@@ -1,0 +1,25 @@
+targets:
+  GAME:
+    filename: Game.exe
+    source_root: src
+    hash:
+      sha256: b0963242470d96cdd8021e2cb81ccbc5e26b4fb2cb122febdec50ad30774f08e
+    data_sources: []
+    encoding:
+    ghidra:
+      ignore_types: []
+      ignore_functions: []
+      name_substitutions: []
+      allow_hash_mismatch: false
+    report:
+      # __DllMainCRTStartup@12 (0x00643885) is not game code: it is VC6's CRT entry
+      # point, which reccmp auto-detects from its library signature DB and pairs
+      # against our recompiled entry. Our build is a temporary DLL (/LD) while the
+      # target is an EXE, so the two startup routines differ structurally (~10%).
+      # Excluded so the report reflects only decompiled game functions. Remove this
+      # once the project links a real EXE with the original entry point.
+      ignore_functions:
+        - __DllMainCRTStartup@12
+      ignore_variables: []
+      icon:
+    marker_aliases: {}

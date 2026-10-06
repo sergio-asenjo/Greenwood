@@ -1,0 +1,29 @@
+# Copyrighted inputs
+/original/
+
+# Downloaded third-party toolchains/binaries
+/tools/external/
+
+# Build output
+/build/
+
+# Ghidra project + raw export
+/ghidra/
+
+# Local reccmp configuration + environment
+/reccmp-user.yml
+/reccmp-build.yml
+/.venv/
+
+# Python bytecode caches
+__pycache__/
+*.pyc
+
+# Compiler / linker artifacts
+*.obj
+*.o
+*.i
+*.exp
+*.lib
+*.ilk
+*.pdb
