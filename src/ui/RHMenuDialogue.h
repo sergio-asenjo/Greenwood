@@ -1,0 +1,50 @@
+// Declarations shared by RHMenuDialogue.cpp (the decompiled TU) and
+// RHMenuDialogue_stubs.cpp (external-symbol stubs).
+//
+// Only the layout the target instructions actually touch is modelled:
+//   - the returned "resource" object has an array of 24-byte elements whose
+//     begin/end pointers live at +0xc / +0x10 (target 0x0052b2e0);
+//   - the engine singleton pointer lives in the global at 0x006c0a88.
+
+#include "SB.h"
+
+// A dialogue entry: the indexed stride is 24 bytes on Windows (target
+// 0x0052b2e0 does `(end - begin) / 24` and `begin + id * 24`). The internal
+// fields are not touched by this function, so the element is modelled as raw
+// storage. (The Mac oracle uses a 20-byte stride — the structure differs
+// between the two builds; the Windows layout is what matters here.)
+struct RHDialogue
+{
+    unsigned char m_data[24];
+};
+
+// The resource object returned by RHEngine::GetDynResources. The oracle does
+// not expose a name for it, so it stays provisional.
+class RHDialogueSet
+{
+public:
+    unsigned char m_pad0[0xc];
+    RHDialogue *m_pDialoguesBegin; // [this+0xc]
+    RHDialogue *m_pDialoguesEnd;   // [this+0x10]
+};
+
+// Oracle-backed target of the call at 0x0052b2e0: 0x004e35a0 is
+// RHEngine::GetDynResources(unsigned long) (symbols/mac-RH.txt line 2110 and
+// symbols/zeta-robin.txt `GetDynResources__8RHEngineUl`; the Mac
+// RHMenuDialogue::GetDialogue calls the same method with the same 0 argument).
+class RHEngine
+{
+public:
+    RHDialogueSet *GetDynResources(unsigned long resources); // 0x004e35a0
+};
+
+// The engine singleton pointer read from the global at 0x006c0a88.
+extern RHEngine *g_pEngine;
+
+class RHMenuDialogue
+{
+public:
+    // Windows codegen calls this WITHOUT a `this` (no `mov ecx, this` at the
+    // ctor call site, 0x0052a7b0), so on this build it is a static member.
+    static RHDialogue *GetDialogue(unsigned long id);
+};

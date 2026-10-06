@@ -1,0 +1,1508 @@
+#include "RHArtificialIntelligence.h"
+
+template <class T> inline T &RHAIField(void *object, unsigned offset)
+{
+    return *(T *)((char *)object + offset);
+}
+
+class RHSeekPoint
+{
+public:
+    bool SerializeStatus(SBFile &file);
+};
+class RHFastFindTacticalArray;
+extern RHFastFindTacticalArray g_unk0x006c06f0;
+
+struct RHArtificialIntelligenceStaticArray
+{
+    int m_grow;
+    void **m_first;
+    void **m_last;
+    unsigned size() { return m_first == 0 ? 0 : m_last - m_first; }
+    void *operator[](unsigned index) { return m_first[index]; }
+};
+
+class RHArtificialIntelligenceStaticObject
+{
+public:
+    virtual void V00() = 0;
+    virtual void V04() = 0;
+    virtual void V08() = 0;
+    virtual bool V0c(SBFile &file) = 0;
+};
+
+// GLOBAL: GAME 0x006c06d0
+RHArtificialIntelligenceStaticArray g_unk0x006c06d0;
+// GLOBAL: GAME 0x006c07de
+char g_unk0x006c07de;
+// GLOBAL: GAME 0x006c07e2
+unsigned short g_unk0x006c07e2;
+// GLOBAL: GAME 0x006c07e4
+unsigned short g_unk0x006c07e4;
+// GLOBAL: GAME 0x006c07e6
+unsigned short g_unk0x006c07e6;
+// GLOBAL: GAME 0x006c078c
+unsigned g_unk0x006c078c;
+// GLOBAL: GAME 0x006c0780
+unsigned g_unk0x006c0780;
+// GLOBAL: GAME 0x006c0784
+long g_unk0x006c0784;
+// GLOBAL: GAME 0x006c07b8
+RHArtificialIntelligenceList g_unk0x006c07b8;
+// GLOBAL: GAME 0x006c0758
+RHArtificialIntelligenceList g_unk0x006c0758;
+
+extern "C" long __cdecl time(long *value);
+extern "C" void __cdecl srand(unsigned seed);
+void operator delete(void *pointer) throw();
+
+class RHArtificialIntelligenceForbiddenRemark
+{
+public:
+    ~RHArtificialIntelligenceForbiddenRemark() {}
+};
+
+#define RHAI_STIMULUS_ACCESS(offset, size, line) \
+    if (file.Access((char *)this + offset, size) < 0) \
+    { \
+        SBString *err = file.GetError(); \
+        const char *reason = err->m_chars ? err->m_chars : ""; \
+        SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp", line, "Serialize failed reason is %s", reason); \
+        return false; \
+    }
+
+#define RHAI_STIMULUS_POINTER(offset, line) \
+    if (!FUN_00416b30(*(void **)((char *)this + offset), file)) \
+    { \
+        SBAssert(1, "P:\\Robin Hood\\RHartificialintelligence.cpp", line, "Serialization failed"); \
+        return false; \
+    }
+
+// Parked: placeholder numbering diverges at the switch table.
+// STUB: GAME 0x0040f090
+bool RHStimulus::Serialize(SBFile &file)
+{
+    // STRING: GAME 0x006a7424
+    RHSerializeName(file, "RHStimulus");
+    if (file.m_version >= 10)
+    {
+        RHAI_STIMULUS_ACCESS(0x28, 1, 171);
+    }
+    RHAI_STIMULUS_ACCESS(0x20, 4, 174);
+    if (file.Access(&m_type, 4) < 0)
+    {
+        SBString *err = file.GetError();
+        const char *reason = err->m_chars ? err->m_chars : "";
+        SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp", 175, "Serialize failed reason is %s", reason);
+        return false;
+    }
+    if (!((RHReconnaissanceEngine *)g_pEngine)->Unk004c3cb0(file, m_24))
+    {
+        SBAssert(1, "P:\\Robin Hood\\RHartificialintelligence.cpp", 176, "Serialization failed");
+        return false;
+    }
+    switch (m_type)
+    {
+    case 0:
+        break;
+    case 1:
+        RHAI_STIMULUS_ACCESS(0, 16, 184);
+        ((RHUnkPathGeometry *)g_unk0x6c0a9c)->Unk004fbec0(file, *(void **)((char *)this + 8));
+        if (file.m_version >= 22)
+        {
+            RHAI_STIMULUS_ACCESS(0, 4, 189);
+            RHAI_STIMULUS_ACCESS(4, 4, 190);
+            RHAI_STIMULUS_ACCESS(12, 2, 191);
+            ((RHUnkPathGeometry *)g_unk0x6c0a9c)->Unk004fbec0(file, *(void **)((char *)this + 8));
+        }
+        RHAI_STIMULUS_ACCESS(16, 4, 195);
+        RHAI_STIMULUS_ACCESS(20, 2, 196);
+        RHAI_STIMULUS_ACCESS(22, 2, 197);
+        break;
+    case 2:
+        RHAI_STIMULUS_ACCESS(0, 4, 202);
+        RHAI_STIMULUS_ACCESS(4, 4, 203);
+        ((RHUnkPathGeometry *)g_unk0x6c0a9c)->Unk004fbec0(file, *(void **)((char *)this + 8));
+        RHAI_STIMULUS_ACCESS(12, 2, 205);
+        break;
+    case 3:
+        RHAI_STIMULUS_POINTER(0, 209);
+        break;
+    case 4:
+        RHAI_STIMULUS_ACCESS(0, 4, 213);
+        RHAI_STIMULUS_ACCESS(4, 4, 214);
+        ((RHUnkPathGeometry *)g_unk0x6c0a9c)->Unk004fbec0(file, *(void **)((char *)this + 8));
+        RHAI_STIMULUS_ACCESS(12, 2, 216);
+        RHAI_STIMULUS_POINTER(20, 217);
+        RHAI_STIMULUS_ACCESS(16, 2, 218);
+        break;
+    case 5:
+        RHAI_STIMULUS_POINTER(0, 222);
+        break;
+    case 6:
+        RHAI_STIMULUS_POINTER(0, 226);
+        RHAI_STIMULUS_POINTER(4, 227);
+    case 7:
+        RHAI_STIMULUS_ACCESS(4, 4, 230);
+        RHAI_STIMULUS_ACCESS(8, 4, 231);
+        ((RHUnkPathGeometry *)g_unk0x6c0a9c)->Unk004fbec0(file, *(void **)((char *)this + 12));
+        RHAI_STIMULUS_ACCESS(16, 2, 233);
+        RHAI_STIMULUS_POINTER(0, 234);
+        break;
+    case 8:
+        RHAI_STIMULUS_ACCESS(0, 2, 238);
+        RHAI_STIMULUS_ACCESS(20, 2, 239);
+        RHAI_STIMULUS_ACCESS(4, 4, 240);
+        RHAI_STIMULUS_ACCESS(8, 4, 241);
+        ((RHUnkPathGeometry *)g_unk0x6c0a9c)->Unk004fbec0(file, *(void **)((char *)this + 12));
+        RHAI_STIMULUS_ACCESS(16, 2, 243);
+        RHAI_STIMULUS_POINTER(24, 244);
+        break;
+    case 9:
+        RHAI_STIMULUS_ACCESS(0, 2, 248);
+        break;
+    default:
+        return false;
+    }
+    return true;
+}
+
+#undef RHAI_STIMULUS_ACCESS
+#undef RHAI_STIMULUS_POINTER
+
+// GLOBAL: GAME 0x006c07e8
+char g_unk0x006c07e8;
+
+// Parked: 59.63%; switch/register scheduling and recursive ILT operands.
+// STUB: GAME 0x00410010
+void RHArtificialIntelligence::Unk00410010(bool mode)
+{
+    RHArtificialIntelligenceActor *actor;
+    RHArtificialIntelligencePathCursor *cursor;
+    for (;;)
+    {
+        if (RHAIField<int>(this, 0x0c) == 1)
+            V10(1, 15);
+        actor = m_actor;
+        RHAIField<unsigned short>(this, 0xa8) = 0;
+        void *interfaceObject = RHAIField<void *>(actor, 0x49c);
+        cursor = (RHArtificialIntelligencePathCursor *)((char *)actor + 0x4cc + RHAIField<int>(interfaceObject, 4));
+        if (RHAIField<short>(this, 0x7c) <= 0)
+            break;
+        unsigned char *commands = RHAIField<unsigned char *>(this, 0x78);
+        --RHAIField<short>(this, 0x7c);
+        unsigned char command = *commands++;
+        RHAIField<unsigned char *>(this, 0x78) = commands;
+        RHAIField<char>(this, 0x7e) = 1;
+        switch (command)
+        {
+        case 0:
+            RHAIField<char>(cursor, 2) ^= 1;
+            mode = false;
+            continue;
+        case 1:
+            cursor->Unk005505c0();
+            RHAIField<short>(this, 0x7c) = 0;
+            mode = false;
+            continue;
+        case 2:
+        {
+            unsigned short waypoint = *(unsigned short *)commands;
+            if (waypoint == RHAIField<unsigned char>(cursor, 0) && !g_unk0x006c07e8)
+                SBAssert(1, "P:\\Robin Hood\\RHartificialintelligence.cpp", 582,
+                         // STRING: GAME 0x006a769c
+                         "It's a crusade of the Good against the Evil ! : NPC going from a waypoint to the same waypoint !");
+            cursor->Unk005505b0(waypoint);
+            RHAIField<short>(this, 0x7c) = 0;
+            mode = true;
+            continue;
+        }
+        case 3:
+            V10(1, 16);
+            Unk00412f70(RHAIField<unsigned short>(RHAIField<void *>(this, 0x78), 0), 0);
+            RHAIField<char *>(this, 0x78) += 2;
+            RHAIField<short>(this, 0x7c) -= 2;
+            return;
+        case 4:
+            ((RHArtificialIntelligenceActorCalls *)m_actor)->Unk0048b450(*(unsigned short *)commands, 1);
+            RHAIField<char>(this, 0x7f) = 0;
+            RHAIField<char *>(this, 0x78) += 2;
+            RHAIField<short>(this, 0x7c) -= 2;
+            return;
+        case 5:
+        {
+            unsigned short first = *(unsigned short *)commands;
+            unsigned short second = *(unsigned short *)(commands + 2);
+            RHAIField<short>(this, 0x7c) -= 4;
+            RHAIField<unsigned char *>(this, 0x78) = commands + 4;
+            if ((RHAIField<unsigned>(m_actor, 4) & 31) != 20)
+                SBAssert(1, "P:\\Robin Hood\\RHartificialintelligence.cpp", 611,
+                         // STRING: GAME 0x006a75b8
+                         "Waypoint command 'CheckFor' is illegal for civilists");
+            if (!m_actor->V130())
+                SBAssert(1, "P:\\Robin Hood\\RHartificialintelligence.cpp", 616,
+                         // STRING: GAME 0x006a7578
+                         "Waypoint command 'CheckFor' is illegal for friendly soldiers");
+            V40(first, second, 0xffff);
+            RHAIField<char>(this, 0x7f) = 0;
+            return;
+        }
+        case 6:
+        {
+            unsigned short first = *(unsigned short *)commands;
+            unsigned short second = *(unsigned short *)(commands + 2);
+            unsigned short third = *(unsigned short *)(commands + 4);
+            RHAIField<unsigned char *>(this, 0x78) = commands + 6;
+            RHAIField<short>(this, 0x7c) -= 6;
+            if ((RHAIField<unsigned>(m_actor, 4) & 31) != 20)
+                SBAssert(1, "P:\\Robin Hood\\RHartificialintelligence.cpp", 633,
+                         // STRING: GAME 0x006a753c
+                         "Waypoint command 'CheckForSync' is illegal for civilists");
+            if (!m_actor->V130())
+                SBAssert(1, "P:\\Robin Hood\\RHartificialintelligence.cpp", 638,
+                         // STRING: GAME 0x006a74f8
+                         "Waypoint command 'CheckForSync' is illegal for friendly soldiers");
+            V40(first, second, third);
+            RHAIField<char>(this, 0x7f) = 0;
+            return;
+        }
+        case 7:
+            Unk00418600(0xffff);
+            return;
+        case 8:
+            Unk00418600(*(unsigned short *)commands);
+            Unk00410600();
+            V00(0);
+            return;
+        case 9:
+            RHAIField<unsigned char>(this, 0x22c) |= 1;
+            Unk00410010(false);
+            if ((RHAIField<unsigned>(m_actor, 4) & 31) == 4 && (RHAIField<unsigned short>(this, 0x22c) & 0xd802))
+                RHAIField<unsigned short>(this, 0x22c) &= 0x27fd;
+            return;
+        case 10:
+            RHAIField<unsigned short>(this, 0x22c) &= 0xfffe;
+            Unk00410010(false);
+            if ((RHAIField<unsigned>(m_actor, 4) & 31) == 4 && (RHAIField<unsigned short>(this, 0x22c) & 0xd802))
+                RHAIField<unsigned short>(this, 0x22c) &= 0x27fd;
+            return;
+        case 11:
+            if ((RHAIField<unsigned>(m_actor, 4) & 31) != 20)
+                SBAssert(1, "P:\\Robin Hood\\RHartificialintelligence.cpp", 689,
+                         // STRING: GAME 0x006a749c
+                         "Waypoint command 'LookLeft' is illegal for civilists, even if they are called Guisbourne!");
+            V04(0);
+            V10(1, 16);
+            RHAIField<char>(this, 0x7f) = 0;
+            return;
+        case 12:
+            if ((RHAIField<unsigned>(m_actor, 4) & 31) != 20)
+                SBAssert(1, "P:\\Robin Hood\\RHartificialintelligence.cpp", 700,
+                         // STRING: GAME 0x006a7464
+                         "Waypoint command 'LookRight' is illegal for civilists");
+            V04(1);
+            V10(1, 16);
+            RHAIField<char>(this, 0x7f) = 0;
+            return;
+        case 13:
+            if ((RHAIField<unsigned>(m_actor, 4) & 31) != 20)
+                SBAssert(1, "P:\\Robin Hood\\RHartificialintelligence.cpp", 710,
+                         // STRING: GAME 0x006a7430
+                         "Waypoint command 'Bend' is illegal for civilists");
+            V04(4);
+            ((RHArtificialIntelligenceActorCalls *)m_actor)->Unk0048b450(RHAIField<unsigned short>(RHAIField<void *>(this, 0x78), 0), 1);
+            RHAIField<char>(this, 0x7f) = 0;
+            RHAIField<char *>(this, 0x78) += 2;
+            RHAIField<short>(this, 0x7c) -= 2;
+            return;
+        case 14:
+            if ((RHAIField<unsigned>(actor, 4) & 31) != 20)
+                SBAssert(1, "P:\\Robin Hood\\RHartificialintelligence.cpp", 722,
+                         // STRING: GAME 0x006a7664
+                         "Waypoint command 'PatrolStop' is illegal for civilists");
+            RHAIField<char>(this, 0x344) = 1;
+            if ((RHAIField<unsigned>(m_actor, 4) & 31) == 20 && RHAIField<int>(RHAIField<void *>(m_actor, 0xa1c), 0x58) == 1)
+                Unk00418c40(59, 0);
+            mode = false;
+            continue;
+        case 15:
+            if ((RHAIField<unsigned>(actor, 4) & 31) != 20)
+                SBAssert(1, "P:\\Robin Hood\\RHartificialintelligence.cpp", 735,
+                         // STRING: GAME 0x006a7628
+                         "Waypoint command 'PatrolDirection' is illegal for civilists");
+            Unk0041a960(RHAIField<unsigned short>(RHAIField<void *>(this, 0x78), 0));
+            RHAIField<short>(this, 0x7c) -= 2;
+            RHAIField<char *>(this, 0x78) += 2;
+            mode = false;
+            continue;
+        case 16:
+            if ((RHAIField<unsigned>(actor, 4) & 31) != 20)
+                SBAssert(1, "P:\\Robin Hood\\RHartificialintelligence.cpp", 746,
+                         // STRING: GAME 0x006a75f0
+                         "Waypoint command 'PatrolStart' is illegal for civilists");
+            RHAIField<char>(this, 0x344) = 0;
+            if ((RHAIField<unsigned>(m_actor, 4) & 31) == 20 && RHAIField<int>(RHAIField<void *>(m_actor, 0xa1c), 0x58) == 1)
+                Unk00418c40(60, 0);
+            ((RHScriptBatchCalls *)this)->Unk0041ac50();
+            mode = false;
+            continue;
+        default:
+            RHAIField<short>(this, 0x7c) = 0;
+            mode = false;
+            continue;
+        }
+    }
+    if (V28())
+    {
+        Unk00410600();
+        return;
+    }
+    void *path = RHAIField<void *>(cursor, 4);
+    if (path && RHAIField<void **>(path, 4) && (unsigned short)(RHAIField<void **>(path, 8) - RHAIField<void **>(path, 4)) == 1)
+    {
+        if (RHAIField<char>(this, 0x7f))
+        {
+            V10(1, 15);
+            RHAIField<char>(this, 0x7f) = 0;
+            ((RHArtificialIntelligenceActorCalls *)m_actor)->Unk0048b450(100, 1);
+        }
+        else
+        {
+            RHAIField<char>(this, 0x7e) = 0;
+            ((RHArtificialIntelligenceActorCalls *)m_actor)->Unk0048b4e0(1);
+            V10(1, 13);
+            ((RHScriptBatchCalls *)this)->Unk0040d980(3);
+        }
+        return;
+    }
+    if (!mode)
+        cursor->Unk005505c0();
+    V10(1, 13);
+    if (Unk00419cc0())
+        Unk00412c80(RHAIField<void **>(RHAIField<void *>(cursor, 4), 4)[RHAIField<unsigned char>(cursor, 0)], RHAIField<unsigned short>(this, 0x22c));
+    else
+        Unk00412c80(RHAIField<void **>(RHAIField<void *>(cursor, 4), 4)[RHAIField<unsigned char>(cursor, 0)], RHAIField<unsigned short>(this, 0x22c) | 0x400);
+    RHAIField<char>(this, 0x7e) = 0;
+    ((RHArtificialIntelligenceActorCalls *)m_actor)->Unk0048b4e0(1);
+}
+
+// Parked: switch tail merging and register scheduling.
+// STUB: GAME 0x00414550
+bool RHArtificialIntelligence::InitState()
+{
+    SBGeoPoint2D point;
+    m_16f = false;
+    m_170 = false;
+    m_173 = false;
+    RHArtificialIntelligenceInitialEntry *entry = m_actor->m_data->m_entry;
+    bool done = true;
+    if (entry->Flag13() & 1)
+    {
+        m_173 = done;
+        V10(1, 17);
+        RHElementActor *value = (RHElementActor *)entry;
+        if (((RHSectorActorList *)&g_unk0x006c0758)->Unk004b8f80(value, true) == -1)
+            g_unk0x006c0758.InsertLast((void *const &)value);
+    }
+    else
+    {
+        switch (m_initialAction)
+        {
+        case 0:
+        case 1:
+        case 3:
+            V10(1, 11);
+            Unk00416710(Unk0041a420());
+            return done;
+        case 45:
+            V10(0, 1);
+            m_actor->Vc4(0);
+            ((RHScriptBatchCalls *)m_actor)->Unk0046bcf0(13, 0);
+            ((RHScriptBatchCalls *)m_actor)->Unk00464630();
+            *((char *)m_actor + 0x490) = done;
+            break;
+        case 47:
+            V10(0, 1);
+            m_actor->Vc4(0);
+            ((RHScriptBatchCalls *)m_actor)->Unk0046bcf0(12, 0);
+            ((RHScriptBatchCalls *)m_actor)->Unk00464630();
+            *((char *)m_actor + 0x490) = done;
+            break;
+        case 48:
+            V10(0, 2);
+            m_actor->Vdc(300, 0, 0);
+            ((RHScriptBatchCalls *)m_actor)->Unk0046bcf0(3, 0);
+            ((RHScriptBatchCalls *)m_actor)->Unk00464630();
+            break;
+        case 270:
+            V10(1, 11);
+            ((RHScriptBatchCalls *)m_actor)->Unk0046bcf0(24, 0);
+            ((RHScriptBatchCalls *)m_actor)->Unk00464630();
+            m_170 = done;
+            break;
+        case 162:
+            V10(0, 3);
+            ((RHArtificialIntelligence *)m_actor)->Unk00486f60();
+            ((RHScriptBatchCalls *)m_actor)->Unk0046bcf0(1, 16);
+            ((RHScriptBatchCalls *)m_actor)->Unk00464630();
+            ((RHScriptBatchCalls *)this)->Unk00419fb0(4);
+            break;
+        case 159:
+            V10(1, 11);
+            Unk00416710(Unk0041a420());
+            ((RHScriptBatchCalls *)m_actor)->Unk0046bcf0(8, 0);
+            ((RHScriptBatchCalls *)m_actor)->Unk00464630();
+            m_16f = done;
+            break;
+        default:
+            V10(1, 11);
+            Unk00416710(Unk0041a420());
+            SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp", 3734,
+                     // STRING: GAME 0x006a7700
+                     "Actor at (%f, %f): Initial action %u not supported by AI.",
+                     m_actor->m_data->m_x, m_actor->m_data->m_y, (unsigned short)m_initialAction);
+            return done;
+        }
+    }
+    return false;
+}
+
+// Parked: delete/reload scheduling plus rule 28.
+// STUB: GAME 0x004148b0
+bool RHArtificialIntelligence::SerializeAllAI(SBFile &file)
+{
+    // STRING: GAME 0x006a773c
+    RHSerializeName(file, "RHArtificialIntelligence");
+    if (file.Access(&g_unk0x006c07de, 1) < 0)
+    {
+        SBString *err = file.GetError();
+        const char *reason = err->m_chars ? err->m_chars : "";
+        SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
+                 3764, "Serialize failed reason is %s", reason);
+        return false;
+    }
+    RHArtificialIntelligenceStaticArray &points = (RHArtificialIntelligenceStaticArray &)g_unk0x006c06f0;
+    unsigned count = points.size();
+    for (unsigned i = 0; i < count; ++i)
+    {
+        if (!((RHSeekPoint *)points[i])->SerializeStatus(file))
+        {
+            SBAssert(1, "P:\\Robin Hood\\RHartificialintelligence.cpp", 3772, "Serialization failed");
+            return false;
+        }
+    }
+    count = g_unk0x006c06d0.size();
+    for (i = 0; i < count; ++i)
+    {
+        if (!((RHArtificialIntelligenceStaticObject *)g_unk0x006c06d0[i])->V0c(file))
+        {
+            SBAssert(1, "P:\\Robin Hood\\RHartificialintelligence.cpp", 3779, "Serialization failed");
+            return false;
+        }
+    }
+    if (file.Access(&g_unk0x006c07e2, 2) < 0)
+    {
+        SBString *err = file.GetError();
+        const char *reason = err->m_chars ? err->m_chars : "";
+        SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
+                 3782, "Serialize failed reason is %s", reason);
+        return false;
+    }
+    if (file.Access(&g_unk0x006c07e4, 2) < 0)
+    {
+        SBString *err = file.GetError();
+        const char *reason = err->m_chars ? err->m_chars : "";
+        SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
+                 3783, "Serialize failed reason is %s", reason);
+        return false;
+    }
+    if (file.Access(&g_unk0x006c07e6, 2) < 0)
+    {
+        SBString *err = file.GetError();
+        const char *reason = err->m_chars ? err->m_chars : "";
+        SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
+                 3784, "Serialize failed reason is %s", reason);
+        return false;
+    }
+    if (file.Access(&g_unk0x006c078c, 4) < 0)
+    {
+        SBString *err = file.GetError();
+        const char *reason = err->m_chars ? err->m_chars : "";
+        SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
+                 3786, "Serialize failed reason is %s", reason);
+        return false;
+    }
+    if (file.Access(&g_unk0x006c0780, 4) < 0)
+    {
+        SBString *err = file.GetError();
+        const char *reason = err->m_chars ? err->m_chars : "";
+        SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
+                 3787, "Serialize failed reason is %s", reason);
+        return false;
+    }
+    if (!file.m_bLoading)
+    {
+        g_unk0x006c0784 = time(0);
+        if (file.Access(&g_unk0x006c0784, 4) < 0)
+        {
+            SBString *err = file.GetError();
+            const char *reason = err->m_chars ? err->m_chars : "";
+            SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
+                     3800, "Serialize failed reason is %s", reason);
+            return false;
+        }
+        srand(g_unk0x006c0784);
+    }
+    else
+    {
+        if (file.Access(&g_unk0x006c0784, 4) < 0)
+        {
+            SBString *err = file.GetError();
+            const char *reason = err->m_chars ? err->m_chars : "";
+            SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
+                     3812, "Serialize failed reason is %s", reason);
+            return false;
+        }
+        srand(g_unk0x006c0784);
+    }
+    if (file.m_bLoading)
+    {
+        g_unk0x006c07b8.m_current = g_unk0x006c07b8.begin();
+        while (g_unk0x006c07b8.m_current.m_node != g_unk0x006c07b8.m_head)
+        {
+            delete (RHArtificialIntelligenceForbiddenRemark *)g_unk0x006c07b8.m_current.m_node->m_data;
+            ++g_unk0x006c07b8.m_current;
+        }
+        RHArtificialIntelligenceNode *head = g_unk0x006c07b8.m_head;
+        RHArtificialIntelligenceNode *node = head->m_next;
+        while (node != head)
+        {
+            RHArtificialIntelligenceNode *old = node;
+            node = node->m_next;
+            old->m_prev->m_next = old->m_next;
+            old->m_next->m_prev = old->m_prev;
+            ::operator delete(old);
+            --g_unk0x006c07b8.m_count;
+        }
+        g_unk0x006c07b8.m_dirty = true;
+    }
+    return true;
+}
+
+template <class T> struct RHArtificialIntelligenceValueNode
+{
+    RHArtificialIntelligenceValueNode *m_next;
+    RHArtificialIntelligenceValueNode *m_previous;
+    T m_value;
+};
+
+template <class T> struct RHArtificialIntelligenceValueList
+{
+    int m_allocator;
+    RHArtificialIntelligenceValueNode<T> *m_head;
+    unsigned m_count;
+    RHArtificialIntelligenceValueNode<T> *m_current;
+    bool m_dirty;
+    char m_11[3];
+    int m_index;
+    void clear()
+    {
+        typedef RHScriptIter (RHTitbitList::*Erase)(RHScriptIter, RHScriptIter);
+        (((RHTitbitList *)this)->*(Erase)&RHTitbitList::Clear)(((RHUnk0046eb30 *)this)->begin(), RHScriptIter((RHScriptNode *)m_head));
+        m_dirty = true;
+    }
+    T &operator[](unsigned index)
+    {
+        ((RHTitbitList *)this)->At(index);
+        return m_current->m_value;
+    }
+};
+
+#define RHAI_LOCAL_ACCESS(address, size, line) \
+    if (file.Access(address, size) < 0) \
+    { \
+        SBString *error = file.GetError(); \
+        const char *reason = error->m_chars ? error->m_chars : ""; \
+        SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp", line, "Serialize failed reason is %s", reason); \
+        return false; \
+    }
+
+#define RHAI_LOCAL_FIELD(offset, size, line) RHAI_LOCAL_ACCESS((char *)this + offset, size, line)
+
+#define RHAI_LOCAL_CHECK(expression, line) \
+    if (!(expression)) \
+    { \
+        SBAssert(1, "P:\\Robin Hood\\RHartificialintelligence.cpp", line, "Serialization failed"); \
+        return false; \
+    }
+
+// Parked: 87.95%; four-byte frame gap, container scheduling and rule 28.
+// STUB: GAME 0x00414be0
+bool RHArtificialIntelligence::Unk00414be0(SBFile &file)
+{
+    RHStimulus stimulus;
+    // STRING: GAME 0x006a77ac
+    RHSerializeName(file, "RHArtificialIntelligenceLocalAI");
+    unsigned count;
+    unsigned i;
+    if (file.m_version > 37)
+    {
+        SerializePosition(RHAIField<RHArtificialIntelligencePosition>(this, 0x378), file);
+        RHAI_LOCAL_FIELD(0x388, 2, 0xf1b)
+        RHAI_LOCAL_FIELD(0x38a, 2, 0xf1c)
+    }
+    else
+        RHAIField<void *>(this, 0x380) = 0;
+    if (file.m_version > 32)
+    {
+        RHArtificialIntelligenceValueList<int> &list = RHAIField<RHArtificialIntelligenceValueList<int> >(this, 0x230);
+        int value;
+        if (file.m_bLoading)
+        {
+            RHAI_LOCAL_ACCESS(&count, 4, 0xf2b)
+            list.clear();
+            for (i = 0; i < count; ++i)
+            {
+                RHAI_LOCAL_ACCESS(&value, 4, 0xf31)
+                ((RHUnkList *)&list)->insert(RHUnkIter(list.m_head), (RHOrder *const &)value);
+                list.m_dirty = true;
+            }
+        }
+        else
+        {
+            count = list.m_count;
+            RHAI_LOCAL_ACCESS(&count, 4, 0xf39)
+            for (i = 0; i < count; ++i)
+            {
+                value = list[i];
+                RHAI_LOCAL_ACCESS(&value, 4, 0xf3f)
+            }
+        }
+    }
+    if (file.m_version >= 14)
+    {
+        RHAI_LOCAL_FIELD(0x25c, 2, 0xf46)
+    }
+    if (file.m_version >= 12)
+    {
+        RHArtificialIntelligenceValueList<RHArtificialIntelligenceTriple> &list = RHAIField<RHArtificialIntelligenceValueList<RHArtificialIntelligenceTriple> >(this, 0x34c);
+        RHArtificialIntelligenceTriple value;
+        if (file.m_bLoading)
+        {
+            RHAI_LOCAL_ACCESS(&count, 4, 0xf4e)
+            list.clear();
+            for (i = 0; i < count; ++i)
+            {
+                RHAI_LOCAL_ACCESS(&value, 12, 0xf54)
+                ((RHArtificialIntelligenceTripleList *)&list)->insert(RHArtificialIntelligenceIterator((RHArtificialIntelligenceNode *)list.m_head), value);
+                list.m_dirty = true;
+            }
+        }
+        else
+        {
+            count = list.m_count;
+            RHAI_LOCAL_ACCESS(&count, 4, 0xf5c)
+            for (i = 0; i < count; ++i)
+            {
+                RHAI_LOCAL_ACCESS(&list[i], 12, 0xf61)
+            }
+        }
+    }
+    RHAI_LOCAL_CHECK(FUN_00416b30((void *&)m_actor, file), 0xf67)
+    RHAI_LOCAL_FIELD(0x0c, 4, 0xf6a)
+    RHAI_LOCAL_FIELD(0x10, 4, 0xf6b)
+    RHAI_LOCAL_FIELD(0x14, 4, 0xf6c)
+    RHAI_LOCAL_FIELD(0x18, 4, 0xf6d)
+    RHAI_LOCAL_FIELD(0x1c, 4, 0xf6e)
+    RHAI_LOCAL_FIELD(0x20, 4, 0xf6f)
+    RHAI_LOCAL_FIELD(0x24, 1, 0xf70)
+    RHAI_LOCAL_FIELD(0x28, 4, 0xf71)
+    RHAI_LOCAL_FIELD(0x2c, 1, 0xf73)
+    RHAI_LOCAL_FIELD(0x71, 1, 0xf75)
+    RHAI_LOCAL_FIELD(0x72, 1, 0xf78)
+    RHAI_LOCAL_FIELD(0x73, 1, 0xf79)
+    RHAI_LOCAL_FIELD(0x74, 2, 0xf7a)
+    RHArtificialIntelligencePathCursor *cursor = (RHArtificialIntelligencePathCursor *)((char *)this + 0x30);
+    RHAI_LOCAL_CHECK(((RHPath *)cursor)->SerializeStatus(file), 0xf7e)
+    RHAI_LOCAL_FIELD(0x70, 1, 0xf7f)
+    if (RHAIField<char>(this, 0x70))
+    {
+        unsigned short offset;
+        if (file.m_bLoading)
+        {
+            RHAI_LOCAL_ACCESS(&offset, 2, 0xf87)
+            void *waypoint = RHAIField<void **>(RHAIField<void *>(cursor, 4), 4)[RHAIField<unsigned char>(cursor, 0)];
+            RHAIField<char *>(this, 0x78) = RHAIField<char *>(waypoint, 0x74) + offset;
+        }
+        else
+        {
+            void *waypoint = RHAIField<void **>(RHAIField<void *>(cursor, 4), 4)[RHAIField<unsigned char>(cursor, 0)];
+            offset = (unsigned short)(RHAIField<char *>(this, 0x78) - RHAIField<char *>(waypoint, 0x74));
+            RHAI_LOCAL_ACCESS(&offset, 2, 0xf8d)
+        }
+    }
+    RHAI_LOCAL_FIELD(0x7c, 2, 0xf90)
+    RHAI_LOCAL_FIELD(0x7e, 1, 0xf91)
+    RHAI_LOCAL_CHECK(FUN_00416b30(RHAIField<void *>(this, 0x80), file), 0xf94)
+    RHAI_LOCAL_CHECK(FUN_00416b30(RHAIField<void *>(this, 0x84), file), 0xf95)
+    RHAI_LOCAL_CHECK(FUN_00416b30(RHAIField<void *>(this, 0x88), file), 0xf96)
+    RHAI_LOCAL_CHECK(FUN_00416b30(RHAIField<void *>(this, 0x8c), file), 0xf97)
+    RHAI_LOCAL_CHECK(FUN_00416b30(RHAIField<void *>(this, 0x90), file), 0xf9a)
+    RHAI_LOCAL_CHECK(FUN_00416b30(RHAIField<void *>(this, 0x94), file), 0xf9b)
+    RHAI_LOCAL_FIELD(0x98, 1, 0xf9e)
+    RHAI_LOCAL_FIELD(0x9c, 4, 0xf9f)
+    RHAI_LOCAL_FIELD(0xa0, 1, 0xfa0)
+    RHAI_LOCAL_FIELD(0xa4, 4, 0xfa1)
+    RHAI_LOCAL_FIELD(0xa8, 2, 0xfa4)
+    RHAI_LOCAL_FIELD(0xaa, 2, 0xfa7)
+    RHAI_LOCAL_FIELD(0xac, 4, 0xfaa)
+    RHAI_LOCAL_FIELD(0xb0, 4, 0xfab)
+    RHAI_LOCAL_FIELD(0xb4, 4, 0xfac)
+    RHAI_LOCAL_FIELD(0xb8, 4, 0xfad)
+    RHAI_LOCAL_FIELD(0xbc, 4, 0xfae)
+    RHAI_LOCAL_FIELD(0xc0, 2, 0xfaf)
+    RHAI_LOCAL_FIELD(0xc2, 2, 0xfb0)
+    RHAI_LOCAL_FIELD(0xc4, 2, 0xfb1)
+    RHAI_LOCAL_FIELD(0xc6, 2, 0xfb2)
+    RHAI_LOCAL_FIELD(0xc8, 2, 0xfb3)
+    RHAI_LOCAL_FIELD(0xca, 1, 0xfb6)
+    RHAI_LOCAL_CHECK(FUN_00416b30(RHAIField<void *>(this, 0xcc), file), 0xfb7)
+    SerializePosition(RHAIField<RHArtificialIntelligencePosition>(this, 0xd0), file);
+    SerializePosition(RHAIField<RHArtificialIntelligencePosition>(this, 0xe0), file);
+    RHAI_LOCAL_FIELD(0xf0, 1, 0xfbe)
+    RHAI_LOCAL_FIELD(0xf4, 4, 0xfc1)
+    RHAI_LOCAL_FIELD(0xf8, 4, 0xfc2)
+    RHAI_LOCAL_FIELD(0xfc, 1, 0xfc3)
+    RHAI_LOCAL_FIELD(0xfd, 1, 0xfc4)
+    RHAI_LOCAL_CHECK(SerializeListOfPointersToHumans(RHAIField<RHArtificialIntelligenceList>(this, 0x100), file), 0xfc8)
+    RHAI_LOCAL_CHECK(SerializeListOfPointersToActorsNPC(RHAIField<RHArtificialIntelligenceList>(this, 0x124), file), 0xfc9)
+    RHAI_LOCAL_CHECK(SerializeListOfPointersToActorsNPC(RHAIField<RHArtificialIntelligenceList>(this, 0x148), file), 0xfca)
+    RHAI_LOCAL_FIELD(0x16c, 1, 0xfcd)
+    RHAI_LOCAL_FIELD(0x16d, 1, 0xfce)
+    RHAI_LOCAL_FIELD(0x16e, 1, 0xfcf)
+    RHAI_LOCAL_FIELD(0x16f, 1, 0xfd2)
+    RHAI_LOCAL_FIELD(0x170, 1, 0xfd3)
+    RHAI_LOCAL_FIELD(0x171, 1, 0xfd7)
+    RHAI_LOCAL_FIELD(0x172, 1, 0xfda)
+    RHAI_LOCAL_FIELD(0x173, 1, 0xfdd)
+    RHAI_LOCAL_FIELD(0x174, 1, 0xfe1)
+    RHAI_LOCAL_FIELD(0x175, 1, 0xfe2)
+    RHArtificialIntelligenceValueList<RHStimulus> &stimuli = RHAIField<RHArtificialIntelligenceValueList<RHStimulus> >(this, 0x178);
+    if (file.m_bLoading)
+    {
+        RHAI_LOCAL_ACCESS(&count, 4, 0xfe6)
+        RHScriptIter first((RHScriptNode *)stimuli.m_head->m_next);
+        RHScriptNode *last = (RHScriptNode *)stimuli.m_head;
+        while (first.node != last)
+        {
+            typedef RHScriptIter (RHSectorActorIter::*Increment)(int);
+            ((RHUnk0046eb30 *)&stimuli)->erase((((RHSectorActorIter *)&first)->*(Increment)&RHSectorActorIter::operator++)(0));
+        }
+        stimuli.m_dirty = true;
+        for (i = 0; i < count; ++i)
+        {
+            RHAI_LOCAL_CHECK(stimulus.Serialize(file), 0xfec)
+            RHArtificialIntelligenceStimulusNode *head = (RHArtificialIntelligenceStimulusNode *)stimuli.m_head;
+            head->m_previous = ((RHArtificialIntelligenceStimulusList *)&stimuli)->Unk00424340(head, head->m_previous);
+            RHArtificialIntelligenceStimulusNode *node = head->m_previous;
+            node->m_previous->m_next = node;
+            FUN_00424470((RHStimulus *)(node + 1), &stimulus);
+            ++stimuli.m_count;
+            stimuli.m_dirty = true;
+        }
+    }
+    else
+    {
+        count = stimuli.m_count;
+        RHAI_LOCAL_ACCESS(&count, 4, 0xff4)
+        for (i = 0; i < count; ++i)
+        {
+            RHAI_LOCAL_CHECK(stimuli[i].Serialize(file), 0xff9)
+        }
+    }
+    RHAI_LOCAL_FIELD(0x1c4, 1, 0xffc)
+    RHAI_LOCAL_FIELD(0x1c5, 1, 0xffd)
+    RHAI_LOCAL_FIELD(0x1c6, 2, 0x1000)
+    RHAI_LOCAL_FIELD(0x1c8, 4, 0x1003)
+    RHAI_LOCAL_FIELD(0x1cc, 4, 0x1004)
+    RHAI_LOCAL_CHECK(((RHUnkPathGeometry *)g_unk0x6c0a9c)->Unk004fc030(file, RHAIField<void *>(this, 0x1d0)), 0x1006)
+    RHAI_LOCAL_CHECK(SerializeListOfPointersToObjects(RHAIField<RHArtificialIntelligenceList>(this, 0x1d4), file), 0x1008)
+    RHAI_LOCAL_CHECK(((RHReconnaissanceEngine *)g_pEngine)->Unk004c4110(file, RHAIField<void *>(this, 0x1f8)), 0x1009)
+    RHAI_LOCAL_CHECK(((RHReconnaissanceEngine *)g_pEngine)->Unk004c3cb0(file, RHAIField<void *>(this, 0x1fc)), 0x100a)
+    RHAI_LOCAL_CHECK(((RHReconnaissanceEngine *)g_pEngine)->Unk004c3cb0(file, RHAIField<void *>(this, 0x200)), 0x100b)
+    RHAI_LOCAL_FIELD(0x204, 1, 0x100c)
+    RHAI_LOCAL_FIELD(0x7f, 1, 0x100e)
+    SerializeListOfPointersToActorsNPC(RHAIField<RHArtificialIntelligenceList>(this, 0x208), file);
+    unsigned short &walkingFlags = RHAIField<unsigned short>(this, 0x22c);
+    if (file.m_bLoading)
+    {
+        RHAI_LOCAL_ACCESS(&walkingFlags, 2, 0x1013)
+        if ((RHAIField<unsigned>(m_actor, 4) & 31) == 4 && (walkingFlags & 0xd802))
+        {
+            SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp", 0x1017,
+                     // STRING: GAME 0x006a7784
+                     "Bad walking flags for civilians read!");
+            walkingFlags &= 0x27fd;
+        }
+    }
+    else
+    {
+        if ((RHAIField<unsigned>(m_actor, 4) & 31) == 4 && (walkingFlags & 0xd802))
+        {
+            SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp", 0x1020,
+                     // STRING: GAME 0x006a7758
+                     "Bad walking flags for civilians written!");
+            walkingFlags &= 0x27fd;
+        }
+        RHAI_LOCAL_ACCESS(&walkingFlags, 2, 0x1023)
+    }
+    RHAI_LOCAL_FIELD(0x22e, 1, 0x1025)
+    RHAI_LOCAL_FIELD(0x258, 4, 0x1027)
+    if (file.m_bLoading && RHAIField<int>(this, 0x258) != 121)
+    {
+        unsigned short flags = RHAIField<unsigned short>(this, 0x25c);
+        RHAIField<int>(this, 0x258) = 121;
+        RHAIField<unsigned short>(this, 0x25c) = 0;
+        Unk004195f0(flags);
+    }
+    RHAI_LOCAL_FIELD(0x25e, 2, 0x1031)
+    RHAI_LOCAL_FIELD(0x25f, 1, 0x1032)
+    RHAI_LOCAL_FIELD(0x260, 4, 0x1034)
+    RHAI_LOCAL_FIELD(0x264, 4, 0x1035)
+    RHAI_LOCAL_FIELD(0x268, 1, 0x1036)
+    RHAI_LOCAL_CHECK(((RHReconnaissanceReport *)((char *)this + 0x26c))->Serialize(file), 0x1038)
+    RHAI_LOCAL_FIELD(0x2ac, 1, 0x103a)
+    RHAI_LOCAL_FIELD(0x348, 1, 0x103b)
+    RHAI_LOCAL_CHECK(((RHReconnaissanceEngine *)g_pEngine)->Unk004c3cb0(file, RHAIField<void *>(this, 0x2b0)), 0x103d)
+    SerializeListOfPointersToActorsNPC(RHAIField<RHArtificialIntelligenceList>(this, 0x2b4), file);
+    SerializeListOfPointersToActorsNPC(RHAIField<RHArtificialIntelligenceList>(this, 0x2d8), file);
+    SerializeListOfPointersToActorsNPC(RHAIField<RHArtificialIntelligenceList>(this, 0x2fc), file);
+    RHAI_LOCAL_FIELD(0x344, 1, 0x1041)
+    RHAI_LOCAL_FIELD(0x346, 2, 0x1042)
+    return V08(file);
+}
+
+#undef RHAI_LOCAL_ACCESS
+#undef RHAI_LOCAL_FIELD
+#undef RHAI_LOCAL_CHECK
+
+// deferred: unannotated pending reccmp #534
+bool FUN_00416b30(void *&value, SBFile &file)
+{
+    unsigned short index;
+    RHArtificialIntelligenceEngineView *engine;
+    if (file.m_bLoading)
+    {
+        if (file.Access(&index, 2) < 0)
+        {
+            SBString *err = file.GetError();
+            const char *reason = err->m_chars ? err->m_chars : "";
+            SBAssert(0,
+                     // STRING: GAME 0x006a73c8
+                     "P:\\Robin Hood\\RHartificialintelligence.cpp",
+                     4772, "Serialize failed reason is %s", reason);
+            return false;
+        }
+        if (index == 0xd431)
+        {
+            value = 0;
+            return true;
+        }
+        engine = (RHArtificialIntelligenceEngineView *)g_pEngine;
+        if (index >= engine->m_elements.size())
+            return false;
+        value = engine->m_elements[index];
+        return true;
+    }
+    {
+        if (value)
+        {
+            engine = (RHArtificialIntelligenceEngineView *)g_pEngine;
+            engine->m_elements.Find(value, index);
+        }
+        else
+            index = 0xd431;
+        if (file.Access(&index, 2) < 0)
+        {
+            SBString *err = file.GetError();
+            const char *reason = err->m_chars ? err->m_chars : "";
+            SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
+                     4820, "Serialize failed reason is %s", reason);
+            return false;
+        }
+        return true;
+    }
+}
+
+// Parked: 92.39%; cursor scheduling.
+// STUB: GAME 0x00416c80
+bool RHArtificialIntelligence::SerializeListOfPointersToActorsNPC(RHArtificialIntelligenceList &list, SBFile &file)
+{
+    // STRING: GAME 0x006a77cc
+    RHSerializeName(file, "ListOfPointerToActorsNPC");
+    unsigned count;
+    RHArtificialIntelligenceElement *element;
+    if (file.m_bLoading)
+    {
+        list.clear();
+        if (file.Access(&count, 4) < 0)
+        {
+            SBString *err = file.GetError();
+            const char *reason = err->m_chars ? err->m_chars : "";
+            SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
+                     4980, "Serialize failed reason is %s", reason);
+            return false;
+        }
+        for (unsigned i = 0; i < count; ++i)
+        {
+            if (!FUN_00416b30((void *&)element, file))
+            {
+                SBAssert(1, "P:\\Robin Hood\\RHartificialintelligence.cpp", 4985, "Serialization failed");
+                return false;
+            }
+            if (element)
+            {
+                unsigned type = element->m_flags & 0xf;
+                if (type != 4)
+                    return false;
+                list.InsertLast((void *)element);
+            }
+        }
+    }
+    else
+    {
+        count = list.m_count;
+        if (file.Access(&count, 4) < 0)
+        {
+            SBString *err = file.GetError();
+            const char *reason = err->m_chars ? err->m_chars : "";
+            SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
+                     5013, "Serialize failed reason is %s", reason);
+            return false;
+        }
+        for (unsigned i = 0; i < count; ++i)
+        {
+            element = list[i];
+            if (!FUN_00416b30((void *&)element, file))
+            {
+                SBAssert(1, "P:\\Robin Hood\\RHartificialintelligence.cpp", 5019, "Serialization failed");
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+// Parked: cursor scheduling.
+// STUB: GAME 0x00416f40
+bool RHArtificialIntelligence::SerializeListOfPointersToHumans(RHArtificialIntelligenceList &list, SBFile &file)
+{
+    // STRING: GAME 0x006a77e8
+    RHSerializeName(file, "ListOfPointerToHumans");
+    unsigned count;
+    RHArtificialIntelligenceElement *element;
+    if (file.m_bLoading)
+    {
+        list.clear();
+        if (file.Access(&count, 4) < 0)
+        {
+            SBString *err = file.GetError();
+            const char *reason = err->m_chars ? err->m_chars : "";
+            SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
+                     5053, "Serialize failed reason is %s", reason);
+            return false;
+        }
+        for (unsigned i = 0; i < count; ++i)
+        {
+            if (!FUN_00416b30((void *&)element, file))
+            {
+                SBAssert(1,
+                         // STRING: GAME 0x006a73f8
+                         "P:\\Robin Hood\\RHartificialintelligence.cpp",
+                         5058, "Serialization failed");
+                return false;
+            }
+            list.InsertLast((void *)element);
+        }
+    }
+    else
+    {
+        count = list.m_count;
+        if (file.Access(&count, 4) < 0)
+        {
+            SBString *err = file.GetError();
+            const char *reason = err->m_chars ? err->m_chars : "";
+            SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
+                     5068, "Serialize failed reason is %s", reason);
+            return false;
+        }
+        for (unsigned i = 0; i < count; ++i)
+        {
+            element = list[i];
+            if (!FUN_00416b30((void *&)element, file))
+            {
+                SBAssert(1, "P:\\Robin Hood\\RHartificialintelligence.cpp",
+                         5075, "Serialization failed");
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+// Parked: 92.76%; cursor scheduling.
+// STUB: GAME 0x004171f0
+bool RHArtificialIntelligence::SerializeListOfPointersToObjects(RHArtificialIntelligenceList &list, SBFile &file)
+{
+    // STRING: GAME 0x006a7800
+    RHSerializeName(file, "ListOfPointerToObjects");
+    unsigned count;
+    RHArtificialIntelligenceElement *element;
+    if (file.m_bLoading)
+    {
+        list.clear();
+        if (file.Access(&count, 4) < 0)
+        {
+            SBString *err = file.GetError();
+            const char *reason = err->m_chars ? err->m_chars : "";
+            SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
+                     5110, "Serialize failed reason is %s", reason);
+            return false;
+        }
+        for (unsigned i = 0; i < count; ++i)
+        {
+            if (!FUN_00416b30((void *&)element, file))
+            {
+                SBAssert(1, "P:\\Robin Hood\\RHartificialintelligence.cpp", 5115, "Serialization failed");
+                return false;
+            }
+            if (element)
+            {
+                unsigned type = element->m_flags & 3;
+                if (type == 3)
+                    list.InsertLast((void *)element);
+            }
+        }
+    }
+    else
+    {
+        count = list.m_count;
+        if (file.Access(&count, 4) < 0)
+        {
+            SBString *err = file.GetError();
+            const char *reason = err->m_chars ? err->m_chars : "";
+            SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
+                     5134, "Serialize failed reason is %s", reason);
+            return false;
+        }
+        for (unsigned i = 0; i < count; ++i)
+        {
+            element = list[i];
+            if (!FUN_00416b30((void *&)element, file))
+            {
+                SBAssert(1, "P:\\Robin Hood\\RHartificialintelligence.cpp", 5140, "Serialization failed");
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+// FUNCTION: GAME 0x004174b0
+bool RHArtificialIntelligence::SerializePosition(RHArtificialIntelligencePosition &position, SBFile &file)
+{
+    // STRING: GAME 0x006a7818
+    RHSerializeName(file, "RHArtificialIntelligencePosition");
+    if (file.Access(&position.m_00, 4) < 0)
+    {
+        SBString *err = file.GetError();
+        const char *reason = err->m_chars ? err->m_chars : "";
+        SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
+                 5166, "Serialize failed reason is %s", reason);
+        return false;
+    }
+    if (file.Access(&position.m_04, 4) < 0)
+    {
+        SBString *err = file.GetError();
+        const char *reason = err->m_chars ? err->m_chars : "";
+        SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
+                 5167, "Serialize failed reason is %s", reason);
+        return false;
+    }
+    if (file.Access(&position.m_0c, 2) < 0)
+    {
+        SBString *err = file.GetError();
+        const char *reason = err->m_chars ? err->m_chars : "";
+        SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
+                 5168, "Serialize failed reason is %s", reason);
+        return false;
+    }
+    ((RHUnkPathGeometry *)g_unk0x6c0a9c)->Unk004fbec0(file, position.m_08);
+    return true;
+}
+
+class RHArtificialIntelligenceDispatchView
+{
+public:
+    virtual void V00() = 0;
+    virtual void V04() = 0;
+    virtual void V08() = 0;
+    virtual void V0c() = 0;
+    virtual void V10() = 0;
+    virtual void V14() = 0;
+    virtual void V18() = 0;
+    virtual void V1c() = 0;
+    virtual void V20() = 0;
+    virtual void V24(RHStimulus *stimulus) = 0;
+};
+
+struct RHUnkPathRegistry;
+extern RHUnkPathRegistry *g_unk0x6c0b9c;
+
+// Parked: 82.38%; argument/register scheduling and dispatch tail merging.
+// STUB: GAME 0x00418600
+bool RHArtificialIntelligence::Unk00418600(unsigned short path)
+{
+    RHUnk005fc3b0 direction;
+    Unk00410600();
+    if (path == 0xffff)
+    {
+        RHAIField<char>(this, 0x70) = 0;
+        ((RHArtificialIntelligencePathCursor *)((char *)this + 0x30))->Unk00550f60(0xffff);
+        RHUnk00571160Position position;
+        ((RHUnk00560420 *)((char *)m_actor->m_data + 4))->Unk(&position);
+        RHAIField<RHUnk00571160Position>(m_actor, 0x4dc) = position;
+        direction.Unk005fcd40(RHAIField<unsigned short>(m_actor->m_data, 0xd8), 0.57357645f);
+        RHAIField<SBGeoPoint2D>(m_actor, 0x4d4) = direction;
+        char disabled = RHAIField<char>(this, 0x1c4);
+        m_16f = 0;
+        m_170 = 0;
+        m_173 = 0;
+        if (!disabled)
+        switch (RHAIField<int>(this, 0x0c))
+        {
+        case 1:
+        {
+            RHStimulus stimulus;
+            stimulus.Unk004188d0(0x15);
+            ((RHArtificialIntelligenceDispatchView *)this)->V24(&stimulus);
+            break;
+        }
+        }
+    }
+    else if (path == 0xfffe)
+    {
+        RHAIField<char>(this, 0x70) = 0;
+        ((RHArtificialIntelligencePathCursor *)((char *)this + 0x30))->Unk00550f60(0xffff);
+        RHUnk00571160Position position;
+        ((RHUnk00560420 *)((char *)m_actor->m_data + 4))->Unk(&position);
+        RHAIField<RHUnk00571160Position>(m_actor, 0x4dc) = position;
+        direction.Unk005fcd40(RHAIField<unsigned short>(m_actor->m_data, 0xd8), 0.57357645f);
+        RHAIField<SBGeoPoint2D>(m_actor, 0x4d4) = direction;
+        char disabled = RHAIField<char>(this, 0x1c4);
+        m_16f = 1;
+        m_170 = 0;
+        m_173 = 0;
+        if (!disabled)
+        switch (RHAIField<int>(this, 0x0c))
+        {
+        case 1:
+        {
+            RHStimulus stimulus;
+            stimulus.m_20 = 0x15;
+            *(unsigned short *)stimulus.m_00 = 0;
+            stimulus.m_type = 0;
+            ((RHArtificialIntelligenceDispatchView *)this)->V24(&stimulus);
+            break;
+        }
+        }
+    }
+    else
+    {
+        RHAIField<char>(this, 0x70) = 1;
+        void **first = RHAIField<void **>(g_unk0x6c0b9c, 8);
+        unsigned count = first == 0 ? 0 : RHAIField<void **>(g_unk0x6c0b9c, 0x0c) - first;
+        if (path > (unsigned short)count)
+        {
+            SBAssert(1, "P:\\Robin Hood\\RHartificialintelligence.cpp", 5598,
+                     // STRING: GAME 0x006a783c
+                     "Assigned illegal path on point (%f,%f) !", m_actor->m_data->m_x, m_actor->m_data->m_y);
+            return false;
+        }
+        ((RHArtificialIntelligencePathCursor *)((char *)this + 0x30))->Unk00550f60(path);
+        char disabled = RHAIField<char>(this, 0x1c4);
+        m_16f = 0;
+        m_170 = 0;
+        if (!disabled)
+        switch (RHAIField<int>(this, 0x0c))
+        {
+        case 1:
+        {
+            RHStimulus stimulus;
+            stimulus.m_20 = 0x15;
+            *(unsigned short *)stimulus.m_00 = 0;
+            stimulus.m_type = 0;
+            ((RHArtificialIntelligenceDispatchView *)this)->V24(&stimulus);
+            break;
+        }
+        }
+    }
+    return true;
+}
+
+struct RHArtificialIntelligenceRemarkEntry
+{
+    unsigned short m_command;
+    unsigned short m_02;
+    std::string m_name;
+    int m_remark;
+    RHArtificialIntelligenceRemarkEntry(unsigned flags)
+    {
+        *(unsigned char *)&m_name = (unsigned char)flags;
+    }
+};
+
+struct RHArtificialIntelligenceRemarkNode
+{
+    RHArtificialIntelligenceRemarkNode *m_next;
+    RHArtificialIntelligenceRemarkNode *m_previous;
+    RHArtificialIntelligenceRemarkEntry *m_entry;
+};
+
+// GLOBAL: GAME 0x006c0794
+RHArtificialIntelligenceRemarkNode *g_unk0x006c0794;
+// GLOBAL: GAME 0x006c0798
+unsigned g_unk0x006c0798;
+// GLOBAL: GAME 0x006c07a0
+char g_unk0x006c07a0;
+// GLOBAL: GAME 0x006c07e0
+unsigned short g_unk0x006c07e0;
+// GLOBAL: GAME 0x006c1070
+RHArtificialIntelligenceSoundCalls *g_unk0x006c1070;
+
+#define RHAI_REMARK_ERROR(message, line) \
+    { \
+        std::string name = FUN_00420d40(remark); \
+        const char *text = name.c_str(); \
+        RHArtificialIntelligenceInitialData *data = m_actor->m_data; \
+        SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp", line, message, text, \
+                 (unsigned short)data->m_x, (unsigned short)data->m_y); \
+    }
+
+// Parked: 61.78%; string cleanup, search/register scheduling and switch layout.
+// STUB: GAME 0x00418c40
+void RHArtificialIntelligence::Unk00418c40(int remark, unsigned flags)
+{
+    SBGeoPoint2D position;
+    unsigned variant = 0xffff;
+    Unk00422b70(4, remark);
+    if (RHAIField<char>(m_actor, 8))
+    {
+        Unk00422b70(5, 0);
+        Unk004195f0(flags);
+        return;
+    }
+    RHArtificialIntelligenceList &forbidden = RHAIField<RHArtificialIntelligenceList>(this, 0x230);
+    RHAIField<int>(this, 0x250) = remark;
+    RHAIField<char>(this, 0x248) = 1;
+    forbidden.m_current.m_node = forbidden.m_head->m_next;
+    int count = forbidden.m_count;
+    int i = 0;
+    while (i < count)
+    {
+        if ((int)forbidden.m_current.m_node->m_data == RHAIField<int>(this, 0x250))
+            break;
+        ++i;
+        ((RHSectorActorIter *)&forbidden.m_current)->operator++(0);
+    }
+    if (i < count)
+    {
+        RHAIField<int>(this, 0x24c) = i;
+        forbidden.m_dirty = false;
+        forbidden.m_index = i;
+    }
+    else
+    {
+        forbidden.m_dirty = true;
+        RHAIField<int>(this, 0x24c) = -1;
+    }
+    if (RHAIField<int>(this, 0x24c) != -1)
+    {
+        Unk00422b70(5, 1);
+        Unk004195f0(flags);
+        return;
+    }
+    if (!(flags & 8) && Unk00419b20(remark))
+    {
+        Unk00422b70(5, 2);
+        Unk004195f0(flags);
+        return;
+    }
+    if (!(flags & 1) && ((RHArtificialIntelligenceActorCalls *)m_actor)->Unk00485e60())
+    {
+        Unk00422b70(5, 3);
+        Unk004195f0(flags);
+        return;
+    }
+    if (flags & 0x800)
+    {
+        variant = ((int)g_unk0x006c07e0 + 1) % 3;
+        g_unk0x006c07e0 = variant;
+    }
+    if (RHAIField<int>(this, 0x258) != 121)
+    {
+        if (!(flags & 2))
+        {
+            Unk00422b70(5, 4);
+            Unk004195f0(flags);
+            return;
+        }
+        g_unk0x006c1070->Unk005a8d10(m_actor);
+    }
+    position = RHAIField<SBGeoPoint2D>(m_actor->m_data, 0x24);
+    RHAIField<int>(this, 0x258) = remark;
+    RHAIField<unsigned short>(this, 0x25c) = (unsigned short)flags;
+    void *profile = m_actor->V178();
+    if (profile)
+    {
+        if (remark >= 106)
+        {
+            if ((unsigned char)(RHAIField<unsigned>(m_actor, 4) & 31) == 20 && !m_actor->Vf8())
+            {
+                if (!(flags & 4))
+                    // STRING: GAME 0x006a7a78
+                    RHAI_REMARK_ERROR("AI error: Trying to play VIP remark [%s] for non-VIP soldier at (%u,%u)", 5885)
+                else
+                    // STRING: GAME 0x006a7a2c
+                    RHAI_REMARK_ERROR("Script error: Trying to play VIP remark [%s] for non-VIP soldier at (%u,%u)", 5889)
+                Unk00422b70(5, 5);
+                Unk004195f0(flags);
+                RHAIField<int>(this, 0x258) = 121;
+                RHAIField<unsigned short>(this, 0x25c) = 0;
+                return;
+            }
+            if ((unsigned char)(RHAIField<unsigned>(m_actor, 4) & 31) == 4 && !((RHArtificialIntelligenceActorCalls *)m_actor)->Unk00470ce0())
+            {
+                if (!(flags & 4))
+                    // STRING: GAME 0x006a79e0
+                    RHAI_REMARK_ERROR("AI error: Trying to play VIP remark [%s] for non-VIP civilian at (%u,%u)", 5901)
+                else
+                    // STRING: GAME 0x006a7990
+                    RHAI_REMARK_ERROR("Script error: Trying to play VIP remark [%s] for non-VIP civilian at (%u,%u)", 5905)
+                Unk00422b70(5, 6);
+                Unk004195f0(flags);
+                RHAIField<int>(this, 0x258) = 121;
+                RHAIField<unsigned short>(this, 0x25c) = 0;
+                return;
+            }
+            g_unk0x006c1070->Unk005a8b70(3, profile, remark - 106, variant, &position, m_actor);
+        }
+        else if (remark >= 78)
+        {
+            if ((unsigned char)(RHAIField<unsigned>(m_actor, 4) & 31) == 20)
+            {
+                if (!(flags & 4))
+                    // STRING: GAME 0x006a7948
+                    RHAI_REMARK_ERROR("AI error: Trying to play civilian remark [%s] for soldier at (%u,%u)", 5924)
+                else
+                    // STRING: GAME 0x006a78fc
+                    RHAI_REMARK_ERROR("Script error: Trying to play civilian remark [%s] for soldier at (%u,%u)", 5928)
+                Unk00422b70(5, 7);
+                Unk004195f0(flags);
+                RHAIField<int>(this, 0x258) = 121;
+                RHAIField<unsigned short>(this, 0x25c) = 0;
+                return;
+            }
+            if (((RHArtificialIntelligenceActorCalls *)m_actor)->Unk00470ce0())
+            {
+                Unk004195f0(flags);
+                Unk00422b70(5, 8);
+                RHAIField<int>(this, 0x258) = 121;
+                RHAIField<unsigned short>(this, 0x25c) = 0;
+                return;
+            }
+            g_unk0x006c1070->Unk005a8b70(2, profile, remark - 78, variant, &position, m_actor);
+        }
+        else
+        {
+            if ((unsigned char)(RHAIField<unsigned>(m_actor, 4) & 31) != 20)
+            {
+                if (!(flags & 4))
+                    // STRING: GAME 0x006a78b4
+                    RHAI_REMARK_ERROR("AI error: Trying to play soldier remark [%s] for civilian at (%u,%u)", 5956)
+                else
+                    // STRING: GAME 0x006a7868
+                    RHAI_REMARK_ERROR("Script error: Trying to play soldier remark [%s] for civilian at (%u,%u)", 5960)
+                Unk004195f0(flags);
+                Unk00422b70(5, 9);
+                RHAIField<int>(this, 0x258) = 121;
+                RHAIField<unsigned short>(this, 0x25c) = 0;
+                return;
+            }
+            if (m_actor->Vf8())
+            {
+                Unk00422b70(5, 10);
+                Unk004195f0(flags);
+                RHAIField<int>(this, 0x258) = 121;
+                RHAIField<unsigned short>(this, 0x25c) = 0;
+                return;
+            }
+            g_unk0x006c1070->Unk005a8b70(2, profile, remark, variant, &position, m_actor);
+        }
+    }
+    RHArtificialIntelligenceRemarkEntry *entry = new RHArtificialIntelligenceRemarkEntry(flags);
+    entry->m_command = 100;
+    entry->m_remark = remark;
+    const char *name = RHAIField<char *>(m_actor->m_data, 0x168);
+    entry->m_name = name ? name : "";
+    RHArtificialIntelligenceRemarkNode *head = g_unk0x006c0794;
+    RHArtificialIntelligenceRemarkNode *previous = head->m_previous;
+    RHArtificialIntelligenceRemarkNode *node = (RHArtificialIntelligenceRemarkNode *)::operator new(12);
+    node->m_next = head ? head : node;
+    node->m_previous = previous ? previous : node;
+    head->m_previous = node;
+    node->m_previous->m_next = node;
+    node->m_entry = entry;
+    ++g_unk0x006c0798;
+    g_unk0x006c07a0 = 1;
+    switch (remark)
+    {
+    case 29:
+        Unk00419970(29, 10, 1);
+        break;
+    case 36:
+        Unk00419970(36, 200, 1);
+        Unk00419970(36, 1000, 8);
+        break;
+    case 78:
+    case 79:
+        Unk00419970(remark, 200, 6);
+        break;
+    case 12: case 13: case 14: case 15: case 16: case 17: case 18: case 19:
+    case 20: case 21: case 22: case 23: case 24: case 30: case 31: case 54:
+    case 61: case 62: case 63: case 64: case 66: case 67: case 68: case 69:
+    case 70: case 71: case 72: case 73: case 74: case 75: case 77: case 84:
+    case 85: case 102: case 103: case 104: case 105: case 106: case 113: case 114:
+        break;
+    default:
+        if ((unsigned)remark <= 119)
+            Unk00419970(remark, 200, 1);
+        break;
+    }
+}
+
+void RHArtificialIntelligence::Emit(SBFile &file, RHArtificialIntelligencePosition &position)
+{
+    SerializePosition(position, file);
+    ((RHStimulus *)this)->Serialize(file);
+    InitState();
+    SerializeAllAI(file);
+    RHArtificialIntelligenceList list;
+    SerializeListOfPointersToHumans(list, file);
+    SerializeListOfPointersToActorsNPC(list, file);
+    SerializeListOfPointersToObjects(list, file);
+    Unk00418600(0);
+    Unk00410010(false);
+    Unk00418c40(0, 0);
+    Unk00414be0(file);
+}

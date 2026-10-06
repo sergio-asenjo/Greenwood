@@ -1,0 +1,19 @@
+// Stub definitions for the external symbols RHMenuDialogue.cpp calls.
+//
+// These are NOT decompiled implementations; they only give the linker a local
+// target so the calls in RHMenuDialogue::GetDialogue are direct `call rel32`
+// (matching the original shape) instead of unresolved externals. They live in
+// a separate translation unit so VC6 cannot inline them into the matched
+// function.
+//
+// SBAssert is already defined once, in RHSword_stubs.cpp; this TU only
+// declares it (include/SB.h).
+
+#include "RHMenuDialogue.h"
+
+// Target 0x004e35a0 (RHEngine::GetDynResources).
+RHDialogueSet *RHEngine::GetDynResources(unsigned long) { return 0; }
+
+// The global entity at 0x006c0a88.
+// GLOBAL: GAME 0x006c0a88
+RHEngine *g_pEngine = 0;

@@ -1,0 +1,4 @@
+#include "RHPatch.h"
+
+void RHPatch::FUN_00550070(bool) {}
+void RHPatch::FUN_00550150() {}
