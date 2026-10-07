@@ -6,6 +6,11 @@ class SBFile;
 class RHBow
 {
 public:
+    RHBow();
+    ~RHBow();
+    virtual bool Serialize(SBFile &file);
+    int m_04; // [0x04]; allocation size 0x08
+
     struct Profile
     {
         short m_00;

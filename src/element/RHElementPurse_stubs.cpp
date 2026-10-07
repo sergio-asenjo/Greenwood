@@ -10,7 +10,3 @@
 // declares them (include/SB.h, include/RHElementPurse.h).
 
 #include "RHElementPurse.h"
-
-// Target 0x004b7500 (rhelementprojectile.cpp — writes the "RHElementProjectile"
-// tag). Its own string markers belong to that TU, not this one.
-bool RHElementProjectile::Serialize(SBFile &) { return true; }

@@ -11,8 +11,3 @@
 // (include/RHElementArrow.h, include/SB.h).
 
 #include "RHElementArrow.h"
-
-// Target 0x00450370 (RHBow.cpp — the RHBow analogue of
-// RHSword::SerializePointer). Static member: it takes no `this` and the caller
-// cleans the two stack args.
-bool RHBow::SerializePointer(SBFile &, RHBow *&) { return true; }

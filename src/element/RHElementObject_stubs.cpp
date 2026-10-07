@@ -11,12 +11,6 @@
 
 #include "RHElementObject.h"
 
-// Target 0x00462330 (RHElement::Serialize — writes the "RHElement" tag).
-bool RHElement::Serialize(SBFile &) { return true; }
-
 // The nested sub-object serialiser at RHElementObject+0xbc (target 0x00521210)
 // is now the real RHUnk004b2190Member::Serialize defined in src/RHLine.cpp; the
 // declaration stays in include/RHElementObject.h.
-
-// Target 0x005e1b70 (serialises a type-name tag into the stream).
-void RHSerializeName(SBFile &, const char *) {}
