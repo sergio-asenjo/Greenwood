@@ -57,7 +57,6 @@ public:
 
 void *RHEngineReinforcementCalls::FUN_00452130(void *) { return 0; }
 void RHEngineReinforcementCalls::FUN_004936a0(int) {}
-void RHEngineReinforcementCalls::FUN_00491fd0(const RHbeamMe &) {}
 void RHEngineReinforcementCalls::FUN_004d8460(void *, int, int) {}
 unsigned RHEngineReinforcementCalls::FUN_004e4460(void **, int) { return 0; }
 SBGeoPoint2D RHEngineReinforcementCalls::FUN_004a49e0() { return SBGeoPoint2D(); }
@@ -70,7 +69,6 @@ public:
     char m_data[0x60c];
 };
 
-RHUnk0048f280::RHUnk0048f280(void *) {}
 
 class RHUnk00588830
 {

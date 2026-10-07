@@ -28,6 +28,11 @@ struct RHUnk005c9010Iterator : std::iterator<std::bidirectional_iterator_tag, RH
         return *this;
     }
     RHUnk005c9010Iterator &operator++() { m_node = m_node->m_next; return *this; }
+    RHUnk005c9010Iterator &AssignNode(RHUnk005c9010Node *node)
+    {
+        *(RHUnk005c9010Node *volatile *)&m_node = node;
+        return *this;
+    }
     RHUnk005c9010Iterator &operator--() { m_node = m_node->m_prev; return *this; }
     RHUnk00597a70 *&operator*() { return m_node->m_data; }
 };
@@ -91,9 +96,9 @@ public:
                 {
                     if (index < (previous + 1) / 2)
                     {
-                        *(RHUnk005c9010Node *volatile *)&m_current.m_node = m_list.m_head->m_next;
                         std::bidirectional_iterator_tag category;
-                        FUN_005c9010(m_current, index, category);
+                        FUN_005c9010(m_current.AssignNode(
+                            *(RHUnk005c9010Node *volatile *)&m_list.m_head->m_next), index, category);
                     }
                     else
                     {

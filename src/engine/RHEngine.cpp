@@ -273,8 +273,8 @@ public:
     void FUN_004609a0(void *first, void *last);
 };
 
-// STUB: GAME 0x004c0510
 // Parked: 21.13%; partial chunk dispatch.
+// STUB: GAME 0x004c0510
 bool RHEngine::InitializeFromMission(RHMission *mission)
 {
     RHUnk005f4fc0 protoFile, missionFile;
@@ -376,8 +376,8 @@ bool RHEngine::InitializeFromMission(RHMission *mission)
     return true;
 }
 
-// STUB: GAME 0x004c1be0
 // cdecl cleanup seam, not proven irreducible.
+// STUB: GAME 0x004c1be0
 void RHEngine::InitializeActorsFromMissionStream(SBFile &file, std::vector<RHbeamMe> &beamMes)
 {
     FUN_005e1d50(file, 0x424f595a, 3);
@@ -452,8 +452,8 @@ void RHEngine::InitializeBuildingTenantsFromMissionStream(SBFile &file)
     FUN_005e20c0(file);
 }
 
-// STUB: GAME 0x004c2200
 // Parked: 44.80%.
+// STUB: GAME 0x004c2200
 void RHEngine::FUN_004c2200(SBFile &file, std::vector<RHbeamMe> &beamMes)
 {
     unsigned index = 0;
@@ -537,8 +537,8 @@ void RHEngine::FUN_004c2200(SBFile &file, std::vector<RHbeamMe> &beamMes)
     *(unsigned *)((char *)this + 0x4a4c) = beamMes.size();
 }
 
-// STUB: GAME 0x004c28c0
 // Parked: 26.09%.
+// STUB: GAME 0x004c28c0
 void RHEngine::FUN_004c28c0(const std::string &name)
 {
     std::string mapPath, minimapPath, ambiance;
@@ -789,8 +789,8 @@ char g_unk0x006c0a86 = 0;
         return false; \
     }
 
-// STUB: GAME 0x004c4570
 // Parked: 39.37%; partial scalar and element serialization.
+// STUB: GAME 0x004c4570
 bool RHEngine::FUN_004c4570(SBFile &file)
 {
     char *engine = (char *)this;
@@ -853,8 +853,8 @@ bool RHEngine::FUN_004c4570(SBFile &file)
     return true;
 }
 
-// STUB: GAME 0x004c6040
 // Parked: 19.63%; partial element construction cases.
+// STUB: GAME 0x004c6040
 bool RHEngine::FUN_004c6040(SBFile &file)
 {
     char *engine = (char *)this;
@@ -985,8 +985,8 @@ bool RHEngine::FUN_004c6040(SBFile &file)
 
 #undef RHENGINE_ACCESS
 
-// STUB: GAME 0x004e2390
 // Parked: 53.01%.
+// STUB: GAME 0x004e2390
 void RHEngine::FUN_004e2390(void *actor)
 {
     RHbeamMe beamMe;

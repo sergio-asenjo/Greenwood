@@ -31,8 +31,8 @@ void RHGame::DisplayLostLeicester()
     FUN_00529e60((RHMapWindow *)&dialog, message, false, 0);
 }
 
-// STUB: GAME 0x00511340
 // Parked: 66.04%; narrow-string EH cleanup and frame-slot ordering.
+// STUB: GAME 0x00511340
 bool RHGame::Serialize(unsigned long mode, RHSaveGame *saveGame, bool loading)
 {
     RHUnk005f4fc0 file;

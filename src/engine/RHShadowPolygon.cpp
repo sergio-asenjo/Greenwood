@@ -1,7 +1,6 @@
 #include "RHShadowPolygon.h"
 
-// Parked: 96.57%; cached-list call scheduling at 0x58e93c/0x58e950.
-// STUB: GAME 0x0058e7f0
+// FUNCTION: GAME 0x0058e7f0
 void RHShadowPolygon::DisplayDebug(const SBGeoBoundingBox2D &box, float zoom, RHElementActor *actor, SBGeoPoint3D &point, RHviewParameters &view, unsigned long flags)
 {
     const float *bounds = (const float *)&box;
