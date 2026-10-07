@@ -62,12 +62,15 @@ public:
     ~RHArtificialIntelligenceForbiddenRemark() {}
 };
 
+// GLOBAL: GAME 0x006a73c8
+extern const char g_unk0x006a73c8[] = "P:\\Robin Hood\\RHartificialintelligence.cpp";
+
 #define RHAI_STIMULUS_ACCESS(offset, size, line) \
     if (file.Access((char *)this + offset, size) < 0) \
     { \
         SBString *err = file.GetError(); \
         const char *reason = err->m_chars ? err->m_chars : ""; \
-        SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp", line, "Serialize failed reason is %s", reason); \
+        SBAssert(0, g_unk0x006a73c8, line, "Serialize failed reason is %s", reason); \
         return false; \
     }
 
@@ -78,8 +81,7 @@ public:
         return false; \
     }
 
-// Parked: placeholder numbering diverges at the switch table.
-// STUB: GAME 0x0040f090
+// FUNCTION: GAME 0x0040f090
 bool RHStimulus::Serialize(SBFile &file)
 {
     // STRING: GAME 0x006a7424
@@ -93,7 +95,7 @@ bool RHStimulus::Serialize(SBFile &file)
     {
         SBString *err = file.GetError();
         const char *reason = err->m_chars ? err->m_chars : "";
-        SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp", 175, "Serialize failed reason is %s", reason);
+        SBAssert(0, g_unk0x006a73c8, 175, "Serialize failed reason is %s", reason);
         return false;
     }
     if (!((RHReconnaissanceEngine *)g_pEngine)->Unk004c3cb0(file, m_24))
@@ -477,7 +479,7 @@ bool RHArtificialIntelligence::SerializeAllAI(SBFile &file)
     {
         SBString *err = file.GetError();
         const char *reason = err->m_chars ? err->m_chars : "";
-        SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
+        SBAssert(0, g_unk0x006a73c8,
                  3764, "Serialize failed reason is %s", reason);
         return false;
     }
@@ -504,7 +506,7 @@ bool RHArtificialIntelligence::SerializeAllAI(SBFile &file)
     {
         SBString *err = file.GetError();
         const char *reason = err->m_chars ? err->m_chars : "";
-        SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
+        SBAssert(0, g_unk0x006a73c8,
                  3782, "Serialize failed reason is %s", reason);
         return false;
     }
@@ -512,7 +514,7 @@ bool RHArtificialIntelligence::SerializeAllAI(SBFile &file)
     {
         SBString *err = file.GetError();
         const char *reason = err->m_chars ? err->m_chars : "";
-        SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
+        SBAssert(0, g_unk0x006a73c8,
                  3783, "Serialize failed reason is %s", reason);
         return false;
     }
@@ -520,7 +522,7 @@ bool RHArtificialIntelligence::SerializeAllAI(SBFile &file)
     {
         SBString *err = file.GetError();
         const char *reason = err->m_chars ? err->m_chars : "";
-        SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
+        SBAssert(0, g_unk0x006a73c8,
                  3784, "Serialize failed reason is %s", reason);
         return false;
     }
@@ -528,7 +530,7 @@ bool RHArtificialIntelligence::SerializeAllAI(SBFile &file)
     {
         SBString *err = file.GetError();
         const char *reason = err->m_chars ? err->m_chars : "";
-        SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
+        SBAssert(0, g_unk0x006a73c8,
                  3786, "Serialize failed reason is %s", reason);
         return false;
     }
@@ -536,7 +538,7 @@ bool RHArtificialIntelligence::SerializeAllAI(SBFile &file)
     {
         SBString *err = file.GetError();
         const char *reason = err->m_chars ? err->m_chars : "";
-        SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
+        SBAssert(0, g_unk0x006a73c8,
                  3787, "Serialize failed reason is %s", reason);
         return false;
     }
@@ -547,8 +549,8 @@ bool RHArtificialIntelligence::SerializeAllAI(SBFile &file)
         {
             SBString *err = file.GetError();
             const char *reason = err->m_chars ? err->m_chars : "";
-            SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
-                     3800, "Serialize failed reason is %s", reason);
+            SBAssert(0, g_unk0x006a73c8,
+                      3800, "Serialize failed reason is %s", reason);
             return false;
         }
         srand(g_unk0x006c0784);
@@ -559,8 +561,8 @@ bool RHArtificialIntelligence::SerializeAllAI(SBFile &file)
         {
             SBString *err = file.GetError();
             const char *reason = err->m_chars ? err->m_chars : "";
-            SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
-                     3812, "Serialize failed reason is %s", reason);
+            SBAssert(0, g_unk0x006a73c8,
+                      3812, "Serialize failed reason is %s", reason);
             return false;
         }
         srand(g_unk0x006c0784);
@@ -898,8 +900,7 @@ bool FUN_00416b30(void *&value, SBFile &file)
             SBString *err = file.GetError();
             const char *reason = err->m_chars ? err->m_chars : "";
             SBAssert(0,
-                     // STRING: GAME 0x006a73c8
-                     "P:\\Robin Hood\\RHartificialintelligence.cpp",
+                     g_unk0x006a73c8,
                      4772, "Serialize failed reason is %s", reason);
             return false;
         }
@@ -1117,7 +1118,7 @@ bool RHArtificialIntelligence::SerializePosition(RHArtificialIntelligencePositio
     {
         SBString *err = file.GetError();
         const char *reason = err->m_chars ? err->m_chars : "";
-        SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
+        SBAssert(0, g_unk0x006a73c8,
                  5166, "Serialize failed reason is %s", reason);
         return false;
     }
@@ -1125,7 +1126,7 @@ bool RHArtificialIntelligence::SerializePosition(RHArtificialIntelligencePositio
     {
         SBString *err = file.GetError();
         const char *reason = err->m_chars ? err->m_chars : "";
-        SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
+        SBAssert(0, g_unk0x006a73c8,
                  5167, "Serialize failed reason is %s", reason);
         return false;
     }
@@ -1133,7 +1134,7 @@ bool RHArtificialIntelligence::SerializePosition(RHArtificialIntelligencePositio
     {
         SBString *err = file.GetError();
         const char *reason = err->m_chars ? err->m_chars : "";
-        SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
+        SBAssert(0, g_unk0x006a73c8,
                  5168, "Serialize failed reason is %s", reason);
         return false;
     }
