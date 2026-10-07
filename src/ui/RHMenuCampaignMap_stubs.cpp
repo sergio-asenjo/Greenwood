@@ -16,7 +16,6 @@ RHMapDescription::RHMapDescription() {}
 RHMapDescription::~RHMapDescription() {}
 bool RHMapDescription::FUN_0063cda0(unsigned) { return false; }
 RHMapDescription::Entry *RHMapDescription::FUN_0063c9e0(unsigned) { return 0; }
-bool RHMapResources::FUN_00600fc0(unsigned) { return false; }
 bool RHMapResources::FUN_006009e0(unsigned, unsigned, RHMapWideText &) { return false; }
 bool RHMenuCampaignMap::FUN_00544b40(const RHMapTitleText &, const RHMapBox &, unsigned) { return false; }
 void RHMenuCampaignMap::FUN_00527a70(RHMapByte) {}

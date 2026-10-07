@@ -77,6 +77,12 @@ struct RHTitbitNode
     RHTitbit m_data;      // [0x08]
 };
 
+struct RHTitbitIterator
+{
+    RHTitbitNode *node;
+    RHTitbitIterator(RHTitbitNode *value) : node(value) {}
+};
+
 class RHTitbitList
 {
 public:
@@ -89,9 +95,14 @@ public:
 
     void At(int i); // target 0x005c8e40 (out-of-line at the write call site)
 
-    // Inline copy of the same cursor seek: at the read (load) site VC6 emitted
-    // the algorithm in-line rather than calling 0x005c8e40, so the source's
-    // two call sites are modelled as two entry points.
+    void Advance(int distance)
+    {
+        for (; distance > 0; --distance)
+            m_cur = m_cur->m_next;
+        for (; distance < 0; ++distance)
+            m_cur = m_cur->m_prev;
+    }
+
     void Seek(int i)
     {
         if (m_valid)
@@ -99,14 +110,12 @@ public:
             if (i <= (m_count + 1) / 2)
             {
                 m_cur = m_head->m_next;
-                for (int k = i; k > 0; k--)
-                    m_cur = m_cur->m_next;
+                Advance(i);
             }
             else
             {
                 m_cur = m_head;
-                for (int k = i - m_count; k > 0; k--)
-                    m_cur = m_cur->m_next;
+                Advance(i - m_count);
             }
             m_valid = 0;
             m_index = i;
@@ -119,14 +128,12 @@ public:
             {
                 if (i >= (m_index + 1) / 2)
                 {
-                    for (int k = m_index - i; k > 0; k--)
-                        m_cur = m_cur->m_prev;
+                    Advance(i - m_index);
                 }
                 else
                 {
                     m_cur = m_head->m_next;
-                    for (int k = i; k > 0; k--)
-                        m_cur = m_cur->m_next;
+                    Advance(i);
                 }
             }
             else
@@ -134,13 +141,11 @@ public:
                 if (i >= (m_index + m_count) / 2)
                 {
                     m_cur = m_head;
-                    for (int k = i - m_count; k > 0; k--)
-                        m_cur = m_cur->m_next;
+                    Advance(i - m_count);
                 }
                 else
                 {
-                    for (int k = i - m_index; k > 0; k--)
-                        m_cur = m_cur->m_next;
+                    Advance(i - m_index);
                 }
             }
             m_index = i;

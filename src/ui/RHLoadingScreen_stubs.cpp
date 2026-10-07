@@ -22,6 +22,5 @@ void RHUnk006114c0::Unk18() {}
 void RHUnk006114c0::Unk1c() {}
 bool RHUnk006114c0::Unk20(RHUnkFXDraw *, unsigned long) { return false; }
 bool RHUnk006114c0::Unk00611710(SBFile &) { return false; }
-bool RHUnk006114c0::Unk00611e10(unsigned long, unsigned long) { return false; }
 RHUnk006114c0 *RHUnk006114c0::Unk00612ad0(const SBGeoPoint2D &, const SBGeoVector2D &) { return 0; }
 bool RHUnk006114c0::Unk00613530(RHUnkFXDraw *, unsigned long) { return false; }

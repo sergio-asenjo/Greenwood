@@ -7,8 +7,6 @@ std::map<unsigned short, unsigned short>::insert(const value_type &value)
     return _Tr.insert(value);
 }
 
-unsigned short SBResourceManager::FUN_00600550(unsigned long) { return 0; }
-bool SBResourceManager::FUN_00600920(unsigned long, unsigned long, unsigned long &) { return false; }
 unsigned short RHEngine::FUN_004d2340(int) { return 0; }
 int RHUnk005f4fc0::FUN_005f5d60(const std::string &, int) { return 0; }
 unsigned long RHFrameHolder::FUN_00505980(unsigned long, unsigned long &, unsigned short &, unsigned short &, long &, long &) { return 0; }

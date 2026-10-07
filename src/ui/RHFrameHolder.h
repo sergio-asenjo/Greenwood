@@ -101,7 +101,7 @@ public:
 class SBResourceManager
 {
 public:
-    unsigned short FUN_00600550(unsigned long);
+    unsigned int FUN_00600550(unsigned long);
     bool FUN_00600920(unsigned long, unsigned long, unsigned long &);
 };
 
