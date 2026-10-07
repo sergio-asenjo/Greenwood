@@ -86,7 +86,5 @@ RHProfileFile::~RHProfileFile() {}
 int RHProfileFile::FUN_005f5090(const RHProfileText &, int) { return -1; }
 int RHProfileFile::FUN_005f5370(int, int) { return -1; }
 unsigned long FUN_005e1d00(SBFile &) { return 0; }
-void FUN_005e1d50(SBFile &, unsigned long, int) {}
 bool FUN_005e2020(SBFile &, unsigned long, int) { return false; }
-void FUN_005e20c0(SBFile &) {}
 void FUN_005e2300(SBFile &) {}

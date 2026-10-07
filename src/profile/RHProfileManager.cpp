@@ -4,6 +4,24 @@
 #include "RHProfileFile.h"
 #include <algorithm>
 
+void RHProfileManager::Emit(SBFile &file)
+{
+    SerializeCivilians(file);
+    SerializeCharacters(file);
+    SerializeMissions(file);
+    SerializeSoldiers(file);
+    SerializeHandToHandWeapon(file);
+    SerializeShootWeapon(file);
+    const RHHtHWeaponProfile *handToHand = 0;
+    RHMissionProfile *mission = 0;
+    const RHBow::Profile *shoot = 0;
+    const RHCharacterProfile *character = 0;
+    SerializeProfilePointer(file, handToHand);
+    SerializeProfilePointer(file, mission);
+    SerializeProfilePointer(file, shoot);
+    SerializeProfilePointer(file, character);
+}
+
 #define RH_PROFILE_ACCESS(value, bytes, line) \
     if (file.Access(value, bytes) < 0) \
     { \
@@ -22,8 +40,7 @@
         goto failed; \
     }
 
-// Parked: 94.37%; constructor/frame/body exact, duplicated EH return epilogue.
-// STUB: GAME 0x00564ea0
+// FUNCTION: GAME 0x00564ea0
 bool RHProfileManager::SerializeCivilians(SBFile &file)
 {
     unsigned int count;
@@ -64,8 +81,7 @@ finished:
     return result;
 }
 
-// Parked: effective-only; final index update selects ecx instead of edx.
-// STUB: GAME 0x00565490
+// FUNCTION: GAME 0x00565490
 bool RHProfileManager::SerializeCharacters(SBFile &file)
 {
     unsigned int count;
@@ -85,7 +101,7 @@ bool RHProfileManager::SerializeCharacters(SBFile &file)
         for (unsigned int i = 0; i < count; ++i)
             profiles.InsertLast(new RHCharacterProfile);
     }
-    for (RHCharacterProfile **it = m_characters.begin(); it != m_characters.end(); index = *(volatile unsigned int *)&index + 1, ++it)
+    for (RHCharacterProfile **it = m_characters.begin(); it != m_characters.end(); ++index, ++it)
     {
         RHCharacterProfile *profile = *it;
         profile->m_00 = *(volatile unsigned int *)&index - 1;
@@ -710,22 +726,4 @@ bool RHProfileManager::SerializeProfilePointer(SBFile &file, const RHCharacterPr
         profile = m_characters.m_first[index];
     }
     return true;
-}
-
-void RHProfileManager::Emit(SBFile &file)
-{
-    SerializeCivilians(file);
-    SerializeCharacters(file);
-    SerializeMissions(file);
-    SerializeSoldiers(file);
-    SerializeHandToHandWeapon(file);
-    SerializeShootWeapon(file);
-    const RHHtHWeaponProfile *handToHand = 0;
-    RHMissionProfile *mission = 0;
-    const RHBow::Profile *shoot = 0;
-    const RHCharacterProfile *character = 0;
-    SerializeProfilePointer(file, handToHand);
-    SerializeProfilePointer(file, mission);
-    SerializeProfilePointer(file, shoot);
-    SerializeProfilePointer(file, character);
 }

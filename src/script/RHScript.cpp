@@ -4486,8 +4486,7 @@ int RHScript::GetNumberOfActorsInSector(void *sector)
     return *(int *)((char *)sector + 0xd4);
 }
 
-// 95.76%; cached-list argument registers remain unresolved.
-// STUB: GAME 0x0057a0a0
+// FUNCTION: GAME 0x0057a0a0
 void *RHScript::GetActorInSector(void *sector, int index)
 {
     if (sector == 0) return 0;
@@ -4934,8 +4933,7 @@ bool RHScript::IsPCSelected(void *actor)
     return true;
 }
 
-// 95.83%; cached-list argument registers remain unresolved.
-// STUB: GAME 0x0057b5f0
+// FUNCTION: GAME 0x0057b5f0
 void *RHScript::GetSelectedPC(int index)
 {
     if ((unsigned int)index >= (unsigned int)*(int *)((char *)g_pEngine + 0x4a00))

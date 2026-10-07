@@ -19,6 +19,11 @@ struct RHScriptListIterator : std::iterator<std::bidirectional_iterator_tag, voi
         node = other.node;
         return *this;
     }
+    RHScriptListIterator &AssignNode(RHScriptListNode *value)
+    {
+        *(RHScriptListNode *volatile *)&node = value;
+        return *this;
+    }
     RHScriptListIterator &operator++() { node = node->next; return *this; }
     RHScriptListIterator &operator--() { node = node->previous; return *this; }
     void *&operator*() { return node->value; }
@@ -74,9 +79,9 @@ struct RHScriptIndexedList
                 {
                     if (wanted < (previous + 1) / 2)
                     {
-                        *(RHScriptListNode *volatile *)&cursor.node = head->next;
                         std::bidirectional_iterator_tag category;
-                        FUN_005c9010((RHUnk005c9010Iterator &)cursor, wanted, category);
+                        FUN_005c9010((RHUnk005c9010Iterator &)cursor.AssignNode(
+                            *(RHScriptListNode *volatile *)&head->next), wanted, category);
                     }
                     else
                     {

@@ -1,8 +1,13 @@
 #include "RHPCStatus.h"
 #include <cstring>
 
-// Parked: 95.09%, final string cleanup duplicates the return epilogue.
-// STUB: GAME 0x0055bf00
+void RHPCStatus::Emit(SBFile &file, const RHCharacterProfile &profile)
+{
+    GenerateName(profile);
+    Serialize(file);
+}
+
+// FUNCTION: GAME 0x0055bf00
 std::wstring RHPCStatus::GenerateName(const RHCharacterProfile &profile)
 {
     std::wstring name;
@@ -170,10 +175,4 @@ bool RHPCStatus::Serialize(SBFile &file)
     }
     FUN_005e0ea0(file, m_2c);
     return true;
-}
-
-void RHPCStatus::Emit(SBFile &file, const RHCharacterProfile &profile)
-{
-    GenerateName(profile);
-    Serialize(file);
 }
