@@ -35,21 +35,21 @@
 00401a80	UNKNOWN		none	0	6	no TU-carrying callers
 00401aa0	UNKNOWN		none	0	1	no TU-carrying callers
 00401b10	UNKNOWN		none	0	6	no TU-carrying callers
-00401c80	UNKNOWN		none	0	32	no TU-carrying callers
-00401ce0	UNKNOWN	rhsoundcache.cpp	mixed	3	71	callers
-00401ee0	UNKNOWN	rhprofilemanager.cpp	mixed	6	189	callers
+00401c80	UNKNOWN	sbresourcemanager.cpp	probable	1	31	callers
+00401ce0	UNKNOWN	rhsoundcache.cpp	mixed	3	68	callers
+00401ee0	UNKNOWN	rhprofilemanager.cpp	mixed	6	180	callers
 00401f30	UNKNOWN		none	0	2	no TU-carrying callers
-004021c0	UNKNOWN	rhsoundcache.cpp	mixed	3	44	callers
-00402260	UNKNOWN	rhsound.cpp	mixed	4	86	callers
-00402280	UNKNOWN	rhsound.cpp	mixed	5	155	callers
+004021c0	UNKNOWN	rhsoundcache.cpp	mixed	3	43	callers
+00402260	UNKNOWN	rhsound.cpp	mixed	4	84	callers
+00402280	UNKNOWN	rhsound.cpp	mixed	5	152	callers
 004023a0	UNKNOWN	rhsoundcache.cpp	probable	1	3	callers
 00402660	UNKNOWN	launcher.cpp	probable	1	6	callers
 00402670	UNKNOWN	toolbox.cpp	mixed	1	30	callers
 004026f0	UNKNOWN		none	0	1	no TU-carrying callers
-00402780	UNKNOWN	rhsoundcache.cpp	mixed	1	26	callers
+00402780	UNKNOWN	sbresourcemanager.cpp	mixed	1	24	callers
 00402850	UNKNOWN		none	0	3	no TU-carrying callers
 00402890	UNKNOWN		none	0	1	no TU-carrying callers
-00402a70	UNKNOWN	rhsoundcache.cpp	mixed	1	22	callers
+00402a70	UNKNOWN	sbresourcemanager.cpp	mixed	1	20	callers
 00402b90	UNKNOWN		none	0	8	no TU-carrying callers
 00402d00	UNKNOWN		none	0	5	no TU-carrying callers
 00402d60	UNKNOWN		none	0	1	no TU-carrying callers
@@ -469,9 +469,9 @@
 0040eb00	UNKNOWN		none	0	0	no callers in graph
 0040eb10	UNKNOWN		none	0	0	no callers in graph
 0040eb20	UNKNOWN		none	0	0	no callers in graph
-0040eb30	UNKNOWN		none	0	0	no callers in graph
+0040eb40	UNKNOWN		none	0	0	no callers in graph
 0040eb70	UNKNOWN		none	0	0	no callers in graph
-0040eb80	UNKNOWN		none	0	0	no callers in graph
+0040eb90	UNKNOWN		none	0	0	no callers in graph
 0040eba0	UNKNOWN		none	0	0	no callers in graph
 0040ebb0	UNKNOWN		none	0	1	no TU-carrying callers
 0040ebc0	UNKNOWN		none	0	1	no TU-carrying callers
@@ -489,7 +489,7 @@
 0040edf0	UNKNOWN		none	0	1	no TU-carrying callers
 0040ee00	UNKNOWN		none	0	1	no TU-carrying callers
 0040ee10	UNKNOWN		none	0	0	no callers in graph
-0040ee30	UNKNOWN	rhelementscroll.cpp	mixed	1	847	callers
+0040ee30	UNKNOWN	rhelementscroll.cpp	mixed	1	846	callers
 0040ee80	UNKNOWN		none	0	0	no callers in graph
 0040ee90	UNKNOWN		none	0	1	no TU-carrying callers
 0040eea0	UNKNOWN		none	0	1	no TU-carrying callers
@@ -579,7 +579,7 @@
 00418c40	UNKNOWN	rhartificialintelligence.cpp	direct	0	0	self __FILE__
 004195f0	UNKNOWN	rhartificialintelligence.cpp	probable	1	2	callers
 00419640	UNKNOWN		none	0	1	no TU-carrying callers
-00419940	UNKNOWN	rhpcstatus.cpp	mixed	1	93	callers
+00419940	UNKNOWN	rhpcstatus.cpp	mixed	1	92	callers
 00419970	UNKNOWN		none	0	2	no TU-carrying callers
 00419a40	UNKNOWN	rhscript.cpp	probable	1	0	callers
 00419b20	UNKNOWN		none	0	1	no TU-carrying callers
@@ -620,10 +620,10 @@
 004235a0	UNKNOWN		none	0	2	no TU-carrying callers
 004237d0	UNKNOWN		none	0	22	no TU-carrying callers
 00423800	UNKNOWN		none	0	1	no TU-carrying callers
-004238c0	UNKNOWN	rhmenucampaignmap.cpp	mixed	2	137	callers
-00423910	UNKNOWN	rhmenucampaignmap.cpp	probable	1	26	callers
-004239c0	UNKNOWN	rhpcstatus.cpp	mixed	1	86	callers
-004239e0	UNKNOWN	rhpcstatus.cpp	mixed	1	122	callers
+004238c0	UNKNOWN	rhmenucampaignmap.cpp	mixed	2	134	callers
+00423910	UNKNOWN	sbresourcemanager.cpp	mixed	1	25	callers
+004239c0	UNKNOWN	rhpcstatus.cpp	mixed	1	85	callers
+004239e0	UNKNOWN	rhpcstatus.cpp	mixed	1	121	callers
 00423b10	UNKNOWN	toolbox.cpp	probable	1	18	callers
 00423b92	UNKNOWN		none	0	1	no TU-carrying callers
 00423c20	UNKNOWN		none	0	10	no TU-carrying callers
@@ -633,12 +633,12 @@
 00423fa0	UNKNOWN		none	0	3	no TU-carrying callers
 00424060	UNKNOWN		none	0	1	no TU-carrying callers
 004241a0	UNKNOWN		none	0	1	no TU-carrying callers
-004242b0	UNKNOWN	rhscript.cpp	probable	1	7	callers
+004242b0	UNKNOWN	rhscript.cpp	mixed	1	6	callers
 004242e0	UNKNOWN		none	0	2	no TU-carrying callers
-00424340	UNKNOWN	rhartificialintelligence.cpp	probable	1	2	callers
+00424340	UNKNOWN	rhartificialintelligence.cpp	mixed	1	1	callers
 00424370	UNKNOWN	rhartificialintelligence.cpp	probable	1	7	callers
 004243e0	UNKNOWN		none	0	8	no TU-carrying callers
-00424410	UNKNOWN	rhpathfinder.cpp	mixed	2	62	callers
+00424410	UNKNOWN	rhpathfinder.cpp	mixed	2	60	callers
 00424470	UNKNOWN	rhartificialintelligence.cpp	probable	1	0	callers
 00424490	UNKNOWN		none	0	0	no callers in graph
 004244c0	UNKNOWN		none	0	0	no callers in graph
@@ -694,7 +694,7 @@
 00435c80	UNKNOWN	rhartificialmalignity.cpp	direct	0	0	self __FILE__
 00436400	UNKNOWN		none	0	0	no callers in graph
 00436500	UNKNOWN	rhmission.cpp	mixed	1	8	callers
-00436570	UNKNOWN		none	0	0	no callers in graph
+00436570	UNKNOWN	rhartificialmalignity.cpp	direct	0	0	self __FILE__
 00438600	UNKNOWN		none	0	4	no TU-carrying callers
 00438620	UNKNOWN		none	0	7	no TU-carrying callers
 00438710	UNKNOWN	rhartificialmalignity.cpp	probable	1	4	callers
@@ -829,14 +829,14 @@
 0044e7d0	UNKNOWN		none	0	28	no TU-carrying callers
 0044e830	UNKNOWN	rhspritescriptor.cpp	probable	1	10	callers
 0044e850	UNKNOWN		none	0	5	no TU-carrying callers
-0044e8b0	UNKNOWN	rhartificialintelligence.cpp	mixed	4	99	callers
+0044e8b0	UNKNOWN	rhartificialintelligence.cpp	mixed	4	97	callers
 0044e900	UNKNOWN		none	0	6	no TU-carrying callers
-0044e940	UNKNOWN	rhcampaign.cpp	probable	1	8	callers
+0044e940	UNKNOWN	rhcampaign.cpp	mixed	1	7	callers
 0044e960	UNKNOWN		none	0	0	no callers in graph
 0044e990	UNKNOWN		none	0	10	no TU-carrying callers
 0044e9b0	UNKNOWN		none	0	3	no TU-carrying callers
 0044ea00	UNKNOWN		none	0	1	no TU-carrying callers
-0044ea70	UNKNOWN	rhcampaign.cpp	strong	2	14	callers
+0044ea70	UNKNOWN	rhcampaign.cpp	weak	2	13	callers
 0044eab0	UNKNOWN		none	0	1	no TU-carrying callers
 0044ec20	UNKNOWN		none	0	0	no callers in graph
 0044ec30	UNKNOWN		none	0	0	no callers in graph
@@ -846,7 +846,7 @@
 0044ec70	UNKNOWN		none	0	0	no callers in graph
 0044ec80	UNKNOWN		none	0	0	no callers in graph
 0044ec90	UNKNOWN		none	0	0	no callers in graph
-0044eca0	UNKNOWN		none	0	0	no callers in graph
+0044ecb0	UNKNOWN		none	0	0	no callers in graph
 0044ecf0	UNKNOWN		none	0	0	no callers in graph
 0044ed00	UNKNOWN		none	0	0	no callers in graph
 0044ed10	UNKNOWN		none	0	0	no callers in graph
@@ -865,13 +865,13 @@
 0044ef00	UNKNOWN		none	0	1	no TU-carrying callers
 0044ef60	UNKNOWN		none	0	3	no TU-carrying callers
 0044f400	UNKNOWN		none	0	1	no TU-carrying callers
-0044f580	UNKNOWN	rhscript.cpp	probable	1	39	callers
+0044f580	UNKNOWN	rhscript.cpp	mixed	1	38	callers
 0044f5d0	UNKNOWN		none	0	1	no TU-carrying callers
 0044f750	UNKNOWN		none	0	2	no TU-carrying callers
 0044f8d0	UNKNOWN		none	0	1	no TU-carrying callers
 0044f960	UNKNOWN		none	0	4	no TU-carrying callers
 0044fa70	UNKNOWN	rhscript.cpp	probable	1	26	callers
-0044fbc0	UNKNOWN	rhscript.cpp	probable	1	36	callers
+0044fbc0	UNKNOWN	rhscript.cpp	mixed	1	35	callers
 0044fca0	UNKNOWN		none	0	1	no TU-carrying callers
 0044fd00	UNKNOWN		none	0	1	no TU-carrying callers
 0044fd10	UNKNOWN		none	0	0	no callers in graph
@@ -982,7 +982,7 @@
 00456a30	UNKNOWN		none	0	0	no callers in graph
 00456a40	UNKNOWN		none	0	1	no TU-carrying callers
 00456a70	UNKNOWN		none	0	1	no TU-carrying callers
-00456aa0	UNKNOWN		none	0	0	no callers in graph
+00456aa0	UNKNOWN	rhcampaign.cpp	direct	0	0	self __FILE__
 00456af0	UNKNOWN		none	0	1	no TU-carrying callers
 00456cb0	UNKNOWN	rhscript.cpp	probable	1	1	callers
 00456ce0	UNKNOWN	rhscript.cpp	probable	1	0	callers
@@ -998,7 +998,7 @@
 004577a0	UNKNOWN	rhmenucampaignmap.cpp	probable	1	0	callers
 004577b0	UNKNOWN	rhmenucampaignmap.cpp	probable	1	0	callers
 004577c0	UNKNOWN	rhfontmanager.cpp	probable	1	2	callers
-004578e0	UNKNOWN		none	0	21	no TU-carrying callers
+004578e0	UNKNOWN	sbresourcemanager.cpp	probable	1	20	callers
 00457950	UNKNOWN	rhcampaign.cpp	probable	1	7	callers
 00457990	UNKNOWN		none	0	1	no TU-carrying callers
 004579d0	UNKNOWN		none	0	3	no TU-carrying callers
@@ -1006,12 +1006,12 @@
 00457a30	UNKNOWN	rhcampaign.cpp	probable	1	7	callers
 00457bc0	UNKNOWN	rhcampaign.cpp	probable	1	0	callers
 00457be0	UNKNOWN	rhcampaign.cpp	probable	1	9	callers
-00457c60	UNKNOWN	rhcampaign.cpp	probable	1	10	callers
+00457c60	UNKNOWN	sbresourcemanager.cpp	mixed	1	9	callers
 00457cb0	UNKNOWN	rhcampaign.cpp	probable	1	2	callers
 00457e80	UNKNOWN	rhcampaign.cpp	probable	1	0	callers
 004580a0	UNKNOWN	rhcampaign.cpp	probable	1	5	callers
-004580c0	UNKNOWN	rhpcstatus.cpp	mixed	1	68	callers
-004582d0	UNKNOWN	rhprofilemanager.cpp	mixed	8	59	callers
+004580c0	UNKNOWN	rhpcstatus.cpp	mixed	1	66	callers
+004582d0	UNKNOWN	rhprofilemanager.cpp	mixed	8	57	callers
 004584e0	UNKNOWN	rhcampaign.cpp	probable	1	1	callers
 00458800	UNKNOWN		none	0	1	no TU-carrying callers
 00458af0	UNKNOWN		none	0	3	no TU-carrying callers
@@ -1026,7 +1026,7 @@
 00459160	UNKNOWN	rhcampaign.cpp	direct	0	0	self __FILE__
 004593f0	UNKNOWN	rhcampaign.cpp	direct	0	0	self __FILE__
 00459620	UNKNOWN	rhcampaign.cpp	probable	1	2	callers
-004598e0	UNKNOWN	rhprofilemanager.cpp	weak	3	26	callers
+004598e0	UNKNOWN	rhprofilemanager.cpp	mixed	3	25	callers
 00459910	UNKNOWN		none	0	3	no TU-carrying callers
 00459a60	UNKNOWN		none	0	3	no TU-carrying callers
 00459bc0	UNKNOWN		none	0	8	no TU-carrying callers
@@ -1036,7 +1036,7 @@
 00459df0	UNKNOWN	rhcampaign.cpp	probable	1	2	callers
 00459fa0	UNKNOWN		none	0	1	no TU-carrying callers
 00459fd0	UNKNOWN		none	0	1	no TU-carrying callers
-0045a010	UNKNOWN	rhcampaign.cpp	probable	1	15	callers
+0045a010	UNKNOWN	rhcampaign.cpp	mixed	1	14	callers
 0045a060	UNKNOWN		none	0	1	no TU-carrying callers
 0045a240	UNKNOWN		none	0	2	no TU-carrying callers
 0045a420	UNKNOWN		none	0	1	no TU-carrying callers
@@ -1149,7 +1149,7 @@
 00460460	UNKNOWN		none	0	0	no callers in graph
 00460600	UNKNOWN		none	0	3	no TU-carrying callers
 00460620	UNKNOWN		none	0	0	no callers in graph
-00460900	UNKNOWN	rhprofilemanager.cpp	mixed	1	11	callers
+00460900	UNKNOWN	rhprofilemanager.cpp	mixed	1	10	callers
 00460970	UNKNOWN		none	0	0	no callers in graph
 004609a0	UNKNOWN	rhcampaign.cpp	mixed	2	39	callers
 004609e0	UNKNOWN		none	0	0	no callers in graph
@@ -1293,9 +1293,9 @@
 0046e980	UNKNOWN		none	0	1	no TU-carrying callers
 0046ea20	UNKNOWN		none	0	3	no TU-carrying callers
 0046eb20	UNKNOWN		none	0	8	no TU-carrying callers
-0046eb30	UNKNOWN	rhelementactor.cpp	mixed	2	131	callers
+0046eb30	UNKNOWN	rhsector.cpp	mixed	3	128	callers
 0046eb70	UNKNOWN		none	0	1	no TU-carrying callers
-0046eb80	UNKNOWN	rhsequencemanager.cpp	mixed	2	166	callers
+0046eb80	UNKNOWN	rhsequencemanager.cpp	mixed	2	165	callers
 0046eb90	UNKNOWN		none	0	0	no callers in graph
 0046ebc0	UNKNOWN		none	0	0	no callers in graph
 0046ebd0	UNKNOWN		none	0	0	no callers in graph
@@ -1336,12 +1336,12 @@
 00470350	UNKNOWN		none	0	1	no TU-carrying callers
 00470390	UNKNOWN		none	0	0	no callers in graph
 00470460	UNKNOWN		none	0	0	no callers in graph
-00470480	UNKNOWN		none	0	0	no callers in graph
-00470a10	UNKNOWN		none	0	1	no TU-carrying callers
+00470480	UNKNOWN	rhelementactorcivilian.cpp	direct	0	0	self __FILE__
+00470a10	UNKNOWN	rhelementactorcivilian.cpp	probable	1	0	callers
 00470c80	UNKNOWN		none	0	0	no callers in graph
-00470ca0	UNKNOWN		none	0	10	no TU-carrying callers
+00470ca0	UNKNOWN	rhelementactorcivilian.cpp	probable	1	9	callers
 00470cc0	UNKNOWN		none	0	2	no TU-carrying callers
-00470ce0	UNKNOWN		none	0	6	no TU-carrying callers
+00470ce0	UNKNOWN	rhelementactorcivilian.cpp	probable	1	5	callers
 00470d00	UNKNOWN		none	0	0	no callers in graph
 00470e30	UNKNOWN		none	0	2	no TU-carrying callers
 00470e50	UNKNOWN		none	0	0	no callers in graph
@@ -1369,7 +1369,7 @@
 00471550	UNKNOWN		none	0	0	no callers in graph
 00471560	UNKNOWN		none	0	0	no callers in graph
 00471570	UNKNOWN		none	0	0	no callers in graph
-00471580	UNKNOWN		none	0	0	no callers in graph
+00471590	UNKNOWN		none	0	0	no callers in graph
 004715b0	UNKNOWN		none	0	0	no callers in graph
 004715c0	UNKNOWN		none	0	1	no TU-carrying callers
 004715d0	UNKNOWN		none	0	1	no TU-carrying callers
@@ -1417,7 +1417,7 @@
 0047a890	UNKNOWN		none	0	0	no callers in graph
 0047a8a0	UNKNOWN		none	0	1	no TU-carrying callers
 0047a960	UNKNOWN		none	0	2	no TU-carrying callers
-0047ab00	UNKNOWN		none	0	2	no TU-carrying callers
+0047ab00	UNKNOWN	rhelementactorsoldier.cpp	probable	1	1	callers
 0047aba0	UNKNOWN		none	0	1	no TU-carrying callers
 0047ac60	UNKNOWN		none	0	1	no TU-carrying callers
 0047ac90	UNKNOWN		none	0	1	no TU-carrying callers
@@ -1667,7 +1667,7 @@
 00493ae0	UNKNOWN		none	0	2	no TU-carrying callers
 00493b40	UNKNOWN		none	0	0	no callers in graph
 00493c10	UNKNOWN		none	0	0	no callers in graph
-00493da0	UNKNOWN		none	0	0	no callers in graph
+00493da0	UNKNOWN	rhelementactorpc.cpp	direct	0	0	self __FILE__
 00494850	UNKNOWN		none	0	0	no callers in graph
 00494920	UNKNOWN		none	0	0	no callers in graph
 00495f90	UNKNOWN		none	0	0	no callers in graph
@@ -1743,16 +1743,16 @@
 0049d4f0	UNKNOWN	rhscript.cpp	strong	6	13	callers
 0049d520	UNKNOWN		none	0	1	no TU-carrying callers
 0049d560	UNKNOWN	rhscript.cpp	strong	4	25	callers
-0049d590	UNKNOWN		none	0	13	no TU-carrying callers
+0049d590	UNKNOWN	rhelementactorpc.cpp	probable	1	12	callers
 0049d5c0	UNKNOWN		none	0	6	no TU-carrying callers
 0049d5e0	UNKNOWN		none	0	4	no TU-carrying callers
 0049d680	UNKNOWN		none	0	4	no TU-carrying callers
 0049d6c0	UNKNOWN	rhscript.cpp	probable	1	3	callers
 0049d780	UNKNOWN		none	0	3	no TU-carrying callers
-0049d890	UNKNOWN		none	0	8	no TU-carrying callers
-0049d960	UNKNOWN		none	0	5	no TU-carrying callers
-0049da00	UNKNOWN		none	0	1	no TU-carrying callers
-0049dad0	UNKNOWN		none	0	1	no TU-carrying callers
+0049d890	UNKNOWN	rhelementactorpc.cpp	probable	1	7	callers
+0049d960	UNKNOWN	rhelementactorpc.cpp	probable	1	4	callers
+0049da00	UNKNOWN	rhelementactorpc.cpp	probable	1	0	callers
+0049dad0	UNKNOWN	rhelementactorpc.cpp	probable	1	0	callers
 0049dbc0	UNKNOWN		none	0	1	no TU-carrying callers
 0049e720	UNKNOWN		none	0	0	no callers in graph
 0049e760	UNKNOWN		none	0	0	no callers in graph
@@ -1826,7 +1826,7 @@
 004a1db0	UNKNOWN		none	0	0	no callers in graph
 004a1dc0	UNKNOWN		none	0	2	no TU-carrying callers
 004a1df0	UNKNOWN		none	0	1	no TU-carrying callers
-004a1e90	UNKNOWN		none	0	0	no callers in graph
+004a1e90	UNKNOWN	rhelementactorsoldier.cpp	direct	0	0	self __FILE__
 004a2550	UNKNOWN		none	0	0	no callers in graph
 004a2590	UNKNOWN		none	0	0	no callers in graph
 004a2e00	UNKNOWN		none	0	0	no callers in graph
@@ -1859,7 +1859,7 @@
 004a5b70	UNKNOWN		none	0	0	no callers in graph
 004a5b90	UNKNOWN		none	0	0	no callers in graph
 004a5ba0	UNKNOWN		none	0	0	no callers in graph
-004a5c30	UNKNOWN		none	0	2	no TU-carrying callers
+004a5c30	UNKNOWN	rhelementactorsoldier.cpp	probable	1	1	callers
 004a5d30	UNKNOWN		none	0	0	no callers in graph
 004a5d50	UNKNOWN		none	0	0	no callers in graph
 004a5dc0	UNKNOWN		none	0	1	no TU-carrying callers
@@ -2099,7 +2099,7 @@
 004b1270	UNKNOWN		none	0	2	no TU-carrying callers
 004b1380	UNKNOWN		none	0	0	no callers in graph
 004b14a0	UNKNOWN		none	0	0	no callers in graph
-004b1520	UNKNOWN		none	0	0	no callers in graph
+004b1520	UNKNOWN	rhelementnet.cpp	direct	0	0	self __FILE__
 004b1730	UNKNOWN		none	0	2	no TU-carrying callers
 004b19d0	UNKNOWN		none	0	1	no TU-carrying callers
 004b1b10	UNKNOWN		none	0	0	no callers in graph
@@ -2286,7 +2286,7 @@
 004bb3a0	UNKNOWN		none	0	0	no callers in graph
 004bb820	UNKNOWN	rhelementtarget.cpp	direct	0	0	self __FILE__
 004bbf80	UNKNOWN		none	0	0	no callers in graph
-004bbfa0	UNKNOWN		none	0	0	no callers in graph
+004bbfa0	UNKNOWN	rhelementtarget.cpp	direct	0	0	self __FILE__
 004bc1d0	UNKNOWN		none	0	0	no callers in graph
 004bc3d0	UNKNOWN		none	0	1	no TU-carrying callers
 004bc410	UNKNOWN		none	0	0	no callers in graph
@@ -2308,7 +2308,7 @@
 004bce50	UNKNOWN		none	0	2	no TU-carrying callers
 004bcec0	UNKNOWN		none	0	0	no callers in graph
 004bd0f0	UNKNOWN		none	0	0	no callers in graph
-004bd120	UNKNOWN		none	0	0	no callers in graph
+004bd120	UNKNOWN	rhelementwasp.cpp	direct	0	0	self __FILE__
 004bd200	UNKNOWN		none	0	2	no TU-carrying callers
 004bd220	UNKNOWN		none	0	1	no TU-carrying callers
 004bd250	UNKNOWN		none	0	1	no TU-carrying callers
@@ -2621,7 +2621,7 @@
 004e60a0	UNKNOWN	rhline.cpp	mixed	1	11	callers
 004e62b0	UNKNOWN		none	0	4	no TU-carrying callers
 004e6540	UNKNOWN		none	0	1	no TU-carrying callers
-004e65b0	UNKNOWN		none	0	4	no TU-carrying callers
+004e65b0	UNKNOWN	rhartificialmalignity.cpp	probable	1	3	callers
 004e6620	UNKNOWN		none	0	1	no TU-carrying callers
 004e6690	UNKNOWN		none	0	1	no TU-carrying callers
 004e6930	UNKNOWN		none	0	1	no TU-carrying callers
@@ -2632,7 +2632,7 @@
 004e6ba0	UNKNOWN		none	0	2	no TU-carrying callers
 004e6bd0	UNKNOWN		none	0	1	no TU-carrying callers
 004e6c10	UNKNOWN	rhcampaign.cpp	mixed	1	54	callers
-004e6c50	UNKNOWN		none	0	3	no TU-carrying callers
+004e6c50	UNKNOWN	sbresourcemanager.cpp	probable	1	2	callers
 004e6dc0	UNKNOWN		none	0	1	no TU-carrying callers
 004e6f70	UNKNOWN	rhengine.cpp	probable	1	3	callers
 004e70a0	UNKNOWN	rhengine.cpp	probable	1	0	callers
@@ -2775,7 +2775,7 @@
 004fe250	UNKNOWN		none	0	2	no TU-carrying callers
 004fe280	UNKNOWN		none	0	1	no TU-carrying callers
 004fe2b0	UNKNOWN		none	0	1	no TU-carrying callers
-004fe2e0	UNKNOWN	rhcampaign.cpp	probable	1	3	callers
+004fe2e0	UNKNOWN	rhartificialmalignity.cpp	mixed	1	1	callers
 004fe340	UNKNOWN		none	0	1	no TU-carrying callers
 004fe380	UNKNOWN		none	0	1	no TU-carrying callers
 004fe3b0	UNKNOWN		none	0	1	no TU-carrying callers
@@ -2832,7 +2832,7 @@
 005007a0	UNKNOWN		none	0	2	no TU-carrying callers
 00500830	UNKNOWN		none	0	1	no TU-carrying callers
 005008a0	UNKNOWN		none	0	1	no TU-carrying callers
-005008e0	UNKNOWN	rhprofilemanager.cpp	mixed	6	93	callers
+005008e0	UNKNOWN	rhprofilemanager.cpp	mixed	6	92	callers
 005008f0	UNKNOWN		none	0	3	no TU-carrying callers
 00500a20	UNKNOWN		none	0	1	no TU-carrying callers
 00500a70	UNKNOWN		none	0	1	no TU-carrying callers
@@ -2958,7 +2958,7 @@
 00507500	UNKNOWN	rhframeholder.cpp	probable	1	1	callers
 00507630	UNKNOWN		none	0	2	no TU-carrying callers
 00507960	UNKNOWN	rhcampaign.cpp	probable	1	2	callers
-005079b0	UNKNOWN	rhframeholder.cpp	probable	1	2	callers
+005079b0	UNKNOWN	rhframeholder.cpp	mixed	1	1	callers
 00507ae0	UNKNOWN		none	0	1	no TU-carrying callers
 00508000	UNKNOWN		none	0	1	no TU-carrying callers
 00508090	UNKNOWN		none	0	1	no TU-carrying callers
@@ -3028,7 +3028,7 @@
 0050ed10	UNKNOWN		none	0	2	no TU-carrying callers
 0050ed40	UNKNOWN	rhscript.cpp	strong	2	7	callers
 0050ef90	UNKNOWN		none	0	0	no callers in graph
-0050efb0	UNKNOWN		none	0	2	no TU-carrying callers
+0050efb0	UNKNOWN	rhelementactorpc.cpp	probable	1	1	callers
 0050efd0	UNKNOWN		none	0	1	no TU-carrying callers
 0050eff0	UNKNOWN		none	0	1	no TU-carrying callers
 0050f000	UNKNOWN	rhengine.cpp	probable	1	0	callers
@@ -3246,6 +3246,7 @@
 0051aa00	UNKNOWN	rhfastfindgrid.cpp	weak	2	1	callers
 0051aa90	UNKNOWN		none	0	2	no TU-carrying callers
 0051abe0	UNKNOWN		none	0	0	no callers in graph
+0051ae30	UNKNOWN		none	0	0	no callers in graph
 0051afe0	UNKNOWN		none	0	1	no TU-carrying callers
 0051b110	UNKNOWN		none	0	1	no TU-carrying callers
 0051b2a0	UNKNOWN	rhfastfindgrid.cpp	mixed	1	1	callers
@@ -3316,7 +3317,7 @@
 0051d450	UNKNOWN		none	0	0	no callers in graph
 0051d460	UNKNOWN		none	0	2	no TU-carrying callers
 0051d480	UNKNOWN		none	0	1	no TU-carrying callers
-0051d4b0	UNKNOWN		none	0	1	no TU-carrying callers
+0051d4b0	UNKNOWN	rhelementactorsoldier.cpp	probable	1	0	callers
 0051d4e0	UNKNOWN		none	0	2	no TU-carrying callers
 0051d540	UNKNOWN		none	0	2	no TU-carrying callers
 0051d550	UNKNOWN		none	0	1	no TU-carrying callers
@@ -3448,7 +3449,7 @@
 00521570	UNKNOWN		none	0	0	no callers in graph
 00521590	UNKNOWN		none	0	1	no TU-carrying callers
 005215f0	UNKNOWN		none	0	1	no TU-carrying callers
-00521770	UNKNOWN		none	0	1	no TU-carrying callers
+00521770	UNKNOWN	rhartificialmalignity.cpp	probable	1	0	callers
 005217a0	UNKNOWN		none	0	0	no callers in graph
 005217c0	UNKNOWN		none	0	1	no TU-carrying callers
 00521810	UNKNOWN	rhline.cpp	direct	0	0	self __FILE__
@@ -3471,7 +3472,7 @@
 00522560	UNKNOWN		none	0	0	no callers in graph
 00522580	UNKNOWN		none	0	1	no TU-carrying callers
 005225a0	UNKNOWN	rhsector.cpp	probable	1	0	callers
-00522680	UNKNOWN		none	0	1	no TU-carrying callers
+00522680	UNKNOWN	rhsector.cpp	probable	1	0	callers
 005226a0	UNKNOWN	rhline.cpp	probable	1	1	callers
 00522750	UNKNOWN		none	0	0	no callers in graph
 00522780	UNKNOWN		none	0	1	no TU-carrying callers
@@ -4151,8 +4152,8 @@
 00545bd0	UNKNOWN		none	0	1	no TU-carrying callers
 00545ed0	UNKNOWN		none	0	0	no callers in graph
 00545ef0	UNKNOWN		none	0	1	no TU-carrying callers
-00546050	UNKNOWN	rhscript.cpp	weak	4	113	callers
-005460c0	UNKNOWN	rhscript.cpp	mixed	3	98	callers
+00546050	UNKNOWN	rhscript.cpp	mixed	4	112	callers
+005460c0	UNKNOWN	rhscript.cpp	mixed	3	97	callers
 00547080	UNKNOWN		none	0	2	no TU-carrying callers
 00547230	UNKNOWN		none	0	2	no TU-carrying callers
 00547280	UNKNOWN		none	0	1	no TU-carrying callers
@@ -4179,10 +4180,10 @@
 00549180	UNKNOWN		none	0	0	no callers in graph
 005491a0	UNKNOWN		none	0	3	no TU-carrying callers
 00549200	UNKNOWN		none	0	12	no TU-carrying callers
-00549250	UNKNOWN	rhengine.cpp	mixed	2	47	callers
+00549250	UNKNOWN	rhengine.cpp	mixed	2	46	callers
 00549280	UNKNOWN		none	0	0	no callers in graph
 005492a0	UNKNOWN	rhelementactorpc.cpp	mixed	1	39	callers
-005492d0	UNKNOWN	rhscript.cpp	mixed	3	260	callers
+005492d0	UNKNOWN	rhscript.cpp	mixed	3	259	callers
 005492e0	UNKNOWN		none	0	0	no callers in graph
 00549310	UNKNOWN		none	0	0	no callers in graph
 00549320	UNKNOWN		none	0	1	no TU-carrying callers
@@ -4402,10 +4403,10 @@
 00553e60	UNKNOWN		none	0	1	no TU-carrying callers
 00554360	UNKNOWN		none	0	2	no TU-carrying callers
 00554560	UNKNOWN		none	0	1	no TU-carrying callers
-005545c0	UNKNOWN		none	0	0	no callers in graph
+005545c0	UNKNOWN	rhpathfinder.cpp	direct	0	0	self __FILE__
 005546e0	UNKNOWN	rhpathfinder.cpp	direct	0	0	self __FILE__
 00554750	UNKNOWN	rhpathfinder.cpp	probable	1	2	callers
-005547c0	UNKNOWN		none	0	1	no TU-carrying callers
+005547c0	UNKNOWN	rhpathfinder.cpp	probable	1	0	callers
 00554b80	UNKNOWN		none	0	1	no TU-carrying callers
 005553d0	UNKNOWN		none	0	1	no TU-carrying callers
 005557c0	UNKNOWN		none	0	1	no TU-carrying callers
@@ -4562,12 +4563,12 @@
 0055f140	UNKNOWN		none	0	3	no TU-carrying callers
 0055f1a0	UNKNOWN		none	0	1	no TU-carrying callers
 0055f210	UNKNOWN		none	0	1	no TU-carrying callers
-0055f290	UNKNOWN	rhscript.cpp	mixed	3	25	callers
+0055f290	UNKNOWN	rhscript.cpp	mixed	3	23	callers
 0055f550	UNKNOWN	rhsprite.cpp	probable	1	4	callers
 0055f6d0	UNKNOWN		none	0	2	no TU-carrying callers
 0055f870	UNKNOWN		none	0	1	no TU-carrying callers
-0055fa10	UNKNOWN	rhelementactorpc.cpp	mixed	2	59	callers
-0055fa20	UNKNOWN	rhelementactorpc.cpp	mixed	2	9	callers
+0055fa10	UNKNOWN	rhelementactorpc.cpp	mixed	2	57	callers
+0055fa20	UNKNOWN	rhelementactorpc.cpp	mixed	2	7	callers
 0055fa70	UNKNOWN	rhelement.cpp	mixed	1	5	callers
 0055fc20	UNKNOWN	rhelementmobile.cpp	mixed	1	3	callers
 0055fe10	UNKNOWN	rhpositioninterface.cpp	direct	0	0	self __FILE__
@@ -4597,7 +4598,7 @@
 00564490	UNKNOWN		none	0	1	no TU-carrying callers
 005644a0	UNKNOWN		none	0	1	no TU-carrying callers
 005644b0	UNKNOWN		none	0	0	no callers in graph
-005644c0	UNKNOWN	rhelementactorpc.cpp	weak	2	5	callers
+005644c0	UNKNOWN	rhelementactorpc.cpp	mixed	2	3	callers
 00564560	UNKNOWN		none	0	0	no callers in graph
 00564580	UNKNOWN		none	0	1	no TU-carrying callers
 005647c0	UNKNOWN		none	0	4	no TU-carrying callers
@@ -4648,7 +4649,7 @@
 0056d7b0	UNKNOWN		none	0	4	no TU-carrying callers
 0056d870	UNKNOWN		none	0	0	no callers in graph
 0056d890	UNKNOWN		none	0	1	no TU-carrying callers
-0056dac0	UNKNOWN	rhsoundcache.cpp	probable	1	7	callers
+0056dac0	UNKNOWN	rhsoundcache.cpp	mixed	1	6	callers
 0056db10	UNKNOWN		none	0	0	no callers in graph
 0056db40	UNKNOWN		none	0	1	no TU-carrying callers
 0056dbc0	UNKNOWN	rhsoundcache.cpp	probable	1	3	callers
@@ -4944,7 +4945,7 @@
 00578820	UNKNOWN		none	0	1	no TU-carrying callers
 00578830	UNKNOWN		none	0	1	no TU-carrying callers
 005788a0	UNKNOWN	rhscript.cpp	direct	0	0	self __FILE__
-00578c50	UNKNOWN	launcher.cpp	mixed	1	99	callers
+00578c50	UNKNOWN	sbdrawmanager.cpp	weak	6	93	callers
 00578c60	UNKNOWN		none	0	1	no TU-carrying callers
 00578c70	UNKNOWN	rhscript.cpp	direct	0	0	self __FILE__
 00578cb0	UNKNOWN	rhscript.cpp	direct	0	0	self __FILE__
@@ -5053,11 +5054,11 @@
 0057bff0	UNKNOWN		none	0	1	no TU-carrying callers
 0057c500	UNKNOWN	rhscript.cpp	direct	0	0	self __FILE__
 0057c710	UNKNOWN		none	0	2	no TU-carrying callers
-0057c7f0	UNKNOWN		none	0	3	no TU-carrying callers
+0057c7f0	UNKNOWN	sbresourcemanager.cpp	strong	2	1	callers
 0057c820	UNKNOWN		none	0	8	no TU-carrying callers
 0057c920	UNKNOWN		none	0	1	no TU-carrying callers
 0057c950	UNKNOWN	rhscript.cpp	weak	2	1	callers
-0057c9c0	UNKNOWN	rhelementactor.cpp	mixed	1	96	callers
+0057c9c0	UNKNOWN	rhsector.cpp	mixed	2	95	callers
 0057c9d0	UNKNOWN		none	0	0	no callers in graph
 0057ca00	UNKNOWN		none	0	0	no callers in graph
 0057ca10	UNKNOWN		none	0	1	no TU-carrying callers
@@ -5111,7 +5112,7 @@
 0057e580	UNKNOWN		none	0	1	no TU-carrying callers
 0057e680	UNKNOWN	rhengine.cpp	probable	1	0	callers
 0057e710	UNKNOWN		none	0	0	no callers in graph
-0057e970	UNKNOWN		none	0	0	no callers in graph
+0057e970	UNKNOWN	rhsector.cpp	direct	0	0	self __FILE__
 0057eb80	UNKNOWN		none	0	0	no callers in graph
 0057ebd0	UNKNOWN	rhscript.cpp	probable	1	1	callers
 0057ec80	UNKNOWN	rhscript.cpp	probable	1	1	callers
@@ -5130,13 +5131,13 @@
 0057f270	UNKNOWN		none	0	0	no callers in graph
 0057f290	UNKNOWN		none	0	1	no TU-carrying callers
 0057f360	UNKNOWN	rhsector.cpp	direct	0	0	self __FILE__
-0057f520	UNKNOWN		none	0	0	no callers in graph
+0057f520	UNKNOWN	rhsector.cpp	direct	0	0	self __FILE__
 0057f5d0	UNKNOWN		none	0	1	no TU-carrying callers
 0057f680	UNKNOWN	rhfastfindgrid.cpp	probable	1	0	callers
 0057f770	UNKNOWN		none	0	1	no TU-carrying callers
 0057f790	UNKNOWN		none	0	1	no TU-carrying callers
 0057f8c0	UNKNOWN	rhsector.cpp	direct	0	0	self __FILE__
-0057fae0	UNKNOWN		none	0	0	no callers in graph
+0057fae0	UNKNOWN	rhsector.cpp	direct	0	0	self __FILE__
 0057fcc0	UNKNOWN	rhsector.cpp	direct	0	0	self __FILE__
 0057fdb0	UNKNOWN	rhsector.cpp	direct	0	0	self __FILE__
 0057ff00	UNKNOWN	rhscript.cpp	probable	1	2	callers
@@ -5202,7 +5203,7 @@
 005821f0	UNKNOWN		none	0	1	no TU-carrying callers
 00582200	UNKNOWN		none	0	1	no TU-carrying callers
 00582210	UNKNOWN		none	0	0	no callers in graph
-00582220	UNKNOWN	rhscript.cpp	mixed	3	42	callers
+00582220	UNKNOWN	rhscript.cpp	mixed	3	40	callers
 00582280	UNKNOWN		none	0	0	no callers in graph
 005822a0	UNKNOWN		none	0	1	no TU-carrying callers
 005823f0	UNKNOWN		none	0	1	no TU-carrying callers
@@ -5271,7 +5272,7 @@
 00586210	UNKNOWN		none	0	2	no TU-carrying callers
 00586270	UNKNOWN		none	0	9	no TU-carrying callers
 005862c0	UNKNOWN		none	0	0	no callers in graph
-00586370	UNKNOWN		none	0	0	no callers in graph
+00586370	UNKNOWN	rhsequenceelementdamage.cpp	direct	0	0	self __FILE__
 005864a0	UNKNOWN	rhelementactorhuman.cpp	probable	1	6	callers
 005864b0	UNKNOWN	rhelementactorhuman.cpp	probable	1	3	callers
 005864c0	UNKNOWN	rhelementactorhuman.cpp	probable	1	0	callers
@@ -5291,7 +5292,7 @@
 005866a0	UNKNOWN	rhscript.cpp	strong	22	37	callers
 00586790	UNKNOWN		none	0	1	no TU-carrying callers
 00586840	UNKNOWN		none	0	0	no callers in graph
-00586a30	UNKNOWN		none	0	0	no callers in graph
+00586a30	UNKNOWN	rhsequenceelementgeneric.cpp	direct	0	0	self __FILE__
 00586e00	UNKNOWN	rhscript.cpp	strong	4	15	callers
 00586e50	UNKNOWN		none	0	4	no TU-carrying callers
 00586e90	UNKNOWN		none	0	6	no TU-carrying callers
@@ -5307,18 +5308,18 @@
 005871b0	UNKNOWN	rhelementactor.cpp	mixed	1	1	callers
 00587290	UNKNOWN		none	0	4	no TU-carrying callers
 00587340	UNKNOWN	rhelementactorhuman.cpp	probable	1	4	callers
-005873a0	UNKNOWN		none	0	8	no TU-carrying callers
-005874d0	UNKNOWN		none	0	3	no TU-carrying callers
+005873a0	UNKNOWN	rhsequenceelementgeneric.cpp	probable	1	7	callers
+005874d0	UNKNOWN	rhsequenceelementgeneric.cpp	probable	1	2	callers
 00587600	UNKNOWN		none	0	1	no TU-carrying callers
 00587b20	UNKNOWN		none	0	1	no TU-carrying callers
 00587b40	UNKNOWN		none	0	1	no TU-carrying callers
 00587bd0	UNKNOWN		none	0	1	no TU-carrying callers
-00587ed0	UNKNOWN		none	0	3	no TU-carrying callers
+00587ed0	UNKNOWN	rhsequenceelementgeneric.cpp	probable	1	2	callers
 00587f80	UNKNOWN		none	0	1	no TU-carrying callers
 00588060	UNKNOWN		none	0	8	no TU-carrying callers
 005880b0	UNKNOWN		none	0	1	no TU-carrying callers
 005880d0	UNKNOWN		none	0	1	no TU-carrying callers
-00588190	UNKNOWN	rhscript.cpp	probable	1	6	callers
+00588190	UNKNOWN	rhscript.cpp	mixed	1	5	callers
 005881c0	UNKNOWN		none	0	0	no callers in graph
 005881f0	UNKNOWN		none	0	0	no callers in graph
 00588200	UNKNOWN		none	0	1	no TU-carrying callers
@@ -5350,7 +5351,7 @@
 00589490	UNKNOWN		none	0	1	no TU-carrying callers
 005897e0	UNKNOWN		none	0	1	no TU-carrying callers
 00589810	UNKNOWN		none	0	0	no callers in graph
-00589910	UNKNOWN		none	0	0	no callers in graph
+00589910	UNKNOWN	rhsequenceelementmovement.cpp	direct	0	0	self __FILE__
 00589c00	UNKNOWN		none	0	0	no callers in graph
 00589c70	UNKNOWN		none	0	0	no callers in graph
 00589ca0	UNKNOWN		none	0	1	no TU-carrying callers
@@ -5466,7 +5467,7 @@
 0059f580	UNKNOWN		none	0	0	no callers in graph
 0059f5a0	UNKNOWN		none	0	1	no TU-carrying callers
 0059f6f0	UNKNOWN		none	0	1	no TU-carrying callers
-0059f720	UNKNOWN	rhartificialintelligence.cpp	mixed	4	61	callers
+0059f720	UNKNOWN	rhartificialintelligence.cpp	mixed	4	59	callers
 0059f750	UNKNOWN		none	0	1	no TU-carrying callers
 0059f7c0	UNKNOWN		none	0	1	no TU-carrying callers
 0059f900	UNKNOWN		none	0	3	no TU-carrying callers
@@ -5477,8 +5478,8 @@
 0059fb20	UNKNOWN		none	0	6	no TU-carrying callers
 0059fb40	UNKNOWN		none	0	0	no callers in graph
 0059fb70	UNKNOWN		none	0	3	no TU-carrying callers
-0059fba0	UNKNOWN	rhprofilemanager.cpp	strong	5	19	callers
-0059fbc0	UNKNOWN	rhcampaign.cpp	weak	5	45	callers
+0059fba0	UNKNOWN	rhprofilemanager.cpp	weak	5	16	callers
+0059fbc0	UNKNOWN	rhcampaign.cpp	weak	5	44	callers
 0059fbe0	UNKNOWN		none	0	6	no TU-carrying callers
 0059fc40	UNKNOWN		none	0	6	no TU-carrying callers
 0059fc80	UNKNOWN		none	0	4	no TU-carrying callers
@@ -5755,7 +5756,7 @@
 005b1940	UNKNOWN		none	0	1	no TU-carrying callers
 005b1a00	UNKNOWN		none	0	1	no TU-carrying callers
 005b1b70	UNKNOWN		none	0	0	no callers in graph
-005b1ba0	UNKNOWN		none	0	2	no TU-carrying callers
+005b1ba0	UNKNOWN	sbresourcemanager.cpp	probable	1	1	callers
 005b1c20	UNKNOWN		none	0	0	no callers in graph
 005b1c30	UNKNOWN		none	0	1	no TU-carrying callers
 005b1c40	UNKNOWN		none	0	1	no TU-carrying callers
@@ -5825,8 +5826,8 @@
 005b3c20	UNKNOWN		none	0	1	no TU-carrying callers
 005b3c40	UNKNOWN		none	0	1	no TU-carrying callers
 005b3f30	UNKNOWN		none	0	1	no TU-carrying callers
-005b4210	UNKNOWN		none	0	0	no callers in graph
-005b4700	UNKNOWN		none	0	1	no TU-carrying callers
+005b4210	UNKNOWN	rhsoundsource.cpp	direct	0	0	self __FILE__
+005b4700	UNKNOWN	rhsoundsource.cpp	probable	1	0	callers
 005b4920	UNKNOWN		none	0	0	no callers in graph
 005b4950	UNKNOWN		none	0	0	no callers in graph
 005b4960	UNKNOWN		none	0	1	no TU-carrying callers
@@ -5901,11 +5902,11 @@
 005bc3c0	UNKNOWN		none	0	1	no TU-carrying callers
 005bc920	UNKNOWN		none	0	1	no TU-carrying callers
 005bd000	UNKNOWN	rhspritescriptor.cpp	probable	1	9	callers
-005bd050	UNKNOWN	rhelementtarget.cpp	probable	1	4	callers
+005bd050	UNKNOWN	rhelementactorcivilian.cpp	mixed	1	2	callers
 005bd3a0	UNKNOWN		none	0	1	no TU-carrying callers
 005bd450	UNKNOWN	rhsprite.cpp	strong	2	26	callers
 005bd4e0	UNKNOWN		none	0	1	no TU-carrying callers
-005bd560	UNKNOWN	rhelementactorpc.cpp	mixed	2	17	callers
+005bd560	UNKNOWN	rhelementactorpc.cpp	mixed	2	15	callers
 005bd5b0	UNKNOWN	rhsprite.cpp	mixed	2	10	callers
 005bd600	UNKNOWN		none	0	1	no TU-carrying callers
 005bd650	UNKNOWN	rhelementactor.cpp	probable	1	0	callers
@@ -5930,8 +5931,8 @@
 005bddb0	UNKNOWN		none	0	6	no TU-carrying callers
 005bddf0	UNKNOWN		none	0	1	no TU-carrying callers
 005bde70	UNKNOWN		none	0	1	no TU-carrying callers
-005bdef0	UNKNOWN	rhelementtarget.cpp	probable	1	7	callers
-005bdf20	UNKNOWN	rhelementtarget.cpp	probable	1	7	callers
+005bdef0	UNKNOWN	rhelementactorcivilian.cpp	mixed	1	5	callers
+005bdf20	UNKNOWN	rhelementactorcivilian.cpp	mixed	1	5	callers
 005bdf30	UNKNOWN		none	0	1	no TU-carrying callers
 005bdf70	UNKNOWN		none	0	2	no TU-carrying callers
 005bdfa0	UNKNOWN	rhspritescriptor.cpp	probable	1	5	callers
@@ -5972,7 +5973,7 @@
 005c0b50	UNKNOWN		none	0	1	no TU-carrying callers
 005c10d0	UNKNOWN		none	0	1	no TU-carrying callers
 005c11c0	UNKNOWN		none	0	3	no TU-carrying callers
-005c1270	UNKNOWN	rhfontmanager.cpp	probable	1	5	callers
+005c1270	UNKNOWN	rhfontmanager.cpp	mixed	1	4	callers
 005c1290	UNKNOWN		none	0	1	no TU-carrying callers
 005c15a0	UNKNOWN		none	0	1	no TU-carrying callers
 005c1660	UNKNOWN		none	0	1	no TU-carrying callers
@@ -6042,7 +6043,7 @@
 005c8cc0	UNKNOWN		none	0	1	no TU-carrying callers
 005c8cf0	UNKNOWN		none	0	1	no TU-carrying callers
 005c8d30	UNKNOWN	rhtitbit.cpp	probable	1	0	callers
-005c8e40	UNKNOWN	rhscript.cpp	mixed	5	284	callers
+005c8e40	UNKNOWN	rhscript.cpp	mixed	5	280	callers
 005c8fe0	UNKNOWN		none	0	0	no callers in graph
 005c9010	UNKNOWN	rhscript.cpp	mixed	4	162	callers
 005c9040	UNKNOWN		none	0	0	no callers in graph
@@ -6271,7 +6272,7 @@
 005d06d0	UNKNOWN		none	0	0	no callers in graph
 005d06e0	UNKNOWN		none	0	0	no callers in graph
 005d0750	UNKNOWN		none	0	1	no TU-carrying callers
-005d0880	UNKNOWN		none	0	2	no TU-carrying callers
+005d0880	UNKNOWN	sbuirendererinputfield.cpp	probable	1	1	callers
 005d09b0	UNKNOWN		none	0	0	no callers in graph
 005d09d0	UNKNOWN		none	0	0	no callers in graph
 005d09f0	UNKNOWN		none	0	0	no callers in graph
@@ -6318,7 +6319,6 @@
 005d23f0	UNKNOWN		none	0	0	no callers in graph
 005d2460	UNKNOWN		none	0	3	no TU-carrying callers
 005d24c0	UNKNOWN		none	0	0	no callers in graph
-005d24e0	UNKNOWN		none	0	0	no callers in graph
 005d24f0	UNKNOWN		none	0	0	no callers in graph
 005d2510	UNKNOWN		none	0	0	no callers in graph
 005d2540	UNKNOWN		none	0	0	no callers in graph
@@ -6495,8 +6495,8 @@
 005d9180	UNKNOWN		none	0	1	no TU-carrying callers
 005d9210	UNKNOWN		none	0	1	no TU-carrying callers
 005d92c0	UNKNOWN	rhwidgetportrait.cpp	direct	0	0	self __FILE__
-005d9700	UNKNOWN		none	0	2	no TU-carrying callers
-005d9860	UNKNOWN		none	0	2	no TU-carrying callers
+005d9700	UNKNOWN	rhelementactorpc.cpp	probable	1	1	callers
+005d9860	UNKNOWN	rhelementactorpc.cpp	probable	1	1	callers
 005d9920	UNKNOWN		none	0	1	no TU-carrying callers
 005d9950	UNKNOWN		none	0	4	no TU-carrying callers
 005d9a20	UNKNOWN		none	0	1	no TU-carrying callers
@@ -6622,7 +6622,7 @@
 005df4b0	UNKNOWN		none	0	0	no callers in graph
 005df4c0	UNKNOWN		none	0	13	no TU-carrying callers
 005df4f0	UNKNOWN	rhsprite.cpp	mixed	2	26	callers
-005df510	UNKNOWN	rhelementprojectile.cpp	mixed	1	2	callers
+005df510	UNKNOWN	rhelementprojectile.cpp	mixed	1	0	callers
 005df550	UNKNOWN	rhelementactor.cpp	probable	1	43	callers
 005df5a0	UNKNOWN		none	0	4	no TU-carrying callers
 005df5f0	UNKNOWN		none	0	5	no TU-carrying callers
@@ -6719,30 +6719,30 @@
 005e3869	UNKNOWN		none	0	1	no TU-carrying callers
 005e3919	UNKNOWN		none	0	1	no TU-carrying callers
 005e3b10	UNKNOWN		none	0	0	no callers in graph
-005e3c20	UNKNOWN	launcher.cpp	probable	1	0	callers
+005e3c20	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
 005e3ed0	UNKNOWN		none	0	2	no TU-carrying callers
 005e3f40	UNKNOWN	launcher.cpp	probable	1	0	callers
-005e3f70	UNKNOWN		none	0	2	no TU-carrying callers
-005e41d0	UNKNOWN	launcher.cpp	probable	1	0	callers
-005e4810	UNKNOWN	launcher.cpp	probable	1	3	callers
+005e3f70	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005e41d0	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005e4810	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
 005e4ca0	UNKNOWN	launcher.cpp	probable	1	0	callers
-005e4ed0	UNKNOWN	toolbox.cpp	mixed	2	35	callers
-005e4f70	UNKNOWN		none	0	2	no TU-carrying callers
-005e5160	UNKNOWN	rhloadingscreen.cpp	mixed	1	22	callers
-005e5260	UNKNOWN	toolbox.cpp	mixed	1	12	callers
-005e56c0	UNKNOWN	rhminimap.cpp	mixed	1	39	callers
-005e5750	UNKNOWN	rhminimap.cpp	mixed	1	31	callers
-005e57e0	UNKNOWN	rhuirenderershiftingtitbit.cpp	probable	1	1	callers
-005e5890	UNKNOWN		none	0	1	no TU-carrying callers
-005e5a00	UNKNOWN	avitoolbox.cpp	mixed	1	37	callers
-005e5bd0	UNKNOWN		none	0	1	no TU-carrying callers
-005e5d30	UNKNOWN		none	0	3	no TU-carrying callers
-005e5ea0	UNKNOWN	avitoolbox.cpp	mixed	1	37	callers
-005e5ec0	UNKNOWN		none	0	1	no TU-carrying callers
-005e5f60	UNKNOWN		none	0	7	no TU-carrying callers
+005e4ed0	UNKNOWN	toolbox.cpp	mixed	2	32	callers
+005e4f70	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005e5160	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005e5260	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005e56c0	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005e5750	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005e57e0	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005e5890	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005e5a00	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005e5bd0	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005e5d30	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005e5ea0	UNKNOWN	sbdrawmanager.cpp	weak	6	31	callers
+005e5ec0	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005e5f60	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
 005e6000	UNKNOWN		none	0	6	no TU-carrying callers
-005e61e0	UNKNOWN	avitoolbox.cpp	mixed	1	23	callers
-005e6440	UNKNOWN	toolbox.cpp	mixed	2	37	callers
+005e61e0	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005e6440	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
 005e6880	UNKNOWN		none	0	0	no callers in graph
 005e6890	UNKNOWN		none	0	1	no TU-carrying callers
 005e68a0	UNKNOWN		none	0	1	no TU-carrying callers
@@ -6751,80 +6751,80 @@
 005e68d0	UNKNOWN		none	0	1	no TU-carrying callers
 005e68e0	UNKNOWN		none	0	1	no TU-carrying callers
 005e68f0	UNKNOWN		none	0	0	no callers in graph
-005e6900	UNKNOWN		none	0	3	no TU-carrying callers
-005e7710	UNKNOWN		none	0	1	no TU-carrying callers
-005e7880	UNKNOWN		none	0	1	no TU-carrying callers
-005e78c0	UNKNOWN		none	0	1	no TU-carrying callers
-005e7a30	UNKNOWN		none	0	1	no TU-carrying callers
-005e7bc0	UNKNOWN		none	0	1	no TU-carrying callers
-005e7d30	UNKNOWN		none	0	1	no TU-carrying callers
-005e7d70	UNKNOWN		none	0	1	no TU-carrying callers
-005e7da0	UNKNOWN		none	0	1	no TU-carrying callers
-005e7de0	UNKNOWN		none	0	1	no TU-carrying callers
-005e7f60	UNKNOWN		none	0	1	no TU-carrying callers
-005e7fa0	UNKNOWN		none	0	1	no TU-carrying callers
-005e8110	UNKNOWN		none	0	1	no TU-carrying callers
-005e82a0	UNKNOWN		none	0	1	no TU-carrying callers
-005e8410	UNKNOWN		none	0	1	no TU-carrying callers
-005e8450	UNKNOWN		none	0	1	no TU-carrying callers
-005e84a0	UNKNOWN		none	0	1	no TU-carrying callers
-005e84e0	UNKNOWN		none	0	1	no TU-carrying callers
-005e85b0	UNKNOWN		none	0	1	no TU-carrying callers
-005e8670	UNKNOWN		none	0	1	no TU-carrying callers
-005e8740	UNKNOWN		none	0	1	no TU-carrying callers
-005e8b10	UNKNOWN		none	0	1	no TU-carrying callers
-005e8f20	UNKNOWN		none	0	1	no TU-carrying callers
-005e92f0	UNKNOWN		none	0	1	no TU-carrying callers
-005e93c0	UNKNOWN		none	0	1	no TU-carrying callers
-005e9790	UNKNOWN		none	0	1	no TU-carrying callers
-005e9860	UNKNOWN		none	0	1	no TU-carrying callers
-005e9920	UNKNOWN		none	0	1	no TU-carrying callers
-005e99f0	UNKNOWN		none	0	1	no TU-carrying callers
-005e9dc0	UNKNOWN		none	0	1	no TU-carrying callers
-005ea1d0	UNKNOWN		none	0	1	no TU-carrying callers
-005ea5a0	UNKNOWN		none	0	1	no TU-carrying callers
-005ea670	UNKNOWN		none	0	1	no TU-carrying callers
-005eaa40	UNKNOWN	rhuirendererportrait.cpp	probable	1	5	callers
-005eb450	UNKNOWN		none	0	1	no TU-carrying callers
-005eb800	UNKNOWN		none	0	1	no TU-carrying callers
-005ebbb0	UNKNOWN		none	0	1	no TU-carrying callers
-005ec230	UNKNOWN		none	0	1	no TU-carrying callers
-005ec320	UNKNOWN		none	0	1	no TU-carrying callers
-005ec410	UNKNOWN		none	0	1	no TU-carrying callers
-005ec500	UNKNOWN		none	0	1	no TU-carrying callers
-005ec5f0	UNKNOWN	rhuirenderershiftingtitbit.cpp	mixed	1	18	callers
+005e6900	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005e7710	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+005e7880	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+005e78c0	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+005e7a30	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+005e7bc0	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+005e7d30	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+005e7d70	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+005e7da0	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+005e7de0	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+005e7f60	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+005e7fa0	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+005e8110	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+005e82a0	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+005e8410	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+005e8450	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005e84a0	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+005e84e0	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005e85b0	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005e8670	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005e8740	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+005e8b10	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+005e8f20	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+005e92f0	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005e93c0	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+005e9790	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005e9860	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005e9920	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005e99f0	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+005e9dc0	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+005ea1d0	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+005ea5a0	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005ea670	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+005eaa40	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005eb450	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+005eb800	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+005ebbb0	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005ec230	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005ec320	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005ec410	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005ec500	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005ec5f0	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
 005ecbd0	UNKNOWN		none	0	20	no TU-carrying callers
-005ecdc0	UNKNOWN		none	0	4	no TU-carrying callers
+005ecdc0	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
 005ed270	UNKNOWN		none	0	1	no TU-carrying callers
-005ed2f0	UNKNOWN		none	0	1	no TU-carrying callers
-005ed500	UNKNOWN		none	0	1	no TU-carrying callers
-005ed740	UNKNOWN		none	0	1	no TU-carrying callers
-005edae0	UNKNOWN		none	0	29	no TU-carrying callers
-005ede40	UNKNOWN	rhengine.cpp	probable	1	33	callers
-005ee640	UNKNOWN		none	0	1	no TU-carrying callers
-005eec00	UNKNOWN		none	0	1	no TU-carrying callers
-005ef320	UNKNOWN	rhelementactorpc.cpp	mixed	1	11	callers
+005ed2f0	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005ed500	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005ed740	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005edae0	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005ede40	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005ee640	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+005eec00	UNKNOWN	sbdrawmanager.cpp	direct	0	0	self __FILE__
+005ef320	UNKNOWN	rhelementactorcivilian.cpp	mixed	1	10	callers
 005ef380	UNKNOWN		none	0	5	no TU-carrying callers
 005ef390	UNKNOWN		none	0	1	no TU-carrying callers
 005ef3a0	UNKNOWN		none	0	1	no TU-carrying callers
-005ef440	UNKNOWN		none	0	3	no TU-carrying callers
-005ef570	UNKNOWN		none	0	2	no TU-carrying callers
-005efa90	UNKNOWN		none	0	3	no TU-carrying callers
-005efbc0	UNKNOWN		none	0	7	no TU-carrying callers
-005efc10	UNKNOWN		none	0	7	no TU-carrying callers
+005ef440	UNKNOWN	sbdrawmanager.cpp	strong	3	0	callers
+005ef570	UNKNOWN	sbdrawmanager.cpp	probable	1	1	callers
+005efa90	UNKNOWN	sbdrawmanager.cpp	probable	1	2	callers
+005efbc0	UNKNOWN	sbdrawmanager.cpp	strong	3	4	callers
+005efc10	UNKNOWN	sbdrawmanager.cpp	strong	7	0	callers
 005efc30	UNKNOWN		none	0	1	no TU-carrying callers
 005efcc0	UNKNOWN		none	0	1	no TU-carrying callers
 005effc0	UNKNOWN		none	0	5	no TU-carrying callers
-005f0070	UNKNOWN		none	0	1	no TU-carrying callers
-005f0090	UNKNOWN		none	0	10	no TU-carrying callers
+005f0070	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+005f0090	UNKNOWN	sbdrawmanager.cpp	strong	6	4	callers
 005f00e0	UNKNOWN		none	0	1	no TU-carrying callers
 005f01a0	UNKNOWN		none	0	1	no TU-carrying callers
 005f01f0	UNKNOWN		none	0	4	no TU-carrying callers
-005f02f0	UNKNOWN		none	0	1	no TU-carrying callers
+005f02f0	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
 005f0320	UNKNOWN		none	0	1	no TU-carrying callers
 005f0340	UNKNOWN		none	0	1	no TU-carrying callers
 005f03d0	UNKNOWN		none	0	2	no TU-carrying callers
-005f0440	UNKNOWN		none	0	1	no TU-carrying callers
+005f0440	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
 005f0470	UNKNOWN		none	0	0	no callers in graph
 005f04a0	UNKNOWN		none	0	0	no callers in graph
 005f04b0	UNKNOWN		none	0	1	no TU-carrying callers
@@ -6922,24 +6922,24 @@
 005f4f00	UNKNOWN		none	0	1	no TU-carrying callers
 005f4f20	UNKNOWN		none	0	1	no TU-carrying callers
 005f4f30	UNKNOWN		none	0	0	no callers in graph
-005f4fc0	UNKNOWN	rhsoundcache.cpp	mixed	3	19	callers
+005f4fc0	UNKNOWN	rhsoundcache.cpp	mixed	3	18	callers
 005f4ff0	UNKNOWN	rhsoundcache.cpp	mixed	3	60	callers
-005f5090	UNKNOWN	rhsoundcache.cpp	mixed	3	16	callers
+005f5090	UNKNOWN	sbfile.cpp	direct	0	0	self __FILE__
 005f5280	UNKNOWN		none	0	2	no TU-carrying callers
 005f5290	UNKNOWN	rhplayerprofilemanager.cpp	mixed	2	18	callers
-005f52b0	UNKNOWN	rhengine.cpp	mixed	18	108	callers
-005f5370	UNKNOWN	rhsoundcache.cpp	mixed	1	14	callers
-005f5440	UNKNOWN	rhsightobstacle.cpp	mixed	1	18	callers
+005f52b0	UNKNOWN	rhengine.cpp	mixed	18	87	callers
+005f5370	UNKNOWN	sbresourcemanager.cpp	mixed	2	12	callers
+005f5440	UNKNOWN	sbresourcemanager.cpp	mixed	2	16	callers
 005f5460	UNKNOWN		none	0	1	no TU-carrying callers
 005f54d0	UNKNOWN		none	0	1	no TU-carrying callers
-005f5500	UNKNOWN		none	0	1	no TU-carrying callers
+005f5500	UNKNOWN	sbfile.cpp	direct	0	0	self __FILE__
 005f56b0	UNKNOWN		none	0	1	no TU-carrying callers
 005f58c0	UNKNOWN		none	0	1	no TU-carrying callers
 005f5a80	UNKNOWN	rhsoundcacheentry.cpp	mixed	1	1	callers
 005f5d00	UNKNOWN		none	0	1	no TU-carrying callers
 005f5d30	UNKNOWN	launcher.cpp	probable	1	0	callers
-005f5d60	UNKNOWN	rhframeholder.cpp	probable	1	0	callers
-005f5f30	UNKNOWN	rhengine.cpp	mixed	15	15	callers
+005f5d60	UNKNOWN	sbfile.cpp	direct	0	0	self __FILE__
+005f5f30	UNKNOWN	rhengine.cpp	mixed	15	1	callers
 005f6200	UNKNOWN	rhsavegame.cpp	probable	1	0	callers
 005f6220	UNKNOWN		none	0	1	no TU-carrying callers
 005f63c0	UNKNOWN		none	0	1	no TU-carrying callers
@@ -6947,12 +6947,12 @@
 005f6490	UNKNOWN	launcher.cpp	probable	1	0	callers
 005f64a0	UNKNOWN		none	0	1	no TU-carrying callers
 005f6570	UNKNOWN		none	0	1	no TU-carrying callers
-005f6640	UNKNOWN		none	0	2	no TU-carrying callers
+005f6640	UNKNOWN	sbfile.cpp	probable	1	1	callers
 005f6bb0	UNKNOWN		none	0	1	no TU-carrying callers
-005f6cf0	UNKNOWN		none	0	2	no TU-carrying callers
+005f6cf0	UNKNOWN	sbfile.cpp	probable	1	1	callers
 005f7220	UNKNOWN		none	0	1	no TU-carrying callers
-005f7360	UNKNOWN		none	0	1	no TU-carrying callers
-005f73f0	UNKNOWN		none	0	1	no TU-carrying callers
+005f7360	UNKNOWN	sbfile.cpp	probable	1	0	callers
+005f73f0	UNKNOWN	sbfile.cpp	probable	1	0	callers
 005f7410	UNKNOWN		none	0	1	no TU-carrying callers
 005f74f0	UNKNOWN		none	0	2	no TU-carrying callers
 005f75a0	UNKNOWN		none	0	1	no TU-carrying callers
@@ -6979,12 +6979,12 @@
 005f7ef0	UNKNOWN		none	0	1	no TU-carrying callers
 005f7f10	UNKNOWN		none	0	2	no TU-carrying callers
 005f7ff0	UNKNOWN		none	0	1	no TU-carrying callers
-005f8030	UNKNOWN	rhscript.cpp	mixed	165	154	callers
+005f8030	UNKNOWN	rhscript.cpp	mixed	165	14	callers
 005f818b	UNKNOWN		none	0	0	no callers in graph
-005f81d0	UNKNOWN		none	0	26	no TU-carrying callers
+005f81d0	UNKNOWN	sbdrawmanager.cpp	weak	12	10	callers
 005f94c0	UNKNOWN		none	0	1	no TU-carrying callers
 005f94f0	UNKNOWN		none	0	2	no TU-carrying callers
-005f9510	UNKNOWN		none	0	7	no TU-carrying callers
+005f9510	UNKNOWN	sbdrawmanager.cpp	strong	3	4	callers
 005f9760	UNKNOWN	launcher.cpp	probable	1	1	callers
 005f9780	UNKNOWN		none	0	0	no callers in graph
 005f97f0	UNKNOWN		none	0	1	no TU-carrying callers
@@ -7008,10 +7008,10 @@
 005f9b50	UNKNOWN		none	0	1	no TU-carrying callers
 005f9b60	UNKNOWN		none	0	1	no TU-carrying callers
 005f9b70	UNKNOWN		none	0	0	no callers in graph
-005f9b80	UNKNOWN	launcher.cpp	probable	1	0	callers
+005f9b80	UNKNOWN	sbinput.cpp	direct	0	0	self __FILE__
 005f9d00	UNKNOWN	launcher.cpp	probable	1	0	callers
 005f9ea0	UNKNOWN	launcher.cpp	probable	1	4	callers
-005fa240	UNKNOWN	launcher.cpp	probable	1	0	callers
+005fa240	UNKNOWN	sbinput.cpp	direct	0	0	self __FILE__
 005fae50	UNKNOWN		none	0	0	no callers in graph
 005fae70	UNKNOWN		none	0	1	no TU-carrying callers
 005fafc0	UNKNOWN		none	0	1	no TU-carrying callers
@@ -7022,34 +7022,34 @@
 005fb410	UNKNOWN		none	0	1	no TU-carrying callers
 005fb730	UNKNOWN		none	0	1	no TU-carrying callers
 005fb770	UNKNOWN		none	0	1	no TU-carrying callers
-005fb980	UNKNOWN		none	0	1	no TU-carrying callers
-005fba70	UNKNOWN		none	0	1	no TU-carrying callers
+005fb980	UNKNOWN	sbinput.cpp	direct	0	0	self __FILE__
+005fba70	UNKNOWN	sbinput.cpp	direct	0	0	self __FILE__
 005fbb70	UNKNOWN		none	0	1	no TU-carrying callers
 005fbdb0	UNKNOWN		none	0	1	no TU-carrying callers
 005fbfc0	UNKNOWN		none	0	1	no TU-carrying callers
 005fc000	UNKNOWN		none	0	0	no callers in graph
-005fc030	UNKNOWN	rhscript.cpp	mixed	7	297	callers
+005fc030	UNKNOWN	rhscript.cpp	mixed	7	295	callers
 005fc040	UNKNOWN	rhelementactor.cpp	weak	3	87	callers
-005fc060	UNKNOWN	rhscript.cpp	mixed	5	152	callers
-005fc090	UNKNOWN	rhscript.cpp	mixed	4	314	callers
+005fc060	UNKNOWN	rhscript.cpp	mixed	5	148	callers
+005fc090	UNKNOWN	rhscript.cpp	mixed	4	308	callers
 005fc0b0	UNKNOWN	rhelementactor.cpp	mixed	2	9	callers
 005fc0e0	UNKNOWN	rhelementmobile.cpp	mixed	1	18	callers
-005fc110	UNKNOWN	rhelementmobile.cpp	mixed	3	198	callers
-005fc190	UNKNOWN	rhengine.cpp	mixed	3	150	callers
+005fc110	UNKNOWN	rhelementmobile.cpp	mixed	3	197	callers
+005fc190	UNKNOWN	sbuirenderer.cpp	mixed	3	146	callers
 005fc1e0	UNKNOWN	rhelementmobile.cpp	weak	2	35	callers
 005fc200	UNKNOWN		none	0	56	no TU-carrying callers
 005fc250	UNKNOWN		none	0	17	no TU-carrying callers
 005fc270	UNKNOWN		none	0	1	no TU-carrying callers
-005fc2a0	UNKNOWN	rhprofilemanager.cpp	mixed	2	4	callers
+005fc2a0	UNKNOWN	sbgeopoint2d.cpp	direct	0	0	self __FILE__
 005fc330	UNKNOWN		none	0	1	no TU-carrying callers
 005fc360	UNKNOWN		none	0	0	no callers in graph
 005fc390	UNKNOWN		none	0	4	no TU-carrying callers
-005fc3b0	UNKNOWN	rhscript.cpp	mixed	2	220	callers
-005fc3c0	UNKNOWN	rhsprite.cpp	mixed	2	109	callers
-005fc3e0	UNKNOWN	rhelementactor.cpp	mixed	2	168	callers
+005fc3b0	UNKNOWN	sbuirenderer.cpp	mixed	3	214	callers
+005fc3c0	UNKNOWN	rhsprite.cpp	mixed	2	108	callers
+005fc3e0	UNKNOWN	rhelementactor.cpp	mixed	2	164	callers
 005fc400	UNKNOWN		none	0	9	no TU-carrying callers
-005fc430	UNKNOWN	rhelementmobile.cpp	mixed	2	149	callers
-005fc450	UNKNOWN	rhuirenderershiftingtitbit.cpp	mixed	1	14	callers
+005fc430	UNKNOWN	rhelementmobile.cpp	mixed	2	148	callers
+005fc450	UNKNOWN	rhelementactorcivilian.cpp	mixed	1	12	callers
 005fc4d0	UNKNOWN		none	0	38	no TU-carrying callers
 005fc4f0	UNKNOWN	rhelement.cpp	mixed	1	44	callers
 005fc580	UNKNOWN	launcher.cpp	mixed	1	30	callers
@@ -7089,61 +7089,61 @@
 005fd0f0	UNKNOWN		none	0	2	no TU-carrying callers
 005fd160	UNKNOWN		none	0	3	no TU-carrying callers
 005fd1d0	UNKNOWN		none	0	1	no TU-carrying callers
-005fd4a0	UNKNOWN		none	0	6	no TU-carrying callers
-005fd5c0	UNKNOWN	launcher.cpp	probable	1	0	callers
-005fd710	UNKNOWN		none	0	1	no TU-carrying callers
-005fd8e0	UNKNOWN		none	0	2	no TU-carrying callers
+005fd4a0	UNKNOWN	sbresourcemanager.cpp	direct	0	0	self __FILE__
+005fd5c0	UNKNOWN	sbresourcemanager.cpp	direct	0	0	self __FILE__
+005fd710	UNKNOWN	sbresourcemanager.cpp	direct	0	0	self __FILE__
+005fd8e0	UNKNOWN	sbresourcemanager.cpp	strong	2	0	callers
 005fdc70	UNKNOWN		none	0	16	no TU-carrying callers
-005fdcc0	UNKNOWN		none	0	2	no TU-carrying callers
-005fe000	UNKNOWN		none	0	2	no TU-carrying callers
-005fe380	UNKNOWN		none	0	2	no TU-carrying callers
+005fdcc0	UNKNOWN	sbresourcemanager.cpp	strong	2	0	callers
+005fe000	UNKNOWN	sbresourcemanager.cpp	strong	2	0	callers
+005fe380	UNKNOWN	sbresourcemanager.cpp	direct	0	0	self __FILE__
 005fe790	UNKNOWN		none	0	1	no TU-carrying callers
 005fe880	UNKNOWN		none	0	1	no TU-carrying callers
-005fe970	UNKNOWN		none	0	1	no TU-carrying callers
+005fe970	UNKNOWN	sbresourcemanager.cpp	direct	0	0	self __FILE__
 005fed80	UNKNOWN		none	0	1	no TU-carrying callers
 005fee70	UNKNOWN		none	0	1	no TU-carrying callers
-005fef60	UNKNOWN		none	0	2	no TU-carrying callers
+005fef60	UNKNOWN	sbresourcemanager.cpp	strong	2	0	callers
 005ff390	UNKNOWN		none	0	1	no TU-carrying callers
-005ff3a0	UNKNOWN		none	0	2	no TU-carrying callers
-005ff730	UNKNOWN		none	0	2	no TU-carrying callers
-005ffac0	UNKNOWN		none	0	2	no TU-carrying callers
-005ffe50	UNKNOWN		none	0	2	no TU-carrying callers
-006001d0	UNKNOWN		none	0	9	no TU-carrying callers
-006002d0	UNKNOWN		none	0	1	no TU-carrying callers
-00600390	UNKNOWN		none	0	1	no TU-carrying callers
-00600450	UNKNOWN		none	0	1	no TU-carrying callers
+005ff3a0	UNKNOWN	sbresourcemanager.cpp	strong	2	0	callers
+005ff730	UNKNOWN	sbresourcemanager.cpp	strong	2	0	callers
+005ffac0	UNKNOWN	sbresourcemanager.cpp	strong	2	0	callers
+005ffe50	UNKNOWN	sbresourcemanager.cpp	strong	2	0	callers
+006001d0	UNKNOWN	sbresourcemanager.cpp	probable	1	8	callers
+006002d0	UNKNOWN	sbresourcemanager.cpp	direct	0	0	self __FILE__
+00600390	UNKNOWN	sbresourcemanager.cpp	direct	0	0	self __FILE__
+00600450	UNKNOWN	sbresourcemanager.cpp	direct	0	0	self __FILE__
 00600540	UNKNOWN		none	0	0	no callers in graph
-00600550	UNKNOWN	rhframeholder.cpp	probable	1	1	callers
-00600620	UNKNOWN	rhsoundcache.cpp	probable	1	0	callers
-006006f0	UNKNOWN	rhuirenderershiftingtitbit.cpp	probable	1	7	callers
-00600820	UNKNOWN	rhuirenderercustom.cpp	mixed	1	7	callers
-00600920	UNKNOWN	rhframeholder.cpp	probable	1	16	callers
-006009e0	UNKNOWN	rhgame.cpp	mixed	1	9	callers
-00600bb0	UNKNOWN	rhsoundcache.cpp	probable	1	1	callers
-00600db0	UNKNOWN		none	0	10	no TU-carrying callers
+00600550	UNKNOWN	sbresourcemanager.cpp	direct	0	0	self __FILE__
+00600620	UNKNOWN	sbresourcemanager.cpp	direct	0	0	self __FILE__
+006006f0	UNKNOWN	sbresourcemanager.cpp	direct	0	0	self __FILE__
+00600820	UNKNOWN	sbresourcemanager.cpp	direct	0	0	self __FILE__
+00600920	UNKNOWN	sbresourcemanager.cpp	direct	0	0	self __FILE__
+006009e0	UNKNOWN	sbresourcemanager.cpp	direct	0	0	self __FILE__
+00600bb0	UNKNOWN	sbresourcemanager.cpp	direct	0	0	self __FILE__
+00600db0	UNKNOWN	sbresourcemanager.cpp	direct	0	0	self __FILE__
 00600f10	UNKNOWN		none	0	2	no TU-carrying callers
 00600fc0	UNKNOWN	rhgame.cpp	mixed	1	2	callers
 00601070	UNKNOWN		none	0	2	no TU-carrying callers
 006010e0	UNKNOWN		none	0	8	no TU-carrying callers
-00601210	UNKNOWN		none	0	4	no TU-carrying callers
+00601210	UNKNOWN	sbresourcemanager.cpp	probable	1	3	callers
 00601350	UNKNOWN		none	0	8	no TU-carrying callers
-006013a0	UNKNOWN		none	0	9	no TU-carrying callers
-006013f0	UNKNOWN		none	0	10	no TU-carrying callers
+006013a0	UNKNOWN	sbresourcemanager.cpp	probable	1	8	callers
+006013f0	UNKNOWN	sbresourcemanager.cpp	strong	2	8	callers
 00601520	UNKNOWN		none	0	2	no TU-carrying callers
-00601650	UNKNOWN		none	0	11	no TU-carrying callers
+00601650	UNKNOWN	sbresourcemanager.cpp	strong	3	8	callers
 006016a0	UNKNOWN		none	0	1	no TU-carrying callers
 006017d0	UNKNOWN		none	0	2	no TU-carrying callers
-00601910	UNKNOWN		none	0	1	no TU-carrying callers
+00601910	UNKNOWN	sbresourcemanager.cpp	probable	1	0	callers
 00601a40	UNKNOWN		none	0	2	no TU-carrying callers
-00601b80	UNKNOWN		none	0	1	no TU-carrying callers
-00601bd0	UNKNOWN		none	0	2	no TU-carrying callers
-00601c20	UNKNOWN		none	0	1	no TU-carrying callers
+00601b80	UNKNOWN	sbresourcemanager.cpp	probable	1	0	callers
+00601bd0	UNKNOWN	sbresourcemanager.cpp	strong	2	0	callers
+00601c20	UNKNOWN	sbresourcemanager.cpp	probable	1	0	callers
 00601d50	UNKNOWN		none	0	2	no TU-carrying callers
-00601e90	UNKNOWN		none	0	1	no TU-carrying callers
-00601ee0	UNKNOWN		none	0	1	no TU-carrying callers
+00601e90	UNKNOWN	sbresourcemanager.cpp	probable	1	0	callers
+00601ee0	UNKNOWN	sbresourcemanager.cpp	probable	1	0	callers
 00601f30	UNKNOWN		none	0	1	no TU-carrying callers
 00601fe0	UNKNOWN		none	0	1	no TU-carrying callers
-00602580	UNKNOWN		none	0	1	no TU-carrying callers
+00602580	UNKNOWN	sbresourcemanager.cpp	probable	1	0	callers
 006025a0	UNKNOWN		none	0	1	no TU-carrying callers
 006026b0	UNKNOWN		none	0	1	no TU-carrying callers
 00602760	UNKNOWN		none	0	1	no TU-carrying callers
@@ -7156,27 +7156,27 @@
 00603950	UNKNOWN		none	0	1	no TU-carrying callers
 00603a00	UNKNOWN		none	0	1	no TU-carrying callers
 00603d00	UNKNOWN		none	0	1	no TU-carrying callers
-006042a0	UNKNOWN		none	0	1	no TU-carrying callers
+006042a0	UNKNOWN	sbresourcemanager.cpp	probable	1	0	callers
 006042c0	UNKNOWN		none	0	1	no TU-carrying callers
 006043e0	UNKNOWN		none	0	1	no TU-carrying callers
 00604490	UNKNOWN		none	0	1	no TU-carrying callers
 00604790	UNKNOWN		none	0	1	no TU-carrying callers
-00604d30	UNKNOWN		none	0	1	no TU-carrying callers
+00604d30	UNKNOWN	sbresourcemanager.cpp	probable	1	0	callers
 00604d50	UNKNOWN		none	0	1	no TU-carrying callers
 00604e70	UNKNOWN		none	0	1	no TU-carrying callers
 00604f20	UNKNOWN		none	0	1	no TU-carrying callers
-00605220	UNKNOWN		none	0	8	no TU-carrying callers
+00605220	UNKNOWN	sbresourcemanager.cpp	strong	4	4	callers
 00605270	UNKNOWN		none	0	1	no TU-carrying callers
-00605330	UNKNOWN		none	0	2	no TU-carrying callers
+00605330	UNKNOWN	sbresourcemanager.cpp	probable	1	1	callers
 00605380	UNKNOWN		none	0	1	no TU-carrying callers
-00605440	UNKNOWN		none	0	3	no TU-carrying callers
+00605440	UNKNOWN	sbresourcemanager.cpp	strong	3	0	callers
 00605490	UNKNOWN		none	0	1	no TU-carrying callers
 00605550	UNKNOWN		none	0	4	no TU-carrying callers
 006055a0	UNKNOWN		none	0	1	no TU-carrying callers
-00605660	UNKNOWN		none	0	5	no TU-carrying callers
+00605660	UNKNOWN	sbresourcemanager.cpp	strong	2	3	callers
 006056b0	UNKNOWN		none	0	1	no TU-carrying callers
-00605770	UNKNOWN		none	0	2	no TU-carrying callers
-006057c0	UNKNOWN		none	0	4	no TU-carrying callers
+00605770	UNKNOWN	sbresourcemanager.cpp	probable	1	1	callers
+006057c0	UNKNOWN	sbresourcemanager.cpp	probable	1	3	callers
 00605870	UNKNOWN		none	0	2	no TU-carrying callers
 00605920	UNKNOWN		none	0	2	no TU-carrying callers
 006059d0	UNKNOWN		none	0	1	no TU-carrying callers
@@ -7189,19 +7189,19 @@
 00605e60	UNKNOWN		none	0	1	no TU-carrying callers
 00605f50	UNKNOWN		none	0	1	no TU-carrying callers
 00606040	UNKNOWN	rhgroundmark.cpp	probable	1	2	callers
-00606070	UNKNOWN		none	0	1	no TU-carrying callers
-00606270	UNKNOWN		none	0	1	no TU-carrying callers
-00606470	UNKNOWN		none	0	2	no TU-carrying callers
-006065c0	UNKNOWN		none	0	1	no TU-carrying callers
-006066a0	UNKNOWN		none	0	1	no TU-carrying callers
+00606070	UNKNOWN	sbresourcemanager.cpp	probable	1	0	callers
+00606270	UNKNOWN	sbresourcemanager.cpp	probable	1	0	callers
+00606470	UNKNOWN	sbresourcemanager.cpp	probable	1	1	callers
+006065c0	UNKNOWN	sbresourcemanager.cpp	probable	1	0	callers
+006066a0	UNKNOWN	sbresourcemanager.cpp	probable	1	0	callers
 00606780	UNKNOWN		none	0	4	no TU-carrying callers
 006068e0	UNKNOWN		none	0	2	no TU-carrying callers
 00606930	UNKNOWN		none	0	0	no callers in graph
-00606960	UNKNOWN		none	0	1	no TU-carrying callers
+00606960	UNKNOWN	sbresourcemanager.cpp	probable	1	0	callers
 006069e0	UNKNOWN		none	0	11	no TU-carrying callers
-00606bd0	UNKNOWN		none	0	1	no TU-carrying callers
+00606bd0	UNKNOWN	sbresourcemanager.cpp	probable	1	0	callers
 00606ea0	UNKNOWN		none	0	1	no TU-carrying callers
-00606fc0	UNKNOWN		none	0	1	no TU-carrying callers
+00606fc0	UNKNOWN	sbresourcemanager.cpp	probable	1	0	callers
 006072a0	UNKNOWN		none	0	1	no TU-carrying callers
 006073b0	UNKNOWN		none	0	2	no TU-carrying callers
 00607660	UNKNOWN		none	0	2	no TU-carrying callers
@@ -7214,15 +7214,15 @@
 00607970	UNKNOWN		none	0	1	no TU-carrying callers
 00607980	UNKNOWN		none	0	0	no callers in graph
 00607990	UNKNOWN		none	0	2	no TU-carrying callers
-006079c0	UNKNOWN	rhprofilemanager.cpp	mixed	2	166	callers
+006079c0	UNKNOWN	sbdrawmanager.cpp	mixed	3	163	callers
 00607a70	UNKNOWN	rhelementactor.cpp	probable	1	37	callers
 00607ad0	UNKNOWN		none	0	5	no TU-carrying callers
 00607b40	UNKNOWN		none	0	2	no TU-carrying callers
-00607ba0	UNKNOWN	rhsprite.cpp	probable	1	34	callers
-00607c10	UNKNOWN	rhmenucampaignmap.cpp	mixed	1	59	callers
-00607c70	UNKNOWN	rhprofilemanager.cpp	mixed	2	0	callers
+00607ba0	UNKNOWN	rhelementactorcivilian.cpp	mixed	1	31	callers
+00607c10	UNKNOWN	rhmenucampaignmap.cpp	mixed	1	57	callers
+00607c70	UNKNOWN	sbgeoboundingbox2d.cpp	direct	0	0	self __FILE__
 00607d90	UNKNOWN		none	0	9	no TU-carrying callers
-00607da0	UNKNOWN	rhelementmobile.cpp	mixed	2	138	callers
+00607da0	UNKNOWN	rhelementmobile.cpp	mixed	2	132	callers
 00607dc0	UNKNOWN	rhsightobstacle.cpp	mixed	1	18	callers
 00607e30	UNKNOWN		none	0	5	no TU-carrying callers
 00607e50	UNKNOWN		none	0	2	no TU-carrying callers
@@ -7232,23 +7232,23 @@
 00608180	UNKNOWN		none	0	1	no TU-carrying callers
 006082a0	UNKNOWN		none	0	2	no TU-carrying callers
 006083b0	UNKNOWN		none	0	36	no TU-carrying callers
-00608400	UNKNOWN	rhelementactorpc.cpp	mixed	2	67	callers
+00608400	UNKNOWN	rhelementactorpc.cpp	mixed	2	65	callers
 00608450	UNKNOWN		none	0	2	no TU-carrying callers
-006084a0	UNKNOWN		none	0	8	no TU-carrying callers
+006084a0	UNKNOWN	sbuirendererinputfield.cpp	probable	1	7	callers
 006085a0	UNKNOWN		none	0	1	no TU-carrying callers
 00608650	UNKNOWN		none	0	13	no TU-carrying callers
 00608730	UNKNOWN		none	0	1	no TU-carrying callers
 00608800	UNKNOWN		none	0	2	no TU-carrying callers
 00608c70	UNKNOWN		none	0	1	no TU-carrying callers
 00608d60	UNKNOWN		none	0	1	no TU-carrying callers
-00608f10	UNKNOWN	rhartificialmalignity.cpp	probable	1	31	callers
-00608f30	UNKNOWN	rhelementfx.cpp	probable	1	16	callers
+00608f10	UNKNOWN	rhartificialmalignity.cpp	mixed	1	30	callers
+00608f30	UNKNOWN	sbuirenderer.cpp	weak	2	14	callers
 00608f40	UNKNOWN	rhelementactor.cpp	mixed	2	20	callers
 00609050	UNKNOWN	rhsightobstacle.cpp	probable	1	46	callers
 006090a0	UNKNOWN		none	0	5	no TU-carrying callers
-006090d0	UNKNOWN	rhelementactorpc.cpp	mixed	2	58	callers
+006090d0	UNKNOWN	rhelementactorpc.cpp	mixed	2	54	callers
 00609170	UNKNOWN		none	0	1	no TU-carrying callers
-006091b0	UNKNOWN	rhelementmobile.cpp	weak	2	32	callers
+006091b0	UNKNOWN	rhelementmobile.cpp	mixed	2	30	callers
 006091d0	UNKNOWN		none	0	2	no TU-carrying callers
 00609200	UNKNOWN	rhuirenderercustom.cpp	mixed	1	14	callers
 006092a0	UNKNOWN	rhelementfx.cpp	probable	1	14	callers
@@ -7333,18 +7333,19 @@
 0060d420	UNKNOWN		none	0	4	no TU-carrying callers
 0060d470	UNKNOWN		none	0	9	no TU-carrying callers
 0060d500	UNKNOWN		none	0	4	no TU-carrying callers
+0060d520	UNKNOWN		none	0	0	no callers in graph
 0060d530	UNKNOWN		none	0	1	no TU-carrying callers
-0060d550	UNKNOWN		none	0	8	no TU-carrying callers
+0060d550	UNKNOWN	sbuirenderer.cpp	direct	0	0	self __FILE__
 0060d690	UNKNOWN		none	0	16	no TU-carrying callers
-0060d6a0	UNKNOWN		none	0	1	no TU-carrying callers
-0060d780	UNKNOWN		none	0	0	no callers in graph
+0060d6a0	UNKNOWN	sbuirenderer.cpp	direct	0	0	self __FILE__
+0060d780	UNKNOWN	sbuirenderer.cpp	direct	0	0	self __FILE__
 0060d890	UNKNOWN		none	0	24	no TU-carrying callers
 0060d9f0	UNKNOWN		none	0	15	no TU-carrying callers
 0060da10	UNKNOWN		none	0	27	no TU-carrying callers
-0060da20	UNKNOWN		none	0	4	no TU-carrying callers
+0060da20	UNKNOWN	sbuirenderer.cpp	direct	0	0	self __FILE__
 0060dab0	UNKNOWN		none	0	7	no TU-carrying callers
 0060dad0	UNKNOWN		none	0	16	no TU-carrying callers
-0060dae0	UNKNOWN		none	0	4	no TU-carrying callers
+0060dae0	UNKNOWN	sbuirenderer.cpp	direct	0	0	self __FILE__
 0060db80	UNKNOWN		none	0	6	no TU-carrying callers
 0060dbc0	UNKNOWN		none	0	14	no TU-carrying callers
 0060dc00	UNKNOWN		none	0	0	no callers in graph
@@ -7494,26 +7495,26 @@
 00611b60	UNKNOWN		none	0	1	no TU-carrying callers
 00611b70	UNKNOWN		none	0	1	no TU-carrying callers
 00611b80	UNKNOWN		none	0	0	no callers in graph
-00611b90	UNKNOWN		none	0	3	no TU-carrying callers
+00611b90	UNKNOWN	sbpicture.cpp	probable	1	2	callers
 00611bd0	UNKNOWN		none	0	0	no callers in graph
 00611be0	UNKNOWN		none	0	0	no callers in graph
 00611c00	UNKNOWN		none	0	3	no TU-carrying callers
 00611c50	UNKNOWN		none	0	9	no TU-carrying callers
 00611c80	UNKNOWN		none	0	1	no TU-carrying callers
 00611e10	UNKNOWN	rhengine.cpp	mixed	1	2	callers
-00611ea0	UNKNOWN		none	0	1	no TU-carrying callers
-00611f70	UNKNOWN		none	0	1	no TU-carrying callers
-00612040	UNKNOWN		none	0	1	no TU-carrying callers
-00612150	UNKNOWN		none	0	1	no TU-carrying callers
+00611ea0	UNKNOWN	sbpicture.cpp	direct	0	0	self __FILE__
+00611f70	UNKNOWN	sbpicture.cpp	direct	0	0	self __FILE__
+00612040	UNKNOWN	sbpicture.cpp	direct	0	0	self __FILE__
+00612150	UNKNOWN	sbpicture.cpp	direct	0	0	self __FILE__
 00612260	UNKNOWN		none	0	1	no TU-carrying callers
 006122b0	UNKNOWN		none	0	2	no TU-carrying callers
 00612300	UNKNOWN		none	0	1	no TU-carrying callers
-00612350	UNKNOWN		none	0	1	no TU-carrying callers
-006124f0	UNKNOWN		none	0	1	no TU-carrying callers
-006125c0	UNKNOWN		none	0	1	no TU-carrying callers
-00612690	UNKNOWN		none	0	1	no TU-carrying callers
-006128b0	UNKNOWN		none	0	1	no TU-carrying callers
-00612ad0	UNKNOWN	rhloadingscreen.cpp	mixed	1	0	callers
+00612350	UNKNOWN	sbpicture.cpp	direct	0	0	self __FILE__
+006124f0	UNKNOWN	sbpicture.cpp	probable	1	0	callers
+006125c0	UNKNOWN	sbpicture.cpp	probable	1	0	callers
+00612690	UNKNOWN	sbpicture.cpp	direct	0	0	self __FILE__
+006128b0	UNKNOWN	sbpicture.cpp	direct	0	0	self __FILE__
+00612ad0	UNKNOWN	sbpicture.cpp	direct	0	0	self __FILE__
 00612d80	UNKNOWN		none	0	1	no TU-carrying callers
 00612dc0	UNKNOWN		none	0	1	no TU-carrying callers
 00612e30	UNKNOWN		none	0	1	no TU-carrying callers
@@ -7532,18 +7533,18 @@
 006138b0	UNKNOWN		none	0	1	no TU-carrying callers
 006138c0	UNKNOWN		none	0	1	no TU-carrying callers
 006138d0	UNKNOWN		none	0	0	no callers in graph
-006138e0	UNKNOWN		none	0	13	no TU-carrying callers
+006138e0	UNKNOWN	sbuirendererinputfield.cpp	probable	1	12	callers
 00613940	UNKNOWN		none	0	1	no TU-carrying callers
 00613c50	UNKNOWN		none	0	1	no TU-carrying callers
 00613c90	UNKNOWN		none	0	1	no TU-carrying callers
 00613e40	UNKNOWN		none	0	1	no TU-carrying callers
 00613e70	UNKNOWN		none	0	1	no TU-carrying callers
 00613e80	UNKNOWN		none	0	1	no TU-carrying callers
-00613e90	UNKNOWN	rhelementactorpc.cpp	mixed	2	177	callers
+00613e90	UNKNOWN	sbdrawmanager.cpp	mixed	6	171	callers
 00613ea0	UNKNOWN		none	0	1	no TU-carrying callers
 006141e0	UNKNOWN		none	0	1	no TU-carrying callers
 00614230	UNKNOWN		none	0	10	no TU-carrying callers
-00614bf0	UNKNOWN		none	0	5	no TU-carrying callers
+00614bf0	UNKNOWN	sbuirendererinputfield.cpp	probable	1	4	callers
 00614d70	UNKNOWN		none	0	2	no TU-carrying callers
 00614d80	UNKNOWN		none	0	2	no TU-carrying callers
 00614e40	UNKNOWN		none	0	0	no callers in graph
@@ -7618,7 +7619,7 @@
 006170d0	UNKNOWN		none	0	0	no callers in graph
 00617220	UNKNOWN		none	0	0	no callers in graph
 00617590	UNKNOWN		none	0	0	no callers in graph
-00617690	UNKNOWN		none	0	7	no TU-carrying callers
+00617690	UNKNOWN	sbdrawmanager.cpp	probable	1	6	callers
 006176a0	UNKNOWN		none	0	2	no TU-carrying callers
 006177d0	UNKNOWN		none	0	1	no TU-carrying callers
 00617900	UNKNOWN		none	0	1	no TU-carrying callers
@@ -7734,7 +7735,7 @@
 0061d620	UNKNOWN		none	0	3	no TU-carrying callers
 0061d7c0	UNKNOWN		none	0	9	no TU-carrying callers
 0061d950	UNKNOWN		none	0	2	no TU-carrying callers
-0061d980	UNKNOWN		none	0	2	no TU-carrying callers
+0061d980	UNKNOWN	sbuirendererlistbox.cpp	direct	0	0	self __FILE__
 0061da60	UNKNOWN		none	0	0	no callers in graph
 0061da90	UNKNOWN		none	0	0	no callers in graph
 0061daa0	UNKNOWN		none	0	1	no TU-carrying callers
@@ -7747,24 +7748,24 @@
 0061db10	UNKNOWN		none	0	1	no TU-carrying callers
 0061dc00	UNKNOWN		none	0	0	no callers in graph
 0061dc20	UNKNOWN		none	0	3	no TU-carrying callers
-0061dd00	UNKNOWN		none	0	2	no TU-carrying callers
+0061dd00	UNKNOWN	sbuirendererinputfield.cpp	probable	1	1	callers
 0061dd30	UNKNOWN		none	0	1	no TU-carrying callers
-0061dd50	UNKNOWN		none	0	1	no TU-carrying callers
+0061dd50	UNKNOWN	sbuirendererinputfield.cpp	probable	1	0	callers
 0061df50	UNKNOWN		none	0	1	no TU-carrying callers
 0061df60	UNKNOWN		none	0	6	no TU-carrying callers
 0061e060	UNKNOWN		none	0	2	no TU-carrying callers
 0061e180	UNKNOWN		none	0	1	no TU-carrying callers
-0061e230	UNKNOWN		none	0	2	no TU-carrying callers
+0061e230	UNKNOWN	sbuirendererinputfield.cpp	probable	1	1	callers
 0061e240	UNKNOWN		none	0	2	no TU-carrying callers
 0061e2b0	UNKNOWN		none	0	1	no TU-carrying callers
 0061e320	UNKNOWN		none	0	12	no TU-carrying callers
 0061e340	UNKNOWN		none	0	6	no TU-carrying callers
 0061e4b0	UNKNOWN		none	0	1	no TU-carrying callers
 0061e4c0	UNKNOWN		none	0	0	no callers in graph
-0061e4f0	UNKNOWN		none	0	1	no TU-carrying callers
+0061e4f0	UNKNOWN	sbevent.cpp	direct	0	0	self __FILE__
 0061e540	UNKNOWN		none	0	0	no callers in graph
 0061e560	UNKNOWN		none	0	2	no TU-carrying callers
-0061e580	UNKNOWN		none	0	1	no TU-carrying callers
+0061e580	UNKNOWN	rhpathfinder.cpp	probable	1	0	callers
 0061e5b0	UNKNOWN		none	0	2	no TU-carrying callers
 0061e5d0	UNKNOWN		none	0	0	no callers in graph
 0061e600	UNKNOWN		none	0	0	no callers in graph
@@ -7789,28 +7790,28 @@
 0061e840	UNKNOWN		none	0	1	no TU-carrying callers
 0061e850	UNKNOWN		none	0	4	no TU-carrying callers
 0061e880	UNKNOWN		none	0	1	no TU-carrying callers
-0061e890	UNKNOWN		none	0	13	no TU-carrying callers
-0061e8a0	UNKNOWN		none	0	1	no TU-carrying callers
+0061e890	UNKNOWN	sbuirendererlistbox.cpp	probable	1	12	callers
+0061e8a0	UNKNOWN	sbfont.cpp	probable	1	0	callers
 0061e970	UNKNOWN		none	0	1	no TU-carrying callers
 0061e980	UNKNOWN		none	0	1	no TU-carrying callers
-0061ea50	UNKNOWN		none	0	7	no TU-carrying callers
+0061ea50	UNKNOWN	sbuirendererinputfield.cpp	probable	1	6	callers
 0061ea80	UNKNOWN		none	0	2	no TU-carrying callers
 0061eb00	UNKNOWN		none	0	2	no TU-carrying callers
 0061eb80	UNKNOWN		none	0	1	no TU-carrying callers
-0061ebd0	UNKNOWN		none	0	1	no TU-carrying callers
+0061ebd0	UNKNOWN	sbfont.cpp	direct	0	0	self __FILE__
 0061ed70	UNKNOWN		none	0	2	no TU-carrying callers
 0061edd0	UNKNOWN		none	0	1	no TU-carrying callers
-0061eea0	UNKNOWN		none	0	2	no TU-carrying callers
-0061ef10	UNKNOWN		none	0	3	no TU-carrying callers
+0061eea0	UNKNOWN	sbfont.cpp	probable	1	1	callers
+0061ef10	UNKNOWN	sbfont.cpp	probable	1	2	callers
 0061efe0	UNKNOWN		none	0	1	no TU-carrying callers
-0061f120	UNKNOWN		none	0	1	no TU-carrying callers
-0061f2b0	UNKNOWN		none	0	1	no TU-carrying callers
-0061f3e0	UNKNOWN		none	0	1	no TU-carrying callers
+0061f120	UNKNOWN	sbfont.cpp	probable	1	0	callers
+0061f2b0	UNKNOWN	sbfont.cpp	probable	1	0	callers
+0061f3e0	UNKNOWN	sbfont.cpp	probable	1	0	callers
 0061f550	UNKNOWN		none	0	1	no TU-carrying callers
 0061fb40	UNKNOWN		none	0	1	no TU-carrying callers
-0061fcb0	UNKNOWN		none	0	1	no TU-carrying callers
+0061fcb0	UNKNOWN	sbfont.cpp	probable	1	0	callers
 0061fce0	UNKNOWN		none	0	4	no TU-carrying callers
-0061fe10	UNKNOWN		none	0	1	no TU-carrying callers
+0061fe10	UNKNOWN	sbfont.cpp	probable	1	0	callers
 0061fe30	UNKNOWN		none	0	1	no TU-carrying callers
 00620130	UNKNOWN		none	0	1	no TU-carrying callers
 00620440	UNKNOWN		none	0	1	no TU-carrying callers
@@ -7841,54 +7842,54 @@
 00621380	UNKNOWN		none	0	4	no TU-carrying callers
 00621430	UNKNOWN		none	0	0	no callers in graph
 00621440	UNKNOWN		none	0	1	no TU-carrying callers
-00621470	UNKNOWN		none	0	2	no TU-carrying callers
+00621470	UNKNOWN	sbuirendererinputfield.cpp	direct	0	0	self __FILE__
 00621b80	UNKNOWN		none	0	0	no callers in graph
-00621c30	UNKNOWN		none	0	2	no TU-carrying callers
+00621c30	UNKNOWN	sbuirendererinputfield.cpp	direct	0	0	self __FILE__
 00621d50	UNKNOWN		none	0	0	no callers in graph
 00621d80	UNKNOWN		none	0	0	no callers in graph
 00621db8	UNKNOWN		none	0	0	no callers in graph
 00621e5c	UNKNOWN		none	0	0	no callers in graph
 00621ef0	UNKNOWN		none	0	0	no callers in graph
 00621f94	UNKNOWN		none	0	0	no callers in graph
-00622028	UNKNOWN		none	0	1	no TU-carrying callers
-006220ec	UNKNOWN		none	0	1	no TU-carrying callers
-006221e4	UNKNOWN		none	0	1	no TU-carrying callers
-006222bc	UNKNOWN		none	0	1	no TU-carrying callers
-00622380	UNKNOWN		none	0	1	no TU-carrying callers
-00622478	UNKNOWN		none	0	1	no TU-carrying callers
-00622550	UNKNOWN		none	0	1	no TU-carrying callers
-0062261c	UNKNOWN		none	0	1	no TU-carrying callers
-00622720	UNKNOWN		none	0	1	no TU-carrying callers
+00622028	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+006220ec	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+006221e4	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+006222bc	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+00622380	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+00622478	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+00622550	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+0062261c	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+00622720	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
 00622800	UNKNOWN		none	0	1	no TU-carrying callers
-00622924	UNKNOWN		none	0	1	no TU-carrying callers
-00622a7c	UNKNOWN		none	0	1	no TU-carrying callers
+00622924	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+00622a7c	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
 00622bc0	UNKNOWN		none	0	1	no TU-carrying callers
-00622ca0	UNKNOWN		none	0	1	no TU-carrying callers
-00622db4	UNKNOWN		none	0	1	no TU-carrying callers
+00622ca0	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+00622db4	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
 00622eb4	UNKNOWN		none	0	1	no TU-carrying callers
-00622fd4	UNKNOWN		none	0	1	no TU-carrying callers
-00623128	UNKNOWN		none	0	1	no TU-carrying callers
-00623268	UNKNOWN		none	0	1	no TU-carrying callers
-00623360	UNKNOWN		none	0	1	no TU-carrying callers
-0062348c	UNKNOWN		none	0	1	no TU-carrying callers
-00623598	UNKNOWN		none	0	1	no TU-carrying callers
-00623668	UNKNOWN		none	0	1	no TU-carrying callers
-0062376c	UNKNOWN		none	0	1	no TU-carrying callers
+00622fd4	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+00623128	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+00623268	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+00623360	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+0062348c	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+00623598	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+00623668	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+0062376c	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
 00623850	UNKNOWN		none	0	1	no TU-carrying callers
-00623978	UNKNOWN		none	0	1	no TU-carrying callers
-00623ad4	UNKNOWN		none	0	1	no TU-carrying callers
+00623978	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+00623ad4	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
 00623c1c	UNKNOWN		none	0	1	no TU-carrying callers
-00623cfc	UNKNOWN		none	0	1	no TU-carrying callers
-00623e10	UNKNOWN		none	0	1	no TU-carrying callers
+00623cfc	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+00623e10	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
 00623f10	UNKNOWN		none	0	1	no TU-carrying callers
-00624030	UNKNOWN		none	0	1	no TU-carrying callers
-00624184	UNKNOWN		none	0	1	no TU-carrying callers
+00624030	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+00624184	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
 006242c4	UNKNOWN		none	0	1	no TU-carrying callers
-006243c0	UNKNOWN		none	0	1	no TU-carrying callers
-006244ec	UNKNOWN		none	0	1	no TU-carrying callers
+006243c0	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
+006244ec	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
 006245fc	UNKNOWN		none	0	0	no callers in graph
 0062469c	UNKNOWN		none	0	0	no callers in graph
-00624748	UNKNOWN		none	0	1	no TU-carrying callers
+00624748	UNKNOWN	sbdrawmanager.cpp	probable	1	0	callers
 006247e8	UNKNOWN		none	0	0	no callers in graph
 00624888	UNKNOWN		none	0	0	no callers in graph
 00624934	UNKNOWN		none	0	0	no callers in graph
@@ -8058,68 +8059,68 @@
 00634830	UNKNOWN		none	0	1	no TU-carrying callers
 00634860	UNKNOWN		none	0	1	no TU-carrying callers
 00634870	UNKNOWN		none	0	0	no callers in graph
-006348f0	UNKNOWN	rhelementactor.cpp	mixed	1	3	callers
+006348f0	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
 00634ab0	UNKNOWN		none	0	1	no TU-carrying callers
 00634bb0	UNKNOWN	launcher.cpp	probable	1	781	callers
-00634bf0	UNKNOWN		none	0	1	no TU-carrying callers
-00634c20	UNKNOWN		none	0	1	no TU-carrying callers
-00634c30	UNKNOWN		none	0	1	no TU-carrying callers
-00634d30	UNKNOWN		none	0	1	no TU-carrying callers
-00634d80	UNKNOWN		none	0	1	no TU-carrying callers
-00634db0	UNKNOWN		none	0	1	no TU-carrying callers
-00634dd0	UNKNOWN		none	0	1	no TU-carrying callers
-00634de0	UNKNOWN		none	0	1	no TU-carrying callers
-00634eb0	UNKNOWN		none	0	1	no TU-carrying callers
-00634fa0	UNKNOWN		none	0	1	no TU-carrying callers
-00635090	UNKNOWN		none	0	1	no TU-carrying callers
-00635150	UNKNOWN		none	0	1	no TU-carrying callers
-00635210	UNKNOWN		none	0	1	no TU-carrying callers
-00635240	UNKNOWN		none	0	1	no TU-carrying callers
-00635320	UNKNOWN		none	0	1	no TU-carrying callers
-00635330	UNKNOWN		none	0	1	no TU-carrying callers
-006353f0	UNKNOWN		none	0	1	no TU-carrying callers
-006354b0	UNKNOWN		none	0	1	no TU-carrying callers
-00635630	UNKNOWN		none	0	1	no TU-carrying callers
-006357b0	UNKNOWN		none	0	1	no TU-carrying callers
-006358a0	UNKNOWN		none	0	1	no TU-carrying callers
-00635990	UNKNOWN		none	0	1	no TU-carrying callers
-00635b20	UNKNOWN		none	0	1	no TU-carrying callers
-00635cb0	UNKNOWN		none	0	1	no TU-carrying callers
-00635e50	UNKNOWN		none	0	1	no TU-carrying callers
-00635fd0	UNKNOWN		none	0	1	no TU-carrying callers
-00636210	UNKNOWN		none	0	1	no TU-carrying callers
-00636450	UNKNOWN		none	0	1	no TU-carrying callers
-00636680	UNKNOWN		none	0	1	no TU-carrying callers
-006368c0	UNKNOWN		none	0	1	no TU-carrying callers
-00636b00	UNKNOWN		none	0	1	no TU-carrying callers
-00636d40	UNKNOWN		none	0	1	no TU-carrying callers
-00636f80	UNKNOWN		none	0	1	no TU-carrying callers
-006371b0	UNKNOWN		none	0	1	no TU-carrying callers
-006373e0	UNKNOWN		none	0	1	no TU-carrying callers
-00637610	UNKNOWN		none	0	1	no TU-carrying callers
-00637840	UNKNOWN		none	0	1	no TU-carrying callers
-00637a40	UNKNOWN		none	0	1	no TU-carrying callers
-00637c40	UNKNOWN		none	0	1	no TU-carrying callers
-00637e40	UNKNOWN		none	0	1	no TU-carrying callers
-00638040	UNKNOWN		none	0	1	no TU-carrying callers
-00638240	UNKNOWN		none	0	1	no TU-carrying callers
-00638440	UNKNOWN		none	0	1	no TU-carrying callers
-00638650	UNKNOWN		none	0	1	no TU-carrying callers
-00638860	UNKNOWN		none	0	1	no TU-carrying callers
-00638a70	UNKNOWN		none	0	1	no TU-carrying callers
-00638c80	UNKNOWN		none	0	1	no TU-carrying callers
-00638e90	UNKNOWN		none	0	1	no TU-carrying callers
+00634bf0	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+00634c20	UNKNOWN	vmcore.cpp	probable	1	0	callers
+00634c30	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+00634d30	UNKNOWN	vmcore.cpp	probable	1	0	callers
+00634d80	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+00634db0	UNKNOWN	vmcore.cpp	probable	1	0	callers
+00634dd0	UNKNOWN	vmcore.cpp	probable	1	0	callers
+00634de0	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+00634eb0	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+00634fa0	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+00635090	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+00635150	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+00635210	UNKNOWN	vmcore.cpp	probable	1	0	callers
+00635240	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+00635320	UNKNOWN	vmcore.cpp	probable	1	0	callers
+00635330	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+006353f0	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+006354b0	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+00635630	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+006357b0	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+006358a0	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+00635990	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+00635b20	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+00635cb0	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+00635e50	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+00635fd0	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+00636210	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+00636450	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+00636680	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+006368c0	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+00636b00	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+00636d40	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+00636f80	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+006371b0	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+006373e0	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+00637610	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+00637840	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+00637a40	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+00637c40	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+00637e40	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+00638040	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+00638240	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+00638440	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+00638650	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+00638860	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+00638a70	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+00638c80	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+00638e90	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
 006390a0	UNKNOWN		none	0	1	no TU-carrying callers
 006390b0	UNKNOWN		none	0	1	no TU-carrying callers
 00639170	UNKNOWN		none	0	2	no TU-carrying callers
-00639230	UNKNOWN		none	0	6	no TU-carrying callers
-00639280	UNKNOWN		none	0	1	no TU-carrying callers
+00639230	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
+00639280	UNKNOWN	sbsimplevirtualmachine.cpp	probable	1	0	callers
 006392c0	UNKNOWN		none	0	1	no TU-carrying callers
 006392e0	UNKNOWN		none	0	23	no TU-carrying callers
 00639300	UNKNOWN		none	0	29	no TU-carrying callers
 00639340	UNKNOWN		none	0	1	no TU-carrying callers
 00639360	UNKNOWN		none	0	23	no TU-carrying callers
-00639370	UNKNOWN		none	0	1	no TU-carrying callers
+00639370	UNKNOWN	vmcore.cpp	direct	0	0	self __FILE__
 006396c0	UNKNOWN		none	0	1	no TU-carrying callers
 00639740	UNKNOWN		none	0	3	no TU-carrying callers
 00639750	UNKNOWN		none	0	1	no TU-carrying callers
@@ -8135,24 +8136,24 @@
 00639960	UNKNOWN		none	0	6	no TU-carrying callers
 006399a0	UNKNOWN		none	0	1	no TU-carrying callers
 00639a00	UNKNOWN		none	0	1	no TU-carrying callers
-00639a30	UNKNOWN	rhelementactor.cpp	mixed	2	0	callers
+00639a30	UNKNOWN	sbsimplevirtualmachine.cpp	direct	0	0	self __FILE__
 00639a80	UNKNOWN		none	0	20	no TU-carrying callers
 00639b10	UNKNOWN		none	0	0	no callers in graph
 00639b40	UNKNOWN		none	0	1	no TU-carrying callers
 00639b70	UNKNOWN		none	0	1	no TU-carrying callers
 00639bc0	UNKNOWN		none	0	1	no TU-carrying callers
-00639c10	UNKNOWN		none	0	1	no TU-carrying callers
+00639c10	UNKNOWN	vmcore.cpp	probable	1	0	callers
 00639f80	UNKNOWN		none	0	1	no TU-carrying callers
 0063a110	UNKNOWN		none	0	0	no callers in graph
 0063a140	UNKNOWN		none	0	5	no TU-carrying callers
 0063a1d0	UNKNOWN	launcher.cpp	probable	1	7	callers
-0063a1e0	UNKNOWN		none	0	42	no TU-carrying callers
+0063a1e0	UNKNOWN	vmcore.cpp	strong	41	1	callers
 0063a1f0	UNKNOWN		none	0	1	no TU-carrying callers
 0063a220	UNKNOWN		none	0	0	no callers in graph
 0063a250	UNKNOWN		none	0	2	no TU-carrying callers
-0063a320	UNKNOWN		none	0	2	no TU-carrying callers
-0063a370	UNKNOWN		none	0	2	no TU-carrying callers
-0063a3b0	UNKNOWN		none	0	2	no TU-carrying callers
+0063a320	UNKNOWN	vmcore.cpp	probable	1	1	callers
+0063a370	UNKNOWN	vmcore.cpp	probable	1	1	callers
+0063a3b0	UNKNOWN	vmcore.cpp	strong	2	0	callers
 0063a3d0	UNKNOWN		none	0	0	no callers in graph
 0063a400	UNKNOWN		none	0	1	no TU-carrying callers
 0063a450	UNKNOWN		none	0	1	no TU-carrying callers
@@ -8162,11 +8163,11 @@
 0063a5c0	UNKNOWN		none	0	1	no TU-carrying callers
 0063a790	UNKNOWN		none	0	1	no TU-carrying callers
 0063a920	UNKNOWN		none	0	0	no callers in graph
-0063a940	UNKNOWN		none	0	1	no TU-carrying callers
+0063a940	UNKNOWN	scserialize.cpp	probable	1	0	callers
 0063af70	UNKNOWN		none	0	0	no callers in graph
 0063af90	UNKNOWN		none	0	1	no TU-carrying callers
 0063b070	UNKNOWN		none	0	1	no TU-carrying callers
-0063b2d0	UNKNOWN		none	0	1	no TU-carrying callers
+0063b2d0	UNKNOWN	scserialize.cpp	direct	0	0	self __FILE__
 0063b5c0	UNKNOWN		none	0	1	no TU-carrying callers
 0063b610	UNKNOWN		none	0	1	no TU-carrying callers
 0063b6f0	UNKNOWN		none	0	1	no TU-carrying callers
@@ -8367,17 +8368,17 @@
 0064150b	UNKNOWN		none	0	4	no TU-carrying callers
 00641577	UNKNOWN		none	0	0	no callers in graph
 00641583	UNKNOWN		none	0	0	no callers in graph
-0064158f	UNKNOWN	rhcampaign.cpp	mixed	10	2363	callers
+0064158f	UNKNOWN	sbdrawmanager.cpp	mixed	12	2329	callers
 0064159a	UNKNOWN	toolbox.cpp	mixed	2	76	callers
 006415f4	UNKNOWN		none	0	2	no TU-carrying callers
 00641658	UNKNOWN		none	0	0	no callers in graph
 00641695	UNKNOWN		none	0	0	no callers in graph
 006416ce	UNKNOWN		none	0	1	no TU-carrying callers
-006416e6	UNKNOWN	rhscript.cpp	mixed	1	67	callers
+006416e6	UNKNOWN	sbresourcemanager.cpp	mixed	2	64	callers
 0064176a	UNKNOWN		none	0	0	no callers in graph
 00641776	UNKNOWN		none	0	0	no callers in graph
-00641782	UNKNOWN	rhframeholder.cpp	probable	1	318	callers
-0064181e	UNKNOWN	rhframeholder.cpp	probable	1	562	callers
+00641782	UNKNOWN	rhframeholder.cpp	mixed	1	317	callers
+0064181e	UNKNOWN	rhframeholder.cpp	mixed	1	561	callers
 00641833	UNKNOWN		none	0	4	no TU-carrying callers
 006418cf	UNKNOWN		none	0	1	no TU-carrying callers
 00641940	UNKNOWN		none	0	0	no callers in graph
@@ -8407,7 +8408,7 @@
 00641f0b	UNKNOWN		none	0	1	no TU-carrying callers
 0064201e	UNKNOWN		none	0	1	no TU-carrying callers
 0064205f	UNKNOWN		none	0	1	no TU-carrying callers
-006420dd	UNKNOWN		none	0	709	no TU-carrying callers
+006420dd	UNKNOWN	sbresourcemanager.cpp	probable	1	708	callers
 0064211e	UNKNOWN		none	0	1	no TU-carrying callers
 00642152	UNKNOWN		none	0	2	no TU-carrying callers
 00642159	UNKNOWN		none	0	1	no TU-carrying callers
@@ -8421,22 +8422,17 @@
 006424da	UNKNOWN		none	0	1	no TU-carrying callers
 006424f2	UNKNOWN		none	0	1	no TU-carrying callers
 0064251b	UNKNOWN		none	0	0	no callers in graph
-00642580	UNKNOWN	rhsoundcache.cpp	mixed	1	35	callers
-006426e0	UNKNOWN		none	0	0	no callers in graph
-006426ec	UNKNOWN		none	0	0	no callers in graph
-00642718	UNKNOWN		none	0	0	no callers in graph
-00642878	UNKNOWN		none	0	0	no callers in graph
-0064289c	UNKNOWN		none	0	0	no callers in graph
+00642580	UNKNOWN	sbresourcemanager.cpp	mixed	1	33	callers
 006428c3	UNKNOWN		none	0	1	no TU-carrying callers
 006428db	UNKNOWN		none	0	1	no TU-carrying callers
 00642913	UNKNOWN	rhloadingscreen.cpp	probable	1	18	callers
 00642965	UNKNOWN		none	0	2	no TU-carrying callers
 006429f0	UNKNOWN		none	0	7	no TU-carrying callers
-00642a00	UNKNOWN	rhgame.cpp	mixed	1	30	callers
+00642a00	UNKNOWN	sbresourcemanager.cpp	mixed	2	28	callers
 00642a2f	UNKNOWN	launcher.cpp	probable	1	6	callers
 00642a70	UNKNOWN	launcher.cpp	mixed	1	0	callers
 00642a9f	UNKNOWN	launcher.cpp	mixed	1	0	callers
-00642bac	UNKNOWN	toolbox.cpp	mixed	1	89	callers
+00642bac	UNKNOWN	toolbox.cpp	mixed	1	88	callers
 00642bc9	UNKNOWN		none	0	22	no TU-carrying callers
 00642c38	UNKNOWN		none	0	17	no TU-carrying callers
 00642ca2	UNKNOWN		none	0	1	no TU-carrying callers
@@ -8460,7 +8456,7 @@
 00643540	UNKNOWN		none	0	4	no TU-carrying callers
 00643569	UNKNOWN		none	0	2	no TU-carrying callers
 006435d7	UNKNOWN	rhfontmanager.cpp	probable	1	4	callers
-00643608	UNKNOWN		none	0	8	no TU-carrying callers
+00643608	UNKNOWN	sbdrawmanager.cpp	strong	3	5	callers
 00643705	UNKNOWN		none	0	3	no TU-carrying callers
 0064383d	UNKNOWN		none	0	18	no TU-carrying callers
 006439b2	UNKNOWN		none	0	1	no TU-carrying callers
@@ -8470,10 +8466,10 @@
 00643ab1	UNKNOWN		none	0	2	no TU-carrying callers
 00643c12	UNKNOWN		none	0	1	no TU-carrying callers
 00643c43	UNKNOWN		none	0	5	no TU-carrying callers
-00643c56	UNKNOWN		none	0	8	no TU-carrying callers
-00643cd3	UNKNOWN		none	0	13	no TU-carrying callers
+00643c56	UNKNOWN	sbfile.cpp	probable	1	7	callers
+00643cd3	UNKNOWN	scserialize.cpp	probable	1	12	callers
 00643d02	UNKNOWN		none	0	1	no TU-carrying callers
-00643e0c	UNKNOWN		none	0	6	no TU-carrying callers
+00643e0c	UNKNOWN	scserialize.cpp	probable	1	5	callers
 00643e3b	UNKNOWN		none	0	1	no TU-carrying callers
 00643f23	UNKNOWN		none	0	1	no TU-carrying callers
 00643f50	UNKNOWN		none	0	3	no TU-carrying callers
@@ -8481,7 +8477,7 @@
 00644017	UNKNOWN		none	0	2	no TU-carrying callers
 00644020	UNKNOWN		none	0	2	no TU-carrying callers
 00644029	UNKNOWN		none	0	2	no TU-carrying callers
-00644043	UNKNOWN		none	0	1	no TU-carrying callers
+00644043	UNKNOWN	sbpicture.cpp	probable	1	0	callers
 00644112	UNKNOWN		none	0	11	no TU-carrying callers
 0064420a	UNKNOWN		none	0	16	no TU-carrying callers
 00644239	UNKNOWN		none	0	3	no TU-carrying callers
@@ -8497,11 +8493,6 @@
 00644515	UNKNOWN		none	0	3	no TU-carrying callers
 006445a4	UNKNOWN		none	0	28	no TU-carrying callers
 006445d0	UNKNOWN		none	0	8	no TU-carrying callers
-00644730	UNKNOWN		none	0	0	no callers in graph
-0064473c	UNKNOWN		none	0	0	no callers in graph
-00644768	UNKNOWN		none	0	0	no callers in graph
-006448c8	UNKNOWN		none	0	0	no callers in graph
-006448ec	UNKNOWN		none	0	0	no callers in graph
 00644905	UNKNOWN		none	0	1	no TU-carrying callers
 00644940	UNKNOWN		none	0	2	no TU-carrying callers
 00644962	UNKNOWN		none	0	1	no TU-carrying callers
@@ -8536,7 +8527,6 @@
 00645933	UNKNOWN		none	0	12	no TU-carrying callers
 0064599a	UNKNOWN		none	0	4	no TU-carrying callers
 006459fb	UNKNOWN		none	0	5	no TU-carrying callers
-00645aa4	UNKNOWN		none	0	0	no callers in graph
 00645ae4	UNKNOWN		none	0	0	no callers in graph
 00645b48	UNKNOWN		none	0	1	no TU-carrying callers
 00645b5a	UNKNOWN		none	0	1	no TU-carrying callers
