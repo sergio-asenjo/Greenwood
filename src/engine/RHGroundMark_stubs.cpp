@@ -12,17 +12,8 @@
 
 #include "RHGroundMark.h"
 
-// Target 0x005fc030.
-SBGeoPoint2D::SBGeoPoint2D() {}
-
 // Target 0x005fc080 (thunk to 0x00578c50).
 SBGeoPoint2D::~SBGeoPoint2D() {}
-
-// Target 0x005fc040.
-SBGeoPoint2D::SBGeoPoint2D(const SBGeoPoint2D &) {}
-
-// Target 0x005fc090.
-SBGeoPoint2D &SBGeoPoint2D::operator=(const SBGeoPoint2D &) { return *this; }
 
 // Target 0x00606040.
 RHGroundInfo::RHGroundInfo() {}

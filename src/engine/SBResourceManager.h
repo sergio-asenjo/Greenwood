@@ -53,9 +53,16 @@ public:
     class Tree44
     {
     public:
+        struct Iterator
+        {
+            Node<unsigned long> *m_node;
+            Iterator(Node<unsigned long> *node) : m_node(node) {}
+            Iterator(const Iterator &other) : m_node(other.m_node) {}
+        };
         char m_00[4];
         Node<unsigned long> *m_head;
         Node<unsigned long> *FUN_00605220(const unsigned long &);
+        Iterator FUN_00602580(const unsigned long &);
     };
     class Tree84
     {

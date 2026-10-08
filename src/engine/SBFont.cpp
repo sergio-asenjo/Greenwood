@@ -1,6 +1,34 @@
 #include "SBFont.h"
 #include "RHSaveGame.h"
+#include "RHCampaign.h"
 #include <string.h>
+
+DECOMP_SIZE_ASSERT(SBFontTextView, 0x0c)
+DECOMP_SIZE_ASSERT(SBFontUnk0061e840, 0x44)
+DECOMP_SIZE_ASSERT(SBFontNode0061fcb0, 0x14)
+DECOMP_SIZE_ASSERT(SBFontIterator0061fe10, 0x04)
+DECOMP_SIZE_ASSERT(SBFontPair0061f2b0, 0x08)
+DECOMP_SIZE_ASSERT(SBFontTree0061fcb0, 0x10)
+DECOMP_SIZE_ASSERT(SBFontValue0061f120, 0x20)
+DECOMP_SIZE_ASSERT(SBFontNode0061f3e0, 0x30)
+DECOMP_SIZE_ASSERT(SBFontTree0061f3e0, 0x10)
+DECOMP_SIZE_ASSERT(SBFontIterator0061f3e0, 0x04)
+DECOMP_SIZE_ASSERT(SBFontPair0061f3e0, 0x08)
+DECOMP_SIZE_ASSERT(SBFontLock, 0x01)
+
+// GLOBAL: GAME 0x006c191c
+SBFontNode0061fcb0 *g_unk0x006c191c = 0;
+// GLOBAL: GAME 0x006c1920
+unsigned g_unk0x006c1920 = 0;
+// GLOBAL: GAME 0x006c1914
+SBFontNode0061f3e0 *g_unk0x006c1914 = 0;
+// GLOBAL: GAME 0x006c1900
+SBFontTree0061f3e0 g_unk0x006c1900;
+
+// STRING: GAME 0x006bb87c
+static const char g_sbFontFile[] = "P:\\Robin Hood\\SBLibNG\\SBFont.cpp";
+// STRING: GAME 0x006bb8a0
+static const char g_sbFontMissing[] = "Warning ! Character 0x%02x is missing in the font '%s'";
 
 // FUNCTION: GAME 0x0061e810
 void SBFontUnk0061e840::FUN_0061e810(int value, int)
@@ -32,7 +60,7 @@ int SBFontUnk0061e840::FUN_0061e880()
     return m_14;
 }
 
-// FUNCTION: GAME 0x0061e8a0
+// Unannotated: original returns {char, std::string} by value from a char arg; signature unmatched.
 std::string SBFontUnk0061e840::FUN_0061e8a0()
 {
     return std::string(m_18);
@@ -121,6 +149,25 @@ int SBFontUnk0061e840::FUN_0061eb80(SBFontTextView *text, void *a, const void *b
     return count;
 }
 
+// STUB: GAME 0x0061ebd0
+void SBFontUnk0061e840::FUN_0061ebd0(unsigned short value)
+{
+    std::string name = FUN_0061e8a0();
+    undefined compare;
+    undefined allocator;
+    SBFontPair0061f3e0 result = g_unk0x006c1900.FUN_0061f3e0(
+        SBFontValue0061f120(name, SBFontTree0061fcb0(compare, false, allocator)));
+    SBFontTree0061fcb0 &characters = result.m_00.m_00->m_0c.m_10;
+    SBFontIterator0061fe10 it = characters.FUN_0061fe10(value);
+    if (it.m_00 == characters.m_04 || value < it.m_00->m_0c) {
+        it = characters.end();
+    }
+    if (it.m_00 == characters.m_04) {
+        characters.FUN_0061f2b0(value);
+        FUN_005f8030(0, g_sbFontFile, 0x17d, g_sbFontMissing, (unsigned)value, name.c_str());
+    }
+}
+
 // FUNCTION: GAME 0x0061ed70
 bool SBFontUnk0061e840::FUN_0061ed70(SBFile &file)
 {
@@ -136,6 +183,100 @@ bool SBFontUnk0061e840::FUN_0061ed70(SBFile &file)
     return true;
 }
 
+// STUB: GAME 0x0061eea0
+void SBFontTree0061fcb0::FUN_0061eea0()
+{
+    FUN_0061fce0(begin(), end());
+    operator delete(m_04);
+    m_04 = 0;
+    m_0c = 0;
+    SBFontLock lock;
+    if (--g_unk0x006c1920 == 0) {
+        operator delete(g_unk0x006c191c);
+        g_unk0x006c191c = 0;
+    }
+}
+
+// STUB: GAME 0x0061ef10
+SBFontValue0061f120::~SBFontValue0061f120()
+{
+}
+
+// STUB: GAME 0x0061f120
+SBFontValue0061f120::SBFontValue0061f120(const std::string &name, const SBFontTree0061fcb0 &tree)
+    : m_00(name), m_10(tree)
+{
+}
+
+// STUB: GAME 0x0061f2b0
+SBFontPair0061f2b0 SBFontTree0061fcb0::FUN_0061f2b0(const unsigned short &value)
+{
+    SBFontNode0061fcb0 *node = m_04->m_04;
+    SBFontNode0061fcb0 *parent = m_04;
+    bool left = true;
+    {
+        SBFontLock lock;
+        while (node != g_unk0x006c191c) {
+            parent = node;
+            left = value < node->m_0c;
+            node = left ? node->m_00 : node->m_08;
+        }
+    }
+    if (m_08) return SBFontPair0061f2b0(FUN_0061fe30(node, parent, value), true);
+    SBFontIterator0061fe10 it;
+    it.m_00 = parent;
+    if (left) {
+        if (it.m_00 == m_04->m_00)
+            return SBFontPair0061f2b0(FUN_0061fe30(node, parent, value), true);
+        it.FUN_00620ca0();
+    }
+    if (it.m_00->m_0c < value)
+        return SBFontPair0061f2b0(FUN_0061fe30(node, parent, value), true);
+    return SBFontPair0061f2b0(it, false);
+}
+
+// STUB: GAME 0x0061f3e0
+SBFontPair0061f3e0 SBFontTree0061f3e0::FUN_0061f3e0(const SBFontValue0061f120 &value)
+{
+    SBFontNode0061f3e0 *node = m_04->m_04;
+    SBFontNode0061f3e0 *parent = m_04;
+    bool left = true;
+    {
+        SBFontLock lock;
+        while (node != g_unk0x006c1914) {
+            parent = node;
+            left = value.m_00 < node->m_0c.m_00;
+            node = left ? node->m_00 : node->m_08;
+        }
+    }
+    if (m_08) return SBFontPair0061f3e0(FUN_00620130(node, parent, value), true);
+    SBFontIterator0061f3e0 it;
+    it.m_00 = parent;
+    if (left) {
+        if (it.m_00 == m_04->m_00)
+            return SBFontPair0061f3e0(FUN_00620130(node, parent, value), true);
+        it.FUN_00620e30();
+    }
+    if (((RHCampaignCommandLine *)&it.m_00->m_0c.m_00)->FUN_0045a010(*(const RHProfileText *)&value.m_00) < 0)
+        return SBFontPair0061f3e0(FUN_00620130(node, parent, value), true);
+    return SBFontPair0061f3e0(it, false);
+}
+
+// FUNCTION: GAME 0x0061fcb0
+SBFontTree0061fcb0::SBFontTree0061fcb0(const undefined &compare, bool multi, const undefined &allocator)
+    : m_00(allocator), m_01(compare), m_08(multi)
+{
+    FUN_00620b70();
+}
+
+// FUNCTION: GAME 0x0061fe10
+SBFontIterator0061fe10 SBFontTree0061fcb0::FUN_0061fe10(const unsigned short &value)
+{
+    SBFontIterator0061fe10 result;
+    result.m_00 = FUN_00620c20(value);
+    return result;
+}
+
 void SBFontEmit(SBFontUnk0061e840 *font, unsigned short value)
 {
     font->FUN_0061e810(value, 0);
@@ -149,4 +290,12 @@ void SBFontEmit(SBFontUnk0061e840 *font, unsigned short value)
     font->FUN_0061eb80(0, 0, 0, 0);
     font->FUN_0061eb00(*(SBFile *)0);
     font->FUN_0061ed70(*(SBFile *)0);
+    font->FUN_0061ebd0(value);
+    undefined byte;
+    SBFontTree0061fcb0 tree(byte, false, byte);
+    tree.FUN_0061fe10(value);
+    tree.FUN_0061eea0();
+    tree.FUN_0061f2b0(value);
+    SBFontValue0061f120 pair(std::string(), tree);
+    g_unk0x006c1900.FUN_0061f3e0(pair);
 }

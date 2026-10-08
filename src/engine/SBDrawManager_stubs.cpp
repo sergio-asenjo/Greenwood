@@ -1,6 +1,10 @@
 #include "SBDrawManager.h"
 
 SBDrawUnk005f0090Node *SBDrawUnk005f0090::FUN_005f0090(const unsigned long &) { return 0; }
+SBDrawUnk005efc10Iterator SBDrawUnk005efc10::FUN_005efc10(const unsigned long &) { return SBDrawUnk005efc10Iterator(0); }
+SBDrawUnk005fc3b0Point::SBDrawUnk005fc3b0Point() {}
+SBDrawUnk005fc3b0Point::~SBDrawUnk005fc3b0Point() {}
+bool RHUnk005ef320::FUN_005ee640(void *, SBDrawUnk005fc3b0Point &) { return false; }
 
 void FUN_006220ec(void *, void *, int, int, int, int, unsigned, unsigned) {}
 void FUN_006221e4(void *, void *, int, int, int, int, unsigned, unsigned) {}

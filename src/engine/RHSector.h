@@ -2,17 +2,23 @@
 #define RHSECTOR_H
 
 #include "SB.h"
+#include "Decomp.h"
 #include <string.h>
 #include <vector>
 #include <string>
 
 void RHSerializeName(SBFile &file, const char *name);
 
+// SIZE 0x58
 class RHSector
 {
 public:
+    RHSector();
+    virtual void UnkV0(); // vtable+0x00
     void Unk0057cd60(SBFile &file, bool mode);
-    char m_data[0x58];
+    undefined m_pad4[0x2c]; // 0x04
+    int m_30; // 0x30
+    undefined m_pad34[0x24]; // 0x34
 };
 
 template <class T>
@@ -33,21 +39,14 @@ public:
     }
 };
 
-class RHUnk00522540
-{
-public:
-    RHUnk00522540();
-    ~RHUnk00522540();
-    void Unk005225a0(SBFile &file);
-    char m_pad0[0x14];
-    char m_14; // [0x14]
-    char m_pad15[7];
-};
+class RHUnk00522540;
 
+// SIZE 0x84
 class RHSectorArchery : public RHSector
 {
 public:
     void InitializeFromMissionStream(SBFile &file);
+    bool Serialize(SBFile &file);
     void Emit(SBFile &file);
     RHSectorArray<RHUnk00522540 *> m_58; // [0x58]
     char m_pad70[8];
@@ -55,6 +54,7 @@ public:
     unsigned short m_7c; // [0x7c]
     unsigned short m_7e; // [0x7e]
     unsigned short m_80; // [0x80]
+    unsigned short m_82; // 0x82
 };
 
 struct RHUnkSectorGlobal
@@ -79,12 +79,40 @@ public:
     bool Serialize(SBFile &file);
 };
 
+// VTABLE: GAME 0x00679140
+// SIZE 0x1c
+class RHUnk00522540
+{
+public:
+    RHUnk00522540();
+    virtual ~RHUnk00522540(); // vtable+0x00
+    void Unk005225a0(SBFile &file);
+    bool FUN_00522680(SBFile &file);
+    SBGeoPoint2D m_4; // 0x04
+    undefined2 m_c; // 0x0c
+    undefined2 m_e; // 0x0e
+    void *m_10; // 0x10
+    undefined m_14; // 0x14
+    undefined m_15; // 0x15
+    undefined2 m_16; // 0x16
+    void *m_18; // 0x18
+};
+
+// SIZE 0x2c
 class RHUnkSectorPoints
 {
 public:
     unsigned int Unk0060ce80();
     SBGeoPoint2D &Unk0060cef0(unsigned int index);
     void Unk0060ced0(const SBGeoPoint2D &point, unsigned int index);
+    SBGeoPoint2D &FUN_006112c0(unsigned int index);
+    void FUN_006112a0(const SBGeoPoint2D &point, unsigned int index);
+    void FUN_0060ce90(const SBGeoPoint2D &point, unsigned int index);
+    void FUN_0060c2e0();
+    undefined m_pad0[0x28]; // 0x00
+    undefined m_28; // 0x28
+    undefined m_29; // 0x29
+    undefined m_pad2a[2]; // 0x2a
 };
 
 class RHUnkSectorScript
@@ -204,21 +232,35 @@ public:
     }
 };
 
+// SIZE 0x11c
+class RHSectorBuilding
+{
+public:
+    bool Serialize(SBFile &file);
+    void Emit(SBFile &file);
+    undefined m_pad0[0xf4]; // 0x00
+    RHSectorActorList m_f4; // 0xf4
+    undefined m_118; // 0x118
+    undefined m_pad119[3]; // 0x119
+};
+
 class RHUnkSectorScriptRef
 {
 public:
-    void Unk004089f0(RHElementActor *actor);
-    void Unk00408af0(RHElementActor *actor);
-    void Unk00408900();
-    char m_data[4];
+    int Unk004089f0(RHElementActor *actor);
+    int Unk00408af0(RHElementActor *actor);
+    int Unk00408900();
+    void *m_0; // 0x00
 };
 
+// SIZE 0xf8
 class RHSectorScript
 {
 public:
     void Enter(RHElementActor *actor);
     void Leave(RHElementActor *actor);
     void InitializeFromMissionStream(SBFile &file);
+    bool Serialize(SBFile &file);
     void Emit(RHElementActor *actor);
     void Emit(SBFile &file);
 
@@ -238,6 +280,7 @@ public:
 
 extern RHElementActor *g_unk0x6c100c;
 
+// SIZE 0x108
 class RHSectorLift
 {
 public:
@@ -264,16 +307,17 @@ public:
     int Unk();
 };
 
-class RHUnk0057d440
+// VTABLE: GAME 0x00679c24
+// SIZE 0x5c
+class RHUnk0057d440 : public RHSector
 {
 public:
     RHUnk0057d440();
     ~RHUnk0057d440();
-    virtual void UnkV0();
-    virtual void UnkV4(SBFile &file, bool mode);
-    char m_pad4[0x2c];
-    int m_30; // [0x30]
-    char m_pad34[0x24];
+    virtual void UnkV0(); // vtable+0x00
+    virtual void UnkV4(SBFile &file, bool mode); // vtable+0x04
+    virtual void UnkV8(); // vtable+0x08
+    virtual void UnkVc(); // vtable+0x0c
     RHSectorLift *m_58; // [0x58]
 };
 
@@ -309,6 +353,7 @@ public:
     RHSectorLiftArray m_4080; // [0x4080]
 };
 
+// SIZE 0x35
 class RHSectorDoor
 {
 public:

@@ -1,6 +1,77 @@
 #include "SBUIRenderer.h"
 #include "SBUIRendererListbox.h"
-#include "RHUIRendererShifting.h"
+#include "SB.h"
+
+// SIZE 0x08
+class SBGeoPoint2D
+{
+public:
+    SBGeoPoint2D();
+    ~SBGeoPoint2D();
+    SBGeoPoint2D &operator=(const SBGeoPoint2D &);
+    SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &) const;
+    SBGeoPoint2D Unk005fc110(const SBGeoPoint2D &) const;
+    float m_x; // 0x00
+    float m_y; // 0x04
+};
+
+// SIZE 0x08
+class RHUnk005fc3b0 : public SBGeoPoint2D
+{
+public:
+    RHUnk005fc3b0();
+    ~RHUnk005fc3b0() {}
+};
+
+// SIZE 0x14
+class SBGeoBoundingBox2D
+{
+public:
+    SBGeoBoundingBox2D &operator=(const SBGeoBoundingBox2D &);
+    bool Unk00608f30() const;
+    void SetEnd(const SBGeoPoint2D &point) { m_flag = true; m_p1 = point; }
+    SBGeoPoint2D m_p0; // 0x00
+    SBGeoPoint2D m_p1; // 0x08
+    bool m_flag; // 0x10
+};
+
+// SIZE 0x14
+class RHMobileUnk006091b0
+{
+public:
+    RHMobileUnk006091b0 &FUN_006091b0(const SBGeoPoint2D &);
+    undefined m_00[0x14]; // 0x00
+};
+
+class SBResourceManager
+{
+public:
+    bool GetSurfaceForResource(long, unsigned int, unsigned int &);
+};
+
+class SBDrawManager
+{
+public:
+    void BlitAlphaKeying(unsigned long, unsigned long, unsigned long,
+        SBGeoBoundingBox2D *, unsigned short, unsigned short, unsigned long);
+};
+
+DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
+DECOMP_SIZE_ASSERT(RHUnk005fc3b0, 0x08)
+DECOMP_SIZE_ASSERT(SBGeoBoundingBox2D, 0x14)
+DECOMP_SIZE_ASSERT(RHMobileUnk006091b0, 0x14)
+DECOMP_SIZE_ASSERT(SBUIUnk0060d530, 0x3c)
+DECOMP_SIZE_ASSERT(SBUIUnk0060da20, 0x4c)
+DECOMP_SIZE_ASSERT(SBUIUnk0060dae0, 0x50)
+DECOMP_SIZE_ASSERT(SBUIUnk0060dd00, 0x7c)
+
+extern float g_unk0x00677488;
+
+#define m_resource (*(SBResourceManager **)(m_bytes + 0x04))
+#define m_box (*(SBGeoBoundingBox2D *)(m_bytes + 0x08))
+#define m_draw (*(SBDrawManager **)(m_bytes + 0x1c))
+#define m_unk20 (*(unsigned long *)(m_bytes + 0x20))
+#define m_resourceId (*(long *)(m_bytes + 0x38))
 
 class RHUnk005ef320;
 extern RHUnk005ef320 *g_unk0x6c11d0;
@@ -32,10 +103,75 @@ void SBUIUnk0060d530::FUN_0060d530(unsigned int surface)
     *(unsigned int *)(m_bytes + 0x20) = surface;
 }
 
+// STUB: GAME 0x0060d550
+bool SBUIUnk0060d530::FUN_0060d550(long resourceId)
+{
+    RHUnk005fc3b0 size;
+    m_resourceId = resourceId;
+    SBGeoBoundingBox2D &position = m_box;
+    if (!position.Unk00608f30())
+        return false;
+    if (m_resourceId != -1)
+    {
+        if (!((SBUIUnk006006f0 *)m_resource)->FUN_006006f0(m_resourceId, size))
+        {
+            SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBUIRenderer.cpp", 0x78,
+                "Unable to retrieve the size of a resource");
+            return false;
+        }
+        if (position.m_p1.m_x - position.m_p0.m_x == g_unk0x00677488
+            || position.m_p1.m_x - position.m_p0.m_x != size.m_x)
+            position.SetEnd(position.m_p0.Unk005fc190(size));
+    }
+    return true;
+}
+
 // FUNCTION: GAME 0x0060d690
 void *SBUIUnk0060d530::FUN_0060d690()
 {
     return m_bytes + 8;
+}
+
+// STUB: GAME 0x0060d6a0
+void SBUIUnk0060d530::FUN_0060d6a0(const SBGeoBoundingBox2D &box)
+{
+    RHUnk005fc3b0 size;
+    SBGeoBoundingBox2D &position = m_box;
+    position = box;
+    if (position.m_p1.m_x - position.m_p0.m_x == g_unk0x00677488 && m_resourceId != -1)
+    {
+        if (!((SBUIUnk006006f0 *)m_resource)->FUN_006006f0(m_resourceId, size))
+        {
+            SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBUIRenderer.cpp", 0xac,
+                // STRING: GAME 0x006bb580
+                "Unable to retrieve the size of a resource");
+        }
+        else
+        {
+            position.SetEnd((*(SBGeoPoint2D *)(m_bytes + 0x10)).Unk005fc190(size));
+        }
+    }
+}
+
+// STUB: GAME 0x0060d780
+void SBUIUnk0060d530::FUN_0060d780(const SBGeoPoint2D &point)
+{
+    RHUnk005fc3b0 size;
+    SBGeoBoundingBox2D &position = m_box;
+    ((RHMobileUnk006091b0 *)&position)->FUN_006091b0(point.Unk005fc110(position.m_p0));
+    if ((!position.Unk00608f30() || position.m_p1.m_x - position.m_p0.m_x == g_unk0x00677488)
+        && m_resourceId != -1)
+    {
+        if (!((SBUIUnk006006f0 *)m_resource)->FUN_006006f0(m_resourceId, size))
+        {
+            SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBUIRenderer.cpp", 0xbf,
+                "Unable to retrieve the size of a resource");
+        }
+        else
+        {
+            position.SetEnd((*(SBGeoPoint2D *)(m_bytes + 0x10)).Unk005fc190(size));
+        }
+    }
 }
 
 // FUNCTION: GAME 0x0060da20
@@ -145,7 +281,10 @@ void EmitSBUIRenderer(SBUIUnk0060da20 *bitmap, SBUIUnk0060dae0 *alpha,
     base->FUN_0060d500(0);
     base->FUN_0060d520();
     base->FUN_0060d530(0);
+    base->FUN_0060d550(0);
     base->FUN_0060d690();
+    base->FUN_0060d6a0(*(SBGeoBoundingBox2D *)base);
+    base->FUN_0060d780(*(SBGeoPoint2D *)base);
     bitmap->FUN_0060da20(0);
     alpha->FUN_0060dae0(0);
     alpha->FUN_0060db80(0);

@@ -2,11 +2,37 @@
 #define SB_DRAW_MANAGER_H
 
 class SBGeoVector2D;
+class RHUnk00613e90;
+
+class SBDrawUnk005fc3b0Point
+{
+public:
+    SBDrawUnk005fc3b0Point();
+    ~SBDrawUnk005fc3b0Point();
+    float m_x;
+    float m_y;
+};
+
+struct SBDrawUnk005eec00Edge
+{
+    unsigned char m_00;
+    char m_01[7];
+    unsigned long m_08;
+    char m_0c[4];
+    unsigned long m_10;
+    int m_14;
+    int m_18;
+};
 
 class RHUnk005ef320
 {
 public:
+    bool FUN_005e3f70();
     void FUN_005e57e0(unsigned, SBGeoVector2D &);
+    bool FUN_005e5bd0(unsigned long, void *);
+    bool FUN_005ee640(void *, SBDrawUnk005fc3b0Point &);
+    bool FUN_005eec00(unsigned long, unsigned long, void *, unsigned long,
+        unsigned long, unsigned long, unsigned long, unsigned long);
 };
 
 class SBDrawUnk005f0090Node
@@ -25,6 +51,20 @@ public:
     char m_pad0[4];
     SBDrawUnk005f0090Node *m_head;
     SBDrawUnk005f0090Node *FUN_005f0090(const unsigned long &);
+};
+
+struct SBDrawUnk005efc10Iterator
+{
+    SBDrawUnk005f0090Node *m_node;
+    SBDrawUnk005efc10Iterator(SBDrawUnk005f0090Node *node) : m_node(node) {}
+};
+
+class SBDrawUnk005efc10
+{
+public:
+    char m_00[4];
+    SBDrawUnk005f0090Node *m_head;
+    SBDrawUnk005efc10Iterator FUN_005efc10(const unsigned long &);
 };
 
 class SBDrawUnk005e8450

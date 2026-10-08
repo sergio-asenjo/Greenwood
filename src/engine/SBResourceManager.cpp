@@ -1,5 +1,5 @@
 #include "SBResourceManager.h"
-#include "SB.h"
+#include "RHUIRendererPortrait.h"
 
 struct SBResourceUnkIterator
 {
@@ -108,6 +108,40 @@ unsigned int SBResourceManager::FUN_00600620(unsigned long id)
     if (found->m_first == 0)
         return 0;
     return found->m_last - found->m_first;
+}
+
+inline SBResourceManager::Tree44::Iterator SBResourceFindWrapped(
+    SBResourceManager::Tree44 &tree, const unsigned long &key)
+{
+    SBResourceManager::Tree44::Iterator found = tree.FUN_00602580(key);
+    SBResourceManager::Node<unsigned long> *head = tree.m_head;
+    return (found.m_node != head && key >= found.m_node->m_key
+        ? found : SBResourceManager::Tree44::Iterator(head));
+}
+
+bool RHUnk00600820::ResolveSurface(void *surface, unsigned int indexValue, float *output)
+{
+    unsigned long &id = *(unsigned long *)&surface;
+    int index = indexValue;
+    unsigned long &value = *(unsigned long *)output;
+    SBResourceManager &view = *(SBResourceManager *)this;
+    SBResourceManager::Tree44 &tree = view.m_44;
+    SBResourceManager::Node<unsigned long> *found = SBResourceFindWrapped(tree, id).m_node;
+    if (found == view.m_44.m_head) {
+        if (!view.FUN_00600db0(id)) {
+            SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBResourceManager.cpp", 0x61b,
+                "Unable to recover a resource");
+            return false;
+        }
+        found = SBResourceFind(tree, id).m_node;
+    }
+    int count = found->m_first == 0 ? 0 : found->m_last - found->m_first;
+    if (count > index && index >= 0) {
+        value = found->m_first[index];
+        return true;
+    }
+    value = 0;
+    return false;
 }
 
 // FUNCTION: GAME 0x00600920
@@ -227,6 +261,7 @@ void EmitSBResourceManager(SBResourceManager *resource)
     resource->FUN_00600550(0);
     resource->FUN_00600620(0);
     unsigned long value;
+    ((RHUnk00600820 *)resource)->ResolveSurface(0, 0, (float *)&value);
     resource->FUN_00600920(0, 0, value);
     resource->FUN_00600f10(0);
     ((RHMapResources *)resource)->FUN_00600fc0(0);

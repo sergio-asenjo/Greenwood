@@ -1,10 +1,12 @@
 #include "SB.h"
+#include "Decomp.h"
 
+// SIZE 0x08
 class SBGeoPoint2D
 {
 public:
-    float m_x;
-    float m_y;
+    float m_x; // 0x00
+    float m_y; // 0x04
     SBGeoPoint2D();
     ~SBGeoPoint2D();
     SBGeoPoint2D(const SBGeoPoint2D &other);
@@ -14,18 +16,21 @@ public:
 
 void RHSerializeName(SBFile &file, const char *name);
 
+// SIZE 0x34
 class RHSectorProduction
 {
 public:
+    // SIZE 0x10
     struct Occupant
     {
         void *m_0; // +0x00
         SBGeoPoint2D m_point; // +0x04
-        unsigned short m_c; // +0x0c
-        char m_pad[2]; // +0x0e
+        undefined2 m_c; // +0x0c
+        undefined m_pad[2]; // +0x0e
         Occupant &operator=(const Occupant &other);
     };
 
+    // SIZE 0x10
     struct Occupants
     {
         int m_grow; // +0x00
@@ -59,15 +64,20 @@ public:
             }
             return first;
         }
+        static Occupant *UninitializedCopy(const Occupant *first, const Occupant *last, Occupant *out);
+        static void UninitializedFill(Occupant *first, unsigned count, const Occupant &value);
+        static void Fill(Occupant *first, Occupant *last, const Occupant &value);
+        static void DestroyElements(Occupant *first, Occupant *last);
+        static Occupant *Allocate(int count);
     };
 
     int m_0; // +0x00
     unsigned short m_4; // +0x04
-    char m_pad6[0x16]; // +0x06
+    undefined m_pad6[0x16]; // +0x06
     Occupants m_occupants; // +0x1c
     unsigned short m_2c; // +0x2c
     unsigned short m_2e; // +0x2e
-    char m_30; // +0x30
+    undefined m_30; // +0x30
 
     bool Serialize(SBFile &file);
     static bool SerializeOccupant(SBFile &file, Occupant &occupant);
@@ -77,3 +87,4 @@ public:
 };
 
 bool FUN_00453da0(SBFile &file, void *&value);
+void FUN_0045a850(RHSectorProduction::Occupant *out, const RHSectorProduction::Occupant &value);

@@ -1,5 +1,28 @@
 #include "RHSectorProduction.h"
 
+DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
+DECOMP_SIZE_ASSERT(RHSectorProduction::Occupant, 0x10)
+DECOMP_SIZE_ASSERT(RHSectorProduction::Occupants, 0x10)
+DECOMP_SIZE_ASSERT(RHSectorProduction, 0x34)
+
+// SIZE 0x24
+struct RHSoundPendingData
+{
+    undefined m_00[0x24]; // 0x00
+    void FUN_0052c5a0();
+};
+
+DECOMP_SIZE_ASSERT(RHSoundPendingData, 0x24)
+
+// FUNCTION: GAME 0x0045a910
+inline RHSectorProduction::Occupant &RHSectorProduction::Occupant::operator=(const Occupant &other)
+{
+    m_0 = other.m_0;
+    m_point = other.m_point;
+    m_c = other.m_c;
+    return *this;
+}
+
 // FUNCTION: GAME 0x00580970
 bool RHSectorProduction::Serialize(SBFile &file)
 {
@@ -80,8 +103,77 @@ bool RHSectorProduction::SerializeOccupant(SBFile &file, Occupant &occupant)
     return true;
 }
 
+inline void RHSectorProduction::Occupants::DestroyElements(Occupant *first, Occupant *last)
+{
+    for (; first != last; ++first)
+        ((RHSoundPendingData *)first)->FUN_0052c5a0();
+}
+
+inline RHSectorProduction::Occupant *RHSectorProduction::Occupants::UninitializedCopy(
+    const Occupant *first, const Occupant *last, Occupant *out)
+{
+    for (; first != last; ++out, ++first)
+        FUN_0045a850(out, *first);
+    return out;
+}
+
+inline void RHSectorProduction::Occupants::UninitializedFill(Occupant *first, unsigned count,
+                                                            const Occupant &value)
+{
+    for (; count > 0; --count, ++first)
+        FUN_0045a850(first, value);
+}
+
+inline void RHSectorProduction::Occupants::Fill(Occupant *first, Occupant *last, const Occupant &value)
+{
+    for (; first != last; ++first)
+        *first = value;
+}
+
+inline RHSectorProduction::Occupant *RHSectorProduction::Occupants::Allocate(int count)
+{
+    if (count < 0)
+        count = 0;
+    return (Occupant *)operator new((unsigned)count * sizeof(Occupant));
+}
+
+// FUNCTION: GAME 0x005815f0
+void RHSectorProduction::Occupants::Insert(Occupant *where, unsigned count, const Occupant &value)
+{
+    if ((unsigned)(m_end - m_last) < count)
+    {
+        unsigned capacity = size() + (count < size() ? size() : count);
+        Occupant *storage = Allocate(capacity);
+        Occupant *next = UninitializedCopy(m_first, where, storage);
+        UninitializedFill(next, count, value);
+        UninitializedCopy(where, m_last, next + count);
+        DestroyElements(m_first, m_last);
+        operator delete(m_first);
+        m_end = storage + capacity;
+        m_last = storage + size() + count;
+        m_first = storage;
+    }
+    else if ((unsigned)(m_last - where) < count)
+    {
+        UninitializedCopy(where, m_last, where + count);
+        UninitializedFill(m_last, count - (m_last - where), value);
+        Fill(where, m_last, value);
+        m_last += count;
+    }
+    else if (count > 0)
+    {
+        UninitializedCopy(m_last - count, m_last, m_last);
+        Occupant *first = m_last - count;
+        Occupant *out = m_last;
+        while (where != first)
+            *--out = *--first;
+        Fill(where, where + count, value);
+        m_last += count;
+    }
+}
+
 // deferred: unannotated pending reccmp #534
-// 0x005818c0: exact when annotated; occupant-container instantiation, not SerializePoint.
+// 0x005818c0: historically exact; callback and Insert annotations are coupled.
 bool RHSectorProduction::FUN_005818c0(SBFile &file, Occupants &occupants,
                                     bool (*serialize)(SBFile &, Occupant &))
 {
@@ -130,4 +222,5 @@ void RHSectorProduction::Emit(SBFile &file)
     Serialize(file);
     Occupant occupant;
     SerializeOccupant(file, occupant);
+    m_occupants.Insert(m_occupants.end(), 1, occupant);
 }

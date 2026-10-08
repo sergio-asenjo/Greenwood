@@ -1,4 +1,52 @@
 #include "RHSector.h"
+#include "RHEngine.h"
+#include "VMCore.h"
+
+extern RHEngine *g_pEngine;
+
+DECOMP_SIZE_ASSERT(RHSector, 0x58)
+DECOMP_SIZE_ASSERT(RHUnk00522540, 0x1c)
+DECOMP_SIZE_ASSERT(RHUnkSectorPoints, 0x2c)
+DECOMP_SIZE_ASSERT(RHSectorArchery, 0x84)
+DECOMP_SIZE_ASSERT(RHSectorScript, 0xf8)
+DECOMP_SIZE_ASSERT(RHSectorLift, 0x108)
+DECOMP_SIZE_ASSERT(RHUnk0057d440, 0x5c)
+DECOMP_SIZE_ASSERT(RHSectorDoor, 0x35)
+DECOMP_SIZE_ASSERT(RHSectorBuilding, 0x11c)
+
+class SBGeoBoundingBox2D
+{
+public:
+    void Unk00607dc0(const SBGeoPoint2D &point);
+};
+
+class RHScrollScript
+{
+public:
+    bool FUN_006348f0(SBFile &file);
+};
+
+struct RHScriptNode
+{
+    RHScriptNode *next; // 0x00
+    RHScriptNode *prev; // 0x04
+    void *data; // 0x08
+};
+
+struct RHScriptIter
+{
+    RHScriptNode *node; // 0x00
+    RHScriptIter(RHScriptNode *value) : node(value) {}
+};
+
+class RHUnk0046eb30
+{
+public:
+    undefined4 allocator; // 0x00
+    RHScriptNode *head; // 0x04
+    int count; // 0x08
+    RHScriptIter erase(RHScriptIter position);
+};
 
 // GLOBAL: GAME 0x6c100c
 RHElementActor *g_unk0x6c100c;
@@ -17,6 +65,143 @@ inline void *RHUnkSectorLookup(unsigned short sector)
     if (sector == 0xffff)
         return g_unk0x6c0a9c->m_4184;
     return g_unk0x6c0a9c->m_4064[sector];
+}
+
+// deferred: 0x00408900, parked body; called by a counted initializer.
+int RHUnkSectorScriptRef::Unk00408900()
+{
+    {
+        std::string name("Initialize");
+        ((VMCore *)m_0)->FUN_00639300(&name);
+    }
+    int value[4];
+    value[1] = value[2] = value[3] = 0;
+    ((VMCore *)m_0)->FUN_00639360(value[0]);
+    return value[0];
+}
+
+// STUB: GAME 0x004089f0
+int RHUnkSectorScriptRef::Unk004089f0(RHElementActor *actor)
+{
+    ((VMCore *)m_0)->FUN_006392e0(&actor, 4);
+    {
+        // STRING: GAME 0x006a6cf4
+        std::string name("EnterZone");
+        ((VMCore *)m_0)->FUN_00639300(&name);
+    }
+    int value[4];
+    value[1] = value[2] = value[3] = 0;
+    ((VMCore *)m_0)->FUN_00639360(value[0]);
+    return value[0];
+}
+
+// STUB: GAME 0x00408af0
+int RHUnkSectorScriptRef::Unk00408af0(RHElementActor *actor)
+{
+    ((VMCore *)m_0)->FUN_006392e0(&actor, 4);
+    {
+        // STRING: GAME 0x006a6d00
+        std::string name("ExitZone");
+        ((VMCore *)m_0)->FUN_00639300(&name);
+    }
+    int value[4];
+    value[1] = value[2] = value[3] = 0;
+    ((VMCore *)m_0)->FUN_00639360(value[0]);
+    return value[0];
+}
+
+// deferred: 0x0046eb30, parked body; shared by counted callers.
+RHScriptIter RHUnk0046eb30::erase(RHScriptIter position)
+{
+    RHScriptNode *next = *(RHScriptNode *volatile *)&position.node->next;
+    position.node->prev->next = position.node->next;
+    position.node->next->prev = position.node->prev;
+    operator delete(position.node);
+    --count;
+    return RHScriptIter(next);
+}
+
+// FUNCTION: GAME 0x00522540
+RHUnk00522540::RHUnk00522540()
+{
+    m_18 = 0;
+}
+
+// FUNCTION: GAME 0x005225a0
+void RHUnk00522540::Unk005225a0(SBFile &file)
+{
+    unsigned short x, y, sector, scratch, value;
+    undefined flag;
+    file.Access(&x, 2);
+    file.Access(&y, 2);
+    file.Access(&sector, 2);
+    file.Access(&scratch, 2);
+    file.Access(&flag, 1);
+    file.Access(&value, 2);
+    m_4.m_x = x;
+    m_4.m_y = y;
+    m_10 = RHUnkSectorLookup(sector);
+    m_c = *(unsigned short *)((char *)m_10 + 0x36);
+    m_14 = flag;
+    m_16 = value;
+}
+
+// STUB: GAME 0x00522680
+bool RHUnk00522540::FUN_00522680(SBFile &file)
+{
+    return g_pEngine->FUN_004c3d90(file, m_18);
+}
+
+// FUNCTION: GAME 0x0057c9c0
+RHSectorActorIter RHSectorActorIter::operator++(int)
+{
+    RHSectorActorIter previous = *this;
+    m_p = m_p->m_next;
+    return previous;
+}
+
+// deferred: 0x0057cd60, parked body; called by a counted initializer.
+void RHSector::Unk0057cd60(SBFile &file, bool mode)
+{
+    SBGeoPoint2D point;
+    ((RHUnk005f5440 *)&file)->Unk();
+    short width = *(short *)((char *)g_unk0x6c0a9c + 0x3e98) << 6;
+    short height = *(short *)((char *)g_unk0x6c0a9c + 0x3e9a) << 6;
+    undefined type;
+    unsigned short count;
+    file.Access(&type, 1);
+    file.Access(&count, 2);
+    for (unsigned short i = 0; i < count; ++i)
+    {
+        short x, y;
+        file.Access(&x, 2);
+        file.Access(&y, 2);
+        if (mode)
+        {
+            if (x < 0)
+                x = 0;
+            else if (x > width)
+                x = width;
+            if (y < 0)
+                y = 0;
+            else if (y > height)
+                y = height;
+        }
+        point.m_x = x;
+        point.m_y = y;
+        ((RHUnkSectorPoints *)((char *)this + 4))->FUN_0060ce90(point, i);
+        ((SBGeoBoundingBox2D *)((char *)this + 0x3c))->Unk00607dc0(point);
+    }
+    undefined flag;
+    file.Access(&flag, 1);
+    ((RHUnkSectorPoints *)((char *)this + 4))->FUN_0060c2e0();
+    ((RHUnk005f5440 *)&file)->Unk();
+}
+
+// FUNCTION: GAME 0x0057d440
+RHUnk0057d440::RHUnk0057d440()
+{
+    m_30 = 0x400;
 }
 
 // Unresolved vector inlining/frame layout; target 0x24, current 0x28.
@@ -111,6 +296,63 @@ bool RHSectorLift::Serialize(SBFile &file)
     return true;
 }
 
+// STUB: GAME 0x0057e970
+bool RHSectorBuilding::Serialize(SBFile &file)
+{
+    // STRING: GAME 0x006b72b8
+    RHSerializeName(file, "RHSectorBuilding");
+    unsigned short count;
+    RHElementActor *actor;
+    if (!file.m_bLoading)
+    {
+        count = (unsigned short)m_f4.m_count;
+        if (file.Access(&count, 2) < 0)
+        {
+            SBString *err = file.GetError();
+            const char *reason = err->m_chars ? err->m_chars : "";
+            SBAssert(0, "P:\\Robin Hood\\RHsector.cpp", 0x6bb, "Serialize failed reason is %s", reason);
+            return false;
+        }
+        for (unsigned short i = 0; i < count; ++i)
+        {
+            m_f4.Unk005c8e40(i);
+            actor = m_f4.CurrentValue();
+            if (!g_pEngine->FUN_004c3af0(file, (void *&)actor))
+                return false;
+        }
+    }
+    else
+    {
+        RHSectorActorList &list = m_f4;
+        RHSectorActorIter it = list.begin();
+        while (it.m_p != list.m_head)
+            ((RHUnk0046eb30 *)&list)->erase(RHScriptIter((RHScriptNode *)(it++).m_p));
+        list.m_valid = 1;
+        if (file.Access(&count, 2) < 0)
+        {
+            SBString *err = file.GetError();
+            const char *reason = err->m_chars ? err->m_chars : "";
+            SBAssert(0, "P:\\Robin Hood\\RHsector.cpp", 0x6ca, "Serialize failed reason is %s", reason);
+            return false;
+        }
+        for (unsigned short i = 0; i < count; ++i)
+        {
+            if (!g_pEngine->FUN_004c3af0(file, (void *&)actor))
+                return false;
+            list.insert(RHSectorActorIter(list.m_head), actor);
+            list.m_valid = 1;
+        }
+    }
+    if (file.Access(&m_118, 1) < 0)
+    {
+        SBString *err = file.GetError();
+        const char *reason = err->m_chars ? err->m_chars : "";
+        SBAssert(0, "P:\\Robin Hood\\RHsector.cpp", 0x6d8, "Serialize failed reason is %s", reason);
+        return false;
+    }
+    return true;
+}
+
 // FUNCTION: GAME 0x0057edd0
 bool RHSectorDoor::Serialize(SBFile &file)
 {
@@ -160,6 +402,25 @@ void RHSectorArchery::InitializeFromMissionStream(SBFile &file)
     }
 }
 
+// STUB: GAME 0x0057f520
+bool RHSectorArchery::Serialize(SBFile &file)
+{
+    // STRING: GAME 0x006b7324
+    RHSerializeName(file, "RHSectorArchery");
+    if (file.Access(&m_82, 2) < 0)
+    {
+        SBString *err = file.GetError();
+        const char *reason = err->m_chars ? err->m_chars : "";
+        SBAssert(0, "P:\\Robin Hood\\RHsector.cpp", 0x8fd, "Serialize failed reason is %s", reason);
+        return false;
+    }
+    unsigned short count = (unsigned short)m_58.size();
+    for (unsigned short i = 0; i < count; ++i)
+        if (!m_58[i]->FUN_00522680(file))
+            return false;
+    return true;
+}
+
 // FUNCTION: GAME 0x0057f8c0
 void RHSectorScript::InitializeFromMissionStream(SBFile &file)
 {
@@ -196,6 +457,62 @@ void RHSectorScript::InitializeFromMissionStream(SBFile &file)
         else
             m_b8 = 0;
     }
+}
+
+// STUB: GAME 0x0057fae0
+bool RHSectorScript::Serialize(SBFile &file)
+{
+    // STRING: GAME 0x006b7388
+    RHSerializeName(file, "RHSectorScript");
+    unsigned short count;
+    RHElementActor *actor;
+    if (!file.m_bLoading)
+    {
+        count = (unsigned short)m_cc.m_count;
+        if (file.Access(&count, 2) < 0)
+        {
+            SBString *err = file.GetError();
+            const char *reason = err->m_chars ? err->m_chars : "";
+            SBAssert(0, "P:\\Robin Hood\\RHsector.cpp", 0x990, "Serialize failed reason is %s", reason);
+            return false;
+        }
+        for (unsigned short i = 0; i < count; ++i)
+        {
+            m_cc.Unk005c8e40(i);
+            actor = m_cc.CurrentValue();
+            if (!g_pEngine->FUN_004c3af0(file, (void *&)actor))
+                return false;
+        }
+    }
+    else
+    {
+        RHSectorActorList &list = m_cc;
+        RHSectorActorNode *it = list.m_head->m_next;
+        while (it != list.m_head)
+        {
+            RHSectorActorNode *previous = it;
+            it = it->m_next;
+            ((RHUnk0046eb30 *)&list)->erase(RHScriptIter((RHScriptNode *)previous));
+        }
+        list.m_valid = 1;
+        if (file.Access(&count, 2) < 0)
+        {
+            SBString *err = file.GetError();
+            const char *reason = err->m_chars ? err->m_chars : "";
+            SBAssert(0, "P:\\Robin Hood\\RHsector.cpp", 0x99f, "Serialize failed reason is %s", reason);
+            return false;
+        }
+        for (unsigned short i = 0; i < count; ++i)
+        {
+            if (!g_pEngine->FUN_004c3af0(file, (void *&)actor))
+                return false;
+            list.insert(RHSectorActorIter(list.m_head), actor);
+            list.m_valid = 1;
+        }
+    }
+    if (g_unk0x6c0691 && m_b8)
+        ((RHScrollScript *)((char *)this + 0x58))->FUN_006348f0(file);
+    return true;
 }
 
 // deferred: unannotated pending reccmp #534 (0x0057fcc0, recursive ILT call).
@@ -268,11 +585,18 @@ void RHSectorScript::Emit(RHElementActor *actor)
 void RHSectorScript::Emit(SBFile &file)
 {
     InitializeFromMissionStream(file);
+    Serialize(file);
+}
+
+void RHSectorBuilding::Emit(SBFile &file)
+{
+    Serialize(file);
 }
 
 void RHSectorArchery::Emit(SBFile &file)
 {
     InitializeFromMissionStream(file);
+    Serialize(file);
 }
 
 void RHSectorLift::Emit(SBFile &file)
@@ -288,4 +612,18 @@ void RHSectorLift::Emit(SBFile &file, RHUnkSectorLiftGrid *grid)
 void RHSectorDoor::Emit(SBFile &file)
 {
     Serialize(file);
+}
+
+// deferred: 0x0060ced0, exact body; called by a counted initializer.
+void RHUnkSectorPoints::Unk0060ced0(const SBGeoPoint2D &point, unsigned int index)
+{
+    m_28 = 0;
+    m_29 = 0;
+    FUN_006112a0(point, index);
+}
+
+// deferred: 0x0060cef0, exact body; called by counted initializers.
+SBGeoPoint2D &RHUnkSectorPoints::Unk0060cef0(unsigned int index)
+{
+    return FUN_006112c0(index);
 }

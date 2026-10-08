@@ -1,6 +1,58 @@
 #include "SBDrawManager.h"
-#include "Toolbox.h"
 #include "SBResourceManager.h"
+#include <string>
+
+void SBAssert(int, const char *, int, const char *, ...);
+std::string FUN_005f81d0(long);
+
+class RHUnk00613e90
+{
+public:
+    RHUnk00613e90();
+    ~RHUnk00613e90();
+    char m_00[4];
+    unsigned short m_width;
+    char m_06[2];
+    unsigned long m_pitch;
+    unsigned short m_depth;
+    char m_0e[2];
+    unsigned short *m_data;
+    char m_14[4];
+};
+
+class RHUnkFXDraw
+{
+public:
+    unsigned long Unk005e4ed0(int, int, int, int);
+    void Unk005e5160(unsigned long);
+    void FUN_005e5260();
+    bool Unk005e5a00(unsigned long, RHUnk00613e90 &, unsigned long);
+    void Unk005e5ea0(RHUnk00613e90 &);
+    unsigned short FUN_005e56c0(unsigned long);
+    unsigned short FUN_005e5750(unsigned long);
+    void FUN_005e61e0(unsigned long, unsigned long, unsigned long, unsigned long);
+    void FUN_005e6440(unsigned long, int, int, unsigned long, unsigned long);
+    unsigned short UnkField10c() const { return m_depth; }
+    char m_00[0x10c];
+    unsigned short m_depth;
+};
+
+class SBGeoPoint2D
+{
+public:
+    SBGeoPoint2D();
+    SBGeoPoint2D(float, float);
+    ~SBGeoPoint2D();
+    float m_x;
+    float m_y;
+};
+
+class SBGeoVector2D : public SBGeoPoint2D
+{
+public:
+    SBGeoVector2D(float, float);
+    ~SBGeoVector2D() {}
+};
 
 extern float g_unk0x006774f4;
 extern float g_unk0x006775d8;
@@ -17,6 +69,51 @@ inline SBDrawUnk005e56c0Iterator SBDrawFind(SBDrawUnk005f0090 &tree, const unsig
     SBDrawUnk005f0090Node *head = tree.m_head;
     return (found.m_node != head && key >= found.m_node->m_key
         ? found : SBDrawUnk005e56c0Iterator(head));
+}
+
+static __forceinline const char *SBDrawStringData(const std::string &value)
+{
+    const char *buffer = *(const char *const *)((const char *)&value + 4);
+    return buffer ? buffer : "";
+}
+
+// STUB: GAME 0x005e3f70
+bool RHUnk005ef320::FUN_005e3f70()
+{
+    SBDrawUnk005efc10 &tree = *(SBDrawUnk005efc10 *)((char *)this + 0x54);
+    for (;;) {
+        unsigned long key = 0;
+        SBDrawUnk005efc10Iterator found = tree.FUN_005efc10(key);
+        found.m_node = tree.m_head;
+        SBDrawUnk005e5ec0Surface *object = *(SBDrawUnk005e5ec0Surface **)((char *)this + 0x88);
+        if (!object) return false;
+        long result = ((long (__stdcall *)(SBDrawUnk005e5ec0Surface *))object->m_vtable[25])(object);
+        if (result == 0) return true;
+        if (result == (long)0x8876024b) {
+            object = *(SBDrawUnk005e5ec0Surface **)((char *)this + 0x84);
+            result = ((long (__stdcall *)(SBDrawUnk005e5ec0Surface *, void *, unsigned long))object->m_vtable[20])(
+                object, *(void **)((char *)this + 0x100), 0x413);
+            if (result != 0)
+                SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0x103,
+                    // STRING: GAME 0x006b9320
+                    "Unable to switch back to exclusive mode DxERR=%s", SBDrawStringData(FUN_005f81d0(result)));
+            object = *(SBDrawUnk005e5ec0Surface **)((char *)this + 0x88);
+            result = ((long (__stdcall *)(SBDrawUnk005e5ec0Surface *, unsigned long, unsigned long,
+                unsigned long, unsigned long, unsigned long))object->m_vtable[21])(
+                object, *(unsigned short *)((char *)this + 0x10e), *(unsigned short *)((char *)this + 0x110), 16, 0, 0);
+            if (result != 0)
+                SBAssert(1, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0x109,
+                    // STRING: GAME 0x006b92dc
+                    "Unable to set the display resolution DxERR=%s resolution( %d, %d )",
+                    SBDrawStringData(FUN_005f81d0(result)), *(unsigned short *)((char *)this + 0x10e),
+                    *(unsigned short *)((char *)this + 0x110));
+        } else {
+            SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0x110,
+                // STRING: GAME 0x006b92ac
+                "Unable to restore the primary surface DxERR=%s", SBDrawStringData(FUN_005f81d0(result)));
+            return false;
+        }
+    }
 }
 
 // FUNCTION: GAME 0x005e56c0
@@ -71,6 +168,29 @@ void RHUnk005ef320::FUN_005e57e0(unsigned surface, SBGeoVector2D &size)
     float height = node->m_height;
     size.m_x = node->m_width;
     size.m_y = height;
+}
+
+// FUNCTION: GAME 0x005e5bd0
+bool RHUnk005ef320::FUN_005e5bd0(unsigned long surface, void *dc)
+{
+    if (surface == 0) surface = 1;
+    SBDrawUnk005f0090 &tree = *(SBDrawUnk005f0090 *)((char *)this + 0x54);
+    SBDrawUnk005f0090Node *found = SBDrawFind(tree, surface).m_node;
+    if (found == *(SBDrawUnk005f0090Node **)((char *)this + 0x58)) {
+        SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0x59e,
+            // STRING: GAME 0x006b962c
+            "Trying to release the DC of an inexistant surface");
+        return false;
+    }
+    SBDrawUnk005e5ec0Surface *object = *(SBDrawUnk005e5ec0Surface **)((char *)found + 0x10);
+    long result = ((long (__stdcall *)(SBDrawUnk005e5ec0Surface *, void *))object->m_vtable[26])(object, dc);
+    if (result != 0) {
+        SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0x5a6,
+            // STRING: GAME 0x006b95ec
+            "Unable to release the gdi compatible DC of a surface DxErr=%s", FUN_005f81d0(result));
+        return false;
+    }
+    return true;
 }
 
 // FUNCTION: GAME 0x005e5ec0
@@ -415,8 +535,138 @@ bool SBDrawUnk005e8450::FUN_005ec500(void *source, void *destination,
     return true;
 }
 
+// STUB: GAME 0x005eec00
+bool RHUnk005ef320::FUN_005eec00(unsigned long destination, unsigned long source, void *polygon,
+    unsigned long scale, unsigned long offsetX, unsigned long offsetY, unsigned long color, unsigned long alpha)
+{
+    SBDrawUnk005fc3b0Point point;
+    RHUnk00613e90 destinationView;
+    RHUnk00613e90 sourceView;
+    if (source == 0 && !*(unsigned char *)((char *)this + 0x112)) {
+        source = 1;
+        if (destination == 0) destination = 1;
+    }
+    point.m_x = 0;
+    point.m_y = 0;
+    if (!FUN_005ee640(polygon, point)) return false;
+    unsigned long tint = ((((color >> 16) & 0xff) * alpha) & 0xff00) << 8;
+    tint |= ((color & 0xff) * alpha) >> 8;
+    tint |= (((color >> 8) & 0xff) * alpha) & 0xff00;
+    unsigned long inverseAlpha = 0x100 - alpha;
+    RHUnkFXDraw *draw = (RHUnkFXDraw *)this;
+    if (!draw->Unk005e5a00(source, sourceView, 0)) {
+        SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0x33f6,
+            // STRING: GAME 0x006b98b4
+            "Cannot get source surface viewport");
+        return false;
+    }
+    switch (sourceView.m_depth) {
+    case 16:
+        if (scale == 1) color = 0x00624748;
+        else if (scale == 2) color = 0x006245fc;
+        else color = 0x0062469c;
+        break;
+    case 15:
+        if (scale == 1) color = 0x00624934;
+        else if (scale == 2) color = 0x006247e8;
+        else color = 0x00624888;
+        break;
+    }
+    unsigned long sourcePitch = sourceView.m_pitch >> 1;
+    unsigned short *sourceData = sourceView.m_data;
+    unsigned long destinationPitch;
+    unsigned short *destinationData;
+    if (destination != source) {
+        if (!draw->Unk005e5a00(destination, destinationView, 0)) {
+            draw->Unk005e5ea0(sourceView);
+            SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0x342a,
+                "Cannot get source surface viewport");
+            return false;
+        }
+        destinationPitch = destinationView.m_pitch >> 1;
+        destinationData = destinationView.m_data;
+    } else {
+        destinationPitch = sourcePitch;
+        destinationData = sourceData;
+    }
+    SBDrawUnk005eec00Edge *&edges = *(SBDrawUnk005eec00Edge **)((char *)this + 0x134);
+    unsigned long *&active = *(unsigned long **)((char *)this + 0x13c);
+    unsigned long y = *(unsigned long *)((char *)this + 0x144);
+    unsigned long &endY = *(unsigned long *)((char *)this + 0x14c);
+    unsigned long &activeCount = *(unsigned long *)((char *)this + 0x138);
+    unsigned long &edgeCount = *(unsigned long *)((char *)this + 0x130);
+    typedef void (__cdecl *Blit)(unsigned short *, unsigned short *, unsigned long,
+        unsigned long, unsigned long, unsigned long);
+    while (y < endY) {
+        unsigned long nextY = ~0UL;
+        for (unsigned long i = 0; i < activeCount; ++i)
+            if (edges[active[i]].m_10 < nextY) nextY = edges[active[i]].m_10;
+        for (i = 0; i < edgeCount; ++i)
+            if (!edges[i].m_00 && edges[i].m_08 > y && edges[i].m_08 < nextY)
+                nextY = edges[i].m_08;
+        unsigned long rows = nextY - y;
+        if (rows != 0) {
+            unsigned long sourceRow = y * scale;
+            unsigned long destinationRow = y * destinationPitch;
+            unsigned long sourceOffset = scale * offsetY;
+            y += rows;
+            do {
+                unsigned long sourceBase = ((sourceRow - sourceOffset) >> 1) * sourcePitch;
+                for (i = 0; i < (activeCount >> 1); ++i) {
+                    unsigned long x = (unsigned long)edges[active[i * 2]].m_14 >> 16;
+                    unsigned long right = (unsigned long)edges[active[i * 2 + 1]].m_14 >> 16;
+                    ((Blit)color)(destinationData + destinationRow + x,
+                        sourceData + sourceBase + (((x - offsetX) * scale) >> 1),
+                        sourcePitch * 2, right - x + 1, inverseAlpha, tint);
+                }
+                for (i = 0; i < activeCount; ++i)
+                    edges[active[i]].m_14 += edges[active[i]].m_18;
+                sourceRow += scale;
+                destinationRow += destinationPitch;
+            } while (--rows != 0);
+        }
+        for (i = 0; i < activeCount; ++i)
+            if (edges[active[i]].m_10 == y) edges[active[i]].m_00 = 1;
+        activeCount = 0;
+        for (i = 0; i < edgeCount; ++i)
+            if (!edges[i].m_00 && edges[i].m_08 <= y) active[activeCount++] = i;
+        if (activeCount != 0) {
+            unsigned long passes = activeCount - 1;
+            while (passes != 0) {
+                for (i = 0; i < passes; ++i) {
+                    unsigned long left = active[i];
+                    unsigned long right = active[i + 1];
+                    int difference = edges[left].m_14 - edges[right].m_14;
+                    if (difference > 0 || (difference == 0 && edges[left].m_18 > edges[right].m_18)) {
+                        active[i + 1] = left;
+                        active[i] = right;
+                    }
+                }
+                --passes;
+            }
+        }
+    }
+    if (y == endY) {
+        unsigned long sourceBase = (((y - offsetY) * scale) >> 1) * sourcePitch;
+        unsigned long destinationRow = y * destinationPitch;
+        for (unsigned long i = 0; i < (activeCount >> 1); ++i) {
+            unsigned long x = (unsigned long)edges[active[i * 2]].m_14 >> 16;
+            unsigned long right = (unsigned long)edges[active[i * 2 + 1]].m_14 >> 16;
+            ((Blit)color)(destinationData + destinationRow + x,
+                sourceData + sourceBase + (((x - offsetX) * scale) >> 1),
+                sourcePitch * 2, right - x + 1, inverseAlpha, tint);
+        }
+    }
+    if (source != destination) draw->Unk005e5ea0(destinationView);
+    draw->Unk005e5ea0(sourceView);
+    return true;
+}
+
 void EmitSBDrawManager(SBDrawUnk005e8450 *draw, void *buffer)
 {
+    ((RHUnk005ef320 *)draw)->FUN_005e5bd0(0, buffer);
+    ((RHUnk005ef320 *)draw)->FUN_005e3f70();
+    ((RHUnk005ef320 *)draw)->FUN_005eec00(0, 0, buffer, 0, 0, 0, 0, 0);
     draw->FUN_005e7880(buffer, buffer, buffer, 0, 0, 0, 0, 0, 0);
     draw->FUN_005e7d30(buffer, buffer, buffer, 0, 0, 0, 0, 0, 0);
     draw->FUN_005e7d70(buffer, buffer, buffer, 0, 0, 0, 0, 0, 0);

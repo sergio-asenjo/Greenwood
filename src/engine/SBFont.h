@@ -2,14 +2,25 @@
 #define SB_FONT_H
 
 #include <string>
+#include "Decomp.h"
 
 class SBFile;
+void FUN_005f8030(int, const char *, int, const char *, ...);
 
+// SIZE 0x01
+class SBFontLock
+{
+public:
+    SBFontLock();
+    ~SBFontLock();
+};
+
+// SIZE 0x0c
 struct SBFontTextView
 {
-    int m_00;
-    unsigned short *m_04;
-    unsigned m_08;
+    undefined4 m_00; // 0x00
+    unsigned short *m_04; // 0x04
+    unsigned m_08; // 0x08
     unsigned short *end()
     {
         unsigned short *value = m_04;
@@ -18,25 +29,26 @@ struct SBFontTextView
     }
 };
 
+// SIZE 0x44
 class SBFontUnk0061e840
 {
 public:
-    virtual int v0();
-    virtual void v1(void *);
-    virtual void v2();
-    virtual int v3(unsigned short, int &, int &);
-    virtual void v4(unsigned short, void *, const void *, bool);
-    virtual void v5();
-    virtual void v6();
-    virtual void v7();
-    virtual int v8();
-    virtual bool v9(SBFile &);
-    int m_04;
-    char m_08[0x0c];
-    int m_14;
-    char m_18[0x24];
-    int m_3c;
-    int m_40;
+    virtual int v0(); // vtable+0x00
+    virtual void v1(void *); // vtable+0x04
+    virtual void v2(); // vtable+0x08
+    virtual int v3(unsigned short, int &, int &); // vtable+0x0c
+    virtual void v4(unsigned short, void *, const void *, bool); // vtable+0x10
+    virtual void v5(); // vtable+0x14
+    virtual void v6(); // vtable+0x18
+    virtual void v7(); // vtable+0x1c
+    virtual int v8(); // vtable+0x20
+    virtual bool v9(SBFile &); // vtable+0x24
+    int m_04; // 0x04
+    char m_08[0x0c]; // 0x08
+    int m_14; // 0x14
+    char m_18[0x24]; // 0x18
+    int m_3c; // 0x3c
+    undefined4 m_40; // 0x40
 
     void FUN_0061e810(int, int);
     void FUN_0061e840();
@@ -49,7 +61,143 @@ public:
     bool FUN_0061ea80(const std::string &);
     int FUN_0061eb80(SBFontTextView *, void *, const void *, bool);
     bool FUN_0061eb00(SBFile &);
+    void FUN_0061ebd0(unsigned short);
     bool FUN_0061ed70(SBFile &);
+};
+
+// SIZE 0x14
+struct SBFontNode0061fcb0
+{
+    SBFontNode0061fcb0 *m_00; // 0x00
+    SBFontNode0061fcb0 *m_04; // 0x04
+    SBFontNode0061fcb0 *m_08; // 0x08
+    unsigned short m_0c; // 0x0c
+    undefined2 m_0e; // 0x0e
+    int m_10; // 0x10
+};
+
+// SIZE 0x04
+struct SBFontIterator0061fe10
+{
+    SBFontNode0061fcb0 *m_00; // 0x00
+    void FUN_00620ca0();
+};
+
+// SIZE 0x08
+struct SBFontPair0061f2b0
+{
+    SBFontIterator0061fe10 m_00; // 0x00
+    bool m_04; // 0x04
+    SBFontPair0061f2b0(const SBFontIterator0061fe10 &value, const bool &inserted) : m_00(value), m_04(inserted) {}
+};
+
+extern SBFontNode0061fcb0 *g_unk0x006c191c;
+extern unsigned g_unk0x006c1920;
+
+// SIZE 0x10
+class SBFontTree0061fcb0
+{
+public:
+    undefined m_00; // 0x00
+    undefined m_01; // 0x01
+    undefined2 m_02; // 0x02
+    SBFontNode0061fcb0 *m_04; // 0x04
+    bool m_08; // 0x08
+    undefined m_09[3]; // 0x09
+    unsigned m_0c; // 0x0c
+    SBFontTree0061fcb0(const undefined &, bool, const undefined &);
+    SBFontTree0061fcb0(const SBFontTree0061fcb0 &other)
+        : m_00(other.m_00), m_01(other.m_01), m_08(other.m_08)
+    {
+        {
+            SBFontLock lock;
+            if (!g_unk0x006c191c) {
+                SBFontNode0061fcb0 *node = (SBFontNode0061fcb0 *)operator new(0x14);
+                node->m_04 = 0;
+                node->m_10 = 1;
+                g_unk0x006c191c = node;
+                g_unk0x006c191c->m_00 = 0;
+                g_unk0x006c191c->m_08 = 0;
+            }
+            ++g_unk0x006c1920;
+            m_04 = FUN_00620c70(g_unk0x006c191c, 0);
+            m_0c = 0;
+            m_04->m_00 = m_04;
+            m_04->m_08 = m_04;
+        }
+        FUN_00620960(other);
+    }
+    ~SBFontTree0061fcb0()
+    {
+        FUN_0061fce0(begin(), end());
+        operator delete(m_04);
+        m_04 = 0;
+        m_0c = 0;
+        SBFontLock lock;
+        if (--g_unk0x006c1920 == 0) {
+            operator delete(g_unk0x006c191c);
+            g_unk0x006c191c = 0;
+        }
+    }
+    SBFontIterator0061fe10 begin() { SBFontIterator0061fe10 it; it.m_00 = m_04->m_00; return it; }
+    SBFontIterator0061fe10 end() { SBFontIterator0061fe10 it; it.m_00 = m_04; return it; }
+    void FUN_0061eea0();
+    SBFontPair0061f2b0 FUN_0061f2b0(const unsigned short &);
+    SBFontIterator0061fe10 FUN_0061fe10(const unsigned short &);
+    void FUN_00620b70();
+    SBFontNode0061fcb0 *FUN_00620c20(const unsigned short &);
+    SBFontIterator0061fe10 FUN_0061fe30(SBFontNode0061fcb0 *, SBFontNode0061fcb0 *, const unsigned short &);
+    SBFontIterator0061fe10 FUN_0061fce0(SBFontIterator0061fe10, SBFontIterator0061fe10);
+    void FUN_00620960(const SBFontTree0061fcb0 &);
+    SBFontNode0061fcb0 *FUN_00620c70(SBFontNode0061fcb0 *, int);
+};
+
+// SIZE 0x20
+class SBFontValue0061f120
+{
+public:
+    std::string m_00; // 0x00
+    SBFontTree0061fcb0 m_10; // 0x10
+    SBFontValue0061f120(const std::string &, const SBFontTree0061fcb0 &);
+    ~SBFontValue0061f120();
+};
+
+// SIZE 0x30
+struct SBFontNode0061f3e0
+{
+    SBFontNode0061f3e0 *m_00; // 0x00
+    SBFontNode0061f3e0 *m_04; // 0x04
+    SBFontNode0061f3e0 *m_08; // 0x08
+    SBFontValue0061f120 m_0c; // 0x0c
+    int m_2c; // 0x2c
+};
+
+// SIZE 0x04
+struct SBFontIterator0061f3e0
+{
+    SBFontNode0061f3e0 *m_00; // 0x00
+    void FUN_00620e30();
+};
+
+// SIZE 0x08
+struct SBFontPair0061f3e0
+{
+    SBFontIterator0061f3e0 m_00; // 0x00
+    bool m_04; // 0x04
+    SBFontPair0061f3e0(const SBFontIterator0061f3e0 &value, const bool &inserted) : m_00(value), m_04(inserted) {}
+};
+
+// SIZE 0x10
+class SBFontTree0061f3e0
+{
+public:
+    undefined m_00[4]; // 0x00
+    SBFontNode0061f3e0 *m_04; // 0x04
+    bool m_08; // 0x08
+    undefined m_09[3]; // 0x09
+    unsigned m_0c; // 0x0c
+    SBFontPair0061f3e0 FUN_0061f3e0(const SBFontValue0061f120 &);
+    SBFontIterator0061f3e0 FUN_00620130(SBFontNode0061f3e0 *, SBFontNode0061f3e0 *, const SBFontValue0061f120 &);
 };
 
 #endif

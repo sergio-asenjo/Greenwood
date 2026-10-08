@@ -3,25 +3,118 @@
 #include "RHCivilianProfile.h"
 #include <windows.h>
 
+DECOMP_SIZE_ASSERT(RHEngine, 0x4944)
+DECOMP_SIZE_ASSERT(RHUnk0046ffe0, 0xa9c)
+DECOMP_SIZE_ASSERT(RHUnk004ab090, 0x270)
+DECOMP_SIZE_ASSERT(RHUnk004b9b70, 0x170)
+DECOMP_SIZE_ASSERT(RHUnk004bac30, 0x18c)
+DECOMP_SIZE_ASSERT(RHUnk004a8130, 0xfc)
+DECOMP_SIZE_ASSERT(RHUnk005069a0, 0x14)
+DECOMP_SIZE_ASSERT(RHUnk005055b0, 0x44)
+DECOMP_SIZE_ASSERT(RHUnk004bc5b0, 0x160)
+DECOMP_SIZE_ASSERT(RHUnk004e51e0, 0x30)
+DECOMP_SIZE_ASSERT(RHMobileUnk00607da0, 0x14)
+DECOMP_SIZE_ASSERT(RHUnk0058c590, 0xc8)
+DECOMP_SIZE_ASSERT(RHUnk00551da0, 0x04)
+DECOMP_SIZE_ASSERT(RHUnk0051d2c0, 0x20)
+DECOMP_SIZE_ASSERT(RHHikingGuide, 0x1c)
+DECOMP_SIZE_ASSERT(RHUnk005f4fc0, 0x58)
+
 void FUN_005e0c90(SBFile &file, std::string &value);
+void RHSerializeName(SBFile &file, const char *name);
 extern char g_unk0x6c0560[4];
+extern void **g_unk0x6c0f34;
+extern float g_unk0x0067749c;
+
+class RHEngineWidenedCalls
+{
+public:
+    bool FUN_004b2010(char flag, void *description);
+    void FUN_004c7f60(const void *point);
+    void FUN_00556260();
+    void FUN_005563f0(unsigned value);
+    void FUN_0055ebf0();
+    void FUN_004eb120(SBFile &file, void *pathFinder);
+    void FUN_00558670(SBFile &file);
+    void FUN_005bd450();
+    bool FUN_005b76e0(unsigned row, unsigned flags);
+    void FUN_005bd5b0(bool flag);
+    void FUN_0050efd0(void *actor);
+    void FUN_004e3660(char flag);
+    unsigned FUN_004d2340(unsigned value);
+    void FUN_00504b80(unsigned value);
+    void FUN_005e5160(unsigned surface);
+};
+
+void *FUN_004b3120(int type);
+
+// GLOBAL: GAME 0x006c1058
+unsigned g_unk0x006c1058 = 0;
+
+// GLOBAL: GAME 0x006c1060
+unsigned g_unk0x006c1060 = 0;
+
+extern unsigned char *g_unk0x006c0bd4;
+
+class RHUnk00523620Object
+{
+public:
+    virtual void Unk00(); // vtable+0x00
+    virtual void Unk04(); // vtable+0x04
+    virtual void Unk08(unsigned flags); // vtable+0x08
+    virtual void Unk0c(); // vtable+0x0c
+    virtual void Unk10(); // vtable+0x10
+    virtual void Unk14(); // vtable+0x14
+    virtual void Unk18(); // vtable+0x18
+};
+
+class RHUnk00523620Owned
+{
+public:
+    virtual void Unk00(unsigned flags); // vtable+0x00
+};
 
 class SBGeoVector2D;
 
+// SIZE 0x08
 class SBGeoPoint2D
 {
 public:
     SBGeoPoint2D();
+    SBGeoPoint2D(float x, float y);
     ~SBGeoPoint2D();
     SBGeoPoint2D &operator=(const SBGeoPoint2D &value);
     SBGeoPoint2D operator+(const SBGeoVector2D &value) const;
     bool Serialize(SBFile &file);
-    float m_x;
-    float m_y;
+    float m_x; // 0x00
+    float m_y; // 0x04
 };
+
+DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 
 class RHUnk00452030;
 extern RHUnk00452030 *g_unk0x6c07fc;
+class RHUnk0048a970;
+extern RHUnk0048a970 *g_unk0x6c0b3c;
+
+class RHElementActorPC
+{
+public:
+    static RHElementActorPC *CreatePCFromMissionStream(SBFile &file);
+};
+
+// SIZE 0x100
+class RHElementBonus
+{
+public:
+    enum BonusType { BONUS_UNKNOWN = 0 };
+    RHElementBonus(BonusType type, bool flag, unsigned short quantity);
+    ~RHElementBonus();
+    static RHElementBonus *CreateBonusFromMissionStream(SBFile &file);
+    undefined m_data[0x100]; // 0x00
+};
+
+DECOMP_SIZE_ASSERT(RHElementBonus, 0x100)
 struct RHBonusProjection;
 
 class RHUnk0057d800
@@ -121,7 +214,7 @@ public:
     void FUN_00491fd0(const RHbeamMe &beamMe);
     void FUN_004d8460(void *actor, int first, int second);
     unsigned FUN_004e4460(void **value, int insert);
-    SBGeoPoint2D FUN_004a49e0();
+    SBGeoVector2D FUN_004a49e0();
     bool FUN_004f6c20(const SBGeoPoint2D &origin, SBGeoPoint2D &destination,
         unsigned short layer, const SBGeoPoint2D &extent);
 };
@@ -140,10 +233,30 @@ public:
     char m_data[0x9c];
 };
 
+// SIZE 0x08
 class SBGeoVector2D : public SBGeoPoint2D
 {
 public:
     SBGeoVector2D(float x, float y);
+    SBGeoVector2D(const SBGeoPoint2D &value);
+};
+
+DECOMP_SIZE_ASSERT(SBGeoVector2D, 0x08)
+
+// SIZE 0x08
+class RHUnk005fc3b0 : public SBGeoPoint2D
+{
+public:
+    RHUnk005fc3b0();
+    SBGeoVector2D FUN_005fc5d0(float value);
+};
+
+DECOMP_SIZE_ASSERT(RHUnk005fc3b0, 0x08)
+
+class RHSpritePositionCalls
+{
+public:
+    SBGeoVector2D FUN_004a4a10();
 };
 
 void FUN_0048c5b0(void *actor, int value);
@@ -180,9 +293,37 @@ public:
 class RHEngineBackgroundCalls
 {
 public:
-    void FUN_00611660(const std::string &path);
-    void FUN_004e7fa0(int width, int height);
+    bool FUN_00611660(const std::string &path);
+    bool FUN_004e7fa0(unsigned short width, unsigned short height);
 };
+
+// SIZE 0x14
+class SBGeoBoundingBox2D
+{
+public:
+    int FUN_00609050(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
+    float m_00; // 0x00
+    float m_04; // 0x04
+    float m_08; // 0x08
+    float m_0c; // 0x0c
+    undefined m_10; // 0x10
+    undefined m_11[3]; // 0x11
+};
+
+DECOMP_SIZE_ASSERT(SBGeoBoundingBox2D, 0x14)
+
+// SIZE 0x04 (call view)
+class RHUnk00611660Calls
+{
+public:
+    virtual void Unk00(); // vtable+0x00
+    virtual void Unk04(); // vtable+0x04
+    virtual void Unk08(); // vtable+0x08
+    virtual void Unk0c(); // vtable+0x0c
+    virtual bool Unk10(SBFile &file); // vtable+0x10
+};
+
+DECOMP_SIZE_ASSERT(RHUnk00611660Calls, 0x04)
 
 extern std::string g_unk0x006c05f0;
 extern float g_unk0x00677438;
@@ -254,6 +395,194 @@ float g_unk0x006774a0 = 20.0f;
 
 // STRING: GAME 0x006aef80
 static const char *g_rhengineFile = "P:\\Robin Hood\\RHengine.cpp";
+
+// deferred: unannotated pending reccmp #534 (0x004622e0)
+void *FUN_004622e0(int index, void *container)
+{
+    void **first = *(void ***)((char *)container + 4);
+    unsigned count = !first ? 0 : *(void ***)((char *)container + 8) - first;
+    for (unsigned i = 0; i < count; ++i)
+    {
+        void *value = first[i];
+        if (value && *(int *)((char *)value + 0xc) == index)
+            return first[i];
+    }
+    return 0;
+}
+
+// FUNCTION: GAME 0x00462a90
+void RHUnk00462a90::FUN_00462a90(const char *value)
+{
+    m_8e = value[1];
+}
+
+// FUNCTION: GAME 0x00486170
+void RHUnk00486170::FUN_00486170(void *value, unsigned count)
+{
+    operator delete(value);
+}
+
+// FUNCTION: GAME 0x004936a0
+void RHEngineReinforcementCalls::FUN_004936a0(int value)
+{
+    if ((char)value || *(unsigned *)((char *)**(void ***)((char *)g_unk0x6c07fc + 0x178) + 0x3c) != 8)
+    {
+        void *actor = *(void **)((char *)this + 0x4ec);
+        if (*((char *)actor + 0xca9))
+            ((RHEngineWidenedCalls *)g_unk0x6c0b3c)->FUN_0050efd0(actor);
+    }
+}
+
+#define RHENGINE_OBJECT_CREATE(type, row, flag) \
+    if (((RHEngineWidenedCalls *)this)->FUN_004b2010(flag, FUN_004b3120(type)) == true) \
+    { \
+        unsigned &current = *(unsigned *)((char *)this + 0xb4); \
+        if (current != row) \
+        { \
+            RHEngineWidenedCalls *sprite = *(RHEngineWidenedCalls **)((char *)this + 0x50); \
+            current = row; \
+            sprite->FUN_005bd450(); \
+            (*(RHEngineWidenedCalls **)((char *)this + 0x50))->FUN_005b76e0(row, 0); \
+        } \
+        return true; \
+    } \
+    return false;
+
+// FUNCTION: GAME 0x004a49e0
+SBGeoVector2D RHEngineReinforcementCalls::FUN_004a49e0()
+{
+    return ((RHSpritePositionCalls *)((char *)*(void **)((char *)this + 0x50) + 4))->FUN_004a4a10();
+}
+
+// FUNCTION: GAME 0x004a6000
+bool RHUnk004a6000::FUN_004a6000()
+{
+    RHENGINE_OBJECT_CREATE(3, 0xc3, 1)
+}
+
+// FUNCTION: GAME 0x004a6310
+bool RHUnk004a6310::FUN_004a6310(char flag)
+{
+    RHENGINE_OBJECT_CREATE(4, 0xc4, flag)
+}
+
+// FUNCTION: GAME 0x004a66d0
+bool RHUnk004a66d0::FUN_004a66d0(char flag)
+{
+    return ((RHEngineWidenedCalls *)this)->FUN_004b2010(flag, FUN_004b3120(5));
+}
+
+// FUNCTION: GAME 0x004a7d70
+bool RHUnk004a7d70::FUN_004a7d70(char flag)
+{
+    RHENGINE_OBJECT_CREATE(13, 0xbe, flag)
+}
+
+// FUNCTION: GAME 0x004a7ed0
+bool RHUnk004a7ed0::FUN_004a7ed0(char flag)
+{
+    RHENGINE_OBJECT_CREATE(8, 0xc4, flag)
+}
+
+// FUNCTION: GAME 0x004b0980
+bool RHUnk004b0980::FUN_004b0980(char flag)
+{
+    RHENGINE_OBJECT_CREATE(9, 0xc4, flag)
+}
+
+// FUNCTION: GAME 0x004b91a0
+bool RHUnk004b91a0::FUN_004b91a0(char flag)
+{
+    RHENGINE_OBJECT_CREATE(7, 0xc4, flag)
+}
+
+// FUNCTION: GAME 0x004ba900
+bool RHUnk004ba900::FUN_004ba900(char flag)
+{
+    if (((RHEngineWidenedCalls *)this)->FUN_004b2010(flag, FUN_004b3120(6)) == true)
+    {
+        unsigned &current = *(unsigned *)((char *)this + 0xb4);
+        if (current != 0xc4)
+        {
+            RHEngineWidenedCalls *sprite = *(RHEngineWidenedCalls **)((char *)this + 0x50);
+            current = 0xc4;
+            sprite->FUN_005bd450();
+            (*(RHEngineWidenedCalls **)((char *)this + 0x50))->FUN_005b76e0(0xc4, 0);
+        }
+        (*(RHEngineWidenedCalls **)((char *)this + 0x50))->FUN_005bd5b0(false);
+        return true;
+    }
+    return false;
+}
+
+// FUNCTION: GAME 0x004be080
+bool RHUnk004be080::FUN_004be080(char flag)
+{
+    RHENGINE_OBJECT_CREATE(11, 0xc4, flag)
+}
+
+#undef RHENGINE_OBJECT_CREATE
+
+class RHElementActor
+{
+public:
+    void FUN_00462730(RHElementActor *actor, bool value);
+};
+
+// SIZE 0x0c
+struct RHEngineSpritePoint
+{
+    undefined4 m_00; // 0x00
+    undefined4 m_04; // 0x04
+    undefined4 m_08; // 0x08
+    RHEngineSpritePoint &operator=(const RHEngineSpritePoint &value)
+    {
+        m_00 = value.m_00;
+        m_04 = value.m_04;
+        m_08 = value.m_08;
+        return *this;
+    }
+};
+
+// SIZE 0x18 (partial layout)
+struct RHEngineSpritePosition
+{
+    undefined4 m_00; // 0x00
+    unsigned m_04; // 0x04
+    undefined4 m_08; // 0x08
+    RHEngineSpritePoint m_point; // 0x0c
+    void Assign(const RHEngineSpritePoint &point)
+    {
+        m_point = point;
+        m_04 = 1;
+    }
+};
+
+DECOMP_SIZE_ASSERT(RHEngineSpritePoint, 0x0c)
+DECOMP_SIZE_ASSERT(RHEngineSpritePosition, 0x18)
+
+// STUB: GAME 0x004bc5b0
+bool RHUnk004bc5b0::FUN_004bc5b0(char flag)
+{
+    if (!((RHEngineWidenedCalls *)this)->FUN_004b2010(flag, FUN_004b3120(10)))
+        return false;
+    if (m_parent)
+    {
+        ((RHElementActor *)this)->FUN_00462730((RHElementActor *)m_parent, false);
+        RHEngineSpritePosition *sprite = (RHEngineSpritePosition *)((char *)m_sprite + 4);
+        sprite->Assign(*(RHEngineSpritePoint *)((char *)m_parent->m_sprite + 0x10));
+        *(unsigned *)((char *)m_sprite + 8) = 7;
+    }
+    unsigned current = m_b4;
+    m_b0 = 10;
+    if (current != 0xbe)
+    {
+        m_b4 = 0xbe;
+        ((RHEngineWidenedCalls *)m_sprite)->FUN_005bd450();
+        ((RHEngineWidenedCalls *)m_sprite)->FUN_005b76e0(0xbe, 0);
+    }
+    return true;
+}
 
 class RHEngineMissionCalls
 {
@@ -421,6 +750,37 @@ void RHEngine::InitializeActorsFromMissionStream(SBFile &file, std::vector<RHbea
     FUN_005e20c0(file);
 }
 
+// FUNCTION: GAME 0x004c1d20
+void RHEngine::FUN_004c1d20(SBFile &file)
+{
+    FUN_005e1d50(file, 0x4f494c45, 3);
+    unsigned short count;
+    file.Access(&count, 2);
+    for (unsigned short i = 0; i < count; ++i)
+    {
+        RHUnk0046ffe0 *actor = new RHUnk0046ffe0(true);
+        actor->Unk3c(file);
+        *(unsigned *)((char *)this + 0x4a68) += *(unsigned *)((char *)actor + 0x4f0);
+        ((RHEngineReinforcementCalls *)this)->FUN_004d8460(actor, 1, 1);
+    }
+    FUN_005e20c0(file);
+}
+
+// FUNCTION: GAME 0x004c1ee0
+void RHEngineMissionCalls::FUN_004c1ee0(SBFile &file)
+{
+    FUN_005e1d50(file, 0x54494e47, 3);
+    unsigned short count;
+    file.Access(&count, 2);
+    for (unsigned short i = 0; i < count; ++i)
+    {
+        RHUnk004ab090 *actor = new RHUnk004ab090;
+        actor->Unk3c(file);
+        ((RHEngineReinforcementCalls *)this)->FUN_004d8460(actor, 1, 1);
+    }
+    FUN_005e20c0(file);
+}
+
 // FUNCTION: GAME 0x004c1f90
 void RHEngine::InitializeBuildingTenantsFromMissionStream(SBFile &file)
 {
@@ -448,6 +808,36 @@ void RHEngine::InitializeBuildingTenantsFromMissionStream(SBFile &file)
         char flag;
         file.Access(&flag, 1);
         *((char *)building + 0x118) = flag;
+    }
+    FUN_005e20c0(file);
+}
+
+// FUNCTION: GAME 0x004c20a0
+void RHEngineMissionCalls::FUN_004c20a0(SBFile &file)
+{
+    FUN_005e1d50(file, 0x534b524f, 4);
+    unsigned short count;
+    file.Access(&count, 2);
+    for (unsigned short i = 0; i < count; ++i)
+    {
+        RHUnk004b9b70 *actor = new RHUnk004b9b70;
+        actor->Unk3c(file);
+        ((RHEngineReinforcementCalls *)this)->FUN_004d8460(actor, 1, 1);
+    }
+    FUN_005e20c0(file);
+}
+
+// FUNCTION: GAME 0x004c2150
+void RHEngine::FUN_004c2150(SBFile &file)
+{
+    FUN_005e1d50(file, 0x424f4f4d, 5);
+    unsigned short count;
+    file.Access(&count, 2);
+    for (unsigned short i = 0; i < count; ++i)
+    {
+        RHUnk004bac30 *actor = new RHUnk004bac30;
+        actor->Unk3c(file);
+        ((RHEngineReinforcementCalls *)this)->FUN_004d8460(actor, 1, 1);
     }
     FUN_005e20c0(file);
 }
@@ -535,6 +925,24 @@ void RHEngine::FUN_004c2200(SBFile &file, std::vector<RHbeamMe> &beamMes)
     }
     FUN_005e20c0(file);
     *(unsigned *)((char *)this + 0x4a4c) = beamMes.size();
+}
+
+// Parked: named bonus-factory call versus unnamed ILT operand (rule 28).
+// STUB: GAME 0x004c2830
+void RHEngineMissionCalls::FUN_004c2830(SBFile &file)
+{
+    FUN_005e1d50(file, 0x5a4f5247, 2);
+    unsigned short count;
+    file.Access(&count, 2);
+    while (count)
+    {
+        RHElementBonus *actor = RHElementBonus::CreateBonusFromMissionStream(file);
+        ((RHEngineReinforcementCalls *)this)->FUN_004d8460(actor, 1, 1);
+        if (*(unsigned *)((char *)actor + 0xb0) == 0x17)
+            *(unsigned *)((char *)this + 0x4a64) += *(unsigned short *)((char *)actor + 0xae);
+        --count;
+    }
+    FUN_005e20c0(file);
 }
 
 // Parked: 26.09%.
@@ -638,6 +1046,44 @@ void RHEngine::FUN_004c28c0(const std::string &name)
     g_unk0x6c0a50.FUN_00523300();
 }
 
+// FUNCTION: GAME 0x004c3630
+void RHEngineMissionCalls::FUN_004c3630(SBFile &file)
+{
+    FUN_005e1d50(file, 0x53544154, 2);
+    ((RHEngineWidenedCalls *)((char *)this + 0x11c))->FUN_004eb120(
+        file, *(void **)((char *)this + 0x45b8));
+    (*(RHEngineWidenedCalls **)((char *)this + 0x45b8))->FUN_00558670(file);
+    FUN_005e20c0(file);
+}
+
+// FUNCTION: GAME 0x004c3680
+void RHEngineMissionCalls::FUN_004c3680(SBFile &file)
+{
+    FUN_005e1d50(file, 0x464c494d, 2);
+    unsigned short count;
+    file.Access(&count, 2);
+    for (unsigned short i = 0; i < count; ++i)
+    {
+        RHUnk004a8130 *actor = new RHUnk004a8130(true);
+        actor->Unk38(file);
+        *(unsigned short *)((char *)actor + 0x10) = 0x1001;
+        ((RHEngineReinforcementCalls *)this)->FUN_004d8460(actor, 1, 1);
+    }
+    FUN_005e20c0(file);
+}
+
+// FUNCTION: GAME 0x004c38d0
+void RHEngine::FUN_004c38d0(SBFile &file, unsigned *value)
+{
+    FUN_005e1d50(file, 0x53504f4b, 3);
+    file.Access(value, 4);
+    file.Access((char *)this + 0x4aa8, 1);
+    unsigned scalar;
+    file.Access(&scalar, 4);
+    *(unsigned *)((char *)this + 0x42a4) = scalar;
+    FUN_005e20c0(file);
+}
+
 // deferred: unannotated pending reccmp #534 (0x004c3a10)
 bool RHEngine::SerializeNestedA(SBFile &file, void *storage)
 {
@@ -728,15 +1174,6 @@ class RHUnk00452030
 {
 public:
     int FUN_00453d60(const void *description);
-};
-
-class RHElementBonus
-{
-public:
-    enum BonusType { BONUS_UNKNOWN = 0 };
-    RHElementBonus(BonusType type, bool flag, unsigned short quantity);
-    ~RHElementBonus();
-    char m_data[0x100];
 };
 
 class RHUnk0048a970;
@@ -985,6 +1422,23 @@ bool RHEngine::FUN_004c6040(SBFile &file)
 
 #undef RHENGINE_ACCESS
 
+// FUNCTION: GAME 0x004c8120
+void RHEngine::FUN_004c8120(void *actor)
+{
+    ((RHEngineWidenedCalls *)this)->FUN_004c7f60(
+        (char *)*(void **)((char *)actor + 0x50) + 0x24);
+}
+
+// FUNCTION: GAME 0x004dee70
+void RHEngine::FUN_004dee70(float *point)
+{
+    float scale = g_unk0x0067749c / *(float *)((char *)this + 0x475c);
+    float *offset = (float *)((char *)*(void **)((char *)this + 0x68) + 0x84);
+    float y = offset[1] * scale + *(float *)((char *)this + 0x473c);
+    point[0] = offset[0] * scale + *(float *)((char *)this + 0x4738);
+    point[1] = y;
+}
+
 // Parked: 53.01%.
 // STUB: GAME 0x004e2390
 void RHEngine::FUN_004e2390(void *actor)
@@ -1102,9 +1556,332 @@ void RHEngine::LoadDynRes(unsigned mission)
     SetCurrentDirectoryA(directory);
 }
 
+// Parked: 97.56%; named factory call versus ILT operand.
+// STUB: GAME 0x004e35f0
+void RHEngine::FUN_004e35f0(SBFile &file)
+{
+    FUN_005e1d50(file, 0x544f544f, 2);
+    unsigned short count;
+    file.Access(&count, 2);
+    while (count)
+    {
+        RHElementActorPC *actor = RHElementActorPC::CreatePCFromMissionStream(file);
+        ((RHEngineReinforcementCalls *)this)->FUN_004d8460(actor, 1, 1);
+        ((RHEngineWidenedCalls *)actor)->FUN_004e3660(0);
+        --count;
+    }
+    FUN_005e20c0(file);
+}
+
+// FUNCTION: GAME 0x004e4110
+unsigned RHEngine::FUN_004e4110(unsigned value)
+{
+    return value - 1;
+}
+
+// SIZE 0x20
+struct RHEnginePointerSearchLayout
+{
+    undefined4 m_00; // 0x00
+    void **m_first; // 0x04
+    void **m_last; // 0x08
+    undefined4 m_0c; // 0x0c
+    void **m_cursor; // 0x10
+    char m_dirty; // 0x14
+    char m_forward; // 0x15
+    undefined m_16[2]; // 0x16
+    int m_index; // 0x18
+    void *m_key; // 0x1c
+};
+
+DECOMP_SIZE_ASSERT(RHEnginePointerSearchLayout, 0x20)
+
+// STUB: GAME 0x004e4460
+unsigned RHEngineReinforcementCalls::FUN_004e4460(void **value, int insert)
+{
+    RHEnginePointerSearchLayout &data = *(RHEnginePointerSearchLayout *)this;
+    data.m_dirty = 0;
+    data.m_key = *value;
+    int count = !data.m_first ? 0 : data.m_last - data.m_first;
+    int i = 0;
+    if ((char)insert == 1)
+    {
+        data.m_forward = 1;
+        data.m_cursor = data.m_first;
+        for (; i < count; ++i, ++data.m_cursor)
+        {
+            if (*data.m_cursor == data.m_key)
+                break;
+        }
+        return data.m_index = i < count ? i : -1;
+    }
+    else
+    {
+        data.m_forward = 0;
+        data.m_cursor = data.m_last - 1;
+        for (; count > 0; --count, --data.m_cursor)
+        {
+            if (*data.m_cursor == data.m_key)
+                break;
+        }
+        return data.m_index = count > 0 ? count - 1 : -1;
+    }
+}
+
+// FUNCTION: GAME 0x004e51e0
+void *RHUnk004e51e0::FUN_004e51e0(unsigned flags)
+{
+    FUN_00454bb0();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// FUNCTION: GAME 0x004e70a0
+void FUN_004e70a0(void **position, void *value, bool (*compare)(void *, void *))
+{
+    void **previous = position - 1;
+    while (compare(value, *previous))
+    {
+        *position = *previous;
+        position = previous;
+        --previous;
+    }
+    *position = value;
+}
+
+// Parked: counted bounding-box callee resolves asymmetrically through the ILT.
+// STUB: GAME 0x004e7fa0
+bool RHEngineBackgroundCalls::FUN_004e7fa0(unsigned short width, unsigned short height)
+{
+    *(unsigned short *)((char *)this + 0x3e98) = width;
+    *(unsigned short *)((char *)this + 0x3e9a) = height + 4;
+    ((SBGeoBoundingBox2D *)((char *)this + 0x3e84))->FUN_00609050(
+        SBGeoPoint2D(0.0f, 0.0f),
+        SBGeoPoint2D((float)((width << 6) - 1), (float)((height << 6) - 1)));
+    return true;
+}
+
+// FUNCTION: GAME 0x00505520
+void RHUnk005055b0::FUN_00505520(int value)
+{
+    switch (value)
+    {
+    case 1:
+    {
+        std::vector<RHUnk005069a0> &items = *(std::vector<RHUnk005069a0> *)((char *)this + 0x28);
+        items.erase(items.begin(), items.end());
+        break;
+    }
+    case 2:
+    {
+        std::vector<RHUnk005069a0> &items = *(std::vector<RHUnk005069a0> *)((char *)this + 0x38);
+        items.erase(items.begin(), items.end());
+        break;
+    }
+    }
+}
+
+// FUNCTION: GAME 0x005055b0
+void RHUnk005055b0::FUN_005055b0()
+{
+    for (char *it = m_1c; it != m_20; it += 0x14)
+        ((RHEngineWidenedCalls *)it)->FUN_00504b80(
+            ((RHEngineWidenedCalls *)g_pEngine)->FUN_004d2340(15));
+    for (it = m_3c; it != m_40; it += 0x14)
+        ((RHEngineWidenedCalls *)it)->FUN_00504b80(
+            ((RHEngineWidenedCalls *)g_pEngine)->FUN_004d2340(15));
+    for (it = m_2c; it != m_30; it += 0x14)
+        ((RHEngineWidenedCalls *)it)->FUN_00504b80(
+            ((RHEngineWidenedCalls *)g_pEngine)->FUN_004d2340(15));
+}
+
+// Parked: 50.00%; tail jump through unnamed ILT (rule 25).
+// STUB: GAME 0x0050f000
+void RHEngineSerializationCalls::FUN_0050f000()
+{
+    (*(RHEngineWidenedCalls **)((char *)this + 0x196c))->FUN_0055ebf0();
+}
+
+// FUNCTION: GAME 0x0051cd10
+void RHHikingGuide::FUN_0051cd10(SBFile &file)
+{
+    FUN_005e1d50(file, 0x5241494c, 3);
+    int count = m_04.size();
+    for (int i = 0; i < count; ++i)
+        delete m_04[i];
+    m_04.erase(m_04.begin(), m_04.end());
+    m_18 = 1;
+    unsigned short loaded;
+    file.Access(&loaded, 2);
+    for (unsigned short index = 0; index < loaded; ++index)
+        FUN_0051cac0(file);
+    FUN_005e20c0(file);
+}
+
+// Parked: effective-only receiver register and indexed-address ordering.
+// STUB: GAME 0x0051d020
+bool RHHikingGuide::FUN_0051d020(SBFile &file)
+{
+    // STRING: GAME 0x006b0668
+    RHSerializeName(file, "RHHikingGuide");
+    bool result = true;
+    unsigned short count = m_04.size();
+    for (unsigned short i = 0; i < count; ++i)
+    {
+        RHUnk0051d2c0 *group = m_04[i];
+        unsigned short entries = group->m_00.size();
+        for (unsigned short j = 0; j < entries; ++j)
+            result |= group->m_00[j]->FUN_00551da0(file);
+    }
+    return result;
+}
+
+// FUNCTION: GAME 0x00523620
+bool RHUnk00523620::FUN_00523620()
+{
+    char *storage = (char *)this;
+    (*(RHEngineWidenedCalls **)(storage + 0x18))->FUN_005e5160(*(unsigned *)(storage + 0x24));
+    (*(RHEngineWidenedCalls **)(storage + 0x18))->FUN_005e5160(*(unsigned *)(storage + 0x28));
+    operator delete(g_unk0x006c0bd4);
+    g_unk0x006c0bd4 = 0;
+    (*(RHUnk00523620Object **)(storage + 0xc))->Unk18();
+    (*(RHUnk00523620Object **)(storage + 0x10))->Unk18();
+    if (*(RHUnk00523620Object **)(storage + 0xc))
+        (*(RHUnk00523620Object **)(storage + 0xc))->Unk08(1);
+    if (*(RHUnk00523620Object **)(storage + 0x10))
+        (*(RHUnk00523620Object **)(storage + 0x10))->Unk08(1);
+    if (*(RHUnk00523620Owned **)(storage + 0x14))
+        (*(RHUnk00523620Owned **)(storage + 0x14))->Unk00(1);
+    return true;
+}
+
+// FUNCTION: GAME 0x00556470
+void RHUnk00556470::FUN_00556470()
+{
+    ((RHEngineWidenedCalls *)this)->FUN_005563f0(0x55555555);
+    ((RHEngineWidenedCalls *)this)->FUN_00556260();
+}
+
+// FUNCTION: GAME 0x0055dbb0
+char *RHUnk0055dbb0::FUN_0055dbb0()
+{
+    return *(char **)((char *)this + 0x28);
+}
+
+// FUNCTION: GAME 0x005709a0
+void FUN_005709a0(void *value, unsigned index)
+{
+    g_unk0x6c0f34[index] = value;
+    if (value)
+        *(unsigned short *)((char *)value + 0x8a) = (unsigned short)index;
+}
+
+// FUNCTION: GAME 0x0058c590
+void RHUnk0058c590::FUN_0058c590(char flag, unsigned short width, unsigned short height)
+{
+    m_64.FUN_00607da0(*(RHMobileUnk00607da0 *)((char *)g_unk0x6c0a9c + 0x3e84));
+    m_4c = *(undefined4 *)((char *)g_pEngine + 0x48c4);
+    FUN_0058c6f0(flag);
+    FUN_0058c630(width, height);
+    m_c2 = 0xff;
+    m_c4 = 0xff;
+    m_c6 = 0xff;
+    int value = *(int *)((char *)g_pEngine + 0x4ad0);
+    m_60 = value == 4 || value == 2;
+    if (m_60)
+        m_c0 = 0x78;
+    else
+        m_c0 = 0xc0;
+}
+
+// FUNCTION: GAME 0x005a5c50
+void RHEngineSerializationCalls::FUN_005a5c50()
+{
+    *(unsigned *)((char *)this + 0x198) = 0;
+    *(unsigned *)((char *)this + 0x1a0) = 0;
+}
+
+// FUNCTION: GAME 0x005a5cd0
+void FUN_005a5cd0()
+{
+    g_unk0x006c1058 = 0;
+    g_unk0x006c1060 = 0;
+}
+
+class RHProfileFile
+{
+public:
+    int FUN_005f5370(int offset, int origin);
+};
+
+// FUNCTION: GAME 0x005e1d00
+unsigned long FUN_005e1d00(SBFile &file)
+{
+    unsigned long value;
+    file.Access(&value, 4);
+    ((RHProfileFile *)&file)->FUN_005f5370(-4, 1);
+    return ((value & 0xff00 | value << 16) << 8) |
+        ((value & 0xff0000 | value >> 16) >> 8);
+}
+
+// FUNCTION: GAME 0x005e2300
+void FUN_005e2300(SBFile &file)
+{
+    unsigned long tag;
+    int size;
+    file.Access(&tag, 4);
+    file.Access(&size, 4);
+    ((RHProfileFile *)&file)->FUN_005f5370(size, 1);
+}
+
+// FUNCTION: GAME 0x005fc5d0
+SBGeoVector2D RHUnk005fc3b0::FUN_005fc5d0(float value)
+{
+    RHUnk005fc3b0 result;
+    result.m_x = m_x / value;
+    result.m_y = m_y / value;
+    return SBGeoVector2D(result);
+}
+
+// FUNCTION: GAME 0x00611660
+bool RHEngineBackgroundCalls::FUN_00611660(const std::string &path)
+{
+    RHUnk005f4fc0 file;
+    if (file.FUN_005f5090(path, 1) != 0)
+        return false;
+    bool result = ((RHUnk00611660Calls *)this)->Unk10(file);
+    file.FUN_005f5290();
+    return result;
+}
+
 void RHEngine::Emit(SBFile &file, void *&value)
 {
+    ((RHHikingGuide *)value)->FUN_0051cd10(file);
+    ((RHHikingGuide *)value)->FUN_0051d020(file);
+    ((RHUnk00462a90 *)value)->FUN_00462a90((const char *)value);
+    ((RHUnk00486170 *)value)->FUN_00486170(value, 0);
+    ((RHUnk004a66d0 *)value)->FUN_004a66d0(0);
+    ((RHUnk004a6000 *)value)->FUN_004a6000();
+    ((RHUnk004a6310 *)value)->FUN_004a6310(0);
+    ((RHUnk004a7d70 *)value)->FUN_004a7d70(0);
+    ((RHUnk004a7ed0 *)value)->FUN_004a7ed0(0);
+    ((RHUnk004b0980 *)value)->FUN_004b0980(0);
+    ((RHUnk004b91a0 *)value)->FUN_004b91a0(0);
+    ((RHUnk004be080 *)value)->FUN_004be080(0);
+    ((RHUnk004ba900 *)value)->FUN_004ba900(0);
+    FUN_004c8120(value);
+    FUN_004c38d0(file, (unsigned *)value);
+    FUN_004dee70((float *)value);
+    value = (void *)FUN_004e4110((unsigned)value);
+    ((RHUnk00556470 *)value)->FUN_00556470();
+    ((RHUnk005055b0 *)value)->FUN_005055b0();
+    ((RHUnk005055b0 *)value)->FUN_00505520(1);
+    ((RHUnk00523620 *)value)->FUN_00523620();
+    value = ((RHUnk0055dbb0 *)value)->FUN_0055dbb0();
     InitializeActorsFromMissionStream(file, *(std::vector<RHbeamMe> *)value);
+    FUN_004c1d20(file);
+    FUN_004c2150(file);
     InitializeBuildingTenantsFromMissionStream(file);
     FUN_004c3af0(file, value);
     FUN_004c3bd0(file, value);
@@ -1118,4 +1895,5 @@ void RHEngine::Emit(SBFile &file, void *&value)
     GetPC((RHPCDescription *)value);
     GetPC((const RHCharacterProfile *)value);
     LoadDynRes(0);
+    ((RHUnk005fc3b0 *)value)->FUN_005fc5d0(1.0f);
 }

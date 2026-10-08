@@ -1,5 +1,10 @@
 #include "SBResourceManager.h"
 
+SBResourceManager::Tree44::Iterator SBResourceManager::Tree44::FUN_00602580(const unsigned long &key)
+{
+    return Iterator(FUN_00605220(key));
+}
+
 SBResourceManager::Node<unsigned long> *SBResourceManager::Tree44::FUN_00605220(const unsigned long &)
 {
     return 0;

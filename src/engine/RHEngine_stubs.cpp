@@ -1,6 +1,15 @@
 #include "RHEngine.h"
 #include "RHScript.h"
 
+RHUnk005069a0::~RHUnk005069a0() {}
+RHUnk0051d2c0::~RHUnk0051d2c0() {}
+int RHHikingGuide::FUN_0051cac0(SBFile &) { return 0; }
+bool RHUnk00551da0::FUN_00551da0(SBFile &) { return true; }
+void RHUnk004e51e0::FUN_00454bb0() {}
+void RHUnk0058c590::FUN_0058c630(unsigned short, unsigned short) {}
+void RHUnk0058c590::FUN_0058c6f0(char) {}
+RHUnk005069a0 &RHUnk005069a0::operator=(const RHUnk005069a0 &) { return *this; }
+
 struct RHbeamMe;
 
 class RHEngineSerializationCalls
@@ -15,12 +24,9 @@ public:
 };
 
 void RHEngineSerializationCalls::FUN_0058a430() {}
-void RHEngineSerializationCalls::FUN_005a5c50() {}
 void RHEngineSerializationCalls::FUN_0048fa30() {}
 void RHEngineSerializationCalls::FUN_004d88e0(void *, int, int) {}
-void RHEngineSerializationCalls::FUN_0050f000() {}
 void RHEngineSerializationCalls::FUN_0050f010() {}
-void FUN_005a5cd0() {}
 
 class RHEngineMissionCalls
 {
@@ -35,12 +41,7 @@ public:
 };
 
 void RHEngineMissionCalls::FUN_004c1ab0(SBFile &, RHMission *, std::string &, unsigned *) {}
-void RHEngineMissionCalls::FUN_004c3680(SBFile &) {}
-void RHEngineMissionCalls::FUN_004c3630(SBFile &) {}
 void RHEngineMissionCalls::FUN_004c3930(SBFile &, int) {}
-void RHEngineMissionCalls::FUN_004c1ee0(SBFile &) {}
-void RHEngineMissionCalls::FUN_004c20a0(SBFile &) {}
-void RHEngineMissionCalls::FUN_004c2830(SBFile &) {}
 
 class RHEngineReinforcementCalls
 {
@@ -50,16 +51,12 @@ public:
     void FUN_00491fd0(const RHbeamMe &beamMe);
     void FUN_004d8460(void *actor, int first, int second);
     unsigned FUN_004e4460(void **value, int insert);
-    SBGeoPoint2D FUN_004a49e0();
     bool FUN_004f6c20(const SBGeoPoint2D &origin, SBGeoPoint2D &destination,
         unsigned short layer, const SBGeoPoint2D &extent);
 };
 
 void *RHEngineReinforcementCalls::FUN_00452130(void *) { return 0; }
-void RHEngineReinforcementCalls::FUN_004936a0(int) {}
 void RHEngineReinforcementCalls::FUN_004d8460(void *, int, int) {}
-unsigned RHEngineReinforcementCalls::FUN_004e4460(void **, int) { return 0; }
-SBGeoPoint2D RHEngineReinforcementCalls::FUN_004a49e0() { return SBGeoPoint2D(); }
 bool RHEngineReinforcementCalls::FUN_004f6c20(const SBGeoPoint2D &, SBGeoPoint2D &, unsigned short, const SBGeoPoint2D &) { return false; }
 
 class RHUnk0048f280
@@ -78,19 +75,13 @@ public:
 };
 
 RHUnk00588830::RHUnk00588830(unsigned short, int, void *, int, int) {}
-void FUN_0048c5b0(void *, int) {}
 
 class RHEngineBackgroundCalls
 {
 public:
-    void FUN_00611660(const std::string &path);
-    void FUN_004e7fa0(int width, int height);
+    bool FUN_00611660(const std::string &path);
+    bool FUN_004e7fa0(unsigned short width, unsigned short height);
 };
-
-void RHEngineBackgroundCalls::FUN_00611660(const std::string &) {}
-void RHEngineBackgroundCalls::FUN_004e7fa0(int, int) {}
-std::string FUN_004e4b40(const std::string &, const std::string &) { return std::string(); }
-std::string FUN_004e4c70(const std::string &, const char *) { return std::string(); }
 
 class RHEngineBeamCalls
 {
@@ -102,16 +93,68 @@ void RHEngineBeamCalls::FUN_004e4120(RHbeamMe *, unsigned, const RHbeamMe &)
 {
 }
 
-void *FUN_004622e0(int, void *)
-{
-    return 0;
-}
-
 void RHEngineBuildingCalls::FUN_0057e680(void *)
 {
 }
 
-void RHEngine::FUN_004c1d20(SBFile &) {}
 void RHEngine::FUN_004c1df0(SBFile &) {}
-void RHEngine::FUN_004c2150(SBFile &) {}
-void RHEngine::FUN_004e35f0(SBFile &) {}
+
+RHUnk0046ffe0::RHUnk0046ffe0(bool) {}
+RHUnk004ab090::RHUnk004ab090() {}
+RHUnk004b9b70::RHUnk004b9b70() {}
+RHUnk004bac30::RHUnk004bac30() {}
+RHUnk004a8130::RHUnk004a8130(bool) {}
+
+void RHEngineMissionElementCalls::Unk00() {}
+void RHEngineMissionElementCalls::Unk04() {}
+void RHEngineMissionElementCalls::Unk08() {}
+void RHEngineMissionElementCalls::Unk0c() {}
+void RHEngineMissionElementCalls::Unk10() {}
+void RHEngineMissionElementCalls::Unk14() {}
+void RHEngineMissionElementCalls::Unk18() {}
+void RHEngineMissionElementCalls::Unk1c() {}
+void RHEngineMissionElementCalls::Unk20() {}
+void RHEngineMissionElementCalls::Unk24() {}
+void RHEngineMissionElementCalls::Unk28() {}
+void RHEngineMissionElementCalls::Unk2c() {}
+void RHEngineMissionElementCalls::Unk30() {}
+void RHEngineMissionElementCalls::Unk34() {}
+void RHEngineMissionElementCalls::Unk38(SBFile &) {}
+void RHEngineMissionElementCalls::Unk3c(SBFile &) {}
+
+class RHEngineWidenedCalls
+{
+public:
+    bool FUN_004b2010(char flag, void *description);
+    void FUN_004c7f60(const void *point);
+    void FUN_00556260();
+    void FUN_005563f0(unsigned value);
+    void FUN_0055ebf0();
+    void FUN_004eb120(SBFile &file, void *pathFinder);
+    void FUN_00558670(SBFile &file);
+    void FUN_005bd450();
+    bool FUN_005b76e0(unsigned row, unsigned flags);
+    void FUN_005bd5b0(bool flag);
+    void FUN_0050efd0(void *actor);
+    void FUN_004e3660(char flag);
+    unsigned FUN_004d2340(unsigned value);
+    void FUN_00504b80(unsigned value);
+    void FUN_005e5160(unsigned surface);
+};
+
+bool RHEngineWidenedCalls::FUN_004b2010(char, void *) { return false; }
+void RHEngineWidenedCalls::FUN_004c7f60(const void *) {}
+void RHEngineWidenedCalls::FUN_00556260() {}
+void RHEngineWidenedCalls::FUN_005563f0(unsigned) {}
+void RHEngineWidenedCalls::FUN_0055ebf0() {}
+void *FUN_004b3120(int) { return 0; }
+void RHEngineWidenedCalls::FUN_004eb120(SBFile &, void *) {}
+void RHEngineWidenedCalls::FUN_00558670(SBFile &) {}
+void RHEngineWidenedCalls::FUN_005bd450() {}
+bool RHEngineWidenedCalls::FUN_005b76e0(unsigned, unsigned) { return false; }
+void RHEngineWidenedCalls::FUN_0050efd0(void *) {}
+void RHEngineWidenedCalls::FUN_004e3660(char) {}
+unsigned RHEngineWidenedCalls::FUN_004d2340(unsigned) { return 0; }
+void RHEngineWidenedCalls::FUN_00504b80(unsigned) {}
+void RHEngineWidenedCalls::FUN_005bd5b0(bool) {}
+void RHEngineWidenedCalls::FUN_005e5160(unsigned) {}

@@ -1,4 +1,16 @@
 #include "RHGame_calls.h"
+#include <vector>
+#include <algorithm>
+
+DECOMP_SIZE_ASSERT(RHGame, 0x357c)
+DECOMP_SIZE_ASSERT(RHGameMissionProfile, 0x6c)
+DECOMP_SIZE_ASSERT(RHGameMission, 0x0c)
+DECOMP_SIZE_ASSERT(RHGameCampaignView, 0x184)
+DECOMP_SIZE_ASSERT(RHGameBlazonWidget, 0xb4)
+DECOMP_SIZE_ASSERT(RHGameSaveHeader, 0x0c)
+DECOMP_SIZE_ASSERT(SBArray<RHSaveGame *>, 0x10)
+DECOMP_SIZE_ASSERT(RHGameSaveOwner, 0x04)
+DECOMP_SIZE_ASSERT(RHMapDescription::Entry, 0x48)
 
 #define RHGAME_ACCESS(member, line) \
     if (file.Access(&member, 1) < 0) \
@@ -7,6 +19,113 @@
         SBAssert(0, "P:\\Robin Hood\\RHgame.cpp", line, "Serialize failed reason is %s", error->m_chars ? error->m_chars : ""); \
         return false; \
     }
+
+// Parked: 66.67%; string cleanup, iterator scheduling, and annotated SelectMissions calls.
+// STUB: GAME 0x00451a90
+void RHGameCampaignView::FUN_00451a90()
+{
+    std::wstring scratch;
+    RHGameMission *mission = *(RHGameMission **)((char *)this + 0x148) + 1;
+    for (; mission != *(RHGameMission **)((char *)this + 0x14c); ++mission)
+    {
+        if (mission->FUN_0054c800())
+        {
+            RHGameMission **first = *(RHGameMission ***)((char *)this + 0x158);
+            RHGameMission **last = *(RHGameMission ***)((char *)this + 0x15c);
+            first = std::find(first, last, mission);
+            if (first == last)
+            {
+                ((SBArray<RHSaveGame *> *)((char *)this + 0x154))->Insert(
+                    *(RHSaveGame ***)((char *)this + 0x15c), 1, (RHSaveGame *const &)mission);
+                mission->m_08 = 0;
+            }
+        }
+    }
+    ((RHCampaign *)this)->SelectMissions(false);
+    ((RHCampaign *)this)->SelectMissions(true);
+}
+
+// FUNCTION: GAME 0x00453b70
+void RHGameCampaignView::FUN_00453b70(RHGameMission *mission)
+{
+    std::vector<RHGameMission *> &missions = *(std::vector<RHGameMission *> *)((char *)this + 0x154);
+    for (std::vector<RHGameMission *>::iterator it = missions.begin(); it != missions.end(); ++it)
+    {
+        if (*it == mission)
+        {
+            mission->m_04 = 0;
+            missions.erase(it);
+            return;
+        }
+    }
+}
+
+// FUNCTION: GAME 0x00456190
+int RHGameCampaignView::FUN_00456190(RHGameMission *mission)
+{
+    int cost = (int)mission->m_profile->m_68 - (int)mission->m_profile->m_6a;
+    if (*(int *)((char *)this + 0xa0) < cost &&
+        FUN_00456270() >= *(unsigned short *)((char *)mission->m_profile + 0x70))
+        return 1;
+    return 0;
+}
+
+// FUNCTION: GAME 0x004561d0
+int RHGameCampaignView::FUN_004561d0(RHGameMission *mission)
+{
+    RHGameMission **first = *(RHGameMission ***)((char *)this + 0x168);
+    RHGameMission **last = *(RHGameMission ***)((char *)this + 0x16c);
+    if (first && last - first != 0 &&
+        ((int)mission->m_04 + 1 < *(unsigned short *)((char *)mission->m_profile + 0x4c) || mission->m_profile->m_34 == 5))
+    {
+        int cost = (int)mission->m_profile->m_68 - (int)mission->m_profile->m_6a;
+        if (*(int *)((char *)this + 0xa0) < cost)
+            return 1;
+    }
+    return 0;
+}
+
+// FUNCTION: GAME 0x00456230
+int RHGameCampaignView::FUN_00456230(RHGameMission *mission)
+{
+    if ((int)mission->m_06 <= *(int *)((char *)this + 0x98))
+    {
+        int cost = (int)mission->m_profile->m_68 - (int)mission->m_profile->m_6a;
+        if (*(int *)((char *)this + 0xa0) < cost)
+            return 1;
+    }
+    return 0;
+}
+
+// FUNCTION: GAME 0x00456540
+void RHGameCampaignView::FUN_00456540(bool flag, RHGameMission *mission)
+{
+    if (!mission)
+        mission = m_178;
+    if (flag)
+    {
+        FUN_00456e40(*((char *)mission->m_profile + 0x60));
+        mission->m_08 = 1;
+    }
+    else
+    {
+        FUN_00456e40(*((char *)mission->m_profile + 0x61));
+        mission->m_08 = 2;
+        if (mission == m_180)
+            ((RHScriptBatchCalls *)this)->Unk004520e0(3, 0);
+    }
+    if (mission == m_180 && mission->m_profile->m_34 == 5)
+    {
+        *(unsigned *)((char *)this + 0x1ac) = *(unsigned *)mission->m_profile;
+        *(unsigned *)((char *)this + 0x1a8) = mission->m_08;
+    }
+}
+
+// FUNCTION: GAME 0x0050e850
+void RHGame::FUN_0050e850()
+{
+    m_54 = 1;
+}
 
 // FUNCTION: GAME 0x0050f510
 void RHGame::DisplayLostLeicester()
@@ -226,10 +345,146 @@ void RHGame::UpdateBlazons(RHMenuCampaignMap *map, RHMenuMissionDescription *des
     }
 }
 
+// FUNCTION: GAME 0x00528380
+void RHGameMenuCalls::FUN_00528380(const std::wstring &text)
+{
+    ((RHGameMenuText *)((char *)this + 0x25ec))->v11(text);
+    unsigned timer = *(unsigned *)((char *)this + 0x26fc);
+    if (timer != (unsigned)-1)
+        (*(RHGameMenuOwner **)((char *)this + 0xb4))->FUN_0053bb30(timer);
+    *(unsigned *)((char *)this + 0x26fc) =
+        (*(RHGameMenuOwner **)((char *)this + 0xb4))->FUN_0053baa0(3000);
+}
+
+// FUNCTION: GAME 0x00535950
+void RHGameMenuCalls::FUN_00535950(int first, int second, int third)
+{
+    *((char *)this + 0x344) = (char)first;
+    *((char *)this + 0x144) = (char)second;
+    *((char *)this + 0x244) = (char)third;
+}
+
+// FUNCTION: GAME 0x00544b30
+void RHGameMenuCalls::FUN_00544b30()
+{
+    (*(RHGameMenuOwner **)((char *)this + 0xb4))->FUN_0053c870(this);
+}
+
+// FUNCTION: GAME 0x0056e230
+RHGameSaveHeader::RHGameSaveHeader(unsigned long mode)
+{
+    m_00 = 0x52485347;
+    m_04 = 0x30;
+    m_08 = mode;
+}
+
+// deferred: unannotated pending reccmp #534 (0x0056e5d0)
+std::string RHSaveGame::FUN_0056e5d0() const
+{
+    return FUN_004e4b40(FUN_004e4c70((*(RHGameSaveOwner *const *)this)->v0(), "\\"),
+                       *(const std::string *)((const char *)this + 0x08));
+}
+
+// FUNCTION: GAME 0x0056e6b0
+std::string RHGameSaveCalls::FUN_0056e6b0()
+{
+    return FUN_004e4b40(FUN_004e4c70((*(RHGameSaveOwner **)this)->v0(), "\\"),
+                       *(std::string *)((char *)this + 0x18));
+}
+
+// GLOBAL: GAME 0x006c0ea0
+std::string g_unk0x006c0ea0;
+// GLOBAL: GAME 0x006c0ed8
+std::string g_unk0x006c0ed8;
+// GLOBAL: GAME 0x006c0ee8
+std::string g_unk0x006c0ee8;
+
+// Parked: 97.73%; basic_string::_Nullstr operand does not resolve to the shared empty literal.
+// STUB: GAME 0x0056e790
+char RHGameSaveCalls::FUN_0056e790()
+{
+    return ((std::string *)((char *)this + 0x08))->compare(g_unk0x006c0ea0) == 0;
+}
+
+// Parked: 97.73%; basic_string::_Nullstr operand does not resolve to the shared empty literal.
+// STUB: GAME 0x0056e7f0
+bool RHGameSaveCalls::FUN_0056e7f0()
+{
+    return ((std::string *)((char *)this + 0x08))->compare(g_unk0x006c0ed8) == 0;
+}
+
+// Parked: 97.73%; basic_string::_Nullstr operand does not resolve to the shared empty literal.
+// STUB: GAME 0x0056e850
+bool RHGameSaveCalls::FUN_0056e850()
+{
+    return ((std::string *)((char *)this + 0x08))->compare(g_unk0x006c0ee8) == 0;
+}
+
+// FUNCTION: GAME 0x005cc900
+void RHGameBlazonWidget::FUN_005cc900(int value)
+{
+    if (m_b0)
+        m_b0->FUN_0044f960(value);
+}
+
+// FUNCTION: GAME 0x005cc920
+void RHGameBlazonWidget::FUN_005cc920(int value)
+{
+    if (m_b0)
+        m_b0->FUN_0044f8d0(value);
+}
+
+// Parked: 65.17%; lookup register scheduling; unannotated to preserve DisplayLostLeicester.
+RHMapDescription::Entry *RHMapDescription::FUN_0063c9e0(unsigned id)
+{
+    Entry *first = *(Entry *volatile *)((char *)this + 0x08);
+    unsigned count = first == 0 ? 0 : *(Entry *volatile *)((char *)this + 0x0c) - first;
+    if (count != 0)
+    {
+        Entry *last = *(Entry **)((char *)this + 0x0c);
+        if (id <= last[-1].m_44)
+        {
+            first = *(Entry **)((char *)this + 0x08);
+            if (id >= first->m_44)
+            {
+                Entry *entry = first + (id < count ? id : count - 1);
+                if (entry->m_44 == id)
+                    return entry;
+                for (entry = first; entry != last; ++entry)
+                {
+                    if (id < entry->m_44)
+                        return 0;
+                    if (id == entry->m_44)
+                        return entry;
+                }
+            }
+        }
+    }
+    return 0;
+}
+
 void RHGame::Emit(SBFile &file)
 {
     Serialize(file);
     UpdateBlazons(0, 0, 0, false);
     DisplayLostLeicester();
     Serialize(0, 0, false);
+    ((RHGameSaveCalls *)this)->FUN_0056e790();
+    ((RHGameSaveCalls *)this)->FUN_0056e6b0();
+    ((RHGameSaveCalls *)this)->FUN_0056e7f0();
+    ((RHGameSaveCalls *)this)->FUN_0056e850();
+    FUN_0050e850();
+    RHGameMenuCalls *menu = (RHGameMenuCalls *)m_3578;
+    menu->FUN_00535950(0, 0, 0);
+    menu->FUN_00544b30();
+    menu->FUN_00528380(std::wstring());
+    RHGameSaveHeader header(0);
+    m_29b0->FUN_005cc900(0);
+    m_29b0->FUN_005cc920(0);
+    RHGameCampaignView *campaign = (RHGameCampaignView *)g_unk0x6c07fc;
+    campaign->FUN_00456190(0);
+    campaign->FUN_004561d0(0);
+    campaign->FUN_00456230(0);
+    campaign->FUN_00456540(false, 0);
+    campaign->FUN_00453b70(0);
 }

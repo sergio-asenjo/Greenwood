@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include "Decomp.h"
 
 class SBFile;
 class RHElement;
@@ -37,9 +38,14 @@ extern RHUnkSectorGlobal *g_unk0x6c0a9c;
 void FUN_005e1d50(SBFile &file, unsigned long tag, int level);
 void FUN_005e20c0(SBFile &file);
 
+// SIZE 0x4944 (partial layout)
 class RHEngine
 {
 public:
+    void FUN_004c8120(void *actor);
+    void FUN_004c38d0(SBFile &file, unsigned *value);
+    void FUN_004dee70(float *point);
+    unsigned FUN_004e4110(unsigned value);
     bool InitializeFromMission(RHMission *mission);
     bool FUN_004c4570(SBFile &file);
     bool FUN_004c6040(SBFile &file);
@@ -76,10 +82,71 @@ public:
     }
     void Emit(SBFile &file, void *&value);
 
-    char m_0000[0x48d8];
-    char m_48d8[0x64]; // +0x48d8: element lookup container
-    void **m_493c; // +0x493c: first actor pointer
-    void **m_4940; // +0x4940: one-past-last actor pointer
+    undefined m_0000[0x48d8]; // 0x0000
+    undefined m_48d8[0x64]; // 0x48d8
+    void **m_493c; // 0x493c
+    void **m_4940; // 0x4940
+};
+
+class RHEngineMissionElementCalls
+{
+public:
+    virtual void Unk00(); // vtable+0x00
+    virtual void Unk04(); // vtable+0x04
+    virtual void Unk08(); // vtable+0x08
+    virtual void Unk0c(); // vtable+0x0c
+    virtual void Unk10(); // vtable+0x10
+    virtual void Unk14(); // vtable+0x14
+    virtual void Unk18(); // vtable+0x18
+    virtual void Unk1c(); // vtable+0x1c
+    virtual void Unk20(); // vtable+0x20
+    virtual void Unk24(); // vtable+0x24
+    virtual void Unk28(); // vtable+0x28
+    virtual void Unk2c(); // vtable+0x2c
+    virtual void Unk30(); // vtable+0x30
+    virtual void Unk34(); // vtable+0x34
+    virtual void Unk38(SBFile &file); // vtable+0x38
+    virtual void Unk3c(SBFile &file); // vtable+0x3c
+};
+
+// SIZE 0xa9c
+class RHUnk0046ffe0 : public RHEngineMissionElementCalls
+{
+public:
+    RHUnk0046ffe0(bool flag);
+    undefined m_04[0xa98]; // 0x04
+};
+
+// SIZE 0x270
+class RHUnk004ab090 : public RHEngineMissionElementCalls
+{
+public:
+    RHUnk004ab090();
+    undefined m_04[0x26c]; // 0x04
+};
+
+// SIZE 0x170
+class RHUnk004b9b70 : public RHEngineMissionElementCalls
+{
+public:
+    RHUnk004b9b70();
+    undefined m_04[0x16c]; // 0x04
+};
+
+// SIZE 0x18c
+class RHUnk004bac30 : public RHEngineMissionElementCalls
+{
+public:
+    RHUnk004bac30();
+    undefined m_04[0x188]; // 0x04
+};
+
+// SIZE 0xfc
+class RHUnk004a8130 : public RHEngineMissionElementCalls
+{
+public:
+    RHUnk004a8130(bool flag);
+    undefined m_04[0xf8]; // 0x04
 };
 
 class RHReconnaissanceEngine
@@ -91,5 +158,202 @@ public:
 
 extern RHEngine *g_pEngine;
 void *FUN_004622e0(int index, void *container);
+
+class RHUnk00462a90
+{
+public:
+    void FUN_00462a90(const char *value);
+    char m_00[0x8e];
+    char m_8e;
+};
+
+class RHUnk00486170
+{
+public:
+    void FUN_00486170(void *value, unsigned count);
+};
+
+class RHUnk004a66d0
+{
+public:
+    bool FUN_004a66d0(char flag);
+};
+
+class RHUnk004a6000
+{
+public:
+    bool FUN_004a6000();
+};
+
+class RHUnk004a6310
+{
+public:
+    bool FUN_004a6310(char flag);
+};
+
+class RHUnk004a7d70
+{
+public:
+    bool FUN_004a7d70(char flag);
+};
+
+class RHUnk004a7ed0
+{
+public:
+    bool FUN_004a7ed0(char flag);
+};
+
+class RHUnk004b0980
+{
+public:
+    bool FUN_004b0980(char flag);
+};
+
+class RHUnk004b91a0
+{
+public:
+    bool FUN_004b91a0(char flag);
+};
+
+class RHUnk004be080
+{
+public:
+    bool FUN_004be080(char flag);
+};
+
+class RHUnk004ba900
+{
+public:
+    bool FUN_004ba900(char flag);
+};
+
+class RHUnk0055dbb0
+{
+public:
+    char *FUN_0055dbb0();
+};
+
+class RHUnk00556470
+{
+public:
+    void FUN_00556470();
+};
+
+void FUN_005709a0(void *value, unsigned index);
+void FUN_004e70a0(void **position, void *value, bool (*compare)(void *, void *));
+
+// SIZE 0x04 (call view)
+class RHUnk00551da0
+{
+public:
+    bool FUN_00551da0(SBFile &file);
+    undefined4 m_00; // 0x00
+};
+
+// SIZE 0x20
+class RHUnk0051d2c0
+{
+public:
+    ~RHUnk0051d2c0();
+    std::vector<RHUnk00551da0 *> m_00; // 0x00
+    undefined m_10[0x10]; // 0x10
+};
+
+// SIZE 0x1c (partial layout)
+class RHHikingGuide
+{
+public:
+    int FUN_0051cac0(SBFile &file);
+    void FUN_0051cd10(SBFile &file);
+    bool FUN_0051d020(SBFile &file);
+    undefined4 m_00; // 0x00
+    std::vector<RHUnk0051d2c0 *> m_04; // 0x04
+    undefined4 m_14; // 0x14
+    char m_18; // 0x18
+    undefined m_19[3]; // 0x19
+};
+
+// SIZE 0x14
+class RHUnk005069a0
+{
+public:
+    ~RHUnk005069a0();
+    RHUnk005069a0 &operator=(const RHUnk005069a0 &value);
+    undefined m_00[0x14]; // 0x00
+};
+
+// SIZE 0x44
+class RHUnk005055b0
+{
+public:
+    void FUN_00505520(int value);
+    void FUN_005055b0();
+    undefined m_00[0x1c]; // 0x00
+    char *m_1c; // 0x1c
+    char *m_20; // 0x20
+    undefined m_24[8]; // 0x24
+    char *m_2c; // 0x2c
+    char *m_30; // 0x30
+    undefined m_34[8]; // 0x34
+    char *m_3c; // 0x3c
+    char *m_40; // 0x40
+};
+
+class RHUnk00523620
+{
+public:
+    bool FUN_00523620();
+};
+
+// SIZE 0x160 (partial layout)
+class RHUnk004bc5b0
+{
+public:
+    bool FUN_004bc5b0(char flag);
+    undefined m_00[0x50]; // 0x00
+    void *m_sprite; // 0x50
+    undefined m_54[0x5c]; // 0x54
+    unsigned m_b0; // 0xb0
+    unsigned m_b4; // 0xb4
+    undefined m_b8[0xa4]; // 0xb8
+    RHUnk004bc5b0 *m_parent; // 0x15c
+};
+
+// SIZE 0x30 (partial layout)
+class RHUnk004e51e0
+{
+public:
+    void FUN_00454bb0();
+    void *FUN_004e51e0(unsigned flags);
+    undefined m_00[0x30]; // 0x00
+};
+
+// SIZE 0x14
+class RHMobileUnk00607da0
+{
+public:
+    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
+    undefined m_00[0x14]; // 0x00
+};
+
+// SIZE 0xc8 (partial layout)
+class RHUnk0058c590
+{
+public:
+    void FUN_0058c590(char flag, unsigned short width, unsigned short height);
+    void FUN_0058c630(unsigned short width, unsigned short height);
+    void FUN_0058c6f0(char flag);
+    undefined m_00[0x4c]; // 0x00
+    undefined4 m_4c; // 0x4c
+    undefined m_50[0x10]; // 0x50
+    char m_60; // 0x60
+    undefined m_61[3]; // 0x61
+    RHMobileUnk00607da0 m_64; // 0x64
+    undefined m_78[0x48]; // 0x78
+    unsigned short m_c0; // 0xc0
+    unsigned short m_c2; // 0xc2
+    unsigned short m_c4; // 0xc4
+    unsigned short m_c6; // 0xc6
+};
 
 #endif
