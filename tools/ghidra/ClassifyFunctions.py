@@ -41,9 +41,20 @@ def classify(name):
 
 # Program-level count of references to detect unreached code (graph reachability)
 # is expensive; keep it simple and mark by naming for now.
+args = list(getScriptArgs())
+if args not in ([], ["--audit-thunks"]):
+    raise RuntimeError("Expected --audit-thunks or no arguments")
+native_mismatches = 0
 for func in fm.getFunctions(True):
     body = func.getBody()
     size = body.getNumAddresses() if body else 0
     name = func.getName()
     cls = classify(name)
-    print("%08x\t%08x\t%s\t%s" % (func.getEntryPoint().getOffset(), size, cls, name))
+    if args:
+        if func.isThunk() and cls != "THUNK":
+            native_mismatches += 1
+            print("NATIVE_THUNK_CLASS\t%s\t%s\t%s" % (func.getEntryPoint(), cls, name))
+    else:
+        print("%08x\t%08x\t%s\t%s" % (func.getEntryPoint().getOffset(), size, cls, name))
+if args:
+    print("# native thunk classification mismatches=%d" % native_mismatches)

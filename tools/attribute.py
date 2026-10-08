@@ -48,18 +48,18 @@ HUB_CALLEE_LIMIT = 25
 MAX_CALLERS = 3
 
 
-def load_class() -> dict[int, str]:
+def load_class(symbols: Path = ROOT / "symbols") -> dict[int, str]:
     out: dict[int, str] = {}
-    for line in (ROOT / "symbols" / "functions-classified.tsv").read_text().splitlines():
+    for line in (symbols / "functions-classified.tsv").read_text().splitlines():
         p = line.split("\t")
         if len(p) >= 3:
             out[int(p[0], 16)] = p[2]
     return out
 
 
-def load_direct() -> dict[int, str]:
+def load_direct(symbols: Path = ROOT / "symbols") -> dict[int, str]:
     out: dict[int, str] = {}
-    for line in (ROOT / "symbols" / "functions-by-file.tsv").read_text().splitlines():
+    for line in (symbols / "functions-by-file.tsv").read_text().splitlines():
         p = line.split("\t")
         if len(p) >= 3:
             out[int(p[0], 16)] = p[2].strip().lower()
@@ -92,11 +92,12 @@ def hub_seeds(direct: dict[int, str], callers: dict[int, set[int]]) -> set[int]:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("callgraph", help="callgraph.tsv produced by tools/ghidra/CallGraph.py")
+    ap.add_argument("--symbols-root", type=Path, default=ROOT / "symbols")
     ap.add_argument("--out", default=str(ROOT / "symbols" / "tu-attribution.tsv"))
     args = ap.parse_args()
 
-    cls = load_class()
-    direct = load_direct()
+    cls = load_class(args.symbols_root)
+    direct = load_direct(args.symbols_root)
     callers = load_edges(Path(args.callgraph))
     hubs = hub_seeds(direct, callers)
 
