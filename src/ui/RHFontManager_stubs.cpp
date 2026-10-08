@@ -1,10 +1,8 @@
 #include "RHFontManager.h"
 
 RHFontManager::Fonts::~Fonts() {}
-std::string RHFontManager::Get(FILE *, char) { return std::string(); }
-void RHFontManager::TrimString(std::string &) {}
-RHFontInsertResult::RHFontInsertResult(const RHFontIterator &iterator, const bool &inserted)
-    : first(iterator), second(inserted) {}
+// Parked: tree insertion uses CRT critical-section imports.
+// STUB: GAME 0x00502c20
 RHFontInsertResult RHFontMap::FUN_00502c20(const std::pair<const std::string, void *> &)
 {
     RHFontIterator iterator;
@@ -15,3 +13,6 @@ RHFontInsertResult RHFontMap::FUN_00502c20(const std::pair<const std::string, vo
 
 // LIBRARY: GAME 0x006435d7
 extern "C" int fgetc(FILE *) { return 0; }
+
+// LIBRARY: GAME 0x00643540
+extern "C" int ungetc(int, FILE *) { return 0; }

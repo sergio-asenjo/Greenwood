@@ -3,16 +3,19 @@
 
 #include "RHSaveGame.h"
 #include "RHCivilianProfile.h"
+#include "Decomp.h"
 #include <map>
 #include <stdio.h>
 
+// SIZE 0x10
 class RHFontText
 {
 public:
-    std::allocator<char> m_allocator;
-    char *m_chars;
-    unsigned m_size;
-    unsigned m_capacity;
+    std::allocator<char> m_allocator; // 0x00
+    char *m_chars; // 0x04
+    unsigned m_size; // 0x08
+    unsigned m_capacity; // 0x0c
+    RHFontText(const RHFontText &value);
     RHFontText(const std::allocator<char> &allocator = std::allocator<char>()) : m_allocator(allocator)
     {
         ((RHProfileText *)this)->FUN_00401ee0(false);
@@ -33,23 +36,26 @@ public:
     }
 };
 
+// SIZE 0x04
 struct RHFontIterator
 {
     struct Node
     {
-        char m_00[0x1c];
-        void *m_1c;
+        undefined m_00[0x1c]; // 0x00
+        void *m_1c; // 0x1c
     };
-    Node *m_node;
+    Node *m_node; // 0x00
 };
 
+// SIZE 0x08
 struct RHFontInsertResult
 {
     RHFontInsertResult(const RHFontIterator &, const bool &);
-    RHFontIterator first;
-    bool second;
+    RHFontIterator first; // 0x00
+    bool second; // 0x04
 };
 
+// SIZE 0x0c
 class RHFontMap
 {
 public:
@@ -64,12 +70,14 @@ public:
         RHFontIterator position = Insert(std::pair<const std::string, void *>(key, (void *)0)).first;
         return position.m_node->m_1c;
     }
-    char m_00[0x0c];
+    undefined m_00[0x0c]; // 0x00
 };
 
+// SIZE 0x0c
 class RHFontManager
 {
 public:
+    // SIZE 0x20
     struct Fonts
     {
         std::string m_00; // +0x00

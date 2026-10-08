@@ -1,5 +1,133 @@
 #include "RHMenuCampaignMap.h"
 #include <windows.h>
+#include <stdio.h>
+
+#define DECOMP_SIZE_ASSERT(T, S) namespace { typedef int T##_size_assert[(sizeof(T) == S) ? 1 : -1]; }
+DECOMP_SIZE_ASSERT(RHMapWideText, 0x10)
+DECOMP_SIZE_ASSERT(RHMapTitleText, 0x10)
+DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
+DECOMP_SIZE_ASSERT(RHMapBox, 0x14)
+DECOMP_SIZE_ASSERT(RHMapWidget, 0xcc)
+DECOMP_SIZE_ASSERT(RHMapLocation, 0x27c)
+DECOMP_SIZE_ASSERT(RHMapCampaign, 0x1b0)
+DECOMP_SIZE_ASSERT(RHMapWindow, 0x1990)
+DECOMP_SIZE_ASSERT(RHMapDescription, 0x1c)
+DECOMP_SIZE_ASSERT(RHMenuCampaignMap, 0x2704)
+
+// deferred: unannotated pending reccmp #534; proven 100.00% when annotated.
+void RHMapWideText::Tidy(bool built)
+{
+    if (built && m_chars != 0)
+    {
+        unsigned char &references = *((unsigned char *)m_chars - 1);
+        if (references == 0 || references == 255)
+            operator delete(m_chars - 1);
+        else
+            --references;
+    }
+    m_chars = 0;
+    m_size = 0;
+    m_capacity = 0;
+}
+
+// FUNCTION: GAME 0x004577a0
+unsigned RHMapCampaign::FUN_004577a0()
+{
+    return m_1a8;
+}
+
+// FUNCTION: GAME 0x004577b0
+void RHMapCampaign::FUN_004577b0()
+{
+    m_1a8 = 0;
+}
+
+// FUNCTION: GAME 0x00527a70
+void RHMenuCampaignMap::FUN_00527a70(RHMapByte state)
+{
+    if (state.value != -1)
+    {
+        unsigned i = 0;
+        int selected = state.value;
+        RHMapWidget *arrow = (RHMapWidget *)((char *)this + 0x1a74);
+        for (; i < 10; ++i, ++arrow)
+        {
+            if (selected == i)
+            {
+                void *mission = ((RHMapLocation *)((char *)this + 0x19c))[FUN_00527cc0(i)].m_278;
+                if (mission)
+                {
+                    unsigned type = *(unsigned *)((char *)*(void **)mission + 0x34);
+                    if (type == 5 || type == 1)
+                        V3c(arrow);
+                }
+            }
+            else
+                V38(arrow);
+        }
+    }
+}
+
+// FUNCTION: GAME 0x00527ae0
+void RHMenuCampaignMap::FUN_00527ae0(RHMapByte state)
+{
+    bool accessible[5] = {false, false, false, false, false};
+    unsigned locations[5] = {5, 6, 4, 9, 7};
+    switch (state.value)
+    {
+    case 1: case 2: accessible[0] = true; break;
+    case 3: case 4: accessible[0] = true; accessible[1] = true; break;
+    case 5: case 6: accessible[0] = true; accessible[1] = true; accessible[2] = true; break;
+    case 7: case 8: accessible[0] = true; accessible[1] = true; accessible[2] = true; accessible[3] = true; break;
+    case 9: accessible[0] = true; accessible[1] = true; accessible[2] = true; accessible[3] = true; accessible[4] = true; break;
+    }
+    unsigned i = 0;
+    unsigned *location = locations;
+    for (; i != 5; ++i, ++location)
+    {
+        bool enabled = accessible[i];
+        unsigned index = *location;
+        if (enabled)
+            V3c((char *)this + (index + 1) * 0x27c);
+        else
+            V38((char *)this + (index + 1) * 0x27c);
+    }
+}
+
+class RHMapMission
+{
+public:
+    bool FUN_0054cc20();
+    void *m_00; // 0x00
+    unsigned short m_04; // 0x04
+};
+
+// STUB: GAME 0x00527c00
+void RHMenuCampaignMap::FUN_00527c00(const std::vector<void *> &missions)
+{
+    for (std::vector<void *>::const_iterator it = missions.begin(); it != missions.end(); ++it)
+    {
+        RHMapMission *mission = (RHMapMission *)*it;
+        unsigned locationIndex = *(unsigned *)((char *)mission->m_00 + 0x3c);
+        char *base = (char *)this + locationIndex * 0x27c;
+        RHMapLocation *location = (RHMapLocation *)(base + 0x19c);
+        ((RHMapWidget *)location)->V54(true);
+        unsigned count = *(unsigned short *)((char *)mission->m_00 + 0x4c);
+        *(unsigned *)((char *)location + 0xd4) = 1000;
+        *((bool *)location + 0xcc) = mission->m_04 == count - 1;
+        if (mission->FUN_0054cc20())
+        {
+            V3c(base + 0x348);
+            *(bool *)(base + 0x34c) = true;
+        }
+        else
+        {
+            V38(base + 0x348);
+            *(bool *)(base + 0x34c) = false;
+        }
+        *(void **)(base + 0x414) = mission;
+    }
+}
 
 // Parked: 99.19%, two this-register scheduling differences.
 // STUB: GAME 0x00527d20
@@ -57,6 +185,12 @@ bool RHMenuCampaignMap::Create()
     return false;
 }
 
+// FUNCTION: GAME 0x00528050
+std::vector<void *> RHMapCampaign::FUN_00528050()
+{
+    return m_154;
+}
+
 // deferred: unannotated pending reccmp #534; proven 100.00% when annotated.
 void RHMenuCampaignMap::DisplayPseudoMissionDebriefing()
 {
@@ -107,8 +241,105 @@ void RHMenuCampaignMap::DisplayPseudoMissionDebriefing()
     }
 }
 
+// STUB: GAME 0x005284b0
+void RHMenuCampaignMap::FUN_005284b0()
+{
+    unsigned zero = 0;
+    char *location = (char *)this + 0x19c;
+    for (unsigned count = 10; count != 0; --count, location += 0x27c)
+    {
+        ((RHMapWidget *)location)->V54(zero);
+        V38(location + 0xe0);
+        V38(location + 0x1ac);
+        *(undefined *)(location + 0x1b0) = zero;
+        *(undefined4 *)(location + 0x278) = zero;
+    }
+    RHMapWidget *arrow = (RHMapWidget *)((char *)this + 0x1a74);
+    for (unsigned arrows = 10; arrows != 0; --arrows, ++arrow)
+        V38(arrow);
+}
+
+// STUB: GAME 0x00528810
+void RHMenuCampaignMap::FUN_00528810()
+{
+    unsigned converted = g_unk0x6c07fc->Get(4);
+    unsigned remaining = g_unk0x6c07fc->Get(5);
+    unsigned percentage = 0;
+    if (converted != 0 || remaining != 0)
+        percentage = converted * 100 / (converted + remaining);
+    unsigned short money[0x100];
+    unsigned short message[0x100];
+    swprintf(money, FUN_005e23d0(0xf4).c_str(), g_unk0x6c07fc->Get(1));
+    swprintf(message,
+             // STRING: GAME 0x006b0a18
+             L"%s -  %s : %d  -  %s : %d%%", money,
+             FUN_005e23d0(0x40).c_str(), g_unk0x6c07fc->Get(2),
+             FUN_005e23d0(0xf3).c_str(), percentage);
+    RHMapTitleText text(message);
+    ((RHMapWidget *)((char *)this + 0x25ec))->V2c(text);
+}
+
+// deferred: unannotated pending reccmp #534; proven 100.00% when annotated.
+unsigned RHMapWindow::FUN_0053baa0(unsigned duration)
+{
+    Timer timer = {m_198c, duration, GetTickCount()};
+    m_1980.push_back(timer);
+    return m_198c++;
+}
+
+// deferred: unannotated pending reccmp #534; proven 100.00% when annotated.
+void RHMapWindow::FUN_0053bb30(unsigned timer)
+{
+    for (std::list<Timer>::iterator it = m_1980.begin(); it != m_1980.end(); ++it)
+    {
+        if (it->m_00 == timer)
+        {
+            m_1980.erase(it);
+            break;
+        }
+    }
+}
+
+// STUB: GAME 0x0053bbe0
+void RHMapWindow::FUN_0053bbe0()
+{
+    while (!m_191c.empty())
+    {
+        std::vector<void *> &widgets = m_191c.back();
+        for (std::vector<void *>::iterator it = widgets.begin(); it != widgets.end(); ++it)
+            ((RHMapWindowPart *)((char *)this + 0x10))->FUN_00619ad0(*it);
+        m_191c.pop_back();
+    }
+    *((bool *)this + 0x197c) = true;
+}
+
+// FUNCTION: GAME 0x0053c7e0
+void RHMapWindow::FUN_0053c7e0()
+{
+    ((RHMapWindowPart *)((char *)this + 0x10))->FUN_00618850((char *)this + 0x1914);
+}
+
+// FUNCTION: GAME 0x00544b40
+bool RHMenuCampaignMap::FUN_00544b40(const RHMapTitleText &title, const RHMapBox &box, unsigned flags)
+{
+    return FUN_0061a1e0(title, box, flags);
+}
+
+// FUNCTION: GAME 0x00607c10
+RHMapBox::RHMapBox(float x1, float y1, float x2, float y2)
+    : m_0(x1, y1), m_8(x2, y2), m_10(true)
+{
+}
+
 void RHMenuCampaignMap::Emit()
 {
     Create();
     DisplayPseudoMissionDebriefing();
+    RHMapCampaign *campaign = (RHMapCampaign *)g_unk0x6c07fc;
+    campaign->FUN_004577a0();
+    campaign->FUN_004577b0();
+    RHMapWindow *window = *(RHMapWindow **)((char *)this + 0xb4);
+    window->FUN_0053bb30(0);
+    window->FUN_0053bbe0();
+    window->FUN_0053c7e0();
 }

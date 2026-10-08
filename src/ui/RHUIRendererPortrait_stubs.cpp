@@ -11,11 +11,6 @@
 
 #include "RHUIRendererPortrait.h"
 
-bool RHUnk00600820::ResolveSurface(void *, unsigned int, float *)
-{
-    return true;
-}
-
 bool RHUnk005e6440::BlitFull(float, int, int, void *, int)
 {
     return true;

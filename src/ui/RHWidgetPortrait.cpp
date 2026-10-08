@@ -30,6 +30,122 @@
 
 #include "RHWidgetPortrait.h"
 
+DECOMP_SIZE_ASSERT(RHWidgetPortrait, 0xe58)
+DECOMP_SIZE_ASSERT(RHUnk005d92c0Sub, 0x04)
+DECOMP_SIZE_ASSERT(RHUnk005d73d0Actor, 0x04)
+DECOMP_SIZE_ASSERT(RHUnk005d92c0Elem, 0x104)
+DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
+DECOMP_SIZE_ASSERT(SBGeoVector2D, 0x08)
+
+extern float g_unk0x00677438;
+// GLOBAL: GAME 0x0067a554
+float g_unk0x0067a554 = 52.0f;
+
+#define W(O) (*(RHUnk005d92c0Sub *)((char *)this + (O)))
+#define P(O) (*(SBGeoPoint2D *)((char *)this + (O)))
+#define A (*(RHUnk005d73d0Actor **)((char *)this + 0xe1c))
+
+// deferred: unannotated pending reccmp #534
+bool RHWidgetPortrait::Method005d6690()
+{
+    m_arr[2].m_4e = 1;
+    W(0x344).v08(P(0xcf0));
+    W(0x42c).v08(P(0xd04));
+    if (!m_arr[2].m_50)
+        W(0x514).v08(P(0xd18));
+    W(0x18c).v08(P(0xcc8));
+    W(0xa0).v08(P(0xcb4));
+    W(0x268).v08(P(0xcdc));
+    W(0).v15(&W(0x344));
+    W(0).v15(&W(0x42c));
+    if (!m_arr[2].m_50)
+        W(0).v15(&W(0x514));
+    P(0xe20) = P(0xcdc);
+    float x = P(0xe20).m_x;
+    P(0xe20).m_x = x + g_unk0x0067a554;
+    float y = P(0xe20).m_y;
+    P(0xe20).m_y = y + g_unk0x00677438;
+    W(0x97c).v08(P(0xd2c));
+    W(0xa80).v08(P(0xd40));
+    W(0xb84).v08(P(0xd54));
+    W(0x888).v08(P(0xcdc));
+    return true;
+}
+
+// deferred: unannotated pending reccmp #534
+bool RHWidgetPortrait::Method005d67e0()
+{
+    m_arr[2].m_4e = 0;
+    if (!m_arr[2].m_4f)
+    {
+        W(0x344).v08(P(0xcf0));
+        W(0x42c).v08(P(0xd04));
+        if (!m_arr[2].m_50)
+            W(0x514).v08(P(0xd18));
+        W(0x18c).v08(P(0xd7c));
+        W(0xa0).v08(P(0xd68));
+        W(0x268).v08(P(0xd90));
+        W(0).v14(&W(0x344));
+        W(0).v14(&W(0x42c));
+        if (!m_arr[2].m_50)
+            W(0).v14(&W(0x514));
+        P(0xe20) = P(0xd90);
+        float x = P(0xe20).m_x;
+        P(0xe20).m_x = x + g_unk0x0067a554;
+        float y = P(0xe20).m_y;
+        P(0xe20).m_y = y + g_unk0x00677438;
+        W(0x97c).v08(P(0xde0));
+        W(0xa80).v08(P(0xdf4));
+        W(0xb84).v08(P(0xe08));
+        W(0x888).v08(P(0xd90));
+    }
+    return true;
+}
+
+// deferred: unannotated pending reccmp #534
+bool RHWidgetPortrait::Method005d73d0()
+{
+    W(0xa0).v08(P(0x1bc).FUN_005fc200(SBGeoVector2D(0.0f, 23.0f)));
+    if (A->FUN_0049f510())
+    {
+        W(0xa0).v21(1);
+        W(0x18c).v21(1);
+        FUN_005d8ed0(A->v51(), (int)(P(0xd8).m_x - P(0xd0).m_x));
+    }
+    else
+    {
+        W(0xa0).v21(0);
+        W(0x18c).v21(0);
+    }
+    FUN_005da1f0();
+    FUN_005d9c30();
+    W(0).v14(&W(0x344));
+    W(0).v14(&W(0x42c));
+    W(0).v14(&W(0x514));
+    W(0).v14(&W(0x268));
+    m_arr[2].m_4f = 1;
+    m_arr[2].m_4e = 0;
+    return true;
+}
+
+// deferred: unannotated pending reccmp #534
+bool RHWidgetPortrait::Method005d7530()
+{
+    m_arr[2].m_4f = 0;
+    m_arr[2].m_4e = 0;
+    W(0xa0).v21(1);
+    W(0x18c).v21(1);
+    FUN_005da1f0();
+    FUN_005d9c30();
+    W(0).v15(&W(0x344));
+    W(0).v15(&W(0x42c));
+    if (!m_arr[2].m_50)
+        W(0).v15(&W(0x514));
+    W(0).v15(&W(0x268));
+    Method005d67e0();
+    return true;
+}
+
 // FUNCTION: GAME 0x005d92c0
 bool RHWidgetPortrait::Serialize(SBFile &file)
 {

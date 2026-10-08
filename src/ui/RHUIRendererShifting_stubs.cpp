@@ -14,26 +14,16 @@
 // RHGroundMark_stubs.cpp; this TU only adds the (float,float) ctor and the
 // free operator+ that no other TU provides.
 
-SBGeoPoint2D::SBGeoPoint2D(float, float)
-{
-}
-
 SBGeoPoint2D operator+(const SBGeoPoint2D &point, const SBGeoVector2D &)
 {
     return point;
 }
 
-SBGeoVector2D::SBGeoVector2D(float x, float y) : SBGeoPoint2D(x, y)
-{
-}
 
 SBGeoBoundingBox2D::SBGeoBoundingBox2D()
 {
 }
 
-SBGeoBoundingBox2D::SBGeoBoundingBox2D(const SBGeoPoint2D &, const SBGeoPoint2D &)
-{
-}
 
 SBGeoBoundingBox2D &SBGeoBoundingBox2D::operator=(const SBGeoBoundingBox2D &)
 {

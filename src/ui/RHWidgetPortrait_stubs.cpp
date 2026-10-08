@@ -12,8 +12,7 @@
 
 #include "RHWidgetPortrait.h"
 
-// Targets 0x005d6690 / 0x005d67e0 / 0x005d73d0 / 0x005d7530.
-void RHWidgetPortrait::Method005d6690() {}
-void RHWidgetPortrait::Method005d67e0() {}
-void RHWidgetPortrait::Method005d73d0() {}
-void RHWidgetPortrait::Method005d7530() {}
+char RHUnk005d73d0Actor::FUN_0049f510() { return 0; }
+void RHWidgetPortrait::FUN_005d8ed0(int, int) {}
+void RHWidgetPortrait::FUN_005d9c30() {}
+void RHWidgetPortrait::FUN_005da1f0() {}

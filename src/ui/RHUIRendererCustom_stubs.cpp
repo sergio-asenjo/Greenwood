@@ -15,12 +15,6 @@
 
 #include "RHUIRendererCustom.h"
 
-// Target 0x005fc3e0, ret 0x4 (copy-constructs from an SBGeoPoint2D: zeroes the
-// receiver at 0x005fc030 then copies the two floats at 0x005fc390).
-SBGeoVector2D::SBGeoVector2D(const SBGeoPoint2D &) : SBGeoPoint2D()
-{
-}
-
 // Target 0x00609200, ret 0x8 (member returning a box by value, constructed from
 // m_p0 - vector and m_p1 - vector via SBGeoPoint2D::operator- at 0x005fc200).
 SBGeoBoundingBox2D SBGeoBoundingBox2D::operator-(const SBGeoVector2D &) const
