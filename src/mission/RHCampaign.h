@@ -3,6 +3,7 @@
 
 #include "RHSaveGame.h"
 #include "RHCivilianProfile.h"
+#include "Decomp.h"
 #include <vector>
 #include <string>
 
@@ -18,14 +19,16 @@ inline const char *RHCampaignStringChars(const std::string &value)
     return chars ? chars : "";
 }
 
+// SIZE 0x0c
 class RHMission
 {
 public:
-    void *m_profile;
-    unsigned short m_4;
-    unsigned short m_6;
-    int m_8;
+    void *m_profile; // 0x00
+    unsigned short m_4; // 0x04
+    unsigned short m_6; // 0x06
+    int m_8; // 0x08
     RHMission();
+    bool Serialize(SBFile &file);
 };
 
 class RHUnk00452030
@@ -33,29 +36,31 @@ class RHUnk00452030
 public:
     char m_pad0[0x108];
     void **m_108;
+    void **m_10c;
     int Get(int index);
     int FUN_00453d60(const void *value);
 };
 
 extern RHUnk00452030 *g_unk0x6c07fc;
 
+// SIZE 0x1c4
 class RHCampaign
 {
 public:
-    char m_pad0[0x104];
-    std::vector<RHPCDescription *> m_104;
-    std::vector<RHPCDescription *> m_114;
-    std::vector<RHPCDescription *> m_124;
-    std::vector<std::wstring> m_134;
-    std::vector<RHMission> m_144;
-    std::vector<RHMission *> m_154;
-    std::vector<RHMission *> m_164;
-    RHMission *m_174;
-    RHMission *m_178;
-    RHMission *m_17c; // +0x17c
-    char m_pad180[0x30];
-    std::vector<RHPCDescription *> m_1b0; // +0x1b0; pointers +0x1b4/+0x1b8/+0x1bc
-    bool m_1c0;
+    undefined m_pad0[0x104]; // 0x00
+    std::vector<RHPCDescription *> m_104; // 0x104
+    std::vector<RHPCDescription *> m_114; // 0x114
+    std::vector<RHPCDescription *> m_124; // 0x124
+    std::vector<std::wstring> m_134; // 0x134
+    std::vector<RHMission> m_144; // 0x144
+    std::vector<RHMission *> m_154; // 0x154
+    std::vector<RHMission *> m_164; // 0x164
+    RHMission *m_174; // 0x174
+    RHMission *m_178; // 0x178
+    RHMission *m_17c; // 0x17c
+    undefined m_pad180[0x30]; // 0x180
+    std::vector<RHPCDescription *> m_1b0; // 0x1b0
+    bool m_1c0; // 0x1c0
 
     void CreateGang();
     void SelectMissions(bool forced);
@@ -69,6 +74,7 @@ public:
     void FUN_00452a50(std::vector<RHMission *> &missions);
     void FUN_00452c90(std::vector<RHMission *> &missions);
     void FUN_00455f00(std::vector<RHMission *> &missions);
+    void FUN_004564e0(std::vector<RHMission *> &missions);
     void FUN_00456e60();
     bool FUN_00454c00(RHbeamMe beamMe, unsigned short character);
     void FUN_004552f0(SBArray<RHElement *> &elements, RHbeamMe beamMe, unsigned short character);
@@ -79,6 +85,22 @@ public:
     bool CopyBackupTo(SBFile &file) const;
     void Emit(std::vector<RHMission *> &missions);
 };
+
+struct RHGameMission;
+
+// SIZE 0x184
+class RHGameCampaignView
+{
+public:
+    undefined m_00[0x178]; // 0x00
+    RHGameMission *m_178; // 0x178
+    RHGameMission *m_17c; // 0x17c
+    RHGameMission *m_180; // 0x180
+    void FUN_00456540(bool flag, RHGameMission *mission);
+};
+
+bool FUN_00452040(RHMission *mission);
+bool FUN_00452090(RHMission *mission);
 
 bool FUN_00453da0(SBFile &file, void *&value);
 void FUN_0045a4f0(RHMission **first, RHMission **last,
@@ -226,6 +248,7 @@ public:
     unsigned size() { return m_first == 0 ? 0 : m_last - m_first; }
     void Destroy(RHCampaignWideString *first, RHCampaignWideString *last);
     void Insert(RHCampaignWideString *position, unsigned count, const RHCampaignWideString &value);
+    void FUN_00459620(RHCampaignWideString *position, unsigned count, const RHCampaignWideString &value);
     void erase(RHCampaignWideString *first, RHCampaignWideString *last)
     {
         RHCampaignWideString *destination = copy(last, end(), first);
@@ -249,10 +272,25 @@ class SBGeoPoint2D
 {
 public:
     SBGeoPoint2D();
+    SBGeoPoint2D(const SBGeoPoint2D &value);
     SBGeoPoint2D &operator=(const SBGeoPoint2D &value);
     float m_x;
     float m_y;
     ~SBGeoPoint2D();
+};
+
+// SIZE 0x60c
+class RHUnk0048f280
+{
+public:
+    RHUnk0048f280(void *description);
+    undefined m_data[0x60c]; // 0x00
+};
+
+class RHEngineReinforcementCalls
+{
+public:
+    void FUN_00491fd0(const RHbeamMe &beamMe);
 };
 
 class RHSectorProduction
@@ -286,6 +324,7 @@ public:
     RHSectorProduction(int type);
     ~RHSectorProduction() {}
     RHSectorProduction &operator=(const RHSectorProduction &value);
+    void FUN_00456960();
 };
 
 class RHCampaignProductionSectors
@@ -317,6 +356,34 @@ public:
         }
         return destination;
     }
+};
+
+class RHSoundPendingData
+{
+public:
+    char m_data[16];
+    void FUN_0052c5a0();
+};
+
+class RHCampaignDestroyOps
+{
+public:
+    void FUN_00459100(RHSoundPendingData *first, RHSoundPendingData *last);
+};
+
+class RHCampaignUnk00457950
+{
+public:
+    struct Value
+    {
+        char m_data[16];
+        void FUN_0051c0c0();
+    };
+    char m_allocator[4];
+    Value *m_first;
+    Value *m_last;
+    Value *m_end;
+    void FUN_00457950();
 };
 
 bool FUN_00458e70(SBFile &file, RHCampaignProductionSectors &values,

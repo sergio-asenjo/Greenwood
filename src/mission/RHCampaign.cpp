@@ -3,6 +3,34 @@
 #include <windows.h>
 #include <cstdlib>
 
+DECOMP_SIZE_ASSERT(RHMission, 0x0c)
+DECOMP_SIZE_ASSERT(RHCampaign, 0x1c4)
+DECOMP_SIZE_ASSERT(RHGameCampaignView, 0x184)
+DECOMP_SIZE_ASSERT(RHCampaignMissionCandidates, 0x10)
+DECOMP_SIZE_ASSERT(RHCampaignBeamText, 0x10)
+DECOMP_SIZE_ASSERT(RHbeamMe, 0x30)
+DECOMP_SIZE_ASSERT(RHUnk0048f280, 0x60c)
+DECOMP_SIZE_ASSERT(RHPCDescription, 0x48)
+DECOMP_SIZE_ASSERT(RHCampaignPCBase, 0x04)
+DECOMP_SIZE_ASSERT(SBGeoVector2D, 0x08)
+DECOMP_SIZE_ASSERT(SBGeoBoundingBox2D, 0x14)
+DECOMP_SIZE_ASSERT(RHCampaignCharacterData, 0x9c)
+DECOMP_SIZE_ASSERT(RHSaveGame::Header, 0x0c)
+
+// FUNCTION: GAME 0x0044e940
+void FUN_0044e940(unsigned short *destination, const unsigned short *value)
+{
+    if (destination)
+        *destination = *value;
+}
+
+// FUNCTION: GAME 0x0044ea70
+void RHCampaignArrayOps::FUN_0044ea70()
+{
+    ((std::vector<void *> *)this)->erase(((std::vector<void *> *)this)->begin(),
+                                       ((std::vector<void *> *)this)->end());
+}
+
 // Parked: 49.95%.
 // STUB: GAME 0x00450ec0
 void RHCampaign::CreateGang()
@@ -33,37 +61,37 @@ void RHCampaign::CreateGang()
             {
             case 'R':
                 {
-                    ((RHCampaignPCArray *)&m_114)->Push(new RHPCDescription(profiles->FUN_0056d5d0(RHCampaignText("Robin des bois"), true), true));
+                    ((RHCampaignPCArray *)&m_114)->Push(new RHPCDescription(profiles->FUN_0056d5d0(RHCampaignText("Robin des bois")), true));
                     ((RHMissionArrayStorage *)&m_104)->FUN_004e5820(m_104.end(), (const unsigned long &)m_114.back());
                 }
                 break;
             case 'J':
                 {
-                    ((RHCampaignPCArray *)&m_114)->Push(new RHPCDescription(profiles->FUN_0056d5d0(RHCampaignText("Petit Jean"), true), true));
+                    ((RHCampaignPCArray *)&m_114)->Push(new RHPCDescription(profiles->FUN_0056d5d0(RHCampaignText("Petit Jean")), true));
                     ((RHMissionArrayStorage *)&m_104)->FUN_004e5820(m_104.end(), (const unsigned long &)m_114.back());
                 }
                 break;
             case 'T':
                 {
-                    ((RHCampaignPCArray *)&m_114)->Push(new RHPCDescription(profiles->FUN_0056d5d0(RHCampaignText("Frere Tuck"), true), true));
+                    ((RHCampaignPCArray *)&m_114)->Push(new RHPCDescription(profiles->FUN_0056d5d0(RHCampaignText("Frere Tuck")), true));
                     ((RHMissionArrayStorage *)&m_104)->FUN_004e5820(m_104.end(), (const unsigned long &)m_114.back());
                 }
                 break;
             case 'S':
                 {
-                    ((RHCampaignPCArray *)&m_114)->PushCounted(new RHPCDescription(profiles->FUN_0056d5d0(RHCampaignText("Stutely"), true), true));
+                    ((RHCampaignPCArray *)&m_114)->PushCounted(new RHPCDescription(profiles->FUN_0056d5d0(RHCampaignText("Stutely")), true));
                     ((SBArray<RHSaveGame *> *)&m_104)->Insert((RHSaveGame **)m_104.end(), 1, (RHSaveGame *const &)m_114.back());
                 }
                 break;
             case 'W':
                 {
-                    ((RHCampaignPCArray *)&m_114)->PushCounted(new RHPCDescription(profiles->FUN_0056d5d0(RHProfileText("Will Ecarlate"), true), true));
+                    ((RHCampaignPCArray *)&m_114)->PushCounted(new RHPCDescription(profiles->FUN_0056d5d0(RHProfileText("Will Ecarlate")), true));
                     ((SBArray<RHSaveGame *> *)&m_104)->Insert((RHSaveGame **)m_104.end(), 1, (RHSaveGame *const &)m_114.back());
                 }
                 break;
             case 'M':
                 {
-                    ((RHCampaignPCArray *)&m_114)->PushCounted(new RHPCDescription(profiles->FUN_0056d5d0(RHProfileText("Lady Marianne"), true), true));
+                    ((RHCampaignPCArray *)&m_114)->PushCounted(new RHPCDescription(profiles->FUN_0056d5d0(RHProfileText("Lady Marianne")), true));
                     ((SBArray<RHSaveGame *> *)&m_104)->Insert((RHSaveGame **)m_104.end(), 1, (RHSaveGame *const &)m_114.back());
                 }
                 break;
@@ -71,7 +99,7 @@ void RHCampaign::CreateGang()
                 {
                     ((RHCampaignPCArray *)&m_114)->PushCounted(new RHPCDescription(profiles->FUN_0056d5d0(RHProfileText(
                         // STRING: GAME 0x006ab954
-                        "Paysan A"), true), true));
+                        "Paysan A")), true));
                     ((SBArray<RHSaveGame *> *)&m_104)->Insert((RHSaveGame **)m_104.end(), 1, (RHSaveGame *const &)m_114.back());
                 }
                 break;
@@ -79,7 +107,7 @@ void RHCampaign::CreateGang()
                 {
                     ((RHCampaignPCArray *)&m_114)->PushCounted(new RHPCDescription(profiles->FUN_0056d5d0(RHProfileText(
                         // STRING: GAME 0x006ab948
-                        "Paysan B"), true), true));
+                        "Paysan B")), true));
                     ((SBArray<RHSaveGame *> *)&m_104)->Insert((RHSaveGame **)m_104.end(), 1, (RHSaveGame *const &)m_114.back());
                 }
                 break;
@@ -87,7 +115,7 @@ void RHCampaign::CreateGang()
                 {
                     ((RHCampaignPCArray *)&m_114)->PushCounted(new RHPCDescription(profiles->FUN_0056d5d0(RHProfileText(
                         // STRING: GAME 0x006ab93c
-                        "Paysan C"), true), true));
+                        "Paysan C")), true));
                     ((SBArray<RHSaveGame *> *)&m_104)->Insert((RHSaveGame **)m_104.end(), 1, (RHSaveGame *const &)m_114.back());
                 }
                 break;
@@ -174,6 +202,83 @@ void RHCampaign::SelectMissions(bool forced)
         ((RHCampaignArrayOps *)&m_164)->FUN_00457a30((const RHCampaignArrayOps &)candidates);
     else
         ((RHCampaignArrayOps *)&m_154)->FUN_00457a30((const RHCampaignArrayOps &)candidates);
+}
+
+// Parked: register allocation and a counted callee operand.
+// STUB: GAME 0x004526f0
+void RHCampaign::FUN_004526f0(std::vector<RHMission *> &missions)
+{
+    for (RHMission **it = missions.begin(); it != missions.end();)
+    {
+        RHMission *mission = *it;
+        void *profile = mission->m_profile;
+        if (*(int *)((char *)profile + 0x34) == 0 &&
+            mission->m_4 == *(unsigned short *)((char *)profile + 0x4c) - 1)
+        {
+            for (RHMission **other = missions.begin(); other != missions.end(); ++other)
+                if (*other != mission)
+                    (*other)->m_4 = 0;
+            RHCampaignPointerArray<RHMission *> &values = (RHCampaignPointerArray<RHMission *> &)missions;
+            RHMission **last = values.copy(values.end(), values.end(), values.begin());
+            ((RHScriptFXArray *)&values)->Unk005008e0((void **)last, (void **)values.end());
+            values.m_last = last;
+            ((SBArray<RHSaveGame *> *)&values)->Insert((RHSaveGame **)last, 1, (RHSaveGame *const &)mission);
+            break;
+        }
+        if (mission->m_4 == *(unsigned short *)((char *)profile + 0x4c))
+        {
+            mission->m_4 = 0;
+            it = missions.erase(it);
+            if (mission->m_8 == 0 &&
+                (*(int *)((char *)mission->m_profile + 0x34) == 5 ||
+                 *(int *)((char *)mission->m_profile + 0x34) == 1))
+                ((RHGameCampaignView *)this)->FUN_00456540(false, (RHGameMission *)mission);
+        }
+        else
+            ++it;
+    }
+}
+
+// Parked: container scheduling and counted helper operands.
+// STUB: GAME 0x00452810
+void RHCampaign::FUN_00452810(std::vector<RHMission *> &missions)
+{
+    RHCampaignMissionCandidates previous(missions);
+    missions.erase(std::remove_if(missions.begin(), missions.end(), FUN_00452040), missions.end());
+    if (missions.empty())
+        ((RHCampaignMissionCandidates *)&missions)->Assign(previous);
+}
+
+// Parked: container scheduling and counted helper operands.
+// STUB: GAME 0x00452a50
+void RHCampaign::FUN_00452a50(std::vector<RHMission *> &missions)
+{
+    RHCampaignMissionCandidates previous(missions);
+    missions.erase(std::remove_if(missions.begin(), missions.end(), FUN_00452090), missions.end());
+    if (missions.empty())
+        ((RHCampaignMissionCandidates *)&missions)->Assign(previous);
+}
+
+// FUNCTION: GAME 0x00452c90
+void RHCampaign::FUN_00452c90(std::vector<RHMission *> &missions)
+{
+    for (int i = *(unsigned *)((char *)this + 0x18c) - 1; i >= 0; --i)
+    {
+        RHCampaignMissionList &previous = *(RHCampaignMissionList *)((char *)this + 0x184);
+        previous.FUN_005c8e40(i);
+        RHMission *value = previous.m_cursor->value;
+        for (RHMission **position = missions.begin(); position != missions.end(); ++position)
+        {
+            if (*position == value)
+            {
+                (*position)->m_4 = 0;
+                missions.erase(position);
+                break;
+            }
+        }
+        if (missions.size() <= 1)
+            break;
+    }
 }
 
 // FUNCTION: GAME 0x00452d20
@@ -376,6 +481,58 @@ bool RHCampaign::SerializeAllCharacters(SBFile &file)
     return true;
 }
 
+// STUB: GAME 0x00453930
+bool FUN_00453930(SBFile &file, RHMission &mission)
+{
+    return mission.Serialize(file);
+}
+
+// FUNCTION: GAME 0x00453940
+bool FUN_00453940(SBFile &file, RHMission *&mission)
+{
+    unsigned index;
+    if (!file.m_bLoading)
+    {
+        index = 0xffff;
+        if (mission != 0)
+        {
+            unsigned id = *(unsigned *)mission->m_profile;
+            unsigned i = 0;
+            std::vector<RHMission> &missions = ((RHCampaign *)g_unk0x6c07fc)->m_144;
+            for (RHMission *it = missions.begin(); it != missions.end(); ++it, ++i)
+                if (*(unsigned *)it->m_profile == id)
+                {
+                    index = i;
+                    break;
+                }
+        }
+        file.Access(&index, 2);
+        return true;
+    }
+    else
+    {
+        file.Access(&index, 2);
+        if ((unsigned short)index == 0xffff)
+        {
+            mission = 0;
+            return true;
+        }
+        mission = ((RHCampaign *)g_unk0x6c07fc)->m_144.begin() + (unsigned short)index;
+    }
+    return true;
+}
+
+// FUNCTION: GAME 0x00453d60
+int RHUnk00452030::FUN_00453d60(const void *value)
+{
+    void **first = *(void **volatile *)&m_108;
+    unsigned count = first == 0 ? 0 : m_10c - first;
+    for (unsigned i = 0; i < count; ++i)
+        if (m_108[i] == value)
+            return i;
+    return -1;
+}
+
 // deferred: unannotated pending reccmp #534
 // 0x00453da0: 100.00% when temporarily annotated.
 bool FUN_00453da0(SBFile &file, void *&value)
@@ -438,7 +595,7 @@ void RHCampaign::CreatePlayableCharacterSet(SBArray<RHElement *> &elements, std:
                 if (_stricmp(name, required) == 0 ||
                     (beamMes[i].m_required == 4 && _stricmp(name, "Robin des villes") == 0))
                 {
-                    FUN_004552f0(elements, ((RHCampaignBeamArray *)&beamMes)->FUN_00457bc0(i, character), character);
+                    FUN_004552f0(elements, ((RHCampaignBeamArray *)&beamMes)->FUN_00457bc0(i), character);
                     assigned[i] = 1;
                     --remaining;
                     break;
@@ -459,7 +616,7 @@ void RHCampaign::CreatePlayableCharacterSet(SBArray<RHElement *> &elements, std:
             if (beamMe != -1)
             {
                 assigned[beamMe] = 1;
-                FUN_004552f0(elements, ((RHCampaignBeamArray *)&beamMes)->FUN_00457bc0(beamMe, character), character);
+                FUN_004552f0(elements, ((RHCampaignBeamArray *)&beamMes)->FUN_00457bc0(beamMe), character);
                 --remaining;
                 g_pEngine->FUN_004e3770(elements.m_last[-1]);
             }
@@ -552,6 +709,94 @@ void RHCampaign::CreatePlayableCharacterSet(SBArray<RHElement *> &elements, std:
         FUN_004559f0();
 }
 
+// Parked: counted point-copy operand and compiler-owned null-string storage.
+// STUB: GAME 0x00454a10
+RHbeamMe::RHbeamMe(const RHbeamMe &value)
+    : m_point(value.m_point), m_8(value.m_8), m_a(value.m_a), m_c(value.m_c),
+      m_e(value.m_e), m_10(value.m_10), m_12(value.m_12), m_14(value.m_14),
+      m_required(value.m_required), m_1c(value.m_1c), m_text(value.m_text)
+{
+}
+
+// Parked: four-byte EH frame excess and annotated helper operands.
+// STUB: GAME 0x00454c00
+bool RHCampaign::FUN_00454c00(RHbeamMe beamMe, unsigned short character)
+{
+    RHCampaignCharacterData profile(*(RHCampaignCharacterData *)m_114[character]->m_profile);
+    bool available0 = false;
+    bool available1 = false;
+    bool available2 = false;
+    bool available3 = false;
+    bool available4 = false;
+    bool available5 = false;
+    bool available6 = false;
+    bool available7 = false;
+    bool available8 = false;
+    bool available9 = false;
+    for (unsigned first = 0; first < 3; ++first)
+    {
+        switch (profile.m_48[first])
+        {
+        case 1: available3 = true; break;
+        case 2:
+        case 3: available6 = true; break;
+        case 9: available7 = true; break;
+        case 13:
+        case 14: available8 = true; break;
+        case 28: available2 = true; break;
+        }
+    }
+    for (unsigned second = 0; second < 4; ++second)
+    {
+        switch (profile.m_5c[second])
+        {
+        case 9: available7 = true; break;
+        case 21: available0 = true; break;
+        case 22: available1 = true; break;
+        case 23: available9 = true; break;
+        case 25:
+        case 26: available4 = true; break;
+        case 27: available5 = true; break;
+        case 28: available2 = true; break;
+        }
+    }
+    unsigned requirements = beamMe.m_required;
+    if ((requirements & 8) && !available3) return false;
+    if ((requirements & 16) && !available4) return false;
+    if ((requirements & 1) && !available0) return false;
+    if ((requirements & 2) && !available1) return false;
+    if ((requirements & 128) && !available7) return false;
+    if ((requirements & 4) && !available2) return false;
+    if ((requirements & 64) && !available6) return false;
+    if ((requirements & 32) && !available5) return false;
+    if ((requirements & 256) && !available8) return false;
+    if ((requirements & 512) && !available9) return false;
+    return true;
+}
+
+// STUB: GAME 0x004552f0
+void RHCampaign::FUN_004552f0(SBArray<RHElement *> &elements, RHbeamMe beamMe, unsigned short character)
+{
+    RHPCDescription *description = m_1b0[character];
+    description->m_44 = true;
+    if (*(int *)((char *)m_178->m_profile + 0x3c) == 8)
+        description->m_3c = beamMe.m_12;
+    else
+        description->m_3c = -1;
+    RHUnk0048f280 *actor = new RHUnk0048f280(description);
+    ((RHEngineReinforcementCalls *)actor)->FUN_00491fd0(beamMe);
+    RHElement *element = (RHElement *)actor;
+    ((SBArray<RHSaveGame *> *)&elements)->Insert((RHSaveGame **)elements.m_last, 1,
+                                                (RHSaveGame *const &)element);
+    *(bool *)((char *)&elements + 0x14) = true;
+}
+
+// FUNCTION: GAME 0x004559f0
+void RHCampaign::FUN_004559f0()
+{
+    m_1b0.erase(m_1b0.begin(), m_1b0.end());
+}
+
 // FUNCTION: GAME 0x00455a70
 unsigned short RHCampaign::GetNumberOfPeasantsToConvertToBlazons() const
 {
@@ -571,6 +816,115 @@ unsigned short RHCampaign::GetNumberOfPeasantsToConvertToBlazons() const
     if ((unsigned short)peasants < blazons)
         return peasants * *(unsigned short *)((char *)profile + 0x70);
     return blazons * *(unsigned short *)((char *)profile + 0x70);
+}
+
+// STUB: GAME 0x00455f00
+void RHCampaign::FUN_00455f00(std::vector<RHMission *> &missions)
+{
+    RHMission *&selected = *(RHMission **)((char *)this + 0x180);
+    if (missions.size() > 1)
+    {
+        FUN_004564e0(m_164);
+        RHMission **found = std::find_if(missions.begin(), missions.end(), FUN_0054cc10);
+        selected = found != missions.end() ? *found : 0;
+        for (RHMission **it = missions.begin(); it != missions.end();)
+        {
+            RHMission *mission = *it;
+            if (mission != selected && FUN_0054cc10(mission))
+            {
+                mission->m_4 = 0;
+                it = missions.erase(it);
+            }
+            else if (((RHCampaignMissionCalls *)mission)->FUN_0054cc20())
+            {
+                if (selected == 0)
+                {
+                    mission->m_4 = 0;
+                    it = missions.erase(it);
+                }
+                else if (selected != mission)
+                {
+                    it = missions.erase(it);
+                    ((SBArray<RHSaveGame *> *)&m_164)->Insert((RHSaveGame **)m_164.end(), 1, (RHSaveGame *const &)mission);
+                }
+                else
+                    ++it;
+            }
+            else
+                ++it;
+        }
+    }
+    else if (missions.size() == 1 && ((RHCampaignMissionCalls *)missions.front())->FUN_0054cbf0())
+        selected = missions.front();
+    else
+        selected = 0;
+}
+
+// FUNCTION: GAME 0x00456aa0
+bool FUN_00456aa0(SBFile &file, unsigned long &value)
+{
+    if (file.Access(&value, 4) < 0)
+    {
+        SBString *err = file.GetError();
+        const char *reason = err->m_chars ? err->m_chars : "";
+        SBAssert(0, "P:\\Robin Hood\\RHCampaign.cpp", 2857, "Serialize failed reason is %s", reason);
+        return false;
+    }
+    return true;
+}
+
+// STUB: GAME 0x00456e60
+void RHCampaign::FUN_00456e60()
+{
+    std::string status;
+    std::string accessible;
+    std::string reason;
+    SBSimpleUnk005f9510(g_unk0x006c13c0, "\n");
+    SBSimpleUnk005f9510(g_unk0x006c13c0, "\n");
+    SBSimpleUnk005f9510(g_unk0x006c13c0, " ---------- \n");
+    SBSimpleUnk005f9510(g_unk0x006c13c0, "| Campaign |\n");
+    SBSimpleUnk005f9510(g_unk0x006c13c0, " ---------- \n");
+    SBSimpleUnk005f9510(g_unk0x006c13c0, " - Ransom : %d\n", ((RHUnk00452030 *)this)->Get(1));
+    SBSimpleUnk005f9510(g_unk0x006c13c0, " - Gang size : %d\n", m_114.size());
+    SBSimpleUnk005f9510(g_unk0x006c13c0, " - ARES : %d\n", *(signed char *)((char *)this + 0x100));
+    SBSimpleUnk005f9510(g_unk0x006c13c0, "\n");
+    SBSimpleUnk005f9510(g_unk0x006c13c0, "\n");
+    SBSimpleUnk005f9510(g_unk0x006c13c0, " ---------- \n");
+    SBSimpleUnk005f9510(g_unk0x006c13c0, "| Missions |\n");
+    SBSimpleUnk005f9510(g_unk0x006c13c0, " ---------- \n");
+    unsigned count = m_144.size();
+    for (unsigned index = 0; index < count; ++index)
+    {
+        RHMission &mission = m_144[index];
+        switch (mission.m_8)
+        {
+        case 0: status = "AVAILABLE"; break;
+        case 1: status.assign("WON", 3); break;
+        case 2: status = "LOST"; break;
+        }
+        if (((RHCampaignMissionCalls *)&mission)->FUN_0054c8a0(reason))
+            accessible = "ACCESSIBLE";
+        else
+            accessible = "NOT ACCESSIBLE";
+        RHMissionProfile *profile = (RHMissionProfile *)mission.m_profile;
+        SBSimpleUnk005f9510(g_unk0x006c13c0, " - Mission[ %d ] \"%s\" (%s,%s) : %s - %s (%s)\n",
+            index, profile->m_24.c_str(), profile->m_14.c_str(), profile->m_04.c_str(),
+            status.c_str(), accessible.c_str(), reason.c_str());
+    }
+    SBSimpleUnk005f9510(g_unk0x006c13c0, "\n");
+    SBSimpleUnk005f9510(g_unk0x006c13c0, "\n");
+    SBSimpleUnk005f9510(g_unk0x006c13c0, " -------------- \n");
+    SBSimpleUnk005f9510(g_unk0x006c13c0, "| Robin's gang |\n");
+    SBSimpleUnk005f9510(g_unk0x006c13c0, " -------------- \n");
+    count = m_114.size();
+    for (unsigned character = 0; character < count; ++character)
+    {
+        RHPCDescription *description = m_114[character];
+        const char *name = ((RHProfileText *)((char *)description->m_profile + 0x14))->c_str();
+        unsigned short *displayName = *(unsigned short **)((char *)description + 0x30);
+        SBSimpleUnk005f9510(g_unk0x006c13c0, " - Gang member[ %d ] \"%S\" (%s)\n",
+            character, displayName ? displayName : (const unsigned short *)L"", name);
+    }
 }
 
 // STUB: GAME 0x00457330
@@ -636,6 +990,106 @@ bool RHCampaign::CopyBackupTo(SBFile &file) const
     } while (transferred != 0);
     CloseHandle(backup);
     return true;
+}
+
+// FUNCTION: GAME 0x00457950
+void RHCampaignUnk00457950::FUN_00457950()
+{
+    Value *last = m_last;
+    for (Value *it = m_first; it != last; ++it)
+        it->FUN_0051c0c0();
+    operator delete(m_first);
+    m_first = 0;
+    m_last = 0;
+    m_end = 0;
+}
+
+// STUB: GAME 0x00457a30
+RHCampaignArrayOps &RHCampaignArrayOps::FUN_00457a30(const RHCampaignArrayOps &value)
+{
+    if (this == &value)
+        ;
+    else if (value.size() <= size())
+    {
+        std::copy(value.m_first, value.m_last, m_first);
+        m_last = m_first + value.size();
+    }
+    else if (value.size() <= capacity())
+    {
+        void *const *middle = value.m_first + size();
+        std::copy((void *const *)value.m_first, middle, m_first);
+        ConstructCopy(middle, value.m_last, m_last);
+        m_last = m_first + value.size();
+    }
+    else
+    {
+        operator delete(m_first);
+        m_first = std::_Allocate((int)value.size(), (void **)0);
+        m_last = ConstructCopy(value.m_first, value.m_last, m_first);
+        m_end = m_last;
+    }
+    return *this;
+}
+
+// FUNCTION: GAME 0x00457bc0
+RHbeamMe &RHCampaignBeamArray::FUN_00457bc0(unsigned beamMe)
+{
+    return m_first[beamMe];
+}
+
+// STUB: GAME 0x00457be0
+void RHCampaignCommandLine::FUN_00457be0()
+{
+    if (m_chars && ((unsigned char *)m_chars)[-1] != 0 && ((unsigned char *)m_chars)[-1] != 255)
+    {
+        unsigned length = m_length;
+        if (length > (unsigned)-3)
+            std::_Xlen();
+        if (m_chars && ((unsigned char *)m_chars)[-1] != 0 && ((unsigned char *)m_chars)[-1] != 255)
+        {
+            if (length == 0)
+            {
+                --((unsigned char *)m_chars)[-1];
+                m_chars = 0, m_length = 0, m_capacity = 0;
+            }
+            else
+                ((RHCampaignStringCalls *)this)->FUN_00402670(length);
+        }
+        else if (length == 0)
+        {
+            if (m_chars)
+                ((RHProfileText *)this)->FUN_00402260(0);
+        }
+        else if (m_capacity < length)
+            ((RHCampaignStringCalls *)this)->FUN_00402670(length);
+    }
+    if (m_chars)
+        ((unsigned char *)m_chars)[-1] = 255;
+}
+
+// STUB: GAME 0x00457cb0
+void RHCampaignByteArray::FUN_00457cb0(char *position, unsigned count, const char &value)
+{
+    ((std::vector<char> *)this)->insert(position, count, value);
+}
+
+// STUB: GAME 0x00457e80
+void RHCampaignMissionValues::FUN_00457e80(RHMission *position, const RHMission &value)
+{
+    ((std::vector<RHMission> *)this)->insert(position, value);
+}
+
+// FUNCTION: GAME 0x004580a0
+unsigned RHCampaignArrayOps::FUN_004580a0()
+{
+    return m_first == 0 ? 0 : m_end - m_first;
+}
+
+// STUB: GAME 0x004584e0
+void RHCampaignProductionSectors::Insert(RHSectorProduction *position, unsigned count,
+                                         const RHSectorProduction &value)
+{
+    ((std::vector<RHSectorProduction> *)this)->insert(position, count, value);
 }
 
 // FUNCTION: GAME 0x00458be0
@@ -723,6 +1177,20 @@ bool FUN_00458e70(SBFile &file, RHCampaignProductionSectors &values,
         }
     }
     return true;
+}
+
+// FUNCTION: GAME 0x00459100
+void RHCampaignDestroyOps::FUN_00459100(RHSoundPendingData *first, RHSoundPendingData *last)
+{
+    for (; first != last; ++first)
+        first->FUN_0052c5a0();
+}
+
+// FUNCTION: GAME 0x00459130
+void RHCampaignProductionSectors::Destroy(RHSectorProduction *first, RHSectorProduction *last)
+{
+    for (; first != last; ++first)
+        first->FUN_00456960();
 }
 
 // FUNCTION: GAME 0x00459160
@@ -814,6 +1282,250 @@ bool RHUnk004593f0SerializeList(SBFile &file, RHUnk0054e250List &values, void *s
     return true;
 }
 
+// STUB: GAME 0x00459620
+void RHCampaignWideStrings::FUN_00459620(RHCampaignWideString *position, unsigned count,
+                                        const RHCampaignWideString &value)
+{
+    ((std::vector<std::wstring> *)this)->insert((std::wstring *)position, count, (const std::wstring &)value);
+}
+
+// FUNCTION: GAME 0x00459dd0
+void *RHPCDescription::FUN_00459dd0(unsigned flags)
+{
+    FUN_00459fd0();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// FUNCTION: GAME 0x00459df0
+RHSectorProduction &RHSectorProduction::operator=(const RHSectorProduction &value)
+{
+    m_0 = value.m_0;
+    m_4 = value.m_4;
+    m_8 = value.m_8;
+    m_points = value.m_points;
+    m_occupants = value.m_occupants;
+    m_2c = value.m_2c;
+    m_2e = value.m_2e;
+    m_30 = value.m_30;
+    return *this;
+}
+
+// FUNCTION: GAME 0x0045a010
+int RHCampaignCommandLine::FUN_0045a010(const RHProfileText &value)
+{
+    unsigned length = value.m_size;
+    const char *chars = value.c_str();
+    const std::string &text = *(const std::string *)this;
+    return text.compare(0, text.size(), chars, length);
+}
+
+// FUNCTION: GAME 0x0045a440
+void RHCampaignMissionList::FUN_0045a440(const RHMission *const &value)
+{
+    Node *next = m_head;
+    Node *previous = next->previous;
+    Node *node = (Node *)operator new(sizeof(Node));
+    node->next = next ? next : node;
+    node->previous = previous ? previous : node;
+    next->previous = node;
+    node->previous->next = node;
+    RHMission **destination = &node->value;
+    if (destination)
+        *destination = (RHMission *)value;
+    ++m_count;
+}
+
+// deferred: unannotated pending reccmp #534
+void FUN_0045a4f0(RHMission **first, RHMission **last,
+                  bool (*compare)(RHMission *, RHMission *), int)
+{
+    if (last - first <= std::_SORT_MAX)
+        std::_Insertion_sort(first, last, compare);
+    else
+    {
+        std::_Sort(first, last, compare, (RHMission **)0);
+        std::_Insertion_sort(first, first + std::_SORT_MAX, compare);
+        for (first += std::_SORT_MAX; first != last; ++first)
+            std::_Unguarded_insert(first, (RHMission *)*first, compare);
+    }
+}
+
+// deferred: unannotated pending reccmp #534
+void FUN_0045a940(RHMission **first, RHMission **last,
+                  bool (*compare)(RHMission *, RHMission *), int)
+{
+    while (std::_SORT_MAX < last - first)
+    {
+        RHMission **middle = std::_Unguarded_partition(first, last,
+            std::_Median(*first, *(first + (last - first) / 2), *(last - 1), compare), compare);
+        if (last - middle <= middle - first)
+        {
+            FUN_0045a940(middle, last, compare, 0);
+            last = middle;
+        }
+        else
+        {
+            FUN_0045a940(first, middle, compare, 0);
+            first = middle;
+        }
+    }
+}
+
+// Parked: shared declaration discards the iterator return.
+// STUB: GAME 0x004609a0
+void RHMissionArrayStorage::FUN_004609a0(void *first, void *last)
+{
+    ((std::vector<void *> *)this)->erase((void **)first, (void **)last);
+}
+
+// STUB: GAME 0x004e3770
+void RHEngine::FUN_004e3770(RHElement *element)
+{
+    char *info = RHCampaignField<char *>(element, 0x50);
+    SBGeoPoint2D point(RHCampaignField<SBGeoPoint2D>(info, 0x24));
+    point.m_x += rand() * g_unk0x00677f7c * g_unk0x00677438 - g_unk0x0067748c;
+    point.m_y += rand() * g_unk0x00677f7c * g_unk0x00677438 - g_unk0x0067748c;
+    char *position = RHCampaignField<char *>(element, 0x50) + 4;
+    SBGeoBoundingBox2D box(*(SBGeoBoundingBox2D *)((RHUnkPathActorInfoBase *)position)->Unk0055fa10(
+        RHCampaignField<int>(position, 0x88)));
+    ((RHMobileUnk006091b0 *)((char *)&box + 4))->FUN_006091b0(SBGeoVector2D(point));
+    RHPathObstacleGrid *grid = (RHPathObstacleGrid *)((char *)this + 0x11c);
+    info = RHCampaignField<char *>(element, 0x50);
+    if (grid->FUN_004f5750(box, RHCampaignField<unsigned short>(info, 0xde)) &&
+        grid->FUN_004f9260(RHCampaignField<SBGeoPoint2D>(info, 0x24), point,
+                          RHCampaignField<unsigned short>(info, 0xde)))
+    {
+        position = RHCampaignField<char *>(element, 0x50) + 4;
+        for (unsigned offset = 0; offset < 12; offset += 4)
+            RHCampaignField<undefined4>(position, 0x28 + offset) = RHCampaignField<undefined4>(position, 0x0c + offset);
+        RHCampaignField<SBGeoPoint2D>(position, 0x3c) = RHCampaignField<SBGeoPoint2D>(position, 0x20);
+        position = RHCampaignField<char *>(element, 0x50) + 4;
+        RHCampaignField<SBGeoPoint2D>(position, 0x20) = point;
+        SBGeoBoundingBox2D shifted = ((SBGeoBoundingBox2D *)((RHUnkPathActorInfoBase *)position)->Unk0055fa10(
+            RHCampaignField<int>(position, 0x88)))->FUN_006090d0(SBGeoVector2D(point));
+        ((RHMobileUnk00607da0 *)(position + 0xc0))->FUN_00607da0(*(RHMobileUnk00607da0 *)&shifted);
+        RHCampaignField<int>(position, 4) = 2;
+        ((RHBonusInfoBase *)(RHCampaignField<char *>(element, 0x50) + 4))->FUN_0055f290();
+    }
+    unsigned short direction = (rand() % 16) & 15;
+    position = RHCampaignField<char *>(element, 0x50) + 4;
+    RHCampaignField<unsigned short>(position, 0xd4) = direction;
+    RHCampaignField<unsigned short>(position, 0xd6) = direction;
+}
+
+// deferred: unannotated pending reccmp #534
+void RHMissionArrayStorage::FUN_004e5820(void *position, const unsigned long &value)
+{
+    ((std::vector<unsigned long> *)this)->insert((unsigned long *)position, value);
+}
+
+// FUNCTION: GAME 0x004e6c10
+void RHCampaignMissionList::FUN_004e6c10()
+{
+    ((std::list<RHMission *> *)this)->clear();
+}
+
+// deferred: unannotated pending reccmp #534
+void FUN_004e7210(RHMission **first, RHMission **last,
+                  bool (*compare)(RHMission *, RHMission *), int)
+{
+    std::_Insertion_sort(first, last, compare);
+}
+
+// FUNCTION: GAME 0x00507960
+RHMission *RHCampaignMissionValues::FUN_00507960(RHMission *first, RHMission *last)
+{
+    return ((std::vector<RHMission> *)this)->erase(first, last);
+}
+
+// FUNCTION: GAME 0x0054c680
+RHMission::RHMission()
+{
+    m_profile = 0;
+    m_4 = 0;
+    m_6 = 0;
+    m_8 = 0;
+}
+
+// deferred: unannotated pending reccmp #534
+bool FUN_0054c780(RHMission *left, RHMission *right)
+{
+    RHMissionProfile *rightProfile = (RHMissionProfile *)right->m_profile;
+    const char *rightName = rightProfile->m_04.c_str();
+    RHMissionProfile *leftProfile = (RHMissionProfile *)left->m_profile;
+    int order = strcmp(leftProfile->m_04.c_str(), rightName);
+    if (order < 0)
+        return true;
+    if (order == 0)
+        return *(unsigned short *)((char *)leftProfile + 0x50) < *(unsigned short *)((char *)rightProfile + 0x50) ? 1 : 0;
+    return false;
+}
+
+// deferred: unannotated pending reccmp #534
+// 0x0055bab0: 100.00% when temporarily annotated.
+RHPCDescription::RHPCDescription()
+{
+    FUN_0055bc30();
+    m_profile = 0;
+    m_44 = false;
+}
+
+// FUNCTION: GAME 0x0055bad0
+RHPCDescription::RHPCDescription(void *profile, bool playable)
+{
+    FUN_0055bc90(profile, playable);
+    m_profile = profile;
+    m_44 = false;
+}
+
+// deferred: unannotated pending reccmp #534
+bool RHPCDescription::FUN_0055bb30(SBFile &file)
+{
+    if (!((RHCampaignPCBase *)this)->FUN_0055bce0(file))
+        return false;
+    if (!RHUnk00436500GetProfileManager()->SerializeProfilePointer(file, *(const RHCharacterProfile **)&m_profile))
+        return false;
+    file.Access(&m_44, 1);
+    return true;
+}
+
+// FUNCTION: GAME 0x0056d5d0
+void *RHCampaignProfiles::FUN_0056d5d0(const RHProfileText &name)
+{
+    void **first = m_characters.begin();
+    void **last = m_characters.end();
+    for (void **it = first; it != last; ++it)
+    {
+        const std::string &text = *(const std::string *)((char *)*it + 0x14);
+        if (text.compare(0, text.size(), name.c_str(), name.m_size) == 0)
+            return *it;
+    }
+    return *first;
+}
+
+// deferred: 0x0056e210, exact body; unannotated pending reccmp #534.
+RHSaveGame::Header::Header()
+{
+    m_00 = 0x52485347;
+    m_04 = 0x30;
+    m_08 = 0xbad;
+}
+
+// FUNCTION: GAME 0x00570330
+void RHCampaignArrayOps::FUN_00570330()
+{
+    typedef std::vector<void *> Values;
+    ((Values *)this)->~Values();
+}
+
+// FUNCTION: GAME 0x00580050
+RHSectorProduction::RHSectorProduction(int type)
+    : m_0(type), m_4(0), m_8(0), m_2c(0), m_2e(0), m_30(0)
+{
+}
+
 void RHCampaign::Emit(std::vector<RHMission *> &missions)
 {
     SelectMissions(false);
@@ -826,4 +1538,12 @@ void RHCampaign::Emit(std::vector<RHMission *> &missions)
     SBArray<RHElement *> elements;
     std::vector<RHbeamMe> beamMes;
     CreatePlayableCharacterSet(elements, beamMes);
+    ((RHCampaignArrayOps *)&missions)->FUN_004580a0();
+    ((RHCampaignArrayOps *)&missions)->FUN_00570330();
+    RHCampaignDestroyOps destroy;
+    destroy.FUN_00459100(0, 0);
+    RHCampaignUnk00457950 values;
+    values.FUN_00457950();
+    RHCampaignWideStrings strings;
+    strings.FUN_00459620(0, 0, *(const RHCampaignWideString *)0);
 }

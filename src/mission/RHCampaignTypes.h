@@ -15,6 +15,7 @@ public:
     void Insert(T *position, unsigned count, const T &value);
 };
 
+// SIZE 0x48
 class RHPCDescription
 {
 public:
@@ -27,16 +28,32 @@ public:
     RHPCDescription();
     RHPCDescription(void *profile, bool playable);
     ~RHPCDescription();
+    void FUN_0055bc30();
+    void FUN_0055bc90(void *profile, bool playable);
     void *FUN_00459dd0(unsigned flags);
+    void FUN_00459fd0();
     bool FUN_0055bb30(SBFile &file);
 };
 
 class RHCampaignArrayOps
 {
 public:
+    char m_allocator[4];
+    void **m_first;
+    void **m_last;
+    void **m_end;
+    unsigned size() const { return m_first ? m_last - m_first : 0; }
+    unsigned capacity() const { return m_first ? m_end - m_first : 0; }
+    static __forceinline void **ConstructCopy(void *const *first, void *const *last, void **destination)
+    {
+        for (; first != last; ++first, ++destination)
+            if (destination)
+                *destination = *first;
+        return destination;
+    }
     void FUN_0044ea70();
     unsigned FUN_004580a0();
-    void FUN_00457a30(const RHCampaignArrayOps &value);
+    RHCampaignArrayOps &FUN_00457a30(const RHCampaignArrayOps &value);
     void FUN_00570330();
 };
 
@@ -50,12 +67,24 @@ public:
     RHMission *begin() { return m_first; }
     RHMission *end() { return m_last; }
     unsigned size() { return m_first == 0 ? 0 : m_last - m_first; }
-    void FUN_00507960(RHMission *first, RHMission *last);
+    RHMission *FUN_00507960(RHMission *first, RHMission *last);
     void FUN_00457e80(RHMission *position, const RHMission &value);
 };
 
 bool FUN_00453930(SBFile &file, RHMission &mission);
 bool FUN_00453940(SBFile &file, RHMission *&mission);
+bool FUN_0054cc10(RHMission *mission);
+
+class RHCampaignMissionCalls
+{
+public:
+    bool FUN_0054cc20();
+    bool FUN_0054cbf0();
+    bool FUN_0054c8a0(std::string &reason);
+};
+
+extern char g_unk0x006c13c0[16];
+void SBSimpleUnk005f9510(void *, const char *, ...);
 bool FUN_00456a30(SBFile &file, RHSectorProduction &sector);
 bool FUN_00456aa0(SBFile &file, unsigned long &value);
 void RHSerializeName(SBFile &file, const char *name);
@@ -155,21 +184,25 @@ public:
 
 void **FUN_004598e0(void **first, void **last, void **destination);
 
+// SIZE 0x10
 class RHCampaignMissionCandidates
 {
 public:
-    std::allocator<RHMission *> m_allocator;
-    RHMission **m_first;
-    RHMission **m_last;
-    RHMission **m_end;
+    std::allocator<RHMission *> m_allocator; // 0x00
+    RHMission **m_first; // 0x04
+    RHMission **m_last; // 0x08
+    RHMission **m_end; // 0x0c
     RHCampaignMissionCandidates(const std::allocator<RHMission *> &allocator = std::allocator<RHMission *>())
         : m_allocator(allocator), m_first(0), m_last(0), m_end(0) {}
-    ~RHCampaignMissionCandidates()
+    RHCampaignMissionCandidates(const std::vector<RHMission *> &value)
     {
-        ((RHScriptFXArray *)this)->Unk005008e0((void **)begin(), (void **)end());
-        operator delete(begin());
-        m_first = 0, m_last = 0, m_end = 0;
+        *(char *)&m_allocator = *(const char *)&value;
+        m_first = std::_Allocate((int)value.size(), (RHMission **)0);
+        m_last = (RHMission **)((RHScriptFXArray *)this)->Unk004fe420(
+            (void **)value.begin(), (void **)value.end(), (void **)m_first);
+        m_end = m_last;
     }
+    ~RHCampaignMissionCandidates() { ((RHCampaignArrayOps *)this)->FUN_00570330(); }
     operator std::vector<RHMission *> &() { return *(std::vector<RHMission *> *)this; }
     RHMission **begin() { return m_first; }
     RHMission **end() { return m_last; }
@@ -257,7 +290,7 @@ public:
     char m_20[0x50];
     RHCampaignProfiles();
     ~RHCampaignProfiles();
-    void *FUN_0056d5d0(const RHProfileText &name, bool required);
+    void *FUN_0056d5d0(const RHProfileText &name);
 };
 
 class RHCampaignCommandLine
@@ -280,25 +313,60 @@ public:
     }
 };
 
+class RHCampaignStringCalls
+{
+public:
+    void FUN_00402670(unsigned length);
+};
+
+// SIZE 0x04
+class RHCampaignPCBase
+{
+public:
+    virtual bool FUN_0055bce0(SBFile &file); // vtable+0x00
+};
+
+class RHProfileManager
+{
+public:
+    bool SerializeProfilePointer(SBFile &file, const RHCharacterProfile *&profile) const;
+};
+
+RHProfileManager *RHUnk00436500GetProfileManager();
+
 extern char g_unk0x6c0560[4];
 extern RHCampaignCommandLine g_unk0x6c05cc;
 extern RHCampaignProfiles *g_unk0x6c0e84;
 
+// SIZE 0x10
+class RHCampaignBeamText : public std::string
+{
+public:
+    typedef std::string Base;
+    RHCampaignBeamText() {}
+    RHCampaignBeamText(const RHCampaignBeamText &value) : Base(value) {}
+    void FUN_00401ce0(const std::string &value, unsigned first, unsigned count)
+    {
+        ((RHProfileText *)this)->FUN_00401ce0(value, first, count);
+    }
+};
+
+// SIZE 0x30
 struct RHbeamMe
 {
-    SBGeoPoint2D m_point;
-    unsigned short m_8;
-    unsigned short m_a;
-    unsigned short m_c;
-    char m_e;
-    char m_f;
-    unsigned short m_10;
-    unsigned short m_12;
-    unsigned short m_14;
-    char m_16[2];
-    int m_required;
-    int m_1c;
-    RHProfileText m_text;
+    SBGeoPoint2D m_point; // 0x00
+    unsigned short m_8; // 0x08
+    unsigned short m_a; // 0x0a
+    unsigned short m_c; // 0x0c
+    char m_e; // 0x0e
+    undefined m_f; // 0x0f
+    unsigned short m_10; // 0x10
+    unsigned short m_12; // 0x12
+    unsigned short m_14; // 0x14
+    undefined m_16[2]; // 0x16
+    int m_required; // 0x18
+    int m_1c; // 0x1c
+    RHCampaignBeamText m_text; // 0x20
     RHbeamMe() {}
     RHbeamMe(const RHbeamMe &value);
     RHbeamMe &operator=(const RHbeamMe &value)
@@ -321,7 +389,9 @@ struct RHbeamMe
 class RHCampaignBeamArray
 {
 public:
-    RHbeamMe &FUN_00457bc0(unsigned beamMe, unsigned character);
+    char m_allocator[4];
+    RHbeamMe *m_first;
+    RHbeamMe &FUN_00457bc0(unsigned beamMe);
 };
 
 struct RHScriptNode
@@ -444,5 +514,91 @@ public:
 extern RHEngine *g_pEngine;
 extern RHCampaignLoadingProgress g_unk0x6c0a50;
 extern float g_unk0x00677438;
+
+// SIZE 0x08
+class SBGeoVector2D : public SBGeoPoint2D
+{
+public:
+    SBGeoVector2D(const SBGeoPoint2D &point);
+    ~SBGeoVector2D() {}
+};
+
+// SIZE 0x14
+class SBGeoBoundingBox2D
+{
+public:
+    SBGeoBoundingBox2D(const SBGeoBoundingBox2D &value);
+    SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &value) const;
+    SBGeoPoint2D m_0; // 0x00
+    SBGeoPoint2D m_8; // 0x08
+    undefined m_10; // 0x10
+};
+
+// SIZE 0x9c
+struct RHCampaignCharacterData
+{
+    undefined4 m_00; // 0x00
+    RHProfileString m_04; // 0x04
+    RHProfileString m_14; // 0x14
+    RHProfileString m_24; // 0x24
+    undefined m_34; // 0x34
+    undefined m_35; // 0x35
+    undefined2 m_36; // 0x36
+    undefined2 m_38; // 0x38
+    undefined2 m_3a; // 0x3a
+    undefined4 m_3c; // 0x3c
+    undefined4 m_40; // 0x40
+    undefined4 m_44; // 0x44
+    int m_48[3]; // 0x48
+    undefined4 m_54; // 0x54
+    undefined2 m_58; // 0x58
+    int m_5c[4]; // 0x5c
+    undefined m_6c; // 0x6c
+    SBGeoBoundingBox2D m_70; // 0x70
+    SBGeoPoint2D m_84; // 0x84
+    undefined2 m_8c[4]; // 0x8c
+    undefined4 m_94; // 0x94
+    undefined4 m_98; // 0x98
+};
+
+class RHMobileUnk006091b0
+{
+public:
+    RHMobileUnk006091b0 &FUN_006091b0(const SBGeoPoint2D &value);
+};
+
+class RHMobileUnk00607da0
+{
+public:
+    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &value);
+};
+
+class RHUnkPathActorInfoBase
+{
+public:
+    void *Unk0055fa10(int index);
+};
+
+class RHBonusInfoBase
+{
+public:
+    void FUN_0055f290();
+};
+
+class RHPathObstacleGrid
+{
+public:
+    bool FUN_004f5750(SBGeoBoundingBox2D &box, unsigned short layer);
+    bool FUN_004f9260(const SBGeoPoint2D &first, const SBGeoPoint2D &last, unsigned short layer);
+};
+
+template<class T>
+T &RHCampaignField(void *object, unsigned offset)
+{
+    return *(T *)((char *)object + offset);
+}
+
+extern float g_unk0x0067748c;
+extern float g_unk0x00677f7c;
 
 #endif

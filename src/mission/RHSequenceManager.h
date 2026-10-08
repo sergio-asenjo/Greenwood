@@ -2,6 +2,7 @@
 #define RHSEQUENCEMANAGER_H
 
 #include "RHOrder.h"
+#include "Decomp.h"
 #include <list>
 #include <new>
 
@@ -30,12 +31,13 @@ public:
     bool FUN_0058b7c0(SBFile &file, void *&value);
 };
 
+// SIZE 0x3c
 class RHUnk00582220
 {
 public:
     RHUnk00582220();
     ~RHUnk00582220();
-    char data[0x3c];
+    undefined data[0x3c]; // 0x00
 };
 
 struct RHScriptNode;
@@ -52,6 +54,7 @@ class RHUnk0046eb30
 {
 public:
     RHScriptIter begin();
+    RHScriptIter FUN_0046eb80();
     RHScriptIter erase(RHScriptIter position);
 };
 
@@ -78,18 +81,19 @@ template<class T> struct RHManagerNode
     T value;
 };
 
+// SIZE 0x24
 template<class T> class RHManagerList
 {
 public:
     typedef typename std::list<T>::iterator Iterator;
-    int allocator; // +0x00
+    undefined4 allocator; // +0x00
     RHManagerNode<T> *head; // +0x04
     int count; // +0x08
     Iterator cursor; // +0x0c
     char valid; // +0x10
-    char padding[3];
+    undefined padding[3]; // 0x11
     int index; // +0x14
-    char padding18[12];
+    undefined padding18[12]; // 0x18
 
     Iterator begin()
     {
@@ -186,6 +190,7 @@ public:
     }
 };
 
+// SIZE 0x2c
 class RHManagerSequenceView
 {
 public:
@@ -194,10 +199,11 @@ public:
     RHManagerList<RHSequenceElement *> m_8; // +0x08
 };
 
+// SIZE 0x3c
 class RHManagerElementView
 {
 public:
-    char padding[0x18];
+    undefined padding[0x18]; // 0x00
     RHManagerList<RHOrder *> m_18; // +0x18
 };
 
@@ -219,6 +225,7 @@ public:
     }
 };
 
+// SIZE 0x1b4
 class RHSequenceManager
 {
 public:

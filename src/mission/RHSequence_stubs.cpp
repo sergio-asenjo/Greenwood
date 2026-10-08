@@ -35,13 +35,6 @@ RHUnk588270::RHUnk588270() {}
 // Target 0x005c8e40: SBList<RHSequenceElement*>::GoTo(int).
 void RHSeqList::GoTo(int) {}
 
-// Target 0x0059fb00: out-of-line 4-byte payload copy used by the inlined insert.
-void RHSeqList::CopyData(RHSequenceElement **dst, RHSequenceElement *const *src)
-{
-    if (dst)
-        *dst = *src;
-}
-
 // Inlined SBList<RHSequenceElement*>::insert(iterator, T* const&). The node is
 // 0xc bytes ({next, prev, data}); only the tail links through CopyData.
 RHSeqIter RHSeqList::insert(RHSeqIter pos, RHSequenceElement *const &value)

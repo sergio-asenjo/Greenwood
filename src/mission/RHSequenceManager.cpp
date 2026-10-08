@@ -1,5 +1,17 @@
 #include "RHSequenceManager.h"
 
+DECOMP_SIZE_ASSERT(RHUnk00582220, 0x3c)
+DECOMP_SIZE_ASSERT(RHManagerList<void *>, 0x24)
+DECOMP_SIZE_ASSERT(RHManagerSequenceView, 0x2c)
+DECOMP_SIZE_ASSERT(RHManagerElementView, 0x3c)
+DECOMP_SIZE_ASSERT(RHSequenceManager, 0x1b4)
+
+// FUNCTION: GAME 0x0046eb80
+RHScriptIter RHUnk0046eb30::FUN_0046eb80()
+{
+    return RHScriptIter((RHScriptNode *)((RHManagerList<void *> *)this)->head->next);
+}
+
 // Parked: frame 0x10 versus 0x14, plus container/EH differences.
 // STUB: GAME 0x0058a9c0
 bool RHSequenceManager::Serialize(SBFile &file)
