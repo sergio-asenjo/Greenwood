@@ -30,6 +30,531 @@
 #include "RHScriptLists.h"
 #include <list>
 #include <string>
+#include <new>
+#include <math.h>
+
+extern unsigned *g_unk0x006c08a4;
+extern float g_unk0x00677488;
+extern float g_unk0x0067749c;
+class RHUnk6c1040;
+extern RHUnk6c1040 *g_unk0x6c1040;
+extern RHUnk0048a970 *g_unk0x6c0b3c;
+
+class RHEngine;
+extern RHEngine *g_pEngine;
+
+extern unsigned short g_unk0x006c07e2;
+extern unsigned short g_unk0x006c07e4;
+extern unsigned short g_unk0x006c07e6;
+class RHArtificialIntelligenceSoundCalls;
+extern RHArtificialIntelligenceSoundCalls *g_unk0x006c1070;
+
+DECOMP_SIZE_ASSERT(RHScriptStimulusValue, 0x2c)
+DECOMP_SIZE_ASSERT(RHScriptStimulusDispatch, 0x04)
+DECOMP_SIZE_ASSERT(RHScriptPropertyValue, 0x0c)
+DECOMP_SIZE_ASSERT(RHScriptPropertyPair, 0x10)
+DECOMP_SIZE_ASSERT(RHScriptPropertyInsertResult, 0x08)
+DECOMP_SIZE_ASSERT(RHUnk005866a0, 0x74)
+DECOMP_SIZE_ASSERT(RHMalignityPosition, 0x10)
+DECOMP_SIZE_ASSERT(RHUnk004169c0, 0x04)
+DECOMP_SIZE_ASSERT(RHArtificialIntelligencePathCursor, 0x0c)
+
+// deferred: 0x0040d980, exact body; unannotated pending reccmp #534.
+void RHScriptBatchCalls::Unk0040d980(int state)
+{
+    RHScriptStimulusValue value;
+    value.m_20 = state;
+    *(unsigned short *)value.m_00 = 0;
+    value.m_type = 0;
+    ((RHScriptStimulusDispatch *)this)->v09(value);
+}
+
+// deferred: 0x00413640, exact body; unannotated pending reccmp #534.
+void RHUnk00413640::Unk(int state, bool flag)
+{
+    unsigned char flags = *(unsigned char *)&flag;
+    void *actor = *(void **)((char *)this + 4);
+    if ((*(unsigned *)((char *)actor + 4) & 0x1f) == 0x14 &&
+        state != *(int *)((char *)this + 0x18))
+    {
+        int previous = g_unk0x006c07e6 ? 2 : (g_unk0x006c07e4 ? 1 : 0);
+        switch (*(int *)((char *)this + 0x18))
+        {
+        case 0: --g_unk0x006c07e2; break;
+        case 1: --g_unk0x006c07e4; break;
+        case 2: --g_unk0x006c07e6; break;
+        }
+        switch (state)
+        {
+        case 0: ++g_unk0x006c07e2; break;
+        case 1: ++g_unk0x006c07e4; break;
+        case 2: ++g_unk0x006c07e6; break;
+        }
+        int current = g_unk0x006c07e6 ? 2 : (g_unk0x006c07e4 ? 1 : 0);
+        if (current != previous && !*(bool *)((char *)g_unk0x6c0b3c + 0x5a))
+        {
+            switch (current)
+            {
+            case 0:
+                if (!*(bool *)((char *)g_pEngine + 0x4aa8))
+                {
+                    if (flags & 1)
+                        ((RHScriptSoundStateCalls *)g_unk0x006c1070)->FUN_005a7fb0(0);
+                    else
+                        ((RHScriptSoundStateCalls *)g_unk0x006c1070)->FUN_005a7ef0(0);
+                    break;
+                }
+                if (flags & 1)
+                {
+                    ((RHScriptSoundStateCalls *)g_unk0x006c1070)->FUN_005a7fb0(1);
+                    break;
+                }
+            case 1:
+                ((RHScriptSoundStateCalls *)g_unk0x006c1070)->FUN_005a7ef0(1);
+                break;
+            case 2:
+                ((RHScriptSoundStateCalls *)g_unk0x006c1070)->FUN_005a7ef0(2);
+                break;
+            }
+        }
+    }
+    *(int *)((char *)this + 0x18) = state;
+    if (!(flags & 2))
+    {
+        actor = *(void **)((char *)this + 4);
+        if ((*(unsigned *)((char *)actor + 4) & 0x1f) == 0x14 &&
+            *(bool *)((char *)actor + 0xa2e) && state == 0)
+            *(int *)((char *)actor + 0x658) = 1;
+        else
+            *(int *)((char *)actor + 0x658) = state;
+    }
+}
+
+// deferred: 0x004169c0, exact body; unannotated pending reccmp #534.
+void RHUnk004169c0::Unk(int state, int value)
+{
+    switch (state)
+    {
+    case 1:
+        if ((unsigned char)value != 0)
+            v04(1, 15);
+        else
+        {
+            RHScriptStimulusValue stimulus;
+            stimulus.m_20 = 0x15;
+            *(unsigned short *)stimulus.m_00 = 0;
+            stimulus.m_type = 0;
+            ((RHScriptStimulusDispatch *)this)->v09(stimulus);
+        }
+        break;
+    case 3:
+    {
+        RHScriptStimulusValue stimulus;
+        stimulus.m_20 = 0x47;
+        *(unsigned short *)stimulus.m_00 = 0;
+        stimulus.m_type = 0;
+        ((RHScriptAIStateCalls *)this)->FUN_00410620(stimulus);
+        ((RHScriptAIStateCalls *)((char *)*(void **)((char *)this + 4) + 0x6e8))->FUN_0043a220(
+            ((RHMalignityBaseView *)this)->FUN_004165e0(*(void **)((char *)this + 4), true), 300, 0, 0x29a);
+        ((RHScriptAIStateCalls *)this)->FUN_00410d30();
+        break;
+    }
+    case 6:
+    {
+        RHScriptStimulusValue stimulus;
+        stimulus.m_20 = 0x47;
+        *(unsigned short *)stimulus.m_00 = 0;
+        stimulus.m_type = 0;
+        ((RHScriptAIStateCalls *)this)->FUN_00410620(stimulus);
+        ((RHScriptAIStateCalls *)this)->FUN_004132d0(7, 0, 2);
+        ((RHScriptAIStateCalls *)this)->FUN_00410d30();
+        break;
+    }
+    }
+}
+
+// Parked: 0x004188f0, 74.89%; register scheduling and coupled call operands.
+bool RHScriptBatchCalls::Unk004188f0(void *path)
+{
+    RHUnk005fc3b0 direction;
+    ((RHArtificialIntelligence *)this)->Unk00410600();
+    if (path == 0 || path == (void *)-1)
+    {
+        *(bool *)((char *)this + 0x70) = false;
+        ((RHArtificialIntelligencePathCursor *)((char *)this + 0x30))->Unk00550f60(0xffff);
+        RHUnk00571160Position position;
+        ((RHUnk00560420 *)((char *)*(void **)((char *)*(void **)((char *)this + 4) + 0x50) + 4))->Unk(&position);
+        *(RHUnk00571160Position *)((char *)*(void **)((char *)this + 4) + 0x4dc) = position;
+        direction.Unk005fcd40(*(unsigned short *)((char *)*(void **)((char *)*(void **)((char *)this + 4) + 0x50) + 0xd8), 0.5735764503479004f);
+        ((RHUnk005fc3b0 *)((char *)*(void **)((char *)this + 4) + 0x4d4))->FUN_005fc430(direction);
+        *(bool *)((char *)this + 0x173) = false;
+        if (!*(bool *)((char *)this + 0x1c4))
+        {
+            switch (*(int *)((char *)this + 0xc))
+            {
+            case 1:
+            {
+                RHScriptStimulusValue stimulus;
+                stimulus.m_20 = 0x15;
+                *(unsigned short *)stimulus.m_00 = 0;
+                stimulus.m_type = 0;
+                ((RHScriptStimulusDispatch *)this)->v09(stimulus);
+                break;
+            }
+            }
+        }
+        *(bool *)((char *)this + 0x170) = false;
+        *(bool *)((char *)this + 0x16f) = path != 0;
+    }
+    else
+    {
+        *(bool *)((char *)this + 0x70) = true;
+        ((RHArtificialIntelligencePathCursor *)((char *)this + 0x30))->FUN_00550fa0(path);
+        *(bool *)((char *)this + 0x16f) = false;
+        if (!*(bool *)((char *)this + 0x1c4))
+        {
+            switch (*(int *)((char *)this + 0xc))
+            {
+            case 1:
+            {
+                RHScriptStimulusValue stimulus;
+                stimulus.m_20 = 0x15;
+                *(unsigned short *)stimulus.m_00 = 0;
+                stimulus.m_type = 0;
+                ((RHScriptStimulusDispatch *)this)->v09(stimulus);
+                break;
+            }
+            }
+        }
+    }
+    return true;
+}
+
+// Parked: 0x00418a80, 92.86%; receiver scheduling and coupled call operands.
+bool RHScriptBatchCalls::Unk00418a80(RHUnk00571160Position position, int facing)
+{
+    RHUnk005fc3b0 direction;
+    ((RHArtificialIntelligence *)this)->Unk00410600();
+    ((RHArtificialIntelligencePathCursor *)((char *)this + 0x30))->Unk00550f60(0xffff);
+    *(bool *)((char *)this + 0x70) = false;
+    *(RHUnk00571160Position *)((char *)*(void **)((char *)this + 4) + 0x4dc) = position;
+    direction.Unk005fcd40((unsigned short)facing, 0.5735764503479004f);
+    ((RHUnk005fc3b0 *)((char *)*(void **)((char *)this + 4) + 0x4d4))->FUN_005fc430(direction);
+    *(bool *)((char *)this + 0x173) = false;
+    *(bool *)((char *)this + 0x70) = false;
+    *(bool *)((char *)this + 0x16f) = false;
+    *(bool *)((char *)this + 0x170) = false;
+    if (!*(bool *)((char *)this + 0x1c4))
+    {
+        switch (*(int *)((char *)this + 0xc))
+        {
+        case 1:
+        {
+            RHScriptStimulusValue stimulus;
+            stimulus.m_20 = 0x15;
+            *(unsigned short *)stimulus.m_00 = 0;
+            stimulus.m_type = 0;
+            ((RHScriptStimulusDispatch *)this)->v09(stimulus);
+            break;
+        }
+        }
+    }
+    return true;
+}
+
+// Parked: 0x00418b80, 89.47%; coupled call operands require no annotation.
+void RHUnk00418b80::Unk(bool value)
+{
+    *(bool *)((char *)this + 0x1c4) = true;
+    *(bool *)((char *)this + 0x1c5) = value;
+    if (value)
+        *(volatile bool *)((char *)this + 0x1c5) = value;
+    void *actor = *(void **)((char *)this + 4);
+    if (((RHUnk0046bd20 *)actor)->FUN_0046bd20() != 0x7f)
+        ((RHUnk0046bcb0 *)*(void **)((char *)this + 4))->Unk(8);
+    ((RHArtificialIntelligence *)this)->Unk00410600();
+}
+
+// Parked: clock/duration register allocation differs from the target.
+// STUB: GAME 0x00419fd0
+void RHScriptBatchCalls::Unk00419fd0(int value, int duration)
+{
+    Unk00419fb0(value);
+    unsigned time = *g_unk0x006c08a4;
+    *(bool *)((char *)this + 0x268) = true;
+    *(unsigned *)((char *)this + 0x264) = time + (unsigned short)duration;
+}
+
+// deferred: 0x004242b0, exact body; unannotated pending reccmp #534.
+RHScriptNode *RHScriptPositionList::Unk004242b0(RHScriptNode *next, RHScriptNode *previous)
+{
+    RHScriptNode *node = (RHScriptNode *)operator new(0x18);
+    node->next = next ? next : node;
+    node->prev = previous ? previous : node;
+    return node;
+}
+
+// Parked: 0x00444440, 64.15%; receiver scheduling and coupled callers.
+void RHScriptBatchCalls::Unk00444440(bool attentive)
+{
+    *(bool *)((char *)this + 0x346) = attentive;
+    if (attentive)
+    {
+        int offset = (*(int **)this)[1];
+        ((RHUnk004a5230 *)*(void **)((char *)this + offset + 4))->FUN_004a5230(true, false);
+        offset = (*(int **)this)[1];
+        RHUnk00413640 *base = (RHUnk00413640 *)((char *)this + offset);
+        void *actor = *(void **)((char *)base + 4);
+        if (*(int *)((char *)actor + 0x658) == 0 &&
+            *(unsigned *)((char *)g_pEngine + 0x4a94) > 1)
+            base->Unk(1, false);
+    }
+}
+
+// FUNCTION: GAME 0x0044f580
+unsigned short *FUN_0044f580(unsigned short *destination, const unsigned short *source, unsigned int count)
+{
+    unsigned short *current = destination;
+    if (source < destination && destination < source + count)
+    {
+        current += count;
+        source += count;
+        while (count > 0)
+        {
+            *--current = *--source;
+            --count;
+        }
+    }
+    else
+    {
+        while (count > 0)
+        {
+            *current++ = *source++;
+            --count;
+        }
+    }
+    return destination;
+}
+
+// Parked: 0x00450b60, 97.73%; coupled call operand requires no annotation.
+void RHUnk00450b60::Unk(int property, int amount)
+{
+    RHScriptBatchCalls *engine = (RHScriptBatchCalls *)g_pEngine;
+    *(int *)((char *)this + property * 4 + 0x94) += amount;
+    switch (property)
+    {
+    case 1:
+    {
+        int &money = *(int *)((char *)engine->Unk004e3cc0() + 4);
+        money += amount;
+        if (amount > 0 && *(unsigned *)((char *)engine + 0x4a94) > 0)
+            (*(RHSound **)((char *)engine + 0x45e0))->PlayJingle(3);
+        ((RHScriptBatchCalls *)this)->FUN_00456d20();
+        break;
+    }
+    case 2:
+    {
+        int &money = *(int *)((char *)engine->Unk004e3cc0() + 0x24);
+        money += amount;
+        break;
+    }
+    }
+}
+
+// deferred: 0x00450be0, exact body; unannotated pending reccmp #534.
+void RHScriptBatchCalls::Unk00450be0(int property, int value)
+{
+    *(int *)((char *)this + property * 4 + 0x94) -= value;
+    if (property == 1)
+        FUN_00456d20();
+}
+
+// deferred: 0x00452030, exact body; unannotated pending reccmp #534.
+int RHUnk00452030::Get(int index)
+{
+    return *(int *)((char *)this + index * 4 + 0x94);
+}
+
+// Parked: 0x004520e0, 96.15%; coupled call operand requires no annotation.
+void RHScriptBatchCalls::Unk004520e0(int index, int value)
+{
+    if (index == 1 && value > *(int *)((char *)this + 0x98))
+    {
+        char *engine = (char *)g_pEngine;
+        if (*(unsigned *)(engine + 0x4a94) > 0)
+            (*(RHSound **)(engine + 0x45e0))->PlayJingle(3);
+    }
+    *(int *)((char *)this + index * 4 + 0x94) = value;
+    if (index == 1)
+        FUN_00456d20();
+}
+
+// deferred: 0x00456cb0, exact body; unannotated pending reccmp #534.
+bool RHScriptBatchCalls::Unk00456cb0(int type)
+{
+    void **first = *(void ***)((char *)this + 0x118);
+    void **last = *(void ***)((char *)this + 0x11c);
+    for (; first != last; ++first)
+    {
+        if (*(int *)((char *)*first + 0x40) == type)
+            return true;
+    }
+    return false;
+}
+
+// deferred: 0x00456ce0, exact body; unannotated pending reccmp #534.
+bool RHScriptBatchCalls::Unk00456ce0(void *type)
+{
+    void **first = *(void ***)((char *)this + 0x118);
+    void **last = *(void ***)((char *)this + 0x11c);
+    for (; first != last; ++first)
+    {
+        if (*(void **)((char *)*first + 0x40) == type && !*(bool *)((char *)*first + 0x44))
+            return true;
+    }
+    return false;
+}
+
+// deferred: 0x0046bcb0, exact body; unannotated pending reccmp #534.
+void RHUnk0046bcb0::Unk(int value)
+{
+    RHUnk0046bcb0Dispatch *order = *(RHUnk0046bcb0Dispatch **)((char *)this + 0x130);
+    if (order && order != *(RHUnk0046bcb0Dispatch **)((char *)this + 0x138))
+        order->v04(value);
+    ((RHScriptBatchCalls *)g_unk0x6c1040)->FUN_0058bbe0(this, value);
+}
+
+// deferred: 0x0046bcf0, exact body; unannotated pending reccmp #534.
+void RHScriptBatchCalls::Unk0046bcf0(int state, int value)
+{
+    ((RHUnk00570e70Vtbl *)this)->v17(state);
+    *(int *)((char *)this + 0x144) = value;
+}
+
+// deferred: 0x0046bd10, exact body; unannotated pending reccmp #534.
+void RHScriptBatchCalls::Unk0046bd10(int state)
+{
+    *(int *)((char *)this + 0x144) = state;
+}
+
+// deferred: 0x00485220, exact body; unannotated pending reccmp #534.
+void RHScriptBatchCalls::Unk00485220(int index, int value)
+{
+    (*(RHScriptBatchCalls **)((char *)this + 0x1c4))->FUN_0051d540(index, value);
+}
+
+// deferred: 0x00486f50, exact body; unannotated pending reccmp #534.
+void RHScriptBatchCalls::Unk00486f50(void *, bool)
+{
+}
+
+// deferred: 0x00489e80, exact body; unannotated pending reccmp #534.
+bool RHScriptBatchCalls::Unk00489e80(void *target)
+{
+    return FUN_00489680(target) > g_unk0x00677488;
+}
+
+// deferred: 0x0048a970, exact body; unannotated pending reccmp #534.
+void RHUnk0048a970::Unk(int)
+{
+}
+
+// deferred: 0x0049d4f0, exact body; unannotated pending reccmp #534.
+bool RHUnk0049d4f0::Unk(int value)
+{
+    int *entry = *(int **)((char *)this + 0x5fc);
+    unsigned int index = 0;
+    entry += 0x48 / 4;
+    for (; index < 3; ++index, ++entry)
+    {
+        if (*entry == value)
+            return true;
+    }
+    return false;
+}
+
+// deferred: 0x0049d560, exact body; unannotated pending reccmp #534.
+bool RHScriptBatchCalls::Unk0049d560(int action)
+{
+    int *entry = *(int **)((char *)this + 0x5fc);
+    bool found = false;
+    unsigned int index = 0;
+    entry += 0x5c / 4;
+    for (; index < 4; ++index, ++entry)
+    {
+        if (*entry == action)
+        {
+            found = true;
+            break;
+        }
+    }
+    return found;
+}
+
+// deferred: 0x004af1d0, exact body; unannotated pending reccmp #534.
+void RHUnk004af1d0::Unk(bool value)
+{
+    *(bool *)((char *)this + 0x12) = value;
+    for (unsigned int index = 0; index <
+        (*(void ***)((char *)this + 0xb0) == 0 ? 0 :
+         *(void ***)((char *)this + 0xb4) - *(void ***)((char *)this + 0xb0)); ++index)
+    {
+        void *actor = (*(void ***)((char *)this + 0xb0))[index];
+        *(bool *)((char *)actor + 0x12) = value;
+    }
+}
+
+// deferred: 0x004baea0, exact body; unannotated pending reccmp #534.
+unsigned int RHScriptBatchCalls::Unk004baea0()
+{
+    return *(unsigned int *)((char *)this + 0x168);
+}
+
+// deferred: 0x004e3220, exact body; unannotated pending reccmp #534.
+void RHScriptBatchCalls::Unk004e3220(int value)
+{
+    *(bool *)((char *)this + 0x4a50) = true;
+    *(char *)((char *)this + 0x4a51) = (char)value;
+    if ((char)value == 0)
+    {
+        ((RHScriptBatchCalls *)g_unk0x6c0b3c)->FUN_0050eca0(true);
+        ((RHScriptBatchCalls *)g_unk0x6c0b3c)->FUN_0050eb80(false);
+    }
+}
+
+// deferred: 0x004e3cc0, exact body; unannotated pending reccmp #534.
+RHScriptBatchCalls *RHScriptBatchCalls::Unk004e3cc0()
+{
+    return (RHScriptBatchCalls *)((char *)this + 0x4a5c);
+}
+
+// deferred: 0x004e3e00, exact body; unannotated pending reccmp #534.
+void RHScriptBatchCalls::Unk004e3e00(int index, int value)
+{
+    (*(int **)((char *)this + 0x4c5c))[index] = value;
+}
+
+// deferred: 0x004e3e20, exact body; unannotated pending reccmp #534.
+int RHScriptBatchCalls::Unk004e3e20(int index)
+{
+    return (*(int **)((char *)this + 0x4c5c))[index];
+}
+
+// deferred: 0x004e3e30, exact body; unannotated pending reccmp #534.
+bool RHScriptBatchCalls::Unk004e3e30(int index)
+{
+    return index >= 0 && index < (*(int **)((char *)this + 0x4c5c) == 0 ? 0 :
+        *(int **)((char *)this + 0x4c60) - *(int **)((char *)this + 0x4c5c));
+}
+
+// deferred: 0x00560420, exact body; unannotated pending reccmp #534.
+void RHUnk00560420::Unk(RHUnk00571160Position *position)
+{
+    position->x = *(float *)((char *)this + 0x20);
+    position->y = *(float *)((char *)this + 0x24);
+    position->area = *(void **)((char *)this + 0xdc);
+    position->layer = *(short *)((char *)this + 0xda);
+}
 
 std::wstring FUN_005e23d0(unsigned long id);
 
@@ -5189,6 +5714,97 @@ void RHScript::LinkTargetToFX(void *target, void *fx)
 
 // Force emission: non-inline member functions defined here are emitted into the
 // object; these out-of-line calls keep them in the build.
+// deferred: 0x0057ff70, exact body; unannotated pending reccmp #534.
+void RHScriptBatchCalls::Unk0057ff70(float height)
+{
+    *(int *)((char *)this + 0x30) = 0x20000;
+    *(float *)((char *)this + 0xf0) = height;
+}
+
+// deferred: 0x00586e00, exact body; unannotated pending reccmp #534.
+void RHUnk005866a0::Unk00586e00(int property, bool value)
+{
+    RHScriptPropertyValue payload;
+    payload.m_bool = value;
+    ((RHScriptPropertyMap *)((char *)this + 0x64))->FUN_005873a0(RHScriptPropertyPair(property, payload));
+}
+
+// deferred: 0x00586ed0, exact body; unannotated pending reccmp #534.
+void RHUnk005866a0::Unk00586ed0(int property, int value)
+{
+    RHScriptPropertyValue payload;
+    payload.m_int = value;
+    ((RHScriptPropertyMap *)((char *)this + 0x64))->FUN_005873a0(RHScriptPropertyPair(property, payload));
+}
+
+// deferred: 0x00586fd0, exact body; unannotated pending reccmp #534.
+void RHUnk005866a0::Unk00586fd0(int property, float value)
+{
+    RHScriptPropertyValue payload;
+    payload.m_float = value;
+    ((RHScriptPropertyMap *)((char *)this + 0x64))->FUN_005873a0(RHScriptPropertyPair(property, payload));
+}
+
+// deferred: 0x00587010, exact body; unannotated pending reccmp #534.
+void RHUnk005866a0::Unk00587010(int property, const SBGeoPoint2D &value)
+{
+    RHScriptPropertyValue payload;
+    payload.m_point.x = value.m_x;
+    payload.m_point.y = value.m_y;
+    ((RHScriptPropertyMap *)((char *)this + 0x64))->FUN_005873a0(RHScriptPropertyPair(property, payload));
+}
+
+// FUNCTION: GAME 0x00588190
+void RHScriptPositionList::Unk00588190(RHUnk00571160Position *destination, const RHUnk00571160Position *source)
+{
+    if (destination)
+    {
+        ((unsigned long *)destination)[0] = ((const unsigned long *)source)[0];
+        ((unsigned long *)destination)[1] = ((const unsigned long *)source)[1];
+        ((unsigned long *)destination)[2] = ((const unsigned long *)source)[2];
+        ((unsigned long *)destination)[3] = ((const unsigned long *)source)[3];
+    }
+}
+
+// FUNCTION: GAME 0x005bdd30
+SBGeoPoint2D *RHUnk005b5e00::Unk005bdd30(short index)
+{
+    void *bank = FUN_005b5de0();
+    char *frames = *(char **)((char *)bank + 4);
+    return (SBGeoPoint2D *)(frames + (unsigned short)index * 100 + 8);
+}
+
+// deferred: 0x005fc090, exact body; unannotated pending reccmp #534.
+SBGeoPoint2D &SBGeoPoint2D::operator=(const SBGeoPoint2D &other)
+{
+    if (&other != this)
+    {
+        SBGeoPoint2D::~SBGeoPoint2D();
+        FUN_005fc390(other);
+    }
+    return *this;
+}
+
+// deferred: 0x005fc6a0, exact body; unannotated pending reccmp #534.
+float RHUnk005fc3b0::Unk005fc6a0(float value)
+{
+    float y = m_y;
+    if (value != g_unk0x0067749c)
+        y /= value;
+    return (float)sqrt(m_x * m_x + y * y);
+}
+
+// FUNCTION: GAME 0x005fc6d0
+float SBGeoPoint2D::Unk005fc6d0(float value) const
+{
+    float y;
+    if (value != g_unk0x0067749c)
+        y = m_y / value;
+    else
+        y = m_y;
+    return m_x * m_x + y * y;
+}
+
 void RHScript::Emit()
 {
     IsActorCharacter(0);

@@ -24,7 +24,100 @@
 // carry no relocation records and reccmp cannot discover them by scanning.
 
 #include "SB.h"
+#include "Decomp.h"
 #include <iterator>
+
+// SIZE 0x2c
+class RHScriptStimulusValue
+{
+public:
+    RHScriptStimulusValue() : m_24(0), m_28(0) {}
+    ~RHScriptStimulusValue() {}
+    undefined m_00[0x1c]; // 0x00
+    unsigned m_type; // 0x1c
+    unsigned m_20; // 0x20
+    void *m_24; // 0x24
+    char m_28; // 0x28
+};
+
+// SIZE 0x04
+class RHScriptStimulusDispatch
+{
+public:
+    virtual void v00() = 0; // vtable+0x00
+    virtual void v01() = 0; // vtable+0x04
+    virtual void v02() = 0; // vtable+0x08
+    virtual void v03() = 0; // vtable+0x0c
+    virtual void v04() = 0; // vtable+0x10
+    virtual void v05() = 0; // vtable+0x14
+    virtual void v06() = 0; // vtable+0x18
+    virtual void v07() = 0; // vtable+0x1c
+    virtual void v08() = 0; // vtable+0x20
+    virtual void v09(RHScriptStimulusValue &value) = 0; // vtable+0x24
+};
+
+class RHArtificialIntelligence
+{
+public:
+    void Unk00410600();
+};
+
+class RHUnk0046bd20
+{
+public:
+    int FUN_0046bd20();
+};
+
+class RHSound
+{
+public:
+    void PlayJingle(int jingle);
+};
+
+class RHScriptSoundStateCalls
+{
+public:
+    void FUN_005a7ef0(int state);
+    void FUN_005a7fb0(int state);
+};
+
+class RHUnk004a5230
+{
+public:
+    void FUN_004a5230(bool value, bool flag);
+};
+
+// SIZE 0x0c
+union RHScriptPropertyValue
+{
+    bool m_bool; // 0x00
+    int m_int; // 0x00
+    float m_float; // 0x00
+    struct { float x; float y; } m_point; // 0x00
+    undefined m_data[0x0c]; // 0x00
+};
+
+// SIZE 0x10
+struct RHScriptPropertyPair
+{
+    int m_key; // 0x00
+    RHScriptPropertyValue m_value; // 0x04
+    RHScriptPropertyPair(int key, const RHScriptPropertyValue &value) : m_key(key), m_value(value) {}
+};
+
+// SIZE 0x08
+struct RHScriptPropertyInsertResult
+{
+    void *m_node; // 0x00
+    bool m_inserted; // 0x04
+    undefined m_padding[3]; // 0x05
+};
+
+class RHScriptPropertyMap
+{
+public:
+    RHScriptPropertyInsertResult FUN_005873a0(const RHScriptPropertyPair &value);
+};
 
 // Actor sub-object model used by RHScript::UnBlip (0x00570e70): the target
 // loads the vtable pointer from actor+0, sets ecx = actor and dispatches the
@@ -508,6 +601,7 @@ public:
     SBGeoPoint2D Unk005fc110(const SBGeoPoint2D &other) const;
     SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
     float Unk005fc6d0(float value) const;
+    void FUN_005fc390(const SBGeoPoint2D &other) throw();
 };
 
 SBGeoPoint2D RHUnk005758d0(const SBGeoPoint2D &point);
@@ -738,6 +832,7 @@ public:
     void Unk(int index, bool forbidden);
 };
 
+// SIZE 0x74
 class RHUnk005866a0
 {
 public:
@@ -747,7 +842,7 @@ public:
     void Unk00586fd0(int property, float value);
     void Unk00587010(int property, const SBGeoPoint2D &value);
     void Unk00586e00(int property, bool value);
-    char data[0x74];
+    undefined data[0x74]; // 0x00
 };
 
 class RHUnk005fc3b0 : public SBGeoPoint2D
@@ -756,6 +851,8 @@ public:
     RHUnk005fc3b0();
     ~RHUnk005fc3b0() {}
     float Unk005fc6a0(float value);
+    RHUnk005fc3b0 &Unk005fcd40(unsigned short direction, float length);
+    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other);
     void Set(float x, float y) { m_x = x; m_y = y; }
 };
 
@@ -803,15 +900,56 @@ public:
     void Unk(int state, bool flag);
 };
 
+// SIZE 0x10
+struct RHMalignityPosition
+{
+    float x; // 0x00
+    float y; // 0x04
+    void *area; // 0x08
+    unsigned short layer; // 0x0c
+};
+
+class RHMalignityBaseView
+{
+public:
+    RHMalignityPosition FUN_004165e0(void *actor, bool mode);
+};
+
+class RHScriptAIStateCalls
+{
+public:
+    bool FUN_00410620(RHScriptStimulusValue value);
+    void FUN_004132d0(int first, int second, int third);
+    void FUN_00410d30();
+    void FUN_0043a220(RHMalignityPosition position, int first, int second, int third);
+};
+
+struct RHAIPathArray;
+
+// SIZE 0x0c
+class RHArtificialIntelligencePathCursor
+{
+public:
+    void Unk00550f60(unsigned short path);
+    void FUN_00550fa0(void *path);
+    unsigned char m_current; // 0x00
+    unsigned char m_previous; // 0x01
+    char m_forward; // 0x02
+    undefined m_03; // 0x03
+    RHAIPathArray *m_path; // 0x04
+    unsigned short m_id; // 0x08
+};
+
+// SIZE 0x04
 class RHUnk004169c0
 {
 public:
     void Unk(int state, int value);
-    virtual void v00();
-    virtual void v01();
-    virtual void v02();
-    virtual void v03();
-    virtual void v04(int state, int value);
+    virtual void v00(); // vtable+0x00
+    virtual void v01(); // vtable+0x04
+    virtual void v02(); // vtable+0x08
+    virtual void v03(); // vtable+0x0c
+    virtual void v04(int state, int value); // vtable+0x10
 };
 
 class RHSoundSource;
@@ -889,6 +1027,7 @@ class RHUnk005b5e00
 public:
     void *Unk();
     SBGeoPoint2D *Unk005bdd30(short index);
+    void *FUN_005b5de0();
 };
 
 class RHScriptBatchCalls
@@ -897,8 +1036,8 @@ public:
     void Unk00486f50(void *target, bool flag);
     void Unk00464630();
     void Unk0046bd10(int state);
-    void Unk004188f0(void *path);
-    void Unk00418a80(RHUnk00571160Position position, int direction);
+    bool Unk004188f0(void *path);
+    bool Unk00418a80(RHUnk00571160Position position, int direction);
     void Unk00418bc0();
     void Unk0046fe00();
     void Unk0046ec50(int value);
@@ -940,6 +1079,15 @@ public:
     void Unk00419fb0(int value);
     void Unk00419fd0(int value, int duration);
     void Unk0041ac50();
+    float FUN_00489680(void *target);
+    void FUN_0051d540(int index, int value);
+    void FUN_0058bbe0(void *actor, int value);
+    void FUN_0050eb80(bool value);
+    void FUN_0050eca0(bool value);
+    void FUN_00456d20();
+    void FUN_005209b0();
+    void FUN_00520a70();
+    void FUN_00549090();
 };
 
 class RHUnk00613e90
@@ -1063,6 +1211,16 @@ public:
 };
 
 extern RHUnk005ef320 *g_unk0x6c11d0;
+
+class RHUnk0046bcb0Dispatch
+{
+public:
+    virtual void v00();
+    virtual void v01();
+    virtual void v02();
+    virtual void v03();
+    virtual void v04(int value);
+};
 
 struct RHScriptActionCursor
 {
