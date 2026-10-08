@@ -2,6 +2,7 @@
 #define RHPLAYERPROFILEMANAGER_H
 
 #include "RHSaveGame.h"
+#include "Decomp.h"
 #include <iterator>
 #include <list>
 
@@ -9,35 +10,40 @@ class RHElementActor;
 class RHUnk00597a70;
 struct RHSectorActorNode;
 
+// SIZE 0x04
 class RHSectorActorConstIter
 {
 public:
-    RHSectorActorNode *m_p;
+    RHSectorActorNode *m_p; // 0x00
 };
 
+// SIZE 0x04
 class RHSectorActorIter : public RHSectorActorConstIter
 {
 public:
     RHSectorActorIter operator++(int);
 };
 
+// SIZE 0x24
 class RHSectorActorList
 {
 public:
-    char m_data[0x24];
+    undefined m_data[0x24]; // 0x00
     void Unk005c8e40(int);
 };
 
+// SIZE 0x0c
 struct RHUnk005c9010Node
 {
-    RHUnk005c9010Node *m_next;
-    RHUnk005c9010Node *m_prev;
-    RHUnk00597a70 *m_data;
+    RHUnk005c9010Node *m_next; // 0x00
+    RHUnk005c9010Node *m_prev; // 0x04
+    RHUnk00597a70 *m_data; // 0x08
 };
 
+// SIZE 0x04
 struct RHUnk005c9010Iterator : std::iterator<std::bidirectional_iterator_tag, RHUnk00597a70 *>
 {
-    RHUnk005c9010Node *m_node;
+    RHUnk005c9010Node *m_node; // 0x00
     RHUnk005c9010Iterator(RHUnk005c9010Node *node = 0) : m_node(node) {}
     RHUnk005c9010Iterator &operator=(const RHUnk005c9010Iterator &other)
     {
@@ -58,15 +64,92 @@ public:
     static void CopyData(RHSequenceElement **, RHSequenceElement *const *);
 };
 
-class RHPlayerProfile
+// SIZE 0x18
+class RHSaveGameManager
+{
+public:
+    RHSaveGameManager();
+    ~RHSaveGameManager();
+    virtual std::string GetSaveGameDirectory() const = 0; // vtable+0x00
+    bool Serialize(SBFile &file);
+    undefined4 m_04; // 0x04
+    undefined m_08[0x10]; // 0x08
+};
+
+// SIZE 0x08
+class RHKeyConfig
+{
+public:
+    RHKeyConfig();
+    ~RHKeyConfig();
+    bool Serialize(SBFile &file);
+    short *m_keys; // 0x00
+    short m_count; // 0x04
+};
+
+// SIZE 0x08
+class SBGeoPoint2D
+{
+public:
+    SBGeoPoint2D(float x, float y);
+    ~SBGeoPoint2D();
+    bool Serialize(SBFile &file);
+    float m_x; // 0x00
+    float m_y; // 0x04
+};
+
+// SIZE 0x0c
+class RHSoundConfig
+{
+public:
+    RHSoundConfig();
+    bool Serialize(SBFile &file);
+    short m_00; // 0x00
+    short m_02; // 0x02
+    short m_04; // 0x04
+    short m_06; // 0x06
+    short m_08; // 0x08
+    char m_0a; // 0x0a
+    char m_0b; // 0x0b
+};
+
+// SIZE 0x0c
+class RHGraphicConfig
+{
+public:
+    RHGraphicConfig();
+    bool Serialize(SBFile &file);
+    undefined m_00[4]; // 0x00
+    SBGeoPoint2D m_point; // 0x04
+};
+
+// VTABLE: GAME 0x00679bd8
+// SIZE 0x74
+class RHPlayerProfile : public RHSaveGameManager
 {
 public:
     RHPlayerProfile();
     ~RHPlayerProfile();
     bool Serialize(SBFile &file);
-    char m_data[0x74]; // [0x00, 0x74): allocation at 0x0055e040
+    virtual std::string GetSaveGameDirectory() const; // vtable+0x00
+    void FUN_0055cc80();
+    void Emit(SBFile &file);
+    undefined4 m_18; // 0x18
+    undefined4 m_1c; // 0x1c
+    undefined4 m_20; // 0x20
+    undefined4 m_24; // 0x24
+    undefined4 m_28; // 0x28
+    undefined4 m_2c; // 0x2c
+    undefined4 m_30; // 0x30
+    RHKeyConfig m_keys1; // 0x34
+    RHKeyConfig m_keys2; // 0x3c
+    RHSoundConfig m_sound; // 0x44
+    RHGraphicConfig m_graphics; // 0x50
+    std::wstring m_name; // 0x5c
+    SBGeoPoint2D m_point; // 0x6c
 };
 
+// SIZE 0x0c
 class RHPlayerProfileListStorage : public std::list<RHPlayerProfile *>
 {
 public:
@@ -92,6 +175,7 @@ public:
     }
 };
 
+// SIZE 0x24
 class RHPlayerProfileList
 {
 public:
@@ -99,7 +183,7 @@ public:
     std::list<RHPlayerProfile *>::iterator m_current; // +0x0c
     bool m_dirty; // +0x10
     int m_index; // +0x14
-    char m_18[0xc]; // [0x18, 0x24)
+    undefined m_18[0xc]; // [0x18, 0x24)
 
     __forceinline void GoTo(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
     __forceinline std::list<RHPlayerProfile *>::iterator begin() { return m_list.begin(); }
@@ -189,6 +273,7 @@ public:
     }
 };
 
+// SIZE 0x30
 class RHPlayerProfileManager
 {
 public:
@@ -201,6 +286,7 @@ public:
     unsigned long m_00; // +0x00: four-byte archive field
     mutable RHPlayerProfileList m_profiles; // +0x04: head +0x08, count +0x0c, cursor +0x10
     RHPlayerProfile *m_active; // +0x28
+    bool m_2c; // 0x2c
 };
 
 #endif

@@ -22,8 +22,6 @@ RHSaveGame::~RHSaveGame() {}
 // Target 0x0056ea20 (writes the "RHSaveGame" tag).
 bool RHSaveGame::Serialize(SBFile &) { return true; }
 
-// Target 0x004582d0 (out-of-line SBArray<RHSaveGame*>::Insert).
-void SBArray<RHSaveGame *>::Insert(RHSaveGame **, unsigned int, RHSaveGame *const &) {}
 
 // Target 0x0064158f (operator delete).
 void operator delete(void *) {}

@@ -4,6 +4,64 @@
 #include "RHProfileFile.h"
 #include <algorithm>
 
+// deferred: unannotated pending reccmp #534 (0x004582d0)
+void SBArray<RHSaveGame *>::Insert(RHSaveGame **position, unsigned int count, RHSaveGame *const &value)
+{
+    if ((unsigned int)(m_end - m_last) < count)
+    {
+        unsigned int capacity = GetSize() + (count < GetSize() ? GetSize() : count);
+        RHSaveGame **storage = std::_Allocate((int)capacity, (RHSaveGame **)0);
+        RHSaveGame **destination = RHProfileConstructCopy(m_first, position, storage);
+        RHProfileConstructFill(destination, count, value);
+        RHProfileConstructCopy(position, m_last, destination + count);
+        RHProfileDestroy(m_first, m_last);
+        std::allocator<RHSaveGame *>().deallocate(m_first, m_end - m_first);
+        m_end = storage + capacity;
+        m_last = storage + GetSize() + count;
+        m_first = storage;
+    }
+    else if ((unsigned int)(m_last - position) < count)
+    {
+        RHProfileConstructCopy(position, m_last, position + count);
+        RHProfileConstructFill(m_last, count - (m_last - position), value);
+        std::fill(position, m_last, value);
+        m_last += count;
+    }
+    else if (count > 0)
+    {
+        RHProfileConstructCopy(m_last - count, m_last, m_last);
+        std::copy_backward(position, m_last - count, m_last);
+        std::fill(position, position + count, value);
+        m_last += count;
+    }
+}
+
+// deferred: unannotated pending reccmp #534 (0x004598e0)
+void **FUN_004598e0(void **first, void **last, void **destination)
+{
+    for (; first != last; ++destination, ++first)
+        *destination = *first;
+    return destination;
+}
+
+// deferred: unannotated pending reccmp #534 (0x00460900)
+int RHProfileText::FUN_00460900(unsigned int first, unsigned int count, const char *value, unsigned int size) const
+{
+    if (m_size < first)
+        std::_Xran();
+    if (m_size - first < count)
+        count = m_size - first;
+    int result = memcmp(m_chars == 0 ? 0 : m_chars + first, value, count < size ? count : size);
+    if (result != 0)
+        return result;
+    if (count < size)
+        return -1;
+    return count != size;
+}
+
+// deferred: unannotated pending reccmp #534 (0x005008e0)
+void RHScriptFXArray::Unk005008e0(void **, void **) {}
+
 void RHProfileManager::Emit(SBFile &file)
 {
     SerializeCivilians(file);
@@ -535,6 +593,66 @@ void RHProfileManager::ImportBeamMes(RHMissionProfile *profile)
     FUN_005e20c0(file);
 }
 
+// FUNCTION: GAME 0x0056cef0
+int RHProfileManager::FUN_0056cef0(const RHCharacterProfile *profile) const
+{
+    int index = 0;
+    for (RHCharacterProfile **it = m_characters.m_first; it != m_characters.m_last; ++it, ++index)
+    {
+        if (*it == profile)
+            return index;
+    }
+    FUN_0056cf40(this,
+        // STRING: GAME 0x006b21d0
+        "In mission profile : character not recognized (%s) defaulting to none\n",
+        profile->m_14.c_str());
+    return -1;
+}
+
+// deferred: unannotated pending reccmp #534 (0x0056d0d0)
+int RHProfileManager::GetProfileIndex(const RHHtHWeaponProfile *profile) const
+{
+    int index = -1;
+    RHHtHWeaponProfile **last = m_handToHand.m_last;
+    RHHtHWeaponProfile **it = std::find(m_handToHand.m_first, last, profile);
+    if (it != m_handToHand.m_last)
+        index = it - m_handToHand.m_first;
+    return index;
+}
+
+// deferred: unannotated pending reccmp #534 (0x0056d100)
+int RHProfileManager::GetProfileIndex(const RHBow::Profile *profile) const
+{
+    int index = -1;
+    RHBow::Profile **last = m_shoot.m_last;
+    RHBow::Profile **it = std::find(m_shoot.m_first, last, profile);
+    if (it != m_shoot.m_last)
+        index = it - m_shoot.m_first;
+    return index;
+}
+
+// deferred: unannotated pending reccmp #534 (0x0056d130)
+int RHProfileManager::GetProfileIndex(const RHCharacterProfile *profile) const
+{
+    int index = -1;
+    RHCharacterProfile **last = m_characters.m_last;
+    RHCharacterProfile **it = std::find(m_characters.m_first, last, profile);
+    if (it != m_characters.m_last)
+        index = it - m_characters.m_first;
+    return index;
+}
+
+// FUNCTION: GAME 0x0056d160
+int RHProfileManager::GetProfileIndex(const RHMissionProfile *profile) const
+{
+    int index = -1;
+    RHMissionProfile **last = m_missions.m_last;
+    RHMissionProfile **it = std::find(m_missions.m_first, last, profile);
+    if (it != m_missions.m_last)
+        index = it - m_missions.m_first;
+    return index;
+}
+
 // FUNCTION: GAME 0x0056d190
 bool RHProfileManager::SerializeProfilePointer(SBFile &file, const RHHtHWeaponProfile *&profile) const
 {
@@ -725,5 +843,37 @@ bool RHProfileManager::SerializeProfilePointer(SBFile &file, const RHCharacterPr
         }
         profile = m_characters.m_first[index];
     }
+    return true;
+}
+
+// deferred: unannotated pending reccmp #534 (0x0059fba0)
+RHUnk0059fba0::RHUnk0059fba0(const char &allocator)
+{
+    m_00 = allocator;
+    m_04 = 0;
+    m_08 = 0;
+    m_0c = 0;
+}
+
+// FUNCTION: GAME 0x005e2020
+bool FUN_005e2020(SBFile &file, unsigned long tag, int level)
+{
+    unsigned long actualTag;
+    struct
+    {
+        int level;
+        unsigned long unused;
+        unsigned long size;
+    } header;
+    file.Access(&actualTag, 4);
+    file.Access(&header.size, 4);
+    file.Access(&header.level, 4);
+    ((RHProfileFile *)&file)->FUN_005f5370(-4, 1);
+    ((RHProfileFile *)&file)->FUN_005f5370(-4, 1);
+    ((RHProfileFile *)&file)->FUN_005f5370(-4, 1);
+    actualTag = (((actualTag & 0xff0000) | (actualTag >> 16)) >> 8)
+        | (((actualTag & 0xff00) | (actualTag << 16)) << 8);
+    if (tag != actualTag || level != header.level)
+        return false;
     return true;
 }

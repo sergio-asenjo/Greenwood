@@ -10,8 +10,42 @@ class RHCharacterProfile;
 class RHHtHWeaponProfile;
 class RHMissionProfile;
 class RHSoldierProfile;
+class RHProfileManager;
 
 void **FUN_004598e0(void **first, void **last, void **destination);
+void FUN_0056cf40(const RHProfileManager *, const char *, ...);
+
+template <class T>
+inline T *RHProfileConstructCopy(const T *first, const T *last, T *destination)
+{
+    for (; first != last; ++destination, ++first)
+        std::_Construct(destination, *first);
+    return destination;
+}
+
+template <class T>
+inline void RHProfileConstructFill(T *first, unsigned int count, const T &value)
+{
+    for (; count > 0; --count, ++first)
+        std::_Construct(first, value);
+}
+
+template <class T>
+inline void RHProfileDestroy(T *first, T *last)
+{
+    for (; first != last; ++first)
+        std::_Destroy(first);
+}
+
+class RHUnk0059fba0
+{
+public:
+    RHUnk0059fba0(const char &allocator);
+    char m_00;
+    void *m_04;
+    void *m_08;
+    void *m_0c;
+};
 
 class RHScriptFXArray
 {
