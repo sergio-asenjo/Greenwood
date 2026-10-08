@@ -1,12 +1,38 @@
 #include "RHSoundSourceManager.h"
 
+DECOMP_SIZE_ASSERT(RHUnk005fc030, 0x08)
+DECOMP_SIZE_ASSERT(RHSoundSourcePointStorage, 0x10)
+DECOMP_SIZE_ASSERT(RHSoundSourcePoints, 0x24)
+DECOMP_SIZE_ASSERT(RHSoundSourceFields, 0x3c)
+DECOMP_SIZE_ASSERT(RHSoundSource, 0x50)
+DECOMP_SIZE_ASSERT(RHSoundSourceArray, 0x20)
+DECOMP_SIZE_ASSERT(RHSoundSourceIterator, 0x04)
+DECOMP_SIZE_ASSERT(RHSoundSourceManager, 0x24)
+
+// SIZE 0x10
 struct RHSoundSourceSerializationState
 {
-    unsigned int index;
-    RHSoundSource *source;
-    int id;
-    int resource;
+    unsigned int index; // 0x00
+    RHSoundSource *source; // 0x04
+    int id; // 0x08
+    int resource; // 0x0c
 };
+
+DECOMP_SIZE_ASSERT(RHSoundSourceSerializationState, 0x10)
+
+// FUNCTION: GAME 0x005b3880
+RHSoundSource::RHSoundSource() : m_04(0), m_08(1), m_0c(-1), m_4c(false)
+{
+}
+
+// Parked: 92.86%; the unused iterator-result stack slot is optimized away.
+// STUB: GAME 0x005b4ae0
+void RHSoundSourceManager::RHUnk005b4ae0()
+{
+    for (short index = m_sources.GetSize() - 1; index >= 0; --index)
+        FUN_005b4f00(m_sources.m_first[index]);
+    m_sources.RemoveAll();
+}
 
 // FUNCTION: GAME 0x005b4e00
 RHSoundSource *RHSoundSourceManager::GetSoundSource(unsigned short id)

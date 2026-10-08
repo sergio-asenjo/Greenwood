@@ -21,32 +21,42 @@ RHSoundQueue g_unk0x006c1078;
 // GLOBAL: GAME 0x006c0610
 std::string g_unk0x006c0610;
 
-unsigned long FUN_006183c0(unsigned long, const char *, unsigned long) { return 0; }
-void RHSoundChannels::FUN_005aaa50(unsigned int, const RHSoundChannel &) {}
-RHSoundCacheEntry *RHSound::FUN_005a7080(const RHSoundSettings &, bool) { return 0; }
-void RHSound::FUN_005a7110(RHSoundSource *) {}
-bool RHSound::FUN_005a9260(unsigned short, bool, unsigned long &, std::string &) { return false; }
-void RHSound::FUN_005ad570(void *) {}
-void RHSound::FUN_005a79f0(bool) {}
-void RHSound::FUN_005a74e0(unsigned long) {}
-bool RHSound::FUN_005a71f0(RHSoundSource *) { return false; }
-void RHSound::FUN_005a7220(void *) {}
-void RHSound::FUN_005a9380() {}
-unsigned long RHSound::FUN_005a93e0(RHSoundPendingData &) { return 0; }
-bool RHSound::FUN_005a9400(const RHSoundSettings &) { return false; }
-unsigned long FUN_005a93c0(unsigned long, unsigned long) { return 0; }
-void RHSound::FUN_005aec10() {}
-void RHSoundPendingData::FUN_0052c5a0() {}
-RHSoundQueueNode **RHSoundQueue::FUN_005aa1c0(RHSoundQueueNode **result, RHSoundQueueNode *) { return result; }
+bool RHSound::FUN_005ae320(void *) { return false; }
 
-void RHSound::FUN_005a6fb0(int, int, RHSoundCacheEntry *, void *, void *, void *) {}
-RHSoundCacheEntry *RHSound::FUN_005ae9f0(unsigned long) { return 0; }
-void RHSoundGeometryView::FUN_005b33b0(RHSoundChannelSettings &) {}
-void RHSoundGeometryView::FUN_005b3420(RHSoundChannelSettings &) {}
-unsigned short RHSoundGeometryView::FUN_005b3500() { return 0; }
-unsigned short RHSoundGeometryView::FUN_005b3490(bool) { return 0; }
-unsigned short RHSoundGeometryView::FUN_005b34e0() { return 0; }
-bool RHSoundGeometryView::FUN_005b2ff0(const RHSoundSettings &, bool, RHSoundChannelSettings &) { return false; }
+
+void RHSound::FUN_005ab570(void *, unsigned int &, unsigned short) {}
+void RHSound::FUN_005ab5e0(void *, void *, unsigned short) {}
+void RHUnk005a7220Manager::FUN_005b4f00(RHUnk005a7220 *) {}
+void RHUnk005a7220Manager::FUN_005b4ae0() {}
+RHUnk005a9260::RHUnk005a9260() {}
+void RHSound::FUN_005a7660(bool) {}
+void RHSound::FUN_005a8780() {}
+void RHSound::FUN_005ae1c0(bool) {}
+void RHSound::FUN_005aeda0() {}
+RHSoundCacheEntry *RHSound::FUN_005ae640(bool, unsigned long) { return 0; }
+RHSoundCacheEntry *RHSound::FUN_005ae670(bool, unsigned long, bool) { return 0; }
+
+// LIBRARY: GAME 0x005e39d0
+extern "C" void __stdcall FSOUND_Close() {}
+
+RHSoundSettings::RHSoundSettings() {}
+RHSoundPendingData::RHSoundPendingData(const RHSoundSettings &settings) : m_00(settings) {}
+void FUN_005aa990(RHSoundPendingData *, const RHSoundPendingData *) {}
+
+int RHSoundChannels::FUN_0045a490() { return Size(); }
+RHSoundChannel *RHSoundChannels::FUN_005aaca0(RHSoundChannel *, RHSoundChannel *, RHSoundChannel *result) { return result; }
+void RHSoundChannels::FUN_005aacf0(RHSoundChannel *, unsigned int, const RHSoundChannel &) {}
+
+RHUnk005b2410::RHUnk005b2410(float first, float second, float third, float fourth)
+    : m_00(first), m_04(second), m_08(third), m_0c(fourth) {}
+float RHUnk005b2ff0Geometry::FUN_005b2510(float, const RHUnk005b2410 &) { return 0; }
+float RHUnk005b2ff0Geometry::FUN_005b2560(const SBGeoPoint2D &, const RHUnk005b2410 &) { return 0; }
+float RHUnk005b2ff0Geometry::FUN_005b25e0(const RHUnk005b2410 &) { return 0; }
+float RHUnk005b2ff0Geometry::FUN_005b27e0(const RHUnk005b2410 &) { return 0; }
+void RHUnk005b2ff0Geometry::FUN_005b2a30(RHUnk005a7220 *, RHUnk005b2410 &) {}
+
+// LIBRARY: GAME 0x00643030
+extern "C" double _CIpow() { return 0; }
 
 // LIBRARY: GAME 0x005e39e8
 extern "C" signed char __stdcall FSOUND_GetDriverCaps(int, unsigned int *) { return 0; }

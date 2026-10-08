@@ -1,6 +1,103 @@
 #include "RHSoundCache.h"
 #include "RHSoundCacheSpeechList.h"
 
+DECOMP_SIZE_ASSERT(RHSoundCache, 0x138)
+DECOMP_SIZE_ASSERT(RHcacheData, 0x0c)
+DECOMP_SIZE_ASSERT(RHUnk005b1ca0, 0x24)
+DECOMP_SIZE_ASSERT(RHUnk005f4fc0, 0x58)
+DECOMP_SIZE_ASSERT(RHSoundCacheListNode, 0x0c)
+DECOMP_SIZE_ASSERT(RHSoundCacheListIterator, 0x04)
+DECOMP_SIZE_ASSERT(RHSoundCacheList, 0x18)
+DECOMP_SIZE_ASSERT(RHsoundGroup, 0x2c)
+DECOMP_SIZE_ASSERT(RHSoundCacheGroupNode, 0x18)
+DECOMP_SIZE_ASSERT(RHSoundCacheGroupIterator, 0x04)
+DECOMP_SIZE_ASSERT(RHSoundCacheGroupInsert, 0x08)
+DECOMP_SIZE_ASSERT(RHSoundCacheGroups, 0x10)
+DECOMP_SIZE_ASSERT(RHSoundCacheEntryMap, 0x10)
+DECOMP_SIZE_ASSERT(RHSoundCacheMusicArray, 0x2c)
+DECOMP_SIZE_ASSERT(RHSoundCacheString, 0x10)
+DECOMP_SIZE_ASSERT(RHUnk00641782, 0x01)
+
+// unannotated: 0x004023a0 is called by InitializeMusic; container frame and inlining remain unmatched.
+void RHSoundCacheMusicArray::FUN_004023a0(RHSoundCacheMusic *position, unsigned int count, const RHSoundCacheMusic &value)
+{
+    ((std::vector<RHSoundCacheMusic> *)this)->insert(position, count, value);
+}
+
+// unannotated: 0x004e4b40 has matched callers; reconstruction remains partial.
+std::string FUN_004e4b40(const std::string &first, const std::string &second)
+{
+    std::string result(first);
+    result.append(second);
+    return result;
+}
+
+// deferred: 0x0056dac0 is called by InitializeMusic.
+void RHSoundCacheMusicArray::FUN_0056dac0(RHSoundCacheMusic *first, RHSoundCacheMusic *last)
+{
+    for (; first != last; ++first)
+        first->~basic_string();
+}
+
+// unannotated: 0x0056dbc0 is called by InitializeMusic; register scheduling remains unmatched.
+RHSoundCacheMusic *FUN_0056dbc0(RHSoundCacheMusic *first, RHSoundCacheMusic *last, RHSoundCacheMusic *destination)
+{
+    for (; first != last; ++first, ++destination)
+    {
+        RHSoundCacheString &value = *(RHSoundCacheString *)destination;
+        const RHSoundCacheString &source = *(const RHSoundCacheString *)first;
+        unsigned int size = source.size();
+        if (std::string::npos < size)
+            size = std::string::npos;
+        if (&value == &source)
+        {
+            value.erase(size);
+            value.FUN_00402780();
+        }
+        else if (size > 0 && size == source.size() && (unsigned char)source.c_str()[-1] < 254)
+        {
+            value.Release();
+            value.m_04 = (char *)source.c_str();
+            value.m_08 = source.size();
+            value.m_0c = source.capacity();
+            ++value.m_04[-1];
+        }
+        else if (((RHProfileText *)&value)->FUN_00402280(size, true))
+        {
+            memcpy(value.m_04, source.c_str(), size);
+            value.m_08 = size;
+            value.m_04[size] = 0;
+        }
+    }
+    return destination;
+}
+
+// FUNCTION: GAME 0x005ab430
+unsigned long RHSoundCache::FUN_005ab430(RHcacheData &cache)
+{
+    if (cache.m_04 == cache.m_08)
+    {
+        cache.m_00 = (RHSoundCacheEntry *)FUN_00643705(cache.m_00, (cache.m_08 + 200) * sizeof(RHUnk005b1ca0));
+        RHUnk005b1ca0 *first = (RHUnk005b1ca0 *)(cache.m_00 + cache.m_04);
+        for (unsigned int index = 0; index < 200; ++index)
+            new (first + index) RHUnk005b1ca0;
+        cache.m_08 += 200;
+    }
+    return cache.m_04++;
+}
+
+// deferred: 0x005ab7e0 calls LoadSample and is called by GetFXSample.
+void RHSoundCache::FUN_005ab7e0(RHSoundCacheEntry *entry, void *data, unsigned short stamp, bool spatial)
+{
+    entry->LoadSample(spatial, stamp);
+    if (entry->m_sample)
+    {
+        RHcacheData &cache = *(RHcacheData *)data;
+        ++cache.m_04;
+        cache.m_08 += entry->m_size;
+    }
+}
+
 // FUNCTION: GAME 0x005ab840
 RHsoundGroup *RHSoundCache::AddSoundGroup(RHSoundCacheGroups &groups, int type, unsigned long id, unsigned short stamp)
 {
@@ -100,6 +197,8 @@ void RHSoundCache::InitializeFXCache()
         AddSoundEntry(index++, std::string("iha_") + materials[heavyImpact % 12] + ".wav", combat);
 }
 
+// String/list temporaries and EH slots remain unmatched.
+// STUB: GAME 0x005aca40
 void RHSoundCache::FUN_005aca40(SBFile &file, RHsoundGroup *group, unsigned long count)
 {
     while (count != 0)
@@ -497,6 +596,175 @@ RHSoundCacheEntry *RHSoundCache::GetSourceCacheEntryForID(unsigned long id)
     return 0;
 }
 
+// FUNCTION: GAME 0x005af0c0
+std::pair<RHSoundCacheEntryMap::iterator, bool> RHSoundCacheEntryMap::FUN_005af0c0(const value_type &value)
+{
+    RHSoundCacheGroupNode *parent = *(RHSoundCacheGroupNode **)((char *)this + 4);
+    RHSoundCacheGroupNode *node = parent->m_04;
+    bool left = true;
+    RHUnk00641782 lock;
+    lock.FUN_00641782();
+    while (node != g_unk0x006c10ac)
+    {
+        parent = node;
+        left = value.first < node->m_0c;
+        node = left ? node->m_00 : node->m_08;
+    }
+    lock.FUN_0064181e();
+    if (*(bool *)((char *)this + 8))
+    {
+        std::pair<iterator, bool> result((const iterator &)FUN_005b04c0(node, parent, value), true);
+        return result;
+    }
+    RHSoundCacheGroupIterator previous(parent);
+    if (left)
+    {
+        RHSoundCacheGroupNode *head = *(RHSoundCacheGroupNode **)((char *)this + 4);
+        if (parent == head->m_00)
+        {
+            std::pair<iterator, bool> result((const iterator &)FUN_005b04c0(node, parent, value), true);
+            return result;
+        }
+        previous.FUN_005b1480();
+    }
+    if (previous.m_node->m_0c < value.first)
+    {
+        std::pair<iterator, bool> result((const iterator &)FUN_005b04c0(node, parent, value), true);
+        return result;
+    }
+    std::pair<iterator, bool> result((const iterator &)previous, false);
+    return result;
+}
+
+// deferred: 0x005af600 is called by AddSoundGroup.
+RHSoundCacheGroupInsert &RHSoundCacheGroups::FUN_005af600(RHSoundCacheGroupInsert &output, const value_type &value)
+{
+    RHSoundCacheGroupNode *parent = *(RHSoundCacheGroupNode **)((char *)this + 4);
+    RHSoundCacheGroupNode *node = parent->m_04;
+    bool left = true;
+    RHUnk00641782 lock;
+    lock.FUN_00641782();
+    while (node != g_unk0x006c10a4)
+    {
+        parent = node;
+        left = value.first < node->m_0c;
+        node = left ? node->m_00 : node->m_08;
+    }
+    lock.FUN_0064181e();
+    if (*(bool *)((char *)this + 8))
+    {
+        output = RHSoundCacheGroupInsert(FUN_005b10e0(node, parent, value), true);
+        return output;
+    }
+    RHSoundCacheGroupIterator previous(parent);
+    if (left)
+    {
+        RHSoundCacheGroupNode *head = *(RHSoundCacheGroupNode **)((char *)this + 4);
+        if (parent == head->m_00)
+        {
+            output = RHSoundCacheGroupInsert(FUN_005b10e0(node, parent, value), true);
+            return output;
+        }
+        previous.FUN_005b1880();
+    }
+    if (previous.m_node->m_0c < value.first)
+    {
+        output = RHSoundCacheGroupInsert(FUN_005b10e0(node, parent, value), true);
+        return output;
+    }
+    output = RHSoundCacheGroupInsert(previous, false);
+    return output;
+}
+
+// deferred: 0x005afc50 is called by GetFXSample.
+RHSoundCacheGroupIterator &RHSoundCacheGroups::FUN_005afc50(RHSoundCacheGroupIterator &result, const unsigned long &key)
+{
+    result.m_node = FUN_005b13e0(key);
+    return result;
+}
+
+// GLOBAL: GAME 0x006c10a4
+RHSoundCacheGroupNode *g_unk0x006c10a4;
+
+// GLOBAL: GAME 0x006c10ac
+RHSoundCacheGroupNode *g_unk0x006c10ac;
+
+// deferred: 0x005b13e0 is called by AddSoundGroup.
+RHSoundCacheGroupNode *RHSoundCacheGroups::FUN_005b13e0(const unsigned long &key)
+{
+    RHUnk00641782 lock;
+    lock.FUN_00641782();
+    RHSoundCacheGroupNode *head = *(RHSoundCacheGroupNode **)((char *)this + 4);
+    RHSoundCacheGroupNode *node = head->m_04;
+    RHSoundCacheGroupNode *result = head;
+    while (node != g_unk0x006c10a4)
+    {
+        if (node->m_0c < key)
+            node = node->m_08;
+        else
+        {
+            result = node;
+            node = node->m_00;
+        }
+    }
+    lock.FUN_0064181e();
+    return result;
+}
+
+// deferred: 0x005b1430 is called by GetSourceCacheEntryForID.
+RHSoundCacheGroupNode *RHSoundCacheEntryMap::FUN_005b1430(const unsigned long &key)
+{
+    RHUnk00641782 lock;
+    lock.FUN_00641782();
+    RHSoundCacheGroupNode *head = *(RHSoundCacheGroupNode **)((char *)this + 4);
+    RHSoundCacheGroupNode *node = head->m_04;
+    RHSoundCacheGroupNode *result = head;
+    while (node != g_unk0x006c10ac)
+    {
+        if (node->m_0c < key)
+            node = node->m_08;
+        else
+        {
+            result = node;
+            node = node->m_00;
+        }
+    }
+    lock.FUN_0064181e();
+    return result;
+}
+
+// deferred: 0x005b1ca0 is called by FUN_005ab430.
+RHUnk005b1ca0::RHUnk005b1ca0()
+{
+    m_10 = 0;
+    m_14 = 0;
+    m_18 = 0;
+    m_1c = false;
+    m_1e = 0;
+    m_20 = 0;
+}
+
+// FUNCTION: GAME 0x005b2040
+void RHUnk005b1ca0::FUN_005b2040()
+{
+    if (m_10)
+        FSOUND_Sample_Free(m_10);
+    m_10 = 0;
+    m_20 = 0;
+    m_1e = 0;
+}
+
+// deferred: 0x005f4fc0 has matched callers in several TUs.
+RHUnk005f4fc0::RHUnk005f4fc0()
+{
+    *(undefined4 *)m_pad0 = 0;
+    m_3c = false;
+    m_28 = false;
+    m_30 = 0;
+    m_34 = 0;
+    m_38 = 0;
+}
+
 void RHSoundCache::Emit(unsigned short index, RHSoundCacheGroups &groups, const RHSoundCacheMissionProfile *profile)
 {
     AddSoundGroup(groups, 1, index, index);
@@ -510,4 +778,7 @@ void RHSoundCache::Emit(unsigned short index, RHSoundCacheGroups &groups, const 
     GetAlertMusic(index);
     GetFightMusic(index);
     GetSourceCacheEntryForID(index);
+    RHUnk005b1ca0 entry;
+    entry.FUN_005b2040();
+    ((RHSoundCacheEntryMap *)&m_044)->FUN_005b1430(index);
 }
