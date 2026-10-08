@@ -1,5 +1,18 @@
 #include "Toolbox.h"
 #include <windows.h>
+#include "SBPicture.h"
+
+DECOMP_SIZE_ASSERT(ToolboxChunk, 0x08)
+DECOMP_SIZE_ASSERT(ToolboxChunkIterator, 0x10)
+DECOMP_SIZE_ASSERT(RHProfileText, 0x10)
+DECOMP_SIZE_ASSERT(RHUnk00423b10, 0x10)
+DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
+DECOMP_SIZE_ASSERT(RHUnkFXDraw, 0x10e)
+DECOMP_SIZE_ASSERT(RHUnk006114c0, 0x38)
+DECOMP_SIZE_ASSERT(RHUnk00613e90, 0x18)
+DECOMP_SIZE_ASSERT(RHUnk005f4fc0, 0x58)
+DECOMP_SIZE_ASSERT(RHUnk0060e4c0, 0x6c)
+DECOMP_SIZE_ASSERT(ToolboxMouseState, 0x0a)
 
 // STRING: GAME 0x006b8f98
 #define g_toolboxFile "P:\\Robin Hood\\Toolbox.cpp"
@@ -12,6 +25,79 @@ ToolboxChunks g_unk0x006c1178;
 unsigned char g_unk0x006a6d27 = 1;
 // GLOBAL: GAME 0x0067a664
 float g_unk0x0067a664 = 0.001f;
+
+// FUNCTION: GAME 0x00402670
+void RHProfileText::FUN_00402670(unsigned int count)
+{
+    unsigned int capacity = count | 31;
+    if (capacity > 0xfffffffd)
+        capacity = count;
+    char *storage;
+    try {
+        storage = std::allocator<char>().allocate(capacity + 2, 0);
+    } catch (...) {
+        capacity = count;
+        storage = std::allocator<char>().allocate(capacity + 2, 0);
+    }
+    if (m_size > 0)
+        memcpy(storage + 1, m_chars, m_size > capacity ? capacity : m_size);
+    unsigned int oldSize = m_size;
+    if (m_chars) {
+        unsigned char &references = ((unsigned char *)m_chars)[-1];
+        if (references == 0 || references == 255)
+            operator delete(m_chars - 1);
+        else
+            --references;
+    }
+    m_chars = 0;
+    m_size = 0;
+    m_capacity = 0;
+    m_chars = storage + 1;
+    ((unsigned char *)m_chars)[-1] = 0;
+    m_capacity = capacity;
+    m_size = oldSize > capacity ? capacity : oldSize;
+    m_chars[m_size] = 0;
+}
+
+// FUNCTION: GAME 0x00423b10
+void RHUnk00423b10::FUN_00423b10(unsigned int count)
+{
+    unsigned int capacity = count | 31;
+    if (capacity > 0x7ffffffd)
+        capacity = count;
+    unsigned short *storage;
+    try {
+        storage = std::allocator<unsigned short>().allocate(capacity + 2, 0);
+    } catch (...) {
+        capacity = count;
+        storage = std::allocator<unsigned short>().allocate(capacity + 2, 0);
+    }
+    if (m_size > 0) {
+        unsigned int remaining = m_size > capacity ? capacity : m_size;
+        unsigned short *source = m_chars;
+        unsigned short *destination = storage + 1;
+        while (remaining > 0) {
+            *destination++ = *source++;
+            --remaining;
+        }
+    }
+    unsigned int oldSize = m_size;
+    if (m_chars) {
+        unsigned char &references = ((unsigned char *)m_chars)[-1];
+        if (references == 0 || references == 255)
+            operator delete(m_chars - 1);
+        else
+            --references;
+    }
+    m_chars = 0;
+    m_size = 0;
+    m_capacity = 0;
+    m_chars = storage + 1;
+    ((unsigned char *)m_chars)[-1] = 0;
+    m_capacity = capacity;
+    m_size = oldSize > capacity ? capacity : oldSize;
+    m_chars[m_size] = 0;
+}
 
 // deferred: unannotated pending reccmp #534
 void RHSerializeName(SBFile &file, const char *name)
@@ -213,8 +299,91 @@ void Toolbox::PlaySlide(const std::string &name, unsigned short duration)
         FUN_005e1400();
 }
 
+// parked, unannotated: preserves the counted PlaySlide caller
+bool RHUnk006114c0::Unk00611710(SBFile &file)
+{
+    unsigned long header[3] = {0xcccccccc, 0xcccccccc, 0xcccccccc};
+    FUN_00611aa0(file, header);
+    SBPicture *picture = (SBPicture *)this;
+    picture->m_22 = ((unsigned short *)header)[1];
+    picture->m_20 = ((unsigned short *)header)[0];
+    picture->m_04 = 3;
+    if (picture->m_1c) {
+        operator delete(picture->m_14);
+        picture->m_14 = 0;
+    }
+    if (header[1] > 2)
+        return false;
+    picture->m_14 = (unsigned char *)operator new(picture->m_22 * picture->m_20 * 2);
+    switch (header[1]) {
+    case 0:
+        file.Access(picture->m_14, header[2]);
+        picture->m_1c = header[2];
+        *(unsigned long *)(m_24 + 0x10) = header[2];
+        break;
+    case 1:
+        {
+            void *compressed = operator new(header[2]);
+            file.Access(compressed, header[2]);
+            picture->m_1c = picture->m_22 * picture->m_20 * 2;
+            *(unsigned long *)(m_24 + 0x10) = header[2];
+            extern int FUN_006277e0(void *, unsigned int *, const void *, unsigned int);
+            FUN_006277e0(picture->m_14, &picture->m_1c, compressed, header[2]);
+            operator delete(compressed);
+        }
+        picture->m_24 = picture->m_20 * 2;
+        return true;
+    case 2:
+        {
+            void *compressed = operator new(header[2]);
+            file.Access(compressed, header[2]);
+            picture->m_1c = picture->m_22 * picture->m_20 * 2;
+            *(unsigned long *)(m_24 + 0x10) = header[2];
+            extern int __stdcall FUN_006273d0(void *, unsigned int *, const void *, unsigned int, int, int);
+            FUN_006273d0(picture->m_14, &picture->m_1c, compressed, header[2], 0, 0);
+            operator delete(compressed);
+        }
+        picture->m_24 = picture->m_20 * 2;
+        return true;
+    }
+    picture->m_24 = picture->m_20 * 2;
+    return true;
+}
+
+// parked, unannotated: counted callers and surface-getter ILT operands
+bool RHUnk006114c0::Unk00613530(RHUnkFXDraw *draw, unsigned long surface)
+{
+    RHUnk00613e90 pixels;
+    SBPicture *picture = (SBPicture *)this;
+    if (draw->FUN_005e56c0(surface) == picture->m_20 &&
+        draw->FUN_005e5750(surface) == picture->m_22) {
+        unsigned int format = *(volatile unsigned int *)&picture->m_04;
+        if (draw->UnkField10c() == 16 && format != 3)
+            Unk00611e10(3, 0);
+        if (draw->UnkField10c() == 15 && picture->m_04 != 2)
+            Unk00611e10(2, 0);
+        if (draw->Unk005e5a00(surface, pixels, 0)) {
+            unsigned int gap = (pixels.m_pitch >> 1) - picture->m_20;
+            unsigned short *destination = pixels.m_data;
+            unsigned short *source = (unsigned short *)picture->m_14;
+            for (unsigned int y = 0; (unsigned short)y < picture->m_22; ++y) {
+                for (unsigned int x = 0; (unsigned short)x < picture->m_20; ++x)
+                    *destination++ = *source++;
+                destination += gap;
+            }
+            draw->Unk005e5ea0(pixels);
+            return true;
+        }
+    }
+    return false;
+}
+
 void Toolbox::Emit()
 {
     DisplayPicture("", false);
     PlaySlide("", 0);
+    RHUnk00423b10 wide;
+    wide.FUN_00423b10(0);
+    RHProfileText text("");
+    text.FUN_00402670(0);
 }

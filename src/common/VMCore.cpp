@@ -125,11 +125,48 @@ void VMCore::FUN_00634dd0()
     m_24 = m_0c.FUN_0063a320();
 }
 
+// STUB: GAME 0x00634de0
+void VMCore::FUN_00634de0()
+{
+    int *value = GetSymbolValuePtr(((unsigned short *)m_28)[2]);
+    if (*(int *)(m_0c.m_pad0 + 12) != 1) {
+        VMUnk00634d30Node *node = (*(VMUnk00634d30Stack **)(m_0c.m_pad0 + 8))->m_04;
+        (*(VMUnk00634d30Node **)(node->m_pad0 + 4))->m_08->m_04 = *value;
+    }
+    m_2c = *value;
+    m_24 = m_0c.FUN_0063a320();
+}
+
+// STUB: GAME 0x00634eb0
+void VMCore::FUN_00634eb0()
+{
+    int *source = m_0c.FUN_0063a3b0(m_28[2]);
+    *GetSymbolValuePtr(((unsigned short *)m_28)[2]) = *source;
+    ++m_24;
+}
+
+// STUB: GAME 0x00634fa0
+void VMCore::FUN_00634fa0()
+{
+    int *destination = m_0c.FUN_0063a3b0(m_28[2]);
+    *destination = *GetSymbolValuePtr(((unsigned short *)m_28)[2]);
+    ++m_24;
+}
+
 // STUB: GAME 0x00635090
 void VMCore::FUN_00635090()
 {
     int *value = GetSymbolValuePtr(((unsigned short *)m_28)[2]);
     *value = (*(VMUnk00634d30Stack **)(m_0c.m_pad0 + 8))->m_04->m_08->m_04;
+    ++m_24;
+}
+
+// STUB: GAME 0x00635150
+void VMCore::FUN_00635150()
+{
+    int *value = GetSymbolValuePtr(((unsigned short *)m_28)[2]);
+    *(int *)(*(char **)m_pad30 + *(int *)(m_pad30 + 4)) = *value;
+    *(int *)(m_pad30 + 4) += 4;
     ++m_24;
 }
 
@@ -140,6 +177,13 @@ void VMCore::FUN_00635210()
     int result = g_unk0x006c1944[m_28[1]](m_pad30);
     m_24 = index + 1;
     *(int *)(m_pad30 + 8) = result;
+}
+
+// STUB: GAME 0x00635240
+void VMCore::FUN_00635240()
+{
+    *GetSymbolValuePtr(((unsigned short *)m_28)[2]) = *(int *)(m_pad30 + 8);
+    ++m_24;
 }
 
 // FUNCTION: GAME 0x00635320
@@ -285,8 +329,13 @@ void EmitVMCore(VMCore *core)
     core->EndFunction();
     core->FUN_00634db0();
     core->FUN_00634dd0();
+    core->FUN_00634de0();
+    core->FUN_00634eb0();
+    core->FUN_00634fa0();
     core->FUN_00635090();
+    core->FUN_00635150();
     core->FUN_00635210();
+    core->FUN_00635240();
     core->FUN_00635320();
     core->FUN_00635330();
     core->FUN_006353f0();

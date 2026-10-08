@@ -82,11 +82,16 @@ public:
     void EndFunction();
     void FUN_00634db0();
     void FUN_00634dd0();
+    void FUN_00634de0();
+    void FUN_00634eb0();
+    void FUN_00634fa0();
     void FUN_00635090();
+    void FUN_00635150();
     int *GetSymbolValuePtr(unsigned short &);
     void FUN_00635330();
     void FUN_006353f0();
     void FUN_00635210();
+    void FUN_00635240();
     void FUN_00635320();
     virtual bool FUN_006390a0();
     virtual bool FUN_006390a0_1();

@@ -1,5 +1,30 @@
 #include "Toolbox.h"
 
+void RHUnk006114c0::FUN_00611aa0(SBFile &, void *) {}
+int FUN_006277e0(void *, unsigned int *, const void *, unsigned int) { return 0; }
+int __stdcall FUN_006273d0(void *, unsigned int *, const void *, unsigned int, int, int) { return 0; }
+
+// parked, unannotated: base-constructor/vptr ordering and counted callers
+RHUnk006114c0::RHUnk006114c0()
+{
+    FUN_00611b90();
+    *(undefined4 *)(m_24 + 0x0c) = 2;
+}
+
+// parked, unannotated: base-destructor ILT tail jump and counted callers
+RHUnk006114c0::~RHUnk006114c0()
+{
+    FUN_00611c00();
+}
+
+void RHUnk006114c0::FUN_00611b90() {}
+void RHUnk006114c0::FUN_00611c00() {}
+void RHUnk006114c0::Unk10() {}
+bool RHUnk006114c0::Unk20(RHUnkFXDraw *draw, unsigned long surface)
+{
+    return Unk00613530(draw, surface);
+}
+
 void RHUnkFXDraw::FUN_005e5260() {}
 void RHUnkFXDraw::FUN_005e61e0(unsigned long, unsigned long, unsigned long, unsigned long) {}
 void RHUnkFXDraw::FUN_005e6440(unsigned long, int, int, unsigned long, unsigned long) {}

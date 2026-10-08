@@ -2,15 +2,18 @@
 #define TOOLBOX_H
 
 #include "SB.h"
+#include "Decomp.h"
 #include <string>
 #include <deque>
 
+// SIZE 0x08
 struct ToolboxChunk
 {
     unsigned long m_start; // +0x00
     unsigned long m_size; // +0x04
 };
 
+// SIZE 0x10
 struct ToolboxChunkIterator
 {
     ToolboxChunkIterator(ToolboxChunk *, ToolboxChunk **);
@@ -76,6 +79,7 @@ public:
     }
 };
 
+// SIZE 0x10
 class RHProfileText
 {
 public:
@@ -93,6 +97,7 @@ public:
     }
     ~RHProfileText() { FUN_00401ee0(true); }
     bool FUN_00402280(unsigned int, bool);
+    void FUN_00402670(unsigned int);
     void FUN_00401ee0(bool);
     char m_allocator; // +0x00
     char *m_chars; // +0x04
@@ -100,13 +105,25 @@ public:
     unsigned int m_capacity; // +0x0c
 };
 
+// SIZE 0x10
+class RHUnk00423b10
+{
+public:
+    void FUN_00423b10(unsigned int);
+    undefined m_allocator; // 0x00
+    unsigned short *m_chars; // 0x04
+    unsigned int m_size; // 0x08
+    unsigned int m_capacity; // 0x0c
+};
+
+// SIZE 0x08
 class SBGeoPoint2D
 {
 public:
     SBGeoPoint2D(float, float);
     ~SBGeoPoint2D();
-    float m_x;
-    float m_y;
+    float m_x; // 0x00
+    float m_y; // 0x04
 };
 
 class SBGeoVector2D : public SBGeoPoint2D
@@ -116,6 +133,7 @@ public:
     ~SBGeoVector2D() {}
 };
 
+// SIZE 0x10e
 class RHUnkFXDraw
 {
 public:
@@ -126,36 +144,65 @@ public:
     unsigned short FUN_005e5750(unsigned long);
     void FUN_005e61e0(unsigned long, unsigned long, unsigned long, unsigned long);
     void FUN_005e6440(unsigned long, int, int, unsigned long, unsigned long);
+    bool Unk005e5a00(unsigned long, class RHUnk00613e90 &, unsigned long);
+    void Unk005e5ea0(class RHUnk00613e90 &);
     unsigned short UnkField10c() const { return m_depth; }
-    char m_00[0x10c];
+    undefined m_00[0x10c]; // 0x00
     unsigned short m_depth; // +0x10c
 };
 
+// SIZE 0x38
 class RHUnk006114c0
 {
 public:
     RHUnk006114c0();
-    virtual ~RHUnk006114c0();
-    virtual void Unk04();
-    virtual void Unk08();
-    virtual void Unk0c();
-    virtual void Unk10();
-    virtual void Unk14();
-    virtual void Unk18();
-    virtual void Unk1c();
-    virtual bool Unk20(RHUnkFXDraw *, unsigned long);
+    virtual ~RHUnk006114c0(); // vtable+0x00
+    virtual void Unk04(); // vtable+0x04
+    virtual void Unk08(); // vtable+0x08
+    virtual void Unk0c(); // vtable+0x0c
+    virtual void Unk10(); // vtable+0x10
+    virtual void Unk14(); // vtable+0x14
+    virtual void Unk18(); // vtable+0x18
+    virtual void Unk1c(); // vtable+0x1c
+    virtual bool Unk20(RHUnkFXDraw *, unsigned long); // vtable+0x20
+    virtual void *FUN_006114e0() { return *(void **)(m_04 + 0x10); } // vtable+0x24
+    virtual unsigned int FUN_006114f0() { return *(unsigned int *)(m_04 + 0x18); } // vtable+0x28
+    virtual unsigned short FUN_00611500() { return m_width; } // vtable+0x2c
+    virtual unsigned short FUN_00611510() { return m_height; } // vtable+0x30
+    virtual unsigned short FUN_00611520() { return *(unsigned short *)m_24; } // vtable+0x34
+    virtual int FUN_00611530() { return *(unsigned int *)(m_04 + 0x18) != 0; } // vtable+0x38
     bool Unk00611710(SBFile &);
+    bool Unk00613530(RHUnkFXDraw *, unsigned long);
     bool Unk00611e10(unsigned long, unsigned long);
     RHUnk006114c0 *Unk00612ad0(const SBGeoPoint2D &, const SBGeoVector2D &);
-    bool Unk00613530(RHUnkFXDraw *, unsigned long);
+    void FUN_00611aa0(SBFile &, void *);
+    void FUN_00611b90();
+    void FUN_00611c00();
     unsigned short UnkField20() const { return m_width; }
     unsigned short UnkField22() const { return m_height; }
-    char m_04[0x1c];
+    undefined m_04[0x1c]; // 0x04
     unsigned short m_width; // +0x20
     unsigned short m_height; // +0x22
-    char m_24[0x14]; // sizeof 0x38
+    undefined m_24[0x14]; // 0x24
 };
 
+// SIZE 0x18
+class RHUnk00613e90
+{
+public:
+    RHUnk00613e90();
+    ~RHUnk00613e90();
+    undefined m_00[4]; // 0x00
+    unsigned short m_width; // 0x04
+    undefined m_06[2]; // 0x06
+    unsigned long m_pitch; // 0x08
+    unsigned short m_depth; // 0x0c
+    undefined m_0e[2]; // 0x0e
+    unsigned short *m_data; // 0x10
+    undefined m_14[4]; // 0x14
+};
+
+// SIZE 0x58
 class RHUnk005f4fc0 : public SBFile
 {
 public:
@@ -166,16 +213,17 @@ public:
     void FUN_005f5290();
     unsigned int Position() const { return *(const unsigned int *)((const char *)this + 0xc); }
     unsigned int Size() const { return *(const unsigned int *)((const char *)this + 8); }
-    char m_14[0x44]; // sizeof 0x58
+    undefined m_14[0x44]; // 0x14
 };
 
+// SIZE 0x6c
 class RHUnk0060e4c0
 {
 public:
     void FUN_0060e4c0();
     bool FUN_0060f1c0(const RHUnk0060e4c0 &);
     void FUN_0060f1e0(SBFile &);
-    char m_00[0x6c]; // sizeof 0x6c
+    undefined m_00[0x6c]; // 0x00
 };
 
 RHUnk0060e4c0 *FUN_005e1b20(RHUnk0060e4c0 *, const char *);
@@ -187,6 +235,7 @@ public:
 class RHUnk005ef320;
 extern RHUnk005ef320 *g_unk0x6c11d0;
 
+// SIZE 0x0a
 struct ToolboxMouseState
 {
     short m_x; // +0x00
