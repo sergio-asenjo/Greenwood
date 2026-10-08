@@ -19,25 +19,11 @@ extern "C" unsigned int wcslen(const unsigned short *value)
     return end - value;
 }
 
-std::wstring FUN_0055bdf0(unsigned long first, unsigned long count)
-{
-    return std::wstring();
-}
-
 std::wstring FUN_005e23d0(unsigned long id)
 {
     return std::wstring();
 }
 
 void FUN_005e0ea0(SBFile &file, std::wstring &value)
-{
-}
-
-bool RHUnk00452030::FUN_004565c0(const std::wstring &name)
-{
-    return false;
-}
-
-void RHUnk00452030::FUN_00456670(const std::wstring &name)
 {
 }
