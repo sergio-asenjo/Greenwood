@@ -261,7 +261,7 @@ class RHUnk005fc3b0 : public SBGeoPoint2D
 public:
     RHUnk005fc3b0();
     ~RHUnk005fc3b0() {}
-    void Unk005fcd40(unsigned short direction, float length);
+    RHUnk005fc3b0 &Unk005fcd40(unsigned short direction, float length);
 };
 
 struct RHUnk00571160Position
@@ -278,12 +278,20 @@ public:
     void Unk(RHUnk00571160Position *position);
 };
 
+struct RHAIPathArray;
+
 class RHArtificialIntelligencePathCursor
 {
 public:
     void Unk00550f60(unsigned short path);
     void Unk005505b0(unsigned short waypoint);
-    void Unk005505c0();
+    RHArtificialIntelligencePathCursor &Unk005505c0();
+    unsigned char m_current;
+    unsigned char m_previous;
+    char m_forward;
+    char m_03;
+    RHAIPathArray *m_path;
+    unsigned short m_id;
 };
 
 class RHPath
@@ -292,11 +300,15 @@ public:
     bool SerializeStatus(SBFile &file);
 };
 
+struct RHAIActorTimerView;
+
 class RHArtificialIntelligenceActorCalls
 {
 public:
     void Unk0048b450(unsigned value, int mode);
     void Unk0048b4e0(int mode);
+    void Unk0048d020();
+    RHAIActorTimerView &TimerView();
     bool Unk00485e60();
     bool Unk00470ce0();
 };
@@ -328,6 +340,15 @@ class RHArtificialIntelligenceStimulusList
 {
 public:
     RHArtificialIntelligenceStimulusNode *Unk00424340(RHArtificialIntelligenceStimulusNode *next, RHArtificialIntelligenceStimulusNode *previous);
+};
+
+class RHAIUnk0044e8b0
+{
+public:
+    int m_allocator;
+    RHArtificialIntelligenceNode *m_head;
+    unsigned m_count;
+    RHArtificialIntelligenceIterator FUN_0044e8b0(RHArtificialIntelligenceIterator first, RHArtificialIntelligenceIterator last);
 };
 
 void FUN_00424470(RHStimulus *destination, const RHStimulus *source);
@@ -537,14 +558,18 @@ public:
     bool Unk00418600(unsigned short path);
     void Unk00418c40(int remark, unsigned flags);
     void Unk00410600();
-    void Unk00412c80(void *waypoint, unsigned short flags);
-    void Unk00412f70(unsigned short value, int mode);
+    bool Unk00412c80(void *waypoint, unsigned short flags);
+    bool Unk00412f70(unsigned short value, int mode);
+    bool Unk00412240(const RHUnk00571160Position &position, unsigned short flags, float length);
     bool Unk00419cc0();
     void Unk0041a960(unsigned short direction);
     void Unk00422b70(int property, int value);
     void Unk004195f0(unsigned flags);
     bool Unk00419b20(int remark);
     void Unk00419970(int remark, int time, int flags);
+    void Unk0041a300(int value);
+    unsigned char Unk00419c80();
+    void Unk0041ab10(unsigned short direction);
 
     RHArtificialIntelligenceActor *m_actor; // +0x04
     char m_08[0x20];

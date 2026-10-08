@@ -5,6 +5,7 @@
 
 class RHWaypoint;
 
+// SIZE 0x10
 struct RHPathArray
 {
     int m_grow; // +0x00
@@ -17,6 +18,7 @@ struct RHPathArray
     RHWaypoint *&operator[](unsigned index) { return *(begin() + index); }
 };
 
+// SIZE 0x14
 struct RHPathHistory
 {
     int m_0; // +0x00
@@ -28,6 +30,7 @@ struct RHPathHistory
     unsigned short m_12; // +0x12
 };
 
+// SIZE 0x1c
 struct RHPathHistoryNode
 {
     RHPathHistoryNode *m_next; // +0x00
@@ -53,6 +56,7 @@ public:
 
 void RHPathUnk0048f180(RHPathHistory *dst, const RHPathHistory *src);
 
+// SIZE 0x18
 class RHPathHistoryList
 {
 public:
@@ -95,6 +99,7 @@ public:
     }
 };
 
+// SIZE 0x24
 class RHPath
 {
 public:
@@ -112,20 +117,22 @@ public:
     RHPathHistoryList m_c; // +0x0c
 };
 
+// SIZE 0x04
 class RHUnkWaypointRef
 {
 public:
     RHWaypoint *m_0; // +0x00
-    void Unk00408660();
+    int Unk00408660();
 };
 
+// SIZE 0x7c
 class RHWaypoint
 {
 public:
     unsigned int LoadDataFromFile(SBFile &file);
     void Emit(SBFile &file);
 
-    char m_pad0[0x60];
+    undefined m_pad0[0x60]; // 0x00
     RHUnkWaypointRef m_60; // +0x60
     short m_64; // +0x64
     short m_66; // +0x66
@@ -204,5 +211,153 @@ struct RHUnkPathEngineView
         return *actor;
     }
 };
+
+// SIZE 0x08
+class SBGeoVector2D : public SBGeoPoint2D
+{
+public:
+    SBGeoVector2D(const SBGeoPoint2D &point);
+    SBGeoVector2D(float x, float y);
+    ~SBGeoVector2D() {}
+};
+
+// SIZE 0x14
+class SBGeoBoundingBox2D
+{
+public:
+    SBGeoBoundingBox2D();
+    void FUN_00607e30(const class RHMalignitySegment &segment);
+    SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &vector) const;
+    SBGeoPoint2D m_0; // 0x00
+    SBGeoPoint2D m_8; // 0x08
+    undefined m_10; // 0x10
+};
+
+class RHPathObstacleGrid
+{
+public:
+    bool FUN_004f5750(SBGeoBoundingBox2D &box, unsigned short layer);
+};
+
+class RHEngineReinforcementCalls
+{
+public:
+    bool FUN_004f6c20(const SBGeoPoint2D &a, SBGeoPoint2D &b, unsigned short layer, const SBGeoPoint2D &point);
+};
+
+class RHMalignityGridCalls
+{
+public:
+    void FUN_004ed070(class RHMalignityQueryList &list, unsigned short layer, const SBGeoBoundingBox2D &box, unsigned mask);
+};
+
+// SIZE 0x10
+class RHMalignitySegment
+{
+public:
+    RHMalignitySegment(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
+    ~RHMalignitySegment();
+    bool FUN_0060a990(const RHMalignitySegment &other);
+    SBGeoPoint2D m_0; // 0x00
+    SBGeoPoint2D m_8; // 0x08
+};
+
+class RHMalignityArrayCalls
+{
+public:
+    void FUN_0059fba0(const unsigned &value);
+    void FUN_004e60a0(void *position, unsigned count, const unsigned &value);
+    void FUN_004e62b0(void *position, unsigned count, const RHMalignitySegment &value);
+};
+
+// SIZE 0x50
+class RHMalignityRectangle
+{
+public:
+    RHMalignityRectangle();
+    ~RHMalignityRectangle();
+    undefined m_00[0x50]; // 0x00
+};
+
+// SIZE 0x0c
+struct RHPathHelperNode
+{
+    RHPathHelperNode *m_next; // 0x00
+    RHPathHelperNode *m_prev; // 0x04
+    void *m_data; // 0x08
+};
+
+// SIZE 0x18
+class RHPathHelperList
+{
+public:
+    RHPathHelperList(const char &allocator);
+    void FUN_005c8e40(unsigned index) { ((RHTitbitList *)this)->At(index); }
+    undefined4 m_0; // 0x00
+    RHPathHelperNode *m_head; // 0x04
+    int m_count; // 0x08
+    RHPathHelperNode *m_cur; // 0x0c
+    undefined m_valid; // 0x10
+    undefined m_pad11[3]; // 0x11
+    int m_index; // 0x14
+};
+
+// SIZE 0x24
+class RHMalignityQueryList : public RHPathHelperList
+{
+public:
+    RHMalignityQueryList();
+    ~RHMalignityQueryList() { FUN_004e6c10(); FUN_004e52a0(); }
+    void FUN_004e6c10();
+    void FUN_004e52a0();
+    undefined m_18[0x0c]; // 0x18
+};
+
+// SIZE 0x50
+class RHUnk004dab90Rectangle : public RHMalignityRectangle
+{
+public:
+    RHUnk004dab90Rectangle()
+    {
+        unsigned value = 0;
+        RHMalignityArrayCalls &indices = *(RHMalignityArrayCalls *)(m_00 + 0x2c);
+        indices.FUN_0059fba0(value);
+        m_00[0x40] = 1;
+    }
+    ~RHUnk004dab90Rectangle();
+};
+
+// SIZE 0x24
+class RHUnk004f9260List : public RHPathHelperList
+{
+public:
+    RHUnk004f9260List(const char &allocator) : RHPathHelperList(allocator) { m_valid = 1; }
+    ~RHUnk004f9260List()
+    {
+        Clear();
+        Clear();
+        operator delete(m_head);
+    }
+    void Clear()
+    {
+        RHPathHelperNode *node = m_head->m_next;
+        while (node != m_head)
+        {
+            RHPathHelperNode *removed = node;
+            node = node->m_next;
+            removed->m_prev->m_next = removed->m_next;
+            removed->m_next->m_prev = removed->m_prev;
+            operator delete(removed);
+            --m_count;
+        }
+    }
+    undefined m_18[0x0c]; // 0x18
+};
+
+template <class T>
+inline T &RHPathField(void *object, unsigned offset)
+{
+    return *(T *)((undefined *)object + offset);
+}
 
 #endif

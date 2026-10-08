@@ -1,4 +1,124 @@
 #include "RHPath.h"
+#include "VMCore.h"
+
+DECOMP_SIZE_ASSERT(RHPathArray, 0x10)
+DECOMP_SIZE_ASSERT(RHPathHistory, 0x14)
+DECOMP_SIZE_ASSERT(RHPathHistoryNode, 0x1c)
+DECOMP_SIZE_ASSERT(RHPathHistoryList, 0x18)
+DECOMP_SIZE_ASSERT(RHPath, 0x24)
+DECOMP_SIZE_ASSERT(RHUnkWaypointRef, 0x04)
+DECOMP_SIZE_ASSERT(RHWaypoint, 0x7c)
+DECOMP_SIZE_ASSERT(SBGeoVector2D, 0x08)
+DECOMP_SIZE_ASSERT(SBGeoBoundingBox2D, 0x14)
+DECOMP_SIZE_ASSERT(RHMalignitySegment, 0x10)
+DECOMP_SIZE_ASSERT(RHMalignityRectangle, 0x50)
+DECOMP_SIZE_ASSERT(RHPathHelperNode, 0x0c)
+DECOMP_SIZE_ASSERT(RHPathHelperList, 0x18)
+DECOMP_SIZE_ASSERT(RHMalignityQueryList, 0x24)
+DECOMP_SIZE_ASSERT(RHUnk004dab90Rectangle, 0x50)
+DECOMP_SIZE_ASSERT(RHUnk004f9260List, 0x24)
+
+// Parked: string cleanup scheduling and annotated VM calls.
+// deferred: 0x00408660, unannotated pending reccmp #534.
+int RHUnkWaypointRef::Unk00408660()
+{
+    {
+        std::string name("Initialize");
+        ((VMCore *)m_0)->FUN_00639300(&name);
+    }
+    int value;
+    ((VMCore *)m_0)->FUN_00639360(value);
+    return value;
+}
+
+// Parked: frame layout, register allocation and coupled calls.
+// deferred: 0x004dab90, unannotated pending reccmp #534.
+void RHUnkPathEngine::Unk004dab90(RHPathArray *path, unsigned short index)
+{
+    SBGeoPoint2D previous;
+    SBGeoPoint2D current;
+    RHPathHelperList &list = RHPathField<RHPathHelperList>(this, 0x4c9c);
+    unsigned count = list.m_count;
+    for (unsigned short i = 0; i < (unsigned short)count; ++i)
+    {
+        list.FUN_005c8e40(i);
+        if (RHPathField<RHPathArray *>(list.m_cur->m_data, 0x4c) == path)
+        {
+            list.FUN_005c8e40(i);
+            RHPathField<unsigned short *>(list.m_cur->m_data, 0x30)[index] = 0xf000;
+            return;
+        }
+    }
+    RHWaypoint *waypoint = (*path)[0];
+    ((RHUnkPathPointSet *)&previous)->Set(waypoint->m_64, waypoint->m_66);
+    RHMalignityRectangle *rectangle = new RHUnk004dab90Rectangle;
+    RHMalignityArrayCalls &indices = RHPathField<RHMalignityArrayCalls>(rectangle, 0x2c);
+    RHPathField<RHPathArray *>(rectangle, 0x4c) = path;
+    unsigned short size = path->size();
+    if (size > 1)
+    {
+        unsigned marked = index + 1;
+        for (unsigned i = 1, remaining = size - 1; remaining != 0; ++i, --remaining)
+        {
+            waypoint = (*path)[i];
+            ((RHUnkPathPointSet *)&current)->Set(waypoint->m_64, waypoint->m_66);
+            ((RHMalignityArrayCalls *)rectangle)->FUN_004e62b0(RHPathField<void *>(rectangle, 8), 1, RHMalignitySegment(previous, current));
+            RHPathField<undefined>(rectangle, 0x14) = 1;
+            unsigned flag = i == marked ? 0xf000 : 0;
+            indices.FUN_004e60a0(RHPathField<void *>(&indices, 8), 1, flag);
+            RHPathField<undefined>(&indices, 0x14) = 1;
+            previous = current;
+        }
+    }
+    RHPathHelperNode *head = list.m_head;
+    RHPathHelperNode *prev = head->m_prev;
+    RHPathHelperNode *node = (RHPathHelperNode *)operator new(0x0c);
+    node->m_next = head ? head : node;
+    node->m_prev = prev ? prev : node;
+    head->m_prev = node;
+    node->m_prev->m_next = node;
+    if (&node->m_data)
+        node->m_data = rectangle;
+    ++RHPathField<int>(this, 0x4ca4);
+    RHPathField<undefined>(this, 0x4cac) = 1;
+}
+
+// Parked: temporary cleanup scheduling and coupled calls.
+// deferred: 0x004f9170, unannotated pending reccmp #534.
+bool RHUnkPathGeometry::Unk004f9170(const SBGeoPoint2D &a, const SBGeoPoint2D &b, unsigned short layer, void *radius)
+{
+    SBGeoBoundingBox2D *box = (SBGeoBoundingBox2D *)radius;
+    bool blocked;
+    {
+        SBGeoVector2D vector(b);
+        blocked = !((RHPathObstacleGrid *)this)->FUN_004f5750(box->FUN_006090d0(vector), layer);
+    }
+    if (blocked)
+        return false;
+    return ((RHEngineReinforcementCalls *)this)->FUN_004f6c20(a, (SBGeoPoint2D &)b, layer, SBGeoVector2D(box->m_8));
+}
+
+// Parked: container cleanup, frame layout and coupled calls.
+// deferred: 0x004f9260, unannotated pending reccmp #534.
+bool RHUnkPathGeometry::Unk004f9260(const SBGeoPoint2D &a, const SBGeoPoint2D &b, unsigned short layer)
+{
+    RHMalignitySegment segment(SBGeoVector2D(0, 0), SBGeoVector2D(0, 0));
+    SBGeoBoundingBox2D box;
+    char allocator;
+    RHUnk004f9260List lines(allocator);
+    segment.m_0 = a;
+    segment.m_8 = b;
+    box.FUN_00607e30(segment);
+    ((RHMalignityGridCalls *)this)->FUN_004ed070((RHMalignityQueryList &)lines, layer, box, 2);
+    unsigned short count = lines.m_count;
+    for (unsigned short i = 0; i < count; ++i)
+    {
+        lines.FUN_005c8e40(i);
+        if (RHPathField<RHMalignitySegment>(lines.m_cur->m_data, 4).FUN_0060a990(segment))
+            return false;
+    }
+    return true;
+}
 
 // FUNCTION: GAME 0x00550690
 bool RHPath::TestIfPathIsFine(RHElementActor *actor)

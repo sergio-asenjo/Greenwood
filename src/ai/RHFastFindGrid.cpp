@@ -5,7 +5,13 @@ RHFastFindTacticalArray g_unk0x006c06f0;
 // GLOBAL: GAME 0x006c0718
 RHFastFindTacticalArray g_unk0x006c0718;
 
-// deferred: unannotated pending reccmp #534
+// GLOBAL: GAME 0x006790d8
+float g_unk0x006790d8 = -40.0f;
+
+// GLOBAL: GAME 0x006c0bcc
+unsigned long g_unk0x006c0bcc;
+
+// deferred: 0x004e5270, exact body; unannotated pending reccmp #534.
 RHSeqList::RHSeqList(const char &allocator)
 {
     m_00[0] = allocator;
@@ -456,6 +462,29 @@ void RHFastFindGrid::InitializeTacticalInfosFromMissionStream(SBFile &file)
     FUN_005e20c0(file);
 }
 
+// FUNCTION: GAME 0x004fad80
+void RHFastFindGrid::FUN_004fad80(void *gate)
+{
+    (*(RHFastFindPointerArray *)((char *)this + 0x4100)).InsertLast(gate);
+    void *value = gate;
+    fastfind_gateObjects.InsertLast(value, true, false, true);
+}
+
+// FUNCTION: GAME 0x004fb1d0
+void RHFastFindGrid::FUN_004fb1d0(SBFile &file)
+{
+    FUN_005e1d50(file, 0x484f4c45, 2);
+    unsigned short count;
+    file.Access(&count, 2);
+    RHUnk005223f0 hole;
+    for (unsigned short i = 0; i < count; ++i)
+    {
+        hole.FUN_005223f0(file);
+        FUN_00418390(&hole);
+    }
+    FUN_005e20c0(file);
+}
+
 // STUB: GAME 0x004fb510
 void RHFastFindGrid::InitializeJumpStuffFromProtoStream(SBFile &file)
 {
@@ -787,6 +816,36 @@ bool RHFastFindGrid::SerializeLinePointer(SBFile &file, void *&value)
     return true;
 }
 
+// FUNCTION: GAME 0x004fdb90
+RHFastFindRepulsive &RHFastFindRepulsive::FUN_004fdb90(const RHFastFindRepulsive &other)
+{
+    *(SBGeoPoint2D *)((char *)this + 4) = *(const SBGeoPoint2D *)(&other ? (const char *)&other + 4 : 0);
+    *(int *)((char *)this + 0xc) = *(const int *)((const char *)&other + 0xc);
+    *((char *)this + 0x10) = *((const char *)&other + 0x10);
+    ((RHUnk005fc3b0 *)&m_14)->FUN_005fc430(other.m_14);
+    ((RHUnk005fc3b0 *)&m_1c)->FUN_005fc430(other.m_1c);
+    m_24 = other.m_24;
+    m_28 = other.m_28;
+    m_2c = other.m_2c;
+    m_30 = other.m_30;
+    m_34 = other.m_34;
+    m_35 = other.m_35;
+    m_36 = other.m_36;
+    m_37 = other.m_37;
+    m_38 = other.m_38;
+    m_id = other.m_id;
+    return *this;
+}
+
+// deferred: 0x004fdc20, exact body; unannotated pending reccmp #534.
+RHFastFindRepulsiveBase &RHFastFindRepulsiveBase::Unk004fdc20(const RHFastFindRepulsiveBase &other)
+{
+    *(SBGeoPoint2D *)((char *)this + 4) = *(const SBGeoPoint2D *)(&other ? (const char *)&other + 4 : 0);
+    *(int *)((char *)this + 0xc) = *(const int *)((const char *)&other + 0xc);
+    *((char *)this + 0x10) = *((const char *)&other + 0x10);
+    return *this;
+}
+
 // deferred: unannotated pending reccmp #534
 void **RHScriptFXArray::Unk004fe420(void **first, void **last, void **destination)
 {
@@ -796,10 +855,139 @@ void **RHScriptFXArray::Unk004fe420(void **first, void **last, void **destinatio
     return destination;
 }
 
+// deferred: 0x004fe450, exact body; unannotated pending reccmp #534.
+void RHScriptFXArray::Unk004fe450(void **destination, unsigned int count, void *const &value)
+{
+    for (; count > 0; --count, ++destination)
+        if (destination)
+            *destination = value;
+}
+
+// deferred: 0x0051aa00, exact body; unannotated pending reccmp #534.
+RHUnk0051aa00::RHUnk0051aa00()
+{
+    *(int *)((char *)this + 4) = 1;
+    *((char *)this + 8) = 1;
+    m_8c[0] = 0;
+    m_8c[1] = 0;
+    m_8c[2] = 0;
+    m_8c[3] = 0;
+    m_b0 = 0;
+    *(int *)((char *)this + 0xac) = 0;
+    m_b4[0] = 0;
+    *(short *)((char *)this + 0xb6) = 0;
+    *(short *)((char *)this + 0xb8) = 0;
+}
+
+// FUNCTION: GAME 0x0051e1e0
+RHUnk0051e1e0::RHUnk0051e1e0()
+{
+    FUN_0051f0f0();
+    *(unsigned long *)this = 0x006790c0;
+    *(int *)((char *)this + 0x14) = 0x400;
+    *((char *)this + 0x39) = 0;
+}
+
+// FUNCTION: GAME 0x0051e5e0
+RHUnk0051e5e0::RHUnk0051e5e0()
+{
+    FUN_0057ca80();
+    char firstAllocator;
+    char secondAllocator;
+    m_lines.Initialize(firstAllocator);
+    (*(RHFastFindPointerArray *)((char *)this + 0x78)).Initialize(secondAllocator);
+    *(unsigned long *)this = 0x006790c8;
+    *(int *)((char *)this + 0x30) = 0x8040;
+}
+
+// FUNCTION: GAME 0x0051e700
+int RHUnk0051e5e0::Unk0051e700(SBFile &file)
+{
+    int start = ((RHUnk005f5440 *)&file)->Unk();
+    ((RHSector *)this)->Unk0057cd60(file, false);
+    unsigned short sector;
+    file.Access(&sector, 2);
+    *(void **)((char *)this + 0x98) = RHFastFindLookup(sector);
+    file.Access(&m_layer, 2);
+    file.Access((char *)this + 0x9c, 1);
+    return ((RHUnk005f5440 *)&file)->Unk() - start;
+}
+
+// FUNCTION: GAME 0x0051e800
+void RHUnk0051e5e0::Unk0051e800()
+{
+    unsigned int count = m_lines.size();
+    float zero = 0;
+    {
+        RHUnk004ff7b0 &distances = *(RHUnk004ff7b0 *)((char *)this + 0x78);
+        distances.FUN_004ff7b0(count, zero);
+        *((char *)&distances + 0x14) = 1;
+    }
+    for (unsigned int i = 0; i < count; ++i)
+    {
+        RHUnk0051e1e0 *line = (RHUnk0051e1e0 *)m_lines.m_first[i];
+        float height = *(float *)((char *)line->m_other + 0x30);
+        float *destination = (*(RHUnk004ff7b0 *)((char *)this + 0x78)).m_first;
+        float distance = height - *(float *)((char *)line + 0x30);
+        destination[i] = distance;
+        if (distance < g_unk0x006790d8 && (*((char *)this + 0x9c) || *((char *)line->m_other->m_sector + 0x9c)))
+            *((char *)line + 0x39) = 1;
+    }
+}
+
+// FUNCTION: GAME 0x00520ae0
+RHUnk00520ae0::RHUnk00520ae0() : RHUnk005209d0(6)
+{
+    m_35 = true;
+    m_36 = true;
+    m_37 = true;
+    m_38 = true;
+    m_id = g_unk0x006c0bcc;
+    ++g_unk0x006c0bcc;
+}
+
+// FUNCTION: GAME 0x00520bf0
+RHUnk00520ae0::~RHUnk00520ae0()
+{
+}
+
+// FUNCTION: GAME 0x005224d0
+void RHUnk00522470::Unk005224d0(SBFile &file)
+{
+    FUN_00520a90(file);
+    unsigned short sector;
+    file.Access(&sector, 2);
+    file.Access(&m_layer, 2);
+    void *value;
+    if (sector == 0xffff)
+        value = g_unk0x6c0a9c->m_4184;
+    else
+        value = g_unk0x6c0a9c->m_4064[sector];
+    *((char *)this + 0x14) = 0;
+    *(void **)((char *)this + 0x24) = value;
+}
+
 // deferred: unannotated pending reccmp #534
 unsigned int RHFastFindGateArray::FUN_0059fbc0()
 {
     return Size();
+}
+
+// FUNCTION: GAME 0x005df860
+void RHUnk005df860::Unk005df860(const SBGeoPoint3D &first, const SBGeoPoint3D &second, const SBGeoPoint3D &third)
+{
+    *(SBGeoPoint3D *)this = first;
+    *(SBGeoPoint3D *)((char *)this + 0xc) = second;
+    *(SBGeoPoint3D *)((char *)this + 0x18) = third;
+}
+
+// FUNCTION: GAME 0x005dfa00
+void RHUnk005df860::Unk005dfa00()
+{
+    FUN_005df8b0();
+    FUN_005df900();
+    FUN_005df9a0();
+    FUN_005df9c0();
 }
 
 void RHFastFindGrid::Emit(SBFile &file, void *&value)
@@ -813,4 +1001,10 @@ void RHFastFindGrid::Emit(SBFile &file, void *&value)
     InitializeJumpStuffFromProtoStream(file);
     InitializeScriptStuffFromMissionStream(file);
     SerializeLinePointer(file, value);
+    RHUnk005df860 plane;
+    SBGeoPoint3D point(0, 0, 0);
+    plane.Unk005df860(point, point, point);
+    plane.Unk005dfa00();
+    m_repulsivePoints.begin()->FUN_004fdb90(*m_repulsivePoints.begin());
+    RHUnk00520ae0 repulsive;
 }

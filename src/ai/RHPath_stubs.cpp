@@ -17,8 +17,15 @@ RHPathHistoryNode *RHPathHistoryList::Unk00551de0(RHPathHistoryNode *next, RHPat
     return node;
 }
 
-bool RHUnkPathGeometry::Unk004f9260(const SBGeoPoint2D &, const SBGeoPoint2D &, unsigned short) { return true; }
-bool RHUnkPathGeometry::Unk004f9170(const SBGeoPoint2D &, const SBGeoPoint2D &, unsigned short, void *) { return true; }
-void RHUnkPathEngine::Unk004dab90(RHPathArray *, unsigned short) {}
-void *RHUnkPathActorInfoBase::Unk0055fa10(int) { return this; }
-void RHUnkWaypointRef::Unk00408660() {}
+void SBGeoBoundingBox2D::FUN_00607e30(const RHMalignitySegment &) {}
+bool RHMalignitySegment::FUN_0060a990(const RHMalignitySegment &) { return false; }
+RHPathHelperList::RHPathHelperList(const char &allocator)
+{
+    *(char *)&m_0 = allocator;
+    m_head = (RHPathHelperNode *)operator new(0x0c);
+    m_head->m_next = m_head;
+    m_head->m_prev = m_head;
+    m_count = 0;
+}
+
+RHUnk004dab90Rectangle::~RHUnk004dab90Rectangle() {}

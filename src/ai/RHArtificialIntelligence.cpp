@@ -388,6 +388,81 @@ void RHArtificialIntelligence::Unk00410010(bool mode)
     ((RHArtificialIntelligenceActorCalls *)m_actor)->Unk0048b4e0(1);
 }
 
+// Parked: annotated callee operand.
+// STUB: GAME 0x00410600
+void RHArtificialIntelligence::Unk00410600()
+{
+    RHArtificialIntelligenceActorCalls *actor = (RHArtificialIntelligenceActorCalls *)m_actor;
+    RHAIField<char>(this, 0x7e) = 0;
+    actor->Unk0048b4e0(1);
+    Unk0041a300(0);
+}
+
+// FUNCTION: GAME 0x00412c80
+bool RHArtificialIntelligence::Unk00412c80(void *waypoint, unsigned short flags)
+{
+    RHUnk00571160Position position;
+    position.x = RHAIField<short>(waypoint, 0x64);
+    position.y = RHAIField<short>(waypoint, 0x66);
+    position.area = RHAIField<void *>(waypoint, 0x68);
+    position.layer = RHAIField<short>(waypoint, 0x6c);
+    RHUnk00571160Position destination = position;
+    return Unk00412240(destination, flags, 1.0f);
+}
+
+class RHUnk00582220
+{
+public:
+    RHUnk00582220();
+    ~RHUnk00582220();
+    char m_data[0x3c];
+};
+
+class RHUnk005866a0
+{
+public:
+    RHUnk005866a0(unsigned short level, int command, void *actor);
+    ~RHUnk005866a0();
+    void Unk00586e90(int property, unsigned short value);
+    char m_data[0x74];
+};
+
+class RHUnk00585500
+{
+public:
+    void Unk(void *sequence);
+};
+
+class RHUnk0058a3d0
+{
+public:
+    void Unk(void *context, int value, void *sequence);
+};
+
+class RHUnk6c1040;
+extern RHUnk6c1040 *g_unk0x6c1040;
+extern char g_unk0x6c0560[4];
+
+// FUNCTION: GAME 0x00412f70
+bool RHArtificialIntelligence::Unk00412f70(unsigned short direction, int mode)
+{
+    SBGeoPoint2D point;
+    RHArtificialIntelligenceActor *actor = m_actor;
+    if ((unsigned)direction == (int)RHAIField<short>(actor->m_data, 0xd8) &&
+        RHAIField<int>(actor, 0x144) >= 0 && RHAIField<int>(actor, 0x144) <= 1)
+    {
+        RHAIField<char>(this, 0x16e) = 1;
+        return true;
+    }
+    ((RHArtificialIntelligenceActorCalls *)actor)->Unk0048d020();
+    RHUnk00582220 *sequence = new RHUnk00582220;
+    RHUnk005866a0 *command = new RHUnk005866a0(1, (unsigned char)mode ? 28 : 26, m_actor);
+    command->Unk00586e90(0, direction);
+    ((RHUnk00585500 *)command)->Unk(sequence);
+    ((RHUnk0058a3d0 *)g_unk0x6c1040)->Unk(g_unk0x6c0560, 0, sequence);
+    return true;
+}
+
 // Parked: switch tail merging and register scheduling.
 // STUB: GAME 0x00414550
 bool RHArtificialIntelligence::InitState()
@@ -888,6 +963,15 @@ bool RHArtificialIntelligence::Unk00414be0(SBFile &file)
 #undef RHAI_LOCAL_FIELD
 #undef RHAI_LOCAL_CHECK
 
+// FUNCTION: GAME 0x00416710
+void RHArtificialIntelligence::Unk00416710(unsigned value)
+{
+    Unk00422b70(7, value);
+    if (value == 0)
+        value = 1;
+    ((RHArtificialIntelligenceActorCalls *)m_actor)->Unk0048b450(value, 0);
+}
+
 // deferred: unannotated pending reccmp #534
 bool FUN_00416b30(void *&value, SBFile &file)
 {
@@ -1251,6 +1335,14 @@ bool RHArtificialIntelligence::Unk00418600(unsigned short path)
     return true;
 }
 
+// FUNCTION: GAME 0x004188d0
+void RHStimulus::Unk004188d0(int value)
+{
+    *(unsigned short *)m_00 = 0;
+    m_20 = value;
+    m_type = 0;
+}
+
 struct RHArtificialIntelligenceRemarkEntry
 {
     unsigned short m_command;
@@ -1492,6 +1584,338 @@ void RHArtificialIntelligence::Unk00418c40(int remark, unsigned flags)
     }
 }
 
+// FUNCTION: GAME 0x004195f0
+void RHArtificialIntelligence::Unk004195f0(unsigned flags)
+{
+    if ((flags & 0x100) > 0)
+        ((RHScriptBatchCalls *)this)->Unk0040d980(59);
+    else if ((flags & 0x200) > 0)
+        ((RHScriptBatchCalls *)this)->Unk0040d980(60);
+    else if ((flags & 0x400) > 0)
+        ((RHScriptBatchCalls *)this)->Unk0040d980(61);
+    else if ((flags & 0x1000) > 0)
+        ((RHScriptBatchCalls *)this)->Unk0040d980(68);
+}
+
+class RHAIUnk00550660
+{
+public:
+    int Unk00550660(int value);
+};
+
+// Parked: command-decoder frame and register scheduling.
+// STUB: GAME 0x00419cc0
+bool RHArtificialIntelligence::Unk00419cc0()
+{
+    char *actor = (char *)m_actor;
+    RHArtificialIntelligencePathCursor *cursor = (RHArtificialIntelligencePathCursor *)(actor + RHAIField<int>(RHAIField<void *>(actor, 0x49c), 4) + 0x4cc);
+    void *path = RHAIField<void *>(cursor, 4);
+    if (!path || !RHAIField<void **>(path, 4) || (unsigned short)(RHAIField<void **>(path, 8) - RHAIField<void **>(path, 4)) == 0)
+        return true;
+    void *waypoint = RHAIField<void **>(path, 4)[RHAIField<unsigned char>(cursor, 0)];
+    if (RHAIField<unsigned short>(waypoint, 0x70) == 0)
+        return false;
+    if (RHAIField<char>(waypoint, 0x6e))
+        return true;
+    unsigned char *base = RHAIField<unsigned char *>(waypoint, 0x74);
+    unsigned char *stream = base;
+    unsigned short alternatives = *(unsigned short *)stream;
+    stream += 2;
+    int condition = *stream++;
+    unsigned offset;
+    if (((RHAIUnk00550660 *)cursor)->Unk00550660(condition))
+        offset = *(unsigned short *)stream;
+    else
+    {
+        stream += 2;
+        if (alternatives != 2 || !((RHAIUnk00550660 *)cursor)->Unk00550660(*stream))
+            return false;
+        offset = *(unsigned short *)(stream + 1);
+    }
+    stream = base + offset;
+    unsigned short count = *(unsigned short *)stream;
+    stream += 2;
+    unsigned char choice = Unk00419c80();
+    unsigned short index = 0;
+    while (choice > *stream)
+    {
+        choice -= *stream;
+        stream += 3;
+        if (++index == count)
+            return false;
+    }
+    stream = base + *(unsigned short *)(stream + 1);
+    count = *(unsigned short *)stream;
+    stream += 2;
+    while (count > 0)
+    {
+        switch (*stream)
+        {
+        case 3: case 4: case 5: case 6: case 7: case 11: case 12: case 13:
+            return true;
+        case 9: case 10: case 14: case 16:
+            --count;
+            ++stream;
+            break;
+        case 15:
+            count -= 3;
+            stream += 3;
+            break;
+        case 0: case 1: case 2: case 8:
+        default:
+            return false;
+        }
+    }
+    return false;
+}
+
+// FUNCTION: GAME 0x00419fb0
+void RHScriptBatchCalls::Unk00419fb0(int value)
+{
+    RHAIField<char>(this, 0x268) = 0;
+    RHAIField<int>(this, 0x260) = value;
+}
+
+extern "C" int __cdecl rand();
+
+// Parked: inlined profile-test shape and register scheduling.
+// STUB: GAME 0x0041a420
+unsigned short RHArtificialIntelligence::Unk0041a420()
+{
+    unsigned type = RHAIField<unsigned>(m_actor, 4) & 31;
+    if (type == 20 && RHAIField<int>(RHAIField<void *>(m_actor, 0xa1c), 0x58) == 1)
+        return rand() % 600 + 200;
+    if (type == 20 && RHAIField<unsigned short>(RHAIField<void *>(m_actor, 0xa1c), 0x38) > 0)
+        return rand() % 800 + 400;
+    return rand() % 70 + 70;
+}
+
+// Parked: cached-list cursor and loop-counter scheduling.
+// STUB: GAME 0x0041a960
+void RHArtificialIntelligence::Unk0041a960(unsigned short direction)
+{
+    RHArtificialIntelligenceList &list = RHAIField<RHArtificialIntelligenceList>(this, 0x2b4);
+    unsigned short size = (unsigned short)list.m_count;
+    if (size > 0)
+    {
+        unsigned count = size;
+        int index = 0;
+        do
+        {
+            list.GoTo(index);
+            char *actor = (char *)list.m_current.m_node->m_data;
+            RHArtificialIntelligence *ai = (RHArtificialIntelligence *)(actor + RHAIField<int>(RHAIField<void *>(actor, 0x49c), 4) + 0x49c);
+            ai->Unk0041ab10(direction);
+            ++index;
+        } while (--count);
+    }
+}
+
+// FUNCTION: GAME 0x00424340
+RHArtificialIntelligenceStimulusNode *RHArtificialIntelligenceStimulusList::Unk00424340(RHArtificialIntelligenceStimulusNode *next, RHArtificialIntelligenceStimulusNode *previous)
+{
+    RHArtificialIntelligenceStimulusNode *node = (RHArtificialIntelligenceStimulusNode *)::operator new(0x34);
+    node->m_next = next ? next : node;
+    node->m_previous = previous ? previous : node;
+    return node;
+}
+
+// FUNCTION: GAME 0x00424370
+RHArtificialIntelligenceIterator RHArtificialIntelligenceTripleList::insert(RHArtificialIntelligenceIterator position, const RHArtificialIntelligenceTriple &value)
+{
+    RHArtificialIntelligenceNode *head = position.m_node;
+    RHArtificialIntelligenceNode *previous = head->m_prev;
+    RHArtificialIntelligenceNode *node = (RHArtificialIntelligenceNode *)::operator new(20);
+    node->m_next = head ? head : node;
+    node->m_prev = previous ? previous : node;
+    head->m_prev = node;
+    node->m_prev->m_next = node;
+    RHArtificialIntelligenceTriple *destination = (RHArtificialIntelligenceTriple *)((char *)node + 8);
+    if (destination)
+        *destination = value;
+    ++RHAIField<unsigned>(this, 8);
+    return RHArtificialIntelligenceIterator(node);
+}
+
+// FUNCTION: GAME 0x00424470
+void FUN_00424470(RHStimulus *destination, const RHStimulus *source)
+{
+    if (destination)
+        *destination = *source;
+}
+
+// deferred: unannotated pending reccmp #534
+RHArtificialIntelligenceIterator RHAIUnk0044e8b0::FUN_0044e8b0(RHArtificialIntelligenceIterator first, RHArtificialIntelligenceIterator last)
+{
+    while (first.m_node != last.m_node)
+    {
+        RHArtificialIntelligenceNode *node = first.m_node;
+        first.m_node = first.m_node->m_next;
+        node->m_prev->m_next = node->m_next;
+        node->m_next->m_prev = node->m_prev;
+        ::operator delete(node);
+        --m_count;
+    }
+    return first;
+}
+
+// FUNCTION: GAME 0x00486f60
+void RHArtificialIntelligence::Unk00486f60()
+{
+    RHAIField<char>(this, 0x65d) = 0;
+    RHAIField<char>(this, 0x65c) = 0;
+}
+
+extern unsigned *g_unk0x006c08a4;
+
+struct RHAIActorTimerView
+{
+    char m_00[0x4b0];
+    unsigned m_4b0;
+    char m_4b4[4];
+    unsigned m_4b8;
+    unsigned Field4b0() { return m_4b0; }
+    void Field4b8(unsigned value) { m_4b8 = value; }
+};
+
+inline RHAIActorTimerView &RHArtificialIntelligenceActorCalls::TimerView()
+{
+    return *(RHAIActorTimerView *)((char *)this + RHAIField<int>(RHAIField<void *>(this, 0x49c), 4));
+}
+
+// deferred: unannotated pending reccmp #534
+void RHArtificialIntelligenceActorCalls::Unk0048b450(unsigned value, int mode)
+{
+    if ((unsigned char)mode)
+    {
+        unsigned time = *g_unk0x006c08a4 + value;
+        RHAIField<unsigned>((char *)this + RHAIField<int>(RHAIField<void *>(this, 0x49c), 4), 0x540) = time;
+        RHAIField<char>((char *)this + RHAIField<int>(RHAIField<void *>(this, 0x49c), 4), 0x53c) = 1;
+    }
+    else
+    {
+        TimerView().Field4b8(TimerView().Field4b0());
+        unsigned time = *g_unk0x006c08a4 + value;
+        RHAIField<unsigned>((char *)this + RHAIField<int>(RHAIField<void *>(this, 0x49c), 4), 0x538) = time;
+        RHAIField<char>((char *)this + RHAIField<int>(RHAIField<void *>(this, 0x49c), 4), 0x534) = 1;
+    }
+}
+
+// FUNCTION: GAME 0x0048b4e0
+void RHArtificialIntelligenceActorCalls::Unk0048b4e0(int mode)
+{
+    if ((unsigned char)mode)
+        RHAIField<char>((char *)this + RHAIField<int>(RHAIField<void *>(this, 0x49c), 4), 0x53c) = 0;
+    else
+        RHAIField<char>((char *)this + RHAIField<int>(RHAIField<void *>(this, 0x49c), 4), 0x534) = 0;
+}
+
+// FUNCTION: GAME 0x005505b0
+void RHArtificialIntelligencePathCursor::Unk005505b0(unsigned short waypoint)
+{
+    RHAIField<unsigned char>(this, 1) = RHAIField<unsigned char>(this, 0);
+    RHAIField<unsigned char>(this, 0) = (unsigned char)waypoint;
+}
+
+struct RHAIPathArray
+{
+    int m_grow;
+    void **m_first;
+    void **m_last;
+    unsigned size() { return m_first ? m_last - m_first : 0; }
+};
+
+// Parked: repeated array-size tests and register scheduling.
+// STUB: GAME 0x005505c0
+RHArtificialIntelligencePathCursor &RHArtificialIntelligencePathCursor::Unk005505c0()
+{
+    RHAIPathArray *path = m_path;
+    m_previous = m_current;
+    if (path && path->m_first && (unsigned short)(path->m_last - path->m_first) > 1)
+    {
+        if (m_forward)
+        {
+            if (m_current < (unsigned short)path->size() - 1)
+                ++m_current;
+            else
+            {
+                --m_current;
+                m_forward = 0;
+            }
+        }
+        else if (m_current > 0)
+            --m_current;
+        else
+        {
+            m_forward = 1;
+            ++m_current;
+        }
+    }
+    return *this;
+}
+
+// FUNCTION: GAME 0x00550f60
+void RHArtificialIntelligencePathCursor::Unk00550f60(unsigned short path)
+{
+    RHAIField<unsigned short>(this, 8) = path;
+    if (path == 0xffff)
+        RHAIField<void *>(this, 4) = 0;
+    else
+    {
+        RHAIField<unsigned char>(this, 0) = 0;
+        RHAIField<unsigned char>(this, 2) = 1;
+        RHAIField<void *>(this, 4) = RHAIField<void **>(g_unk0x6c0b9c, 8)[path];
+    }
+}
+
+struct RHScriptNode
+{
+    RHScriptNode *next;
+    RHScriptNode *previous;
+    void *value;
+};
+
+// deferred: unannotated pending reccmp #534
+RHScriptNode *RHUnk0046eb30::Unk0059f720(RHScriptNode *next, RHScriptNode *previous)
+{
+    RHScriptNode *node = (RHScriptNode *)::operator new(12);
+    node->next = next ? next : node;
+    node->previous = previous ? previous : node;
+    return node;
+}
+
+// deferred: unannotated pending reccmp #534
+void RHSeqList::CopyData(RHSequenceElement **destination, RHSequenceElement *const *source)
+{
+    if (destination)
+        *destination = *source;
+}
+
+// GLOBAL: GAME 0x0067a7a0
+const unsigned g_unk0x0067a7a0[16] = {
+    0x00000000, 0x3ec3ef15, 0x3f3504f3, 0x3f6c835e,
+    0x3f800000, 0x3f6c835e, 0x3f3504f3, 0x3ec3ef15,
+    0x00000000, 0xbec3ef15, 0xbf3504f3, 0xbf6c835e,
+    0xbf800000, 0xbf6c835e, 0xbf3504f3, 0xbec3ef15
+};
+
+// GLOBAL: GAME 0x0067a7e0
+const unsigned g_unk0x0067a7e0[16] = {
+    0xbf800000, 0xbf6c835e, 0xbf3504f3, 0xbec3ef15,
+    0x00000000, 0x3ec3ef15, 0x3f3504f3, 0x3f6c835e,
+    0x3f800000, 0x3f6c835e, 0x3f3504f3, 0x3ec3ef15,
+    0x00000000, 0xbec3ef15, 0xbf3504f3, 0xbf6c835e
+};
+
+// FUNCTION: GAME 0x005fcd40
+RHUnk005fc3b0 &RHUnk005fc3b0::Unk005fcd40(unsigned short direction, float length)
+{
+    unsigned offset = ((unsigned char)direction & 15) * 4;
+    m_x = *(const float *)((const char *)g_unk0x0067a7a0 + offset);
+    m_y = length * *(const float *)((const char *)g_unk0x0067a7e0 + offset);
+    return *this;
+}
+
 void RHArtificialIntelligence::Emit(SBFile &file, RHArtificialIntelligencePosition &position)
 {
     SerializePosition(position, file);
@@ -1506,4 +1930,6 @@ void RHArtificialIntelligence::Emit(SBFile &file, RHArtificialIntelligencePositi
     Unk00410010(false);
     Unk00418c40(0, 0);
     Unk00414be0(file);
+    Unk00486f60();
+    ((RHAIUnk0044e8b0 *)this)->FUN_0044e8b0(RHArtificialIntelligenceIterator(0), RHArtificialIntelligenceIterator(0));
 }

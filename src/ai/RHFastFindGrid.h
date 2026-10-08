@@ -2,6 +2,7 @@
 #define RHFASTFINDGRID_H
 
 #include "SB.h"
+#include "Decomp.h"
 #include <vector>
 
 class SBGeoPoint2D
@@ -31,6 +32,7 @@ public:
 class RHFastFindRepulsive : public RHFastFindRepulsiveBase
 {
 public:
+    RHFastFindRepulsive &FUN_004fdb90(const RHFastFindRepulsive &other);
     SBGeoPoint2D m_14; // +0x14
     SBGeoPoint2D m_1c; // +0x1c
     int m_24; // +0x24
@@ -81,6 +83,15 @@ struct RHFastFindPointerArray
     bool m_searching; // +0x15
     int m_index; // +0x18
     void *m_value; // +0x1c
+
+    void Initialize(const char &allocator)
+    {
+        *(char *)&m_grow = allocator;
+        m_first = 0;
+        m_last = 0;
+        m_end = 0;
+        m_changed = true;
+    }
 
     int size() const { return m_first == 0 ? 0 : m_last - m_first; }
     void InsertLast(void *const &value)
@@ -134,7 +145,7 @@ public:
     void FUN_004fb1d0(SBFile &file);
     void FUN_004fb230(SBFile &file);
     void FUN_004e8bd0(void *sector, unsigned short layer, bool mode);
-    void FUN_004fad80(class RHUnk0051aa00 *gate);
+    void FUN_004fad80(void *gate);
     void FUN_004ebfe0(class RHUnk00522470 *point, unsigned short layer, bool mode);
     void FUN_004e99e0(void *sector, unsigned short layer, bool mode);
     void FUN_004ed690(void *point, unsigned short layer, bool mode);
@@ -234,6 +245,10 @@ class RHUnk005df860
 {
 public:
     void Unk005df860(const SBGeoPoint3D &first, const SBGeoPoint3D &second, const SBGeoPoint3D &third);
+    void FUN_005df8b0();
+    void FUN_005df900();
+    void FUN_005df9a0();
+    void FUN_005df9c0();
     void Unk005dfa00();
     char m_00[0x58];
 };
@@ -286,30 +301,48 @@ public:
     char m_3c[0xe0];
 };
 
-class RHUnk0051aa00
+class RHElementActor;
+
+// SIZE 0x94
+class RHUnk0051a5e0
 {
 public:
-    RHUnk0051aa00();
-    ~RHUnk0051aa00();
-    void Unk0051b2a0(SBFile &file, bool mode);
-    char m_00[0xc];
+    RHUnk0051a5e0();
+    ~RHUnk0051a5e0();
+    virtual bool FUN_0051abe0(bool, RHElementActor *, bool, bool, bool); // vtable+0x00
+    virtual bool Serialize(SBFile &file); // vtable+0x04
+    undefined m_04[8]; // +0x04
     RHFastFindSector *m_0c; // +0x0c
     RHFastFindSector *m_10; // +0x10
     unsigned short m_14; // +0x14
     short m_16; // +0x16
     SBGeoPoint2D m_18; // +0x18
     SBGeoPoint2D m_20; // +0x20
-    char m_28[0x60];
+    undefined m_28[0x60]; // +0x28
     int m_88; // +0x88
-    char m_8c[8];
+    undefined m_8c[8]; // +0x8c
+};
+
+// VTABLE: GAME 0x006790a4
+// SIZE 0xbc
+class RHUnk0051aa00 : public RHUnk0051a5e0
+{
+public:
+    RHUnk0051aa00();
+    ~RHUnk0051aa00();
+    virtual bool FUN_0051abe0(bool, RHElementActor *, bool, bool, bool); // vtable+0x00
+    virtual bool Serialize(SBFile &file); // vtable+0x04
+    virtual bool FUN_0051b870(bool, RHElementActor *, bool, bool, bool); // vtable+0x08
+    virtual bool FUN_0057cd50(undefined4); // vtable+0x0c
+    void Unk0051b2a0(SBFile &file, bool mode);
     SBGeoPoint2D m_94; // +0x94
     int m_9c; // +0x9c
     int m_a0; // +0xa0
     int m_a4; // +0xa4
     int m_a8; // +0xa8
-    char m_ac[4];
+    undefined m_ac[4]; // +0xac
     int m_b0; // +0xb0
-    char m_b4[8];
+    undefined m_b4[8]; // +0xb4
 };
 
 class RHScriptRecordWorld
@@ -408,7 +441,7 @@ class RHFastFindGateArray : public RHScriptFXArray
 {
 public:
     unsigned int FUN_0059fbc0();
-    void InsertLast(void *const &value, bool inlineCopy = true, bool externalSize = false)
+    void InsertLast(void *const &value, bool inlineCopy = true, bool externalSize = false, bool sourceFirst = false)
     {
         void **position = last;
         if ((unsigned int)(end - last) < 1)
@@ -419,8 +452,16 @@ public:
             void **destination = storage;
             if (inlineCopy)
             {
-                for (void **source = first; source != position; ++destination, ++source)
-                    RHSeqList::CopyData((RHSequenceElement **)destination, (RHSequenceElement *const *)source);
+                if (sourceFirst)
+                {
+                    for (void **source = first; source != position; ++source, ++destination)
+                        RHSeqList::CopyData((RHSequenceElement **)destination, (RHSequenceElement *const *)source);
+                }
+                else
+                {
+                    for (void **source = first; source != position; ++destination, ++source)
+                        RHSeqList::CopyData((RHSequenceElement **)destination, (RHSequenceElement *const *)source);
+                }
             }
             else
                 destination = Unk004fe420(first, position, storage);
@@ -463,6 +504,7 @@ public:
     RHUnk00522470();
     ~RHUnk00522470();
     void Unk005224d0(SBFile &file);
+    void FUN_00520a90(SBFile &file);
     char m_00[0x20];
     unsigned short m_layer;
     char m_22[6];
@@ -495,7 +537,8 @@ class RHUnk0051e5e0
 public:
     RHUnk0051e5e0();
     ~RHUnk0051e5e0();
-    void Unk0051e700(SBFile &file);
+    void FUN_0057ca80();
+    int Unk0051e700(SBFile &file);
     void Unk0051e800();
     char m_00[0x36];
     unsigned short m_layer;
@@ -517,6 +560,7 @@ class RHUnk0051e1e0
 {
 public:
     RHUnk0051e1e0();
+    void FUN_0051f0f0();
     ~RHUnk0051e1e0();
     void Unk0051e230(SBFile &file, RHSeqList &sectors);
     char m_00[0x1c];
@@ -586,6 +630,86 @@ inline void RHFastFindClearTactical(RHFastFindTacticalArray &array)
 
 extern RHFastFindTacticalArray g_unk0x006c06f0;
 extern RHFastFindTacticalArray g_unk0x006c0718;
+
+struct RHUnkSectorGlobal
+{
+    char m_pad0[0x4064];
+    void **m_4064;
+    char m_pad4068[0x11c];
+    void *m_4184;
+};
+
+extern RHUnkSectorGlobal *g_unk0x6c0a9c;
+
+inline void *RHFastFindLookup(unsigned short sector)
+{
+    if (sector == 0xffff)
+        return g_unk0x6c0a9c->m_4184;
+    return g_unk0x6c0a9c->m_4064[sector];
+}
+
+class RHUnk005f5440
+{
+public:
+    int Unk();
+};
+
+class RHSector
+{
+public:
+    void Unk0057cd60(SBFile &file, bool mode);
+};
+
+class RHUnk005fc3b0 : public SBGeoPoint2D
+{
+public:
+    RHUnk005fc3b0();
+    ~RHUnk005fc3b0() {}
+    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other);
+};
+
+// SIZE 0x14
+class RHUnk005209d0
+{
+public:
+    RHUnk005209d0(int type);
+    virtual ~RHUnk005209d0(); // vtable+0x00
+    undefined m_04[0x10]; // +0x04
+};
+
+// VTABLE: GAME 0x00678b54
+// SIZE 0x40
+class RHUnk00520ae0 : public RHUnk005209d0
+{
+public:
+    RHUnk00520ae0();
+    virtual ~RHUnk00520ae0(); // vtable+0x00
+    RHUnk005fc3b0 m_14; // +0x14
+    RHUnk005fc3b0 m_1c; // +0x1c
+    undefined m_24[0x11]; // +0x24
+    undefined m_35; // +0x35
+    undefined m_36; // +0x36
+    undefined m_37; // +0x37
+    undefined m_38; // +0x38
+    unsigned long m_id; // +0x3c
+};
+
+class RHUnk004ff7b0
+{
+public:
+    void FUN_004ff7b0(unsigned int count, const float &value);
+    char m_00[4];
+    float *m_first;
+};
+
+class RHUnk005223f0
+{
+public:
+    void FUN_005223f0(SBFile &file);
+    char m_00[0x14];
+};
+
+void FUN_00418390(RHUnk005223f0 *hole);
 
 class RHUnkPathGeometry
 {
