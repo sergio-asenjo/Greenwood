@@ -32,6 +32,157 @@
 
 #include "RHElementActorCivilian.h"
 
+DECOMP_SIZE_ASSERT(RHElementActorNPC, 0x704)
+DECOMP_SIZE_ASSERT(RHElementActorCivilian, 0x70c)
+DECOMP_SIZE_ASSERT(RHCivilianProfileView, 0x34)
+DECOMP_SIZE_ASSERT(RHCivilianSpriteView, 0x19e)
+DECOMP_SIZE_ASSERT(RHUnk005ef320, 0x10e)
+DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
+DECOMP_SIZE_ASSERT(SBGeoVector2D, 0x08)
+DECOMP_SIZE_ASSERT(SBGeoBoundingBox2D, 0x14)
+DECOMP_SIZE_ASSERT(std::vector<unsigned short>, 0x10)
+DECOMP_SIZE_ASSERT(RHCampaignProfiles, 0x70)
+
+// Parked: scalar slots, geometry temporaries and named callees differ.
+// STUB: GAME 0x00470480
+void RHElementActorCivilian::FUN_00470480(SBFile &file)
+{
+    unsigned short mapX, mapY, projectionIndex, animationIndex, direction;
+    unsigned flags, state, identifier;
+    int profileIndex;
+    file.Access(&mapX, 2);
+    file.Access(&mapY, 2);
+    file.Access(&flags, 4);
+    file.Access(&state, 4);
+    file.Access(&projectionIndex, 2);
+    file.Access(&animationIndex, 2);
+    file.Access(&direction, 2);
+    file.Access(&identifier, 4);
+    file.Access(&profileIndex, 4);
+
+    if (!g_unk0x6c0e84)
+        g_unk0x6c0e84 = new RHCampaignProfiles;
+    m_708 = RHCivilianField<RHCivilianProfileView **>(g_unk0x6c0e84, 0x64)[profileIndex];
+    if (FUN_00470ce0())
+    {
+        RHCivilianField<unsigned short>(this, 0x98) = g_unk0x6c11d0->Unk(115, 40, 203);
+        RHCivilianField<unsigned short>(this, 0x94) = g_unk0x6c11d0->Unk(115, 40, 203);
+        RHCivilianField<unsigned short>(this, 0x96) = g_unk0x6c11d0->Unk(115, 40, 203);
+    }
+    void *status = RHCivilianField<void *>(this, 0x49c);
+    unsigned statusOffset = RHCivilianField<unsigned>(status, 4);
+    file.Access((char *)this + statusOffset + 0x4a4, 2);
+    int value;
+    file.Access(&value, 4);
+    RHCivilianField<int>(this, 0x4f0) = value;
+    if (FUN_00470ca0())
+        FUN_00470a10(file);
+
+    void *&info = RHCivilianField<void *>(this, 0x50);
+    ((RHUnkTargetSprite *)info)->FUN_005bd050(
+        !RHCivilianField<char>(g_pEngine, 0x4aa8),
+        *(std::string *)m_708, *(std::string *)((char *)m_708 + 0x10), 0);
+    void *global = RHCivilianField<void *>(this, 0x64);
+    SBGeoVector2D extent(*RHCivilianField<SBGeoPoint2D *>(global, 0x4164));
+    RHCivilianField<SBGeoBoundingBox2D>(info, 0x98) = SBGeoBoundingBox2D(-extent, extent);
+    RHCivilianField<unsigned short>(info, 0x94) = 0;
+    RHCivilianField<unsigned long>(this, 0x54) =
+        RHCivilianField<RHUnkFXDraw *>(this, 0x60)->Unk005e4ed0(
+            ((RHCivilianSpriteView *)info)->FUN_005bdef0(),
+            ((RHCivilianSpriteView *)info)->FUN_005bdf20(), 0, 0);
+    RHCivilianField<unsigned long>(this, 0x58) =
+        RHCivilianField<RHUnkFXDraw *>(this, 0x60)->Unk005e4ed0(
+            ((RHCivilianSpriteView *)info)->FUN_005bdef0() + 6,
+            ((RHCivilianSpriteView *)info)->FUN_005bdf20(), 0, 0);
+    {
+        SBGeoPoint2D position((float)mapX, (float)mapY);
+        void *base = (char *)info + 4;
+        RHCivilianField<SBGeoPoint2D>(base, 0x20) = position;
+        SBGeoVector2D displacement(position);
+        SBGeoBoundingBox2D *box = (SBGeoBoundingBox2D *)((RHUnkPathActorInfoBase *)base)->Unk0055fa10(
+            RHCivilianField<int>(base, 0x88));
+        RHCivilianField<SBGeoBoundingBox2D>(base, 0xc0) = box->FUN_006090d0(displacement);
+        RHCivilianField<int>(base, 4) = 2;
+    }
+    RHCivilianField<unsigned short>(info, 0xde) = direction;
+    RHCivilianField<void *>(info, 0xe0) = animationIndex == 0xffff
+        ? RHCivilianField<void *>(global, 0x4184)
+        : RHCivilianField<void **>(global, 0x4064)[animationIndex];
+    RHBonusProjection *projection = projectionIndex == 0xffff ? 0
+        : RHCivilianField<RHBonusProjection **>(global, 0x4144)[projectionIndex];
+    if (projection)
+    {
+        if ((RHCivilianField<unsigned>(projection, 0) & 4) == 0)
+            SBAssert(1, "P:\\Robin Hood\\rhelementactorcivilian.cpp", 359,
+                // STRING: GAME 0x006ae404
+                "DA F\xc4LLT MIR NICHTS MEHR EIN ! Civilian (%d,%d) not lying on projection area !",
+                (short)RHCivilianField<float>(info, 0x24), (short)RHCivilianField<float>(info, 0x28));
+        if (!RHCivilianField<SBGeoBoundingBox2D>(projection, 0x38).FUN_00608400(
+                RHCivilianField<SBGeoPoint2D>(info, 0x24)))
+            SBAssert(1, "P:\\Robin Hood\\rhelementactorcivilian.cpp", 363,
+                // STRING: GAME 0x006ae39c
+                "DA F\xc4LLT MIR NICHTS MEHR EIN ! Civilian (%d,%d) map position not lying in projection area screen box !",
+                (short)RHCivilianField<float>(info, 0x24), (short)RHCivilianField<float>(info, 0x28));
+    }
+    ((RHBonusInfoBase *)((char *)info + 4))->FUN_0055fa20(projection);
+    RHCivilianField<unsigned>(info, 0xfc) = identifier;
+    ((RHBonusInfoBase *)((char *)info + 4))->FUN_0055f290();
+    ((RHBonusInfo *)info)->FUN_005bd560(0, true);
+    RHCivilianField<undefined4>(info, 0x2c) = RHCivilianField<undefined4>(info, 0x10);
+    RHCivilianField<undefined4>(info, 0x30) = RHCivilianField<undefined4>(info, 0x14);
+    RHCivilianField<undefined4>(info, 0x34) = RHCivilianField<undefined4>(info, 0x18);
+    RHCivilianField<SBGeoPoint2D>(info, 0x40) = RHCivilianField<SBGeoPoint2D>(info, 0x24);
+    RHCivilianField<unsigned short>(info, 0xd8) = flags & 15;
+    RHCivilianField<unsigned short>(info, 0xda) = flags & 15;
+    statusOffset = RHCivilianField<unsigned>(RHCivilianField<void *>(this, 0x49c), 4);
+    RHCivilianField<unsigned>((char *)this + statusOffset, 0x4c4) = state;
+    std::string script;
+    unsigned char hasScript;
+    file.Access(&hasScript, 1);
+    if (hasScript)
+    {
+        FUN_005e0c90(file, script);
+        if (g_unk0x6c0691 && script.size())
+            ((RHElementActor *)this)->InitializeScript(script);
+    }
+}
+
+// Parked: vector helper and callback operands differ under the interim link.
+// STUB: GAME 0x00470a10
+void RHElementActorCivilian::FUN_00470a10(SBFile &file)
+{
+    std::vector<unsigned short> *&arrays = *(std::vector<unsigned short> **)((char *)this + 0x700);
+    arrays = new std::vector<unsigned short>[10];
+    unsigned offset = 0;
+    int remaining = 10;
+    do
+    {
+        unsigned short count;
+        file.Access(&count, 2);
+        while (count != 0)
+        {
+            unsigned short value;
+            file.Access(&value, 2);
+            std::vector<unsigned short> &array = *(std::vector<unsigned short> *)((char *)arrays + offset);
+            array.insert(array.end(), value);
+            --count;
+        }
+        offset += 16;
+    } while (--remaining != 0);
+}
+
+// FUNCTION: GAME 0x00470ca0
+bool RHElementActorCivilian::FUN_00470ca0()
+{
+    return m_708->m_30 == 4;
+}
+
+// FUNCTION: GAME 0x00470ce0
+bool RHElementActorCivilian::FUN_00470ce0()
+{
+    return m_708->m_30 == 5;
+}
+
 // FUNCTION: GAME 0x004711c0
 bool RHElementActorCivilian::Serialize(SBFile &file)
 {
@@ -57,10 +208,50 @@ bool RHElementActorCivilian::Serialize(SBFile &file)
     return true;
 }
 
-// Force emission: a virtual is only emitted if its vtable is needed; this
-// non-inlinable out-of-line call keeps RHElementActorCivilian::Serialize in the
-// build.
+// FUNCTION: GAME 0x005bdef0
+unsigned short RHCivilianSpriteView::FUN_005bdef0()
+{
+    unsigned short width = m_19a;
+    int remainder = (int)width % 4;
+    if (remainder != 0)
+        width += 4 - remainder;
+    return width;
+}
+
+// FUNCTION: GAME 0x005bdf20
+unsigned short RHCivilianSpriteView::FUN_005bdf20()
+{
+    return m_19c;
+}
+
+// deferred: unannotated pending reccmp #534 (0x005ef320).
+unsigned short RHUnk005ef320::Unk(int red, int green, int blue)
+{
+    if (m_10c == 16)
+        return (((((unsigned char)red & 0xf8) << 5) | ((unsigned char)green & 0xfc)) << 3) | ((unsigned)(unsigned char)blue >> 3);
+    return (((((unsigned char)red & 0xf8) << 5) | ((unsigned char)green & 0xf8)) << 2) | ((unsigned)(unsigned char)blue >> 3);
+}
+
+// FUNCTION: GAME 0x005fc450
+SBGeoVector2D SBGeoVector2D::operator-() const
+{
+    SBGeoVector2D opposite;
+    opposite.m_x = -m_x;
+    opposite.m_y = -m_y;
+    return SBGeoVector2D((const SBGeoPoint2D &)opposite);
+}
+
+// FUNCTION: GAME 0x00607ba0
+SBGeoBoundingBox2D::SBGeoBoundingBox2D(const SBGeoPoint2D &first, const SBGeoPoint2D &second)
+{
+    m_p0 = first;
+    m_p1 = second;
+    m_flag = true;
+}
+
 void RHElementActorCivilian::Emit(SBFile &file)
 {
     Serialize(file);
+    FUN_00470ca0();
+    FUN_00470ce0();
 }

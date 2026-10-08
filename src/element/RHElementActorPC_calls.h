@@ -2,16 +2,19 @@
 #define RHELEMENTACTORPC_CALLS_H
 
 #include "RHElementBonus.h"
+#include "Decomp.h"
 #include <string>
+#include <vector>
 #include <string.h>
 
+// SIZE 0x0c
 class RHUnk00613e90
 {
 public:
     RHUnk00613e90();
-    float x;
-    float y;
-    float z;
+    float x; // 0x00
+    float y; // 0x04
+    float z; // 0x08
 };
 
 class RHScriptBatchCalls
@@ -23,34 +26,51 @@ public:
 };
 
 class RHUnk005c38b0;
+class RHUnk5490f0;
+class RHMessenger
+{
+public:
+    void RHUnk005460c0(RHUnk5490f0 &message);
+};
 class RHUnk00452030;
+// SIZE 0x18
+struct RHActorPCProfileNode
+{
+    RHActorPCProfileNode *next; // 0x00
+    RHActorPCProfileNode *previous; // 0x04
+    undefined value[0x10]; // 0x08
+};
+
+// SIZE 0x70
 class RHCampaignProfiles
 {
 public:
     RHCampaignProfiles();
     ~RHCampaignProfiles();
-    char m_0[0x14];
-    void **m_14;
-    char m_18[0x58];
+    undefined m_0[0x14]; // 0x00
+    void **m_14; // 0x14
+    undefined m_18[0x58]; // 0x18
 };
 
+// SIZE 0x48
 class RHPCDescription
 {
 public:
     RHPCDescription(void *profile, bool playable);
     ~RHPCDescription();
-    char m_0[0x14];
-    unsigned short m_14;
-    char m_16[0x2e];
-    char m_44;
-    char m_45[3];
+    undefined m_0[0x14]; // 0x00
+    unsigned short m_14; // 0x14
+    undefined m_16[0x2e]; // 0x16
+    char m_44; // 0x44
+    undefined m_45[3]; // 0x45
 };
 
+// SIZE 0x60c
 class RHUnk0048f280
 {
 public:
     RHUnk0048f280(void *description);
-    char m_data[0x60c];
+    undefined m_data[0x60c]; // 0x00
 };
 
 class RHEngineSerializationCalls
@@ -64,6 +84,8 @@ class RHActorPCProfileCalls
 public:
     RHPCDescription *FUN_00455ce0(void *profile);
     void FUN_00455d40(RHPCDescription *description);
+    undefined m_0[0x104]; // 0x00
+    std::vector<RHPCDescription *> m_104; // 0x104
 };
 
 class RHUnkSectorScript
@@ -145,18 +167,34 @@ public:
     RHUnk00471630(int type, int value, void *description);
 };
 
+// SIZE 0x08
 class RHUnk005fc030
 {
 public:
     RHUnk005fc030();
-    float x;
-    float y;
+    float x; // 0x00
+    float y; // 0x04
+};
+
+// SIZE 0x14
+class RHActorPCBoxCalls
+{
+public:
+    RHActorPCBoxCalls();
+    ~RHActorPCBoxCalls();
+    undefined m_0[0x14]; // 0x00
 };
 
 class RHUnk0045aaf0
 {
 public:
     RHUnk0045aaf0();
+    undefined4 m_0; // 0x00
+    undefined4 m_4; // 0x04
+    undefined m_8[8]; // 0x08
+    RHActorPCBoxCalls m_10; // 0x10
+    undefined m_24[0x10]; // 0x24
+    RHUnk005fc030 m_34; // 0x34
 };
 
 struct RHScriptNode;
@@ -166,12 +204,16 @@ public:
     RHScriptNode *Unk0059f720(RHScriptNode *next, RHScriptNode *previous);
 };
 
+// SIZE 0x14
 class RHUnk005492a0
 {
 public:
     RHUnk005492a0(int command, void *actor, int action);
     ~RHUnk005492a0();
-    char m_data[0x14];
+    undefined4 m_0; // 0x00
+    undefined m_4[8]; // 0x04
+    int m_c; // 0x0c
+    void *m_10; // 0x10
 };
 
 class RHUnk005ef320
@@ -189,5 +231,75 @@ extern RHCampaignProfiles *g_unk0x6c0e84;
 extern RHUnk00452030 *g_unk0x6c07fc;
 extern char g_unk0x6c0691;
 void FUN_005e0c90(SBFile &file, std::string &value);
+
+class RHActorPCMessageBaseCalls
+{
+public:
+    void FUN_00549030(int level, int action);
+};
+
+class RHActorPCMenuCalls
+{
+public:
+    void FUN_0055e710(void *value);
+};
+
+class RHActorPCEngineCalls
+{
+public:
+    void FUN_0050efb0(void *value);
+    undefined m_0[0x196c]; // 0x00
+    RHActorPCMenuCalls *m_196c; // 0x196c
+};
+
+class RHActorPCWidgetCalls
+{
+public:
+    void FUN_005d9950(int action);
+    void FUN_005d9a60(int action);
+    void FUN_005d9860();
+    void FUN_005d9700(unsigned short action);
+};
+
+// SIZE 0xe8
+class RHActorPCWidgetState
+{
+public:
+    void FUN_005db620(RHActorPCWidgetState *state);
+    void Mark()
+    {
+        if (!m_cc)
+        {
+            m_cc = 1;
+            if (m_7c == 5)
+                m_7c = 8;
+            if (m_7c == 6)
+                m_7c = 9;
+        }
+    }
+    void ClearLinked()
+    {
+        if (m_d0 && this != m_d0)
+        {
+            RHActorPCWidgetState *linked = m_d0;
+            if (linked->m_cc == 1)
+            {
+                if (linked->m_7c == 9)
+                    linked->m_7c = 6;
+                if (linked->m_7c == 8)
+                    linked->m_7c = 5;
+                linked->m_cc = 0;
+            }
+            linked->m_d0->FUN_005db620(this);
+        }
+    }
+    undefined m_0[0x7c]; // 0x00
+    int m_7c; // 0x7c
+    undefined m_80[0x4c]; // 0x80
+    char m_cc; // 0xcc
+    undefined m_cd[3]; // 0xcd
+    RHActorPCWidgetState *m_d0; // 0xd0
+    undefined m_d4[0x14]; // 0xd4
+};
 
 #endif

@@ -2,6 +2,7 @@
 #define RHSPRITE_CALLS_H
 
 #include "SB.h"
+#include "Decomp.h"
 #include <iterator>
 
 template<class T> T &RHSpriteField(void *object, unsigned offset)
@@ -9,6 +10,7 @@ template<class T> T &RHSpriteField(void *object, unsigned offset)
     return *(T *)((char *)object + offset);
 }
 
+// SIZE 0x08
 class SBGeoPoint2D
 {
 public:
@@ -19,17 +21,22 @@ public:
     SBGeoPoint2D &operator=(const SBGeoPoint2D &);
     SBGeoPoint2D &FUN_005fc1e0(const SBGeoPoint2D &);
     SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &) const;
+    SBGeoPoint2D Unk005fc110(const SBGeoPoint2D &) const;
+    float FUN_005fc700(float) const;
     bool operator==(const SBGeoPoint2D &) const;
-    float m_x;
-    float m_y;
+    float m_x; // 0x00
+    float m_y; // 0x04
 };
 
+// SIZE 0x08
 class SBGeoVector2D : public SBGeoPoint2D
 {
 public:
+    SBGeoVector2D();
     SBGeoVector2D(float, float);
     SBGeoVector2D(const SBGeoPoint2D &);
     ~SBGeoVector2D() {}
+    float FUN_005fc660(const SBGeoPoint2D &) const;
 };
 SBGeoVector2D operator*(float, const SBGeoVector2D &);
 
@@ -39,6 +46,7 @@ public:
     RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &);
 };
 
+// SIZE 0x14
 class SBGeoBoundingBox2D
 {
 public:
@@ -49,9 +57,10 @@ public:
     bool FUN_00608400(const SBGeoPoint2D &) const;
     SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &) const;
     bool FUN_00607c70(SBFile &);
-    SBGeoPoint2D m_00;
-    SBGeoPoint2D m_08;
-    bool m_10;
+    void FUN_00607d90();
+    SBGeoPoint2D m_00; // 0x00
+    SBGeoPoint2D m_08; // 0x08
+    bool m_10; // 0x10
 };
 
 struct RHBonusProjection;
@@ -83,15 +92,18 @@ public:
 };
 
 class RHEngine;
+struct RHUnkSectorGlobal;
+extern RHUnkSectorGlobal *g_unk0x6c0a9c;
 class RHSpriteEngineCalls
 {
 public:
-    unsigned short FUN_004d9090();
+    unsigned FUN_004d9090();
 };
 
 class RHSpritePositionCalls
 {
 public:
+    SBGeoVector2D FUN_004a4a10();
     void FUN_0055f550();
     bool FUN_00560460();
     void FUN_00560780(float, unsigned short);
@@ -100,13 +112,14 @@ public:
     void FUN_00563ea0();
 };
 
+// SIZE 0x0c
 class RHUnk005df4f0
 {
 public:
     RHUnk005df4f0(float, float, float);
-    float m_0;
-    float m_4;
-    float m_8;
+    float m_0; // 0x00
+    float m_4; // 0x04
+    float m_8; // 0x08
 };
 
 class RHUnkTargetSprite
@@ -115,20 +128,57 @@ public:
     bool FUN_005b76e0(unsigned, unsigned);
 };
 
+class RHSpriteFrameCalls
+{
+public:
+    void FUN_00505940(unsigned);
+};
+
+class RHEngineReinforcementCalls
+{
+public:
+    bool FUN_004f6c20(const SBGeoPoint2D &, SBGeoPoint2D &, unsigned short, const SBGeoPoint2D &);
+};
+
+// SIZE 0x0c
+class RHUnk00613e90
+{
+public:
+    RHUnk00613e90();
+    float m_0; // 0x00
+    float m_4; // 0x04
+    float m_8; // 0x08
+};
+
+// VTABLE: GAME 0x00679bc8
+// SIZE 0x3c
 class RHOrder
 {
 public:
     RHOrder(RHOrder &);
-    virtual ~RHOrder();
-    char m_04[0x30];
-    int m_34;
-    char m_38[4];
+    virtual ~RHOrder(); // vtable+0x00
+    undefined4 m_04; // 0x04
+    RHUnk00613e90 m_08; // 0x08
+    SBGeoPoint2D m_14; // 0x14
+    SBGeoVector2D m_1c; // 0x1c
+    int m_24; // 0x24
+    undefined m_28; // 0x28
+    undefined m_29; // 0x29
+    undefined m_2a; // 0x2a
+    undefined m_2b; // 0x2b
+    undefined m_2c; // 0x2c
+    undefined m_2d; // 0x2d
+    undefined m_2e[2]; // 0x2e
+    void *m_30; // 0x30
+    int m_34; // 0x34
+    void *m_38; // 0x38
 };
 struct RHSpriteOrderNode
 {
     RHSpriteOrderNode *next;
     RHSpriteOrderNode *previous;
     RHOrder *value;
+    static void CopyData(RHOrder **, RHOrder *const *);
 };
 struct RHSpriteOrderIterator
 {

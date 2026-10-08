@@ -8,21 +8,26 @@
 #include <new>
 #include "RHActorTranslation.h"
 
+// SIZE 0x08
 class SBGeoPoint2D
 {
 public:
     SBGeoPoint2D();
+    SBGeoPoint2D(float x, float y);
     SBGeoPoint2D(const SBGeoPoint2D &other);
     ~SBGeoPoint2D();
     SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
+    void FUN_005fc390(const SBGeoPoint2D &other) throw();
+    float FUN_005fc700(float scale) const;
     bool Serialize(SBFile &file);
     bool operator==(const SBGeoPoint2D &other) const;
     bool FUN_005fc0e0(const SBGeoPoint2D &other) const;
     SBGeoPoint2D Unk005fc110(const SBGeoPoint2D &other) const;
-    float m_0;
-    float m_4;
+    float m_0; // 0x00
+    float m_4; // 0x04
 };
 
+// SIZE 0x08
 class SBGeoVector2D : public SBGeoPoint2D
 {
 public:
@@ -30,21 +35,25 @@ public:
     ~SBGeoVector2D() {}
 };
 
+// SIZE 0x14
 class SBGeoBoundingBox2D
 {
 public:
+    SBGeoBoundingBox2D(const SBGeoBoundingBox2D &other);
     SBGeoPoint2D FUN_00608f40() const;
     bool FUN_00608400(const SBGeoPoint2D &point) const;
+    SBGeoBoundingBox2D &operator=(const SBGeoBoundingBox2D &other);
     SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &other) const;
-    SBGeoPoint2D m_0;
-    SBGeoPoint2D m_8;
-    char m_10;
+    SBGeoPoint2D m_0; // 0x00
+    SBGeoPoint2D m_8; // 0x08
+    char m_10; // 0x10
 };
 
 class RHUnk00613e90
 {
 public:
     RHUnk00613e90();
+    RHUnk00613e90(float x, float y, float z);
     void FUN_00467990(float x, float y, float z);
     RHUnk00613e90 FUN_005df550(const RHUnk00613e90 &other) const;
     float m_0;
@@ -334,6 +343,7 @@ public:
 class RHBonusInfoBase
 {
 public:
+    SBGeoVector2D FUN_00468f10(int value) const;
     void FUN_0055f290();
     void FUN_0055fa70(void *area);
 };
@@ -422,6 +432,8 @@ class RHActorCrossingHumanCalls
 {
 public:
     void FUN_004846d0();
+    bool FUN_004843a0(void *area);
+    bool FUN_004843d0(SBGeoPoint2D &point, void *area, bool value);
 };
 
 class RHElementAreaShape

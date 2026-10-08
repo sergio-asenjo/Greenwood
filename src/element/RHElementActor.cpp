@@ -1,4 +1,60 @@
 #include "RHElementActor.h"
+#include "VMCore.h"
+
+DECOMP_SIZE_ASSERT(RHHumanMapNode, 0x14)
+DECOMP_SIZE_ASSERT(RHHumanMapIterator, 0x04)
+DECOMP_SIZE_ASSERT(RHHumanMap, 0x10)
+DECOMP_SIZE_ASSERT(RHActorSequencePointCalls, 0x74)
+DECOMP_SIZE_ASSERT(RHMobileUnk00607da0, 0x14)
+DECOMP_SIZE_ASSERT(RHUnk0053bf20, 0x0c)
+DECOMP_SIZE_ASSERT(RHUnk00560410, 0x92)
+DECOMP_SIZE_ASSERT(RHUnk0060fbf0, 0x0c)
+DECOMP_SIZE_ASSERT(RHUnk004e52a0, 0x0c)
+DECOMP_SIZE_ASSERT(RHUnk004679c0, 0x58c)
+DECOMP_SIZE_ASSERT(RHElementActor, 0x1b8)
+DECOMP_SIZE_ASSERT(RHOrder, 0x3c)
+DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
+DECOMP_SIZE_ASSERT(SBGeoVector2D, 0x08)
+DECOMP_SIZE_ASSERT(SBGeoBoundingBox2D, 0x14)
+
+// Unannotated: coupled caller and shared void-return declaration (0x004030a0).
+void RHActorScriptContext::FUN_004030a0()
+{
+    {
+        // STRING: GAME 0x006a6ba0
+        std::string name("Initialize");
+        ((VMCore *)m_0)->FUN_00639300(&name);
+    }
+    int value[3] = {0, 0, 0};
+    ((VMCore *)m_0)->FUN_00639360(value[0]);
+}
+
+// STUB: GAME 0x004033b0
+void RHActorScriptContext::FUN_004033b0(int message, int argument1, int argument2)
+{
+    ((VMCore *)m_0)->FUN_006392e0(&message, 4);
+    ((VMCore *)m_0)->FUN_006392e0(&argument1, 4);
+    ((VMCore *)m_0)->FUN_006392e0(&argument2, 4);
+    // STRING: GAME 0x006a6bcc
+    std::string name("ProcessMessage");
+    ((VMCore *)m_0)->FUN_00639300(&name);
+}
+
+// FUNCTION: GAME 0x004626e0
+unsigned short RHElementActor::FUN_004626e0() const
+{
+    void *area = RHActorField<void *>(Info(), 0xe0);
+    if (!area)
+        return 0xffff;
+    return RHActorField<unsigned short>(area, 0x38);
+}
+
+// FUNCTION: GAME 0x00462700
+void RHElementActor::FUN_00462700(unsigned short value)
+{
+    void **areas = RHActorField<void **>(Grid(), 0x4064);
+    RHActorField<void *>(Info(), 0xe0) = areas[value];
+}
 
 #define RH_ACTOR_ACCESS(value, size, line) \
     if (file.Access(&(value), size) < 0) \
@@ -102,6 +158,18 @@ bool RHElementActor::Serialize(SBFile &file)
     return RHElement::Serialize(file);
 }
 
+void RHActorPositionCalls::FUN_00464530(const SBGeoPoint2D &point)
+{
+    RHActorField<SBGeoPoint2D>(this, 0x20) = point;
+    {
+        SBGeoVector2D displacement(point);
+        SBGeoBoundingBox2D *box = (SBGeoBoundingBox2D *)
+            ((RHUnkPathActorInfoBase *)this)->Unk0055fa10(RHActorField<int>(this, 0x88));
+        RHActorField<SBGeoBoundingBox2D>(this, 0xc0) = box->FUN_006090d0(displacement);
+    }
+    RHActorField<int>(this, 4) = 2;
+}
+
 // GLOBAL: GAME 0x006775b4
 float g_actorStepScale = 0.25f;
 // GLOBAL: GAME 0x006777c4
@@ -129,7 +197,7 @@ void RHElementActor::ExecuteImmediately(RHSequenceElement *element)
         int effect;
         if (Type() == 12 && !same)
         {
-            draw = !FUN_004679c0(FUN_004679b0(), 20);
+            draw = !((RHUnk004679c0 *)this)->FUN_004679c0(FUN_004679b0(), 20);
             if (draw)
             {
                 FUN_00478c20(destination, false);
@@ -256,6 +324,33 @@ void RHElementActor::ExecuteImmediately(RHSequenceElement *element)
     }
 }
 
+// FUNCTION: GAME 0x00467990
+void RHUnk00613e90::FUN_00467990(float x, float y, float z)
+{
+    m_0 = x;
+    m_4 = y;
+    m_8 = z;
+}
+
+// FUNCTION: GAME 0x004679b0
+const SBGeoPoint2D &RHElementActor::FUN_004679b0() const
+{
+    return *(SBGeoPoint2D *)((char *)Info() + 0x24);
+}
+
+// FUNCTION: GAME 0x004679c0
+bool RHUnk004679c0::FUN_004679c0(SBGeoPoint2D point, unsigned short value)
+{
+    bool result = m_580 > 0;
+    if (!(m_584 == *(SBGeoPoint2D *)(m_info + 0x24)))
+    {
+        m_584 = point;
+        m_580 = value;
+        m_582 = value;
+    }
+    return result;
+}
+
 // Parked: movement/interaction branches and original EH scheduling remain incomplete.
 // STUB: GAME 0x00467a50
 void RHElementActor::Translate(RHSequenceElement *element, RHcommand command)
@@ -333,6 +428,12 @@ void RHElementActor::Translate(RHSequenceElement *element, RHcommand command)
     }
 }
 
+// FUNCTION: GAME 0x00468ee0
+SBGeoVector2D RHElementActor::FUN_00468ee0(int value) const
+{
+    return Position()->FUN_00468f10(value);
+}
+
 static void RHActorApplyCrossingFlags(RHElementActor *actor, RHElevationLine *line)
 {
     SBGeoPoint2D &point = RHActorField<SBGeoPoint2D>(actor->Info(), 0x24);
@@ -390,6 +491,12 @@ static void RHActorApplyCrossingFlags(RHElementActor *actor, RHElevationLine *li
                 RHActorField<void *>(actor->Grid(), 0x4188);
         }
     }
+}
+
+// FUNCTION: GAME 0x0046c8e0
+void RHElementActor::FUN_0046c8e0(int value)
+{
+    m_15c = (RHSequence *)value;
 }
 
 // Parked: intersection sorting and original list/EH scheduling remain incomplete.
@@ -544,6 +651,189 @@ void RHElementActor::InitializeScript(std::string &name)
     m_108.FUN_004030a0();
 }
 
+// FUNCTION: GAME 0x004846d0
+void RHActorCrossingHumanCalls::FUN_004846d0()
+{
+    RHOrder *order = RHActorField<RHOrder *>(this, 0x134);
+    if (order && order->m_24 == 0x7f &&
+        RHActorField<RHSequenceElement *>(this, 0x130)->m_10 != 0x4c)
+    {
+        void *area = RHActorField<void *>(RHActorField<void *>(this, 0x50), 0xec);
+        SBGeoPoint2D point;
+        if (FUN_004843a0(area) && FUN_004843d0(point, area, true))
+        {
+            RHActorField<SBGeoPoint2D>(RHActorField<RHOrder *>(this, 0x134), 0x14) = point;
+            RHActorField<RHOrder *>(this, 0x134)->FUN_0054e730();
+            void *position = (char *)RHActorField<void *>(this, 0x50) + 4;
+            RHActorField<SBGeoPoint2D>(position, 0x44) = point;
+            RHActorField<int>(position, 8) = 0;
+        }
+        else
+        {
+            void *position = RHActorField<void *>(this, 0x50);
+            SBGeoPoint2D *source = (SBGeoPoint2D *)((char *)position + 0x24);
+            SBGeoPoint2D *destination = (SBGeoPoint2D *)((char *)position + 0x48);
+            *destination = *source;
+            RHActorField<int>(position, 0xc) = 0;
+        }
+    }
+}
+
+// FUNCTION: GAME 0x004e52a0
+void RHUnk004e52a0::FUN_004e52a0()
+{
+    RHScriptNode *head = m_head;
+    RHScriptNode *current = head->next;
+    while (current != head)
+    {
+        RHScriptNode *node = current;
+        current = current->next;
+        node->previous->next = node->next;
+        node->next->previous = node->previous;
+        ::operator delete(node);
+        --m_count;
+    }
+    ::operator delete(m_head);
+    m_head = 0;
+    m_count = 0;
+}
+
+// FUNCTION: GAME 0x0053bf20
+void *RHUnk0053bf20::FUN_0053bf20() const
+{
+    return m_8;
+}
+
+// FUNCTION: GAME 0x00560410
+unsigned short RHUnk00560410::FUN_00560410(int value) const
+{
+    return m_90;
+}
+
+// FUNCTION: GAME 0x00585970
+void RHActorTranslationSequenceCalls::FUN_00585970(RHOrder *order)
+{
+    if (order->m_24 == 0x123)
+        delete order;
+    else
+    {
+        RHScriptNode *head = RHActorField<RHScriptNode *>(this, 0x1c);
+        RHScriptNode *previous = head->previous;
+        RHScriptNode *node = (RHScriptNode *)::operator new(sizeof(RHScriptNode));
+        node->next = head ? head : node;
+        node->previous = previous ? previous : node;
+        head->previous = node;
+        node->previous->next = node;
+        new (&node->data) RHOrder *(order);
+        unsigned count = RHActorField<unsigned>(this, 0x20);
+        RHActorField<undefined>(this, 0x28) = 1;
+        RHActorField<unsigned>(this, 0x20) = count + 1;
+        order->m_38 = this;
+    }
+}
+
+// FUNCTION: GAME 0x00587160
+int RHSequenceElement::Unk00587160(int argument)
+{
+    return ((RHHumanMap *)((char *)this + 0x64))->find(argument)->m_value;
+}
+
+// Parked: counted point-copy constructor operand crosses the ILT.
+// STUB: GAME 0x005871b0
+SBGeoPoint2D RHActorSequencePointCalls::FUN_005871b0(int key)
+{
+    SBGeoPoint2D point;
+    RHHumanMapIterator position = m_64.find(key);
+    if (!(position == m_64.end()))
+        point = SBGeoPoint2D(RHActorField<float>(position.m_node, 0x10),
+                             RHActorField<float>(position.m_node, 0x14));
+    return point;
+}
+
+// FUNCTION: GAME 0x005df550
+RHUnk00613e90 RHUnk00613e90::FUN_005df550(const RHUnk00613e90 &other) const
+{
+    RHUnk00613e90 result(m_0 - other.m_0, m_4 - other.m_4, m_8 - other.m_8);
+    return result;
+}
+
+// FUNCTION: GAME 0x005fc040
+SBGeoPoint2D::SBGeoPoint2D(const SBGeoPoint2D &other)
+{
+    FUN_005fc390(other);
+}
+
+// deferred: unannotated pending reccmp #534 (0x005fc0b0).
+bool SBGeoPoint2D::operator==(const SBGeoPoint2D &other) const
+{
+    return m_0 == other.m_0 && m_4 == other.m_4;
+}
+
+// deferred: unannotated pending reccmp #534 (0x005fc3e0).
+SBGeoVector2D::SBGeoVector2D(const SBGeoPoint2D &other) : SBGeoPoint2D()
+{
+    FUN_005fc390(other);
+}
+
+extern float g_unk0x00677488;
+
+// Parked: x87 spills and branch scheduling differ.
+// STUB: GAME 0x005fc700
+float SBGeoPoint2D::FUN_005fc700(float scale) const
+{
+    scale = m_4 / scale;
+    if (m_0 > g_unk0x00677488)
+    {
+        float other = scale > g_unk0x00677488 ? scale : -scale;
+        return other < m_0 ? m_0 : other;
+    }
+    if (scale > g_unk0x00677488)
+        return -m_0 >= scale ? -m_0 : scale;
+    scale = -scale;
+    return -m_0 >= scale ? -m_0 : scale;
+}
+
+// FUNCTION: GAME 0x00607a70
+SBGeoBoundingBox2D::SBGeoBoundingBox2D(const SBGeoBoundingBox2D &other)
+{
+    ((RHMobileUnk00607da0 *)this)->FUN_00607990((const RHMobileUnk00607da0 &)other);
+}
+
+// FUNCTION: GAME 0x0060fbf0
+RHUnk0060fbf0::RHUnk0060fbf0()
+{
+    m_0 = 0;
+    m_2 = 0;
+    m_4 = 0;
+}
+
+// FUNCTION: GAME 0x0060fca0
+RHUnk0060fbf0 &RHUnk0060fbf0::FUN_0060fca0(const RHUnk0060fbf0 &other)
+{
+    if (this != &other)
+    {
+        FUN_0060fa20();
+        FUN_0060fa30(other);
+    }
+    return *this;
+}
+
+void RHActorEmitWidened(RHUnk0053bf20 *first, RHUnk00560410 *second,
+                        RHUnk0060fbf0 *third, RHUnk004e52a0 *list,
+                        SBGeoPoint2D *point)
+{
+    first->FUN_0053bf20();
+    second->FUN_00560410(0);
+    new RHUnk0060fbf0;
+    third->FUN_0060fca0(*third);
+    list->FUN_004e52a0();
+    point->FUN_005fc700(1.0f);
+    ((RHActorSequencePointCalls *)first)->FUN_005871b0(0);
+    ((RHActorCrossingHumanCalls *)first)->FUN_004846d0();
+    ((RHSequenceElement *)first)->Unk00587160(0);
+    new SBGeoBoundingBox2D(*(SBGeoBoundingBox2D *)first);
+}
+
 void RHElementActor::Emit(SBFile &file, std::string &name)
 {
     Serialize(file);
@@ -551,6 +841,8 @@ void RHElementActor::Emit(SBFile &file, std::string &name)
     Translate(0, RHcommandUnk0);
     CheckForLineCrossing();
     InitializeScript(name);
+    FUN_004626e0();
+    FUN_00468ee0(0);
 }
 
 RHOrder::RHOrder()
@@ -563,24 +855,4 @@ RHOrder::RHOrder()
     m_34 = 0;
 }
 
-void RHActorTranslationSequenceCalls::FUN_00585970(RHOrder *order)
-{
-    if (order->m_24 == 0x123)
-    {
-        delete order;
-        return;
-    }
-    RHScriptNode *head = RHActorField<RHScriptNode *>(this, 0x1c);
-    RHScriptNode *node = (RHScriptNode *)::operator new(sizeof(RHScriptNode));
-    node->next = head;
-    node->previous = head->previous;
-    head->previous = node;
-    node->previous->next = node;
-    node->data = order;
-    ++RHActorField<unsigned>(this, 0x20);
-    RHActorField<unsigned char>(this, 0x28) = 1;
-    order->m_38 = this;
-}
-
-void RHActorCrossingHumanCalls::FUN_004846d0() {}
 void __stdcall FUN_0048a970(RHElementActor *) {}

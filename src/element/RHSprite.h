@@ -2,18 +2,21 @@
 #define RHSPRITE_H
 
 #include "RHSprite_calls.h"
+#include "Decomp.h"
 #include <list>
 
+// SIZE 0x0c
 struct RHSpriteListNode
 {
-    RHSpriteListNode *next;
-    RHSpriteListNode *previous;
-    int value;
+    RHSpriteListNode *next; // 0x00
+    RHSpriteListNode *previous; // 0x04
+    int value; // 0x08
 };
 
+// SIZE 0x04
 struct RHSpriteListIterator
 {
-    RHSpriteListNode *node;
+    RHSpriteListNode *node; // 0x00
     RHSpriteListIterator(RHSpriteListNode *value) : node(value) {}
     RHSpriteListIterator(const RHSpriteListIterator &value) : node(value.node) {}
     RHSpriteListIterator &operator=(const RHSpriteListIterator &value) { node = value.node; return *this; }
@@ -25,6 +28,7 @@ struct RHSpriteListIterator
 struct RHUnk005c9010Iterator;
 void FUN_005c9010(RHUnk005c9010Iterator &, int, std::bidirectional_iterator_tag);
 
+// SIZE 0x18
 class RHSpriteList
 {
 public:
@@ -132,7 +136,7 @@ public:
             }
         }
     }
-    char m_00[4];
+    undefined m_00[4]; // 0x00
     RHSpriteListNode *head; // +0x04
     int count; // +0x08
     RHSpriteListIterator current; // +0x0c
@@ -144,6 +148,7 @@ class RHUnk005b5e00
 {
 public:
     void *Unk();
+    void *FUN_005b5de0();
 };
 
 struct RHSpriteFrameTable
@@ -176,18 +181,19 @@ public:
 };
 extern RHEngine *g_pEngine;
 
+// SIZE 0x22c
 class RHUnk005b5ed0
 {
 public:
     bool FUN_005b5ed0(SBFile &);
     void FUN_005bd8b0();
-    char m_00[0xd8];
+    undefined m_00[0xd8]; // 0x00
     unsigned short m_d8; // +0xd8
-    char m_da[0x76];
+    undefined m_da[0x76]; // 0xda
     int m_150; // +0x150
-    char m_154[0x14];
+    undefined m_154[0x14]; // 0x154
     char *m_168; // +0x168
-    char m_16c[0x18];
+    undefined m_16c[0x18]; // 0x16c
     unsigned short m_184; // +0x184, WORD
     unsigned short m_186; // +0x186, WORD
     unsigned short m_188; // +0x188, WORD
@@ -198,26 +204,27 @@ public:
     char m_192; // +0x192, BYTE
     char m_193; // +0x193, BYTE
     char m_194; // +0x194, BYTE
-    char m_195[5];
+    undefined m_195[5]; // 0x195
     unsigned short m_19a; // +0x19a, WORD
     unsigned short m_19c; // +0x19c, WORD
-    char m_19e[2];
+    undefined m_19e[2]; // 0x19e
     SBGeoBoundingBox2D m_1a0; // +0x1a0
-    char m_1b4[0x10];
+    undefined m_1b4[0x10]; // 0x1b4
     int m_1c4; // +0x1c4, DWORD
     class RHElement *m_1c8; // +0x1c8, pointer
     char m_1cc; // +0x1cc, BYTE
-    char m_1cd[0xf];
+    undefined m_1cd[0xf]; // 0x1cd
     int m_1dc; // +0x1dc, DWORD
     RHSpriteList m_1e0; // +0x1e0
     bool m_1f8; // +0x1f8, BYTE
     int m_1fc; // +0x1fc, DWORD
     int m_200; // +0x200, DWORD
     RHSpriteList m_204; // +0x204
-    char m_21c[0xc];
+    undefined m_21c[0xc]; // 0x21c
     unsigned char m_228; // +0x228, BYTE
 };
 
+// SIZE 0x22c
 class RHSprite : public RHUnk005b5ed0
 {
 public:
@@ -225,11 +232,13 @@ public:
     void LoadPositionInfoFromFile(SBFile &, int);
     int PerformMotion(RHOrder *, RHOrder *, int, int, float, int, bool);
     void FUN_005b7720(int);
-    void FUN_005b7300(int, int);
+    bool FUN_005b7300(int, int);
     bool FUN_005b7820(int);
-    void FUN_005bd450();
+    bool FUN_005bd450();
     unsigned short FUN_005bdbf0(unsigned short, unsigned short);
     short FUN_005bdc20(unsigned short, unsigned short);
+    unsigned short FUN_005bdcd0(unsigned short);
+    unsigned short FUN_005bdcf0(unsigned short);
     void Emit(SBFile &);
 };
 

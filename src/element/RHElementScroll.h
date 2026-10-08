@@ -2,13 +2,19 @@
 #define RHELEMENTSCROLL_H
 
 #include "RHElementBonus.h"
+#include "Decomp.h"
 #include <string>
 
+// SIZE 0x100
 class RHElementObject
 {
 public:
-    virtual bool Serialize(SBFile &file);
-    char m_pad4[0xfc];
+    virtual bool Serialize(SBFile &file); // vtable+0x00
+    undefined m_pad4[0x0e]; // 0x04
+    undefined m_12; // 0x12
+    undefined m_pad13[0x3d]; // 0x13
+    RHBonusInfo *m_50; // 0x50
+    undefined m_pad54[0xac]; // 0x54
 };
 
 class RHUnkSectorScript
@@ -17,43 +23,58 @@ public:
     bool Unk00639a30(const std::string &name);
 };
 
+// SIZE 0x60
 class RHScrollScript
 {
 public:
     bool FUN_006348f0(SBFile &file);
-    char m_pad0[0x58];
-    char m_58;
-    char m_pad59[7];
+    undefined m_pad0[0x58]; // 0x00
+    undefined m_58; // 0x58
+    undefined m_pad59[7]; // 0x59
 };
 
 class RHUnk004ba7a0
 {
 public:
     void Set(int status);
+    void FUN_004ba7e0();
 };
 
+// SIZE 0x14
+class RHScrollUnk0040ee30
+{
+public:
+    ~RHScrollUnk0040ee30();
+    SBGeoPoint2D m_0; // 0x00
+    SBGeoPoint2D m_8; // 0x08
+    undefined m_10; // 0x10
+};
+
+// SIZE 0x170
 class RHElementScroll : public RHElementObject
 {
 public:
     void InitializeFromMissionStream(SBFile &file);
-    virtual bool Serialize(SBFile &file);
+    virtual bool Serialize(SBFile &file); // vtable+0x00
     static void SetScrollExecutingScript(RHElementScroll *scroll);
     void FUN_004ba400();
+    bool FUN_004ba550();
     void Emit(SBFile &file);
     RHBonusInfo *Info() { return *(RHBonusInfo **)((char *)this + 0x50); } // +0x50
     RHBonusGlobalView *Global() { return *(RHBonusGlobalView **)((char *)this + 0x64); } // +0x64
 
-    RHScrollScript m_100; // +0x100, flag +0x158
-    RHUnkSectorScript *m_160; // +0x160
-    int m_164; // +0x164
-    int m_168; // +0x168
-    char m_16c[3]; // +0x16c
-    char m_16f; // +0x16f
+    RHScrollScript m_100; // 0x100
+    RHUnkSectorScript *m_160; // 0x160
+    int m_164; // 0x164
+    undefined4 m_168; // 0x168
+    undefined m_16c[3]; // 0x16c
+    undefined m_16f; // 0x16f
 };
 
 void RHSerializeName(SBFile &file, const char *name);
 void FUN_005e0c90(SBFile &file, std::string &value);
 extern char g_unk0x6c0691;
 extern RHElementScroll *g_scrollExecutingScript;
+extern undefined g_unk0x006c0e48[];
 
 #endif

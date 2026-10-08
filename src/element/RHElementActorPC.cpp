@@ -1,12 +1,49 @@
 #include "RHElementActorPC.h"
 #include "RHElementActorPC_calls.h"
 
+DECOMP_SIZE_ASSERT(RHElementActorPC, 0x60c)
+DECOMP_SIZE_ASSERT(RHUnk005492a0, 0x14)
+DECOMP_SIZE_ASSERT(RHActorPCBoxCalls, 0x14)
+DECOMP_SIZE_ASSERT(RHActorPCWidgetState, 0xe8)
+DECOMP_SIZE_ASSERT(RHCampaignProfiles, 0x70)
+DECOMP_SIZE_ASSERT(RHActorPCProfileNode, 0x18)
+DECOMP_SIZE_ASSERT(RHUnk00613e90, 0x0c)
+DECOMP_SIZE_ASSERT(RHPCDescription, 0x48)
+DECOMP_SIZE_ASSERT(RHUnk0048f280, 0x60c)
+DECOMP_SIZE_ASSERT(RHUnk005fc030, 0x08)
+
 extern RHUnk005c38b0 *g_unk0x6c10e8;
+RHMessenger *RHUnk00546050();
 
 // STRING: GAME 0x006ae5e0
 #define g_actorPCFile "P:\\Robin Hood\\RHelementactorpc.cpp"
 // STRING: GAME 0x006ae858
 #define g_unknownInitialAction "ACHTUNG : Unknown initial action %d !"
+
+// FUNCTION: GAME 0x00455ce0
+RHPCDescription *RHActorPCProfileCalls::FUN_00455ce0(void *profile)
+{
+    for (RHPCDescription **it = m_104.begin(); it != m_104.end(); ++it)
+    {
+        if (RHActorPCField<void *>(*it, 0x40) == profile)
+            return *it;
+    }
+    return 0;
+}
+
+// FUNCTION: GAME 0x00455d40
+void RHActorPCProfileCalls::FUN_00455d40(RHPCDescription *description)
+{
+    std::vector<RHPCDescription *> &descriptions = m_104;
+    descriptions.insert(descriptions.end(), description);
+}
+
+// FUNCTION: GAME 0x0045aaf0
+RHUnk0045aaf0::RHUnk0045aaf0()
+{
+    m_0 = 0;
+    m_4 = 0;
+}
 
 // Parked: flat subobjects omit the original member-cleanup EH states.
 // STUB: GAME 0x0048f280
@@ -189,6 +226,102 @@ void RHEngineReinforcementCalls::FUN_00491fd0(const RHbeamMe &beamMe)
     ((RHScriptBatchCalls *)actor)->Unk00464630();
 }
 
+// FUNCTION: GAME 0x00493660
+void RHActorPCTemplateCalls::FUN_00493660(int value)
+{
+    if ((char)value || RHActorPCField<int>(RHActorPCField<void **>(g_unk0x6c07fc, 0x178)[0], 0x3c) != 8)
+    {
+        void *menu = RHActorPCField<void *>(this, 0x4ec);
+        if (!RHActorPCField<char>(menu, 0xca9))
+            ((RHActorPCEngineCalls *)g_unk0x6c0b3c)->FUN_0050efb0(menu);
+    }
+}
+
+// FUNCTION: GAME 0x0049d590
+int RHElementActorPC::FUN_0049d590(int action)
+{
+    do
+    {
+        for (unsigned i = 0; i < 3; ++i)
+        {
+            if (RHActorPCField<int>(m_5fc, 0x48 + i * 4) == action)
+                return i;
+        }
+        if (action != 13)
+            return -1;
+        action = 14;
+    } while (true);
+}
+
+int RHElementActorPC::FUN_0049d5c0(unsigned short action)
+{
+    return RHActorPCField<int>(m_5fc, 0x48 + action * 4);
+}
+
+// FUNCTION: GAME 0x0049d890
+void RHElementActorPC::FUN_0049d890(unsigned short action)
+{
+    if (RHActorPCField<int>(this, 0x500) == FUN_0049d5c0(action))
+        RHActorPCField<int>(this, 0x500) = 0;
+    if (RHActorPCField<int>(this, 0x504) == FUN_0049d5c0(action))
+        RHActorPCField<int>(this, 0x504) = 0;
+    RHActorPCField<char>(this, 0x508 + action) = 1;
+    RHActorPCWidgetCalls *menu = RHActorPCField<RHActorPCWidgetCalls *>(this, 0x4ec);
+    if (RHActorPCField<char>(menu, 0xca9))
+        RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk005492a0(26, this, action));
+    else
+        menu->FUN_005d9950(action);
+}
+
+// Parked: EH prologue and receiver/index register allocation differ.
+// STUB: GAME 0x0049d960
+void RHElementActorPC::FUN_0049d960(unsigned short action)
+{
+    RHActorPCField<char>(this, 0x508 + action) = 0;
+    if (!RHActorPCField<char>(this, 0x50b + action))
+    {
+        RHActorPCWidgetCalls *menu = RHActorPCField<RHActorPCWidgetCalls *>(this, 0x4ec);
+        if (RHActorPCField<char>(menu, 0xca9))
+            RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk005492a0(27, this, action));
+        else
+            menu->FUN_005d9a60(action);
+    }
+}
+
+// FUNCTION: GAME 0x0049da00
+void RHElementActorPC::FUN_0049da00(unsigned short action)
+{
+    RHActorPCField<char>(this, 0x50b + action) = 1;
+    int current = RHActorPCField<int>(this, 0x500);
+    if (current == FUN_0049d5c0(action))
+    {
+        RHActorPCField<int>(this, 0x504) = current;
+        RHActorPCField<int>(this, 0x500) = 0;
+    }
+    RHActorPCWidgetCalls *menu = RHActorPCField<RHActorPCWidgetCalls *>(this, 0x4ec);
+    if (RHActorPCField<char>(menu, 0xca9))
+        RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk005492a0(26, this, action));
+    else
+        menu->FUN_005d9950(action);
+}
+
+// FUNCTION: GAME 0x0049dad0
+void RHElementActorPC::FUN_0049dad0(unsigned short action)
+{
+    RHActorPCField<char>(this, 0x50b + action) = 0;
+    if (!RHActorPCField<char>(this, 0x508 + action))
+    {
+        RHActorPCWidgetCalls *menu = RHActorPCField<RHActorPCWidgetCalls *>(this, 0x4ec);
+        if (RHActorPCField<char>(menu, 0xca9))
+            RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk005492a0(27, this, action));
+        else
+            menu->FUN_005d9a60(action);
+        int previous = RHActorPCField<int>(this, 0x504);
+        if (FUN_0049d5c0(action) == previous)
+            RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk005492a0(22, this, previous));
+    }
+}
+
 // Parked: local colouring and projection scheduling differ beyond rule 28.
 // STUB: GAME 0x004a0f10
 RHElementActorPC *RHElementActorPC::CreatePCFromMissionStream(SBFile &file)
@@ -355,4 +488,192 @@ void RHElementActorPC::InitializeAction(int action)
 void RHElementActorPC::Emit(int action)
 {
     InitializeAction(action);
+    FUN_0049d590(action);
+    FUN_0049d890(action);
+    FUN_0049d960(action);
+    FUN_0049da00(action);
+    FUN_0049dad0(action);
+}
+
+// deferred: 0x0050efb0 is byte-exact; unannotated pending reccmp #534.
+void RHActorPCEngineCalls::FUN_0050efb0(void *value)
+{
+    m_196c->FUN_0055e710(value);
+}
+
+// deferred: 0x005492a0 is byte-exact; unannotated pending reccmp #534.
+RHUnk005492a0::RHUnk005492a0(int command, void *actor, int action)
+{
+    ((RHActorPCMessageBaseCalls *)this)->FUN_00549030(2, action);
+    m_c = command;
+    m_10 = actor;
+    m_0 = 0x679b6c;
+}
+
+// deferred: 0x0055fa10 is byte-exact; called by RHPath::TestIfPathIsFine.
+void *RHUnkPathActorInfoBase::Unk0055fa10(int value)
+{
+    return (char *)this + 0x94;
+}
+
+// FUNCTION: GAME 0x0055fa20
+void RHBonusInfoBase::FUN_0055fa20(RHBonusProjection *projection)
+{
+    RHActorPCField<RHBonusProjection *>(this, 0xe8) = projection;
+    if (projection)
+    {
+        RHActorPCField<void *>(this, 0xec) = (char *)projection + 0xa8;
+        m_4 &= ~1;
+        RHActorPCField<unsigned>(this, 8) &= ~2;
+    }
+    else
+    {
+        unsigned flags = m_4;
+        RHActorPCField<void *>(this, 0xec) = 0;
+        m_4 = flags & ~1;
+        RHActorPCField<unsigned>(this, 8) &= ~2;
+    }
+}
+
+// GLOBAL: GAME 0x006774cc
+float g_unk0x006774cc = 0.001f;
+
+// FUNCTION: GAME 0x005644c0
+RHCampaignProfiles::RHCampaignProfiles()
+{
+    char listAllocator;
+    RHActorPCField<char>(this, 4) = listAllocator;
+    RHActorPCProfileNode *head = new RHActorPCProfileNode;
+    head->next = head;
+    head->previous = head;
+    RHActorPCField<RHActorPCProfileNode *>(this, 8) = head;
+    RHActorPCField<int>(this, 0xc) = 0;
+    char firstAllocator;
+    RHActorPCField<char>(this, 0x10) = firstAllocator;
+    RHActorPCField<int>(this, 0x14) = 0;
+    RHActorPCField<int>(this, 0x18) = 0;
+    RHActorPCField<int>(this, 0x1c) = 0;
+    char secondAllocator;
+    RHActorPCField<char>(this, 0x20) = secondAllocator;
+    RHActorPCField<int>(this, 0x24) = 0;
+    RHActorPCField<int>(this, 0x28) = 0;
+    RHActorPCField<int>(this, 0x2c) = 0;
+    char thirdAllocator;
+    RHActorPCField<char>(this, 0x30) = thirdAllocator;
+    RHActorPCField<int>(this, 0x34) = 0;
+    RHActorPCField<int>(this, 0x38) = 0;
+    RHActorPCField<int>(this, 0x3c) = 0;
+    char fourthAllocator;
+    RHActorPCField<char>(this, 0x40) = fourthAllocator;
+    RHActorPCField<int>(this, 0x44) = 0;
+    RHActorPCField<int>(this, 0x48) = 0;
+    RHActorPCField<int>(this, 0x4c) = 0;
+    char fifthAllocator;
+    RHActorPCField<char>(this, 0x50) = fifthAllocator;
+    RHActorPCField<int>(this, 0x54) = 0;
+    RHActorPCField<int>(this, 0x58) = 0;
+    RHActorPCField<int>(this, 0x5c) = 0;
+    char sixthAllocator;
+    RHActorPCField<char>(this, 0x60) = sixthAllocator;
+    RHActorPCField<int>(this, 0x64) = 0;
+    RHActorPCField<int>(this, 0x68) = 0;
+    RHActorPCField<int>(this, 0x6c) = 0;
+    RHActorPCField<unsigned>(this, 0) = 0x679be0;
+    g_unk0x6c0e84 = this;
+}
+
+// FUNCTION: GAME 0x005bd560
+void RHBonusInfo::FUN_005bd560(void *value, bool flag)
+{
+    if (value == 0)
+        RHActorPCField<unsigned>(this, 0x1c4) = RHActorPCField<unsigned>(this, 0x14);
+    else if (flag)
+        RHActorPCField<float>(this, 0x1c4) = RHActorPCField<float>(RHActorPCField<void *>(value, 0x50), 0x1c4) - g_unk0x006774cc;
+    else
+    {
+        float depth = RHActorPCField<float>(RHActorPCField<void *>(value, 0x50), 0x1c4);
+        RHActorPCField<float>(this, 0x1c4) = depth + g_unk0x006774cc;
+    }
+}
+
+// FUNCTION: GAME 0x005d9700
+void RHActorPCWidgetCalls::FUN_005d9700(unsigned short action)
+{
+    switch (action)
+    {
+    case 0:
+        {
+            RHActorPCWidgetState *state = (RHActorPCWidgetState *)((char *)this + 0x344);
+            state->Mark();
+            state->ClearLinked();
+        }
+        break;
+    case 1:
+        {
+            RHActorPCWidgetState *state = (RHActorPCWidgetState *)((char *)this + 0x42c);
+            state->Mark();
+            if (state->m_d0)
+                state->m_d0->FUN_005db620(state);
+        }
+        break;
+    case 2:
+        {
+            RHActorPCWidgetState *state = (RHActorPCWidgetState *)((char *)this + 0x514);
+            state->Mark();
+            state->ClearLinked();
+        }
+        break;
+    }
+}
+
+// Parked: comparison scheduling differs; effective-only match.
+// STUB: GAME 0x005d9860
+void RHActorPCWidgetCalls::FUN_005d9860()
+{
+    if (RHActorPCField<char>(this, 0x410) == 1)
+    {
+        RHActorPCField<char>(this, 0x410) = 0;
+        RHActorPCField<int>(this, 0x390) = 0;
+        if (RHActorPCField<int>(this, 0x3c0) == 8)
+            RHActorPCField<int>(this, 0x3c0) = 5;
+        if (RHActorPCField<int>(this, 0x3c0) == 9)
+            RHActorPCField<int>(this, 0x3c0) = 6;
+    }
+    if (RHActorPCField<char>(this, 0x4f8) == 1)
+    {
+        RHActorPCField<char>(this, 0x4f8) = 0;
+        RHActorPCField<int>(this, 0x478) = 0;
+        if (RHActorPCField<int>(this, 0x4a8) == 8)
+            RHActorPCField<int>(this, 0x4a8) = 5;
+        if (RHActorPCField<int>(this, 0x4a8) == 9)
+            RHActorPCField<int>(this, 0x4a8) = 6;
+    }
+    if (RHActorPCField<char>(this, 0x5e0) == 1)
+    {
+        RHActorPCField<char>(this, 0x5e0) = 0;
+        RHActorPCField<int>(this, 0x560) = 0;
+        if (RHActorPCField<int>(this, 0x590) == 8)
+            RHActorPCField<int>(this, 0x590) = 5;
+        if (RHActorPCField<int>(this, 0x590) == 9)
+            RHActorPCField<int>(this, 0x590) = 6;
+    }
+}
+
+// FUNCTION: GAME 0x00608400
+bool SBGeoBoundingBox2D::FUN_00608400(const SBGeoPoint2D &point) const
+{
+    if (!m_flag)
+        return false;
+    return m_p0.m_x <= point.m_x && m_p1.m_x >= point.m_x
+        && m_p0.m_y <= point.m_y && m_p1.m_y >= point.m_y;
+}
+
+void RHActorPCEmitHelpers(RHActorPCProfileCalls *profiles, RHActorPCTemplateCalls *actor, RHActorPCEngineCalls *engine, void *value)
+{
+    profiles->FUN_00455ce0(value);
+    profiles->FUN_00455d40((RHPCDescription *)value);
+    actor->FUN_00493660(0);
+    engine->FUN_0050efb0(value);
+    ((RHActorPCWidgetCalls *)value)->FUN_005d9860();
+    ((RHActorPCWidgetCalls *)value)->FUN_005d9700(0);
 }

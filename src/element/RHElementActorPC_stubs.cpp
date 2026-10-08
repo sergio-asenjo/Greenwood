@@ -1,11 +1,15 @@
 #include "RHElementActorPC_calls.h"
 
-RHPCDescription *RHActorPCProfileCalls::FUN_00455ce0(void *) { return 0; }
-void RHActorPCProfileCalls::FUN_00455d40(RHPCDescription *) {}
-void RHActorPCTemplateCalls::FUN_00493660(int) {}
 RHUnk00471630::RHUnk00471630(int, int, void *) {}
 RHUnk005fc030::RHUnk005fc030() {}
-RHUnk0045aaf0::RHUnk0045aaf0() {}
+RHActorPCBoxCalls::RHActorPCBoxCalls() {}
+RHActorPCBoxCalls::~RHActorPCBoxCalls() {}
+void RHActorPCWidgetCalls::FUN_005d9950(int) {}
+void RHActorPCWidgetCalls::FUN_005d9a60(int) {}
+void RHActorPCWidgetState::FUN_005db620(RHActorPCWidgetState *) {}
+
+void RHActorPCMessageBaseCalls::FUN_00549030(int, int) {}
+void RHActorPCMenuCalls::FUN_0055e710(void *) {}
 
 // GLOBAL: GAME 0x006c0689
 char g_unk0x6c0689;
