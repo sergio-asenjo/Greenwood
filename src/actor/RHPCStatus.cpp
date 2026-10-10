@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHPCStatus.h"
 #include <cstring>
 #include <cstdlib>
@@ -19,14 +20,8 @@ void RHPCStatus::Emit(SBFile &file, const RHCharacterProfile &profile)
     Serialize(file);
 }
 
-// deferred: unannotated pending reccmp #534.
-unsigned short *FUN_00419940(unsigned short *destination, const unsigned short *source, unsigned count)
-{
-    unsigned short *cursor = destination;
-    for (; count > 0; --count)
-        *cursor++ = *source++;
-    return destination;
-}
+// FUNCTION: GAME 0x00419940
+// wmemcpy
 
 // deferred: unannotated pending reccmp #534.
 void RHPCWideText::FUN_004239c0(unsigned count)
@@ -68,13 +63,13 @@ bool RHPCWideText::FUN_004239e0(unsigned count, bool trim)
     return true;
 }
 
-// parked: unannotated because GenerateName calls this helper.
+// FUNCTION: GAME 0x004565c0
 bool RHUnk00452030::FUN_004565c0(const std::wstring &name)
 {
     return std::find(m_134.begin(), m_134.end(), name) != m_134.end();
 }
 
-// deferred: unannotated pending reccmp #534.
+// FUNCTION: GAME 0x00456670
 void RHUnk00452030::FUN_00456670(const std::wstring &name)
 {
     std::vector<std::wstring> &values = m_134;
@@ -112,7 +107,7 @@ void RHMapWideText::FUN_004580c0(const std::wstring &text, unsigned first, unsig
     }
 }
 
-// deferred: unannotated pending reccmp #534.
+// FUNCTION: GAME 0x0055bdf0
 std::wstring FUN_0055bdf0(unsigned long first, unsigned long count)
 {
     std::wstring name;
@@ -191,9 +186,7 @@ std::wstring RHPCStatus::GenerateName(const RHCharacterProfile &profile)
     return name;
 }
 
-// deferred: unannotated pending reccmp #534 — the sole residual when annotated is the
-// `call RHHumanStatus::Serialize` (0x51d5d0, already matched) routing through the ILT; body
-// is otherwise byte-exact (99.57% annotated, differing only in that operand).
+// FUNCTION: GAME 0x0055c3c0
 bool RHPCStatus::Serialize(SBFile &file)
 {
     if (!RHHumanStatus::Serialize(file))
@@ -290,7 +283,9 @@ bool RHPCStatus::Serialize(SBFile &file)
     return true;
 }
 
-// parked: unannotated because GenerateName calls this helper.
+// TEMPLATE: GAME 0x0055c680
+// ?append@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@QAEAAV12@ABV12@II@Z
+
 RHPCWideText &RHPCWideText::FUN_0055c680(const std::wstring &text, unsigned first, unsigned count)
 {
     if (text.size() < first)
@@ -308,10 +303,5 @@ RHPCWideText &RHPCWideText::FUN_0055c680(const std::wstring &text, unsigned firs
     return *this;
 }
 
-// parked: unannotated because GenerateName calls this helper.
-std::wstring FUN_0055c770(const unsigned short *text, const std::wstring &suffix)
-{
-    std::wstring name(text);
-    name += suffix;
-    return name;
-}
+// TEMPLATE: GAME 0x0055c770
+// ??Hstd@@YA?AV?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@0@PBGABV10@@Z
