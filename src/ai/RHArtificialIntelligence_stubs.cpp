@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHArtificialIntelligence.h"
 
 // LIBRARY: GAME 0x00642a70
@@ -15,7 +16,6 @@ bool RHArtificialIntelligenceActorCalls::Unk00470ce0() { return false; }
 void RHArtificialIntelligenceSoundCalls::Unk005a8d10(RHArtificialIntelligenceActor *) {}
 void RHArtificialIntelligenceSoundCalls::Unk005a8b70(int, void *, int, short, SBGeoPoint2D *, RHArtificialIntelligenceActor *) {}
 std::string FUN_00420d40(int) { return std::string(); }
-void RHArtificialIntelligence::Unk0041a300(int) {}
 bool RHArtificialIntelligence::Unk00412240(const RHUnk00571160Position &, unsigned short, float) { return false; }
 unsigned char RHArtificialIntelligence::Unk00419c80() { return 0; }
 void RHArtificialIntelligence::Unk0041ab10(unsigned short) {}

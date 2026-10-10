@@ -528,13 +528,14 @@ public:
     void FUN_004ed070(RHMalignityQueryList &list, unsigned short layer, const SBGeoBoundingBox2D &box, unsigned mask);
 };
 
-class SBGeoVector2D
+class SBGeoVector2D : public SBGeoPoint2D
 {
 public:
+    ~SBGeoVector2D() {}
     float FUN_005fc660(const SBGeoPoint2D &point) const;
 };
 
-SBGeoPoint2D FUN_005fc4f0(float factor, const SBGeoPoint2D &point);
+SBGeoVector2D operator*(float factor, const SBGeoVector2D &point);
 extern float g_unk0x006787f8;
 
 class RHFastFindTacticalArray

@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHSightObstacle.h"
 
 DECOMP_SIZE_ASSERT(SBGeoBoundingBox2D, 0x14)
@@ -97,8 +98,8 @@ bool RHSightObstacle::Serialize(SBFile &file)
     m_a8.FUN_005dfb00(file);
     m_100.FUN_005dfb00(file);
     m_0c.FUN_005dfd00(file);
-    m_24.FUN_00607c70(file);
-    m_38.FUN_00607c70(file);
+    m_24.Serialize(file);
+    m_38.Serialize(file);
     if (file.Access(&m_158, 1) < 0)
     {
         SBString *err = file.GetError();

@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHPathFinder.h"
 
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
@@ -120,16 +121,16 @@ bool RHPathObstacleGrid::FUN_004f5890(SBGeoBoundingBox2D &box, unsigned short se
             {
                 float distance = normal->FUN_005fc660(origin->Unk005fc110(box.first));
                 if (distance > g_unk0x006787f8)
-                    ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(FUN_005fc4f0(distance + g_unk0x0067749c, *(SBGeoPoint2D *)normal));
+                    ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(operator*(distance + g_unk0x0067749c, *(SBGeoVector2D *)normal));
                 distance = normal->FUN_005fc660(origin->Unk005fc110(box.last));
                 if (distance > g_unk0x006787f8)
-                    ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(FUN_005fc4f0(distance + g_unk0x0067749c, *(SBGeoPoint2D *)normal));
+                    ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(operator*(distance + g_unk0x0067749c, *(SBGeoVector2D *)normal));
                 distance = normal->FUN_005fc660(origin->Unk005fc110(SBGeoPoint2D(box.last.x, box.first.y)));
                 if (distance > g_unk0x006787f8)
-                    ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(FUN_005fc4f0(distance + g_unk0x0067749c, *(SBGeoPoint2D *)normal));
+                    ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(operator*(distance + g_unk0x0067749c, *(SBGeoVector2D *)normal));
                 distance = normal->FUN_005fc660(origin->Unk005fc110(SBGeoPoint2D(box.first.x, box.last.y)));
                 if (distance > g_unk0x006787f8)
-                    ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(FUN_005fc4f0(distance + g_unk0x0067749c, *(SBGeoPoint2D *)normal));
+                    ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(operator*(distance + g_unk0x0067749c, *(SBGeoVector2D *)normal));
             }
             ++index;
             --count;
@@ -289,7 +290,7 @@ bool FUN_005547c0(unsigned short graph, unsigned short sector, unsigned short di
             for (unsigned short index = 2; index < count; ++index)
             {
                 current = g_unk0x006c0c78.FUN_00610cb0(index);
-                vector.FUN_005fc430(FUN_005fc4f0(0.00005f, current.Unk005fc110(previous)));
+                vector.FUN_005fc430(operator*(0.00005f, (const SBGeoVector2D &)current.Unk005fc110(previous)));
                 if (FUN_00556990(previous.Unk005fc190(vector), current.FUN_005fc200(vector)))
                 {
                     g_unk0x006c0c78.FUN_00610b50(index - 1);
@@ -357,7 +358,7 @@ unsigned short RHPathFinder::ConvertSector(unsigned short sector)
     g_pEngine->SerializeElementPointer(file, (request)->m_20); \
     ((RHPathSequenceSerializer *)g_unk0x6c1040)->FUN_0058b7c0(file, (request)->m_18);
 
-// Parked: 83.78%, local/clear scheduling and annotated engine call.
+// Parked: counted begin callee corrected; iterator-result/local scheduling and engine-call residuals remain.
 // STUB: GAME 0x0055aa60
 bool RHPathFinder::Serialize(SBFile &file)
 {

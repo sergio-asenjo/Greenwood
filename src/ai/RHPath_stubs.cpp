@@ -1,14 +1,17 @@
+#include "SBNullstr.h"
 #include "RHPath.h"
 
 // GLOBAL: GAME 0x006c0b9c
 RHUnkPathRegistry *g_unk0x6c0b9c;
 
+// FUNCTION: GAME 0x0048f180
 void RHPathUnk0048f180(RHPathHistory *dst, const RHPathHistory *src)
 {
     if (dst)
         *dst = *src;
 }
 
+// FUNCTION: GAME 0x00551de0
 RHPathHistoryNode *RHPathHistoryList::Unk00551de0(RHPathHistoryNode *next, RHPathHistoryNode *prev)
 {
     RHPathHistoryNode *node = (RHPathHistoryNode *)::operator new(0x1c);

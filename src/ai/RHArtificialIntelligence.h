@@ -45,6 +45,7 @@ class RHUnk0046eb30
 public:
     RHScriptNode *Unk0059f720(RHScriptNode *next, RHScriptNode *previous);
     RHScriptIter begin();
+    RHScriptIter FUN_0046eb80();
     RHScriptIter erase(RHScriptIter position);
 };
 class RHSequenceElement;
@@ -567,7 +568,6 @@ public:
     void Unk004195f0(unsigned flags);
     bool Unk00419b20(int remark);
     void Unk00419970(int remark, int time, int flags);
-    void Unk0041a300(int value);
     unsigned char Unk00419c80();
     void Unk0041ab10(unsigned short direction);
 

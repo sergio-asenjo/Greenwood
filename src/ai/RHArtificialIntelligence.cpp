@@ -1,9 +1,16 @@
+#include "SBNullstr.h"
 #include "RHArtificialIntelligence.h"
 
 template <class T> inline T &RHAIField(void *object, unsigned offset)
 {
     return *(T *)((char *)object + offset);
 }
+
+class RHMalignityBaseView
+{
+public:
+    void FUN_0041a300(void *actor);
+};
 
 class RHSeekPoint
 {
@@ -388,14 +395,13 @@ void RHArtificialIntelligence::Unk00410010(bool mode)
     ((RHArtificialIntelligenceActorCalls *)m_actor)->Unk0048b4e0(1);
 }
 
-// Parked: annotated callee operand.
-// STUB: GAME 0x00410600
+// FUNCTION: GAME 0x00410600
 void RHArtificialIntelligence::Unk00410600()
 {
     RHArtificialIntelligenceActorCalls *actor = (RHArtificialIntelligenceActorCalls *)m_actor;
     RHAIField<char>(this, 0x7e) = 0;
     actor->Unk0048b4e0(1);
-    Unk0041a300(0);
+    ((RHMalignityBaseView *)this)->FUN_0041a300(0);
 }
 
 // FUNCTION: GAME 0x00412c80
@@ -544,7 +550,7 @@ bool RHArtificialIntelligence::InitState()
     return false;
 }
 
-// Parked: delete/reload scheduling plus rule 28.
+// Parked: delete argument transfer and post-delete cursor/head reload order.
 // STUB: GAME 0x004148b0
 bool RHArtificialIntelligence::SerializeAllAI(SBFile &file)
 {
@@ -685,7 +691,7 @@ template <class T> struct RHArtificialIntelligenceValueList
     void clear()
     {
         typedef RHScriptIter (RHTitbitList::*Erase)(RHScriptIter, RHScriptIter);
-        (((RHTitbitList *)this)->*(Erase)&RHTitbitList::Clear)(((RHUnk0046eb30 *)this)->begin(), RHScriptIter((RHScriptNode *)m_head));
+        (((RHTitbitList *)this)->*(Erase)&RHTitbitList::Clear)(((RHUnk0046eb30 *)this)->FUN_0046eb80(), RHScriptIter((RHScriptNode *)m_head));
         m_dirty = true;
     }
     T &operator[](unsigned index)
@@ -1019,7 +1025,7 @@ bool FUN_00416b30(void *&value, SBFile &file)
     }
 }
 
-// Parked: 92.39%; cursor scheduling.
+// Parked: dirty-end and clean-start cursor register/store scheduling.
 // STUB: GAME 0x00416c80
 bool RHArtificialIntelligence::SerializeListOfPointersToActorsNPC(RHArtificialIntelligenceList &list, SBFile &file)
 {
@@ -1034,7 +1040,7 @@ bool RHArtificialIntelligence::SerializeListOfPointersToActorsNPC(RHArtificialIn
         {
             SBString *err = file.GetError();
             const char *reason = err->m_chars ? err->m_chars : "";
-            SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
+            SBAssert(0, g_unk0x006a73c8,
                      4980, "Serialize failed reason is %s", reason);
             return false;
         }
@@ -1061,7 +1067,7 @@ bool RHArtificialIntelligence::SerializeListOfPointersToActorsNPC(RHArtificialIn
         {
             SBString *err = file.GetError();
             const char *reason = err->m_chars ? err->m_chars : "";
-            SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
+            SBAssert(0, g_unk0x006a73c8,
                      5013, "Serialize failed reason is %s", reason);
             return false;
         }
@@ -1078,7 +1084,7 @@ bool RHArtificialIntelligence::SerializeListOfPointersToActorsNPC(RHArtificialIn
     return true;
 }
 
-// Parked: cursor scheduling.
+// Parked: dirty-end and clean-start cursor register/store scheduling.
 // STUB: GAME 0x00416f40
 bool RHArtificialIntelligence::SerializeListOfPointersToHumans(RHArtificialIntelligenceList &list, SBFile &file)
 {
@@ -1093,7 +1099,7 @@ bool RHArtificialIntelligence::SerializeListOfPointersToHumans(RHArtificialIntel
         {
             SBString *err = file.GetError();
             const char *reason = err->m_chars ? err->m_chars : "";
-            SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
+            SBAssert(0, g_unk0x006a73c8,
                      5053, "Serialize failed reason is %s", reason);
             return false;
         }
@@ -1117,7 +1123,7 @@ bool RHArtificialIntelligence::SerializeListOfPointersToHumans(RHArtificialIntel
         {
             SBString *err = file.GetError();
             const char *reason = err->m_chars ? err->m_chars : "";
-            SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
+            SBAssert(0, g_unk0x006a73c8,
                      5068, "Serialize failed reason is %s", reason);
             return false;
         }
@@ -1135,7 +1141,7 @@ bool RHArtificialIntelligence::SerializeListOfPointersToHumans(RHArtificialIntel
     return true;
 }
 
-// Parked: 92.76%; cursor scheduling.
+// Parked: dirty-end and clean-start cursor register/store scheduling.
 // STUB: GAME 0x004171f0
 bool RHArtificialIntelligence::SerializeListOfPointersToObjects(RHArtificialIntelligenceList &list, SBFile &file)
 {
@@ -1150,7 +1156,7 @@ bool RHArtificialIntelligence::SerializeListOfPointersToObjects(RHArtificialInte
         {
             SBString *err = file.GetError();
             const char *reason = err->m_chars ? err->m_chars : "";
-            SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
+            SBAssert(0, g_unk0x006a73c8,
                      5110, "Serialize failed reason is %s", reason);
             return false;
         }
@@ -1176,7 +1182,7 @@ bool RHArtificialIntelligence::SerializeListOfPointersToObjects(RHArtificialInte
         {
             SBString *err = file.GetError();
             const char *reason = err->m_chars ? err->m_chars : "";
-            SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
+            SBAssert(0, g_unk0x006a73c8,
                      5134, "Serialize failed reason is %s", reason);
             return false;
         }
@@ -1783,7 +1789,7 @@ inline RHAIActorTimerView &RHArtificialIntelligenceActorCalls::TimerView()
     return *(RHAIActorTimerView *)((char *)this + RHAIField<int>(RHAIField<void *>(this, 0x49c), 4));
 }
 
-// deferred: unannotated pending reccmp #534
+// FUNCTION: GAME 0x0048b450
 void RHArtificialIntelligenceActorCalls::Unk0048b450(unsigned value, int mode)
 {
     if ((unsigned char)mode)
@@ -1875,7 +1881,7 @@ struct RHScriptNode
     void *value;
 };
 
-// deferred: unannotated pending reccmp #534
+// FUNCTION: GAME 0x0059f720
 RHScriptNode *RHUnk0046eb30::Unk0059f720(RHScriptNode *next, RHScriptNode *previous)
 {
     RHScriptNode *node = (RHScriptNode *)::operator new(12);

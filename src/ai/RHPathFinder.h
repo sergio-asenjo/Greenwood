@@ -99,6 +99,7 @@ class RHUnk0046eb30
 public:
     RHScriptNode *Unk0059f720(RHScriptNode *next, RHScriptNode *previous);
     RHScriptIter erase(RHScriptIter position);
+    RHScriptIter FUN_0046eb80();
 };
 
 struct RHSectorActorNode;
@@ -206,9 +207,10 @@ public:
     RHMobileUnk006091b0 &FUN_006091b0(const SBGeoPoint2D &point);
 };
 
-class SBGeoVector2D
+class SBGeoVector2D : public SBGeoPoint2D
 {
 public:
+    ~SBGeoVector2D() {}
     float FUN_005fc660(const SBGeoPoint2D &point) const;
 };
 
@@ -218,7 +220,7 @@ public:
     void FUN_005c8e40(int index);
 };
 
-SBGeoPoint2D FUN_005fc4f0(float factor, const SBGeoPoint2D &point);
+SBGeoVector2D operator*(float factor, const SBGeoVector2D &point);
 extern float g_unk0x00677488;
 extern float g_unk0x0067749c;
 extern float g_unk0x006787f8;
@@ -289,7 +291,10 @@ public:
     undefined padding[3]; // 0x11
     int index; // +0x14
     RHUnkIter FUN_0046eb80();
-    RHUnkIter begin() { return FUN_0046eb80(); }
+    RHUnkIter begin()
+    {
+        return RHUnkIter(((RHUnk0046eb30 *)this)->FUN_0046eb80().node);
+    }
     RHUnkIter end() { return RHUnkIter(head); }
     RHUnkIter insert(RHUnkIter position, RHpathRequest *const &request)
     {

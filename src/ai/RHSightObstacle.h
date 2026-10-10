@@ -18,7 +18,7 @@ public:
 class SBGeoBoundingBox2D
 {
 public:
-    bool FUN_00607c70(SBFile &file);
+    bool Serialize(SBFile &file);
     void Unk00607dc0(const SBGeoPoint2D &point);
     int FUN_00609050(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
     float m_00; // 0x00

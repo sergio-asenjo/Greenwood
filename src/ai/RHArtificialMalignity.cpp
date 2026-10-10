@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHArtificialMalignity.h"
 #include <stdlib.h>
 #include <new>
@@ -131,7 +132,7 @@ bool RHMalignityBaseView::FUN_00419e10(void *actor)
     return first == second;
 }
 
-// deferred: unannotated pending reccmp #534.
+// FUNCTION: GAME 0x0041a300
 void RHMalignityBaseView::FUN_0041a300(void *actor)
 {
     RHMalignityList &list = RHMalignityField<RHMalignityList>(m_actor, 0x5d4);
@@ -802,6 +803,9 @@ void RHMalignityEngineCalls::FUN_004da8d0(const SBGeoBoundingBox2D &box)
     list.m_dirty = true;
 }
 
+// TEMPLATE: GAME 0x004e60a0
+// ?insert@?$vector@GV?$allocator@G@std@@@std@@QAEXPAGIABG@Z
+
 // STUB: GAME 0x004e65b0
 void RHMalignityOwnedList::FUN_004e65b0()
 {
@@ -846,16 +850,16 @@ bool RHMalignityGridCalls::FUN_004f5e50(SBGeoBoundingBox2D &box, const SBGeoPoin
             {
                 float distance = normal.FUN_005fc660(anchor.Unk005fc110(RHMalignityField<SBGeoPoint2D>(&box, 0)));
                 if (distance > g_unk0x006787f8)
-                    ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(FUN_005fc4f0(distance + g_unk0x0067749c, *(SBGeoPoint2D *)&normal));
+                    ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(operator*(distance + g_unk0x0067749c, normal));
                 distance = normal.FUN_005fc660(anchor.Unk005fc110(RHMalignityField<SBGeoPoint2D>(&box, 8)));
                 if (distance > g_unk0x006787f8)
-                    ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(FUN_005fc4f0(distance + g_unk0x0067749c, *(SBGeoPoint2D *)&normal));
+                    ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(operator*(distance + g_unk0x0067749c, normal));
                 distance = normal.FUN_005fc660(anchor.Unk005fc110(SBGeoPoint2D(RHMalignityField<float>(&box, 8), RHMalignityField<float>(&box, 4))));
                 if (distance > g_unk0x006787f8)
-                    ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(FUN_005fc4f0(distance + g_unk0x0067749c, *(SBGeoPoint2D *)&normal));
+                    ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(operator*(distance + g_unk0x0067749c, normal));
                 distance = normal.FUN_005fc660(anchor.Unk005fc110(SBGeoPoint2D(RHMalignityField<float>(&box, 0), RHMalignityField<float>(&box, 0x0c))));
                 if (distance > g_unk0x006787f8)
-                    ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(FUN_005fc4f0(distance + g_unk0x0067749c, *(SBGeoPoint2D *)&normal));
+                    ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(operator*(distance + g_unk0x0067749c, normal));
             }
         }
         RHMalignityNode *head = lines.m_head;

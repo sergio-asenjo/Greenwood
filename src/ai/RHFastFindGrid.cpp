@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHFastFindGrid.h"
 
 // GLOBAL: GAME 0x006c06f0
@@ -11,7 +12,7 @@ float g_unk0x006790d8 = -40.0f;
 // GLOBAL: GAME 0x006c0bcc
 unsigned long g_unk0x006c0bcc;
 
-// deferred: 0x004e5270, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x004e5270
 RHSeqList::RHSeqList(const char &allocator)
 {
     m_00[0] = allocator;
@@ -181,7 +182,7 @@ void RHFastFindGrid::InitializeSightObstaclesFromProtoStream(SBFile &file)
     FUN_005e20c0(file);
 }
 
-// deferred: unannotated pending reccmp #534
+// FUNCTION: GAME 0x004efbb0
 bool RHFastFindGrid::Unk004efbb0(SBFile &file, void **value)
 {
     short index;
@@ -581,7 +582,7 @@ void RHFastFindGrid::InitializeScriptStuffFromMissionStream(SBFile &file)
     FUN_005e20c0(file);
 }
 
-// deferred: unannotated pending reccmp #534
+// FUNCTION: GAME 0x004fbec0
 bool RHUnkPathGeometry::Unk004fbec0(SBFile &file, void *&value)
 {
     RHFastFindGrid &grid = *(RHFastFindGrid *)this;
@@ -629,7 +630,7 @@ bool RHUnkPathGeometry::Unk004fbec0(SBFile &file, void *&value)
     return true;
 }
 
-// deferred: unannotated pending reccmp #534
+// FUNCTION: GAME 0x004fc030
 bool RHUnkPathGeometry::Unk004fc030(SBFile &file, void *&value)
 {
     RHFastFindGrid &grid = *(RHFastFindGrid *)this;
@@ -667,7 +668,7 @@ bool RHUnkPathGeometry::Unk004fc030(SBFile &file, void *&value)
     return true;
 }
 
-// deferred: unannotated pending reccmp #534
+// FUNCTION: GAME 0x004fc180
 bool RHUnkPathGeometry::Unk004fc180(SBFile &file, void *&value)
 {
     RHFastFindGrid &grid = *(RHFastFindGrid *)this;
@@ -705,7 +706,7 @@ bool RHUnkPathGeometry::Unk004fc180(SBFile &file, void *&value)
     return true;
 }
 
-// deferred: unannotated pending reccmp #534
+// FUNCTION: GAME 0x004fc2d0
 bool RHUnkPathGeometry::Unk004fc2d0(SBFile &file, void *&value)
 {
     RHFastFindGrid &grid = *(RHFastFindGrid *)this;
@@ -837,7 +838,7 @@ RHFastFindRepulsive &RHFastFindRepulsive::FUN_004fdb90(const RHFastFindRepulsive
     return *this;
 }
 
-// deferred: 0x004fdc20, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x004fdc20
 RHFastFindRepulsiveBase &RHFastFindRepulsiveBase::Unk004fdc20(const RHFastFindRepulsiveBase &other)
 {
     *(SBGeoPoint2D *)((char *)this + 4) = *(const SBGeoPoint2D *)(&other ? (const char *)&other + 4 : 0);
@@ -863,7 +864,7 @@ void RHScriptFXArray::Unk004fe450(void **destination, unsigned int count, void *
             *destination = value;
 }
 
-// deferred: 0x0051aa00, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x0051aa00
 RHUnk0051aa00::RHUnk0051aa00()
 {
     *(int *)((char *)this + 4) = 1;

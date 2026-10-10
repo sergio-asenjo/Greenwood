@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHFastFindGrid.h"
 
 DECOMP_SIZE_ASSERT(RHUnk0051a5e0, 0x94)
@@ -118,5 +119,5 @@ bool RHUnk0051aa00::Serialize(SBFile &file)
 // STUB: GAME 0x0051b870
 bool RHUnk0051aa00::FUN_0051b870(bool, RHElementActor *, bool, bool, bool) { return false; }
 
-// STUB: GAME 0x0057cd50
+// FUNCTION: GAME 0x0057cd50
 bool RHUnk0051aa00::FUN_0057cd50(undefined4) { return true; }
