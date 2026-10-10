@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "VMCore.h"
 #include "SCQuad.h"
 #include "SB.h"
@@ -74,11 +75,13 @@ inline int *VMCore::GetSymbolValuePtr(unsigned short &value)
         return m_08->FUN_0063a1e0(value & 0x3fff);
     if (flags == 0x4000)
         return m_1c.FUN_0063a1e0(value & 0x3fff);
-    if (flags == 0x8000)
-        return (*(VMUnk00634d30Stack **)(m_0c.m_pad0 + 8))->m_04->m_08->m_0c.FUN_0063a1e0(value & 0x3fff);
+    if (flags == 0x8000) {
+        VMUnk00634d30Object *object = (*(VMUnk00634d30Stack **)(m_0c.m_pad0 + 8))->m_04->m_08;
+        return object->m_0c.FUN_0063a1e0(value & 0x3fff);
+    }
     if (flags == 0xc000) {
-        VMUnk00634d30Stack *stack = *(VMUnk00634d30Stack **)(m_0c.m_pad0 + 8);
-        return stack->m_04->m_08->m_14.FUN_0063a1e0(value & 0x3fff);
+        VMUnk00634d30Object *object = (*(VMUnk00634d30Stack **)(m_0c.m_pad0 + 8))->m_04->m_08;
+        return object->m_14.FUN_0063a1e0(value & 0x3fff);
     }
     SBAssert(0, "P:\\Robin Hood\\VirtualMachine\\VMCore.cpp", 0x516,
         // STRING: GAME 0x006be0b8
@@ -86,7 +89,7 @@ inline int *VMCore::GetSymbolValuePtr(unsigned short &value)
     return 0;
 }
 
-// STUB: GAME 0x00634c30
+// FUNCTION: GAME 0x00634c30
 void VMCore::FUN_00634c30()
 {
     m_0c.FUN_0063a370(GetSymbolValuePtr(((unsigned short *)m_28)[2]), 4);
@@ -125,6 +128,7 @@ void VMCore::FUN_00634dd0()
     m_24 = m_0c.FUN_0063a320();
 }
 
+// Parked: return-value store chain and final reload use different registers.
 // STUB: GAME 0x00634de0
 void VMCore::FUN_00634de0()
 {
@@ -137,7 +141,7 @@ void VMCore::FUN_00634de0()
     m_24 = m_0c.FUN_0063a320();
 }
 
-// STUB: GAME 0x00634eb0
+// FUNCTION: GAME 0x00634eb0
 void VMCore::FUN_00634eb0()
 {
     int *source = m_0c.FUN_0063a3b0(m_28[2]);
@@ -145,7 +149,7 @@ void VMCore::FUN_00634eb0()
     ++m_24;
 }
 
-// STUB: GAME 0x00634fa0
+// FUNCTION: GAME 0x00634fa0
 void VMCore::FUN_00634fa0()
 {
     int *destination = m_0c.FUN_0063a3b0(m_28[2]);
@@ -153,7 +157,7 @@ void VMCore::FUN_00634fa0()
     ++m_24;
 }
 
-// STUB: GAME 0x00635090
+// FUNCTION: GAME 0x00635090
 void VMCore::FUN_00635090()
 {
     int *value = GetSymbolValuePtr(((unsigned short *)m_28)[2]);
@@ -161,6 +165,7 @@ void VMCore::FUN_00635090()
     ++m_24;
 }
 
+// Parked: native-stack store folds the address into SIB and interleaves increments.
 // STUB: GAME 0x00635150
 void VMCore::FUN_00635150()
 {
@@ -179,7 +184,7 @@ void VMCore::FUN_00635210()
     *(int *)(m_pad30 + 8) = result;
 }
 
-// STUB: GAME 0x00635240
+// FUNCTION: GAME 0x00635240
 void VMCore::FUN_00635240()
 {
     *GetSymbolValuePtr(((unsigned short *)m_28)[2]) = *(int *)(m_pad30 + 8);
@@ -192,7 +197,7 @@ void VMCore::FUN_00635320()
     m_24 = m_28[1];
 }
 
-// STUB: GAME 0x00635330
+// FUNCTION: GAME 0x00635330
 void VMCore::FUN_00635330()
 {
     int *value = GetSymbolValuePtr(((unsigned short *)m_28)[2]);
@@ -202,7 +207,7 @@ void VMCore::FUN_00635330()
         ++m_24;
 }
 
-// STUB: GAME 0x006353f0
+// FUNCTION: GAME 0x006353f0
 void VMCore::FUN_006353f0()
 {
     int *value = GetSymbolValuePtr(((unsigned short *)m_28)[2]);
@@ -223,7 +228,7 @@ bool VMCore::FUN_006390a0_1()
     return false;
 }
 
-// STUB: GAME 0x00639170
+// FUNCTION: GAME 0x00639170
 VMCore::~VMCore()
 {
     if (--g_unk0x006c1940 == 0 && g_unk0x006c1944)
@@ -362,7 +367,7 @@ struct VMUnk0063a320Node
     VMUnk0063a400 *m_value;
 };
 
-// Unannotated: counted return handler and record-cleanup operand coupling.
+// FUNCTION: GAME 0x0063a320
 int VMUnk0063a250::FUN_0063a320()
 {
     VMUnk0063a400 *value = (*(VMUnk0063a320Node **)(m_pad0 + 8))->m_previous->m_value;
@@ -379,7 +384,7 @@ int VMUnk0063a250::FUN_0063a320()
     return result;
 }
 
-// deferred: unannotated pending reccmp #534.
+// FUNCTION: GAME 0x0063a370
 bool VMUnk0063a250::FUN_0063a370(void *source, int size)
 {
     int previous = ((RHUnk0063a1d0 *)*(VMUnk0063a140 **)m_pad0)->FUN_0063a1d0();
@@ -388,11 +393,11 @@ bool VMUnk0063a250::FUN_0063a370(void *source, int size)
     return true;
 }
 
-// STUB: GAME 0x0063a3b0
+// FUNCTION: GAME 0x0063a3b0
 int *VMUnk0063a250::FUN_0063a3b0(int offset)
 {
-    VMUnk00634d30Stack *stack = *(VMUnk00634d30Stack **)(m_pad0 + 8);
-    return (*(VMUnk0063a140 **)stack->m_04->m_08)->FUN_0063a1e0(offset);
+    VMUnk00634d30Object *object = (*(VMUnk00634d30Stack **)(m_pad0 + 8))->m_04->m_08;
+    return (*(VMUnk0063a140 **)object)->FUN_0063a1e0(offset);
 }
 
 void EmitVMUnk0063a3b0(VMUnk0063a250 *stack)

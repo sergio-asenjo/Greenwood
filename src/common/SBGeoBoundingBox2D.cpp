@@ -1,6 +1,8 @@
+#include "SBNullstr.h"
 #include "SBGeoBoundingBox2D.h"
 
-bool SBGeoBoundingBox2D::FUN_00607c70(SBFile &file)
+// FUNCTION: GAME 0x00607c70
+bool SBGeoBoundingBox2D::Serialize(SBFile &file)
 {
     if (file.Access(m_00, 4) < 0)
     {
@@ -44,5 +46,5 @@ bool SBGeoBoundingBox2D::FUN_00607c70(SBFile &file)
 
 void EmitSBGeoBoundingBox2D(SBGeoBoundingBox2D *box, SBFile &file)
 {
-    box->FUN_00607c70(file);
+    box->Serialize(file);
 }

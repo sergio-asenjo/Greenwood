@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "SBSimpleVirtualMachine.h"
 #include <new>
 
@@ -34,7 +35,7 @@ bool SBSimpleVirtualMachine::Initialize(std::string &name)
     return g_unk0x006c1969;
 }
 
-// STUB: GAME 0x00639a00
+// FUNCTION: GAME 0x00639a00
 bool SBSimpleVirtualMachine::Destroy()
 {
     g_unk0x006c1969 = false;

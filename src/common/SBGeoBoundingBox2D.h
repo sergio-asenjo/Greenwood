@@ -6,7 +6,7 @@
 class SBGeoBoundingBox2D
 {
 public:
-    bool FUN_00607c70(SBFile &file);
+    bool Serialize(SBFile &file);
     char m_00[0x14];
 };
 

@@ -9,6 +9,9 @@
 // The definitions live in RHSword_stubs.cpp (single definition; both TUs just
 // declare, so the linker sees one entity per call target).
 
+#ifndef SB_H
+#define SB_H
+
 struct SBString
 {
     char *m_pad0;
@@ -28,3 +31,5 @@ public:
 };
 
 inline void SBAssert(int, const char *, int, const char *, ...) {}
+
+#endif

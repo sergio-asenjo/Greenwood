@@ -97,7 +97,6 @@ public:
     }
     ~RHProfileText() { FUN_00401ee0(true); }
     bool FUN_00402280(unsigned int, bool);
-    void FUN_00402670(unsigned int);
     void FUN_00401ee0(bool);
     char m_allocator; // +0x00
     char *m_chars; // +0x04
@@ -166,10 +165,15 @@ public:
     virtual void Unk1c(); // vtable+0x1c
     virtual bool Unk20(RHUnkFXDraw *, unsigned long); // vtable+0x20
     virtual void *FUN_006114e0() { return *(void **)(m_04 + 0x10); } // vtable+0x24
+    // FUNCTION: GAME 0x006114f0
     virtual unsigned int FUN_006114f0() { return *(unsigned int *)(m_04 + 0x18); } // vtable+0x28
+    // FUNCTION: GAME 0x00611500
     virtual unsigned short FUN_00611500() { return m_width; } // vtable+0x2c
+    // FUNCTION: GAME 0x00611510
     virtual unsigned short FUN_00611510() { return m_height; } // vtable+0x30
+    // FUNCTION: GAME 0x00611520
     virtual unsigned short FUN_00611520() { return *(unsigned short *)m_24; } // vtable+0x34
+    // FUNCTION: GAME 0x00611530
     virtual int FUN_00611530() { return *(unsigned int *)(m_04 + 0x18) != 0; } // vtable+0x38
     bool Unk00611710(SBFile &);
     bool Unk00613530(RHUnkFXDraw *, unsigned long);

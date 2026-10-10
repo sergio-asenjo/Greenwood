@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "SCSerialize.h"
 
 int SCSerializeUnk00643c56(FILE *)
@@ -15,7 +16,13 @@ int SCSerializeUnk00642a2f(const char *, ...)
     return 0;
 }
 
-int SCSerialize::Serialize(bool)
+SCSerializeUnkList::~SCSerializeUnkList() {}
+SCSerializeUnkList00424340::~SCSerializeUnkList00424340() {}
+SCSerializeUnkArray::~SCSerializeUnkArray() {}
+
+SCSerializeUnkObject::~SCSerializeUnkObject() {}
+
+int SCSerializeUnkObject::FUN_0063a940(FILE *, bool)
 {
     return 0;
 }

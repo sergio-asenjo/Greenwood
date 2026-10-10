@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "Toolbox.h"
 
 void RHUnk006114c0::FUN_00611aa0(SBFile &, void *) {}
@@ -35,9 +36,16 @@ void RHUnk0060e4c0::FUN_0060f1e0(SBFile &) {}
 RHUnk0060e4c0 *FUN_005e1b20(RHUnk0060e4c0 *result, const char *) { return result; }
 unsigned long ToolboxPositionFile::FUN_005f5440() { return 0; }
 void ToolboxChunks::FUN_005e3070() { Buyback(); }
+// TEMPLATE: GAME 0x005e2ea0
+// ?substr@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@QBE?AV12@II@Z
+
+// FUNCTION: GAME 0x005e31d0
 ToolboxChunk **ToolboxChunks::FUN_005e31d0(unsigned int count) { return _Growmap(count); }
-ToolboxChunkIterator::ToolboxChunkIterator(ToolboxChunk *next, ToolboxChunk **map)
-    : m_first(*map), m_last(*map + 512), m_next(next), m_map(map) {}
+// TEMPLATE: GAME 0x0053dca0
+// ??0const_iterator@?$deque@UToolboxChunk@@V?$allocator@UToolboxChunk@@@std@@@std@@QAE@XZ
+
+// FUNCTION: GAME 0x0053e080
+ToolboxChunkIterator::ToolboxChunkIterator(ToolboxChunk *next, ToolboxChunk **map) : m_first(*map), m_last(*map + 512), m_next(next), m_map(map) {}
 unsigned long FUN_005f0ce0() { return 0; }
 bool FUN_005f1150(ToolboxMouseState &, unsigned char *) { return false; }
 bool FUN_005e17a0(unsigned char *) { return false; }

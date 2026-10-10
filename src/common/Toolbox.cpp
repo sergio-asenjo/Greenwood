@@ -1,4 +1,6 @@
+#include "SBNullstr.h"
 #include "Toolbox.h"
+#include <vector>
 #include <windows.h>
 #include "SBPicture.h"
 
@@ -26,40 +28,57 @@ unsigned char g_unk0x006a6d27 = 1;
 // GLOBAL: GAME 0x0067a664
 float g_unk0x0067a664 = 0.001f;
 
-// FUNCTION: GAME 0x00402670
-void RHProfileText::FUN_00402670(unsigned int count)
-{
-    unsigned int capacity = count | 31;
-    if (capacity > 0xfffffffd)
-        capacity = count;
-    char *storage;
-    try {
-        storage = std::allocator<char>().allocate(capacity + 2, 0);
-    } catch (...) {
-        capacity = count;
-        storage = std::allocator<char>().allocate(capacity + 2, 0);
-    }
-    if (m_size > 0)
-        memcpy(storage + 1, m_chars, m_size > capacity ? capacity : m_size);
-    unsigned int oldSize = m_size;
-    if (m_chars) {
-        unsigned char &references = ((unsigned char *)m_chars)[-1];
-        if (references == 0 || references == 255)
-            operator delete(m_chars - 1);
-        else
-            --references;
-    }
-    m_chars = 0;
-    m_size = 0;
-    m_capacity = 0;
-    m_chars = storage + 1;
-    ((unsigned char *)m_chars)[-1] = 0;
-    m_capacity = capacity;
-    m_size = oldSize > capacity ? capacity : oldSize;
-    m_chars[m_size] = 0;
-}
+// SYNTHETIC: GAME 0x00401910
+// ??0RHProfileString@@QAE@ABV0@@Z
 
-// FUNCTION: GAME 0x00423b10
+// TEMPLATE: GAME 0x00401c80
+// ??1?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@QAE@XZ
+
+// TEMPLATE: GAME 0x00401ce0
+// ?assign@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAEAAV12@ABV12@II@Z
+
+// TEMPLATE: GAME 0x00401f30
+// ?insert@?$vector@V?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@V?$allocator@V?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator6451574f
+
+// TEMPLATE: GAME 0x004021c0
+// ?assign@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAEAAV12@PBDI@Z
+
+// TEMPLATE: GAME 0x00402660
+// ?max_size@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QBEIXZ
+
+// TEMPLATE: GAME 0x00402670
+// ?_Copy@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AAEXI@Z
+
+// TEMPLATE: GAME 0x00402850
+// ?_Destroy@std@@YAXPAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@1@@Z
+
+// TEMPLATE: GAME 0x00402890
+// ?_Construct@std@@YAXPAV?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@1@ABV21@@Z
+
+// TEMPLATE: GAME 0x00402b90
+// ?_Construct@std@@YAXPAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@1@ABV21@@Z
+
+// SYNTHETIC: GAME 0x00402d00
+// ??_G?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAEPAXI@Z
+
+// TEMPLATE: GAME 0x00402de0
+// ??4?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@QAEAAV01@ABV01@@Z
+
+// TEMPLATE: GAME 0x00423800
+// ??0?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAE@PBDABV?$allocator@D@1@@Z
+
+// TEMPLATE: GAME 0x00423910
+// ?assign@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@QAEAAV12@PBGI@Z
+
+// TEMPLATE: GAME 0x004239c0
+// ?_Eos@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@AAEXI@Z
+
+// TEMPLATE: GAME 0x004239e0
+// ?_Grow@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@AAE_NI_N@Z
+
+// TEMPLATE: GAME 0x00423b10
+// ?_Copy@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@AAEXI@Z
+
 void RHUnk00423b10::FUN_00423b10(unsigned int count)
 {
     unsigned int capacity = count | 31;
@@ -99,7 +118,19 @@ void RHUnk00423b10::FUN_00423b10(unsigned int count)
     m_chars[m_size] = 0;
 }
 
-// deferred: unannotated pending reccmp #534
+// TEMPLATE: GAME 0x0044fa70
+// ?erase@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@QAEAAV12@II@Z
+
+// TEMPLATE: GAME 0x0044fbc0
+// ?_Split@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@AAEXXZ
+
+// TEMPLATE: GAME 0x00457c60
+// ?_Destroy@?$vector@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@V?$allocator@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@@2@@std@@IAEXPAV?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@2@0@Z
+
+// TEMPLATE: GAME 0x00458bd0
+// ?max_size@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@QBEIXZ
+
+// FUNCTION: GAME 0x005e1b70
 void RHSerializeName(SBFile &file, const char *name)
 {
     RHUnk0060e4c0 expected;
@@ -121,7 +152,11 @@ void RHSerializeName(SBFile &file, const char *name)
     }
 }
 
-// deferred: unannotated pending reccmp #534; map-load registers remain unmatched
+// SYNTHETIC: GAME 0x005e1c50
+// ??1ToolboxChunks@@QAE@XZ
+
+// Parked: deque map-end loads select reversed base/count registers.
+// STUB: GAME 0x005e1d50
 void FUN_005e1d50(SBFile &file, unsigned long expected, int version)
 {
     unsigned long tag;
@@ -156,7 +191,7 @@ void FUN_005e1d50(SBFile &file, unsigned long expected, int version)
     g_unk0x006c1178.Append(chunk);
 }
 
-// deferred: unannotated pending reccmp #534
+// FUNCTION: GAME 0x005e20c0
 void FUN_005e20c0(SBFile &file)
 {
     ToolboxChunk chunk = g_unk0x006c1178.back();
@@ -384,6 +419,13 @@ void Toolbox::Emit()
     PlaySlide("", 0);
     RHUnk00423b10 wide;
     wide.FUN_00423b10(0);
-    RHProfileText text("");
-    text.FUN_00402670(0);
+    typedef std::vector<std::string> Strings;
+    Strings strings;
+    void (*volatile destroy)(std::string *) = std::_Destroy;
+    void (*volatile construct)(Strings *, const Strings &) = std::_Construct;
+    Strings &(Strings::*volatile assign)(const Strings &) = &Strings::operator=;
+    (strings.*assign)(strings);
+    std::string &(std::string::*volatile assignString)(const std::string &, unsigned, unsigned) = &std::string::assign;
+    typedef std::vector<Strings> NestedStrings;
+    void (NestedStrings::*volatile insertStrings)(Strings *, unsigned, const Strings &) = &NestedStrings::insert;
 }

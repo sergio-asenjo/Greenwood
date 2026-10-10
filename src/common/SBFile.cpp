@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "SBFile.h"
 #include "RHSaveGame.h"
 #include "SCSerialize.h"
@@ -35,7 +36,7 @@ int SBFileUnk005f5280::FUN_005f5280(int)
     return -1;
 }
 
-// deferred: unannotated pending reccmp #534.
+// FUNCTION: GAME 0x005f5290
 void RHUnk005f4fc0::FUN_005f5290()
 {
     if (SBFile_embedded != 1) {
@@ -44,15 +45,14 @@ void RHUnk005f4fc0::FUN_005f5290()
     }
 }
 
-// Unannotated: coupled callers; embedded-position scheduling differs.
+// FUNCTION: GAME 0x005f52b0
 int SBFile::Access(void *buffer, int size)
 {
     if (SBFile_stream == 0 && SBFile_embedded == 0)
         return SBFile_error = -4;
     if (SBFile_embedded == 1) {
-        int position = SBFile_start + SBFile_position;
-        if (SBFileUnk00643a8f(SBFile_stream) != position)
-            SBFileUnk006439d6(SBFile_stream, position, 0);
+        if (SBFileUnk00643a8f(SBFile_stream) != SBFile_start + SBFile_position)
+            SBFileUnk006439d6(SBFile_stream, SBFile_start + SBFile_position, 0);
     }
     if (m_bLoading != 0) {
         if (SBFileUnk00643e0c(buffer, 1, size, SBFile_stream) != size)
@@ -140,8 +140,10 @@ int FUN_005f5500(const void *key)
     return 0;
 }
 
-// Parked: basic_string::_Nullstr operand is not the shared empty literal.
-// STUB: GAME 0x005f7360
+// FUNCTION: GAME 0x005f63c0
+// wmemset
+
+// FUNCTION: GAME 0x005f7360
 SBFileTreeIterator SBFileTree::FUN_005f7360(const std::string &key)
 {
     SBFileTreeIterator iterator(FUN_005f7710(key));

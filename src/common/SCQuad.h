@@ -32,13 +32,29 @@ public:
     int Serialize(FILE *, bool, bool);
 };
 
+struct VMQuad
+{
+    unsigned char m_00;
+    char m_pad01[3];
+    unsigned m_04;
+    union { unsigned m_08; float m_float08; };
+};
+
 class SCQuad
 {
 public:
+    int m_00;
+    SCQuadArg m_04;
+    SCQuadArg m_10;
+    SCQuadArg m_1c;
+
+    int Serialize(FILE *, bool, bool);
+    void InitializeVMQuadWithSCQuad(SCQuad &, VMQuad &);
     void InitializeVMQuadSymbolWithSCQuadArg(unsigned short &, SCQuadArg &);
 };
 
 int SCSerializeUnk00642a2f(const char *, ...);
 int SCQuadUnk00644112(FILE *, const char *, ...);
+const char *SCQuadUnk0063c760(int);
 
 #endif

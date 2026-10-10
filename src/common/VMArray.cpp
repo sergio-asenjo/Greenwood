@@ -1,8 +1,9 @@
+#include "SBNullstr.h"
 #include "VMArray.h"
 #include <new>
 #include <string.h>
 
-// deferred: unannotated pending reccmp #534.
+// FUNCTION: GAME 0x0063a140
 int VMUnk0063a140::FUN_0063a140(int size, bool preserve)
 {
     if (size > 0) {

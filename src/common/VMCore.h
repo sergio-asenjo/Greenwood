@@ -59,6 +59,7 @@ public:
     void *FUN_0063a510(VMUnk0063a490Result *, void *);
 };
 
+// VTABLE: GAME 0x0067bbc4
 class VMCore
 {
 public:
