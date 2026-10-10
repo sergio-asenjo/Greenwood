@@ -3,14 +3,6 @@
 
 #include "RHSoundSourceManager.h"
 
-class SBGeoPoint2D
-{
-public:
-    bool Serialize(SBFile &file);
-    float m_x;
-    float m_y;
-};
-
 class RHUnk005b4700
 {
 public:

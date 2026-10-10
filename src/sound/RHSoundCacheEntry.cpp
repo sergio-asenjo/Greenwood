@@ -7,7 +7,7 @@ static inline const char *SoundCacheStringData(const std::string &value)
     return chars ? chars : "";
 }
 
-// deferred: unannotated pending reccmp #534
+// FUNCTION: GAME 0x005b1d40
 bool RHSoundCacheEntry::UpdateSampleSize()
 {
     unsigned int mode = FSOUND_Sample_GetMode(m_sample);

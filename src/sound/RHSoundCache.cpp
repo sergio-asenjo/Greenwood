@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHSoundCache.h"
 #include "RHSoundCacheSpeechList.h"
 
@@ -24,7 +25,9 @@ void RHSoundCacheMusicArray::FUN_004023a0(RHSoundCacheMusic *position, unsigned 
     ((std::vector<RHSoundCacheMusic> *)this)->insert(position, count, value);
 }
 
-// unannotated: 0x004e4b40 has matched callers; reconstruction remains partial.
+// TEMPLATE: GAME 0x004e4b40
+// ??Hstd@@YA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@0@ABV10@0@Z
+
 std::string FUN_004e4b40(const std::string &first, const std::string &second)
 {
     std::string result(first);
@@ -32,7 +35,7 @@ std::string FUN_004e4b40(const std::string &first, const std::string &second)
     return result;
 }
 
-// deferred: 0x0056dac0 is called by InitializeMusic.
+// FUNCTION: GAME 0x0056dac0
 void RHSoundCacheMusicArray::FUN_0056dac0(RHSoundCacheMusic *first, RHSoundCacheMusic *last)
 {
     for (; first != last; ++first)
@@ -86,7 +89,7 @@ unsigned long RHSoundCache::FUN_005ab430(RHcacheData &cache)
     return cache.m_04++;
 }
 
-// deferred: 0x005ab7e0 calls LoadSample and is called by GetFXSample.
+// FUNCTION: GAME 0x005ab7e0
 void RHSoundCache::FUN_005ab7e0(RHSoundCacheEntry *entry, void *data, unsigned short stamp, bool spatial)
 {
     entry->LoadSample(spatial, stamp);
@@ -596,6 +599,9 @@ RHSoundCacheEntry *RHSoundCache::GetSourceCacheEntryForID(unsigned long id)
     return 0;
 }
 
+// TEMPLATE: GAME 0x005aef50
+// ??1?$pair@$$CBKV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@std@@QAE@XZ
+
 // FUNCTION: GAME 0x005af0c0
 std::pair<RHSoundCacheEntryMap::iterator, bool> RHSoundCacheEntryMap::FUN_005af0c0(const value_type &value)
 {
@@ -636,7 +642,7 @@ std::pair<RHSoundCacheEntryMap::iterator, bool> RHSoundCacheEntryMap::FUN_005af0
     return result;
 }
 
-// deferred: 0x005af600 is called by AddSoundGroup.
+// FUNCTION: GAME 0x005af600
 RHSoundCacheGroupInsert &RHSoundCacheGroups::FUN_005af600(RHSoundCacheGroupInsert &output, const value_type &value)
 {
     RHSoundCacheGroupNode *parent = *(RHSoundCacheGroupNode **)((char *)this + 4);
@@ -676,7 +682,7 @@ RHSoundCacheGroupInsert &RHSoundCacheGroups::FUN_005af600(RHSoundCacheGroupInser
     return output;
 }
 
-// deferred: 0x005afc50 is called by GetFXSample.
+// FUNCTION: GAME 0x005afc50
 RHSoundCacheGroupIterator &RHSoundCacheGroups::FUN_005afc50(RHSoundCacheGroupIterator &result, const unsigned long &key)
 {
     result.m_node = FUN_005b13e0(key);
@@ -689,7 +695,6 @@ RHSoundCacheGroupNode *g_unk0x006c10a4;
 // GLOBAL: GAME 0x006c10ac
 RHSoundCacheGroupNode *g_unk0x006c10ac;
 
-// deferred: 0x005b13e0 is called by AddSoundGroup.
 RHSoundCacheGroupNode *RHSoundCacheGroups::FUN_005b13e0(const unsigned long &key)
 {
     RHUnk00641782 lock;
@@ -711,7 +716,6 @@ RHSoundCacheGroupNode *RHSoundCacheGroups::FUN_005b13e0(const unsigned long &key
     return result;
 }
 
-// deferred: 0x005b1430 is called by GetSourceCacheEntryForID.
 RHSoundCacheGroupNode *RHSoundCacheEntryMap::FUN_005b1430(const unsigned long &key)
 {
     RHUnk00641782 lock;
@@ -733,7 +737,10 @@ RHSoundCacheGroupNode *RHSoundCacheEntryMap::FUN_005b1430(const unsigned long &k
     return result;
 }
 
-// deferred: 0x005b1ca0 is called by FUN_005ab430.
+// TEMPLATE: GAME 0x005b1a00
+// ?_Construct@std@@YAXPAU?$pair@$$CBKV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@1@ABU21@@Z
+
+// FUNCTION: GAME 0x005b1ca0
 RHUnk005b1ca0::RHUnk005b1ca0()
 {
     m_10 = 0;
@@ -754,7 +761,7 @@ void RHUnk005b1ca0::FUN_005b2040()
     m_1e = 0;
 }
 
-// deferred: 0x005f4fc0 has matched callers in several TUs.
+// FUNCTION: GAME 0x005f4fc0
 RHUnk005f4fc0::RHUnk005f4fc0()
 {
     *(undefined4 *)m_pad0 = 0;
@@ -764,6 +771,12 @@ RHUnk005f4fc0::RHUnk005f4fc0()
     m_34 = 0;
     m_38 = 0;
 }
+
+// TEMPLATE: GAME 0x005f77d0
+// ?_Ucopy@?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@IAEPAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@2@PBV32@0PAV32@@Z
+
+// TEMPLATE: GAME 0x005f7a40
+// ?copy_backward@std@@YAPAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@1@PAV21@00@Z
 
 void RHSoundCache::Emit(unsigned short index, RHSoundCacheGroups &groups, const RHSoundCacheMissionProfile *profile)
 {

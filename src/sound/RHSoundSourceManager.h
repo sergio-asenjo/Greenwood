@@ -3,14 +3,16 @@
 
 #include "RHSaveGameManager.h"
 #include "Decomp.h"
+#include <vector>
 
 // SIZE 0x08
-class RHUnk005fc030
+class SBGeoPoint2D
 {
 public:
-    RHUnk005fc030();
-    float x; // 0x00
-    float y; // 0x04
+    SBGeoPoint2D();
+    bool Serialize(SBFile &file);
+    float m_x; // 0x00
+    float m_y; // 0x04
 };
 
 // SIZE 0x10
@@ -28,9 +30,9 @@ public:
     ~RHSoundSourcePointStorage();
 
     undefined m_allocator; // 0x00
-    RHUnk005fc030 *m_first; // 0x04
-    RHUnk005fc030 *m_last; // 0x08
-    RHUnk005fc030 *m_end; // 0x0c
+    SBGeoPoint2D *m_first; // 0x04
+    SBGeoPoint2D *m_last; // 0x08
+    SBGeoPoint2D *m_end; // 0x0c
 };
 
 // SIZE 0x24
@@ -42,7 +44,7 @@ public:
     undefined4 m_10; // 0x10
     bool m_changed; // 0x14
     undefined4 m_18; // 0x18
-    RHUnk005fc030 m_1c; // 0x1c
+    SBGeoPoint2D m_1c; // 0x1c
 };
 
 // SIZE 0x3c
@@ -109,13 +111,10 @@ public:
     RHSoundSource *operator[](unsigned short index) { return m_first[index]; }
     RHSoundSource **begin() { return m_first; }
     RHSoundSource **end() { return m_last; }
-    RHSoundSourceIterator RemoveAll()
+    void RemoveAll()
     {
-        RHSoundSource **first = copy(end(), end(), begin());
-        RHSoundSourceIterator result(end());
-        m_last = first;
+        ((std::vector<RHSoundSource *> *)this)->erase(begin(), end());
         m_changed = true;
-        return result;
     }
     void InsertLast(RHSoundSource *const &value)
     {

@@ -1,10 +1,10 @@
+#include "SBNullstr.h"
 #include "RHSound.h"
 #include <windows.h>
 #include <math.h>
 #include <stdio.h>
 
 DECOMP_SIZE_ASSERT(RHSound, 0x294)
-DECOMP_SIZE_ASSERT(RHUnk0040bb20, 0x10)
 DECOMP_SIZE_ASSERT(RHUnk005a7220, 0x50)
 DECOMP_SIZE_ASSERT(RHUnk005a9260, 0x0c)
 DECOMP_SIZE_ASSERT(RHUnk005ad570Profiles, 0x6c)
@@ -118,7 +118,7 @@ DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 
 extern float g_unk0x006774ec;
 // GLOBAL: GAME 0x006774f0
-static float g_unk0x006774f0 = 0.01f;
+float g_unk0x006774f0 = 0.01f;
 
 // GLOBAL: GAME 0x00679df4
 static float g_unk0x00679df4 = 128.0f;
@@ -152,13 +152,9 @@ void RHProfileText::FUN_00402260(unsigned int size)
     m_chars[size] = 0;
 }
 
-// STUB: GAME 0x0040bb20
-std::string &RHUnk0040bb20::FUN_0040bb20(const std::string &value, unsigned int first, unsigned int count)
-{
-    return append(value, first, count);
-}
+// TEMPLATE: GAME 0x0040bb20
+// ?append@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAEAAV12@ABV12@II@Z
 
-// deferred: 0x0052c5a0 coupled caller; member tail jump remains unmatched.
 void RHSoundPendingData::FUN_0052c5a0()
 {
     ((SBGeoPoint2D *)((char *)this + 4))->~SBGeoPoint2D();
@@ -402,7 +398,7 @@ void RHSound::FUN_005a6fb0(int channel, int type, RHSoundCacheEntry *entry, void
     }
 }
 
-// deferred: 0x005a7080 unannotated pending reccmp #534
+// FUNCTION: GAME 0x005a7080
 RHSoundCacheEntry *RHSound::FUN_005a7080(const RHSoundSettings &sound, bool load)
 {
     RHSoundCacheEntry *entry;
@@ -562,7 +558,7 @@ void RHSound::FUN_005a7410(int channel, RHSoundChannelSettings &settings)
             "Unable to set priority.\n");
 }
 
-// deferred: 0x005a74e0 unannotated pending reccmp #534
+// FUNCTION: GAME 0x005a74e0
 void RHSound::FUN_005a74e0(unsigned long position)
 {
     std::string name;
@@ -571,19 +567,19 @@ void RHSound::FUN_005a74e0(unsigned long position)
     case 0:
         {
             std::string *music = m_000.GetQuietMusic(m_284);
-            ((RHProfileText *)&name)->FUN_00401ce0(*music, 0, std::string::npos);
+            name = *music;
         }
         break;
     case 1:
         {
             std::string *music = m_000.GetAlertMusic(m_284);
-            ((RHProfileText *)&name)->FUN_00401ce0(*music, 0, std::string::npos);
+            name = *music;
         }
         break;
     case 2:
         {
             std::string *music = m_000.GetFightMusic(m_284);
-            ((RHProfileText *)&name)->FUN_00401ce0(*music, 0, std::string::npos);
+            name = *music;
         }
         break;
     }
@@ -601,7 +597,7 @@ void RHSound::FUN_005a74e0(unsigned long position)
     }
 }
 
-// deferred: 0x005a7800 unannotated pending reccmp #534
+// FUNCTION: GAME 0x005a7800
 bool RHSound::InitializeSoundEngine(std::string &error)
 {
     if (g_unk0x006c0685)
@@ -631,7 +627,7 @@ bool RHSound::InitializeSoundEngine(std::string &error)
     return true;
 }
 
-// deferred: 0x005a7900 unannotated pending reccmp #534
+// FUNCTION: GAME 0x005a7900
 void RHSound::Activate(const RHSoundCacheMissionProfile *profile, bool flag)
 {
     if (m_20a)
@@ -664,7 +660,7 @@ void RHSound::Activate(const RHSoundCacheMissionProfile *profile, bool flag)
     }
 }
 
-// deferred: 0x005a79f0 unannotated pending reccmp #534
+// FUNCTION: GAME 0x005a79f0
 void RHSound::FUN_005a79f0(bool clear)
 {
     if (m_254)
@@ -681,7 +677,7 @@ void RHSound::FUN_005a79f0(bool clear)
             FUN_005a8420(channel);
     if (clear)
     {
-        ((RHUnk005a7220Manager *)m_200)->FUN_005b4ae0();
+        m_200->RHUnk005b4ae0();
         FUN_005ae1c0(false);
     }
     else
@@ -706,7 +702,7 @@ void RHSound::FUN_005a79f0(bool clear)
     m_20b = 0;
 }
 
-// deferred: 0x005a7d40 unannotated pending reccmp #534
+// FUNCTION: GAME 0x005a7d40
 void RHSound::ApplySoundSettings()
 {
     if (m_20a)
@@ -821,7 +817,7 @@ int RHSound::FUN_005a9040(void *stream, void *callback, int channel)
     return -1;
 }
 
-// deferred: 0x005a90d0 unannotated pending reccmp #534
+// FUNCTION: GAME 0x005a90d0
 void RHSound::FUN_005a90d0(void *&stream, int &channel)
 {
     if (stream)
@@ -872,7 +868,7 @@ bool RHSound::FUN_005a9170(unsigned long id)
     return true;
 }
 
-// deferred: 0x005a9260 unannotated pending reccmp #534
+// FUNCTION: GAME 0x005a9260
 bool RHSound::FUN_005a9260(unsigned short driver, bool force, unsigned long &position, std::string &error)
 {
     RHUnk005a9260 settings;
@@ -1344,7 +1340,7 @@ void RHSound::FUN_005ad570(void *value)
             m_000.InitializeExclamationsForProfile(entry->second, entry->first & 0xffff0000);
 }
 
-// deferred: 0x005ae9f0 unannotated pending reccmp #534
+// FUNCTION: GAME 0x005ae9f0
 RHSoundCacheEntry *RHSound::FUN_005ae9f0(unsigned long id)
 {
     RHSoundCacheEntryMap &entries = *(RHSoundCacheEntryMap *)((char *)this + 0x94);
@@ -1373,6 +1369,62 @@ void RHSound::FUN_005aec10()
     FUN_005ab5e0((char *)this + 0x44, (char *)this + 0x54, 2);
     FUN_005ab570((char *)this + 0x60, m_000.m_07c, 5);
     FUN_005ab5e0((char *)this + 0x94, (char *)this + 0xa4, 10);
+}
+
+// FUNCTION: GAME 0x005af320
+RHSoundFileTree::Pair RHSoundFileTree::FUN_005af320(const Value &value)
+{
+    Pair answer;
+    answer = FUN_005b0870(value);
+    Pair result(answer.first, answer.second);
+    return result;
+}
+
+// FUNCTION: GAME 0x005b0870
+RHSoundFileTree::Pair RHSoundFileTree::FUN_005b0870(const Value &value)
+{
+    Node *parent = m_head;
+    Node *node = parent->m_parent;
+    bool left = true;
+    {
+        RHUnk00641782 lock;
+        lock.FUN_00641782();
+        while (node != g_unk0x006c10b4)
+        {
+            parent = node;
+            left = value.m_key < node->m_key;
+            node = left ? node->m_left : node->m_right;
+        }
+        lock.FUN_0064181e();
+    }
+    if (m_multi)
+    {
+        Pair result(FUN_005b1580(node, parent, value), true);
+        return result;
+    }
+    Iterator previous;
+    previous.m_node = parent;
+    if (left)
+    {
+        if (previous.m_node == m_head->m_left)
+        {
+            Pair result(FUN_005b1580(node, parent, value), true);
+            return result;
+        }
+        previous.FUN_005b1940();
+    }
+    if (previous.m_node->m_key < value.m_key)
+    {
+        Pair result(FUN_005b1580(node, parent, value), true);
+        return result;
+    }
+    Pair result(previous, false);
+    return result;
+}
+
+void EmitRHSoundFileTree(RHSoundFileTree *tree, const RHSoundFileTree::Value &value)
+{
+    tree->FUN_005af320(value);
 }
 
 // STUB: GAME 0x005b2ff0
@@ -1459,7 +1511,7 @@ void RHSoundGeometryView::FUN_005b33b0(RHSoundChannelSettings &settings)
     settings.m_12 = (unsigned short)((depth + g_unk0x0067749c) * g_unk0x00679e08);
 }
 
-// deferred: 0x005b3420 unannotated pending reccmp #534
+// FUNCTION: GAME 0x005b3420
 void RHSoundGeometryView::FUN_005b3420(RHSoundChannelSettings &settings)
 {
     FUN_005b33b0(settings);
@@ -1489,16 +1541,15 @@ unsigned short RHSoundGeometryView::FUN_005b3490(bool spatial)
     return (unsigned short)(value * g_unk0x00679148) >> 1;
 }
 
-// STUB: GAME 0x005b34e0
+// FUNCTION: GAME 0x005b34e0
 unsigned short RHSoundGeometryView::FUN_005b34e0()
 {
     float value = m_10;
     *(float *)((char *)this + 0x18) = value;
-    value *= g_unk0x00679148;
-    return (unsigned short)value;
+    return (unsigned short)(*(float *)((char *)this + 0x18) * g_unk0x00679148);
 }
 
-// deferred: 0x005b3500 called by PlayDialog; CRT tail jump remains unmatched.
+// FUNCTION: GAME 0x005b3500
 unsigned short RHSoundGeometryView::FUN_005b3500()
 {
     float value = *(float *)((char *)this + 0x1c);
@@ -1537,7 +1588,6 @@ unsigned long FUN_006183c0(unsigned long crc, const char *data, unsigned long le
 
 void RHSound::Emit(SBFile &file, std::string &name, RHSoundChannelSettings &settings)
 {
-    ((RHUnk0040bb20 *)&name)->FUN_0040bb20(name, 0, 0);
     unsigned long driver;
     FUN_005a6520(driver);
     FUN_005a67b0(driver);

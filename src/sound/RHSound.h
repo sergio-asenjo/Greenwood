@@ -13,12 +13,6 @@ extern LONG (__stdcall *g_rhsoundRegQueryValueExA)(HKEY, LPCSTR, LPDWORD, LPDWOR
 
 class SBFile;
 
-// SIZE 0x10
-class RHUnk0040bb20 : public std::string
-{
-public:
-    std::string &FUN_0040bb20(const std::string &, unsigned int, unsigned int);
-};
 class RHSoundSource;
 struct RHSoundPendingNode;
 struct RHSoundPendingData;
@@ -93,6 +87,7 @@ struct RHSoundSourcesView
 class RHSoundSourceManager
 {
 public:
+    void RHUnk005b4ae0();
     RHSoundSource *GetSoundSource(unsigned short);
     bool Serialize(SBFile &);
     undefined m_00[4]; // 0x00
@@ -286,6 +281,42 @@ struct RHUnk005a9260
     char m_0b; // 0x0b
 };
 
+// SIZE 0x10
+class RHSoundFileTree
+{
+public:
+    struct Node
+    {
+        Node *m_left; // 0x00
+        Node *m_parent; // 0x04
+        Node *m_right; // 0x08
+        unsigned long m_key; // 0x0c
+        std::string m_value; // 0x10
+        undefined4 m_color; // 0x20
+    };
+    struct Iterator
+    {
+        Node *m_node; // 0x00
+        void FUN_005b1940();
+    };
+    typedef std::pair<Iterator, bool> Pair;
+    struct Value
+    {
+        unsigned long m_key; // 0x00
+        std::string m_value; // 0x04
+    };
+    Pair FUN_005af320(const Value &);
+    Pair FUN_005b0870(const Value &);
+    Iterator FUN_005b1580(Node *, Node *, const Value &);
+    undefined m_00[4]; // 0x00
+    Node *m_head; // 0x04
+    undefined m_multi; // 0x08
+    undefined m_09[3]; // 0x09
+    unsigned int m_size; // 0x0c
+};
+
+extern RHSoundFileTree::Node *g_unk0x006c10b4;
+
 // SIZE 0x6c
 struct RHUnk005ad570Profiles
 {
@@ -312,7 +343,6 @@ class RHUnk005a7220Manager
 {
 public:
     void FUN_005b4f00(RHUnk005a7220 *);
-    void FUN_005b4ae0();
 };
 
 // SIZE 0x10

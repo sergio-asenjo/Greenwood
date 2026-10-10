@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHSound.h"
 #include <windows.h>
 
@@ -27,7 +28,6 @@ bool RHSound::FUN_005ae320(void *) { return false; }
 void RHSound::FUN_005ab570(void *, unsigned int &, unsigned short) {}
 void RHSound::FUN_005ab5e0(void *, void *, unsigned short) {}
 void RHUnk005a7220Manager::FUN_005b4f00(RHUnk005a7220 *) {}
-void RHUnk005a7220Manager::FUN_005b4ae0() {}
 RHUnk005a9260::RHUnk005a9260() {}
 void RHSound::FUN_005a7660(bool) {}
 void RHSound::FUN_005a8780() {}
@@ -47,8 +47,8 @@ int RHSoundChannels::FUN_0045a490() { return Size(); }
 RHSoundChannel *RHSoundChannels::FUN_005aaca0(RHSoundChannel *, RHSoundChannel *, RHSoundChannel *result) { return result; }
 void RHSoundChannels::FUN_005aacf0(RHSoundChannel *, unsigned int, const RHSoundChannel &) {}
 
-RHUnk005b2410::RHUnk005b2410(float first, float second, float third, float fourth)
-    : m_00(first), m_04(second), m_08(third), m_0c(fourth) {}
+// FUNCTION: GAME 0x005b2410
+RHUnk005b2410::RHUnk005b2410(float first, float second, float third, float fourth) : m_00(first), m_04(second), m_08(third), m_0c(fourth) {}
 float RHUnk005b2ff0Geometry::FUN_005b2510(float, const RHUnk005b2410 &) { return 0; }
 float RHUnk005b2ff0Geometry::FUN_005b2560(const SBGeoPoint2D &, const RHUnk005b2410 &) { return 0; }
 float RHUnk005b2ff0Geometry::FUN_005b25e0(const RHUnk005b2410 &) { return 0; }
@@ -129,3 +129,7 @@ extern "C" signed char __stdcall FSOUND_Stream_Stop(void *) { return 0; }
 extern "C" int __stdcall FSOUND_PlaySound(int, void *) { return 0; }
 // LIBRARY: GAME 0x005e3ab4
 extern "C" void __stdcall FSOUND_3D_Update() {}
+// GLOBAL: GAME 0x006c10b4
+RHSoundFileTree::Node *g_unk0x006c10b4 = 0;
+void RHSoundFileTree::Iterator::FUN_005b1940() {}
+RHSoundFileTree::Iterator RHSoundFileTree::FUN_005b1580(Node *, Node *, const Value &) { Iterator result; result.m_node = m_head; return result; }

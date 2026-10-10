@@ -1,6 +1,7 @@
+#include "SBNullstr.h"
 #include "RHSoundSourceManager.h"
 
-DECOMP_SIZE_ASSERT(RHUnk005fc030, 0x08)
+DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 DECOMP_SIZE_ASSERT(RHSoundSourcePointStorage, 0x10)
 DECOMP_SIZE_ASSERT(RHSoundSourcePoints, 0x24)
 DECOMP_SIZE_ASSERT(RHSoundSourceFields, 0x3c)
@@ -25,8 +26,7 @@ RHSoundSource::RHSoundSource() : m_04(0), m_08(1), m_0c(-1), m_4c(false)
 {
 }
 
-// Parked: 92.86%; the unused iterator-result stack slot is optimized away.
-// STUB: GAME 0x005b4ae0
+// FUNCTION: GAME 0x005b4ae0
 void RHSoundSourceManager::RHUnk005b4ae0()
 {
     for (short index = m_sources.GetSize() - 1; index >= 0; --index)
