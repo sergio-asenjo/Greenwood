@@ -25,6 +25,7 @@
 // addresses: the original is a fixed-base EXE, so its absolute string pointers
 // carry no relocation records and reccmp cannot discover them by scanning.
 
+#include "SBNullstr.h"
 #include "RHScript.h"
 #include "RHGame.h"
 #include "RHScriptLists.h"
@@ -59,7 +60,7 @@ DECOMP_SIZE_ASSERT(RHMalignityPosition, 0x10)
 DECOMP_SIZE_ASSERT(RHUnk004169c0, 0x04)
 DECOMP_SIZE_ASSERT(RHArtificialIntelligencePathCursor, 0x0c)
 
-// deferred: 0x0040d980, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x0040d980
 void RHScriptBatchCalls::Unk0040d980(int state)
 {
     RHScriptStimulusValue value;
@@ -69,7 +70,7 @@ void RHScriptBatchCalls::Unk0040d980(int state)
     ((RHScriptStimulusDispatch *)this)->v09(value);
 }
 
-// deferred: 0x00413640, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x00413640
 void RHUnk00413640::Unk(int state, bool flag)
 {
     unsigned char flags = *(unsigned char *)&flag;
@@ -130,7 +131,7 @@ void RHUnk00413640::Unk(int state, bool flag)
     }
 }
 
-// deferred: 0x004169c0, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x004169c0
 void RHUnk004169c0::Unk(int state, int value)
 {
     switch (state)
@@ -262,7 +263,7 @@ bool RHScriptBatchCalls::Unk00418a80(RHUnk00571160Position position, int facing)
     return true;
 }
 
-// Parked: 0x00418b80, 89.47%; coupled call operands require no annotation.
+// FUNCTION: GAME 0x00418b80
 void RHUnk00418b80::Unk(bool value)
 {
     *(bool *)((char *)this + 0x1c4) = true;
@@ -285,7 +286,7 @@ void RHScriptBatchCalls::Unk00419fd0(int value, int duration)
     *(unsigned *)((char *)this + 0x264) = time + (unsigned short)duration;
 }
 
-// deferred: 0x004242b0, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x004242b0
 RHScriptNode *RHScriptPositionList::Unk004242b0(RHScriptNode *next, RHScriptNode *previous)
 {
     RHScriptNode *node = (RHScriptNode *)operator new(0x18);
@@ -312,31 +313,9 @@ void RHScriptBatchCalls::Unk00444440(bool attentive)
 }
 
 // FUNCTION: GAME 0x0044f580
-unsigned short *FUN_0044f580(unsigned short *destination, const unsigned short *source, unsigned int count)
-{
-    unsigned short *current = destination;
-    if (source < destination && destination < source + count)
-    {
-        current += count;
-        source += count;
-        while (count > 0)
-        {
-            *--current = *--source;
-            --count;
-        }
-    }
-    else
-    {
-        while (count > 0)
-        {
-            *current++ = *source++;
-            --count;
-        }
-    }
-    return destination;
-}
+// wmemmove
 
-// Parked: 0x00450b60, 97.73%; coupled call operand requires no annotation.
+// FUNCTION: GAME 0x00450b60
 void RHUnk00450b60::Unk(int property, int amount)
 {
     RHScriptBatchCalls *engine = (RHScriptBatchCalls *)g_pEngine;
@@ -361,7 +340,7 @@ void RHUnk00450b60::Unk(int property, int amount)
     }
 }
 
-// deferred: 0x00450be0, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x00450be0
 void RHScriptBatchCalls::Unk00450be0(int property, int value)
 {
     *(int *)((char *)this + property * 4 + 0x94) -= value;
@@ -369,7 +348,7 @@ void RHScriptBatchCalls::Unk00450be0(int property, int value)
         FUN_00456d20();
 }
 
-// deferred: 0x00452030, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x00452030
 int RHUnk00452030::Get(int index)
 {
     return *(int *)((char *)this + index * 4 + 0x94);
@@ -389,7 +368,7 @@ void RHScriptBatchCalls::Unk004520e0(int index, int value)
         FUN_00456d20();
 }
 
-// deferred: 0x00456cb0, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x00456cb0
 bool RHScriptBatchCalls::Unk00456cb0(int type)
 {
     void **first = *(void ***)((char *)this + 0x118);
@@ -402,7 +381,7 @@ bool RHScriptBatchCalls::Unk00456cb0(int type)
     return false;
 }
 
-// deferred: 0x00456ce0, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x00456ce0
 bool RHScriptBatchCalls::Unk00456ce0(void *type)
 {
     void **first = *(void ***)((char *)this + 0x118);
@@ -415,7 +394,7 @@ bool RHScriptBatchCalls::Unk00456ce0(void *type)
     return false;
 }
 
-// deferred: 0x0046bcb0, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x0046bcb0
 void RHUnk0046bcb0::Unk(int value)
 {
     RHUnk0046bcb0Dispatch *order = *(RHUnk0046bcb0Dispatch **)((char *)this + 0x130);
@@ -424,42 +403,42 @@ void RHUnk0046bcb0::Unk(int value)
     ((RHScriptBatchCalls *)g_unk0x6c1040)->FUN_0058bbe0(this, value);
 }
 
-// deferred: 0x0046bcf0, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x0046bcf0
 void RHScriptBatchCalls::Unk0046bcf0(int state, int value)
 {
     ((RHUnk00570e70Vtbl *)this)->v17(state);
     *(int *)((char *)this + 0x144) = value;
 }
 
-// deferred: 0x0046bd10, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x0046bd10
 void RHScriptBatchCalls::Unk0046bd10(int state)
 {
     *(int *)((char *)this + 0x144) = state;
 }
 
-// deferred: 0x00485220, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x00485220
 void RHScriptBatchCalls::Unk00485220(int index, int value)
 {
     (*(RHScriptBatchCalls **)((char *)this + 0x1c4))->FUN_0051d540(index, value);
 }
 
-// deferred: 0x00486f50, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x00486f50
 void RHScriptBatchCalls::Unk00486f50(void *, bool)
 {
 }
 
-// deferred: 0x00489e80, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x00489e80
 bool RHScriptBatchCalls::Unk00489e80(void *target)
 {
     return FUN_00489680(target) > g_unk0x00677488;
 }
 
-// deferred: 0x0048a970, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x0048a970
 void RHUnk0048a970::Unk(int)
 {
 }
 
-// deferred: 0x0049d4f0, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x0049d4f0
 bool RHUnk0049d4f0::Unk(int value)
 {
     int *entry = *(int **)((char *)this + 0x5fc);
@@ -473,7 +452,7 @@ bool RHUnk0049d4f0::Unk(int value)
     return false;
 }
 
-// deferred: 0x0049d560, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x0049d560
 bool RHScriptBatchCalls::Unk0049d560(int action)
 {
     int *entry = *(int **)((char *)this + 0x5fc);
@@ -504,13 +483,13 @@ void RHUnk004af1d0::Unk(bool value)
     }
 }
 
-// deferred: 0x004baea0, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x004baea0
 unsigned int RHScriptBatchCalls::Unk004baea0()
 {
     return *(unsigned int *)((char *)this + 0x168);
 }
 
-// deferred: 0x004e3220, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x004e3220
 void RHScriptBatchCalls::Unk004e3220(int value)
 {
     *(bool *)((char *)this + 0x4a50) = true;
@@ -522,32 +501,32 @@ void RHScriptBatchCalls::Unk004e3220(int value)
     }
 }
 
-// deferred: 0x004e3cc0, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x004e3cc0
 RHScriptBatchCalls *RHScriptBatchCalls::Unk004e3cc0()
 {
     return (RHScriptBatchCalls *)((char *)this + 0x4a5c);
 }
 
-// deferred: 0x004e3e00, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x004e3e00
 void RHScriptBatchCalls::Unk004e3e00(int index, int value)
 {
     (*(int **)((char *)this + 0x4c5c))[index] = value;
 }
 
-// deferred: 0x004e3e20, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x004e3e20
 int RHScriptBatchCalls::Unk004e3e20(int index)
 {
     return (*(int **)((char *)this + 0x4c5c))[index];
 }
 
-// deferred: 0x004e3e30, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x004e3e30
 bool RHScriptBatchCalls::Unk004e3e30(int index)
 {
     return index >= 0 && index < (*(int **)((char *)this + 0x4c5c) == 0 ? 0 :
         *(int **)((char *)this + 0x4c60) - *(int **)((char *)this + 0x4c5c));
 }
 
-// deferred: 0x00560420, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x00560420
 void RHUnk00560420::Unk(RHUnk00571160Position *position)
 {
     position->x = *(float *)((char *)this + 0x20);
@@ -1400,7 +1379,7 @@ bool RHScript::SetActorLocation(void *actor, void *location)
         }
         RHUnk00522470 &target = *(RHUnk00522470 *)location;
         SBGeoPoint2D &point = *(SBGeoPoint2D *)&target.x;
-        ((RHUnk00464530 *)(*(char **)((char *)actor + 0x50) + 4))->Unk(point);
+        ((RHActorPositionCalls *)(*(char **)((char *)actor + 0x50) + 4))->FUN_00464530(point);
         ((RHScriptActorPositionFields *)actor)->position->layer = target.layer;
         ((RHScriptActorPositionFields *)actor)->position->area = target.area;
         char *area = (char *)target.area;
@@ -2535,7 +2514,7 @@ bool RHScript::RecordSeekActorMessageWithArguments(void *actor, void *target, in
     return false;
 }
 
-// parked: 64.36% initial, 80.26% preloaded destination; first/area register allocation and cached-list scheduling differ.
+// Parked: counted begin callee corrected; first/area registers and cached-list scheduling remain non-exact.
 // STUB: GAME 0x005740b0
 bool RHScript::RecordMove(void *actor, void *location, int style)
 {
@@ -2610,7 +2589,7 @@ bool RHScript::RecordMove(void *actor, void *location, int style)
     return true;
 }
 
-// parked: 60.34% initial, 80.94% preloaded destination; first/area register allocation and cached-list scheduling differ.
+// Parked: counted begin callee corrected; first/area registers and cached-list scheduling remain non-exact.
 // STUB: GAME 0x005743a0
 bool RHScript::RecordMoveNear(void *actor, void *location, int style, int distance)
 {
@@ -2975,7 +2954,7 @@ bool RHScript::RecordUnLockUser()
                          "RecordUnLockUser");
 }
 
-// deferred: unannotated pending reccmp #534 (0x005755f0, annotated 95.45%, callee operand only)
+// FUNCTION: GAME 0x005755f0
 void *RHScript::GetSoundSourceScript(int index)
 {
     char *context = *(char **)(g_unk0x6c0fa8 + 0x45e0);
@@ -3047,7 +3026,7 @@ bool RHScript::Activate(void *actor)
     return false;
 }
 
-// deferred: unannotated pending reccmp #534 (0x00575760, annotated 98.61%, callee operand only)
+// FUNCTION: GAME 0x00575760
 bool RHScript::SetActionAvailable(void *actor, int action, bool available)
 {
     if (!IsActorPC(actor))
@@ -3075,7 +3054,7 @@ bool RHScript::SetActionAvailable(void *actor, int action, bool available)
     }
 }
 
-// deferred: unannotated pending reccmp #534 (0x00575870, annotated 96.77%, callee operand only)
+// FUNCTION: GAME 0x00575870
 bool RHScript::IsActionAvailable(void *actor, int action)
 {
     if (!IsActorPC(actor))
@@ -3820,7 +3799,7 @@ bool RHScript::CleanFromHisBuildingBeforeTeleport(void *actor)
     return false;
 }
 
-// deferred: unannotated pending reccmp #534 (0x00577220: 99.04% annotated, 100.00% with Leave unannotated)
+// FUNCTION: GAME 0x00577220
 bool RHScript::CleanFromScriptZoneBeforeTeleport(void *actor, void *zone)
 {
     if (zone != 0)
@@ -4200,7 +4179,7 @@ void RHScript::PutActorInBulding(void *actor, void *building)
     *(char *)((char *)actor + 0x12) = 0;
     position->layer = *(short *)((char *)g_unk0x6c0a9c + 0x3e9c);
     ((RHScriptActorPositionFields *)actor)->position->area = building;
-    ((RHUnk00464530 *)((char *)((RHScriptActorPositionFields *)actor)->position + 4))->Unk(*(SBGeoPoint2D *)(location + 0x20));
+    ((RHActorPositionCalls *)((char *)((RHScriptActorPositionFields *)actor)->position + 4))->FUN_00464530(*(SBGeoPoint2D *)(location + 0x20));
     ((RHBonusInfoBase *)((char *)((RHScriptActorPositionFields *)actor)->position + 4))->FUN_0055f290();
     ((RHScriptBatchCalls *)building)->Unk0057ebd0(actor);
     if ((*(unsigned int *)((char *)actor + 4) & 15) == 12)
@@ -4500,8 +4479,7 @@ void RHScript::AddPCToMissionTeam(void *actor)
              "Script Error: Trying to add an element that is not a PC to the team for the next mission.");
 }
 
-// 94.44%; sole diff is the ILT tail-jmp (rule 25).
-// STUB: GAME 0x00579280
+// FUNCTION: GAME 0x00579280
 void RHScript::RemovePCFromMissionTeam(void *actor)
 {
     if ((*(unsigned int *)((char *)actor + 4) & 15) == 12)
@@ -4797,13 +4775,7 @@ void RHScript::RHUnk5798a0(void *object, bool value)
     }
 }
 
-// STATUS: BLOCKED — 96.15%, parked as STUB. The only differing instruction is the tail
-// `jmp` to the scroll-status getter (0x4b9f30): our incremental link (`/DEBUG` implies
-// `/INCREMENTAL`) routes cross-TU/class-member tail jumps through the ILT, whose stubs are
-// unnamed, so reccmp cannot resolve the jmp operand (calls get `<OFFSETn>` placeholders;
-// jmp does not). Fix would be `/INCREMENTAL:NO`, which Hard rule 17 forbids pending
-// verification. Everything else matches byte-for-byte; see docs/06-subagents.md.
-// STUB: GAME 0x005798f0
+// FUNCTION: GAME 0x005798f0
 int RHScript::GetScrollStatus(void *element)
 {
     if (element == 0)
@@ -4972,7 +4944,7 @@ int RHScript::GetSoundSourceIndex(void *source)
     return index;
 }
 
-// deferred: unannotated pending reccmp #534
+// FUNCTION: GAME 0x0057a020
 bool RHScript::AddToSequence(RHSequenceElement *element, const char *where)
 {
     if (g_unk0x6c0f78 != 0)
@@ -5604,7 +5576,7 @@ void RHScript::SelectActorPC(void *actor, bool selected)
     }
 }
 
-// 86.90%; search/postfix and word-result register allocation remain unresolved.
+// Parked: counted postfix callee corrected; search and word-result registers remain non-exact.
 // STUB: GAME 0x0057bed0
 bool RHScript::HasAnyActionSelected(void *actor)
 {
@@ -5627,7 +5599,7 @@ bool RHScript::HasAnyActionSelected(void *actor)
             engine->selection.searchValid = true;
             engine->selection.cursor.node = engine->selection.head->next;
             int index = 0;
-            for (; index < size; ++index, ((RHScriptActionCursor &)engine->selection.cursor)++)
+            for (; index < size; ++index, ((RHSectorActorIter &)engine->selection.cursor)++)
                 if (engine->selection.cursor.node->data == engine->selection.searchValue) break;
             if (index < size)
             {
@@ -5714,14 +5686,14 @@ void RHScript::LinkTargetToFX(void *target, void *fx)
 
 // Force emission: non-inline member functions defined here are emitted into the
 // object; these out-of-line calls keep them in the build.
-// deferred: 0x0057ff70, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x0057ff70
 void RHScriptBatchCalls::Unk0057ff70(float height)
 {
     *(int *)((char *)this + 0x30) = 0x20000;
     *(float *)((char *)this + 0xf0) = height;
 }
 
-// deferred: 0x00586e00, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x00586e00
 void RHUnk005866a0::Unk00586e00(int property, bool value)
 {
     RHScriptPropertyValue payload;
@@ -5729,7 +5701,7 @@ void RHUnk005866a0::Unk00586e00(int property, bool value)
     ((RHScriptPropertyMap *)((char *)this + 0x64))->FUN_005873a0(RHScriptPropertyPair(property, payload));
 }
 
-// deferred: 0x00586ed0, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x00586ed0
 void RHUnk005866a0::Unk00586ed0(int property, int value)
 {
     RHScriptPropertyValue payload;
@@ -5737,7 +5709,7 @@ void RHUnk005866a0::Unk00586ed0(int property, int value)
     ((RHScriptPropertyMap *)((char *)this + 0x64))->FUN_005873a0(RHScriptPropertyPair(property, payload));
 }
 
-// deferred: 0x00586fd0, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x00586fd0
 void RHUnk005866a0::Unk00586fd0(int property, float value)
 {
     RHScriptPropertyValue payload;
@@ -5745,7 +5717,7 @@ void RHUnk005866a0::Unk00586fd0(int property, float value)
     ((RHScriptPropertyMap *)((char *)this + 0x64))->FUN_005873a0(RHScriptPropertyPair(property, payload));
 }
 
-// deferred: 0x00587010, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x00587010
 void RHUnk005866a0::Unk00587010(int property, const SBGeoPoint2D &value)
 {
     RHScriptPropertyValue payload;
@@ -5774,7 +5746,7 @@ SBGeoPoint2D *RHUnk005b5e00::Unk005bdd30(short index)
     return (SBGeoPoint2D *)(frames + (unsigned short)index * 100 + 8);
 }
 
-// deferred: 0x005fc090, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x005fc090
 SBGeoPoint2D &SBGeoPoint2D::operator=(const SBGeoPoint2D &other)
 {
     if (&other != this)
@@ -5785,12 +5757,14 @@ SBGeoPoint2D &SBGeoPoint2D::operator=(const SBGeoPoint2D &other)
     return *this;
 }
 
-// deferred: 0x005fc6a0, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x005fc6a0
 float RHUnk005fc3b0::Unk005fc6a0(float value)
 {
-    float y = m_y;
+    float y;
     if (value != g_unk0x0067749c)
-        y /= value;
+        y = m_y / value;
+    else
+        y = m_y;
     return (float)sqrt(m_x * m_x + y * y);
 }
 

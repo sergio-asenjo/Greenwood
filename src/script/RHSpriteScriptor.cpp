@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHSpriteScriptor.h"
 #include <string.h>
 #include <stdlib.h>
@@ -6,6 +7,45 @@ class RHProfileFile : public SBFile
 {
 public:
     int FUN_005f5370(int offset, int origin);
+};
+
+class RHSpritePointVectorEmission : public std::vector<SBGeoPoint2D>
+{
+public:
+    static void Emit()
+    {
+        void (std::vector<SBGeoPoint2D>::*volatile destroy)(SBGeoPoint2D *, SBGeoPoint2D *) = &RHSpritePointVectorEmission::_Destroy;
+        void (std::vector<SBGeoPoint2D>::*volatile insert)(SBGeoPoint2D *, unsigned int, const SBGeoPoint2D &) = &RHSpritePointVectorEmission::insert;
+        SBGeoPoint2D *(std::vector<SBGeoPoint2D>::*volatile copy)(const SBGeoPoint2D *, const SBGeoPoint2D *, SBGeoPoint2D *) = &RHSpritePointVectorEmission::_Ucopy;
+        void (std::vector<SBGeoPoint2D>::*volatile fill)(SBGeoPoint2D *, unsigned int, const SBGeoPoint2D &) = &RHSpritePointVectorEmission::_Ufill;
+    }
+};
+
+class RHSpriteGeometryVectorEmission : public std::vector<SBGeoVector2D>
+{
+public:
+    static void Emit()
+    {
+        RHSpritePointVectorEmission::Emit();
+        void (std::vector<SBGeoVector2D>::*volatile clear)() = &RHSpriteGeometryVectorEmission::clear;
+        SBGeoVector2D *(std::vector<SBGeoVector2D>::*volatile insertOne)(SBGeoVector2D *, const SBGeoVector2D &) = &RHSpriteGeometryVectorEmission::insert;
+        void (std::vector<SBGeoVector2D>::*volatile destroy)(SBGeoVector2D *, SBGeoVector2D *) = &RHSpriteGeometryVectorEmission::_Destroy;
+        void (std::vector<SBGeoVector2D>::*volatile fill)(SBGeoVector2D *, unsigned int, const SBGeoVector2D &) = &RHSpriteGeometryVectorEmission::_Ufill;
+        void (__cdecl *volatile pointFill)(SBGeoPoint2D *, SBGeoPoint2D *, const SBGeoPoint2D &) = &std::fill;
+        SBGeoPoint2D *(__cdecl *volatile pointCopyBackward)(SBGeoPoint2D *, SBGeoPoint2D *, SBGeoPoint2D *) = &std::copy_backward;
+        void (__cdecl *volatile vectorFill)(SBGeoVector2D *, SBGeoVector2D *, const SBGeoVector2D &) = &std::fill;
+        SBGeoVector2D *(__cdecl *volatile vectorCopyBackward)(SBGeoVector2D *, SBGeoVector2D *, SBGeoVector2D *) = &std::copy_backward;
+    }
+};
+
+class RHSpriteRowVectorEmission : public std::vector<RHUnkSpriteRow>
+{
+public:
+    static void Emit()
+    {
+        RHSpriteGeometryVectorEmission::Emit();
+        void (std::vector<RHUnkSpriteRow>::*volatile destroy)(RHUnkSpriteRow *, RHUnkSpriteRow *) = &RHSpriteRowVectorEmission::_Destroy;
+    }
 };
 
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
@@ -23,11 +63,61 @@ DECOMP_SIZE_ASSERT(RHSpriteScriptor, 0x14)
 DECOMP_SIZE_ASSERT(RHUnkSpriteRowHeader, 0x0e)
 DECOMP_SIZE_ASSERT(RHUnkSpriteFrameHeader, 0x0e)
 
-// FUNCTION: GAME 0x0044e830
+// TEMPLATE: GAME 0x0044e830
+// ?size@?$vector@GV?$allocator@G@std@@@std@@QBEIXZ
+
 unsigned RHUnkSpriteUshortVector::FUN_0044e830() const
 {
     return m_first == 0 ? 0 : m_last - m_first;
 }
+
+// TEMPLATE: GAME 0x00461f10
+// ?_Construct@std@@YAXPAVSBGeoPoint2D@@ABV2@@Z
+
+// TEMPLATE: GAME 0x004afd70
+// ?insert@?$vector@VSBGeoVector2D@@V?$allocator@VSBGeoVector2D@@@std@@@std@@QAEPAVSBGeoVector2D@@PAV3@ABV3@@Z
+
+// TEMPLATE: GAME 0x004aff00
+// ?_Destroy@?$vector@VSBGeoVector2D@@V?$allocator@VSBGeoVector2D@@@std@@@std@@IAEXPAVSBGeoVector2D@@0@Z
+
+// TEMPLATE: GAME 0x004aff30
+// ?insert@?$vector@VSBGeoPoint2D@@V?$allocator@VSBGeoPoint2D@@@std@@@std@@QAEXPAVSBGeoPoint2D@@IABV3@@Z
+
+// TEMPLATE: GAME 0x004b01b0
+// ?insert@?$vector@VSBGeoVector2D@@V?$allocator@VSBGeoVector2D@@@std@@@std@@QAEXPAVSBGeoVector2D@@IABV3@@Z
+
+// TEMPLATE: GAME 0x004b0430
+// ?_Destroy@?$vector@VSBGeoPoint2D@@V?$allocator@VSBGeoPoint2D@@@std@@@std@@IAEXPAVSBGeoPoint2D@@0@Z
+
+// TEMPLATE: GAME 0x004b0460
+// ?_Ucopy@?$vector@VSBGeoPoint2D@@V?$allocator@VSBGeoPoint2D@@@std@@@std@@IAEPAVSBGeoPoint2D@@PBV3@0PAV3@@Z
+
+// TEMPLATE: GAME 0x004b04a0
+// ?_Ufill@?$vector@VSBGeoPoint2D@@V?$allocator@VSBGeoPoint2D@@@std@@@std@@IAEXPAVSBGeoPoint2D@@IABV3@@Z
+
+// TEMPLATE: GAME 0x004b04d0
+// ?_Ucopy@?$vector@VSBGeoVector2D@@V?$allocator@VSBGeoVector2D@@@std@@@std@@IAEPAVSBGeoVector2D@@PBV3@0PAV3@@Z
+
+// TEMPLATE: GAME 0x004b0510
+// ?_Ufill@?$vector@VSBGeoVector2D@@V?$allocator@VSBGeoVector2D@@@std@@@std@@IAEXPAVSBGeoVector2D@@IABV3@@Z
+
+// TEMPLATE: GAME 0x004b0540
+// ?fill@std@@YAXPAVSBGeoPoint2D@@0ABV2@@Z
+
+// TEMPLATE: GAME 0x004b0570
+// ?copy_backward@std@@YAPAVSBGeoPoint2D@@PAV2@00@Z
+
+// TEMPLATE: GAME 0x004b05b0
+// ?fill@std@@YAXPAVSBGeoVector2D@@0ABV2@@Z
+
+// TEMPLATE: GAME 0x004b05e0
+// ?copy_backward@std@@YAPAVSBGeoVector2D@@PAV2@00@Z
+
+// TEMPLATE: GAME 0x004b0620
+// ?_Construct@std@@YAXPAVSBGeoVector2D@@ABV2@@Z
+
+// TEMPLATE: GAME 0x004b06a0
+// ?clear@?$vector@VSBGeoVector2D@@V?$allocator@VSBGeoVector2D@@@std@@@std@@QAEXXZ
 
 // FUNCTION: GAME 0x00506b10
 bool RHUnkSpriteBank::FUN_00506b10(SBFile *file)
@@ -41,11 +131,43 @@ RHUnkSpriteScriptInfo::~RHUnkSpriteScriptInfo()
 {
 }
 
-// FUNCTION: GAME 0x005bdfa0
+// TEMPLATE: GAME 0x005bdf70
+// ?size@?$vector@URHUnkSpriteRow@@V?$allocator@URHUnkSpriteRow@@@std@@@std@@QBEIXZ
+
+// TEMPLATE: GAME 0x005bdfa0
+// ?erase@?$vector@GV?$allocator@G@std@@@std@@QAEPAGPAG0@Z
+
 unsigned short *RHUnkSpriteUshortVector::FUN_005bdfa0(unsigned short *first, unsigned short *last)
 {
     return ((std::vector<unsigned short> *)this)->erase(first, last);
 }
+
+// TEMPLATE: GAME 0x005bdfe0
+// ?insert@?$vector@URHUnkSpriteRow@@V?$allocator@URHUnkSpriteRow@@@std@@@std@@QAEXPAURHUnkSpriteRow@@IABU3@@Z
+
+// TEMPLATE: GAME 0x005be330
+// ?erase@?$vector@URHUnkSpriteRow@@V?$allocator@URHUnkSpriteRow@@@std@@@std@@QAEPAURHUnkSpriteRow@@PAU3@0@Z
+
+// TEMPLATE: GAME 0x005be400
+// ?_Destroy@?$vector@URHUnkSpriteRow@@V?$allocator@URHUnkSpriteRow@@@std@@@std@@IAEXPAURHUnkSpriteRow@@0@Z
+
+// TEMPLATE: GAME 0x005be430
+// ?_Construct@std@@YAXPAURHUnkSpriteRow@@ABU2@@Z
+
+// TEMPLATE: GAME 0x005be880
+// ??4?$vector@VSBGeoVector2D@@V?$allocator@VSBGeoVector2D@@@std@@@std@@QAEAAV01@ABV01@@Z
+
+// TEMPLATE: GAME 0x005bea70
+// ??0?$vector@GV?$allocator@G@std@@@std@@QAE@ABV01@@Z
+
+// TEMPLATE: GAME 0x005bead0
+// ??4?$vector@GV?$allocator@G@std@@@std@@QAEAAV01@ABV01@@Z
+
+// TEMPLATE: GAME 0x005bec50
+// ?capacity@?$vector@GV?$allocator@G@std@@@std@@QBEIXZ
+
+// TEMPLATE: GAME 0x005bec70
+// ?copy@std@@YAPAGPAG00@Z
 
 // Parked: 58.91%; frame 0x228 versus 0x230 and cache/EH temporary coloring.
 // STUB: GAME 0x005bf160
@@ -230,16 +352,16 @@ bool RHSpriteScriptor::FUN_005c0490(SBFile &file, const char *profile)
     return false;
 }
 
-// Parked: 93.33%; pair conversion reads a byte instead of a dword.
-// STUB: GAME 0x005c0690
+// FUNCTION: GAME 0x005c0690
 RHUnkSpriteCacheInsertResult RHUnkSpriteCache::FUN_005c0690(const RHUnkSpriteCacheValue &value)
 {
-    RHUnkSpriteCacheInsertResult result(FUN_005c09c0(value));
+    std::pair<RHUnkSpriteCacheIterator, bool> answer;
+    answer = FUN_005c09c0(value);
+    RHUnkSpriteCacheInsertResult result(answer.first, answer.second);
     return result;
 }
 
-// Parked: 98.31%; STL null-string storage is not the pooled empty literal.
-// STUB: GAME 0x005c0800
+// FUNCTION: GAME 0x005c0800
 RHUnkSpriteCacheIterator RHUnkSpriteCache::FUN_005c0800(const std::string &key)
 {
     RHUnkSpriteCacheIterator result;
@@ -247,8 +369,7 @@ RHUnkSpriteCacheIterator RHUnkSpriteCache::FUN_005c0800(const std::string &key)
     return result == end() || key < result.m_node->m_key ? end() : result;
 }
 
-// Parked: 97.27%; STL null-string storage is not the pooled empty literal.
-// STUB: GAME 0x005c0890
+// FUNCTION: GAME 0x005c0890
 RHUnkSpriteCacheValue::RHUnkSpriteCacheValue(const std::string &key, const RHUnkSpriteScriptInfo &info)
     : m_key(key), m_info(info)
 {
@@ -256,6 +377,8 @@ RHUnkSpriteCacheValue::RHUnkSpriteCacheValue(const std::string &key, const RHUnk
 
 void RHSpriteScriptor::Emit(const std::string &name, const std::string &profile)
 {
+    RHSpriteRowVectorEmission::Emit();
+    unsigned short *(__cdecl *volatile copy)(unsigned short *, unsigned short *, unsigned short *) = std::copy;
     LoadSpriteScript(FRAME_2, name, profile);
     RHUnkSpriteUshortVector *vector = (RHUnkSpriteUshortVector *)this;
     vector->FUN_0044e830();

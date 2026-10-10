@@ -46,11 +46,9 @@ struct RHUnkSpriteRow
 {
     RHUnkSpriteRow();
     undefined2 m_00; // 0x00
-    undefined2 m_02; // 0x02
     float m_04; // 0x04
     SBGeoPoint2D m_position; // 0x08
     undefined2 m_10; // 0x10
-    undefined2 m_12; // 0x12
     std::vector<int> m_resources; // 0x14
     std::vector<unsigned short> m_frames; // 0x24
     std::vector<unsigned short> m_rates; // 0x34
@@ -100,6 +98,8 @@ struct RHUnkSpriteCacheInsertResult
     RHUnkSpriteCacheInsertResult() {}
     RHUnkSpriteCacheInsertResult(const std::pair<RHUnkSpriteCacheIterator, bool> &other)
         : m_first(other.first), m_second(other.second) {}
+    RHUnkSpriteCacheInsertResult(const RHUnkSpriteCacheIterator &first, const bool &second)
+        : m_first(first), m_second(second) {}
     RHUnkSpriteCacheIterator m_first; // 0x00
     undefined m_second; // 0x04
 };

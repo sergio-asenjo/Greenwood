@@ -9,16 +9,17 @@
 // SBAssert is already defined once, in RHSword_stubs.cpp; this TU just declares
 // it (include/SB.h).
 
+#include "SBNullstr.h"
 #include "RHScript.h"
 
-// deferred: 0x005fc030, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x005fc030
 SBGeoPoint2D::SBGeoPoint2D()
 {
     m_x = 0.0f;
     m_y = 0.0f;
 }
 
-// deferred: 0x005fc060, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x005fc060
 SBGeoPoint2D::SBGeoPoint2D(float x, float y)
 {
     m_x = x;
@@ -98,7 +99,7 @@ void RHUnk0058a3d0::Unk(void *context, int value, void *sequence)
     (void)sequence;
 }
 
-// deferred: 0x00522470, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x00522470
 RHUnk00522470::RHUnk00522470()
 {
     ((RHScriptBatchCalls *)this)->FUN_005209b0();
@@ -116,7 +117,6 @@ RHUnk00522470::~RHUnk00522470()
 }
 void RHUnk005c38b0::Unk(void *actor) { (void)actor; }
 void RHUnk004e3660::Unk(bool value) { (void)value; }
-void RHUnk00464530::Unk(const SBGeoPoint2D &point) { (void)point; }
 RHBonusProjection *RHUnk0057d800::Unk(const SBGeoPoint2D &point)
 {
     (void)point;
@@ -190,9 +190,9 @@ void RHUnk00582640::Unk(unsigned short &level, void *actor, int style, const SBG
     (void)flags;
     (void)scale;
 }
-SBGeoPoint2D SBGeoPoint2D::Unk005fc110(const SBGeoPoint2D &other) const { return other; }
 SBGeoPoint2D SBGeoPoint2D::Unk005fc190(const SBGeoPoint2D &other) const { return other; }
 RHScriptIter RHUnk0046eb30::Unk0057c950(RHScriptIter position, const RHUnk00571160Position &) { return position; }
+// FUNCTION: GAME 0x005b5de0
 void *RHUnk005b5e00::FUN_005b5de0()
 {
     if (*(bool *)((char *)this + 0x194))
@@ -231,6 +231,7 @@ void RHScriptBatchCalls::Unk0054cfa0(void *) {}
 void RHScriptBatchCalls::Unk0046b9e0() {}
 
 float RHScriptBatchCalls::FUN_00489680(void *) { return 0.0f; }
+// FUNCTION: GAME 0x0051d540
 void RHScriptBatchCalls::FUN_0051d540(int index, int value)
 {
     *(int *)((char *)this + index * 8 + 8) = value;
