@@ -149,13 +149,18 @@ public:
     SBGeoPoint2D m_point; // 0x6c
 };
 
+class RHCampaignMissionList
+{
+public:
+    void FUN_004e6c10();
+};
+
 // SIZE 0x0c
 class RHPlayerProfileListStorage : public std::list<RHPlayerProfile *>
 {
 public:
     __forceinline iterator begin() { return iterator(_Head->_Next); }
     __forceinline iterator end() { return iterator(_Head); }
-    void FUN_004e6c10();
     __forceinline _Nodeptr BuyNode(_Nodeptr next, _Nodeptr previous)
     {
         _Nodeptr node = (_Nodeptr)allocator._Charalloc(sizeof(_Node));
@@ -196,7 +201,7 @@ public:
             delete *m_current;
             (*(RHSectorActorIter *)&m_current)++;
         }
-        m_list.FUN_004e6c10();
+        ((RHCampaignMissionList *)&m_list)->FUN_004e6c10();
         m_dirty = true;
     }
     void InsertLast(RHPlayerProfile *const &value)

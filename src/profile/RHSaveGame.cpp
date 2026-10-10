@@ -1,6 +1,6 @@
 #include "RHSaveGame.h"
 
-// deferred: unannotated pending reccmp #534 — 0x0056ea70 proven exact 100.00% when annotated.
+// FUNCTION: GAME 0x0056ea70
 bool RHSaveGame::SerializeHeader(SBFile &file, Header &header)
 {
     unsigned &version = file.m_version;

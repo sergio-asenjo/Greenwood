@@ -4,7 +4,7 @@
 #include "RHProfileFile.h"
 #include <algorithm>
 
-// deferred: unannotated pending reccmp #534 (0x004582d0)
+// FUNCTION: GAME 0x004582d0
 void SBArray<RHSaveGame *>::Insert(RHSaveGame **position, unsigned int count, RHSaveGame *const &value)
 {
     if ((unsigned int)(m_end - m_last) < count)
@@ -36,7 +36,7 @@ void SBArray<RHSaveGame *>::Insert(RHSaveGame **position, unsigned int count, RH
     }
 }
 
-// deferred: unannotated pending reccmp #534 (0x004598e0)
+// FUNCTION: GAME 0x004598e0
 void **FUN_004598e0(void **first, void **last, void **destination)
 {
     for (; first != last; ++destination, ++first)
@@ -44,7 +44,7 @@ void **FUN_004598e0(void **first, void **last, void **destination)
     return destination;
 }
 
-// deferred: unannotated pending reccmp #534 (0x00460900)
+// FUNCTION: GAME 0x00460900
 int RHProfileText::FUN_00460900(unsigned int first, unsigned int count, const char *value, unsigned int size) const
 {
     if (m_size < first)
@@ -609,7 +609,7 @@ int RHProfileManager::FUN_0056cef0(const RHCharacterProfile *profile) const
     return -1;
 }
 
-// deferred: unannotated pending reccmp #534 (0x0056d0d0)
+// FUNCTION: GAME 0x0056d0d0
 int RHProfileManager::GetProfileIndex(const RHHtHWeaponProfile *profile) const
 {
     int index = -1;
@@ -620,7 +620,7 @@ int RHProfileManager::GetProfileIndex(const RHHtHWeaponProfile *profile) const
     return index;
 }
 
-// deferred: unannotated pending reccmp #534 (0x0056d100)
+// FUNCTION: GAME 0x0056d100
 int RHProfileManager::GetProfileIndex(const RHBow::Profile *profile) const
 {
     int index = -1;
@@ -631,7 +631,7 @@ int RHProfileManager::GetProfileIndex(const RHBow::Profile *profile) const
     return index;
 }
 
-// deferred: unannotated pending reccmp #534 (0x0056d130)
+// FUNCTION: GAME 0x0056d130
 int RHProfileManager::GetProfileIndex(const RHCharacterProfile *profile) const
 {
     int index = -1;
@@ -702,7 +702,7 @@ bool RHProfileManager::SerializeProfilePointer(SBFile &file, const RHHtHWeaponPr
     return true;
 }
 
-// deferred: unannotated pending reccmp #534 (0x0056d2a0)
+// FUNCTION: GAME 0x0056d2a0
 bool RHProfileManager::SerializeProfilePointer(SBFile &file, RHMissionProfile *&profile) const
 {
     int index;

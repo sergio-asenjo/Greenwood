@@ -20,7 +20,6 @@ void RHSerializeName(SBFile &file, const char *name);
 // GLOBAL: GAME 0x006c05e0
 std::string g_unk0x006c05e0;
 
-// Unannotated: coupled Save callers; 98.13%, string-limit operand.
 std::string FUN_004e4c70(const std::string &first, const char *second)
 {
     return std::string(first).append(second);
@@ -33,7 +32,7 @@ RHPlayerProfile::RHPlayerProfile() :
 {
 }
 
-// Unannotated: coupled Save caller; 95.35%, call operands and string storage.
+// FUNCTION: GAME 0x0055d1a0
 bool RHPlayerProfile::Serialize(SBFile &file)
 {
     RHSerializeName(file,
@@ -60,23 +59,24 @@ bool RHPlayerProfile::Serialize(SBFile &file)
         m_name.assign(buffer, count);
         delete buffer;
         FUN_0055cc80();
-        RHSaveGameManager::Serialize(file);
-        return true;
     }
-    count = m_name.size();
-    file.Access(&count, 4);
-    file.Access((void *)m_name.c_str(), count * 2);
+    else
+    {
+        count = m_name.size();
+        file.Access(&count, 4);
+        file.Access((void *)m_name.c_str(), count * 2);
+    }
     RHSaveGameManager::Serialize(file);
     return true;
 }
 
-// deferred: 0x0055de90, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x0055de90
 const std::string &RHPlayerProfileManager::GetProfilesDirectory()
 {
     return g_unk0x006c05e0;
 }
 
-// Parked at 98.58%: stack coloring and owner reload.
+// Parked at 99.06%: owner pointer is reloaded into edx at its use instead of ebp at loop exit.
 // STUB: GAME 0x0055dea0
 bool RHPlayerProfileManager::Load()
 {
@@ -112,6 +112,7 @@ bool RHPlayerProfileManager::Load()
     m_profiles.RemoveAll();
     file.Access(&m_00, 4);
     unsigned long count;
+    int active;
     file.Access(&count, 4);
     if (count > 0)
     {
@@ -124,7 +125,6 @@ bool RHPlayerProfileManager::Load()
             profiles.InsertLast(profile);
             --remaining;
         }
-        int active;
         file.Access(&active, 4);
         m_active = active >= 0 ? m_profiles.GetProfile(active) : 0;
         file.FUN_005f5290();
@@ -164,7 +164,7 @@ bool RHPlayerProfileManager::Save() const
     return true;
 }
 
-// Parked at 82.24%: additional destructor vptr store.
+// Parked at 93.46%: user dtor stores the vptr; the implicit dtor omits it but inlines into Load.
 // STUB: GAME 0x0055e560
 RHPlayerProfile::~RHPlayerProfile()
 {

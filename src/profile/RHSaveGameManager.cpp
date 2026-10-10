@@ -14,27 +14,12 @@
 //         element, clears the array (inlined erase/copy), reads a count and
 //         re-creates that many RHSaveGame objects on load, then serialises every
 //         element through RHSaveGame::Serialize.
-//
-// STATUS: BLOCKED — not a byte match (binding is solid; logic and frame
-// reproduced). reccmp: 93.73%. The residual is compiler scheduling/entropy in
-// the SBArray erase + insert region, not the code (isolate-probed at /O2 /GX):
-//   * after `list.RemoveAll()` the original keeps an extra pair of instructions
-//     (`mov ecx,[esi+8]` / `mov [esp+0x28],ecx`) — the old m_last spilled to the
-//     outgoing-argument slot — and schedules `m_last = <copy result>` *after*
-//     `test eax,eax`; VC6 at every probed source shape emits the assignment
-//     first and drops the dead spill.
-//   * the inlined Insert materialises its value temporary into the arg slot
-//     BEFORE loading `m_last` (`lea edx,[esp+0x28]; mov [esp+0x28],eax;
-//     mov eax,[esi+8]`); every probed shape defers the store until after the
-//     three `push`es.
-// `RemoveAll()` reproduces the erase exactly only as `copy(end(), end(), begin())`
-// (a `copy(m_last, m_last, m_first)` source emits `mov eax,edx; cmp eax,edx`
-// instead of the target's `cmp ecx,ecx; mov eax,ecx`). Kept as STUB so reccmp
-// does not count it; the reconstruction is for reference.
 
+#include "SBNullstr.h"
 #include "RHSaveGameManager.h"
+#include <vector>
 
-// STUB: GAME 0x0056ff10
+// FUNCTION: GAME 0x0056ff10
 bool RHSaveGameManager::Serialize(SBFile &file)
 {
     SBArray<RHSaveGame *> &list = m_saveGames;
@@ -76,7 +61,7 @@ bool RHSaveGameManager::Serialize(SBFile &file)
             if (p)
                 delete p;
         }
-        list.RemoveAll();
+        ((std::vector<RHSaveGame *> *)&list)->erase(list.begin(), list.end());
         while (count != 0)
         {
             list.InsertLast(new RHSaveGame(this));
