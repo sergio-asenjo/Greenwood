@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "sb3dstuff.h"
 
 // FUNCTION: GAME 0x005dfb00

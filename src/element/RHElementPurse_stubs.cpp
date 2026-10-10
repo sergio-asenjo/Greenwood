@@ -9,4 +9,5 @@
 // defined once, in RHSword_stubs.cpp / RHElementObject_stubs.cpp; this TU only
 // declares them (include/SB.h, include/RHElementPurse.h).
 
+#include "SBNullstr.h"
 #include "RHElementPurse.h"

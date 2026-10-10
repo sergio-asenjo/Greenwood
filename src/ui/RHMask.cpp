@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHMask.h"
 
 // STRING: GAME 0x006b08ac

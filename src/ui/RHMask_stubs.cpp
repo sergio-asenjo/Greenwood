@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHMask.h"
 
 void RHMaskPointArray::InsertLast(const SBGeoPoint2D &) {}

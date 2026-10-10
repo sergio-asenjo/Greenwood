@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "launcher.h"
 
 // Parked: this is the WinMain/_SDL_main entry point. Its real body calls Win32/User32 imports

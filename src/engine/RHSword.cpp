@@ -23,6 +23,7 @@
 // addresses: the original is a fixed-base EXE, so its absolute string pointers
 // carry no relocation records and reccmp cannot discover them by scanning.
 
+#include "SBNullstr.h"
 #include "RHSword.h"
 
 // FUNCTION: GAME 0x005c1ff0

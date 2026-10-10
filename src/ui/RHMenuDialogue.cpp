@@ -44,6 +44,7 @@
 //   volatile read also commits `set` to esi and orders the tail as the
 //   original does (load, scale, pop edi, pop esi, combine).
 
+#include "SBNullstr.h"
 #include "RHMenuDialogue.h"
 
 // FUNCTION: GAME 0x0052b2e0

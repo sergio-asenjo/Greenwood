@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHElementScroll.h"
 
 bool RHElementScroll::FUN_004ba550() { return false; }

@@ -13,6 +13,7 @@
 // for separate boxes; arrays of boxes or point members emit vector helpers.
 // Implicit, forceinline and later-defined inline box dtors retain the residual.
 
+#include "SBNullstr.h"
 #include "RHUIRendererCustom.h"
 
 // STUB: GAME 0x005ca340

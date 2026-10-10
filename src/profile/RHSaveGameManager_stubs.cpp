@@ -11,6 +11,7 @@
 // operator new once in crt_stubs.cpp. This TU only defines the remaining
 // targets.
 
+#include "SBNullstr.h"
 #include "RHSaveGameManager.h"
 
 // Target 0x0056e250 (initialises the 0x48-byte RHSaveGame).

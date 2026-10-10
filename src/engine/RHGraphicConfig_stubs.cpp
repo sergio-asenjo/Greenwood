@@ -11,6 +11,7 @@
 // RHElementObject_stubs.cpp. Both TUs just declare them (include/SB.h,
 // include/RHGraphicConfig.h).
 
+#include "SBNullstr.h"
 #include "RHGraphicConfig.h"
 
 // Target 0x005fc2a0 (SBGeoPoint2D::Serialize — two 4-byte Access calls at

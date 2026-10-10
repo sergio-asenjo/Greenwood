@@ -11,6 +11,7 @@
 // RHElementObject_stubs.cpp. This TU just declares them (include/SB.h,
 // include/RHMessenger.h).
 
+#include "SBNullstr.h"
 #include "RHMessenger.h"
 
 // Target 0x00547560 — __thiscall(this), no extra args. PROVISIONAL identity:

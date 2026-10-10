@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHShadowPolygon.h"
 
 void RHShadowPolygon::FUN_0058d990() {}

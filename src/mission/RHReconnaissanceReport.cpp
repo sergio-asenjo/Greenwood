@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHReconnaissanceReport.h"
 
 // FUNCTION: GAME 0x0056df30

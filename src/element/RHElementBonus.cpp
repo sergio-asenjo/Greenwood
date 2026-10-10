@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHElementBonus.h"
 
 inline void RHElementBonus::ApplyProjection(RHBonusProjection *projection)

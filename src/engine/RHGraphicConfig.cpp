@@ -26,6 +26,7 @@
 // addresses: the original is a fixed-base EXE, so its absolute string pointers
 // carry no relocation records and reccmp cannot discover them by scanning.
 
+#include "SBNullstr.h"
 #include "RHGraphicConfig.h"
 
 // FUNCTION: GAME 0x0051ba00

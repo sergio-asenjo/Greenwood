@@ -10,6 +10,7 @@
 // defined once, in RHSword_stubs.cpp / RHElementObject_stubs.cpp; this TU only
 // declares them (include/SB.h, include/RHElementActorCivilian.h).
 
+#include "SBNullstr.h"
 #include "RHElementActorCivilian.h"
 
 // Target 0x0048b5d0 (rhelementactornpc.cpp — writes the "RHElementActorNPC"

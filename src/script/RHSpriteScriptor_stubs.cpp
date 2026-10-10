@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHSpriteScriptor.h"
 
 // GLOBAL: GAME 0x006c0620

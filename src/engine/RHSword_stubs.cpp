@@ -6,6 +6,7 @@
 // separate translation unit on purpose: VC6 emits the `new`-cleanup C++ EH
 // frame only while the RHSword destructor body is not visible at the call site.
 
+#include "SBNullstr.h"
 #include "RHSword.h"
 
 RHSword::RHSword() {}

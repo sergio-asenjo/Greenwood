@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "SBDrawManager.h"
 
 SBDrawUnk005f0090Node *SBDrawUnk005f0090::FUN_005f0090(const unsigned long &) { return 0; }

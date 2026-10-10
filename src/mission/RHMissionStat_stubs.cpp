@@ -10,4 +10,5 @@
 // defined once, in RHSword_stubs.cpp / RHElementObject_stubs.cpp; this TU only
 // declares them (include/SB.h, include/RHMissionStat.h).
 
+#include "SBNullstr.h"
 #include "RHMissionStat.h"

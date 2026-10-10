@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "SBUIRendererInputField.h"
 
 bool SBUIInputFieldBoxCalls::FUN_00608450(const SBGeoBoundingBox2D &) { return false; }

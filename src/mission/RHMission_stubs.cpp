@@ -10,6 +10,7 @@
 // RHElementObject_stubs.cpp. Both TUs just declare them (include/SB.h,
 // include/RHMission.h).
 
+#include "SBNullstr.h"
 #include "RHMission.h"
 
 // Target 0x00436500 — singleton accessor: if global 0x6c0e84 is null it `new`s

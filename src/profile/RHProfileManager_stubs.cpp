@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHProfileManager.h"
 #include "RHMissionProfile.h"
 #include "RHActorProfiles.h"

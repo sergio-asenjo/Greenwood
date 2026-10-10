@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "SBUIRendererListbox.h"
 
 int SBUIListboxUnk0061e890::FUN_0061e890()

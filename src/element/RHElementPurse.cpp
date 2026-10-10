@@ -28,6 +28,7 @@
 // base's tag 0x006aed88 / __FILE__ belong to rhelementprojectile.cpp and are
 // deliberately not annotated here.)
 
+#include "SBNullstr.h"
 #include "RHElementPurse.h"
 
 // FUNCTION: GAME 0x004b9830

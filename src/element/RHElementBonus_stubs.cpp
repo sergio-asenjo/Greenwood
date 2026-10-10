@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHElementBonus.h"
 
 RHElementBonus::RHElementBonus(BonusType, bool, unsigned short) {}

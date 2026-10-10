@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHSoundCacheEntry.h"
 
 // GLOBAL: GAME 0x006773d8

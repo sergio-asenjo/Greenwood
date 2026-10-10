@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHSightObstacle.h"
 
 void RHUnkSightVertexList::GoTo(int) {}

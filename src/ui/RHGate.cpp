@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHGate.h"
 
 // FUNCTION: GAME 0x0051ae30

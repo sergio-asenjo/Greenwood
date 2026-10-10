@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHPositionInterface.h"
 
 // FUNCTION: GAME 0x0055fe10

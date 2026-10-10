@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHArtificialBonhomie.h"
 
 // FUNCTION: GAME 0x0040e150

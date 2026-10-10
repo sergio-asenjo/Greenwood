@@ -35,6 +35,7 @@
 // addresses: the original is a fixed-base EXE, so its absolute string pointers
 // carry no relocation records and reccmp cannot discover them by scanning.
 
+#include "SBNullstr.h"
 #include "RHOrder.h"
 
 // The global pointer at 0x006c1040 (singleton walking the interpreter's lists).

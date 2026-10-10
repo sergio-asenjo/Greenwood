@@ -12,6 +12,7 @@
 // absolute string pointers and numeric `.rdata` operands carry no relocation
 // records and reccmp cannot discover them by scanning.
 
+#include "SBNullstr.h"
 #include "RHSoundGeometry.h"
 
 // The numeric .rdata constants GetVolumeForAltitude reads. The original is a

@@ -10,4 +10,5 @@
 // RHSword_stubs.cpp / RHElementObject_stubs.cpp; this TU only declares them
 // (include/RHElementArrow.h, include/SB.h).
 
+#include "SBNullstr.h"
 #include "RHElementArrow.h"

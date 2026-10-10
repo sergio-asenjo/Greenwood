@@ -9,6 +9,7 @@
 // SBFile::Access / SBFile::GetError / SBAssert are already defined once, in
 // RHSword_stubs.cpp; both TUs just declare them (include/SB.h).
 
+#include "SBNullstr.h"
 #include "RHElementObject.h"
 
 // The nested sub-object serialiser at RHElementObject+0xbc (target 0x00521210)

@@ -28,6 +28,7 @@
 // ("" 0x006773d0 and the format 0x006a7390 are annotated once, in
 // src/RHSword.cpp; references here resolve to the same pooled entities.)
 
+#include "SBNullstr.h"
 #include "RHMission.h"
 
 // FUNCTION: GAME 0x0054cc40

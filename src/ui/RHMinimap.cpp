@@ -39,6 +39,7 @@
 // (0x006a7390) are annotated once in src/RHSword.cpp; this function's
 // references resolve to the same pooled entities.
 
+#include "SBNullstr.h"
 #include "RHMinimap.h"
 
 // FUNCTION: GAME 0x00549a80

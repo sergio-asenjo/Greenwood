@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "SBFile.h"
 
 int SBFileUnk006439d6(FILE *, long, int)

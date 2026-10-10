@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHShortBriefings.h"
 
 // Target 0x005a3360: vector range erase.

@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHSoundSourceManager.h"
 
 RHSoundSource::~RHSoundSource() {}

@@ -11,6 +11,7 @@
 // operator new once (LIBRARY seed) in crt_stubs.cpp. This TU only defines the
 // new targets.
 
+#include "SBNullstr.h"
 #include "RHSequence.h"
 
 // Target 0x00584cf0 (RHSequenceElement base ctor).

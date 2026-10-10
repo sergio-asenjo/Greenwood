@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHElement.h"
 
 unsigned RHElementAreaShape::FUN_0060ce80() const { return 0; }

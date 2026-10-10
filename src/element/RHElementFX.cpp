@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHElementFX.h"
 
 inline void FXBlit(RHUnkFXDraw *const &draw, RHUnkFXEngine *engine, SBGeoBoundingBox2D *box,

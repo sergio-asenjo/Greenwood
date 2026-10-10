@@ -9,6 +9,7 @@
 // SBAssert is already defined once, in RHSword_stubs.cpp; this TU only
 // declares it (include/SB.h).
 
+#include "SBNullstr.h"
 #include "RHMenuDialogue.h"
 
 // Target 0x004e35a0 (RHEngine::GetDynResources).

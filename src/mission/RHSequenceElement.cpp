@@ -22,6 +22,7 @@
 // addresses: the original is a fixed-base EXE, so its absolute string pointers
 // carry no relocation records and reccmp cannot discover them by scanning.
 
+#include "SBNullstr.h"
 #include "RHSequenceElement.h"
 
 // The 4-byte global read/written by SerializeStaticStuff (original 0x006b74d8).

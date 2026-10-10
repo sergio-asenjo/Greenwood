@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "SBInput.h"
 
 void SBInputUnk005fb730::FUN_005fae70(void *) {}

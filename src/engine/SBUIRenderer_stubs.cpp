@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "SBUIRenderer.h"
 
 bool SBUIUnk006006f0::FUN_006006f0(long, RHUnk005fc3b0 &) { return false; }

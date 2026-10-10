@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "SBPicture.h"
 
 bool SBPicture::FUN_00612350(void *) { return false; }

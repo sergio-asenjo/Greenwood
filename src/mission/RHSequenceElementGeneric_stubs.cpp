@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHSequenceElementGeneric.h"
 
 RHGenericInsertResult RHGenericMap::FUN_005873a0(const RHGenericPair &)

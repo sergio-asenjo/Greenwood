@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHElementProjectile.h"
 
 #define RH_PROJECTILE_ACCESS(field, width, line) \

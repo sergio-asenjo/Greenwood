@@ -11,4 +11,5 @@
 // singleton g_pEngine is already defined once, in RHMenuDialogue_stubs.cpp;
 // this TU only declares it extern (include/RHMinimap.h).
 
+#include "SBNullstr.h"
 #include "RHMinimap.h"

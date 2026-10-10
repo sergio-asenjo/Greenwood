@@ -12,6 +12,7 @@
 // RHGraphicConfig_stubs.cpp; RHUnk005df510::Serialize once in
 // RHTitbits_stubs.cpp. This TU only defines the one new target.
 
+#include "SBNullstr.h"
 #include "RHOrder.h"
 
 // Target 0x00424410: list insert (`ret 0xc`, ecx = the list).

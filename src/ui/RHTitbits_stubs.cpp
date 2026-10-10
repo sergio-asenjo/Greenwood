@@ -11,6 +11,7 @@
 // RHElementObject_stubs.cpp / RHMenuDialogue_stubs.cpp; this TU only declares
 // them (include/SB.h, include/RHTitbits.h).
 
+#include "SBNullstr.h"
 #include "RHTitbits.h"
 
 // Target 0x00613e90.

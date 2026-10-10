@@ -13,6 +13,7 @@
 // RHUIRendererShifting_stubs.cpp. This TU defines only the genuinely-new
 // targets.
 
+#include "SBNullstr.h"
 #include "RHUIRendererCustom.h"
 
 // Target 0x00609200, ret 0x8 (member returning a box by value, constructed from

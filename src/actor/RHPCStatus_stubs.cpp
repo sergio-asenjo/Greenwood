@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHPCStatus.h"
 
 // GLOBAL: GAME 0x006775e0

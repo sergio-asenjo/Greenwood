@@ -10,6 +10,7 @@
 // defined once, in RHSword_stubs.cpp / RHElementObject_stubs.cpp; this TU only
 // declares them (include/SB.h, include/RHWidgetPortrait.h).
 
+#include "SBNullstr.h"
 #include "RHWidgetPortrait.h"
 
 char RHUnk005d73d0Actor::FUN_0049f510() { return 0; }

@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHSoundSource.h"
 
 #define m_08 (*(unsigned int *)((char *)this + 0x08))

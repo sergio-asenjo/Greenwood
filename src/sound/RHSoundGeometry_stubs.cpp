@@ -11,6 +11,7 @@
 // RHElementObject_stubs.cpp. This TU just declares them (include/SB.h,
 // include/RHSoundGeometry.h).
 
+#include "SBNullstr.h"
 #include "RHSoundGeometry.h"
 
 // Target 0x005b2f30 — __thiscall(this, float). PROVISIONAL identity: its body

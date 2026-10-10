@@ -9,6 +9,7 @@
 // SBAssert is defined once, in RHSword_stubs.cpp; _ftol is defined once, with a
 // // LIBRARY: seed, in RHMenuGraphics_stubs.cpp. This TU only declares both.
 
+#include "SBNullstr.h"
 #include "RHUIRendererPortrait.h"
 
 bool RHUnk005e6440::BlitFull(float, int, int, void *, int)

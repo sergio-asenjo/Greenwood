@@ -8,6 +8,7 @@
 // SBAssert is already defined once, in RHSword_stubs.cpp; this TU only
 // declares it (include/SB.h).
 
+#include "SBNullstr.h"
 #include "RHUIRendererShifting.h"
 
 // SBGeoPoint2D()/~SBGeoPoint2D()/operator= are already defined once in

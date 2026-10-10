@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "VMCore.h"
 
 bool VMUnk0063a250::FUN_0063a250(int, int) { return false; }

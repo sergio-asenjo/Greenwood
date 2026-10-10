@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "avitoolbox.h"
 #include <string.h>
 

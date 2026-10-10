@@ -7,6 +7,7 @@
 //
 // STATUS: exact 100% — instruction-for-instruction identical to the original.
 
+#include "SBNullstr.h"
 #include "RHUIRendererShifting.h"
 
 // FUNCTION: GAME 0x005cbe60

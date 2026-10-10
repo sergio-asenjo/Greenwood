@@ -21,6 +21,7 @@
 //   split: VC6 inlines five sites and emits the sixth/seventh as calls, the
 //   out-of-line copy landing adjacent to SynchronizeWidgets as in the original.
 
+#include "SBNullstr.h"
 #include "RHMenuGraphics.h"
 
 // FUNCTION: GAME 0x0052d090

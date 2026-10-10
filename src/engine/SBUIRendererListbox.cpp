@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "SBUIRendererListbox.h"
 #include "SB.h"
 

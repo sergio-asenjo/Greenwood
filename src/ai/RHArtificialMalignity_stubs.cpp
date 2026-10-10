@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHArtificialMalignity.h"
 
 bool RHUnk00608f10::FUN_006082a0(void *) { return false; }

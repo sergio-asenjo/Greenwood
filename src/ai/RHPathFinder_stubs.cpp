@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHPathFinder.h"
 
 SBGeoPoint2D SBGeoBoundingBox2D::FUN_00608f40() const { return first; }

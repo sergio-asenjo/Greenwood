@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHMenuCampaignMap.h"
 
 bool RHMapWideText::Grow(unsigned, bool) { return false; }
