@@ -22,7 +22,7 @@ public:
     char *m_chars; // 0x04
     unsigned m_length; // 0x08
     unsigned m_capacity; // 0x0c
-    void FUN_00457be0();
+    void FUN_00457be0() { ((std::string *)this)->begin(); }
 };
 
 // SIZE 0x10
@@ -44,16 +44,8 @@ struct RHFontTrimText
     unsigned m_size; // 0x08
     unsigned m_capacity; // 0x0c
 
-    char *Begin()
-    {
-        ((RHCampaignCommandLine *)this)->FUN_00457be0();
-        return m_chars;
-    }
-    char *End()
-    {
-        ((RHCampaignCommandLine *)this)->FUN_00457be0();
-        return m_chars == 0 ? 0 : m_chars + m_size;
-    }
+    char *Begin() { return ((std::string *)this)->begin(); }
+    char *End() { return ((std::string *)this)->end(); }
     void Split()
     {
         char *storage = m_chars;

@@ -28,6 +28,11 @@ public:
 };
 
 SBGeoVector2D operator*(float, const SBGeoVector2D &);
+class RHMobileUnk006091b0
+{
+public:
+    RHMobileUnk006091b0 &FUN_006091b0(const SBGeoPoint2D &);
+};
 
 class SBGeoBoundingBox2D
 {

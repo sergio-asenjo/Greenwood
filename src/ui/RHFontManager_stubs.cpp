@@ -1,5 +1,7 @@
+#include "SBNullstr.h"
 #include "RHFontManager.h"
 
+// FUNCTION: GAME 0x005f5460
 RHFontManager::Fonts::~Fonts() {}
 // Parked: tree insertion uses CRT critical-section imports.
 // STUB: GAME 0x00502c20

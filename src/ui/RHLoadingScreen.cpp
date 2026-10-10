@@ -8,7 +8,6 @@ DECOMP_SIZE_ASSERT(RHUnkFXDraw, 0x10e)
 DECOMP_SIZE_ASSERT(RHUnk006114c0, 0x38)
 DECOMP_SIZE_ASSERT(RHMissionProfile, 0x14)
 DECOMP_SIZE_ASSERT(RHLoadingScreen, 0x24)
-DECOMP_SIZE_ASSERT(RHUnk005239b0, 0x10)
 
 // STRING: GAME 0x006b0764
 #define g_loadingFile "P:\\Robin Hood\\RHloadingscreen.cpp"
@@ -39,7 +38,7 @@ std::string g_unk0x006c05f0;
 // GLOBAL: GAME 0x006c0650
 std::string g_unk0x006c0650;
 
-// deferred: unannotated pending reccmp #534 — 0x005229f0 proven exact 100.00% when annotated.
+// FUNCTION: GAME 0x005229f0
 unsigned long RHLoadingScreen::CreateSurfaceForPicture(SBFile &file)
 {
     RHUnk006114c0 picture;
@@ -156,7 +155,7 @@ void RHLoadingScreen::GenerateSand(SBFile &file)
     }
 }
 
-// Unannotated: 99.61% — string-build order/sprintf operand differs; needs a closer diff.
+// FUNCTION: GAME 0x005236a0
 std::string RHLoadingScreen::GetDataFile(const RHMission *mission, unsigned long number)
 {
     std::string path;
@@ -178,17 +177,8 @@ std::string RHLoadingScreen::GetDataFile(const RHMission *mission, unsigned long
     return path;
 }
 
-// Parked: 98.75%, counted string-copy callee operand differs under incremental linking.
-// STUB: GAME 0x005239b0
-std::string &RHUnk005239b0::FUN_005239b0(const char *value, unsigned int count)
-{
-    return append(value, count);
-}
-
-void RHLoadingScreenEmitAppend(RHUnk005239b0 &text, const char *value, unsigned int count)
-{
-    text.FUN_005239b0(value, count);
-}
+// TEMPLATE: GAME 0x005239b0
+// ?append@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAEAAV12@PBDI@Z
 
 void RHLoadingScreen::Emit(SBFile &file, const RHMission *mission)
 {

@@ -101,15 +101,6 @@ public:
     unsigned long m_height; // +0x20
 };
 
-// SIZE 0x10
-class RHUnk005239b0 : public std::string
-{
-public:
-    std::string &FUN_005239b0(const char *, unsigned int);
-};
-
-void RHLoadingScreenEmitAppend(RHUnk005239b0 &, const char *, unsigned int);
-
 bool FUN_005f6400(const std::string &);
 extern std::string g_unk0x006c05f0;
 extern std::string g_unk0x006c0650;

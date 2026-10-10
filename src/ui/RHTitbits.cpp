@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHTitbits.h"
 
 // Parked: list/file register allocation and cursor scheduling remain different.
@@ -135,7 +136,7 @@ bool RHTitbits::Serialize(SBFile &file)
             return false;
         }
 
-        g_pEngine->SerializeNestedA(file, &elem.m_0c);
+        g_pEngine->SerializeElementPointer(file, *(RHElement **)(&elem.m_0c));
         g_pEngine->SerializeNestedB(file, &elem.m_10);
         ((RHUnk005df510 *)((char *)&elem + 0x1c))->Serialize(file);
 

@@ -28,6 +28,7 @@
 // compiles to an integer `mov` pair instead. The temp coalesces into f10's
 // stack slot, so the 0x10 frame is unchanged.
 
+#include "SBNullstr.h"
 #include "RHWidgetPortrait.h"
 
 DECOMP_SIZE_ASSERT(RHWidgetPortrait, 0xe58)
@@ -45,7 +46,7 @@ float g_unk0x0067a554 = 52.0f;
 #define P(O) (*(SBGeoPoint2D *)((char *)this + (O)))
 #define A (*(RHUnk005d73d0Actor **)((char *)this + 0xe1c))
 
-// deferred: unannotated pending reccmp #534
+// FUNCTION: GAME 0x005d6690
 bool RHWidgetPortrait::Method005d6690()
 {
     m_arr[2].m_4e = 1;
@@ -72,7 +73,7 @@ bool RHWidgetPortrait::Method005d6690()
     return true;
 }
 
-// deferred: unannotated pending reccmp #534
+// FUNCTION: GAME 0x005d67e0
 bool RHWidgetPortrait::Method005d67e0()
 {
     m_arr[2].m_4e = 0;
@@ -102,7 +103,7 @@ bool RHWidgetPortrait::Method005d67e0()
     return true;
 }
 
-// deferred: unannotated pending reccmp #534
+// FUNCTION: GAME 0x005d73d0
 bool RHWidgetPortrait::Method005d73d0()
 {
     W(0xa0).v08(P(0x1bc).FUN_005fc200(SBGeoVector2D(0.0f, 23.0f)));
@@ -128,7 +129,7 @@ bool RHWidgetPortrait::Method005d73d0()
     return true;
 }
 
-// deferred: unannotated pending reccmp #534
+// FUNCTION: GAME 0x005d7530
 bool RHWidgetPortrait::Method005d7530()
 {
     m_arr[2].m_4f = 0;

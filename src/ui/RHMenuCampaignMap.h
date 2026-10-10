@@ -36,8 +36,6 @@ public:
     }
 };
 
-unsigned short *FUN_00419940(unsigned short *, const unsigned short *, unsigned);
-
 // SIZE 0x10
 class RHMapTitleText
 {
@@ -55,7 +53,7 @@ public:
         unsigned size = wcslen(text);
         if (string->Grow(size, true))
         {
-            FUN_00419940(m_chars, text, size);
+            wmemcpy(m_chars, text, size);
             string->End(size);
         }
     }
@@ -239,6 +237,7 @@ public:
 };
 extern RHUnk00452030 *g_unk0x6c07fc;
 extern std::string g_unk0x006c0660;
+extern char *g_unk0x006c0664;
 extern RHMapResources *g_unk0x006c1840;
 std::wstring FUN_005e23d0(unsigned long);
 unsigned FUN_00527cc0(unsigned);

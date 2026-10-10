@@ -26,7 +26,7 @@ RHUnk00507500::Node *g_unk0x006c0b30 = 0;
 // GLOBAL: GAME 0x006c0b34
 unsigned int g_unk0x006c0b34 = 0;
 
-// deferred: unannotated pending reccmp #534.
+// FUNCTION: GAME 0x004d2340
 unsigned int RHEngine::FUN_004d2340(int type)
 {
     switch (type)
@@ -104,7 +104,7 @@ bool RHFrameHolder::InitializeSpriteBank()
     return true;
 }
 
-// STUB: GAME 0x00504590
+// FUNCTION: GAME 0x00504590
 void RHUnk00507500::FUN_00504590()
 {
     Iterator first;
@@ -115,11 +115,13 @@ void RHUnk00507500::FUN_00504590()
     operator delete(m_head);
     m_head = 0;
     m_size = 0;
-    RHUnk00641782 lock;
-    if (--g_unk0x006c0b34 == 0)
     {
-        operator delete(g_unk0x006c0b30);
-        g_unk0x006c0b30 = 0;
+        RHUnk00641782 lock;
+        if (--g_unk0x006c0b34 == 0)
+        {
+            operator delete(g_unk0x006c0b30);
+            g_unk0x006c0b30 = 0;
+        }
     }
 }
 
@@ -150,6 +152,7 @@ void RHFrameHolder::FUN_00504b10(unsigned long data, unsigned long size, unsigne
     }
 }
 
+// Parked: effective-only; signed size division sign fix uses ecx instead of eax.
 // STUB: GAME 0x005051a0
 unsigned short RHFrameHolder::FUN_005051a0(unsigned short id, SBFile &file)
 {
@@ -294,11 +297,13 @@ unsigned int RHUnk00506e00::FUN_00506e00() const
     return m_first == 0 ? 0 : m_last - m_first;
 }
 
-// STUB: GAME 0x00506e70
+// FUNCTION: GAME 0x00506e70
 RHFrameHolderRowMap::Pair RHFrameHolderRowMap::Insert(const Value &value)
 {
-    TreePair result = InsertTree(value);
-    return Pair(result.first, result.second);
+    TreePair result;
+    result = InsertTree(value);
+    Pair pair(result.first, result.second);
+    return pair;
 }
 
 // FUNCTION: GAME 0x00506fd0
@@ -352,13 +357,19 @@ RHFrameHolderRecord *RHUnk00506e00::FUN_00507320(RHFrameHolderRecord *first, RHF
     return first;
 }
 
-// STUB: GAME 0x005074d0
+// TEMPLATE: GAME 0x00507360
+// ?_Destroy@?$vector@VRHUnk005069a0@@V?$allocator@VRHUnk005069a0@@@std@@@std@@IAEXPAVRHUnk005069a0@@0@Z
+
+// FUNCTION: GAME 0x005074d0
 RHUnk005074d0::Pair RHUnk005074d0::FUN_005074d0(const Value &value)
 {
-    TreePair result = FUN_00508950(value);
-    return Pair(result.first, result.second);
+    TreePair result;
+    result = FUN_00508950(value);
+    Pair pair(result.first, result.second);
+    return pair;
 }
 
+// Parked: EH-state store and return-slot load scheduled before the root reset.
 // STUB: GAME 0x00507500
 RHUnk00507500::Iterator RHUnk00507500::FUN_00507500(Iterator first, Iterator last)
 {
@@ -368,20 +379,18 @@ RHUnk00507500::Iterator RHUnk00507500::FUN_00507500(Iterator first, Iterator las
         Node *node = m_head->m_parent;
         {
             RHUnk00641782 inner;
-            while (node != g_unk0x006c0b30)
+            for (Node *next = node; next != g_unk0x006c0b30; node = next)
             {
-                FUN_00508fa0(node->m_right);
-                Node *previous = node;
-                node = node->m_left;
-                operator delete(previous);
+                FUN_00508fa0(next->m_right);
+                next = next->m_left;
+                operator delete(node);
             }
         }
         m_head->m_parent = g_unk0x006c0b30;
         m_size = 0;
         m_head->m_left = m_head;
         m_head->m_right = m_head;
-        first.m_node = m_head->m_left;
-        return first;
+        return begin();
     }
     while (first.m_node != last.m_node)
     {
@@ -392,7 +401,7 @@ RHUnk00507500::Iterator RHUnk00507500::FUN_00507500(Iterator first, Iterator las
     return first;
 }
 
-// STUB: GAME 0x005079b0
+// FUNCTION: GAME 0x005079b0
 RHFrameHolderRowMap::TreePair RHFrameHolderRowMap::InsertTree(const Value &value)
 {
     Node *parent = m_head;
@@ -407,34 +416,93 @@ RHFrameHolderRowMap::TreePair RHFrameHolderRowMap::InsertTree(const Value &value
             node = left ? node->m_left : node->m_right;
         }
     }
-    TreePair result;
     if (m_comparator[0])
     {
-        result.first = FUN_005090e0(node, parent, value);
-        result.second = true;
+        TreePair result(FUN_005090e0(node, parent, value), true);
         return result;
     }
     Iterator previous;
     previous.m_node = parent;
     if (left)
     {
-        if (parent == m_head->m_left)
+        if (previous.m_node == m_head->m_left)
         {
-            result.first = FUN_005090e0(node, parent, value);
-            result.second = true;
+            TreePair result(FUN_005090e0(node, parent, value), true);
             return result;
         }
         previous.FUN_005097a0();
     }
     if (previous.m_node->m_key < value.first)
     {
-        result.first = FUN_005090e0(node, parent, value);
-        result.second = true;
+        TreePair result(FUN_005090e0(node, parent, value), true);
         return result;
     }
-    result.first = previous;
-    result.second = false;
+    TreePair result(previous, false);
     return result;
+}
+
+// FUNCTION: GAME 0x00508000
+void RHFrameHolderRowMap::FUN_00508000(Node *node)
+{
+    RHUnk00641782 lock;
+    for (Node *next = node; next != g_unk0x006c0b2c; node = next)
+    {
+        FUN_00508000(next->m_right);
+        next = next->m_left;
+        operator delete(node);
+    }
+}
+
+// FUNCTION: GAME 0x00508950
+RHUnk005074d0::TreePair RHUnk005074d0::FUN_00508950(const Value &value)
+{
+    Node *parent = m_head;
+    Node *node = parent->m_parent;
+    bool left = true;
+    {
+        RHUnk00641782 lock;
+        while (node != (Node *)g_unk0x006c0b30)
+        {
+            parent = node;
+            left = value.m_key < node->m_key;
+            node = left ? node->m_left : node->m_right;
+        }
+    }
+    if (m_multi)
+    {
+        TreePair result(FUN_005094a0(node, parent, value), true);
+        return result;
+    }
+    Iterator previous;
+    previous.m_node = parent;
+    if (left)
+    {
+        if (previous.m_node == m_head->m_left)
+        {
+            TreePair result(FUN_005094a0(node, parent, value), true);
+            return result;
+        }
+        previous.FUN_005099c0();
+    }
+    if (previous.m_node->m_key < value.m_key)
+    {
+        TreePair result(FUN_005094a0(node, parent, value), true);
+        return result;
+    }
+    TreePair result(RHFrameHolderRowMap::Iterator((RHFrameHolderRowMap::Node *)previous.m_node), false);
+    return result;
+}
+
+// FUNCTION: GAME 0x00508fa0
+void RHUnk00507500::FUN_00508fa0(Node *node)
+{
+    RHUnk00641782 lock;
+    for (Node *next = node; next != g_unk0x006c0b30; node = next)
+    {
+        FUN_00508fa0(next->m_right);
+        next = next->m_left;
+        operator delete(node);
+    }
 }
 
 // FUNCTION: GAME 0x00509030
@@ -461,6 +529,220 @@ void RHUnk00507500::FUN_00509030()
     m_head->m_right = m_head;
 }
 
+inline void RHUnk005074d0::Lrotate(Node *x)
+{
+    RHUnk00641782 lock;
+    Node *y = x->m_right;
+    x->m_right = y->m_left;
+    if (y->m_left != (Node *)g_unk0x006c0b30)
+        y->m_left->m_parent = x;
+    y->m_parent = x->m_parent;
+    if (x == m_head->m_parent)
+        m_head->m_parent = y;
+    else if (x == x->m_parent->m_left)
+        x->m_parent->m_left = y;
+    else
+        x->m_parent->m_right = y;
+    y->m_left = x;
+    x->m_parent = y;
+}
+
+inline void RHUnk005074d0::Rrotate(Node *x)
+{
+    RHUnk00641782 lock;
+    Node *y = x->m_left;
+    x->m_left = y->m_right;
+    if (y->m_right != (Node *)g_unk0x006c0b30)
+        y->m_right->m_parent = x;
+    y->m_parent = x->m_parent;
+    if (x == m_head->m_parent)
+        m_head->m_parent = y;
+    else if (x == x->m_parent->m_right)
+        x->m_parent->m_right = y;
+    else
+        x->m_parent->m_left = y;
+    y->m_right = x;
+    x->m_parent = y;
+}
+
+// Parked: VC6 inlines the std::_Construct value copy; the target calls it out of line.
+// STUB: GAME 0x005094a0
+RHFrameHolderRowMap::Iterator RHUnk005074d0::FUN_005094a0(Node *x, Node *y, const Value &value)
+{
+    RHUnk00641782 lock;
+    Node *z = (Node *)operator new(sizeof(Node));
+    z->m_parent = y;
+    z->m_color = 0;
+    z->m_left = (Node *)g_unk0x006c0b30;
+    z->m_right = (Node *)g_unk0x006c0b30;
+    std::_Construct((Value *)&z->m_key, value);
+    ++m_size;
+    if (y == m_head || x != (Node *)g_unk0x006c0b30 || value.m_key < y->m_key)
+    {
+        y->m_left = z;
+        if (y == m_head)
+        {
+            m_head->m_parent = z;
+            m_head->m_right = z;
+        }
+        else if (y == m_head->m_left)
+            m_head->m_left = z;
+    }
+    else
+    {
+        y->m_right = z;
+        if (y == m_head->m_right)
+            m_head->m_right = z;
+    }
+    for (x = z; x != m_head->m_parent && x->m_parent->m_color == 0; )
+        if (x->m_parent == x->m_parent->m_parent->m_left)
+        {
+            y = x->m_parent->m_parent->m_right;
+            if (y->m_color == 0)
+            {
+                x->m_parent->m_color = 1;
+                y->m_color = 1;
+                x->m_parent->m_parent->m_color = 0;
+                x = x->m_parent->m_parent;
+            }
+            else
+            {
+                if (x == x->m_parent->m_right)
+                {
+                    x = x->m_parent;
+                    Lrotate(x);
+                }
+                x->m_parent->m_color = 1;
+                x->m_parent->m_parent->m_color = 0;
+                Rrotate(x->m_parent->m_parent);
+            }
+        }
+        else
+        {
+            y = x->m_parent->m_parent->m_left;
+            if (y->m_color == 0)
+            {
+                x->m_parent->m_color = 1;
+                y->m_color = 1;
+                x->m_parent->m_parent->m_color = 0;
+                x = x->m_parent->m_parent;
+            }
+            else
+            {
+                if (x == x->m_parent->m_left)
+                {
+                    x = x->m_parent;
+                    Rrotate(x);
+                }
+                x->m_parent->m_color = 1;
+                x->m_parent->m_parent->m_color = 0;
+                Lrotate(x->m_parent->m_parent);
+            }
+        }
+    m_head->m_parent->m_color = 1;
+    return RHFrameHolderRowMap::Iterator((RHFrameHolderRowMap::Node *)z);
+}
+
+static inline RHFrameHolderRowMap::Node *FrameHolderRowMax(RHFrameHolderRowMap::Node *node)
+{
+    RHUnk00641782 lock;
+    while (node->m_right != g_unk0x006c0b2c)
+        node = node->m_right;
+    return node;
+}
+
+// Parked: target shrink-wraps push esi into the _Max branch; VC6 pushes it in the prologue.
+// STUB: GAME 0x005097a0
+void RHFrameHolderRowMap::Iterator::FUN_005097a0()
+{
+    RHUnk00641782 lock;
+    if (m_node->m_color == 0 && m_node->m_parent->m_parent == m_node)
+        m_node = m_node->m_right;
+    else if (m_node->m_left != g_unk0x006c0b2c)
+        m_node = FrameHolderRowMax(m_node->m_left);
+    else
+    {
+        Node *parent;
+        while (m_node == (parent = m_node->m_parent)->m_left)
+            m_node = parent;
+        m_node = parent;
+    }
+}
+
+static inline RHFrameHolderRowMap::Node *FrameHolderRowMin(RHFrameHolderRowMap::Node *node)
+{
+    RHUnk00641782 lock;
+    while (node->m_left != g_unk0x006c0b2c)
+        node = node->m_left;
+    return node;
+}
+
+// FUNCTION: GAME 0x00509860
+void RHFrameHolderRowMap::Iterator::FUN_00509860()
+{
+    RHUnk00641782 lock;
+    if (m_node->m_right != g_unk0x006c0b2c)
+        m_node = FrameHolderRowMin(m_node->m_right);
+    else
+    {
+        Node *parent;
+        while (m_node == (parent = m_node->m_parent)->m_right)
+            m_node = parent;
+        if (m_node->m_right != parent)
+            m_node = parent;
+    }
+}
+
+static inline RHUnk005074d0::Node *FrameHolderShortMax(RHUnk005074d0::Node *node)
+{
+    RHUnk00641782 lock;
+    while (node->m_right != (RHUnk005074d0::Node *)g_unk0x006c0b30)
+        node = node->m_right;
+    return node;
+}
+
+// Parked: target shrink-wraps push esi into the _Max branch; VC6 pushes it in the prologue.
+// STUB: GAME 0x005099c0
+void RHUnk005074d0::Iterator::FUN_005099c0()
+{
+    RHUnk00641782 lock;
+    if (m_node->m_color == 0 && m_node->m_parent->m_parent == m_node)
+        m_node = m_node->m_right;
+    else if (m_node->m_left != (Node *)g_unk0x006c0b30)
+        m_node = FrameHolderShortMax(m_node->m_left);
+    else
+    {
+        Node *parent;
+        while (m_node == (parent = m_node->m_parent)->m_left)
+            m_node = parent;
+        m_node = parent;
+    }
+}
+
+static inline RHUnk00507500::Node *FrameHolderShortMin(RHUnk00507500::Node *node)
+{
+    RHUnk00641782 lock;
+    while (node->m_left != g_unk0x006c0b30)
+        node = node->m_left;
+    return node;
+}
+
+// FUNCTION: GAME 0x00509a80
+void RHUnk00507500::Iterator::FUN_00509a80()
+{
+    RHUnk00641782 lock;
+    if (m_node->m_right != g_unk0x006c0b30)
+        m_node = FrameHolderShortMin(m_node->m_right);
+    else
+    {
+        Node *parent;
+        while (m_node == (parent = m_node->m_parent)->m_right)
+            m_node = parent;
+        if (m_node->m_right != parent)
+            m_node = parent;
+    }
+}
+
 void RHFrameHolder::Emit(SBResourceManager *resources, SBArray<SBGeoVector2D> &vectors)
 {
     unsigned short count;
@@ -483,6 +765,9 @@ void EmitFrameHolderMaps(RHFrameHolderRowMap *rows, RHUnk005074d0 *strings, RHUn
     unsigned long key = 0;
     rows->Insert(RHFrameHolderRowMap::Value(0, 0));
     rows->Find(key);
+    RHFrameHolderRowMap::Iterator it = rows->End();
+    it.FUN_00509860();
+    rows->FUN_00508000(it.m_node);
     strings->FUN_005074d0(value);
 }
 

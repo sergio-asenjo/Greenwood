@@ -1,10 +1,24 @@
+#include "SBNullstr.h"
 #include "RHLoadingScreen.h"
 
 // LIBRARY: GAME 0x00642913
 extern "C" int sprintf(char *, const char *, ...) { return 0; }
 
-// STUB: GAME 0x0064159a
+// TEMPLATE: GAME 0x0063f890
+// ??1?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@QAE@XZ
+
+// FUNCTION: GAME 0x0064159a
 // ?_Xlen@std@@YAXXZ
+
+// VTABLE: GAME 0x0067bd10
+// class std::length_error
+
+// STRING: GAME 0x0067bd1c
+// "string too long"
+
+// Throw-info data; bound by name only.
+// STUB: GAME 0x006a4638 SYMBOL
+// __TI3?AVlength_error@std@@
 
 // Constructor 0x00613e90 is shared with RHTitbits_stubs.cpp.
 RHUnk00613e90::~RHUnk00613e90() {}

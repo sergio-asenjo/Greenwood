@@ -37,6 +37,7 @@
 class RHUnk0052d2c0
 {
 public:
+    // FUNCTION: GAME 0x0052d2c0
     void SetEnable(bool enable)
     {
         if (enable == true)

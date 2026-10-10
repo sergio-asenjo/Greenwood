@@ -42,6 +42,9 @@ void RHMapCampaign::FUN_004577b0()
     m_1a8 = 0;
 }
 
+// TEMPLATE: GAME 0x00525430
+// ?append@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@QAEAAV12@PBGI@Z
+
 // FUNCTION: GAME 0x00527a70
 void RHMenuCampaignMap::FUN_00527a70(RHMapByte state)
 {
@@ -191,7 +194,7 @@ std::vector<void *> RHMapCampaign::FUN_00528050()
     return m_154;
 }
 
-// deferred: unannotated pending reccmp #534; proven 100.00% when annotated.
+// FUNCTION: GAME 0x005280d0
 void RHMenuCampaignMap::DisplayPseudoMissionDebriefing()
 {
     RHMapCampaign *campaign = (RHMapCampaign *)g_unk0x6c07fc;
@@ -207,7 +210,7 @@ void RHMenuCampaignMap::DisplayPseudoMissionDebriefing()
             RHMapDescription description;
             char directory[0x104];
             GetCurrentDirectoryA(0x104, directory);
-            const char *directoryChars = ((SBString *)&g_unk0x006c0660)->m_chars;
+            const char *directoryChars = g_unk0x006c0664;
             SetCurrentDirectoryA(directoryChars ? directoryChars : "");
             unsigned mission = campaign->m_1ac;
             if (!description.FUN_0063cda0(mission))
@@ -279,7 +282,7 @@ void RHMenuCampaignMap::FUN_00528810()
     ((RHMapWidget *)((char *)this + 0x25ec))->V2c(text);
 }
 
-// deferred: unannotated pending reccmp #534; proven 100.00% when annotated.
+// FUNCTION: GAME 0x0053baa0
 unsigned RHMapWindow::FUN_0053baa0(unsigned duration)
 {
     Timer timer = {m_198c, duration, GetTickCount()};
@@ -287,7 +290,7 @@ unsigned RHMapWindow::FUN_0053baa0(unsigned duration)
     return m_198c++;
 }
 
-// deferred: unannotated pending reccmp #534; proven 100.00% when annotated.
+// FUNCTION: GAME 0x0053bb30
 void RHMapWindow::FUN_0053bb30(unsigned timer)
 {
     for (std::list<Timer>::iterator it = m_1980.begin(); it != m_1980.end(); ++it)
@@ -318,6 +321,9 @@ void RHMapWindow::FUN_0053c7e0()
 {
     ((RHMapWindowPart *)((char *)this + 0x10))->FUN_00618850((char *)this + 0x1914);
 }
+
+// TEMPLATE: GAME 0x0053e170
+// ?_Add@const_iterator@?$deque@V?$vector@PAXV?$allocator@PAX@std@@@std@@V?$allocator@V?$vector@PAXV?$allocator@PAX@std@@@std@@@2@@std@@IAEXH@Z
 
 // FUNCTION: GAME 0x00544b40
 bool RHMenuCampaignMap::FUN_00544b40(const RHMapTitleText &title, const RHMapBox &box, unsigned flags)

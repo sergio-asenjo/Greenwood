@@ -79,6 +79,7 @@ public:
         bool operator==(const Iterator &other) const { return m_node == other.m_node; }
         bool operator!=(const Iterator &other) const { return !(*this == other); }
         void FUN_005097a0();
+        void FUN_00509860();
     };
     typedef std::pair<Iterator, bool> Pair;
     typedef Pair TreePair;
@@ -93,6 +94,7 @@ public:
     Iterator End() { Iterator result; result.m_node = m_head; return result; }
     Pair Insert(const Value &);
     TreePair InsertTree(const Value &);
+    void FUN_00508000(Node *);
     Iterator FUN_005090e0(Node *, Node *, const Value &);
     unsigned long &operator[](const unsigned long &key)
     {
@@ -111,14 +113,35 @@ class RHUnk005074d0
 public:
     typedef RHFrameHolderRowMap::Pair Pair;
     typedef RHFrameHolderRowMap::TreePair TreePair;
+    struct Node
+    {
+        Node *m_left; // 0x00
+        Node *m_parent; // 0x04
+        Node *m_right; // 0x08
+        unsigned short m_key; // 0x0c
+        unsigned short m_value; // 0x0e
+        undefined4 m_color; // 0x10
+    };
+    struct Iterator
+    {
+        Node *m_node; // 0x00
+        void FUN_005099c0();
+    };
     struct Value
     {
-        unsigned long m_key; // 0x00
-        std::string m_value; // 0x04
+        unsigned short m_key; // 0x00
+        unsigned short m_value; // 0x02
     };
     Pair FUN_005074d0(const Value &);
     TreePair FUN_00508950(const Value &);
-    undefined m_00[0x10]; // 0x00
+    RHFrameHolderRowMap::Iterator FUN_005094a0(Node *, Node *, const Value &);
+    void Lrotate(Node *);
+    void Rrotate(Node *);
+    undefined m_00[4]; // 0x00
+    Node *m_head; // 0x04
+    undefined m_multi; // 0x08
+    undefined m_09[3]; // 0x09
+    unsigned int m_size; // 0x0c
 };
 
 class SBResourceManager
@@ -265,6 +288,7 @@ public:
         Node *m_node; // 0x00
         void FUN_00509a80();
     };
+    Iterator begin() { Iterator it; it.m_node = m_head->m_left; return it; }
     void FUN_00504590();
     Iterator FUN_00507500(Iterator, Iterator);
     Iterator FUN_00508a80(Iterator);

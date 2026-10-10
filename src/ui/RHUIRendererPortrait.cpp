@@ -6,10 +6,14 @@
 //
 // STATUS: exact 100% — instruction-for-instruction identical to the original.
 
+#include "SBNullstr.h"
 #include "RHUIRendererPortrait.h"
 
 // GLOBAL: GAME 0x0067755c
 float g_rhuirendererportrait_percent = 100.0f;
+
+// TEMPLATE: GAME 0x005cac40
+// ?find@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@QBEIPBGII@Z
 
 // FUNCTION: GAME 0x005cbbe0
 bool RHUIRendererPortrait::BlitPicture(unsigned int id, float f)
