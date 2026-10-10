@@ -4,6 +4,7 @@
 #include "RHMessenger.h"
 #include "RHGame.h"
 #include <string>
+#include <vector>
 #include <windows.h>
 
 class RHMenuCampaignMap;
@@ -50,6 +51,8 @@ class RHScriptBatchCalls
 public:
     void Unk004520e0(int index, int value);
     void Unk004e3220(int value);
+    void FUN_0050eb80(bool value);
+    void FUN_0050eca0(bool value);
 };
 
 // SIZE 0x184
@@ -74,8 +77,6 @@ class RHGameMenuOwner
 {
 public:
     void FUN_0053c870(void *menu);
-    unsigned FUN_0053baa0(unsigned duration);
-    void FUN_0053bb30(unsigned timer);
 };
 
 class RHGameMenuText
@@ -93,6 +94,44 @@ public:
     virtual void v9(); // vtable+0x24
     virtual void v10(); // vtable+0x28
     virtual void v11(const std::wstring &text); // vtable+0x2c
+    virtual void v12(); // vtable+0x30
+    virtual void v13(); // vtable+0x34
+    virtual void v14(); // vtable+0x38
+    virtual void v15(); // vtable+0x3c
+    virtual void v16(); // vtable+0x40
+    virtual void v17(); // vtable+0x44
+    virtual void v18(); // vtable+0x48
+    virtual void v19(); // vtable+0x4c
+    virtual void v20(); // vtable+0x50
+    virtual void v21(bool value); // vtable+0x54
+};
+
+struct RHMapByte
+{
+    signed char value;
+};
+
+class RHMapCampaign
+{
+public:
+    std::vector<void *> FUN_00528050();
+};
+
+class RHMenuCampaignMap
+{
+public:
+    void FUN_005284b0();
+    void FUN_00527c00(const std::vector<void *> &missions);
+    void FUN_00527a70(RHMapByte state);
+    void FUN_00527ae0(RHMapByte state);
+};
+
+class RHMapWindow
+{
+public:
+    unsigned FUN_0053baa0(unsigned duration);
+    void FUN_0053bb30(unsigned timer);
+    void FUN_0053c7e0();
 };
 
 class RHGameMenuCalls
@@ -194,12 +233,25 @@ public:
     void Insert(T *position, unsigned count, const T &value);
 };
 
+class SBGeoPoint2D;
+
+class RHUnk005fc3b0
+{
+public:
+    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other);
+};
+
+struct RHGameConfigTriple
+{
+    float values[3];
+};
+
 class RHGameConfig
 {
 public:
     RHGameConfig();
     ~RHGameConfig();
-    void FUN_006134a0(void *configuration);
+    bool FUN_006134a0(void *configuration);
     bool FUN_00611960(SBFile &file);
     char m_00[0x38];
 };
@@ -209,6 +261,102 @@ class RHGameTextCalls
 public:
     void FUN_00514ac0(const std::wstring &text, unsigned duration);
 };
+
+class RHUnk0055dbb0
+{
+public:
+    char *FUN_0055dbb0();
+};
+
+class RHPlayerProfileManager
+{
+public:
+    bool Save() const;
+};
+
+class RHGameContinueCalls
+{
+public:
+    RHSaveGame *FUN_0056f730(const std::wstring &, const std::string &);
+    void FUN_0056f700(RHSaveGame *, RHSaveGame *, const std::wstring &);
+};
+
+extern undefined g_unk0x006c0e48[];
+extern std::string g_unk0x006c0ea0;
+
+class RHUnk00549250 : public RHUnk5490f0
+{
+public:
+    RHUnk00549250(int command, void *actor);
+    ~RHUnk00549250();
+    char m_data[4]; // 0x10
+};
+
+class RHUnk005492a0
+{
+public:
+    RHUnk005492a0(int command, void *actor, int action);
+    ~RHUnk005492a0();
+    char m_data[0x14]; // 0x00
+};
+
+class RHGamePortraitCalls
+{
+public:
+    void FUN_005d9b10();
+    void FUN_005d9ae0(unsigned short action, bool enabled);
+};
+
+class RHGameSyncCalls
+{
+public:
+    RHGamePortraitCalls *FUN_0050f140(void *);
+    void FUN_00513520(RHUnk00549250 &);
+    void FUN_005134c0(RHUnk00549250 &);
+    void FUN_00513b00(void *);
+    void FUN_0050ed40();
+    void FUN_00514670();
+    void FUN_005146f0();
+    void FUN_0048a970(RHUnk005492a0 &);
+};
+
+class RHGameEngineCalls
+{
+public:
+    bool FUN_004c7cd0();
+    bool FUN_004c7cf0();
+};
+
+class RHGameActorView
+{
+public:
+    virtual void v0(); virtual void v1(); virtual void v2(); virtual void v3();
+    virtual void v4(); virtual void v5(); virtual void v6(); virtual void v7();
+    virtual void v8(); virtual void v9(); virtual void v10(); virtual void v11();
+    virtual void v12(); virtual void v13(); virtual void v14(); virtual void v15();
+    virtual void v16(); virtual void v17(); virtual void v18(); virtual void v19();
+    virtual void v20(); virtual void v21(); virtual void v22(); virtual void v23();
+    virtual void v24(); virtual void v25(); virtual void v26(); virtual void v27();
+    virtual void v28(); virtual void v29(); virtual void v30(); virtual void v31();
+    virtual void v32(); virtual void v33(); virtual void v34(); virtual void v35();
+    virtual void v36(); virtual void v37(); virtual void v38(); virtual void v39();
+    virtual void v40(); virtual void v41(); virtual void v42(); virtual void v43();
+    virtual void v44(); virtual void v45(); virtual void v46(); virtual void v47();
+    virtual void v48(); virtual void v49(); virtual void v50();
+    virtual short v51(); // vtable+0xcc
+    virtual void v52(); // vtable+0xd0
+    virtual void v53(short action, bool first, bool second); // vtable+0xd4
+    bool FUN_004936e0();
+};
+
+class RHElementActor;
+class RHSectorActorList
+{
+public:
+    int Unk004b8f80(RHElementActor *const &, bool);
+};
+
+void FUN_0053a830();
 
 std::wstring FUN_005e23d0(unsigned long id);
 

@@ -11,6 +11,7 @@ class RHPCDescription;
 class RHCharacterProfile;
 class RHElementActorPC;
 class RHMission;
+class SBGeoPoint2D;
 struct RHUnkSectorGlobal;
 struct RHbeamMe;
 
@@ -34,6 +35,67 @@ public:
     void FUN_0057e680(void *actor);
 };
 
+class RHEngineRosterCalls
+{
+public:
+    void FUN_0055eda0();
+    unsigned FUN_0055e880();
+};
+
+class RHEngineMenuStateCalls
+{
+public:
+    bool FUN_00514970();
+};
+
+class RHEngineSequenceStateCalls
+{
+public:
+    bool FUN_005823f0();
+    bool FUN_0058a670(void *sequence);
+    bool FUN_0058a7d0(void *element);
+};
+
+// SIZE 0x1a0
+class RHUnk0054eab0
+{
+public:
+    RHUnk0054eab0();
+    void FUN_0054eea0(SBFile &file, void *grid);
+    undefined m_00[0x1a0]; // 0x00
+};
+
+class RHEngineGridCalls
+{
+public:
+    void FUN_004eb830(SBFile &file);
+    void FUN_004ebab0(SBFile &file);
+    void FUN_004efd10(void *value, unsigned short layer, bool mode);
+    short FUN_004e9760(const SBGeoPoint2D &point, const SBGeoPoint2D &origin, void *&sector, unsigned short &layer);
+    short FUN_004e9920(const SBGeoPoint2D &point, const SBGeoPoint2D &origin, void *&sector, unsigned short &layer);
+};
+
+class RHEngineContinuationSectorCalls
+{
+public:
+    virtual ~RHEngineContinuationSectorCalls();
+    virtual bool Serialize(SBFile &file, bool mode);
+};
+
+class RHUnk0057ee90
+{
+public:
+    RHUnk0057ee90();
+    undefined m_00[0x70];
+};
+
+class RHUnk0057ee40
+{
+public:
+    RHUnk0057ee40();
+    undefined m_00[0x68];
+};
+
 extern RHUnkSectorGlobal *g_unk0x6c0a9c;
 void FUN_005e1d50(SBFile &file, unsigned long tag, int level);
 void FUN_005e20c0(SBFile &file);
@@ -43,8 +105,10 @@ class RHEngine
 {
 public:
     void FUN_004c8120(void *actor);
+    unsigned int FUN_004d2340(int type);
     void FUN_004c38d0(SBFile &file, unsigned *value);
     void FUN_004dee70(float *point);
+    void FUN_004debf0(const SBGeoPoint2D &point);
     unsigned FUN_004e4110(unsigned value);
     bool InitializeFromMission(RHMission *mission);
     bool FUN_004c4570(SBFile &file);
@@ -55,11 +119,11 @@ public:
     void FUN_004c1df0(SBFile &file);
     void FUN_004c2150(SBFile &file);
     void FUN_004c2200(SBFile &file, std::vector<RHbeamMe> &beamMes);
+    void FUN_004c2720(SBFile &file);
     void FUN_004c28c0(const std::string &name);
     void FUN_004e35f0(SBFile &file);
     void FUN_004e2390(void *actor);
     bool SerializeElementPointer(SBFile &file, RHElement *&element);
-    bool SerializeNestedA(SBFile &file, void *value);
     bool SerializeNestedB(SBFile &file, void *value);
     bool FUN_004c3af0(SBFile &file, void *&value);
     bool FUN_004c3bd0(SBFile &file, void *&value);
@@ -115,6 +179,80 @@ class RHUnk0046ffe0 : public RHEngineMissionElementCalls
 public:
     RHUnk0046ffe0(bool flag);
     undefined m_04[0xa98]; // 0x04
+};
+
+// SIZE 0xdd0 (partial layout)
+class RHUnk004a1bc0
+{
+public:
+    RHUnk004a1bc0(bool flag);
+    undefined m_00[0xdd0]; // 0x00
+};
+
+class RHEngineExtendedMissionElementCalls : public RHEngineMissionElementCalls
+{
+public:
+    virtual void Unk40();
+    virtual void Unk44();
+    virtual void Unk48();
+    virtual void Unk4c();
+    virtual void Unk50();
+    virtual void Unk54();
+    virtual void Unk58();
+    virtual void Unk5c();
+    virtual void Unk60();
+    virtual void Unk64();
+    virtual void Unk68();
+    virtual void Unk6c();
+    virtual void Unk70();
+    virtual void Unk74();
+    virtual void Unk78();
+    virtual void Unk7c();
+    virtual void Unk80();
+    virtual void Unk84();
+    virtual void Unk88();
+    virtual void Unk8c();
+    virtual void Unk90();
+    virtual void Unk94();
+    virtual void Unk98();
+    virtual void Unk9c();
+    virtual void Unka0();
+    virtual void Unka4();
+    virtual void Unka8();
+    virtual void Unkac();
+    virtual void Unkb0();
+    virtual void Unkb4();
+    virtual void Unkb8();
+    virtual void Unkbc();
+    virtual void Unkc0();
+    virtual void Unkc4();
+    virtual void Unkc8();
+    virtual void Unkcc();
+    virtual void Unkd0();
+    virtual void Unkd4();
+    virtual void Unkd8();
+    virtual void Unkdc();
+    virtual void Unke0();
+    virtual void Unke4();
+    virtual void Unke8();
+    virtual void Unkec();
+    virtual void Unkf0();
+    virtual void Unkf4();
+    virtual void Unkf8();
+    virtual void Unkfc();
+    virtual void Unk100();
+    virtual void Unk104();
+    virtual void Unk108();
+    virtual void Unk10c();
+    virtual void Unk110();
+    virtual void Unk114();
+    virtual void Unk118();
+    virtual void Unk11c();
+    virtual void Unk120();
+    virtual void Unk124();
+    virtual void Unk128();
+    virtual void Unk12c();
+    virtual int Unk130();
 };
 
 // SIZE 0x270
@@ -240,7 +378,22 @@ public:
 };
 
 void FUN_005709a0(void *value, unsigned index);
+class RHEngineContinuationCampaignCalls
+{
+public:
+    void FUN_00450c10(void *actors, SBFile &file);
+};
+
+void FUN_00570850(void *actor);
+
+class RHMissionArrayStorage
+{
+public:
+    void *FUN_004609a0(void *first, void *last);
+    void FUN_004e5820(void *position, const unsigned long &value);
+};
 void FUN_004e70a0(void **position, void *value, bool (*compare)(void *, void *));
+void FUN_004e6f70(void **first, void **last, bool (*compare)(void *, void *), void **value);
 
 // SIZE 0x04 (call view)
 class RHUnk00551da0
@@ -277,6 +430,8 @@ public:
 class RHUnk005069a0
 {
 public:
+    RHUnk005069a0(const RHUnk005069a0 &value);
+    RHUnk005069a0(const RHUnk005069a0 &value, int mode);
     ~RHUnk005069a0();
     RHUnk005069a0 &operator=(const RHUnk005069a0 &value);
     undefined m_00[0x14]; // 0x00
@@ -286,8 +441,10 @@ public:
 class RHUnk005055b0
 {
 public:
+    void FUN_005052c0();
     void FUN_00505520(int value);
     void FUN_005055b0();
+    void FUN_00505640();
     undefined m_00[0x1c]; // 0x00
     char *m_1c; // 0x1c
     char *m_20; // 0x20

@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "SBResourceManager.h"
 
 SBResourceManager::Tree44::Iterator SBResourceManager::Tree44::FUN_00602580(const unsigned long &key)
@@ -45,6 +46,7 @@ SBResourceUnkKeyNode *SBResourceManager::Tree74::FUN_00605550(const unsigned lon
     return 0;
 }
 
+// FUNCTION: GAME 0x00617690
 SBResourceUnkKeyIterator SBResourceUnkTreeEnd::FUN_00617690()
 {
     return SBResourceUnkKeyIterator(m_head);

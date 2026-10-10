@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "SBResourceManager.h"
 #include "RHUIRendererPortrait.h"
 
@@ -176,7 +177,7 @@ inline SBResourceUnkRecoveryIterator SBResourceFind(
         ? found : SBResourceUnkRecoveryIterator(head));
 }
 
-// deferred: unannotated pending reccmp #534
+// FUNCTION: GAME 0x00600db0
 bool SBResourceManager::FUN_00600db0(unsigned long id)
 {
     Tree54 &tree = m_54;
@@ -240,18 +241,15 @@ int SBResourceManager::FUN_00600f10(unsigned long id)
     return 1;
 }
 
-// Parked 0x00600fc0: shared bool return width; unannotated to preserve callers.
+// FUNCTION: GAME 0x00600fc0
 bool RHMapResources::FUN_00600fc0(unsigned resource)
 {
     const unsigned long &id = *(const unsigned long *)&resource;
     SBResourceManager &view = *(SBResourceManager *)this;
     SBResourceUnkKeyNode *head = view.m_74.m_head;
-    if (SBResourceFindExternalEnd(view.m_74, id).m_node == head) {
-        SBResourceUnkKeyNode *otherHead = view.m_34.m_head;
-        if (SBResourceFind(view.m_34, id).m_node == otherHead)
-            return false;
-    }
-    return true;
+    SBResourceUnkKeyNode *otherHead;
+    return SBResourceFindExternalEnd(view.m_74, id).m_node != head
+        || (otherHead = view.m_34.m_head, SBResourceFind(view.m_34, id).m_node != otherHead);
 }
 
 void EmitSBResourceManager(SBResourceManager *resource)

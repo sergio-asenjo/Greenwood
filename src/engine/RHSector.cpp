@@ -146,7 +146,7 @@ void RHUnk00522540::Unk005225a0(SBFile &file)
     m_16 = value;
 }
 
-// STUB: GAME 0x00522680
+// FUNCTION: GAME 0x00522680
 bool RHUnk00522540::FUN_00522680(SBFile &file)
 {
     return g_pEngine->FUN_004c3d90(file, m_18);
@@ -402,7 +402,7 @@ void RHSectorArchery::InitializeFromMissionStream(SBFile &file)
     }
 }
 
-// STUB: GAME 0x0057f520
+// FUNCTION: GAME 0x0057f520
 bool RHSectorArchery::Serialize(SBFile &file)
 {
     // STRING: GAME 0x006b7324
@@ -416,8 +416,11 @@ bool RHSectorArchery::Serialize(SBFile &file)
     }
     unsigned short count = (unsigned short)m_58.size();
     for (unsigned short i = 0; i < count; ++i)
-        if (!m_58[i]->FUN_00522680(file))
+    {
+        RHUnk00522540 *entry = m_58[i];
+        if (!entry->FUN_00522680(file))
             return false;
+    }
     return true;
 }
 
@@ -515,7 +518,7 @@ bool RHSectorScript::Serialize(SBFile &file)
     return true;
 }
 
-// deferred: unannotated pending reccmp #534 (0x0057fcc0, recursive ILT call).
+// FUNCTION: GAME 0x0057fcc0
 void RHSectorScript::Enter(RHElementActor *actor)
 {
     RHSectorActorList &list = m_cc;
@@ -614,7 +617,7 @@ void RHSectorDoor::Emit(SBFile &file)
     Serialize(file);
 }
 
-// deferred: 0x0060ced0, exact body; called by a counted initializer.
+// FUNCTION: GAME 0x0060ced0
 void RHUnkSectorPoints::Unk0060ced0(const SBGeoPoint2D &point, unsigned int index)
 {
     m_28 = 0;
@@ -622,7 +625,7 @@ void RHUnkSectorPoints::Unk0060ced0(const SBGeoPoint2D &point, unsigned int inde
     FUN_006112a0(point, index);
 }
 
-// deferred: 0x0060cef0, exact body; called by counted initializers.
+// FUNCTION: GAME 0x0060cef0
 SBGeoPoint2D &RHUnkSectorPoints::Unk0060cef0(unsigned int index)
 {
     return FUN_006112c0(index);

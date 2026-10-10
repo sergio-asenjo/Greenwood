@@ -27,13 +27,7 @@
 //         `WORD [this+0x04] = keysRead + 2`;
 //       * it is the only caller of 0x0051ec40, fixing the pair.
 //
-// STATUS OF 0x0051ec40 (Serialize) — DEFERRED, UNANNOTATED (reccmp #534):
-//   SetToPreset (matched) calls Serialize, so annotating Serialize would make
-//   reccmp resolve the original `call 0x0051ec40` by name while our
-//   incremental-link call stays an unnamed ILT placeholder -> the caller drops
-//   below 100% (Hard rule 28 / docs/07-link-limitations.md). The real body is
-//   kept here with its // FUNCTION: marker omitted until reccmp lands the
-//   symmetric-operand fix; then the marker is a one-line flip.
+// STATUS OF 0x0051ec40 (Serialize) — exact under the reviewed #534 comparator.
 //
 // STATUS OF 0x0051ece0 (SetToPreset) — PARKED (frame/EH layout wall):
 //   The body is reproduced logically, but the original frame is `sub esp,0xd4`
@@ -49,9 +43,10 @@
 // addresses: the original is a fixed-base EXE, so its absolute string pointers
 // carry no relocation records and reccmp cannot discover them by scanning.
 
+#include "SBNullstr.h"
 #include "RHKeyConfig.h"
 
-// deferred: unannotated pending reccmp #534
+// FUNCTION: GAME 0x0051ec40
 bool RHKeyConfig::Serialize(SBFile &file)
 {
     // STRING: GAME 0x6b06c8

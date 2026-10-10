@@ -1,18 +1,10 @@
+#include "SBNullstr.h"
 #include "RHSectorProduction.h"
 
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 DECOMP_SIZE_ASSERT(RHSectorProduction::Occupant, 0x10)
 DECOMP_SIZE_ASSERT(RHSectorProduction::Occupants, 0x10)
 DECOMP_SIZE_ASSERT(RHSectorProduction, 0x34)
-
-// SIZE 0x24
-struct RHSoundPendingData
-{
-    undefined m_00[0x24]; // 0x00
-    void FUN_0052c5a0();
-};
-
-DECOMP_SIZE_ASSERT(RHSoundPendingData, 0x24)
 
 // FUNCTION: GAME 0x0045a910
 inline RHSectorProduction::Occupant &RHSectorProduction::Occupant::operator=(const Occupant &other)
@@ -68,8 +60,7 @@ bool RHSectorProduction::Serialize(SBFile &file)
     return true;
 }
 
-// deferred: unannotated pending reccmp #534
-// 0x00580ab0: exact when annotated; annotation resolves the caller's literal callback asymmetrically.
+// FUNCTION: GAME 0x00580ab0
 bool RHSectorProduction::SerializeOccupant(SBFile &file, Occupant &occupant)
 {
     FUN_00453da0(file, occupant.m_0);
@@ -106,14 +97,21 @@ bool RHSectorProduction::SerializeOccupant(SBFile &file, Occupant &occupant)
 inline void RHSectorProduction::Occupants::DestroyElements(Occupant *first, Occupant *last)
 {
     for (; first != last; ++first)
-        ((RHSoundPendingData *)first)->FUN_0052c5a0();
+        first->~Occupant();
+}
+
+// FUNCTION: GAME 0x00459100
+void RHSectorProduction::Occupants::Destroy(Occupant *first, Occupant *last)
+{
+    for (; first != last; ++first)
+        first->~Occupant();
 }
 
 inline RHSectorProduction::Occupant *RHSectorProduction::Occupants::UninitializedCopy(
     const Occupant *first, const Occupant *last, Occupant *out)
 {
     for (; first != last; ++out, ++first)
-        FUN_0045a850(out, *first);
+        std::_Construct(out, *first);
     return out;
 }
 
@@ -121,7 +119,7 @@ inline void RHSectorProduction::Occupants::UninitializedFill(Occupant *first, un
                                                             const Occupant &value)
 {
     for (; count > 0; --count, ++first)
-        FUN_0045a850(first, value);
+        std::_Construct(first, value);
 }
 
 inline void RHSectorProduction::Occupants::Fill(Occupant *first, Occupant *last, const Occupant &value)
@@ -140,40 +138,39 @@ inline RHSectorProduction::Occupant *RHSectorProduction::Occupants::Allocate(int
 // FUNCTION: GAME 0x005815f0
 void RHSectorProduction::Occupants::Insert(Occupant *where, unsigned count, const Occupant &value)
 {
-    if ((unsigned)(m_end - m_last) < count)
+    if ((unsigned)(_End - _Last) < count)
     {
         unsigned capacity = size() + (count < size() ? size() : count);
         Occupant *storage = Allocate(capacity);
-        Occupant *next = UninitializedCopy(m_first, where, storage);
+        Occupant *next = UninitializedCopy(_First, where, storage);
         UninitializedFill(next, count, value);
-        UninitializedCopy(where, m_last, next + count);
-        DestroyElements(m_first, m_last);
-        operator delete(m_first);
-        m_end = storage + capacity;
-        m_last = storage + size() + count;
-        m_first = storage;
+        UninitializedCopy(where, _Last, next + count);
+        DestroyElements(_First, _Last);
+        operator delete(_First);
+        _End = storage + capacity;
+        _Last = storage + size() + count;
+        _First = storage;
     }
-    else if ((unsigned)(m_last - where) < count)
+    else if ((unsigned)(_Last - where) < count)
     {
-        UninitializedCopy(where, m_last, where + count);
-        UninitializedFill(m_last, count - (m_last - where), value);
-        Fill(where, m_last, value);
-        m_last += count;
+        UninitializedCopy(where, _Last, where + count);
+        UninitializedFill(_Last, count - (_Last - where), value);
+        Fill(where, _Last, value);
+        _Last += count;
     }
     else if (count > 0)
     {
-        UninitializedCopy(m_last - count, m_last, m_last);
-        Occupant *first = m_last - count;
-        Occupant *out = m_last;
+        UninitializedCopy(_Last - count, _Last, _Last);
+        Occupant *first = _Last - count;
+        Occupant *out = _Last;
         while (where != first)
             *--out = *--first;
         Fill(where, where + count, value);
-        m_last += count;
+        _Last += count;
     }
 }
 
-// deferred: unannotated pending reccmp #534
-// 0x005818c0: historically exact; callback and Insert annotations are coupled.
+// FUNCTION: GAME 0x005818c0
 bool RHSectorProduction::FUN_005818c0(SBFile &file, Occupants &occupants,
                                     bool (*serialize)(SBFile &, Occupant &))
 {

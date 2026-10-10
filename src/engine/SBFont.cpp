@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "SBFont.h"
 #include "RHSaveGame.h"
 #include "RHCampaign.h"
@@ -60,7 +61,7 @@ int SBFontUnk0061e840::FUN_0061e880()
     return m_14;
 }
 
-// Unannotated: original returns {char, std::string} by value from a char arg; signature unmatched.
+// FUNCTION: GAME 0x0061e8a0
 std::string SBFontUnk0061e840::FUN_0061e8a0()
 {
     return std::string(m_18);
@@ -149,6 +150,7 @@ int SBFontUnk0061e840::FUN_0061eb80(SBFontTextView *text, void *a, const void *b
     return count;
 }
 
+// Parked: font-name return ABI and pair-copy materialization remain unmatched.
 // STUB: GAME 0x0061ebd0
 void SBFontUnk0061e840::FUN_0061ebd0(unsigned short value)
 {
@@ -183,32 +185,34 @@ bool SBFontUnk0061e840::FUN_0061ed70(SBFile &file)
     return true;
 }
 
-// STUB: GAME 0x0061eea0
+// FUNCTION: GAME 0x0061eea0
 void SBFontTree0061fcb0::FUN_0061eea0()
 {
     FUN_0061fce0(begin(), end());
     operator delete(m_04);
     m_04 = 0;
     m_0c = 0;
-    SBFontLock lock;
-    if (--g_unk0x006c1920 == 0) {
-        operator delete(g_unk0x006c191c);
-        g_unk0x006c191c = 0;
+    {
+        SBFontLock lock;
+        if (--g_unk0x006c1920 == 0) {
+            operator delete(g_unk0x006c191c);
+            g_unk0x006c191c = 0;
+        }
     }
 }
 
-// STUB: GAME 0x0061ef10
+// FUNCTION: GAME 0x0061ef10
 SBFontValue0061f120::~SBFontValue0061f120()
 {
 }
 
-// STUB: GAME 0x0061f120
+// FUNCTION: GAME 0x0061f120
 SBFontValue0061f120::SBFontValue0061f120(const std::string &name, const SBFontTree0061fcb0 &tree)
     : m_00(name), m_10(tree)
 {
 }
 
-// STUB: GAME 0x0061f2b0
+// FUNCTION: GAME 0x0061f2b0
 SBFontPair0061f2b0 SBFontTree0061fcb0::FUN_0061f2b0(const unsigned short &value)
 {
     SBFontNode0061fcb0 *node = m_04->m_04;
@@ -222,19 +226,28 @@ SBFontPair0061f2b0 SBFontTree0061fcb0::FUN_0061f2b0(const unsigned short &value)
             node = left ? node->m_00 : node->m_08;
         }
     }
-    if (m_08) return SBFontPair0061f2b0(FUN_0061fe30(node, parent, value), true);
+    if (m_08) {
+        SBFontPair0061f2b0 result(FUN_0061fe30(node, parent, value), true);
+        return result;
+    }
     SBFontIterator0061fe10 it;
     it.m_00 = parent;
     if (left) {
-        if (it.m_00 == m_04->m_00)
-            return SBFontPair0061f2b0(FUN_0061fe30(node, parent, value), true);
+        if (it.m_00 == m_04->m_00) {
+            SBFontPair0061f2b0 result(FUN_0061fe30(node, parent, value), true);
+            return result;
+        }
         it.FUN_00620ca0();
     }
-    if (it.m_00->m_0c < value)
-        return SBFontPair0061f2b0(FUN_0061fe30(node, parent, value), true);
-    return SBFontPair0061f2b0(it, false);
+    if (it.m_00->m_0c < value) {
+        SBFontPair0061f2b0 result(FUN_0061fe30(node, parent, value), true);
+        return result;
+    }
+    SBFontPair0061f2b0 result(it, false);
+    return result;
 }
 
+// Parked: pair-construction calls and frame slots differ from the target.
 // STUB: GAME 0x0061f3e0
 SBFontPair0061f3e0 SBFontTree0061f3e0::FUN_0061f3e0(const SBFontValue0061f120 &value)
 {
@@ -245,21 +258,31 @@ SBFontPair0061f3e0 SBFontTree0061f3e0::FUN_0061f3e0(const SBFontValue0061f120 &v
         SBFontLock lock;
         while (node != g_unk0x006c1914) {
             parent = node;
-            left = value.m_00 < node->m_0c.m_00;
+            const RHProfileText &key = *(const RHProfileText *)&value.m_00;
+            const RHProfileText &other = *(const RHProfileText *)&node->m_0c.m_00;
+            left = key.FUN_00460900(0, key.m_size, other.c_str(), other.m_size) < 0;
             node = left ? node->m_00 : node->m_08;
         }
     }
-    if (m_08) return SBFontPair0061f3e0(FUN_00620130(node, parent, value), true);
+    if (m_08) {
+        SBFontPair0061f3e0 result(FUN_00620130(node, parent, value), true);
+        return result;
+    }
     SBFontIterator0061f3e0 it;
     it.m_00 = parent;
     if (left) {
-        if (it.m_00 == m_04->m_00)
-            return SBFontPair0061f3e0(FUN_00620130(node, parent, value), true);
+        if (it.m_00 == m_04->m_00) {
+            SBFontPair0061f3e0 result(FUN_00620130(node, parent, value), true);
+            return result;
+        }
         it.FUN_00620e30();
     }
-    if (((RHCampaignCommandLine *)&it.m_00->m_0c.m_00)->FUN_0045a010(*(const RHProfileText *)&value.m_00) < 0)
-        return SBFontPair0061f3e0(FUN_00620130(node, parent, value), true);
-    return SBFontPair0061f3e0(it, false);
+    if (((RHCampaignCommandLine *)&it.m_00->m_0c.m_00)->FUN_0045a010(*(const RHProfileText *)&value.m_00) < 0) {
+        SBFontPair0061f3e0 result(FUN_00620130(node, parent, value), true);
+        return result;
+    }
+    SBFontPair0061f3e0 result(it, false);
+    return result;
 }
 
 // FUNCTION: GAME 0x0061fcb0

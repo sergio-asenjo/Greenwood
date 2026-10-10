@@ -133,10 +133,12 @@ public:
         operator delete(m_04);
         m_04 = 0;
         m_0c = 0;
-        SBFontLock lock;
-        if (--g_unk0x006c1920 == 0) {
-            operator delete(g_unk0x006c191c);
-            g_unk0x006c191c = 0;
+        {
+            SBFontLock lock;
+            if (--g_unk0x006c1920 == 0) {
+                operator delete(g_unk0x006c191c);
+                g_unk0x006c191c = 0;
+            }
         }
     }
     SBFontIterator0061fe10 begin() { SBFontIterator0061fe10 it; it.m_00 = m_04->m_00; return it; }

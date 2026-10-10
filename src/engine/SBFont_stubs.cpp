@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "SBFont.h"
 
 SBFontLock::SBFontLock() {}
@@ -6,6 +7,7 @@ void FUN_005f8030(int, const char *, int, const char *, ...) {}
 
 void SBFontTree0061fcb0::FUN_00620b70() {}
 SBFontNode0061fcb0 *SBFontTree0061fcb0::FUN_00620c20(const unsigned short &) { return 0; }
+// FUNCTION: GAME 0x00620c70
 SBFontNode0061fcb0 *SBFontTree0061fcb0::FUN_00620c70(SBFontNode0061fcb0 *parent, int color)
 {
     SBFontNode0061fcb0 *node = (SBFontNode0061fcb0 *)operator new(sizeof(SBFontNode0061fcb0));

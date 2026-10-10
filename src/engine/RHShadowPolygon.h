@@ -61,7 +61,14 @@ public:
     const SBGeoPoint2D &FUN_0060c2b0(unsigned short);
 };
 
-SBGeoPoint2D FUN_005fc4f0(float, const SBGeoPoint2D &);
+class SBGeoVector2D : public SBGeoPoint2D
+{
+public:
+    SBGeoVector2D();
+    ~SBGeoVector2D() {}
+};
+
+SBGeoVector2D operator*(float, const SBGeoVector2D &);
 class RHElementActor;
 class RHviewParameters;
 class RHUnk00597a70

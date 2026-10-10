@@ -1,7 +1,230 @@
+#include "SBNullstr.h"
 #include "RHSaveGame.h"
 #include "RHEngine.h"
 #include "RHCivilianProfile.h"
 #include <windows.h>
+#include <algorithm>
+#include <iterator>
+#include <stdlib.h>
+
+class RHFastFindGrid
+{
+public:
+    void FUN_004e8bd0(void *sector, unsigned short layer, bool mode);
+};
+
+class RHSequenceElement;
+struct RHScriptNode
+{
+    RHScriptNode *next;
+    RHScriptNode *previous;
+    void *data;
+};
+
+struct RHScriptIter
+{
+    RHScriptNode *node;
+    RHScriptIter(RHScriptNode *value) : node(value) {}
+};
+
+struct RHUnk004b1520List
+{
+    char m_00[4];
+    RHScriptNode *m_04;
+    int m_08;
+    RHScriptIter m_0c;
+    bool m_10;
+    int m_14;
+    RHScriptIter end() { return RHScriptIter(m_04); }
+    RHScriptIter FUN_00424410(RHScriptIter position, void *const &value);
+};
+
+class RHSeqList
+{
+public:
+    int allocator;
+    RHScriptNode *head;
+    int count;
+    RHScriptNode *cursor;
+    void GoTo(int index);
+    static void CopyData(RHSequenceElement **destination, RHSequenceElement *const *source);
+};
+
+class RHEngineBuildingActorCalls
+{
+public:
+    virtual void v00(); virtual void v01(); virtual void v02(); virtual void v03();
+    virtual void v04(); virtual void v05(); virtual void v06(); virtual void v07();
+    virtual void v08(); virtual void v09(); virtual void v10(); virtual void v11();
+    virtual void v12(); virtual void v13(); virtual void v14(); virtual void v15();
+    virtual void v16(); virtual void v17(); virtual void v18(); virtual void v19();
+    virtual void v20(); virtual void v21(); virtual void v22(); virtual void v23();
+    virtual void v24(); virtual void v25(); virtual void v26(); virtual void v27();
+    virtual void v28(); virtual void v29(); virtual void v30(); virtual void v31();
+    virtual void v32(); virtual void v33(); virtual void v34(); virtual void v35();
+    virtual void v36(); virtual void v37(); virtual void v38(); virtual void v39();
+    virtual void v40(unsigned short layer, void *building);
+};
+
+class RHActorPositionCalls
+{
+public:
+    void FUN_00464530(const SBGeoPoint2D &point);
+};
+
+class RHUnk0046eb30
+{
+public:
+    RHScriptIter FUN_0046eb80();
+    RHScriptIter erase(RHScriptIter position);
+};
+
+struct RHUnk005c9010Iterator;
+void FUN_005c9010(RHUnk005c9010Iterator &current, int distance, std::bidirectional_iterator_tag category);
+
+class RHEngineSequenceList
+{
+public:
+    int allocator;
+    RHScriptNode *head;
+    int count;
+    RHScriptNode *cursor;
+    bool dirty;
+    int index;
+    __forceinline void Advance(int distance)
+    {
+        while (distance > 0) { cursor = cursor->next; --distance; }
+        while (distance < 0) { cursor = cursor->previous; ++distance; }
+    }
+    __forceinline void *Get(int wanted, bool inlineForward, bool inlineBegin)
+    {
+        int size = count;
+        if (dirty)
+        {
+            if (wanted <= (size + 1) / 2)
+            {
+                std::bidirectional_iterator_tag category;
+                if (inlineBegin)
+                    FUN_005c9010((RHUnk005c9010Iterator &)(cursor = head->next), wanted, category);
+                else
+                    FUN_005c9010((RHUnk005c9010Iterator &)(cursor = ((RHUnk0046eb30 *)this)->FUN_0046eb80().node), wanted, category);
+            }
+            else
+            {
+                std::bidirectional_iterator_tag category;
+                FUN_005c9010((RHUnk005c9010Iterator &)(cursor = head), wanted - size, category);
+            }
+            dirty = false;
+            index = wanted;
+        }
+        else
+        {
+            int previous = index;
+            if (wanted != previous)
+            {
+                if (wanted < previous)
+                {
+                    if (wanted < (previous + 1) / 2)
+                    {
+                        std::bidirectional_iterator_tag category;
+                        if (inlineForward)
+                            FUN_005c9010((RHUnk005c9010Iterator &)(cursor = head->next), wanted, category);
+                        else
+                            FUN_005c9010((RHUnk005c9010Iterator &)(cursor = ((RHUnk0046eb30 *)this)->FUN_0046eb80().node), wanted, category);
+                    }
+                    else
+                    {
+                        std::bidirectional_iterator_tag category;
+                        FUN_005c9010((RHUnk005c9010Iterator &)cursor, wanted - previous, category);
+                    }
+                }
+                else if (wanted < (previous + size) / 2)
+                {
+                    if (inlineForward)
+                        Advance(wanted - previous);
+                    else
+                    {
+                        std::bidirectional_iterator_tag category;
+                        FUN_005c9010((RHUnk005c9010Iterator &)cursor, wanted - previous, category);
+                    }
+                }
+                else
+                {
+                    if (inlineForward)
+                    {
+                        cursor = head;
+                        Advance(wanted - size);
+                    }
+                    else
+                    {
+                        std::bidirectional_iterator_tag category;
+                        FUN_005c9010((RHUnk005c9010Iterator &)(cursor = head), wanted - size, category);
+                    }
+                }
+                index = wanted;
+            }
+        }
+        return cursor->data;
+    }
+};
+
+class RHScriptFXArray
+{
+public:
+    int grow;
+    void **first;
+    void **last;
+    void **end;
+    void **cursor;
+    bool dirty;
+    void **Unk004fe420(void **first, void **last, void **destination);
+    void Unk004fe450(void **destination, unsigned count, void *const &value);
+    void Unk005008e0(void **first, void **last);
+    unsigned Size() { return first == 0 ? 0 : last - first; }
+    void InsertLast(void *const &value)
+    {
+        void **position = last;
+        if ((unsigned)(end - last) < 1)
+        {
+            unsigned grow = Size() > 1 ? Size() : 1;
+            int size = Size() + grow;
+            void **storage = (void **)operator new((size < 0 ? 0 : size) * 4);
+            void **destination = storage;
+            for (void **source = first; source != position; ++source, ++destination)
+                RHSeqList::CopyData((RHSequenceElement **)destination, (RHSequenceElement *const *)source);
+            Unk004fe450(destination, 1, value);
+            ++destination;
+            Unk004fe420(position, last, destination);
+            Unk005008e0(first, last);
+            operator delete(first);
+            end = storage + size;
+            unsigned previousSize = Size();
+            first = storage;
+            last = first + previousSize + 1;
+        }
+        else if ((unsigned)(last - position) < 1)
+        {
+            Unk004fe420(position, last, position + 1);
+            Unk004fe450(last, 1 - (last - position), value);
+            for (void **destination = position; destination != last; ++destination)
+                *destination = value;
+            ++last;
+        }
+        else
+        {
+            Unk004fe420(last - 1, last, last);
+            void **source = last - 1;
+            void **destination = last;
+            while (source != position)
+                *--destination = *--source;
+            void **finish = position + 1;
+            for (destination = position; destination != finish; ++destination)
+                *destination = value;
+            ++last;
+        }
+        dirty = true;
+    }
+};
 
 DECOMP_SIZE_ASSERT(RHEngine, 0x4944)
 DECOMP_SIZE_ASSERT(RHUnk0046ffe0, 0xa9c)
@@ -19,11 +242,17 @@ DECOMP_SIZE_ASSERT(RHUnk00551da0, 0x04)
 DECOMP_SIZE_ASSERT(RHUnk0051d2c0, 0x20)
 DECOMP_SIZE_ASSERT(RHHikingGuide, 0x1c)
 DECOMP_SIZE_ASSERT(RHUnk005f4fc0, 0x58)
+DECOMP_SIZE_ASSERT(RHUnk0054eab0, 0x1a0)
+DECOMP_SIZE_ASSERT(RHUnk004a1bc0, 0xdd0)
+DECOMP_SIZE_ASSERT(RHEngineExtendedMissionElementCalls, 0x04)
+DECOMP_SIZE_ASSERT(RHUnk0057ee90, 0x70)
+DECOMP_SIZE_ASSERT(RHEngineContinuationSectorCalls, 0x04)
 
 void FUN_005e0c90(SBFile &file, std::string &value);
 void RHSerializeName(SBFile &file, const char *name);
 extern char g_unk0x6c0560[4];
 extern void **g_unk0x6c0f34;
+extern void **g_unk0x6c0f38;
 extern float g_unk0x0067749c;
 
 class RHEngineWidenedCalls
@@ -38,12 +267,16 @@ public:
     void FUN_00558670(SBFile &file);
     void FUN_005bd450();
     bool FUN_005b76e0(unsigned row, unsigned flags);
-    void FUN_005bd5b0(bool flag);
     void FUN_0050efd0(void *actor);
     void FUN_004e3660(char flag);
-    unsigned FUN_004d2340(unsigned value);
     void FUN_00504b80(unsigned value);
     void FUN_005e5160(unsigned surface);
+};
+
+class RHUnk005bd5b0
+{
+public:
+    bool Unk(bool);
 };
 
 void *FUN_004b3120(int type);
@@ -358,6 +591,9 @@ int g_unk0x006c0a7c = 0;
 // GLOBAL: GAME 0x006774a0
 float g_unk0x006774a0 = 20.0f;
 
+// GLOBAL: GAME 0x006c081c
+unsigned g_unk0x006c081c = 0;
+
 #define RHENGINE_POINTER_BODY(value) \
     int index; \
     if (file.m_bLoading == 1) \
@@ -393,10 +629,38 @@ float g_unk0x006774a0 = 20.0f;
         return true; \
     }
 
+// Parked: two-vector cleanup operands and carried-register scheduling differ.
+// STUB: GAME 0x00452130
+void *RHEngineReinforcementCalls::FUN_00452130(void *profile)
+{
+    std::vector<unsigned long> preferred;
+    std::vector<unsigned long> fallback;
+    std::vector<void *> &missions = *(std::vector<void *> *)((char *)this + 0x114);
+    unsigned count = missions.size();
+    for (unsigned long i = 0; i < count; ++i)
+    {
+        void *mission = missions[i];
+        if (!*((char *)mission + 0x44))
+        {
+            void *description = *(void **)((char *)mission + 0x40);
+            if (!*((char *)description + 0x35))
+            {
+                std::vector<unsigned long> &candidates = description == profile ? preferred : fallback;
+                ((RHMissionArrayStorage *)&candidates)->FUN_004e5820(candidates.end(), i);
+            }
+        }
+    }
+    if (preferred.size())
+        return missions[preferred[(unsigned)rand() % preferred.size()]];
+    if (fallback.size())
+        return missions[fallback[(unsigned)rand() % fallback.size()]];
+    return 0;
+}
+
 // STRING: GAME 0x006aef80
 static const char *g_rhengineFile = "P:\\Robin Hood\\RHengine.cpp";
 
-// deferred: unannotated pending reccmp #534 (0x004622e0)
+// FUNCTION: GAME 0x004622e0
 void *FUN_004622e0(int index, void *container)
 {
     void **first = *(void ***)((char *)container + 4);
@@ -509,7 +773,7 @@ bool RHUnk004ba900::FUN_004ba900(char flag)
             sprite->FUN_005bd450();
             (*(RHEngineWidenedCalls **)((char *)this + 0x50))->FUN_005b76e0(0xc4, 0);
         }
-        (*(RHEngineWidenedCalls **)((char *)this + 0x50))->FUN_005bd5b0(false);
+        (*(RHUnk005bd5b0 **)((char *)this + 0x50))->Unk(false);
         return true;
     }
     return false;
@@ -594,12 +858,6 @@ public:
     void FUN_004c1ee0(SBFile &file);
     void FUN_004c20a0(SBFile &file);
     void FUN_004c2830(SBFile &file);
-};
-
-class RHMissionArrayStorage
-{
-public:
-    void FUN_004609a0(void *first, void *last);
 };
 
 // Parked: 21.13%; partial chunk dispatch.
@@ -750,6 +1008,36 @@ void RHEngine::InitializeActorsFromMissionStream(SBFile &file, std::vector<RHbea
     FUN_005e20c0(file);
 }
 
+// FUNCTION: GAME 0x004c1ab0
+void RHEngineMissionCalls::FUN_004c1ab0(SBFile &file, RHMission *mission,
+    std::string &background, unsigned *version)
+{
+    FUN_005e1d50(file, 0x464f4f54, 4);
+    file.Access(version, 4);
+    unsigned &type = *(unsigned *)((char *)this + 0x4ad0);
+    file.Access(&type, 4);
+    switch (type)
+    {
+    case 1:
+    case 8:
+    case 16:
+    case 32:
+    case 64:
+    case 128:
+        *(unsigned short *)((char *)this + 0x4cc0) = 400;
+        break;
+    case 2:
+    case 4:
+        *(unsigned short *)((char *)this + 0x4cc0) = 300;
+        break;
+    }
+    FUN_005e0c90(file, background);
+    unsigned value;
+    file.Access(&value, 4);
+    ((RHEngine *)this)->LoadDynRes(**(unsigned **)mission);
+    FUN_005e20c0(file);
+}
+
 // FUNCTION: GAME 0x004c1d20
 void RHEngine::FUN_004c1d20(SBFile &file)
 {
@@ -762,6 +1050,24 @@ void RHEngine::FUN_004c1d20(SBFile &file)
         actor->Unk3c(file);
         *(unsigned *)((char *)this + 0x4a68) += *(unsigned *)((char *)actor + 0x4f0);
         ((RHEngineReinforcementCalls *)this)->FUN_004d8460(actor, 1, 1);
+    }
+    FUN_005e20c0(file);
+}
+
+// FUNCTION: GAME 0x004c1df0
+void RHEngine::FUN_004c1df0(SBFile &file)
+{
+    FUN_005e1d50(file, 0x424f5247, 4);
+    unsigned short count;
+    file.Access(&count, 2);
+    for (unsigned short i = 0; i < count; ++i)
+    {
+        RHUnk004a1bc0 *actor = new RHUnk004a1bc0(true);
+        ((RHEngineMissionElementCalls *)actor)->Unk3c(file);
+        ((RHEngineReinforcementCalls *)this)->FUN_004d8460(actor, 1, 1);
+        *(unsigned *)((char *)this + 0x4a68) += *(unsigned *)((char *)actor + 0x4f0);
+        if (((RHEngineExtendedMissionElementCalls *)actor)->Unk130() == 1)
+            ++*(unsigned *)((char *)this + 0x4a70);
     }
     FUN_005e20c0(file);
 }
@@ -927,8 +1233,38 @@ void RHEngine::FUN_004c2200(SBFile &file, std::vector<RHbeamMe> &beamMes)
     *(unsigned *)((char *)this + 0x4a4c) = beamMes.size();
 }
 
-// Parked: named bonus-factory call versus unnamed ILT operand (rule 28).
-// STUB: GAME 0x004c2830
+// Parked: first-vector receiver reload and compared function-tail extent differ.
+// STUB: GAME 0x004c2720
+void RHEngine::FUN_004c2720(SBFile &file)
+{
+    *(int *)((char *)this + 0x4a44) = g_unk0x6c0f34 == 0 ? 0 : g_unk0x6c0f38 - g_unk0x6c0f34;
+    *(unsigned *)((char *)this + 0x4a48) = g_unk0x006c081c;
+    std::vector<void *> &actors = *(std::vector<void *> *)((char *)this + 0x48d8);
+    ((RHEngineContinuationCampaignCalls *)g_unk0x6c07fc)->FUN_00450c10(&actors, file);
+    std::vector<void *> &remaining = *(std::vector<void *> *)((char *)this + 0x4978);
+    int index = *(int *)((char *)this + 0x4a44) + remaining.size();
+    for (; index < (int)actors.size(); ++index)
+        ((RHEngineReinforcementCalls *)this)->FUN_004d8460(actors[index], 0, 0);
+    std::vector<void *> &pcs = *(std::vector<void *> *)((char *)this + 0x4938);
+    unsigned count = pcs.size();
+    for (unsigned slot = 0; slot < *(unsigned *)((char *)this + 0x4a4c); ++slot)
+    {
+        unsigned pc = 0;
+        for (; pc < count; ++pc)
+        {
+            void *actor = pcs[pc];
+            if (*(unsigned short *)((char *)actor + 0x4ea) == slot)
+            {
+                FUN_00570850(actor);
+                break;
+            }
+        }
+        if (pc == count)
+            FUN_00570850(0);
+    }
+}
+
+// FUNCTION: GAME 0x004c2830
 void RHEngineMissionCalls::FUN_004c2830(SBFile &file)
 {
     FUN_005e1d50(file, 0x5a4f5247, 2);
@@ -1084,13 +1420,26 @@ void RHEngine::FUN_004c38d0(SBFile &file, unsigned *value)
     FUN_005e20c0(file);
 }
 
-// deferred: unannotated pending reccmp #534 (0x004c3a10)
-bool RHEngine::SerializeNestedA(SBFile &file, void *storage)
+// FUNCTION: GAME 0x004c3930
+void RHEngineMissionCalls::FUN_004c3930(SBFile &file, int protoLevel)
 {
-    RHENGINE_POINTER_BODY((*(void **)storage))
+    FUN_005e1d50(file, (char)protoLevel ? 0x5455504f : 0x504f5546, 3);
+    unsigned short count;
+    file.Access(&count, 2);
+    for (unsigned short i = 0; i < count; ++i)
+    {
+        RHUnk0054eab0 *value = new RHUnk0054eab0;
+        void *grid = (char *)this + 0x11c;
+        value->FUN_0054eea0(file, grid);
+        ((RHEngineGridCalls *)grid)->FUN_004efd10(value,
+            *(unsigned short *)((char *)value + 0x13c), true);
+        ((RHEngineReinforcementCalls *)this)->FUN_004d8460(
+            *(void **)((char *)value + 0x18), 1, 1);
+    }
+    FUN_005e20c0(file);
 }
 
-// deferred: unannotated pending reccmp #534 (0x004c3a10)
+// FUNCTION: GAME 0x004c3a10
 bool RHEngine::SerializeElementPointer(SBFile &file, RHElement *&element)
 {
     RHENGINE_POINTER_BODY((*(void **)&element))
@@ -1108,7 +1457,7 @@ bool RHEngine::FUN_004c3bd0(SBFile &file, void *&value)
     RHENGINE_POINTER_BODY(value)
 }
 
-// deferred: unannotated pending reccmp #534 (0x004c3cb0)
+// FUNCTION: GAME 0x004c3cb0
 bool RHReconnaissanceEngine::Unk004c3cb0(SBFile &file, void *&value)
 {
     RHENGINE_POINTER_BODY(value)
@@ -1120,7 +1469,7 @@ bool RHEngine::FUN_004c3d90(SBFile &file, void *&value)
     RHENGINE_POINTER_BODY(value)
 }
 
-// deferred: unannotated pending reccmp #534 (0x004c3e70)
+// FUNCTION: GAME 0x004c3e70
 bool RHEngine::SerializeNestedB(SBFile &file, void *storage)
 {
     RHENGINE_POINTER_BODY((*(void **)storage))
@@ -1138,7 +1487,7 @@ bool RHEngine::FUN_004c4030(SBFile &file, void *&value)
     RHENGINE_POINTER_BODY(value)
 }
 
-// deferred: unannotated pending reccmp #534 (0x004c4110)
+// FUNCTION: GAME 0x004c4110
 bool RHReconnaissanceEngine::Unk004c4110(SBFile &file, void *&value)
 {
     RHENGINE_POINTER_BODY(value)
@@ -1191,6 +1540,20 @@ public:
 };
 
 void FUN_005a5cd0();
+
+class RHEngineMenuWidgetCalls
+{
+public:
+    virtual void v00(); virtual void v01(); virtual void v02(); virtual void v03();
+    virtual void v04(); virtual void v05(); virtual void v06(); virtual void v07();
+    virtual void v08(); virtual void v09(); virtual void v10(); virtual void v11();
+    virtual void v12(); virtual void v13();
+    virtual void v14(void *widget);
+    virtual void v15(void *widget);
+    virtual void v16(); virtual void v17(); virtual void v18(); virtual void v19();
+    virtual void v20();
+    virtual void v21(bool enabled);
+};
 
 class RHEngineSerializedElement
 {
@@ -1429,6 +1792,66 @@ void RHEngine::FUN_004c8120(void *actor)
         (char *)*(void **)((char *)actor + 0x50) + 0x24);
 }
 
+// Parked: layer/point receiver scheduling and sector-bit lowering differ.
+// STUB: GAME 0x004debf0
+void RHEngine::FUN_004debf0(const SBGeoPoint2D &point)
+{
+    SBGeoPoint2D origin;
+    void *&sector = *(void **)((char *)this + 0xc8);
+    void *&building = *(void **)((char *)this + 0xcc);
+    building = 0;
+    *(unsigned short *)((char *)this + 0xc4) = 0;
+    sector = 0;
+    unsigned short layer;
+    if (*(int *)((char *)this + 0x4a00))
+    {
+        void *node = **(void ***)((char *)this + 0x49fc);
+        void *actor = *(void **)((char *)node + 8);
+        void *sprite = *(void **)((char *)actor + 0x50);
+        layer = *(unsigned short *)((char *)sprite + 0xde);
+        node = **(void ***)((char *)this + 0x49fc);
+        actor = *(void **)((char *)node + 8);
+        sprite = *(void **)((char *)actor + 0x50);
+        origin = *(SBGeoPoint2D *)((char *)sprite + 0x24);
+    }
+    else
+        layer = 0;
+    if (*(float *)((char *)this + 0x4730) > point.m_x &&
+        *(float *)((char *)this + 0x4734) > point.m_y)
+    {
+        RHEngineGridCalls *grid = (RHEngineGridCalls *)((char *)this + 0x11c);
+        if (*((char *)*(void **)((char *)this + 0x68) + 0x14))
+        {
+            if (grid->FUN_004e9920(point, origin, sector, layer) < 0)
+                sector = 0;
+        }
+        else if (grid->FUN_004e9760(point, origin, sector, layer) < 0)
+            sector = 0;
+    }
+    else
+        sector = 0;
+    *(unsigned short *)((char *)this + 0xc4) = layer;
+    if (sector && ((*(unsigned *)((char *)sector + 0x30) >> 2) & 1))
+    {
+        building = *(void **)((char *)sector + 0x58);
+        unsigned short index = *(unsigned short *)((char *)building + 0x13e);
+        sector = index == 0xffff ? *(void **)((char *)this + 0x42a0) :
+            (*(void ***)((char *)this + 0x4180))[index];
+        *(unsigned short *)((char *)this + 0xc4) = *(unsigned short *)((char *)building + 0x13c);
+    }
+    bool result = true;
+    if (!building)
+    {
+        if (!sector ||
+            !((*(unsigned *)((char *)sector + 0x30) & 1) &&
+                ((*(unsigned *)((char *)sector + 0x30) >> 1) & 1)) &&
+            !((*(unsigned *)((char *)sector + 0x30) >> 12) & 1) &&
+            (*(unsigned *)((char *)sector + 0x30) & 0x8000) != 0x8000)
+            result = false;
+    }
+    *((char *)this + 0x4a98) = result;
+}
+
 // FUNCTION: GAME 0x004dee70
 void RHEngine::FUN_004dee70(float *point)
 {
@@ -1556,8 +1979,7 @@ void RHEngine::LoadDynRes(unsigned mission)
     SetCurrentDirectoryA(directory);
 }
 
-// Parked: 97.56%; named factory call versus ILT operand.
-// STUB: GAME 0x004e35f0
+// FUNCTION: GAME 0x004e35f0
 void RHEngine::FUN_004e35f0(SBFile &file)
 {
     FUN_005e1d50(file, 0x544f544f, 2);
@@ -1572,6 +1994,9 @@ void RHEngine::FUN_004e35f0(SBFile &file)
     }
     FUN_005e20c0(file);
 }
+
+// TEMPLATE: GAME 0x004e40d0
+// ??1?$vector@URHbeamMe@@V?$allocator@URHbeamMe@@@std@@@std@@QAE@XZ
 
 // FUNCTION: GAME 0x004e4110
 unsigned RHEngine::FUN_004e4110(unsigned value)
@@ -1595,6 +2020,13 @@ struct RHEnginePointerSearchLayout
 };
 
 DECOMP_SIZE_ASSERT(RHEnginePointerSearchLayout, 0x20)
+
+// Parked: vector-wrapper frame/inlining and shared beam destructor ABI differ.
+// STUB: GAME 0x004e4120
+void RHEngineBeamCalls::FUN_004e4120(RHbeamMe *position, unsigned count, const RHbeamMe &value)
+{
+    ((std::vector<RHbeamMe> *)this)->insert(position, count, value);
+}
 
 // STUB: GAME 0x004e4460
 unsigned RHEngineReinforcementCalls::FUN_004e4460(void **value, int insert)
@@ -1637,6 +2069,26 @@ void *RHUnk004e51e0::FUN_004e51e0(unsigned flags)
     return this;
 }
 
+// FUNCTION: GAME 0x004e6f70
+void FUN_004e6f70(void **first, void **last, bool (*compare)(void *, void *), void **value)
+{
+    while (16 < last - first)
+    {
+        void **middle = std::_Unguarded_partition(first, last,
+            std::_Median(*first, *(first + (last - first) / 2), *(last - 1), compare), compare);
+        if (last - middle <= middle - first)
+        {
+            FUN_004e6f70(middle, last, compare, (void **)0);
+            last = middle;
+        }
+        else
+        {
+            FUN_004e6f70(first, middle, compare, (void **)0);
+            first = middle;
+        }
+    }
+}
+
 // FUNCTION: GAME 0x004e70a0
 void FUN_004e70a0(void **position, void *value, bool (*compare)(void *, void *))
 {
@@ -1650,8 +2102,7 @@ void FUN_004e70a0(void **position, void *value, bool (*compare)(void *, void *))
     *position = value;
 }
 
-// Parked: counted bounding-box callee resolves asymmetrically through the ILT.
-// STUB: GAME 0x004e7fa0
+// FUNCTION: GAME 0x004e7fa0
 bool RHEngineBackgroundCalls::FUN_004e7fa0(unsigned short width, unsigned short height)
 {
     *(unsigned short *)((char *)this + 0x3e98) = width;
@@ -1660,6 +2111,65 @@ bool RHEngineBackgroundCalls::FUN_004e7fa0(unsigned short width, unsigned short 
         SBGeoPoint2D(0.0f, 0.0f),
         SBGeoPoint2D((float)((width << 6) - 1), (float)((height << 6) - 1)));
     return true;
+}
+
+// Parked: pointer-container allocation branch and insertion-loop register scheduling differ.
+// STUB: GAME 0x004eb830
+void RHEngineGridCalls::FUN_004eb830(SBFile &file)
+{
+    FUN_005e1d50(file, 0x54455854, 2);
+    unsigned short count;
+    file.Access(&count, 2);
+    for (unsigned short i = 0; i < count; ++i)
+    {
+        unsigned char type;
+        file.Access(&type, 1);
+        void *sector = new RHUnk0057ee40;
+        if (type >= 9)
+            *(unsigned *)((char *)sector + 0x60) = *(unsigned *)((char *)this + 0x4188);
+        else
+            *(unsigned *)((char *)sector + 0x60) = type;
+        ((RHEngineContinuationSectorCalls *)sector)->Serialize(file, false);
+        RHScriptFXArray &sectors = *(RHScriptFXArray *)((char *)this + 0x4120);
+        sectors.InsertLast(sector);
+    }
+    FUN_005e20c0(file);
+}
+
+// FUNCTION: GAME 0x004ebab0
+void RHEngineGridCalls::FUN_004ebab0(SBFile &file)
+{
+    FUN_005e1d50(file, 0x4441524b, 2);
+    unsigned short count;
+    file.Access(&count, 2);
+    for (unsigned short i = 0; i < count; ++i)
+    {
+        RHUnk0057ee90 *sector = new RHUnk0057ee90;
+        *(unsigned *)((char *)sector + 0x30) = 0x4000;
+        unsigned short layer;
+        file.Access(&layer, 2);
+        *(unsigned short *)((char *)sector + 0x36) = layer;
+        ((RHEngineContinuationSectorCalls *)sector)->Serialize(file, false);
+        unsigned flags;
+        file.Access(&flags, 4);
+        if (*(unsigned *)((char *)g_pEngine + 0x4ad0) & flags)
+            ((RHFastFindGrid *)this)->FUN_004e8bd0(sector, layer, true);
+        else
+            delete (RHEngineContinuationSectorCalls *)sector;
+    }
+    FUN_005e20c0(file);
+}
+
+// FUNCTION: GAME 0x005052c0
+void RHUnk005055b0::FUN_005052c0()
+{
+    for (RHUnk005069a0 *entry = (RHUnk005069a0 *)m_1c;
+        entry != (RHUnk005069a0 *)m_20; ++entry)
+    {
+        RHUnk005069a0 value(*entry, 2);
+        std::vector<RHUnk005069a0> &values = *(std::vector<RHUnk005069a0> *)((char *)this + 0x38);
+        values.insert(values.end(), value);
+    }
 }
 
 // FUNCTION: GAME 0x00505520
@@ -1687,20 +2197,67 @@ void RHUnk005055b0::FUN_005055b0()
 {
     for (char *it = m_1c; it != m_20; it += 0x14)
         ((RHEngineWidenedCalls *)it)->FUN_00504b80(
-            ((RHEngineWidenedCalls *)g_pEngine)->FUN_004d2340(15));
+            g_pEngine->FUN_004d2340(15));
     for (it = m_3c; it != m_40; it += 0x14)
         ((RHEngineWidenedCalls *)it)->FUN_00504b80(
-            ((RHEngineWidenedCalls *)g_pEngine)->FUN_004d2340(15));
+            g_pEngine->FUN_004d2340(15));
     for (it = m_2c; it != m_30; it += 0x14)
         ((RHEngineWidenedCalls *)it)->FUN_00504b80(
-            ((RHEngineWidenedCalls *)g_pEngine)->FUN_004d2340(15));
+            g_pEngine->FUN_004d2340(15));
 }
 
-// Parked: 50.00%; tail jump through unnamed ILT (rule 25).
-// STUB: GAME 0x0050f000
+// FUNCTION: GAME 0x00505640
+void RHUnk005055b0::FUN_00505640()
+{
+    for (RHUnk005069a0 *entry = (RHUnk005069a0 *)m_1c;
+        entry != (RHUnk005069a0 *)m_20; ++entry)
+    {
+        RHUnk005069a0 value(*entry, 1);
+        std::vector<RHUnk005069a0> &values = *(std::vector<RHUnk005069a0> *)((char *)this + 0x28);
+        values.insert(values.end(), value);
+    }
+}
+
+// FUNCTION: GAME 0x0050f000
 void RHEngineSerializationCalls::FUN_0050f000()
 {
     (*(RHEngineWidenedCalls **)((char *)this + 0x196c))->FUN_0055ebf0();
+}
+
+// FUNCTION: GAME 0x0050f010
+void RHEngineSerializationCalls::FUN_0050f010()
+{
+    (*(RHEngineRosterCalls **)((char *)this + 0x196c))->FUN_0055eda0();
+    if (*(char *)((char *)this + 0x5a))
+    {
+        RHUnk00452030 *campaign = g_unk0x6c07fc;
+        unsigned count = (*(RHEngineRosterCalls **)((char *)this + 0x196c))->FUN_0055e880();
+        RHEngineMenuWidgetCalls *menu = (RHEngineMenuWidgetCalls *)((char *)this + 0x1970);
+        if (count > 5)
+        {
+            menu->v14((char *)this + 0x1f7c);
+            menu->v14((char *)this + 0x1eac);
+            ((RHEngineMenuWidgetCalls *)((char *)this + 0x1c48))->v21(true);
+            ((RHEngineMenuWidgetCalls *)((char *)this + 0x1d14))->v21(true);
+        }
+        else
+        {
+            menu->v15((char *)this + 0x1f7c);
+            menu->v15((char *)this + 0x1eac);
+            ((RHEngineMenuWidgetCalls *)((char *)this + 0x1c48))->v21(false);
+            ((RHEngineMenuWidgetCalls *)((char *)this + 0x1d14))->v21(false);
+        }
+        void **mission = *(void ***)((char *)campaign + 0x17c);
+        if (mission)
+            ((RHEngineMenuWidgetCalls *)((char *)this + 0x21e4))->v21(
+                count != 0 &&
+                (count <= *(unsigned short *)((char *)*mission + 0x72) || *(char *)((char *)this + 0x57) == 1) &&
+                !((RHEngineMenuStateCalls *)this)->FUN_00514970());
+        if (count)
+            menu->v14((char *)this + 0x1de0);
+        else
+            menu->v15((char *)this + 0x1de0);
+    }
 }
 
 // FUNCTION: GAME 0x0051cd10
@@ -1719,8 +2276,7 @@ void RHHikingGuide::FUN_0051cd10(SBFile &file)
     FUN_005e20c0(file);
 }
 
-// Parked: effective-only receiver register and indexed-address ordering.
-// STUB: GAME 0x0051d020
+// FUNCTION: GAME 0x0051d020
 bool RHHikingGuide::FUN_0051d020(SBFile &file)
 {
     // STRING: GAME 0x006b0668
@@ -1732,7 +2288,10 @@ bool RHHikingGuide::FUN_0051d020(SBFile &file)
         RHUnk0051d2c0 *group = m_04[i];
         unsigned short entries = group->m_00.size();
         for (unsigned short j = 0; j < entries; ++j)
-            result |= group->m_00[j]->FUN_00551da0(file);
+        {
+            RHUnk00551da0 *entry = group->m_00[j];
+            result |= entry->FUN_00551da0(file);
+        }
     }
     return result;
 }
@@ -1775,6 +2334,58 @@ void FUN_005709a0(void *value, unsigned index)
     g_unk0x6c0f34[index] = value;
     if (value)
         *(unsigned short *)((char *)value + 0x8a) = (unsigned short)index;
+}
+
+// FUNCTION: GAME 0x0057e680
+void RHEngineBuildingCalls::FUN_0057e680(void *actor)
+{
+    RHUnk004b1520List &occupants = *(RHUnk004b1520List *)((char *)this + 0xf4);
+    occupants.FUN_00424410(occupants.end(), actor);
+    occupants.m_10 = true;
+    ((RHEngineBuildingActorCalls *)actor)->v40(*(unsigned short *)((char *)g_unk0x6c0a9c + 0x3e9c) - 1, this);
+    ((RHSeqList *)((char *)this + 0x80))->GoTo(0);
+    RHSeqList *locations = (RHSeqList *)((char *)this + 0x5c);
+    locations->GoTo(0);
+    ((RHActorPositionCalls *)(*(char **)((char *)actor + 0x50) + 4))->FUN_00464530(
+        *(SBGeoPoint2D *)((char *)locations->cursor->data + 0x20));
+    *(char *)((char *)actor + 0x12) = 0;
+}
+
+// Parked: cached-cursor address lifetime, frame size and iterator scheduling differ.
+// STUB: GAME 0x0058a430
+void RHEngineSerializationCalls::FUN_0058a430()
+{
+    unsigned short count = *(volatile unsigned *)((char *)this + 0xc);
+    RHEngineSequenceList &sequences = *(RHEngineSequenceList *)((char *)this + 4);
+    for (unsigned short i = 0; i < count; ++i)
+    {
+        if (((RHEngineSequenceStateCalls *)sequences.Get(i, false, true))->FUN_005823f0())
+        {
+            RHEngineSerializedElement *sequence = (RHEngineSerializedElement *)sequences.Get(i, false, false);
+            if (sequence)
+                delete sequence;
+            ((RHUnk0046eb30 *)&sequences)->erase(RHScriptIter(sequences.cursor));
+            sequences.dirty = true;
+            --i;
+            --count;
+        }
+    }
+}
+
+// Parked: cached-cursor address lifetime and loop/receiver register allocation differ.
+// STUB: GAME 0x0058a7d0
+bool RHEngineSequenceStateCalls::FUN_0058a7d0(void *element)
+{
+    void *sequence = *(void **)((char *)element + 0x54);
+    if (FUN_0058a670(sequence))
+    {
+        unsigned short count = *(volatile unsigned *)((char *)sequence + 0x10);
+        RHEngineSequenceList &elements = *(RHEngineSequenceList *)((char *)sequence + 8);
+        for (unsigned short i = 0; i < count; ++i)
+            if (elements.Get(i, true, true) == element)
+                return true;
+    }
+    return false;
 }
 
 // FUNCTION: GAME 0x0058c590
@@ -1857,6 +2468,13 @@ bool RHEngineBackgroundCalls::FUN_00611660(const std::string &path)
 
 void RHEngine::Emit(SBFile &file, void *&value)
 {
+    ((RHEngineGridCalls *)this)->FUN_004eb830(file);
+    ((RHEngineGridCalls *)this)->FUN_004ebab0(file);
+    FUN_004debf0(*(SBGeoPoint2D *)&value);
+    FUN_004c2720(file);
+    FUN_004e6f70((void **)0, (void **)0, (bool (*)(void *, void *))0, (void **)0);
+    ((RHUnk005055b0 *)this)->FUN_005052c0();
+    ((RHUnk005055b0 *)this)->FUN_00505640();
     ((RHHikingGuide *)value)->FUN_0051cd10(file);
     ((RHHikingGuide *)value)->FUN_0051d020(file);
     ((RHUnk00462a90 *)value)->FUN_00462a90((const char *)value);

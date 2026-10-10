@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "SBInput.h"
 
 void SBAssert(int, const char *, int, const char *, ...);
@@ -7,6 +8,9 @@ static __forceinline const char *SBInputStringData(const std::string &value)
     const char *buffer = *(const char *const *)((const char *)&value + 4);
     return buffer ? buffer : "";
 }
+
+// TEMPLATE: GAME 0x005f78f0
+// ?fill@std@@YAXPAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@1@0ABV21@@Z
 
 // FUNCTION: GAME 0x005fae50
 int __stdcall FUN_005fae50(void *value, SBInputUnk005fb730 *input)

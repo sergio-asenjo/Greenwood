@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "SBPicture.h"
 #include "RHLoadingScreen.h"
 #include <new>
@@ -18,8 +19,7 @@ void SBPicture::FUN_00611c50()
     }
 }
 
-// Parked: six annotated converter call operands differ through the ILT.
-// STUB: GAME 0x00611e10
+// FUNCTION: GAME 0x00611e10
 bool RHUnk006114c0::Unk00611e10(unsigned long format, unsigned long mode)
 {
     SBPicture *picture = (SBPicture *)this;

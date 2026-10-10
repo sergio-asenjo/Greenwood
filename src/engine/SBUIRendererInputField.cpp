@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "SBUIRendererInputField.h"
 #include "SBUIRenderer.h"
 #include "SBFont.h"
@@ -18,8 +19,6 @@ DECOMP_SIZE_ASSERT(SBUIInputFieldDrawUnk, 0x30)
 DECOMP_SIZE_ASSERT(RHMapWideText, 0x10)
 
 void SBAssert(int, const char *, int, const char *, ...);
-unsigned short *FUN_00419940(unsigned short *, const unsigned short *, unsigned int);
-unsigned short *FUN_0044f580(unsigned short *, const unsigned short *, unsigned int);
 namespace std { void _Xlen(); }
 extern float g_unk0x006775d8;
 
@@ -59,8 +58,16 @@ public:
 
 DECOMP_SIZE_ASSERT(SBUIInputFieldFontHeight, 0x04)
 
-// Parked: pooled STL null-string operand is unresolved.
-// STUB: GAME 0x005d0880
+// GLOBAL: GAME 0x006775dc
+// ?_C@?1??_Nullstr@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@CAPBGXZ@4GB
+
+// SYNTHETIC: GAME 0x004d7770
+// ??1SBUIInputFieldDrawUnk@@QAE@XZ
+
+// TEMPLATE: GAME 0x005cf1e0
+// ??0?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@QAE@ABV01@@Z
+
+// FUNCTION: GAME 0x005d0880
 std::wstring FUN_005d0880(const std::wstring &left, const std::wstring &right)
 {
     std::wstring result(left);
@@ -84,8 +91,7 @@ bool SBGeoBoundingBox2D::FUN_006084a0(const SBGeoBoundingBox2D &other)
     return ((SBUIInputFieldBoxCalls *)this)->FUN_00608450(*(SBGeoBoundingBox2D *)&span);
 }
 
-// Parked: call to counted box constructor resolves asymmetrically.
-// STUB: GAME 0x006138e0
+// FUNCTION: GAME 0x006138e0
 SBUIInputFieldDrawUnk::SBUIInputFieldDrawUnk()
     : m_10(0), m_14(0), m_18(2), m_1c(0, 0, 0, 0)
 {
@@ -167,8 +173,8 @@ RHMapWideText SBUIInputFieldTextUnk::FUN_0061dd50(unsigned int direction, unsign
             unsigned int size = result.m_size + 1;
             if (result.Grow(size, false))
             {
-                FUN_0044f580(result.m_chars + 1, result.m_chars, result.m_size);
-                FUN_00419940(result.m_chars, &character, 1);
+                wmemmove(result.m_chars + 1, result.m_chars, result.m_size);
+                wmemcpy(result.m_chars, &character, 1);
                 result.m_chars[result.m_size = size] = 0;
             }
             node = node->m_04;
@@ -181,8 +187,8 @@ RHMapWideText SBUIInputFieldTextUnk::FUN_0061dd50(unsigned int direction, unsign
             unsigned int size = result.m_size + 1;
             if (result.Grow(size, false))
             {
-                FUN_0044f580(result.m_chars + offset + 1, result.m_chars + offset, result.m_size - offset);
-                FUN_00419940(result.m_chars + offset, &character, 1);
+                wmemmove(result.m_chars + offset + 1, result.m_chars + offset, result.m_size - offset);
+                wmemcpy(result.m_chars + offset, &character, 1);
                 result.m_chars[result.m_size = size] = 0;
             }
             node = node->m_00;
@@ -196,7 +202,7 @@ char SBUIInputFieldTextUnk::FUN_0061e230()
     return m_1c;
 }
 
-// STUB: GAME 0x00621430
+// FUNCTION: GAME 0x00621430
 void SBUIInputFieldUnk00621440::FUN_00621430(unsigned int value)
 {
     ((SBUIUnk0060d530 *)this)->FUN_0060d530(value);
@@ -280,8 +286,7 @@ bool SBUIInputFieldUnk00621440::FUN_00621470(unsigned int id)
     return true;
 }
 
-// Parked: annotated containment helper resolves asymmetrically.
-// STUB: GAME 0x00621c30
+// FUNCTION: GAME 0x00621c30
 bool SBUIInputFieldUnk00621440::FUN_00621c30(const SBGeoBoundingBox2D &box)
 {
     SBGeoPoint2D *origin = (SBGeoPoint2D *)(m_00 + 8);

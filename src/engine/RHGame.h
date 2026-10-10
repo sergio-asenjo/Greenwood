@@ -51,7 +51,9 @@ private:
     char m_3559; // 0x3559
     char m_355a; // 0x355a
     char m_355b; // 0x355b
-    undefined m_opaque355c[0x3578 - 0x355c]; // 0x355c
+    undefined m_opaque355c[4]; // 0x355c
+    unsigned m_3560; // 0x3560
+    undefined m_opaque3564[0x3578 - 0x3564]; // 0x3564
     void *m_3578; // 0x3578
 };
 

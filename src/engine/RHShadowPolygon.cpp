@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHShadowPolygon.h"
 #include <math.h>
 
@@ -145,7 +146,7 @@ void RHShadowPolygon::FUN_00594bf0(const SBGeoBoundingBox2D &box, float zoom, RH
     for (unsigned short index = 1; index < (int)count + 3; ++index)
     {
         SBGeoPoint2D vector(field.FUN_0060c2b0(index));
-        projected = origin.Unk005fc190(FUN_005fc4f0(RHShadowField<float>(this, 0xa0), vector));
+        projected = origin.Unk005fc190(operator*(RHShadowField<float>(this, 0xa0), (const SBGeoVector2D &)vector));
         fieldBounds.Unk00607dc0(projected);
     }
 }

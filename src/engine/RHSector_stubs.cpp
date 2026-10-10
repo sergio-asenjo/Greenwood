@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHSector.h"
 
 RHSectorActorIter RHSectorActorList::insert(RHSectorActorIter pos, RHElementActor *const &) { return pos; }
@@ -5,7 +6,6 @@ RHSectorActorIter RHSectorActorList::erase(RHSectorActorIter pos) { return pos; 
 void RHSectorActorList::Unk005c8e40(int) {}
 
 RHUnk00522540::~RHUnk00522540() {}
-void RHSectorArray<RHUnk00522540 *>::Erase(RHUnk00522540 **, RHUnk00522540 **) {}
 
 unsigned int RHUnkSectorPoints::Unk0060ce80() { return 0; }
 SBGeoPoint2D &RHUnkSectorPoints::FUN_006112c0(unsigned int) { return *(SBGeoPoint2D *)0; }

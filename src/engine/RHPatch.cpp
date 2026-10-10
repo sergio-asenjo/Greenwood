@@ -1,7 +1,7 @@
+#include "SBNullstr.h"
 #include "RHPatch.h"
 
-// deferred: unannotated pending reccmp #534
-// Annotated 99.37%: only the two calls to matched RHEngine::FUN_004c3af0 differ.
+// FUNCTION: GAME 0x0054f870
 bool RHUnk0054f870::Unk0054f870(SBFile &file)
 {
     RHPatch *patch = (RHPatch *)this;
@@ -136,7 +136,7 @@ bool RHUnk0054f870::Unk0054f870(SBFile &file)
     return true;
 }
 
-// deferred: unannotated pending reccmp #534
+// FUNCTION: GAME 0x005502c0
 void RHPatch::Enter(RHElementActor *actor)
 {
     RHElementActor *value = actor;

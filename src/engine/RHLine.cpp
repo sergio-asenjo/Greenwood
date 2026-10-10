@@ -35,8 +35,10 @@
 //   kept here, unannotated, so the empty stub in RHElementObject_stubs.cpp is
 //   retired and RHElementObject/RHOrder stay 100%.
 
+#include "SBNullstr.h"
 #include "RHLine.h"
 
+// FUNCTION: GAME 0x00521210
 bool RHUnk004b2190Member::Serialize(SBFile &file)
 {
     if (file.Access(&m_4, 4) < 0)

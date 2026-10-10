@@ -8,6 +8,7 @@
 #include <string>
 
 void RHSerializeName(SBFile &file, const char *name);
+class RHMissionArrayStorage;
 
 // SIZE 0x58
 class RHSector
@@ -28,13 +29,12 @@ public:
     char m_pad10[4];
     char m_dirty; // [0x14]
     char m_pad15[3];
-    void Erase(T *first, T *last);
     void Resize(unsigned int count, const T &value = T())
     {
         if (size() < count)
             insert(end(), count - size(), value);
         else if (count < size())
-            Erase(begin() + count, end());
+            ((RHMissionArrayStorage *)this)->FUN_004609a0(begin() + count, end());
         m_dirty = 1;
     }
 };

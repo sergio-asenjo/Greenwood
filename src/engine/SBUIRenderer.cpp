@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "SBUIRenderer.h"
 #include "SBUIRendererListbox.h"
 #include "SB.h"
@@ -153,7 +154,7 @@ void SBUIUnk0060d530::FUN_0060d6a0(const SBGeoBoundingBox2D &box)
     }
 }
 
-// STUB: GAME 0x0060d780
+// FUNCTION: GAME 0x0060d780
 void SBUIUnk0060d530::FUN_0060d780(const SBGeoPoint2D &point)
 {
     RHUnk005fc3b0 size;

@@ -1,5 +1,6 @@
 #include "SB.h"
 #include "Decomp.h"
+#include <vector>
 
 // SIZE 0x08
 class SBGeoPoint2D
@@ -25,22 +26,17 @@ public:
     {
         void *m_0; // +0x00
         SBGeoPoint2D m_point; // +0x04
-        undefined2 m_c; // +0x0c
-        undefined m_pad[2]; // +0x0e
+        unsigned short m_c; // +0x0c
         Occupant &operator=(const Occupant &other);
     };
 
     // SIZE 0x10
-    struct Occupants
+    class Occupants : public std::vector<Occupant>
     {
-        int m_grow; // +0x00
-        Occupant *m_first; // +0x04
-        Occupant *m_last; // +0x08
-        Occupant *m_end; // +0x0c
-
-        Occupant *begin() { return m_first; }
-        Occupant *end() { return m_last; }
-        unsigned size() { return m_first == 0 ? 0 : m_last - m_first; }
+    public:
+        Occupant *begin() { return _First; }
+        Occupant *end() { return _Last; }
+        unsigned size() { return _First == 0 ? 0 : _Last - _First; }
         void Destroy(Occupant *first, Occupant *last);
         void Insert(Occupant *where, unsigned count, const Occupant &value);
         void clear()
@@ -51,7 +47,7 @@ public:
         {
             Occupant *next = copy(last, end(), first);
             Destroy(next, end());
-            m_last = next;
+            _Last = next;
             return first;
         }
         static Occupant *copy(Occupant *next, Occupant *last, Occupant *first)
@@ -71,13 +67,30 @@ public:
         static Occupant *Allocate(int count);
     };
 
+    // SIZE 0x10
+    struct Point
+    {
+        SBGeoPoint2D m_point; // +0x00
+        unsigned short m_8; // +0x08
+        unsigned short m_a; // +0x0a
+        unsigned short m_c; // +0x0c
+    };
+    typedef std::vector<Point> Points;
+
     int m_0; // +0x00
     unsigned short m_4; // +0x04
-    undefined m_pad6[0x16]; // +0x06
+    int m_8; // +0x08
+    Points m_points; // +0x0c
     Occupants m_occupants; // +0x1c
     unsigned short m_2c; // +0x2c
     unsigned short m_2e; // +0x2e
-    undefined m_30; // +0x30
+    char m_30; // +0x30
+
+    RHSectorProduction(int type);
+    RHSectorProduction(const RHSectorProduction &value);
+    // FUNCTION: GAME 0x00456960
+    ~RHSectorProduction() {}
+    RHSectorProduction &operator=(const RHSectorProduction &value);
 
     bool Serialize(SBFile &file);
     static bool SerializeOccupant(SBFile &file, Occupant &occupant);
@@ -87,4 +100,3 @@ public:
 };
 
 bool FUN_00453da0(SBFile &file, void *&value);
-void FUN_0045a850(RHSectorProduction::Occupant *out, const RHSectorProduction::Occupant &value);
