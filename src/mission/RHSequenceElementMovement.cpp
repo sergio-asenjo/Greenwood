@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHSequenceElementMovement.h"
 
 // STRING: GAME 0x006b757c
@@ -16,8 +17,7 @@ void RHSequenceElementMovement::Emit(SBFile &file, bool pointers)
     Serialize(file, pointers);
 }
 
-// Parked: counted geometry/sequence callees resolve asymmetrically through the ILT.
-// STUB: GAME 0x00589910
+// FUNCTION: GAME 0x00589910
 bool RHSequenceElementMovement::Serialize(SBFile &file, bool pointers)
 {
     FUN_00584ef0(file, pointers);
@@ -28,7 +28,7 @@ bool RHSequenceElementMovement::Serialize(SBFile &file, bool pointers)
     RH_MOVEMENT_ACCESS(m_74, 2, 1313);
     RH_MOVEMENT_ACCESS(m_98, 4, 1314);
     m_6c.Serialize(file);
-    g_pEngine->SerializeNestedA(file, &m_84);
+    g_pEngine->SerializeElementPointer(file, *(RHElement **)(&m_84));
     RHUnkPathGeometry *grid = (RHUnkPathGeometry *)g_unk0x6c0a9c;
     grid->Unk004fc030(file, m_7c);
     ((RHFastFindGrid *)grid)->SerializeLinePointer(file, m_80);

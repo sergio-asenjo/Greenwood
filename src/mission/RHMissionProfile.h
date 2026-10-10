@@ -8,7 +8,7 @@ class RHCharacterProfile;
 class RHMissionArrayStorage
 {
 public:
-    void FUN_004609a0(void *first, void *last);
+    void *FUN_004609a0(void *first, void *last);
     void FUN_004e5820(void *position, const unsigned long &value);
 };
 

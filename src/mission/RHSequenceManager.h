@@ -98,7 +98,7 @@ public:
     Iterator begin()
     {
         typedef Iterator (RHUnk0046eb30::*Begin)();
-        return (((RHUnk0046eb30 *)this)->*(Begin)&RHUnk0046eb30::begin)();
+        return (((RHUnk0046eb30 *)this)->*(Begin)&RHUnk0046eb30::FUN_0046eb80)();
     }
     Iterator erase(Iterator position)
     {
@@ -121,7 +121,7 @@ public:
             {
                 Iterator &current = cursor;
                 typedef Iterator (RHUnk0046eb30::*Begin)();
-                current = (((RHUnk0046eb30 *)this)->*(Begin)&RHUnk0046eb30::begin)();
+                current = (((RHUnk0046eb30 *)this)->*(Begin)&RHUnk0046eb30::FUN_0046eb80)();
                 std::bidirectional_iterator_tag category;
                 FUN_005c9010((RHUnk005c9010Iterator &)current, wanted, category);
             }
@@ -145,7 +145,7 @@ public:
                     {
                         Iterator &current = cursor;
                         typedef Iterator (RHUnk0046eb30::*Begin)();
-                        current = (((RHUnk0046eb30 *)this)->*(Begin)&RHUnk0046eb30::begin)();
+                        current = (((RHUnk0046eb30 *)this)->*(Begin)&RHUnk0046eb30::FUN_0046eb80)();
                         std::bidirectional_iterator_tag category;
                         FUN_005c9010((RHUnk005c9010Iterator &)current, wanted, category);
                     }

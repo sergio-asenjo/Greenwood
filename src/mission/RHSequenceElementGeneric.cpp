@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHSequenceElementGeneric.h"
 
 // STRING: GAME 0x006b7550
@@ -35,7 +36,7 @@ bool RHSequenceElementGeneric::Serialize(SBFile &file, bool pointers)
             case 40:
             case 41:
             case 42:
-                g_pEngine->SerializeNestedA(file, &iterator.node->value);
+                g_pEngine->SerializeElementPointer(file, *(RHElement **)(&iterator.node->value));
                 break;
             case 23:
             case 24:
@@ -108,7 +109,7 @@ bool RHSequenceElementGeneric::Serialize(SBFile &file, bool pointers)
             case 40:
             case 41:
             case 42:
-                g_pEngine->SerializeNestedA(file, &property.value);
+                g_pEngine->SerializeElementPointer(file, *(RHElement **)(&property.value));
                 break;
             case 23:
             case 24:

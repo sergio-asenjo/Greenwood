@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHSequenceManager.h"
 
 DECOMP_SIZE_ASSERT(RHUnk00582220, 0x3c)
@@ -247,7 +248,7 @@ bool RHSequenceManager::PreSerializePointer(SBFile &file, RHSequence **sequence)
     return true;
 }
 
-// Parked: iterator/frame reconstruction remains non-exact.
+// Parked: counted begin callee corrected; iterator/frame reconstruction remains non-exact.
 // STUB: GAME 0x0058b280
 bool RHSequenceManager::SetAllPreSerializedPointers()
 {
@@ -372,7 +373,7 @@ bool RHSequenceManager::SetAllPreSerializedPointers()
     return true;
 }
 
-// Parked.
+// Parked: counted begin callee corrected; index registers and scheduling remain non-exact.
 // STUB: GAME 0x0058b7c0
 bool RHPathSequenceSerializer::FUN_0058b7c0(SBFile &file, void *&value)
 {

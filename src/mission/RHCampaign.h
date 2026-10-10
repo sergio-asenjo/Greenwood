@@ -3,6 +3,7 @@
 
 #include "RHSaveGame.h"
 #include "RHCivilianProfile.h"
+#include "RHSectorProduction.h"
 #include "Decomp.h"
 #include <vector>
 #include <string>
@@ -28,6 +29,7 @@ public:
     unsigned short m_6; // 0x06
     int m_8; // 0x08
     RHMission();
+    RHMission(const RHMission &value);
     bool Serialize(SBFile &file);
 };
 
@@ -268,17 +270,6 @@ public:
     }
 };
 
-class SBGeoPoint2D
-{
-public:
-    SBGeoPoint2D();
-    SBGeoPoint2D(const SBGeoPoint2D &value);
-    SBGeoPoint2D &operator=(const SBGeoPoint2D &value);
-    float m_x;
-    float m_y;
-    ~SBGeoPoint2D();
-};
-
 // SIZE 0x60c
 class RHUnk0048f280
 {
@@ -291,40 +282,6 @@ class RHEngineReinforcementCalls
 {
 public:
     void FUN_00491fd0(const RHbeamMe &beamMe);
-};
-
-class RHSectorProduction
-{
-public:
-    struct Point
-    {
-        SBGeoPoint2D m_point;
-        char m_8[8];
-        ~Point() {}
-    };
-    struct Occupant
-    {
-        void *m_0;
-        SBGeoPoint2D m_point;
-        unsigned short m_c;
-        char m_pad[2];
-        ~Occupant() {}
-    };
-    typedef std::vector<Point> Points;
-    typedef std::vector<Occupant> Occupants;
-    int m_0; // +0x00
-    unsigned short m_4; // +0x04
-    char m_pad6[2];
-    int m_8; // +0x08
-    Points m_points; // +0x0c
-    Occupants m_occupants; // +0x1c
-    unsigned short m_2c; // +0x2c
-    unsigned short m_2e; // +0x2e
-    char m_30; // +0x30
-    RHSectorProduction(int type);
-    ~RHSectorProduction() {}
-    RHSectorProduction &operator=(const RHSectorProduction &value);
-    void FUN_00456960();
 };
 
 class RHCampaignProductionSectors
@@ -356,19 +313,6 @@ public:
         }
         return destination;
     }
-};
-
-class RHSoundPendingData
-{
-public:
-    char m_data[16];
-    void FUN_0052c5a0();
-};
-
-class RHCampaignDestroyOps
-{
-public:
-    void FUN_00459100(RHSoundPendingData *first, RHSoundPendingData *last);
 };
 
 class RHCampaignUnk00457950

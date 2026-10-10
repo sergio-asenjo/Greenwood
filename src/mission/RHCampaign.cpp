@@ -1,3 +1,14 @@
+#include "SBNullstr.h"
+
+namespace std {
+template<> inline basic_string<unsigned short, char_traits<unsigned short>, allocator<unsigned short> >::basic_string(const basic_string &value)
+    : allocator(value.allocator)
+{
+    _Tidy();
+    assign(value, 0, static_cast<size_type>(-1));
+}
+}
+
 #include "RHCampaign.h"
 #include <algorithm>
 #include <windows.h>
@@ -17,12 +28,8 @@ DECOMP_SIZE_ASSERT(SBGeoBoundingBox2D, 0x14)
 DECOMP_SIZE_ASSERT(RHCampaignCharacterData, 0x9c)
 DECOMP_SIZE_ASSERT(RHSaveGame::Header, 0x0c)
 
-// FUNCTION: GAME 0x0044e940
-void FUN_0044e940(unsigned short *destination, const unsigned short *value)
-{
-    if (destination)
-        *destination = *value;
-}
+// TEMPLATE: GAME 0x0044e940
+// ?_Construct@std@@YAXPAGABG@Z
 
 // FUNCTION: GAME 0x0044ea70
 void RHCampaignArrayOps::FUN_0044ea70()
@@ -358,8 +365,8 @@ void RHCampaign::SelectMissionsByObligation(std::vector<RHMission *> &missions)
     }
 }
 
-// deferred: unannotated pending reccmp #534
-// 0x00452f20: 100.00%.
+// Parked: eight STL callee-entity mismatches; in-body rebinding changes VC6 codegen.
+// STUB: GAME 0x00452f20
 bool RHCampaign::Serialize(SBFile &file)
 {
     RHSerializeName(file,
@@ -481,7 +488,7 @@ bool RHCampaign::SerializeAllCharacters(SBFile &file)
     return true;
 }
 
-// STUB: GAME 0x00453930
+// FUNCTION: GAME 0x00453930
 bool FUN_00453930(SBFile &file, RHMission &mission)
 {
     return mission.Serialize(file);
@@ -533,8 +540,7 @@ int RHUnk00452030::FUN_00453d60(const void *value)
     return -1;
 }
 
-// deferred: unannotated pending reccmp #534
-// 0x00453da0: 100.00% when temporarily annotated.
+// FUNCTION: GAME 0x00453da0
 bool FUN_00453da0(SBFile &file, void *&value)
 {
     int index;
@@ -709,8 +715,7 @@ void RHCampaign::CreatePlayableCharacterSet(SBArray<RHElement *> &elements, std:
         FUN_004559f0();
 }
 
-// Parked: counted point-copy operand and compiler-owned null-string storage.
-// STUB: GAME 0x00454a10
+// FUNCTION: GAME 0x00454a10
 RHbeamMe::RHbeamMe(const RHbeamMe &value)
     : m_point(value.m_point), m_8(value.m_8), m_a(value.m_a), m_c(value.m_c),
       m_e(value.m_e), m_10(value.m_10), m_12(value.m_12), m_14(value.m_14),
@@ -773,6 +778,9 @@ bool RHCampaign::FUN_00454c00(RHbeamMe beamMe, unsigned short character)
     if ((requirements & 512) && !available9) return false;
     return true;
 }
+
+// SYNTHETIC: GAME 0x00455200
+// ??1RHCampaignCharacterData@@QAE@XZ
 
 // STUB: GAME 0x004552f0
 void RHCampaign::FUN_004552f0(SBArray<RHElement *> &elements, RHbeamMe beamMe, unsigned short character)
@@ -992,7 +1000,12 @@ bool RHCampaign::CopyBackupTo(SBFile &file) const
     return true;
 }
 
-// FUNCTION: GAME 0x00457950
+// TEMPLATE: GAME 0x004578e0
+// ??1?$vector@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@V?$allocator@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@@2@@std@@QAE@XZ
+
+// TEMPLATE: GAME 0x00457950
+// ??1?$vector@UPoint@RHSectorProduction@@V?$allocator@UPoint@RHSectorProduction@@@std@@@std@@QAE@XZ
+
 void RHCampaignUnk00457950::FUN_00457950()
 {
     Value *last = m_last;
@@ -1004,7 +1017,12 @@ void RHCampaignUnk00457950::FUN_00457950()
     m_end = 0;
 }
 
-// STUB: GAME 0x00457a30
+// TEMPLATE: GAME 0x00457a10
+// ?size@?$vector@VRHMission@@V?$allocator@VRHMission@@@std@@@std@@QBEIXZ
+
+// TEMPLATE: GAME 0x00457a30
+// ??4?$vector@HV?$allocator@H@std@@@std@@QAEAAV01@ABV01@@Z
+
 RHCampaignArrayOps &RHCampaignArrayOps::FUN_00457a30(const RHCampaignArrayOps &value)
 {
     if (this == &value)
@@ -1037,60 +1055,55 @@ RHbeamMe &RHCampaignBeamArray::FUN_00457bc0(unsigned beamMe)
     return m_first[beamMe];
 }
 
-// STUB: GAME 0x00457be0
-void RHCampaignCommandLine::FUN_00457be0()
-{
-    if (m_chars && ((unsigned char *)m_chars)[-1] != 0 && ((unsigned char *)m_chars)[-1] != 255)
-    {
-        unsigned length = m_length;
-        if (length > (unsigned)-3)
-            std::_Xlen();
-        if (m_chars && ((unsigned char *)m_chars)[-1] != 0 && ((unsigned char *)m_chars)[-1] != 255)
-        {
-            if (length == 0)
-            {
-                --((unsigned char *)m_chars)[-1];
-                m_chars = 0, m_length = 0, m_capacity = 0;
-            }
-            else
-                ((RHCampaignStringCalls *)this)->FUN_00402670(length);
-        }
-        else if (length == 0)
-        {
-            if (m_chars)
-                ((RHProfileText *)this)->FUN_00402260(0);
-        }
-        else if (m_capacity < length)
-            ((RHCampaignStringCalls *)this)->FUN_00402670(length);
-    }
-    if (m_chars)
-        ((unsigned char *)m_chars)[-1] = 255;
-}
+// TEMPLATE: GAME 0x00457be0
+// ?_Freeze@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AAEXXZ
 
-// STUB: GAME 0x00457cb0
+// TEMPLATE: GAME 0x00457cb0
+// ?insert@?$vector@DV?$allocator@D@std@@@std@@QAEXPADIABD@Z
+
 void RHCampaignByteArray::FUN_00457cb0(char *position, unsigned count, const char &value)
 {
     ((std::vector<char> *)this)->insert(position, count, value);
 }
 
-// STUB: GAME 0x00457e80
+// TEMPLATE: GAME 0x00457e80
+// ?insert@?$vector@VRHMission@@V?$allocator@VRHMission@@@std@@@std@@QAEPAVRHMission@@PAV3@ABV3@@Z
+
 void RHCampaignMissionValues::FUN_00457e80(RHMission *position, const RHMission &value)
 {
     ((std::vector<RHMission> *)this)->insert(position, value);
 }
 
-// FUNCTION: GAME 0x004580a0
+// TEMPLATE: GAME 0x004580a0
+// ?capacity@?$vector@HV?$allocator@H@std@@@std@@QBEIXZ
+
 unsigned RHCampaignArrayOps::FUN_004580a0()
 {
     return m_first == 0 ? 0 : m_end - m_first;
 }
 
+// Parked: real sector vector insertion calls assignment where the target inlines it.
 // STUB: GAME 0x004584e0
 void RHCampaignProductionSectors::Insert(RHSectorProduction *position, unsigned count,
                                          const RHSectorProduction &value)
 {
     ((std::vector<RHSectorProduction> *)this)->insert(position, count, value);
 }
+
+// TEMPLATE: GAME 0x00458800
+// ?insert@?$vector@VRHMission@@V?$allocator@VRHMission@@@std@@@std@@QAEXPAVRHMission@@IABV3@@Z
+
+// TEMPLATE: GAME 0x00458af0
+// ?_Ucopy@?$vector@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@V?$allocator@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@@2@@std@@IAEPAV?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@2@PBV32@0PAV32@@Z
+
+// TEMPLATE: GAME 0x00458b30
+// ?_Ufill@?$vector@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@V?$allocator@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@@2@@std@@IAEXPAV?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@2@IABV32@@Z
+
+// TEMPLATE: GAME 0x00458b60
+// ?_Ucopy@?$vector@VRHMission@@V?$allocator@VRHMission@@@std@@@std@@IAEPAVRHMission@@PBV3@0PAV3@@Z
+
+// TEMPLATE: GAME 0x00458ba0
+// ?_Ufill@?$vector@VRHMission@@V?$allocator@VRHMission@@@std@@@std@@IAEXPAVRHMission@@IABV3@@Z
 
 // FUNCTION: GAME 0x00458be0
 bool FUN_00458be0(SBFile &file, std::vector<RHPCDescription *> &values,
@@ -1179,18 +1192,11 @@ bool FUN_00458e70(SBFile &file, RHCampaignProductionSectors &values,
     return true;
 }
 
-// FUNCTION: GAME 0x00459100
-void RHCampaignDestroyOps::FUN_00459100(RHSoundPendingData *first, RHSoundPendingData *last)
-{
-    for (; first != last; ++first)
-        first->FUN_0052c5a0();
-}
-
 // FUNCTION: GAME 0x00459130
 void RHCampaignProductionSectors::Destroy(RHSectorProduction *first, RHSectorProduction *last)
 {
     for (; first != last; ++first)
-        first->FUN_00456960();
+        first->~RHSectorProduction();
 }
 
 // FUNCTION: GAME 0x00459160
@@ -1236,8 +1242,8 @@ bool FUN_00459160(SBFile &file, std::vector<unsigned long> &values,
     return true;
 }
 
-// deferred: unannotated pending reccmp #534
-// 0x004593f0: 100.00% when temporarily annotated.
+// Parked: wide-vector _Destroy calls the wrong local entity; rebinding inlines cleanup.
+// STUB: GAME 0x004593f0
 bool RHUnk004593f0SerializeList(SBFile &file, RHUnk0054e250List &values, void *serialize)
 {
     RHCampaignWideStrings &strings = (RHCampaignWideStrings &)values;
@@ -1274,7 +1280,7 @@ bool RHUnk004593f0SerializeList(SBFile &file, RHUnk0054e250List &values, void *s
                 RHCampaignWideString value;
                 if (!callback(file, value))
                     return false;
-                list.Insert(list.end(), 1, value);
+                list.FUN_00459620(list.end(), 1, value);
             }
             --count;
         }
@@ -1282,12 +1288,25 @@ bool RHUnk004593f0SerializeList(SBFile &file, RHUnk0054e250List &values, void *s
     return true;
 }
 
+// Parked: real wide vector insertion has register-allocation and scheduling differences.
 // STUB: GAME 0x00459620
 void RHCampaignWideStrings::FUN_00459620(RHCampaignWideString *position, unsigned count,
                                         const RHCampaignWideString &value)
 {
     ((std::vector<std::wstring> *)this)->insert((std::wstring *)position, count, (const std::wstring &)value);
 }
+
+// TEMPLATE: GAME 0x00459910
+// ?fill@std@@YAXPAV?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@1@0ABV21@@Z
+
+// TEMPLATE: GAME 0x00459a60
+// ?copy_backward@std@@YAPAV?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@1@PAV21@00@Z
+
+// TEMPLATE: GAME 0x00459d30
+// ?_Construct@std@@YAXPAVRHSectorProduction@@ABV2@@Z
+
+// TEMPLATE: GAME 0x00459d80
+// ?_Construct@std@@YAXPAVRHMission@@ABV2@@Z
 
 // FUNCTION: GAME 0x00459dd0
 void *RHPCDescription::FUN_00459dd0(unsigned flags)
@@ -1312,6 +1331,9 @@ RHSectorProduction &RHSectorProduction::operator=(const RHSectorProduction &valu
     return *this;
 }
 
+// TEMPLATE: GAME 0x00459fa0
+// ?_Destroy@?$vector@UPoint@RHSectorProduction@@V?$allocator@UPoint@RHSectorProduction@@@std@@@std@@IAEXPAUPoint@RHSectorProduction@@0@Z
+
 // FUNCTION: GAME 0x0045a010
 int RHCampaignCommandLine::FUN_0045a010(const RHProfileText &value)
 {
@@ -1321,7 +1343,15 @@ int RHCampaignCommandLine::FUN_0045a010(const RHProfileText &value)
     return text.compare(0, text.size(), chars, length);
 }
 
-// FUNCTION: GAME 0x0045a440
+// TEMPLATE: GAME 0x0045a060
+// ??4?$vector@UPoint@RHSectorProduction@@V?$allocator@UPoint@RHSectorProduction@@@std@@@std@@QAEAAV01@ABV01@@Z
+
+// TEMPLATE: GAME 0x0045a240
+// ??4?$vector@UOccupant@RHSectorProduction@@V?$allocator@UOccupant@RHSectorProduction@@@std@@@std@@QAEAAV01@ABV01@@Z
+
+// TEMPLATE: GAME 0x0045a440
+// ?push_back@?$list@PAVRHMission@@V?$allocator@PAVRHMission@@@std@@@std@@QAEXABQAVRHMission@@@Z
+
 void RHCampaignMissionList::FUN_0045a440(const RHMission *const &value)
 {
     Node *next = m_head;
@@ -1337,7 +1367,13 @@ void RHCampaignMissionList::FUN_0045a440(const RHMission *const &value)
     ++m_count;
 }
 
-// deferred: unannotated pending reccmp #534
+// TEMPLATE: GAME 0x0045a490
+// ?size@?$vector@UPoint@RHSectorProduction@@V?$allocator@UPoint@RHSectorProduction@@@std@@@std@@QBEIXZ
+
+// TEMPLATE: GAME 0x0045a4b0
+// ?_Ucopy@?$vector@UPoint@RHSectorProduction@@V?$allocator@UPoint@RHSectorProduction@@@std@@@std@@IAEPAUPoint@RHSectorProduction@@PBU34@0PAU34@@Z
+
+// Unannotated: 0x0045a4f0 calls std::_Sort, which counted 0x00452d20 cannot share.
 void FUN_0045a4f0(RHMission **first, RHMission **last,
                   bool (*compare)(RHMission *, RHMission *), int)
 {
@@ -1352,7 +1388,19 @@ void FUN_0045a4f0(RHMission **first, RHMission **last,
     }
 }
 
-// deferred: unannotated pending reccmp #534
+// TEMPLATE: GAME 0x0045a790
+// ?copy@std@@YAPAUPoint@RHSectorProduction@@PBU23@0PAU23@@Z
+
+// TEMPLATE: GAME 0x0045a7e0
+// ?_Construct@std@@YAXPAUPoint@RHSectorProduction@@ABU23@@Z
+
+// TEMPLATE: GAME 0x0045a850
+// ?_Construct@std@@YAXPAUOccupant@RHSectorProduction@@ABU23@@Z
+
+// SYNTHETIC: GAME 0x0045a8e0
+// ??4Point@RHSectorProduction@@QAEAAU01@ABU01@@Z
+
+// FUNCTION: GAME 0x0045a940
 void FUN_0045a940(RHMission **first, RHMission **last,
                   bool (*compare)(RHMission *, RHMission *), int)
 {
@@ -1373,11 +1421,12 @@ void FUN_0045a940(RHMission **first, RHMission **last,
     }
 }
 
-// Parked: shared declaration discards the iterator return.
-// STUB: GAME 0x004609a0
-void RHMissionArrayStorage::FUN_004609a0(void *first, void *last)
+// TEMPLATE: GAME 0x004609a0
+// ?erase@?$vector@HV?$allocator@H@std@@@std@@QAEPAHPAH0@Z
+
+void *RHMissionArrayStorage::FUN_004609a0(void *first, void *last)
 {
-    ((std::vector<void *> *)this)->erase((void **)first, (void **)last);
+    return ((std::vector<void *> *)this)->erase((void **)first, (void **)last);
 }
 
 // STUB: GAME 0x004e3770
@@ -1415,26 +1464,35 @@ void RHEngine::FUN_004e3770(RHElement *element)
     RHCampaignField<unsigned short>(position, 0xd6) = direction;
 }
 
-// deferred: unannotated pending reccmp #534
+// TEMPLATE: GAME 0x004e5820
+// ?insert@?$vector@KV?$allocator@K@std@@@std@@QAEPAKPAKABK@Z
+
 void RHMissionArrayStorage::FUN_004e5820(void *position, const unsigned long &value)
 {
     ((std::vector<unsigned long> *)this)->insert((unsigned long *)position, value);
 }
 
-// FUNCTION: GAME 0x004e6c10
+// TEMPLATE: GAME 0x004e6ba0
+// ?_Destroy@?$vector@UOccupant@RHSectorProduction@@V?$allocator@UOccupant@RHSectorProduction@@@std@@@std@@IAEXPAUOccupant@RHSectorProduction@@0@Z
+
+// TEMPLATE: GAME 0x004e6c10
+// ?clear@?$list@PAVRHMission@@V?$allocator@PAVRHMission@@@std@@@std@@QAEXXZ
+
 void RHCampaignMissionList::FUN_004e6c10()
 {
     ((std::list<RHMission *> *)this)->clear();
 }
 
-// deferred: unannotated pending reccmp #534
+// FUNCTION: GAME 0x004e7210
 void FUN_004e7210(RHMission **first, RHMission **last,
                   bool (*compare)(RHMission *, RHMission *), int)
 {
     std::_Insertion_sort(first, last, compare);
 }
 
-// FUNCTION: GAME 0x00507960
+// TEMPLATE: GAME 0x00507960
+// ?erase@?$vector@VRHMission@@V?$allocator@VRHMission@@@std@@@std@@QAEPAVRHMission@@PAV3@0@Z
+
 RHMission *RHCampaignMissionValues::FUN_00507960(RHMission *first, RHMission *last)
 {
     return ((std::vector<RHMission> *)this)->erase(first, last);
@@ -1449,7 +1507,8 @@ RHMission::RHMission()
     m_8 = 0;
 }
 
-// deferred: unannotated pending reccmp #534
+// Parked: empty-string fallback scheduling differs; explicit initialization swaps profile registers.
+// STUB: GAME 0x0054c780
 bool FUN_0054c780(RHMission *left, RHMission *right)
 {
     RHMissionProfile *rightProfile = (RHMissionProfile *)right->m_profile;
@@ -1463,8 +1522,7 @@ bool FUN_0054c780(RHMission *left, RHMission *right)
     return false;
 }
 
-// deferred: unannotated pending reccmp #534
-// 0x0055bab0: 100.00% when temporarily annotated.
+// FUNCTION: GAME 0x0055bab0
 RHPCDescription::RHPCDescription()
 {
     FUN_0055bc30();
@@ -1480,7 +1538,7 @@ RHPCDescription::RHPCDescription(void *profile, bool playable)
     m_44 = false;
 }
 
-// deferred: unannotated pending reccmp #534
+// FUNCTION: GAME 0x0055bb30
 bool RHPCDescription::FUN_0055bb30(SBFile &file)
 {
     if (!((RHCampaignPCBase *)this)->FUN_0055bce0(file))
@@ -1505,7 +1563,7 @@ void *RHCampaignProfiles::FUN_0056d5d0(const RHProfileText &name)
     return *first;
 }
 
-// deferred: 0x0056e210, exact body; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x0056e210
 RHSaveGame::Header::Header()
 {
     m_00 = 0x52485347;
@@ -1513,11 +1571,20 @@ RHSaveGame::Header::Header()
     m_08 = 0xbad;
 }
 
-// FUNCTION: GAME 0x00570330
+// TEMPLATE: GAME 0x00570330
+// ??1?$vector@GV?$allocator@G@std@@@std@@QAE@XZ
+
 void RHCampaignArrayOps::FUN_00570330()
 {
     typedef std::vector<void *> Values;
     ((Values *)this)->~Values();
+}
+
+// FUNCTION: GAME 0x00580090
+RHSectorProduction::RHSectorProduction(const RHSectorProduction &value)
+    : m_0(value.m_0), m_4(value.m_4), m_8(value.m_8), m_points(value.m_points),
+      m_occupants(value.m_occupants), m_2c(value.m_2c), m_2e(value.m_2e), m_30(value.m_30)
+{
 }
 
 // FUNCTION: GAME 0x00580050
@@ -1540,10 +1607,29 @@ void RHCampaign::Emit(std::vector<RHMission *> &missions)
     CreatePlayableCharacterSet(elements, beamMes);
     ((RHCampaignArrayOps *)&missions)->FUN_004580a0();
     ((RHCampaignArrayOps *)&missions)->FUN_00570330();
-    RHCampaignDestroyOps destroy;
-    destroy.FUN_00459100(0, 0);
     RHCampaignUnk00457950 values;
     values.FUN_00457950();
     RHCampaignWideStrings strings;
     strings.FUN_00459620(0, 0, *(const RHCampaignWideString *)0);
+    typedef std::vector<RHMission> Missions;
+    unsigned (Missions::*volatile size)() const = &Missions::size;
+    RHMission *(Missions::*volatile insertMission)(RHMission *, const RHMission &) = &Missions::insert;
+    void (Missions::*volatile insertMissionCount)(RHMission *, unsigned, const RHMission &) = &Missions::insert;
+    RHMission *(Missions::*volatile eraseMissions)(RHMission *, RHMission *) = &Missions::erase;
+    typedef std::list<RHMission *> MissionList;
+    void (MissionList::*volatile clearMissions)() = &MissionList::clear;
+    void (MissionList::*volatile pushMission)(RHMission *const &) = &MissionList::push_back;
+    typedef std::vector<unsigned long> Indices;
+    unsigned long *(Indices::*volatile insertIndex)(unsigned long *, const unsigned long &) = &Indices::insert;
+    typedef std::vector<char> Bytes;
+    void (Bytes::*volatile insertByte)(char *, unsigned, const char &) = &Bytes::insert;
+    typedef std::vector<std::wstring> WideStrings;
+    void (WideStrings::*volatile insertWide)(std::wstring *, unsigned, const std::wstring &) = &WideStrings::insert;
+    WideStrings wideStrings;
+    WideStrings &(WideStrings::*volatile assignWide)(const WideStrings &) = &WideStrings::operator=;
+    (wideStrings.*assignWide)(wideStrings);
+    typedef RHSectorProduction::Point Point;
+    Point &(Point::*volatile assign)(const Point &) = &Point::operator=;
+    typedef std::vector<Point> Points;
+    Points &(Points::*volatile assignPoints)(const Points &) = &Points::operator=;
 }

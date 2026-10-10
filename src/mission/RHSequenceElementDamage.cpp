@@ -1,7 +1,7 @@
+#include "SBNullstr.h"
 #include "RHSequenceElementDamage.h"
 
-// Parked: counted sword/engine callees resolve asymmetrically through the ILT.
-// STUB: GAME 0x00586370
+// FUNCTION: GAME 0x00586370
 bool RHSequenceElementDamage::Serialize(SBFile &file, bool pointers)
 {
     FUN_00584ef0(file, pointers);
@@ -35,7 +35,7 @@ bool RHSequenceElementDamage::Serialize(SBFile &file, bool pointers)
                  "Serialize failed reason is %s", error->m_chars ? error->m_chars : "");
         return false;
     }
-    g_pEngine->SerializeNestedA(file, &m_64);
+    g_pEngine->SerializeElementPointer(file, *(RHElement **)(&m_64));
     RHSword::SerializePointer(file, m_70);
     g_pEngine->FUN_004c41f0(file, m_78);
     return true;

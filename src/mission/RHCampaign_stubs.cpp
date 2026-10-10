@@ -1,15 +1,20 @@
+#include "SBNullstr.h"
 #include "RHCampaign.h"
+
+// FUNCTION: GAME 0x0054c6a0
+RHMission::RHMission(const RHMission &value)
+    : m_profile(value.m_profile), m_4(value.m_4), m_6(value.m_6), m_8(value.m_8)
+{
+}
 
 extern "C" int __cdecl rand() { return 0; }
 
 
 void RHCampaignWideString::Tidy(bool) {}
-void RHCampaignStringCalls::FUN_00402670(unsigned) {}
 void RHCampaignWideString::Assign(const RHCampaignWideString &, unsigned, unsigned) {}
 void RHCampaignWideStrings::Destroy(RHCampaignWideString *, RHCampaignWideString *) {}
 void RHCampaignWideStrings::Insert(RHCampaignWideString *, unsigned, const RHCampaignWideString &) {}
 
-void RHSectorProduction::FUN_00456960() {}
 void RHCampaignUnk00457950::Value::FUN_0051c0c0() {}
 
 void RHPCDescription::FUN_0055bc30() {}

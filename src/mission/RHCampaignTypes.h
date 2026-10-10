@@ -301,7 +301,7 @@ public:
     unsigned m_length;
     unsigned m_capacity;
     int FUN_0045a010(const RHProfileText &value);
-    void FUN_00457be0();
+    void FUN_00457be0() { ((std::string *)this)->begin(); }
     char operator[](unsigned index)
     {
         if (m_length >= index && m_chars != 0)
@@ -311,12 +311,6 @@ public:
         }
         return *"";
     }
-};
-
-class RHCampaignStringCalls
-{
-public:
-    void FUN_00402670(unsigned length);
 };
 
 // SIZE 0x04
@@ -414,7 +408,6 @@ public:
     RHScriptNode *Unk0059f720(RHScriptNode *next, RHScriptNode *previous);
 };
 
-void FUN_0044e940(unsigned short *destination, const unsigned short *value);
 
 template<bool InlineHead>
 class RHCampaignIndexList
@@ -466,7 +459,7 @@ public:
             RHScriptNode *node = ((RHUnk0046eb30 *)this)->Unk0059f720(m_head, m_head->prev);
             m_head->prev = node;
             node->prev->next = node;
-            FUN_0044e940((unsigned short *)&node->data, &value);
+            std::_Construct((unsigned short *)&node->data, value);
             ++m_count;
         }
         else

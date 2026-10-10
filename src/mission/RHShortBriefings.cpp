@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHShortBriefings.h"
 
 // FUNCTION: GAME 0x005a3030
@@ -11,7 +12,7 @@ bool RHShortBriefings::Serialize(SBFile &file)
 }
 
 // deferred: unannotated pending reccmp #534 (callback address)
-// 0x005a32a0: exact when annotated; inlined containers call it directly through the ILT.
+// FUNCTION: GAME 0x005a32a0
 bool RHShortBriefings::SerializeShortBriefing(SBFile &file, ShortBriefing &value)
 {
     if (file.Access(&value.m_0, 4) < 0)
