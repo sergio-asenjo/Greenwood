@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHElementActorNPC_calls.h"
 
 #define RHNPC_ACCESS(buffer, size, line) \
@@ -68,7 +69,7 @@ bool RHElementActorNPC::Serialize(SBFile &file)
     RHNPC_ACCESS((char *)this + 0x4f4, 1, 3995);
     RHNPC_ACCESS((char *)this + 0x4f6, 2, 3997);
     RHNPC_ACCESS((char *)this + 0x654, 0x90, 4000);
-    engine->SerializeNestedA(file, (char *)this + 0x6bc);
+    engine->SerializeElementPointer(file, *(RHElement **)((char *)this + 0x6bc));
     RHNPC_ACCESS((char *)this + 0x4dc, 0x10, 4003);
     RHNPC_CHECK(((RHUnkPathGeometry *)g_unk0x6c0a9c)->Unk004fbec0(file, *(void **)((char *)this + 0x4e4)), 4004);
     ((SBGeoPoint2D *)((char *)this + 0x4d4))->Serialize(file);

@@ -28,7 +28,7 @@ struct RHScriptIter
 class RHUnk0046eb30
 {
 public:
-    RHScriptIter begin();
+    RHScriptIter FUN_0046eb80();
 };
 
 struct RHUnk004b1520List

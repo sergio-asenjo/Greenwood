@@ -1,7 +1,7 @@
+#include "SBNullstr.h"
 #include "RHElementActorPC_calls.h"
 
 RHUnk00471630::RHUnk00471630(int, int, void *) {}
-RHUnk005fc030::RHUnk005fc030() {}
 RHActorPCBoxCalls::RHActorPCBoxCalls() {}
 RHActorPCBoxCalls::~RHActorPCBoxCalls() {}
 void RHActorPCWidgetCalls::FUN_005d9950(int) {}

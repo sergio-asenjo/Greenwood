@@ -56,7 +56,7 @@ public:
     SBGeoBoundingBox2D &operator=(const SBGeoBoundingBox2D &);
     bool FUN_00608400(const SBGeoPoint2D &) const;
     SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &) const;
-    bool FUN_00607c70(SBFile &);
+    bool Serialize(SBFile &);
     void FUN_00607d90();
     SBGeoPoint2D m_00; // 0x00
     SBGeoPoint2D m_08; // 0x08
@@ -125,7 +125,7 @@ public:
 class RHUnkTargetSprite
 {
 public:
-    bool FUN_005b76e0(unsigned, unsigned);
+    bool FUN_005b76e0(unsigned, unsigned short);
 };
 
 class RHSpriteFrameCalls

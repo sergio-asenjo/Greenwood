@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHElementActorHuman.h"
 #include <stdlib.h>
 
@@ -6,6 +7,7 @@ extern float g_unk0x00677f7c;
 extern char g_unk0x6c0560[4];
 extern float g_unk0x00677488;
 extern float g_unk0x006774e4;
+extern float g_unk0x006774f0;
 
 // GLOBAL: GAME 0x006b793c
 int g_unk0x006b793c[16] = { 0, 1, 2, 3, 1, 4, 5, 6, 2, 5, 7, 8, 3, 6, 8, 9 };
@@ -118,6 +120,12 @@ int RHUnk0046bd20::FUN_0046bd20()
         SBAssert(0, sourceFile, line, "Serialize failed reason is %s", reason); \
         return false; \
     }
+
+// TEMPLATE: GAME 0x00471440
+// ?_Ucopy@?$vector@GV?$allocator@G@std@@@std@@IAEPAGPBG0PAG@Z
+
+// TEMPLATE: GAME 0x00471470
+// ?_Ufill@?$vector@GV?$allocator@G@std@@@std@@IAEXPAGIABG@Z
 
 // Parked: posture/combat dispatch and original EH states remain incomplete.
 // STUB: GAME 0x00472070
@@ -355,34 +363,35 @@ bool RHElementActorHuman::Serialize(SBFile &file)
     return true;
 }
 
-// STUB: GAME 0x0047b760
+// FUNCTION: GAME 0x0047b760
 int RHElementActorHuman::FUN_0047b760(void *actor, int *value)
 {
+    int other;
     if ((RHActorField<unsigned>(actor, 4) & 7) == 4)
     {
-        undefined storage[0x0c];
-        RHUnk00613e90 &point = *(RHUnk00613e90 *)storage;
         if (RHActorField<int>(RHActorField<void *>(actor, 0x50), 0x8c) != 19)
         {
-            point.RHUnk00613e90::RHUnk00613e90();
+            RHUnk00613e90 point;
             ((RHHumanActorCalls *)actor)->FUN_00479320(point);
             return ((RHHumanActorCalls *)this)->FUN_0047b8a0(point, value, false);
         }
-        point.RHUnk00613e90::RHUnk00613e90();
-        ((RHHumanActorCalls *)actor)->FUN_00479320(point);
-        if (!((RHHumanActorCalls *)this)->FUN_0047b8a0(point, value, false))
+        else
         {
-            if (*value == 1)
+            RHUnk00613e90 point;
+            ((RHHumanActorCalls *)actor)->FUN_00479320(point);
+            if (!((RHHumanActorCalls *)this)->FUN_0047b8a0(point, value, false))
             {
-                ((RHElementActor *)actor)->FUN_00478c20(point, false);
-                int other;
-                if (((RHHumanActorCalls *)this)->FUN_0047b8a0(point, &other, false) && other == 0)
-                    *value = 0;
+                if (*value == 1)
+                {
+                    ((RHElementActor *)actor)->FUN_00478c20(point, false);
+                    if (((RHHumanActorCalls *)this)->FUN_0047b8a0(point, &other, false) && other == 0)
+                        *value = 0;
+                }
+                return 0;
             }
-            return 0;
+            ((RHElementActor *)actor)->FUN_00478c20(point, false);
+            return ((RHHumanActorCalls *)this)->FUN_0047b8a0(point, value, false);
         }
-        ((RHElementActor *)actor)->FUN_00478c20(point, false);
-        return ((RHHumanActorCalls *)this)->FUN_0047b8a0(point, value, false);
     }
     if (RHActorField<undefined>(g_pEngine, 0x4aa8))
         return ((RHHumanActorCalls *)this)->FUN_0047b8a0(RHActorField<RHUnk00613e90>(RHActorField<void *>(actor, 0x50), 0x10), value, true);
@@ -549,7 +558,7 @@ int RHElementActorHuman::FUN_0047e7d0(RHUnk005864a0 *element)
     return result;
 }
 
-// STUB: GAME 0x0047e9d0
+// FUNCTION: GAME 0x0047e9d0
 void RHElementActorHuman::FUN_0047e9d0(RHUnk005864a0 *element)
 {
     unsigned short value = RHActorField<unsigned short>(element, 0x68);
@@ -657,7 +666,7 @@ bool RHElementActorHuman::FUN_00484bb0(RHElementActorHuman *actor, SBGeoPoint2D 
         else if (position <= g_unk0x00677488)
             result = *(SBGeoPoint2D *)segment;
         else
-            result = ((SBGeoPoint2D *)segment)->Unk005fc190(FUN_005fc4f0(position, direction));
+            result = ((SBGeoPoint2D *)segment)->Unk005fc190(operator*(position, (const SBGeoVector2D &)direction));
         return true;
     case 1:
         lower = fraction - margin;
@@ -691,20 +700,20 @@ bool RHElementActorHuman::FUN_00484bb0(RHElementActorHuman *actor, SBGeoPoint2D 
     {
         if (margin <= g_unk0x0067749c)
         {
-            result = ((SBGeoPoint2D *)segment)->Unk005fc190(FUN_005fc4f0(margin, direction));
-            SBGeoPoint2D alternate = ((SBGeoPoint2D *)segment)->Unk005fc190(FUN_005fc4f0(lower, direction));
+            result = ((SBGeoPoint2D *)segment)->Unk005fc190(operator*(margin, (const SBGeoVector2D &)direction));
+            SBGeoPoint2D alternate = ((SBGeoPoint2D *)segment)->Unk005fc190(operator*(lower, (const SBGeoVector2D &)direction));
             SBGeoPoint2D &current = RHActorField<SBGeoPoint2D>(RHActorField<void *>(this, 0x50), 0x24);
             if (current.Unk005fc110(alternate).Unk005fc6d0(1.0f) < current.Unk005fc110(result).Unk005fc6d0(1.0f))
                 result = alternate;
         }
         else
-            result = ((SBGeoPoint2D *)segment)->Unk005fc190(FUN_005fc4f0(lower, direction));
+            result = ((SBGeoPoint2D *)segment)->Unk005fc190(operator*(lower, (const SBGeoVector2D &)direction));
         fractions.FUN_0044e8b0(fractions.FUN_0046eb80(), RHHumanFloatIterator(fractions.m_head));
         return true;
     }
     if (margin <= g_unk0x0067749c)
     {
-        result = ((SBGeoPoint2D *)segment)->Unk005fc190(FUN_005fc4f0(margin, direction));
+        result = ((SBGeoPoint2D *)segment)->Unk005fc190(operator*(margin, (const SBGeoVector2D &)direction));
         fractions.Release();
         return true;
     }
@@ -738,8 +747,8 @@ void FUN_0048c5b0(void *actor, int value)
         int offset = 0;
         do
         {
-            RHUnk0048c700 **actors = RHActorField<RHUnk0048c700 **>(g_pEngine, 0x495c);
-            RHActorField<RHUnk0048c700 *>(actors, offset)->FUN_0048c700(actor, value);
+            RHMalignityActorCalls **actors = RHActorField<RHMalignityActorCalls **>(g_pEngine, 0x495c);
+            RHActorField<RHMalignityActorCalls *>(actors, offset)->FUN_0048c700(actor, value);
             offset += 4;
         } while (--remaining);
     }
@@ -812,7 +821,7 @@ void RHManagerListCalls::FUN_0058bed0()
     }
 }
 
-// STUB: GAME 0x005a8220
+// FUNCTION: GAME 0x005a8220
 bool RHSound::FUN_005a8220(int first, int second, int third, const SBGeoPoint2D &point)
 {
     if (RHActorField<undefined>(this, 0x20b))
@@ -832,7 +841,7 @@ bool RHSound::FUN_005a8220(int first, int second, int third, const SBGeoPoint2D 
     return true;
 }
 
-// STUB: GAME 0x005a8330
+// FUNCTION: GAME 0x005a8330
 bool RHSound::FUN_005a8330(int first, int second, int third, const SBGeoPoint2D &point)
 {
     if (RHActorField<undefined>(this, 0x20b))
@@ -859,13 +868,13 @@ undefined4 RHUnk005c1d50::FUN_005c1d50(int index)
     return 0;
 }
 
-// STUB: GAME 0x005c1dd0
+// FUNCTION: GAME 0x005c1dd0
 unsigned short RHUnk005c1d50::FUN_005c1dd0(int index, void *actor)
 {
     float scale;
     if ((RHActorField<unsigned>(actor, 4) & 31) == 20 &&
         RHActorField<int>(RHActorField<void *>(actor, 0xa1c), 0x58) == 0)
-        scale = ((RHHumanVirtualCalls *)actor)->V124() * 0.01f + g_unk0x0067749c;
+        scale = ((RHHumanVirtualCalls *)actor)->V124() * g_unk0x006774f0 + g_unk0x0067749c;
     else
         scale = g_unk0x0067749c;
     switch (index)

@@ -147,8 +147,7 @@ void RHElementActorCivilian::FUN_00470480(SBFile &file)
     }
 }
 
-// Parked: vector helper and callback operands differ under the interim link.
-// STUB: GAME 0x00470a10
+// FUNCTION: GAME 0x00470a10
 void RHElementActorCivilian::FUN_00470a10(SBFile &file)
 {
     std::vector<unsigned short> *&arrays = *(std::vector<unsigned short> **)((char *)this + 0x700);
@@ -170,6 +169,9 @@ void RHElementActorCivilian::FUN_00470a10(SBFile &file)
         offset += 16;
     } while (--remaining != 0);
 }
+
+// SYNTHETIC: GAME 0x00470c80
+// ??_F?$vector@GV?$allocator@G@std@@@std@@QAEXXZ
 
 // FUNCTION: GAME 0x00470ca0
 bool RHElementActorCivilian::FUN_00470ca0()
@@ -224,7 +226,7 @@ unsigned short RHCivilianSpriteView::FUN_005bdf20()
     return m_19c;
 }
 
-// deferred: unannotated pending reccmp #534 (0x005ef320).
+// FUNCTION: GAME 0x005ef320
 unsigned short RHUnk005ef320::Unk(int red, int green, int blue)
 {
     if (m_10c == 16)

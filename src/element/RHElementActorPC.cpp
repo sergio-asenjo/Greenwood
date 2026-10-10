@@ -10,7 +10,6 @@ DECOMP_SIZE_ASSERT(RHActorPCProfileNode, 0x18)
 DECOMP_SIZE_ASSERT(RHUnk00613e90, 0x0c)
 DECOMP_SIZE_ASSERT(RHPCDescription, 0x48)
 DECOMP_SIZE_ASSERT(RHUnk0048f280, 0x60c)
-DECOMP_SIZE_ASSERT(RHUnk005fc030, 0x08)
 
 extern RHUnk005c38b0 *g_unk0x6c10e8;
 RHMessenger *RHUnk00546050();
@@ -50,7 +49,7 @@ RHUnk0045aaf0::RHUnk0045aaf0()
 RHUnk0048f280::RHUnk0048f280(void *description)
 {
     ((RHUnk00471630 *)this)->RHUnk00471630::RHUnk00471630(12, 0, description);
-    ((RHUnk005fc030 *)((char *)this + 0x4f0))->RHUnk005fc030::RHUnk005fc030();
+    ((SBGeoPoint2D *)((char *)this + 0x4f0))->SBGeoPoint2D::SBGeoPoint2D();
     RHActorPCField<int>(this, 0x4f8) = 0;
     RHActorPCField<char>(this, 0x4fc) = 0;
     char allocator;
@@ -58,7 +57,7 @@ RHUnk0048f280::RHUnk0048f280(void *description)
     RHActorPCField<RHScriptNode *>(this, 0x560) = ((RHUnk0046eb30 *)((char *)this + 0x55c))->Unk0059f720(0, 0);
     RHActorPCField<int>(this, 0x564) = 0;
     RHActorPCField<char>(this, 0x56c) = 1;
-    ((RHUnk005fc030 *)((char *)this + 0x584))->RHUnk005fc030::RHUnk005fc030();
+    ((SBGeoPoint2D *)((char *)this + 0x584))->SBGeoPoint2D::SBGeoPoint2D();
     ((RHUnk0045aaf0 *)((char *)this + 0x590))->RHUnk0045aaf0::RHUnk0045aaf0();
     ((RHUnk00613e90 *)((char *)this + 0x5d4))->RHUnk00613e90::RHUnk00613e90();
     RHActorPCField<int>(this, 0x5e8) = 0;
@@ -253,6 +252,7 @@ int RHElementActorPC::FUN_0049d590(int action)
     } while (true);
 }
 
+// FUNCTION: GAME 0x0049d5c0
 int RHElementActorPC::FUN_0049d5c0(unsigned short action)
 {
     return RHActorPCField<int>(m_5fc, 0x48 + action * 4);
@@ -495,13 +495,13 @@ void RHElementActorPC::Emit(int action)
     FUN_0049dad0(action);
 }
 
-// deferred: 0x0050efb0 is byte-exact; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x0050efb0
 void RHActorPCEngineCalls::FUN_0050efb0(void *value)
 {
     m_196c->FUN_0055e710(value);
 }
 
-// deferred: 0x005492a0 is byte-exact; unannotated pending reccmp #534.
+// FUNCTION: GAME 0x005492a0
 RHUnk005492a0::RHUnk005492a0(int command, void *actor, int action)
 {
     ((RHActorPCMessageBaseCalls *)this)->FUN_00549030(2, action);
@@ -510,7 +510,7 @@ RHUnk005492a0::RHUnk005492a0(int command, void *actor, int action)
     m_0 = 0x679b6c;
 }
 
-// deferred: 0x0055fa10 is byte-exact; called by RHPath::TestIfPathIsFine.
+// FUNCTION: GAME 0x0055fa10
 void *RHUnkPathActorInfoBase::Unk0055fa10(int value)
 {
     return (char *)this + 0x94;
@@ -626,36 +626,41 @@ void RHActorPCWidgetCalls::FUN_005d9700(unsigned short action)
     }
 }
 
-// Parked: comparison scheduling differs; effective-only match.
-// STUB: GAME 0x005d9860
+template<class T>
+inline T &RHActorPCWidgetField(void *actor, int offset)
+{
+    return *(T *)((char *)actor + offset);
+}
+
+// FUNCTION: GAME 0x005d9860
 void RHActorPCWidgetCalls::FUN_005d9860()
 {
-    if (RHActorPCField<char>(this, 0x410) == 1)
+    if (RHActorPCWidgetField<char>(this, 0x410) == 1)
     {
-        RHActorPCField<char>(this, 0x410) = 0;
-        RHActorPCField<int>(this, 0x390) = 0;
-        if (RHActorPCField<int>(this, 0x3c0) == 8)
-            RHActorPCField<int>(this, 0x3c0) = 5;
-        if (RHActorPCField<int>(this, 0x3c0) == 9)
-            RHActorPCField<int>(this, 0x3c0) = 6;
+        RHActorPCWidgetField<char>(this, 0x410) = 0;
+        RHActorPCWidgetField<int>(this, 0x390) = 0;
+        if (RHActorPCWidgetField<int>(this, 0x3c0) == 8)
+            RHActorPCWidgetField<int>(this, 0x3c0) = 5;
+        if (RHActorPCWidgetField<int>(this, 0x3c0) == 9)
+            RHActorPCWidgetField<int>(this, 0x3c0) = 6;
     }
-    if (RHActorPCField<char>(this, 0x4f8) == 1)
+    if (RHActorPCWidgetField<char>(this, 0x4f8) == 1)
     {
-        RHActorPCField<char>(this, 0x4f8) = 0;
-        RHActorPCField<int>(this, 0x478) = 0;
-        if (RHActorPCField<int>(this, 0x4a8) == 8)
-            RHActorPCField<int>(this, 0x4a8) = 5;
-        if (RHActorPCField<int>(this, 0x4a8) == 9)
-            RHActorPCField<int>(this, 0x4a8) = 6;
+        RHActorPCWidgetField<char>(this, 0x4f8) = 0;
+        RHActorPCWidgetField<int>(this, 0x478) = 0;
+        if (RHActorPCWidgetField<int>(this, 0x4a8) == 8)
+            RHActorPCWidgetField<int>(this, 0x4a8) = 5;
+        if (RHActorPCWidgetField<int>(this, 0x4a8) == 9)
+            RHActorPCWidgetField<int>(this, 0x4a8) = 6;
     }
-    if (RHActorPCField<char>(this, 0x5e0) == 1)
+    if (RHActorPCWidgetField<char>(this, 0x5e0) == 1)
     {
-        RHActorPCField<char>(this, 0x5e0) = 0;
-        RHActorPCField<int>(this, 0x560) = 0;
-        if (RHActorPCField<int>(this, 0x590) == 8)
-            RHActorPCField<int>(this, 0x590) = 5;
-        if (RHActorPCField<int>(this, 0x590) == 9)
-            RHActorPCField<int>(this, 0x590) = 6;
+        RHActorPCWidgetField<char>(this, 0x5e0) = 0;
+        RHActorPCWidgetField<int>(this, 0x560) = 0;
+        if (RHActorPCWidgetField<int>(this, 0x590) == 8)
+            RHActorPCWidgetField<int>(this, 0x590) = 5;
+        if (RHActorPCWidgetField<int>(this, 0x590) == 9)
+            RHActorPCWidgetField<int>(this, 0x590) = 6;
     }
 }
 

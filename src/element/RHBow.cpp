@@ -1,7 +1,8 @@
+#include "SBNullstr.h"
 #include "RHBow.h"
 #include "SB.h"
 
-// deferred: unannotated pending reccmp #534
+// FUNCTION: GAME 0x00450370
 bool RHBow::SerializePointer(SBFile &file, RHBow *&ptr)
 {
     bool exists;

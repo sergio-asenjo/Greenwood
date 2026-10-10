@@ -76,6 +76,7 @@ struct RHScriptIter
 class RHUnk0046eb30
 {
 public:
+    RHScriptIter FUN_0046eb80();
     RHScriptIter erase(RHScriptIter position);
 };
 
@@ -117,7 +118,7 @@ public:
 class RHEngine
 {
 public:
-    bool SerializeNestedA(SBFile &file, void *value);
+    bool SerializeElementPointer(SBFile &file, RHElement *&element);
 };
 class RHReconnaissanceEngine
 {
@@ -340,11 +341,14 @@ public:
     RHUnkSectorScript *m_0;
 };
 
+struct RHBonusProjection;
+
 class RHBonusInfoBase
 {
 public:
     SBGeoVector2D FUN_00468f10(int value) const;
     void FUN_0055f290();
+    void FUN_0055fa20(RHBonusProjection *projection);
     void FUN_0055fa70(void *area);
 };
 class RHUnkPathActorInfoBase
@@ -362,6 +366,7 @@ public:
 class RHActorGridCalls
 {
 public:
+    short FUN_004e8fc0(const SBGeoPoint2D &point, const SBGeoPoint2D &origin, short layer, void *&area);
     unsigned short FUN_004e9800(const SBGeoPoint2D &point, void *&area, int &layer);
     bool FUN_004f5e50(SBGeoPoint2D &point, const SBGeoPoint2D &other, int layer);
 };

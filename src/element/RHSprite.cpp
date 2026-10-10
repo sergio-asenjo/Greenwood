@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHSprite.h"
 #include <stdlib.h>
 
@@ -198,7 +199,7 @@ void RHSpriteSequenceCalls::FUN_005859e0(RHOrder *order, unsigned short wanted)
     order->m_38 = this;
 }
 
-// deferred: 0x005b5e00, unannotated pending reccmp #534
+// FUNCTION: GAME 0x005b5e00
 void *RHUnk005b5e00::Unk()
 {
     if (RHSpriteField<char>(this, 0x194))
@@ -239,7 +240,7 @@ bool RHUnk005b5ed0::FUN_005b5ed0(SBFile &file)
     ACCESS(sprite.m_190, 2, 0x104);
     ACCESS(sprite.m_18a, 2, 0x105);
     ACCESS(sprite.m_150, 4, 0x107);
-    sprite.m_1a0.FUN_00607c70(file);
+    sprite.m_1a0.Serialize(file);
     unsigned count;
     int first;
     int second;
@@ -500,7 +501,7 @@ bool RHSprite::FUN_005b7300(int animation, int progression)
 }
 
 // deferred: 0x005b76e0, unannotated pending reccmp #534
-bool RHUnkTargetSprite::FUN_005b76e0(unsigned animation, unsigned direction)
+bool RHUnkTargetSprite::FUN_005b76e0(unsigned animation, unsigned short direction)
 {
     unsigned short frame = ((RHSpriteFrameTable *)((RHUnk005b5e00 *)this)->Unk())->Frame(animation);
     RHSpriteField<int>(this, 0x1dc) = animation;
@@ -510,6 +511,9 @@ bool RHUnkTargetSprite::FUN_005b76e0(unsigned animation, unsigned direction)
     RHSpriteField<unsigned short>(this, 0x188) = 0;
     return true;
 }
+
+// SYNTHETIC: GAME 0x005b7600
+// ??1RHUnkSpriteRow@@QAE@XZ
 
 // FUNCTION: GAME 0x005b7720
 void RHSprite::FUN_005b7720(int animation)
@@ -1004,7 +1008,7 @@ bool RHSprite::FUN_005bd450()
     return true;
 }
 
-// deferred: 0x005bd5b0, unannotated pending reccmp #534
+// FUNCTION: GAME 0x005bd5b0
 bool RHUnk005bd5b0::Unk(bool last)
 {
     if (last)
@@ -1036,7 +1040,7 @@ void RHUnk005b5ed0::FUN_005bd8b0()
     }
 }
 
-// deferred: 0x005bdbf0, unannotated pending reccmp #534
+// FUNCTION: GAME 0x005bdbf0
 unsigned short RHSprite::FUN_005bdbf0(unsigned short animation, unsigned short frame)
 {
     void *holder = ((RHUnk005b5e00 *)this)->FUN_005b5de0();
@@ -1052,7 +1056,7 @@ short RHSprite::FUN_005bdc20(unsigned short animation, unsigned short frame)
     return RHSpriteField<short *>(entries + animation * 0x64, 0x38)[frame];
 }
 
-// deferred: 0x005df4f0, unannotated pending reccmp #534
+// Duplicate of the annotated RHUnk00613e90 (float, float, float) constructor (0x005df4f0).
 RHUnk005df4f0::RHUnk005df4f0(float x, float y, float z)
 {
     m_0 = x;
@@ -1060,7 +1064,7 @@ RHUnk005df4f0::RHUnk005df4f0(float x, float y, float z)
     m_8 = z;
 }
 
-// deferred: 0x005fc3c0, unannotated pending reccmp #534
+// FUNCTION: GAME 0x005fc3c0
 SBGeoVector2D::SBGeoVector2D(float x, float y) : SBGeoPoint2D(x, y)
 {
 }

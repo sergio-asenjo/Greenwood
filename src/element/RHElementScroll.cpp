@@ -9,7 +9,7 @@ public:
 class RHUnkTargetSprite
 {
 public:
-    bool FUN_005b76e0(unsigned animation, unsigned direction);
+    bool FUN_005b76e0(unsigned animation, unsigned short direction);
 };
 
 DECOMP_SIZE_ASSERT(RHElementObject, 0x100)
@@ -97,7 +97,7 @@ void RHElementScroll::InitializeFromMissionStream(SBFile &file)
     FUN_004ba400();
 }
 
-// Parked: shared direction argument width and counted profile-getter operand.
+// Parked: VC6 hoists the shared pop edi/esi above the branch; target pops after each call.
 // STUB: GAME 0x004ba400
 void RHElementScroll::FUN_004ba400()
 {
@@ -113,7 +113,7 @@ void RHElementScroll::FUN_004ba400()
         ((RHUnkTargetSprite *)info)->FUN_005b76e0(0xbe, *(unsigned short *)((char *)info + 0xd8));
 }
 
-// deferred: 0x004ba690, 98.48% annotated; sole diff is the matched base call, pending reccmp #534.
+// FUNCTION: GAME 0x004ba690
 bool RHElementScroll::Serialize(SBFile &file)
 {
     RHSerializeName(file,
@@ -148,7 +148,7 @@ void RHElementScroll::SetScrollExecutingScript(RHElementScroll *scroll)
     g_scrollExecutingScript = scroll;
 }
 
-// Parked: 0x004ba7a0, 84.85%; shared direction width, unannotated to preserve the script caller.
+// FUNCTION: GAME 0x004ba7a0
 void RHUnk004ba7a0::Set(int status)
 {
     *(int *)((char *)this + 0x164) = status;

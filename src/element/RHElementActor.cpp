@@ -1,6 +1,96 @@
 #include "RHElementActor.h"
 #include "VMCore.h"
 
+class RHSeqList
+{
+public:
+    void GoTo(int index);
+};
+
+struct RHUnk004b1520List
+{
+    char m_00[4];
+    RHScriptNode *m_04;
+    int m_08;
+    RHScriptIter m_0c;
+    bool m_10;
+    int m_14;
+    RHScriptIter end() { return RHScriptIter(m_04); }
+    RHScriptIter FUN_00424410(RHScriptIter position, void *const &value);
+};
+
+struct RHSectorActorNode;
+class RHSectorActorConstIter
+{
+public:
+    RHSectorActorNode *m_p;
+    RHSectorActorConstIter(RHSectorActorNode *value) : m_p(value) {}
+};
+
+class RHSectorActorIter : public RHSectorActorConstIter
+{
+public:
+    RHSectorActorIter(RHSectorActorNode *value) : RHSectorActorConstIter(value) {}
+    RHSectorActorIter operator++(int);
+};
+
+class RHActorValueList
+{
+public:
+    int allocator;
+    RHScriptNode *head;
+    int count;
+    RHScriptIter cursor;
+    bool dirty;
+    int index;
+    bool searched;
+    int found;
+    int value;
+    int Find(int wanted, bool inlineIterator)
+    {
+        int size = count;
+        value = wanted;
+        searched = true;
+        if (inlineIterator)
+            cursor.node = head->next;
+        else
+            cursor = ((RHUnk0046eb30 *)this)->FUN_0046eb80();
+        int i = 0;
+        for (; i < size; ++i)
+        {
+            RHScriptNode *node = *(RHScriptNode *volatile *)&cursor.node;
+            int searchedValue = *(volatile int *)&value;
+            if (*(int *)&node->data == searchedValue)
+                break;
+            if (inlineIterator)
+                cursor.node = cursor.node->next;
+            else
+                (*(RHSectorActorIter *)&cursor)++;
+        }
+        if (i < size)
+        {
+            found = i;
+            dirty = false;
+            index = i;
+        }
+        else
+        {
+            dirty = true;
+            found = -1;
+        }
+        return *(volatile int *)&found;
+    }
+    void Erase(RHScriptIter position)
+    {
+        RHScriptNode *node = position.node;
+        node->previous->next = node->next;
+        node->next->previous = node->previous;
+        operator delete(node);
+        --count;
+        dirty = true;
+    }
+};
+
 DECOMP_SIZE_ASSERT(RHHumanMapNode, 0x14)
 DECOMP_SIZE_ASSERT(RHHumanMapIterator, 0x04)
 DECOMP_SIZE_ASSERT(RHHumanMap, 0x10)
@@ -56,6 +146,47 @@ void RHElementActor::FUN_00462700(unsigned short value)
     RHActorField<void *>(Info(), 0xe0) = areas[value];
 }
 
+// Parked: actor/receiver registers, point-temporary lifetime and copy scheduling differ.
+// STUB: GAME 0x00462730
+void RHElementActor::FUN_00462730(RHElementActor *actor, bool value)
+{
+    Position()->FUN_0055fa20(RHActorField<RHBonusProjection *>(actor->Info(), 0xec));
+    RHActorField<unsigned short>(Position(), 0xda) = RHActorField<unsigned short>(actor->Info(), 0xde);
+    RHActorField<void *>(Position(), 0xdc) = RHActorField<void *>(actor->Info(), 0xe0);
+    unsigned short direction = RHActorField<unsigned short>(actor->Info(), 0xd8) & 15;
+    RHActorField<unsigned short>(Position(), 0xd4) = direction;
+    RHActorField<unsigned short>(Position(), 0xd6) = direction;
+    if (value)
+    {
+        const SBGeoPoint2D &point = actor->FUN_00462920();
+        RHBonusInfoBase *position = Position();
+        RHActorField<SBGeoPoint2D>(position, 0x20) = point;
+        {
+            SBGeoVector2D displacement(point);
+            SBGeoBoundingBox2D *bounds = (SBGeoBoundingBox2D *)
+                ((RHUnkPathActorInfoBase *)position)->Unk0055fa10(RHActorField<int>(position, 0x88));
+            ((RHMobileUnk00607da0 *)((char *)position + 0xc0))->FUN_00607da0(
+                *(RHMobileUnk00607da0 *)&bounds->FUN_006090d0(displacement));
+        }
+        RHActorField<int>(position, 4) = 2;
+    }
+    else
+    {
+        RHBonusInfoBase *position = Position();
+        SBGeoPoint2D &point = RHActorField<SBGeoPoint2D>(actor->Info(), 0x24);
+        RHActorField<SBGeoPoint2D>(position, 0x20) = point;
+        {
+            SBGeoVector2D displacement(point);
+            SBGeoBoundingBox2D *bounds = (SBGeoBoundingBox2D *)
+                ((RHUnkPathActorInfoBase *)position)->Unk0055fa10(RHActorField<int>(position, 0x88));
+            ((RHMobileUnk00607da0 *)((char *)position + 0xc0))->FUN_00607da0(
+                *(RHMobileUnk00607da0 *)&bounds->FUN_006090d0(displacement));
+        }
+        RHActorField<int>(position, 4) = 2;
+    }
+    Position()->FUN_0055f290();
+}
+
 #define RH_ACTOR_ACCESS(value, size, line) \
     if (file.Access(&(value), size) < 0) \
     { \
@@ -96,8 +227,8 @@ bool RHElementActor::Serialize(SBFile &file)
     m_128.Serialize(file);
     RHEngine *engine = g_pEngine;
     ((RHReconnaissanceEngine *)engine)->Unk004c3cb0(file, m_11c);
-    engine->SerializeNestedA(file, &m_150);
-    engine->SerializeNestedA(file, &m_170);
+    engine->SerializeElementPointer(file, *(RHElement **)(&m_150));
+    engine->SerializeElementPointer(file, *(RHElement **)(&m_170));
     ((RHUnkPathGeometry *)g_unk0x6c0a9c)->Unk004fbec0(file, m_120);
     ((RHUnkPathGeometry *)g_unk0x6c0a9c)->Unk004fbec0(file, m_168);
     (*(RHSequenceManager **)((char *)this + 0x5c))->PreSerializePointer(file, &m_130, true);
@@ -158,6 +289,7 @@ bool RHElementActor::Serialize(SBFile &file)
     return RHElement::Serialize(file);
 }
 
+// FUNCTION: GAME 0x00464530
 void RHActorPositionCalls::FUN_00464530(const SBGeoPoint2D &point)
 {
     RHActorField<SBGeoPoint2D>(this, 0x20) = point;
@@ -698,6 +830,44 @@ void RHUnk004e52a0::FUN_004e52a0()
     m_count = 0;
 }
 
+// Parked: receiver/layer registers and sector-flag shift/test lowering differ.
+// STUB: GAME 0x004e9800
+unsigned short RHActorGridCalls::FUN_004e9800(const SBGeoPoint2D &point, void *&area, int &layer)
+{
+    for (short index = RHActorField<unsigned short>(this, 0x3e9c) - 1; index >= 0; --index)
+    {
+        short result = FUN_004e8fc0(point, SBGeoPoint2D(), index, area);
+        if (result >= 0)
+        {
+            if (((RHActorField<unsigned>(area, 0x30) >> 1) & 1) &&
+                (RHActorField<unsigned>(area, 0x30) & 1))
+            {
+                *(unsigned short *)&layer = index;
+                return RHActorField<unsigned short>(area, 0x38);
+            }
+            if (result > 0)
+            {
+                if ((RHActorField<unsigned>(area, 0x30) >> 10) & 1)
+                {
+                    area = RHActorField<void *>(area, 0x58);
+                    if ((RHActorField<unsigned>(area, 0x30) >> 9) & 1)
+                    {
+                        *(unsigned short *)&layer = RHActorField<unsigned short>(this, 0x3e9c);
+                        return RHActorField<unsigned short>(area, 0x38);
+                    }
+                }
+                else if ((RHActorField<unsigned>(area, 0x30) & 0x8000) == 0x8000)
+                {
+                    *(unsigned short *)&layer = RHActorField<unsigned short>(area, 0x36);
+                    area = RHActorField<void *>(area, 0x98);
+                    return RHActorField<unsigned short>(area, 0x38);
+                }
+            }
+        }
+    }
+    return 0xffff;
+}
+
 // FUNCTION: GAME 0x0053bf20
 void *RHUnk0053bf20::FUN_0053bf20() const
 {
@@ -738,8 +908,7 @@ int RHSequenceElement::Unk00587160(int argument)
     return ((RHHumanMap *)((char *)this + 0x64))->find(argument)->m_value;
 }
 
-// Parked: counted point-copy constructor operand crosses the ILT.
-// STUB: GAME 0x005871b0
+// FUNCTION: GAME 0x005871b0
 SBGeoPoint2D RHActorSequencePointCalls::FUN_005871b0(int key)
 {
     SBGeoPoint2D point;
@@ -748,6 +917,50 @@ SBGeoPoint2D RHActorSequencePointCalls::FUN_005871b0(int key)
         point = SBGeoPoint2D(RHActorField<float>(position.m_node, 0x10),
                              RHActorField<float>(position.m_node, 0x14));
     return point;
+}
+
+// Parked: search-loop registers, iterator temporaries and insertion scheduling differ.
+// STUB: GAME 0x005bd650
+void RHBonusInfo::FUN_005bd650(int value1, int value2)
+{
+    RHActorValueList &keys = *(RHActorValueList *)((char *)this + 0x1e0);
+    unsigned short index = keys.Find(value1, true);
+    if (index == 0xffff)
+    {
+        RHActorValueList &values = *(RHActorValueList *)((char *)this + 0x204);
+        index = values.Find(value1, false);
+        if (index == 0xffff)
+        {
+            RHUnk004b1520List &keyList = *(RHUnk004b1520List *)&keys;
+            keyList.FUN_00424410(keyList.end(), *(void *const *)&value1);
+            keys.dirty = true;
+            RHUnk004b1520List &valueList = *(RHUnk004b1520List *)&values;
+            valueList.FUN_00424410(valueList.end(), *(void *const *)&value2);
+            values.dirty = true;
+            return;
+        }
+    }
+    RHActorValueList &values = *(RHActorValueList *)((char *)this + 0x204);
+    ((RHSeqList *)&values)->GoTo(index);
+    *(int *)&values.cursor.node->data = value2;
+}
+
+// Parked: cached-search loads and postincrement erase scheduling differ.
+// STUB: GAME 0x005bd7b0
+void RHBonusInfo::FUN_005bd7b0(int value)
+{
+    RHActorValueList &keys = *(RHActorValueList *)((char *)this + 0x1e0);
+    unsigned short index = keys.Find(value, true);
+    if (index != 0xffff)
+    {
+        ((RHSeqList *)&keys)->GoTo(index);
+        keys.Erase(keys.cursor);
+        RHActorValueList &values = *(RHActorValueList *)((char *)this + 0x204);
+        ((RHSeqList *)&values)->GoTo(index);
+        RHSectorActorIter position((RHSectorActorNode *)values.cursor.node);
+        RHSectorActorIter previous = position++;
+        values.Erase(RHScriptIter((RHScriptNode *)previous.m_p));
+    }
 }
 
 // FUNCTION: GAME 0x005df550
@@ -763,7 +976,7 @@ SBGeoPoint2D::SBGeoPoint2D(const SBGeoPoint2D &other)
     FUN_005fc390(other);
 }
 
-// deferred: unannotated pending reccmp #534 (0x005fc0b0).
+// FUNCTION: GAME 0x005fc0b0
 bool SBGeoPoint2D::operator==(const SBGeoPoint2D &other) const
 {
     return m_0 == other.m_0 && m_4 == other.m_4;

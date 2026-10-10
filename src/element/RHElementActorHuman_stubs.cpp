@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHElementActorHuman.h"
 
 void RHHumanActorCalls::FUN_00479320(RHUnk00613e90 &) {}
@@ -15,10 +16,6 @@ RHHumanFloatIterator RHHumanFloatList::FUN_00424410(RHHumanFloatIterator positio
 RHHumanFloatIterator RHHumanFloatList::FUN_0044e8b0(RHHumanFloatIterator, RHHumanFloatIterator last) { return last; }
 RHHumanFloatIterator RHHumanFloatList::FUN_0046eb80() { return RHHumanFloatIterator(m_head->next); }
 void RHHumanFloatList::At(int) {}
-
-void RHUnk0048c700::FUN_0048c700(void *actor, int value)
-{
-}
 
 RHHumanMapNode *RHHumanMap::FUN_00588060(const int &key)
 {

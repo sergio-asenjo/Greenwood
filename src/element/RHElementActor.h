@@ -58,6 +58,7 @@ class RHMobileUnk00607da0
 {
 public:
     void FUN_00607990(const RHMobileUnk00607da0 &other);
+    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
     undefined m_00[0x14]; // 0x00
 };
 
@@ -135,6 +136,7 @@ public:
     void FUN_00478ae0(RHUnk00613e90 &point);
     void FUN_00462700(unsigned short value);
     void FUN_00462730(RHElementActor *actor, bool value);
+    SBGeoPoint2D FUN_00462920();
     void FUN_00464630();
     RHBonusInfo *Info() const { return *(RHBonusInfo *const *)((char *)this + 0x50); }
     RHBonusInfoBase *Position() const { return (RHBonusInfoBase *)((char *)Info() + 4); }

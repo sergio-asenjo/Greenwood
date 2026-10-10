@@ -1,7 +1,7 @@
+#include "SBNullstr.h"
 #include "RHElementWasp.h"
 
-// Parked: counted engine/base callees resolve asymmetrically through the ILT.
-// STUB: GAME 0x004bd120
+// FUNCTION: GAME 0x004bd120
 bool RHElementWasp::Serialize(SBFile &file)
 {
     RHEngine *engine = g_pEngine;

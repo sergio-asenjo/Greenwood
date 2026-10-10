@@ -211,4 +211,11 @@ public:
     void *m_4188; // 0x4188
 };
 
-SBGeoPoint2D FUN_005fc4f0(float factor, const SBGeoPoint2D &point);
+class SBGeoVector2D : public SBGeoPoint2D
+{
+public:
+    SBGeoVector2D();
+    ~SBGeoVector2D() {}
+};
+
+SBGeoVector2D operator*(float factor, const SBGeoVector2D &point);

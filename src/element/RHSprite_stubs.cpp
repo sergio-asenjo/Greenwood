@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHSprite.h"
 #include <math.h>
 
@@ -6,6 +7,10 @@ RHSpriteListIterator RHSpriteList::erase(RHSpriteListIterator value) { return va
 RHSpriteListIterator RHSpriteList::begin() { return RHSpriteListIterator(head->next); }
 RHSpriteListIterator RHSpriteListIterator::operator++(int) { return RHSpriteListIterator(node); }
 bool RHSpritePositionCalls::FUN_00561040(void *, float, unsigned short &, bool) { return false; }
+// SYNTHETIC: GAME 0x0054e5c0
+// ??_GRHOrder@@UAEPAXI@Z
+
+// FUNCTION: GAME 0x0054e6d0
 RHOrder::~RHOrder() {}
 RHSpriteOrderIterator RHSpriteOrderList::FUN_0046eb80() { return RHSpriteOrderIterator(head->next); }
 RHSpriteOrderIterator RHSpriteOrderList::FUN_0046eb30(RHSpriteOrderIterator value) { return value; }

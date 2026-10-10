@@ -10,7 +10,7 @@ bool FUN_00416b30(void *&value, SBFile &file);
 class RHEngine
 {
 public:
-    bool SerializeNestedA(SBFile &file, void *storage);
+    bool SerializeElementPointer(SBFile &file, class RHElement *&element);
     bool FUN_004c4490(SBFile &file, void *&value);
 };
 extern RHEngine *g_pEngine;

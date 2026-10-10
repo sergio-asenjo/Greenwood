@@ -6,6 +6,7 @@
 class SBGeoPoint2D
 {
 public:
+    SBGeoPoint2D();
     SBGeoPoint2D(float x, float y);
     ~SBGeoPoint2D();
     SBGeoPoint2D &operator=(const SBGeoPoint2D &other);

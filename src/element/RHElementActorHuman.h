@@ -351,10 +351,10 @@ public:
     virtual ~RHUnk0058bed0Object() = 0; // vtable+0x00
 };
 
-class RHUnk0048c700
+class RHMalignityActorCalls
 {
 public:
-    void FUN_0048c700(void *actor, int value);
+    void FUN_0048c700(void *actor, unsigned mode);
 };
 
 // SIZE 0x4964
@@ -367,8 +367,8 @@ struct RHHumanEngineActorArray
         return m_last - m_first;
     }
     undefined m_0000[0x495c]; // 0x0000
-    RHUnk0048c700 **m_first; // 0x495c
-    RHUnk0048c700 **m_last; // 0x4960
+    RHMalignityActorCalls **m_first; // 0x495c
+    RHMalignityActorCalls **m_last; // 0x4960
 };
 
 // SIZE 0x04
@@ -579,7 +579,7 @@ public:
     int index; // 0x14
 };
 
-SBGeoPoint2D FUN_005fc4f0(float factor, const SBGeoPoint2D &point);
+SBGeoVector2D operator*(float factor, const SBGeoVector2D &point);
 
 class RHHumanActorCalls
 {

@@ -13,9 +13,17 @@ class RHUnkTargetSprite : public RHBonusInfo
 {
 public:
     bool FUN_005bd050(int kind, const std::string &name, const std::string &profile, int flag);
-    int FUN_005bdef0();
-    int FUN_005bdf20();
-    bool FUN_005b76e0(unsigned index, unsigned row);
+    bool FUN_005b76e0(unsigned index, unsigned short row);
+};
+
+class RHCivilianSpriteView
+{
+public:
+    unsigned short FUN_005bdef0();
+    unsigned short FUN_005bdf20();
+    undefined m_00[0x19a];
+    undefined2 m_19a;
+    undefined2 m_19c;
 };
 
 class RHUnkFXDraw

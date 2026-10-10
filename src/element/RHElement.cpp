@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHElement.h"
 #include <new>
 
@@ -12,7 +13,7 @@ DECOMP_SIZE_ASSERT(RHElementAreaListBase, 0x0c)
 DECOMP_SIZE_ASSERT(RHElementAreaList, 0x18)
 DECOMP_SIZE_ASSERT(RHUnk0040f060, 0x24)
 
-// deferred: unannotated pending reccmp #534
+// FUNCTION: GAME 0x00462330
 bool RHElement::Serialize(SBFile &file)
 {
     // STRING: GAME 0x006ae088
@@ -208,7 +209,7 @@ void RHElement::CrossElevationLine(RHElevationLine *line)
                  "STRENG VERBOTEN !: No projection area was found for this bond : (%f,%f) - (%f,%f) !\n",
                  line->m_04, line->m_08, line->m_0c, line->m_10);
         {
-            SBGeoPoint2D point = ((SBGeoPoint2D *)((char *)m_50 + 0x24))->Unk005fc190(FUN_005fc4f0(2.0f, *(SBGeoPoint2D *)((char *)m_50 + 0x70)));
+            SBGeoPoint2D point = ((SBGeoPoint2D *)((char *)m_50 + 0x24))->Unk005fc190(operator*(2.0f, *(SBGeoVector2D *)((char *)m_50 + 0x70)));
             RHElementGrid *grid = *(RHElementGrid **)((char *)this + 0x64);
             grid->FUN_004e89d0(&areas, point.CellY() * grid->m_3e98 + point.CellX(), 0x20);
             for (unsigned count = (unsigned short)areas.m_08, index = 0; count != 0; ++index, --count)
@@ -343,9 +344,9 @@ void RHBonusInfoBase::FUN_0055fa70(void *area)
 }
 
 // FUNCTION: GAME 0x005fc4f0
-SBGeoPoint2D FUN_005fc4f0(float factor, const SBGeoPoint2D &point)
+SBGeoVector2D operator*(float factor, const SBGeoVector2D &point)
 {
-    SBGeoPoint2D result;
+    SBGeoVector2D result;
     result.m_0 = factor * point.m_0;
     result.m_4 = factor * point.m_4;
     return result;

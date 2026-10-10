@@ -1,6 +1,6 @@
 #include "RHElementTarget.h"
 
-// Parked: 76.37%; local-slot coloring and SetPoint temporaries.
+// Parked: counted unsigned-short sprite getters corrected; local-slot coloring and SetPoint temporaries remain.
 // STUB: GAME 0x004bb820
 void RHElementTarget::InitializeFromMissionStream(SBFile &file)
 {
@@ -75,8 +75,8 @@ void RHElementTarget::InitializeFromMissionStream(SBFile &file)
             RHElementTarget_m_15c = this ? script : 0;
         }
     }
-    *(unsigned long *)(m_data + 0x54) = Draw()->Unk005e4ed0(Info()->FUN_005bdef0(), Info()->FUN_005bdf20(), 0, 0);
-    *(unsigned long *)(m_data + 0x58) = Draw()->Unk005e4ed0(Info()->FUN_005bdef0() + 6, Info()->FUN_005bdf20(), 0, 0);
+    *(unsigned long *)(m_data + 0x54) = Draw()->Unk005e4ed0(((RHCivilianSpriteView *)Info())->FUN_005bdef0(), ((RHCivilianSpriteView *)Info())->FUN_005bdf20(), 0, 0);
+    *(unsigned long *)(m_data + 0x58) = Draw()->Unk005e4ed0(((RHCivilianSpriteView *)Info())->FUN_005bdef0() + 6, ((RHCivilianSpriteView *)Info())->FUN_005bdf20(), 0, 0);
     Info()->m_4.SetPoint(SBGeoPoint2D((float)x, (float)y));
     Info()->m_4.m_da = layer;
     Info()->m_e0 = index == 0xffff ? Global()->m_4184 : Global()->m_4064[index];

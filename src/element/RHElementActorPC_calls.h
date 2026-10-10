@@ -167,15 +167,6 @@ public:
     RHUnk00471630(int type, int value, void *description);
 };
 
-// SIZE 0x08
-class RHUnk005fc030
-{
-public:
-    RHUnk005fc030();
-    float x; // 0x00
-    float y; // 0x04
-};
-
 // SIZE 0x14
 class RHActorPCBoxCalls
 {
@@ -194,7 +185,7 @@ public:
     undefined m_8[8]; // 0x08
     RHActorPCBoxCalls m_10; // 0x10
     undefined m_24[0x10]; // 0x24
-    RHUnk005fc030 m_34; // 0x34
+    SBGeoPoint2D m_34; // 0x34
 };
 
 struct RHScriptNode;

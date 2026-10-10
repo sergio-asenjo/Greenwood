@@ -1,7 +1,7 @@
+#include "SBNullstr.h"
 #include "RHElementNet.h"
 
-// Parked: the counted engine serializer resolves asymmetrically through the ILT.
-// STUB: GAME 0x004b1520
+// FUNCTION: GAME 0x004b1520
 bool RHElementNet::Serialize(SBFile &file)
 {
     RHElementProjectile::Serialize(file);
@@ -10,7 +10,7 @@ bool RHElementNet::Serialize(SBFile &file)
     if (file.m_bLoading)
     {
         RHUnk004b1520List &list = m_19c;
-        list.FUN_0044e8b0(((RHUnk0046eb30 *)&list)->begin(), list.end());
+        list.FUN_0044e8b0(((RHUnk0046eb30 *)&list)->FUN_0046eb80(), list.end());
         list.m_10 = true;
         if (file.Access(&count, 2) < 0)
         {
