@@ -239,6 +239,16 @@ public:
     short FUN_005bdc20(unsigned short, unsigned short);
     unsigned short FUN_005bdcd0(unsigned short);
     unsigned short FUN_005bdcf0(unsigned short);
+    unsigned short FUN_005bdd50();
+    unsigned short FUN_005bdd70();
+    void FUN_005b94d0(unsigned short, void *, void *, void *, int);
+    bool FUN_005b9b60(unsigned short, unsigned short);
+    void FUN_005b9ce0();
+    bool FUN_005b9e30(void *, void *, bool);
+    bool FUN_005ba130(void *, float, void *, void *);
+    void FUN_005ba6c0(void *, float, void *, void *, void *);
+    void FUN_005bad10(void *, unsigned short, unsigned short, unsigned short, void *);
+    void FUN_005bb180(unsigned short, unsigned long, unsigned short, unsigned short, unsigned short, void *);
     void Emit(SBFile &);
 };
 

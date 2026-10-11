@@ -17,6 +17,9 @@ RHSpriteOrderIterator RHSpriteOrderList::FUN_0046eb30(RHSpriteOrderIterator valu
 void SBGeoBoundingBox2D::FUN_00607d90() {}
 unsigned short RHSprite::FUN_005bdcd0(unsigned short) { return 0; }
 unsigned short RHSprite::FUN_005bdcf0(unsigned short) { return 0; }
+unsigned short RHSprite::FUN_005bdd50() { return 0; }
+unsigned short RHSprite::FUN_005bdd70() { return 0; }
+bool SBGeoBoundingBox2D::FUN_00609050(const SBGeoPoint2D &, const SBGeoPoint2D &) { return false; }
 
 void RHSpriteFrameCalls::FUN_00505940(unsigned) {}
 void RHSpriteOrderNode::CopyData(RHOrder **destination, RHOrder *const *source) { *destination = *source; }

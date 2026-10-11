@@ -673,7 +673,7 @@ bool RHSprite::FUN_005b7820(int progression)
     return false;
 }
 
-// Parked: effective-only instruction scheduling at the depth update.
+// New probe: marker flip is effective-only (100.00%*) with depth scheduling unresolved.
 // STUB: GAME 0x005b8050
 int RHSprite::PerformAction(RHOrder *order, int animation, int progression, bool reset)
 {
@@ -978,6 +978,66 @@ int RHSprite::PerformMotion(RHOrder *order, RHOrder *following, int animation, i
 #undef S
 }
 
+// Parked: large movement/init routine (5 args, EH frame, path/geometry lists); not reconstructed within budget.
+// STUB: GAME 0x005b94d0
+void RHSprite::FUN_005b94d0(unsigned short, void *, void *, void *, int)
+{
+}
+
+// Parked: frame-bounding-box update (2 args); same register/EH scheduling wall as 0x5b9ce0.
+// STUB: GAME 0x005b9b60
+bool RHSprite::FUN_005b9b60(unsigned short, unsigned short)
+{
+    return false;
+}
+
+// Parked: VC6 keeps &size in ebx and this+0x1c in ebp across the geometry calls; the
+// EH-state store and the deref/lea register split do not reproduce (44.68%).
+// STUB: GAME 0x005b9ce0
+void RHSprite::FUN_005b9ce0()
+{
+    void *holder = ((RHUnk005b5e00 *)this)->FUN_005b5de0();
+    SBGeoVector2D size((float)FUN_005bdd50(), (float)FUN_005bdd70());
+    SBGeoPoint2D &position = RHSpriteField<SBGeoPoint2D>(this, 0x1c);
+#define FRAMEPOINT() RHSpriteField<SBGeoPoint2D *>(RHSpriteField<undefined *>(holder, 4) + m_184 * 0x64, 0x48)[m_186]
+    SBGeoPoint2D a = position.Unk005fc190(FRAMEPOINT());
+    SBGeoPoint2D b = a.Unk005fc190(size);
+    RHSpriteField<SBGeoBoundingBox2D>(this, 0x1a0).FUN_00609050(position.Unk005fc190(FRAMEPOINT()), b);
+#undef FRAMEPOINT
+}
+
+// Parked: 3-arg visibility/collision test (box contains + engine lookup); geometry/EH wall.
+// STUB: GAME 0x005b9e30
+bool RHSprite::FUN_005b9e30(void *, void *, bool)
+{
+    return false;
+}
+
+// Parked: 4-arg blit-box generation (GenerateBlitBox candidate); geometry/EH wall.
+// STUB: GAME 0x005ba130
+bool RHSprite::FUN_005ba130(void *, float, void *, void *)
+{
+    return false;
+}
+
+// Parked: 5-arg blit-box generation (GenerateBlitBox overload candidate); geometry/EH wall.
+// STUB: GAME 0x005ba6c0
+void RHSprite::FUN_005ba6c0(void *, float, void *, void *, void *)
+{
+}
+
+// Parked: 5-arg script-row initializer (InitializeScriptFromLoadedFrame candidate); allocates.
+// STUB: GAME 0x005bad10
+void RHSprite::FUN_005bad10(void *, unsigned short, unsigned short, unsigned short, void *)
+{
+}
+
+// Parked: 6-arg script-row initializer (InitializeScriptRowFromLoadedFrame candidate).
+// STUB: GAME 0x005bb180
+void RHSprite::FUN_005bb180(unsigned short, unsigned long, unsigned short, unsigned short, unsigned short, void *)
+{
+}
+
 // SIZE 0x64
 struct RHSpriteFrameEntry
 {
@@ -1078,4 +1138,12 @@ void RHSprite::Emit(SBFile &file)
     ((RHSpriteEngineCalls *)g_pEngine)->FUN_004d9090();
     ((RHSpritePositionCalls *)this)->FUN_00563e90();
     ((RHSpritePositionCalls *)this)->FUN_00563ea0();
+    FUN_005b94d0(0, 0, 0, 0, 0);
+    FUN_005b9b60(0, 0);
+    FUN_005b9ce0();
+    FUN_005b9e30(0, 0, false);
+    FUN_005ba130(0, 0.0f, 0, 0);
+    FUN_005ba6c0(0, 0.0f, 0, 0, 0);
+    FUN_005bad10(0, 0, 0, 0, 0);
+    FUN_005bb180(0, 0, 0, 0, 0, 0);
 }

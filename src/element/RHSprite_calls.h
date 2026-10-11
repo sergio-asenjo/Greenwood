@@ -55,6 +55,7 @@ public:
     ~SBGeoBoundingBox2D() {}
     SBGeoBoundingBox2D &operator=(const SBGeoBoundingBox2D &);
     bool FUN_00608400(const SBGeoPoint2D &) const;
+    bool FUN_00609050(const SBGeoPoint2D &, const SBGeoPoint2D &);
     SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &) const;
     bool Serialize(SBFile &);
     void FUN_00607d90();
