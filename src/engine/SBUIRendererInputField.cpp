@@ -239,8 +239,10 @@ bool SBUIInputFieldUnk00621440::FUN_00621470(unsigned int id)
     float available = m_70.m_08.m_x - m_70.m_00.m_x;
     int shift = available <= width ? (int)(available - width) : 0;
     unsigned int cursor = width + shift;
-    before.FUN_004580c0(*(std::wstring *)&text->FUN_0061dd50(0, cursor), 0, std::wstring::npos);
-    after.FUN_004580c0(*(std::wstring *)&text->FUN_0061dd50(1, (unsigned int)(available - width - shift)), 0, std::wstring::npos);
+    typedef std::wstring &(std::wstring::*Assign)(const std::wstring &, unsigned, unsigned);
+    Assign assign = &std::wstring::assign;
+    (((std::wstring *)&before)->*assign)((const std::wstring &)text->FUN_0061dd50(0, cursor), 0, std::wstring::npos);
+    (((std::wstring *)&after)->*assign)((const std::wstring &)text->FUN_0061dd50(1, (unsigned int)(available - width - shift)), 0, std::wstring::npos);
     unsigned int surface = 0;
     if (m_00[0x60] == 1 && !text->FUN_0061e230())
     {

@@ -196,7 +196,11 @@ void RHGame::DisplayLostLeicester()
     unsigned resource = description.FUN_0063c9e0(mission)->m_38;
     RHMapResources *resources = g_unk0x006c1840;
     if (!resources->FUN_00600fc0(resource) || !resources->FUN_006009e0(resource, 0, message))
-        message.FUN_004580c0(FUN_005e23d0(259), 0, std::wstring::npos);
+    {
+        typedef std::wstring &(std::wstring::*Assign)(const std::wstring &, unsigned, unsigned);
+        Assign assign = &std::wstring::assign;
+        (((std::wstring *)&message)->*assign)(FUN_005e23d0(259), 0, std::wstring::npos);
+    }
     RHGameDialog dialog(0, 0, true, true, (char *)this + 0x68);
     FUN_00529e60((RHMapWindow *)&dialog, message, false, 0);
 }

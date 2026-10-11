@@ -379,7 +379,6 @@ public:
     unsigned m_capacity;
     RHMapWideText(const std::allocator<unsigned short> &allocator = std::allocator<unsigned short>()) : m_allocator(allocator) { Tidy(false); }
     void Tidy(bool);
-    void FUN_004580c0(const std::wstring &text, unsigned first, unsigned count);
     ~RHMapWideText()
     {
         if (m_chars == 0)

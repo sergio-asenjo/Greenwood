@@ -101,7 +101,9 @@ public:
     RHMapWideText(const RHMapWideText &other) : m_allocator(other.m_allocator)
     {
         Tidy(false);
-        FUN_004580c0(*(const std::wstring *)&other, 0, std::wstring::npos);
+        typedef std::wstring &(std::wstring::*Assign)(const std::wstring &, unsigned, unsigned);
+        Assign assign = &std::wstring::assign;
+        (((std::wstring *)this)->*assign)((const std::wstring &)other, 0, std::wstring::npos);
     }
     ~RHMapWideText()
     {
@@ -119,7 +121,6 @@ public:
     }
     void Tidy(bool);
     bool Grow(unsigned int, bool);
-    void FUN_004580c0(const std::wstring &, unsigned int, unsigned int);
     std::allocator<unsigned short> m_allocator; // 0x00
     unsigned short *m_chars; // 0x04
     unsigned int m_size; // 0x08
