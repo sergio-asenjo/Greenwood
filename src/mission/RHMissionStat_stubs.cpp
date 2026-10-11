@@ -12,3 +12,14 @@
 
 #include "SBNullstr.h"
 #include "RHMissionStat.h"
+
+// LIBRARY: GAME 0x00642bc9
+int __cdecl wsprintfW(unsigned short *buffer, const unsigned short *format, ...)
+{
+    return 0;
+}
+
+std::wstring FUN_005e2bf0(int value)
+{
+    return std::wstring();
+}

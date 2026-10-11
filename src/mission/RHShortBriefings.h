@@ -1,4 +1,5 @@
 #include "SB.h"
+#include <vector>
 
 void RHSerializeName(SBFile &file, const char *name);
 
@@ -22,8 +23,6 @@ public:
         ShortBriefing *begin() { return m_first; }
         ShortBriefing *end() { return m_last; }
         unsigned size() { return m_first == 0 ? 0 : m_last - m_first; }
-        ShortBriefing *erase(ShortBriefing *first, ShortBriefing *last);
-        void Insert(ShortBriefing *where, unsigned count, const ShortBriefing &value);
     };
 
     ShortBriefingVector m_0; // +0x00
@@ -53,7 +52,9 @@ public:
         else
         {
             ShortBriefingVector &list = values;
-            list.erase(list.begin(), list.end());
+            typedef std::vector<ShortBriefing> Vector;
+            ShortBriefing *(Vector::*erase)(ShortBriefing *, ShortBriefing *) = &Vector::erase;
+            (((Vector *)&list)->*erase)(list.begin(), list.end());
             unsigned count;
             if (file.Access(&count, 4) < 0)
             {
@@ -67,7 +68,8 @@ public:
                 ShortBriefing value;
                 if (!serialize(file, value))
                     return false;
-                list.Insert(list.end(), 1, value);
+                void (Vector::*insert)(ShortBriefing *, unsigned, const ShortBriefing &) = &Vector::insert;
+                (((Vector *)&list)->*insert)(list.end(), 1, value);
                 --count;
             }
         }

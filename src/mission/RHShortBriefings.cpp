@@ -1,6 +1,27 @@
 #include "SBNullstr.h"
 #include "RHShortBriefings.h"
 
+class RHShortBriefingVectorEmission : public std::vector<RHShortBriefings::ShortBriefing>
+{
+public:
+    static void Emit()
+    {
+        typedef RHShortBriefings::ShortBriefing Value;
+        void (std::vector<Value>::*volatile fill)(Value *, unsigned, const Value &) = &RHShortBriefingVectorEmission::_Ufill;
+        Value *(std::vector<Value>::*volatile copy)(const Value *, const Value *, Value *) = &RHShortBriefingVectorEmission::_Ucopy;
+        Value *(__cdecl *volatile assign)(Value *, Value *, Value *) = &std::copy;
+    }
+};
+
+// TEMPLATE: GAME 0x0054c320
+// ?insert@?$vector@UShortBriefing@RHShortBriefings@@V?$allocator@UShortBriefing@RHShortBriefings@@@std@@@std@@QAEXPAUShortBriefing@RHShortBriefings@@IABU34@@Z
+
+// TEMPLATE: GAME 0x0054c570
+// ?_Ufill@?$vector@UShortBriefing@RHShortBriefings@@V?$allocator@UShortBriefing@RHShortBriefings@@@std@@@std@@IAEXPAUShortBriefing@RHShortBriefings@@IABU34@@Z
+
+// TEMPLATE: GAME 0x0054c5a0
+// ?copy@std@@YAPAUShortBriefing@RHShortBriefings@@PAU23@00@Z
+
 // FUNCTION: GAME 0x005a3030
 bool RHShortBriefings::Serialize(SBFile &file)
 {
@@ -11,7 +32,6 @@ bool RHShortBriefings::Serialize(SBFile &file)
     return true;
 }
 
-// deferred: unannotated pending reccmp #534 (callback address)
 // FUNCTION: GAME 0x005a32a0
 bool RHShortBriefings::SerializeShortBriefing(SBFile &file, ShortBriefing &value)
 {
@@ -35,7 +55,14 @@ bool RHShortBriefings::SerializeShortBriefing(SBFile &file, ShortBriefing &value
 
 void RHShortBriefings::Emit(SBFile &file)
 {
+    RHShortBriefingVectorEmission::Emit();
     Serialize(file);
     ShortBriefing value;
     SerializeShortBriefing(file, value);
 }
+
+// TEMPLATE: GAME 0x005a3320
+// ?_Ucopy@?$vector@UShortBriefing@RHShortBriefings@@V?$allocator@UShortBriefing@RHShortBriefings@@@std@@@std@@IAEPAUShortBriefing@RHShortBriefings@@PBU34@0PAU34@@Z
+
+// TEMPLATE: GAME 0x005a3360
+// ?erase@?$vector@UShortBriefing@RHShortBriefings@@V?$allocator@UShortBriefing@RHShortBriefings@@@std@@@std@@QAEPAUShortBriefing@RHShortBriefings@@PAU34@0@Z

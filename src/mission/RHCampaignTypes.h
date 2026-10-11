@@ -52,8 +52,19 @@ public:
         return destination;
     }
     void FUN_0044ea70();
-    unsigned FUN_004580a0();
-    RHCampaignArrayOps &FUN_00457a30(const RHCampaignArrayOps &value);
+    unsigned FUN_004580a0()
+    {
+        typedef std::vector<int> Values;
+        unsigned (Values::*capacity)() const = &Values::capacity;
+        return (((const Values *)this)->*capacity)();
+    }
+    RHCampaignArrayOps &FUN_00457a30(const RHCampaignArrayOps &value)
+    {
+        typedef std::vector<int> Values;
+        Values &(Values::*assign)(const Values &) = &Values::operator=;
+        (((Values *)this)->*assign)((const Values &)value);
+        return *this;
+    }
     void FUN_00570330();
 };
 
@@ -115,7 +126,9 @@ __forceinline bool RHCampaignSerializeMissions(SBFile &file, RHCampaignMissionVa
     else
     {
         RHCampaignMissionValues &list = values;
-        list.FUN_00507960(list.begin(), list.end());
+        typedef RHMission *(std::vector<RHMission>::*Erase)(RHMission *, RHMission *);
+        Erase erase = &std::vector<RHMission>::erase;
+        (((std::vector<RHMission> *)&list)->*erase)(list.begin(), list.end());
         unsigned count;
         if (!RHCampaignAccess(file, &count, 4, 60))
             return false;
@@ -124,7 +137,9 @@ __forceinline bool RHCampaignSerializeMissions(SBFile &file, RHCampaignMissionVa
             RHMission value;
             if (!FUN_00453930(file, value))
                 return false;
-            list.FUN_00457e80(list.end(), value);
+            typedef RHMission *(std::vector<RHMission>::*Insert)(RHMission *, const RHMission &);
+            Insert insert = &std::vector<RHMission>::insert;
+            (((std::vector<RHMission> *)&list)->*insert)(list.end(), value);
             --count;
         }
     }
@@ -156,7 +171,9 @@ __forceinline bool RHCampaignSerializePointers(SBFile &file, std::vector<T *> &v
             T *value;
             if (!serialize(file, value))
                 return false;
-            ((RHMissionArrayStorage *)&list)->FUN_004e5820(list.end(), (const unsigned long &)value);
+            typedef unsigned long *(std::vector<unsigned long>::*Insert)(unsigned long *, const unsigned long &);
+            Insert insert = &std::vector<unsigned long>::insert;
+            (((std::vector<unsigned long> *)&list)->*insert)((unsigned long *)list.end(), (const unsigned long &)value);
             --count;
         }
     }
@@ -177,7 +194,6 @@ public:
     unsigned m_count;
     Node *m_cursor;
     bool m_dirty;
-    void FUN_004e6c10();
     void FUN_0045a440(const RHMission *const &value);
     void FUN_005c8e40(unsigned index);
 };

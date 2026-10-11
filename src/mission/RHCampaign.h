@@ -133,7 +133,12 @@ public:
 class RHFastFindGateArray : public RHScriptFXArray
 {
 public:
-    unsigned FUN_0059fbc0();
+    unsigned FUN_0059fbc0()
+    {
+        typedef unsigned (std::vector<unsigned long>::*Size)() const;
+        Size size = &std::vector<unsigned long>::size;
+        return (((const std::vector<unsigned long> *)this)->*size)();
+    }
 };
 
 template<class T>
@@ -220,10 +225,11 @@ public:
     RHCampaignWideString(const std::allocator<unsigned short> &allocator = std::allocator<unsigned short>())
         : m_allocator(allocator) { Tidy(false); }
     void Tidy(bool built);
-    void Assign(const RHCampaignWideString &value, unsigned position, unsigned length);
     RHCampaignWideString &operator=(const RHCampaignWideString &value)
     {
-        Assign(value, 0, std::wstring::npos);
+        typedef std::wstring &(std::wstring::*AssignCall)(const std::wstring &, unsigned, unsigned);
+        AssignCall assign = &std::wstring::assign;
+        (((std::wstring *)this)->*assign)((const std::wstring &)value, 0, std::wstring::npos);
         return *this;
     }
     ~RHCampaignWideString()

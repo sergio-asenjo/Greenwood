@@ -28,6 +28,131 @@
 
 #include "SBNullstr.h"
 #include "RHMissionStat.h"
+#include <algorithm>
+#include <vector>
+
+extern template class std::basic_string<unsigned short>;
+
+// FUNCTION: GAME 0x0054cfa0
+void RHMissionStat::FUN_0054cfa0(const void *source)
+{
+    const std::wstring &value = *(const std::wstring *)((const char *)source + 0x2c);
+    ((std::vector<std::wstring> *)&m_list)->push_back(value);
+}
+
+// FUNCTION: GAME 0x0054d150
+void RHMissionStat::FUN_0054d150(const void *value)
+{
+    for (std::wstring *it = m_list.m_first; it != m_list.m_last; ++it)
+    {
+        if (*(const std::wstring *)((const char *)value + 0x2c) == *it)
+        {
+            ((std::vector<std::wstring> *)&m_list)->erase(it);
+            return;
+        }
+    }
+}
+
+// FUNCTION: GAME 0x0054d310
+void RHMissionStat::FUN_0054d310(std::wstring &text) const
+{
+    wchar_t buffer[512];
+    wsprintfW(buffer, FUN_005e23d0(0x4d).c_str(), m_f1c);
+    text += buffer;
+    text += L"\n";
+    if (m_f20 != 0)
+    {
+        wsprintfW(buffer, FUN_005e23d0(0x54).c_str(), m_f20);
+        text += buffer;
+        text += L"\n";
+    }
+}
+
+// FUNCTION: GAME 0x0054d550
+void RHMissionStat::FUN_0054d550(std::wstring &text) const
+{
+    wchar_t buffer[128];
+    wsprintfW(buffer, FUN_005e23d0(0x50).c_str(), FUN_005e2bf0(g_unk0x6c07fc->Get(6)).c_str());
+    text += buffer;
+    text += L"\n";
+}
+
+// FUNCTION: GAME 0x0054d760
+void RHMissionStat::FUN_0054d760(std::wstring &text) const
+{
+    wchar_t buffer[512];
+    if (m_f04 != 0)
+    {
+        wsprintfW(buffer, FUN_005e23d0(0x49).c_str(), m_f04);
+        text += buffer;
+        text += L"\n";
+    }
+    if (m_f08 != 0 || m_f0c != 0)
+    {
+        int total = m_f0c + m_f08;
+        wsprintfW(buffer, FUN_005e23d0(0x55).c_str(), total, m_f08, m_f0c);
+        text += buffer;
+        text += L"\n";
+    }
+}
+
+// FUNCTION: GAME 0x0054d9c0
+void RHMissionStat::FUN_0054d9c0(std::wstring &text) const
+{
+    std::wstring separator = FUN_005e23d0(0x4c);
+    wchar_t buffer[512];
+    for (const std::wstring *it = m_list.m_first; it != m_list.m_last; ++it)
+    {
+        // STRING: GAME 0x6b1340
+        wsprintfW(buffer, L"%s %s\n", it->c_str(), separator.c_str());
+        text += buffer;
+    }
+}
+
+// FUNCTION: GAME 0x0054db50
+void RHMissionStat::FUN_0054db50(std::wstring &text) const
+{
+    wchar_t buffer[128];
+    wsprintfW(buffer, FUN_005e23d0(0x4e).c_str(), m_f24);
+    text += buffer;
+    // STRING: GAME 0x6b0944
+    text += L"\n";
+}
+
+// FUNCTION: GAME 0x0054dd10
+void RHMissionStat::FUN_0054dd10(std::wstring &text) const
+{
+    wchar_t buffer[512];
+    wsprintfW(buffer, FUN_005e23d0(0x4a).c_str(), m_f10, m_f14);
+    text += buffer;
+    text += L"\n";
+}
+
+// FUNCTION: GAME 0x0054dee0
+void RHMissionStat::FUN_0054dee0(std::wstring &text) const
+{
+    wchar_t buffer[512];
+    unsigned count = m_list.size();
+    wsprintfW(buffer, FUN_005e23d0(0x4b).c_str(), m_f18 + (int)count);
+    text += buffer;
+    text += L"\n";
+}
+
+// FUNCTION: GAME 0x0054e090
+std::wstring RHMissionStat::FUN_0054e090() const
+{
+    std::wstring text;
+    FUN_0054d760(text);
+    text += L"\n";
+    FUN_0054dd10(text);
+    FUN_0054dee0(text);
+    FUN_0054d9c0(text);
+    FUN_0054d310(text);
+    text += L"\n";
+    FUN_0054db50(text);
+    FUN_0054d550(text);
+    return text;
+}
 
 // FUNCTION: GAME 0x0054e250
 bool RHMissionStat::Serialize(SBFile &file)

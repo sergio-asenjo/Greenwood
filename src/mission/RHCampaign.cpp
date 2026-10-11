@@ -14,6 +14,10 @@ template<> inline basic_string<unsigned short, char_traits<unsigned short>, allo
 #include <windows.h>
 #include <cstdlib>
 
+namespace std {
+template<> void _Sort(RHMission **first, RHMission **last, bool (*compare)(RHMission *, RHMission *), RHMission **);
+}
+
 DECOMP_SIZE_ASSERT(RHMission, 0x0c)
 DECOMP_SIZE_ASSERT(RHCampaign, 0x1c4)
 DECOMP_SIZE_ASSERT(RHGameCampaignView, 0x184)
@@ -136,7 +140,7 @@ void RHCampaign::CreateGang()
     }
 }
 
-// Parked: 81.23%.
+// Parked: receiver scheduling and early-exit vector cleanup differ.
 // STUB: GAME 0x00451b70
 void RHCampaign::SelectMissions(bool forced)
 {
@@ -299,7 +303,7 @@ void RHCampaign::SelectMissionsByLocation(std::vector<RHMission *> &missions)
         FUN_004e7210(first, last, (bool (*)(RHMission *, RHMission *))0x0054c780, 0);
     else
     {
-        FUN_0045a940(first, last, (bool (*)(RHMission *, RHMission *))0x0054c780, 0);
+        std::_Sort(first, last, (bool (*)(RHMission *, RHMission *))0x0054c780, (RHMission **)0);
         FUN_004e7210(first, first + 16, (bool (*)(RHMission *, RHMission *))0x0054c780, 0);
         for (RHMission **it = first + 16; it != last; ++it)
         {
@@ -365,8 +369,7 @@ void RHCampaign::SelectMissionsByObligation(std::vector<RHMission *> &missions)
     }
 }
 
-// Parked: eight STL callee-entity mismatches; in-body rebinding changes VC6 codegen.
-// STUB: GAME 0x00452f20
+// FUNCTION: GAME 0x00452f20
 bool RHCampaign::Serialize(SBFile &file)
 {
     RHSerializeName(file,
@@ -413,14 +416,18 @@ bool RHCampaign::Serialize(SBFile &file)
         if (file.m_bLoading)
         {
             RHCampaignMissionList &missions = *(RHCampaignMissionList *)((char *)this + 0x184);
-            missions.FUN_004e6c10();
+            typedef void (std::list<RHMission *>::*Clear)();
+            Clear clear = &std::list<RHMission *>::clear;
+            (((std::list<RHMission *> *)&missions)->*clear)();
             missions.m_dirty = true;
             if (!RHCampaignAccess(file, &count, 4, 1121))
                 return false;
             for (unsigned i = 0; i < count; ++i)
             {
                 FUN_00453940(file, value);
-                missions.FUN_0045a440((const RHMission *const &)value);
+                typedef void (std::list<RHMission *>::*Push)(RHMission *const &);
+                Push push = &std::list<RHMission *>::push_back;
+                (((std::list<RHMission *> *)&missions)->*push)(value);
                 missions.m_dirty = true;
             }
         }
@@ -1023,32 +1030,6 @@ void RHCampaignUnk00457950::FUN_00457950()
 // TEMPLATE: GAME 0x00457a30
 // ??4?$vector@HV?$allocator@H@std@@@std@@QAEAAV01@ABV01@@Z
 
-RHCampaignArrayOps &RHCampaignArrayOps::FUN_00457a30(const RHCampaignArrayOps &value)
-{
-    if (this == &value)
-        ;
-    else if (value.size() <= size())
-    {
-        std::copy(value.m_first, value.m_last, m_first);
-        m_last = m_first + value.size();
-    }
-    else if (value.size() <= capacity())
-    {
-        void *const *middle = value.m_first + size();
-        std::copy((void *const *)value.m_first, middle, m_first);
-        ConstructCopy(middle, value.m_last, m_last);
-        m_last = m_first + value.size();
-    }
-    else
-    {
-        operator delete(m_first);
-        m_first = std::_Allocate((int)value.size(), (void **)0);
-        m_last = ConstructCopy(value.m_first, value.m_last, m_first);
-        m_end = m_last;
-    }
-    return *this;
-}
-
 // FUNCTION: GAME 0x00457bc0
 RHbeamMe &RHCampaignBeamArray::FUN_00457bc0(unsigned beamMe)
 {
@@ -1076,11 +1057,6 @@ void RHCampaignMissionValues::FUN_00457e80(RHMission *position, const RHMission 
 
 // TEMPLATE: GAME 0x004580a0
 // ?capacity@?$vector@HV?$allocator@H@std@@@std@@QBEIXZ
-
-unsigned RHCampaignArrayOps::FUN_004580a0()
-{
-    return m_first == 0 ? 0 : m_end - m_first;
-}
 
 // Parked: real sector vector insertion calls assignment where the target inlines it.
 // STUB: GAME 0x004584e0
@@ -1148,6 +1124,7 @@ bool FUN_00458be0(SBFile &file, std::vector<RHPCDescription *> &values,
     return true;
 }
 
+// Parked: cleanup needs a distinct _Destroy entity and an out-of-line Point-vector destructor.
 // STUB: GAME 0x00458e70
 bool FUN_00458e70(SBFile &file, RHCampaignProductionSectors &values,
                   bool (*serialize)(SBFile &, RHSectorProduction &))
@@ -1242,8 +1219,14 @@ bool FUN_00459160(SBFile &file, std::vector<unsigned long> &values,
     return true;
 }
 
-// Parked: wide-vector _Destroy calls the wrong local entity; rebinding inlines cleanup.
-// STUB: GAME 0x004593f0
+class RHCampaignWideVectorCalls : public std::vector<std::wstring>
+{
+public:
+    typedef void (std::vector<std::wstring>::*Destroy)(std::wstring *, std::wstring *);
+    static Destroy GetDestroy() { return &RHCampaignWideVectorCalls::_Destroy; }
+};
+
+// FUNCTION: GAME 0x004593f0
 bool RHUnk004593f0SerializeList(SBFile &file, RHUnk0054e250List &values, void *serialize)
 {
     RHCampaignWideStrings &strings = (RHCampaignWideStrings &)values;
@@ -1265,7 +1248,10 @@ bool RHUnk004593f0SerializeList(SBFile &file, RHUnk0054e250List &values, void *s
     else
     {
         RHCampaignWideStrings &list = strings;
-        list.erase(list.begin(), list.end());
+        RHCampaignWideString *destination = RHCampaignWideStrings::copy(list.end(), list.end(), list.begin());
+        RHCampaignWideVectorCalls::Destroy destroy = RHCampaignWideVectorCalls::GetDestroy();
+        (((std::vector<std::wstring> *)&list)->*destroy)((std::wstring *)destination, (std::wstring *)list.end());
+        list.m_last = destination;
         unsigned count;
         if (file.Access(&count, 4) < 0)
         {
@@ -1373,7 +1359,7 @@ void RHCampaignMissionList::FUN_0045a440(const RHMission *const &value)
 // TEMPLATE: GAME 0x0045a4b0
 // ?_Ucopy@?$vector@UPoint@RHSectorProduction@@V?$allocator@UPoint@RHSectorProduction@@@std@@@std@@IAEPAUPoint@RHSectorProduction@@PBU34@0PAU34@@Z
 
-// Unannotated: 0x0045a4f0 calls std::_Sort, which counted 0x00452d20 cannot share.
+// FUNCTION: GAME 0x0045a4f0
 void FUN_0045a4f0(RHMission **first, RHMission **last,
                   bool (*compare)(RHMission *, RHMission *), int)
 {
@@ -1381,7 +1367,23 @@ void FUN_0045a4f0(RHMission **first, RHMission **last,
         std::_Insertion_sort(first, last, compare);
     else
     {
-        std::_Sort(first, last, compare, (RHMission **)0);
+        RHMission **rangeLast = last;
+        RHMission **rangeFirst = first;
+        while (std::_SORT_MAX < rangeLast - rangeFirst)
+        {
+            RHMission **middle = std::_Unguarded_partition(rangeFirst, rangeLast,
+                std::_Median(*rangeFirst, *(rangeFirst + (rangeLast - rangeFirst) / 2), *(rangeLast - 1), compare), compare);
+            if (rangeLast - middle <= middle - rangeFirst)
+            {
+                std::_Sort(middle, rangeLast, compare, (RHMission **)0);
+                rangeLast = middle;
+            }
+            else
+            {
+                std::_Sort(rangeFirst, middle, compare, (RHMission **)0);
+                rangeFirst = middle;
+            }
+        }
         std::_Insertion_sort(first, first + std::_SORT_MAX, compare);
         for (first += std::_SORT_MAX; first != last; ++first)
             std::_Unguarded_insert(first, (RHMission *)*first, compare);
@@ -1400,7 +1402,9 @@ void FUN_0045a4f0(RHMission **first, RHMission **last,
 // SYNTHETIC: GAME 0x0045a8e0
 // ??4Point@RHSectorProduction@@QAEAAU01@ABU01@@Z
 
-// FUNCTION: GAME 0x0045a940
+// TEMPLATE: GAME 0x0045a940
+// ?_Sort@std@@YAXPAPAVRHMission@@0P6A_NPAV2@1@Z0@Z
+
 void FUN_0045a940(RHMission **first, RHMission **last,
                   bool (*compare)(RHMission *, RHMission *), int)
 {
@@ -1423,11 +1427,6 @@ void FUN_0045a940(RHMission **first, RHMission **last,
 
 // TEMPLATE: GAME 0x004609a0
 // ?erase@?$vector@HV?$allocator@H@std@@@std@@QAEPAHPAH0@Z
-
-void *RHMissionArrayStorage::FUN_004609a0(void *first, void *last)
-{
-    return ((std::vector<void *> *)this)->erase((void **)first, (void **)last);
-}
 
 // STUB: GAME 0x004e3770
 void RHEngine::FUN_004e3770(RHElement *element)
@@ -1467,21 +1466,11 @@ void RHEngine::FUN_004e3770(RHElement *element)
 // TEMPLATE: GAME 0x004e5820
 // ?insert@?$vector@KV?$allocator@K@std@@@std@@QAEPAKPAKABK@Z
 
-void RHMissionArrayStorage::FUN_004e5820(void *position, const unsigned long &value)
-{
-    ((std::vector<unsigned long> *)this)->insert((unsigned long *)position, value);
-}
-
 // TEMPLATE: GAME 0x004e6ba0
 // ?_Destroy@?$vector@UOccupant@RHSectorProduction@@V?$allocator@UOccupant@RHSectorProduction@@@std@@@std@@IAEXPAUOccupant@RHSectorProduction@@0@Z
 
 // TEMPLATE: GAME 0x004e6c10
 // ?clear@?$list@PAVRHMission@@V?$allocator@PAVRHMission@@@std@@@std@@QAEXXZ
-
-void RHCampaignMissionList::FUN_004e6c10()
-{
-    ((std::list<RHMission *> *)this)->clear();
-}
 
 // FUNCTION: GAME 0x004e7210
 void FUN_004e7210(RHMission **first, RHMission **last,
@@ -1507,12 +1496,11 @@ RHMission::RHMission()
     m_8 = 0;
 }
 
-// Parked: empty-string fallback scheduling differs; explicit initialization swaps profile registers.
-// STUB: GAME 0x0054c780
+// FUNCTION: GAME 0x0054c780
 bool FUN_0054c780(RHMission *left, RHMission *right)
 {
     RHMissionProfile *rightProfile = (RHMissionProfile *)right->m_profile;
-    const char *rightName = rightProfile->m_04.c_str();
+    const char *rightName = ((const std::string *)&rightProfile->m_04)->c_str();
     RHMissionProfile *leftProfile = (RHMissionProfile *)left->m_profile;
     int order = strcmp(leftProfile->m_04.c_str(), rightName);
     if (order < 0)

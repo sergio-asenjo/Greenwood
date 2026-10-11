@@ -1,5 +1,27 @@
 #include "SBNullstr.h"
 #include "RHCampaign.h"
+#include <algorithm>
+
+namespace std {
+template<> void _Sort(RHMission **first, RHMission **last, bool (*compare)(RHMission *, RHMission *), RHMission **)
+{
+    while (_SORT_MAX < last - first)
+    {
+        RHMission **middle = _Unguarded_partition(first, last,
+            _Median(*first, *(first + (last - first) / 2), *(last - 1), compare), compare);
+        if (last - middle <= middle - first)
+        {
+            _Sort(middle, last, compare, (RHMission **)0);
+            last = middle;
+        }
+        else
+        {
+            _Sort(first, middle, compare, (RHMission **)0);
+            first = middle;
+        }
+    }
+}
+}
 
 // FUNCTION: GAME 0x0054c6a0
 RHMission::RHMission(const RHMission &value)
@@ -11,7 +33,6 @@ extern "C" int __cdecl rand() { return 0; }
 
 
 void RHCampaignWideString::Tidy(bool) {}
-void RHCampaignWideString::Assign(const RHCampaignWideString &, unsigned, unsigned) {}
 void RHCampaignWideStrings::Destroy(RHCampaignWideString *, RHCampaignWideString *) {}
 void RHCampaignWideStrings::Insert(RHCampaignWideString *, unsigned, const RHCampaignWideString &) {}
 
