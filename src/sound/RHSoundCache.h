@@ -275,7 +275,9 @@ struct RHSoundCacheMusicArray
     }
     void push_back(const RHSoundCacheMusic &value)
     {
-        FUN_004023a0(end(), 1, value);
+        typedef void (std::vector<RHSoundCacheMusic>::*Insert)(RHSoundCacheMusic *, unsigned int, const RHSoundCacheMusic &);
+        Insert insert = &std::vector<RHSoundCacheMusic>::insert;
+        (((std::vector<RHSoundCacheMusic> *)this)->*insert)(end(), 1, value);
         m_14 = true;
     }
 };
@@ -330,7 +332,6 @@ struct RHSoundCacheString
         m_0c = 0;
     }
     void FUN_00402780();
-    RHSoundCacheString &FUN_00402a70(unsigned int, unsigned int);
     RHSoundCacheString &erase(unsigned int position, unsigned int count = std::string::npos)
     {
         if (m_08 < position)
@@ -360,7 +361,9 @@ struct RHSoundCacheString
         if (this == &value)
         {
             erase(position + size);
-            FUN_00402a70(0, position);
+            typedef std::string &(std::string::*Erase)(unsigned, unsigned);
+            Erase eraseFront = &std::string::erase;
+            (((std::string *)this)->*eraseFront)(0, position);
         }
         else if (0 < size && size == value.size() && (unsigned char)value.c_str()[-1] < 254)
         {

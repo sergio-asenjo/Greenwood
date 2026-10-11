@@ -25,7 +25,7 @@ extern float g_unk0x0067749c;
 extern double g_unk0x00677d90;
 
 // GLOBAL: GAME 0x00677670
-static double g_unk0x00677670 = 2.0;
+double g_unk0x00677670 = 2.0;
 // GLOBAL: GAME 0x00679e08
 static double g_unk0x00679e08 = 127.5;
 // GLOBAL: GAME 0x00679e10
@@ -462,7 +462,7 @@ bool RHSound::FUN_005a71f0(RHSoundSource *source)
     return node != m_24c;
 }
 
-// STUB: GAME 0x005a7220
+// FUNCTION: GAME 0x005a7220
 void RHSound::FUN_005a7220(void *value)
 {
     RHUnk005a7220 *source = (RHUnk005a7220 *)value;
@@ -475,7 +475,8 @@ void RHSound::FUN_005a7220(void *value)
         {
             float scale = source->m_48;
             int minimum = source->m_44;
-            source->m_4a = (unsigned short)(rand() * scale * g_unk0x00677f7c * (source->m_46 - minimum) / scale + minimum);
+            source->m_4a = (unsigned short)(((rand() * scale) * g_unk0x00677f7c) * (source->m_46 - minimum)
+                / scale + minimum);
         }
         break;
     case 3:

@@ -19,7 +19,9 @@ DECOMP_SIZE_ASSERT(RHSoundCacheMusicArray, 0x2c)
 DECOMP_SIZE_ASSERT(RHSoundCacheString, 0x10)
 DECOMP_SIZE_ASSERT(RHUnk00641782, 0x01)
 
-// unannotated: 0x004023a0 is called by InitializeMusic; container frame and inlining remain unmatched.
+// TEMPLATE: GAME 0x004023a0
+// ?insert@?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@QAEXPAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@2@IABV32@@Z
+
 void RHSoundCacheMusicArray::FUN_004023a0(RHSoundCacheMusic *position, unsigned int count, const RHSoundCacheMusic &value)
 {
     ((std::vector<RHSoundCacheMusic> *)this)->insert(position, count, value);
@@ -34,6 +36,9 @@ std::string FUN_004e4b40(const std::string &first, const std::string &second)
     result.append(second);
     return result;
 }
+
+// TEMPLATE: GAME 0x005014a0
+// ?_Buynode@?$_Tree@KU?$pair@$$CBKPAVRHSoundCacheEntry@@@std@@U_Kfn@?$map@KPAVRHSoundCacheEntry@@U?$less@K@std@@V?$allocator@PAVRHSoundCacheEntry@@@3@@2@U?$less@K@2@V?$allocator@PAVRHSoundCacheEntry@@@2@@std@@IAEPAU_Node@12@PAU312@W4_Redbl@12@@Z
 
 // FUNCTION: GAME 0x0056dac0
 void RHSoundCacheMusicArray::FUN_0056dac0(RHSoundCacheMusic *first, RHSoundCacheMusic *last)
@@ -282,11 +287,13 @@ void RHSoundCache::InitializeExclamationsForProfile(const std::string &profile, 
     file.FUN_005f5290();
 }
 
-// LoadSample call operand deferred under rule 28.
+// FUNCTION: GAME 0x005ad160
 RHSoundCacheEntry *RHSoundCache::AddSoundEntry(unsigned long id, const std::string &name, std::map<unsigned long, RHSoundCacheEntry *> &entries)
 {
     RHSoundCacheEntry *entry = (RHSoundCacheEntry *)new RHUnk005b1ca0;
-    ((RHProfileText *)entry)->FUN_00401ce0(name, 0, std::string::npos);
+    typedef std::string &(std::string::*Assign)(const std::string &, unsigned int, unsigned int);
+    Assign assign = &std::string::assign;
+    (((std::string *)entry)->*assign)(name, 0, std::string::npos);
     if (g_unk0x006c0686)
     {
         if (!entry->LoadSample(m_134, 0))
@@ -303,7 +310,8 @@ RHSoundCacheEntry *RHSoundCache::AddSoundEntry(unsigned long id, const std::stri
     return entry;
 }
 
-// LoadSample call operand deferred under rule 28.
+// Parked: inlined string erase retains different pointer registers.
+// STUB: GAME 0x005ad250
 unsigned long RHSoundCache::AddSoundEntry(const std::string &name, RHcacheData &cache)
 {
     unsigned long index = FUN_005ab430(cache);

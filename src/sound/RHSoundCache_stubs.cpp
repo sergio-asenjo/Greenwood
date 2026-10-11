@@ -27,7 +27,6 @@ RHSoundCacheListIterator RHSoundCacheList::FUN_00424410(RHSoundCacheListIterator
 }
 
 unsigned int RHMapResources::FUN_00600620(unsigned long) { return 0; }
-bool RHMapResources::FUN_00600bb0(unsigned long, unsigned int, std::string &) { return false; }
 
 
 
@@ -36,7 +35,6 @@ RHUnk005b1ca0::~RHUnk005b1ca0() {}
 void FUN_006416e6() {}
 void *FUN_00642580(void *destination, const void *, unsigned int) { return destination; }
 void RHSoundCacheString::FUN_00402780() {}
-RHSoundCacheString &RHSoundCacheString::FUN_00402a70(unsigned int, unsigned int) { return *this; }
 RHSoundCacheGroupIterator RHSoundCacheEntryMap::FUN_005b04c0(RHSoundCacheGroupNode *, RHSoundCacheGroupNode *, const value_type &value)
 {
     return RHSoundCacheGroupIterator((RHSoundCacheGroupNode *)insert(value).first._Mynode());
