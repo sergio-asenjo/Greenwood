@@ -163,7 +163,7 @@ extern RHEngine *g_pEngine;
 extern RHCampaignProfiles *g_unk0x6c0e84;
 extern RHUnk005ef320 *g_unk0x6c11d0;
 extern char g_unk0x6c0691;
-void FUN_005e0c90(SBFile &file, std::string &value);
+bool FUN_005e0c90(SBFile &file, std::string &value);
 
 // Target 0x005e1b70 (RHSerializeName): serialises a type-name tag into the
 // stream. Declared identically in include/RHElementObject.h,

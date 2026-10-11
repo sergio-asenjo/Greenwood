@@ -24,7 +24,3 @@ std::wstring FUN_005e23d0(unsigned long id)
 {
     return std::wstring();
 }
-
-void FUN_005e0ea0(SBFile &file, std::wstring &value)
-{
-}

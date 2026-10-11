@@ -24,7 +24,6 @@ void RHProfileText::FUN_00401ee0(bool release)
 RHProfileString::RHProfileString(const std::allocator<char> &allocator) : std::basic_string<char>(allocator) {}
 void RHProfileText::FUN_00401ce0(const std::string &, unsigned int, unsigned int) {}
 
-void FUN_005e0c90(SBFile &, std::string &) {}
 
 void FUN_0056cf40(const RHProfileManager *, const char *, ...) {}
 

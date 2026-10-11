@@ -72,7 +72,7 @@ public:
 };
 
 void RHSerializeName(SBFile &file, const char *name);
-void FUN_005e0c90(SBFile &file, std::string &value);
+bool FUN_005e0c90(SBFile &file, std::string &value);
 extern char g_unk0x6c0691;
 extern RHElementScroll *g_scrollExecutingScript;
 extern undefined g_unk0x006c0e48[];

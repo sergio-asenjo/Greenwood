@@ -77,7 +77,9 @@ void RHUnk00452030::FUN_00456670(const std::wstring &name)
     values.insert(last, name);
 }
 
-// parked: unannotated because GenerateName and DisplayLostLeicester call this helper.
+// TEMPLATE: GAME 0x004580c0
+// ?assign@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@QAEAAV12@ABV12@II@Z
+
 void RHMapWideText::FUN_004580c0(const std::wstring &text, unsigned first, unsigned count)
 {
     RHPCWideText &value = *(RHPCWideText *)this;

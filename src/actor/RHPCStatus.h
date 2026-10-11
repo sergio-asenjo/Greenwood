@@ -140,7 +140,7 @@ inline void RHPCWideText::TidyExternal(bool built)
 
 std::wstring FUN_0055bdf0(unsigned long first, unsigned long count);
 std::wstring FUN_005e23d0(unsigned long id);
-void FUN_005e0ea0(SBFile &file, std::wstring &value);
+bool FUN_005e0ea0(SBFile &file, std::wstring &value);
 extern RHUnk00452030 *g_unk0x6c07fc;
 
 #endif

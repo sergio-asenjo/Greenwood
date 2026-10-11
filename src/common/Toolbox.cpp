@@ -130,6 +130,76 @@ void RHUnk00423b10::FUN_00423b10(unsigned int count)
 // TEMPLATE: GAME 0x00458bd0
 // ?max_size@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@QBEIXZ
 
+// FUNCTION: GAME 0x005e0c90
+bool FUN_005e0c90(SBFile &file, std::string &value)
+{
+    unsigned short length;
+    if (!file.m_bLoading) {
+        length = value.size();
+        if (file.Access(&length, 2) < 0) {
+            SBString *error = file.GetError();
+            SBAssert(0, g_toolboxFile, 0x86, "Serialize failed reason is %s", error->m_chars ? error->m_chars : "");
+            return false;
+        }
+        if (file.Access((void *)value.c_str(), length) < 0) {
+            SBString *error = file.GetError();
+            SBAssert(0, g_toolboxFile, 0x87, "Serialize failed reason is %s", error->m_chars ? error->m_chars : "");
+            return false;
+        }
+    } else {
+        if (file.Access(&length, 2) < 0) {
+            SBString *error = file.GetError();
+            SBAssert(0, g_toolboxFile, 0x8f, "Serialize failed reason is %s", error->m_chars ? error->m_chars : "");
+            return false;
+        }
+        char *buffer = (char *)operator new(length + 1);
+        if (file.Access(buffer, length) < 0) {
+            SBString *error = file.GetError();
+            SBAssert(0, g_toolboxFile, 0x94, "Serialize failed reason is %s", error->m_chars ? error->m_chars : "");
+            return false;
+        }
+        buffer[length] = 0;
+        value.assign(buffer);
+        operator delete(buffer);
+    }
+    return true;
+}
+
+// FUNCTION: GAME 0x005e0ea0
+bool FUN_005e0ea0(SBFile &file, std::wstring &value)
+{
+    unsigned short length;
+    if (!file.m_bLoading) {
+        length = value.size();
+        if (file.Access(&length, 2) < 0) {
+            SBString *error = file.GetError();
+            SBAssert(0, g_toolboxFile, 0xb6, "Serialize failed reason is %s", error->m_chars ? error->m_chars : "");
+            return false;
+        }
+        if (file.Access((void *)value.c_str(), length * 2) < 0) {
+            SBString *error = file.GetError();
+            SBAssert(0, g_toolboxFile, 0xb7, "Serialize failed reason is %s", error->m_chars ? error->m_chars : "");
+            return false;
+        }
+    } else {
+        if (file.Access(&length, 2) < 0) {
+            SBString *error = file.GetError();
+            SBAssert(0, g_toolboxFile, 0xbf, "Serialize failed reason is %s", error->m_chars ? error->m_chars : "");
+            return false;
+        }
+        wchar_t *buffer = (wchar_t *)operator new((length + 1) * 2);
+        if (file.Access(buffer, length * 2) < 0) {
+            SBString *error = file.GetError();
+            SBAssert(0, g_toolboxFile, 0xc4, "Serialize failed reason is %s", error->m_chars ? error->m_chars : "");
+            return false;
+        }
+        buffer[length] = 0;
+        value.assign(buffer);
+        operator delete(buffer);
+    }
+    return true;
+}
+
 // FUNCTION: GAME 0x005e1b70
 void RHSerializeName(SBFile &file, const char *name)
 {
@@ -155,7 +225,7 @@ void RHSerializeName(SBFile &file, const char *name)
 // SYNTHETIC: GAME 0x005e1c50
 // ??1ToolboxChunks@@QAE@XZ
 
-// Parked: deque map-end loads select reversed base/count registers.
+// Parked: deque map-end loads use reversed base/count registers.
 // STUB: GAME 0x005e1d50
 void FUN_005e1d50(SBFile &file, unsigned long expected, int version)
 {
@@ -203,7 +273,7 @@ void FUN_005e20c0(SBFile &file)
     g_unk0x006c1178.pop_back();
 }
 
-// parked (96.71%): crop-result register and draw-reload scheduling differ
+// Parked: crop receiver and draw-argument reload scheduling differ.
 // STUB: GAME 0x005e24f0
 void Toolbox::DisplayPicture(const char *name, bool wait)
 {
@@ -212,7 +282,7 @@ void Toolbox::DisplayPicture(const char *name, bool wait)
     RHUnk005f4fc0 file;
     unsigned long width = draw->FUN_005e56c0(0);
     unsigned long height = draw->FUN_005e5750(0);
-    file.FUN_005f5090(RHProfileText(name), 1);
+    file.FUN_005f5090((const std::string &)RHProfileText(name), 1);
     if (!picture.Unk00611710(file))
     {
         SBAssert(0, g_toolboxFile, 0x4f5, "Unable to load picture from pak file");

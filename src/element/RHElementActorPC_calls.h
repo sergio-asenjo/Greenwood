@@ -221,7 +221,7 @@ extern RHUnk0048a970 *g_unk0x6c0b3c;
 extern RHCampaignProfiles *g_unk0x6c0e84;
 extern RHUnk00452030 *g_unk0x6c07fc;
 extern char g_unk0x6c0691;
-void FUN_005e0c90(SBFile &file, std::string &value);
+bool FUN_005e0c90(SBFile &file, std::string &value);
 
 class RHActorPCMessageBaseCalls
 {

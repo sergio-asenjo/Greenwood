@@ -52,6 +52,6 @@ struct RHCivilianProfile
     int m_38;
 };
 
-void FUN_005e0c90(SBFile &file, std::string &value);
+bool FUN_005e0c90(SBFile &file, std::string &value);
 
 #endif
