@@ -12,6 +12,9 @@ float g_unk0x006790d8 = -40.0f;
 // GLOBAL: GAME 0x006c0bcc
 unsigned long g_unk0x006c0bcc;
 
+// GLOBAL: GAME 0x006c0aa8
+float g_unk0x006c0aa8[2] = {0.0f, 0.0f};
+
 // FUNCTION: GAME 0x004e5270
 RHSeqList::RHSeqList(const char &allocator)
 {
@@ -101,6 +104,749 @@ void RHFastFindGrid::DeleteStaticRepulsivePoint(unsigned long id)
     SBAssert(0, "P:\\Robin Hood\\RHfastfindgrid.cpp", 0xdcc,
         // STRING: GAME 0x006afc60
         "ACHTUNG : Trying to delete inexisting static repulsive point (ID : %d)", id);
+}
+
+struct RHUnk005c9010Iterator;
+void FUN_005c9010(RHUnk005c9010Iterator &current, int distance, std::bidirectional_iterator_tag category);
+
+struct RHScriptNode;
+struct RHScriptIter
+{
+    RHScriptNode *node;
+    RHScriptIter(RHScriptNode *value) : node(value) {}
+};
+
+class RHUnk0046eb30
+{
+public:
+    RHScriptIter FUN_0046eb80();
+    RHScriptIter erase(RHScriptIter position);
+};
+
+struct RHFastFindUniqueNode
+{
+    RHFastFindUniqueNode *next;
+    RHFastFindUniqueNode *previous;
+    void *value;
+
+    RHFastFindUniqueNode(RHFastFindUniqueNode *after, RHFastFindUniqueNode *before)
+        : next(after ? after : this), previous(before ? before : this) {}
+};
+
+class RHFastFindUniqueList
+{
+public:
+    struct Iterator
+    {
+        RHFastFindUniqueNode *node;
+        Iterator(RHFastFindUniqueNode *value) : node(value) {}
+    };
+
+    undefined m_00[4];
+    RHFastFindUniqueNode *m_head;
+    int m_count;
+    RHFastFindUniqueNode *m_current;
+    bool m_changed;
+    undefined m_11[3];
+    int m_index;
+    bool m_searching;
+    undefined m_19[3];
+    int m_found;
+    void *m_value;
+
+    int GetSize() { return m_count; }
+
+    int Find(void *value)
+    {
+        RHFastFindUniqueNode *head = *(RHFastFindUniqueNode *volatile *)&m_head;
+        m_value = value;
+        m_searching = true;
+        int count = m_count;
+        *(RHFastFindUniqueNode *volatile *)&m_current = head->next;
+        int index;
+        for (index = 0; index < count; ++index, m_current = (*(RHFastFindUniqueNode *volatile *)&m_current)->next)
+        {
+            RHFastFindUniqueNode *node = m_current;
+            void *value = *(void *volatile *)&m_value;
+            void *current = *(void *volatile *)&node->value;
+            if (current == value)
+                break;
+        }
+        if (index < count)
+        {
+            m_found = index;
+            m_changed = false;
+            m_index = index;
+        }
+        else
+        {
+            m_changed = true;
+            m_found = -1;
+        }
+        return m_found;
+    }
+
+    void InsertLast(void *value)
+    {
+        RHFastFindUniqueNode *head = m_head;
+        RHFastFindUniqueNode *previous = head->previous;
+        RHFastFindUniqueNode *node = (RHFastFindUniqueNode *)operator new(0xc);
+        node->RHFastFindUniqueNode::RHFastFindUniqueNode(head, previous);
+        head->previous = node;
+        node->previous->next = node;
+        if (&node->value)
+            node->value = value;
+        ++m_count;
+        m_changed = true;
+    }
+
+    void InsertLastExternal(void *const &value)
+    {
+        RHFastFindUniqueNode *head = m_head;
+        RHFastFindUniqueNode *previous = head->previous;
+        RHFastFindUniqueNode *node = (RHFastFindUniqueNode *)operator new(0xc);
+        node->RHFastFindUniqueNode::RHFastFindUniqueNode(head, previous);
+        head->previous = node;
+        node->previous->next = node;
+        RHSeqList::CopyData((RHSequenceElement **)&node->value, (RHSequenceElement *const *)&value);
+        ++m_count;
+        m_changed = true;
+    }
+
+    void GoTo(int wanted)
+    {
+        int count = m_count;
+        if (m_changed)
+        {
+            if (wanted <= (count + 1) / 2)
+            {
+                std::bidirectional_iterator_tag category;
+                FUN_005c9010((RHUnk005c9010Iterator &)SetCurrent(Begin()), wanted, category);
+            }
+            else
+            {
+                std::bidirectional_iterator_tag category;
+                FUN_005c9010((RHUnk005c9010Iterator &)SetCurrent(End()), wanted - count, category);
+            }
+            m_changed = false;
+            m_index = wanted;
+        }
+        else
+        {
+            int previous = m_index;
+            if (wanted != previous)
+            {
+                if (wanted < previous)
+                {
+                    if (wanted < (previous + 1) / 2)
+                    {
+                        std::bidirectional_iterator_tag category;
+                        FUN_005c9010((RHUnk005c9010Iterator &)SetCurrent(Begin()), wanted, category);
+                    }
+                    else
+                    {
+                        std::bidirectional_iterator_tag category;
+                        FUN_005c9010((RHUnk005c9010Iterator &)m_current, wanted - previous, category);
+                    }
+                }
+                else if (wanted < (previous + count) / 2)
+                {
+                    std::bidirectional_iterator_tag category;
+                    FUN_005c9010((RHUnk005c9010Iterator &)m_current, wanted - previous, category);
+                }
+                else
+                {
+                    std::bidirectional_iterator_tag category;
+                    FUN_005c9010((RHUnk005c9010Iterator &)SetCurrent(End()), wanted - count, category);
+                }
+                m_index = wanted;
+            }
+        }
+    }
+
+    RHFastFindUniqueNode *&SetCurrent(Iterator iterator)
+    {
+        m_current = iterator.node;
+        return m_current;
+    }
+
+    void GoToSegment(int wanted)
+    {
+        int count = m_count;
+        if (m_changed)
+        {
+            if (wanted <= (count + 1) / 2)
+            {
+                std::bidirectional_iterator_tag category;
+                FUN_005c9010((RHUnk005c9010Iterator &)SetCurrent(Iterator((RHFastFindUniqueNode *)((RHUnk0046eb30 *)this)->FUN_0046eb80().node)), wanted, category);
+            }
+            else
+            {
+                std::bidirectional_iterator_tag category;
+                FUN_005c9010((RHUnk005c9010Iterator &)SetCurrent(End()), wanted - count, category);
+            }
+            m_changed = false;
+            m_index = wanted;
+        }
+        else
+        {
+            int previous = m_index;
+            if (wanted != previous)
+            {
+                if (wanted < previous)
+                {
+                    if (wanted < (previous + 1) / 2)
+                    {
+                        std::bidirectional_iterator_tag category;
+                        FUN_005c9010((RHUnk005c9010Iterator &)SetCurrent(Iterator((RHFastFindUniqueNode *)((RHUnk0046eb30 *)this)->FUN_0046eb80().node)), wanted, category);
+                    }
+                    else
+                    {
+                        std::bidirectional_iterator_tag category;
+                        FUN_005c9010((RHUnk005c9010Iterator &)m_current, wanted - previous, category);
+                    }
+                }
+                else if (wanted < (previous + count) / 2)
+                {
+                    std::bidirectional_iterator_tag category;
+                    FUN_005c9010((RHUnk005c9010Iterator &)m_current, wanted - previous, category);
+                }
+                else
+                {
+                    std::bidirectional_iterator_tag category;
+                    FUN_005c9010((RHUnk005c9010Iterator &)SetCurrent(End()), wanted - count, category);
+                }
+                m_index = wanted;
+            }
+        }
+    }
+
+    RHFastFindUniqueNode *&Head()
+    {
+        return m_head;
+    }
+
+    Iterator Begin()
+    {
+        return Iterator(Head()->next);
+    }
+
+    Iterator End()
+    {
+        return Iterator(Head());
+    }
+
+    void Remove(unsigned short index)
+    {
+        GoTo(index);
+        RHFastFindUniqueNode *node = m_current;
+        node->previous->next = node->next;
+        node->next->previous = node->previous;
+        operator delete(node);
+        --m_count;
+        m_changed = true;
+    }
+
+};
+
+DECOMP_SIZE_ASSERT(RHFastFindUniqueList, 0x24)
+
+struct RHFastFindCell
+{
+    undefined m_00[0x18];
+    unsigned short m_obstacleCount;
+    undefined m_1a[2];
+    void **m_obstacles;
+    unsigned short m_pointCount;
+    undefined m_22[2];
+    void **m_points;
+};
+
+class RHMobileUnk00607da0
+{
+public:
+    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
+};
+
+// Parked: insertion receiver scheduling changes this/index registers and argument slots.
+// STUB: GAME 0x004eda80
+void RHFastFindGrid::FUN_004eda80(void *value, unsigned short layer, bool mode)
+{
+    SBGeoBoundingBox2D box;
+    if (mode)
+        (*(RHFastFindPointerArray *)(*(char **)((char *)this + 0x3ea4) + layer * 0xc0 + 0x80)).InsertLast(value);
+    ((RHMobileUnk00607da0 *)&box)->FUN_00607da0(*(RHMobileUnk00607da0 *)((char *)value + 8));
+    const float *bounds = (const float *)&box;
+    short firstX = (short)bounds[0] >> 6;
+    short firstY = (short)bounds[1] >> 6;
+    short lastX = (short)bounds[2] >> 6;
+    short lastY = (short)bounds[3] >> 6;
+    if (firstX < 0) firstX = 0;
+    else if (firstX >= m_width) firstX = m_width - 1;
+    if (firstY < 0) firstY = 0;
+    else if (firstY >= m_height) firstY = m_height - 1;
+    if (lastX < 0) lastX = 0;
+    else if (lastX >= m_width) lastX = m_width - 1;
+    if (lastY < 0) lastY = 0;
+    else if (lastY >= m_height) lastY = m_height - 1;
+    unsigned long cell = (m_height * layer + firstY) * m_width + firstX;
+    int skip = m_width - (lastX - firstX) - 1;
+    for (unsigned short y = firstY; y <= (unsigned short)lastY; ++y)
+    {
+        for (unsigned short x = firstX; x <= (unsigned short)lastX; ++x, ++cell)
+            (*(RHFastFindPointerArray *)(*(char **)((char *)this + 0x3f80) + cell * 0xa0 + 0x80)).InsertLast(value);
+        cell += skip;
+    }
+}
+
+// Parked: cell-pointer spill and unique-list search loads differ.
+// STUB: GAME 0x004edcf0
+void RHFastFindGrid::FUN_004edcf0(RHFastFindUniqueList &output, unsigned long cell, unsigned long mask)
+{
+    RHFastFindCell &entry = m_cells[cell];
+    void **values = entry.m_points;
+    unsigned short count = entry.m_pointCount;
+    while (count > 0)
+    {
+        void *value = *values;
+        if (*(bool *)value && (*(unsigned long *)((char *)value + 4) & mask) == mask)
+        {
+            if (output.Find(value) == -1)
+                output.InsertLast(value);
+        }
+        ++values;
+        --count;
+    }
+}
+
+class RHUnk00608f10
+{
+public:
+    int FUN_00608f10(void *value);
+};
+
+class RHUnk005243a0
+{
+public:
+    bool FUN_005243a0(void *point);
+    bool FUN_005246c0(void *point, undefined4 mode);
+};
+
+// FUNCTION: GAME 0x004ede00
+void RHFastFindGrid::FUN_004ede00(RHFastFindUniqueList &output, unsigned short layer, const SBGeoBoundingBox2D &box, void *point)
+{
+    int previousCount = output.GetSize();
+    const float *bounds = (const float *)&box;
+    short firstX = (short)bounds[0] >> 6;
+    short firstY = (short)bounds[1] >> 6;
+    short lastX = (short)bounds[2] >> 6;
+    short lastY = (short)bounds[3] >> 6;
+    if (firstX < 0) firstX = 0;
+    else if (firstX >= m_width) firstX = m_width - 1;
+    if (firstY < 0) firstY = 0;
+    else if (firstY >= m_height) firstY = m_height - 1;
+    if (lastX < 0) lastX = 0;
+    else if (lastX >= m_width) lastX = m_width - 1;
+    if (lastY < 0) lastY = 0;
+    else if (lastY >= m_height) lastY = m_height - 1;
+    unsigned long cell = (m_height * layer + firstY) * m_width + firstX;
+    int skip = m_width - (lastX - firstX) - 1;
+    for (unsigned short y = firstY; y <= (unsigned short)lastY; ++y)
+    {
+        for (unsigned short x = firstX; x <= (unsigned short)lastX; ++x, ++cell)
+            FUN_004edcf0(output, cell, 1);
+        cell += skip;
+    }
+    unsigned short count = output.GetSize();
+    if (count != 0)
+    {
+        for (unsigned short i = previousCount; i < count; ++i)
+        {
+            ((RHSeqList *)&output)->GoTo(i);
+            void *value = output.m_current->value;
+            if (!(unsigned char)((RHUnk00608f10 *)((char *)value + 8))->FUN_00608f10((void *)&box) ||
+                !((RHUnk005243a0 *)value)->FUN_005243a0(point))
+            {
+                output.Remove(i);
+                --i;
+                --count;
+            }
+        }
+    }
+}
+
+// Parked: inlined list-seek register allocation differs after center-point construction.
+// STUB: GAME 0x004ee120
+void RHFastFindGrid::FUN_004ee120(RHFastFindUniqueList &output, unsigned short layer, const SBGeoBoundingBox2D &box, void *point, undefined4 mode)
+{
+    int previousCount = output.GetSize();
+    const float *bounds = (const float *)&box;
+    short firstX = (short)bounds[0] >> 6;
+    short firstY = (short)bounds[1] >> 6;
+    short lastX = (short)bounds[2] >> 6;
+    short lastY = (short)bounds[3] >> 6;
+    if (firstX < 0) firstX = 0;
+    else if (firstX >= m_width) firstX = m_width - 1;
+    if (firstY < 0) firstY = 0;
+    else if (firstY >= m_height) firstY = m_height - 1;
+    if (lastX < 0) lastX = 0;
+    else if (lastX >= m_width) lastX = m_width - 1;
+    if (lastY < 0) lastY = 0;
+    else if (lastY >= m_height) lastY = m_height - 1;
+    unsigned long cell = (m_height * layer + firstY) * m_width + firstX;
+    int skip = m_width - (lastX - firstX) - 1;
+    for (unsigned short y = firstY; y <= (unsigned short)lastY; ++y)
+    {
+        for (unsigned short x = firstX; x <= (unsigned short)lastX; ++x, ++cell)
+            FUN_004edcf0(output, cell, 2);
+        cell += skip;
+    }
+    unsigned short count = output.GetSize();
+    if (count != 0)
+    {
+        SBGeoPoint2D center = box.FUN_00608f40();
+        for (unsigned short i = previousCount; i < count; ++i)
+        {
+            ((RHSeqList *)&output)->GoTo(i);
+            void *value = output.m_current->value;
+            if (!(unsigned char)((RHUnk00608f10 *)((char *)value + 8))->FUN_00608f10((void *)&box) ||
+                !((RHUnk005243a0 *)value)->FUN_005246c0(point, mode))
+            {
+                output.Remove(i);
+                --i;
+                --count;
+            }
+        }
+    }
+}
+
+// FUNCTION: GAME 0x004ee470
+void RHFastFindGrid::FUN_004ee470(RHFastFindUniqueList &output, unsigned short layer, const SBGeoBoundingBox2D &box)
+{
+    int previousCount = output.GetSize();
+    const float *bounds = (const float *)&box;
+    short firstX = (short)bounds[0] >> 6;
+    short firstY = (short)bounds[1] >> 6;
+    short lastX = (short)bounds[2] >> 6;
+    short lastY = (short)bounds[3] >> 6;
+    if (firstX < 0) firstX = 0;
+    else if (firstX >= m_width) firstX = m_width - 1;
+    if (firstY < 0) firstY = 0;
+    else if (firstY >= m_height) firstY = m_height - 1;
+    if (lastX < 0) lastX = 0;
+    else if (lastX >= m_width) lastX = m_width - 1;
+    if (lastY < 0) lastY = 0;
+    else if (lastY >= m_height) lastY = m_height - 1;
+    unsigned long cell = (m_height * layer + firstY) * m_width + firstX;
+    int skip = m_width - (lastX - firstX) - 1;
+    for (unsigned short y = firstY; y <= (unsigned short)lastY; ++y)
+    {
+        for (unsigned short x = firstX; x <= (unsigned short)lastX; ++x, ++cell)
+            FUN_004edcf0(output, cell, 4);
+        cell += skip;
+    }
+    unsigned short count = output.GetSize();
+    for (unsigned short i = previousCount; i < count; ++i)
+    {
+        ((RHSeqList *)&output)->GoTo(i);
+        void *value = output.m_current->value;
+        if (!(unsigned char)((RHUnk00608f10 *)((char *)value + 8))->FUN_00608f10((void *)&box))
+        {
+            output.Remove(i);
+            --i;
+            --count;
+        }
+    }
+}
+
+// Parked: cell-pointer spill and unique-list search loads differ.
+// STUB: GAME 0x004ee770
+void RHFastFindGrid::FUN_004ee770(RHFastFindUniqueList &output, unsigned long cell, unsigned long mask)
+{
+    RHFastFindCell &entry = m_cells[cell];
+    void **values = entry.m_obstacles;
+    unsigned short count = entry.m_obstacleCount;
+    while (count > 0)
+    {
+        void *value = *values;
+        if (*(bool *)((char *)value + 8) && (*(unsigned long *)value & mask) == mask)
+        {
+            if (output.Find(value) == -1)
+                output.InsertLast(value);
+        }
+        ++values;
+        --count;
+    }
+}
+
+class RHUnk00608650
+{
+public:
+    bool FUN_00608650(const RHMalignitySegment &segment);
+};
+
+struct RHFastFindMobileOwner
+{
+    undefined m_00[0x50];
+    undefined *m_position;
+    undefined m_54[0x7c];
+    void **m_first;
+    void **m_last;
+    undefined m_d8[0xd4];
+    SBGeoBoundingBox2D m_bounds;
+};
+
+struct RHFastFindMobileArray
+{
+    RHFastFindMobileOwner **m_first;
+    RHFastFindMobileOwner **m_last;
+    int Size() { return m_first == 0 ? 0 : m_last - m_first; }
+};
+
+class RHEngine;
+extern RHEngine *g_pEngine;
+
+// Parked: mobile-array count/value stack slots and unique-list search loads differ.
+// STUB: GAME 0x004ee880
+void RHFastFindGrid::FUN_004ee880(RHFastFindUniqueList &output, unsigned short layer, const SBGeoBoundingBox2D &box, unsigned long mask)
+{
+    RHFastFindMobileArray &owners = *(RHFastFindMobileArray *)((char *)g_pEngine + 0x497c);
+    unsigned short count = owners.Size();
+    for (unsigned short i = 0; i < count; ++i)
+    {
+        RHFastFindMobileOwner *owner = owners.m_first[i];
+        if (*(unsigned short *)(owner->m_position + 0xde) == layer &&
+            (unsigned char)((RHUnk00608f10 *)&owner->m_bounds)->FUN_00608f10((void *)&box))
+        {
+            unsigned short obstacleCount = owner->m_first == 0 ? 0 : owner->m_last - owner->m_first;
+            for (unsigned short j = 0; j < obstacleCount; ++j)
+            {
+                void *value = owner->m_first[j];
+                if ((unsigned char)((RHUnk00608f10 *)&box)->FUN_00608f10((char *)value + 0x24))
+                {
+                    if (output.Find(value) == -1)
+                        output.InsertLastExternal(value);
+                }
+            }
+        }
+    }
+}
+
+// Parked: mobile-array count/value stack slots and unique-list search loads differ.
+// STUB: GAME 0x004eea50
+void RHFastFindGrid::FUN_004eea50(RHFastFindUniqueList &output, unsigned short layer, const RHMalignitySegment &segment, unsigned long mask)
+{
+    RHFastFindMobileArray &owners = *(RHFastFindMobileArray *)((char *)g_pEngine + 0x497c);
+    unsigned short count = owners.Size();
+    for (unsigned short i = 0; i < count; ++i)
+    {
+        RHFastFindMobileOwner *owner = owners.m_first[i];
+        if (*(unsigned short *)(owner->m_position + 0xde) == layer &&
+            ((RHUnk00608650 *)&owner->m_bounds)->FUN_00608650(segment))
+        {
+            unsigned short obstacleCount = owner->m_first == 0 ? 0 : owner->m_last - owner->m_first;
+            for (unsigned short j = 0; j < obstacleCount; ++j)
+            {
+                void *value = owner->m_first[j];
+                if (((RHUnk00608650 *)((char *)value + 0x24))->FUN_00608650(segment))
+                {
+                    if (output.Find(value) == -1)
+                        output.InsertLastExternal(value);
+                }
+            }
+        }
+    }
+}
+
+// FUNCTION: GAME 0x004eec20
+void RHFastFindGrid::FUN_004eec20(RHFastFindUniqueList &output, unsigned short layer, const SBGeoBoundingBox2D &box, unsigned long mask)
+{
+    int previousCount = output.GetSize();
+    const float *bounds = (const float *)&box;
+    short firstX = (short)bounds[0] >> 6;
+    short firstY = (short)bounds[1] >> 6;
+    short lastX = (short)bounds[2] >> 6;
+    short lastY = (short)bounds[3] >> 6;
+    if (firstX < 0) firstX = 0;
+    else if (firstX >= m_width) firstX = m_width - 1;
+    if (firstY < 0) firstY = 0;
+    else if (firstY >= m_height) firstY = m_height - 1;
+    if (lastX < 0) lastX = 0;
+    else if (lastX >= m_width) lastX = m_width - 1;
+    if (lastY < 0) lastY = 0;
+    else if (lastY >= m_height) lastY = m_height - 1;
+    unsigned long cell = (m_height * layer + firstY) * m_width + firstX;
+    int skip = m_width - (lastX - firstX) - 1;
+    for (unsigned short y = firstY; y <= (unsigned short)lastY; ++y)
+    {
+        for (unsigned short x = firstX; x <= (unsigned short)lastX; ++x, ++cell)
+            FUN_004ee770(output, cell, mask);
+        cell += skip;
+    }
+    if (mask & 3)
+        FUN_004ee880(output, layer, box, mask);
+    unsigned short count = output.GetSize();
+    for (unsigned short i = previousCount; i < count; ++i)
+    {
+        ((RHSeqList *)&output)->GoTo(i);
+        void *value = output.m_current->value;
+        if (!(unsigned char)((RHUnk00608f10 *)((char *)value + 0x24))->FUN_00608f10((void *)&box))
+        {
+            output.Remove(i);
+            --i;
+            --count;
+        }
+    }
+}
+
+// Parked: segment begin/erase return slots and seek register scheduling differ.
+// STUB: GAME 0x004eef30
+void RHFastFindGrid::FUN_004eef30(RHFastFindUniqueList &output, unsigned short layer, const RHMalignitySegment &segment, unsigned long mask)
+{
+    SBGeoPoint2D point;
+    SBGeoBoundingBox2D box;
+    int previousCount = output.GetSize();
+    box.FUN_00607e30(segment);
+    const float *bounds = (const float *)&box;
+    short firstX = (short)bounds[0] >> 6;
+    short firstY = (short)bounds[1] >> 6;
+    short lastX = (short)bounds[2] >> 6;
+    short lastY = (short)bounds[3] >> 6;
+    if (firstX < 0) firstX = 0;
+    else if (firstX >= m_width) firstX = m_width - 1;
+    if (firstY < 0) firstY = 0;
+    else if (firstY >= m_height) firstY = m_height - 1;
+    if (lastX < 0) lastX = 0;
+    else if (lastX >= m_width) lastX = m_width - 1;
+    if (lastY < 0) lastY = 0;
+    else if (lastY >= m_height) lastY = m_height - 1;
+    unsigned long cell = (m_height * layer + firstY) * m_width + firstX;
+    int skip = m_width - (lastX - firstX) - 1;
+    for (unsigned short y = firstY; y <= (unsigned short)lastY; ++y)
+    {
+        for (unsigned short x = firstX; x <= (unsigned short)lastX; ++x, ++cell)
+        {
+            point.m_x = (float)(x << 6);
+            point.m_y = (float)(y << 6);
+            box.FUN_00609050(point, point.Unk005fc190(*(SBGeoPoint2D *)g_unk0x006c0aa8));
+            if (((RHMalignitySegment *)&segment)->FUN_0060ad50(box))
+                FUN_004ee770(output, cell, mask);
+        }
+        cell += skip;
+    }
+    if (mask & 3)
+        FUN_004eea50(output, layer, segment, mask);
+    unsigned short count = output.GetSize();
+    for (unsigned short i = previousCount; i < count; ++i)
+    {
+        ((RHSeqList *)&output)->GoTo(i);
+        void *value = output.m_current->value;
+        if (!((RHUnk00608650 *)((char *)value + 0x24))->FUN_00608650(segment))
+        {
+            output.GoToSegment(i);
+            ((RHUnk0046eb30 *)&output)->erase(RHScriptIter((RHScriptNode *)output.m_current));
+            output.m_changed = true;
+            --i;
+            --count;
+        }
+    }
+}
+
+struct RHFastFindPatchView
+{
+    char m_00[0xac];
+    RHFastFindUniqueList m_lines; // +0xac
+    RHFastFindUniqueList m_points; // +0xd0
+    char m_f4[0x54];
+    void *m_148; // +0x148
+};
+
+// FUNCTION: GAME 0x004efd10
+void RHFastFindGrid::FUN_004efd10(void *patch, unsigned short layer, bool mode)
+{
+    m_patches.InsertLast(patch);
+    if (mode)
+        (*(RHFastFindPointerArray *)(*(char **)((char *)this + 0x3ea4) + layer * 0xc0 + 0xa0)).InsertLast(patch);
+    RHFastFindUniqueList *list = &((RHFastFindPatchView *)patch)->m_lines;
+    unsigned short count = list->GetSize();
+    for (unsigned short i = 0; i < count; ++i)
+    {
+        ((RHSeqList *)list)->GoTo(i);
+        FUN_004e8bd0(list->m_current->value, layer, true);
+    }
+    list = &((RHFastFindPatchView *)patch)->m_points;
+    count = list->GetSize();
+    for (unsigned short j = 0; j < count; ++j)
+    {
+        ((RHSeqList *)list)->GoTo(j);
+        FUN_004e8bd0(list->m_current->value, layer, true);
+    }
+    void *obstacle = ((RHFastFindPatchView *)patch)->m_148;
+    if (obstacle)
+    {
+        FUN_004e8bd0(obstacle, layer, true);
+        unsigned char shifted = (unsigned char)(*(unsigned long *)((char *)obstacle + 0x30) >> 7);
+        if (shifted & 1)
+            FUN_004e99e0(obstacle, layer, true);
+    }
+}
+
+// Parked: best probe 42.11%. Target fuses dx>0/dy>0 tests, then splits a dx>0&dy>0
+// dominant-axis block from a shared tail (two useDx sites + one merged useDy);
+// the source shape behind that FP compare/fuse/schedule is not reproduced.
+// STUB: GAME 0x004efe40
+bool RHFastFindGrid::FUN_004efe40(const SBGeoPoint3D &first, const SBGeoPoint3D &second, float &slope, float &intercept)
+{
+    RHUnk005fc3b0 direction;
+    direction.m_x = second.m_x - first.m_x;
+    direction.m_y = second.m_y - first.m_y;
+    float dx = second.m_x - first.m_x;
+    float dy = second.m_y - first.m_y;
+    if (dx > 0)
+    {
+        if (dy > 0)
+        {
+            if (dx > dy)
+            {
+                slope = (second.m_z - first.m_z) / dx;
+                intercept = first.m_z - slope * first.m_x;
+                return true;
+            }
+        }
+        else
+        {
+            if (dx > -dy)
+            {
+                slope = (second.m_z - first.m_z) / dx;
+                intercept = first.m_z - slope * first.m_x;
+                return true;
+            }
+        }
+    }
+    else
+    {
+        if (dy > 0)
+        {
+            if (-dx > dy)
+            {
+                slope = (second.m_z - first.m_z) / dx;
+                intercept = first.m_z - slope * first.m_x;
+                return true;
+            }
+        }
+        else
+        {
+            if (dx < dy)
+            {
+                slope = (second.m_z - first.m_z) / dx;
+                intercept = first.m_z - slope * first.m_x;
+                return true;
+            }
+        }
+    }
+    slope = (second.m_z - first.m_z) / dy;
+    intercept = first.m_z - slope * first.m_y;
+    return false;
 }
 
 // parked: best probe 61.16%.
@@ -370,7 +1116,7 @@ bool RHFastFindGrid::Serialize(SBFile &file)
     return true;
 }
 
-// parked: default-branch cleanup split.
+// New probe: marker flip leaves default-branch cleanup split at 93.24% and creates an effective row.
 // STUB: GAME 0x004fa8e0
 void RHFastFindGrid::InitializeTacticalInfosFromMissionStream(SBFile &file)
 {
@@ -546,6 +1292,7 @@ void RHFastFindGrid::InitializeJumpStuffFromProtoStream(SBFile &file)
     FUN_005e20c0(file);
 }
 
+// Parked: word-argument registers and sector-constructor cleanup scheduling differ.
 // STUB: GAME 0x004fb8e0
 void RHFastFindGrid::InitializeScriptStuffFromMissionStream(SBFile &file)
 {
@@ -968,11 +1715,8 @@ void RHUnk00522470::Unk005224d0(SBFile &file)
     *(void **)((char *)this + 0x24) = value;
 }
 
-// deferred: unannotated pending reccmp #534
-unsigned int RHFastFindGateArray::FUN_0059fbc0()
-{
-    return Size();
-}
+// TEMPLATE: GAME 0x0059fbc0
+// ?size@?$vector@KV?$allocator@K@std@@@std@@QBEIXZ
 
 // FUNCTION: GAME 0x005df860
 void RHUnk005df860::Unk005df860(const SBGeoPoint3D &first, const SBGeoPoint3D &second, const SBGeoPoint3D &third)
@@ -993,6 +1737,18 @@ void RHUnk005df860::Unk005dfa00()
 
 void RHFastFindGrid::Emit(SBFile &file, void *&value)
 {
+    FUN_004eda80(value, 0, false);
+    FUN_004edcf0(*(RHFastFindUniqueList *)value, 0, 0);
+    FUN_004ede00(*(RHFastFindUniqueList *)value, 0, *(SBGeoBoundingBox2D *)value, value);
+    FUN_004ee120(*(RHFastFindUniqueList *)value, 0, *(SBGeoBoundingBox2D *)value, value, 0);
+    FUN_004ee470(*(RHFastFindUniqueList *)value, 0, *(SBGeoBoundingBox2D *)value);
+    FUN_004ee770(*(RHFastFindUniqueList *)value, 0, 0);
+    FUN_004ee880(*(RHFastFindUniqueList *)value, 0, *(SBGeoBoundingBox2D *)value, 0);
+    FUN_004eea50(*(RHFastFindUniqueList *)value, 0, *(RHMalignitySegment *)value, 0);
+    FUN_004eec20(*(RHFastFindUniqueList *)value, 0, *(SBGeoBoundingBox2D *)value, 0);
+    FUN_004eef30(*(RHFastFindUniqueList *)value, 0, *(RHMalignitySegment *)value, 0);
+    FUN_004efd10(value, 0, false);
+    FUN_004efe40(*(SBGeoPoint3D *)value, *(SBGeoPoint3D *)value, *(float *)value, *(float *)value);
     InitializeLiftsFromProtoStream(file);
     InitializeBuildingsFromProtoStream(file);
     InitializeSightObstaclesFromProtoStream(file);

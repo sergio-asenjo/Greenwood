@@ -12,6 +12,7 @@ public:
     SBGeoPoint2D(float x, float y);
     ~SBGeoPoint2D();
     SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
+    SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
     void Set(short x, short y)
     {
         m_x = (float)x;
@@ -129,9 +130,24 @@ struct RHFastFindLayer
     class RHUnk0054f870 **m_paths;
 };
 
+class SBGeoBoundingBox2D;
+class RHMalignitySegment;
+class SBGeoPoint3D;
 class RHFastFindGrid
 {
 public:
+    void FUN_004eda80(void *value, unsigned short layer, bool mode);
+    void FUN_004edcf0(class RHFastFindUniqueList &output, unsigned long cell, unsigned long mask);
+    void FUN_004ede00(class RHFastFindUniqueList &output, unsigned short layer, const SBGeoBoundingBox2D &box, void *point);
+    void FUN_004ee120(class RHFastFindUniqueList &output, unsigned short layer, const SBGeoBoundingBox2D &box, void *point, undefined4 mode);
+    void FUN_004ee470(class RHFastFindUniqueList &output, unsigned short layer, const SBGeoBoundingBox2D &box);
+    void FUN_004ee770(class RHFastFindUniqueList &output, unsigned long cell, unsigned long mask);
+    void FUN_004ee880(class RHFastFindUniqueList &output, unsigned short layer, const SBGeoBoundingBox2D &box, unsigned long mask);
+    void FUN_004eea50(class RHFastFindUniqueList &output, unsigned short layer, const RHMalignitySegment &segment, unsigned long mask);
+    void FUN_004eec20(class RHFastFindUniqueList &output, unsigned short layer, const SBGeoBoundingBox2D &box, unsigned long mask);
+    void FUN_004eef30(class RHFastFindUniqueList &output, unsigned short layer, const RHMalignitySegment &segment, unsigned long mask);
+    void FUN_004efd10(void *patch, unsigned short layer, bool mode);
+    bool FUN_004efe40(const SBGeoPoint3D &first, const SBGeoPoint3D &second, float &slope, float &intercept);
     void InitializeLiftsFromProtoStream(SBFile &file);
     void InitializeBuildingsFromProtoStream(SBFile &file);
     void DeleteStaticRepulsivePoint(unsigned long id);
@@ -154,11 +170,13 @@ public:
     bool SerializeLinePointer(SBFile &file, void *&value);
     void Emit(SBFile &file, void *&value);
 
-    char m_00[0x3e9c];
+    char m_00[0x3e98];
+    unsigned short m_width;
+    unsigned short m_height;
     unsigned short m_layerCount; // +0x3e9c
     char m_3e9e[0x19a];
     RHFastFindLayer *m_layers; // +0x4038
-    char m_403c[4];
+    struct RHFastFindCell *m_cells;
     RHFastFindPointerArray m_projectionAreas; // +0x4040
     RHFastFindPointerArray m_sectors; // +0x4060
     RHFastFindPointerArray m_gates; // +0x4080
@@ -256,9 +274,25 @@ public:
 class SBGeoBoundingBox2D
 {
 public:
+    SBGeoBoundingBox2D();
+    ~SBGeoBoundingBox2D()
+    {
+        ((SBGeoPoint2D *)(m_00 + 8))->~SBGeoPoint2D();
+        ((SBGeoPoint2D *)m_00)->~SBGeoPoint2D();
+    }
     void Unk00607dc0(const SBGeoPoint2D &point);
+    void FUN_00607e30(const class RHMalignitySegment &segment);
+    SBGeoPoint2D FUN_00608f40() const;
+    int FUN_00609050(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
     SBGeoBoundingBox2D &operator=(const SBGeoBoundingBox2D &other);
     char m_00[0x14];
+};
+
+class RHMalignitySegment
+{
+public:
+    bool FUN_0060ad50(const SBGeoBoundingBox2D &box);
+    undefined m_00[0x10];
 };
 
 class RHUnk005a3450
@@ -440,7 +474,12 @@ public:
 class RHFastFindGateArray : public RHScriptFXArray
 {
 public:
-    unsigned int FUN_0059fbc0();
+    unsigned int FUN_0059fbc0()
+    {
+        typedef unsigned (std::vector<unsigned long>::*Size)() const;
+        Size size = &std::vector<unsigned long>::size;
+        return (((const std::vector<unsigned long> *)this)->*size)();
+    }
     void InsertLast(void *const &value, bool inlineCopy = true, bool externalSize = false, bool sourceFirst = false)
     {
         void **position = last;

@@ -6,6 +6,26 @@ DECOMP_SIZE_ASSERT(RHUnk0051aa00, 0xbc)
 DECOMP_SIZE_ASSERT(RHUnk005209d0, 0x14)
 DECOMP_SIZE_ASSERT(RHUnk00520ae0, 0x40)
 
+class RHUnk00608650
+{
+public:
+    bool FUN_00608650(const RHMalignitySegment &segment);
+};
+
+bool RHUnk00608650::FUN_00608650(const RHMalignitySegment &) { return false; }
+
+bool RHMalignitySegment::FUN_0060ad50(const SBGeoBoundingBox2D &) { return false; }
+
+class RHUnk005243a0
+{
+public:
+    bool FUN_005243a0(void *point);
+    bool FUN_005246c0(void *point, undefined4 mode);
+};
+
+bool RHUnk005243a0::FUN_005243a0(void *) { return false; }
+bool RHUnk005243a0::FUN_005246c0(void *, undefined4) { return false; }
+
 void RHFastFindGrid::FUN_004faf40(SBFile &) {}
 void RHFastFindGrid::FUN_004fb230(SBFile &) {}
 RHUnk0057e4d0::RHUnk0057e4d0() {}
