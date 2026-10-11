@@ -217,6 +217,277 @@ void VMCore::FUN_006353f0()
         ++m_24;
 }
 
+// FUNCTION: GAME 0x006354b0
+void VMCore::FUN_006354b0()
+{
+    int *destination = GetSymbolValuePtr(((unsigned short *)m_28)[2]);
+    *destination = *GetSymbolValuePtr(((unsigned short *)m_28)[3]);
+    ++m_24;
+}
+
+// FUNCTION: GAME 0x00635630
+void VMCore::FUN_00635630()
+{
+    int *destination = GetSymbolValuePtr(((unsigned short *)m_28)[2]);
+    *destination = *GetSymbolValuePtr(((unsigned short *)m_28)[3]);
+    ++m_24;
+}
+
+// FUNCTION: GAME 0x006357b0
+void VMCore::FUN_006357b0()
+{
+    int *destination = GetSymbolValuePtr(((unsigned short *)m_28)[2]);
+    *destination = m_28[2];
+    ++m_24;
+}
+
+// FUNCTION: GAME 0x006358a0
+void VMCore::FUN_006358a0()
+{
+    int *destination = GetSymbolValuePtr(((unsigned short *)m_28)[2]);
+    *destination = m_28[2];
+    ++m_24;
+}
+
+// FUNCTION: GAME 0x00635990
+void VMCore::FUN_00635990()
+{
+    int *destination = GetSymbolValuePtr(((unsigned short *)m_28)[2]);
+    *destination = -*GetSymbolValuePtr(((unsigned short *)m_28)[3]);
+    ++m_24;
+}
+
+// FUNCTION: GAME 0x00635b20
+void VMCore::FUN_00635b20()
+{
+    float *destination = (float *)GetSymbolValuePtr(((unsigned short *)m_28)[2]);
+    *destination = -*(float *)GetSymbolValuePtr(((unsigned short *)m_28)[3]);
+    ++m_24;
+}
+
+// FUNCTION: GAME 0x00635cb0
+void VMCore::FUN_00635cb0()
+{
+    int *destination = GetSymbolValuePtr(((unsigned short *)m_28)[2]);
+    *destination = (int)*(float *)GetSymbolValuePtr(((unsigned short *)m_28)[3]);
+    ++m_24;
+}
+
+// FUNCTION: GAME 0x00635e50
+void VMCore::FUN_00635e50()
+{
+    float *destination = (float *)GetSymbolValuePtr(((unsigned short *)m_28)[2]);
+    *destination = (float)*GetSymbolValuePtr(((unsigned short *)m_28)[3]);
+    ++m_24;
+}
+
+// FUNCTION: GAME 0x00635fd0
+void VMCore::FUN_00635fd0()
+{
+    int *destination = GetSymbolValuePtr(((unsigned short *)m_28)[2]);
+    int *left = GetSymbolValuePtr(((unsigned short *)m_28)[3]);
+    *destination = *left + *GetSymbolValuePtr(((unsigned short *)m_28)[4]);
+    ++m_24;
+}
+
+// FUNCTION: GAME 0x00636210
+void VMCore::FUN_00636210()
+{
+    int *destination = GetSymbolValuePtr(((unsigned short *)m_28)[2]);
+    int *left = GetSymbolValuePtr(((unsigned short *)m_28)[3]);
+    *destination = *left - *GetSymbolValuePtr(((unsigned short *)m_28)[4]);
+    ++m_24;
+}
+
+// FUNCTION: GAME 0x00636450
+void VMCore::FUN_00636450()
+{
+    int *destination = GetSymbolValuePtr(((unsigned short *)m_28)[2]);
+    int *left = GetSymbolValuePtr(((unsigned short *)m_28)[3]);
+    *destination = *left * *GetSymbolValuePtr(((unsigned short *)m_28)[4]);
+    ++m_24;
+}
+
+// FUNCTION: GAME 0x00636680
+void VMCore::FUN_00636680()
+{
+    int *destination = GetSymbolValuePtr(((unsigned short *)m_28)[2]);
+    int *left = GetSymbolValuePtr(((unsigned short *)m_28)[3]);
+    *destination = *left / *GetSymbolValuePtr(((unsigned short *)m_28)[4]);
+    ++m_24;
+}
+
+// FUNCTION: GAME 0x006368c0
+void VMCore::FUN_006368c0()
+{
+    int *destination = GetSymbolValuePtr(((unsigned short *)m_28)[2]);
+    int *left = GetSymbolValuePtr(((unsigned short *)m_28)[3]);
+    *destination = *left | *GetSymbolValuePtr(((unsigned short *)m_28)[4]);
+    ++m_24;
+}
+
+// FUNCTION: GAME 0x00636b00
+void VMCore::FUN_00636b00()
+{
+    int *destination = GetSymbolValuePtr(((unsigned short *)m_28)[2]);
+    int *left = GetSymbolValuePtr(((unsigned short *)m_28)[3]);
+    *destination = *left & *GetSymbolValuePtr(((unsigned short *)m_28)[4]);
+    ++m_24;
+}
+
+// FUNCTION: GAME 0x00636d40
+void VMCore::FUN_00636d40()
+{
+    int *destination = GetSymbolValuePtr(((unsigned short *)m_28)[2]);
+    int *left = GetSymbolValuePtr(((unsigned short *)m_28)[3]);
+    *destination = *left ^ *GetSymbolValuePtr(((unsigned short *)m_28)[4]);
+    ++m_24;
+}
+
+// FUNCTION: GAME 0x00636f80
+void VMCore::FUN_00636f80()
+{
+    float *destination = (float *)GetSymbolValuePtr(((unsigned short *)m_28)[2]);
+    float *left = (float *)GetSymbolValuePtr(((unsigned short *)m_28)[3]);
+    *destination = *left + *(float *)GetSymbolValuePtr(((unsigned short *)m_28)[4]);
+    ++m_24;
+}
+
+// FUNCTION: GAME 0x006371b0
+void VMCore::FUN_006371b0()
+{
+    float *destination = (float *)GetSymbolValuePtr(((unsigned short *)m_28)[2]);
+    float *left = (float *)GetSymbolValuePtr(((unsigned short *)m_28)[3]);
+    *destination = *left - *(float *)GetSymbolValuePtr(((unsigned short *)m_28)[4]);
+    ++m_24;
+}
+
+// FUNCTION: GAME 0x006373e0
+void VMCore::FUN_006373e0()
+{
+    float *destination = (float *)GetSymbolValuePtr(((unsigned short *)m_28)[2]);
+    float *left = (float *)GetSymbolValuePtr(((unsigned short *)m_28)[3]);
+    *destination = *left * *(float *)GetSymbolValuePtr(((unsigned short *)m_28)[4]);
+    ++m_24;
+}
+
+// FUNCTION: GAME 0x00637610
+void VMCore::FUN_00637610()
+{
+    float *destination = (float *)GetSymbolValuePtr(((unsigned short *)m_28)[2]);
+    float *left = (float *)GetSymbolValuePtr(((unsigned short *)m_28)[3]);
+    *destination = *left / *(float *)GetSymbolValuePtr(((unsigned short *)m_28)[4]);
+    ++m_24;
+}
+
+// FUNCTION: GAME 0x00637840
+void VMCore::FUN_00637840()
+{
+    int *destination = GetSymbolValuePtr(((unsigned short *)m_28)[2]);
+    int *left = GetSymbolValuePtr(((unsigned short *)m_28)[3]);
+    *destination = *left <= *GetSymbolValuePtr(((unsigned short *)m_28)[4]);
+    ++m_24;
+}
+
+// FUNCTION: GAME 0x00637a40
+void VMCore::FUN_00637a40()
+{
+    int *destination = GetSymbolValuePtr(((unsigned short *)m_28)[2]);
+    int *left = GetSymbolValuePtr(((unsigned short *)m_28)[3]);
+    *destination = *left < *GetSymbolValuePtr(((unsigned short *)m_28)[4]);
+    ++m_24;
+}
+
+// FUNCTION: GAME 0x00637c40
+void VMCore::FUN_00637c40()
+{
+    int *destination = GetSymbolValuePtr(((unsigned short *)m_28)[2]);
+    int *left = GetSymbolValuePtr(((unsigned short *)m_28)[3]);
+    *destination = *left >= *GetSymbolValuePtr(((unsigned short *)m_28)[4]);
+    ++m_24;
+}
+
+// FUNCTION: GAME 0x00637e40
+void VMCore::FUN_00637e40()
+{
+    int *destination = GetSymbolValuePtr(((unsigned short *)m_28)[2]);
+    int *left = GetSymbolValuePtr(((unsigned short *)m_28)[3]);
+    *destination = *left > *GetSymbolValuePtr(((unsigned short *)m_28)[4]);
+    ++m_24;
+}
+
+// FUNCTION: GAME 0x00638040
+void VMCore::FUN_00638040()
+{
+    int *destination = GetSymbolValuePtr(((unsigned short *)m_28)[2]);
+    int *left = GetSymbolValuePtr(((unsigned short *)m_28)[3]);
+    *destination = *left != *GetSymbolValuePtr(((unsigned short *)m_28)[4]);
+    ++m_24;
+}
+
+// FUNCTION: GAME 0x00638240
+void VMCore::FUN_00638240()
+{
+    int *destination = GetSymbolValuePtr(((unsigned short *)m_28)[2]);
+    int *left = GetSymbolValuePtr(((unsigned short *)m_28)[3]);
+    *destination = *left == *GetSymbolValuePtr(((unsigned short *)m_28)[4]);
+    ++m_24;
+}
+
+// FUNCTION: GAME 0x00638440
+void VMCore::FUN_00638440()
+{
+    float *destination = (float *)GetSymbolValuePtr(((unsigned short *)m_28)[2]);
+    float *left = (float *)GetSymbolValuePtr(((unsigned short *)m_28)[3]);
+    *destination = (float)(int)(*left <= *(float *)GetSymbolValuePtr(((unsigned short *)m_28)[4]));
+    ++m_24;
+}
+
+// FUNCTION: GAME 0x00638650
+void VMCore::FUN_00638650()
+{
+    float *destination = (float *)GetSymbolValuePtr(((unsigned short *)m_28)[2]);
+    float *left = (float *)GetSymbolValuePtr(((unsigned short *)m_28)[3]);
+    *destination = (float)(int)(*left < *(float *)GetSymbolValuePtr(((unsigned short *)m_28)[4]));
+    ++m_24;
+}
+
+// FUNCTION: GAME 0x00638860
+void VMCore::FUN_00638860()
+{
+    float *destination = (float *)GetSymbolValuePtr(((unsigned short *)m_28)[2]);
+    float *left = (float *)GetSymbolValuePtr(((unsigned short *)m_28)[3]);
+    *destination = (float)(int)(*left >= *(float *)GetSymbolValuePtr(((unsigned short *)m_28)[4]));
+    ++m_24;
+}
+
+// FUNCTION: GAME 0x00638a70
+void VMCore::FUN_00638a70()
+{
+    float *destination = (float *)GetSymbolValuePtr(((unsigned short *)m_28)[2]);
+    float *left = (float *)GetSymbolValuePtr(((unsigned short *)m_28)[3]);
+    *destination = (float)(int)(*left > *(float *)GetSymbolValuePtr(((unsigned short *)m_28)[4]));
+    ++m_24;
+}
+
+// FUNCTION: GAME 0x00638c80
+void VMCore::FUN_00638c80()
+{
+    float *destination = (float *)GetSymbolValuePtr(((unsigned short *)m_28)[2]);
+    float *left = (float *)GetSymbolValuePtr(((unsigned short *)m_28)[3]);
+    *destination = (float)(int)(*left != *(float *)GetSymbolValuePtr(((unsigned short *)m_28)[4]));
+    ++m_24;
+}
+
+// FUNCTION: GAME 0x00638e90
+void VMCore::FUN_00638e90()
+{
+    float *destination = (float *)GetSymbolValuePtr(((unsigned short *)m_28)[2]);
+    float *left = (float *)GetSymbolValuePtr(((unsigned short *)m_28)[3]);
+    *destination = (float)(int)(*left == *(float *)GetSymbolValuePtr(((unsigned short *)m_28)[4]));
+    ++m_24;
+}
+
 // FUNCTION: GAME 0x006390a0
 bool VMCore::FUN_006390a0()
 {
@@ -325,6 +596,79 @@ void VMCore::FUN_00639360(int &value)
     value = m_2c;
 }
 
+// FUNCTION: GAME 0x00639370
+void VMCore::FUN_00639370()
+{
+    for (;;) {
+        int index = m_24;
+        VMQuad *quads = m_40->m_50;
+        m_28 = (int *)(quads + index);
+        switch (*(unsigned char *)m_28) {
+        case 0: Empty(); break;
+        case 1: FUN_00634c20(); break;
+        case 2: FUN_00634c30(); break;
+        case 3: FUN_00634d30(); break;
+        case 4: EndFunction(); break;
+        case 5: FUN_00634db0(); break;
+        case 6:
+            FUN_00634dd0();
+            if (m_24 == -1)
+                return;
+            break;
+        case 7:
+            FUN_00634de0();
+            if (m_24 == -1)
+                return;
+            break;
+        case 8: FUN_00634eb0(); break;
+        case 9: FUN_00634fa0(); break;
+        case 10: FUN_00635090(); break;
+        case 11: FUN_00635150(); break;
+        case 12: FUN_00635210(); break;
+        case 13: FUN_00635240(); break;
+        case 14: FUN_00635320(); break;
+        case 15: FUN_00635330(); break;
+        case 16: FUN_006353f0(); break;
+        case 17: FUN_006354b0(); break;
+        case 18: FUN_00635630(); break;
+        case 19: FUN_006357b0(); break;
+        case 20: FUN_006358a0(); break;
+        case 21: FUN_00635990(); break;
+        case 22: FUN_00635b20(); break;
+        case 23: FUN_00635cb0(); break;
+        case 24: FUN_00635e50(); break;
+        case 25: FUN_00635fd0(); break;
+        case 26: FUN_00636210(); break;
+        case 27: FUN_00636450(); break;
+        case 28: FUN_00636680(); break;
+        case 29: FUN_006368c0(); break;
+        case 30: FUN_00636b00(); break;
+        case 31: FUN_00636d40(); break;
+        case 32: FUN_00636f80(); break;
+        case 33: FUN_006371b0(); break;
+        case 34: FUN_006373e0(); break;
+        case 35: FUN_00637610(); break;
+        case 36: FUN_00637840(); break;
+        case 37: FUN_00637a40(); break;
+        case 38: FUN_00637c40(); break;
+        case 39: FUN_00637e40(); break;
+        case 40: FUN_00638040(); break;
+        case 41: FUN_00638240(); break;
+        case 42: FUN_00638440(); break;
+        case 43: FUN_00638650(); break;
+        case 44: FUN_00638860(); break;
+        case 45: FUN_00638a70(); break;
+        case 46: FUN_00638c80(); break;
+        case 47: FUN_00638e90(); break;
+        default:
+            SBAssert(0, "P:\\Robin Hood\\VirtualMachine\\VMCore.cpp", 0x4f1,
+                // STRING: GAME 0x006be16c
+                "VMCore::Run: Unexpected quad.\n");
+            break;
+        }
+    }
+}
+
 void EmitVMCore(VMCore *core)
 {
     core->Empty();
@@ -344,6 +688,37 @@ void EmitVMCore(VMCore *core)
     core->FUN_00635320();
     core->FUN_00635330();
     core->FUN_006353f0();
+    core->FUN_006354b0();
+    core->FUN_00635630();
+    core->FUN_006357b0();
+    core->FUN_006358a0();
+    core->FUN_00635990();
+    core->FUN_00635b20();
+    core->FUN_00635cb0();
+    core->FUN_00635e50();
+    core->FUN_00635fd0();
+    core->FUN_00636210();
+    core->FUN_00636450();
+    core->FUN_00636680();
+    core->FUN_006368c0();
+    core->FUN_00636b00();
+    core->FUN_00636d40();
+    core->FUN_00636f80();
+    core->FUN_006371b0();
+    core->FUN_006373e0();
+    core->FUN_00637610();
+    core->FUN_00637840();
+    core->FUN_00637a40();
+    core->FUN_00637c40();
+    core->FUN_00637e40();
+    core->FUN_00638040();
+    core->FUN_00638240();
+    core->FUN_00638440();
+    core->FUN_00638650();
+    core->FUN_00638860();
+    core->FUN_00638a70();
+    core->FUN_00638c80();
+    core->FUN_00638e90();
     core->VMCore::FUN_006390a0();
     core->~VMCore();
     core->FUN_00639230();

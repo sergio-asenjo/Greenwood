@@ -45,11 +45,15 @@ public:
     void FUN_0063a1f0(int, unsigned char *, int);
 };
 
+struct VMQuad;
+
 class VMUnk0063a490Result
 {
 public:
     char m_pad0[0x24];
     int m_24;
+    char m_pad28[0x28];
+    VMQuad *m_50;
 };
 
 class VMUnk0063a490
@@ -94,6 +98,37 @@ public:
     void FUN_00635210();
     void FUN_00635240();
     void FUN_00635320();
+    void FUN_006354b0();
+    void FUN_00635630();
+    void FUN_006357b0();
+    void FUN_006358a0();
+    void FUN_00635990();
+    void FUN_00635b20();
+    void FUN_00635cb0();
+    void FUN_00635e50();
+    void FUN_00635fd0();
+    void FUN_00636210();
+    void FUN_00636450();
+    void FUN_00636680();
+    void FUN_006368c0();
+    void FUN_00636b00();
+    void FUN_00636d40();
+    void FUN_00636f80();
+    void FUN_006371b0();
+    void FUN_006373e0();
+    void FUN_00637610();
+    void FUN_00637840();
+    void FUN_00637a40();
+    void FUN_00637c40();
+    void FUN_00637e40();
+    void FUN_00638040();
+    void FUN_00638240();
+    void FUN_00638440();
+    void FUN_00638650();
+    void FUN_00638860();
+    void FUN_00638a70();
+    void FUN_00638c80();
+    void FUN_00638e90();
     virtual bool FUN_006390a0();
     virtual bool FUN_006390a0_1();
     ~VMCore();
