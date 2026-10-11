@@ -15,6 +15,27 @@ public:
     unsigned int m_capacity; // 0x0c
 };
 
+class SBFileArchiveText
+{
+public:
+    explicit SBFileArchiveText(const char *value, const std::allocator<char> &allocator = std::allocator<char>())
+    {
+        m_allocator = *(const char *)&allocator;
+        ((RHProfileText *)this)->FUN_00401ee0(false);
+        unsigned int length = strlen(value);
+        if (((RHProfileText *)this)->FUN_00402280(length, true)) {
+            memcpy(m_chars, value, length);
+            m_size = length;
+            m_chars[length] = 0;
+        }
+    }
+    ~SBFileArchiveText() { ((RHProfileText *)this)->FUN_00401ee0(true); }
+    char m_allocator;
+    char *m_chars;
+    unsigned int m_size;
+    unsigned int m_capacity;
+};
+
 extern void SBFileAssert(int, const char *, int, const char *, ...);
 
 DECOMP_SIZE_ASSERT(SBFileUnk005f5280, 0x01)
@@ -29,6 +50,63 @@ DECOMP_SIZE_ASSERT(RHProfileText, 0x10)
 #define SBFile_error (*(int *)((char *)this + 0x14))
 #define SBFile_embedded (*(char *)((char *)this + 0x28))
 #define SBFile_start (*(int *)((char *)this + 0x2c))
+
+#include <windows.h>
+
+// GLOBAL: GAME 0x006c137c
+bool (*g_unk0x006c137c)(const std::string &) = 0;
+
+// FUNCTION: GAME 0x005f5090
+int RHUnk005f4fc0::FUN_005f5090(const std::string &name, int mode)
+{
+    for (;;) {
+        if (SBFile_stream && *(char *)((char *)this + 0x3c) == 0)
+            FUN_005f5290();
+        HANDLE file = CreateFileA(name.c_str(), GENERIC_READ, FILE_SHARE_READ, 0,
+            OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+        if (file != INVALID_HANDLE_VALUE) {
+            GetFileTime(file, (FILETIME *)((char *)this + 0x40),
+                (FILETIME *)((char *)this + 0x48), (FILETIME *)((char *)this + 0x50));
+            CloseHandle(file);
+        }
+        switch (mode) {
+        case 1:
+            if ((SBFile_stream = SCSerializeUnk00643c43(name.c_str(), "rb")) == 0 &&
+                (SBFile_stream = FUN_005f58c0(name, "rb")) == 0 &&
+                ((SBFileUnk005f5280 *)this)->FUN_005f5280((int)&name) == -1) {
+                SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBFile.cpp", 0xcb,
+                    // STRING: GAME 0x006b9d94
+                    "Unable to find the file '%s'", name.c_str());
+                if (g_unk0x006c137c && g_unk0x006c137c(name) == true)
+                    continue;
+                return SBFile_error = -1;
+            }
+            m_bLoading = true;
+            break;
+        case 2:
+        case 8:
+            if ((SBFile_stream = SCSerializeUnk00643c43(name.c_str(),
+                // STRING: GAME 0x006b9d6c
+                "wb")) == 0 && (SBFile_stream = FUN_005f58c0(name, "wb")) == 0)
+                return SBFile_error = -1;
+            m_bLoading = false;
+            break;
+        case 4:
+            if ((SBFile_stream = SCSerializeUnk00643c43(name.c_str(),
+                // STRING: GAME 0x006b9d68
+                "ab")) == 0 && (SBFile_stream = FUN_005f58c0(name, "ab")) == 0)
+                return SBFile_error = -1;
+            m_bLoading = false;
+            break;
+        }
+        SBFile_position = 0;
+        SBFileUnk006439d6(SBFile_stream, 0, 2);
+        *(long *)((char *)this + 8) = SBFileUnk00643a8f(SBFile_stream);
+        SBFileUnk006439d6(SBFile_stream, 0, 0);
+        SBFile_error = 0;
+        return 0;
+    }
+}
 
 // FUNCTION: GAME 0x005f5280
 int SBFileUnk005f5280::FUN_005f5280(int)
@@ -100,28 +178,27 @@ int FUN_005f54d0()
     return result;
 }
 
-// Unannotated: coupled caller; iterator temporaries and EH frame differ.
+// FUNCTION: GAME 0x005f5500
 int FUN_005f5500(const void *key)
 {
-    SBFileTreeIterator archive = g_unk0x006c1358.FUN_005f7360(*(const std::string *)key);
-    if (archive.m_node == g_unk0x006c1358.m_head)
+    typedef SBFileTreeIterator &(SBFileTree::*Find)(SBFileTreeIterator &, const std::string &);
+    Find findArchive = (Find)&SBFileTree::FUN_005f7360;
+    SBFileTreeIterator archiveStorage;
+    SBFileTreeIterator archive((g_unk0x006c1358.*findArchive)(archiveStorage, *(const std::string *)key).m_node);
+    if (archive.m_node == g_unk0x006c135c)
         return -1;
-    unsigned int count = *(unsigned int *)((char *)archive.m_node + 0x20);
     unsigned int index = 0;
-    unsigned int offset = 0;
-    if (count != 0) {
+    unsigned int count = *(unsigned int *)((char *)archive.m_node + 0x20);
+    if (count != index) {
+        unsigned int offset = 0;
         do {
             char *name = *(char **)((char *)archive.m_node + 0x24) + offset;
-            SBFileTreeIterator entry(0);
+            SBFileTreeIterator entry;
             {
-                RHProfileText text;
-                unsigned int size = strlen(name);
-                if (text.FUN_00402280(size, true)) {
-                    memcpy(text.m_chars, name, size);
-                    text.m_size = size;
-                    text.m_chars[size] = 0;
-                }
-                SBFileTreeIterator candidate = g_unk0x006c1348.FUN_005f73f0(*(std::string *)&text);
+                SBFileArchiveText text(name);
+                Find findEntry = (Find)&SBFileTree::FUN_005f73f0;
+                SBFileTreeIterator candidateStorage;
+                SBFileTreeIterator candidate((g_unk0x006c1348.*findEntry)(candidateStorage, *(std::string *)&text).m_node);
                 entry = candidate.m_node == g_unk0x006c1348.m_head ||
                     ((RHCampaignCommandLine *)&text)->FUN_0045a010(
                         *(RHProfileText *)((char *)candidate.m_node + 0x0c)) < 0
@@ -130,14 +207,74 @@ int FUN_005f5500(const void *key)
             if (entry.m_node != g_unk0x006c1348.m_head)
                 g_unk0x006c1348.FUN_005f6640(entry);
             else
-                SBFileAssert(0, g_sbFileName, 0x2de, g_sbFileArchiveWarning);
+                SBFileAssert(0, "P:\\Robin Hood\\SBLibNG\\SBFile.cpp", 0x2de,
+                    "Warning, unable to find a file entry while closing an archive");
             ++index;
             offset += 0x58;
         } while (index != *(unsigned int *)((char *)archive.m_node + 0x20));
     }
-    operator delete(*(void **)((char *)archive.m_node + 0x24));
+    void *buffer = *(void **)((char *)archive.m_node + 0x24);
+    operator delete(buffer);
     g_unk0x006c1358.FUN_005f6cf0(archive);
     return 0;
+}
+
+// FUNCTION: GAME 0x005f5d60
+int RHUnk005f4fc0::FUN_005f5d60(const std::string &name, int mode)
+{
+    if (SBFile_stream)
+        SCSerializeUnk00643c56(SBFile_stream);
+    unsigned long access;
+    unsigned long protection;
+    unsigned long mappingAccess;
+    if (mode & 1) {
+        access = GENERIC_READ;
+        protection = PAGE_READONLY;
+        mappingAccess = FILE_MAP_READ;
+    }
+    if (mode & 2) {
+        access = GENERIC_WRITE;
+        protection = PAGE_READWRITE;
+        mappingAccess = FILE_MAP_ALL_ACCESS;
+    }
+    HANDLE &file = *(HANDLE *)((char *)this + 0x30);
+    HANDLE &mapping = *(HANDLE *)((char *)this + 0x34);
+    void *&view = *(void **)((char *)this + 0x38);
+    file = CreateFileA(name.c_str(), access, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+    char *message;
+    if (file == INVALID_HANDLE_VALUE) {
+        FormatMessageA(0x1300, 0, GetLastError(), 0x400, (char *)&message, 0, 0);
+        SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBFile.cpp", 0x437,
+            // STRING: GAME 0x006b9e48
+            "Unable to perform create file, %s", message);
+        LocalFree(message);
+        return 0;
+    }
+    mapping = CreateFileMappingA(file, 0, protection, 0, 0,
+        // STRING: GAME 0x006b9e40
+        "bank");
+    if (mapping == INVALID_HANDLE_VALUE) {
+        FormatMessageA(0x1300, 0, GetLastError(), 0x400, (char *)&message, 0, 0);
+        CloseHandle(file);
+        file = INVALID_HANDLE_VALUE;
+        SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBFile.cpp", 0x450,
+            // STRING: GAME 0x006b9e14
+            "Unable to perform create file mapping, %s", message);
+        LocalFree(message);
+        return 0;
+    }
+    view = MapViewOfFile(mapping, mappingAccess, 0, 0, 0);
+    if (!view) {
+        FormatMessageA(0x1300, 0, GetLastError(), 0x400, (char *)&message, 0, 0);
+        CloseHandle(mapping);
+        CloseHandle(file);
+        mapping = INVALID_HANDLE_VALUE;
+        file = INVALID_HANDLE_VALUE;
+        SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBFile.cpp", 0x46d,
+            // STRING: GAME 0x006b9df8
+            "Unable to map the view (%s)", message);
+    }
+    return (int)view;
 }
 
 // FUNCTION: GAME 0x005f63c0

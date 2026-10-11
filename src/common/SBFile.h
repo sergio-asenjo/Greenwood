@@ -23,6 +23,7 @@ public:
 struct SBFileTreeIterator
 {
     void *m_node; // 0x00
+    SBFileTreeIterator() {}
     explicit SBFileTreeIterator(void *node) : m_node(node) {}
 };
 

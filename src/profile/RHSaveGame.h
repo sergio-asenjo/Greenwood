@@ -12,6 +12,8 @@ public:
     RHUnk005f4fc0();
     ~RHUnk005f4fc0();
     int FUN_005f5090(const std::string &name, int mode);
+    int FUN_005f5d60(const std::string &, int);
+    FILE *FUN_005f58c0(const std::string &, const char *);
     void FUN_005f5290();
     bool FUN_005f6200(void *value);
 

@@ -1,5 +1,8 @@
 #include "SBNullstr.h"
 #include "SBFile.h"
+#include "RHSaveGame.h"
+
+FILE *RHUnk005f4fc0::FUN_005f58c0(const std::string &, const char *) { return 0; }
 
 int SBFileUnk006439d6(FILE *, long, int)
 {
