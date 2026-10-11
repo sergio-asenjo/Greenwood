@@ -11,23 +11,26 @@ void RHShadowPolygon::FUN_00595020() {}
 void RHShadowPolygon::FUN_005959e0() {}
 
 void RHUnk004a96a0::FUN_004a96a0(void *, void *, void *, bool) {}
-RHUnk00597a70::~RHUnk00597a70() {}
-RHUnk005977e0::~RHUnk005977e0() {}
+RHShadowVectorStdList::~RHShadowVectorStdList() {}
+RHScriptIter RHShadowPointListBase::FUN_0044e850(RHScriptIter, RHScriptIter last) { return last; }
 RHUnk00564020::~RHUnk00564020() {}
 void RHUnk0059f000::FUN_0059f000() {}
 void RHUnk0059ec90::FUN_0059ec90() {}
-bool RHShadowPolygon::FUN_0059e7e0(undefined *, RHUnk00564020 *) { return false; }
+RHShadowIterator *RHUnk0059f000::FUN_0059f1a0() { return 0; }
+RHShadowEvent *RHUnk0059ec90::FUN_0059ee30() { return 0; }
 void RHShadowPolygonList::FUN_005c8e40(int) {}
 RHUnk005c9010Iterator RHUnk0058e7f0List::FUN_0044e8b0(RHUnk005c9010Iterator, RHUnk005c9010Iterator last) { return last; }
+RHScriptIter RHShadowUnk0044e8b0::FUN_0044e8b0(RHScriptIter, RHScriptIter last) { return last; }
 RHUnk005c9010Iterator RHUnk0058e7f0List::FUN_0046eb30(RHUnk005c9010Iterator current) { return current; }
+RHUnk005c9010Iterator RHUnk0058e7f0List::FUN_0046eb30(RHSectorActorIter current) { return RHUnk005c9010Iterator((RHUnk005c9010Node *)current.m_p); }
 RHUnk005c9010Iterator RHUnk0058e7f0List::FUN_0046eb80() { return RHUnk005c9010Iterator(m_head->m_next); }
+RHUnk005c9010Iterator RHUnk0058e7f0List::FUN_00424410(RHUnk005c9010Iterator position, RHUnk00597a70 *const &) { return position; }
 RHUnk005c9010Iterator RHUnk005c9010Iterator::FUN_0057c9c0(int)
 {
     RHUnk005c9010Iterator previous = *this;
     ++*this;
     return previous;
 }
-float RHUnk005fc3b0::FUN_005fc7c0(float) { return 0.0f; }
 RHUnk005fc3b0 RHUnk005fc3b0::FUN_005fc9e0(float, float) { return *this; }
 void RHShadowUnk0060c260::FUN_0060c260(const SBGeoPoint2D &) {}
 void RHShadowUnk0060c260::FUN_0060c280() {}
@@ -35,16 +38,23 @@ const SBGeoPoint2D &RHShadowUnk0060c260::FUN_0060c2b0(unsigned short) { return *
 float RHShadowUnk005df9e0::FUN_005df9e0(float, float) { return 0.0f; }
 bool RHShadowPolygon::FUN_00598230(RHUnk005977e0 *, RHShadowUnk005df9e0 *, bool) { return false; }
 bool RHShadowPolygon::FUN_00598b90(RHUnk005977e0 *, RHShadowUnk005df9e0 *) { return false; }
-bool RHShadowPolygon::FUN_0059b1f0(undefined *) { return false; }
-bool RHShadowPolygon::FUN_0059b380(undefined *) { return false; }
-bool RHShadowPolygon::FUN_0059b510(undefined *, RHShadowUnk005df9e0 *) { return false; }
-bool RHShadowPolygon::FUN_0059b6b0(undefined *, RHShadowUnk005df9e0 *) { return false; }
 void RHShadowPolygon::FUN_0059b850(RHUnk005977e0 *, RHShadowUnk005df9e0 *) {}
 void RHShadowPolygon::FUN_0059bfb0(RHUnk005977e0 *, RHShadowUnk005df9e0 *) {}
 void RHShadowPolygon::FUN_0059c720(RHUnk005977e0 *, RHShadowUnk005df9e0 *) {}
 void RHShadowPolygon::FUN_0059ce90(RHUnk005977e0 *) {}
-void RHShadowPolygon::FUN_0059d5b0(RHUnk005977e0 *) {}
 void RHShadowPolygon::FUN_0059d7f0(RHUnk005977e0 *) {}
+RHShadowViewport::RHShadowViewport() {}
+RHShadowBox::RHShadowBox() {}
+RHMobileUnk006100e0::RHMobileUnk006100e0(const SBGeoPoint2D &, const SBGeoPoint2D &) {}
+void RHMobileUnk006100e0::FUN_00610160(const SBGeoPoint2D &) {}
+float RHMobileUnk006100e0::FUN_006104f0(float) { return 0.0f; }
+float RHMobileUnk006100e0::FUN_00610520(float) { return 0.0f; }
+RHShadowPointNodeList::~RHShadowPointNodeList() {}
+RHShadowPointNode *RHShadowPointNodeList::FUN_004243e0(RHShadowPointNode *next, RHShadowPointNode *) { return next; }
+void FUN_0059fb20(RHUnk00613e90 *, const RHUnk00613e90 &) {}
+void FUN_0059fb00(RHUnk00597a70 **, RHUnk00597a70 *const &) {}
+RHShadowViewport::~RHShadowViewport() {}
+float RHUnk00613e90::FUN_005df5f0(const RHUnk00613e90 &) const { return 0.0f; }
 
 void FUN_005c9010(RHUnk005c9010Iterator &current, int distance, std::bidirectional_iterator_tag)
 {
