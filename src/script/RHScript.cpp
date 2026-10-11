@@ -354,7 +354,7 @@ int RHUnk00452030::Get(int index)
     return *(int *)((char *)this + index * 4 + 0x94);
 }
 
-// Parked: 0x004520e0, 96.15%; coupled call operand requires no annotation.
+// FUNCTION: GAME 0x004520e0
 void RHScriptBatchCalls::Unk004520e0(int index, int value)
 {
     if (index == 1 && value > *(int *)((char *)this + 0x98))
@@ -3685,8 +3685,8 @@ void RHScript::UnlockAI(void *actor)
     if ((type & 7) == 0)
     {
         *(char *)((char *)actor + 0x1c5) = 0;
-        ((RHScriptBatchCalls *)actor)->Unk0046fe00();
-        ((RHScriptBatchCalls *)actor)->Unk0046ec50(3);
+        ((RHElementActorAnimal *)actor)->ThisIsYourNewHome();
+        ((RHElementActorAnimal *)actor)->Think((RHanimalStimulusType)3);
         return;
     }
     SBAssert(0, "P:\\Robin Hood\\RHScript.cpp", 5361,

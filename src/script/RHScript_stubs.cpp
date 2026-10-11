@@ -200,8 +200,6 @@ void *RHUnk005b5e00::FUN_005b5de0()
     return *(void **)((char *)this + 0x154);
 }
 void RHScriptBatchCalls::Unk00418bc0() {}
-void RHScriptBatchCalls::Unk0046fe00() {}
-void RHScriptBatchCalls::Unk0046ec50(int) {}
 void RHScriptBatchCalls::Unk00464630() {}
 void RHScriptBatchCalls::Unk0048cbc0() {}
 void RHScriptBatchCalls::Unk0048c4d0() {}

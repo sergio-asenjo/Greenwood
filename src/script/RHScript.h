@@ -852,7 +852,7 @@ public:
     RHUnk005fc3b0();
     ~RHUnk005fc3b0() {}
     float Unk005fc6a0(float value);
-    RHUnk005fc3b0 &Unk005fcd40(unsigned short direction, float length);
+    RHUnk005fc3b0 &Unk005fcd40(unsigned char direction, float length);
     RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other);
     void Set(float x, float y) { m_x = x; m_y = y; }
 };
@@ -1031,6 +1031,17 @@ public:
     void *FUN_005b5de0();
 };
 
+enum RHanimalStimulusType
+{
+};
+
+class RHElementActorAnimal
+{
+public:
+    void Think(RHanimalStimulusType stimulus);
+    void ThisIsYourNewHome();
+};
+
 class RHScriptBatchCalls
 {
 public:
@@ -1040,8 +1051,6 @@ public:
     bool Unk004188f0(void *path);
     bool Unk00418a80(RHUnk00571160Position position, int direction);
     void Unk00418bc0();
-    void Unk0046fe00();
-    void Unk0046ec50(int value);
     bool Unk004e3e30(int index);
     void Unk004e3e00(int index, int value);
     int Unk004e3e20(int index);
