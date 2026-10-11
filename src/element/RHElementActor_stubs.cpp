@@ -9,7 +9,6 @@ void RHActorString::FUN_00402780() {}
 bool RHActorString::FUN_00402280(unsigned, bool) { return true; }
 void RHActorString::FUN_00402260(unsigned) {}
 void RHActorString::FUN_00401ee0(bool) {}
-RHActorString &RHActorString::FUN_00402a70(unsigned, unsigned) { return *this; }
 
 // FUNCTION: GAME 0x006416e6
 // ?_Xran@std@@YAXXZ

@@ -2,7 +2,6 @@
 #include "RHElement.h"
 
 unsigned RHElementAreaShape::FUN_0060ce80() const { return 0; }
-const SBGeoPoint2D &RHElementAreaShape::FUN_0060cef0(unsigned) const { return *(const SBGeoPoint2D *)0; }
 RHElementAreaListBase::RHElementAreaListBase(const char &) {}
 RHElementAreaListBase::~RHElementAreaListBase() {}
 void RHElementAreaListBase::Clear() {}

@@ -197,11 +197,20 @@ public:
     undefined m_4[0x38]; // 0x04
 };
 
+class RHUnkSectorPoints
+{
+public:
+    SBGeoPoint2D &Unk0060cef0(unsigned index);
+};
+
 class RHMobilePolygonPoints
 {
 public:
     unsigned short FUN_0060ce80() const;
-    const SBGeoPoint2D &FUN_0060cef0(unsigned index) const;
+    const SBGeoPoint2D &FUN_0060cef0(unsigned index) const
+    {
+        return ((RHUnkSectorPoints *)this)->Unk0060cef0(index);
+    }
 };
 
 class RHMobileUnk0051fd10

@@ -54,6 +54,13 @@ struct RHUnk0047c420Message
 
 DECOMP_SIZE_ASSERT(RHUnk0047c420Message, 0x2c)
 
+class RHUnk0046bcb0
+{
+public:
+    void Unk(int value);
+};
+
+// Parked: propagation register lifetimes and EH scheduling differ.
 // STUB: GAME 0x0044d400
 void RHUnk0044d400::FUN_0044d400(int value, bool propagate)
 {
@@ -228,7 +235,7 @@ void RHElementActorHuman::Translate(RHSequenceElement *element, RHcommand comman
     sequence->FUN_00585970(order);
 }
 
-// Sequence-list cursor allocation and named-call operands remain unmatched.
+// Parked: sequence-list cursor uses ebx instead of ebp, shifting failure branches.
 // STUB: GAME 0x004799e0
 bool RHElementActorHuman::Serialize(SBFile &file)
 {
@@ -398,12 +405,13 @@ int RHElementActorHuman::FUN_0047b760(void *actor, int *value)
     return ((RHHumanActorCalls *)this)->FUN_0047b8a0(RHActorField<RHUnk00613e90>(RHActorField<void *>(actor, 0x50), 0x10), value, false);
 }
 
+// Parked: message input loads are hoisted and adjusted-receiver registers differ.
 // STUB: GAME 0x0047c420
 void RHElementActorHuman::FUN_0047c420(void *value)
 {
     if (m_260.count == 0)
     {
-        ((RHElementActor *)this)->FUN_0046bcb0(7);
+        ((RHUnk0046bcb0 *)this)->Unk(7);
         if ((RHActorField<unsigned>(this, 4) & 31) == 20)
         {
             RHUnk0047c420Message message;
@@ -481,6 +489,7 @@ void RHUnk0047ca50::Unk()
     }
 }
 
+// Parked: cached-cursor expansion and opponent-swap receiver scheduling differ.
 // STUB: GAME 0x0047d920
 void RHElementActorHuman::FUN_0047d920(RHElementActorHuman *actor)
 {
@@ -510,6 +519,7 @@ void RHElementActorHuman::FUN_0047d920(RHElementActorHuman *actor)
     }
 }
 
+// Parked: word-result narrowing and zero-result return tails differ.
 // STUB: GAME 0x0047e7d0
 int RHElementActorHuman::FUN_0047e7d0(RHUnk005864a0 *element)
 {
@@ -520,41 +530,42 @@ int RHElementActorHuman::FUN_0047e7d0(RHUnk005864a0 *element)
         if ((RHActorField<int>(this, 0x144) == 10 && element->FUN_005864d0() != 12 && element->FUN_005864d0() != 13) ||
             RHActorField<int>(this, 0x144) == 11)
             return 4;
-        return 0;
     }
-    RHHumanWeaponCalls *defender = RHActorField<RHHumanWeaponCalls *>(this, 0x25c);
-    if (!defender)
-        return 3;
-    unsigned short chance = defender->FUN_005c1d70(element->FUN_005864d0());
-    chance = RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1b70(this, (void *)element->FUN_005864a0(), chance);
-    if (rand() % 99 + 1 > chance)
+    else if (RHActorField<RHHumanWeaponCalls *>(this, 0x25c))
     {
-        unsigned short amount = weapon->FUN_005c1dd0(element->FUN_005864d0(), (void *)element->FUN_005864a0());
-        if (amount > 0)
+        unsigned short chance = RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1d70(element->FUN_005864d0());
+        chance = RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1b70(this, (void *)element->FUN_005864a0(), chance);
+        if (rand() % 99 + 1 > chance)
         {
-            ((RHHumanVirtualCalls *)this)->V0bc(amount, (void *)element->FUN_005864a0());
-            if (((RHHumanVirtualCalls *)this)->V048())
+            chance = weapon->FUN_005c1dd0(element->FUN_005864d0(), (void *)element->FUN_005864a0());
+            if (chance > 0)
             {
-                unsigned count = RHActorField<unsigned>(RHActorField<void *>(this, 0x1c4), 8);
-                unsigned amount = 20;
-                unsigned other = RHActorField<unsigned>(RHActorField<void *>((void *)element->FUN_005864a0(), 0x1c4), 8);
-                if (count > other)
-                    amount += count - other;
-                ((RHHumanVirtualCalls *)element->FUN_005864a0())->V0c8(0, amount);
+                ((RHHumanVirtualCalls *)this)->V0bc(chance, (void *)element->FUN_005864a0());
+                if (((RHHumanVirtualCalls *)this)->V048())
+                {
+                    unsigned count = RHActorField<unsigned>(RHActorField<void *>(this, 0x1c4), 8);
+                    unsigned amount = 20;
+                    unsigned other = RHActorField<unsigned>(RHActorField<void *>((void *)element->FUN_005864a0(), 0x1c4), 8);
+                    if (count > other)
+                        amount += count - other;
+                    ((RHHumanVirtualCalls *)element->FUN_005864a0())->V0c8(0, amount);
+                }
+                result = 1;
             }
-            result = 1;
         }
-    }
-    chance = RHActorField<unsigned short>(RHActorField<void *>(RHActorField<void *>(this, 0x25c), 4), 0x12);
-    if (rand() % 99 + 1 > chance)
-    {
-        unsigned short amount = ((RHHumanWeaponCalls *)weapon)->FUN_005c1db0(element->FUN_005864d0());
-        if (amount > 0)
+        chance = RHActorField<unsigned short>(RHActorField<void *>(RHActorField<void *>(this, 0x25c), 4), 0x12);
+        if (rand() % 99 + 1 > chance)
         {
-            ((RHHumanVirtualCalls *)this)->V0d8(amount, (void *)element->FUN_005864a0());
-            return result | 2;
+            chance = ((RHHumanWeaponCalls *)weapon)->FUN_005c1db0(element->FUN_005864d0());
+            if (chance > 0)
+            {
+                ((RHHumanVirtualCalls *)this)->V0d8(chance, (void *)element->FUN_005864a0());
+                return result | 2;
+            }
         }
     }
+    else
+        return 3;
     return result;
 }
 
@@ -617,6 +628,7 @@ int RHElementActorHuman::FUN_004838f0(bool alternate)
     }
 }
 
+// Parked: cached-cursor reset and advance paths merge differently.
 // STUB: GAME 0x00484a70
 int RHElementActorHuman::FUN_00484a70(void *value)
 {
@@ -634,6 +646,7 @@ int RHElementActorHuman::FUN_00484a70(void *value)
     return result;
 }
 
+// Parked: cached-list expansion, local frame size and x87 scheduling differ.
 // STUB: GAME 0x00484bb0
 bool RHElementActorHuman::FUN_00484bb0(RHElementActorHuman *actor, SBGeoPoint2D &result, void *line)
 {

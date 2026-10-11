@@ -25,8 +25,7 @@ inline void RHElementBonus::ApplyProjection(RHBonusProjection *projection)
     m_50->m_4.FUN_0055fa20(projection);
 }
 
-// Parked: null-branch placement and register allocation.
-// Last probe 92.31%; not proven irreducible.
+// New probe: marker flip leaves null-branch placement at 92.31% and creates an effective row.
 // STUB: GAME 0x004a74f0
 RHElementBonus *RHElementBonus::CreateBonusFromMissionStream(SBFile &file)
 {

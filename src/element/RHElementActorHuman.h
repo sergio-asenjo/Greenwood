@@ -539,11 +539,7 @@ public:
     RHHumanFloatNode *m_head; // 0x04
     unsigned m_count; // 0x08
 };
-class RHCampaignMissionList
-{
-public:
-    void FUN_004e6c10();
-};
+class RHMission;
 class RHUnk004e52a0
 {
 public:
@@ -558,7 +554,9 @@ public:
     {
         if (m_head)
         {
-            ((RHCampaignMissionList *)this)->FUN_004e6c10();
+            typedef std::list<RHMission *> Missions;
+            void (Missions::*clear)() = &Missions::clear;
+            (((Missions *)this)->*clear)();
             ((RHUnk004e52a0 *)this)->FUN_004e52a0();
         }
     }

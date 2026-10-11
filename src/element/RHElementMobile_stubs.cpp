@@ -45,6 +45,7 @@ bool RHMobilePath::FUN_00550660(unsigned char) { return false; }
 void RHMobilePath::FUN_005505c0() {}
 RHUnk005fc3b0::RHUnk005fc3b0(float x, float y) : SBGeoPoint2D(x, y) {}
 unsigned char RHUnk005fc3b0::FUN_005fcc50(float) const { return 0; }
+float RHUnk005fc3b0::FUN_005fc7c0(float) { return 0.0f; }
 void FUN_004b0620(RHUnk005fc3b0 *destination, const RHUnk005fc3b0 &value) { new (destination) RHUnk005fc3b0(value); }
 void FUN_004b05b0(RHUnk005fc3b0 *first, RHUnk005fc3b0 *last, const RHUnk005fc3b0 &value)
 {
@@ -88,7 +89,6 @@ void RHMobilePointList::FUN_005c9010(RHMobilePointNode *&node, int distance, uns
 void RHMobileUnk005dfaa0::FUN_005dfaa0(const SBGeoPoint2D &) {}
 
 unsigned short RHMobilePolygonPoints::FUN_0060ce80() const { return 0; }
-const SBGeoPoint2D &RHMobilePolygonPoints::FUN_0060cef0(unsigned) const { return *(const SBGeoPoint2D *)this; }
 RHMobileUnk0051fd10::RHMobileUnk0051fd10(float, float) {}
 RHMobileUnk0051fd10::~RHMobileUnk0051fd10() {}
 void RHMobileUnk0051fd10::FUN_0051fdc0() {}

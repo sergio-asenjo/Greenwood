@@ -249,12 +249,13 @@ bool RHElementMobile::ExecuteMacroCommand()
     }
 }
 
+// Parked: holder/count register roles and argument/index scheduling differ.
 // STUB: GAME 0x004ac7c0
 bool RHElementMobile::FUN_004ac7c0(void *value, void *unused, int type)
 {
     if (type == 9 && RHMobileField<bool>(this, 0x12) && RHMobileField<bool>(this, 0x1f1) && RHMobileField<bool>(this, 0xa8))
     {
-        unsigned short count = m_b0 ? m_b4 - m_b0 : 0;
+        unsigned short count = Size();
         for (unsigned short i = 0; i < count; ++i)
             if (((RHMobilePartCalls *)m_b0[i])->FUN_004aafc0(value))
                 return true;
@@ -415,18 +416,26 @@ void RHElementMobile::InitializeFromMissionStream(SBFile &file)
         ((RHUnk004af060 *)this)->Unk(((RHUnk005fc3b0 *)&m_188->FUN_004ae380())->FUN_005fcc50(1.0f));
 }
 
-// Parked: x87 conversion ordering and live temporary scheduling differ.
+static inline const SBGeoPoint2D &MobilePathDifference(SBGeoVector2D &result, float lastX, float lastY, RHMobileElement *first)
+{
+    result.m_x = lastX;
+    result.m_y = lastY;
+    result.m_x = lastX - first->m_64;
+    result.m_y = lastY - first->m_66;
+    return result;
+}
+
+// Parked: first-waypoint loads are CSE-hoisted before the result's coordinate stores.
 // STUB: GAME 0x004ae380
 SBGeoVector2D RHMobilePath::FUN_004ae380() const
 {
     SBGeoVector2D result;
-    RHMobileElement *last = m_4->m_4[(unsigned short)(Size() - 1)];
-    result.m_x = last->m_64;
-    result.m_y = last->m_66;
+    unsigned int count = m_4 == 0 ? 0 : m_4->m_4 == 0 ? 0 : m_4->m_8 - m_4->m_4;
+    RHMobileElement *last = m_4->m_4[(unsigned short)(count - 1)];
+    float lastY = last->m_66;
+    float lastX = last->m_64;
     RHMobileElement *first = m_4->m_4[0];
-    result.m_x -= first->m_64;
-    result.m_y -= first->m_66;
-    return result;
+    return SBGeoVector2D(MobilePathDifference(result, lastX, lastY, first));
 }
 
 #define RH_MOBILE_ACCESS(value, bytes, line) \
@@ -633,7 +642,7 @@ void RHElementMobile::FUN_004af0f0(int value)
     }
 }
 
-// Parked: effective-only; strength-reduced element load emits [esi+eax], target [eax+esi].
+// New probe: marker flip is effective-only (100.00%*) with the SIB operand order unresolved.
 // STUB: GAME 0x004af170
 void RHElementMobile::FUN_004af170(void *value)
 {
@@ -893,7 +902,7 @@ RHUnk005fc3b0 *RHMobileUnk004b06f0::FUN_004b06f0(RHUnk005fc3b0 *first, RHUnk005f
     return first;
 }
 
-// Parked: geometry allocation and list-insertion register scheduling require comparison.
+// Parked: line metadata stores and point-assignment receivers/arguments are reordered.
 // STUB: GAME 0x004e9d90
 void RHMobileGrid::FUN_004e9d90(RHMobilePointerList &output, RHMobilePolygon &polygon)
 {
@@ -902,21 +911,29 @@ void RHMobileGrid::FUN_004e9d90(RHMobilePointerList &output, RHMobilePolygon &po
     RHMobilePolygonPoints &points = RHMobileField<RHMobilePolygonPoints>(&polygon, 4);
     unsigned short count = points.FUN_0060ce80();
     previous = points.FUN_0060cef0(count - 1);
-    for (unsigned index = 0, remaining = count; remaining; ++index, --remaining)
+    if (count > 0)
     {
-        current = points.FUN_0060cef0(index);
-        RHMobileUnk0051fd10 *line = new RHMobileUnk0051fd10(0, 5.0f);
-        unsigned &flags = RHMobileField<unsigned>(line, 0x14);
-        if (RHMobileField<unsigned char>(&polygon, 0x30) & 1)
-            flags |= 1;
-        else
-            flags &= ~1;
-        RHMobileField<unsigned char>(line, 0x18) = RHMobileField<unsigned char>(&polygon, 0x34);
-        RHMobileField<SBGeoPoint2D>(line, 4) = previous;
-        RHMobileField<SBGeoPoint2D>(line, 0xc) = current;
-        line->FUN_0051fdc0();
-        output.Append(line);
-        previous = current;
+        unsigned index = 0;
+        unsigned remaining = count;
+        do
+        {
+            current = points.FUN_0060cef0(index);
+            RHMobileUnk0051fd10 *line = new RHMobileUnk0051fd10(0, 5.0f);
+            bool inside = (RHMobileField<unsigned char>(&polygon, 0x30) & 1) != 0;
+            unsigned &flags = RHMobileField<unsigned>(line, 0x14);
+            if (inside)
+                flags |= 1;
+            else
+                flags &= ~1;
+            RHMobileField<unsigned char>(line, 0x18) = RHMobileField<unsigned char>(&polygon, 0x34);
+            SBGeoPoint2D *ends = (SBGeoPoint2D *)((char *)line + 4);
+            ends[0] = previous;
+            ends[1] = current;
+            line->FUN_0051fdc0();
+            output.Append(line);
+            previous = current;
+            ++index;
+        } while (--remaining);
     }
 }
 

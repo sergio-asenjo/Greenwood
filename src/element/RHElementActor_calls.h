@@ -172,7 +172,7 @@ struct RHUnkSectorGlobal;
 extern RHEngine *g_pEngine;
 extern RHUnkSectorGlobal *g_unk0x6c0a9c;
 void RHSerializeName(SBFile &file, const char *name);
-void FUN_005e0c90(SBFile &file, std::string &value);
+bool FUN_005e0c90(SBFile &file, std::string &value);
 
 struct RHUnk005c9010Iterator;
 void FUN_005c9010(RHUnk005c9010Iterator &current, int distance, std::bidirectional_iterator_tag category);
@@ -288,7 +288,6 @@ public:
     bool FUN_00402280(unsigned length, bool trim = false);
     void FUN_00402260(unsigned length);
     void FUN_00401ee0(bool release);
-    RHActorString &FUN_00402a70(unsigned start, unsigned length);
     void Assign(const RHActorString &source)
     {
         unsigned count = std::string::npos;
@@ -309,7 +308,9 @@ public:
                 if (FUN_00402280(remaining))
                     FUN_00402260(remaining);
             }
-            FUN_00402a70(0, 0);
+            typedef std::string &(std::string::*Erase)(unsigned, unsigned);
+            Erase erase = &std::string::erase;
+            (((std::string *)this)->*erase)(0, 0);
         }
         else if (length > 0 && length == source.m_8 && (unsigned char)source.c_str()[-1] < 254)
         {
