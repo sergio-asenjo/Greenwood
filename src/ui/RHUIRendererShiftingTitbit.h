@@ -2,6 +2,7 @@
 #define RHUIRENDERERSHIFTINGTITBIT_H
 
 #include "SB.h"
+#include "SBUIRenderer.h"
 
 class SBGeoVector2D;
 
@@ -56,7 +57,10 @@ class SBResourceManager
 {
 public:
     bool GetSurfaceForResource(long, unsigned, unsigned &);
-    void FUN_006006f0(long, SBGeoVector2D &);
+    bool FUN_006006f0(long id, SBGeoVector2D &value)
+    {
+        return ((SBUIUnk006006f0 *)this)->FUN_006006f0(id, (RHUnk005fc3b0 &)value);
+    }
 };
 
 class SBDrawManager

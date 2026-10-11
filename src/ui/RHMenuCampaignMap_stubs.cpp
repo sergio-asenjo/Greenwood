@@ -6,7 +6,6 @@ void RHMapWideText::End(unsigned) {}
 RHMapDescription::RHMapDescription() {}
 RHMapDescription::~RHMapDescription() {}
 bool RHMapDescription::FUN_0063cda0(unsigned) { return false; }
-bool RHMapResources::FUN_006009e0(unsigned, unsigned, RHMapWideText &) { return false; }
 bool RHMenuCampaignMap::FUN_0061a1e0(const RHMapTitleText &, const RHMapBox &, unsigned) { return false; }
 void RHMapWindowPart::FUN_00618850(void *) {}
 bool RHMapWindowPart::FUN_00619ad0(void *) { return false; }

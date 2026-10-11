@@ -3,6 +3,38 @@
 #include "RHLoadingScreen.h"
 #include <new>
 
+// TEMPLATE: GAME 0x006136a0
+// ?_Sort@std@@YAXPAG0P6A_NGG@Z0@Z
+
+// TEMPLATE: GAME 0x006137d0
+// ?_Insertion_sort_1@std@@YAXPAG0P6A_NGG@Z0@Z
+
+// SIZE 0x18
+class SBPictureUnkView
+{
+public:
+    SBPictureUnkView();
+    ~SBPictureUnkView();
+    char m_00[4];
+    unsigned short m_width;
+    unsigned short m_height;
+    unsigned long m_pitch;
+    unsigned short m_depth;
+    char m_0e[2];
+    unsigned short *m_data;
+    char m_14[4];
+};
+
+class SBPictureUnkDrawManager
+{
+public:
+    bool Unk005e5a00(unsigned long, SBPictureUnkView &, unsigned long);
+    void Unk005e5ea0(SBPictureUnkView &);
+    char m_00[0x10c];
+    unsigned short m_depth;
+    unsigned short Depth() const { return m_depth; }
+};
+
 // FUNCTION: GAME 0x00611bd0
 void *SBPicture::FUN_00611bd0(int)
 {
@@ -17,6 +49,42 @@ void SBPicture::FUN_00611c50()
         m_14 = 0;
         m_1c = 0;
     }
+}
+
+// FUNCTION: GAME 0x00611c80
+bool SBPicture::FUN_00611c80(SBPictureUnkDrawManager *draw, unsigned long surface)
+{
+    SBPictureUnkView view;
+    if (!((RHUnkFXDraw *)draw)->Unk005e5a00(surface, (RHUnk00613e90 &)view, 0))
+        return false;
+    if (m_1c != 0) {
+        unsigned char *old = m_14;
+        m_1c = 0;
+        operator delete(old);
+    }
+    if (m_04 == 1) {
+        void *old = m_18;
+        operator delete(old);
+    }
+    m_04 = draw->Depth() == 16 ? 3 : 2;
+    m_20 = view.m_width;
+    m_22 = view.m_height;
+    m_24 = view.m_width;
+    m_1c = view.m_height * view.m_width * 2;
+    unsigned short *picture = new unsigned short[m_1c / 2];
+    m_14 = (unsigned char *)picture;
+    unsigned long pitch = view.m_pitch >> 1;
+    unsigned short *source = view.m_data;
+    unsigned long sourceOffset = 0;
+    unsigned long destinationOffset = 0;
+    for (unsigned short y = 0; y < view.m_height; ++y) {
+        for (unsigned short x = 0; x < view.m_width; ++x)
+            picture[x + destinationOffset] = source[x + sourceOffset];
+        sourceOffset += pitch;
+        destinationOffset += view.m_width;
+    }
+    draw->Unk005e5ea0(view);
+    return true;
 }
 
 // FUNCTION: GAME 0x00611e10
@@ -46,7 +114,7 @@ bool RHUnk006114c0::Unk00611e10(unsigned long format, unsigned long mode)
     return false;
 }
 
-// STUB: GAME 0x00611ea0
+// FUNCTION: GAME 0x00611ea0
 bool SBPicture::FUN_00611ea0(int)
 {
     unsigned short *picture = (unsigned short *)operator new(m_22 * m_20 * 2);
@@ -60,14 +128,12 @@ bool SBPicture::FUN_00611ea0(int)
             "Unable to allocate new picture when trying to convert from 24 to 16 bits");
         return false;
     }
-    unsigned short *destination = picture;
     for (unsigned int i = 0; i < m_1c / 3; ++i)
     {
-        unsigned short value = source[0] & 0xf8;
-        value = (value << 5) | (unsigned short)(source[1] & 0xfc);
-        value = (value << 3) | (unsigned short)(source[2] >> 3);
-        *destination++ = value;
-        source += 3;
+        unsigned short value = source[i * 3] & 0xf8;
+        value = (value << 5) | (unsigned short)(source[i * 3 + 1] & 0xfc);
+        value = (value << 3) | (unsigned short)(source[i * 3 + 2] >> 3);
+        picture[i] = value;
     }
     m_04 = 3;
     operator delete(m_14);
@@ -76,7 +142,7 @@ bool SBPicture::FUN_00611ea0(int)
     return true;
 }
 
-// STUB: GAME 0x00611f70
+// FUNCTION: GAME 0x00611f70
 bool SBPicture::FUN_00611f70(int)
 {
     unsigned short *picture = (unsigned short *)operator new(m_22 * m_20 * 2);
@@ -87,14 +153,12 @@ bool SBPicture::FUN_00611f70(int)
             "Unable to allocate new picture when trying to convert from 24 to 16 bits");
         return false;
     }
-    unsigned short *destination = picture;
     for (unsigned int i = 0; i < m_1c / 3; ++i)
     {
-        unsigned short value = source[0] & 0xf8;
-        value = (value << 5) | (unsigned short)(source[1] & 0xf8);
-        value = (value << 2) | (unsigned short)(source[2] >> 3);
-        *destination++ = value;
-        source += 3;
+        unsigned short value = source[i * 3] & 0xf8;
+        value = (value << 5) | (unsigned short)(source[i * 3 + 1] & 0xf8);
+        value = (value << 2) | (unsigned short)(source[i * 3 + 2] >> 3);
+        picture[i] = value;
     }
     m_04 = 2;
     operator delete(m_14);
@@ -103,7 +167,7 @@ bool SBPicture::FUN_00611f70(int)
     return true;
 }
 
-// STUB: GAME 0x00612040
+// FUNCTION: GAME 0x00612040
 bool SBPicture::FUN_00612040(int)
 {
     unsigned char *picture = (unsigned char *)operator new(m_22 * m_20 * 3);
@@ -114,15 +178,13 @@ bool SBPicture::FUN_00612040(int)
             "Unable to allocate new picture when trying to convert from 16 to 24 bits");
         return false;
     }
-    unsigned char *destination = picture;
     for (unsigned int i = 0; i < m_1c / 2; ++i) {
-        unsigned short value = *source++;
-        int green = (((value >> 5) & 63) << 8) / 64;
-        int blue = ((value & 31) << 8) / 32;
-        int red = ((value >> 11) << 8) / 32;
-        *destination++ = red;
-        *destination++ = green;
-        *destination++ = blue;
+        int green = ((source[i] >> 5) & 63) * 256 / 64;
+        int blue = (source[i] & 31) * 256 / 32;
+        int red = (source[i] >> 11) * 256 / 32;
+        picture[i * 3] = red;
+        picture[i * 3 + 1] = green;
+        picture[i * 3 + 2] = blue;
     }
     m_04 = 4;
     operator delete(m_14);
@@ -131,7 +193,7 @@ bool SBPicture::FUN_00612040(int)
     return true;
 }
 
-// STUB: GAME 0x00612150
+// FUNCTION: GAME 0x00612150
 bool SBPicture::FUN_00612150(int)
 {
     unsigned char *picture = (unsigned char *)operator new(m_22 * m_20 * 3);
@@ -142,15 +204,13 @@ bool SBPicture::FUN_00612150(int)
             "Unable to allocate new picture when trying to convert from 15 to 24 bits");
         return false;
     }
-    unsigned char *destination = picture;
     for (unsigned int i = 0; i < m_1c / 2; ++i) {
-        unsigned short value = *source++;
-        int green = (((value >> 5) & 31) << 8) / 32;
-        int blue = ((value & 31) << 8) / 32;
-        int red = (((value >> 10) & 31) << 8) / 32;
-        *destination++ = red;
-        *destination++ = green;
-        *destination++ = blue;
+        int green = ((source[i] >> 5) & 31) * 256 / 32;
+        int blue = (source[i] & 31) * 256 / 32;
+        int red = ((source[i] >> 10) & 31) * 256 / 32;
+        picture[i * 3] = red;
+        picture[i * 3 + 1] = green;
+        picture[i * 3 + 2] = blue;
     }
     operator delete(m_14);
     m_14 = picture;
@@ -184,7 +244,7 @@ bool SBPicture::FUN_006122b0(int)
 }
 
 // FUNCTION: GAME 0x00612300
-bool SBPicture::FUN_00612300(void *size, int mode)
+bool SBPicture::FUN_00612300(const SBPictureUnkVector2D &size, int mode)
 {
     switch (m_04) {
     case 2:
@@ -203,16 +263,47 @@ bool SBPicture::FUN_00612300(void *size, int mode)
     return false;
 }
 
-// STUB: GAME 0x006124f0
+// FUNCTION: GAME 0x00612350
+bool SBPicture::FUN_00612350(const SBPictureUnkVector2D &size)
+{
+    unsigned short *picture = (unsigned short *)operator new((int)(size.GetX() * size.GetY()) * 2);
+    unsigned short *source = (unsigned short *)m_14;
+    if (!picture) {
+        SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBPicture.cpp", 0x253,
+            // STRING: GAME 0x006bb72c
+            "Unable to allocate a new picture to resize the old one");
+        return false;
+    }
+    unsigned short width = (int)size.GetX();
+    float x = g_unk0x00677488;
+    float y = g_unk0x00677488;
+    float stepX = size.GetX() / m_20;
+    float stepY = size.GetY() / m_22;
+    for (unsigned short row = 0; row < m_22; ++row) {
+        for (unsigned short column = 0; column < m_20; ++column) {
+            picture[(unsigned short)(int)y * width + (unsigned short)(int)x] = source[row * m_24 + column];
+            x += stepX;
+        }
+        y += stepY;
+    }
+    operator delete(m_14);
+    m_14 = (unsigned char *)picture;
+    m_24 = width;
+    m_20 = (int)size.GetX();
+    m_22 = (int)size.GetY();
+    return true;
+}
+
+// FUNCTION: GAME 0x006124f0
 unsigned short SBPicture::FUN_006124f0(unsigned short *pixels, unsigned short stride,
     unsigned short width, unsigned short height)
 {
     unsigned short red = 0;
     unsigned short green = 0;
     unsigned short blue = 0;
-    for (unsigned int y = 0; y < height; ++y) {
+    for (unsigned short y = 0; y < height; ++y) {
         unsigned short *row = pixels;
-        for (unsigned int x = 0; x < width; ++x) {
+        for (unsigned short x = 0; x < width; ++x) {
             unsigned short value = *row++;
             red += value >> 11;
             green += (value >> 5) & 62;
@@ -220,20 +311,20 @@ unsigned short SBPicture::FUN_006124f0(unsigned short *pixels, unsigned short st
         }
         pixels += stride;
     }
-    int count = width * height;
-    return (((red / count) << 6) | ((green / count) & 63)) << 5 | ((blue / count) & 31);
+    return (((red / (width * height)) << 6) | ((green / (width * height)) & 63)) << 5
+        | ((blue / (width * height)) & 31);
 }
 
-// STUB: GAME 0x006125c0
+// FUNCTION: GAME 0x006125c0
 unsigned short SBPicture::FUN_006125c0(unsigned short *pixels, unsigned short stride,
     unsigned short width, unsigned short height)
 {
     unsigned short red = 0;
     unsigned short green = 0;
     unsigned short blue = 0;
-    for (unsigned int y = 0; y < height; ++y) {
+    for (unsigned short y = 0; y < height; ++y) {
         unsigned short *row = pixels;
-        for (unsigned int x = 0; x < width; ++x) {
+        for (unsigned short x = 0; x < width; ++x) {
             unsigned short value = *row++;
             red += (value >> 10) & 31;
             green += (value >> 5) & 31;
@@ -241,8 +332,78 @@ unsigned short SBPicture::FUN_006125c0(unsigned short *pixels, unsigned short st
         }
         pixels += stride;
     }
-    int count = width * height;
-    return ((((red / count) & 31) << 5) | ((green / count) & 31)) << 5 | ((blue / count) & 31);
+    return ((((red / (width * height)) & 31) << 5) | ((green / (width * height)) & 31)) << 5
+        | ((blue / (width * height)) & 31);
+}
+
+// Folded 0.0f for-guards bind the pooled literal, not g_unk0x00677488; do/while guards reorder the store.
+// STUB: GAME 0x00612690
+bool SBPicture::FUN_00612690(const SBPictureUnkVector2D &size)
+{
+    unsigned short *picture = (unsigned short *)operator new((int)(size.GetX() * size.GetY()) * 2);
+    unsigned short *source = (unsigned short *)m_14;
+    if (!picture) {
+        SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBPicture.cpp", 0x305,
+            "Unable to allocate a new picture to resize the old one");
+        return false;
+    }
+    unsigned short width = (int)size.GetX();
+    float stepX = m_20 / size.GetX();
+    float stepY = m_22 / size.GetY();
+    float y = 0.0f;
+    for (unsigned short row = 0; row < size.GetY(); ++row) {
+        float x = 0.0f;
+        for (unsigned short column = 0; column < size.GetX(); ++column) {
+            int blockHeight = (int)stepY;
+            int blockWidth = (int)stepX;
+            picture[row * width + column] = FUN_006124f0(source + m_24 * (int)y + (int)x, m_24,
+                blockWidth < 1 ? 1 : blockWidth, blockHeight < 1 ? 1 : blockHeight);
+            x += stepX;
+        }
+        y += stepY;
+    }
+    operator delete(m_14);
+    m_14 = (unsigned char *)picture;
+    m_24 = width;
+    m_20 = (int)size.GetX();
+    m_22 = (int)size.GetY();
+    m_1c = (int)(size.GetX() * size.GetY() * 2);
+    return true;
+}
+
+// Folded 0.0f for-guards bind the pooled literal, not g_unk0x00677488; do/while guards reorder the store.
+// STUB: GAME 0x006128b0
+bool SBPicture::FUN_006128b0(const SBPictureUnkVector2D &size)
+{
+    unsigned short *picture = (unsigned short *)operator new((int)(size.GetX() * size.GetY()) * 2);
+    unsigned short *source = (unsigned short *)m_14;
+    if (!picture) {
+        SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBPicture.cpp", 0x34c,
+            "Unable to allocate a new picture to resize the old one");
+        return false;
+    }
+    unsigned short width = (int)size.GetX();
+    float stepX = m_20 / size.GetX();
+    float stepY = m_22 / size.GetY();
+    float y = 0.0f;
+    for (unsigned short row = 0; row < size.GetY(); ++row) {
+        float x = 0.0f;
+        for (unsigned short column = 0; column < size.GetX(); ++column) {
+            int blockHeight = (int)stepY;
+            int blockWidth = (int)stepX;
+            picture[row * width + column] = FUN_006125c0(source + m_24 * (int)y + (int)x, m_24,
+                blockWidth < 1 ? 1 : blockWidth, blockHeight < 1 ? 1 : blockHeight);
+            x += stepX;
+        }
+        y += stepY;
+    }
+    operator delete(m_14);
+    m_14 = (unsigned char *)picture;
+    m_24 = width;
+    m_20 = (int)size.GetX();
+    m_22 = (int)size.GetY();
+    m_1c = (int)(size.GetX() * size.GetY() * 2);
+    return true;
 }
 
 // FUNCTION: GAME 0x00612d80
@@ -256,25 +417,94 @@ bool SBPicture::FUN_00612d80(unsigned short width, unsigned short height)
 }
 
 // FUNCTION: GAME 0x00612dc0
-int FUN_00612dc0(unsigned short first, unsigned short second)
+bool FUN_00612dc0(unsigned short first, unsigned short second)
 {
     unsigned short secondIntensity = (((second >> 7) & 15) + (second >> 11) + (second & 31)) / 3;
     unsigned short firstIntensity = (((first >> 7) & 15) + (first >> 11) + (first & 31)) / 3;
     return firstIntensity < secondIntensity;
 }
 
+// Included after the resize functions; earlier inclusion reorders FUN_00612350 loop-exit reloads.
+#include <vector>
+#include <algorithm>
+
+// FUNCTION: GAME 0x00612e30
+bool SBPicture::FUN_00612e30(unsigned short width, unsigned short height)
+{
+    std::vector<unsigned short> window;
+    --width;
+    --height;
+    int count;
+    window.resize(count = (width + 1) * (height + 1));
+    unsigned short *first = window.begin();
+    unsigned short *last = window.end();
+    unsigned short *picture = (unsigned short *)operator new(m_22 * m_20 * 2);
+    for (unsigned short y = 0; y < m_22; ++y) {
+        for (unsigned short x = 0; x < m_20; ++x) {
+            unsigned short index = 0;
+            for (short row = y - (height >> 1); row <= (height >> 1) + y; ++row) {
+                for (short column = x - (width >> 1); column <= (width >> 1) + x; ++column) {
+                    if (column >= 0 && column < m_20 && row >= 0 && row < m_22)
+                        window[index] = ((unsigned short *)m_14)[row * m_20 + column];
+                    else
+                        window[index] = 0;
+                    ++index;
+                }
+            }
+            std::sort(first, last, FUN_00612dc0);
+            picture[y * m_20 + x] = window[count >> 1];
+        }
+    }
+    operator delete(m_14);
+    m_14 = (unsigned char *)picture;
+    return true;
+}
+
 // FUNCTION: GAME 0x00613130
-int FUN_00613130(unsigned short first, unsigned short second)
+bool FUN_00613130(unsigned short first, unsigned short second)
 {
     unsigned short secondIntensity = (((second >> 5) & 30) + ((second >> 11) & 15) + (second & 31)) / 3;
     unsigned short firstIntensity = (((first >> 5) & 30) + ((first >> 11) & 15) + (first & 31)) / 3;
     return firstIntensity < secondIntensity;
 }
 
-void EmitSBPicture(SBPicture *picture)
+// FUNCTION: GAME 0x006131a0
+bool SBPicture::FUN_006131a0(unsigned short width, unsigned short height)
+{
+    std::vector<unsigned short> window;
+    --width;
+    --height;
+    int count;
+    window.resize(count = (width + 1) * (height + 1));
+    unsigned short *first = window.begin();
+    unsigned short *last = window.end();
+    unsigned short *picture = (unsigned short *)operator new(m_22 * m_20 * 2);
+    for (unsigned short y = 0; y < m_22; ++y) {
+        for (unsigned short x = 0; x < m_20; ++x) {
+            unsigned short index = 0;
+            for (short row = y - (height >> 1); row <= (height >> 1) + y; ++row) {
+                for (short column = x - (width >> 1); column <= (width >> 1) + x; ++column) {
+                    if (column >= 0 && column < m_20 && row >= 0 && row < m_22)
+                        window[index] = ((unsigned short *)m_14)[row * m_20 + column];
+                    else
+                        window[index] = 0;
+                    ++index;
+                }
+            }
+            std::sort(first, last, FUN_00613130);
+            picture[y * m_20 + x] = window[count >> 1];
+        }
+    }
+    operator delete(m_14);
+    m_14 = (unsigned char *)picture;
+    return true;
+}
+
+void EmitSBPicture(SBPicture *picture, const SBPictureUnkVector2D &size)
 {
     picture->FUN_00611bd0(0);
     picture->FUN_00611c50();
+    picture->FUN_00611c80(0, 0);
     ((RHUnk006114c0 *)picture)->Unk00611e10(0, 0);
     picture->FUN_00611ea0(0);
     picture->FUN_00611f70(0);
@@ -282,8 +512,10 @@ void EmitSBPicture(SBPicture *picture)
     picture->FUN_00612150(0);
     picture->FUN_00612260(0);
     picture->FUN_006122b0(0);
-    picture->FUN_00612300(0, 0);
+    picture->FUN_00612300(size, 0);
     picture->FUN_006124f0(0, 0, 0, 0);
     picture->FUN_006125c0(0, 0, 0, 0);
     picture->FUN_00612d80(0, 0);
+    picture->FUN_00612e30(0, 0);
+    picture->FUN_006131a0(0, 0);
 }
