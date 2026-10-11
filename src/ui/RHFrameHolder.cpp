@@ -52,11 +52,11 @@ unsigned int RHEngine::FUN_004d2340(int type)
 // STRING: GAME 0x006b0090
 #define g_frameHolderSurfaceError "Unable to retrieve surface from resource"
 
-// parked (69.61%): STL pair construction and dictionary cleanup differ.
+// Parked: dictionary local slots and success-path destructor inlining differ.
 // STUB: GAME 0x00504040
 bool RHFrameHolder::InitializeSpriteBank()
 {
-    std::map<unsigned short, unsigned short> dictionaries;
+    RHUnk00507500 dictionaries;
     if (!FUN_005f6400(g_frameHolderBank))
         SBAssert(1, g_frameHolderFile, 86, g_frameHolderBankError);
     int opened = m_bank.FUN_005f5d60(g_frameHolderBank, 1);
@@ -92,13 +92,13 @@ bool RHFrameHolder::InitializeSpriteBank()
         unsigned char bytes[14];
         index.Access(bytes, 14);
         RHFrameHolderRecord record;
-        record.m_width = *(unsigned short *)bytes;
-        record.m_height = *(unsigned short *)(bytes + 2);
         record.m_size = *(unsigned long *)(bytes + 8);
         record.m_data = opened + ((*(unsigned long *)(bytes + 4) >> 1) * 2);
-        record.m_0c = 0;
         record.m_10 = true;
+        record.m_0c = 0;
         record.m_12 = dictionaries[*(unsigned short *)(bytes + 12)];
+        record.m_width = *(unsigned short *)bytes;
+        record.m_height = *(unsigned short *)(bytes + 2);
         m_frames.m_first[frame] = record;
     }
     return true;
@@ -125,6 +125,7 @@ void RHUnk00507500::FUN_00504590()
     }
 }
 
+// Parked: carried index/pixel registers and conditional esi save differ.
 // STUB: GAME 0x00504b10
 void RHFrameHolder::FUN_00504b10(unsigned long data, unsigned long size, unsigned short replacement)
 {
@@ -171,15 +172,15 @@ unsigned short RHFrameHolder::FUN_005051a0(unsigned short id, SBFile &file)
     return array.Size() - 1;
 }
 
+// Parked: RLE scan/copy scheduling and live-local register allocation differ.
 // STUB: GAME 0x00505980
 unsigned long RHFrameHolder::FUN_00505980(unsigned long surface, unsigned long &size, unsigned short &width, unsigned short &height, long &x, long &y)
 {
     RHUnk00613e90 pixels;
     unsigned int used = 0;
-    RHUnkFXDraw *draw = *(RHUnkFXDraw **)((char *)this + 4);
-    if (!draw->Unk005e5a00(surface, pixels, 0))
+    if (!Draw()->Unk005e5a00(surface, pixels, 0))
         return 0;
-    if (draw->m_depth != 16)
+    if (Draw()->m_depth != 16)
         FUN_00504c50((unsigned long)pixels.m_data, pixels.m_width, pixels.m_height, pixels.m_pitch, 31);
     unsigned int pitch = pixels.m_pitch >> 1;
     unsigned short *row = pixels.m_data;
@@ -192,7 +193,7 @@ unsigned long RHFrameHolder::FUN_00505980(unsigned long surface, unsigned long &
     for (unsigned int outputRow = 0; outputRow < height; ++outputRow)
     {
         unsigned short *pixel = row;
-        for (unsigned int i = 0; i < width; ++i, ++pixel)
+        for (unsigned int i = 0; i < width; ++i)
         {
             if (*pixel != 0x7c0)
             {
@@ -201,6 +202,7 @@ unsigned long RHFrameHolder::FUN_00505980(unsigned long surface, unsigned long &
                 if (top > outputRow) top = outputRow;
                 if (bottom < outputRow) bottom = outputRow;
             }
+            ++pixel;
         }
         row += pitch;
     }
@@ -219,21 +221,29 @@ unsigned long RHFrameHolder::FUN_00505980(unsigned long surface, unsigned long &
         for (unsigned int column = 0; column < width; ++column)
             if (source[column] != 0x7c0 && first == ~0u)
                 first = column;
-        temporary[used++] = first;
+        if (first == ~0u)
+            temporary[used++] = 0xffff;
+        else
+            temporary[used++] = first;
         for (unsigned int reverse = width - 1; reverse > 0; --reverse)
             if (row[rowOffset + reverse] != 0x7c0 && last == ~0u)
                 last = reverse;
-        temporary[used++] = last;
-        if (last != ~0u && first <= last)
+        if (last == ~0u)
+            temporary[used++] = 0xffff;
+        else
         {
-            unsigned int count = last - first + 1;
-            unsigned short *destination = temporary + used;
-            unsigned short *pixel = row + rowOffset + first;
-            used += count;
-            do
+            temporary[used++] = last;
+            if (first <= last)
             {
-                *destination++ = *pixel++;
-            } while (--count);
+                unsigned int count = last - first + 1;
+                unsigned short *destination = temporary + used;
+                unsigned short *pixel = row + rowOffset + first;
+                used += count;
+                do
+                {
+                    *destination++ = *pixel++;
+                } while (--count);
+            }
         }
         source += pitch;
         rowOffset += pitch;
@@ -242,20 +252,44 @@ unsigned long RHFrameHolder::FUN_00505980(unsigned long surface, unsigned long &
     unsigned short *result = (unsigned short *)operator new(size * 2);
     memcpy(result, temporary, size);
     operator delete(temporary);
-    draw = *(RHUnkFXDraw **)((char *)this + 4);
-    if (draw->m_depth != 16)
+    if (Draw()->m_depth != 16)
         FUN_00504bd0((unsigned long)pixels.m_data, pixels.m_width, pixels.m_height, pixels.m_pitch, 31);
-    draw->Unk005e5ea0(pixels);
+    Draw()->Unk005e5ea0(pixels);
     return (unsigned long)result;
 }
 
-// parked (46.79%): container/frame scheduling remains unmatched.
+#include <vector>
+
+class RHFrameHolderVectors : public std::vector<SBGeoVector2D>
+{
+public:
+    void RemoveAll()
+    {
+        iterator (std::vector<SBGeoVector2D>::*eraseRange)(iterator, iterator) = &std::vector<SBGeoVector2D>::erase;
+        (this->*eraseRange)(begin(), end());
+        m_dirty = true;
+    }
+    void InsertLast(const SBGeoVector2D &value)
+    {
+        void (std::vector<SBGeoVector2D>::*insertCount)(iterator, size_type, const SBGeoVector2D &) = &std::vector<SBGeoVector2D>::insert;
+        (this->*insertCount)(end(), 1, value);
+        m_dirty = true;
+    }
+    unsigned int m_10; // 0x10
+    bool m_dirty; // 0x14
+};
+
+DECOMP_SIZE_ASSERT(RHFrameHolderVectors, 0x18)
+
+// Parked: vector temporary/EH slots and frame-record receiver scheduling differ.
 // STUB: GAME 0x00505cd0
 unsigned long RHFrameHolder::AddRowFromResource(SBResourceManager *resources, unsigned long row, unsigned short &count, SBArray<SBGeoVector2D> &vectors)
 {
-    vectors.RemoveAll();
+    RHFrameHolderVectors &output = (RHFrameHolderVectors &)vectors;
+    output.RemoveAll();
     unsigned long first;
     unsigned long surface;
+    long x;
     long y;
     if (m_rows.Find(row) != m_rows.End())
     {
@@ -263,12 +297,11 @@ unsigned long RHFrameHolder::AddRowFromResource(SBResourceManager *resources, un
         first = m_rows.Insert(RHFrameHolderRowMap::Value(row, 0)).first.m_node->m_value;
         for (unsigned long i = first; i < first + count; ++i)
         {
-            long x;
             if (!resources->FUN_00600920(row, i - first, surface))
                 SBAssert(1, g_frameHolderFile, 1208, g_frameHolderSurfaceError);
             unsigned long data = FUN_00505980(surface, m_frames[i].m_size, m_frames[i].m_width, m_frames[i].m_height, x, y);
             operator delete((void *)data);
-            vectors.InsertLast(SBGeoVector2D((float)x, (float)y));
+            output.InsertLast(SBGeoVector2D((float)x, (float)y));
         }
     }
     else
@@ -281,10 +314,10 @@ unsigned long RHFrameHolder::AddRowFromResource(SBResourceManager *resources, un
             if (!resources->FUN_00600920(row, i - first, surface))
                 SBAssert(1, g_frameHolderFile, 1236, g_frameHolderSurfaceError);
             m_frames[i].m_10 = false;
-            m_frames[i].m_data = FUN_00505980(surface, m_frames[i].m_size, m_frames[i].m_width, m_frames[i].m_height, i, y);
+            m_frames[i].m_data = FUN_00505980(surface, m_frames[i].m_size, m_frames[i].m_width, m_frames[i].m_height, x, y);
             m_frames[i].m_12 = 0xffff;
             FUN_00504b10(m_frames[i].m_data, m_frames[i].m_size, g_pEngine->FUN_004d2340(15));
-            vectors.InsertLast(SBGeoVector2D((float)i, (float)y));
+            output.InsertLast(SBGeoVector2D((float)x, (float)y));
         }
         m_rows[row] = first;
     }
@@ -369,8 +402,7 @@ RHUnk005074d0::Pair RHUnk005074d0::FUN_005074d0(const Value &value)
     return pair;
 }
 
-// Parked: EH-state store and return-slot load scheduled before the root reset.
-// STUB: GAME 0x00507500
+// FUNCTION: GAME 0x00507500
 RHUnk00507500::Iterator RHUnk00507500::FUN_00507500(Iterator first, Iterator last)
 {
     if (m_size != 0 && first.m_node == m_head->m_left && last.m_node == m_head)
@@ -386,17 +418,15 @@ RHUnk00507500::Iterator RHUnk00507500::FUN_00507500(Iterator first, Iterator las
                 operator delete(node);
             }
         }
-        m_head->m_parent = g_unk0x006c0b30;
+        Root() = g_unk0x006c0b30;
         m_size = 0;
-        m_head->m_left = m_head;
-        m_head->m_right = m_head;
+        Leftmost() = m_head;
+        Rightmost() = m_head;
         return begin();
     }
     while (first.m_node != last.m_node)
     {
-        Iterator previous = first;
-        first.FUN_00509a80();
-        FUN_00508a80(previous);
+        FUN_00508a80(first++);
     }
     return first;
 }
@@ -565,8 +595,7 @@ inline void RHUnk005074d0::Rrotate(Node *x)
     x->m_parent = y;
 }
 
-// Parked: VC6 inlines the std::_Construct value copy; the target calls it out of line.
-// STUB: GAME 0x005094a0
+// FUNCTION: GAME 0x005094a0
 RHFrameHolderRowMap::Iterator RHUnk005074d0::FUN_005094a0(Node *x, Node *y, const Value &value)
 {
     RHUnk00641782 lock;
@@ -595,7 +624,7 @@ RHFrameHolderRowMap::Iterator RHUnk005074d0::FUN_005094a0(Node *x, Node *y, cons
             m_head->m_right = z;
     }
     for (x = z; x != m_head->m_parent && x->m_parent->m_color == 0; )
-        if (x->m_parent == x->m_parent->m_parent->m_left)
+        if (x->m_parent == Left(x->m_parent->m_parent))
         {
             y = x->m_parent->m_parent->m_right;
             if (y->m_color == 0)
@@ -619,7 +648,7 @@ RHFrameHolderRowMap::Iterator RHUnk005074d0::FUN_005094a0(Node *x, Node *y, cons
         }
         else
         {
-            y = x->m_parent->m_parent->m_left;
+            y = Left(x->m_parent->m_parent);
             if (y->m_color == 0)
             {
                 x->m_parent->m_color = 1;
@@ -651,15 +680,14 @@ static inline RHFrameHolderRowMap::Node *FrameHolderRowMax(RHFrameHolderRowMap::
     return node;
 }
 
-// Parked: target shrink-wraps push esi into the _Max branch; VC6 pushes it in the prologue.
-// STUB: GAME 0x005097a0
+// FUNCTION: GAME 0x005097a0
 void RHFrameHolderRowMap::Iterator::FUN_005097a0()
 {
     RHUnk00641782 lock;
     if (m_node->m_color == 0 && m_node->m_parent->m_parent == m_node)
         m_node = m_node->m_right;
-    else if (m_node->m_left != g_unk0x006c0b2c)
-        m_node = FrameHolderRowMax(m_node->m_left);
+    else if (Left(m_node) != g_unk0x006c0b2c)
+        m_node = FrameHolderRowMax(Left(m_node));
     else
     {
         Node *parent;
@@ -701,15 +729,14 @@ static inline RHUnk005074d0::Node *FrameHolderShortMax(RHUnk005074d0::Node *node
     return node;
 }
 
-// Parked: target shrink-wraps push esi into the _Max branch; VC6 pushes it in the prologue.
-// STUB: GAME 0x005099c0
+// FUNCTION: GAME 0x005099c0
 void RHUnk005074d0::Iterator::FUN_005099c0()
 {
     RHUnk00641782 lock;
     if (m_node->m_color == 0 && m_node->m_parent->m_parent == m_node)
         m_node = m_node->m_right;
-    else if (m_node->m_left != (Node *)g_unk0x006c0b30)
-        m_node = FrameHolderShortMax(m_node->m_left);
+    else if (Left(m_node) != (Node *)g_unk0x006c0b30)
+        m_node = FrameHolderShortMax(Left(m_node));
     else
     {
         Node *parent;

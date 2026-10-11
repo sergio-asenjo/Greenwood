@@ -8,7 +8,6 @@ struct RHSoundCacheString
     unsigned m_08; // 0x08
     unsigned m_0c; // 0x0c
     void FUN_00402780();
-    RHSoundCacheString &FUN_00402a70(unsigned int, unsigned int);
 };
 
 void FUN_006416e6();
@@ -204,7 +203,9 @@ void RHFontManager::TrimString(std::string &value)
         char *begin = text.Begin();
         char *base = text.Begin();
         unsigned position = begin == 0 ? 0 : begin - base;
-        ((RHSoundCacheString *)&value)->FUN_00402a70(position, first == 0 ? 0 : first - begin);
+        typedef std::string &(std::string::*Erase)(unsigned, unsigned);
+        Erase erase = &std::string::erase;
+        (value.*erase)(position, first == 0 ? 0 : first - begin);
     }
     if (*(text.End() - 1) == ' ' || *(text.End() - 1) == '\t')
     {

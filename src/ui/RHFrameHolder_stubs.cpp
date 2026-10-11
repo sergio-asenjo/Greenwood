@@ -1,6 +1,16 @@
 #include "SBNullstr.h"
 #include "RHFrameHolder.h"
 
+namespace std
+{
+// Unannotated: binding this _Construct regresses eight counted callers.
+template <>
+void _Construct(RHUnk005074d0::Value *destination, const RHUnk005074d0::Value &value)
+{
+    new ((void *)destination) RHUnk005074d0::Value(value);
+}
+}
+
 template <>
 std::map<unsigned short, unsigned short>::_Pairib
 std::map<unsigned short, unsigned short>::insert(const value_type &value)
@@ -8,7 +18,6 @@ std::map<unsigned short, unsigned short>::insert(const value_type &value)
     return _Tr.insert(value);
 }
 
-int RHUnk005f4fc0::FUN_005f5d60(const std::string &, int) { return 0; }
 void SBArray<RHFrameHolderRecord>::Insert(RHFrameHolderRecord *, unsigned int, const RHFrameHolderRecord &) {}
 void SBArray<RHFrameHolderRecord>::Remove(RHFrameHolderRecord *, RHFrameHolderRecord *) {}
 void SBArray<SBGeoVector2D>::Insert(SBGeoVector2D *, unsigned int, const SBGeoVector2D &) {}

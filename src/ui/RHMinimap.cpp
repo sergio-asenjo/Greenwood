@@ -62,10 +62,113 @@ bool RHMinimap::SerializeHighlightedElement(SBFile &file, RHMinimapHighlightedEl
     return true;
 }
 
+// FUNCTION: GAME 0x00549ae0
+bool FUN_00549ae0(const RHMinimapSortElement *a, const RHMinimapSortElement *b){
+    unsigned ka;
+    {
+        unsigned v = a->m_04;
+        bool t2 = (v & 0x3) == 0x3;
+        bool t3 = (v & 0xf) == 0xc;
+        bool t4 = (v & 7) == 0;
+        ka = ((((t2 << 1 | t3) << 1 | (bool)((v & 0x1f) == 0x14)) << 1 |
+               (bool)((v & 0x1f) == 0x14))
+                  << 2 |
+              t4)
+             << 11;
+    }
+    unsigned kb;
+    {
+        unsigned v = b->m_04;
+        bool t2 = (v & 0x3) == 0x3;
+        bool t3 = (v & 0xf) == 0xc;
+        bool t4 = (v & 7) == 0;
+        kb = ((((t2 << 1 | t3) << 1 | (bool)((v & 0x1f) == 0x14)) << 1 |
+               (bool)((v & 0x1f) == 0x14))
+                  << 2 |
+              t4)
+             << 11;
+    }
+    if (ka > kb)
+    {
+        return false;
+    }
+    if (ka < kb)
+    {
+        return true;
+    }
+    float fa = a->m_50->m_1c4;
+    float fb = b->m_50->m_1c4;
+    if (fa != fb)
+    {
+        float ga = a->m_50->m_1c4;
+        float gb = b->m_50->m_1c4;
+        return ga < gb;
+    }
+    return a->m_0c < b->m_0c;
+}
+
+// Parked: the body is the widget's Create — it calls the unmodelled widget base
+// class (vtable slot +0x24, 0x61a1e0/0x61ad20) and its resource/geometry helper
+// set, none of which this TU can establish from its own evidence.
+// STUB: GAME 0x00549c10
+bool RHMinimap::FUN_00549c10(const void *, const void *, unsigned long)
+{
+    return false;
+}
+
+// Parked: same widget base dependency (0x61ad20, 0x600920, virtual +0x24), plus
+// an EH frame with three local-object states.
+// STUB: GAME 0x00549e00
+bool RHMinimap::FUN_00549e00(const void *)
+{
+    return false;
+}
+
+// Parked: same widget base dependency (0x54b150, 0x6090d0/0x609200 geometry and
+// the +0x120/+0xe0/+0xe4 members), none of which this TU establishes.
+// STUB: GAME 0x00549f50
+void RHMinimap::FUN_00549f50()
+{
+}
+
+// Parked: same widget base dependency (static std::string globals 0x6c0c58 /
+// 0x6c0e48 and the 0x5fc0xx/0x608f10 helper family).
+// STUB: GAME 0x0054a0f0
+void RHMinimap::FUN_0054a0f0(const void *)
+{
+}
+
+// Parked: VC6 vector-insert specialisation over the 8-byte HighlightedElement
+// vector at +0xcc; the _Insert_n branch layout and 0x54ae90 helper differ.
+// STUB: GAME 0x0054a440
+void RHMinimap::FUN_0054a440(const void *)
+{
+}
+
+// Parked: same widget base dependency (the +0x90 list, virtual +0x24/+0x44 and
+// the 0x60xxxx helper family).
+// STUB: GAME 0x0054a640
+void RHMinimap::FUN_0054a640(const void *)
+{
+}
+
+// Parked: same widget base dependency (0x61ad20, 0x54b1f0 and the +0x120/+0xe4/
+// +0x10c members); the x87 box scaling cannot be reconstructed without the base.
+// STUB: GAME 0x0054a920
+void RHMinimap::FUN_0054a920()
+{
+}
+
 // Force emission: a non-inline static member defined here is emitted into the
 // object; this out-of-line call keeps RHMinimap::SerializeHighlightedElement in
 // the build.
 void RHMinimapEmit(SBFile &file, RHMinimapHighlightedElement &element)
 {
     RHMinimap::SerializeHighlightedElement(file, element);
+}
+
+// Force emission of the element comparator (nothing in this build calls it).
+void RHMinimapSortEmit(RHMinimapSortElement *a, RHMinimapSortElement *b)
+{
+    FUN_00549ae0(a, b);
 }

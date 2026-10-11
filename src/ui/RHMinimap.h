@@ -34,6 +34,33 @@ struct RHMinimapHighlightedElement
 
 extern RHEngine *g_pEngine;
 
+// Sort view of an element for the minimap's element comparator FUN_00549ae0,
+// which the RHEngine element sort calls. The target reads the 4-byte type word
+// at +0x4, the creation id at +0xc and the sprite pointer at +0x50, and orders
+// by the float weight at +0x1c4 of that sprite. Mirrors RHElement's layout
+// (RHElement.h); RHElement itself stays the authoritative declaration.
+struct RHMinimapSortWeight
+{
+    undefined m_00[0x1c4]; // 0x00
+    float m_1c4;           // 0x1c4
+};
+
+struct RHMinimapSortElement
+{
+    undefined m_00[4];         // 0x00
+    unsigned m_04;             // 0x04
+    undefined m_08[4];         // 0x08
+    unsigned m_0c;             // 0x0c
+    undefined m_10[0x40];      // 0x10
+    RHMinimapSortWeight *m_50; // 0x50
+};
+
+// Element ordering predicate (target 0x00549ae0): `this`-less, two pointer
+// arguments and a plain `ret`, so a free function. Ordering key: a category
+// word built from four masked tests of the type word, then the sprite weight,
+// then the creation id.
+bool FUN_00549ae0(const RHMinimapSortElement *a, const RHMinimapSortElement *b);
+
 class RHMinimap
 {
 public:
@@ -42,4 +69,16 @@ public:
     // this build it is a static member — the same shape as
     // RHOrder::SerializeStaticStuff and RHMenuDialogue::GetDialogue.
     static bool SerializeHighlightedElement(SBFile &file, RHMinimapHighlightedElement &element);
+
+    // Parked at 0x00549ae0's sibling run. Argument counts come from each
+    // target's `ret N`; the argument types stay neutral because the owning
+    // widget base class is not established (see the parks in RHMinimap.cpp).
+    bool FUN_00549c10(const void *name, const void *box, unsigned long flags); // ret 0xc
+    bool FUN_00549e00(const void *point);                                      // ret 4
+    void FUN_00549f50();                                                       // ret
+    void FUN_0054a0f0(const void *arg);                                        // ret 4
+    void FUN_0054a440(const void *element);                                    // ret 4
+    void FUN_0054a640(const void *arg);                                        // ret 4
+    void FUN_0054a920();                                                       // ret
 };
+

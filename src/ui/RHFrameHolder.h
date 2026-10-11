@@ -79,6 +79,7 @@ public:
         bool operator==(const Iterator &other) const { return m_node == other.m_node; }
         bool operator!=(const Iterator &other) const { return !(*this == other); }
         void FUN_005097a0();
+        static Node *&Left(Node *node) { return node->m_left; }
         void FUN_00509860();
     };
     typedef std::pair<Iterator, bool> Pair;
@@ -126,6 +127,7 @@ public:
     {
         Node *m_node; // 0x00
         void FUN_005099c0();
+        static Node *&Left(Node *node) { return node->m_left; }
     };
     struct Value
     {
@@ -137,12 +139,19 @@ public:
     RHFrameHolderRowMap::Iterator FUN_005094a0(Node *, Node *, const Value &);
     void Lrotate(Node *);
     void Rrotate(Node *);
+    static Node *&Left(Node *node) { return node->m_left; }
     undefined m_00[4]; // 0x00
     Node *m_head; // 0x04
     undefined m_multi; // 0x08
     undefined m_09[3]; // 0x09
     unsigned int m_size; // 0x0c
 };
+
+namespace std
+{
+template <>
+void _Construct(RHUnk005074d0::Value *, const RHUnk005074d0::Value &);
+}
 
 class SBResourceManager
 {
@@ -255,7 +264,10 @@ public:
     void Resize(unsigned int count)
     {
         if (Size() < count)
-            FUN_00507020(m_last, count - FUN_00506e00(), RHFrameHolderRecord());
+        {
+            RHFrameHolderRecord *position = m_last;
+            FUN_00507020(position, count - FUN_00506e00(), RHFrameHolderRecord());
+        }
         else if (count < FUN_00506e00())
             FUN_00507320(m_first + count, m_last);
     }
@@ -274,6 +286,9 @@ public:
 class RHUnk00507500
 {
 public:
+    RHUnk00507500(const std::less<unsigned short> &compare = std::less<unsigned short>(), const std::allocator<unsigned short> &allocator = std::allocator<unsigned short>())
+        : m_allocator(allocator), m_multi(false), m_comparator(compare) { FUN_00509030(); }
+    ~RHUnk00507500() { FUN_00504590(); }
     struct Node
     {
         Node *m_left; // 0x00
@@ -285,19 +300,30 @@ public:
     };
     struct Iterator
     {
+        Iterator() {}
+        Iterator(Node *node) : m_node(node) {}
         Node *m_node; // 0x00
         void FUN_00509a80();
+        Iterator operator++(int) { Iterator previous = *this; FUN_00509a80(); return previous; }
     };
-    Iterator begin() { Iterator it; it.m_node = m_head->m_left; return it; }
+    Node *&Root() { return m_head->m_parent; }
+    Node *&Leftmost() { return m_head->m_left; }
+    Node *&Rightmost() { return m_head->m_right; }
+    Iterator begin() { return Iterator(Leftmost()); }
+    unsigned short &operator[](const unsigned short &key)
+    {
+        RHUnk005074d0::Value value = { key, 0 };
+        return ((Node *)((RHUnk005074d0 *)this)->FUN_005074d0(value).first.m_node)->m_value;
+    }
     void FUN_00504590();
     Iterator FUN_00507500(Iterator, Iterator);
     Iterator FUN_00508a80(Iterator);
     void FUN_00508fa0(Node *);
     void FUN_00509030();
-    undefined m_00[4]; // 0x00
+    std::allocator<unsigned short> m_allocator; // 0x00
     Node *m_head; // 0x04
     undefined m_multi; // 0x08
-    undefined m_09[3]; // 0x09
+    std::less<unsigned short> m_comparator; // 0x09
     unsigned int m_size; // 0x0c
 };
 
@@ -339,6 +365,7 @@ public:
     void FUN_00504bd0(unsigned long, unsigned short, unsigned short, unsigned long, unsigned short);
     void FUN_00504b10(unsigned long, unsigned long, unsigned short);
     void Emit(SBResourceManager *, SBArray<SBGeoVector2D> &);
+    RHUnkFXDraw *&Draw() { return *(RHUnkFXDraw **)((char *)this + 4); }
 
     undefined m_00[8]; // 0x00
     RHFrameHolderFrameArray m_frames; // 0x08
