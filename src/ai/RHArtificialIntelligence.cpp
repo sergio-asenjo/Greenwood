@@ -550,7 +550,7 @@ bool RHArtificialIntelligence::InitState()
     return false;
 }
 
-// Parked: delete argument transfer and post-delete cursor/head reload order.
+// Parked: delete omits the ecx-to-eax transfer and reloads the sentinel before the cursor.
 // STUB: GAME 0x004148b0
 bool RHArtificialIntelligence::SerializeAllAI(SBFile &file)
 {
@@ -1025,7 +1025,7 @@ bool FUN_00416b30(void *&value, SBFile &file)
     }
 }
 
-// Parked: dirty-end and clean-start cursor register/store scheduling.
+// New probe: marker flip leaves dirty-end/cursor scheduling at 92.39% and creates an effective row.
 // STUB: GAME 0x00416c80
 bool RHArtificialIntelligence::SerializeListOfPointersToActorsNPC(RHArtificialIntelligenceList &list, SBFile &file)
 {
@@ -1084,7 +1084,7 @@ bool RHArtificialIntelligence::SerializeListOfPointersToActorsNPC(RHArtificialIn
     return true;
 }
 
-// Parked: dirty-end and clean-start cursor register/store scheduling.
+// New probe: marker flip leaves dirty-end/cursor scheduling at 91.84% and creates an effective row.
 // STUB: GAME 0x00416f40
 bool RHArtificialIntelligence::SerializeListOfPointersToHumans(RHArtificialIntelligenceList &list, SBFile &file)
 {
@@ -1141,7 +1141,7 @@ bool RHArtificialIntelligence::SerializeListOfPointersToHumans(RHArtificialIntel
     return true;
 }
 
-// Parked: dirty-end and clean-start cursor register/store scheduling.
+// New probe: marker flip leaves dirty-end/cursor scheduling at 92.76% and creates an effective row.
 // STUB: GAME 0x004171f0
 bool RHArtificialIntelligence::SerializeListOfPointersToObjects(RHArtificialIntelligenceList &list, SBFile &file)
 {
@@ -1914,9 +1914,9 @@ const unsigned g_unk0x0067a7e0[16] = {
 };
 
 // FUNCTION: GAME 0x005fcd40
-RHUnk005fc3b0 &RHUnk005fc3b0::Unk005fcd40(unsigned short direction, float length)
+RHUnk005fc3b0 &RHUnk005fc3b0::Unk005fcd40(unsigned char direction, float length)
 {
-    unsigned offset = ((unsigned char)direction & 15) * 4;
+    unsigned offset = (direction & 15) * 4;
     m_x = *(const float *)((const char *)g_unk0x0067a7a0 + offset);
     m_y = length * *(const float *)((const char *)g_unk0x0067a7e0 + offset);
     return *this;

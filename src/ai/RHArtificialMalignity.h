@@ -29,7 +29,9 @@ class RHUnk005fc3b0 : public SBGeoPoint2D
 public:
     RHUnk005fc3b0();
     ~RHUnk005fc3b0() {}
-    RHUnk005fc3b0 &Unk005fcd40(unsigned short direction, float length);
+    RHUnk005fc3b0 &Unk005fcd40(unsigned char direction, float length);
+    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other);
+    SBGeoPoint2D FUN_005fc8f0(int mode, float value) const;
     float FUN_005fc680(const RHUnk005fc3b0 &vector, float scale) const;
 };
 
@@ -38,6 +40,7 @@ class RHUnk00613e90
 {
 public:
     RHUnk00613e90();
+    RHUnk00613e90 FUN_005df550(const RHUnk00613e90 &other) const;
     float x; // 0x00
     float y; // 0x04
     float z; // 0x08
@@ -88,10 +91,12 @@ struct RHMalignityNode
 };
 
 struct RHScriptNode;
+struct RHScriptIter;
 class RHUnk0046eb30
 {
 public:
     RHScriptNode *Unk0059f720(RHScriptNode *next, RHScriptNode *previous);
+    RHScriptIter FUN_0046eb80();
 };
 
 class RHSequenceElement;
@@ -133,6 +138,8 @@ struct RHMalignityList
     int m_index; // +0x14
 
     void Clear();
+    void FUN_005c8e40(int index);
+    int size() { return m_count; }
 
     void InsertLast(void *const &value)
     {
@@ -228,6 +235,7 @@ public:
     virtual int V130() = 0; // vtable+0x130
     bool FUN_0048a260(const RHUnk00613e90 &point);
     void FUN_0048ebe0();
+    void FUN_00487aa0(int value);
     void FUN_0048c700(void *actor, unsigned mode);
     void FUN_0048d050();
     void FUN_00478c20(RHUnk00613e90 &point, bool mode);
@@ -258,7 +266,31 @@ public:
     void FUN_0041ab30();
     bool FUN_00419e10(void *actor);
     float FUN_0041a010(void *actor);
+    float FUN_0041a060(void *actor);
+    float FUN_0041a0b0(void *actor);
+    void FUN_00412cf0(const RHMalignityPosition &position, unsigned short heading, int mode);
     void *m_actor; // +0x04
+};
+
+// SIZE 0x40
+struct RHUnk00441dd0Record
+{
+    void *m_0; // 0x00
+    RHMalignityPosition m_4; // 0x04
+    void *m_14; // 0x14
+    RHMalignityPosition m_18; // 0x18
+    unsigned short m_28; // 0x28
+    unsigned char m_2a; // 0x2a
+    unsigned char m_2b; // 0x2b
+    unsigned short m_2c; // 0x2c
+    unsigned short m_2e; // 0x2e
+    unsigned char m_30; // 0x30
+    undefined m_31[3]; // 0x31
+    int m_34; // 0x34
+    int m_38; // 0x38
+    int m_3c; // 0x3c
+
+    RHUnk00441dd0Record() : m_2a(0), m_2b(0), m_2c(0), m_2e(0x1a0a), m_30(0), m_34(0), m_38(0), m_3c(0) {}
 };
 
 class RHArtificialMalignity
@@ -272,7 +304,23 @@ public:
     void InitOneAI();
     bool SerializeExactlyThisAI(SBFile &file);
     void InitializeFriendCheck(unsigned short actor, unsigned short delay, unsigned short waypoint);
+    short FUN_00440cf0(RHUnk00441dd0Record *record);
+    int FUN_00441020(RHUnk00441dd0Record *record, RHMalignityList *list);
+    void FUN_00441f20();
+    void *FUN_0043d780(unsigned short flags);
+    bool FUN_0043f340(void *actor);
+    bool FUN_0043f540(void *actor);
+    void FUN_0043fa80(void *target, void *actor);
+    void FUN_0043fc60(void *target, void *actor);
+    void FUN_00440040(void *target, RHMalignityPosition position, RHUnk005fc3b0 *direction, int mode, void *actor);
+    RHUnk00441dd0Record *FUN_00441dd0();
+    bool FUN_0044afa0(void *actor);
     void Emit(SBFile &file);
+
+    RHMalignityBaseView &VirtualBase()
+    {
+        return *(RHMalignityBaseView *)((char *)this + (*(int **)this)[1]);
+    }
 
     RHMalignityBaseView &Base()
     {
@@ -329,6 +377,7 @@ class RHAIUnk0044e8b0
 {
 public:
     RHMalignityIterator FUN_0044e8b0(RHMalignityIterator first, RHMalignityIterator last);
+    RHScriptIter FUN_0044e8b0(RHScriptIter first, RHScriptIter last);
     RHMalignityIterator FUN_0046eb80();
     RHMalignityIterator FUN_00424410(RHMalignityIterator position, void *const &value);
     void FUN_0045a440(void *const &value);
@@ -401,14 +450,7 @@ public:
 };
 
 // SIZE 0x10
-struct RHMalignityOwnedList
-{
-    undefined4 m_allocator; // 0x00
-    RHMalignityNode *m_head; // 0x04
-    int m_count; // 0x08
-    RHMalignityNode *m_current; // 0x0c
-    void FUN_004e65b0();
-};
+struct RHMalignityOwnedList;
 
 // SIZE 0x3c
 class RHUnk00521770
@@ -432,6 +474,7 @@ public:
 };
 
 extern float g_unk0x006774ec;
+extern float g_unk0x00677504;
 extern undefined g_unk0x006c0e48[];
 
 // SIZE 0x14
@@ -446,7 +489,14 @@ struct RHMalignityMessage
     bool m_0c; // 0x0c
     undefined m_0d[3]; // 0x0d
     unsigned m_10; // 0x10
-    RHMalignityMessage() : type(7), m_0a(false), m_08(false), m_09(false), m_0c(false), m_10(0) {}
+    RHMalignityMessage() : type(7)
+    {
+        m_0a = false;
+        m_08 = false;
+        m_09 = false;
+        m_0c = false;
+        m_10 = 0;
+    }
     ~RHMalignityMessage() {}
 };
 
@@ -509,6 +559,19 @@ public:
     void FUN_004da8d0(const SBGeoBoundingBox2D &box);
 };
 
+class RHUnk004dab90Rectangle : public RHMalignityRectangle
+{
+public:
+    RHUnk004dab90Rectangle()
+    {
+        unsigned value = 0;
+        RHMalignityArrayCalls &indices = *(RHMalignityArrayCalls *)(m_00 + 0x2c);
+        indices.FUN_0059fba0(value);
+        m_00[0x40] = 1;
+    }
+    ~RHUnk004dab90Rectangle();
+};
+
 // SIZE 0x24
 class RHMalignityQueryList : public RHMalignityList
 {
@@ -531,11 +594,15 @@ public:
 class SBGeoVector2D : public SBGeoPoint2D
 {
 public:
+    SBGeoVector2D(const SBGeoPoint2D &point);
     ~SBGeoVector2D() {}
     float FUN_005fc660(const SBGeoPoint2D &point) const;
 };
 
 SBGeoVector2D operator*(float factor, const SBGeoVector2D &point);
+SBGeoPoint2D FUN_005fc580(const SBGeoPoint2D &point, float factor);
+RHMalignityPosition FUN_0040ed40(const RHMalignityPosition &position, SBGeoVector2D vector);
+RHMalignityPosition FUN_0040ece0(const RHMalignityPosition &position, SBGeoPoint2D point);
 extern float g_unk0x006787f8;
 
 class RHFastFindTacticalArray
@@ -567,6 +634,11 @@ template <class T>
 inline T &RHMalignityField(void *object, int offset)
 {
     return *(T *)((char *)object + offset);
+}
+
+inline unsigned short RHMalignityHeading(void *actor)
+{
+    return RHMalignityField<unsigned short>(RHMalignityField<void *>(actor, 0x50), 0xd8);
 }
 
 #endif

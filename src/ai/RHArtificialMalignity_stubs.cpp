@@ -6,6 +6,18 @@ void RHMalignityActorCalls::FUN_00478c20(RHUnk00613e90 &, bool) {}
 unsigned char RHMalignityActorCalls::FUN_0048c8e0(void *, bool) { return 0; }
 bool RHMalignityActorCalls::FUN_0048a130(void *) { return false; }
 float RHMalignityBaseView::FUN_0041a010(void *) { return 0.0f; }
+float RHMalignityBaseView::FUN_0041a060(void *) { return 0.0f; }
+float RHMalignityBaseView::FUN_0041a0b0(void *) { return 0.0f; }
+void RHMalignityList::FUN_005c8e40(int) {}
+bool RHArtificialMalignity::FUN_0044afa0(void *) { return false; }
+// STUB: GAME 0x00440cf0
+short RHArtificialMalignity::FUN_00440cf0(RHUnk00441dd0Record *) { return 0; }
+void RHMalignityActorCalls::FUN_00487aa0(int) {}
+void RHMalignityBaseView::FUN_00412cf0(const RHMalignityPosition &, unsigned short, int) {}
+void RHArtificialMalignity::FUN_00440040(void *, RHMalignityPosition, RHUnk005fc3b0 *, int, void *) {}
+SBGeoPoint2D FUN_005fc580(const SBGeoPoint2D &point, float) { return point; }
+RHMalignityPosition FUN_0040ed40(const RHMalignityPosition &position, SBGeoVector2D) { return position; }
+RHMalignityPosition FUN_0040ece0(const RHMalignityPosition &position, SBGeoPoint2D) { return position; }
 
 RHMalignityPosition RHMalignityBaseView::FUN_004165e0(void *, bool)
 {
@@ -20,6 +32,7 @@ SBGeoPoint2D RHMalignityBaseView::FUN_0040cbf0(const RHMalignityPosition &)
 
 void RHMalignityNodeValue::FUN_0040eab0(int) {}
 RHMalignityIterator RHAIUnk0044e8b0::FUN_0044e8b0(RHMalignityIterator, RHMalignityIterator last) { return last; }
+RHScriptIter RHAIUnk0044e8b0::FUN_0044e8b0(RHScriptIter, RHScriptIter last) { return last; }
 RHMalignityIterator RHAIUnk0044e8b0::FUN_0046eb80() { return RHMalignityIterator(0); }
 RHMalignityIterator RHAIUnk0044e8b0::FUN_00424410(RHMalignityIterator position, void *const &) { return position; }
 void RHAIUnk0044e8b0::FUN_0045a440(void *const &) {}

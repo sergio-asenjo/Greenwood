@@ -262,7 +262,7 @@ class RHUnk005fc3b0 : public SBGeoPoint2D
 public:
     RHUnk005fc3b0();
     ~RHUnk005fc3b0() {}
-    RHUnk005fc3b0 &Unk005fcd40(unsigned short direction, float length);
+    RHUnk005fc3b0 &Unk005fcd40(unsigned char direction, float length);
 };
 
 struct RHUnk00571160Position
