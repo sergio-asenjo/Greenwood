@@ -1,6 +1,8 @@
 #ifndef SB_DRAW_MANAGER_H
 #define SB_DRAW_MANAGER_H
 
+#include <utility>
+
 class SBGeoVector2D;
 class RHUnk00613e90;
 
@@ -28,8 +30,10 @@ class RHUnk005ef320
 {
 public:
     bool FUN_005e3f70();
+    bool FUN_005e5890(unsigned long, void **, unsigned long);
     void FUN_005e57e0(unsigned, SBGeoVector2D &);
     bool FUN_005e5bd0(unsigned long, void *);
+    bool FUN_005e5d30(unsigned long);
     bool FUN_005ee640(void *, SBDrawUnk005fc3b0Point &);
     bool FUN_005eec00(unsigned long, unsigned long, void *, unsigned long,
         unsigned long, unsigned long, unsigned long, unsigned long);
@@ -59,12 +63,28 @@ struct SBDrawUnk005efc10Iterator
     SBDrawUnk005efc10Iterator(SBDrawUnk005f0090Node *node) : m_node(node) {}
 };
 
+struct SBDrawUnk005e4f70Surface
+{
+    void *m_object;
+    unsigned short m_width;
+    unsigned short m_height;
+    unsigned long m_color;
+    unsigned long m_0c;
+    bool m_locked;
+    void *m_section;
+};
+
+typedef std::pair<const unsigned long, SBDrawUnk005e4f70Surface> SBDrawUnk005e4f70Pair;
+typedef std::pair<SBDrawUnk005efc10Iterator, bool> SBDrawUnk005ef440Result;
+
 class SBDrawUnk005efc10
 {
 public:
     char m_00[4];
     SBDrawUnk005f0090Node *m_head;
     SBDrawUnk005efc10Iterator FUN_005efc10(const unsigned long &);
+    SBDrawUnk005efc10Iterator FUN_005efbc0(const unsigned long &);
+    SBDrawUnk005ef440Result FUN_005ef440(const SBDrawUnk005e4f70Pair &);
 };
 
 class SBDrawUnk005e8450
