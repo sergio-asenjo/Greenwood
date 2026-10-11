@@ -33,8 +33,6 @@ public:
 class RHUnkSpriteUshortVector
 {
 public:
-    unsigned FUN_0044e830() const;
-    unsigned short *FUN_005bdfa0(unsigned short *first, unsigned short *last);
     undefined m_0[4]; // 0x00
     unsigned short *m_first; // 0x04
     unsigned short *m_last; // 0x08

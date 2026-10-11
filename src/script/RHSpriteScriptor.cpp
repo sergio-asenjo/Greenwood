@@ -66,11 +66,6 @@ DECOMP_SIZE_ASSERT(RHUnkSpriteFrameHeader, 0x0e)
 // TEMPLATE: GAME 0x0044e830
 // ?size@?$vector@GV?$allocator@G@std@@@std@@QBEIXZ
 
-unsigned RHUnkSpriteUshortVector::FUN_0044e830() const
-{
-    return m_first == 0 ? 0 : m_last - m_first;
-}
-
 // TEMPLATE: GAME 0x00461f10
 // ?_Construct@std@@YAXPAVSBGeoPoint2D@@ABV2@@Z
 
@@ -136,11 +131,6 @@ RHUnkSpriteScriptInfo::~RHUnkSpriteScriptInfo()
 
 // TEMPLATE: GAME 0x005bdfa0
 // ?erase@?$vector@GV?$allocator@G@std@@@std@@QAEPAGPAG0@Z
-
-unsigned short *RHUnkSpriteUshortVector::FUN_005bdfa0(unsigned short *first, unsigned short *last)
-{
-    return ((std::vector<unsigned short> *)this)->erase(first, last);
-}
 
 // TEMPLATE: GAME 0x005bdfe0
 // ?insert@?$vector@URHUnkSpriteRow@@V?$allocator@URHUnkSpriteRow@@@std@@@std@@QAEXPAURHUnkSpriteRow@@IABU3@@Z
@@ -380,7 +370,10 @@ void RHSpriteScriptor::Emit(const std::string &name, const std::string &profile)
     RHSpriteRowVectorEmission::Emit();
     unsigned short *(__cdecl *volatile copy)(unsigned short *, unsigned short *, unsigned short *) = std::copy;
     LoadSpriteScript(FRAME_2, name, profile);
-    RHUnkSpriteUshortVector *vector = (RHUnkSpriteUshortVector *)this;
-    vector->FUN_0044e830();
-    vector->FUN_005bdfa0(vector->m_first, vector->m_last);
+    typedef std::vector<unsigned short> Vector;
+    Vector *vector = (Vector *)this;
+    unsigned (Vector::*size)() const = &Vector::size;
+    (vector->*size)();
+    unsigned short *(Vector::*erase)(unsigned short *, unsigned short *) = &Vector::erase;
+    (vector->*erase)(vector->begin(), vector->end());
 }
