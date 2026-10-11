@@ -46,7 +46,6 @@ ToolboxChunk **ToolboxChunks::FUN_005e31d0(unsigned int count) { return _Growmap
 
 // FUNCTION: GAME 0x0053e080
 ToolboxChunkIterator::ToolboxChunkIterator(ToolboxChunk *next, ToolboxChunk **map) : m_first(*map), m_last(*map + 512), m_next(next), m_map(map) {}
-unsigned long FUN_005f0ce0() { return 0; }
 bool FUN_005f1150(ToolboxMouseState &, unsigned char *) { return false; }
 bool FUN_005e17a0(unsigned char *) { return false; }
 void FUN_005e1380() {}

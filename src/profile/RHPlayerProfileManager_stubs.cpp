@@ -4,7 +4,7 @@
 RHSaveGameManager::RHSaveGameManager() {}
 RHSaveGameManager::~RHSaveGameManager() {}
 RHKeyConfig::RHKeyConfig() {}
-RHKeyConfig::~RHKeyConfig() {}
+RHKeyConfig::~RHKeyConfig() { operator delete(m_keys); }
 RHSoundConfig::RHSoundConfig() {}
 RHGraphicConfig::RHGraphicConfig() : m_point(800.0f, 600.0f) {}
 std::string RHPlayerProfile::GetSaveGameDirectory() const { return std::string(); }

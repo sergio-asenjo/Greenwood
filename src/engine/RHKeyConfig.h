@@ -18,6 +18,10 @@
 class RHKeyConfig
 {
 public:
+    RHKeyConfig(const RHKeyConfig &other);
+    ~RHKeyConfig();
+    unsigned short GetKeyCount() const;
+    const short *GetKeys() const;
     bool Serialize(SBFile &file);
 
     void SetToPreset(unsigned short preset, bool flag);

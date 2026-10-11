@@ -34,7 +34,7 @@ bool SBInputUnk005fb730::FUN_005fb730(unsigned char index)
     return false;
 }
 
-// STUB: GAME 0x005fb770
+// FUNCTION: GAME 0x005fb770
 bool SBInputUnk005fb730::FUN_005fb770(unsigned char index, void *data, int)
 {
     if (index < 16) {
@@ -48,13 +48,16 @@ bool SBInputUnk005fb730::FUN_005fb770(unsigned char index, void *data, int)
                 if (result != 0) {
                     m_2aa = 0x11;
                     m_2ac = FUN_005f81d0(result);
-                    return false;
+                } else {
+                    device->m_table->m_64(device);
+                    result = device->m_table->m_24(device, 0x50, data);
+                    if (result != 0) {
+                        m_2aa = 0x0b;
+                        m_2ac = FUN_005f81d0(result);
+                        return false;
+                    }
+                    return true;
                 }
-                device->m_table->m_64(device);
-                result = device->m_table->m_24(device, 0x50, data);
-                if (result == 0) return true;
-                m_2aa = 0x0b;
-                m_2ac = FUN_005f81d0(result);
             }
         }
     }
