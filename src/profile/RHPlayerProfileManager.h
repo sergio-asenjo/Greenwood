@@ -149,11 +149,7 @@ public:
     SBGeoPoint2D m_point; // 0x6c
 };
 
-class RHCampaignMissionList
-{
-public:
-    void FUN_004e6c10();
-};
+class RHMission;
 
 // SIZE 0x0c
 class RHPlayerProfileListStorage : public std::list<RHPlayerProfile *>
@@ -201,7 +197,9 @@ public:
             delete *m_current;
             (*(RHSectorActorIter *)&m_current)++;
         }
-        ((RHCampaignMissionList *)&m_list)->FUN_004e6c10();
+        typedef std::list<RHMission *> Missions;
+        void (Missions::*clear)() = &Missions::clear;
+        (((Missions *)&m_list)->*clear)();
         m_dirty = true;
     }
     void InsertLast(RHPlayerProfile *const &value)

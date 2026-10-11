@@ -76,7 +76,7 @@ const std::string &RHPlayerProfileManager::GetProfilesDirectory()
     return g_unk0x006c05e0;
 }
 
-// Parked at 99.06%: owner pointer is reloaded into edx at its use instead of ebp at loop exit.
+// Parked: owner reload uses edx at the store instead of ebp before the file read.
 // STUB: GAME 0x0055dea0
 bool RHPlayerProfileManager::Load()
 {
