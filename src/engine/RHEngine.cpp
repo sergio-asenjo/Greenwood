@@ -11,6 +11,7 @@ class RHFastFindGrid
 {
 public:
     void FUN_004e8bd0(void *sector, unsigned short layer, bool mode);
+    void FUN_004efd10(void *value, unsigned short layer, bool mode);
 };
 
 class RHSequenceElement;
@@ -236,8 +237,6 @@ DECOMP_SIZE_ASSERT(RHUnk005069a0, 0x14)
 DECOMP_SIZE_ASSERT(RHUnk005055b0, 0x44)
 DECOMP_SIZE_ASSERT(RHUnk004bc5b0, 0x160)
 DECOMP_SIZE_ASSERT(RHUnk004e51e0, 0x30)
-DECOMP_SIZE_ASSERT(RHMobileUnk00607da0, 0x14)
-DECOMP_SIZE_ASSERT(RHUnk0058c590, 0xc8)
 DECOMP_SIZE_ASSERT(RHUnk00551da0, 0x04)
 DECOMP_SIZE_ASSERT(RHUnk0051d2c0, 0x20)
 DECOMP_SIZE_ASSERT(RHHikingGuide, 0x1c)
@@ -248,7 +247,7 @@ DECOMP_SIZE_ASSERT(RHEngineExtendedMissionElementCalls, 0x04)
 DECOMP_SIZE_ASSERT(RHUnk0057ee90, 0x70)
 DECOMP_SIZE_ASSERT(RHEngineContinuationSectorCalls, 0x04)
 
-void FUN_005e0c90(SBFile &file, std::string &value);
+bool FUN_005e0c90(SBFile &file, std::string &value);
 void RHSerializeName(SBFile &file, const char *name);
 extern char g_unk0x6c0560[4];
 extern void **g_unk0x6c0f34;
@@ -1233,8 +1232,17 @@ void RHEngine::FUN_004c2200(SBFile &file, std::vector<RHbeamMe> &beamMes)
     *(unsigned *)((char *)this + 0x4a4c) = beamMes.size();
 }
 
-// Parked: first-vector receiver reload and compared function-tail extent differ.
-// STUB: GAME 0x004c2720
+class RHEngineActorVector : public std::vector<void *>
+{
+public:
+    __forceinline size_type ReloadingSize() const
+    {
+        void **first = *(void **volatile *)&_First;
+        return first == 0 ? 0 : _Last - first;
+    }
+};
+
+// FUNCTION: GAME 0x004c2720
 void RHEngine::FUN_004c2720(SBFile &file)
 {
     *(int *)((char *)this + 0x4a44) = g_unk0x6c0f34 == 0 ? 0 : g_unk0x6c0f38 - g_unk0x6c0f34;
@@ -1243,8 +1251,8 @@ void RHEngine::FUN_004c2720(SBFile &file)
     ((RHEngineContinuationCampaignCalls *)g_unk0x6c07fc)->FUN_00450c10(&actors, file);
     std::vector<void *> &remaining = *(std::vector<void *> *)((char *)this + 0x4978);
     int index = *(int *)((char *)this + 0x4a44) + remaining.size();
-    for (; index < (int)actors.size(); ++index)
-        ((RHEngineReinforcementCalls *)this)->FUN_004d8460(actors[index], 0, 0);
+    for (; index < (int)((RHEngineActorVector *)&actors)->ReloadingSize(); ++index)
+        ((RHEngineReinforcementCalls *)this)->FUN_004d8460((*(std::vector<void *> *)((char *)this + 0x48d8))[index], 0, 0);
     std::vector<void *> &pcs = *(std::vector<void *> *)((char *)this + 0x4938);
     unsigned count = pcs.size();
     for (unsigned slot = 0; slot < *(unsigned *)((char *)this + 0x4a4c); ++slot)
@@ -1431,7 +1439,7 @@ void RHEngineMissionCalls::FUN_004c3930(SBFile &file, int protoLevel)
         RHUnk0054eab0 *value = new RHUnk0054eab0;
         void *grid = (char *)this + 0x11c;
         value->FUN_0054eea0(file, grid);
-        ((RHEngineGridCalls *)grid)->FUN_004efd10(value,
+        ((RHFastFindGrid *)grid)->FUN_004efd10(value,
             *(unsigned short *)((char *)value + 0x13c), true);
         ((RHEngineReinforcementCalls *)this)->FUN_004d8460(
             *(void **)((char *)value + 0x18), 1, 1);
@@ -1790,6 +1798,81 @@ void RHEngine::FUN_004c8120(void *actor)
 {
     ((RHEngineWidenedCalls *)this)->FUN_004c7f60(
         (char *)*(void **)((char *)actor + 0x50) + 0x24);
+}
+
+// Parked: ~1.2 KB sequence-list serialization; not attempted in the probe budget.
+// STUB: GAME 0x004cd600
+void RHEngine::FUN_004cd600(void *a, void *b)
+{
+    (void)a;
+    (void)b;
+}
+
+// Parked: build box then per-PC string/message dispatch; VC6 operand scheduling
+// not reproduced in the probe budget.
+// STUB: GAME 0x004cdab0
+void RHEngine::FUN_004cdab0(void *a)
+{
+    (void)a;
+}
+
+// Parked: build box from two engine points, per-PC predicate/message loop; VC6
+// operand scheduling not reproduced in the probe budget.
+// STUB: GAME 0x004cdcc0
+void RHEngine::FUN_004cdcc0()
+{
+}
+
+// Parked: PC-vector scan with sequence-list insertion; VC6 operand scheduling
+// not reproduced in the probe budget.
+// STUB: GAME 0x004cde00
+void RHEngine::FUN_004cde00()
+{
+}
+
+// Parked: ~3.2 KB element/sequence serialization body; not attempted in the budget.
+// STUB: GAME 0x004cdfc0
+void RHEngine::FUN_004cdfc0()
+{
+}
+
+// Parked: 55.21%; VC6 FPU operand-order/comparison-idiom scheduling plus a dead
+// int store into the local point are not reproducible from any probed source shape.
+// STUB: GAME 0x004cec60
+bool RHEngine::FUN_004cec60()
+{
+    return true;
+}
+
+// Parked: ~2.1 KB element serialization body; not attempted in the budget.
+// STUB: GAME 0x004cede0
+void RHEngine::FUN_004cede0()
+{
+}
+
+// Parked: ~1.7 KB bounding-box/FPU body; not attempted in the budget.
+// STUB: GAME 0x004cf610
+void RHEngine::FUN_004cf610()
+{
+}
+
+// Parked: ~1.8 KB FPU/geometry body; not attempted in the budget.
+// STUB: GAME 0x004cfce0
+void RHEngine::FUN_004cfce0()
+{
+}
+
+// Parked: ~1.5 KB body; not attempted in the budget.
+// STUB: GAME 0x004d0400
+void RHEngine::FUN_004d0400()
+{
+}
+
+// Parked: ~3.1 KB body; not attempted in the budget.
+// STUB: GAME 0x004d0a10
+void RHEngine::FUN_004d0a10(void *a)
+{
+    (void)a;
 }
 
 // Parked: layer/point receiver scheduling and sector-bit lowering differ.
@@ -2386,24 +2469,6 @@ bool RHEngineSequenceStateCalls::FUN_0058a7d0(void *element)
                 return true;
     }
     return false;
-}
-
-// FUNCTION: GAME 0x0058c590
-void RHUnk0058c590::FUN_0058c590(char flag, unsigned short width, unsigned short height)
-{
-    m_64.FUN_00607da0(*(RHMobileUnk00607da0 *)((char *)g_unk0x6c0a9c + 0x3e84));
-    m_4c = *(undefined4 *)((char *)g_pEngine + 0x48c4);
-    FUN_0058c6f0(flag);
-    FUN_0058c630(width, height);
-    m_c2 = 0xff;
-    m_c4 = 0xff;
-    m_c6 = 0xff;
-    int value = *(int *)((char *)g_pEngine + 0x4ad0);
-    m_60 = value == 4 || value == 2;
-    if (m_60)
-        m_c0 = 0x78;
-    else
-        m_c0 = 0xc0;
 }
 
 // FUNCTION: GAME 0x005a5c50

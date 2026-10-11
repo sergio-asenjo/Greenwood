@@ -20,8 +20,6 @@ RHUnk0051d2c0::~RHUnk0051d2c0() {}
 int RHHikingGuide::FUN_0051cac0(SBFile &) { return 0; }
 bool RHUnk00551da0::FUN_00551da0(SBFile &) { return true; }
 void RHUnk004e51e0::FUN_00454bb0() {}
-void RHUnk0058c590::FUN_0058c630(unsigned short, unsigned short) {}
-void RHUnk0058c590::FUN_0058c6f0(char) {}
 RHUnk005069a0 &RHUnk005069a0::operator=(const RHUnk005069a0 &) { return *this; }
 
 struct RHbeamMe;

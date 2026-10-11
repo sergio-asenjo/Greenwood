@@ -123,6 +123,17 @@ public:
     void FUN_004c28c0(const std::string &name);
     void FUN_004e35f0(SBFile &file);
     void FUN_004e2390(void *actor);
+    void FUN_004cd600(void *a, void *b);
+    void FUN_004cdab0(void *a);
+    void FUN_004cdcc0();
+    void FUN_004cde00();
+    void FUN_004cdfc0();
+    bool FUN_004cec60();
+    void FUN_004cede0();
+    void FUN_004cf610();
+    void FUN_004cfce0();
+    void FUN_004d0400();
+    void FUN_004d0a10(void *a);
     bool SerializeElementPointer(SBFile &file, RHElement *&element);
     bool SerializeNestedB(SBFile &file, void *value);
     bool FUN_004c3af0(SBFile &file, void *&value);
@@ -389,8 +400,18 @@ void FUN_00570850(void *actor);
 class RHMissionArrayStorage
 {
 public:
-    void *FUN_004609a0(void *first, void *last);
-    void FUN_004e5820(void *position, const unsigned long &value);
+    void *FUN_004609a0(void *first, void *last)
+    {
+        typedef std::vector<int> Values;
+        int *(Values::*erase)(int *, int *) = &Values::erase;
+        return (((Values *)this)->*erase)((int *)first, (int *)last);
+    }
+    void FUN_004e5820(void *position, const unsigned long &value)
+    {
+        typedef std::vector<unsigned long> Values;
+        unsigned long *(Values::*insert)(unsigned long *, const unsigned long &) = &Values::insert;
+        (((Values *)this)->*insert)((unsigned long *)position, value);
+    }
 };
 void FUN_004e70a0(void **position, void *value, bool (*compare)(void *, void *));
 void FUN_004e6f70(void **first, void **last, bool (*compare)(void *, void *), void **value);
@@ -491,26 +512,6 @@ class RHMobileUnk00607da0
 public:
     RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
     undefined m_00[0x14]; // 0x00
-};
-
-// SIZE 0xc8 (partial layout)
-class RHUnk0058c590
-{
-public:
-    void FUN_0058c590(char flag, unsigned short width, unsigned short height);
-    void FUN_0058c630(unsigned short width, unsigned short height);
-    void FUN_0058c6f0(char flag);
-    undefined m_00[0x4c]; // 0x00
-    undefined4 m_4c; // 0x4c
-    undefined m_50[0x10]; // 0x50
-    char m_60; // 0x60
-    undefined m_61[3]; // 0x61
-    RHMobileUnk00607da0 m_64; // 0x64
-    undefined m_78[0x48]; // 0x78
-    unsigned short m_c0; // 0xc0
-    unsigned short m_c2; // 0xc2
-    unsigned short m_c4; // 0xc4
-    unsigned short m_c6; // 0xc6
 };
 
 #endif
