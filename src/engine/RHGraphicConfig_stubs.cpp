@@ -13,7 +13,3 @@
 
 #include "SBNullstr.h"
 #include "RHGraphicConfig.h"
-
-// Target 0x005fc2a0 (SBGeoPoint2D::Serialize — two 4-byte Access calls at
-// __FILE__ P:\Robin Hood\SBLibNG\SBGeoPoint2D.cpp lines 264/265).
-bool SBGeoPoint2D::Serialize(SBFile &) { return true; }
