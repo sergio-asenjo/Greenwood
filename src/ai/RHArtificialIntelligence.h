@@ -205,6 +205,7 @@ public:
         GoTo(wanted);
         return m_current.m_node->m_data;
     }
+    RHArtificialIntelligenceElement *&FUN_00423c20(int wanted);
 };
 
 struct RHArtificialIntelligencePointerArray

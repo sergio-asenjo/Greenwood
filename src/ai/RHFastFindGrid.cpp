@@ -106,6 +106,95 @@ void RHFastFindGrid::DeleteStaticRepulsivePoint(unsigned long id)
         "ACHTUNG : Trying to delete inexisting static repulsive point (ID : %d)", id);
 }
 
+struct RHFastFindRawNode
+{
+    RHFastFindRawNode *next;
+    RHFastFindRawNode *previous;
+    void *value;
+};
+
+// Residual: target type filtering and nested-node cleanup use a different owner/list layout.
+// STUB: GAME 0x004fc590
+void RHFastFindGrid::FUN_004fc590()
+{
+    unsigned long *first = *(unsigned long **)((char *)this + 0x40e4);
+    unsigned long *last = *(unsigned long **)((char *)this + 0x40e8);
+    for (unsigned long *entry = first; entry && entry != last; ++entry)
+    {
+        void *object = (void *)*entry;
+        if (object && *(int *)((char *)object + 4) == 2)
+        {
+            char *owner = (char *)object - 0xb8;
+            RHFastFindRawNode *head = *(RHFastFindRawNode **)(owner + 0xd0);
+            if (!head)
+                continue;
+            RHFastFindRawNode *node = head->next;
+            while (node != head)
+            {
+                RHFastFindRawNode *next = node->next;
+                node->previous->next = next;
+                next->previous = node->previous;
+                ::operator delete(node);
+                node = next;
+                --*(int *)(owner + 0xd4);
+            }
+            *(char *)(owner + 0xdc) = 1;
+        }
+    }
+}
+
+// Residual: the grid-to-cell conversion, actor filtering, and insertion path are not reconstructed.
+// STUB: GAME 0x004fc660
+void RHFastFindGrid::FUN_004fc660()
+{
+    unsigned short width = m_width;
+    unsigned short height = m_height;
+    if (!m_layers || width == 0 || height == 0)
+        return;
+    for (unsigned short layer = 0; layer < m_layerCount; ++layer)
+    {
+        RHFastFindLayer &current = m_layers[layer];
+        for (unsigned short line = 0; line < current.m_lineCount; ++line)
+        {
+            void *value = current.m_lines[line];
+            if (value)
+                current.m_lines[line] = value;
+        }
+    }
+}
+
+// Residual: the target's geometric projection and three-way closest-point comparisons are missing.
+// STUB: GAME 0x004fc8f0
+bool RHFastFindGrid::FUN_004fc8f0(void *first, void *second, void *third, void *fourth)
+{
+    if (!first || !second || !third || !fourth)
+        return false;
+    SBGeoPoint2D &start = *(SBGeoPoint2D *)first;
+    SBGeoPoint2D &end = *(SBGeoPoint2D *)second;
+    float left = *(float *)third;
+    float top = *(float *)fourth;
+    return start.m_x <= end.m_x && start.m_y <= end.m_y && start.m_x <= left && start.m_y <= top;
+}
+
+// Residual: the target searches nested patch arrays and honors the patch-owned fast path.
+// STUB: GAME 0x004fcfd0
+bool RHFastFindGrid::FUN_004fcfd0(void *value)
+{
+    for (void **patch = m_patches.m_first; patch && patch != m_patches.m_last; ++patch)
+    {
+        void *object = *patch;
+        if (!object)
+            continue;
+        void **first = *(void ***)((char *)object + 0x15c);
+        void **last = *(void ***)((char *)object + 0x160);
+        if (first)
+            for (; first != last; ++first)
+                if (*first == value)
+                    return true;
+    }
+    return false;
+}
+
 struct RHUnk005c9010Iterator;
 void FUN_005c9010(RHUnk005c9010Iterator &current, int distance, std::bidirectional_iterator_tag category);
 
@@ -1583,6 +1672,292 @@ RHFastFindRepulsive &RHFastFindRepulsive::FUN_004fdb90(const RHFastFindRepulsive
     m_38 = other.m_38;
     m_id = other.m_id;
     return *this;
+}
+
+class RHUnk004fd680
+{
+public:
+    char m_data[0x40];
+    RHUnk004fd680(const RHUnk004fd680 &other);
+};
+
+// Residual: constructor subobject/vtable setup and source argument placement differ from the target.
+// STUB: GAME 0x004fd680
+RHUnk004fd680::RHUnk004fd680(const RHUnk004fd680 &other)
+{
+    const char *source = other.m_data;
+    char *destination = m_data;
+    for (unsigned index = 0; index < sizeof(m_data); ++index)
+        destination[index] = source[index];
+}
+
+class RHUnk004fd070Item
+{
+public:
+    void Unk(int value);
+};
+
+class RHUnk004fd070
+{
+public:
+    char m_00[4];
+    RHUnk004fd070Item *m_first;
+    RHUnk004fd070Item *m_last;
+    RHUnk004fd070Item *m_end;
+    ~RHUnk004fd070();
+};
+
+// Residual: the target's end-pointer loop and object destructor dispatch need ABI-level matching.
+// STUB: GAME 0x004fd070
+RHUnk004fd070::~RHUnk004fd070()
+{
+    for (RHUnk004fd070Item *item = m_first; item != m_last;
+        item = (RHUnk004fd070Item *)((char *)item + 0x40))
+    {
+        union { unsigned long address; void (RHUnk004fd070Item::*destroy)(int); } destroyCall;
+        destroyCall.address = *(unsigned long *)item;
+        (item->*destroyCall.destroy)(0);
+    }
+    ::operator delete(m_first);
+    m_first = 0;
+    m_last = 0;
+    m_end = 0;
+}
+
+class RHUnk004fd0c0
+{
+public:
+    char m_00[4];
+    RHFastFindRepulsive *m_first;
+    RHFastFindRepulsive *m_last;
+    RHFastFindRepulsive *m_end;
+    void Insert(unsigned index, unsigned count, const RHFastFindRepulsive &value);
+};
+
+// Residual: the target performs capacity-aware 0x40-byte insertion with allocator/copy helper calls.
+// STUB: GAME 0x004fd0c0
+void RHUnk004fd0c0::Insert(unsigned index, unsigned count, const RHFastFindRepulsive &value)
+{
+    unsigned size = m_first ? (unsigned)(m_last - m_first) : 0;
+    unsigned capacity = m_first ? (unsigned)(m_end - m_first) : 0;
+    if (index > size)
+        index = size;
+    if (count == 0)
+        return;
+    unsigned newSize = size + count;
+    if (newSize > capacity)
+    {
+        unsigned newCapacity = capacity ? capacity : 1;
+        while (newCapacity < newSize)
+            newCapacity *= 2;
+        RHFastFindRepulsive *storage = (RHFastFindRepulsive *)::operator new(newCapacity * sizeof(RHFastFindRepulsive));
+        unsigned offset = 0;
+        for (; offset < index; ++offset)
+            for (unsigned byte = 0; byte < sizeof(RHFastFindRepulsive); ++byte)
+                ((char *)&storage[offset])[byte] = ((char *)&m_first[offset])[byte];
+        for (unsigned inserted = 0; inserted < count; ++inserted, ++offset)
+            for (unsigned byte = 0; byte < sizeof(RHFastFindRepulsive); ++byte)
+                ((char *)&storage[offset])[byte] = ((const char *)&value)[byte];
+        for (unsigned oldIndex = index; oldIndex < size; ++oldIndex, ++offset)
+            for (unsigned byte = 0; byte < sizeof(RHFastFindRepulsive); ++byte)
+                ((char *)&storage[offset])[byte] = ((char *)&m_first[oldIndex])[byte];
+        ::operator delete(m_first);
+        m_first = storage;
+        m_last = storage + newSize;
+        m_end = storage + newCapacity;
+        return;
+    }
+    for (unsigned old = size; old > index; --old)
+        m_first[old + count - 1] = m_first[old - 1];
+    for (unsigned inserted = 0; inserted < count; ++inserted)
+        m_first[index + inserted] = value;
+    m_last += count;
+}
+
+class RHUnk004fd3d0
+{
+public:
+    char m_00[4];
+    char *m_first;
+    char *m_last;
+    char *m_end;
+    char m_10[0x10];
+    ~RHUnk004fd3d0();
+};
+
+// Residual: nested 0xc0-byte element destruction and member reset order remain incomplete.
+// STUB: GAME 0x004fd3d0
+RHUnk004fd3d0::~RHUnk004fd3d0()
+{
+    for (char *item = m_first; item && item != m_last; item += 0xc0)
+        ::operator delete(*(void **)(item + 0x14));
+    ::operator delete(m_first);
+    m_first = 0;
+    m_last = 0;
+    m_end = 0;
+    for (unsigned offset = 0x1c; offset <= 0xa0; offset += 0x20)
+    {
+        void **array = (void **)((char *)this + offset + 4);
+        ::operator delete(*array);
+        array[0] = 0;
+        array[1] = 0;
+        array[2] = 0;
+    }
+}
+
+class RHUnk004fd530
+{
+public:
+    char m_00[4];
+    char *m_first;
+    char *m_last;
+    char *m_end;
+    char m_10[0x10];
+    ~RHUnk004fd530();
+};
+
+// Residual: nested 0xa0-byte element destruction and member reset order remain incomplete.
+// STUB: GAME 0x004fd530
+RHUnk004fd530::~RHUnk004fd530()
+{
+    for (char *item = m_first; item && item != m_last; item += 0xa0)
+        ::operator delete(*(void **)(item + 0x24));
+    ::operator delete(m_first);
+    m_first = 0;
+    m_last = 0;
+    m_end = 0;
+    for (unsigned offset = 0x1c; offset <= 0x80; offset += 0x20)
+    {
+        void **array = (void **)((char *)this + offset + 4);
+        ::operator delete(*array);
+        array[0] = 0;
+        array[1] = 0;
+        array[2] = 0;
+    }
+}
+
+class RHUnk004fd750
+{
+public:
+    char m_data[0xb8];
+    RHUnk004fd750(char mode);
+};
+
+// Residual: constructor argument propagation and the target's repeated member initialization differ.
+// STUB: GAME 0x004fd750
+RHUnk004fd750::RHUnk004fd750(char mode)
+{
+    char *base = (char *)this;
+    *(char *)(base + 0x00) = mode;
+    *(void **)(base + 0x04) = 0;
+    *(void **)(base + 0x08) = 0;
+    *(void **)(base + 0x0c) = 0;
+    *(char *)(base + 0x14) = 1;
+    *(char *)(base + 0x20) = mode;
+    *(void **)(base + 0x24) = 0;
+    *(void **)(base + 0x28) = 0;
+    *(void **)(base + 0x2c) = 0;
+    *(char *)(base + 0x34) = 1;
+    *(char *)(base + 0x40) = mode;
+    *(void **)(base + 0x44) = 0;
+    *(void **)(base + 0x48) = 0;
+    *(void **)(base + 0x4c) = 0;
+    *(char *)(base + 0x54) = 1;
+    *(char *)(base + 0x60) = mode;
+    *(void **)(base + 0x64) = 0;
+    *(void **)(base + 0x68) = 0;
+    *(void **)(base + 0x6c) = 0;
+    *(char *)(base + 0x74) = 1;
+    *(char *)(base + 0x80) = mode;
+    *(void **)(base + 0x84) = 0;
+    *(void **)(base + 0x88) = 0;
+    *(void **)(base + 0x8c) = 0;
+    *(char *)(base + 0x94) = 1;
+    *(void **)(base + 0xa4) = 0;
+    *(void **)(base + 0xa8) = 0;
+    *(void **)(base + 0xac) = 0;
+    *(char *)(base + 0xb4) = 1;
+}
+
+class RHUnk004fd7f0
+{
+public:
+    char m_data[0xc0];
+    ~RHUnk004fd7f0();
+};
+
+// Residual: five nested arrays and their pairwise helper cleanup calls are not reproduced.
+// STUB: GAME 0x004fd7f0
+RHUnk004fd7f0::~RHUnk004fd7f0()
+{
+    for (unsigned offset = 0x20; offset <= 0xa0; offset += 0x20)
+    {
+        void **array = (void **)((char *)this + offset + 4);
+        ::operator delete(*array);
+        array[0] = 0;
+        array[1] = 0;
+        array[2] = 0;
+    }
+}
+
+class RHUnk004fd9a0
+{
+public:
+    char m_data[0x98];
+    RHUnk004fd9a0(char mode);
+};
+
+// Residual: constructor argument propagation and repeated member initialization remain different.
+// STUB: GAME 0x004fd9a0
+RHUnk004fd9a0::RHUnk004fd9a0(char mode)
+{
+    char *base = (char *)this;
+    *(char *)(base + 0x00) = mode;
+    *(void **)(base + 0x04) = 0;
+    *(void **)(base + 0x08) = 0;
+    *(void **)(base + 0x0c) = 0;
+    *(char *)(base + 0x14) = 1;
+    *(char *)(base + 0x20) = mode;
+    *(void **)(base + 0x24) = 0;
+    *(void **)(base + 0x28) = 0;
+    *(void **)(base + 0x2c) = 0;
+    *(char *)(base + 0x34) = 1;
+    *(char *)(base + 0x40) = mode;
+    *(void **)(base + 0x44) = 0;
+    *(void **)(base + 0x48) = 0;
+    *(void **)(base + 0x4c) = 0;
+    *(char *)(base + 0x54) = 1;
+    *(char *)(base + 0x60) = mode;
+    *(void **)(base + 0x64) = 0;
+    *(void **)(base + 0x68) = 0;
+    *(void **)(base + 0x6c) = 0;
+    *(char *)(base + 0x74) = 1;
+    *(char *)(base + 0x80) = mode;
+    *(void **)(base + 0x84) = 0;
+    *(void **)(base + 0x88) = 0;
+    *(void **)(base + 0x8c) = 0;
+    *(char *)(base + 0x94) = 1;
+}
+
+class RHUnk004fda20
+{
+public:
+    char m_data[0xa0];
+    ~RHUnk004fda20();
+};
+
+// Residual: the target releases and clears four nested arrays in a different register schedule.
+// STUB: GAME 0x004fda20
+RHUnk004fda20::~RHUnk004fda20()
+{
+    for (unsigned offset = 0x20; offset <= 0x80; offset += 0x20)
+    {
+        void **array = (void **)((char *)this + offset + 4);
+        ::operator delete(*array);
+        array[0] = 0;
+        array[1] = 0;
+        array[2] = 0;
+    }
 }
 
 // FUNCTION: GAME 0x004fdc20

@@ -158,6 +158,10 @@ public:
     void InitializeJumpStuffFromProtoStream(SBFile &file);
     void InitializeScriptStuffFromMissionStream(SBFile &file);
     void FUN_004faf40(SBFile &file);
+    void FUN_004fc590();
+    void FUN_004fc660();
+    bool FUN_004fc8f0(void *first, void *second, void *third, void *fourth);
+    bool FUN_004fcfd0(void *value);
     void FUN_004fb1d0(SBFile &file);
     void FUN_004fb230(SBFile &file);
     void FUN_004e8bd0(void *sector, unsigned short layer, bool mode);

@@ -6,6 +6,14 @@ template <class T> inline T &RHAIField(void *object, unsigned offset)
     return *(T *)((char *)object + offset);
 }
 
+// Parked: list semantics and return address are established, but ABI owner remains provisional.
+// STUB: GAME 0x00423c20
+RHArtificialIntelligenceElement *&RHArtificialIntelligenceList::FUN_00423c20(int wanted)
+{
+    GoTo(wanted);
+    return m_current.m_node->m_data;
+}
+
 class RHMalignityBaseView
 {
 public:
@@ -38,6 +46,89 @@ public:
     virtual bool V0c(SBFile &file) = 0;
 };
 
+struct RHUnk00423fa0Node
+{
+    RHUnk00423fa0Node *next;
+    RHUnk00423fa0Node *previous;
+    void *payload;
+};
+
+class RHUnk00423fa0List
+{
+public:
+    int allocator;
+    RHUnk00423fa0Node *head;
+    int count;
+    void Clear();
+};
+
+// Parked: the target's iterator-helper and per-node cleanup calls are not yet attributed.
+// STUB: GAME 0x00423fa0
+void RHUnk00423fa0List::Clear()
+{
+    RHUnk00423fa0Node *sentinel = head;
+    RHUnk00423fa0Node *node = sentinel->next;
+    while (node != sentinel)
+    {
+        RHUnk00423fa0Node *next = node->next;
+        node->previous->next = node->next;
+        node->next->previous = node->previous;
+        typedef void (__cdecl *NodeCleanup)(int);
+        ((NodeCleanup)0x0040eab0)(0);
+        operator delete(node);
+        --count;
+        node = next;
+    }
+    operator delete(sentinel);
+    head = 0;
+    count = 0;
+}
+
+struct RHUnk00424060Node
+{
+    RHUnk00424060Node *next;
+    RHUnk00424060Node *previous;
+    void *payload;
+};
+
+class RHUnk00424060List
+{
+public:
+    int allocator;
+    RHUnk00424060Node *head;
+    int count;
+    RHUnk00424060Node *cursor;
+    void Clear();
+};
+
+// Parked: target iterator-helper passes after payload release remain unresolved.
+// STUB: GAME 0x00424060
+void RHUnk00424060List::Clear()
+{
+    RHUnk00424060Node *sentinel = head;
+    cursor = sentinel->next;
+    while (cursor != sentinel)
+    {
+        void *storage = cursor->payload;
+        if (storage)
+            operator delete(storage);
+        cursor = cursor->next;
+    }
+    RHUnk00424060Node *node = sentinel->next;
+    while (node != sentinel)
+    {
+        RHUnk00424060Node *next = node->next;
+        node->previous->next = next;
+        next->previous = node->previous;
+        operator delete(node);
+        --count;
+        node = next;
+    }
+    operator delete(sentinel);
+    head = 0;
+    count = 0;
+}
+
 // GLOBAL: GAME 0x006c06d0
 RHArtificialIntelligenceStaticArray g_unk0x006c06d0;
 // GLOBAL: GAME 0x006c07de
@@ -62,6 +153,114 @@ RHArtificialIntelligenceList g_unk0x006c0758;
 extern "C" long __cdecl time(long *value);
 extern "C" void __cdecl srand(unsigned seed);
 void operator delete(void *pointer) throw();
+
+class RHAIObjectDeletingView
+{
+public:
+    virtual void Delete(unsigned flags) = 0;
+};
+
+class RHUnk00423d90
+{
+public:
+    int allocator;
+    void **first;
+    void **last;
+    void **end;
+    void FUN_00423d90();
+};
+
+class RHUnk00423e40
+{
+public:
+    int allocator;
+    void **first;
+    void **last;
+    void **end;
+    void FUN_00423e40();
+};
+
+class RHUnk00423ef0
+{
+public:
+    int allocator;
+    void **first;
+    void **last;
+    void **end;
+    void FUN_00423ef0();
+};
+
+// Parked: 59.46%; provisional vector-clear; exact owner and register schedule unresolved.
+// STUB: GAME 0x00423d90
+void RHUnk00423d90::FUN_00423d90()
+{
+    int count = first == 0 ? 0 : last - first;
+    int index = 0;
+    if (count > 0)
+    {
+        do
+        {
+            RHAIObjectDeletingView *object = (RHAIObjectDeletingView *)first[index];
+            if (object)
+                object->Delete(1);
+            ++index;
+        } while (index < count);
+    }
+    last = first;
+    last = first;
+    operator delete(first);
+    first = 0;
+    last = 0;
+    end = 0;
+}
+
+// Parked: 59.46%; provisional vector-clear sibling; no direct TU attribution.
+// STUB: GAME 0x00423e40
+void RHUnk00423e40::FUN_00423e40()
+{
+    int count = first == 0 ? 0 : last - first;
+    int index = 0;
+    if (count > 0)
+    {
+        do
+        {
+            RHAIObjectDeletingView *object = (RHAIObjectDeletingView *)first[index];
+            if (object)
+                object->Delete(1);
+            ++index;
+        } while (index < count);
+    }
+    last = first;
+    last = first;
+    operator delete(first);
+    first = 0;
+    last = 0;
+    end = 0;
+}
+
+// Parked: 59.46%; provisional vector-clear sibling; no direct TU attribution.
+// STUB: GAME 0x00423ef0
+void RHUnk00423ef0::FUN_00423ef0()
+{
+    int count = first == 0 ? 0 : last - first;
+    int index = 0;
+    if (count > 0)
+    {
+        do
+        {
+            RHAIObjectDeletingView *object = (RHAIObjectDeletingView *)first[index];
+            if (object)
+                object->Delete(1);
+            ++index;
+        } while (index < count);
+    }
+    last = first;
+    last = first;
+    operator delete(first);
+    first = 0;
+    last = 0;
+    end = 0;
+}
 
 class RHArtificialIntelligenceForbiddenRemark
 {
