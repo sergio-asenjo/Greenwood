@@ -45,8 +45,13 @@ public:
 
     bool FUN_00470ca0();
     bool FUN_00470ce0();
+    bool FUN_00470310();
     void FUN_00470a10(SBFile &file);
     void FUN_00470480(SBFile &file);
+    bool FUN_00470d00(void *first, void *second, int kind);
+    bool FUN_00470e50(void *first, void *second, int kind);
+    void *FUN_00470f70(void *element);
+    void FUN_00471090();
 
     void Emit(SBFile &file);
 
@@ -54,6 +59,7 @@ private:
     undefined4 m_unk704; // 0x704
     RHCivilianProfileView *m_708; // 0x708
 };
+
 
 // SIZE 0x19e
 class RHCivilianSpriteView

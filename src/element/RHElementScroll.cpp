@@ -1,5 +1,8 @@
 #include "RHElementScroll.h"
 
+class RHEngine;
+extern RHEngine *g_pEngine;
+
 class RHUnk0055dbb0
 {
 public:
@@ -111,6 +114,94 @@ void RHElementScroll::FUN_004ba400()
         ((RHUnkTargetSprite *)info)->FUN_005b76e0(0xbf, *(unsigned short *)((char *)info + 0xd8));
     else
         ((RHUnkTargetSprite *)info)->FUN_005b76e0(0xbe, *(unsigned short *)((char *)info + 0xd8));
+}
+
+// Parked: helper-call argument register scheduling remains different.
+// STUB: GAME 0x004ba470
+bool RHElementScroll::FUN_004ba470(void *first, void *second, void *third)
+{
+    if (!m_12 || second == 0 || *(unsigned int *)((char *)g_pEngine + 0x4a00) > 1)
+        return false;
+    if (m_164 != 1 && m_164 != 3)
+        return false;
+    void *last = third;
+    return FUN_004b23c0(first, second, last);
+}
+
+// FUNCTION: GAME 0x004ba4c0
+bool RHElementScroll::IsRevealable() const
+{
+    return m_12 && m_164 == 0;
+}
+
+// Parked: result-register and reset-helper call scheduling remain different.
+// STUB: GAME 0x004ba4e0
+bool RHElementScroll::FUN_004ba4e0(unsigned long value)
+{
+    RHBonusInfo *info = Info();
+    m_164 = 3;
+    ((RHUnkTargetSprite *)info)->FUN_005b76e0(0xc0, *(unsigned short *)((char *)info + 0xd8));
+    if (!*(char *)((char *)this + 0x158))
+        return false;
+    SetScrollExecutingScript(this);
+    int result = ((RHUnk00404860 *)((char *)this + 0x160))->FUN_00404860(value);
+    ResetScrollExecutingScript();
+    if (result)
+    {
+        m_164 = 2;
+        ((RHUnk004ba7a0 *)this)->FUN_004ba7e0();
+        return true;
+    }
+    return false;
+}
+
+// Parked: profile-index result is tested in the wrong register.
+// STUB: GAME 0x004ba550
+bool RHElementScroll::FUN_004ba550()
+{
+    char *profile = ((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0();
+    return *(int *)(profile + 0x1c) == 0 && !m_16c[0];
+}
+
+// Parked: status branch and four-word helper argument scheduling differ.
+// STUB: GAME 0x004ba580
+bool RHElementScroll::FUN_004ba580(unsigned long first, unsigned long second,
+                                   unsigned long third, unsigned long fourth) const
+{
+    int status = m_164;
+    if (status != 1 && status != 3)
+        return false;
+    bool result = FUN_004b2b60(first, second, third, fourth);
+    return result;
+}
+
+// FUNCTION: GAME 0x004ba5c0
+void RHElementScroll::ResetScrollExecutingScript()
+{
+    g_scrollExecutingScript = 0;
+}
+
+// Parked: helper entities and allocation/EH cleanup shape differ.
+// STUB: GAME 0x004ba5d0
+void *RHElementScroll::FUN_004ba5d0()
+{
+    if (!IsRevealable())
+    {
+        ((RHUnk004ba7a0 *)this)->Set(1);
+        return this;
+    }
+    if (!FUN_004ba550())
+    {
+        ((RHUnk004ba7a0 *)this)->Set(1);
+        return this;
+    }
+    void *element = operator new(0x100);
+    if (element != 0)
+        ((RHUnk004a7150 *)element)->FUN_004a7150(0xa, 0, 1);
+    ((RHUnk00462730 *)element)->FUN_00462730(this, 0);
+    ((RHUnk004d8460 *)g_pEngine)->FUN_004d8460(element, 0, 1);
+    ((RHUnk004ba7a0 *)this)->Set(2);
+    return element;
 }
 
 // FUNCTION: GAME 0x004ba690

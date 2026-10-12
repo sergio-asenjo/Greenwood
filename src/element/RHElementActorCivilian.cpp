@@ -43,6 +43,25 @@ DECOMP_SIZE_ASSERT(SBGeoBoundingBox2D, 0x14)
 DECOMP_SIZE_ASSERT(std::vector<unsigned short>, 0x10)
 DECOMP_SIZE_ASSERT(RHCampaignProfiles, 0x70)
 
+class RHUnk006c0838
+{
+public:
+    void FUN_0045ab50();
+};
+
+// GLOBAL: GAME 0x006c0838
+RHUnk006c0838 g_unk0x6c0838;
+
+void RHUnk006c0838::FUN_0045ab50()
+{
+}
+
+// FUNCTION: GAME 0x00471050
+void FUN_00471050()
+{
+    g_unk0x6c0838.FUN_0045ab50();
+}
+
 // Parked: scalar slots, geometry temporaries and named callees differ.
 // STUB: GAME 0x00470480
 void RHElementActorCivilian::FUN_00470480(SBFile &file)
@@ -183,6 +202,180 @@ bool RHElementActorCivilian::FUN_00470ca0()
 bool RHElementActorCivilian::FUN_00470ce0()
 {
     return m_708->m_30 == 5;
+}
+
+bool RHCivilianVirtualBool(void *object, unsigned offset);
+
+// Parked: branch helpers and the sprite receiver's exact callee are unresolved.
+// STUB: GAME 0x00470d00
+bool RHElementActorCivilian::FUN_00470d00(void *first, void *second, int kind)
+{
+    if (!RHCivilianField<char>(this, 0x12))
+        return false;
+
+    if (kind != 5 && kind != 0x10 && kind != 2 &&
+        RHCivilianField<unsigned>(g_pEngine, 0x4a00) > 1)
+        return false;
+
+    if (kind == 3)
+    {
+        if (RHCivilianField<char>(this, 8) ||
+            RHCivilianField<void *>(this, 0x500) ||
+            !FUN_00470ca0() ||
+            !RHCivilianVirtualBool(second, 0xf8))
+            return false;
+
+        unsigned action = RHCivilianField<unsigned>(RHCivilianField<void *>(this, 0x50), 0x1dc);
+        return action != 0x108 && action != 0x109 && action != 0x10a;
+    }
+
+    if (kind == 0xf)
+        return RHCivilianField<char>(this, 8) != 0;
+
+    return true;
+}
+
+#define SBGeoPoint2D RHElemScrollPoint2D
+#define SBGeoVector2D RHElemScrollVector2D
+#define SBGeoBoundingBox2D RHElemScrollBoundingBox2D
+#define RHUnkPathActorInfoBase RHElemScrollPathActorInfoBase
+#define RHBonusInfoBase RHElemScrollBonusInfoBase
+#define RHBonusInfo RHElemScrollBonusInfo
+#include "RHElementScroll.h"
+#undef RHBonusInfo
+#undef RHBonusInfoBase
+#undef RHUnkPathActorInfoBase
+#undef SBGeoBoundingBox2D
+#undef SBGeoVector2D
+#undef SBGeoPoint2D
+
+#include "../ui/RHMinimap.h"
+
+// GLOBAL: GAME 0x006c09dc
+RHElementScroll ** volatile g_unk0x6c09dc;
+
+// FUNCTION: GAME 0x00470e30
+bool FUN_00470e30(unsigned int index)
+{
+    RHElementScroll **scrolls = g_unk0x6c09dc;
+    return scrolls[index]->IsRevealable();
+}
+
+#define RHCIVILIAN_VIRTUAL_BOOL(object, offset) \
+    ((bool (__fastcall *)(void *))(*(void ***)object)[(offset) / 4])(object)
+
+// Parked: allocation cleanup and helper-call entities remain unresolved.
+// STUB: GAME 0x00470e50
+bool RHElementActorCivilian::FUN_00470e50(void *first, void *second, int kind)
+{
+    if (RHCIVILIAN_VIRTUAL_BOOL(this, 0x48) ||
+        RHCivilianField<char>(this, 0x1ce) ||
+        RHCivilianField<void *>(this, 0x500) ||
+        !FUN_00470ca0() ||
+        !RHCIVILIAN_VIRTUAL_BOOL(second, 0xf8))
+        return false;
+
+    if (RHCivilianField<int>(g_pEngine, 0x4a00) <= 50)
+        return false;
+
+    void *event = ::operator new(0x68);
+    if (!event)
+        return false;
+
+    RHCivilianField<void *>(event, 0) = first;
+    RHCivilianField<void *>(event, 4) = this;
+    RHCivilianField<void *>(event, 8) = second;
+    RHCivilianField<unsigned>(event, 0x10) = kind;
+    RHCivilianField<unsigned short>(this, 0x6fc) = 3;
+    return true;
+}
+
+#undef RHCIVILIAN_VIRTUAL_BOOL
+
+// GLOBAL: GAME 0x006c0c50
+RHMinimap *g_unk0x6c0c50;
+
+// Parked: the argument read and saved-register schedule still differ from the target.
+// STUB: GAME 0x00471060
+void FUN_00471060(unsigned int index)
+{
+    RHElementScroll **scrolls = g_unk0x6c09dc;
+    RHElementScroll *scroll = scrolls[index];
+    RHMinimap *minimap = g_unk0x6c0c50;
+    minimap->FUN_0054a440(scroll->FUN_004ba5d0());
+}
+
+// GLOBAL: GAME 0x006c0874
+unsigned char g_unk0x6c0874;
+
+bool RHCivilianVirtualBool(void *object, unsigned offset)
+{
+    void **vtable = *(void ***)object;
+    typedef bool (__fastcall *Method)(void *);
+    return ((Method)vtable[offset / 4])(object);
+}
+
+// Parked: virtual receivers and global helper calls remain source-shape approximations.
+// STUB: GAME 0x00470f70
+void *RHElementActorCivilian::FUN_00470f70(void *element)
+{
+    if ((g_unk0x6c0874 & 1) == 0)
+    {
+        g_unk0x6c0874 |= 1;
+        g_unk0x6c0838.FUN_0045ab50();
+    }
+
+    if (RHCivilianVirtualBool(this, 0x48) ||
+        RHCivilianField<char>(this, 0x1ce) ||
+        !FUN_00470ca0() ||
+        !RHCivilianVirtualBool(element, 0xf8))
+        return 0;
+
+    if (RHCivilianField<int>(g_pEngine, 0x4a00) <= 50)
+        return 0;
+
+    RHCivilianField<char>(this, 0x92) = 1;
+    RHCivilianField<int>(this, 0xa0) = 0;
+    RHCivilianField<unsigned short>(this, 0xa4) = 2;
+    g_unk0x6c0838.FUN_0045ab50();
+    return &g_unk0x6c0838;
+}
+
+// Parked: the list dispatch, status callback and transition-call schedule differ.
+// STUB: GAME 0x00471090
+void RHElementActorCivilian::FUN_00471090()
+{
+    unsigned &current = RHCivilianField<unsigned>(this, 0x704);
+    if (current == 10)
+    {
+        g_unk0x6c0c50->FUN_00549f50();
+        return;
+    }
+
+    std::vector<unsigned short> *arrays =
+        RHCivilianField<std::vector<unsigned short> *>(this, 0x700);
+    std::vector<unsigned short> &values = arrays[current];
+    unsigned revealable = 0;
+    for (std::vector<unsigned short>::iterator it = values.begin(); it != values.end(); ++it)
+        if (FUN_00470e30(*it))
+            ++revealable;
+
+    unsigned message;
+    unsigned duration = 10;
+    if (revealable != 0)
+    {
+        for (std::vector<unsigned short>::iterator it = values.begin(); it != values.end(); ++it)
+            FUN_00471060(*it);
+        g_unk0x6c0c50->FUN_00549f50();
+        message = FUN_00470310() ? 99 : 101;
+    }
+    else
+        message = FUN_00470310() ? 100 : 102;
+
+    (void)message;
+    (void)duration;
+    RHCivilianField<unsigned short>(this, 0x6fc) = 3;
+    ++current;
 }
 
 // FUNCTION: GAME 0x004711c0

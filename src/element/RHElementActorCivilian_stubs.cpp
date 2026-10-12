@@ -13,5 +13,10 @@
 #include "SBNullstr.h"
 #include "RHElementActorCivilian.h"
 
+bool RHElementActorCivilian::FUN_00470310()
+{
+    return false;
+}
+
 // Target 0x0048b5d0 (rhelementactornpc.cpp — writes the "RHElementActorNPC"
 // tag). Its own string markers belong to that TU, not this one.
