@@ -104,15 +104,56 @@ void FUN_005e20c0(SBFile &file);
 class RHEngine
 {
 public:
+    void FUN_004d1640(unsigned first, unsigned second, unsigned third, unsigned fourth, unsigned fifth, unsigned sixth, unsigned seventh);
+    unsigned short FUN_004d16b0(void *first, void *second, unsigned third);
+    bool FUN_004d1840();
+    bool FUN_004d1aa0();
+    void FUN_004d1d00();
+    void FUN_004d1f50();
+    void FUN_004d21b0();
     void FUN_004c8120(void *actor);
     unsigned int FUN_004d2340(int type);
     void FUN_004c38d0(SBFile &file, unsigned *value);
     void FUN_004dee70(float *point);
+    int FUN_004deeb0(const SBGeoPoint2D &point, SBGeoPoint2D &result);
+    void FUN_004defa0(char flag);
+    void FUN_004df070(void *value, char flag);
+    void FUN_004df330(const SBGeoPoint2D &point, void *actor, int index);
+    void FUN_004df550(const SBGeoPoint2D &point, void *actor, int flag, void *provided);
+    void FUN_004df7b0(const SBGeoPoint2D &point, char flag);
+    void FUN_004dfb50(const SBGeoPoint2D &point, char flag);
+    void FUN_004dfcf0(char flag);
+    void FUN_004df950(const SBGeoPoint2D &point, char flag);
+    void FUN_004dfe70(const SBGeoPoint2D &point, char flag);
+    void *FUN_004e04c0(int type, const SBGeoPoint2D &point, int index, void *actor);
+    void FUN_004e0550(const SBGeoPoint2D &point, void *actor, int index);
+    void FUN_004e0770(const SBGeoPoint2D &point, void *actor, int index);
+    void FUN_004e0bf0(const SBGeoPoint2D &point, void *actor, char flag);
+    void FUN_004e14a0(const SBGeoPoint2D &point, int value, char flag);
+    void FUN_004e1630(const SBGeoPoint2D &point, char flag);
+    void FUN_004e09d0(const SBGeoPoint2D &point, void *actor, char flag);
+    void FUN_004e0d80(const SBGeoPoint2D &point, void *actor, char flag);
+    void FUN_004e17c0(unsigned value, void *actor);
+    void FUN_004e0030(const SBGeoPoint2D &point, void *actor, char flag);
+    void FUN_004e0fb0(const SBGeoPoint2D &point, void *actor, char flag, int value);
     void FUN_004debf0(const SBGeoPoint2D &point);
+    unsigned FUN_004e19c0(unsigned value);
+    bool FUN_004e1890();
     unsigned FUN_004e4110(unsigned value);
     bool InitializeFromMission(RHMission *mission);
     bool FUN_004c4570(SBFile &file);
     bool FUN_004c6040(SBFile &file);
+    int FUN_004c6ef0();
+    bool FUN_004c7c90();
+    int FUN_004c7cc0();
+    bool FUN_004c7cd0();
+    bool FUN_004c7cf0();
+    unsigned FUN_004c7d50();
+    bool FUN_004c7d80(void *first, int second, void **result);
+    bool FUN_004c7e10(void *first, int second, void **result);
+    bool FUN_004c7eb0(void *first, int second, void **result);
+    void FUN_004c7f60(const void *point);
+    void FUN_004db7f0(SBGeoPoint2D &point);
     void InitializeActorsFromMissionStream(SBFile &file, std::vector<RHbeamMe> &beamMes);
     void InitializeBuildingTenantsFromMissionStream(SBFile &file);
     void FUN_004c1d20(SBFile &file);
@@ -121,6 +162,11 @@ public:
     void FUN_004c2200(SBFile &file, std::vector<RHbeamMe> &beamMes);
     void FUN_004c2720(SBFile &file);
     void FUN_004c28c0(const std::string &name);
+    int FUN_004cac00(void *first, void *second, int third, char fourth);
+    unsigned short FUN_004cc100(void *first, void *second);
+    int FUN_004cc970(void *first, void *second, void *third);
+    void FUN_004ccad0(void *first, void *second);
+    void FUN_004cd400();
     void FUN_004e35f0(SBFile &file);
     void FUN_004e2390(void *actor);
     void FUN_004cd600(void *a, void *b);
@@ -162,6 +208,9 @@ public:
     void **m_493c; // 0x493c
     void **m_4940; // 0x4940
 };
+
+void *FUN_004d1630();
+bool __stdcall FUN_004d2330(int type);
 
 class RHEngineMissionElementCalls
 {

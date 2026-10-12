@@ -3,6 +3,13 @@
 #include "RHScript.h"
 
 void RHEngineContinuationCampaignCalls::FUN_00450c10(void *, SBFile &) {}
+void RHEngine::FUN_004db7f0(SBGeoPoint2D &) {}
+class RHUnk00493a80
+{
+public:
+    void FUN_00493a80();
+};
+void RHUnk00493a80::FUN_00493a80() {}
 void FUN_00570850(void *) {}
 RHUnk004a1bc0::RHUnk004a1bc0(bool) {}
 RHUnk0057ee90::RHUnk0057ee90() {}
@@ -144,7 +151,6 @@ public:
 };
 
 bool RHEngineWidenedCalls::FUN_004b2010(char, void *) { return false; }
-void RHEngineWidenedCalls::FUN_004c7f60(const void *) {}
 void RHEngineWidenedCalls::FUN_00556260() {}
 void RHEngineWidenedCalls::FUN_005563f0(unsigned) {}
 void RHEngineWidenedCalls::FUN_0055ebf0() {}
