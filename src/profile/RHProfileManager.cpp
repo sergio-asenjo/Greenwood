@@ -3,6 +3,289 @@
 #include "RHMissionProfile.h"
 #include "RHProfileFile.h"
 #include <algorithm>
+#include <string.h>
+
+class RHProfileManagerParseCalls
+{
+public:
+    int FUN_0056c100(void *, unsigned, unsigned);
+    unsigned FUN_0056c290(void *, unsigned, unsigned);
+    unsigned FUN_0056c360(void *, unsigned, unsigned);
+    unsigned FUN_0056c410(void *, unsigned, unsigned);
+    unsigned FUN_0056c490(void *, unsigned, unsigned);
+    unsigned FUN_0056c5b0(void *, unsigned, unsigned);
+    const char *FUN_0056c700(void *, unsigned, unsigned);
+    const char *FUN_0056cb00(void *, unsigned, unsigned);
+    const char *FUN_0056cc40(void *, unsigned, unsigned);
+    unsigned FUN_0056cdb0(void *, unsigned, unsigned);
+    int FUN_0056ce70(void *);
+};
+
+static const char *RHProfileToken(void *token)
+{
+    const char *value = *(const char **)((char *)token + 4);
+    return value ? value : "";
+}
+
+static bool RHProfileTokenEquals(const char *first, const char *second)
+{
+    return _stricmp(first, second) == 0;
+}
+
+// Parked: The parser's case-mode helper and diagnostic call ABI remain unresolved.
+// STUB: GAME 0x0056c100
+int RHProfileManagerParseCalls::FUN_0056c100(void *profile, unsigned line, unsigned column)
+{
+    const char *value = RHProfileToken(profile);
+    if (RHProfileTokenEquals(value, "head"))
+        return 0;
+    if (RHProfileTokenEquals(value, "throat"))
+        return 1;
+    if (RHProfileTokenEquals(value, "chest"))
+        return 2;
+    if (RHProfileTokenEquals(value, "back"))
+        return 3;
+    if (RHProfileTokenEquals(value, "arm"))
+        return 4;
+    FUN_0056cf40((const RHProfileManager *)this,
+        "In weapon profile at (%d,%d) : type of wound %s", line, column, value);
+    return 0;
+}
+
+// Parked: The parser's shared case-mode comparison semantics are not available.
+// STUB: GAME 0x0056c200
+unsigned FUN_0056c200(const char *token)
+{
+    if (RHProfileTokenEquals(token, "yes") || RHProfileTokenEquals(token, "x"))
+        return 1;
+    return 0;
+}
+
+// Parked: The fixed-width conversion's string-helper behavior is not fully recovered.
+// STUB: GAME 0x0056c250
+unsigned FUN_0056c250(const char *token)
+{
+    unsigned value = 0;
+    if (!RHProfileTokenEquals(token, "NONE"))
+        strncpy((char *)&value, token, 4);
+    return value;
+}
+
+// Parked: The parser's case-mode helper and diagnostic call ABI remain unresolved.
+// STUB: GAME 0x0056c290
+unsigned RHProfileManagerParseCalls::FUN_0056c290(void *profile, unsigned line, unsigned column)
+{
+    const char *value = RHProfileToken(profile);
+    if (RHProfileTokenEquals(value, "wood"))
+        return 0;
+    if (RHProfileTokenEquals(value, "steel"))
+        return 1;
+    if (RHProfileTokenEquals(value, "cast iron"))
+        return 2;
+    if (RHProfileTokenEquals(value, "steel and wood"))
+        return 3;
+    FUN_0056cf40((const RHProfileManager *)this,
+        "In profile at (%d,%d) : type of weapon %s", line, column, value);
+    return 0;
+}
+
+// Parked: The parser's case-mode helper and diagnostic call ABI remain unresolved.
+// STUB: GAME 0x0056c360
+unsigned RHProfileManagerParseCalls::FUN_0056c360(void *profile, unsigned line, unsigned column)
+{
+    const char *value = RHProfileToken(profile);
+    if (RHProfileTokenEquals(value, "leather"))
+        return 0;
+    if (RHProfileTokenEquals(value, "chainmail"))
+        return 1;
+    if (RHProfileTokenEquals(value, "plate"))
+        return 2;
+    FUN_0056cf40((const RHProfileManager *)this,
+        "In profile at (%d,%d) : type of armor %s", line, column, value);
+    return 0;
+}
+
+// Parked: The parser's case-mode comparison and diagnostic context remain unresolved.
+// STUB: GAME 0x0056c410
+unsigned RHProfileManagerParseCalls::FUN_0056c410(void *profile, unsigned line, unsigned column)
+{
+    const char *value = RHProfileToken(profile);
+    if (RHProfileTokenEquals(value, "friendly"))
+        return 1;
+    if (RHProfileTokenEquals(value, "hostile"))
+        return 0;
+    FUN_0056cf40((const RHProfileManager *)this,
+        "In civilian profile at (%d,%d) : allegiance %s", line, column, value);
+    return 1;
+}
+
+// Parked: The parser's case-mode comparison and diagnostic context remain unresolved.
+// STUB: GAME 0x0056c490
+unsigned RHProfileManagerParseCalls::FUN_0056c490(void *profile, unsigned line, unsigned column)
+{
+    const char *value = RHProfileToken(profile);
+    if (RHProfileTokenEquals(value, "man"))
+        return 0;
+    if (RHProfileTokenEquals(value, "woman"))
+        return 1;
+    if (RHProfileTokenEquals(value, "old man"))
+        return 2;
+    if (RHProfileTokenEquals(value, "child"))
+        return 3;
+    if (RHProfileTokenEquals(value, "beggar"))
+        return 4;
+    if (RHProfileTokenEquals(value, "vip"))
+        return 5;
+    FUN_0056cf40((const RHProfileManager *)this,
+        "In civilian profile at (%d,%d) : type %s", line, column, value);
+    return 0;
+}
+
+// Parked: The parser's case-mode comparison and diagnostic context remain unresolved.
+// STUB: GAME 0x0056c5b0
+unsigned RHProfileManagerParseCalls::FUN_0056c5b0(void *profile, unsigned line, unsigned column)
+{
+    const char *value = RHProfileToken(profile);
+    if (RHProfileTokenEquals(value, "straight"))
+        return 0;
+    if (RHProfileTokenEquals(value, "lateral"))
+        return 1;
+    if (RHProfileTokenEquals(value, "push aside"))
+        return 2;
+    if (RHProfileTokenEquals(value, "true half circle"))
+        return 3;
+    if (RHProfileTokenEquals(value, "true circle"))
+        return 4;
+    if (RHProfileTokenEquals(value, "false half circle"))
+        return 5;
+    if (RHProfileTokenEquals(value, "false circle"))
+        return 6;
+    FUN_0056cf40((const RHProfileManager *)this,
+        "In weapon profile at (%d,%d) : kind %s", line, column, value);
+    return 0;
+}
+
+// Parked: The full indexed action table and the target's sentinel handling remain unresolved.
+// STUB: GAME 0x0056c700
+const char *RHProfileManagerParseCalls::FUN_0056c700(void *profile, unsigned line, unsigned column)
+{
+    struct Entry { const char *name; unsigned value; };
+    static const Entry entries[] = {
+        {"hit", 0}, {"bow", 1}, {"net", 2}, {"hit hard", 3},
+        {"hit harder", 3}, {"purse", 4}, {"stone", 5},
+        {"slingshot", 5}, {"shield", 6}, {"big shield", 7},
+        {"bigger shield", 7}, {"strangle", 8}, {"lever", 9},
+        {"help to climb", 10}, {"apple", 11}, {"guzzle", 13},
+        {"listen", 14}, {"beggar", 17}, {"climb", 18},
+        {"megajump", 21}, {"search", 22}, {"resuscitate", 23},
+        {"little john carry", 24}, {"farmer carry", 25}, {"tie", 26},
+        {"lockpick", 27}, {"kill on ground", 28}, {"execute", 12},
+        {"whistle", 29}, {"test", 22}, {"end", 0}
+    };
+    const char *value = RHProfileToken(profile);
+    for (unsigned i = 0; i < sizeof(entries) / sizeof(entries[0]); ++i)
+    {
+        if (RHProfileTokenEquals(value, entries[i].name))
+        {
+            if (RHProfileTokenEquals(entries[i].name, "end"))
+                FUN_0056cf40((const RHProfileManager *)this,
+                    "In character profile at (%d,%d) : action %s", line, column, value);
+            return (const char *)entries[i].value;
+        }
+    }
+    FUN_0056cf40((const RHProfileManager *)this,
+        "In character profile at (%d,%d) : action %s", line, column, value);
+    return 0;
+}
+
+// Parked: The parser's case-mode comparison semantics remain unresolved.
+// STUB: GAME 0x0056cab0
+char FUN_0056cab0(const char *value)
+{
+    if (RHProfileTokenEquals(value, "left"))
+        return 0;
+    if (RHProfileTokenEquals(value, "right"))
+        return 1;
+    return 2;
+}
+
+// Parked: Table traversal, fallback comparison, and diagnostic context remain unresolved.
+// STUB: GAME 0x0056cb00
+const char *RHProfileManagerParseCalls::FUN_0056cb00(void *profile, unsigned line, unsigned column)
+{
+    static const char *names[] = {
+        "historical", "attack", "rescue", "ambush", "", "pseudo", "tactical", "end"
+    };
+    const char *value = RHProfileToken(profile);
+    for (unsigned i = 0; i < sizeof(names) / sizeof(names[0]); ++i)
+    {
+        if (RHProfileTokenEquals(value, names[i]))
+        {
+            if (i == 7)
+                FUN_0056cf40((const RHProfileManager *)this,
+                    "In mission profile at (%d,%d) : mission type %s", line, column, value);
+            return (const char *)i;
+        }
+    }
+    FUN_0056cf40((const RHProfileManager *)this,
+        "In mission profile at (%d,%d) : mission type %s", line, column, value);
+    return (const char *)7;
+}
+
+// Parked: Table traversal, fallback comparison, and diagnostic context remain unresolved.
+// STUB: GAME 0x0056cc40
+const char *RHProfileManagerParseCalls::FUN_0056cc40(void *profile, unsigned line, unsigned column)
+{
+    static const char *names[] = {
+        "Cross 1", "Cross 2", "Cross 3", "Derby", "Leicester",
+        "Lincoln", "Nottingham", "Sherwood", "York", "end"
+    };
+    const char *value = RHProfileToken(profile);
+    for (unsigned i = 0; i < sizeof(names) / sizeof(names[0]); ++i)
+    {
+        if (RHProfileTokenEquals(value, names[i]))
+        {
+            if (i == 9)
+                FUN_0056cf40((const RHProfileManager *)this,
+                    "In mission profile at (%d,%d) : mission location %s", line, column, value);
+            return (const char *)(i + 1);
+        }
+    }
+    FUN_0056cf40((const RHProfileManager *)this,
+        "In mission profile at (%d,%d) : mission location %s", line, column, value);
+    return (const char *)10;
+}
+
+// Parked: Identifier validation and diagnostic formatting remain incomplete.
+// STUB: GAME 0x0056cdb0
+unsigned RHProfileManagerParseCalls::FUN_0056cdb0(void *profile, unsigned line, unsigned column)
+{
+    const char *value = RHProfileToken(profile);
+    if (*(unsigned *)((char *)profile + 8) != 2 ||
+        !((value[0] >= 'A' && value[0] <= 'Z') || (value[0] >= 'a' && value[0] <= 'z')) ||
+        !((value[1] >= '0' && value[1] <= '9') || (value[1] >= 'A' && value[1] <= 'Z') ||
+            (value[1] >= 'a' && value[1] <= 'z')))
+        FUN_0056cf40((const RHProfileManager *)this,
+            "In mission profile at (%d,%d) : identifier %s", line, column, value);
+    return (unsigned char)value[0] | ((unsigned char)value[1] << 8);
+}
+
+// Parked: The profile comparison helper and diagnostic ABI remain unresolved.
+// STUB: GAME 0x0056ce70
+int RHProfileManagerParseCalls::FUN_0056ce70(void *profile)
+{
+    const char *value = RHProfileToken(profile);
+    for (RHCharacterProfile **it = ((RHProfileManager *)this)->m_characters.begin();
+         it != ((RHProfileManager *)this)->m_characters.end(); ++it)
+    {
+        const char *name = *(const char **)((char *)*it + 0x18);
+        if (RHProfileTokenEquals(name ? name : "", value))
+            return (int)*it;
+    }
+    FUN_0056cf40((const RHProfileManager *)this,
+        "In mission profile : character name %s", value);
+    return 0;
+}
 
 // FUNCTION: GAME 0x004582d0
 void SBArray<RHSaveGame *>::Insert(RHSaveGame **position, unsigned int count, RHSaveGame *const &value)

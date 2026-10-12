@@ -1,4 +1,6 @@
+#include "SBNullstr.h"
 #include "RHPlayerProfileManager.h"
+#include <stdio.h>
 
 DECOMP_SIZE_ASSERT(RHSaveGameManager, 0x18)
 DECOMP_SIZE_ASSERT(RHKeyConfig, 0x08)
@@ -16,6 +18,7 @@ DECOMP_SIZE_ASSERT(RHUnk005c9010Iterator, 0x04)
 DECOMP_SIZE_ASSERT(RHPlayerProfileListStorage, 0x0c)
 
 void RHSerializeName(SBFile &file, const char *name);
+std::wstring FUN_005e23d0(unsigned long id);
 
 // GLOBAL: GAME 0x006c05e0
 std::string g_unk0x006c05e0;
@@ -30,6 +33,90 @@ RHPlayerProfile::RHPlayerProfile() :
     m_18(0), m_1c(1), m_20(0), m_24(0), m_2c(0), m_30(0),
     m_point(65536.0f, 65536.0f)
 {
+}
+
+// FUNCTION: GAME 0x0055ca20
+RHPlayerProfile::RHPlayerProfile(unsigned long id, const std::wstring &name, unsigned long difficulty) :
+    m_18(id), m_1c(difficulty), m_20(0), m_24(100), m_28(0), m_2c(0), m_30(0),
+    m_name(name), m_point(65536.0f, 65536.0f)
+{
+    CreateSaveGameDirectory();
+}
+
+// Parked: helper return-object forwarding and switch-arm scheduling differ.
+// STUB: GAME 0x0055cc00
+std::wstring RHPlayerProfile::ConvertDifficultyLevelToWideString(unsigned long difficulty)
+{
+    unsigned long id = difficulty;
+    switch (difficulty)
+    {
+    case 0:
+        id = 0x22;
+        break;
+    case 1:
+        id = 0x23;
+        break;
+    case 2:
+        id = 0x24;
+        break;
+    }
+    return FUN_005e23d0(id);
+}
+
+// Parked: CreateDirectoryA IAT call and returned-string cleanup scheduling differ.
+// STUB: GAME 0x0055cc80
+void RHPlayerProfile::CreateSaveGameDirectory() const
+{
+    RHSaveGameManager *base = (RHSaveGameManager *)this;
+    std::string path = base->GetSaveGameDirectory();
+    (*(int (__stdcall **)(const char *, void *))0x006770d0)(path.c_str(), 0);
+}
+
+// Parked: file-search local/frame layout and string cleanup remain different.
+// STUB: GAME 0x0055ccd0
+void RHPlayerProfile::DeleteSaveGameDirectory() const
+{
+    char directory[256];
+    sprintf(directory, "%s\\Profile_%03i", RHPlayerProfileManager::GetProfilesDirectory().c_str(), m_18);
+    char path[256];
+    sprintf(path, "%s\\*", directory);
+    char data[0x130];
+    int handle = (*(int (__stdcall **)(const char *, void *))0x006770c0)(path, data);
+    if (handle != -1)
+    {
+        do
+        {
+            const char *name = data + 0x2c;
+            if (name[0] != '.' || (name[1] != 0 && (name[1] != '.' || name[2] != 0)))
+            {
+                std::string file = std::string(directory) + "\\" + name;
+                (*(int (__stdcall **)(const char *))0x006770cc)(file.c_str());
+            }
+        } while ((*(int (__stdcall **)(int, void *))0x006770c8)(handle, data));
+        (*(int (__stdcall **)(int))0x006771a4)(handle);
+    }
+}
+
+// FUNCTION: GAME 0x0055cf40
+const std::wstring &RHPlayerProfile::GetName() const
+{
+    return m_name;
+}
+
+// FUNCTION: GAME 0x0055cf50
+std::string RHPlayerProfile::GetSaveGameDirectory() const
+{
+    char path[260];
+    sprintf(path,
+        // STRING: GAME 0x006b17bc
+        "%s\\Profile_%03i", RHPlayerProfileManager::GetProfilesDirectory().c_str(), m_18);
+    return std::string(path);
+}
+
+// FUNCTION: GAME 0x0055d060
+void RHPlayerProfile::SetName(const std::wstring &name)
+{
+    m_name.assign(name);
 }
 
 // FUNCTION: GAME 0x0055d1a0
@@ -58,7 +145,7 @@ bool RHPlayerProfile::Serialize(SBFile &file)
         file.Access(buffer, count * 2);
         m_name.assign(buffer, count);
         delete buffer;
-        FUN_0055cc80();
+        CreateSaveGameDirectory();
     }
     else
     {

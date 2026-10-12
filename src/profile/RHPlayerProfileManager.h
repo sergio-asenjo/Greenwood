@@ -129,8 +129,14 @@ class RHPlayerProfile : public RHSaveGameManager
 {
 public:
     RHPlayerProfile();
+    RHPlayerProfile(unsigned long id, const std::wstring &name, unsigned long difficulty);
     ~RHPlayerProfile();
     bool Serialize(SBFile &file);
+    static std::wstring ConvertDifficultyLevelToWideString(unsigned long difficulty);
+    void CreateSaveGameDirectory() const;
+    void DeleteSaveGameDirectory() const;
+    const std::wstring &GetName() const;
+    void SetName(const std::wstring &name);
     virtual std::string GetSaveGameDirectory() const; // vtable+0x00
     void FUN_0055cc80();
     void Emit(SBFile &file);
