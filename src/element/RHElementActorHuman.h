@@ -3,6 +3,7 @@
 
 #include "SB.h"
 #include "Decomp.h"
+#include "RHScript.h"
 #include <new>
 #include <list>
 #include <iterator>
@@ -23,6 +24,7 @@ class RHElementActor
 public:
     virtual bool Serialize(SBFile &file); // vtable+0x00
     void Translate(RHSequenceElement *element, RHcommand command);
+    void ExecuteImmediately(RHSequenceElement *element);
     void FUN_0046bcb0(int value);
     void FUN_00478c20(RHUnk00613e90 &point, bool value);
 };
@@ -62,58 +64,6 @@ public:
 };
 void RHSerializeName(SBFile &file, const char *name);
 
-class SBGeoPoint2D
-{
-public:
-    SBGeoPoint2D();
-    SBGeoPoint2D(const SBGeoPoint2D &other);
-    ~SBGeoPoint2D();
-    SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
-    SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
-    SBGeoPoint2D FUN_005fc200(const SBGeoPoint2D &other) const;
-    SBGeoPoint2D Unk005fc110(const SBGeoPoint2D &other) const;
-    float FUN_005fc6a0(float value) const;
-    float Unk005fc6d0(float value) const;
-    float m_0;
-    float m_4;
-};
-
-class RHUnk005fc3b0 : public SBGeoPoint2D
-{
-public:
-    RHUnk005fc3b0();
-    ~RHUnk005fc3b0() {}
-    float Unk005fc6a0(float value);
-};
-
-struct RHScriptNode
-{
-    RHScriptNode *next;
-    RHScriptNode *previous;
-    void *data;
-};
-struct RHScriptIter
-{
-    RHScriptNode *node;
-    RHScriptIter(RHScriptNode *value) : node(value) {}
-};
-class RHUnk0046eb30
-{
-public:
-    RHScriptIter erase(RHScriptIter position);
-    RHScriptIter FUN_0046eb80();
-};
-class RHUnkIter
-{
-public:
-    void *m_p;
-    RHUnkIter(void *value) : m_p(value) {}
-};
-class RHUnkList
-{
-public:
-    RHUnkIter insert(RHUnkIter position, RHOrder *const &value);
-};
 struct RHTitbitNode;
 class RHTitbitList
 {
@@ -184,9 +134,9 @@ struct RHHumanList
         {
             while (wanted < count)
             {
-                RHScriptNode *last = head->previous;
-                last->previous->next = last->next;
-                last->next->previous = last->previous;
+                RHScriptNode *last = head->prev;
+                last->prev->next = last->next;
+                last->next->prev = last->prev;
                 ::operator delete(last);
                 --count;
             }
@@ -196,15 +146,87 @@ struct RHHumanList
 
 // SIZE 0x49c
 class RHUnk005864a0;
+class RHUnk005bdcb0
+{
+public:
+    float FUN_005bdcb0();
+};
+class RHUnkHumanPlacementA
+{
+public:
+    void *FUN_005c1b20(int value);
+};
+class RHUnkHumanPlacementB
+{
+public:
+    void *FUN_00450040(int value);
+};
+class RHUnkHumanPositionProvider
+{
+public:
+    void FUN_00560420(void *position);
+    bool FUN_005b8240(void *first, void *second);
+    int FUN_005b8050(void *first, void *second, int, int);
+    void FUN_005bd450();
+    void *FUN_005b5e00();
+};
+class RHUnkHumanPositionRange
+{
+public:
+    bool FUN_0051afe0();
+};
 class RHElementActorHuman
 {
 public:
     void Translate(RHSequenceElement *element, RHcommand command);
     bool Serialize(SBFile &file);
+    void FUN_0047a870(void *value);
+    void FUN_0047f4f0(void *value);
+    bool FUN_0047f420();
+    void FUN_0047a880(RHSequenceElement *element);
+    float FUN_0047a890();
+    unsigned char FUN_0047ac60();
+    void FUN_0047a8a0();
+    void FUN_0047ab00(int first, int second);
+    void FUN_0047aba0();
+    void FUN_0047a960(void *first, void *second, char force);
+    bool FUN_0047ac90(void *element, bool checkRange);
+    void FUN_0046e2e0(void *value);
     int FUN_004838f0(bool alternate);
+    void FUN_00482150(int value, int unused, bool flag);
+    unsigned short FUN_00482240(int index, RHElementActorHuman *other);
+    void FUN_00482390(RHHumanList *result, int weaponData, bool alternate);
+    void FUN_00482600(RHHumanList *result, int weaponData);
+    void FUN_004828b0(RHHumanList *result, int weaponData);
+    void FUN_00482b90(RHHumanList *result, float angle);
+    void FUN_00482e50(RHHumanList *result, int weaponData);
+    void FUN_00482fd0(RHHumanList *result, int weaponData, bool alternate);
+    bool FUN_00483070(RHElementActorHuman *other);
+    unsigned FUN_00483160(void *context, RHElementActorHuman *target, unsigned type);
+    unsigned FUN_00483500(void *context, unsigned command, RHElementActorHuman *target);
+    void *FUN_004837f0(RHElementActorHuman *target);
     int FUN_0047b760(void *actor, int *value);
+    int FUN_00481050(void *first, void *second, int weaponData);
+    int FUN_00480e90(void *first, void *second, int weaponData);
+    int FUN_00481d40(void *first, void *second);
+    int FUN_00481ef0(int target, void *first, int weaponData);
+    void FUN_0047f520(float mode, int weaponData);
+    void FUN_0047faf0(float mode, int weaponData);
+    int FUN_004801d0(void *first, void *second, int weaponData);
+    int FUN_004808f0(void *first, void *second, int weaponData);
+    int FUN_00481150(int weaponData);
     void FUN_0047c420(void *value);
     int FUN_0047c4c0(RHElementActorHuman *actor);
+    void FUN_0047ca50();
+    bool FUN_0047c600(RHElementActorHuman *actor, int mode, bool flag);
+    void FUN_0047cb00();
+    void FUN_0047cd40();
+    bool FUN_0047ce70(RHElementActorHuman *actor, void *line);
+    bool FUN_0047cf80(RHElementActorHuman *actor, void *line);
+    void FUN_0047d1b0();
+    bool FUN_0047d320(RHElementActorHuman *actor);
+    void FUN_0047d560();
+    void FUN_0047d670();
     void FUN_0047d920(RHElementActorHuman *actor);
     int FUN_0047e7d0(RHUnk005864a0 *element);
     void FUN_0047e9d0(RHUnk005864a0 *element);
@@ -252,15 +274,6 @@ public:
     undefined m_496; // 0x496
     undefined m_497; // 0x497
     void *m_498; // 0x498
-};
-
-// SIZE 0x134
-class RHUnk0046bd20
-{
-public:
-    int FUN_0046bd20();
-    undefined m_000[0x130]; // 0x000
-    RHSequenceElement *m_130; // 0x130
 };
 
 // SIZE 0x7c
@@ -398,7 +411,7 @@ public:
     virtual void V050() = 0; // vtable+0x050
     virtual void V054() = 0; // vtable+0x054
     virtual void V058() = 0; // vtable+0x058
-    virtual void V05c() = 0; // vtable+0x05c
+    virtual void V05c(void *value) = 0; // vtable+0x05c
     virtual void V060() = 0; // vtable+0x060
     virtual void V064() = 0; // vtable+0x064
     virtual void V068() = 0; // vtable+0x068
@@ -424,9 +437,9 @@ public:
     virtual void V0b8() = 0; // vtable+0x0b8
     virtual void V0bc(unsigned value, void *actor) = 0; // vtable+0x0bc
     virtual void V0c0() = 0; // vtable+0x0c0
-    virtual void V0c4() = 0; // vtable+0x0c4
+    virtual void V0c4(int value) = 0; // vtable+0x0c4
     virtual void V0c8(int value, int amount) = 0; // vtable+0x0c8
-    virtual void V0cc() = 0; // vtable+0x0cc
+    virtual unsigned short V0cc() = 0; // vtable+0x0cc
     virtual void V0d0() = 0; // vtable+0x0d0
     virtual void V0d4() = 0; // vtable+0x0d4
     virtual void V0d8(unsigned short value, void *actor) = 0; // vtable+0x0d8
@@ -435,7 +448,7 @@ public:
     virtual void V0e4() = 0; // vtable+0x0e4
     virtual void V0e8() = 0; // vtable+0x0e8
     virtual void V0ec() = 0; // vtable+0x0ec
-    virtual void V0f0() = 0; // vtable+0x0f0
+    virtual bool V0f0() = 0; // vtable+0x0f0
     virtual void V0f4() = 0; // vtable+0x0f4
     virtual bool V0f8() = 0; // vtable+0x0f8
     virtual void V0fc() = 0; // vtable+0x0fc
@@ -469,23 +482,6 @@ public:
 };
 
 // SIZE 0x0c
-class RHUnk00613e90
-{
-public:
-    RHUnk00613e90();
-    float m_00; // 0x00
-    float m_04; // 0x04
-    float m_08; // 0x08
-};
-
-// SIZE 0x08
-class SBGeoVector2D : public SBGeoPoint2D
-{
-public:
-    SBGeoVector2D(float x, float y);
-    ~SBGeoVector2D() {}
-};
-
 // SIZE 0x14
 class SBGeoBoundingBox2D
 {
@@ -530,15 +526,6 @@ struct RHHumanFloatIterator
     RHHumanFloatIterator(RHHumanFloatNode *value) : node(value) {}
     RHHumanFloatNode *node; // 0x00
 };
-// SIZE 0x0c
-class RHSeqList
-{
-public:
-    RHSeqList(const char &allocator);
-    undefined m_00[4]; // 0x00
-    RHHumanFloatNode *m_head; // 0x04
-    unsigned m_count; // 0x08
-};
 class RHMission;
 class RHUnk004e52a0
 {
@@ -546,10 +533,13 @@ public:
     void FUN_004e52a0();
 };
 // SIZE 0x18
-class RHHumanFloatList : public RHSeqList
+class RHHumanFloatList
 {
 public:
-    RHHumanFloatList(const char &allocator) : RHSeqList(allocator), valid(1) {}
+    char m_allocator; // 0x00
+    RHHumanFloatNode *m_head; // 0x04
+    unsigned m_count; // 0x08
+    RHHumanFloatList(const char &allocator) : m_allocator(allocator), valid(1) {}
     ~RHHumanFloatList()
     {
         if (m_head)
@@ -582,42 +572,29 @@ SBGeoVector2D operator*(float factor, const SBGeoVector2D &point);
 class RHHumanActorCalls
 {
 public:
+    void FUN_0047d4c0();
+    void FUN_0047d520(void *actor, int value);
     void FUN_00479320(RHUnk00613e90 &point);
     int FUN_0047b8a0(const RHUnk00613e90 &point, int *value, bool mode);
     void FUN_0047d270(void *actor);
     void FUN_0049d780();
-    void FUN_0047d4c0();
     SBGeoPoint2D FUN_004237d0();
 };
 
-class RHScriptBatchCalls
-{
-public:
-    void Unk0040d980(int state);
-    void Unk0058a940(void *context, int value, void *element);
-};
-
-class RHUnk0047ca50
-{
-public:
-    void Unk();
-};
-
-// SIZE 0x74
-class RHUnk005866a0
-{
-public:
-    RHUnk005866a0(unsigned short level, int command, void *actor);
-    ~RHUnk005866a0();
-    void Unk00586ed0(int property, int value);
-    void Unk00586e00(int property, bool value);
-    undefined m_00[0x74]; // 0x00
-};
+class RHUnk005c38b0;
+extern RHUnk005c38b0 *g_unk0x6c10e8;
 
 class RHHumanWeaponCalls
 {
 public:
+    unsigned short FUN_005c1d50(int index);
     unsigned short FUN_005c1d70(int index);
+    unsigned short FUN_005c1e80(int index);
+    unsigned short FUN_005c1ea0(int index);
+    unsigned short FUN_005c1f50(int index);
+    float FUN_005c1ed0(int index);
+    unsigned short FUN_005c1f10(int index);
+    unsigned short FUN_005c1b50(int index);
     unsigned short FUN_005c1b70(void *actor, void *target, unsigned short value);
     unsigned short FUN_005c1db0(int index);
 };
@@ -661,6 +638,14 @@ inline RHHumanOpponent &RHHumanOpponentAt(RHHumanList &list, int wanted)
     return ((RHHumanOpponentNode *)list.cursor)->value;
 }
 
+inline void *RHHumanAt(RHHumanList &list, int wanted)
+{
+    RHScriptNode *node = list.head->next;
+    while (wanted-- > 0)
+        node = node->next;
+    return node->data;
+}
+
 // SIZE 0x18
 struct RHSoundSettings
 {
@@ -689,12 +674,4 @@ class RHSoundGeometryView
 public:
     bool FUN_005b2ff0(const RHSoundSettings &sound, bool mode, RHSoundChannelSettings &settings);
 };
-class RHSound
-{
-public:
-    int FUN_005a72c0(const RHSoundSettings &sound, RHSoundChannelSettings &settings, unsigned position);
-    bool FUN_005a8220(int first, int second, int third, const SBGeoPoint2D &point);
-    bool FUN_005a8330(int first, int second, int third, const SBGeoPoint2D &point);
-};
-
 #endif

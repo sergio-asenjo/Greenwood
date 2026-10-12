@@ -1,11 +1,16 @@
 #include "SBNullstr.h"
 #include "RHElementActorHuman.h"
 
+void RHElementActorHuman::FUN_0046e2e0(void *) {}
+float RHUnk005bdcb0::FUN_005bdcb0() { return 0; }
+void *RHUnkHumanPlacementA::FUN_005c1b20(int) { return this; }
+void *RHUnkHumanPlacementB::FUN_00450040(int) { return this; }
+void RHUnkHumanPositionProvider::FUN_00560420(void *) {}
+bool RHUnkHumanPositionRange::FUN_0051afe0() { return false; }
+
 void RHHumanActorCalls::FUN_00479320(RHUnk00613e90 &) {}
 int RHHumanActorCalls::FUN_0047b8a0(const RHUnk00613e90 &, int *, bool) { return 0; }
-void RHHumanActorCalls::FUN_0047d270(void *) {}
 void RHHumanActorCalls::FUN_0049d780() {}
-void RHHumanActorCalls::FUN_0047d4c0() {}
 unsigned short RHHumanWeaponCalls::FUN_005c1d70(int) { return 0; }
 unsigned short RHHumanWeaponCalls::FUN_005c1b70(void *, void *, unsigned short) { return 0; }
 unsigned short RHHumanWeaponCalls::FUN_005c1db0(int) { return 0; }
