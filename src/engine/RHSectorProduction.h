@@ -96,6 +96,12 @@ public:
     static bool SerializeOccupant(SBFile &file, Occupant &occupant);
     static bool FUN_005818c0(SBFile &file, Occupants &occupants,
                             bool (*serialize)(SBFile &, Occupant &));
+    int FUN_005803c0();
+    unsigned int FUN_00580500();
+    unsigned int FUN_005806b0() const;
+    void FUN_00580430();
+    void FUN_00580520();
+    void FUN_005804e0();
     void Emit(SBFile &file);
 };
 

@@ -6,6 +6,15 @@ DECOMP_SIZE_ASSERT(RHSectorProduction::Occupant, 0x10)
 DECOMP_SIZE_ASSERT(RHSectorProduction::Occupants, 0x10)
 DECOMP_SIZE_ASSERT(RHSectorProduction, 0x34)
 
+int FUN_00580350(int);
+
+struct RHSectorProductionRuntime
+{
+    char m_00[0x48dc];
+    char **m_first;
+    char **m_last;
+};
+
 // FUNCTION: GAME 0x0045a910
 inline RHSectorProduction::Occupant &RHSectorProduction::Occupant::operator=(const Occupant &other)
 {
@@ -13,6 +22,59 @@ inline RHSectorProduction::Occupant &RHSectorProduction::Occupant::operator=(con
     m_point = other.m_point;
     m_c = other.m_c;
     return *this;
+}
+
+// FUNCTION: GAME 0x005803c0
+int RHSectorProduction::FUN_005803c0()
+{
+    int previous = m_8;
+    m_8 = 0;
+    m_points.erase(m_points.begin(), m_points.end());
+    return previous;
+}
+
+// Parked: the call to unassigned helper 0x00580350 is still an unresolved target entity.
+// STUB: GAME 0x00580430
+void RHSectorProduction::FUN_00580430()
+{
+    int value = FUN_00580350(m_0);
+    if (value == 0)
+        return;
+    RHSectorProductionRuntime *runtime = *(RHSectorProductionRuntime **)0x006c0a88;
+    unsigned int count = runtime->m_first == 0 ? 0 : runtime->m_last - runtime->m_first;
+    m_2c = 0;
+    for (unsigned int index = 0; index < count; ++index)
+    {
+        char *entry = runtime->m_first[index];
+        unsigned char enabled = entry[0x12];
+        unsigned int type = *(unsigned int *)(entry + 4) & 0xf;
+        if (enabled && type == 3 && *(int *)(entry + 0xa8) == value)
+            m_2c += *(unsigned short *)(entry + 0xae);
+        else if (value == 1 && enabled && type == 7 && *(int *)(entry + 0xb0) == 5)
+            ++m_2c;
+    }
+}
+
+// FUNCTION: GAME 0x005804e0
+void RHSectorProduction::FUN_005804e0()
+{
+    if (m_0 >= 0 && m_0 <= 8)
+        FUN_00580430();
+    FUN_00580520();
+}
+
+// FUNCTION: GAME 0x00580500
+unsigned int RHSectorProduction::FUN_00580500()
+{
+    return m_occupants.size();
+}
+
+// FUNCTION: GAME 0x005806b0
+unsigned int RHSectorProduction::FUN_005806b0() const
+{
+    unsigned int result = 0;
+    result = m_2e;
+    return result;
 }
 
 // FUNCTION: GAME 0x00580970

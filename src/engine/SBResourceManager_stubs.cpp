@@ -1,6 +1,8 @@
 #include "SBNullstr.h"
 #include "SBResourceManager.h"
 
+void FUN_0064158f(void *) {}
+
 SBResourceManager::ResourceNode *&SBResourceManager::Tree54::FUN_00601650(ResourceNode *&result, const unsigned long &key)
 {
     ResourceNode *node = FUN_00605330(key);

@@ -21,6 +21,7 @@ DECOMP_SIZE_ASSERT(RHMapWideText, 0x10)
 void SBAssert(int, const char *, int, const char *, ...);
 namespace std { void _Xlen(); }
 extern float g_unk0x006775d8;
+void FUN_0048be30();
 
 class RHUnkFXDraw
 {
@@ -61,6 +62,25 @@ DECOMP_SIZE_ASSERT(SBUIInputFieldFontHeight, 0x04)
 // GLOBAL: GAME 0x006775dc
 // ?_C@?1??_Nullstr@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@CAPBGXZ@4GB
 
+// FUNCTION: GAME 0x0061df50
+unsigned int SBUIInputFieldTextUnk::FUN_0061df50()
+{
+    return m_0c - 1;
+}
+
+// Parked: the linked-list copy is captured, but the compiler emits a larger temporary string frame and different allocator/copy operations; three shapes scored 34.75%, 36.24%, and 45.85%.
+// STUB: GAME 0x0061df60
+RHMapWideText SBUIInputFieldUnk00621440::FUN_0061df60()
+{
+    std::wstring temporary;
+    SBUIInputFieldNode *head = *(SBUIInputFieldNode **)((char *)this + 8);
+    for (SBUIInputFieldNode *node = head->m_00; node != head; node = node->m_00)
+        temporary.append(1, (wchar_t)node->m_08);
+    RHMapWideText result;
+    result.FUN_004580c0(temporary, 0, std::wstring::npos);
+    return result;
+}
+
 // SYNTHETIC: GAME 0x004d7770
 // ??1SBUIInputFieldDrawUnk@@QAE@XZ
 
@@ -95,6 +115,53 @@ bool SBGeoBoundingBox2D::FUN_006084a0(const SBGeoBoundingBox2D &other)
 SBUIInputFieldDrawUnk::SBUIInputFieldDrawUnk()
     : m_10(0), m_14(0), m_18(2), m_1c(0, 0, 0, 0)
 {
+}
+
+// Parked: one counted branch displacement still differs after two loop shapes.
+// STUB: GAME 0x00613c50
+int FUN_00613c50(const unsigned short *left, const unsigned short *right, unsigned int count)
+{
+    if (count > 0)
+    {
+        do
+        {
+            if (*left != *right)
+                return *left < *right ? -1 : 1;
+            ++left;
+            ++right;
+        } while (--count);
+    }
+    return 0;
+}
+
+// Parked: branch condition and argument scheduling differ from the target.
+// STUB: GAME 0x00613e40
+bool FUN_00613e40(unsigned char flag, const void *first, unsigned int count, const void *last)
+{
+    return count >= 2 && (const char *)first + 0x10 != last && flag == 0;
+}
+
+// FUNCTION: GAME 0x00613e70
+RHMapBox *SBUIInputFieldDrawUnk::FUN_00613e70()
+{
+    return &m_1c;
+}
+
+// FUNCTION: GAME 0x00613e80
+unsigned int SBUIInputFieldDrawUnk::FUN_00613e80()
+{
+    return m_10;
+}
+
+// Parked: font parameter order and floating-point compare lowering differ.
+// STUB: GAME 0x006141e0
+bool FUN_006141e0(float threshold, const std::wstring &text, void *font)
+{
+    const unsigned short *character = (const unsigned short *)text.c_str();
+    for (unsigned int i = 0; i < text.size(); ++i, ++character)
+        if (((SBFontUnk0061e840 *)font)->FUN_0061ea50((void *)character) <= threshold)
+            return true;
+    return false;
 }
 
 // Parked: x87/register scheduling and counted font operand differ.
@@ -200,6 +267,172 @@ RHMapWideText SBUIInputFieldTextUnk::FUN_0061dd50(unsigned int direction, unsign
 char SBUIInputFieldTextUnk::FUN_0061e230()
 {
     return m_1c;
+}
+
+// Parked: list traversal and node relinking are present, but VC6 emits a different cursor branch and link-store order; five shapes scored 57.78%, 58.43%, 58.14%, 58.14%, and 67.44%.
+// STUB: GAME 0x0061e2b0
+void SBUIInputFieldTextUnk::FUN_0061e2b0(unsigned int index)
+{
+    SBUIInputFieldNode *node;
+    if (index == 0xffffffff)
+    {
+        node = m_10;
+    }
+    else
+    {
+        if (m_0c - 1 <= index)
+            return;
+        node = m_08->m_00;
+        for (unsigned int count = index + 1; count != 0; --count)
+            node = node->m_00;
+    }
+    if (node != m_08 && node != m_08->m_00)
+    {
+        if (node == m_10)
+            m_10 = m_10->m_04;
+        node->m_04->m_00 = node->m_00;
+        node->m_00->m_04 = node->m_04;
+        operator delete(node);
+        --m_0c;
+    }
+}
+
+class SBUIInputFieldUnk0061e180
+{
+public:
+    char m_00[8];
+    SBUIInputFieldNode *m_08;
+    unsigned int m_0c;
+    SBUIInputFieldNode *m_10;
+    SBFontUnk0061e840 *m_14;
+    char m_18[8];
+    unsigned int m_20;
+    bool Insert(unsigned short character);
+};
+
+// Parked: insertion semantics are identified, but VC6 register allocation and local character storage differ; five shapes scored 20.56%, 20.56%, 5.36%, 37.40%, and 15.65%.
+// STUB: GAME 0x0061e180
+bool SBUIInputFieldUnk0061e180::Insert(unsigned short character)
+{
+    unsigned int characterValue = character;
+    if (m_20 != 0xffffffff && m_20 <= m_0c)
+        return false;
+    if (character == 0)
+        return false;
+    SBUIInputFieldNode *position = m_10;
+    if (position != m_08)
+        position = position->m_00;
+    int width = m_14->FUN_0061e850((unsigned short)characterValue) + m_14->v8();
+    SBUIInputFieldNode *node = (SBUIInputFieldNode *)operator new(0x10);
+    SBUIInputFieldNode *previous = position->m_04;
+    node->m_00 = position;
+    node->m_04 = previous;
+    previous->m_00 = node;
+    position->m_04 = node;
+    node->m_08 = (unsigned short)characterValue;
+    node->m_0c = width;
+    ++m_0c;
+    m_10 = node;
+    return true;
+}
+
+// Parked: the switch dispatch still differs in branch-table and register setup.
+// STUB: GAME 0x0061e240
+void SBUIInputFieldTextUnk::FUN_0061e240(unsigned int direction)
+{
+    SBUIInputFieldNode *head = m_08;
+    SBUIInputFieldNode *node = m_10;
+    switch (direction)
+    {
+    case 0:
+        if (node != head->m_00)
+            m_10 = node->m_04;
+        return;
+    case 1:
+        if (node != head)
+        {
+            node = node->m_00;
+            m_10 = node;
+            if (node == head)
+                m_10 = node->m_04;
+        }
+        return;
+    case 2:
+        m_10 = head->m_00;
+        return;
+    case 3:
+        m_10 = head->m_04;
+        return;
+    }
+}
+
+// FUNCTION: GAME 0x0061e320
+void SBUIInputFieldTextUnk::FUN_0061e320(unsigned char value)
+{
+    m_1c = value;
+    FUN_0061e240(3);
+}
+
+// Parked: the list reset and text-node insertion semantics are identified, but the temporary list node/container helper setup does not match the target.
+// STUB: GAME 0x0061e060
+void SBUIInputFieldUnk00621440::FUN_0061e060(RHMapWideText *text)
+{
+    SBUIInputFieldNode *head = *(SBUIInputFieldNode **)((char *)this + 8);
+    SBUIInputFieldNode *node = head->m_00;
+    while (node != head)
+    {
+        SBUIInputFieldNode *next = node->m_00;
+        node->m_04->m_00 = next;
+        next->m_04 = node->m_04;
+        operator delete(node);
+        node = next;
+    }
+    *(unsigned int *)((char *)this + 0x0c) = 0;
+    SBUIInputFieldNode *empty = (SBUIInputFieldNode *)operator new(0x10);
+    empty->m_00 = head;
+    empty->m_04 = head->m_04;
+    head->m_04->m_00 = empty;
+    head->m_04 = empty;
+    empty->m_08 = 0;
+    empty->m_0c = 0;
+    ++*(unsigned int *)((char *)this + 0x0c);
+    SBFontUnk0061e840 *font = *(SBFontUnk0061e840 **)((char *)this + 0x14);
+    for (unsigned int i = 0; i != text->m_size; ++i)
+    {
+        unsigned short character = text->m_chars[i];
+        SBUIInputFieldNode *inserted = (SBUIInputFieldNode *)operator new(0x10);
+        SBUIInputFieldNode *previous = head->m_04;
+        inserted->m_00 = head;
+        inserted->m_04 = previous;
+        previous->m_00 = inserted;
+        head->m_04 = inserted;
+        inserted->m_08 = character;
+        inserted->m_0c = font->FUN_0061e850(character) + font->v8();
+        ++*(unsigned int *)((char *)this + 0x0c);
+    }
+    *(SBUIInputFieldNode **)((char *)this + 0x10) = head->m_00;
+}
+
+// Parked: copy-on-write assignment is modeled, but the generated return-temporary layout and inlined string-copy branches still differ; three shapes scored 26.67%, 26.67%, and 80.15%.
+// STUB: GAME 0x0061e340
+void SBUIInputFieldUnk00621440::FUN_0061e340()
+{
+    RHMapWideText text = FUN_0061df60();
+    *(std::wstring *)((char *)this + 0x38) = (const std::wstring &)text;
+}
+
+// FUNCTION: GAME 0x0061e4b0
+void SBUIInputFieldUnk00621440::FUN_0061e4b0()
+{
+    FUN_0061e060((RHMapWideText *)((char *)this + 0x38));
+}
+
+// Parked: global-bit branch and fixed-address tail target differ.
+// STUB: GAME 0x0061e4c0
+void FUN_0061e4c0()
+{
+    *(unsigned char *)0x006c223c |= 1;
+    FUN_0048be30();
 }
 
 // FUNCTION: GAME 0x00621430
@@ -323,4 +556,15 @@ void SBUIInputFieldEmit(SBUIInputFieldUnk00621440 *renderer)
     renderer->FUN_00621440(0);
     renderer->FUN_00621470(0);
     renderer->FUN_00621c30(renderer->m_70);
+}
+
+void SBUIInputFieldEmitAssigned(SBUIInputFieldDrawUnk *draw, const unsigned short *left,
+    const unsigned short *right, unsigned char flag, const void *first, unsigned int count,
+    const void *last, void *font, const std::wstring &text)
+{
+    FUN_00613c50(left, right, count);
+    FUN_00613e40(flag, first, count, last);
+    draw->FUN_00613e70();
+    draw->FUN_00613e80();
+    FUN_006141e0(0.0f, text, font);
 }

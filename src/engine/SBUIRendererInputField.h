@@ -86,6 +86,10 @@ public:
     SBUIInputFieldDrawUnk();
     bool FUN_00614bf0(void *, std::wstring *, const SBGeoPoint2D &, unsigned int);
     unsigned short FUN_00614230(void *, std::wstring *, const SBGeoBoundingBox2D &, unsigned int, unsigned int, unsigned int);
+    void FUN_00613c90(void *, void *, void *, void *);
+    unsigned short FUN_00613ea0(void *, std::wstring *, const SBGeoBoundingBox2D &, unsigned int, unsigned int);
+    RHMapBox *FUN_00613e70();
+    unsigned int FUN_00613e80();
     std::wstring m_00; // 0x00
     undefined4 m_10; // 0x10
     char m_14; // 0x14
@@ -121,6 +125,7 @@ public:
     }
     void Tidy(bool);
     bool Grow(unsigned int, bool);
+    void FUN_004580c0(const std::wstring &, unsigned int, unsigned int);
     std::allocator<unsigned short> m_allocator; // 0x00
     unsigned short *m_chars; // 0x04
     unsigned int m_size; // 0x08
@@ -152,6 +157,10 @@ public:
     unsigned int FUN_0061dd00();
     RHMapWideText FUN_0061dd50(unsigned int, unsigned int);
     char FUN_0061e230();
+    unsigned int FUN_0061df50();
+    void FUN_0061e320(unsigned char);
+    void FUN_0061e240(unsigned int);
+    void FUN_0061e2b0(unsigned int);
 };
 
 // SIZE 0x04
@@ -187,8 +196,16 @@ public:
     void FUN_00621440(SBUIInputFieldUnkResource *);
     bool FUN_00621470(unsigned int);
     bool FUN_00621c30(const SBGeoBoundingBox2D &);
+    void FUN_0061e4b0();
+    RHMapWideText FUN_0061df60();
+    void FUN_0061e060(RHMapWideText *);
+    void FUN_0061e340();
 };
 
 std::wstring FUN_005d0880(const std::wstring &, const std::wstring &);
+int FUN_00613c50(const unsigned short *, const unsigned short *, unsigned int);
+bool FUN_00613e40(unsigned char, const void *, unsigned int, const void *);
+bool FUN_006141e0(void *, const std::wstring &, float);
+unsigned int FUN_00613940(void *, int **, int **, int **, int **, unsigned char *, unsigned int, int);
 
 #endif

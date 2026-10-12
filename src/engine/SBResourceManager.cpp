@@ -20,6 +20,25 @@ public:
     float m_y;
 };
 
+class FUN_005ff390
+{
+public:
+    SBGeoPoint2D m_point;
+    FUN_005ff390();
+};
+
+class SBResourceUnk005fdc70
+{
+public:
+    char m_00[8];
+    unsigned long *m_first;
+    unsigned long *m_last;
+    unsigned long *m_end;
+    void FUN_005fdc70();
+};
+
+void FUN_0064158f(void *);
+
 class RHUnkFXDraw
 {
 public:
@@ -168,6 +187,69 @@ bool SBResourceManager::FUN_005fd710(SBFile &file)
         }
     }
     return true;
+}
+
+#include <vector>
+
+class SBResourceUnk005fed80
+{
+public:
+    char m_00[4];
+    std::vector<std::string> m_values;
+    char m_14[0xc];
+    std::string m_text;
+    void FUN_005fed80();
+};
+
+class SBResourceUnk005fee70
+{
+public:
+    char m_00[4];
+    std::vector<std::string> m_values;
+    char m_14[0xc];
+    std::string m_text;
+    void FUN_005fee70();
+};
+
+// Parked: the target's 0x0064158f deallocation call has no local resolvable entity in this assignment.
+// STUB: GAME 0x005fdc70
+void SBResourceUnk005fdc70::FUN_005fdc70()
+{
+    unsigned long *source = m_last;
+    unsigned long *end = m_last;
+    unsigned long *destination = m_first;
+    for (; source != end; ++source, ++destination)
+        *destination = *source;
+    m_last = destination;
+    FUN_0064158f(m_first);
+    m_first = 0;
+    m_last = 0;
+    m_end = 0;
+}
+
+// Parked: target EH, iterator scheduling, and the static-CRT npos data load differ from this source shape.
+// STUB: GAME 0x005fed80
+void SBResourceUnk005fed80::FUN_005fed80()
+{
+    typedef std::string String;
+    m_values.clear();
+    m_text.~String();
+    m_values.~vector();
+}
+
+// Parked: target EH, iterator scheduling, and the static-CRT npos data load differ from this source shape.
+// STUB: GAME 0x005fee70
+void SBResourceUnk005fee70::FUN_005fee70()
+{
+    typedef std::string String;
+    m_values.clear();
+    m_text.~String();
+    m_values.~vector();
+}
+
+// FUNCTION: GAME 0x005ff390
+FUN_005ff390::FUN_005ff390()
+{
 }
 
 inline SBResourceUnkIterator SBResourceFind(SBResourceUnk00605440 &tree, const unsigned long &key)
