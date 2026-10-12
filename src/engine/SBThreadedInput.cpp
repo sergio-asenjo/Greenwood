@@ -98,14 +98,8 @@ static bool g_inputChanged;
 // GLOBAL: GAME 0x006c12ac
 static bool g_mouseEnabled;
 
-struct SBInputPosition
-{
-    float m_x;
-    float m_y;
-};
-
 // GLOBAL: GAME 0x006c1300
-static SBInputPosition g_inputPosition;
+SBInputPosition g_inputPosition;
 
 // GLOBAL: GAME 0x006c12e8
 static SBGeoBoundingBox2D g_inputClipping;
@@ -125,7 +119,7 @@ extern "C" __declspec(dllimport) unsigned long __stdcall GetTickCount();
 static bool g_selfIncrement;
 
 // GLOBAL: GAME 0x006c1298
-static SBInputPosition g_hotSpot;
+SBInputPosition g_hotSpot;
 
 // GLOBAL: GAME 0x006c12b0
 static unsigned long g_renderingSurface;

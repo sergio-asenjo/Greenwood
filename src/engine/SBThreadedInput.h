@@ -8,6 +8,15 @@ class SBGeoVector2D;
 struct SBThreadedInputEvent;
 struct SBInputMouseState;
 
+struct SBInputPosition
+{
+    float m_x;
+    float m_y;
+};
+
+extern SBInputPosition g_inputPosition;
+extern SBInputPosition g_hotSpot;
+
 enum SBButton
 {
     SBButtonLeft,
