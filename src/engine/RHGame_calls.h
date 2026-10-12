@@ -305,6 +305,19 @@ class RHGamePortraitCalls
 public:
     void FUN_005d9b10();
     void FUN_005d9ae0(unsigned short action, bool enabled);
+    void FUN_005d9b70();
+    void FUN_005d9a60(unsigned action);
+    void FUN_005d9950(unsigned action);
+    void FUN_005d9140(unsigned);
+    void FUN_005d6690();
+    void FUN_005d8f20(unsigned short);
+    void FUN_005d8fa0(unsigned short, bool);
+};
+
+class RHGameNotificationCalls
+{
+public:
+    void FUN_0055e7a0(unsigned);
 };
 
 class RHGameSyncCalls
@@ -327,6 +340,12 @@ public:
     bool FUN_004c7cf0();
 };
 
+class RHEngineActionCalls
+{
+public:
+    int FUN_004d2300(void *, unsigned);
+};
+
 class RHGameActorView
 {
 public:
@@ -347,6 +366,53 @@ public:
     virtual void v52(); // vtable+0xd0
     virtual void v53(short action, bool first, bool second); // vtable+0xd4
     bool FUN_004936e0();
+};
+
+class RHActorPCTemplateCalls
+{
+public:
+    void FUN_00493660(int);
+};
+
+class RHEngineReinforcementCalls
+{
+public:
+    void FUN_004936a0(int);
+};
+
+class RHGameWidgetCalls
+{
+public:
+    void FUN_0051df00(void *);
+};
+
+class RHGameWindowCalls
+{
+public:
+    static int __stdcall CloseWindow(void *);
+};
+
+extern unsigned char g_unk0x006a6d27;
+extern unsigned char g_unk0x006c12b6;
+
+class RHGameActionCalls
+{
+public:
+    void FUN_005110e0(unsigned short);
+    void FUN_00510fc0(unsigned);
+    void FUN_00511210(unsigned short);
+    void FUN_005140b0();
+    void FUN_0050eff0();
+    void FUN_005f4900(char);
+    void FUN_005f0fa0();
+    void FUN_005ef380(int);
+    void FUN_005e5260();
+    void FUN_005104c0();
+    void FUN_005104d0();
+    void FUN_00619cc0();
+    bool FUN_004d2300(void *, unsigned);
+    void FUN_004da2f0();
+    void FUN_005a7b40(int);
 };
 
 class RHElementActor;

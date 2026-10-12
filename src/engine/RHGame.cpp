@@ -1,5 +1,6 @@
 #include "SBNullstr.h"
 #include "RHGame_calls.h"
+#include "SBThreadedInput.h"
 #include <vector>
 #include <algorithm>
 #include <memory.h>
@@ -15,6 +16,9 @@ DECOMP_SIZE_ASSERT(RHGameSaveOwner, 0x04)
 DECOMP_SIZE_ASSERT(RHMapDescription::Entry, 0x48)
 DECOMP_SIZE_ASSERT(RHGameConfig, 0x38)
 DECOMP_SIZE_ASSERT(RHGameConfigTriple, 0x0c)
+
+// GLOBAL: GAME 0x006c12b6
+unsigned char g_unk0x006c12b6;
 
 #define RHGAME_ACCESS(member, line) \
     if (file.Access(&member, 1) < 0) \
@@ -205,6 +209,182 @@ void RHGame::DisplayLostLeicester()
     FUN_00529e60((RHMapWindow *)&dialog, message, false, 0);
 }
 
+// FUNCTION: GAME 0x005104b0
+unsigned FUN_005104b0()
+{
+    return (unsigned)&g_hotSpot;
+}
+
+// FUNCTION: GAME 0x005104c0
+void *FUN_005104c0()
+{
+    return &g_inputPosition;
+}
+
+// Parked: The point temporary construction and cleanup sequence is only partially recovered.
+// STUB: GAME 0x005104d0
+bool RHGame::FUN_005104d0(float first, float second)
+{
+    float *point = (float *)((char *)this + 0x1758);
+    if (!*(void **)point)
+        return false;
+    return first == second;
+}
+
+// Parked: The point temporary assignment and cleanup sequence is only partially recovered.
+// STUB: GAME 0x00510550
+bool RHGame::FUN_00510550(float first, float second)
+{
+    float *point = (float *)((char *)this + 0x1758);
+    if (!*(void **)point)
+        return false;
+    return first == second;
+}
+
+// Parked: The display timer and input critical-section helpers are only partially recovered.
+// STUB: GAME 0x005105d0
+void RHGame::FUN_005105d0(unsigned char first, char second)
+{
+    if (*((char *)this + 0x5a) != 0)
+        return;
+    ((RHGameSyncCalls *)this)->FUN_0050ed40();
+    if (*(unsigned *)((char *)this + 0x3574) != 0)
+        --*(unsigned *)((char *)this + 0x3574);
+    if (*(char *)((char *)this + 0x18 + 0xd1) == 0 &&
+        *(unsigned *)((char *)this + 0x3550) != 1 &&
+        *(unsigned *)((char *)this + 0x3550) != 2 &&
+        *(unsigned *)((char *)this + 0x3550) != 3)
+    {
+        ((RHGameActionCalls *)((char *)this + 0x0c))->FUN_005f4900(first & *(unsigned char *)0x006c12ac);
+        if (second)
+            ((RHGameActionCalls *)((char *)this + 0x10))->FUN_005e5260();
+        ((RHGameActionCalls *)((char *)this + 0x0c))->FUN_005f4900(*(unsigned char *)0x006c12ac);
+    }
+}
+
+// FUNCTION: GAME 0x00510750
+bool RHGame::FUN_00510750()
+{
+    unsigned char *state = *(unsigned char **)0x006c0b54;
+    *(unsigned short *)((char *)this + 0x1eb6) = *(unsigned short *)(state + 0x16a);
+    *(unsigned short *)((char *)this + 0x1f86) = *(unsigned short *)(state + 0x168);
+    *(unsigned short *)((char *)this + 0x2056) = *(unsigned short *)(state + 0x178);
+    if (!*((char *)this + 0x5a))
+        *(unsigned short *)((char *)this + 0x34c8) = *(unsigned short *)(state + 0x158);
+    return true;
+}
+
+// Parked: Event actions, message lifetimes, and per-widget updates are only partially recovered.
+// STUB: GAME 0x005107a0
+bool RHGame::FUN_005107a0(int *event)
+{
+    if (!event)
+        return false;
+    for (int *current = event; current; current = (int *)current[3])
+    {
+        if (current[0] == 2 && current[1] == (int)((char *)this + 0x23a4) && !*((char *)this + 0x59))
+            ((RHGameActionCalls *)this)->FUN_005140b0();
+        if (current[0] == 3 && current[1] == (int)((char *)this + 0x1c48))
+            ((RHGameActionCalls *)((char *)this + 0x0c))->FUN_005f4900(0);
+    }
+    return true;
+}
+
+// Parked: Actor selection and the cached intrusive-list cursor are only partially recovered.
+// STUB: GAME 0x00510fc0
+void RHGameActionCalls::FUN_00510fc0(unsigned value)
+{
+    RHGame *game = (RHGame *)this;
+    void **actors = *(void ***)((char *)*(void **)0x006c0a88 + 0x493c);
+    unsigned count = actors
+        ? (unsigned)(*(void ***)((char *)*(void **)0x006c0a88 + 0x4940) - actors)
+        : 0;
+    count &= 0xff;
+    for (unsigned index = 0; index < count; ++index)
+    {
+        void *actor = actors[index];
+        RHEngine *engine = *(RHEngine **)((char *)game + 0x18);
+        if (!actor)
+        {
+            if (*(int *)((char *)engine + 0x4a00) == 0)
+                continue;
+        }
+        else
+        {
+            *(void **)((char *)engine + 0x4a18) = actor;
+            *(char *)((char *)engine + 0x4a10) = 1;
+            *(void **)((char *)engine + 0x4a04) = **(void ***)((char *)engine + 0x49fc);
+            int size = *(int *)((char *)engine + 0x4a00);
+            int position = 0;
+            while (position < size && *(void **)(*(char **)((char *)engine + 0x4a04) + 8) != actor)
+            {
+                ++position;
+                *(void **)((char *)engine + 0x4a04) = **(void ***)((char *)engine + 0x4a04);
+            }
+            if (position == size)
+            {
+                *(int *)((char *)engine + 0x4a14) = -1;
+                *(char *)((char *)engine + 0x4a08) = 1;
+            }
+            else
+            {
+                *(int *)((char *)engine + 0x4a14) = position;
+                *(char *)((char *)engine + 0x4a08) = 0;
+                *(int *)((char *)engine + 0x4a0c) = position;
+            }
+        }
+        RHGamePortraitCalls *portrait = ((RHGameSyncCalls *)game)->FUN_0050f140(actor);
+        if (portrait)
+            portrait->FUN_005d8f20((unsigned short)value);
+    }
+}
+
+// Parked: The target's cached-list cursor and action-result call scheduling remain incomplete.
+// STUB: GAME 0x005110e0
+void RHGameActionCalls::FUN_005110e0(unsigned short value)
+{
+    RHGame *game = (RHGame *)this;
+    void **actors = *(void ***)((char *)*(void **)0x006c0a88 + 0x493c);
+    unsigned count = actors
+        ? (unsigned)(*(void ***)((char *)*(void **)0x006c0a88 + 0x4940) - actors)
+        : 0;
+    for (unsigned index = 0; index < (count & 0xff); ++index)
+    {
+        void *actor = actors[index];
+        if (!actor && *(int *)((char *)*(void **)((char *)game + 0x18) + 0x4a00) == 0)
+            continue;
+        RHGamePortraitCalls *portrait = ((RHGameSyncCalls *)game)->FUN_0050f140(actor);
+        if (portrait)
+        {
+            bool enabled = ((RHEngineActionCalls *)*(void **)((char *)game + 0x18))->FUN_004d2300(actor, value) != 0;
+            portrait->FUN_005d8fa0(value, enabled);
+        }
+    }
+}
+
+// Parked: The target's null-actor predicate and portrait dispatch branch are not exact.
+// STUB: GAME 0x00511210
+void RHGameActionCalls::FUN_00511210(unsigned short value)
+{
+    RHGame *game = (RHGame *)this;
+    void **actors = *(void ***)((char *)*(void **)0x006c0a88 + 0x493c);
+    unsigned count = actors
+        ? (unsigned)(*(void ***)((char *)*(void **)0x006c0a88 + 0x4940) - actors)
+        : 0;
+    for (unsigned index = 0; index < (count & 0xff); ++index)
+    {
+        void *actor = actors[index];
+        if (actor && *(int *)((char *)*(void **)((char *)game + 0x18) + 0x4a00) != 0)
+            continue;
+        RHGamePortraitCalls *portrait = ((RHGameSyncCalls *)game)->FUN_0050f140(actor);
+        if (portrait)
+        {
+            bool enabled = ((RHEngineActionCalls *)*(void **)((char *)game + 0x18))->FUN_004d2300(actor, value) != 0;
+            portrait->FUN_005d8fa0(value, enabled);
+        }
+    }
+}
+
 // Parked: 66.04%; narrow-string EH cleanup and frame-slot ordering.
 // STUB: GAME 0x00511340
 bool RHGame::Serialize(unsigned long mode, RHSaveGame *saveGame, bool loading)
@@ -307,6 +487,332 @@ bool RHGame::Serialize(SBFile &file)
         m_3559 = 0;
     }
     return true;
+}
+
+// FUNCTION: GAME 0x00512c90
+void RHGame::FUN_00512c90(void *value)
+{
+    if (m_5a)
+        ((RHGameWidgetCalls *)((char *)this + 0x29b4))->FUN_0051df00(0);
+}
+
+// Parked: CloseWindow is an unresolved USER32 import under the fixed link line.
+// STUB: GAME 0x00513070
+void RHGame::FUN_00513070(void *value)
+{
+    void *handle = *(void **)((char *)value + 0x10);
+    RHGameWindowCalls::CloseWindow(*(void **)((char *)handle + 0x100));
+    g_unk0x006a6d27 = 0;
+}
+
+// FUNCTION: GAME 0x00513ac0
+void RHGame::FUN_00513ac0(void *value)
+{
+    if (!m_5a)
+        ((RHEngineReinforcementCalls *)*(void **)((char *)value + 0x10))->FUN_004936a0(0);
+}
+
+// FUNCTION: GAME 0x00513ae0
+void RHGame::FUN_00513ae0(void *value)
+{
+    ((RHActorPCTemplateCalls *)*(void **)((char *)value + 0x10))->FUN_00493660(0);
+}
+
+// FUNCTION: GAME 0x00513d00
+void RHGame::FUN_00513d00(void *)
+{
+    *((char *)this + 0x61) = 0;
+    *((char *)this + 0x62) = 0;
+}
+
+// Parked: Rebuilt helper argument scheduling differs from the original.
+// STUB: GAME 0x00513d10
+void RHGame::FUN_00513d10(void *event)
+{
+    RHGamePortraitCalls *portrait = ((RHGameSyncCalls *)this)->FUN_0050f140(*(void **)((char *)event + 0x10));
+    if (portrait)
+        portrait->FUN_005d9b70();
+}
+
+// Parked: The body is effective-only because helper argument scheduling differs.
+// STUB: GAME 0x00513d30
+void RHGame::FUN_00513d30(void *event)
+{
+    RHGamePortraitCalls *portrait = ((RHGameSyncCalls *)this)->FUN_0050f140(*(void **)((char *)event + 0x10));
+    if (portrait)
+    {
+        portrait->FUN_005d9a60(0);
+        portrait->FUN_005d9a60(1);
+        portrait->FUN_005d9a60(2);
+    }
+}
+
+// FUNCTION: GAME 0x00513d70
+void RHGame::FUN_00513d70(void *event)
+{
+    RHGamePortraitCalls *portrait = ((RHGameSyncCalls *)this)->FUN_0050f140(*(void **)((char *)event + 0x10));
+    if (portrait)
+        portrait->FUN_005d9950(*(unsigned *)((char *)event + 0x08));
+}
+
+// Parked: Loop receiver and termination branch scheduling differ.
+// STUB: GAME 0x00513360
+void RHGame::FUN_00513360(void *event)
+{
+    unsigned index = *(unsigned *)((char *)event + 0x08);
+    RHGameNotificationCalls *notifications = *(RHGameNotificationCalls **)((char *)this + 0x196c);
+    for (; index < 3; ++index)
+        notifications->FUN_0055e7a0(index);
+}
+
+// FUNCTION: GAME 0x00513490
+void RHGame::FUN_00513490(void *event)
+{
+    unsigned value = *(unsigned *)((char *)event + 0x08);
+    RHGamePortraitCalls *portrait = ((RHGameSyncCalls *)this)->FUN_0050f140(*(void **)((char *)event + 0x10));
+    if (portrait)
+        portrait->FUN_005d9140(value);
+}
+
+// Parked: The actor and portrait branches retain different receiver registers.
+// STUB: GAME 0x00513620
+void RHGame::FUN_00513620(void *event)
+{
+    if (m_5a)
+    {
+        void *actor = *(void **)((char *)event + 0x10);
+        ((RHActorPCTemplateCalls *)actor)->FUN_00493660(1);
+        ((RHGamePortraitCalls *)*(void **)((char *)actor + 0x4ec))->FUN_005d6690();
+        ((RHGameActionCalls *)this)->FUN_005140b0();
+    }
+    else
+    {
+        RHGamePortraitCalls *portrait = ((RHGameSyncCalls *)this)->FUN_0050f140(*(void **)((char *)event + 0x10));
+        if (portrait)
+            portrait->FUN_005d6690();
+    }
+}
+
+// Parked: Argument-register allocation differs across the event and helper calls.
+// STUB: GAME 0x00513110
+void RHGame::FUN_00513110(void *event)
+{
+    RHGameActionCalls *calls = (RHGameActionCalls *)this;
+    calls->FUN_005110e0(*(unsigned short *)((char *)this + 0x355c));
+    unsigned value = *(unsigned *)((char *)event + 0x08);
+    calls->FUN_00510fc0(value);
+    *(unsigned short *)((char *)this + 0x355c) = (unsigned short)value;
+}
+
+// Parked: The target zero-extends the action before each helper call.
+// STUB: GAME 0x005131d0
+void RHGame::FUN_005131d0(void *)
+{
+    if (m_59)
+    {
+        RHGameActionCalls *calls = (RHGameActionCalls *)this;
+        unsigned short action = *(unsigned short *)((char *)this + 0x355c);
+        calls->FUN_00511210(action);
+        calls->FUN_00510fc0(action);
+        calls->FUN_005140b0();
+    }
+}
+
+// Parked: The target calls input methods on two embedded owners, not this object.
+// STUB: GAME 0x005139b0
+void RHGame::FUN_005139b0(void *)
+{
+    ((SBThreadedInput *)*(void **)((char *)this + 0x0c))->SetMouseEnabled(m_5d);
+    SBThreadedInput::CleanUpInputs();
+    ((RHGameActionCalls *)*(void **)((char *)this + 0x10))->FUN_005ef380(0);
+}
+
+// FUNCTION: GAME 0x005139e0
+void RHGame::FUN_005139e0(void *event)
+{
+    unsigned value = *(unsigned *)((char *)event + 0x08);
+    m_5f = 0;
+    ((RHGameMenuText *)((char *)this + 0x1ab0))->v21((value >> 16) & 1);
+    ((RHGameMenuText *)((char *)this + 0x1b7c))->v21(value & 1);
+}
+
+// FUNCTION: GAME 0x00513a20
+void RHGame::FUN_00513a20(void *event)
+{
+    unsigned value = *(unsigned *)((char *)event + 0x08);
+    m_60 = 0;
+    ((RHGameMenuText *)((char *)this + 0x1ab0))->v21((value >> 16) & 1);
+    ((RHGameMenuText *)((char *)this + 0x1b7c))->v21(value & 1);
+}
+
+// Parked: The original constructor and two cleanup paths require exact EH ownership recovery.
+// STUB: GAME 0x00512be0
+void RHGame::FUN_00512be0(void *)
+{
+}
+
+// Parked: The original save-selection routine owns multiple temporary strings and SEH state.
+// STUB: GAME 0x00512cb0
+void RHGame::FUN_00512cb0()
+{
+}
+
+// Parked: The original routine has nested string and UI cleanup with recovered stack corruption.
+// STUB: GAME 0x00512eb0
+void RHGame::FUN_00512eb0(void *)
+{
+}
+
+// Parked: Actor iteration, portrait lookup, and messenger EH state are not reconstructed.
+// STUB: GAME 0x00513390
+void RHGame::FUN_00513390(void *)
+{
+}
+
+// Parked: The selector reads external control state and synchronizes paired widget modes.
+// STUB: GAME 0x00513b00
+void RHGame::FUN_00513b00()
+{
+}
+
+// Parked: The actor/team branches call distinct owners and menu transitions.
+// STUB: GAME 0x005134c0
+void RHGame::FUN_005134c0(void *)
+{
+}
+
+// Parked: The target contains actor iteration, portrait dispatch, and messenger cleanup.
+// STUB: GAME 0x00513520
+void RHGame::FUN_00513520(void *)
+{
+}
+
+// Parked: The input polling loop and its nested SEH cleanup remain unrecovered.
+// STUB: GAME 0x005138b0
+void RHGame::FUN_005138b0()
+{
+}
+
+// Parked: The actor scan and messaging branches have nested SEH and dynamic helper dispatch.
+// STUB: GAME 0x00513210
+void RHGame::FUN_00513210(void *)
+{
+}
+
+// Parked: The routine mutates several paired widget states and campaign mode fields.
+// STUB: GAME 0x00513e60
+void RHGame::FUN_00513e60()
+{
+}
+
+// Parked: This function relies on stack-backed strings and the campaign/save manager graph.
+// STUB: GAME 0x00513ff0
+void RHGame::FUN_00513ff0()
+{
+}
+
+// Parked: Target actor validation iterates external vectors and sends per-actor portrait calls.
+// STUB: GAME 0x00513da0
+void RHGame::FUN_00513da0(void *)
+{
+}
+
+// Parked: The function owns UI input polling, geometry temporaries, and nested SEH cleanup.
+// STUB: GAME 0x00513df0
+void RHGame::FUN_00513df0()
+{
+}
+
+// Parked: Resource discovery loops through temporary strings and profile-owned allocations.
+// STUB: GAME 0x00513670
+void RHGame::FUN_00513670()
+{
+}
+
+// Parked: The target constructs and copies an embedded geometry value before cleanup.
+// STUB: GAME 0x00513a60
+void RHGame::FUN_00513a60()
+{
+    memset((char *)this + 0x1960, 0, 10);
+    memset((char *)this + 0x1860, 0, 0x100);
+    RHGameActionCalls *calls = (RHGameActionCalls *)this;
+    calls->FUN_00619cc0();
+    calls->FUN_005104c0();
+    calls->FUN_005104d0();
+    calls->FUN_005f0fa0();
+}
+
+// Parked: The target emits a tail jump to FUN_00512310.
+// STUB: GAME 0x00513090
+void RHGame::FUN_00513090(void *)
+{
+    RHGameActionCalls *calls = (RHGameActionCalls *)this;
+    calls->FUN_004da2f0();
+    ((RHGameActionCalls *)*(void **)((char *)this + 0x1c))->FUN_005a7b40(2);
+    m_5e = 1;
+    FUN_00512310();
+}
+
+// Parked: Helper call argument materialization differs in both actor branches.
+// STUB: GAME 0x005130c0
+void RHGame::FUN_005130c0(void *event)
+{
+    RHGameActionCalls *calls = (RHGameActionCalls *)this;
+    m_59 = 1;
+    g_unk0x006c12b6 = 1;
+    void *actor = *(void **)((char *)event + 0x10);
+    if (actor == 0)
+        calls->FUN_00510fc0(*(unsigned short *)((char *)this + 0x355c));
+    else
+    {
+        RHGamePortraitCalls *portrait = ((RHGameSyncCalls *)this)->FUN_0050f140(actor);
+        if (portrait)
+            portrait->FUN_005d8f20(*(unsigned short *)((char *)this + 0x355c));
+    }
+}
+
+// Parked: The target carries the 16-bit action in ebx across both helper calls.
+// STUB: GAME 0x00513150
+void RHGame::FUN_00513150(void *event)
+{
+    RHGameActionCalls *calls = (RHGameActionCalls *)this;
+    m_59 = 0;
+    g_unk0x006c12b6 = 0;
+    void *actor = *(void **)((char *)event + 0x10);
+    unsigned short action = *(unsigned short *)((char *)this + 0x355c);
+    if (!actor)
+    {
+        calls->FUN_005110e0(action);
+        calls->FUN_005140b0();
+        return;
+    }
+    RHGamePortraitCalls *portrait = ((RHGameSyncCalls *)this)->FUN_0050f140(actor);
+    if (portrait)
+    {
+        bool enabled = calls->FUN_004d2300(actor, action);
+        portrait->FUN_005d8fa0(action, enabled);
+    }
+    calls->FUN_005140b0();
+}
+
+// Parked: The target's nested action/actor loops use a different frame and register schedule.
+// STUB: GAME 0x005140b0
+void RHGame::FUN_005140b0()
+{
+    RHGameActorView **first = *(RHGameActorView ***)((char *)g_pEngine + 0x493c);
+    RHGameActorView **last = *(RHGameActorView ***)((char *)g_pEngine + 0x4940);
+    unsigned count = first == 0 ? 0 : (unsigned)(last - first);
+    count &= 0xff;
+    bool any = false;
+    for (unsigned action = 0; action < 3; ++action)
+    {
+        for (unsigned index = 0; index < count; ++index)
+        {
+            if (((RHEngineActionCalls *)m_18)->FUN_004d2300(first[index], action))
+                any = true;
+        }
+    }
+    ((RHGameMenuText *)((char *)this + 0x23a4))->v21(any);
 }
 
 // Parked: message EH temporaries and portrait-loop scheduling.
@@ -626,6 +1132,13 @@ RHMapDescription::Entry *RHMapDescription::FUN_0063c9e0(unsigned id)
 
 void RHGame::Emit(SBFile &file)
 {
+    FUN_005104b0();
+    FUN_005104c0();
+    FUN_005104d0(0.0f, 0.0f);
+    FUN_00510550(0.0f, 0.0f);
+    FUN_005105d0(0, 0);
+    FUN_00510750();
+    FUN_005107a0(0);
     Serialize(file);
     UpdateBlazons(0, 0, 0, false);
     DisplayLostLeicester();
