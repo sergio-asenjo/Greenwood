@@ -9,6 +9,10 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+if [ "${GREENWOOD_RAW_OUTPUT:-0}" != "1" ]; then
+  "$ROOT/.venv/bin/python" "$ROOT/tools/compact_output.py" report "$@"
+  exit "$?"
+fi
 RECCMP="$ROOT/.venv/bin/reccmp-reccmp"
 
 if [ ! -x "$RECCMP" ]; then

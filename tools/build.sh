@@ -6,9 +6,26 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+if [ "${GREENWOOD_RAW_OUTPUT:-0}" != "1" ] && [ "${1:-}" != "--listing" ]; then
+  "$ROOT/.venv/bin/python" "$ROOT/tools/compact_output.py" build "$@"
+  exit "$?"
+fi
 MSVC="$ROOT/tools/external/msvc600"
 OUT="$ROOT/build"
 NAME="Game.exe"
+FLAGS=(/nologo /LD /O2 /GX /Zi)
+LISTING=0
+
+if [ "${1:-}" = "--listing" ]; then
+  shift
+  if [ "$#" -ne 1 ] || [ ! -f "$1" ]; then
+    echo "usage: tools/build.sh --listing <existing source.cpp>" >&2
+    exit 2
+  fi
+  LISTING=1
+  mkdir -p "$OUT/listings"
+  OUT="$(mktemp -d "$OUT/listings/listing-$(date -u +%Y%m%dT%H%M%SZ)-XXXXXX")"
+fi
 
 if [ ! -f "$MSVC/VC98/Bin/CL.EXE" ]; then
   echo "VC6 not found at $MSVC — run tools/fetch-tools.sh first" >&2
@@ -48,13 +65,23 @@ while IFS= read -r d; do
   INCDIRS+=("/I$(z "$d")")
 done < <(find "$ROOT/src" -name '*.h' -printf '%h\n' | sort -u)
 
+if [ "$LISTING" -eq 1 ]; then
+  WINEDEBUG=-all WINEPATH="$WP" INCLUDE="$MSVCZ\\VC98\\INCLUDE" LIB="$MSVCZ\\VC98\\LIB" \
+    "$ROOT/.venv/bin/python" "$ROOT/tools/compiler_listing.py" \
+    --output "$OUT" --source "${SRCS[0]}" -- \
+    wine "$MSVC/VC98/Bin/CL.EXE" "${FLAGS[@]}" /c /FAs \
+    /Fa"$OUTZ\\listing.asm" /Fd"$OUTZ\\vc60.pdb" /Fo"$OUTZ\\listing.obj" \
+    "${INCDIRS[@]}" "${SRCZ[@]}"
+  exit "$?"
+fi
+
 echo "building ${#SRCZ[@]} file(s) -> $OUT/$NAME"
 
 WINEDEBUG=-all \
   WINEPATH="$WP" \
   INCLUDE="$MSVCZ\\VC98\\INCLUDE" \
   LIB="$MSVCZ\\VC98\\LIB" \
-  wine "$MSVC/VC98/Bin/CL.EXE" /nologo /LD /O2 /GX /Zi /Fd"$OUTZ\\vc60.pdb" /Fo"$OUTZ\\" "${INCDIRS[@]}" "${SRCZ[@]}" \
+  wine "$MSVC/VC98/Bin/CL.EXE" "${FLAGS[@]}" /Fd"$OUTZ\\vc60.pdb" /Fo"$OUTZ\\" "${INCDIRS[@]}" "${SRCZ[@]}" \
     /link /DEBUG /OUT:"$OUTZ\\$NAME" /PDB:"$OUTZ\\Game.pdb"
 
 echo "done: $OUT/$NAME + $OUT/Game.pdb"
