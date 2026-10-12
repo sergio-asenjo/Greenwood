@@ -18,6 +18,13 @@ namespace std {
 template<> void _Sort(RHMission **first, RHMission **last, bool (*compare)(RHMission *, RHMission *), RHMission **);
 }
 
+class RHScriptBatchCalls
+{
+public:
+    void Unk00455400(void *description);
+    void Unk004555f0(void *description);
+};
+
 DECOMP_SIZE_ASSERT(RHMission, 0x0c)
 DECOMP_SIZE_ASSERT(RHCampaign, 0x1c4)
 DECOMP_SIZE_ASSERT(RHGameCampaignView, 0x184)
@@ -804,6 +811,67 @@ void RHCampaign::FUN_004552f0(SBArray<RHElement *> &elements, RHbeamMe beamMe, u
     ((SBArray<RHSaveGame *> *)&elements)->Insert((RHSaveGame **)elements.m_last, 1,
                                                 (RHSaveGame *const &)element);
     *(bool *)((char *)&elements + 0x14) = true;
+}
+
+// FUNCTION: GAME 0x004553f0
+std::vector<RHPCDescription *> *RHCampaign::FUN_004553f0()
+{
+    return &m_1b0;
+}
+
+// Parked: vector growth and exception cleanup remain approximate.
+// STUB: GAME 0x00455400
+void RHScriptBatchCalls::Unk00455400(void *description)
+{
+    RHCampaign *campaign = (RHCampaign *)this;
+    RHCampaignPointerArray<void *> &available =
+        (RHCampaignPointerArray<void *> &)campaign->m_1b0;
+    if (description == 0)
+    {
+        available.erase(available.begin(), available.end());
+        description = campaign->m_114.front();
+    }
+    for (void **it = available.begin(); it != available.end(); ++it)
+        if (*it == description)
+            return;
+    available.insert(available.end(), 1, description);
+}
+
+// Parked: search-loop register assignment still differs from the target.
+// STUB: GAME 0x004555f0
+void RHScriptBatchCalls::Unk004555f0(void *description)
+{
+    void **first = *(void ***)((char *)this + 0x1b4);
+    void **last = *(void ***)((char *)this + 0x1b8);
+    void **match = first;
+    while (match != last && *match != description)
+        ++match;
+    if (match == last)
+        return;
+    void **source = match + 1;
+    if (source != last)
+    {
+        do
+        {
+            source[-1] = *source;
+            ++source;
+        } while (source != last);
+    }
+    *(void ***)((char *)this + 0x1b8) = last - 1;
+}
+
+// Parked: real vector insertion and EH cleanup still differ from the target.
+// STUB: GAME 0x00455650
+void RHCampaign::FUN_00455650()
+{
+    FUN_004559f0();
+    RHCampaignPointerArray<RHPCDescription *> &available =
+        (RHCampaignPointerArray<RHPCDescription *> &)m_1b0;
+    for (RHPCDescription **it = m_114.begin(); it != m_114.end(); ++it)
+    {
+        if (*((char *)(*it)->m_profile + 0x35))
+            available.insert(available.m_last, 1, *it);
+    }
 }
 
 // FUNCTION: GAME 0x004559f0

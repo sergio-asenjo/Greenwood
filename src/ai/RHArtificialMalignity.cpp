@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <new>
 
+void FUN_0064158f(void *memory);
+
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 DECOMP_SIZE_ASSERT(RHUnk005fc3b0, 0x08)
 DECOMP_SIZE_ASSERT(RHUnk00613e90, 0x0c)
@@ -47,6 +49,112 @@ float g_unk0x006787f8 = -0.10000000149011612f;
 #define SA(type, offset) RHMalignityField<type>((char *)B(void *, 0x200) + ((int *)S(void *, 0x49c))[1], offset)
 #define AA(type, offset) RHMalignityField<type>((char *)Base().m_actor + ((int *)A(void *, 0x49c))[1], offset)
 #define RESET() ((RHArtificialIntelligence *)&Base())->Unk00410010(false)
+
+void RHMalignityList::FUN_005c8e40(int wanted)
+{
+    if (m_dirty)
+    {
+        int distance;
+        if ((m_count + 1) / 2 < wanted)
+        {
+            m_current = m_head;
+            distance = wanted - m_count;
+        }
+        else
+        {
+            m_current = m_head->next;
+            distance = wanted;
+        }
+        std::bidirectional_iterator_tag category;
+        FUN_005c9010((RHUnk005c9010Iterator &)m_current, distance, category);
+        m_dirty = false;
+    }
+    else if (wanted != m_index)
+    {
+        int previous = m_index;
+        int distance;
+        if (wanted < previous)
+        {
+            if (wanted < (previous + 1) / 2)
+            {
+                m_current = (RHMalignityNode *)
+                    ((RHUnk0046eb30 *)this)->FUN_0046eb80().node;
+                distance = wanted;
+            }
+            else
+                distance = wanted - previous;
+        }
+        else if (wanted < (previous + m_count) / 2)
+            distance = wanted - previous;
+        else
+        {
+            m_current = m_head;
+            distance = wanted - m_count;
+        }
+        std::bidirectional_iterator_tag category;
+        FUN_005c9010((RHUnk005c9010Iterator &)m_current, distance, category);
+    }
+    m_index = wanted;
+}
+
+// Parked: cached-cursor branch layout and iterator-call scheduling remain unmatched.
+// STUB: GAME 0x0048c8e0
+unsigned char RHMalignityActorCalls::FUN_0048c8e0(void *actor, unsigned mode)
+{
+    RHMalignityList &list = RHMalignityField<RHMalignityList>(this, 0x504 + mode * 0x34);
+    unsigned short count = (unsigned short)list.m_count;
+    unsigned short index = 0;
+    while (index < count)
+    {
+        std::bidirectional_iterator_tag category;
+        if (list.m_dirty)
+        {
+            int distance;
+            if ((list.m_count + 1) / 2 < index)
+            {
+                list.m_current = list.m_head;
+                distance = (int)index - list.m_count;
+            }
+            else
+            {
+                list.m_current = list.m_head->next;
+                distance = index;
+            }
+            FUN_005c9010((RHUnk005c9010Iterator &)list.m_current, distance, category);
+            list.m_dirty = false;
+            list.m_index = index;
+        }
+        else if (index != list.m_index)
+        {
+            int previous = list.m_index;
+            int distance;
+            if (index < previous)
+            {
+                if (index < (previous + 1) / 2)
+                {
+                    list.m_current = (RHMalignityNode *)
+                        ((RHUnk0046eb30 *)&list)->FUN_0046eb80().node;
+                    distance = index;
+                }
+                else
+                    distance = (int)index - previous;
+            }
+            else if (index < (previous + list.m_count) / 2)
+                distance = (int)index - previous;
+            else
+            {
+                list.m_current = list.m_head;
+                distance = (int)index - list.m_count;
+            }
+            FUN_005c9010((RHUnk005c9010Iterator &)list.m_current, distance, category);
+            list.m_index = index;
+        }
+        if (((RHMalignityMessageNode *)list.m_current)->value.actor == actor)
+            return 1;
+        ++index;
+    }
+    return 0;
+}
 
 inline void RHMalignityList::Clear()
 {
@@ -874,6 +982,98 @@ void RHArtificialMalignity::FUN_00441f20()
         VirtualBase().V00(0);
 }
 
+// Parked: engine actor selection and action dispatch rely on unresolved out-of-run helpers.
+// STUB: GAME 0x004436e0
+unsigned RHArtificialMalignity::FUN_004436e0(void *, char)
+{
+    return 0;
+}
+
+// Parked: the sibling action requires the same unresolved actor-array and UI dispatch helpers.
+// STUB: GAME 0x00443850
+unsigned RHArtificialMalignity::FUN_00443850(void *)
+{
+    return 0;
+}
+
+// Parked: state updates span a script list, actor references and multiple manager helpers.
+// STUB: GAME 0x004439a0
+void RHArtificialMalignity::FUN_004439a0(void *, unsigned char)
+{
+}
+
+// Parked: threat selection, actor allocation and movement notification depend on out-of-run helpers.
+// STUB: GAME 0x00443af0
+void RHArtificialMalignity::FUN_00443af0(unsigned)
+{
+}
+
+// Parked: actor-array filtering depends on engine globals and multiple external virtual/helper bindings.
+// STUB: GAME 0x00443c40
+void *RHArtificialMalignity::FUN_00443c40(void *)
+{
+    return 0;
+}
+
+// Parked: the sibling actor-array filter adds geometry and script comparisons through external helpers.
+// STUB: GAME 0x00443d10
+void *RHArtificialMalignity::FUN_00443d10(void *)
+{
+    return 0;
+}
+
+// Parked: nearest-actor selection depends on engine arrays, geometry conversion and virtual filters.
+// STUB: GAME 0x00443e20
+void *RHArtificialMalignity::FUN_00443e20(unsigned, unsigned, unsigned, int)
+{
+    return 0;
+}
+
+// Parked: route generation builds nested geometry/list temporaries and requires unresolved helper ABIs.
+// STUB: GAME 0x00443fa0
+unsigned RHArtificialMalignity::FUN_00443fa0(unsigned, unsigned, unsigned, unsigned)
+{
+    return 0;
+}
+
+// Parked: AI state transition allocates exception-cleaned path and sector-list objects.
+// STUB: GAME 0x004444a0
+void RHArtificialMalignity::FUN_004444a0()
+{
+}
+
+// Parked: the waypoint rebuild uses geometry construction, dynamic allocation and list-node insertion.
+// STUB: GAME 0x00444bb0
+void RHArtificialMalignity::FUN_00444bb0(void *)
+{
+}
+
+// Parked: path initialization depends on a separate set of engine and actor-manager bindings.
+// STUB: GAME 0x004450a0
+void RHArtificialMalignity::FUN_004450a0()
+{
+}
+
+// Parked: this short helper's ownership/signature and member-field binding remain unverified.
+// STUB: GAME 0x00445180
+void RHArtificialMalignity::FUN_00445180()
+{
+}
+
+// Parked: path-state processing uses out-of-run actor callbacks and global engine data.
+// STUB: GAME 0x00445210
+unsigned FUN_00445210(float, unsigned, unsigned, unsigned, float, unsigned, void *, unsigned)
+{
+    return 0;
+}
+
+// Parked: the remaining path/actor routine has unresolved object-layout and helper dependencies.
+// STUB: GAME 0x00445510
+bool RHArtificialMalignity::FUN_00445510(float)
+{
+    return false;
+}
+
 // Parked: x87 retains both y and z in the target; source retains only scaled y.
 // STUB: GAME 0x0048a260
 bool RHMalignityActorCalls::FUN_0048a260(const RHUnk00613e90 &point)
@@ -968,6 +1168,99 @@ void RHMalignityActorCalls::FUN_0048c700(void *actor, unsigned mode)
     list.m_dirty = true;
 }
 
+// Parked: cached-cursor erase and return-register scheduling still differ.
+// STUB: GAME 0x0048ca20
+unsigned char RHMalignityActorCalls::FUN_0048ca20(void *actor, unsigned mode)
+{
+    RHMalignityList &list = RHMalignityField<RHMalignityList>(this, 0x504 + mode * 0x34);
+    unsigned short count = (unsigned short)list.m_count;
+    for (unsigned short index = 0; index < count; ++index)
+    {
+        list.FUN_005c8e40(index);
+        RHMalignityMessageNode *node = (RHMalignityMessageNode *)list.m_current;
+        if (node->value.actor == actor)
+        {
+            RHMalignityNode *removed = list.m_current;
+            RHMalignityNode *next = removed->next;
+            removed->previous->next = next;
+            next->previous = removed->previous;
+            FUN_0064158f(removed);
+            --list.m_count;
+            list.m_dirty = true;
+            return true;
+        }
+    }
+    return false;
+}
+
+// Parked: compiler register assignment and the target's global-pointer access differ.
+// STUB: GAME 0x0048cbc0
+void RHScriptBatchCalls::Unk0048cbc0()
+{
+    int *first = RHMalignityField<int *>(g_pEngine, 0x495c);
+    int *last = RHMalignityField<int *>(g_pEngine, 0x4960);
+    unsigned count = first ? (unsigned)(last - first) : 0;
+    if ((short)count != 0)
+    {
+        unsigned remaining = count & 0xffff;
+        int *cursor = first;
+        do
+        {
+            ((RHMalignityActorCalls *)*cursor)->FUN_0048cb90(this);
+            ++cursor;
+            --remaining;
+        } while (remaining != 0);
+    }
+}
+
+// FUNCTION: GAME 0x0048cb90
+void RHMalignityActorCalls::FUN_0048cb90(void *actor)
+{
+    int *vbase = RHMalignityField<int *>(this, 0x49c);
+    void *current = RHMalignityField<void *>(this, vbase[1] + 0x4a0);
+    if (actor != current)
+        FUN_0048ca20(actor, 1);
+}
+
+// Parked: switch jump-table layout and case block ordering remain mismatched.
+// STUB: GAME 0x0048cc20
+void FUN_0048cc20(void *value)
+{
+    unsigned type = RHMalignityField<unsigned>(value, 0x10);
+    switch (type)
+    {
+    case 1:
+    case 7:
+        RHMalignityField<unsigned short>(value, 0x14) = 70;
+        return;
+    case 2:
+        RHMalignityField<unsigned short>(value, 0x14) = 50;
+        return;
+    case 4:
+    case 12:
+        RHMalignityField<unsigned short>(value, 0x14) = 500;
+        return;
+    case 5:
+    case 6:
+    case 8:
+    case 9:
+        RHMalignityField<unsigned short>(value, 0x14) = 200;
+        return;
+    case 10:
+    case 11:
+        RHMalignityField<unsigned short>(value, 0x14) = 400;
+        return;
+    case 14:
+        RHMalignityField<unsigned short>(value, 0x14) = 0;
+        return;
+    case 0:
+        RHMalignityField<unsigned short>(value, 0x14) = 300;
+        break;
+    default:
+        return;
+    }
+}
+
 struct RHUnk00611a40Raw
 {
     undefined4 m_00;
@@ -990,6 +1283,186 @@ void RHMalignityActorCalls::FUN_0048d050()
     profile = RHMalignityField<void *>(this, 0x50);
     RHMalignityField<unsigned short>(this, 0x4e8) = RHMalignityField<unsigned short>(profile, 0xde);
     RHMalignityField<void *>(this, 0x4e4) = RHMalignityField<void *>(profile, 0xe0);
+}
+
+// Reconstructed the radius calculation and area comparison; polygon probing and hazard attenuation remain incomplete.
+// STUB: GAME 0x0048db80
+float RHMalignityActorCalls::FUN_0048db80(void *position, void *actor)
+{
+    if (!actor)
+        return 0.0f;
+    void *profile = RHMalignityField<void *>(this, 0x50);
+    RHMalignityPosition origin = RHMalignityPositionOf(profile);
+    RHMalignityPosition target = RHMalignityPositionOf(RHMalignityField<void *>(actor, 0x50));
+    if (origin.area != target.area)
+        return 0.0f;
+    SBGeoPoint2D displacement = FUN_0040ec20(origin, target);
+    float range = displacement.FUN_005fc700(1.0f);
+    float radius = RHMalignityField<unsigned short>(this, 0x6cc);
+    float remainder = radius * radius - range * range;
+    if (remainder <= 0.0f)
+        return 0.0f;
+    if (position && RHMalignityField<void *>(position, 0x08) != origin.area)
+        return 0.0f;
+    return remainder;
+}
+
+// Parked: list iteration, tagged geometry, map bounds, EH cleanup, and hazard-dependent radius adjustment are unreconstructed.
+// STUB: GAME 0x0048e420
+void RHMalignityActorCalls::FUN_0048e420(void *actor)
+{
+    RHMalignityList &list = RHMalignityField<RHMalignityList>(this, 0x504);
+    int count = list.m_count;
+    int index = 0;
+    if (actor)
+    {
+        for (; index < count; ++index)
+        {
+            list.FUN_005c8e40(index);
+            if (list.m_current->value == actor)
+                break;
+        }
+    }
+    if (list.m_dirty)
+    {
+        list.m_current = list.m_head->next;
+        FUN_005c9010((RHUnk005c9010Iterator &)list.m_current, index, std::bidirectional_iterator_tag());
+        list.m_dirty = false;
+    }
+    else if (index != list.m_index)
+    {
+        int previous = list.m_index;
+        if (index < previous)
+        {
+            if (index < (previous + 1) / 2)
+            {
+                list.m_current = list.m_head->next;
+                FUN_005c9010((RHUnk005c9010Iterator &)list.m_current, index, std::bidirectional_iterator_tag());
+            }
+            else
+                FUN_005c9010((RHUnk005c9010Iterator &)list.m_current, index - previous, std::bidirectional_iterator_tag());
+        }
+        else if (index < (previous + count) / 2)
+            FUN_005c9010((RHUnk005c9010Iterator &)list.m_current, index - previous, std::bidirectional_iterator_tag());
+        else
+        {
+            list.m_current = list.m_head;
+            FUN_005c9010((RHUnk005c9010Iterator &)list.m_current, index - count, std::bidirectional_iterator_tag());
+        }
+        list.m_index = index;
+    }
+    if (list.m_current && list.m_current != list.m_head)
+        RHMalignityField<unsigned char>(list.m_current->value, 0x12) = 0;
+}
+
+// Parked 85.71% effective-only: the zeroing sequence and the following constant store have a different source shape.
+// STUB: GAME 0x0048e580
+void RHMalignityActorCalls::FUN_0048e580()
+{
+    RHMalignityField<unsigned>(this, 0x63c) = 0;
+    RHMalignityField<unsigned>(this, 0x640) = 0;
+    RHMalignityField<unsigned>(this, 0x644) = 0;
+    RHMalignityField<unsigned short>(this, 0x648) = 0;
+    RHMalignityField<unsigned>(this, 0x64c) = 7;
+}
+
+// Parked 43.48%: the parameter-width model and saturating subtraction lowering do not match the three-argument target.
+// STUB: GAME 0x0048e5b0
+void RHMalignityActorCalls::FUN_0048e5b0(unsigned operation, unsigned short value, unsigned)
+{
+    if (operation == 1)
+    {
+        unsigned short current = RHMalignityField<unsigned short>(this, 0x4ca);
+        if (value < current)
+            RHMalignityField<unsigned short>(this, 0x4ca) = current - value;
+        else
+            RHMalignityField<unsigned short>(this, 0x4ca) = 0;
+    }
+}
+
+// Parked 30.77%: the target returns a sign-extended word sentinel while this candidate's branch/width shape differs.
+// STUB: GAME 0x0048e5f0
+unsigned short RHMalignityActorCalls::FUN_0048e5f0(unsigned operation)
+{
+    if (operation == 1)
+        return RHMalignityField<unsigned short>(this, 0x4ca);
+    return 0xffff;
+}
+
+// FUNCTION: GAME 0x0048e610
+unsigned short RHMalignityActorCalls::FUN_0048e610()
+{
+    return RHMalignityField<unsigned short>(this, 0x4c8);
+}
+
+// FUNCTION: GAME 0x0048e620
+void RHMalignityActorCalls::FUN_0048e620(unsigned short value)
+{
+    RHMalignityField<unsigned short>(this, 0x4c8) = value;
+}
+
+// Parked 72.73%: the conditional word update does not reproduce the target's argument and branch scheduling.
+// STUB: GAME 0x0048e630
+void RHMalignityActorCalls::FUN_0048e630(unsigned operation, unsigned short value)
+{
+    if (operation == 1)
+        RHMalignityField<unsigned short>(this, 0x4ca) += value;
+}
+
+// Parked 72.73%: the conditional word store does not reproduce the target's branch and argument-width shape.
+// STUB: GAME 0x0048e650
+void RHMalignityActorCalls::FUN_0048e650(unsigned operation, unsigned short value)
+{
+    if (operation == 1)
+        RHMalignityField<unsigned short>(this, 0x4ca) = value;
+}
+
+// Reconstructed gates and actor-profile checks; geometry, event allocation and dispatch remain incomplete.
+// STUB: GAME 0x0048e670
+bool RHMalignityActorCalls::FUN_0048e670(void *actor)
+{
+    if (RHMalignityField<unsigned char>(this, 0x652))
+        return false;
+    void *profile = RHMalignityField<void *>(this, 0x50);
+    void *base = (char *)this + (*(int **)RHMalignityField<void *>(this, 0x49c))[1];
+    if (RHMalignityField<int>(base, 0x4a8) != 1)
+        return false;
+    if ((RHMalignityField<unsigned>(this, 4) & 31) == 0x14 || RHMalignityField<unsigned>(this, 0x4f0) < 200)
+        return false;
+    if (RHMalignityField<float>(profile, 0x10) == RHMalignityField<float>(profile, 0x2c) &&
+        RHMalignityField<float>(profile, 0x14) == RHMalignityField<float>(profile, 0x30) &&
+        RHMalignityField<float>(profile, 0x18) == RHMalignityField<float>(profile, 0x34))
+        return false;
+    void *otherProfile = RHMalignityField<void *>(actor, 0x50);
+    if ((RHMalignityField<unsigned>(actor, 4) & 0xf) == 0xc &&
+        RHMalignityField<unsigned char>(base, 0x7e4) == 1)
+        return false;
+    if (RHMalignityField<void *>(profile, 0xe0) != RHMalignityField<void *>(otherProfile, 0xe0))
+        return false;
+    RHMalignityPosition own = RHMalignityPositionOf(profile);
+    RHMalignityPosition other = RHMalignityPositionOf(otherProfile);
+    SBGeoPoint2D displacement = FUN_0040ec20(own, other);
+    if (displacement.FUN_005fc700(1.0f) > 70.0f)
+        return false;
+    unsigned difference = (RHMalignityHeading(actor) - 0x0c) & 0xf;
+    return difference < 2 || difference == 0xf;
+}
+
+// Reconstructed point projection and action setup; the target's selection and cleanup paths remain incomplete.
+// STUB: GAME 0x0048e870
+void RHMalignityActorCalls::FUN_0048e870(void *actor)
+{
+    void *profile = RHMalignityField<void *>(this, 0x50);
+    void *otherProfile = RHMalignityField<void *>(actor, 0x50);
+    RHMalignityPosition own = RHMalignityPositionOf(profile);
+    RHMalignityPosition other = RHMalignityPositionOf(otherProfile);
+    if (own.area != other.area)
+        return;
+    SBGeoPoint2D delta = FUN_0040ec20(own, other);
+    if (delta.FUN_005fc700(1.0f) >= g_unk0x00677488)
+        return;
+    RHMalignityField<unsigned char>(this, 0x652) = 1;
+    RHMalignityField<unsigned>(this, 0x4f0) -= RHMalignityField<unsigned>(this, 0x4f0) >= 10 ? 10 : 0;
 }
 
 // FUNCTION: GAME 0x0048ebe0

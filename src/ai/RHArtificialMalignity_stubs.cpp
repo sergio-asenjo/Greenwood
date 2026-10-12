@@ -3,12 +3,10 @@
 
 bool RHUnk00608f10::FUN_006082a0(void *) { return false; }
 void RHMalignityActorCalls::FUN_00478c20(RHUnk00613e90 &, bool) {}
-unsigned char RHMalignityActorCalls::FUN_0048c8e0(void *, bool) { return 0; }
 bool RHMalignityActorCalls::FUN_0048a130(void *) { return false; }
 float RHMalignityBaseView::FUN_0041a010(void *) { return 0.0f; }
 float RHMalignityBaseView::FUN_0041a060(void *) { return 0.0f; }
 float RHMalignityBaseView::FUN_0041a0b0(void *) { return 0.0f; }
-void RHMalignityList::FUN_005c8e40(int) {}
 bool RHArtificialMalignity::FUN_0044afa0(void *) { return false; }
 // STUB: GAME 0x00440cf0
 short RHArtificialMalignity::FUN_00440cf0(RHUnk00441dd0Record *) { return 0; }

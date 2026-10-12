@@ -60,6 +60,8 @@ class RHArtificialIntelligence
 {
 public:
     void Unk00410600();
+    void Unk00410010(bool mode);
+    bool InitState();
 };
 
 class RHUnk0046bd20
@@ -68,10 +70,23 @@ public:
     int FUN_0046bd20();
 };
 
+class RHSoundSource;
+class SBGeoPoint2D;
+struct RHSoundSettings;
+struct RHSoundChannelSettings;
+
 class RHSound
 {
 public:
+    int FUN_005a72c0(const RHSoundSettings &sound, RHSoundChannelSettings &settings, unsigned position);
+    bool FUN_005a8220(int first, int second, int third, const SBGeoPoint2D &point);
+    bool FUN_005a8330(int first, int second, int third, const SBGeoPoint2D &point);
     void PlayJingle(int jingle);
+    void FUN_005a8780();
+    void FUN_005a8700(void *, void *);
+    void FUN_005a87f0(RHSoundSource *);
+    void FUN_005a8810(void *);
+    void FUN_005a88a0(void *);
 };
 
 class RHScriptSoundStateCalls
@@ -367,6 +382,16 @@ public:
     static bool RecordLockUser();
     static bool RecordUnLockUser();
     static void *GetSoundSourceScript(int index);
+    static char RHUnk575510();
+    static char RHUnk575530();
+    static char RHUnk575560(void *value);
+    static char RHUnk575590(void *value);
+    static char RHUnk5755c0(void *value);
+    static int RHUnk579e80(int value);
+    static int RHUnk579ef0(int value);
+    static void RHUnk579f10(int value);
+    static void RHUnk579f30(int value);
+    static void RecordDisplayPopupText(int value);
     static bool Deactivate(void *actor);
     static bool Activate(void *actor);
     static bool SetActionAvailable(void *actor, int action, bool available);
@@ -405,6 +430,10 @@ public:
     static void SetPathWalkingStyle(void *actor, int style);
     static bool Sees(void *actor, void *target);
     static void PutActorInBulding(void *actor, void *building);
+    static bool RecordStartMobileElement(int index);
+    static bool RecordStopMobileElement(int index);
+    static bool RecordActivateMobileElement(int index);
+    static bool RecordDeactivateMobileElement(int index);
     static void AttachScrollToNPC(void *actor, void *scroll);
     static void EnableViewCone(void *actor);
     static bool Select(int code);
@@ -421,6 +450,11 @@ public:
     static void AddPCToMissionTeam(void *actor);
     static void RemovePCFromMissionTeam(void *actor);
     static int GetNumberOfBeamMes();
+    static void *GetPCFromMissionTeam(unsigned long index);
+    static char RHUnk5793a0(void *actor);
+    static void *RHUnk5793e0();
+    static void *RHUnk5793f0();
+    static void *RHUnk579410();
     static int GetCustomCampaignValue(int index);
     static void SetCustomCampaignValue(int index, int value);
     static int GetCustomNPCValue(void *actor, int index);
@@ -600,7 +634,10 @@ public:
     SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
     SBGeoPoint2D Unk005fc110(const SBGeoPoint2D &other) const;
     SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
+    SBGeoPoint2D FUN_005fc200(const SBGeoPoint2D &other) const;
+    float FUN_005fc700(float scale) const;
     float Unk005fc6d0(float value) const;
+    bool FUN_005fc0e0(const SBGeoPoint2D &other) const;
     void FUN_005fc390(const SBGeoPoint2D &other) throw();
 };
 
@@ -854,6 +891,8 @@ public:
     float Unk005fc6a0(float value);
     RHUnk005fc3b0 &Unk005fcd40(unsigned char direction, float length);
     RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other);
+    float FUN_005fc680(const RHUnk005fc3b0 &vector, float scale) const;
+    SBGeoPoint2D FUN_005fc8f0(int mode, float value) const;
     void Set(float x, float y) { m_x = x; m_y = y; }
 };
 
@@ -875,6 +914,19 @@ public:
     ~RHUnk00584d60();
     char data[0x64];
     void SetFlag(bool value) { data[0x60] = value; }
+};
+
+class RHUnk004e3760
+{
+public:
+    void *Get();
+};
+
+class RHUnk005a2450
+{
+public:
+    void FUN_005a2450(void *first, void *second);
+    void FUN_005a2df0(void *value);
 };
 
 class RHUnk0049d4f0
@@ -913,7 +965,22 @@ struct RHMalignityPosition
 class RHMalignityBaseView
 {
 public:
+    virtual void V00(int mode) = 0;
+    virtual void V04(int mode) = 0;
+    virtual void V08() = 0;
+    virtual void V0c() = 0;
+    virtual void V10(int state, int substate) = 0;
+    SBGeoPoint2D FUN_0040cc20(void *actor);
     RHMalignityPosition FUN_004165e0(void *actor, bool mode);
+    SBGeoPoint2D FUN_0040cbf0(const RHMalignityPosition &position);
+    void FUN_0041a300(void *actor);
+    void FUN_0041ab30();
+    bool FUN_00419e10(void *actor);
+    float FUN_0041a010(void *actor);
+    float FUN_0041a060(void *actor);
+    float FUN_0041a0b0(void *actor);
+    void FUN_00412cf0(const RHMalignityPosition &position, unsigned short heading, int mode);
+    void *m_actor;
 };
 
 class RHScriptAIStateCalls
@@ -989,12 +1056,20 @@ private:
     int m_unk08;
     int m_unk0c;
 };
+class RHUnk005490a0Message
+{
+public:
+    RHUnk005490a0Message(int command, int value);
+    ~RHUnk005490a0Message();
+    char data[0x10];
+};
 class RHMessenger
 {
 public:
     void RHUnk005460c0(RHUnk5490f0 &message);
 };
 RHMessenger *RHUnk00546050();
+RHMessenger *__stdcall RHUnk00546050(RHUnk5490f0 *message);
 
 class RHUnk00585ea0 : public RHUnk00584d60
 {
@@ -1014,7 +1089,9 @@ public:
 class SBGeoVector2D : public SBGeoPoint2D
 {
 public:
+    SBGeoVector2D(float x, float y);
     SBGeoVector2D(const SBGeoPoint2D &point);
+    float FUN_005fc660(const SBGeoPoint2D &point) const;
 };
 
 class RHUnk00560420
@@ -1104,6 +1181,7 @@ class RHUnk00613e90
 {
 public:
     RHUnk00613e90();
+    RHUnk00613e90 FUN_005df550(const RHUnk00613e90 &other) const;
     float x;
     float y;
     float z;

@@ -28,6 +28,7 @@
 #include "SBNullstr.h"
 #include "RHScript.h"
 #include "RHGame.h"
+#include "RHEngine.h"
 #include "RHScriptLists.h"
 #include <list>
 #include <string>
@@ -41,12 +42,43 @@ class RHUnk6c1040;
 extern RHUnk6c1040 *g_unk0x6c1040;
 extern RHUnk0048a970 *g_unk0x6c0b3c;
 
-class RHEngine;
 extern RHEngine *g_pEngine;
+class RHUnk0057c710
+{
+public:
+    void Ensure();
+};
+class RHUnk005793e0
+{
+public:
+    void *GetValue();
+};
+class RHUnk0051d0e0
+{
+public:
+    unsigned short Find(int value);
+};
+struct RHUnk579e80State
+{
+    char padding[4];
+    int *first;
+    int *end;
+    char padding0c[4];
+    int *cursor;
+    char valid;
+    char searchValid;
+    char padding16[2];
+    int index;
+    int value;
+};
+void FUN_005edae0(RHUnk005ef320 *, const char *, int);
+void FUN_0053a0b0(int);
 
 extern unsigned short g_unk0x006c07e2;
 extern unsigned short g_unk0x006c07e4;
 extern unsigned short g_unk0x006c07e6;
+struct RHUnkPathRegistry;
+extern RHUnkPathRegistry *g_unk0x6c0b9c;
 class RHArtificialIntelligenceSoundCalls;
 extern RHArtificialIntelligenceSoundCalls *g_unk0x006c1070;
 
@@ -1094,7 +1126,7 @@ void RHScript::MakeNoise(void *location, int noise)
         break;
     }
 
-    if (location == 0)
+    if (!location)
     {
         SBAssert(0, "P:\\Robin Hood\\RHScript.cpp", 1012,
                  // STRING: GAME 0x006b27e8
@@ -1325,7 +1357,7 @@ void *RHScript::GetActorLocation(void *actor)
     return location;
 }
 
-// 88.89%, vbase/scalar register scheduling.
+// Parked: 95.97%; vbase offset inlining helps, with flag and return scheduling still different.
 // STUB: GAME 0x005718d0
 bool RHScript::SetActorLocation(void *actor, void *location)
 {
@@ -1355,10 +1387,9 @@ bool RHScript::SetActorLocation(void *actor, void *location)
         }
         if ((*(unsigned int *)((char *)actor + 4) & 15) == 4)
         {
-            int offset = *(int *)(*(char **)((char *)actor + 0x49c) + 4);
-            if (!*(char *)((char *)actor + offset + 0x660))
+            if (!*(char *)((char *)actor + *(int *)(*(char **)((char *)actor + 0x49c) + 4) + 0x660))
             {
-                ((RHUnk00418b80 *)((char *)actor + offset + 0x49c))->Unk(false);
+                ((RHUnk00418b80 *)((char *)actor + *(int *)(*(char **)((char *)actor + 0x49c) + 4) + 0x49c))->Unk(false);
                 return true;
             }
         }
@@ -1383,7 +1414,7 @@ bool RHScript::SetActorLocation(void *actor, void *location)
         ((RHScriptActorPositionFields *)actor)->position->layer = target.layer;
         ((RHScriptActorPositionFields *)actor)->position->area = target.area;
         char *area = (char *)target.area;
-        unsigned short flags = (unsigned short)(*(volatile unsigned int *)(area + 0x30) >> 1);
+        unsigned int flags = *(volatile unsigned int *)(area + 0x30) >> 1;
         if ((flags & 1) && (*(unsigned int *)(area + 0x30) & 1))
         {
             RHBonusProjection *projection = ((RHUnk0057d800 *)area)->Unk(point);
@@ -2589,7 +2620,7 @@ bool RHScript::RecordMove(void *actor, void *location, int style)
     return true;
 }
 
-// Parked: counted begin callee corrected; first/area registers and cached-list scheduling remain non-exact.
+// Parked: 81.29% with a widened first-count local; first/area registers and cached-list scheduling remain non-exact.
 // STUB: GAME 0x005743a0
 bool RHScript::RecordMoveNear(void *actor, void *location, int style, int distance)
 {
@@ -2639,7 +2670,7 @@ bool RHScript::RecordMoveNear(void *actor, void *location, int style, int distan
                  "Script Error: You tried to create a move sequence with an illegal style");
         return false;
     }
-    unsigned short first = *(int *)((char *)g_unk0x6c0f78 + 0x10);
+    unsigned int first = *(int *)((char *)g_unk0x6c0f78 + 0x10);
     unsigned short layer = *(unsigned short *)((char *)location + 0x20);
     void *area = *(void **)((char *)location + 0x24);
     ((RHUnk00582640 *)g_unk0x6c0f78)->Unk(g_unk0x6c0fa4, actor, animation,
@@ -2707,7 +2738,7 @@ bool RHScript::RecordMoveIntoBuilding(void *actor, void *location, int style)
     return false;
 }
 
-// parked: 61.41% scoped destination, 82.30% function-scope destination; iterator temporary slot and point-call scheduling differ.
+// Parked: 82.30% with function-scope destination; iterator temporary slot and point-call scheduling still differ.
 // STUB: GAME 0x00574a70
 bool RHScript::RecordTakeCorpse(void *actor, void *corpse, int style)
 {
@@ -2971,6 +3002,113 @@ void *RHScript::GetSoundSourceScript(int index)
         return g_unk0x6c0f7c;
     }
     return g_unk0x6c0f7c;
+}
+
+// FUNCTION: GAME 0x00579e80
+int RHScript::RHUnk579e80(int value)
+{
+    RHUnk579e80State *state = (RHUnk579e80State *)((char *)g_unk0x6c0a9c + 0x40c0);
+    state->valid = 0;
+    state->value = value;
+    int *first = state->first;
+    int count = first == 0 ? 0 : state->end - first;
+    state->cursor = first;
+    state->searchValid = 1;
+    int index = 0;
+    while (index < count)
+    {
+        if (*state->cursor == value)
+            break;
+        ++index;
+        ++state->cursor;
+    }
+    if (index >= count)
+        index = -1;
+    state->index = index;
+    return index;
+}
+
+// FUNCTION: GAME 0x00579ef0
+int RHScript::RHUnk579ef0(int value)
+{
+    return ((RHUnk0051d0e0 *)g_unk0x6c0b9c)->Find(value);
+}
+
+// FUNCTION: GAME 0x00579f10
+void RHScript::RHUnk579f10(int value)
+{
+    FUN_005edae0(g_unk0x6c11d0,
+        // STRING: GAME 0x006b652c
+        "%d\n", value);
+}
+
+// Parked: the message command and cleanup are modeled, but the constructor result/manager-call argument sequence differs; three shapes scored 84.21%, 73.85%, and 75.00%.
+// STUB: GAME 0x00579f30
+void RHScript::RHUnk579f30(int value)
+{
+    FUN_0053a0b0(value);
+    RHUnk005490a0Message message(0x2e, 0);
+    RHMessenger *messenger = RHUnk00546050((RHUnk5490f0 *)&message);
+    messenger->RHUnk005460c0((RHUnk5490f0 &)message);
+}
+
+// FUNCTION: GAME 0x00575510
+char RHScript::RHUnk575510()
+{
+    RHSound *sound = (RHSound *)*(void **)(g_unk0x6c0fa8 + 0x45e0);
+    if (*(char *)((char *)sound + 0x20a))
+        sound->FUN_005a8780();
+    return 1;
+}
+
+// FUNCTION: GAME 0x00575530
+char RHScript::RHUnk575530()
+{
+    char *base = g_unk0x6c0fa8;
+    RHSound *sound = (RHSound *)*(void **)(base + 0x45e0);
+    if (*(char *)((char *)sound + 0x20a))
+        sound->FUN_005a8700(base + 0x4738, *(void **)(base + 0x475c));
+    return 1;
+}
+
+// FUNCTION: GAME 0x00575560
+char RHScript::RHUnk575560(void *value)
+{
+    if (value != 0)
+    {
+        RHSound *sound = (RHSound *)*(void **)(g_unk0x6c0fa8 + 0x45e0);
+        if (*(char *)((char *)sound + 0x20a))
+            sound->FUN_005a87f0((RHSoundSource *)value);
+    }
+    return 1;
+}
+
+// FUNCTION: GAME 0x00575590
+char RHScript::RHUnk575590(void *value)
+{
+    RHSound *sound = (RHSound *)*(void **)(g_unk0x6c0fa8 + 0x45e0);
+    if (*(char *)((char *)sound + 0x20a))
+        sound->FUN_005a8810(value);
+    return 1;
+}
+
+// FUNCTION: GAME 0x005755c0
+char RHScript::RHUnk5755c0(void *value)
+{
+    RHSound *sound = (RHSound *)*(void **)(g_unk0x6c0fa8 + 0x45e0);
+    if (*(char *)((char *)sound + 0x20a))
+        sound->FUN_005a88a0(value);
+    return 1;
+}
+
+// FUNCTION: GAME 0x00579fa0
+void RHScript::RecordDisplayPopupText(int value)
+{
+    RHUnk005866a0 *element = new RHUnk005866a0(g_unk0x6c0fa4, 0x10, 0);
+    element->Unk00586ed0(0x14, value);
+    AddToSequence((RHSequenceElement *)element,
+        // STRING: GAME 0x006b6530
+        "RecordDisplayPopupText");
 }
 
 // FUNCTION: GAME 0x00575640
@@ -4186,6 +4324,81 @@ void RHScript::PutActorInBulding(void *actor, void *building)
         ((RHScriptBatchCalls *)actor)->Unk0049d6c0();
 }
 
+// Parked: iterator/cursor register scheduling remains different after three source shapes.
+// STUB: GAME 0x005782a0
+void FUN_005782a0(void *object, bool value)
+{
+    *(bool *)((char *)object + 0x34) = value;
+    RHUnk0046eb30 *list = (RHUnk0046eb30 *)((char *)object + 0x5c);
+    int remaining = (unsigned short)*(int *)((char *)list + 8);
+    int index = 0;
+    while (remaining != 0)
+    {
+        *(bool *)((char *)list->Get(index) + 8) = value;
+        ++index, --remaining;
+    }
+}
+
+// Parked: VC6 argument/register scheduling differs across three source shapes.
+// STUB: GAME 0x005783b0
+bool RHScript::RecordStartMobileElement(int index)
+{
+    RHUnk00584d60 *element = new RHUnk00584d60(g_unk0x6c0fa4, 0x9c,
+        (*(void ***)((char *)g_pEngine + 0x497c))[index]);
+    return AddToSequence((RHSequenceElement *)element,
+                         // STRING: GAME 0x006b58b0
+                         "RecordStartMobileElement");
+}
+
+// Parked: VC6 argument/register scheduling differs across three source shapes.
+// STUB: GAME 0x00578430
+bool RHScript::RecordStopMobileElement(int index)
+{
+    RHUnk00584d60 *element = new RHUnk00584d60(g_unk0x6c0fa4, 0x9d,
+        (*(void ***)((char *)g_pEngine + 0x497c))[index]);
+    return AddToSequence((RHSequenceElement *)element,
+                         // STRING: GAME 0x006b58cc
+                         "RecordStopMobileElement");
+}
+
+// Parked: VC6 argument/register scheduling differs across three source shapes.
+// STUB: GAME 0x005784b0
+bool RHScript::RecordActivateMobileElement(int index)
+{
+    RHUnk00584d60 *element = new RHUnk00584d60(g_unk0x6c0fa4, 0x9e,
+        (*(void ***)((char *)g_pEngine + 0x497c))[index]);
+    return AddToSequence((RHSequenceElement *)element,
+                         // STRING: GAME 0x006b58e4
+                         "RecordActiveMobileElement");
+}
+
+// Parked: VC6 argument/register scheduling differs across three source shapes.
+// STUB: GAME 0x00578530
+bool RHScript::RecordDeactivateMobileElement(int index)
+{
+    RHUnk00584d60 *element = new RHUnk00584d60(g_unk0x6c0fa4, 0x9f,
+        (*(void ***)((char *)g_pEngine + 0x497c))[index]);
+    return AddToSequence((RHSequenceElement *)element,
+                         // STRING: GAME 0x006b5900
+                         "RecordDeactivateMobileElement");
+}
+
+// FUNCTION: GAME 0x005785b0
+void FUN_005785b0(void *first, void *second)
+{
+    RHUnk005a2450 *manager =
+        (RHUnk005a2450 *)((RHUnk004e3760 *)g_unk0x6c0fa8)->Get();
+    manager->FUN_005a2450(first, second);
+}
+
+// FUNCTION: GAME 0x005785d0
+void FUN_005785d0(void *value)
+{
+    RHUnk005a2450 *manager =
+        (RHUnk005a2450 *)((RHUnk004e3760 *)g_unk0x6c0fa8)->Get();
+    manager->FUN_005a2df0(value);
+}
+
 // FUNCTION: GAME 0x005785f0
 void RHScript::AttachScrollToNPC(void *actor, void *scroll)
 {
@@ -4509,6 +4722,53 @@ int RHScript::GetNumberOfBeamMes()
     if (next == 0)
         return 5;
     return *(unsigned short *)(*next + 0x72);
+}
+
+// FUNCTION: GAME 0x00579350
+void *RHScript::GetPCFromMissionTeam(unsigned long index)
+{
+    char *campaign = (char *)g_unk0x6c07fc;
+    char *mission = **(char ***)(campaign + 0x17c);
+    char *profiles = mission + 0x74;
+    unsigned int *first = *(unsigned int **)(profiles + 4);
+    if (first == 0 || (unsigned int)(*(unsigned int **)(profiles + 8) - first) <= index)
+        ((RHUnk0057c710 *)profiles)->Ensure();
+    first = *(unsigned int **)(profiles + 4);
+    return g_pEngine->GetPC((RHCharacterProfile *)first[index]);
+}
+
+// Parked: the profile scan matches semantically, but VC6 schedules the actor/profile load differently; prior and current source shapes remain below full match.
+// STUB: GAME 0x005793a0
+char RHScript::RHUnk5793a0(void *actor)
+{
+    char *missionForEnd = **(char ***)( (char *)g_unk0x6c07fc + 0x17c);
+    unsigned int *end = *(unsigned int **)(missionForEnd + 0x7c);
+    char *missionForCursor = **(char ***)( (char *)g_unk0x6c07fc + 0x17c);
+    unsigned int *cursor = *(unsigned int **)(missionForCursor + 0x78);
+    while (cursor != end && *cursor != *(unsigned int *)((char *)actor + 0x5fc))
+        ++cursor;
+    return cursor != end;
+}
+
+// Parked: target tail-jumps to 0x00453cd0, whose owning entity and signature are unresolved.
+// STUB: GAME 0x005793e0
+void *RHScript::RHUnk5793e0()
+{
+    return ((RHUnk005793e0 *)g_unk0x6c07fc)->GetValue();
+}
+
+// FUNCTION: GAME 0x005793f0
+void *RHScript::RHUnk5793f0()
+{
+    void *array = *(void **)((char *)g_unk0x6c07fc + 0x174);
+    return array ? **(void ***)array : 0;
+}
+
+// FUNCTION: GAME 0x00579410
+void *RHScript::RHUnk579410()
+{
+    void *array = *(void **)((char *)g_unk0x6c07fc + 0x17c);
+    return array ? **(void ***)array : 0;
 }
 
 // FUNCTION: GAME 0x00579430
@@ -5576,7 +5836,7 @@ void RHScript::SelectActorPC(void *actor, bool selected)
     }
 }
 
-// Parked: counted postfix callee corrected; search and word-result registers remain non-exact.
+// Parked: 96.51%; counted search and word-result register scheduling remain non-exact.
 // STUB: GAME 0x0057bed0
 bool RHScript::HasAnyActionSelected(void *actor)
 {
@@ -5597,7 +5857,8 @@ bool RHScript::HasAnyActionSelected(void *actor)
             int size = engine->selection.count;
             engine->selection.searchValue = actor;
             engine->selection.searchValid = true;
-            engine->selection.cursor.node = engine->selection.head->next;
+            volatile RHScriptNode *head = engine->selection.head;
+            engine->selection.cursor.node = head->next;
             int index = 0;
             for (; index < size; ++index, ((RHSectorActorIter &)engine->selection.cursor)++)
                 if (engine->selection.cursor.node->data == engine->selection.searchValue) break;
@@ -5616,7 +5877,7 @@ bool RHScript::HasAnyActionSelected(void *actor)
         }
         else selected = engine->selection.count == 0 ? false : true;
         if (!selected) return false;
-        return *(unsigned short *)((char *)RHUnk00546050() + 0xa2) == 0 ? false : true;
+        return *(unsigned short *)((char *)RHUnk00546050() + 0xa2) != 0;
     }
     return false;
 }

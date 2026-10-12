@@ -3,57 +3,11 @@
 
 #include "SB.h"
 #include "Decomp.h"
+#include "RHScript.h"
 #include <iterator>
 
 class RHEngine;
 extern RHEngine *g_pEngine;
-
-// SIZE 0x08
-class SBGeoPoint2D
-{
-public:
-    SBGeoPoint2D();
-    SBGeoPoint2D(float x, float y);
-    SBGeoPoint2D(const SBGeoPoint2D &point);
-    SBGeoPoint2D &operator=(const SBGeoPoint2D &point);
-    float FUN_005fc700(float scale) const;
-    SBGeoPoint2D Unk005fc110(const SBGeoPoint2D &point) const;
-    ~SBGeoPoint2D();
-    float m_x; // 0x00
-    float m_y; // 0x04
-};
-
-// SIZE 0x08
-class RHUnk005fc3b0 : public SBGeoPoint2D
-{
-public:
-    RHUnk005fc3b0();
-    ~RHUnk005fc3b0() {}
-    RHUnk005fc3b0 &Unk005fcd40(unsigned char direction, float length);
-    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other);
-    SBGeoPoint2D FUN_005fc8f0(int mode, float value) const;
-    float FUN_005fc680(const RHUnk005fc3b0 &vector, float scale) const;
-};
-
-// SIZE 0x0c
-class RHUnk00613e90
-{
-public:
-    RHUnk00613e90();
-    RHUnk00613e90 FUN_005df550(const RHUnk00613e90 &other) const;
-    float x; // 0x00
-    float y; // 0x04
-    float z; // 0x08
-};
-
-// SIZE 0x10
-struct RHMalignityPosition
-{
-    float x; // +0x00
-    float y; // +0x04
-    void *area; // +0x08
-    unsigned short layer; // +0x0c
-};
 
 struct RHMalignityWaypoint
 {
@@ -90,22 +44,7 @@ struct RHMalignityNode
     void *value; // 0x08
 };
 
-struct RHScriptNode;
-struct RHScriptIter;
-class RHUnk0046eb30
-{
-public:
-    RHScriptNode *Unk0059f720(RHScriptNode *next, RHScriptNode *previous);
-    RHScriptIter FUN_0046eb80();
-};
-
 class RHSequenceElement;
-class RHSeqList
-{
-public:
-    static void CopyData(RHSequenceElement **destination, RHSequenceElement *const *source);
-};
-
 class RHElementActor;
 // SIZE 0x24
 class RHSectorActorList
@@ -234,42 +173,26 @@ public:
     virtual void V12c() = 0;
     virtual int V130() = 0; // vtable+0x130
     bool FUN_0048a260(const RHUnk00613e90 &point);
+    float FUN_0048db80(void *position, void *actor);
+    void FUN_0048e420(void *actor);
+    void FUN_0048e580();
+    void FUN_0048e5b0(unsigned operation, unsigned short value, unsigned unused);
+    unsigned short FUN_0048e5f0(unsigned operation);
+    unsigned short FUN_0048e610();
+    void FUN_0048e620(unsigned short value);
+    void FUN_0048e630(unsigned operation, unsigned short value);
+    void FUN_0048e650(unsigned operation, unsigned short value);
+    bool FUN_0048e670(void *actor);
+    void FUN_0048e870(void *actor);
     void FUN_0048ebe0();
     void FUN_00487aa0(int value);
     void FUN_0048c700(void *actor, unsigned mode);
+    unsigned char FUN_0048ca20(void *actor, unsigned mode);
+    void FUN_0048cb90(void *actor);
     void FUN_0048d050();
     void FUN_00478c20(RHUnk00613e90 &point, bool mode);
-    unsigned char FUN_0048c8e0(void *actor, bool mode);
+    unsigned char FUN_0048c8e0(void *actor, unsigned mode);
     bool FUN_0048a130(void *actor);
-};
-
-class RHArtificialIntelligence
-{
-public:
-    void Unk00410010(bool mode);
-    bool InitState();
-};
-
-class RHMalignityBaseView
-{
-public:
-    virtual void V00(int mode) = 0; // vtable+0x00
-    virtual void V04(int mode) = 0; // vtable+0x04
-    virtual void V08() = 0; // vtable+0x08
-    virtual void V0c() = 0; // vtable+0x0c
-    virtual void V10(int state, int substate) = 0; // vtable+0x10
-
-    SBGeoPoint2D FUN_0040cc20(void *actor);
-    RHMalignityPosition FUN_004165e0(void *actor, bool mode);
-    SBGeoPoint2D FUN_0040cbf0(const RHMalignityPosition &position);
-    void FUN_0041a300(void *actor);
-    void FUN_0041ab30();
-    bool FUN_00419e10(void *actor);
-    float FUN_0041a010(void *actor);
-    float FUN_0041a060(void *actor);
-    float FUN_0041a0b0(void *actor);
-    void FUN_00412cf0(const RHMalignityPosition &position, unsigned short heading, int mode);
-    void *m_actor; // +0x04
 };
 
 // SIZE 0x40
@@ -307,6 +230,19 @@ public:
     short FUN_00440cf0(RHUnk00441dd0Record *record);
     int FUN_00441020(RHUnk00441dd0Record *record, RHMalignityList *list);
     void FUN_00441f20();
+    unsigned FUN_004436e0(void *record, char mode);
+    unsigned FUN_00443850(void *record);
+    void FUN_004439a0(void *record, unsigned char flags);
+    void FUN_00443af0(unsigned value);
+    void *FUN_00443c40(void *value);
+    void *FUN_00443d10(void *position);
+    void *FUN_00443e20(unsigned index, unsigned radius, unsigned flags, int type);
+    unsigned FUN_00443fa0(unsigned first, unsigned second, unsigned third, unsigned fourth);
+    void FUN_004444a0();
+    void FUN_00444bb0(void *record);
+    void FUN_004450a0();
+    void FUN_00445180();
+    bool FUN_00445510(float distance);
     void *FUN_0043d780(unsigned short flags);
     bool FUN_0043f340(void *actor);
     bool FUN_0043f540(void *actor);
@@ -328,6 +264,8 @@ public:
     }
 };
 
+unsigned FUN_00445210(float first, unsigned second, unsigned third, unsigned fourth, float fifth, unsigned sixth, void *seventh, unsigned eighth);
+
 RHUnk00613e90 FUN_00414360(const RHMalignityPosition &position, bool mode);
 SBGeoPoint2D FUN_0040ec20(const RHMalignityPosition &first, RHMalignityPosition second);
 class RHActorAreaCalls
@@ -338,25 +276,6 @@ public:
 extern float g_unk0x00677488;
 extern float g_unk0x0067749c;
 extern float g_unk0x006774a0;
-class RHScriptBatchCalls
-{
-public:
-    void Unk0041ac50();
-};
-
-struct RHScriptNode
-{
-    RHScriptNode *next; // 0x00
-    RHScriptNode *prev; // 0x04
-    void *data; // 0x08
-};
-
-struct RHScriptIter
-{
-    RHScriptNode *node; // 0x00
-    RHScriptIter(RHScriptNode *value = 0) : node(value) {}
-};
-
 template <bool InlineHead>
 class RHCampaignIndexList
 {
@@ -391,12 +310,6 @@ class RHMalignityNodeValue
 {
 public:
     void FUN_0040eab0(int mode);
-};
-
-class RHArtificialIntelligencePathCursor
-{
-public:
-    void Unk00550f60(unsigned short path);
 };
 
 class RHPath
@@ -589,14 +502,6 @@ public:
     bool FUN_004f5e50(SBGeoBoundingBox2D &box, const SBGeoPoint2D &point, unsigned short layer);
     void FUN_004ed370(RHMalignityQueryList &list, unsigned short layer, const RHMalignitySegment &segment, unsigned mask);
     void FUN_004ed070(RHMalignityQueryList &list, unsigned short layer, const SBGeoBoundingBox2D &box, unsigned mask);
-};
-
-class SBGeoVector2D : public SBGeoPoint2D
-{
-public:
-    SBGeoVector2D(const SBGeoPoint2D &point);
-    ~SBGeoVector2D() {}
-    float FUN_005fc660(const SBGeoPoint2D &point) const;
 };
 
 SBGeoVector2D operator*(float factor, const SBGeoVector2D &point);

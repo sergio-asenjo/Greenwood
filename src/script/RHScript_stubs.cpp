@@ -12,6 +12,61 @@
 #include "SBNullstr.h"
 #include "RHScript.h"
 
+void FUN_0053a0b0(int value)
+{
+    (void)value;
+}
+
+RHUnk005490a0Message::RHUnk005490a0Message(int command, int value)
+{
+    (void)command;
+    (void)value;
+}
+
+RHUnk005490a0Message::~RHUnk005490a0Message() {}
+
+void RHSound::FUN_005a88a0(void *) {}
+
+class RHUnk0051d0e0
+{
+public:
+    unsigned short Find(int value);
+};
+
+unsigned short RHUnk0051d0e0::Find(int value)
+{
+    (void)value;
+    return 0;
+}
+
+void FUN_005edae0(RHUnk005ef320 *object, const char *format, int value)
+{
+    (void)object;
+    (void)format;
+    (void)value;
+}
+
+class RHUnk0057c710
+{
+public:
+    void Ensure();
+};
+
+void RHUnk0057c710::Ensure()
+{
+}
+
+class RHUnk005793e0
+{
+public:
+    void *GetValue();
+};
+
+void *RHUnk005793e0::GetValue()
+{
+    return 0;
+}
+
 // FUNCTION: GAME 0x005fc030
 SBGeoPoint2D::SBGeoPoint2D()
 {
@@ -143,6 +198,9 @@ RHUnk00584d60::RHUnk00584d60(unsigned short level, int command, void *actor)
     (void)actor;
 }
 RHUnk00584d60::~RHUnk00584d60() {}
+void *RHUnk004e3760::Get() { return (char *)this + 0x42f4; }
+void RHUnk005a2450::FUN_005a2450(void *, void *) {}
+void RHUnk005a2450::FUN_005a2df0(void *) {}
 RHUnk00588530::RHUnk00588530(unsigned short level, int command, void *actor, int style, void *target, float distance, void *value)
 {
     (void)level;
@@ -161,6 +219,7 @@ RHUnk005492a0::~RHUnk005492a0()
     ((RHScriptBatchCalls *)this)->FUN_00549090();
 }
 RHMessenger *RHUnk00546050() { return 0; }
+RHMessenger *__stdcall RHUnk00546050(RHUnk5490f0 *message) { (void)message; return 0; }
 RHUnk00585ea0::RHUnk00585ea0(unsigned short level, int command, void *actor, void *target)
     : RHUnk00584d60(level, command, actor)
 {
@@ -201,7 +260,6 @@ void *RHUnk005b5e00::FUN_005b5de0()
 }
 void RHScriptBatchCalls::Unk00418bc0() {}
 void RHScriptBatchCalls::Unk00464630() {}
-void RHScriptBatchCalls::Unk0048cbc0() {}
 void RHScriptBatchCalls::Unk0048c4d0() {}
 void RHScriptBatchCalls::Unk0057ec80(void *) {}
 void RHScriptBatchCalls::Unk005c2ec0(void *, int, int, void *, int, int, int, int) {}
@@ -217,9 +275,7 @@ void RHScriptBatchCalls::Unk0049d6c0() {}
 void RHScriptBatchCalls::Unk0057ebd0(void *) {}
 void RHScriptBatchCalls::Unk0048ec00(void *) {}
 void RHScriptBatchCalls::Unk004d9330(void *, bool) {}
-void RHScriptBatchCalls::Unk00455400(void *) {}
 void RHScriptBatchCalls::Unk00514670() {}
-void RHScriptBatchCalls::Unk004555f0(void *) {}
 RHUnk00549250::RHUnk00549250(int, void *) : RHUnk5490f0(0) {}
 RHUnk00549250::~RHUnk00549250() {}
 void RHScriptBatchCalls::Unk0050ed40() {}

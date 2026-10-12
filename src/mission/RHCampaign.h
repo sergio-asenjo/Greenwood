@@ -75,6 +75,8 @@ public:
     void FUN_00452810(std::vector<RHMission *> &missions);
     void FUN_00452a50(std::vector<RHMission *> &missions);
     void FUN_00452c90(std::vector<RHMission *> &missions);
+    std::vector<RHPCDescription *> *FUN_004553f0();
+    void FUN_00455650();
     void FUN_00455f00(std::vector<RHMission *> &missions);
     void FUN_004564e0(std::vector<RHMission *> &missions);
     void FUN_00456e60();
