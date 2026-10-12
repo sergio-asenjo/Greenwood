@@ -94,6 +94,82 @@ unsigned long RHSoundCache::FUN_005ab430(RHcacheData &cache)
     return cache.m_04++;
 }
 
+// Reconstructed cache-array teardown; per-entry sample release remains incomplete.
+// STUB: GAME 0x005ab4e0
+void RHSoundCache::FUN_005ab4e0(RHcacheData &cache)
+{
+    for (unsigned int index = 0; index < cache.m_04; ++index)
+        (cache.m_00 + index)->~RHSoundCacheEntry();
+    operator delete(cache.m_00);
+    cache.m_00 = 0;
+    cache.m_04 = 0;
+    cache.m_08 = 0;
+}
+
+// Reconstructed loaded-sample iteration; the target's unload callback and stats updates remain incomplete.
+// STUB: GAME 0x005ab530
+void RHSoundCache::FUN_005ab530(RHcacheData &cache, unsigned long)
+{
+    for (unsigned int index = 0; index < cache.m_04; ++index)
+    {
+        RHSoundCacheEntry *entry = cache.m_00 + index;
+        if (entry->m_sample)
+        {
+            entry->m_sample = 0;
+            entry->m_duration = 0;
+        }
+    }
+}
+
+// Reconstructed cache-map and backing-array teardown; sample accounting remains incomplete.
+// STUB: GAME 0x005ab660
+void RHSoundCache::FUN_005ab660(std::map<unsigned long, RHSoundCacheEntry *> &entries, RHcacheData &cache)
+{
+    for (std::map<unsigned long, RHSoundCacheEntry *>::iterator entry = entries.begin(); entry != entries.end(); ++entry)
+    {
+        delete entry->second;
+        entry->second = 0;
+    }
+    entries.clear();
+    FUN_005ab4e0(cache);
+}
+
+// Reconstructed map-entry destruction and clear; target-specific node helpers remain unresolved.
+// STUB: GAME 0x005ab6d0
+void RHSoundCache::FUN_005ab6d0(std::map<unsigned long, RHSoundCacheEntry *> &entries)
+{
+    for (std::map<unsigned long, RHSoundCacheEntry *>::iterator entry = entries.begin(); entry != entries.end(); ++entry)
+    {
+        delete entry->second;
+        entry->second = 0;
+    }
+    entries.clear();
+}
+
+// Parked 25.48%: the candidate map lookup is reconstructed, but argument-slot lifetime, sample-state updates, and entry return scheduling differ.
+// STUB: GAME 0x005ab730
+RHSoundCacheEntry *RHSoundCache::GetSample(bool load, std::map<unsigned long, RHSoundCacheEntry *> &entries, void *stats, unsigned long id, unsigned long stamp, unsigned long lifetime, bool spatial)
+{
+    std::map<unsigned long, RHSoundCacheEntry *>::iterator found = entries.lower_bound(id);
+    if (found == entries.end() || found->first != id)
+        return 0;
+    RHSoundCacheEntry *entry = found->second;
+    entry->m_stamp = (unsigned short)stamp;
+    if (load)
+    {
+        if (entry->m_sample)
+        {
+            ++*(unsigned long *)stats;
+            entry->m_stamp = (unsigned short)(entry->m_stamp + lifetime);
+            return entry;
+        }
+        FUN_005ab7e0(entry, stats, (unsigned short)lifetime, spatial);
+    }
+    else if (entry->m_duration == 0)
+        FUN_005ab7e0(entry, stats, (unsigned short)lifetime, spatial);
+    return entry;
+}
+
 // FUNCTION: GAME 0x005ab7e0
 void RHSoundCache::FUN_005ab7e0(RHSoundCacheEntry *entry, void *data, unsigned short stamp, bool spatial)
 {

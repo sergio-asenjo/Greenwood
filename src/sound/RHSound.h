@@ -12,6 +12,7 @@ extern LONG (__stdcall *g_rhsoundRegCreateKeyExA)(HKEY, LPCSTR, DWORD, LPSTR, DW
 extern LONG (__stdcall *g_rhsoundRegQueryValueExA)(HKEY, LPCSTR, LPDWORD, LPDWORD, LPBYTE, LPDWORD);
 
 class SBFile;
+class SBGeoPoint2D;
 
 class RHSoundSource;
 struct RHSoundPendingNode;
@@ -88,6 +89,9 @@ class RHSoundSourceManager
 {
 public:
     void RHUnk005b4ae0();
+    void FUN_005b4b50(void *, void *, void *);
+    void FUN_005b4db0();
+    RHSoundSource *FUN_005b4e00(unsigned short);
     RHSoundSource *GetSoundSource(unsigned short);
     bool Serialize(SBFile &);
     undefined m_00[4]; // 0x00
@@ -160,6 +164,12 @@ public:
     void Activate(const RHSoundCacheMissionProfile *profile, bool flag);
     void ApplySoundSettings();
     void FUN_005a8420(int channel);
+    void FUN_005a8470(void *first, void *second);
+    void FUN_005a85e0();
+    void FUN_005a8650(const SBGeoPoint2D &position, float zoom);
+    void FUN_005a8700(void *position, void *zoom);
+    void FUN_005ad400(void *data);
+    void FUN_005aec70();
     void PlayJingle(int jingle);
     unsigned long OpenStream(const std::string &name, void *&stream, bool loop, unsigned long position);
     int FUN_005a9040(void *stream, void *callback, int channel);
@@ -355,7 +365,6 @@ struct RHUnk005b2410
     float m_0c; // 0x0c
 };
 
-class SBGeoPoint2D;
 class RHUnk005b2ff0Geometry
 {
 public:
@@ -433,6 +442,7 @@ extern "C" signed char __stdcall FSOUND_SetPriority(int, int);
 extern "C" signed char __stdcall FSOUND_SetVolume(int, int);
 extern "C" signed char __stdcall FSOUND_SetPan(int, int);
 extern "C" signed char __stdcall FSOUND_3D_SetAttributes(int, const float *, const float *);
+extern "C" void __stdcall FSOUND_3D_Listener_SetAttributes(const float *, const float *, float, float, float, float, float, float);
 extern "C" signed char __stdcall FSOUND_StopSound(int);
 extern "C" signed char __stdcall FSOUND_IsPlaying(int);
 extern "C" int __stdcall FSOUND_Stream_Play(int, void *);

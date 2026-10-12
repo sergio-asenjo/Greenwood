@@ -409,6 +409,11 @@ public:
     RHSoundCacheEntry *AddSoundEntry(unsigned long, const std::string &, std::map<unsigned long, RHSoundCacheEntry *> &);
     unsigned long AddSoundEntry(const std::string &, struct RHcacheData &);
     unsigned long FUN_005ab430(struct RHcacheData &);
+    void FUN_005ab4e0(struct RHcacheData &);
+    void FUN_005ab530(struct RHcacheData &, unsigned long);
+    void FUN_005ab660(std::map<unsigned long, RHSoundCacheEntry *> &, struct RHcacheData &);
+    void FUN_005ab6d0(std::map<unsigned long, RHSoundCacheEntry *> &);
+    RHSoundCacheEntry *GetSample(bool, std::map<unsigned long, RHSoundCacheEntry *> &, void *, unsigned long, unsigned long, unsigned long, bool);
     RHSoundCacheEntry *GetFXSample(bool, unsigned long, int);
     RHSoundCacheEntry *GetExclamationSample(bool, unsigned long, unsigned long);
     void FUN_005ab7e0(RHSoundCacheEntry *, void *, unsigned short, bool);

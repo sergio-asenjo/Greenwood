@@ -30,11 +30,16 @@ void RHSound::FUN_005ab5e0(void *, void *, unsigned short) {}
 void RHUnk005a7220Manager::FUN_005b4f00(RHUnk005a7220 *) {}
 RHUnk005a9260::RHUnk005a9260() {}
 void RHSound::FUN_005a7660(bool) {}
-void RHSound::FUN_005a8780() {}
 void RHSound::FUN_005ae1c0(bool) {}
 void RHSound::FUN_005aeda0() {}
 RHSoundCacheEntry *RHSound::FUN_005ae640(bool, unsigned long) { return 0; }
 RHSoundCacheEntry *RHSound::FUN_005ae670(bool, unsigned long, bool) { return 0; }
+void RHSound::FUN_005ad400(void *) {}
+void RHSound::FUN_005aec70() {}
+void RHSoundSourceManager::FUN_005b4b50(void *, void *, void *) {}
+void RHSoundSourceManager::FUN_005b4db0() {}
+RHSoundSource *RHSoundSourceManager::FUN_005b4e00(unsigned short) { return 0; }
+void FUN_005aa090(void *, void *, void *) {}
 
 // LIBRARY: GAME 0x005e39d0
 extern "C" void __stdcall FSOUND_Close() {}
@@ -113,6 +118,8 @@ extern "C" signed char __stdcall FSOUND_SetVolume(int, int) { return 0; }
 extern "C" signed char __stdcall FSOUND_SetPan(int, int) { return 0; }
 // LIBRARY: GAME 0x005e3a60
 extern "C" signed char __stdcall FSOUND_3D_SetAttributes(int, const float *, const float *) { return 0; }
+// LIBRARY: GAME 0x005e3a78
+extern "C" void __stdcall FSOUND_3D_Listener_SetAttributes(const float *, const float *, float, float, float, float, float, float) {}
 // LIBRARY: GAME 0x005e3a72
 extern "C" signed char __stdcall FSOUND_StopSound(int) { return 0; }
 // LIBRARY: GAME 0x005e3a7e

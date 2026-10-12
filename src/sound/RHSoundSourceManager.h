@@ -10,6 +10,7 @@ class SBGeoPoint2D
 {
 public:
     SBGeoPoint2D();
+    ~SBGeoPoint2D();
     bool Serialize(SBFile &file);
     float m_x; // 0x00
     float m_y; // 0x04
@@ -75,6 +76,10 @@ class RHSoundSource
 {
 public:
     RHSoundSource();
+    unsigned short FUN_005b3c20(unsigned int index);
+    float FUN_005b3a10(const SBGeoPoint2D &first, const SBGeoPoint2D &second, unsigned char &visible);
+    unsigned short FUN_005b3c40(const void *point);
+    void FUN_005b3f30(SBFile &file);
     virtual ~RHSoundSource(); // vtable+0x00
     virtual bool Serialize(SBFile &file); // vtable+0x04
 

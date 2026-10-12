@@ -4,6 +4,9 @@
 #include <math.h>
 #include <stdio.h>
 
+void FUN_0064158f(void *memory);
+void FUN_005aa090(void *value, void *first, void *last);
+
 DECOMP_SIZE_ASSERT(RHSound, 0x294)
 DECOMP_SIZE_ASSERT(RHUnk005a7220, 0x50)
 DECOMP_SIZE_ASSERT(RHUnk005a9260, 0x0c)
@@ -87,6 +90,7 @@ public:
     SBGeoPoint2D();
     ~SBGeoPoint2D();
     SBGeoPoint2D Unk005fc110(const SBGeoPoint2D &) const;
+    bool FUN_005fc0e0(const SBGeoPoint2D &) const;
     SBGeoPoint2D &operator=(const SBGeoPoint2D &);
     float m_x;
     float m_y;
@@ -111,6 +115,7 @@ class RHSoundGeometry
 public:
     bool Serialize(SBFile &);
     float GetVolumeForAltitude(float, RHsoundSourceAltitude);
+    void RHUnk005b2f30(float);
 };
 
 DECOMP_SIZE_ASSERT(RHUnk005b2410, 0x10)
@@ -733,6 +738,133 @@ void RHSound::FUN_005a8420(int channel)
                 // STRING: GAME 0x006b7ea0
                 "Unable to stop channel %d.\n", channel);
         FUN_005a6fb0(channel, 0, 0, 0, 0, 0);
+    }
+}
+
+// Parked: the shared pending-list owner and its EH cleanup type remain provisional.
+// STUB: GAME 0x005a8470
+void RHSound::FUN_005a8470(void *first, void *second)
+{
+    RHUnk00641782 lock;
+    lock.FUN_00641782();
+    void **sentinel = (void **)0x006c1088;
+    unsigned long *references = (unsigned long *)0x006c1084;
+    if (*sentinel == 0)
+    {
+        *sentinel = operator new(0x14);
+        ((void **)*sentinel)[0] = 0;
+        ((void **)*sentinel)[1] = 0;
+        ((void **)*sentinel)[2] = 0;
+        ((void **)*sentinel)[4] = (void *)1;
+    }
+    void **node = (void **)operator new(0x14);
+    node[0] = node;
+    node[1] = *sentinel;
+    node[2] = node;
+    node[4] = 0;
+    ++*references;
+    lock.FUN_0064181e();
+
+    RHSoundPendingData data;
+    m_200->FUN_005b4b50(first, second, &data);
+    if (m_20a)
+    {
+        FUN_005ad400(&data);
+        m_200->FUN_005b4db0();
+        FUN_005aec70();
+    }
+    data.~RHSoundPendingData();
+    FUN_005aa090(&first, node[0], node);
+    FUN_0064158f(node);
+
+    lock.FUN_00641782();
+    if (--*references == 0)
+    {
+        operator delete(*sentinel);
+        *sentinel = 0;
+    }
+    lock.FUN_0064181e();
+}
+
+// Parked: the original helper's list-value type is not attributed to RHSound.
+// STUB: GAME 0x005a85e0
+void RHSound::FUN_005a85e0()
+{
+    RHUnk00641782 lock;
+    void **value = (void **)((char *)this + 4);
+    void *memory = *value;
+    FUN_005aa090(this, *(void **)memory, memory);
+    FUN_0064158f(memory);
+    *value = 0;
+    *(void **)((char *)this + 0x0c) = 0;
+    lock.FUN_00641782();
+    unsigned long *references = (unsigned long *)0x006c1084;
+    void **sentinel = (void **)0x006c1088;
+    if (--*references == 0)
+    {
+        FUN_0064158f(*sentinel);
+        *sentinel = 0;
+    }
+    lock.FUN_0064181e();
+}
+
+// FUNCTION: GAME 0x005a8650
+void RHSound::FUN_005a8650(const SBGeoPoint2D &position, float zoom)
+{
+    SBGeoPoint2D &listener = *(SBGeoPoint2D *)((char *)this + 0x138);
+    if (listener.FUN_005fc0e0(position))
+    {
+        listener = position;
+        m_27d = 1;
+    }
+    if (((float *)((char *)this + 0x140))[0] != zoom)
+    {
+        ((RHSoundGeometry *)&m_138)->RHUnk005b2f30(zoom);
+        m_27c = 1;
+        m_27d = 1;
+    }
+    if (m_20b && m_210)
+    {
+        float attributes[3] = {0.0f, 0.0f, 0.0f};
+        FSOUND_3D_Listener_SetAttributes(attributes, 0, 0.0f, 0.0f, -1.0f,
+                                         0.0f, 1.0f, 0.0f);
+    }
+}
+
+// FUNCTION: GAME 0x005a8700
+void RHSound::FUN_005a8700(void *position, void *zoom)
+{
+    FUN_005a8650(*(const SBGeoPoint2D *)position, *(float *)&zoom);
+    unsigned short count = (unsigned short)m_200->m_04.GetSize();
+    for (int index = 0; (unsigned short)index < count; ++index)
+    {
+        RHSoundSource *source = m_200->GetSoundSource(index);
+        if (source && *((char *)source + 0x4c) && !FUN_005a71f0(source))
+            FUN_005a7110(source);
+    }
+}
+
+// Parked: compiler cleanup and list-node lifetime layout still differ.
+// STUB: GAME 0x005a8780
+void RHSound::FUN_005a8780()
+{
+    RHSoundPendingNode *head = m_24c;
+    RHSoundPendingNode *node = head->m_00;
+    while (node != head)
+    {
+        if (node->m_08.m_00.m_00 == 1)
+        {
+            RHSoundPendingNode *next = node->m_00;
+            FUN_005a8420(node->m_08.m_18);
+            node->m_04->m_00 = node->m_00;
+            node->m_00->m_04 = node->m_04;
+            node->m_08.FUN_0052c5a0();
+            FUN_0064158f(node);
+            --m_250;
+            node = next;
+        }
+        else
+            node = node->m_00;
     }
 }
 
