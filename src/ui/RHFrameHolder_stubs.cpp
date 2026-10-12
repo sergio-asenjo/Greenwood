@@ -1,6 +1,11 @@
 #include "SBNullstr.h"
 #include "RHFrameHolder.h"
 
+unsigned short RHFrameHolder::FUN_00504680(unsigned short)
+{
+    return 0;
+}
+
 namespace std
 {
 // Unannotated: binding this _Construct regresses eight counted callers.
@@ -32,5 +37,3 @@ RHUnk00641782::RHUnk00641782() {}
 RHUnk00641782::~RHUnk00641782() {}
 RHUnk00507500::Iterator RHUnk00507500::FUN_00508a80(Iterator value) { return value; }
 RHFrameHolderRowMap::Iterator RHFrameHolderRowMap::FUN_005090e0(Node *, Node *, const Value &) { Iterator result; result.m_node = m_head; return result; }
-void RHFrameHolder::FUN_00504c50(unsigned long, unsigned short, unsigned short, unsigned long, unsigned short) {}
-void RHFrameHolder::FUN_00504bd0(unsigned long, unsigned short, unsigned short, unsigned long, unsigned short) {}

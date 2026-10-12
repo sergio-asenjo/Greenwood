@@ -153,6 +153,70 @@ void RHFrameHolder::FUN_00504b10(unsigned long data, unsigned long size, unsigne
     }
 }
 
+// Parked: source array and stride argument lowering differ.
+// STUB: GAME 0x00504bd0
+void RHFrameHolder::FUN_00504bd0(unsigned long data, unsigned short width, unsigned short height,
+    unsigned long pitch, unsigned short key)
+{
+    unsigned short *row = (unsigned short *)data;
+    for (unsigned int y = 0; y < height; ++y, row += pitch >> 1)
+        for (unsigned int x = 0; x < width; ++x)
+            if (row[x] != key)
+                row[x] = (row[x] & 0x001f) | ((row[x] >> 1) & 0x7fe0);
+}
+
+// Parked: source array and stride argument lowering differ.
+// STUB: GAME 0x00504c50
+void RHFrameHolder::FUN_00504c50(unsigned long data, unsigned short width, unsigned short height,
+    unsigned long pitch, unsigned short key)
+{
+    unsigned short *row = (unsigned short *)data;
+    for (unsigned int y = 0; y < height; ++y, row += pitch >> 1)
+        for (unsigned int x = 0; x < width; ++x)
+            if (row[x] != key)
+                row[x] = (row[x] & 0x001f) | ((row[x] & 0xfff0) << 1);
+}
+
+// Parked: target scheduling differs for selector and row-stride operands.
+// STUB: GAME 0x005050a0
+void RHFrameHolder::FUN_005050a0(unsigned short *pixels, unsigned long *output,
+    unsigned short outputPitch, unsigned short width, unsigned short height, unsigned int tableIndex, int selector)
+{
+    unsigned long table;
+    if (selector == 0)
+        table = *(unsigned long *)((char *)this + 0x1c) + (tableIndex & 0xffff) * 0x14;
+    else if (selector == 1)
+        table = *(unsigned long *)((char *)this + 0x2c) + (tableIndex & 0xffff) * 0x14;
+    else if (selector == 2)
+        table = *(unsigned long *)((char *)this + 0x3c) + (tableIndex & 0xffff) * 0x14;
+    else
+        table = tableIndex;
+
+    unsigned int outputPadding = outputPitch >> 1;
+    for (unsigned int row = 0; row < height; ++row)
+    {
+        for (unsigned int column = 0; column < (width + 3) / 4; ++column)
+        {
+            unsigned short color = *pixels++;
+            unsigned long lookup = *(unsigned long *)(table + 4) + color * 8;
+            *output++ = *(unsigned long *)lookup;
+            *output++ = *(unsigned long *)(lookup + 4);
+        }
+        output = (unsigned long *)((char *)output + outputPadding * 2);
+    }
+}
+
+// Parked: function return and sentinel merge differ.
+// STUB: GAME 0x00505170
+RHUnk005068e0 *RHFrameHolder::FUN_00505170(unsigned short id)
+{
+    unsigned short index = FUN_00504680(id);
+    RHUnk005068e0 *result = 0;
+    if (index != 0xffff)
+        result = m_dictionaries.m_first + index;
+    return result;
+}
+
 // Parked: effective-only; signed size division sign fix uses ecx instead of eax.
 // STUB: GAME 0x005051a0
 unsigned short RHFrameHolder::FUN_005051a0(unsigned short id, SBFile &file)
@@ -803,4 +867,13 @@ void EmitFrameHolderTree(RHUnk00507500 *tree, RHFrameHolder *holder, SBFile &fil
     tree->FUN_00509030();
     tree->FUN_00504590();
     holder->FUN_005051a0(0, file);
+}
+
+
+void EmitFrameHolderAssigned(RHFrameHolder *holder, void *mapping, unsigned short *pixels,
+    unsigned short width, unsigned short height, unsigned long pitch, unsigned short key)
+{
+    holder->FUN_00505170(key);
+    holder->FUN_00504bd0((unsigned long)pixels, width, height, pitch, key);
+    holder->FUN_00504c50((unsigned long)pixels, width, height, pitch, key);
 }

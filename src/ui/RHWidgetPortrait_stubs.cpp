@@ -14,6 +14,5 @@
 #include "RHWidgetPortrait.h"
 
 char RHUnk005d73d0Actor::FUN_0049f510() { return 0; }
-void RHWidgetPortrait::FUN_005d8ed0(int, int) {}
 void RHWidgetPortrait::FUN_005d9c30() {}
 void RHWidgetPortrait::FUN_005da1f0() {}

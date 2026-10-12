@@ -30,6 +30,7 @@
 
 #include "SBNullstr.h"
 #include "RHWidgetPortrait.h"
+#include "../engine/RHGame_calls.h"
 
 DECOMP_SIZE_ASSERT(RHWidgetPortrait, 0xe58)
 DECOMP_SIZE_ASSERT(RHUnk005d92c0Sub, 0x04)
@@ -45,6 +46,212 @@ float g_unk0x0067a554 = 52.0f;
 #define W(O) (*(RHUnk005d92c0Sub *)((char *)this + (O)))
 #define P(O) (*(SBGeoPoint2D *)((char *)this + (O)))
 #define A (*(RHUnk005d73d0Actor **)((char *)this + 0xe1c))
+
+// Parked: the body has three owning widget/resource lifetimes whose VC6 EH shape is not yet aligned.
+// STUB: GAME 0x005d75c0
+bool RHWidgetPortrait::FUN_005d75c0(int first, int second, int third)
+{
+    W(0xa0).v08(P(0xd68));
+    W(0x18c).v08(P(0xd7c));
+    *(int *)((char *)this + 0x174) = third;
+    *(int *)((char *)this + 0x178) = third;
+    *(char *)((char *)this + 0xd68) = (char)first;
+    *(char *)((char *)this + 0xd7c) = (char)second;
+    return true;
+}
+
+// Parked: the wide-resource copy loop and temporary-string cleanup remain unaligned.
+// STUB: GAME 0x005d7730
+bool RHWidgetPortrait::FUN_005d7730(int value)
+{
+    W(0x268).v08(P(0xd90));
+    *(int *)((char *)this + 0xd90) = value;
+    return true;
+}
+
+// Parked: the selected resource and serialized text depend on a recovered string/container view.
+// STUB: GAME 0x005d7810
+bool RHWidgetPortrait::FUN_005d7810(unsigned int index, void *value)
+{
+    RHUnk005d92c0Sub *widget = (RHUnk005d92c0Sub *)((char *)this + (index * 0x104) + 0x97c);
+    *(void **)((char *)this + index * 4 + 0xc88) = value;
+    *(char *)((char *)this + index + 0xc94) = 0;
+    widget->v08(P(0xcb4 + (index * 20)));
+    return true;
+}
+
+// Parked: the string-to-wide-string conversion and temporary object lifetime remain unaligned.
+// STUB: GAME 0x005d7930
+bool RHWidgetPortrait::FUN_005d7930(int value)
+{
+    W(0x5fc).v08(P(0xd0));
+    *(int *)((char *)this + 0x5fc) = value;
+    return true;
+}
+
+// Parked: the shared string-conversion and resource-construction EH frame remains unaligned.
+// STUB: GAME 0x005d7a30
+bool RHWidgetPortrait::FUN_005d7a30(int value)
+{
+    W(0x6c8).v08(P(0xd18));
+    *(int *)((char *)this + 0x6c8) = value;
+    return true;
+}
+
+// Parked: the resource-construction path has an unresolved temporary-string EH layout.
+// STUB: GAME 0x005d7b30
+bool RHWidgetPortrait::FUN_005d7b30(int value)
+{
+    W(0x7bc).v08(P(0xe50));
+    *(int *)((char *)this + 0x7bc) = value;
+    return true;
+}
+
+// Parked: the three-way resource setup and nested temporary cleanup remain unaligned.
+// STUB: GAME 0x005d7c40
+bool RHWidgetPortrait::FUN_005d7c40(int index, void *value, int mode)
+{
+    unsigned int slot = index < 3 ? (unsigned int)index : 3;
+    char *element = (char *)this + 0x97c + slot * 0x104;
+    *(void **)((char *)this + slot * 4 + 0xc88) = value;
+    *(char *)((char *)this + slot + 0xc94) = 0;
+    if (mode >= 0 && mode < 3)
+        *(char *)(element + 0x30) = (char)mode;
+    return true;
+}
+
+// Parked: several resource/message construction paths and their shared cleanup remain unaligned.
+// STUB: GAME 0x005d7ea0
+bool RHWidgetPortrait::FUN_005d7ea0()
+{
+    for (unsigned int i = 0; i < 3; ++i)
+    {
+        RHUnk005d92c0Sub *widget = (RHUnk005d92c0Sub *)((char *)this + 0x97c + i * 0x104);
+        widget->v08(P(0xcb4 + i * 20));
+    }
+    return true;
+}
+
+// Parked: the large action/resource dispatch still lacks its complete state and message model.
+// STUB: GAME 0x005d8430
+bool RHWidgetPortrait::FUN_005d8430()
+{
+    for (unsigned int i = 0; i < 3; ++i)
+    {
+        char *element = (char *)this + 0xa50 + i * 0x104;
+        if (*(char *)(element + 0x4e))
+            *(char *)(element + 0x50) = 1;
+        if (*(char *)(element + 0x4f))
+            *(char *)(element + 0x51) = 1;
+    }
+    return true;
+}
+
+// Parked: the target's conditional x87 store does not yet match the source conversion shape.
+// STUB: GAME 0x005d8ed0
+void RHWidgetPortrait::FUN_005d8ed0(int value, int height)
+{
+    m_16c = (float)value;
+    if (height != 0)
+        m_170 = (float)height;
+}
+
+// Parked: the indexed virtual dispatch and per-slot cleanup need a confirmed element view.
+// STUB: GAME 0x005d8f20
+void RHGamePortraitCalls::FUN_005d8f20(unsigned short index)
+{
+    char *slot = (char *)this + 0x97c + index * 0x104;
+    if (!*((char *)this + index + 0xc94))
+    {
+        void *value = W(0x97c + index * 0x104).v20();
+        *(void **)((char *)this + index * 4 + 0xc88) = value;
+        *((char *)this + index + 0xc94) = 1;
+    }
+    *(int *)((char *)this + index * 4 + 0xa50) = -1;
+    *(char *)((char *)this + index * 4 + 0xa55) = 0;
+    ((RHUnk005d92c0Sub *)slot)->v21(0);
+}
+
+// Parked: the enabled-state transition also mutates a global-selected resource entry.
+// STUB: GAME 0x005d8fa0
+void RHGamePortraitCalls::FUN_005d8fa0(unsigned short index, bool enabled)
+{
+    char *slot = (char *)this + 0x97c + index * 0x104;
+    if (*(char *)((char *)this + index + 0xc94))
+        ((RHUnk005d92c0Sub *)slot)->v21(enabled);
+    *(int *)((char *)this + index * 4 + 0xa50) = enabled ? 0 : -1;
+    *(char *)((char *)this + index * 4 + 0xa55) = enabled ? 1 : 0;
+}
+
+// FUNCTION: GAME 0x005d9070
+void RHWidgetPortrait::FUN_005d9070()
+{
+    W(0x7bc).v21(1);
+}
+
+// FUNCTION: GAME 0x005d9090
+bool RHWidgetPortrait::FUN_005d9090(unsigned int index)
+{
+    W(0x97c + index * 0x104).v21(0);
+    return true;
+}
+
+// Parked: resource selection uses engine state and a variable-width index conversion.
+// STUB: GAME 0x005d90c0
+bool RHWidgetPortrait::FUN_005d90c0(unsigned int index)
+{
+    char *slot = (char *)this + 0x97c + index * 0x104;
+    ((RHUnk005d92c0Sub *)slot)->v21((int)index);
+    *(unsigned short *)((char *)this + 0xc98 + index * 2) = 6;
+    *(unsigned short *)((char *)this + 0xc9e + index * 2) = 5;
+    return true;
+}
+
+// FUNCTION: GAME 0x005d9140
+void RHGamePortraitCalls::FUN_005d9140(unsigned int index)
+{
+    *(unsigned short *)((char *)this + 0xc98 + index * 2) = 6;
+    *(unsigned short *)((char *)this + 0xc9e + index * 2) = 5;
+}
+
+// STUB: GAME 0x005d9160
+void RHWidgetPortrait::FUN_005d9160()
+{
+    W(0x748).v21(1);
+}
+
+// Parked: the three-slot animation counters and virtual transitions are only partially reconstructed.
+// STUB: GAME 0x005d9180
+void RHWidgetPortrait::FUN_005d9180()
+{
+    unsigned short *counter = (unsigned short *)((char *)this + 0xc98);
+    char *element = (char *)this + 0xa54;
+    for (unsigned int i = 0; i < 3; ++i)
+    {
+        if (counter[3] == 5)
+        {
+            W(0x97c + i * 0x104).v21(1);
+            *element = counter[0] == 1;
+        }
+        if (counter[0] > 0 && --counter[3] == 0)
+        {
+            --counter[0];
+            counter[3] = counter[0] != 0 ? 5 : 0;
+            if (counter[0] == 0)
+                *element = 1;
+        }
+        counter += 1;
+        element += 0x104;
+    }
+}
+
+// Parked: the helper constructs a string-like value whose allocation and ownership remain unresolved.
+// STUB: GAME 0x005d9210
+void *RHWidgetPortrait::FUN_005d9210(unsigned int value)
+{
+    *(unsigned int *)((char *)this + 0x298) = value;
+    return (char *)this + 0xd0;
+}
 
 // FUNCTION: GAME 0x005d6690
 bool RHWidgetPortrait::Method005d6690()

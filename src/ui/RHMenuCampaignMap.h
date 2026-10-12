@@ -130,6 +130,7 @@ class RHMapCampaign
 {
 public:
     std::vector<void *> FUN_00528050();
+    std::vector<void *> FUN_005286b0();
     unsigned FUN_004577a0();
     void FUN_004577b0();
     RHMapByte UnkState() const { return m_100; }
@@ -224,6 +225,8 @@ public:
     void FUN_00527ae0(RHMapByte);
     void FUN_00527c00(const std::vector<void *> &);
     void FUN_005284b0();
+    bool FUN_00528520(unsigned, unsigned, unsigned);
+    bool FUN_00528550(unsigned, unsigned, unsigned);
     void FUN_00528810();
     void Emit();
     char m_04[0x26fc]; // +0x04; this+0x5d flag, +0xb4 window, +0xcc widget

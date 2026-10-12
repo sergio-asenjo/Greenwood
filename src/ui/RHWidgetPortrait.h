@@ -64,7 +64,7 @@ public:
     virtual void v17(); // vtable+0x44
     virtual void v18(); // vtable+0x48
     virtual void v19(); // vtable+0x4c
-    virtual void v20(); // vtable+0x50
+    virtual void *v20(); // vtable+0x50
     virtual void v21(int value); // vtable+0x54
 };
 
@@ -133,18 +133,35 @@ public:
     bool Serialize(SBFile &file);
     void Emit(SBFile &file);
 
+    bool FUN_005d75c0(int first, int second, int third);
+    bool FUN_005d7730(int value);
+    bool FUN_005d7810(unsigned int index, void *value);
+    bool FUN_005d7930(int value);
+    bool FUN_005d7a30(int value);
+    bool FUN_005d7b30(int value);
+    bool FUN_005d7c40(int index, void *value, int mode);
+    bool FUN_005d7ea0();
+    bool FUN_005d8430();
+    void FUN_005d8ed0(int value, int height);
+    void FUN_005d9070();
+    bool FUN_005d9090(unsigned int index);
+    bool FUN_005d90c0(unsigned int index);
+    void FUN_005d9160();
+    void FUN_005d9180();
+    void *FUN_005d9210(unsigned int value);
+
     bool Method005d6690();
     bool Method005d67e0();
     bool Method005d73d0();
     bool Method005d7530();
-    void FUN_005d8ed0(int value, int height);
     void FUN_005d9c30();
     void FUN_005da1f0();
 
 private:
     undefined m_pad0[0x16c]; // 0x00
     float m_16c;           // [0x16c]
-    undefined m_pad1[0x7bc - 0x170]; // 0x170
+    float m_170;           // [0x170]
+    undefined m_pad1[0x7bc - 0x174]; // 0x174
     RHUnk005d92c0Sub m_7bc; // [0x7bc]
     char m_7c0;            // [0x7c0]
     undefined m_pad2[0xa50 - 0x7c1]; // 0x7c1

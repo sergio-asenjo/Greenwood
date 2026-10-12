@@ -262,6 +262,28 @@ void RHMenuCampaignMap::FUN_005284b0()
         V38(arrow);
 }
 
+// FUNCTION: GAME 0x00528520
+bool RHMenuCampaignMap::FUN_00528520(unsigned, unsigned, unsigned)
+{
+    (*(RHMapWindow **)((char *)this + 0xb4))->FUN_0053bb30(*(unsigned long *)((char *)this + 0x26fc));
+    *(unsigned long *)((char *)this + 0x26fc) = unsigned(-1);
+    FUN_00528810();
+    return false;
+}
+
+// FUNCTION: GAME 0x00528550
+bool RHMenuCampaignMap::FUN_00528550(unsigned, unsigned, unsigned)
+{
+    DisplayPseudoMissionDebriefing();
+    return false;
+}
+
+// FUNCTION: GAME 0x005286b0
+std::vector<void *> RHMapCampaign::FUN_005286b0()
+{
+    return *(std::vector<void *> *)((char *)this + 0x164);
+}
+
 // STUB: GAME 0x00528810
 void RHMenuCampaignMap::FUN_00528810()
 {
@@ -348,4 +370,7 @@ void RHMenuCampaignMap::Emit()
     window->FUN_0053bb30(0);
     window->FUN_0053bbe0();
     window->FUN_0053c7e0();
+    FUN_00528520(0, 0, 0);
+    FUN_00528550(0, 0, 0);
+    campaign->FUN_005286b0();
 }

@@ -364,6 +364,9 @@ public:
     void FUN_00504c50(unsigned long, unsigned short, unsigned short, unsigned long, unsigned short);
     void FUN_00504bd0(unsigned long, unsigned short, unsigned short, unsigned long, unsigned short);
     void FUN_00504b10(unsigned long, unsigned long, unsigned short);
+    void FUN_005050a0(unsigned short *, unsigned long *, unsigned short, unsigned short, unsigned short, unsigned int, int);
+    unsigned short FUN_00504680(unsigned short);
+    RHUnk005068e0 *FUN_00505170(unsigned short);
     void Emit(SBResourceManager *, SBArray<SBGeoVector2D> &);
     RHUnkFXDraw *&Draw() { return *(RHUnkFXDraw **)((char *)this + 4); }
 
