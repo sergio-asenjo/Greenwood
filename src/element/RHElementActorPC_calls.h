@@ -25,6 +25,83 @@ public:
     void Unk005c2ec0(void *position, int first, int second, void *actor, int third, int fourth, int fifth, int sixth);
 };
 
+class RHActorPCVTableCalls
+{
+public:
+    virtual void FUN_0() = 0;
+    virtual void FUN_1() = 0;
+    virtual void FUN_2() = 0;
+    virtual void FUN_3() = 0;
+    virtual void FUN_4() = 0;
+    virtual void FUN_5() = 0;
+    virtual void FUN_6() = 0;
+    virtual void FUN_7() = 0;
+    virtual void FUN_8() = 0;
+    virtual void FUN_9() = 0;
+    virtual void FUN_10() = 0;
+    virtual void FUN_11() = 0;
+    virtual void FUN_12() = 0;
+    virtual void FUN_13() = 0;
+    virtual void FUN_14() = 0;
+    virtual void FUN_15() = 0;
+    virtual void FUN_16() = 0;
+    virtual void FUN_17() = 0;
+    virtual bool FUN_0049e720() = 0;
+    virtual void FUN_19() = 0;
+    virtual void FUN_20() = 0;
+    virtual void FUN_21() = 0;
+    virtual void FUN_22() = 0;
+    virtual void FUN_23() = 0;
+    virtual void FUN_24() = 0;
+    virtual void FUN_25() = 0;
+    virtual void FUN_26() = 0;
+    virtual void FUN_27() = 0;
+    virtual void FUN_28() = 0;
+    virtual void FUN_29() = 0;
+    virtual void FUN_30() = 0;
+    virtual void FUN_31() = 0;
+    virtual void FUN_32() = 0;
+    virtual void FUN_33() = 0;
+    virtual void FUN_34() = 0;
+    virtual void FUN_35() = 0;
+    virtual void FUN_36() = 0;
+    virtual void FUN_37() = 0;
+    virtual void FUN_38() = 0;
+    virtual void FUN_39() = 0;
+    virtual void FUN_40() = 0;
+    virtual void FUN_41() = 0;
+    virtual void FUN_42() = 0;
+    virtual void FUN_43() = 0;
+    virtual void FUN_44() = 0;
+    virtual void FUN_45() = 0;
+    virtual void FUN_46() = 0;
+    virtual void FUN_47() = 0;
+    virtual void FUN_48() = 0;
+    virtual void FUN_49() = 0;
+    virtual void FUN_50() = 0;
+    virtual void FUN_51() = 0;
+    virtual void FUN_52() = 0;
+    virtual void FUN_slot53(int, int, int) = 0;
+    virtual void FUN_slot54() = 0;
+    virtual void FUN_slot55(int, int, int) = 0;
+    virtual void FUN_56() = 0;
+    virtual void FUN_57() = 0;
+    virtual void FUN_58() = 0;
+    virtual void FUN_59() = 0;
+    virtual void FUN_60() = 0;
+    virtual void FUN_61() = 0;
+    virtual void FUN_62() = 0;
+    virtual void FUN_63() = 0;
+    virtual void FUN_64() = 0;
+    virtual void FUN_slot65(int, int, int) = 0;
+};
+
+class RHMalignityGeometryCalls
+{
+public:
+    bool FUN_004eff80(const RHUnk00613e90 &first, const RHUnk00613e90 &second, int mode);
+};
+
 class RHUnk005c38b0;
 class RHUnk5490f0;
 class RHMessenger

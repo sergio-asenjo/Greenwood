@@ -12,7 +12,13 @@ DECOMP_SIZE_ASSERT(RHPCDescription, 0x48)
 DECOMP_SIZE_ASSERT(RHUnk0048f280, 0x60c)
 
 extern RHUnk005c38b0 *g_unk0x6c10e8;
+extern float g_unk0x006774ec;
+extern float g_unk0x00677484;
+extern float g_unk0x00677f9c;
 RHMessenger *RHUnk00546050();
+
+// GLOBAL: GAME 0x00677fa0
+float g_unk0x00677fa0 = 562500.0f;
 
 // STRING: GAME 0x006ae5e0
 #define g_actorPCFile "P:\\Robin Hood\\RHelementactorpc.cpp"
@@ -322,6 +328,334 @@ void RHElementActorPC::FUN_0049dad0(unsigned short action)
     }
 }
 
+// Parked: the body combines exception-managed geometry, actor-state branches and many out-of-run action factories.
+// STUB: GAME 0x0049dbc0
+void RHElementActorPC::FUN_0049dbc0()
+{
+}
+
+// FUNCTION: GAME 0x0049e720
+char RHElementActorPC::FUN_0049e720()
+{
+    if (((RHActorPCVTableCalls *)this)->FUN_0049e720() ||
+        RHActorPCField<char>(this, 0x1ce) || !RHActorPCField<char>(this, 0x12))
+        return false;
+    int action = RHActorPCField<int>(m_50, 0x8c);
+    if (action >= 21 && action <= 22)
+        return false;
+    return true;
+}
+
+// Parked: action routing calls three out-of-run helpers whose ownership and operand bindings are unresolved.
+// STUB: GAME 0x0049e760
+void RHElementActorPC::FUN_0049e760(int value)
+{
+    int action = RHActorPCField<int>(m_50, 0x8c);
+    if (action > 13 && action <= 16)
+        FUN_0049e8f0(value);
+}
+
+// Parked: the out-of-run callback calls still bind as unmatched offsets, and their receiver scheduling differs.
+// STUB: GAME 0x0049e7b0
+void RHElementActorPC::FUN_0049e7b0(int value)
+{
+    int action = RHActorPCField<int>(m_50, 0x8c);
+    if (action > 13 && action <= 16)
+        FUN_0049e8f0(value);
+}
+
+// Parked: the out-of-run callback calls still bind as unmatched offsets, and their receiver scheduling differs.
+// STUB: GAME 0x0049e800
+void RHElementActorPC::FUN_0049e800(int value)
+{
+    int action = RHActorPCField<int>(m_50, 0x8c);
+    if (action > 13 && action <= 16)
+        FUN_0049e8f0(value);
+}
+
+// Parked: the out-of-run callback calls still bind as unmatched offsets, and their receiver scheduling differs.
+// STUB: GAME 0x0049e850
+void RHElementActorPC::FUN_0049e850(int first, int second)
+{
+    int action = RHActorPCField<int>(m_50, 0x8c);
+    if (action > 13 && action <= 16)
+        FUN_0049e8f0(first);
+    (void)second;
+}
+
+// Parked: the out-of-run callback calls still bind as unmatched offsets, and their receiver scheduling differs.
+// STUB: GAME 0x0049e8a0
+void RHElementActorPC::FUN_0049e8a0(int first, int second)
+{
+    int action = RHActorPCField<int>(m_50, 0x8c);
+    if (action > 13 && action <= 16)
+        FUN_0049e8f0(first);
+    (void)second;
+}
+
+// Parked: both action branches allocate exception-cleaned helper objects and update external manager state.
+// STUB: GAME 0x0049e8f0
+void RHElementActorPC::FUN_0049e8f0(int)
+{
+}
+
+// Parked: geometry construction and collision checks depend on out-of-run helpers and nested EH cleanup.
+// STUB: GAME 0x0049eab0
+bool RHElementActorPC::FUN_0049eab0()
+{
+    return false;
+}
+
+// Parked: the required out-of-line action-field accessor is not owned by this run.
+// STUB: GAME 0x0049ec20
+unsigned short RHElementActorPC::FUN_0049ec20(unsigned action)
+{
+    (void)action;
+    return 0;
+}
+
+// Parked: local action-field reconstruction differs from the out-of-run 0x0055c220 accessor.
+// STUB: GAME 0x0049ec50
+void RHElementActorPC::FUN_0049ec50(unsigned action, unsigned short amount)
+{
+    (void)action;
+    (void)amount;
+}
+
+// Parked: this behavior factory allocates and initializes an object through out-of-run helpers with EH cleanup.
+// STUB: GAME 0x0049ece0
+void RHElementActorPC::FUN_0049ece0(unsigned)
+{
+}
+
+// Parked: the sibling behavior factory has distinct constructors, constants and EH cleanup outside this run.
+// STUB: GAME 0x0049eeb0
+void RHElementActorPC::FUN_0049eeb0(unsigned)
+{
+}
+
+// Parked: construction, virtual initialization and dispatch depend on several out-of-run factories.
+// STUB: GAME 0x0049f080
+void RHElementActorPC::FUN_0049f080(void *)
+{
+}
+
+// Parked: construction, virtual initialization and dispatch depend on several out-of-run factories.
+// STUB: GAME 0x0049f210
+void RHElementActorPC::FUN_0049f210(void *)
+{
+}
+
+// Parked: construction, virtual initialization and dispatch depend on several out-of-run factories.
+// STUB: GAME 0x0049f380
+void RHElementActorPC::FUN_0049f380(void *)
+{
+}
+
+// Parked: the action-field pointer is reconstructed locally instead of calling out-of-run 0x0055c220.
+// STUB: GAME 0x0049f520
+void RHElementActorPC::FUN_0049f520(unsigned action, unsigned short amount, char notify)
+{
+    (void)action;
+    (void)amount;
+    (void)notify;
+}
+
+// Parked: the action-field pointer is reconstructed locally instead of calling out-of-run 0x0055c220.
+// STUB: GAME 0x0049f5c0
+void RHElementActorPC::FUN_0049f5c0(unsigned action, unsigned short value)
+{
+    (void)action;
+    (void)value;
+}
+
+// Parked: the action-field pointer is reconstructed locally instead of calling out-of-run 0x0055c220.
+// STUB: GAME 0x0049f640
+void RHElementActorPC::FUN_0049f640(unsigned action, short value)
+{
+    (void)action;
+    (void)value;
+}
+
+// Parked: this query constructs geometry temporaries and relies on out-of-run coordinate/vector helpers.
+// STUB: GAME 0x0049f6c0
+unsigned RHElementActorPC::FUN_0049f6c0()
+{
+    return 0;
+}
+
+// Parked: event dispatch uses the skipped 0x0049f510 glue and several out-of-run callback helpers.
+// STUB: GAME 0x0049fa20
+void RHElementActorPC::FUN_0049fa20(unsigned, void *)
+{
+}
+
+// FUNCTION: GAME 0x0049fbc0
+bool RHElementActorPC::FUN_0049fbc0()
+{
+    int &counter = RHActorPCField<int>(this, 0x5ec);
+    if (counter == -1)
+        return false;
+    if (counter == 0)
+    {
+        counter = -1;
+        return true;
+    }
+    --counter;
+    return false;
+}
+
+// Parked: resource adjustment depends on the skipped action-limit accessor and an out-of-run reset helper.
+// STUB: GAME 0x0049fbf0
+void RHElementActorPC::FUN_0049fbf0(void *)
+{
+}
+
+// Parked: the routine delegates to out-of-run widget update and notification helpers.
+// STUB: GAME 0x0049fc80
+void RHElementActorPC::FUN_0049fc80(int, void *)
+{
+}
+
+// Parked: random placement and vector construction depend on out-of-run geometry and script helpers.
+// STUB: GAME 0x0049fcd0
+void RHElementActorPC::FUN_0049fcd0()
+{
+}
+
+// Parked: this action allocates EH-managed message objects and depends on out-of-run engine helpers.
+// STUB: GAME 0x0049fe20
+void RHElementActorPC::FUN_0049fe20()
+{
+}
+
+// Parked: the geometry helper's receiver and argument layout do not match the reconstructed vector wrapper.
+// STUB: GAME 0x0049ff70
+void RHElementActorPC::FUN_0049ff70()
+{
+    struct Position
+    {
+        float x;
+        float y;
+        float z;
+    } source, destination;
+    float *position = (float *)((char *)m_50 + 0x10);
+    source.x = position[0];
+    source.y = position[1];
+    source.z = position[2];
+    destination.x = source.x;
+    destination.y = source.y;
+    destination.z = source.z + g_unk0x00677f9c;
+    source.z = source.z + g_unk0x00677484;
+    ((RHMalignityGeometryCalls *)m_64)->FUN_004eff80(*(RHUnk00613e90 *)&source, *(RHUnk00613e90 *)&destination, 1);
+}
+
+// Parked: VC6 evaluates the transformed byte before pushing the preceding arguments, unlike the target schedule.
+// STUB: GAME 0x0049ffe0
+void RHElementActorPC::FUN_0049ffe0(void *first, unsigned char flag, unsigned third, unsigned fourth, unsigned fifth, unsigned sixth, unsigned seventh)
+{
+    FUN_004a0020(first, (fourth & 0xffffff00) | ((unsigned char)(flag >> 3) & 1), third, fourth, fifth, sixth, seventh);
+}
+
+// Parked: the 0x31d-byte body constructs and dispatches several actions; only its wrapper call shape is modeled.
+// STUB: GAME 0x004a0020
+void RHElementActorPC::FUN_004a0020(void *, unsigned, unsigned, unsigned, unsigned, unsigned, unsigned)
+{
+}
+
+// Parked: event dispatch depends on out-of-run allocation and message-manager calls.
+// STUB: GAME 0x004a0340
+void RHElementActorPC::FUN_004a0340(void *, void *, unsigned, unsigned, int, char)
+{
+}
+
+// FUNCTION: GAME 0x004a05a0
+void RHElementActorPC::FUN_004a05a0()
+{
+    RHActorPCField<char>(RHActorPCField<void *>(this, 0x600), 0x16) = 0;
+    RHActorPCVTableCalls *vtable = (RHActorPCVTableCalls *)this;
+    vtable->FUN_slot55(0, 0, 1);
+    vtable->FUN_slot65(0x13, 0, 0xff);
+    vtable->FUN_slot53(0x32, 0, 0);
+    ((RHScriptBatchCalls *)this)->Unk00464630();
+}
+
+// Parked: three float-temp shapes retain different x87 stack scheduling from the target.
+// STUB: GAME 0x004a05f0
+char RHElementActorPC::FUN_004a05f0(const RHElementActorPC *other)
+{
+    volatile float position[3];
+    position[0] = RHActorPCField<float>(other->m_50, 0x10);
+    position[1] = RHActorPCField<float>(other->m_50, 0x14);
+    position[2] = RHActorPCField<float>(other->m_50, 0x18);
+    float deltaX = position[0] - RHActorPCField<float>(m_50, 0x10);
+    float deltaY = position[1] - RHActorPCField<float>(m_50, 0x14);
+    position[2] -= RHActorPCField<float>(m_50, 0x18);
+    deltaY *= g_unk0x006774ec;
+    float distance = deltaY * deltaY + position[2] * position[2] + deltaX * deltaX;
+    if (distance >= g_unk0x00677fa0)
+        return 0;
+    return 1;
+}
+
+// Parked: iteration invokes unassigned callback methods on the engine actor array.
+// STUB: GAME 0x004a0670
+void RHElementActorPC::FUN_004a0670()
+{
+}
+
+// Parked: the method scans an engine actor array and constructs temporary vectors for every candidate.
+// STUB: GAME 0x004a06e0
+void RHElementActorPC::FUN_004a06e0(unsigned char)
+{
+}
+
+// Parked: complex EH-managed geometry setup and virtual dispatch depend on unassigned helper entities.
+// STUB: GAME 0x004a07f0
+void RHElementActorPC::FUN_004a07f0(unsigned, unsigned, unsigned)
+{
+}
+
+// Parked: distance tests depend on out-of-run geometry, settings and projection helpers.
+// STUB: GAME 0x004a0a30
+unsigned RHElementActorPC::FUN_004a0a30(void *)
+{
+    return 0;
+}
+
+// Parked: this wrapper delegates to an out-of-run callback whose symbol binding is outside the assigned set.
+// STUB: GAME 0x004a0c90
+void RHElementActorPC::FUN_004a0c90(int, int, int)
+{
+    FUN_004a0cc0(0);
+}
+
+// Parked: the pointer-link semantics are known, but the target keeps zero in ESI and this source keeps it in EDX.
+// STUB: GAME 0x004a0cc0
+void RHElementActorPC::FUN_004a0cc0(RHElementActorPC *other)
+{
+    register int zero = 0;
+    if ((int)other != zero)
+    {
+        RHActorPCField<RHElementActorPC *>(other, 0x5e4) = this;
+        RHActorPCField<RHElementActorPC *>(this, 0x5e0) = other;
+        return;
+    }
+    RHElementActorPC *linked = RHActorPCField<RHElementActorPC *>(this, 0x5e0);
+    if ((int)linked != zero)
+        RHActorPCField<int>(linked, 0x5e4) = zero;
+    RHActorPCField<int>(this, 0x5d4) = zero;
+    RHActorPCField<int>(this, 0x5d8) = zero;
+    RHActorPCField<int>(this, 0x5dc) = zero;
+    RHActorPCField<RHElementActorPC *>(this, 0x5e0) = (RHElementActorPC *)zero;
+}
+
+// Parked: this action allocates several EH-managed messages and dispatches through unassigned manager helpers.
+// STUB: GAME 0x004a0d10
+void RHElementActorPC::FUN_004a0d10(void *, void *, unsigned, unsigned, unsigned, unsigned, void *)
+{
+}
+
 // Parked: local colouring and projection scheduling differ beyond rule 28.
 // STUB: GAME 0x004a0f10
 RHElementActorPC *RHElementActorPC::CreatePCFromMissionStream(SBFile &file)
@@ -483,16 +817,6 @@ void RHElementActorPC::InitializeAction(int action)
         ((RHScriptBatchCalls *)this)->Unk0046bcf0(1, 0);
         break;
     }
-}
-
-void RHElementActorPC::Emit(int action)
-{
-    InitializeAction(action);
-    FUN_0049d590(action);
-    FUN_0049d890(action);
-    FUN_0049d960(action);
-    FUN_0049da00(action);
-    FUN_0049dad0(action);
 }
 
 // FUNCTION: GAME 0x0050efb0
