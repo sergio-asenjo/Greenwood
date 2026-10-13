@@ -1,6 +1,28 @@
 #ifndef VMCORE_H
 #define VMCORE_H
 
+#include <string>
+
+class SBFile;
+
+struct VMUnk00634ab0Text
+{
+    std::allocator<char> m_allocator;
+    char *m_pointer;
+    unsigned int m_length;
+    unsigned int m_capacity;
+    VMUnk00634ab0Text() : m_allocator(std::allocator<char>()), m_pointer(0), m_length(0), m_capacity(0) {}
+    ~VMUnk00634ab0Text() { ((std::string *)this)->~basic_string(); }
+};
+
+struct VMUnk00634ab0Record
+{
+    VMUnk00634ab0Text m_name;
+    void (__cdecl *m_serializer)(SBFile &, void *&);
+    VMUnk00634ab0Record() {}
+    VMUnk00634ab0Record(const VMUnk00634ab0Record &);
+};
+
 class VMUnk00634bb0
 {
 public:
@@ -80,6 +102,7 @@ public:
     VMUnk0063a490Result *m_40;
     int *m_44;
 
+    void RegisterSerializerForType(const std::string &, void (__cdecl *)(SBFile &, void *&));
     void Empty();
     void FUN_00634c20();
     void FUN_00634c30();

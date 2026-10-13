@@ -12,6 +12,21 @@ typedef int (__cdecl *VMUnk00635210Handler)(void *);
 // GLOBAL: GAME 0x006c1944
 VMUnk00635210Handler *g_unk0x006c1944 = 0;
 
+#include <list>
+
+// GLOBAL: GAME 0x006c1930
+std::list<VMUnk00634ab0Record> g_unk0x006c1930;
+
+// FUNCTION: GAME 0x00634ab0
+void VMCore::RegisterSerializerForType(const std::string &name, void (__cdecl *serializer)(SBFile &, void *&))
+{
+    VMUnk00634ab0Record record;
+    std::string &(std::string::*assign)(const std::string &, unsigned int, unsigned int) = &std::string::assign;
+    (((std::string *)&record.m_name)->*assign)(name, 0, std::string::npos);
+    record.m_serializer = serializer;
+    g_unk0x006c1930.push_back(record);
+}
+
 void VMUnk00634bb0::FUN_00634bb0()
 {
     if (m_04 != 0) {
@@ -667,6 +682,11 @@ void VMCore::FUN_00639370()
             break;
         }
     }
+}
+
+void EmitVMCoreSerializer(VMCore *core, const std::string &name, void (__cdecl *serializer)(SBFile &, void *&))
+{
+    core->RegisterSerializerForType(name, serializer);
 }
 
 void EmitVMCore(VMCore *core)
