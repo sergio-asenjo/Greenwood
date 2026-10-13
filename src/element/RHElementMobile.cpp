@@ -902,7 +902,7 @@ RHUnk005fc3b0 *RHMobileUnk004b06f0::FUN_004b06f0(RHUnk005fc3b0 *first, RHUnk005f
     return first;
 }
 
-// Parked: line metadata stores and point-assignment receivers/arguments are reordered.
+// Parked: point-assignment argument registers and receiver setup remain reordered.
 // STUB: GAME 0x004e9d90
 void RHMobileGrid::FUN_004e9d90(RHMobilePointerList &output, RHMobilePolygon &polygon)
 {
@@ -925,7 +925,7 @@ void RHMobileGrid::FUN_004e9d90(RHMobilePointerList &output, RHMobilePolygon &po
                 flags |= 1;
             else
                 flags &= ~1;
-            RHMobileField<unsigned char>(line, 0x18) = RHMobileField<unsigned char>(&polygon, 0x34);
+            RHMobileField<volatile unsigned char>(line, 0x18) = RHMobileField<unsigned char>(&polygon, 0x34);
             SBGeoPoint2D *ends = (SBGeoPoint2D *)((char *)line + 4);
             ends[0] = previous;
             ends[1] = current;
