@@ -19,6 +19,10 @@ public:
     SBUIListboxUnk0061e890 *m_58;
     SBUIListboxUnk0061e890 *m_5c;
     SBUIListboxUnk0061e890 *m_60;
+    char m_64[0x1a];
+    unsigned short m_7e;
+
+    bool FUN_0061d1c0();
 
     bool FUN_0061d980(SBUIListboxUnk0061e890 *, SBUIListboxUnk0061e890 *,
         SBUIListboxUnk0061e890 *, bool);

@@ -2,6 +2,13 @@
 #include "SBUIRendererListbox.h"
 #include "SB.h"
 
+// FUNCTION: GAME 0x0061d1c0
+bool SBUIListboxUnk0061d980::FUN_0061d1c0()
+{
+    m_7e = 0;
+    return true;
+}
+
 // FUNCTION: GAME 0x0061d980
 bool SBUIListboxUnk0061d980::FUN_0061d980(SBUIListboxUnk0061e890 *first,
     SBUIListboxUnk0061e890 *second, SBUIListboxUnk0061e890 *third, bool alternate)
@@ -40,5 +47,6 @@ bool SBUIListboxUnk0061d980::FUN_0061d980(SBUIListboxUnk0061e890 *first,
 void EmitSBUIRendererListbox(SBUIListboxUnk0061d980 *listbox,
     SBUIListboxUnk0061e890 *font)
 {
+    listbox->FUN_0061d1c0();
     listbox->FUN_0061d980(font, font, font, false);
 }
