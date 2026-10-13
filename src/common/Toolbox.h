@@ -257,6 +257,7 @@ void FUN_005e1400();
 
 namespace Toolbox
 {
+    unsigned long HexaAsciiToInteger(const char *);
     void DisplayPicture(const char *, bool);
     void PlaySlide(const std::string &, unsigned short);
     void Emit();
