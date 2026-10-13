@@ -364,17 +364,25 @@ public:
     void FUN_005bd650(int value1, int value2);
     void FUN_005bd7b0(int value);
 };
+class RHElementActor;
+
 class RHActorGridCalls
 {
 public:
     short FUN_004e8fc0(const SBGeoPoint2D &point, const SBGeoPoint2D &origin, short layer, void *&area);
     unsigned short FUN_004e9800(const SBGeoPoint2D &point, void *&area, int &layer);
     bool FUN_004f5e50(SBGeoPoint2D &point, const SBGeoPoint2D &other, int layer);
+    bool FUN_004f9a80(void *sectors, RHElementActor *actor, const SBGeoPoint2D &start, void *startArea,
+        unsigned short startLayer, const SBGeoPoint2D &end, void *endArea, unsigned endLayer, int mode);
 };
+class RHElementActor;
+
 class RHActorAreaCalls
 {
 public:
     void *FUN_0057d800(const SBGeoPoint2D &point);
+    void FUN_0057df20(RHElementActor *actor, bool mode);
+    void FUN_0057dfc0(RHElementActor *actor, bool mode);
 };
 class RHElementActor;
 class RHUnk005c38b0;
@@ -383,6 +391,8 @@ class RHScriptBatchCalls
 public:
     void Unk0046bcf0(int posture, int value);
     void Unk005c2ec0(void *position, int layer, int kind, void *actor, int value1, int value2, int value3, int value4);
+    void Unk0057ec80(void *actor);
+    void Unk0057ebd0(void *actor);
 };
 extern RHUnk005c38b0 *g_unk0x6c10e8;
 extern RHElementActor *g_unk0x6c100c;
@@ -472,6 +482,20 @@ struct RHActorEngineFlags
 };
 
 enum RHActorUnkType { RHActorUnkType12 = 12 };
+
+class RHUnk0046bcb0
+{
+public:
+    void Unk(int value);
+};
+
+class RHUnk0058a3d0
+{
+public:
+    void Unk(void *context, int value, void *sequence);
+};
+
+extern char g_unk0x6c0560[4];
 
 extern char g_unk0x6c0691;
 

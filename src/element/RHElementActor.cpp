@@ -7,7 +7,15 @@
 class RHSeqList
 {
 public:
+    RHSeqList(const char &allocator);
     void GoTo(int index);
+    char m_00[4];
+    RHScriptNode *m_head;
+    int m_count;
+    RHScriptNode *m_current;
+    bool m_valid;
+    char m_11[3];
+    int m_index;
 };
 
 struct RHUnk004b1520List
@@ -767,6 +775,233 @@ void RHElementActor::CheckForLineCrossing()
     }
 }
 
+class RHUnk0048a970
+{
+public:
+    void Unk(int mode);
+};
+
+class RHActorAreaTransitionView
+{
+public:
+    virtual void V00() = 0;
+    virtual void V04() = 0;
+    virtual void V08() = 0;
+    virtual void V0c() = 0;
+    virtual void V10() = 0;
+    virtual void V14() = 0;
+    virtual void V18() = 0;
+    virtual void V1c() = 0;
+    virtual void V20() = 0;
+    virtual void V24() = 0;
+    virtual void V28() = 0;
+    virtual void V2c() = 0;
+    virtual void V30() = 0;
+    virtual void V34() = 0;
+    virtual void V38() = 0;
+    virtual void V3c() = 0;
+    virtual void V40() = 0;
+    virtual void V44() = 0;
+    virtual void V48() = 0;
+    virtual void V4c() = 0;
+    virtual void V50() = 0;
+    virtual void V54() = 0;
+    virtual void V58() = 0;
+    virtual void V5c() = 0;
+    virtual void V60() = 0;
+    virtual void V64() = 0;
+    virtual void V68() = 0;
+    virtual void V6c() = 0;
+    virtual void V70() = 0;
+    virtual void V74() = 0;
+    virtual void V78() = 0;
+    virtual void V7c() = 0;
+    virtual void V80() = 0;
+    virtual void V84() = 0;
+    virtual void V88() = 0;
+    virtual void V8c() = 0;
+    virtual void V90() = 0;
+    virtual void V94() = 0;
+    virtual void V98() = 0;
+    virtual void V9c() = 0;
+    virtual void Va0(unsigned short layer, void *area) = 0;
+};
+
+struct RHActorTransitionType
+{
+    unsigned kind : 5;
+    unsigned remaining : 27;
+};
+
+class RHActorTransitionPosition
+{
+public:
+    RHActorTransitionPosition &Set(void *value)
+    {
+        RHActorField<void *>(this, 0xf0) = value;
+        return *this;
+    }
+};
+
+// Parked: 85.13%; final position receiver arithmetic and area/type register scheduling differ.
+// STUB: GAME 0x0046d5f0
+void RHElementActor::FUN_0046d5f0(void *door, bool reverse)
+{
+    void *area = RHActorField<void *>(Info(), 0xe0);
+    bool building;
+    unsigned flags = RHActorField<unsigned>(area, 0x30);
+    if ((unsigned char)(flags >> 13) & 1)
+    {
+        building = true;
+        if (RHActorField<RHActorTransitionType>(this, 4).kind == 20)
+            ((RHUnk0048a970 *)((char *)this + 0x6e8))->Unk(0);
+        ((RHScriptBatchCalls *)area)->Unk0057ec80(this);
+    }
+    else
+    {
+        building = false;
+        if ((((unsigned char)(flags >> 9) & 1) && RHActorField<int>(area, 0xf0) == 2) ||
+            RHActorField<int>(area, 0xf0) == 3)
+        {
+            if (RHActorField<int>(door, 0x88) == 4)
+                ((RHActorAreaCalls *)area)->FUN_0057dfc0(this, false);
+            else
+                ((RHActorAreaCalls *)area)->FUN_0057df20(this, false);
+        }
+    }
+    if (reverse == true)
+    {
+        area = RHActorField<void *>(door, 0x10);
+        ((RHActorAreaTransitionView *)this)->Va0(RHActorField<unsigned short>(door, 0x16), area);
+    }
+    else
+    {
+        area = RHActorField<void *>(door, 0x0c);
+        ((RHActorAreaTransitionView *)this)->Va0(RHActorField<unsigned short>(door, 0x14), area);
+        if (building)
+        {
+            void *projection = ((RHActorAreaCalls *)area)->FUN_0057d800(RHActorField<SBGeoPoint2D>(door, 0x18));
+            Position()->FUN_0055fa70(projection);
+        }
+        Position()->FUN_0055f290();
+    }
+    ((RHActorTransitionPosition *)Position())->Set(0);
+    if ((unsigned char)(RHActorField<unsigned>(area, 0x30) >> 13) & 1)
+    {
+        if (RHActorField<RHActorTransitionType>(this, 4).kind == 20)
+            ((RHUnk0048a970 *)((char *)this + 0x6e8))->Unk(1);
+        ((RHScriptBatchCalls *)area)->Unk0057ebd0(this);
+    }
+    if (RHActorField<RHPatch *>(door, 0xb0))
+        RHActorField<RHPatch *>(door, 0xb0)->FUN_00550150();
+}
+
+// FUNCTION: GAME 0x0046d710
+bool RHElementActor::FUN_0046d710()
+{
+    int state = *(int *)((char *)Info() + 0x8c);
+    if (state >= 4 && (state <= 5 || state == 9))
+        return true;
+    if (m_130)
+    {
+        int command = m_130->m_10;
+        if (command == 0x13 || command == 0x2d)
+            return true;
+    }
+    return false;
+}
+
+struct RHActorSeekPosition
+{
+    float x;
+    float y;
+    void *area;
+    unsigned layer;
+};
+
+class RHFastFindTacticalArray;
+extern RHFastFindTacticalArray g_unk0x006c06f0;
+
+class RHActorSeekList : public RHSeqList
+{
+public:
+    RHActorSeekList(const char &allocator) : RHSeqList(allocator) { m_valid = true; }
+    ~RHActorSeekList()
+    {
+        Clear();
+        Clear();
+        operator delete(m_head);
+        m_head = 0;
+        m_count = 0;
+    }
+    void Clear()
+    {
+        RHSectorActorIter current((RHSectorActorNode *)m_head->next);
+        while (current.m_p != (RHSectorActorNode *)m_head)
+        {
+            RHSectorActorIter removed = current++;
+            ((RHUnk0046eb30 *)this)->erase(RHScriptIter((RHScriptNode *)removed.m_p));
+        }
+    }
+};
+
+// Parked: 35.08%; seek-position copies, list cleanup temporaries and stack/register allocation differ.
+// STUB: GAME 0x0046d750
+void *RHElementActor::FUN_0046d750(const SBGeoPoint2D &origin, unsigned short radius)
+{
+    SBGeoPoint2D point;
+    char allocator;
+    RHActorSeekList sectors(allocator);
+    RHActorGridCalls *grid = (RHActorGridCalls *)g_unk0x6c0a9c;
+    void *result = 0;
+    float farthest = 10.0f;
+    void **first = RHActorField<void **>(&g_unk0x006c06f0, 4);
+    unsigned short count = first ? RHActorField<void **>(&g_unk0x006c06f0, 8) - first : 0;
+    for (unsigned short index = 0; index < count; ++index)
+    {
+        void *seek = RHActorField<void **>(&g_unk0x006c06f0, 4)[index];
+        RHActorSeekPosition position = RHActorField<RHActorSeekPosition>(seek, 4);
+        RHActorSeekPosition copy = RHActorField<RHActorSeekPosition>(seek, 4);
+        float x = copy.x;
+        float y = position.y;
+        point.m_0 = x;
+        point.m_4 = y;
+        float distance = origin.Unk005fc110(point).FUN_005fc700(1.0f);
+        if (distance > farthest && distance <= radius)
+        {
+            RHActorSeekPosition destination = RHActorField<RHActorSeekPosition>(seek, 4);
+            void *info = Info();
+            if (RHActorField<void *>(info, 0xe0) == destination.area ||
+                grid->FUN_004f9a80(&sectors, this, RHActorField<SBGeoPoint2D>(info, 0x24),
+                    RHActorField<void *>(info, 0xe0), RHActorField<unsigned short>(info, 0xde), point,
+                    destination.area, destination.layer, 0))
+            {
+                farthest = distance;
+                result = seek;
+            }
+        }
+    }
+    if (!result && radius < 10000)
+        result = FUN_0046d750(origin, 10000);
+    return result;
+}
+
+// FUNCTION: GAME 0x0046e270
+bool RHElementActor::FUN_0046e270()
+{
+    if (m_15c)
+    {
+        if (m_150 && (*(unsigned *)((char *)m_150 + 4) & 15) == 12)
+            ((RHUnk0046bcb0 *)m_150)->Unk(8);
+        m_150 = 0;
+        m_130->FUN_00585970(0, true);
+        ((RHUnk0058a3d0 *)*(void **)((char *)this + 0x5c))->Unk(g_unk0x6c0560, 0, m_15c);
+        FUN_0046c8e0(0);
+        return true;
+    }
+    return false;
+}
+
 // FUNCTION: GAME 0x0046e7e0
 void RHElementActor::InitializeScript(std::string &name)
 {
@@ -1052,6 +1287,10 @@ void RHActorEmitWidened(RHUnk0053bf20 *first, RHUnk00560410 *second,
 
 void RHElementActor::Emit(SBFile &file, std::string &name)
 {
+    FUN_0046d710();
+    FUN_0046d5f0(this, false);
+    FUN_0046d750(m_128, 10000);
+    FUN_0046e270();
     Serialize(file);
     ExecuteImmediately(0);
     Translate(0, RHcommandUnk0);

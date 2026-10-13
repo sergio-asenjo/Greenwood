@@ -31,6 +31,8 @@ RHScriptIter RHScriptIter::operator++(int) { return RHScriptIter(node); }
 short RHActorGridCalls::FUN_004e8fc0(const SBGeoPoint2D &, const SBGeoPoint2D &, short, void *&) { return -1; }
 bool RHActorGridCalls::FUN_004f5e50(SBGeoPoint2D &, const SBGeoPoint2D &, int) { return false; }
 void *RHActorAreaCalls::FUN_0057d800(const SBGeoPoint2D &) { return 0; }
+void RHActorAreaCalls::FUN_0057df20(RHElementActor *, bool) {}
+void RHActorAreaCalls::FUN_0057dfc0(RHElementActor *, bool) {}
 void RHElementActor::FUN_0046bcb0(int) {}
 void RHElementActor::FUN_00478c20(RHUnk00613e90 &, bool) {}
 void RHElementActor::FUN_00478ae0(RHUnk00613e90 &) {}

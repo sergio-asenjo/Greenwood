@@ -127,6 +127,10 @@ public:
     void ExecuteImmediately(RHSequenceElement *element);
     void Translate(RHSequenceElement *element, RHcommand command);
     void CheckForLineCrossing();
+    void FUN_0046d5f0(void *door, bool reverse);
+    void *FUN_0046d750(const SBGeoPoint2D &origin, unsigned short radius);
+    bool FUN_0046d710();
+    bool FUN_0046e270();
     unsigned short FUN_004626e0() const;
     void FUN_0046c8e0(int value);
     void FUN_0046bcb0(int value);
