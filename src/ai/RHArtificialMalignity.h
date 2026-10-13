@@ -9,6 +9,17 @@
 class RHEngine;
 extern RHEngine *g_pEngine;
 
+struct RHMalignityStimulus
+{
+    RHMalignityStimulus() : m_type(0), m_24(0), m_28(0) {}
+    ~RHMalignityStimulus() {}
+    undefined m_00[0x1c];
+    unsigned m_type;
+    unsigned m_20;
+    void *m_24;
+    char m_28;
+};
+
 struct RHMalignityWaypoint
 {
     undefined m_00[0x64]; // 0x00
@@ -186,6 +197,7 @@ public:
     void FUN_0048e870(void *actor);
     void FUN_0048ebe0();
     void FUN_00487aa0(int value);
+    void FUN_00487ad0(const RHMalignityPosition &position);
     void FUN_0048c700(void *actor, unsigned mode);
     unsigned char FUN_0048ca20(void *actor, unsigned mode);
     void FUN_0048cb90(void *actor);
@@ -227,6 +239,14 @@ public:
     void InitOneAI();
     bool SerializeExactlyThisAI(SBFile &file);
     void InitializeFriendCheck(unsigned short actor, unsigned short delay, unsigned short waypoint);
+    void FUN_00439cb0(const RHMalignityPosition &position, unsigned short radius);
+    void FUN_00439e70(void *actor, const RHMalignityPosition &position);
+    void FUN_00439f60(const RHMalignityStimulus &stimulus);
+    void FUN_0043a080(const RHMalignityPosition &position);
+    void FUN_0043a170(const RHMalignityPosition &position);
+    void FUN_00438620(unsigned short value);
+    void FUN_0043b1b0(RHMalignityPosition position, int mode);
+    void FUN_0043c960(RHMalignityPosition position, int mode);
     short FUN_00440cf0(RHUnk00441dd0Record *record);
     int FUN_00441020(RHUnk00441dd0Record *record, RHMalignityList *list);
     void FUN_00441f20();

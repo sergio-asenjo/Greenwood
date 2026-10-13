@@ -712,6 +712,141 @@ void RHArtificialMalignity::InitializeFriendCheck(unsigned short actor, unsigned
     Base().V04(2 | (~rand() & 1));
 }
 
+class RHMalignityReactionCalls
+{
+public:
+    virtual void V00() = 0;
+    virtual void V04() = 0;
+    virtual void V08() = 0;
+    virtual void V0c() = 0;
+    virtual void V10(int state, int substate) = 0;
+    virtual void V14() = 0;
+    virtual void V18() = 0;
+    virtual void V1c() = 0;
+    virtual void V20() = 0;
+    virtual void V24(RHMalignityStimulus *stimulus) = 0;
+    void FUN_00412d60(RHMalignityPosition position, int heading, int mode);
+    void FUN_0041a3e0();
+};
+
+struct RHMalignityPriorityPosition
+{
+    RHMalignityPosition position;
+    int priority;
+    void Set(const RHMalignityPosition &value, int level)
+    {
+        if (priority <= level)
+        {
+            priority = level;
+            position = value;
+        }
+    }
+};
+
+struct RHMalignityAlertPayload
+{
+    RHMalignityPosition position;
+    unsigned unknown;
+    void *actor;
+};
+
+// Parked: loop scheduling, virtual-base reloads and x87 temporary lifetimes differ.
+// STUB: GAME 0x00439cb0
+void RHArtificialMalignity::FUN_00439cb0(const RHMalignityPosition &position, unsigned short radius)
+{
+    RHMalignityStimulus stimulus;
+    RHMalignityAlertPayload payload;
+    payload.position = position;
+    payload.actor = VirtualBase().m_actor;
+    stimulus.m_20 = 0x27;
+    RHMalignityField<RHMalignityAlertPayload>(&stimulus, 0) = payload;
+    stimulus.m_type = 4;
+    int offset = ((RHMalignityActorCalls *)VirtualBase().m_actor)->V130() << 5;
+    unsigned short count = RHMalignityField<RHMalignityArray>(g_pEngine, 0x4d08 + offset).size();
+    if (count > 0)
+    {
+    unsigned remaining = count;
+    for (int index = 0; remaining != 0; ++index, --remaining)
+    {
+        void *actor = RHMalignityField<void **>(g_pEngine, 0x4d0c + offset)[index];
+        if (actor == VirtualBase().m_actor)
+            continue;
+        void *base = (char *)actor + RHMalignityField<int *>(actor, 0x49c)[1];
+        int state = RHMalignityField<int>(base, 0x4a8);
+        if (state > 0 && (state <= 2 || (state == 3 &&
+            RHMalignityField<int>(base, 0x4b0) >= 0x52 && RHMalignityField<int>(base, 0x4b0) <= 0x53)))
+        {
+            const RHUnk00613e90 &own = RHMalignityField<RHUnk00613e90>(RHMalignityField<void *>(VirtualBase().m_actor, 0x50), 0x10);
+            RHUnk00613e90 difference = RHMalignityField<RHUnk00613e90>(RHMalignityField<void *>(actor, 0x50), 0x10).FUN_005df550(own);
+            if (difference.z * difference.z + difference.x * difference.x + difference.y * difference.y < (int)radius * radius)
+                ((RHMalignityReactionCalls *)((char *)actor + RHMalignityField<int *>(actor, 0x49c)[1] + 0x49c))->V24(&stimulus);
+        }
+    }
+    }
+}
+
+// FUNCTION: GAME 0x00439e70
+void RHArtificialMalignity::FUN_00439e70(void *, const RHMalignityPosition &position)
+{
+    if (((RHMalignityActorCalls *)VirtualBase().m_actor)->V130() != 0 ||
+        !RHMalignityField<bool>(g_pEngine, 0x4aa8) || ((RHMalignityActorCalls *)VirtualBase().m_actor)->Vf4())
+        ((RHScriptBatchCalls *)&VirtualBase())->Unk00419fd0(2, 10);
+    ((RHMalignityReactionCalls *)&VirtualBase())->FUN_0041a3e0();
+    VirtualBase().V10(2, 0x1d);
+    RHMalignityField<RHMalignityPosition>(&VirtualBase(), 0xd0) = position;
+    ((RHMalignityActorCalls *)VirtualBase().m_actor)->FUN_00487ad0(position);
+    ((RHMalignityReactionCalls *)&VirtualBase())->FUN_00412d60(RHMalignityField<RHMalignityPosition>(&VirtualBase(), 0xd0), -1, 0);
+    ((RHArtificialIntelligence *)&VirtualBase())->Unk00416710(100);
+}
+
+// Parked: stimulus/base register allocation and the shared timer call differ.
+// STUB: GAME 0x00439f60
+void RHArtificialMalignity::FUN_00439f60(const RHMalignityStimulus &stimulus)
+{
+    const RHMalignityPosition &position = RHMalignityField<RHMalignityPosition>((void *)&stimulus, 0);
+    ((RHScriptBatchCalls *)&VirtualBase())->Unk00419fd0(2, 10);
+    RHMalignityField<RHMalignityPriorityPosition>(&VirtualBase(), 0x26c).Set(position, 5);
+    if (RHMalignityField<int>(M(void *, 0x334), 0x58) == 2)
+        VirtualBase().V10(3, 0x54);
+    else
+        VirtualBase().V10(2, 0x39);
+    RHMalignityField<RHMalignityPosition>(&VirtualBase(), 0xd0) = position;
+    ((RHMalignityActorCalls *)VirtualBase().m_actor)->FUN_00487ad0(RHMalignityField<RHMalignityPosition>(&VirtualBase(), 0xd0));
+    RHMalignityBaseView &base = VirtualBase();
+    void *actor = RHMalignityField<void *>((void *)&stimulus, 0x14);
+    ((RHMalignityReactionCalls *)&base)->FUN_00412d60(base.FUN_004165e0(actor, true),
+        (int)RHMalignityField<float>(RHMalignityField<void *>(actor, 0x50), 0x18), 0);
+    ((RHArtificialIntelligence *)&VirtualBase())->Unk00416710(100);
+}
+
+// FUNCTION: GAME 0x0043a080
+void RHArtificialMalignity::FUN_0043a080(const RHMalignityPosition &position)
+{
+    RHMalignityField<RHMalignityPosition>(&VirtualBase(), 0xd0) = position;
+    RHMalignityField<RHMalignityPriorityPosition>(&VirtualBase(), 0x26c).Set(position, 5);
+    switch (RHMalignityField<int>(M(void *, 0x334), 0x58))
+    {
+    case 0:
+        FUN_0043c960(RHMalignityField<RHMalignityPosition>(&VirtualBase(), 0xd0), 0);
+        M(unsigned short, 0x10) = 11;
+        break;
+    case 1:
+        FUN_0043b1b0(RHMalignityField<RHMalignityPosition>(&VirtualBase(), 0xd0), 0);
+        break;
+    }
+}
+
+// FUNCTION: GAME 0x0043a170
+void RHArtificialMalignity::FUN_0043a170(const RHMalignityPosition &position)
+{
+    ((RHScriptBatchCalls *)&VirtualBase())->Unk00419fd0(2, 10);
+    VirtualBase().V10(3, 0x8c);
+    RHMalignityField<RHMalignityPosition>(&VirtualBase(), 0xd0) = position;
+    ((RHMalignityActorCalls *)VirtualBase().m_actor)->FUN_00487ad0(position);
+    ((RHMalignityReactionCalls *)&VirtualBase())->FUN_00412d60(RHMalignityField<RHMalignityPosition>(&VirtualBase(), 0xd0), -1, 0);
+    FUN_00438620(50);
+}
+
 // Parked 98.8%: VC6 schedules the hoisted `flags & 4` after the loop-counter setup (target: right after the flags load).
 // STUB: GAME 0x0043d780
 void *RHArtificialMalignity::FUN_0043d780(unsigned short flags)
@@ -1721,6 +1856,11 @@ int RHUnk00608f10::FUN_00608f10(void *value)
 void RHArtificialMalignity::Emit(SBFile &file)
 {
     InitOneAI();
+    FUN_00439cb0(*(RHMalignityPosition *)this, 0);
+    FUN_00439e70(0, *(RHMalignityPosition *)this);
+    FUN_00439f60(*(RHMalignityStimulus *)this);
+    FUN_0043a080(*(RHMalignityPosition *)this);
+    FUN_0043a170(*(RHMalignityPosition *)this);
     FUN_0043d780(0);
     FUN_00441020(0, 0);
     FUN_0043f340(0);

@@ -1,7 +1,30 @@
 #include "SBNullstr.h"
 #include "RHArtificialMalignity.h"
 
-bool RHUnk00608f10::FUN_006082a0(void *) { return false; }
+class RHMalignityReactionCalls
+{
+public:
+    virtual void V00() = 0;
+    virtual void V04() = 0;
+    virtual void V08() = 0;
+    virtual void V0c() = 0;
+    virtual void V10(int state, int substate) = 0;
+    virtual void V14() = 0;
+    virtual void V18() = 0;
+    virtual void V1c() = 0;
+    virtual void V20() = 0;
+    virtual void V24(RHMalignityStimulus *stimulus) = 0;
+    void FUN_00412d60(RHMalignityPosition position, int heading, int mode);
+    void FUN_0041a3e0();
+};
+
+void RHMalignityReactionCalls::FUN_00412d60(RHMalignityPosition, int, int) {}
+void RHMalignityReactionCalls::FUN_0041a3e0() {}
+void RHMalignityActorCalls::FUN_00487ad0(const RHMalignityPosition &) {}
+void RHArtificialMalignity::FUN_00438620(unsigned short) {}
+void RHArtificialMalignity::FUN_0043b1b0(RHMalignityPosition, int) {}
+void RHArtificialMalignity::FUN_0043c960(RHMalignityPosition, int) {}
+
 void RHMalignityActorCalls::FUN_00478c20(RHUnk00613e90 &, bool) {}
 bool RHMalignityActorCalls::FUN_0048a130(void *) { return false; }
 float RHMalignityBaseView::FUN_0041a010(void *) { return 0.0f; }
