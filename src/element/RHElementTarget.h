@@ -41,7 +41,18 @@ public:
 class RHUnkTargetScriptRef
 {
 public:
-    void FUN_004034e0();
+    int FUN_004034e0();
+    int FUN_004035d0(int activator);
+    int FUN_004036d0(int activator);
+    int FUN_004037d0(int activator);
+    int FUN_004038d0(int activator);
+    int FUN_004039d0(int activator);
+    int FUN_00403ad0(int activator);
+    int FUN_00403bd0(int activator);
+    int FUN_00403cd0(int activator);
+    int FUN_00403dd0(int activator);
+    int FUN_00403ed0(int activator);
+    void *m_0;
 };
 
 class RHElementTarget

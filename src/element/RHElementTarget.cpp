@@ -1,4 +1,124 @@
 #include "RHElementTarget.h"
+#include "VMCore.h"
+
+// FUNCTION: GAME 0x004034e0
+int RHUnkTargetScriptRef::FUN_004034e0()
+{
+    ((VMCore *)m_0)->FUN_00639300(&std::string("Initialize"));
+    int value;
+    ((VMCore *)m_0)->FUN_00639360(value);
+    return value;
+}
+
+// FUNCTION: GAME 0x004035d0
+int RHUnkTargetScriptRef::FUN_004035d0(int activator)
+{
+    ((VMCore *)m_0)->FUN_006392e0(&activator, 4);
+    // STRING: GAME 0x006a6bdc
+    ((VMCore *)m_0)->FUN_00639300(&std::string("ActivatedByApple"));
+    int value;
+    ((VMCore *)m_0)->FUN_00639360(value);
+    return value;
+}
+
+// FUNCTION: GAME 0x004036d0
+int RHUnkTargetScriptRef::FUN_004036d0(int activator)
+{
+    ((VMCore *)m_0)->FUN_006392e0(&activator, 4);
+    // STRING: GAME 0x006a6bf0
+    ((VMCore *)m_0)->FUN_00639300(&std::string("ActivatedByArrow"));
+    int value;
+    ((VMCore *)m_0)->FUN_00639360(value);
+    return value;
+}
+
+// FUNCTION: GAME 0x004037d0
+int RHUnkTargetScriptRef::FUN_004037d0(int activator)
+{
+    ((VMCore *)m_0)->FUN_006392e0(&activator, 4);
+    // STRING: GAME 0x006a6c04
+    ((VMCore *)m_0)->FUN_00639300(&std::string("ActivatedByHand"));
+    int value;
+    ((VMCore *)m_0)->FUN_00639360(value);
+    return value;
+}
+
+// FUNCTION: GAME 0x004038d0
+int RHUnkTargetScriptRef::FUN_004038d0(int activator)
+{
+    ((VMCore *)m_0)->FUN_006392e0(&activator, 4);
+    // STRING: GAME 0x006a6c14
+    ((VMCore *)m_0)->FUN_00639300(&std::string("ActivatedByHeal"));
+    int value;
+    ((VMCore *)m_0)->FUN_00639360(value);
+    return value;
+}
+
+// FUNCTION: GAME 0x004039d0
+int RHUnkTargetScriptRef::FUN_004039d0(int activator)
+{
+    ((VMCore *)m_0)->FUN_006392e0(&activator, 4);
+    // STRING: GAME 0x006a6c24
+    ((VMCore *)m_0)->FUN_00639300(&std::string("ActivatedByLever"));
+    int value;
+    ((VMCore *)m_0)->FUN_00639360(value);
+    return value;
+}
+
+// FUNCTION: GAME 0x00403ad0
+int RHUnkTargetScriptRef::FUN_00403ad0(int activator)
+{
+    ((VMCore *)m_0)->FUN_006392e0(&activator, 4);
+    // STRING: GAME 0x006a6c38
+    ((VMCore *)m_0)->FUN_00639300(&std::string("ActivatedByMoney"));
+    int value;
+    ((VMCore *)m_0)->FUN_00639360(value);
+    return value;
+}
+
+// FUNCTION: GAME 0x00403bd0
+int RHUnkTargetScriptRef::FUN_00403bd0(int activator)
+{
+    ((VMCore *)m_0)->FUN_006392e0(&activator, 4);
+    // STRING: GAME 0x006a6c4c
+    ((VMCore *)m_0)->FUN_00639300(&std::string("ActivatedBySearch"));
+    int value;
+    ((VMCore *)m_0)->FUN_00639360(value);
+    return value;
+}
+
+// FUNCTION: GAME 0x00403cd0
+int RHUnkTargetScriptRef::FUN_00403cd0(int activator)
+{
+    ((VMCore *)m_0)->FUN_006392e0(&activator, 4);
+    // STRING: GAME 0x006a6c60
+    ((VMCore *)m_0)->FUN_00639300(&std::string("ActivatedByStone"));
+    int value;
+    ((VMCore *)m_0)->FUN_00639360(value);
+    return value;
+}
+
+// FUNCTION: GAME 0x00403dd0
+int RHUnkTargetScriptRef::FUN_00403dd0(int activator)
+{
+    ((VMCore *)m_0)->FUN_006392e0(&activator, 4);
+    // STRING: GAME 0x006a6c74
+    ((VMCore *)m_0)->FUN_00639300(&std::string("ActivatedBySword"));
+    int value;
+    ((VMCore *)m_0)->FUN_00639360(value);
+    return value;
+}
+
+// FUNCTION: GAME 0x00403ed0
+int RHUnkTargetScriptRef::FUN_00403ed0(int activator)
+{
+    ((VMCore *)m_0)->FUN_006392e0(&activator, 4);
+    // STRING: GAME 0x006a6c88
+    ((VMCore *)m_0)->FUN_00639300(&std::string("ActivatedByListenable"));
+    int value;
+    ((VMCore *)m_0)->FUN_00639360(value);
+    return value;
+}
 
 // Parked: counted unsigned-short sprite getters corrected; local-slot coloring and SetPoint temporaries remain.
 // STUB: GAME 0x004bb820
