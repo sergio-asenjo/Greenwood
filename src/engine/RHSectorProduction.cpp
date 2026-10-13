@@ -333,7 +333,7 @@ unsigned int RHSectorProduction::FUN_00580500()
     return m_occupants.size();
 }
 
-// Parked: the occupant-insert argument address takes edx where the target keeps ecx (96.64%).
+// Parked: the occupant-insert argument address takes edx where the target keeps ecx.
 // STUB: GAME 0x00580520
 void RHSectorProduction::FUN_00580520()
 {
@@ -345,7 +345,8 @@ void RHSectorProduction::FUN_00580520()
     occupants.ClearAll();
     for (int index = 0; index != count; ++index)
     {
-        RHSectorProductionActorList &list = ((RHSectorProductionScript *)m_8)->m_cc;
+        RHSectorProductionScript *current = (RHSectorProductionScript *)m_8;
+        RHSectorProductionActorList &list = current->m_cc;
         list.GoTo(index);
         RHSectorProductionActor *actor = (RHSectorProductionActor *)list.m_c->m_8;
         if ((*(unsigned int *)((char *)actor + 4) & 0xf) == 0xc && FUN_00580940((RHElementActorPC *)actor) == true)
