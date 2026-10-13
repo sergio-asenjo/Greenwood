@@ -66,7 +66,7 @@ void RHElementMobile::FUN_004abfe0()
             if (RHMobileField<bool>(waypoint, 0x6e))
             {
                 if (g_unk0x6c0691)
-                    ((RHMobileUnk00408750 *)((char *)waypoint + 0x60))->FUN_00408750(this);
+                    ((RHUnkWaypointRef *)((char *)waypoint + 0x60))->Unk00408750(this);
             }
             else
             {

@@ -16,10 +16,10 @@ template <class T> inline const T &RHMobileField(const void *object, unsigned of
 }
 
 class RHElementMobile;
-class RHMobileUnk00408750
+class RHUnkWaypointRef
 {
 public:
-    void FUN_00408750(RHElementMobile *value);
+    int Unk00408750(RHElementMobile *mobile);
 };
 extern char g_unk0x6c0691;
 

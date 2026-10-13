@@ -18,14 +18,21 @@ DECOMP_SIZE_ASSERT(RHMalignityQueryList, 0x24)
 DECOMP_SIZE_ASSERT(RHUnk004dab90Rectangle, 0x50)
 DECOMP_SIZE_ASSERT(RHUnk004f9260List, 0x24)
 
-// Parked: string cleanup scheduling and annotated VM calls.
-// deferred: 0x00408660, unannotated pending reccmp #534.
+// FUNCTION: GAME 0x00408660
 int RHUnkWaypointRef::Unk00408660()
 {
-    {
-        std::string name("Initialize");
-        ((VMCore *)m_0)->FUN_00639300(&name);
-    }
+    ((VMCore *)m_0)->FUN_00639300(&std::string("Initialize"));
+    int value;
+    ((VMCore *)m_0)->FUN_00639360(value);
+    return value;
+}
+
+// FUNCTION: GAME 0x00408750
+int RHUnkWaypointRef::Unk00408750(RHElementMobile *mobile)
+{
+    ((VMCore *)m_0)->FUN_006392e0(&mobile, 4);
+    // STRING: GAME 0x006a6ce8
+    ((VMCore *)m_0)->FUN_00639300(&std::string("ReachPoint"));
     int value;
     ((VMCore *)m_0)->FUN_00639360(value);
     return value;

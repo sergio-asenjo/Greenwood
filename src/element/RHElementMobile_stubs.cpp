@@ -40,7 +40,6 @@ void RHMobileUnk0060a820::FUN_006158b0(const SBGeoPoint2D &, const SBGeoPoint2D 
 void RHMobileUnk00607da0::FUN_00607990(const RHMobileUnk00607da0 &) {}
 void RHMobileUnk006100e0::FUN_00578c50() {}
 
-void RHMobileUnk00408750::FUN_00408750(RHElementMobile *) {}
 bool RHMobilePath::FUN_00550660(unsigned char) { return false; }
 void RHMobilePath::FUN_005505c0() {}
 RHUnk005fc3b0::RHUnk005fc3b0(float x, float y) : SBGeoPoint2D(x, y) {}
