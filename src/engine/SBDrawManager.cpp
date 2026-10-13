@@ -840,3 +840,612 @@ void EmitSBDrawManager(SBDrawUnk005e8450 *draw, void *buffer)
     draw->FUN_005ec410(buffer, buffer, 0, 0, 0, 0, 0, 0, 0, 0);
     draw->FUN_005ec500(buffer, buffer, 0, 0, 0, 0, 0, 0, 0, 0);
 }
+
+// GLOBAL: GAME 0x006c11b8
+unsigned __int64 g_unk0x006c11b8;
+
+// GLOBAL: GAME 0x006c11c8
+unsigned __int64 g_unk0x006c11c8;
+
+inline unsigned __int64 SBDrawMultiplyHigh(unsigned __int64 left, unsigned __int64 right)
+{
+    union Channels {
+        unsigned __int64 packed;
+        unsigned short lane[4];
+    } lhs, rhs, result;
+    lhs.packed = left;
+    rhs.packed = right;
+    for (unsigned i = 0; i < 4; ++i) {
+        int product = (short)lhs.lane[i] * (short)rhs.lane[i];
+        result.lane[i] = (unsigned short)(product >> 16);
+    }
+    return result.packed;
+}
+
+inline unsigned __int64 SBDrawSaturatedAdd(unsigned __int64 left, unsigned __int64 right)
+{
+    union Channels {
+        unsigned __int64 packed;
+        unsigned short lane[4];
+    } lhs, rhs, result;
+    lhs.packed = left;
+    rhs.packed = right;
+    for (unsigned i = 0; i < 4; ++i) {
+        unsigned sum = lhs.lane[i] + rhs.lane[i];
+        if (sum > 0xffff) sum = 0xffff;
+        result.lane[i] = (unsigned short)sum;
+    }
+    return result.packed;
+}
+
+inline unsigned SBDrawDoubleBytes(unsigned value)
+{
+    unsigned result = 0;
+    for (unsigned shift = 0; shift < 32; shift += 8) {
+        unsigned doubled = (unsigned char)(value >> shift) * 2;
+        if (doubled > 0xff) doubled = 0xff;
+        result |= doubled << shift;
+    }
+    return result;
+}
+
+template<int Depth>
+inline unsigned short SBDrawScalarScale(unsigned short pixel, unsigned short alpha)
+{
+    unsigned short red = (pixel & (Depth == 16 ? 0xf800 : 0x7c00)) >> (Depth == 16 ? 11 : 10);
+    unsigned short green = (pixel & (Depth == 16 ? 0x7e0 : 0x3e0)) >> 5;
+    unsigned short blue = pixel & 0x1f;
+    red = (unsigned short)(red * alpha) >> 8;
+    green = (unsigned short)(green * alpha) >> 8;
+    blue = (unsigned short)(blue * alpha) >> 8;
+    return (unsigned short)((red << (Depth == 16 ? 11 : 10)) | (green << 5) | blue);
+}
+
+#define SBDRAW_SCALAR_KEYING_BODY(Depth, Transparent) \
+    unsigned short *src = (unsigned short *)source; \
+    unsigned short *dst = (unsigned short *)destination; \
+    unsigned rows = (unsigned short)height; \
+    do { \
+        unsigned columns = (unsigned short)width; \
+        do { \
+            unsigned short pixel = *src++; \
+            if (pixel == 0x1f) pixel = SBDrawScalarScale<Depth>(*dst, (unsigned short)alpha); \
+            else if (Transparent && pixel == (Depth == 16 ? 0x7c0 : 0x3e0)) { \
+                ++dst; \
+                continue; \
+            } \
+            *dst++ = pixel; \
+        } while ((columns = (unsigned short)(columns - 1)) != 0); \
+        src = (unsigned short *)((char *)src + sourceStride); \
+        dst = (unsigned short *)((char *)dst + destinationStride); \
+    } while ((rows = (unsigned short)(rows - 1)) != 0);
+
+// Parked: handwritten pusha/bswap register packing differs from VC6 C++.
+// STUB: GAME 0x00621db8
+void FUN_00621db8(void *source, void *destination, int width, int height,
+    int sourceStride, int destinationStride, unsigned alpha, unsigned unused)
+{
+    SBDRAW_SCALAR_KEYING_BODY(16, true)
+}
+
+// Parked: handwritten pusha/bswap register packing differs from VC6 C++.
+// STUB: GAME 0x00621e5c
+void FUN_00621e5c(void *source, void *destination, int width, int height,
+    int sourceStride, int destinationStride, unsigned alpha, unsigned unused)
+{
+    SBDRAW_SCALAR_KEYING_BODY(16, false)
+}
+
+// Parked: handwritten pusha/bswap register packing differs from VC6 C++.
+// STUB: GAME 0x00621ef0
+void FUN_00621ef0(void *source, void *destination, int width, int height,
+    int sourceStride, int destinationStride, unsigned alpha, unsigned unused)
+{
+    SBDRAW_SCALAR_KEYING_BODY(15, true)
+}
+
+// Parked: handwritten pusha/bswap register packing differs from VC6 C++.
+// STUB: GAME 0x00621f94
+void FUN_00621f94(void *source, void *destination, int width, int height,
+    int sourceStride, int destinationStride, unsigned alpha, unsigned unused)
+{
+    SBDRAW_SCALAR_KEYING_BODY(15, false)
+}
+
+#undef SBDRAW_SCALAR_KEYING_BODY
+
+template<int Depth>
+inline unsigned __int64 SBDrawUnpackPixel(unsigned short pixel)
+{
+    unsigned channels = (pixel & (Depth == 16 ? 0x7ff : 0x3ff)) << 3;
+    unsigned char green = (unsigned char)(channels >> 8);
+    green <<= Depth == 16 ? 1 : 2;
+    channels = (channels & 0xffff0000) | ((unsigned)green << 8) | ((unsigned char)channels >> 1);
+    channels |= (pixel & (Depth == 16 ? 0xf800 : 0x7c00)) << (Depth == 16 ? 7 : 8);
+    return ((unsigned __int64)(unsigned char)channels << 8) |
+        ((unsigned __int64)(unsigned char)(channels >> 8) << 24) |
+        ((unsigned __int64)(unsigned char)(channels >> 16) << 40) |
+        ((unsigned __int64)(unsigned char)(channels >> 24) << 56);
+}
+
+template<int Depth>
+inline unsigned short SBDrawPackPixel(unsigned __int64 channels)
+{
+    channels &= Depth == 16 ? g_unk0x006c11c8 : g_unk0x006c11b8;
+    unsigned low = (unsigned)channels;
+    unsigned pixel = (unsigned char)(low >> 8) | (low >> (Depth == 16 ? 18 : 19));
+    pixel |= (unsigned)(channels >> (Depth == 16 ? 29 : 30));
+    return (unsigned short)pixel;
+}
+
+inline unsigned __int64 SBDrawConstantWeight(unsigned alpha)
+{
+    unsigned weight = alpha << 6;
+    weight |= weight << 16;
+    return ((unsigned __int64)weight << 32) | weight;
+}
+
+inline unsigned __int64 SBDrawChannelWeight(unsigned alpha)
+{
+    unsigned char value = (unsigned char)alpha;
+    return ((unsigned __int64)value << 8) | ((unsigned __int64)value << 24) |
+        ((unsigned __int64)value << 40);
+}
+
+template<int Depth, int Mode>
+inline unsigned short SBDrawAlphaPixel(unsigned short source, unsigned short destination, unsigned short alpha)
+{
+    unsigned weight;
+    if (Mode == 0) {
+        unsigned value = Depth == 16 ? alpha : (unsigned)alpha * 2;
+        weight = SBDrawDoubleBytes(value) >> 10;
+    } else if (Mode == 3) {
+        weight = (source & 0x1f) * 2;
+    } else {
+        weight = (alpha & 0x1f) * 2;
+    }
+    if (Mode == 1)
+        return SBDrawPackPixel<Depth>(SBDrawMultiplyHigh(SBDrawUnpackPixel<Depth>(destination), SBDrawChannelWeight(weight)));
+    unsigned sourceWeight = Mode == 3 ? ((weight ^ 0x3f) + 1) : weight;
+    unsigned destinationWeight = Mode == 3 ? weight : ((weight ^ 0x3f) + 1);
+    unsigned __int64 foreground = SBDrawMultiplyHigh(SBDrawUnpackPixel<Depth>(source), SBDrawChannelWeight(sourceWeight));
+    unsigned __int64 background = SBDrawMultiplyHigh(SBDrawUnpackPixel<Depth>(destination), SBDrawChannelWeight(destinationWeight));
+    return SBDrawPackPixel<Depth>(SBDrawSaturatedAdd(foreground, background));
+}
+
+#define SBDRAW_RECTANGLE_SETUP(Scale) \
+    unsigned columns = (unsigned)width; \
+    unsigned rows = (unsigned)height; \
+    if (Scale == 2) { columns >>= 1; rows >>= 1; } \
+    if (columns == 0 || rows == 0) return; \
+    unsigned short *src = (unsigned short *)source; \
+    unsigned short *dst = (unsigned short *)destination; \
+    int destinationRow = destinationStride; \
+    if (Scale == 2) { \
+        sourceStride -= columns * 2; \
+        destinationStride = (destinationStride - columns * 2) * 2; \
+    } else if (Scale == 0) { \
+        sourceStride = (sourceStride - columns * 2) * 2; \
+        destinationStride -= columns * 2; \
+    }
+
+#define SBDRAW_STORE_PIXEL(Scale, Pixel) \
+    if (Scale == 2) { \
+        unsigned pair = (unsigned)(Pixel) | ((unsigned)(Pixel) << 16); \
+        *(unsigned *)dst = pair; \
+        *(unsigned *)((char *)dst + destinationRow) = pair; \
+    } else *dst = (Pixel);
+
+#define SBDRAW_KEYING_BODY(Depth, Scale, Transparent) \
+    SBDRAW_RECTANGLE_SETUP(Scale) \
+    unsigned __int64 weight = SBDrawConstantWeight(alpha); \
+    do { \
+        for (unsigned count = columns; count != 0; --count) { \
+            unsigned short pixel = *src; \
+            if (!Transparent || pixel != (Depth == 16 ? 0x7c0 : 0x3e0)) { \
+                if ((unsigned)pixel == key) pixel = SBDrawPackPixel<Depth>(SBDrawMultiplyHigh(SBDrawUnpackPixel<Depth>(*dst), weight)); \
+                SBDRAW_STORE_PIXEL(Scale, pixel) \
+            } \
+            src += Scale == 0 ? 2 : 1; \
+            dst += Scale == 2 ? 2 : 1; \
+        } \
+        src = (unsigned short *)((char *)src + sourceStride); \
+        dst = (unsigned short *)((char *)dst + destinationStride); \
+    } while (--rows != 0);
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x00622028
+void FUN_00622028(void *source, void *destination, int width, int height,
+    int sourceStride, int destinationStride, unsigned alpha, unsigned key)
+{
+    SBDRAW_KEYING_BODY(16, 1, false)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x006220ec
+void FUN_006220ec(void *source, void *destination, int width, int height,
+    int sourceStride, int destinationStride, unsigned alpha, unsigned key)
+{
+    SBDRAW_KEYING_BODY(16, 2, false)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x006221e4
+void FUN_006221e4(void *source, void *destination, int width, int height,
+    int sourceStride, int destinationStride, unsigned alpha, unsigned key)
+{
+    SBDRAW_KEYING_BODY(16, 0, false)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x006222bc
+void FUN_006222bc(void *source, void *destination, int width, int height,
+    int sourceStride, int destinationStride, unsigned alpha, unsigned key)
+{
+    SBDRAW_KEYING_BODY(15, 1, false)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x00622380
+void FUN_00622380(void *source, void *destination, int width, int height,
+    int sourceStride, int destinationStride, unsigned alpha, unsigned key)
+{
+    SBDRAW_KEYING_BODY(15, 2, false)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x00622478
+void FUN_00622478(void *source, void *destination, int width, int height,
+    int sourceStride, int destinationStride, unsigned alpha, unsigned key)
+{
+    SBDRAW_KEYING_BODY(15, 0, false)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x00622550
+void FUN_00622550(void *source, void *destination, int width, int height,
+    int sourceStride, int destinationStride, unsigned alpha, unsigned key)
+{
+    SBDRAW_KEYING_BODY(16, 1, true)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x0062261c
+void FUN_0062261c(void *source, void *destination, int width, int height,
+    int sourceStride, int destinationStride, unsigned alpha, unsigned key)
+{
+    SBDRAW_KEYING_BODY(16, 2, true)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x00622720
+void FUN_00622720(void *source, void *destination, int width, int height,
+    int sourceStride, int destinationStride, unsigned alpha, unsigned key)
+{
+    SBDRAW_KEYING_BODY(16, 0, true)
+}
+
+#define SBDRAW_ALPHA_BODY(Depth, Scale, Mode) \
+    SBDRAW_RECTANGLE_SETUP(Scale) \
+    unsigned short *mask = (unsigned short *)alpha; \
+    if (Scale == 2) alphaStride -= columns * 2; \
+    else if (Scale == 0) alphaStride = (alphaStride - columns * 2) * 2; \
+    do { \
+        for (unsigned count = columns; count != 0; --count) { \
+            unsigned short pixel = *src; \
+            if (pixel != (Depth == 16 ? 0x7c0 : 0x3e0)) { \
+                pixel = SBDrawAlphaPixel<Depth, Mode>(pixel, *dst, *mask); \
+                SBDRAW_STORE_PIXEL(Scale, pixel) \
+            } \
+            src += Scale == 0 ? 2 : 1; \
+            dst += Scale == 2 ? 2 : 1; \
+            mask += Scale == 0 ? 2 : 1; \
+        } \
+        src = (unsigned short *)((char *)src + sourceStride); \
+        dst = (unsigned short *)((char *)dst + destinationStride); \
+        mask = (unsigned short *)((char *)mask + alphaStride); \
+    } while (--rows != 0);
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x00622800
+void FUN_00622800(void *source, void *destination, void *alpha, int width, int height,
+    int sourceStride, int destinationStride, int alphaStride)
+{
+    SBDRAW_ALPHA_BODY(16, 1, 0)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x00622924
+void FUN_00622924(void *source, void *destination, void *alpha, int width, int height,
+    int sourceStride, int destinationStride, int alphaStride)
+{
+    SBDRAW_ALPHA_BODY(16, 2, 0)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x00622a7c
+void FUN_00622a7c(void *source, void *destination, void *alpha, int width, int height,
+    int sourceStride, int destinationStride, int alphaStride)
+{
+    SBDRAW_ALPHA_BODY(16, 0, 0)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x00622bc0
+void FUN_00622bc0(void *source, void *destination, void *alpha, int width, int height,
+    int sourceStride, int destinationStride, int alphaStride)
+{
+    SBDRAW_ALPHA_BODY(16, 1, 1)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x00622ca0
+void FUN_00622ca0(void *source, void *destination, void *alpha, int width, int height,
+    int sourceStride, int destinationStride, int alphaStride)
+{
+    SBDRAW_ALPHA_BODY(16, 2, 1)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x00622db4
+void FUN_00622db4(void *source, void *destination, void *alpha, int width, int height,
+    int sourceStride, int destinationStride, int alphaStride)
+{
+    SBDRAW_ALPHA_BODY(16, 0, 1)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x00622eb4
+void FUN_00622eb4(void *source, void *destination, void *alpha, int width, int height,
+    int sourceStride, int destinationStride, int alphaStride)
+{
+    SBDRAW_ALPHA_BODY(16, 1, 2)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x00622fd4
+void FUN_00622fd4(void *source, void *destination, void *alpha, int width, int height,
+    int sourceStride, int destinationStride, int alphaStride)
+{
+    SBDRAW_ALPHA_BODY(16, 2, 2)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x00623128
+void FUN_00623128(void *source, void *destination, void *alpha, int width, int height,
+    int sourceStride, int destinationStride, int alphaStride)
+{
+    SBDRAW_ALPHA_BODY(16, 0, 2)
+}
+
+#define SBDRAW_INVERSE_ALPHA_BODY(Depth, Scale) \
+    SBDRAW_RECTANGLE_SETUP(Scale) \
+    do { \
+        for (unsigned count = columns; count != 0; --count) { \
+            unsigned short pixel = *src; \
+            if (pixel != (Depth == 16 ? 0x7c0 : 0x3e0)) { \
+                pixel = SBDrawAlphaPixel<Depth, 3>(pixel, *dst, 0); \
+                SBDRAW_STORE_PIXEL(Scale, pixel) \
+            } \
+            src += Scale == 0 ? 2 : 1; \
+            dst += Scale == 2 ? 2 : 1; \
+        } \
+        src = (unsigned short *)((char *)src + sourceStride); \
+        dst = (unsigned short *)((char *)dst + destinationStride); \
+    } while (--rows != 0);
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x00623268
+void FUN_00623268(void *source, void *destination, int width, int height,
+    int sourceStride, int destinationStride)
+{
+    SBDRAW_INVERSE_ALPHA_BODY(16, 1)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x00623360
+void FUN_00623360(void *source, void *destination, int width, int height,
+    int sourceStride, int destinationStride)
+{
+    SBDRAW_INVERSE_ALPHA_BODY(16, 2)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x0062348c
+void FUN_0062348c(void *source, void *destination, int width, int height,
+    int sourceStride, int destinationStride)
+{
+    SBDRAW_INVERSE_ALPHA_BODY(16, 0)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x00623598
+void FUN_00623598(void *source, void *destination, int width, int height,
+    int sourceStride, int destinationStride, unsigned alpha, unsigned key)
+{
+    SBDRAW_KEYING_BODY(15, 1, true)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x00623668
+void FUN_00623668(void *source, void *destination, int width, int height,
+    int sourceStride, int destinationStride, unsigned alpha, unsigned key)
+{
+    SBDRAW_KEYING_BODY(15, 2, true)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x0062376c
+void FUN_0062376c(void *source, void *destination, int width, int height,
+    int sourceStride, int destinationStride, unsigned alpha, unsigned key)
+{
+    SBDRAW_KEYING_BODY(15, 0, true)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x00623850
+void FUN_00623850(void *source, void *destination, void *alpha, int width, int height,
+    int sourceStride, int destinationStride, int alphaStride)
+{
+    SBDRAW_ALPHA_BODY(15, 1, 0)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x00623978
+void FUN_00623978(void *source, void *destination, void *alpha, int width, int height,
+    int sourceStride, int destinationStride, int alphaStride)
+{
+    SBDRAW_ALPHA_BODY(15, 2, 0)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x00623ad4
+void FUN_00623ad4(void *source, void *destination, void *alpha, int width, int height,
+    int sourceStride, int destinationStride, int alphaStride)
+{
+    SBDRAW_ALPHA_BODY(15, 0, 0)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x00623c1c
+void FUN_00623c1c(void *source, void *destination, void *alpha, int width, int height,
+    int sourceStride, int destinationStride, int alphaStride)
+{
+    SBDRAW_ALPHA_BODY(15, 1, 1)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x00623cfc
+void FUN_00623cfc(void *source, void *destination, void *alpha, int width, int height,
+    int sourceStride, int destinationStride, int alphaStride)
+{
+    SBDRAW_ALPHA_BODY(15, 2, 1)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x00623e10
+void FUN_00623e10(void *source, void *destination, void *alpha, int width, int height,
+    int sourceStride, int destinationStride, int alphaStride)
+{
+    SBDRAW_ALPHA_BODY(15, 0, 1)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x00623f10
+void FUN_00623f10(void *source, void *destination, void *alpha, int width, int height,
+    int sourceStride, int destinationStride, int alphaStride)
+{
+    SBDRAW_ALPHA_BODY(15, 1, 2)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x00624030
+void FUN_00624030(void *source, void *destination, void *alpha, int width, int height,
+    int sourceStride, int destinationStride, int alphaStride)
+{
+    SBDRAW_ALPHA_BODY(15, 2, 2)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x00624184
+void FUN_00624184(void *source, void *destination, void *alpha, int width, int height,
+    int sourceStride, int destinationStride, int alphaStride)
+{
+    SBDRAW_ALPHA_BODY(15, 0, 2)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x006242c4
+void FUN_006242c4(void *source, void *destination, int width, int height,
+    int sourceStride, int destinationStride)
+{
+    SBDRAW_INVERSE_ALPHA_BODY(15, 1)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x006243c0
+void FUN_006243c0(void *source, void *destination, int width, int height,
+    int sourceStride, int destinationStride)
+{
+    SBDRAW_INVERSE_ALPHA_BODY(15, 2)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x006244ec
+void FUN_006244ec(void *source, void *destination, int width, int height,
+    int sourceStride, int destinationStride)
+{
+    SBDRAW_INVERSE_ALPHA_BODY(15, 0)
+}
+
+#define SBDRAW_TINTED_LINE_BODY(Depth, Scale) \
+    if (Scale == 0) width = (unsigned)width >> 1; \
+    if (width <= 0) return; \
+    unsigned short *src = (unsigned short *)source; \
+    unsigned short *dst = (unsigned short *)destination; \
+    unsigned __int64 tint = ((unsigned __int64)(unsigned char)color << 5) | \
+        ((unsigned __int64)(unsigned char)(color >> 8) << 21) | \
+        ((unsigned __int64)(unsigned char)(color >> 16) << 37) | \
+        ((unsigned __int64)(unsigned char)(color >> 24) << 53); \
+    unsigned __int64 weight = SBDrawConstantWeight(alpha); \
+    for (; width != 0; --width) { \
+        unsigned short pixel = SBDrawPackPixel<Depth>(SBDrawSaturatedAdd(SBDrawMultiplyHigh(SBDrawUnpackPixel<Depth>(*src), weight), tint)); \
+        SBDRAW_STORE_PIXEL(Scale, pixel) \
+        src += Scale == 0 ? 2 : 1; \
+        dst += Scale == 2 ? 2 : 1; \
+    }
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x006245fc
+void FUN_006245fc(void *source, void *destination, int destinationRow, int width,
+    unsigned color, unsigned alpha)
+{
+    SBDRAW_TINTED_LINE_BODY(16, 1)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x0062469c
+void FUN_0062469c(void *source, void *destination, int destinationRow, int width,
+    unsigned color, unsigned alpha)
+{
+    SBDRAW_TINTED_LINE_BODY(16, 2)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x00624748
+void FUN_00624748(void *source, void *destination, int destinationRow, int width,
+    unsigned color, unsigned alpha)
+{
+    SBDRAW_TINTED_LINE_BODY(16, 0)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x006247e8
+void FUN_006247e8(void *source, void *destination, int destinationRow, int width,
+    unsigned color, unsigned alpha)
+{
+    SBDRAW_TINTED_LINE_BODY(15, 1)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x00624888
+void FUN_00624888(void *source, void *destination, int destinationRow, int width,
+    unsigned color, unsigned alpha)
+{
+    SBDRAW_TINTED_LINE_BODY(15, 2)
+}
+
+// Parked: handwritten pusha/MMX/emms differs from scalar VC6 C++.
+// STUB: GAME 0x00624934
+void FUN_00624934(void *source, void *destination, int destinationRow, int width,
+    unsigned color, unsigned alpha)
+{
+    SBDRAW_TINTED_LINE_BODY(15, 0)
+}
+
+#undef SBDRAW_TINTED_LINE_BODY
+#undef SBDRAW_INVERSE_ALPHA_BODY
+#undef SBDRAW_ALPHA_BODY
+#undef SBDRAW_KEYING_BODY
+#undef SBDRAW_STORE_PIXEL
+#undef SBDRAW_RECTANGLE_SETUP
