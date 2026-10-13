@@ -901,7 +901,7 @@ unsigned short RHCampaign::GetNumberOfPeasantsToConvertToBlazons() const
     return blazons * *(unsigned short *)((char *)profile + 0x70);
 }
 
-// STUB: GAME 0x00455f00
+// FUNCTION: GAME 0x00455f00
 void RHCampaign::FUN_00455f00(std::vector<RHMission *> &missions)
 {
     RHMission *&selected = *(RHMission **)((char *)this + 0x180);
@@ -928,7 +928,8 @@ void RHCampaign::FUN_00455f00(std::vector<RHMission *> &missions)
                 else if (selected != mission)
                 {
                     it = missions.erase(it);
-                    ((SBArray<RHSaveGame *> *)&m_164)->Insert((RHSaveGame **)m_164.end(), 1, (RHSaveGame *const &)mission);
+                    SBArray<RHSaveGame *> &saved = *(SBArray<RHSaveGame *> *)&m_164;
+                    saved.Insert(saved.m_last, 1, (RHSaveGame *const &)mission);
                 }
                 else
                     ++it;

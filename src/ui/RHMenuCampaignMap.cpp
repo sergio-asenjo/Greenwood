@@ -105,7 +105,7 @@ public:
     unsigned short m_04; // 0x04
 };
 
-// STUB: GAME 0x00527c00
+// FUNCTION: GAME 0x00527c00
 void RHMenuCampaignMap::FUN_00527c00(const std::vector<void *> &missions)
 {
     for (std::vector<void *>::const_iterator it = missions.begin(); it != missions.end(); ++it)
@@ -116,8 +116,8 @@ void RHMenuCampaignMap::FUN_00527c00(const std::vector<void *> &missions)
         RHMapLocation *location = (RHMapLocation *)(base + 0x19c);
         ((RHMapWidget *)location)->V54(true);
         unsigned count = *(unsigned short *)((char *)mission->m_00 + 0x4c);
-        *(unsigned *)((char *)location + 0xd4) = 1000;
         *((bool *)location + 0xcc) = mission->m_04 == count - 1;
+        *(unsigned *)((char *)location + 0xd4) = 1000;
         if (mission->FUN_0054cc20())
         {
             V3c(base + 0x348);
