@@ -3,6 +3,39 @@
 
 void RHGame::FUN_00512310() {}
 
+RHGameWidgetLifetimeBase::RHGameWidgetLifetimeBase() {}
+RHGameWidgetLifetimeBase::~RHGameWidgetLifetimeBase() {}
+RHGameRenderer0060dad0::RHGameRenderer0060dad0() {}
+RHGameRenderer0060dad0::~RHGameRenderer0060dad0() {}
+RHGameRenderer0060da10::RHGameRenderer0060da10() {}
+RHGameRenderer0060da10::~RHGameRenderer0060da10() {}
+RHGameRenderer005cb220::RHGameRenderer005cb220() {}
+RHGameRenderer005cb220::~RHGameRenderer005cb220() {}
+RHGameRenderer0060dab0::RHGameRenderer0060dab0() {}
+RHGameRenderer0060dab0::~RHGameRenderer0060dab0() {}
+RHGameRenderer005c9270::RHGameRenderer005c9270() {}
+RHGameRenderer005c9270::~RHGameRenderer005c9270() {}
+RHGameRenderer005cbe50::RHGameRenderer005cbe50() {}
+RHGameRenderer005cbe50::~RHGameRenderer005cbe50() {}
+void RHGameLifetimeDeleteCalls::FUN_0050a460() {}
+void RHGameLifetimeDeleteCalls::FUN_0050a4f0() {}
+void RHGameLifetimeDeleteCalls::FUN_0050a5c0() {}
+
+void RHGameWidgetBaseCalls::FUN_0060d290(unsigned long) {}
+bool RHGameWidgetRendererCalls::FUN_0060d890(const SBGeoPoint2D &) { return false; }
+bool RHGameWidgetRendererCalls::FUN_005cb270(unsigned) { return false; }
+bool RHGameWidgetRendererCalls::FUN_005c9320(unsigned) { return false; }
+int RHGameWidgetInputCalls::FUN_0060e240(unsigned short) { return 0; }
+void RHGameWidgetAnimatedCalls::FUN_005d5790(void *, int, bool) {}
+
+namespace std
+{
+    template<> void _Construct(RHUnk00514e10::Value *destination, const RHUnk00514e10::Value &value)
+    {
+        new ((void *)destination) RHUnk00514e10::Value(value);
+    }
+}
+
 bool RHGameMission::FUN_0054c800() { return false; }
 unsigned short RHGameCampaignView::FUN_00456270() { return 0; }
 void RHGameCampaignView::FUN_00456e40(char) {}
@@ -44,11 +77,6 @@ void RHGameActionCalls::FUN_00619cc0() {}
 bool RHGameActionCalls::FUN_004d2300(void *, unsigned) { return false; }
 void RHGameActionCalls::FUN_004da2f0() {}
 void RHGameActionCalls::FUN_005a7b40(int) {}
-void RHGamePortraitCalls::FUN_005d9b10() {}
-void RHGamePortraitCalls::FUN_005d9ae0(unsigned short, bool) {}
-void RHGamePortraitCalls::FUN_005d9b70() {}
-void RHGamePortraitCalls::FUN_005d9a60(unsigned) {}
-void RHGamePortraitCalls::FUN_005d9950(unsigned) {}
 void RHGamePortraitCalls::FUN_005d6690() {}
 void RHGameNotificationCalls::FUN_0055e7a0(unsigned) {}
 void FUN_0053a830() {}

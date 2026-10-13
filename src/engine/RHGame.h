@@ -64,6 +64,7 @@ public:
     void FUN_00513b00();
     void FUN_00512cb0();
     void FUN_00513670();
+    void FUN_00514c50();
     void Emit(SBFile &file);
 
 private:

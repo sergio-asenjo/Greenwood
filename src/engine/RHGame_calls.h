@@ -12,6 +12,285 @@ class RHMenuMissionDescription;
 class RHMenuBuyBlazons;
 class RHGameBlazonWidget;
 
+class RHUnk00641782
+{
+public:
+    RHUnk00641782();
+    ~RHUnk00641782();
+    undefined m_00;
+};
+
+class RHUnk00514e10
+{
+public:
+    typedef std::pair<const int, int> Value;
+    struct Node
+    {
+        Node *left;
+        Node *parent;
+        Node *right;
+        Value value;
+        int color;
+    };
+    struct Iterator
+    {
+        Iterator() {}
+        Iterator(Node *node) : node(node) {}
+        void FUN_005159d0();
+        void FUN_00515a90();
+        Iterator operator++(int) { Iterator old = *this; FUN_00515a90(); return old; }
+        Node *node;
+    };
+    struct Pair
+    {
+        Pair() {}
+        Pair(const Iterator &entry, bool inserted) : first(entry), second(inserted) {}
+        Iterator first;
+        bool second;
+    };
+    int &FUN_00514e10(const int &key);
+    void FUN_00514e50();
+    Iterator FUN_00514ec0(Iterator first, Iterator last);
+    Pair FUN_00514ff0(const Value &value);
+    Iterator FUN_00515120(Iterator entry);
+    void FUN_00515640(Node *node);
+    Iterator FUN_005156d0(Node *node, Node *parent, const Value &value);
+    Node *&Root() { return m_head->parent; }
+    Node *&Leftmost() { return m_head->left; }
+    Node *&Rightmost() { return m_head->right; }
+    Iterator begin() { return Iterator(Leftmost()); }
+    static Node *&Left(Node *node) { return node->left; }
+    static Node *&Right(Node *node) { return node->right; }
+    static Node *&Parent(Node *node) { return node->parent; }
+    static int &Color(Node *node) { return node->color; }
+    void RotateLeft(Node *node);
+    void RotateRight(Node *node);
+    undefined m_00[4];
+    Node *m_head;
+    bool m_multi;
+    undefined m_09[3];
+    unsigned m_size;
+};
+
+class SBGeoPoint2D;
+
+class RHGameWidgetLifetimeBase
+{
+public:
+    RHGameWidgetLifetimeBase();
+    ~RHGameWidgetLifetimeBase();
+    unsigned m_vptr;
+    undefined m_04[0x78];
+    int m_state;
+};
+
+class RHGameRenderer0060dad0
+{
+public:
+    RHGameRenderer0060dad0();
+    ~RHGameRenderer0060dad0();
+    undefined m_data[0x50];
+};
+
+class RHGameRenderer0060da10
+{
+public:
+    RHGameRenderer0060da10();
+    ~RHGameRenderer0060da10();
+    undefined m_data[0x4c];
+};
+
+class RHGameRenderer005cb220
+{
+public:
+    RHGameRenderer005cb220();
+    ~RHGameRenderer005cb220();
+    undefined m_data[0x4c];
+};
+
+class RHGameRenderer0060dab0
+{
+public:
+    RHGameRenderer0060dab0();
+    ~RHGameRenderer0060dab0();
+    undefined m_data[0x4c];
+};
+
+class RHGameRenderer005c9270
+{
+public:
+    RHGameRenderer005c9270();
+    ~RHGameRenderer005c9270();
+    undefined m_data[0x50];
+};
+
+class RHGameRenderer005cbe50
+{
+public:
+    RHGameRenderer005cbe50();
+    ~RHGameRenderer005cbe50();
+    undefined m_data[0x50];
+};
+
+class RHGameLifetime00515b40 : public RHGameWidgetLifetimeBase
+{
+public:
+    RHGameLifetime00515b40();
+    ~RHGameLifetime00515b40();
+    void *FUN_00517280(unsigned flags);
+    RHGameRenderer0060dad0 m_renderer;
+};
+
+class RHGameLifetime00515d30 : public RHGameWidgetLifetimeBase
+{
+public:
+    ~RHGameLifetime00515d30();
+    void *FUN_005172a0(unsigned flags);
+    RHGameRenderer0060dad0 m_renderer;
+};
+
+class RHGameLifetime00515f00 : public RHGameWidgetLifetimeBase
+{
+public:
+    RHGameLifetime00515f00();
+    ~RHGameLifetime00515f00();
+    void *FUN_005172c0(unsigned flags);
+    RHGameRenderer0060da10 m_renderer;
+};
+
+class RHGameLifetime00515fd0 : public RHGameWidgetLifetimeBase
+{
+public:
+    RHGameLifetime00515fd0();
+    ~RHGameLifetime00515fd0();
+    void *FUN_005172e0(unsigned flags);
+    RHGameRenderer005cb220 m_renderer;
+};
+
+class RHGameLifetime00516150 : public RHGameWidgetLifetimeBase
+{
+public:
+    RHGameLifetime00516150();
+    ~RHGameLifetime00516150();
+    void *FUN_00517360(unsigned flags);
+    RHGameRenderer0060dab0 m_renderer;
+};
+
+class RHGameLifetime005161a0 : public RHGameWidgetLifetimeBase
+{
+public:
+    ~RHGameLifetime005161a0();
+    void *FUN_005173e0(unsigned flags);
+    RHGameRenderer0060dad0 m_renderer;
+};
+
+class RHGameLifetime00516430 : public RHGameWidgetLifetimeBase
+{
+public:
+    ~RHGameLifetime00516430();
+    void *FUN_00517400(unsigned flags);
+    RHGameRenderer0060da10 m_renderer;
+};
+
+class RHGameLifetime00516750 : public RHGameWidgetLifetimeBase
+{
+public:
+    ~RHGameLifetime00516750();
+    void *FUN_00517420(unsigned flags);
+    RHGameRenderer0060da10 m_renderer;
+};
+
+class RHGameLifetime00516a60 : public RHGameWidgetLifetimeBase
+{
+public:
+    ~RHGameLifetime00516a60();
+    void *FUN_00517440(unsigned flags);
+    RHGameRenderer005c9270 m_renderer;
+};
+
+class RHGameLifetime00516c50 : public RHGameWidgetLifetimeBase
+{
+public:
+    RHGameLifetime00516c50();
+    ~RHGameLifetime00516c50();
+    void *FUN_00517460(unsigned flags);
+    RHGameRenderer005c9270 m_renderer;
+};
+
+class RHGameLifetime00516e20 : public RHGameWidgetLifetimeBase
+{
+public:
+    ~RHGameLifetime00516e20();
+    RHGameRenderer005cbe50 m_renderer;
+};
+
+class RHGameLifetime00517630 : public RHGameWidgetLifetimeBase
+{
+public:
+    RHGameLifetime00517630();
+    ~RHGameLifetime00517630();
+    RHGameRenderer005cbe50 m_renderer;
+    unsigned short m_d0;
+    undefined m_d2[2];
+    unsigned m_d4;
+    unsigned m_d8;
+    unsigned m_dc;
+    unsigned m_e0;
+};
+
+class RHGameLifetime005174a0 : public RHGameWidgetLifetimeBase
+{
+public:
+    ~RHGameLifetime005174a0();
+    void *FUN_00517480(unsigned flags);
+    RHGameRenderer005cbe50 m_renderer;
+};
+
+class RHGameLifetimeDeleteCalls
+{
+public:
+    void FUN_0050a460();
+    void FUN_0050a4f0();
+    void FUN_0050a5c0();
+    void *FUN_00517500(unsigned flags);
+    void *FUN_00517520(unsigned flags);
+    void *FUN_005176d0(unsigned flags);
+};
+
+class RHGameWidgetBaseCalls
+{
+public:
+    void FUN_0060d290(unsigned long hardware);
+};
+
+class RHGameWidgetRendererCalls
+{
+public:
+    virtual void v0();
+    virtual void v1();
+    virtual void v2(unsigned long hardware);
+    bool FUN_0060d890(const SBGeoPoint2D &point);
+    bool FUN_005cb270(unsigned id);
+    bool FUN_005c9320(unsigned id);
+};
+
+class RHGameWidgetInputCalls
+{
+public:
+    int FUN_0060e240(unsigned short shortcut);
+};
+
+class RHGameWidgetAnimatedCalls
+{
+public:
+    void FUN_005d5790(void *event, int state, bool option);
+};
+
+namespace std
+{
+    template<> void _Construct(RHUnk00514e10::Value *, const RHUnk00514e10::Value &);
+}
+
 RHMessenger *RHUnk00546050();
 
 // SIZE 0x6c
@@ -53,6 +332,7 @@ public:
     void Unk004e3220(int value);
     void FUN_0050eb80(bool value);
     void FUN_0050eca0(bool value);
+    bool Unk0049d560(int action);
 };
 
 // SIZE 0x184
