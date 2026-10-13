@@ -9,76 +9,15 @@ void SBResourceSurfaceArray::Assign(const SBResourceSurfaceArray &other, unsigne
 
 void FUN_0064158f(void *) {}
 
-SBResourceManager::ResourceNode *&SBResourceManager::Tree54::FUN_00601650(ResourceNode *&result, const unsigned long &key)
-{
-    ResourceNode *node = FUN_00605330(key);
-    result = node != m_head && key >= node->m_key ? node : m_head;
-    return result;
-}
+template class SBResourceTreeStorage<0x34, 0x30, 0x44>;
+template class SBResourceTreeStorage<0x20, 0x1c, 0x54>;
+template class SBResourceTreeStorage<0x20, 0x1c, 0x64>;
+template class SBResourceTreeStorage<0x40, 0x3c, 0x74>;
+template class SBResourceTreeStorage<0x40, 0x3c, 0x84>;
 
-SBResourceManager::Tree44::Iterator &SBResourceManager::Tree44::FUN_006013a0(Iterator &result, const unsigned long &key)
-{
-    Node<unsigned long> *node = FUN_00605220(key);
-    result.m_node = node != m_head && key >= node->m_key ? node : m_head;
-    return result;
-}
 
-SBResourceUnkKeyNode *&SBResourceManager::Tree74::FUN_00601bd0(SBResourceUnkKeyNode *&result, const unsigned long &key)
-{
-    SBResourceUnkKeyNode *node = FUN_00605550(key);
-    result = node != m_head && key >= node->m_key ? node : m_head;
-    return result;
-}
-
-SBResourceUnkKeyNode *&SBResourceManager::Tree74::FUN_006042a0(SBResourceUnkKeyNode *&result, const unsigned long &key)
-{
-    result = FUN_00605550(key);
-    return result;
-}
-
-SBResourceManager::Node<unsigned long> *SBResourceManager::Tree44::FUN_00605770(const unsigned long &) { return 0; }
-SBResourceManager::Tree44::Iterator &SBResourceManager::Tree44::FUN_00601210(Iterator &result, Node<unsigned long> *, Node<unsigned long> *) { return result; }
-
-class SBResourceUnkAdvance
-{
-public:
-    SBResourceManager::Tree44::Iterator m_value;
-    void FUN_006057c0();
-};
-
-void SBResourceUnkAdvance::FUN_006057c0() {}
-
-SBResourceManager::Node<SBResourceManager::Element> *&SBResourceManager::Tree84::FUN_00604d30(Node<Element> *&result, const unsigned long &key)
-{
-    result = FUN_00605660(key);
-    return result;
-}
-
-SBResourceManager::Tree44::Iterator &SBResourceManager::Tree44::FUN_00602580(Iterator &result, const unsigned long &key)
-{
-    result.m_node = FUN_00605220(key);
-    return result;
-}
-
-SBResourceManager::Node<unsigned long> *SBResourceManager::Tree44::FUN_00605220(const unsigned long &)
-{
-    return 0;
-}
-
-SBResourceUnk00605440Node *SBResourceUnk00605440::FUN_00605440(const unsigned long &)
-{
-    return 0;
-}
-
-SBResourceManager::Node<SBResourceManager::Element> *SBResourceManager::Tree84::FUN_00605660(const unsigned long &)
-{
-    return 0;
-}
-
-SBResourceManager::ResourceNode *SBResourceManager::Tree54::FUN_00605330(const unsigned long &)
-{
-    return 0;
-}
+void SBResourceArrayLifecycle44::FUN_0051d120() {}
+void SBResourceArrayLifecycle84::FUN_0057c820() {}
 
 bool SBResourceManager::FUN_005fd8e0(int, unsigned long) { return false; }
 bool SBResourceManager::FUN_005fdcc0(int, unsigned long) { return false; }
@@ -96,16 +35,6 @@ SBResourceUnkKeyNode *SBResourceManager::Tree34::FUN_005093e0(const unsigned lon
     return 0;
 }
 
-SBResourceUnkKeyNode *SBResourceManager::Tree74::FUN_00605550(const unsigned long &)
-{
-    return 0;
-}
-
-// FUNCTION: GAME 0x00617690
-SBResourceUnkKeyIterator SBResourceUnkTreeEnd::FUN_00617690()
-{
-    return SBResourceUnkKeyIterator(m_head);
-}
 
 #include <vector>
 
@@ -117,5 +46,50 @@ void ForceWideRangeInsert(std::vector<std::wstring> &values, std::wstring *posit
     (values.*insert)(position, first, last);
 }
 
+void ForceNarrowRangeInsert(std::vector<std::string> &values, std::string *position,
+                           const std::string *first, const std::string *last)
+{
+    typedef void (std::vector<std::string>::*Insert)(std::string *, const std::string *, const std::string *);
+    Insert insert = &std::vector<std::string>::insert;
+    (values.*insert)(position, first, last);
+}
+
+void ForceResourceWideResize(std::vector<std::wstring> &values, unsigned int count, const std::wstring &value)
+{
+    void (std::vector<std::wstring>::*resize)(unsigned int, const std::wstring &) = &std::vector<std::wstring>::resize;
+    (values.*resize)(count, value);
+}
+
+void ForceResourceWideErase(std::vector<std::wstring> &values, std::wstring *first, std::wstring *last)
+{
+    std::wstring *(std::vector<std::wstring>::*erase)(std::wstring *, std::wstring *) = &std::vector<std::wstring>::erase;
+    (values.*erase)(first, last);
+}
+
+// Parked: the original reuses the separately owned 16-byte-element vector size entity.
+// STUB: GAME 0x00606270
+// ?resize@?$vector@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@V?$allocator@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@@2@@std@@QAEXIABV?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@2@@Z
+
+// TEMPLATE: GAME 0x00606470
+// ?erase@?$vector@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@V?$allocator@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@@2@@std@@QAEPAV?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@2@PAV32@0@Z
+
+// FUNCTION: GAME 0x00606780
+std::wstring *FUN_00606780(const std::wstring *first, const std::wstring *last, std::wstring *output)
+{
+    for (; first != last; ++first, ++output)
+        *output = *first;
+    return output;
+}
+
+// Parked: static-CRT npos loads fold to immediate -1 in narrow-string assignment.
+// STUB: GAME 0x006073b0
+// ?insert@?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@QAEXPAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@2@PBV32@1@Z
+
 // TEMPLATE: GAME 0x00607660
 // ?insert@?$vector@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@V?$allocator@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@@2@@std@@QAEXPAV?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@2@PBV32@1@Z
+
+// FUNCTION: GAME 0x00617690
+SBResourceUnkKeyIterator SBResourceUnkTreeEnd::FUN_00617690()
+{
+    return SBResourceUnkKeyIterator(m_head);
+}
