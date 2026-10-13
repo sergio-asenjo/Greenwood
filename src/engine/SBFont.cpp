@@ -17,6 +17,95 @@ DECOMP_SIZE_ASSERT(SBFontIterator0061f3e0, 0x04)
 DECOMP_SIZE_ASSERT(SBFontPair0061f3e0, 0x08)
 DECOMP_SIZE_ASSERT(SBFontLock, 0x01)
 
+template <class Node>
+inline Node *&SBFontLeft(Node *node)
+{
+    return node->m_00;
+}
+
+template <class Node>
+inline Node *&SBFontRight(Node *node)
+{
+    return node->m_08;
+}
+
+template <class Node>
+inline Node *&SBFontParent(Node *node)
+{
+    return node->m_04;
+}
+
+inline int &SBFontColor(SBFontNode0061fcb0 *node)
+{
+    return node->m_10;
+}
+
+inline SBFontNode0061fcb0 *SBFontCopyNodes(SBFontTree0061fcb0 *tree, SBFontNode0061fcb0 *source, SBFontNode0061fcb0 *parent)
+{
+    SBFontLock lock;
+    SBFontNode0061fcb0 *root = source;
+    for (; source != g_unk0x006c191c; source = source->m_00) {
+        int color = source->m_10;
+        SBFontNode0061fcb0 *node = (SBFontNode0061fcb0 *)operator new(sizeof(SBFontNode0061fcb0));
+        node->m_04 = parent;
+        node->m_10 = color;
+        if (root == source) root = node;
+        node->m_08 = tree->FUN_00620d60(source->m_08, node);
+        void (*construct)(unsigned short *, const unsigned short &) = &std::_Construct;
+        construct(&node->m_0c, source->m_0c);
+        parent->m_00 = node;
+        parent = node;
+    }
+    parent->m_00 = g_unk0x006c191c;
+    return root;
+}
+
+template <class Node, class Tree>
+inline void SBFontRotateLeft(Tree *tree, Node *node, Node *&nil)
+{
+    SBFontLock lock;
+    Node *right = node->m_08;
+    node->m_08 = right->m_00;
+    if (right->m_00 != nil) right->m_00->m_04 = node;
+    right->m_04 = node->m_04;
+    if (node == tree->m_04->m_04) tree->m_04->m_04 = right;
+    else if (node == node->m_04->m_00) node->m_04->m_00 = right;
+    else node->m_04->m_08 = right;
+    right->m_00 = node;
+    node->m_04 = right;
+}
+
+template <class Node, class Tree>
+inline void SBFontRotateRight(Tree *tree, Node *node, Node *&nil)
+{
+    SBFontLock lock;
+    Node *left = node->m_00;
+    node->m_00 = left->m_08;
+    if (left->m_08 != nil) left->m_08->m_04 = node;
+    left->m_04 = node->m_04;
+    if (node == tree->m_04->m_04) tree->m_04->m_04 = left;
+    else if (node == node->m_04->m_08) node->m_04->m_08 = left;
+    else node->m_04->m_00 = left;
+    left->m_08 = node;
+    node->m_04 = left;
+}
+
+template <class Node>
+inline Node *SBFontMinimum(Node *node, Node *&nil)
+{
+    SBFontLock lock;
+    while (node->m_00 != nil) node = node->m_00;
+    return node;
+}
+
+template <class Node>
+inline Node *SBFontMaximum(Node *node, Node *&nil)
+{
+    SBFontLock lock;
+    while (node->m_08 != nil) node = node->m_08;
+    return node;
+}
+
 // GLOBAL: GAME 0x006c191c
 SBFontNode0061fcb0 *g_unk0x006c191c = 0;
 // GLOBAL: GAME 0x006c1920
@@ -300,6 +389,307 @@ SBFontIterator0061fe10 SBFontTree0061fcb0::FUN_0061fe10(const unsigned short &va
     return result;
 }
 
+// FUNCTION: GAME 0x0061fe30
+SBFontIterator0061fe10 SBFontTree0061fcb0::FUN_0061fe30(SBFontNode0061fcb0 *node, SBFontNode0061fcb0 *parent, const unsigned short &value)
+{
+    SBFontLock lock;
+    SBFontNode0061fcb0 *inserted = (SBFontNode0061fcb0 *)operator new(sizeof(SBFontNode0061fcb0));
+    inserted->m_04 = parent;
+    inserted->m_10 = 0;
+    inserted->m_00 = g_unk0x006c191c;
+    inserted->m_08 = g_unk0x006c191c;
+    void (*construct)(unsigned short *, const unsigned short &) = &std::_Construct;
+    construct(&inserted->m_0c, value);
+    ++m_0c;
+    if (parent == m_04 || node != g_unk0x006c191c || value < parent->m_0c) {
+        parent->m_00 = inserted;
+        if (parent == m_04) {
+            m_04->m_04 = inserted;
+            m_04->m_08 = inserted;
+        } else if (parent == m_04->m_00) m_04->m_00 = inserted;
+    } else {
+        parent->m_08 = inserted;
+        if (parent == m_04->m_08) m_04->m_08 = inserted;
+    }
+    for (node = inserted; node != m_04->m_04 && node->m_04->m_10 == 0;) {
+        if (node->m_04 == SBFontLeft(node->m_04->m_04)) {
+            parent = node->m_04->m_04->m_08;
+            if (parent->m_10 == 0) {
+                node->m_04->m_10 = 1;
+                parent->m_10 = 1;
+                node->m_04->m_04->m_10 = 0;
+                node = node->m_04->m_04;
+            } else {
+                if (node == node->m_04->m_08) {
+                    node = node->m_04;
+                    SBFontRotateLeft(this, node, g_unk0x006c191c);
+                }
+                node->m_04->m_10 = 1;
+                node->m_04->m_04->m_10 = 0;
+                SBFontRotateRight(this, node->m_04->m_04, g_unk0x006c191c);
+            }
+        } else {
+            parent = node->m_04->m_04->m_00;
+            if (parent->m_10 == 0) {
+                node->m_04->m_10 = 1;
+                parent->m_10 = 1;
+                node->m_04->m_04->m_10 = 0;
+                node = node->m_04->m_04;
+            } else {
+                if (node == node->m_04->m_00) {
+                    node = node->m_04;
+                    SBFontRotateRight(this, node, g_unk0x006c191c);
+                }
+                node->m_04->m_10 = 1;
+                node->m_04->m_04->m_10 = 0;
+                SBFontRotateLeft(this, node->m_04->m_04, g_unk0x006c191c);
+            }
+        }
+    }
+    m_04->m_04->m_10 = 1;
+    SBFontIterator0061fe10 result;
+    result.m_00 = inserted;
+    return result;
+}
+
+// FUNCTION: GAME 0x00620130
+SBFontIterator0061f3e0 SBFontTree0061f3e0::FUN_00620130(SBFontNode0061f3e0 *node, SBFontNode0061f3e0 *parent, const SBFontValue0061f120 &value)
+{
+    SBFontLock lock;
+    SBFontNode0061f3e0 *inserted = (SBFontNode0061f3e0 *)operator new(sizeof(SBFontNode0061f3e0));
+    inserted->m_04 = parent;
+    inserted->m_2c = 0;
+    inserted->m_00 = g_unk0x006c1914;
+    inserted->m_08 = g_unk0x006c1914;
+    SBFontConstructValue(&inserted->m_0c, value);
+    ++m_0c;
+    if (parent == m_04 || node != g_unk0x006c1914 ||
+        ((RHCampaignCommandLine *)&value.m_00)->FUN_0045a010(*(const RHProfileText *)&parent->m_0c.m_00) < 0) {
+        parent->m_00 = inserted;
+        if (parent == m_04) {
+            m_04->m_04 = inserted;
+            m_04->m_08 = inserted;
+        } else if (parent == m_04->m_00) m_04->m_00 = inserted;
+    } else {
+        parent->m_08 = inserted;
+        if (parent == m_04->m_08) m_04->m_08 = inserted;
+    }
+    for (node = inserted; node != m_04->m_04 && node->m_04->m_2c == 0;) {
+        if (node->m_04 == SBFontLeft(node->m_04->m_04)) {
+            parent = node->m_04->m_04->m_08;
+            if (parent->m_2c == 0) {
+                node->m_04->m_2c = 1;
+                parent->m_2c = 1;
+                node->m_04->m_04->m_2c = 0;
+                node = node->m_04->m_04;
+            } else {
+                if (node == node->m_04->m_08) {
+                    node = node->m_04;
+                    SBFontRotateLeft(this, node, g_unk0x006c1914);
+                }
+                node->m_04->m_2c = 1;
+                node->m_04->m_04->m_2c = 0;
+                SBFontRotateRight(this, node->m_04->m_04, g_unk0x006c1914);
+            }
+        } else {
+            parent = node->m_04->m_04->m_00;
+            if (parent->m_2c == 0) {
+                node->m_04->m_2c = 1;
+                parent->m_2c = 1;
+                node->m_04->m_04->m_2c = 0;
+                node = node->m_04->m_04;
+            } else {
+                if (node == node->m_04->m_00) {
+                    node = node->m_04;
+                    SBFontRotateRight(this, node, g_unk0x006c1914);
+                }
+                node->m_04->m_2c = 1;
+                node->m_04->m_04->m_2c = 0;
+                SBFontRotateLeft(this, node->m_04->m_04, g_unk0x006c1914);
+            }
+        }
+    }
+    m_04->m_04->m_2c = 1;
+    SBFontIterator0061f3e0 result;
+    result.m_00 = inserted;
+    return result;
+}
+
+// FUNCTION: GAME 0x00620440
+SBFontIterator0061fe10 SBFontTree0061fcb0::FUN_00620440(SBFontIterator0061fe10 position)
+{
+    SBFontNode0061fcb0 *replacement;
+    SBFontNode0061fcb0 *removed = (position++).m_00;
+    SBFontNode0061fcb0 *original = removed;
+    SBFontLock lock;
+    if (SBFontLeft(removed) == g_unk0x006c191c) replacement = SBFontRight(removed);
+    else if (SBFontRight(removed) == g_unk0x006c191c) replacement = SBFontLeft(removed);
+    else {
+        removed = SBFontMinimum(SBFontRight(removed), g_unk0x006c191c);
+        replacement = SBFontRight(removed);
+    }
+    if (removed != original) {
+        SBFontParent(SBFontLeft(original)) = removed;
+        SBFontLeft(removed) = SBFontLeft(original);
+        if (removed == SBFontRight(original)) SBFontParent(replacement) = removed;
+        else {
+            SBFontParent(replacement) = SBFontParent(removed);
+            SBFontLeft(SBFontParent(removed)) = replacement;
+            SBFontRight(removed) = SBFontRight(original);
+            SBFontParent(SBFontRight(original)) = removed;
+        }
+        if (root() == original) root() = removed;
+        else if (SBFontLeft(SBFontParent(original)) == original) SBFontLeft(SBFontParent(original)) = removed;
+        else SBFontRight(SBFontParent(original)) = removed;
+        SBFontParent(removed) = SBFontParent(original);
+        std::swap(SBFontColor(removed), SBFontColor(original));
+        removed = original;
+    } else {
+        SBFontParent(replacement) = SBFontParent(removed);
+        if (root() == original) root() = replacement;
+        else if (SBFontLeft(SBFontParent(original)) == original) SBFontLeft(SBFontParent(original)) = replacement;
+        else SBFontRight(SBFontParent(original)) = replacement;
+        if (leftmost() == original) {
+            if (SBFontRight(original) == g_unk0x006c191c) leftmost() = SBFontParent(original);
+            else leftmost() = SBFontMinimum(replacement, g_unk0x006c191c);
+        }
+        if (rightmost() == original) {
+            if (SBFontLeft(original) == g_unk0x006c191c) rightmost() = SBFontParent(original);
+            else rightmost() = SBFontMaximum(replacement, g_unk0x006c191c);
+        }
+    }
+    if (SBFontColor(removed) == 1) {
+        while (replacement != root() && SBFontColor(replacement) == 1) {
+            if (replacement == SBFontLeft(SBFontParent(replacement))) {
+                SBFontNode0061fcb0 *sibling = SBFontRight(SBFontParent(replacement));
+                if (SBFontColor(sibling) == 0) {
+                    SBFontColor(sibling) = 1;
+                    SBFontColor(SBFontParent(replacement)) = 0;
+                    SBFontRotateLeft(this, SBFontParent(replacement), g_unk0x006c191c);
+                    sibling = SBFontRight(SBFontParent(replacement));
+                }
+                if (SBFontColor(SBFontLeft(sibling)) == 1 && SBFontColor(SBFontRight(sibling)) == 1) {
+                    SBFontColor(sibling) = 0;
+                    replacement = SBFontParent(replacement);
+                } else {
+                    if (SBFontColor(SBFontRight(sibling)) == 1) {
+                        SBFontColor(SBFontLeft(sibling)) = 1;
+                        SBFontColor(sibling) = 0;
+                        SBFontRotateRight(this, sibling, g_unk0x006c191c);
+                        sibling = SBFontRight(SBFontParent(replacement));
+                    }
+                    SBFontColor(sibling) = SBFontColor(SBFontParent(replacement));
+                    SBFontColor(SBFontParent(replacement)) = 1;
+                    SBFontColor(SBFontRight(sibling)) = 1;
+                    SBFontRotateLeft(this, SBFontParent(replacement), g_unk0x006c191c);
+                    break;
+                }
+            } else {
+                SBFontNode0061fcb0 *sibling = SBFontLeft(SBFontParent(replacement));
+                if (SBFontColor(sibling) == 0) {
+                    SBFontColor(sibling) = 1;
+                    SBFontColor(SBFontParent(replacement)) = 0;
+                    SBFontRotateRight(this, SBFontParent(replacement), g_unk0x006c191c);
+                    sibling = SBFontLeft(SBFontParent(replacement));
+                }
+                if (SBFontColor(SBFontRight(sibling)) == 1 && SBFontColor(SBFontLeft(sibling)) == 1) {
+                    SBFontColor(sibling) = 0;
+                    replacement = SBFontParent(replacement);
+                } else {
+                    if (SBFontColor(SBFontLeft(sibling)) == 1) {
+                        SBFontColor(SBFontRight(sibling)) = 1;
+                        SBFontColor(sibling) = 0;
+                        SBFontRotateLeft(this, sibling, g_unk0x006c191c);
+                        sibling = SBFontLeft(SBFontParent(replacement));
+                    }
+                    SBFontColor(sibling) = SBFontColor(SBFontParent(replacement));
+                    SBFontColor(SBFontParent(replacement)) = 1;
+                    SBFontColor(SBFontLeft(sibling)) = 1;
+                    SBFontRotateRight(this, SBFontParent(replacement), g_unk0x006c191c);
+                    break;
+                }
+            }
+        }
+        SBFontColor(replacement) = 1;
+    }
+    operator delete(removed);
+    --m_0c;
+    return position;
+}
+
+// FUNCTION: GAME 0x00620960
+void SBFontTree0061fcb0::FUN_00620960(const SBFontTree0061fcb0 &other)
+{
+    SBFontLock lock;
+    root() = SBFontCopyNodes(this, other.m_04->m_04, m_04);
+    m_0c = other.size();
+    if (root() != g_unk0x006c191c) {
+        leftmost() = SBFontMinimum(root(), g_unk0x006c191c);
+        rightmost() = SBFontMaximum(root(), g_unk0x006c191c);
+    } else {
+        leftmost() = m_04;
+        rightmost() = m_04;
+    }
+}
+
+// FUNCTION: GAME 0x00620ae0
+void SBFontTree0061fcb0::FUN_00620ae0(SBFontNode0061fcb0 *node)
+{
+    SBFontLock lock;
+    SBFontNode0061fcb0 *current = node;
+    while (current != g_unk0x006c191c)
+    {
+        FUN_00620ae0(current->m_08);
+        current = current->m_00;
+        operator delete(node);
+        node = current;
+    }
+}
+
+// FUNCTION: GAME 0x00620b70
+void SBFontTree0061fcb0::FUN_00620b70()
+{
+    SBFontLock lock;
+    if (!g_unk0x006c191c)
+    {
+        SBFontNode0061fcb0 *node = (SBFontNode0061fcb0 *)operator new(sizeof(SBFontNode0061fcb0));
+        node->m_04 = 0;
+        node->m_10 = 1;
+        g_unk0x006c191c = node;
+        g_unk0x006c191c->m_00 = 0;
+        g_unk0x006c191c->m_08 = 0;
+    }
+    ++g_unk0x006c1920;
+    SBFontNode0061fcb0 *parent = g_unk0x006c191c;
+    SBFontNode0061fcb0 *node = (SBFontNode0061fcb0 *)operator new(sizeof(SBFontNode0061fcb0));
+    node->m_04 = parent;
+    node->m_10 = 0;
+    m_04 = node;
+    m_0c = 0;
+    m_04->m_00 = m_04;
+    m_04->m_08 = m_04;
+}
+
+// FUNCTION: GAME 0x00620c20
+SBFontNode0061fcb0 *SBFontTree0061fcb0::FUN_00620c20(const unsigned short &key)
+{
+    SBFontLock lock;
+    SBFontNode0061fcb0 *head = m_04;
+    SBFontNode0061fcb0 *node = head->m_04;
+    SBFontNode0061fcb0 *result = head;
+    while (node != g_unk0x006c191c)
+    {
+        if (node->m_0c < key)
+            node = node->m_08;
+        else
+        {
+            result = node;
+            node = node->m_00;
+        }
+    }
+    return result;
+}
+
 void SBFontEmit(SBFontUnk0061e840 *font, unsigned short value)
 {
     font->FUN_0061e810(value, 0);
@@ -319,6 +709,8 @@ void SBFontEmit(SBFontUnk0061e840 *font, unsigned short value)
     tree.FUN_0061fe10(value);
     tree.FUN_0061eea0();
     tree.FUN_0061f2b0(value);
+    tree.FUN_00620ae0(g_unk0x006c191c);
+    tree.FUN_00620440(tree.begin());
     SBFontValue0061f120 pair(std::string(), tree);
     g_unk0x006c1900.FUN_0061f3e0(pair);
 }
