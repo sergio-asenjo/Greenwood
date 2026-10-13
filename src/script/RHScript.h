@@ -62,6 +62,7 @@ public:
     void Unk00410600();
     void Unk00410010(bool mode);
     bool InitState();
+    void Unk00416710(unsigned value);
 };
 
 class RHUnk0046bd20

@@ -1357,7 +1357,13 @@ void *RHScript::GetActorLocation(void *actor)
     return location;
 }
 
-// Parked: 95.97%; vbase offset inlining helps, with flag and return scheduling still different.
+class RHElementActorHuman
+{
+public:
+    void FUN_0047ca50();
+};
+
+// Parked: the area-flag test takes eax where the target uses edx.
 // STUB: GAME 0x005718d0
 bool RHScript::SetActorLocation(void *actor, void *location)
 {
@@ -1374,7 +1380,7 @@ bool RHScript::SetActorLocation(void *actor, void *location)
         *(char *)((char *)actor + 0x88) = 1;
         if ((*(unsigned int *)((char *)actor + 4) & 7) == 4)
         {
-            ((RHUnk0047ca50 *)actor)->Unk();
+            ((RHElementActorHuman *)actor)->FUN_0047ca50();
             g_unk0x6c10e8->Unk(actor);
         }
         if ((*(unsigned int *)((char *)actor + 4) & 15) == 12)
@@ -4339,45 +4345,41 @@ void FUN_005782a0(void *object, bool value)
     }
 }
 
-// Parked: VC6 argument/register scheduling differs across three source shapes.
-// STUB: GAME 0x005783b0
+// FUNCTION: GAME 0x005783b0
 bool RHScript::RecordStartMobileElement(int index)
 {
     RHUnk00584d60 *element = new RHUnk00584d60(g_unk0x6c0fa4, 0x9c,
-        (*(void ***)((char *)g_pEngine + 0x497c))[index]);
+        (*(std::vector<void *> *)((char *)g_pEngine + 0x4978))[index]);
     return AddToSequence((RHSequenceElement *)element,
                          // STRING: GAME 0x006b58b0
                          "RecordStartMobileElement");
 }
 
-// Parked: VC6 argument/register scheduling differs across three source shapes.
-// STUB: GAME 0x00578430
+// FUNCTION: GAME 0x00578430
 bool RHScript::RecordStopMobileElement(int index)
 {
     RHUnk00584d60 *element = new RHUnk00584d60(g_unk0x6c0fa4, 0x9d,
-        (*(void ***)((char *)g_pEngine + 0x497c))[index]);
+        (*(std::vector<void *> *)((char *)g_pEngine + 0x4978))[index]);
     return AddToSequence((RHSequenceElement *)element,
                          // STRING: GAME 0x006b58cc
                          "RecordStopMobileElement");
 }
 
-// Parked: VC6 argument/register scheduling differs across three source shapes.
-// STUB: GAME 0x005784b0
+// FUNCTION: GAME 0x005784b0
 bool RHScript::RecordActivateMobileElement(int index)
 {
     RHUnk00584d60 *element = new RHUnk00584d60(g_unk0x6c0fa4, 0x9e,
-        (*(void ***)((char *)g_pEngine + 0x497c))[index]);
+        (*(std::vector<void *> *)((char *)g_pEngine + 0x4978))[index]);
     return AddToSequence((RHSequenceElement *)element,
                          // STRING: GAME 0x006b58e4
                          "RecordActiveMobileElement");
 }
 
-// Parked: VC6 argument/register scheduling differs across three source shapes.
-// STUB: GAME 0x00578530
+// FUNCTION: GAME 0x00578530
 bool RHScript::RecordDeactivateMobileElement(int index)
 {
     RHUnk00584d60 *element = new RHUnk00584d60(g_unk0x6c0fa4, 0x9f,
-        (*(void ***)((char *)g_pEngine + 0x497c))[index]);
+        (*(std::vector<void *> *)((char *)g_pEngine + 0x4978))[index]);
     return AddToSequence((RHSequenceElement *)element,
                          // STRING: GAME 0x006b5900
                          "RecordDeactivateMobileElement");
@@ -5567,7 +5569,13 @@ void RHScript::SetNPCEmoticon(void *actor, int emoticon, int duration)
     }
 }
 
-// 100% effective only; push eax precedes mov ecx,edi instead of following it.
+class RHMissionStat
+{
+public:
+    void FUN_0054cfa0(const void *source);
+};
+
+// Parked: the campaign-call argument push precedes mov ecx,edi; the target loads the receiver first.
 // STUB: GAME 0x0057afe0
 void RHScript::AddPCToGang(void *actor)
 {
@@ -5584,7 +5592,7 @@ void RHScript::AddPCToGang(void *actor)
     void *description = *(void *volatile *)((char *)actor + 0x5f8);
     campaign->Unk004522e0(description);
     actor = *(void **)((char *)actor + 0x5f8);
-    engine->Unk004e3cc0()->Unk0054cfa0(actor);
+    ((RHMissionStat *)engine->Unk004e3cc0())->FUN_0054cfa0(actor);
 }
 
 // FUNCTION: GAME 0x0057b080
@@ -5836,8 +5844,7 @@ void RHScript::SelectActorPC(void *actor, bool selected)
     }
 }
 
-// Parked: 96.51%; counted search and word-result register scheduling remain non-exact.
-// STUB: GAME 0x0057bed0
+// FUNCTION: GAME 0x0057bed0
 bool RHScript::HasAnyActionSelected(void *actor)
 {
     if (!RHUnk005709c0(actor))
@@ -5857,8 +5864,8 @@ bool RHScript::HasAnyActionSelected(void *actor)
             int size = engine->selection.count;
             engine->selection.searchValue = actor;
             engine->selection.searchValid = true;
-            volatile RHScriptNode *head = engine->selection.head;
-            engine->selection.cursor.node = head->next;
+            RHScriptNode *first = *(RHScriptNode *volatile *)&engine->selection.head->next;
+            engine->selection.cursor.node = first;
             int index = 0;
             for (; index < size; ++index, ((RHSectorActorIter &)engine->selection.cursor)++)
                 if (engine->selection.cursor.node->data == engine->selection.searchValue) break;
