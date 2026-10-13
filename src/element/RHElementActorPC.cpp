@@ -276,7 +276,7 @@ void RHElementActorPC::FUN_0049d890(unsigned short action)
     if (RHActorPCField<char>(menu, 0xca9))
         RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk005492a0(26, this, action));
     else
-        menu->FUN_005d9950(action);
+        ((RHGamePortraitCalls *)menu)->FUN_005d9950(action);
 }
 
 // Parked: EH prologue and receiver/index register allocation differ.
@@ -290,7 +290,7 @@ void RHElementActorPC::FUN_0049d960(unsigned short action)
         if (RHActorPCField<char>(menu, 0xca9))
             RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk005492a0(27, this, action));
         else
-            menu->FUN_005d9a60(action);
+            ((RHGamePortraitCalls *)menu)->FUN_005d9a60(action);
     }
 }
 
@@ -308,7 +308,7 @@ void RHElementActorPC::FUN_0049da00(unsigned short action)
     if (RHActorPCField<char>(menu, 0xca9))
         RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk005492a0(26, this, action));
     else
-        menu->FUN_005d9950(action);
+        ((RHGamePortraitCalls *)menu)->FUN_005d9950(action);
 }
 
 // FUNCTION: GAME 0x0049dad0
@@ -321,7 +321,7 @@ void RHElementActorPC::FUN_0049dad0(unsigned short action)
         if (RHActorPCField<char>(menu, 0xca9))
             RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk005492a0(27, this, action));
         else
-            menu->FUN_005d9a60(action);
+            ((RHGamePortraitCalls *)menu)->FUN_005d9a60(action);
         int previous = RHActorPCField<int>(this, 0x504);
         if (FUN_0049d5c0(action) == previous)
             RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk005492a0(22, this, previous));

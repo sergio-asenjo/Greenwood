@@ -15,4 +15,87 @@
 
 char RHUnk005d73d0Actor::FUN_0049f510() { return 0; }
 void RHWidgetPortrait::FUN_005d9c30() {}
-void RHWidgetPortrait::FUN_005da1f0() {}
+void RHPortraitRendererCalls::FUN_005cb2a0() {}
+void RHPortraitRendererCalls::FUN_005cb2b0(int) {}
+RHPortraitRenderer005cadc0::RHPortraitRenderer005cadc0() {}
+RHPortraitRenderer005cadc0::~RHPortraitRenderer005cadc0() {}
+RHPortraitRenderer005ca330::RHPortraitRenderer005ca330() {}
+RHPortraitRenderer005ca330::~RHPortraitRenderer005ca330() {}
+RHPortraitRenderer005cc110::~RHPortraitRenderer005cc110() {}
+RHPortraitStrategyCalls::RHPortraitStrategyCalls() {}
+void RHPortraitRendererCalls::FUN_005cae10(int) {}
+void RHPortraitRendererCalls::FUN_005cafa0(unsigned) {}
+bool RHPortraitWidgetSetupCalls::FUN_0060d130(const std::wstring &, const SBGeoBoundingBox2D &, bool) { return true; }
+RHPortraitRootLifetime::RHPortraitRootLifetime() {}
+RHPortraitRootLifetime::~RHPortraitRootLifetime() {}
+void RHPortraitRootLifetime::FUN_0061a800(void *) {}
+void RHPortraitRootLifetime::FUN_0061aa30(void *) {}
+bool RHPortraitRootLifetime::FUN_0061a920(void *) { return true; }
+void *RHPortraitRootLifetime::FUN_0061a6e0(const void *) { return 0; }
+RHPortraitResourceCollection::RHPortraitResourceCollection(bool) {}
+RHPortraitResourceCollection::~RHPortraitResourceCollection() {}
+void RHPortraitCtorCalls::FUN_005d6940(unsigned short) {}
+RHPortraitResourceCalls *RHPortraitResourceCalls::FUN_00502270() { return this; }
+RHPortraitResourceCalls *FUN_005024f0(const std::string &) { return 0; }
+RHPortraitLifetime005d6320::RHPortraitLifetime005d6320() {}
+const std::wstring &RHPortraitActorCalls::FUN_00492730() { static std::wstring value; return value; }
+
+class RHPortraitRenderer0060dad0
+{
+public:
+    ~RHPortraitRenderer0060dad0();
+};
+
+class RHPortraitRenderer0060da10
+{
+public:
+    ~RHPortraitRenderer0060da10();
+};
+
+class RHPortraitRenderer0060d470
+{
+public:
+    ~RHPortraitRenderer0060d470();
+};
+
+RHPortraitRenderer0060dad0::~RHPortraitRenderer0060dad0() {}
+RHPortraitRenderer0060da10::~RHPortraitRenderer0060da10() {}
+RHPortraitRenderer0060d470::~RHPortraitRenderer0060d470() {}
+
+class RHUnk005490a0Message
+{
+public:
+    RHUnk005490a0Message(int command, int value);
+    ~RHUnk005490a0Message();
+    char data[0x10];
+};
+
+struct RHPortraitQuickEntry
+{
+    ~RHPortraitQuickEntry();
+};
+
+RHPortraitQuickEntry::~RHPortraitQuickEntry() {}
+
+class RHPortraitPCList
+{
+public:
+    void FUN_005c8e40(unsigned index);
+};
+
+void RHPortraitPCList::FUN_005c8e40(unsigned) {}
+RHPortraitUnk005cf320::~RHPortraitUnk005cf320() {}
+RHPortraitUnk005cf570::~RHPortraitUnk005cf570() {}
+RHPortraitUnk005d0180::~RHPortraitUnk005d0180() {}
+RHPortraitInputRenderer::~RHPortraitInputRenderer() {}
+RHPortraitInputRenderer::RHPortraitInputRenderer() {}
+void RHPortraitInputRenderer::FUN_0061d570(unsigned short, int) {}
+unsigned RHPortraitInputRenderer::FUN_0061d5e0() { return 0; }
+SBGeoBoundingBox2D RHPortraitInputRenderer::FUN_0061d3f0(unsigned short, int) { return SBGeoBoundingBox2D(); }
+SBGeoBoundingBox2D RHPortraitInputRenderer::FUN_0061d7c0() { return SBGeoBoundingBox2D(); }
+bool RHPortraitInputCalls::FUN_005cfc30(const void *) { return false; }
+RHPortraitRenderer006212d0::RHPortraitRenderer006212d0() {}
+RHPortraitRenderer006212d0::~RHPortraitRenderer006212d0() {}
+RHPortraitText0061db10::RHPortraitText0061db10() {}
+RHPortraitText0061db10::~RHPortraitText0061db10() {}
+void *RHPortraitUIOwner::FUN_004fffd0() { return *(void **)((char *)this + 0x6c); }

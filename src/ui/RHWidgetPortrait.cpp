@@ -31,6 +31,8 @@
 #include "SBNullstr.h"
 #include "RHWidgetPortrait.h"
 #include "../engine/RHGame_calls.h"
+#include "../engine/SBUIRenderer.h"
+#include "../element/RHElementActorPC.h"
 
 DECOMP_SIZE_ASSERT(RHWidgetPortrait, 0xe58)
 DECOMP_SIZE_ASSERT(RHUnk005d92c0Sub, 0x04)
@@ -46,6 +48,2465 @@ float g_unk0x0067a554 = 52.0f;
 #define W(O) (*(RHUnk005d92c0Sub *)((char *)this + (O)))
 #define P(O) (*(SBGeoPoint2D *)((char *)this + (O)))
 #define A (*(RHUnk005d73d0Actor **)((char *)this + 0xe1c))
+
+class RHMobileUnk006091b0
+{
+public:
+    RHMobileUnk006091b0 &FUN_006091b0(const SBGeoPoint2D &point);
+};
+
+class RHMapBox
+{
+public:
+    RHMapBox(float left, float top, float right, float bottom);
+    SBGeoPoint2D m_first;
+    SBGeoPoint2D m_second;
+    int m_10;
+};
+
+class RHMobileUnk00607da0
+{
+public:
+    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
+};
+
+extern float g_unk0x006775d8;
+extern RHUnk00514e10::Node *g_unk0x006c0b48;
+extern unsigned g_unk0x006c0b4c;
+
+inline void RHPortraitClearMap(RHUnk00514e10 &map)
+{
+    map.FUN_00514ec0(RHUnk00514e10::Iterator(map.m_head->left), RHUnk00514e10::Iterator(map.m_head));
+    operator delete(map.m_head);
+    map.m_head = 0;
+    map.m_size = 0;
+}
+
+class RHPortraitAnimated
+{
+public:
+    RHPortraitAnimated(int id);
+    ~RHPortraitAnimated()
+    {
+        RHUnk00514e10 &map = m_map;
+        RHPortraitClearMap(map);
+        RHUnk00641782 guard;
+        if (--g_unk0x006c0b4c == 0)
+        {
+            operator delete(g_unk0x006c0b48);
+            g_unk0x006c0b48 = 0;
+        }
+    }
+    int m_id;
+    RHUnk00514e10 m_map;
+    int m_state;
+    char m_handled;
+};
+
+struct RHPortraitWidgetEvent;
+
+class RHPortraitTree
+{
+public:
+    RHUnk00514e10::Node *FUN_005d5840(const RHPortraitWidgetEvent &event);
+    undefined m_00[4];
+    RHUnk00514e10::Node *m_head;
+};
+
+struct RHPortraitWidgetEvent
+{
+    int type;
+    void *widget;
+    int value;
+    RHPortraitWidgetEvent *next;
+};
+
+class RHPortraitBoxEvent
+{
+public:
+    ~RHPortraitBoxEvent();
+    int m_type;
+    SBGeoBoundingBox2D m_box;
+    void *m_widget;
+    void *m_next;
+};
+
+class RHPortraitUnk005d3880;
+
+struct RHPortraitWidgetUI
+{
+    undefined m_00[0x17f0];
+    RHPortraitUnk005d3880 *m_selected;
+    RHPortraitUnk005d3880 *m_captured;
+    void Clear()
+    {
+        m_selected = 0;
+        m_captured = 0;
+    }
+};
+
+struct RHPortraitWidgetInput
+{
+    SBGeoPoint2D point;
+    undefined m_08[2];
+    unsigned short flags;
+    RHGameWidgetInputCalls *shortcuts;
+    RHPortraitWidgetUI *ui;
+};
+
+class RHPortraitWidgetStrategy
+{
+public:
+    virtual void v0(unsigned flags) = 0;
+    virtual void v1(unsigned value) = 0;
+    virtual void v2() = 0;
+    virtual void v3() = 0;
+    virtual void v4() = 0;
+    virtual RHPortraitWidgetEvent *v5(const void *input) = 0;
+    virtual void v6(const RHPortraitWidgetInput &input) = 0;
+    virtual void v7(const SBGeoBoundingBox2D &box) = 0;
+    virtual void v8(const SBGeoPoint2D &point) = 0;
+    undefined m_04[0xd8 - 4];
+};
+
+class RHPortraitUnk005d3880
+{
+public:
+    int FUN_005d3880(const SBGeoPoint2D &point);
+    RHPortraitWidgetEvent *FUN_005d3a10(const RHPortraitWidgetInput &input);
+    void FUN_005d3a60(const RHPortraitWidgetInput &input);
+    void FUN_005d3a80(const void *stop);
+    void FUN_005d3ab0(RHPortraitUnk005d3880 *linked);
+    bool FUN_005d3b00(char value);
+    void *FUN_005d3b10();
+    RHPortraitWidgetEvent *FUN_005d3b20(const void *input);
+    int FUN_005d3b60(const SBGeoPoint2D &point);
+    int FUN_005d4db0(const SBGeoPoint2D &point);
+    RHPortraitWidgetEvent *FUN_005d4d60(const RHPortraitWidgetInput &input);
+    RHPortraitWidgetEvent *FUN_005d4e50(const RHPortraitWidgetInput &input);
+    RHPortraitWidgetEvent *FUN_005d4ec0(const RHPortraitWidgetInput &input);
+    RHPortraitWidgetEvent *FUN_005d4f30(const RHPortraitWidgetInput &input);
+    RHPortraitWidgetEvent *FUN_005d4f80(const RHPortraitWidgetInput &input);
+    RHPortraitWidgetEvent *FUN_005d4fe0(const RHPortraitWidgetInput &input);
+    RHPortraitWidgetEvent *FUN_005d4cb0(const RHPortraitWidgetInput &input);
+    bool FUN_005d4bb0(int mode, const std::wstring &text, const SBGeoPoint2D &origin, int resource);
+    int FUN_005d5230();
+    int FUN_005d52d0();
+    RHPortraitWidgetEvent *FUN_005d53b0(const RHPortraitWidgetInput &input);
+    undefined m_00[0x4c];
+    RHPortraitWidgetEvent m_event;
+    undefined m_5c[0x7c - 0x5c];
+    int m_state;
+    undefined m_80[0xb8 - 0x80];
+    void *m_b8;
+    undefined m_bc[0xd8 - 0xbc];
+    char m_selected;
+    undefined m_d9[0x110 - 0xd9];
+    RHPortraitUnk005d3880 *m_linked;
+};
+
+class RHPortraitUnk005d3fe0
+{
+public:
+    void FUN_005d3fe0(unsigned value);
+    void FUN_005d4020();
+    void FUN_005d4060();
+    void FUN_005d40b0();
+    void *FUN_005d40f0(const RHPortraitWidgetInput &input);
+    RHPortraitWidgetEvent *FUN_005d3ef0(const RHPortraitWidgetInput &input);
+    RHPortraitWidgetEvent *FUN_005d4240(const RHPortraitWidgetInput &input);
+    void FUN_005d4280(const SBGeoPoint2D &point);
+    void FUN_005d4360(const SBGeoPoint2D &point);
+    RHPortraitWidgetEvent *FUN_005d4480(const RHPortraitWidgetInput &input);
+    RHPortraitWidgetEvent *FUN_005d45a0(const RHPortraitWidgetInput &input);
+    RHPortraitWidgetEvent *FUN_005d46e0(const RHPortraitWidgetInput &input);
+    undefined m_00[0x30];
+    SBGeoBoundingBox2D m_box;
+    undefined m_44[8];
+    RHPortraitWidgetEvent m_event;
+    undefined m_5c[0x20];
+    int m_state;
+    RHPortraitWidgetStrategy *m_widgets;
+    unsigned m_count;
+    unsigned m_index;
+    RHPortraitWidgetEvent **m_events;
+};
+
+class RHPortraitUnk005d5100
+{
+public:
+    RHPortraitWidgetEvent *FUN_005d3ac0();
+    RHPortraitWidgetEvent *FUN_005d5090();
+    int FUN_005d5100(const SBGeoPoint2D &point);
+    void *FUN_005d51a0();
+    RHPortraitWidgetEvent *FUN_005d51c0(char value);
+    RHPortraitWidgetEvent *FUN_005d5210(char value);
+    undefined m_00[0x30];
+    char m_30;
+    char m_31;
+};
+
+class RHPortraitUnk005d5950
+{
+public:
+    void FUN_005d5940();
+    void FUN_005d5950(int value);
+};
+
+DECOMP_SIZE_ASSERT(RHPortraitWidgetStrategy, 0xd8)
+DECOMP_SIZE_ASSERT(RHPortraitWidgetEvent, 0x10)
+
+class RHPortraitButtonDispatch
+{
+public:
+    virtual void v0() = 0;
+    virtual void v1() = 0;
+    virtual void v2() = 0;
+    virtual void v3() = 0;
+    virtual void v4() = 0;
+    virtual void v5() = 0;
+    virtual void v6() = 0;
+    virtual void v7() = 0;
+    virtual void v8() = 0;
+    virtual unsigned v9() = 0;
+    virtual void v10() = 0;
+    virtual void v11() = 0;
+    virtual void v12() = 0;
+    virtual void v13() = 0;
+    virtual void v14() = 0;
+    virtual RHPortraitWidgetEvent *v15(const RHPortraitWidgetInput &input) = 0;
+    virtual RHPortraitWidgetEvent *v16(const RHPortraitWidgetInput &input) = 0;
+    virtual RHPortraitWidgetEvent *v17(const RHPortraitWidgetInput &input) = 0;
+    virtual RHPortraitWidgetEvent *v18(const RHPortraitWidgetInput &input) = 0;
+    virtual int v19(const RHPortraitWidgetInput &input) = 0;
+    virtual void v20() = 0;
+    virtual void v21() = 0;
+    virtual RHPortraitWidgetEvent *v22(const RHPortraitWidgetInput &input) = 0;
+    virtual RHPortraitWidgetEvent *v23(const RHPortraitWidgetInput &input) = 0;
+    virtual RHPortraitWidgetEvent *v24(const RHPortraitWidgetInput &input) = 0;
+    virtual RHPortraitWidgetEvent *v25(const RHPortraitWidgetInput &input) = 0;
+    virtual RHPortraitWidgetEvent *v26(const RHPortraitWidgetInput &input) = 0;
+    virtual RHPortraitWidgetEvent *v27(const RHPortraitWidgetInput &input) = 0;
+};
+
+class RHPortraitRendererDispatch
+{
+public:
+    virtual void v0() = 0;
+    virtual void v1() = 0;
+    virtual void v2() = 0;
+    virtual void v3(const SBGeoBoundingBox2D &box) = 0;
+};
+
+extern float g_unk0x00677488;
+
+inline void RHPortraitAssignWideText(void *destination, const std::wstring &text)
+{
+    std::wstring &(std::wstring::*assign)(const std::wstring &, unsigned, unsigned) = &std::wstring::assign;
+    (((std::wstring *)destination)->*assign)(text, 0, std::basic_string<unsigned short>::npos);
+}
+
+inline int &RHPortraitMapLookup(RHUnk00514e10 &map, int key)
+{
+    RHUnk00514e10::Value value(key, 0);
+    RHUnk00514e10::Pair result;
+    result = map.FUN_00514ff0(value);
+    return result.first.node->value.second;
+}
+
+class RHPortraitLifetime005d5350 : public RHGameWidgetLifetimeBase
+{
+public:
+    RHPortraitLifetime005d5350()
+    {
+        m_vptr = 0x0067a2f0;
+        m_state = 6;
+    }
+    ~RHPortraitLifetime005d5350();
+    void *FUN_005d55f0(unsigned flags);
+    RHPortraitRenderer005cadc0 m_renderer;
+};
+
+class RHPortraitRadioLifetimeBase : public RHPortraitLifetime005d5350
+{
+public:
+    RHPortraitRadioLifetimeBase() : m_selected(0) {}
+    char m_selected;
+    undefined m_d9[3];
+    unsigned m_strategy;
+};
+
+class RHPortraitRadioLifetime : public RHPortraitRadioLifetimeBase, public RHPortraitAnimated
+{
+public:
+    RHPortraitRadioLifetime();
+    ~RHPortraitRadioLifetime();
+    void *FUN_005d4ab0(unsigned flags);
+    RHPortraitWidgetEvent m_secondary;
+    char m_10c;
+    char m_10d;
+    undefined m_10e[2];
+};
+
+class RHPortraitLinkedLifetime : public RHPortraitRadioLifetime
+{
+public:
+    RHPortraitLinkedLifetime();
+    ~RHPortraitLinkedLifetime();
+    void *FUN_005d39d0(unsigned flags);
+    void *m_linked;
+};
+
+class RHPortraitGroupLifetimeBase : public RHGameWidgetLifetimeBase
+{
+public:
+    RHPortraitGroupLifetimeBase() : m_widgets(0), m_count(0), m_index(0)
+    {
+        m_vptr = 0x0067a240;
+    }
+    ~RHPortraitGroupLifetimeBase();
+    void *FUN_005d4410(unsigned flags);
+    RHPortraitWidgetStrategy *m_widgets;
+    unsigned m_count;
+    unsigned m_index;
+    RHPortraitWidgetEvent **m_events;
+    int m_type;
+    SBGeoBoundingBox2D m_box;
+    void *m_widget;
+    void *m_next;
+};
+
+class RHPortraitGroupLifetime : public RHPortraitGroupLifetimeBase, public RHPortraitAnimated
+{
+public:
+    RHPortraitGroupLifetime();
+    ~RHPortraitGroupLifetime();
+    void *FUN_005d3dc0(unsigned flags);
+};
+
+DECOMP_SIZE_ASSERT(RHPortraitRadioLifetime, 0x110)
+DECOMP_SIZE_ASSERT(RHPortraitGroupLifetimeBase, 0xb0)
+
+class RHPortraitLifetime005d6260 : public RHGameWidgetLifetimeBase
+{
+public:
+    ~RHPortraitLifetime005d6260();
+    RHGameRenderer0060da10 m_renderer;
+};
+
+class RHPortraitLifetime005d62c0 : public RHGameWidgetLifetimeBase
+{
+public:
+    ~RHPortraitLifetime005d62c0();
+    RHGameRenderer0060da10 m_renderer;
+};
+
+class RHPortraitActionWidget : public RHPortraitLifetime005d6200
+{
+public:
+    RHPortraitActionWidget()
+    {
+        m_state = 0;
+        m_vptr = 0x0067a48c;
+        m_messages[0] = 0;
+        m_messages[1] = 0;
+        m_messages[2] = 0;
+        m_messages[3] = 0;
+    }
+    int m_messages[4];
+};
+
+class RHPortraitMessageBitmap : public RHGameLifetime00515f00
+{
+public:
+    RHPortraitMessageBitmap()
+    {
+        m_state = 0;
+        m_vptr = 0x0067a434;
+        m_messages[0] = 0;
+        m_messages[1] = 0;
+        m_messages[2] = 0;
+        m_messages[3] = 0;
+    }
+    int m_messages[4];
+};
+
+class RHPortraitMessageWidget : public RHPortraitMessageWidgetBase
+{
+public:
+    RHPortraitMessageWidget()
+    {
+        m_value = 0;
+        m_vptr = 0x0067a3d0;
+        m_messages[0] = 0;
+        m_messages[1] = 0;
+        m_messages[2] = 0;
+        m_messages[3] = 0;
+    }
+    int m_messages[4];
+    int m_e4;
+};
+
+class RHPortraitBitmap : public RHPortraitLifetime005d6260
+{
+public:
+    RHPortraitBitmap()
+    {
+        m_vptr = 0x00678b60;
+        m_state = 0;
+    }
+};
+
+class RHPortraitCustomBitmap : public RHGameLifetime00516a60
+{
+public:
+    RHPortraitCustomBitmap()
+    {
+        m_vptr = 0x00678bb8;
+        m_state = 0;
+    }
+    undefined m_d0[0x24];
+};
+
+class RHPortraitCustomBackground : public RHGameLifetime00516a60
+{
+public:
+    RHPortraitCustomBackground()
+    {
+        m_vptr = 0x0067a398;
+    }
+    undefined m_d0[0x24];
+};
+
+class RHPortraitResourceInterface
+{
+public:
+    virtual void v0() = 0;
+    virtual void v1() = 0;
+    virtual void v2(unsigned flags) = 0;
+    virtual void v3() = 0;
+    virtual void v4() = 0;
+    virtual void v5(RHPortraitResourceCollection &collection, bool value) = 0;
+    virtual void v6() = 0;
+};
+
+class RHPortraitFullLifetime : public RHPortraitRootLifetime
+{
+public:
+    RHPortraitFullLifetime(unsigned short index, RHPortraitActorCalls *actor);
+    ~RHPortraitFullLifetime();
+    void *FUN_005d61e0(unsigned flags);
+    RHPortraitActionWidget m_action;
+    RHPortraitMessageBitmap m_first;
+    RHPortraitMessageBitmap m_second;
+    RHPortraitMessageWidget m_buttonFirst;
+    RHPortraitMessageWidget m_buttonSecond;
+    RHPortraitMessageWidget m_buttonThird;
+    RHPortraitBitmap m_bitmapFirst;
+    RHPortraitCustomBitmap m_customFirst;
+    RHPortraitBitmap m_bitmapSecond;
+    RHPortraitCustomBackground m_customSecond;
+    RHPortraitLifetime005d6320 m_quick[3];
+    undefined m_c88[0x22];
+    unsigned short m_caa;
+    int m_cac;
+    undefined m_cb0[4];
+    SBGeoBoundingBox2D m_positions[9];
+    SBGeoBoundingBox2D m_hiddenPositions[9];
+    RHPortraitActorCalls *m_actor;
+    SBGeoPoint2D m_point;
+    RHPortraitResourceInterface *m_portraitResource;
+    RHPortraitResourceInterface *m_backgroundResource;
+    RHPortraitResourceCollection m_resources;
+    unsigned short m_e50[3];
+};
+
+class RHPortraitSetupDispatch
+{
+public:
+    virtual void v0() = 0;
+    virtual void v1(unsigned value) = 0;
+    virtual void v2() = 0;
+    virtual void v3() = 0;
+    virtual void v4() = 0;
+    virtual void v5() = 0;
+    virtual void v6() = 0;
+    virtual void v7() = 0;
+    virtual void v8() = 0;
+    virtual void v9() = 0;
+    virtual void v10() = 0;
+    virtual void v11() = 0;
+    virtual bool v12(const std::wstring &text, const SBGeoBoundingBox2D &box, bool value, const std::wstring &name) = 0;
+};
+
+inline const char *RHPortraitResourceName()
+{
+    // STRING: GAME 0x006b8e58
+    return "PCPortrait";
+}
+
+inline const char *RHPortraitBackgroundName()
+{
+    // STRING: GAME 0x006b01a0
+    return "Background";
+}
+
+inline const wchar_t *RHPortraitSwordName()
+{
+    // STRING: GAME 0x006b8e4c
+    return L"Sword";
+}
+
+DECOMP_SIZE_ASSERT(RHPortraitActionWidget, 0xec)
+DECOMP_SIZE_ASSERT(RHPortraitMessageBitmap, 0xdc)
+DECOMP_SIZE_ASSERT(RHPortraitMessageWidget, 0xe8)
+DECOMP_SIZE_ASSERT(RHPortraitCustomBitmap, 0xf4)
+DECOMP_SIZE_ASSERT(RHPortraitFullLifetime, 0xe58)
+
+#include <list>
+#include <vector>
+
+// FUNCTION: GAME 0x005d09b0
+void *RHPortraitUnk005cf320::FUN_005d09b0(unsigned flags)
+{
+    this->~RHPortraitUnk005cf320();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// FUNCTION: GAME 0x005d09d0
+void *RHPortraitUnk005cf570::FUN_005d09d0(unsigned flags)
+{
+    this->~RHPortraitUnk005cf570();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// FUNCTION: GAME 0x005d09f0
+void *RHPortraitUnk005d0180::FUN_005d09f0(unsigned flags)
+{
+    this->~RHPortraitUnk005d0180();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+class RHPortraitInputField
+{
+public:
+    RHPortraitWidgetEvent *FUN_005d0a10(const RHPortraitWidgetInput &input);
+    bool FUN_005d1630(const RHPortraitWidgetInput &input, unsigned short key);
+    void FUN_005d1670();
+    void FUN_005d1700();
+    bool FUN_005d1790(const RHPortraitWidgetInput &input);
+    RHPortraitWidgetEvent *FUN_005d1810(const RHPortraitWidgetInput &input);
+    RHPortraitInputRenderer &Renderer() { return *(RHPortraitInputRenderer *)((char *)this + 0x80); }
+    undefined m_00[0x4c];
+    RHPortraitWidgetEvent m_event;
+    undefined m_5c[0x7c - 0x5c];
+    int m_state;
+    undefined m_80[0x10c - 0x80];
+    int m_10c;
+    undefined m_110[0x13c - 0x110];
+    unsigned m_13c;
+    undefined m_140[0x188 - 0x140];
+    unsigned short m_188;
+    unsigned short m_18a;
+    unsigned short m_18c;
+};
+
+// Parked: Boolean tests still use test al,al instead of the retained zero register.
+// STUB: GAME 0x005d0a10
+RHPortraitWidgetEvent *RHPortraitInputField::FUN_005d0a10(const RHPortraitWidgetInput &input)
+{
+    RHPortraitWidgetEvent *result = 0;
+    Renderer().FUN_0061d570(m_18c, m_13c);
+    if (((RHPortraitInputCalls *)this)->FUN_005cfc30(&input))
+    {
+        result = &m_event;
+        m_state = 1;
+        m_event.widget = this;
+        m_event.value = 0;
+        m_event.next = 0;
+        result->type = 0;
+    }
+    else if (FUN_005d1790(input))
+    {
+        result = &m_event;
+        m_state = 4;
+        m_event.widget = this;
+        m_event.value = 0;
+        m_event.next = 0;
+        result->type = 0;
+    }
+    return result;
+}
+
+// FUNCTION: GAME 0x005d1630
+bool RHPortraitInputField::FUN_005d1630(const RHPortraitWidgetInput &input, unsigned short key)
+{
+    int pressed = input.shortcuts->FUN_0060e240(key);
+    int state = ((int *)((char *)input.shortcuts + 0xa0c))[key];
+    if (pressed == 1 && (state == 2 || state == 0))
+        return true;
+    return false;
+}
+
+// Parked: Constant-mask allocation and branch placement differ from the target.
+// STUB: GAME 0x005d1670
+void RHPortraitInputField::FUN_005d1670()
+{
+    unsigned short invalid = 0xffff;
+    unsigned short position = m_188;
+    if (position != invalid)
+    {
+        if (position < m_10c - 1)
+        {
+            unsigned short line = m_18c;
+            m_188 = position + 1;
+            if (m_188 >= Renderer().FUN_0061d5e0() + line)
+                m_18c = line + 1;
+        }
+    }
+    else
+        m_188 = m_18a != invalid ? m_18a : m_18c;
+    m_18a = invalid;
+}
+
+// Parked: The compiler folds the invalid index instead of retaining it in esi.
+// STUB: GAME 0x005d1700
+void RHPortraitInputField::FUN_005d1700()
+{
+    unsigned short invalid = 0xffff;
+    if (m_188 == invalid)
+    {
+        unsigned short position = m_18a != invalid ? m_18a : m_18c;
+        m_18a = invalid;
+        m_188 = position;
+        return;
+    }
+    if (m_188 > 0)
+    {
+        unsigned short line = m_18c;
+        --m_188;
+        if (m_188 < line)
+            m_18c = line - 1;
+    }
+    m_18a = invalid;
+}
+
+// FUNCTION: GAME 0x005d1790
+bool RHPortraitInputField::FUN_005d1790(const RHPortraitWidgetInput &input)
+{
+    return Renderer().FUN_0061d7c0().FUN_00608400(input.point);
+}
+
+// Parked: Scroll locals and renderer stores have different register allocation and scheduling.
+// STUB: GAME 0x005d1810
+RHPortraitWidgetEvent *RHPortraitInputField::FUN_005d1810(const RHPortraitWidgetInput &input)
+{
+    RHPortraitWidgetEvent *result = 0;
+    short delta = *(short *)input.m_08;
+    if (delta > 0)
+    {
+        if (m_18c > 0)
+        {
+            --m_18c;
+            Renderer().FUN_0061d570(m_18c, m_13c);
+            m_event.next = 0;
+            m_event.widget = this;
+            RHPortraitWidgetEvent *event = &m_event;
+            m_event.value = 0;
+            event->type = 13;
+            return event;
+        }
+    }
+    else if (delta < 0)
+    {
+        unsigned limit = m_13c;
+        unsigned short line = m_18c;
+        RHPortraitInputRenderer &renderer = Renderer();
+        if (renderer.FUN_0061d5e0() + line + 1 <= limit)
+        {
+            m_18c = line + 1;
+            renderer.FUN_0061d570(m_18c, m_13c);
+            m_event.next = 0;
+            m_event.widget = this;
+            RHPortraitWidgetEvent *event = &m_event;
+            m_event.value = 0;
+            event->type = 12;
+            return event;
+        }
+    }
+    return result;
+}
+
+struct RHPortraitTextLine
+{
+    int m_00;
+    int m_04;
+    int m_08;
+    int m_0c;
+};
+
+class RHPortraitTextLines
+{
+public:
+    RHPortraitTextLines();
+    std::list<RHPortraitTextLine> m_list;
+    std::list<RHPortraitTextLine>::iterator m_current;
+    bool m_dirty;
+    int m_index;
+    undefined m_18[8];
+    std::vector<int> m_vector;
+};
+
+// FUNCTION: GAME 0x005d1aa0
+RHPortraitTextLines::RHPortraitTextLines() : m_dirty(true)
+{
+}
+
+class RHPortraitInputRendererMember : public RHPortraitInputRenderer
+{
+public:
+    RHPortraitInputRendererMember()
+    {
+        m_vptr = 0x0067a044;
+    }
+};
+
+class RHPortraitInputWidget : public RHGameWidgetLifetimeBase
+{
+public:
+    RHPortraitInputWidget();
+    RHPortraitInputRendererMember m_renderer;
+};
+
+// FUNCTION: GAME 0x005d1ae0
+RHPortraitInputWidget::RHPortraitInputWidget()
+{
+    m_vptr = 0x0067a00c;
+}
+
+// FUNCTION: GAME 0x005d1b40
+void *RHPortraitInputRenderer::FUN_005d1b40(unsigned flags)
+{
+    this->~RHPortraitInputRenderer();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+class RHPortraitButtonBase : public RHGameWidgetLifetimeBase
+{
+public:
+    RHPortraitButtonBase()
+    {
+        m_vptr = 0x0067a0a8;
+    }
+    ~RHPortraitButtonBase();
+    void *FUN_005d24f0(unsigned flags);
+    void FUN_005d24c0();
+    RHPortraitRenderer005cadc0 m_renderer;
+    unsigned m_strategy;
+};
+
+class RHPortraitButton : public RHPortraitButtonBase, public RHPortraitAnimated
+{
+public:
+    RHPortraitButton();
+    ~RHPortraitButton();
+    void *FUN_005d1ce0(unsigned flags);
+    bool FUN_005d1e30(int mode, const std::wstring &text, int resource);
+    RHPortraitWidgetEvent *FUN_005d2000(const RHPortraitWidgetInput &input);
+    RHPortraitWidgetEvent *FUN_005d2090(const RHPortraitWidgetInput &input);
+    RHPortraitWidgetEvent *FUN_005d2120(const RHPortraitWidgetInput &input);
+    RHPortraitWidgetEvent *FUN_005d21f0(const RHPortraitWidgetInput &input);
+    RHPortraitWidgetEvent *FUN_005d22c0(const RHPortraitWidgetInput &input);
+    int FUN_005d23f0();
+    SBGeoBoundingBox2D &Box() { return *(SBGeoBoundingBox2D *)((char *)this + 0x30); }
+    RHPortraitWidgetEvent &Event() { return *(RHPortraitWidgetEvent *)((char *)this + 0x4c); }
+    int m_f8;
+    char m_fc;
+};
+
+class RHPortraitButtonStrategy
+{
+public:
+    RHPortraitWidgetEvent *FUN_005d1de0();
+    int FUN_005d1f50(const SBGeoPoint2D &point);
+    RHPortraitWidgetEvent *FUN_005d2370(bool value);
+    RHPortraitWidgetEvent *FUN_005d23d0(bool value);
+    undefined m_00[0x20];
+    int m_20;
+};
+
+DECOMP_SIZE_ASSERT(RHPortraitButton, 0x100)
+
+// FUNCTION: GAME 0x005d1bf0
+RHPortraitButton::RHPortraitButton() : RHPortraitAnimated(2)
+{
+    ((RHPortraitStrategyCalls *)&m_strategy)->RHPortraitStrategyCalls::RHPortraitStrategyCalls();
+    m_strategy = 0x0067a08c;
+    m_f8 = 0;
+    m_fc = 0;
+    m_vptr = 0x0067a054;
+    RHUnk00514e10 &map = m_map;
+    RHPortraitMapLookup(map, 0) = 1;
+    RHPortraitMapLookup(map, 2) = 0;
+}
+
+// FUNCTION: GAME 0x005d1ce0
+void *RHPortraitButton::FUN_005d1ce0(unsigned flags)
+{
+    this->~RHPortraitButton();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// Parked: Inlined map cleanup needs an extra temporary slot and shifts the EH frame.
+// STUB: GAME 0x005d1d00
+RHPortraitButton::~RHPortraitButton()
+{
+    m_vptr = 0x0067a054;
+    m_strategy = 0x0067a08c;
+}
+
+// FUNCTION: GAME 0x005d1de0
+RHPortraitWidgetEvent *RHPortraitButtonStrategy::FUN_005d1de0()
+{
+    RHPortraitWidgetEvent *event = 0;
+    if (*((char *)this - 0xd4))
+    {
+        RHGameWidgetAnimatedCalls *animated = (RHGameWidgetAnimatedCalls *)((char *)this + 4);
+        *(void **)((char *)this - 0x88) = (char *)this - 0xd8;
+        event = (RHPortraitWidgetEvent *)((char *)this - 0x8c);
+        event->type = 2;
+        *(int *)((char *)this - 0x84) = 0;
+        *(int *)((char *)this - 0x80) = 0;
+        animated->FUN_005d5790(event, *(int *)((char *)this - 0x5c), 0);
+    }
+    return event;
+}
+
+// Parked: The box address and resource input have different constructor-call live ranges.
+// STUB: GAME 0x005d1e30
+bool RHPortraitButton::FUN_005d1e30(int mode, const std::wstring &text, int resource)
+{
+    {
+        RHMapBox box(0.0f, 0.0f, 0.0f, 0.0f);
+        if (!resource)
+            resource = -1;
+        ((RHPortraitWidgetSetupCalls *)this)->FUN_0060d130(text, *(SBGeoBoundingBox2D *)&box, false);
+        RHPortraitRendererDispatch *renderer = (RHPortraitRendererDispatch *)((char *)this + 0x80);
+        renderer->v3(*(SBGeoBoundingBox2D *)&box);
+        ((SBUIUnk0060d530 *)renderer)->FUN_0060d550(resource);
+        *(int *)((char *)this + 0xa4) = 0;
+        RHPortraitAssignWideText((char *)this + 0xa8, text);
+        SBGeoBoundingBox2D &bounds = Box();
+        if (bounds.m_second.m_x - bounds.m_first.m_x == g_unk0x00677488)
+            bounds.FUN_00607da0(*(SBGeoBoundingBox2D *)((SBUIUnk0060d530 *)renderer)->FUN_0060d690());
+    }
+    ((RHPortraitRendererCalls *)((char *)this + 0x80))->FUN_005cae10(mode);
+    return true;
+}
+
+// FUNCTION: GAME 0x005d1f50
+int RHPortraitButtonStrategy::FUN_005d1f50(const SBGeoPoint2D &point)
+{
+    SBGeoBoundingBox2D &box = *(SBGeoBoundingBox2D *)((char *)this - 0xa8);
+    if (box.FUN_006083b0(point) &&
+        ((RHGameWidgetRendererCalls *)((char *)this - 0x58))->FUN_0060d890(point.Unk005fc110(*(SBGeoPoint2D *)&box)) == true)
+        return true;
+    return false;
+}
+
+// FUNCTION: GAME 0x005d2000
+RHPortraitWidgetEvent *RHPortraitButton::FUN_005d2000(const RHPortraitWidgetInput &input)
+{
+    RHPortraitWidgetEvent *event;
+    if (!*((char *)this + 4))
+        event = 0;
+    else
+    {
+        switch (RHPortraitButtonBase::m_state)
+        {
+        case 0: event = FUN_005d2090(input); break;
+        case 1: event = FUN_005d2120(input); break;
+        case 3: event = FUN_005d21f0(input); break;
+        case 2: event = FUN_005d22c0(input); break;
+        }
+    }
+    ((RHGameWidgetAnimatedCalls *)((char *)this + 0xdc))->FUN_005d5790(event, RHPortraitButtonBase::m_state, 0);
+    return event;
+}
+
+// FUNCTION: GAME 0x005d2090
+RHPortraitWidgetEvent *RHPortraitButton::FUN_005d2090(const RHPortraitWidgetInput &input)
+{
+    SBGeoBoundingBox2D &box = Box();
+    if (box.FUN_006083b0(input.point) &&
+        ((RHGameWidgetRendererCalls *)((char *)this + 0x80))->FUN_0060d890(input.point.Unk005fc110(*(SBGeoPoint2D *)&box)) == true &&
+        !(input.flags & 0x40))
+        RHPortraitButtonBase::m_state = 1;
+    return 0;
+}
+
+// Parked: The zero value is hoisted across point cleanup rather than created in the event arm.
+// STUB: GAME 0x005d2120
+RHPortraitWidgetEvent *RHPortraitButton::FUN_005d2120(const RHPortraitWidgetInput &input)
+{
+    SBGeoBoundingBox2D &box = Box();
+    if (box.FUN_006083b0(input.point) &&
+        ((RHGameWidgetRendererCalls *)((char *)this + 0x80))->FUN_0060d890(input.point.Unk005fc110(*(SBGeoPoint2D *)&box)))
+    {
+        if (input.flags & 0x40)
+        {
+            RHPortraitButtonBase::m_state = 3;
+            input.ui->m_selected = (RHPortraitUnk005d3880 *)this;
+            return 0;
+        }
+        RHPortraitWidgetEvent *event = &Event();
+        *(void **)((char *)this + 0x50) = this;
+        *(int *)((char *)this + 0x54) = 0;
+        *(int *)((char *)this + 0x58) = 0;
+        event->type = 0;
+        return event;
+    }
+    RHPortraitButtonBase::m_state = 0;
+    return 0;
+}
+
+// Parked: Event and capture-zero liveness changes the point temporary registers and EH offsets.
+// STUB: GAME 0x005d21f0
+RHPortraitWidgetEvent *RHPortraitButton::FUN_005d21f0(const RHPortraitWidgetInput &input)
+{
+    RHPortraitWidgetEvent *result;
+    SBGeoBoundingBox2D &box = Box();
+    if (box.FUN_006083b0(input.point) &&
+        ((RHGameWidgetRendererCalls *)((char *)this + 0x80))->FUN_0060d890(input.point.Unk005fc110(*(SBGeoPoint2D *)&box)))
+    {
+        if (input.flags & 9)
+        {
+            input.ui->Clear();
+            RHPortraitButtonBase::m_state = 1;
+            result = &Event();
+            *(void **)((char *)this + 0x50) = this;
+            *(int *)((char *)this + 0x54) = 0;
+            *(int *)((char *)this + 0x58) = 0;
+            result->type = 2;
+        }
+        else
+            result = 0;
+    }
+    else
+    {
+        RHPortraitButtonBase::m_state = 2;
+        result = 0;
+    }
+    return result;
+}
+
+// FUNCTION: GAME 0x005d22c0
+RHPortraitWidgetEvent *RHPortraitButton::FUN_005d22c0(const RHPortraitWidgetInput &input)
+{
+    SBGeoBoundingBox2D &box = Box();
+    if (box.FUN_006083b0(input.point) &&
+        ((RHGameWidgetRendererCalls *)((char *)this + 0x80))->FUN_0060d890(input.point.Unk005fc110(*(SBGeoPoint2D *)&box)))
+        RHPortraitButtonBase::m_state = 3;
+    else if (input.flags & 1)
+    {
+        input.ui->Clear();
+        RHPortraitButtonBase::m_state = 0;
+    }
+    return 0;
+}
+
+// FUNCTION: GAME 0x005d2370
+RHPortraitWidgetEvent *RHPortraitButtonStrategy::FUN_005d2370(bool value)
+{
+    RHPortraitWidgetEvent *event = 0;
+    m_20 = value == 1;
+    if (*((char *)this - 0xd4) == 1)
+    {
+        if (value)
+        {
+            *(void **)((char *)this - 0x88) = (char *)this - 0xd8;
+            event = (RHPortraitWidgetEvent *)((char *)this - 0x8c);
+            event->type = 0;
+            *(int *)((char *)this - 0x84) = 0;
+            *(int *)((char *)this - 0x80) = 0;
+        }
+        ((RHGameWidgetAnimatedCalls *)((char *)this + 4))->FUN_005d5790(event, m_20, 0);
+    }
+    return event;
+}
+
+// FUNCTION: GAME 0x005d23d0
+RHPortraitWidgetEvent *RHPortraitButtonStrategy::FUN_005d23d0(bool value)
+{
+    m_20 = value == 1 ? 3 : 0;
+    return 0;
+}
+
+// FUNCTION: GAME 0x005d23f0
+int RHPortraitButton::FUN_005d23f0()
+{
+    int result;
+    if (!*((char *)this + 4))
+        return 0;
+    int state = RHPortraitButtonBase::m_state;
+    if (state <= m_f8)
+        state = m_f8;
+    switch (state)
+    {
+    case 0: result = 1; break;
+    case 1: result = m_fc == 1 ? 1 : 2; break;
+    case 3: result = 3; break;
+    case 2: result = 2; break;
+    }
+    return result;
+}
+
+// Parked: The manual vptr store is scheduled after the member EH-state setup.
+// STUB: GAME 0x005d2460
+inline RHPortraitButtonBase::~RHPortraitButtonBase()
+{
+    m_vptr = 0x0067a0a8;
+}
+
+// FUNCTION: GAME 0x005d24c0
+void RHPortraitButtonBase::FUN_005d24c0()
+{
+    unsigned id = ((RHPortraitButtonDispatch *)this)->v9();
+    ((RHPortraitRendererCalls *)&m_renderer)->FUN_005cafa0(id);
+}
+
+// FUNCTION: GAME 0x005d24f0
+void *RHPortraitButtonBase::FUN_005d24f0(unsigned flags)
+{
+    this->~RHPortraitButtonBase();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+class RHPortraitTextWidgetBase : public RHGameWidgetLifetimeBase
+{
+public:
+    RHPortraitTextWidgetBase() { m_vptr = 0x0067a158; }
+    ~RHPortraitTextWidgetBase();
+    void *FUN_005d3390(unsigned flags);
+    void FUN_005d2ee0(const SBGeoBoundingBox2D &box);
+    void FUN_005d2f10(const SBGeoBoundingBox2D &box);
+    void FUN_005d2ec0();
+    RHPortraitRenderer006212d0 m_renderer;
+};
+
+class RHPortraitTextWidget : public RHPortraitTextWidgetBase
+{
+public:
+    RHPortraitTextWidget() : m_linked(0)
+    {
+        m_vptr = 0x0067a120;
+        m_state = 0;
+        m_indices[0] = 0;
+        m_indices[1] = 0;
+        m_caretFlags[0] = 0;
+        m_caretFlags[1] = 0;
+        m_positions[0] = 0;
+        m_positions[1] = 0;
+    }
+    ~RHPortraitTextWidget();
+    void *FUN_005d33b0(unsigned flags);
+    int FUN_005d2fa0();
+    void FUN_005d3360();
+    RHPortraitBoxEvent *FUN_005d3290(unsigned value);
+    void FUN_005d2cf0(const std::wstring &text);
+    RHPortraitText0061db10 m_text;
+    RHPortraitTextWidget *m_linked;
+    undefined m_15c[0x10];
+    int m_indices[2];
+    char m_caretFlags[2];
+    undefined m_176[2];
+    unsigned m_positions[2];
+};
+
+struct RHPortraitEditableStrategy
+{
+    unsigned m_vptr;
+    RHPortraitUIOwner *m_owner;
+    RHPortraitWidgetEvent *FUN_005d2cb0(const RHPortraitWidgetInput &input);
+};
+
+class RHPortraitEditableWidget : public RHPortraitTextWidget, public RHPortraitEditableStrategy, public RHPortraitAnimated
+{
+public:
+    RHPortraitEditableWidget();
+    ~RHPortraitEditableWidget();
+    void *FUN_005d26f0(unsigned flags);
+};
+
+class RHPortraitTextWidgetDispatch
+{
+public:
+    virtual void v0() = 0;
+    virtual void v1() = 0;
+    virtual void v2() = 0;
+    virtual void v3() = 0;
+    virtual void v4() = 0;
+    virtual void v5() = 0;
+    virtual void v6() = 0;
+    virtual void v7() = 0;
+    virtual void v8() = 0;
+    virtual unsigned v9() = 0;
+    virtual void v10() = 0;
+    virtual void v11() = 0;
+    virtual void v12() = 0;
+    virtual int v13(unsigned id) = 0;
+};
+
+DECOMP_SIZE_ASSERT(RHPortraitTextWidgetBase, 0x110)
+DECOMP_SIZE_ASSERT(RHPortraitTextWidget, 0x180)
+DECOMP_SIZE_ASSERT(RHPortraitEditableWidget, 0x1a4)
+
+// FUNCTION: GAME 0x005d25c0
+RHPortraitEditableWidget::RHPortraitEditableWidget() : RHPortraitAnimated(42)
+{
+    RHPortraitEditableStrategy *strategy = (RHPortraitEditableStrategy *)((char *)this + 0x180);
+    ((RHPortraitStrategyCalls *)strategy)->RHPortraitStrategyCalls::RHPortraitStrategyCalls();
+    strategy->m_vptr = 0x0067a118;
+    RHPortraitTextWidgetBase::m_vptr = 0x0067a0e0;
+    RHUnk00514e10 &map = m_map;
+    RHPortraitMapLookup(map, 0) = 1;
+    RHPortraitMapLookup(map, 2) = 0;
+}
+
+// FUNCTION: GAME 0x005d26f0
+void *RHPortraitEditableWidget::FUN_005d26f0(unsigned flags)
+{
+    this->~RHPortraitEditableWidget();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// Parked: Inlined map cleanup reserves an extra EH temporary and shifts stack operands.
+// STUB: GAME 0x005d2710
+RHPortraitEditableWidget::~RHPortraitEditableWidget()
+{
+    RHPortraitTextWidgetBase::m_vptr = 0x0067a0e0;
+    RHPortraitEditableStrategy::m_vptr = 0x0067a118;
+}
+
+// FUNCTION: GAME 0x005d2cb0
+RHPortraitWidgetEvent *RHPortraitEditableStrategy::FUN_005d2cb0(const RHPortraitWidgetInput &)
+{
+    RHPortraitWidgetUI *ui = (RHPortraitWidgetUI *)m_owner->FUN_004fffd0();
+    RHPortraitTextWidget *widget = (RHPortraitTextWidget *)((char *)this - 0x180);
+    if (widget->m_state != 13)
+    {
+        ui->m_selected = (RHPortraitUnk005d3880 *)widget;
+        widget->m_state = 13;
+        ((SBUIInputFieldUnk00621440 *)&widget->m_text)->FUN_0061e340();
+        ((SBUIInputFieldTextUnk *)&widget->m_text)->FUN_0061e320(1);
+    }
+    return 0;
+}
+
+// FUNCTION: GAME 0x005d2cf0
+void RHPortraitTextWidget::FUN_005d2cf0(const std::wstring &text)
+{
+    *(int *)((char *)this + 0xc0) = -1;
+    *(int *)((char *)this + 0xc4) = -1;
+    *(std::wstring *)((char *)this + 0x10) = text;
+    ((SBUIInputFieldUnk00621440 *)&m_text)->FUN_0061e060((RHMapWideText *)&text);
+}
+
+// Parked: The manual vptr store is delayed past the member EH-state setup.
+// STUB: GAME 0x005d2e60
+inline RHPortraitTextWidgetBase::~RHPortraitTextWidgetBase()
+{
+    m_vptr = 0x0067a158;
+}
+
+// FUNCTION: GAME 0x005d2ec0
+void RHPortraitTextWidgetBase::FUN_005d2ec0()
+{
+    unsigned id = ((RHPortraitTextWidgetDispatch *)this)->v9();
+    ((SBUIInputFieldUnk00621440 *)&m_renderer)->FUN_00621470(id);
+}
+
+// FUNCTION: GAME 0x005d2ee0
+void RHPortraitTextWidgetBase::FUN_005d2ee0(const SBGeoBoundingBox2D &box)
+{
+    RHPortraitRendererDispatch &renderer = *(RHPortraitRendererDispatch *)&m_renderer;
+    renderer.v3(box);
+    ((SBGeoBoundingBox2D *)((char *)this + 0x30))->FUN_00607da0(*(SBGeoBoundingBox2D *)((SBUIUnk0060d530 *)&renderer)->FUN_0060d690());
+}
+
+// FUNCTION: GAME 0x005d2f10
+void RHPortraitTextWidgetBase::FUN_005d2f10(const SBGeoBoundingBox2D &box)
+{
+    ((RHGameWidgetBaseCalls *)this)->FUN_0060d290((unsigned long)&box);
+    SBGeoBoundingBox2D copy(box);
+    ((RHPortraitRendererDispatch *)&m_renderer)->v3(copy);
+}
+
+// FUNCTION: GAME 0x005d2fa0
+int RHPortraitTextWidget::FUN_005d2fa0()
+{
+    if (!*((char *)this + 4))
+        return 0;
+    int result;
+    switch (m_state)
+    {
+    case 0: result = 1; break;
+    case 1: result = 2; break;
+    case 4: result = 4; break;
+    case 2:
+    case 13: result = 3; break;
+    default:
+        if (result != 1)
+            return result;
+    }
+    if (result == 1 && !*((char *)this + 6))
+        result = 255;
+    return result;
+}
+
+// Parked: Both manual vptr stores are delayed past member EH-state setup.
+// STUB: GAME 0x005d3020
+inline RHPortraitTextWidget::~RHPortraitTextWidget()
+{
+    m_vptr = 0x0067a120;
+}
+
+// Parked: The cached branch exchanges the event pointer and shared vtable registers.
+// STUB: GAME 0x005d3290
+RHPortraitBoxEvent *RHPortraitTextWidget::FUN_005d3290(unsigned value)
+{
+    *(unsigned *)((char *)this + 0xc8) = value;
+    ((SBGeoBoundingBox2D *)((char *)this + 0x60))->FUN_00607da0(*(SBGeoBoundingBox2D *)((SBUIUnk0060d530 *)&m_renderer)->FUN_0060d690());
+    *(void **)((char *)this + 0x78) = 0;
+    *(void **)((char *)this + 0x74) = this;
+    unsigned index = value & 1;
+    SBUIInputFieldTextUnk *text = (SBUIInputFieldTextUnk *)&m_text;
+    if (m_caretFlags[index] == text->FUN_0061e230() &&
+        m_indices[index] == text->FUN_0061dd00() &&
+        m_positions[index] == (unsigned short)text->FUN_0061df50())
+    {
+        RHPortraitBoxEvent &event = *(RHPortraitBoxEvent *)((char *)this + 0x5c);
+        RHPortraitTextWidgetDispatch *widget = (RHPortraitTextWidgetDispatch *)this;
+        event.m_type = widget->v13(widget->v9());
+        return &event;
+    }
+    else
+    {
+        RHPortraitBoxEvent *event = (RHPortraitBoxEvent *)((char *)this + 0x5c);
+        event->m_type = 1;
+        m_caretFlags[index] = text->FUN_0061e230();
+        m_indices[index] = text->FUN_0061dd00();
+        m_positions[index] = (unsigned short)text->FUN_0061df50();
+        return event;
+    }
+}
+
+// FUNCTION: GAME 0x005d3360
+void RHPortraitTextWidget::FUN_005d3360()
+{
+    unsigned id = ((RHPortraitTextWidgetDispatch *)this)->v9();
+    if (id != 255)
+    {
+        *((char *)this + 0x104) = *((char *)this + 4);
+        ((SBUIInputFieldUnk00621440 *)&m_renderer)->FUN_00621470(id);
+    }
+}
+
+// FUNCTION: GAME 0x005d3390
+void *RHPortraitTextWidgetBase::FUN_005d3390(unsigned flags)
+{
+    this->~RHPortraitTextWidgetBase();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// FUNCTION: GAME 0x005d33b0
+void *RHPortraitTextWidget::FUN_005d33b0(unsigned flags)
+{
+    this->~RHPortraitTextWidget();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// FUNCTION: GAME 0x005d3880
+int RHPortraitUnk005d3880::FUN_005d3880(const SBGeoPoint2D &point)
+{
+    SBGeoBoundingBox2D &box = *(SBGeoBoundingBox2D *)((char *)this + 0x30);
+    if (box.FUN_006083b0(point) &&
+        ((RHGameWidgetRendererCalls *)((char *)this + 0x80))->FUN_0060d890(point.Unk005fc110(*(SBGeoPoint2D *)&box)))
+        return true;
+    return false;
+}
+
+// FUNCTION: GAME 0x005d39a0
+RHPortraitLinkedLifetime::RHPortraitLinkedLifetime() : m_linked(0)
+{
+    m_vptr = 0x0067a1ac;
+    m_strategy = 0x0067a190;
+}
+
+// FUNCTION: GAME 0x005d39d0
+void *RHPortraitLinkedLifetime::FUN_005d39d0(unsigned flags)
+{
+    this->~RHPortraitLinkedLifetime();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// FUNCTION: GAME 0x005d39f0
+RHPortraitLinkedLifetime::~RHPortraitLinkedLifetime()
+{
+    m_vptr = 0x0067a1ac;
+    m_strategy = 0x0067a190;
+}
+
+// FUNCTION: GAME 0x005d3a10
+RHPortraitWidgetEvent *RHPortraitUnk005d3880::FUN_005d3a10(const RHPortraitWidgetInput &input)
+{
+    RHPortraitWidgetEvent *event = FUN_005d4cb0(input);
+    if (m_state == 9)
+    {
+        for (RHPortraitWidgetEvent *entry = event; entry; entry = entry->next)
+        {
+            if (entry->type == 2 && m_linked)
+            {
+                m_linked->FUN_005d3a80(this);
+                break;
+            }
+        }
+    }
+    return event;
+}
+
+// FUNCTION: GAME 0x005d3a60
+void RHPortraitUnk005d3880::FUN_005d3a60(const RHPortraitWidgetInput &input)
+{
+    FUN_005d4fe0(input);
+    if (m_state == 6)
+        m_state = 9;
+}
+
+// Parked: The stop pointer and zero byte use edx/eax instead of eax/edx.
+// STUB: GAME 0x005d3a80
+void RHPortraitUnk005d3880::FUN_005d3a80(const void *stop)
+{
+    RHPortraitUnk005d3880 *widget = this;
+    const unsigned cleared = 0;
+    if (stop == widget)
+        return;
+    do
+    {
+        if (widget->m_state == 9)
+        {
+            widget->m_state = 6;
+            widget->m_selected = (char)cleared;
+        }
+        widget = widget->m_linked;
+        if ((unsigned)widget == cleared)
+            return;
+    }
+    while (stop != widget);
+}
+
+// FUNCTION: GAME 0x005d3ab0
+void RHPortraitUnk005d3880::FUN_005d3ab0(RHPortraitUnk005d3880 *linked)
+{
+    m_linked = linked;
+}
+
+// FUNCTION: GAME 0x005d3ac0
+RHPortraitWidgetEvent *RHPortraitUnk005d5100::FUN_005d3ac0()
+{
+    if (*((char *)this - 0xd8) && *(int *)((char *)this - 0x60) == 6)
+    {
+        RHPortraitWidgetEvent *event = FUN_005d5090();
+        (*(RHPortraitUnk005d3880 **)((char *)this + 0x34))->FUN_005d3a80((char *)this - 0xdc);
+        return event;
+    }
+    return 0;
+}
+
+// FUNCTION: GAME 0x005d3b00
+bool RHPortraitUnk005d3880::FUN_005d3b00(char value)
+{
+    *((char *)this + 4) = value;
+    return true;
+}
+
+// FUNCTION: GAME 0x005d3b10
+void *RHPortraitUnk005d3880::FUN_005d3b10()
+{
+    return m_b8;
+}
+
+// FUNCTION: GAME 0x005d3b20
+RHPortraitWidgetEvent *RHPortraitUnk005d3880::FUN_005d3b20(const void *)
+{
+    RHPortraitWidgetEvent *event = &m_event;
+    if (event->type != 2 && event->type != 7)
+        event->type = 2;
+    else
+        event->type = 7;
+    m_event.value = m_selected == 1;
+    m_event.next = 0;
+    m_event.widget = this;
+    return event;
+}
+
+// FUNCTION: GAME 0x005d3b60
+int RHPortraitUnk005d3880::FUN_005d3b60(const SBGeoPoint2D &point)
+{
+    SBGeoBoundingBox2D &box = *(SBGeoBoundingBox2D *)((char *)this + 0x30);
+    if (box.FUN_006083b0(point) &&
+        ((RHGameWidgetRendererCalls *)((char *)this + 0x80))->FUN_0060d890(point.Unk005fc110(*(SBGeoPoint2D *)&box)))
+        return true;
+    return false;
+}
+
+// FUNCTION: GAME 0x005d3cb0
+RHPortraitGroupLifetime::RHPortraitGroupLifetime() : RHPortraitAnimated(11)
+{
+    m_vptr = 0x0067a21c;
+    RHUnk00514e10 &map = m_map;
+    RHPortraitMapLookup(map, 0) = 1;
+    RHPortraitMapLookup(map, 16) = 1;
+    RHPortraitMapLookup(map, 2) = 0;
+}
+
+// FUNCTION: GAME 0x005d3dc0
+void *RHPortraitGroupLifetime::FUN_005d3dc0(unsigned flags)
+{
+    this->~RHPortraitGroupLifetime();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// Parked: Inlined map cleanup retains an extra frame slot and different EH scheduling.
+// STUB: GAME 0x005d3de0
+RHPortraitGroupLifetime::~RHPortraitGroupLifetime()
+{
+    m_vptr = 0x0067a21c;
+}
+
+// FUNCTION: GAME 0x005d3ef0
+RHPortraitWidgetEvent *RHPortraitUnk005d3fe0::FUN_005d3ef0(const RHPortraitWidgetInput &input)
+{
+    RHPortraitWidgetEvent *event;
+    switch (m_state)
+    {
+    case 0: event = FUN_005d4480(input); break;
+    case 1: event = FUN_005d45a0(input); break;
+    case 2: event = FUN_005d46e0(input); break;
+    default: event = 0; break;
+    }
+    ((RHGameWidgetAnimatedCalls *)((char *)this + 0xb0))->FUN_005d5790(event, m_state, 0);
+    return event;
+}
+
+// Parked: The cleanup state is scheduled before the vptr store.
+// STUB: GAME 0x005d3f50
+inline RHPortraitGroupLifetimeBase::~RHPortraitGroupLifetimeBase()
+{
+    *(volatile unsigned *)&m_vptr = 0x0067a240;
+    if (m_widgets)
+        m_widgets->v0(3);
+    void *allocation = m_events;
+    operator delete(allocation);
+}
+
+// FUNCTION: GAME 0x005d3fe0
+void RHPortraitUnk005d3fe0::FUN_005d3fe0(unsigned value)
+{
+    for (unsigned i = 0; i < m_count; ++i)
+        m_widgets[i].v1(value);
+}
+
+// FUNCTION: GAME 0x005d4020
+void RHPortraitUnk005d3fe0::FUN_005d4020()
+{
+    for (unsigned i = 0; i < m_count; ++i)
+        m_widgets[i].v2();
+}
+
+// FUNCTION: GAME 0x005d4060
+void RHPortraitUnk005d3fe0::FUN_005d4060()
+{
+    for (unsigned i = 0; i < m_count; ++i)
+    {
+        if (!m_events[i] || m_events[i]->type != 0)
+            m_widgets[i].v3();
+    }
+}
+
+// FUNCTION: GAME 0x005d40b0
+void RHPortraitUnk005d3fe0::FUN_005d40b0()
+{
+    for (unsigned i = 0; i < m_count; ++i)
+        m_widgets[i].v4();
+}
+
+// FUNCTION: GAME 0x005d40f0
+void *RHPortraitUnk005d3fe0::FUN_005d40f0(const RHPortraitWidgetInput &input)
+{
+    bool produced = false;
+    int type = 1;
+    SBGeoBoundingBox2D bounds;
+    for (unsigned i = 0; i < m_count; ++i)
+    {
+        m_events[i] = m_widgets[i].v5(&input);
+        if (m_events[i])
+        {
+            produced = true;
+            if (type <= m_events[i]->type)
+                type = m_events[i]->type;
+        }
+    }
+    if (produced == 1)
+    {
+        *(int *)((char *)this + 0x90) = type;
+        *(void **)((char *)this + 0xac) = 0;
+        *(void **)((char *)this + 0xa8) = this;
+        ((RHMobileUnk00607da0 *)((char *)this + 0x94))->FUN_00607da0((const RHMobileUnk00607da0 &)RHMapBox(0, 0, 0, 0));
+        return (char *)this + 0x90;
+    }
+    return 0;
+}
+
+// FUNCTION: GAME 0x005d4240
+RHPortraitWidgetEvent *RHPortraitUnk005d3fe0::FUN_005d4240(const RHPortraitWidgetInput &input)
+{
+    switch (m_state)
+    {
+    case 0: return FUN_005d4480(input);
+    case 1: return FUN_005d45a0(input);
+    case 2: return FUN_005d46e0(input);
+    }
+    return 0;
+}
+
+// FUNCTION: GAME 0x005d4280
+void RHPortraitUnk005d3fe0::FUN_005d4280(const SBGeoPoint2D &point)
+{
+    SBGeoPoint2D displacement = point.Unk005fc110(m_box.m_first);
+    for (unsigned i = 0; i < m_count; ++i)
+    {
+        SBGeoPoint2D position(*(SBGeoPoint2D *)((char *)&m_widgets[i] + 0x30));
+        position.FUN_005fc1e0(displacement);
+        m_widgets[i].v8(position);
+    }
+    ((RHMobileUnk006091b0 *)&m_box)->FUN_006091b0(displacement);
+}
+
+// FUNCTION: GAME 0x005d4360
+void RHPortraitUnk005d3fe0::FUN_005d4360(const SBGeoPoint2D &point)
+{
+    SBGeoBoundingBox2D box(m_box);
+    SBGeoPoint2D displacement = point.Unk005fc110(m_box.m_first);
+    ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(displacement);
+    ((RHPortraitWidgetStrategy *)this)->v7(box);
+}
+
+// FUNCTION: GAME 0x005d4410
+void *RHPortraitGroupLifetimeBase::FUN_005d4410(unsigned flags)
+{
+    this->~RHPortraitGroupLifetimeBase();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// FUNCTION: GAME 0x005d4430
+RHPortraitBoxEvent::~RHPortraitBoxEvent()
+{
+}
+
+// Parked: The owning-widget store is scheduled before the cleanup receiver address.
+// STUB: GAME 0x005d4480
+RHPortraitWidgetEvent *RHPortraitUnk005d3fe0::FUN_005d4480(const RHPortraitWidgetInput &input)
+{
+    RHPortraitWidgetEvent *event = 0;
+    if (m_box.FUN_00608400(input.point) && !(input.flags & 0x40))
+    {
+        RHPortraitWidgetInput local;
+        memcpy(&local, &input, sizeof(local));
+        local.flags &= 0xff7d;
+        for (unsigned i = 0; i < m_count; ++i)
+            m_widgets[i].v6(local);
+        m_state = 1;
+        if (m_count)
+        {
+            SBGeoBoundingBox2D &box = *(SBGeoBoundingBox2D *)((char *)m_widgets + 0x30);
+            unsigned width = (unsigned)(box.m_second.m_x - box.m_first.m_x);
+            float left = m_box.m_first.m_x;
+            m_index = (int)((input.point.m_x - left) / width);
+        }
+        RHPortraitWidgetEvent *result = &m_event;
+        m_event.widget = this;
+        result->type = 0;
+        m_event.value = 0;
+        m_event.next = 0;
+        event = result;
+    }
+    return event;
+}
+
+// FUNCTION: GAME 0x005d45a0
+RHPortraitWidgetEvent *RHPortraitUnk005d3fe0::FUN_005d45a0(const RHPortraitWidgetInput &input)
+{
+    RHPortraitWidgetEvent *event = 0;
+    unsigned previous = m_index;
+    RHPortraitWidgetInput local;
+    if (m_box.FUN_00608400(input.point))
+    {
+        if (input.flags & 0x40)
+        {
+            m_state = 2;
+            void *ui = input.ui;
+            *(void **)((char *)ui + 0x17f0) = this;
+        }
+    }
+    else
+        m_state = 0;
+    memcpy(&local, &input, sizeof(local));
+    local.flags &= 0xff7d;
+    for (unsigned i = 0; i < m_count; ++i)
+        m_widgets[i].v6(local);
+    if (m_count)
+    {
+        SBGeoBoundingBox2D &box = *(SBGeoBoundingBox2D *)((char *)m_widgets + 0x30);
+        unsigned width = (unsigned)(box.m_second.m_x - box.m_first.m_x);
+        float left = m_box.m_first.m_x;
+        m_index = (int)((input.point.m_x - left) / width);
+    }
+    if (previous != m_index)
+    {
+        RHPortraitWidgetEvent *result = &m_event;
+        m_event.widget = this;
+        m_event.value = 0;
+        result->type = 16;
+        m_event.next = 0;
+        event = result;
+    }
+    return event;
+}
+
+// FUNCTION: GAME 0x005d46e0
+RHPortraitWidgetEvent *RHPortraitUnk005d3fe0::FUN_005d46e0(const RHPortraitWidgetInput &input)
+{
+    RHPortraitWidgetInput local;
+    RHPortraitWidgetEvent *event = 0;
+    if (input.flags & 1)
+    {
+        if (m_box.FUN_00608400(input.point))
+            m_state = 1;
+        else
+            m_state = 0;
+        input.ui->Clear();
+        RHPortraitWidgetEvent *result = &m_event;
+        m_event.widget = this;
+        m_event.value = 0;
+        m_event.next = 0;
+        result->type = 2;
+        event = result;
+    }
+    memcpy(&local, &input, sizeof(local));
+    local.flags &= 0xff7d;
+    if (m_box.m_second.m_x <= input.point.m_x)
+    {
+        SBGeoBoundingBox2D &box = *(SBGeoBoundingBox2D *)((char *)&m_widgets[m_count - 1] + 0x30);
+        float right = m_box.m_second.m_x;
+        float position = right - (box.m_second.m_x - box.m_first.m_x) * g_unk0x006775d8;
+        local.point.m_x = position;
+    }
+    else if (m_box.m_first.m_x >= input.point.m_x)
+    {
+        SBGeoBoundingBox2D &box = *(SBGeoBoundingBox2D *)((char *)m_widgets + 0x30);
+        float left = m_box.m_first.m_x;
+        float position = left + (box.m_second.m_x - box.m_first.m_x) * g_unk0x006775d8;
+        local.point.m_x = position;
+    }
+    else
+        local.point.m_x = input.point.m_x;
+    if (m_box.m_second.m_y <= input.point.m_y)
+    {
+        float bottom = m_box.m_second.m_y;
+        float position = bottom - (*(volatile float *)&m_box.m_second.m_y - m_box.m_first.m_y) * g_unk0x006775d8;
+        local.point.m_y = position;
+    }
+    else if (m_box.m_first.m_y >= input.point.m_y)
+    {
+        float top = *(volatile float *)&m_box.m_first.m_y;
+        float position = top + (m_box.m_second.m_y - m_box.m_first.m_y) * g_unk0x006775d8;
+        local.point.m_y = position;
+    }
+    else
+        local.point.m_y = input.point.m_y;
+    for (unsigned i = 0; i < m_count; ++i)
+        m_widgets[i].v6(local);
+    unsigned previous = m_index;
+    if (m_count)
+    {
+        SBGeoBoundingBox2D &box = *(SBGeoBoundingBox2D *)((char *)m_widgets + 0x30);
+        unsigned width = (unsigned)(box.m_second.m_x - box.m_first.m_x);
+        float left = m_box.m_first.m_x;
+        m_index = (int)((local.point.m_x - left) / width);
+    }
+    if (previous != m_index)
+    {
+        RHPortraitWidgetEvent *result = &m_event;
+        m_event.widget = this;
+        m_event.value = 0;
+        m_event.next = 0;
+        result->type = 16;
+        event = result;
+    }
+    return event;
+}
+
+// FUNCTION: GAME 0x005d49b0
+RHPortraitRadioLifetime::RHPortraitRadioLifetime() : RHPortraitAnimated(2)
+{
+    ((RHPortraitStrategyCalls *)&m_strategy)->RHPortraitStrategyCalls::RHPortraitStrategyCalls();
+    m_strategy = 0x0067a2d4;
+    m_10c = 0;
+    m_10d = 0;
+    m_vptr = 0x0067a264;
+    RHUnk00514e10 &map = m_map;
+    RHPortraitMapLookup(map, 0) = 1;
+    RHPortraitMapLookup(map, 2) = 0;
+}
+
+// FUNCTION: GAME 0x005d4ab0
+void *RHPortraitRadioLifetime::FUN_005d4ab0(unsigned flags)
+{
+    this->~RHPortraitRadioLifetime();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// Parked: Map-cleanup frame coloring and vptr/EH-state scheduling differ.
+// STUB: GAME 0x005d4ad0
+RHPortraitRadioLifetime::~RHPortraitRadioLifetime()
+{
+    m_vptr = 0x0067a264;
+    m_strategy = 0x0067a2d4;
+}
+
+// Parked: The constructed box receiver and resource identifier exchange registers.
+// STUB: GAME 0x005d4bb0
+bool RHPortraitUnk005d3880::FUN_005d4bb0(int mode, const std::wstring &text, const SBGeoPoint2D &origin, int resource)
+{
+    {
+        const SBGeoBoundingBox2D &local = SBGeoBoundingBox2D(origin, origin);
+        const SBGeoBoundingBox2D *box = &local;
+        if (resource == 0)
+            resource = -1;
+        ((RHPortraitWidgetSetupCalls *)this)->FUN_0060d130(text, *box, false);
+        RHPortraitRendererDispatch *renderer = (RHPortraitRendererDispatch *)((char *)this + 0x80);
+        renderer->v3(*box);
+        ((SBUIUnk0060d530 *)renderer)->FUN_0060d550(resource);
+        *(int *)((char *)this + 0xa4) = 0;
+        RHPortraitAssignWideText((char *)this + 0xa8, text);
+        SBGeoBoundingBox2D &bounds = *(SBGeoBoundingBox2D *)((char *)this + 0x30);
+        if (bounds.m_second.m_x - bounds.m_first.m_x == g_unk0x00677488)
+            ((RHMobileUnk00607da0 *)&bounds)->FUN_00607da0(*(RHMobileUnk00607da0 *)((SBUIUnk0060d530 *)renderer)->FUN_0060d690());
+    }
+    ((RHPortraitRendererCalls *)((char *)this + 0x80))->FUN_005cae10(mode);
+    return true;
+}
+
+// FUNCTION: GAME 0x005d4cb0
+RHPortraitWidgetEvent *RHPortraitUnk005d3880::FUN_005d4cb0(const RHPortraitWidgetInput &input)
+{
+    RHPortraitButtonDispatch *widget = (RHPortraitButtonDispatch *)this;
+    RHPortraitWidgetEvent *event;
+    switch (m_state)
+    {
+    case 5: event = widget->v23(input); break;
+    case 7: event = widget->v24(input); break;
+    case 6: event = widget->v22(input); break;
+    case 9: event = widget->v25(input); break;
+    case 8: event = widget->v26(input); break;
+    case 10: event = widget->v27(input); break;
+    default: event = 0; break;
+    }
+    ((RHGameWidgetAnimatedCalls *)((char *)this + 0xe0))->FUN_005d5790(event, m_state, 0);
+    return event;
+}
+
+// FUNCTION: GAME 0x005d4d60
+RHPortraitWidgetEvent *RHPortraitUnk005d3880::FUN_005d4d60(const RHPortraitWidgetInput &input)
+{
+    RHPortraitWidgetEvent *event = 0;
+    if (*((char *)this + 4) && (char)FUN_005d4db0(*(SBGeoPoint2D *)&input) && !(input.flags & 0x40))
+    {
+        event = &m_event;
+        m_event.value = 0;
+        m_event.next = 0;
+        m_state = 5;
+        event->type = 0;
+        m_event.widget = this;
+    }
+    return event;
+}
+
+// FUNCTION: GAME 0x005d4db0
+int RHPortraitUnk005d3880::FUN_005d4db0(const SBGeoPoint2D &point)
+{
+    SBGeoBoundingBox2D &box = *(SBGeoBoundingBox2D *)((char *)this + 0x30);
+    if (box.FUN_006083b0(point) &&
+        ((RHGameWidgetRendererCalls *)((char *)this + 0x80))->FUN_0060d890(point.Unk005fc110(*(SBGeoPoint2D *)&box)))
+        return true;
+    return false;
+}
+
+// Parked: Retaining the UI receiver exchanges this/input registers; direct access reloads the receiver.
+// STUB: GAME 0x005d4e50
+RHPortraitWidgetEvent *RHPortraitUnk005d3880::FUN_005d4e50(const RHPortraitWidgetInput &input)
+{
+    if ((char)FUN_005d4db0(*(SBGeoPoint2D *)&input))
+    {
+        if (input.flags & 0x40)
+        {
+            m_state = 7;
+            input.ui->m_selected = this;
+        }
+    }
+    else
+    {
+        if (!(input.flags & 0x40))
+        {
+            m_state = 6;
+            m_selected = 0;
+        }
+        if (input.flags & 9)
+        {
+            input.ui->m_selected = 0;
+            input.ui->m_captured = 0;
+        }
+    }
+    return 0;
+}
+
+// FUNCTION: GAME 0x005d4ec0
+RHPortraitWidgetEvent *RHPortraitUnk005d3880::FUN_005d4ec0(const RHPortraitWidgetInput &input)
+{
+    RHPortraitWidgetEvent *event = 0;
+    if (!(char)FUN_005d4db0(*(SBGeoPoint2D *)&input))
+    {
+        if (input.flags & 0x40)
+        {
+            m_state = 5;
+            m_selected = 0;
+        }
+    }
+    else if ((input.flags & 1) || (input.flags & 8))
+    {
+        m_state = 9;
+        m_selected = 1;
+        void *ui = input.ui;
+        *(void **)((char *)ui + 0x17f0) = 0;
+        *(void **)((char *)ui + 0x17f4) = 0;
+        event = &m_event;
+        m_event.widget = this;
+        m_event.value = 0;
+        m_event.next = 0;
+        event->type = 2;
+    }
+    return event;
+}
+
+// FUNCTION: GAME 0x005d4f30
+RHPortraitWidgetEvent *RHPortraitUnk005d3880::FUN_005d4f30(const RHPortraitWidgetInput &input)
+{
+    RHPortraitWidgetEvent *event = 0;
+    if (*((char *)this + 4) && (char)FUN_005d4db0(*(SBGeoPoint2D *)&input) && !(input.flags & 0x40))
+    {
+        event = &m_event;
+        m_event.value = 0;
+        m_event.next = 0;
+        m_state = 8;
+        event->type = 0;
+        m_event.widget = this;
+    }
+    return event;
+}
+
+// Parked: Input-flag scheduling and the UI receiver register remain different.
+// STUB: GAME 0x005d4f80
+RHPortraitWidgetEvent *RHPortraitUnk005d3880::FUN_005d4f80(const RHPortraitWidgetInput &input)
+{
+    if (!(char)FUN_005d4db0(*(SBGeoPoint2D *)&input))
+    {
+        unsigned char flags = (unsigned char)input.flags;
+        if (!(flags & 0x40))
+        {
+            m_state = 9;
+            m_selected = 1;
+        }
+        if (input.flags & 9)
+        {
+            input.ui->Clear();
+        }
+    }
+    else if (input.flags & 0x40)
+    {
+        m_state = 10;
+        input.ui->m_selected = this;
+    }
+    return 0;
+}
+
+// FUNCTION: GAME 0x005d4fe0
+RHPortraitWidgetEvent *RHPortraitUnk005d3880::FUN_005d4fe0(const RHPortraitWidgetInput &input)
+{
+    RHPortraitWidgetEvent *event = 0;
+    if (!(char)FUN_005d4db0(*(SBGeoPoint2D *)&input))
+    {
+        if (input.flags & 0x40)
+            m_state = 8;
+    }
+    else
+    {
+        unsigned short flags = input.flags;
+        unsigned released = flags & 1;
+        if ((unsigned short)released || (flags & 8))
+        {
+            m_state = (unsigned short)released ? 6 : 9;
+            m_selected = m_state == 9;
+            input.ui->Clear();
+            event = &m_event;
+            m_event.widget = this;
+            m_event.value = 0;
+            m_event.next = 0;
+            event->type = 7;
+            if (input.flags & 8)
+            {
+                RHPortraitWidgetEvent *next = (RHPortraitWidgetEvent *)((char *)this + 0xfc);
+                *(void **)((char *)this + 0x100) = this;
+                m_event.next = next;
+                *(int *)((char *)this + 0x104) = 0;
+                *(void **)((char *)this + 0x108) = 0;
+                next->type = 3;
+            }
+        }
+    }
+    return event;
+}
+
+// FUNCTION: GAME 0x005d5090
+RHPortraitWidgetEvent *RHPortraitUnk005d5100::FUN_005d5090()
+{
+    if (*((char *)this - 0xd8))
+    {
+        RHPortraitWidgetEvent *event;
+        if (*(int *)((char *)this - 0x60) == 9)
+        {
+            event = (RHPortraitWidgetEvent *)((char *)this - 0x90);
+            *((char *)this - 4) = 0;
+            *(int *)((char *)this - 0x60) = 6;
+            event->type = 7;
+        }
+        else
+        {
+            *(volatile char *)((char *)this - 4) = 1;
+            *(int *)((char *)this - 0x60) = 9;
+            event = (RHPortraitWidgetEvent *)((char *)this - 0x90);
+            event->type = 2;
+        }
+        *(void *volatile *)((char *)this - 0x8c) = (char *)this - 0xdc;
+        *(int *)((char *)this - 0x88) = 0;
+        *(void **)((char *)this - 0x84) = 0;
+        return event;
+    }
+    return 0;
+}
+
+// FUNCTION: GAME 0x005d5100
+int RHPortraitUnk005d5100::FUN_005d5100(const SBGeoPoint2D &point)
+{
+    SBGeoBoundingBox2D &box = *(SBGeoBoundingBox2D *)((char *)this - 0xac);
+    if (box.FUN_006083b0(point) &&
+        ((RHGameWidgetRendererCalls *)((char *)this - 0x5c))->FUN_0060d890(point.Unk005fc110(*(SBGeoPoint2D *)&box)) == 1)
+        return true;
+    return false;
+}
+
+// FUNCTION: GAME 0x005d51a0
+void *RHPortraitUnk005d5100::FUN_005d51a0()
+{
+    return (char *)this - 0xdc;
+}
+
+// FUNCTION: GAME 0x005d51c0
+RHPortraitWidgetEvent *RHPortraitUnk005d5100::FUN_005d51c0(char value)
+{
+    *(volatile char *)&m_30 = value;
+    char enabled = *((char *)this - 0xd8);
+    if (enabled && value == 1)
+    {
+        *(void **)((char *)this - 0x8c) = (char *)this - 0xdc;
+        RHPortraitWidgetEvent *event = (RHPortraitWidgetEvent *)((char *)this - 0x90);
+        event->type = 7;
+        *(int *)((char *)this - 0x88) = 0;
+        *(void **)((char *)this - 0x84) = 0;
+        return event;
+    }
+    return 0;
+}
+
+// FUNCTION: GAME 0x005d5210
+RHPortraitWidgetEvent *RHPortraitUnk005d5100::FUN_005d5210(char value)
+{
+    if (*((char *)this - 0xd8))
+        *((char *)this + 0x31) = value;
+    return 0;
+}
+
+// FUNCTION: GAME 0x005d5230
+int RHPortraitUnk005d3880::FUN_005d5230()
+{
+    if (*((char *)this + 0x10d) == 1)
+        return 3;
+    if (*((char *)this + 0x10c) == 1)
+        return 2;
+    if (!*((char *)this + 4))
+        return 0;
+    int result;
+    switch (m_state)
+    {
+    case 5: if (*((char *)this + 5) == 1) return 2; result = 1; break;
+    case 6:
+    case 7: result = 1; break;
+    case 8: if (*((char *)this + 5) == 1) return 4; result = 3; break;
+    case 9:
+    case 10: result = 3; break;
+    }
+    if ((result == 1 || result == 3) && *((char *)this + 6) != 1)
+        result = 255;
+    return result;
+}
+
+// FUNCTION: GAME 0x005d52d0
+int RHPortraitUnk005d3880::FUN_005d52d0()
+{
+    if (!*((char *)this + 4))
+        return 0;
+    int result;
+    switch (m_state)
+    {
+    case 5: if (*((char *)this + 5) == 1) return 2; result = 1; break;
+    case 6:
+    case 7: result = 1; break;
+    case 8: if (*((char *)this + 5) == 1) return 4; result = 3; break;
+    case 9:
+    case 10: result = 3; break;
+    }
+    if ((result == 1 || result == 3) && *((char *)this + 6) != 1)
+        result = 255;
+    return result;
+}
+
+// Parked: The vptr store follows the member-cleanup receiver and state.
+// STUB: GAME 0x005d5350
+inline RHPortraitLifetime005d5350::~RHPortraitLifetime005d5350()
+{
+    *(unsigned *)this = 0x0067a0a8;
+}
+
+// FUNCTION: GAME 0x005d53b0
+RHPortraitWidgetEvent *RHPortraitUnk005d3880::FUN_005d53b0(const RHPortraitWidgetInput &input)
+{
+    RHPortraitButtonDispatch *widget = (RHPortraitButtonDispatch *)this;
+    if (!*((char *)this + 4))
+    {
+        if (*((char *)this + 8) && (char)widget->v19(input) &&
+            ((SBUIUnk0060dae0 *)((char *)this + 0x80))->FUN_0060db80(0))
+        {
+            m_event.next = 0;
+            RHPortraitWidgetEvent *event = &m_event;
+            m_event.value = 0;
+            m_event.widget = this;
+            event->type = 18;
+            return event;
+        }
+        return 0;
+    }
+    if (*(unsigned short *)((char *)this + 0x0a))
+    {
+        if (input.shortcuts->FUN_0060e240(*(unsigned short *)((char *)this + 0x0a)) == 1)
+        {
+            if (!m_selected)
+                m_state = 10;
+            else
+                m_state = 7;
+            return widget->v17(input);
+        }
+        if (input.shortcuts->FUN_0060e240(*(unsigned short *)((char *)this + 0x0a)) == 2 ||
+            input.shortcuts->FUN_0060e240(*(unsigned short *)((char *)this + 0x0a)) == 3)
+        {
+            if (!m_selected)
+            {
+                m_selected = 1;
+                m_state = 9;
+            }
+            else
+            {
+                m_selected = 0;
+                m_state = 6;
+            }
+            return widget->v16(input);
+        }
+    }
+    if ((char)widget->v19(input))
+    {
+        unsigned short flags = input.flags;
+        if (flags & 0x40)
+        {
+            if (!m_selected)
+                m_state = 7;
+            else
+                m_state = 10;
+            return widget->v17(input);
+        }
+        if (flags & 8)
+        {
+            RHPortraitWidgetEvent *event = &m_event;
+            m_event.value = m_selected == 1;
+            m_event.next = 0;
+            m_event.widget = this;
+            event->type = 7;
+            return event;
+        }
+        if (flags & 1)
+        {
+            if (!m_selected)
+            {
+                m_selected = 1;
+                m_state = 9;
+            }
+            else
+            {
+                m_selected = 0;
+                m_state = 6;
+            }
+            return widget->v16(input);
+        }
+        if (!(flags & 0x12))
+        {
+            if (*((char *)this + 5) == 1)
+            {
+                if (!m_selected)
+                    m_state = 5;
+                else
+                    m_state = 8;
+                return widget->v15(input);
+            }
+        }
+        else
+            return widget->v18(input);
+    }
+    if (m_state == 5 || m_state == 7)
+        m_state = 6;
+    if (m_state == 8 || m_state == 10)
+        m_state = 9;
+    return 0;
+}
+
+// FUNCTION: GAME 0x005d55f0
+void *RHPortraitLifetime005d5350::FUN_005d55f0(unsigned flags)
+{
+    this->~RHPortraitLifetime005d5350();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// Parked: The identifier store is sunk after allocator-byte stores and the guard receiver.
+// STUB: GAME 0x005d56c0
+RHPortraitAnimated::RHPortraitAnimated(int id) : m_id(id)
+{
+    unsigned char allocator;
+    unsigned char comparator;
+    m_map.m_00[0] = allocator;
+    m_map.m_00[1] = comparator;
+    m_map.m_multi = false;
+    {
+        RHUnk00641782 guard;
+        if (!g_unk0x006c0b48)
+        {
+            RHUnk00514e10::Node *node = (RHUnk00514e10::Node *)operator new(sizeof(RHUnk00514e10::Node));
+            node->parent = 0;
+            node->color = 1;
+            g_unk0x006c0b48 = node;
+            node->left = 0;
+            g_unk0x006c0b48->right = 0;
+        }
+        ++g_unk0x006c0b4c;
+        RHUnk00514e10::Node *parent = g_unk0x006c0b48;
+        RHUnk00514e10::Node *node = (RHUnk00514e10::Node *)operator new(sizeof(RHUnk00514e10::Node));
+        node->parent = parent;
+        node->color = 0;
+        m_map.m_head = node;
+        m_map.m_size = 0;
+        node->left = node;
+        m_map.m_head->right = m_map.m_head;
+    }
+    m_state = 0;
+    m_handled = 0;
+}
+
+// FUNCTION: GAME 0x005d5840
+RHUnk00514e10::Node *RHPortraitTree::FUN_005d5840(const RHPortraitWidgetEvent &event)
+{
+    RHUnk00641782 guard;
+    RHUnk00514e10::Node *node = m_head->parent;
+    RHUnk00514e10::Node *result = m_head;
+    while (node != g_unk0x006c0b48)
+    {
+        if (node->value.first < event.type)
+            node = node->right;
+        else
+        {
+            result = node;
+            node = node->left;
+        }
+    }
+    return result;
+}
+
+// FUNCTION: GAME 0x005d5940
+void RHPortraitUnk005d5950::FUN_005d5940()
+{
+    ((RHPortraitRendererCalls *)((char *)this + 0x80))->FUN_005cb2a0();
+}
+
+// FUNCTION: GAME 0x005d5950
+void RHPortraitUnk005d5950::FUN_005d5950(int value)
+{
+    ((RHPortraitRendererCalls *)((char *)this + 0x80))->FUN_005cb2b0(value);
+}
+
+// Parked: Subobject constructor inlining and temporary-string EH coloring differ.
+// STUB: GAME 0x005d5a20
+RHPortraitFullLifetime::RHPortraitFullLifetime(unsigned short index, RHPortraitActorCalls *actor)
+    : m_actor(actor),
+      m_portraitResource((RHPortraitResourceInterface *)FUN_005024f0(std::string(RHPortraitResourceName()))->FUN_00502270()),
+      m_backgroundResource((RHPortraitResourceInterface *)FUN_005024f0(std::string(RHPortraitBackgroundName()))->FUN_00502270()),
+      m_resources(false)
+{
+    *((char *)this + 0xca6) = 0;
+    *((char *)this + 0xca7) = 0;
+    *((char *)this + 0xca8) = 0;
+    *((char *)this + 0xca9) = 0;
+    m_caa = 0;
+    m_cac = 0;
+    m_vptr = 0x0067a348;
+    unsigned short *counter = (unsigned short *)((char *)this + 0xc9e);
+    for (int remaining = 3; remaining; --remaining, ++counter)
+    {
+        counter[-3] = 0;
+        counter[0] = 0;
+    }
+    FUN_0061a800(&m_second);
+    FUN_0061a800(&m_first);
+    FUN_0061a800(&m_action);
+    FUN_0061a800(&m_buttonFirst);
+    FUN_0061a800(&m_buttonSecond);
+    FUN_0061a800(&m_buttonThird);
+    FUN_0061aa30(&m_buttonFirst);
+    FUN_0061aa30(&m_buttonSecond);
+    FUN_0061aa30(&m_buttonThird);
+    m_buttonFirst.m_value = (int)&m_buttonSecond;
+    m_buttonSecond.m_value = (int)&m_buttonThird;
+    m_buttonThird.m_value = (int)&m_buttonFirst;
+    FUN_0061a800(&m_quick[0]);
+    FUN_0061a800(&m_quick[1]);
+    FUN_0061a800(&m_quick[2]);
+    FUN_0061a800(&m_bitmapFirst);
+    FUN_0061a800(&m_customFirst);
+    FUN_0061a800(&m_bitmapSecond);
+    ((RHUnk005d92c0Sub *)&m_bitmapFirst)->v21(0);
+    ((RHUnk005d92c0Sub *)&m_customFirst)->v21(0);
+    ((RHUnk005d92c0Sub *)&m_bitmapSecond)->v21(0);
+    FUN_0061aa30(&m_bitmapFirst);
+    FUN_0061aa30(&m_customFirst);
+    ((RHUnk005d92c0Sub *)&m_quick[0])->v21(0);
+    ((RHUnk005d92c0Sub *)&m_quick[1])->v21(0);
+    ((RHUnk005d92c0Sub *)&m_quick[2])->v21(0);
+    {
+        std::wstring text = FUN_005e23d0(0x11e);
+        *((char *)&m_quick[0] + 8) = 1;
+        RHPortraitAssignWideText((char *)&m_quick[0] + 0x20, text);
+    }
+    {
+        std::wstring text = FUN_005e23d0(0x11e);
+        *((char *)&m_quick[1] + 8) = 1;
+        RHPortraitAssignWideText((char *)&m_quick[1] + 0x20, text);
+    }
+    {
+        std::wstring text = FUN_005e23d0(0x11e);
+        *((char *)&m_quick[2] + 8) = 1;
+        RHPortraitAssignWideText((char *)&m_quick[2] + 0x20, text);
+    }
+    m_e50[0] = 0;
+    m_e50[1] = 0;
+    m_e50[2] = 0;
+    m_portraitResource->v5(m_resources, false);
+    if (m_backgroundResource)
+        m_backgroundResource->v5(m_resources, false);
+    {
+        std::wstring text(RHPortraitSwordName());
+        RHMapBox box(0, 0, 0, 0);
+        ((RHPortraitSetupDispatch *)&m_customSecond)->v12(text, *(SBGeoBoundingBox2D *)&box, false, actor->FUN_00492730());
+    }
+    ((RHPortraitSetupDispatch *)&m_customSecond)->v1(0);
+    ((RHPortraitCtorCalls *)this)->FUN_005d6940(index);
+    *(void **)((char *)this + 0x94) = this;
+    *(int *)((char *)this + 0x98) = 0;
+    *(int *)((char *)this + 0x90) = 11;
+    *(void **)((char *)this + 0x9c) = 0;
+}
+
+// FUNCTION: GAME 0x005d61e0
+void *RHPortraitFullLifetime::FUN_005d61e0(unsigned flags)
+{
+    this->~RHPortraitFullLifetime();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// Parked: The vptr store follows the member-cleanup receiver and state.
+// STUB: GAME 0x005d6200
+RHPortraitLifetime005d6200::~RHPortraitLifetime005d6200()
+{
+    *(unsigned *)this = 0x0067a4e4;
+}
+
+// Parked: The vptr store follows the member-cleanup receiver and state.
+// STUB: GAME 0x005d6260
+RHPortraitLifetime005d6260::~RHPortraitLifetime005d6260()
+{
+    *(unsigned *)this = 0x00677624;
+}
+
+// Parked: The vptr store follows the member-cleanup receiver and state.
+// STUB: GAME 0x005d62c0
+RHPortraitLifetime005d62c0::~RHPortraitLifetime005d62c0()
+{
+    *(unsigned *)this = 0x00677624;
+}
+
+// Parked: The base vptr store follows the renderer-cleanup receiver and state.
+// STUB: GAME 0x005d6320
+RHPortraitLifetime005d6320::~RHPortraitLifetime005d6320()
+{
+}
+
+// Parked: The vptr store follows the member-cleanup receiver and state.
+// STUB: GAME 0x005d63b0
+inline RHPortraitLifetime005d63b0::~RHPortraitLifetime005d63b0()
+{
+    *(unsigned *)this = 0x0067a51c;
+}
+
+// Parked: Shared bitmap destructors remain out of line and alter EH cleanup states.
+// STUB: GAME 0x005d6410
+RHPortraitFullLifetime::~RHPortraitFullLifetime()
+{
+    *(volatile unsigned *)&m_vptr = 0x0067a348;
+    m_portraitResource->v6();
+    if (m_portraitResource)
+        m_portraitResource->v2(1);
+    if (m_backgroundResource)
+    {
+        m_backgroundResource->v6();
+        if (m_backgroundResource)
+            m_backgroundResource->v2(1);
+    }
+}
+
+void EmitPortraitWidgetBatch99(RHPortraitUnk005d3880 *widget, RHPortraitUnk005d3fe0 *group, RHPortraitUnk005d5100 *strategy, RHPortraitTree *tree, RHPortraitAnimated *animated, RHPortraitUnk005d5950 *rendererWidget, const SBGeoPoint2D &point, const RHPortraitWidgetInput &input)
+{
+    widget->FUN_005d3880(point);
+    widget->FUN_005d3a10(input);
+    widget->FUN_005d3a60(input);
+    widget->FUN_005d3a80(widget);
+    widget->FUN_005d3ab0(widget);
+    widget->FUN_005d3b00(1);
+    widget->FUN_005d3b10();
+    widget->FUN_005d3b20(&input);
+    widget->FUN_005d3b60(point);
+    group->FUN_005d3fe0(0);
+    group->FUN_005d4020();
+    group->FUN_005d4060();
+    group->FUN_005d40b0();
+    group->FUN_005d40f0(input);
+    group->FUN_005d3ef0(input);
+    group->FUN_005d4240(input);
+    group->FUN_005d4280(point);
+    group->FUN_005d4360(point);
+    ((RHPortraitBoxEvent *)((char *)group + 0x90))->~RHPortraitBoxEvent();
+    group->FUN_005d4480(input);
+    group->FUN_005d45a0(input);
+    group->FUN_005d46e0(input);
+    widget->FUN_005d4cb0(input);
+    widget->FUN_005d4bb0(0, *(std::wstring *)widget, point, -1);
+    widget->FUN_005d4db0(point);
+    widget->FUN_005d4d60(input);
+    widget->FUN_005d4e50(input);
+    widget->FUN_005d4ec0(input);
+    widget->FUN_005d4f30(input);
+    widget->FUN_005d4f80(input);
+    widget->FUN_005d4fe0(input);
+    strategy->FUN_005d3ac0();
+    strategy->FUN_005d5090();
+    strategy->FUN_005d5100(point);
+    strategy->FUN_005d51a0();
+    strategy->FUN_005d51c0(0);
+    strategy->FUN_005d5210(0);
+    widget->FUN_005d5230();
+    widget->FUN_005d52d0();
+    widget->FUN_005d53b0(input);
+    tree->FUN_005d5840(widget->m_event);
+    animated->RHPortraitAnimated::RHPortraitAnimated(2);
+    rendererWidget->FUN_005d5940();
+    rendererWidget->FUN_005d5950(0);
+    ((RHPortraitLinkedLifetime *)widget)->RHPortraitLinkedLifetime::RHPortraitLinkedLifetime();
+    ((RHPortraitLinkedLifetime *)widget)->FUN_005d39d0(0);
+    ((RHPortraitRadioLifetime *)widget)->FUN_005d4ab0(0);
+    ((RHPortraitGroupLifetime *)group)->RHPortraitGroupLifetime::RHPortraitGroupLifetime();
+    ((RHPortraitGroupLifetime *)group)->FUN_005d3dc0(0);
+    ((RHPortraitGroupLifetimeBase *)group)->FUN_005d4410(0);
+    ((RHPortraitLifetime005d5350 *)widget)->FUN_005d55f0(0);
+    ((RHPortraitLifetime005d6200 *)widget)->~RHPortraitLifetime005d6200();
+    ((RHPortraitLifetime005d6260 *)widget)->~RHPortraitLifetime005d6260();
+    ((RHPortraitLifetime005d62c0 *)widget)->~RHPortraitLifetime005d62c0();
+    ((RHPortraitLifetime005d6320 *)widget)->~RHPortraitLifetime005d6320();
+    ((RHPortraitLifetime005d63b0 *)widget)->~RHPortraitLifetime005d63b0();
+    ((RHPortraitFullLifetime *)widget)->RHPortraitFullLifetime::RHPortraitFullLifetime(0, (RHPortraitActorCalls *)group);
+    ((RHPortraitFullLifetime *)widget)->FUN_005d61e0(0);
+}
 
 // Parked: the body has three owning widget/resource lifetimes whose VC6 EH shape is not yet aligned.
 // STUB: GAME 0x005d75c0
@@ -548,4 +3009,1234 @@ bool RHWidgetPortrait::Serialize(SBFile &file)
 void RHWidgetPortrait::Emit(SBFile &file)
 {
     Serialize(file);
+}
+
+// SIZE 0xe8
+class RHPortraitActionButton
+{
+public:
+    virtual void v00(); // vtable+0x00
+    virtual void v01(); // vtable+0x04
+    virtual void v02(); // vtable+0x08
+    virtual void v03(); // vtable+0x0c
+    virtual void v04(); // vtable+0x10
+    virtual void v05(); // vtable+0x14
+    virtual void v06(); // vtable+0x18
+    virtual void v07(); // vtable+0x1c
+    virtual void v08(); // vtable+0x20
+    virtual void v09(); // vtable+0x24
+    virtual void v10(int value); // vtable+0x28
+    virtual void v11(); // vtable+0x2c
+    virtual void v12(); // vtable+0x30
+    virtual void v13(); // vtable+0x34
+    virtual void v14(); // vtable+0x38
+    virtual void v15(); // vtable+0x3c
+    virtual void v16(); // vtable+0x40
+    virtual void v17(); // vtable+0x44
+    virtual void v18(); // vtable+0x48
+    virtual void v19(); // vtable+0x4c
+    virtual int v20(); // vtable+0x50
+    virtual void v21(bool enabled); // vtable+0x54
+    void Release()
+    {
+        if (m_cc == 1)
+        {
+            m_cc = 0;
+            m_4c = 0;
+            if (m_7c == 8)
+                m_7c = 5;
+            if (m_7c == 9)
+                m_7c = 6;
+        }
+    }
+    bool m_04; // 0x04
+    char m_05; // 0x05
+    char m_06; // 0x06
+    undefined m_07[0x4c - 0x07]; // 0x07
+    int m_4c; // 0x4c
+    undefined m_50[0x7c - 0x50]; // 0x50
+    int m_7c; // 0x7c
+    undefined m_80[0xcc - 0x80]; // 0x80
+    char m_cc; // 0xcc
+    undefined m_cd[3]; // 0xcd
+    void *m_d0; // 0xd0
+    undefined m_d4[0x14]; // 0xd4
+};
+
+DECOMP_SIZE_ASSERT(RHPortraitActionButton, 0xe8)
+
+#define B(O) (*(RHPortraitActionButton *)((char *)this + (O)))
+#define TWO_BUTTONS (*((char *)this + 0xca8))
+
+// FUNCTION: GAME 0x005d9920
+void RHWidgetPortrait::FUN_005d9920()
+{
+    m_arr[2].m_50 = 1;
+    W(0).v14(&W(0x514));
+    ((RHPortraitCtorCalls *)this)->FUN_005d6940(*(unsigned short *)((char *)this + 0xca4));
+}
+
+// FUNCTION: GAME 0x005d9950
+void RHGamePortraitCalls::FUN_005d9950(unsigned action)
+{
+    switch (action)
+    {
+    case 0:
+        B(0x344).Release();
+        B(0x344).v21(0);
+        break;
+    case 1:
+        B(0x42c).Release();
+        B(0x42c).v21(0);
+        break;
+    case 2:
+        if (!TWO_BUTTONS)
+        {
+            B(0x514).Release();
+            B(0x514).v21(0);
+        }
+        break;
+    }
+}
+
+// FUNCTION: GAME 0x005d9a20
+bool RHWidgetPortrait::FUN_005d9a20(int action)
+{
+    switch (action)
+    {
+    case 0:
+        return B(0x344).m_04;
+    case 1:
+        return B(0x42c).m_04;
+    case 2:
+        if (!m_arr[2].m_50)
+            return B(0x514).m_04;
+    }
+    return false;
+}
+
+// FUNCTION: GAME 0x005d9a60
+void RHGamePortraitCalls::FUN_005d9a60(unsigned action)
+{
+    RHWidgetPortrait *portrait = (RHWidgetPortrait *)this;
+    switch (action)
+    {
+    case 0:
+        B(0x344).v21(portrait->FUN_005d9eb0(0));
+        break;
+    case 1:
+        B(0x42c).v21(portrait->FUN_005d9eb0(1));
+        break;
+    case 2:
+        if (!TWO_BUTTONS)
+            B(0x514).v21(portrait->FUN_005d9eb0(2));
+        break;
+    }
+}
+
+// FUNCTION: GAME 0x005d9ae0
+void RHGamePortraitCalls::FUN_005d9ae0(unsigned short action, bool enabled)
+{
+    B(0x97c + action * 0x104).v21(enabled);
+}
+
+// FUNCTION: GAME 0x005d9b10
+void RHGamePortraitCalls::FUN_005d9b10()
+{
+    char *pending = (char *)this + 0xc94;
+    RHPortraitActionButton *button = &B(0x97c);
+    int *saved = (int *)((char *)this + 0xc88);
+    for (int count = 3; count != 0; --count)
+    {
+        if (*pending)
+        {
+            *pending = 0;
+            int previous = *saved;
+            *saved = button->v20();
+            button->v10(previous);
+            *pending = 0;
+        }
+        ++saved;
+        button = (RHPortraitActionButton *)((char *)button + 0x104);
+        ++pending;
+    }
+}
+
+// FUNCTION: GAME 0x005d9b70
+void RHGamePortraitCalls::FUN_005d9b70()
+{
+    B(0x344).v21(0);
+    B(0x42c).v21(0);
+    if (!TWO_BUTTONS)
+        B(0x514).v21(0);
+}
+
+// FUNCTION: GAME 0x005d9bc0
+void RHWidgetPortrait::FUN_005d9bc0()
+{
+    B(0x344).v21(FUN_005d9eb0(0));
+    B(0x42c).v21(FUN_005d9eb0(1));
+    if (!m_arr[2].m_50)
+        B(0x514).v21(FUN_005d9eb0(2));
+}
+
+// FUNCTION: GAME 0x005d9eb0
+bool RHWidgetPortrait::FUN_005d9eb0(int action)
+{
+    if (((RHElementActorPC *)A)->FUN_0049d590(4) == action
+        && (g_unk0x6c07fc->Get(1) < 50 || !A->v57(4)))
+        return false;
+    return true;
+}
+
+class RHUIRendererCustom
+{
+public:
+    bool Render(unsigned int id);
+};
+
+class RHUIRendererShiftingTitbit
+{
+public:
+    bool Render(unsigned id);
+    void SetCounter(unsigned short value) { m_50 = value; }
+    undefined m_00[0x50]; // 0x00
+    unsigned short m_50; // 0x50
+};
+
+class RHPortraitWidgetRenderer
+{
+public:
+    virtual void v0(); // vtable+0x00
+    virtual void v1(int value); // vtable+0x04
+};
+
+#define PORTRAIT_WIDGET_VIRTUALS \
+    virtual void v00(); \
+    virtual void v01(); \
+    virtual void v02(); \
+    virtual void v03(); \
+    virtual void v04(); \
+    virtual void v05(); \
+    virtual void v06(); \
+    virtual void v07(); \
+    virtual void v08(); \
+    virtual unsigned int v09();
+
+// SIZE 0xdc
+class RHPortraitWidget005da4a0
+{
+public:
+    PORTRAIT_WIDGET_VIRTUALS
+    void FUN_005da4a0();
+    void FUN_005da4c0(long id);
+    void FUN_005da700(int value);
+    int FUN_005da720();
+    int FUN_005da780(const SBGeoPoint2D &point);
+    RHPortraitWidgetEvent *FUN_005da820(const RHPortraitWidgetInput &input);
+    RHPortraitWidgetEvent *FUN_005da860(const RHPortraitWidgetInput &input);
+    RHPortraitWidgetEvent *FUN_005da8f0(const RHPortraitWidgetInput &input);
+    RHPortraitWidgetEvent *FUN_005da930(const RHPortraitWidgetInput &input);
+    void FUN_005dec30(const SBGeoBoundingBox2D &box);
+    RHPortraitWidgetEvent *FUN_005daea0(const RHPortraitWidgetInput &input);
+    char m_04; // 0x04
+    char m_05; // 0x05
+    char m_06; // 0x06
+    undefined m_07[3]; // 0x07
+    unsigned short m_0a; // 0x0a
+    undefined m_0c[0x30 - 0x0c]; // 0x0c
+    SBGeoBoundingBox2D m_box; // 0x30
+    undefined m_44[0x4c - 0x44]; // 0x44
+    RHPortraitWidgetEvent m_event; // 0x4c
+    undefined m_5c[0x7c - 0x5c]; // 0x5c
+    int m_7c; // 0x7c
+    undefined m_renderer[0x4c]; // 0x80
+    RHUnk5490f0 *m_messages[4]; // 0xcc
+};
+
+// SIZE 0xe8
+class RHActorPCWidgetState
+{
+public:
+    PORTRAIT_WIDGET_VIRTUALS
+    void FUN_005db620(RHActorPCWidgetState *state);
+    int FUN_005da970();
+    RHPortraitWidgetEvent *FUN_005daa00(const RHPortraitWidgetInput &input);
+    RHPortraitWidgetEvent *FUN_005daa80(const RHPortraitWidgetInput &input);
+    RHPortraitWidgetEvent *FUN_005dab00(const RHPortraitWidgetInput &input);
+    RHPortraitWidgetEvent *FUN_005dab40(const RHPortraitWidgetInput &input);
+    RHPortraitWidgetEvent *FUN_005dab80(const RHPortraitWidgetInput &input);
+    void ClearLinked()
+    {
+        if (m_d0 && this != m_d0)
+        {
+            RHActorPCWidgetState *linked = m_d0;
+            if (linked->m_cc == 1)
+            {
+                if (linked->m_7c == 9)
+                    linked->m_7c = 6;
+                if (linked->m_7c == 8)
+                    linked->m_7c = 5;
+                linked->m_cc = 0;
+            }
+            linked->m_d0->FUN_005db620(this);
+        }
+    }
+    char m_04; // 0x04
+    char m_05; // 0x05
+    char m_06; // 0x06
+    undefined m_07[0x4c - 0x07]; // 0x07
+    RHPortraitWidgetEvent m_event; // 0x4c
+    undefined m_5c[0x7c - 0x5c]; // 0x5c
+    int m_7c; // 0x7c
+    undefined m_80[0xcc - 0x80]; // 0x80
+    char m_cc; // 0xcc
+    undefined m_cd[3]; // 0xcd
+    RHActorPCWidgetState *m_d0; // 0xd0
+    RHUnk5490f0 *m_messages[5]; // 0xd4
+};
+
+// SIZE 0xec
+class RHPortraitWidget005dafd0
+{
+public:
+    PORTRAIT_WIDGET_VIRTUALS
+    void FUN_005dafd0();
+    RHPortraitWidgetEvent *FUN_005db080(const RHPortraitWidgetInput &input);
+    int FUN_005db0a0();
+    RHPortraitWidgetEvent *FUN_005db1a0(const RHPortraitWidgetInput &input);
+    RHPortraitWidgetEvent *FUN_005db1e0(const RHPortraitWidgetInput &input);
+    RHPortraitWidgetEvent *FUN_005db270(const RHPortraitWidgetInput &input);
+    RHPortraitWidgetEvent *FUN_005db2b0(const RHPortraitWidgetInput &input);
+    int FUN_005db2f0(unsigned int id);
+    void FUN_005db350();
+    char m_04; // 0x04
+    char m_05; // 0x05
+    char m_06; // 0x06
+    undefined m_07[3]; // 0x07
+    unsigned short m_0a; // 0x0a
+    undefined m_0c[0x4c - 0x0c]; // 0x0c
+    RHPortraitWidgetEvent m_event; // 0x4c
+    undefined m_5c[0x7c - 0x5c]; // 0x5c
+    int m_7c; // 0x7c
+    undefined m_renderer[0x5c]; // 0x80
+    RHUnk5490f0 *m_messages[4]; // 0xdc
+    unsigned short m_ec; // 0xec
+    unsigned short m_ee; // 0xee
+    SBGeoBoundingBox2D m_box; // 0xf0
+};
+
+DECOMP_SIZE_ASSERT(RHPortraitWidget005da4a0, 0xdc)
+DECOMP_SIZE_ASSERT(RHActorPCWidgetState, 0xe8)
+DECOMP_SIZE_ASSERT(RHPortraitWidget005dafd0, 0x104)
+
+inline void RHPortraitPost(RHUnk5490f0 *const &message)
+{
+    RHMessenger *messenger = RHUnk00546050();
+    if (message)
+        messenger->RHUnk005460c0(*message);
+}
+
+// FUNCTION: GAME 0x005da4a0
+void RHPortraitWidget005da4a0::FUN_005da4a0()
+{
+    ((RHUIRendererCustom *)m_renderer)->Render(v09());
+}
+
+// FUNCTION: GAME 0x005da4c0
+void RHPortraitWidget005da4a0::FUN_005da4c0(long id)
+{
+    SBUIUnk0060d530 &renderer = *(SBUIUnk0060d530 *)m_renderer;
+    renderer.FUN_0060d550(id);
+    ((RHMobileUnk00607da0 *)&m_box)->FUN_00607da0(*(RHMobileUnk00607da0 *)renderer.FUN_0060d690());
+}
+
+// FUNCTION: GAME 0x005da700
+void RHPortraitWidget005da4a0::FUN_005da700(int value)
+{
+    ((RHPortraitWidgetRenderer *)m_renderer)->v1(value);
+}
+
+// FUNCTION: GAME 0x005da720
+int RHPortraitWidget005da4a0::FUN_005da720()
+{
+    int result;
+    if (!m_04)
+        return 0;
+    switch (m_7c)
+    {
+    case 2:
+    case 3:
+        return 3;
+    case 1:
+        return 2;
+    case 0:
+        result = 1;
+        break;
+    }
+    if (result == 1 && !m_06)
+        result = 0xff;
+    return result;
+}
+
+// FUNCTION: GAME 0x005da780
+int RHPortraitWidget005da4a0::FUN_005da780(const SBGeoPoint2D &point)
+{
+    SBGeoBoundingBox2D &box = m_box;
+    if (box.FUN_006083b0(point) &&
+        ((RHGameWidgetRendererCalls *)m_renderer)->FUN_0060d890(point.Unk005fc110(*(SBGeoPoint2D *)&box)))
+        return true;
+    return false;
+}
+
+// FUNCTION: GAME 0x005da820
+RHPortraitWidgetEvent *RHPortraitWidget005da4a0::FUN_005da820(const RHPortraitWidgetInput &input)
+{
+    RHPortraitPost(m_messages[0]);
+    m_event.next = 0;
+    m_event.widget = this;
+    m_event.value = 0;
+    m_event.type = 0;
+    return &m_event;
+}
+
+// FUNCTION: GAME 0x005da860
+RHPortraitWidgetEvent *RHPortraitWidget005da4a0::FUN_005da860(const RHPortraitWidgetInput &input)
+{
+    RHPortraitPost(m_messages[1]);
+    if ((input.flags & 1) || (m_0a && input.shortcuts->FUN_0060e240(m_0a) == 2))
+        m_event.type = 2;
+    else if ((input.flags & 8) || (m_0a && input.shortcuts->FUN_0060e240(m_0a) == 3))
+        m_event.type = 3;
+    m_event.next = 0;
+    m_event.widget = this;
+    m_event.value = 0;
+    return &m_event;
+}
+
+// FUNCTION: GAME 0x005da8f0
+RHPortraitWidgetEvent *RHPortraitWidget005da4a0::FUN_005da8f0(const RHPortraitWidgetInput &input)
+{
+    RHPortraitPost(m_messages[2]);
+    m_event.next = 0;
+    m_event.widget = this;
+    m_event.value = 0;
+    m_event.type = 0;
+    return &m_event;
+}
+
+// FUNCTION: GAME 0x005da930
+RHPortraitWidgetEvent *RHPortraitWidget005da4a0::FUN_005da930(const RHPortraitWidgetInput &input)
+{
+    RHPortraitPost(m_messages[3]);
+    m_event.next = 0;
+    m_event.widget = this;
+    m_event.value = 0;
+    m_event.type = 4;
+    return &m_event;
+}
+
+// FUNCTION: GAME 0x005da970
+int RHActorPCWidgetState::FUN_005da970()
+{
+    int result;
+    if (!m_04)
+        return 0;
+    switch (m_7c)
+    {
+    case 5:
+    case 8:
+        if (m_05 == 1)
+            return m_cc ? 4 : 2;
+        result = m_cc ? 3 : 1;
+        break;
+    case 6:
+    case 7:
+        result = 1;
+        break;
+    case 9:
+    case 10:
+        result = 3;
+        break;
+    default:
+        if (result != 3 && result != 1)
+            return result;
+    }
+    if (m_06 != 1)
+        result = 0xff;
+    return result;
+}
+
+// FUNCTION: GAME 0x005daa00
+RHPortraitWidgetEvent *RHActorPCWidgetState::FUN_005daa00(const RHPortraitWidgetInput &input)
+{
+    RHPortraitPost(m_messages[0]);
+    m_event.type = 2;
+    m_event.next = 0;
+    m_event.widget = this;
+    m_event.value = 0;
+    ClearLinked();
+    return &m_event;
+}
+
+// FUNCTION: GAME 0x005daa80
+RHPortraitWidgetEvent *RHActorPCWidgetState::FUN_005daa80(const RHPortraitWidgetInput &input)
+{
+    RHPortraitPost(m_messages[1]);
+    m_event.type = 7;
+    m_event.next = 0;
+    m_event.widget = this;
+    m_event.value = 0;
+    ClearLinked();
+    return &m_event;
+}
+
+// FUNCTION: GAME 0x005dab00
+RHPortraitWidgetEvent *RHActorPCWidgetState::FUN_005dab00(const RHPortraitWidgetInput &input)
+{
+    RHPortraitPost(m_messages[2]);
+    m_event.next = 0;
+    m_event.widget = this;
+    m_event.value = 0;
+    m_event.type = 4;
+    return &m_event;
+}
+
+// FUNCTION: GAME 0x005dab40
+RHPortraitWidgetEvent *RHActorPCWidgetState::FUN_005dab40(const RHPortraitWidgetInput &input)
+{
+    RHPortraitPost(m_messages[3]);
+    m_event.next = 0;
+    m_event.widget = this;
+    m_event.value = 0;
+    m_event.type = 5;
+    return &m_event;
+}
+
+// FUNCTION: GAME 0x005dab80
+RHPortraitWidgetEvent *RHActorPCWidgetState::FUN_005dab80(const RHPortraitWidgetInput &input)
+{
+    RHPortraitPost(m_messages[4]);
+    m_event.next = 0;
+    m_event.widget = this;
+    m_event.value = 0;
+    m_event.type = 6;
+    return &m_event;
+}
+
+// FUNCTION: GAME 0x005daea0
+RHPortraitWidgetEvent *RHPortraitWidget005da4a0::FUN_005daea0(const RHPortraitWidgetInput &input)
+{
+    if (m_04)
+    {
+        SBGeoBoundingBox2D &box = m_box;
+        if (box.FUN_006083b0(input.point) == 1 &&
+            ((RHGameWidgetRendererCalls *)m_renderer)->FUN_0060d890(input.point.Unk005fc110(*(SBGeoPoint2D *)&box)) == 1)
+        {
+            if (!(input.flags & 1))
+            {
+                RHPortraitWidgetEvent *event = &m_event;
+                m_event.next = 0;
+                m_event.value = 0;
+                m_event.widget = this;
+                event->type = 0;
+                return event;
+            }
+        }
+        else if (!m_0a || input.shortcuts->FUN_0060e240(m_0a) != 2)
+        {
+            m_7c = 0;
+            return 0;
+        }
+        RHPortraitWidgetEvent *event = &m_event;
+        if (m_event.type != 2 && m_event.type != 7)
+        {
+            m_event.next = 0;
+            m_event.value = 0;
+            m_event.widget = this;
+            event->type = 2;
+            return event;
+        }
+        m_event.next = 0;
+        m_event.value = 0;
+        m_event.widget = this;
+        event->type = 7;
+        return event;
+    }
+    return 0;
+}
+
+// FUNCTION: GAME 0x005dafd0
+void RHPortraitWidget005dafd0::FUN_005dafd0()
+{
+    ((RHUIRendererShiftingTitbit *)m_renderer)->Render(v09());
+}
+
+// FUNCTION: GAME 0x005db080
+RHPortraitWidgetEvent *RHPortraitWidget005dafd0::FUN_005db080(const RHPortraitWidgetInput &input)
+{
+    m_event.next = 0;
+    m_event.widget = this;
+    m_event.type = 1;
+    m_event.value = 0;
+    return &m_event;
+}
+
+// FUNCTION: GAME 0x005db0a0
+int RHPortraitWidget005dafd0::FUN_005db0a0()
+{
+    int result;
+    if (!m_04)
+        return 0;
+    switch (m_7c)
+    {
+    case 2:
+    case 3:
+        return 3;
+    case 1:
+        return 2;
+    case 0:
+        result = 1;
+        break;
+    }
+    if (result == 1 && !m_06)
+        result = 0xff;
+    return result;
+}
+
+// FUNCTION: GAME 0x005db1a0
+RHPortraitWidgetEvent *RHPortraitWidget005dafd0::FUN_005db1a0(const RHPortraitWidgetInput &input)
+{
+    RHPortraitPost(m_messages[0]);
+    m_event.next = 0;
+    m_event.widget = this;
+    m_event.value = 0;
+    m_event.type = 0;
+    return &m_event;
+}
+
+// FUNCTION: GAME 0x005db1e0
+RHPortraitWidgetEvent *RHPortraitWidget005dafd0::FUN_005db1e0(const RHPortraitWidgetInput &input)
+{
+    RHPortraitPost(m_messages[1]);
+    if ((input.flags & 1) || (m_0a && input.shortcuts->FUN_0060e240(m_0a) == 2))
+        m_event.type = 2;
+    else if ((input.flags & 8) || (m_0a && input.shortcuts->FUN_0060e240(m_0a) == 3))
+        m_event.type = 3;
+    m_event.next = 0;
+    m_event.widget = this;
+    m_event.value = 0;
+    return &m_event;
+}
+
+// FUNCTION: GAME 0x005db270
+RHPortraitWidgetEvent *RHPortraitWidget005dafd0::FUN_005db270(const RHPortraitWidgetInput &input)
+{
+    RHPortraitPost(m_messages[2]);
+    m_event.next = 0;
+    m_event.widget = this;
+    m_event.value = 0;
+    m_event.type = 0;
+    return &m_event;
+}
+
+// FUNCTION: GAME 0x005db2b0
+RHPortraitWidgetEvent *RHPortraitWidget005dafd0::FUN_005db2b0(const RHPortraitWidgetInput &input)
+{
+    RHPortraitPost(m_messages[3]);
+    m_event.next = 0;
+    m_event.widget = this;
+    m_event.value = 0;
+    m_event.type = 4;
+    return &m_event;
+}
+
+static inline unsigned int RHPortraitAnimatedComparison(SBUIUnk0060dae0 *renderer, unsigned int id)
+{
+    unsigned int previous = ((unsigned int *)((char *)renderer + 0x40))[(*(unsigned int *)((char *)renderer + 0x48)) & 1];
+    unsigned int current = id == 255 ? 0 : renderer->FUN_0060db80(id);
+    if (current == (unsigned int)-1)
+        return 3;
+    if (previous != current)
+        return current == 0 ? 2 : 1;
+    return 0;
+}
+
+// FUNCTION: GAME 0x005db2f0
+int RHPortraitWidget005dafd0::FUN_005db2f0(unsigned int id)
+{
+    if (m_ec != 0)
+        return 1;
+    return RHPortraitAnimatedComparison((SBUIUnk0060dae0 *)m_renderer, id);
+}
+
+// FUNCTION: GAME 0x005db350
+void RHPortraitWidget005dafd0::FUN_005db350()
+{
+    SBGeoBoundingBox2D &bounds = m_box;
+    if (bounds.Unk00608f30() &&
+        bounds.m_second.m_x - bounds.m_first.m_x > g_unk0x00677488 &&
+        bounds.m_second.m_y - bounds.m_first.m_y > g_unk0x00677488)
+        ((SBGeoBoundingBox2D *)((char *)this + 0x30))->FUN_00607da0(
+            bounds.FUN_006090d0(SBGeoVector2D((float)m_ec, 0.0f)));
+    if (m_ec)
+    {
+        if (m_ec > m_ee)
+            m_ec -= m_ee;
+        else
+        {
+            m_ec = 0;
+            m_ee = 0;
+            bounds.FUN_00607d90();
+        }
+    }
+    ((RHUIRendererShiftingTitbit *)m_renderer)->SetCounter(m_ec);
+    ((RHUIRendererShiftingTitbit *)m_renderer)->Render(v09());
+}
+
+class RHPortraitLifetime005db4a0 : public RHGameWidgetLifetimeBase
+{
+public:
+    ~RHPortraitLifetime005db4a0();
+    void *FUN_005db480(unsigned flags);
+    RHPortraitRenderer005ca330 m_renderer;
+};
+
+class RHPortraitLifetime005dae40 : public RHGameWidgetLifetimeBase
+{
+public:
+    ~RHPortraitLifetime005dae40();
+    void *FUN_005db560(unsigned flags);
+    RHGameRenderer005c9270 m_renderer;
+};
+
+class RHPortraitLifetime005db5a0 : public RHGameWidgetLifetimeBase
+{
+public:
+    ~RHPortraitLifetime005db5a0();
+    void *FUN_005db580(unsigned flags);
+    RHPortraitRenderer005cc110 m_renderer;
+};
+
+class RHPortraitDeleting
+{
+public:
+    void *FUN_005db500(unsigned flags);
+    void *FUN_005db520(unsigned flags);
+    void *FUN_005db540(unsigned flags);
+    void *FUN_005db600(unsigned flags);
+    void *FUN_005db690(unsigned flags);
+    void *FUN_005dee10(unsigned flags);
+    void *FUN_005dee30(unsigned flags);
+    void *FUN_005deff0(unsigned flags);
+    void *FUN_005df010(unsigned flags);
+};
+
+class RHPortraitRenderer0060dad0
+{
+public:
+    ~RHPortraitRenderer0060dad0();
+};
+
+class RHPortraitRenderer0060da10
+{
+public:
+    ~RHPortraitRenderer0060da10();
+};
+
+class RHPortraitRenderer0060d470
+{
+public:
+    ~RHPortraitRenderer0060d470();
+};
+
+// Parked: same vptr/member-cleanup EH wall as the other portrait lifetime destructors.
+// STUB: GAME 0x005dae40
+RHPortraitLifetime005dae40::~RHPortraitLifetime005dae40()
+{
+    m_vptr = 0x00679000;
+}
+
+// FUNCTION: GAME 0x005db480
+void *RHPortraitLifetime005db4a0::FUN_005db480(unsigned flags)
+{
+    this->~RHPortraitLifetime005db4a0();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// Parked: same vptr/member-cleanup EH wall as the other portrait lifetime destructors.
+// STUB: GAME 0x005db4a0
+RHPortraitLifetime005db4a0::~RHPortraitLifetime005db4a0()
+{
+    m_vptr = 0x0067a4e4;
+}
+
+// FUNCTION: GAME 0x005db500
+void *RHPortraitDeleting::FUN_005db500(unsigned flags)
+{
+    RHPortraitLifetime005d6200 *self = (RHPortraitLifetime005d6200 *)this;
+    self->~RHPortraitLifetime005d6200();
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+
+// FUNCTION: GAME 0x005db520
+void *RHPortraitDeleting::FUN_005db520(unsigned flags)
+{
+    RHPortraitLifetime005d6260 *self = (RHPortraitLifetime005d6260 *)this;
+    self->~RHPortraitLifetime005d6260();
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+
+// FUNCTION: GAME 0x005db540
+void *RHPortraitDeleting::FUN_005db540(unsigned flags)
+{
+    RHPortraitLifetime005d62c0 *self = (RHPortraitLifetime005d62c0 *)this;
+    self->~RHPortraitLifetime005d62c0();
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+
+// FUNCTION: GAME 0x005db560
+void *RHPortraitLifetime005dae40::FUN_005db560(unsigned flags)
+{
+    this->~RHPortraitLifetime005dae40();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// FUNCTION: GAME 0x005db580
+void *RHPortraitLifetime005db5a0::FUN_005db580(unsigned flags)
+{
+    this->~RHPortraitLifetime005db5a0();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// Parked: same vptr/member-cleanup EH wall as the other portrait lifetime destructors.
+// STUB: GAME 0x005db5a0
+RHPortraitLifetime005db5a0::~RHPortraitLifetime005db5a0()
+{
+    m_vptr = 0x0067a51c;
+}
+
+// FUNCTION: GAME 0x005db600
+void *RHPortraitDeleting::FUN_005db600(unsigned flags)
+{
+    RHPortraitLifetime005d6320 *self = (RHPortraitLifetime005d6320 *)this;
+    self->~RHPortraitLifetime005d6320();
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+
+// FUNCTION: GAME 0x005db620
+void RHActorPCWidgetState::FUN_005db620(RHActorPCWidgetState *state)
+{
+    for (RHActorPCWidgetState *widget = this; state != widget; widget = widget->m_d0)
+    {
+        if (widget->m_cc == 1)
+        {
+            if (widget->m_7c == 9)
+                widget->m_7c = 6;
+            if (widget->m_7c == 8)
+                widget->m_7c = 5;
+            widget->m_cc = 0;
+        }
+    }
+}
+
+// FUNCTION: GAME 0x005db690
+void *RHPortraitDeleting::FUN_005db690(unsigned flags)
+{
+    RHPortraitLifetime005d63b0 *self = (RHPortraitLifetime005d63b0 *)this;
+    self->~RHPortraitLifetime005d63b0();
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+
+// FUNCTION: GAME 0x005db6b0
+RHPortraitLifetime005d6200::RHPortraitLifetime005d6200()
+{
+    m_vptr = 0x0067a4e4;
+}
+
+// FUNCTION: GAME 0x005db700
+RHPortraitMessageWidgetBase::RHPortraitMessageWidgetBase()
+{
+    m_vptr = 0x00678e50;
+    m_state = 6;
+    *(char *)&m_strategy = 0;
+}
+
+
+// SIZE 0x20
+class RHPortraitRecord005dec40
+{
+public:
+    RHPortraitRecord005dec40 &operator=(const RHPortraitRecord005dec40 &other);
+    int m_00; // 0x00
+    undefined m_box[0x14]; // 0x04
+    int m_18; // 0x18
+    int m_1c; // 0x1c
+};
+
+#include <algorithm>
+
+void FUN_005df400(RHUnk005d92c0Sub *widget);
+
+class RHPortraitRootList : public RHPortraitRootLifetime
+{
+public:
+    ~RHPortraitRootList();
+    bool FUN_005df300(RHUnk005d92c0Sub *widget);
+    std::vector<RHUnk005d92c0Sub *> m_items; // 0xa0
+};
+
+// FUNCTION: GAME 0x005de100
+void FUN_005de100(unsigned short *destination, const unsigned short &value)
+{
+    *destination = value;
+}
+
+// TEMPLATE: GAME 0x005de110
+// ?_Nullstr@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@CAPBGXZ
+
+// FUNCTION: GAME 0x005dec30
+void RHPortraitWidget005da4a0::FUN_005dec30(const SBGeoBoundingBox2D &box)
+{
+    ((RHMobileUnk00607da0 *)&m_box)->FUN_00607da0(*(const RHMobileUnk00607da0 *)&box);
+}
+
+// FUNCTION: GAME 0x005dec40
+RHPortraitRecord005dec40 &RHPortraitRecord005dec40::operator=(const RHPortraitRecord005dec40 &other)
+{
+    m_00 = other.m_00;
+    ((RHMobileUnk00607da0 *)m_box)->FUN_00607da0(*(const RHMobileUnk00607da0 *)other.m_box);
+    m_18 = other.m_18;
+    m_1c = other.m_1c;
+    return *this;
+}
+
+// FUNCTION: GAME 0x005dee10
+void *RHPortraitDeleting::FUN_005dee10(unsigned flags)
+{
+    RHGameWidgetLifetimeBase *self = (RHGameWidgetLifetimeBase *)this;
+    self->~RHGameWidgetLifetimeBase();
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+
+// FUNCTION: GAME 0x005dee30
+void *RHPortraitDeleting::FUN_005dee30(unsigned flags)
+{
+    RHPortraitRenderer0060dad0 *self = (RHPortraitRenderer0060dad0 *)this;
+    self->~RHPortraitRenderer0060dad0();
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+
+// FUNCTION: GAME 0x005deff0
+void *RHPortraitDeleting::FUN_005deff0(unsigned flags)
+{
+    RHPortraitRenderer0060da10 *self = (RHPortraitRenderer0060da10 *)this;
+    self->~RHPortraitRenderer0060da10();
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+
+// FUNCTION: GAME 0x005df010
+void *RHPortraitDeleting::FUN_005df010(unsigned flags)
+{
+    RHPortraitRenderer0060d470 *self = (RHPortraitRenderer0060d470 *)this;
+    self->~RHPortraitRenderer0060d470();
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+
+// FUNCTION: GAME 0x005df0e0
+RHPortraitRootList::~RHPortraitRootList()
+{
+    m_vptr = 0x00678ea8;
+}
+
+// FUNCTION: GAME 0x005df300
+bool RHPortraitRootList::FUN_005df300(RHUnk005d92c0Sub *widget)
+{
+    if (widget)
+    {
+        if (FUN_0061a920(widget))
+        {
+            FUN_005df400(widget);
+            m_items.erase(std::remove(m_items.begin(), m_items.end(), widget), m_items.end());
+            return true;
+        }
+        return false;
+    }
+    std::for_each(m_items.begin(), m_items.end(), FUN_005df400);
+    m_items.erase(m_items.begin(), m_items.end());
+    return FUN_0061a920(0);
+}
+
+// FUNCTION: GAME 0x005df400
+void FUN_005df400(RHUnk005d92c0Sub *widget)
+{
+    widget->v02();
+}
+
+// FUNCTION: GAME 0x005dcb10
+int FUN_005dcb10(int value)
+{
+    switch (value)
+    {
+    case 1:
+        return 1;
+    case 9:
+        return 5;
+    case 25:
+    case 26:
+        return 2;
+    case 21:
+        return 3;
+    case 22:
+        return 4;
+    case 28:
+        return 6;
+    case 2:
+    case 3:
+        return 7;
+    case 27:
+        return 8;
+    case 13:
+    case 14:
+        return 9;
+    case 23:
+        return 10;
+    }
+    return 0;
+}
+
+struct RHPortraitKeyed
+{
+    undefined m_00[0x40]; // 0x00
+    int m_40; // 0x40
+};
+
+class RHUnk005490a0Message
+{
+public:
+    RHUnk005490a0Message(int command, int value);
+    ~RHUnk005490a0Message();
+    char data[0x10];
+};
+
+// SIZE 0x278
+struct RHPortraitQuickEntry
+{
+    ~RHPortraitQuickEntry();
+    int m_00; // 0x00
+    int m_04; // 0x04
+    undefined m_08[0x270]; // 0x08
+};
+
+class RHUnk0049d4f0
+{
+public:
+    bool Unk(int value);
+};
+
+struct RHPortraitPCNode
+{
+    undefined m_00[8]; // 0x00
+    char *m_actor; // 0x08
+};
+
+class RHPortraitPCList
+{
+public:
+    void FUN_005c8e40(unsigned index);
+    undefined m_00[8]; // 0x00
+    unsigned m_08; // 0x08
+    RHPortraitPCNode *m_0c; // 0x0c
+};
+
+class RHPortraitQuickList : public RHPortraitRootList
+{
+public:
+    bool FUN_005dd1d0(RHPortraitPCList &list);
+    RHPortraitWidgetEvent *FUN_005dd370(const void *input);
+    int m_b0; // 0xb0
+    RHPortraitQuickEntry *m_first; // 0xb4
+    RHPortraitQuickEntry *m_last; // 0xb8
+    RHPortraitQuickEntry *m_end; // 0xbc
+};
+
+
+// Parked: VC6 swaps the stack slots of the hoisted PC count and the entry cursor.
+// STUB: GAME 0x005dd1d0
+bool RHPortraitQuickList::FUN_005dd1d0(RHPortraitPCList &list)
+{
+    RHPortraitQuickEntry *entry = m_first;
+    unsigned count = list.m_08;
+    for (; entry != m_last; ++entry)
+    {
+        bool enabled = false;
+        int action = entry->m_00;
+        if (action)
+        {
+            for (unsigned i = 0; i < count; ++i)
+            {
+                list.FUN_005c8e40(i);
+                char *actor = list.m_0c->m_actor;
+                if (((RHUnk0049d4f0 *)actor)->Unk(action) || ((RHScriptBatchCalls *)actor)->Unk0049d560(action))
+                {
+                    enabled = true;
+                    break;
+                }
+                if (action == 25)
+                {
+                    if (((RHScriptBatchCalls *)actor)->Unk0049d560(26))
+                    {
+                        enabled = true;
+                        break;
+                    }
+                }
+                else if (action == 26)
+                {
+                    if (((RHScriptBatchCalls *)actor)->Unk0049d560(25))
+                    {
+                        enabled = true;
+                        break;
+                    }
+                }
+                else if (action == 13)
+                {
+                    if (((RHUnk0049d4f0 *)actor)->Unk(14))
+                    {
+                        enabled = true;
+                        break;
+                    }
+                }
+                else if (action == 14)
+                {
+                    if (((RHUnk0049d4f0 *)actor)->Unk(13))
+                    {
+                        enabled = true;
+                        break;
+                    }
+                }
+            }
+        }
+        else
+        {
+            int pc = entry->m_04;
+            if (pc)
+            {
+                for (unsigned i = 0; i < count; ++i)
+                {
+                    list.FUN_005c8e40(i);
+                    if (*(int *)(list.m_0c->m_actor + 0x5fc) == pc)
+                    {
+                        enabled = true;
+                        break;
+                    }
+                }
+            }
+        }
+        entry->m_08[0x1a4] = enabled;
+    }
+    return true;
+}
+
+// FUNCTION: GAME 0x005dd320
+void FUN_005dd320(int key, std::vector<RHPortraitKeyed *> &list)
+{
+    for (std::vector<RHPortraitKeyed *>::iterator it = list.begin(); it != list.end(); ++it)
+    {
+        if ((*it)->m_40 == key)
+        {
+            list.erase(it);
+            return;
+        }
+    }
+}
+
+// FUNCTION: GAME 0x005da340
+std::wstring RHWidgetPortrait::GetPCName() const
+{
+    std::wstring name = *(const std::wstring *)(*(const char *const *)(*(const char *const *)((const char *)this + 0xe1c) + 0x600) + 0x2c);
+    if (!(*(RHUnk005d73d0Actor *const *)((const char *)this + 0xe1c))->v62())
+    {
+        for (std::wstring::iterator it = name.begin(); it != name.end(); ++it)
+        {
+            if (*it == L' ')
+            {
+                *it = L'\n';
+                break;
+            }
+        }
+    }
+    return name;
+}
+
+// Parked: the outer box's EH state store is scheduled before the second point-destructor receiver.
+// STUB: GAME 0x005da1f0
+void RHWidgetPortrait::FUN_005da1f0()
+{
+    SBGeoBoundingBox2D frame;
+    SBGeoBoundingBox2D bounds(P(0xd0), P(0x1c4));
+    ((RHMobileUnk00607da0 *)&frame)->FUN_00607da0(*(RHMobileUnk00607da0 *)((char *)this + 0x7ec));
+    SBGeoPoint2D origin(bounds.m_first);
+    W(0x7bc).v08(SBGeoPoint2D(((bounds.m_second.m_x - bounds.m_first.m_x) - (frame.m_second.m_x - frame.m_first.m_x)) * g_unk0x006775d8,
+                              ((bounds.m_second.m_y - bounds.m_first.m_y) - (frame.m_second.m_y - frame.m_first.m_y)) * g_unk0x006775d8)
+                     .Unk005fc190(origin));
+}
+
+// FUNCTION: GAME 0x005dd370
+RHPortraitWidgetEvent *RHPortraitQuickList::FUN_005dd370(const void *input)
+{
+    RHPortraitWidgetEvent *events = (RHPortraitWidgetEvent *)FUN_0061a6e0(input);
+    for (RHPortraitWidgetEvent *event = events; event; event = event->next)
+    {
+        if (event->type == 0)
+        {
+            for (RHPortraitQuickEntry *entry = m_first; entry != m_last; ++entry)
+            {
+                if (entry->m_08 == event->widget)
+                {
+                    if (!entry->m_04 && entry->m_00)
+                        RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk005490a0Message(0x2d, entry->m_00));
+                    break;
+                }
+            }
+        }
+    }
+    return events;
+}
+
+// TEMPLATE: GAME 0x005dd530
+// ??1?$vector@URHPortraitQuickEntry@@V?$allocator@URHPortraitQuickEntry@@@std@@@std@@QAE@XZ
+
+// TEMPLATE: GAME 0x005dd570
+// ?size@?$vector@URHPortraitQuickEntry@@V?$allocator@URHPortraitQuickEntry@@@std@@@std@@QBEIXZ
+
+void EmitPortraitQuickEntries(std::vector<RHPortraitQuickEntry> *entries)
+{
+    std::vector<RHPortraitQuickEntry>::size_type (std::vector<RHPortraitQuickEntry>::*size)() const = &std::vector<RHPortraitQuickEntry>::size;
+    (entries->*size)();
+    std::vector<RHPortraitQuickEntry> local;
+    FUN_005df400(0);
 }

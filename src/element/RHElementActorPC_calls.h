@@ -320,11 +320,16 @@ public:
     RHActorPCMenuCalls *m_196c; // 0x196c
 };
 
+class RHGamePortraitCalls
+{
+public:
+    void FUN_005d9950(unsigned action);
+    void FUN_005d9a60(unsigned action);
+};
+
 class RHActorPCWidgetCalls
 {
 public:
-    void FUN_005d9950(int action);
-    void FUN_005d9a60(int action);
     void FUN_005d9860();
     void FUN_005d9700(unsigned short action);
 };

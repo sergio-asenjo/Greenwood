@@ -4,9 +4,6 @@
 RHUnk00471630::RHUnk00471630(int, int, void *) {}
 RHActorPCBoxCalls::RHActorPCBoxCalls() {}
 RHActorPCBoxCalls::~RHActorPCBoxCalls() {}
-void RHActorPCWidgetCalls::FUN_005d9950(int) {}
-void RHActorPCWidgetCalls::FUN_005d9a60(int) {}
-void RHActorPCWidgetState::FUN_005db620(RHActorPCWidgetState *) {}
 
 void RHActorPCMessageBaseCalls::FUN_00549030(int, int) {}
 void RHActorPCMenuCalls::FUN_0055e710(void *) {}
