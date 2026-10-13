@@ -43,7 +43,10 @@ public:
 class RHUnk00404860
 {
 public:
-    int __cdecl FUN_00404860(unsigned long value);
+    void FUN_00404780();
+    int FUN_00404860(unsigned long value);
+    void FUN_00404960(int value);
+    void *m_0;
 };
 
 class RHUnk004a7150

@@ -1,4 +1,29 @@
 #include "RHElementScroll.h"
+#include "VMCore.h"
+
+// FUNCTION: GAME 0x00404780
+void RHUnk00404860::FUN_00404780()
+{
+    ((VMCore *)m_0)->FUN_00639300(&std::string("Initialize"));
+}
+
+// FUNCTION: GAME 0x00404860
+int RHUnk00404860::FUN_00404860(unsigned long value)
+{
+    ((VMCore *)m_0)->FUN_006392e0(&value, 4);
+    // STRING: GAME 0x006a6ce0
+    ((VMCore *)m_0)->FUN_00639300(&std::string("IsTaken"));
+    int result;
+    ((VMCore *)m_0)->FUN_00639360(result);
+    return result;
+}
+
+// FUNCTION: GAME 0x00404960
+void RHUnk00404860::FUN_00404960(int value)
+{
+    ((VMCore *)m_0)->FUN_006392e0(&value, 4);
+    ((VMCore *)m_0)->FUN_00639300(&std::string("Hourglass"));
+}
 
 class RHEngine;
 extern RHEngine *g_pEngine;
@@ -134,8 +159,7 @@ bool RHElementScroll::IsRevealable() const
     return m_12 && m_164 == 0;
 }
 
-// Parked: result-register and reset-helper call scheduling remain different.
-// STUB: GAME 0x004ba4e0
+// FUNCTION: GAME 0x004ba4e0
 bool RHElementScroll::FUN_004ba4e0(unsigned long value)
 {
     RHBonusInfo *info = Info();
