@@ -17,6 +17,9 @@ public:
 
 void RHSerializeName(SBFile &file, const char *name);
 
+class RHElementActorPC;
+class RHMission;
+
 // SIZE 0x34
 class RHSectorProduction
 {
@@ -42,6 +45,13 @@ public:
         void clear()
         {
             erase(begin(), end());
+        }
+        void ClearAll()
+        {
+            Occupant *(*copy)(Occupant *, Occupant *, Occupant *) = std::copy;
+            Occupant *next = copy(end(), end(), begin());
+            Destroy(next, end());
+            _Last = next;
         }
         Occupant *erase(Occupant *first, Occupant *last)
         {
@@ -96,12 +106,23 @@ public:
     static bool SerializeOccupant(SBFile &file, Occupant &occupant);
     static bool FUN_005818c0(SBFile &file, Occupants &occupants,
                             bool (*serialize)(SBFile &, Occupant &));
+    static int FUN_00580350(int type);
     int FUN_005803c0();
     unsigned int FUN_00580500();
     unsigned int FUN_005806b0() const;
     void FUN_00580430();
     void FUN_00580520();
     void FUN_005804e0();
+    RHElementActorPC *FUN_005806c0() const;
+    bool FUN_00580940(const RHElementActorPC *pc) const;
+    char FUN_00580960() const;
+    void FUN_00580b70();
+    void FUN_00580d20(const RHMission *mission);
+    void FUN_00580dc0();
+    void FUN_00580e80();
+    void FUN_00581020(const RHMission *mission);
+    void FUN_005810c0(const RHMission *mission);
+    void FUN_00581180(const RHMission *mission);
     void Emit(SBFile &file);
 };
 
