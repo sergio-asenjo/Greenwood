@@ -1,0 +1,166 @@
+#ifndef SBFRAMEWND_H
+#define SBFRAMEWND_H
+
+#include "Decomp.h"
+
+class SBGeoPoint2D
+{
+public:
+    ~SBGeoPoint2D();
+    SBGeoPoint2D Unk005fc110(const SBGeoPoint2D &other) const;
+    float m_x;
+    float m_y;
+};
+
+class SBGeoVector2D : public SBGeoPoint2D
+{
+};
+
+class SBGeoBoundingBox2D
+{
+public:
+    SBGeoBoundingBox2D(const SBGeoBoundingBox2D &other);
+    SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &offset) const;
+    bool FUN_006084a0(const SBGeoBoundingBox2D &other);
+    SBGeoPoint2D m_0;
+    SBGeoPoint2D m_8;
+    undefined m_10;
+};
+
+class RHMobileUnk006091b0
+{
+public:
+    RHMobileUnk006091b0 &FUN_006091b0(const SBGeoPoint2D &offset);
+};
+
+class RHMobileUnk00607da0
+{
+public:
+    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
+};
+
+class RHUnk00608f10
+{
+public:
+    int FUN_00608f10(void *bounds);
+};
+
+class RHUnk005ef320;
+extern RHUnk005ef320 *g_unk0x6c11d0;
+
+struct SBFrameEvent
+{
+    undefined m_00[0x1c];
+    SBFrameEvent *next;
+};
+
+class SBFrameWidgetView
+{
+public:
+    virtual void V00() = 0;
+    virtual void V04(unsigned long display) = 0;
+    virtual void V08() = 0;
+    virtual void V0c() = 0;
+    virtual void V10() = 0;
+    virtual SBFrameEvent *V14(const void *input) = 0;
+    virtual void V18() = 0;
+    virtual void V1c(const SBGeoBoundingBox2D &bounds) = 0;
+    virtual void V20() = 0;
+    virtual void V24() = 0;
+    virtual void V28() = 0;
+    virtual void V2c(const SBGeoBoundingBox2D &bounds) = 0;
+};
+
+struct SBFrameWidgetNode
+{
+    SBFrameWidgetNode *next;
+    SBFrameWidgetNode *previous;
+    SBFrameWidgetView *widget;
+};
+
+struct SBFrameWidgetIterator
+{
+    SBFrameWidgetNode *node;
+    SBFrameWidgetIterator(SBFrameWidgetNode *value = 0) : node(value) {}
+    SBFrameWidgetIterator &operator++() { node = node->next; return *this; }
+    SBFrameWidgetView *&operator*() { return node->widget; }
+};
+
+struct SBFrameWidgetFindList
+{
+    unsigned allocator;
+    SBFrameWidgetNode *head;
+    int count;
+    SBFrameWidgetIterator cursor;
+    bool dirty;
+    undefined m_11[3];
+    int index;
+    bool cursorValid;
+    undefined m_19[3];
+    int result;
+    SBFrameWidgetView *current;
+
+    int Find(SBFrameWidgetView *widget)
+    {
+        current = widget;
+        cursorValid = true;
+        cursor = SBFrameWidgetIterator(head->next);
+        return Search(count);
+    }
+
+    int Find(SBFrameWidgetView *widget, int size)
+    {
+        current = widget;
+        cursorValid = true;
+        cursor = SBFrameWidgetIterator(head->next);
+        return Search(size);
+    }
+
+    int Search(int size)
+    {
+        int position;
+        for (position = 0; position < size; ++position) {
+            if (*cursor == current)
+                break;
+            ++cursor;
+        }
+        if (position < size) {
+            result = position;
+            dirty = false;
+            index = position;
+        } else {
+            dirty = true;
+            result = -1;
+        }
+        return result;
+    }
+
+};
+
+class SBFrameWnd : public SBFrameWidgetView
+{
+public:
+    void FUN_0061a350(unsigned long display);
+    void FUN_0061a3a0();
+    void FUN_0061a430(SBGeoBoundingBox2D &bounds);
+    void FUN_0061a570();
+    SBFrameEvent *FUN_0061a610(const void *input);
+    void FUN_0061ac80(const SBGeoPoint2D &position);
+    void FUN_0061ad20(const SBGeoBoundingBox2D &bounds);
+
+    undefined m_04[4];
+    SBFrameWidgetView **m_first;
+    SBFrameWidgetView **m_last;
+    undefined m_10[0x28];
+    SBFrameWidgetFindList m_excluded;
+    bool m_enabled;
+    undefined m_5d[0x13];
+    SBGeoBoundingBox2D m_bounds;
+    RHUnk005ef320 *m_draw;
+    unsigned long m_display;
+    void *m_resource;
+
+    int Size() const { return m_first == 0 ? 0 : m_last - m_first; }
+};
+
+#endif
