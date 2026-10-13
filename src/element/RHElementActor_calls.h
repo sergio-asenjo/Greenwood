@@ -337,7 +337,7 @@ public:
 class RHActorScriptContext
 {
 public:
-    void FUN_004030a0();
+    int FUN_004030a0();
     void FUN_004033b0(int message, int argument1, int argument2);
     RHUnkSectorScript *m_0;
 };

@@ -118,27 +118,24 @@ DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 DECOMP_SIZE_ASSERT(SBGeoVector2D, 0x08)
 DECOMP_SIZE_ASSERT(SBGeoBoundingBox2D, 0x14)
 
-// Unannotated: coupled caller and shared void-return declaration (0x004030a0).
-void RHActorScriptContext::FUN_004030a0()
+// FUNCTION: GAME 0x004030a0
+int RHActorScriptContext::FUN_004030a0()
 {
-    {
-        // STRING: GAME 0x006a6ba0
-        std::string name("Initialize");
-        ((VMCore *)m_0)->FUN_00639300(&name);
-    }
-    int value[3] = {0, 0, 0};
-    ((VMCore *)m_0)->FUN_00639360(value[0]);
+    // STRING: GAME 0x006a6ba0
+    ((VMCore *)m_0)->FUN_00639300(&std::string("Initialize"));
+    int value;
+    ((VMCore *)m_0)->FUN_00639360(value);
+    return value;
 }
 
-// STUB: GAME 0x004033b0
+// FUNCTION: GAME 0x004033b0
 void RHActorScriptContext::FUN_004033b0(int message, int argument1, int argument2)
 {
     ((VMCore *)m_0)->FUN_006392e0(&message, 4);
     ((VMCore *)m_0)->FUN_006392e0(&argument1, 4);
     ((VMCore *)m_0)->FUN_006392e0(&argument2, 4);
     // STRING: GAME 0x006a6bcc
-    std::string name("ProcessMessage");
-    ((VMCore *)m_0)->FUN_00639300(&name);
+    ((VMCore *)m_0)->FUN_00639300(&std::string("ProcessMessage"));
 }
 
 // FUNCTION: GAME 0x004626e0

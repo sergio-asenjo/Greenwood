@@ -180,7 +180,7 @@ public:
 class RHActorScriptContext
 {
 public:
-    void FUN_004030a0();
+    int FUN_004030a0();
 };
 
 class RHActorPCInfo : public RHBonusInfo
