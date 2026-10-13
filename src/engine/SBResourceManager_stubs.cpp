@@ -1,6 +1,12 @@
 #include "SBNullstr.h"
 #include "SBResourceManager.h"
 
+void SBResourceSurfaceArray::Assign(const SBResourceSurfaceArray &other, unsigned)
+{
+    m_values = other.m_values;
+    m_changed = true;
+}
+
 void FUN_0064158f(void *) {}
 
 SBResourceManager::ResourceNode *&SBResourceManager::Tree54::FUN_00601650(ResourceNode *&result, const unsigned long &key)
@@ -32,7 +38,6 @@ SBResourceUnkKeyNode *&SBResourceManager::Tree74::FUN_006042a0(SBResourceUnkKeyN
 
 SBResourceManager::Node<unsigned long> *SBResourceManager::Tree44::FUN_00605770(const unsigned long &) { return 0; }
 SBResourceManager::Tree44::Iterator &SBResourceManager::Tree44::FUN_00601210(Iterator &result, Node<unsigned long> *, Node<unsigned long> *) { return result; }
-void SBResourceManager::FUN_006001d0(Tree44::Iterator &) {}
 
 class SBResourceUnkAdvance
 {

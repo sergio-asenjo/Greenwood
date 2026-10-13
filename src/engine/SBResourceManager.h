@@ -2,6 +2,22 @@
 #define SB_RESOURCE_MANAGER_H
 
 #include <string>
+#include <vector>
+
+class SBResourceSurfaceArray
+{
+public:
+    std::vector<unsigned long> m_values;
+    unsigned long *m_search;
+    bool m_changed;
+    bool m_searching;
+    int m_index;
+    unsigned long m_value;
+    SBResourceSurfaceArray() : m_changed(true) {}
+    ~SBResourceSurfaceArray() { m_values.erase(m_values.begin(), m_values.end()); }
+    int Size() const { return m_values.begin() == 0 ? 0 : m_values.end() - m_values.begin(); }
+    void Assign(const SBResourceSurfaceArray &, unsigned);
+};
 
 struct SBResourceUnkKeyNode
 {

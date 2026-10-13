@@ -191,6 +191,8 @@ bool SBResourceManager::FUN_005fd710(SBFile &file)
 
 #include <vector>
 
+struct SBResourceWideString : std::wstring {};
+
 class SBResourceUnk005fed80
 {
 public:
@@ -198,7 +200,27 @@ public:
     std::vector<std::string> m_values;
     char m_14[0xc];
     std::string m_text;
-    void FUN_005fed80();
+    ~SBResourceUnk005fed80();
+};
+
+class SBResourceUnk005fe790
+{
+public:
+    char m_00[4];
+    std::vector<SBResourceWideString> m_values;
+    char m_14[0xc];
+    std::wstring m_text;
+    ~SBResourceUnk005fe790();
+};
+
+class SBResourceUnk005fe880
+{
+public:
+    char m_00[4];
+    std::vector<SBResourceWideString> m_values;
+    char m_14[0xc];
+    std::wstring m_text;
+    ~SBResourceUnk005fe880();
 };
 
 class SBResourceUnk005fee70
@@ -208,43 +230,45 @@ public:
     std::vector<std::string> m_values;
     char m_14[0xc];
     std::string m_text;
-    void FUN_005fee70();
+    ~SBResourceUnk005fee70();
 };
 
-// Parked: the target's 0x0064158f deallocation call has no local resolvable entity in this assignment.
-// STUB: GAME 0x005fdc70
+// FUNCTION: GAME 0x005fdc70
 void SBResourceUnk005fdc70::FUN_005fdc70()
 {
-    unsigned long *source = m_last;
-    unsigned long *end = m_last;
-    unsigned long *destination = m_first;
-    for (; source != end; ++source, ++destination)
-        *destination = *source;
-    m_last = destination;
-    FUN_0064158f(m_first);
-    m_first = 0;
-    m_last = 0;
-    m_end = 0;
+    std::vector<unsigned long> &values = *(std::vector<unsigned long> *)((char *)this + 4);
+    values.clear();
+    values.~vector();
+}
+
+// Parked: vector erase invokes _Tidy instead of the target out-of-line string destructor; this/EH and iterator registers differ.
+// STUB: GAME 0x005fe790
+SBResourceUnk005fe790::~SBResourceUnk005fe790()
+{
+    m_values.clear();
+}
+
+// Parked: vector erase invokes _Tidy instead of the target out-of-line string destructor; this/EH and iterator registers differ.
+// STUB: GAME 0x005fe880
+SBResourceUnk005fe880::~SBResourceUnk005fe880()
+{
+    m_values.clear();
 }
 
 // Parked: target EH, iterator scheduling, and the static-CRT npos data load differ from this source shape.
 // STUB: GAME 0x005fed80
-void SBResourceUnk005fed80::FUN_005fed80()
+SBResourceUnk005fed80::~SBResourceUnk005fed80()
 {
-    typedef std::string String;
-    m_values.clear();
-    m_text.~String();
-    m_values.~vector();
+    std::vector<std::string> &values = m_values;
+    values.erase(values.begin(), values.end());
 }
 
 // Parked: target EH, iterator scheduling, and the static-CRT npos data load differ from this source shape.
 // STUB: GAME 0x005fee70
-void SBResourceUnk005fee70::FUN_005fee70()
+SBResourceUnk005fee70::~SBResourceUnk005fee70()
 {
-    typedef std::string String;
-    m_values.clear();
-    m_text.~String();
-    m_values.~vector();
+    std::vector<std::string> &values = m_values;
+    values.erase(values.begin(), values.end());
 }
 
 // FUNCTION: GAME 0x005ff390
@@ -258,6 +282,32 @@ inline SBResourceUnkIterator SBResourceFind(SBResourceUnk00605440 &tree, const u
     SBResourceUnk00605440Node *head = tree.m_head;
     return (found.m_node != head && key >= found.m_node->m_key
         ? found : SBResourceUnkIterator(head));
+}
+
+class RHEngineWidenedCalls
+{
+public:
+    void FUN_005e5160(unsigned);
+};
+
+// FUNCTION: GAME 0x006001d0
+void SBResourceManager::FUN_006001d0(Tree44::Iterator &position)
+{
+    SBResourceSurfaceArray surfaces;
+    SBResourceSurfaceArray &source = *(SBResourceSurfaceArray *)((char *)position.m_node + 0x10);
+    if (&source != &surfaces) {
+        typedef std::vector<int> Values;
+        int *(Values::*erase)(int *, int *) = &Values::erase;
+        (((Values *)&surfaces.m_values)->*erase)((int *)surfaces.m_values.begin(), (int *)surfaces.m_values.end());
+        surfaces.Assign(source, 0);
+    }
+    while (surfaces.Size() > 0) {
+        unsigned long surface = *surfaces.m_values.begin();
+        if (surface)
+            (*(RHEngineWidenedCalls **)(m_00 + 4))->FUN_005e5160(surface);
+        surfaces.m_values.erase(surfaces.m_values.begin());
+        surfaces.m_changed = true;
+    }
 }
 
 // FUNCTION: GAME 0x006002d0
@@ -686,6 +736,10 @@ bool RHMapResources::FUN_00600fc0(unsigned resource)
 
 void EmitSBResourceManager(SBResourceManager *resource)
 {
+    ((SBResourceUnk005fe790 *)resource)->~SBResourceUnk005fe790();
+    ((SBResourceUnk005fe880 *)resource)->~SBResourceUnk005fe880();
+    SBResourceManager::Tree44::Iterator position;
+    resource->FUN_006001d0(position);
     ((RHUnk005fd5c0 *)resource)->FUN_005fd5c0(std::string());
     resource->FUN_005fd710(*(SBFile *)0);
     resource->FUN_006002d0(0);
