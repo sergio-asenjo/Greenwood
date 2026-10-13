@@ -1,6 +1,21 @@
 #include "SBNullstr.h"
 #include "RHFastFindGrid.h"
 
+
+
+RHFastFindLine::RHFastFindLine() {}
+RHFastFindLine::~RHFastFindLine() {}
+void RHFastFindLine::FUN_0051faf0(SBFile &, RHFastFindPointerArray &) {}
+float RHFastFindLine::FUN_0051f450() { return ((float *)m_00)[1] > ((float *)m_00)[3] ? ((float *)m_00)[1] : ((float *)m_00)[3]; }
+float RHFastFindLine::FUN_0051f470() { return ((float *)m_00)[1] > ((float *)m_00)[3] ? ((float *)m_00)[3] : ((float *)m_00)[1]; }
+float RHFastFindLine::FUN_0051f490() { return ((float *)m_00)[2] > ((float *)m_00)[4] ? ((float *)m_00)[4] : ((float *)m_00)[2]; }
+float RHFastFindLine::FUN_0051f4b0() { return ((float *)m_00)[2] > ((float *)m_00)[4] ? ((float *)m_00)[2] : ((float *)m_00)[4]; }
+RHMobileUnk006100e0::RHMobileUnk006100e0(const RHMobileUnk006100e0 &other) : SBGeoPoint2D(other)
+{
+    memcpy(m_08, other.m_08, sizeof(m_08));
+}
+bool RHFastFindSegmentCalls::FUN_0060a990(const RHMalignitySegment &) { return false; }
+
 DECOMP_SIZE_ASSERT(RHUnk0051a5e0, 0x94)
 DECOMP_SIZE_ASSERT(RHUnk0051aa00, 0xbc)
 DECOMP_SIZE_ASSERT(RHUnk005209d0, 0x14)
@@ -39,7 +54,6 @@ void RHFastFindSector::UnkSlot10(SBFile &, RHFastFindGrid *) {}
 void RHUnk00522470::FUN_00520a90(SBFile &) {}
 RHSectorScript::RHSectorScript() {}
 RHSectorScript::~RHSectorScript() {}
-void RHFastFindGrid::FUN_004ebfe0(RHUnk00522470 *, unsigned short, bool) {}
 void RHFastFindGrid::FUN_004e99e0(void *, unsigned short, bool) {}
 void RHUnk0051e5e0::FUN_0057ca80() {}
 RHUnk0051e5e0::~RHUnk0051e5e0() {}
@@ -48,7 +62,6 @@ RHUnk0051e1e0::~RHUnk0051e1e0() {}
 void RHUnk0051e1e0::Unk0051e230(SBFile &, RHSeqList &) {}
 RHUnk0051b6e0::RHUnk0051b6e0(RHUnk0051e1e0 *, RHUnk0051e1e0 *) {}
 RHUnk0051b6e0::~RHUnk0051b6e0() {}
-void RHFastFindGrid::FUN_004ed690(void *, unsigned short, bool) {}
 RHUnk005a3450::RHUnk005a3450() {}
 RHUnk005a3450::RHUnk005a3450(int) {}
 RHUnk005a3450::~RHUnk005a3450() {}

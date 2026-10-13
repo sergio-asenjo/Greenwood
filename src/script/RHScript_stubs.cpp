@@ -279,7 +279,6 @@ void RHScriptBatchCalls::Unk00514670() {}
 RHUnk00549250::RHUnk00549250(int, void *) : RHUnk5490f0(0) {}
 RHUnk00549250::~RHUnk00549250() {}
 void RHScriptBatchCalls::Unk0050ed40() {}
-int RHScriptBatchCalls::Unk004ec910(void *, float, float, int) { return 0; }
 void RHScriptBatchCalls::Unk004522e0(void *) {}
 void RHScriptBatchCalls::Unk0054cfa0(void *) {}
 void RHScriptBatchCalls::Unk0046b9e0() {}

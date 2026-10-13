@@ -9,10 +9,12 @@ class SBGeoPoint2D
 {
 public:
     SBGeoPoint2D();
+    SBGeoPoint2D(const SBGeoPoint2D &);
     SBGeoPoint2D(float x, float y);
     ~SBGeoPoint2D();
     SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
     SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
+    SBGeoPoint2D Unk005fc110(const SBGeoPoint2D &other) const;
     void Set(short x, short y)
     {
         m_x = (float)x;
@@ -136,6 +138,16 @@ class SBGeoPoint3D;
 class RHFastFindGrid
 {
 public:
+    void FUN_004ec240(class RHFastFindUniqueList &, unsigned short, const SBGeoBoundingBox2D &, unsigned long);
+    void FUN_004ec450(class RHFastFindUniqueList &, unsigned long, unsigned long);
+    void FUN_004ec560(class RHFastFindUniqueList &, unsigned short, const SBGeoBoundingBox2D &, unsigned long);
+    void FUN_004ec700(class RHFastFindUniqueList &, unsigned short, const RHMalignitySegment &, unsigned long);
+    bool FUN_004ecb50(class RHFastFindUniqueList &, unsigned short, const SBGeoBoundingBox2D &, unsigned long);
+    bool FUN_004ecc60(class RHFastFindUniqueList &, class RHFastFindUniqueList &, class RHFastFindUniqueList &, unsigned short, const SBGeoBoundingBox2D &);
+    void FUN_004ecf60(class RHFastFindUniqueList &, unsigned long, unsigned long);
+    void FUN_004ed070(class RHFastFindUniqueList &, unsigned short, const SBGeoBoundingBox2D &, unsigned long);
+    void FUN_004ed370(class RHFastFindUniqueList &, unsigned short, const RHMalignitySegment &, unsigned long);
+    void FUN_004ed9b0(SBFile &);
     void FUN_004eda80(void *value, unsigned short layer, bool mode);
     void FUN_004edcf0(class RHFastFindUniqueList &output, unsigned long cell, unsigned long mask);
     void FUN_004ede00(class RHFastFindUniqueList &output, unsigned short layer, const SBGeoBoundingBox2D &box, void *point);
@@ -148,6 +160,11 @@ public:
     void FUN_004eef30(class RHFastFindUniqueList &output, unsigned short layer, const RHMalignitySegment &segment, unsigned long mask);
     void FUN_004efd10(void *patch, unsigned short layer, bool mode);
     bool FUN_004efe40(const SBGeoPoint3D &first, const SBGeoPoint3D &second, float &slope, float &intercept);
+    class RHFastFindPathGate *FUN_004f9d60(class RHElementActor *, const SBGeoPoint2D &, void *, unsigned short, const SBGeoPoint2D &, void *, unsigned, int);
+    bool FUN_004fa080(class RHFastFindUniqueList &, class RHElementActor *, const SBGeoPoint2D &, void *, unsigned short, class RHFastFindPathGate *, int);
+    class RHFastFindPathGate *FUN_004fa340(class RHElementActor *, const SBGeoPoint2D &, void *, unsigned short, class RHFastFindPathGate *, int);
+    void FUN_004fa660();
+    void FUN_004fa6f0(void *);
     void InitializeLiftsFromProtoStream(SBFile &file);
     void InitializeBuildingsFromProtoStream(SBFile &file);
     void DeleteStaticRepulsivePoint(unsigned long id);
@@ -166,7 +183,7 @@ public:
     void FUN_004fb230(SBFile &file);
     void FUN_004e8bd0(void *sector, unsigned short layer, bool mode);
     void FUN_004fad80(void *gate);
-    void FUN_004ebfe0(class RHUnk00522470 *point, unsigned short layer, bool mode);
+    void FUN_004ebfe0(void *point, unsigned short layer, bool mode);
     void FUN_004e99e0(void *sector, unsigned short layer, bool mode);
     void FUN_004ed690(void *point, unsigned short layer, bool mode);
     void FUN_004ef8e0(class RHUnk005a3450 *area, unsigned short layer, bool mode);
@@ -279,17 +296,16 @@ class SBGeoBoundingBox2D
 {
 public:
     SBGeoBoundingBox2D();
-    ~SBGeoBoundingBox2D()
-    {
-        ((SBGeoPoint2D *)(m_00 + 8))->~SBGeoPoint2D();
-        ((SBGeoPoint2D *)m_00)->~SBGeoPoint2D();
-    }
+    ~SBGeoBoundingBox2D() {}
     void Unk00607dc0(const SBGeoPoint2D &point);
     void FUN_00607e30(const class RHMalignitySegment &segment);
+    bool FUN_00608400(const SBGeoPoint2D &) const;
     SBGeoPoint2D FUN_00608f40() const;
     int FUN_00609050(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
     SBGeoBoundingBox2D &operator=(const SBGeoBoundingBox2D &other);
-    char m_00[0x14];
+    SBGeoPoint2D m_first;
+    SBGeoPoint2D m_second;
+    char m_10[4];
 };
 
 class RHMalignitySegment
@@ -297,6 +313,33 @@ class RHMalignitySegment
 public:
     bool FUN_0060ad50(const SBGeoBoundingBox2D &box);
     undefined m_00[0x10];
+};
+
+class RHFastFindLine
+{
+public:
+    RHFastFindLine();
+    ~RHFastFindLine();
+    void FUN_0051faf0(SBFile &, RHFastFindPointerArray &);
+    float FUN_0051f450();
+    float FUN_0051f470();
+    float FUN_0051f490();
+    float FUN_0051f4b0();
+    undefined m_00[0x2c];
+};
+
+class RHMobileUnk006100e0 : public SBGeoPoint2D
+{
+public:
+    RHMobileUnk006100e0(const RHMobileUnk006100e0 &);
+    ~RHMobileUnk006100e0();
+    undefined m_08[8];
+};
+
+class RHFastFindSegmentCalls
+{
+public:
+    bool FUN_0060a990(const RHMalignitySegment &);
 };
 
 class RHUnk005a3450
@@ -709,6 +752,7 @@ public:
     RHUnk005fc3b0();
     ~RHUnk005fc3b0() {}
     RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other);
+    float Unk005fc6a0(float value);
 };
 
 // SIZE 0x14
