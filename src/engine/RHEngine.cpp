@@ -2,6 +2,7 @@
 #include "RHSaveGame.h"
 #include "RHEngine.h"
 #include "RHCivilianProfile.h"
+#include "VMCore.h"
 #include <windows.h>
 #include <algorithm>
 #include <iterator>
@@ -784,6 +785,74 @@ unsigned g_unk0x006c081c = 0;
         } \
         return true; \
     }
+
+class RHUnkEngineScriptRef
+{
+public:
+    int FUN_00404080(int value);
+    int FUN_00404180(int value);
+    int FUN_00404280(int value);
+    void FUN_00404380(int message, int argument1, int argument2);
+    void FUN_00404480(int value);
+    void FUN_00404570();
+    void *m_0;
+};
+
+// FUNCTION: GAME 0x00404080
+int RHUnkEngineScriptRef::FUN_00404080(int value)
+{
+    ((VMCore *)m_0)->FUN_006392e0(&value, 4);
+    ((VMCore *)m_0)->FUN_00639300(&std::string("Initialize"));
+    int result;
+    ((VMCore *)m_0)->FUN_00639360(result);
+    return result;
+}
+
+// FUNCTION: GAME 0x00404180
+int RHUnkEngineScriptRef::FUN_00404180(int value)
+{
+    ((VMCore *)m_0)->FUN_006392e0(&value, 4);
+    // STRING: GAME 0x006a6ca0
+    ((VMCore *)m_0)->FUN_00639300(&std::string("Hourglass"));
+    int result;
+    ((VMCore *)m_0)->FUN_00639360(result);
+    return result;
+}
+
+// FUNCTION: GAME 0x00404280
+int RHUnkEngineScriptRef::FUN_00404280(int value)
+{
+    ((VMCore *)m_0)->FUN_006392e0(&value, 4);
+    // STRING: GAME 0x006a6cac
+    ((VMCore *)m_0)->FUN_00639300(&std::string("CheckVictoryCondition"));
+    int result;
+    ((VMCore *)m_0)->FUN_00639360(result);
+    return result;
+}
+
+// FUNCTION: GAME 0x00404380
+void RHUnkEngineScriptRef::FUN_00404380(int message, int argument1, int argument2)
+{
+    ((VMCore *)m_0)->FUN_006392e0(&message, 4);
+    ((VMCore *)m_0)->FUN_006392e0(&argument1, 4);
+    ((VMCore *)m_0)->FUN_006392e0(&argument2, 4);
+    ((VMCore *)m_0)->FUN_00639300(&std::string("ProcessMessage"));
+}
+
+// FUNCTION: GAME 0x00404480
+void RHUnkEngineScriptRef::FUN_00404480(int value)
+{
+    ((VMCore *)m_0)->FUN_006392e0(&value, 4);
+    // STRING: GAME 0x006a6cc4
+    ((VMCore *)m_0)->FUN_00639300(&std::string("Finalize"));
+}
+
+// FUNCTION: GAME 0x00404570
+void RHUnkEngineScriptRef::FUN_00404570()
+{
+    // STRING: GAME 0x006a6cd0
+    ((VMCore *)m_0)->FUN_00639300(&std::string("PostInitialize"));
+}
 
 // Parked: two-vector cleanup operands and carried-register scheduling differ.
 // STUB: GAME 0x00452130
