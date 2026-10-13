@@ -1,6 +1,10 @@
 #include "SBNullstr.h"
 #include "RHArtificialIntelligence.h"
 
+void SBGeoBoundingBox2D::FUN_006091d0(float) {}
+
+void SBDrawManager::FUN_005ecdc0(unsigned long, const SBGeoBoundingBox2D &, unsigned short, unsigned long) {}
+
 // LIBRARY: GAME 0x00642a70
 extern "C" void __cdecl srand(unsigned) {}
 

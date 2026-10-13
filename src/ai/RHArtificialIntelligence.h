@@ -254,6 +254,10 @@ public:
     SBGeoPoint2D();
     ~SBGeoPoint2D();
     SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
+    SBGeoPoint2D Unk005fc110(const SBGeoPoint2D &other) const;
+    SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
+    SBGeoPoint2D FUN_005fc200(const SBGeoPoint2D &other) const;
+    float FUN_005fc700(float scale) const;
     float m_x;
     float m_y;
 };
@@ -264,6 +268,41 @@ public:
     RHUnk005fc3b0();
     ~RHUnk005fc3b0() {}
     RHUnk005fc3b0 &Unk005fcd40(unsigned char direction, float length);
+    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other);
+};
+
+class SBGeoVector2D : public SBGeoPoint2D
+{
+public:
+    SBGeoVector2D(float x, float y);
+    SBGeoVector2D(const SBGeoPoint2D &point);
+    float FUN_005fc660(const SBGeoPoint2D &point) const;
+    ~SBGeoVector2D() {}
+};
+
+class SBGeoBoundingBox2D
+{
+public:
+    SBGeoBoundingBox2D();
+    SBGeoBoundingBox2D(const SBGeoBoundingBox2D &other);
+    SBGeoBoundingBox2D FUN_00417a20();
+    int FUN_00609050(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
+    SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &other) const;
+    SBGeoBoundingBox2D FUN_006092c0(const SBGeoBoundingBox2D &other) const;
+    bool Unk00608f30() const;
+    void FUN_006092a0(const SBGeoVector2D &offset);
+    void FUN_006091d0(float scale);
+    SBGeoPoint2D first;
+    SBGeoPoint2D last;
+    bool valid;
+};
+
+class SBDrawManager
+{
+public:
+    void FUN_005e61e0(unsigned long surface, const SBGeoBoundingBox2D &box, unsigned short color, unsigned long flags);
+    bool FUN_005ecbd0(unsigned long surface, const SBGeoPoint2D &first, const SBGeoPoint2D &second, unsigned short color);
+    void FUN_005ecdc0(unsigned long surface, const SBGeoBoundingBox2D &box, unsigned short color, unsigned long flags);
 };
 
 struct RHUnk00571160Position
@@ -558,6 +597,8 @@ public:
     void Unk00410010(bool mode);
     bool Unk00414be0(SBFile &file);
     bool Unk00418600(unsigned short path);
+    void *FUN_00417ed0(SBGeoPoint2D *position, bool active);
+    void FUN_00417580();
     void Unk00418c40(int remark, unsigned flags);
     void Unk00410600();
     bool Unk00412c80(void *waypoint, unsigned short flags);

@@ -14,10 +14,13 @@ RHArtificialIntelligenceElement *&RHArtificialIntelligenceList::FUN_00423c20(int
     return m_current.m_node->m_data;
 }
 
+struct RHMalignityPosition;
+
 class RHMalignityBaseView
 {
 public:
     void FUN_0041a300(void *actor);
+    RHMalignityPosition FUN_004165e0(void *actor, bool mode);
 };
 
 class RHSeekPoint
@@ -1431,6 +1434,253 @@ bool RHArtificialIntelligence::SerializePosition(RHArtificialIntelligencePositio
     return true;
 }
 
+class RHDrawManager : public SBGeoBoundingBox2D
+{
+public:
+    static RHDrawManager *mpDrawManager;
+    float m_scale;
+    unsigned m_18;
+    SBDrawManager *m_drawManager;
+};
+
+class RHMobileUnk00607da0
+{
+public:
+    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
+};
+
+extern float g_unk0x006774cc;
+extern float g_unk0x006774c8;
+extern float g_unk0x006774a0;
+
+void FUN_00417ab0(const SBGeoBoundingBox2D &box, unsigned char red, unsigned char green, unsigned char blue,
+                 SBDrawManager *draw, bool shade);
+void FUN_00417ca0(const SBGeoBoundingBox2D &box, unsigned char red, unsigned char green, unsigned char blue,
+                 SBDrawManager *draw, unsigned char thickness, bool shade);
+
+// Parked: 94.29%; clipped-box vector temporaries use different stack slots and argument registers.
+// STUB: GAME 0x00417580
+void RHArtificialIntelligence::FUN_00417580()
+{
+    SBGeoPoint2D center;
+    SBGeoBoundingBox2D outline;
+    SBGeoBoundingBox2D fill;
+    RHDrawManager *draw = RHDrawManager::mpDrawManager;
+    SBGeoBoundingBox2D clip = draw->FUN_00417a20();
+    float scale = draw->m_scale;
+    center = RHAIField<SBGeoPoint2D>(RHAIField<void *>(m_actor, 0x50), 0x24).Unk005fc190(SBGeoVector2D(0.0f, -55.0f));
+    void *interfaceObject = RHAIField<void *>(m_actor, 0x49c);
+    unsigned short first = RHAIField<unsigned short>(m_actor, 0x648);
+    unsigned short second = RHAIField<unsigned short>(m_actor, 0x546 + RHAIField<int>(interfaceObject, 4));
+    unsigned short maximum = first > second ? first : second;
+    unsigned value;
+    if (maximum > 1000)
+        value = 1000;
+    else
+        value = (unsigned short)(first > second ? first : second);
+    fill.FUN_00609050(center.FUN_005fc200(SBGeoVector2D(20.0f, 2.0f)),
+        center.Unk005fc190(SBGeoVector2D(((unsigned short)value * g_unk0x006774cc) * g_unk0x006774c8 - g_unk0x006774a0, 0.0f)));
+    ((RHMobileUnk00607da0 *)&fill)->FUN_00607da0((const RHMobileUnk00607da0 &)clip.FUN_006092c0(fill));
+    if (fill.Unk00608f30())
+    {
+        fill.FUN_006092a0((SBGeoVector2D)clip.first);
+        fill.FUN_006091d0(scale);
+        FUN_00417ab0(fill, 255, 0, 0, draw->m_drawManager, false);
+    }
+    outline.FUN_00609050(center.FUN_005fc200(SBGeoVector2D(20.0f, 2.0f)),
+        center.Unk005fc190(SBGeoVector2D(20.0f, 2.0f)));
+    ((RHMobileUnk00607da0 *)&outline)->FUN_00607da0((const RHMobileUnk00607da0 &)clip.FUN_006092c0(outline));
+    if (outline.Unk00608f30())
+    {
+        outline.FUN_006092a0((SBGeoVector2D)clip.first);
+        outline.FUN_006091d0(scale);
+        FUN_00417ca0(outline, 255, 255, 255, draw->m_drawManager, 0, false);
+    }
+}
+
+// FUNCTION: GAME 0x00417a20
+SBGeoBoundingBox2D SBGeoBoundingBox2D::FUN_00417a20()
+{
+    return *this;
+}
+
+// FUNCTION: GAME 0x00417a40
+unsigned short FUN_00417a40(unsigned char red, unsigned char green, unsigned char blue, unsigned short depth)
+{
+    switch ((unsigned char)depth)
+    {
+    case 15:
+        return (((red & 0xf8) << 5) | (green & 0xf8)) << 2 | (blue >> 3);
+    case 16:
+        return (((red & 0xf8) << 5) | (green & 0xfc)) << 3 | (blue >> 3);
+    }
+    return 0;
+}
+
+// GLOBAL: GAME 0x006774d0
+double g_unk0x006774d0 = 0.7;
+
+// Parked: 82.07%; dark-color x87 operand order and shaded-edge register scheduling differ.
+// STUB: GAME 0x00417ab0
+void FUN_00417ab0(const SBGeoBoundingBox2D &box, unsigned char red, unsigned char green, unsigned char blue,
+                 SBDrawManager *draw, bool shade)
+{
+    SBGeoPoint2D lowerLeft;
+    SBGeoPoint2D upperRight;
+    unsigned short depth = *(unsigned short *)((char *)draw + 0x10c);
+    unsigned short color = FUN_00417a40(red, green, blue, depth);
+    double r;
+    unsigned short brightRed = (unsigned short)((r = red) * 1.5);
+    if (brightRed > 255)
+        brightRed = 255;
+    double g;
+    unsigned short brightGreen = (unsigned short)((g = green) * 1.5);
+    if (brightGreen > 255)
+        brightGreen = 255;
+    double b;
+    unsigned short brightBlue = (unsigned short)((b = blue) * 1.5);
+    if (brightBlue > 255)
+        brightBlue = 255;
+    unsigned short bright = FUN_00417a40((unsigned char)brightRed, (unsigned char)brightGreen, (unsigned char)brightBlue,
+        *(unsigned short *)((char *)draw + 0x10c));
+    unsigned short dark = FUN_00417a40((unsigned char)(g_unk0x006774d0 * r), (unsigned char)(g_unk0x006774d0 * g),
+        (unsigned char)(g_unk0x006774d0 * b), *(unsigned short *)((char *)draw + 0x10c));
+    draw->FUN_005e61e0(0, box, color, 0);
+    if (shade)
+    {
+        upperRight.m_x = box.last.m_x;
+        float top = box.first.m_y;
+        upperRight.m_y = top;
+        lowerLeft.m_x = box.first.m_x;
+        float bottom = box.last.m_y;
+        lowerLeft.m_y = bottom;
+        draw->FUN_005ecbd0(0, lowerLeft, box.last, dark);
+        draw->FUN_005ecbd0(0, box.last, upperRight, dark);
+        draw->FUN_005ecbd0(0, lowerLeft, box.first, bright);
+        draw->FUN_005ecbd0(0, box.first, upperRight, bright);
+    }
+}
+
+// Parked: 73.96%; expanded-corner x87 temporaries and call argument scheduling differ.
+// STUB: GAME 0x00417ca0
+void FUN_00417ca0(const SBGeoBoundingBox2D &box, unsigned char red, unsigned char green, unsigned char blue,
+                 SBDrawManager *draw, unsigned char thickness, bool shade)
+{
+    SBGeoBoundingBox2D expanded;
+    SBGeoPoint2D first;
+    SBGeoPoint2D last;
+    unsigned short color = FUN_00417a40(red, green, blue, *(unsigned short *)((char *)draw + 0x10c));
+    unsigned short dark = FUN_00417a40((unsigned char)(red * g_unk0x006774d0), (unsigned char)(green * g_unk0x006774d0),
+        (unsigned char)(blue * g_unk0x006774d0), *(unsigned short *)((char *)draw + 0x10c));
+    float size = thickness;
+    first.m_y = box.first.m_y - size - 1.0f;
+    first.m_x = box.first.m_x - size - 1.0f;
+    last.m_x = box.last.m_x + size;
+    last.m_y = box.last.m_y + size;
+    expanded.FUN_00609050(first, last);
+    if (shade)
+        draw->FUN_005ecdc0(0, expanded.FUN_006090d0(SBGeoVector2D(1.0f, 1.0f)), dark, 0);
+    draw->FUN_005ecdc0(0, expanded, color, 0);
+}
+
+void EmitArtificialIntelligenceDebug(SBGeoBoundingBox2D &box)
+{
+    box.FUN_00417a20();
+    FUN_00417a40(0, 0, 0, 0);
+    FUN_00417ab0(box, 0, 0, 0, (SBDrawManager *)&box, false);
+    FUN_00417ca0(box, 0, 0, 0, (SBDrawManager *)&box, 0, false);
+}
+
+struct RHMalignityPosition
+{
+    float x;
+    float y;
+    void *area;
+    unsigned short layer;
+};
+
+SBGeoPoint2D FUN_0040ec20(const RHMalignityPosition &first, RHMalignityPosition second);
+
+class RHArtificialIntelligenceDoorCalls
+{
+public:
+    virtual bool V00(int mode, void *actor, int first, int second, int third) = 0;
+};
+
+// Parked: 26.76%; nearest-door stack layout, temporary lifetimes and iterator register allocation differ.
+// STUB: GAME 0x00417ed0
+void *RHArtificialIntelligence::FUN_00417ed0(SBGeoPoint2D *position, bool active)
+{
+    RHUnk005fc3b0 direction;
+    SBGeoPoint2D own;
+    unsigned short best = 0xffff;
+    void *result = 0;
+    own = RHAIField<SBGeoPoint2D>(RHAIField<void *>(m_actor, 0x50), 0x24);
+    RHArtificialIntelligenceStaticArray &doors = RHAIField<RHArtificialIntelligenceStaticArray>(g_unk0x6c0a9c, 0x4080);
+    unsigned short count = doors.size();
+    for (unsigned short index = 0; index < count; ++index)
+    {
+        void *door = doors[index];
+        if (RHAIField<int>(door, 4) != 1)
+            continue;
+        direction.FUN_005fc430(RHAIField<SBGeoPoint2D>(door, 0x18).Unk005fc110(own));
+        if (RHAIField<int>(door, 0x88) != 1)
+            continue;
+        void *area = RHAIField<void *>(RHAIField<void *>(m_actor, 0x50), 0xe0);
+        if (!((RHAIField<unsigned>(area, 0x30) >> 13) & 1))
+            area = 0;
+        if (RHAIField<void *>(door, 0x10) == area ||
+            !((RHArtificialIntelligenceDoorCalls *)door)->V00(1, m_actor, 0, 0, 0))
+            continue;
+        if (position)
+        {
+            SBGeoPoint2D offset = FUN_0040ec20(*(RHMalignityPosition *)position,
+                ((RHMalignityBaseView *)this)->FUN_004165e0(m_actor, true));
+            if (((SBGeoVector2D &)direction).FUN_005fc660(offset) >= 0.0f)
+                continue;
+        }
+        if (active && !RHAIField<bool>(RHAIField<void *>(door, 0x10), 0x118))
+            continue;
+        RHMalignityPosition destination;
+        destination.x = RHAIField<float>(door, 0x18);
+        destination.y = RHAIField<float>(door, 0x1c);
+        destination.area = RHAIField<void *>(door, 0x0c);
+        destination.layer = RHAIField<unsigned short>(door, 0x14);
+        SBGeoPoint2D offset = FUN_0040ec20(destination, ((RHMalignityBaseView *)this)->FUN_004165e0(m_actor, true));
+        direction.FUN_005fc430(offset);
+        int distance = (int)direction.FUN_005fc700(1.0f);
+        void *profile = RHAIField<void *>(m_actor, 0x50);
+        if (destination.area != RHAIField<void *>(profile, 0xe0))
+            distance += 500;
+        if (destination.layer != RHAIField<unsigned short>(profile, 0xde))
+            distance += 300;
+        unsigned short candidate = (unsigned short)distance;
+        if (candidate >= best)
+            continue;
+        bool blocked = false;
+        if (m_actor->V130() == 1)
+        {
+            RHArtificialIntelligenceList &occupants = RHAIField<RHArtificialIntelligenceList>(RHAIField<void *>(door, 0x10), 0xf4);
+            unsigned short size = occupants.m_count;
+            for (unsigned short occupant = 0; occupant < size; ++occupant)
+            {
+                occupants.GoTo(occupant);
+                if ((occupants.m_current.m_node->m_data->m_flags & 15) == 12)
+                {
+                    blocked = true;
+                    break;
+                }
+            }
+        }
+        if (!blocked)
+        {
+            best = candidate;
+            result = door;
+        }
+    }
+    return result;
+}
+
 class RHArtificialIntelligenceDispatchView
 {
 public:
@@ -2123,6 +2373,8 @@ RHUnk005fc3b0 &RHUnk005fc3b0::Unk005fcd40(unsigned char direction, float length)
 
 void RHArtificialIntelligence::Emit(SBFile &file, RHArtificialIntelligencePosition &position)
 {
+    FUN_00417ed0(0, false);
+    FUN_00417580();
     SerializePosition(position, file);
     ((RHStimulus *)this)->Serialize(file);
     InitState();
