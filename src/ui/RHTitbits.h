@@ -24,6 +24,8 @@
 
 extern RHEngine *g_pEngine;
 
+class SBGeoBoundingBox2D;
+
 // Target 0x005df510: __thiscall(SBFile&) serialising a 12-byte triple of ints.
 class RHUnk005df510
 {
@@ -152,7 +154,9 @@ public:
         }
     }
 
-    void Resize(int n);                                   // 0x005c8d30
+    void Resize(long n);                                   // 0x005c8d30
+    void FUN_005c8bf0(RHTitbitList &other);
+    void FUN_005c8980();
     void Clear(void *out, RHTitbitNode *first, RHTitbitNode *last); // 0x0044e8b0
 };
 
@@ -160,6 +164,12 @@ class RHTitbits
 {
 public:
     virtual bool Serialize(SBFile &file);
+    short FUN_005c7fb0(unsigned long id);
+    void FUN_005c8120(int kind, RHElement *element);
+    bool FUN_005c8340(int kind, RHElement *element);
+    bool IsRunningForQA(unsigned long id);
+    bool RenderText(const std::wstring &text, const SBGeoPoint2D &point) const;
+    bool RenderText(const std::wstring &text, const SBGeoBoundingBox2D &box, unsigned long flags) const;
 
     void Emit(SBFile &file);
 
