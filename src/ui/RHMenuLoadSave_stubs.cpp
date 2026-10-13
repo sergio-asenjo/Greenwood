@@ -1,0 +1,46 @@
+// Stub definitions for the external symbols RHMenuLoadSave.cpp calls.
+//
+// These are NOT decompiled implementations; they only give the linker a local
+// target so the calls are direct `call rel32` in a separate translation unit.
+
+#include "SBNullstr.h"
+#include "RHMenuLoadSave.h"
+
+// Target 0x00530510, __thiscall.
+RHMenuLoadSave::~RHMenuLoadSave() {}
+
+// Target 0x00463d80, __thiscall, ret 0xc.
+bool RHMenuLoadSave::FUN_00463d80(int, void *, void *) { return false; }
+
+// Target 0x0052ce80, __thiscall, ret 0xc.
+bool RHMenuLoadSave::FUN_0052ce80(int, void *, void *) { return false; }
+
+// Target 0x005314d0, __thiscall, ret 0xc.
+bool RHMenuLoadSave::FUN_005314d0(int, void *, void *) { return false; }
+
+
+
+
+// Target 0x00531740, __thiscall, ret 0xc.
+bool RHMenuLoadSave::FUN_00531740(int, void *, void *) { return false; }
+
+// Target 0x00531240, __thiscall.
+void RHMenuLoadSave::FUN_00531240() {}
+
+// Target 0x00531a80, __thiscall.
+void RHMenuLoadSave::FUN_00531a80() {}
+
+// Target 0x00531bd0, __thiscall.
+void RHMenuLoadSave::FUN_00531bd0() {}
+
+// Target 0x00530320, __thiscall, ret 8.
+RHMenuLoadSave::RHMenuLoadSave(RHMenuScreenView *, bool) : RHMenuWindowFocus(0, 0, 0, false) {}
+
+// Target 0x005307d0, __thiscall.
+void RHMenuLoadSave::FUN_005307d0() {}
+
+// Target 0x00531220, __thiscall.
+int RHMenuLoadSave::FUN_00531220() { return 0; }
+
+// Target 0x00531230, __thiscall.
+int RHMenuLoadSave::FUN_00531230() { return 0; }
