@@ -67,47 +67,35 @@ inline void *RHUnkSectorLookup(unsigned short sector)
     return g_unk0x6c0a9c->m_4064[sector];
 }
 
-// deferred: 0x00408900, parked body; called by a counted initializer.
+// FUNCTION: GAME 0x00408900
 int RHUnkSectorScriptRef::Unk00408900()
 {
-    {
-        std::string name("Initialize");
-        ((VMCore *)m_0)->FUN_00639300(&name);
-    }
-    int value[4];
-    value[1] = value[2] = value[3] = 0;
-    ((VMCore *)m_0)->FUN_00639360(value[0]);
-    return value[0];
+    ((VMCore *)m_0)->FUN_00639300(&std::string("Initialize"));
+    int value;
+    ((VMCore *)m_0)->FUN_00639360(value);
+    return value;
 }
 
-// STUB: GAME 0x004089f0
+// FUNCTION: GAME 0x004089f0
 int RHUnkSectorScriptRef::Unk004089f0(RHElementActor *actor)
 {
     ((VMCore *)m_0)->FUN_006392e0(&actor, 4);
-    {
-        // STRING: GAME 0x006a6cf4
-        std::string name("EnterZone");
-        ((VMCore *)m_0)->FUN_00639300(&name);
-    }
-    int value[4];
-    value[1] = value[2] = value[3] = 0;
-    ((VMCore *)m_0)->FUN_00639360(value[0]);
-    return value[0];
+    // STRING: GAME 0x006a6cf4
+    ((VMCore *)m_0)->FUN_00639300(&std::string("EnterZone"));
+    int value;
+    ((VMCore *)m_0)->FUN_00639360(value);
+    return value;
 }
 
-// STUB: GAME 0x00408af0
+// FUNCTION: GAME 0x00408af0
 int RHUnkSectorScriptRef::Unk00408af0(RHElementActor *actor)
 {
     ((VMCore *)m_0)->FUN_006392e0(&actor, 4);
-    {
-        // STRING: GAME 0x006a6d00
-        std::string name("ExitZone");
-        ((VMCore *)m_0)->FUN_00639300(&name);
-    }
-    int value[4];
-    value[1] = value[2] = value[3] = 0;
-    ((VMCore *)m_0)->FUN_00639360(value[0]);
-    return value[0];
+    // STRING: GAME 0x006a6d00
+    ((VMCore *)m_0)->FUN_00639300(&std::string("ExitZone"));
+    int value;
+    ((VMCore *)m_0)->FUN_00639360(value);
+    return value;
 }
 
 // deferred: 0x0046eb30, parked body; shared by counted callers.
