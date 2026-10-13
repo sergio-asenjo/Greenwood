@@ -519,6 +519,7 @@ class RHUnk005fc3b0
 {
 public:
     RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other);
+    float Unk005fc6a0(float value);
 };
 
 struct RHGameConfigTriple
@@ -590,8 +591,8 @@ public:
     void FUN_005d9950(unsigned action);
     void FUN_005d9140(unsigned);
     void FUN_005d6690();
-    void FUN_005d8f20(unsigned short);
-    void FUN_005d8fa0(unsigned short, bool);
+    bool FUN_005d8f20(unsigned);
+    bool FUN_005d8fa0(unsigned, int);
 };
 
 class RHGameNotificationCalls

@@ -93,9 +93,19 @@ void RHPortraitInputRenderer::FUN_0061d570(unsigned short, int) {}
 unsigned RHPortraitInputRenderer::FUN_0061d5e0() { return 0; }
 SBGeoBoundingBox2D RHPortraitInputRenderer::FUN_0061d3f0(unsigned short, int) { return SBGeoBoundingBox2D(); }
 SBGeoBoundingBox2D RHPortraitInputRenderer::FUN_0061d7c0() { return SBGeoBoundingBox2D(); }
+SBGeoBoundingBox2D RHPortraitInputRenderer::FUN_0061d620() { return SBGeoBoundingBox2D(); }
+unsigned RHPortraitInputRenderer::FUN_0061d950() { return 0; }
 bool RHPortraitInputCalls::FUN_005cfc30(const void *) { return false; }
 RHPortraitRenderer006212d0::RHPortraitRenderer006212d0() {}
 RHPortraitRenderer006212d0::~RHPortraitRenderer006212d0() {}
 RHPortraitText0061db10::RHPortraitText0061db10() {}
 RHPortraitText0061db10::~RHPortraitText0061db10() {}
 void *RHPortraitUIOwner::FUN_004fffd0() { return *(void **)((char *)this + 0x6c); }
+void RHPortraitUIOwner::FUN_00500780(bool) {}
+void RHPortraitUIOwner::FUN_00500790(bool) {}
+void RHPortraitTextLinkedCalls::FUN_0053f9f0(void *) {}
+unsigned SBUIInputFieldTextUnk::FUN_0061dd30() { return 0; }
+char RHPortraitKeyboardCalls::FUN_0060e270(unsigned short) { return 0; }
+unsigned FUN_005fb1d0(unsigned key) { return key; }
+int FUN_005fb0f0(unsigned, unsigned short *, const void *, unsigned) { return 0; }
+void *RHPortraitTextResourceCalls::FUN_0053be80(const std::string &) { return 0; }

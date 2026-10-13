@@ -597,11 +597,17 @@ class RHPortraitInputField
 {
 public:
     RHPortraitWidgetEvent *FUN_005d0a10(const RHPortraitWidgetInput &input);
+    RHPortraitWidgetEvent *FUN_005d0a90(const RHPortraitWidgetInput &input);
+    RHPortraitWidgetEvent *FUN_005d0d00(const RHPortraitWidgetInput &input);
+    RHPortraitWidgetEvent *FUN_005d1090(const RHPortraitWidgetInput &input);
+    RHPortraitWidgetEvent *FUN_005d1270(const RHPortraitWidgetInput &input);
+    RHPortraitWidgetEvent *FUN_005d14e0(const RHPortraitWidgetInput &input);
     bool FUN_005d1630(const RHPortraitWidgetInput &input, unsigned short key);
     void FUN_005d1670();
     void FUN_005d1700();
     bool FUN_005d1790(const RHPortraitWidgetInput &input);
     RHPortraitWidgetEvent *FUN_005d1810(const RHPortraitWidgetInput &input);
+    unsigned short FUN_005d18f0(const SBGeoPoint2D &point);
     RHPortraitInputRenderer &Renderer() { return *(RHPortraitInputRenderer *)((char *)this + 0x80); }
     undefined m_00[0x4c];
     RHPortraitWidgetEvent m_event;
@@ -642,6 +648,402 @@ RHPortraitWidgetEvent *RHPortraitInputField::FUN_005d0a10(const RHPortraitWidget
         result->type = 0;
     }
     return result;
+}
+
+// Parked: Focus, scroll and hover branches need register and return-tail alignment.
+// STUB: GAME 0x005d0a90
+RHPortraitWidgetEvent *RHPortraitInputField::FUN_005d0a90(const RHPortraitWidgetInput &input)
+{
+    RHPortraitWidgetEvent *result = 0;
+    RHPortraitInputRenderer &renderer = Renderer();
+    renderer.FUN_0061d570(m_18c, m_13c);
+    if (FUN_005d1790(input))
+    {
+        if (!(input.flags & 0x40))
+            m_state = 4;
+        if (m_18a != 0xffff)
+        {
+            result = &m_event;
+            m_18a = 0xffff;
+            m_event.widget = this;
+            m_event.value = 0xffff;
+            m_event.next = 0;
+            result->type = 14;
+        }
+    }
+    else if (!((SBGeoBoundingBox2D *)((char *)this + 0x30))->FUN_006083b0(input.point))
+    {
+        m_state = 0;
+        if (m_18a != 0xffff)
+        {
+            result = &m_event;
+            m_18a = 0xffff;
+            m_event.widget = this;
+            m_event.value = 0xffff;
+            m_event.next = 0;
+            result->type = 14;
+        }
+    }
+    else if (*(short *)input.m_08 != 0)
+    {
+        RHPortraitWidgetEvent *scroll = 0;
+        if (*(short *)input.m_08 > 0)
+        {
+            if (m_18c > 0)
+            {
+                --m_18c;
+                renderer.FUN_0061d570(m_18c, m_13c);
+                scroll = &m_event;
+                m_event.next = 0;
+                m_event.widget = this;
+                m_event.value = 0;
+                scroll->type = 13;
+            }
+        }
+        else if (*(short *)input.m_08 < 0)
+        {
+            unsigned limit = m_13c;
+            unsigned short line = m_18c;
+            if (renderer.FUN_0061d5e0() + line + 1 <= limit)
+            {
+                m_18c = line + 1;
+                renderer.FUN_0061d570(m_18c, m_13c);
+                scroll = &m_event;
+                m_event.next = 0;
+                m_event.widget = this;
+                m_event.value = 0;
+                scroll->type = 12;
+            }
+        }
+        return scroll;
+    }
+    else if (input.flags & 8)
+    {
+        result = &m_event;
+        m_event.widget = this;
+        m_event.value = 0;
+        m_event.next = 0;
+        result->type = 2;
+    }
+    else if (input.flags & 2)
+    {
+        if (m_188 != 0xffff)
+        {
+            result = &m_event;
+            m_188 = 0xffff;
+            m_event.widget = this;
+            m_event.value = 0xffff;
+            m_event.next = 0;
+            result->type = 15;
+        }
+    }
+    else
+    {
+        unsigned short position = FUN_005d18f0(input.point);
+        if (input.flags & 0x40)
+        {
+            m_state = 2;
+            input.ui->m_selected = (RHPortraitUnk005d3880 *)this;
+        }
+        SBGeoPoint2D &previous = *(SBGeoPoint2D *)((char *)this + 0x1a4);
+        if (m_18a != position && previous.FUN_005fc0e0(input.point))
+        {
+            m_18a = position;
+            previous = input.point;
+            result = &m_event;
+            m_event.widget = this;
+            result->type = 14;
+            m_event.value = m_18a;
+            m_event.next = 0;
+        }
+    }
+    return result;
+}
+
+// Parked: Repeated line-box temporaries and scroll paths need frame/EH alignment.
+// STUB: GAME 0x005d0d00
+RHPortraitWidgetEvent *RHPortraitInputField::FUN_005d0d00(const RHPortraitWidgetInput &input)
+{
+    RHPortraitWidgetEvent *result = 0;
+    RHPortraitInputRenderer &renderer = Renderer();
+    renderer.FUN_0061d570(m_18c, m_13c);
+    SBGeoBoundingBox2D &box = *(SBGeoBoundingBox2D *)((char *)this + 0x30);
+    if (box.FUN_006083b0(input.point) && !renderer.FUN_0061d7c0().FUN_00608400(input.point))
+    {
+        if (!(input.flags & 0x40))
+            m_state = 1;
+    }
+    else if (!box.FUN_006083b0(input.point))
+        m_state = 0;
+    else if (*(short *)input.m_08 != 0)
+    {
+        RHPortraitWidgetEvent *scroll = 0;
+        if (*(short *)input.m_08 > 0)
+        {
+            if (m_18c > 0)
+            {
+                --m_18c;
+                renderer.FUN_0061d570(m_18c, m_13c);
+                scroll = &m_event;
+                m_event.next = 0;
+                m_event.widget = this;
+                m_event.value = 0;
+                scroll->type = 13;
+            }
+        }
+        else if (*(short *)input.m_08 < 0)
+        {
+            unsigned limit = m_13c;
+            unsigned short line = m_18c;
+            if (renderer.FUN_0061d5e0() + line + 1 <= limit)
+            {
+                m_18c = line + 1;
+                renderer.FUN_0061d570(m_18c, m_13c);
+                scroll = &m_event;
+                m_event.next = 0;
+                m_event.widget = this;
+                m_event.value = 0;
+                scroll->type = 12;
+            }
+        }
+        return scroll;
+    }
+    else if (input.flags & 1)
+    {
+        if (input.point.m_y < renderer.FUN_0061d620().m_first.m_y && m_18c > 0)
+        {
+            --m_18c;
+            renderer.FUN_0061d570(m_18c, m_13c);
+            *(SBGeoPoint2D *)((char *)this + 0x1a4) = input.point;
+            result = &m_event;
+            m_event.widget = this;
+            m_event.value = 0;
+            m_event.next = 0;
+            result->type = 13;
+        }
+        else if (input.point.m_y > renderer.FUN_0061d620().m_second.m_y)
+        {
+            unsigned limit = m_13c;
+            unsigned short line = m_18c;
+            if (renderer.FUN_0061d5e0() + line + 1 <= limit)
+            {
+                m_18c = line + 1;
+                renderer.FUN_0061d570(m_18c, m_13c);
+                *(SBGeoPoint2D *)((char *)this + 0x1a4) = input.point;
+                result = &m_event;
+                m_event.widget = this;
+                m_event.value = 0;
+                m_event.next = 0;
+                result->type = 12;
+            }
+        }
+    }
+    else if ((input.flags & 0x40) && renderer.FUN_0061d620().FUN_006083b0(input.point))
+    {
+        *(SBGeoPoint2D *)((char *)this + 0x1a4) = input.point;
+        input.ui->m_selected = (RHPortraitUnk005d3880 *)this;
+        m_state = 5;
+    }
+    return result;
+}
+
+// Parked: Scroll and selection live ranges need codegen alignment.
+// STUB: GAME 0x005d1090
+RHPortraitWidgetEvent *RHPortraitInputField::FUN_005d1090(const RHPortraitWidgetInput &input)
+{
+    RHPortraitWidgetEvent *result = 0;
+    RHPortraitInputRenderer &renderer = Renderer();
+    renderer.FUN_0061d570(m_18c, m_13c);
+    if (*(short *)input.m_08 != 0)
+    {
+        RHPortraitWidgetEvent *scroll = 0;
+        if (*(short *)input.m_08 > 0)
+        {
+            if (m_18c > 0)
+            {
+                --m_18c;
+                renderer.FUN_0061d570(m_18c, m_13c);
+                m_event.next = 0;
+                m_event.value = 0;
+                m_event.widget = this;
+                scroll = &m_event;
+                scroll->type = 13;
+            }
+        }
+        else if (*(short *)input.m_08 < 0)
+        {
+            unsigned limit = m_13c;
+            unsigned short line = m_18c;
+            if (renderer.FUN_0061d5e0() + line + 1 <= limit)
+            {
+                m_18c = line + 1;
+                renderer.FUN_0061d570(m_18c, m_13c);
+                m_event.next = 0;
+                m_event.value = 0;
+                m_event.widget = this;
+                scroll = &m_event;
+                scroll->type = 12;
+            }
+        }
+        return scroll;
+    }
+    unsigned short position = FUN_005d18f0(input.point);
+    if (m_18a != position)
+    {
+        m_18a = position;
+        result = &m_event;
+        m_event.widget = this;
+        result->type = 14;
+        m_event.value = position;
+        m_event.next = 0;
+    }
+    if (((RHPortraitInputCalls *)this)->FUN_005cfc30(&input))
+    {
+        if (input.flags & 1)
+        {
+            m_188 = m_18a;
+            input.ui->Clear();
+            result = &m_event;
+            m_event.next = 0;
+            m_event.widget = this;
+            m_event.value = m_188;
+            m_state = 1;
+            result->type = 15;
+            return result;
+        }
+        else if (input.flags & 8)
+        {
+            input.ui->Clear();
+            result = &m_event;
+            m_event.value = 0;
+            m_event.next = 0;
+            m_event.widget = this;
+            m_state = 1;
+            result->type = 2;
+            return result;
+        }
+    }
+    else
+        m_state = 3;
+    return result;
+}
+
+// Parked: Drag-distance and repeated geometry temporary EH slots need alignment.
+// STUB: GAME 0x005d1270
+RHPortraitWidgetEvent *RHPortraitInputField::FUN_005d1270(const RHPortraitWidgetInput &input)
+{
+    RHPortraitWidgetEvent *result = 0;
+    if (input.flags & 0x40)
+    {
+        SBGeoPoint2D &previous = *(SBGeoPoint2D *)((char *)this + 0x1a4);
+        bool moved;
+        {
+            SBGeoPoint2D difference = previous.Unk005fc110(input.point);
+            float distance = ((RHUnk005fc3b0 *)&difference)->Unk005fc6a0(1.0f);
+            moved = Renderer().FUN_0061d950() < distance;
+        }
+        if (moved)
+        {
+            if (input.point.m_y < previous.m_y)
+            {
+                if (m_18c > 0)
+                {
+                    --m_18c;
+                    Renderer().FUN_0061d570(m_18c, m_13c);
+                    previous = input.point;
+                    result = &m_event;
+                    m_event.widget = this;
+                    result->type = 13;
+                    m_event.value = m_18c;
+                    m_event.next = 0;
+                }
+            }
+            else
+            {
+                unsigned short line = m_18c;
+                unsigned limit = m_13c;
+                if (Renderer().FUN_0061d5e0() + line + 1 <= limit)
+                {
+                    m_18c = line + 1;
+                    previous = input.point;
+                    Renderer().FUN_0061d570(m_18c, m_13c);
+                    result = &m_event;
+                    m_event.widget = this;
+                    result->type = 12;
+                    m_event.value = m_18c;
+                    m_event.next = 0;
+                }
+            }
+        }
+    }
+    else
+    {
+        input.ui->Clear();
+        if (((SBGeoBoundingBox2D *)((char *)this + 0x30))->FUN_006083b0(input.point) &&
+            !Renderer().FUN_0061d7c0().FUN_00608400(input.point))
+            m_state = 1;
+        else if (Renderer().FUN_0061d7c0().FUN_00608400(input.point))
+            m_state = 4;
+        else
+            m_state = 0;
+    }
+    return result;
+}
+
+// Parked: Scroll event and capture receiver scheduling need codegen alignment.
+// STUB: GAME 0x005d14e0
+RHPortraitWidgetEvent *RHPortraitInputField::FUN_005d14e0(const RHPortraitWidgetInput &input)
+{
+    RHPortraitWidgetEvent *outside = 0;
+    if (((SBGeoBoundingBox2D *)((char *)this + 0x30))->FUN_00608400(input.point))
+    {
+        RHPortraitWidgetEvent *result = 0;
+        short delta = *(short *)input.m_08;
+        if (delta > 0)
+        {
+            if (m_18c > 0)
+            {
+                --m_18c;
+                Renderer().FUN_0061d570(m_18c, m_13c);
+                result = &m_event;
+                m_event.next = 0;
+                m_event.widget = this;
+                m_event.value = 0;
+                result->type = 13;
+            }
+        }
+        else if (delta < 0)
+        {
+            unsigned limit = m_13c;
+            unsigned short line = m_18c;
+            RHPortraitInputRenderer &renderer = Renderer();
+            if (renderer.FUN_0061d5e0() + line + 1 <= limit)
+            {
+                m_18c = line + 1;
+                renderer.FUN_0061d570(m_18c, m_13c);
+                RHPortraitWidgetEvent *event = &m_event;
+                m_event.next = 0;
+                m_event.widget = this;
+                m_event.value = 0;
+                event->type = 12;
+                result = event;
+            }
+        }
+        if (((RHPortraitInputCalls *)this)->FUN_005cfc30(&input))
+            m_state = 2;
+        else if (input.flags & 1)
+        {
+            m_state = 4;
+            input.ui->Clear();
+        }
+        return result;
+    }
+    if (input.flags & 1)
+    {
+        m_state = 0;
+        input.ui->Clear();
+    }
+    return outside;
 }
 
 // FUNCTION: GAME 0x005d1630
@@ -750,6 +1152,98 @@ struct RHPortraitTextLine
     int m_08;
     int m_0c;
 };
+
+struct RHScriptNode;
+struct RHScriptIter
+{
+    RHScriptNode *node;
+};
+
+class RHUnk0046eb30
+{
+public:
+    RHScriptIter FUN_0046eb80();
+};
+
+struct RHUnk005c9010Iterator;
+void FUN_005c9010(RHUnk005c9010Iterator &current, int distance, std::bidirectional_iterator_tag category);
+
+struct RHPortraitTextNode
+{
+    RHPortraitTextNode *next;
+    RHPortraitTextNode *previous;
+    RHPortraitTextLine value;
+};
+
+class RHPortraitTextCursor
+{
+public:
+    RHPortraitTextLine &At(int index)
+    {
+        int count = m_count;
+        std::bidirectional_iterator_tag category;
+        if (m_dirty)
+        {
+            if (index <= (count + 1) / 2)
+            {
+                m_current = m_head->next;
+                FUN_005c9010((RHUnk005c9010Iterator &)m_current, index, category);
+            }
+            else
+            {
+                m_current = m_head;
+                FUN_005c9010((RHUnk005c9010Iterator &)m_current, index - count, category);
+            }
+            m_dirty = false;
+            m_index = index;
+        }
+        else
+        {
+            int previous = m_index;
+            if (index != previous)
+            {
+                if (index < previous)
+                {
+                    if (index < (previous + 1) / 2)
+                    {
+                        m_current = (RHPortraitTextNode *)((RHUnk0046eb30 *)this)->FUN_0046eb80().node;
+                        FUN_005c9010((RHUnk005c9010Iterator &)m_current, index, category);
+                    }
+                    else
+                        FUN_005c9010((RHUnk005c9010Iterator &)m_current, index - previous, category);
+                }
+                else if (index < (previous + count) / 2)
+                    FUN_005c9010((RHUnk005c9010Iterator &)m_current, index - previous, category);
+                else
+                {
+                    m_current = m_head;
+                    FUN_005c9010((RHUnk005c9010Iterator &)m_current, index - count, category);
+                }
+                m_index = index;
+            }
+        }
+        return m_current->value;
+    }
+    int m_allocator;
+    RHPortraitTextNode *m_head;
+    int m_count;
+    RHPortraitTextNode *m_current;
+    bool m_dirty;
+    int m_index;
+};
+
+// Parked: Cached-list iterator and line-box temporary codegen need alignment.
+// STUB: GAME 0x005d18f0
+unsigned short RHPortraitInputField::FUN_005d18f0(const SBGeoPoint2D &point)
+{
+    for (unsigned short index = 0; index < m_10c; ++index)
+    {
+        RHPortraitTextCursor &lines = *(RHPortraitTextCursor *)((char *)this + 0x164);
+        if (Renderer().FUN_0061d3f0(index - m_18c, lines.At(index).m_00).FUN_00608400(point))
+            return index;
+    }
+    return 0xffff;
+}
 
 class RHPortraitTextLines
 {
@@ -1126,6 +1620,9 @@ public:
     void FUN_005d3360();
     RHPortraitBoxEvent *FUN_005d3290(unsigned value);
     void FUN_005d2cf0(const std::wstring &text);
+    RHPortraitWidgetEvent *FUN_005d3090(const RHPortraitWidgetInput &input);
+    RHPortraitWidgetEvent *FUN_005d33d0(const RHPortraitWidgetInput &input);
+    RHPortraitWidgetEvent &Event() { return *(RHPortraitWidgetEvent *)((char *)this + 0x4c); }
     RHPortraitText0061db10 m_text;
     RHPortraitTextWidget *m_linked;
     undefined m_15c[0x10];
@@ -1148,6 +1645,8 @@ public:
     RHPortraitEditableWidget();
     ~RHPortraitEditableWidget();
     void *FUN_005d26f0(unsigned flags);
+    bool FUN_005d2810(const SBGeoPoint2D &point, RHPortraitTextResourceCalls *resources);
+    RHPortraitWidgetEvent *FUN_005d2a70(const RHPortraitWidgetInput &input);
 };
 
 class RHPortraitTextWidgetDispatch
@@ -1200,6 +1699,137 @@ RHPortraitEditableWidget::~RHPortraitEditableWidget()
 {
     RHPortraitTextWidgetBase::m_vptr = 0x0067a0e0;
     RHPortraitEditableStrategy::m_vptr = 0x0067a118;
+}
+
+// GLOBAL: GAME 0x006c0b50
+wchar_t g_unk0x006c0b50[1] = {0};
+
+// Parked: Resource lookup binding and nested string/box lifetimes need codegen alignment.
+// STUB: GAME 0x005d2810
+bool RHPortraitEditableWidget::FUN_005d2810(const SBGeoPoint2D &point, RHPortraitTextResourceCalls *resources)
+{
+    // STRING: GAME 0x006b0d50
+    void *resource = resources->FUN_0053be80(std::string("EditField"));
+    RHPortraitRendererDispatch *renderer = (RHPortraitRendererDispatch *)&m_renderer;
+    {
+        std::wstring text(g_unk0x006c0b50);
+        SBGeoBoundingBox2D box(point, point);
+        ((RHPortraitWidgetSetupCalls *)this)->FUN_0060d130(text, box, false);
+        renderer->v3(box);
+        ((SBUIUnk0060d530 *)renderer)->FUN_0060d550(0xbf);
+        *(int *)((char *)this + 0xa4) = 0;
+        RHPortraitAssignWideText((char *)this + 0xa8, text);
+        SBGeoBoundingBox2D &bounds = *(SBGeoBoundingBox2D *)((char *)this + 0x30);
+        if (bounds.m_second.m_x - bounds.m_first.m_x == g_unk0x00677488)
+            bounds.FUN_00607da0(*(SBGeoBoundingBox2D *)((SBUIUnk0060d530 *)renderer)->FUN_0060d690());
+    }
+    *(void **)((char *)this + 0x124) = resource;
+    *(void **)((char *)this + 0x128) = resource;
+    ((SBUIInputFieldUnk00621440 *)renderer)->FUN_00621440((SBUIInputFieldUnkResource *)&m_text);
+    ((SBUIInputFieldUnk00621440 *)renderer)->FUN_00621c30(*(SBGeoBoundingBox2D *)&RHMapBox(10.0f, 10.0f, 403.0f, 20.0f));
+    ((RHUnk005fc3b0 *)((char *)this + 0x108))->FUN_005fc430(SBGeoPoint2D(-1.0f, -5.0f));
+    return true;
+}
+
+// Parked: Animated text-state switch and linked-widget cleanup need codegen alignment.
+// STUB: GAME 0x005d2a70
+RHPortraitWidgetEvent *RHPortraitEditableWidget::FUN_005d2a70(const RHPortraitWidgetInput &input)
+{
+    RHPortraitWidgetEvent *result = 0;
+    RHPortraitWidgetEvent &event = *(RHPortraitWidgetEvent *)((char *)this + 0x4c);
+    if (*((char *)this + 4))
+    {
+        switch (RHPortraitTextWidgetBase::m_state)
+        {
+        case 0:
+            if (((RHPortraitUnk005d3880 *)this)->FUN_005d3880(input.point) && !(input.flags & 0x40))
+            {
+                result = &event;
+                RHPortraitTextWidgetBase::m_state = 1;
+                event.widget = this;
+                event.value = 0;
+                result->type = 0;
+                event.next = 0;
+            }
+            break;
+        case 1:
+            if (((RHPortraitUnk005d3880 *)this)->FUN_005d3880(input.point))
+            {
+                if (input.flags & 0x40)
+                {
+                    RHPortraitTextWidgetBase::m_state = 4;
+                    input.ui->m_selected = (RHPortraitUnk005d3880 *)this;
+                }
+            }
+            else if (!(input.flags & 0x40))
+            {
+                RHPortraitTextWidgetBase::m_state = 0;
+                input.ui->Clear();
+            }
+            break;
+        case 4:
+            if (((RHPortraitUnk005d3880 *)this)->FUN_005d3880(input.point))
+            {
+                if (input.flags & 1)
+                {
+                    if (!m_linked)
+                    {
+                        RHPortraitTextWidgetBase::m_state = 13;
+                        ((SBUIInputFieldUnk00621440 *)&m_text)->FUN_0061e340();
+                        ((SBUIInputFieldTextUnk *)&m_text)->FUN_0061e320(1);
+                        result = &event;
+                        event.next = 0;
+                        event.widget = this;
+                        event.value = 0;
+                        result->type = 8;
+                    }
+                    else
+                    {
+                        RHPortraitTextWidgetBase::m_state = 2;
+                        input.ui->Clear();
+                        RHPortraitTextWidget *linked = m_linked;
+                        if (linked != this)
+                        {
+                            if (linked->m_state == 2 || linked->m_state == 13)
+                            {
+                                ((SBUIInputFieldTextUnk *)&linked->m_text)->FUN_0061e320(0);
+                                linked->m_state = 0;
+                            }
+                            if (linked->m_linked)
+                                ((RHPortraitTextLinkedCalls *)linked->m_linked)->FUN_0053f9f0(this);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                RHPortraitTextWidgetBase::m_state = 1;
+                if (input.flags & 1)
+                    input.ui->Clear();
+            }
+            break;
+        case 2:
+            if (((RHPortraitUnk005d3880 *)this)->FUN_005d3880(input.point) && (input.flags & 8))
+            {
+                result = &event;
+                event.next = 0;
+                event.widget = this;
+                event.value = 0;
+                result->type = 3;
+            }
+            break;
+        case 13:
+            result = FUN_005d33d0(input);
+            break;
+        }
+    }
+    ((RHGameWidgetAnimatedCalls *)((char *)this + 0x188))->FUN_005d5790(result, RHPortraitTextWidgetBase::m_state, 0);
+    if (m_owner && RHPortraitTextWidgetBase::m_state != 13)
+    {
+        m_owner->FUN_00500790(true);
+        m_owner->FUN_00500780(true);
+    }
+    return result;
 }
 
 // FUNCTION: GAME 0x005d2cb0
@@ -1285,6 +1915,107 @@ inline RHPortraitTextWidget::~RHPortraitTextWidget()
     m_vptr = 0x0067a120;
 }
 
+// Parked: Text-state switch registers and linked-widget return tails need alignment.
+// STUB: GAME 0x005d3090
+RHPortraitWidgetEvent *RHPortraitTextWidget::FUN_005d3090(const RHPortraitWidgetInput &input)
+{
+    RHPortraitWidgetEvent *result;
+    if (*((char *)this + 4))
+    {
+        switch (m_state)
+        {
+        case 0:
+            result = 0;
+            if ((unsigned char)((RHPortraitUnk005d3880 *)this)->FUN_005d3880(input.point) && !(input.flags & 0x40))
+            {
+                result = &Event();
+                m_state = 1;
+                Event().widget = this;
+                Event().value = 0;
+                result->type = 0;
+                Event().next = 0;
+            }
+            break;
+        case 1:
+            result = 0;
+            if ((unsigned char)((RHPortraitUnk005d3880 *)this)->FUN_005d3880(input.point))
+            {
+                if (input.flags & 0x40)
+                {
+                    m_state = 4;
+                    input.ui->m_selected = (RHPortraitUnk005d3880 *)this;
+                }
+            }
+            else if (!(input.flags & 0x40))
+            {
+                m_state = 0;
+                input.ui->Clear();
+            }
+            break;
+        case 4:
+            result = 0;
+            if ((unsigned char)((RHPortraitUnk005d3880 *)this)->FUN_005d3880(input.point))
+            {
+                if (input.flags & 1)
+                {
+                    if (!m_linked)
+                    {
+                        m_state = 13;
+                        ((SBUIInputFieldUnk00621440 *)&m_text)->FUN_0061e340();
+                        ((SBUIInputFieldTextUnk *)&m_text)->FUN_0061e320(1);
+                        result = &Event();
+                        Event().next = 0;
+                        Event().widget = this;
+                        Event().value = 0;
+                        result->type = 8;
+                    }
+                    else
+                    {
+                        m_state = 2;
+                        input.ui->Clear();
+                        RHPortraitTextWidget *linked = m_linked;
+                        if (linked != this)
+                        {
+                            if (linked->m_state == 2 || linked->m_state == 13)
+                            {
+                                ((SBUIInputFieldTextUnk *)&linked->m_text)->FUN_0061e320(0);
+                                linked->m_state = 0;
+                            }
+                            if (linked->m_linked)
+                                ((RHPortraitTextLinkedCalls *)linked->m_linked)->FUN_0053f9f0(this);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                m_state = 1;
+                if (input.flags & 1)
+                    input.ui->Clear();
+            }
+            break;
+        case 2:
+            result = 0;
+            if ((unsigned char)((RHPortraitUnk005d3880 *)this)->FUN_005d3880(input.point) && (input.flags & 8))
+            {
+                result = &Event();
+                Event().next = 0;
+                Event().widget = this;
+                Event().value = 0;
+                result->type = 3;
+            }
+            break;
+        case 13:
+            return FUN_005d33d0(input);
+        default:
+            result = 0;
+        }
+    }
+    else
+        result = 0;
+    return result;
+}
+
 // Parked: The cached branch exchanges the event pointer and shared vtable registers.
 // STUB: GAME 0x005d3290
 RHPortraitBoxEvent *RHPortraitTextWidget::FUN_005d3290(unsigned value)
@@ -1342,6 +2073,146 @@ void *RHPortraitTextWidget::FUN_005d33b0(unsigned flags)
     if (flags & 1)
         operator delete(this);
     return this;
+}
+
+// Parked: Keyboard conversion bindings and text-event EH/register layout need alignment.
+// STUB: GAME 0x005d33d0
+RHPortraitWidgetEvent *RHPortraitTextWidget::FUN_005d33d0(const RHPortraitWidgetInput &input)
+{
+    RHPortraitWidgetEvent *result = 0;
+    SBGeoBoundingBox2D &box = *(SBGeoBoundingBox2D *)((char *)this + 0x30);
+    RHPortraitWidgetEvent &event = *(RHPortraitWidgetEvent *)((char *)this + 0x4c);
+    SBUIInputFieldTextUnk &text = *(SBUIInputFieldTextUnk *)&m_text;
+    SBUIInputFieldUnk00621440 &textCalls = *(SBUIInputFieldUnk00621440 *)&m_text;
+    if (!(box.FUN_006083b0(input.point) &&
+          ((RHGameWidgetRendererCalls *)&m_renderer)->FUN_0060d890(input.point.Unk005fc110(box.m_first))) &&
+        (input.flags & 0x40))
+    {
+        if (m_linked)
+            m_state = 2;
+        else
+            m_state = 0;
+        result = &event;
+        event.next = 0;
+        event.widget = this;
+        result->type = 9;
+        event.value = 0;
+        m_state = m_linked ? 2 : 0;
+        text.FUN_0061e320(0);
+        *(int *)((char *)this + 0xc0) = -1;
+        *(int *)((char *)this + 0xc4) = -1;
+        input.ui->Clear();
+        return result;
+    }
+    unsigned short key = 0;
+    int scanCode = 0;
+    for (; key <= 255; ++key, ++scanCode)
+    {
+        int pressed = input.shortcuts->FUN_0060e240(key);
+        char released = ((RHPortraitKeyboardCalls *)input.shortcuts)->FUN_0060e270(key);
+        int state = ((int *)((char *)input.shortcuts + 0xa0c))[key];
+        if (pressed == 1)
+        {
+            if (state == 0 || state == 2)
+            {
+                unsigned short characters[2] = {0, 0};
+                unsigned converted = FUN_005fb1d0(scanCode & 0x7f);
+                if (converted > 0)
+                {
+                    switch (converted)
+                    {
+                    case 37: text.FUN_0061e240(1); break;
+                    case 39: text.FUN_0061e240(0); break;
+                    case 36: text.FUN_0061e240(2); break;
+                    case 35: text.FUN_0061e240(3); break;
+                    case 8: text.FUN_0061e2b0(-1); break;
+                    case 46: text.FUN_0061e2b0(text.FUN_0061dd30() + 1); break;
+                    case 9:
+                    case 13:
+                    case 27:
+                    case 38:
+                    case 40:
+                        continue;
+                    default:
+                        if (FUN_005fb0f0(scanCode, characters, (char *)input.shortcuts + 0x1610, 2) > 0)
+                        {
+                            if (!characters[0])
+                                continue;
+                            ((SBUIInputFieldUnk0061e180 *)&m_text)->Insert(characters[0]);
+                            *(int *)((char *)this + 0xc0) = -1;
+                            *(int *)((char *)this + 0xc4) = -1;
+                        }
+                        else
+                        {
+                            // STRING: GAME 0x006b8dd8
+                            const char *file = "P:\\Robin Hood\\SBLibNG/SBWidgetInputField.h";
+                            // STRING: GAME 0x006b8e04
+                            const char *message = "No conversion for the scan code %i\n";
+                            SBAssert(false, file, 0x278, message, scanCode);
+                            continue;
+                        }
+                        break;
+                    }
+                }
+                else if (FUN_005fb0f0(scanCode, characters, (char *)input.shortcuts + 0x1610, 2) > 0)
+                {
+                    if (!characters[0])
+                        continue;
+                    ((SBUIInputFieldUnk0061e180 *)&m_text)->Insert(characters[0]);
+                    *(int *)((char *)this + 0xc0) = -1;
+                    *(int *)((char *)this + 0xc4) = -1;
+                }
+                else
+                {
+                    SBAssert(false, "P:\\Robin Hood\\SBLibNG/SBWidgetInputField.h", 0x278,
+                        "No conversion for the scan code %i\n", scanCode);
+                    continue;
+                }
+                result = &event;
+                event.next = 0;
+                event.widget = this;
+                event.value = 0;
+                result->type = 10;
+            }
+        }
+        else if (pressed == 0 && released == 1)
+        {
+            unsigned converted = FUN_005fb1d0(scanCode & 0x7f);
+            if (converted == 27)
+            {
+                m_state = m_linked ? 2 : 0;
+                textCalls.FUN_0061e4b0();
+                text.FUN_0061e320(0);
+                *(int *)((char *)this + 0xc0) = -1;
+                *(int *)((char *)this + 0xc4) = -1;
+                input.ui->Clear();
+                result = &event;
+                event.next = 0;
+                result->type = 9;
+                event.widget = this;
+                event.value = 0;
+            }
+            else if (converted == 13 && textCalls.FUN_0061df60().m_size != 0)
+            {
+                m_state = m_linked ? 2 : 0;
+                text.FUN_0061e320(0);
+                *(int *)((char *)this + 0xc0) = -1;
+                *(int *)((char *)this + 0xc4) = -1;
+                input.ui->Clear();
+                RHPortraitWidgetEvent &secondary = *(RHPortraitWidgetEvent *)((char *)this + 0x15c);
+                result = &event;
+                event.next = &secondary;
+                result->type = 9;
+                event.widget = this;
+                event.value = 0;
+                secondary.type = 2;
+                secondary.next = 0;
+                secondary.widget = this;
+                secondary.value = 0;
+            }
+        }
+    }
+    return result;
 }
 
 // FUNCTION: GAME 0x005d3880
@@ -2608,40 +3479,69 @@ bool RHWidgetPortrait::FUN_005d8430()
     return true;
 }
 
-// Parked: the target's conditional x87 store does not yet match the source conversion shape.
-// STUB: GAME 0x005d8ed0
+// FUNCTION: GAME 0x005d8ed0
 void RHWidgetPortrait::FUN_005d8ed0(int value, int height)
 {
-    m_16c = (float)value;
-    if (height != 0)
-        m_170 = (float)height;
+    float maximum = (float)(unsigned short)height;
+    m_16c = (float)(unsigned short)value;
+    if (maximum != g_unk0x00677488)
+        m_170 = maximum;
 }
 
-// Parked: the indexed virtual dispatch and per-slot cleanup need a confirmed element view.
-// STUB: GAME 0x005d8f20
-void RHGamePortraitCalls::FUN_005d8f20(unsigned short index)
+// FUNCTION: GAME 0x005d8f20
+bool RHGamePortraitCalls::FUN_005d8f20(unsigned index)
 {
-    char *slot = (char *)this + 0x97c + index * 0x104;
     if (!*((char *)this + index + 0xc94))
     {
-        void *value = W(0x97c + index * 0x104).v20();
-        *(void **)((char *)this + index * 4 + 0xc88) = value;
+        void *previous = *(void **)((char *)this + index * 4 + 0xc88);
+        RHUnk005d92c0Sub &widget = W(0x97c + index * 0x104);
+        *(void **)((char *)this + index * 4 + 0xc88) = widget.v20();
+        widget.v10(previous);
         *((char *)this + index + 0xc94) = 1;
     }
-    *(int *)((char *)this + index * 4 + 0xa50) = -1;
-    *(char *)((char *)this + index * 4 + 0xa55) = 0;
-    ((RHUnk005d92c0Sub *)slot)->v21(0);
+    char *slot = (char *)this + index * 0x104;
+    ((RHUnk005d92c0Sub *)(slot + 0x97c))->DisableQuick(slot);
+    return true;
 }
 
-// Parked: the enabled-state transition also mutates a global-selected resource entry.
-// STUB: GAME 0x005d8fa0
-void RHGamePortraitCalls::FUN_005d8fa0(unsigned short index, bool enabled)
+class RHTitbits
 {
-    char *slot = (char *)this + 0x97c + index * 0x104;
+public:
+    bool IsRunningForQA(unsigned long id);
+    short FUN_005c7fb0(unsigned long id);
+};
+
+class RHUnk005c38b0;
+extern RHUnk005c38b0 *g_unk0x6c10e8;
+
+// Parked: The retained resource-owner load uses edi before the ecx receiver copy.
+// STUB: GAME 0x005d8fa0
+bool RHGamePortraitCalls::FUN_005d8fa0(unsigned index, int enabled)
+{
     if (*(char *)((char *)this + index + 0xc94))
-        ((RHUnk005d92c0Sub *)slot)->v21(enabled);
-    *(int *)((char *)this + index * 4 + 0xa50) = enabled ? 0 : -1;
-    *(char *)((char *)this + index * 4 + 0xa55) = enabled ? 1 : 0;
+    {
+        void *previous = *(void **)((char *)this + index * 4 + 0xc88);
+        RHUnk005d92c0Sub &widget = W(0x97c + index * 0x104);
+        *(void **)((char *)this + index * 4 + 0xc88) = widget.v20();
+        widget.v10(previous);
+        *((char *)this + index + 0xc94) = 0;
+    }
+    char *slot = (char *)this + index * 0x104;
+    ((RHUnk005d92c0Sub *)(slot + 0x97c))->v21(enabled);
+    if ((unsigned char)enabled)
+    {
+        unsigned long action = *(unsigned long *)((char *)*(void **)((char *)this + 0xe1c) + (unsigned short)index * 4 + 0x538);
+        RHTitbits *titbits;
+        bool running = (titbits = (RHTitbits *)g_unk0x6c10e8)->IsRunningForQA(action);
+        *(int *)(slot + 0xa50) = (unsigned short)titbits->FUN_005c7fb0(action);
+        *(char *)(slot + 0xa55) = running;
+    }
+    else
+    {
+        *(int *)(slot + 0xa50) = -1;
+        *(char *)(slot + 0xa55) = 0;
+    }
+    return true;
 }
 
 // FUNCTION: GAME 0x005d9070
@@ -2662,9 +3562,16 @@ bool RHWidgetPortrait::FUN_005d9090(unsigned int index)
 bool RHWidgetPortrait::FUN_005d90c0(unsigned int index)
 {
     char *slot = (char *)this + 0x97c + index * 0x104;
-    ((RHUnk005d92c0Sub *)slot)->v21((int)index);
-    *(unsigned short *)((char *)this + 0xc98 + index * 2) = 6;
-    *(unsigned short *)((char *)this + 0xc9e + index * 2) = 5;
+    extern RHEngine *g_pEngine;
+    ((RHUnk005d92c0Sub *)slot)->v21(((RHEngineActionCalls *)g_pEngine)->FUN_004d2300(*(void **)((char *)this + 0xe1c), index));
+    *(unsigned short *)(slot + 0xec) = 24;
+    *(unsigned short *)(slot + 0xee) = 10;
+    ((SBGeoBoundingBox2D *)(slot + 0xf0))->FUN_00607da0(*(SBGeoBoundingBox2D *)(slot + 0x30));
+    if (index != 2)
+    {
+        *(int *)(slot + 0xd4) = *(int *)(slot + 0x1d8);
+        *(char *)(slot + 0xd9) = *(char *)(slot + 0x1dd);
+    }
     return true;
 }
 
@@ -2675,24 +3582,41 @@ void RHGamePortraitCalls::FUN_005d9140(unsigned int index)
     *(unsigned short *)((char *)this + 0xc9e + index * 2) = 5;
 }
 
+class SBResourceWidgetID
+{
+public:
+    int m_value;
+};
+
+class RHUIRendererBlinking
+{
+public:
+    void SetBlinking(SBResourceWidgetID id, SBResourceWidgetID first, SBResourceWidgetID second, unsigned long period);
+};
+
+// Parked: By-value resource IDs materialize register constants instead of immediate pushes.
 // STUB: GAME 0x005d9160
 void RHWidgetPortrait::FUN_005d9160()
 {
-    W(0x748).v21(1);
+    SBResourceWidgetID id = {1};
+    SBResourceWidgetID first = {1};
+    SBResourceWidgetID second = {2};
+    ((RHUIRendererBlinking *)((char *)this + 0x748))->SetBlinking(id, first, second, 25);
 }
 
-// Parked: the three-slot animation counters and virtual transitions are only partially reconstructed.
+// Parked: Loop strength reduction retains an extra widget pointer and saved register.
 // STUB: GAME 0x005d9180
 void RHWidgetPortrait::FUN_005d9180()
 {
     unsigned short *counter = (unsigned short *)((char *)this + 0xc98);
     char *element = (char *)this + 0xa54;
-    for (unsigned int i = 0; i < 3; ++i)
+    int remaining = 3;
+    for (; remaining; ++counter, element += 0x104, --remaining)
     {
         if (counter[3] == 5)
         {
-            W(0x97c + i * 0x104).v21(1);
-            *element = counter[0] == 1;
+            ((RHUnk005d92c0Sub *)(element - 0xd8))->v21(1);
+            *element = counter[0] % 2 == 0;
         }
         if (counter[0] > 0 && --counter[3] == 0)
         {
@@ -2701,17 +3625,17 @@ void RHWidgetPortrait::FUN_005d9180()
             if (counter[0] == 0)
                 *element = 1;
         }
-        counter += 1;
-        element += 0x104;
     }
 }
 
-// Parked: the helper constructs a string-like value whose allocation and ownership remain unresolved.
-// STUB: GAME 0x005d9210
-void *RHWidgetPortrait::FUN_005d9210(unsigned int value)
+// FUNCTION: GAME 0x005d9210
+SBGeoBoundingBox2D RHWidgetPortrait::FUN_005d9210() const
 {
-    *(unsigned int *)((char *)this + 0x298) = value;
-    return (char *)this + 0xd0;
+    SBGeoBoundingBox2D box;
+    box.FUN_00607da0(*(const SBGeoBoundingBox2D *)((const char *)this + 0xd0));
+    box.FUN_00607e90(*(const SBGeoBoundingBox2D *)((const char *)this + 0x298));
+    box.FUN_00607e90(*(const SBGeoBoundingBox2D *)((const char *)this + 0x1bc));
+    return box;
 }
 
 // FUNCTION: GAME 0x005d6690
@@ -4202,7 +5126,7 @@ void RHWidgetPortrait::FUN_005da1f0()
     SBGeoPoint2D origin(bounds.m_first);
     W(0x7bc).v08(SBGeoPoint2D(((bounds.m_second.m_x - bounds.m_first.m_x) - (frame.m_second.m_x - frame.m_first.m_x)) * g_unk0x006775d8,
                               ((bounds.m_second.m_y - bounds.m_first.m_y) - (frame.m_second.m_y - frame.m_first.m_y)) * g_unk0x006775d8)
-                     .Unk005fc190(origin));
+                      .Unk005fc190(origin));
 }
 
 // FUNCTION: GAME 0x005dd370

@@ -31,6 +31,7 @@ public:
     SBGeoPoint2D Unk005fc110(const SBGeoPoint2D &other) const;
     SBGeoPoint2D &FUN_005fc1e0(const SBGeoPoint2D &other);
     SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
+    bool FUN_005fc0e0(const SBGeoPoint2D &other) const;
     float m_x; // 0x00
     float m_y; // 0x04
 };
@@ -55,6 +56,7 @@ public:
     bool Unk00608f30() const;
     void FUN_00607d90();
     SBGeoBoundingBox2D &FUN_00607da0(const SBGeoBoundingBox2D &other);
+    void FUN_00607e90(const SBGeoBoundingBox2D &other);
     SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &offset) const;
     SBGeoPoint2D m_first;
     SBGeoPoint2D m_second;
@@ -78,7 +80,7 @@ public:
     virtual void v07(); // vtable+0x1c
     virtual void v08(const SBGeoPoint2D &point); // vtable+0x20
     virtual void v09(); // vtable+0x24
-    virtual void v10(); // vtable+0x28
+    virtual void v10(void *value); // vtable+0x28
     virtual void v11(); // vtable+0x2c
     virtual void v12(); // vtable+0x30
     virtual void v13(); // vtable+0x34
@@ -90,6 +92,12 @@ public:
     virtual void v19(); // vtable+0x4c
     virtual void *v20(); // vtable+0x50
     virtual void v21(int value); // vtable+0x54
+    void DisableQuick(char *slot)
+    {
+        *(int *)(slot + 0xa50) = -1;
+        *(char *)(slot + 0xa55) = 0;
+        v21(0);
+    }
 };
 
 // SIZE 0x04
@@ -183,7 +191,7 @@ public:
     bool FUN_005d90c0(unsigned int index);
     void FUN_005d9160();
     void FUN_005d9180();
-    void *FUN_005d9210(unsigned int value);
+    SBGeoBoundingBox2D FUN_005d9210() const;
 
     bool Method005d6690();
     bool Method005d67e0();
@@ -361,6 +369,8 @@ public:
     unsigned FUN_0061d5e0();
     SBGeoBoundingBox2D FUN_0061d3f0(unsigned short line, int value);
     SBGeoBoundingBox2D FUN_0061d7c0();
+    SBGeoBoundingBox2D FUN_0061d620();
+    unsigned FUN_0061d950();
     unsigned m_vptr;
 };
 
@@ -390,7 +400,23 @@ class RHPortraitUIOwner
 {
 public:
     void *FUN_004fffd0();
+    void FUN_00500780(bool value);
+    void FUN_00500790(bool value);
 };
+
+class RHPortraitTextLinkedCalls
+{
+public:
+    void FUN_0053f9f0(void *stop);
+};
+
+class RHPortraitTextResourceCalls
+{
+public:
+    void *FUN_0053be80(const std::string &name);
+};
+
+struct SBUIInputFieldUnkResource;
 
 class RHMapWideText;
 
@@ -400,6 +426,10 @@ public:
     bool FUN_00621470(unsigned int id);
     void FUN_0061e340();
     void FUN_0061e060(RHMapWideText *text);
+    void FUN_0061e4b0();
+    RHMapWideText FUN_0061df60();
+    void FUN_00621440(SBUIInputFieldUnkResource *resource);
+    bool FUN_00621c30(const SBGeoBoundingBox2D &box);
 };
 
 class SBUIInputFieldTextUnk
@@ -409,4 +439,22 @@ public:
     char FUN_0061e230();
     unsigned FUN_0061dd00();
     unsigned FUN_0061df50();
+    unsigned FUN_0061dd30();
+    void FUN_0061e240(unsigned direction);
+    void FUN_0061e2b0(unsigned index);
 };
+
+class SBUIInputFieldUnk0061e180
+{
+public:
+    bool Insert(unsigned short character);
+};
+
+class RHPortraitKeyboardCalls
+{
+public:
+    char FUN_0060e270(unsigned short key);
+};
+
+unsigned FUN_005fb1d0(unsigned key);
+int FUN_005fb0f0(unsigned key, unsigned short *characters, const void *state, unsigned flags);
