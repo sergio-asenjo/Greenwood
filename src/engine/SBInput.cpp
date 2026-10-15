@@ -12,6 +12,40 @@ static __forceinline const char *SBInputStringData(const std::string &value)
 // TEMPLATE: GAME 0x005f78f0
 // ?fill@std@@YAXPAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@1@0ABV21@@Z
 
+class SBGeoPoint2D
+{
+public:
+    float m_x;
+    float m_y;
+};
+
+class SBDrawViewport
+{
+public:
+    unsigned short *operator[](const SBGeoPoint2D &point) const;
+    unsigned short GetPixel(unsigned short x, unsigned short y) const;
+    unsigned char m_00[4];
+    unsigned short m_width;
+    unsigned short m_height;
+    unsigned long m_pitch;
+    unsigned char m_0c[4];
+    unsigned short *m_pixels;
+};
+
+// FUNCTION: GAME 0x005f99f0
+unsigned short *SBDrawViewport::operator[](const SBGeoPoint2D &point) const
+{
+    unsigned long row = (m_pitch >> 1) * (int)point.m_y;
+    row += (int)point.m_x;
+    return m_pixels + row;
+}
+
+// FUNCTION: GAME 0x005f9a20
+unsigned short SBDrawViewport::GetPixel(unsigned short x, unsigned short y) const
+{
+    return m_pixels[(m_pitch >> 1) * y + x];
+}
+
 // FUNCTION: GAME 0x005fae50
 int __stdcall FUN_005fae50(void *value, SBInputUnk005fb730 *input)
 {
@@ -115,6 +149,9 @@ bool SBInputUnk005fb730::FUN_005fbfc0()
 
 void SBInputEmit(SBInputUnk005fb730 *input, unsigned char index)
 {
+    SBDrawViewport *viewport = (SBDrawViewport *)input;
+    viewport->operator[](*(SBGeoPoint2D *)input);
+    viewport->GetPixel(index, index);
     input->FUN_005fb730(index);
     input->FUN_005fb770(index, 0, 0);
     input->FUN_005fb980(0);
