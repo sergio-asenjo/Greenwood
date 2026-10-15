@@ -8,8 +8,6 @@ void RHSectorActorList::Unk005c8e40(int) {}
 RHUnk00522540::~RHUnk00522540() {}
 
 unsigned int RHUnkSectorPoints::Unk0060ce80() { return 0; }
-SBGeoPoint2D &RHUnkSectorPoints::FUN_006112c0(unsigned int) { return *(SBGeoPoint2D *)0; }
-void RHUnkSectorPoints::FUN_006112a0(const SBGeoPoint2D &, unsigned int) {}
 void RHUnkSectorPoints::FUN_0060ce90(const SBGeoPoint2D &, unsigned int) {}
 void RHUnkSectorPoints::FUN_0060c2e0() {}
 bool RHUnkSectorScript::Unk00639a30(const std::string &) { return true; }

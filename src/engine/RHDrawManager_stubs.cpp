@@ -18,5 +18,3 @@ void SBDrawManager::FUN_005e61e0(unsigned long, const SBGeoBoundingBox2D &, unsi
 // Target 0x005ecbd0.
 bool SBDrawManager::FUN_005ecbd0(unsigned long, const SBGeoPoint2D &, const SBGeoPoint2D &, unsigned short) { return false; }
 
-// Target 0x00610cb0.
-const SBGeoPoint2D &SBGeoPolyLine2DList::FUN_00610cb0(unsigned long) const { return *(const SBGeoPoint2D *)this; }
