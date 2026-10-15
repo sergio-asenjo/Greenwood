@@ -388,6 +388,341 @@ unsigned long RHFrameHolder::AddRowFromResource(SBResourceManager *resources, un
     return first;
 }
 
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
+
+class RHSpriteFrameCalls
+{
+public:
+    void FUN_00505940(unsigned);
+};
+
+struct RHConsoleBlockMap
+{
+    char m_00[0x58];
+    int m_counts[17];
+};
+
+class RHConsoleBlockAllocator
+{
+public:
+    bool FUN_00506070(RHConsoleBlockMap *);
+    int FUN_00506620();
+};
+
+// FUNCTION: GAME 0x00506120
+void RHFrameHolder::FUN_00506120()
+{
+    unsigned int count = m_frames.Size();
+    for (unsigned int i = 0; i < count; ++i)
+        ((RHSpriteFrameCalls *)this)->FUN_00505940(i);
+}
+
+// FUNCTION: GAME 0x00506160
+bool RHFrameHolder::FUN_00506160(SBFile &file)
+{
+    char text[80];
+    RHConsoleBlockMap information;
+    ((RHConsoleBlockAllocator *)this)->FUN_00506070(&information);
+    sprintf(text,
+        // STRING: GAME 0x006b00bc
+        "%d;%d;%d;%d\n",
+        *(int *)(information.m_00 + 4),
+        *(int *)(information.m_00 + 12),
+        *(int *)(information.m_00 + 8),
+        *(int *)(information.m_00 + 16));
+    file.Access(text, strlen(text));
+    return true;
+}
+
+struct RHFramePoolBlock
+{
+    void *address;
+    unsigned long size;
+    unsigned long page;
+};
+
+struct RHFramePoolNode
+{
+    RHFramePoolNode *next;
+    RHFramePoolNode *previous;
+    RHFramePoolBlock value;
+};
+
+#include <list>
+#include "RHShortBriefings.h"
+
+class RHFramePoolListLifetime
+{
+public:
+    void FUN_005062b0();
+    std::allocator<RHFramePoolBlock> m_allocator;
+    RHFramePoolNode *m_head;
+    unsigned long m_count;
+};
+
+// FUNCTION: GAME 0x005062b0
+void RHFramePoolListLifetime::FUN_005062b0()
+{
+    std::allocator<RHFramePoolBlock> allocator;
+    memcpy(&m_allocator, &allocator, sizeof(allocator));
+    RHFramePoolNode *node = (RHFramePoolNode *)operator new(sizeof(RHFramePoolNode));
+    node->next = node;
+    node->previous = node;
+    m_head = node;
+    m_count = 0;
+}
+
+void RHFramePoolListEmit(RHFramePoolListLifetime *list)
+{
+    list->FUN_005062b0();
+}
+
+struct RHFramePoolList
+{
+    char allocator;
+    RHFramePoolNode *head;
+    unsigned long count;
+
+    void Insert(RHFramePoolNode *position, const RHFramePoolBlock &value)
+    {
+        RHFramePoolNode *previous = position->previous;
+        RHFramePoolNode *node = (RHFramePoolNode *)operator new(sizeof(RHFramePoolNode));
+        node->next = position ? position : node;
+        node->previous = previous ? previous : node;
+        position->previous = node;
+        node->previous->next = node;
+        if (&node->value)
+            new (&node->value) RHFramePoolBlock(value);
+        ++count;
+    }
+};
+
+struct RHFramePoolPage
+{
+    void *address;
+    unsigned long index;
+};
+
+class RHFrameMemoryPool
+{
+public:
+    void FUN_005062e0();
+    unsigned long FUN_00506460(unsigned long size);
+    void FUN_005064b0(RHFramePoolList *list, const RHFramePoolBlock &value);
+    bool FUN_00506560(RHFramePoolList *list, const RHFramePoolBlock &value);
+    unsigned long FUN_005065b0() const;
+    unsigned long FUN_005065d0() const;
+    static int FUN_00506600(const RHFramePoolBlock *first, const RHFramePoolBlock *second);
+    unsigned long Size() const { if (!m_first) return 0; return m_last - m_first; }
+
+    RHFramePoolList *m_free;
+    RHFramePoolList *m_used;
+    unsigned long m_allocator;
+    RHFramePoolPage *m_first;
+    RHFramePoolPage *m_last;
+    RHFramePoolPage *m_end;
+};
+
+extern double g_unk0x00677670;
+double FUN_006433ab(double) throw();
+
+DECOMP_SIZE_ASSERT(RHFramePoolBlock, 0x0c)
+DECOMP_SIZE_ASSERT(RHFramePoolNode, 0x14)
+DECOMP_SIZE_ASSERT(RHFramePoolList, 0x0c)
+DECOMP_SIZE_ASSERT(RHFramePoolListLifetime, 0x0c)
+DECOMP_SIZE_ASSERT(RHFramePoolPage, 0x08)
+DECOMP_SIZE_ASSERT(RHFrameMemoryPool, 0x18)
+
+// FUNCTION: GAME 0x005062e0
+void RHFrameMemoryPool::FUN_005062e0()
+{
+    RHFramePoolPage page;
+    page.address = operator new(0x200000);
+    *(unsigned short *)&page.index = 0;
+    typedef RHShortBriefings::ShortBriefing Value;
+    typedef std::vector<Value> Vector;
+    Vector &pages = *(Vector *)((char *)this + 8);
+    void (Vector::*insert)(Value *, unsigned, const Value &) = &Vector::insert;
+    (pages.*insert)(pages.end(), 1, *(const Value *)&page);
+    RHFramePoolBlock block;
+    block.address = page.address;
+    block.size = 0x200000;
+    *(unsigned short *)&block.page = (unsigned short)(pages.size() - 1);
+    RHFramePoolList &list = m_free[16];
+    list.Insert(list.head, block);
+}
+
+// Parked: subtraction emits add eax,-4 instead of sub eax,4.
+// STUB: GAME 0x00506460
+unsigned long RHFrameMemoryPool::FUN_00506460(unsigned long size)
+{
+    unsigned long index = (unsigned long)FUN_006433ab(log10((double)size) / log10(g_unk0x00677670));
+    return index >= 4 ? index - 4 : 0;
+}
+
+// FUNCTION: GAME 0x005064b0
+void RHFrameMemoryPool::FUN_005064b0(RHFramePoolList *list, const RHFramePoolBlock &value)
+{
+    RHFramePoolNode *head = list->head;
+    RHFramePoolNode *position = head->next;
+    for (; position != head; position = position->next)
+        if (position->value.size > value.size)
+        {
+            list->Insert(position, value);
+            return;
+        }
+    list->Insert(head, value);
+}
+
+// FUNCTION: GAME 0x00506560
+bool RHFrameMemoryPool::FUN_00506560(RHFramePoolList *list, const RHFramePoolBlock &value)
+{
+    bool found = false;
+    RHFramePoolNode *head = list->head;
+    for (RHFramePoolNode *node = head->next; node != head; node = node->next)
+        if (node->value.address == value.address)
+        {
+            node->previous->next = node->next;
+            node->next->previous = node->previous;
+            operator delete(node);
+            --list->count;
+            found = true;
+            break;
+        }
+    return found;
+}
+
+// FUNCTION: GAME 0x005065b0
+unsigned long RHFrameMemoryPool::FUN_005065b0() const
+{
+    return Size() * 0x200000;
+}
+
+// FUNCTION: GAME 0x005065d0
+unsigned long RHFrameMemoryPool::FUN_005065d0() const
+{
+    unsigned long size = 0;
+    for (unsigned int i = 0; i < 17; ++i)
+    {
+        RHFramePoolNode *head = m_used[i].head;
+        for (RHFramePoolNode *node = head->next; node != head; node = node->next)
+            size += node->value.size;
+    }
+    return size;
+}
+
+// FUNCTION: GAME 0x00506600
+int RHFrameMemoryPool::FUN_00506600(const RHFramePoolBlock *first, const RHFramePoolBlock *second)
+{
+    return first->address < second->address;
+}
+
+void RHFramePoolEmit(RHFrameMemoryPool *pool, RHFramePoolList *list, const RHFramePoolBlock &value)
+{
+    pool->FUN_005062e0();
+    pool->FUN_005064b0(list, value);
+    pool->FUN_00506460(value.size);
+    pool->FUN_00506560(list, value);
+    pool->FUN_005065b0();
+    pool->FUN_005065d0();
+    RHFrameMemoryPool::FUN_00506600(&value, &value);
+}
+
+// FUNCTION: GAME 0x005068e0
+RHUnk005068e0::RHUnk005068e0()
+{
+    m_00 = 0;
+    m_04 = 0;
+    m_0c = 31;
+    m_0e[0] = 0;
+    m_0e[1] = 0;
+    m_0e[2] = 0;
+    m_0e[3] = 0;
+}
+
+RHUnk005068e0::RHUnk005068e0(const RHUnk005068e0 &value)
+{
+    m_00 = 0;
+    m_04 = 0;
+    m_0e[0] = 0;
+    m_0e[1] = 0;
+    m_0e[2] = 0;
+    m_0e[3] = 0;
+    m_0c = 31;
+    FUN_00506a70(value);
+}
+
+RHUnk005068e0 &RHUnk005068e0::FUN_005069b0(const RHUnk005068e0 &value)
+{
+    FUN_00506a70(value);
+    return *this;
+}
+
+struct RHFrameDictionaryEntry
+{
+    unsigned long first;
+    unsigned long second;
+};
+
+class RHUnk005ef320;
+extern RHUnk005ef320 *g_unk0x6c11d0;
+unsigned long FUN_006183c0(unsigned long, const char *, unsigned long);
+
+// FUNCTION: GAME 0x005069d0
+void RHUnk005068e0::FUN_005069d0(unsigned short count, SBFile &file)
+{
+    m_00 = count;
+    if (m_04)
+        operator delete((void *)m_04);
+    unsigned long size = count * 8;
+    m_04 = (unsigned long)operator new(size);
+    file.Access((void *)m_04, size);
+    m_08 = FUN_006183c0(0, (const char *)m_04, size);
+    unsigned short *pixels = (unsigned short *)m_04;
+    for (unsigned short i = 0; i < m_00 * 4; ++i)
+        if (pixels[i] == 0x7e0)
+            pixels[i] = 0x7c0;
+    if (((RHUnkFXDraw *)g_unk0x6c11d0)->m_depth == 15)
+        FUN_00506b40();
+}
+
+// FUNCTION: GAME 0x00506a70
+void RHUnk005068e0::FUN_00506a70(const RHUnk005068e0 &value)
+{
+    if (m_04)
+        operator delete((void *)m_04);
+    m_00 = value.m_00;
+    if (!value.m_04)
+        m_04 = 0;
+    else
+    {
+        m_04 = (unsigned long)operator new(m_00 * sizeof(RHFrameDictionaryEntry));
+        for (unsigned short i = 0; i < m_00; ++i)
+            ((RHFrameDictionaryEntry *)m_04)[i] = ((RHFrameDictionaryEntry *)value.m_04)[i];
+    }
+    m_0e[3] = value.m_0e[3];
+    m_0e[0] = value.m_0e[0];
+    m_0e[1] = value.m_0e[1];
+    m_0e[2] = value.m_0e[2];
+    m_0c = value.m_0c;
+}
+
+void RHFrameDictionaryEmit(RHUnk005068e0 *destination, const RHUnk005068e0 &value)
+{
+    new (destination) RHUnk005068e0;
+    new (destination) RHUnk005068e0(value);
+    destination->FUN_005069b0(value);
+    destination->FUN_00506a70(value);
+}
+
+void RHFrameCacheEmit(RHFrameHolder *holder, SBFile &file)
+{
+    holder->FUN_00506120();
+    holder->FUN_00506160(file);
+}
+
 // FUNCTION: GAME 0x00506e00
 unsigned int RHUnk00506e00::FUN_00506e00() const
 {

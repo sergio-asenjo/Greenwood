@@ -234,8 +234,12 @@ class RHUnk005068e0
 {
 public:
     RHUnk005068e0();
+    RHUnk005068e0(const RHUnk005068e0 &value);
     ~RHUnk005068e0();
+    RHUnk005068e0 &FUN_005069b0(const RHUnk005068e0 &value);
     void FUN_005069d0(unsigned short, SBFile &);
+    void FUN_00506a70(const RHUnk005068e0 &value);
+    void FUN_00506b40();
     undefined2 m_00; // 0x00
     undefined2 m_02; // 0x02
     undefined4 m_04; // 0x04
@@ -366,6 +370,8 @@ public:
     void FUN_00504b10(unsigned long, unsigned long, unsigned short);
     void FUN_005050a0(unsigned short *, unsigned long *, unsigned short, unsigned short, unsigned short, unsigned int, int);
     unsigned short FUN_00504680(unsigned short);
+    void FUN_00506120();
+    bool FUN_00506160(SBFile &file);
     RHUnk005068e0 *FUN_00505170(unsigned short);
     void Emit(SBResourceManager *, SBArray<SBGeoVector2D> &);
     RHUnkFXDraw *&Draw() { return *(RHUnkFXDraw **)((char *)this + 4); }

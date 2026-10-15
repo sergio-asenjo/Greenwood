@@ -29,9 +29,8 @@ void SBArray<SBGeoVector2D>::Insert(SBGeoVector2D *, unsigned int, const SBGeoVe
 void SBArray<SBGeoVector2D>::Remove(SBGeoVector2D *, SBGeoVector2D *) {}
 unsigned int SBArray<RHFrameHolderRecord>::GetSize() const { return Size(); }
 RHFrameHolderRowMap::Node *RHFrameHolderRowMap::FUN_005093e0(const unsigned long &) { return m_head; }
-RHUnk005068e0::RHUnk005068e0() {}
 RHUnk005068e0::~RHUnk005068e0() {}
-void RHUnk005068e0::FUN_005069d0(unsigned short, SBFile &) {}
+void RHUnk005068e0::FUN_00506b40() {}
 void RHUnk005051a0Array::FUN_00508090(RHUnk005068e0 *, unsigned int, const RHUnk005068e0 &) {}
 RHUnk00641782::RHUnk00641782() {}
 RHUnk00641782::~RHUnk00641782() {}
