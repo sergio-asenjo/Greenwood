@@ -56,6 +56,8 @@ public:
     virtual void v09(RHScriptStimulusValue &value) = 0; // vtable+0x24
 };
 
+struct RHUnk00571160Position;
+
 class RHArtificialIntelligence
 {
 public:
@@ -63,6 +65,7 @@ public:
     void Unk00410010(bool mode);
     bool InitState();
     void Unk00416710(unsigned value);
+    bool Unk00412240(const RHUnk00571160Position &position, unsigned short flags, float length);
 };
 
 class RHUnk0046bd20
@@ -881,6 +884,7 @@ public:
     void Unk00586fd0(int property, float value);
     void Unk00587010(int property, const SBGeoPoint2D &value);
     void Unk00586e00(int property, bool value);
+    void Unk00586e90(int property, unsigned short value);
     undefined data[0x74]; // 0x00
 };
 
@@ -927,7 +931,6 @@ class RHUnk005a2450
 {
 public:
     void FUN_005a2450(void *first, void *second);
-    void FUN_005a2df0(void *value);
 };
 
 class RHUnk0049d4f0

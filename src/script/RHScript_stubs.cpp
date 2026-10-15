@@ -12,10 +12,6 @@
 #include "SBNullstr.h"
 #include "RHScript.h"
 
-void FUN_0053a0b0(int value)
-{
-    (void)value;
-}
 
 RHUnk005490a0Message::RHUnk005490a0Message(int command, int value)
 {
@@ -108,13 +104,6 @@ void RHUnk0041b0e0::Clear()
 {
 }
 
-// Target 0x0044cae0 — __thiscall, no stack args, plain `ret` (see
-// include/RHScript.h). PROVISIONAL identity: named by address only. Defined once
-// here so the call in RHScript::SwitchToAlertPath resolves to a local entity.
-void RHUnk0044cae0::Switch()
-{
-}
-
 // Target 0x004b9f30 — __thiscall getter, no stack args, plain `ret`: returns
 // the dword at [this+0x164] (see include/RHScript.h). PROVISIONAL identity:
 // named by address only. Defined once here so the tail jump in
@@ -181,13 +170,6 @@ RHBonusProjection *RHUnk0057d800::Unk(const SBGeoPoint2D &point)
 bool RHUnk0057ff00::Unk(void *actor) { return actor != 0; }
 void RHUnk00419a40::Unk(int index, bool forbidden) { (void)index; (void)forbidden; }
 
-RHUnk005866a0::RHUnk005866a0(unsigned short level, int command, void *actor)
-{
-    (void)level;
-    (void)command;
-    (void)actor;
-}
-RHUnk005866a0::~RHUnk005866a0() {}
 
 RHUnk005fc3b0::RHUnk005fc3b0() {}
 
@@ -200,18 +182,6 @@ RHUnk00584d60::RHUnk00584d60(unsigned short level, int command, void *actor)
 RHUnk00584d60::~RHUnk00584d60() {}
 void *RHUnk004e3760::Get() { return (char *)this + 0x42f4; }
 void RHUnk005a2450::FUN_005a2450(void *, void *) {}
-void RHUnk005a2450::FUN_005a2df0(void *) {}
-RHUnk00588530::RHUnk00588530(unsigned short level, int command, void *actor, int style, void *target, float distance, void *value)
-{
-    (void)level;
-    (void)command;
-    (void)actor;
-    (void)style;
-    (void)target;
-    (void)distance;
-    (void)value;
-}
-RHUnk00588530::~RHUnk00588530() {}
 // Parked: 0x005492d0, 50.00%; ILT tail jump and coupled callers.
 RHUnk005492a0::~RHUnk005492a0()
 {
@@ -220,11 +190,6 @@ RHUnk005492a0::~RHUnk005492a0()
 }
 RHMessenger *RHUnk00546050() { return 0; }
 RHMessenger *__stdcall RHUnk00546050(RHUnk5490f0 *message) { (void)message; return 0; }
-RHUnk00585ea0::RHUnk00585ea0(unsigned short level, int command, void *actor, void *target)
-    : RHUnk00584d60(level, command, actor)
-{
-    (void)target;
-}
 RHUnk00585ea0::~RHUnk00585ea0() {}
 RHScriptIter RHUnk0046eb30::begin() { return RHScriptIter(head->next); }
 void RHUnk00574690(void *actor, RHUnk00571160Position *position, void *location)
@@ -264,7 +229,6 @@ void RHScriptBatchCalls::Unk0048c4d0() {}
 void RHScriptBatchCalls::Unk0057ec80(void *) {}
 void RHScriptBatchCalls::Unk005c2ec0(void *, int, int, void *, int, int, int, int) {}
 void RHScriptBatchCalls::Unk0058a940(void *, int, void *) {}
-RHUnk005861c0::RHUnk005861c0(unsigned short, int, void *, unsigned short, unsigned short) {}
 RHUnk005861c0::~RHUnk005861c0() {}
 RHUnk005883a0::RHUnk005883a0(unsigned short, int, void *, int, const SBGeoPoint2D &, int, int, int) {}
 RHUnk005883a0::~RHUnk005883a0() {}

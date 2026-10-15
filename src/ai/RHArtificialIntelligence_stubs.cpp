@@ -25,12 +25,6 @@ unsigned char RHArtificialIntelligence::Unk00419c80() { return 0; }
 void RHArtificialIntelligence::Unk0041ab10(unsigned short) {}
 void RHArtificialIntelligenceActorCalls::Unk0048d020() {}
 
-class RHUnk005866a0
-{
-public:
-    void Unk00586e90(int property, unsigned short value);
-};
-void RHUnk005866a0::Unk00586e90(int, unsigned short) {}
 
 class RHAIUnk00550660
 {

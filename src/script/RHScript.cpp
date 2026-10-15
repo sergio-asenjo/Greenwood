@@ -72,7 +72,11 @@ struct RHUnk579e80State
     int value;
 };
 void FUN_005edae0(RHUnk005ef320 *, const char *, int);
-void FUN_0053a0b0(int);
+class RHMenuPopupScroll
+{
+public:
+    static void FUN_0053a0b0(int id);
+};
 
 extern unsigned short g_unk0x006c07e2;
 extern unsigned short g_unk0x006c07e4;
@@ -3052,7 +3056,7 @@ void RHScript::RHUnk579f10(int value)
 // STUB: GAME 0x00579f30
 void RHScript::RHUnk579f30(int value)
 {
-    FUN_0053a0b0(value);
+    RHMenuPopupScroll::FUN_0053a0b0(value);
     RHUnk005490a0Message message(0x2e, 0);
     RHMessenger *messenger = RHUnk00546050((RHUnk5490f0 *)&message);
     messenger->RHUnk005460c0((RHUnk5490f0 &)message);
@@ -4393,12 +4397,18 @@ void FUN_005785b0(void *first, void *second)
     manager->FUN_005a2450(first, second);
 }
 
+class RHShortBriefings
+{
+public:
+    void DoneShortBriefing(unsigned long id);
+};
+
 // FUNCTION: GAME 0x005785d0
 void FUN_005785d0(void *value)
 {
-    RHUnk005a2450 *manager =
-        (RHUnk005a2450 *)((RHUnk004e3760 *)g_unk0x6c0fa8)->Get();
-    manager->FUN_005a2df0(value);
+    RHShortBriefings *manager =
+        (RHShortBriefings *)((RHUnk004e3760 *)g_unk0x6c0fa8)->Get();
+    manager->DoneShortBriefing((unsigned long)value);
 }
 
 // FUNCTION: GAME 0x005785f0
@@ -5966,6 +5976,14 @@ void RHUnk005866a0::Unk00586e00(int property, bool value)
 {
     RHScriptPropertyValue payload;
     payload.m_bool = value;
+    ((RHScriptPropertyMap *)((char *)this + 0x64))->FUN_005873a0(RHScriptPropertyPair(property, payload));
+}
+
+// FUNCTION: GAME 0x00586e90
+void RHUnk005866a0::Unk00586e90(int property, unsigned short value)
+{
+    RHScriptPropertyValue payload;
+    payload.m_int = value;
     ((RHScriptPropertyMap *)((char *)this + 0x64))->FUN_005873a0(RHScriptPropertyPair(property, payload));
 }
 
