@@ -1,6 +1,94 @@
 #include "SBNullstr.h"
 #include "RHPositionInterface.h"
 
+// FUNCTION: GAME 0x0055f0f0
+bool RHPositionInterface::Turn()
+{
+    if (m_fe)
+        return TurnAntiVibration();
+    unsigned short difference = (unsigned short)(m_d6 - m_d4);
+    difference &= 15;
+    if (difference == 0)
+        return false;
+    if (difference < 8)
+        m_d4 = (unsigned short)(m_d4 + 1) & 15;
+    else
+        m_d4 = (unsigned short)(m_d4 - 1) & 15;
+    return true;
+}
+
+// FUNCTION: GAME 0x0055f140
+bool RHPositionInterface::TurnFast()
+{
+    unsigned short difference = (unsigned short)(m_d6 - m_d4);
+    difference &= 15;
+    if (difference == 0)
+        return false;
+    if (difference < 8)
+    {
+        if (difference >= 2)
+        {
+            m_d4 = (unsigned short)(m_d4 + 2) & 15;
+            return true;
+        }
+    }
+    else if (difference <= 14)
+    {
+        m_d4 = (unsigned short)(m_d4 - 2) & 15;
+        return true;
+    }
+    m_d4 = (unsigned short)(m_d4 + difference) & 15;
+    return true;
+}
+
+// FUNCTION: GAME 0x0055f1a0
+bool RHPositionInterface::TurnSlow(unsigned char delay)
+{
+    if (m_d8 == 0)
+    {
+        unsigned short difference = (unsigned short)(m_d6 - m_d4);
+        difference &= 15;
+        if (difference == 0)
+            return false;
+        m_d8 = delay;
+        if (difference < 8)
+            m_d4 = (unsigned short)(m_d4 + 1) & 15;
+        else
+            m_d4 = (unsigned short)(m_d4 - 1) & 15;
+    }
+    else
+        --m_d8;
+    return true;
+}
+
+// FUNCTION: GAME 0x0055f210
+bool RHPositionInterface::TurnAntiVibration()
+{
+    unsigned short difference = (unsigned short)(m_d6 - m_d4);
+    difference &= 15;
+    if (difference == 0)
+        return false;
+    if (difference < 8)
+    {
+        if (m_d9 >= 2)
+            m_d4 = (unsigned short)(m_d4 + 1) & 15;
+        else if (m_d9 < 0)
+            m_d9 = 0;
+        else
+            ++m_d9;
+    }
+    else
+    {
+        if (m_d9 <= -2)
+            m_d4 = (unsigned short)(m_d4 - 1) & 15;
+        else if (m_d9 > 0)
+            m_d9 = 0;
+        else
+            --m_d9;
+    }
+    return true;
+}
+
 // FUNCTION: GAME 0x0055fe10
 bool RHPositionInterface::Serialize(SBFile &file)
 {
@@ -200,5 +288,9 @@ bool RHPositionInterface::Serialize(SBFile &file)
 
 void RHPositionInterface::Emit(SBFile &file)
 {
+    Turn();
+    TurnFast();
+    TurnSlow(1);
+    TurnAntiVibration();
     Serialize(file);
 }

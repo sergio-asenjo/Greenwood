@@ -25,6 +25,10 @@ public:
 class RHPositionInterface
 {
 public:
+    bool Turn();
+    bool TurnFast();
+    bool TurnSlow(unsigned char delay);
+    bool TurnAntiVibration();
     bool Serialize(SBFile &file);
     void Emit(SBFile &file);
 
