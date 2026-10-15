@@ -14,20 +14,34 @@
 #include "RHMenuWindow.h"
 #include "RHMenuLoadSave.h"
 #include "RHMenuOptions.h"
+#include "../mission/RHShortBriefings.h"
+
+typedef RHShortBriefings RHMenuIngamePauseToken;
 
 class RHMenuIngame : public RHMenuWindowFocus
 {
 public:
+    RHMenuIngame(RHMenuScreenView *screen, bool pause);
     ~RHMenuIngame();
     void FUN_0052d3e0(RHMenuEvent *event);
     bool FUN_0052d400(RHMenuEvent *event);
     void *FUN_0052d600(unsigned flags);
+    void FUN_0052d750();
+    static void FUN_0052dc20();
 
-    undefined m_140[0x600]; // 0x140
+    RHPortraitButton m_continue;
+    RHPortraitButton m_load;
+    RHPortraitButton m_save;
+    RHPortraitButton m_options;
+    RHPortraitButton m_restart;
+    RHPortraitButton m_quit;
     RHMenuLoadSaveResult m_result; // 0x740
-    undefined m_748[8]; // 0x748
+    bool m_pause;
+    undefined m_749[3];
+    RHMenuIngamePauseToken *m_pauseToken;
     bool m_750; // 0x750
     bool m_751; // 0x751
+    undefined m_752[2]; // 0x752
     bool FUN_0052dcf0(int msg, void *widget, void *data);
     bool FUN_0052dd10(int msg, void *widget, void *data);
     bool FUN_0052dd80(int msg, void *widget, void *data);

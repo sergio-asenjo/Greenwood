@@ -29,6 +29,30 @@ bool RHMenuIngame::FUN_0052d400(RHMenuEvent *event)
     return handled;
 }
 
+class RHUnk004e3760
+{
+public:
+    void *Get();
+};
+
+class RHEngine;
+extern RHEngine *g_pEngine;
+
+// FUNCTION: GAME 0x0052d4e0
+RHMenuIngame::RHMenuIngame(RHMenuScreenView *screen, bool pause)
+    : RHMenuWindowFocus(0, screen, 0, false)
+{
+    m_pause = pause;
+    m_pauseToken = 0;
+    m_750 = false;
+    m_751 = false;
+    m_vptr = 0x006794c0;
+    if (pause)
+        m_pauseToken = new RHMenuIngamePauseToken(true);
+    else
+        m_pauseToken = (RHMenuIngamePauseToken *)((RHUnk004e3760 *)g_pEngine)->Get();
+}
+
 // FUNCTION: GAME 0x0052d600
 void *RHMenuIngame::FUN_0052d600(unsigned flags)
 {
@@ -36,6 +60,17 @@ void *RHMenuIngame::FUN_0052d600(unsigned flags)
     if (flags & 1)
         operator delete(this);
     return this;
+}
+
+extern RHUnk0048a970 *g_unk0x6c0b3c;
+
+// FUNCTION: GAME 0x0052dc20
+void RHMenuIngame::FUN_0052dc20()
+{
+    RHMenuScreenView screen(0, 0, true, true, (char *)g_unk0x6c0b3c + 0x68);
+    RHMenuIngame menu(&screen, true);
+    menu.FUN_0052d750();
+    menu.FUN_00544b80(true, true);
 }
 
 // FUNCTION: GAME 0x0052dcf0
