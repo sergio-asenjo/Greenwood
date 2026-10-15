@@ -48,4 +48,68 @@ public:
     undefined m_59c[0x32c]; // 0x59c
 };
 
+class RHMenuLoadSaveListBase
+{
+public:
+    void FUN_00531d60();
+    undefined m_00[0x18a];
+    unsigned short m_18a;
+    unsigned short m_18c;
+};
+
+class RHMenuLoadSaveMap
+{
+public:
+    RHUnk00514e10::Pair FUN_00531d80(const RHUnk00514e10::Value &value);
+    RHUnk00514e10 m_tree;
+};
+
+class RHMenuLoadSaveEntry
+{
+public:
+    RHMenuLoadSaveEntry(const int &key, const int &value);
+    int m_key;
+    int m_value;
+};
+
+class RHMenuLoadSaveListView
+{
+public:
+    virtual void V00() = 0;
+    virtual void V04() = 0;
+    virtual void V08() = 0;
+    virtual void V0c() = 0;
+    virtual void V10() = 0;
+    virtual void V14() = 0;
+    virtual void V18() = 0;
+    virtual void V1c() = 0;
+    virtual void V20() = 0;
+    virtual unsigned long V24() = 0;
+};
+
+class RHMenuLoadSaveText
+{
+public:
+    ~RHMenuLoadSaveText();
+    void *FUN_00532cd0(unsigned flags);
+    void FUN_00531e30();
+    unsigned m_vptr;
+    undefined m_04[0x7c];
+    RHPortraitInputRenderer m_renderer;
+};
+
+class RHMenuLoadSaveSlots
+{
+public:
+    ~RHMenuLoadSaveSlots();
+    void *FUN_00532cf0(unsigned flags);
+};
+
+class RHMenuLoadSaveList
+{
+public:
+    ~RHMenuLoadSaveList();
+    void *FUN_00532d10(unsigned flags);
+};
+
 #endif

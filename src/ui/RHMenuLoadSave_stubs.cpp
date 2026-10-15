@@ -44,3 +44,8 @@ int RHMenuLoadSave::FUN_00531220() { return 0; }
 
 // Target 0x00531230, __thiscall.
 int RHMenuLoadSave::FUN_00531230() { return 0; }
+
+RHMenuLoadSaveText::~RHMenuLoadSaveText() {}
+RHMenuLoadSaveSlots::~RHMenuLoadSaveSlots() {}
+RHMenuLoadSaveList::~RHMenuLoadSaveList() {}
+void RHPortraitInputRenderer::FUN_0061c610(unsigned long) {}

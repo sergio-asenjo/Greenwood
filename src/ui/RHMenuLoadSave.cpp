@@ -99,3 +99,69 @@ bool RHMenuLoadSave::FUN_00531720(int, void *, void *)
     FUN_00531bd0();
     return false;
 }
+
+// FUNCTION: GAME 0x00531d60
+void RHMenuLoadSaveListBase::FUN_00531d60()
+{
+    m_18a = 0xffff;
+    m_18c = 0xffff;
+}
+
+// FUNCTION: GAME 0x00531d80
+RHUnk00514e10::Pair RHMenuLoadSaveMap::FUN_00531d80(const RHUnk00514e10::Value &value)
+{
+    RHUnk00514e10::Pair answer;
+    answer = m_tree.FUN_00514ff0(value);
+    RHUnk00514e10::Pair result(answer.first, answer.second);
+    return result;
+}
+
+// FUNCTION: GAME 0x00531db0
+RHMenuLoadSaveEntry::RHMenuLoadSaveEntry(const int &key, const int &value) : m_key(key), m_value(value)
+{
+}
+
+// FUNCTION: GAME 0x00531e30
+void RHMenuLoadSaveText::FUN_00531e30()
+{
+    m_renderer.FUN_0061c610(((RHMenuLoadSaveListView *)this)->V24());
+}
+
+// FUNCTION: GAME 0x00532cd0
+void *RHMenuLoadSaveText::FUN_00532cd0(unsigned flags)
+{
+    this->~RHMenuLoadSaveText();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// FUNCTION: GAME 0x00532cf0
+void *RHMenuLoadSaveSlots::FUN_00532cf0(unsigned flags)
+{
+    this->~RHMenuLoadSaveSlots();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// FUNCTION: GAME 0x00532d10
+void *RHMenuLoadSaveList::FUN_00532d10(unsigned flags)
+{
+    this->~RHMenuLoadSaveList();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+void EmitRHMenuLoadSaveHelpers(RHMenuLoadSaveListBase *list, RHMenuLoadSaveMap *map, RHMenuLoadSaveText *text,
+    RHMenuLoadSaveSlots *slots, RHMenuLoadSaveList *box, const int &key)
+{
+    list->FUN_00531d60();
+    map->FUN_00531d80(*(const RHUnk00514e10::Value *)&key);
+    RHMenuLoadSaveEntry entry(key, key);
+    text->FUN_00531e30();
+    text->FUN_00532cd0(0);
+    slots->FUN_00532cf0(0);
+    box->FUN_00532d10(0);
+}
