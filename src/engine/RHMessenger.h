@@ -33,6 +33,8 @@ private:
     int m_unk0c;
 };
 
+class RHReceiverInterface;
+
 class RHMessenger
 {
 public:
@@ -66,6 +68,9 @@ public:
     void Reset();
 
     void Emit(SBFile &file);
+    void Subscribe(RHReceiverInterface *receiver);
+    void Unsubscribe(RHReceiverInterface *receiver);
+    void FUN_00547280();
 
 private:
     char m_unk00[0x2e];   // [0x00, 0x2e): vptr + opaque; the 4-byte tail at

@@ -42,6 +42,65 @@
 
 #include "SBNullstr.h"
 #include "RHMessenger.h"
+#include <algorithm>
+#include <vector>
+
+class SBGeoPoint2D
+{
+public:
+    SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
+    bool operator==(const SBGeoPoint2D &other) const;
+    float m_x;
+    float m_y;
+};
+
+template<class T> T &RHMessengerField(void *object, unsigned offset)
+{
+    return *(T *)((char *)object + offset);
+}
+
+// FUNCTION: GAME 0x00547080
+void RHMessenger::Subscribe(RHReceiverInterface *receiver)
+{
+    std::vector<RHReceiverInterface *> &receivers = RHMessengerField<std::vector<RHReceiverInterface *> >(this, 4);
+    receivers.push_back(receiver);
+}
+
+// FUNCTION: GAME 0x00547230
+void RHMessenger::Unsubscribe(RHReceiverInterface *receiver)
+{
+    std::vector<RHReceiverInterface *> &receivers = RHMessengerField<std::vector<RHReceiverInterface *> >(this, 4);
+    std::vector<RHReceiverInterface *>::iterator position = receivers.begin();
+    RHReceiverInterface **last;
+    memcpy(&last, (char *)this + 0x0c, sizeof(last));
+    for (; position != last; ++position)
+    {
+        if (*position == receiver)
+        {
+            receivers.erase(position);
+            return;
+        }
+    }
+}
+
+// FUNCTION: GAME 0x00547280
+void RHMessenger::FUN_00547280()
+{
+    SBGeoPoint2D &previous = RHMessengerField<SBGeoPoint2D>(this, 0x8c);
+    SBGeoPoint2D &position = RHMessengerField<SBGeoPoint2D>(this, 0x84);
+    if (position == previous)
+    {
+        int count = RHMessengerField<int>(this, 0x9c);
+        RHMessengerField<bool>(this, 0x24) = false;
+        RHMessengerField<int>(this, 0x9c) = count + 1;
+    }
+    else
+    {
+        RHMessengerField<int>(this, 0x9c) = 0;
+        previous = position;
+        RHMessengerField<bool>(this, 0x24) = false;
+    }
+}
 
 // FUNCTION: GAME 0x005472d0
 bool RHMessenger::Serialize(SBFile &file)
@@ -171,6 +230,9 @@ bool RHMessenger::SerializeLockUser(SBFile &file)
 // RHMessenger::SerializeLockUser in the build.
 void RHMessenger::Emit(SBFile &file)
 {
+    Subscribe(0);
+    Unsubscribe(0);
+    FUN_00547280();
     Serialize(file);
     SerializeLockUser(file);
 }
