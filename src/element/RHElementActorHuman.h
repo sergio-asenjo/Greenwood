@@ -26,6 +26,10 @@ public:
     void Translate(RHSequenceElement *element, RHcommand command);
     void ExecuteImmediately(RHSequenceElement *element);
     void FUN_0046bcb0(int value);
+    void FUN_00468f40(void *value);
+    void FUN_0046bd40(RHSequenceElement *element);
+    bool FUN_0046b760(unsigned flags, void *value);
+    bool FUN_0046b2b0(unsigned flags, RHActorTranslationSequenceCalls *sequence);
     void FUN_00478c20(RHUnk00613e90 &point, bool value);
 };
 class RHEngine
@@ -178,6 +182,11 @@ public:
 class RHElementActorHuman
 {
 public:
+    void FUN_00474890(void *value);
+    bool FUN_00475750(unsigned flags, RHActorTranslationSequenceCalls *sequence);
+    bool FUN_00475b00(unsigned flags, void *value);
+    void FUN_00479920(RHElementActorHuman *actor);
+    void FUN_00479970(RHSequenceElement *element);
     void Translate(RHSequenceElement *element, RHcommand command);
     bool Serialize(SBFile &file);
     void FUN_0047a870(void *value);
@@ -418,7 +427,7 @@ public:
     virtual void V06c() = 0; // vtable+0x06c
     virtual void V070() = 0; // vtable+0x070
     virtual void V074() = 0; // vtable+0x074
-    virtual void V078() = 0; // vtable+0x078
+    virtual void V078(void *value, int command) = 0; // vtable+0x078
     virtual void V07c() = 0; // vtable+0x07c
     virtual void V080() = 0; // vtable+0x080
     virtual void V084() = 0; // vtable+0x084
@@ -446,10 +455,10 @@ public:
     virtual void V0dc() = 0; // vtable+0x0dc
     virtual void V0e0() = 0; // vtable+0x0e0
     virtual void V0e4() = 0; // vtable+0x0e4
-    virtual void V0e8() = 0; // vtable+0x0e8
+    virtual void V0e8(int value, bool flag) = 0; // vtable+0x0e8
     virtual void V0ec() = 0; // vtable+0x0ec
     virtual bool V0f0() = 0; // vtable+0x0f0
-    virtual void V0f4() = 0; // vtable+0x0f4
+    virtual bool V0f4() = 0; // vtable+0x0f4
     virtual bool V0f8() = 0; // vtable+0x0f8
     virtual void V0fc() = 0; // vtable+0x0fc
     virtual void V100() = 0; // vtable+0x100

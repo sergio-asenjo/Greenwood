@@ -46,6 +46,200 @@ DECOMP_SIZE_ASSERT(RHHumanFloatList, 0x18)
 // GLOBAL: GAME 0x00677554
 float g_unk0x677554 = 60.0f;
 
+// FUNCTION: GAME 0x00474890
+void RHElementActorHuman::FUN_00474890(void *value)
+{
+    if (RHActorField<int>(value, 0x3c) == 1 &&
+        RHActorField<int>(value, 0x40) >= 7 && RHActorField<int>(value, 0x40) <= 11)
+    {
+        switch (RHActorField<int>(value, 0x94))
+        {
+        case 10:
+            RHActorField<int>(value, 0x94) = 0x130;
+            break;
+        case 6: case 187:
+            RHActorField<int>(value, 0x94) = 0x12f;
+            break;
+        }
+    }
+    else
+        ((RHElementActor *)this)->FUN_00468f40(value);
+}
+
+// FUNCTION: GAME 0x00475750
+bool RHElementActorHuman::FUN_00475750(unsigned flags, RHActorTranslationSequenceCalls *sequence)
+{
+    if (RHActorField<int>(RHActorField<void *>(this, 0x50), 0x8c) != 24)
+        return ((RHElementActor *)this)->FUN_0046b2b0(flags, sequence);
+    if ((flags & 1) && !(flags & 0x20000))
+    {
+        RHOrder *order = new RHOrder;
+        order->m_24 = 0x10d;
+        order->m_2a = 0;
+        sequence->FUN_00585970(order);
+        RHActorField<int>(sequence, 0x3c) = 1;
+    }
+    return true;
+}
+
+// Parked: the second switch duplicates the default state-store tail before its virtual-call cases.
+// STUB: GAME 0x00475b00
+bool RHElementActorHuman::FUN_00475b00(unsigned flags, void *value)
+{
+    if (flags & 8)
+    {
+        switch (RHActorField<unsigned>(value, 0x40))
+        {
+        case 0:
+            ((RHHumanVirtualCalls *)this)->V078(value, 29);
+        case 4:
+            RHActorField<unsigned>(value, 0x40) = 4;
+            break;
+        case 5:
+            RHActorField<unsigned>(value, 0x40) = 5;
+            break;
+        case 6:
+            RHActorField<unsigned>(value, 0x40) = 6;
+            break;
+        }
+        return true;
+    }
+    if (flags & 16)
+    {
+        switch (RHActorField<unsigned>(value, 0x40))
+        {
+        case 0:
+            ((RHHumanVirtualCalls *)this)->V078(value, 29);
+        case 4: case 6:
+            ((RHHumanVirtualCalls *)this)->V078(value, 34);
+            break;
+        }
+        RHActorField<unsigned>(value, 0x40) = 5;
+        return true;
+    }
+    if (flags & 128)
+        return true;
+    return ((RHElementActor *)this)->FUN_0046b760(flags, value);
+}
+
+struct RHHumanHeading
+{
+    char m_00[0xd8];
+    unsigned m_heading : 4;
+};
+
+// GLOBAL: GAME 0x006774e0
+float g_unk0x006774e0 = 30.0f;
+// GLOBAL: GAME 0x00677560
+float g_unk0x00677560 = 25.0f;
+// GLOBAL: GAME 0x00677b4c
+float g_unk0x00677b4c = 65.0f;
+// GLOBAL: GAME 0x00677b50
+float g_unk0x00677b50 = 55.0f;
+extern float g_unk0x00677438;
+extern float g_unk0x0067748c;
+
+// FUNCTION: GAME 0x00479320
+void RHHumanActorCalls::FUN_00479320(RHUnk00613e90 &point)
+{
+    point = RHActorField<RHUnk00613e90>(RHActorField<void *>(this, 0x50), 0x10);
+    switch (RHActorField<int>(RHActorField<void *>(this, 0x50), 0x8c))
+    {
+    case 1: case 4: case 5: case 6: case 9: case 11: case 14: case 15:
+    case 19: case 21: case 23: case 24:
+    {
+        bool alternate = ((RHHumanVirtualCalls *)this)->V0f4();
+        float height = point.z;
+        if (alternate)
+            height += g_unk0x006774e0;
+        else
+            height += g_unk0x00677560;
+        point.z = height;
+        break;
+    }
+    case 16:
+    {
+        float height = point.z;
+        height += g_unk0x00677b4c;
+        point.z = height;
+        break;
+    }
+    case 7:
+    {
+        float height = point.z;
+        height += g_unk0x00677b50;
+        point.z = height;
+        break;
+    }
+    case 8: case 10: case 20: case 22:
+    {
+        float height = point.z;
+        height += g_unk0x00677438;
+        point.z = height;
+        break;
+    }
+    case 3: case 12: case 13: case 17: case 18:
+    {
+        float height = point.z;
+        height += g_unk0x0067748c;
+        point.z = height;
+        break;
+    }
+    }
+}
+
+// FUNCTION: GAME 0x00479920
+void RHElementActorHuman::FUN_00479920(RHElementActorHuman *actor)
+{
+    if (actor)
+    {
+        m_254 = actor;
+        RHActorField<char>(this, 0x110) = 0;
+        return;
+    }
+    if (m_254)
+    {
+        RHActorField<unsigned short>(RHActorField<void *>(this, 0x50), 0xda) =
+            RHActorField<RHHumanHeading *>(m_254, 0x50)->m_heading;
+        m_254 = 0;
+    }
+}
+
+class RHEngineSerializationCalls
+{
+public:
+    void FUN_004d88e0(void *element, int first, int second);
+};
+
+class RHUnk004b1270
+{
+public:
+    void FUN_004b1270();
+};
+
+class RHHumanTypeView
+{
+public:
+    unsigned Type() const { return RHActorField<volatile unsigned>((void *)this, 4) & 15; }
+};
+
+// FUNCTION: GAME 0x00479970
+void RHElementActorHuman::FUN_00479970(RHSequenceElement *element)
+{
+    if (element->m_10 == 0x54)
+    {
+        void *value = RHActorField<void *>(element, 0x64);
+        if (RHActorField<int>(value, 0xb0) == 9 && RHActorField<char>(value, 0x12))
+        {
+            ((RHEngineSerializationCalls *)g_pEngine)->FUN_004d88e0(value, 0, 1);
+            ((RHUnk004b1270 *)value)->FUN_004b1270();
+            if (((RHHumanTypeView *)this)->Type() == 12)
+                ((RHHumanVirtualCalls *)this)->V0e8(17, true);
+        }
+    }
+    ((RHElementActor *)this)->FUN_0046bd40(element);
+}
+
 // FUNCTION: GAME 0x0047a870
 void RHElementActorHuman::FUN_0047a870(void *value)
 {
@@ -2247,6 +2441,11 @@ unsigned short RHUnk005c1d50::FUN_005c1dd0(int index, void *actor)
 
 void RHElementActorHuman::Emit(SBFile &file, RHSequenceElement *element, RHcommand command)
 {
+    FUN_00474890(element);
+    FUN_00475750(command, (RHActorTranslationSequenceCalls *)element);
+    FUN_00475b00(command, element);
+    FUN_00479920((RHElementActorHuman *)element);
+    FUN_00479970(element);
     Translate(element, command);
     ((RHUnk0044d400 *)this)->FUN_0044d400(59, false);
     Serialize(file);
