@@ -9,9 +9,12 @@
 class RHEngine;
 extern RHEngine *g_pEngine;
 
+struct RHMalignityAlertPayload;
+
 struct RHMalignityStimulus
 {
     RHMalignityStimulus() : m_type(0), m_24(0), m_28(0) {}
+    RHMalignityStimulus(unsigned value, const RHMalignityAlertPayload &payload);
     ~RHMalignityStimulus() {}
     undefined m_00[0x1c];
     unsigned m_type;
@@ -89,6 +92,8 @@ struct RHMalignityList
 
     void Clear();
     void FUN_005c8e40(int index);
+    void Seek(int wanted);
+    void RemoveFirst();
     int size() { return m_count; }
 
     void InsertLast(void *const &value)
@@ -205,6 +210,7 @@ public:
     void FUN_00478c20(RHUnk00613e90 &point, bool mode);
     unsigned char FUN_0048c8e0(void *actor, unsigned mode);
     bool FUN_0048a130(void *actor);
+    bool FUN_0048a350(void *actor);
 };
 
 // SIZE 0x40
@@ -262,7 +268,45 @@ public:
     void FUN_00444bb0(void *record);
     void FUN_004450a0();
     void FUN_00445180();
-    bool FUN_00445510(float distance);
+    bool FUN_00445510(RHMalignityPosition position, void *actor);
+    void FUN_004457c0(const RHMalignityPosition &position);
+    bool FUN_00438cb0(int command, bool mode);
+    void FUN_004459b0();
+    void FUN_00445b40();
+    void *FUN_00445d40();
+    bool FUN_004460f0();
+    void FUN_004461a0(void *target, void *actor);
+    void FUN_00446700();
+    bool FUN_004468a0();
+    void FUN_004469e0();
+    void FUN_00446d20();
+    void FUN_00446eb0(void *actor);
+    void FUN_00447030(void *guard);
+    void FUN_00447420(void *target);
+    void FUN_00447490(void *target);
+    void *FUN_004474e0();
+    bool FUN_00447640(RHMalignityPosition &target);
+    void FUN_00447da0(RHMalignityPosition &position, unsigned short &heading);
+    unsigned short FUN_00449170();
+    bool FUN_00449810(const RHMalignityPosition &position, unsigned short heading);
+    bool FUN_00449ac0();
+    unsigned short FUN_00449d40(void *group);
+    bool FUN_0044a090();
+    void FUN_0044a760(void *actor);
+    void FUN_0044a830(void *actor);
+    void FUN_0044b000();
+    bool FUN_0044b120(const RHMalignityPosition &position);
+    void *FUN_0044b7b0();
+    void FUN_0044b800();
+    void FUN_0044b810(void *point);
+    void FUN_0044b840(void *point);
+    bool FUN_0044b870(void *area, unsigned short id);
+    void FUN_0044ca90();
+    bool FUN_0044cf00();
+    void FUN_00430020();
+    void FUN_004303e0();
+    void FUN_0044d0b0();
+    void FUN_00430300(int mode);
     void *FUN_0043d780(unsigned short flags);
     bool FUN_0043f340(void *actor);
     bool FUN_0043f540(void *actor);
