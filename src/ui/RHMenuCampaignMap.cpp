@@ -284,7 +284,7 @@ std::vector<void *> RHMapCampaign::FUN_005286b0()
     return *(std::vector<void *> *)((char *)this + 0x164);
 }
 
-// STUB: GAME 0x00528810
+// FUNCTION: GAME 0x00528810
 void RHMenuCampaignMap::FUN_00528810()
 {
     unsigned converted = g_unk0x6c07fc->Get(4);
@@ -300,8 +300,438 @@ void RHMenuCampaignMap::FUN_00528810()
              L"%s -  %s : %d  -  %s : %d%%", money,
              FUN_005e23d0(0x40).c_str(), g_unk0x6c07fc->Get(2),
              FUN_005e23d0(0xf3).c_str(), percentage);
-    RHMapTitleText text(message);
-    ((RHMapWidget *)((char *)this + 0x25ec))->V2c(text);
+    ((RHMapWidget *)((char *)this + 0x25ec))->V2c((const RHMapTitleText &)std::wstring(message));
+}
+
+class RHMapFocusScreen
+{
+public:
+    bool FUN_0053c320(void *);
+};
+
+class RHMapFocusWidget
+{
+public:
+    void FUN_00541060();
+};
+
+// FUNCTION: GAME 0x00528a60
+void RHMenuCampaignMap::FUN_00528a60()
+{
+    RHMapFocusWidget *widget = (RHMapFocusWidget *)((char *)this + 0x226c);
+    if ((*(RHMapFocusScreen **)((char *)this + 0xb4))->FUN_0053c320(widget))
+        widget->FUN_00541060();
+}
+
+class RHGameWidgetLifetimeBase
+{
+public:
+    RHGameWidgetLifetimeBase();
+    ~RHGameWidgetLifetimeBase();
+    unsigned m_vptr;
+    undefined m_data[0x7c];
+};
+
+class RHGameRenderer0060da10
+{
+public:
+    RHGameRenderer0060da10();
+    ~RHGameRenderer0060da10();
+    undefined m_data[0x4c];
+};
+
+class RHUnk00528a80 : public RHGameWidgetLifetimeBase
+{
+public:
+    RHUnk00528a80();
+    RHGameRenderer0060da10 m_renderer;
+};
+
+// FUNCTION: GAME 0x00528a80
+RHUnk00528a80::RHUnk00528a80()
+{
+    m_vptr = 0x00678c10;
+}
+
+class SBUIUnk0060d530
+{
+public:
+    void *FUN_0060d690();
+};
+
+class SBUIUnk0060da20
+{
+public:
+    bool FUN_0060da20(unsigned);
+};
+
+class RHMobileUnk00607da0
+{
+public:
+    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &);
+};
+
+template<class T>
+static T &RHMapWidgetField(void *object, unsigned offset)
+{
+    return *(T *)((char *)object + offset);
+}
+
+class RHMapBlinkParent
+{
+public:
+    virtual void V00();
+    virtual void V04();
+    virtual void V08();
+    virtual void V0c();
+    virtual void V10();
+};
+
+struct RHMapCachedEvent
+{
+    unsigned char m_prefix[0x5c];
+    unsigned m_type;
+    unsigned m_bounds[5];
+    void *m_widget;
+    void *m_next;
+};
+
+class RHUnk00528ad0
+{
+public:
+    virtual void V00();
+    virtual void V04();
+    virtual void V08();
+    virtual void V0c();
+    virtual void V10();
+    virtual void V14();
+    virtual void V18();
+    virtual void V1c();
+    virtual void V20();
+    virtual unsigned V24();
+    virtual void V28();
+    virtual void V2c();
+    virtual void V30();
+    virtual unsigned V34(unsigned);
+    unsigned *FUN_00528ad0(unsigned index);
+    void FUN_00528b70();
+    void FUN_00528bb0();
+    unsigned FUN_00528be0();
+    unsigned *MakeEvent(unsigned index)
+    {
+        RHMapWidgetField<unsigned>(this, 0xc8) = index;
+        ((RHMobileUnk00607da0 *)((char *)this + 0x60))->FUN_00607da0(
+            *(RHMobileUnk00607da0 *)((SBUIUnk0060d530 *)((char *)this + 0x80))->FUN_0060d690());
+        RHMapCachedEvent *event = (RHMapCachedEvent *)this;
+        event->m_type = V34(V24());
+        event->m_next = 0;
+        event->m_widget = this;
+        return &event->m_type;
+    }
+};
+
+// FUNCTION: GAME 0x00528ad0
+unsigned *RHUnk00528ad0::FUN_00528ad0(unsigned index)
+{
+    if (RHMapWidgetField<bool>(this, 0xcc))
+    {
+        unsigned now = GetTickCount();
+        if (now - RHMapWidgetField<unsigned>(this, 0xd0) >= RHMapWidgetField<unsigned>(this, 0xd4))
+        {
+            bool blinking = RHMapWidgetField<bool>(this, 0xcd);
+            RHMapWidgetField<unsigned>(this, 0xd0) = now;
+            RHMapWidgetField<bool>(this, 0xcd) = !blinking;
+        }
+    }
+    unsigned *event = MakeEvent(index);
+    if (event && *event)
+    {
+        RHMapBlinkParent *parent = RHMapWidgetField<RHMapBlinkParent *>(this, 0xd8);
+        if (parent)
+            parent->V10();
+    }
+    return event;
+}
+
+// FUNCTION: GAME 0x00528b70
+void RHUnk00528ad0::FUN_00528b70()
+{
+    ((SBUIUnk0060da20 *)((char *)this + 0x80))->FUN_0060da20(V24());
+    RHMapBlinkParent *parent = RHMapWidgetField<RHMapBlinkParent *>(this, 0xd8);
+    if (parent && RHMapWidgetField<bool>(this, 0xdc) == true && RHMapWidgetField<bool>(parent, 4) == true)
+        parent->V0c();
+}
+
+// FUNCTION: GAME 0x00528bb0
+void RHUnk00528ad0::FUN_00528bb0()
+{
+    RHMapWidgetField<int>(this, 0xc0) = -1;
+    RHMapWidgetField<int>(this, 0xc4) = -1;
+    RHMapWidgetField<bool>(this, 0xdc) = true;
+    RHMapBlinkParent *parent = RHMapWidgetField<RHMapBlinkParent *>(this, 0xd8);
+    if (parent)
+        parent->V10();
+}
+
+// FUNCTION: GAME 0x00528be0
+unsigned RHUnk00528ad0::FUN_00528be0()
+{
+    if (RHMapWidgetField<bool>(this, 0xcc) == true &&
+        RHMapWidgetField<bool>(this, 4) == true && RHMapWidgetField<int>(this, 0x7c) == 0)
+    {
+        unsigned result = (RHMapWidgetField<bool>(this, 0xcd) ? 1 : 0) + 1;
+        V10();
+        return result;
+    }
+    if (!RHMapWidgetField<bool>(this, 4))
+        return 0;
+    unsigned result;
+    switch (RHMapWidgetField<unsigned>(this, 0x7c))
+    {
+    case 2:
+    case 3:
+        return 3;
+    case 1:
+        return 2;
+    case 0:
+        result = 1;
+        break;
+    }
+    if (result == 1 && !RHMapWidgetField<bool>(this, 6))
+        result = 255;
+    return result;
+}
+
+// FUNCTION: GAME 0x00528c70
+void *RHMenuCampaignMap::FUN_00528c70(unsigned flags)
+{
+    FUN_00527870();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+void EmitRHMapBlink(RHUnk00528a80 *text, RHUnk00528ad0 *blink)
+{
+    text->RHUnk00528a80::RHUnk00528a80();
+    blink->FUN_00528ad0(0);
+    blink->FUN_00528b70();
+    blink->FUN_00528bb0();
+    blink->FUN_00528be0();
+}
+
+class RHUnk00641782
+{
+public:
+    RHUnk00641782();
+    ~RHUnk00641782();
+    unsigned char m_00;
+};
+
+struct RHMapTreeNode
+{
+    RHMapTreeNode *left;
+    RHMapTreeNode *parent;
+    RHMapTreeNode *right;
+};
+
+struct RHMapTreeIterator
+{
+    RHMapTreeNode *node;
+};
+
+class RHMapTree
+{
+public:
+    void FUN_0053ad50();
+    RHMapTreeIterator FUN_0053d2f0(RHMapTreeIterator first, RHMapTreeIterator last);
+    undefined m_00[4];
+    RHMapTreeNode *m_head;
+    bool m_multi;
+    undefined m_09[3];
+    unsigned m_size;
+};
+
+// GLOBAL: GAME 0x006c0c24
+unsigned g_unk0x006c0c24 = 0;
+
+// GLOBAL: GAME 0x006c0c28
+RHMapTreeNode *g_unk0x006c0c28 = 0;
+
+// FUNCTION: GAME 0x0053ad50
+void RHMapTree::FUN_0053ad50()
+{
+    RHMapTreeIterator first;
+    first.node = m_head->left;
+    RHMapTreeIterator last;
+    last.node = m_head;
+    FUN_0053d2f0(first, last);
+    delete m_head;
+    m_head = 0;
+    m_size = 0;
+    {
+        RHUnk00641782 lock;
+        if (--g_unk0x006c0c24 == 0) {
+            delete g_unk0x006c0c28;
+            g_unk0x006c0c28 = 0;
+        }
+    }
+}
+
+class RHUnkFXDraw
+{
+public:
+    unsigned long Unk005e4ed0(int, int, int, int);
+    unsigned short FUN_005e56c0(unsigned long);
+    unsigned short FUN_005e5750(unsigned long);
+    void FUN_005e6440(unsigned long, int, int, unsigned long, unsigned long);
+};
+
+class RHUnk005ef320;
+extern RHUnk005ef320 *g_unk0x6c11d0;
+
+class RHGame
+{
+public:
+    void FUN_005105d0(unsigned char first, char second);
+};
+
+class RHUnk0048a970;
+extern RHUnk0048a970 *g_unk0x6c0b3c;
+
+class SBUILifetime
+{
+public:
+    SBUILifetime();
+    ~SBUILifetime();
+    undefined m_00[0x17f8];
+};
+
+class SBUIUnkSurface
+{
+public:
+    SBUIUnkSurface(unsigned long surface);
+    ~SBUIUnkSurface();
+    undefined m_00[0x20];
+};
+
+class SBThreadedInput;
+extern SBThreadedInput *g_unk0x6c1340;
+
+struct RHMapScreenNode
+{
+    RHMapScreenNode *left;
+    RHMapScreenNode *parent;
+    RHMapScreenNode *right;
+    undefined m_0c[0x14];
+    int color;
+};
+
+struct RHMapScreenLess
+{
+};
+
+struct RHMapScreenAlloc
+{
+};
+
+class RHMapScreenTree
+{
+public:
+    RHMapScreenTree(const RHMapScreenLess &comp, bool multi, const RHMapScreenAlloc &alloc)
+        : m_alloc(alloc), m_comp(comp), m_multi(multi)
+    {
+        Init();
+    }
+    ~RHMapScreenTree();
+    static RHMapScreenNode *Buynode(RHMapScreenNode *parent, int color)
+    {
+        RHMapScreenNode *node = (RHMapScreenNode *)operator new(sizeof(RHMapScreenNode));
+        node->parent = parent;
+        node->color = color;
+        return node;
+    }
+    void Init()
+    {
+        RHUnk00641782 lock;
+        if ((RHMapScreenNode *)g_unk0x006c0c28 == 0) {
+            g_unk0x006c0c28 = (RHMapTreeNode *)Buynode(0, 1);
+            g_unk0x006c0c28->left = 0;
+            g_unk0x006c0c28->right = 0;
+        }
+        ++g_unk0x006c0c24;
+        m_head = Buynode((RHMapScreenNode *)g_unk0x006c0c28, 0);
+        m_size = 0;
+        m_head->left = m_head;
+        m_head->right = m_head;
+    }
+    RHMapScreenAlloc m_alloc;
+    RHMapScreenLess m_comp;
+    undefined m_02[2];
+    RHMapScreenNode *m_head;
+    bool m_multi;
+    undefined m_09[3];
+    unsigned m_size;
+};
+
+class RHMenuScreenView
+{
+public:
+    RHMenuScreenView(unsigned long flags, long background, bool colorize, bool pause, void *ui);
+    RHMenuScreenView(unsigned long flags, long background, unsigned short color, void *ui);
+    static void *FUN_0053b730(long background, unsigned short color);
+    void FUN_0053c140(unsigned long flags);
+
+    void *m_ui;
+    unsigned long m_04;
+    unsigned long m_08;
+    void *m_background;
+    SBUILifetime m_sbui;
+    undefined m_1808[0x10c];
+    unsigned long m_1914;
+    SBThreadedInput *m_input;
+    std::deque<std::vector<void *> > m_191c;
+    SBUIUnkSurface m_surfaces;
+    RHMapScreenTree m_196c;
+    bool m_197c;
+    std::list<RHMapWindow::Timer> m_1980;
+    unsigned long m_198c;
+};
+
+DECOMP_SIZE_ASSERT(RHMenuScreenView, 0x1990)
+
+// FUNCTION: GAME 0x0053aaa0
+RHMenuScreenView::RHMenuScreenView(unsigned long flags, long background, bool colorize, bool pause, void *ui)
+    : m_ui(ui), m_04(0), m_08(0),
+      m_background((void *)RHMapWindow::FUN_0053b6b0(background, colorize, pause)), m_1914(0),
+      m_input(g_unk0x6c1340), m_surfaces(flags), m_196c(RHMapScreenLess(), false, RHMapScreenAlloc()),
+      m_197c(false), m_198c(0)
+{
+    FUN_0053c140(flags);
+}
+
+// FUNCTION: GAME 0x0053adc0
+RHMenuScreenView::RHMenuScreenView(unsigned long flags, long background, unsigned short color, void *ui)
+    : m_ui(ui), m_04(0), m_08(0), m_background(FUN_0053b730(background, color)), m_1914(0),
+      m_input(g_unk0x6c1340), m_surfaces(flags), m_196c(RHMapScreenLess(), false, RHMapScreenAlloc()),
+      m_197c(false), m_198c(0)
+{
+    FUN_0053c140(flags);
+}
+
+// FUNCTION: GAME 0x0053b6b0
+unsigned long RHMapWindow::FUN_0053b6b0(unsigned long source, bool colorize, bool pause)
+{
+    RHUnkFXDraw *draw = (RHUnkFXDraw *)g_unk0x6c11d0;
+    if (g_unk0x6c0b3c && pause == true)
+        ((RHGame *)g_unk0x6c0b3c)->FUN_005105d0(0, 0);
+    typedef unsigned long (RHUnkFXDraw::*CreateSurface)(unsigned short, unsigned short, unsigned long, bool);
+    unsigned long surface = (draw->*reinterpret_cast<CreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(
+        draw->FUN_005e56c0(0), draw->FUN_005e5750(0), 0, false);
+    draw->FUN_005e6440(source, 0, surface, 0, 0);
+    if (colorize)
+        FUN_0053b330(surface, 0x96, 0.2f);
+    return surface;
 }
 
 // FUNCTION: GAME 0x0053baa0
@@ -347,6 +777,11 @@ void RHMapWindow::FUN_0053c7e0()
 // TEMPLATE: GAME 0x0053e170
 // ?_Add@const_iterator@?$deque@V?$vector@PAXV?$allocator@PAX@std@@@std@@V?$allocator@V?$vector@PAXV?$allocator@PAX@std@@@std@@@2@@std@@IAEXH@Z
 
+// TEMPLATE: GAME 0x0053e1e0
+// ?_Construct@std@@YAXPAV?$vector@PAXV?$allocator@PAX@std@@@1@ABV21@@Z
+
+void (*g_rhMapWidgetsConstruct)(std::vector<void *> *, const std::vector<void *> &) = &std::_Construct;
+
 // FUNCTION: GAME 0x00544b40
 bool RHMenuCampaignMap::FUN_00544b40(const RHMapTitleText &title, const RHMapBox &box, unsigned flags)
 {
@@ -373,4 +808,11 @@ void RHMenuCampaignMap::Emit()
     FUN_00528520(0, 0, 0);
     FUN_00528550(0, 0, 0);
     campaign->FUN_005286b0();
+    FUN_00528a60();
+    FUN_00528c70(0);
+}
+
+void EmitRHMapTree(RHMapTree *tree)
+{
+    tree->FUN_0053ad50();
 }

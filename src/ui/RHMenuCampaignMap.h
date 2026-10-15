@@ -154,6 +154,8 @@ public:
 class RHMapWindow
 {
 public:
+    static unsigned long FUN_0053b6b0(unsigned long source, bool colorize, bool pause);
+    static void FUN_0053b330(unsigned long surface, unsigned short amount, float factor);
     unsigned FUN_0053baa0(unsigned);
     void FUN_0053bb30(unsigned);
     void FUN_0053bbe0();
@@ -201,6 +203,8 @@ public:
 class RHMenuCampaignMap
 {
 public:
+    void FUN_00527870();
+    void *FUN_00528c70(unsigned flags);
     virtual void V00(); // vtable+0x00
     virtual void V04(); // vtable+0x04
     virtual void V08(); // vtable+0x08
@@ -228,6 +232,7 @@ public:
     bool FUN_00528520(unsigned, unsigned, unsigned);
     bool FUN_00528550(unsigned, unsigned, unsigned);
     void FUN_00528810();
+    void FUN_00528a60();
     void Emit();
     char m_04[0x26fc]; // +0x04; this+0x5d flag, +0xb4 window, +0xcc widget
     unsigned m_2700; // +0x2700; location array +0x19c (stride 0x27c), arrows +0x1a74 (stride 0xcc), widget +0x25ec
@@ -244,6 +249,6 @@ extern char *g_unk0x006c0664;
 extern RHMapResources *g_unk0x006c1840;
 std::wstring FUN_005e23d0(unsigned long);
 unsigned FUN_00527cc0(unsigned);
-void FUN_00529e60(RHMapWindow *, const RHMapWideText &, bool, unsigned);
+void FUN_00529e60(RHMapWindow *, const RHMapWideText &, bool, bool);
 
 #endif
