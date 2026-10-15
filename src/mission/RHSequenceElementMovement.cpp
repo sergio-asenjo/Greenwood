@@ -1,6 +1,7 @@
 #include "SBNullstr.h"
 #include "RHSequenceElementMovement.h"
 #include <iterator>
+#include "RHActorTranslation.h"
 
 // STRING: GAME 0x006b757c
 #define RH_MOVEMENT_FILE "P:\\Robin Hood\\RHSequenceElementMovement.cpp"
@@ -112,11 +113,14 @@ public:
     RHUnk00588530(unsigned short level, int command, void *actor, const SBGeoPoint2D &point, void *value78, unsigned short value90, int value88);
     ~RHUnk00588530();
     void *FUN_005882f0(unsigned int flags);
+    void FUN_00588940();
     void FUN_00588b20();
     void FUN_00588b60();
     void FUN_00588d60();
     void FUN_00588f00();
     void FUN_005890c0();
+    void FUN_005892a0(int replacement, int action, float distance, const SBGeoPoint2D &origin);
+    void FUN_00589490(int replacement, int action, float distance, const SBGeoPoint2D &origin);
     RHUnk00588530 *FUN_00589810();
     void EmitMovement();
     RH_MOVEMENT_FIELDS
@@ -420,6 +424,87 @@ public:
     void FUN_004d2b70(void *actor);
 };
 
+class RHUnk005fc3b0 : public SBGeoPoint2D
+{
+public:
+    RHUnk005fc3b0();
+    ~RHUnk005fc3b0() {}
+    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other);
+    RHUnk005fc3b0 &FUN_005fc4d0(float factor);
+    float Unk005fc6a0(float factor);
+};
+
+class RHSpriteList
+{
+public:
+    void FUN_005c8e40(int index);
+};
+
+class RHSpriteSequenceCalls
+{
+public:
+    void FUN_005859e0(RHOrder *order, unsigned short index);
+};
+
+class RHSectorActorIter
+{
+public:
+    RHMovementOrderNode *m_p;
+    RHSectorActorIter(RHMovementOrderNode *node) : m_p(node) {}
+    RHSectorActorIter operator++(int);
+};
+
+extern float g_unk0x00677438;
+extern float g_unk0x00677488;
+
+// Parked: receiver/index registers and iterator/point argument scheduling differ.
+// STUB: GAME 0x00588940
+void RHUnk00588530::FUN_00588940()
+{
+    RHOrder *order = (RHOrder *)RHMovementField<RHMovementOrderNode *>(this, 0x1c)->next->value;
+    SBGeoPoint2D position;
+    RHUnk005fc3b0 direction;
+    m_88 &= ~4;
+    switch (order->m_24)
+    {
+    case 6:
+        order->m_24 = 8;
+        break;
+    case 10:
+        order->m_24 = 12;
+        break;
+    case 16:
+        order->m_24 = 17;
+        break;
+    default:
+        ((RHActorTranslationSequenceCalls *)this)->V0c(6, true);
+        return;
+    }
+    order->FUN_0054e730();
+    int remaining = RHMovementField<int>(this, 0x20);
+    for (int i = remaining - 1; i > 0; --i)
+    {
+        RHMovementOrderList &orders = RHMovementField<RHMovementOrderList>(this, 0x18);
+        ((RHSpriteList *)&orders)->FUN_005c8e40(i);
+        delete (RHOrder *)orders.current.node->value;
+        RHMovementOrderNode *node = (RHSectorActorIter(orders.current.node)++).m_p;
+        node->previous->next = node->next;
+        node->next->previous = node->previous;
+        operator delete(node);
+        --orders.count;
+        orders.dirty = true;
+    }
+    void *owner = RHMovementField<void *>(this, 0x48);
+    position = RHMovementField<SBGeoPoint2D>(RHMovementField<void *>(owner, 0x50), 0x24);
+    direction.FUN_005fc430(RHMovementField<SBGeoPoint2D>(order, 0x14).Unk005fc110(position));
+    float distance = direction.Unk005fc6a0(1.0f);
+    if (distance > g_unk0x00677438)
+    {
+        direction.FUN_005fc4d0(g_unk0x00677438 / distance);
+        m_6c = position.Unk005fc190(direction);
+    }
+}
+
 // FUNCTION: GAME 0x00588b20
 void RHUnk00588530::FUN_00588b20()
 {
@@ -582,6 +667,137 @@ void RHUnk00588530::FUN_005890c0()
     ((RHSequenceElementCalls *)this)->RHSequenceElementCalls::FUN_00585e30();
 }
 
+// Parked: count/index widths and receiver/index register allocation differ.
+// STUB: GAME 0x005892a0
+void RHUnk00588530::FUN_005892a0(int replacement, int action, float distance, const SBGeoPoint2D &origin)
+{
+    if (distance == g_unk0x00677488)
+        distance = 0.01f;
+    SBGeoPoint2D previous(origin);
+    RHUnk005fc3b0 direction;
+    unsigned short count = (unsigned short)RHMovementField<unsigned>(this, 0x20);
+    for (unsigned short i = 0; i < count; ++i)
+    {
+        RHMovementOrderList &orders = RHMovementField<RHMovementOrderList>(this, 0x18);
+        ((RHSpriteList *)&orders)->FUN_005c8e40((unsigned short)i);
+        RHOrder *order = (RHOrder *)orders.current.node->value;
+        if (order->m_24 == action)
+        {
+            direction.FUN_005fc430(RHMovementField<SBGeoPoint2D>(order, 0x14).Unk005fc110(previous));
+            float length = direction.Unk005fc6a0(1.0f);
+            if (length < distance)
+            {
+                distance -= length;
+                order->m_24 = replacement;
+            }
+            else
+            {
+                order = new RHOrder;
+                order->m_24 = replacement;
+                order->m_2a = 1;
+                RHMovementField<SBGeoPoint2D>(order, 0x14) = previous;
+                if (length != g_unk0x00677488)
+                {
+                    direction.FUN_005fc4d0(distance / length);
+                    RHMovementField<SBGeoPoint2D>(order, 0x14).FUN_005fc1e0(direction);
+                }
+                ((RHSpriteSequenceCalls *)this)->FUN_005859e0(order, (unsigned short)i);
+                break;
+            }
+        }
+        SBGeoPoint2D &point = RHMovementField<SBGeoPoint2D>(order, 0x14);
+        if (point.m_x != g_unk0x00677488 || point.m_y != g_unk0x00677488)
+            previous = point;
+    }
+}
+
+// GLOBAL: GAME 0x00679db4
+float g_unk0x00679db4 = 1.01f;
+
+// Parked: initial count load, loop branches and floating multiply operand order differ.
+// STUB: GAME 0x00589490
+void RHUnk00588530::FUN_00589490(int replacement, int action, float distance, const SBGeoPoint2D &origin)
+{
+    if (distance == g_unk0x00677488)
+        distance = 0.01f;
+    bool scaled = ((unsigned)m_88 >> 16) & 1;
+    SBGeoPoint2D previous;
+    RHUnk005fc3b0 direction;
+    float length;
+    distance += m_8c;
+    RHMovementOrderList &orders = RHMovementField<RHMovementOrderList>(this, 0x18);
+    for (int i = (unsigned short)orders.count - 1; i >= 0; --i)
+    {
+        ((RHSpriteList *)&orders)->FUN_005c8e40(i);
+        RHOrder *order = (RHOrder *)orders.current.node->value;
+        if (order->m_24 != action)
+            continue;
+        order->m_24 = replacement;
+        previous = RHMovementField<SBGeoPoint2D>(order, 0x14);
+        int j;
+        for (j = i - 1; j >= 0; --j)
+        {
+            ((RHSpriteList *)&orders)->FUN_005c8e40((unsigned short)j);
+            order = (RHOrder *)orders.current.node->value;
+            SBGeoPoint2D &point = RHMovementField<SBGeoPoint2D>(order, 0x14);
+            if (point.m_x != g_unk0x00677488 || point.m_y != g_unk0x00677488)
+                goto foundPoint;
+        }
+        goto useOrigin;
+        {
+        foundPoint:
+            direction.FUN_005fc430(RHMovementField<SBGeoPoint2D>(order, 0x14).Unk005fc110(previous));
+            if (scaled)
+                length = direction.Unk005fc6a0(0.57357645f);
+            else
+                length = direction.Unk005fc6a0(1.0f);
+            if (length * g_unk0x00679db4 < distance)
+            {
+                distance -= length;
+                continue;
+            }
+            order = new RHOrder;
+            order->m_24 = action;
+            order->m_2a = 1;
+            RHMovementField<SBGeoPoint2D>(order, 0x14) = previous;
+            if (length != g_unk0x00677488)
+            {
+                direction.FUN_005fc4d0(distance / length);
+                RHMovementField<SBGeoPoint2D>(order, 0x14).FUN_005fc1e0(direction);
+            }
+            RHMovementField<int>(order, 4) = 0;
+            if (!(m_88 & 4) || !(m_88 & 0x400))
+                order->m_30 = m_84;
+            ((RHSpriteSequenceCalls *)this)->FUN_005859e0(order, (unsigned short)i);
+            break;
+        }
+        {
+        useOrigin:
+            direction.FUN_005fc430(origin.Unk005fc110(previous));
+            if (scaled)
+                length = direction.Unk005fc6a0(0.57357645f);
+            else
+                length = direction.Unk005fc6a0(1.0f);
+            if (length < distance)
+                break;
+            order = new RHOrder;
+            order->m_24 = action;
+            order->m_2a = 1;
+            RHMovementField<SBGeoPoint2D>(order, 0x14) = previous;
+            if (length != g_unk0x00677488)
+            {
+                direction.FUN_005fc4d0(distance / length);
+                RHMovementField<SBGeoPoint2D>(order, 0x14).FUN_005fc1e0(direction);
+            }
+            RHMovementField<int>(order, 4) = 0;
+            if (!(m_88 & 4) || !(m_88 & 0x400))
+                order->m_30 = m_84;
+            ((RHSpriteSequenceCalls *)this)->FUN_005859e0(order, (unsigned short)i);
+            break;
+        }
+    }
+}
+
 // FUNCTION: GAME 0x005897e0
 bool RHSequenceElementMovement::FUN_005897e0()
 {
@@ -614,6 +830,9 @@ RHUnk00588530 *RHUnk00588530::FUN_00589810()
 
 void RHUnk00588530::EmitMovement()
 {
+    FUN_00588940();
+    FUN_005892a0(0, 0, 1.0f, m_6c);
+    FUN_00589490(0, 0, 1.0f, m_6c);
     FUN_00588b20();
     FUN_00588b60();
     FUN_00588d60();
