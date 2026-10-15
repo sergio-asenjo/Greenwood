@@ -1,6 +1,52 @@
 #include "SBNullstr.h"
 #include "SBUIRendererListbox.h"
 #include "SB.h"
+#include "SBGeoBoundingBox2D.h"
+
+class RHPortraitRenderer0060d470
+{
+public:
+    RHPortraitRenderer0060d470();
+    ~RHPortraitRenderer0060d470();
+    unsigned m_vptr;
+    char m_04[0x60];
+};
+
+class RHPortraitInputRenderer : public RHPortraitRenderer0060d470
+{
+public:
+    RHPortraitInputRenderer();
+    ~RHPortraitInputRenderer();
+    void *FUN_0061c590(unsigned flags);
+    int m_64;
+    int m_68;
+    SBGeoPoint2D m_6c;
+    char m_74[0xe];
+    unsigned short m_82;
+};
+
+// FUNCTION: GAME 0x0061c530
+RHPortraitInputRenderer::RHPortraitInputRenderer() : m_64(-1), m_68(-1)
+{
+    m_82 = 0x14;
+    m_vptr = 0x0067ae1c;
+}
+
+// Parked: compiler vptr reset precedes the EH state store; the literal vptr store schedules after it.
+// STUB: GAME 0x0061c5b0
+RHPortraitInputRenderer::~RHPortraitInputRenderer()
+{
+    m_vptr = 0x0067ae1c;
+}
+
+// FUNCTION: GAME 0x0061c590
+void *RHPortraitInputRenderer::FUN_0061c590(unsigned flags)
+{
+    this->~RHPortraitInputRenderer();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
 
 // FUNCTION: GAME 0x0061d1c0
 bool SBUIListboxUnk0061d980::FUN_0061d1c0()
@@ -47,6 +93,7 @@ bool SBUIListboxUnk0061d980::FUN_0061d980(SBUIListboxUnk0061e890 *first,
 void EmitSBUIRendererListbox(SBUIListboxUnk0061d980 *listbox,
     SBUIListboxUnk0061e890 *font)
 {
+    ((RHPortraitInputRenderer *)listbox)->FUN_0061c590(0);
     listbox->FUN_0061d1c0();
     listbox->FUN_0061d980(font, font, font, false);
 }
