@@ -2,6 +2,39 @@
 #include <vector>
 
 void RHSerializeName(SBFile &file, const char *name);
+class RHMenuWindow;
+class SBGeoBoundingBox2D;
+
+class RHShortBriefingsWidgetBase
+{
+public:
+    RHShortBriefingsWidgetBase();
+    ~RHShortBriefingsWidgetBase();
+    unsigned m_vptr;
+    char m_04[0x7c];
+};
+
+class RHShortBriefingsRenderer
+{
+public:
+    RHShortBriefingsRenderer();
+    ~RHShortBriefingsRenderer();
+    char m_00[0x4c];
+};
+
+class RHShortBriefingsText : public RHShortBriefingsWidgetBase
+{
+public:
+    RHShortBriefingsText() { m_vptr = 0x00678c10; }
+    ~RHShortBriefingsText() { m_vptr = 0x00677624; }
+    RHShortBriefingsRenderer m_renderer;
+};
+
+class RHShortBriefingsCalls
+{
+public:
+    void FUN_005a2450(void *first, void *second);
+};
 
 class RHShortBriefings
 {
@@ -15,7 +48,14 @@ public:
 
     struct ShortBriefingVector
     {
-        char m_allocator[4]; // +0x00
+        ShortBriefingVector(const std::allocator<ShortBriefing> &allocator = std::allocator<ShortBriefing>())
+            : m_allocator(allocator), m_first(0), m_last(0), m_end(0) {}
+        ~ShortBriefingVector()
+        {
+            typedef std::vector<ShortBriefing> Vector;
+            ((Vector *)this)->~Vector();
+        }
+        std::allocator<ShortBriefing> m_allocator; // +0x00
         ShortBriefing *m_first; // +0x04
         ShortBriefing *m_last; // +0x08
         ShortBriefing *m_end; // +0x0c
@@ -27,8 +67,24 @@ public:
 
     ShortBriefingVector m_0; // +0x00
     ShortBriefingVector m_10; // +0x10
+    ShortBriefingVector m_20; // +0x20
+    RHShortBriefingsText m_30; // +0x30
+    void *m_fc; // +0xfc
+
+    RHShortBriefings(bool load);
+    ~RHShortBriefings();
 
     bool Serialize(SBFile &file);
+    bool HasShortBriefing(unsigned long id) const;
+    unsigned GetShortBriefingNumber(bool first) const;
+    std::basic_string<unsigned short> GetShortBriefingText(const ShortBriefing &value) const;
+    void CreateWidgets(RHMenuWindow *window, const SBGeoBoundingBox2D &box);
+    void DestroyWidgets();
+    void DoneShortBriefing(unsigned long id);
+    void FUN_005a28c0(RHMenuWindow *window, SBGeoBoundingBox2D &box, bool mode);
+    void FUN_005a2630(RHMenuWindow *window, SBGeoBoundingBox2D &box);
+    static bool IsSearchedShortBriefing(const ShortBriefing &value);
+    static unsigned long ulCurID;
     static bool SerializeShortBriefing(SBFile &file, ShortBriefing &value);
     void Emit(SBFile &file);
 
