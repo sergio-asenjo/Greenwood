@@ -177,7 +177,7 @@ std::string RHLoadingScreen::GetDataFile(const RHMission *mission, unsigned long
     return path;
 }
 
-// TEMPLATE: GAME 0x005239b0
+// LIBRARY: GAME 0x005239b0
 // ?append@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAEAAV12@PBDI@Z
 
 void RHLoadingScreen::Emit(SBFile &file, const RHMission *mission)

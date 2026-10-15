@@ -20,7 +20,7 @@ void RHPCStatus::Emit(SBFile &file, const RHCharacterProfile &profile)
     Serialize(file);
 }
 
-// FUNCTION: GAME 0x00419940
+// LIBRARY: GAME 0x00419940
 // wmemcpy
 
 // deferred: unannotated pending reccmp #534.
@@ -77,7 +77,7 @@ void RHUnk00452030::FUN_00456670(const std::wstring &name)
     values.insert(last, name);
 }
 
-// TEMPLATE: GAME 0x004580c0
+// LIBRARY: GAME 0x004580c0
 // ?assign@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@QAEAAV12@ABV12@II@Z
 
 void RHMapWideText::FUN_004580c0(const std::wstring &text, unsigned first, unsigned count)
@@ -285,7 +285,7 @@ bool RHPCStatus::Serialize(SBFile &file)
     return true;
 }
 
-// TEMPLATE: GAME 0x0055c680
+// LIBRARY: GAME 0x0055c680
 // ?append@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@QAEAAV12@ABV12@II@Z
 
 RHPCWideText &RHPCWideText::FUN_0055c680(const std::wstring &text, unsigned first, unsigned count)
@@ -305,5 +305,5 @@ RHPCWideText &RHPCWideText::FUN_0055c680(const std::wstring &text, unsigned firs
     return *this;
 }
 
-// TEMPLATE: GAME 0x0055c770
+// LIBRARY: GAME 0x0055c770
 // ??Hstd@@YA?AV?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@0@PBGABV10@@Z

@@ -9,7 +9,7 @@ static __forceinline const char *SBInputStringData(const std::string &value)
     return buffer ? buffer : "";
 }
 
-// TEMPLATE: GAME 0x005f78f0
+// LIBRARY: GAME 0x005f78f0
 // ?fill@std@@YAXPAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@1@0ABV21@@Z
 
 class SBGeoPoint2D

@@ -1,7 +1,7 @@
 #include "RHElementActor.h"
 #include "VMCore.h"
 
-// TEMPLATE: GAME 0x00402a70
+// LIBRARY: GAME 0x00402a70
 // ?erase@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAEAAV12@II@Z
 
 class RHSeqList

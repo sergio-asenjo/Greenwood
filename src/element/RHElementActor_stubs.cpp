@@ -10,7 +10,7 @@ bool RHActorString::FUN_00402280(unsigned, bool) { return true; }
 void RHActorString::FUN_00402260(unsigned) {}
 void RHActorString::FUN_00401ee0(bool) {}
 
-// FUNCTION: GAME 0x006416e6
+// LIBRARY: GAME 0x006416e6
 // ?_Xran@std@@YAXXZ
 
 // VTABLE: GAME 0x0067bd40

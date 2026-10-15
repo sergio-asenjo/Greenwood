@@ -12,7 +12,7 @@
 // GLOBAL: GAME 0x0067755c
 float g_rhuirendererportrait_percent = 100.0f;
 
-// TEMPLATE: GAME 0x005cac40
+// LIBRARY: GAME 0x005cac40
 // ?find@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@QBEIPBGII@Z
 
 class RHPortraitRenderer0060d470

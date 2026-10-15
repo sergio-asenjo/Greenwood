@@ -42,7 +42,7 @@ void RHMapCampaign::FUN_004577b0()
     m_1a8 = 0;
 }
 
-// TEMPLATE: GAME 0x00525430
+// LIBRARY: GAME 0x00525430
 // ?append@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@QAEAAV12@PBGI@Z
 
 // FUNCTION: GAME 0x00527a70
@@ -858,10 +858,10 @@ void RHMapWindow::FUN_0053c7e0()
     ((RHMapWindowPart *)((char *)this + 0x10))->FUN_00618850((char *)this + 0x1914);
 }
 
-// TEMPLATE: GAME 0x0053e170
+// LIBRARY: GAME 0x0053e170
 // ?_Add@const_iterator@?$deque@V?$vector@PAXV?$allocator@PAX@std@@@std@@V?$allocator@V?$vector@PAXV?$allocator@PAX@std@@@std@@@2@@std@@IAEXH@Z
 
-// TEMPLATE: GAME 0x0053e1e0
+// LIBRARY: GAME 0x0053e1e0
 // ?_Construct@std@@YAXPAV?$vector@PAXV?$allocator@PAX@std@@@1@ABV21@@Z
 
 void (*g_rhMapWidgetsConstruct)(std::vector<void *> *, const std::vector<void *> &) = &std::_Construct;

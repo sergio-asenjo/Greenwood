@@ -4832,7 +4832,7 @@ void FUN_005de100(unsigned short *destination, const unsigned short &value)
     *destination = value;
 }
 
-// TEMPLATE: GAME 0x005de110
+// LIBRARY: GAME 0x005de110
 // ?_Nullstr@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@CAPBGXZ
 
 // FUNCTION: GAME 0x005dec30

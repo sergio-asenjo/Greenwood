@@ -36,7 +36,7 @@ void RHUnk0060e4c0::FUN_0060f1e0(SBFile &) {}
 RHUnk0060e4c0 *FUN_005e1b20(RHUnk0060e4c0 *result, const char *) { return result; }
 unsigned long ToolboxPositionFile::FUN_005f5440() { return 0; }
 void ToolboxChunks::FUN_005e3070() { Buyback(); }
-// TEMPLATE: GAME 0x005e2ea0
+// LIBRARY: GAME 0x005e2ea0
 // ?substr@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@QBE?AV12@II@Z
 
 // FUNCTION: GAME 0x005e31d0

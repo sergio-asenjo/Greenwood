@@ -39,7 +39,7 @@ DECOMP_SIZE_ASSERT(SBGeoBoundingBox2D, 0x14)
 DECOMP_SIZE_ASSERT(RHCampaignCharacterData, 0x9c)
 DECOMP_SIZE_ASSERT(RHSaveGame::Header, 0x0c)
 
-// TEMPLATE: GAME 0x0044e940
+// LIBRARY: GAME 0x0044e940
 // ?_Construct@std@@YAXPAGABG@Z
 
 // FUNCTION: GAME 0x0044ea70
@@ -1076,7 +1076,7 @@ bool RHCampaign::CopyBackupTo(SBFile &file) const
     return true;
 }
 
-// TEMPLATE: GAME 0x004578e0
+// LIBRARY: GAME 0x004578e0
 // ??1?$vector@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@V?$allocator@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@@2@@std@@QAE@XZ
 
 // TEMPLATE: GAME 0x00457950
@@ -1096,7 +1096,7 @@ void RHCampaignUnk00457950::FUN_00457950()
 // TEMPLATE: GAME 0x00457a10
 // ?size@?$vector@VRHMission@@V?$allocator@VRHMission@@@std@@@std@@QBEIXZ
 
-// TEMPLATE: GAME 0x00457a30
+// LIBRARY: GAME 0x00457a30
 // ??4?$vector@HV?$allocator@H@std@@@std@@QAEAAV01@ABV01@@Z
 
 // FUNCTION: GAME 0x00457bc0
@@ -1105,10 +1105,10 @@ RHbeamMe &RHCampaignBeamArray::FUN_00457bc0(unsigned beamMe)
     return m_first[beamMe];
 }
 
-// TEMPLATE: GAME 0x00457be0
+// LIBRARY: GAME 0x00457be0
 // ?_Freeze@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AAEXXZ
 
-// TEMPLATE: GAME 0x00457cb0
+// LIBRARY: GAME 0x00457cb0
 // ?insert@?$vector@DV?$allocator@D@std@@@std@@QAEXPADIABD@Z
 
 void RHCampaignByteArray::FUN_00457cb0(char *position, unsigned count, const char &value)
@@ -1124,7 +1124,7 @@ void RHCampaignMissionValues::FUN_00457e80(RHMission *position, const RHMission 
     ((std::vector<RHMission> *)this)->insert(position, value);
 }
 
-// TEMPLATE: GAME 0x004580a0
+// LIBRARY: GAME 0x004580a0
 // ?capacity@?$vector@HV?$allocator@H@std@@@std@@QBEIXZ
 
 // Parked: real sector vector insertion calls assignment where the target inlines it.
@@ -1138,10 +1138,10 @@ void RHCampaignProductionSectors::Insert(RHSectorProduction *position, unsigned 
 // TEMPLATE: GAME 0x00458800
 // ?insert@?$vector@VRHMission@@V?$allocator@VRHMission@@@std@@@std@@QAEXPAVRHMission@@IABV3@@Z
 
-// TEMPLATE: GAME 0x00458af0
+// LIBRARY: GAME 0x00458af0
 // ?_Ucopy@?$vector@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@V?$allocator@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@@2@@std@@IAEPAV?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@2@PBV32@0PAV32@@Z
 
-// TEMPLATE: GAME 0x00458b30
+// LIBRARY: GAME 0x00458b30
 // ?_Ufill@?$vector@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@V?$allocator@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@@2@@std@@IAEXPAV?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@2@IABV32@@Z
 
 // TEMPLATE: GAME 0x00458b60
@@ -1351,10 +1351,10 @@ void RHCampaignWideStrings::FUN_00459620(RHCampaignWideString *position, unsigne
     ((std::vector<std::wstring> *)this)->insert((std::wstring *)position, count, (const std::wstring &)value);
 }
 
-// TEMPLATE: GAME 0x00459910
+// LIBRARY: GAME 0x00459910
 // ?fill@std@@YAXPAV?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@1@0ABV21@@Z
 
-// TEMPLATE: GAME 0x00459a60
+// LIBRARY: GAME 0x00459a60
 // ?copy_backward@std@@YAPAV?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@1@PAV21@00@Z
 
 // TEMPLATE: GAME 0x00459d30
@@ -1494,7 +1494,7 @@ void FUN_0045a940(RHMission **first, RHMission **last,
     }
 }
 
-// TEMPLATE: GAME 0x004609a0
+// LIBRARY: GAME 0x004609a0
 // ?erase@?$vector@HV?$allocator@H@std@@@std@@QAEPAHPAH0@Z
 
 // STUB: GAME 0x004e3770
@@ -1532,7 +1532,7 @@ void RHEngine::FUN_004e3770(RHElement *element)
     RHCampaignField<unsigned short>(position, 0xd6) = direction;
 }
 
-// TEMPLATE: GAME 0x004e5820
+// LIBRARY: GAME 0x004e5820
 // ?insert@?$vector@KV?$allocator@K@std@@@std@@QAEPAKPAKABK@Z
 
 // TEMPLATE: GAME 0x004e6ba0
@@ -1628,7 +1628,7 @@ RHSaveGame::Header::Header()
     m_08 = 0xbad;
 }
 
-// TEMPLATE: GAME 0x00570330
+// LIBRARY: GAME 0x00570330
 // ??1?$vector@GV?$allocator@G@std@@@std@@QAE@XZ
 
 void RHCampaignArrayOps::FUN_00570330()

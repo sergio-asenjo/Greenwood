@@ -348,7 +348,7 @@ void RHScriptBatchCalls::Unk00444440(bool attentive)
     }
 }
 
-// FUNCTION: GAME 0x0044f580
+// LIBRARY: GAME 0x0044f580
 // wmemmove
 
 // FUNCTION: GAME 0x00450b60

@@ -84,7 +84,7 @@ RHMapWideText SBUIInputFieldUnk00621440::FUN_0061df60()
 // SYNTHETIC: GAME 0x004d7770
 // ??1SBUIInputFieldDrawUnk@@QAE@XZ
 
-// TEMPLATE: GAME 0x005cf1e0
+// LIBRARY: GAME 0x005cf1e0
 // ??0?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@QAE@ABV01@@Z
 
 // FUNCTION: GAME 0x005d0880

@@ -4,10 +4,10 @@
 // LIBRARY: GAME 0x00642913
 extern "C" int sprintf(char *, const char *, ...) { return 0; }
 
-// TEMPLATE: GAME 0x0063f890
+// LIBRARY: GAME 0x0063f890
 // ??1?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@QAE@XZ
 
-// FUNCTION: GAME 0x0064159a
+// LIBRARY: GAME 0x0064159a
 // ?_Xlen@std@@YAXXZ
 
 // VTABLE: GAME 0x0067bd10

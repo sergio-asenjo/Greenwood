@@ -63,7 +63,7 @@ DECOMP_SIZE_ASSERT(RHSpriteScriptor, 0x14)
 DECOMP_SIZE_ASSERT(RHUnkSpriteRowHeader, 0x0e)
 DECOMP_SIZE_ASSERT(RHUnkSpriteFrameHeader, 0x0e)
 
-// TEMPLATE: GAME 0x0044e830
+// LIBRARY: GAME 0x0044e830
 // ?size@?$vector@GV?$allocator@G@std@@@std@@QBEIXZ
 
 // TEMPLATE: GAME 0x00461f10
@@ -129,7 +129,7 @@ RHUnkSpriteScriptInfo::~RHUnkSpriteScriptInfo()
 // TEMPLATE: GAME 0x005bdf70
 // ?size@?$vector@URHUnkSpriteRow@@V?$allocator@URHUnkSpriteRow@@@std@@@std@@QBEIXZ
 
-// TEMPLATE: GAME 0x005bdfa0
+// LIBRARY: GAME 0x005bdfa0
 // ?erase@?$vector@GV?$allocator@G@std@@@std@@QAEPAGPAG0@Z
 
 // TEMPLATE: GAME 0x005bdfe0
@@ -147,16 +147,16 @@ RHUnkSpriteScriptInfo::~RHUnkSpriteScriptInfo()
 // TEMPLATE: GAME 0x005be880
 // ??4?$vector@VSBGeoVector2D@@V?$allocator@VSBGeoVector2D@@@std@@@std@@QAEAAV01@ABV01@@Z
 
-// TEMPLATE: GAME 0x005bea70
+// LIBRARY: GAME 0x005bea70
 // ??0?$vector@GV?$allocator@G@std@@@std@@QAE@ABV01@@Z
 
-// TEMPLATE: GAME 0x005bead0
+// LIBRARY: GAME 0x005bead0
 // ??4?$vector@GV?$allocator@G@std@@@std@@QAEAAV01@ABV01@@Z
 
-// TEMPLATE: GAME 0x005bec50
+// LIBRARY: GAME 0x005bec50
 // ?capacity@?$vector@GV?$allocator@G@std@@@std@@QBEIXZ
 
-// TEMPLATE: GAME 0x005bec70
+// LIBRARY: GAME 0x005bec70
 // ?copy@std@@YAPAGPAG00@Z
 
 // Parked: 58.91%; frame 0x228 versus 0x230 and cache/EH temporary coloring.

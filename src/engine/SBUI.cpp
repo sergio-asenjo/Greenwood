@@ -335,10 +335,10 @@ void SBUIFlagArray::FUN_00619d00()
     ((std::vector<char> *)this)->~vector();
 }
 
-// TEMPLATE: GAME 0x00619f10
+// LIBRARY: GAME 0x00619f10
 // ?_Ucopy@?$vector@DV?$allocator@D@std@@@std@@IAEPADPBD0PAD@Z
 
-// TEMPLATE: GAME 0x00619f40
+// LIBRARY: GAME 0x00619f40
 // ?_Ufill@?$vector@DV?$allocator@D@std@@@std@@IAEXPADIABD@Z
 
 // GLOBAL: GAME 0x006c18d8

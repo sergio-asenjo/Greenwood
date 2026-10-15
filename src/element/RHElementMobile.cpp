@@ -1206,7 +1206,7 @@ RHMobileUnk006091b0 &RHMobileUnk006091b0::FUN_006091b0(const SBGeoPoint2D &value
     return *this;
 }
 
-// TEMPLATE: GAME 0x0060a750
+// LIBRARY: GAME 0x0060a750
 // ?_Construct@std@@YAXPADABD@Z
 
 // FUNCTION: GAME 0x0060a820

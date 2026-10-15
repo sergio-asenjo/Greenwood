@@ -31,52 +31,52 @@ float g_unk0x0067a664 = 0.001f;
 // SYNTHETIC: GAME 0x00401910
 // ??0RHProfileString@@QAE@ABV0@@Z
 
-// TEMPLATE: GAME 0x00401c80
+// LIBRARY: GAME 0x00401c80
 // ??1?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@QAE@XZ
 
-// TEMPLATE: GAME 0x00401ce0
+// LIBRARY: GAME 0x00401ce0
 // ?assign@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAEAAV12@ABV12@II@Z
 
-// TEMPLATE: GAME 0x00401f30
+// LIBRARY: GAME 0x00401f30
 // ?insert@?$vector@V?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@V?$allocator@V?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator6451574f
 
-// TEMPLATE: GAME 0x004021c0
+// LIBRARY: GAME 0x004021c0
 // ?assign@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAEAAV12@PBDI@Z
 
-// TEMPLATE: GAME 0x00402660
+// LIBRARY: GAME 0x00402660
 // ?max_size@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QBEIXZ
 
-// TEMPLATE: GAME 0x00402670
+// LIBRARY: GAME 0x00402670
 // ?_Copy@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AAEXI@Z
 
-// TEMPLATE: GAME 0x00402850
+// LIBRARY: GAME 0x00402850
 // ?_Destroy@std@@YAXPAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@1@@Z
 
-// TEMPLATE: GAME 0x00402890
+// LIBRARY: GAME 0x00402890
 // ?_Construct@std@@YAXPAV?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@1@ABV21@@Z
 
-// TEMPLATE: GAME 0x00402b90
+// LIBRARY: GAME 0x00402b90
 // ?_Construct@std@@YAXPAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@1@ABV21@@Z
 
-// SYNTHETIC: GAME 0x00402d00
+// LIBRARY: GAME 0x00402d00
 // ??_G?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAEPAXI@Z
 
-// TEMPLATE: GAME 0x00402de0
+// LIBRARY: GAME 0x00402de0
 // ??4?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@QAEAAV01@ABV01@@Z
 
-// TEMPLATE: GAME 0x00423800
+// LIBRARY: GAME 0x00423800
 // ??0?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAE@PBDABV?$allocator@D@1@@Z
 
-// TEMPLATE: GAME 0x00423910
+// LIBRARY: GAME 0x00423910
 // ?assign@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@QAEAAV12@PBGI@Z
 
-// TEMPLATE: GAME 0x004239c0
+// LIBRARY: GAME 0x004239c0
 // ?_Eos@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@AAEXI@Z
 
-// TEMPLATE: GAME 0x004239e0
+// LIBRARY: GAME 0x004239e0
 // ?_Grow@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@AAE_NI_N@Z
 
-// TEMPLATE: GAME 0x00423b10
+// LIBRARY: GAME 0x00423b10
 // ?_Copy@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@AAEXI@Z
 
 void RHUnk00423b10::FUN_00423b10(unsigned int count)
@@ -118,16 +118,16 @@ void RHUnk00423b10::FUN_00423b10(unsigned int count)
     m_chars[m_size] = 0;
 }
 
-// TEMPLATE: GAME 0x0044fa70
+// LIBRARY: GAME 0x0044fa70
 // ?erase@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@QAEAAV12@II@Z
 
-// TEMPLATE: GAME 0x0044fbc0
+// LIBRARY: GAME 0x0044fbc0
 // ?_Split@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@AAEXXZ
 
-// TEMPLATE: GAME 0x00457c60
+// LIBRARY: GAME 0x00457c60
 // ?_Destroy@?$vector@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@V?$allocator@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@@2@@std@@IAEXPAV?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@2@0@Z
 
-// TEMPLATE: GAME 0x00458bd0
+// LIBRARY: GAME 0x00458bd0
 // ?max_size@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@QBEIXZ
 
 // FUNCTION: GAME 0x005e0c90

@@ -2818,7 +2818,7 @@ void RHGameMenuCalls::FUN_005283d0()
     (*(RHMapWindow **)((char *)this + 0xb4))->FUN_0053c7e0();
 }
 
-// SYNTHETIC: GAME 0x00533c10
+// LIBRARY: GAME 0x00533c10
 // ??_G?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@QAEPAXI@Z
 
 // FUNCTION: GAME 0x00535950

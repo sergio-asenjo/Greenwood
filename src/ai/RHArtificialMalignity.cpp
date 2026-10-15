@@ -3093,7 +3093,7 @@ void RHMalignityEngineCalls::FUN_004da8d0(const SBGeoBoundingBox2D &box)
     list.m_dirty = true;
 }
 
-// TEMPLATE: GAME 0x004e60a0
+// LIBRARY: GAME 0x004e60a0
 // ?insert@?$vector@GV?$allocator@G@std@@@std@@QAEXPAGIABG@Z
 
 #include <list>

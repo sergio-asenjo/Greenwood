@@ -3,10 +3,10 @@
 #include "RHLoadingScreen.h"
 #include <new>
 
-// TEMPLATE: GAME 0x006136a0
+// LIBRARY: GAME 0x006136a0
 // ?_Sort@std@@YAXPAG0P6A_NGG@Z0@Z
 
-// TEMPLATE: GAME 0x006137d0
+// LIBRARY: GAME 0x006137d0
 // ?_Insertion_sort_1@std@@YAXPAG0P6A_NGG@Z0@Z
 
 // SIZE 0x18

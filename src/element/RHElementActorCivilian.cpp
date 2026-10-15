@@ -56,7 +56,7 @@ void RHUnk006c0838::FUN_0045ab50()
 {
 }
 
-// FUNCTION: GAME 0x00471050
+// LIBRARY: GAME 0x00471050
 void FUN_00471050()
 {
     g_unk0x6c0838.FUN_0045ab50();
@@ -189,7 +189,7 @@ void RHElementActorCivilian::FUN_00470a10(SBFile &file)
     } while (--remaining != 0);
 }
 
-// SYNTHETIC: GAME 0x00470c80
+// LIBRARY: GAME 0x00470c80
 // ??_F?$vector@GV?$allocator@G@std@@@std@@QAEXXZ
 
 // FUNCTION: GAME 0x00470ca0

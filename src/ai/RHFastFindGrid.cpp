@@ -2899,7 +2899,7 @@ void RHUnk00522470::Unk005224d0(SBFile &file)
     *(void **)((char *)this + 0x24) = value;
 }
 
-// TEMPLATE: GAME 0x0059fbc0
+// LIBRARY: GAME 0x0059fbc0
 // ?size@?$vector@KV?$allocator@K@std@@@std@@QBEIXZ
 
 // FUNCTION: GAME 0x005df860

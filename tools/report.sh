@@ -2,9 +2,13 @@
 #
 # Report decompilation progress with a faithful denominator.
 #
-# Denominator = GAME-target functions (classified as UNKNOWN or GAME in
-# symbols/functions-classified.tsv), i.e. excluding LIBRARY/CRT/STL/FMOD/Bink
-# and compiler noise such as "Unwind@" records.
+# Denominator = first-party game functions (classified as UNKNOWN or GAME in
+# symbols/functions-classified.tsv). Excluded as LIBRARY: CRT/STL/compiler
+# helpers, compiler static-init/`atexit` glue, statically-linked third-party
+# libraries (bzip2 1.0.1, zlib 1.1.3), std-only STL template instantiations and
+# "Unwind@" records. Genuine compiler/linker artifacts are THUNK.
+# Regenerate the classification with tools/classify_functions.py; the policy is
+# also used by the Ghidra pass tools/ghidra/ClassifyFunctions.py.
 #
 set -euo pipefail
 
@@ -27,4 +31,4 @@ echo "Game functions (denominator): $TOTAL"
 echo "Library functions (excluded): $LIBRARY"
 echo
 
-"$RECCMP" --target GAME --total "$TOTAL" "$@"
+"$RECCMP" --target GAME --total "$TOTAL" --nolib "$@"

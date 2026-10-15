@@ -70,7 +70,7 @@ void ForceResourceWideErase(std::vector<std::wstring> &values, std::wstring *fir
 // STUB: GAME 0x00606270
 // ?resize@?$vector@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@V?$allocator@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@@2@@std@@QAEXIABV?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@2@@Z
 
-// TEMPLATE: GAME 0x00606470
+// LIBRARY: GAME 0x00606470
 // ?erase@?$vector@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@V?$allocator@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@@2@@std@@QAEPAV?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@2@PAV32@0@Z
 
 // FUNCTION: GAME 0x00606780
@@ -85,7 +85,7 @@ std::wstring *FUN_00606780(const std::wstring *first, const std::wstring *last, 
 // STUB: GAME 0x006073b0
 // ?insert@?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@QAEXPAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@2@PBV32@1@Z
 
-// TEMPLATE: GAME 0x00607660
+// LIBRARY: GAME 0x00607660
 // ?insert@?$vector@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@V?$allocator@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@@2@@std@@QAEXPAV?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@2@PBV32@1@Z
 
 // FUNCTION: GAME 0x00617690

@@ -277,7 +277,7 @@ int RHUnk005f4fc0::FUN_005f5d60(const std::string &name, int mode)
     return (int)view;
 }
 
-// FUNCTION: GAME 0x005f63c0
+// LIBRARY: GAME 0x005f63c0
 // wmemset
 
 // FUNCTION: GAME 0x005f7360

@@ -157,7 +157,7 @@ void RHProfileText::FUN_00402260(unsigned int size)
     m_chars[size] = 0;
 }
 
-// TEMPLATE: GAME 0x0040bb20
+// LIBRARY: GAME 0x0040bb20
 // ?append@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAEAAV12@ABV12@II@Z
 
 void RHSoundPendingData::FUN_0052c5a0()

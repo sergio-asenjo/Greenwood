@@ -918,10 +918,10 @@ int RHUnk0046bd20::FUN_0046bd20()
         return false; \
     }
 
-// TEMPLATE: GAME 0x00471440
+// LIBRARY: GAME 0x00471440
 // ?_Ucopy@?$vector@GV?$allocator@G@std@@@std@@IAEPAGPBG0PAG@Z
 
-// TEMPLATE: GAME 0x00471470
+// LIBRARY: GAME 0x00471470
 // ?_Ufill@?$vector@GV?$allocator@G@std@@@std@@IAEXPAGIABG@Z
 
 // Parked: posture/combat dispatch and original EH states remain incomplete.

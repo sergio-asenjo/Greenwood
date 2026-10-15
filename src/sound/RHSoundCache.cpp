@@ -19,7 +19,7 @@ DECOMP_SIZE_ASSERT(RHSoundCacheMusicArray, 0x2c)
 DECOMP_SIZE_ASSERT(RHSoundCacheString, 0x10)
 DECOMP_SIZE_ASSERT(RHUnk00641782, 0x01)
 
-// TEMPLATE: GAME 0x004023a0
+// LIBRARY: GAME 0x004023a0
 // ?insert@?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@QAEXPAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@2@IABV32@@Z
 
 void RHSoundCacheMusicArray::FUN_004023a0(RHSoundCacheMusic *position, unsigned int count, const RHSoundCacheMusic &value)
@@ -27,7 +27,7 @@ void RHSoundCacheMusicArray::FUN_004023a0(RHSoundCacheMusic *position, unsigned 
     ((std::vector<RHSoundCacheMusic> *)this)->insert(position, count, value);
 }
 
-// TEMPLATE: GAME 0x004e4b40
+// LIBRARY: GAME 0x004e4b40
 // ??Hstd@@YA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@0@ABV10@0@Z
 
 std::string FUN_004e4b40(const std::string &first, const std::string &second)
@@ -683,7 +683,7 @@ RHSoundCacheEntry *RHSoundCache::GetSourceCacheEntryForID(unsigned long id)
     return 0;
 }
 
-// TEMPLATE: GAME 0x005aef50
+// LIBRARY: GAME 0x005aef50
 // ??1?$pair@$$CBKV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@std@@QAE@XZ
 
 // FUNCTION: GAME 0x005af0c0
@@ -821,7 +821,7 @@ RHSoundCacheGroupNode *RHSoundCacheEntryMap::FUN_005b1430(const unsigned long &k
     return result;
 }
 
-// TEMPLATE: GAME 0x005b1a00
+// LIBRARY: GAME 0x005b1a00
 // ?_Construct@std@@YAXPAU?$pair@$$CBKV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@1@ABU21@@Z
 
 // FUNCTION: GAME 0x005b1ca0
@@ -856,10 +856,10 @@ RHUnk005f4fc0::RHUnk005f4fc0()
     m_38 = 0;
 }
 
-// TEMPLATE: GAME 0x005f77d0
+// LIBRARY: GAME 0x005f77d0
 // ?_Ucopy@?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@IAEPAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@2@PBV32@0PAV32@@Z
 
-// TEMPLATE: GAME 0x005f7a40
+// LIBRARY: GAME 0x005f7a40
 // ?copy_backward@std@@YAPAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@1@PAV21@00@Z
 
 void RHSoundCache::Emit(unsigned short index, RHSoundCacheGroups &groups, const RHSoundCacheMissionProfile *profile)

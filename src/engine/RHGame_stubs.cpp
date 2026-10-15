@@ -74,5 +74,5 @@ void RHGamePortraitCalls::FUN_005d6690() {}
 void RHGameNotificationCalls::FUN_0055e7a0(unsigned) {}
 void FUN_0053a830() {}
 
-// FUNCTION: GAME 0x00642a00
+// LIBRARY: GAME 0x00642a00
 // __chkstk
