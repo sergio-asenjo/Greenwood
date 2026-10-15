@@ -811,6 +811,120 @@ bool RHUnk005ef320::FUN_005eec00(unsigned long destination, unsigned long source
     return true;
 }
 
+struct SBDrawTreeNode
+{
+    SBDrawTreeNode *m_left;
+    SBDrawTreeNode *m_parent;
+    SBDrawTreeNode *m_right;
+    unsigned long m_key;
+};
+
+// GLOBAL: GAME 0x006c11dc
+SBDrawTreeNode *g_unk0x006c11dc;
+
+// FUNCTION: GAME 0x005efbc0
+SBDrawUnk005efc10Iterator SBDrawUnk005efc10::FUN_005efbc0(const unsigned long &key)
+{
+    SBDrawUnk005efc10Iterator found(((SBDrawUnk005f0090 *)this)->FUN_005f0090(key));
+    return found.m_node == m_head || key < found.m_node->m_key ? SBDrawUnk005efc10Iterator(m_head) : found;
+}
+
+// FUNCTION: GAME 0x005efc10
+SBDrawUnk005efc10Iterator SBDrawUnk005efc10::FUN_005efc10(const unsigned long &key)
+{
+    return SBDrawUnk005efc10Iterator(((SBDrawUnk005f0090 *)this)->FUN_005f0090(key));
+}
+
+// FUNCTION: GAME 0x005f0070
+SBDrawUnk005efc10Iterator SBDrawUnk005efc10::FUN_005f0070(const unsigned long &key)
+{
+    return SBDrawUnk005efc10Iterator(((SBDrawUnk005f0090 *)this)->FUN_005f01a0(key));
+}
+
+// FUNCTION: GAME 0x005f0090
+SBDrawUnk005f0090Node *SBDrawUnk005f0090::FUN_005f0090(const unsigned long &key)
+{
+    std::_Lockit lock;
+    SBDrawTreeNode *node = ((SBDrawTreeNode *)m_head)->m_parent;
+    SBDrawTreeNode *result = (SBDrawTreeNode *)m_head;
+    while (node != g_unk0x006c11dc)
+    {
+        if (node->m_key < key)
+            node = node->m_right;
+        else
+            result = node, node = node->m_left;
+    }
+    return (SBDrawUnk005f0090Node *)result;
+}
+
+// FUNCTION: GAME 0x005f01a0
+SBDrawUnk005f0090Node *SBDrawUnk005f0090::FUN_005f01a0(const unsigned long &key)
+{
+    std::_Lockit lock;
+    SBDrawTreeNode *node = ((SBDrawTreeNode *)m_head)->m_parent;
+    SBDrawTreeNode *result = (SBDrawTreeNode *)m_head;
+    while (node != g_unk0x006c11dc)
+    {
+        if (key < node->m_key)
+            result = node, node = node->m_left;
+        else
+            node = node->m_right;
+    }
+    return (SBDrawUnk005f0090Node *)result;
+}
+
+struct SBDrawTreeIterator
+{
+    SBDrawTreeNode *m_node;
+    void FUN_005effc0();
+    SBDrawTreeIterator &operator++()
+    {
+        FUN_005effc0();
+        return *this;
+    }
+    bool operator!=(const SBDrawTreeIterator &other) const { return m_node != other.m_node; }
+};
+
+struct SBDrawTreeIteratorB
+{
+    SBDrawTreeNode *m_node;
+    void FUN_005effc0();
+    SBDrawTreeIteratorB &operator++()
+    {
+        FUN_005effc0();
+        return *this;
+    }
+    bool operator!=(const SBDrawTreeIteratorB &other) const { return m_node != other.m_node; }
+};
+
+// FUNCTION: GAME 0x005f02f0
+void FUN_005f02f0(SBDrawTreeIterator first, SBDrawTreeIterator last, int &count)
+{
+    SBDrawTreeIterator current;
+    current.m_node = first.m_node;
+    for (; current != last; ++current)
+        ++count;
+}
+
+struct SBDrawSurfaceEntry
+{
+    unsigned long m_values[7];
+};
+
+// FUNCTION: GAME 0x005f0320
+void FUN_005f0320(SBDrawSurfaceEntry *entry, const SBDrawSurfaceEntry &value)
+{
+    if (entry != 0)
+        *entry = value;
+}
+
+// FUNCTION: GAME 0x005f0440
+void FUN_005f0440(SBDrawTreeIteratorB first, SBDrawTreeIteratorB last, int &count)
+{
+    for (; first != last; ++first)
+        ++count;
+}
+
 void EmitSBDrawManager(SBDrawUnk005e8450 *draw, void *buffer)
 {
     ((RHUnkFXDraw *)draw)->FUN_005e4f70(0, 0, 0, 0);
@@ -839,6 +953,12 @@ void EmitSBDrawManager(SBDrawUnk005e8450 *draw, void *buffer)
     draw->FUN_005ec320(buffer, buffer, 0, 0, 0, 0, 0, 0, 0, 0);
     draw->FUN_005ec410(buffer, buffer, 0, 0, 0, 0, 0, 0, 0, 0);
     draw->FUN_005ec500(buffer, buffer, 0, 0, 0, 0, 0, 0, 0, 0);
+    ((SBDrawUnk005efc10 *)buffer)->FUN_005efbc0(0);
+    ((SBDrawUnk005efc10 *)buffer)->FUN_005f0070(0);
+    int count = 0;
+    FUN_005f02f0(*(SBDrawTreeIterator *)buffer, *(SBDrawTreeIterator *)buffer, count);
+    FUN_005f0320((SBDrawSurfaceEntry *)buffer, *(SBDrawSurfaceEntry *)buffer);
+    FUN_005f0440(*(SBDrawTreeIteratorB *)buffer, *(SBDrawTreeIteratorB *)buffer, count);
 }
 
 // GLOBAL: GAME 0x006c11b8

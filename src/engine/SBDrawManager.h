@@ -55,6 +55,7 @@ public:
     char m_pad0[4];
     SBDrawUnk005f0090Node *m_head;
     SBDrawUnk005f0090Node *FUN_005f0090(const unsigned long &);
+    SBDrawUnk005f0090Node *FUN_005f01a0(const unsigned long &);
 };
 
 struct SBDrawUnk005efc10Iterator
@@ -84,6 +85,7 @@ public:
     SBDrawUnk005f0090Node *m_head;
     SBDrawUnk005efc10Iterator FUN_005efc10(const unsigned long &);
     SBDrawUnk005efc10Iterator FUN_005efbc0(const unsigned long &);
+    SBDrawUnk005efc10Iterator FUN_005f0070(const unsigned long &);
     SBDrawUnk005ef440Result FUN_005ef440(const SBDrawUnk005e4f70Pair &);
 };
 
