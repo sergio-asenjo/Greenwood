@@ -7,15 +7,6 @@ RHShortBriefingsRenderer::RHShortBriefingsRenderer() {}
 RHShortBriefingsRenderer::~RHShortBriefingsRenderer() {}
 void RHShortBriefingsCalls::FUN_005a2450(void *, void *) {}
 
-class RHBriefingNarrowText;
-class RHBriefingParentCalls
-{
-public:
-    void *FUN_00544b60(const RHBriefingNarrowText &name);
-};
-
-void *RHBriefingParentCalls::FUN_00544b60(const RHBriefingNarrowText &) { return 0; }
-
 class RHBriefingTitleBase
 {
 public:

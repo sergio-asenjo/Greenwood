@@ -66,3 +66,17 @@ void RHMenuWindow::FUN_00544300()
         m_saveSurface = (unsigned long)-1;
     }
 }
+
+class RHBriefingNarrowText;
+
+class RHBriefingParentCalls
+{
+public:
+    void *FUN_00544b60(const RHBriefingNarrowText &name);
+};
+
+// FUNCTION: GAME 0x00544b60
+void *RHBriefingParentCalls::FUN_00544b60(const RHBriefingNarrowText &name)
+{
+    return (*(RHPortraitTextResourceCalls **)((char *)this + 0xb4))->FUN_0053be80(*(const std::string *)&name);
+}
