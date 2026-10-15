@@ -511,6 +511,101 @@ unsigned long Toolbox::HexaAsciiToInteger(const char *text)
     return result;
 }
 
+// Parked: green channel extracted through ah instead of shr edx,8 / mov cl,dl.
+// STUB: GAME 0x00624c40
+void RHUnk00624a60::FUN_00624c40(const char *text, unsigned int &position, RHTextChunk *chunk)
+{
+    char tag[256];
+    int length = 0;
+    while (text[position] != '\0' && text[position] != '>')
+        tag[length++] = text[position++];
+    tag[length] = '\0';
+    ++position;
+    // STRING: GAME 0x006bb9f8
+    if (strcmp(tag, "BOLD") == 0)
+        chunk->m_flags |= 1;
+    // STRING: GAME 0x006bb9f0
+    if (strcmp(tag, "/BOLD") == 0)
+        chunk->m_flags &= ~1;
+    // STRING: GAME 0x006bb9e8
+    if (strcmp(tag, "ITALIC") == 0)
+        chunk->m_flags |= 2;
+    // STRING: GAME 0x006bb9e0
+    if (strcmp(tag, "/ITALIC") == 0)
+        chunk->m_flags &= ~2;
+    // STRING: GAME 0x006bb9d4
+    if (strcmp(tag, "UNDERLINE") == 0)
+        chunk->m_flags |= 4;
+    // STRING: GAME 0x006bb9c8
+    if (strcmp(tag, "/UNDERLINE") == 0)
+        chunk->m_flags &= ~4;
+    // STRING: GAME 0x006bb9c0
+    if (strncmp(tag, "COLOR=", 6) == 0) {
+        unsigned long color = Toolbox::HexaAsciiToInteger(tag + 6);
+        chunk->m_color = RGB((BYTE)(color >> 16), (BYTE)(color >> 8), (BYTE)color);
+    }
+    // STRING: GAME 0x006bb9b8
+    if (strncmp(tag, "FONT=", 5) == 0)
+        strcpy(chunk->m_font, tag + 5);
+    // STRING: GAME 0x006bb9ac
+    if (strncmp(tag, "FONTSIZE=", 9) == 0)
+        chunk->m_size = atoi(tag + 9);
+}
+
+// Parked: target caches byte zero in bl across both inlined cursor walks.
+// STUB: GAME 0x00624ed0
+const char *RHUnk00624a60::FUN_00624ed0(unsigned short index)
+{
+    if (m_list.At(index).m_font[0] == '\0')
+        // STRING: GAME 0x006bba00
+        return "Courrier New";
+    return m_list.At(index).m_font;
+}
+
+// Parked: target caches zero in ebx (this in ebp) and keeps the first construct out of line.
+// STUB: GAME 0x006250d0
+unsigned short RHUnk00624a60::FUN_006250d0(const char *text)
+{
+    unsigned int length = strlen(text);
+    RHTextChunk chunk;
+    unsigned int position = 0;
+    int used = 0;
+    chunk.m_text[0] = '\0';
+    // STRING: GAME 0x006bba10
+    strcpy(chunk.m_font, "Lucida Sans Console");
+    chunk.m_flags = 0;
+    chunk.m_color = 0xffffff;
+    chunk.m_ac = 0;
+    chunk.m_size = 12;
+    while (position < length) {
+        char c = text[position];
+        if (c != '<') {
+            chunk.m_text[used] = c;
+            chunk.m_text[used + 1] = '\0';
+            ++position;
+            ++used;
+        } else {
+            ++position;
+            if (strlen(chunk.m_text) != 0) {
+                m_list.InsertLast(chunk);
+                used = 0;
+                chunk.m_text[0] = '\0';
+            }
+            FUN_00624c40(text, position, &chunk);
+        }
+    }
+    m_list.push_back(chunk);
+    m_list.m_dirty = true;
+    return m_list.size();
+}
+
+// FUNCTION: GAME 0x00625270
+void FUN_00625270(RHTextChunk *pointer, const RHTextChunk &value)
+{
+    if (pointer)
+        *pointer = value;
+}
+
 void Toolbox::Emit()
 {
     DisplayPicture("", false);
