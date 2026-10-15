@@ -1,5 +1,6 @@
 #include "MD5.h"
 #include <stdio.h>
+#include "SB.h"
 
 typedef char MD5SizeCheck[sizeof(MD5) == 0x6c ? 1 : -1];
 
@@ -7,6 +8,12 @@ extern char g_unk0x6c0560[4];
 
 // GLOBAL: GAME 0x006bb5ac
 unsigned char g_md5Padding[64] = {0x80};
+
+// FUNCTION: GAME 0x0060e4c0
+MD5::MD5()
+{
+    init();
+}
 
 // FUNCTION: GAME 0x0060e4d0
 void MD5::update(unsigned char *input, unsigned int length)
@@ -207,6 +214,19 @@ bool MD5::operator==(MD5 &other)
         if (digest[i] != other.digest[i])
             return false;
     return true;
+}
+
+// FUNCTION: GAME 0x0060f1c0
+bool MD5::operator!=(MD5 &other)
+{
+    return !operator==(other);
+}
+
+// FUNCTION: GAME 0x0060f1e0
+void MD5::Serialize(SBFile &file)
+{
+    for (int i = 0; i < 16; ++i)
+        file.Access(&digest[i], 1);
 }
 
 void MD5::Emit(unsigned char *input, unsigned int length, MD5 &other)

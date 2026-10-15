@@ -2,6 +2,7 @@
 #define TOOLBOX_H
 
 #include "SB.h"
+#include "MD5.h"
 #include "Decomp.h"
 #include <string>
 #include <deque>
@@ -222,17 +223,6 @@ public:
     undefined m_14[0x44]; // 0x14
 };
 
-// SIZE 0x6c
-class RHUnk0060e4c0
-{
-public:
-    void FUN_0060e4c0();
-    bool FUN_0060f1c0(const RHUnk0060e4c0 &);
-    void FUN_0060f1e0(SBFile &);
-    undefined m_00[0x6c]; // 0x00
-};
-
-RHUnk0060e4c0 *FUN_005e1b20(RHUnk0060e4c0 *, const char *);
 class ToolboxPositionFile : public SBFile
 {
 public:
@@ -259,6 +249,7 @@ void FUN_005e1400();
 
 namespace Toolbox
 {
+    MD5 *MD5_string(MD5 *, unsigned char *);
     unsigned long HexaAsciiToInteger(const char *);
     void DisplayPicture(const char *, bool);
     void PlaySlide(const std::string &, unsigned short);

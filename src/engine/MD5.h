@@ -1,9 +1,14 @@
 #ifndef GREENWOOD_MD5_H
 #define GREENWOOD_MD5_H
 
+class SBFile;
+
 class MD5
 {
 public:
+    MD5();
+    enum Uninitialized { UninitializedStorage };
+    explicit MD5(Uninitialized) {}
     void update(unsigned char *input, unsigned int length);
     void finalize();
     char *hex_digest();
@@ -16,6 +21,8 @@ public:
     static void II(unsigned int &a, unsigned int b, unsigned int c, unsigned int d,
                    unsigned int x, unsigned int s, unsigned int ac);
     bool operator==(MD5 &other);
+    bool operator!=(MD5 &other);
+    void Serialize(SBFile &file);
     void Emit(unsigned char *input, unsigned int length, MD5 &other);
 
     unsigned int state[4];

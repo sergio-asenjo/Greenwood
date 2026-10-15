@@ -13,7 +13,7 @@ DECOMP_SIZE_ASSERT(RHUnkFXDraw, 0x10e)
 DECOMP_SIZE_ASSERT(RHUnk006114c0, 0x38)
 DECOMP_SIZE_ASSERT(RHUnk00613e90, 0x18)
 DECOMP_SIZE_ASSERT(RHUnk005f4fc0, 0x58)
-DECOMP_SIZE_ASSERT(RHUnk0060e4c0, 0x6c)
+DECOMP_SIZE_ASSERT(MD5, 0x6c)
 DECOMP_SIZE_ASSERT(ToolboxMouseState, 0x0a)
 
 // STRING: GAME 0x006b8f98
@@ -200,22 +200,31 @@ bool FUN_005e0ea0(SBFile &file, std::wstring &value)
     return true;
 }
 
+// FUNCTION: GAME 0x005e1b20
+MD5 *Toolbox::MD5_string(MD5 *result, unsigned char *name)
+{
+    MD5 digest;
+    digest.update(name, strlen((char *)name));
+    digest.finalize();
+    *result = digest;
+    return result;
+}
+
 // FUNCTION: GAME 0x005e1b70
 void RHSerializeName(SBFile &file, const char *name)
 {
-    RHUnk0060e4c0 expected;
+    MD5 expected(MD5::UninitializedStorage);
     {
-        RHUnk0060e4c0 temporary;
-        expected = *FUN_005e1b20(&temporary, name);
+        MD5 temporary(MD5::UninitializedStorage);
+        expected = *Toolbox::MD5_string(&temporary, (unsigned char *)name);
     }
     if (!file.m_bLoading)
-        expected.FUN_0060f1e0(file);
+        expected.Serialize(file);
     else
     {
-        RHUnk0060e4c0 actual;
-        actual.FUN_0060e4c0();
-        actual.FUN_0060f1e0(file);
-        if (actual.FUN_0060f1c0(expected))
+        MD5 actual;
+        actual.Serialize(file);
+        if (actual != expected)
             SBAssert(1, g_toolboxStreamFile, 0x40b,
                 // STRING: GAME 0x006b9124
                 "Digital signature of readed stream is not valid");
