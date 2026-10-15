@@ -164,41 +164,136 @@ bool FUN_006141e0(float threshold, const std::wstring &text, void *font)
     return false;
 }
 
-// Parked: x87/register scheduling and counted font operand differ.
+inline void SetSBUIInputFieldBoxX(SBGeoBoundingBox2D &box, float first, float last)
+{
+    box.m_00.m_x = first;
+    box.m_08.m_x = last;
+    box.m_10 = true;
+}
+
+inline void SetSBUIInputFieldBoxY(SBGeoBoundingBox2D &box, float first, float last)
+{
+    box.m_00.m_y = first;
+    box.m_08.m_y = last;
+    box.m_10 = true;
+}
+
+// Parked: x87 operand order, alignment flags and result-slot scheduling differ.
 // STUB: GAME 0x00614bf0
 bool SBUIInputFieldDrawUnk::FUN_00614bf0(void *font, std::wstring *text, const SBGeoPoint2D &point, unsigned int flags)
 {
     SBGeoBoundingBox2D box;
     int width = ((SBFontUnk0061e840 *)font)->FUN_0061ea50(text);
     int height = ((SBUIListboxUnk0061e890 *)font)->FUN_0061e890();
-    float y = point.m_y;
-    box.m_00.m_y = y;
-    box.m_08.m_y = y + height;
-    box.m_10 = true;
+    SetSBUIInputFieldBoxY(box, point.m_y, point.m_y + height);
     if (flags & 1)
     {
-        box.m_00.m_x = point.m_x;
-        box.m_08.m_x = point.m_x + ((float)(m_18 * 2) + width);
-        box.m_10 = true;
+        SetSBUIInputFieldBoxX(box, point.m_x, point.m_x + ((float)(m_18 * 2) + width));
     }
     else if (!(flags & 6))
     {
         if (flags & 8)
         {
-            box.m_00.m_x = point.m_x - width - (int)(m_18 * 2);
-            box.m_08.m_x = point.m_x;
-            box.m_10 = true;
+            SetSBUIInputFieldBoxX(box, point.m_x - width - (int)(m_18 * 2), point.m_x);
         }
     }
     else
     {
         float padding = (float)m_18;
-        box.m_00.m_x = point.m_x - width / 2 - padding;
-        box.m_08.m_x = box.m_00.m_x + (width + padding);
-        box.m_10 = true;
+        float first = point.m_x - width / 2 - padding;
+        SetSBUIInputFieldBoxX(box, first, first + (width + padding));
         flags = (flags & ~6) | 1;
     }
     return FUN_00614230(font, text, box, flags, 0, 0) != 0;
+}
+
+#include <vector>
+
+std::wstring *FUN_00606780(const std::wstring *, const std::wstring *, std::wstring *);
+
+class RHCampaignWideString;
+class RHCampaignWideStrings
+{
+public:
+    void FUN_00459620(RHCampaignWideString *, unsigned, const RHCampaignWideString &);
+};
+
+class SBUIInputFieldSplitStrings : public std::vector<std::wstring>
+{
+public:
+    void Clear()
+    {
+        std::wstring *last = FUN_00606780(end(), end(), begin());
+        typedef void (SBUIInputFieldSplitStrings::*Destroy)(std::wstring *, std::wstring *);
+        Destroy destroy = &SBUIInputFieldSplitStrings::_Destroy;
+        (this->*destroy)(last, end());
+        _Last = last;
+    }
+    void Append(const std::wstring &value)
+    {
+        ((RHCampaignWideStrings *)this)->FUN_00459620(
+            (RHCampaignWideString *)end(), 1, (const RHCampaignWideString &)value);
+    }
+};
+
+class SBUIInputFieldSplitUnk
+{
+public:
+    ~SBUIInputFieldSplitUnk();
+    void *FUN_00614e40(unsigned flags);
+    void FUN_00614e60(const std::wstring &text, const std::wstring &separators);
+    unsigned m_vptr;
+    std::vector<std::wstring> m_tokens;
+    std::vector<std::wstring> m_separators;
+};
+
+// FUNCTION: GAME 0x00614d80
+SBUIInputFieldSplitUnk::~SBUIInputFieldSplitUnk()
+{
+    m_vptr = 0x0067a8f8;
+}
+
+// FUNCTION: GAME 0x00614e40
+void *SBUIInputFieldSplitUnk::FUN_00614e40(unsigned flags)
+{
+    this->~SBUIInputFieldSplitUnk();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// Parked: iterator storage, append npos load and temporary assign inline depth differ.
+// STUB: GAME 0x00614e60
+void SBUIInputFieldSplitUnk::FUN_00614e60(const std::wstring &text, const std::wstring &separators)
+{
+    std::wstring token;
+    SBUIInputFieldSplitStrings &tokens = (SBUIInputFieldSplitStrings &)m_tokens;
+    SBUIInputFieldSplitStrings &separatorTokens = (SBUIInputFieldSplitStrings &)m_separators;
+    tokens.Clear();
+    typedef std::wstring *(std::vector<std::wstring>::*Erase)(std::wstring *, std::wstring *);
+    Erase erase = &std::vector<std::wstring>::erase;
+    (m_separators.*erase)(m_separators.begin(), m_separators.end());
+    typedef unsigned (std::wstring::*Find)(const unsigned short *, unsigned, unsigned) const;
+    Find find = &std::wstring::find;
+    for (std::wstring::const_iterator character = text.begin(); character != text.end(); ++character)
+    {
+        unsigned short value = *character;
+        if ((separators.*find)(&value, 0, 1) == (unsigned)-1)
+            token.append(character, 1);
+        else
+        {
+            tokens.Append(token);
+            token.erase(0, (unsigned)-1);
+            separatorTokens.Append(std::wstring(character, 1));
+        }
+    }
+    tokens.Append(token);
+}
+
+void EmitSBUIInputFieldSplit(SBUIInputFieldSplitUnk *split, const std::wstring &text)
+{
+    split->FUN_00614e40(0);
+    split->FUN_00614e60(text, text);
 }
 
 // FUNCTION: GAME 0x0061dd00
