@@ -2708,6 +2708,66 @@ RHFastFindRepulsiveBase &RHFastFindRepulsiveBase::Unk004fdc20(const RHFastFindRe
     return *this;
 }
 
+// SIZE 0xc0
+struct RHFastFindRecordC0
+{
+    char m_data[0xc0];
+};
+
+// SIZE 0xa0
+struct RHFastFindRecordA0
+{
+    char m_data[0xa0];
+};
+
+void FUN_004fe9d0(RHFastFindRecordC0 *destination, const RHFastFindRecordC0 &value);
+void FUN_004feb10(RHFastFindRecordA0 *destination, const RHFastFindRecordA0 &value);
+
+class RHFastFindRecordArray
+{
+public:
+    RHFastFindRecordC0 *Unk004fe340(const RHFastFindRecordC0 *first, const RHFastFindRecordC0 *last,
+        RHFastFindRecordC0 *destination);
+    void Unk004fe380(RHFastFindRecordC0 *destination, unsigned int count, const RHFastFindRecordC0 &value);
+    RHFastFindRecordA0 *Unk004fe3b0(const RHFastFindRecordA0 *first, const RHFastFindRecordA0 *last,
+        RHFastFindRecordA0 *destination);
+    void Unk004fe3f0(RHFastFindRecordA0 *destination, unsigned int count, const RHFastFindRecordA0 &value);
+};
+
+// FUNCTION: GAME 0x004fe340
+RHFastFindRecordC0 *RHFastFindRecordArray::Unk004fe340(const RHFastFindRecordC0 *first,
+    const RHFastFindRecordC0 *last, RHFastFindRecordC0 *destination)
+{
+    for (; first != last; ++destination, ++first)
+        FUN_004fe9d0(destination, *first);
+    return destination;
+}
+
+// FUNCTION: GAME 0x004fe380
+void RHFastFindRecordArray::Unk004fe380(RHFastFindRecordC0 *destination, unsigned int count,
+    const RHFastFindRecordC0 &value)
+{
+    for (; count > 0; --count, ++destination)
+        FUN_004fe9d0(destination, value);
+}
+
+// FUNCTION: GAME 0x004fe3b0
+RHFastFindRecordA0 *RHFastFindRecordArray::Unk004fe3b0(const RHFastFindRecordA0 *first,
+    const RHFastFindRecordA0 *last, RHFastFindRecordA0 *destination)
+{
+    for (; first != last; ++destination, ++first)
+        FUN_004feb10(destination, *first);
+    return destination;
+}
+
+// FUNCTION: GAME 0x004fe3f0
+void RHFastFindRecordArray::Unk004fe3f0(RHFastFindRecordA0 *destination, unsigned int count,
+    const RHFastFindRecordA0 &value)
+{
+    for (; count > 0; --count, ++destination)
+        FUN_004feb10(destination, value);
+}
+
 // deferred: unannotated pending reccmp #534
 void **RHScriptFXArray::Unk004fe420(void **first, void **last, void **destination)
 {
@@ -2723,6 +2783,16 @@ void RHScriptFXArray::Unk004fe450(void **destination, unsigned int count, void *
     for (; count > 0; --count, ++destination)
         if (destination)
             *destination = value;
+}
+
+// FUNCTION: GAME 0x004ff7b0
+void RHUnk004ff7b0::FUN_004ff7b0(unsigned int count, const float &value)
+{
+    std::vector<unsigned long> &values = *(std::vector<unsigned long> *)this;
+    if (values.size() < count)
+        values.insert(values.end(), count - values.size(), *(const unsigned long *)&value);
+    else if (count < values.size())
+        values.erase(values.begin() + count, values.end());
 }
 
 // FUNCTION: GAME 0x0051aa00

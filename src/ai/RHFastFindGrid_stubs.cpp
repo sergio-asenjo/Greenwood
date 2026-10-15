@@ -80,7 +80,6 @@ void SBArray<RHUnk004b2190Member>::Insert(RHUnk004b2190Member *, unsigned int, c
 void SBArray<unsigned short>::Insert(unsigned short *, unsigned int, const unsigned short &) {}
 void RHUnk005223f0::FUN_005223f0(SBFile &) {}
 void FUN_00418390(RHUnk005223f0 *) {}
-void RHUnk004ff7b0::FUN_004ff7b0(unsigned int, const float &) {}
 RHUnk005209d0::RHUnk005209d0(int) {}
 RHUnk005209d0::~RHUnk005209d0() {}
 RHUnk0051a5e0::RHUnk0051a5e0() {}
@@ -154,3 +153,8 @@ bool RHUnk0051aa00::FUN_0051b870(bool, RHElementActor *, bool, bool, bool) { ret
 
 // FUNCTION: GAME 0x0057cd50
 bool RHUnk0051aa00::FUN_0057cd50(undefined4) { return true; }
+
+struct RHFastFindRecordC0;
+struct RHFastFindRecordA0;
+void FUN_004fe9d0(RHFastFindRecordC0 *, const RHFastFindRecordC0 &) {}
+void FUN_004feb10(RHFastFindRecordA0 *, const RHFastFindRecordA0 &) {}
