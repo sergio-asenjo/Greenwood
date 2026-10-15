@@ -1,0 +1,140 @@
+#include "SBNullstr.h"
+#include "rhuirenderer_005cb420.h"
+
+DECOMP_SIZE_ASSERT(SBGeoBoundingBox2D, 0x14)
+DECOMP_SIZE_ASSERT(SBUIInputFieldDrawUnk, 0x30)
+DECOMP_SIZE_ASSERT(RHPopupRenderer0060dbc0, 0x7c)
+DECOMP_SIZE_ASSERT(RHUnk005cba10, 0x9c)
+
+extern float g_unk0x00677488;
+
+inline float Min(float first, float second)
+{
+    if (second > first)
+        return first;
+    return second;
+}
+
+// FUNCTION: GAME 0x005cb420
+RHUnk005cba10::RHUnk005cba10()
+    : m_dropped(0, 0)
+{
+    m_characters = 0;
+    m_lines = 0;
+    m_vptr = 0x00679e9c;
+}
+
+// FUNCTION: GAME 0x005cb4a0
+void *RHUnk005cba10::FUN_005cb4a0(unsigned flags)
+{
+    this->~RHUnk005cba10();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// FUNCTION: GAME 0x005cb4c0
+RHUnk005cba10::~RHUnk005cba10()
+{
+}
+
+// Parked: 91.38% — the first m_64 read must not CSE with the per-branch reloads; only a volatile
+// read achieves that and it emits `mov dx;and edx,0xffff` for `xor edx,edx;mov dx`. The target
+// also pops the Min operand with fcomp and reloads m_dropped.m_x, keeping the result in st(1).
+// STUB: GAME 0x005cb550
+SBGeoBoundingBox2D RHUnk005cba10::FUN_005cb550(SBUIListboxUnk0061e890 *font, bool clip) const
+{
+    SBGeoBoundingBox2D box(m_box);
+    float height = m_dropped.m_y;
+    float lines = height / (unsigned int)(font->FUN_0061e890() - *(volatile unsigned short *)&m_64);
+    unsigned int count = (unsigned int)lines;
+    if (lines - count != g_unk0x00677488)
+        lines = count + 1;
+    if (clip)
+    {
+        float shift = Min(box.m_08.m_x - box.m_00.m_x, m_dropped.m_x);
+        box.SetMaxX(box.m_08.m_x - shift);
+        float top = box.m_00.m_y;
+        int pad = m_64;
+        box.SetMaxY((unsigned int)(font->FUN_0061e890() - pad) * lines + pad + top);
+    }
+    else
+    {
+        float top = box.m_00.m_y;
+        int pad = m_64;
+        box.SetMinY((unsigned int)(font->FUN_0061e890() - pad) * lines + pad + top);
+    }
+    return box;
+}
+
+// FUNCTION: GAME 0x005cb700
+void RHUnk005cba10::FUN_005cb700(SBUIListboxUnk0061e890 *font)
+{
+    typedef std::wstring &(std::wstring::*Assign)(const std::wstring &, unsigned int, unsigned int);
+    SBUIInputFieldDrawUnk drawer;
+    std::wstring text;
+    SBGeoBoundingBox2D box;
+    Assign assign = &std::wstring::assign;
+    (text.*assign)(m_text, 0, std::wstring::npos);
+    box.FUN_00607da0(FUN_005cb550(font, true));
+    m_characters = 0;
+    m_lines += drawer.FUN_00614230(font, &text, box, m_60, m_64, 1);
+    m_characters += drawer.FUN_00613e80();
+    std::wstring &rest = drawer.FUN_00613e90();
+    (text.*assign)(rest, 0, std::wstring::npos);
+    box.FUN_00607da0(FUN_005cb550(font, false));
+    box.SetMinY(box.m_00.m_y - m_64);
+    m_lines += drawer.FUN_00614230(font, &text, box, m_60, m_64, 1);
+    m_characters += drawer.FUN_00613e80();
+    std::wstring &remaining = drawer.FUN_00613e90();
+    (m_rendered.*assign)(remaining, 0, std::wstring::npos);
+}
+
+// FUNCTION: GAME 0x005cb9d0
+void RHUnk005cba10::FUN_005cb9d0(unsigned long width, unsigned long height)
+{
+    m_dropped.m_x = width;
+    m_dropped.m_y = height;
+}
+
+// FUNCTION: GAME 0x005cba10
+bool RHUnk005cba10::FUN_005cba10(unsigned id)
+{
+    if (m_dropped.m_x == g_unk0x00677488 && m_dropped.m_y == g_unk0x00677488)
+        return FUN_0060dd10(id);
+    if (id == 0xff)
+    {
+        m_40[m_48 & 1] = 0;
+        return false;
+    }
+    SBUIListboxUnk0061e890 *font;
+    switch (id)
+    {
+    case 0:
+        font = m_54;
+        break;
+    case 2:
+        font = m_58;
+        break;
+    case 3:
+        font = m_5c;
+        break;
+    case 1:
+        font = m_50;
+        break;
+    default:
+        font = m_50;
+        break;
+    }
+    if (font)
+    {
+        if (m_box.m_08.m_x - m_box.m_00.m_x > g_unk0x00677488)
+        {
+            FUN_005cb700(font);
+            return true;
+        }
+        return false;
+    }
+    m_40[m_48 & 1] = 0;
+    return true;
+}

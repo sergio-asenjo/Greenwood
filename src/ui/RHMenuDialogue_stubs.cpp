@@ -34,11 +34,10 @@ void RHSound::PauseDialog() {}
 class RHUnk005cba10
 {
 public:
-    void FUN_005cba10(unsigned);
+    bool FUN_005cba10(unsigned);
     void FUN_005cbc80(unsigned);
 };
 
-void RHUnk005cba10::FUN_005cba10(unsigned) {}
 void RHUnk005cba10::FUN_005cbc80(unsigned) {}
 
 RHMenuDialogue::RHMenuDialogue(RHMenuScreenView *, unsigned long) {}

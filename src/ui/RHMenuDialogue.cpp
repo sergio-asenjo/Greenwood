@@ -442,7 +442,7 @@ void RHMenuDialogue::UpdatePortrait()
 class RHUnk005cba10
 {
 public:
-    void FUN_005cba10(unsigned);
+    bool FUN_005cba10(unsigned);
     void FUN_005cbc80(unsigned);
 };
 
