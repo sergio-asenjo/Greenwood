@@ -44,7 +44,7 @@ WP="$MSVCZ\\VC98\\Bin;$MSVCZ\\Common\\MSDev98\\Bin"
 if [ "$#" -gt 0 ]; then
   SRCS=("$@")
 else
-  mapfile -t SRCS < <(find "$ROOT/src" -name '*.cpp' | sort)
+  mapfile -t SRCS < <(find "$ROOT/src" \( -name '*.cpp' -o -name '*.c' \) | sort)
 fi
 
 if [ "${#SRCS[@]}" -eq 0 ]; then
@@ -77,11 +77,25 @@ fi
 
 echo "building ${#SRCZ[@]} file(s) -> $OUT/$NAME"
 
+LINKSRCS=()
+for s in "${SRCS[@]}"; do
+  if [[ "$s" == *.c ]]; then
+    object="${s#"$ROOT/src/"}"
+    object="${object//\//_}"
+    object="$OUTZ\\${object%.c}.obj"
+    WINEDEBUG=-all WINEPATH="$WP" INCLUDE="$MSVCZ\\VC98\\INCLUDE" LIB="$MSVCZ\\VC98\\LIB" \
+      wine "$MSVC/VC98/Bin/CL.EXE" "${FLAGS[@]}" /c /Fd"$OUTZ\\vc60.pdb" /Fo"$object" "${INCDIRS[@]}" "$(z "$(realpath "$s")")"
+    LINKSRCS+=("$object")
+  else
+    LINKSRCS+=("$(z "$(realpath "$s")")")
+  fi
+done
+
 WINEDEBUG=-all \
   WINEPATH="$WP" \
   INCLUDE="$MSVCZ\\VC98\\INCLUDE" \
   LIB="$MSVCZ\\VC98\\LIB" \
-  wine "$MSVC/VC98/Bin/CL.EXE" "${FLAGS[@]}" /Fd"$OUTZ\\vc60.pdb" /Fo"$OUTZ\\" "${INCDIRS[@]}" "${SRCZ[@]}" \
+  wine "$MSVC/VC98/Bin/CL.EXE" "${FLAGS[@]}" /Fd"$OUTZ\\vc60.pdb" /Fo"$OUTZ\\" "${INCDIRS[@]}" "${LINKSRCS[@]}" \
     /link /DEBUG /OUT:"$OUTZ\\$NAME" /PDB:"$OUTZ\\Game.pdb"
 
 echo "done: $OUT/$NAME + $OUT/Game.pdb"

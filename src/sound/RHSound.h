@@ -430,7 +430,7 @@ extern "C" void __stdcall FSOUND_3D_Listener_SetRolloffFactor(float);
 extern "C" int __stdcall FSOUND_GetMaxChannels();
 extern "C" unsigned int __stdcall FSOUND_GetNumHardwareChannels();
 extern "C" void __stdcall FSOUND_3D_Update();
-unsigned long FUN_006183c0(unsigned long, const char *, unsigned long);
+#include "zlib.h"
 extern "C" float __stdcall FSOUND_GetVersion();
 extern "C" signed char __stdcall FSOUND_GetDriverCaps(int, unsigned int *);
 extern "C" signed char __stdcall FSOUND_Stream_SetTime(void *, unsigned int);

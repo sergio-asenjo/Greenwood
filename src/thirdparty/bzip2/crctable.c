@@ -1,7 +1,77 @@
+
+/*-------------------------------------------------------------*/
+/*--- Table for doing CRCs                                  ---*/
+/*---                                            crctable.c ---*/
+/*-------------------------------------------------------------*/
+
+/*--
+  This file is a part of bzip2 and/or libbzip2, a program and
+  library for lossless, block-sorting data compression.
+
+  Copyright (C) 1996-2000 Julian R Seward.  All rights reserved.
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+
+  1. Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+
+  2. The origin of this software must not be misrepresented; you must 
+     not claim that you wrote the original software.  If you use this 
+     software in a product, an acknowledgment in the product 
+     documentation would be appreciated but is not required.
+
+  3. Altered source versions must be plainly marked as such, and must
+     not be misrepresented as being the original software.
+
+  4. The name of the author may not be used to endorse or promote 
+     products derived from this software without specific prior written 
+     permission.
+
+  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS
+  OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+  DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+  GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+  Julian Seward, Cambridge, UK.
+  jseward@acm.org
+  bzip2/libbzip2 version 1.0 of 21 March 2000
+
+  This program is based on (at least) the work of:
+     Mike Burrows
+     David Wheeler
+     Peter Fenwick
+     Alistair Moffat
+     Radford Neal
+     Ian H. Witten
+     Robert Sedgewick
+     Jon L. Bentley
+
+  For more information on these sources, see the manual.
+--*/
+
+
 #include "bzlib_private.h"
 
-// GLOBAL: GAME 0x006bbe6c
+/*--
+  I think this is an implementation of the AUTODIN-II,
+  Ethernet & FDDI 32-bit CRC standard.  Vaguely derived
+  from code by Rob Warnock, in Section 51 of the
+  comp.compression FAQ.
+--*/
+
 UInt32 BZ2_crc32Table[256] = {
+
+   /*-- Ugly, innit? --*/
+
    0x00000000L, 0x04c11db7L, 0x09823b6eL, 0x0d4326d9L,
    0x130476dcL, 0x17c56b6bL, 0x1a864db2L, 0x1e475005L,
    0x2608edb8L, 0x22c9f00fL, 0x2f8ad6d6L, 0x2b4bcb61L,
@@ -67,3 +137,8 @@ UInt32 BZ2_crc32Table[256] = {
    0xafb010b1L, 0xab710d06L, 0xa6322bdfL, 0xa2f33668L,
    0xbcb4666dL, 0xb8757bdaL, 0xb5365d03L, 0xb1f740b4L
 };
+
+
+/*-------------------------------------------------------------*/
+/*--- end                                        crctable.c ---*/
+/*-------------------------------------------------------------*/

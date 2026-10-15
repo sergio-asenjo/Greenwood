@@ -668,7 +668,7 @@ struct RHFrameDictionaryEntry
 
 class RHUnk005ef320;
 extern RHUnk005ef320 *g_unk0x6c11d0;
-unsigned long FUN_006183c0(unsigned long, const char *, unsigned long);
+#include "zlib.h"
 
 // FUNCTION: GAME 0x005069d0
 void RHUnk005068e0::FUN_005069d0(unsigned short count, SBFile &file)
@@ -679,7 +679,7 @@ void RHUnk005068e0::FUN_005069d0(unsigned short count, SBFile &file)
     unsigned long size = count * 8;
     m_04 = (unsigned long)operator new(size);
     file.Access((void *)m_04, size);
-    m_08 = FUN_006183c0(0, (const char *)m_04, size);
+    m_08 = crc32(0, (const Bytef *)m_04, size);
     unsigned short *pixels = (unsigned short *)m_04;
     for (unsigned short i = 0; i < m_00 * 4; ++i)
         if (pixels[i] == 0x7e0)
