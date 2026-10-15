@@ -430,6 +430,90 @@ public:
     }
 };
 
+class RHPopupRenderer0060dbc0
+{
+public:
+    bool FUN_0060dd10(unsigned id);
+};
+
+class SBUIUnk0060dd00
+{
+public:
+    int FUN_0060dc20(unsigned id);
+};
+
+class RHUnk005254f0
+{
+public:
+    void FUN_005254f0();
+    unsigned FUN_00525510(unsigned id);
+    void FUN_005255c0(const std::wstring &text);
+    unsigned *FUN_005257c0(unsigned index);
+    void FUN_00525840();
+};
+
+// FUNCTION: GAME 0x005254f0
+void RHUnk005254f0::FUN_005254f0()
+{
+    ((RHPopupRenderer0060dbc0 *)((char *)this + 0x80))->FUN_0060dd10(
+        ((RHUnk00528ad0 *)this)->V24());
+}
+
+// FUNCTION: GAME 0x00525510
+unsigned RHUnk005254f0::FUN_00525510(unsigned id)
+{
+    SBUIUnk0060dd00 *renderer = (SBUIUnk0060dd00 *)((char *)this + 0x80);
+    unsigned previous = ((unsigned *)((char *)renderer + 0x40))[
+        RHMapWidgetField<unsigned>(renderer, 0x48) & 1];
+    unsigned current = id == 255 ? 0 : renderer->FUN_0060dc20(id);
+    if (current == (unsigned)-1)
+        return 3;
+    if (previous != current)
+        return current == 0 ? 2 : 1;
+    return 0;
+}
+
+// Parked: nested string assignment inlines cleanup and self-assignment erasure at different depths.
+// STUB: GAME 0x005255c0
+void RHUnk005254f0::FUN_005255c0(const std::wstring &text)
+{
+    RHMapWidgetField<bool>(this, 0xfc) = true;
+    RHMapWidgetField<bool>(this, 0xfd) = true;
+    RHMapWidgetField<std::wstring>(this, 0x10) = text;
+    RHMapWidgetField<std::wstring>(this, 0xa8) = text;
+}
+
+// FUNCTION: GAME 0x005257c0
+unsigned *RHUnk005254f0::FUN_005257c0(unsigned index)
+{
+    bool &dirty = RHMapWidgetField<bool>(this, 0xfc + (index & 1));
+    if (dirty == true)
+    {
+        dirty = false;
+        return ((RHUnk00528ad0 *)this)->MakeEvent(index);
+    }
+    return 0;
+}
+
+// FUNCTION: GAME 0x00525840
+void RHUnk005254f0::FUN_00525840()
+{
+    RHMapWidgetField<bool>(this, 0xfc) = true;
+    RHMapWidgetField<bool>(this, 0xfd) = true;
+    RHMapWidgetField<unsigned>(this, 0xc0) = -1;
+    RHMapWidgetField<unsigned>(this, 0xc4) = -1;
+}
+
+void RHMapTailEmit(void *object, unsigned index, const std::wstring &text)
+{
+    RHUnk005254f0 *widget = (RHUnk005254f0 *)object;
+    widget->FUN_005254f0();
+    widget->FUN_00525510(index);
+    widget->FUN_005255c0(text);
+    widget->FUN_005257c0(index);
+    widget->FUN_00525840();
+}
+
 // FUNCTION: GAME 0x00528ad0
 unsigned *RHUnk00528ad0::FUN_00528ad0(unsigned index)
 {
