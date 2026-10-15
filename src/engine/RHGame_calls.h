@@ -100,13 +100,7 @@ public:
     undefined m_data[0x4c];
 };
 
-class RHGameRenderer005cb220
-{
-public:
-    RHGameRenderer005cb220();
-    ~RHGameRenderer005cb220();
-    undefined m_data[0x4c];
-};
+#include "RHGameRenderer005cb220.h"
 
 class RHGameRenderer0060dab0
 {
@@ -270,7 +264,6 @@ public:
     virtual void v1();
     virtual void v2(unsigned long hardware);
     bool FUN_0060d890(const SBGeoPoint2D &point);
-    bool FUN_005cb270(unsigned id);
     bool FUN_005c9320(unsigned id);
 };
 
@@ -387,24 +380,12 @@ public:
     virtual void v21(bool value); // vtable+0x54
 };
 
-struct RHMapByte
-{
-    signed char value;
-};
+#include "RHMenuCampaignMapClass.h"
 
 class RHMapCampaign
 {
 public:
     std::vector<void *> FUN_00528050();
-};
-
-class RHMenuCampaignMap
-{
-public:
-    void FUN_005284b0();
-    void FUN_00527c00(const std::vector<void *> &missions);
-    void FUN_00527a70(RHMapByte state);
-    void FUN_00527ae0(RHMapByte state);
 };
 
 class RHMapWindow
@@ -769,18 +750,7 @@ public:
     bool FUN_006009e0(unsigned, unsigned, RHMapWideText &);
 };
 
-class RHMapWindow;
-// SIZE 0x1990
-class RHMenuScreenView
-{
-public:
-    RHMenuScreenView(unsigned long flags, long background, unsigned short color, void *ui);
-    RHMenuScreenView(unsigned long flags, long background, bool first, bool second, void *source);
-    ~RHMenuScreenView();
-    void FUN_0053be40(unsigned long value);
-
-    undefined m_00[0x1990]; // 0x00
-};
+#include "RHMenuScreenView.h"
 
 extern char *g_unk0x006c0664;
 extern RHMapResources *g_unk0x006c1840;

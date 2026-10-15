@@ -44,11 +44,7 @@ public:
 
 void FUN_00529e60(RHMapWindow *screen, const RHMapWideText &text, bool won, bool last);
 
-class RHUnk0056fb70
-{
-public:
-    void *FUN_0056fb70(const void *value);
-};
+#include "RHUnk0056fb70.h"
 
 // SIZE 0x67c
 class RHMenuDebriefing : public RHMenuWindowFocus

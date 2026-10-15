@@ -3,13 +3,7 @@
 #include <algorithm>
 #include <vector>
 
-class RHWidgetPortrait
-{
-public:
-    bool Method005d6690();
-    bool Method005d67e0();
-    void FUN_005d9180();
-};
+#include "RHWidgetPortraitClass.h"
 
 class RHPortraitCtorCalls
 {

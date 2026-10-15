@@ -1,5 +1,7 @@
 #include "SBNullstr.h"
 #include "RHMenuCampaignMap.h"
+#include "RHMenuScreenView.h"
+#include "RHUnk00527870.h"
 
 bool RHMapWideText::Grow(unsigned, bool) { return false; }
 void RHMapWideText::End(unsigned) {}
@@ -36,28 +38,9 @@ public:
 
 RHMapTreeIterator RHMapTree::FUN_0053d2f0(RHMapTreeIterator first, RHMapTreeIterator) { return first; }
 
-class SBUILifetime
-{
-public:
-    ~SBUILifetime();
-};
-
 SBUILifetime::~SBUILifetime() {}
 
-class RHMapScreenTree
-{
-public:
-    ~RHMapScreenTree();
-};
-
 RHMapScreenTree::~RHMapScreenTree() {}
-
-class RHMenuScreenView
-{
-public:
-    static void *FUN_0053b730(long background, unsigned short color);
-    void FUN_0053c140(unsigned long flags);
-};
 
 void *RHMenuScreenView::FUN_0053b730(long, unsigned short) { return 0; }
 void RHMenuScreenView::FUN_0053c140(unsigned long) {}
@@ -77,4 +60,4 @@ public:
 bool RHMapFocusScreen::FUN_0053c320(void *) { return false; }
 void RHMapFocusWidget::FUN_00541060() {}
 
-void RHMenuCampaignMap::FUN_00527870() {}
+void RHUnk00527870::FUN_00527870() {}

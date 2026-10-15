@@ -15,29 +15,7 @@ float g_rhuirendererportrait_percent = 100.0f;
 // LIBRARY: GAME 0x005cac40
 // ?find@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@QBEIPBGII@Z
 
-class RHPortraitRenderer0060d470
-{
-public:
-    RHPortraitRenderer0060d470();
-    ~RHPortraitRenderer0060d470();
-    unsigned int m_vptr; // 0x00
-    char m_04[0x48];     // 0x04
-};
-
-// SIZE 0x64
-class RHUnk005cbb80 : public RHPortraitRenderer0060d470
-{
-public:
-    RHUnk005cbb80();
-    ~RHUnk005cbb80();
-    void *FUN_005cbbb0(unsigned flags);
-    unsigned int m_4c; // 0x4c
-    unsigned int m_50; // 0x50
-    unsigned int m_54; // 0x54
-    unsigned int m_58; // 0x58
-    unsigned int m_5c; // 0x5c
-    unsigned int m_60; // 0x60
-};
+#include "RHUnk005cbb80.h"
 
 // FUNCTION: GAME 0x005cbb80
 RHUnk005cbb80::RHUnk005cbb80()

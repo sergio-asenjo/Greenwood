@@ -32,11 +32,7 @@ public:
     undefined m_00[0x70]; // 0x00
 };
 
-class RHPortraitRootLifetime
-{
-public:
-    void *FUN_0061a6e0(const void *input);
-};
+#include "RHPortraitRootLifetime.h"
 
 class SBFrameWnd
 {

@@ -15,12 +15,7 @@ template <class T> inline const T &RHMobileField(const void *object, unsigned of
     return *(const T *)((const char *)object + offset);
 }
 
-class RHElementMobile;
-class RHUnkWaypointRef
-{
-public:
-    int Unk00408750(RHElementMobile *mobile);
-};
+#include "RHUnkWaypointRef.h"
 extern char g_unk0x6c0691;
 
 // SIZE 0x08

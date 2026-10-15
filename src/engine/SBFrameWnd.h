@@ -2,6 +2,7 @@
 #define SBFRAMEWND_H
 
 #include "Decomp.h"
+#include "RHPortraitRootLifetime.h"
 
 class SBGeoPoint2D
 {
@@ -52,14 +53,6 @@ public:
 class RHUnk005ef320;
 extern RHUnk005ef320 *g_unk0x6c11d0;
 
-struct SBFrameInputEvent
-{
-    int type;
-    void *widget;
-    void *data;
-    SBFrameInputEvent *next;
-};
-
 struct SBFrameEvent
 {
     undefined m_00[0x1c];
@@ -81,72 +74,6 @@ public:
     virtual void V24() = 0;
     virtual void V28() = 0;
     virtual void V2c(const SBGeoBoundingBox2D &bounds) = 0;
-};
-
-struct SBFrameWidgetNode
-{
-    SBFrameWidgetNode *next;
-    SBFrameWidgetNode *previous;
-    SBFrameWidgetView *widget;
-};
-
-struct SBFrameWidgetIterator
-{
-    SBFrameWidgetNode *node;
-    SBFrameWidgetIterator(SBFrameWidgetNode *value = 0) : node(value) {}
-    SBFrameWidgetIterator &operator++() { node = node->next; return *this; }
-    SBFrameWidgetView *&operator*() { return node->widget; }
-};
-
-struct SBFrameWidgetFindList
-{
-    unsigned allocator;
-    SBFrameWidgetNode *head;
-    int count;
-    SBFrameWidgetIterator cursor;
-    bool dirty;
-    undefined m_11[3];
-    int index;
-    bool cursorValid;
-    undefined m_19[3];
-    int result;
-    SBFrameWidgetView *current;
-
-    int Find(SBFrameWidgetView *widget)
-    {
-        current = widget;
-        cursorValid = true;
-        cursor = SBFrameWidgetIterator(head->next);
-        return Search(count);
-    }
-
-    int Find(SBFrameWidgetView *widget, int size)
-    {
-        current = widget;
-        cursorValid = true;
-        cursor = SBFrameWidgetIterator(head->next);
-        return Search(size);
-    }
-
-    int Search(int size)
-    {
-        int position;
-        for (position = 0; position < size; ++position) {
-            if (*cursor == current)
-                break;
-            ++cursor;
-        }
-        if (position < size) {
-            result = position;
-            dirty = false;
-            index = position;
-        } else {
-            dirty = true;
-            result = -1;
-        }
-        return result;
-    }
-
 };
 
 class SBFrameWnd : public SBFrameWidgetView
@@ -177,26 +104,6 @@ public:
     SBFrameInputEvent m_input;
 
     int Size() const { return m_first == 0 ? 0 : m_last - m_first; }
-};
-
-class RHMapTitleText;
-class RHMapBox;
-
-class RHMenuCampaignMap : public SBFrameWnd
-{
-public:
-    bool FUN_0061a1e0(const RHMapTitleText &title, const RHMapBox &box, unsigned flags);
-};
-
-class RHPortraitRootLifetime : public SBFrameWnd
-{
-public:
-    ~RHPortraitRootLifetime();
-    void *FUN_0061a070(unsigned flags);
-    bool FUN_0061a800(void *widget);
-    bool FUN_0061a920(void *widget);
-    bool FUN_0061aa30(void *widget);
-    void *FUN_0061a6e0(const void *input);
 };
 
 #endif

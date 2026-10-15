@@ -46,6 +46,8 @@
 
 #include "SBNullstr.h"
 #include "RHMenuDialogue.h"
+#include "RHMapWindowPart.h"
+#include "RHMenuScreenView.h"
 #include <stdlib.h>
 
 typedef char RHMenuDialogueSize[(sizeof(RHMenuDialogue) == 0x55c) ? 1 : -1];
@@ -90,14 +92,6 @@ public:
     void FUN_00544b80(bool, bool);
 };
 
-class RHMenuScreenView
-{
-public:
-    RHMenuScreenView(unsigned long, long, bool, bool, void *);
-    ~RHMenuScreenView();
-    unsigned char m_bytes[0x1990];
-};
-
 extern RHUnk0048a970 *g_unk0x6c0b3c;
 
 class RHMapWideText;
@@ -126,12 +120,6 @@ class RHMenuWindowScreen
 {
 public:
     RHMenuWindowUI *FUN_0053bf30();
-};
-
-class RHMapWindowPart
-{
-public:
-    void FUN_00618850(void *);
 };
 
 class RHDialogueTextView
@@ -439,12 +427,8 @@ void RHMenuDialogue::UpdatePortrait()
     portrait->V38(frame);
 }
 
-class RHUnk005cba10
-{
-public:
-    bool FUN_005cba10(unsigned);
-    void FUN_005cbc80(unsigned);
-};
+#include "rhuirenderer_005cb420.h"
+#include "RHUnk005cbb80.h"
 
 class RHUnk0052b860
 {
@@ -563,26 +547,8 @@ unsigned *RHUnk0052bbb0::FUN_0052bbd0(unsigned index)
 // FUNCTION: GAME 0x0052bc20
 void RHUnk0052b860::FUN_0052bc20()
 {
-    ((RHUnk005cba10 *)((char *)this + 0x80))->FUN_005cbc80(V24());
+    ((RHUnk005cbb80 *)((char *)this + 0x80))->FUN_005cbc80(V24());
 }
-
-class SBGeoPoint2D
-{
-public:
-    ~SBGeoPoint2D();
-    SBGeoPoint2D Unk005fc110(const SBGeoPoint2D &other) const;
-    float m_x;
-    float m_y;
-};
-
-class SBGeoBoundingBox2D
-{
-public:
-    bool FUN_006083b0(const SBGeoPoint2D &point) const;
-    SBGeoPoint2D m_min;
-    SBGeoPoint2D m_max;
-    bool m_flag;
-};
 
 class RHGameWidgetRendererCalls
 {

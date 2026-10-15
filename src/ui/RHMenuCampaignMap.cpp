@@ -1,8 +1,11 @@
 #include "RHMenuCampaignMap.h"
+#include "RHPortraitRootLifetime.h"
+#include "RHMenuScreenView.h"
+#include "RHUnk00527870.h"
 #include <windows.h>
 #include <stdio.h>
+#include <stddef.h>
 
-#define DECOMP_SIZE_ASSERT(T, S) namespace { typedef int T##_size_assert[(sizeof(T) == S) ? 1 : -1]; }
 DECOMP_SIZE_ASSERT(RHMapWideText, 0x10)
 DECOMP_SIZE_ASSERT(RHMapTitleText, 0x10)
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
@@ -587,7 +590,7 @@ unsigned RHUnk00528ad0::FUN_00528be0()
 }
 
 // FUNCTION: GAME 0x00528c70
-void *RHMenuCampaignMap::FUN_00528c70(unsigned flags)
+void *RHUnk00527870::FUN_00528c70(unsigned flags)
 {
     FUN_00527870();
     if (flags & 1)
@@ -602,6 +605,7 @@ void EmitRHMapBlink(RHUnk00528a80 *text, RHUnk00528ad0 *blink)
     blink->FUN_00528b70();
     blink->FUN_00528bb0();
     blink->FUN_00528be0();
+    ((RHUnk00527870 *)blink)->FUN_00528c70(0);
 }
 
 class RHUnk00641782
@@ -683,106 +687,45 @@ public:
 class RHUnk0048a970;
 extern RHUnk0048a970 *g_unk0x6c0b3c;
 
-class SBUILifetime
-{
-public:
-    SBUILifetime();
-    ~SBUILifetime();
-    undefined m_00[0x17f8];
-};
-
-class SBUIUnkSurface
-{
-public:
-    SBUIUnkSurface(unsigned long surface);
-    ~SBUIUnkSurface();
-    undefined m_00[0x20];
-};
-
 class SBThreadedInput;
 extern SBThreadedInput *g_unk0x6c1340;
 
-struct RHMapScreenNode
+inline RHMapScreenTree::RHMapScreenTree(const RHMapScreenLess &comp, bool multi, const RHMapScreenAlloc &alloc)
+    : m_alloc(alloc), m_comp(comp), m_multi(multi)
 {
-    RHMapScreenNode *left;
-    RHMapScreenNode *parent;
-    RHMapScreenNode *right;
-    undefined m_0c[0x14];
-    int color;
-};
+    Init();
+}
 
-struct RHMapScreenLess
+inline RHMapScreenNode *RHMapScreenTree::Buynode(RHMapScreenNode *parent, int color)
 {
-};
+    RHMapScreenNode *node = (RHMapScreenNode *)operator new(sizeof(RHMapScreenNode));
+    node->parent = parent;
+    node->color = color;
+    return node;
+}
 
-struct RHMapScreenAlloc
+inline void RHMapScreenTree::Init()
 {
-};
-
-class RHMapScreenTree
-{
-public:
-    RHMapScreenTree(const RHMapScreenLess &comp, bool multi, const RHMapScreenAlloc &alloc)
-        : m_alloc(alloc), m_comp(comp), m_multi(multi)
-    {
-        Init();
+    RHUnk00641782 lock;
+    if ((RHMapScreenNode *)g_unk0x006c0c28 == 0) {
+        g_unk0x006c0c28 = (RHMapTreeNode *)Buynode(0, 1);
+        g_unk0x006c0c28->left = 0;
+        g_unk0x006c0c28->right = 0;
     }
-    ~RHMapScreenTree();
-    static RHMapScreenNode *Buynode(RHMapScreenNode *parent, int color)
-    {
-        RHMapScreenNode *node = (RHMapScreenNode *)operator new(sizeof(RHMapScreenNode));
-        node->parent = parent;
-        node->color = color;
-        return node;
-    }
-    void Init()
-    {
-        RHUnk00641782 lock;
-        if ((RHMapScreenNode *)g_unk0x006c0c28 == 0) {
-            g_unk0x006c0c28 = (RHMapTreeNode *)Buynode(0, 1);
-            g_unk0x006c0c28->left = 0;
-            g_unk0x006c0c28->right = 0;
-        }
-        ++g_unk0x006c0c24;
-        m_head = Buynode((RHMapScreenNode *)g_unk0x006c0c28, 0);
-        m_size = 0;
-        m_head->left = m_head;
-        m_head->right = m_head;
-    }
-    RHMapScreenAlloc m_alloc;
-    RHMapScreenLess m_comp;
-    undefined m_02[2];
-    RHMapScreenNode *m_head;
-    bool m_multi;
-    undefined m_09[3];
-    unsigned m_size;
-};
-
-class RHMenuScreenView
-{
-public:
-    RHMenuScreenView(unsigned long flags, long background, bool colorize, bool pause, void *ui);
-    RHMenuScreenView(unsigned long flags, long background, unsigned short color, void *ui);
-    static void *FUN_0053b730(long background, unsigned short color);
-    void FUN_0053c140(unsigned long flags);
-
-    void *m_ui;
-    unsigned long m_04;
-    unsigned long m_08;
-    void *m_background;
-    SBUILifetime m_sbui;
-    undefined m_1808[0x10c];
-    unsigned long m_1914;
-    SBThreadedInput *m_input;
-    std::deque<std::vector<void *> > m_191c;
-    SBUIUnkSurface m_surfaces;
-    RHMapScreenTree m_196c;
-    bool m_197c;
-    std::list<RHMapWindow::Timer> m_1980;
-    unsigned long m_198c;
-};
+    ++g_unk0x006c0c24;
+    m_head = Buynode((RHMapScreenNode *)g_unk0x006c0c28, 0);
+    m_size = 0;
+    m_head->left = m_head;
+    m_head->right = m_head;
+}
 
 DECOMP_SIZE_ASSERT(RHMenuScreenView, 0x1990)
+DECOMP_STATIC_ASSERT(offsetof(RHMenuScreenView, m_sbui) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHMenuScreenView, m_191c) == 0x191c)
+DECOMP_STATIC_ASSERT(offsetof(RHMenuScreenView, m_surfaces) == 0x194c)
+DECOMP_STATIC_ASSERT(offsetof(RHMenuScreenView, m_196c) == 0x196c)
+DECOMP_STATIC_ASSERT(offsetof(RHMenuScreenView, m_1980) == 0x1980)
+DECOMP_STATIC_ASSERT(offsetof(RHMenuScreenView, m_198c) == 0x198c)
 
 // FUNCTION: GAME 0x0053aaa0
 RHMenuScreenView::RHMenuScreenView(unsigned long flags, long background, bool colorize, bool pause, void *ui)
@@ -869,7 +812,7 @@ void (*g_rhMapWidgetsConstruct)(std::vector<void *> *, const std::vector<void *>
 // FUNCTION: GAME 0x00544b40
 bool RHMenuCampaignMap::FUN_00544b40(const RHMapTitleText &title, const RHMapBox &box, unsigned flags)
 {
-    return FUN_0061a1e0(title, box, flags);
+    return ((RHPortraitRootLifetime *)this)->FUN_0061a1e0(title, box, flags);
 }
 
 // FUNCTION: GAME 0x00607c10
@@ -893,7 +836,6 @@ void RHMenuCampaignMap::Emit()
     FUN_00528550(0, 0, 0);
     campaign->FUN_005286b0();
     FUN_00528a60();
-    FUN_00528c70(0);
 }
 
 void EmitRHMapTree(RHMapTree *tree)

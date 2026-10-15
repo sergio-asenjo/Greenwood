@@ -2,6 +2,7 @@
 #define RHELEMENTACTORPC_CALLS_H
 
 #include "RHElementBonus.h"
+#include "RHMessage.h"
 #include "Decomp.h"
 #include <string>
 #include <vector>
@@ -270,16 +271,6 @@ class RHUnk0046eb30
 {
 public:
     RHScriptNode *Unk0059f720(RHScriptNode *next, RHScriptNode *previous);
-};
-
-// SIZE 0xc
-class RHMessage
-{
-public:
-    RHMessage(int type, int value);
-    ~RHMessage();
-    undefined4 m_0; // 0x00
-    undefined m_4[8]; // 0x04
 };
 
 // SIZE 0x14

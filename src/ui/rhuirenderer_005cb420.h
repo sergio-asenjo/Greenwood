@@ -8,6 +8,7 @@ class SBGeoPoint2D
 {
 public:
     ~SBGeoPoint2D();
+    SBGeoPoint2D Unk005fc110(const SBGeoPoint2D &other) const;
     float m_x; // 0x00
     float m_y; // 0x04
 };
@@ -26,6 +27,7 @@ public:
     SBGeoBoundingBox2D(const SBGeoBoundingBox2D &other);
     ~SBGeoBoundingBox2D() {}
     SBGeoBoundingBox2D &FUN_00607da0(const SBGeoBoundingBox2D &other);
+    bool FUN_006083b0(const SBGeoPoint2D &point) const;
     void SetMaxX(float x)
     {
         m_10 = true;

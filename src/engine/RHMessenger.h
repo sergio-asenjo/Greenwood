@@ -12,6 +12,7 @@
 // are laid out; everything else is opaque padding.
 
 #include "SB.h"
+#include "RHMessage.h"
 
 // A 0x10-byte value object constructed on a stack temporary and passed by
 // reference to RHMessenger::SerializeLockUser's action callee. Layout derived
@@ -20,19 +21,6 @@
 // deliberately unproven: no Windows-side __FILE__/tag/string names the type, so
 // it stays named by address (docs/05-naming.md). Defined once in
 // RHMessenger_stubs.cpp.
-// SIZE 0xc
-class RHMessage
-{
-public:
-    RHMessage(int type, int value);
-    RHMessage(int type);
-    ~RHMessage();
-    void *FUN_00549050(unsigned flags);
-    unsigned m_vptr; // 0x00
-    int m_type;      // 0x04
-    int m_value;     // 0x08
-};
-
 // SIZE 0x10
 class RHUnk5490f0 : public RHMessage
 {

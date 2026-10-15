@@ -2,6 +2,7 @@
 #include <vector>
 
 DECOMP_SIZE_ASSERT(SBUI, 0x17f8)
+DECOMP_SIZE_ASSERT(RHMapWindowPart, 0x17f8)
 
 class SBGeoPoint2D
 {

@@ -116,13 +116,7 @@ bool RHMenuGraphics::HandleEvent(RHMenuEvent *event)
     return handled;
 }
 
-class RHMenuScreenView
-{
-public:
-    RHMenuScreenView(unsigned long flags, long background, unsigned short color, void *ui);
-    ~RHMenuScreenView();
-    unsigned char m_bytes[0x1990];
-};
+#include "RHMenuScreenView.h"
 
 class RHMenuWindowFocus
 {

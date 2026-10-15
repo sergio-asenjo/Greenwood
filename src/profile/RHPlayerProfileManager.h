@@ -64,17 +64,7 @@ public:
     static void CopyData(RHSequenceElement **, RHSequenceElement *const *);
 };
 
-// SIZE 0x18
-class RHSaveGameManager
-{
-public:
-    RHSaveGameManager();
-    ~RHSaveGameManager();
-    virtual std::string GetSaveGameDirectory() const = 0; // vtable+0x00
-    bool Serialize(SBFile &file);
-    undefined4 m_04; // 0x04
-    undefined m_08[0x10]; // 0x08
-};
+#include "RHSaveGameManager.h"
 
 // SIZE 0x08
 class RHKeyConfig

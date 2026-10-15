@@ -1404,7 +1404,7 @@ bool RHPortraitButton::FUN_005d1e30(int mode, const std::wstring &text, int reso
         if (bounds.m_second.m_x - bounds.m_first.m_x == g_unk0x00677488)
             bounds.FUN_00607da0(*(SBGeoBoundingBox2D *)((SBUIUnk0060d530 *)renderer)->FUN_0060d690());
     }
-    ((RHPortraitRendererCalls *)((char *)this + 0x80))->FUN_005cae10(mode);
+    ((RHPortraitRenderer005cadc0 *)((char *)this + 0x80))->FUN_005cae10(mode);
     return true;
 }
 
@@ -1576,7 +1576,7 @@ inline RHPortraitButtonBase::~RHPortraitButtonBase()
 void RHPortraitButtonBase::FUN_005d24c0()
 {
     unsigned id = ((RHPortraitButtonDispatch *)this)->v9();
-    ((RHPortraitRendererCalls *)&m_renderer)->FUN_005cafa0(id);
+    ((RHPortraitRenderer005cadc0 *)&m_renderer)->FUN_005cafa0(id);
 }
 
 // FUNCTION: GAME 0x005d24f0
@@ -2701,7 +2701,7 @@ bool RHPortraitUnk005d3880::FUN_005d4bb0(int mode, const std::wstring &text, con
         if (bounds.m_second.m_x - bounds.m_first.m_x == g_unk0x00677488)
             ((RHMobileUnk00607da0 *)&bounds)->FUN_00607da0(*(RHMobileUnk00607da0 *)((SBUIUnk0060d530 *)renderer)->FUN_0060d690());
     }
-    ((RHPortraitRendererCalls *)((char *)this + 0x80))->FUN_005cae10(mode);
+    ((RHPortraitRenderer005cadc0 *)((char *)this + 0x80))->FUN_005cae10(mode);
     return true;
 }
 
@@ -3168,13 +3168,13 @@ RHUnk00514e10::Node *RHPortraitTree::FUN_005d5840(const RHPortraitWidgetEvent &e
 // FUNCTION: GAME 0x005d5940
 void RHPortraitUnk005d5950::FUN_005d5940()
 {
-    ((RHPortraitRendererCalls *)((char *)this + 0x80))->FUN_005cb2a0();
+    ((RHGameRenderer005cb220 *)((char *)this + 0x80))->FUN_005cb2a0();
 }
 
 // FUNCTION: GAME 0x005d5950
 void RHPortraitUnk005d5950::FUN_005d5950(int value)
 {
-    ((RHPortraitRendererCalls *)((char *)this + 0x80))->FUN_005cb2b0(value);
+    ((RHGameRenderer005cb220 *)((char *)this + 0x80))->FUN_005cb2b0(value);
 }
 
 // Parked: Subobject constructor inlining and temporary-string EH coloring differ.
@@ -3496,7 +3496,7 @@ bool RHGamePortraitCalls::FUN_005d8f20(unsigned index)
         void *previous = *(void **)((char *)this + index * 4 + 0xc88);
         RHUnk005d92c0Sub &widget = W(0x97c + index * 0x104);
         *(void **)((char *)this + index * 4 + 0xc88) = widget.v20();
-        widget.v10(previous);
+        widget.v10((long)previous);
         *((char *)this + index + 0xc94) = 1;
     }
     char *slot = (char *)this + index * 0x104;
@@ -3523,7 +3523,7 @@ bool RHGamePortraitCalls::FUN_005d8fa0(unsigned index, int enabled)
         void *previous = *(void **)((char *)this + index * 4 + 0xc88);
         RHUnk005d92c0Sub &widget = W(0x97c + index * 0x104);
         *(void **)((char *)this + index * 4 + 0xc88) = widget.v20();
-        widget.v10(previous);
+        widget.v10((long)previous);
         *((char *)this + index + 0xc94) = 0;
     }
     char *slot = (char *)this + index * 0x104;

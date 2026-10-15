@@ -831,7 +831,7 @@ RHUnk005492a0::RHUnk005492a0(int command, void *actor, int action)
 {
     m_c = command;
     m_10 = actor;
-    m_0 = 0x679b6c;
+    m_vptr = 0x679b6c;
 }
 
 // FUNCTION: GAME 0x0055fa10

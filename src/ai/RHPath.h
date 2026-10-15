@@ -117,16 +117,7 @@ public:
     RHPathHistoryList m_c; // +0x0c
 };
 
-// SIZE 0x04
-class RHElementMobile;
-
-class RHUnkWaypointRef
-{
-public:
-    RHWaypoint *m_0; // +0x00
-    int Unk00408660();
-    int Unk00408750(RHElementMobile *mobile);
-};
+#include "RHUnkWaypointRef.h"
 
 // SIZE 0x7c
 class RHWaypoint

@@ -6,6 +6,8 @@
 #include <list>
 #include <deque>
 #include "SB.h"
+#include "RHMenuCampaignMapClass.h"
+#include "RHMenuScreenTimer.h"
 
 typedef unsigned char undefined;
 typedef unsigned short undefined2;
@@ -58,11 +60,6 @@ public:
         }
     }
     ~RHMapTitleText() { ((RHMapWideText *)this)->Tidy(true); }
-};
-
-struct RHMapByte
-{
-    signed char value;
 };
 
 // SIZE 0x08
@@ -143,12 +140,7 @@ public:
     unsigned m_1ac; // +0x1ac
 };
 
-class RHMapWindowPart
-{
-public:
-    void FUN_00618850(void *);
-    bool FUN_00619ad0(void *);
-};
+#include "RHMapWindowPart.h"
 
 // SIZE 0x1990
 class RHMapWindow
@@ -160,12 +152,7 @@ public:
     void FUN_0053bb30(unsigned);
     void FUN_0053bbe0();
     void FUN_0053c7e0();
-    struct Timer
-    {
-        unsigned m_00; // 0x00
-        unsigned m_04; // 0x04
-        unsigned m_08; // 0x08
-    };
+    typedef RHMenuScreenTimer Timer;
     undefined m_00[0x191c]; // 0x00
     std::deque<std::vector<void *> > m_191c; // 0x191c
     undefined m_194c[0x34]; // 0x194c
@@ -197,45 +184,6 @@ class RHMapResources
 public:
     bool FUN_00600fc0(unsigned);
     bool FUN_006009e0(unsigned, unsigned, RHMapWideText &);
-};
-
-// SIZE 0x2704
-class RHMenuCampaignMap
-{
-public:
-    void FUN_00527870();
-    void *FUN_00528c70(unsigned flags);
-    virtual void V00(); // vtable+0x00
-    virtual void V04(); // vtable+0x04
-    virtual void V08(); // vtable+0x08
-    virtual void V0c(); // vtable+0x0c
-    virtual void V10(); // vtable+0x10
-    virtual void V14(); // vtable+0x14
-    virtual void V18(); // vtable+0x18
-    virtual void V1c(); // vtable+0x1c
-    virtual void V20(); // vtable+0x20
-    virtual void V24(); // vtable+0x24
-    virtual void V28(); // vtable+0x28
-    virtual void V2c(); // vtable+0x2c
-    virtual void V30(void *); // vtable+0x30
-    virtual void V34(); // vtable+0x34
-    virtual void V38(void *); // vtable+0x38
-    virtual void V3c(void *); // vtable+0x3c
-    bool Create();
-    void DisplayPseudoMissionDebriefing();
-    bool FUN_00544b40(const RHMapTitleText &, const RHMapBox &, unsigned);
-    bool FUN_0061a1e0(const RHMapTitleText &, const RHMapBox &, unsigned);
-    void FUN_00527a70(RHMapByte);
-    void FUN_00527ae0(RHMapByte);
-    void FUN_00527c00(const std::vector<void *> &);
-    void FUN_005284b0();
-    bool FUN_00528520(unsigned, unsigned, unsigned);
-    bool FUN_00528550(unsigned, unsigned, unsigned);
-    void FUN_00528810();
-    void FUN_00528a60();
-    void Emit();
-    char m_04[0x26fc]; // +0x04; this+0x5d flag, +0xb4 window, +0xcc widget
-    unsigned m_2700; // +0x2700; location array +0x19c (stride 0x27c), arrows +0x1a74 (stride 0xcc), widget +0x25ec
 };
 
 class RHUnk00452030

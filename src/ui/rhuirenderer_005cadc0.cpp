@@ -32,7 +32,7 @@ RHPortraitRenderer005cadc0::~RHPortraitRenderer005cadc0()
 }
 
 // FUNCTION: GAME 0x005cae10
-void RHPortraitRendererCalls::FUN_005cae10(int screen)
+void RHPortraitRenderer005cadc0::FUN_005cae10(int screen)
 {
     if (screen)
     {
@@ -44,7 +44,7 @@ void RHPortraitRendererCalls::FUN_005cae10(int screen)
 }
 
 // FUNCTION: GAME 0x005cafa0
-bool RHPortraitRendererCalls::FUN_005cafa0(unsigned id)
+bool RHPortraitRenderer005cadc0::FUN_005cafa0(unsigned id)
 {
     if (((SBUIUnk0060dae0 *)this)->FUN_0060dae0(id))
     {

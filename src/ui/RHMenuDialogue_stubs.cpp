@@ -31,14 +31,10 @@ float RHSound::GetDialogVolume() { return 0.0f; }
 bool RHSound::IsDialogFinished() { return true; }
 void RHSound::PauseDialog() {}
 
-class RHUnk005cba10
-{
-public:
-    bool FUN_005cba10(unsigned);
-    void FUN_005cbc80(unsigned);
-};
+#include "rhuirenderer_005cb420.h"
+#include "RHUnk005cbb80.h"
 
-void RHUnk005cba10::FUN_005cbc80(unsigned) {}
+bool RHUnk005cbb80::FUN_005cbc80(unsigned) { return false; }
 
 RHMenuDialogue::RHMenuDialogue(RHMenuScreenView *, unsigned long) {}
 RHMenuDialogue::~RHMenuDialogue() {}

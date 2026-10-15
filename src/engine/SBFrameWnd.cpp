@@ -1,8 +1,14 @@
 #include "SBFrameWnd.h"
 #include <list>
 #include <string>
+#include <stddef.h>
 
 DECOMP_SIZE_ASSERT(SBFrameWnd, 0xa0)
+DECOMP_SIZE_ASSERT(RHPortraitRootLifetime, 0xa0)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitRootLifetime, m_flags) == 0x34)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitRootLifetime, m_excluded) == 0x38)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitRootLifetime, m_bounds) == 0x70)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitRootLifetime, m_input) == 0x90)
 
 // FUNCTION: GAME 0x0061a070
 void *RHPortraitRootLifetime::FUN_0061a070(unsigned flags)
@@ -14,7 +20,7 @@ void *RHPortraitRootLifetime::FUN_0061a070(unsigned flags)
 }
 
 // FUNCTION: GAME 0x0061a1e0
-bool RHMenuCampaignMap::FUN_0061a1e0(const RHMapTitleText &title, const RHMapBox &box, unsigned flags)
+bool RHPortraitRootLifetime::FUN_0061a1e0(const RHMapTitleText &title, const RHMapBox &box, unsigned flags)
 {
     m_input.widget = this;
     m_input.data = 0;
@@ -169,7 +175,7 @@ void *RHPortraitRootLifetime::FUN_0061a6e0(const void *input)
     if (m_enabled && m_visible) {
         SBFrameInputEvent *first;
         SBFrameInputEvent *last;
-        if (m_bounds.FUN_00608400(*(const SBGeoPoint2D *)input) == true) {
+        if (((SBGeoBoundingBox2D *)m_bounds)->FUN_00608400(*(const SBGeoPoint2D *)input) == true) {
             m_input.next = 0;
             first = &m_input;
             last = first;
@@ -210,7 +216,7 @@ bool RHPortraitRootLifetime::FUN_0061a800(void *item)
     if (m_draw != 0)
         widget->V04(m_display);
     SBGeoVector2D offset(*(SBGeoPoint2D *)((char *)widget + 0x30));
-    widget->V20(m_bounds.m_0.Unk005fc190(offset));
+    widget->V20(((SBGeoBoundingBox2D *)m_bounds)->m_0.Unk005fc190(offset));
     return true;
 }
 
@@ -365,7 +371,7 @@ void SBFrameWnd::FUN_0061ad20(const SBGeoBoundingBox2D &bounds)
 
 void EmitSBFrameWnd(SBFrameWnd *window)
 {
-    ((RHMenuCampaignMap *)window)->FUN_0061a1e0(*(RHMapTitleText *)0, *(RHMapBox *)0, 0);
+    ((RHPortraitRootLifetime *)window)->FUN_0061a1e0(*(RHMapTitleText *)0, *(RHMapBox *)0, 0);
     window->FUN_0061a350(0);
     window->FUN_0061a3a0();
     window->FUN_0061a430(window->m_bounds);

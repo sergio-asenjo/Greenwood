@@ -1499,36 +1499,6 @@ void RHUnk00514e10::Iterator::FUN_00515a90()
 
 #include "SBUIRenderer.h"
 
-class SBGeoPoint2D
-{
-public:
-    ~SBGeoPoint2D();
-    SBGeoPoint2D Unk005fc110(const SBGeoPoint2D &other) const;
-    float m_x;
-    float m_y;
-};
-
-class SBGeoVector2D;
-
-class SBGeoBoundingBox2D
-{
-public:
-    bool FUN_006083b0(const SBGeoPoint2D &point) const;
-    bool Unk00608f30() const;
-    void FUN_00607d90();
-    SBGeoBoundingBox2D &FUN_00607da0(const SBGeoBoundingBox2D &other);
-    SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &offset) const;
-    SBGeoPoint2D m_min;
-    SBGeoPoint2D m_max;
-    bool m_flag;
-};
-
-class SBGeoVector2D : public SBGeoPoint2D
-{
-public:
-    SBGeoVector2D(float x, float y);
-};
-
 extern float g_unk0x00677488;
 
 struct RHGameWidgetInput
@@ -1774,7 +1744,7 @@ RHGameLifetime00515f00::~RHGameLifetime00515f00()
 // FUNCTION: GAME 0x00515f60
 void RHUnk00515f80::FUN_00515f60()
 {
-    ((RHGameWidgetRendererCalls *)((char *)this + 0x80))->FUN_005cb270(((RHGameWidgetDispatch *)this)->v9());
+    ((RHGameRenderer005cb220 *)((char *)this + 0x80))->FUN_005cb270(((RHGameWidgetDispatch *)this)->v9());
 }
 
 // FUNCTION: GAME 0x00515f80
@@ -2455,8 +2425,8 @@ void RHUnk00516d20::FUN_00517000()
 {
     SBGeoBoundingBox2D &bounds = *(SBGeoBoundingBox2D *)((char *)this + 0xe8);
     if (bounds.Unk00608f30() &&
-        bounds.m_max.m_x - bounds.m_min.m_x > g_unk0x00677488 &&
-        bounds.m_max.m_y - bounds.m_min.m_y > g_unk0x00677488)
+        bounds.m_second.m_x - bounds.m_first.m_x > g_unk0x00677488 &&
+        bounds.m_second.m_y - bounds.m_first.m_y > g_unk0x00677488)
         ((SBGeoBoundingBox2D *)((char *)this + 0x30))->FUN_00607da0(
             bounds.FUN_006090d0(SBGeoVector2D((float)*(unsigned short *)((char *)this + 0xe4), 0.0f)));
     if (*(unsigned short *)((char *)this + 0xe4))
