@@ -69,6 +69,25 @@ void RHSaveGame::SynchronizeWithFile()
     }
 }
 
+struct _FILETIME
+{
+    unsigned long m_low;
+    unsigned long m_high;
+};
+
+extern "C" __declspec(dllimport) int __stdcall SystemTimeToFileTime(const _SYSTEMTIME *, _FILETIME *);
+extern "C" __declspec(dllimport) long __stdcall CompareFileTime(const _FILETIME *, const _FILETIME *);
+
+// FUNCTION: GAME 0x0056ee20
+bool RHSaveGame::operator<(const RHSaveGame &other) const
+{
+    _FILETIME mine;
+    _FILETIME theirs;
+    SystemTimeToFileTime(&GetTime(), &mine);
+    SystemTimeToFileTime(&other.GetTime(), &theirs);
+    return CompareFileTime(&mine, &theirs) > 0;
+}
+
 void RHSaveGame::Emit(SBFile &file, Header &header)
 {
     SerializeHeader(file, header);

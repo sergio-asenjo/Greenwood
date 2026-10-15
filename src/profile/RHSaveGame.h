@@ -5,6 +5,7 @@
 #include <string>
 
 class RHSaveGameManager;
+struct _SYSTEMTIME;
 
 class RHUnk005f4fc0 : public SBFile
 {
@@ -32,11 +33,16 @@ public:
     };
 
     RHSaveGame(RHSaveGameManager *mgr);
+    RHSaveGame(RHSaveGameManager *mgr, const std::string &fileName, const std::wstring &name);
     ~RHSaveGame();
     bool Serialize(SBFile &file);
     std::string FUN_0056e5d0() const;
     static bool SerializeHeader(SBFile &file, Header &header);
     void SynchronizeWithFile();
+    const _SYSTEMTIME &GetTime() const;
+    bool operator<(const RHSaveGame &other) const;
+    void CopyFiles(const RHSaveGame *source);
+    void SetText(const std::wstring &text);
     void Emit(SBFile &file, Header &header);
 
     char m_data[0x48]; // [0x00, 0x48): compatible with RHSaveGameManager.h

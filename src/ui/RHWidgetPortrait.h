@@ -226,7 +226,7 @@ public:
     void FUN_005cb2a0();
     void FUN_005cb2b0(int value);
     void FUN_005cae10(int mode);
-    void FUN_005cafa0(unsigned id);
+    bool FUN_005cafa0(unsigned id);
 };
 
 class RHPortraitRenderer005cadc0

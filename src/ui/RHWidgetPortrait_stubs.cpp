@@ -15,16 +15,10 @@
 
 char RHUnk005d73d0Actor::FUN_0049f510() { return 0; }
 void RHWidgetPortrait::FUN_005d9c30() {}
-void RHPortraitRendererCalls::FUN_005cb2a0() {}
-void RHPortraitRendererCalls::FUN_005cb2b0(int) {}
-RHPortraitRenderer005cadc0::RHPortraitRenderer005cadc0() {}
-RHPortraitRenderer005cadc0::~RHPortraitRenderer005cadc0() {}
 RHPortraitRenderer005ca330::RHPortraitRenderer005ca330() {}
 RHPortraitRenderer005ca330::~RHPortraitRenderer005ca330() {}
 RHPortraitRenderer005cc110::~RHPortraitRenderer005cc110() {}
 RHPortraitStrategyCalls::RHPortraitStrategyCalls() {}
-void RHPortraitRendererCalls::FUN_005cae10(int) {}
-void RHPortraitRendererCalls::FUN_005cafa0(unsigned) {}
 bool RHPortraitWidgetSetupCalls::FUN_0060d130(const std::wstring &, const SBGeoBoundingBox2D &, bool) { return true; }
 RHPortraitRootLifetime::RHPortraitRootLifetime() {}
 RHPortraitRootLifetime::~RHPortraitRootLifetime() {}

@@ -1,8 +1,6 @@
 #include "SBNullstr.h"
 #include "RHPlayerProfileManager.h"
 
-RHSaveGameManager::RHSaveGameManager() {}
-RHSaveGameManager::~RHSaveGameManager() {}
 RHKeyConfig::RHKeyConfig() {}
 RHKeyConfig::~RHKeyConfig() { operator delete(m_keys); }
 RHSoundConfig::RHSoundConfig() {}

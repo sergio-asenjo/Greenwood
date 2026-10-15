@@ -12,13 +12,33 @@
 // targets.
 
 #include "SBNullstr.h"
-#include "RHSaveGameManager.h"
+#include "RHSaveGame.h"
+
+class RHSaveGameArrayCalls
+{
+public:
+    void FUN_00570360();
+};
+
+void RHSaveGameArrayCalls::FUN_00570360() {}
 
 // Target 0x0056e250 (initialises the 0x48-byte RHSaveGame).
 RHSaveGame::RHSaveGame(RHSaveGameManager *) {}
 
-// Target 0x0056fd90 (releases the three string-like members at +0x0c/+0x1c/+0x2c).
-RHSaveGame::~RHSaveGame() {}
+RHSaveGame::RHSaveGame(RHSaveGameManager *, const std::string &, const std::wstring &) {}
+
+// FUNCTION: GAME 0x0056fd90
+RHSaveGame::~RHSaveGame()
+{
+    typedef std::string NarrowString;
+    typedef std::wstring WideString;
+    ((WideString *)(m_data + 0x28))->~WideString();
+    ((NarrowString *)(m_data + 0x18))->~NarrowString();
+    ((NarrowString *)(m_data + 0x08))->~NarrowString();
+}
+
+void RHSaveGame::CopyFiles(const RHSaveGame *) {}
+void RHSaveGame::SetText(const std::wstring &) {}
 
 // Target 0x0056ea20 (writes the "RHSaveGame" tag).
 bool RHSaveGame::Serialize(SBFile &) { return true; }
