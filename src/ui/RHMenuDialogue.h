@@ -7,6 +7,8 @@
 //   - the engine singleton pointer lives in the global at 0x006c0a88.
 
 #include "SB.h"
+#include <string>
+#include <vector>
 
 // A dialogue entry: the indexed stride is 24 bytes on Windows (target
 // 0x0052b2e0 does `(end - begin) / 24` and `begin + id * 24`). The internal
@@ -44,7 +46,40 @@ extern RHEngine *g_pEngine;
 class RHMenuDialogue
 {
 public:
+    RHMenuDialogue(class RHMenuScreenView *, unsigned long);
+    ~RHMenuDialogue();
+    void *FUN_0052a810(unsigned flags);
+    bool Create();
+    static void Display(const std::vector<unsigned long> &);
+    static void Display(unsigned long);
+    static void Display(class RHSequenceElement *);
+    static void DisplayAll();
+    static void DisplaySingleDialogue(class RHMenuScreenView *, unsigned long);
+    void RouteEvent(struct RHMenuEvent *event);
+    bool HandleEvent(struct RHMenuEvent *event);
+    bool OnSkip(int message, void *widget, void *data);
+    bool OnTimer(int message, void *widget, void *data);
+    bool GetNextSentence(std::wstring &text, std::string &sound, unsigned long &portrait);
+    void UpdateDialogue();
+    void UpdatePortrait();
     // Windows codegen calls this WITHOUT a `this` (no `mov ecx, this` at the
     // ctor call site, 0x0052a7b0), so on this build it is a static member.
     static RHDialogue *GetDialogue(unsigned long id);
+    unsigned char m_bytes[0x548];
+    RHDialogue *m_dialogue;
+    unsigned m_sentence;
+    unsigned char m_tail[0xc];
+};
+
+class RHDialogueWidgetLifetimeCalls
+{
+public:
+    void FUN_0052b890();
+    void FUN_0052bd90();
+    void FUN_0052be10();
+    void FUN_0052bf00();
+    void *FUN_0052bdf0(unsigned);
+    void *FUN_0052bec0(unsigned);
+    void *FUN_0052bee0(unsigned);
+    void *FUN_0052bf60(unsigned);
 };

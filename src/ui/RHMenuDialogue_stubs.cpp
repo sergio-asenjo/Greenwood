@@ -18,3 +18,34 @@ RHDialogueSet *RHEngine::GetDynResources(unsigned long) { return 0; }
 // The global entity at 0x006c0a88.
 // GLOBAL: GAME 0x006c0a88
 RHEngine *g_pEngine = 0;
+
+class RHSound
+{
+public:
+    float GetDialogVolume();
+    bool IsDialogFinished();
+    void PauseDialog();
+};
+
+float RHSound::GetDialogVolume() { return 0.0f; }
+bool RHSound::IsDialogFinished() { return true; }
+void RHSound::PauseDialog() {}
+
+class RHUnk005cba10
+{
+public:
+    void FUN_005cba10(unsigned);
+    void FUN_005cbc80(unsigned);
+};
+
+void RHUnk005cba10::FUN_005cba10(unsigned) {}
+void RHUnk005cba10::FUN_005cbc80(unsigned) {}
+
+RHMenuDialogue::RHMenuDialogue(RHMenuScreenView *, unsigned long) {}
+RHMenuDialogue::~RHMenuDialogue() {}
+bool RHMenuDialogue::Create() { return false; }
+
+void RHDialogueWidgetLifetimeCalls::FUN_0052b890() {}
+void RHDialogueWidgetLifetimeCalls::FUN_0052bd90() {}
+void RHDialogueWidgetLifetimeCalls::FUN_0052be10() {}
+void RHDialogueWidgetLifetimeCalls::FUN_0052bf00() {}
