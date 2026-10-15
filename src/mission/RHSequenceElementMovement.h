@@ -31,6 +31,8 @@ class RHSequenceElementMovement : public RHSequenceElement
 public:
     virtual bool Serialize(SBFile &file, bool pointers);
     void Emit(SBFile &file, bool pointers);
+    void FUN_00588d40(int value);
+    bool FUN_005897e0();
 
     RHSequenceElement *m_64;
     RHSequence *m_68;

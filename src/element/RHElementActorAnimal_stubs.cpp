@@ -1,7 +1,6 @@
 #include "RHElementActorAnimal.h"
 
 // Target 0x005883a0.
-RHUnk005883a0::RHUnk005883a0(unsigned short, int, void *, int, const SBGeoPoint2D &, void *, float, unsigned long) {}
 
 // Target 0x0048cca0.
 void RHElementActorNPC::Noise(int, RHAnimalNoisePosition &, float, void *) {}
