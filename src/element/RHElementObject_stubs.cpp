@@ -12,6 +12,51 @@
 #include "SBNullstr.h"
 #include "RHElementObject.h"
 
+class RHObjectConstructorCalls
+{
+public:
+    RHObjectConstructorCalls(unsigned long type, bool flag, int action);
+    ~RHObjectConstructorCalls();
+    unsigned char unknown[0x100];
+};
+
+RHObjectConstructorCalls::RHObjectConstructorCalls(unsigned long, bool, int)
+{
+}
+
+RHObjectConstructorCalls::~RHObjectConstructorCalls()
+{
+}
+
+
+class RHUnk0045aaf0
+{
+public:
+    bool FUN_0045abc0(unsigned short value, int first, int second);
+};
+
+bool RHUnk0045aaf0::FUN_0045abc0(unsigned short, int, int)
+{
+    return false;
+}
+
+class RHObjectUniqueView
+{
+public:
+    bool FUN_004b2d70();
+};
+
+bool RHObjectUniqueView::FUN_004b2d70()
+{
+    return false;
+}
+
+unsigned short RHObjectPCQuantity::FUN_0049d5e0(int)
+{
+    return 0;
+}
+
+
 // The nested sub-object serialiser at RHElementObject+0xbc (target 0x00521210)
 // is now the real RHUnk004b2190Member::Serialize defined in src/RHLine.cpp; the
 // declaration stays in include/RHElementObject.h.
