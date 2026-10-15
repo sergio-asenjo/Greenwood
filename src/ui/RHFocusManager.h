@@ -12,7 +12,7 @@ struct RHFocusEvent
 class RHFocusGroupableView
 {
 public:
-    virtual void V00() = 0;
+    virtual RHFocusEvent *V00() = 0;
     virtual void *V04() = 0;
     virtual void V08(bool hidden) = 0;
     virtual bool V0c(const void *position) = 0;
@@ -38,13 +38,22 @@ template <class T> struct RHFocusNode
 class RHFocusManager
 {
 public:
+    RHFocusManager(int orientation);
     void FUN_004ffc20(RHFocusFocusableView *widget);
     void FUN_004ffc70(RHFocusGroupableView *widget, bool sleeping);
+    void FUN_004ffce0(RHFocusGroupableView *widget, unsigned short key);
+    void FUN_004ffd20(const void *widget);
+    int FUN_004ffed0(const void *input) const;
     void FUN_004fffe0(bool hidden);
     bool FUN_00500010(const void *widget) const;
     RHFocusEvent *FUN_00500040(RHFocusEvent *first, RHFocusEvent *second) const;
     RHFocusEvent *FUN_00500070();
     RHFocusEvent *FUN_005000d0();
+    RHFocusEvent *FUN_00500130();
+    RHFocusEvent *FUN_005001e0();
+    RHFocusEvent *FUN_005002a0(RHFocusEvent *events, const void *input, void *ui);
+    RHFocusEvent *FUN_005003a0(const void *input);
+    RHFocusEvent *FUN_005004d0(const void *input);
     RHFocusEvent *FUN_005006a0();
     RHFocusEvent *FUN_00500720();
     RHFocusEvent *FUN_00500750();
@@ -69,6 +78,8 @@ public:
     unsigned short *m_shortcutFirst;
     unsigned short *m_shortcutLast;
     unsigned short *m_shortcutEnd;
+    float m_position[2];
+    void *m_ui;
 };
 
 #endif
