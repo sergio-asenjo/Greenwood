@@ -18,11 +18,25 @@
 class RHMenuPopupScroll : public RHMenuWindowFocus
 {
 public:
+    RHMenuPopupScroll(RHMenuScreenView *screen, const std::wstring &text, const std::string &title, bool flag);
+    RHMenuPopupScroll(RHMenuScreenView *screen, const std::wstring &text, int id, const std::string &title, int flags);
+    void FUN_00539b30();
+    const std::wstring &FUN_0053a820();
+    static std::wstring FUN_0053a660(int id);
     ~RHMenuPopupScroll();
     void FUN_005394e0(RHMenuEvent *event);
     bool FUN_00539500(RHMenuEvent *event);
     void *FUN_00539710(unsigned flags);
     bool FUN_0053a860(int msg, void *widget, void *data);
+
+    undefined m_140[0x318]; // 0x140
+    static void FUN_0053a000(void *text, void *title, bool flag);
+    static void FUN_0053a380(RHMenuScreenView *screen, const std::wstring &text, const std::string &title, bool flag);
+    static bool FUN_0053a840();
+    static void FUN_0053a0b0(int id);
+    static void FUN_0053a1d0(const std::vector<int> &ids);
+    static void FUN_0053a2d0();
+    static void FUN_0053a4c0(RHMenuScreenView *screen, int id, const std::string &title, int flags);
 };
 
 #endif
