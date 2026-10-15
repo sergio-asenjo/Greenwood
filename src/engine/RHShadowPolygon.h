@@ -1157,4 +1157,73 @@ public:
     void FUN_0059d7f0(RHUnk005977e0 *);
 };
 
+struct RHShadowMemoryRange
+{
+    unsigned long m_first;
+    unsigned long m_last;
+};
+
+struct RHShadowMemoryNode
+{
+    RHShadowMemoryNode *m_next;
+    RHShadowMemoryNode *m_previous;
+    RHShadowMemoryRange m_value;
+};
+
+class RHShadowMemoryList
+{
+public:
+    unsigned char m_allocator;
+    RHShadowMemoryNode *m_head;
+    unsigned m_count;
+    void FUN_0059fbe0(const RHShadowMemoryRange &value);
+    RHShadowMemoryNode *FUN_0059fcc0(RHShadowMemoryNode *next, RHShadowMemoryNode *previous);
+};
+
+class RHShadowMemoryBlock
+{
+public:
+    unsigned char m_data[0x2c];
+    void FUN_0059f4e0();
+    RHShadowMemoryBlock *FUN_005a0ed0(unsigned flags);
+    RHShadowMemoryBlock &FUN_005a0ef0(const RHShadowMemoryBlock &source);
+};
+
+class RHShadowMemoryVector
+{
+public:
+    unsigned char m_allocator;
+    RHShadowMemoryBlock *m_first;
+    RHShadowMemoryBlock *m_last;
+    RHShadowMemoryBlock *m_end;
+    void FUN_0059fc40();
+    RHShadowMemoryBlock *FUN_0059fcf0(RHShadowMemoryBlock *position, const RHShadowMemoryBlock &value);
+    void FUN_0059ff20() const;
+    RHShadowMemoryBlock *FUN_005a0000(RHShadowMemoryBlock *position, const RHShadowMemoryBlock &value);
+    void FUN_005a0200() const;
+    void FUN_005a02e0(RHShadowMemoryBlock *position, unsigned count, const RHShadowMemoryBlock &value);
+    void FUN_005a0600(RHShadowMemoryBlock *position, unsigned count, const RHShadowMemoryBlock &value);
+    void FUN_0059fef0(RHShadowMemoryBlock *first, RHShadowMemoryBlock *last);
+    unsigned FUN_005a0990() const;
+    RHShadowMemoryBlock *FUN_005a0920(const RHShadowMemoryBlock *first, const RHShadowMemoryBlock *last, RHShadowMemoryBlock *destination);
+    void FUN_005a0960(RHShadowMemoryBlock *destination, unsigned count, const RHShadowMemoryBlock &value);
+    RHShadowMemoryBlock *FUN_005a09c0(const RHShadowMemoryBlock *first, const RHShadowMemoryBlock *last, RHShadowMemoryBlock *destination);
+    void FUN_005a0a00(RHShadowMemoryBlock *destination, unsigned count, const RHShadowMemoryBlock &value);
+};
+
+class RHShadowPointerVector
+{
+public:
+    unsigned char m_allocator;
+    void **m_first;
+    void **m_last;
+    void **m_end;
+    void **FUN_0059fc80(void **position);
+    void Destroy(void **first, void **last)
+    {
+        for (; first != last; ++first)
+            std::_Destroy(first);
+    }
+};
+
 #endif

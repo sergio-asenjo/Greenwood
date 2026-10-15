@@ -1953,7 +1953,699 @@ unsigned char RHShadowPolygon::FUN_0059ec40(SBGeoPoint2D *a, SBGeoPoint2D *b)
     return 1;
 }
 
+// FUNCTION: GAME 0x0059fbe0
+void RHShadowMemoryList::FUN_0059fbe0(const RHShadowMemoryRange &value)
+{
+    RHShadowMemoryNode *next = m_head;
+    RHShadowMemoryNode *previous = next->m_previous;
+    RHShadowMemoryNode *node = (RHShadowMemoryNode *)operator new(sizeof(RHShadowMemoryNode));
+    node->m_next = next ? next : node;
+    node->m_previous = previous ? previous : node;
+    next->m_previous = node;
+    node->m_previous->m_next = node;
+    new (&node->m_value) RHShadowMemoryRange(value);
+    ++m_count;
+}
+
+// FUNCTION: GAME 0x0059fc40
+void RHShadowMemoryVector::FUN_0059fc40()
+{
+    RHShadowMemoryBlock *last = m_last;
+    for (RHShadowMemoryBlock *first = m_first; first != last; ++first)
+        first->FUN_0059f4e0();
+    operator delete(m_first);
+    m_first = 0;
+    m_last = 0;
+    m_end = 0;
+}
+
+// FUNCTION: GAME 0x0059fc80
+void **RHShadowPointerVector::FUN_0059fc80(void **position)
+{
+    std::copy(position + 1, m_last, position);
+    Destroy(m_last - 1, m_last);
+    --m_last;
+    return position;
+}
+
+// FUNCTION: GAME 0x0059fcc0
+RHShadowMemoryNode *RHShadowMemoryList::FUN_0059fcc0(RHShadowMemoryNode *next, RHShadowMemoryNode *previous)
+{
+    RHShadowMemoryNode *node = (RHShadowMemoryNode *)operator new(sizeof(RHShadowMemoryNode));
+    node->m_next = next ? next : node;
+    node->m_previous = previous ? previous : node;
+    return node;
+}
+
+void FUN_005a0d10(RHShadowMemoryBlock *destination, const RHShadowMemoryBlock &source);
+void FUN_005a0df0(RHShadowMemoryBlock *destination, const RHShadowMemoryBlock &source);
+void FUN_005a0a30(RHShadowMemoryBlock *first, RHShadowMemoryBlock *last, const RHShadowMemoryBlock &value);
+RHShadowMemoryBlock *FUN_005a0b90(RHShadowMemoryBlock *first, RHShadowMemoryBlock *last, RHShadowMemoryBlock *destination);
+
+// FUNCTION: GAME 0x0059fcf0
+RHShadowMemoryBlock *RHShadowMemoryVector::FUN_0059fcf0(RHShadowMemoryBlock *position, const RHShadowMemoryBlock &value)
+{
+    unsigned offset = position - m_first;
+    if ((unsigned)(m_end - m_last) < 1)
+    {
+        unsigned growth = (m_first != 0 && (unsigned)(m_last - m_first) > 1) ? m_last - m_first : 1;
+        unsigned capacity = (m_first == 0 ? 0 : m_last - m_first) + growth;
+        RHShadowMemoryBlock *allocation = std::_Allocate((int)capacity, (RHShadowMemoryBlock *)0);
+        RHShadowMemoryBlock *destination = allocation;
+        for (RHShadowMemoryBlock *first = m_first; first != position; ++first, ++destination)
+            FUN_005a0d10(destination, *first);
+        FUN_005a0d10(destination, value);
+        FUN_005a0920(position, m_last, destination + 1);
+        FUN_0059fef0(m_first, m_last);
+        operator delete(m_first);
+        m_end = allocation + capacity;
+        unsigned (RHShadowMemoryVector::*size)() const = &RHShadowMemoryVector::FUN_005a0990;
+        m_last = allocation + (this->*size)() + 1;
+        m_first = allocation;
+    }
+    else if ((unsigned)(m_last - position) < 1)
+    {
+        FUN_005a0920(position, m_last, position + 1);
+        FUN_005a0960(m_last, 1 - (m_last - position), value);
+        FUN_005a0a30(position, m_last, value);
+        ++m_last;
+    }
+    else
+    {
+        FUN_005a0920(m_last - 1, m_last, m_last);
+        FUN_005a0b90(position, m_last - 1, m_last);
+        FUN_005a0a30(position, position + 1, value);
+        ++m_last;
+    }
+    return m_first + offset;
+}
+
+// FUNCTION: GAME 0x0059fef0
+void RHShadowMemoryVector::FUN_0059fef0(RHShadowMemoryBlock *first, RHShadowMemoryBlock *last)
+{
+    for (; first != last; ++first)
+        first->FUN_0059f4e0();
+}
+
+#include <stdexcept>
+
+// Parked: exception base construction uses a pooled empty string instead of the target's shared empty-data object.
+// STUB: GAME 0x0059ff20
+void RHShadowMemoryVector::FUN_0059ff20() const
+{
+    throw std::out_of_range(
+        // STRING: GAME 0x006afb90
+        "invalid vector<T> subscript");
+}
+
+// FUNCTION: GAME 0x005a0000
+RHShadowMemoryBlock *RHShadowMemoryVector::FUN_005a0000(RHShadowMemoryBlock *position, const RHShadowMemoryBlock &value)
+{
+    unsigned offset = position - m_first;
+    if ((unsigned)(m_end - m_last) < 1)
+    {
+        unsigned growth = (m_first != 0 && (unsigned)(m_last - m_first) > 1) ? m_last - m_first : 1;
+        unsigned capacity = (m_first == 0 ? 0 : m_last - m_first) + growth;
+        RHShadowMemoryBlock *allocation = std::_Allocate((int)capacity, (RHShadowMemoryBlock *)0);
+        RHShadowMemoryBlock *destination = allocation;
+        for (RHShadowMemoryBlock *first = m_first; first != position; ++first, ++destination)
+            FUN_005a0df0(destination, *first);
+        FUN_005a0df0(destination, value);
+        FUN_005a09c0(position, m_last, destination + 1);
+        FUN_0059fef0(m_first, m_last);
+        operator delete(m_first);
+        m_end = allocation + capacity;
+        unsigned (RHShadowMemoryVector::*size)() const = &RHShadowMemoryVector::FUN_005a0990;
+        m_last = allocation + (this->*size)() + 1;
+        m_first = allocation;
+    }
+    else if ((unsigned)(m_last - position) < 1)
+    {
+        FUN_005a09c0(position, m_last, position + 1);
+        FUN_005a0a00(m_last, 1 - (m_last - position), value);
+        FUN_005a0a30(position, m_last, value);
+        ++m_last;
+    }
+    else
+    {
+        FUN_005a09c0(m_last - 1, m_last, m_last);
+        FUN_005a0b90(position, m_last - 1, m_last);
+        FUN_005a0a30(position, position + 1, value);
+        ++m_last;
+    }
+    return m_first + offset;
+}
+
+// Parked: exception base construction uses a pooled empty string instead of the target's shared empty-data object.
+// STUB: GAME 0x005a0200
+void RHShadowMemoryVector::FUN_005a0200() const
+{
+    throw std::out_of_range("invalid vector<T> subscript");
+}
+
+inline RHShadowMemoryBlock *RHShadowCopyBlocks0(const RHShadowMemoryBlock *first, const RHShadowMemoryBlock *last, RHShadowMemoryBlock *destination)
+{
+    for (; first != last; ++destination, ++first)
+        FUN_005a0d10(destination, *first);
+    return destination;
+}
+inline void RHShadowFillBlocks0(RHShadowMemoryBlock *destination, unsigned count, const RHShadowMemoryBlock &value)
+{
+    for (; count > 0; --count, ++destination)
+        FUN_005a0d10(destination, value);
+}
+inline RHShadowMemoryBlock *RHShadowCopyBlocks1(const RHShadowMemoryBlock *first, const RHShadowMemoryBlock *last, RHShadowMemoryBlock *destination)
+{
+    for (; first != last; ++destination, ++first)
+        FUN_005a0df0(destination, *first);
+    return destination;
+}
+inline void RHShadowFillBlocks1(RHShadowMemoryBlock *destination, unsigned count, const RHShadowMemoryBlock &value)
+{
+    for (; count > 0; --count, ++destination)
+        FUN_005a0df0(destination, value);
+}
+inline void RHShadowAssignBlocks(RHShadowMemoryBlock *first, RHShadowMemoryBlock *last, const RHShadowMemoryBlock &value);
+inline void RHShadowMoveBlocks(RHShadowMemoryBlock *first, RHShadowMemoryBlock *last, RHShadowMemoryBlock *destination);
+
+// FUNCTION: GAME 0x005a02e0
+void RHShadowMemoryVector::FUN_005a02e0(RHShadowMemoryBlock *position, unsigned count, const RHShadowMemoryBlock &value)
+{
+    if ((unsigned)(m_end - m_last) < count)
+    {
+        unsigned growth = (m_first != 0 && count < (unsigned)(m_last - m_first)) ? m_last - m_first : count;
+        unsigned capacity = (m_first == 0 ? 0 : m_last - m_first) + growth;
+        RHShadowMemoryBlock *allocation = std::_Allocate((int)capacity, (RHShadowMemoryBlock *)0);
+        RHShadowMemoryBlock *destination = RHShadowCopyBlocks0(m_first, position, allocation);
+        RHShadowFillBlocks0(destination, count, value);
+        RHShadowCopyBlocks0(position, m_last, destination + count);
+        RHShadowMemoryBlock *last = m_last;
+        for (RHShadowMemoryBlock *first = m_first; first != last; ++first)
+            first->FUN_0059f4e0();
+        operator delete(m_first);
+        m_end = allocation + capacity;
+        m_last = allocation + (m_first == 0 ? 0 : m_last - m_first) + count;
+        m_first = allocation;
+    }
+    else if ((unsigned)(m_last - position) < count)
+    {
+        RHShadowCopyBlocks0(position, m_last, position + count);
+        RHShadowFillBlocks0(m_last, count - (m_last - position), value);
+        RHShadowAssignBlocks(position, m_last, value);
+        m_last += count;
+    }
+    else if (count > 0)
+    {
+        RHShadowCopyBlocks0(m_last - count, m_last, m_last);
+        RHShadowMoveBlocks(position, m_last - count, m_last);
+        RHShadowAssignBlocks(position, position + count, value);
+        m_last += count;
+    }
+}
+
+// FUNCTION: GAME 0x005a0600
+void RHShadowMemoryVector::FUN_005a0600(RHShadowMemoryBlock *position, unsigned count, const RHShadowMemoryBlock &value)
+{
+    if ((unsigned)(m_end - m_last) < count)
+    {
+        unsigned growth = (m_first != 0 && count < (unsigned)(m_last - m_first)) ? m_last - m_first : count;
+        unsigned capacity = (m_first == 0 ? 0 : m_last - m_first) + growth;
+        RHShadowMemoryBlock *allocation = std::_Allocate((int)capacity, (RHShadowMemoryBlock *)0);
+        RHShadowMemoryBlock *destination = RHShadowCopyBlocks1(m_first, position, allocation);
+        RHShadowFillBlocks1(destination, count, value);
+        RHShadowCopyBlocks1(position, m_last, destination + count);
+        RHShadowMemoryBlock *last = m_last;
+        for (RHShadowMemoryBlock *first = m_first; first != last; ++first)
+            first->FUN_0059f4e0();
+        operator delete(m_first);
+        m_end = allocation + capacity;
+        m_last = allocation + (m_first == 0 ? 0 : m_last - m_first) + count;
+        m_first = allocation;
+    }
+    else if ((unsigned)(m_last - position) < count)
+    {
+        RHShadowCopyBlocks1(position, m_last, position + count);
+        RHShadowFillBlocks1(m_last, count - (m_last - position), value);
+        RHShadowAssignBlocks(position, m_last, value);
+        m_last += count;
+    }
+    else if (count > 0)
+    {
+        RHShadowCopyBlocks1(m_last - count, m_last, m_last);
+        RHShadowMoveBlocks(position, m_last - count, m_last);
+        RHShadowAssignBlocks(position, position + count, value);
+        m_last += count;
+    }
+}
+
+// FUNCTION: GAME 0x005a0920
+RHShadowMemoryBlock *RHShadowMemoryVector::FUN_005a0920(const RHShadowMemoryBlock *first,
+    const RHShadowMemoryBlock *last, RHShadowMemoryBlock *destination)
+{
+    for (; first != last; ++first, ++destination)
+        FUN_005a0d10(destination, *first);
+    return destination;
+}
+
+// FUNCTION: GAME 0x005a0960
+void RHShadowMemoryVector::FUN_005a0960(RHShadowMemoryBlock *destination, unsigned count,
+    const RHShadowMemoryBlock &value)
+{
+    for (; count > 0; --count, ++destination)
+        FUN_005a0d10(destination, value);
+}
+
+// FUNCTION: GAME 0x005a0990
+unsigned RHShadowMemoryVector::FUN_005a0990() const
+{
+    return m_first == 0 ? 0 : m_last - m_first;
+}
+
+// FUNCTION: GAME 0x005a09c0
+RHShadowMemoryBlock *RHShadowMemoryVector::FUN_005a09c0(const RHShadowMemoryBlock *first,
+    const RHShadowMemoryBlock *last, RHShadowMemoryBlock *destination)
+{
+    for (; first != last; ++first, ++destination)
+        FUN_005a0df0(destination, *first);
+    return destination;
+}
+
+// FUNCTION: GAME 0x005a0a00
+void RHShadowMemoryVector::FUN_005a0a00(RHShadowMemoryBlock *destination, unsigned count,
+    const RHShadowMemoryBlock &value)
+{
+    for (; count > 0; --count, ++destination)
+        FUN_005a0df0(destination, value);
+}
+
+inline void RHShadowAssignBlock(RHShadowMemoryBlock &destination, const RHShadowMemoryBlock &source);
+
+// Parked: descriptor assignment inlining and cursor scheduling remain under comparison.
+// STUB: GAME 0x005a0a30
+void FUN_005a0a30(RHShadowMemoryBlock *first, RHShadowMemoryBlock *last, const RHShadowMemoryBlock &value)
+{
+    while (first != last)
+    {
+        RHShadowAssignBlock(*first, value);
+        first = first + 1;
+    }
+}
+
+// Parked: descriptor assignment inlining and cursor scheduling remain under comparison.
+// STUB: GAME 0x005a0b90
+RHShadowMemoryBlock *FUN_005a0b90(RHShadowMemoryBlock *first, RHShadowMemoryBlock *last, RHShadowMemoryBlock *destination)
+{
+    while (first != last)
+    {
+        --last;
+        --destination;
+        RHShadowAssignBlock(*destination, *last);
+    }
+    return destination;
+}
+
+template<int Kind>
+class RHShadowMemoryCopyList : public RHShadowMemoryList
+{
+public:
+    RHShadowMemoryCopyList(const std::allocator<RHShadowMemoryRange> &allocator)
+    {
+        m_allocator = *(const unsigned char *)&allocator;
+        RHShadowMemoryNode *head = (RHShadowMemoryNode *)operator new(sizeof(RHShadowMemoryNode));
+        head->m_next = head;
+        head->m_previous = head;
+        m_head = head;
+        m_count = 0;
+    }
+    ~RHShadowMemoryCopyList()
+    {
+        RHShadowMemoryNode *last = m_head;
+        RHShadowMemoryNode *first = last->m_next;
+        while (first != last)
+        {
+            RHShadowMemoryNode *node = first;
+            first = first->m_next;
+            node->m_previous->m_next = node->m_next;
+            node->m_next->m_previous = node->m_previous;
+            operator delete(node);
+            --m_count;
+        }
+        operator delete(m_head);
+        m_head = 0;
+        m_count = 0;
+    }
+};
+
+template<int Kind>
+class RHShadowMemoryCachedList
+{
+public:
+    RHShadowMemoryCachedList(const RHShadowMemoryCachedList &source)
+        : m_list(std::allocator<RHShadowMemoryRange>())
+    {
+        RHShadowMemoryNode *position = m_list.m_head->m_next;
+        m_current = position;
+        RHShadowMemoryNode *last = source.m_list.m_head;
+        for (RHShadowMemoryNode *first = last->m_next; first != last; first = first->m_next)
+        {
+            RHShadowMemoryNode *previous = position->m_previous;
+            RHShadowMemoryNode *node = (RHShadowMemoryNode *)operator new(sizeof(RHShadowMemoryNode));
+            node->m_next = position ? position : node;
+            node->m_previous = previous ? previous : node;
+            position->m_previous = node;
+            node->m_previous->m_next = node;
+            new (&node->m_value) RHShadowMemoryRange(first->m_value);
+            ++m_list.m_count;
+        }
+        m_dirty = true;
+    }
+    RHShadowMemoryCopyList<Kind> m_list;
+    RHShadowMemoryNode *m_current;
+    bool m_dirty;
+    unsigned char m_unknown[23];
+};
+
+template<int Kind>
+class RHShadowMemoryCopyBlock
+{
+public:
+    RHShadowMemoryCopyBlock(const RHShadowMemoryCopyBlock &source)
+        : m_tag(source.m_tag), m_ranges(source.m_ranges) {}
+    unsigned long m_tag;
+    RHShadowMemoryCachedList<Kind> m_ranges;
+};
+
+DECOMP_SIZE_ASSERT(RHShadowMemoryCopyBlock<0>, 0x2c)
+
+// FUNCTION: GAME 0x005a0d10
+void FUN_005a0d10(RHShadowMemoryBlock *destination, const RHShadowMemoryBlock &source)
+{
+    new (destination) RHShadowMemoryCopyBlock<0>((const RHShadowMemoryCopyBlock<0> &)source);
+}
+
+// FUNCTION: GAME 0x005a0df0
+void FUN_005a0df0(RHShadowMemoryBlock *destination, const RHShadowMemoryBlock &source)
+{
+    new (destination) RHShadowMemoryCopyBlock<1>((const RHShadowMemoryCopyBlock<1> &)source);
+}
+
+// FUNCTION: GAME 0x005a0ed0
+RHShadowMemoryBlock *RHShadowMemoryBlock::FUN_005a0ed0(unsigned flags)
+{
+    FUN_0059f4e0();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+struct RHsoundGroup;
+void *FUN_0048f170(void *value);
+
+struct RHHumanOpponent
+{
+    void *m_actor;
+    void *m_line;
+};
+struct RHHumanOpponentNode;
+struct RHHumanOpponentIterator
+{
+    RHHumanOpponentNode *node;
+    RHHumanOpponentIterator(RHHumanOpponentNode *value) : node(value) {}
+};
+class RHHumanOpponentListCalls
+{
+public:
+    RHHumanOpponentIterator FUN_00486110(RHHumanOpponentIterator position, const RHHumanOpponent &value);
+};
+
+class RHShadowMemoryAssignmentList : public RHShadowMemoryList
+{
+public:
+    void Assign(const RHShadowMemoryAssignmentList &source, bool constructValue, bool destroyNode = false)
+    {
+        if (&source != this)
+        {
+            RHShadowMemoryNode *last = m_head;
+            RHShadowMemoryNode *first = last->m_next;
+            while (first != last)
+            {
+                RHShadowMemoryNode *node = first;
+                first = first->m_next;
+                if (destroyNode)
+                    FUN_0048f170(node);
+                node->m_previous->m_next = node->m_next;
+                node->m_next->m_previous = node->m_previous;
+                operator delete(node);
+                --m_count;
+            }
+            if (m_count == 0)
+            {
+                int count = source.m_count;
+                for (int index = 0; index < count; ++index)
+                {
+                    ((RHShadowPolygonList *)&source)->FUN_005c8e40(index);
+                    void (RHShadowMemoryList::*append)(const RHShadowMemoryRange &) = &RHShadowMemoryList::FUN_0059fbe0;
+                    (this->*append)(source.m_current->m_value);
+                }
+            }
+            else
+            {
+                ((RHShadowPolygonList *)this)->FUN_005c8e40(0);
+                int count = source.m_count;
+                for (int index = 0; index < count; ++index)
+                {
+                    ((RHShadowPolygonList *)&source)->FUN_005c8e40(index);
+                    RHShadowMemoryNode *position = m_current;
+                    const RHShadowMemoryRange &value = source.m_current->m_value;
+                    RHShadowMemoryNode *previous = position->m_previous;
+                    RHShadowMemoryNode *node = (RHShadowMemoryNode *)operator new(sizeof(RHShadowMemoryNode));
+                    node->m_next = position ? position : node;
+                    node->m_previous = previous ? previous : node;
+                    position->m_previous = node;
+                    node->m_previous->m_next = node;
+                    if (constructValue)
+                    {
+                        typedef std::pair<const unsigned long, RHsoundGroup *> Pair;
+                        void (__cdecl *construct)(Pair *, const Pair &) = &std::_Construct;
+                        construct((Pair *)&node->m_value, (const Pair &)value);
+                    }
+                    else
+                        new (&node->m_value) RHShadowMemoryRange(value);
+                    ++m_count;
+                }
+            }
+            m_dirty = true;
+        }
+    }
+    RHShadowMemoryAssignmentList &FUN_005a1020(const RHShadowMemoryAssignmentList &source);
+    void FUN_005a1140(const RHShadowMemoryAssignmentList &source, int index);
+    void LocateForInsert(int index)
+    {
+        RHShadowPolygonList &list = *(RHShadowPolygonList *)this;
+        int count = m_count;
+        if (m_dirty)
+        {
+            if (index <= (count + 1) / 2)
+            {
+                std::bidirectional_iterator_tag category;
+                list.m_current = RHUnk005c9010Iterator(list.m_list.m_head->m_next);
+                FUN_005c9010(list.m_current, index, category);
+            }
+            else
+            {
+                std::bidirectional_iterator_tag category;
+                list.m_current = RHUnk005c9010Iterator(list.m_list.m_head);
+                FUN_005c9010(list.m_current, index - count, category);
+            }
+            m_dirty = false;
+            list.m_index = index;
+        }
+        else
+        {
+            int previous = list.m_index;
+            if (index != previous)
+            {
+                if (index < previous)
+                {
+                    if (index < (previous + 1) / 2)
+                    {
+                        std::bidirectional_iterator_tag category;
+                        list.m_current = RHUnk005c9010Iterator(list.m_list.m_head->m_next);
+                        FUN_005c9010(list.m_current, index, category);
+                    }
+                    else
+                    {
+                        std::bidirectional_iterator_tag category;
+                        FUN_005c9010(list.m_current, index - previous, category);
+                    }
+                }
+                else if (index < (previous + count) / 2)
+                {
+                    std::bidirectional_iterator_tag category;
+                    FUN_005c9010(list.m_current, index - previous, category);
+                }
+                else
+                {
+                    std::bidirectional_iterator_tag category;
+                    list.m_current = RHUnk005c9010Iterator(list.m_list.m_head);
+                    FUN_005c9010(list.m_current, index - count, category);
+                }
+                list.m_index = index;
+            }
+        }
+    }
+    RHShadowMemoryNode *m_current;
+    bool m_dirty;
+    unsigned char m_unknown[23];
+};
+
+class RHShadowMemoryAssignmentBlock
+{
+public:
+    unsigned long m_tag;
+    RHShadowMemoryAssignmentList m_ranges;
+    RHShadowMemoryAssignmentBlock &operator=(const RHShadowMemoryAssignmentBlock &source)
+    {
+        m_tag = source.m_tag;
+        m_ranges.Assign(source.m_ranges, true, true);
+        return *this;
+    }
+};
+
+inline void RHShadowAssignBlock(RHShadowMemoryBlock &destination, const RHShadowMemoryBlock &source)
+{
+    (RHShadowMemoryAssignmentBlock &)destination = (const RHShadowMemoryAssignmentBlock &)source;
+}
+
+DECOMP_SIZE_ASSERT(RHShadowMemoryNode, 0x10)
+DECOMP_SIZE_ASSERT(RHShadowMemoryList, 0x0c)
+DECOMP_SIZE_ASSERT(RHShadowMemoryVector, 0x10)
+DECOMP_SIZE_ASSERT(RHShadowMemoryBlock, 0x2c)
+DECOMP_SIZE_ASSERT(RHShadowMemoryAssignmentList, 0x28)
+
+// Parked: conditional register saves and return reloads differ from the target's shared assignment epilogue.
+// STUB: GAME 0x005a0ef0
+RHShadowMemoryBlock &RHShadowMemoryBlock::FUN_005a0ef0(const RHShadowMemoryBlock &source)
+{
+    *(unsigned long *)this = *(const unsigned long *)&source;
+    ((RHShadowMemoryAssignmentList *)((char *)this + 4))->Assign(
+        *(const RHShadowMemoryAssignmentList *)((const char *)&source + 4), true);
+    return *this;
+}
+
+// Parked: conditional EBX/ESI saves split the self-assignment return from the target's shared epilogue.
+// STUB: GAME 0x005a1020
+RHShadowMemoryAssignmentList &RHShadowMemoryAssignmentList::FUN_005a1020(const RHShadowMemoryAssignmentList &source)
+{
+    Assign(source, false);
+    return *this;
+}
+
+// Parked: cached-list cursor and insertion temporary scheduling remain under comparison.
+// STUB: GAME 0x005a1140
+void RHShadowMemoryAssignmentList::FUN_005a1140(const RHShadowMemoryAssignmentList &source, int index)
+{
+    if (index == (int)m_count)
+    {
+        int count = source.m_count;
+        for (int i = 0; i < count; ++i)
+        {
+            ((RHShadowPolygonList *)&source)->FUN_005c8e40(i);
+            ((RHHumanOpponentListCalls *)this)->FUN_00486110(
+                RHHumanOpponentIterator((RHHumanOpponentNode *)m_head),
+                (const RHHumanOpponent &)source.m_current->m_value);
+        }
+    }
+    else
+    {
+        LocateForInsert(index);
+        int count = source.m_count;
+        for (int i = 0; i < count; ++i)
+        {
+            ((RHShadowPolygonList *)&source)->FUN_005c8e40(i);
+            const RHShadowMemoryRange &value = source.m_current->m_value;
+            RHShadowMemoryNode *position = m_current;
+            RHShadowMemoryNode *previous = position->m_previous;
+            RHShadowMemoryNode *node = (RHShadowMemoryNode *)operator new(sizeof(RHShadowMemoryNode));
+            node->m_next = position ? position : node;
+            node->m_previous = previous ? previous : node;
+            position->m_previous = node;
+            node->m_previous->m_next = node;
+            new (&node->m_value) RHShadowMemoryRange(value);
+            ++m_count;
+        }
+    }
+    m_dirty = true;
+}
+
+inline void RHShadowAssignBlocks(RHShadowMemoryBlock *first, RHShadowMemoryBlock *last, const RHShadowMemoryBlock &value)
+{
+    for (; first != last; ++first)
+    {
+        RHShadowMemoryAssignmentBlock &destination = (RHShadowMemoryAssignmentBlock &)*first;
+        const RHShadowMemoryAssignmentBlock &source = (const RHShadowMemoryAssignmentBlock &)value;
+        destination.m_tag = source.m_tag;
+        RHShadowMemoryAssignmentList &(RHShadowMemoryAssignmentList::*assign)(const RHShadowMemoryAssignmentList &) = &RHShadowMemoryAssignmentList::FUN_005a1020;
+        (destination.m_ranges.*assign)(source.m_ranges);
+    }
+}
+
+#include <list>
+
+class RHMission;
+
+inline void RHShadowMoveBlocks(RHShadowMemoryBlock *first, RHShadowMemoryBlock *last, RHShadowMemoryBlock *destination)
+{
+    while (first != last)
+    {
+        const RHShadowMemoryAssignmentBlock &from = (const RHShadowMemoryAssignmentBlock &)*--last;
+        RHShadowMemoryAssignmentBlock &to = (RHShadowMemoryAssignmentBlock &)*--destination;
+        to.m_tag = from.m_tag;
+        if (&from.m_ranges != &to.m_ranges)
+        {
+            void (std::list<RHMission *>::*clear)() = &std::list<RHMission *>::clear;
+            (((std::list<RHMission *> *)&to.m_ranges)->*clear)();
+            void (RHShadowMemoryAssignmentList::*insert)(const RHShadowMemoryAssignmentList &, int) = &RHShadowMemoryAssignmentList::FUN_005a1140;
+            (to.m_ranges.*insert)(from.m_ranges, 0);
+        }
+    }
+}
+
+void rh_shadow_memory_emit(RHShadowMemoryList *list, RHShadowMemoryVector *blocks,
+    RHShadowPointerVector *pointers, RHShadowMemoryBlock *first, RHShadowMemoryBlock *last,
+    RHShadowMemoryNode *node, const RHShadowMemoryRange &value)
+{
+    list->FUN_0059fbe0(value);
+    blocks->FUN_0059fc40();
+    blocks->FUN_0059fcf0(first, *last);
+    blocks->FUN_005a0000(first, *last);
+    blocks->FUN_005a02e0(first, 2, *last);
+    blocks->FUN_005a0600(first, 2, *last);
+    pointers->FUN_0059fc80(pointers->m_first);
+    list->FUN_0059fcc0(node, node);
+    blocks->FUN_0059fef0(first, last);
+    blocks->FUN_005a0990();
+    blocks->FUN_005a0920(first, last, first);
+    blocks->FUN_005a0960(first, 1, *last);
+    blocks->FUN_005a09c0(first, last, first);
+    blocks->FUN_005a0a00(first, 1, *last);
+    FUN_005a0a30(first, last, *last);
+    FUN_005a0b90(first, last, last);
+    first->FUN_005a0ed0(0);
+    first->FUN_005a0ef0(*last);
+    ((RHShadowMemoryAssignmentList *)list)->FUN_005a1020(*(RHShadowMemoryAssignmentList *)list);
+    ((RHShadowMemoryAssignmentList *)list)->FUN_005a1140(*(RHShadowMemoryAssignmentList *)list, 0);
+}
+
 void rh_shadowpolygon_emit(RHShadowPolygon *polygon, const SBGeoBoundingBox2D &box, float zoom, RHElementActor *actor, SBGeoPoint3D &point, RHviewParameters &view, unsigned long flags)
 {
     polygon->DisplayDebug(box, zoom, actor, point, view, flags);
+}
+
+void rh_shadow_memory_range_error_emit(const RHShadowMemoryVector *blocks, bool second)
+{
+    if (second)
+        blocks->FUN_005a0200();
+    else
+        blocks->FUN_0059ff20();
 }

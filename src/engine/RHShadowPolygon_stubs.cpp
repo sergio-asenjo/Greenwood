@@ -1,6 +1,8 @@
 #include "SBNullstr.h"
 #include "RHShadowPolygon.h"
 
+void RHShadowMemoryBlock::FUN_0059f4e0() {}
+
 void RHShadowPolygon::FUN_0058d990() {}
 void RHShadowPolygon::FUN_0058ec60() {}
 void RHShadowPolygon::FUN_0058ffa0(RHUnk00597a70 *) {}
@@ -46,9 +48,6 @@ void RHShadowPolygon::FUN_0059d7f0(RHUnk005977e0 *) {}
 RHShadowViewport::RHShadowViewport() {}
 RHShadowBox::RHShadowBox() {}
 RHMobileUnk006100e0::RHMobileUnk006100e0(const SBGeoPoint2D &, const SBGeoPoint2D &) {}
-void RHMobileUnk006100e0::FUN_00610160(const SBGeoPoint2D &) {}
-float RHMobileUnk006100e0::FUN_006104f0(float) { return 0.0f; }
-float RHMobileUnk006100e0::FUN_00610520(float) { return 0.0f; }
 RHShadowPointNodeList::~RHShadowPointNodeList() {}
 RHShadowPointNode *RHShadowPointNodeList::FUN_004243e0(RHShadowPointNode *next, RHShadowPointNode *) { return next; }
 void FUN_0059fb20(RHUnk00613e90 *, const RHUnk00613e90 &) {}
