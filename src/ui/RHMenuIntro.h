@@ -15,6 +15,7 @@
 #include "RHMenuLoadSave.h"
 #include "RHMenuMovies.h"
 #include "RHMenuOptions.h"
+#include "RHMenuShortMissionDescription.h"
 
 class SBThreadedInput
 {
@@ -28,13 +29,22 @@ extern SBThreadedInput *g_unk0x6c1340;
 class RHMenuIntro : public RHMenuWindowFocus
 {
 public:
+    RHMenuIntro(RHMenuScreenView *screen);
     ~RHMenuIntro();
     void FUN_0052e090(RHMenuEvent *event);
     bool FUN_0052e0b0(RHMenuEvent *event);
     void *FUN_0052e300(unsigned flags);
     void FUN_0052f540();
 
-    undefined m_140[0x900]; // 0x140
+    RHPortraitButton m_140;
+    RHPortraitButton m_240;
+    RHPortraitButton m_340;
+    RHPortraitButton m_440;
+    RHPortraitButton m_540;
+    RHPortraitButton m_640;
+    RHPortraitButton m_740;
+    RHMenuShortMissionTitle m_840;
+    RHMenuShortMissionTitle m_940;
     int m_choice; // 0xa40
     RHMenuLoadSaveResult m_result; // 0xa44
     bool FUN_0052ec60(int msg, void *widget, void *data);

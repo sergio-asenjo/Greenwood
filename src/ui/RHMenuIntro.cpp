@@ -31,6 +31,13 @@ bool RHMenuIntro::FUN_0052e0b0(RHMenuEvent *event)
     return handled;
 }
 
+// FUNCTION: GAME 0x0052e1b0
+RHMenuIntro::RHMenuIntro(RHMenuScreenView *screen)
+    : RHMenuWindowFocus(0, screen, 0, false), m_choice(0)
+{
+    m_vptr = 0x00679518;
+}
+
 // FUNCTION: GAME 0x0052e300
 void *RHMenuIntro::FUN_0052e300(unsigned flags)
 {
