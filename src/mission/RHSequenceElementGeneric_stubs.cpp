@@ -6,12 +6,10 @@ RHGenericInsertResult RHGenericMap::FUN_005873a0(const RHGenericPair &)
     return RHGenericInsertResult(RHGenericIterator(head), false);
 }
 
-RHGenericIterator RHGenericMap::FUN_005874d0(RHGenericIterator, RHGenericIterator last)
+class RHUnk00584d60
 {
-    return last;
-}
+public:
+    RHUnk00584d60();
+};
 
-RHGenericIterator &RHGenericIterator::FUN_00587ed0()
-{
-    return *this;
-}
+RHUnk00584d60::RHUnk00584d60() {}
