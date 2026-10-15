@@ -28,10 +28,6 @@ void RHSequenceElement::Dummy2() {}
 bool RHSequenceElement::Serialize(SBFile &, bool) { return true; }
 
 // Targets 0x00586050 / 0x005865a0 / 0x00585e70 / 0x00588270.
-RHUnk586050::RHUnk586050() {}
-RHUnk5865a0::RHUnk5865a0() {}
-RHUnk585e70::RHUnk585e70() {}
-RHUnk588270::RHUnk588270() {}
 
 // Target 0x005c8e40: SBList<RHSequenceElement*>::GoTo(int).
 void RHSeqList::GoTo(int) {}

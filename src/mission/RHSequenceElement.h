@@ -11,7 +11,9 @@
 class RHSequenceElement
 {
 public:
+    RHSequenceElement();
     static bool SerializeStaticStuff(SBFile &file);
+    bool FUN_00584ef0(SBFile &file, bool pointers);
 
     static void Emit(SBFile &file);
 };

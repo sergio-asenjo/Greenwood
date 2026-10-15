@@ -25,6 +25,9 @@ public:
 class SBGeoPoint2D
 {
 public:
+    SBGeoPoint2D();
+    ~SBGeoPoint2D();
+    SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
     bool Serialize(SBFile &file);
     float m_x;
     float m_y;
