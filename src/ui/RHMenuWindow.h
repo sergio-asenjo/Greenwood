@@ -125,14 +125,21 @@ public:
     undefined m_80[0x124]; // 0x80
 };
 
+struct RHMenuEvent;
+
 // SIZE 0x448
 class RHMenuYesNo : public RHMenuWindow
 {
 public:
     RHMenuYesNo(RHMenuWindowScreen *screen, const std::wstring &text);
     ~RHMenuYesNo();
+    void HandleEvent(RHMenuEvent *event);
+    bool RouteEvent(RHMenuEvent *event);
+    void *FUN_00545590(unsigned flags);
     void FUN_00545710();
     int FUN_00545ad0();
+    bool OnNo(int message, void *widget, void *data);
+    bool OnYes(int message, void *widget, void *data);
     static bool AskForConfirmation(RHMenuWindowScreen *screen, const std::wstring &text);
 
     undefined m_c8[0x380]; // 0xc8
