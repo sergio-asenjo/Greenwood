@@ -89,6 +89,7 @@ class RHMenuWindowFocus
 {
 public:
     RHMenuWindowFocus(RHMenuWindow *parent, void *screen, int orientation, bool wrap);
+    RHMenuWindowFocus(RHMenuWindow *parent, void *screen, long resource, int orientation, bool wrap);
     ~RHMenuWindowFocus();
     void FUN_00544b80(bool display, bool modal);
 
@@ -96,16 +97,6 @@ public:
     undefined m_04[0xb0]; // 0x04
     RHMenuWindowScreen *m_screen; // 0xb4
     undefined m_b8[0x88]; // 0xb8
-};
-
-// SIZE 0x1990
-class RHMenuScreenView
-{
-public:
-    RHMenuScreenView(unsigned long flags, long background, unsigned short color, void *ui);
-    ~RHMenuScreenView();
-
-    undefined m_00[0x1990]; // 0x00
 };
 
 // SIZE 0x100

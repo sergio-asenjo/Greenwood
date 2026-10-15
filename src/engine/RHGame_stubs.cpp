@@ -47,8 +47,6 @@ void RHGameSaveCalls::FUN_0056ecc0() {}
 RHGameConfig::RHGameConfig() {}
 RHGameConfig::~RHGameConfig() {}
 bool RHGameConfig::FUN_00611960(SBFile &) { return true; }
-RHGameDialog::RHGameDialog(int, int, bool, bool, void *) {}
-RHGameDialog::~RHGameDialog() {}
 
 RHSaveGame *RHGameContinueCalls::FUN_0056f730(const std::wstring &, const std::string &) { return 0; }
 void RHGameContinueCalls::FUN_0056f700(RHSaveGame *, RHSaveGame *, const std::wstring &) {}
@@ -73,7 +71,6 @@ void RHGameActionCalls::FUN_005ef380(int) {}
 void RHGameActionCalls::FUN_005e5260() {}
 void RHGameActionCalls::FUN_005104c0() {}
 void RHGameActionCalls::FUN_005104d0() {}
-void RHGameActionCalls::FUN_00619cc0() {}
 bool RHGameActionCalls::FUN_004d2300(void *, unsigned) { return false; }
 void RHGameActionCalls::FUN_004da2f0() {}
 void RHGameActionCalls::FUN_005a7b40(int) {}

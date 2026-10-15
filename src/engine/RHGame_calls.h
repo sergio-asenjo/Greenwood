@@ -333,6 +333,7 @@ public:
     void FUN_0050eb80(bool value);
     void FUN_0050eca0(bool value);
     bool Unk0049d560(int action);
+    RHScriptBatchCalls *Unk004e3cc0();
 };
 
 // SIZE 0x184
@@ -488,10 +489,13 @@ public:
 std::string FUN_004e4c70(const std::string &first, const char *second);
 std::string FUN_004e4b40(const std::string &first, const std::string &second);
 
+class RHDialogueSet;
+
 class RHEngine
 {
 public:
     bool FUN_004c4570(SBFile &file);
+    RHDialogueSet *GetDynResources(unsigned long resources);
 };
 
 class RHCampaign
@@ -766,16 +770,20 @@ public:
 };
 
 class RHMapWindow;
-class RHGameDialog
+// SIZE 0x1990
+class RHMenuScreenView
 {
 public:
-    RHGameDialog(int first, int second, bool third, bool fourth, void *owner);
-    ~RHGameDialog();
-    char m_00[0x1990];
+    RHMenuScreenView(unsigned long flags, long background, unsigned short color, void *ui);
+    RHMenuScreenView(unsigned long flags, long background, bool first, bool second, void *source);
+    ~RHMenuScreenView();
+    void FUN_0053be40(unsigned long value);
+
+    undefined m_00[0x1990]; // 0x00
 };
 
 extern char *g_unk0x006c0664;
 extern RHMapResources *g_unk0x006c1840;
-void FUN_00529e60(RHMapWindow *, const RHMapWideText &, bool, unsigned);
+void FUN_00529e60(RHMapWindow *, const RHMapWideText &, bool, bool);
 
 #endif

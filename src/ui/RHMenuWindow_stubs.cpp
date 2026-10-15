@@ -11,6 +11,8 @@ RHMenuWindowUI *RHMenuWindowScreen::FUN_0053bf30() { return 0; }
 
 // Target 0x00544c50, __thiscall, ret 0x10.
 RHMenuWindowFocus::RHMenuWindowFocus(RHMenuWindow *, void *, int, bool) {}
+// Target 0x00544e60, __thiscall, ret 0x14.
+RHMenuWindowFocus::RHMenuWindowFocus(RHMenuWindow *, void *, long, int, bool) {}
 
 // Target 0x00544ee0, __thiscall.
 RHMenuWindowFocus::~RHMenuWindowFocus() {}
@@ -18,8 +20,7 @@ RHMenuWindowFocus::~RHMenuWindowFocus() {}
 // Target 0x00544b80, __thiscall, ret 8.
 void RHMenuWindowFocus::FUN_00544b80(bool, bool) {}
 
-// Target 0x0053adc0, __thiscall, ret 0x10.
-RHMenuScreenView::RHMenuScreenView(unsigned long, long, unsigned short, void *) {}
+
 
 // Target 0x0053af80, __thiscall.
 RHMenuScreenView::~RHMenuScreenView() {}

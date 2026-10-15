@@ -205,7 +205,7 @@ void RHGame::DisplayLostLeicester()
         Assign assign = &std::wstring::assign;
         (((std::wstring *)&message)->*assign)(FUN_005e23d0(259), 0, std::wstring::npos);
     }
-    RHGameDialog dialog(0, 0, true, true, (char *)this + 0x68);
+    RHMenuScreenView dialog(0, 0, true, true, (char *)this + 0x68);
     FUN_00529e60((RHMapWindow *)&dialog, message, false, 0);
 }
 
