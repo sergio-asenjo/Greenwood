@@ -147,6 +147,47 @@ void RHGameCampaignView::FUN_00456540(bool flag, RHGameMission *mission)
 // TEMPLATE: GAME 0x00509bc0
 // ?_Construct@std@@YAXPAVRHUnk005069a0@@ABV2@@Z
 
+class RHUnk005069a0
+{
+public:
+    ~RHUnk005069a0();
+    void *FUN_00509c10(unsigned flags);
+    undefined m_00[0x14];
+};
+
+class RHPortraitRootList
+{
+public:
+    ~RHPortraitRootList();
+    void *FUN_0050e770(unsigned flags);
+    unsigned m_vptr;
+    undefined m_04[0xac];
+};
+
+// FUNCTION: GAME 0x00509c10
+void *RHUnk005069a0::FUN_00509c10(unsigned flags)
+{
+    this->~RHUnk005069a0();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// FUNCTION: GAME 0x0050e770
+void *RHPortraitRootList::FUN_0050e770(unsigned flags)
+{
+    this->~RHPortraitRootList();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+void RHGameTailEmit(void *object, unsigned flags)
+{
+    ((RHUnk005069a0 *)object)->FUN_00509c10(flags);
+    ((RHPortraitRootList *)object)->FUN_0050e770(flags);
+}
+
 // Parked: GetTickCount import is unavailable under the interim link.
 // STUB: GAME 0x0050e7b0
 void RHGame::FUN_0050e7b0()
