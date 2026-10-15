@@ -3,7 +3,12 @@
 #include "RHScript.h"
 
 void RHEngineContinuationCampaignCalls::FUN_00450c10(void *, SBFile &) {}
-void RHEngine::FUN_004db7f0(SBGeoPoint2D &) {}
+class RHEngineCameraRotationCalls
+{
+public:
+    void FUN_005fc9a0(float angle, float scale);
+};
+void RHEngineCameraRotationCalls::FUN_005fc9a0(float, float) {}
 class RHUnk00493a80
 {
 public:
@@ -93,7 +98,6 @@ public:
     char m_data[0x9c];
 };
 
-RHUnk00588830::RHUnk00588830(unsigned short, int, void *, int, int) {}
 
 class RHEngineBackgroundCalls
 {
@@ -163,3 +167,18 @@ void RHEngineWidenedCalls::FUN_0050efd0(void *) {}
 void RHEngineWidenedCalls::FUN_004e3660(char) {}
 void RHEngineWidenedCalls::FUN_00504b80(unsigned) {}
 void RHEngineWidenedCalls::FUN_005e5160(unsigned) {}
+class RHEngineActorUpdateCalls
+{
+public:
+    void FUN_004af2a0();
+};
+
+void RHEngineActorUpdateCalls::FUN_004af2a0() {}
+
+class RHEngineActorActionCalls
+{
+public:
+    void FUN_00490910(unsigned short value);
+};
+
+void RHEngineActorActionCalls::FUN_00490910(unsigned short) {}

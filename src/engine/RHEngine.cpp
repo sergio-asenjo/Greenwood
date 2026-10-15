@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <stdlib.h>
+#include <math.h>
 
 class RHFastFindGrid
 {
@@ -14,6 +15,21 @@ public:
     void FUN_004e8bd0(void *sector, unsigned short layer, bool mode);
     void FUN_004efd10(void *value, unsigned short layer, bool mode);
 };
+
+class RHEngineActorUpdateCalls
+{
+public:
+    void FUN_004af2a0();
+};
+
+class RHEngineActorActionCalls
+{
+public:
+    void FUN_00490910(unsigned short value);
+};
+
+// GLOBAL: GAME 0x006785d8
+float g_unk0x006785d8 = -1.0f;
 
 class RHSequenceElement;
 struct RHScriptNode
@@ -111,6 +127,7 @@ public:
     RHScriptNode *cursor;
     bool dirty;
     int index;
+    void Clear();
     __forceinline void Advance(int distance)
     {
         while (distance > 0) { cursor = cursor->next; --distance; }
@@ -2841,6 +2858,401 @@ bool __stdcall FUN_004d2330(int type)
     return true;
 }
 
+// FUNCTION: GAME 0x004db7b0
+int RHEngine::FUN_004db7b0(void *actor)
+{
+    void *state = *(void **)((char *)actor + 0x50);
+    return *(int *)((char *)state + 0x8c) == 5 || *(int *)((char *)state + 0x8c) == 4
+        || ((unsigned char)(*(unsigned int *)((char *)*(void **)((char *)state + 0xe0) + 0x30) >> 13) & 1) != 0;
+}
+
+// FUNCTION: GAME 0x004db7f0
+void RHEngine::FUN_004db7f0(SBGeoPoint2D &point)
+{
+    *(float *)((char *)this + 0x4738) = (float)floor(point.m_x);
+    float y = (float)floor(point.m_y);
+    *(float *)((char *)this + 0x473c) = y;
+    if (*(unsigned int *)((char *)this + 0x475c) == 0x3f000000)
+    {
+        if ((int)*(float *)((char *)this + 0x4738) & 1)
+            *(float *)((char *)this + 0x4738) -= g_unk0x0067749c;
+        if ((int)y & 1)
+            *(float *)((char *)this + 0x473c) = y - g_unk0x0067749c;
+    }
+}
+
+// FUNCTION: GAME 0x004db880
+void RHEngine::FUN_004db880()
+{
+    std::vector<RHEngineActorUpdateCalls *> &actors = *(std::vector<RHEngineActorUpdateCalls *> *)((char *)this + 0x4978);
+    unsigned int count = actors.size();
+    for (unsigned int index = 0; index < count; ++index)
+        actors[index]->FUN_004af2a0();
+}
+
+// FUNCTION: GAME 0x004db8c0
+void RHEngine::FUN_004db8c0(unsigned char value)
+{
+    unsigned char &current = *(unsigned char *)((char *)this + 0x48c0);
+    if (value > current)
+        current = value;
+}
+
+// FUNCTION: GAME 0x004db8e0
+bool RHEngine::FUN_004db8e0(unsigned short index)
+{
+    RHUnk00546050();
+    if (*(float *)((char *)this + 0x4748) == g_unk0x006785d8
+        && !*((unsigned char *)this + 0x6d + index))
+        return true;
+    return false;
+}
+
+// FUNCTION: GAME 0x004db920
+void RHEngine::FUN_004db920(const void *)
+{
+    RHMessenger *messenger;
+    if (*(bool *)((char *)this + 0x4b3b)
+        && !*((unsigned char *)(messenger = RHUnk00546050()) + 0x15)
+        && !*((unsigned char *)messenger + 0x19))
+    {
+        if (*((unsigned char *)RHUnk00546050() + 0x14))
+        {
+            if (*(float *)((char *)this + 0x4bd8) > g_unk0x0067749c)
+                *(float *)((char *)this + 0x4bd8) -= g_unk0x0067749c;
+        }
+        else
+        {
+            float position = *(float *)((char *)this + 0x4bd4);
+            *(float *)((char *)this + 0x4bd4) = position + g_unk0x0067749c;
+        }
+        return;
+    }
+    if (FUN_004db8e0(3))
+    {
+        *(bool *)((char *)this + 0x471a) = false;
+        if (*(unsigned char *)((char *)this + 0x4781) == 1)
+        {
+            *(unsigned short *)((char *)this + 0x4784) = 0;
+            *(unsigned char *)((char *)this + 0x4781) = 0;
+        }
+        else if (*(unsigned short *)((char *)this + 0x4784) < 31)
+            ++*(unsigned short *)((char *)this + 0x4784);
+        float speed = ((float *)((char *)this + 0x4818))[*(unsigned short *)((char *)this + 0x4784)]
+            / *(float *)((char *)this + 0x475c);
+        *(volatile float *)((char *)this + 0x48bc) = speed;
+        *(volatile bool *)((char *)this + 0x70) = true;
+        int distance = (int)*(float *)((char *)this + 0x48bc);
+        float maximum = *(float *)((char *)this + 0x472c);
+        distance = abs(distance);
+        if (distance > (unsigned short)(maximum * *(float *)((char *)this + 0x475c)))
+        {
+            FUN_004db8c0(5);
+            *(unsigned short *)((char *)this + 0x4782) = 0;
+            *(unsigned short *)((char *)this + 0x4784) = 0;
+        }
+        else
+            FUN_004db8c0(2);
+    }
+}
+
+class RHEngineCameraRotationCalls
+{
+public:
+    void FUN_005fc9a0(float angle, float scale);
+};
+
+// FUNCTION: GAME 0x004dba50
+void RHEngine::FUN_004dba50(const void *)
+{
+    RHMessenger *messenger;
+    if (*(bool *)((char *)this + 0x4b3b)
+        && !*((unsigned char *)(messenger = RHUnk00546050()) + 0x15)
+        && !*((unsigned char *)messenger + 0x19))
+    {
+        if (*((unsigned char *)RHUnk00546050() + 0x14))
+            ((RHEngineCameraRotationCalls *)((char *)this + 0x4b88))->FUN_005fc9a0(-0.01f, 1.0f);
+        else
+            *(float *)((char *)this + 0x4bd0) -= g_unk0x0067749c;
+        return;
+    }
+    if (FUN_004db8e0(1))
+    {
+        *(bool *)((char *)this + 0x471a) = false;
+        if (*(unsigned char *)((char *)this + 0x4780) == 0)
+        {
+            *(unsigned short *)((char *)this + 0x4782) = 0;
+            *(unsigned char *)((char *)this + 0x4780) = 1;
+        }
+        else if (*(unsigned short *)((char *)this + 0x4782) < 31)
+            ++*(unsigned short *)((char *)this + 0x4782);
+        *(float *)((char *)this + 0x48b8) = -(((float *)((char *)this + 0x4798))[*(unsigned short *)((char *)this + 0x4782)]
+            / *(float *)((char *)this + 0x475c));
+        *(bool *)((char *)this + 0x6e) = true;
+        int distance = (int)*(float *)((char *)this + 0x48b8);
+        float maximum = *(float *)((char *)this + 0x4728);
+        distance = abs(distance);
+        if (distance > (unsigned short)(maximum * *(float *)((char *)this + 0x475c)))
+        {
+            FUN_004db8c0(5);
+            *(unsigned short *)((char *)this + 0x4782) = 0;
+            *(unsigned short *)((char *)this + 0x4784) = 0;
+        }
+        else
+            FUN_004db8c0(2);
+    }
+}
+
+// FUNCTION: GAME 0x004dbb70
+void RHEngine::FUN_004dbb70(const void *)
+{
+    RHMessenger *messenger;
+    if (*(bool *)((char *)this + 0x4b3b)
+        && !*((unsigned char *)(messenger = RHUnk00546050()) + 0x15)
+        && !*((unsigned char *)messenger + 0x19))
+    {
+        if (*((unsigned char *)RHUnk00546050() + 0x14))
+            ((RHEngineCameraRotationCalls *)((char *)this + 0x4b88))->FUN_005fc9a0(0.01f, 1.0f);
+        else
+        {
+            float position = *(float *)((char *)this + 0x4bd0);
+            *(float *)((char *)this + 0x4bd0) = position + g_unk0x0067749c;
+        }
+        return;
+    }
+    if (FUN_004db8e0(2))
+    {
+        *(bool *)((char *)this + 0x471a) = false;
+        if (*(unsigned char *)((char *)this + 0x4780) == 1)
+        {
+            *(unsigned short *)((char *)this + 0x4782) = 0;
+            *(unsigned char *)((char *)this + 0x4780) = 0;
+        }
+        else if (*(unsigned short *)((char *)this + 0x4782) < 31)
+            ++*(unsigned short *)((char *)this + 0x4782);
+        *(float *)((char *)this + 0x48b8) = ((float *)((char *)this + 0x4798))[*(unsigned short *)((char *)this + 0x4782)]
+            / *(float *)((char *)this + 0x475c);
+        *(bool *)((char *)this + 0x6f) = true;
+        int distance = (int)*(float *)((char *)this + 0x48b8);
+        float maximum = *(float *)((char *)this + 0x4728);
+        distance = abs(distance);
+        if (distance > (unsigned short)(maximum * *(float *)((char *)this + 0x475c)))
+        {
+            FUN_004db8c0(5);
+            *(unsigned short *)((char *)this + 0x4782) = 0;
+            *(unsigned short *)((char *)this + 0x4784) = 0;
+        }
+        else
+            FUN_004db8c0(2);
+    }
+}
+
+// FUNCTION: GAME 0x004dbc90
+void RHEngine::FUN_004dbc90(const void *)
+{
+    RHMessenger *messenger;
+    if (*(bool *)((char *)this + 0x4b3b)
+        && !*((unsigned char *)(messenger = RHUnk00546050()) + 0x15)
+        && !*((unsigned char *)messenger + 0x19))
+    {
+        if (*((unsigned char *)RHUnk00546050() + 0x14))
+        {
+            float position = *(float *)((char *)this + 0x4bd8);
+            *(float *)((char *)this + 0x4bd8) = position + g_unk0x0067749c;
+        }
+        else
+            *(float *)((char *)this + 0x4bd4) -= g_unk0x0067749c;
+        return;
+    }
+    if (FUN_004db8e0(0))
+    {
+        *(bool *)((char *)this + 0x471a) = false;
+        if (*(unsigned char *)((char *)this + 0x4781) == 0)
+        {
+            *(unsigned short *)((char *)this + 0x4784) = 0;
+            *(unsigned char *)((char *)this + 0x4781) = 1;
+        }
+        else if (*(unsigned short *)((char *)this + 0x4784) < 31)
+            ++*(unsigned short *)((char *)this + 0x4784);
+        *(volatile float *)((char *)this + 0x48bc) = -(((float *)((char *)this + 0x4818))[*(unsigned short *)((char *)this + 0x4784)]
+            / *(float *)((char *)this + 0x475c));
+        *(volatile bool *)((char *)this + 0x6d) = true;
+        int distance = (int)*(float *)((char *)this + 0x48bc);
+        float maximum = *(float *)((char *)this + 0x472c);
+        distance = abs(distance);
+        if (distance > (unsigned short)(maximum * *(float *)((char *)this + 0x475c)))
+        {
+            FUN_004db8c0(5);
+            *(unsigned short *)((char *)this + 0x4782) = 0;
+            *(unsigned short *)((char *)this + 0x4784) = 0;
+        }
+        else
+            FUN_004db8c0(2);
+    }
+}
+
+// FUNCTION: GAME 0x004dbdb0
+void RHEngine::FUN_004dbdb0(const void *event)
+{
+    if (FUN_004c7cf0() && FUN_004c7c90())
+    {
+        *(bool *)((char *)this + 0x4793) = false;
+        *(bool *)((char *)this + 0x4769) = *(const unsigned int *)((const char *)event + 8) > 0;
+        if (*(unsigned short *)((char *)this + 0x4782) != 0
+            || *(unsigned short *)((char *)this + 0x4784) != 0
+            || *(unsigned char *)((char *)this + 0x48c0) == 3
+            || *(unsigned char *)((char *)this + 0x48c0) == 4)
+        {
+            *(bool *)((char *)this + 0x4792) = false;
+            *(bool *)((char *)this + 0x4793) = true;
+        }
+        else if (*(unsigned short *)((char *)this + 0x4898) > 0)
+        {
+            --*(unsigned short *)((char *)this + 0x4898);
+            *(bool *)((char *)this + 0x4791) = true;
+            FUN_004db8c0(3);
+        }
+    }
+}
+
+// FUNCTION: GAME 0x004dbe40
+void RHEngine::FUN_004dbe40(const void *event)
+{
+    if (FUN_004c7cd0() && FUN_004c7c90())
+    {
+        *(bool *)((char *)this + 0x4792) = false;
+        *(bool *)((char *)this + 0x4769) = *(const unsigned int *)((const char *)event + 8) > 0;
+        if (*(unsigned short *)((char *)this + 0x4782) != 0
+            || *(unsigned short *)((char *)this + 0x4784) != 0
+            || *(unsigned char *)((char *)this + 0x48c0) == 3
+            || *(unsigned char *)((char *)this + 0x48c0) == 4)
+        {
+            *(bool *)((char *)this + 0x4792) = true;
+            *(bool *)((char *)this + 0x4793) = false;
+        }
+        else if (*(unsigned short *)((char *)this + 0x4898) < 2)
+        {
+            ++*(unsigned short *)((char *)this + 0x4898);
+            *(bool *)((char *)this + 0x4790) = true;
+            FUN_004db8c0(3);
+        }
+    }
+}
+
+// FUNCTION: GAME 0x004dbed0
+void RHEngine::FUN_004dbed0(const void *event)
+{
+    unsigned int value = *(const unsigned int *)((const char *)event + 8);
+    std::vector<RHEngineActorActionCalls *> &actors = *(std::vector<RHEngineActorActionCalls *> *)((char *)this + 0x4938);
+    unsigned int count = actors.size();
+    for (unsigned int index = 0; index < count; ++index)
+        actors[index]->FUN_00490910(value);
+}
+
+inline void RHEngineSequenceList::Clear()
+{
+    RHScriptNode *last = head;
+    RHScriptIter position(head->next);
+    while (position.node != last)
+    {
+        RHScriptIter erased = position;
+        position.node = position.node->next;
+        ((RHUnk0046eb30 *)this)->erase(erased);
+    }
+    dirty = true;
+}
+
+// Parked: branch-local register saves and cached-search load scheduling differ.
+// STUB: GAME 0x004dc190
+bool RHEngine::FUN_004dc190(void *actor)
+{
+    if (!actor)
+    {
+        RHEngineSequenceList &actors = *(RHEngineSequenceList *)((char *)this + 0x49f8);
+        actors.Clear();
+        return true;
+    }
+    RHEngineSequenceList &actors = *(RHEngineSequenceList *)((char *)this + 0x49f8);
+    int count = actors.count;
+    *(void **)((char *)&actors + 0x20) = actor;
+    *((bool *)&actors + 0x18) = true;
+    actors.cursor = actors.head->next;
+    int index;
+    for (index = 0; index < count; ++index, actors.cursor = actors.cursor->next)
+    {
+        RHScriptNode *node = *(RHScriptNode *volatile *)&actors.cursor;
+        void *value = *(void *volatile *)((char *)&actors + 0x20);
+        if (node->data == value)
+            break;
+    }
+    if (index < count)
+    {
+        *(int *)((char *)&actors + 0x1c) = index;
+        actors.dirty = false;
+        actors.index = index;
+    }
+    else
+    {
+        actors.dirty = true;
+        *(int *)((char *)&actors + 0x1c) = -1;
+    }
+    ((RHTitbitList *)&actors)->At(*(int *)((char *)&actors + 0x1c));
+    RHScriptNode *removed = actors.cursor;
+    removed->previous->next = removed->next;
+    removed->next->previous = removed->previous;
+    ::operator delete(removed);
+    int remaining = actors.count - 1;
+    actors.dirty = true;
+    actors.count = remaining;
+    return true;
+}
+
+// FUNCTION: GAME 0x004dc260
+void RHEngine::FUN_004dc260(const void *)
+{
+    *(bool *)((char *)this + 0x6c) = false;
+    (*(RHMessenger **)((char *)this + 0x68))->RHUnk005460c0(RHUnk00549250(42, 0));
+}
+
+// FUNCTION: GAME 0x004de170
+void RHEngine::FUN_004de170(bool first, bool second, bool third)
+{
+    if (first)
+    {
+        *(bool *)((char *)this + 0x89) = true;
+        *((bool *)*(void **)((char *)this + 0x68) + 0xaa) = true;
+    }
+    if (second)
+        *(bool *)((char *)this + 0x88) = true;
+    *(bool *)((char *)this + 0x8a) = third;
+    if (first || third)
+    {
+        char *messenger = *(char **)((char *)this + 0x68);
+        *(unsigned short *)(messenger + 0xa4) = *(unsigned short *)(messenger + 0xa2);
+        messenger[0x21] = messenger[0x20];
+        *(SBGeoPoint2D *)(messenger + 0x94) = *(SBGeoPoint2D *)(messenger + 0x84);
+    }
+}
+
+// FUNCTION: GAME 0x004de1e0
+void RHEngine::FUN_004de1e0()
+{
+    RHUnk00546050();
+    SBGeoPoint2D point;
+    FUN_004dee70((float *)&point);
+    char *messenger = *(char **)((char *)this + 0x68);
+    if (*(unsigned short *)(messenger + 0xa2) == 0 && !messenger[0x15]
+        && !messenger[0x19] && !messenger[0x1a])
+    {
+        if (!*(bool *)((char *)this + 0x73))
+        {
+            *(bool *)((char *)this + 0x73) = true;
+            *(SBGeoPoint2D *)((char *)this + 0x78) = point;
+        }
+        *(SBGeoPoint2D *)((char *)this + 0x80) = point;
+    }
+}
+
 // Parked: layer/point receiver scheduling and sector-bit lowering differ.
 // STUB: GAME 0x004debf0
 void RHEngine::FUN_004debf0(const SBGeoPoint2D &point)
@@ -4115,6 +4527,21 @@ bool RHEngineBackgroundCalls::FUN_00611660(const std::string &path)
 
 void RHEngine::Emit(SBFile &file, void *&value)
 {
+    FUN_004db7b0(value);
+    FUN_004db880();
+    FUN_004db8c0(0);
+    FUN_004db8e0(0);
+    FUN_004db920(value);
+    FUN_004dba50(value);
+    FUN_004dbb70(value);
+    FUN_004dbc90(value);
+    FUN_004dbdb0(value);
+    FUN_004dbe40(value);
+    FUN_004dbed0(value);
+    FUN_004dc190(value);
+    FUN_004dc260(value);
+    FUN_004de170(false, false, false);
+    FUN_004de1e0();
     ((RHEngineGridCalls *)this)->FUN_004eb830(file);
     ((RHEngineGridCalls *)this)->FUN_004ebab0(file);
     FUN_004debf0(*(SBGeoPoint2D *)&value);
