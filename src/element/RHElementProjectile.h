@@ -51,6 +51,7 @@ class RHUnk0046eb30
 {
 public:
     RHScriptIter begin();
+    RHScriptIter FUN_0046eb80();
     RHScriptIter erase(RHScriptIter position);
     RHScriptNode *Unk0059f720(RHScriptNode *next, RHScriptNode *previous);
 };
@@ -176,6 +177,10 @@ class RHElementProjectile : public RHElementObject
 public:
     virtual bool Serialize(SBFile &file);
     void Emit(SBFile &file);
+    void FUN_004b8230();
+    void CopyTrajectory(RHElementProjectile *other);
+    unsigned ComputeNumberOfFramesLeft() const;
+    void PlayImpactSound(const void *position, bool special) const;
 
     RHUnk005df510 m_100; // [0x100]
     RHUnk005df510 m_10c; // [0x10c]
