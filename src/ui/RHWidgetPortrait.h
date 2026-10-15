@@ -270,8 +270,8 @@ class RHPortraitRootLifetime
 public:
     RHPortraitRootLifetime();
     ~RHPortraitRootLifetime();
-    void FUN_0061a800(void *widget);
-    void FUN_0061aa30(void *widget);
+    bool FUN_0061a800(void *widget);
+    bool FUN_0061aa30(void *widget);
     bool FUN_0061a920(void *widget);
     void *FUN_0061a6e0(const void *input);
     unsigned m_vptr;
@@ -365,6 +365,7 @@ public:
     RHPortraitInputRenderer();
     ~RHPortraitInputRenderer();
     void *FUN_005d1b40(unsigned flags);
+    void FUN_0061c610(unsigned long surface);
     void FUN_0061d570(unsigned short position, int limit);
     unsigned FUN_0061d5e0();
     SBGeoBoundingBox2D FUN_0061d3f0(unsigned short line, int value);

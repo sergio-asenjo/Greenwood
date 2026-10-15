@@ -28,10 +28,6 @@ void RHPortraitRendererCalls::FUN_005cafa0(unsigned) {}
 bool RHPortraitWidgetSetupCalls::FUN_0060d130(const std::wstring &, const SBGeoBoundingBox2D &, bool) { return true; }
 RHPortraitRootLifetime::RHPortraitRootLifetime() {}
 RHPortraitRootLifetime::~RHPortraitRootLifetime() {}
-void RHPortraitRootLifetime::FUN_0061a800(void *) {}
-void RHPortraitRootLifetime::FUN_0061aa30(void *) {}
-bool RHPortraitRootLifetime::FUN_0061a920(void *) { return true; }
-void *RHPortraitRootLifetime::FUN_0061a6e0(const void *) { return 0; }
 RHPortraitResourceCollection::RHPortraitResourceCollection(bool) {}
 RHPortraitResourceCollection::~RHPortraitResourceCollection() {}
 void RHPortraitCtorCalls::FUN_005d6940(unsigned short) {}
@@ -55,12 +51,14 @@ public:
 class RHPortraitRenderer0060d470
 {
 public:
+    RHPortraitRenderer0060d470();
     ~RHPortraitRenderer0060d470();
 };
 
 RHPortraitRenderer0060dad0::~RHPortraitRenderer0060dad0() {}
 RHPortraitRenderer0060da10::~RHPortraitRenderer0060da10() {}
 RHPortraitRenderer0060d470::~RHPortraitRenderer0060d470() {}
+RHPortraitRenderer0060d470::RHPortraitRenderer0060d470() {}
 
 class RHUnk005490a0Message
 {
@@ -87,8 +85,6 @@ void RHPortraitPCList::FUN_005c8e40(unsigned) {}
 RHPortraitUnk005cf320::~RHPortraitUnk005cf320() {}
 RHPortraitUnk005cf570::~RHPortraitUnk005cf570() {}
 RHPortraitUnk005d0180::~RHPortraitUnk005d0180() {}
-RHPortraitInputRenderer::~RHPortraitInputRenderer() {}
-RHPortraitInputRenderer::RHPortraitInputRenderer() {}
 void RHPortraitInputRenderer::FUN_0061d570(unsigned short, int) {}
 unsigned RHPortraitInputRenderer::FUN_0061d5e0() { return 0; }
 SBGeoBoundingBox2D RHPortraitInputRenderer::FUN_0061d3f0(unsigned short, int) { return SBGeoBoundingBox2D(); }
