@@ -15,29 +15,38 @@ void RHMenuSounds::FUN_00541370(RHMenuEvent *event)
 bool RHMenuSounds::FUN_00541390(RHMenuEvent *event)
 {
     bool handled = false;
-    if (event->m_type == 2 && event->m_widget == m_240)
+    if (event->m_type == 2 && event->m_widget == &m_240)
         handled = FUN_0052ce80(2, event->m_widget, event->m_data);
-    if (event->m_type == 2 && event->m_widget == m_340)
+    if (event->m_type == 2 && event->m_widget == &m_340)
         handled = FUN_00543520(2, event->m_widget, event->m_data);
-    if (event->m_type == 2 && event->m_widget == m_454)
+    if (event->m_type == 2 && event->m_widget == &m_454)
         handled = FUN_00543520(2, event->m_widget, event->m_data);
-    if (event->m_type == 2 && event->m_widget == m_568)
+    if (event->m_type == 2 && event->m_widget == &m_568)
         handled = FUN_00543520(2, event->m_widget, event->m_data);
-    if (event->m_type == 2 && event->m_widget == m_67c)
+    if (event->m_type == 2 && event->m_widget == &m_67c)
         handled = FUN_00543520(2, event->m_widget, event->m_data);
-    if (event->m_type == 2 && event->m_widget == m_790)
+    if (event->m_type == 2 && event->m_widget == &m_790)
         handled = FUN_00543520(2, event->m_widget, event->m_data);
-    if (event->m_type == 2 && event->m_widget == m_85c)
+    if (event->m_type == 2 && event->m_widget == &m_85c)
         handled = FUN_00543520(2, event->m_widget, event->m_data);
-    if (event->m_type == 2 && event->m_widget == m_928)
+    if (event->m_type == 2 && event->m_widget == &m_928)
         handled = FUN_00543520(2, event->m_widget, event->m_data);
-    if (event->m_type == 2 && event->m_widget == m_9f4)
+    if (event->m_type == 2 && event->m_widget == &m_9f4)
         handled = FUN_00543520(2, event->m_widget, event->m_data);
-    if (event->m_type == 2 && event->m_widget == m_ac0)
+    if (event->m_type == 2 && event->m_widget == &m_ac0)
         handled = FUN_00543520(2, event->m_widget, event->m_data);
-    if (event->m_type == 2 && event->m_widget == m_140)
+    if (event->m_type == 2 && event->m_widget == &m_140)
         handled = FUN_00543750(2, event->m_widget, event->m_data);
     return handled;
+}
+
+// FUNCTION: GAME 0x00541520
+RHMenuSounds::RHMenuSounds(void *screen)
+    : RHMenuWindowFocus(0, screen, 0, false),
+      m_settings(*(RHMenuSoundsSettings *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x44))
+{
+    m_changed = false;
+    m_vptr = 0x00679998;
 }
 
 // FUNCTION: GAME 0x00541780

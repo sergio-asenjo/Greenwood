@@ -19,6 +19,7 @@
 #include "SB.h"
 #include "Decomp.h"
 #include "RHMenuWindow.h"
+#include "RHMenuShortMissionDescription.h"
 
 // SIZE 0xc
 struct RHMenuSoundsInput : public SBGeoPoint2D
@@ -67,9 +68,48 @@ public:
     bool m_highlighted; // 0xd4
 };
 
+class RHPortraitLinkedLifetime
+{
+public:
+    RHPortraitLinkedLifetime();
+    ~RHPortraitLinkedLifetime();
+    undefined m_00[0x114];
+};
+
+class RHPortraitGroupLifetime
+{
+public:
+    RHPortraitGroupLifetime();
+    ~RHPortraitGroupLifetime();
+    undefined m_00[0xcc];
+};
+
+class RHMenuSoundsLabel : public RHGameWidgetLifetimeBase
+{
+public:
+    RHMenuSoundsLabel();
+
+    RHMenuShortMissionRenderer m_renderer; // 0x80
+};
+
+class RHMenuSoundsTitle : public RHMenuSoundsLabel
+{
+public:
+    RHMenuSoundsTitle()
+    {
+        m_vptr = 0x006791a8;
+        m_fc = true;
+        m_fd = true;
+    }
+
+    bool m_fc; // 0xfc
+    bool m_fd; // 0xfd
+};
+
 // SIZE 0xc
 struct RHMenuSoundsSettings
 {
+    RHMenuSoundsSettings(const RHMenuSoundsSettings &other);
     unsigned long m_00; // 0x00
     unsigned long m_04; // 0x04
     unsigned long m_08; // 0x08
@@ -90,17 +130,23 @@ public:
     bool FUN_00543520(int msg, void *widget, void *data);
     bool FUN_00543750(int msg, void *widget, void *data);
 
-    undefined m_140[0x100]; // 0x140
-    undefined m_240[0x100]; // 0x240
-    undefined m_340[0x114]; // 0x340
-    undefined m_454[0x114]; // 0x454
-    undefined m_568[0x114]; // 0x568
-    undefined m_67c[0x114]; // 0x67c
-    undefined m_790[0xcc]; // 0x790
-    undefined m_85c[0xcc]; // 0x85c
-    undefined m_928[0xcc]; // 0x928
-    undefined m_9f4[0xcc]; // 0x9f4
-    undefined m_ac0[0x6cc]; // 0xac0
+    RHPortraitButton m_140;
+    RHPortraitButton m_240;
+    RHPortraitLinkedLifetime m_340;
+    RHPortraitLinkedLifetime m_454;
+    RHPortraitLinkedLifetime m_568;
+    RHPortraitLinkedLifetime m_67c;
+    RHPortraitGroupLifetime m_790;
+    RHPortraitGroupLifetime m_85c;
+    RHPortraitGroupLifetime m_928;
+    RHPortraitGroupLifetime m_9f4;
+    RHPortraitGroupLifetime m_ac0;
+    RHMenuShortMissionTitle m_b8c;
+    RHMenuShortMissionTitle m_c8c;
+    RHMenuShortMissionTitle m_d8c;
+    RHMenuShortMissionTitle m_e8c;
+    RHMenuShortMissionTitle m_f8c;
+    RHMenuSoundsTitle m_108c;
     RHMenuSoundsSettings m_settings; // 0x118c
     bool m_changed; // 0x1198
 };
