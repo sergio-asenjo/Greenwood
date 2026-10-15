@@ -71,16 +71,28 @@ public:
     bool m_enabled;
 };
 
+class RHMenuScreenView;
+
 class RHMenuGraphics
 {
 public:
+    RHMenuGraphics(RHMenuScreenView *screen);
+    ~RHMenuGraphics();
+    bool Create();
+    static bool Display(void *ui);
+    bool FUN_0052ce70() const;
+    void RouteEvent(struct RHMenuEvent *event);
+    bool HandleEvent(struct RHMenuEvent *event);
+    bool OnOK(int message, void *widget, void *data);
+    bool OnOption(int message, void *widget, void *data);
+    bool OnScreen(int message, void *widget, void *data);
     void SynchronizeWidgets();
 
     void Emit();
 
     // Total size is irrelevant: the fields the matched function touches are
     // reached through the offset aliases below.
-    char m_bytes[0xdc4];
+    char m_bytes[0xdcc];
 };
 
 // Screen width in pixels (target `fld DWORD PTR [esi+0xdc0]`).

@@ -20,3 +20,14 @@ extern "C" __int64 _ftol()
 {
     return 0;
 }
+
+#include "RHMenuGraphics.h"
+
+// Target 0x0052c220, __thiscall.
+RHMenuGraphics::RHMenuGraphics(RHMenuScreenView *) {}
+
+// Target 0x0052c3c0, __thiscall.
+RHMenuGraphics::~RHMenuGraphics() {}
+
+// Target 0x0052c5b0, __thiscall.
+bool RHMenuGraphics::Create() { return false; }
