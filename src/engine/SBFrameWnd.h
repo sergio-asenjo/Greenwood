@@ -8,12 +8,15 @@ class SBGeoPoint2D
 public:
     ~SBGeoPoint2D();
     SBGeoPoint2D Unk005fc110(const SBGeoPoint2D &other) const;
+    SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
     float m_x;
     float m_y;
 };
 
 class SBGeoVector2D : public SBGeoPoint2D
 {
+public:
+    SBGeoVector2D(const SBGeoPoint2D &other);
 };
 
 class SBGeoBoundingBox2D
@@ -22,6 +25,7 @@ public:
     SBGeoBoundingBox2D(const SBGeoBoundingBox2D &other);
     SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &offset) const;
     bool FUN_006084a0(const SBGeoBoundingBox2D &other);
+    bool FUN_00608400(const SBGeoPoint2D &point) const;
     SBGeoPoint2D m_0;
     SBGeoPoint2D m_8;
     undefined m_10;
@@ -48,6 +52,14 @@ public:
 class RHUnk005ef320;
 extern RHUnk005ef320 *g_unk0x6c11d0;
 
+struct SBFrameInputEvent
+{
+    int type;
+    void *widget;
+    void *data;
+    SBFrameInputEvent *next;
+};
+
 struct SBFrameEvent
 {
     undefined m_00[0x1c];
@@ -63,9 +75,9 @@ public:
     virtual void V0c() = 0;
     virtual void V10() = 0;
     virtual SBFrameEvent *V14(const void *input) = 0;
-    virtual void V18() = 0;
+    virtual SBFrameInputEvent *V18(const void *input) = 0;
     virtual void V1c(const SBGeoBoundingBox2D &bounds) = 0;
-    virtual void V20() = 0;
+    virtual void V20(const SBGeoPoint2D &position) = 0;
     virtual void V24() = 0;
     virtual void V28() = 0;
     virtual void V2c(const SBGeoBoundingBox2D &bounds) = 0;
@@ -145,22 +157,46 @@ public:
     void FUN_0061a430(SBGeoBoundingBox2D &bounds);
     void FUN_0061a570();
     SBFrameEvent *FUN_0061a610(const void *input);
+    bool FUN_0061ab10(SBFrameWidgetView *widget);
     void FUN_0061ac80(const SBGeoPoint2D &position);
     void FUN_0061ad20(const SBGeoBoundingBox2D &bounds);
 
     undefined m_04[4];
     SBFrameWidgetView **m_first;
     SBFrameWidgetView **m_last;
-    undefined m_10[0x28];
+    undefined m_10[0x24];
+    unsigned long m_flags;
     SBFrameWidgetFindList m_excluded;
     bool m_enabled;
-    undefined m_5d[0x13];
+    bool m_visible;
+    undefined m_5e[0x12];
     SBGeoBoundingBox2D m_bounds;
     RHUnk005ef320 *m_draw;
     unsigned long m_display;
     void *m_resource;
+    SBFrameInputEvent m_input;
 
     int Size() const { return m_first == 0 ? 0 : m_last - m_first; }
+};
+
+class RHMapTitleText;
+class RHMapBox;
+
+class RHMenuCampaignMap : public SBFrameWnd
+{
+public:
+    bool FUN_0061a1e0(const RHMapTitleText &title, const RHMapBox &box, unsigned flags);
+};
+
+class RHPortraitRootLifetime : public SBFrameWnd
+{
+public:
+    ~RHPortraitRootLifetime();
+    void *FUN_0061a070(unsigned flags);
+    bool FUN_0061a800(void *widget);
+    bool FUN_0061a920(void *widget);
+    bool FUN_0061aa30(void *widget);
+    void *FUN_0061a6e0(const void *input);
 };
 
 #endif
