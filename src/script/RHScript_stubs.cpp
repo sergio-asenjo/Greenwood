@@ -13,12 +13,6 @@
 #include "RHScript.h"
 
 
-RHUnk005490a0Message::RHUnk005490a0Message(int command, int value)
-{
-    (void)command;
-    (void)value;
-}
-
 RHUnk005490a0Message::~RHUnk005490a0Message() {}
 
 void RHSound::FUN_005a88a0(void *) {}
@@ -188,7 +182,6 @@ RHUnk005492a0::~RHUnk005492a0()
     *(unsigned *)this = 0x679b6c;
     ((RHScriptBatchCalls *)this)->FUN_00549090();
 }
-RHMessenger *RHUnk00546050() { return 0; }
 RHMessenger *__stdcall RHUnk00546050(RHUnk5490f0 *message) { (void)message; return 0; }
 RHUnk00585ea0::~RHUnk00585ea0() {}
 RHScriptIter RHUnk0046eb30::begin() { return RHScriptIter(head->next); }
@@ -240,7 +233,6 @@ void RHScriptBatchCalls::Unk0057ebd0(void *) {}
 void RHScriptBatchCalls::Unk0048ec00(void *) {}
 void RHScriptBatchCalls::Unk004d9330(void *, bool) {}
 void RHScriptBatchCalls::Unk00514670() {}
-RHUnk00549250::RHUnk00549250(int, void *) : RHUnk5490f0(0) {}
 RHUnk00549250::~RHUnk00549250() {}
 void RHScriptBatchCalls::Unk0050ed40() {}
 void RHScriptBatchCalls::Unk004522e0(void *) {}

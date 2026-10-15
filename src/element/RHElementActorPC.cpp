@@ -827,8 +827,8 @@ void RHActorPCEngineCalls::FUN_0050efb0(void *value)
 
 // FUNCTION: GAME 0x005492a0
 RHUnk005492a0::RHUnk005492a0(int command, void *actor, int action)
+    : RHMessage(2, action)
 {
-    ((RHActorPCMessageBaseCalls *)this)->FUN_00549030(2, action);
     m_c = command;
     m_10 = actor;
     m_0 = 0x679b6c;

@@ -20,24 +20,39 @@
 // deliberately unproven: no Windows-side __FILE__/tag/string names the type, so
 // it stays named by address (docs/05-naming.md). Defined once in
 // RHMessenger_stubs.cpp.
-class RHUnk5490f0
+// SIZE 0xc
+class RHMessage
+{
+public:
+    RHMessage(int type, int value);
+    RHMessage(int type);
+    ~RHMessage();
+    void *FUN_00549050(unsigned flags);
+    unsigned m_vptr; // 0x00
+    int m_type;      // 0x04
+    int m_value;     // 0x08
+};
+
+// SIZE 0x10
+class RHUnk5490f0 : public RHMessage
 {
 public:
     RHUnk5490f0(int value);
     ~RHUnk5490f0();
-
-private:
-    void *m_vt;
-    int m_unk04;
-    int m_unk08;
-    int m_unk0c;
+    void *FUN_005490d0(unsigned flags);
+    int m_unk0c; // 0x0c
 };
 
 class RHReceiverInterface;
+class SBGeoPoint2D;
+class SBGeoVector2D;
 
 class RHMessenger
 {
 public:
+    RHMessenger();
+    ~RHMessenger();
+    void *FUN_00545ed0(unsigned flags);
     virtual bool Serialize(SBFile &file);
 
     // Target 0x00547460 (__FILE__ rhmessenger.cpp). On the loading path it
@@ -71,6 +86,12 @@ public:
     void Subscribe(RHReceiverInterface *receiver);
     void Unsubscribe(RHReceiverInterface *receiver);
     void FUN_00547280();
+    int CheckThrustHI(const SBGeoPoint2D &a, const SBGeoPoint2D &b, const SBGeoPoint2D &c, const SBGeoPoint2D &d,
+        unsigned long e, unsigned long f, unsigned long g, unsigned long h);
+    int CheckThrustFG(const SBGeoPoint2D &a, const SBGeoPoint2D &b, const SBGeoPoint2D &c, float x, float y);
+    int CheckThrustDE(const SBGeoPoint2D &a, const SBGeoVector2D &b, const SBGeoPoint2D &c, const SBGeoPoint2D &d);
+    int CheckThrustAB(const SBGeoPoint2D &a, const SBGeoVector2D &b, const SBGeoPoint2D &c, const SBGeoPoint2D &d);
+    int CheckThrustC(unsigned long a, unsigned long b, unsigned long c, unsigned long d);
 
 private:
     char m_unk00[0x2e];   // [0x00, 0x2e): vptr + opaque; the 4-byte tail at
@@ -81,6 +102,7 @@ private:
                           // later offset; the original packs +0x1a/1, +0x28/1
                           // and +0x2a/2 with no gap, so the short is carved out
                           // of an opaque byte run instead.
+    char m_unk2e[0x7a];
 };
 
 // The fields RHMessenger::Serialize (and SerializeLockUser) touch. Offset

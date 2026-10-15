@@ -19,7 +19,6 @@
 // embedded containers; it is called from both the loading and saving paths of
 // RHMessenger::Serialize. No Windows-side __FILE__/tag/string names it, so it
 // stays named by address (see include/RHMessenger.h).
-void RHMessenger::Reset() {}
 
 // Target 0x005490f0 / 0x00549110 — the ctor/dtor pair of the 0x10-byte value
 // object RHMessenger::SerializeLockUser constructs on a stack temporary and
@@ -27,7 +26,8 @@ void RHMessenger::Reset() {}
 // no Windows-side __FILE__/tag/string names the type (docs/05-naming.md).
 // Defined in this separate TU so VC6 keeps the ctor/dtor as external calls and
 // does not elide the matched function's EH temp frame (Hard rule 5).
-RHUnk5490f0::RHUnk5490f0(int) {}
+RHMessenger::RHMessenger() {}
+RHMessenger::~RHMessenger() {}
 RHUnk5490f0::~RHUnk5490f0() {}
 
 // Target 0x005460c0 — __thiscall(this, RHUnk5490f0&), ends `ret 4`. A real
@@ -35,3 +35,11 @@ RHUnk5490f0::~RHUnk5490f0() {}
 // +0xa2/+0xa8 flag block and dispatches on the argument's field at +0xc. No
 // Windows-side signal names it, so it stays named by address.
 void RHMessenger::RHUnk005460c0(RHUnk5490f0 &) {}
+
+class SBGeoPoint2D
+{
+public:
+    float FUN_005fca90(const SBGeoPoint2D &other, float scale) const;
+};
+
+float SBGeoPoint2D::FUN_005fca90(const SBGeoPoint2D &, float) const { return 0.0f; }

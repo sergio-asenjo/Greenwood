@@ -272,14 +272,22 @@ public:
     RHScriptNode *Unk0059f720(RHScriptNode *next, RHScriptNode *previous);
 };
 
+// SIZE 0xc
+class RHMessage
+{
+public:
+    RHMessage(int type, int value);
+    ~RHMessage();
+    undefined4 m_0; // 0x00
+    undefined m_4[8]; // 0x04
+};
+
 // SIZE 0x14
-class RHUnk005492a0
+class RHUnk005492a0 : public RHMessage
 {
 public:
     RHUnk005492a0(int command, void *actor, int action);
     ~RHUnk005492a0();
-    undefined4 m_0; // 0x00
-    undefined m_4[8]; // 0x04
     int m_c; // 0x0c
     void *m_10; // 0x10
 };
@@ -299,12 +307,6 @@ extern RHCampaignProfiles *g_unk0x6c0e84;
 extern RHUnk00452030 *g_unk0x6c07fc;
 extern char g_unk0x6c0691;
 bool FUN_005e0c90(SBFile &file, std::string &value);
-
-class RHActorPCMessageBaseCalls
-{
-public:
-    void FUN_00549030(int level, int action);
-};
 
 class RHActorPCMenuCalls
 {
