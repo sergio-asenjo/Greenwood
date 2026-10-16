@@ -12,24 +12,12 @@
 #include "SBNullstr.h"
 #include "RHMenuDialogue.h"
 
-// Target 0x004e35a0 (RHEngine::GetDynResources).
-RHDialogueSet *RHEngine::GetDynResources(unsigned long) { return 0; }
-
 // The global entity at 0x006c0a88.
 // GLOBAL: GAME 0x006c0a88
 RHEngine *g_pEngine = 0;
 
-class RHSound
-{
-public:
-    float GetDialogVolume();
-    bool IsDialogFinished();
-    void PauseDialog();
-};
+#include "RHSoundCore.h"
 
-float RHSound::GetDialogVolume() { return 0.0f; }
-bool RHSound::IsDialogFinished() { return true; }
-void RHSound::PauseDialog() {}
 
 #include "rhuirenderer_005cb420.h"
 #include "RHUnk005cbb80.h"

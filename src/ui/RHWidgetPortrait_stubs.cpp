@@ -17,7 +17,6 @@ char RHUnk005d73d0Actor::FUN_0049f510() { return 0; }
 void RHWidgetPortrait::FUN_005d9c30() {}
 RHPortraitRenderer005ca330::RHPortraitRenderer005ca330() {}
 RHPortraitRenderer005ca330::~RHPortraitRenderer005ca330() {}
-RHPortraitRenderer005cc110::~RHPortraitRenderer005cc110() {}
 RHPortraitStrategyCalls::RHPortraitStrategyCalls() {}
 bool RHPortraitWidgetSetupCalls::FUN_0060d130(const std::wstring &, const SBGeoBoundingBox2D &, bool) { return true; }
 RHPortraitRootLifetime::RHPortraitRootLifetime() {}
@@ -95,7 +94,6 @@ void RHPortraitUIOwner::FUN_00500780(bool) {}
 void RHPortraitUIOwner::FUN_00500790(bool) {}
 void RHPortraitTextLinkedCalls::FUN_0053f9f0(void *) {}
 unsigned SBUIInputFieldTextUnk::FUN_0061dd30() { return 0; }
-char RHPortraitKeyboardCalls::FUN_0060e270(unsigned short) { return 0; }
 unsigned FUN_005fb1d0(unsigned key) { return key; }
 int FUN_005fb0f0(unsigned, unsigned short *, const void *, unsigned) { return 0; }
 void *RHPortraitTextResourceCalls::FUN_0053be80(const std::string &) { return 0; }

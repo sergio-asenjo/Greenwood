@@ -5,9 +5,15 @@
 
 #include "SBNullstr.h"
 #include "RHMenuShortcuts.h"
+#include <string.h>
 
-// Target 0x0051ebf0, __thiscall, ret 4 (RHKeyConfig copy assignment).
-RHMenuShortcutsKeys &RHMenuShortcutsKeys::FUN_0051ebf0(const RHKeyConfig &) { return *this; }
+// FUNCTION: GAME 0x0051ebf0
+RHMenuShortcutsKeys &RHMenuShortcutsKeys::FUN_0051ebf0(const RHKeyConfig &other)
+{
+    memcpy(m_keys, other.m_keys, 0x3a);
+    m_count = other.m_count;
+    return *this;
+}
 
 // Target 0x005ccc00, __thiscall.
 RHMenuShortcutsList::RHMenuShortcutsList() {}

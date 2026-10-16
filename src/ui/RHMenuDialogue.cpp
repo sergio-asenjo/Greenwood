@@ -71,14 +71,7 @@ public:
     bool FUN_0052b520(int, void *, void *);
 };
 
-class RHSound
-{
-public:
-    float GetDialogVolume();
-    bool IsDialogFinished();
-    void PauseDialog();
-    bool PlayDialog(std::string &);
-};
+#include "RHSoundCore.h"
 
 class RHGameMenuCalls
 {
@@ -86,7 +79,7 @@ public:
     void FUN_00544b30();
 };
 
-class RHMenuWindowFocus
+class RHMenuWindow
 {
 public:
     void FUN_00544b80(bool, bool);
@@ -107,12 +100,6 @@ class SBUIUnk0060d530
 public:
     bool FUN_0060d550(long);
     void *FUN_0060d690();
-};
-
-class RHMobileUnk00607da0
-{
-public:
-    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &);
 };
 
 class RHMenuWindowUI;
@@ -292,7 +279,7 @@ void RHMenuDialogue::DisplaySingleDialogue(RHMenuScreenView *screen, unsigned lo
 {
     RHMenuDialogue dialogue(screen, id);
     dialogue.Create();
-    ((RHMenuWindowFocus *)&dialogue)->FUN_00544b80(true, true);
+    ((RHMenuWindow *)&dialogue)->FUN_00544b80(true, true);
 }
 
 // FUNCTION: GAME 0x0052b2e0
@@ -391,7 +378,7 @@ void RHMenuDialogue::UpdateDialogue()
         ((RHDialoguePortraitView *)(m_bytes + 0x460))->V38(0);
         RHSound *player = RHDialogueField<RHSound *>(this, 0x558);
         if (!player->IsDialogFinished())
-            RHDialogueField<RHSound *>(this, 0x558)->PauseDialog();
+            RHDialogueField<RHSound *>(this, 0x558)->CloseDialog();
         ((RHMapWindowPart *)RHDialogueField<RHMenuWindowScreen *>(this, 0xb4)->FUN_0053bf30())->FUN_00618850(0);
         RHDialogueField<RHSound *>(this, 0x558)->PlayDialog(FUN_004e4c70(g_unk0x006c0660, "\\") + sound);
     }
@@ -556,11 +543,7 @@ public:
     bool FUN_0060d890(const SBGeoPoint2D &point);
 };
 
-class RHGameWidgetInputCalls
-{
-public:
-    int FUN_0060e240(unsigned short shortcut);
-};
+#include "SBUIKeyboardCalls.h"
 
 struct RHDialogueWidgetInput
 {

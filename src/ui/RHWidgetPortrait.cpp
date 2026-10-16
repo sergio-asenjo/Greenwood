@@ -3112,13 +3112,13 @@ void *RHPortraitLifetime005d5350::FUN_005d55f0(unsigned flags)
     return this;
 }
 
-// Parked: The identifier store is sunk after allocator-byte stores and the guard receiver.
-// STUB: GAME 0x005d56c0
+// FUNCTION: GAME 0x005d56c0
 RHPortraitAnimated::RHPortraitAnimated(int id) : m_id(id)
 {
     unsigned char allocator;
     unsigned char comparator;
-    m_map.m_00[0] = allocator;
+    unsigned char *bytes = m_map.m_00;
+    bytes[0] = allocator;
     m_map.m_00[1] = comparator;
     m_map.m_multi = false;
     {
@@ -4117,15 +4117,6 @@ class RHUIRendererCustom
 {
 public:
     bool Render(unsigned int id);
-};
-
-class RHUIRendererShiftingTitbit
-{
-public:
-    bool Render(unsigned id);
-    void SetCounter(unsigned short value) { m_50 = value; }
-    undefined m_00[0x50]; // 0x00
-    unsigned short m_50; // 0x50
 };
 
 class RHPortraitWidgetRenderer

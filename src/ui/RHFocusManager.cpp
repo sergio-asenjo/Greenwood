@@ -347,22 +347,11 @@ void RHFocusManager::FUN_004ffd20(const void *widget)
     }
 }
 
-class RHGameWidgetInputCalls
-{
-public:
-    int FUN_0060e240(unsigned short shortcut);
-};
-
-class RHPortraitKeyboardCalls
-{
-public:
-    char FUN_0060e270(unsigned short key);
-};
+#include "SBUIKeyboardCalls.h"
 
 unsigned FUN_005fb1d0(unsigned key);
 
-// Parked: the input carrier uses esi rather than edi before the key-index setup.
-// STUB: GAME 0x004ffed0
+// FUNCTION: GAME 0x004ffed0
 int RHFocusManager::FUN_004ffed0(const void *input) const
 {
     unsigned short key = 0;
@@ -370,12 +359,10 @@ int RHFocusManager::FUN_004ffed0(const void *input) const
     for (; key <= 255; ++key) {
         if (action != 0)
             break;
-        const void *current = *(const void *volatile *)&input;
-        RHGameWidgetInputCalls *shortcuts = *(RHGameWidgetInputCalls **)((char *)current + 0x0c);
-        int pressed = shortcuts->FUN_0060e240(key);
+        int pressed = (*(RHGameWidgetInputCalls **)((char *)input + 0x0c))->FUN_0060e240(key);
         unsigned index = key;
-        shortcuts = *(RHGameWidgetInputCalls **)((char *)current + 0x0c);
-        int state = *(int *)((char *)shortcuts + 0xa0c + index * 4);
+        int state = *(int *)((char *)*(RHGameWidgetInputCalls **)((char *)input + 0x0c) + 0xa0c + index * 4);
+        RHGameWidgetInputCalls *shortcuts = *(RHGameWidgetInputCalls **)((char *)input + 0x0c);
         if (pressed == 1) {
             if (state == 2 || state == 0) {
                 unsigned translated = FUN_005fb1d0(key & 0x7f);
@@ -1168,23 +1155,32 @@ RHFocusShortcutNode *RHFocusShortcutTree::FUN_00501450(const unsigned short &key
     return result;
 }
 
-// Parked: the iterator store precedes nested-lock destruction.
-// STUB: GAME 0x005014c0
+struct RHFocusShortcutAccess
+{
+    static RHFocusShortcutNode *&Left(RHFocusShortcutNode *node) { return node->left; }
+    static RHFocusShortcutNode *&Right(RHFocusShortcutNode *node) { return node->right; }
+    static RHFocusShortcutNode *&Parent(RHFocusShortcutNode *node) { return node->parent; }
+    static int &Color(RHFocusShortcutNode *node) { return node->color; }
+    static RHFocusShortcutNode *Max(RHFocusShortcutNode *node)
+    {
+        RHUnk00641782 inner;
+        while (Right(node) != g_unk0x006c0ac0)
+            node = Right(node);
+        return node;
+    }
+};
+
+// FUNCTION: GAME 0x005014c0
 void RHFocusShortcutIterator::FUN_005014c0()
 {
     RHUnk00641782 lock;
-    if (node->color == 0 && node->parent->parent == node)
-        node = node->right;
-    else if (node->left != g_unk0x006c0ac0) {
-        RHFocusShortcutNode *maximum = node->left;
-        RHUnk00641782 inner;
-        while (maximum->right != g_unk0x006c0ac0)
-            maximum = maximum->right;
-        node = maximum;
-    }
+    if (RHFocusShortcutAccess::Color(node) == 0 && RHFocusShortcutAccess::Parent(RHFocusShortcutAccess::Parent(node)) == node)
+        node = RHFocusShortcutAccess::Right(node);
+    else if (RHFocusShortcutAccess::Left(node) != g_unk0x006c0ac0)
+        node = RHFocusShortcutAccess::Max(RHFocusShortcutAccess::Left(node));
     else {
         RHFocusShortcutNode *parent;
-        while (node == (parent = node->parent)->left)
+        while (node == RHFocusShortcutAccess::Left(parent = RHFocusShortcutAccess::Parent(node)))
             node = parent;
         node = parent;
     }

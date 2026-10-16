@@ -9,6 +9,37 @@
 
 #include "SBNullstr.h"
 #include "RHUIRendererShifting.h"
+#include "RHPortraitRenderer005cadc0.h"
+
+void EmitShiftingLifetime(RHUIRendererShifting *value, unsigned flags)
+{
+    value->RHUIRendererShifting::RHUIRendererShifting();
+    value->FUN_005cbe30(flags);
+}
+
+// FUNCTION: GAME 0x005cbe10
+RHUIRendererShifting::RHUIRendererShifting()
+{
+    ((RHPortraitRenderer0060dab0 *)this)->RHPortraitRenderer0060dab0::RHPortraitRenderer0060dab0();
+    *(unsigned *)this = 0x00679ebc;
+    *(unsigned short *)((char *)this + 0x50) = 0;
+}
+
+// FUNCTION: GAME 0x005cbe30
+void *RHUIRendererShifting::FUN_005cbe30(unsigned flags)
+{
+    this->~RHUIRendererShifting();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// FUNCTION: GAME 0x005cbe50
+RHUIRendererShifting::~RHUIRendererShifting()
+{
+    *(unsigned *)this = 0x00679ebc;
+    ((RHPortraitRenderer0060dab0 *)this)->~RHPortraitRenderer0060dab0();
+}
 
 // FUNCTION: GAME 0x005cbe60
 bool RHUIRendererShifting::Render(unsigned int id)

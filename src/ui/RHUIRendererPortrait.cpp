@@ -38,6 +38,7 @@ void *RHUnk005cbb80::FUN_005cbbb0(unsigned flags)
     return this;
 }
 
+// FUNCTION: GAME 0x005cbbd0
 RHUnk005cbb80::~RHUnk005cbb80()
 {
 }

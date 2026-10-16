@@ -89,10 +89,15 @@ public:
     undefined m_data[0x5c];
 };
 
+#include "RHUIRendererShiftingTitbitClass.h"
+
 class RHPortraitRenderer005cc110
 {
 public:
-    ~RHPortraitRenderer005cc110();
+    ~RHPortraitRenderer005cc110()
+    {
+        ((RHUIRendererShiftingTitbit *)this)->~RHUIRendererShiftingTitbit();
+    }
     undefined m_data[0x70];
 };
 
@@ -284,11 +289,7 @@ public:
     bool Insert(unsigned short character);
 };
 
-class RHPortraitKeyboardCalls
-{
-public:
-    char FUN_0060e270(unsigned short key);
-};
+#include "SBUIKeyboardCalls.h"
 
 unsigned FUN_005fb1d0(unsigned key);
 int FUN_005fb0f0(unsigned key, unsigned short *characters, const void *state, unsigned flags);

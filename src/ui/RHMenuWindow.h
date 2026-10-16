@@ -59,9 +59,12 @@ public:
     void *m_17f4; // 0x17f4
 };
 
+class RHMenuWindow;
+
 class RHMenuWindowScreen
 {
 public:
+    void FUN_0053bb80(RHMenuWindow *window, bool display, bool modal);
     RHMenuWindowUI *FUN_0053bf30();
 };
 
@@ -91,7 +94,7 @@ public:
     RHMenuWindowFocus(RHMenuWindow *parent, void *screen, int orientation, bool wrap);
     RHMenuWindowFocus(RHMenuWindow *parent, void *screen, long resource, int orientation, bool wrap);
     ~RHMenuWindowFocus();
-    void FUN_00544b80(bool display, bool modal);
+    void FUN_00544b80(bool display, bool modal) { ((RHMenuWindow *)this)->FUN_00544b80(display, modal); }
 
     unsigned m_vptr; // 0x00
     undefined m_04[0xb0]; // 0x04

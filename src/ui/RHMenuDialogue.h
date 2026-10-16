@@ -34,11 +34,7 @@ public:
 // RHEngine::GetDynResources(unsigned long) (symbols/mac-RH.txt line 2110 and
 // symbols/zeta-robin.txt `GetDynResources__8RHEngineUl`; the Mac
 // RHMenuDialogue::GetDialogue calls the same method with the same 0 argument).
-class RHEngine
-{
-public:
-    RHDialogueSet *GetDynResources(unsigned long resources); // 0x004e35a0
-};
+#include "RHEngine.h"
 
 // The engine singleton pointer read from the global at 0x006c0a88.
 extern RHEngine *g_pEngine;

@@ -1,4 +1,9 @@
 #include "RHFrameHolder.h"
+#include "RHFrameHolderCalls.h"
+#include "RHProfileFileCore.h"
+#include <string.h>
+
+void FUN_0064158f(void *);
 
 DECOMP_SIZE_ASSERT(RHFrameHolderRecord, 0x14)
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
@@ -125,6 +130,44 @@ void RHUnk00507500::FUN_00504590()
     }
 }
 
+// Parked: indexed loads and counter-store scheduling use different registers.
+// STUB: GAME 0x00504600
+unsigned long RHFrameHolder::FUN_00504600(unsigned long index)
+{
+    if (m_frames.m_first[index].m_10 && !m_frames.m_first[index].m_data)
+    {
+        FUN_005058a0(index);
+        ++m_b8;
+        return m_frames.m_first[index].m_data;
+    }
+    ++m_bc;
+    return m_frames.m_first[index].m_data;
+}
+
+// FUNCTION: GAME 0x00504660
+bool RHFrameHolder::FUN_00504660(unsigned long index)
+{
+    return m_frames.m_first[index].m_10;
+}
+
+// FUNCTION: GAME 0x00504680
+unsigned short RHFrameHolder::FUN_00504680(unsigned long index)
+{
+    return m_frames.m_first[index].m_12;
+}
+
+// FUNCTION: GAME 0x005046a0
+unsigned short RHFrameHolder::FUN_005046a0(unsigned long index)
+{
+    return m_frames.m_first[index].m_width;
+}
+
+// FUNCTION: GAME 0x005046c0
+unsigned short RHFrameHolder::FUN_005046c0(unsigned long index)
+{
+    return m_frames.m_first[index].m_height;
+}
+
 // Parked: carried index/pixel registers and conditional esi save differ.
 // STUB: GAME 0x00504b10
 void RHFrameHolder::FUN_00504b10(unsigned long data, unsigned long size, unsigned short replacement)
@@ -151,6 +194,31 @@ void RHFrameHolder::FUN_00504b10(unsigned long data, unsigned long size, unsigne
             } while (--count);
         }
     }
+}
+
+// FUNCTION: GAME 0x00504b80
+bool RHUnk005069a0::FUN_00504b80(unsigned short replacement)
+{
+    unsigned short count = m_00 * 4;
+    unsigned short *pixel = (unsigned short *)m_04;
+    if (replacement != m_0c)
+    {
+        if (count > 0)
+        {
+            unsigned int remaining = count;
+            do
+            {
+                if (*pixel == replacement)
+                    ++*pixel;
+                if (*pixel == m_0c)
+                    *pixel = replacement;
+                ++pixel;
+            } while (--remaining);
+        }
+        m_0c = replacement;
+    }
+    *(bool *)((char *)this + 0x0f) = true;
+    return true;
 }
 
 // Parked: source array and stride argument lowering differ.
@@ -206,12 +274,11 @@ void RHFrameHolder::FUN_005050a0(unsigned short *pixels, unsigned long *output,
     }
 }
 
-// Parked: function return and sentinel merge differ.
-// STUB: GAME 0x00505170
-RHUnk005068e0 *RHFrameHolder::FUN_00505170(unsigned short id)
+// FUNCTION: GAME 0x00505170
+RHUnk005068e0 *RHFrameHolder::FUN_00505170(unsigned long id)
 {
-    unsigned short index = FUN_00504680(id);
     RHUnk005068e0 *result = 0;
+    unsigned short index = FUN_00504680(id);
     if (index != 0xffff)
         result = m_dictionaries.m_first + index;
     return result;
@@ -234,6 +301,42 @@ unsigned short RHFrameHolder::FUN_005051a0(unsigned short id, SBFile &file)
     RHUnk005051a0Array &array = *(RHUnk005051a0Array *)((char *)this + 0x18);
     array.FUN_00508090(array.m_last, 1, value);
     return array.Size() - 1;
+}
+
+// Parked: frame address CSE and bank-copy register scheduling differ.
+// STUB: GAME 0x005058a0
+bool RHFrameHolder::FUN_005058a0(unsigned long index)
+{
+    if (!m_frames.m_first[index].m_data)
+    {
+        m_frames.m_first[index].m_data = (unsigned long)operator new(
+            (m_frames.m_first[index].m_size >> 1) * 2);
+        if (!m_e8)
+        {
+            memcpy((void *)m_frames.m_first[index].m_data,
+                (const void *)m_frames.m_first[index].m_0c,
+                m_frames.m_first[index].m_size);
+            return true;
+        }
+        RHProfileFile &bank = (RHProfileFile &)m_bank;
+        bank.FUN_005f5370(m_frames.m_first[index].m_0c, 0);
+        bank.Access((void *)m_frames.m_first[index].m_data,
+            m_frames.m_first[index].m_size);
+    }
+    return true;
+}
+
+// Parked: effective-only; final indexed store reverses the SIB base/index operands.
+// STUB: GAME 0x00505940
+bool RHSpriteFrameCalls::FUN_00505940(unsigned index)
+{
+    RHFrameHolder *holder = (RHFrameHolder *)this;
+    if (holder->m_frames.m_first[index].m_10 && holder->m_frames.m_first[index].m_data)
+    {
+        FUN_0064158f((void *)holder->m_frames.m_first[index].m_data);
+        holder->m_frames.m_first[index].m_data = 0;
+    }
+    return true;
 }
 
 // Parked: RLE scan/copy scheduling and live-local register allocation differ.
@@ -392,24 +495,39 @@ unsigned long RHFrameHolder::AddRowFromResource(SBResourceManager *resources, un
 #include <string.h>
 #include <math.h>
 
-class RHSpriteFrameCalls
-{
-public:
-    void FUN_00505940(unsigned);
-};
+#include "RHConsoleBlockAllocator.h"
 
-struct RHConsoleBlockMap
-{
-    char m_00[0x58];
-    int m_counts[17];
-};
+DECOMP_SIZE_ASSERT(RHConsoleBlockMap, 0x9c)
 
-class RHConsoleBlockAllocator
+// FUNCTION: GAME 0x00506070
+bool RHConsoleBlockAllocator::FUN_00506070(RHConsoleBlockMap *information)
 {
-public:
-    bool FUN_00506070(RHConsoleBlockMap *);
-    int FUN_00506620();
-};
+    memset(information, 0, sizeof(*information));
+    RHFrameHolder &holder = *(RHFrameHolder *)this;
+    unsigned int remaining = holder.m_frames.Size();
+    unsigned int index = 0;
+    if (remaining > 0)
+    {
+        do
+        {
+            RHFrameHolderRecord frame = holder.m_frames[index];
+            if (frame.m_data)
+            {
+                *(unsigned long *)(information->m_00 + 16) += frame.m_size;
+                ++*(unsigned long *)(information->m_00 + 8);
+                if (!frame.m_0c)
+                    ++*(unsigned long *)information->m_00;
+            }
+            else
+            {
+                *(unsigned long *)(information->m_00 + 12) += frame.m_size;
+                ++*(unsigned long *)(information->m_00 + 4);
+            }
+            ++index;
+        } while (--remaining);
+    }
+    return true;
+}
 
 // FUNCTION: GAME 0x00506120
 void RHFrameHolder::FUN_00506120()
@@ -554,12 +672,12 @@ void RHFrameMemoryPool::FUN_005062e0()
     list.Insert(list.head, block);
 }
 
-// Parked: subtraction emits add eax,-4 instead of sub eax,4.
-// STUB: GAME 0x00506460
+// FUNCTION: GAME 0x00506460
 unsigned long RHFrameMemoryPool::FUN_00506460(unsigned long size)
 {
     unsigned long index = (unsigned long)FUN_006433ab(log10((double)size) / log10(g_unk0x00677670));
-    return index >= 4 ? index - 4 : 0;
+    index = index >= 4 ? index - 4 : 0;
+    return index;
 }
 
 // FUNCTION: GAME 0x005064b0
@@ -631,7 +749,7 @@ void RHFramePoolEmit(RHFrameMemoryPool *pool, RHFramePoolList *list, const RHFra
 }
 
 // FUNCTION: GAME 0x005068e0
-RHUnk005068e0::RHUnk005068e0()
+RHUnk005069a0::RHUnk005069a0()
 {
     m_00 = 0;
     m_04 = 0;
@@ -642,7 +760,8 @@ RHUnk005068e0::RHUnk005068e0()
     m_0e[3] = 0;
 }
 
-RHUnk005068e0::RHUnk005068e0(const RHUnk005068e0 &value)
+// FUNCTION: GAME 0x00506900
+RHUnk005069a0::RHUnk005069a0(const RHUnk005069a0 &value)
 {
     m_00 = 0;
     m_04 = 0;
@@ -654,6 +773,14 @@ RHUnk005068e0::RHUnk005068e0(const RHUnk005068e0 &value)
     FUN_00506a70(value);
 }
 
+// FUNCTION: GAME 0x005069a0
+RHUnk005069a0::~RHUnk005069a0()
+{
+    if (m_04)
+        operator delete((void *)m_04);
+}
+
+// FUNCTION: GAME 0x005069b0
 RHUnk005068e0 &RHUnk005068e0::FUN_005069b0(const RHUnk005068e0 &value)
 {
     FUN_00506a70(value);
@@ -719,14 +846,74 @@ void RHFrameDictionaryEmit(RHUnk005068e0 *destination, const RHUnk005068e0 &valu
 
 void RHFrameCacheEmit(RHFrameHolder *holder, SBFile &file)
 {
+    holder->FUN_00504600(0);
+    holder->FUN_005058a0(0);
     holder->FUN_00506120();
     holder->FUN_00506160(file);
+}
+
+// FUNCTION: GAME 0x00506b40
+bool RHUnk005069a0::FUN_00506b40()
+{
+    unsigned short count = m_00 * 4;
+    unsigned short *pixel = (unsigned short *)m_04;
+    if (!m_0e[2] && count > 0)
+    {
+        unsigned int remaining = count;
+        do
+        {
+            unsigned short value = *pixel++;
+            pixel[-1] = (value & 0x1f) | ((value >> 1) & 0x7fe0);
+        } while (--remaining);
+    }
+    *(bool *)((char *)this + 0x10) = true;
+    return true;
+}
+
+// FUNCTION: GAME 0x00506b90
+void RHUnk005069a0::FUN_00506b90(SBFile &file)
+{
+    unsigned short *pixels = (unsigned short *)m_04;
+    char text[80];
+    for (unsigned short index = 0; index < m_00; index += 16)
+    {
+        unsigned short *pixel = pixels + index;
+        unsigned int remaining = 16;
+        do
+        {
+            sprintf(text,
+                // STRING: GAME 0x006b00cc
+                "%04x ", *pixel);
+            file.Access(text, strlen(text));
+            ++pixel;
+        } while (--remaining);
+        file.Access(
+            // STRING: GAME 0x006abd20
+            (void *)"\n", 1);
+    }
+}
+
+void RHFrameDictionaryDumpEmit(RHUnk005069a0 *dictionary, SBFile &file)
+{
+    dictionary->FUN_00506b90(file);
 }
 
 // FUNCTION: GAME 0x00506e00
 unsigned int RHUnk00506e00::FUN_00506e00() const
 {
     return m_first == 0 ? 0 : m_last - m_first;
+}
+
+// FUNCTION: GAME 0x00506e30
+void RHUnk005051a0Array::FUN_00506e30()
+{
+    RHUnk005068e0 *last = m_last;
+    for (RHUnk005068e0 *first = m_first; first != last; ++first)
+        first->~RHUnk005069a0();
+    operator delete(m_first);
+    m_first = 0;
+    m_last = 0;
+    m_end = 0;
 }
 
 // FUNCTION: GAME 0x00506e70
@@ -1171,12 +1358,19 @@ void RHUnk00507500::Iterator::FUN_00509a80()
 
 void RHFrameHolder::Emit(SBResourceManager *resources, SBArray<SBGeoVector2D> &vectors)
 {
+    FUN_00504660(0);
+    FUN_00504680(0);
+    FUN_005046a0(0);
+    FUN_005046c0(0);
+    RHUnk005069a0 dictionary;
+    dictionary.FUN_00504b80(0);
     unsigned short count;
     InitializeSpriteBank();
     AddRowFromResource(resources, 0, count, vectors);
 }
 
-void EmitFrameHolderWidened(RHEngine *engine, RHUnk00506e00 *array, unsigned int count, const RHFrameHolderRecord &value)
+void EmitFrameHolderWidened(RHEngine *engine, RHUnk00506e00 *array, unsigned int count,
+    const RHFrameHolderRecord &value, RHUnk005051a0Array *dictionaries)
 {
     engine->FUN_004d2340(15);
     RHFrameHolder *holder = 0;
@@ -1184,6 +1378,7 @@ void EmitFrameHolderWidened(RHEngine *engine, RHUnk00506e00 *array, unsigned int
     array->FUN_00506e00();
     array->FUN_00507320(0, 0);
     array->FUN_00507020(0, count, value);
+    dictionaries->FUN_00506e30();
 }
 
 void EmitFrameHolderMaps(RHFrameHolderRowMap *rows, RHUnk005074d0 *strings, RHUnk005074d0::Value &value)

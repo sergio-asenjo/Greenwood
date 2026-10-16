@@ -1,6 +1,36 @@
 #include "SBNullstr.h"
 #include "RHUIRendererShiftingTitbit.h"
 
+void EmitShiftingTitbitLifetime(RHUIRendererShiftingTitbit *value, unsigned flags)
+{
+    value->RHUIRendererShiftingTitbit::RHUIRendererShiftingTitbit();
+    value->FUN_005cc0f0(flags);
+}
+
+// FUNCTION: GAME 0x005cc0c0
+RHUIRendererShiftingTitbit::RHUIRendererShiftingTitbit()
+{
+    *(unsigned *)this = 0x00679ecc;
+    m_54 = 0xffffffff;
+    m_59 = false;
+    m_58 = true;
+}
+
+// FUNCTION: GAME 0x005cc0f0
+void *RHUIRendererShiftingTitbit::FUN_005cc0f0(unsigned flags)
+{
+    this->~RHUIRendererShiftingTitbit();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// FUNCTION: GAME 0x005cc110
+RHUIRendererShiftingTitbit::~RHUIRendererShiftingTitbit()
+{
+    *(unsigned *)this = 0x00679ecc;
+}
+
 // FUNCTION: GAME 0x005cc120
 bool RHUIRendererShiftingTitbit::Render(unsigned id)
 {

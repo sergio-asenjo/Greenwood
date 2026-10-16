@@ -6,7 +6,6 @@
 #include "SBNullstr.h"
 #include "RHMenuSounds.h"
 
-RHMenuSoundsSettings::RHMenuSoundsSettings(const RHMenuSoundsSettings &) {}
 RHMenuSoundsLabel::RHMenuSoundsLabel() {}
 
 // Target 0x005417a0, __thiscall.

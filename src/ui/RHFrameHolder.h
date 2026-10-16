@@ -229,29 +229,13 @@ public:
     RHFrameHolderRecord *m_end; // 0x0c
 };
 
-// SIZE 0x14
-class RHUnk005068e0
-{
-public:
-    RHUnk005068e0();
-    RHUnk005068e0(const RHUnk005068e0 &value);
-    ~RHUnk005068e0();
-    RHUnk005068e0 &FUN_005069b0(const RHUnk005068e0 &value);
-    void FUN_005069d0(unsigned short, SBFile &);
-    void FUN_00506a70(const RHUnk005068e0 &value);
-    void FUN_00506b40();
-    undefined2 m_00; // 0x00
-    undefined2 m_02; // 0x02
-    undefined4 m_04; // 0x04
-    undefined4 m_08; // 0x08
-    undefined2 m_0c; // 0x0c
-    undefined m_0e[6]; // 0x0e
-};
+#include "RHFrameDictionary.h"
 
 // SIZE 0x10
 class RHUnk005051a0Array
 {
 public:
+    void FUN_00506e30();
     void FUN_00508090(RHUnk005068e0 *, unsigned int, const RHUnk005068e0 &);
     unsigned int Size() const { return m_first == 0 ? 0 : m_last - m_first; }
     undefined4 m_00; // 0x00
@@ -369,10 +353,15 @@ public:
     void FUN_00504bd0(unsigned long, unsigned short, unsigned short, unsigned long, unsigned short);
     void FUN_00504b10(unsigned long, unsigned long, unsigned short);
     void FUN_005050a0(unsigned short *, unsigned long *, unsigned short, unsigned short, unsigned short, unsigned int, int);
-    unsigned short FUN_00504680(unsigned short);
+    bool FUN_00504660(unsigned long);
+    unsigned long FUN_00504600(unsigned long);
+    bool FUN_005058a0(unsigned long);
+    unsigned short FUN_00504680(unsigned long);
+    unsigned short FUN_005046a0(unsigned long);
+    unsigned short FUN_005046c0(unsigned long);
     void FUN_00506120();
     bool FUN_00506160(SBFile &file);
-    RHUnk005068e0 *FUN_00505170(unsigned short);
+    RHUnk005068e0 *FUN_00505170(unsigned long);
     void Emit(SBResourceManager *, SBArray<SBGeoVector2D> &);
     RHUnkFXDraw *&Draw() { return *(RHUnkFXDraw **)((char *)this + 4); }
 
@@ -383,7 +372,9 @@ public:
     RHFrameHolderRowMap m_rows; // [0x4c]: tree head +0x50
     RHUnk005f4fc0 m_bank; // [0x5c, 0xb4)
     unsigned long m_b4; // [0xb4]: index header
-    undefined m_b8[0x30]; // 0xb8
+    unsigned long m_b8;
+    unsigned long m_bc;
+    undefined m_c0[0x28];
     bool m_e8; // [0xe8]: bank-open fallback
 };
 

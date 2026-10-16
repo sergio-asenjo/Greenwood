@@ -67,6 +67,14 @@ SBGeoBoundingBox2D RHUnk005cba10::FUN_005cb550(SBUIListboxUnk0061e890 *font, boo
     return box;
 }
 
+#include "RHSectorProductionCampaign.h"
+
+// FUNCTION: GAME 0x005cb6f0
+RHSectorProductionRelics *RHSectorProductionCampaign::FUN_005cb6f0()
+{
+    return (RHSectorProductionRelics *)((char *)this + 0x84);
+}
+
 // FUNCTION: GAME 0x005cb700
 void RHUnk005cba10::FUN_005cb700(SBUIListboxUnk0061e890 *font)
 {

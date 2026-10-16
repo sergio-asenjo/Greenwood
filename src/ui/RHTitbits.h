@@ -34,7 +34,7 @@ public:
     int m_4;
     int m_8;
 
-    void Serialize(SBFile &file);
+    bool Serialize(SBFile &file);
 };
 
 // Target 0x00613e90: trivial ctor (`mov eax,ecx; ret`); stored as a 12-byte

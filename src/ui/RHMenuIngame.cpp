@@ -29,11 +29,7 @@ bool RHMenuIngame::FUN_0052d400(RHMenuEvent *event)
     return handled;
 }
 
-class RHUnk004e3760
-{
-public:
-    void *Get();
-};
+#include "RHEngineAccessors.h"
 
 class RHEngine;
 extern RHEngine *g_pEngine;

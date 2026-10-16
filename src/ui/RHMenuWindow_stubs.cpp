@@ -13,8 +13,6 @@ RHMenuWindowUI *RHMenuWindowScreen::FUN_0053bf30() { return 0; }
 // Target 0x00544ee0, __thiscall.
 RHMenuWindowFocus::~RHMenuWindowFocus() {}
 
-// Target 0x00544b80, __thiscall, ret 8.
-void RHMenuWindowFocus::FUN_00544b80(bool, bool) {}
 
 
 
@@ -25,8 +23,8 @@ RHMenuScreenView::~RHMenuScreenView() {}
 RHMenuResolution::RHMenuResolution(const SBGeoPoint2D &) {}
 
 
-// Target 0x00544b80, __thiscall, ret 8.
-void RHMenuWindow::FUN_00544b80(bool, bool) {}
+// Target 0x0053bb80, __thiscall, ret 0xc.
+void RHMenuWindowScreen::FUN_0053bb80(RHMenuWindow *, bool, bool) {}
 
 // Target 0x00545220, __thiscall, ret 8.
 RHMenuYesNo::RHMenuYesNo(RHMenuWindowScreen *screen, const std::wstring &) : RHMenuWindow(0, screen, false) {}

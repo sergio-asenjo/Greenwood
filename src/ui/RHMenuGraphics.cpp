@@ -118,7 +118,7 @@ bool RHMenuGraphics::HandleEvent(RHMenuEvent *event)
 
 #include "RHMenuScreenView.h"
 
-class RHMenuWindowFocus
+class RHMenuWindow
 {
 public:
     void FUN_00544b80(bool, bool);
@@ -130,7 +130,7 @@ bool RHMenuGraphics::Display(void *ui)
     RHMenuScreenView screen(0, 0xba, 0, ui);
     RHMenuGraphics menu(&screen);
     menu.Create();
-    ((RHMenuWindowFocus *)&menu)->FUN_00544b80(true, true);
+    ((RHMenuWindow *)&menu)->FUN_00544b80(true, true);
     return menu.FUN_0052ce70();
 }
 

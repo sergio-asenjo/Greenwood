@@ -80,3 +80,9 @@ void *RHBriefingParentCalls::FUN_00544b60(const RHBriefingNarrowText &name)
 {
     return (*(RHPortraitTextResourceCalls **)((char *)this + 0xb4))->FUN_0053be80(*(const std::string *)&name);
 }
+
+// FUNCTION: GAME 0x00544b80
+void RHMenuWindow::FUN_00544b80(bool display, bool modal)
+{
+    m_screen->FUN_0053bb80(this, display, modal);
+}
