@@ -107,13 +107,8 @@ public:
 };
 
 // SIZE 0xc
-struct RHMenuSoundsSettings
-{
-    RHMenuSoundsSettings(const RHMenuSoundsSettings &other);
-    unsigned long m_00; // 0x00
-    unsigned long m_04; // 0x04
-    unsigned long m_08; // 0x08
-};
+#include "RHSoundConfig.h"
+typedef RHSoundConfig RHMenuSoundsSettings;
 
 // SIZE 0x119c
 class RHMenuSounds : public RHMenuWindowFocus

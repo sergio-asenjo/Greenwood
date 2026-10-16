@@ -16,11 +16,7 @@
 #include "RHMenuSounds.h"
 #include "RHMenuShortMissionDescription.h"
 
-class RHSound
-{
-public:
-    void ApplySoundSettings();
-};
+#include "RHSoundCore.h"
 
 class RHArtificialIntelligenceSoundCalls;
 extern RHArtificialIntelligenceSoundCalls *g_unk0x006c1070;

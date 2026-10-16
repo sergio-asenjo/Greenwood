@@ -2,6 +2,7 @@
 #define RHARTIFICIALINTELLIGENCE_H
 
 #include "SB.h"
+#include "RHSoundActorCalls.h"
 #include <iterator>
 #include <string>
 
@@ -419,13 +420,6 @@ class RHReconnaissanceEngine
 public:
     bool Unk004c3cb0(SBFile &file, void *&value);
     bool Unk004c4110(SBFile &file, void *&value);
-};
-
-class RHArtificialIntelligenceSoundCalls
-{
-public:
-    void Unk005a8d10(RHArtificialIntelligenceActor *actor);
-    void Unk005a8b70(int category, void *profile, int remark, short variant, SBGeoPoint2D *position, RHArtificialIntelligenceActor *actor);
 };
 
 struct RHArtificialIntelligenceInitialEntry

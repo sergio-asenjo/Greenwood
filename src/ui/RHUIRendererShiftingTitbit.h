@@ -78,22 +78,7 @@ public:
 
 extern RHUnk005ef320 *g_unk0x6c11d0;
 
-class RHUIRendererShifting
-{
-public:
-    bool Render(unsigned);
-    char m_bytes[0x54]; // resource +0x04, box +0x08, blit arg +0x20, words +0x4c/+0x4e/+0x50
-};
-
-class RHUIRendererShiftingTitbit : public RHUIRendererShifting
-{
-public:
-    bool Render(unsigned);
-    void Emit();
-    unsigned m_54; // +0x54
-    bool m_58; // +0x58
-    bool m_59; // +0x59
-};
+#include "RHUIRendererShiftingTitbitClass.h"
 
 #define TitbitResource (*(SBResourceManager **)((char *)this + 0x04))
 #define TitbitBox (*(SBGeoBoundingBox2D *)((char *)this + 0x08))

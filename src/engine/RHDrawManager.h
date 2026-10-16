@@ -66,11 +66,7 @@ public:
     unsigned char m_00[0x10]; // 0x00
 };
 
-class SBGeoPolyLine2DList
-{
-public:
-    const SBGeoPoint2D &FUN_00610cb0(unsigned long index) const;
-};
+#include "SBGeoPolyLine2DList.h"
 
 // SIZE 0x0c
 class RHUnk0060fbf0

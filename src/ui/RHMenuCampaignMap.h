@@ -160,24 +160,7 @@ public:
     unsigned m_198c; // 0x198c
 };
 
-// SIZE 0x1c
-class RHMapDescription
-{
-public:
-    RHMapDescription();
-    ~RHMapDescription();
-    bool FUN_0063cda0(unsigned);
-    struct Entry
-    {
-        char m_00[0x30];
-        unsigned m_30; // +0x30
-        char m_34[4];
-        unsigned m_38; // +0x38
-        char m_3c[0x0c]; // sizeof = 0x48
-    };
-    Entry *FUN_0063c9e0(unsigned);
-    char m_00[0x1c]; // sizeof = 0x1c
-};
+#include "RHMapDescription.h"
 
 class RHMapResources
 {

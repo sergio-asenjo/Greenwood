@@ -593,20 +593,7 @@ public:
 class RHUnk005c38b0;
 extern RHUnk005c38b0 *g_unk0x6c10e8;
 
-class RHHumanWeaponCalls
-{
-public:
-    unsigned short FUN_005c1d50(int index);
-    unsigned short FUN_005c1d70(int index);
-    unsigned short FUN_005c1e80(int index);
-    unsigned short FUN_005c1ea0(int index);
-    unsigned short FUN_005c1f50(int index);
-    float FUN_005c1ed0(int index);
-    unsigned short FUN_005c1f10(int index);
-    unsigned short FUN_005c1b50(int index);
-    unsigned short FUN_005c1b70(void *actor, void *target, unsigned short value);
-    unsigned short FUN_005c1db0(int index);
-};
+#include "RHHumanWeaponCalls.h"
 
 struct RHUnk005c9010Iterator;
 void FUN_005c9010(RHUnk005c9010Iterator &current, int distance, std::bidirectional_iterator_tag category);
@@ -655,32 +642,6 @@ inline void *RHHumanAt(RHHumanList &list, int wanted)
     return node->data;
 }
 
-// SIZE 0x18
-struct RHSoundSettings
-{
-    RHSoundSettings();
-    ~RHSoundSettings() { ((SBGeoPoint2D *)m_04)->~SBGeoPoint2D(); }
-    int m_00; // 0x00
-    undefined m_04[8]; // 0x04
-    void *m_0c; // 0x0c
-    undefined m_10[4]; // 0x10
-    void *m_14; // 0x14
-};
-// SIZE 0x20
-struct RHSoundChannelSettings
-{
-    float m_00; // 0x00
-    float m_04; // 0x04
-    float m_08; // 0x08
-    unsigned short m_0c; // 0x0c
-    unsigned short m_0e; // 0x0e
-    unsigned short m_10; // 0x10
-    unsigned short m_12; // 0x12
-    float m_14[3]; // 0x14
-};
-class RHSoundGeometryView
-{
-public:
-    bool FUN_005b2ff0(const RHSoundSettings &sound, bool mode, RHSoundChannelSettings &settings);
-};
+#include "RHSoundSettingsLifetime.h"
+#include "RHSoundCore.h"
 #endif

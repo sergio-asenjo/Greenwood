@@ -64,11 +64,7 @@ public:
 class RHUnk00452030;
 extern RHUnk00452030 *g_unk0x6c07fc;
 
-class RHUnk004d8460
-{
-public:
-    void FUN_004d8460(void *actor, int first, int second);
-};
+#include "RHUnk004d8460Calls.h"
 
 struct RHSectorProductionInfoHead
 {
@@ -112,11 +108,7 @@ public:
     }
 };
 
-class RHSectorProductionCampaign
-{
-public:
-    RHSectorProductionRelics *FUN_005cb6f0();
-};
+#include "RHSectorProductionCampaign.h"
 
 struct RHSectorProductionActorNode
 {

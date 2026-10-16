@@ -106,17 +106,7 @@ public:
                          unsigned long e);
 };
 
-class RHUIRendererShifting
-{
-public:
-    bool Render(unsigned int id);
-
-    void Emit();
-
-    // Total size is irrelevant: the fields the matched function touches are
-    // reached through the offset aliases below.
-    char m_bytes[0x54];
-};
+#include "RHUIRendererShiftingClass.h"
 
 // Resource manager sub-object pointer (target `mov ecx,[esi+0x4]`).
 #define m_resource (*(SBResourceManager **)((char *)this + 0x4))

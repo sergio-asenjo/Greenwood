@@ -412,11 +412,7 @@ template<class T> T &RHMovementField(void *object, unsigned offset)
     return *(T *)((char *)object + offset);
 }
 
-class RHMovementPathFinderCalls
-{
-public:
-    void FUN_00553100(void *actor);
-};
+#include "RHMovementPathFinderCalls.h"
 
 class RHMovementEngineCalls
 {

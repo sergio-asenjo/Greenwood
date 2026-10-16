@@ -27,11 +27,7 @@ public:
     unsigned short m_10c; // +0x10c, WORD
 };
 
-class RHArtificialIntelligenceSoundCalls
-{
-public:
-    void *FUN_005a6f90();
-};
+class RHArtificialIntelligenceSoundCalls;
 
 struct ToolboxMouseState
 {

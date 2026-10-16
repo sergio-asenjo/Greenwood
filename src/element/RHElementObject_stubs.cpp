@@ -12,13 +12,7 @@
 #include "SBNullstr.h"
 #include "RHElementObject.h"
 
-class RHObjectConstructorCalls
-{
-public:
-    RHObjectConstructorCalls(unsigned long type, bool flag, int action);
-    ~RHObjectConstructorCalls();
-    unsigned char unknown[0x100];
-};
+#include "RHObjectConstructorCalls.h"
 
 RHObjectConstructorCalls::RHObjectConstructorCalls(unsigned long, bool, int)
 {

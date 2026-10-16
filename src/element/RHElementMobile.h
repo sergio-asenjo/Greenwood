@@ -420,11 +420,8 @@ public:
     undefined m_0[0x1a8]; // 0x00
 };
 
-class RHMobileUnk005dfaa0
-{
-public:
-    void FUN_005dfaa0(const SBGeoPoint2D &value);
-};
+#include "RHPlaneCalls.h"
+typedef RHUnk005df860 RHMobileUnk005dfaa0;
 
 struct RHMobilePointNode
 {
@@ -506,18 +503,7 @@ struct RHMobileSoundNode
     int m_20; // 0x20
 };
 
-// SIZE 0x254
-class RHSound
-{
-public:
-    void FUN_005a7110(RHSoundSource *source);
-    void FUN_005a87f0(RHSoundSource *source);
-    void FUN_005a8420(int channel);
-    void FUN_005a8810(void *value);
-    undefined m_0[0x24c]; // 0x00
-    RHMobileSoundNode *m_24c; // 0x24c
-    unsigned m_250; // 0x250
-};
+#include "RHSoundCore.h"
 
 // SIZE 0x14
 class SBGeoBoundingBox2D

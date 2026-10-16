@@ -66,16 +66,7 @@ public:
 
 #include "RHSaveGameManager.h"
 
-// SIZE 0x08
-class RHKeyConfig
-{
-public:
-    RHKeyConfig();
-    ~RHKeyConfig();
-    bool Serialize(SBFile &file);
-    short *m_keys; // 0x00
-    short m_count; // 0x04
-};
+#include "RHKeyConfig.h"
 
 // SIZE 0x08
 class SBGeoPoint2D
@@ -89,19 +80,7 @@ public:
 };
 
 // SIZE 0x0c
-class RHSoundConfig
-{
-public:
-    RHSoundConfig();
-    bool Serialize(SBFile &file);
-    short m_00; // 0x00
-    short m_02; // 0x02
-    short m_04; // 0x04
-    short m_06; // 0x06
-    short m_08; // 0x08
-    char m_0a; // 0x0a
-    char m_0b; // 0x0b
-};
+#include "RHSoundConfig.h"
 
 // SIZE 0x0c
 class RHGraphicConfig
