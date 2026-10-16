@@ -9,6 +9,7 @@
 
 void RHSerializeName(SBFile &file, const char *name);
 class RHMissionArrayStorage;
+class SBGeoBoundingBox2D;
 
 // SIZE 0x58
 class RHSector
@@ -16,7 +17,8 @@ class RHSector
 public:
     RHSector();
     virtual void UnkV0(); // vtable+0x00
-    void Unk0057cd60(SBFile &file, bool mode);
+    int Unk0057cd60(SBFile &file, bool mode);
+    void FUN_0057d390(void *draw, unsigned long surface, const SBGeoBoundingBox2D &box, float scale, unsigned short layer);
     undefined m_pad4[0x2c]; // 0x04
     int m_30; // 0x30
     undefined m_pad34[0x24]; // 0x34
@@ -280,10 +282,24 @@ public:
 
 extern RHElementActor *g_unk0x6c100c;
 
+class RHSectorGateCalls
+{
+public:
+    void FUN_0057dea0(RHElementActor *actor, bool mode);
+    bool FUN_0057deb0(RHElementActor *actor, bool mode);
+    undefined m_00[0xb4];
+    bool m_b4;
+};
+
 // SIZE 0x108
 class RHSectorLift
 {
 public:
+    int FUN_0057dcf0(int animation);
+    int FUN_0057dd90(int animation);
+    bool FUN_0057de30(RHElementActor *actor);
+    bool FUN_0057dec0();
+    bool FUN_0057def0();
     int Unk0057e060(SBFile &file, class RHUnkSectorLiftGrid *grid);
     bool Serialize(SBFile &file);
     void Emit(SBFile &file);
@@ -305,6 +321,13 @@ class RHUnk005f5440
 {
 public:
     int Unk();
+};
+
+class RHUnk0057d490
+{
+public:
+    void FUN_0057d760(void *gate, bool side);
+    void Emit(void *gate, bool side);
 };
 
 // VTABLE: GAME 0x00679c24

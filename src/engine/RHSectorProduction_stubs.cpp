@@ -24,16 +24,6 @@ public:
 RHSectorProductionBonus::RHSectorProductionBonus(int, int, unsigned short) {}
 RHSectorProductionBonus::RHSectorProductionBonus(unsigned long, int, int) {}
 
-class RHSectorProductionRelics;
-
-class RHSectorProductionCampaign
-{
-public:
-    RHSectorProductionRelics *FUN_005cb6f0();
-};
-
-RHSectorProductionRelics *RHSectorProductionCampaign::FUN_005cb6f0() { return 0; }
-
 class RHSectorProductionActorList
 {
 public:

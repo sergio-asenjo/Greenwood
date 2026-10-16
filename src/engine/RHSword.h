@@ -11,6 +11,9 @@ public:
     ~RHSword();
     virtual bool Serialize(SBFile &file);
     int m_unk4;
+    char FUN_005c1b60() const;
+    unsigned short FUN_005c1f90(int index) const;
+    unsigned short FUN_005c1fb0(int index) const;
 
     static bool SerializePointer(SBFile &file, RHSword *&ptr);
 };

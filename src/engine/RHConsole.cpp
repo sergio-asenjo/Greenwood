@@ -146,11 +146,6 @@ struct RHConsolePCList
         RHConsoleListNode *sentinel = *(RHConsoleListNode *volatile *)&m_head;
         return RHConsoleListIterator(sentinel);
     }
-    RHConsoleListIterator beginRelaxed()
-    {
-        RHConsoleListNode *sentinel = *(RHConsoleListNode *volatile *)&m_head;
-        return RHConsoleListIterator(sentinel->next);
-    }
     RHElementActorPC *getInline(int wanted)
     {
         int size = m_count;
@@ -210,9 +205,9 @@ struct RHConsolePCList
         {
             if (0 <= (size + 1) / 2)
             {
-                m_cursor = beginRelaxed();
+                RHConsoleListNode *head = m_head;
                 std::bidirectional_iterator_tag category;
-                FUN_005c9010((RHUnk005c9010Iterator &)m_cursor, 0, category);
+                FUN_005c9010((RHUnk005c9010Iterator &)(m_cursor = RHConsoleListIterator(head->next)), 0, category);
             }
             else
             {
@@ -361,6 +356,14 @@ struct RHConsoleActorSearch : RHConsoleActorArray
     }
 };
 
+struct RHConsoleActorActive
+{
+    char m_00[0x12];
+    bool m_active;
+    char m_13[0x49c - 0x13];
+    int *m_vbtable;
+};
+
 inline RHConsoleActor *RHConsoleHumanBase(RHConsoleActor *actor)
 {
     return (RHConsoleActor *)((char *)actor + 0x49c + RHConsoleField<int>(RHConsoleField<void *>(actor, 0x49c), 4));
@@ -469,13 +472,11 @@ void RHConsole::FUN_0045cc60(unsigned, char **)
     }
 }
 
-// Parked: pointer/index spill and loop reload scheduling differ.
-// STUB: GAME 0x0045ccc0
+// FUNCTION: GAME 0x0045ccc0
 void RHConsole::FUN_0045ccc0(const std::string &name)
 {
-    RHConsoleActor **first = RHConsoleField<RHConsoleActor **volatile>(g_pEngine, 0x493c);
     for (unsigned index = 0;
-         index < (unsigned char)(first == 0 ? 0 : RHConsoleField<RHConsoleActorArray>(g_pEngine, 0x4938).m_last - first);
+         index < (unsigned char)RHConsoleField<RHConsoleActorArray>(g_pEngine, 0x4938).size();
          ++index)
     {
         RHConsoleActor *actor = RHConsoleField<RHConsoleActorArray>(g_pEngine, 0x4938).m_first[(unsigned char)index];
@@ -526,12 +527,12 @@ void RHConsole::FUN_0045d5f0(unsigned, char **)
     }
 }
 
-// Parked: EH-state zero register and pre-destructor state store differ.
+// Parked: the pre-destructor EH-state store is omitted once the state-zero register matches.
 // STUB: GAME 0x0045d650
 void RHConsole::FUN_0045d650(unsigned, char **)
 {
-    unsigned index = 0;
     unsigned soldierCount = 0;
+    unsigned index = 0;
     SBGeoPoint2D point;
     RHUnk005ef320 *draw = g_unk0x6c11d0;
     typedef void (__cdecl *Message)(RHUnk005ef320 *, const char *);
@@ -651,8 +652,7 @@ void RHConsole::FUN_0045d920(unsigned, char **)
     }
 }
 
-// Parked: empty-size branch folding and countdown register scheduling differ.
-// STUB: GAME 0x0045da50
+// FUNCTION: GAME 0x0045da50
 void RHConsole::FUN_0045da50(unsigned, char **)
 {
     // STRING: GAME 0x006ad2f0
@@ -660,20 +660,15 @@ void RHConsole::FUN_0045da50(unsigned, char **)
     if (RHConsoleField<RHConsoleActor *>(m_engine, 0xd4))
     {
         unsigned short count = RHConsoleField<RHConsoleActorArray>(g_pEngine, 0x4958).size();
-        if (count > 0)
+        for (unsigned short index = 0; index < count; ++index)
         {
-            unsigned index = 0;
-            unsigned remaining = count;
-            do
+            RHConsoleActor *actor = RHConsoleField<RHConsoleActorArray>(g_pEngine, 0x4958).m_first[index];
+            if (actor != RHConsoleField<RHConsoleActor *>(m_engine, 0xd4))
             {
-                RHConsoleActor *actor = RHConsoleField<RHConsoleActorArray>(g_pEngine, 0x4958).m_first[index];
-                if (actor != RHConsoleField<RHConsoleActor *>(m_engine, 0xd4))
-                {
-                    RHConsoleField<char>(actor, 0x12) = 0;
-                    RHConsoleHumanBase(actor)->v15(4);
-                }
-                ++index;
-            } while (--remaining);
+                RHConsoleActorActive *view = (RHConsoleActorActive *)actor;
+                view->m_active = false;
+                ((RHConsoleActor *)((char *)&view->m_vbtable + view->m_vbtable[1]))->v15(4);
+            }
         }
         // STRING: GAME 0x006ad2e0
         FUN_005edae0(m_engine->m_draw, "Lonely hero...");
@@ -1041,8 +1036,7 @@ void RHConsole::FUN_0045e7e0(unsigned, char **)
         FUN_005edae0(m_engine->m_draw, "Please enable view cone of a NPC before using this command.");
 }
 
-// Parked: dirty-cache node load and cursor address precede the argument pushes.
-// STUB: GAME 0x0045e8d0
+// FUNCTION: GAME 0x0045e8d0
 void RHConsole::FUN_0045e8d0(unsigned, char **)
 {
     // STRING: GAME 0x006ada08

@@ -11,5 +11,4 @@
 
 RHSword::RHSword() {}
 RHSword::~RHSword() {}
-bool RHSword::Serialize(SBFile &) { return true; }
 SBString *SBFile::GetError() { return 0; }

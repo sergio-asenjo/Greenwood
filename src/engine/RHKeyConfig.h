@@ -13,14 +13,20 @@
 //
 // The class has no vptr — the first member is at +0x00.
 
+#ifndef RHKEYCONFIG_H
+#define RHKEYCONFIG_H
+
 #include "SB.h"
 
 class RHKeyConfig
 {
 public:
+    RHKeyConfig();
     RHKeyConfig(const RHKeyConfig &other);
     ~RHKeyConfig();
     unsigned short GetKeyCount() const;
+    unsigned short GetKeyIndex(unsigned short key) const;
+    short &operator[](unsigned short index);
     const short *GetKeys() const;
     bool Serialize(SBFile &file);
 
@@ -35,3 +41,5 @@ public:
 // Serialises a type-name tag into the stream; target 0x005e1b70. Defined once
 // in RHElementObject_stubs.cpp; declared here so the call resolves.
 void RHSerializeName(SBFile &file, const char *name);
+
+#endif

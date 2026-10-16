@@ -12,14 +12,6 @@ unsigned short SBUIInputFieldDrawUnk::FUN_00614230(void *, std::wstring *, const
 #include "RHKeyConfig.h"
 #include <string.h>
 
-RHKeyConfig::RHKeyConfig(const RHKeyConfig &other)
-{
-    m_keys = (short *)operator new(0x3a);
-    m_count = other.m_count;
-    memcpy(m_keys, other.m_keys, 0x3a);
-}
-
-unsigned short RHKeyConfig::GetKeyCount() const { return 0x1c; }
 const short *RHKeyConfig::GetKeys() const { return m_keys; }
 
 void RHGameInputSegment::FUN_004611c0() {}

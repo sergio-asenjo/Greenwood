@@ -14,8 +14,6 @@ RHGameRenderer0060dab0::RHGameRenderer0060dab0() {}
 RHGameRenderer0060dab0::~RHGameRenderer0060dab0() {}
 RHGameRenderer005c9270::RHGameRenderer005c9270() {}
 RHGameRenderer005c9270::~RHGameRenderer005c9270() {}
-RHGameRenderer005cbe50::RHGameRenderer005cbe50() {}
-RHGameRenderer005cbe50::~RHGameRenderer005cbe50() {}
 void RHGameLifetimeDeleteCalls::FUN_0050a460() {}
 void RHGameLifetimeDeleteCalls::FUN_0050a4f0() {}
 void RHGameLifetimeDeleteCalls::FUN_0050a5c0() {}
@@ -23,7 +21,6 @@ void RHGameLifetimeDeleteCalls::FUN_0050a5c0() {}
 void RHGameWidgetBaseCalls::FUN_0060d290(unsigned long) {}
 bool RHGameWidgetRendererCalls::FUN_0060d890(const SBGeoPoint2D &) { return false; }
 bool RHGameWidgetRendererCalls::FUN_005c9320(unsigned) { return false; }
-int RHGameWidgetInputCalls::FUN_0060e240(unsigned short) { return 0; }
 void RHGameWidgetAnimatedCalls::FUN_005d5790(void *, int, bool) {}
 
 namespace std
@@ -62,11 +59,9 @@ int __stdcall RHGameWindowCalls::CloseWindow(void *) { return 0; }
 void RHGameActionCalls::FUN_005140b0() {}
 void RHGameActionCalls::FUN_0050eff0() {}
 void RHGameActionCalls::FUN_005f4900(char) {}
-void RHGameActionCalls::FUN_005f0fa0() {}
 void RHGameActionCalls::FUN_005ef380(int) {}
 void RHGameActionCalls::FUN_005e5260() {}
 void RHGameActionCalls::FUN_005104c0() {}
-void RHGameActionCalls::FUN_005104d0() {}
 bool RHGameActionCalls::FUN_004d2300(void *, unsigned) { return false; }
 void RHGameActionCalls::FUN_004da2f0() {}
 void RHGameActionCalls::FUN_005a7b40(int) {}

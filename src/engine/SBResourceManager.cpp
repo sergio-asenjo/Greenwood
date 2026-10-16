@@ -335,11 +335,7 @@ inline SBResourceUnkIterator SBResourceFind(SBResourceUnk00605440 &tree, const u
         ? found : SBResourceUnkIterator(head));
 }
 
-class RHEngineWidenedCalls
-{
-public:
-    void FUN_005e5160(unsigned);
-};
+#include "RHEngineWidenedCalls.h"
 
 // FUNCTION: GAME 0x006001d0
 void SBResourceManager::FUN_006001d0(Tree44::Iterator &position)

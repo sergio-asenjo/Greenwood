@@ -14,6 +14,12 @@ long SBTrueTypeFont::GetCharacterWidth(unsigned short character, long &left, lon
     return FUN_00616870(m_deviceContext, code);
 }
 
+// FUNCTION: GAME 0x006168e0
+unsigned SBTrueTypeFont::FUN_006168e0() const
+{
+    return 0x100;
+}
+
 // FUNCTION: GAME 0x006168f0
 void SBTrueTypeFont::GetImplementationTag(char (&tag)[6]) const
 {
@@ -43,6 +49,7 @@ bool SBTrueTypeFont::SaveToStream(SBFile &file)
 
 void EmitSBTrueTypeFont(SBTrueTypeFont *font, SBFile &file, char (&tag)[6], long &spacing)
 {
+    font->FUN_006168e0();
     font->GetCharacterWidth(0, spacing, spacing);
     font->GetImplementationTag(tag);
     font->LoadFromStream(file);

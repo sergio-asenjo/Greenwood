@@ -144,6 +144,9 @@ public:
     void *FUN_00616c70(unsigned flags);
     void AttachToRenderContext(SBNativeFontRenderContext *, unsigned long);
     void DetachFromRenderContext();
+    unsigned FUN_00616f40() const;
+    unsigned FUN_00617030() const;
+    unsigned FUN_00617080() const;
     const CharacterInfo *GetCharacterInfo(unsigned short) const;
     void GetImplementationTag(char (&tag)[6]) const;
     long GetCharacterWidth(unsigned short character, long &left, long &right) const;

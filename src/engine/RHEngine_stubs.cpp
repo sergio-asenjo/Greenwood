@@ -25,27 +25,15 @@ bool RHEngineMenuStateCalls::FUN_00514970() { return false; }
 bool RHEngineSequenceStateCalls::FUN_005823f0() { return false; }
 bool RHEngineSequenceStateCalls::FUN_0058a670(void *) { return false; }
 
-RHUnk005069a0::~RHUnk005069a0() {}
-RHUnk005069a0::RHUnk005069a0(const RHUnk005069a0 &) {}
 RHUnk005069a0::RHUnk005069a0(const RHUnk005069a0 &, int) {}
 RHUnk0051d2c0::~RHUnk0051d2c0() {}
 int RHHikingGuide::FUN_0051cac0(SBFile &) { return 0; }
 bool RHUnk00551da0::FUN_00551da0(SBFile &) { return true; }
 void RHUnk004e51e0::FUN_00454bb0() {}
-RHUnk005069a0 &RHUnk005069a0::operator=(const RHUnk005069a0 &) { return *this; }
 
 struct RHbeamMe;
 
-class RHEngineSerializationCalls
-{
-public:
-    void FUN_0058a430();
-    void FUN_005a5c50();
-    void FUN_0048fa30();
-    void FUN_004d88e0(void *element, int first, int second);
-    void FUN_0050f000();
-    void FUN_0050f010();
-};
+#include "RHEngineSerializationCalls.h"
 
 void RHEngineSerializationCalls::FUN_0048fa30() {}
 void RHEngineSerializationCalls::FUN_004d88e0(void *, int, int) {}
@@ -136,27 +124,10 @@ void RHEngineMissionElementCalls::Unk34() {}
 void RHEngineMissionElementCalls::Unk38(SBFile &) {}
 void RHEngineMissionElementCalls::Unk3c(SBFile &) {}
 
-class RHEngineWidenedCalls
-{
-public:
-    bool FUN_004b2010(char flag, void *description);
-    void FUN_004c7f60(const void *point);
-    void FUN_00556260();
-    void FUN_005563f0(unsigned value);
-    void FUN_0055ebf0();
-    void FUN_004eb120(SBFile &file, void *pathFinder);
-    void FUN_00558670(SBFile &file);
-    void FUN_005bd450();
-    bool FUN_005b76e0(unsigned row, unsigned flags);
-    void FUN_0050efd0(void *actor);
-    void FUN_004e3660(char flag);
-    void FUN_00504b80(unsigned value);
-    void FUN_005e5160(unsigned surface);
-};
+#include "RHEngineWidenedCalls.h"
 
 bool RHEngineWidenedCalls::FUN_004b2010(char, void *) { return false; }
 void RHEngineWidenedCalls::FUN_00556260() {}
-void RHEngineWidenedCalls::FUN_005563f0(unsigned) {}
 void RHEngineWidenedCalls::FUN_0055ebf0() {}
 void *FUN_004b3120(int) { return 0; }
 void RHEngineWidenedCalls::FUN_004eb120(SBFile &, void *) {}
@@ -165,7 +136,6 @@ void RHEngineWidenedCalls::FUN_005bd450() {}
 bool RHEngineWidenedCalls::FUN_005b76e0(unsigned, unsigned) { return false; }
 void RHEngineWidenedCalls::FUN_0050efd0(void *) {}
 void RHEngineWidenedCalls::FUN_004e3660(char) {}
-void RHEngineWidenedCalls::FUN_00504b80(unsigned) {}
 void RHEngineWidenedCalls::FUN_005e5160(unsigned) {}
 class RHEngineActorUpdateCalls
 {

@@ -32,7 +32,7 @@ public:
     static bool BlitDouble(unsigned long source, const SBGeoBoundingBox2D &sourceBox, unsigned long destination, const SBGeoBoundingBox2D &destinationBox, unsigned long flags);
     static void ChangeShadowIntoPulse(unsigned long surface, const SBGeoBoundingBox2D &box, unsigned short level);
     static unsigned long GetNumberOfInputsUTS();
-    static bool CleanUpInputs();
+    bool CleanUpInputs();
     static bool FUN_005f0c20(bool keyboard, SBThreadedInputEvent &event);
     static void PushButton(SBButton button);
     static void ReleaseButton(SBButton button);

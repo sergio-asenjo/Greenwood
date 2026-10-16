@@ -148,11 +148,12 @@ RHSectorActorIter RHSectorActorIter::operator++(int)
     return previous;
 }
 
-// deferred: 0x0057cd60, parked body; called by a counted initializer.
-void RHSector::Unk0057cd60(SBFile &file, bool mode)
+// Parked: coordinate-width, scalar-slot and x87 scheduling differ.
+// STUB: GAME 0x0057cd60
+int RHSector::Unk0057cd60(SBFile &file, bool mode)
 {
     SBGeoPoint2D point;
-    ((RHUnk005f5440 *)&file)->Unk();
+    int start = ((RHUnk005f5440 *)&file)->Unk();
     short width = *(short *)((char *)g_unk0x6c0a9c + 0x3e98) << 6;
     short height = *(short *)((char *)g_unk0x6c0a9c + 0x3e9a) << 6;
     undefined type;
@@ -175,21 +176,205 @@ void RHSector::Unk0057cd60(SBFile &file, bool mode)
             else if (y > height)
                 y = height;
         }
-        point.m_x = x;
         point.m_y = y;
+        point.m_x = x;
         ((RHUnkSectorPoints *)((char *)this + 4))->FUN_0060ce90(point, i);
         ((SBGeoBoundingBox2D *)((char *)this + 0x3c))->Unk00607dc0(point);
     }
     undefined flag;
     file.Access(&flag, 1);
     ((RHUnkSectorPoints *)((char *)this + 4))->FUN_0060c2e0();
-    ((RHUnk005f5440 *)&file)->Unk();
+    return ((RHUnk005f5440 *)&file)->Unk() - start;
+}
+
+// FUNCTION: GAME 0x0057d390
+void RHSector::FUN_0057d390(void *, unsigned long, const SBGeoBoundingBox2D &, float, unsigned short)
+{
 }
 
 // FUNCTION: GAME 0x0057d440
 RHUnk0057d440::RHUnk0057d440()
 {
     m_30 = 0x400;
+}
+
+#include <list>
+
+template <class T>
+class RHMotionAreaList : public std::list<T>
+{
+public:
+    void *m_cursor;
+    char m_dirty;
+    void InsertLast(const T &value)
+    {
+        insert(end(), value);
+        m_dirty = 1;
+    }
+};
+
+// FUNCTION: GAME 0x0057d760
+void RHUnk0057d490::FUN_0057d760(void *gate, bool side)
+{
+    ((RHMotionAreaList<void *> *)((char *)this + 0x5c))->InsertLast(gate);
+    ((RHMotionAreaList<bool> *)((char *)this + 0x80))->InsertLast(side);
+}
+
+// FUNCTION: GAME 0x0057dcf0
+int RHSectorLift::FUN_0057dcf0(int animation)
+{
+    switch (m_f0)
+    {
+    case 0:
+        return animation == 10 ? 294 : 6;
+    case 1:
+        return animation == 10 ? 10 : 7;
+    case 2:
+        if (animation != 10)
+            return animation == 143 ? 228 : 35;
+        return 296;
+    case 3:
+        return animation == 10 ? 298 : 20;
+    }
+    return 7;
+}
+
+// FUNCTION: GAME 0x0057dd90
+int RHSectorLift::FUN_0057dd90(int animation)
+{
+    switch (m_f0)
+    {
+    case 0:
+        return animation == 10 ? 294 : 6;
+    case 1:
+        return animation == 10 ? 10 : 7;
+    case 2:
+        if (animation != 10)
+            return animation == 143 ? 231 : 38;
+        return 297;
+    case 3:
+        return animation == 10 ? 299 : 21;
+    }
+    return 7;
+}
+
+#include "RHScriptEngineCalls.h"
+
+// Parked: full-width boolean tail sharing and actor-state comparison differ.
+// STUB: GAME 0x0057de30
+bool RHSectorLift::FUN_0057de30(RHElementActor *actor)
+{
+    switch (m_f0)
+    {
+    case 1:
+        if ((actor->m_4 & 7) == 0 && *(int *)((char *)actor + 0x1d0) != 1)
+            return false;
+        break;
+    case 2:
+        return (unsigned int)((actor->m_4 & 7) == 4 && (actor->m_4 & 0x1f) == 4);
+    case 3:
+        return (unsigned int)(actor->UnkType() == RHUnkSectorType12 &&
+            ((RHScriptBatchCalls *)actor)->Unk0049d560(21));
+    }
+    return true;
+}
+
+// FUNCTION: GAME 0x0057dea0
+void RHSectorGateCalls::FUN_0057dea0(RHElementActor *, bool)
+{
+    m_b4 = true;
+}
+
+// FUNCTION: GAME 0x0057deb0
+bool RHSectorGateCalls::FUN_0057deb0(RHElementActor *, bool)
+{
+    return false;
+}
+
+// FUNCTION: GAME 0x0057dec0
+bool RHSectorLift::FUN_0057dec0()
+{
+    if (m_fc)
+    {
+        --m_fc;
+        return false;
+    }
+    return m_f4 == 0 || m_f9 == 1;
+}
+
+// FUNCTION: GAME 0x0057def0
+bool RHSectorLift::FUN_0057def0()
+{
+    if (m_fc)
+    {
+        --m_fc;
+        return false;
+    }
+    return m_f4 == 0 || m_f8 == 1;
+}
+
+#include "RHActorAreaCalls.h"
+
+// FUNCTION: GAME 0x0057df20
+void RHActorAreaCalls::FUN_0057df20(RHElementActor *actor, bool mode)
+{
+    RHSectorLift &lift = *(RHSectorLift *)this;
+    if (mode)
+    {
+        ++lift.m_f4;
+        if (actor->UnkType() == RHUnkSectorType12)
+            ++lift.m_f6;
+        lift.m_f9 = 1;
+        lift.m_fc = 100;
+    }
+    else
+    {
+        short count = --lift.m_f4;
+        if (actor->UnkType() == RHUnkSectorType12)
+        {
+            --lift.m_f6;
+            if (lift.m_f6 < 0)
+                lift.m_f6 = 0;
+        }
+        if (count <= 0)
+        {
+            lift.m_f4 = 0;
+            lift.m_fc = 0;
+            lift.m_f9 = 0;
+            lift.m_f8 = 0;
+        }
+    }
+}
+
+// FUNCTION: GAME 0x0057dfc0
+void RHActorAreaCalls::FUN_0057dfc0(RHElementActor *actor, bool mode)
+{
+    RHSectorLift &lift = *(RHSectorLift *)this;
+    if (mode)
+    {
+        ++lift.m_f4;
+        if (actor->UnkType() == RHUnkSectorType12)
+            ++lift.m_f6;
+        lift.m_f8 = 1;
+        lift.m_fc = 80;
+    }
+    else
+    {
+        short count = --lift.m_f4;
+        if (actor->UnkType() == RHUnkSectorType12)
+        {
+            --lift.m_f6;
+            if (lift.m_f6 < 0)
+                lift.m_f6 = 0;
+        }
+        if (count <= 0)
+        {
+            lift.m_f4 = 0;
+            lift.m_fc = 0;
+            lift.m_f9 = 0;
+            lift.m_f8 = 0;
+        }
+    }
 }
 
 // Unresolved vector inlining/frame layout; target 0x24, current 0x28.
@@ -592,7 +777,17 @@ void RHSectorArchery::Emit(SBFile &file)
 
 void RHSectorLift::Emit(SBFile &file)
 {
+    FUN_0057dcf0(0);
+    FUN_0057dd90(0);
+    FUN_0057de30(0);
+    FUN_0057dec0();
+    FUN_0057def0();
     Serialize(file);
+}
+
+void RHUnk0057d490::Emit(void *gate, bool side)
+{
+    FUN_0057d760(gate, side);
 }
 
 void RHSectorLift::Emit(SBFile &file, RHUnkSectorLiftGrid *grid)

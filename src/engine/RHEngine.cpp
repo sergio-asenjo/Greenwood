@@ -290,23 +290,7 @@ extern void **g_unk0x6c0f34;
 extern void **g_unk0x6c0f38;
 extern float g_unk0x0067749c;
 
-class RHEngineWidenedCalls
-{
-public:
-    bool FUN_004b2010(char flag, void *description);
-    void FUN_004c7f60(const void *point);
-    void FUN_00556260();
-    void FUN_005563f0(unsigned value);
-    void FUN_0055ebf0();
-    void FUN_004eb120(SBFile &file, void *pathFinder);
-    void FUN_00558670(SBFile &file);
-    void FUN_005bd450();
-    bool FUN_005b76e0(unsigned row, unsigned flags);
-    void FUN_0050efd0(void *actor);
-    void FUN_004e3660(char flag);
-    void FUN_00504b80(unsigned value);
-    void FUN_005e5160(unsigned surface);
-};
+#include "RHEngineWidenedCalls.h"
 
 class RHUnk005bd5b0
 {
@@ -363,6 +347,20 @@ public:
 };
 
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
+
+#include "RHPathRequest.h"
+
+DECOMP_SIZE_ASSERT(RHpathRequest, 0x3c)
+
+class RHUnk004bf6d0
+{
+public:
+    ~RHUnk004bf6d0();
+    undefined m_00[0x128];
+    SBGeoPoint2D m_128;
+    SBGeoPoint2D m_130;
+    SBGeoPoint2D m_138;
+};
 
 class RHUnk00452030;
 extern RHUnk00452030 *g_unk0x6c07fc;
@@ -449,13 +447,7 @@ public:
     void Unk(int value);
 };
 
-class RHScriptBatchCalls
-{
-public:
-    void Unk0058a940(void *context, int value, void *element);
-    void Unk005c2ec0(void *position, int first, int second, void *actor,
-        int third, int fourth, int fifth, int sixth);
-};
+#include "RHScriptEngineCalls.h"
 
 class RHSequenceFilterCalls
 {
@@ -750,11 +742,10 @@ float g_unk0x00677484 = 50.0f;
 // GLOBAL: GAME 0x00677f7c
 float g_unk0x00677f7c = 0.00003051850944757461548f;
 
-class RHMapDescription
-{
-public:
-    bool FUN_0063cda0(unsigned mission);
-};
+#include "RHMapDescription.h"
+
+DECOMP_SIZE_ASSERT(RHMapDescription, 0x1c)
+DECOMP_SIZE_ASSERT(RHMapDescription::Entry, 0x48)
 
 // GLOBAL: GAME 0x006c0664
 char *g_unk0x006c0664 = 0;
@@ -966,10 +957,22 @@ bool RHUnk004a6000::FUN_004a6000()
     RHENGINE_OBJECT_CREATE(3, 0xc3, 1)
 }
 
+// FUNCTION: GAME 0x004a6060
+char RHUnk004a6000::FUN_004a6060() const
+{
+    return *(const char *)((const char *)this + 0x12);
+}
+
 // FUNCTION: GAME 0x004a6310
 bool RHUnk004a6310::FUN_004a6310(char flag)
 {
     RHENGINE_OBJECT_CREATE(4, 0xc4, flag)
+}
+
+// FUNCTION: GAME 0x004a6370
+int RHUnk004a6310::FUN_004a6370() const
+{
+    return 0x1fd;
 }
 
 // FUNCTION: GAME 0x004a66d0
@@ -1042,13 +1045,6 @@ struct RHEngineSpritePoint
     undefined4 m_00; // 0x00
     undefined4 m_04; // 0x04
     undefined4 m_08; // 0x08
-    RHEngineSpritePoint &operator=(const RHEngineSpritePoint &value)
-    {
-        m_00 = value.m_00;
-        m_04 = value.m_04;
-        m_08 = value.m_08;
-        return *this;
-    }
 };
 
 // SIZE 0x18 (partial layout)
@@ -1068,7 +1064,20 @@ struct RHEngineSpritePosition
 DECOMP_SIZE_ASSERT(RHEngineSpritePoint, 0x0c)
 DECOMP_SIZE_ASSERT(RHEngineSpritePosition, 0x18)
 
-// STUB: GAME 0x004bc5b0
+inline void RHSetWaspState(RHUnk004bc5b0 *wasp, unsigned type, unsigned row)
+{
+    unsigned current = wasp->m_b4;
+    wasp->m_b0 = type;
+    if (current != row)
+    {
+        RHEngineWidenedCalls *sprite = (RHEngineWidenedCalls *)wasp->m_sprite;
+        wasp->m_b4 = row;
+        sprite->FUN_005bd450();
+        ((RHEngineWidenedCalls *)wasp->m_sprite)->FUN_005b76e0(row, 0);
+    }
+}
+
+// FUNCTION: GAME 0x004bc5b0
 bool RHUnk004bc5b0::FUN_004bc5b0(char flag)
 {
     if (!((RHEngineWidenedCalls *)this)->FUN_004b2010(flag, FUN_004b3120(10)))
@@ -1080,15 +1089,55 @@ bool RHUnk004bc5b0::FUN_004bc5b0(char flag)
         sprite->Assign(*(RHEngineSpritePoint *)((char *)m_parent->m_sprite + 0x10));
         *(unsigned *)((char *)m_sprite + 8) = 7;
     }
-    unsigned current = m_b4;
-    m_b0 = 10;
-    if (current != 0xbe)
-    {
-        m_b4 = 0xbe;
-        ((RHEngineWidenedCalls *)m_sprite)->FUN_005bd450();
-        ((RHEngineWidenedCalls *)m_sprite)->FUN_005b76e0(0xbe, 0);
-    }
+    RHSetWaspState(this, 10, 0xbe);
     return true;
+}
+
+inline unsigned RHEngineIndexedPointerCount(RHEngine *engine, void **first)
+{
+    if (first == 0)
+        return 0;
+    return *(void ***)((char *)engine + 0x48e0) - first;
+}
+
+// FUNCTION: GAME 0x004be5c0
+void FUN_004be5c0(SBFile &file, void *&value)
+{
+    bool loading = file.m_bLoading;
+    RHEngine *engine = g_pEngine;
+    unsigned identifier;
+    if (!loading) {
+        void *saved = value;
+        void **first = *(void ***)((char *)engine + 0x48dc);
+        for (unsigned short i = 0; i < RHEngineIndexedPointerCount(engine, first); ++i) {
+            if ((*(void **volatile *)((char *)engine + 0x48dc))[i] == saved) {
+                identifier = *(unsigned *)((char *)saved + 0x0c);
+                file.Access(&identifier, 4);
+                return;
+            }
+        }
+        identifier = 0xffffffff;
+        file.Access(&identifier, 4);
+        return;
+    }
+    file.Access(&identifier, 4);
+    if (identifier == 0xffffffff) {
+        value = 0;
+        return;
+    }
+    void **first = *(void **volatile *)((char *)engine + 0x48dc);
+    for (unsigned short i = 0; i < RHEngineIndexedPointerCount(engine, first); ++i) {
+        if (*(unsigned *)((char *)(*(void ***)((char *)engine + 0x48dc))[i] + 0x0c) == identifier) {
+            value = (*(void ***)((char *)engine + 0x48dc))[i];
+            return;
+        }
+    }
+    value = 0;
+}
+
+// FUNCTION: GAME 0x004bf6d0
+RHUnk004bf6d0::~RHUnk004bf6d0()
+{
 }
 
 class RHEngineMissionCalls
@@ -1102,6 +1151,47 @@ public:
     void FUN_004c20a0(SBFile &file);
     void FUN_004c2830(SBFile &file);
 };
+
+extern float g_unk0x00677488;
+extern float g_unk0x00677598;
+
+// FUNCTION: GAME 0x004c0340
+bool RHEngine::FUN_004c0340(SBGeoPoint2D &point)
+{
+    bool top = false;
+    bool left = top;
+    if (point.m_x < g_unk0x00677488) {
+        point.m_x = 0.0f;
+        left = true;
+    }
+    if (point.m_y < g_unk0x00677488) {
+        point.m_y = 0.0f;
+        top = true;
+    }
+    float right = *(volatile float *)((char *)this + 0x4730);
+    if (point.m_x + *(volatile float *)((char *)this + 0x4728) /
+        *(float *)((char *)this + 0x475c) > right) {
+        if (left == true)
+            point = SBGeoPoint2D(0.0f, 0.0f);
+        else {
+            float maximum = *(volatile float *)((char *)this + 0x4730);
+            point.m_x = maximum -
+                *(float *)((char *)this + 0x4728) / *(float *)((char *)this + 0x475c);
+        }
+    }
+    float bottom = *(volatile float *)((char *)this + 0x4734);
+    if (point.m_y + (*(volatile float *)((char *)this + 0x472c) - g_unk0x00677598) /
+        *(float *)((char *)this + 0x475c) > bottom) {
+        if (top == true)
+            point = SBGeoPoint2D(0.0f, 0.0f);
+        else {
+            point.m_y = *(volatile float *)((char *)this + 0x4734) -
+                (*(float *)((char *)this + 0x472c) - g_unk0x00677598) /
+                *(float *)((char *)this + 0x475c);
+        }
+    }
+    return top | left;
+}
 
 // Parked: 21.13%; partial chunk dispatch.
 // STUB: GAME 0x004c0510
@@ -1206,8 +1296,7 @@ bool RHEngine::InitializeFromMission(RHMission *mission)
     return true;
 }
 
-// cdecl cleanup seam, not proven irreducible.
-// STUB: GAME 0x004c1be0
+// FUNCTION: GAME 0x004c1be0
 void RHEngine::InitializeActorsFromMissionStream(SBFile &file, std::vector<RHbeamMe> &beamMes)
 {
     FUN_005e1d50(file, 0x424f595a, 3);
@@ -1236,10 +1325,14 @@ void RHEngine::InitializeActorsFromMissionStream(SBFile &file, std::vector<RHbea
             FUN_004e35f0(file);
             break;
         case 0x4d454f57:
-            FUN_005e2300(file);
-            SBAssert(0, "P:\\Robin Hood\\RHengine.cpp", 0x544,
-                // STRING: GAME 0x006af3b0
-                "ACHTUNG : Unimplemented chunk skipped");
+            {
+                FUN_005e2300(file);
+                typedef void (*Assert)(int, const char *, int, const char *, ...);
+                Assert report = &SBAssert;
+                report(0, "P:\\Robin Hood\\RHengine.cpp", 0x544,
+                    // STRING: GAME 0x006af3b0
+                    "ACHTUNG : Unimplemented chunk skipped");
+            }
             break;
         default:
             SBAssert(1, "P:\\Robin Hood\\RHengine.cpp", 0x548,
@@ -1780,16 +1873,7 @@ public:
 class RHUnk0048a970;
 extern RHUnk0048a970 *g_unk0x6c0b3c;
 
-class RHEngineSerializationCalls
-{
-public:
-    void FUN_0058a430();
-    void FUN_005a5c50();
-    void FUN_0048fa30();
-    void FUN_004d88e0(void *element, int first, int second);
-    void FUN_0050f000();
-    void FUN_0050f010();
-};
+#include "RHEngineSerializationCalls.h"
 
 void FUN_005a5cd0();
 
@@ -2856,6 +2940,61 @@ bool __stdcall FUN_004d2330(int type)
     if (type != 0x11)
         return false;
     return true;
+}
+
+#include "RHPathFinderCore.h"
+
+// FUNCTION: GAME 0x004d23b0
+bool RHEngine::TurnPathFinderOn()
+{
+    return (*(RHPathFinder **)((char *)this + 0x45b8))->TurnOn();
+}
+
+// FUNCTION: GAME 0x004d23c0
+void RHEngine::TurnPathFinderOff()
+{
+    (*(RHPathFinder **)((char *)this + 0x45b8))->FUN_00554750();
+}
+
+// FUNCTION: GAME 0x004d2d10
+RHpathRequest::~RHpathRequest()
+{
+}
+
+class RHUnk004d96d0
+{
+public:
+    SBGeoPoint2D FUN_004d96d0() const;
+};
+
+class RHUnk004d96a0
+{
+public:
+    SBGeoPoint2D FUN_004d96a0() const;
+};
+
+// FUNCTION: GAME 0x004d96a0
+SBGeoPoint2D RHUnk004d96a0::FUN_004d96a0() const
+{
+    return ((RHUnk004d96d0 *)((char *)*(void **)((char *)this + 0x50) + 4))->FUN_004d96d0();
+}
+
+// FUNCTION: GAME 0x004d96d0
+SBGeoPoint2D RHUnk004d96d0::FUN_004d96d0() const
+{
+    return ((SBGeoPoint2D *)((char *)this + 0x20))->Unk005fc110(*(SBGeoPoint2D *)((char *)this + 0x3c));
+}
+
+#include "RHConsole.h"
+
+// GLOBAL: GAME 0x006c068d
+bool g_unk0x006c068d = false;
+
+// FUNCTION: GAME 0x004db7a0
+bool RHConsoleEngine::FUN_004db7a0()
+{
+    g_unk0x006c068d = !g_unk0x006c068d;
+    return g_unk0x006c068d;
 }
 
 // FUNCTION: GAME 0x004db7b0
@@ -3939,6 +4078,24 @@ unsigned RHEngine::FUN_004e19c0(unsigned value)
     }
 }
 
+// FUNCTION: GAME 0x004e1f30
+unsigned RHEngine::FUN_004e1f30(unsigned value)
+{
+    switch (value)
+    {
+    case 2: return 0;
+    case 3: return 1;
+    case 4: return 2;
+    case 5: return 3;
+    case 6: return 4;
+    case 7: return 5;
+    case 8: return 6;
+    case 9: return 7;
+    case 10: return 8;
+    default: return 10;
+    }
+}
+
 // Parked: 53.01%.
 // STUB: GAME 0x004e2390
 void RHEngine::FUN_004e2390(void *actor)
@@ -4042,6 +4199,18 @@ RHElementActorPC *RHEngine::GetPC(const RHCharacterProfile *profile) const
     return 0;
 }
 
+// FUNCTION: GAME 0x004e34f0
+int RHEngine::FUN_004e34f0()
+{
+    if (*(unsigned int *)((char *)this + 0x4a00) == 1)
+    {
+        void **node = **(void ****)((char *)this + 0x49fc);
+        if (((RHScriptBatchCalls *)node[2])->Unk0049d560(28))
+            return 1;
+    }
+    return 0;
+}
+
 // FUNCTION: GAME 0x004e3520
 void RHEngine::LoadDynRes(unsigned mission)
 {
@@ -4054,6 +4223,17 @@ void RHEngine::LoadDynRes(unsigned mission)
             "Warning: unable to load the resource description for the mission '%s'\n", &mission);
     }
     SetCurrentDirectoryA(directory);
+}
+
+// FUNCTION: GAME 0x004e35a0
+RHDialogueSet *RHEngine::GetDynResources(unsigned long mission)
+{
+    if (!mission)
+        mission = ***((unsigned ***)((char *)g_unk0x6c07fc + 0x178));
+    RHMapDescription &description = *(RHMapDescription *)((char *)this + 0x4d68);
+    if (!description.FUN_0063c9e0(mission))
+        LoadDynRes(mission);
+    return (RHDialogueSet *)description.FUN_0063c9e0(mission);
 }
 
 // FUNCTION: GAME 0x004e35f0
@@ -4070,6 +4250,41 @@ void RHEngine::FUN_004e35f0(SBFile &file)
         --count;
     }
     FUN_005e20c0(file);
+}
+
+// FUNCTION: GAME 0x004e3720
+int RHEngine::FUN_004e3720(void *first, int second, unsigned short type, void *fourth, void *fifth)
+{
+    *(unsigned short *)((char *)this + 0xc4) = type;
+    *(void **)((char *)this + 0xcc) = fifth;
+    *(void **)((char *)this + 0xc8) = fourth;
+    return FUN_004cac00(first, 0, second, 0);
+}
+
+#include "RHEngineAccessors.h"
+
+// FUNCTION: GAME 0x004e3760
+void *RHUnk004e3760::Get()
+{
+    return (char *)this + 0x42f4;
+}
+
+// FUNCTION: GAME 0x004e3cd0
+bool RHEngine::FUN_004e3cd0()
+{
+    void **first = *(void **volatile *)((char *)this + 0x493c);
+    unsigned count;
+    if (first == 0)
+        count = 0;
+    else
+        count = *(void ***)((char *)this + 0x4940) - first;
+    for (unsigned index = 0; index < count; ++index)
+    {
+        void *value = (*(void ***)((char *)this + 0x493c))[index];
+        if (*(int *)((char *)value + 0x5e8))
+            return true;
+    }
+    return false;
 }
 
 // TEMPLATE: GAME 0x004e40d0
@@ -4273,13 +4488,13 @@ void RHUnk005055b0::FUN_00505520(int value)
 void RHUnk005055b0::FUN_005055b0()
 {
     for (char *it = m_1c; it != m_20; it += 0x14)
-        ((RHEngineWidenedCalls *)it)->FUN_00504b80(
+        ((RHUnk005069a0 *)it)->FUN_00504b80(
             g_pEngine->FUN_004d2340(15));
     for (it = m_3c; it != m_40; it += 0x14)
-        ((RHEngineWidenedCalls *)it)->FUN_00504b80(
+        ((RHUnk005069a0 *)it)->FUN_00504b80(
             g_pEngine->FUN_004d2340(15));
     for (it = m_2c; it != m_30; it += 0x14)
-        ((RHEngineWidenedCalls *)it)->FUN_00504b80(
+        ((RHUnk005069a0 *)it)->FUN_00504b80(
             g_pEngine->FUN_004d2340(15));
 }
 
@@ -4527,6 +4742,17 @@ bool RHEngineBackgroundCalls::FUN_00611660(const std::string &path)
 
 void RHEngine::Emit(SBFile &file, void *&value)
 {
+    ((RHpathRequest *)value)->~RHpathRequest();
+    ((RHUnk004d96a0 *)value)->FUN_004d96a0();
+    ((RHUnk004d96d0 *)value)->FUN_004d96d0();
+    TurnPathFinderOn();
+    TurnPathFinderOff();
+    FUN_004e34f0();
+    FUN_004e1f30(0);
+    FUN_004e3cd0();
+    FUN_004e3720(0, 0, 0, 0, 0);
+    FUN_004be5c0(file, value);
+    FUN_004c0340(*(SBGeoPoint2D *)value);
     FUN_004db7b0(value);
     FUN_004db880();
     FUN_004db8c0(0);
@@ -4555,7 +4781,9 @@ void RHEngine::Emit(SBFile &file, void *&value)
     ((RHUnk00486170 *)value)->FUN_00486170(value, 0);
     ((RHUnk004a66d0 *)value)->FUN_004a66d0(0);
     ((RHUnk004a6000 *)value)->FUN_004a6000();
+    ((RHUnk004a6000 *)value)->FUN_004a6060();
     ((RHUnk004a6310 *)value)->FUN_004a6310(0);
+    ((RHUnk004a6310 *)value)->FUN_004a6370();
     ((RHUnk004a7d70 *)value)->FUN_004a7d70(0);
     ((RHUnk004a7ed0 *)value)->FUN_004a7ed0(0);
     ((RHUnk004b0980 *)value)->FUN_004b0980(0);

@@ -74,6 +74,27 @@ public:
 
 class SBGeoPoint2D;
 
+class RHUnk0050e540
+{
+public:
+    struct Node
+    {
+        Node *next;
+        Node *previous;
+        void *value;
+    };
+    int FUN_0050e540(void *value);
+    undefined m_00[0x3c];
+    Node *m_head;
+    int m_count;
+    Node *volatile m_current;
+    bool m_dirty;
+    int m_index;
+    bool m_searching;
+    int m_result;
+    void *volatile m_value;
+};
+
 class RHGameWidgetLifetimeBase
 {
 public:
@@ -118,13 +139,9 @@ public:
     undefined m_data[0x50];
 };
 
-class RHGameRenderer005cbe50
-{
-public:
-    RHGameRenderer005cbe50();
-    ~RHGameRenderer005cbe50();
-    undefined m_data[0x50];
-};
+#include "RHUIRendererShiftingClass.h"
+
+typedef RHUIRendererShifting RHGameRenderer005cbe50;
 
 class RHGameLifetime00515b40 : public RHGameWidgetLifetimeBase
 {
@@ -224,8 +241,6 @@ public:
     RHGameLifetime00517630();
     ~RHGameLifetime00517630();
     RHGameRenderer005cbe50 m_renderer;
-    unsigned short m_d0;
-    undefined m_d2[2];
     unsigned m_d4;
     unsigned m_d8;
     unsigned m_dc;
@@ -267,11 +282,7 @@ public:
     bool FUN_005c9320(unsigned id);
 };
 
-class RHGameWidgetInputCalls
-{
-public:
-    int FUN_0060e240(unsigned short shortcut);
-};
+#include "SBUIKeyboardCalls.h"
 
 class RHGameWidgetAnimatedCalls
 {
@@ -323,8 +334,6 @@ class RHScriptBatchCalls
 public:
     void Unk004520e0(int index, int value);
     void Unk004e3220(int value);
-    void FUN_0050eb80(bool value);
-    void FUN_0050eca0(bool value);
     bool Unk0049d560(int action);
     RHScriptBatchCalls *Unk004e3cc0();
 };
@@ -664,17 +673,17 @@ extern unsigned char g_unk0x006c12b6;
 class RHGameActionCalls
 {
 public:
-    void FUN_005110e0(unsigned short);
-    void FUN_00510fc0(unsigned);
-    void FUN_00511210(unsigned short);
+    void FUN_005110e0(unsigned);
+    void FUN_00510fc0(unsigned short);
+    void FUN_00511210(unsigned);
     void FUN_005140b0();
     void FUN_0050eff0();
     void FUN_005f4900(char);
-    void FUN_005f0fa0();
     void FUN_005ef380(int);
     void FUN_005e5260();
     void FUN_005104c0();
-    void FUN_005104d0();
+    bool FUN_005104d0(SBGeoPoint2D point);
+    bool FUN_00510550(SBGeoPoint2D point);
     void FUN_00619cc0();
     bool FUN_004d2300(void *, unsigned);
     void FUN_004da2f0();
@@ -723,25 +732,7 @@ public:
     }
 };
 
-class RHMapDescription
-{
-public:
-    RHMapDescription();
-    ~RHMapDescription();
-    bool FUN_0063cda0(unsigned);
-    // SIZE 0x48
-    struct Entry
-    {
-        undefined m_00[0x30]; // 0x00
-        unsigned m_30; // 0x30
-        undefined m_34[4]; // 0x34
-        unsigned m_38; // 0x38
-        undefined m_3c[0x08]; // 0x3c
-        unsigned m_44; // 0x44
-    };
-    Entry *FUN_0063c9e0(unsigned);
-    char m_00[0x1c];
-};
+#include "RHMapDescription.h"
 
 class RHMapResources
 {

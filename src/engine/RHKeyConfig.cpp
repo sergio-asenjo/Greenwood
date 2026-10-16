@@ -45,6 +45,48 @@
 
 #include "SBNullstr.h"
 #include "RHKeyConfig.h"
+#include <string.h>
+
+// FUNCTION: GAME 0x0051eb20
+RHKeyConfig::RHKeyConfig()
+{
+    m_keys = (short *)operator new(0x3a);
+    m_count = 2;
+    memset(m_keys, 0, 0x3a);
+    SetToPreset(0, false);
+}
+
+// FUNCTION: GAME 0x0051eb60
+RHKeyConfig::RHKeyConfig(const RHKeyConfig &other)
+{
+    m_keys = (short *)operator new(0x3a);
+    m_count = other.m_count;
+    memcpy(m_keys, other.m_keys, 0x3a);
+}
+
+// FUNCTION: GAME 0x0051eba0
+RHKeyConfig::~RHKeyConfig() { operator delete(m_keys); }
+
+// FUNCTION: GAME 0x0051ebb0
+unsigned short RHKeyConfig::GetKeyCount() const { return 0x1c; }
+
+// FUNCTION: GAME 0x0051ebc0
+unsigned short RHKeyConfig::GetKeyIndex(unsigned short key) const
+{
+    unsigned short missing = 0xffff;
+    for (int index = 0; index < 0x1c; ++index)
+    {
+        if ((unsigned short)m_keys[index] == key)
+        {
+            missing = index;
+            break;
+        }
+    }
+    return missing;
+}
+
+// FUNCTION: GAME 0x0051ec20
+short &RHKeyConfig::operator[](unsigned short index) { return m_keys[index]; }
 
 // FUNCTION: GAME 0x0051ec40
 bool RHKeyConfig::Serialize(SBFile &file)

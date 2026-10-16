@@ -356,7 +356,7 @@ bool SBPicture::FUN_00612690(const SBPictureUnkVector2D &size)
         for (unsigned short column = 0; column < size.GetX(); ++column) {
             int blockHeight = (int)stepY;
             int blockWidth = (int)stepX;
-            picture[row * width + column] = FUN_006124f0(source + m_24 * (int)y + (int)x, m_24,
+            picture[column + row * width] = FUN_006124f0(source + m_24 * (int)y + (int)x, m_24,
                 blockWidth < 1 ? 1 : blockWidth, blockHeight < 1 ? 1 : blockHeight);
             x += stepX;
         }

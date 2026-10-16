@@ -49,6 +49,7 @@
 class SBGeoPoint2D
 {
 public:
+    SBGeoPoint2D();
     SBGeoPoint2D(const SBGeoPoint2D &other);
     ~SBGeoPoint2D();
     SBGeoPoint2D Unk005fc110(const SBGeoPoint2D &other) const;
@@ -269,11 +270,7 @@ public:
     RHScriptIter erase(RHScriptIter position);
 };
 
-class SBGeoPolyLine2DList
-{
-public:
-    void FUN_00610ac0();
-};
+#include "SBGeoPolyLine2DList.h"
 
 struct SBInputPosition;
 extern SBInputPosition g_inputPosition;

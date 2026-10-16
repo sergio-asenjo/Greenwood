@@ -72,6 +72,12 @@ void SBNativeFont::DetachFromRenderContext()
     ((SBFontUnk0061e840 *)this)->FUN_0061e840();
 }
 
+// FUNCTION: GAME 0x00616f40
+unsigned SBNativeFont::FUN_00616f40() const
+{
+    return m_nativeHeader[1];
+}
+
 // Parked: iterator temporaries add four frame bytes and shift result slots.
 // STUB: GAME 0x00616f50
 const SBNativeFont::CharacterInfo *SBNativeFont::GetCharacterInfo(unsigned short character) const
@@ -96,11 +102,23 @@ const SBNativeFont::CharacterInfo *SBNativeFont::GetCharacterInfo(unsigned short
     return result;
 }
 
+// FUNCTION: GAME 0x00617030
+unsigned SBNativeFont::FUN_00617030() const
+{
+    return 0x200;
+}
+
 // FUNCTION: GAME 0x00617040
 void SBNativeFont::GetImplementationTag(char (&tag)[6]) const
 {
     char value[6] = {'S', 'B', 'F', 'O', 'N', 'T'};
     memcpy(tag, value, sizeof(value));
+}
+
+// FUNCTION: GAME 0x00617080
+unsigned SBNativeFont::FUN_00617080() const
+{
+    return m_spacing;
 }
 
 // Parked: the null-result zero stores use different registers and scheduling.
@@ -291,6 +309,9 @@ void EmitSBNativeFont(SBNativeFont *font, SBNativeFontRenderContext *context,
     font->FUN_00616c70(0);
     font->AttachToRenderContext(context, 0);
     font->DetachFromRenderContext();
+    font->FUN_00616f40();
+    font->FUN_00617030();
+    font->FUN_00617080();
     font->GetImplementationTag(tag);
     font->GetCharacterWidth(0, spacing, spacing);
     font->LoadFromStream(file);

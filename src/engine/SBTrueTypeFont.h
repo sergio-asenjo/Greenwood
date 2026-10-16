@@ -8,6 +8,7 @@ int __stdcall FUN_00616870(void *, unsigned long);
 class SBTrueTypeFont
 {
 public:
+    unsigned FUN_006168e0() const;
     long GetCharacterWidth(unsigned short character, long &left, long &right) const;
     void GetImplementationTag(char (&tag)[6]) const;
     bool LoadFromStream(SBFile &file);

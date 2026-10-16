@@ -1,6 +1,7 @@
 #include <windows.h>
 #include <string.h>
 #include "SBUI.h"
+#include "SBUIKeyboardCalls.h"
 
 struct SBUIKeyboardFields
 {
@@ -21,6 +22,51 @@ struct SBUIKeyboardFields
 };
 
 typedef char SBUIKeyboardSizeCheck[sizeof(SBUIKeyboardFields) == 0x1710 ? 1 : -1];
+
+// FUNCTION: GAME 0x0060e1b0
+SBUIUnk0060e1b0::SBUIUnk0060e1b0(int capacity)
+{
+    SBUIKeyboardFields &self = *(SBUIKeyboardFields *)this;
+    self.delay = capacity;
+    self.initialized = false;
+    self.changed = false;
+    self.vptr = 0x0067a870;
+    unsigned i = 0;
+    for (unsigned remaining = 256; remaining != 0; --remaining, ++i) {
+        self.state[i] = 0;
+        self.keys[i] = 0;
+        self.released[i] = 0;
+        self.repeat[i] = 0;
+        self.pressed[i] = 0;
+    }
+    self.first = 5;
+    self.second = 2;
+}
+
+// FUNCTION: GAME 0x0060e230
+SBUIUnk0060e1b0::~SBUIUnk0060e1b0()
+{
+    ((SBUIKeyboardFields *)this)->vptr = 0x0067a870;
+}
+
+// FUNCTION: GAME 0x0060e240
+int RHGameWidgetInputCalls::FUN_0060e240(unsigned short shortcut)
+{
+    return ((SBUIKeyboardFields *)this)->state[shortcut];
+}
+
+// FUNCTION: GAME 0x0060e260
+bool SBUIUnk0060e1b0::FUN_0060e260() const
+{
+    return ((const SBUIKeyboardFields *)this)->changed;
+}
+
+// FUNCTION: GAME 0x0060e270
+char RHPortraitKeyboardCalls::FUN_0060e270(unsigned short key)
+{
+    SBUIKeyboardFields &self = *(SBUIKeyboardFields *)this;
+    return self.previous[key] != self.state[key];
+}
 
 // FUNCTION: GAME 0x0060e2a0
 bool SBUIUnk0060e1b0::FUN_0060e2a0(const SBInputKeyboardState &input)
@@ -104,6 +150,16 @@ bool SBUIUnk0060e1b0::FUN_0060e2a0(const SBInputKeyboardState &input)
     }
     memcpy(self.keyboard, keyboard, 256);
     return true;
+}
+
+// FUNCTION: GAME 0x0060e460
+void SBUIUnk0060e1b0::FUN_0060e460()
+{
+    SBUIKeyboardFields &self = *(SBUIKeyboardFields *)this;
+    self.changed = true;
+    memset(self.keys, 0, sizeof(self.keys));
+    memset(self.released, 0, sizeof(self.released));
+    memset(self.pressed, 0, sizeof(self.pressed));
 }
 
 bool SBUIUnk0060e1b0::EmitRefresh(const SBInputKeyboardState &input)

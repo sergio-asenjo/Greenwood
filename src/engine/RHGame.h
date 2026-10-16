@@ -18,13 +18,22 @@ public:
     bool Serialize(unsigned long mode, RHSaveGame *saveGame, bool loading);
     void DisplayLostLeicester();
     void UpdateBlazons(RHMenuCampaignMap *map, RHMenuMissionDescription *description, RHMenuBuyBlazons *buy, bool flag);
+    void *FUN_0050e530();
+    char FUN_0050e5c0();
+    void FUN_0050e5d0(char value);
+    char FUN_0050e5e0();
     void FUN_0050e850();
+    void FUN_0050e860();
+    void FUN_0050eb80(bool value);
+    void FUN_0050ebe0(char value);
+    void FUN_0050eca0(bool value);
+    void FUN_0050ed10(bool value);
+    void FUN_0050ec40(char value);
     void FUN_0050e800();
+    int FUN_0050e7d0();
     void FUN_0050e7b0();
     void FUN_00512310();
     void FUN_0050f1a0(RHSaveGame *saveGame);
-    bool FUN_005104d0(float first, float second);
-    bool FUN_00510550(float first, float second);
     void FUN_005105d0(unsigned char first, char second);
     bool FUN_00510750();
     bool FUN_005107a0(int *event);
@@ -48,7 +57,7 @@ public:
     void FUN_00513da0(void *);
     void FUN_00513620(void *);
     void FUN_005130c0(void *);
-    void FUN_00513a60();
+    void FUN_00513a60(void *);
     void FUN_005134c0(void *);
     void FUN_00513df0();
     void FUN_00513150(void *);
@@ -80,7 +89,7 @@ private:
     char m_5a; // 0x5a
     char m_5b; // 0x5b
     char m_5c; // 0x5c
-    char m_5d; // 0x5d
+    bool m_5d; // 0x5d
     char m_5e; // 0x5e
     char m_5f; // 0x5f
     char m_60; // 0x60

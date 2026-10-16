@@ -44,6 +44,7 @@ public:
     SBUIUnk0060e1b0(int capacity);
     ~SBUIUnk0060e1b0();
     void FUN_0060e460();
+    bool FUN_0060e260() const;
     bool FUN_0060e2a0(const SBInputKeyboardState &input);
     bool EmitRefresh(const SBInputKeyboardState &input);
 };

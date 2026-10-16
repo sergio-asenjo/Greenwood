@@ -12,6 +12,7 @@ class RHCharacterProfile;
 class RHElementActorPC;
 class RHMission;
 class SBGeoPoint2D;
+class RHDialogueSet;
 struct RHUnkSectorGlobal;
 struct RHbeamMe;
 
@@ -99,11 +100,15 @@ public:
 extern RHUnkSectorGlobal *g_unk0x6c0a9c;
 void FUN_005e1d50(SBFile &file, unsigned long tag, int level);
 void FUN_005e20c0(SBFile &file);
+void FUN_004be5c0(SBFile &file, void *&value);
 
 // SIZE 0x4944 (partial layout)
 class RHEngine
 {
 public:
+    bool TurnPathFinderOn();
+    void TurnPathFinderOff();
+    bool FUN_004c0340(SBGeoPoint2D &point);
     void FUN_004d1640(unsigned first, unsigned second, unsigned third, unsigned fourth, unsigned fifth, unsigned sixth, unsigned seventh);
     unsigned short FUN_004d16b0(void *first, void *second, unsigned third);
     bool FUN_004d1840();
@@ -138,7 +143,11 @@ public:
     void FUN_004e0fb0(const SBGeoPoint2D &point, void *actor, char flag, int value);
     void FUN_004debf0(const SBGeoPoint2D &point);
     unsigned FUN_004e19c0(unsigned value);
+    unsigned FUN_004e1f30(unsigned value);
+    bool FUN_004e3cd0();
     bool FUN_004e1890();
+    int FUN_004e34f0();
+    int FUN_004e3720(void *, int, unsigned short, void *, void *);
     unsigned FUN_004e4110(unsigned value);
     bool InitializeFromMission(RHMission *mission);
     bool FUN_004c4570(SBFile &file);
@@ -209,6 +218,7 @@ public:
     RHElementActorPC *GetPC(RHPCDescription *description) const;
     RHElementActorPC *GetPC(const RHCharacterProfile *profile) const;
     void LoadDynRes(unsigned mission);
+    RHDialogueSet *GetDynResources(unsigned long mission);
     unsigned PCCount() const
     {
         void **first = *(void **const volatile *)&m_493c;
@@ -396,12 +406,14 @@ class RHUnk004a6000
 {
 public:
     bool FUN_004a6000();
+    char FUN_004a6060() const;
 };
 
 class RHUnk004a6310
 {
 public:
     bool FUN_004a6310(char flag);
+    int FUN_004a6370() const;
 };
 
 class RHUnk004a7d70
@@ -511,16 +523,7 @@ public:
     undefined m_19[3]; // 0x19
 };
 
-// SIZE 0x14
-class RHUnk005069a0
-{
-public:
-    RHUnk005069a0(const RHUnk005069a0 &value);
-    RHUnk005069a0(const RHUnk005069a0 &value, int mode);
-    ~RHUnk005069a0();
-    RHUnk005069a0 &operator=(const RHUnk005069a0 &value);
-    undefined m_00[0x14]; // 0x00
-};
+#include "RHFrameDictionary.h"
 
 // SIZE 0x44
 class RHUnk005055b0
