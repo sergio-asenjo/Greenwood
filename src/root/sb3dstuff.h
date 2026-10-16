@@ -7,7 +7,7 @@ public:
     int m_4;
     int m_8;
 
-    void Serialize(SBFile &file);
+    bool Serialize(SBFile &file);
 };
 
 class RHUnk005dfb00
@@ -31,6 +31,8 @@ public:
 class RHUnk005dfd00
 {
 public:
+    RHUnk005dfd00();
+    void FUN_005dfc80(float x, float y, float z);
     int m_00;
     int m_04;
     int m_08;

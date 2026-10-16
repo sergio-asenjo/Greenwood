@@ -1,6 +1,7 @@
 #include "SBNullstr.h"
 #include "avitoolbox.h"
 #include <string.h>
+#include "RHSoundCore.h"
 
 // GLOBAL: GAME 0x006772d0
 void (__stdcall *g_unk0x006772d0)(RHUnkBink *);
@@ -36,7 +37,7 @@ bool FUN_00401130(const char *name)
     memset(keys, 0, sizeof(keys));
     char summary[124];
     RHUnkFXDraw *draw = (RHUnkFXDraw *)g_unk0x6c11d0;
-    g_unk0x006772ec(g_unk0x006772f0, g_unk0x006c1070->FUN_005a6f90());
+    g_unk0x006772ec(g_unk0x006772f0, ((RHSound *)g_unk0x006c1070)->FUN_005a6f90());
     const char *(__stdcall *getError)() = g_unk0x006772e8;
     getError();
     RHUnkBink *movie = g_unk0x006772e4(name, 0);
