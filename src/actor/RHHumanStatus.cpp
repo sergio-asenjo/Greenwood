@@ -29,6 +29,39 @@
 #include "SBNullstr.h"
 #include "RHHumanStatus.h"
 
+// FUNCTION: GAME 0x0051d460
+RHHumanStatus::RHHumanStatus()
+{
+    *(unsigned long *)this = 0x006790bc;
+    RHHumanStatusEntry *entry = m_entries;
+    unsigned count = 2;
+    do {
+        entry->m_f4 = 0;
+        entry->m_f0 = 0;
+        ++entry;
+    } while (--count);
+}
+
+// FUNCTION: GAME 0x0051d480
+RHHumanStatus::RHHumanStatus(const RHCharacterProfile &profile)
+{
+    *(unsigned long *)this = 0x006790bc;
+    m_entries[0].m_f4 = *(unsigned short *)((char *)&profile + 0x38);
+    m_entries[0].m_f0 = 0;
+    m_entries[1].m_f4 = *(unsigned short *)((char *)&profile + 0x36);
+    m_entries[1].m_f0 = 0;
+}
+
+// FUNCTION: GAME 0x0051d4b0
+RHHumanStatus::RHHumanStatus(const RHSoldierProfile &profile)
+{
+    *(unsigned long *)this = 0x006790bc;
+    m_entries[0].m_f4 = *(unsigned short *)((char *)&profile + 0x3e);
+    m_entries[0].m_f0 = 0;
+    m_entries[1].m_f4 = *(unsigned short *)((char *)&profile + 0x3c);
+    m_entries[1].m_f0 = 0;
+}
+
 // FUNCTION: GAME 0x0051d5d0
 bool RHHumanStatus::Serialize(SBFile &file)
 {
@@ -66,5 +99,7 @@ bool RHHumanStatus::Serialize(SBFile &file)
 // referenced; this non-inlinable out-of-line call keeps Serialize in the build.
 void RHHumanStatus::Emit(SBFile &file)
 {
+    RHHumanStatus status;
+    status.Serialize(file);
     Serialize(file);
 }

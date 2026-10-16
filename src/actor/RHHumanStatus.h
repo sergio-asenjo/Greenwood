@@ -10,6 +10,9 @@
 
 #include "SB.h"
 
+class RHCharacterProfile;
+class RHSoldierProfile;
+
 class RHHumanStatusEntry
 {
 public:
@@ -20,6 +23,9 @@ public:
 class RHHumanStatus
 {
 public:
+    RHHumanStatus();
+    RHHumanStatus(const RHCharacterProfile &profile);
+    RHHumanStatus(const RHSoldierProfile &profile);
     // Virtual so the object layout carries the vptr at +0x00 the target
     // instructions imply (the first serialised field is at +0x04).
     virtual bool Serialize(SBFile &file);
