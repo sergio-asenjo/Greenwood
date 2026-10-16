@@ -43,7 +43,7 @@ public:
             *(ToolboxChunkIterator *)&_First = cursor;
             _Last = _First;
         }
-        else if (_Last._Map < _Map + (_Mapsize - 1))
+        else if (_Last._Map < *(_Tptr *volatile *)&_Map + (_Mapsize - 1))
         {
             *++_Last._Map = block;
             ToolboxChunkIterator cursor(block, _Last._Map);

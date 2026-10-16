@@ -5,9 +5,29 @@ int FUN_00579a20();
 void FUN_005785d0(void *value);
 void FUN_005782a0(void *object, bool value);
 void FUN_005785b0(void *first, void *second);
+unsigned FUN_0057aa20();
+class RHElementScroll;
 
 namespace VMCoreCustomDependencies
 {
+    int FUN_0057b150();
+    int FUN_00576a30();
+    int FUN_00576af0();
+    bool FUN_00577fe0();
+    bool FUN_005761f0();
+    bool FUN_00576260();
+    RHElementScroll *FUN_005798c0();
+    void *FUN_0057a8e0();
+    int FUN_0057b370();
+    void FUN_00578c60();
+    int FUN_00578050();
+    int FUN_005714d0();
+    unsigned char FUN_00578820();
+    int FUN_005791d0();
+    int FUN_005792d0();
+    unsigned char FUN_005795b0();
+    int FUN_0057b5e0();
+    unsigned char FUN_0057bfe0();
     void FUN_00577090(int, int);
     int FUN_00571760(int);
     int FUN_00571780(int);
@@ -359,6 +379,13 @@ int VMCoreCustom::IRecordActionAvailable(VMNativeStack *stack)
     return RHScript::RecordActionAvailable(*(void **)(data + top - 12), *(int *)(data + top - 8), *(int *)(data + size - 4) != 0);
 }
 
+// FUNCTION: GAME 0x00404ee0
+int VMCoreCustom::FUN_00404ee0(VMNativeStack *)
+{
+    VMCoreCustomDependencies::FUN_00578c60();
+    return 0;
+}
+
 // FUNCTION: GAME 0x00405020
 int VMCoreCustom::IRecordCharacterAvailable(VMNativeStack *stack)
 {
@@ -375,6 +402,12 @@ int VMCoreCustom::IRecordLockCameraOn(VMNativeStack *stack)
     int *args = (int *)(stack->m_data + stack->m_size) - 1;
     stack->m_size -= 4;
     return RHScript::RecordLockCameraOn((void *)args[0]);
+}
+
+// FUNCTION: GAME 0x00405080
+int VMCoreCustom::FUN_00405080(VMNativeStack *)
+{
+    return VMCoreCustomDependencies::FUN_00577fe0();
 }
 
 // FUNCTION: GAME 0x00405090
@@ -684,6 +717,18 @@ int VMCoreCustom::IRecordDeactivateMobileElement(VMNativeStack *stack)
     return 0;
 }
 
+// FUNCTION: GAME 0x004056e0
+int VMCoreCustom::FUN_004056e0(VMNativeStack *)
+{
+    return VMCoreCustomDependencies::FUN_00578050();
+}
+
+// FUNCTION: GAME 0x004056f0
+int VMCoreCustom::FUN_004056f0(VMNativeStack *)
+{
+    return VMCoreCustomDependencies::FUN_005714d0();
+}
+
 // FUNCTION: GAME 0x00405700
 int VMCoreCustom::FUN_00405700(VMNativeStack *stack)
 {
@@ -943,6 +988,12 @@ int VMCoreCustom::IEnableViewCone(VMNativeStack *stack)
     return 0;
 }
 
+// FUNCTION: GAME 0x00405c50
+int VMCoreCustom::FUN_00405c50(VMNativeStack *)
+{
+    return VMCoreCustomDependencies::FUN_00578820();
+}
+
 // FUNCTION: GAME 0x00405c60
 int VMCoreCustom::FUN_00405c60(VMNativeStack *stack)
 {
@@ -1052,6 +1103,30 @@ int VMCoreCustom::IGetPersistentProperty(VMNativeStack *stack)
     int top = stack->m_size;
     stack->m_size -= 8;
     return RHScript::GetPersistentProperty(*(void **)(data + top - 8), *(int *)(data + size - 4));
+}
+
+// FUNCTION: GAME 0x00405e90
+int VMCoreCustom::FUN_00405e90(VMNativeStack *)
+{
+    return VMCoreCustomDependencies::FUN_005761f0();
+}
+
+// FUNCTION: GAME 0x00405ea0
+int VMCoreCustom::FUN_00405ea0(VMNativeStack *)
+{
+    return VMCoreCustomDependencies::FUN_00576260();
+}
+
+// FUNCTION: GAME 0x00405eb0
+int VMCoreCustom::FUN_00405eb0(VMNativeStack *)
+{
+    return VMCoreCustomDependencies::FUN_00576a30();
+}
+
+// FUNCTION: GAME 0x00405ec0
+int VMCoreCustom::FUN_00405ec0(VMNativeStack *)
+{
+    return VMCoreCustomDependencies::FUN_00576af0();
 }
 
 // FUNCTION: GAME 0x00405ed0
@@ -1415,6 +1490,12 @@ int VMCoreCustom::FUN_00406550(VMNativeStack *stack)
     return 0;
 }
 
+// FUNCTION: GAME 0x00406580
+int VMCoreCustom::FUN_00406580(VMNativeStack *)
+{
+    return VMCoreCustomDependencies::FUN_005791d0();
+}
+
 // FUNCTION: GAME 0x00406590
 int VMCoreCustom::FUN_00406590(VMNativeStack *stack)
 {
@@ -1479,6 +1560,18 @@ int VMCoreCustom::FUN_00406690(VMNativeStack *stack)
 int VMCoreCustom::IGetNumberOfBeamMes(VMNativeStack *stack)
 {
     return RHScript::GetNumberOfBeamMes();
+}
+
+// FUNCTION: GAME 0x00406610
+int VMCoreCustom::FUN_00406610(VMNativeStack *)
+{
+    return VMCoreCustomDependencies::FUN_005792d0();
+}
+
+// FUNCTION: GAME 0x004066a0
+int VMCoreCustom::FUN_004066a0(VMNativeStack *)
+{
+    return VMCoreCustomDependencies::FUN_005795b0();
 }
 
 // FUNCTION: GAME 0x004066c0
@@ -1648,6 +1741,12 @@ int VMCoreCustom::IActivateDoorMouseSector(VMNativeStack *stack)
     stack->m_size -= 8;
     RHScript::ActivateDoorMouseSector(*(int *)(data + top - 8) != 0, *(void **)(data + size - 4));
     return 0;
+}
+
+// FUNCTION: GAME 0x004069f0
+int VMCoreCustom::FUN_004069f0(VMNativeStack *)
+{
+    return (int)VMCoreCustomDependencies::FUN_005798c0();
 }
 
 // FUNCTION: GAME 0x00406a00
@@ -1823,6 +1922,12 @@ int VMCoreCustom::IHasAnyPCAction(VMNativeStack *stack)
     return RHScript::HasAnyPCAction(args[0]);
 }
 
+// FUNCTION: GAME 0x00406d20
+int VMCoreCustom::FUN_00406d20(VMNativeStack *)
+{
+    return (int)VMCoreCustomDependencies::FUN_0057a8e0();
+}
+
 // FUNCTION: GAME 0x00406d30
 int VMCoreCustom::IRecordMoveNear(VMNativeStack *stack)
 {
@@ -1858,6 +1963,12 @@ int VMCoreCustom::FUN_00406dd0(VMNativeStack *stack)
     int *args = (int *)(stack->m_data + stack->m_size) - 1;
     stack->m_size -= 4;
     return VMCoreCustomDependencies::FUN_0057a950(args[0]);
+}
+
+// FUNCTION: GAME 0x00406df0
+int VMCoreCustom::FUN_00406df0(VMNativeStack *)
+{
+    return FUN_0057aa20();
 }
 
 // FUNCTION: GAME 0x00406e00
@@ -2045,6 +2156,12 @@ int VMCoreCustom::IIsActorActive(VMNativeStack *stack)
     return (unsigned char)RHScript::IsActorActive((void *)args[0]);
 }
 
+// FUNCTION: GAME 0x004071a0
+int VMCoreCustom::FUN_004071a0(VMNativeStack *)
+{
+    return VMCoreCustomDependencies::FUN_0057b150();
+}
+
 // FUNCTION: GAME 0x004071f0
 int VMCoreCustom::FUN_004071f0(VMNativeStack *stack)
 {
@@ -2086,6 +2203,12 @@ int VMCoreCustom::FUN_00407280(VMNativeStack *stack)
     return 0;
 }
 
+// FUNCTION: GAME 0x004072b0
+int VMCoreCustom::FUN_004072b0(VMNativeStack *)
+{
+    return VMCoreCustomDependencies::FUN_0057b370();
+}
+
 // FUNCTION: GAME 0x004072c0
 int VMCoreCustom::FUN_004072c0(VMNativeStack *stack)
 {
@@ -2109,6 +2232,12 @@ int VMCoreCustom::IIsPCSelected(VMNativeStack *stack)
     int *args = (int *)(stack->m_data + stack->m_size) - 1;
     stack->m_size -= 4;
     return RHScript::IsPCSelected((void *)args[0]);
+}
+
+// FUNCTION: GAME 0x00407350
+int VMCoreCustom::FUN_00407350(VMNativeStack *)
+{
+    return VMCoreCustomDependencies::FUN_0057b5e0();
 }
 
 // FUNCTION: GAME 0x00407360
@@ -2199,6 +2328,12 @@ int VMCoreCustom::ISetActorActionState(VMNativeStack *stack)
     stack->m_size -= 8;
     RHScript::SetActorActionState(*(void **)(data + top - 8), *(int *)(data + size - 4));
     return 0;
+}
+
+// FUNCTION: GAME 0x00407520
+int VMCoreCustom::FUN_00407520(VMNativeStack *)
+{
+    return VMCoreCustomDependencies::FUN_0057bfe0();
 }
 
 // FUNCTION: GAME 0x00407530

@@ -234,8 +234,7 @@ void RHSerializeName(SBFile &file, const char *name)
 // SYNTHETIC: GAME 0x005e1c50
 // ??1ToolboxChunks@@QAE@XZ
 
-// Parked: deque map-end loads use reversed base/count registers.
-// STUB: GAME 0x005e1d50
+// FUNCTION: GAME 0x005e1d50
 void FUN_005e1d50(SBFile &file, unsigned long expected, int version)
 {
     unsigned long tag;

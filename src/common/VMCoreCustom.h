@@ -11,6 +11,25 @@ struct VMNativeStack
 class VMCoreCustom
 {
 public:
+    static int FUN_004071a0(VMNativeStack *stack);
+    static int FUN_00405080(VMNativeStack *stack);
+    static int FUN_00405eb0(VMNativeStack *stack);
+    static int FUN_00405ec0(VMNativeStack *stack);
+    static int FUN_00405e90(VMNativeStack *stack);
+    static int FUN_00405ea0(VMNativeStack *stack);
+    static int FUN_004069f0(VMNativeStack *stack);
+    static int FUN_00406d20(VMNativeStack *stack);
+    static int FUN_00406df0(VMNativeStack *stack);
+    static int FUN_004072b0(VMNativeStack *stack);
+    static int FUN_00404ee0(VMNativeStack *stack);
+    static int FUN_004056e0(VMNativeStack *stack);
+    static int FUN_004056f0(VMNativeStack *stack);
+    static int FUN_00405c50(VMNativeStack *stack);
+    static int FUN_00406580(VMNativeStack *stack);
+    static int FUN_00406610(VMNativeStack *stack);
+    static int FUN_004066a0(VMNativeStack *stack);
+    static int FUN_00407350(VMNativeStack *stack);
+    static int FUN_00407520(VMNativeStack *stack);
     static int FUN_00404a80(VMNativeStack *stack);
     static int FUN_00404ba0(VMNativeStack *stack);
     static int FUN_00404bc0(VMNativeStack *stack);
