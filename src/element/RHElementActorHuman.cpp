@@ -205,11 +205,7 @@ void RHElementActorHuman::FUN_00479920(RHElementActorHuman *actor)
     }
 }
 
-class RHEngineSerializationCalls
-{
-public:
-    void FUN_004d88e0(void *element, int first, int second);
-};
+#include "RHEngineSerializationCalls.h"
 
 class RHUnk004b1270
 {
@@ -529,31 +525,6 @@ unsigned short RHHumanWeaponCalls::FUN_005c1b50(int)
 }
 
 unsigned short RHHumanWeaponCalls::FUN_005c1d50(int)
-{
-    return 0;
-}
-
-unsigned short RHHumanWeaponCalls::FUN_005c1e80(int)
-{
-    return 0;
-}
-
-unsigned short RHHumanWeaponCalls::FUN_005c1ea0(int)
-{
-    return 0;
-}
-
-unsigned short RHHumanWeaponCalls::FUN_005c1f50(int)
-{
-    return 0;
-}
-
-float RHHumanWeaponCalls::FUN_005c1ed0(int)
-{
-    return 0.0f;
-}
-
-unsigned short RHHumanWeaponCalls::FUN_005c1f10(int)
 {
     return 0;
 }

@@ -18,6 +18,7 @@ public:
     SBGeoPoint2D(float, float);
     SBGeoPoint2D(const SBGeoPoint2D &);
     ~SBGeoPoint2D();
+    bool Serialize(SBFile &file);
     SBGeoPoint2D &operator=(const SBGeoPoint2D &);
     SBGeoPoint2D &FUN_005fc1e0(const SBGeoPoint2D &);
     SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &) const;
@@ -44,6 +45,7 @@ class RHUnk005fc3b0 : public SBGeoPoint2D
 {
 public:
     RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &);
+    RHUnk005fc3b0 &FUN_005fc5b0(float factor);
 };
 
 // SIZE 0x14
@@ -123,17 +125,9 @@ public:
     float m_8; // 0x08
 };
 
-class RHUnkTargetSprite
-{
-public:
-    bool FUN_005b76e0(unsigned, unsigned short);
-};
+#include "RHUnkTargetSpriteCalls.h"
 
-class RHSpriteFrameCalls
-{
-public:
-    void FUN_00505940(unsigned);
-};
+#include "RHFrameHolderCalls.h"
 
 class RHEngineReinforcementCalls
 {

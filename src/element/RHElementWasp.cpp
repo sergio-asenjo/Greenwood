@@ -1,5 +1,29 @@
 #include "SBNullstr.h"
 #include "RHElementWasp.h"
+#include "RHElementWaspNest.h"
+#include "RHEngineSerializationCalls.h"
+#include "RHProjectileLifetime.h"
+
+DECOMP_SIZE_ASSERT(RHUnk004bc4d0, 0x178)
+
+// FUNCTION: GAME 0x004bc4d0
+RHUnk004bc4d0::RHUnk004bc4d0() : RHProjectileLifetime(0, 0), m_15c(0), m_160(0), m_164(0), m_168(0)
+{
+    *(unsigned long *)this = 0x00678a0c;
+}
+
+// FUNCTION: GAME 0x004bc540
+RHUnk004bc4d0::RHUnk004bc4d0(const RHElementWaspNest *nest) : RHProjectileLifetime(0, 0), m_15c(nest), m_160(0), m_164(0), m_168(0)
+{
+    *(unsigned long *)this = 0x00678a0c;
+}
+
+// FUNCTION: GAME 0x004bd0f0
+void RHElementWasp::FUN_004bd0f0(void *)
+{
+    ((RHEngineSerializationCalls *)g_pEngine)->FUN_004d88e0(this, 0, 1);
+    ((RHElementWaspNest *)m_15c)->WaspKilled();
+}
 
 // FUNCTION: GAME 0x004bd120
 bool RHElementWasp::Serialize(SBFile &file)
@@ -30,7 +54,20 @@ bool RHElementWasp::Serialize(SBFile &file)
     return RHElementObject::Serialize(file);
 }
 
+// FUNCTION: GAME 0x004bd200
+int RHElementWasp::VictimCandidatureOrdering::operator()(const VictimCandidature &first, const VictimCandidature &second) const
+{
+    return first.m_00 < second.m_00;
+}
+
 void RHElementWasp::Emit(SBFile &file)
 {
+    RHUnk004bc4d0 *storage = (RHUnk004bc4d0 *)this;
+    storage->RHUnk004bc4d0::RHUnk004bc4d0();
+    storage->RHUnk004bc4d0::RHUnk004bc4d0((const RHElementWaspNest *)this);
+    FUN_004bd0f0(0);
     Serialize(file);
+    VictimCandidatureOrdering ordering;
+    VictimCandidature first = {0, this};
+    ordering(first, first);
 }

@@ -61,11 +61,7 @@ public:
     void FUN_00462730(void *, int);
 };
 
-class RHUnk004d8460
-{
-public:
-    void FUN_004d8460(void *, int, int);
-};
+#include "RHUnk004d8460Calls.h"
 
 // SIZE 0x14
 class RHScrollUnk0040ee30
@@ -82,11 +78,12 @@ class RHElementScroll : public RHElementObject
 {
 public:
     void InitializeFromMissionStream(SBFile &file);
+    bool FUN_004b9f40();
     bool FUN_004ba470(void *first, void *second, void *third);
     bool IsRevealable() const;
     bool FUN_004ba4e0(unsigned long value);
-    bool FUN_004ba550();
-    bool FUN_004ba580(unsigned long first, unsigned long second, unsigned long third, unsigned long fourth) const;
+    int FUN_004ba550();
+    int FUN_004ba580(unsigned long first, unsigned long second, unsigned long third, unsigned long fourth) const;
     static void ResetScrollExecutingScript();
     void *FUN_004ba5d0();
     virtual bool Serialize(SBFile &file); // vtable+0x00
@@ -105,8 +102,17 @@ public:
 };
 
 void RHSerializeName(SBFile &file, const char *name);
-bool __stdcall FUN_004b23c0(void *, void *, void *);
-bool __stdcall FUN_004b2b60(unsigned long, unsigned long, unsigned long, unsigned long);
+class RHScrollObjectCalls
+{
+public:
+    bool FUN_004b23c0(void *, void *, void *);
+    int FUN_004b2b60(unsigned long, unsigned long, unsigned long, unsigned long) const;
+};
+class RHScrollSpriteRefreshCalls
+{
+public:
+    void FUN_005b7f60(unsigned long value);
+};
 bool FUN_005e0c90(SBFile &file, std::string &value);
 extern char g_unk0x6c0691;
 extern RHElementScroll *g_scrollExecutingScript;

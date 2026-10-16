@@ -8,7 +8,7 @@ public:
     int m_0; // 0x00
     int m_4; // 0x04
     int m_8; // 0x08
-    void Serialize(SBFile &file);
+    bool Serialize(SBFile &file);
 };
 
 // SIZE 0x08
@@ -40,6 +40,12 @@ class RHElement
 {
 public:
     virtual bool Serialize(SBFile &file); // vtable+0x00
+    int FUN_00462190() const;
+    void FUN_004621d0(RHUnk005df510 &point) const;
+    void FUN_004621f0();
+    char FUN_00462200() const;
+    char FUN_00462210(void *value);
+    void *FUN_004622d0() const;
     void CrossElevationLine(RHElevationLine *line);
     void Emit(SBFile &file);
 

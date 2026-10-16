@@ -28,6 +28,10 @@ class RHElementArrow : public RHElementProjectile
 {
 public:
     virtual bool Serialize(SBFile &file);
+    char FUN_004a6640();
+    void FUN_004a6a70(void *target);
+    void FUN_004a6b80(void *target, bool flag);
+    int FUN_004a6ff0();
 
     void Emit(SBFile &file);
 

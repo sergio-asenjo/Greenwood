@@ -35,6 +35,20 @@
 #include "SBNullstr.h"
 #include "RHElementArrow.h"
 
+// FUNCTION: GAME 0x004a6640
+char RHElementArrow::FUN_004a6640()
+{
+    return m_161;
+}
+
+// FUNCTION: GAME 0x004a6a70
+void RHElementArrow::FUN_004a6a70(void *target)
+{
+    if (!m_161)
+        FUN_004a6b80(target, true);
+    m_166 = 1;
+}
+
 // FUNCTION: GAME 0x004a6e10
 bool RHElementArrow::Serialize(SBFile &file)
 {
@@ -148,6 +162,14 @@ bool RHElementArrow::Serialize(SBFile &file)
 
 // Force emission: a virtual is only emitted if its vtable is needed; this
 // non-inlinable out-of-line call keeps RHElementArrow::Serialize in the build.
+// FUNCTION: GAME 0x004a6ff0
+int RHElementArrow::FUN_004a6ff0()
+{
+    if (m_166 == 1 && !m_161)
+        return 0x1fe;
+    return -1;
+}
+
 void RHElementArrow::Emit(SBFile &file)
 {
     Serialize(file);

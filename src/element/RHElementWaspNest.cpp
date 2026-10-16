@@ -32,6 +32,77 @@
 
 #include "SBNullstr.h"
 #include "RHElementWaspNest.h"
+#include "RHProjectileSoundCalls.h"
+#include "RHProjectileLifetime.h"
+#include "RHElementWasp.h"
+#include "RHEngineWidenedCalls.h"
+#include "RHUnk004d8460Calls.h"
+
+DECOMP_SIZE_ASSERT(RHElementProjectile, 0x15c)
+DECOMP_SIZE_ASSERT(RHElementWaspNest, 0x160)
+
+class RHArtificialIntelligenceSoundCalls;
+extern RHArtificialIntelligenceSoundCalls *g_unk0x006c1070;
+
+class RHUnk004be050 : public RHProjectileLifetime
+{
+public:
+    RHUnk004be050();
+    unsigned int m_15c;
+};
+
+DECOMP_SIZE_ASSERT(RHUnk004be050, 0x160)
+
+// FUNCTION: GAME 0x004be050
+RHUnk004be050::RHUnk004be050() : RHProjectileLifetime(0, 0), m_15c(0)
+{
+    *(unsigned long *)this = 0x00678aa0;
+    *(unsigned long *)((char *)this + 0xb0) = 11;
+}
+
+inline void RHSetWaspNestAnimation(RHElementWaspNest *nest, unsigned row)
+{
+    unsigned &current = *(unsigned *)((char *)nest + 0xb4);
+    if (current != row)
+    {
+        RHEngineWidenedCalls *sprite = *(RHEngineWidenedCalls **)((char *)nest + 0x50);
+        current = row;
+        sprite->FUN_005bd450();
+        (*(RHEngineWidenedCalls **)((char *)nest + 0x50))->FUN_005b76e0(row, 0);
+    }
+}
+
+// FUNCTION: GAME 0x004be0e0
+void RHElementWaspNest::FUN_004be0e0()
+{
+    RHEngine *engine = g_pEngine;
+    FUN_004b8230();
+    RHSetWaspNestAnimation(this, 0xc5);
+    int count = 20;
+    do
+    {
+        RHUnk004bc4d0 *wasp = new RHUnk004bc4d0(this);
+        ((RHUnk004bc5b0 *)wasp)->FUN_004bc5b0(1);
+        ((RHUnk004d8460 *)engine)->FUN_004d8460(wasp, 0, 1);
+        --count;
+    } while (count != 0);
+    m_unk15c = 20;
+}
+
+// FUNCTION: GAME 0x004be1a0
+bool RHElementWaspNest::FUN_004be1a0()
+{
+    if (((RHProjectileRefreshCalls *)this)->FUN_004b82e0())
+    {
+        if (m_unk15c > 0)
+        {
+            void *sprite = *(void **)((char *)this + 0x50);
+            ((RHProjectileSoundCalls *)g_unk0x006c1070)->FUN_005a8070(0x1fb, (char *)sprite + 0x24, 9);
+        }
+        return true;
+    }
+    return false;
+}
 
 // FUNCTION: GAME 0x004be1e0
 bool RHElementWaspNest::Serialize(SBFile &file)
@@ -79,10 +150,20 @@ bool RHElementWaspNest::Serialize(SBFile &file)
     return false;
 }
 
+// FUNCTION: GAME 0x004be290
+void RHElementWaspNest::WaspKilled()
+{
+    if (m_unk15c > 0)
+        --m_unk15c;
+}
+
 // Force emission: a virtual is only emitted if its vtable is needed; this
 // non-inlinable out-of-line call keeps RHElementWaspNest::Serialize in the
 // build.
 void RHElementWaspNest::Emit(SBFile &file)
 {
+    RHUnk004be050 initialized;
+    FUN_004be0e0();
     Serialize(file);
+    WaspKilled();
 }

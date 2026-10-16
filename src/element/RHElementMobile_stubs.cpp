@@ -85,7 +85,6 @@ void RHMobilePointList::FUN_005c9010(RHMobilePointNode *&node, int distance, uns
     while (distance > 0) { node = node->next; --distance; }
     while (distance < 0) { node = node->previous; ++distance; }
 }
-void RHMobileUnk005dfaa0::FUN_005dfaa0(const SBGeoPoint2D &) {}
 
 unsigned short RHMobilePolygonPoints::FUN_0060ce80() const { return 0; }
 RHMobileUnk0051fd10::RHMobileUnk0051fd10(float, float) {}

@@ -1,6 +1,8 @@
 #include "RHElementActorPC.h"
 #include "RHElementActorPC_calls.h"
 
+extern "C" int rand();
+
 DECOMP_SIZE_ASSERT(RHElementActorPC, 0x60c)
 DECOMP_SIZE_ASSERT(RHUnk005492a0, 0x14)
 DECOMP_SIZE_ASSERT(RHActorPCBoxCalls, 0x14)
@@ -229,6 +231,87 @@ void RHEngineReinforcementCalls::FUN_00491fd0(const RHbeamMe &beamMe)
         ((RHElementActor *)actor)->InitializeScript((std::string &)beamMe.m_20);
     actor->InitializeAction(beamMe.m_1c);
     ((RHScriptBatchCalls *)actor)->Unk00464630();
+}
+
+// FUNCTION: GAME 0x0048f910
+unsigned short RHElementActorPC::FUN_0048f910()
+{
+    return 100;
+}
+
+// FUNCTION: GAME 0x0048f920
+char RHElementActorPC::FUN_0048f920()
+{
+    return *((char *)this + 0x5f4);
+}
+
+// FUNCTION: GAME 0x0048f930
+bool RHElementActorPC::FUN_0048f930()
+{
+    return *(int *)((char *)m_50 + 0x8c) == 11;
+}
+
+// FUNCTION: GAME 0x0048f980
+bool RHElementActorPC::FUN_0048f980()
+{
+    return rand() > 0x3fff;
+}
+
+// FUNCTION: GAME 0x0048f9a0
+char RHElementActorPC::FUN_0048f9a0()
+{
+    return *((char *)this + 0x5f5);
+}
+
+// FUNCTION: GAME 0x0048f9b0
+unsigned short RHElementActorPC::FUN_0048f9b0()
+{
+    return *(unsigned short *)((char *)m_5fc + 0x38);
+}
+
+// FUNCTION: GAME 0x0048f9c0
+unsigned short RHElementActorPC::FUN_0048f9c0()
+{
+    return *(unsigned short *)((char *)m_5fc + 0x36);
+}
+
+// FUNCTION: GAME 0x0048f9d0
+unsigned short RHElementActorPC::FUN_0048f9d0()
+{
+    return *(unsigned short *)((char *)m_5fc + 0x3a);
+}
+
+// FUNCTION: GAME 0x0048f9e0
+char RHElementActorPC::FUN_0048f9e0()
+{
+    return *((char *)m_5fc + 0x35);
+}
+
+// FUNCTION: GAME 0x0048f9f0
+unsigned RHElementActorPC::FUN_0048f9f0()
+{
+    return *(unsigned *)((char *)m_5fc + 0x94);
+}
+
+// FUNCTION: GAME 0x0048fa00
+unsigned RHElementActorPC::FUN_0048fa00()
+{
+    return *(unsigned *)((char *)m_5fc + 0x98);
+}
+
+void EmitRHActorPCSmallMethods(RHElementActorPC *actor)
+{
+    actor->FUN_0048f910();
+    actor->FUN_0048f920();
+    actor->FUN_0048f930();
+    actor->FUN_0048f980();
+    actor->FUN_0048f9a0();
+    actor->FUN_0048f9b0();
+    actor->FUN_0048f9c0();
+    actor->FUN_0048f9d0();
+    actor->FUN_0048f9e0();
+    actor->FUN_0048f9f0();
+    actor->FUN_0048fa00();
 }
 
 // FUNCTION: GAME 0x00493660
@@ -817,6 +900,20 @@ void RHElementActorPC::InitializeAction(int action)
         ((RHScriptBatchCalls *)this)->Unk0046bcf0(1, 0);
         break;
     }
+}
+
+extern "C" int __cdecl rand();
+
+// FUNCTION: GAME 0x004a18c0
+bool RHElementActorPC::FUN_004a18c0(void *target)
+{
+    if (((RHActorPCHumanCalls *)this)->FUN_004859b0(target) == 1)
+    {
+        unsigned short chance = *(unsigned short *)(*(char **)(*(char **)((char *)this + 0x25c) + 4) + 0x14);
+        bool result = rand() % 101 > chance;
+        return result;
+    }
+    return false;
 }
 
 // FUNCTION: GAME 0x0050efb0

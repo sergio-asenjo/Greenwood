@@ -368,4 +368,10 @@ public:
     undefined m_d4[0x14]; // 0xd4
 };
 
+class RHActorPCHumanCalls
+{
+public:
+    char FUN_004859b0(void *target);
+};
+
 #endif

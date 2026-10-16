@@ -394,13 +394,7 @@ void RHObjectMasterTree::FUN_004b2ea0()
     }
 }
 
-class RHObjectConstructorCalls
-{
-public:
-    RHObjectConstructorCalls(unsigned long type, bool flag, int action);
-    ~RHObjectConstructorCalls();
-    unsigned char unknown[0x100];
-};
+#include "RHObjectConstructorCalls.h"
 
 class RHObjectMasterLifetime : public RHObjectConstructorCalls
 {

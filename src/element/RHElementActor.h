@@ -71,14 +71,7 @@ public:
     void *m_8; // 0x08
 };
 
-// SIZE 0x92
-class RHUnk00560410
-{
-public:
-    unsigned short FUN_00560410(int value) const;
-    undefined m_0[0x90]; // 0x00
-    undefined2 m_90; // 0x90
-};
+#include "RHActorDirectionCalls.h"
 
 // SIZE 0x0c
 class RHUnk0060fbf0
@@ -123,6 +116,10 @@ public:
 class RHElementActor : public RHElement, public RHActorScriptBase
 {
 public:
+    char FUN_00463200() const;
+    void FUN_00463240(unsigned first, unsigned second, unsigned third);
+    void FUN_00463250(unsigned value);
+    void FUN_00463260(unsigned first, unsigned second, unsigned third, unsigned fourth);
     virtual bool Serialize(SBFile &file); // vtable+0x00 (interim model)
     void ExecuteImmediately(RHSequenceElement *element);
     void Translate(RHSequenceElement *element, RHcommand command);
@@ -142,6 +139,8 @@ public:
     void FUN_00462730(RHElementActor *actor, bool value);
     SBGeoPoint2D FUN_00462920();
     void FUN_00464630();
+    int FUN_00467200() const;
+    void *FUN_00467220() const;
     RHBonusInfo *Info() const { return *(RHBonusInfo *const *)((char *)this + 0x50); }
     RHBonusInfoBase *Position() const { return (RHBonusInfoBase *)((char *)Info() + 4); }
     RHActorGridCalls *Grid() const { return *(RHActorGridCalls *const *)((char *)this + 0x64); }

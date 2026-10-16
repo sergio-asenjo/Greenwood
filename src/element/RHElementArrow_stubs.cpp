@@ -12,3 +12,7 @@
 
 #include "SBNullstr.h"
 #include "RHElementArrow.h"
+
+void RHElementArrow::FUN_004a6b80(void *, bool)
+{
+}

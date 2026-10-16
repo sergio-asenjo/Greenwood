@@ -8,7 +8,7 @@ DECOMP_SIZE_ASSERT(RHMobilePath, 0x08)
 DECOMP_SIZE_ASSERT(RHMobileNode005504d0, 0x1c)
 DECOMP_SIZE_ASSERT(RHMobileUnk005504d0, 0x20)
 DECOMP_SIZE_ASSERT(RHMobileSoundNode, 0x24)
-DECOMP_SIZE_ASSERT(RHSound, 0x254)
+DECOMP_SIZE_ASSERT(RHSound, 0x294)
 DECOMP_SIZE_ASSERT(SBGeoBoundingBox2D, 0x14)
 DECOMP_SIZE_ASSERT(RHMobileBase004a8130, 0xfc)
 DECOMP_SIZE_ASSERT(RHUnk004aac40, 0x104)
@@ -1100,7 +1100,7 @@ void RHSound::FUN_005a87f0(RHSoundSource *source)
 // FUNCTION: GAME 0x005a8810
 void RHSound::FUN_005a8810(void *value)
 {
-    RHMobileSoundNode *head = m_24c;
+    RHMobileSoundNode *head = (RHMobileSoundNode *)m_24c;
     RHMobileSoundNode *node = head->next;
     for (;; node = node->next)
     {

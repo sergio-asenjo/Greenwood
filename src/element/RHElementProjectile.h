@@ -18,7 +18,7 @@ public:
     int m_0;
     int m_4;
     int m_8;
-    void Serialize(SBFile &file);
+    bool Serialize(SBFile &file);
 };
 
 class RHUnk00613e90

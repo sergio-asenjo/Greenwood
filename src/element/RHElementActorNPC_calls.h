@@ -1,35 +1,30 @@
 #ifndef RHELEMENTACTORNPC_CALLS_H
 #define RHELEMENTACTORNPC_CALLS_H
 
-#include "SB.h"
+#include "RHSprite.h"
+
 #include "RHElementActorNPC.h"
+
+// SIZE 0x90
+class RHNPCUnk004867d0
+{
+public:
+    ~RHNPCUnk004867d0();
+    char m_00[0x48];
+    SBGeoPoint2D m_48; // 0x48
+    SBGeoPoint2D m_50; // 0x50
+    SBGeoPoint2D m_58; // 0x58
+    SBGeoPoint2D m_60; // 0x60
+    char m_68[0x28];
+};
 
 void RHSerializeName(SBFile &file, const char *name);
 bool FUN_00416b30(void *&value, SBFile &file);
 
-class RHEngine
-{
-public:
-    bool SerializeElementPointer(SBFile &file, class RHElement *&element);
-    bool FUN_004c4490(SBFile &file, void *&value);
-};
 extern RHEngine *g_pEngine;
 
 struct RHUnkSectorGlobal;
 extern RHUnkSectorGlobal *g_unk0x6c0a9c;
-class RHUnkPathGeometry
-{
-public:
-    bool Unk004fbec0(SBFile &file, void *&value);
-};
-
-class SBGeoPoint2D
-{
-public:
-    bool Serialize(SBFile &file);
-    float m_x;
-    float m_y;
-};
 
 class RHArtificialIntelligence
 {
@@ -127,6 +122,88 @@ public:
 struct RHNPCDetectableList : public RHPathHistoryList
 {
     char m_18[0x1c];
+};
+
+class RHNPCActorCalls
+{
+public:
+    virtual void V00() = 0;
+    virtual void V04() = 0;
+    virtual void V08() = 0;
+    virtual void V0c() = 0;
+    virtual void V10() = 0;
+    virtual void V14() = 0;
+    virtual void V18() = 0;
+    virtual void V1c() = 0;
+    virtual void V20() = 0;
+    virtual void V24() = 0;
+    virtual void V28() = 0;
+    virtual void V2c() = 0;
+    virtual void V30() = 0;
+    virtual void V34() = 0;
+    virtual void V38() = 0;
+    virtual void V3c() = 0;
+    virtual void V40() = 0;
+    virtual void V44() = 0;
+    virtual void V48() = 0;
+    virtual void V4c() = 0;
+    virtual void V50() = 0;
+    virtual void V54() = 0;
+    virtual void V58() = 0;
+    virtual void V5c() = 0;
+    virtual void V60() = 0;
+    virtual void V64() = 0;
+    virtual void V68() = 0;
+    virtual void V6c() = 0;
+    virtual void V70() = 0;
+    virtual void V74() = 0;
+    virtual void V78() = 0;
+    virtual void V7c() = 0;
+    virtual void V80() = 0;
+    virtual void V84() = 0;
+    virtual void V88() = 0;
+    virtual void V8c() = 0;
+    virtual void V90() = 0;
+    virtual void V94() = 0;
+    virtual void V98() = 0;
+    virtual void V9c() = 0;
+    virtual void Va0() = 0;
+    virtual void Va4() = 0;
+    virtual void Va8() = 0;
+    virtual void Vac() = 0;
+    virtual void Vb0() = 0;
+    virtual void Vb4() = 0;
+    virtual void Vb8() = 0;
+    virtual void Vbc() = 0;
+    virtual void Vc0() = 0;
+    virtual void Vc4() = 0;
+    virtual void Vc8() = 0;
+    virtual void Vcc() = 0;
+    virtual void Vd0() = 0;
+    virtual void Vd4() = 0;
+    virtual void Vd8() = 0;
+    virtual void Vdc() = 0;
+    virtual void Ve0() = 0;
+    virtual void Ve4() = 0;
+    virtual void Ve8() = 0;
+    virtual void Vec() = 0;
+    virtual void Vf0() = 0;
+    virtual void Vf4() = 0;
+    virtual void Vf8() = 0;
+    virtual void Vfc() = 0;
+    virtual void V100() = 0;
+    virtual void V104() = 0;
+    virtual void V108() = 0;
+    virtual void V10c() = 0;
+    virtual void V110() = 0;
+    virtual void V114() = 0;
+    virtual void V118() = 0;
+    virtual void V11c() = 0;
+    virtual void V120() = 0;
+    virtual void V124() = 0;
+    virtual void V128() = 0;
+    virtual void V12c() = 0;
+    virtual int V130() = 0; // vtable+0x130
 };
 
 #endif

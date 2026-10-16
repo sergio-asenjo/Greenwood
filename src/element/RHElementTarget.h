@@ -59,6 +59,8 @@ class RHElementTarget
 {
 public:
     void InitializeFromMissionStream(SBFile &file);
+    bool FUN_004bbf80();
+    void FUN_004bc3d0(int activator);
     void Emit(SBFile &file);
     RHUnkTargetSprite *&Info() { return *(RHUnkTargetSprite **)(m_data + 0x50); }
     RHUnkFXDraw *&Draw() { return *(RHUnkFXDraw **)(m_data + 0x60); }

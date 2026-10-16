@@ -53,6 +53,26 @@ RHScrollUnk0040ee30::~RHScrollUnk0040ee30()
 {
 }
 
+// FUNCTION: GAME 0x004b9f40
+bool RHElementScroll::FUN_004b9f40()
+{
+    if (m_12)
+    {
+        if (m_100.m_58)
+        {
+            if (++m_168 == 25)
+            {
+                SetScrollExecutingScript(this);
+                ((RHUnk00404860 *)&m_160)->FUN_00404960(0);
+                ResetScrollExecutingScript();
+                m_168 = 0;
+            }
+        }
+        ((RHScrollSpriteRefreshCalls *)Info())->FUN_005b7f60(0);
+    }
+    return true;
+}
+
 // Parked: local coloring and projection-branch scheduling.
 // STUB: GAME 0x004ba030
 void RHElementScroll::InitializeFromMissionStream(SBFile &file)
@@ -130,7 +150,7 @@ void RHElementScroll::InitializeFromMissionStream(SBFile &file)
 void RHElementScroll::FUN_004ba400()
 {
     char *profile = ((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0();
-    if (FUN_004ba550())
+    if ((unsigned char)FUN_004ba550())
         m_12 = 1;
     else
         m_12 = m_16c[*(int *)(profile + 0x1c)];
@@ -141,8 +161,7 @@ void RHElementScroll::FUN_004ba400()
         ((RHUnkTargetSprite *)info)->FUN_005b76e0(0xbe, *(unsigned short *)((char *)info + 0xd8));
 }
 
-// Parked: helper-call argument register scheduling remains different.
-// STUB: GAME 0x004ba470
+// FUNCTION: GAME 0x004ba470
 bool RHElementScroll::FUN_004ba470(void *first, void *second, void *third)
 {
     if (!m_12 || second == 0 || *(unsigned int *)((char *)g_pEngine + 0x4a00) > 1)
@@ -150,7 +169,7 @@ bool RHElementScroll::FUN_004ba470(void *first, void *second, void *third)
     if (m_164 != 1 && m_164 != 3)
         return false;
     void *last = third;
-    return FUN_004b23c0(first, second, last);
+    return ((RHScrollObjectCalls *)this)->FUN_004b23c0(first, second, last);
 }
 
 // FUNCTION: GAME 0x004ba4c0
@@ -179,23 +198,27 @@ bool RHElementScroll::FUN_004ba4e0(unsigned long value)
     return false;
 }
 
-// Parked: profile-index result is tested in the wrong register.
-// STUB: GAME 0x004ba550
-bool RHElementScroll::FUN_004ba550()
+// FUNCTION: GAME 0x004ba550
+int RHElementScroll::FUN_004ba550()
 {
     char *profile = ((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0();
-    return *(int *)(profile + 0x1c) == 0 && !m_16c[0];
+    int index = *(int *)(profile + 0x1c);
+    if (index == 0)
+    {
+        if (!m_16c[index])
+            return true;
+    }
+    return false;
 }
 
-// Parked: status branch and four-word helper argument scheduling differ.
-// STUB: GAME 0x004ba580
-bool RHElementScroll::FUN_004ba580(unsigned long first, unsigned long second,
+// FUNCTION: GAME 0x004ba580
+int RHElementScroll::FUN_004ba580(unsigned long first, unsigned long second,
                                    unsigned long third, unsigned long fourth) const
 {
     int status = m_164;
     if (status != 1 && status != 3)
         return false;
-    bool result = FUN_004b2b60(first, second, third, fourth);
+    int result = ((const RHScrollObjectCalls *)this)->FUN_004b2b60(first, second, third, fourth);
     return result;
 }
 
@@ -214,7 +237,7 @@ void *RHElementScroll::FUN_004ba5d0()
         ((RHUnk004ba7a0 *)this)->Set(1);
         return this;
     }
-    if (!FUN_004ba550())
+    if (!(unsigned char)FUN_004ba550())
     {
         ((RHUnk004ba7a0 *)this)->Set(1);
         return this;
@@ -273,6 +296,16 @@ void RHUnk004ba7a0::Set(int status)
         ((RHUnkTargetSprite *)info)->FUN_005b76e0(0xc0, *(unsigned short *)((char *)info + 0xd8));
     }
     FUN_004ba7e0();
+}
+
+// FUNCTION: GAME 0x004ba7e0
+void RHUnk004ba7a0::FUN_004ba7e0()
+{
+    int status = *(int *)((char *)this + 0x164);
+    if (status == 1 || status == 3)
+        *(unsigned short *)((char *)this + 0x8c) = 1;
+    else
+        *(unsigned short *)((char *)this + 0x8c) = 0;
 }
 
 void RHElementScroll::Emit(SBFile &file)

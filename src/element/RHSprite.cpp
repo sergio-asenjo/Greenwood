@@ -673,8 +673,7 @@ bool RHSprite::FUN_005b7820(int progression)
     return false;
 }
 
-// New probe: marker flip is effective-only (100.00%*) with depth scheduling unresolved.
-// STUB: GAME 0x005b8050
+// FUNCTION: GAME 0x005b8050
 int RHSprite::PerformAction(RHOrder *order, int animation, int progression, bool reset)
 {
     if (*((char *)g_pEngine + 0x4d84))
@@ -700,8 +699,8 @@ int RHSprite::PerformAction(RHOrder *order, int animation, int progression, bool
             (unsigned short)animation, m_168 ? m_168 : "");
         return 4;
     }
-    unsigned short frame = ((RHSpriteFrameTable *)((RHUnk005b5e00 *)this)->Unk())->Frame(animation);
-    m_184 = frame + m_d8;
+    unsigned short *entries = ((RHSpriteFrameTable *)((RHUnk005b5e00 *)this)->Unk())->m_04;
+    m_184 = entries[animation] + m_d8;
     bool finished;
     if (order && m_150 != *(int *)((char *)order + 0x34))
     {
@@ -1100,6 +1099,14 @@ void RHUnk005b5ed0::FUN_005bd8b0()
     }
 }
 
+// FUNCTION: GAME 0x005bdbc0
+unsigned RHSprite::FUN_005bdbc0(unsigned short animation, unsigned short frame)
+{
+    void *holder = ((RHUnk005b5e00 *)this)->FUN_005b5de0();
+    undefined *entries = RHSpriteField<undefined *>(holder, 4);
+    return RHSpriteField<unsigned *>(entries + animation * 0x64, 0x18)[frame];
+}
+
 // FUNCTION: GAME 0x005bdbf0
 unsigned short RHSprite::FUN_005bdbf0(unsigned short animation, unsigned short frame)
 {
@@ -1114,6 +1121,36 @@ short RHSprite::FUN_005bdc20(unsigned short animation, unsigned short frame)
     void *holder = ((RHUnk005b5e00 *)this)->FUN_005b5de0();
     undefined *entries = RHSpriteField<undefined *>(holder, 4);
     return RHSpriteField<short *>(entries + animation * 0x64, 0x38)[frame];
+}
+
+// FUNCTION: GAME 0x005bdc50
+unsigned short RHSprite::FUN_005bdc50(unsigned short animation, unsigned short frame)
+{
+    void *holder = ((RHUnk005b5e00 *)this)->FUN_005b5de0();
+    undefined *entries = RHSpriteField<undefined *>(holder, 4);
+    return RHSpriteField<unsigned short *>(entries + animation * 0x64, 0x58)[frame];
+}
+
+// FUNCTION: GAME 0x005bdc80
+const SBGeoPoint2D *RHSprite::FUN_005bdc80(unsigned short animation, unsigned short frame)
+{
+    void *holder = ((RHUnk005b5e00 *)this)->FUN_005b5de0();
+    undefined *entries = RHSpriteField<undefined *>(holder, 4);
+    return RHSpriteField<SBGeoPoint2D *>(entries + animation * 0x64, 0x48) + frame;
+}
+
+// FUNCTION: GAME 0x005bdcd0
+unsigned short RHSprite::FUN_005bdcd0(unsigned short animation)
+{
+    void *holder = ((RHUnk005b5e00 *)this)->FUN_005b5de0();
+    undefined *entries = RHSpriteField<undefined *>(holder, 4);
+    return RHSpriteField<unsigned short>(entries + animation * 0x64, 0);
+}
+
+// FUNCTION: GAME 0x005bdd90
+const SBGeoPoint2D *RHSprite::FUN_005bdd90()
+{
+    return FUN_005bdc80(m_184, m_186);
 }
 
 // Duplicate of the annotated RHUnk00613e90 (float, float, float) constructor (0x005df4f0).

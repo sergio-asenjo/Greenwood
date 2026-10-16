@@ -49,17 +49,7 @@ public:
     char m_10; // 0x10
 };
 
-class RHUnk00613e90
-{
-public:
-    RHUnk00613e90();
-    RHUnk00613e90(float x, float y, float z);
-    void FUN_00467990(float x, float y, float z);
-    RHUnk00613e90 FUN_005df550(const RHUnk00613e90 &other) const;
-    float m_0;
-    float m_4;
-    float m_8;
-};
+#include "RHTripleVectorCalls.h"
 
 struct RHScriptNode
 {
@@ -111,6 +101,7 @@ class RHElement
 {
 public:
     virtual bool Serialize(SBFile &file);
+    int FUN_004671b0() const;
     void CrossElevationLine(class RHElevationLine *line);
     char m_04[0xa4];
 };
@@ -347,6 +338,8 @@ struct RHBonusProjection;
 class RHBonusInfoBase
 {
 public:
+    char FUN_004671d0() const;
+    void FUN_004671e0(char value);
     SBGeoVector2D FUN_00468f10(int value) const;
     void FUN_0055f290();
     void FUN_0055fa20(RHBonusProjection *projection);
@@ -377,13 +370,7 @@ public:
 };
 class RHElementActor;
 
-class RHActorAreaCalls
-{
-public:
-    void *FUN_0057d800(const SBGeoPoint2D &point);
-    void FUN_0057df20(RHElementActor *actor, bool mode);
-    void FUN_0057dfc0(RHElementActor *actor, bool mode);
-};
+#include "RHActorAreaCalls.h"
 class RHElementActor;
 class RHUnk005c38b0;
 class RHScriptBatchCalls

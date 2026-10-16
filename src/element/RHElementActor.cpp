@@ -297,6 +297,18 @@ bool RHElementActor::Serialize(SBFile &file)
     return RHElement::Serialize(file);
 }
 
+// FUNCTION: GAME 0x00463200
+char RHElementActor::FUN_00463200() const { return 0; }
+
+// FUNCTION: GAME 0x00463240
+void RHElementActor::FUN_00463240(unsigned first, unsigned second, unsigned third) {}
+
+// FUNCTION: GAME 0x00463250
+void RHElementActor::FUN_00463250(unsigned value) {}
+
+// FUNCTION: GAME 0x00463260
+void RHElementActor::FUN_00463260(unsigned first, unsigned second, unsigned third, unsigned fourth) {}
+
 // FUNCTION: GAME 0x00464530
 void RHActorPositionCalls::FUN_00464530(const SBGeoPoint2D &point)
 {
@@ -314,6 +326,82 @@ void RHActorPositionCalls::FUN_00464530(const SBGeoPoint2D &point)
 float g_actorStepScale = 0.25f;
 // GLOBAL: GAME 0x006777c4
 float g_actorEffectOffset = 4.0f;
+
+class RHActorSequenceAccessors
+{
+public:
+    void *FUN_00467180() const;
+    void *FUN_00467190() const;
+    int FUN_004671a0() const;
+    unsigned FUN_004671c0() const;
+};
+
+class RHUnk6c1040;
+extern RHUnk6c1040 *g_unk0x6c1040;
+
+// FUNCTION: GAME 0x00466fe0
+RHUnk6c1040 *FUN_00466fe0()
+{
+    return g_unk0x6c1040;
+}
+
+// FUNCTION: GAME 0x00467180
+void *RHActorSequenceAccessors::FUN_00467180() const
+{
+    return *(void *const *)((const char *)this + 0x7c);
+}
+
+// FUNCTION: GAME 0x00467190
+void *RHActorSequenceAccessors::FUN_00467190() const
+{
+    return *(void *const *)((const char *)this + 0x78);
+}
+
+// FUNCTION: GAME 0x004671a0
+int RHActorSequenceAccessors::FUN_004671a0() const
+{
+    return *(const int *)((const char *)this + 0x94);
+}
+
+// FUNCTION: GAME 0x004671b0
+int RHElement::FUN_004671b0() const
+{
+    return *(const int *)((const char *)this + 0xc);
+}
+
+// FUNCTION: GAME 0x004671c0
+unsigned RHActorSequenceAccessors::FUN_004671c0() const
+{
+    return *(const unsigned *)((const char *)this + 0x88);
+}
+
+// FUNCTION: GAME 0x004671d0
+char RHBonusInfoBase::FUN_004671d0() const
+{
+    return *((const char *)this + 0xf4);
+}
+
+// FUNCTION: GAME 0x004671e0
+void RHBonusInfoBase::FUN_004671e0(char value)
+{
+    *((char *)this + 0xfd) = value;
+    if (!value) {
+        *((char *)this + 0xfe) = 0;
+        *((char *)this + 0xfc) = 0;
+    }
+}
+
+// FUNCTION: GAME 0x00467200
+int RHElementActor::FUN_00467200() const
+{
+    return *(const int *)((const char *)Info() + 0xe0);
+}
+
+// FUNCTION: GAME 0x00467220
+void *RHElementActor::FUN_00467220() const
+{
+    return *(void *const *)((const char *)Info() + 0xf4);
+}
 
 // Local placement, register scheduling, and cleanup remain unmatched.
 // STUB: GAME 0x00467230
@@ -1284,6 +1372,10 @@ void RHActorEmitWidened(RHUnk0053bf20 *first, RHUnk00560410 *second,
 
 void RHElementActor::Emit(SBFile &file, std::string &name)
 {
+    FUN_00463200();
+    FUN_00463240(0, 0, 0);
+    FUN_00463250(0);
+    FUN_00463260(0, 0, 0, 0);
     FUN_0046d710();
     FUN_0046d5f0(this, false);
     FUN_0046d750(m_128, 10000);

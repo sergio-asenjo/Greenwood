@@ -33,6 +33,16 @@ class RHElementActorNPC
 public:
     virtual bool Serialize(SBFile &file);
     void Emit(SBFile &file);
+    int FUN_00486790();
+    static void FUN_00486940(unsigned long first, unsigned long second, unsigned long third);
+    void FUN_00486f30(unsigned char status);
+    void FUN_00486f70();
+    void FUN_00487aa0(void *target);
+    void FUN_00487b70();
+    void FUN_00487ce0();
+    bool FUN_004887a0(int kind);
+    static void FUN_0048c6a0(void *actor, unsigned mode);
+    static void SetUniversalFrameCounter(unsigned long &counter);
     enum
     {
         OffsetAI = 0x49c,

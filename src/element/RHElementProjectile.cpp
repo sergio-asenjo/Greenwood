@@ -1,61 +1,7 @@
 #include "SBNullstr.h"
 #include "RHElementProjectile.h"
 
-class RHObjectConstructorCalls
-{
-public:
-    RHObjectConstructorCalls(unsigned long type, bool flag, int action);
-    ~RHObjectConstructorCalls();
-    unsigned char unknown[0x100];
-};
-
-struct RHProjectilePointLifetime
-{
-    RHProjectilePointLifetime()
-    {
-        ((RHUnk00613e90 *)this)->RHUnk00613e90::RHUnk00613e90();
-    }
-    unsigned char data[12];
-};
-
-struct RHProjectileCtorList
-{
-    RHProjectileCtorList(const unsigned char &allocation)
-    {
-        allocator = allocation;
-        RHScriptNode *created = (RHScriptNode *)operator new(12);
-        created->next = created;
-        created->previous = created;
-        head = created;
-        count = 0;
-        dirty = true;
-    }
-    unsigned char allocator;
-    RHScriptNode *head;
-    unsigned count;
-    RHScriptNode *cursor;
-    bool dirty;
-    int index;
-};
-
-class RHProjectileLifetime : public RHObjectConstructorCalls
-{
-public:
-    RHProjectileLifetime(int action, void *victim);
-    RHProjectilePointLifetime point100;
-    RHProjectilePointLifetime point10c;
-    unsigned char data118[8];
-    void *material;
-    unsigned char data124[8];
-    void *target;
-    unsigned short count130;
-    unsigned char flag132;
-    unsigned char flag133;
-    unsigned char flag134;
-    unsigned char flag135;
-    unsigned char data136[2];
-    RHProjectileCtorList list;
-};
+#include "RHProjectileLifetime.h"
 
 // FUNCTION: GAME 0x004b4020
 RHProjectileLifetime::RHProjectileLifetime(int action, void *victim)
@@ -151,11 +97,6 @@ struct RHProjectilePathList
         *(RHScriptNode *volatile *)&cursor = node;
         return cursor;
     }
-    RHScriptNode *&SetCursorAt(RHScriptNode *const &node)
-    {
-        *(RHScriptNode *volatile *)&cursor = *(RHScriptNode *volatile *)&node;
-        return cursor;
-    }
     void ResetAndAdvance(RHScriptNode *node, int distance)
     {
         std::bidirectional_iterator_tag category;
@@ -194,8 +135,9 @@ struct RHProjectilePathList
                     if (wanted < (previous + 1) / 2) {
                         if (InlineHead) {
                             std::bidirectional_iterator_tag category;
-                            RHScriptNode *sentinel = *(RHScriptNode *volatile *)&head;
-                            FUN_005c9010((RHUnk005c9010Iterator &)SetCursorAt(sentinel->next), wanted, category);
+                            RHScriptIter &position = *(RHScriptIter *)&cursor;
+                            FUN_005c9010((RHUnk005c9010Iterator &)(position =
+                                RHScriptIter(*(RHScriptNode *volatile *)&head->next)), wanted, category);
                         }
                         else {
                             ResetAndAdvance(((RHUnk0046eb30 *)this)->FUN_0046eb80().node, wanted);
@@ -456,11 +398,7 @@ public:
     virtual void V70(); virtual int V74() const;
 };
 
-class RHProjectileSoundCalls
-{
-public:
-    bool FUN_005a8070(int sound, const void *position, unsigned char kind);
-};
+#include "RHProjectileSoundCalls.h"
 class RHArtificialIntelligenceSoundCalls;
 extern RHArtificialIntelligenceSoundCalls *g_unk0x006c1070;
 
@@ -478,8 +416,7 @@ void RHElementProjectile::PlayImpactSound(const void *position, bool special) co
     ((RHProjectileSoundCalls *)g_unk0x006c1070)->FUN_005a8070(sound, position, 9);
 }
 
-// Parked: second cursor reset swaps ECX and EDX; all other instructions agree.
-// STUB: GAME 0x004b8bd0
+// FUNCTION: GAME 0x004b8bd0
 unsigned RHElementProjectile::ComputeNumberOfFramesLeft() const
 {
     unsigned total = 0;

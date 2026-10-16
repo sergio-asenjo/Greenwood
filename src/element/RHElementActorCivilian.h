@@ -44,6 +44,7 @@ public:
     virtual bool Serialize(SBFile &file); // vtable+0x00 (serializer-only view)
 
     bool FUN_00470ca0();
+    bool FUN_00470cc0();
     bool FUN_00470ce0();
     bool FUN_00470310();
     void FUN_00470a10(SBFile &file);

@@ -198,6 +198,12 @@ bool RHElementActorCivilian::FUN_00470ca0()
     return m_708->m_30 == 4;
 }
 
+// FUNCTION: GAME 0x00470cc0
+bool RHElementActorCivilian::FUN_00470cc0()
+{
+    return m_708->m_30 == 3;
+}
+
 // FUNCTION: GAME 0x00470ce0
 bool RHElementActorCivilian::FUN_00470ce0()
 {
@@ -403,6 +409,24 @@ bool RHElementActorCivilian::Serialize(SBFile &file)
     return true;
 }
 
+class RHCivilianAdjustedReceiver
+{
+public:
+    void FUN_00471590(unsigned char flags);
+};
+
+// FUNCTION: GAME 0x00471590
+void RHCivilianAdjustedReceiver::FUN_00471590(unsigned char flags)
+{
+    char *receiver = (char *)this + (*(int **)((char *)this - 0x250))[1] - 0x250;
+    receiver[0x174] |= flags;
+}
+
+void EmitRHCivilianAdjustedReceiver(RHCivilianAdjustedReceiver *receiver, unsigned char flags)
+{
+    receiver->FUN_00471590(flags);
+}
+
 // FUNCTION: GAME 0x005bdef0
 unsigned short RHCivilianSpriteView::FUN_005bdef0()
 {
@@ -446,6 +470,7 @@ SBGeoBoundingBox2D::SBGeoBoundingBox2D(const SBGeoPoint2D &first, const SBGeoPoi
 
 void RHElementActorCivilian::Emit(SBFile &file)
 {
+    FUN_00470cc0();
     Serialize(file);
     FUN_00470ca0();
     FUN_00470ce0();

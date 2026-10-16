@@ -1,5 +1,6 @@
 #include "SBNullstr.h"
 #include "RHElementActorNPC_calls.h"
+#include "RHMalignityActorCalls.h"
 
 #define RHNPC_ACCESS(buffer, size, line) \
     if (file.Access(buffer, size) < 0) \
@@ -36,6 +37,175 @@ bool RHDetectable::Serialize(SBFile &file)
         return false;
     }
     return true;
+}
+
+#define RHNPC_FIELD(type, offset) (*(type *)((char *)this + (offset)))
+
+extern unsigned *g_unk0x006c08a4;
+
+// FUNCTION: GAME 0x00486790
+int RHElementActorNPC::FUN_00486790()
+{
+    return 0;
+}
+
+// FUNCTION: GAME 0x004867d0
+RHNPCUnk004867d0::~RHNPCUnk004867d0()
+{
+}
+
+// GLOBAL: GAME 0x006c087c
+unsigned char g_unk0x006c087c = 0;
+// GLOBAL: GAME 0x006c087d
+unsigned char g_unk0x006c087d = 0;
+// GLOBAL: GAME 0x006c0880
+unsigned char g_unk0x006c0880 = 0;
+// GLOBAL: GAME 0x006c0881
+unsigned char g_unk0x006c0881 = 0;
+// GLOBAL: GAME 0x006c08a8
+unsigned char g_unk0x006c08a8 = 0;
+// GLOBAL: GAME 0x006c08a9
+unsigned char g_unk0x006c08a9 = 0;
+// GLOBAL: GAME 0x006c08ac
+unsigned char g_unk0x006c08ac[32] = {0};
+// GLOBAL: GAME 0x006c08cc
+unsigned char g_unk0x006c08cc[32] = {0};
+// GLOBAL: GAME 0x006c0884
+unsigned char g_unk0x006c0884[32] = {0};
+// GLOBAL: GAME 0x00677d7c
+float g_unk0x00677d7c = 1.0f / 36.0f;
+extern float g_unk0x0067749c;
+
+inline void RHNPCColorChannels(unsigned long color, unsigned char &red, unsigned char &green, unsigned char &blue)
+{
+    red = color;
+    green = color >> 8;
+    blue = color >> 16;
+}
+
+// Parked: byte-local storage, channel conversion order and x87 lifetimes differ.
+// STUB: GAME 0x00486940
+void RHElementActorNPC::FUN_00486940(unsigned long first, unsigned long second, unsigned long third)
+{
+    unsigned char red = first;
+    unsigned char green = first >> 8;
+    unsigned char blue = first >> 16;
+    RHNPCColorChannels(second, g_unk0x006c0881, g_unk0x006c087d, g_unk0x006c08a8);
+    RHNPCColorChannels(third, g_unk0x006c0880, g_unk0x006c087c, g_unk0x006c08a9);
+    float redStart = red;
+    float redEnd = g_unk0x006c0881;
+    float greenStart = green;
+    float greenEnd = g_unk0x006c087d;
+    float blueStart = blue;
+    float blueEnd = g_unk0x006c08a8;
+    int i = 0;
+    int count = 32;
+    do {
+        g_unk0x006c08ac[i] = redStart * (g_unk0x0067749c - i * g_unk0x00677d7c) + redEnd * (i * g_unk0x00677d7c);
+        g_unk0x006c08cc[i] = greenStart * (g_unk0x0067749c - i * g_unk0x00677d7c) + greenEnd * (i * g_unk0x00677d7c);
+        g_unk0x006c0884[i] = blueStart * (g_unk0x0067749c - i * g_unk0x00677d7c) + blueEnd * (i * g_unk0x00677d7c);
+        ++i;
+    } while (--count);
+}
+
+// FUNCTION: GAME 0x00486f30
+void RHElementActorNPC::FUN_00486f30(unsigned char status)
+{
+    RHNPC_FIELD(unsigned char, 0x65d) = RHNPC_FIELD(unsigned char, 0x65c) != status;
+    RHNPC_FIELD(unsigned char, 0x65c) = status;
+}
+
+// FUNCTION: GAME 0x00486f70
+void RHElementActorNPC::FUN_00486f70()
+{
+    RHNPC_FIELD(unsigned char, 0x65d) = 1;
+    RHNPC_FIELD(unsigned short, 0x6c2) = 5;
+    RHNPC_FIELD(unsigned short, 0x6c0) = *(unsigned short *)((char *)g_pEngine + 0x4cc0);
+    RHNPC_FIELD(unsigned char, 0x65c) = 8;
+}
+
+// FUNCTION: GAME 0x00487aa0
+void RHElementActorNPC::FUN_00487aa0(void *target)
+{
+    if (target)
+    {
+        RHNPC_FIELD(void *, 0x6bc) = target;
+        RHNPC_FIELD(unsigned char, 0x65c) = 6;
+        RHNPC_FIELD(float, 0x660) = 1.3f;
+    }
+    else
+        FUN_00487b70();
+}
+
+// FUNCTION: GAME 0x00487b70
+void RHElementActorNPC::FUN_00487b70()
+{
+    RHNPC_FIELD(unsigned char, 0x65c) = 1;
+    RHNPC_FIELD(float, 0x660) = 0.8f;
+}
+
+// FUNCTION: GAME 0x00487ce0
+void RHElementActorNPC::FUN_00487ce0()
+{
+    RHNPC_FIELD(RHUnk005b5ed0 *, 0x50)->FUN_005bd8b0();
+    RHNPC_FIELD(unsigned char, 0x08) = 0;
+}
+
+// Parked: VC6 lays out and cross-jumps the two state-range switch bodies differently.
+// STUB: GAME 0x004887a0
+bool RHElementActorNPC::FUN_004887a0(int kind)
+{
+    int state;
+    if (((RHNPCActorCalls *)this)->V130() == 1)
+    {
+        switch (kind)
+        {
+        case 0:
+        case 1:
+            state = *(int *)((char *)this + 0x4a8 + (*(int **)((char *)this + 0x49c))[1]);
+            if (state >= 0 && state <= 2)
+                return false;
+            return true;
+        case 2:
+            state = *(int *)((char *)this + 0x4a8 + (*(int **)((char *)this + 0x49c))[1]);
+            if (state >= 0 && state <= 1)
+                return false;
+            return true;
+        case 3:
+        case 4:
+        case 5:
+            return true;
+        }
+    }
+    else
+    {
+        switch (kind)
+        {
+        case 0:
+            return true;
+        case 1:
+            state = *(int *)((char *)this + 0x4a8 + (*(int **)((char *)this + 0x49c))[1]);
+            if (state >= 0 && state <= 2)
+                return false;
+            return true;
+        case 2:
+            state = *(int *)((char *)this + 0x4a8 + (*(int **)((char *)this + 0x49c))[1]);
+            if (state >= 0 && state <= 1)
+                return false;
+            return true;
+        case 3:
+        case 4:
+        case 5:
+            return true;
+        }
+    }
+    return false;
+}
+
+// FUNCTION: GAME 0x0048b440
+void RHElementActorNPC::SetUniversalFrameCounter(unsigned long &counter)
+{
+    g_unk0x006c08a4 = (unsigned *)&counter;
 }
 
 // STRING: GAME 0x006ae570
@@ -120,8 +290,26 @@ bool RHElementActorNPC::Serialize(SBFile &file)
     return ((RHNPCBaseCalls *)this)->FUN_004799e0(file);
 }
 
+inline unsigned short RHNPCActorCount()
+{
+    RHMalignityActorCalls **first = *(RHMalignityActorCalls ***)((char *)g_pEngine + 0x495c);
+    if (!first)
+        return 0;
+    return (unsigned short)(*(RHMalignityActorCalls ***)((char *)g_pEngine + 0x4960) - first);
+}
+
+// FUNCTION: GAME 0x0048c6a0
+void RHElementActorNPC::FUN_0048c6a0(void *actor, unsigned mode)
+{
+    unsigned short count = RHNPCActorCount();
+    for (unsigned short i = 0; i < count; ++i)
+        (*(RHMalignityActorCalls ***)((char *)g_pEngine + 0x495c))[i]->FUN_0048ca20(actor, mode);
+}
+
 void RHElementActorNPC::Emit(SBFile &file)
 {
+    FUN_00487ce0();
+    FUN_0048c6a0(this, 0);
     Serialize(file);
     RHDetectable value;
     value.Serialize(file);

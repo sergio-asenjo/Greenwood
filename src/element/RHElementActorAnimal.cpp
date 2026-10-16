@@ -223,8 +223,7 @@ void RHElementActorAnimal::Startle()
     }
 }
 
-// Parked 97.70%: the m_de word copy picks dx where the target reuses cx.
-// STUB: GAME 0x0046f290
+// FUNCTION: GAME 0x0046f290
 void RHElementActorAnimal::GetRestless()
 {
     bool noise;
@@ -234,8 +233,10 @@ void RHElementActorAnimal::GetRestless()
     RHAnimalNoisePosition position;
     position.m_x = point.m_x;
     position.m_y = point.m_y;
-    position.m_8 = m_50->m_e0;
-    position.m_c = m_50->m_de;
+    int value = m_50->m_e0;
+    position.m_8 = value;
+    unsigned short level = m_50->m_de;
+    position.m_c = level;
     int species = m_1d0;
     switch (species)
     {

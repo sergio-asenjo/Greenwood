@@ -13,6 +13,27 @@ DECOMP_SIZE_ASSERT(RHElementAreaListBase, 0x0c)
 DECOMP_SIZE_ASSERT(RHElementAreaList, 0x18)
 DECOMP_SIZE_ASSERT(RHUnk0040f060, 0x24)
 
+// FUNCTION: GAME 0x00462190
+int RHElement::FUN_00462190() const { return 3; }
+
+// FUNCTION: GAME 0x004621d0
+void RHElement::FUN_004621d0(RHUnk005df510 &point) const
+{
+    point = *(RHUnk005df510 *)((char *)m_50 + 0x10);
+}
+
+// FUNCTION: GAME 0x004621f0
+void RHElement::FUN_004621f0() { m_08 = 0; }
+
+// FUNCTION: GAME 0x00462200
+char RHElement::FUN_00462200() const { return 1; }
+
+// FUNCTION: GAME 0x00462210
+char RHElement::FUN_00462210(void *value) { return 0; }
+
+// FUNCTION: GAME 0x004622d0
+void *RHElement::FUN_004622d0() const { return (char *)m_50 + 0x1a0; }
+
 // FUNCTION: GAME 0x00462330
 bool RHElement::Serialize(SBFile &file)
 {
@@ -477,6 +498,12 @@ downwardCrossing:
 
 void RHElement::Emit(SBFile &file)
 {
+    FUN_00462190();
+    FUN_004621d0(m_74);
+    FUN_004621f0();
+    FUN_00462200();
+    FUN_00462210(0);
+    FUN_004622d0();
     Serialize(file);
     CrossElevationLine(0);
     ((RHElementAreaShape *)this)->FUN_0060c660(m_80);

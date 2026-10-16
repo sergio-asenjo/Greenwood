@@ -241,7 +241,27 @@ void RHElementTarget::InitializeFromMissionStream(SBFile &file)
         ((RHUnkTargetScriptRef *)(m_data + 0x15c))->FUN_004034e0();
 }
 
+// FUNCTION: GAME 0x004bbf80
+bool RHElementTarget::FUN_004bbf80()
+{
+    if (m_data[0x12])
+        ((RHScrollSpriteRefreshCalls *)Info())->FUN_005b7f60(*(unsigned long *)(m_data + 0x164));
+    return true;
+}
+
+// FUNCTION: GAME 0x004bc3d0
+void RHElementTarget::FUN_004bc3d0(int activator)
+{
+    if ((RHElementTarget_m_168 & 0x200) && g_unk0x6c0691)
+    {
+        RHElementTarget_m_168 &= ~0x200;
+        ((RHUnkTargetScriptRef *)(m_data + 0x15c))->FUN_00403ed0(activator);
+    }
+}
+
 void RHElementTarget::Emit(SBFile &file)
 {
+    FUN_004bbf80();
     InitializeFromMissionStream(file);
+    FUN_004bc3d0(0);
 }

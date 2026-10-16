@@ -178,6 +178,7 @@ class RHEngine
 {
 public:
     bool SerializeElementPointer(SBFile &, class RHElement *&);
+    bool FUN_004c4490(SBFile &file, void *&value);
 };
 extern RHEngine *g_pEngine;
 
@@ -236,11 +237,15 @@ public:
     bool FUN_005b7820(int);
     bool FUN_005bd450();
     unsigned short FUN_005bdbf0(unsigned short, unsigned short);
+    unsigned FUN_005bdbc0(unsigned short, unsigned short);
     short FUN_005bdc20(unsigned short, unsigned short);
+    unsigned short FUN_005bdc50(unsigned short, unsigned short);
+    const SBGeoPoint2D *FUN_005bdc80(unsigned short, unsigned short);
     unsigned short FUN_005bdcd0(unsigned short);
     unsigned short FUN_005bdcf0(unsigned short);
     unsigned short FUN_005bdd50();
     unsigned short FUN_005bdd70();
+    const SBGeoPoint2D *FUN_005bdd90();
     void FUN_005b94d0(unsigned short, void *, void *, void *, int);
     bool FUN_005b9b60(unsigned short, unsigned short);
     void FUN_005b9ce0();

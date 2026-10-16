@@ -12,9 +12,21 @@ struct RHBonusProjection;
 class RHElementActorPC
 {
 public:
+    unsigned short FUN_0048f910();
+    char FUN_0048f920();
+    bool FUN_0048f930();
+    static bool FUN_0048f980();
+    char FUN_0048f9a0();
+    unsigned short FUN_0048f9b0();
+    unsigned short FUN_0048f9c0();
+    unsigned short FUN_0048f9d0();
+    char FUN_0048f9e0();
+    unsigned FUN_0048f9f0();
+    unsigned FUN_0048fa00();
     static RHElementActorPC *CreatePCFromMissionStream(SBFile &file);
     void ApplyProjection(RHBonusProjection *projection);
     void InitializeAction(int action);
+    bool FUN_004a18c0(void *target);
     int FUN_0049d590(int action);
     int FUN_0049d5c0(unsigned short action);
     void FUN_0049d890(unsigned short action);
