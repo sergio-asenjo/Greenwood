@@ -88,6 +88,12 @@ bool RHSaveGame::operator<(const RHSaveGame &other) const
     return CompareFileTime(&mine, &theirs) > 0;
 }
 
+// FUNCTION: GAME 0x00570320
+bool FUN_00570320(const RHSaveGame *first, const RHSaveGame *second)
+{
+    return *first < *second;
+}
+
 void RHSaveGame::Emit(SBFile &file, Header &header)
 {
     SerializeHeader(file, header);
