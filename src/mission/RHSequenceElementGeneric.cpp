@@ -825,25 +825,33 @@ RHGenericNode *RHGenericMap::FUN_005880b0(RHGenericNode *parent, int color)
     return node;
 }
 
-// Parked: iterator store precedes nested-lock destruction.
-// STUB: GAME 0x005880d0
+struct RHGenericTreeAccess
+{
+    static RHGenericNode *&Left(RHGenericNode *node) { return node->left; }
+    static RHGenericNode *&Right(RHGenericNode *node) { return node->right; }
+    static RHGenericNode *&Parent(RHGenericNode *node) { return node->parent; }
+    static int &Color(RHGenericNode *node) { return node->color; }
+    static RHGenericNode *Max(RHGenericNode *node)
+    {
+        RHUnk00641782 inner;
+        while (Right(node) != g_unk0x006c1034)
+            node = Right(node);
+        return node;
+    }
+};
+
+// FUNCTION: GAME 0x005880d0
 void RHGenericIterator::FUN_005880d0()
 {
     RHUnk00641782 lock;
-    if (node->color == 0 && node->parent->parent == node)
-        node = node->right;
-    else if (node->left != g_unk0x006c1034)
-    {
-        RHGenericNode *maximum = node->left;
-        RHUnk00641782 inner;
-        while (maximum->right != g_unk0x006c1034)
-            maximum = maximum->right;
-        node = maximum;
-    }
+    if (RHGenericTreeAccess::Color(node) == 0 && RHGenericTreeAccess::Parent(RHGenericTreeAccess::Parent(node)) == node)
+        node = RHGenericTreeAccess::Right(node);
+    else if (RHGenericTreeAccess::Left(node) != g_unk0x006c1034)
+        node = RHGenericTreeAccess::Max(RHGenericTreeAccess::Left(node));
     else
     {
         RHGenericNode *parent;
-        while (node == (parent = node->parent)->left)
+        while (node == RHGenericTreeAccess::Left(parent = RHGenericTreeAccess::Parent(node)))
             node = parent;
         node = parent;
     }
