@@ -79,26 +79,7 @@ class SBGeoPoint2D;
 struct RHSoundSettings;
 struct RHSoundChannelSettings;
 
-class RHSound
-{
-public:
-    int FUN_005a72c0(const RHSoundSettings &sound, RHSoundChannelSettings &settings, unsigned position);
-    bool FUN_005a8220(int first, int second, int third, const SBGeoPoint2D &point);
-    bool FUN_005a8330(int first, int second, int third, const SBGeoPoint2D &point);
-    void PlayJingle(int jingle);
-    void FUN_005a8780();
-    void FUN_005a8700(void *, void *);
-    void FUN_005a87f0(RHSoundSource *);
-    void FUN_005a8810(void *);
-    void FUN_005a88a0(void *);
-};
-
-class RHScriptSoundStateCalls
-{
-public:
-    void FUN_005a7ef0(int state);
-    void FUN_005a7fb0(int state);
-};
+#include "RHSoundCore.h"
 
 class RHUnk004a5230
 {
@@ -241,7 +222,7 @@ public:
     virtual void v87();
     virtual void v88();
     virtual void v89();
-    virtual void v90();
+    virtual bool v90();
     virtual void v91();
     virtual void v92(int first, int second, int index, int value);
 };
@@ -317,6 +298,10 @@ extern RHUnk00452030 *g_unk0x6c07fc;
 class RHScript
 {
 public:
+    RHScript();
+    ~RHScript();
+    void *FUN_00570820(unsigned flags);
+    unsigned m_vptr;
     static bool IsActorCharacter(void *actor);
     static bool IsActorObject(void *actor);
     static bool IsActorCart(void *actor);
@@ -921,11 +906,7 @@ public:
     void SetFlag(bool value) { data[0x60] = value; }
 };
 
-class RHUnk004e3760
-{
-public:
-    void *Get();
-};
+#include "RHEngineAccessors.h"
 
 class RHUnk005a2450
 {
@@ -1025,6 +1006,7 @@ public:
 };
 
 class RHSoundSource;
+
 class RHSoundSourceManager
 {
 public:
@@ -1173,8 +1155,6 @@ public:
     float FUN_00489680(void *target);
     void FUN_0051d540(int index, int value);
     void FUN_0058bbe0(void *actor, int value);
-    void FUN_0050eb80(bool value);
-    void FUN_0050eca0(bool value);
     void FUN_00456d20();
     void FUN_005209b0();
     void FUN_00520a70();

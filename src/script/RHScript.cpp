@@ -532,8 +532,8 @@ void RHScriptBatchCalls::Unk004e3220(int value)
     *(char *)((char *)this + 0x4a51) = (char)value;
     if ((char)value == 0)
     {
-        ((RHScriptBatchCalls *)g_unk0x6c0b3c)->FUN_0050eca0(true);
-        ((RHScriptBatchCalls *)g_unk0x6c0b3c)->FUN_0050eb80(false);
+        ((RHGame *)g_unk0x6c0b3c)->FUN_0050eca0(true);
+        ((RHGame *)g_unk0x6c0b3c)->FUN_0050eb80(false);
     }
 }
 
@@ -694,6 +694,27 @@ struct RHScriptPCArray
     void *Get(unsigned char index) { return first[index]; }
 };
 
+struct RHScriptActorKind
+{
+    unsigned value : 5;
+};
+
+struct RHScriptNPCArray
+{
+    char padding[0x495c];
+    void **first;
+    void **last;
+    unsigned Count()
+    {
+        unsigned result;
+        if (first == 0)
+            result = 0;
+        else
+            result = last - first;
+        return result;
+    }
+};
+
 struct RHScriptPCType
 {
     char padding[8];
@@ -739,6 +760,60 @@ struct RHScriptSoundArray
         return index;
     }
 };
+
+// GLOBAL: GAME 0x006c0fe0
+void *g_unk0x006c0fe0;
+
+// FUNCTION: GAME 0x00570800
+RHScript::RHScript()
+{
+    m_vptr = 0x00679bec;
+    g_unk0x006c0fe0 = 0;
+    g_unk0x6c0fa4 = 0;
+    g_unk0x6c0f78 = 0;
+}
+
+// FUNCTION: GAME 0x00570820
+void *RHScript::FUN_00570820(unsigned flags)
+{
+    this->~RHScript();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// FUNCTION: GAME 0x00570840
+RHScript::~RHScript()
+{
+    m_vptr = 0x00679bec;
+}
+
+void EmitRHScriptLifetime(void *storage)
+{
+    RHScript *script = (RHScript *)storage;
+    script->RHScript::RHScript();
+    script->FUN_00570820(0);
+}
+
+namespace VMCoreCustomDependencies
+{
+// FUNCTION: GAME 0x00570a30
+void FUN_00570a30(int value) { *(int *)(g_unk0x6c0fa8 + 0x4a58) = value; }
+
+// FUNCTION: GAME 0x00570a50
+bool FUN_00570a50(int value) { return value == 0; }
+
+// FUNCTION: GAME 0x00570a60
+bool FUN_00570a60(int first, int second) { return first == second; }
+
+struct RHScriptKind2 { unsigned value : 2; };
+
+// FUNCTION: GAME 0x00570a70
+bool FUN_00570a70(int value)
+{
+    return value != 0 && ((RHScriptKind2 *)(value + 4))->value == 1;
+}
+}
 
 // FUNCTION: GAME 0x00570a90
 bool RHScript::IsActorCharacter(void *actor)
@@ -968,6 +1043,12 @@ bool RHScript::FUN_00570dd0(void *actor)
     SBAssert(0, "P:\\Robin Hood\\RHScript.cpp", 766,
              "ACHTUNG : Script error (\"SetAnimationState\") : invalid animation !");
     return false;
+}
+
+namespace VMCoreCustomDependencies
+{
+// FUNCTION: GAME 0x00570e20
+bool FUN_00570e20(int value) { return *(bool *)value; }
 }
 
 // FUNCTION: GAME 0x00570e70
@@ -1207,6 +1288,16 @@ bool RHScript::JumpCameraTo(void *location)
     return true;
 }
 
+namespace VMCoreCustomDependencies
+{
+// FUNCTION: GAME 0x005714d0
+int FUN_005714d0()
+{
+    void **first = g_unk0x6c0f34;
+    return first == 0 ? 0 : g_unk0x6c0f38 - first;
+}
+}
+
 // FUNCTION: GAME 0x005714f0
 void *RHScript::GetLocationScript(int index)
 {
@@ -1337,6 +1428,23 @@ void *RHScript::GetPatchScript(int index)
     return 0;
 }
 
+namespace VMCoreCustomDependencies
+{
+// FUNCTION: GAME 0x00571760
+int FUN_00571760(int index)
+{
+    return (*(int **)((char *)g_unk0x6c0a9c + 0x40c4))[index];
+}
+
+// FUNCTION: GAME 0x00571780
+int FUN_00571780(int index)
+{
+    if (index == -1)
+        return 0;
+    return (*(int **)((char *)g_unk0x6c0b9c + 8))[(unsigned short)index];
+}
+}
+
 // FUNCTION: GAME 0x005717a0
 void *RHScript::GetActorLocation(void *actor)
 {
@@ -1367,8 +1475,10 @@ public:
     void FUN_0047ca50();
 };
 
-// Parked: the area-flag test takes eax where the target uses edx.
-// STUB: GAME 0x005718d0
+static inline bool RHScriptAreaBit1(char *area) { return (*(unsigned int *)(area + 0x30) >> 1) & 1; }
+static inline bool RHScriptAreaBit0(char *area) { return *(unsigned int *)(area + 0x30) & 1; }
+
+// FUNCTION: GAME 0x005718d0
 bool RHScript::SetActorLocation(void *actor, void *location)
 {
     if (!RHUnk005709c0(actor))
@@ -1424,8 +1534,7 @@ bool RHScript::SetActorLocation(void *actor, void *location)
         ((RHScriptActorPositionFields *)actor)->position->layer = target.layer;
         ((RHScriptActorPositionFields *)actor)->position->area = target.area;
         char *area = (char *)target.area;
-        unsigned int flags = *(volatile unsigned int *)(area + 0x30) >> 1;
-        if ((flags & 1) && (*(unsigned int *)(area + 0x30) & 1))
+        if (RHScriptAreaBit1(area) && RHScriptAreaBit0(area))
         {
             RHBonusProjection *projection = ((RHUnk0057d800 *)area)->Unk(point);
             ((RHBonusInfoBase *)(*(char **)((char *)actor + 0x50) + 4))->FUN_0055fa20(projection);
@@ -3495,6 +3604,45 @@ void RHScript::StareLocation(void *actor, void *location, bool flag)
     ((RHScriptBatchCalls *)actor)->Unk00486f50(&position, true);
 }
 
+namespace VMCoreCustomDependencies
+{
+// FUNCTION: GAME 0x005761f0
+bool FUN_005761f0()
+{
+    char *engine = (char *)g_pEngine;
+    void **first = *(void ***)(engine + 0x495c);
+    unsigned short count = first == 0 ? 0 : *(void ***)(engine + 0x4960) - first;
+    for (unsigned int index = 0; (unsigned short)index < count; ++index)
+    {
+        void *actor = (*(void ***)((char *)g_pEngine + 0x495c))[(unsigned short)index];
+        if (((RHUnk00570e70Vtbl *)actor)->v18())
+        {
+            if (((RHScriptActorKind *)((char *)actor + 4))->value == 4)
+                return true;
+        }
+    }
+    return false;
+}
+
+// FUNCTION: GAME 0x00576260
+bool FUN_00576260()
+{
+    char *engine = (char *)g_pEngine;
+    void **first = *(void ***)(engine + 0x495c);
+    unsigned short count = first == 0 ? 0 : *(void ***)(engine + 0x4960) - first;
+    for (unsigned int index = 0; (unsigned short)index < count; ++index)
+    {
+        void *actor = (*(void ***)((char *)g_pEngine + 0x495c))[(unsigned short)index];
+        if (((RHUnk00570e70Vtbl *)actor)->v18())
+        {
+            if (((RHScriptActorKind *)((char *)actor + 4))->value == 20)
+                return true;
+        }
+    }
+    return false;
+}
+}
+
 // FUNCTION: GAME 0x005762d0
 int RHScript::GetActorPosture(void *actor)
 {
@@ -3716,6 +3864,65 @@ void RHScript::SetActorActionState(void *actor, int state)
     case 16: ((RHScriptBatchCalls *)actor)->Unk0046bd10(16); ((RHScriptBatchCalls *)actor)->Unk00464630(); break;
     case 17: ((RHScriptBatchCalls *)actor)->Unk0046bd10(17); ((RHScriptBatchCalls *)actor)->Unk00464630(); break;
     }
+}
+
+namespace VMCoreCustomDependencies
+{
+// FUNCTION: GAME 0x00576a30
+int FUN_00576a30()
+{
+    int result = 0;
+    unsigned short count = ((RHScriptNPCArray *)g_pEngine)->Count();
+    int state;
+    for (unsigned short index = 0; index < count; ++index)
+    {
+        void *actor = ((RHScriptNPCArray *)g_pEngine)->first[index];
+        if (!((RHUnk00570e70Vtbl *)actor)->v18())
+        {
+            if (((RHScriptActorKind *)((char *)actor + 4))->value == 20)
+            {
+                char *base = (char *)actor + (*(int **)((char *)actor + 0x49c))[1];
+                switch (*(int *)(*(char **)(base + 0x4a0) + 0x658))
+                {
+                case 0: state = 0; break;
+                case 1: state = 1; break;
+                case 2: state = 2; break;
+                }
+                if (state > result)
+                    result = state;
+            }
+        }
+    }
+    return result;
+}
+
+// FUNCTION: GAME 0x00576af0
+int FUN_00576af0()
+{
+    int result = 0;
+    unsigned short count = ((RHScriptNPCArray *)g_pEngine)->Count();
+    int state;
+    for (unsigned short index = 0; index < count; ++index)
+    {
+        void *actor = ((RHScriptNPCArray *)g_pEngine)->first[index];
+        if (!((RHUnk00570e70Vtbl *)actor)->v18())
+        {
+            if (((RHScriptActorKind *)((char *)actor + 4))->value != 20)
+            {
+                char *base = (char *)actor + (*(int **)((char *)actor + 0x49c))[1];
+                switch (*(int *)(*(char **)(base + 0x4a0) + 0x658))
+                {
+                case 0: state = 0; break;
+                case 1: state = 1; break;
+                case 2: state = 2; break;
+                }
+                if (state > result)
+                    result = state;
+            }
+        }
+    }
+    return result;
+}
 }
 
 // FUNCTION: GAME 0x00576bb0
@@ -4235,6 +4442,26 @@ bool RHScript::RecordLockCameraOn(void *actor)
                          "RecordLockCameraOn");
 }
 
+extern RHElementActor *g_unk0x6c100c;
+
+namespace VMCoreCustomDependencies
+{
+// FUNCTION: GAME 0x00577fe0
+bool FUN_00577fe0()
+{
+    RHUnk00584d60 *element = new RHUnk00584d60(g_unk0x6c0fa4, 14, 0);
+    return RHScript::AddToSequence((RHSequenceElement *)element,
+                                  // STRING: GAME 0x006b5630
+                                  "RecordClearCameraLock");
+}
+
+// FUNCTION: GAME 0x00578050
+int FUN_00578050()
+{
+    return (int)g_unk0x6c100c;
+}
+}
+
 // FUNCTION: GAME 0x00578060
 int RHScript::GetCurrentAction(void *actor)
 {
@@ -4475,6 +4702,15 @@ void RHScript::ActivateDoorMouseSector(bool active, void *door)
              "Door for activation not found !");
 }
 
+namespace VMCoreCustomDependencies
+{
+// FUNCTION: GAME 0x00578820
+unsigned char FUN_00578820()
+{
+    return *((unsigned char *)RHUnk00546050() + 0x17);
+}
+}
+
 // FUNCTION: GAME 0x005788a0
 void RHScript::CustomizeMinimapDisplay(void *actor, int code)
 {
@@ -4545,6 +4781,15 @@ void RHScript::CustomizeMinimapDisplay(void *actor, int code)
         *(short *)((char *)actor + 0x96) = g_unk0x6c11d0->Unk(0, 190, 255);
         break;
     }
+}
+
+namespace VMCoreCustomDependencies
+{
+// FUNCTION: GAME 0x00578c60
+void FUN_00578c60()
+{
+    *(g_unk0x6c0fa8 + 0x4a56) = 1;
+}
 }
 
 // FUNCTION: GAME 0x00578c70
@@ -4687,6 +4932,18 @@ void RHScript::DeclareAsCombatTrainer(void *actor)
     *(char *)((char *)actor + 0x496) = 1;
 }
 
+namespace VMCoreCustomDependencies
+{
+// FUNCTION: GAME 0x005791d0
+int FUN_005791d0()
+{
+    int *first = *(int **)((char *)g_unk0x6c07fc + 0x1b4);
+    if (!first)
+        return 0;
+    return *(int **)((char *)g_unk0x6c07fc + 0x1b8) - first;
+}
+}
+
 // FUNCTION: GAME 0x00579210
 void RHScript::AddPCToMissionTeam(void *actor)
 {
@@ -4716,6 +4973,26 @@ void RHScript::RemovePCFromMissionTeam(void *actor)
     SBAssert(0, "P:\\Robin Hood\\RHScript.cpp", 7115,
              // STRING: GAME 0x006b5db8
              "Script Error: Trying to remove an element that is not a PC from the team for the next mission.");
+}
+
+namespace VMCoreCustomDependencies
+{
+struct NativeArray
+{
+    unsigned allocator;
+    int *first;
+    int *last;
+};
+
+// FUNCTION: GAME 0x005792d0
+int FUN_005792d0()
+{
+    char *owner = **(char ***)((char *)g_unk0x6c07fc + 0x17c);
+    NativeArray &array = *(NativeArray *)(owner + 0x74);
+    if (!array.first)
+        return 0;
+    return array.last - array.first;
+}
 }
 
 // FUNCTION: GAME 0x00579300
@@ -4762,8 +5039,7 @@ char RHScript::RHUnk5793a0(void *actor)
     return cursor != end;
 }
 
-// Parked: target tail-jumps to 0x00453cd0, whose owning entity and signature are unresolved.
-// STUB: GAME 0x005793e0
+// FUNCTION: GAME 0x005793e0
 void *RHScript::RHUnk5793e0()
 {
     return ((RHUnk005793e0 *)g_unk0x6c07fc)->GetValue();
@@ -4857,6 +5133,15 @@ void RHScript::SetCustomNPCValue(void *actor, int index, int value)
         return;
     }
     *(int *)((char *)actor + index * 4 + 0x4a0) = value;
+}
+
+namespace VMCoreCustomDependencies
+{
+// FUNCTION: GAME 0x005795b0
+unsigned char FUN_005795b0()
+{
+    return *((unsigned char *)g_unk0x6c0b3c + 0x57);
+}
 }
 
 // FUNCTION: GAME 0x005795c0
@@ -5045,6 +5330,31 @@ void RHScript::RHUnk5798a0(void *object, bool value)
     {
         *(char *)((char *)object + 8) = 1;
     }
+}
+
+class RHElementScroll;
+extern RHElementScroll *g_scrollExecutingScript;
+extern RHElementScroll **volatile g_unk0x6c09dc;
+
+// GLOBAL: GAME 0x006c09e0
+RHElementScroll **g_unk0x006c09e0;
+
+namespace VMCoreCustomDependencies
+{
+// FUNCTION: GAME 0x005798c0
+RHElementScroll *FUN_005798c0()
+{
+    RHElementScroll *scroll = g_scrollExecutingScript;
+    if (scroll)
+    {
+        RHElementScroll **end = g_unk0x006c09e0;
+        RHElementScroll **entry = g_unk0x6c09dc;
+        while (entry != end && *entry != scroll)
+            ++entry;
+        return *entry;
+    }
+    return 0;
+}
 }
 
 // FUNCTION: GAME 0x005798f0
@@ -5352,6 +5662,28 @@ bool RHScript::HasAnyActivePCAction(int action)
     return false;
 }
 
+namespace VMCoreCustomDependencies
+{
+// FUNCTION: GAME 0x0057a8e0
+void *FUN_0057a8e0()
+{
+    unsigned short count = ((RHScriptPCArray *)g_pEngine)->Count();
+    for (unsigned int index = 0; (unsigned short)index < count; ++index)
+    {
+        void *actor = ((RHScriptPCArray *)g_pEngine)->Get((unsigned char)index);
+        if (((RHUnk00570e70Vtbl *)actor)->v90())
+            return actor;
+    }
+    return 0;
+}
+}
+
+// FUNCTION: GAME 0x0057aa20
+unsigned FUN_0057aa20()
+{
+    return ((RHScriptPCArray *)g_pEngine)->Count();
+}
+
 // 90.44%; virtual-base and list-search register scheduling remain unresolved.
 // STUB: GAME 0x0057aa70
 void RHScript::AddAsSubordinate(void *chief, void *subordinate)
@@ -5651,6 +5983,17 @@ void RHScript::SetRansomMoney(int value)
     ((RHScriptBatchCalls *)g_unk0x6c07fc)->Unk004520e0(1, value);
 }
 
+extern unsigned char g_unk0x006c0e48[];
+
+namespace VMCoreCustomDependencies
+{
+// FUNCTION: GAME 0x0057b150
+int FUN_0057b150()
+{
+    return *(int *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x1c);
+}
+}
+
 // FUNCTION: GAME 0x0057b2f0
 void RHScript::SetExperiences(void *actor, int first, int second)
 {
@@ -5663,6 +6006,24 @@ void RHScript::SetExperiences(void *actor, int first, int second)
     SBAssert(0, "P:\\Robin Hood\\RHScript.cpp", 8889,
              // STRING: GAME 0x006b6d78
              "Script Error: in SetExperiences the supplied actor is invalid.");
+}
+
+namespace VMCoreCustomDependencies
+{
+// FUNCTION: GAME 0x0057b370
+int FUN_0057b370()
+{
+    int result = 0;
+    unsigned count = ((RHScriptPCArray *)g_pEngine)->Count();
+    while (count)
+    {
+        void *actor = ((RHScriptPCArray *)g_pEngine)->Get((unsigned char)(count - 1));
+        if (!((RHUnk00570e70Vtbl *)actor)->v18())
+            ++result;
+        --count;
+    }
+    return result;
+}
 }
 
 // FUNCTION: GAME 0x0057b450
@@ -5706,6 +6067,15 @@ bool RHScript::IsPCSelected(void *actor)
              // STRING: GAME 0x006b6ea8
              "Script Error: The Actor in IsPCSelected is invalid.");
     return true;
+}
+
+namespace VMCoreCustomDependencies
+{
+// FUNCTION: GAME 0x0057b5e0
+int FUN_0057b5e0()
+{
+    return *(int *)((char *)g_pEngine + 0x4a00);
+}
 }
 
 // FUNCTION: GAME 0x0057b5f0
@@ -6063,6 +6433,15 @@ float SBGeoPoint2D::Unk005fc6d0(float value) const
     else
         y = m_y;
     return m_x * m_x + y * y;
+}
+
+namespace VMCoreCustomDependencies
+{
+// FUNCTION: GAME 0x0057bfe0
+unsigned char FUN_0057bfe0()
+{
+    return *((unsigned char *)g_unk0x6c07fc + 0x1c0);
+}
 }
 
 void RHScript::Emit()

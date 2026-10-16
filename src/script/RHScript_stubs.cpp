@@ -15,8 +15,6 @@
 
 RHUnk005490a0Message::~RHUnk005490a0Message() {}
 
-void RHSound::FUN_005a88a0(void *) {}
-
 class RHUnk0051d0e0
 {
 public:
@@ -174,7 +172,6 @@ RHUnk00584d60::RHUnk00584d60(unsigned short level, int command, void *actor)
     (void)actor;
 }
 RHUnk00584d60::~RHUnk00584d60() {}
-void *RHUnk004e3760::Get() { return (char *)this + 0x42f4; }
 void RHUnk005a2450::FUN_005a2450(void *, void *) {}
 // Parked: 0x005492d0, 50.00%; ILT tail jump and coupled callers.
 RHUnk005492a0::~RHUnk005492a0()
@@ -253,8 +250,6 @@ RHScriptActionCursor RHScriptActionCursor::operator++(int)
 }
 
 void RHScriptBatchCalls::FUN_0058bbe0(void *, int) {}
-void RHScriptBatchCalls::FUN_0050eb80(bool) {}
-void RHScriptBatchCalls::FUN_0050eca0(bool) {}
 void RHScriptBatchCalls::FUN_00456d20() {}
 void RHScriptBatchCalls::FUN_005209b0() {}
 void RHScriptBatchCalls::FUN_00520a70() {}
@@ -262,8 +257,6 @@ void RHScriptBatchCalls::FUN_00549090() {}
 
 void RHUnk004a5230::FUN_004a5230(bool, bool) {}
 
-void RHScriptSoundStateCalls::FUN_005a7ef0(int) {}
-void RHScriptSoundStateCalls::FUN_005a7fb0(int) {}
 
 bool RHScriptAIStateCalls::FUN_00410620(RHScriptStimulusValue) { return false; }
 void RHScriptAIStateCalls::FUN_004132d0(int, int, int) {}
