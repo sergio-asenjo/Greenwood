@@ -4,6 +4,7 @@
 
 DECOMP_SIZE_ASSERT(RHSoundCache, 0x138)
 DECOMP_SIZE_ASSERT(RHcacheData, 0x0c)
+DECOMP_SIZE_ASSERT(RHsampleCacheStats, 0x0c)
 DECOMP_SIZE_ASSERT(RHUnk005b1ca0, 0x24)
 DECOMP_SIZE_ASSERT(RHUnk005f4fc0, 0x58)
 DECOMP_SIZE_ASSERT(RHSoundCacheListNode, 0x0c)
@@ -80,6 +81,12 @@ RHSoundCacheMusic *FUN_0056dbc0(RHSoundCacheMusic *first, RHSoundCacheMusic *las
     return destination;
 }
 
+// FUNCTION: GAME 0x005ab410
+void RHSoundCache::FUN_005ab410(RHcacheData &cache)
+{
+    memset(&cache, 0, sizeof(cache));
+}
+
 // FUNCTION: GAME 0x005ab430
 unsigned long RHSoundCache::FUN_005ab430(RHcacheData &cache)
 {
@@ -94,29 +101,65 @@ unsigned long RHSoundCache::FUN_005ab430(RHcacheData &cache)
     return cache.m_04++;
 }
 
-// Reconstructed cache-array teardown; per-entry sample release remains incomplete.
-// STUB: GAME 0x005ab4e0
+
+// FUNCTION: GAME 0x005ab4e0
 void RHSoundCache::FUN_005ab4e0(RHcacheData &cache)
 {
     for (unsigned int index = 0; index < cache.m_04; ++index)
-        (cache.m_00 + index)->~RHSoundCacheEntry();
+        ((RHUnk005b1ca0 *)cache.m_00 + index)->~RHUnk005b1ca0();
     operator delete(cache.m_00);
-    cache.m_00 = 0;
-    cache.m_04 = 0;
-    cache.m_08 = 0;
+    memset(&cache, 0, sizeof(cache));
 }
 
-// Reconstructed loaded-sample iteration; the target's unload callback and stats updates remain incomplete.
-// STUB: GAME 0x005ab530
-void RHSoundCache::FUN_005ab530(RHcacheData &cache, unsigned long)
+
+// FUNCTION: GAME 0x005ab530
+void RHSoundCache::FUN_005ab530(RHcacheData &cache, RHsampleCacheStats &stats)
 {
     for (unsigned int index = 0; index < cache.m_04; ++index)
     {
         RHSoundCacheEntry *entry = cache.m_00 + index;
         if (entry->m_sample)
+            UnloadSample(entry, stats);
+    }
+}
+
+
+// FUNCTION: GAME 0x005ab570
+void RHSoundCache::UpdateCacheState(RHcacheData &cache, RHsampleCacheStats &stats, unsigned long elapsed)
+{
+    for (unsigned int index = 0; index < cache.m_04; ++index)
+    {
+        RHSoundCacheEntry *entry = cache.m_00 + index;
+        if (*(unsigned short *)((char *)entry + 0x1e) == 0 && entry->m_stamp > 0)
         {
-            entry->m_sample = 0;
-            entry->m_duration = 0;
+            if (entry->m_stamp < elapsed)
+                entry->m_stamp = 0;
+            else
+                entry->m_stamp -= elapsed;
+            if (entry->m_stamp == 0)
+                UnloadSample(entry, stats);
+        }
+    }
+}
+
+// Parked: iterator stack-slot coloring and map/statistics register lifetimes differ.
+// STUB: GAME 0x005ab5e0
+void RHSoundCache::UpdateCacheState(std::map<unsigned long, RHSoundCacheEntry *> &entries, RHsampleCacheStats &stats, unsigned long elapsed)
+{
+    typedef std::map<unsigned long, RHSoundCacheEntry *> Map;
+    typedef void (Map::const_iterator::*Increment)();
+    Increment increment = &Map::const_iterator::_Inc;
+    for (Map::iterator position = entries.begin(); position != entries.end(); (position.*increment)())
+    {
+        RHSoundCacheEntry *entry = position->second;
+        if (*(unsigned short *)((char *)entry + 0x1e) == 0 && entry->m_stamp > 0)
+        {
+            if (entry->m_stamp < elapsed)
+                entry->m_stamp = 0;
+            else
+                entry->m_stamp -= elapsed;
+            if (entry->m_stamp == 0)
+                UnloadSample(entry, stats);
         }
     }
 }
@@ -148,7 +191,7 @@ void RHSoundCache::FUN_005ab6d0(std::map<unsigned long, RHSoundCacheEntry *> &en
 
 // Parked 25.48%: the candidate map lookup is reconstructed, but argument-slot lifetime, sample-state updates, and entry return scheduling differ.
 // STUB: GAME 0x005ab730
-RHSoundCacheEntry *RHSoundCache::GetSample(bool load, std::map<unsigned long, RHSoundCacheEntry *> &entries, void *stats, unsigned long id, unsigned long stamp, unsigned long lifetime, bool spatial)
+RHSoundCacheEntry *RHSoundCache::GetSample(bool load, std::map<unsigned long, RHSoundCacheEntry *> &entries, void *stats, unsigned long stamp, unsigned long lifetime, unsigned long id, bool spatial)
 {
     std::map<unsigned long, RHSoundCacheEntry *>::iterator found = entries.lower_bound(id);
     if (found == entries.end() || found->first != id)
@@ -180,6 +223,13 @@ void RHSoundCache::FUN_005ab7e0(RHSoundCacheEntry *entry, void *data, unsigned s
         ++cache.m_04;
         cache.m_08 += entry->m_size;
     }
+}
+
+// FUNCTION: GAME 0x005ab820
+void RHSoundCache::UnloadSample(RHSoundCacheEntry *entry, RHsampleCacheStats &stats)
+{
+    stats.m_values[2] -= entry->m_size;
+    ((RHUnk005b1ca0 *)entry)->FUN_005b2040();
 }
 
 // FUNCTION: GAME 0x005ab840
@@ -386,8 +436,7 @@ RHSoundCacheEntry *RHSoundCache::AddSoundEntry(unsigned long id, const std::stri
     return entry;
 }
 
-// Parked: inlined string erase retains different pointer registers.
-// STUB: GAME 0x005ad250
+// FUNCTION: GAME 0x005ad250
 unsigned long RHSoundCache::AddSoundEntry(const std::string &name, RHcacheData &cache)
 {
     unsigned long index = FUN_005ab430(cache);
@@ -509,6 +558,51 @@ void RHSoundCache::InitializeMenuCache()
     file.FUN_005f5290();
 }
 
+static void ClearSoundMusic(RHSoundCacheMusicArray &music)
+{
+    typedef std::string &(std::string::*Assign)(const std::string &, unsigned int, unsigned int);
+    Assign assign = &std::string::assign;
+    std::string *destination = music.begin();
+    for (std::string *source = music.end(); source != music.end(); ++source, ++destination)
+        (destination->*assign)(*source, 0, *(const volatile unsigned int *)&std::string::npos);
+    for (std::string *entry = destination; entry != music.end(); ++entry)
+        entry->~basic_string();
+    music.m_08 = destination;
+    music.m_14 = true;
+}
+
+// Parked: music erase helper stays out of line; inline variants expand string cleanup.
+// STUB: GAME 0x005ae1c0
+void RHSoundCache::FUN_005ae1c0(bool clear)
+{
+    if (clear)
+    {
+        FUN_005ab660(*(std::map<unsigned long, RHSoundCacheEntry *> *)&m_00c, *(RHcacheData *)this);
+        FUN_005ab6d0(*(std::map<unsigned long, RHSoundCacheEntry *> *)((char *)this + 0x28));
+        FUN_005ab660(*(std::map<unsigned long, RHSoundCacheEntry *> *)&m_06c, *(RHcacheData *)((char *)this + 0x60));
+        FUN_005ab6d0(*(std::map<unsigned long, RHSoundCacheEntry *> *)((char *)this + 0x94));
+    }
+    FUN_005ab6d0(m_044);
+    ClearSoundMusic(m_0b0);
+    ClearSoundMusic(m_0dc);
+    ClearSoundMusic(m_108);
+    FUN_005aec70();
+}
+
+// FUNCTION: GAME 0x005ae320
+bool RHSoundCache::FUN_005ae320(unsigned long id)
+{
+    RHSoundCacheGroups &groups = m_00c;
+    RHSoundCacheGroupNode *found = groups.FUN_005b13e0(id);
+    RHSoundCacheGroupNode *head = *(RHSoundCacheGroupNode *volatile *)((char *)&groups + 4);
+    RHSoundCacheGroupIterator entry;
+    *(RHSoundCacheGroupNode *volatile *)&entry.m_node = found;
+    RHSoundCacheGroupIterator chosen = found == head || id < found->m_0c ? RHSoundCacheGroupIterator(head) : entry;
+    if (chosen.m_node == *(RHSoundCacheGroupNode **)((char *)this + 0x10))
+        return false;
+    return chosen.m_node->m_10->m_00 == 0;
+}
+
 // FUNCTION: GAME 0x005ae380
 RHSoundCacheEntry *RHSoundCache::GetFXSample(bool load, unsigned long id, int material)
 {
@@ -573,6 +667,19 @@ sample:
     }
 done:
     return entry;
+}
+
+// FUNCTION: GAME 0x005ae640
+RHSoundCacheEntry *RHSoundCache::FUN_005ae640(bool load, unsigned long id)
+{
+    return GetSample(load, *(std::map<unsigned long, RHSoundCacheEntry *> *)((char *)this + 0x28),
+        (char *)this + 0x38, 400, 200, id, false);
+}
+
+// FUNCTION: GAME 0x005ae670
+RHSoundCacheEntry *RHSoundCache::FUN_005ae670(bool load, unsigned long id, bool spatial)
+{
+    return GetSample(load, m_044, m_054, 400, 200, id, spatial);
 }
 
 // Cached-list control flow remains unmatched.
@@ -671,6 +778,44 @@ RHSoundCacheMusic *RHSoundCache::GetFightMusic(unsigned short index)
     return &g_unk0x006c1090;
 }
 
+// FUNCTION: GAME 0x005aec70
+void RHSoundCache::FUN_005aec70()
+{
+    unsigned long *fields = (unsigned long *)this;
+    fields[7] = 0;
+    fields[8] = 0;
+    fields[9] = 0;
+    fields[14] = 0;
+    fields[15] = 0;
+    fields[16] = 0;
+    fields[21] = 0;
+    fields[22] = 0;
+    fields[23] = 0;
+    fields[31] = 0;
+    fields[32] = 0;
+    fields[33] = 0;
+    fields[34] = 0;
+    fields[35] = 0;
+    fields[36] = 0;
+}
+
+// FUNCTION: GAME 0x005aecb0
+void RHSoundCache::GetCacheStats(RHsampleCacheStats *stats)
+{
+    stats->m_values[0] = m_01c;
+    stats->m_values[1] = *(unsigned long *)((char *)this + 0x20);
+    stats->m_values[2] = *(unsigned long *)((char *)this + 0x24);
+    stats[1].m_values[0] = *(unsigned long *)((char *)this + 0x54);
+    stats[1].m_values[1] = *(unsigned long *)((char *)this + 0x58);
+    stats[1].m_values[2] = *(unsigned long *)((char *)this + 0x5c);
+    stats[2].m_values[0] = m_07c;
+    stats[2].m_values[1] = *(unsigned long *)((char *)this + 0x80);
+    stats[2].m_values[2] = *(unsigned long *)((char *)this + 0x84);
+    stats[3].m_values[0] = *(unsigned long *)((char *)this + 0x54) + m_07c + m_01c;
+    stats[3].m_values[1] = *(unsigned long *)((char *)this + 0x58) + *(unsigned long *)((char *)this + 0x80) + *(unsigned long *)((char *)this + 0x20);
+    stats[3].m_values[2] = *(unsigned long *)((char *)this + 0x84) + *(unsigned long *)((char *)this + 0x24) + *(unsigned long *)((char *)this + 0x5c);
+}
+
 // FUNCTION: GAME 0x005aed30
 RHSoundCacheEntry *RHSoundCache::GetSourceCacheEntryForID(unsigned long id)
 {
@@ -681,6 +826,40 @@ RHSoundCacheEntry *RHSoundCache::GetSourceCacheEntryForID(unsigned long id)
         // STRING: GAME 0x006b8564
         "Unable to find cache entry for id %d !", id);
     return 0;
+}
+
+// Parked: loop-back node reloads precede sentinel reloads; effective-only match.
+// STUB: GAME 0x005aeda0
+void RHSoundCache::FUN_005aeda0()
+{
+    typedef std::map<unsigned long, RHSoundCacheEntry *> Map;
+    typedef void (Map::const_iterator::*Increment)();
+    Increment increment = &Map::const_iterator::_Inc;
+    FUN_005ab530(*(RHcacheData *)this, *(RHsampleCacheStats *)((char *)this + 0x1c));
+    Map &first = *(Map *)((char *)this + 0x28);
+    Map::iterator position = first.begin();
+    for (; position != first.end(); (position.*increment)())
+    {
+        RHSoundCacheEntry *entry = position->second;
+        if (entry->m_sample)
+            UnloadSample(entry, *(RHsampleCacheStats *)((char *)this + 0x38));
+    }
+    position = m_044.begin();
+    for (; position != m_044.end(); (position.*increment)())
+    {
+        RHSoundCacheEntry *entry = position->second;
+        if (entry->m_sample)
+            UnloadSample(entry, *(RHsampleCacheStats *)((char *)this + 0x54));
+    }
+    FUN_005ab530(*(RHcacheData *)((char *)this + 0x60), *(RHsampleCacheStats *)((char *)this + 0x7c));
+    Map &last = *(Map *)((char *)this + 0x94);
+    position = last.begin();
+    for (; position != last.end(); (position.*increment)())
+    {
+        RHSoundCacheEntry *entry = position->second;
+        if (entry->m_sample)
+            UnloadSample(entry, *(RHsampleCacheStats *)((char *)this + 0x54));
+    }
 }
 
 // LIBRARY: GAME 0x005aef50
@@ -835,6 +1014,13 @@ RHUnk005b1ca0::RHUnk005b1ca0()
     m_20 = 0;
 }
 
+
+// FUNCTION: GAME 0x005b1cd0
+RHUnk005b1ca0::~RHUnk005b1ca0()
+{
+    FUN_005b2040();
+}
+
 // FUNCTION: GAME 0x005b2040
 void RHUnk005b1ca0::FUN_005b2040()
 {
@@ -864,12 +1050,17 @@ RHUnk005f4fc0::RHUnk005f4fc0()
 
 void RHSoundCache::Emit(unsigned short index, RHSoundCacheGroups &groups, const RHSoundCacheMissionProfile *profile)
 {
+    RHcacheData cache;
+    FUN_005ab410(cache);
+    RHsampleCacheStats stats;
+    FUN_005aec70();
     AddSoundGroup(groups, 1, index, index);
     InitializeMusic(profile);
     GetFXSample(true, index, 0);
+    FUN_005ae640(true, index);
+    FUN_005ae670(true, index, false);
     GetExclamationSample(true, index, index);
     AddSoundEntry(index, profile->m_0c4, m_044);
-    RHcacheData cache;
     AddSoundEntry(profile->m_0c4, cache);
     GetQuietMusic(index);
     GetAlertMusic(index);
@@ -877,5 +1068,6 @@ void RHSoundCache::Emit(unsigned short index, RHSoundCacheGroups &groups, const 
     GetSourceCacheEntryForID(index);
     RHUnk005b1ca0 entry;
     entry.FUN_005b2040();
+    UnloadSample((RHSoundCacheEntry *)&entry, stats);
     ((RHSoundCacheEntryMap *)&m_044)->FUN_005b1430(index);
 }

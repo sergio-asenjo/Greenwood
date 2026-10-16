@@ -144,41 +144,7 @@ struct RHsoundGroup
     unsigned short m_28; // 0x28
 };
 
-// SIZE 0x18
-struct RHSoundCacheGroupNode
-{
-    RHSoundCacheGroupNode *m_00; // 0x00
-    RHSoundCacheGroupNode *m_04; // 0x04
-    RHSoundCacheGroupNode *m_08; // 0x08
-    unsigned long m_0c; // 0x0c
-    RHsoundGroup *m_10; // 0x10
-    undefined4 m_14; // 0x14
-};
-
-// SIZE 0x04
-struct RHSoundCacheGroupIterator
-{
-    RHSoundCacheGroupNode *m_node; // 0x00
-    RHSoundCacheGroupIterator() {}
-    RHSoundCacheGroupIterator(RHSoundCacheGroupNode *node) : m_node(node) {}
-    RHSoundCacheGroupIterator(const RHSoundCacheGroupIterator &other) : m_node(other.m_node) {}
-    bool operator==(const RHSoundCacheGroupIterator &other) const { return m_node == other.m_node; }
-    void FUN_005b1480();
-    void FUN_005b1880();
-};
-
-// SIZE 0x08
-struct RHSoundCacheGroupInsert
-{
-    std::map<unsigned long, RHsoundGroup *>::iterator first; // 0x00
-    bool second; // 0x04
-    RHSoundCacheGroupInsert() {}
-    RHSoundCacheGroupInsert(const RHSoundCacheGroupIterator &entry, bool inserted)
-    {
-        *(RHSoundCacheGroupIterator *)&first = entry;
-        second = inserted;
-    }
-};
+#include "RHSoundCacheCore.h"
 
 // SIZE 0x01
 struct RHUnk00641782
@@ -188,31 +154,6 @@ struct RHUnk00641782
     undefined m_00; // 0x00
 };
 
-// SIZE 0x10
-class RHSoundCacheGroups : public std::map<unsigned long, RHsoundGroup *>
-{
-public:
-    RHSoundCacheGroupNode *FUN_005b13e0(const unsigned long &);
-    RHSoundCacheGroupIterator FUN_005b10e0(RHSoundCacheGroupNode *, RHSoundCacheGroupNode *, const value_type &);
-    RHSoundCacheGroupIterator &FUN_005afc50(RHSoundCacheGroupIterator &, const unsigned long &);
-    RHSoundCacheGroupIterator End() { return RHSoundCacheGroupIterator(*(RHSoundCacheGroupNode **)((char *)this + 4)); }
-    RHSoundCacheGroupIterator Find(const unsigned long &key)
-    {
-        RHSoundCacheGroupIterator temporary;
-        RHSoundCacheGroupIterator entry = FUN_005afc50(temporary, key);
-        return entry == End() || key < entry.m_node->m_0c ? End() : entry;
-    }
-    RHSoundCacheGroupInsert &FUN_005af600(RHSoundCacheGroupInsert &, const value_type &);
-    RHsoundGroup *&operator[](const unsigned long &key)
-    {
-        RHSoundCacheGroupInsert temporary;
-        RHSoundCacheGroupInsert result = FUN_005af600(temporary, value_type(key, 0));
-        iterator entry = result.first;
-        return entry->second;
-    }
-};
-
-typedef std::string RHSoundCacheMusic;
 
 // SIZE 0x58
 class RHUnk005f4fc0 : public SBFile
@@ -248,39 +189,6 @@ public:
 
 extern RHMapResources *g_unk0x006c1840;
 
-RHSoundCacheMusic *FUN_0056dbc0(RHSoundCacheMusic *, RHSoundCacheMusic *, RHSoundCacheMusic *);
-
-// SIZE 0x2c
-struct RHSoundCacheMusicArray
-{
-    undefined4 m_00; // 0x00
-    RHSoundCacheMusic *m_04; // 0x04
-    RHSoundCacheMusic *m_08; // 0x08
-    RHSoundCacheMusic *m_0c; // 0x0c
-    undefined m_10[4]; // 0x10
-    bool m_14; // 0x14
-    undefined m_15[0x17]; // 0x15
-
-    unsigned int Size() const { return m_04 == 0 ? 0 : m_08 - m_04; }
-    RHSoundCacheMusic *begin() { return m_04; }
-    RHSoundCacheMusic *end() { return m_08; }
-    void FUN_0056dac0(RHSoundCacheMusic *, RHSoundCacheMusic *);
-    void FUN_004023a0(RHSoundCacheMusic *, unsigned int, const RHSoundCacheMusic &);
-    void erase(RHSoundCacheMusic *first, RHSoundCacheMusic *last)
-    {
-        RHSoundCacheMusic *next = FUN_0056dbc0(last, end(), first);
-        FUN_0056dac0(next, end());
-        m_08 = next;
-        m_14 = true;
-    }
-    void push_back(const RHSoundCacheMusic &value)
-    {
-        typedef void (std::vector<RHSoundCacheMusic>::*Insert)(RHSoundCacheMusic *, unsigned int, const RHSoundCacheMusic &);
-        Insert insert = &std::vector<RHSoundCacheMusic>::insert;
-        (((std::vector<RHSoundCacheMusic> *)this)->*insert)(end(), 1, value);
-        m_14 = true;
-    }
-};
 
 struct RHSoundCacheMissionProfile
 {
@@ -342,9 +250,7 @@ struct RHSoundCacheString
             count = available;
         if (0 < count)
         {
-            position += (unsigned int)m_04;
-            char *first = (char *)position;
-            FUN_00642580(first, first + count, available - count);
+            FUN_00642580(m_04 + position, m_04 + position + count, available - count);
             unsigned int size = m_08 - count;
             if (((RHProfileText *)this)->FUN_00402280(size, false))
                 ((RHProfileText *)this)->FUN_00402260(size);
@@ -398,53 +304,6 @@ public:
 extern RHSoundCacheGroupNode *g_unk0x006c10a4;
 extern RHSoundCacheGroupNode *g_unk0x006c10ac;
 
-// SIZE 0x138
-class RHSoundCache
-{
-public:
-    RHsoundGroup *AddSoundGroup(RHSoundCacheGroups &, int, unsigned long, unsigned short);
-    void InitializeFXCache();
-    void FUN_005aca40(SBFile &, RHsoundGroup *, unsigned long);
-    void InitializeExclamationsForProfile(const std::string &, unsigned long);
-    RHSoundCacheEntry *AddSoundEntry(unsigned long, const std::string &, std::map<unsigned long, RHSoundCacheEntry *> &);
-    unsigned long AddSoundEntry(const std::string &, struct RHcacheData &);
-    unsigned long FUN_005ab430(struct RHcacheData &);
-    void FUN_005ab4e0(struct RHcacheData &);
-    void FUN_005ab530(struct RHcacheData &, unsigned long);
-    void FUN_005ab660(std::map<unsigned long, RHSoundCacheEntry *> &, struct RHcacheData &);
-    void FUN_005ab6d0(std::map<unsigned long, RHSoundCacheEntry *> &);
-    RHSoundCacheEntry *GetSample(bool, std::map<unsigned long, RHSoundCacheEntry *> &, void *, unsigned long, unsigned long, unsigned long, bool);
-    RHSoundCacheEntry *GetFXSample(bool, unsigned long, int);
-    RHSoundCacheEntry *GetExclamationSample(bool, unsigned long, unsigned long);
-    void FUN_005ab7e0(RHSoundCacheEntry *, void *, unsigned short, bool);
-    void InitializeMusic(const RHSoundCacheMissionProfile *);
-    void InitializeMenuCache();
-    RHSoundCacheMusic *GetQuietMusic(unsigned short);
-    RHSoundCacheMusic *GetAlertMusic(unsigned short);
-    RHSoundCacheMusic *GetFightMusic(unsigned short);
-    RHSoundCacheEntry *GetSourceCacheEntryForID(unsigned long);
-    void Emit(unsigned short, RHSoundCacheGroups &, const RHSoundCacheMissionProfile *);
-
-    RHSoundCacheEntry *m_000; // 0x000
-    unsigned int m_004; // 0x004
-    unsigned int m_008; // 0x008
-    RHSoundCacheGroups m_00c; // 0x00c
-    unsigned int m_01c; // 0x01c
-    undefined m_020[0x24]; // 0x020
-    std::map<unsigned long, RHSoundCacheEntry *> m_044; // 0x044
-    undefined m_054[0xc]; // 0x054
-    RHSoundCacheEntry *m_060; // 0x060
-    unsigned int m_064; // 0x064
-    unsigned int m_068; // 0x068
-    RHSoundCacheGroups m_06c; // 0x06c
-    unsigned int m_07c; // 0x07c
-    undefined m_080[0x30]; // 0x080
-    RHSoundCacheMusicArray m_0b0; // 0x0b0
-    RHSoundCacheMusicArray m_0dc; // 0x0dc
-    RHSoundCacheMusicArray m_108; // 0x108
-    bool m_134; // 0x134
-    bool m_135; // 0x135
-};
 
 extern RHSoundCacheMusic g_unk0x006c1090;
 extern bool g_unk0x006c0686;

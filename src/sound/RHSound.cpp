@@ -1,5 +1,7 @@
 #include "SBNullstr.h"
 #include "RHSound.h"
+#include "RHSoundGeometry.h"
+#include "RHSoundActorCalls.h"
 #include <windows.h>
 #include <math.h>
 #include <stdio.h>
@@ -12,7 +14,7 @@ DECOMP_SIZE_ASSERT(RHUnk005a7220, 0x50)
 DECOMP_SIZE_ASSERT(RHUnk005a9260, 0x0c)
 DECOMP_SIZE_ASSERT(RHUnk005ad570Profiles, 0x6c)
 DECOMP_SIZE_ASSERT(RHSoundQueue, 0x0c)
-DECOMP_SIZE_ASSERT(RHSoundSourcesView, 0x20)
+DECOMP_SIZE_ASSERT(RHSoundSourceArray, 0x20)
 DECOMP_SIZE_ASSERT(RHSoundSourceManager, 0x24)
 DECOMP_SIZE_ASSERT(RHSoundChannelSettings, 0x20)
 DECOMP_SIZE_ASSERT(RHSoundGeometryView, 0xc8)
@@ -23,9 +25,11 @@ DECOMP_SIZE_ASSERT(RHSoundPendingData, 0x24)
 DECOMP_SIZE_ASSERT(RHSoundPendingNode, 0x2c)
 DECOMP_SIZE_ASSERT(RHSoundQueueNode, 0x40)
 DECOMP_SIZE_ASSERT(RHSoundVirtualSlot39, 0x04)
+DECOMP_SIZE_ASSERT(RHUnk005aada0, 0x10)
 
 extern float g_unk0x0067749c;
 extern double g_unk0x00677d90;
+extern float g_unk0x006774a0;
 
 // GLOBAL: GAME 0x00677670
 double g_unk0x00677670 = 2.0;
@@ -44,6 +48,10 @@ static double g_unk0x00679e18 = 255.0;
 static double g_unk0x00679e20 = 90.0;
 
 extern double g_unk0x006774b8;
+extern float g_dialogueVolumeHigh;
+
+// GLOBAL: GAME 0x00679dd4
+float g_unk0x00679dd4 = 0.1111111119389534f;
 
 class RHProfileManager;
 RHProfileManager *RHUnk00436500GetProfileManager();
@@ -52,6 +60,7 @@ class SBGeoPoint2D
 {
 public:
     SBGeoPoint2D();
+    SBGeoPoint2D(const SBGeoPoint2D &);
     ~SBGeoPoint2D();
     SBGeoPoint2D Unk005fc110(const SBGeoPoint2D &) const;
     bool FUN_005fc0e0(const SBGeoPoint2D &) const;
@@ -60,26 +69,43 @@ public:
     float m_y;
 };
 
+inline void RHUnk005aada0::Destroy(SBGeoPoint2D *first, SBGeoPoint2D *last)
+{
+    for (; first != last; ++first)
+        first->~SBGeoPoint2D();
+}
+
+inline SBGeoPoint2D *RHUnk005aada0::Remove(SBGeoPoint2D *first, SBGeoPoint2D *last)
+{
+    SBGeoPoint2D *next = std::copy(last, End(), first);
+    Destroy(next, End());
+    m_last = next;
+    return first;
+}
+
+inline RHUnk005aada0::~RHUnk005aada0()
+{
+    Destroy(Begin(), End());
+    operator delete(m_first);
+    m_first = 0;
+    m_last = 0;
+    m_end = 0;
+}
+
+class RHUnk005aa860 : public RHUnk005aada0
+{
+public:
+    ~RHUnk005aa860();
+    unsigned char m_10[0xc];
+    SBGeoPoint2D m_1c;
+};
+
+DECOMP_SIZE_ASSERT(RHUnk005aa860, 0x24)
+
 class RHScriptFXArray
 {
 public:
     void Unk005008e0(void **, void **);
-};
-
-enum RHsoundSourceAltitude
-{
-    RH_ALTITUDE_0,
-    RH_ALTITUDE_1,
-    RH_ALTITUDE_2,
-    RH_ALTITUDE_3
-};
-
-class RHSoundGeometry
-{
-public:
-    bool Serialize(SBFile &);
-    float GetVolumeForAltitude(float, RHsoundSourceAltitude);
-    void RHUnk005b2f30(float);
 };
 
 DECOMP_SIZE_ASSERT(RHUnk005b2410, 0x10)
@@ -129,10 +155,7 @@ void RHSoundPendingData::FUN_0052c5a0()
     ((SBGeoPoint2D *)((char *)this + 4))->~SBGeoPoint2D();
 }
 
-inline RHSoundSettings::~RHSoundSettings()
-{
-    ((SBGeoPoint2D *)((char *)this + 4))->~SBGeoPoint2D();
-}
+#include "RHSoundSettingsLifetime.h"
 
 inline RHSoundPendingData::~RHSoundPendingData()
 {
@@ -367,6 +390,14 @@ void RHSound::FUN_005a6fb0(int channel, int type, RHSoundCacheEntry *entry, void
     }
 }
 
+// FUNCTION: GAME 0x005a6f90
+void *RHSound::FUN_005a6f90()
+{
+    if (m_20a)
+        return FSOUND_GetOutputHandle();
+    return 0;
+}
+
 // FUNCTION: GAME 0x005a7080
 RHSoundCacheEntry *RHSound::FUN_005a7080(const RHSoundSettings &sound, bool load)
 {
@@ -378,7 +409,7 @@ RHSoundCacheEntry *RHSound::FUN_005a7080(const RHSoundSettings &sound, bool load
             RHUnk005a7220 *source = (RHUnk005a7220 *)sound.m_14;
             int type = source->m_08;
             unsigned long id = source->m_0c;
-            entry = FUN_005ae670(load, id, type == 1);
+            entry = m_000.FUN_005ae670(load, id, type == 1);
         }
         break;
     case 2:
@@ -386,7 +417,7 @@ RHSoundCacheEntry *RHSound::FUN_005a7080(const RHSoundSettings &sound, bool load
         entry = m_000.GetFXSample(load, (unsigned long)sound.m_0c, (unsigned char)sound.m_10[0]);
         break;
     case 3:
-        entry = FUN_005ae640(load, (unsigned long)sound.m_0c);
+        entry = m_000.FUN_005ae640(load, (unsigned long)sound.m_0c);
         break;
     case 5:
         entry = m_000.GetExclamationSample(load, (unsigned long)sound.m_0c, *(unsigned long *)sound.m_10);
@@ -397,7 +428,7 @@ RHSoundCacheEntry *RHSound::FUN_005a7080(const RHSoundSettings &sound, bool load
     return entry;
 }
 
-// coupled: effective-only pending-node argument register selection.
+// FUNCTION: GAME 0x005a7110
 void RHSound::FUN_005a7110(RHSoundSource *source)
 {
     RHSoundSettings settings;
@@ -416,7 +447,8 @@ void RHSound::FUN_005a7110(RHSoundSource *source)
         previousLink = node;
     node->m_04 = previousLink;
     head->m_04 = node;
-    node->m_04->m_00 = node;
+    RHSoundPendingNode *linkedPrevious = node->m_04;
+    linkedPrevious->m_00 = node;
     FUN_005aa990(&node->m_08, &sound);
     ++m_250;
 }
@@ -450,7 +482,7 @@ void RHSound::FUN_005a7220(void *value)
         break;
     case 3:
         source->m_4c = false;
-        ((RHUnk005a7220Manager *)m_200)->FUN_005b4f00(source);
+        m_200->FUN_005b4f00((RHSoundSource *)source);
         break;
     }
 }
@@ -567,6 +599,74 @@ void RHSound::FUN_005a74e0(unsigned long position)
     }
 }
 
+// Parked: integer volume loads and final stores reorder; effective-only match.
+// STUB: GAME 0x005a7660
+void RHSound::FUN_005a7660(bool dialogue)
+{
+    RHUnk005a9260 settings;
+    settings = *(RHUnk005a9260 *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x44);
+    float first = *(unsigned short *)((char *)&settings + 6) * g_unk0x00679dd4;
+    float second = *(unsigned short *)((char *)&settings + 4) * g_unk0x00679dd4;
+    float third = *(unsigned short *)((char *)&settings + 2) * g_unk0x00679dd4;
+    float fourth = *(unsigned short *)&settings * g_unk0x00679dd4;
+    if (dialogue)
+    {
+        float firstVolume = first;
+        first = firstVolume * g_dialogueVolumeHigh;
+        float secondVolume = second;
+        second = secondVolume * g_dialogueVolumeHigh;
+        float fourthVolume = fourth;
+        fourth = fourthVolume * g_dialogueVolumeHigh;
+    }
+    float *geometry = (float *)&m_138;
+    geometry[4] = second;
+    geometry[5] = fourth;
+    geometry[3] = first;
+    geometry[7] = third;
+    m_27c = 1;
+    m_27d = 1;
+}
+
+class RHArtificialIntelligenceSoundCalls;
+extern RHArtificialIntelligenceSoundCalls *g_unk0x006c1070;
+extern unsigned short g_unk0x006c07e4;
+extern unsigned short g_unk0x006c07e6;
+
+// FUNCTION: GAME 0x005a7750
+bool FUN_005a7750()
+{
+    int state = g_unk0x006c07e6 ? 2 : (g_unk0x006c07e4 ? 1 : 0);
+    switch (state)
+    {
+    case 0:
+        ((RHScriptSoundStateCalls *)g_unk0x006c1070)->FUN_005a7ef0(0);
+        break;
+    case 1:
+        ((RHScriptSoundStateCalls *)g_unk0x006c1070)->FUN_005a7ef0(1);
+        break;
+    case 2:
+        ((RHScriptSoundStateCalls *)g_unk0x006c1070)->FUN_005a7ef0(2);
+        break;
+    }
+    ((RHSound *)g_unk0x006c1070)->m_27a = 1;
+    return false;
+}
+
+// FUNCTION: GAME 0x005a77d0
+bool FUN_005a77d0()
+{
+    ((RHSound *)g_unk0x006c1070)->m_27e = 1;
+    return false;
+}
+
+// FUNCTION: GAME 0x005a77e0
+bool FUN_005a77e0()
+{
+    ((RHSound *)*(RHArtificialIntelligenceSoundCalls *volatile *)&g_unk0x006c1070)->m_278 = 1;
+    ((RHSound *)g_unk0x006c1070)->m_27f = 1;
+    return false;
+}
+
 // FUNCTION: GAME 0x005a7800
 bool RHSound::InitializeSoundEngine(std::string &error)
 {
@@ -609,7 +709,7 @@ void RHSound::Activate(const RHSoundCacheMissionProfile *profile, bool flag)
             SBAssert(1, "P:\\Robin Hood\\RHsound.cpp", 1131,
                 // STRING: GAME 0x006b7e6c
                 "FATAL: RHSound: Some samples are missing !");
-        unsigned short count = m_200->m_04.GetSize();
+        unsigned short count = m_200->m_sources.GetSize();
         for (unsigned short index = 0; index < count; ++index)
         {
             RHSoundSource *source = m_200->GetSoundSource(index);
@@ -648,12 +748,12 @@ void RHSound::FUN_005a79f0(bool clear)
     if (clear)
     {
         m_200->RHUnk005b4ae0();
-        FUN_005ae1c0(false);
+        m_000.FUN_005ae1c0(false);
     }
     else
     {
         FUN_005a8780();
-        FUN_005aeda0();
+        m_000.FUN_005aeda0();
     }
     RHSoundPendingNode *head = m_24c;
     RHSoundPendingNode *node = head->m_00;
@@ -690,6 +790,74 @@ void RHSound::ApplySoundSettings()
         }
         FSOUND_SetVolume(m_264, m_138.FUN_005b3490(false));
     }
+}
+
+// FUNCTION: GAME 0x005a7ef0
+void RHScriptSoundStateCalls::FUN_005a7ef0(int state)
+{
+    RHSound *sound = (RHSound *)this;
+    switch (state)
+    {
+    case 0:
+        if (!sound->m_213)
+        {
+            sound->m_288 += 128;
+            if (sound->m_288 > 256)
+                sound->m_288 = 256;
+            break;
+        }
+    case 1:
+        sound->m_28c += 128;
+        if (sound->m_28c > 256)
+            sound->m_28c = 256;
+        if (sound->m_280 < 1)
+            sound->m_27a = 1;
+        break;
+    case 2:
+        sound->m_290 += 128;
+        if (sound->m_290 > 256)
+            sound->m_290 = 256;
+        if (sound->m_280 < 2)
+            sound->m_27a = 1;
+        break;
+    }
+}
+
+// FUNCTION: GAME 0x005a7fb0
+void RHScriptSoundStateCalls::FUN_005a7fb0(int state)
+{
+    RHSound *sound = (RHSound *)this;
+    switch (state)
+    {
+    case 0:
+    {
+        unsigned long first = sound->m_213 ? 0 : 128;
+        unsigned long second = sound->m_213 ? 128 : 0;
+        sound->m_288 = first;
+        sound->m_28c = second;
+        sound->m_290 = 0;
+        break;
+    }
+    case 1:
+        sound->m_288 = 0;
+        sound->m_290 = 0;
+        sound->m_28c = 128;
+        break;
+    case 2:
+        sound->m_288 = 0;
+        sound->m_28c = 0;
+        sound->m_290 = 128;
+        break;
+    }
+    sound->m_27a = 1;
+}
+
+// FUNCTION: GAME 0x005a8040
+unsigned short RHSound::FUN_005a8040()
+{
+    if (m_254)
+        return (unsigned short)(FSOUND_Stream_GetTime(m_254) * 100 / m_258);
+    return 0;
 }
 
 // FUNCTION: GAME 0x005a8420
@@ -735,7 +903,7 @@ void RHSound::FUN_005a8470(void *first, void *second)
     {
         FUN_005ad400(&data);
         m_200->FUN_005b4db0();
-        FUN_005aec70();
+        m_000.FUN_005aec70();
     }
     data.~RHSoundPendingData();
     FUN_005aa090(&first, node[0], node);
@@ -799,7 +967,7 @@ void RHSound::FUN_005a8650(const SBGeoPoint2D &position, float zoom)
 void RHSound::FUN_005a8700(void *position, void *zoom)
 {
     FUN_005a8650(*(const SBGeoPoint2D *)position, *(float *)&zoom);
-    unsigned short count = (unsigned short)m_200->m_04.GetSize();
+    unsigned short count = (unsigned short)m_200->m_sources.GetSize();
     for (int index = 0; (unsigned short)index < count; ++index)
     {
         RHSoundSource *source = m_200->GetSoundSource(index);
@@ -830,6 +998,25 @@ void RHSound::FUN_005a8780()
         else
             node = node->m_00;
     }
+}
+
+// FUNCTION: GAME 0x005a8880
+bool RHSound::FUN_005a8880(RHSoundSource *source)
+{
+    if (m_20b)
+        m_200->AddSoundSource(source);
+    return true;
+}
+
+// FUNCTION: GAME 0x005a88a0
+bool RHSound::FUN_005a88a0(void *source)
+{
+    if (m_20b && source)
+    {
+        FUN_005a8810(source);
+        return m_200->FUN_005b4f00((RHSoundSource *)source);
+    }
+    return true;
 }
 
 // STUB: GAME 0x005a88e0
@@ -869,6 +1056,92 @@ void RHSound::PlayJingle(int jingle)
                 "Unable to set volume for channel %d.\n", m_26c);
         FUN_005a6fb0(m_26c, 8, 0, 0, 0, 0);
     }
+}
+
+// FUNCTION: GAME 0x005a8b70
+void RHArtificialIntelligenceSoundCalls::Unk005a8b70(int category, void *profile, unsigned short remark, long variant, SBGeoPoint2D *position, RHArtificialIntelligenceActor *actor)
+{
+    RHSound *sound = (RHSound *)this;
+    if (sound->m_20b)
+    {
+        SBGeoPoint2D location;
+        if (category == 0)
+        {
+            location = *(SBGeoPoint2D *)&sound->m_138;
+            if (sound->m_210)
+            {
+                location.m_x -= g_unk0x006774a0;
+                location.m_y -= g_unk0x006774a0;
+            }
+        }
+        else
+            location = *position;
+        RHSoundSettings settings;
+        settings.m_00 = 5;
+        *(SBGeoPoint2D *)settings.m_04 = location;
+        settings.m_0c = (void *)(((unsigned long)profile & 0xffff0000) | remark);
+        *(long *)settings.m_10 = variant;
+        settings.m_14 = actor;
+        RHSoundPendingData data(settings);
+        RHSoundPendingNode *head = sound->m_24c;
+        RHSoundPendingNode *previous = head->m_04;
+        RHSoundPendingNode *node = (RHSoundPendingNode *)operator new(sizeof(RHSoundPendingNode));
+        RHSoundPendingNode *nextLink = head;
+        if (!head)
+            nextLink = node;
+        node->m_00 = nextLink;
+        RHSoundPendingNode *previousLink = previous;
+        if (!previous)
+            previousLink = node;
+        node->m_04 = previousLink;
+        head->m_04 = node;
+        RHSoundPendingNode *linkedPrevious = node->m_04;
+        linkedPrevious->m_00 = node;
+        FUN_005aa990(&node->m_08, &data);
+        ++sound->m_250;
+    }
+    else if (actor)
+    {
+        RHSoundVirtualSlot39 *receiver = (RHSoundVirtualSlot39 *)actor;
+        unsigned short value = remark;
+        receiver->Slot39(value);
+    }
+}
+
+// FUNCTION: GAME 0x005a8d10
+bool RHArtificialIntelligenceSoundCalls::Unk005a8d10(RHArtificialIntelligenceActor *actor)
+{
+    RHSound *sound = (RHSound *)this;
+    if (sound->m_20b)
+    {
+        unsigned int channel = 0;
+        for (; channel < sound->m_218; ++channel)
+        {
+            RHSoundChannel &entry = sound->m_21c.m_04[channel];
+            if (entry.m_00 == 5 && entry.m_0c == actor)
+            {
+                sound->FUN_005a8420(channel);
+                break;
+            }
+        }
+        RHSoundPendingNode *head = sound->m_24c;
+        RHSoundPendingNode *node = head->m_00;
+        while (node != head)
+        {
+            if (node->m_08.m_00.m_00 == 5 && node->m_08.m_00.m_14 == actor)
+            {
+                node->m_04->m_00 = node->m_00;
+                node->m_00->m_04 = node->m_04;
+                node->m_08.FUN_0052c5a0();
+                operator delete(node);
+                --sound->m_250;
+                break;
+            }
+            node = node->m_00;
+        }
+        return channel < sound->m_218;
+    }
+    return true;
 }
 
 // STUB: GAME 0x005a8dd0
@@ -971,11 +1244,11 @@ bool RHSound::FUN_005a9260(unsigned short driver, bool force, unsigned long &pos
     RHUnk005a9260 settings;
     settings = *(RHUnk005a9260 *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x44);
     position = -1;
-    char mixer = settings.m_0b == 0;
+    char mixer = settings.m_b == 0;
     bool reactivate = false;
-    if (force || settings.m_0a != m_210 || mixer != m_214)
+    if (force || settings.m_a != m_210 || mixer != m_214)
     {
-        m_210 = settings.m_0a;
+        m_210 = settings.m_a;
         m_214 = mixer;
         if (m_20a)
         {
@@ -989,7 +1262,7 @@ bool RHSound::FUN_005a9260(unsigned short driver, bool force, unsigned long &pos
                 position = FSOUND_Stream_GetTime(m_260);
                 FUN_005a90d0(m_260, m_264);
             }
-            FUN_005aeda0();
+            m_000.FUN_005aeda0();
             FSOUND_Close();
             m_20a = 0;
         }
@@ -1035,7 +1308,7 @@ unsigned long RHSound::FUN_005a93e0(RHSoundPendingData &sound)
 bool RHSound::FUN_005a9400(const RHSoundSettings &sound)
 {
     if (sound.m_00 == 2)
-        return FUN_005ae320(sound.m_0c);
+        return m_000.FUN_005ae320((unsigned long)sound.m_0c);
     return false;
 }
 
@@ -1044,7 +1317,7 @@ void RHSound::FUN_005a9420()
 {
     if (m_20b)
     {
-        int count = (unsigned short)m_200->m_04.GetSize();
+        int count = (unsigned short)m_200->m_sources.GetSize();
         for (short index = 0; index < count; ++index)
         {
             RHSoundSource *source = m_200->GetSoundSource(index);
@@ -1221,6 +1494,20 @@ void RHSound::FUN_005a9420()
     }
 }
 
+// FUNCTION: GAME 0x005a99b0
+void RHSound::FUN_005a99b0()
+{
+    m_279 = true;
+    FUN_005a7660(true);
+}
+
+// FUNCTION: GAME 0x005a99c0
+void RHSound::FUN_005a99c0()
+{
+    m_279 = false;
+    FUN_005a7660(false);
+}
+
 // FUNCTION: GAME 0x005a99d0
 bool RHSound::PlayDialog(std::string &name)
 {
@@ -1255,12 +1542,55 @@ bool RHSound::PlayDialog(std::string &name)
     return true;
 }
 
+extern float g_unk0x00677488;
+
+// FUNCTION: GAME 0x005a9b30
+float RHSound::GetDialogVolume()
+{
+    if (m_20a)
+    {
+        float left;
+        float right;
+        FSOUND_GetCurrentLevels(m_274, &left, &right);
+        float sum = left + right;
+        float level = sum < g_unk0x0067749c ? sum : 1.0f;
+        if (m_138.FUN_005b3500() > g_unk0x0067749c)
+            return g_unk0x00679148 / m_138.FUN_005b3500() * level;
+        float divisor = g_unk0x0067749c;
+        return g_unk0x00679148 / divisor * level;
+    }
+    return g_unk0x00677488;
+}
+
+// FUNCTION: GAME 0x005a9bf0
+bool RHSound::IsDialogFinished()
+{
+    if (m_20a == 1)
+        return *(bool *)&m_278;
+    return true;
+}
+
+// FUNCTION: GAME 0x005a9c10
+bool RHSound::CloseDialog()
+{
+    if (m_20a)
+        FUN_005a90d0(m_270, m_274);
+    return true;
+}
+
 #define RHSOUND_ACCESS(value, size, line) \
     if (file.Access(&(value), size) < 0) { \
         const char *reason = file.GetError()->m_chars; \
         SBAssert(0, "P:\\Robin Hood\\RHsound.cpp", line, "Serialize failed reason is %s", reason ? reason : ""); \
         return false; \
     }
+
+// FUNCTION: GAME 0x005a9c30
+void RHSound::GetCacheStats(RHsampleCacheStats *stats, int &count)
+{
+    m_000.GetCacheStats(stats);
+    count = m_250;
+}
 
 // STUB: GAME 0x005a9c50
 bool RHSound::Serialize(SBFile &file)
@@ -1333,6 +1663,27 @@ bool RHSound::Serialize(SBFile &file)
 
 #undef RHSOUND_ACCESS
 
+// FUNCTION: GAME 0x005aa030
+RHSoundQueue::~RHSoundQueue()
+{
+    RHSoundQueueNode *head = m_04;
+    RHSoundQueueNode *next = head->m_00;
+    while (next != head)
+    {
+        RHSoundQueueNode *node = next;
+        next = next->m_00;
+        node->m_04->m_00 = node->m_00;
+        node->m_00->m_04 = node->m_04;
+        ((RHSoundPendingData *)&node->m_08)->FUN_0052c5a0();
+        operator delete(node);
+        --m_08;
+    }
+    operator delete(m_04);
+    m_04 = 0;
+    m_08 = 0;
+}
+
+// Parked: second unlink uses eax/ecx and delays the destructor receiver load.
 // STUB: GAME 0x005aa1c0
 RHSoundQueueNode **RHSoundQueue::FUN_005aa1c0(RHSoundQueueNode **result, RHSoundQueueNode *node)
 {
@@ -1348,6 +1699,49 @@ RHSoundQueueNode **RHSoundQueue::FUN_005aa1c0(RHSoundQueueNode **result, RHSound
     --m_08;
     *result = next;
     return result;
+}
+
+// FUNCTION: GAME 0x005aa860
+RHUnk005aa860::~RHUnk005aa860()
+{
+    Remove(Begin(), End());
+}
+
+// FUNCTION: GAME 0x005aa920
+void RHSoundChannels::FUN_005aa920()
+{
+    Remove(Begin(), End());
+    Destroy(Begin(), End());
+    operator delete(m_04);
+    m_04 = 0;
+    m_08 = 0;
+    m_0c = 0;
+}
+
+// FUNCTION: GAME 0x005aa990
+void FUN_005aa990(RHSoundPendingData *destination, const RHSoundPendingData *source)
+{
+    new (destination) RHSoundPendingData(*source);
+}
+
+// SIZE 0x38
+struct RHUnk005aa9f0
+{
+    RHSoundSettings m_00;
+    RHSoundChannelSettings m_18;
+};
+
+DECOMP_SIZE_ASSERT(RHUnk005aa9f0, 0x38)
+
+// FUNCTION: GAME 0x005aa9f0
+void FUN_005aa9f0(RHUnk005aa9f0 *destination, const RHUnk005aa9f0 *source)
+{
+    new (destination) RHUnk005aa9f0(*source);
+}
+
+void EmitSoundChannelCleanup(RHSoundChannels *channels)
+{
+    channels->FUN_005aa920();
 }
 
 // STUB: GAME 0x005aaa50
@@ -1391,6 +1785,57 @@ void RHSoundChannels::FUN_005aaa50(unsigned int count, const RHSoundChannel &val
         RHSoundChannel *next = std::copy(m_08, m_08, m_04 + count);
         m_08 = next;
     }
+}
+
+// FUNCTION: GAME 0x005aaca0
+RHSoundChannel *RHSoundChannels::FUN_005aaca0(RHSoundChannel *first, RHSoundChannel *last,
+    RHSoundChannel *result)
+{
+    for (; first != last; ++first, ++result)
+        new (result) RHSoundChannel(*first);
+    return result;
+}
+
+// FUNCTION: GAME 0x005aacf0
+void RHSoundChannels::FUN_005aacf0(RHSoundChannel *first, unsigned int count,
+    const RHSoundChannel &value)
+{
+    for (; count > 0; --count, ++first)
+        new (first) RHSoundChannel(value);
+}
+
+// FUNCTION: GAME 0x005aad30
+RHSoundChannel *FUN_005aad30(const RHSoundChannel *first, const RHSoundChannel *last,
+    RHSoundChannel *result)
+{
+    for (; first != last; ++first, ++result)
+        *result = *first;
+    return result;
+}
+
+// FUNCTION: GAME 0x005aada0
+void RHUnk005aada0::FUN_005aada0()
+{
+    Remove(Begin(), End());
+}
+
+// FUNCTION: GAME 0x005aadf0
+SBGeoPoint2D *FUN_005aadf0(const SBGeoPoint2D *first, const SBGeoPoint2D *last,
+    SBGeoPoint2D *result)
+{
+    for (; first != last; ++first, ++result)
+        *result = *first;
+    return result;
+}
+
+void EmitSoundPointCleanup(RHUnk005aada0 *points)
+{
+    points->FUN_005aada0();
+}
+
+void EmitSoundPointSearchCleanup(RHUnk005aa860 *points)
+{
+    points->~RHUnk005aa860();
 }
 
 // STUB: GAME 0x005ad570
@@ -1461,11 +1906,11 @@ RHSoundCacheEntry *RHSound::FUN_005ae9f0(unsigned long id)
 // FUNCTION: GAME 0x005aec10
 void RHSound::FUN_005aec10()
 {
-    FUN_005ab570(this, m_000.m_01c, 5);
-    FUN_005ab5e0((char *)this + 0x28, (char *)this + 0x38, 5);
-    FUN_005ab5e0((char *)this + 0x44, (char *)this + 0x54, 2);
-    FUN_005ab570((char *)this + 0x60, m_000.m_07c, 5);
-    FUN_005ab5e0((char *)this + 0x94, (char *)this + 0xa4, 10);
+    m_000.UpdateCacheState(*(RHcacheData *)this, *(RHsampleCacheStats *)&m_000.m_01c, 5);
+    m_000.UpdateCacheState(*(std::map<unsigned long, RHSoundCacheEntry *> *)((char *)this + 0x28), *(RHsampleCacheStats *)((char *)this + 0x38), 5);
+    m_000.UpdateCacheState(*(std::map<unsigned long, RHSoundCacheEntry *> *)((char *)this + 0x44), *(RHsampleCacheStats *)((char *)this + 0x54), 2);
+    m_000.UpdateCacheState(*(RHcacheData *)((char *)this + 0x60), *(RHsampleCacheStats *)&m_000.m_07c, 5);
+    m_000.UpdateCacheState(*(std::map<unsigned long, RHSoundCacheEntry *> *)((char *)this + 0x94), *(RHsampleCacheStats *)((char *)this + 0xa4), 10);
 }
 
 // FUNCTION: GAME 0x005af320
@@ -1524,7 +1969,23 @@ void EmitRHSoundFileTree(RHSoundFileTree *tree, const RHSoundFileTree::Value &va
     tree->FUN_005af320(value);
 }
 
-// STUB: GAME 0x005b2ff0
+// FUNCTION: GAME 0x005b23c0
+RHSoundSettings::RHSoundSettings()
+{
+    ((SBGeoPoint2D *)m_04)->SBGeoPoint2D::SBGeoPoint2D();
+}
+
+// FUNCTION: GAME 0x005b23d0
+RHSoundSettings::RHSoundSettings(const RHSoundSettings &other)
+{
+    m_00 = other.m_00;
+    ((SBGeoPoint2D *)m_04)->SBGeoPoint2D::SBGeoPoint2D(*(const SBGeoPoint2D *)other.m_04);
+    m_0c = other.m_0c;
+    *(unsigned int *)m_10 = *(const unsigned int *)other.m_10;
+    m_14 = other.m_14;
+}
+
+// FUNCTION: GAME 0x005b2ff0
 bool RHSoundGeometryView::FUN_005b2ff0(const RHSoundSettings &sound, bool flag, RHSoundChannelSettings &settings)
 {
     RHUnk005b2ff0Geometry *geometry = (RHUnk005b2ff0Geometry *)this;
@@ -1550,7 +2011,8 @@ bool RHSoundGeometryView::FUN_005b2ff0(const RHSoundSettings &sound, bool flag, 
                 return false;
             settings.m_04 = geometry->FUN_005b25e0(bounds);
             settings.m_08 = geometry->FUN_005b27e0(bounds);
-            settings.m_0c = 64 - (unsigned short)(settings.m_00 * g_unk0x00679e00);
+            float volume = settings.m_00;
+            settings.m_0c = 64 - (unsigned short)(volume * g_unk0x00679e00);
         }
     }
     else
@@ -1570,27 +2032,37 @@ bool RHSoundGeometryView::FUN_005b2ff0(const RHSoundSettings &sound, bool flag, 
         }
         RHUnk005b2410 bounds(nearDistance, 0.0f, farDistance, 1.0f);
         point = ((const SBGeoPoint2D *)sound.m_04)->Unk005fc110(*(SBGeoPoint2D *)this);
-        point.m_y *= g_unk0x006774ec;
+        float y = point.m_y;
+        point.m_y = y * g_unk0x006774ec;
         float distance = (float)sqrt(point.m_x * point.m_x + point.m_y * point.m_y);
         float volume = altitude->GetVolumeForAltitude(geometry->FUN_005b2510(distance, bounds), RH_ALTITUDE_0);
-        if (sound.m_00 >= 2 && sound.m_00 <= 4)
-            volume *= m_10;
-        else if (sound.m_00 == 5)
-            volume *= *(float *)((char *)this + 0xc);
+        if (sound.m_00 >= 2)
+        {
+            if (sound.m_00 > 4)
+            {
+                if (sound.m_00 == 5)
+                    volume *= *(float *)((char *)this + 0xc);
+            }
+            else
+                volume *= m_10;
+        }
         if (volume < g_unk0x006774f0)
             return false;
         settings.m_00 = volume;
         settings.m_04 = geometry->FUN_005b2560(point, bounds);
         settings.m_08 = geometry->FUN_005b2560(point, bounds);
+        float channelVolume = settings.m_00;
         if (flag)
-            settings.m_0c = (unsigned short)(settings.m_00 * g_unk0x00679dfc);
+            channelVolume *= g_unk0x00679dfc;
         else
-            settings.m_0c = (unsigned short)(settings.m_00 * g_unk0x00679df8 + g_unk0x00679df4);
+            channelVolume = channelVolume * g_unk0x00679df8 + g_unk0x00679df4;
+        settings.m_0c = (unsigned short)channelVolume;
     }
     return true;
 }
 
-// coupled: effective-only floating-point store scheduling.
+// Parked: floating-point store scheduling remains unmatched.
+// STUB: GAME 0x005b33b0
 void RHSoundGeometryView::FUN_005b33b0(RHSoundChannelSettings &settings)
 {
     if (settings.m_00 < g_unk0x00679e10)
@@ -1659,13 +2131,17 @@ void RHSound::Emit(SBFile &file, std::string &name, RHSoundChannelSettings &sett
     FUN_005a6520(driver);
     FUN_005a67b0(driver);
     InitializeSound(0, false, name);
+    FUN_005a6f90();
     RHSoundSettings sound;
     FUN_005a72c0(sound, settings, 0);
     FUN_005a7410(0, settings);
     InitializeSoundEngine(name);
     Activate(0, false);
     ApplySoundSettings();
+    FUN_005a8040();
     FUN_005a8420(0);
+    FUN_005a8880(0);
+    FUN_005a88a0(0);
     PlayJingle(0);
     OpenStream(name, m_270, false, 0);
     FUN_005a9040(0, 0, 0);
@@ -1673,6 +2149,14 @@ void RHSound::Emit(SBFile &file, std::string &name, RHSoundChannelSettings &sett
     FUN_005a9170(0);
     FUN_005a9420();
     PlayDialog(name);
+    FUN_005a99b0();
+    FUN_005a99c0();
+    IsDialogFinished();
+    GetDialogVolume();
+    CloseDialog();
+    RHsampleCacheStats stats[4];
+    int count;
+    GetCacheStats(stats, count);
     Serialize(file);
     FUN_005a71f0(0);
     RHSoundPendingData pending;

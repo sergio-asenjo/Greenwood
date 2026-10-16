@@ -1,5 +1,7 @@
 #include "SBNullstr.h"
 #include "RHSoundSourceManager.h"
+#include "RHSoundCacheCore.h"
+#include "RHSoundCacheEntry.h"
 
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 DECOMP_SIZE_ASSERT(RHSoundSourcePointStorage, 0x10)
@@ -26,12 +28,59 @@ RHSoundSource::RHSoundSource() : m_04(0), m_08(1), m_0c(-1), m_4c(false)
 {
 }
 
+// FUNCTION: GAME 0x005b49d0
+RHSoundSourceManager::RHSoundSourceManager(RHSoundCache *cache)
+{
+    *(RHSoundCache **)m_00 = cache;
+}
+
+// FUNCTION: GAME 0x005b4a00
+RHSoundSourceManager::~RHSoundSourceManager()
+{
+    unsigned short count = m_sources.GetSize();
+    unsigned int index = 0;
+    if (count > 0)
+    {
+        unsigned int remaining = count;
+        do
+        {
+            RHSoundSource *source = m_sources.m_first[index];
+            if (source)
+            {
+                source->RHSoundSource::~RHSoundSource();
+                operator delete(source);
+            }
+            ++index;
+            --remaining;
+        }
+        while (remaining);
+    }
+    m_sources.RemoveAll();
+}
+
 // FUNCTION: GAME 0x005b4ae0
 void RHSoundSourceManager::RHUnk005b4ae0()
 {
     for (short index = m_sources.GetSize() - 1; index >= 0; --index)
         FUN_005b4f00(m_sources.m_first[index]);
     m_sources.RemoveAll();
+}
+
+// FUNCTION: GAME 0x005b4db0
+void RHSoundSourceManager::FUN_005b4db0()
+{
+    unsigned int count = m_sources.GetSize();
+    for (unsigned int index = 0; index < count; ++index)
+    {
+        RHSoundSource *source = m_sources.m_first[index];
+        if (source)
+        {
+            unsigned long id = source->m_0c;
+            RHSoundCache *cache = *(RHSoundCache **)m_00;
+            RHSoundCacheEntry *entry = cache->GetSourceCacheEntryForID(id);
+            entry->m_loop = source->m_08 == 1;
+        }
+    }
 }
 
 // FUNCTION: GAME 0x005b4e00
@@ -61,6 +110,29 @@ bool RHSoundSourceManager::AddSoundSource(RHSoundSource *source)
              // STRING: GAME 0x006b8710
              "Sound source already managed", source->m_0c);
     return false;
+}
+
+// FUNCTION: GAME 0x005b4f00
+bool RHSoundSourceManager::FUN_005b4f00(RHSoundSource *source)
+{
+    bool result = true;
+    if (source)
+    {
+        short index = m_sources.Find(source, result);
+        if (index != -1)
+        {
+            RHSoundSource *owned = m_sources.m_first[index];
+            if (owned)
+            {
+                owned->RHSoundSource::~RHSoundSource();
+                operator delete(owned);
+            }
+            m_sources.m_first[index] = 0;
+        }
+        else
+            result = false;
+    }
+    return result;
 }
 
 // Parked: 91.21%; scratch state is +0x14..+0x20, target +0x10..+0x1c.
@@ -154,6 +226,7 @@ bool RHSoundSourceManager::Serialize(SBFile &file)
 
 void RHSoundSourceManager::Emit(SBFile &file, RHSoundSource *source, unsigned short id)
 {
+    RHSoundSourceManager manager(0);
     GetSoundSource(id);
     AddSoundSource(source);
     Serialize(file);

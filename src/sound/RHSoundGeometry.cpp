@@ -14,6 +14,32 @@
 
 #include "SBNullstr.h"
 #include "RHSoundGeometry.h"
+#include "RHSoundGeometryCalls.h"
+#include "Decomp.h"
+#include <math.h>
+
+DECOMP_SIZE_ASSERT(RHSoundGeometry, 0xc8)
+
+extern float g_unk0x00677598;
+
+// GLOBAL: GAME 0x00677dd0
+float g_unk0x00677dd0 = 400.0f;
+// GLOBAL: GAME 0x0067767c
+float g_unk0x0067767c = 360.0f;
+// GLOBAL: GAME 0x006773e0
+float g_unk0x006773e0 = 640.0f;
+// GLOBAL: GAME 0x00679ddc
+float g_unk0x00679ddc = 240.0f;
+// GLOBAL: GAME 0x00679de0
+float g_unk0x00679de0 = 800.0f;
+// GLOBAL: GAME 0x00679de4
+float g_unk0x00679de4 = 960.0f;
+// GLOBAL: GAME 0x00679de8
+float g_unk0x00679de8 = 320.0f;
+// GLOBAL: GAME 0x00679dec
+float g_unk0x00679dec = 120.0f;
+// GLOBAL: GAME 0x00679df0
+float g_unk0x00679df0 = 1200.0f;
 
 // The numeric .rdata constants GetVolumeForAltitude reads. The original is a
 // fixed-base EXE, so these appear as absolute literals (`ds:0x67749c` etc.)
@@ -36,6 +62,56 @@ float g_unk0x00677488 = 0.0f;
 //
 // GLOBAL: GAME 0x00677d90
 double g_unk0x00677d90 = 1.0;
+
+
+// FUNCTION: GAME 0x005b2510
+float RHUnk005b2ff0Geometry::FUN_005b2510(float distance, const RHUnk005b2410 &range)
+{
+    if (distance > range.m_00)
+        return range.m_04;
+    if (!(distance > range.m_08))
+        return range.m_0c;
+    return ((distance - range.m_08) / (range.m_00 - range.m_08)) * (range.m_04 - range.m_0c) + range.m_0c;
+}
+
+
+// FUNCTION: GAME 0x005b2560
+float RHUnk005b2ff0Geometry::FUN_005b2560(const SBGeoPoint2D &point, const RHUnk005b2410 &range)
+{
+    float distance = (float)fabs(*(const float *)&point);
+    if (distance < range.m_08)
+        return g_unk0x00677488;
+    if (distance >= range.m_00)
+        return *(const float *)&point >= g_unk0x00677488 ? 1 : -1;
+    return *(const float *)&point >= g_unk0x00677488
+        ? (distance - range.m_08) / (range.m_00 - range.m_08)
+        : -((distance - range.m_08) / (range.m_00 - range.m_08));
+}
+
+// Parked: zoom-copy scheduling and x87 factor lifetime differ.
+// STUB: GAME 0x005b2f30
+void RHSoundGeometry::RHUnk005b2f30(float value)
+{
+    m_8 = value;
+    if (value < g_unk0x0067749c)
+    {
+        float factor = g_unk0x0067749c - (value + value);
+        m_b8 = factor * g_unk0x00677dd0 + g_unk0x00679df0;
+        float range = factor * g_unk0x00679dec + g_unk0x0067767c;
+        m_bc = range;
+        m_c0 = factor * g_unk0x00679de8 + g_unk0x00679de4;
+        m_c4 = range;
+    }
+    else
+    {
+        float factor = g_unk0x0067749c - value;
+        m_b8 = factor * g_unk0x00677dd0 + g_unk0x00679de0;
+        float range = factor * g_unk0x00677598 + g_unk0x00679ddc;
+        m_bc = range;
+        m_c0 = factor * g_unk0x00679de8 + g_unk0x006773e0;
+        m_c4 = range;
+    }
+}
 
 // FUNCTION: GAME 0x005b32e0
 float RHSoundGeometry::GetVolumeForAltitude(float altitude, RHsoundSourceAltitude type)

@@ -13,11 +13,3 @@
 
 #include "SBNullstr.h"
 #include "RHSoundGeometry.h"
-
-// Target 0x005b2f30 — __thiscall(this, float). PROVISIONAL identity: its body
-// stores the argument to [+0x08] and recomputes derived geometry floats at
-// [+0xb8..c4]; it is reachable from RHSoundGeometry::Serialize and from
-// 0x005a8650 (which guards the call against [+0x08] changing). No Windows-side
-// __FILE__/tag/string names it, so it stays named by address
-// (see include/RHSoundGeometry.h).
-void RHSoundGeometry::RHUnk005b2f30(float) {}

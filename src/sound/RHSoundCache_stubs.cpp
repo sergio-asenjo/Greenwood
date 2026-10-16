@@ -30,7 +30,6 @@ unsigned int RHMapResources::FUN_00600620(unsigned long) { return 0; }
 
 
 
-RHUnk005b1ca0::~RHUnk005b1ca0() {}
 
 void FUN_006416e6() {}
 void *FUN_00642580(void *destination, const void *, unsigned int) { return destination; }

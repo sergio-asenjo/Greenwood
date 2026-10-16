@@ -40,13 +40,13 @@ RHSoundSource::~RHSoundSource()
 // GLOBAL: GAME 0x00679e30
 double g_unk0x679e30 = 1.743446795621098;
 
-// Parked: VC6 expression scheduling and the scaled-axis x87 sequence remain unverified.
-// STUB: GAME 0x005b39e0
-float FUN_005b39e0(const SBGeoPoint2D &second, const SBGeoPoint2D &first)
+
+// FUNCTION: GAME 0x005b39e0
+float RHSoundSource::FUN_005b39e0(const SBGeoPoint2D &second, const SBGeoPoint2D &first)
 {
     float x = first.m_x - second.m_x;
-    float y = first.m_y - second.m_y;
-    return (float)sqrt(x * x + (y * g_unk0x679e30) * (y * g_unk0x679e30));
+    float y = (first.m_y - second.m_y) * g_unk0x679e30;
+    return (float)sqrt(y * y + x * x);
 }
 
 // Parked: the geometry construction and visibility helpers are not reproduced.
@@ -58,16 +58,15 @@ float RHSoundSource::FUN_005b3a10(
     return FUN_005b39e0(first, second);
 }
 
-// Parked: source operand scheduling has not been measured.
-// STUB: GAME 0x005b3c20
-unsigned short RHSoundSource::FUN_005b3c20(unsigned int index)
+
+// FUNCTION: GAME 0x005b3c20
+unsigned short RHSoundSource::FUN_005b3c20(unsigned short index)
 {
     unsigned short maximum = *(unsigned short *)((char *)this + 0x16);
     if (*(unsigned char *)((char *)this + 0x10))
-        goto subtract;
+        return maximum;
     if ((unsigned short)index > maximum)
         return 0;
-subtract:
     return maximum - index;
 }
 

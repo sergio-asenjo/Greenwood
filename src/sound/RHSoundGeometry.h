@@ -68,7 +68,7 @@ public:
     // binds a method name to it; the Mac/Zeta oracles expose
     // RHSoundGeometry::SetZoomFactor(float) as a single-float-arg candidate,
     // but a cross-binary positional match is not accepted as evidence
-    // (docs/05-naming.md). Defined once in RHSoundGeometry_stubs.cpp.
+    // (docs/05-naming.md).
     void RHUnk005b2f30(float value);
 
     void Emit(SBFile &file);
@@ -76,6 +76,11 @@ public:
     int m_0;     // [0x00]
     int m_4;     // [0x04]
     float m_8;   // [0x08]
+    unsigned char m_0c[0xac];
+    float m_b8;
+    float m_bc;
+    float m_c0;
+    float m_c4;
 };
 
 // Serialises a type-name tag into the stream; target 0x005e1b70. Defined once

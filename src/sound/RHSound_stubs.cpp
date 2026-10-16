@@ -22,40 +22,22 @@ RHSoundQueue g_unk0x006c1078;
 // GLOBAL: GAME 0x006c0610
 std::string g_unk0x006c0610;
 
-bool RHSound::FUN_005ae320(void *) { return false; }
 
 
-void RHSound::FUN_005ab570(void *, unsigned int &, unsigned short) {}
-void RHSound::FUN_005ab5e0(void *, void *, unsigned short) {}
-void RHUnk005a7220Manager::FUN_005b4f00(RHUnk005a7220 *) {}
-RHUnk005a9260::RHUnk005a9260() {}
-void RHSound::FUN_005a7660(bool) {}
-void RHSound::FUN_005ae1c0(bool) {}
-void RHSound::FUN_005aeda0() {}
-RHSoundCacheEntry *RHSound::FUN_005ae640(bool, unsigned long) { return 0; }
-RHSoundCacheEntry *RHSound::FUN_005ae670(bool, unsigned long, bool) { return 0; }
 void RHSound::FUN_005ad400(void *) {}
-void RHSound::FUN_005aec70() {}
 void RHSoundSourceManager::FUN_005b4b50(void *, void *, void *) {}
-void RHSoundSourceManager::FUN_005b4db0() {}
 RHSoundSource *RHSoundSourceManager::FUN_005b4e00(unsigned short) { return 0; }
 void FUN_005aa090(void *, void *, void *) {}
 
 // LIBRARY: GAME 0x005e39d0
 extern "C" void __stdcall FSOUND_Close() {}
 
-RHSoundSettings::RHSoundSettings() {}
 RHSoundPendingData::RHSoundPendingData(const RHSoundSettings &settings) : m_00(settings) {}
-void FUN_005aa990(RHSoundPendingData *, const RHSoundPendingData *) {}
 
 int RHSoundChannels::FUN_0045a490() { return Size(); }
-RHSoundChannel *RHSoundChannels::FUN_005aaca0(RHSoundChannel *, RHSoundChannel *, RHSoundChannel *result) { return result; }
-void RHSoundChannels::FUN_005aacf0(RHSoundChannel *, unsigned int, const RHSoundChannel &) {}
 
 // FUNCTION: GAME 0x005b2410
 RHUnk005b2410::RHUnk005b2410(float first, float second, float third, float fourth) : m_00(first), m_04(second), m_08(third), m_0c(fourth) {}
-float RHUnk005b2ff0Geometry::FUN_005b2510(float, const RHUnk005b2410 &) { return 0; }
-float RHUnk005b2ff0Geometry::FUN_005b2560(const SBGeoPoint2D &, const RHUnk005b2410 &) { return 0; }
 float RHUnk005b2ff0Geometry::FUN_005b25e0(const RHUnk005b2410 &) { return 0; }
 float RHUnk005b2ff0Geometry::FUN_005b27e0(const RHUnk005b2410 &) { return 0; }
 void RHUnk005b2ff0Geometry::FUN_005b2a30(RHUnk005a7220 *, RHUnk005b2410 &) {}
@@ -95,6 +77,10 @@ extern "C" signed char __stdcall FSOUND_SetDriver(int) { return 0; }
 extern "C" signed char __stdcall FSOUND_SetHWND(void *) { return 0; }
 // LIBRARY: GAME 0x005e3a3c
 extern "C" signed char __stdcall FSOUND_SetPaused(int, signed char) { return 0; }
+// LIBRARY: GAME 0x005e3a36
+extern "C" void *__stdcall FSOUND_GetOutputHandle() { return 0; }
+// LIBRARY: GAME 0x005e3aba
+extern "C" signed char __stdcall FSOUND_GetCurrentLevels(int, float *, float *) { return 0; }
 // LIBRARY: GAME 0x005e3a42
 extern "C" signed char __stdcall FSOUND_SetCurrentPosition(int, unsigned int) { return 0; }
 // LIBRARY: GAME 0x005e3a48

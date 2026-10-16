@@ -1,9 +1,28 @@
 #ifndef RHSOUNDSOURCEMANAGER_H
 #define RHSOUNDSOURCEMANAGER_H
 
+#include "RHSoundSourceManagerCore.h"
 #include "RHSaveGameManager.h"
-#include "Decomp.h"
 #include <vector>
+
+inline RHSoundSourceArray::~RHSoundSourceArray()
+{
+    ((std::vector<RHSoundSource *> *)this)->erase(begin(), end());
+    ((std::vector<RHSoundSource *> *)this)->~vector();
+}
+
+inline void RHSoundSourceArray::RemoveAll()
+{
+    ((std::vector<RHSoundSource *> *)this)->erase(begin(), end());
+    m_changed = true;
+}
+
+inline void RHSoundSourceArray::InsertLast(RHSoundSource *const &value)
+{
+    ((SBArray<RHSaveGame *> *)this)->Insert(
+        (RHSaveGame **)m_last, 1, (RHSaveGame *const &)value);
+    m_changed = true;
+}
 
 // SIZE 0x08
 class SBGeoPoint2D
@@ -76,7 +95,8 @@ class RHSoundSource
 {
 public:
     RHSoundSource();
-    unsigned short FUN_005b3c20(unsigned int index);
+    float FUN_005b39e0(const SBGeoPoint2D &second, const SBGeoPoint2D &first);
+    unsigned short FUN_005b3c20(unsigned short index);
     float FUN_005b3a10(const SBGeoPoint2D &first, const SBGeoPoint2D &second, unsigned char &visible);
     unsigned short FUN_005b3c40(const void *point);
     void FUN_005b3f30(SBFile &file);
@@ -96,66 +116,6 @@ struct RHSoundSourceIterator
     RHSoundSourceIterator(RHSoundSource **node) : m_node(node) {}
     RHSoundSourceIterator(const RHSoundSourceIterator &other) : m_node(other.m_node) {}
     RHSoundSource **m_node; // 0x00
-};
-
-// SIZE 0x20
-class RHSoundSourceArray
-{
-public:
-    int m_grow;                     // +0x00
-    RHSoundSource **m_first;         // +0x04
-    RHSoundSource **m_last;          // +0x08
-    RHSoundSource **m_end;           // +0x0c
-    RHSoundSource **m_search;        // +0x10
-    bool m_changed;                 // +0x14
-    bool m_searching;               // +0x15
-    int m_index;                    // +0x18
-    RHSoundSource *m_value;          // +0x1c
-
-    int GetSize() const { return m_first == 0 ? 0 : m_last - m_first; }
-    RHSoundSource *operator[](unsigned short index) { return m_first[index]; }
-    RHSoundSource **begin() { return m_first; }
-    RHSoundSource **end() { return m_last; }
-    void RemoveAll()
-    {
-        ((std::vector<RHSoundSource *> *)this)->erase(begin(), end());
-        m_changed = true;
-    }
-    void InsertLast(RHSoundSource *const &value)
-    {
-        ((SBArray<RHSaveGame *> *)this)->Insert(
-            (RHSaveGame **)m_last, 1, (RHSaveGame *const &)value);
-        m_changed = true;
-    }
-    long Find(RHSoundSource *const &value, bool searching = true)
-    {
-        m_changed = false;
-        m_value = value;
-        int count = GetSize();
-        m_search = m_first;
-        int index = 0;
-        m_searching = searching;
-        for (; index < count; ++index, ++m_search)
-            if (*m_search == value)
-                break;
-        m_index = index < count ? index : -1;
-        return m_index;
-    }
-};
-
-// SIZE 0x24
-class RHSoundSourceManager
-{
-public:
-    RHSoundSource *GetSoundSource(unsigned short id);
-    bool AddSoundSource(RHSoundSource *source);
-    bool Serialize(SBFile &file);
-    void RHUnk005b4ae0();
-    bool FUN_005b4f00(RHSoundSource *source);
-    void Emit(SBFile &file, RHSoundSource *source, unsigned short id);
-
-    undefined m_00[4];              // +0x00
-    RHSoundSourceArray m_sources;    // +0x04
 };
 
 #endif

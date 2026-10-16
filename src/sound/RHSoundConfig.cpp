@@ -25,6 +25,19 @@
 #include "SBNullstr.h"
 #include "RHSoundConfig.h"
 
+// FUNCTION: GAME 0x005b2120
+RHSoundConfig::RHSoundConfig()
+    : m_0(9), m_2(9), m_4(9), m_6(9), m_8(5), m_a(0), m_b(0)
+{
+}
+
+// FUNCTION: GAME 0x005b2150
+RHSoundConfig::RHSoundConfig(const RHSoundConfig &value)
+    : m_0(value.m_0), m_2(value.m_2), m_4(value.m_4), m_6(value.m_6),
+      m_8(value.m_8), m_a(value.m_a), m_b(value.m_b)
+{
+}
+
 // FUNCTION: GAME 0x005b2190
 bool RHSoundConfig::Serialize(SBFile &file)
 {

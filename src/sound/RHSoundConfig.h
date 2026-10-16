@@ -9,11 +9,16 @@
 // function touches are laid out; the class is not polymorphic (the target
 // accesses +0x00 as a short, so there is no vptr).
 
+#ifndef RHSOUNDCONFIG_H
+#define RHSOUNDCONFIG_H
+
 #include "SB.h"
 
 class RHSoundConfig
 {
 public:
+    RHSoundConfig();
+    RHSoundConfig(const RHSoundConfig &value);
     bool Serialize(SBFile &file);
 
     void Emit(SBFile &file);
@@ -23,10 +28,12 @@ public:
     short m_4; // [0x04]
     short m_6; // [0x06]
     short m_8; // [0x08]
-    char m_a;  // [0x0a]
+    bool m_a;  // [0x0a]
     char m_b;  // [0x0b]
 };
 
 // Serialises a type-name tag into the stream; target 0x005e1b70. Defined once
 // in RHElementObject_stubs.cpp; declared here so the call resolves.
 void RHSerializeName(SBFile &file, const char *name);
+
+#endif
