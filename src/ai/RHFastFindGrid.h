@@ -280,17 +280,7 @@ public:
     float m_z;
 };
 
-class RHUnk005df860
-{
-public:
-    void Unk005df860(const SBGeoPoint3D &first, const SBGeoPoint3D &second, const SBGeoPoint3D &third);
-    void FUN_005df8b0();
-    void FUN_005df900();
-    void FUN_005df9a0();
-    void FUN_005df9c0();
-    void Unk005dfa00();
-    char m_00[0x58];
-};
+#include "RHPlaneCalls.h"
 
 class SBGeoBoundingBox2D
 {
@@ -743,7 +733,7 @@ public:
 class RHSector
 {
 public:
-    void Unk0057cd60(SBFile &file, bool mode);
+    int Unk0057cd60(SBFile &file, bool mode);
 };
 
 class RHUnk005fc3b0 : public SBGeoPoint2D

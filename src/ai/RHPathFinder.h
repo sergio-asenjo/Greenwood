@@ -6,6 +6,7 @@
 #include "RHEngine.h"
 #include <windows.h>
 #include <new>
+#include "RHPathFinderCore.h"
 
 // SIZE 0x08
 class SBGeoPoint2D
@@ -196,6 +197,8 @@ public:
 class RHUnk005fc3b0 : public SBGeoPoint2D
 {
 public:
+    float Unk005fc6a0(float value);
+    float FUN_005fc680(const RHUnk005fc3b0 &other, float value) const;
     RHUnk005fc3b0();
     ~RHUnk005fc3b0() {}
     RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &point);
@@ -214,11 +217,7 @@ public:
     float FUN_005fc660(const SBGeoPoint2D &point) const;
 };
 
-class RHPathQueryCalls
-{
-public:
-    void FUN_005c8e40(int index);
-};
+#include "SBGeoPolyLine2DList.h"
 
 SBGeoVector2D operator*(float factor, const SBGeoVector2D &point);
 extern float g_unk0x00677488;
@@ -249,28 +248,7 @@ public:
     const SBGeoBoundingBox2D &FUN_00560450();
 };
 
-// SIZE 0x3c
-struct RHpathRequest
-{
-    unsigned short m_0; // +0x00
-    unsigned short m_2; // +0x02
-    unsigned short m_4; // +0x04
-    undefined m_pad6[2]; // 0x06
-    SBGeoPoint2D m_8; // +0x08
-    SBGeoPoint2D m_10; // +0x10
-    void *m_18; // +0x18
-    void *m_1c; // +0x1c
-    RHElement *m_20; // +0x20
-    unsigned short m_24; // +0x24
-    undefined m_pad26[2]; // 0x26
-    int m_28; // +0x28
-    char m_2c; // +0x2c
-    unsigned char m_2d; // +0x2d
-    undefined m_pad2e[2]; // 0x2e
-    int m_30; // +0x30
-    char m_34; // +0x34
-    undefined m_pad35[7]; // 0x35
-};
+#include "RHPathRequest.h"
 
 struct RHPathRequestNode
 {
@@ -279,50 +257,42 @@ struct RHPathRequestNode
     RHpathRequest *request; // +0x08
 };
 
-// SIZE 0x18
-class RHPathRequestList
+inline RHUnkIter RHPathRequestList::begin()
 {
-public:
-    int allocator; // +0x00
-    RHPathRequestNode *head; // +0x04
-    int count; // +0x08
-    RHPathRequestNode *cursor; // +0x0c
-    char valid; // +0x10
-    undefined padding[3]; // 0x11
-    int index; // +0x14
-    RHUnkIter FUN_0046eb80();
-    RHUnkIter begin()
-    {
-        return RHUnkIter(((RHUnk0046eb30 *)this)->FUN_0046eb80().node);
-    }
-    RHUnkIter end() { return RHUnkIter(head); }
-    RHUnkIter insert(RHUnkIter position, RHpathRequest *const &request)
-    {
-        RHUnkIter result = ((RHUnkList *)this)->insert(position, (RHOrder *const &)request);
-        valid = 1;
-        return result;
-    }
-    void clear()
-    {
-        RHUnkIter result;
-        ((RHTitbitList *)this)->Clear(&result, (RHTitbitNode *)begin().m_p, (RHTitbitNode *)end().m_p);
-        valid = 1;
-    }
-    RHpathRequest *&operator[](int wanted)
-    {
-        ((RHTitbitList *)this)->At(wanted);
-        return cursor->request;
-    }
-    void InsertInline(RHPathRequestNode *node, RHpathRequest *const &request)
-    {
-        node->previous = (RHPathRequestNode *)((RHUnk0046eb30 *)this)->Unk0059f720((RHScriptNode *)node, (RHScriptNode *)node->previous);
-        RHPathRequestNode *created = node->previous;
-        created->previous->next = created;
-        RHSeqList::CopyData((RHSequenceElement **)&created->request, (RHSequenceElement *const *)&request);
-        ++count;
-        valid = 1;
-    }
-};
+    return RHUnkIter(((RHUnk0046eb30 *)this)->FUN_0046eb80().node);
+}
+
+inline RHUnkIter RHPathRequestList::end() { return RHUnkIter(head); }
+
+inline RHUnkIter RHPathRequestList::insert(RHUnkIter position, RHpathRequest *const &request)
+{
+    RHUnkIter result = ((RHUnkList *)this)->insert(position, (RHOrder *const &)request);
+    valid = 1;
+    return result;
+}
+
+inline void RHPathRequestList::clear()
+{
+    RHUnkIter result;
+    ((RHTitbitList *)this)->Clear(&result, (RHTitbitNode *)begin().m_p, (RHTitbitNode *)end().m_p);
+    valid = 1;
+}
+
+inline RHpathRequest *&RHPathRequestList::operator[](int wanted)
+{
+    ((RHTitbitList *)this)->At(wanted);
+    return cursor->request;
+}
+
+inline void RHPathRequestList::InsertInline(RHPathRequestNode *node, RHpathRequest *const &request)
+{
+    node->previous = (RHPathRequestNode *)((RHUnk0046eb30 *)this)->Unk0059f720((RHScriptNode *)node, (RHScriptNode *)node->previous);
+    RHPathRequestNode *created = node->previous;
+    created->previous->next = created;
+    RHSeqList::CopyData((RHSequenceElement **)&created->request, (RHSequenceElement *const *)&request);
+    ++count;
+    valid = 1;
+}
 
 class RHPathObstacleGrid
 {
@@ -373,17 +343,7 @@ struct RHPathSearchNode
     undefined m_1e[2]; // 0x1e
 };
 
-// SIZE 0x18
-class RHPathPointList
-{
-public:
-    void FUN_00610ac0();
-    void FUN_00610a00(const SBGeoPoint2D &point);
-    void FUN_00610a60(const SBGeoPoint2D &point);
-    void FUN_00610b50(int index);
-    const SBGeoPoint2D &FUN_00610cb0(int index);
-    undefined m_00[0x18]; // 0x00
-};
+typedef SBGeoPolyLine2DList RHPathPointList;
 
 class RHUnk0053bf20
 {
@@ -395,32 +355,12 @@ bool FUN_005547c0(unsigned short graph, unsigned short sector, unsigned short di
 void FUN_005557c0();
 bool FUN_00558210(const SBGeoPoint2D &point);
 bool FUN_00557e70(const SBGeoPoint2D &first, const SBGeoPoint2D &last);
+bool FUN_00557f90(const SBGeoPoint2D &point, const void *node);
 bool FUN_00556990(SBGeoPoint2D first, SBGeoPoint2D last);
 void FUN_00553e60(const SBGeoPoint2D &first, const SBGeoPoint2D &last);
 RHPathSearchNode *FUN_00556490(const SBGeoPoint2D &point);
 unsigned char FUN_00554b80(RHPathSearchNode *node, unsigned char value, RHPathPointList &list);
 void FUN_005553d0(RHPathSearchNode *node, unsigned char first, unsigned char last, RHPathPointList &list);
-
-// SIZE 0x28
-class RHPathFinder
-{
-public:
-    void AddPathRequest(RHpathRequest *request);
-    bool TurnOn();
-    void FUN_00554750();
-    void FUN_00556260();
-    void FUN_00555a10(unsigned short graph, unsigned short node, unsigned state, RHPathWorkList &list);
-    void FUN_00552d50(unsigned char speed);
-    static unsigned short ConvertSector(unsigned short sector);
-    bool Serialize(SBFile &file);
-    void Emit(SBFile &file, RHpathRequest *request);
-
-    int m_0; // +0x00
-    DWORD m_4; // +0x04: thread id
-    HANDLE m_8; // +0x08: thread handle
-    int m_c; // +0x0c
-    RHPathRequestList m_10; // +0x10, head +0x14, count +0x18
-};
 
 extern char g_pathStatus;
 extern char g_pathThreadDone;

@@ -1,6 +1,12 @@
 #include "SBNullstr.h"
 #include "RHArtificialBonhomie.h"
 
+class RHBonhomieAdjustedReceiver
+{
+public:
+    void FUN_0040eb90(bool enabled);
+};
+
 // FUNCTION: GAME 0x0040e150
 bool RHArtificialBonhomie::SerializeExactlyThisAI(SBFile &file)
 {
@@ -63,6 +69,17 @@ bool RHArtificialBonhomie::SerializeExactlyThisAI(SBFile &file)
     }
 
     return true;
+}
+
+// FUNCTION: GAME 0x0040eb90
+void RHBonhomieAdjustedReceiver::FUN_0040eb90(bool enabled)
+{
+    *(bool *)((char *)this - 0x10) = !enabled;
+}
+
+void EmitRHBonhomieAdjustedReceiver(RHBonhomieAdjustedReceiver *receiver, bool enabled)
+{
+    receiver->FUN_0040eb90(enabled);
 }
 
 void RHArtificialBonhomie::Emit(SBFile &file)

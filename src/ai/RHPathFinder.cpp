@@ -1,5 +1,69 @@
 #include "SBNullstr.h"
+extern "C" __declspec(dllimport) __declspec(noreturn) void __stdcall ExitThread(unsigned long);
 #include "RHPathFinder.h"
+#include "SBEvent.h"
+#include "RHEngineWidenedCalls.h"
+#include "RHActorDirectionCalls.h"
+#include "RHMovementPathFinderCalls.h"
+#include <iterator>
+
+struct RHUnk005c9010Iterator;
+void FUN_005c9010(RHUnk005c9010Iterator &, int, std::bidirectional_iterator_tag);
+
+inline void RHPathRequestList::GoTo(int wanted)
+{
+    int size = count;
+    if (valid)
+    {
+        if (wanted <= (size + 1) / 2)
+        {
+            cursor = head->next;
+            std::bidirectional_iterator_tag category;
+            FUN_005c9010((RHUnk005c9010Iterator &)cursor, wanted, category);
+        }
+        else
+        {
+            cursor = head;
+            std::bidirectional_iterator_tag category;
+            FUN_005c9010((RHUnk005c9010Iterator &)cursor, wanted - size, category);
+        }
+        valid = false;
+        index = wanted;
+    }
+    else
+    {
+        int previous = index;
+        if (wanted != previous)
+        {
+            if (wanted < previous)
+            {
+                if (wanted < (previous + 1) / 2)
+                {
+                    cursor = (RHPathRequestNode *)begin().m_p;
+                    std::bidirectional_iterator_tag category;
+                    FUN_005c9010((RHUnk005c9010Iterator &)cursor, wanted, category);
+                }
+                else
+                {
+                    std::bidirectional_iterator_tag category;
+                    FUN_005c9010((RHUnk005c9010Iterator &)cursor, wanted - previous, category);
+                }
+            }
+            else if (wanted < (previous + size) / 2)
+            {
+                std::bidirectional_iterator_tag category;
+                FUN_005c9010((RHUnk005c9010Iterator &)cursor, wanted - previous, category);
+            }
+            else
+            {
+                cursor = head;
+                std::bidirectional_iterator_tag category;
+                FUN_005c9010((RHUnk005c9010Iterator &)cursor, wanted - size, category);
+            }
+            index = wanted;
+        }
+    }
+}
 
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 DECOMP_SIZE_ASSERT(SBGeoBoundingBox2D, 0x14)
@@ -13,7 +77,8 @@ DECOMP_SIZE_ASSERT(RHPathWorkList, 0x24)
 DECOMP_SIZE_ASSERT(RHMalignityQueryList, 0x24)
 DECOMP_SIZE_ASSERT(RHUnk005fc3b0, 0x08)
 DECOMP_SIZE_ASSERT(RHPathSearchNode, 0x20)
-DECOMP_SIZE_ASSERT(RHPathPointList, 0x18)
+DECOMP_SIZE_ASSERT(RHPathStateArray, 0x20)
+DECOMP_SIZE_ASSERT(RHPathPointList, 0x28)
 
 // GLOBAL: GAME 0x006c0d40
 char g_pathStatus;
@@ -51,6 +116,13 @@ RHPathSearchNode *g_unk0x006c0db0;
 RHUnk005fc3b0 g_unk0x006c0db8;
 // GLOBAL: GAME 0x006c0dc0
 undefined2 g_unk0x006c0dc0;
+
+// STRING: GAME 0x006b15d0
+const char g_pathWakeName[] = "Wake up";
+// GLOBAL: GAME 0x006c0d48
+SBEvent g_pathWakeEvent(g_pathWakeName);
+// GLOBAL: GAME 0x006c0d58
+CRITICAL_SECTION g_pathCriticalSection;
 
 // deferred: unannotated pending reccmp #534.
 RHScriptIter RHUnk004b1520List::FUN_00424410(RHScriptIter position, void *const &value)
@@ -151,6 +223,31 @@ bool RHPathObstacleGrid::FUN_004f5890(SBGeoBoundingBox2D &box, unsigned short se
     return false;
 }
 
+// FUNCTION: GAME 0x00552d50
+void RHPathFinder::FUN_00552d50(unsigned char speed)
+{
+    switch (speed)
+    {
+    case 0:
+        if (m_c != 0)
+            SetThreadPriority(m_8, THREAD_PRIORITY_HIGHEST);
+        break;
+    case 1:
+        if (m_c != 1 && m_c != 2)
+            SetThreadPriority(m_8, THREAD_PRIORITY_NORMAL);
+        break;
+    case 2:
+        if (m_c != 1 && m_c != 2)
+            SetThreadPriority(m_8, THREAD_PRIORITY_NORMAL);
+        break;
+    case 3:
+        if (m_c != 3)
+            SetThreadPriority(m_8, THREAD_PRIORITY_LOWEST);
+        break;
+    }
+    m_c = speed;
+}
+
 // Parked: 48.73%, frame/register scheduling.
 // STUB: GAME 0x00552e00
 void RHPathFinder::AddPathRequest(RHpathRequest *request)
@@ -219,6 +316,284 @@ void RHPathFinder::AddPathRequest(RHpathRequest *request)
     }
 }
 
+// Parked: cached-list advance lowering and actor/count register allocation differ.
+// STUB: GAME 0x00553100
+void RHMovementPathFinderCalls::FUN_00553100(void *actor)
+{
+    RHPathRequestList &requests = ((RHPathFinder *)this)->m_10;
+    int count = requests.count;
+    if ((unsigned short)count > 0)
+    {
+        if (requests.head->next->request->m_1c == actor)
+            g_pathThreadDone = 1;
+        for (unsigned short index = 1; index < (unsigned short)count; ++index)
+        {
+            RHpathRequest *request = requests[index];
+            if (request->m_1c == actor)
+            {
+                delete request;
+                requests.GoTo(index);
+                RHPathRequestNode *node = requests.cursor;
+                node->previous->next = node->next;
+                node->next->previous = node->previous;
+                operator delete(node);
+                --requests.count;
+                requests.valid = true;
+                return;
+            }
+        }
+    }
+}
+
+// FUNCTION: GAME 0x00553760
+void RHPathFinder::FUN_00553760(RHElementActor *actor)
+{
+    int count = m_10.count;
+    for (unsigned short index = 0; index < (unsigned short)count; ++index)
+    {
+        RHpathRequest *request = m_10[index];
+        if (request->m_1c == actor)
+        {
+            switch (request->m_28)
+            {
+            case 6: case 16:
+                request->m_28 = 10;
+                request->m_24 = ((RHUnk00560410 *)(*(char **)((char *)actor + 0x50) + 4))->FUN_00560410(1);
+                break;
+            case 20:
+                request->m_28 = 298;
+                request->m_24 = ((RHUnk00560410 *)(*(char **)((char *)actor + 0x50) + 4))->FUN_00560410(5);
+                break;
+            case 21:
+                request->m_28 = 299;
+                request->m_24 = ((RHUnk00560410 *)(*(char **)((char *)actor + 0x50) + 4))->FUN_00560410(5);
+                break;
+            case 35:
+                request->m_28 = 296;
+                request->m_24 = ((RHUnk00560410 *)(*(char **)((char *)actor + 0x50) + 4))->FUN_00560410(4);
+                break;
+            case 38:
+                request->m_28 = 297;
+                request->m_24 = ((RHUnk00560410 *)(*(char **)((char *)actor + 0x50) + 4))->FUN_00560410(4);
+                break;
+            case 303:
+                request->m_28 = 304;
+                request->m_24 = ((RHUnk00560410 *)(*(char **)((char *)actor + 0x50) + 4))->FUN_00560410(1);
+                break;
+            case 305:
+                request->m_28 = 10;
+                request->m_24 = ((RHUnk00560410 *)(*(char **)((char *)actor + 0x50) + 4))->FUN_00560410(1);
+                break;
+            }
+            return;
+        }
+    }
+}
+
+// Parked: cached-list cursor reset scheduling and receiver live ranges differ.
+// STUB: GAME 0x00553850
+void RHPathFinder::FUN_00553850(RHElementActor *actor)
+{
+    int count = m_10.count;
+    for (unsigned short index = 0; index < (unsigned short)count; ++index)
+    {
+        m_10.GoTo(index);
+        RHpathRequest *request = m_10.cursor->request;
+        if (request->m_1c == actor)
+        {
+            if (request->m_28 == 16)
+            {
+                request->m_28 = 6;
+                request->m_24 = ((RHUnk00560410 *)(*(char **)((char *)actor + 0x50) + 4))->FUN_00560410(1);
+            }
+            return;
+        }
+    }
+}
+
+// Parked: redundant command comparisons are eliminated by the rebuilt compiler.
+// STUB: GAME 0x005539a0
+void RHPathFinder::FUN_005539a0(RHElementActor *actor)
+{
+    int count = m_10.count;
+    for (unsigned short index = 0; index < (unsigned short)count; ++index)
+    {
+        RHpathRequest *request = m_10[index];
+        if (request->m_1c == actor)
+        {
+            if (request->m_28 == 6 || request->m_28 == 10)
+                request->m_28 = 16;
+            else
+                request->m_28 = 16;
+            request->m_24 = ((RHUnk00560410 *)(*(char **)((char *)actor + 0x50) + 4))->FUN_00560410(10);
+            return;
+        }
+    }
+}
+
+// Parked: branch-local zero loads are hoisted and return cleanup tails are reordered.
+// STUB: GAME 0x00553a10
+bool RHPathFinder::FUN_00553a10(const SBGeoPoint2D &point, SBGeoPoint2D &node, unsigned char place, SBGeoVector2D &half, bool forward)
+{
+    RHUnk005fc3b0 first;
+    RHUnk005fc3b0 second;
+    RHUnk005fc3b0 vector;
+    vector.FUN_005fc430(point.Unk005fc110(FUN_00553d20(node, place, half)));
+    if (forward)
+    {
+        float zero = g_unk0x00677488;
+        switch (place)
+        {
+        case 1:
+            first.y = zero;
+            second.x = zero;
+            first.x = -1.0f;
+            second.y = 1.0f;
+            break;
+        case 2:
+            first.x = zero;
+            second.y = zero;
+            first.y = -1.0f;
+            second.x = -1.0f;
+            break;
+        case 8:
+            first.x = zero;
+            second.y = zero;
+            first.y = 1.0f;
+            second.x = 1.0f;
+            break;
+        case 4:
+            first.y = zero;
+            second.x = zero;
+            first.x = 1.0f;
+            second.y = -1.0f;
+            break;
+        }
+        if (first.FUN_005fc680(vector, 1.0f) >= g_unk0x00677488 ||
+            second.FUN_005fc680(vector, 1.0f) < g_unk0x00677488)
+            return false;
+    }
+    else
+    {
+        float zero = g_unk0x00677488;
+        switch (place)
+        {
+        case 1:
+            first.y = zero;
+            second.x = zero;
+            first.x = 1.0f;
+            second.y = -1.0f;
+            break;
+        case 2:
+            first.x = zero;
+            second.y = zero;
+            first.y = 1.0f;
+            second.x = 1.0f;
+            break;
+        case 8:
+            first.x = zero;
+            second.y = zero;
+            first.y = -1.0f;
+            second.x = -1.0f;
+            break;
+        case 4:
+            first.y = zero;
+            second.x = zero;
+            first.x = -1.0f;
+            second.y = 1.0f;
+            break;
+        }
+        if (first.FUN_005fc680(vector, 1.0f) > g_unk0x00677488 ||
+            second.FUN_005fc680(vector, 1.0f) <= g_unk0x00677488)
+            return false;
+    }
+    return true;
+}
+
+// FUNCTION: GAME 0x00553d20
+SBGeoPoint2D RHPathFinder::FUN_00553d20(SBGeoPoint2D &point, unsigned char place, SBGeoVector2D &vector)
+{
+    SBGeoPoint2D result;
+    switch (place)
+    {
+    case 1:
+        result = point.FUN_005fc200(vector);
+        break;
+    case 2:
+        result.x = point.x + vector.x;
+        result.y = point.y - vector.y;
+        break;
+    case 8:
+        result.x = point.x - vector.x;
+        result.y = point.y + vector.y;
+        break;
+    case 4:
+        result = point.Unk005fc190(vector);
+        break;
+    }
+    return result;
+}
+
+// FUNCTION: GAME 0x00554560
+void RHPathFinder::GetPath(RHPathPointList &path)
+{
+    path.FUN_00610ac0();
+    unsigned short count = (unsigned short)(unsigned)((RHUnk0053bf20 *)&g_unk0x006c0c78)->FUN_0053bf20();
+    if (count > 0)
+    {
+        int index = 0;
+        unsigned remaining = count;
+        do
+        {
+            path.FUN_00610a60(g_unk0x006c0c78.FUN_00610cb0(index));
+            ++index;
+        } while (--remaining);
+    }
+    g_pathStatus = 1;
+}
+
+// FUNCTION: GAME 0x005545c0
+void __stdcall FUN_005545c0(void *)
+{
+    while (g_pathStatus)
+    {
+        switch (*(unsigned *)&g_pathStatus & 0xff)
+        {
+        case 3:
+            if (!g_pathWakeEvent.WaitForEvent(INFINITE))
+                SBAssert(0, "P:\\Robin Hood\\RHpathfinder.cpp", 0x651,
+                    // STRING: GAME 0x006b1638
+                    "Pathfinder error : WaitForEvent failed");
+            break;
+        case 2:
+            EnterCriticalSection(&g_pathCriticalSection);
+            g_pathStatus = 4;
+            LeaveCriticalSection(&g_pathCriticalSection);
+            FUN_005547c0(g_currentPathRequest->m_0, g_currentPathRequest->m_4,
+                g_currentPathRequest->m_24, g_currentPathRequest->m_8,
+                g_currentPathRequest->m_10);
+            EnterCriticalSection(&g_pathCriticalSection);
+            if (g_pathStatus)
+            {
+                g_pathStatus = 3;
+                LeaveCriticalSection(&g_pathCriticalSection);
+                if (!g_pathWakeEvent.WaitForEvent(INFINITE))
+                    SBAssert(0, "P:\\Robin Hood\\RHpathfinder.cpp", 0x643,
+                        "Pathfinder error : WaitForEvent failed");
+            }
+            else
+                LeaveCriticalSection(&g_pathCriticalSection);
+            break;
+        case 1:
+            if (!g_pathWakeEvent.WaitForEvent(INFINITE))
+                SBAssert(0, "P:\\Robin Hood\\RHpathfinder.cpp", 0x65a,
+                    "Pathfinder error : WaitForEvent failed");
+            break;
+        }
+    }
+    ExitThread(0);
+}
+
 // FUNCTION: GAME 0x005546e0
 bool RHPathFinder::TurnOn()
 {
@@ -242,6 +617,27 @@ bool RHPathFinder::TurnOn()
         return false;
     }
     return true;
+}
+
+// Parked: the wake-event branch reloads the thread handle in ECX rather than EAX.
+// STUB: GAME 0x00554750
+void RHPathFinder::FUN_00554750()
+{
+    EnterCriticalSection(&g_pathCriticalSection);
+    if (g_pathStatus != 1 && g_pathStatus != 3)
+    {
+        g_pathStatus = 0;
+        LeaveCriticalSection(&g_pathCriticalSection);
+        g_pathThreadDone = 1;
+        WaitForSingleObject(m_8, INFINITE);
+    }
+    else
+    {
+        g_pathStatus = 0;
+        LeaveCriticalSection(&g_pathCriticalSection);
+        g_pathWakeEvent.TriggerEvent();
+        WaitForSingleObject(m_8, INFINITE);
+    }
 }
 
 // Parked: 66.54%, receiver scheduling, return cleanup and annotated callees.
@@ -306,6 +702,24 @@ bool FUN_005547c0(unsigned short graph, unsigned short sector, unsigned short di
     return true;
 }
 
+// FUNCTION: GAME 0x005559b0
+void RHPathFinder::FUN_005559b0(unsigned short graph, unsigned short node, unsigned short state, RHPathWorkList &list)
+{
+    unsigned value = g_pathStates[graph].first[node];
+    unsigned mask = 1 << ((unsigned)state << 1);
+    if (value & mask)
+        value += mask;
+    else
+        value -= mask;
+    FUN_00555a10(graph, node, value, list);
+}
+
+// FUNCTION: GAME 0x00556230
+void RHPathFinder::FUN_00556230(unsigned short graph, unsigned short sector, unsigned short state, RHPathWorkList &list)
+{
+    FUN_005559b0(graph, ConvertSector(sector), state, list);
+}
+
 // Parked: 43.31%, list frame/cursor scheduling; unannotated for rule 28.
 void RHPathFinder::FUN_00556260()
 {
@@ -318,6 +732,100 @@ void RHPathFinder::FUN_00556260()
             FUN_00555a10(graph, node, g_pathStates[graph].first[node], list);
     }
     list.clear();
+}
+
+// Parked: graph-count null tail, register allocation and state-offset induction differ.
+// STUB: GAME 0x005563f0
+void RHEngineWidenedCalls::FUN_005563f0(unsigned value)
+{
+    unsigned short graphs = g_pathGraphFirst ? g_pathGraphLast - g_pathGraphFirst : 0;
+    if (graphs > 0)
+    {
+        unsigned graph = 0;
+        unsigned remainingGraphs = graphs;
+        do
+        {
+            unsigned short nodes = g_pathGraphFirst[graph]->size();
+            if (nodes > 0)
+            {
+                unsigned node = 0;
+                unsigned remainingNodes = nodes;
+                do
+                {
+                    g_pathStates[graph].first[node] = value;
+                    ++node;
+                } while (--remainingNodes);
+            }
+            ++graph;
+        } while (--remainingGraphs);
+    }
+}
+
+// FUNCTION: GAME 0x005568f0
+unsigned char RHPathFinder::FUN_005568f0(unsigned char place, bool forward)
+{
+    if (forward)
+    {
+        if (place == 8)
+            return 1;
+        return (unsigned)place << 1;
+    }
+    if (place == 1)
+        return 8;
+    return (unsigned)place >> 1;
+}
+
+// FUNCTION: GAME 0x00556920
+unsigned char RHPathFinder::FUN_00556920(unsigned char places)
+{
+    switch (places)
+    {
+    case 0:
+        return 0;
+    case 1: case 2: case 4: case 8:
+        return 1;
+    case 3: case 5: case 6: case 9: case 10: case 12:
+        return 2;
+    case 7: case 11: case 13: case 14:
+        return 3;
+    case 15:
+        return 4;
+    }
+    return 0;
+}
+
+inline void RHPathSetVector(RHUnk005fc3b0 &vector, float x, float y)
+{
+    vector.x = x;
+    vector.y = y;
+}
+
+// FUNCTION: GAME 0x00557f90
+bool FUN_00557f90(const SBGeoPoint2D &point, const void *node)
+{
+    RHUnk005fc3b0 vector;
+    const SBGeoPoint2D &origin = *(const SBGeoPoint2D *)node;
+    const RHUnk005fc3b0 &first = *(const RHUnk005fc3b0 *)((const char *)node + 0x6c);
+    RHPathSetVector(vector, point.x - g_unk0x006c0db8.x - origin.x, point.y - g_unk0x006c0db8.y - origin.y);
+    if (first.FUN_005fc680(vector, 1.0f) > g_unk0x00677488 ||
+        ((const RHUnk005fc3b0 *)((const char *)node + 0x74))->FUN_005fc680(vector, 1.0f) > g_unk0x00677488 ||
+        (RHPathSetVector(vector, point.x + g_unk0x006c0db8.x - origin.x, point.y - g_unk0x006c0db8.y - origin.y),
+            first.FUN_005fc680(vector, 1.0f) > g_unk0x00677488) ||
+        ((const RHUnk005fc3b0 *)((const char *)node + 0x74))->FUN_005fc680(vector, 1.0f) > g_unk0x00677488 ||
+        (RHPathSetVector(vector, point.x + g_unk0x006c0db8.x - origin.x, point.y + g_unk0x006c0db8.y - origin.y),
+            first.FUN_005fc680(vector, 1.0f) > g_unk0x00677488) ||
+        ((const RHUnk005fc3b0 *)((const char *)node + 0x74))->FUN_005fc680(vector, 1.0f) > g_unk0x00677488 ||
+        (RHPathSetVector(vector, point.x - g_unk0x006c0db8.x - origin.x, point.y + g_unk0x006c0db8.y - origin.y),
+            first.FUN_005fc680(vector, 1.0f) > g_unk0x00677488) ||
+        ((const RHUnk005fc3b0 *)((const char *)node + 0x74))->FUN_005fc680(vector, 1.0f) > g_unk0x00677488)
+        return true;
+    return false;
+}
+
+// FUNCTION: GAME 0x005581a0
+float RHPathFinder::EstimateDistance(SBGeoPoint2D &first, SBGeoPoint2D &last)
+{
+    return ((RHUnk005fc3b0 *)&last.Unk005fc110(first))->Unk005fc6a0(1.0f);
 }
 
 // FUNCTION: GAME 0x00559660
@@ -442,6 +950,16 @@ bool RHPathFinder::Serialize(SBFile &file)
 
 void RHPathFinder::Emit(SBFile &file, RHpathRequest *request)
 {
+    FUN_00553760((RHElementActor *)request->m_1c);
+    FUN_00553850((RHElementActor *)request->m_1c);
+    FUN_005539a0((RHElementActor *)request->m_1c);
+    FUN_00553a10(request->m_8, request->m_10, 1, (SBGeoVector2D &)request->m_10, true);
+    FUN_00553d20(request->m_8, 1, (SBGeoVector2D &)request->m_10);
+    GetPath(g_unk0x006c0c78);
+    FUN_005568f0(1, false);
+    FUN_00556920(1);
+    EstimateDistance(request->m_8, request->m_10);
+    FUN_00557f90(request->m_8, request);
     AddPathRequest(request);
     TurnOn();
     ConvertSector(0);

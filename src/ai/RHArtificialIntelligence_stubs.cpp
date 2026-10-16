@@ -17,8 +17,6 @@ bool RHArtificialIntelligence::Unk00419b20(int) { return false; }
 void RHArtificialIntelligence::Unk00419970(int, int, int) {}
 bool RHArtificialIntelligenceActorCalls::Unk00485e60() { return false; }
 bool RHArtificialIntelligenceActorCalls::Unk00470ce0() { return false; }
-void RHArtificialIntelligenceSoundCalls::Unk005a8d10(RHArtificialIntelligenceActor *) {}
-void RHArtificialIntelligenceSoundCalls::Unk005a8b70(int, void *, int, short, SBGeoPoint2D *, RHArtificialIntelligenceActor *) {}
 std::string FUN_00420d40(int) { return std::string(); }
 bool RHArtificialIntelligence::Unk00412240(const RHUnk00571160Position &, unsigned short, float) { return false; }
 unsigned char RHArtificialIntelligence::Unk00419c80() { return 0; }

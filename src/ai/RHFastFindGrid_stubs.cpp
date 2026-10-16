@@ -6,9 +6,13 @@
 RHFastFindLine::RHFastFindLine() {}
 RHFastFindLine::~RHFastFindLine() {}
 void RHFastFindLine::FUN_0051faf0(SBFile &, RHFastFindPointerArray &) {}
+// FUNCTION: GAME 0x0051f450
 float RHFastFindLine::FUN_0051f450() { return ((float *)m_00)[1] > ((float *)m_00)[3] ? ((float *)m_00)[1] : ((float *)m_00)[3]; }
+// FUNCTION: GAME 0x0051f470
 float RHFastFindLine::FUN_0051f470() { return ((float *)m_00)[1] > ((float *)m_00)[3] ? ((float *)m_00)[3] : ((float *)m_00)[1]; }
+// FUNCTION: GAME 0x0051f490
 float RHFastFindLine::FUN_0051f490() { return ((float *)m_00)[2] > ((float *)m_00)[4] ? ((float *)m_00)[4] : ((float *)m_00)[2]; }
+// FUNCTION: GAME 0x0051f4b0
 float RHFastFindLine::FUN_0051f4b0() { return ((float *)m_00)[2] > ((float *)m_00)[4] ? ((float *)m_00)[2] : ((float *)m_00)[4]; }
 RHMobileUnk006100e0::RHMobileUnk006100e0(const RHMobileUnk006100e0 &other) : SBGeoPoint2D(other)
 {
@@ -68,10 +72,6 @@ RHUnk005a3450::~RHUnk005a3450() {}
 void RHUnk005a3450::Unk005a3810(SBFile &, RHFastFindPointerArray &) {}
 void *RHUnk005a3450::Unk005a5780() { return 0; }
 SBGeoPoint3D::SBGeoPoint3D(float, float, float) {}
-void RHUnk005df860::FUN_005df8b0() {}
-void RHUnk005df860::FUN_005df900() {}
-void RHUnk005df860::FUN_005df9a0() {}
-void RHUnk005df860::FUN_005df9c0() {}
 void RHFastFindGrid::FUN_004ef8e0(RHUnk005a3450 *, unsigned short, bool) {}
 void RHUnk0054f870::Unk00550220() {}
 RHUnk004b2190Member::RHUnk004b2190Member() {}

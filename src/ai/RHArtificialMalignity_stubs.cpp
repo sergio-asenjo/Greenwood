@@ -50,7 +50,6 @@ float RHMalignityBaseView::FUN_0041a060(void *) { return 0.0f; }
 float RHMalignityBaseView::FUN_0041a0b0(void *) { return 0.0f; }
 // STUB: GAME 0x00440cf0
 short RHArtificialMalignity::FUN_00440cf0(RHUnk00441dd0Record *) { return 0; }
-void RHMalignityActorCalls::FUN_00487aa0(int) {}
 void RHMalignityBaseView::FUN_00412cf0(const RHMalignityPosition &, unsigned short, int) {}
 void RHArtificialMalignity::FUN_00440040(void *, RHMalignityPosition, RHUnk005fc3b0 *, int, void *) {}
 SBGeoPoint2D FUN_005fc580(const SBGeoPoint2D &point, float) { return point; }
@@ -116,12 +115,6 @@ public:
 
 bool RHMalignityAreaCalls::FUN_0060be00(const void *) { return false; }
 void RHArtificialMalignity::FUN_00430300(int) {}
-
-class RHMalignityAlertCalls
-{
-public:
-    void FUN_0042c890(int type, void *actor);
-};
 
 void RHMalignityAlertCalls::FUN_0042c890(int, void *) {}
 void RHArtificialMalignity::FUN_0044a830(void *) {}

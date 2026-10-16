@@ -1,5 +1,6 @@
 #include "SBNullstr.h"
 #include "RHArtificialMalignity.h"
+#include "RHElementActorNPC.h"
 #include <stdlib.h>
 #include <new>
 
@@ -1075,7 +1076,7 @@ RHUnk00441dd0Record *RHArtificialMalignity::FUN_00441dd0()
 void RHArtificialMalignity::FUN_00441f20()
 {
     int first = ((RHMalignityActorCalls *)VirtualBase().m_actor)->V130() == 0;
-    ((RHMalignityActorCalls *)VirtualBase().m_actor)->FUN_00487aa0(0);
+    ((RHElementActorNPC *)VirtualBase().m_actor)->FUN_00487aa0(0);
     if (M(unsigned char, 0x351) ||
         (((RHMalignityActorCalls *)VirtualBase().m_actor)->V130() == 0 &&
          RHMalignityField<unsigned char>(g_pEngine, 0x4aa8) &&
@@ -2295,7 +2296,7 @@ void RHArtificialMalignity::FUN_0044a760(void *actor)
     ((RHMalignityDataView *)this)->m_d0 = VirtualBase().FUN_004165e0(actor, true);
     ((RHScriptBatchCalls *)&VirtualBase())->Unk00419fb0(3);
     VirtualBase().V10(3, 0x6e);
-    ((RHMalignityActorCalls *)VirtualBase().m_actor)->FUN_00487aa0((int)actor);
+    ((RHElementActorNPC *)VirtualBase().m_actor)->FUN_00487aa0(actor);
     VirtualBase().FUN_00412cf0(RHMalignityField<RHMalignityPosition>(&VirtualBase(), 0xd0), 0x1e, 1);
     ((RHArtificialIntelligence *)&VirtualBase())->Unk00416710(10);
 }
@@ -2311,12 +2312,6 @@ bool RHArtificialMalignity::FUN_0044afa0(void *target)
         return false;
     return true;
 }
-
-class RHMalignityAlertCalls
-{
-public:
-    void FUN_0042c890(int type, void *actor);
-};
 
 // GLOBAL: GAME 0x00677590
 float g_unk0x00677590 = 40000.0f;
