@@ -37,6 +37,8 @@ public:
     static void FUN_0053a1d0(const std::vector<int> &ids);
     static void FUN_0053a2d0();
     static void FUN_0053a4c0(RHMenuScreenView *screen, int id, const std::string &title, int flags);
+    static unsigned long FUN_0053a5f0();
+    static unsigned long FUN_0053a610(unsigned long index);
 };
 
 #endif

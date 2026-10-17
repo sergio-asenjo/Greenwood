@@ -14,10 +14,7 @@ bool RHMenuPopupScroll::FUN_0053a860(int, void *, void *) { return false; }
 
 RHMenuPopupScroll::RHMenuPopupScroll(RHMenuScreenView *, const std::wstring &, const std::string &, bool)
     : RHMenuWindowFocus(0, 0, 0, false) {}
-bool RHMenuPopupScroll::FUN_0053a840() { return false; }
-void RHMenuScreenView::FUN_0053be40(unsigned long) {}
 RHMenuPopupScroll::RHMenuPopupScroll(RHMenuScreenView *, const std::wstring &, int, const std::string &, int)
     : RHMenuWindowFocus(0, 0, 0, false) {}
 void RHMenuPopupScroll::FUN_00539b30() {}
-const std::wstring &RHMenuPopupScroll::FUN_0053a820() { static std::wstring text; return text; }
 std::wstring RHMenuPopupScroll::FUN_0053a660(int) { return std::wstring(); }

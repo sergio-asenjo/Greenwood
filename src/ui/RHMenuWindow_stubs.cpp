@@ -6,9 +6,6 @@
 #include "SBNullstr.h"
 #include "RHMenuWindow.h"
 
-// Target 0x0053bf30, __thiscall, no stack argument.
-RHMenuWindowUI *RHMenuWindowScreen::FUN_0053bf30() { return 0; }
-
 
 // Target 0x00544ee0, __thiscall.
 RHMenuWindowFocus::~RHMenuWindowFocus() {}
@@ -23,8 +20,14 @@ RHMenuScreenView::~RHMenuScreenView() {}
 RHMenuResolution::RHMenuResolution(const SBGeoPoint2D &) {}
 
 
-// Target 0x0053bb80, __thiscall, ret 0xc.
-void RHMenuWindowScreen::FUN_0053bb80(RHMenuWindow *, bool, bool) {}
+// Target 0x0053b1f0, __thiscall, ret 4.
+void RHMenuScreenView::FUN_0053b1f0(RHMenuWindow *) {}
+
+// Target 0x0053c390, __thiscall.
+void RHMenuScreenView::FUN_0053c390() {}
+
+// Target 0x0053c650, __thiscall, ret 8.
+void RHMenuScreenView::FUN_0053c650(RHMenuWindow *, bool) {}
 
 // Target 0x00545220, __thiscall, ret 8.
 RHMenuYesNo::RHMenuYesNo(RHMenuWindowScreen *screen, const std::wstring &) : RHMenuWindow(0, screen, false) {}
@@ -34,4 +37,3 @@ RHMenuYesNo::~RHMenuYesNo() {}
 
 // Target 0x00545710, __thiscall.
 void RHMenuYesNo::FUN_00545710() {}
-

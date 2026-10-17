@@ -227,9 +227,16 @@ RHFontInsertResult::RHFontInsertResult(const RHFontIterator &iterator, const boo
 {
 }
 
+// FUNCTION: GAME 0x005024f0
+void *RHFontManager::FUN_005024f0()
+{
+    return (void *)0x6c0ad0;
+}
+
 void RHFontManager::Emit(const std::string &name)
 {
     LoadConfiguration(name);
+    FUN_005024f0();
     RHFontText text;
     RHFontText copy(text);
 }

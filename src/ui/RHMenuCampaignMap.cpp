@@ -2,6 +2,9 @@
 #include "RHPortraitRootLifetime.h"
 #include "RHMenuScreenView.h"
 #include "RHUnk00527870.h"
+#include "RHGameInputTranslator.h"
+#include "SBUIBase.h"
+#include "RHMission.h"
 #include <windows.h>
 #include <stdio.h>
 #include <stddef.h>
@@ -438,6 +441,7 @@ public:
     unsigned FUN_00525510(unsigned id);
     void FUN_005255c0(const std::wstring &text);
     unsigned *FUN_005257c0(unsigned index);
+    unsigned *FUN_00525830(unsigned index);
     void FUN_00525840();
 };
 
@@ -484,6 +488,12 @@ unsigned *RHUnk005254f0::FUN_005257c0(unsigned index)
     return 0;
 }
 
+// FUNCTION: GAME 0x00525830
+unsigned *RHUnk005254f0::FUN_00525830(unsigned index)
+{
+    return 0;
+}
+
 // FUNCTION: GAME 0x00525840
 void RHUnk005254f0::FUN_00525840()
 {
@@ -500,6 +510,7 @@ void RHMapTailEmit(void *object, unsigned index, const std::wstring &text)
     widget->FUN_00525510(index);
     widget->FUN_005255c0(text);
     widget->FUN_005257c0(index);
+    widget->FUN_00525830(index);
     widget->FUN_00525840();
 }
 
@@ -768,6 +779,27 @@ void RHMapWindow::FUN_0053bb30(unsigned timer)
     }
 }
 
+// FUNCTION: GAME 0x0053bb80
+void RHMenuScreenView::FUN_0053bb80(RHMenuWindow *window, bool display, bool modal)
+{
+    FUN_0053c650(window, display);
+    if (modal == 1)
+        FUN_0053b1f0(window);
+    if (display)
+        FUN_0053c390();
+}
+
+// FUNCTION: GAME 0x0053bbc0
+void RHMenuScreenView::FUN_0053bbc0(RHMenuWindow *window)
+{
+    RHPortraitRootLifetime *widget = (RHPortraitRootLifetime *)window;
+    typedef void (RHPortraitRootLifetime::*SetVisible)(bool);
+    SetVisible setVisible;
+    *(unsigned *)&setVisible = ((unsigned *)widget->m_vptr)[0x12];
+    (widget->*setVisible)(false);
+    widget->m_visible = false;
+}
+
 // STUB: GAME 0x0053bbe0
 void RHMapWindow::FUN_0053bbe0()
 {
@@ -781,10 +813,67 @@ void RHMapWindow::FUN_0053bbe0()
     *((bool *)this + 0x197c) = true;
 }
 
+// FUNCTION: GAME 0x0053be40
+void RHMenuScreenView::FUN_0053be40(unsigned long value)
+{
+    m_04 = (unsigned long)RHGameInputTranslator::mpInstance;
+    m_08 = value;
+}
+
+// FUNCTION: GAME 0x0053be60
+void RHMenuScreenView::FUN_0053be60(RHMenuWindow *window)
+{
+    RHPortraitRootLifetime *widget = (RHPortraitRootLifetime *)window;
+    typedef void (RHPortraitRootLifetime::*SetVisible)(bool);
+    SetVisible setVisible;
+    *(unsigned *)&setVisible = ((unsigned *)widget->m_vptr)[0x12];
+    (widget->*setVisible)(true);
+    widget->m_visible = true;
+}
+
+// FUNCTION: GAME 0x0053bf30
+RHMenuWindowUI *RHMenuScreenView::FUN_0053bf30()
+{
+    return (RHMenuWindowUI *)&m_sbui;
+}
+
+// Parked: count/index register lifetimes and duplicated boolean tails differ.
+// STUB: GAME 0x0053c320
+bool RHMenuScreenView::FUN_0053c320(void *widget)
+{
+    void **first = *(void ***)((char *)this + 0x18);
+    *(bool *)((char *)this + 0x28) = false;
+    *(void **)((char *)this + 0x30) = widget;
+    int count = first ? *(void ***)((char *)this + 0x1c) - first : 0;
+    void **&cursor = *(void ***)((char *)this + 0x24);
+    cursor = first;
+    int index = 0;
+    *(bool *)((char *)this + 0x29) = true;
+    for (; index < count; ++index, ++cursor)
+        if (*cursor == widget)
+            break;
+    if (index >= count)
+        index = -1;
+    *(int *)((char *)this + 0x2c) = index;
+    return index != -1;
+}
+
 // FUNCTION: GAME 0x0053c7e0
 void RHMapWindow::FUN_0053c7e0()
 {
     ((RHMapWindowPart *)((char *)this + 0x10))->FUN_00618850((char *)this + 0x1914);
+}
+
+// FUNCTION: GAME 0x0053c7f0
+void RHMenuScreenView::FUN_0053c7f0(unsigned long surface)
+{
+    ((SBUI *)&m_sbui)->FUN_00618910(surface);
+}
+
+// FUNCTION: GAME 0x0053cd20
+bool RHMenuScreenView::FUN_0053cd20()
+{
+    return m_197c;
 }
 
 // LIBRARY: GAME 0x0053e170
@@ -817,7 +906,10 @@ void RHMenuCampaignMap::Emit()
     RHMapWindow *window = *(RHMapWindow **)((char *)this + 0xb4);
     window->FUN_0053bb30(0);
     window->FUN_0053bbe0();
+    RHMenuScreenView::FUN_0053bbc0((RHMenuWindow *)window);
+    RHMenuScreenView::FUN_0053be60((RHMenuWindow *)window);
     window->FUN_0053c7e0();
+    ((RHMenuScreenView *)window)->FUN_0053c7f0(0);
     FUN_00528520(0, 0, 0);
     FUN_00528550(0, 0, 0);
     campaign->FUN_005286b0();

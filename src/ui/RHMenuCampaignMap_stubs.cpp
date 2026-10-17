@@ -8,13 +8,25 @@ void RHMapWideText::End(unsigned) {}
 RHMapDescription::RHMapDescription() {}
 RHMapDescription::~RHMapDescription() {}
 bool RHMapDescription::FUN_0063cda0(unsigned) { return false; }
-class RHMapMission
+// Parked: the case bodies and jump table match; VC6 puts the value in eax and
+// sinks the `xor eax,eax` to the end, while the target keeps it in ecx and
+// hoists the zero (volatile/switch(value-1) do not flip it). 0.415094.
+// STUB: GAME 0x00527cc0
+unsigned FUN_00527cc0(volatile unsigned value)
 {
-public:
-    bool FUN_0054cc20();
-};
-bool RHMapMission::FUN_0054cc20() { return false; }
-unsigned FUN_00527cc0(unsigned) { return 0; }
+    switch (value - 1)
+    {
+    case 0: return 5;
+    case 1:
+    case 2: return 6;
+    case 3:
+    case 4: return 4;
+    case 5:
+    case 6: return 9;
+    case 7: return 7;
+    }
+    return 0;
+}
 
 // GLOBAL: GAME 0x006c0660
 std::string g_unk0x006c0660;
@@ -45,19 +57,12 @@ RHMapScreenTree::~RHMapScreenTree() {}
 void *RHMenuScreenView::FUN_0053b730(long, unsigned short) { return 0; }
 void RHMenuScreenView::FUN_0053c140(unsigned long) {}
 
-class RHMapFocusScreen
-{
-public:
-    bool FUN_0053c320(void *);
-};
-
 class RHMapFocusWidget
 {
 public:
     void FUN_00541060();
 };
 
-bool RHMapFocusScreen::FUN_0053c320(void *) { return false; }
 void RHMapFocusWidget::FUN_00541060() {}
 
 void RHUnk00527870::FUN_00527870() {}

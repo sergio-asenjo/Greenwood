@@ -28,6 +28,8 @@ public:
     void *FUN_0052d600(unsigned flags);
     void FUN_0052d750();
     static void FUN_0052dc20();
+    RHMenuLoadSaveResult *FUN_0052dce0();
+    bool FUN_0052dfd0();
 
     RHPortraitButton m_continue;
     RHPortraitButton m_load;

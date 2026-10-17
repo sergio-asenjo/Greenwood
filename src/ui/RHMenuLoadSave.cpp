@@ -69,6 +69,18 @@ RHMenuLoadSaveResult RHMenuLoadSave::FUN_00531110(RHMenuWindowUI *ui, bool save)
     return result;
 }
 
+// FUNCTION: GAME 0x00531220
+int RHMenuLoadSave::FUN_00531220()
+{
+    return *(int *)((char *)this + 0x8bc);
+}
+
+// FUNCTION: GAME 0x00531230
+int RHMenuLoadSave::FUN_00531230()
+{
+    return *(int *)((char *)this + 0x8c0);
+}
+
 // FUNCTION: GAME 0x005316a0
 bool RHMenuLoadSave::FUN_005316a0(int, void *, void *)
 {
@@ -127,6 +139,29 @@ void RHMenuLoadSaveText::FUN_00531e30()
     m_renderer.FUN_0061c610(((RHMenuLoadSaveListView *)this)->V24());
 }
 
+// FUNCTION: GAME 0x00531e50
+int RHMenuLoadSaveListBase::FUN_00531e50()
+{
+    return 1;
+}
+
+class RHMenuLoadSaveUnk00532c50
+{
+public:
+    void *FUN_00532c50();
+};
+
+// FUNCTION: GAME 0x00532c50
+void *RHMenuLoadSaveUnk00532c50::FUN_00532c50()
+{
+    return (void *)((char *)this - 0x1c8);
+}
+
+void EmitRHMenuLoadSaveUnk00532c50(RHMenuLoadSaveUnk00532c50 *a)
+{
+    a->FUN_00532c50();
+}
+
 // FUNCTION: GAME 0x00532cd0
 void *RHMenuLoadSaveText::FUN_00532cd0(unsigned flags)
 {
@@ -158,6 +193,7 @@ void EmitRHMenuLoadSaveHelpers(RHMenuLoadSaveListBase *list, RHMenuLoadSaveMap *
     RHMenuLoadSaveSlots *slots, RHMenuLoadSaveList *box, const int &key)
 {
     list->FUN_00531d60();
+    list->FUN_00531e50();
     map->FUN_00531d80(*(const RHUnk00514e10::Value *)&key);
     RHMenuLoadSaveEntry entry(key, key);
     text->FUN_00531e30();

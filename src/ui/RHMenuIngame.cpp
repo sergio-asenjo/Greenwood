@@ -69,6 +69,12 @@ void RHMenuIngame::FUN_0052dc20()
     menu.FUN_00544b80(true, true);
 }
 
+// FUNCTION: GAME 0x0052dce0
+RHMenuLoadSaveResult *RHMenuIngame::FUN_0052dce0()
+{
+    return &m_result;
+}
+
 // FUNCTION: GAME 0x0052dcf0
 bool RHMenuIngame::FUN_0052dcf0(int, void *, void *)
 {
@@ -143,4 +149,16 @@ bool RHMenuIngame::FUN_0052ded0(int, void *, void *)
     else
         ((RHMapWindow *)m_screen)->FUN_0053c7e0();
     return false;
+}
+
+// FUNCTION: GAME 0x0052dfd0
+bool RHMenuIngame::FUN_0052dfd0()
+{
+    return m_750;
+}
+
+void EmitRHMenuIngameAccessors(RHMenuIngame *menu)
+{
+    menu->FUN_0052dce0();
+    menu->FUN_0052dfd0();
 }

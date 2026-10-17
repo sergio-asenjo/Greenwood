@@ -25,6 +25,7 @@ class RHMenuNewPlayer : public RHMenuWindowFocus
 {
 public:
     int FUN_00538280() const;
+    bool FUN_005383e0();
     ~RHMenuNewPlayer();
     void FUN_00537570(RHMenuEvent *event);
     bool FUN_00537590(RHMenuEvent *event);

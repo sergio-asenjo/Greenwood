@@ -301,12 +301,6 @@ RHDialogue *RHMenuDialogue::GetDialogue(unsigned long id)
     return 0;
 }
 
-bool RHMenuDialogue::OnSkip(int, void *, void *)
-{
-    UpdateDialogue();
-    return false;
-}
-
 // FUNCTION: GAME 0x0052b370
 bool RHMenuDialogue::GetNextSentence(std::wstring &text, std::string &sound, unsigned long &portrait)
 {
@@ -338,6 +332,13 @@ bool RHMenuDialogue::GetNextSentence(std::wstring &text, std::string &sound, uns
         portrait = RHDialogueField<RHDialogueEntryView *>(this, 0x548)->m_first[RHDialogueField<unsigned>(this, 0x54c)];
         return true;
     }
+    return false;
+}
+
+// FUNCTION: GAME 0x0052b510
+bool RHMenuDialogue::OnSkip(int, void *, void *)
+{
+    UpdateDialogue();
     return false;
 }
 
@@ -418,9 +419,41 @@ public:
     virtual void V1c();
     virtual void V20();
     virtual unsigned V24();
+    unsigned FUN_0052b850();
     void FUN_0052b860();
     void FUN_0052bc20();
 };
+
+struct RHDialogueWidgetEvent;
+struct RHDialogueWidgetInput;
+
+class RHUnk0052bd70
+{
+public:
+    void FUN_0052b830(unsigned value);
+    unsigned FUN_0052b840();
+    RHDialogueWidgetEvent *FUN_0052bc40(const RHDialogueWidgetInput &input);
+    unsigned FUN_0052bd70();
+    unsigned char m_bytes[0xe8];
+};
+
+// FUNCTION: GAME 0x0052b830
+void RHUnk0052bd70::FUN_0052b830(unsigned value)
+{
+    RHDialogueField<unsigned>(this, 0xe4) = value;
+}
+
+// FUNCTION: GAME 0x0052b840
+unsigned RHUnk0052bd70::FUN_0052b840()
+{
+    return RHDialogueField<unsigned>(this, 0xe4);
+}
+
+// FUNCTION: GAME 0x0052b850
+unsigned RHUnk0052b860::FUN_0052b850()
+{
+    return 255;
+}
 
 // FUNCTION: GAME 0x0052b860
 void RHUnk0052b860::FUN_0052b860()
@@ -454,6 +487,7 @@ public:
     virtual void V2c();
     virtual void V30();
     virtual unsigned V34(unsigned);
+    unsigned FUN_0052b880();
     unsigned *FUN_0052bb40(unsigned);
     void FUN_0052b940(const std::wstring &);
     void SetText(const std::wstring &text)
@@ -483,6 +517,12 @@ public:
     bool m_dirtyFirst;
     bool m_dirtySecond;
 };
+
+// FUNCTION: GAME 0x0052b880
+unsigned RHUnk0052bbb0::FUN_0052b880()
+{
+    return RHDialogueField<char>(this, 4) == 1 ? 1 : 255;
+}
 
 // Parked: first wide-string cleanup stays out-of-line and erase scheduling differs.
 // STUB: GAME 0x0052b940
@@ -666,6 +706,10 @@ void RHMenuDialogueEmit(RHMenuDialogue *dialogue, RHMenuEvent *event,
     text->FUN_0052bb40(0);
     text->FUN_0052bbd0(0);
     button->FUN_0052bd70();
+    button->FUN_0052b830(0);
+    button->FUN_0052b840();
+    text->FUN_0052b880();
+    renderer->FUN_0052b850();
     button->FUN_0052bc40(*(RHDialogueWidgetInput *)0);
     renderer->FUN_0052b860();
     renderer->FUN_0052bc20();

@@ -80,5 +80,5 @@ public:
     void FUN_0054a440(const void *element);                                    // ret 4
     void FUN_0054a640(const void *arg);                                        // ret 4
     void FUN_0054a920();                                                       // ret
+    bool FUN_0054ae90(RHElement *element);
 };
-

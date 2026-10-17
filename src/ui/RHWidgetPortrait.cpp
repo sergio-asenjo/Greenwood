@@ -566,36 +566,11 @@ DECOMP_SIZE_ASSERT(RHPortraitFullLifetime, 0xe58)
 #include <list>
 #include <vector>
 
-// FUNCTION: GAME 0x005d09b0
-void *RHPortraitUnk005cf320::FUN_005d09b0(unsigned flags)
-{
-    this->~RHPortraitUnk005cf320();
-    if (flags & 1)
-        operator delete(this);
-    return this;
-}
-
-// FUNCTION: GAME 0x005d09d0
-void *RHPortraitUnk005cf570::FUN_005d09d0(unsigned flags)
-{
-    this->~RHPortraitUnk005cf570();
-    if (flags & 1)
-        operator delete(this);
-    return this;
-}
-
-// FUNCTION: GAME 0x005d09f0
-void *RHPortraitUnk005d0180::FUN_005d09f0(unsigned flags)
-{
-    this->~RHPortraitUnk005d0180();
-    if (flags & 1)
-        operator delete(this);
-    return this;
-}
-
 class RHPortraitInputField
 {
 public:
+    void FUN_005cf300();
+    void FUN_005cf380();
     RHPortraitWidgetEvent *FUN_005d0a10(const RHPortraitWidgetInput &input);
     RHPortraitWidgetEvent *FUN_005d0a90(const RHPortraitWidgetInput &input);
     RHPortraitWidgetEvent *FUN_005d0d00(const RHPortraitWidgetInput &input);
@@ -622,6 +597,71 @@ public:
     unsigned short m_18a;
     unsigned short m_18c;
 };
+
+// FUNCTION: GAME 0x005cf300
+void RHPortraitInputField::FUN_005cf300()
+{
+    *(unsigned short *)((char *)this + 0x196) = 0xffff;
+    *(unsigned short *)((char *)this + 0x198) = 0xffff;
+}
+
+// FUNCTION: GAME 0x005cf380
+void RHPortraitInputField::FUN_005cf380()
+{
+    int value = -1;
+    *(int *)((char *)this + 0xc0) = value;
+    *(int *)((char *)this + 0xc4) = value;
+}
+
+void EmitPortraitInputReset(RHPortraitInputField *field)
+{
+    field->FUN_005cf300();
+    field->FUN_005cf380();
+}
+
+class RHPortraitUnk005d06d0
+{
+public:
+    void *FUN_005d06d0();
+};
+
+// FUNCTION: GAME 0x005d06d0
+void *RHPortraitUnk005d06d0::FUN_005d06d0()
+{
+    return (void *)((char *)this - 0x1d4);
+}
+
+void EmitRHPortraitUnk005d06d0(RHPortraitUnk005d06d0 *strategy)
+{
+    strategy->FUN_005d06d0();
+}
+
+// FUNCTION: GAME 0x005d09b0
+void *RHPortraitUnk005cf320::FUN_005d09b0(unsigned flags)
+{
+    this->~RHPortraitUnk005cf320();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// FUNCTION: GAME 0x005d09d0
+void *RHPortraitUnk005cf570::FUN_005d09d0(unsigned flags)
+{
+    this->~RHPortraitUnk005cf570();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// FUNCTION: GAME 0x005d09f0
+void *RHPortraitUnk005d0180::FUN_005d09f0(unsigned flags)
+{
+    this->~RHPortraitUnk005d0180();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
 
 // Parked: Boolean tests still use test al,al instead of the retained zero register.
 // STUB: GAME 0x005d0a10
@@ -1330,7 +1370,10 @@ class RHPortraitButtonStrategy
 {
 public:
     RHPortraitWidgetEvent *FUN_005d1de0();
+    RHPortraitButton *FUN_005d1f30();
+    void FUN_005d1f40(bool value);
     int FUN_005d1f50(const SBGeoPoint2D &point);
+    int FUN_005d1ff0();
     RHPortraitWidgetEvent *FUN_005d2370(bool value);
     RHPortraitWidgetEvent *FUN_005d23d0(bool value);
     undefined m_00[0x20];
@@ -1408,6 +1451,18 @@ bool RHPortraitButton::FUN_005d1e30(int mode, const std::wstring &text, int reso
     return true;
 }
 
+// FUNCTION: GAME 0x005d1f30
+RHPortraitButton *RHPortraitButtonStrategy::FUN_005d1f30()
+{
+    return (RHPortraitButton *)((char *)this - 0xd8);
+}
+
+// FUNCTION: GAME 0x005d1f40
+void RHPortraitButtonStrategy::FUN_005d1f40(bool value)
+{
+    *(bool *)((char *)this + 0x24) = value;
+}
+
 // FUNCTION: GAME 0x005d1f50
 int RHPortraitButtonStrategy::FUN_005d1f50(const SBGeoPoint2D &point)
 {
@@ -1416,6 +1471,19 @@ int RHPortraitButtonStrategy::FUN_005d1f50(const SBGeoPoint2D &point)
         ((RHGameWidgetRendererCalls *)((char *)this - 0x58))->FUN_0060d890(point.Unk005fc110(*(SBGeoPoint2D *)&box)) == true)
         return true;
     return false;
+}
+
+// FUNCTION: GAME 0x005d1ff0
+int RHPortraitButtonStrategy::FUN_005d1ff0()
+{
+    return *(int *)((char *)this - 0x5c) == 0;
+}
+
+void EmitPortraitStrategyAccessors(RHPortraitButtonStrategy *strategy)
+{
+    strategy->FUN_005d1f30();
+    strategy->FUN_005d1f40(true);
+    strategy->FUN_005d1ff0();
 }
 
 // FUNCTION: GAME 0x005d2000
@@ -1636,6 +1704,7 @@ struct RHPortraitEditableStrategy
 {
     unsigned m_vptr;
     RHPortraitUIOwner *m_owner;
+    RHPortraitTextWidget *FUN_005d2ca0();
     RHPortraitWidgetEvent *FUN_005d2cb0(const RHPortraitWidgetInput &input);
 };
 
@@ -1830,6 +1899,17 @@ RHPortraitWidgetEvent *RHPortraitEditableWidget::FUN_005d2a70(const RHPortraitWi
         m_owner->FUN_00500780(true);
     }
     return result;
+}
+
+// FUNCTION: GAME 0x005d2ca0
+RHPortraitTextWidget *RHPortraitEditableStrategy::FUN_005d2ca0()
+{
+    return (RHPortraitTextWidget *)((char *)this - 0x180);
+}
+
+void EmitPortraitEditableAccessors(RHPortraitEditableStrategy *strategy)
+{
+    strategy->FUN_005d2ca0();
 }
 
 // FUNCTION: GAME 0x005d2cb0

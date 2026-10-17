@@ -13,11 +13,19 @@
 #include "SBNullstr.h"
 #include "RHWidgetPortrait.h"
 
-char RHUnk005d73d0Actor::FUN_0049f510() { return 0; }
+// FUNCTION: GAME 0x0049f510
+char RHUnk005d73d0Actor::FUN_0049f510()
+{
+    return *(char *)((char *)*(void **)((char *)this + 0x600) + 0x16);
+}
 void RHWidgetPortrait::FUN_005d9c30() {}
 RHPortraitRenderer005ca330::RHPortraitRenderer005ca330() {}
 RHPortraitRenderer005ca330::~RHPortraitRenderer005ca330() {}
-RHPortraitStrategyCalls::RHPortraitStrategyCalls() {}
+// FUNCTION: GAME 0x005ccb40
+RHPortraitStrategyCalls::RHPortraitStrategyCalls()
+{
+    *(unsigned *)this = 0x679f38;
+}
 bool RHPortraitWidgetSetupCalls::FUN_0060d130(const std::wstring &, const SBGeoBoundingBox2D &, bool) { return true; }
 RHPortraitRootLifetime::RHPortraitRootLifetime() {}
 RHPortraitRootLifetime::~RHPortraitRootLifetime() {}

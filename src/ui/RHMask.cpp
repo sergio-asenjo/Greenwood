@@ -6,8 +6,8 @@ static const char *RHMaskFile = "P:\\Robin Hood\\RHmask.cpp";
 // STRING: GAME 0x006b08c8
 static const char *RHMaskObstacleError = "VERBOTEN : Obstacle-mask with no obstacle associated !";
 
-// STUB: GAME 0x00523df0
 // Parked: shared 0x59fb00 stub is thiscall, target is cdecl.
+// STUB: GAME 0x00523df0
 void RHMask::InitializeFromProtoStream(SBFile &file, RHFastFindGrid *grid)
 {
     unsigned long flags;
@@ -80,7 +80,39 @@ void RHMask::InitializeFromProtoStream(SBFile &file, RHFastFindGrid *grid)
     }
 }
 
+// FUNCTION: GAME 0x00524800
+unsigned char RHMask::FUN_00524800(unsigned long index)
+{
+    return m_data[index];
+}
+
+class RHUnk0048a970
+{
+public:
+    void Unk(int);
+};
+
+class RHUnk00524910
+{
+public:
+    bool FUN_00524930(int value);
+    void FUN_00524910(int value);
+};
+
+// FUNCTION: GAME 0x00524910
+void RHUnk00524910::FUN_00524910(int value)
+{
+    if (FUN_00524930(value))
+        ((RHUnk0048a970 *)this)->Unk(value);
+}
+
+bool RHUnk00524910::FUN_00524930(int value)
+{
+    return false;
+}
+
 void RHMask::Emit(SBFile &file, RHFastFindGrid *grid)
 {
+    FUN_00524800(0);
     InitializeFromProtoStream(file, grid);
 }

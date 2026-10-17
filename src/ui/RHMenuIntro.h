@@ -35,6 +35,8 @@ public:
     bool FUN_0052e0b0(RHMenuEvent *event);
     void *FUN_0052e300(unsigned flags);
     void FUN_0052f540();
+    int FUN_0052ec40();
+    void *FUN_0052ec50();
 
     RHPortraitButton m_140;
     RHPortraitButton m_240;

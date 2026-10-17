@@ -38,6 +38,86 @@ std::string g_unk0x006c05f0;
 // GLOBAL: GAME 0x006c0650
 std::string g_unk0x006c0650;
 
+class RHUnk005223e0
+{
+public:
+    RHUnk005223e0 *FUN_005229a0();
+    void FUN_005223e0();
+    void FUN_005229e0();
+};
+
+struct RHUnk005223a0Source
+{
+    int m_00;
+    int m_04;
+    int m_08;
+    int m_0c;
+};
+
+class RHUnk005223a0
+{
+public:
+    RHUnk005223a0(const RHUnk005223a0Source &source, short value);
+};
+
+// FUNCTION: GAME 0x005223a0
+RHUnk005223a0::RHUnk005223a0(const RHUnk005223a0Source &source, short value)
+{
+    *(unsigned *)this = 0x679138;
+    *(RHUnk005223a0Source *)((char *)this + 4) = source;
+    *(short *)((char *)this + 0x14) = value;
+    *(int *)((char *)this + 0x18) = 0;
+}
+
+// FUNCTION: GAME 0x005223e0
+void RHUnk005223e0::FUN_005223e0()
+{
+    *(unsigned *)this = 0x679138;
+}
+
+class RHUnk005224c0
+{
+public:
+    ~RHUnk005224c0();
+    void FUN_00520a70();
+};
+
+// FUNCTION: GAME 0x005224c0
+RHUnk005224c0::~RHUnk005224c0()
+{
+    *(unsigned *)this = 0x67913c;
+    FUN_00520a70();
+}
+
+void RHUnk005224c0::FUN_00520a70() {}
+
+// FUNCTION: GAME 0x005229a0
+RHUnk005223e0 *RHUnk005223e0::FUN_005229a0()
+{
+    int zero = 0;
+    *(int *)((char *)this + 0xc) = zero;
+    *(int *)((char *)this + 0x10) = zero;
+    *(int *)((char *)this + 0x14) = zero;
+    *(int *)((char *)this + 0x1c) = zero;
+    *(int *)((char *)this + 0x20) = zero;
+    *(unsigned *)this = 0x679144;
+    g_unk0x006c0bd4 = (unsigned char *)zero;
+    return this;
+}
+
+// FUNCTION: GAME 0x005229e0
+void RHUnk005223e0::FUN_005229e0()
+{
+    *(unsigned *)this = 0x679144;
+}
+
+void EmitRHUnk005223e0(RHUnk005223e0 *a)
+{
+    a->FUN_005223e0();
+    a->FUN_005229a0();
+    a->FUN_005229e0();
+}
+
 // FUNCTION: GAME 0x005229f0
 unsigned long RHLoadingScreen::CreateSurfaceForPicture(SBFile &file)
 {

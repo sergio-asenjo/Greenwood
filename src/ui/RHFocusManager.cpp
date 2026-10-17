@@ -389,6 +389,12 @@ int RHFocusManager::FUN_004ffed0(const void *input) const
     return action;
 }
 
+// FUNCTION: GAME 0x004fffd0
+void *RHFocusManager::FUN_004fffd0()
+{
+    return m_ui;
+}
+
 // FUNCTION: GAME 0x004fffe0
 void RHFocusManager::FUN_004fffe0(bool hidden)
 {
@@ -757,6 +763,18 @@ RHFocusEvent *RHFocusManager::FUN_00500750()
     Link link = &RHFocusManager::FUN_00500040;
     RHFocusEvent *result = (this->*link)(0, (this->*resetFocus)());
     return (this->*link)(result, (this->*resetGroup)());
+}
+
+// FUNCTION: GAME 0x00500780
+void RHFocusManager::FUN_00500780(bool value)
+{
+    m_40[0] = value;
+}
+
+// FUNCTION: GAME 0x00500790
+void RHFocusManager::FUN_00500790(bool value)
+{
+    m_40[1] = value;
 }
 
 // Parked: the initial edi save precedes the zero-result register setup.
@@ -1216,6 +1234,7 @@ void EmitRHFocusManager(RHFocusManager *manager, RHFocusEvent *event, const void
     manager->FUN_004ffce0((RHFocusGroupableView *)widget, 0);
     manager->FUN_004ffd20(widget);
     manager->FUN_004ffed0(widget);
+    manager->FUN_004fffd0();
     manager->FUN_004fffe0(false);
     manager->FUN_00500010(widget);
     manager->FUN_00500040(event, event);
@@ -1229,6 +1248,8 @@ void EmitRHFocusManager(RHFocusManager *manager, RHFocusEvent *event, const void
     manager->FUN_005006a0();
     manager->FUN_00500720();
     manager->FUN_00500750();
+    manager->FUN_00500780(false);
+    manager->FUN_00500790(false);
     manager->FUN_005007a0((RHFocusGroupableView *)widget);
     manager->FUN_00500830(widget);
     RHFocusManager::FUN_005008a0(event, widget);

@@ -42,6 +42,8 @@
 #include "SBNullstr.h"
 #include "RHMinimap.h"
 
+int FUN_0054ae80(const RHMinimapHighlightedElement &element);
+
 // FUNCTION: GAME 0x00549a80
 bool RHMinimap::SerializeHighlightedElement(SBFile &file, RHMinimapHighlightedElement &element){
     g_pEngine->SerializeElementPointer(file, element.m_element);
@@ -159,16 +161,41 @@ void RHMinimap::FUN_0054a920()
 {
 }
 
+// FUNCTION: GAME 0x0054ae80
+int FUN_0054ae80(const RHMinimapHighlightedElement &element)
+{
+    return element.m_0c == 0;
+}
+
+// FUNCTION: GAME 0x0054ae90
+bool RHMinimap::FUN_0054ae90(RHElement *element)
+{
+    RHMinimapHighlightedElement *entry = *(RHMinimapHighlightedElement **)((char *)this + 0xd0);
+    RHMinimapHighlightedElement *end = *(RHMinimapHighlightedElement **)((char *)this + 0xd4);
+    for (; entry != end; ++entry)
+    {
+        if (entry->m_element == element)
+            return true;
+    }
+    return false;
+}
+
 // Force emission: a non-inline static member defined here is emitted into the
 // object; this out-of-line call keeps RHMinimap::SerializeHighlightedElement in
 // the build.
 void RHMinimapEmit(SBFile &file, RHMinimapHighlightedElement &element)
 {
     RHMinimap::SerializeHighlightedElement(file, element);
+    FUN_0054ae80(element);
 }
 
 // Force emission of the element comparator (nothing in this build calls it).
 void RHMinimapSortEmit(RHMinimapSortElement *a, RHMinimapSortElement *b)
 {
     FUN_00549ae0(a, b);
+}
+
+void RHMinimapHighlightEmit(RHMinimap *minimap, RHElement *element)
+{
+    minimap->FUN_0054ae90(element);
 }

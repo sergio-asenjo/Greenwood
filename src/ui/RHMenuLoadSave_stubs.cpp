@@ -9,7 +9,7 @@
 // Target 0x00530510, __thiscall.
 RHMenuLoadSave::~RHMenuLoadSave() {}
 
-// Target 0x00463d80, __thiscall, ret 0xc.
+// FUNCTION: GAME 0x00463d80
 bool RHMenuLoadSave::FUN_00463d80(int, void *, void *) { return false; }
 
 // Target 0x0052ce80, __thiscall, ret 0xc.
@@ -38,12 +38,6 @@ RHMenuLoadSave::RHMenuLoadSave(RHMenuScreenView *, bool) : RHMenuWindowFocus(0, 
 
 // Target 0x005307d0, __thiscall.
 void RHMenuLoadSave::FUN_005307d0() {}
-
-// Target 0x00531220, __thiscall.
-int RHMenuLoadSave::FUN_00531220() { return 0; }
-
-// Target 0x00531230, __thiscall.
-int RHMenuLoadSave::FUN_00531230() { return 0; }
 
 RHMenuLoadSaveText::~RHMenuLoadSaveText() {}
 RHMenuLoadSaveSlots::~RHMenuLoadSaveSlots() {}

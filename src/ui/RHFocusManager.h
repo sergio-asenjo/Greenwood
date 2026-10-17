@@ -44,6 +44,7 @@ public:
     void FUN_004ffce0(RHFocusGroupableView *widget, unsigned short key);
     void FUN_004ffd20(const void *widget);
     int FUN_004ffed0(const void *input) const;
+    void *FUN_004fffd0();
     void FUN_004fffe0(bool hidden);
     bool FUN_00500010(const void *widget) const;
     RHFocusEvent *FUN_00500040(RHFocusEvent *first, RHFocusEvent *second) const;
@@ -57,6 +58,8 @@ public:
     RHFocusEvent *FUN_005006a0();
     RHFocusEvent *FUN_00500720();
     RHFocusEvent *FUN_00500750();
+    void FUN_00500780(bool value);
+    void FUN_00500790(bool value);
     RHFocusEvent *FUN_005007a0(RHFocusGroupableView *widget);
     void FUN_00500830(const void *position);
     static RHFocusEvent *FUN_005008a0(RHFocusEvent *first, const void *widget);

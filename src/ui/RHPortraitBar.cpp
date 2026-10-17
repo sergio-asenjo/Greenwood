@@ -54,6 +54,17 @@ RHPortraitBar::RHPortraitBar(SBUI *owner) : ui(owner), shift(0), dirty(false)
 {
 }
 
+// FUNCTION: GAME 0x0055e7a0
+void RHPortraitBar::FUN_0055e7a0(unsigned index)
+{
+    for (RHWidgetPortrait **it = portraits.begin(); it != portraits.end(); ++it)
+    {
+        RHWidgetPortrait *portrait = *it;
+        if (((RHPortraitWindow *)portrait)->V44())
+            portrait->FUN_005d90c0(index);
+    }
+}
+
 // FUNCTION: GAME 0x0055e7e0
 RHWidgetPortrait *RHPortraitBar::FUN_0055e7e0(const void *actor) const
 {
@@ -95,6 +106,12 @@ int RHPortraitBar::GetPortraitIndex(const RHWidgetPortrait *portrait) const
         ++it;
     }
     return result;
+}
+
+// FUNCTION: GAME 0x0055e880
+unsigned RHPortraitBar::FUN_0055e880()
+{
+    return portraits.GetSize();
 }
 
 // FUNCTION: GAME 0x0055e8a0
@@ -209,6 +226,16 @@ void RHPortraitBar::RemoveAllPortraits()
         RemovePortrait(*it);
 }
 
+// FUNCTION: GAME 0x0055ebf0
+void RHPortraitBar::FUN_0055ebf0()
+{
+    additions.erase(additions.begin(), additions.end());
+    RemoveAllPortraits();
+    FUN_0055eda0();
+    shift = 0;
+    dirty = false;
+}
+
 // FUNCTION: GAME 0x0055ec40
 void RHPortraitBar::Resize()
 {
@@ -252,6 +279,20 @@ void RHPortraitBar::ShiftPortraitsToRight()
     }
 }
 
+// Parked: the dirty-only block precedes queue processing instead of following it.
+// STUB: GAME 0x0055eda0
+void RHPortraitBar::FUN_0055eda0()
+{
+    if (additions.GetSize() != 0 || removals.GetSize() != 0)
+    {
+        MakeAllRemovals();
+        MakeAllAdditions();
+        MakePlacement();
+    }
+    else if (dirty)
+        MakePlacement();
+}
+
 // FUNCTION: GAME 0x0055ee00
 void RHPortraitBar::UpdateBlinkings()
 {
@@ -262,16 +303,20 @@ void RHPortraitBar::UpdateBlinkings()
 void RHPortraitBar::Emit(RHWidgetPortrait *portrait, const void *actor)
 {
     new RHPortraitBar(ui);
+    FUN_0055e7a0(0);
     FUN_0055e7e0(actor);
     GetPortraitIndex(portrait);
+    FUN_0055e880();
     MakeAllAdditions();
     MakeAllRemovals();
     MakePlacement();
     RemovePortrait(portrait);
     RemoveAllPortraits();
     Resize();
+    FUN_0055ebf0();
     SetPortraitOpened(actor, true);
     ShiftPortraitsToLeft();
     ShiftPortraitsToRight();
+    FUN_0055eda0();
     UpdateBlinkings();
 }

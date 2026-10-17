@@ -52,6 +52,7 @@ class RHMenuLoadSaveListBase
 {
 public:
     void FUN_00531d60();
+    int FUN_00531e50();
     undefined m_00[0x18a];
     unsigned short m_18a;
     unsigned short m_18c;

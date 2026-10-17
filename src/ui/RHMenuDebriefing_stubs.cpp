@@ -14,5 +14,3 @@ RHMenuDebriefing::~RHMenuDebriefing() {}
 bool RHMenuDebriefing::Create() { return false; }
 
 
-
-bool RHDebriefingScreenCalls::FUN_0053cd20() { return false; }

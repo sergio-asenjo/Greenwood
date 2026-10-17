@@ -148,6 +148,7 @@ class RHMask
 public:
     void InitializeFromProtoStream(SBFile &, RHFastFindGrid *);
     void Emit(SBFile &, RHFastFindGrid *);
+    unsigned char FUN_00524800(unsigned long index);
 
     char m_pad0[4];
     unsigned long m_flags; // +0x04

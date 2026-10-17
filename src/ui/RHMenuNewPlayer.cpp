@@ -41,6 +41,12 @@ int RHMenuNewPlayer::FUN_00538280() const
     return 0;
 }
 
+// FUNCTION: GAME 0x005383e0
+bool RHMenuNewPlayer::FUN_005383e0()
+{
+    return m_ok;
+}
+
 // FUNCTION: GAME 0x005383f0
 bool RHMenuNewPlayer::FUN_005383f0(int, void *, void *)
 {
@@ -55,4 +61,9 @@ bool RHMenuNewPlayer::FUN_00538410(int, void *, void *)
     m_ok = true;
     ((RHGameMenuCalls *)this)->FUN_00544b30();
     return true;
+}
+
+void EmitRHMenuNewPlayerAccessors(RHMenuNewPlayer *menu)
+{
+    menu->FUN_005383e0();
 }

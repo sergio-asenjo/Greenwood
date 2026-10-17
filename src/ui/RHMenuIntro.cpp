@@ -47,6 +47,18 @@ void *RHMenuIntro::FUN_0052e300(unsigned flags)
     return this;
 }
 
+// FUNCTION: GAME 0x0052ec40
+int RHMenuIntro::FUN_0052ec40()
+{
+    return m_choice;
+}
+
+// FUNCTION: GAME 0x0052ec50
+void *RHMenuIntro::FUN_0052ec50()
+{
+    return (void *)m_result.m_slot;
+}
+
 // FUNCTION: GAME 0x0052ec60
 bool RHMenuIntro::FUN_0052ec60(int, void *, void *)
 {
@@ -88,6 +100,12 @@ bool RHMenuIntro::FUN_0052ed80(int, void *, void *)
     }
     ((RHMapWindow *)m_screen)->FUN_0053c7e0();
     return false;
+}
+
+void EmitRHMenuIntroAccessors(RHMenuIntro *menu)
+{
+    menu->FUN_0052ec40();
+    menu->FUN_0052ec50();
 }
 
 // FUNCTION: GAME 0x0052edf0
