@@ -1,6 +1,7 @@
 #include "SBNullstr.h"
 #include "RHGame_calls.h"
 #include "SBThreadedInput.h"
+#include "SBDrawManager.h"
 #include "../ui/RHWidgetPortraitClass.h"
 #include <vector>
 #include <algorithm>
@@ -389,6 +390,27 @@ void RHGame::FUN_0050ed10(bool value)
     FUN_0050eb80(value);
     FUN_00514c50();
     ((RHGameSyncCalls *)this)->FUN_0050ed40();
+}
+
+#include "RHPortraitBar.h"
+#include "RHEngineWidenedCalls.h"
+
+// FUNCTION: GAME 0x0050efd0
+void RHEngineWidenedCalls::FUN_0050efd0(void *portrait)
+{
+    (*(RHPortraitBar **)((char *)this + 0x196c))->RemovePortrait((RHWidgetPortrait *)portrait);
+}
+
+// FUNCTION: GAME 0x0050eff0
+void RHGameActionCalls::FUN_0050eff0()
+{
+    (*(RHPortraitBar **)((char *)this + 0x196c))->RemoveAllPortraits();
+}
+
+// FUNCTION: GAME 0x0050f140
+RHGamePortraitCalls *RHGameSyncCalls::FUN_0050f140(void *actor)
+{
+    return (RHGamePortraitCalls *)(*(RHPortraitBar **)((char *)this + 0x196c))->FUN_0055e7e0(actor);
 }
 
 // FUNCTION: GAME 0x0050f1a0
@@ -785,6 +807,7 @@ void RHGame::FUN_00513d70(void *event)
         portrait->FUN_005d9950(*(unsigned *)((char *)event + 0x08));
 }
 
+
 // FUNCTION: GAME 0x00513360
 void RHGame::FUN_00513360(void *event)
 {
@@ -848,7 +871,7 @@ void RHGame::FUN_005139b0(void *)
 {
     ((SBThreadedInput *)*(void **)((char *)this + 0x0c))->SetMouseEnabled(m_5d);
     ((SBThreadedInput *)*(void **)((char *)this + 0x0c))->CleanUpInputs();
-    ((RHGameActionCalls *)*(void **)((char *)this + 0x10))->FUN_005ef380(0);
+    ((RHUnk005ef320 *)*(void **)((char *)this + 0x10))->FUN_005ef380(0);
 }
 
 // FUNCTION: GAME 0x005139e0
@@ -2971,6 +2994,23 @@ void RHGameMenuCalls::FUN_00535950(int first, int second, int third)
     *((char *)this + 0x344) = (char)first;
     *((char *)this + 0x144) = (char)second;
     *((char *)this + 0x244) = (char)third;
+}
+
+class RHUnk005364f0
+{
+public:
+    void FUN_005364f0(int value);
+};
+
+// FUNCTION: GAME 0x005364f0
+void RHUnk005364f0::FUN_005364f0(int value)
+{
+    *(int *)((char *)this + 0xbc) = value;
+}
+
+void EmitRHUnk005364f0(RHUnk005364f0 *a)
+{
+    a->FUN_005364f0(0);
 }
 
 // FUNCTION: GAME 0x00544b30

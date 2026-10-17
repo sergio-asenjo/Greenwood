@@ -44,10 +44,12 @@ class RHConsole
 {
 public:
     static void FUN_0045bc50(char *, const char *);
+    void FUN_0045bff0();
     char **FUN_0045c360(signed char *, unsigned &);
     void FUN_0045ccc0(const std::string &);
     void FUN_0045cc20(unsigned, char **);
     void FUN_0045cc60(unsigned, char **);
+    void FUN_0045ccb0(unsigned, char **);
     void FUN_0045d580(unsigned, char **);
     void FUN_0045d5c0(unsigned, char **);
     void FUN_0045d5f0(unsigned, char **);
@@ -72,6 +74,7 @@ public:
     void FUN_0045e400(unsigned, char **);
     void FUN_0045e450(unsigned, char **);
     void FUN_0045e4b0(unsigned, char **);
+    void FUN_0045e527(unsigned, char **);
     void FUN_0045e530(unsigned, char **);
     void FUN_0045e620(unsigned, char **);
     void FUN_0045e670(unsigned, char **);
@@ -80,6 +83,7 @@ public:
     void FUN_0045e7e0(unsigned, char **);
     void FUN_0045e8d0(unsigned, char **);
     void FUN_0045eaa0(unsigned, char **);
+    void FUN_0045eb40(unsigned, char **);
     void FUN_0045eb50(unsigned, char **);
     void FUN_0045ec90(unsigned, char **);
     void FUN_0045ee70(unsigned, char **);

@@ -1,6 +1,7 @@
 #include "RHSector.h"
 #include "RHEngine.h"
 #include "VMCore.h"
+#include "SBFilePosition.h"
 
 extern RHEngine *g_pEngine;
 
@@ -153,7 +154,7 @@ RHSectorActorIter RHSectorActorIter::operator++(int)
 int RHSector::Unk0057cd60(SBFile &file, bool mode)
 {
     SBGeoPoint2D point;
-    int start = ((RHUnk005f5440 *)&file)->Unk();
+    int start = ((ToolboxPositionFile *)&file)->FUN_005f5440();
     short width = *(short *)((char *)g_unk0x6c0a9c + 0x3e98) << 6;
     short height = *(short *)((char *)g_unk0x6c0a9c + 0x3e9a) << 6;
     undefined type;
@@ -184,12 +185,24 @@ int RHSector::Unk0057cd60(SBFile &file, bool mode)
     undefined flag;
     file.Access(&flag, 1);
     ((RHUnkSectorPoints *)((char *)this + 4))->FUN_0060c2e0();
-    return ((RHUnk005f5440 *)&file)->Unk() - start;
+    return ((ToolboxPositionFile *)&file)->FUN_005f5440() - start;
 }
 
 // FUNCTION: GAME 0x0057d390
 void RHSector::FUN_0057d390(void *, unsigned long, const SBGeoBoundingBox2D &, float, unsigned short)
 {
+}
+
+// FUNCTION: GAME 0x0057d3a0
+RHUnk0057d3a0::RHUnk0057d3a0()
+{
+    m_30 = 0x20;
+}
+
+// FUNCTION: GAME 0x0057d3f0
+RHUnk0057d3f0::RHUnk0057d3f0()
+{
+    m_30 = 4;
 }
 
 // FUNCTION: GAME 0x0057d440
@@ -219,6 +232,27 @@ void RHUnk0057d490::FUN_0057d760(void *gate, bool side)
     ((RHMotionAreaList<void *> *)((char *)this + 0x5c))->InsertLast(gate);
     ((RHMotionAreaList<bool> *)((char *)this + 0x80))->InsertLast(side);
 }
+
+// FUNCTION: GAME 0x0057ed80
+RHUnk0057ed80::RHUnk0057ed80()
+{
+    m_30 = 0x1040;
+}
+
+// FUNCTION: GAME 0x0057dc80
+RHUnk0057dc80::RHUnk0057dc80()
+{
+    FUN_0057d490();
+    *(unsigned *)this = 0x679c44;
+    m_f4 = 0;
+    m_f6 = 0;
+    m_f9 = 0;
+    m_f8 = 0;
+    m_fc = 0;
+    m_30 = 0x203;
+}
+
+void RHUnk0057dc80::FUN_0057d490() {}
 
 // FUNCTION: GAME 0x0057dcf0
 int RHSectorLift::FUN_0057dcf0(int animation)
@@ -381,7 +415,7 @@ void RHActorAreaCalls::FUN_0057dfc0(RHElementActor *actor, bool mode)
 // STUB: GAME 0x0057e060
 int RHSectorLift::Unk0057e060(SBFile &file, RHUnkSectorLiftGrid *grid)
 {
-    int start = ((RHUnk005f5440 *)&file)->Unk();
+    int start = ((ToolboxPositionFile *)&file)->FUN_005f5440();
     unsigned char type;
     file.Access(&type, 1);
     m_f0 = type;
@@ -420,7 +454,7 @@ int RHSectorLift::Unk0057e060(SBFile &file, RHUnkSectorLiftGrid *grid)
         gates.InsertLast(gate);
     }
     file.Access(&m_fa, 2);
-    return ((RHUnk005f5440 *)&file)->Unk() - start;
+    return ((ToolboxPositionFile *)&file)->FUN_005f5440() - start;
 }
 
 // FUNCTION: GAME 0x0057e390
@@ -812,4 +846,12 @@ void RHUnkSectorPoints::Unk0060ced0(const SBGeoPoint2D &point, unsigned int inde
 SBGeoPoint2D &RHUnkSectorPoints::Unk0060cef0(unsigned int index)
 {
     return FUN_006112c0(index);
+}
+
+void EmitRHSectorVariants(void *storage)
+{
+    ((RHUnk0057d3a0 *)storage)->RHUnk0057d3a0::RHUnk0057d3a0();
+    ((RHUnk0057d3f0 *)storage)->RHUnk0057d3f0::RHUnk0057d3f0();
+    ((RHUnk0057ed80 *)storage)->RHUnk0057ed80::RHUnk0057ed80();
+    ((RHUnk0057dc80 *)storage)->RHUnk0057dc80::RHUnk0057dc80();
 }

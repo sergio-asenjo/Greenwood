@@ -11,7 +11,11 @@
 
 typedef int RHConsole_size_assert[(sizeof(RHConsole) == 0x688) ? 1 : -1];
 
-class RHEngine;
+class RHEngine
+{
+public:
+    void FUN_004e2390(void *actor);
+};
 class RHMessenger;
 class RHUnk00452030
 {
@@ -470,6 +474,14 @@ void RHConsole::FUN_0045cc60(unsigned, char **)
         // STRING: GAME 0x006ad00c
         FUN_005ede40(m_engine->m_draw, "Elevation display disabled.");
     }
+}
+
+void RHConsole::FUN_0045bff0() {}
+
+// FUNCTION: GAME 0x0045ccb0
+void RHConsole::FUN_0045ccb0(unsigned, char **)
+{
+    FUN_0045bff0();
 }
 
 // FUNCTION: GAME 0x0045ccc0
@@ -936,6 +948,11 @@ void RHConsole::FUN_0045e4b0(unsigned, char **)
     }
 }
 
+// FUNCTION: GAME 0x0045e527
+void RHConsole::FUN_0045e527(unsigned, char **)
+{
+}
+
 // FUNCTION: GAME 0x0045e530
 void RHConsole::FUN_0045e530(unsigned count, char **arguments)
 {
@@ -1076,6 +1093,12 @@ void RHConsole::FUN_0045eaa0(unsigned count, char **arguments)
     sprintf(buffer, "%u amulets added to the campaign.", amount);
     FUN_005edae0(m_engine->m_draw, buffer);
     ((RHScriptBatchCalls *)g_unk0x6c07fc)->Unk004520e0(0, amount);
+}
+
+// FUNCTION: GAME 0x0045eb40
+void RHConsole::FUN_0045eb40(unsigned, char **)
+{
+    ((RHEngine *)m_engine)->FUN_004e2390(0);
 }
 
 // FUNCTION: GAME 0x0045eb50
@@ -1417,6 +1440,7 @@ void *RHConsole::FUN_00460600()
 void EmitRHConsole(RHConsole *console, signed char *line, unsigned &count, char **arguments)
 {
     RHConsole::FUN_0045bc50((char *)line, (char *)line);
+    console->FUN_0045e527(count, arguments);
     console->FUN_0045c360(line, count);
     console->FUN_0045cc20(count, arguments);
     console->FUN_0045cc60(count, arguments);
@@ -1453,6 +1477,7 @@ void EmitRHConsole(RHConsole *console, signed char *line, unsigned &count, char 
     console->FUN_0045e7e0(count, arguments);
     console->FUN_0045e8d0(count, arguments);
     console->FUN_0045eaa0(count, arguments);
+    console->FUN_0045eb40(count, arguments);
     console->FUN_0045eb50(count, arguments);
     console->FUN_0045ec90(count, arguments);
     console->FUN_0045ee70(count, arguments);

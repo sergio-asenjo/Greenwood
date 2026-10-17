@@ -1,6 +1,7 @@
 #include "SBNullstr.h"
 #include "SBUIRendererInputField.h"
 
+// FUNCTION: GAME 0x0048be30
 void FUN_0048be30()
 {
 }
@@ -12,6 +13,7 @@ unsigned short SBUIInputFieldDrawUnk::FUN_00614230(void *, std::wstring *, const
 #include "RHKeyConfig.h"
 #include <string.h>
 
+// FUNCTION: GAME 0x0045ac40
 const short *RHKeyConfig::GetKeys() const { return m_keys; }
 
 void RHGameInputSegment::FUN_004611c0() {}

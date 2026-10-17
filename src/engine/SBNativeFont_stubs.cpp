@@ -7,9 +7,22 @@ class SBGeoBoundingBox2D
 {
 public:
     bool FUN_006090a0() const;
+    float m_00;
+    float m_04;
+    float m_08;
+    float m_0c;
+    bool m_10;
 };
 
-bool SBGeoBoundingBox2D::FUN_006090a0() const { return false; }
+// Parked: VC6 lays the `!m_10` return-true block inline; the target jumps to it
+// at the end (je). All comparisons and the shared false block match. 0.842105.
+// STUB: GAME 0x006090a0
+bool SBGeoBoundingBox2D::FUN_006090a0() const
+{
+    if (!m_10)
+        return true;
+    return m_00 <= m_08 && m_04 <= m_0c;
+}
 
 SBResourceUnkKeyIterator SBNativeFontCharacterTree::FUN_00617e20(const unsigned short &)
 {

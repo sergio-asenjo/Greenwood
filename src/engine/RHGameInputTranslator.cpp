@@ -98,6 +98,26 @@ void RHGameInputTranslator::DeityCall()
     m_keys[0x21] = 0x46;
 }
 
+class RHUnk0051a4e0
+{
+public:
+    char *FUN_0051a4e0();
+    bool FUN_0051a680(int first, int second, int third, int fourth, int fifth);
+};
+
+// FUNCTION: GAME 0x0051a4e0
+char *RHUnk0051a4e0::FUN_0051a4e0()
+{
+    void *value = *(void **)((char *)this + 4);
+    return (char *)(*(void **)value) + 8;
+}
+
+// FUNCTION: GAME 0x0051a680
+bool RHUnk0051a4e0::FUN_0051a680(int first, int second, int third, int fourth, int fifth)
+{
+    return false;
+}
+
 void EmitRHGameInputTranslator(RHGameInputTranslator *translator, const SBGeoPoint2D &point)
 {
     translator->ResetState();
@@ -106,4 +126,10 @@ void EmitRHGameInputTranslator(RHGameInputTranslator *translator, const SBGeoPoi
     translator->IsInDeadZone(point);
     translator->ReflectActiveKeyConfig();
     translator->DeityCall();
+}
+
+void EmitRHUnk0051a4e0(RHUnk0051a4e0 *a)
+{
+    a->FUN_0051a4e0();
+    a->FUN_0051a680(0, 0, 0, 0, 0);
 }

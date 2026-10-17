@@ -29,6 +29,7 @@ struct SBDrawUnk005eec00Edge
 class RHUnk005ef320
 {
 public:
+    bool FUN_005ef380(int value);
     bool FUN_005e3f70();
     bool FUN_005e5890(unsigned long, void **, unsigned long);
     void FUN_005e57e0(unsigned, SBGeoVector2D &);

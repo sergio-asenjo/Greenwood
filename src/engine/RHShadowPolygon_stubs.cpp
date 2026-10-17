@@ -37,7 +37,6 @@ RHUnk005fc3b0 RHUnk005fc3b0::FUN_005fc9e0(float, float) { return *this; }
 void RHShadowUnk0060c260::FUN_0060c260(const SBGeoPoint2D &) {}
 void RHShadowUnk0060c260::FUN_0060c280() {}
 const SBGeoPoint2D &RHShadowUnk0060c260::FUN_0060c2b0(unsigned short) { return *(const SBGeoPoint2D *)m_0; }
-float RHShadowUnk005df9e0::FUN_005df9e0(float, float) { return 0.0f; }
 bool RHShadowPolygon::FUN_00598230(RHUnk005977e0 *, RHShadowUnk005df9e0 *, bool) { return false; }
 bool RHShadowPolygon::FUN_00598b90(RHUnk005977e0 *, RHShadowUnk005df9e0 *) { return false; }
 void RHShadowPolygon::FUN_0059b850(RHUnk005977e0 *, RHShadowUnk005df9e0 *) {}
@@ -50,10 +49,14 @@ RHShadowBox::RHShadowBox() {}
 RHMobileUnk006100e0::RHMobileUnk006100e0(const SBGeoPoint2D &, const SBGeoPoint2D &) {}
 RHShadowPointNodeList::~RHShadowPointNodeList() {}
 RHShadowPointNode *RHShadowPointNodeList::FUN_004243e0(RHShadowPointNode *next, RHShadowPointNode *) { return next; }
-void FUN_0059fb20(RHUnk00613e90 *, const RHUnk00613e90 &) {}
 void FUN_0059fb00(RHUnk00597a70 **, RHUnk00597a70 *const &) {}
+// FUNCTION: GAME 0x0059fb20
+void FUN_0059fb20(RHUnk00613e90 *destination, const RHUnk00613e90 &value)
+{
+    if (destination)
+        *destination = value;
+}
 RHShadowViewport::~RHShadowViewport() {}
-float RHUnk00613e90::FUN_005df5f0(const RHUnk00613e90 &) const { return 0.0f; }
 
 void FUN_005c9010(RHUnk005c9010Iterator &current, int distance, std::bidirectional_iterator_tag)
 {

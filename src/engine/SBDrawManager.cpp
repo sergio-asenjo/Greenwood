@@ -341,6 +341,13 @@ bool RHUnk005ef320::FUN_005e5d30(unsigned long surface)
     return true;
 }
 
+// FUNCTION: GAME 0x005e5ea0
+void RHUnkFXDraw::Unk005e5ea0(RHUnk00613e90 &view)
+{
+    *(char *)((char *)&view + 0x14) = 0;
+    ((RHUnk005ef320 *)this)->FUN_005e5d30(*(unsigned long *)&view);
+}
+
 // FUNCTION: GAME 0x005e5ec0
 bool SBDrawUnk005e5ec0::FUN_005e5ec0(unsigned long surface, unsigned long key)
 {
@@ -818,6 +825,13 @@ struct SBDrawTreeNode
     SBDrawTreeNode *m_right;
     unsigned long m_key;
 };
+
+// FUNCTION: GAME 0x005ef380
+bool RHUnk005ef320::FUN_005ef380(int value)
+{
+    *((unsigned char *)this + 0x113) = (unsigned char)value;
+    return true;
+}
 
 // GLOBAL: GAME 0x006c11dc
 SBDrawTreeNode *g_unk0x006c11dc;

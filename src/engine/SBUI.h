@@ -308,6 +308,7 @@ public:
     unsigned long FUN_0061b380(SBUIUnkImage *image, SBUIUnkImage *mask, bool keyed);
     void FUN_0061b4c0(SBUIUnkSurfacePair &surfaces);
     void FUN_0061b660(unsigned long key);
+    void FUN_0061b710(unsigned long surface);
     RHUnk005ef320 *m_draw;
     unsigned long m_surface;
     SBUIUnkTree m_tree;

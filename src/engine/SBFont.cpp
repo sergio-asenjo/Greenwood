@@ -120,6 +120,23 @@ static const char g_sbFontFile[] = "P:\\Robin Hood\\SBLibNG\\SBFont.cpp";
 // STRING: GAME 0x006bb8a0
 static const char g_sbFontMissing[] = "Warning ! Character 0x%02x is missing in the font '%s'";
 
+class SBFontUnk0061e800
+{
+public:
+    void FUN_0061e800();
+};
+
+// FUNCTION: GAME 0x0061e800
+void SBFontUnk0061e800::FUN_0061e800()
+{
+    *(unsigned *)this = 0x67ae34;
+}
+
+void EmitSBFontUnk0061e800(SBFontUnk0061e800 *a)
+{
+    a->FUN_0061e800();
+}
+
 // FUNCTION: GAME 0x0061e810
 void SBFontUnk0061e840::FUN_0061e810(int value, int)
 {

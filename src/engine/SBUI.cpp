@@ -494,6 +494,12 @@ void SBUIUnkSurface::FUN_0061b660(unsigned long key)
     surfaceMap.erase(key);
 }
 
+// FUNCTION: GAME 0x0061b710
+void SBUIUnkSurface::FUN_0061b710(unsigned long surface)
+{
+    m_surface = surface;
+}
+
 // FUNCTION: GAME 0x0061b720
 SBUIUnkTreeIterator SBUIUnkTree::FUN_0061b720(SBUIUnkTreeIterator first, SBUIUnkTreeIterator last)
 {
@@ -886,6 +892,7 @@ void EmitSBUI(SBUI *ui, SBUIWindowView *window, SBUIFontView *font)
     ((SBUIUnkSurface *)ui)->FUN_0061b640(0);
     ((SBUIUnkSurface *)ui)->FUN_0061b380((SBUIUnkImage *)window, (SBUIUnkImage *)window, false);
     ((SBUIUnkSurface *)ui)->FUN_0061b660(0);
+    ((SBUIUnkSurface *)ui)->FUN_0061b710(0);
     ((SBUIUnkTree *)ui)->FUN_0061b850(*(SBUIUnkTreeValue *)window);
     ((SBUIUnkTree *)ui)->FUN_0061b720(*(SBUIUnkTreeIterator *)window, *(SBUIUnkTreeIterator *)window);
     ((SBUIUnkTreeIterator *)ui)->FUN_0061c3c0();

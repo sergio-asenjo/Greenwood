@@ -10,7 +10,17 @@ public:
     void FUN_00484360(int amount);
 };
 
-bool RHSectorProductionPC::FUN_0055bb00(int) { return false; }
+// FUNCTION: GAME 0x0055bb00
+bool RHSectorProductionPC::FUN_0055bb00(int value)
+{
+    int *first = (int *)(*(char **)((char *)this + 0x40) + 0x48);
+    int *last = first + 3;
+    int *current;
+    for (current = first; current != last; ++current)
+        if (*current == value)
+            break;
+    return current != last;
+}
 void RHSectorProductionPC::FUN_0051d4e0(int, unsigned int) {}
 void RHSectorProductionPC::FUN_00484360(int) {}
 

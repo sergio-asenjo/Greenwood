@@ -2,6 +2,8 @@
 #include "SBPicture.h"
 #include "RHLoadingScreen.h"
 #include <new>
+#include <vector>
+#include <algorithm>
 
 // LIBRARY: GAME 0x006136a0
 // ?_Sort@std@@YAXPAG0P6A_NGG@Z0@Z
@@ -83,7 +85,7 @@ bool SBPicture::FUN_00611c80(SBPictureUnkDrawManager *draw, unsigned long surfac
         sourceOffset += pitch;
         destinationOffset += view.m_width;
     }
-    draw->Unk005e5ea0(view);
+    ((RHUnkFXDraw *)draw)->Unk005e5ea0((RHUnk00613e90 &)view);
     return true;
 }
 
@@ -424,9 +426,8 @@ bool FUN_00612dc0(unsigned short first, unsigned short second)
     return firstIntensity < secondIntensity;
 }
 
-// Included after the resize functions; earlier inclusion reorders FUN_00612350 loop-exit reloads.
-#include <vector>
-#include <algorithm>
+// <vector>/<algorithm> are included at the top (see the include block): moving them
+// after these resize functions flips FUN_00612350's loop-exit reload order.
 
 // FUNCTION: GAME 0x00612e30
 bool SBPicture::FUN_00612e30(unsigned short width, unsigned short height)

@@ -2649,3 +2649,14 @@ void rh_shadow_memory_range_error_emit(const RHShadowMemoryVector *blocks, bool 
     else
         blocks->FUN_0059ff20();
 }
+
+// FUNCTION: GAME 0x005df9e0
+float RHShadowUnk005df9e0::FUN_005df9e0(float x, float y)
+{
+    return x * m_4c + y * m_50 + m_54;
+}
+
+void rh_shadow_plane_emit(RHShadowUnk005df9e0 *plane)
+{
+    plane->FUN_005df9e0(0.0f, 0.0f);
+}

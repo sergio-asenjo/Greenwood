@@ -19,8 +19,6 @@ void FUN_00570850(void *) {}
 RHUnk004a1bc0::RHUnk004a1bc0(bool) {}
 RHUnk0057ee90::RHUnk0057ee90() {}
 RHUnk0057ee40::RHUnk0057ee40() {}
-void RHEngineRosterCalls::FUN_0055eda0() {}
-unsigned RHEngineRosterCalls::FUN_0055e880() { return 0; }
 bool RHEngineMenuStateCalls::FUN_00514970() { return false; }
 bool RHEngineSequenceStateCalls::FUN_005823f0() { return false; }
 bool RHEngineSequenceStateCalls::FUN_0058a670(void *) { return false; }
@@ -128,13 +126,12 @@ void RHEngineMissionElementCalls::Unk3c(SBFile &) {}
 
 bool RHEngineWidenedCalls::FUN_004b2010(char, void *) { return false; }
 void RHEngineWidenedCalls::FUN_00556260() {}
-void RHEngineWidenedCalls::FUN_0055ebf0() {}
 void *FUN_004b3120(int) { return 0; }
 void RHEngineWidenedCalls::FUN_004eb120(SBFile &, void *) {}
 void RHEngineWidenedCalls::FUN_00558670(SBFile &) {}
 void RHEngineWidenedCalls::FUN_005bd450() {}
 bool RHEngineWidenedCalls::FUN_005b76e0(unsigned, unsigned) { return false; }
-void RHEngineWidenedCalls::FUN_0050efd0(void *) {}
+void RHEngineWidenedCalls::FUN_005b7f60(unsigned long) {}
 void RHEngineWidenedCalls::FUN_004e3660(char) {}
 void RHEngineWidenedCalls::FUN_005e5160(unsigned) {}
 class RHEngineActorUpdateCalls

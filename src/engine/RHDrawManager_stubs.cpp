@@ -3,7 +3,10 @@
 // Target 0x0060fc90.
 RHUnk0060fbf0::~RHUnk0060fbf0() {}
 
-// Target 0x006092a0.
+// Target 0x006092a0. The real body (a vector subtract returning *this) is the
+// same original function RHElementFX.cpp views as SBGeoBoundingBox2D::operator-=;
+// binding it under FUN_006092a0 demoted RHElementFX::InitializeBackgroundRestoration.
+// Consolidation (rename FUN_006092a0 -> operator-= program-wide) is deferred.
 void SBGeoBoundingBox2D::FUN_006092a0(const SBGeoVector2D &) {}
 
 // Target 0x006092c0.

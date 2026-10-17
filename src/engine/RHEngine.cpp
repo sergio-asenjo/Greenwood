@@ -304,6 +304,9 @@ void *FUN_004b3120(int type);
 // GLOBAL: GAME 0x006c1058
 unsigned g_unk0x006c1058 = 0;
 
+// GLOBAL: GAME 0x006c105c
+float g_unk0x006c105c = 0.0f;
+
 // GLOBAL: GAME 0x006c1060
 unsigned g_unk0x006c1060 = 0;
 
@@ -920,6 +923,24 @@ void RHUnk00486170::FUN_00486170(void *value, unsigned count)
     operator delete(value);
 }
 
+class RHUnk00486180
+{
+public:
+    RHUnk00486180 *FUN_00486180();
+};
+
+// FUNCTION: GAME 0x00486180
+RHUnk00486180 *RHUnk00486180::FUN_00486180()
+{
+    *(int *)this = *(int *)*(int *)this;
+    return this;
+}
+
+void EmitRHUnk00486180(RHUnk00486180 *a)
+{
+    a->FUN_00486180();
+}
+
 // FUNCTION: GAME 0x004936a0
 void RHEngineReinforcementCalls::FUN_004936a0(int value)
 {
@@ -976,10 +997,168 @@ int RHUnk004a6310::FUN_004a6370() const
     return 0x1fd;
 }
 
+class RHProjectileLifetime
+{
+public:
+    RHProjectileLifetime(int action, void *victim);
+    char m_00[0xb0];
+    int m_b0;
+    char m_b4[0xa8];
+    int m_15c;
+    char m_160;
+    char m_161;
+    char m_162;
+    char m_163;
+    unsigned short m_164;
+    char m_166;
+};
+
+class RHUnk004a6670 : public RHProjectileLifetime
+{
+public:
+    RHUnk004a6670(void *victim, int value);
+};
+
+class RHUnk004a65f0 : public RHProjectileLifetime
+{
+public:
+    RHUnk004a65f0();
+};
+
+// FUNCTION: GAME 0x004a65f0
+RHUnk004a65f0::RHUnk004a65f0() : RHProjectileLifetime(1, 0)
+{
+    m_15c = 0;
+    m_160 = 1;
+    m_161 = 0;
+    m_162 = 0;
+    m_163 = 0;
+    m_164 = 0;
+    m_166 = 0;
+    *(unsigned *)this = 0x678288;
+    m_b0 = 5;
+}
+
+// FUNCTION: GAME 0x004a6670
+RHUnk004a6670::RHUnk004a6670(void *victim, int value) : RHProjectileLifetime(1, victim)
+{
+    m_161 = 0;
+    m_162 = 0;
+    m_163 = 0;
+    m_164 = 0;
+    m_15c = value;
+    m_160 = 1;
+    *(unsigned *)this = 0x678288;
+    m_b0 = 5;
+}
+
 // FUNCTION: GAME 0x004a66d0
 bool RHUnk004a66d0::FUN_004a66d0(char flag)
 {
     return ((RHEngineWidenedCalls *)this)->FUN_004b2010(flag, FUN_004b3120(5));
+}
+
+class RHUnk004a7b00
+{
+public:
+    bool FUN_004a7b00();
+};
+
+class RHUnk004a7820
+{
+public:
+    bool FUN_004a7820();
+    void FUN_004a7900();
+};
+
+// FUNCTION: GAME 0x004a7820
+bool RHUnk004a7820::FUN_004a7820()
+{
+    ((RHEngineWidenedCalls *)*(void **)((char *)this + 0x50))->FUN_005b7f60(0);
+    FUN_004a7900();
+    return true;
+}
+
+void RHUnk004a7820::FUN_004a7900()
+{
+}
+
+// FUNCTION: GAME 0x004a7b00
+bool RHUnk004a7b00::FUN_004a7b00()
+{
+    int value = *(int *)((char *)this + 0xb0);
+    if (value == 0x1a || value == 0x1b || value == 0x1c || value == 0x1d ||
+        value == 0x1e || value == 0x1f || value == 0x20)
+        return true;
+    return false;
+}
+
+class RHUnk004a7d10
+{
+public:
+    RHUnk004a7d10();
+    ~RHUnk004a7d10();
+    bool FUN_004a7d30(int first, int second, int third);
+    bool FUN_004a7dd0();
+    void FUN_004b1eb0(int first, int second, int third);
+    void FUN_004b1fb0();
+};
+
+// FUNCTION: GAME 0x004a7d10
+RHUnk004a7d10::RHUnk004a7d10()
+{
+    FUN_004b1eb0(3, 0, 0);
+    *(unsigned *)this = 0x67839c;
+}
+
+// FUNCTION: GAME 0x004a7d30
+bool RHUnk004a7d10::FUN_004a7d30(int first, int second, int third)
+{
+    return false;
+}
+
+// FUNCTION: GAME 0x004a7d60
+RHUnk004a7d10::~RHUnk004a7d10()
+{
+    *(unsigned *)this = 0x67839c;
+    FUN_004b1fb0();
+}
+
+void RHUnk004a7d10::FUN_004b1eb0(int, int, int) {}
+void RHUnk004a7d10::FUN_004b1fb0() {}
+
+// FUNCTION: GAME 0x004a7dd0
+bool RHUnk004a7d10::FUN_004a7dd0()
+{
+    ((RHEngineWidenedCalls *)*(void **)((char *)this + 0x50))->FUN_005b7f60(0);
+    return true;
+}
+
+void EmitRHUnk004a7d10(RHUnk004a7d10 *a, RHUnk004a7b00 *b)
+{
+    a->FUN_004a7d30(0, 0, 0);
+    b->FUN_004a7b00();
+}
+
+class RHUnk004a7e90 : public RHProjectileLifetime
+{
+public:
+    RHUnk004a7e90(void *victim);
+};
+
+// FUNCTION: GAME 0x004a7e90
+RHUnk004a7e90::RHUnk004a7e90(void *victim) : RHProjectileLifetime(4, victim)
+{
+    m_15c = 0;
+    *(unsigned *)this = 0x678410;
+    m_b0 = 8;
+}
+
+void EmitRHUnk004a7e90(void *storage, void *victim)
+{
+    ((RHUnk004a7e90 *)storage)->RHUnk004a7e90::RHUnk004a7e90(victim);
+    ((RHUnk004a6670 *)storage)->RHUnk004a6670::RHUnk004a6670(victim, 0);
+    ((RHUnk004a65f0 *)storage)->RHUnk004a65f0::RHUnk004a65f0();
 }
 
 // FUNCTION: GAME 0x004a7d70
@@ -994,10 +1173,52 @@ bool RHUnk004a7ed0::FUN_004a7ed0(char flag)
     RHENGINE_OBJECT_CREATE(8, 0xc4, flag)
 }
 
+// FUNCTION: GAME 0x004a7f30
+int RHUnk004a7ed0::FUN_004a7f30()
+{
+    return 3;
+}
+
+// FUNCTION: GAME 0x004a7f40
+void RHUnk004a7ed0::FUN_004a7f40(int first, int second, int third)
+{
+}
+
+// FUNCTION: GAME 0x004a7f50
+void RHUnk004a7ed0::FUN_004a7f50()
+{
+    *(int *)((char *)*(RHEngineWidenedCalls **)((char *)this + 0x50) + 0xe0) = *(int *)((char *)*(RHEngineWidenedCalls **)((char *)this + 0x50) + 0xe8);
+    *(short *)((char *)*(RHEngineWidenedCalls **)((char *)this + 0x50) + 0xde) = *(short *)((char *)*(RHEngineWidenedCalls **)((char *)this + 0x50) + 0xe4);
+    FUN_0048c5b0(this, 2);
+}
+
+// FUNCTION: GAME 0x004ba970
+int RHUnk004ba900::FUN_004ba970()
+{
+    return 0x1fc;
+}
+
 // FUNCTION: GAME 0x004b0980
 bool RHUnk004b0980::FUN_004b0980(char flag)
 {
     RHENGINE_OBJECT_CREATE(9, 0xc4, flag)
+}
+
+class RHUnk004b09e0
+{
+public:
+    char FUN_004b09e0();
+};
+
+// FUNCTION: GAME 0x004b09e0
+char RHUnk004b09e0::FUN_004b09e0()
+{
+    return *(char *)((char *)this + 0x1c4) ? 0x0a : 0x28;
+}
+
+void EmitRHUnk004b09e0(RHUnk004b09e0 *a)
+{
+    a->FUN_004b09e0();
 }
 
 // FUNCTION: GAME 0x004b91a0
@@ -4688,11 +4909,53 @@ void RHEngineSerializationCalls::FUN_005a5c50()
     *(unsigned *)((char *)this + 0x1a0) = 0;
 }
 
+// FUNCTION: GAME 0x005a5c60
+float RHEngineSerializationCalls::FUN_005a5c60(unsigned index)
+{
+    if (index == *(unsigned *)((char *)this + 0x198) &&
+        *(unsigned *)((char *)this + 0x1a0) == *(unsigned *)((char *)g_pEngine + 0x4a94))
+        return *(float *)((char *)this + 0x19c);
+    return g_unk0x00677488;
+}
+
+// FUNCTION: GAME 0x005a5ca0
+void RHEngineSerializationCalls::FUN_005a5ca0(unsigned first, float second)
+{
+    *(unsigned *)((char *)this + 0x198) = first;
+    *(float *)((char *)this + 0x19c) = second;
+    *(unsigned *)((char *)this + 0x1a0) = *(unsigned *)((char *)*(void **)0x006c0a88 + 0x4a94);
+}
+
 // FUNCTION: GAME 0x005a5cd0
 void FUN_005a5cd0()
 {
     g_unk0x006c1058 = 0;
     g_unk0x006c1060 = 0;
+}
+
+// FUNCTION: GAME 0x005a5ce0
+float FUN_005a5ce0(unsigned index)
+{
+    if (index == g_unk0x006c1058 &&
+        g_unk0x006c1060 == *(unsigned *)((char *)g_pEngine + 0x4a94))
+        return g_unk0x006c105c;
+    return g_unk0x00677488;
+}
+
+// FUNCTION: GAME 0x005a5d10
+void FUN_005a5d10(unsigned first, float second)
+{
+    g_unk0x006c1058 = first;
+    g_unk0x006c105c = second;
+    g_unk0x006c1060 = *(unsigned *)((char *)g_pEngine + 0x4a94);
+}
+
+void EmitRHEngineSerializationCalls(RHEngineSerializationCalls *a)
+{
+    a->FUN_005a5c60(0);
+    a->FUN_005a5ca0(0, 0.0f);
+    FUN_005a5ce0(0);
+    FUN_005a5d10(0, 0.0f);
 }
 
 class RHProfileFile
@@ -4744,6 +5007,9 @@ bool RHEngineBackgroundCalls::FUN_00611660(const std::string &path)
 void RHEngine::Emit(SBFile &file, void *&value)
 {
     ((RHpathRequest *)value)->~RHpathRequest();
+    ((RHUnk004a7ed0 *)value)->FUN_004a7f30();
+    ((RHUnk004a7ed0 *)value)->FUN_004a7f40(0, 0, 0);
+    ((RHUnk004ba900 *)value)->FUN_004ba970();
     ((RHUnk004d96a0 *)value)->FUN_004d96a0();
     ((RHUnk004d96d0 *)value)->FUN_004d96d0();
     TurnPathFinderOn();

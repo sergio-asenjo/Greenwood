@@ -344,6 +344,46 @@ public:
     RHSectorLift *m_58; // [0x58]
 };
 
+// VTABLE: GAME 0x00679c04
+// SIZE 0x5c
+class RHUnk0057d3a0 : public RHSector
+{
+public:
+    RHUnk0057d3a0();
+};
+
+// VTABLE: GAME 0x00679c14
+// SIZE 0x5c
+class RHUnk0057d3f0 : public RHSector
+{
+public:
+    RHUnk0057d3f0();
+};
+
+// VTABLE: GAME 0x00679c6c
+// SIZE 0x5c
+class RHUnk0057ed80 : public RHSector
+{
+public:
+    RHUnk0057ed80();
+};
+
+class RHUnk0057dc80
+{
+public:
+    RHUnk0057dc80();
+    void FUN_0057d490();
+    char m_00[0x30];
+    int m_30;
+    char m_34[0xc0];
+    unsigned short m_f4;
+    unsigned short m_f6;
+    char m_f8;
+    char m_f9;
+    char m_fa[2];
+    int m_fc;
+};
+
 class RHUnk0051aa00
 {
 public:
