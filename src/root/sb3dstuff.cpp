@@ -31,6 +31,12 @@ RHUnk00613e90 RHUnk00613e90::FUN_005df5a0(const RHUnk00613e90 &other) const
     return result;
 }
 
+// FUNCTION: GAME 0x005df5f0
+float RHUnk00613e90::FUN_005df5f0(const RHUnk00613e90 &other) const
+{
+    return other.m_8 * m_8 + other.m_4 * m_4 + other.m_0 * m_0;
+}
+
 // FUNCTION: GAME 0x005df610
 RHUnk00613e90 RHUnk00613e90::FUN_005df610(const RHUnk00613e90 &other) const
 {
@@ -283,6 +289,7 @@ float EmitSB3DGeometry(RHUnk00613e90 &vector, RHUnk005df860 &plane)
     bounds.FUN_005dfc80(0.0f, 0.0f, 0.0f);
     vector.FUN_005df4c0(vector, vector);
     vector.FUN_005df5a0(vector);
+    vector.FUN_005df5f0(vector);
     vector.FUN_005df610(vector);
     plane.FUN_005df8b0();
     plane.FUN_005df900();

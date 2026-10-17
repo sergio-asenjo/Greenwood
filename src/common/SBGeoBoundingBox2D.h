@@ -37,6 +37,7 @@ class SBGeoBoundingBox2D
 {
 public:
     bool Serialize(SBFile &file);
+    void FUN_00607d90();
     bool FUN_00607f00(const RHMobileUnk006100e0 &) const;
     bool FUN_00608040(const RHMobileUnk006100e0 &) const;
     bool FUN_00608180(const RHMobileUnk006100e0 &) const;

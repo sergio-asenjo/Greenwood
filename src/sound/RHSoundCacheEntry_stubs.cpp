@@ -20,5 +20,3 @@ extern "C" void __stdcall FSOUND_Sample_Free(void *) {}
 extern "C" signed char __stdcall FSOUND_Sample_SetMinMaxDistance(void *, float, float) { return 0; }
 // LIBRARY: GAME 0x005e3ad8
 extern "C" void *__stdcall FSOUND_Sample_Load(int, const char *, unsigned int, int) { return 0; }
-
-void FUN_005f5a80(std::string &, bool) {}

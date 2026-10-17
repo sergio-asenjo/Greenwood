@@ -11,4 +11,3 @@
 
 RHSword::RHSword() {}
 RHSword::~RHSword() {}
-SBString *SBFile::GetError() { return 0; }

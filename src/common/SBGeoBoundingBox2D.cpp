@@ -44,6 +44,12 @@ bool SBGeoBoundingBox2D::Serialize(SBFile &file)
     return true;
 }
 
+// FUNCTION: GAME 0x00607d90
+void SBGeoBoundingBox2D::FUN_00607d90()
+{
+    m_00[16] = 0;
+}
+
 // FUNCTION: GAME 0x00607f00
 bool SBGeoBoundingBox2D::FUN_00607f00(const RHMobileUnk006100e0 &segment) const
 {
@@ -139,6 +145,7 @@ bool SBGeoBoundingBox2D::FUN_006083b0(const SBGeoPoint2D &point) const
 void EmitSBGeoBoundingBox2D(SBGeoBoundingBox2D *box, SBFile &file)
 {
     box->Serialize(file);
+    box->FUN_00607d90();
     box->FUN_00607f00(*(RHMobileUnk006100e0 *)box);
     box->FUN_00608040(*(RHMobileUnk006100e0 *)box);
     box->FUN_00608180(*(RHMobileUnk006100e0 *)box);

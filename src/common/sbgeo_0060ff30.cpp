@@ -10,6 +10,13 @@ double g_unk0x00677490 = 0.0;
 // GLOBAL: GAME 0x0067a878
 double g_unk0x0067a878 = 9.999999717180685e-10;
 
+// FUNCTION: GAME 0x0060ff30
+void RHMobileUnk006100e0::FUN_0060ff30(const RHMobileUnk006100e0 &other)
+{
+    SBGeoPoint2D::operator=(other);
+    m_8 = other.m_8;
+}
+
 // FUNCTION: GAME 0x00610140
 RHMobileUnk006100e0 &RHMobileUnk006100e0::FUN_00610140(const RHMobileUnk006100e0 &other)
 {

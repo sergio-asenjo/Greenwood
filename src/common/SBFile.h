@@ -11,6 +11,10 @@ unsigned int SBFileUnk00643e0c(void *, unsigned int, unsigned int, FILE *);
 unsigned int SBFileUnk00643cd3(const void *, unsigned int, unsigned int, FILE *);
 int FUN_005f54d0();
 int FUN_005f5500(const void *);
+int FUN_005f5a80(std::string &, bool);
+bool FUN_005f5d00(const std::string &name);
+bool FUN_005f5d30(const std::string &name);
+bool FUN_005f6490(bool (*callback)(const std::string &));
 
 // SIZE 0x01
 class SBFileUnk005f5280

@@ -1,5 +1,6 @@
 #include "SBNullstr.h"
 #include "VMArray.h"
+#include "SCQuad.h"
 #include <new>
 #include <string.h>
 
@@ -24,6 +25,12 @@ int VMUnk0063a140::FUN_0063a140(int size, bool preserve)
     *(unsigned char **)m_pad0 = 0;
     *(int *)(m_pad0 + 4) = 0;
     return size;
+}
+
+// FUNCTION: GAME 0x0063a1d0
+unsigned RHUnk0063a1d0::FUN_0063a1d0()
+{
+    return *(unsigned *)((char *)this + 4);
 }
 
 // FUNCTION: GAME 0x0063a1e0

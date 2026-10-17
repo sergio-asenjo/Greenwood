@@ -30,7 +30,6 @@ void RHUnkFXDraw::FUN_005e5260() {}
 void RHUnkFXDraw::FUN_005e61e0(unsigned long, unsigned long, unsigned long, unsigned long) {}
 void RHUnkFXDraw::FUN_005e6440(unsigned long, int, int, unsigned long, unsigned long) {}
 int RHUnk005f4fc0::FUN_005f5090(const RHProfileText &, int) { return 0; }
-unsigned long ToolboxPositionFile::FUN_005f5440() { return 0; }
 void ToolboxChunks::FUN_005e3070() { Buyback(); }
 // LIBRARY: GAME 0x005e2ea0
 // ?substr@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@QBE?AV12@II@Z

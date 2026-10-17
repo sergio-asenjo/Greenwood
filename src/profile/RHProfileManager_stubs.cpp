@@ -34,4 +34,3 @@ RHProfileText operator+(const RHProfileText &, const RHProfileText &) { return R
 RHProfileFile::RHProfileFile() {}
 RHProfileFile::~RHProfileFile() {}
 int RHProfileFile::FUN_005f5090(const RHProfileText &, int) { return -1; }
-int RHProfileFile::FUN_005f5370(int, int) { return -1; }

@@ -7,7 +7,7 @@
 #include "RHArtificialIntelligence.h"
 
 int SCSerializeUnk00643c56(FILE *);
-FILE *SCSerializeUnk00643c43(const char *, const char *);
+extern "C" FILE *SCSerializeUnk00643c43(const char *, const char *);
 int SCSerializeUnk00642a2f(const char *, ...);
 
 // SIZE 0x0c

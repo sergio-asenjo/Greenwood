@@ -25,7 +25,7 @@ extern "C" signed char __stdcall FSOUND_Sample_GetDefaults(void *, int *, int *,
 extern "C" void __stdcall FSOUND_Sample_Free(void *);
 extern "C" signed char __stdcall FSOUND_Sample_SetMinMaxDistance(void *, float, float);
 extern "C" void *__stdcall FSOUND_Sample_Load(int, const char *, unsigned int, int);
-void FUN_005f5a80(std::string &, bool);
+int FUN_005f5a80(std::string &, bool);
 extern std::string g_unk0x006c0600;
 
 #endif
