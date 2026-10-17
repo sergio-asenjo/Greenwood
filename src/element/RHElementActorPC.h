@@ -23,6 +23,9 @@ public:
     char FUN_0048f9e0();
     unsigned FUN_0048f9f0();
     unsigned FUN_0048fa00();
+    void FUN_0049c660(unsigned short value);
+    unsigned short FUN_0049f500();
+    unsigned short FUN_0049ff60();
     static RHElementActorPC *CreatePCFromMissionStream(SBFile &file);
     void ApplyProjection(RHBonusProjection *projection);
     void InitializeAction(int action);

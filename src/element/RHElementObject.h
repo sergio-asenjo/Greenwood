@@ -69,10 +69,13 @@ public:
     virtual bool Serialize(SBFile &file);
 
     void Emit(SBFile &file);
+    void FUN_004b2390(int value);
     bool FUN_004b2420(void *actor) const;
     bool FUN_004b24d0(const SBGeoPoint2D &point) const;
     void FUN_004b2600(void *points, void *lines, void *actor);
     void *FUN_004b29c0(void *actor);
+    void FUN_004b2d60(unsigned short value);
+    int FUN_004b2d70();
 
     int m_a8;                     // [0xa8]
     char m_ac;                    // [0xac]
@@ -279,4 +282,5 @@ public:
     static void AddMasterObject(int key, RHElementObjectMaster *master);
     static void DeleteMasters();
     void FUN_004b3170(const std::string &first, const std::string &second, bool flag);
+    int FUN_004b31c0(int first, int second, int third, int fourth);
 };

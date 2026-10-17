@@ -27,6 +27,7 @@ public:
     ~RHUnk005fc3b0() {}
     RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &point);
     RHUnk005fc3b0 &FUN_005fc4d0(float factor);
+    float Unk005fc6a0(float value);
     void FUN_005fc7c0(float length);
     RHUnk005fc3b0 &Unk005fcd40(unsigned char direction, float length);
 };

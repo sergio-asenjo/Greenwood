@@ -428,6 +428,12 @@ unsigned RHElementProjectile::ComputeNumberOfFramesLeft() const
     return total;
 }
 
+// FUNCTION: GAME 0x004b8da0
+int RHElementProjectile::FUN_004b8da0() const
+{
+    return -1;
+}
+
 void EmitRHProjectileMedium(RHElementProjectile *projectile, RHProjectileVector *vector)
 {
     FUN_004b4260(*vector, 1.0f, 1.0f, 1, projectile);
@@ -437,4 +443,5 @@ void EmitRHProjectileMedium(RHElementProjectile *projectile, RHProjectileVector 
     vector->FUN_004b8840(*vector);
     projectile->PlayImpactSound(vector, false);
     projectile->ComputeNumberOfFramesLeft();
+    projectile->FUN_004b8da0();
 }

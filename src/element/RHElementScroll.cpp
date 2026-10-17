@@ -308,6 +308,32 @@ void RHUnk004ba7a0::FUN_004ba7e0()
         *(unsigned short *)((char *)this + 0x8c) = 0;
 }
 
+class RHProjectileLifetime
+{
+public:
+    RHProjectileLifetime(int action, void *victim);
+    char m_00[0xb0];
+    int m_b0;
+};
+
+class RHUnk004ba8d0 : public RHProjectileLifetime
+{
+public:
+    RHUnk004ba8d0(void *victim);
+};
+
+// FUNCTION: GAME 0x004ba8d0
+RHUnk004ba8d0::RHUnk004ba8d0(void *victim) : RHProjectileLifetime(5, victim)
+{
+    *(unsigned *)this = 0x67890c;
+    m_b0 = 6;
+}
+
+void EmitRHUnk004ba8d0(void *storage, void *victim)
+{
+    ((RHUnk004ba8d0 *)storage)->RHUnk004ba8d0::RHUnk004ba8d0(victim);
+}
+
 void RHElementScroll::Emit(SBFile &file)
 {
     InitializeFromMissionStream(file);

@@ -118,6 +118,12 @@ bool RHElementObject::Serialize(SBFile &file)
     return RHElement::Serialize(file);
 }
 
+// FUNCTION: GAME 0x004b2390
+void RHElementObject::FUN_004b2390(int value)
+{
+    m_b0 = value;
+}
+
 class RHUnk0049d4f0
 {
 public:
@@ -281,12 +287,6 @@ unsigned char g_unk0x006c0968[0x3c] = {0};
 // GLOBAL: GAME 0x006c09a4
 unsigned char g_unk0x006c09a4 = 0;
 
-class RHObjectUniqueView
-{
-public:
-    bool FUN_004b2d70();
-};
-
 // Parked: guard-byte temporary coalesces into AL instead of the target DL copy.
 // STUB: GAME 0x004b29c0
 void *RHElementObject::FUN_004b29c0(void *actor)
@@ -308,7 +308,7 @@ void *RHElementObject::FUN_004b29c0(void *actor)
         ((RHUnk0045aaf0 *)g_unk0x006c0968)->FUN_0045abc0(0x5c, 0, 0);
         return g_unk0x006c0968;
     }
-    bool unique = ((RHObjectUniqueView *)this)->FUN_004b2d70();
+    char unique = (char)FUN_004b2d70();
     *(unsigned char *)((char *)this + 0x92) = 1;
     *(int *)((char *)this + 0xa0) = 0;
     *(unsigned short *)((char *)this + 0xa4) = 2;
@@ -340,10 +340,27 @@ void EmitRHObjectFocus(RHElementObject *object, void *actor)
     object->FUN_004b29c0(actor);
 }
 
+// FUNCTION: GAME 0x004b2d60
+void RHElementObject::FUN_004b2d60(unsigned short value)
+{
+    m_ae = value;
+}
+
+// FUNCTION: GAME 0x004b2d70
+int RHElementObject::FUN_004b2d70()
+{
+    if (m_b0 < 26 && m_b0 >= 14)
+        return 0;
+    return 1;
+}
+
 // Force emission: a virtual is only emitted if its vtable is needed; this
 // non-inlinable out-of-line call keeps RHElementObject::Serialize in the build.
 void RHElementObject::Emit(SBFile &file)
 {
+    FUN_004b2390(0);
+    FUN_004b2d60(0);
+    FUN_004b2d70();
     Serialize(file);
 }
 
@@ -467,9 +484,16 @@ void RHElementObjectMaster::FUN_004b3170(const std::string &first, const std::st
         (*(RHCivilianSpriteView **)((char *)this + 0x50))->FUN_005bdf20(), 0, 0);
 }
 
+// FUNCTION: GAME 0x004b31c0
+int RHElementObjectMaster::FUN_004b31c0(int first, int second, int third, int fourth)
+{
+    return 0;
+}
+
 void EmitRHObjectMasterLoad(RHElementObjectMaster *master, const std::string &first, const std::string &second)
 {
     master->FUN_004b3170(first, second, false);
+    master->FUN_004b31c0(0, 0, 0, 0);
 }
 
 // FUNCTION: GAME 0x004b31d0

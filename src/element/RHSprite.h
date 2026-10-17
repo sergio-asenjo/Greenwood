@@ -190,7 +190,12 @@ public:
     void FUN_005bd8b0();
     undefined m_00[0xd8]; // 0x00
     unsigned short m_d8; // +0xd8
-    undefined m_da[0x76]; // 0xda
+    undefined m_da[0x6a]; // 0xda
+    unsigned short m_144; // 0x144
+    unsigned short m_146; // 0x146
+    unsigned short m_148; // 0x148
+    undefined m_14a[2]; // 0x14a
+    int m_14c; // 0x14c
     int m_150; // +0x150
     undefined m_154[0x14]; // 0x154
     char *m_168; // +0x168
@@ -229,6 +234,11 @@ public:
 class RHSprite : public RHUnk005b5ed0
 {
 public:
+    void FUN_005b5e20();
+    int FUN_0049b2c0();
+    void FUN_005b5e60();
+    void FUN_005b5ea0(SBFile &, int);
+    void Unk005bc920(SBFile &, int);
     int PerformAction(RHOrder *, int, int, bool);
     void LoadPositionInfoFromFile(SBFile &, int);
     int PerformMotion(RHOrder *, RHOrder *, int, int, float, int, bool);
@@ -242,10 +252,16 @@ public:
     unsigned short FUN_005bdc50(unsigned short, unsigned short);
     const SBGeoPoint2D *FUN_005bdc80(unsigned short, unsigned short);
     unsigned short FUN_005bdcd0(unsigned short);
+    float FUN_005bdcb0();
+    int FUN_005bd940();
     unsigned short FUN_005bdcf0(unsigned short);
+    unsigned short FUN_005bdb40(unsigned short, unsigned short);
+    unsigned short FUN_005bdb80(unsigned short, unsigned short);
+    void FUN_005bdf30();
     unsigned short FUN_005bdd50();
     unsigned short FUN_005bdd70();
     const SBGeoPoint2D *FUN_005bdd90();
+    unsigned short FUN_005bddb0(unsigned index);
     void FUN_005b94d0(unsigned short, void *, void *, void *, int);
     bool FUN_005b9b60(unsigned short, unsigned short);
     void FUN_005b9ce0();

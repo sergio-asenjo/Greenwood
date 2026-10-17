@@ -507,6 +507,7 @@ class RHUnk0044d400
 {
 public:
     void FUN_0044d400(int value, bool propagate);
+    void FUN_0044d6a0();
     void *Actor() { return RHActorField<void *>(this, m_00[1] + 4); }
     int *m_00; // 0x00
     undefined m_04[0x284]; // 0x04

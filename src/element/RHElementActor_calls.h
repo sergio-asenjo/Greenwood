@@ -377,6 +377,7 @@ class RHScriptBatchCalls
 {
 public:
     void Unk0046bcf0(int posture, int value);
+    void Unk0046bd10(int state);
     void Unk005c2ec0(void *position, int layer, int kind, void *actor, int value1, int value2, int value3, int value4);
     void Unk0057ec80(void *actor);
     void Unk0057ebd0(void *actor);

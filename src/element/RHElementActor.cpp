@@ -1,6 +1,12 @@
 #include "RHElementActor.h"
 #include "VMCore.h"
 
+class RHPositionInterface
+{
+public:
+    bool Turn();
+};
+
 // LIBRARY: GAME 0x00402a70
 // ?erase@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAEAAV12@II@Z
 
@@ -309,6 +315,9 @@ void RHElementActor::FUN_00463250(unsigned value) {}
 // FUNCTION: GAME 0x00463260
 void RHElementActor::FUN_00463260(unsigned first, unsigned second, unsigned third, unsigned fourth) {}
 
+// FUNCTION: GAME 0x00463d90
+int RHElementActor::FUN_00463d90(unsigned value) const { return 0; }
+
 // FUNCTION: GAME 0x00464530
 void RHActorPositionCalls::FUN_00464530(const SBGeoPoint2D &point)
 {
@@ -395,6 +404,12 @@ void RHBonusInfoBase::FUN_004671e0(char value)
 int RHElementActor::FUN_00467200() const
 {
     return *(const int *)((const char *)Info() + 0xe0);
+}
+
+// FUNCTION: GAME 0x00467210
+bool RHElementActor::FUN_00467210()
+{
+    return ((RHPositionInterface *)((char *)Info() + 4))->Turn();
 }
 
 // FUNCTION: GAME 0x00467220
@@ -719,6 +734,23 @@ static void RHActorApplyCrossingFlags(RHElementActor *actor, RHElevationLine *li
                 RHActorField<void *>(actor->Grid(), 0x4188);
         }
     }
+}
+
+class RHUnk0046ae90
+{
+public:
+    bool FUN_0046ae90(int value);
+};
+
+// FUNCTION: GAME 0x0046ae90
+bool RHUnk0046ae90::FUN_0046ae90(int value)
+{
+    return false;
+}
+
+void EmitRHUnk0046ae90(RHUnk0046ae90 *a)
+{
+    a->FUN_0046ae90(0);
 }
 
 // FUNCTION: GAME 0x0046c8e0
@@ -1087,6 +1119,13 @@ bool RHElementActor::FUN_0046e270()
     return false;
 }
 
+// FUNCTION: GAME 0x0046e7c0
+void RHElementActor::FUN_0046e7c0(unsigned short layer, void *sector)
+{
+    RHActorField<unsigned short>(Info(), 0xde) = layer;
+    RHActorField<void *>(Info(), 0xe0) = sector;
+}
+
 // FUNCTION: GAME 0x0046e7e0
 void RHElementActor::InitializeScript(std::string &name)
 {
@@ -1104,6 +1143,63 @@ void RHElementActor::InitializeScript(std::string &name)
         m_108.m_0 = (RHActorScriptBase *)this;
     }
     m_108.FUN_004030a0();
+}
+
+// FUNCTION: GAME 0x0046e960
+int RHElementActor::FUN_0046e960()
+{
+    if (m_130 && m_130->m_10 == 0x13)
+        return 1;
+    return 0;
+}
+
+// Parked: VC6 duplicates the opposite-polarity state-call tails instead of sharing them.
+// STUB: GAME 0x0046e980
+void RHElementActor::FUN_0046e980(bool first, bool second)
+{
+    switch (RHActorField<int>(this, 0x144))
+    {
+    case 0:
+    case 1:
+    case 2:
+    case 4:
+    case 5:
+    case 6:
+    case 16:
+    case 17:
+        if (second)
+            ((RHScriptBatchCalls *)this)->Unk0046bd10(3);
+        else
+            ((RHScriptBatchCalls *)this)->Unk0046bd10(2);
+        break;
+    case 3:
+        if (!first)
+            ((RHScriptBatchCalls *)this)->Unk0046bd10(3);
+        else
+            ((RHScriptBatchCalls *)this)->Unk0046bd10(2);
+        break;
+    case 7:
+    case 8:
+    case 10:
+    case 11:
+    case 15:
+        if (second)
+            ((RHScriptBatchCalls *)this)->Unk0046bd10(9);
+        else
+            ((RHScriptBatchCalls *)this)->Unk0046bd10(8);
+        break;
+    case 9:
+        if (!first)
+            ((RHScriptBatchCalls *)this)->Unk0046bd10(9);
+        else
+            ((RHScriptBatchCalls *)this)->Unk0046bd10(8);
+        break;
+    case 12:
+    case 13:
+    case 14:
+        ((RHScriptBatchCalls *)this)->Unk0046bd10(14);
+        break;
+    }
 }
 
 // FUNCTION: GAME 0x004846d0
@@ -1151,6 +1247,24 @@ void RHUnk004e52a0::FUN_004e52a0()
     ::operator delete(m_head);
     m_head = 0;
     m_count = 0;
+}
+
+class RHUnk004e54a0
+{
+public:
+    const char *FUN_004e54a0();
+};
+
+// FUNCTION: GAME 0x004e54a0
+const char *RHUnk004e54a0::FUN_004e54a0()
+{
+    const char *value = *(const char **)((char *)this + 0x10);
+    return value ? value : "";
+}
+
+void EmitRHUnk004e54a0(RHUnk004e54a0 *a)
+{
+    a->FUN_004e54a0();
 }
 
 // Parked: receiver/layer registers and sector-flag shift/test lowering differ.
@@ -1343,6 +1457,12 @@ RHUnk0060fbf0::RHUnk0060fbf0()
     m_4 = 0;
 }
 
+// FUNCTION: GAME 0x0060fc00
+RHUnk0060fbf0::RHUnk0060fbf0(const RHUnk0060fbf0 &other)
+{
+    FUN_0060fa30(other);
+}
+
 // FUNCTION: GAME 0x0060fca0
 RHUnk0060fbf0 &RHUnk0060fbf0::FUN_0060fca0(const RHUnk0060fbf0 &other)
 {
@@ -1354,6 +1474,18 @@ RHUnk0060fbf0 &RHUnk0060fbf0::FUN_0060fca0(const RHUnk0060fbf0 &other)
     return *this;
 }
 
+// FUNCTION: GAME 0x0060fcc0
+unsigned short RHUnk0060fbf0::FUN_0060fcc0() const
+{
+    return m_2;
+}
+
+// FUNCTION: GAME 0x0060fcd0
+unsigned short RHUnk0060fbf0::FUN_0060fcd0() const
+{
+    return m_4;
+}
+
 void RHActorEmitWidened(RHUnk0053bf20 *first, RHUnk00560410 *second,
                         RHUnk0060fbf0 *third, RHUnk004e52a0 *list,
                         SBGeoPoint2D *point)
@@ -1362,6 +1494,8 @@ void RHActorEmitWidened(RHUnk0053bf20 *first, RHUnk00560410 *second,
     second->FUN_00560410(0);
     new RHUnk0060fbf0;
     third->FUN_0060fca0(*third);
+    third->FUN_0060fcc0();
+    third->FUN_0060fcd0();
     list->FUN_004e52a0();
     point->FUN_005fc700(1.0f);
     ((RHActorSequencePointCalls *)first)->FUN_005871b0(0);
@@ -1376,10 +1510,14 @@ void RHElementActor::Emit(SBFile &file, std::string &name)
     FUN_00463240(0, 0, 0);
     FUN_00463250(0);
     FUN_00463260(0, 0, 0, 0);
+    FUN_00463d90(0);
     FUN_0046d710();
     FUN_0046d5f0(this, false);
     FUN_0046d750(m_128, 10000);
     FUN_0046e270();
+    FUN_0046e7c0(0, 0);
+    FUN_0046e960();
+    FUN_0046e980(false, false);
     Serialize(file);
     ExecuteImmediately(0);
     Translate(0, RHcommandUnk0);
@@ -1387,6 +1525,7 @@ void RHElementActor::Emit(SBFile &file, std::string &name)
     InitializeScript(name);
     FUN_004626e0();
     FUN_00468ee0(0);
+    FUN_00467210();
 }
 
 RHOrder::RHOrder()

@@ -24,6 +24,8 @@ private:
 class RHElementPurse : public RHElementProjectile
 {
 public:
+    int FUN_004b9200();
+    int FUN_004b9210();
     virtual bool Serialize(SBFile &file);
 
     void Emit(SBFile &file);

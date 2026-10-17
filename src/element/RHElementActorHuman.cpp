@@ -871,6 +871,19 @@ void RHUnk0044d400::FUN_0044d400(int value, bool propagate)
     }
 }
 
+// FUNCTION: GAME 0x0044d6a0
+void RHUnk0044d400::FUN_0044d6a0()
+{
+    m_288 = 0;
+    m_28c = 0;
+    m_290 = 0;
+}
+
+void EmitRHUnk0044d400(RHUnk0044d400 *a)
+{
+    a->FUN_0044d6a0();
+}
+
 // FUNCTION: GAME 0x0046bd20
 int RHUnk0046bd20::FUN_0046bd20()
 {

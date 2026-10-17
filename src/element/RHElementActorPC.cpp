@@ -312,6 +312,9 @@ void EmitRHActorPCSmallMethods(RHElementActorPC *actor)
     actor->FUN_0048f9e0();
     actor->FUN_0048f9f0();
     actor->FUN_0048fa00();
+    actor->FUN_0049c660(0);
+    actor->FUN_0049f500();
+    actor->FUN_0049ff60();
 }
 
 // FUNCTION: GAME 0x00493660
@@ -323,6 +326,13 @@ void RHActorPCTemplateCalls::FUN_00493660(int value)
         if (!RHActorPCField<char>(menu, 0xca9))
             ((RHActorPCEngineCalls *)g_unk0x6c0b3c)->FUN_0050efb0(menu);
     }
+}
+
+// FUNCTION: GAME 0x0049c660
+void RHElementActorPC::FUN_0049c660(unsigned short value)
+{
+    if (RHActorPCField<unsigned short>(this, 0x55a) == value)
+        RHActorPCField<unsigned short>(this, 0x55a) = 0xffff;
 }
 
 // FUNCTION: GAME 0x0049d590
@@ -535,6 +545,12 @@ void RHElementActorPC::FUN_0049f380(void *)
 {
 }
 
+// FUNCTION: GAME 0x0049f500
+unsigned short RHElementActorPC::FUN_0049f500()
+{
+    return RHActorPCField<unsigned short>(m_600, 0x14);
+}
+
 // Parked: the action-field pointer is reconstructed locally instead of calling out-of-run 0x0055c220.
 // STUB: GAME 0x0049f520
 void RHElementActorPC::FUN_0049f520(unsigned action, unsigned short amount, char notify)
@@ -610,6 +626,12 @@ void RHElementActorPC::FUN_0049fcd0()
 // STUB: GAME 0x0049fe20
 void RHElementActorPC::FUN_0049fe20()
 {
+}
+
+// FUNCTION: GAME 0x0049ff60
+unsigned short RHElementActorPC::FUN_0049ff60()
+{
+    return RHActorPCField<unsigned short>(m_5fc, 0x8e);
 }
 
 // Parked: the geometry helper's receiver and argument layout do not match the reconstructed vector wrapper.

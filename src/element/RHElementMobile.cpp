@@ -969,6 +969,37 @@ void RHMobileGrid::FUN_004ea7b0(RHMobilePointerList &output, RHMobilePolygon &po
     }
 }
 
+class RHUnk0051fc10
+{
+public:
+    RHUnk0051fc10();
+    char m_00[0x14];
+    int m_14;
+    char m_18[8];
+    char m_20;
+    char m_21[3];
+    int m_24;
+    int m_28;
+    int m_2c;
+    int m_30;
+};
+
+void FUN_0051f0f0();
+
+// FUNCTION: GAME 0x0051fc10
+RHUnk0051fc10::RHUnk0051fc10()
+{
+    FUN_0051f0f0();
+    *(unsigned *)this = 0x6790f0;
+    m_20 = 0;
+    m_28 = 0;
+    m_30 = 0;
+    m_14 = 0x10;
+    m_24 = 1;
+}
+
+void FUN_0051f0f0() {}
+
 // FUNCTION: GAME 0x0051fd90
 void RHMobileUnk0051fd90::FUN_0051fd90(float first, float second)
 {
@@ -985,6 +1016,52 @@ void RHMobileUnk00520c50::FUN_00520c50(float first, float second)
     m_30 = first;
     m_28 = g_unk0x0067749c / (m_24 - first);
     m_2c = -(m_28 * first);
+}
+
+class RHUnk005214b0
+{
+public:
+    RHUnk005214b0();
+    char m_00[0x14];
+    int m_14;
+    char m_18[8];
+    unsigned short m_20;
+};
+
+// FUNCTION: GAME 0x005214b0
+RHUnk005214b0::RHUnk005214b0()
+{
+    FUN_0051f0f0();
+    int value = m_14;
+    *(unsigned *)this = 0x679120;
+    value |= 2;
+    m_20 = 0xffff;
+    m_14 = value;
+}
+
+class RHUnk00521500
+{
+public:
+    RHUnk00521500();
+    char m_00[0x14];
+    int m_14;
+    char m_18;
+};
+
+// FUNCTION: GAME 0x00521500
+RHUnk00521500::RHUnk00521500()
+{
+    FUN_0051f0f0();
+    *(unsigned *)this = 0x679128;
+    m_14 = 0x40;
+    m_18 = 1;
+}
+
+void EmitRHUnk0051fc10(void *storage)
+{
+    ((RHUnk0051fc10 *)storage)->RHUnk0051fc10::RHUnk0051fc10();
+    ((RHUnk005214b0 *)storage)->RHUnk005214b0::RHUnk005214b0();
+    ((RHUnk00521500 *)storage)->RHUnk00521500::RHUnk00521500();
 }
 
 // FUNCTION: GAME 0x005504d0

@@ -29,20 +29,15 @@ public:
     bool FUN_0045abc0(unsigned short value, int first, int second);
 };
 
-bool RHUnk0045aaf0::FUN_0045abc0(unsigned short, int, int)
+// FUNCTION: GAME 0x0045abc0
+bool RHUnk0045aaf0::FUN_0045abc0(unsigned short value, int first, int second)
 {
-    return false;
-}
-
-class RHObjectUniqueView
-{
-public:
-    bool FUN_004b2d70();
-};
-
-bool RHObjectUniqueView::FUN_004b2d70()
-{
-    return false;
+    bool result = *(int *)((char *)this + 4) == 0;
+    *(unsigned short *)((char *)this + 8) = value;
+    *(int *)((char *)this + 0xc) = first;
+    *(int *)((char *)this + 4) = 1;
+    *(int *)((char *)this) = second;
+    return result;
 }
 
 unsigned short RHObjectPCQuantity::FUN_0049d5e0(int)

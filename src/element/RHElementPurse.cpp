@@ -31,6 +31,18 @@
 #include "SBNullstr.h"
 #include "RHElementPurse.h"
 
+// FUNCTION: GAME 0x004b9200
+int RHElementPurse::FUN_004b9200()
+{
+    return 506;
+}
+
+// FUNCTION: GAME 0x004b9210
+int RHElementPurse::FUN_004b9210()
+{
+    return 7;
+}
+
 // FUNCTION: GAME 0x004b9830
 bool RHElementPurse::Serialize(SBFile &file)
 {
@@ -57,5 +69,7 @@ bool RHElementPurse::Serialize(SBFile &file)
 // referenced; this non-inlinable out-of-line call keeps Serialize in the build.
 void RHElementPurse::Emit(SBFile &file)
 {
+    FUN_004b9200();
+    FUN_004b9210();
     Serialize(file);
 }

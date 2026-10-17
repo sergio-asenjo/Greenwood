@@ -62,6 +62,66 @@ void FUN_00471050()
     g_unk0x6c0838.FUN_0045ab50();
 }
 
+// FUNCTION: GAME 0x00470180
+unsigned short RHElementActorCivilian::FUN_00470180()
+{
+    return 0;
+}
+
+// FUNCTION: GAME 0x00470190
+void RHElementActorCivilian::FUN_00470190(unsigned, unsigned, unsigned, unsigned, unsigned, unsigned, unsigned)
+{
+}
+
+// FUNCTION: GAME 0x004701a0
+char RHElementActorCivilian::FUN_004701a0()
+{
+    void *table = RHCivilianField<void *>(this, 0x49c);
+    unsigned offset = RHCivilianField<unsigned>(table, 4);
+    return RHCivilianField<char>((char *)this + offset, 0x4c0);
+}
+
+// FUNCTION: GAME 0x004701f0
+int RHElementActorCivilian::FUN_004701f0()
+{
+    return RHCivilianField<int>(m_708, 0x38);
+}
+
+bool FUN_00470e30(unsigned int index);
+bool FUN_00470350(const std::vector<unsigned short> &values);
+
+// FUNCTION: GAME 0x00470310
+bool RHElementActorCivilian::FUN_00470310()
+{
+    std::vector<unsigned short> *arrays =
+        RHCivilianField<std::vector<unsigned short> *>(this, 0x700);
+    std::vector<unsigned short> *last = arrays + 10;
+    std::vector<unsigned short> *first = arrays + RHCivilianField<unsigned>(this, 0x704);
+    int count = 0;
+    for (; first != last; ++first)
+        if (FUN_00470350(*first))
+            ++count;
+    return count != 0;
+}
+
+// FUNCTION: GAME 0x00470350
+bool FUN_00470350(const std::vector<unsigned short> &values)
+{
+    int count = 0;
+    std::vector<unsigned short>::const_iterator last = values.end();
+    std::vector<unsigned short>::const_iterator it = values.begin();
+    for (; it != last; ++it)
+        if (FUN_00470e30(*it))
+            ++count;
+    return count != 0;
+}
+
+// FUNCTION: GAME 0x00470460
+int RHElementActorCivilian::FUN_00470460()
+{
+    return RHCivilianField<int>(m_708, 0x34) == 0;
+}
+
 // Parked: scalar slots, geometry temporaries and named callees differ.
 // STUB: GAME 0x00470480
 void RHElementActorCivilian::FUN_00470480(SBFile &file)
@@ -415,6 +475,33 @@ public:
     void FUN_00471590(unsigned char flags);
 };
 
+void RHElementActorCivilian::FUN_00471e50(int, int) {}
+void RHElementActorCivilian::FUN_0047e9a0(int, int) {}
+bool RHElementActorCivilian::FUN_00475810(RHElementActorCivilian *) { return false; }
+
+// FUNCTION: GAME 0x00471240
+bool RHElementActorCivilian::FUN_00471240(RHElementActorCivilian *arg)
+{
+    unsigned type = RHCivilianField<unsigned>(arg, 0x10);
+    if (!FUN_00470ca0() || type == 0x76 || type == 0x8f || type == 0xa1)
+        return FUN_00475810(arg);
+    return false;
+}
+
+// FUNCTION: GAME 0x00471400
+void RHElementActorCivilian::FUN_00471400(int first, int second)
+{
+    if (!RHCivilianField<int>(this, 0x500))
+        FUN_00471e50(first, second);
+}
+
+// FUNCTION: GAME 0x00471420
+void RHElementActorCivilian::FUN_00471420(int first, int second)
+{
+    if (!RHCivilianField<int>(this, 0x500))
+        FUN_0047e9a0(first, second);
+}
+
 // FUNCTION: GAME 0x00471590
 void RHCivilianAdjustedReceiver::FUN_00471590(unsigned char flags)
 {
@@ -425,6 +512,14 @@ void RHCivilianAdjustedReceiver::FUN_00471590(unsigned char flags)
 void EmitRHCivilianAdjustedReceiver(RHCivilianAdjustedReceiver *receiver, unsigned char flags)
 {
     receiver->FUN_00471590(flags);
+}
+
+// FUNCTION: GAME 0x00485990
+bool RHElementActorCivilian::FUN_00485990()
+{
+    if ((RHCivilianField<unsigned>(this, 4) & 0x1f) == 4)
+        return FUN_00470ca0();
+    return *(int *)(RHCivilianField<char *>(this, 0x50) + 0x8c) == 0x14;
 }
 
 // FUNCTION: GAME 0x005bdef0
@@ -470,8 +565,15 @@ SBGeoBoundingBox2D::SBGeoBoundingBox2D(const SBGeoPoint2D &first, const SBGeoPoi
 
 void RHElementActorCivilian::Emit(SBFile &file)
 {
+    FUN_00470180();
+    FUN_00470190(0, 0, 0, 0, 0, 0, 0);
+    FUN_004701a0();
+    FUN_004701f0();
+    FUN_00470460();
     FUN_00470cc0();
     Serialize(file);
     FUN_00470ca0();
     FUN_00470ce0();
+    FUN_00471240(0);
+    FUN_00485990();
 }

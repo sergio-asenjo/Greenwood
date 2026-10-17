@@ -1,6 +1,137 @@
 #include "SBNullstr.h"
 #include "RHElementBonus.h"
 
+// FUNCTION: GAME 0x004a7240
+int FUN_004a7240(volatile int value)
+{
+    switch (value)
+    {
+    case 0: return 1;
+    case 1: return 5;
+    case 2: return 0xb;
+    case 3: return 0xc;
+    case 4: return 0xd;
+    case 5: return 0x10;
+    case 6: return 0x11;
+    case 7: return 0x13;
+    case 8: return 4;
+    case 9:
+    case 10:
+    case 11:
+    case 12:
+    case 13:
+    case 14:
+    case 15:
+    case 16:
+    case 17:
+    case 18:
+        return 0;
+    }
+    return value;
+}
+
+void EmitFUN_004a7240()
+{
+    FUN_004a7240(0);
+}
+
+// FUNCTION: GAME 0x004a72e0
+int FUN_004a72e0(volatile int value)
+{
+    switch (value)
+    {
+    case 0x11: return 1;
+    case 0x18: return 5;
+    case 0x10: return 0xb;
+    case 0xf: return 0xc;
+    case 0x13: return 0xd;
+    case 0x15: return 0x10;
+    case 0x14: return 0x11;
+    case 0x19: return 0x13;
+    case 0x16: return 4;
+    case 0xe:
+    case 0x12:
+    case 0x17:
+    case 0x1a:
+    case 0x1b:
+    case 0x1c:
+    case 0x1d:
+    case 0x1e:
+    case 0x1f:
+    case 0x20:
+        return 0;
+    }
+    return value;
+}
+
+void EmitFUN_004a72e0()
+{
+    FUN_004a72e0(0);
+}
+
+// FUNCTION: GAME 0x004a7380
+int FUN_004a7380(volatile int value)
+{
+    switch (value)
+    {
+    case 3: return 0xf;
+    case 10: return 0xe;
+    case 2: return 0x10;
+    case 0: return 0x11;
+    case 11: return 0x12;
+    case 4: return 0x13;
+    case 5: return 0x15;
+    case 6: return 0x14;
+    case 8: return 0x16;
+    case 9: return 0x17;
+    case 1: return 0x18;
+    case 7: return 0x19;
+    case 12: return 0x1a;
+    case 13: return 0x1b;
+    case 14: return 0x1c;
+    case 15: return 0x1d;
+    case 16: return 0x1e;
+    case 17: return 0x1f;
+    case 18: return 0x20;
+    }
+    return value;
+}
+
+void EmitFUN_004a7380()
+{
+    FUN_004a7380(0);
+}
+
+// Parked: byte-table + dword-table structure and both tables match; residual is
+// only VC6's case-body LAYOUT order. The target lays the bodies out as
+// 0xf,0x10,0x11,0x13,0x15,0x14,0x16,0x18,0x19 (nearly sorted by return value)
+// while any source case order that reproduces the target's dword table
+// (0x11,0x16,0x18,0x10,0xf,0x13,0x15,0x14,0x19) lays them out in source order.
+// Layout is not controllable from the case order; parked at 82.76%.
+// STUB: GAME 0x004a7460
+int FUN_004a7460(volatile int value)
+{
+    switch (value)
+    {
+    case 1: return 0x11;
+    case 4: return 0x16;
+    case 5: return 0x18;
+    case 11: return 0x10;
+    case 12: return 0xf;
+    case 13: return 0x13;
+    case 14: return 0x13;
+    case 16: return 0x15;
+    case 17: return 0x14;
+    case 19: return 0x19;
+    }
+    return value;
+}
+
+void EmitFUN_004a7460()
+{
+    FUN_004a7460(0);
+}
+
 inline void RHElementBonus::ApplyProjection(RHBonusProjection *projection)
 {
     if (projection != 0)

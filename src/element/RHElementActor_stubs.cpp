@@ -1,12 +1,17 @@
 #include "SBNullstr.h"
 #include "RHElementActor.h"
 
+extern int g_unk0x6c0c6c;
+
 void RHUnk0060fbf0::FUN_0060fa20() {}
 void RHUnk0060fbf0::FUN_0060fa30(const RHUnk0060fbf0 &) {}
 
 
 void RHActorString::FUN_00402780() {}
 bool RHActorString::FUN_00402280(unsigned, bool) { return true; }
+// Parked: multi-view (no marker). SBFile::GetError and RHProfileString call this
+// address as std::basic_string<...>::_Eos; any marker here demotes 26 prior
+// exacts. Body: *(unsigned*)(this+8)=size; ((char*)m_4)[size]=0.
 void RHActorString::FUN_00402260(unsigned) {}
 void RHActorString::FUN_00401ee0(bool) {}
 
@@ -39,7 +44,11 @@ void RHElementActor::FUN_00464630() {}
 
 bool RHActorCrossingHumanCalls::FUN_004843a0(void *) { return false; }
 bool RHActorCrossingHumanCalls::FUN_004843d0(SBGeoPoint2D &, void *, bool) { return false; }
-void RHOrder::FUN_0054e730() {}
+// FUNCTION: GAME 0x0054e730
+void RHOrder::FUN_0054e730()
+{
+    *(int *)((char *)this + 0x34) = g_unk0x6c0c6c++;
+}
 
 // FUNCTION: GAME 0x005fc390
 void SBGeoPoint2D::FUN_005fc390(const SBGeoPoint2D &other) throw()

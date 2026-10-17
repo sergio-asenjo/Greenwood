@@ -3,6 +3,7 @@
 #include <math.h>
 
 void RHSpriteList::FUN_005c8e40(int) {}
+void RHSprite::Unk005bc920(SBFile &, int) {}
 RHSpriteListIterator RHSpriteList::erase(RHSpriteListIterator value) { return value; }
 RHSpriteListIterator RHSpriteList::begin() { return RHSpriteListIterator(head->next); }
 RHSpriteListIterator RHSpriteListIterator::operator++(int) { return RHSpriteListIterator(node); }
@@ -14,10 +15,6 @@ bool RHSpritePositionCalls::FUN_00561040(void *, float, unsigned short &, bool) 
 RHOrder::~RHOrder() {}
 RHSpriteOrderIterator RHSpriteOrderList::FUN_0046eb80() { return RHSpriteOrderIterator(head->next); }
 RHSpriteOrderIterator RHSpriteOrderList::FUN_0046eb30(RHSpriteOrderIterator value) { return value; }
-void SBGeoBoundingBox2D::FUN_00607d90() {}
-unsigned short RHSprite::FUN_005bdcf0(unsigned short) { return 0; }
-unsigned short RHSprite::FUN_005bdd50() { return 0; }
-unsigned short RHSprite::FUN_005bdd70() { return 0; }
 bool SBGeoBoundingBox2D::FUN_00609050(const SBGeoPoint2D &, const SBGeoPoint2D &) { return false; }
 
 void RHSpriteOrderNode::CopyData(RHOrder **destination, RHOrder *const *source) { *destination = *source; }
