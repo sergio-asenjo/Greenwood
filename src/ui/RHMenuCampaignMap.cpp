@@ -100,28 +100,20 @@ void RHMenuCampaignMap::FUN_00527ae0(RHMapByte state)
     }
 }
 
-class RHMapMission
-{
-public:
-    bool FUN_0054cc20();
-    void *m_00; // 0x00
-    unsigned short m_04; // 0x04
-};
-
 // FUNCTION: GAME 0x00527c00
 void RHMenuCampaignMap::FUN_00527c00(const std::vector<void *> &missions)
 {
     for (std::vector<void *>::const_iterator it = missions.begin(); it != missions.end(); ++it)
     {
-        RHMapMission *mission = (RHMapMission *)*it;
-        unsigned locationIndex = *(unsigned *)((char *)mission->m_00 + 0x3c);
+        RHMission *mission = (RHMission *)*it;
+        unsigned locationIndex = *(unsigned *)((char *)mission->m_profile + 0x3c);
         char *base = (char *)this + locationIndex * 0x27c;
         RHMapLocation *location = (RHMapLocation *)(base + 0x19c);
         ((RHMapWidget *)location)->V54(true);
-        unsigned count = *(unsigned short *)((char *)mission->m_00 + 0x4c);
-        *((bool *)location + 0xcc) = mission->m_04 == count - 1;
+        unsigned count = *(unsigned short *)((char *)mission->m_profile + 0x4c);
+        *((bool *)location + 0xcc) = (unsigned short)mission->m_4 == count - 1;
         *(unsigned *)((char *)location + 0xd4) = 1000;
-        if (mission->FUN_0054cc20())
+        if ((char)mission->FUN_0054cc20())
         {
             V3c(base + 0x348);
             *(bool *)(base + 0x34c) = true;
@@ -306,12 +298,6 @@ void RHMenuCampaignMap::FUN_00528810()
     ((RHMapWidget *)((char *)this + 0x25ec))->V2c((const RHMapTitleText &)std::wstring(message));
 }
 
-class RHMapFocusScreen
-{
-public:
-    bool FUN_0053c320(void *);
-};
-
 class RHMapFocusWidget
 {
 public:
@@ -322,7 +308,7 @@ public:
 void RHMenuCampaignMap::FUN_00528a60()
 {
     RHMapFocusWidget *widget = (RHMapFocusWidget *)((char *)this + 0x226c);
-    if ((*(RHMapFocusScreen **)((char *)this + 0xb4))->FUN_0053c320(widget))
+    if ((*(RHMenuScreenView **)((char *)this + 0xb4))->FUN_0053c320(widget))
         widget->FUN_00541060();
 }
 

@@ -167,6 +167,7 @@ public:
     virtual void Unk18(); // vtable+0x18
     virtual void Unk1c(); // vtable+0x1c
     virtual bool Unk20(RHUnkFXDraw *, unsigned long); // vtable+0x20
+    // FUNCTION: GAME 0x006114e0
     virtual void *FUN_006114e0() { return *(void **)(m_04 + 0x10); } // vtable+0x24
     // FUNCTION: GAME 0x006114f0
     virtual unsigned int FUN_006114f0() { return *(unsigned int *)(m_04 + 0x18); } // vtable+0x28
@@ -223,11 +224,7 @@ public:
     undefined m_14[0x44]; // 0x14
 };
 
-class ToolboxPositionFile : public SBFile
-{
-public:
-    unsigned long FUN_005f5440();
-};
+#include "SBFilePosition.h"
 class RHUnk005ef320;
 extern RHUnk005ef320 *g_unk0x6c11d0;
 

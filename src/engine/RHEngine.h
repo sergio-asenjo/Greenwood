@@ -36,12 +36,8 @@ public:
     void FUN_0057e680(void *actor);
 };
 
-class RHEngineRosterCalls
-{
-public:
-    void FUN_0055eda0();
-    unsigned FUN_0055e880();
-};
+class RHPortraitBar;
+typedef RHPortraitBar RHEngineRosterCalls;
 
 class RHEngineMenuStateCalls
 {
@@ -426,6 +422,9 @@ class RHUnk004a7ed0
 {
 public:
     bool FUN_004a7ed0(char flag);
+    int FUN_004a7f30();
+    void FUN_004a7f40(int first, int second, int third);
+    void FUN_004a7f50();
 };
 
 class RHUnk004b0980
@@ -450,6 +449,7 @@ class RHUnk004ba900
 {
 public:
     bool FUN_004ba900(char flag);
+    int FUN_004ba970();
 };
 
 class RHUnk0055dbb0

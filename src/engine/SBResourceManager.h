@@ -274,14 +274,6 @@ public:
     bool FUN_005ffe50(int, unsigned long);
 };
 
-class RHMapWideText;
-
-class RHMapResources
-{
-public:
-    bool FUN_00600fc0(unsigned);
-    bool FUN_006009e0(unsigned, unsigned, RHMapWideText &);
-    bool FUN_00600bb0(unsigned long, unsigned int, std::string &);
-};
+#include "RHMapResources.h"
 
 #endif

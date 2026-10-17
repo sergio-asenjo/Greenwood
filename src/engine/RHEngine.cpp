@@ -291,6 +291,7 @@ extern void **g_unk0x6c0f38;
 extern float g_unk0x0067749c;
 
 #include "RHEngineWidenedCalls.h"
+#include "RHPortraitBar.h"
 
 class RHUnk005bd5b0
 {
@@ -2136,7 +2137,7 @@ int RHEngine::FUN_004c6ef0()
         {
             void *actor = actors[i];
             if (*(void **)((char *)actor + 0x5e8))
-                ((RHEngineWidenedCalls *)actor)->FUN_0055ebf0();
+                ((RHPortraitBar *)actor)->FUN_0055ebf0();
         }
     }
     if (*(void **)(engine + 0x4be0))
@@ -4513,7 +4514,7 @@ void RHUnk005055b0::FUN_00505640()
 // FUNCTION: GAME 0x0050f000
 void RHEngineSerializationCalls::FUN_0050f000()
 {
-    (*(RHEngineWidenedCalls **)((char *)this + 0x196c))->FUN_0055ebf0();
+    (*(RHPortraitBar **)((char *)this + 0x196c))->FUN_0055ebf0();
 }
 
 // FUNCTION: GAME 0x0050f010

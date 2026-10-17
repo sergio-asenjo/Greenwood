@@ -422,12 +422,7 @@ void EmitRHShortBriefingCount(const RHShortBriefings *briefings, bool first)
     briefings->GetShortBriefingNumber(first);
 }
 
-class RHMapWideText;
-class RHMapResources
-{
-public:
-    bool FUN_006009e0(unsigned resource, unsigned index, RHMapWideText &text);
-};
+#include "RHMapResources.h"
 extern RHMapResources *g_unk0x006c1840;
 
 // Parked: resource manager loads at the call instead of hoisting into ESI before the null test.

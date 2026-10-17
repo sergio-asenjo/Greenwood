@@ -24,6 +24,8 @@ public:
 };
 
 class SBThreadedInput;
+class RHMenuWindow;
+class RHMenuWindowUI;
 
 struct RHMapScreenNode
 {
@@ -67,6 +69,16 @@ public:
     static void *FUN_0053b730(long background, unsigned short color);
     void FUN_0053c140(unsigned long flags);
     void FUN_0053be40(unsigned long value);
+    void FUN_0053bb80(RHMenuWindow *window, bool display, bool modal);
+    void FUN_0053b1f0(RHMenuWindow *window);
+    void FUN_0053c390();
+    void FUN_0053c650(RHMenuWindow *window, bool display);
+    static void FUN_0053bbc0(RHMenuWindow *window);
+    static void FUN_0053be60(RHMenuWindow *window);
+    RHMenuWindowUI *FUN_0053bf30();
+    bool FUN_0053c320(void *widget);
+    void FUN_0053c7f0(unsigned long surface);
+    bool FUN_0053cd20();
 
     void *m_ui;
     unsigned long m_04;
@@ -83,5 +95,7 @@ public:
     std::list<RHMenuScreenTimer> m_1980;
     unsigned long m_198c;
 };
+
+typedef RHMenuScreenView RHMenuWindowScreen;
 
 #endif

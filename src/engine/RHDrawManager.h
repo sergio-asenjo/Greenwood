@@ -37,46 +37,11 @@ public:
     float Unk005fc6a0(float value);
 };
 
-class RHMobileUnk0060a820
-{
-public:
-    RHMobileUnk0060a820 &FUN_0060a820(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
-};
-
-class RHMobileUnk006100e0
-{
-public:
-    ~RHMobileUnk006100e0();
-};
-
-// SIZE 0x10
-class SBGeoSegment2D
-{
-public:
-    SBGeoSegment2D(const SBGeoPoint2D &first, const SBGeoPoint2D &second)
-    {
-        ((RHMobileUnk0060a820 *)this)->FUN_0060a820(first, second);
-    }
-    ~SBGeoSegment2D()
-    {
-        ((RHMobileUnk006100e0 *)this)->~RHMobileUnk006100e0();
-    }
-    SBGeoPoint2D &First() { return *(SBGeoPoint2D *)&m_00[0]; }
-    SBGeoPoint2D &Second() { return *(SBGeoPoint2D *)&m_00[8]; }
-    unsigned char m_00[0x10]; // 0x00
-};
+#include "SBGeoSegment2D.h"
 
 #include "SBGeoPolyLine2DList.h"
 
-// SIZE 0x0c
-class RHUnk0060fbf0
-{
-public:
-    RHUnk0060fbf0();
-    ~RHUnk0060fbf0();
-    RHUnk0060fbf0 &FUN_0060fca0(const RHUnk0060fbf0 &other);
-    unsigned char m_00[0x0c]; // 0x00
-};
+#include "SBGeoIntersection2D.h"
 
 class RHUnk0053bf20
 {

@@ -20,18 +20,7 @@ inline const char *RHCampaignStringChars(const std::string &value)
     return chars ? chars : "";
 }
 
-// SIZE 0x0c
-class RHMission
-{
-public:
-    void *m_profile; // 0x00
-    unsigned short m_4; // 0x04
-    unsigned short m_6; // 0x06
-    int m_8; // 0x08
-    RHMission();
-    RHMission(const RHMission &value);
-    bool Serialize(SBFile &file);
-};
+#include "RHMission.h"
 
 class RHUnk00452030
 {
@@ -78,11 +67,22 @@ public:
     std::vector<RHPCDescription *> *FUN_004553f0();
     void FUN_00455650();
     void FUN_00455f00(std::vector<RHMission *> &missions);
+    void FUN_004560d0(RHMission *mission);
     void FUN_004564e0(std::vector<RHMission *> &missions);
     void FUN_00456e60();
     bool FUN_00454c00(RHbeamMe beamMe, unsigned short character);
     void FUN_004552f0(SBArray<RHElement *> &elements, RHbeamMe beamMe, unsigned short character);
     void FUN_004559f0();
+    bool FUN_00455a40(RHPCDescription *character);
+    unsigned short FUN_00455af0();
+    void FUN_00455b20(RHPCDescription *character);
+    void FUN_00455b80(RHPCDescription *character);
+    bool FUN_00455d10(RHPCDescription *character);
+    RHSectorProduction *FUN_00456a10(unsigned long index);
+    void FUN_00456a40();
+    void FUN_00456a70();
+    void FUN_00456af0(const void *object);
+    unsigned FUN_00456db0() const;
     unsigned short GetNumberOfPeasantsToConvertToBlazons() const;
     bool LoadFromSaveGame(const RHSaveGame *saveGame);
     bool CreateBackup();
@@ -90,18 +90,7 @@ public:
     void Emit(std::vector<RHMission *> &missions);
 };
 
-struct RHGameMission;
-
-// SIZE 0x184
-class RHGameCampaignView
-{
-public:
-    undefined m_00[0x178]; // 0x00
-    RHGameMission *m_178; // 0x178
-    RHGameMission *m_17c; // 0x17c
-    RHGameMission *m_180; // 0x180
-    void FUN_00456540(bool flag, RHGameMission *mission);
-};
+#include "RHGameCampaignView.h"
 
 bool FUN_00452040(RHMission *mission);
 bool FUN_00452090(RHMission *mission);

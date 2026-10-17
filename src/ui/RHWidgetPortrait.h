@@ -235,13 +235,9 @@ public:
     undefined m_data[0x48];
 };
 
-class RHPortraitUIOwner
-{
-public:
-    void *FUN_004fffd0();
-    void FUN_00500780(bool value);
-    void FUN_00500790(bool value);
-};
+#include "RHFocusManager.h"
+
+typedef RHFocusManager RHPortraitUIOwner;
 
 class RHPortraitTextLinkedCalls
 {

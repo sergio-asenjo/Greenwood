@@ -18,18 +18,7 @@ public:
 
 class RHMobileUnk006100e0;
 
-// SIZE 0x0c
-class RHUnk0060fbf0
-{
-public:
-    RHUnk0060fbf0();
-    RHUnk0060fbf0(const RHUnk0060fbf0 &other);
-    ~RHUnk0060fbf0();
-    void FUN_0060fdb0();
-    void FUN_0060fdc0(const SBGeoPoint2D &point);
-    void FUN_0060fe20(const RHMobileUnk006100e0 &line);
-    undefined m_00[0x0c]; // 0x00
-};
+#include "SBGeoIntersection2D.h"
 
 // SIZE 0x10
 class RHMobileUnk006100e0 : public SBGeoPoint2D

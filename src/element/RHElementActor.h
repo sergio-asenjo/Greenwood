@@ -73,21 +73,7 @@ public:
 
 #include "RHActorDirectionCalls.h"
 
-// SIZE 0x0c
-class RHUnk0060fbf0
-{
-public:
-    RHUnk0060fbf0();
-    RHUnk0060fbf0 &FUN_0060fca0(const RHUnk0060fbf0 &other);
-    void FUN_0060fa20();
-    void FUN_0060fa30(const RHUnk0060fbf0 &other);
-    undefined m_0; // 0x00
-    undefined m_1; // 0x01
-    undefined2 m_2; // 0x02
-    undefined2 m_4; // 0x04
-    undefined2 m_6; // 0x06
-    void *m_8; // 0x08
-};
+#include "SBGeoIntersection2D.h"
 
 // SIZE 0x0c
 class RHUnk004e52a0
@@ -120,6 +106,7 @@ public:
     void FUN_00463240(unsigned first, unsigned second, unsigned third);
     void FUN_00463250(unsigned value);
     void FUN_00463260(unsigned first, unsigned second, unsigned third, unsigned fourth);
+    int FUN_00463d90(unsigned value) const;
     virtual bool Serialize(SBFile &file); // vtable+0x00 (interim model)
     void ExecuteImmediately(RHSequenceElement *element);
     void Translate(RHSequenceElement *element, RHcommand command);
@@ -128,6 +115,9 @@ public:
     void *FUN_0046d750(const SBGeoPoint2D &origin, unsigned short radius);
     bool FUN_0046d710();
     bool FUN_0046e270();
+    void FUN_0046e7c0(unsigned short layer, void *sector);
+    int FUN_0046e960();
+    void FUN_0046e980(bool first, bool second);
     unsigned short FUN_004626e0() const;
     void FUN_0046c8e0(int value);
     void FUN_0046bcb0(int value);
@@ -140,6 +130,7 @@ public:
     SBGeoPoint2D FUN_00462920();
     void FUN_00464630();
     int FUN_00467200() const;
+    bool FUN_00467210();
     void *FUN_00467220() const;
     RHBonusInfo *Info() const { return *(RHBonusInfo *const *)((char *)this + 0x50); }
     RHBonusInfoBase *Position() const { return (RHBonusInfoBase *)((char *)Info() + 4); }

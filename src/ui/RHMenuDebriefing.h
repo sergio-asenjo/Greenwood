@@ -26,11 +26,7 @@
 
 class RHDebriefingStat;
 
-class RHDebriefingScreenCalls
-{
-public:
-    bool FUN_0053cd20();
-};
+typedef RHMenuScreenView RHDebriefingScreenCalls;
 
 class RHDebriefingResources
 {

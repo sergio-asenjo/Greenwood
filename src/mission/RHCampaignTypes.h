@@ -86,13 +86,7 @@ bool FUN_00453930(SBFile &file, RHMission &mission);
 bool FUN_00453940(SBFile &file, RHMission *&mission);
 bool FUN_0054cc10(RHMission *mission);
 
-class RHCampaignMissionCalls
-{
-public:
-    bool FUN_0054cc20();
-    bool FUN_0054cbf0();
-    bool FUN_0054c8a0(std::string &reason);
-};
+typedef RHMission RHCampaignMissionCalls;
 
 extern char g_unk0x006c13c0[16];
 void SBSimpleUnk005f9510(void *, const char *, ...);

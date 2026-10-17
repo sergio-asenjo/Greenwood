@@ -87,13 +87,7 @@ public:
 
 extern RHUnk0048a970 *g_unk0x6c0b3c;
 
-class RHMapWideText;
-class RHMapResources
-{
-public:
-    bool FUN_006009e0(unsigned, unsigned, RHMapWideText &);
-    bool FUN_00600bb0(unsigned long, unsigned, std::string &);
-};
+#include "RHMapResources.h"
 
 class SBUIUnk0060d530
 {
@@ -103,12 +97,6 @@ public:
 };
 
 class RHMenuWindowUI;
-class RHMenuWindowScreen
-{
-public:
-    RHMenuWindowUI *FUN_0053bf30();
-};
-
 class RHDialogueTextView
 {
 public:
@@ -560,14 +548,6 @@ struct RHDialogueWidgetEvent
     void *m_widget;
     unsigned m_value;
     void *m_next;
-};
-
-class RHUnk0052bd70
-{
-public:
-    RHDialogueWidgetEvent *FUN_0052bc40(const RHDialogueWidgetInput &input);
-    unsigned FUN_0052bd70();
-    unsigned char m_bytes[0xe8];
 };
 
 class RHDialogueButtonView

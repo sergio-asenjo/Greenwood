@@ -162,12 +162,7 @@ public:
 
 #include "RHMapDescription.h"
 
-class RHMapResources
-{
-public:
-    bool FUN_00600fc0(unsigned);
-    bool FUN_006009e0(unsigned, unsigned, RHMapWideText &);
-};
+#include "RHMapResources.h"
 
 class RHUnk00452030
 {

@@ -89,9 +89,6 @@ RHPortraitRenderer006212d0::RHPortraitRenderer006212d0() {}
 RHPortraitRenderer006212d0::~RHPortraitRenderer006212d0() {}
 RHPortraitText0061db10::RHPortraitText0061db10() {}
 RHPortraitText0061db10::~RHPortraitText0061db10() {}
-void *RHPortraitUIOwner::FUN_004fffd0() { return *(void **)((char *)this + 0x6c); }
-void RHPortraitUIOwner::FUN_00500780(bool) {}
-void RHPortraitUIOwner::FUN_00500790(bool) {}
 void RHPortraitTextLinkedCalls::FUN_0053f9f0(void *) {}
 unsigned SBUIInputFieldTextUnk::FUN_0061dd30() { return 0; }
 unsigned FUN_005fb1d0(unsigned key) { return key; }

@@ -180,12 +180,7 @@ public:
     int FUN_005f5370(int, int);
 };
 
-class RHMapResources
-{
-public:
-    unsigned int FUN_00600620(unsigned long);
-    bool FUN_00600bb0(unsigned long, unsigned int, std::string &);
-};
+#include "RHMapResources.h"
 
 extern RHMapResources *g_unk0x006c1840;
 

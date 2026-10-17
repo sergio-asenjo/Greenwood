@@ -24,6 +24,7 @@
 
 #include "SB.h"
 #include "Decomp.h"
+#include "RHMenuScreenView.h"
 #include "RHWidgetPortrait.h"
 #include "../engine/SBUIRenderer.h"
 #include <vector>
@@ -60,13 +61,6 @@ public:
 };
 
 class RHMenuWindow;
-
-class RHMenuWindowScreen
-{
-public:
-    void FUN_0053bb80(RHMenuWindow *window, bool display, bool modal);
-    RHMenuWindowUI *FUN_0053bf30();
-};
 
 // SIZE 0xc8
 class RHMenuWindow : public RHPortraitRootList

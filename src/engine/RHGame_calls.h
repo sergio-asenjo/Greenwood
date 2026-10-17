@@ -338,23 +338,7 @@ public:
     RHScriptBatchCalls *Unk004e3cc0();
 };
 
-// SIZE 0x184
-class RHGameCampaignView
-{
-public:
-    undefined m_00[0x178]; // 0x00
-    RHGameMission *m_178; // 0x178
-    RHGameMission *m_17c; // 0x17c
-    RHGameMission *m_180; // 0x180
-    void FUN_00451a90();
-    void FUN_00453b70(RHGameMission *mission);
-    int FUN_00456190(RHGameMission *mission);
-    int FUN_004561d0(RHGameMission *mission);
-    int FUN_00456230(RHGameMission *mission);
-    void FUN_00456540(bool flag, RHGameMission *mission);
-    unsigned short FUN_00456270();
-    void FUN_00456e40(char value);
-};
+#include "RHGameCampaignView.h"
 
 class RHGameMenuOwner
 {
@@ -405,14 +389,7 @@ public:
     void FUN_0053c7e0();
 };
 
-class RHGameMenuCalls
-{
-public:
-    void FUN_005283d0();
-    void FUN_00535950(int first, int second, int third);
-    void FUN_00544b30();
-    void FUN_00528380(const std::wstring &text);
-};
+#include "RHGameMenuCalls.h"
 
 class RHGameBlazonValue
 {
@@ -589,11 +566,8 @@ public:
     bool FUN_005d8fa0(unsigned, int);
 };
 
-class RHGameNotificationCalls
-{
-public:
-    void FUN_0055e7a0(unsigned);
-};
+class RHPortraitBar;
+typedef RHPortraitBar RHGameNotificationCalls;
 
 class RHGameSyncCalls
 {
@@ -679,7 +653,6 @@ public:
     void FUN_005140b0();
     void FUN_0050eff0();
     void FUN_005f4900(char);
-    void FUN_005ef380(int);
     void FUN_005e5260();
     void FUN_005104c0();
     bool FUN_005104d0(SBGeoPoint2D point);
@@ -734,12 +707,7 @@ public:
 
 #include "RHMapDescription.h"
 
-class RHMapResources
-{
-public:
-    bool FUN_00600fc0(unsigned);
-    bool FUN_006009e0(unsigned, unsigned, RHMapWideText &);
-};
+#include "RHMapResources.h"
 
 #include "RHMenuScreenView.h"
 

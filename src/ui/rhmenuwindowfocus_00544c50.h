@@ -2,15 +2,10 @@
 #define RHMENUWINDOWFOCUS_00544C50_H
 
 #include "Decomp.h"
+#include "RHMenuScreenView.h"
 
 class RHMenuWindowUI;
 struct RHFocusEvent;
-
-class RHMenuWindowScreen
-{
-public:
-    RHMenuWindowUI *FUN_0053bf30();
-};
 
 class SBGeoPoint2D
 {
