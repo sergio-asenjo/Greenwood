@@ -17,6 +17,7 @@ public:
     FILE *FUN_005f58c0(const std::string &, const char *);
     void FUN_005f5290();
     bool FUN_005f6200(void *value);
+    int FUN_005f6220(std::string &value);
 
     char m_14[0x44]; // [0x14, 0x58)
 };
@@ -40,6 +41,7 @@ public:
     static bool SerializeHeader(SBFile &file, Header &header);
     void SynchronizeWithFile();
     const _SYSTEMTIME &GetTime() const;
+    const std::wstring &FUN_0056e780() const;
     bool operator<(const RHSaveGame &other) const;
     void CopyFiles(const RHSaveGame *source);
     void SetText(const std::wstring &text);

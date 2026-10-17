@@ -1,5 +1,34 @@
 #include "RHSaveGame.h"
 
+void RHSerializeName(SBFile &, const char *);
+bool FUN_005e0c90(SBFile &, std::string &);
+bool FUN_005e0ea0(SBFile &, std::wstring &);
+
+// FUNCTION: GAME 0x0056e6a0
+const _SYSTEMTIME &RHSaveGame::GetTime() const
+{
+    return *(const _SYSTEMTIME *)(m_data + 0x38);
+}
+
+// FUNCTION: GAME 0x0056e780
+const std::wstring &RHSaveGame::FUN_0056e780() const
+{
+    return *(const std::wstring *)(m_data + 0x28);
+}
+
+// FUNCTION: GAME 0x0056ea20
+bool RHSaveGame::Serialize(SBFile &file)
+{
+    RHSerializeName(file,
+        // STRING: GAME 0x006b22b0
+        "RHSaveGame");
+    FUN_005e0c90(file, *(std::string *)(m_data + 0x08));
+    FUN_005e0c90(file, *(std::string *)(m_data + 0x18));
+    FUN_005e0ea0(file, *(std::wstring *)(m_data + 0x28));
+    SynchronizeWithFile();
+    return true;
+}
+
 // FUNCTION: GAME 0x0056ea70
 bool RHSaveGame::SerializeHeader(SBFile &file, Header &header)
 {
@@ -96,6 +125,7 @@ bool FUN_00570320(const RHSaveGame *first, const RHSaveGame *second)
 
 void RHSaveGame::Emit(SBFile &file, Header &header)
 {
+    FUN_0056e780();
     SerializeHeader(file, header);
     SynchronizeWithFile();
 }

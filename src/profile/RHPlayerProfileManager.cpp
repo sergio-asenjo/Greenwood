@@ -28,6 +28,20 @@ std::string FUN_004e4c70(const std::string &first, const char *second)
     return std::string(first).append(second);
 }
 
+// FUNCTION: GAME 0x0052ef80
+RHGraphicConfig &RHPlayerProfile::FUN_0052ef80()
+{
+    return m_graphics;
+}
+
+extern undefined g_unk0x006c0e48[];
+
+// FUNCTION: GAME 0x0052ef90
+RHPlayerProfileManager *RHPlayerProfileManager::FUN_0052ef90()
+{
+    return (RHPlayerProfileManager *)g_unk0x006c0e48;
+}
+
 // FUNCTION: GAME 0x0055c970
 RHPlayerProfile::RHPlayerProfile() :
     m_18(0), m_1c(1), m_20(0), m_24(0), m_2c(0), m_30(0),
@@ -157,6 +171,14 @@ bool RHPlayerProfile::Serialize(SBFile &file)
     return true;
 }
 
+// FUNCTION: GAME 0x0055d630
+RHPlayerProfileManager::RHPlayerProfileManager() : m_00(0)
+{
+    m_profiles.m_dirty = true;
+    m_active = 0;
+    m_2c = false;
+}
+
 // FUNCTION: GAME 0x0055de90
 const std::string &RHPlayerProfileManager::GetProfilesDirectory()
 {
@@ -251,6 +273,12 @@ bool RHPlayerProfileManager::Save() const
     return true;
 }
 
+// FUNCTION: GAME 0x0055e550
+void RHPlayerProfileManager::FUN_0055e550(RHPlayerProfile *profile)
+{
+    m_active = profile;
+}
+
 // Parked at 93.46%: user dtor stores the vptr; the implicit dtor omits it but inlines into Load.
 // STUB: GAME 0x0055e560
 RHPlayerProfile::~RHPlayerProfile()
@@ -259,11 +287,15 @@ RHPlayerProfile::~RHPlayerProfile()
 
 void RHPlayerProfile::Emit(SBFile &file)
 {
+    FUN_0052ef80();
     Serialize(file);
 }
 
 void RHPlayerProfileManager::Emit()
 {
+    FUN_0052ef90();
+    new RHPlayerProfileManager;
+    FUN_0055e550(0);
     Load();
     Save();
 }

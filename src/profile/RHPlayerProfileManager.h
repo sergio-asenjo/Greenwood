@@ -108,6 +108,7 @@ public:
     void SetName(const std::wstring &name);
     virtual std::string GetSaveGameDirectory() const; // vtable+0x00
     void FUN_0055cc80();
+    RHGraphicConfig &FUN_0052ef80();
     void Emit(SBFile &file);
     undefined4 m_18; // 0x18
     undefined4 m_1c; // 0x1c
@@ -255,10 +256,13 @@ public:
 class RHPlayerProfileManager
 {
 public:
+    RHPlayerProfileManager();
     bool Load();
     bool Save() const;
     bool FUN_0055d830();
     static const std::string &GetProfilesDirectory();
+    static RHPlayerProfileManager *FUN_0052ef90();
+    void FUN_0055e550(RHPlayerProfile *profile);
     void Emit();
 
     unsigned long m_00; // +0x00: four-byte archive field

@@ -40,9 +40,6 @@ RHSaveGame::~RHSaveGame()
 void RHSaveGame::CopyFiles(const RHSaveGame *) {}
 void RHSaveGame::SetText(const std::wstring &) {}
 
-// Target 0x0056ea20 (writes the "RHSaveGame" tag).
-bool RHSaveGame::Serialize(SBFile &) { return true; }
-
 
 // Target 0x0064158f (operator delete).
 void operator delete(void *) {}
