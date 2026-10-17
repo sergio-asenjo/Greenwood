@@ -220,6 +220,7 @@ class SBGeoBoundingBox2D
 {
 public:
     SBGeoBoundingBox2D();
+    void Unk00607dc0(const SBGeoPoint2D &point);
     void FUN_00607e30(const class RHMalignitySegment &segment);
     SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &vector) const;
     SBGeoPoint2D m_0; // 0x00

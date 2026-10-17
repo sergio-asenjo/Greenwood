@@ -1,5 +1,8 @@
 #include "SBNullstr.h"
 #include "RHArtificialMalignity.h"
+#include <math.h>
+
+extern float g_unk0x006774f0;
 
 bool RHArtificialMalignity::FUN_00438cb0(int, bool) { return false; }
 
@@ -37,17 +40,56 @@ public:
 };
 
 void RHMalignityReactionCalls::FUN_00412d60(RHMalignityPosition, int, int) {}
-void RHMalignityReactionCalls::FUN_0041a3e0() {}
 void RHMalignityActorCalls::FUN_00487ad0(const RHMalignityPosition &) {}
 void RHArtificialMalignity::FUN_00438620(unsigned short) {}
 void RHArtificialMalignity::FUN_0043b1b0(RHMalignityPosition, int) {}
 void RHArtificialMalignity::FUN_0043c960(RHMalignityPosition, int) {}
 
+void RHMalignityActorCalls::Unk0048d020() {}
 void RHMalignityActorCalls::FUN_00478c20(RHUnk00613e90 &, bool) {}
 bool RHMalignityActorCalls::FUN_0048a130(void *) { return false; }
-float RHMalignityBaseView::FUN_0041a010(void *) { return 0.0f; }
-float RHMalignityBaseView::FUN_0041a060(void *) { return 0.0f; }
+
+// Parked: temp kept in eax (target) vs esp (ours); VC6 re-materialises the base
+// and schedules x2 before z2. 5 shapes tried.
+// STUB: GAME 0x0041a010
+float RHMalignityBaseView::FUN_0041a010(void *actor)
+{
+    RHUnk00613e90 difference = RHMalignityField<RHUnk00613e90>(RHMalignityField<void *>(actor, 0x50), 0x10).FUN_005df550(RHMalignityField<RHUnk00613e90>(RHMalignityField<void *>(m_actor, 0x50), 0x10));
+    float scaled = difference.y;
+    scaled *= g_unk0x006774ec;
+    difference.y = scaled;
+    return difference.x * difference.x + difference.z * difference.z + scaled * scaled;
+}
+
+// Parked: same base-register/scheduling residual as 0x0041a010 (sqrt form).
+// STUB: GAME 0x0041a060
+float RHMalignityBaseView::FUN_0041a060(void *actor)
+{
+    RHUnk00613e90 difference = RHMalignityField<RHUnk00613e90>(RHMalignityField<void *>(actor, 0x50), 0x10).FUN_005df550(RHMalignityField<RHUnk00613e90>(RHMalignityField<void *>(m_actor, 0x50), 0x10));
+    float scaled = difference.y;
+    scaled *= g_unk0x006774ec;
+    difference.y = scaled;
+    return (float)sqrt(difference.x * difference.x + difference.z * difference.z + scaled * scaled);
+}
+
 float RHMalignityBaseView::FUN_0041a0b0(void *) { return 0.0f; }
+
+class RHUnk0041a0f0
+{
+public:
+    int FUN_0041a0f0(int first, int second, int third);
+};
+
+// Parked: x87 multiply form; VC6 emits fimul/right-first where the target does
+// fild span, fild c, fmul K, fmulp (span*(c*K)). Casts and a named span do not
+// change the tree. 0.444444.
+// STUB: GAME 0x0041a0f0
+int RHUnk0041a0f0::FUN_0041a0f0(int first, int second, int third)
+{
+    int base = first & 0xffff;
+    int span = (second & 0xffff) - base;
+    return (int)((float)span * ((third & 0xff) * g_unk0x006774f0) + base);
+}
 // STUB: GAME 0x00440cf0
 short RHArtificialMalignity::FUN_00440cf0(RHUnk00441dd0Record *) { return 0; }
 void RHMalignityBaseView::FUN_00412cf0(const RHMalignityPosition &, unsigned short, int) {}
@@ -101,7 +143,11 @@ public:
     void FUN_0049fbb0(void *actor);
 };
 
-void RHMalignityGuardCalls::FUN_0049fbb0(void *) {}
+// FUNCTION: GAME 0x0049fbb0
+void RHMalignityGuardCalls::FUN_0049fbb0(void *actor)
+{
+    *(void **)((char *)this + 0x5e8) = actor;
+}
 void *RHArtificialMalignity::FUN_00445d40() { return 0; }
 void RHArtificialMalignity::FUN_00430020() {}
 void RHArtificialMalignity::FUN_004303e0() {}
@@ -128,12 +174,9 @@ public:
 
 class RHMalignityDirection : public RHUnk005fc3b0
 {
-public:
-    RHUnk005fc3b0 &FUN_005fc4d0(float factor);
 };
 
 bool RHMalignityPathGeometry::FUN_004f9170(const SBGeoPoint2D &, const SBGeoPoint2D &, unsigned short, void *) { return false; }
-RHUnk005fc3b0 &RHMalignityDirection::FUN_005fc4d0(float) { return *this; }
 
 class RHMalignityHeadingPoint : public SBGeoPoint2D
 {
@@ -155,4 +198,8 @@ public:
     unsigned short FUN_005c1b50(int index);
 };
 
-unsigned short RHMalignityAbilityCalls::FUN_005c1b50(int) { return 0; }
+// FUNCTION: GAME 0x005c1b50
+unsigned short RHMalignityAbilityCalls::FUN_005c1b50(int index)
+{
+    return *(unsigned short *)((char *)*(void **)((char *)this + 4) + index * 2);
+}

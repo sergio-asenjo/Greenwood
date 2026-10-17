@@ -381,6 +381,36 @@ bool RHStimulus::Serialize(SBFile &file)
 #undef RHAI_STIMULUS_ACCESS
 #undef RHAI_STIMULUS_POINTER
 
+class RHUnk0040fd10
+{
+public:
+    bool FUN_0040fd10(int value);
+};
+
+class RHUnk00410000
+{
+public:
+    void FUN_00410000(int value);
+};
+
+// FUNCTION: GAME 0x0040fd10
+bool RHUnk0040fd10::FUN_0040fd10(int value)
+{
+    return true;
+}
+
+// FUNCTION: GAME 0x00410000
+void RHUnk00410000::FUN_00410000(int value)
+{
+    *(int *)((char *)this + 4) = value;
+}
+
+void EmitRHUnk0040fd10(RHUnk0040fd10 *a, RHUnk00410000 *b)
+{
+    a->FUN_0040fd10(0);
+    b->FUN_00410000(0);
+}
+
 // GLOBAL: GAME 0x006c07e8
 char g_unk0x006c07e8;
 
@@ -616,6 +646,12 @@ bool RHArtificialIntelligence::Unk00412c80(void *waypoint, unsigned short flags)
     position.layer = RHAIField<short>(waypoint, 0x6c);
     RHUnk00571160Position destination = position;
     return Unk00412240(destination, flags, 1.0f);
+}
+
+// FUNCTION: GAME 0x00412f40
+bool RHArtificialIntelligence::Unk00412f40(RHUnk005fc3b0 *direction, int mode)
+{
+    return Unk00412f70((unsigned short)direction->FUN_005fcc50(0.57357645f), mode);
 }
 
 class RHUnk00582220
@@ -2145,6 +2181,43 @@ unsigned short RHArtificialIntelligence::Unk0041a420()
     return rand() % 70 + 70;
 }
 
+struct RHUnk0041a930Value
+{
+    int m_00;
+    int m_04;
+    int m_08;
+    int m_0c;
+};
+
+class RHUnk0041a930
+{
+public:
+    int m_00;
+    int m_04;
+    int m_08;
+    int m_0c;
+    char m_10[0xc];
+    int m_1c;
+    int m_20;
+    RHUnk0041a930 *FUN_0041a930(int first, const RHUnk0041a930Value *second);
+};
+
+// Parked: register colouring seam; VC6 keeps `this` in eax (return) where the target keeps arg1 in eax.
+// STUB: GAME 0x0041a930
+RHUnk0041a930 *RHUnk0041a930::FUN_0041a930(int first, const RHUnk0041a930Value *second)
+{
+    m_20 = first;
+    *(RHUnk0041a930Value *)((char *)this) = *second;
+    m_1c = 2;
+    return this;
+}
+
+void EmitRHUnk0041a930(RHUnk0041a930 *a)
+{
+    RHUnk0041a930Value value = {0, 0, 0, 0};
+    a->FUN_0041a930(0, &value);
+}
+
 // Parked: cached-list cursor and loop-counter scheduling.
 // STUB: GAME 0x0041a960
 void RHArtificialIntelligence::Unk0041a960(unsigned short direction)
@@ -2212,6 +2285,109 @@ RHArtificialIntelligenceIterator RHAIUnk0044e8b0::FUN_0044e8b0(RHArtificialIntel
         --m_count;
     }
     return first;
+}
+
+struct RHUnk0042c750Value
+{
+    int m_00;
+    int m_04;
+    int m_08;
+    int m_0c;
+};
+
+class RHUnk0042c730
+{
+public:
+    unsigned short FUN_0042c730();
+};
+
+class RHUnk0042c750
+{
+public:
+    void FUN_0042c750(int level, const RHUnk0042c750Value *value);
+};
+
+// Parked: the second `return 0` needs full-width `xor eax,eax`; VC6 emits a
+// 16-bit `xor ax,ax` for a 16-bit return and (int)0/(short)0 do not flip it.
+// All other instructions match. 0.827586.
+// STUB: GAME 0x0042c730
+unsigned short RHUnk0042c730::FUN_0042c730()
+{
+    char *outer = *(char **)((char *)this + 4);
+    if (!outer)
+        return 0;
+    int *begin = *(int **)(outer + 4);
+    if (!begin)
+        return 0;
+    return (unsigned short)(*(int **)(outer + 8) - begin);
+}
+
+// FUNCTION: GAME 0x0042c750
+void RHUnk0042c750::FUN_0042c750(int level, const RHUnk0042c750Value *value)
+{
+    if (*(int *)((char *)this + 0x10) <= level)
+    {
+        *(int *)((char *)this + 0x10) = level;
+        *(RHUnk0042c750Value *)((char *)this) = *value;
+    }
+}
+
+class RHUnk0042c780
+{
+public:
+    RHUnk0042c780 *FUN_0042c780();
+    void FUN_0042c790(int first, int second);
+    void FUN_0042c7b0(int first, int *second);
+};
+
+class RHUnk0042c960
+{
+public:
+    int FUN_0042c960();
+};
+
+// FUNCTION: GAME 0x0042c780
+RHUnk0042c780 *RHUnk0042c780::FUN_0042c780()
+{
+    int zero = 0;
+    *(int *)((char *)this + 0x1c) = zero;
+    *(int *)((char *)this + 0x24) = zero;
+    *(char *)((char *)this + 0x28) = (char)zero;
+    return this;
+}
+
+// FUNCTION: GAME 0x0042c790
+void RHUnk0042c780::FUN_0042c790(int first, int second)
+{
+    *(int *)((char *)this + 0x20) = first;
+    *(int *)this = second;
+    *(int *)((char *)this + 0x1c) = 3;
+}
+
+// FUNCTION: GAME 0x0042c7b0
+void RHUnk0042c780::FUN_0042c7b0(int first, int *second)
+{
+    *(int *)((char *)this + 0x20) = first;
+    *(int *)this = second[0];
+    *(int *)((char *)this + 4) = second[1];
+    *(int *)((char *)this + 0x1c) = 6;
+}
+
+// FUNCTION: GAME 0x0042c960
+int RHUnk0042c960::FUN_0042c960()
+{
+    void *value = *(void **)((char *)this + 0x134);
+    if (!value)
+        return 0x11b;
+    return *(int *)((char *)value + 0x24);
+}
+
+void EmitRHUnk0042c780(RHUnk0042c780 *a, RHUnk0042c960 *b)
+{
+    a->FUN_0042c780();
+    a->FUN_0042c790(0, 0);
+    a->FUN_0042c7b0(0, 0);
+    b->FUN_0042c960();
 }
 
 // FUNCTION: GAME 0x00486f60

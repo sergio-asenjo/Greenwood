@@ -1,5 +1,6 @@
 #include "SBNullstr.h"
 #include "RHFastFindGrid.h"
+#include "SBFilePosition.h"
 
 // GLOBAL: GAME 0x006c06f0
 RHFastFindTacticalArray g_unk0x006c06f0;
@@ -2835,14 +2836,14 @@ RHUnk0051e5e0::RHUnk0051e5e0()
 // FUNCTION: GAME 0x0051e700
 int RHUnk0051e5e0::Unk0051e700(SBFile &file)
 {
-    int start = ((RHUnk005f5440 *)&file)->Unk();
+    int start = ((ToolboxPositionFile *)&file)->FUN_005f5440();
     ((RHSector *)this)->Unk0057cd60(file, false);
     unsigned short sector;
     file.Access(&sector, 2);
     *(void **)((char *)this + 0x98) = RHFastFindLookup(sector);
     file.Access(&m_layer, 2);
     file.Access((char *)this + 0x9c, 1);
-    return ((RHUnk005f5440 *)&file)->Unk() - start;
+    return ((ToolboxPositionFile *)&file)->FUN_005f5440() - start;
 }
 
 // FUNCTION: GAME 0x0051e800

@@ -5,6 +5,7 @@ extern "C" __declspec(dllimport) __declspec(noreturn) void __stdcall ExitThread(
 #include "RHEngineWidenedCalls.h"
 #include "RHActorDirectionCalls.h"
 #include "RHMovementPathFinderCalls.h"
+#include "SBGeoSegment2D.h"
 #include <iterator>
 
 struct RHUnk005c9010Iterator;
@@ -116,6 +117,11 @@ RHPathSearchNode *g_unk0x006c0db0;
 RHUnk005fc3b0 g_unk0x006c0db8;
 // GLOBAL: GAME 0x006c0dc0
 undefined2 g_unk0x006c0dc0;
+// GLOBAL: GAME 0x006c0cf8
+RHUnk004b1520List g_pathOpenNodes;
+
+// GLOBAL: GAME 0x006c0ca0
+float g_pathShortestDistance;
 
 // STRING: GAME 0x006b15d0
 const char g_pathWakeName[] = "Wake up";
@@ -534,6 +540,54 @@ SBGeoPoint2D RHPathFinder::FUN_00553d20(SBGeoPoint2D &point, unsigned char place
     return result;
 }
 
+// Parked: cached-list reset lowering, iterator temporary slot and count-register allocation differ.
+// STUB: GAME 0x00554360
+void FUN_00554360(RHPathSearchNode *node)
+{
+    float distance = *(float *)((char *)node + 0x14);
+    unsigned short count = g_pathOpenNodes.m_08;
+    if (count == 0)
+    {
+        RHScriptNode *next = g_pathOpenNodes.m_04->next;
+        next->previous = ((RHUnk0046eb30 *)&g_pathOpenNodes)->Unk0059f720(next, next->previous);
+        RHScriptNode *created = next->previous;
+        created->previous->next = created;
+        RHSeqList::CopyData((RHSequenceElement **)&created->data, (RHSequenceElement *const *)&node);
+        ++g_pathOpenNodes.m_08;
+        g_pathOpenNodes.m_10 = true;
+    }
+    else
+    {
+        unsigned short index = 0;
+        ((RHTitbitList *)&g_pathOpenNodes)->At(0);
+        while (distance > *(float *)((char *)g_pathOpenNodes.m_0c.node->data + 0x14))
+        {
+            ++index;
+            if (index >= count)
+                break;
+            ((RHTitbitList *)&g_pathOpenNodes)->At(index);
+            if (g_pathOpenNodes.m_0c.node->data == node)
+                return;
+        }
+        if ((unsigned)index == g_pathOpenNodes.m_08)
+        {
+            RHScriptNode *next = g_pathOpenNodes.m_04;
+            next->previous = ((RHUnk0046eb30 *)&g_pathOpenNodes)->Unk0059f720(next, next->previous);
+            RHScriptNode *created = next->previous;
+            created->previous->next = created;
+            RHSeqList::CopyData((RHSequenceElement **)&created->data, (RHSequenceElement *const *)&node);
+            ++g_pathOpenNodes.m_08;
+            g_pathOpenNodes.m_10 = true;
+        }
+        else
+        {
+            ((RHPathRequestList *)&g_pathOpenNodes)->GoTo(index);
+            g_pathOpenNodes.FUN_00424410(g_pathOpenNodes.m_0c, (void *const &)node);
+            g_pathOpenNodes.m_10 = true;
+        }
+    }
+}
+
 // FUNCTION: GAME 0x00554560
 void RHPathFinder::GetPath(RHPathPointList &path)
 {
@@ -702,6 +756,174 @@ bool FUN_005547c0(unsigned short graph, unsigned short sector, unsigned short di
     return true;
 }
 
+// Parked: docking-search local packing, layer-load width and branch scheduling differ.
+// STUB: GAME 0x005553d0
+void FUN_005553d0(RHPathSearchNode *node, unsigned char first, unsigned char last, RHPathPointList &list)
+{
+    if (!last)
+        return;
+    unsigned char common = first & last;
+    if (common && RHPathFinder::FUN_00556920(common) == 1)
+    {
+        list.FUN_00610a00(RHPathFinder::FUN_00553d20(*(SBGeoPoint2D *)node, common, (SBGeoVector2D &)g_unk0x006c0db8));
+        return;
+    }
+    if (RHPathFinder::FUN_00556920(last) == 1)
+    {
+        bool forwardOpen = true;
+        bool backwardOpen = true;
+        bool found = false;
+        bool forward;
+        unsigned char clockwise = last;
+        unsigned char counterclockwise = last;
+        while (!found)
+        {
+            if (forwardOpen)
+            {
+                clockwise = RHPathFinder::FUN_005568f0(clockwise, true);
+                if (!(clockwise & (*(unsigned char **)((char *)node + 0x80))[g_unk0x006c0d56]))
+                    forwardOpen = false;
+                else if (first & clockwise)
+                {
+                    found = true;
+                    forward = true;
+                    first = clockwise;
+                }
+            }
+            if (backwardOpen)
+            {
+                counterclockwise = RHPathFinder::FUN_005568f0(counterclockwise, false);
+                if (!(counterclockwise & (*(unsigned char **)((char *)node + 0x80))[g_unk0x006c0d56]))
+                    backwardOpen = false;
+                else if (first & counterclockwise)
+                {
+                    forward = false;
+                    first = counterclockwise;
+                    break;
+                }
+            }
+        }
+        unsigned char place = last;
+        while (place != first)
+        {
+            list.FUN_00610a00(RHPathFinder::FUN_00553d20(*(SBGeoPoint2D *)node, place, (SBGeoVector2D &)g_unk0x006c0db8));
+            place = RHPathFinder::FUN_005568f0(place, forward);
+        }
+        list.FUN_00610a00(RHPathFinder::FUN_00553d20(*(SBGeoPoint2D *)node, place, (SBGeoVector2D &)g_unk0x006c0db8));
+        return;
+    }
+    unsigned char count = RHPathFinder::FUN_00556920(last);
+    unsigned char place = 1;
+    unsigned char shortest = 5;
+    bool forward;
+    unsigned char destination;
+    unsigned char source;
+    while (count != 0)
+    {
+        bool forwardOpen = true;
+        bool backwardOpen = true;
+        bool found = false;
+        while (!(last & place))
+            place <<= 1;
+        unsigned char forwardDistance = 0;
+        unsigned char backwardDistance = 0;
+        unsigned char clockwise = place;
+        unsigned char counterclockwise = place;
+        while (!found)
+        {
+            if (forwardOpen)
+            {
+                clockwise = RHPathFinder::FUN_005568f0(clockwise, true);
+                if (!(clockwise & (*(unsigned char **)((char *)node + 0x80))[g_unk0x006c0d56]))
+                    forwardOpen = false;
+                else if (first & clockwise)
+                {
+                    found = true;
+                    if (forwardDistance < shortest)
+                    {
+                        shortest = forwardDistance;
+                        forward = true;
+                        destination = clockwise;
+                        source = place;
+                    }
+                }
+                else
+                    ++forwardDistance;
+            }
+            if (backwardOpen)
+            {
+                counterclockwise = RHPathFinder::FUN_005568f0(counterclockwise, false);
+                if (!(counterclockwise & (*(unsigned char **)((char *)node + 0x80))[g_unk0x006c0d56]))
+                    backwardOpen = false;
+                else if (first & counterclockwise)
+                {
+                    if (backwardDistance < shortest)
+                    {
+                        shortest = backwardDistance;
+                        forward = false;
+                        destination = counterclockwise;
+                        source = place;
+                    }
+                    break;
+                }
+                else
+                    ++backwardDistance;
+            }
+        }
+        place <<= 1;
+        --count;
+    }
+    unsigned char current = source;
+    while (current != destination)
+    {
+        list.FUN_00610a00(RHPathFinder::FUN_00553d20(*(SBGeoPoint2D *)node, current, (SBGeoVector2D &)g_unk0x006c0db8));
+        current = RHPathFinder::FUN_005568f0(current, forward);
+    }
+    list.FUN_00610a00(RHPathFinder::FUN_00553d20(*(SBGeoPoint2D *)node, current, (SBGeoVector2D &)g_unk0x006c0db8));
+}
+
+// Parked: cached-node iterator temporaries, null-count tail and reset-store scheduling differ.
+// STUB: GAME 0x005557c0
+void FUN_005557c0()
+{
+    g_unk0x006c0db0 = 0;
+    RHScriptNode *last = g_pathOpenNodes.m_04;
+    RHSectorActorIter current((RHSectorActorNode *)last->next);
+    while (current.m_p != (RHSectorActorNode *)last)
+        ((RHUnk0046eb30 *)&g_pathOpenNodes)->erase(RHScriptIter((RHScriptNode *)(current++).m_p));
+    g_pathOpenNodes.m_10 = true;
+    g_pathShortestDistance = 20000000000.0f;
+    RHPathGraphArray *area = (RHPathGraphArray *)g_unk0x006c0d9c;
+    unsigned short count = area->size();
+    if (count > 0)
+    {
+        unsigned graph = 0;
+        unsigned remainingGraphs = count;
+        do
+        {
+            RHPathRequestList &nodes = *(RHPathRequestList *)((RHPathGraphArray *)g_unk0x006c0d9c)->first[graph];
+            unsigned short nodeCount = nodes.count;
+            if (nodeCount > 0)
+            {
+                int index = 0;
+                unsigned remainingNodes = nodeCount;
+                do
+                {
+                    nodes.GoTo(index);
+                    char *node = (char *)nodes.cursor->request;
+                    node[8] = 0;
+                    *(float *)(node + 0x0c) = 10000000000.0f;
+                    *(float *)(node + 0x10) = 10000000000.0f;
+                    *(float *)(node + 0x14) = 20000000000.0f;
+                    *(void **)(node + 0x18) = 0;
+                    ++index;
+                } while (--remainingNodes);
+            }
+            ++graph;
+        } while (--remainingGraphs);
+    }
+}
+
 // FUNCTION: GAME 0x005559b0
 void RHPathFinder::FUN_005559b0(unsigned short graph, unsigned short node, unsigned short state, RHPathWorkList &list)
 {
@@ -798,6 +1020,37 @@ inline void RHPathSetVector(RHUnk005fc3b0 &vector, float x, float y)
 {
     vector.x = x;
     vector.y = y;
+}
+
+struct RHPathMotionSegments
+{
+    undefined padding[0x2c];
+    SBGeoSegment2D *first;
+    SBGeoSegment2D *last;
+    unsigned size() const
+    {
+        if (!first)
+            return 0;
+        return last - first;
+    }
+    SBGeoSegment2D &operator[](unsigned index)
+    {
+        SBGeoSegment2D *begin = first;
+        return begin[index];
+    }
+};
+
+// FUNCTION: GAME 0x00557e70
+bool FUN_00557e70(const SBGeoPoint2D &first, const SBGeoPoint2D &last)
+{
+    SBGeoSegment2D segment(SBGeoPoint2D(0.0f, 0.0f), SBGeoPoint2D(0.0f, 0.0f));
+    segment.First() = first;
+    segment.Second() = last;
+    unsigned short count = ((RHPathMotionSegments *)g_unk0x006c0d70)->size();
+    for (unsigned short index = 0; index < count; ++index)
+        if (segment.IsIntersecting((*(RHPathMotionSegments *)g_unk0x006c0d70)[index]))
+            return false;
+    return true;
 }
 
 // FUNCTION: GAME 0x00557f90
@@ -955,6 +1208,7 @@ void RHPathFinder::Emit(SBFile &file, RHpathRequest *request)
     FUN_005539a0((RHElementActor *)request->m_1c);
     FUN_00553a10(request->m_8, request->m_10, 1, (SBGeoVector2D &)request->m_10, true);
     FUN_00553d20(request->m_8, 1, (SBGeoVector2D &)request->m_10);
+    FUN_00554360((RHPathSearchNode *)request);
     GetPath(g_unk0x006c0c78);
     FUN_005568f0(1, false);
     FUN_00556920(1);

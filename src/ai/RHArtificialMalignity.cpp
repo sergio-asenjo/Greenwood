@@ -196,6 +196,41 @@ inline RHMalignityPosition RHMalignityPositionOf(void *object)
     return position;
 }
 
+class RHMalignityUnk00414320
+{
+public:
+    void *FUN_00414320();
+};
+
+// FUNCTION: GAME 0x00414320
+void *RHMalignityUnk00414320::FUN_00414320()
+{
+    return (void *)((char *)this + 0x18);
+}
+
+void EmitRHMalignityUnk00414320(RHMalignityUnk00414320 *a)
+{
+    a->FUN_00414320();
+}
+
+class RHMalignityUnk00414330
+{
+public:
+    void *FUN_00414330(void *destination);
+};
+
+// FUNCTION: GAME 0x00414330
+void *RHMalignityUnk00414330::FUN_00414330(void *destination)
+{
+    *(RHMalignityPosition *)destination = *(RHMalignityPosition *)((char *)this + 4);
+    return destination;
+}
+
+void EmitRHMalignityUnk00414330(RHMalignityUnk00414330 *a)
+{
+    a->FUN_00414330(0);
+}
+
 // FUNCTION: GAME 0x00414360
 RHUnk00613e90 FUN_00414360(const RHMalignityPosition &position, bool mode)
 {
@@ -254,6 +289,26 @@ bool RHMalignityBaseView::FUN_00419e10(void *actor)
     int first = ((RHMalignityActorCalls *)m_actor)->V130();
     int second = ((RHMalignityActorCalls *)actor)->V130();
     return first == second;
+}
+
+class RHMalignityUnk0041a2e0
+{
+public:
+    bool FUN_0041a2e0();
+};
+
+// FUNCTION: GAME 0x0041a2e0
+bool RHMalignityUnk0041a2e0::FUN_0041a2e0()
+{
+    int value = *(int *)((char *)this + 0x14);
+    if (value == 0x5a || value == 0x7b)
+        return true;
+    return false;
+}
+
+void EmitRHMalignityUnk0041a2e0(RHMalignityUnk0041a2e0 *a)
+{
+    a->FUN_0041a2e0();
 }
 
 // FUNCTION: GAME 0x0041a300
@@ -509,6 +564,16 @@ bool RHArtificialMalignity::SerializeExactlyThisAI(SBFile &file)
     return false;
 }
 
+// Parked: the target loads the value into dx (edx) and reuses eax for the base
+// pointer; VC6 reuses ax (eax) here. Inline, named unsigned-short/unsigned/int
+// locals, char*/unsigned short* pointer forms all give ax. 75.00%.
+// STUB: GAME 0x00438600
+unsigned short RHMalignityOwnerCalls::FUN_00438600()
+{
+    void *value = *(void **)((char *)this + 0x334);
+    return FUN_00438710(*(unsigned short *)((char *)value + 0x32), 0.5f, 2.0f, 100);
+}
+
 // FUNCTION: GAME 0x00438710
 unsigned short RHMalignityOwnerCalls::FUN_00438710(unsigned short value, float low, float high, unsigned short maximum)
 {
@@ -729,6 +794,17 @@ public:
     void FUN_00412d60(RHMalignityPosition position, int heading, int mode);
     void FUN_0041a3e0();
 };
+
+// FUNCTION: GAME 0x0041a3e0
+void RHMalignityReactionCalls::FUN_0041a3e0()
+{
+    if (*(int *)((char *)this + 0x14) >= 0x13 && *(int *)((char *)this + 0x14) <= 0x14)
+        ((RHMalignityBaseView *)this)->FUN_0041a300(0);
+    ((RHMalignityActorCalls *)*(void **)((char *)this + 4))->Unk0048d020();
+    if (*(int *)((char *)this + 0x14) < 0x13 ||
+        (*(int *)((char *)this + 0x14) > 0x14 && *(int *)((char *)this + 0x14) != 0x6c))
+        ((RHArtificialIntelligence *)this)->Unk00410600();
+}
 
 struct RHMalignityPriorityPosition
 {
@@ -2061,8 +2137,6 @@ public:
 
 class RHMalignityDirection : public RHUnk005fc3b0
 {
-public:
-    RHUnk005fc3b0 &FUN_005fc4d0(float factor);
 };
 
 // FUNCTION: GAME 0x00447640

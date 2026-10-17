@@ -270,6 +270,7 @@ public:
     ~RHUnk005fc3b0() {}
     RHUnk005fc3b0 &Unk005fcd40(unsigned char direction, float length);
     RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other);
+    unsigned char FUN_005fcc50(float value) const;
 };
 
 class SBGeoVector2D : public SBGeoPoint2D
@@ -292,7 +293,7 @@ public:
     SBGeoBoundingBox2D FUN_006092c0(const SBGeoBoundingBox2D &other) const;
     bool Unk00608f30() const;
     void FUN_006092a0(const SBGeoVector2D &offset);
-    void FUN_006091d0(float scale);
+    SBGeoBoundingBox2D &FUN_006091d0(float scale);
     SBGeoPoint2D first;
     SBGeoPoint2D last;
     bool valid;
@@ -596,6 +597,7 @@ public:
     void Unk00418c40(int remark, unsigned flags);
     void Unk00410600();
     bool Unk00412c80(void *waypoint, unsigned short flags);
+    bool Unk00412f40(RHUnk005fc3b0 *direction, int mode);
     bool Unk00412f70(unsigned short value, int mode);
     bool Unk00412240(const RHUnk00571160Position &position, unsigned short flags, float length);
     bool Unk00419cc0();
@@ -604,6 +606,7 @@ public:
     void Unk004195f0(unsigned flags);
     bool Unk00419b20(int remark);
     void Unk00419970(int remark, int time, int flags);
+    unsigned char Unk00419c50();
     unsigned char Unk00419c80();
     void Unk0041ab10(unsigned short direction);
 
