@@ -242,6 +242,7 @@ void RHScriptBatchCalls::FUN_0051d540(int index, int value)
 {
     *(int *)((char *)this + index * 8 + 8) = value;
 }
+void RHScriptBatchCalls::FUN_0051d4e0(int, unsigned int) {}
 RHScriptActionCursor RHScriptActionCursor::operator++(int)
 {
     RHScriptActionCursor previous = *this;

@@ -880,6 +880,7 @@ public:
     ~RHUnk005fc3b0() {}
     float Unk005fc6a0(float value);
     RHUnk005fc3b0 &Unk005fcd40(unsigned char direction, float length);
+    RHUnk005fc3b0 &FUN_005fc4d0(float factor);
     RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other);
     float FUN_005fc680(const RHUnk005fc3b0 &vector, float scale) const;
     SBGeoPoint2D FUN_005fc8f0(int mode, float value) const;
@@ -1144,6 +1145,7 @@ public:
     void Unk004522e0(void *description);
     RHScriptBatchCalls *Unk004e3cc0();
     void Unk0054cfa0(void *description);
+    void Unk00485200(int index, int amount);
     void Unk00485220(int index, int value);
     unsigned int Unk004baea0();
     void Unk0046b9e0();
@@ -1154,6 +1156,7 @@ public:
     void Unk0041ac50();
     float FUN_00489680(void *target);
     void FUN_0051d540(int index, int value);
+    void FUN_0051d4e0(int kind, unsigned int amount);
     void FUN_0058bbe0(void *actor, int value);
     void FUN_00456d20();
     void FUN_005209b0();

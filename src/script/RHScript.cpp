@@ -452,6 +452,12 @@ void RHScriptBatchCalls::Unk0046bd10(int state)
     *(int *)((char *)this + 0x144) = state;
 }
 
+// FUNCTION: GAME 0x00485200
+void RHScriptBatchCalls::Unk00485200(int index, int amount)
+{
+    (*(RHScriptBatchCalls **)((char *)this + 0x1c4))->FUN_0051d4e0(index, amount);
+}
+
 // FUNCTION: GAME 0x00485220
 void RHScriptBatchCalls::Unk00485220(int index, int value)
 {
@@ -3942,6 +3948,15 @@ void RHScript::Freeze(void *actor, bool frozen)
         *(char *)((char *)actor + 0x58c) = frozen;
 }
 
+namespace VMCoreCustomDependencies
+{
+// FUNCTION: GAME 0x00576c30
+void FUN_00576c30(bool value)
+{
+    *(bool *)((char *)g_pEngine + 0x4d84) = value;
+}
+}
+
 // FUNCTION: GAME 0x00576c50
 void RHScript::AssignPath(void *actor, void *path)
 {
@@ -5586,6 +5601,27 @@ void *RHScript::GetActorInSector(void *sector, int index)
     return ((RHScriptSectorActors *)sector)->actors[index];
 }
 
+namespace VMCoreCustomDependencies
+{
+// FUNCTION: GAME 0x0057a280
+int FUN_0057a280(int first, int second)
+{
+    return first & second;
+}
+
+// FUNCTION: GAME 0x0057a290
+int FUN_0057a290(int first, int second)
+{
+    return first | second;
+}
+
+// FUNCTION: GAME 0x0057a2a0
+int FUN_0057a2a0(int first, int second)
+{
+    return first ^ second;
+}
+}
+
 // FUNCTION: GAME 0x0057a2b0
 bool RHScript::HasPCAction(void *actor, int action)
 {
@@ -5682,6 +5718,15 @@ void *FUN_0057a8e0()
 unsigned FUN_0057aa20()
 {
     return ((RHScriptPCArray *)g_pEngine)->Count();
+}
+
+namespace VMCoreCustomDependencies
+{
+// FUNCTION: GAME 0x0057aa50
+int FUN_0057aa50(int index)
+{
+    return (int)((RHScriptPCArray *)g_pEngine)->Get((unsigned char)index);
+}
 }
 
 // 90.44%; virtual-base and list-search register scheduling remain unresolved.
@@ -6010,6 +6055,13 @@ void RHScript::SetExperiences(void *actor, int first, int second)
 
 namespace VMCoreCustomDependencies
 {
+// FUNCTION: GAME 0x0057b350
+void FUN_0057b350(int actor, bool value)
+{
+    if (actor)
+        *(bool *)(*(char **)(actor + 0x18) + 0x12) = value;
+}
+
 // FUNCTION: GAME 0x0057b370
 int FUN_0057b370()
 {
@@ -6092,6 +6144,15 @@ void *RHScript::GetSelectedPC(int index)
     return list[(unsigned short)index];
 }
 
+namespace VMCoreCustomDependencies
+{
+// FUNCTION: GAME 0x0057b780
+void FUN_0057b780()
+{
+    (*(RHSound **)((char *)g_pEngine + 0x45e0))->PlayJingle(6);
+}
+}
+
 // FUNCTION: GAME 0x0057b7a0
 void RHScript::MakePCCrouched(void *actor)
 {
@@ -6145,6 +6206,15 @@ bool RHScript::HasAnyPCActionWhoIsInThisLevelOrCouldMaybeComeFromSherwood(int ac
         }
     }
     return false;
+}
+
+namespace VMCoreCustomDependencies
+{
+// FUNCTION: GAME 0x0057ba50
+void FUN_0057ba50(int object, bool value)
+{
+    *(bool *)(object + 0xc) = value;
+}
 }
 
 // FUNCTION: GAME 0x0057ba60
