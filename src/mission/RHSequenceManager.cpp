@@ -7,6 +7,18 @@ DECOMP_SIZE_ASSERT(RHManagerSequenceView, 0x2c)
 DECOMP_SIZE_ASSERT(RHManagerElementView, 0x3c)
 DECOMP_SIZE_ASSERT(RHSequenceManager, 0x1b4)
 
+// FUNCTION: GAME 0x0046eb20
+int RHUnk0046eb30::FUN_0046eb20()
+{
+    return ((RHManagerList<void *> *)this)->count;
+}
+
+// FUNCTION: GAME 0x0046eb70
+char *RHUnk0046eb30::FUN_0046eb70()
+{
+    return (char *)(*(void **)this) + 8;
+}
+
 // FUNCTION: GAME 0x0046eb80
 RHScriptIter RHUnk0046eb30::FUN_0046eb80()
 {
@@ -443,10 +455,18 @@ void RHSequenceManager::Emit(SBFile &file)
     RHOrder *order = 0;
     RHSequenceElement *element = 0;
     RHSequence *sequence = 0;
+    ((RHUnk0046eb30 *)&m_4)->FUN_0046eb20();
     Serialize(file);
     PreSerializePointer(file, &order);
     PreSerializePointer(file, &element, false);
     PreSerializePointer(file, &sequence);
     SetAllPreSerializedPointers();
     SerializeSequenceElementPointer(file, &element);
+}
+
+void EmitRHUnk0046eb30(RHUnk0046eb30 *list)
+{
+    list->FUN_0046eb20();
+    list->FUN_0046eb70();
+    list->FUN_0046eb80();
 }

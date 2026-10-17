@@ -54,6 +54,8 @@ class RHUnk0046eb30
 {
 public:
     RHScriptIter begin();
+    int FUN_0046eb20();
+    char *FUN_0046eb70();
     RHScriptIter FUN_0046eb80();
     RHScriptIter erase(RHScriptIter position);
 };

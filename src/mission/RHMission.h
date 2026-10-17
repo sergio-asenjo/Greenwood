@@ -10,7 +10,15 @@
 // written back), then two 2-byte fields at +0x4/+0x6 and a 4-byte field at
 // +0x8. Every other byte is opaque padding.
 
-#include "RHProfileManager.h"
+#ifndef RHMISSION_H
+#define RHMISSION_H
+
+#include <string>
+#include "SB.h"
+
+class SBFile;
+class RHMissionProfile;
+class RHProfileManager;
 
 // Provisional free-function form of the singleton accessor at 0x00436500: it
 // lazily constructs and returns the process-wide RHProfileManager (global
@@ -30,8 +38,16 @@ public:
     short m_4;                   // [0x4]
     short m_6;                   // [0x6]
     int m_8;                     // [0x8]
+    RHMission();
+    RHMission(const RHMission &value);
+    RHMission(const RHMissionProfile *profile);
+    int FUN_0054cbf0();
+    int FUN_0054cc20();
+    bool FUN_0054c8a0(std::string &reason);
 };
 
 // Serialises a type-name tag into the stream; target 0x005e1b70. Defined once
 // in RHElementObject_stubs.cpp; declared here so the call resolves.
 void RHSerializeName(SBFile &file, const char *name);
+
+#endif

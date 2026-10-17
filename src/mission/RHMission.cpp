@@ -29,7 +29,27 @@
 // src/RHSword.cpp; references here resolve to the same pooled entities.)
 
 #include "SBNullstr.h"
+#include "RHProfileManager.h"
 #include "RHMission.h"
+#include "RHMissionProfile.h"
+
+// FUNCTION: GAME 0x0054cbf0
+int RHMission::FUN_0054cbf0()
+{
+    unsigned type = m_profile->m_34;
+    if (type == 5 || type == 1)
+        return 1;
+    return 0;
+}
+
+// FUNCTION: GAME 0x0054cc20
+int RHMission::FUN_0054cc20()
+{
+    unsigned type = m_profile->m_34;
+    if (type == 1 || type == 6)
+        return 1;
+    return 0;
+}
 
 // FUNCTION: GAME 0x0054cc40
 bool RHMission::Serialize(SBFile &file)
@@ -97,5 +117,7 @@ bool RHMission::Serialize(SBFile &file)
 // object; this out-of-line call keeps RHMission::Serialize in the build.
 void RHMission::Emit(SBFile &file)
 {
+    FUN_0054cbf0();
+    FUN_0054cc20();
     Serialize(file);
 }

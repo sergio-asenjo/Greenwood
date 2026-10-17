@@ -7,6 +7,7 @@ class RHSequenceElementDamage : public RHSequenceElement
 {
 public:
     virtual bool Serialize(SBFile &file, bool pointers);
+    char FUN_005864e0();
     void Emit(SBFile &file, bool pointers);
 
     void *m_64;

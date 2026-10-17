@@ -49,6 +49,52 @@ void RHCampaignArrayOps::FUN_0044ea70()
                                        ((std::vector<void *> *)this)->end());
 }
 
+class RHUnk0044fd00
+{
+public:
+    void FUN_0044fd00(int value);
+    int FUN_0044fd10();
+};
+
+// FUNCTION: GAME 0x0044fd00
+void RHUnk0044fd00::FUN_0044fd00(int value)
+{
+    *(int *)((char *)this + 0xcc) = value;
+}
+
+// FUNCTION: GAME 0x0044fd10
+int RHUnk0044fd00::FUN_0044fd10()
+{
+    return *(int *)((char *)this + 0xcc);
+}
+
+class RHUnk0044fe70
+{
+public:
+    int FUN_0044fe70();
+};
+
+// Parked: correct layout, but VC6 allocates the condition byte to dl where the
+// target uses al (mov al,[ecx+4]; test al,al; mov eax,0xff; je ...). Ternary
+// gives al but hoists the default to the false arm; the result-local form
+// gives the hoisted default but dl. Register-colouring seam, no shape found.
+// STUB: GAME 0x0044fe70
+int RHUnk0044fe70::FUN_0044fe70()
+{
+    char flag = *(char *)((char *)this + 4);
+    int result = 0xff;
+    if (flag)
+        result = *(int *)((char *)this + 0xcc);
+    return result;
+}
+
+void EmitRHUnk0044fd00(RHUnk0044fd00 *a, RHUnk0044fe70 *b)
+{
+    a->FUN_0044fd00(0);
+    a->FUN_0044fd10();
+    b->FUN_0044fe70();
+}
+
 // Parked: 49.95%.
 // STUB: GAME 0x00450ec0
 void RHCampaign::CreateGang()
@@ -231,7 +277,7 @@ void RHCampaign::FUN_004526f0(std::vector<RHMission *> &missions)
         RHMission *mission = *it;
         void *profile = mission->m_profile;
         if (*(int *)((char *)profile + 0x34) == 0 &&
-            mission->m_4 == *(unsigned short *)((char *)profile + 0x4c) - 1)
+            (unsigned short)mission->m_4 == *(unsigned short *)((char *)profile + 0x4c) - 1)
         {
             for (RHMission **other = missions.begin(); other != missions.end(); ++other)
                 if (*other != mission)
@@ -243,7 +289,7 @@ void RHCampaign::FUN_004526f0(std::vector<RHMission *> &missions)
             ((SBArray<RHSaveGame *> *)&values)->Insert((RHSaveGame **)last, 1, (RHSaveGame *const &)mission);
             break;
         }
-        if (mission->m_4 == *(unsigned short *)((char *)profile + 0x4c))
+        if ((unsigned short)mission->m_4 == *(unsigned short *)((char *)profile + 0x4c))
         {
             mission->m_4 = 0;
             it = missions.erase(it);
@@ -837,27 +883,14 @@ void RHScriptBatchCalls::Unk00455400(void *description)
     available.insert(available.end(), 1, description);
 }
 
-// Parked: search-loop register assignment still differs from the target.
-// STUB: GAME 0x004555f0
+// FUNCTION: GAME 0x004555f0
 void RHScriptBatchCalls::Unk004555f0(void *description)
 {
-    void **first = *(void ***)((char *)this + 0x1b4);
-    void **last = *(void ***)((char *)this + 0x1b8);
-    void **match = first;
-    while (match != last && *match != description)
-        ++match;
-    if (match == last)
-        return;
-    void **source = match + 1;
-    if (source != last)
-    {
-        do
-        {
-            source[-1] = *source;
-            ++source;
-        } while (source != last);
-    }
-    *(void ***)((char *)this + 0x1b8) = last - 1;
+    RHCampaign *campaign = (RHCampaign *)this;
+    std::vector<RHPCDescription *>::iterator match = std::find(
+        campaign->m_1b0.begin(), campaign->m_1b0.end(), (RHPCDescription *)description);
+    if (match != campaign->m_1b0.end())
+        campaign->m_1b0.erase(match);
 }
 
 // Parked: real vector insertion and EH cleanup still differ from the target.
@@ -878,6 +911,14 @@ void RHCampaign::FUN_00455650()
 void RHCampaign::FUN_004559f0()
 {
     m_1b0.erase(m_1b0.begin(), m_1b0.end());
+}
+
+// FUNCTION: GAME 0x00455a40
+bool RHCampaign::FUN_00455a40(RHPCDescription *character)
+{
+    if (std::find(m_1b0.begin(), m_1b0.end(), character) == m_1b0.end())
+        return false;
+    return true;
 }
 
 // FUNCTION: GAME 0x00455a70
@@ -901,6 +942,64 @@ unsigned short RHCampaign::GetNumberOfPeasantsToConvertToBlazons() const
     return blazons * *(unsigned short *)((char *)profile + 0x70);
 }
 
+// FUNCTION: GAME 0x00455af0
+unsigned short RHCampaign::FUN_00455af0()
+{
+    RHMission *selected = *(RHMission **)((char *)this + 0x180);
+    if (selected != m_178 && selected)
+    {
+        void *profile = selected->m_profile;
+        return *(unsigned short *)((char *)profile + 0x68) -
+               *(unsigned short *)((char *)profile + 0x6a);
+    }
+    return *(unsigned short *)((char *)m_178->m_profile + 0x68);
+}
+
+// FUNCTION: GAME 0x00455b20
+void RHCampaign::FUN_00455b20(RHPCDescription *character)
+{
+    std::vector<RHPCDescription *>::iterator first = m_114.begin();
+    std::vector<RHPCDescription *>::iterator last = m_114.end();
+    for (; first != last; ++first)
+    {
+        if (*first == character)
+        {
+            m_114.erase(first);
+            return;
+        }
+    }
+}
+
+// FUNCTION: GAME 0x00455b80
+void RHCampaign::FUN_00455b80(RHPCDescription *character)
+{
+    std::vector<RHPCDescription *>::iterator first = m_114.begin();
+    std::vector<RHPCDescription *>::iterator last = m_114.end();
+    for (; first != last; ++first)
+    {
+        if (*first == character)
+        {
+            SBArray<RHSaveGame *> &reservists = *(SBArray<RHSaveGame *> *)&m_124;
+            reservists.Insert(reservists.m_last, 1, *(RHSaveGame **)first);
+            m_114.erase(first);
+            return;
+        }
+    }
+}
+
+// FUNCTION: GAME 0x00455d10
+bool RHCampaign::FUN_00455d10(RHPCDescription *character)
+{
+    std::vector<RHPCDescription *>::iterator first = m_104.begin();
+    std::vector<RHPCDescription *>::iterator last = m_104.end();
+    for (; first != last; ++first)
+    {
+        if (*first == character)
+            return true;
+    }
+    return false;
+}
+
 // FUNCTION: GAME 0x00455f00
 void RHCampaign::FUN_00455f00(std::vector<RHMission *> &missions)
 {
@@ -918,7 +1017,7 @@ void RHCampaign::FUN_00455f00(std::vector<RHMission *> &missions)
                 mission->m_4 = 0;
                 it = missions.erase(it);
             }
-            else if (((RHCampaignMissionCalls *)mission)->FUN_0054cc20())
+            else if ((char)((RHCampaignMissionCalls *)mission)->FUN_0054cc20())
             {
                 if (selected == 0)
                 {
@@ -938,10 +1037,90 @@ void RHCampaign::FUN_00455f00(std::vector<RHMission *> &missions)
                 ++it;
         }
     }
-    else if (missions.size() == 1 && ((RHCampaignMissionCalls *)missions.front())->FUN_0054cbf0())
+    else if (missions.size() == 1 && (char)((RHCampaignMissionCalls *)missions.front())->FUN_0054cbf0())
         selected = missions.front();
     else
         selected = 0;
+}
+
+// FUNCTION: GAME 0x004560d0
+void RHCampaign::FUN_004560d0(RHMission *mission)
+{
+    if (mission == 0)
+        mission = m_17c;
+    std::vector<RHMission *>::iterator it = m_154.begin();
+    while (it != m_154.end())
+    {
+        RHMission *current = *it;
+        if (current != mission)
+        {
+            if (*(unsigned short *)((char *)current->m_profile + 0x4c) < 1000 || current->m_4 == 0)
+                ++current->m_4;
+            if ((unsigned short)mission->m_4 > *(unsigned short *)((char *)mission->m_profile + 0x4c))
+                ((RHGameCampaignView *)this)->FUN_00456e40(*(char *)((char *)mission->m_profile + 0x62));
+            ++it;
+        }
+        else
+        {
+            m_17c = current;
+            current->m_4 = 0;
+            it = m_154.erase(it);
+        }
+    }
+}
+
+// FUNCTION: GAME 0x00456270
+unsigned short RHGameCampaignView::FUN_00456270()
+{
+    RHPCDescription **first = *(RHPCDescription ***)((char *)this + 0x118);
+    RHPCDescription **last = *(RHPCDescription ***)((char *)this + 0x11c);
+    unsigned count = 0;
+    for (; first != last; ++first)
+    {
+        if (*(char *)((char *)(*first)->m_profile + 0x35) == 0)
+            ++count;
+    }
+    return count;
+}
+
+// FUNCTION: GAME 0x004564e0
+void RHCampaign::FUN_004564e0(std::vector<RHMission *> &missions)
+{
+    for (RHMission **it = missions.begin(); it != missions.end(); ++it)
+        (*it)->m_4 = 0;
+    missions.erase(missions.begin(), missions.end());
+}
+
+// FUNCTION: GAME 0x00456a10
+RHSectorProduction *RHCampaign::FUN_00456a10(unsigned long index)
+{
+    RHSectorProduction *first = ((RHCampaignProductionSectors *)((char *)this + 0x74))->begin();
+    return first + index;
+}
+
+// FUNCTION: GAME 0x00456a30
+bool FUN_00456a30(SBFile &file, RHSectorProduction &sector)
+{
+    return sector.Serialize(file);
+}
+
+// FUNCTION: GAME 0x00456a40
+void RHCampaign::FUN_00456a40()
+{
+    RHCampaignProductionSectors &sectors = *(RHCampaignProductionSectors *)((char *)this + 0x74);
+    for (RHSectorProduction *it = sectors.begin(); it != sectors.end(); ++it)
+        it->FUN_00580d20(m_174);
+}
+
+// FUNCTION: GAME 0x00456a70
+void RHCampaign::FUN_00456a70()
+{
+    RHCampaignProductionSectors &sectors = *(RHCampaignProductionSectors *)((char *)this + 0x74);
+    for (RHSectorProduction *it = sectors.begin(); it != sectors.end(); ++it)
+    {
+        it->FUN_005804e0();
+        it->FUN_005803c0();
+    }
 }
 
 // FUNCTION: GAME 0x00456aa0
@@ -955,6 +1134,60 @@ bool FUN_00456aa0(SBFile &file, unsigned long &value)
         return false;
     }
     return true;
+}
+
+// Parked: vector construction helpers inline differently and enlarge the frame.
+// STUB: GAME 0x00456af0
+void RHCampaign::FUN_00456af0(const void *object)
+{
+    std::vector<unsigned long> &relics = *(std::vector<unsigned long> *)((char *)this + 0x84);
+    unsigned long type = *(const unsigned long *)((const char *)object + 0xb0);
+    relics.insert(relics.end(), 1, type);
+}
+
+// FUNCTION: GAME 0x00456db0
+unsigned RHCampaign::FUN_00456db0() const
+{
+    const RHMission *first = m_144.begin();
+    const RHMission *last = m_144.end();
+    bool finalWon;
+    unsigned won = 0;
+    unsigned total = 0;
+    bool previousWon;
+    finalWon = previousWon = false;
+    for (; first != last; ++first)
+    {
+        const RHMissionProfile *profile = (const RHMissionProfile *)first->m_profile;
+        if (profile->m_34 != 3 && profile->m_34 != 6)
+        {
+            ++total;
+            if (first->m_8 == 1)
+            {
+                ++won;
+                switch (profile->m_00)
+                {
+                case 0x4444:
+                    previousWon = true;
+                    break;
+                case 0x4948:
+                    finalWon = true;
+                    break;
+                }
+            }
+        }
+    }
+    if (finalWon == true)
+        return 100;
+    if (previousWon == true)
+        return 95;
+    return 100 * won / total;
+}
+
+// FUNCTION: GAME 0x00456e40
+void RHGameCampaignView::FUN_00456e40(char value)
+{
+    if (value != -1)
+        *((char *)this + 0x100) = value;
 }
 
 // STUB: GAME 0x00456e60
@@ -1030,6 +1263,26 @@ bool RHCampaign::LoadFromSaveGame(const RHSaveGame *saveGame)
         file.FUN_005f5290();
     }
     return result;
+}
+
+class RHCampaignUnk00457480
+{
+public:
+    bool FUN_00457480(int value, void *container);
+};
+
+// FUNCTION: GAME 0x00457480
+bool RHCampaignUnk00457480::FUN_00457480(int value, void *container)
+{
+    int *first = *(int **)((char *)container + 4);
+    int *last = *(int **)((char *)container + 8);
+    while (first != last)
+    {
+        if (*(int *)((char *)*first + 0x40) == value)
+            return true;
+        ++first;
+    }
+    return false;
 }
 
 // FUNCTION: GAME 0x00457560
@@ -1644,6 +1897,25 @@ RHSectorProduction::RHSectorProduction(const RHSectorProduction &value)
 {
 }
 
+class RHUnk00580330
+{
+public:
+    void FUN_00580330(int first, unsigned short second);
+};
+
+// FUNCTION: GAME 0x00580330
+void RHUnk00580330::FUN_00580330(int first, unsigned short second)
+{
+    *(int *)((char *)this + 8) = first;
+    *(unsigned short *)((char *)this + 4) = second;
+    *(int *)((char *)first + 0xf4) = *(int *)this;
+}
+
+void EmitRHUnk00580330(RHUnk00580330 *a)
+{
+    a->FUN_00580330(0, 0);
+}
+
 // FUNCTION: GAME 0x00580050
 RHSectorProduction::RHSectorProduction(int type)
     : m_0(type), m_4(0), m_8(0), m_2c(0), m_2e(0), m_30(0)
@@ -1652,11 +1924,22 @@ RHSectorProduction::RHSectorProduction(int type)
 
 void RHCampaign::Emit(std::vector<RHMission *> &missions)
 {
+    FUN_00456db0();
     SelectMissions(false);
     CreateGang();
     SelectMissionsByLocation(missions);
     SelectMissionsByObligation(missions);
     GetNumberOfPeasantsToConvertToBlazons();
+    FUN_00455a40(0);
+    FUN_00455af0();
+    FUN_00455b20(0);
+    FUN_00455b80(0);
+    FUN_004560d0(0);
+    FUN_00455d10(0);
+    FUN_00456a10(0);
+    FUN_00456a40();
+    FUN_00456a70();
+    FUN_00456af0(0);
     RHUnk005f4fc0 file;
     SerializeAllCharacters(file);
     SBArray<RHElement *> elements;

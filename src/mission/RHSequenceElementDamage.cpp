@@ -230,7 +230,14 @@ bool RHSequenceElementDamage::Serialize(SBFile &file, bool pointers)
     return true;
 }
 
+// FUNCTION: GAME 0x005864e0
+char RHSequenceElementDamage::FUN_005864e0()
+{
+    return m_6c;
+}
+
 void RHSequenceElementDamage::Emit(SBFile &file, bool pointers)
 {
     Serialize(file, pointers);
+    FUN_005864e0();
 }

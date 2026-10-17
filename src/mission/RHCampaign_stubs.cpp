@@ -1,6 +1,7 @@
 #include "SBNullstr.h"
 #include "RHCampaign.h"
 #include <algorithm>
+#include <new>
 
 namespace std {
 template<> void _Sort(RHMission **first, RHMission **last, bool (*compare)(RHMission *, RHMission *), RHMission **)
@@ -29,6 +30,21 @@ RHMission::RHMission(const RHMission &value)
 {
 }
 
+// FUNCTION: GAME 0x0054c6d0
+RHMission::RHMission(const RHMissionProfile *profile)
+    : m_profile((RHMissionProfile *)profile),
+      m_4(0),
+      m_6(*(const short *)((const char *)profile + 0x6c)),
+      m_8(0)
+{
+}
+
+void EmitRHMissionProfileCtor(RHMission *mission, const RHMissionProfile *profile)
+{
+    new (mission) RHMission(profile);
+}
+
+// LIBRARY: GAME 0x00642a7d
 extern "C" int __cdecl rand() { return 0; }
 
 
@@ -42,13 +58,9 @@ void RHPCDescription::FUN_0055bc30() {}
 void RHPCDescription::FUN_0055bc90(void *, bool) {}
 RHPCDescription::~RHPCDescription() {}
 void RHPCDescription::FUN_00459fd0() {}
-bool FUN_00456a30(SBFile &, RHSectorProduction &) { return false; }
 bool FUN_00452040(RHMission *) { return false; }
 bool FUN_00452090(RHMission *) { return false; }
-void RHCampaign::FUN_004564e0(std::vector<RHMission *> &) {}
 bool FUN_0054cc10(RHMission *) { return false; }
-bool RHCampaignMissionCalls::FUN_0054cc20() { return false; }
-bool RHCampaignMissionCalls::FUN_0054cbf0() { return false; }
 bool RHCampaignMissionCalls::FUN_0054c8a0(std::string &) { return false; }
 void RHCampaignMissionList::FUN_005c8e40(unsigned) {}
 void RHCampaignText::FUN_004021c0(const char *, unsigned) {}
