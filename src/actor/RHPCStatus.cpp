@@ -188,6 +188,20 @@ std::wstring RHPCStatus::GenerateName(const RHCharacterProfile &profile)
     return name;
 }
 
+// FUNCTION: GAME 0x0055c390
+void RHPCStatus::FUN_0055c390()
+{
+    m_18 = 0;
+    m_1a = 0;
+    m_1c = 0;
+    m_1e = 0;
+    m_20 = 0;
+    m_22 = 0;
+    m_24 = 0;
+    m_26 = 0;
+    m_28 = 0;
+}
+
 // FUNCTION: GAME 0x0055c3c0
 bool RHPCStatus::Serialize(SBFile &file)
 {
@@ -307,3 +321,8 @@ RHPCWideText &RHPCWideText::FUN_0055c680(const std::wstring &text, unsigned firs
 
 // LIBRARY: GAME 0x0055c770
 // ??Hstd@@YA?AV?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@0@PBGABV10@@Z
+
+void EmitRHPCStatusZero(RHPCStatus *status)
+{
+    status->FUN_0055c390();
+}

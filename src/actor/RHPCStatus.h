@@ -33,6 +33,7 @@ class RHPCStatus : public RHHumanStatus
 {
 public:
     static std::wstring GenerateName(const RHCharacterProfile &profile);
+    void FUN_0055c390();
     virtual bool Serialize(SBFile &file); // vtable+0x00
     void Emit(SBFile &file, const RHCharacterProfile &profile);
 
