@@ -17,6 +17,7 @@
 
 #include <math.h>
 #include "RHScript.h"
+#include "RHEngineWidenedCalls.h"
 
 #define AT(type, off) (*(type *)((char *)this + off))
 
@@ -28,7 +29,8 @@ public:
     float FUN_0049b120();
     void FUN_0049b130(float scale);
     float FUN_0049b150();
-    float m_0;
+    int FUN_0049b180();
+    int FUN_0049b1c0();    float m_0;
     float m_4;
     float m_8;
 };
@@ -79,8 +81,12 @@ class RHUnk0049b390
 {
 public:
     void FUN_0049b390(const SBGeoPoint2D &point);
+    void FUN_0049b410();
+    void FUN_0049b420();
     void FUN_0049b430();
     void FUN_0049b470(void *value, bool flag);
+    void FUN_0049b490(unsigned row, unsigned flags);
+    void FUN_0049b4b0(unsigned long value);
 };
 
 class RHUnk0049b690
@@ -141,6 +147,26 @@ extern RHUnk00452030 *g_unk0x6c07fc;
 extern RHUnkSectorGlobal *g_unk0x6c0a9c;
 extern RHUnk005c38b0 *g_unk0x6c10e8;
 extern RHEngine *g_pEngine;
+extern float g_unk0x00677488;
+
+// SIZE 0x14
+class SBGeoBoundingBox2D
+{
+public:
+    char m_bytes[0x14];
+};
+
+class RHPositionInterface
+{
+public:
+    bool TurnFast();
+};
+
+class RHPathActorInfo
+{
+public:
+    const SBGeoBoundingBox2D &FUN_00560450();
+};
 
 class RHUnk0049b3xx
 {
@@ -174,6 +200,22 @@ void RHUnk0049b100::FUN_0049b130(float scale)
 float RHUnk0049b100::FUN_0049b150()
 {
     return (float)sqrt(AT(float, 0) * AT(float, 0) + AT(float, 4) * AT(float, 4) + AT(float, 8) * AT(float, 8));
+}
+
+// FUNCTION: GAME 0x0049b180
+int RHUnk0049b100::FUN_0049b180()
+{
+    if (m_0 == g_unk0x00677488 && m_4 == g_unk0x00677488 && m_8 == g_unk0x00677488)
+        return 0;
+    return 1;
+}
+
+// FUNCTION: GAME 0x0049b1c0
+int RHUnk0049b100::FUN_0049b1c0()
+{
+    if (m_0 == g_unk0x00677488 && m_4 == g_unk0x00677488 && m_8 == g_unk0x00677488)
+        return 1;
+    return 0;
 }
 
 // FUNCTION: GAME 0x0049b200
@@ -265,6 +307,18 @@ void RHUnk0049b3b0::FUN_0049b3f0(Kind4 value)
     *(unsigned short *)(AT(char *, 0x50) + 0xda) = value & 15;
 }
 
+// FUNCTION: GAME 0x0049b410
+void RHUnk0049b390::FUN_0049b410()
+{
+    ((RHPositionInterface *)(AT(char *, 0x50) + 4))->TurnFast();
+}
+
+// FUNCTION: GAME 0x0049b420
+void RHUnk0049b390::FUN_0049b420()
+{
+    ((RHPathActorInfo *)(AT(char *, 0x50) + 4))->FUN_00560450();
+}
+
 // FUNCTION: GAME 0x0049b430
 void RHUnk0049b390::FUN_0049b430()
 {
@@ -275,6 +329,18 @@ void RHUnk0049b390::FUN_0049b430()
 void RHUnk0049b390::FUN_0049b470(void *value, bool flag)
 {
     AT(RHBonusInfo *, 0x50)->FUN_005bd560(value, flag);
+}
+
+// FUNCTION: GAME 0x0049b490
+void RHUnk0049b390::FUN_0049b490(unsigned row, unsigned flags)
+{
+    ((RHEngineWidenedCalls *)AT(void *, 0x50))->FUN_005b76e0(row, flags);
+}
+
+// FUNCTION: GAME 0x0049b4b0
+void RHUnk0049b390::FUN_0049b4b0(unsigned long value)
+{
+    ((RHEngineWidenedCalls *)AT(void *, 0x50))->FUN_005b7f60(value);
 }
 
 // FUNCTION: GAME 0x0049b4c0
@@ -374,6 +440,8 @@ void rh_emit_accessors(void *object, const RHUnk0049b100 &point)
     vector->FUN_0049b120();
     vector->FUN_0049b130(2);
     vector->FUN_0049b150();
+    vector->FUN_0049b180();
+    vector->FUN_0049b1c0();
     RHUnk0049b200 *flags = (RHUnk0049b200 *)object;
     flags->FUN_0049b200(1);
     flags->FUN_0049b210(1);
@@ -405,6 +473,8 @@ void rh_emit_accessors(void *object, const RHUnk0049b100 &point)
     ((RHUnk0049b680 *)object)->FUN_0049b680(0);
     ((RHUnk0049bb00 *)object)->FUN_0049bb00();
     ((RHUnk0049b390 *)object)->FUN_0049b390(*(SBGeoPoint2D *)object);
+    ((RHUnk0049b390 *)object)->FUN_0049b410();
+    ((RHUnk0049b390 *)object)->FUN_0049b420();
     ((RHUnk0049b390 *)object)->FUN_0049b430();
     ((RHUnk0049b390 *)object)->FUN_0049b470(0, false);
     ((RHUnk0049b690 *)object)->FUN_0049b690((RHUnk00585500 *)object);
