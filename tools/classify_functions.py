@@ -163,6 +163,222 @@ ZLIB_RANGES = [
 ]
 ZLIB_ADDRS = {0x006183C0}  # crc32
 
+# --- Merged compiler guard + registration glue --------------------------------
+# Compiler static-init/`atexit` registration bodies where the guard test and the
+# `__onexit` registration were merged into ONE Ghidra body (size 0x25 = 37 bytes),
+# so the classifier's 10/12-byte static-init trampoline cases miss them.
+# Entry: 8a0d3c226c00 (mov cl,[0x6c223c]); b001 (mov al,1); 84c8 (test al,cl);
+# 75xx (jne +); 0ac8 (or cl,al); 880d3c226c00 (mov [0x6c223c],cl); e9 <rel32>
+# -> local tail at +0x20: 6830be4800 (push 0x48be30); e8 <rel32> (call 0x6420dd);
+# 59 (pop ecx); c3 (ret).  Independently verified (two read-only passes) for every
+# address below; callback 0x48be30 and helper 0x6420dd are identical for all of them.
+# Explicit set (NOT a range/pattern rule): the bodies are interleaved with game code.
+# Evidence: docs/notes/astra_guard-registration-verification_20261018.txt
+MERGED_GUARD_REGISTRATION_ADDRS = {
+    0x00401080,
+    0x004013E0,
+    0x00402FF0,
+    0x004034B0,
+    0x00403FD0,
+    0x00404650,
+    0x00404A50,
+    0x00408630,
+    0x00408850,
+    0x00408BF0,
+    0x0040BC90,
+    0x0040BDC0,
+    0x0040BE70,
+    0x0040EA80,
+    0x00424490,
+    0x0044E960,
+    0x0044FF70,
+    0x004504F0,
+    0x0045A8B0,
+    0x0045AC50,
+    0x00460970,
+    0x00461F60,
+    0x00462EE0,
+    0x0046EB90,
+    0x0046FF30,
+    0x004714A0,
+    0x004861A0,
+    0x0048F1A0,
+    0x004A1B00,
+    0x004A5E30,
+    0x004A6230,
+    0x004A6540,
+    0x004A7010,
+    0x004A7DE0,
+    0x004A8080,
+    0x004AAB90,
+    0x004AAFE0,
+    0x004B0670,
+    0x004B1E00,
+    0x004B2D90,
+    0x004B3F70,
+    0x004B9040,
+    0x004BA810,
+    0x004BAB80,
+    0x004BC410,
+    0x004BDFA0,
+    0x004BE2B0,
+    0x004E6A60,
+    0x004E7390,
+    0x004FEC40,
+    0x00501630,
+    0x00503AB0,
+    0x00509C30,
+    0x005176A0,
+    0x005187D0,
+    0x00518880,
+    0x0051A4F0,
+    0x0051B8F0,
+    0x0051BB00,
+    0x0051C820,
+    0x0051D290,
+    0x0051D680,
+    0x0051E080,
+    0x0051E130,
+    0x0051EA70,
+    0x0051F040,
+    0x00522750,
+    0x00523A70,
+    0x00524810,
+    0x00525950,
+    0x00528C90,
+    0x0052BF80,
+    0x0052D330,
+    0x0052DFE0,
+    0x005300D0,
+    0x00533BE0,
+    0x00535980,
+    0x00536A20,
+    0x005374C0,
+    0x00538490,
+    0x00539430,
+    0x0053A9F0,
+    0x0053E3D0,
+    0x00540680,
+    0x005412C0,
+    0x00543D90,
+    0x00544BA0,
+    0x005450F0,
+    0x00545B20,
+    0x005492E0,
+    0x0054C5D0,
+    0x0054CEB0,
+    0x0054E460,
+    0x0054EA00,
+    0x00550420,
+    0x00551E10,
+    0x0055B940,
+    0x0055BB80,
+    0x0055C8C0,
+    0x0055D410,
+    0x0055E610,
+    0x0055EE30,
+    0x00564410,
+    0x0056DB10,
+    0x0056DDA0,
+    0x0056E160,
+    0x0056EE70,
+    0x00570440,
+    0x0057C9D0,
+    0x0057FF90,
+    0x00581AE0,
+    0x00582170,
+    0x00584C40,
+    0x00585FA0,
+    0x005864F0,
+    0x005881C0,
+    0x00589F00,
+    0x0058BF40,
+    0x0059FB40,
+    0x005A2210,
+    0x005A33A0,
+    0x005A5D40,
+    0x005A5DF0,
+    0x005B1B70,
+    0x005B2070,
+    0x005B2310,
+    0x005B37D0,
+    0x005B4920,
+    0x005B57E0,
+    0x005BECA0,
+    0x005C2190,
+    0x005C8FE0,
+    0x005C90C0,
+    0x005CA240,
+    0x005CAD10,
+    0x005CB170,
+    0x005CBAD0,
+    0x005CBD60,
+    0x005CC010,
+    0x005CC460,
+    0x005CC520,
+    0x005CCB50,
+    0x005D1760,
+    0x005D2510,
+    0x005D3850,
+    0x005D3C00,
+    0x005D4900,
+    0x005D5610,
+    0x005D5890,
+    0x005D5970,
+    0x005DF030,
+    0x005DF410,
+    0x005DFE50,
+    0x005DFF00,
+    0x005E0BE0,
+    0x005E3240,
+    0x005F0470,
+    0x005F4D20,
+    0x005F7BA0,
+    0x005F9A50,
+    0x005FC000,
+    0x005FC360,
+    0x005FCE20,
+    0x00606930,
+    0x0060A770,
+    0x0060BBD0,
+    0x0060CF00,
+    0x0060E100,
+    0x0060E490,
+    0x0060F210,
+    0x0060F970,
+    0x00611490,
+    0x00613670,
+    0x006150A0,
+    0x00615800,
+    0x00616610,
+    0x00616BC0,
+    0x00618390,
+    0x00619F70,
+    0x0061AE80,
+    0x0061C480,
+    0x0061DA60,
+    0x0061E4C0,
+    0x0061E5D0,
+    0x0061E600,
+    0x0061E6B0,
+    0x00621220,
+    0x00621D50,
+    0x00625290,
+    0x00625320,
+    0x006286B0,
+    0x006287F0,
+    0x00639890,
+    0x00639B10,
+    0x0063A110,
+    0x0063A220,
+    0x0063A3D0,
+    0x0063A590,
+    0x0063B970,
+    0x0063C660,
+    0x0063C730,
+    0x0063C790,
+}
+
 # --- CRT/STL helpers implemented as library code -----------------------------
 CRT_HELPER_ADDRS = {
     0x00419940,  # wmemcpy
@@ -250,6 +466,26 @@ STD_TEMPLATE_ADDRS = {
     0x0063F890,
 }
 
+# --- CRT/STL runtime block ----------------------------------------------------
+# 0x63D000-0x64FFFF is the compiler's runtime (VC6 SP6). Named siblings include
+# __CxxThrowException@8, __global_unwind2, __local_unwind2, __CallSettingFrame@12,
+# __abnormal_termination, __allmul/__allshl/__aulldiv/__aullrem/__ftol/__cfltcvt,
+# _malloc/_memchr/_memset, entry, ~exception, uflow, _Gninc, and the Win32/DirectX
+# imports DirectDrawCreate/DirectInputCreateEx. The unnamed members disassemble to
+# strlen, the C++ EH dispatcher (`mov ebx,0xe06d7363` / `mov edi,0x19930520`) and
+# std-only STL instantiations (std::string::assign, std::vector element copies).
+# Both categories are LIBRARY per docs/04-progress.md.
+CRT_RANGES = [
+    (0x0063D000, 0x00650000),
+]
+# Exceptions: the handful of instantiations in the block that are NOT std-only —
+# they call first-party game code, so they stay UNKNOWN (implementation candidates).
+CRT_RANGE_EXCEPTIONS = {
+    0x0063D440,  # calls RHElementActor::FUN_00463250
+    0x0063DE60,  # calls FUN_004598e0
+    0x0063F790,  # calls SBFile::Access
+}
+
 # --- Real functions missing from the Ghidra map (added to the denominator) ---
 MAP_GAPS = [
     (0x00405150, 0x0000002E, "VMCoreCustom::FUN_00405150"),
@@ -261,6 +497,8 @@ MAP_GAPS = [
     (0x004075C0, 0x00000FFA, "VMCoreCustom::InitializeHandlerTable"),
     (0x0045CC60, 0x0000004D, "RHConsole::FUN_0045cc60"),
     (0x0061B460, 0x00000028, "SBUI::FUN_0061b460"),
+    (0x00471280, 0x00000030, "RHElementActorCivilian::GetTransitionFlags"),
+    (0x00495FD0, 0x000001C4, "RHElementActorPC::GetTransitionFlags"),
 ]
 
 
@@ -281,7 +519,13 @@ def load_functions() -> list[tuple[int, int, str]]:
 def is_library_addr(addr: int) -> bool:
     if addr in BZIP2_ADDRS or addr in ZLIB_ADDRS or addr in CRT_HELPER_ADDRS:
         return True
+    if addr in MERGED_GUARD_REGISTRATION_ADDRS:
+        return True
     if addr in STD_TEMPLATE_ADDRS:
+        return True
+    if addr in CRT_RANGE_EXCEPTIONS:
+        return False
+    if any(lo <= addr < hi for lo, hi in CRT_RANGES):
         return True
     return any(lo <= addr < hi for lo, hi in ZLIB_RANGES)
 
