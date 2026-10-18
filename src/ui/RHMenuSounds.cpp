@@ -87,7 +87,7 @@ RHMenuSoundsSlider::RHMenuSoundsSlider()
     m_vptr = 0x006799f0;
 }
 
-// Parked: case 0 loses the target's byte zero-extension and event store order; case 3 keeps the input in edi instead of ebp.
+// Parked: explicit event stores still hoist the event address before state arithmetic.
 // STUB: GAME 0x00543bb0
 RHMenuSoundsEvent *RHMenuSoundsSlider::FUN_00543bb0(const RHMenuSoundsInput &input)
 {

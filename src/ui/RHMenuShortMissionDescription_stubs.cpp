@@ -7,9 +7,6 @@
 #include "SBNullstr.h"
 #include "RHMenuShortMissionDescription.h"
 
-// Target 0x0044eeb0, __thiscall.
-RHMenuShortMissionBlazons::~RHMenuShortMissionBlazons() {}
-
 // Target 0x00540850, __thiscall.
 RHMenuShortMissionDescription::~RHMenuShortMissionDescription() {}
 

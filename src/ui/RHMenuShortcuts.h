@@ -47,8 +47,10 @@ public:
     RHMenuShortcutsList();
     ~RHMenuShortcutsList();
     void FUN_005ced90();
+    void FUN_005cf1c0(RHMenuShortcutsKeys *keys);
 
-    undefined m_00[0x210]; // 0x00
+    undefined m_00[0x20c]; // 0x00
+    RHMenuShortcutsKeys *m_20c; // 0x20c
 };
 
 extern bool g_unk0x6c069c;

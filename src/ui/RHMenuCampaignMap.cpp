@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHMenuCampaignMap.h"
 #include "RHPortraitRootLifetime.h"
 #include "RHMenuScreenView.h"
@@ -5,6 +6,7 @@
 #include "RHGameInputTranslator.h"
 #include "SBUIBase.h"
 #include "RHMission.h"
+#include "RHCampaignCommandLine.h"
 #include <windows.h>
 #include <stdio.h>
 #include <stddef.h>
@@ -642,6 +644,236 @@ unsigned g_unk0x006c0c24 = 0;
 
 // GLOBAL: GAME 0x006c0c28
 RHMapTreeNode *g_unk0x006c0c28 = 0;
+
+struct RHMapStringNode
+{
+    RHMapStringNode *m_00;
+    RHMapStringNode *m_04;
+    RHMapStringNode *m_08;
+    std::pair<const std::string, void *> m_0c;
+    int m_20;
+};
+
+struct RHMapStringIterator
+{
+    RHMapStringNode *m_node;
+};
+
+void RHMapConstructValue(std::pair<const std::string, void *> *, const std::pair<const std::string, void *> &);
+
+class RHMapStringTree
+{
+public:
+    RHMapStringIterator FUN_0053dcb0(RHMapStringNode *, RHMapStringNode *, const std::pair<const std::string, void *> &);
+    RHMapStringNode *FUN_0053dfc0(const std::string &);
+    static RHMapStringNode *&Left(RHMapStringNode *node) { return node->m_00; }
+    inline void RotateLeft(RHMapStringNode *node)
+    {
+        RHUnk00641782 lock;
+        RHMapStringNode *right = node->m_08;
+        node->m_08 = right->m_00;
+        if (right->m_00 != (RHMapStringNode *)g_unk0x006c0c28) right->m_00->m_04 = node;
+        right->m_04 = node->m_04;
+        if (node == m_head->m_04) m_head->m_04 = right;
+        else if (node == node->m_04->m_00) node->m_04->m_00 = right;
+        else node->m_04->m_08 = right;
+        right->m_00 = node;
+        node->m_04 = right;
+    }
+    inline void RotateRight(RHMapStringNode *node)
+    {
+        RHUnk00641782 lock;
+        RHMapStringNode *left = node->m_00;
+        node->m_00 = left->m_08;
+        if (left->m_08 != (RHMapStringNode *)g_unk0x006c0c28) left->m_08->m_04 = node;
+        left->m_04 = node->m_04;
+        if (node == m_head->m_04) m_head->m_04 = left;
+        else if (node == node->m_04->m_08) node->m_04->m_08 = left;
+        else node->m_04->m_00 = left;
+        left->m_08 = node;
+        node->m_04 = left;
+    }
+    unsigned m_00;
+    RHMapStringNode *m_head;
+    unsigned m_08;
+    unsigned m_count;
+};
+
+struct RHMapTreeDecNode
+{
+    RHMapTreeDecNode *m_00;
+    RHMapTreeDecNode *m_04;
+    RHMapTreeDecNode *m_08;
+    int m_0c;
+    int m_10;
+    int m_14;
+    int m_18;
+    int m_1c;
+    int m_20;
+};
+
+static inline RHMapTreeDecNode *&RHMapTreeDecLeft(RHMapTreeDecNode *value) { return value->m_00; }
+
+static inline RHMapTreeDecNode *RHMapTreeDecMax(RHMapTreeDecNode *node)
+{
+    RHUnk00641782 lock;
+    while (node->m_08 != (RHMapTreeDecNode *)g_unk0x006c0c28)
+        node = node->m_08;
+    return node;
+}
+
+struct RHMapTreeDecIterator
+{
+    RHMapTreeDecNode *m_node;
+    void FUN_0053e0b0();
+};
+
+static inline RHMapTreeDecNode *RHMapTreeMin(RHMapTreeDecNode *node)
+{
+    RHUnk00641782 lock;
+    while (node->m_00 != (RHMapTreeDecNode *)g_unk0x006c0c28)
+        node = node->m_00;
+    return node;
+}
+
+struct RHMapTreeIncIterator
+{
+    RHMapTreeDecNode *m_node;
+    void FUN_0053dbf0();
+};
+
+// FUNCTION: GAME 0x0053dbf0
+void RHMapTreeIncIterator::FUN_0053dbf0()
+{
+    RHUnk00641782 lock;
+    if (m_node->m_08 != (RHMapTreeDecNode *)g_unk0x006c0c28)
+        m_node = RHMapTreeMin(m_node->m_08);
+    else {
+        RHMapTreeDecNode *parent;
+        while (m_node == (parent = m_node->m_04)->m_08)
+            m_node = parent;
+        if (m_node->m_08 != parent)
+            m_node = parent;
+    }
+}
+
+void EmitRHMapTreeInc(RHMapTreeIncIterator &iterator)
+{
+    iterator.FUN_0053dbf0();
+}
+
+// FUNCTION: GAME 0x0053dcb0
+RHMapStringIterator RHMapStringTree::FUN_0053dcb0(RHMapStringNode *node, RHMapStringNode *parent, const std::pair<const std::string, void *> &value)
+{
+    RHUnk00641782 lock;
+    RHMapStringNode *inserted = (RHMapStringNode *)operator new(sizeof(RHMapStringNode));
+    inserted->m_04 = parent;
+    inserted->m_20 = 0;
+    inserted->m_00 = (RHMapStringNode *)g_unk0x006c0c28;
+    inserted->m_08 = (RHMapStringNode *)g_unk0x006c0c28;
+    RHMapConstructValue(&inserted->m_0c, value);
+    ++m_count;
+    if (parent == m_head || node != (RHMapStringNode *)g_unk0x006c0c28 ||
+        ((RHCampaignCommandLine *)&value.first)->FUN_0045a010(*(const RHProfileText *)&parent->m_0c.first) < 0) {
+        parent->m_00 = inserted;
+        if (parent == m_head) {
+            m_head->m_04 = inserted;
+            m_head->m_08 = inserted;
+        } else if (parent == m_head->m_00) m_head->m_00 = inserted;
+    } else {
+        parent->m_08 = inserted;
+        if (parent == m_head->m_08) m_head->m_08 = inserted;
+    }
+    for (node = inserted; node != m_head->m_04 && node->m_04->m_20 == 0;) {
+        if (node->m_04 == Left(node->m_04->m_04)) {
+            parent = node->m_04->m_04->m_08;
+            if (parent->m_20 == 0) {
+                node->m_04->m_20 = 1;
+                parent->m_20 = 1;
+                node->m_04->m_04->m_20 = 0;
+                node = node->m_04->m_04;
+            } else {
+                if (node == node->m_04->m_08) {
+                    node = node->m_04;
+                    RotateLeft(node);
+                }
+                node->m_04->m_20 = 1;
+                node->m_04->m_04->m_20 = 0;
+                RotateRight(node->m_04->m_04);
+            }
+        } else {
+            parent = node->m_04->m_04->m_00;
+            if (parent->m_20 == 0) {
+                node->m_04->m_20 = 1;
+                parent->m_20 = 1;
+                node->m_04->m_04->m_20 = 0;
+                node = node->m_04->m_04;
+            } else {
+                if (node == node->m_04->m_00) {
+                    node = node->m_04;
+                    RotateRight(node);
+                }
+                node->m_04->m_20 = 1;
+                node->m_04->m_04->m_20 = 0;
+                RotateLeft(node->m_04->m_04);
+            }
+        }
+    }
+    m_head->m_04->m_20 = 1;
+    RHMapStringIterator result;
+    result.m_node = inserted;
+    return result;
+}
+
+void EmitRHMapStringTree(RHMapStringTree &tree, const std::pair<const std::string, void *> &value)
+{
+    tree.FUN_0053dcb0(0, 0, value);
+}
+
+// FUNCTION: GAME 0x0053dfc0
+RHMapStringNode *RHMapStringTree::FUN_0053dfc0(const std::string &key)
+{
+    RHUnk00641782 lock;
+    RHMapStringNode *node = m_head->m_04;
+    RHMapStringNode *candidate = m_head;
+    while (node != (RHMapStringNode *)g_unk0x006c0c28) {
+        if (node->m_0c.first.compare(key) < 0)
+            node = node->m_08;
+        else {
+            candidate = node;
+            node = node->m_00;
+        }
+    }
+    return candidate;
+}
+
+void EmitRHMapLowerBound(RHMapStringTree &tree, const std::string &key)
+{
+    tree.FUN_0053dfc0(key);
+}
+
+// FUNCTION: GAME 0x0053e0b0
+void RHMapTreeDecIterator::FUN_0053e0b0()
+{
+    RHUnk00641782 lock;
+    if (m_node->m_20 == 0 && m_node->m_04->m_04 == m_node)
+        m_node = m_node->m_08;
+    else if (RHMapTreeDecLeft(m_node) != (RHMapTreeDecNode *)g_unk0x006c0c28)
+        m_node = RHMapTreeDecMax(RHMapTreeDecLeft(m_node));
+    else
+    {
+        RHMapTreeDecNode *parent;
+        while (m_node == (parent = m_node->m_04)->m_00)
+            m_node = parent;
+        m_node = parent;
+    }
+}
+
+void EmitRHMapTreeDec()
+{
+    RHMapTreeDecIterator iterator;
+    iterator.FUN_0053e0b0();
+}
 
 // FUNCTION: GAME 0x0053ad50
 void RHMapTree::FUN_0053ad50()

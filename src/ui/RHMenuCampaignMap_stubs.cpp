@@ -3,9 +3,13 @@
 #include "RHMenuScreenView.h"
 #include "RHUnk00527870.h"
 
+void RHMapConstructValue(std::pair<const std::string, void *> *storage, const std::pair<const std::string, void *> &value)
+{
+    std::_Construct(storage, value);
+}
+
 bool RHMapWideText::Grow(unsigned, bool) { return false; }
 void RHMapWideText::End(unsigned) {}
-RHMapDescription::RHMapDescription() {}
 RHMapDescription::~RHMapDescription() {}
 bool RHMapDescription::FUN_0063cda0(unsigned) { return false; }
 // Parked: the case bodies and jump table match; VC6 puts the value in eax and

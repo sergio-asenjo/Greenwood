@@ -19,6 +19,7 @@ public:
     bool FUN_00506b40();
     void FUN_00506b90(SBFile &file);
     bool FUN_00504b80(unsigned short);
+    bool FUN_00504830(unsigned short percent, unsigned short color);
     void *FUN_00509c10(unsigned flags);
     undefined2 m_00;
     undefined2 m_02;

@@ -112,6 +112,33 @@ bool RHMenuLoadSave::FUN_00531720(int, void *, void *)
     return false;
 }
 
+// Parked: the input-text return view inlines cleanup and adds a temporary frame slot.
+// STUB: GAME 0x00531740
+bool RHMenuLoadSave::FUN_00531740(int, void *, void *)
+{
+    if (!*(bool *)((char *)this + 0x8b8))
+    {
+        std::wstring &name = *(std::wstring *)((char *)this + 0x450);
+        {
+            RHMapWideText text = ((SBUIInputFieldUnk00621440 *)m_field)->FUN_0061df60();
+            typedef std::wstring &(std::wstring::*Assign)(const std::wstring &, unsigned, unsigned);
+            Assign assign = &std::wstring::assign;
+            (name.*assign)((const std::wstring &)text, 0, std::wstring::npos);
+        }
+        std::wstring text(name, 0, std::wstring::npos);
+        unsigned spaces = 0;
+        if (text.size())
+        {
+            std::wstring::iterator last = text.end();
+            for (std::wstring::iterator current = text.begin(); current != last; ++current)
+                if (*current == L' ')
+                    ++spaces;
+        }
+        *(bool *)((char *)this + 0x144) = text.size() && spaces != text.size();
+    }
+    return false;
+}
+
 // FUNCTION: GAME 0x00531d60
 void RHMenuLoadSaveListBase::FUN_00531d60()
 {

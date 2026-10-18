@@ -21,9 +21,6 @@ bool RHMenuLoadSave::FUN_005314d0(int, void *, void *) { return false; }
 
 
 
-// Target 0x00531740, __thiscall, ret 0xc.
-bool RHMenuLoadSave::FUN_00531740(int, void *, void *) { return false; }
-
 // Target 0x00531240, __thiscall.
 void RHMenuLoadSave::FUN_00531240() {}
 

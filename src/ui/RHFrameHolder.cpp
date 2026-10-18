@@ -196,6 +196,68 @@ void RHFrameHolder::FUN_00504b10(unsigned long data, unsigned long size, unsigne
     }
 }
 
+#include "SBDrawManager.h"
+
+extern RHUnk005ef320 *g_unk0x6c11d0;
+
+// Parked: green and countdown locals swap argument-slot coloring despite matching channel operations.
+// STUB: GAME 0x00504830
+bool RHUnk005069a0::FUN_00504830(unsigned short percent, unsigned short color)
+{
+    unsigned short count = m_00 * 4;
+    if (!m_0e[3])
+    {
+        if (*(unsigned short *)((char *)g_unk0x6c11d0 + 0x10c) != 16 && m_0e[2])
+        {
+            int remainder = 100 - percent;
+            int red = ((color >> 10) & 31) * remainder / 100;
+            int green = ((color >> 5) & 31) * remainder / 100;
+            int blue = (color & 31) * remainder / 100;
+            if (count > 0)
+            {
+                unsigned remaining = count;
+                unsigned short *pixel = (unsigned short *)m_04;
+                do
+                {
+                    unsigned short value = *pixel;
+                    if (value != 0x3e0 && value != m_0c)
+                    {
+                        *pixel = (((((value >> 5) & 31) * percent / 100 + green) << 5) & 0x3e0) |
+                            (((((value >> 10) & 31) * percent / 100 + red) & 31) << 10) |
+                            ((((value & 31) * percent / 100) + blue) & 31);
+                    }
+                    ++pixel;
+                } while (--remaining);
+            }
+        }
+        else
+        {
+            int remainder = 100 - percent;
+            int red = (color >> 11) * remainder / 100;
+            int green = ((color >> 5) & 62) * remainder / 100;
+            int blue = (color & 31) * remainder / 100;
+            if (count > 0)
+            {
+                unsigned remaining = count;
+                unsigned short *pixel = (unsigned short *)m_04;
+                do
+                {
+                    unsigned short value = *pixel;
+                    if (value != 0x7c0 && value != m_0c)
+                    {
+                        *pixel = (((((value >> 5) & 62) * percent / 100 + green) << 5) & 0x7c0) |
+                            ((((value >> 11) * percent / 100 + red) & 31) << 11) |
+                            ((((value & 31) * percent / 100) + blue) & 31);
+                    }
+                    ++pixel;
+                } while (--remaining);
+            }
+        }
+    }
+    m_0e[3] = 1;
+    return true;
+}
+
 // FUNCTION: GAME 0x00504b80
 bool RHUnk005069a0::FUN_00504b80(unsigned short replacement)
 {
@@ -221,28 +283,60 @@ bool RHUnk005069a0::FUN_00504b80(unsigned short replacement)
     return true;
 }
 
-// Parked: source array and stride argument lowering differ.
-// STUB: GAME 0x00504bd0
+// FUNCTION: GAME 0x00504bd0
 void RHFrameHolder::FUN_00504bd0(unsigned long data, unsigned short width, unsigned short height,
-    unsigned long pitch, unsigned short key)
+    unsigned short pitch, unsigned short key)
 {
-    unsigned short *row = (unsigned short *)data;
-    for (unsigned int y = 0; y < height; ++y, row += pitch >> 1)
-        for (unsigned int x = 0; x < width; ++x)
-            if (row[x] != key)
-                row[x] = (row[x] & 0x001f) | ((row[x] >> 1) & 0x7fe0);
+    pitch >>= 1;
+    if (height > 0)
+    {
+        unsigned short *row = (unsigned short *)data;
+        unsigned int y = height;
+        do
+        {
+            if (width > 0)
+            {
+                unsigned int x = width;
+                unsigned short *pixel = row;
+                do
+                {
+                    unsigned short color = *pixel;
+                    if (color != key)
+                        *pixel = ((color >> 1) & 0x7fe0) | (color & 0x001f);
+                    ++pixel;
+                } while (--x);
+            }
+            row += pitch;
+        } while (--y);
+    }
 }
 
-// Parked: source array and stride argument lowering differ.
-// STUB: GAME 0x00504c50
+// FUNCTION: GAME 0x00504c50
 void RHFrameHolder::FUN_00504c50(unsigned long data, unsigned short width, unsigned short height,
-    unsigned long pitch, unsigned short key)
+    unsigned short pitch, unsigned short key)
 {
-    unsigned short *row = (unsigned short *)data;
-    for (unsigned int y = 0; y < height; ++y, row += pitch >> 1)
-        for (unsigned int x = 0; x < width; ++x)
-            if (row[x] != key)
-                row[x] = (row[x] & 0x001f) | ((row[x] & 0xfff0) << 1);
+    pitch >>= 1;
+    if (height > 0)
+    {
+        unsigned short *row = (unsigned short *)data;
+        unsigned int y = height;
+        do
+        {
+            if (width > 0)
+            {
+                unsigned int x = width;
+                unsigned short *pixel = row;
+                do
+                {
+                    unsigned short color = *pixel;
+                    if (color != key)
+                        *pixel = ((color & 0xfff0) << 1) | (color & 0x001f);
+                    ++pixel;
+                } while (--x);
+            }
+            row += pitch;
+        } while (--y);
+    }
 }
 
 // Parked: target scheduling differs for selector and row-stride operands.
@@ -773,6 +867,27 @@ RHUnk005069a0::RHUnk005069a0(const RHUnk005069a0 &value)
     FUN_00506a70(value);
 }
 
+// FUNCTION: GAME 0x00506930
+RHUnk005069a0::RHUnk005069a0(const RHUnk005069a0 &value, int mode)
+{
+    m_00 = 0;
+    m_04 = 0;
+    m_0c = 31;
+    m_0e[0] = 0;
+    m_0e[1] = 0;
+    m_0e[2] = 0;
+    m_0e[3] = 0;
+    FUN_00506a70(value);
+    switch (mode)
+    {
+    case 2:
+        FUN_00504830(60, 0xffff);
+        break;
+    case 1:
+        FUN_00504830(50, g_unk0x6c11d0->Unk(0, 30, 60));
+    }
+}
+
 // FUNCTION: GAME 0x005069a0
 RHUnk005069a0::~RHUnk005069a0()
 {
@@ -925,6 +1040,36 @@ RHFrameHolderRowMap::Pair RHFrameHolderRowMap::Insert(const Value &value)
     return pair;
 }
 
+// FUNCTION: GAME 0x00506ea0
+RHFrameHolderRowMap::Iterator RHFrameHolderRowMap::FUN_00506ea0(Iterator first, Iterator last)
+{
+    if (m_size != 0 && first.m_node == m_head->m_left && last.m_node == m_head) {
+        RHUnk00641782 lock;
+        Node *node = m_head->m_parent;
+        {
+            RHUnk00641782 inner;
+            for (Node *next = node; next != g_unk0x006c0b2c; node = next) {
+                FUN_00508000(next->m_right);
+                next = next->m_left;
+                operator delete(node);
+            }
+        }
+        Root() = g_unk0x006c0b2c;
+        m_size = 0;
+        Leftmost() = m_head;
+        Rightmost() = m_head;
+        return begin();
+    }
+    while (first != last)
+        FUN_00507ae0(first++);
+    return first;
+}
+
+void EmitRHFrameHolderRowErase(RHFrameHolderRowMap *tree)
+{
+    tree->FUN_00506ea0(tree->begin(), tree->End());
+}
+
 // FUNCTION: GAME 0x00506fd0
 RHFrameHolderRowMap::Iterator RHFrameHolderRowMap::Find(const unsigned long &key)
 {
@@ -1057,6 +1202,165 @@ RHFrameHolderRowMap::TreePair RHFrameHolderRowMap::InsertTree(const Value &value
     return result;
 }
 
+static inline RHFrameHolderRowMap::Node *RHFrameHolderRowMinimum(RHFrameHolderRowMap::Node *node)
+{
+    RHUnk00641782 lock;
+    while (node->m_left != g_unk0x006c0b2c)
+        node = node->m_left;
+    return node;
+}
+
+static inline RHFrameHolderRowMap::Node *RHFrameHolderRowMaximum(RHFrameHolderRowMap::Node *node)
+{
+    RHUnk00641782 lock;
+    while (node->m_right != g_unk0x006c0b2c)
+        node = node->m_right;
+    return node;
+}
+
+// FUNCTION: GAME 0x00507ae0
+RHFrameHolderRowMap::Iterator RHFrameHolderRowMap::FUN_00507ae0(Iterator position)
+{
+    Node *x;
+    Node *y = (position++).m_node;
+    Node *z = y;
+    RHUnk00641782 lock;
+    if (Left(y) == g_unk0x006c0b2c)
+        x = Right(y);
+    else if (Right(y) == g_unk0x006c0b2c)
+        x = Left(y);
+    else
+    {
+        y = RHFrameHolderRowMinimum(Right(y));
+        x = Right(y);
+    }
+    {
+        if (y != z)
+        {
+            Parent(Left(z)) = y;
+            Left(y) = Left(z);
+            if (y == Right(z))
+                Parent(x) = y;
+            else
+            {
+                Parent(x) = Parent(y);
+                Left(Parent(y)) = x;
+                Right(y) = Right(z);
+                Parent(Right(z)) = y;
+            }
+            if (Root() == z)
+                Root() = y;
+            else if (Left(Parent(z)) == z)
+                Left(Parent(z)) = y;
+            else
+                Right(Parent(z)) = y;
+            Parent(y) = Parent(z);
+            std::swap(Color(y), Color(z));
+            y = z;
+        }
+        else
+        {
+            Parent(x) = Parent(y);
+            if (Root() == z)
+                Root() = x;
+            else if (Left(Parent(z)) == z)
+                Left(Parent(z)) = x;
+            else
+                Right(Parent(z)) = x;
+            if (Leftmost() == z)
+            {
+                if (Right(z) == g_unk0x006c0b2c)
+                    Leftmost() = Parent(z);
+                else
+                {
+                    Leftmost() = RHFrameHolderRowMinimum(x);
+                }
+            }
+            if (Rightmost() == z)
+            {
+                if (Left(z) == g_unk0x006c0b2c)
+                    Rightmost() = Parent(z);
+                else
+                {
+                    Rightmost() = RHFrameHolderRowMaximum(x);
+                }
+            }
+        }
+        if (Color(y) == 1)
+        {
+            while (x != Root() && Color(x) == 1)
+            {
+                if (x == Left(Parent(x)))
+                {
+                    Node *w = Right(Parent(x));
+                    if (Color(w) == 0)
+                    {
+                        Color(w) = 1;
+                        Color(Parent(x)) = 0;
+                        Lrotate(Parent(x));
+                        w = Right(Parent(x));
+                    }
+                    if (Color(Left(w)) == 1 && Color(Right(w)) == 1)
+                    {
+                        Color(w) = 0;
+                        x = Parent(x);
+                    }
+                    else
+                    {
+                        if (Color(Right(w)) == 1)
+                        {
+                            Color(Left(w)) = 1;
+                            Color(w) = 0;
+                            Rrotate(w);
+                            w = Right(Parent(x));
+                        }
+                        Color(w) = Color(Parent(x));
+                        Color(Parent(x)) = 1;
+                        Color(Right(w)) = 1;
+                        Lrotate(Parent(x));
+                        break;
+                    }
+                }
+                else
+                {
+                    Node *w = Left(Parent(x));
+                    if (Color(w) == 0)
+                    {
+                        Color(w) = 1;
+                        Color(Parent(x)) = 0;
+                        Rrotate(Parent(x));
+                        w = Left(Parent(x));
+                    }
+                    if (Color(Right(w)) == 1 && Color(Left(w)) == 1)
+                    {
+                        Color(w) = 0;
+                        x = Parent(x);
+                    }
+                    else
+                    {
+                        if (Color(Left(w)) == 1)
+                        {
+                            Color(Right(w)) = 1;
+                            Color(w) = 0;
+                            Lrotate(w);
+                            w = Left(Parent(x));
+                        }
+                        Color(w) = Color(Parent(x));
+                        Color(Parent(x)) = 1;
+                        Color(Left(w)) = 1;
+                        Rrotate(Parent(x));
+                        break;
+                    }
+                }
+            }
+            Color(x) = 1;
+        }
+    }
+    operator delete(y);
+    --m_size;
+    return position;
+}
+
 // FUNCTION: GAME 0x00508000
 void RHFrameHolderRowMap::FUN_00508000(Node *node)
 {
@@ -1109,6 +1413,197 @@ RHUnk005074d0::TreePair RHUnk005074d0::FUN_00508950(const Value &value)
     return result;
 }
 
+inline void RHUnk00507500::Lrotate(Node *x)
+{
+    RHUnk00641782 lock;
+    Node *y = x->m_right;
+    x->m_right = y->m_left;
+    if (y->m_left != g_unk0x006c0b30)
+        y->m_left->m_parent = x;
+    y->m_parent = x->m_parent;
+    if (x == Root())
+        Root() = y;
+    else if (x == x->m_parent->m_left)
+        x->m_parent->m_left = y;
+    else
+        x->m_parent->m_right = y;
+    y->m_left = x;
+    x->m_parent = y;
+}
+
+inline void RHUnk00507500::Rrotate(Node *x)
+{
+    RHUnk00641782 lock;
+    Node *y = x->m_left;
+    x->m_left = y->m_right;
+    if (y->m_right != g_unk0x006c0b30)
+        y->m_right->m_parent = x;
+    y->m_parent = x->m_parent;
+    if (x == Root())
+        Root() = y;
+    else if (x == x->m_parent->m_right)
+        x->m_parent->m_right = y;
+    else
+        x->m_parent->m_left = y;
+    y->m_right = x;
+    x->m_parent = y;
+}
+
+static inline RHUnk00507500::Node *RHFrameHolderShortMinimum(RHUnk00507500::Node *node)
+{
+    RHUnk00641782 lock;
+    while (node->m_left != g_unk0x006c0b30)
+        node = node->m_left;
+    return node;
+}
+
+static inline RHUnk00507500::Node *RHFrameHolderShortMaximum(RHUnk00507500::Node *node)
+{
+    RHUnk00641782 lock;
+    while (node->m_right != g_unk0x006c0b30)
+        node = node->m_right;
+    return node;
+}
+
+// FUNCTION: GAME 0x00508a80
+RHUnk00507500::Iterator RHUnk00507500::FUN_00508a80(Iterator position)
+{
+    Node *x;
+    Node *y = (position++).m_node;
+    Node *z = y;
+    RHUnk00641782 lock;
+    if (Left(y) == g_unk0x006c0b30)
+        x = Right(y);
+    else if (Right(y) == g_unk0x006c0b30)
+        x = Left(y);
+    else
+    {
+        y = RHFrameHolderShortMinimum(Right(y));
+        x = Right(y);
+    }
+    {
+        if (y != z)
+        {
+            Parent(Left(z)) = y;
+            Left(y) = Left(z);
+            if (y == Right(z))
+                Parent(x) = y;
+            else
+            {
+                Parent(x) = Parent(y);
+                Left(Parent(y)) = x;
+                Right(y) = Right(z);
+                Parent(Right(z)) = y;
+            }
+            if (Root() == z)
+                Root() = y;
+            else if (Left(Parent(z)) == z)
+                Left(Parent(z)) = y;
+            else
+                Right(Parent(z)) = y;
+            Parent(y) = Parent(z);
+            std::swap(Color(y), Color(z));
+            y = z;
+        }
+        else
+        {
+            Parent(x) = Parent(y);
+            if (Root() == z)
+                Root() = x;
+            else if (Left(Parent(z)) == z)
+                Left(Parent(z)) = x;
+            else
+                Right(Parent(z)) = x;
+            if (Leftmost() == z)
+            {
+                if (Right(z) == g_unk0x006c0b30)
+                    Leftmost() = Parent(z);
+                else
+                    Leftmost() = RHFrameHolderShortMinimum(x);
+            }
+            if (Rightmost() == z)
+            {
+                if (Left(z) == g_unk0x006c0b30)
+                    Rightmost() = Parent(z);
+                else
+                    Rightmost() = RHFrameHolderShortMaximum(x);
+            }
+        }
+        if (Color(y) == 1)
+        {
+            while (x != Root() && Color(x) == 1)
+            {
+                if (x == Left(Parent(x)))
+                {
+                    Node *w = Right(Parent(x));
+                    if (Color(w) == 0)
+                    {
+                        Color(w) = 1;
+                        Color(Parent(x)) = 0;
+                        Lrotate(Parent(x));
+                        w = Right(Parent(x));
+                    }
+                    if (Color(Left(w)) == 1 && Color(Right(w)) == 1)
+                    {
+                        Color(w) = 0;
+                        x = Parent(x);
+                    }
+                    else
+                    {
+                        if (Color(Right(w)) == 1)
+                        {
+                            Color(Left(w)) = 1;
+                            Color(w) = 0;
+                            Rrotate(w);
+                            w = Right(Parent(x));
+                        }
+                        Color(w) = Color(Parent(x));
+                        Color(Parent(x)) = 1;
+                        Color(Right(w)) = 1;
+                        Lrotate(Parent(x));
+                        break;
+                    }
+                }
+                else
+                {
+                    Node *w = Left(Parent(x));
+                    if (Color(w) == 0)
+                    {
+                        Color(w) = 1;
+                        Color(Parent(x)) = 0;
+                        Rrotate(Parent(x));
+                        w = Left(Parent(x));
+                    }
+                    if (Color(Right(w)) == 1 && Color(Left(w)) == 1)
+                    {
+                        Color(w) = 0;
+                        x = Parent(x);
+                    }
+                    else
+                    {
+                        if (Color(Left(w)) == 1)
+                        {
+                            Color(Right(w)) = 1;
+                            Color(w) = 0;
+                            Lrotate(w);
+                            w = Left(Parent(x));
+                        }
+                        Color(w) = Color(Parent(x));
+                        Color(Parent(x)) = 1;
+                        Color(Left(w)) = 1;
+                        Rrotate(Parent(x));
+                        break;
+                    }
+                }
+            }
+            Color(x) = 1;
+        }
+    }
+    operator delete(y);
+    --m_size;
+    return position;
+}
+
 // FUNCTION: GAME 0x00508fa0
 void RHUnk00507500::FUN_00508fa0(Node *node)
 {
@@ -1143,6 +1638,126 @@ void RHUnk00507500::FUN_00509030()
     m_size = 0;
     m_head->m_left = m_head;
     m_head->m_right = m_head;
+}
+
+struct RHsoundGroup;
+namespace std
+{
+template <> void _Construct(pair<const unsigned long, RHsoundGroup *> *, const pair<const unsigned long, RHsoundGroup *> &);
+}
+
+inline void RHFrameHolderRowMap::Lrotate(Node *x)
+{
+    RHUnk00641782 lock;
+    Node *y = x->m_right;
+    x->m_right = y->m_left;
+    if (y->m_left != g_unk0x006c0b2c)
+        y->m_left->m_parent = x;
+    y->m_parent = x->m_parent;
+    if (x == Root())
+        Root() = y;
+    else if (x == x->m_parent->m_left)
+        x->m_parent->m_left = y;
+    else
+        x->m_parent->m_right = y;
+    y->m_left = x;
+    x->m_parent = y;
+}
+
+inline void RHFrameHolderRowMap::Rrotate(Node *x)
+{
+    RHUnk00641782 lock;
+    Node *y = x->m_left;
+    x->m_left = y->m_right;
+    if (y->m_right != g_unk0x006c0b2c)
+        y->m_right->m_parent = x;
+    y->m_parent = x->m_parent;
+    if (x == Root())
+        Root() = y;
+    else if (x == x->m_parent->m_right)
+        x->m_parent->m_right = y;
+    else
+        x->m_parent->m_left = y;
+    y->m_right = x;
+    x->m_parent = y;
+}
+
+// FUNCTION: GAME 0x005090e0
+RHFrameHolderRowMap::Iterator RHFrameHolderRowMap::FUN_005090e0(Node *x, Node *y, const Value &value)
+{
+    RHUnk00641782 lock;
+    Node *z = (Node *)operator new(sizeof(Node));
+    z->m_parent = y;
+    z->m_color = 0;
+    z->m_left = g_unk0x006c0b2c;
+    z->m_right = g_unk0x006c0b2c;
+    typedef std::pair<const unsigned long, RHsoundGroup *> StoredValue;
+    std::_Construct((StoredValue *)&z->m_key, (const StoredValue &)value);
+    ++m_size;
+    if (y == m_head || x != g_unk0x006c0b2c || value.first < y->m_key)
+    {
+        y->m_left = z;
+        if (y == m_head)
+        {
+            Root() = z;
+            Rightmost() = z;
+        }
+        else if (y == Leftmost())
+            Leftmost() = z;
+    }
+    else
+    {
+        y->m_right = z;
+        if (y == Rightmost())
+            Rightmost() = z;
+    }
+    for (x = z; x != Root() && x->m_parent->m_color == 0; )
+        if (x->m_parent == Iterator::Left(x->m_parent->m_parent))
+        {
+            y = x->m_parent->m_parent->m_right;
+            if (y->m_color == 0)
+            {
+                x->m_parent->m_color = 1;
+                y->m_color = 1;
+                x->m_parent->m_parent->m_color = 0;
+                x = x->m_parent->m_parent;
+            }
+            else
+            {
+                if (x == x->m_parent->m_right)
+                {
+                    x = x->m_parent;
+                    Lrotate(x);
+                }
+                x->m_parent->m_color = 1;
+                x->m_parent->m_parent->m_color = 0;
+                Rrotate(x->m_parent->m_parent);
+            }
+        }
+        else
+        {
+            y = Iterator::Left(x->m_parent->m_parent);
+            if (y->m_color == 0)
+            {
+                x->m_parent->m_color = 1;
+                y->m_color = 1;
+                x->m_parent->m_parent->m_color = 0;
+                x = x->m_parent->m_parent;
+            }
+            else
+            {
+                if (x == x->m_parent->m_left)
+                {
+                    x = x->m_parent;
+                    Rrotate(x);
+                }
+                x->m_parent->m_color = 1;
+                x->m_parent->m_parent->m_color = 0;
+                Lrotate(x->m_parent->m_parent);
+            }
+        }
+    Root()->m_color = 1;
+    return Iterator(z);
 }
 
 inline void RHUnk005074d0::Lrotate(Node *x)
@@ -1305,6 +1920,50 @@ void RHFrameHolderRowMap::Iterator::FUN_00509860()
         if (m_node->m_right != parent)
             m_node = parent;
     }
+}
+
+struct RHFrameTreeLinksB24
+{
+    RHFrameTreeLinksB24 *m_left;
+    RHFrameTreeLinksB24 *m_parent;
+    RHFrameTreeLinksB24 *m_right;
+};
+
+// GLOBAL: GAME 0x006c0b24
+RHFrameTreeLinksB24 *g_unk0x006c0b24 = 0;
+
+struct RHTreeInc00509910
+{
+    RHFrameTreeLinksB24 *m_node;
+    void FUN_00509910();
+};
+
+static inline RHFrameTreeLinksB24 *FrameHolderMinimumB24(RHFrameTreeLinksB24 *node)
+{
+    RHUnk00641782 lock;
+    while (node->m_left != g_unk0x006c0b24)
+        node = node->m_left;
+    return node;
+}
+
+// FUNCTION: GAME 0x00509910
+void RHTreeInc00509910::FUN_00509910()
+{
+    RHUnk00641782 lock;
+    if (m_node->m_right != g_unk0x006c0b24)
+        m_node = FrameHolderMinimumB24(m_node->m_right);
+    else {
+        RHFrameTreeLinksB24 *parent;
+        while (m_node == (parent = m_node->m_parent)->m_right)
+            m_node = parent;
+        if (m_node->m_right != parent)
+            m_node = parent;
+    }
+}
+
+void EmitFrameHolderIncrementB24(RHTreeInc00509910 &iterator)
+{
+    iterator.FUN_00509910();
 }
 
 static inline RHUnk005074d0::Node *FrameHolderShortMax(RHUnk005074d0::Node *node)

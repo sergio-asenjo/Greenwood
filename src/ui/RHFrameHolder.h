@@ -81,6 +81,12 @@ public:
         void FUN_005097a0();
         static Node *&Left(Node *node) { return node->m_left; }
         void FUN_00509860();
+        Iterator operator++(int)
+        {
+            Iterator previous = *this;
+            FUN_00509860();
+            return previous;
+        }
     };
     typedef std::pair<Iterator, bool> Pair;
     typedef Pair TreePair;
@@ -96,7 +102,19 @@ public:
     Pair Insert(const Value &);
     TreePair InsertTree(const Value &);
     void FUN_00508000(Node *);
+    Iterator FUN_00506ea0(Iterator, Iterator);
+    Iterator FUN_00507ae0(Iterator);
+    Node *&Root() { return m_head->m_parent; }
+    Node *&Leftmost() { return m_head->m_left; }
+    Node *&Rightmost() { return m_head->m_right; }
+    Iterator begin() { return Iterator(Leftmost()); }
     Iterator FUN_005090e0(Node *, Node *, const Value &);
+    void Lrotate(Node *);
+    void Rrotate(Node *);
+    static Node *&Parent(Node *node) { return node->m_parent; }
+    static Node *&Right(Node *node) { return node->m_right; }
+    static Node *&Left(Node *node) { return node->m_left; }
+    static undefined4 &Color(Node *node) { return node->m_color; }
     unsigned long &operator[](const unsigned long &key)
     {
         TreePair result = InsertTree(Value(key, 0));
@@ -306,6 +324,12 @@ public:
     void FUN_00504590();
     Iterator FUN_00507500(Iterator, Iterator);
     Iterator FUN_00508a80(Iterator);
+    static Node *&Parent(Node *node) { return node->m_parent; }
+    static Node *&Right(Node *node) { return node->m_right; }
+    static Node *&Left(Node *node) { return node->m_left; }
+    static undefined4 &Color(Node *node) { return node->m_color; }
+    void Lrotate(Node *);
+    void Rrotate(Node *);
     void FUN_00508fa0(Node *);
     void FUN_00509030();
     std::allocator<unsigned short> m_allocator; // 0x00
@@ -349,8 +373,8 @@ public:
     unsigned long AddRowFromResource(SBResourceManager *, unsigned long, unsigned short &, SBArray<SBGeoVector2D> &);
     unsigned long FUN_00505980(unsigned long, unsigned long &, unsigned short &, unsigned short &, long &, long &);
     unsigned short FUN_005051a0(unsigned short, SBFile &);
-    void FUN_00504c50(unsigned long, unsigned short, unsigned short, unsigned long, unsigned short);
-    void FUN_00504bd0(unsigned long, unsigned short, unsigned short, unsigned long, unsigned short);
+    void FUN_00504c50(unsigned long, unsigned short, unsigned short, unsigned short, unsigned short);
+    void FUN_00504bd0(unsigned long, unsigned short, unsigned short, unsigned short, unsigned short);
     void FUN_00504b10(unsigned long, unsigned long, unsigned short);
     void FUN_005050a0(unsigned short *, unsigned long *, unsigned short, unsigned short, unsigned short, unsigned int, int);
     bool FUN_00504660(unsigned long);

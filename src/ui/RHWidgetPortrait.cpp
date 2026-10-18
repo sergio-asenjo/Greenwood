@@ -571,6 +571,7 @@ class RHPortraitInputField
 public:
     void FUN_005cf300();
     void FUN_005cf380();
+    RHPortraitBoxEvent *FUN_005cf880(unsigned value);
     RHPortraitWidgetEvent *FUN_005d0a10(const RHPortraitWidgetInput &input);
     RHPortraitWidgetEvent *FUN_005d0a90(const RHPortraitWidgetInput &input);
     RHPortraitWidgetEvent *FUN_005d0d00(const RHPortraitWidgetInput &input);
@@ -613,10 +614,66 @@ void RHPortraitInputField::FUN_005cf380()
     *(int *)((char *)this + 0xc4) = value;
 }
 
+class RHPortraitTextWidgetDispatch
+{
+public:
+    virtual void v0() = 0;
+    virtual void v1() = 0;
+    virtual void v2() = 0;
+    virtual void v3() = 0;
+    virtual void v4() = 0;
+    virtual void v5() = 0;
+    virtual void v6() = 0;
+    virtual void v7() = 0;
+    virtual void v8() = 0;
+    virtual unsigned v9() = 0;
+    virtual void v10() = 0;
+    virtual void v11() = 0;
+    virtual void v12() = 0;
+    virtual int v13(unsigned id) = 0;
+};
+
+// Parked: cached buffer-index register and event lifetime scheduling differ.
+// STUB: GAME 0x005cf880
+RHPortraitBoxEvent *RHPortraitInputField::FUN_005cf880(unsigned value)
+{
+    unsigned buffer = value & 1;
+    unsigned short *positions = (unsigned short *)((char *)this + 0x18e);
+    unsigned short *anchors = (unsigned short *)((char *)this + 0x192);
+    unsigned short *carets = (unsigned short *)((char *)this + 0x196);
+    bool *dirty = (bool *)((char *)this + 0x19a);
+    if (m_18c == carets[buffer] && m_18a == anchors[buffer]
+        && m_188 == positions[buffer] && !dirty[buffer])
+        return 0;
+    RHPortraitBoxEvent &event = *(RHPortraitBoxEvent *)((char *)this + 0x5c);
+    if (dirty[buffer])
+    {
+        dirty[buffer] = false;
+        event.m_box.FUN_00607da0(*(SBGeoBoundingBox2D *)((SBUIUnk0060d530 *)&Renderer())->FUN_0060d690());
+        event.m_next = 0;
+        event.m_widget = this;
+        event.m_type = 3;
+    }
+    else
+    {
+        event.m_box.FUN_00607da0(*(SBGeoBoundingBox2D *)((SBUIUnk0060d530 *)&Renderer())->FUN_0060d690());
+        RHPortraitTextWidgetDispatch *dispatch = (RHPortraitTextWidgetDispatch *)this;
+        event.m_type = dispatch->v13(dispatch->v9());
+        event.m_next = 0;
+        event.m_widget = this;
+    }
+    *(unsigned *)((char *)this + 0xc8) = value;
+    carets[buffer] = m_18c;
+    anchors[buffer] = m_18a;
+    positions[buffer] = m_188;
+    return &event;
+}
+
 void EmitPortraitInputReset(RHPortraitInputField *field)
 {
     field->FUN_005cf300();
     field->FUN_005cf380();
+    field->FUN_005cf880(0);
 }
 
 class RHPortraitUnk005d06d0
@@ -1121,7 +1178,7 @@ void RHPortraitInputField::FUN_005d1670()
 // STUB: GAME 0x005d1700
 void RHPortraitInputField::FUN_005d1700()
 {
-    unsigned short invalid = 0xffff;
+    const unsigned short invalid = 0xffff;
     if (m_188 == invalid)
     {
         unsigned short position = m_18a != invalid ? m_18a : m_18c;
@@ -1716,25 +1773,6 @@ public:
     void *FUN_005d26f0(unsigned flags);
     bool FUN_005d2810(const SBGeoPoint2D &point, RHPortraitTextResourceCalls *resources);
     RHPortraitWidgetEvent *FUN_005d2a70(const RHPortraitWidgetInput &input);
-};
-
-class RHPortraitTextWidgetDispatch
-{
-public:
-    virtual void v0() = 0;
-    virtual void v1() = 0;
-    virtual void v2() = 0;
-    virtual void v3() = 0;
-    virtual void v4() = 0;
-    virtual void v5() = 0;
-    virtual void v6() = 0;
-    virtual void v7() = 0;
-    virtual void v8() = 0;
-    virtual unsigned v9() = 0;
-    virtual void v10() = 0;
-    virtual void v11() = 0;
-    virtual void v12() = 0;
-    virtual int v13(unsigned id) = 0;
 };
 
 DECOMP_SIZE_ASSERT(RHPortraitTextWidgetBase, 0x110)
@@ -4299,6 +4337,7 @@ public:
     void FUN_005dafd0();
     RHPortraitWidgetEvent *FUN_005db080(const RHPortraitWidgetInput &input);
     int FUN_005db0a0();
+    int FUN_005db100(const SBGeoPoint2D &point);
     RHPortraitWidgetEvent *FUN_005db1a0(const RHPortraitWidgetInput &input);
     RHPortraitWidgetEvent *FUN_005db1e0(const RHPortraitWidgetInput &input);
     RHPortraitWidgetEvent *FUN_005db270(const RHPortraitWidgetInput &input);
@@ -4597,6 +4636,16 @@ int RHPortraitWidget005dafd0::FUN_005db0a0()
     if (result == 1 && !m_06)
         result = 0xff;
     return result;
+}
+
+// FUNCTION: GAME 0x005db100
+int RHPortraitWidget005dafd0::FUN_005db100(const SBGeoPoint2D &point)
+{
+    SBGeoBoundingBox2D &box = *(SBGeoBoundingBox2D *)((char *)this + 0x30);
+    if (box.FUN_006083b0(point) &&
+        ((RHGameWidgetRendererCalls *)m_renderer)->FUN_0060d890(point.Unk005fc110(*(SBGeoPoint2D *)&box)))
+        return true;
+    return false;
 }
 
 // FUNCTION: GAME 0x005db1a0
@@ -5047,11 +5096,7 @@ struct RHPortraitQuickEntry
     undefined m_08[0x270]; // 0x08
 };
 
-class RHUnk0049d4f0
-{
-public:
-    bool Unk(int value);
-};
+#include "RHPCActionQueryCalls.h"
 
 struct RHPortraitPCNode
 {
@@ -5068,16 +5113,7 @@ public:
     RHPortraitPCNode *m_0c; // 0x0c
 };
 
-class RHPortraitQuickList : public RHPortraitRootList
-{
-public:
-    bool FUN_005dd1d0(RHPortraitPCList &list);
-    RHPortraitWidgetEvent *FUN_005dd370(const void *input);
-    int m_b0; // 0xb0
-    RHPortraitQuickEntry *m_first; // 0xb4
-    RHPortraitQuickEntry *m_last; // 0xb8
-    RHPortraitQuickEntry *m_end; // 0xbc
-};
+#include "RHPortraitQuickList.h"
 
 
 // Parked: VC6 swaps the stack slots of the hoisted PC count and the entry cursor.

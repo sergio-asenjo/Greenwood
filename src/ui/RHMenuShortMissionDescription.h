@@ -19,11 +19,7 @@
 #include "Decomp.h"
 #include "RHMenuWindow.h"
 
-class RHMenuShortMissionBlazons
-{
-public:
-    ~RHMenuShortMissionBlazons();
-};
+#include "RHMenuShortMissionBlazons.h"
 
 // SIZE 0x7c
 class RHMenuShortMissionRenderer

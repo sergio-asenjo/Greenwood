@@ -1,5 +1,6 @@
 #include "SBNullstr.h"
 #include "RHTitbits.h"
+#include "RHEngine.h"
 #include <list>
 #include <iterator>
 
@@ -129,6 +130,29 @@ public:
     bool m_dirty;
     int m_index;
 };
+
+// Parked: second cached traversal is outlined and leaves the frame four bytes short.
+// STUB: GAME 0x005c3440
+bool RHTitbits::RemoveQuickActionTitbitsFor(RHElementActorPC *actor, unsigned short action)
+{
+    unsigned long id = *(unsigned long *)((char *)actor + 0x538 + action * 4);
+    if (id == -1)
+        return false;
+    bool removed = false;
+    unsigned short count = m_list.m_count;
+    for (int index = count - 1; count != 0; --count, --index)
+    {
+        RHTitbitAccess &list = *(RHTitbitAccess *)&m_list;
+        if (list.Get(index, true).m_2c == id)
+        {
+            removed = true;
+            list.Get(index, true);
+            ((RHUnk0046eb30 *)&list)->erase(RHScriptIter((RHScriptNode *)list.m_current.node));
+            list.m_dirty = true;
+        }
+    }
+    return removed;
+}
 
 // Parked: list/file register allocation and cursor scheduling remain different.
 // STUB: GAME 0x005c3a60

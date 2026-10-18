@@ -1,17 +1,13 @@
 #include "SBNullstr.h"
 #include "RHFontManager.h"
 
+void RHFontConstructValue(std::pair<const std::string, void *> *storage, const std::pair<const std::string, void *> &value)
+{
+    std::_Construct(storage, value);
+}
+
 // FUNCTION: GAME 0x005f5460
 RHFontManager::Fonts::~Fonts() {}
-// Parked: tree insertion uses CRT critical-section imports.
-// STUB: GAME 0x00502c20
-RHFontInsertResult RHFontMap::FUN_00502c20(const std::pair<const std::string, void *> &)
-{
-    RHFontIterator iterator;
-    iterator.m_node = 0;
-    bool inserted = false;
-    return RHFontInsertResult(iterator, inserted);
-}
 
 // LIBRARY: GAME 0x006435d7
 extern "C" int fgetc(FILE *) { return 0; }

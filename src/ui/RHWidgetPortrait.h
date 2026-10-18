@@ -23,52 +23,7 @@
 #include "RHWidgetPortraitClass.h"
 
 // SIZE 0x04
-class RHUnk005d73d0Actor : public RHUnk005d92c0Sub
-{
-public:
-    char FUN_0049f510();
-    virtual void v22(); // vtable+0x58
-    virtual void v23(); // vtable+0x5c
-    virtual void v24(); // vtable+0x60
-    virtual void v25(); // vtable+0x64
-    virtual void v26(); // vtable+0x68
-    virtual void v27(); // vtable+0x6c
-    virtual void v28(); // vtable+0x70
-    virtual void v29(); // vtable+0x74
-    virtual void v30(); // vtable+0x78
-    virtual void v31(); // vtable+0x7c
-    virtual void v32(); // vtable+0x80
-    virtual void v33(); // vtable+0x84
-    virtual void v34(); // vtable+0x88
-    virtual void v35(); // vtable+0x8c
-    virtual void v36(); // vtable+0x90
-    virtual void v37(); // vtable+0x94
-    virtual void v38(); // vtable+0x98
-    virtual void v39(); // vtable+0x9c
-    virtual void v40(); // vtable+0xa0
-    virtual void v41(); // vtable+0xa4
-    virtual void v42(); // vtable+0xa8
-    virtual void v43(); // vtable+0xac
-    virtual void v44(); // vtable+0xb0
-    virtual void v45(); // vtable+0xb4
-    virtual void v46(); // vtable+0xb8
-    virtual void v47(); // vtable+0xbc
-    virtual void v48(); // vtable+0xc0
-    virtual void v49(); // vtable+0xc4
-    virtual void v50(); // vtable+0xc8
-    virtual int v51(); // vtable+0xcc
-    virtual void v52(); // vtable+0xd0
-    virtual void v53(); // vtable+0xd4
-    virtual void v54(); // vtable+0xd8
-    virtual void v55(); // vtable+0xdc
-    virtual void v56(); // vtable+0xe0
-    virtual unsigned short v57(int action); // vtable+0xe4
-    virtual void v58(); // vtable+0xe8
-    virtual void v59(); // vtable+0xec
-    virtual void v60(); // vtable+0xf0
-    virtual void v61(); // vtable+0xf4
-    virtual bool v62(); // vtable+0xf8
-};
+#include "RHPortraitActorCalls.h"
 
 // The file version lives at SBFile+0x10. SB.h is shared and must not change,
 // so it is reached through an explicit offset accessor.

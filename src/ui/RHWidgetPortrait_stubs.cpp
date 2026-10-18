@@ -12,6 +12,7 @@
 
 #include "SBNullstr.h"
 #include "RHWidgetPortrait.h"
+#include "SBUIRendererListbox.h"
 
 // FUNCTION: GAME 0x0049f510
 char RHUnk005d73d0Actor::FUN_0049f510()
@@ -19,7 +20,23 @@ char RHUnk005d73d0Actor::FUN_0049f510()
     return *(char *)((char *)*(void **)((char *)this + 0x600) + 0x16);
 }
 void RHWidgetPortrait::FUN_005d9c30() {}
-RHPortraitRenderer005ca330::RHPortraitRenderer005ca330() {}
+
+class RHUnk0060d9f0
+{
+public:
+    void FUN_0060d9f0();
+};
+
+void RHUnk0060d9f0::FUN_0060d9f0() {}
+
+// FUNCTION: GAME 0x005ca2f0
+RHPortraitRenderer005ca330::RHPortraitRenderer005ca330()
+{
+    ((RHUnk0060d9f0 *)this)->FUN_0060d9f0();
+    *(unsigned *)this = 0x679e6c;
+    *(float *)((char *)this + 0x50) = 100.0f;
+    *(float *)((char *)this + 0x4c) = 100.0f;
+}
 RHPortraitRenderer005ca330::~RHPortraitRenderer005ca330() {}
 // FUNCTION: GAME 0x005ccb40
 RHPortraitStrategyCalls::RHPortraitStrategyCalls()
@@ -59,7 +76,6 @@ public:
 RHPortraitRenderer0060dad0::~RHPortraitRenderer0060dad0() {}
 RHPortraitRenderer0060da10::~RHPortraitRenderer0060da10() {}
 RHPortraitRenderer0060d470::~RHPortraitRenderer0060d470() {}
-RHPortraitRenderer0060d470::RHPortraitRenderer0060d470() {}
 
 class RHUnk005490a0Message
 {
@@ -87,11 +103,27 @@ RHPortraitUnk005cf320::~RHPortraitUnk005cf320() {}
 RHPortraitUnk005cf570::~RHPortraitUnk005cf570() {}
 RHPortraitUnk005d0180::~RHPortraitUnk005d0180() {}
 void RHPortraitInputRenderer::FUN_0061d570(unsigned short, int) {}
-unsigned RHPortraitInputRenderer::FUN_0061d5e0() { return 0; }
+
+// FUNCTION: GAME 0x0061d5e0
+unsigned RHPortraitInputRenderer::FUN_0061d5e0()
+{
+    float span = *(float *)((char *)this + 0x14) - *(float *)((char *)this + 0xc);
+    unsigned count = ((SBUIListboxUnk0061d980 *)this)->m_4c->FUN_0061e890();
+    return (unsigned)(span / count);
+}
+
 SBGeoBoundingBox2D RHPortraitInputRenderer::FUN_0061d3f0(unsigned short, int) { return SBGeoBoundingBox2D(); }
 SBGeoBoundingBox2D RHPortraitInputRenderer::FUN_0061d7c0() { return SBGeoBoundingBox2D(); }
 SBGeoBoundingBox2D RHPortraitInputRenderer::FUN_0061d620() { return SBGeoBoundingBox2D(); }
-unsigned RHPortraitInputRenderer::FUN_0061d950() { return 0; }
+extern float g_unk0x006774f4;
+
+// FUNCTION: GAME 0x0061d950
+unsigned RHPortraitInputRenderer::FUN_0061d950()
+{
+    float top = *(float *)((char *)this + 0x14);
+    float bottom = *(float *)((char *)this + 0xc);
+    return (unsigned)((top - bottom - g_unk0x006774f4) / *(unsigned short *)((char *)this + 0x80));
+}
 bool RHPortraitInputCalls::FUN_005cfc30(const void *) { return false; }
 RHPortraitRenderer006212d0::RHPortraitRenderer006212d0() {}
 RHPortraitRenderer006212d0::~RHPortraitRenderer006212d0() {}

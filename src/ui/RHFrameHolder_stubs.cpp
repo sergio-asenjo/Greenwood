@@ -1,6 +1,7 @@
 #include "SBNullstr.h"
 #include "RHFrameHolder.h"
 
+
 namespace std
 {
 // Unannotated: binding this _Construct regresses eight counted callers.
@@ -27,5 +28,3 @@ RHFrameHolderRowMap::Node *RHFrameHolderRowMap::FUN_005093e0(const unsigned long
 void RHUnk005051a0Array::FUN_00508090(RHUnk005068e0 *, unsigned int, const RHUnk005068e0 &) {}
 RHUnk00641782::RHUnk00641782() {}
 RHUnk00641782::~RHUnk00641782() {}
-RHUnk00507500::Iterator RHUnk00507500::FUN_00508a80(Iterator value) { return value; }
-RHFrameHolderRowMap::Iterator RHFrameHolderRowMap::FUN_005090e0(Node *, Node *, const Value &) { Iterator result; result.m_node = m_head; return result; }

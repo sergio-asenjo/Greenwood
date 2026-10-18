@@ -15,16 +15,22 @@
 // The 48-byte payload element (RHTitbit) field offsets are taken verbatim from
 // the Access() calls in the target.
 
+#ifndef RHTITBITS_H
+#define RHTITBITS_H
+
 #include "SB.h"
 
 // Target 0x004593f0-style engine helper: serialises other engine objects.
 // Class identity of the engine is RHEngine (thiscall receiver read from the
 // global 0x006c0a88, the same singleton RHMenuDialogue::GetDialogue uses).
-#include "RHEngine.h"
+class RHEngine;
+class RHElement;
+class RHElementActorPC;
 
 extern RHEngine *g_pEngine;
 
 class SBGeoBoundingBox2D;
+class SBGeoPoint2D;
 
 // Target 0x005df510: __thiscall(SBFile&) serialising a 12-byte triple of ints.
 class RHUnk005df510
@@ -39,13 +45,7 @@ public:
 
 // Target 0x00613e90: trivial ctor (`mov eax,ecx; ret`); stored as a 12-byte
 // sub-object at RHTitbit+0x18.
-class RHUnk00613e90
-{
-public:
-    char m_data[0xc];
-
-    RHUnk00613e90();
-};
+#include "RHUnk00613e90.h"
 
 // The 48-byte serialised element. Fields are named by offset only; identity is
 // unproven (no oracle signal).
@@ -164,6 +164,7 @@ class RHTitbits
 {
 public:
     virtual bool Serialize(SBFile &file);
+    bool RemoveQuickActionTitbitsFor(RHElementActorPC *actor, unsigned short action);
     short FUN_005c7fb0(unsigned long id);
     void FUN_005c8120(int kind, RHElement *element);
     bool FUN_005c8340(int kind, RHElement *element);
@@ -182,3 +183,5 @@ public:
 };
 
 void RHSerializeName(SBFile &file, const char *name);
+
+#endif

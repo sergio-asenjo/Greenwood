@@ -27,10 +27,23 @@ bool RHMenuShortcuts::FUN_0052ce80(int, void *, void *) { return false; }
 RHMenuShortcuts::~RHMenuShortcuts() {}
 
 // Target 0x0053fdd0, __thiscall.
-void RHMenuShortcuts::FUN_0053fdd0() {}
+void RHMenuShortcuts::FUN_0053fdd0()
+{
+    m_list.FUN_005cf1c0(&m_keys);
+}
 
 // Target 0x005ced90, __thiscall, no stack argument.
 void RHMenuShortcutsList::FUN_005ced90() {}
+
+// FUNCTION: GAME 0x005cf1c0
+void RHMenuShortcutsList::FUN_005cf1c0(RHMenuShortcutsKeys *keys)
+{
+    if (keys != m_20c)
+    {
+        m_20c = keys;
+        FUN_005ced90();
+    }
+}
 
 // GLOBAL: GAME 0x006c069c
 bool g_unk0x6c069c;
