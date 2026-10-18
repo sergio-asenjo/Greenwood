@@ -80,6 +80,10 @@ struct SBFontNode0061fcb0
 struct SBFontIterator0061fe10
 {
     SBFontNode0061fcb0 *m_00; // 0x00
+    SBFontIterator0061fe10() {}
+    SBFontIterator0061fe10(SBFontNode0061fcb0 *node) : m_00(node) {}
+    bool operator!=(const SBFontIterator0061fe10 &other) const { return m_00 != other.m_00; }
+    static SBFontNode0061fcb0 *&Left(SBFontNode0061fcb0 *value) { return value->m_00; }
     void FUN_00620ca0();
     void FUN_00620fa0();
     SBFontIterator0061fe10 operator++(int)
@@ -152,8 +156,8 @@ public:
             }
         }
     }
-    SBFontIterator0061fe10 begin() { SBFontIterator0061fe10 it; it.m_00 = m_04->m_00; return it; }
-    SBFontIterator0061fe10 end() { SBFontIterator0061fe10 it; it.m_00 = m_04; return it; }
+    SBFontIterator0061fe10 begin() { return SBFontIterator0061fe10(leftmost()); }
+    SBFontIterator0061fe10 end() { return SBFontIterator0061fe10(m_04); }
     void FUN_0061eea0();
     SBFontPair0061f2b0 FUN_0061f2b0(const unsigned short &);
     SBFontIterator0061fe10 FUN_0061fe10(const unsigned short &);
@@ -192,7 +196,9 @@ struct SBFontNode0061f3e0
 struct SBFontIterator0061f3e0
 {
     SBFontNode0061f3e0 *m_00; // 0x00
+    static SBFontNode0061f3e0 *&Left(SBFontNode0061f3e0 *value) { return value->m_00; }
     void FUN_00620e30();
+    void FUN_00620ef0();
 };
 
 // SIZE 0x08
@@ -207,6 +213,8 @@ struct SBFontPair0061f3e0
 class SBFontTree0061f3e0
 {
 public:
+    SBFontTree0061f3e0() {}
+    SBFontTree0061f3e0(const undefined &, const undefined &);
     undefined m_00[4]; // 0x00
     SBFontNode0061f3e0 *m_04; // 0x04
     bool m_08; // 0x08

@@ -7,10 +7,21 @@ void RHSectorActorList::Unk005c8e40(int) {}
 
 RHUnk00522540::~RHUnk00522540() {}
 
-unsigned int RHUnkSectorPoints::Unk0060ce80() { return 0; }
-void RHUnkSectorPoints::FUN_0060ce90(const SBGeoPoint2D &, unsigned int) {}
+class RHMobileUnk00611360
+{
+public:
+    void FUN_00610f50(const SBGeoPoint2D &point, unsigned long index);
+};
+
+
+// FUNCTION: GAME 0x0060ce90
+void RHUnkSectorPoints::FUN_0060ce90(const SBGeoPoint2D &point, unsigned int index)
+{
+    m_28 = 0;
+    m_29 = 0;
+    ((RHMobileUnk00611360 *)this)->FUN_00610f50(point, index);
+}
 void RHUnkSectorPoints::FUN_0060c2e0() {}
-bool RHUnkSectorScript::Unk00639a30(const std::string &) { return true; }
 
 int RHUnk005f5440::Unk() { return 0; }
 RHSector::RHSector() {}

@@ -1,6 +1,5 @@
 #include "SBNativeFont.h"
 
-SBNativeFontBase::SBNativeFontBase() {}
 SBNativeFontBase::~SBNativeFontBase() {}
 
 class SBGeoBoundingBox2D
@@ -14,35 +13,18 @@ public:
     bool m_10;
 };
 
-// Parked: VC6 lays the `!m_10` return-true block inline; the target jumps to it
-// at the end (je). All comparisons and the shared false block match. 0.842105.
-// STUB: GAME 0x006090a0
+// FUNCTION: GAME 0x006090a0
 bool SBGeoBoundingBox2D::FUN_006090a0() const
 {
-    if (!m_10)
-        return true;
-    return m_00 <= m_08 && m_04 <= m_0c;
+    if (m_10)
+        return m_00 <= m_08 && m_04 <= m_0c;
+    return true;
 }
 
-SBResourceUnkKeyIterator SBNativeFontCharacterTree::FUN_00617e20(const unsigned short &)
+// FUNCTION: GAME 0x00617e20
+SBResourceUnkKeyIterator SBNativeFontCharacterTree::FUN_00617e20(const unsigned short &character)
 {
-    return SBResourceUnkKeyIterator(0);
+    return SBResourceUnkKeyIterator(FUN_00618280(character));
 }
 
 SBResourceUnkKeyNode *SBNativeFontCharacterTree::FUN_00618280(const unsigned short &) { return 0; }
-
-SBNativeFontCharacterPair SBNativeFontCharacterTree::FUN_006177d0(const SBNativeFontCharacterValue &)
-{
-    SBNativeFontCharacterPair result;
-    result.m_iterator.m_node = 0;
-    result.m_inserted = false;
-    return result;
-}
-
-void SBNativeFontCharacterIterator::FUN_00617ed0() {}
-
-SBResourceUnkKeyIterator SBNativeFontCharacterTree::FUN_006176a0(
-    SBResourceUnkKeyIterator first, SBResourceUnkKeyIterator)
-{
-    return first;
-}

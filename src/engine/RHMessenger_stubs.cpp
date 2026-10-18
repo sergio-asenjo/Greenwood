@@ -41,5 +41,3 @@ class SBGeoPoint2D
 public:
     float FUN_005fca90(const SBGeoPoint2D &other, float scale) const;
 };
-
-float SBGeoPoint2D::FUN_005fca90(const SBGeoPoint2D &, float) const { return 0.0f; }

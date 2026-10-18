@@ -4,7 +4,7 @@
 
 #include "SB.h"
 
-class RHSword
+class __declspec(novtable) RHSword
 {
 public:
     RHSword();

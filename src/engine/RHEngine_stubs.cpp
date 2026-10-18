@@ -3,18 +3,6 @@
 #include "RHScript.h"
 
 void RHEngineContinuationCampaignCalls::FUN_00450c10(void *, SBFile &) {}
-class RHEngineCameraRotationCalls
-{
-public:
-    void FUN_005fc9a0(float angle, float scale);
-};
-void RHEngineCameraRotationCalls::FUN_005fc9a0(float, float) {}
-class RHUnk00493a80
-{
-public:
-    void FUN_00493a80();
-};
-void RHUnk00493a80::FUN_00493a80() {}
 void FUN_00570850(void *) {}
 RHUnk004a1bc0::RHUnk004a1bc0(bool) {}
 RHUnk0057ee90::RHUnk0057ee90() {}
@@ -23,7 +11,6 @@ bool RHEngineMenuStateCalls::FUN_00514970() { return false; }
 bool RHEngineSequenceStateCalls::FUN_005823f0() { return false; }
 bool RHEngineSequenceStateCalls::FUN_0058a670(void *) { return false; }
 
-RHUnk005069a0::RHUnk005069a0(const RHUnk005069a0 &, int) {}
 RHUnk0051d2c0::~RHUnk0051d2c0() {}
 int RHHikingGuide::FUN_0051cac0(SBFile &) { return 0; }
 bool RHUnk00551da0::FUN_00551da0(SBFile &) { return true; }
@@ -132,7 +119,6 @@ void RHEngineWidenedCalls::FUN_00558670(SBFile &) {}
 void RHEngineWidenedCalls::FUN_005bd450() {}
 bool RHEngineWidenedCalls::FUN_005b76e0(unsigned, unsigned) { return false; }
 void RHEngineWidenedCalls::FUN_005b7f60(unsigned long) {}
-void RHEngineWidenedCalls::FUN_004e3660(char) {}
 void RHEngineWidenedCalls::FUN_005e5160(unsigned) {}
 class RHEngineActorUpdateCalls
 {
@@ -141,11 +127,3 @@ public:
 };
 
 void RHEngineActorUpdateCalls::FUN_004af2a0() {}
-
-class RHEngineActorActionCalls
-{
-public:
-    void FUN_00490910(unsigned short value);
-};
-
-void RHEngineActorActionCalls::FUN_00490910(unsigned short) {}

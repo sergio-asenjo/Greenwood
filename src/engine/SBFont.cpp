@@ -1,5 +1,6 @@
 #include "SBNullstr.h"
 #include "SBFont.h"
+#include "SBNativeFontBase.h"
 #include "RHSaveGame.h"
 #include "RHCampaign.h"
 #include <string.h>
@@ -112,6 +113,8 @@ SBFontNode0061fcb0 *g_unk0x006c191c = 0;
 unsigned g_unk0x006c1920 = 0;
 // GLOBAL: GAME 0x006c1914
 SBFontNode0061f3e0 *g_unk0x006c1914 = 0;
+// GLOBAL: GAME 0x006c1918
+unsigned g_unk0x006c1918 = 0;
 // GLOBAL: GAME 0x006c1900
 SBFontTree0061f3e0 g_unk0x006c1900;
 
@@ -125,6 +128,16 @@ class SBFontUnk0061e800
 public:
     void FUN_0061e800();
 };
+
+// FUNCTION: GAME 0x0061e7b0
+SBNativeFontBase::SBNativeFontBase()
+{
+    m_context = 0;
+    m_08[0] = 0;
+    m_vptr = 0x67ae34;
+    memset(m_08 + 4, 0, 0xc);
+    memset(m_08 + 0x10, 0, 0x2c);
+}
 
 // FUNCTION: GAME 0x0061e800
 void SBFontUnk0061e800::FUN_0061e800()
@@ -291,6 +304,32 @@ bool SBFontUnk0061e840::FUN_0061ed70(SBFile &file)
     return true;
 }
 
+// FUNCTION: GAME 0x0061edd0
+SBFontTree0061f3e0::SBFontTree0061f3e0(const undefined &comparison, const undefined &allocation)
+{
+    m_00[0] = allocation;
+    m_00[1] = comparison;
+    m_08 = false;
+    SBFontLock lock;
+    if (g_unk0x006c1914 == 0) {
+        SBFontNode0061f3e0 *node = (SBFontNode0061f3e0 *)operator new(0x30);
+        node->m_04 = 0;
+        node->m_2c = 1;
+        g_unk0x006c1914 = node;
+        g_unk0x006c1914->m_00 = 0;
+        g_unk0x006c1914->m_08 = 0;
+    }
+    ++g_unk0x006c1918;
+    SBFontNode0061f3e0 *sentinel = g_unk0x006c1914;
+    SBFontNode0061f3e0 *node = (SBFontNode0061f3e0 *)operator new(0x30);
+    node->m_04 = sentinel;
+    node->m_2c = 0;
+    m_04 = node;
+    m_0c = 0;
+    m_04->m_00 = m_04;
+    m_04->m_08 = m_04;
+}
+
 // FUNCTION: GAME 0x0061eea0
 void SBFontTree0061fcb0::FUN_0061eea0()
 {
@@ -396,6 +435,31 @@ SBFontTree0061fcb0::SBFontTree0061fcb0(const undefined &compare, bool multi, con
     : m_00(allocator), m_01(compare), m_08(multi)
 {
     FUN_00620b70();
+}
+
+// FUNCTION: GAME 0x0061fce0
+SBFontIterator0061fe10 SBFontTree0061fcb0::FUN_0061fce0(SBFontIterator0061fe10 first, SBFontIterator0061fe10 last)
+{
+    if (m_0c != 0 && first.m_00 == m_04->m_00 && last.m_00 == m_04) {
+        SBFontLock lock;
+        SBFontNode0061fcb0 *node = m_04->m_04;
+        {
+            SBFontLock inner;
+            for (SBFontNode0061fcb0 *next = node; next != g_unk0x006c191c; node = next) {
+                FUN_00620ae0(next->m_08);
+                next = next->m_00;
+                operator delete(node);
+            }
+        }
+        root() = g_unk0x006c191c;
+        m_0c = 0;
+        leftmost() = m_04;
+        rightmost() = m_04;
+        return begin();
+    }
+    while (first != last)
+        FUN_00620440(first++);
+    return first;
 }
 
 // FUNCTION: GAME 0x0061fe10
@@ -707,8 +771,112 @@ SBFontNode0061fcb0 *SBFontTree0061fcb0::FUN_00620c20(const unsigned short &key)
     return result;
 }
 
+static inline SBFontNode0061fcb0 *SBFontMax0061fcb0(SBFontNode0061fcb0 *node)
+{
+    SBFontLock lock;
+    while (node->m_08 != g_unk0x006c191c)
+        node = node->m_08;
+    return node;
+}
+
+// FUNCTION: GAME 0x00620ca0
+void SBFontIterator0061fe10::FUN_00620ca0()
+{
+    SBFontLock lock;
+    if (m_00->m_10 == 0 && m_00->m_04->m_04 == m_00)
+        m_00 = m_00->m_08;
+    else if (Left(m_00) != g_unk0x006c191c)
+        m_00 = SBFontMax0061fcb0(Left(m_00));
+    else
+    {
+        SBFontNode0061fcb0 *parent;
+        while (m_00 == (parent = m_00->m_04)->m_00)
+            m_00 = parent;
+        m_00 = parent;
+    }
+}
+
+static inline SBFontNode0061f3e0 *SBFontMax0061f3e0(SBFontNode0061f3e0 *node)
+{
+    SBFontLock lock;
+    while (node->m_08 != g_unk0x006c1914)
+        node = node->m_08;
+    return node;
+}
+
+// FUNCTION: GAME 0x00620e30
+void SBFontIterator0061f3e0::FUN_00620e30()
+{
+    SBFontLock lock;
+    if (m_00->m_2c == 0 && m_00->m_04->m_04 == m_00)
+        m_00 = m_00->m_08;
+    else if (Left(m_00) != g_unk0x006c1914)
+        m_00 = SBFontMax0061f3e0(Left(m_00));
+    else
+    {
+        SBFontNode0061f3e0 *parent;
+        while (m_00 == (parent = m_00->m_04)->m_00)
+            m_00 = parent;
+        m_00 = parent;
+    }
+}
+
+static inline SBFontNode0061f3e0 *SBFontMin0061f3e0(SBFontNode0061f3e0 *node)
+{
+    SBFontLock lock;
+    while (node->m_00 != g_unk0x006c1914)
+        node = node->m_00;
+    return node;
+}
+
+// FUNCTION: GAME 0x00620ef0
+void SBFontIterator0061f3e0::FUN_00620ef0()
+{
+    SBFontLock lock;
+    if (m_00->m_08 != g_unk0x006c1914)
+        m_00 = SBFontMin0061f3e0(m_00->m_08);
+    else {
+        SBFontNode0061f3e0 *parent;
+        while (m_00 == (parent = m_00->m_04)->m_08)
+            m_00 = parent;
+        if (m_00->m_08 != parent)
+            m_00 = parent;
+    }
+}
+
+void EmitSBFontIncrement(SBFontIterator0061f3e0 &iterator)
+{
+    iterator.FUN_00620ef0();
+}
+
+static inline SBFontNode0061fcb0 *SBFontMin0061fcb0(SBFontNode0061fcb0 *node)
+{
+    SBFontLock lock;
+    while (node->m_00 != g_unk0x006c191c)
+        node = node->m_00;
+    return node;
+}
+
+// FUNCTION: GAME 0x00620fa0
+void SBFontIterator0061fe10::FUN_00620fa0()
+{
+    SBFontLock lock;
+    if (m_00->m_08 != g_unk0x006c191c)
+        m_00 = SBFontMin0061fcb0(m_00->m_08);
+    else
+    {
+        SBFontNode0061fcb0 *parent;
+        while (m_00 == (parent = m_00->m_04)->m_08)
+            m_00 = parent;
+        if (m_00->m_08 != parent)
+            m_00 = parent;
+    }
+}
+
 void SBFontEmit(SBFontUnk0061e840 *font, unsigned short value)
 {
+    undefined comparison = 0;
+    SBFontTree0061f3e0 fonts(comparison, comparison);
     font->FUN_0061e810(value, 0);
     font->FUN_0061e840();
     font->FUN_0061e850(value);

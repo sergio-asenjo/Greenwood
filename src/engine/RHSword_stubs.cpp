@@ -8,6 +8,13 @@
 
 #include "SBNullstr.h"
 #include "RHSword.h"
+#include "RHWeapon.h"
 
-RHSword::RHSword() {}
+// FUNCTION: GAME 0x005c1b00
+RHSword::RHSword()
+{
+    ((RHWeapon *)this)->RHWeapon::RHWeapon();
+    m_unk4 = 0;
+    *(unsigned *)this = 0x679e48;
+}
 RHSword::~RHSword() {}

@@ -23,12 +23,25 @@ struct SBNativeFontCharacterValue
 
 struct SBNativeFontCharacterPair
 {
+    SBNativeFontCharacterPair(const SBResourceUnkKeyIterator &iterator, const bool &inserted)
+        : m_iterator(iterator), m_inserted(inserted) {}
     SBResourceUnkKeyIterator m_iterator;
     bool m_inserted;
 };
 
 extern unsigned g_unk0x006c18c4;
 extern SBResourceUnkKeyNode *g_unk0x006c18c8;
+
+struct SBNativeFontDecNode
+{
+    SBNativeFontDecNode *m_00;
+    SBNativeFontDecNode *m_04;
+    SBNativeFontDecNode *m_08;
+    unsigned short m_0c;
+    SBNativeFontCharacterInfo m_info;
+    int m_20;
+    static SBNativeFontDecNode *&Left(SBNativeFontDecNode *node) { return node->m_00; }
+};
 
 class SBNativeFontCharacterTree : public SBResourceUnkTreeEnd
 {
@@ -77,16 +90,27 @@ public:
     SBResourceUnkKeyIterator FUN_00617e20(const unsigned short &);
     SBResourceUnkKeyNode *FUN_00618280(const unsigned short &);
     SBNativeFontCharacterPair FUN_006177d0(const SBNativeFontCharacterValue &);
+    SBResourceUnkKeyIterator FUN_00617f80(SBNativeFontDecNode *, SBNativeFontDecNode *, const SBNativeFontCharacterValue &);
+    void Lrotate(SBNativeFontDecNode *);
+    void Rrotate(SBNativeFontDecNode *);
+    SBNativeFontDecNode *&InsertRoot() { return *(SBNativeFontDecNode **)((char *)m_head + 4); }
     SBResourceUnkKeyIterator FUN_006176a0(SBResourceUnkKeyIterator, SBResourceUnkKeyIterator);
+    void FUN_00617e40(SBResourceUnkKeyNode *);
+    SBResourceUnkKeyIterator FUN_00617900(SBResourceUnkKeyIterator);
+    typedef SBNativeFontDecNode Node;
+    static Node *&Left(Node *node) { return node->m_00; }
+    static Node *&Parent(Node *node) { return node->m_04; }
+    static Node *&Right(Node *node) { return node->m_08; }
+    static int &Color(Node *node) { return node->m_20; }
+    Node *&EraseLeftmost() { return *(Node **)m_head; }
+    Node *&EraseRightmost() { return *(Node **)((char *)m_head + 8); }
+    SBResourceUnkKeyNode *&Root() { return *(SBResourceUnkKeyNode **)((char *)m_head + 4); }
+    SBResourceUnkKeyNode *&Leftmost() { return *(SBResourceUnkKeyNode **)m_head; }
+    SBResourceUnkKeyNode *&Rightmost() { return *(SBResourceUnkKeyNode **)((char *)m_head + 8); }
+    SBResourceUnkKeyIterator begin() { return SBResourceUnkKeyIterator(Leftmost()); }
     void FUN_00616c90();
     unsigned m_08;
     unsigned m_count;
-};
-
-struct SBNativeFontCharacterIterator
-{
-    SBResourceUnkKeyNode *m_node;
-    void FUN_00617ed0();
 };
 
 class SBNativeFontPictureCalls
@@ -124,15 +148,7 @@ public:
     unsigned char m_bytes[0x34];
 };
 
-class SBNativeFontBase
-{
-public:
-    SBNativeFontBase();
-    ~SBNativeFontBase();
-    unsigned m_vptr;
-    SBNativeFontRenderContext *m_context;
-    unsigned char m_08[0x3c];
-};
+#include "SBNativeFontBase.h"
 
 class SBNativeFont : public SBNativeFontBase
 {

@@ -101,27 +101,9 @@ public:
 };
 
 // SIZE 0x2c
-class RHUnkSectorPoints
-{
-public:
-    unsigned int Unk0060ce80();
-    SBGeoPoint2D &Unk0060cef0(unsigned int index);
-    void Unk0060ced0(const SBGeoPoint2D &point, unsigned int index);
-    SBGeoPoint2D &FUN_006112c0(unsigned int index);
-    void FUN_006112a0(const SBGeoPoint2D &point, unsigned int index);
-    void FUN_0060ce90(const SBGeoPoint2D &point, unsigned int index);
-    void FUN_0060c2e0();
-    undefined m_pad0[0x28]; // 0x00
-    undefined m_28; // 0x28
-    undefined m_29; // 0x29
-    undefined m_pad2a[2]; // 0x2a
-};
+#include "RHUnkSectorPoints.h"
 
-class RHUnkSectorScript
-{
-public:
-    bool Unk00639a30(const std::string &name);
-};
+#include "RHUnkSectorScript.h"
 
 extern float g_unk0x679cc4;
 extern char g_unk0x6c0691;

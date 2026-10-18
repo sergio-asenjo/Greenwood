@@ -119,11 +119,7 @@ unsigned FUN_0057aa20();
 extern RHUnk005ef320 *g_unk0x6c11d0;
 extern char g_unk0x006c07de;
 
-class RHConsoleCampaignCalls
-{
-public:
-    void *FUN_004524b0(unsigned short);
-};
+#include "RHConsoleCampaignCalls.h"
 
 class RHConsoleSequenceElement
 {

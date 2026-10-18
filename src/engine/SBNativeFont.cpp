@@ -1,9 +1,11 @@
 #include "SBNativeFont.h"
+
 #include "SB.h"
 #include <string.h>
 
 DECOMP_SIZE_ASSERT(SBNativeFont, 0xd8)
 DECOMP_SIZE_ASSERT(SBNativeFontCharacterValue, 0x14)
+DECOMP_SIZE_ASSERT(SBNativeFontDecNode, 0x24)
 DECOMP_SIZE_ASSERT(SBNativeFontCharacterTree, 0x10)
 DECOMP_SIZE_ASSERT(SBNativeFontBase, 0x44)
 DECOMP_SIZE_ASSERT(RHUnk006114c0, 0x38)
@@ -286,7 +288,7 @@ bool SBNativeFont::SaveToStream(SBFile &file)
         return false;
     if (file.Access(&m_spacing, sizeof(m_spacing)))
         return false;
-    SBNativeFontCharacterIterator it;
+    SBResourceUnkKeyIterator it;
     it.m_node = *(SBResourceUnkKeyNode **)m_characters.m_head;
     for (; it.m_node != m_characters.m_head; it.FUN_00617ed0())
     {
@@ -300,6 +302,401 @@ bool SBNativeFont::SaveToStream(SBFile &file)
     if (!((SBNativeFontPictureCalls *)&m_pictures[0])->V1c(file))
         return false;
     return ((SBNativeFontPictureCalls *)&m_pictures[1])->V1c(file) != false;
+}
+
+static inline SBNativeFontDecNode *&SBNativeFontDecLeft(SBNativeFontDecNode *value) { return value->m_00; }
+
+static inline SBNativeFontDecNode *SBNativeFontDecMax(SBNativeFontDecNode *node)
+{
+    SBFontLock lock;
+    while (node->m_08 != (SBNativeFontDecNode *)g_unk0x006c18c8)
+        node = node->m_08;
+    return node;
+}
+
+struct SBNativeFontDecIterator
+{
+    SBNativeFontDecNode *m_node;
+    void FUN_006182d0();
+};
+
+// FUNCTION: GAME 0x006176a0
+SBResourceUnkKeyIterator SBNativeFontCharacterTree::FUN_006176a0(SBResourceUnkKeyIterator first, SBResourceUnkKeyIterator last)
+{
+    if (m_count != 0 && first.m_node == *(SBResourceUnkKeyNode **)m_head && last.m_node == m_head) {
+        SBFontLock lock;
+        SBResourceUnkKeyNode *node = Root();
+        {
+            SBFontLock inner;
+            for (SBResourceUnkKeyNode *next = node; next != g_unk0x006c18c8; node = next) {
+                FUN_00617e40(*(SBResourceUnkKeyNode **)((char *)next + 8));
+                next = *(SBResourceUnkKeyNode **)next;
+                operator delete(node);
+            }
+        }
+        Root() = g_unk0x006c18c8;
+        m_count = 0;
+        Leftmost() = m_head;
+        Rightmost() = m_head;
+        return begin();
+    }
+    while (first != last)
+        FUN_00617900(first++);
+    return first;
+}
+
+// FUNCTION: GAME 0x006177d0
+SBNativeFontCharacterPair SBNativeFontCharacterTree::FUN_006177d0(const SBNativeFontCharacterValue &value)
+{
+    SBNativeFontDecNode *parent = (SBNativeFontDecNode *)m_head;
+    SBNativeFontDecNode *node = InsertRoot();
+    bool less = true;
+    {
+        SBFontLock lock;
+        while (node != (SBNativeFontDecNode *)g_unk0x006c18c8) {
+            parent = node;
+            less = value.m_character < node->m_0c;
+            node = less ? node->m_00 : node->m_08;
+        }
+    }
+    if (*(bool *)&m_08) {
+        SBNativeFontCharacterPair result(FUN_00617f80(node, parent, value), true);
+        return result;
+    }
+    SBNativeFontDecIterator previous;
+    previous.m_node = parent;
+    if (less) {
+        if (parent == (SBNativeFontDecNode *)Leftmost()) {
+            SBNativeFontCharacterPair result(FUN_00617f80(node, parent, value), true);
+            return result;
+        }
+        previous.FUN_006182d0();
+    }
+    if (previous.m_node->m_0c < value.m_character) {
+        SBNativeFontCharacterPair result(FUN_00617f80(node, parent, value), true);
+        return result;
+    }
+    SBNativeFontCharacterPair result(SBResourceUnkKeyIterator((SBResourceUnkKeyNode *)previous.m_node), false);
+    return result;
+}
+
+static inline SBNativeFontDecNode *SBNativeFontEraseMinimum(SBNativeFontDecNode *node)
+{
+    SBFontLock lock;
+    while (node->m_00 != (SBNativeFontDecNode *)g_unk0x006c18c8)
+        node = node->m_00;
+    return node;
+}
+
+static inline SBNativeFontDecNode *SBNativeFontEraseMaximum(SBNativeFontDecNode *node)
+{
+    SBFontLock lock;
+    while (node->m_08 != (SBNativeFontDecNode *)g_unk0x006c18c8)
+        node = node->m_08;
+    return node;
+}
+
+// FUNCTION: GAME 0x00617900
+SBResourceUnkKeyIterator SBNativeFontCharacterTree::FUN_00617900(SBResourceUnkKeyIterator position)
+{
+    Node *x;
+    Node *y = (Node *)(position++).m_node;
+    Node *z = y;
+    SBFontLock lock;
+    if (Left(y) == (Node *)g_unk0x006c18c8)
+        x = Right(y);
+    else if (Right(y) == (Node *)g_unk0x006c18c8)
+        x = Left(y);
+    else
+    {
+        y = SBNativeFontEraseMinimum(Right(y));
+        x = Right(y);
+    }
+    {
+        if (y != z)
+        {
+            Parent(Left(z)) = y;
+            Left(y) = Left(z);
+            if (y == Right(z))
+                Parent(x) = y;
+            else
+            {
+                Parent(x) = Parent(y);
+                Left(Parent(y)) = x;
+                Right(y) = Right(z);
+                Parent(Right(z)) = y;
+            }
+            if (InsertRoot() == z)
+                InsertRoot() = y;
+            else if (Left(Parent(z)) == z)
+                Left(Parent(z)) = y;
+            else
+                Right(Parent(z)) = y;
+            Parent(y) = Parent(z);
+            std::swap(Color(y), Color(z));
+            y = z;
+        }
+        else
+        {
+            Parent(x) = Parent(y);
+            if (InsertRoot() == z)
+                InsertRoot() = x;
+            else if (Left(Parent(z)) == z)
+                Left(Parent(z)) = x;
+            else
+                Right(Parent(z)) = x;
+            if (EraseLeftmost() == z)
+            {
+                if (Right(z) == (Node *)g_unk0x006c18c8)
+                    EraseLeftmost() = Parent(z);
+                else
+                    EraseLeftmost() = SBNativeFontEraseMinimum(x);
+            }
+            if (EraseRightmost() == z)
+            {
+                if (Left(z) == (Node *)g_unk0x006c18c8)
+                    EraseRightmost() = Parent(z);
+                else
+                    EraseRightmost() = SBNativeFontEraseMaximum(x);
+            }
+        }
+        if (Color(y) == 1)
+        {
+            while (x != InsertRoot() && Color(x) == 1)
+            {
+                if (x == Left(Parent(x)))
+                {
+                    Node *w = Right(Parent(x));
+                    if (Color(w) == 0)
+                    {
+                        Color(w) = 1;
+                        Color(Parent(x)) = 0;
+                        Lrotate(Parent(x));
+                        w = Right(Parent(x));
+                    }
+                    if (Color(Left(w)) == 1 && Color(Right(w)) == 1)
+                    {
+                        Color(w) = 0;
+                        x = Parent(x);
+                    }
+                    else
+                    {
+                        if (Color(Right(w)) == 1)
+                        {
+                            Color(Left(w)) = 1;
+                            Color(w) = 0;
+                            Rrotate(w);
+                            w = Right(Parent(x));
+                        }
+                        Color(w) = Color(Parent(x));
+                        Color(Parent(x)) = 1;
+                        Color(Right(w)) = 1;
+                        Lrotate(Parent(x));
+                        break;
+                    }
+                }
+                else
+                {
+                    Node *w = Left(Parent(x));
+                    if (Color(w) == 0)
+                    {
+                        Color(w) = 1;
+                        Color(Parent(x)) = 0;
+                        Rrotate(Parent(x));
+                        w = Left(Parent(x));
+                    }
+                    if (Color(Right(w)) == 1 && Color(Left(w)) == 1)
+                    {
+                        Color(w) = 0;
+                        x = Parent(x);
+                    }
+                    else
+                    {
+                        if (Color(Left(w)) == 1)
+                        {
+                            Color(Right(w)) = 1;
+                            Color(w) = 0;
+                            Lrotate(w);
+                            w = Left(Parent(x));
+                        }
+                        Color(w) = Color(Parent(x));
+                        Color(Parent(x)) = 1;
+                        Color(Left(w)) = 1;
+                        Rrotate(Parent(x));
+                        break;
+                    }
+                }
+            }
+            Color(x) = 1;
+        }
+    }
+    operator delete(y);
+    --m_count;
+    return position;
+}
+
+// FUNCTION: GAME 0x00617e40
+void SBNativeFontCharacterTree::FUN_00617e40(SBResourceUnkKeyNode *node)
+{
+    SBFontLock lock;
+    for (SBResourceUnkKeyNode *next = node; next != g_unk0x006c18c8; node = next) {
+        FUN_00617e40(*(SBResourceUnkKeyNode **)((char *)next + 8));
+        next = *(SBResourceUnkKeyNode **)next;
+        operator delete(node);
+    }
+}
+
+static inline SBNativeFontDecNode *SBNativeFontMin(SBNativeFontDecNode *node)
+{
+    SBFontLock lock;
+    while (node->m_00 != (SBNativeFontDecNode *)g_unk0x006c18c8)
+        node = node->m_00;
+    return node;
+}
+
+// FUNCTION: GAME 0x00617ed0
+void SBResourceUnkKeyIterator::FUN_00617ed0()
+{
+    SBFontLock lock;
+#define nativeNode (*(SBNativeFontDecNode **)&m_node)
+    if (nativeNode->m_08 != (SBNativeFontDecNode *)g_unk0x006c18c8)
+        nativeNode = SBNativeFontMin(nativeNode->m_08);
+    else {
+        SBNativeFontDecNode *parent;
+        while (nativeNode == (parent = nativeNode->m_04)->m_08)
+            nativeNode = parent;
+        if (nativeNode->m_08 != parent)
+            nativeNode = parent;
+    }
+#undef nativeNode
+}
+
+struct RHPathHistory;
+void RHPathUnk0048f180(RHPathHistory *, const RHPathHistory *);
+
+inline void SBNativeFontCharacterTree::Lrotate(SBNativeFontDecNode *x)
+{
+    SBFontLock lock;
+    SBNativeFontDecNode *y = x->m_08;
+    x->m_08 = y->m_00;
+    if (y->m_00 != (SBNativeFontDecNode *)g_unk0x006c18c8)
+        y->m_00->m_04 = x;
+    y->m_04 = x->m_04;
+    if (x == InsertRoot())
+        InsertRoot() = y;
+    else if (x == x->m_04->m_00)
+        x->m_04->m_00 = y;
+    else
+        x->m_04->m_08 = y;
+    y->m_00 = x;
+    x->m_04 = y;
+}
+
+inline void SBNativeFontCharacterTree::Rrotate(SBNativeFontDecNode *x)
+{
+    SBFontLock lock;
+    SBNativeFontDecNode *y = x->m_00;
+    x->m_00 = y->m_08;
+    if (y->m_08 != (SBNativeFontDecNode *)g_unk0x006c18c8)
+        y->m_08->m_04 = x;
+    y->m_04 = x->m_04;
+    if (x == InsertRoot())
+        InsertRoot() = y;
+    else if (x == x->m_04->m_08)
+        x->m_04->m_08 = y;
+    else
+        x->m_04->m_00 = y;
+    y->m_08 = x;
+    x->m_04 = y;
+}
+
+// FUNCTION: GAME 0x00617f80
+SBResourceUnkKeyIterator SBNativeFontCharacterTree::FUN_00617f80(SBNativeFontDecNode *x, SBNativeFontDecNode *y, const SBNativeFontCharacterValue &value)
+{
+    SBFontLock lock;
+    SBNativeFontDecNode *z = (SBNativeFontDecNode *)operator new(sizeof(SBNativeFontDecNode));
+    z->m_04 = y;
+    z->m_20 = 0;
+    z->m_00 = (SBNativeFontDecNode *)g_unk0x006c18c8;
+    z->m_08 = (SBNativeFontDecNode *)g_unk0x006c18c8;
+    RHPathUnk0048f180((RHPathHistory *)&z->m_0c, (const RHPathHistory *)&value);
+    ++m_count;
+    if (y == (SBNativeFontDecNode *)m_head || x != (SBNativeFontDecNode *)g_unk0x006c18c8 || value.m_character < y->m_0c) {
+        y->m_00 = z;
+        if (y == (SBNativeFontDecNode *)m_head) {
+            InsertRoot() = z;
+            ((SBNativeFontDecNode *)m_head)->m_08 = z;
+        }
+        else if (y == ((SBNativeFontDecNode *)m_head)->m_00)
+            ((SBNativeFontDecNode *)m_head)->m_00 = z;
+    }
+    else {
+        y->m_08 = z;
+        if (y == ((SBNativeFontDecNode *)m_head)->m_08)
+            ((SBNativeFontDecNode *)m_head)->m_08 = z;
+    }
+    for (x = z; x != InsertRoot() && x->m_04->m_20 == 0; )
+        if (x->m_04 == SBNativeFontDecNode::Left(x->m_04->m_04)) {
+            y = x->m_04->m_04->m_08;
+            if (y->m_20 == 0) {
+                x->m_04->m_20 = 1;
+                y->m_20 = 1;
+                x->m_04->m_04->m_20 = 0;
+                x = x->m_04->m_04;
+            }
+            else {
+                if (x == x->m_04->m_08) {
+                    x = x->m_04;
+                    Lrotate(x);
+                }
+                x->m_04->m_20 = 1;
+                x->m_04->m_04->m_20 = 0;
+                Rrotate(x->m_04->m_04);
+            }
+        }
+        else {
+            y = SBNativeFontDecNode::Left(x->m_04->m_04);
+            if (y->m_20 == 0) {
+                x->m_04->m_20 = 1;
+                y->m_20 = 1;
+                x->m_04->m_04->m_20 = 0;
+                x = x->m_04->m_04;
+            }
+            else {
+                if (x == x->m_04->m_00) {
+                    x = x->m_04;
+                    Rrotate(x);
+                }
+                x->m_04->m_20 = 1;
+                x->m_04->m_04->m_20 = 0;
+                Lrotate(x->m_04->m_04);
+            }
+        }
+    InsertRoot()->m_20 = 1;
+    return SBResourceUnkKeyIterator((SBResourceUnkKeyNode *)z);
+}
+
+// FUNCTION: GAME 0x006182d0
+void SBNativeFontDecIterator::FUN_006182d0()
+{
+    SBFontLock lock;
+    if (m_node->m_20 == 0 && m_node->m_04->m_04 == m_node)
+        m_node = m_node->m_08;
+    else if (SBNativeFontDecLeft(m_node) != (SBNativeFontDecNode *)g_unk0x006c18c8)
+        m_node = SBNativeFontDecMax(SBNativeFontDecLeft(m_node));
+    else
+    {
+        SBNativeFontDecNode *parent;
+        while (m_node == (parent = m_node->m_04)->m_00)
+            m_node = parent;
+        m_node = parent;
+    }
+}
+
+void EmitSBNativeFontDec()
+{
+    SBNativeFontDecIterator iterator;
+    iterator.FUN_006182d0();
 }
 
 void EmitSBNativeFont(SBNativeFont *font, SBNativeFontRenderContext *context,

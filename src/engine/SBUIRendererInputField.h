@@ -56,13 +56,7 @@ public:
     RHMobileUnk0060a820 &FUN_0060a820(const SBGeoPoint2D &, const SBGeoPoint2D &);
 };
 
-// SIZE 0x10
-class RHMobileUnk006100e0 : public SBGeoPoint2D
-{
-public:
-    ~RHMobileUnk006100e0();
-    undefined m_08[8]; // 0x08
-};
+#include "RHMobileUnk006100e0.h"
 
 // SIZE 0x14
 class RHMobileUnk00607da0
@@ -204,7 +198,7 @@ public:
 
 std::wstring FUN_005d0880(const std::wstring &, const std::wstring &);
 int FUN_00613c50(const unsigned short *, const unsigned short *, unsigned int);
-bool FUN_00613e40(unsigned char, const void *, unsigned int, const void *);
+bool FUN_00613e40(unsigned char, unsigned int, const void *, const void *);
 bool FUN_006141e0(void *, const std::wstring &, float);
 unsigned int FUN_00613940(void *, int **, int **, int **, int **, unsigned char *, unsigned int, int);
 

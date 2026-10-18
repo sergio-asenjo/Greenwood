@@ -34,6 +34,8 @@ public:
     void FUN_0050e7b0();
     void FUN_00512310();
     void FUN_0050f1a0(RHSaveGame *saveGame);
+    bool FUN_0050f2d0(bool loading);
+    bool SerializeForSherwood();
     void FUN_005105d0(unsigned char first, char second);
     bool FUN_00510750();
     bool FUN_005107a0(int *event);
@@ -59,9 +61,11 @@ public:
     void FUN_005130c0(void *);
     void FUN_00513a60(void *);
     void FUN_005134c0(void *);
-    void FUN_00513df0();
+    void FUN_00513df0(void *event);
     void FUN_00513150(void *);
     void FUN_005140b0();
+    static void FUN_005145b0();
+    static void GenerateDeadZoneForMouseInput();
     void FUN_00512be0(void *);
     void FUN_00513ff0();
     void FUN_00513390(void *);
@@ -69,9 +73,10 @@ public:
     void FUN_005138b0();
     void FUN_00513210(void *);
     void FUN_00513e60();
+    unsigned short FUN_00514470();
     void FUN_00512eb0(void *);
     void FUN_00513b00();
-    void FUN_00512cb0();
+    void FUN_00512cb0(void *event);
     void FUN_00513670();
     void FUN_00514c50();
     void Emit(SBFile &file);

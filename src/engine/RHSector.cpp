@@ -141,6 +141,39 @@ bool RHUnk00522540::FUN_00522680(SBFile &file)
     return g_pEngine->FUN_004c3d90(file, m_18);
 }
 
+class RHUnk0057c920List
+{
+public:
+    RHUnk0057c920List *m_next;
+    RHUnk0057c920List *m_prev;
+    char m_08[0x10];
+};
+
+class RHUnk0057c920
+{
+public:
+    RHUnk0057c920();
+    char m_0;
+    char m_1[3];
+    RHUnk0057c920List *m_4;
+    int m_8;
+    char m_c[4];
+    bool m_10;
+};
+
+// FUNCTION: GAME 0x0057c920
+RHUnk0057c920::RHUnk0057c920()
+{
+    char value;
+    m_0 = value;
+    RHUnk0057c920List *list = new RHUnk0057c920List;
+    list->m_next = list;
+    list->m_prev = list;
+    m_4 = list;
+    m_8 = 0;
+    m_10 = 1;
+}
+
 // FUNCTION: GAME 0x0057c9c0
 RHSectorActorIter RHSectorActorIter::operator++(int)
 {

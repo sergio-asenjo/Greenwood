@@ -103,6 +103,7 @@ class RHEngine
 {
 public:
     bool TurnPathFinderOn();
+    int FUN_0049b590(void *actor);
     void TurnPathFinderOff();
     bool FUN_004c0340(SBGeoPoint2D &point);
     void FUN_004d1640(unsigned first, unsigned second, unsigned third, unsigned fourth, unsigned fifth, unsigned sixth, unsigned seventh);
@@ -116,6 +117,8 @@ public:
     unsigned int FUN_004d2340(int type);
     void FUN_004c38d0(SBFile &file, unsigned *value);
     void FUN_004dee70(float *point);
+    void FUN_004dce20(void *actor);
+    void FUN_004ddfb0();
     int FUN_004deeb0(const SBGeoPoint2D &point, SBGeoPoint2D &result);
     void FUN_004defa0(char flag);
     void FUN_004df070(void *value, char flag);
@@ -137,6 +140,7 @@ public:
     void FUN_004e17c0(unsigned value, void *actor);
     void FUN_004e0030(const SBGeoPoint2D &point, void *actor, char flag);
     void FUN_004e0fb0(const SBGeoPoint2D &point, void *actor, char flag, int value);
+    void FUN_004debe0();
     void FUN_004debf0(const SBGeoPoint2D &point);
     unsigned FUN_004e19c0(unsigned value);
     unsigned FUN_004e1f30(unsigned value);
@@ -156,6 +160,12 @@ public:
     unsigned FUN_004c7d50();
     bool FUN_004c7d80(void *first, int second, void **result);
     bool FUN_004c7e10(void *first, int second, void **result);
+    void FUN_004e3c20(void *point);
+    void FUN_004d8fd0(RHPCDescription *description);
+    void FUN_004d5320(const void *value);
+    void FUN_004e3100(int action);
+    unsigned char FUN_004ded90(void *actor);
+    void FUN_004e3d20(int index, int value);
     bool FUN_004c7eb0(void *first, int second, void **result);
     void FUN_004c7f60(const void *point);
     void FUN_004db7f0(SBGeoPoint2D &point);
@@ -425,6 +435,7 @@ public:
     int FUN_004a7f30();
     void FUN_004a7f40(int first, int second, int third);
     void FUN_004a7f50();
+    bool FUN_004a7f80();
 };
 
 class RHUnk004b0980
@@ -452,11 +463,7 @@ public:
     int FUN_004ba970();
 };
 
-class RHUnk0055dbb0
-{
-public:
-    char *FUN_0055dbb0();
-};
+#include "RHPlayerProfileAccess.h"
 
 class RHUnk00556470
 {

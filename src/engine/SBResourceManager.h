@@ -46,6 +46,14 @@ struct SBResourceUnkKeyIterator
     SBResourceUnkKeyNode *m_node;
     SBResourceUnkKeyIterator() {}
     SBResourceUnkKeyIterator(SBResourceUnkKeyNode *node) : m_node(node) {}
+    bool operator!=(const SBResourceUnkKeyIterator &other) const { return m_node != other.m_node; }
+    void FUN_00617ed0();
+    SBResourceUnkKeyIterator operator++(int)
+    {
+        SBResourceUnkKeyIterator previous = *this;
+        FUN_00617ed0();
+        return previous;
+    }
 };
 
 class SBResourceUnkTreeEnd

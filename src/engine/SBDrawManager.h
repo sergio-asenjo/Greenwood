@@ -29,6 +29,7 @@ struct SBDrawUnk005eec00Edge
 class RHUnk005ef320
 {
 public:
+    unsigned short Unk(int red, int green, int blue);
     bool FUN_005ef380(int value);
     bool FUN_005e3f70();
     bool FUN_005e5890(unsigned long, void **, unsigned long);
@@ -62,7 +63,21 @@ public:
 struct SBDrawUnk005efc10Iterator
 {
     SBDrawUnk005f0090Node *m_node;
+    SBDrawUnk005efc10Iterator() {}
     SBDrawUnk005efc10Iterator(SBDrawUnk005f0090Node *node) : m_node(node) {}
+    bool operator!=(const SBDrawUnk005efc10Iterator &other) const { return m_node != other.m_node; }
+    void FUN_005effc0();
+    SBDrawUnk005efc10Iterator &operator++()
+    {
+        FUN_005effc0();
+        return *this;
+    }
+    SBDrawUnk005efc10Iterator operator++(int)
+    {
+        SBDrawUnk005efc10Iterator previous = *this;
+        FUN_005effc0();
+        return previous;
+    }
 };
 
 struct SBDrawUnk005e4f70Surface
@@ -79,21 +94,65 @@ struct SBDrawUnk005e4f70Surface
 typedef std::pair<const unsigned long, SBDrawUnk005e4f70Surface> SBDrawUnk005e4f70Pair;
 typedef std::pair<SBDrawUnk005efc10Iterator, bool> SBDrawUnk005ef440Result;
 
+struct SBDrawDecNode
+{
+    static SBDrawDecNode *&Left(SBDrawDecNode *node) { return node->m_00; }
+    SBDrawDecNode *m_00;
+    SBDrawDecNode *m_04;
+    SBDrawDecNode *m_08;
+    unsigned long m_0c;
+    int m_10;
+    int m_14;
+    int m_18;
+    int m_1c;
+    int m_20;
+    int m_24;
+    int m_28;
+};
+
+struct SBDrawSurfaceEntry;
+
 class SBDrawUnk005efc10
 {
 public:
     char m_00[4];
     SBDrawUnk005f0090Node *m_head;
+    unsigned m_08;
+    unsigned m_size;
+    SBDrawUnk005efc10Iterator FUN_005efa90(SBDrawUnk005efc10Iterator, SBDrawUnk005efc10Iterator);
+    SBDrawUnk005efc10Iterator FUN_005ef570(SBDrawUnk005efc10Iterator);
+    typedef SBDrawDecNode Node;
+    static Node *&Left(Node *node) { return node->m_00; }
+    static Node *&Parent(Node *node) { return node->m_04; }
+    static Node *&Right(Node *node) { return node->m_08; }
+    static int &Color(Node *node) { return node->m_28; }
+    Node *&EraseLeftmost() { return *(Node **)m_head; }
+    Node *&EraseRightmost() { return *(Node **)((char *)m_head + 8); }
+    void FUN_005efc30(SBDrawUnk005f0090Node *);
+    SBDrawUnk005f0090Node *&Root() { return *(SBDrawUnk005f0090Node **)((char *)m_head + 4); }
+    SBDrawUnk005f0090Node *&Leftmost() { return *(SBDrawUnk005f0090Node **)m_head; }
+    SBDrawUnk005f0090Node *&Rightmost() { return *(SBDrawUnk005f0090Node **)((char *)m_head + 8); }
+    SBDrawUnk005efc10Iterator Begin() { return SBDrawUnk005efc10Iterator(Leftmost()); }
     SBDrawUnk005efc10Iterator FUN_005efc10(const unsigned long &);
     SBDrawUnk005efc10Iterator FUN_005efbc0(const unsigned long &);
     SBDrawUnk005efc10Iterator FUN_005f0070(const unsigned long &);
     SBDrawUnk005ef440Result FUN_005ef440(const SBDrawUnk005e4f70Pair &);
+    SBDrawUnk005efc10Iterator FUN_005efcc0(SBDrawDecNode *, SBDrawDecNode *, const SBDrawSurfaceEntry &);
+    SBDrawDecNode *&InsertRoot() { return ((SBDrawDecNode *)m_head)->m_04; }
+    void Lrotate(SBDrawDecNode *);
+    void Rrotate(SBDrawDecNode *);
 };
 
 class SBDrawUnk005e8450
 {
 public:
     bool FUN_005e7880(void *, void *, void *, int, int, int, int, int, int);
+    bool FUN_005e78c0(unsigned short *, unsigned short *, unsigned short *, unsigned, unsigned, unsigned, unsigned, unsigned);
+    bool FUN_005e7a30(unsigned short *, unsigned short *, unsigned short *, unsigned, unsigned, unsigned, unsigned, unsigned, unsigned short);
+    bool FUN_005e7bc0(unsigned short *, unsigned short *, unsigned short *, unsigned, unsigned, unsigned, unsigned, unsigned);
+    bool FUN_005e7de0(unsigned short *, unsigned short *, unsigned short *, unsigned, unsigned, unsigned, unsigned, unsigned);
+    bool FUN_005e7fa0(unsigned short *, unsigned short *, unsigned short *, unsigned, unsigned, unsigned, unsigned, unsigned);
+    bool FUN_005e82a0(unsigned short *, unsigned short *, unsigned short *, unsigned, unsigned, unsigned, unsigned, unsigned);
     bool FUN_005e7d30(void *, void *, void *, int, int, int, int, int, int);
     bool FUN_005e7d70(void *, void *, void *, int, int, int, int, int, int);
     bool FUN_005e7da0(void *, void *, void *, int, int, int, int, int, int);

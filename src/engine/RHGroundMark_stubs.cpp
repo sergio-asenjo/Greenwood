@@ -18,9 +18,7 @@ SBGeoPoint2D::~SBGeoPoint2D() {}
 // Target 0x00606040.
 RHGroundInfo::RHGroundInfo() {}
 RHGroundInfo::RHGroundInfo(const RHGroundInfo &) {}
+RHGroundInfo::~RHGroundInfo() {}
 
 // Target 0x005c8e40.
 void RHGroundInfoList::GoTo(int) {}
-
-// Target 0x0051c7c0.
-void RHGroundInfoList::Clear(void *, RHGroundInfoNode *, RHGroundInfoNode *) {}

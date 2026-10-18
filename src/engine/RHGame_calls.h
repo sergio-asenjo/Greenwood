@@ -359,7 +359,7 @@ public:
     virtual void v7(); // vtable+0x1c
     virtual void v8(); // vtable+0x20
     virtual void v9(); // vtable+0x24
-    virtual void v10(); // vtable+0x28
+    virtual void v10(const SBGeoPoint2D &point); // vtable+0x28
     virtual void v11(const std::wstring &text); // vtable+0x2c
     virtual void v12(); // vtable+0x30
     virtual void v13(); // vtable+0x34
@@ -391,22 +391,7 @@ public:
 
 #include "RHGameMenuCalls.h"
 
-class RHGameBlazonValue
-{
-public:
-    void FUN_0044f960(int value);
-    void FUN_0044f8d0(int value);
-};
-
-// SIZE 0xb4
-class RHGameBlazonWidget
-{
-public:
-    void FUN_005cc900(int value);
-    void FUN_005cc920(int value);
-    undefined m_00[0xb0]; // 0x00
-    RHGameBlazonValue *m_b0; // 0xb0
-};
+#include "RHGameBlazonWidget.h"
 
 extern RHUnk00452030 *g_unk0x6c07fc;
 class RHEngine;
@@ -436,15 +421,7 @@ public:
     static bool SerializeHeader(SBFile &file, Header &header);
 };
 
-class RHGameSaveCalls
-{
-public:
-    std::string FUN_0056e6b0();
-    char FUN_0056e790();
-    bool FUN_0056e7f0();
-    bool FUN_0056e850();
-    void FUN_0056ecc0();
-};
+#include "RHGameSaveCalls.h"
 
 // SIZE 0x04
 class RHGameSaveOwner
@@ -461,6 +438,9 @@ class RHDialogueSet;
 class RHEngine
 {
 public:
+    void FUN_004d8fd0(class RHPCDescription *description);
+    bool FUN_004c7c90();
+    int FUN_004deeb0(const SBGeoPoint2D &point, SBGeoPoint2D &result);
     bool FUN_004c4570(SBFile &file);
     RHDialogueSet *GetDynResources(unsigned long resources);
 };
@@ -468,6 +448,11 @@ public:
 class RHCampaign
 {
 public:
+    std::vector<RHPCDescription *> *FUN_004553f0();
+    unsigned short GetNumberOfPeasantsToConvertToBlazons() const;
+    void FUN_00455b20(RHPCDescription *character);
+    void FUN_00455b80(RHPCDescription *character);
+    void FUN_004559f0();
     void SelectMissions(bool forced);
     bool Serialize(SBFile &file);
     bool CopyBackupTo(SBFile &file) const;
@@ -573,6 +558,7 @@ class RHGameSyncCalls
 {
 public:
     RHGamePortraitCalls *FUN_0050f140(void *);
+    int FUN_0050f160(unsigned short index);
     void FUN_00513520(RHUnk00549250 &);
     void FUN_005134c0(RHUnk00549250 &);
     void FUN_00513b00(void *);
@@ -633,6 +619,8 @@ class RHGameWidgetCalls
 {
 public:
     void FUN_0051df00(void *);
+    void FUN_0051dfa0(bool first, bool second);
+    void FUN_0051e020(void *widgets, unsigned value, bool empty);
 };
 
 class RHGameWindowCalls
@@ -644,24 +632,7 @@ public:
 extern unsigned char g_unk0x006a6d27;
 extern unsigned char g_unk0x006c12b6;
 
-class RHGameActionCalls
-{
-public:
-    void FUN_005110e0(unsigned);
-    void FUN_00510fc0(unsigned short);
-    void FUN_00511210(unsigned);
-    void FUN_005140b0();
-    void FUN_0050eff0();
-    void FUN_005f4900(char);
-    void FUN_005e5260();
-    void FUN_005104c0();
-    bool FUN_005104d0(SBGeoPoint2D point);
-    bool FUN_00510550(SBGeoPoint2D point);
-    void FUN_00619cc0();
-    bool FUN_004d2300(void *, unsigned);
-    void FUN_004da2f0();
-    void FUN_005a7b40(int);
-};
+#include "RHGameActionCalls.h"
 
 class RHElementActor;
 class RHSectorActorList

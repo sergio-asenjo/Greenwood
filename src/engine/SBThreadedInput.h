@@ -5,6 +5,7 @@
 
 class SBGeoBoundingBox2D;
 class SBGeoVector2D;
+class SBGeoPoint2D;
 struct SBThreadedInputEvent;
 struct SBInputMouseState;
 
@@ -27,11 +28,14 @@ enum SBButton
 class SBThreadedInput
 {
 public:
+    unsigned FUN_005104b0();
     static void AccumulateColor16(unsigned short &red, unsigned short &green, unsigned short &blue, unsigned short color, unsigned short weight);
     static void AccumulateColor15(unsigned short &red, unsigned short &green, unsigned short &blue, unsigned short color, unsigned short weight);
     static bool BlitDouble(unsigned long source, const SBGeoBoundingBox2D &sourceBox, unsigned long destination, const SBGeoBoundingBox2D &destinationBox, unsigned long flags);
     static void ChangeShadowIntoPulse(unsigned long surface, const SBGeoBoundingBox2D &box, unsigned short level);
     static unsigned long GetNumberOfInputsUTS();
+    static bool FUN_005f0d20(int index, SBInputMouseState &mouse, unsigned char *keyboard);
+    static void FUN_005f1a90();
     bool CleanUpInputs();
     static bool FUN_005f0c20(bool keyboard, SBThreadedInputEvent &event);
     static void PushButton(SBButton button);
@@ -50,6 +54,7 @@ public:
     bool Suspend();
     bool Destroy();
     static void SetInstantRefreshMode(bool enabled);
+    static bool ReachPosition(const SBGeoPoint2D &position);
     static SBGeoVector2D GetSize();
     static unsigned short GetHeight();
     void Emit();

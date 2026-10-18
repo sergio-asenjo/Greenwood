@@ -134,9 +134,8 @@ int FUN_00613c50(const unsigned short *left, const unsigned short *right, unsign
     return 0;
 }
 
-// Parked: branch condition and argument scheduling differ from the target.
-// STUB: GAME 0x00613e40
-bool FUN_00613e40(unsigned char flag, const void *first, unsigned int count, const void *last)
+// FUNCTION: GAME 0x00613e40
+bool FUN_00613e40(unsigned char flag, unsigned int count, const void *first, const void *last)
 {
     return count >= 2 && (const char *)first + 0x10 != last && flag == 0;
 }
@@ -658,7 +657,7 @@ void SBUIInputFieldEmitAssigned(SBUIInputFieldDrawUnk *draw, const unsigned shor
     const void *last, void *font, const std::wstring &text)
 {
     FUN_00613c50(left, right, count);
-    FUN_00613e40(flag, first, count, last);
+    FUN_00613e40(flag, count, first, last);
     draw->FUN_00613e70();
     draw->FUN_00613e80();
     FUN_006141e0(0.0f, text, font);

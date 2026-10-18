@@ -870,6 +870,81 @@ inline SBResourceTreeIterator SBResourceTreeStorage<S, C, I>::Begin()
     return SBResourceTreeIterator(Leftmost());
 }
 
+template<> SBResourceTreeIterator SBResourceTreeStorage<0x20, 0x1c, 0x54>::EraseRange(SBResourceTreeLinks *first, SBResourceTreeLinks *last);
+template<> SBResourceTreeIterator SBResourceTreeStorage<0x20, 0x1c, 0x64>::EraseRange(SBResourceTreeLinks *first, SBResourceTreeLinks *last);
+
+// Parked: explicit erase-result address and head/nil-delete registers differ.
+// STUB: GAME 0x005fd010
+template<> void SBResourceTreeStorage<0x34, 0x30, 0x44>::Dispose()
+{
+    SBResourceManager::Tree44 &tree = *(SBResourceManager::Tree44 *)this;
+    {
+        SBResourceManager::Tree44::Iterator result;
+        tree.FUN_00601210(result, (SBResourceManager::Node<unsigned long> *)Leftmost(), tree.m_head);
+    }
+    operator delete(m_head);
+    m_head = 0;
+    m_size = 0;
+    {
+        RHUnk00641782 lock;
+        if (--g_unk0x006c1858 == 0) {
+            operator delete(g_unk0x006c1854);
+            g_unk0x006c1854 = 0;
+        }
+    }
+}
+
+// Parked: erase return storage and the later lock retain separate frame slots.
+// STUB: GAME 0x005fd080
+template<> void SBResourceTreeStorage<0x20, 0x1c, 0x54>::Dispose()
+{
+    EraseRange(m_head->m_left, m_head);
+    operator delete(m_head);
+    m_head = 0;
+    m_size = 0;
+    RHUnk00641782 lock;
+    if (--g_unk0x006c1860 == 0) {
+        operator delete(g_unk0x006c185c);
+        g_unk0x006c185c = 0;
+    }
+}
+
+// Parked: erase return storage and the later lock retain separate frame slots.
+// STUB: GAME 0x005fd0f0
+template<> void SBResourceTreeStorage<0x20, 0x1c, 0x64>::Dispose()
+{
+    EraseRange(m_head->m_left, m_head);
+    operator delete(m_head);
+    m_head = 0;
+    m_size = 0;
+    RHUnk00641782 lock;
+    if (--g_unk0x006c1868 == 0) {
+        operator delete(g_unk0x006c1864);
+        g_unk0x006c1864 = 0;
+    }
+}
+
+// Parked: explicit erase-result address and head/nil-delete registers differ.
+// STUB: GAME 0x005fd160
+template<> void SBResourceTreeStorage<0x40, 0x3c, 0x74>::Dispose()
+{
+    SBResourceManager::Tree74 &tree = *(SBResourceManager::Tree74 *)this;
+    {
+        SBResourceUnkKeyIterator result;
+        tree.FUN_00601a40(result, (SBResourceUnkKeyNode *)Leftmost(), tree.m_head);
+    }
+    operator delete(m_head);
+    m_head = 0;
+    m_size = 0;
+    {
+        RHUnk00641782 lock;
+        if (--g_unk0x006c1870 == 0) {
+            operator delete(g_unk0x006c186c);
+            g_unk0x006c186c = 0;
+        }
+    }
+}
+
 // Parked: explicit erase output storage does not share the subsequent lock slot.
 // STUB: GAME 0x00601070
 template<> void SBResourceTreeStorage<0x40, 0x3c, 0x84>::Dispose()
@@ -2371,5 +2446,9 @@ void EmitSBResourceManager(SBResourceManager *resource)
     ((SBResourceTreeStorage<0x20, 0x1c, 0x54> *)resource)->EraseRange(0, 0);
     ((SBResourceTreeStorage<0x20, 0x1c, 0x64> *)resource)->EraseRange(0, 0);
     ((SBResourceTreeStorage<0x40, 0x3c, 0x84> *)resource)->Dispose();
+    ((SBResourceTreeStorage<0x34, 0x30, 0x44> *)resource)->Dispose();
+    ((SBResourceTreeStorage<0x40, 0x3c, 0x74> *)resource)->Dispose();
+    ((SBResourceTreeStorage<0x20, 0x1c, 0x54> *)resource)->Dispose();
+    ((SBResourceTreeStorage<0x20, 0x1c, 0x64> *)resource)->Dispose();
     ((SBResourceTreeStorage<0x18, 0x14, 0x34> *)resource)->Initialize();
 }

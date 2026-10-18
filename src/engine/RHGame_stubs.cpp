@@ -46,7 +46,6 @@ void RHGameSyncCalls::FUN_005134c0(RHUnk00549250 &) {}
 void RHGameSyncCalls::FUN_00513b00(void *) {}
 void RHGameSyncCalls::FUN_0050ed40() {}
 void RHGameSyncCalls::FUN_00514670() {}
-void RHGameSyncCalls::FUN_005146f0() {}
 void RHGameSyncCalls::FUN_0048a970(RHUnk005492a0 &) {}
 bool RHGameEngineCalls::FUN_004c7cd0() { return false; }
 bool RHGameEngineCalls::FUN_004c7cf0() { return false; }
@@ -55,14 +54,12 @@ bool RHGameActorView::FUN_004936e0()
 {
     return *(bool *)((char *)*(void **)((char *)this + 0x4ec) + 0xca9);
 }
-void RHGameWidgetCalls::FUN_0051df00(void *) {}
 int __stdcall RHGameWindowCalls::CloseWindow(void *) { return 0; }
 void RHGameActionCalls::FUN_005140b0() {}
 void RHGameActionCalls::FUN_005f4900(char) {}
 void RHGameActionCalls::FUN_005e5260() {}
 void RHGameActionCalls::FUN_005104c0() {}
 bool RHGameActionCalls::FUN_004d2300(void *, unsigned) { return false; }
-void RHGameActionCalls::FUN_004da2f0() {}
 void RHGameActionCalls::FUN_005a7b40(int) {}
 void RHGamePortraitCalls::FUN_005d6690() {}
 

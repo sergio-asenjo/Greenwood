@@ -292,17 +292,7 @@ public:
     int FUN_00608f10(void *value);
 };
 
-// SIZE 0x10
-class RHMobileUnk006100e0 : public SBGeoPoint2D
-{
-public:
-    RHMobileUnk006100e0(const SBGeoPoint2D &, const SBGeoPoint2D &);
-    ~RHMobileUnk006100e0();
-    void FUN_00610160(const SBGeoPoint2D &);
-    float FUN_006104f0(float);
-    float FUN_00610520(float);
-    SBGeoPoint2D m_8; // 0x08
-};
+#include "RHMobileUnk006100e0.h"
 
 class RHUnk0059ec90
 {

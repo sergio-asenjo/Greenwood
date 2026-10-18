@@ -2,6 +2,7 @@
 #include "SBUIRenderer.h"
 #include "SBUIRendererListbox.h"
 #include "SB.h"
+#include "RHUnk005cbb80.h"
 
 // SIZE 0x08
 class SBGeoPoint2D
@@ -28,6 +29,7 @@ public:
 class SBGeoBoundingBox2D
 {
 public:
+    SBGeoBoundingBox2D();
     SBGeoBoundingBox2D &operator=(const SBGeoBoundingBox2D &);
     bool Unk00608f30() const;
     void SetEnd(const SBGeoPoint2D &point) { m_flag = true; m_p1 = point; }
@@ -67,6 +69,8 @@ DECOMP_SIZE_ASSERT(SBUIUnk0060dae0, 0x50)
 DECOMP_SIZE_ASSERT(SBUIUnk0060dd00, 0x7c)
 
 extern float g_unk0x00677488;
+class RHMapResources;
+extern RHMapResources *g_unk0x006c1840;
 
 #define m_resource (*(SBResourceManager **)(m_bytes + 0x04))
 #define m_box (*(SBGeoBoundingBox2D *)(m_bytes + 0x08))
@@ -83,6 +87,28 @@ public:
     void Blit(unsigned long, SBGeoBoundingBox2D *, unsigned long,
         SBGeoBoundingBox2D *, unsigned long);
 };
+
+// Parked: the literal vptr store is hoisted before the string allocator-byte store.
+// STUB: GAME 0x0060d420
+RHPortraitRenderer0060d470::RHPortraitRenderer0060d470()
+{
+    char *bytes = (char *)this;
+    ((SBGeoBoundingBox2D *)(bytes + 8))->SBGeoBoundingBox2D::SBGeoBoundingBox2D();
+    char allocator;
+    bytes[0x28] = allocator;
+    *(unsigned *)(bytes + 0x2c) = 0;
+    *(unsigned *)(bytes + 0x30) = 0;
+    *(unsigned *)(bytes + 0x34) = 0;
+    m_vptr = 0x0067a654;
+    *(unsigned *)(bytes + 0x38) = -1;
+    *(unsigned *)(bytes + 0x3c) = 0;
+    RHMapResources *resources = g_unk0x006c1840;
+    *(unsigned *)(bytes + 0x1c) = 0;
+    *(unsigned *)(bytes + 0x40) = 0;
+    *(unsigned *)(bytes + 0x44) = 0;
+    *(unsigned *)(bytes + 0x48) = 0;
+    *(RHMapResources **)(bytes + 4) = resources;
+}
 
 // FUNCTION: GAME 0x0060d500
 unsigned int SBUIUnk0060d530::FUN_0060d500(unsigned int id)
@@ -287,6 +313,7 @@ void EmitSBUIRenderer(SBUIUnk0060da20 *bitmap, SBUIUnk0060dae0 *alpha,
     base->FUN_0060d6a0(*(SBGeoBoundingBox2D *)base);
     base->FUN_0060d780(*(SBGeoPoint2D *)base);
     bitmap->FUN_0060da20(0);
+    ((RHPortraitRenderer0060d470 *)bitmap)->RHPortraitRenderer0060d470::RHPortraitRenderer0060d470();
     alpha->FUN_0060dae0(0);
     alpha->FUN_0060db80(0);
     text->FUN_0060dc20(0);

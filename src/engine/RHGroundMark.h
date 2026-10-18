@@ -34,6 +34,7 @@ struct RHGroundInfo
 
     RHGroundInfo();
     RHGroundInfo(const RHGroundInfo &other);
+    ~RHGroundInfo();
 };
 
 struct RHGroundInfoNode
@@ -63,7 +64,9 @@ public:
     int m_index;              // [0x14]
 
     void GoTo(int i);
-    void Clear(void *out, RHGroundInfoNode *first, RHGroundInfoNode *last);
+    void *Clear(void *out, RHGroundInfoNode *first, RHGroundInfoNode *last);
+    RHGroundInfoIter Erase(RHGroundInfoIter position);
+    void Dispose();
 
     RHGroundInfoIter end() { return RHGroundInfoIter(m_head); }
 

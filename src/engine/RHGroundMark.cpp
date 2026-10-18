@@ -125,7 +125,61 @@ bool RHGroundMark::Serialize(SBFile &file)
     return true;
 }
 
+// FUNCTION: GAME 0x0051c720
+void RHGroundInfoList::Dispose()
+{
+    RHGroundInfoNode *last = m_head;
+    RHGroundInfoNode *current = last->m_next;
+    while (current != last)
+    {
+        RHGroundInfoNode *node = current;
+        current = current->m_next;
+        node->m_prev->m_next = node->m_next;
+        node->m_next->m_prev = node->m_prev;
+        node->m_data.~RHGroundInfo();
+        ::operator delete(node);
+        --m_count;
+    }
+    ::operator delete(m_head);
+    m_head = 0;
+    m_count = 0;
+}
+
+// Parked: cached successor CSE changes the unlink loads and register scheduling.
+// STUB: GAME 0x0051c780
+RHGroundInfoIter RHGroundInfoList::Erase(RHGroundInfoIter position)
+{
+    RHGroundInfoNode *node = (RHGroundInfoNode *)position.m_p;
+    RHGroundInfoNode *next = node->m_next;
+    node->m_prev->m_next = node->m_next;
+    node->m_next->m_prev = node->m_prev;
+    node->m_data.~RHGroundInfo();
+    ::operator delete(node);
+    --m_count;
+    return RHGroundInfoIter(next);
+}
+
+// FUNCTION: GAME 0x0051c7c0
+void *RHGroundInfoList::Clear(void *out, RHGroundInfoNode *first, RHGroundInfoNode *last)
+{
+    while (first != last)
+    {
+        RHGroundInfoNode *node = first;
+        first = first->m_next;
+        node->m_prev->m_next = node->m_next;
+        node->m_next->m_prev = node->m_prev;
+        node->m_data.~RHGroundInfo();
+        ::operator delete(node);
+        --m_count;
+    }
+    *(RHGroundInfoNode **)out = first;
+    return out;
+}
+
 void RHGroundMark::Emit(SBFile &file)
 {
     Serialize(file);
+    m_list.Dispose();
+    m_list.Erase(m_list.end());
+    m_list.Clear(0, 0, 0);
 }

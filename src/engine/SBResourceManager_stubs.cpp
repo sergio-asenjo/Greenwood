@@ -1,12 +1,6 @@
 #include "SBNullstr.h"
 #include "SBResourceManager.h"
 
-void SBResourceSurfaceArray::Assign(const SBResourceSurfaceArray &other, unsigned)
-{
-    m_values = other.m_values;
-    m_changed = true;
-}
-
 void FUN_0064158f(void *) {}
 
 template class SBResourceTreeStorage<0x34, 0x30, 0x44>;

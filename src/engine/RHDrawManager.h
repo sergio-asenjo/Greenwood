@@ -66,6 +66,7 @@ class SBGeoBoundingBox2D
 public:
     SBGeoBoundingBox2D();
     SBGeoBoundingBox2D &FUN_00607da0(const SBGeoBoundingBox2D &other);
+    bool FUN_00608400(const SBGeoPoint2D &point) const;
     bool Unk00608f30() const;
     int FUN_00609050(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
     void SetMin(const SBGeoPoint2D &point)

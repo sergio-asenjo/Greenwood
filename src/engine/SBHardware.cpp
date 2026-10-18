@@ -1,5 +1,19 @@
 #include <windows.h>
 #include "SBHardware.h"
+#include <string>
+
+class __declspec(novtable) RHUnk0060f8a0
+{
+public:
+    virtual ~RHUnk0060f8a0();
+    std::string m_04;
+};
+
+// FUNCTION: GAME 0x0060f8a0
+RHUnk0060f8a0::~RHUnk0060f8a0()
+{
+    *(unsigned *)this = 0x67a874;
+}
 
 // FUNCTION: GAME 0x0060f8f0
 unsigned long SBHardware::GetAmountOfPhysicalMemory()

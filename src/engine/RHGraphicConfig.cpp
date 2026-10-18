@@ -29,6 +29,18 @@
 #include "SBNullstr.h"
 #include "RHGraphicConfig.h"
 
+// FUNCTION: GAME 0x0051b9a0
+RHGraphicConfig::RHGraphicConfig() : m_0(1), m_1(1), m_2(0), m_3(1), m_point(800.0f, 600.0f)
+{
+}
+
+// FUNCTION: GAME 0x0051b9d0
+RHGraphicConfig::RHGraphicConfig(const RHGraphicConfig &other) :
+    m_0(other.m_0), m_1(other.m_1), m_2(other.m_2), m_3(other.m_3),
+    m_point((const SBGeoPoint2D &)other.m_point)
+{
+}
+
 // FUNCTION: GAME 0x0051ba00
 bool RHGraphicConfig::Serialize(SBFile &file)
 {
@@ -88,4 +100,6 @@ bool RHGraphicConfig::Serialize(SBFile &file)
 void RHGraphicConfig::Emit(SBFile &file)
 {
     Serialize(file);
+    RHGraphicConfig defaults;
+    RHGraphicConfig copy(defaults);
 }

@@ -391,6 +391,94 @@ bool SBDrawUnk005e8450::FUN_005e7880(void *arg1, void *arg2, void *arg3,
     return true;
 }
 
+template<int RedShift, int GreenShift, int GreenMask, int SourceGreenMask>
+static __forceinline unsigned short SBDrawBlendPixel(unsigned short source, unsigned short destination, unsigned short weight)
+{
+    unsigned short sourceRed = (source >> RedShift) & 0xf8;
+    unsigned short sourceGreen = (source >> GreenShift) & SourceGreenMask;
+    unsigned short sourceBlue = (source & 0x1f) << 3;
+    int red = sourceRed * weight >> 8;
+    int green = sourceGreen * weight >> 8;
+    int blue = sourceBlue * weight >> 8;
+    unsigned short inverse = 256 - weight;
+    unsigned short destinationRed = (destination >> RedShift) & 0xf8;
+    unsigned short destinationGreen = (destination >> GreenShift) & GreenMask;
+    unsigned short destinationBlue = (destination & 0x1f) << 3;
+    unsigned char finalRed = (destinationRed * inverse >> 8) + red;
+    unsigned char finalGreen = (destinationGreen * inverse >> 8) + green;
+    unsigned short finalBlue = (destinationBlue * inverse >> 8) + blue;
+    return (((finalRed & 0xf8) << 5) + (finalGreen & GreenMask)) * (1 << GreenShift) + (finalBlue >> 3);
+}
+
+// Parked: component live ranges add a frame slot and reorder source/alpha/destination reads.
+// STUB: GAME 0x005e78c0
+bool SBDrawUnk005e8450::FUN_005e78c0(unsigned short *source, unsigned short *destination, unsigned short *alpha,
+    unsigned width, unsigned height, unsigned sourceStride, unsigned destinationStride, unsigned alphaStride)
+{
+    for (unsigned rows = height; rows != 0; --rows)
+    {
+        for (unsigned columns = width; columns != 0; --columns)
+        {
+            *destination = SBDrawBlendPixel<7, 2, 0xf8, 0xf8>(*source, *destination, (*alpha >> 2) & 0xf8);
+            ++destination;
+            ++alpha;
+            ++source;
+        }
+        source = (unsigned short *)((char *)source + sourceStride);
+        alpha = (unsigned short *)((char *)alpha + alphaStride);
+        destination = (unsigned short *)((char *)destination + destinationStride);
+    }
+    return true;
+}
+
+// Parked: component live ranges and loop-parameter reload scheduling differ.
+// STUB: GAME 0x005e7a30
+bool SBDrawUnk005e8450::FUN_005e7a30(unsigned short *source, unsigned short *destination, unsigned short *alpha,
+    unsigned width, unsigned height, unsigned sourceStride, unsigned destinationStride, unsigned alphaStride, unsigned short key)
+{
+    for (unsigned rows = height; rows != 0; --rows)
+    {
+        for (unsigned columns = width; columns != 0; --columns)
+        {
+            if (*source != key)
+            {
+                unsigned short weight = (*alpha >> 1) & 0x1f0;
+                if (weight > 255)
+                    weight = 255;
+                *destination = SBDrawBlendPixel<7, 2, 0xf8, 0xf8>(*source, *destination, weight);
+            }
+            ++destination;
+            ++alpha;
+            ++source;
+        }
+        source = (unsigned short *)((char *)source + sourceStride);
+        alpha = (unsigned short *)((char *)alpha + alphaStride);
+        destination = (unsigned short *)((char *)destination + destinationStride);
+    }
+    return true;
+}
+
+// Parked: component live ranges and loop-parameter reload scheduling differ.
+// STUB: GAME 0x005e7bc0
+bool SBDrawUnk005e8450::FUN_005e7bc0(unsigned short *source, unsigned short *destination, unsigned short *alpha,
+    unsigned width, unsigned height, unsigned sourceStride, unsigned destinationStride, unsigned alphaStride)
+{
+    for (unsigned rows = height; rows != 0; --rows)
+    {
+        for (unsigned columns = width; columns != 0; --columns)
+        {
+            *destination = SBDrawBlendPixel<7, 2, 0xf8, 0xf8>(*source, *destination, (*(unsigned char *)alpha & 0x1f) << 3);
+            ++destination;
+            ++alpha;
+            ++source;
+        }
+        source = (unsigned short *)((char *)source + sourceStride);
+        alpha = (unsigned short *)((char *)alpha + alphaStride);
+        destination = (unsigned short *)((char *)destination + destinationStride);
+    }
+    return true;
+}
+
 // FUNCTION: GAME 0x005e7d30
 bool SBDrawUnk005e8450::FUN_005e7d30(void *arg1, void *arg2, void *arg3,
     int arg4, int arg5, int arg6, int arg7, int arg8, int arg9)
@@ -415,11 +503,74 @@ bool SBDrawUnk005e8450::FUN_005e7da0(void *arg1, void *arg2, void *arg3,
     return true;
 }
 
+// Parked: component live ranges and loop-parameter reload scheduling differ.
+// STUB: GAME 0x005e7de0
+bool SBDrawUnk005e8450::FUN_005e7de0(unsigned short *source, unsigned short *destination, unsigned short *alpha,
+    unsigned width, unsigned height, unsigned sourceStride, unsigned destinationStride, unsigned alphaStride)
+{
+    for (unsigned rows = height; rows != 0; --rows)
+    {
+        for (unsigned columns = width; columns != 0; --columns)
+        {
+            *destination = SBDrawBlendPixel<8, 3, 0xfc, 0xfc>(*source, *destination, ((unsigned char *)alpha)[1] & 0xf8);
+            ++destination;
+            ++alpha;
+            ++source;
+        }
+        source = (unsigned short *)((char *)source + sourceStride);
+        alpha = (unsigned short *)((char *)alpha + alphaStride);
+        destination = (unsigned short *)((char *)destination + destinationStride);
+    }
+    return true;
+}
+
 // FUNCTION: GAME 0x005e7f60
 bool SBDrawUnk005e8450::FUN_005e7f60(void *arg1, void *arg2, void *arg3,
     int arg4, int arg5, int arg6, int arg7, int arg8, int arg9)
 {
     FUN_00622800(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+    return true;
+}
+
+// Parked: component live ranges add a frame slot and reorder source/alpha/destination reads.
+// STUB: GAME 0x005e7fa0
+bool SBDrawUnk005e8450::FUN_005e7fa0(unsigned short *source, unsigned short *destination, unsigned short *alpha,
+    unsigned width, unsigned height, unsigned sourceStride, unsigned destinationStride, unsigned alphaStride)
+{
+    for (unsigned rows = height; rows != 0; --rows)
+    {
+        for (unsigned columns = width; columns != 0; --columns)
+        {
+            *destination = SBDrawBlendPixel<8, 3, 0xfc, 0xf8>(*source, *destination, (*alpha >> 3) & 0xfc);
+            ++destination;
+            ++alpha;
+            ++source;
+        }
+        source = (unsigned short *)((char *)source + sourceStride);
+        alpha = (unsigned short *)((char *)alpha + alphaStride);
+        destination = (unsigned short *)((char *)destination + destinationStride);
+    }
+    return true;
+}
+
+// Parked: component live ranges and loop-parameter reload scheduling differ.
+// STUB: GAME 0x005e82a0
+bool SBDrawUnk005e8450::FUN_005e82a0(unsigned short *source, unsigned short *destination, unsigned short *alpha,
+    unsigned width, unsigned height, unsigned sourceStride, unsigned destinationStride, unsigned alphaStride)
+{
+    for (unsigned rows = height; rows != 0; --rows)
+    {
+        for (unsigned columns = width; columns != 0; --columns)
+        {
+            *destination = SBDrawBlendPixel<8, 3, 0xfc, 0xfc>(*source, *destination, (*(unsigned char *)alpha & 0x1f) << 3);
+            ++destination;
+            ++alpha;
+            ++source;
+        }
+        source = (unsigned short *)((char *)source + sourceStride);
+        alpha = (unsigned short *)((char *)alpha + alphaStride);
+        destination = (unsigned short *)((char *)destination + destinationStride);
+    }
     return true;
 }
 
@@ -836,6 +987,227 @@ bool RHUnk005ef320::FUN_005ef380(int value)
 // GLOBAL: GAME 0x006c11dc
 SBDrawTreeNode *g_unk0x006c11dc;
 
+struct SBDrawDecIterator
+{
+    SBDrawDecNode *m_node;
+    void FUN_005f00e0();
+};
+
+// FUNCTION: GAME 0x005ef440
+SBDrawUnk005ef440Result SBDrawUnk005efc10::FUN_005ef440(const SBDrawUnk005e4f70Pair &value)
+{
+    SBDrawDecNode *parent = (SBDrawDecNode *)m_head;
+    SBDrawDecNode *node = InsertRoot();
+    bool left = true;
+    {
+        std::_Lockit lock;
+        while (node != (SBDrawDecNode *)g_unk0x006c11dc) {
+            parent = node;
+            left = value.first < node->m_0c;
+            node = left ? node->m_00 : node->m_08;
+        }
+    }
+    if (*(bool *)&m_08) {
+        SBDrawUnk005ef440Result result(FUN_005efcc0(node, parent, (const SBDrawSurfaceEntry &)value), true);
+        return result;
+    }
+    SBDrawDecIterator previous;
+    previous.m_node = parent;
+    if (left) {
+        if (previous.m_node == (SBDrawDecNode *)Leftmost()) {
+            SBDrawUnk005ef440Result result(FUN_005efcc0(node, parent, (const SBDrawSurfaceEntry &)value), true);
+            return result;
+        }
+        previous.FUN_005f00e0();
+    }
+    if (previous.m_node->m_0c < value.first) {
+        SBDrawUnk005ef440Result result(FUN_005efcc0(node, parent, (const SBDrawSurfaceEntry &)value), true);
+        return result;
+    }
+    SBDrawUnk005ef440Result result(SBDrawUnk005efc10Iterator((SBDrawUnk005f0090Node *)previous.m_node), false);
+    return result;
+}
+
+static inline SBDrawDecNode *SBDrawEraseMinimum(SBDrawDecNode *node)
+{
+    std::_Lockit lock;
+    while (node->m_00 != (SBDrawDecNode *)g_unk0x006c11dc)
+        node = node->m_00;
+    return node;
+}
+
+static inline SBDrawDecNode *SBDrawEraseMaximum(SBDrawDecNode *node)
+{
+    std::_Lockit lock;
+    while (node->m_08 != (SBDrawDecNode *)g_unk0x006c11dc)
+        node = node->m_08;
+    return node;
+}
+
+// FUNCTION: GAME 0x005ef570
+SBDrawUnk005efc10Iterator SBDrawUnk005efc10::FUN_005ef570(SBDrawUnk005efc10Iterator position)
+{
+    Node *x;
+    Node *y = (Node *)(position++).m_node;
+    Node *z = y;
+    std::_Lockit lock;
+    if (Left(y) == (Node *)g_unk0x006c11dc)
+        x = Right(y);
+    else if (Right(y) == (Node *)g_unk0x006c11dc)
+        x = Left(y);
+    else
+    {
+        y = SBDrawEraseMinimum(Right(y));
+        x = Right(y);
+    }
+    {
+        if (y != z)
+        {
+            Parent(Left(z)) = y;
+            Left(y) = Left(z);
+            if (y == Right(z))
+                Parent(x) = y;
+            else
+            {
+                Parent(x) = Parent(y);
+                Left(Parent(y)) = x;
+                Right(y) = Right(z);
+                Parent(Right(z)) = y;
+            }
+            if (InsertRoot() == z)
+                InsertRoot() = y;
+            else if (Left(Parent(z)) == z)
+                Left(Parent(z)) = y;
+            else
+                Right(Parent(z)) = y;
+            Parent(y) = Parent(z);
+            std::swap(Color(y), Color(z));
+            y = z;
+        }
+        else
+        {
+            Parent(x) = Parent(y);
+            if (InsertRoot() == z)
+                InsertRoot() = x;
+            else if (Left(Parent(z)) == z)
+                Left(Parent(z)) = x;
+            else
+                Right(Parent(z)) = x;
+            if (EraseLeftmost() == z)
+            {
+                if (Right(z) == (Node *)g_unk0x006c11dc)
+                    EraseLeftmost() = Parent(z);
+                else
+                    EraseLeftmost() = SBDrawEraseMinimum(x);
+            }
+            if (EraseRightmost() == z)
+            {
+                if (Left(z) == (Node *)g_unk0x006c11dc)
+                    EraseRightmost() = Parent(z);
+                else
+                    EraseRightmost() = SBDrawEraseMaximum(x);
+            }
+        }
+        if (Color(y) == 1)
+        {
+            while (x != InsertRoot() && Color(x) == 1)
+            {
+                if (x == Left(Parent(x)))
+                {
+                    Node *w = Right(Parent(x));
+                    if (Color(w) == 0)
+                    {
+                        Color(w) = 1;
+                        Color(Parent(x)) = 0;
+                        Lrotate(Parent(x));
+                        w = Right(Parent(x));
+                    }
+                    if (Color(Left(w)) == 1 && Color(Right(w)) == 1)
+                    {
+                        Color(w) = 0;
+                        x = Parent(x);
+                    }
+                    else
+                    {
+                        if (Color(Right(w)) == 1)
+                        {
+                            Color(Left(w)) = 1;
+                            Color(w) = 0;
+                            Rrotate(w);
+                            w = Right(Parent(x));
+                        }
+                        Color(w) = Color(Parent(x));
+                        Color(Parent(x)) = 1;
+                        Color(Right(w)) = 1;
+                        Lrotate(Parent(x));
+                        break;
+                    }
+                }
+                else
+                {
+                    Node *w = Left(Parent(x));
+                    if (Color(w) == 0)
+                    {
+                        Color(w) = 1;
+                        Color(Parent(x)) = 0;
+                        Rrotate(Parent(x));
+                        w = Left(Parent(x));
+                    }
+                    if (Color(Right(w)) == 1 && Color(Left(w)) == 1)
+                    {
+                        Color(w) = 0;
+                        x = Parent(x);
+                    }
+                    else
+                    {
+                        if (Color(Left(w)) == 1)
+                        {
+                            Color(Right(w)) = 1;
+                            Color(w) = 0;
+                            Lrotate(w);
+                            w = Left(Parent(x));
+                        }
+                        Color(w) = Color(Parent(x));
+                        Color(Parent(x)) = 1;
+                        Color(Left(w)) = 1;
+                        Rrotate(Parent(x));
+                        break;
+                    }
+                }
+            }
+            Color(x) = 1;
+        }
+    }
+    operator delete(y);
+    --m_size;
+    return position;
+}
+
+// FUNCTION: GAME 0x005efa90
+SBDrawUnk005efc10Iterator SBDrawUnk005efc10::FUN_005efa90(SBDrawUnk005efc10Iterator first, SBDrawUnk005efc10Iterator last)
+{
+    if (m_size != 0 && first.m_node == *(SBDrawUnk005f0090Node **)m_head && last.m_node == m_head) {
+        std::_Lockit lock;
+        SBDrawUnk005f0090Node *node = Root();
+        {
+            std::_Lockit inner;
+            for (SBDrawUnk005f0090Node *next = node; next != (SBDrawUnk005f0090Node *)g_unk0x006c11dc; node = next) {
+                FUN_005efc30(*(SBDrawUnk005f0090Node **)((char *)next + 8));
+                next = *(SBDrawUnk005f0090Node **)next;
+                operator delete(node);
+            }
+        }
+        Root() = (SBDrawUnk005f0090Node *)g_unk0x006c11dc;
+        m_size = 0;
+        Leftmost() = m_head;
+        Rightmost() = m_head;
+        return Begin();
+    }
+    while (first != last)
+        FUN_005ef570(first++);
+    return first;
+}
+
 // FUNCTION: GAME 0x005efbc0
 SBDrawUnk005efc10Iterator SBDrawUnk005efc10::FUN_005efbc0(const unsigned long &key)
 {
@@ -849,10 +1221,166 @@ SBDrawUnk005efc10Iterator SBDrawUnk005efc10::FUN_005efc10(const unsigned long &k
     return SBDrawUnk005efc10Iterator(((SBDrawUnk005f0090 *)this)->FUN_005f0090(key));
 }
 
+void FUN_005f0320(SBDrawSurfaceEntry *, const SBDrawSurfaceEntry &);
+
+// FUNCTION: GAME 0x005efc30
+void SBDrawUnk005efc10::FUN_005efc30(SBDrawUnk005f0090Node *node)
+{
+    std::_Lockit lock;
+    for (SBDrawUnk005f0090Node *next = node; next != (SBDrawUnk005f0090Node *)g_unk0x006c11dc; node = next) {
+        FUN_005efc30(*(SBDrawUnk005f0090Node **)((char *)next + 8));
+        next = *(SBDrawUnk005f0090Node **)next;
+        operator delete(node);
+    }
+}
+
+inline void SBDrawUnk005efc10::Lrotate(SBDrawDecNode *x)
+{
+    std::_Lockit lock;
+    SBDrawDecNode *y = x->m_08;
+    x->m_08 = y->m_00;
+    if (y->m_00 != (SBDrawDecNode *)g_unk0x006c11dc)
+        y->m_00->m_04 = x;
+    y->m_04 = x->m_04;
+    if (x == InsertRoot())
+        InsertRoot() = y;
+    else if (x == x->m_04->m_00)
+        x->m_04->m_00 = y;
+    else
+        x->m_04->m_08 = y;
+    y->m_00 = x;
+    x->m_04 = y;
+}
+
+inline void SBDrawUnk005efc10::Rrotate(SBDrawDecNode *x)
+{
+    std::_Lockit lock;
+    SBDrawDecNode *y = x->m_00;
+    x->m_00 = y->m_08;
+    if (y->m_08 != (SBDrawDecNode *)g_unk0x006c11dc)
+        y->m_08->m_04 = x;
+    y->m_04 = x->m_04;
+    if (x == InsertRoot())
+        InsertRoot() = y;
+    else if (x == x->m_04->m_08)
+        x->m_04->m_08 = y;
+    else
+        x->m_04->m_00 = y;
+    y->m_08 = x;
+    x->m_04 = y;
+}
+
+// FUNCTION: GAME 0x005efcc0
+SBDrawUnk005efc10Iterator SBDrawUnk005efc10::FUN_005efcc0(SBDrawDecNode *x, SBDrawDecNode *y, const SBDrawSurfaceEntry &value)
+{
+    std::_Lockit lock;
+    SBDrawDecNode *z = (SBDrawDecNode *)operator new(sizeof(SBDrawDecNode));
+    z->m_04 = y;
+    z->m_28 = 0;
+    z->m_00 = (SBDrawDecNode *)g_unk0x006c11dc;
+    z->m_08 = (SBDrawDecNode *)g_unk0x006c11dc;
+    FUN_005f0320((SBDrawSurfaceEntry *)&z->m_0c, value);
+    ++m_size;
+    if (y == (SBDrawDecNode *)m_head || x != (SBDrawDecNode *)g_unk0x006c11dc || *(const unsigned long *)&value < y->m_0c)
+    {
+        y->m_00 = z;
+        if (y == (SBDrawDecNode *)m_head)
+        {
+            InsertRoot() = z;
+            ((SBDrawDecNode *)m_head)->m_08 = z;
+        }
+        else if (y == ((SBDrawDecNode *)m_head)->m_00)
+            ((SBDrawDecNode *)m_head)->m_00 = z;
+    }
+    else
+    {
+        y->m_08 = z;
+        if (y == ((SBDrawDecNode *)m_head)->m_08)
+            ((SBDrawDecNode *)m_head)->m_08 = z;
+    }
+    for (x = z; x != InsertRoot() && x->m_04->m_28 == 0; )
+        if (x->m_04 == SBDrawDecNode::Left(x->m_04->m_04))
+        {
+            y = x->m_04->m_04->m_08;
+            if (y->m_28 == 0)
+            {
+                x->m_04->m_28 = 1;
+                y->m_28 = 1;
+                x->m_04->m_04->m_28 = 0;
+                x = x->m_04->m_04;
+            }
+            else
+            {
+                if (x == x->m_04->m_08)
+                {
+                    x = x->m_04;
+                    Lrotate(x);
+                }
+                x->m_04->m_28 = 1;
+                x->m_04->m_04->m_28 = 0;
+                Rrotate(x->m_04->m_04);
+            }
+        }
+        else
+        {
+            y = SBDrawDecNode::Left(x->m_04->m_04);
+            if (y->m_28 == 0)
+            {
+                x->m_04->m_28 = 1;
+                y->m_28 = 1;
+                x->m_04->m_04->m_28 = 0;
+                x = x->m_04->m_04;
+            }
+            else
+            {
+                if (x == x->m_04->m_00)
+                {
+                    x = x->m_04;
+                    Rrotate(x);
+                }
+                x->m_04->m_28 = 1;
+                x->m_04->m_04->m_28 = 0;
+                Lrotate(x->m_04->m_04);
+            }
+        }
+    InsertRoot()->m_28 = 1;
+    return SBDrawUnk005efc10Iterator((SBDrawUnk005f0090Node *)z);
+}
+
+void EmitSBDrawInsert(SBDrawUnk005efc10 &tree, const SBDrawSurfaceEntry &value)
+{
+    tree.FUN_005efcc0(0, 0, value);
+}
+
 // FUNCTION: GAME 0x005f0070
 SBDrawUnk005efc10Iterator SBDrawUnk005efc10::FUN_005f0070(const unsigned long &key)
 {
     return SBDrawUnk005efc10Iterator(((SBDrawUnk005f0090 *)this)->FUN_005f01a0(key));
+}
+
+static inline SBDrawDecNode *SBDrawMinimum(SBDrawDecNode *node)
+{
+    std::_Lockit lock;
+    while (node->m_00 != (SBDrawDecNode *)g_unk0x006c11dc)
+        node = node->m_00;
+    return node;
+}
+
+// FUNCTION: GAME 0x005effc0
+void SBDrawUnk005efc10Iterator::FUN_005effc0()
+{
+    std::_Lockit lock;
+#define drawNode (*(SBDrawDecNode **)&m_node)
+    if (drawNode->m_08 != (SBDrawDecNode *)g_unk0x006c11dc)
+        drawNode = SBDrawMinimum(drawNode->m_08);
+    else {
+        SBDrawDecNode *parent;
+        while (drawNode == (parent = drawNode->m_04)->m_08)
+            drawNode = parent;
+        if (drawNode->m_08 != parent)
+            drawNode = parent;
+    }
+#undef drawNode
 }
 
 // FUNCTION: GAME 0x005f0090
@@ -871,6 +1399,39 @@ SBDrawUnk005f0090Node *SBDrawUnk005f0090::FUN_005f0090(const unsigned long &key)
     return (SBDrawUnk005f0090Node *)result;
 }
 
+static inline SBDrawDecNode *&SBDrawDecLeft(SBDrawDecNode *value) { return value->m_00; }
+
+static inline SBDrawDecNode *SBDrawDecMax(SBDrawDecNode *node)
+{
+    std::_Lockit lock;
+    while (node->m_08 != (SBDrawDecNode *)g_unk0x006c11dc)
+        node = node->m_08;
+    return node;
+}
+
+// FUNCTION: GAME 0x005f00e0
+void SBDrawDecIterator::FUN_005f00e0()
+{
+    std::_Lockit lock;
+    if (m_node->m_28 == 0 && m_node->m_04->m_04 == m_node)
+        m_node = m_node->m_08;
+    else if (SBDrawDecLeft(m_node) != (SBDrawDecNode *)g_unk0x006c11dc)
+        m_node = SBDrawDecMax(SBDrawDecLeft(m_node));
+    else
+    {
+        SBDrawDecNode *parent;
+        while (m_node == (parent = m_node->m_04)->m_00)
+            m_node = parent;
+        m_node = parent;
+    }
+}
+
+void EmitSBDrawDec()
+{
+    SBDrawDecIterator iterator;
+    iterator.FUN_005f00e0();
+}
+
 // FUNCTION: GAME 0x005f01a0
 SBDrawUnk005f0090Node *SBDrawUnk005f0090::FUN_005f01a0(const unsigned long &key)
 {
@@ -887,29 +1448,8 @@ SBDrawUnk005f0090Node *SBDrawUnk005f0090::FUN_005f01a0(const unsigned long &key)
     return (SBDrawUnk005f0090Node *)result;
 }
 
-struct SBDrawTreeIterator
-{
-    SBDrawTreeNode *m_node;
-    void FUN_005effc0();
-    SBDrawTreeIterator &operator++()
-    {
-        FUN_005effc0();
-        return *this;
-    }
-    bool operator!=(const SBDrawTreeIterator &other) const { return m_node != other.m_node; }
-};
-
-struct SBDrawTreeIteratorB
-{
-    SBDrawTreeNode *m_node;
-    void FUN_005effc0();
-    SBDrawTreeIteratorB &operator++()
-    {
-        FUN_005effc0();
-        return *this;
-    }
-    bool operator!=(const SBDrawTreeIteratorB &other) const { return m_node != other.m_node; }
-};
+typedef SBDrawUnk005efc10Iterator SBDrawTreeIterator;
+typedef SBDrawUnk005efc10Iterator SBDrawTreeIteratorB;
 
 // FUNCTION: GAME 0x005f02f0
 void FUN_005f02f0(SBDrawTreeIterator first, SBDrawTreeIterator last, int &count)
@@ -968,6 +1508,8 @@ void EmitSBDrawManager(SBDrawUnk005e8450 *draw, void *buffer)
     draw->FUN_005ec410(buffer, buffer, 0, 0, 0, 0, 0, 0, 0, 0);
     draw->FUN_005ec500(buffer, buffer, 0, 0, 0, 0, 0, 0, 0, 0);
     ((SBDrawUnk005efc10 *)buffer)->FUN_005efbc0(0);
+    ((SBDrawUnk005efc10 *)buffer)->FUN_005efa90(
+        ((SBDrawUnk005efc10 *)buffer)->Begin(), SBDrawUnk005efc10Iterator(0));
     ((SBDrawUnk005efc10 *)buffer)->FUN_005f0070(0);
     int count = 0;
     FUN_005f02f0(*(SBDrawTreeIterator *)buffer, *(SBDrawTreeIterator *)buffer, count);
@@ -1583,3 +2125,38 @@ void FUN_00624934(void *source, void *destination, int destinationRow, int width
 #undef SBDRAW_KEYING_BODY
 #undef SBDRAW_STORE_PIXEL
 #undef SBDRAW_RECTANGLE_SETUP
+
+class RHUnk00624a60List
+{
+public:
+    RHUnk00624a60List *m_next;
+    RHUnk00624a60List *m_prev;
+    char m_08[0xb4];
+};
+
+class RHUnk00624a60
+{
+public:
+    RHUnk00624a60();
+    unsigned m_vptr;
+    char m_4;
+    char m_5[3];
+    RHUnk00624a60List *m_8;
+    int m_c;
+    char m_10[4];
+    bool m_14;
+};
+
+// FUNCTION: GAME 0x00624a60
+RHUnk00624a60::RHUnk00624a60()
+{
+    char value;
+    m_4 = value;
+    RHUnk00624a60List *list = new RHUnk00624a60List;
+    list->m_next = list;
+    list->m_prev = list;
+    m_8 = list;
+    m_c = 0;
+    m_14 = 1;
+    m_vptr = 0x67ae70;
+}

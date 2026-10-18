@@ -46,7 +46,6 @@ void RHShadowPolygon::FUN_0059ce90(RHUnk005977e0 *) {}
 void RHShadowPolygon::FUN_0059d7f0(RHUnk005977e0 *) {}
 RHShadowViewport::RHShadowViewport() {}
 RHShadowBox::RHShadowBox() {}
-RHMobileUnk006100e0::RHMobileUnk006100e0(const SBGeoPoint2D &, const SBGeoPoint2D &) {}
 RHShadowPointNodeList::~RHShadowPointNodeList() {}
 RHShadowPointNode *RHShadowPointNodeList::FUN_004243e0(RHShadowPointNode *next, RHShadowPointNode *) { return next; }
 void FUN_0059fb00(RHUnk00597a70 **, RHUnk00597a70 *const &) {}

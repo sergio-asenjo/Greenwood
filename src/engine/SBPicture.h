@@ -27,6 +27,8 @@ public:
     unsigned short m_20;
     unsigned short m_22;
     unsigned short m_24;
+    char m_26[2];
+    float m_28[2];
 
     void *FUN_00611bd0(int);
     void FUN_00611c50();
