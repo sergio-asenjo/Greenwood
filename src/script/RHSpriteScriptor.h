@@ -70,7 +70,9 @@ struct RHUnkSpriteScriptInfo
 // SIZE 0x34
 struct RHUnkSpriteCacheNode
 {
-    undefined m_0[0x0c]; // 0x00
+    RHUnkSpriteCacheNode *m_left;
+    RHUnkSpriteCacheNode *m_parent;
+    RHUnkSpriteCacheNode *m_right;
     std::string m_key; // 0x0c
     RHUnkSpriteScriptInfo m_value; // +0x1c
 };

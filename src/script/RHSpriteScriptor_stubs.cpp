@@ -1,6 +1,11 @@
 #include "SBNullstr.h"
 #include "RHSpriteScriptor.h"
 
+void RHSpriteConstructValue(RHUnkSpriteCacheValue *storage, const RHUnkSpriteCacheValue &value)
+{
+    std::_Construct(storage, value);
+}
+
 // GLOBAL: GAME 0x006c0620
 std::string g_unk0x006c0620;
 // GLOBAL: GAME 0x006c0630
@@ -21,5 +26,4 @@ RHUnkSpriteRow::RHUnkSpriteRow() : m_resources(0), m_frames(0), m_rates(0, (unsi
     m_10 = 0;
 }
 SBGeoVector2D::SBGeoVector2D(const SBGeoVector2D &other) : SBGeoPoint2D(other) {}
-RHUnkSpriteCacheNode *RHUnkSpriteCache::FUN_005c15a0(const std::string &) { return m_head; }
 std::pair<RHUnkSpriteCacheIterator, bool> RHUnkSpriteCache::FUN_005c09c0(const RHUnkSpriteCacheValue &) { return std::pair<RHUnkSpriteCacheIterator, bool>(end(), false); }

@@ -246,11 +246,7 @@ class RHSequenceElement;
 // evidence (docs/05-naming.md). Modelled as a provisional class method so the
 // caller emits `mov ecx,element; push global; call`. Defined once in
 // RHScript_stubs.cpp.
-class RHUnk00585500
-{
-public:
-    void Unk(void *sequence);
-};
+#include "RHSequenceAppendCalls.h"
 
 // Callee 0x00452030 — __thiscall, one stack arg, plain `ret 4`: a 6-byte index
 // getter reading the dword at [this + index*4 + 0x94]
@@ -640,96 +636,7 @@ public:
     char m_data[0x3c];
 };
 
-struct RHScriptNode
-{
-    RHScriptNode *next;
-    RHScriptNode *prev;
-    void *data;
-};
-
-struct RHScriptIter
-{
-    RHScriptNode *node;
-    RHScriptIter(RHScriptNode *value) : node(value) {}
-};
-
-struct RHUnk005c9010Iterator;
-void FUN_005c9010(RHUnk005c9010Iterator &current, int distance, std::bidirectional_iterator_tag category);
-
-class RHUnk0046eb30
-{
-public:
-    int allocator;
-    RHScriptNode *head;
-    int count;
-    RHScriptNode *cursor;
-    bool valid;
-    char padding[3];
-    int index;
-    RHScriptIter erase(RHScriptIter position);
-    RHScriptIter begin();
-    RHScriptIter FUN_0046eb80();
-    RHScriptIter Unk0057c950(RHScriptIter position, const RHUnk00571160Position &value);
-    RHScriptNode *Unk0059f720(RHScriptNode *next, RHScriptNode *previous);
-    void *&Get(int wanted)
-    {
-        int size = count;
-        if (valid)
-        {
-            if (wanted <= (size + 1) / 2)
-            {
-                cursor = head->next;
-                std::bidirectional_iterator_tag category;
-                FUN_005c9010((RHUnk005c9010Iterator &)cursor, wanted, category);
-            }
-            else
-            {
-                cursor = head;
-                std::bidirectional_iterator_tag category;
-                FUN_005c9010((RHUnk005c9010Iterator &)cursor, wanted - size, category);
-            }
-            valid = false;
-            index = wanted;
-        }
-        else
-        {
-            int previous = index;
-            if (wanted != previous)
-            {
-                if (wanted < previous)
-                {
-                    if (wanted < (previous + 1) / 2)
-                    {
-                        cursor = FUN_0046eb80().node;
-                        std::bidirectional_iterator_tag category;
-                        FUN_005c9010((RHUnk005c9010Iterator &)cursor, wanted, category);
-                    }
-                    else
-                    {
-                        std::bidirectional_iterator_tag category;
-                        FUN_005c9010((RHUnk005c9010Iterator &)cursor, wanted - previous, category);
-                    }
-                }
-                else
-                {
-                    if (wanted < (previous + size) / 2)
-                    {
-                        std::bidirectional_iterator_tag category;
-                        FUN_005c9010((RHUnk005c9010Iterator &)cursor, wanted - previous, category);
-                    }
-                    else
-                    {
-                        cursor = head;
-                        std::bidirectional_iterator_tag category;
-                        FUN_005c9010((RHUnk005c9010Iterator &)cursor, wanted - size, category);
-                    }
-                }
-                index = wanted;
-            }
-        }
-        return cursor->data;
-    }
-};
+#include "RHScriptListCore.h"
 
 class RHUnk0058a3d0
 {
@@ -790,11 +697,7 @@ public:
     void Unk(void *actor);
 };
 
-class RHUnk004e3660
-{
-public:
-    void Unk(bool value);
-};
+#include "RHEngineWidenedCalls.h"
 
 class RHUnk00418b80
 {
@@ -847,11 +750,7 @@ public:
     bool Unk(void *actor);
 };
 
-class RHUnk00450b60
-{
-public:
-    void Unk(int property, int amount);
-};
+#include "RHCampaignPropertyCalls.h"
 
 class RHUnk00419a40
 {
@@ -898,14 +797,7 @@ public:
     static void CopyData(RHSequenceElement **destination, RHSequenceElement *const *source);
 };
 
-class RHUnk00584d60
-{
-public:
-    RHUnk00584d60(unsigned short level, int command, void *actor);
-    ~RHUnk00584d60();
-    char data[0x64];
-    void SetFlag(bool value) { data[0x60] = value; }
-};
+#include "RHSequenceGenericCalls.h"
 
 #include "RHEngineAccessors.h"
 
@@ -915,11 +807,7 @@ public:
     void FUN_005a2450(void *first, void *second);
 };
 
-class RHUnk0049d4f0
-{
-public:
-    bool Unk(int value);
-};
+#include "RHPCActionQueryCalls.h"
 
 class RHUnk004af1d0
 {
@@ -1155,11 +1043,9 @@ public:
     void Unk00419fd0(int value, int duration);
     void Unk0041ac50();
     float FUN_00489680(void *target);
-    void FUN_0051d540(int index, int value);
-    void FUN_0051d4e0(int kind, unsigned int amount);
     void FUN_0058bbe0(void *actor, int value);
     void FUN_00456d20();
-    void FUN_005209b0();
+    RHScriptBatchCalls *FUN_005209b0();
     void FUN_00520a70();
     void FUN_00549090();
 };
@@ -1174,13 +1060,7 @@ public:
     float z;
 };
 
-class RHUnk005861c0
-{
-public:
-    RHUnk005861c0(unsigned short level, int command, void *actor, unsigned short amount, unsigned short value);
-    ~RHUnk005861c0();
-    char data[0x7c];
-};
+#include "RHSequenceTimedCalls.h"
 
 class RHElementActor;
 class RHSectorScript
@@ -1282,6 +1162,7 @@ public:
 class RHUnk005ef320
 {
 public:
+    bool FUN_005ef380(int value);
     unsigned short Unk(int red, int green, int blue);
 };
 

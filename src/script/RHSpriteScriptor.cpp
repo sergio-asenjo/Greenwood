@@ -1,7 +1,79 @@
 #include "SBNullstr.h"
 #include "RHSpriteScriptor.h"
+#include "RHCampaignCommandLine.h"
+#include "RHSoundCacheCore.h"
+#include "RHTreeDec.h"
 #include <string.h>
 #include <stdlib.h>
+
+extern RHTreeDecNode34 *g_unk0x006c10e0;
+
+struct RHTreeInc005c11c0
+{
+    RHTreeDecNode34 *m_node;
+    void FUN_005c11c0();
+};
+
+static inline RHTreeDecNode34 *RHSpriteTreeMinimum(RHTreeDecNode34 *node)
+{
+    RHUnk00641782Lock lock;
+    while (node->m_00 != g_unk0x006c10e0)
+        node = node->m_00;
+    return node;
+}
+
+struct RHSpriteInsertNode
+{
+    RHSpriteInsertNode *m_00;
+    RHSpriteInsertNode *m_04;
+    RHSpriteInsertNode *m_08;
+    RHUnkSpriteCacheValue m_0c;
+    int m_34;
+};
+
+struct RHSpriteInsertIterator
+{
+    RHSpriteInsertNode *m_node;
+};
+
+void RHSpriteConstructValue(RHUnkSpriteCacheValue *, const RHUnkSpriteCacheValue &);
+
+class RHSpriteInsertTree
+{
+public:
+    RHSpriteInsertIterator FUN_005c1290(RHSpriteInsertNode *, RHSpriteInsertNode *, const RHUnkSpriteCacheValue &);
+    static RHSpriteInsertNode *&Left(RHSpriteInsertNode *node) { return node->m_00; }
+    inline void RotateLeft(RHSpriteInsertNode *node)
+    {
+        RHUnk00641782Lock lock;
+        RHSpriteInsertNode *right = node->m_08;
+        node->m_08 = right->m_00;
+        if (right->m_00 != (RHSpriteInsertNode *)g_unk0x006c10e0) right->m_00->m_04 = node;
+        right->m_04 = node->m_04;
+        if (node == m_head->m_04) m_head->m_04 = right;
+        else if (node == node->m_04->m_00) node->m_04->m_00 = right;
+        else node->m_04->m_08 = right;
+        right->m_00 = node;
+        node->m_04 = right;
+    }
+    inline void RotateRight(RHSpriteInsertNode *node)
+    {
+        RHUnk00641782Lock lock;
+        RHSpriteInsertNode *left = node->m_00;
+        node->m_00 = left->m_08;
+        if (left->m_08 != (RHSpriteInsertNode *)g_unk0x006c10e0) left->m_08->m_04 = node;
+        left->m_04 = node->m_04;
+        if (node == m_head->m_04) m_head->m_04 = left;
+        else if (node == node->m_04->m_08) node->m_04->m_08 = left;
+        else node->m_04->m_00 = left;
+        left->m_08 = node;
+        node->m_04 = left;
+    }
+    unsigned m_00;
+    RHSpriteInsertNode *m_head;
+    unsigned m_08;
+    unsigned m_count;
+};
 
 class RHProfileFile : public SBFile
 {
@@ -363,6 +435,111 @@ RHUnkSpriteCacheIterator RHUnkSpriteCache::FUN_005c0800(const std::string &key)
 RHUnkSpriteCacheValue::RHUnkSpriteCacheValue(const std::string &key, const RHUnkSpriteScriptInfo &info)
     : m_key(key), m_info(info)
 {
+}
+
+// FUNCTION: GAME 0x005c11c0
+void RHTreeInc005c11c0::FUN_005c11c0()
+{
+    RHUnk00641782Lock lock;
+    if (m_node->m_08 != g_unk0x006c10e0)
+        m_node = RHSpriteTreeMinimum(m_node->m_08);
+    else {
+        RHTreeDecNode34 *parent;
+        while (m_node == (parent = m_node->m_04)->m_08)
+            m_node = parent;
+        if (m_node->m_08 != parent)
+            m_node = parent;
+    }
+}
+
+void EmitRHSpriteTreeInc(RHTreeInc005c11c0 &iterator)
+{
+    iterator.FUN_005c11c0();
+}
+
+// FUNCTION: GAME 0x005c1290
+RHSpriteInsertIterator RHSpriteInsertTree::FUN_005c1290(RHSpriteInsertNode *node, RHSpriteInsertNode *parent, const RHUnkSpriteCacheValue &value)
+{
+    RHUnk00641782Lock lock;
+    RHSpriteInsertNode *inserted = (RHSpriteInsertNode *)operator new(sizeof(RHSpriteInsertNode));
+    inserted->m_04 = parent;
+    inserted->m_34 = 0;
+    inserted->m_00 = (RHSpriteInsertNode *)g_unk0x006c10e0;
+    inserted->m_08 = (RHSpriteInsertNode *)g_unk0x006c10e0;
+    RHSpriteConstructValue(&inserted->m_0c, value);
+    ++m_count;
+    if (parent == m_head || node != (RHSpriteInsertNode *)g_unk0x006c10e0 ||
+        ((RHCampaignCommandLine *)&value.m_key)->FUN_0045a010(*(const RHProfileText *)&parent->m_0c.m_key) < 0) {
+        parent->m_00 = inserted;
+        if (parent == m_head) {
+            m_head->m_04 = inserted;
+            m_head->m_08 = inserted;
+        } else if (parent == m_head->m_00) m_head->m_00 = inserted;
+    } else {
+        parent->m_08 = inserted;
+        if (parent == m_head->m_08) m_head->m_08 = inserted;
+    }
+    for (node = inserted; node != m_head->m_04 && node->m_04->m_34 == 0;) {
+        if (node->m_04 == Left(node->m_04->m_04)) {
+            parent = node->m_04->m_04->m_08;
+            if (parent->m_34 == 0) {
+                node->m_04->m_34 = 1;
+                parent->m_34 = 1;
+                node->m_04->m_04->m_34 = 0;
+                node = node->m_04->m_04;
+            } else {
+                if (node == node->m_04->m_08) {
+                    node = node->m_04;
+                    RotateLeft(node);
+                }
+                node->m_04->m_34 = 1;
+                node->m_04->m_04->m_34 = 0;
+                RotateRight(node->m_04->m_04);
+            }
+        } else {
+            parent = node->m_04->m_04->m_00;
+            if (parent->m_34 == 0) {
+                node->m_04->m_34 = 1;
+                parent->m_34 = 1;
+                node->m_04->m_04->m_34 = 0;
+                node = node->m_04->m_04;
+            } else {
+                if (node == node->m_04->m_00) {
+                    node = node->m_04;
+                    RotateRight(node);
+                }
+                node->m_04->m_34 = 1;
+                node->m_04->m_04->m_34 = 0;
+                RotateLeft(node->m_04->m_04);
+            }
+        }
+    }
+    m_head->m_04->m_34 = 1;
+    RHSpriteInsertIterator result;
+    result.m_node = inserted;
+    return result;
+}
+
+void EmitRHSpriteInsertTree(RHSpriteInsertTree &tree, const RHUnkSpriteCacheValue &value)
+{
+    tree.FUN_005c1290(0, 0, value);
+}
+
+// FUNCTION: GAME 0x005c15a0
+RHUnkSpriteCacheNode *RHUnkSpriteCache::FUN_005c15a0(const std::string &key)
+{
+    RHUnk00641782Lock lock;
+    RHUnkSpriteCacheNode *node = m_head->m_parent;
+    RHUnkSpriteCacheNode *candidate = m_head;
+    while (node != (RHUnkSpriteCacheNode *)g_unk0x006c10e0) {
+        if (node->m_key.compare(key) < 0)
+            node = node->m_right;
+        else {
+            candidate = node;
+            node = node->m_left;
+        }
+    }
+    return candidate;
 }
 
 void RHSpriteScriptor::Emit(const std::string &name, const std::string &profile)

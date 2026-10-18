@@ -69,24 +69,33 @@ SBGeoPoint2D::SBGeoPoint2D(float x, float y)
     m_y = y;
 }
 
-// Target 0x005709c0 — cdecl, takes void* and returns bool. PROVISIONAL
-// identity: named by address only. It stores the actor to the global 0x006c0f4c
-// and linearly searches the global pointer array at 0x006c0f34/0x006c0f38 for
-// it, publishing index/cursor state to 0x006c0f40/0x006c0f44/0x006c0f45/
-// 0x006c0f48. No Windows-side __FILE__/tag/string names it, and no
-// function-pointer literal in Game.exe references it, so no Windows-side signal
-// binds a name (see include/RHScript.h). Defined once here.
+extern void **g_unk0x6c0f34;
+extern void **g_unk0x6c0f38;
+extern void **g_unk0x6c0f40;
+extern bool g_unk0x6c0f44;
+extern bool g_unk0x6c0f45;
+extern int g_unk0x6c0f48;
+extern void *g_unk0x6c0f4c;
+
+// FUNCTION: GAME 0x005709c0
 bool RHUnk005709c0(void *actor)
 {
-    return actor != 0;
-}
-
-// Target 0x00585500 — __thiscall, one stack arg, plain `ret 4` (see
-// include/RHScript.h). PROVISIONAL identity: named by address only. Defined once
-// here so the call in RHScript::AddToSequence resolves to a local entity.
-void RHUnk00585500::Unk(void *sequence)
-{
-    (void)sequence;
+    if (actor == 0)
+        return false;
+    g_unk0x6c0f44 = false;
+    g_unk0x6c0f4c = actor;
+    int count = g_unk0x6c0f34 == 0 ? 0 : g_unk0x6c0f38 - g_unk0x6c0f34;
+    g_unk0x6c0f45 = true;
+    g_unk0x6c0f40 = g_unk0x6c0f34;
+    int index = 0;
+    for (; index < count; ++index, ++g_unk0x6c0f40) {
+        if (*g_unk0x6c0f40 == actor)
+            break;
+    }
+    if (index >= count)
+        index = -1;
+    g_unk0x6c0f48 = index;
+    return index != -1;
 }
 
 // Target 0x0041b0e0 — __thiscall, no stack args, plain `ret` (see
@@ -152,7 +161,6 @@ RHUnk00522470::~RHUnk00522470()
     ((RHScriptBatchCalls *)this)->FUN_00520a70();
 }
 void RHUnk005c38b0::Unk(void *actor) { (void)actor; }
-void RHUnk004e3660::Unk(bool value) { (void)value; }
 RHBonusProjection *RHUnk0057d800::Unk(const SBGeoPoint2D &point)
 {
     (void)point;
@@ -214,7 +222,6 @@ void *RHUnk005b5e00::FUN_005b5de0()
     return *(void **)((char *)this + 0x154);
 }
 void RHScriptBatchCalls::Unk00418bc0() {}
-void RHScriptBatchCalls::Unk00464630() {}
 void RHScriptBatchCalls::Unk0048c4d0() {}
 void RHScriptBatchCalls::Unk0057ec80(void *) {}
 void RHScriptBatchCalls::Unk005c2ec0(void *, int, int, void *, int, int, int, int) {}
@@ -225,24 +232,15 @@ RHUnk005883a0::~RHUnk005883a0() {}
 void RHScriptRecordWorld::Unk004fc8f0(SBGeoPoint2D &, SBGeoPoint2D &, const SBGeoPoint2D *, unsigned short) {}
 RHUnk00613e90 RHScriptRecordWorld::Unk004fbdd0(const RHUnk00571160Position &) { return RHUnk00613e90(); }
 void RHScriptBatchCalls::Unk0041bd20(int) {}
-void RHScriptBatchCalls::Unk0049d6c0() {}
 void RHScriptBatchCalls::Unk0057ebd0(void *) {}
 void RHScriptBatchCalls::Unk0048ec00(void *) {}
-void RHScriptBatchCalls::Unk004d9330(void *, bool) {}
 void RHScriptBatchCalls::Unk00514670() {}
 RHUnk00549250::~RHUnk00549250() {}
 void RHScriptBatchCalls::Unk0050ed40() {}
 void RHScriptBatchCalls::Unk004522e0(void *) {}
 void RHScriptBatchCalls::Unk0054cfa0(void *) {}
-void RHScriptBatchCalls::Unk0046b9e0() {}
 
 float RHScriptBatchCalls::FUN_00489680(void *) { return 0.0f; }
-// FUNCTION: GAME 0x0051d540
-void RHScriptBatchCalls::FUN_0051d540(int index, int value)
-{
-    *(int *)((char *)this + index * 8 + 8) = value;
-}
-void RHScriptBatchCalls::FUN_0051d4e0(int, unsigned int) {}
 RHScriptActionCursor RHScriptActionCursor::operator++(int)
 {
     RHScriptActionCursor previous = *this;
@@ -252,12 +250,26 @@ RHScriptActionCursor RHScriptActionCursor::operator++(int)
 
 void RHScriptBatchCalls::FUN_0058bbe0(void *, int) {}
 void RHScriptBatchCalls::FUN_00456d20() {}
-void RHScriptBatchCalls::FUN_005209b0() {}
+struct RHUnk005209b0Layout
+{
+    unsigned int m_vptr;
+    SBGeoPoint2D m_04;
+    int m_c;
+    unsigned char m_10;
+};
+
+// FUNCTION: GAME 0x005209b0
+RHScriptBatchCalls *RHScriptBatchCalls::FUN_005209b0()
+{
+    RHUnk005209b0Layout *self = (RHUnk005209b0Layout *)this;
+    ((SBGeoPoint2D *)&self->m_04)->SBGeoPoint2D::SBGeoPoint2D();
+    self->m_vptr = 0x678b58;
+    self->m_c = 0;
+    self->m_10 = 1;
+    return this;
+}
 void RHScriptBatchCalls::FUN_00520a70() {}
 void RHScriptBatchCalls::FUN_00549090() {}
-
-void RHUnk004a5230::FUN_004a5230(bool, bool) {}
-
 
 bool RHScriptAIStateCalls::FUN_00410620(RHScriptStimulusValue) { return false; }
 void RHScriptAIStateCalls::FUN_004132d0(int, int, int) {}

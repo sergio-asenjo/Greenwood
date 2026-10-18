@@ -34,6 +34,10 @@
 #include <string>
 #include <new>
 #include <math.h>
+#include "RHHumanStatus.h"
+#include "RHMalignityActorCalls.h"
+#include "RHConsoleCampaignCalls.h"
+#include "RHGameActionCalls.h"
 
 extern unsigned *g_unk0x006c08a4;
 extern float g_unk0x00677488;
@@ -455,13 +459,13 @@ void RHScriptBatchCalls::Unk0046bd10(int state)
 // FUNCTION: GAME 0x00485200
 void RHScriptBatchCalls::Unk00485200(int index, int amount)
 {
-    (*(RHScriptBatchCalls **)((char *)this + 0x1c4))->FUN_0051d4e0(index, amount);
+    (*(RHHumanStatus **)((char *)this + 0x1c4))->FUN_0051d4e0(index, amount);
 }
 
 // FUNCTION: GAME 0x00485220
 void RHScriptBatchCalls::Unk00485220(int index, int value)
 {
-    (*(RHScriptBatchCalls **)((char *)this + 0x1c4))->FUN_0051d540(index, value);
+    (*(RHHumanStatus **)((char *)this + 0x1c4))->FUN_0051d540(index, value);
 }
 
 // FUNCTION: GAME 0x00486f50
@@ -1344,7 +1348,7 @@ int RHScript::GetMovementStyle(void *actor)
     return *(int *)((char *)actor + 0x144) == 3;
 }
 
-// count/index register allocation.
+// Parked: narrowing into a separate value adds EDI; count/index register allocation remains different.
 // STUB: GAME 0x00571590
 void *RHScript::GetActorScript(int index)
 {
@@ -1507,7 +1511,7 @@ bool RHScript::SetActorLocation(void *actor, void *location)
         {
             if (*(char *)((char *)actor + 0x4e8))
             {
-                ((RHUnk004e3660 *)actor)->Unk(false);
+                ((RHEngineWidenedCalls *)actor)->FUN_004e3660(false);
                 return true;
             }
         }
@@ -1705,6 +1709,22 @@ bool RHScript::IsInside(void *actor, void *sector)
              // STRING: GAME 0x006b2d84
              "Script Error: trying to check if a character is inside a location which is not a sector.");
     return false;
+}
+
+namespace VMCoreCustomDependencies
+{
+// FUNCTION: GAME 0x00571e30
+bool FUN_00571e30(int sector)
+{
+    unsigned short count = ((RHScriptPCArray *)g_pEngine)->Count();
+    for (unsigned short index = 0; index < count; ++index)
+    {
+        void *actor = ((RHScriptPCArray *)g_pEngine)->Get((unsigned char)index);
+        if (!RHScript::IsInside(actor, (void *)sector))
+            return false;
+    }
+    return true;
+}
 }
 
 // FUNCTION: GAME 0x00571ea0
@@ -2199,6 +2219,20 @@ bool RHScript::RecordSetZoom(float zoom)
     return AddToSequence((RHSequenceElement *)element,
                          // STRING: GAME 0x006b3744
                          "RecordSetZoom");
+}
+
+namespace VMCoreCustomDependencies
+{
+// FUNCTION: GAME 0x00572a20
+bool FUN_00572a20(int dialog)
+{
+    RHUnk005866a0 *element = new RHUnk005866a0(g_unk0x6c0fa4, 12, 0);
+    element->Unk00586ed0(18, dialog);
+    element->Unk00586ed0(19, 0);
+    return RHScript::AddToSequence((RHSequenceElement *)element,
+        // STRING: GAME 0x006b3660
+        "RecordPlayDialog");
+}
 }
 
 // FUNCTION: GAME 0x00572e40
@@ -3129,6 +3163,206 @@ void *RHScript::GetSoundSourceScript(int index)
     return g_unk0x6c0f7c;
 }
 
+namespace VMCoreCustomDependencies
+{
+// FUNCTION: GAME 0x00573d10
+bool FUN_00573d10(int actor, int target, int style, int distance)
+{
+    RHUnk00588530 *element = new RHUnk00588530(g_unk0x6c0fa4, 21, (void *)actor,
+        style == 1 ? 6 : 10, (void *)target, *(float *)&distance, 0);
+    return RHScript::AddToSequence((RHSequenceElement *)element,
+        // STRING: GAME 0x006b3d5c
+        "RecordSeekActor");
+}
+
+// FUNCTION: GAME 0x00575350
+bool FUN_00575350(int value)
+{
+    RHUnk005866a0 *element = new RHUnk005866a0(g_unk0x6c0fa4, 11, 0);
+    element->Unk00586ed0(2, value);
+    return RHScript::AddToSequence((RHSequenceElement *)element,
+        // STRING: GAME 0x006b44ec
+        "RecordTimer");
+}
+
+// FUNCTION: GAME 0x00577df0
+void FUN_00577df0(bool value)
+{
+    RHUnk005866a0 *element = new RHUnk005866a0(g_unk0x6c0fa4, 17, 0);
+    element->Unk00586e00(39, value);
+    RHScript::AddToSequence((RHSequenceElement *)element,
+        // STRING: GAME 0x006b55f0
+        "RecordFreezeAll");
+}
+
+// FUNCTION: GAME 0x00578830
+void FUN_00578830(bool value)
+{
+    RHMessenger *messenger = RHUnk00546050();
+    if (*((bool *)messenger + 0x17) != value)
+        messenger->RHUnk005460c0(RHUnk5490f0(39));
+}
+
+// Parked: the fallback search uses different count/index registers and return-tail sharing.
+// STUB: GAME 0x00579bd0
+int FUN_00579bd0(int value)
+{
+    RHUnk579e80State *state = (RHUnk579e80State *)((char *)g_pEngine + 0x4978);
+    if ((g_unk0x6c0f48 = RHScriptFindActor((void *)value)) != -1)
+        return g_unk0x6c0f48;
+    state->valid = 0;
+    state->value = value;
+    int *first = state->first;
+    int count = first == 0 ? 0 : state->end - first;
+    state->cursor = first;
+    state->searchValid = 1;
+    int index = 0;
+    while (index < count)
+    {
+        if (*state->cursor == value)
+            break;
+        ++index;
+        ++state->cursor;
+    }
+    if (index >= count)
+        index = -1;
+    state->index = index;
+    return index;
+}
+
+// FUNCTION: GAME 0x00579c90
+int FUN_00579c90(int value)
+{
+    RHUnk579e80State *state = (RHUnk579e80State *)((char *)g_unk0x6c0a9c + 0x4080);
+    state->valid = 0;
+    state->value = value;
+    int *first = state->first;
+    int count = first == 0 ? 0 : state->end - first;
+    state->cursor = first;
+    state->searchValid = 1;
+    int index = 0;
+    while (index < count)
+    {
+        if (*state->cursor == value)
+            break;
+        ++index;
+        ++state->cursor;
+    }
+    if (index >= count)
+        index = -1;
+    state->index = index;
+    return index;
+}
+
+// FUNCTION: GAME 0x00579d00
+int FUN_00579d00(int value)
+{
+    RHUnk579e80State *state = (RHUnk579e80State *)((char *)g_unk0x6c0a9c + 0x40a0);
+    state->valid = 0;
+    state->value = value;
+    int *first = state->first;
+    int count = first == 0 ? 0 : state->end - first;
+    state->cursor = first;
+    state->searchValid = 1;
+    int index = 0;
+    while (index < count)
+    {
+        if (*state->cursor == value)
+            break;
+        ++index;
+        ++state->cursor;
+    }
+    if (index >= count)
+        index = -1;
+    state->index = index;
+    return index;
+}
+
+// FUNCTION: GAME 0x00579d70
+int FUN_00579d70(int value)
+{
+    RHUnk579e80State *state = (RHUnk579e80State *)((char *)g_unk0x6c0a9c + 0x40e0);
+    state->valid = 0;
+    state->value = value;
+    int *first = state->first;
+    int count = first == 0 ? 0 : state->end - first;
+    state->cursor = first;
+    state->searchValid = 1;
+    int index = 0;
+    while (index < count)
+    {
+        if (*state->cursor == value)
+            break;
+        ++index;
+        ++state->cursor;
+    }
+    if (index >= count)
+        index = -1;
+    state->index = index;
+    return index;
+}
+
+// FUNCTION: GAME 0x0057a950
+int FUN_0057a950(int type)
+{
+    int kind;
+    switch (type)
+    {
+    case 0: kind = 26; break;
+    case 1: kind = 27; break;
+    case 2: kind = 28; break;
+    case 3: kind = 29; break;
+    case 4: kind = 30; break;
+    case 5: kind = 31; break;
+    case 6: kind = 32; break;
+    default: return 0;
+    }
+    void **first = *(void **volatile *)((char *)g_pEngine + 0x48dc);
+    unsigned short count = first == 0 ? 0 : *(void ***)((char *)g_pEngine + 0x48e0) - first;
+    for (unsigned short index = 0; index < count; ++index)
+    {
+        char *actor = (char *)(*(void ***)((char *)g_pEngine + 0x48dc))[index];
+        if (actor && (*(unsigned *)(actor + 4) & 3) == 3 && actor[0x12] && *(int *)(actor + 0xb0) == kind)
+            return (int)actor;
+    }
+    return 0;
+}
+
+// FUNCTION: GAME 0x0057ae60
+void FUN_0057ae60(int value)
+{
+    *(unsigned short *)((char *)g_pEngine + 0x4cc0) = value;
+    unsigned count = (unsigned short)((RHScriptNPCArray *)g_pEngine)->Count();
+    for (unsigned index = 0; index < count; ++index)
+    {
+        RHMalignityActorCalls *actor = (RHMalignityActorCalls *)((RHScriptNPCArray *)g_pEngine)->first[(unsigned short)index];
+        actor->FUN_0048ebe0();
+    }
+}
+
+// FUNCTION: GAME 0x0057b2b0
+void FUN_0057b2b0(int index, int first, int second)
+{
+    RHHumanStatus *status = (RHHumanStatus *)((RHConsoleCampaignCalls *)g_unk0x6c07fc)->FUN_004524b0(index - 1);
+    status->FUN_0051d540(0, first);
+    status->FUN_0051d540(1, second);
+}
+
+// FUNCTION: GAME 0x0057b3d0
+bool FUN_0057b3d0(int sector)
+{
+    unsigned short count = ((RHScriptPCArray *)g_pEngine)->Count();
+    for (unsigned short index = 0; index < count; ++index)
+    {
+        void *actor = ((RHScriptPCArray *)g_pEngine)->Get((unsigned char)index);
+        if (!((RHUnk00570e70Vtbl *)actor)->v18() && !RHScript::IsInside(actor, (void *)sector))
+            return false;
+    }
+    return true;
+}
+
+}
+
 // FUNCTION: GAME 0x00579e80
 int RHScript::RHUnk579e80(int value)
 {
@@ -3167,14 +3401,11 @@ void RHScript::RHUnk579f10(int value)
         "%d\n", value);
 }
 
-// Parked: the message command and cleanup are modeled, but the constructor result/manager-call argument sequence differs; three shapes scored 84.21%, 73.85%, and 75.00%.
-// STUB: GAME 0x00579f30
+// FUNCTION: GAME 0x00579f30
 void RHScript::RHUnk579f30(int value)
 {
     RHMenuPopupScroll::FUN_0053a0b0(value);
-    RHUnk005490a0Message message(0x2e, 0);
-    RHMessenger *messenger = RHUnk00546050((RHUnk5490f0 *)&message);
-    messenger->RHUnk005460c0((RHUnk5490f0 &)message);
+    RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk005490a0Message(0x2e, 0));
 }
 
 // FUNCTION: GAME 0x00575510
@@ -3253,7 +3484,7 @@ bool RHScript::Deactivate(void *actor)
     }
     if ((*(unsigned int *)((char *)actor + 4) & 15) == 12)
     {
-        ((RHUnk004e3660 *)actor)->Unk(false);
+        ((RHEngineWidenedCalls *)actor)->FUN_004e3660(false);
         for (int index = 0; index < 3; ++index)
             ((RHUnk00570e70Vtbl *)actor)->v92(0, 0, index, -1);
         g_unk0x6c0b3c->Unk(0);
@@ -3277,7 +3508,7 @@ bool RHScript::Activate(void *actor)
         }
         if ((*(unsigned int *)((char *)actor + 4) & 15) == 12)
         {
-            ((RHUnk004e3660 *)actor)->Unk(true);
+            ((RHEngineWidenedCalls *)actor)->FUN_004e3660(true);
             return true;
         }
         *(char *)((char *)actor + 0x12) = 1;
@@ -3612,6 +3843,15 @@ void RHScript::StareLocation(void *actor, void *location, bool flag)
 
 namespace VMCoreCustomDependencies
 {
+// FUNCTION: GAME 0x00576170
+void FUN_00576170()
+{
+    RHMessenger *messenger = RHUnk00546050();
+    (*(RHUnk005ef320 **)(g_unk0x6c0fa8 + 0xdc))->FUN_005ef380(1);
+    (*(RHGameActionCalls **)(g_unk0x6c0fa8 + 0xdc))->FUN_005e5260();
+    messenger->RHUnk005460c0(RHUnk5490f0(36));
+}
+
 // FUNCTION: GAME 0x005761f0
 bool FUN_005761f0()
 {
@@ -4889,6 +5129,31 @@ void RHScript::SendMessageWithArguments(void *actor, int message, int first, int
     ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940(g_unk0x6c0560, 0, element);
 }
 
+namespace VMCoreCustomDependencies
+{
+// FUNCTION: GAME 0x00579000
+void FUN_00579000(int identifier, int location)
+{
+    char *engine = (char *)g_pEngine;
+    void **first = *(void **volatile *)(engine + 0x493c);
+    unsigned count = (unsigned char)(first == 0 ? 0 : *(void ***)(engine + 0x4940) - first);
+    for (unsigned index = 0; index < count; ++index)
+    {
+        void *actor = (*(void ***)(engine + 0x493c))[(unsigned char)index];
+        if (*(unsigned short *)((char *)actor + 0x4ea) == identifier)
+        {
+            ((RHActorPositionCalls *)(*(char **)((char *)actor + 0x50) + 4))->FUN_00464530(
+                *(SBGeoPoint2D *)(location ? location + 4 : 0));
+            *(unsigned short *)(*(char **)((char *)actor + 0x50) + 0xde) = *(unsigned short *)(location + 0x20);
+            *(void **)(*(char **)((char *)actor + 0x50) + 0xe0) = *(void **)(location + 0x24);
+            ((RHBonusInfoBase *)(*(char **)((char *)actor + 0x50) + 4))->FUN_0055f290();
+            ((RHBonusInfo *)*(void **)((char *)actor + 0x50))->FUN_005bd560(0, true);
+            return;
+        }
+    }
+}
+}
+
 // FUNCTION: GAME 0x005790b0
 void RHScript::SetCompanyNumber(void *actor, short number)
 {
@@ -5041,15 +5306,15 @@ void *RHScript::GetPCFromMissionTeam(unsigned long index)
     return g_pEngine->GetPC((RHCharacterProfile *)first[index]);
 }
 
-// Parked: the profile scan matches semantically, but VC6 schedules the actor/profile load differently; prior and current source shapes remain below full match.
+// Parked: splitting the mission lookup and changing the result lifetime still changes prologue and return registers.
 // STUB: GAME 0x005793a0
 char RHScript::RHUnk5793a0(void *actor)
 {
-    char *missionForEnd = **(char ***)( (char *)g_unk0x6c07fc + 0x17c);
-    unsigned int *end = *(unsigned int **)(missionForEnd + 0x7c);
-    char *missionForCursor = **(char ***)( (char *)g_unk0x6c07fc + 0x17c);
-    unsigned int *cursor = *(unsigned int **)(missionForCursor + 0x78);
-    while (cursor != end && *cursor != *(unsigned int *)((char *)actor + 0x5fc))
+    char *mission = **(char ***)((char *)g_unk0x6c07fc + 0x17c);
+    unsigned int *end = *(unsigned int **)(mission + 0x7c);
+    unsigned int *cursor = *(unsigned int **)(mission + 0x78);
+    unsigned int key = *(unsigned int *)((char *)actor + 0x5fc);
+    while (cursor != end && *cursor != key)
         ++cursor;
     return cursor != end;
 }
@@ -6664,4 +6929,107 @@ void RHScript::Emit()
     RemoveAllSubordinates(0);
     SwitchToAlertPath(0);
     IsActorRider(0);
+}
+
+class RHSectorGateCalls
+{
+public:
+    void FUN_0057dea0(RHElementActor *actor, bool mode);
+};
+
+class RHUnk0054b150
+{
+public:
+    void FUN_0054b150(bool flag, int mode);
+};
+
+class RHUnk004032a0
+{
+public:
+    int FUN_004032a0(int first, int second);
+};
+
+
+class RHUnk00580220
+{
+public:
+    void FUN_00580220(int value);
+};
+
+class RHSectorProduction;
+class RHCampaign
+{
+public:
+    RHSectorProduction *FUN_00456a10(unsigned long index);
+    unsigned short FUN_00455af0();
+};
+
+class RHUnk00580330
+{
+public:
+    void FUN_00580330(int first, unsigned short second);
+};
+
+class RHPCDescription;
+class RHMinimap;
+extern RHMinimap *g_unk0x6c0c50;
+
+namespace VMCoreCustomDependencies
+{
+// FUNCTION: GAME 0x005714b0
+bool FUN_005714b0(bool flag)
+{
+    ((RHUnk0054b150 *)g_unk0x6c0c50)->FUN_0054b150(flag, 0);
+    return true;
+}
+
+// FUNCTION: GAME 0x00577090
+void FUN_00577090(int first, int second)
+{
+    g_pEngine->FUN_004e3d20(first, second);
+}
+
+// FUNCTION: GAME 0x00578690
+bool FUN_00578690(int object, int first, int second)
+{
+    return ((RHUnk004032a0 *)((char *)object + 0x108))->FUN_004032a0(first, second) != 0;
+}
+
+// FUNCTION: GAME 0x005786f0
+void FUN_005786f0(int sector, int actor, bool mode)
+{
+    ((RHSectorGateCalls *)sector)->FUN_0057dea0((RHElementActor *)actor, mode);
+}
+
+// FUNCTION: GAME 0x005791f0
+int FUN_005791f0(int index)
+{
+    void **descriptions = *(void ***)((char *)g_unk0x6c07fc + 0x1b4);
+    void *element = descriptions[index];
+    return (int)g_pEngine->GetPC((RHPCDescription *)element);
+}
+
+// FUNCTION: GAME 0x00579690
+bool FUN_00579690()
+{
+    RHUnk00452030 *campaign = g_unk0x6c07fc;
+    if (campaign == 0)
+        return false;
+    int value = campaign->Get(3);
+    return value >= ((RHCampaign *)campaign)->FUN_00455af0();
+}
+
+// FUNCTION: GAME 0x005799d0
+void FUN_005799d0(int first, int second, int third)
+{
+    RHSectorProduction *production = ((RHCampaign *)g_unk0x6c07fc)->FUN_00456a10(first);
+    ((RHUnk00580330 *)production)->FUN_00580330(second, (unsigned short)third);
+}
+
+// FUNCTION: GAME 0x00579a00
+void FUN_00579a00(int first, int second)
+{
+    RHSectorProduction *production = ((RHCampaign *)g_unk0x6c07fc)->FUN_00456a10(first);
+    ((RHUnk00580220 *)production)->FUN_00580220(second);
+}
 }
