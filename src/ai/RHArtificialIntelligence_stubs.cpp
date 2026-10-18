@@ -23,18 +23,6 @@ extern "C" long __cdecl time(long *) { return 0; }
 void RHArtificialIntelligence::Unk00422b70(int, int) {}
 bool RHArtificialIntelligence::Unk00419b20(int) { return false; }
 void RHArtificialIntelligence::Unk00419970(int, int, int) {}
-// Parked: effective-only; target returns full-width eax where a bool return gives al.
-// STUB: GAME 0x00485e60
-bool RHArtificialIntelligenceActorCalls::Unk00485e60()
-{
-    void *data = *(void **)((char *)this + 0x50);
-    if (*(void **)((char *)data + 0xf4))
-        return true;
-    void *area = *(void **)((char *)data + 0xe0);
-    if ((*(unsigned *)((char *)area + 0x30) >> 13) & 1)
-        return true;
-    return false;
-}
 bool RHArtificialIntelligenceActorCalls::Unk00470ce0() { return false; }
 std::string FUN_00420d40(int) { return std::string(); }
 bool RHArtificialIntelligence::Unk00412240(const RHUnk00571160Position &, unsigned short, float) { return false; }

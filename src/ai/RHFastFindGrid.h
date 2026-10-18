@@ -318,13 +318,7 @@ public:
     undefined m_00[0x2c];
 };
 
-class RHMobileUnk006100e0 : public SBGeoPoint2D
-{
-public:
-    RHMobileUnk006100e0(const RHMobileUnk006100e0 &);
-    ~RHMobileUnk006100e0();
-    undefined m_08[8];
-};
+#include "RHMobileUnk006100e0.h"
 
 class RHFastFindSegmentCalls
 {
@@ -586,12 +580,7 @@ public:
     char m_22[6];
 };
 
-class RHUnkSectorPoints
-{
-public:
-    unsigned int Unk0060ce80();
-    SBGeoPoint2D &Unk0060cef0(unsigned int index);
-};
+#include "RHUnkSectorPoints.h"
 
 class RHSectorScript
 {
@@ -608,6 +597,8 @@ public:
     char m_b9[0x3f];
 };
 
+class RHUnk0051e1e0;
+
 class RHUnk0051e5e0
 {
 public:
@@ -615,7 +606,9 @@ public:
     ~RHUnk0051e5e0();
     void FUN_0057ca80();
     int Unk0051e700(SBFile &file);
+    bool FUN_0051e7b0(unsigned int index, RHElementActor *actor, bool mode);
     void Unk0051e800();
+    float FUN_0051e890(RHUnk0051e1e0 *line);
     char m_00[0x36];
     unsigned short m_layer;
     char m_38[0x20];

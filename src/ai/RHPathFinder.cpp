@@ -1081,6 +1081,40 @@ float RHPathFinder::EstimateDistance(SBGeoPoint2D &first, SBGeoPoint2D &last)
     return ((RHUnk005fc3b0 *)&last.Unk005fc110(first))->Unk005fc6a0(1.0f);
 }
 
+class RHUnk005595b0List
+{
+public:
+    RHUnk005595b0List *m_next;
+    RHUnk005595b0List *m_prev;
+    char m_08[0x04];
+};
+
+class RHUnk005595b0
+{
+public:
+    RHUnk005595b0();
+    char m_0[0x10];
+    char m_10;
+    char m_11[3];
+    RHUnk005595b0List *m_14;
+    int m_18;
+    char m_1c[4];
+    bool m_20;
+};
+
+// FUNCTION: GAME 0x005595b0
+RHUnk005595b0::RHUnk005595b0()
+{
+    char value;
+    m_10 = value;
+    RHUnk005595b0List *list = new RHUnk005595b0List;
+    list->m_next = list;
+    list->m_prev = list;
+    m_14 = list;
+    m_18 = 0;
+    m_20 = 1;
+}
+
 // FUNCTION: GAME 0x00559660
 unsigned short RHPathFinder::ConvertSector(unsigned short sector)
 {

@@ -2,6 +2,8 @@
 #include "RHFastFindGrid.h"
 #include "SBFilePosition.h"
 
+extern float g_unk0x00677488;
+
 // GLOBAL: GAME 0x006c06f0
 RHFastFindTacticalArray g_unk0x006c06f0;
 // GLOBAL: GAME 0x006c0718
@@ -2709,6 +2711,92 @@ RHFastFindRepulsiveBase &RHFastFindRepulsiveBase::Unk004fdc20(const RHFastFindRe
     return *this;
 }
 
+class RHUnk004fdc90
+{
+public:
+    void FUN_004fdc90();
+    int m_0;
+    RHUnk004fd7f0 *m_4;
+    RHUnk004fd7f0 *m_8;
+    RHUnk004fd7f0 *m_c;
+};
+
+// FUNCTION: GAME 0x004fdc90
+void RHUnk004fdc90::FUN_004fdc90()
+{
+    RHUnk004fd7f0 *last = m_8;
+    RHUnk004fd7f0 *first = m_4;
+    for (; first != last; ++first)
+        first->~RHUnk004fd7f0();
+    operator delete(m_4);
+    m_4 = 0;
+    m_8 = 0;
+    m_c = 0;
+}
+
+class RHUnk004fdf40
+{
+public:
+    void FUN_004fdf40();
+    int m_0;
+    RHUnk004fda20 *m_4;
+    RHUnk004fda20 *m_8;
+    RHUnk004fda20 *m_c;
+};
+
+// FUNCTION: GAME 0x004fdf40
+void RHUnk004fdf40::FUN_004fdf40()
+{
+    RHUnk004fda20 *last = m_8;
+    RHUnk004fda20 *first = m_4;
+    for (; first != last; ++first)
+        first->~RHUnk004fda20();
+    operator delete(m_4);
+    m_4 = 0;
+    m_8 = 0;
+    m_c = 0;
+}
+
+#include "SBResourceManager.h"
+
+void **FUN_004598e0(void **first, void **last, void **destination);
+
+__forceinline void AssignFastFindIntegers(RHFastFindPointerArray &destination,
+    const RHFastFindPointerArray &source)
+{
+    if (&destination != &source)
+    {
+        typedef std::vector<int> Values;
+        int *(Values::*erase)(int *, int *) = &Values::erase;
+        (((Values *)&destination)->*erase)((int *)destination.m_first, (int *)destination.m_last);
+        ((SBResourceSurfaceArray *)&destination)->Assign(*(const SBResourceSurfaceArray *)&source, 0);
+    }
+}
+
+__forceinline void AssignFastFindPointers(RHFastFindPointerArray &destination,
+    const RHFastFindPointerArray &source)
+{
+    if (&destination != &source)
+    {
+        void **last = FUN_004598e0(destination.m_last, destination.m_last, destination.m_first);
+        ((RHScriptFXArray *)&destination)->Unk005008e0(last, destination.m_last);
+        destination.m_last = last;
+        ((SBResourceSurfaceArray *)&destination)->Assign(*(const SBResourceSurfaceArray *)&source, 0);
+    }
+}
+
+__forceinline void AssignFastFindPlain(RHFastFindPointerArray &destination,
+    const RHFastFindPointerArray &source)
+{
+    if (&destination != &source)
+    {
+        void **last = std::copy(destination.m_last, destination.m_last, destination.m_first);
+        ((RHScriptFXArray *)&destination)->Unk005008e0(last, destination.m_last);
+        destination.m_last = last;
+        ((SBResourceSurfaceArray *)&destination)->Assign(*(const SBResourceSurfaceArray *)&source, 0);
+    }
+}
+
 // SIZE 0xc0
 struct RHFastFindRecordC0
 {
@@ -2733,6 +2821,14 @@ public:
     RHFastFindRecordA0 *Unk004fe3b0(const RHFastFindRecordA0 *first, const RHFastFindRecordA0 *last,
         RHFastFindRecordA0 *destination);
     void Unk004fe3f0(RHFastFindRecordA0 *destination, unsigned int count, const RHFastFindRecordA0 &value);
+    static void FUN_004fe480(RHFastFindRecordC0 *first, RHFastFindRecordC0 *last,
+        const RHFastFindRecordC0 &value);
+    static RHFastFindRecordC0 *FUN_004fe5e0(const RHFastFindRecordC0 *first,
+        const RHFastFindRecordC0 *last, RHFastFindRecordC0 *destination);
+    static void FUN_004fe750(RHFastFindRecordA0 *first, RHFastFindRecordA0 *last,
+        const RHFastFindRecordA0 &value);
+    static RHFastFindRecordA0 *FUN_004fe880(const RHFastFindRecordA0 *first,
+        const RHFastFindRecordA0 *last, RHFastFindRecordA0 *destination);
 };
 
 // FUNCTION: GAME 0x004fe340
@@ -2784,6 +2880,161 @@ void RHScriptFXArray::Unk004fe450(void **destination, unsigned int count, void *
     for (; count > 0; --count, ++destination)
         if (destination)
             *destination = value;
+}
+
+__forceinline void AssignFastFindC0(RHFastFindRecordC0 &destination, const RHFastFindRecordC0 &source)
+{
+    RHFastFindPointerArray *output = (RHFastFindPointerArray *)&destination;
+    const RHFastFindPointerArray *input = (const RHFastFindPointerArray *)&source;
+    AssignFastFindIntegers(output[0], input[0]);
+    AssignFastFindIntegers(output[1], input[1]);
+    AssignFastFindIntegers(output[2], input[2]);
+    AssignFastFindIntegers(output[3], input[3]);
+    AssignFastFindPointers(output[4], input[4]);
+    AssignFastFindPointers(output[5], input[5]);
+}
+
+__forceinline void AssignFastFindA0(RHFastFindRecordA0 &destination, const RHFastFindRecordA0 &source)
+{
+    RHFastFindPointerArray *output = (RHFastFindPointerArray *)&destination;
+    const RHFastFindPointerArray *input = (const RHFastFindPointerArray *)&source;
+    AssignFastFindIntegers(output[0], input[0]);
+    AssignFastFindIntegers(output[1], input[1]);
+    AssignFastFindIntegers(output[2], input[2]);
+    AssignFastFindPointers(output[3], input[3]);
+    AssignFastFindPlain(output[4], input[4]);
+}
+
+// Parked: source/destination comparison polarity and pointer-tail reload scheduling differ.
+// STUB: GAME 0x004fe480
+void RHFastFindRecordArray::FUN_004fe480(RHFastFindRecordC0 *first, RHFastFindRecordC0 *last,
+    const RHFastFindRecordC0 &value)
+{
+    for (; first != last; ++first)
+        AssignFastFindC0(*first, value);
+}
+
+// Parked: backward-copy source/destination live ranges select different registers.
+// STUB: GAME 0x004fe5e0
+RHFastFindRecordC0 *RHFastFindRecordArray::FUN_004fe5e0(const RHFastFindRecordC0 *first,
+    const RHFastFindRecordC0 *last, RHFastFindRecordC0 *destination)
+{
+    while (first != last)
+        AssignFastFindC0(*--destination, *--last);
+    return destination;
+}
+
+// Parked: self-assignment comparisons and final raw-array clear scheduling differ.
+// STUB: GAME 0x004fe750
+void RHFastFindRecordArray::FUN_004fe750(RHFastFindRecordA0 *first, RHFastFindRecordA0 *last,
+    const RHFastFindRecordA0 &value)
+{
+    for (; first != last; ++first)
+        AssignFastFindA0(*first, value);
+}
+
+// Parked: source/destination comparison polarity and pointer-tail reload scheduling differ.
+// STUB: GAME 0x004fe880
+RHFastFindRecordA0 *RHFastFindRecordArray::FUN_004fe880(const RHFastFindRecordA0 *first,
+    const RHFastFindRecordA0 *last, RHFastFindRecordA0 *destination)
+{
+    while (first != last)
+        AssignFastFindA0(*--destination, *--last);
+    return destination;
+}
+
+// SIZE 0xc0
+class RHFastFindAssignmentC0
+{
+public:
+    RHFastFindAssignmentC0 &FUN_004fec70(const RHFastFindAssignmentC0 &source);
+    RHFastFindPointerArray m_arrays[6];
+};
+
+// SIZE 0xa0
+class RHFastFindAssignmentA0
+{
+public:
+    RHFastFindAssignmentA0 &FUN_004fedb0(const RHFastFindAssignmentA0 &source);
+    RHFastFindPointerArray m_arrays[5];
+};
+
+// Parked: source and member-array receiver live ranges choose different registers.
+// STUB: GAME 0x004fec70
+RHFastFindAssignmentC0 &RHFastFindAssignmentC0::FUN_004fec70(const RHFastFindAssignmentC0 &source)
+{
+    AssignFastFindIntegers(m_arrays[0], source.m_arrays[0]);
+    AssignFastFindIntegers(m_arrays[1], source.m_arrays[1]);
+    AssignFastFindIntegers(m_arrays[2], source.m_arrays[2]);
+    AssignFastFindPointers(m_arrays[3], source.m_arrays[3]);
+    AssignFastFindPointers(m_arrays[4], source.m_arrays[4]);
+    AssignFastFindPlain(m_arrays[5], source.m_arrays[5]);
+    return *this;
+}
+
+// Parked: member-array receiver allocation changes the assignment schedule.
+// STUB: GAME 0x004fedb0
+RHFastFindAssignmentA0 &RHFastFindAssignmentA0::FUN_004fedb0(const RHFastFindAssignmentA0 &source)
+{
+    AssignFastFindIntegers(m_arrays[0], source.m_arrays[0]);
+    AssignFastFindIntegers(m_arrays[1], source.m_arrays[1]);
+    AssignFastFindPointers(m_arrays[2], source.m_arrays[2]);
+    AssignFastFindPointers(m_arrays[3], source.m_arrays[3]);
+    if (&source.m_arrays[4] != &m_arrays[4])
+    {
+        void **last = std::copy(m_arrays[4].m_last, m_arrays[4].m_last, m_arrays[4].m_first);
+        m_arrays[4].m_last = last;
+        ((SBResourceSurfaceArray *)&m_arrays[4])->Assign(*(const SBResourceSurfaceArray *)&source.m_arrays[4], 0);
+    }
+    return *this;
+}
+
+// Parked: indexed insertion has different size caching and shift-loop register allocation.
+// STUB: GAME 0x004ff400
+void SBResourceSurfaceArray::Assign(const SBResourceSurfaceArray &other, unsigned position)
+{
+    RHFastFindPointerArray &destination = *(RHFastFindPointerArray *)this;
+    const RHFastFindPointerArray &source = *(const RHFastFindPointerArray *)&other;
+    if (position == destination.size())
+    {
+        position = ((RHFastFindGateArray *)this)->FUN_0059fbc0();
+        int count = ((RHFastFindGateArray *)&source)->FUN_0059fbc0();
+        unsigned added = ((RHFastFindGateArray *)&source)->FUN_0059fbc0();
+        unsigned total = ((RHFastFindGateArray *)this)->FUN_0059fbc0() + added;
+        float zero = 0;
+        ((RHUnk004ff7b0 *)this)->FUN_004ff7b0(total, zero);
+        destination.m_changed = true;
+        for (int index = 0; index < count; ++index)
+            destination.m_first[position + index] = source.m_first[index];
+    }
+    else
+    {
+        int oldCount = destination.size();
+        int last = oldCount - 1;
+        int previous = destination.size();
+        int count = source.size();
+        unsigned total = destination.size() + source.size();
+        float zero = 0;
+        ((RHUnk004ff7b0 *)this)->FUN_004ff7b0(total, zero);
+        destination.m_changed = true;
+        for (; last >= (int)position; --last)
+            destination.m_first[count - oldCount + previous + last] = destination.m_first[last];
+        int sourceCount = source.size();
+        for (int index = 0; index < sourceCount; ++index)
+            destination.m_first[position + index] = source.m_first[index];
+    }
+    destination.m_changed = true;
+}
+
+void EmitFastFindRecordAssignments(RHFastFindRecordC0 *large, RHFastFindRecordA0 *small,
+    RHFastFindAssignmentC0 *largeAssignment, RHFastFindAssignmentA0 *smallAssignment)
+{
+    RHFastFindRecordArray::FUN_004fe480(large, large, *large);
+    RHFastFindRecordArray::FUN_004fe5e0(large, large, large);
+    RHFastFindRecordArray::FUN_004fe750(small, small, *small);
+    RHFastFindRecordArray::FUN_004fe880(small, small, small);
+    largeAssignment->FUN_004fec70(*largeAssignment);
+    smallAssignment->FUN_004fedb0(*smallAssignment);
 }
 
 // FUNCTION: GAME 0x004ff7b0
@@ -2846,6 +3097,20 @@ int RHUnk0051e5e0::Unk0051e700(SBFile &file)
     return ((ToolboxPositionFile *)&file)->FUN_005f5440() - start;
 }
 
+// Parked: actor and virtual-argument live ranges select different registers and cleanup tails.
+// STUB: GAME 0x0051e7b0
+bool RHUnk0051e5e0::FUN_0051e7b0(unsigned int index, RHElementActor *actor, bool mode)
+{
+    RHUnk0051e1e0 *line = (RHUnk0051e1e0 *)m_lines.m_first[index];
+    if (line->m_owner == *(void **)((char *)*(void **)((char *)actor + 0x50) + 0xe0))
+    {
+        RHUnk0051a5e0 *gate = (RHUnk0051a5e0 *)line->m_gate;
+        if (gate->FUN_0051abe0(line == *(RHUnk0051e1e0 **)gate->m_8c, actor, mode, true, false))
+            return true;
+    }
+    return false;
+}
+
 // FUNCTION: GAME 0x0051e800
 void RHUnk0051e5e0::Unk0051e800()
 {
@@ -2866,6 +3131,16 @@ void RHUnk0051e5e0::Unk0051e800()
         if (distance < g_unk0x006790d8 && (*((char *)this + 0x9c) || *((char *)line->m_other->m_sector + 0x9c)))
             *((char *)line + 0x39) = 1;
     }
+}
+
+// FUNCTION: GAME 0x0051e890
+float RHUnk0051e5e0::FUN_0051e890(RHUnk0051e1e0 *line)
+{
+    unsigned int count = m_lines.size();
+    for (unsigned int index = 0; index < count; ++index)
+        if (m_lines.m_first[index] == line)
+            return (*(RHUnk004ff7b0 *)((char *)this + 0x78)).m_first[index];
+    return g_unk0x00677488;
 }
 
 // FUNCTION: GAME 0x00520ae0
@@ -2959,6 +3234,8 @@ void RHFastFindGrid::Emit(SBFile &file, void *&value)
     SBGeoPoint3D point(0, 0, 0);
     plane.Unk005df860(point, point, point);
     plane.Unk005dfa00();
+    ((RHUnk0051e5e0 *)value)->FUN_0051e890((RHUnk0051e1e0 *)value);
+    ((RHUnk0051e5e0 *)value)->FUN_0051e7b0(0, (RHElementActor *)value, false);
     m_repulsivePoints.begin()->FUN_004fdb90(*m_repulsivePoints.begin());
     RHUnk00520ae0 repulsive;
 }

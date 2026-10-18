@@ -671,11 +671,7 @@ public:
     char m_data[0x74];
 };
 
-class RHUnk00585500
-{
-public:
-    void Unk(void *sequence);
-};
+#include "RHSequenceAppendCalls.h"
 
 class RHUnk0058a3d0
 {
@@ -2273,6 +2269,32 @@ void FUN_00424470(RHStimulus *destination, const RHStimulus *source)
 }
 
 // deferred: unannotated pending reccmp #534
+class RHUnk0044e640
+{
+public:
+    void FUN_0044e640();
+    char m_00[4];
+    RHArtificialIntelligenceNode *m_head;
+    int m_count;
+    char m_0c[4];
+    bool m_dirty;
+};
+
+// Parked: payload load uses ECX/EAX instead of EAX/ECX after two shapes.
+// STUB: GAME 0x0044e640
+void RHUnk0044e640::FUN_0044e640()
+{
+    void *value = m_head->m_next->m_data;
+    if (value)
+        operator delete(value);
+    RHArtificialIntelligenceNode *node = m_head->m_next;
+    node->m_prev->m_next = node->m_next;
+    node->m_next->m_prev = node->m_prev;
+    operator delete(node);
+    --m_count;
+    m_dirty = true;
+}
+
 RHArtificialIntelligenceIterator RHAIUnk0044e8b0::FUN_0044e8b0(RHArtificialIntelligenceIterator first, RHArtificialIntelligenceIterator last)
 {
     while (first.m_node != last.m_node)
@@ -2482,6 +2504,15 @@ RHArtificialIntelligencePathCursor &RHArtificialIntelligencePathCursor::Unk00550
             ++m_current;
         }
     }
+    return *this;
+}
+
+// FUNCTION: GAME 0x00550640
+RHArtificialIntelligencePathCursor &RHArtificialIntelligencePathCursor::Unk00550640()
+{
+    m_forward = m_forward ^ 1;
+    Unk005505c0();
+    m_forward = m_forward ^ 1;
     return *this;
 }
 

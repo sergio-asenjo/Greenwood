@@ -14,12 +14,15 @@ public:
     float m_y; // 0x04
 };
 
+class SBGeoPolyLine2DList;
+
 // SIZE 0x14
 class SBGeoBoundingBox2D
 {
 public:
     bool Serialize(SBFile &file);
     void Unk00607dc0(const SBGeoPoint2D &point);
+    void FUN_00607e50(SBGeoPolyLine2DList *list);
     int FUN_00609050(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
     float m_00; // 0x00
     float m_04; // 0x04
@@ -36,17 +39,7 @@ public:
 };
 
 // SIZE 0x2c
-class RHUnkSectorPoints
-{
-public:
-    SBGeoPoint2D &Unk0060cef0(unsigned index);
-    void Unk0060ced0(const SBGeoPoint2D &point, unsigned index);
-    void FUN_0060ceb0(const SBGeoPoint2D &point);
-    undefined m_00[0x28]; // 0x00
-    undefined m_28; // 0x28
-    undefined m_29; // 0x29
-    undefined m_2a[2]; // 0x2a
-};
+#include "RHUnkSectorPoints.h"
 
 // SIZE 0x10
 struct RHUnkSightVertex

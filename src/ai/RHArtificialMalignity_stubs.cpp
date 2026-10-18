@@ -6,11 +6,7 @@ extern float g_unk0x006774f0;
 
 bool RHArtificialMalignity::FUN_00438cb0(int, bool) { return false; }
 
-class RHMalignityVisibilityCalls
-{
-public:
-    bool FUN_004860b0();
-};
+#include "RHMalignityVisibilityCalls.h"
 
 bool RHMalignityVisibilityCalls::FUN_004860b0() { return false; }
 
@@ -104,9 +100,10 @@ RHMalignityPosition RHMalignityBaseView::FUN_004165e0(void *, bool)
     return position;
 }
 
-SBGeoPoint2D RHMalignityBaseView::FUN_0040cbf0(const RHMalignityPosition &)
+// FUNCTION: GAME 0x0040cbf0
+SBGeoPoint2D RHMalignityBaseView::FUN_0040cbf0(const RHMalignityPosition &position)
 {
-    return SBGeoPoint2D();
+    return SBGeoPoint2D(position.x, position.y);
 }
 
 void RHMalignityNodeValue::FUN_0040eab0(int) {}
@@ -162,7 +159,6 @@ public:
 bool RHMalignityAreaCalls::FUN_0060be00(const void *) { return false; }
 void RHArtificialMalignity::FUN_00430300(int) {}
 
-void RHMalignityAlertCalls::FUN_0042c890(int, void *) {}
 void RHArtificialMalignity::FUN_0044a830(void *) {}
 
 class RHMalignityPathGeometry
@@ -196,10 +192,28 @@ class RHMalignityAbilityCalls
 {
 public:
     unsigned short FUN_005c1b50(int index);
+    int FUN_005c2130(float value, int first, int second);
 };
 
 // FUNCTION: GAME 0x005c1b50
 unsigned short RHMalignityAbilityCalls::FUN_005c1b50(int index)
 {
     return *(unsigned short *)((char *)*(void **)((char *)this + 4) + index * 2);
+}
+
+// FUNCTION: GAME 0x005c2130
+int RHMalignityAbilityCalls::FUN_005c2130(float value, int first, int second)
+{
+    if (FUN_005c1b50(first) < value)
+    {
+        if (FUN_005c1b50(second) >= value)
+            return 1;
+    }
+    return 0;
+}
+
+void EmitRHMalignityAbilityCalls(RHMalignityAbilityCalls *self)
+{
+    int (RHMalignityAbilityCalls::*f)(float, int, int) = &RHMalignityAbilityCalls::FUN_005c2130;
+    (self->*f)(0.0f, 0, 0);
 }

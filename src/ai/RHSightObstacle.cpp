@@ -1,5 +1,12 @@
 #include "SBNullstr.h"
 #include "RHSightObstacle.h"
+#include "SBGeoPolyLine2DList.h"
+
+class RHUnk0053bf20
+{
+public:
+    void *FUN_0053bf20() const;
+};
 
 DECOMP_SIZE_ASSERT(SBGeoBoundingBox2D, 0x14)
 DECOMP_SIZE_ASSERT(RHUnkSectorPoints, 0x2c)
@@ -142,6 +149,14 @@ void SBGeoBoundingBox2D::Unk00607dc0(const SBGeoPoint2D &point)
     if (!m_10 || m_04 > y) m_04 = y;
     if (!m_10 || m_0c < y) m_0c = y;
     m_10 = 1;
+}
+
+// FUNCTION: GAME 0x00607e50
+void SBGeoBoundingBox2D::FUN_00607e50(SBGeoPolyLine2DList *list)
+{
+    unsigned int count = (unsigned int)((RHUnk0053bf20 *)list)->FUN_0053bf20();
+    for (unsigned int i = 0; i < count; ++i)
+        Unk00607dc0(list->FUN_00610cb0(i));
 }
 
 // FUNCTION: GAME 0x00609050

@@ -14,10 +14,6 @@ float RHFastFindLine::FUN_0051f470() { return ((float *)m_00)[1] > ((float *)m_0
 float RHFastFindLine::FUN_0051f490() { return ((float *)m_00)[2] > ((float *)m_00)[4] ? ((float *)m_00)[4] : ((float *)m_00)[2]; }
 // FUNCTION: GAME 0x0051f4b0
 float RHFastFindLine::FUN_0051f4b0() { return ((float *)m_00)[2] > ((float *)m_00)[4] ? ((float *)m_00)[2] : ((float *)m_00)[4]; }
-RHMobileUnk006100e0::RHMobileUnk006100e0(const RHMobileUnk006100e0 &other) : SBGeoPoint2D(other)
-{
-    memcpy(m_08, other.m_08, sizeof(m_08));
-}
 bool RHFastFindSegmentCalls::FUN_0060a990(const RHMalignitySegment &) { return false; }
 
 DECOMP_SIZE_ASSERT(RHUnk0051a5e0, 0x94)
@@ -78,7 +74,19 @@ RHUnk004b2190Member::RHUnk004b2190Member() {}
 RHUnk004b2190Member::~RHUnk004b2190Member() {}
 void SBArray<RHUnk004b2190Member>::Insert(RHUnk004b2190Member *, unsigned int, const RHUnk004b2190Member &) {}
 void SBArray<unsigned short>::Insert(unsigned short *, unsigned int, const unsigned short &) {}
-void RHUnk005223f0::FUN_005223f0(SBFile &) {}
+// FUNCTION: GAME 0x005223f0
+void RHUnk005223f0::FUN_005223f0(SBFile &file)
+{
+    short x;
+    short y;
+    file.Access(&x, 2);
+    file.Access(&y, 2);
+    *(float *)this = (float)x;
+    *(float *)((char *)this + 4) = (float)y;
+    ((RHUnkPathGeometry *)g_unk0x6c0a9c)->Unk004fbec0(file, *(void **)((char *)this + 8));
+    file.Access((char *)this + 0xc, 2);
+    file.Access((char *)this + 0x10, 2);
+}
 void FUN_00418390(RHUnk005223f0 *) {}
 RHUnk005209d0::RHUnk005209d0(int) {}
 RHUnk005209d0::~RHUnk005209d0() {}

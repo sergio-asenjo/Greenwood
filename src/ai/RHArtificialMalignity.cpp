@@ -2531,11 +2531,7 @@ void RHUnk0044cae0::Switch()
         ai->VirtualBase().V00(0);
 }
 
-class RHMalignityVisibilityCalls
-{
-public:
-    bool FUN_004860b0();
-};
+#include "RHMalignityVisibilityCalls.h"
 
 // Parked: front-removal iterator temporaries and conditional callee saves differ.
 // STUB: GAME 0x0044cf00
@@ -2792,8 +2788,7 @@ void RHMalignityActorCalls::FUN_0048cb90(void *actor)
         FUN_0048ca20(actor, 1);
 }
 
-// Parked: switch jump-table layout and case block ordering remain mismatched.
-// STUB: GAME 0x0048cc20
+// FUNCTION: GAME 0x0048cc20
 void FUN_0048cc20(void *value)
 {
     unsigned type = RHMalignityField<unsigned>(value, 0x10);
@@ -2806,26 +2801,26 @@ void FUN_0048cc20(void *value)
     case 2:
         RHMalignityField<unsigned short>(value, 0x14) = 50;
         return;
-    case 4:
-    case 12:
-        RHMalignityField<unsigned short>(value, 0x14) = 500;
-        return;
     case 5:
     case 6:
     case 8:
     case 9:
         RHMalignityField<unsigned short>(value, 0x14) = 200;
         return;
+    case 14:
+        RHMalignityField<unsigned short>(value, 0x14) = 0;
+        return;
     case 10:
     case 11:
         RHMalignityField<unsigned short>(value, 0x14) = 400;
         return;
-    case 14:
-        RHMalignityField<unsigned short>(value, 0x14) = 0;
+    case 4:
+    case 12:
+        RHMalignityField<unsigned short>(value, 0x14) = 500;
         return;
     case 0:
         RHMalignityField<unsigned short>(value, 0x14) = 300;
-        break;
+        return;
     default:
         return;
     }
@@ -2925,40 +2920,6 @@ void RHMalignityActorCalls::FUN_0048e420(void *actor)
         RHMalignityField<unsigned char>(list.m_current->value, 0x12) = 0;
 }
 
-// Parked 85.71% effective-only: the zeroing sequence and the following constant store have a different source shape.
-// STUB: GAME 0x0048e580
-void RHMalignityActorCalls::FUN_0048e580()
-{
-    RHMalignityField<unsigned>(this, 0x63c) = 0;
-    RHMalignityField<unsigned>(this, 0x640) = 0;
-    RHMalignityField<unsigned>(this, 0x644) = 0;
-    RHMalignityField<unsigned short>(this, 0x648) = 0;
-    RHMalignityField<unsigned>(this, 0x64c) = 7;
-}
-
-// Parked 43.48%: the parameter-width model and saturating subtraction lowering do not match the three-argument target.
-// STUB: GAME 0x0048e5b0
-void RHMalignityActorCalls::FUN_0048e5b0(unsigned operation, unsigned short value, unsigned)
-{
-    if (operation == 1)
-    {
-        unsigned short current = RHMalignityField<unsigned short>(this, 0x4ca);
-        if (value < current)
-            RHMalignityField<unsigned short>(this, 0x4ca) = current - value;
-        else
-            RHMalignityField<unsigned short>(this, 0x4ca) = 0;
-    }
-}
-
-// Parked 30.77%: the target returns a sign-extended word sentinel while this candidate's branch/width shape differs.
-// STUB: GAME 0x0048e5f0
-unsigned short RHMalignityActorCalls::FUN_0048e5f0(unsigned operation)
-{
-    if (operation == 1)
-        return RHMalignityField<unsigned short>(this, 0x4ca);
-    return 0xffff;
-}
-
 // FUNCTION: GAME 0x0048e610
 unsigned short RHMalignityActorCalls::FUN_0048e610()
 {
@@ -2971,20 +2932,26 @@ void RHMalignityActorCalls::FUN_0048e620(unsigned short value)
     RHMalignityField<unsigned short>(this, 0x4c8) = value;
 }
 
-// Parked 72.73%: the conditional word update does not reproduce the target's argument and branch scheduling.
-// STUB: GAME 0x0048e630
+// FUNCTION: GAME 0x0048e630
 void RHMalignityActorCalls::FUN_0048e630(unsigned operation, unsigned short value)
 {
-    if (operation == 1)
+    switch (operation)
+    {
+    case 1:
         RHMalignityField<unsigned short>(this, 0x4ca) += value;
+        break;
+    }
 }
 
-// Parked 72.73%: the conditional word store does not reproduce the target's branch and argument-width shape.
-// STUB: GAME 0x0048e650
+// FUNCTION: GAME 0x0048e650
 void RHMalignityActorCalls::FUN_0048e650(unsigned operation, unsigned short value)
 {
-    if (operation == 1)
+    switch (operation)
+    {
+    case 1:
         RHMalignityField<unsigned short>(this, 0x4ca) = value;
+        break;
+    }
 }
 
 // Reconstructed gates and actor-profile checks; geometry, event allocation and dispatch remain incomplete.

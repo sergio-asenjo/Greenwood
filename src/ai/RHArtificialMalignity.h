@@ -281,12 +281,7 @@ public:
     void FUN_0042c890(int type, void *actor);
 };
 
-class RHMalignityOwnerCalls
-{
-public:
-    unsigned short FUN_00438600();
-    unsigned short FUN_00438710(unsigned short value, float low, float high, unsigned short maximum);
-};
+#include "RHMalignityOwnerCalls.h"
 
 // SIZE 0x14
 class SBGeoBoundingBox2D
@@ -314,11 +309,7 @@ public:
     char *FUN_0055dbb0();
 };
 
-class RHMalignityGeometryCalls
-{
-public:
-    bool FUN_004eff80(const RHUnk00613e90 &first, const RHUnk00613e90 &second, int mode);
-};
+#include "RHMalignityGeometryCalls.h"
 
 class RHMalignityVectorCalls
 {
@@ -385,13 +376,7 @@ struct RHMalignityMessageNode
     RHMalignityMessage value; // 0x08
 };
 
-// SIZE 0x10
-class RHMobileUnk006100e0 : public SBGeoPoint2D
-{
-public:
-    ~RHMobileUnk006100e0();
-    undefined m_08[8]; // 0x08
-};
+#include "RHMobileUnk006100e0.h"
 
 class RHMobileUnk0060a820
 {

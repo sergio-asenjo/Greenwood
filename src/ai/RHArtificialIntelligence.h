@@ -329,6 +329,7 @@ public:
     void Unk00550f60(unsigned short path);
     void Unk005505b0(unsigned short waypoint);
     RHArtificialIntelligencePathCursor &Unk005505c0();
+    RHArtificialIntelligencePathCursor &Unk00550640();
     unsigned char m_current;
     unsigned char m_previous;
     char m_forward;
@@ -343,18 +344,7 @@ public:
     bool SerializeStatus(SBFile &file);
 };
 
-struct RHAIActorTimerView;
-
-class RHArtificialIntelligenceActorCalls
-{
-public:
-    void Unk0048b450(unsigned value, int mode);
-    void Unk0048b4e0(int mode);
-    void Unk0048d020();
-    RHAIActorTimerView &TimerView();
-    bool Unk00485e60();
-    bool Unk00470ce0();
-};
+#include "RHArtificialIntelligenceActorCalls.h"
 
 class RHArtificialIntelligenceActor;
 std::string FUN_00420d40(int remark);
