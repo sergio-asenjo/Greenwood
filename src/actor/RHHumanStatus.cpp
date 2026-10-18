@@ -62,6 +62,36 @@ RHHumanStatus::RHHumanStatus(const RHSoldierProfile &profile)
     m_entries[1].m_f0 = 0;
 }
 
+// FUNCTION: GAME 0x0051d4e0
+void RHHumanStatus::FUN_0051d4e0(int index, unsigned int amount)
+{
+    m_entries[index].m_f0 += amount;
+    if ((unsigned int)m_entries[index].m_f4 < 100 && (unsigned int)m_entries[index].m_f0 >= 100) {
+        m_entries[index].m_f4 += (unsigned int)m_entries[index].m_f0 / 100;
+        m_entries[index].m_f0 = (unsigned int)m_entries[index].m_f0 % 100;
+        if ((unsigned int)m_entries[index].m_f4 > 100)
+            m_entries[index].m_f4 = 100;
+    }
+}
+
+// FUNCTION: GAME 0x0051d540
+void RHHumanStatus::FUN_0051d540(int index, int value)
+{
+    m_entries[index].m_f4 = value;
+}
+
+// FUNCTION: GAME 0x0051d550
+void RHHumanStatus::FUN_0051d550(int index, float factor)
+{
+    m_entries[index].m_f0 = (unsigned int)((unsigned int)m_entries[index].m_f0 * factor);
+    if ((unsigned int)m_entries[index].m_f4 < 100 && (unsigned int)m_entries[index].m_f0 >= 100) {
+        m_entries[index].m_f4 += (unsigned int)m_entries[index].m_f0 / 100;
+        m_entries[index].m_f0 = (unsigned int)m_entries[index].m_f0 % 100;
+        if ((unsigned int)m_entries[index].m_f4 > 100)
+            m_entries[index].m_f4 = 100;
+    }
+}
+
 // FUNCTION: GAME 0x0051d5d0
 bool RHHumanStatus::Serialize(SBFile &file)
 {
@@ -101,5 +131,8 @@ void RHHumanStatus::Emit(SBFile &file)
 {
     RHHumanStatus status;
     status.Serialize(file);
+    FUN_0051d550(0, 1.0f);
+    FUN_0051d4e0(0, 1);
+    FUN_0051d540(0, 1);
     Serialize(file);
 }

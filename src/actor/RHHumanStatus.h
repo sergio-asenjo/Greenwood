@@ -8,6 +8,9 @@
 // (the serialised data starts at +0x04), then a 2-element array of 8-byte
 // records at +0x04.
 
+#ifndef RHHUMANSTATUS_H
+#define RHHUMANSTATUS_H
+
 #include "SB.h"
 
 class RHCharacterProfile;
@@ -26,6 +29,9 @@ public:
     RHHumanStatus();
     RHHumanStatus(const RHCharacterProfile &profile);
     RHHumanStatus(const RHSoldierProfile &profile);
+    void FUN_0051d4e0(int index, unsigned int amount);
+    void FUN_0051d540(int index, int value);
+    void FUN_0051d550(int index, float factor);
     // Virtual so the object layout carries the vptr at +0x00 the target
     // instructions imply (the first serialised field is at +0x04).
     virtual bool Serialize(SBFile &file);
@@ -39,3 +45,5 @@ public:
 // stream. Declared identically in include/RHElementObject.h and
 // include/RHMissionStat.h; no TU includes more than one of those headers.
 void RHSerializeName(SBFile &file, const char *name);
+
+#endif

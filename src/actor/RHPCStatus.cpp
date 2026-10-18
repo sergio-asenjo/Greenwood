@@ -18,6 +18,8 @@ void RHPCStatus::Emit(SBFile &file, const RHCharacterProfile &profile)
 {
     GenerateName(profile);
     Serialize(file);
+    GetAmmoCounter(0);
+    SetAmmoAmount(0, 0);
 }
 
 // LIBRARY: GAME 0x00419940
@@ -109,6 +111,13 @@ void RHMapWideText::FUN_004580c0(const std::wstring &text, unsigned first, unsig
     }
 }
 
+// FUNCTION: GAME 0x0055bc30
+RHPCStatus::RHPCStatus() : m_14(100), m_16(0), m_18(0), m_1a(0), m_1c(0),
+    m_1e(0), m_20(0), m_22(0), m_24(0), m_26(0), m_28(0), m_3c(0xffff)
+{
+    *(unsigned long *)this = 0x00679bd4;
+}
+
 // FUNCTION: GAME 0x0055bdf0
 std::wstring FUN_0055bdf0(unsigned long first, unsigned long count)
 {
@@ -186,6 +195,42 @@ std::wstring RHPCStatus::GenerateName(const RHCharacterProfile &profile)
         }
     }
     return name;
+}
+
+// FUNCTION: GAME 0x0055c220
+unsigned short *RHPCStatus::GetAmmoCounter(int action)
+{
+    unsigned short *result = 0;
+    switch (action) {
+    case 12: result = &m_18; break;
+    case 11: result = &m_1c; break;
+    case 1: result = &m_1a; break;
+    case 13:
+    case 14: result = &m_1e; break;
+    case 17: result = &m_24; break;
+    case 5: result = &m_20; break;
+    case 16: result = &m_26; break;
+    case 4: result = &m_28; break;
+    case 19: result = &m_22; break;
+    }
+    return result;
+}
+
+// FUNCTION: GAME 0x0055c2c0
+void RHPCStatus::SetAmmoAmount(int action, unsigned short amount)
+{
+    switch (action) {
+    case 12: m_18 = amount; break;
+    case 11: m_1c = amount; break;
+    case 1: m_1a = amount; break;
+    case 13:
+    case 14: m_1e = amount; break;
+    case 17: m_24 = amount; break;
+    case 5: m_20 = amount; break;
+    case 16: m_26 = amount; break;
+    case 4: m_28 = amount; break;
+    case 19: m_22 = amount; break;
+    }
 }
 
 // FUNCTION: GAME 0x0055c390
