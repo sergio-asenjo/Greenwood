@@ -3,6 +3,12 @@
 // Layout is exact from Game.exe: a 16-byte element array with first at +0x8
 // and last at +0xc.
 
+#include "SBNullstr.h"
+#include <vector>
+#include <string.h>
+
+extern char g_unk0x6c0560[4];
+
 class RHUnk00401a00
 {
 public:
@@ -36,6 +42,14 @@ int RHUnk00401a00::FUN_00401a50(int index)
 int RHUnk00401a00::FUN_00401a80(int i, int j)
 {
     return *(int *)(m_8 + i * 16 + 4) + j * 16;
+}
+
+// FUNCTION: GAME 0x00401aa0
+int FUN_00401aa0(const std::vector<std::string> &values)
+{
+    if (!values.empty() && strcmp(values[0].c_str(), g_unk0x6c0560) != 0)
+        return 0;
+    return 1;
 }
 
 void EmitRHUnk00401a00(RHUnk00401a00 *object)

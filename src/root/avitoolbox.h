@@ -29,14 +29,7 @@ public:
 
 class RHArtificialIntelligenceSoundCalls;
 
-struct ToolboxMouseState
-{
-    short m_x;
-    short m_y;
-    unsigned short m_flags;
-    unsigned short m_buttons;
-    unsigned short m_extra;
-};
+#include "ToolboxMouseState.h"
 
 struct RHUnkBink
 {

@@ -97,3 +97,13 @@ bool FUN_00401130(const char *name)
         "Unable to play cinematic %s", name);
     return false;
 }
+
+bool FUN_005f6400(const std::string &name);
+int FUN_005f5a80(std::string &name, bool retry);
+
+// FUNCTION: GAME 0x004013a0
+void FUN_004013a0(const std::string &name)
+{
+    if (FUN_005f6400(name) || FUN_005f5a80(const_cast<std::string &>(name), false) == 0)
+        FUN_00401130(name.c_str());
+}

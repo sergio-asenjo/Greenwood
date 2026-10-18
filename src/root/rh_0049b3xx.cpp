@@ -84,6 +84,7 @@ public:
     void FUN_0049b410();
     void FUN_0049b420();
     void FUN_0049b430();
+    void FUN_0049b440();
     void FUN_0049b470(void *value, bool flag);
     void FUN_0049b490(unsigned row, unsigned flags);
     void FUN_0049b4b0(unsigned long value);
@@ -325,6 +326,21 @@ void RHUnk0049b390::FUN_0049b430()
     ((RHBonusInfoBase *)(AT(char *, 0x50) + 4))->FUN_0055f290();
 }
 
+struct RHUnk0049b440Triple
+{
+    int m_0;
+    int m_4;
+    int m_8;
+};
+
+// FUNCTION: GAME 0x0049b440
+void RHUnk0049b390::FUN_0049b440()
+{
+    char *position = AT(char *, 0x50) + 4;
+    *(RHUnk0049b440Triple *)(position + 0x28) = *(RHUnk0049b440Triple *)(position + 0xc);
+    *(SBGeoPoint2D *)(position + 0x3c) = *(SBGeoPoint2D *)(position + 0x20);
+}
+
 // FUNCTION: GAME 0x0049b470
 void RHUnk0049b390::FUN_0049b470(void *value, bool flag)
 {
@@ -401,7 +417,7 @@ void RHUnk0049b680::FUN_0049b680(int value) { AT(int, 0x68) = value; }
 // FUNCTION: GAME 0x0049b690
 void RHUnk0049b690::FUN_0049b690(RHUnk00585500 *value) { value->Unk(this); }
 
-// Parked: VC6 places the successful return before the shared false return.
+// Parked: named-result and bool-return probes retain the reversed shared false/true return layout.
 // STUB: GAME 0x0049bb00
 char RHUnk0049bb00::FUN_0049bb00()
 {
