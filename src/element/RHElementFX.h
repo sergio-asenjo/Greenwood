@@ -76,6 +76,7 @@ class RHElementFX : public RHElement
 public:
     void InitializeBackgroundRestoration();
     virtual bool Serialize(SBFile &file);
+    int FUN_004aa930();
     void Emit(SBFile &file);
 
     char m_a8[4];                 // +0xa8

@@ -31,6 +31,7 @@
 // src/RHSword.cpp; references here resolve to the same pooled entities.)
 
 #include "RHElementActorCivilian.h"
+#include "RHElementActorHumanCore.h"
 
 DECOMP_SIZE_ASSERT(RHElementActorNPC, 0x704)
 DECOMP_SIZE_ASSERT(RHElementActorCivilian, 0x70c)
@@ -361,7 +362,7 @@ bool RHElementActorCivilian::FUN_00470e50(void *first, void *second, int kind)
 // GLOBAL: GAME 0x006c0c50
 RHMinimap *g_unk0x6c0c50;
 
-// Parked: the argument read and saved-register schedule still differ from the target.
+// Parked: inline argument and receiver probes still change the argument-load/save-register schedule.
 // STUB: GAME 0x00471060
 void FUN_00471060(unsigned int index)
 {
@@ -475,8 +476,6 @@ public:
     void FUN_00471590(unsigned char flags);
 };
 
-void RHElementActorCivilian::FUN_00471e50(int, int) {}
-void RHElementActorCivilian::FUN_0047e9a0(int, int) {}
 bool RHElementActorCivilian::FUN_00475810(RHElementActorCivilian *) { return false; }
 
 // FUNCTION: GAME 0x00471240
@@ -488,18 +487,40 @@ bool RHElementActorCivilian::FUN_00471240(RHElementActorCivilian *arg)
     return false;
 }
 
+// FUNCTION: GAME 0x00471280
+void RHElementActorCivilian::GetTransitionFlags(RHSequenceElement *element, unsigned long &first, unsigned long &second, unsigned long &third)
+{
+    if (*(int *)((char *)element + 0x10) != 0x76)
+        RHElementActorNPC::GetTransitionFlags(element, first, second, third);
+    else
+        first = 1;
+}
+
+// FUNCTION: GAME 0x004712b0
+int RHElementActorCivilian::FUN_004712b0(RHSoldierSequenceElement *element)
+{
+    int type = element->m_5c;
+    if (type == 0xb)
+    {
+        if (element->m_10 != 0x76)
+            return ((RHSoldierNPCCalls *)this)->FUN_0048d100(element);
+        return 8;
+    }
+    return type;
+}
+
 // FUNCTION: GAME 0x00471400
 void RHElementActorCivilian::FUN_00471400(int first, int second)
 {
     if (!RHCivilianField<int>(this, 0x500))
-        FUN_00471e50(first, second);
+        ((RHElementActorHuman *)this)->FUN_00471e50(first, second);
 }
 
 // FUNCTION: GAME 0x00471420
 void RHElementActorCivilian::FUN_00471420(int first, int second)
 {
     if (!RHCivilianField<int>(this, 0x500))
-        FUN_0047e9a0(first, second);
+        ((RHElementActorHuman *)this)->FUN_0047e9a0(first, second);
 }
 
 // FUNCTION: GAME 0x00471590
@@ -575,5 +596,6 @@ void RHElementActorCivilian::Emit(SBFile &file)
     FUN_00470ca0();
     FUN_00470ce0();
     FUN_00471240(0);
+    FUN_004712b0(0);
     FUN_00485990();
 }

@@ -1264,8 +1264,41 @@ unsigned short RHSprite::FUN_005bddb0(unsigned index)
     return RHSpriteField<unsigned short *>(holder, 4)[animation * 0x64 + 0x10];
 }
 
-// Parked: the m_186 frame index is hoisted before the frame-table load; the
-// target loads it after the table (schedule seam, 3 shapes tried).
+// FUNCTION: GAME 0x005bddf0
+unsigned short RHSprite::FUN_005bddf0()
+{
+    void *holder = ((RHUnk005b5e00 *)this)->FUN_005b5de0();
+    undefined *entries = RHSpriteField<undefined *>(holder, 4);
+    undefined *span = entries + m_184 * 0x64 + 0x44;
+    SBGeoPoint2D *first = RHSpriteField<SBGeoPoint2D *>(span, 4);
+    unsigned short count = first == 0 ? 0 : RHSpriteField<SBGeoPoint2D *>(span, 8) - first;
+    unsigned short maximum = 0;
+    for (int index = 0; index < count; ++index)
+    {
+        if (FUN_005bdb40(m_184, index) > maximum)
+            maximum = FUN_005bdb40(m_184, index);
+    }
+    return maximum;
+}
+
+// FUNCTION: GAME 0x005bde70
+unsigned short RHSprite::FUN_005bde70()
+{
+    void *holder = ((RHUnk005b5e00 *)this)->FUN_005b5de0();
+    undefined *entries = RHSpriteField<undefined *>(holder, 4);
+    undefined *span = entries + m_184 * 0x64 + 0x44;
+    SBGeoPoint2D *first = RHSpriteField<SBGeoPoint2D *>(span, 4);
+    unsigned short count = first == 0 ? 0 : RHSpriteField<SBGeoPoint2D *>(span, 8) - first;
+    unsigned short maximum = 0;
+    for (int index = 0; index < count; ++index)
+    {
+        if (FUN_005bdb80(m_184, index) > maximum)
+            maximum = FUN_005bdb80(m_184, index);
+    }
+    return maximum;
+}
+
+// Parked: volatile table/frame probes change registers or still hoist the frame index before the table load.
 // STUB: GAME 0x005bdf30
 void RHSprite::FUN_005bdf30()
 {
@@ -1290,6 +1323,8 @@ SBGeoVector2D::SBGeoVector2D(float x, float y) : SBGeoPoint2D(x, y)
 
 void RHSprite::Emit(SBFile &file)
 {
+    FUN_005bddf0();
+    FUN_005bde70();
     FUN_0049b2c0();
     FUN_005b5e20();
     FUN_005b5e60();

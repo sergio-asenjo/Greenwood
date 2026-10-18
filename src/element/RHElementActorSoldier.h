@@ -13,11 +13,15 @@
 // is not redefined here.
 
 #include "SB.h"
+class RHSequenceElement;
+class RHElementActorHuman;
 
 class RHElementActorNPC
 {
 public:
     virtual bool Serialize(SBFile &file);
+    void *FUN_0048c380(RHElementActorHuman *target);
+    void GetTransitionFlags(RHSequenceElement *element, unsigned long &first, unsigned long &second, unsigned long &third);
 
 private:
     char m_unkBase[0xa38]; // [0x04, 0xa3c): RHElementActorNPC-owned, untouched here
@@ -37,13 +41,7 @@ struct RHSoldierTransition
     int m_40;
 };
 
-struct RHSoldierSequenceElement
-{
-    char m_00[0x10];
-    int m_10;
-    char m_14[0x48];
-    int m_5c;
-};
+#include "RHSoldierNPCCalls.h"
 
 struct RHMalignityPosition;
 struct RHMalignityStimulus;
@@ -70,14 +68,6 @@ public:
     virtual void V24(RHMalignityStimulus *stimulus) = 0;
     void FUN_004a5dc0(unsigned type, const RHSoldierDoorPayload &payload);
     void FUN_004a64a0(unsigned type, const RHMalignityPosition &position);
-};
-
-class RHSoldierNPCCalls
-{
-public:
-    void FUN_0048b510(void *element);
-    int FUN_0048d100(RHSoldierSequenceElement *element);
-    void FUN_0048d790(RHSoldierSequenceElement *element);
 };
 
 class RHSoldierActorCalls
@@ -145,7 +135,7 @@ public:
     virtual void Vec() = 0;
     virtual void Vf0() = 0;
     virtual void Vf4() = 0;
-    virtual void Vf8() = 0;
+    virtual bool Vf8() = 0;
     virtual void Vfc() = 0;
     virtual void V100() = 0;
     virtual void V104() = 0;
@@ -167,6 +157,13 @@ public:
     virtual void V144(int value) = 0; // vtable+0x144
     virtual void V148(int value) = 0; // vtable+0x148
     virtual void V14c(int value) = 0; // vtable+0x14c
+    virtual void V150() = 0;
+    virtual void V154() = 0;
+    virtual void V158() = 0;
+    virtual void V15c() = 0;
+    virtual void V160() = 0;
+    virtual void V164() = 0;
+    virtual bool V168() = 0;
 };
 
 class RHSoldierHumanCalls
@@ -175,7 +172,6 @@ public:
     void FUN_00478e50(class RHUnk00613e90 &position);
     bool FUN_00475970(unsigned flags, struct RHSoldierTransition *element);
     bool FUN_00475b00(unsigned flags, struct RHSoldierTransition *element);
-    void FUN_0047e9a0(void *first, void *second);
 };
 
 class RHElementActorSoldier : public RHElementActorNPC
@@ -194,6 +190,8 @@ public:
     int FUN_004a1da0();
     int FUN_004a1db0();
     void FUN_004a2550(void *element);
+    void *FUN_004a5190(RHSoldierActorCalls *target);
+    void GetTransitionFlags(RHSequenceElement *element, unsigned long &first, unsigned long &second, unsigned long &third);
     bool FUN_004a5670();
     bool FUN_004a5680();
     bool FUN_004a5690();

@@ -246,6 +246,8 @@ public:
     bool FUN_005b7300(int, int);
     bool FUN_005b7820(int);
     bool FUN_005bd450();
+    unsigned short FUN_005bb5f0();
+    unsigned short FUN_005bd600(int animation);
     unsigned short FUN_005bdbf0(unsigned short, unsigned short);
     unsigned FUN_005bdbc0(unsigned short, unsigned short);
     short FUN_005bdc20(unsigned short, unsigned short);
@@ -262,6 +264,8 @@ public:
     unsigned short FUN_005bdd70();
     const SBGeoPoint2D *FUN_005bdd90();
     unsigned short FUN_005bddb0(unsigned index);
+    unsigned short FUN_005bddf0();
+    unsigned short FUN_005bde70();
     void FUN_005b94d0(unsigned short, void *, void *, void *, int);
     bool FUN_005b9b60(unsigned short, unsigned short);
     void FUN_005b9ce0();

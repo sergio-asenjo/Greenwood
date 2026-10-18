@@ -9,14 +9,8 @@
 #include <iterator>
 #include "RHActorTranslation.h"
 
-class RHSequenceElement
-{
-public:
-    int Unk00587160(int argument);
-    char m_00[0x10];
-    int m_10;
-};
-enum RHcommand { RHcommandUnk0 = 0 };
+#include "RHHumanSequenceElement.h"
+#include "RHActorCommand.h"
 class RHOrder;
 class RHUnk00613e90;
 class RHElementActor
@@ -25,12 +19,14 @@ public:
     virtual bool Serialize(SBFile &file); // vtable+0x00
     void Translate(RHSequenceElement *element, RHcommand command);
     void ExecuteImmediately(RHSequenceElement *element);
+    void GetTransitionFlags(RHSequenceElement *element, unsigned long &first, unsigned long &second, unsigned long &third);
     void FUN_0046bcb0(int value);
     void FUN_00468f40(void *value);
     void FUN_0046bd40(RHSequenceElement *element);
     bool FUN_0046b760(unsigned flags, void *value);
     bool FUN_0046b2b0(unsigned flags, RHActorTranslationSequenceCalls *sequence);
     void FUN_00478c20(RHUnk00613e90 &point, bool value);
+    void FUN_00478ae0(RHUnk00613e90 &point);
 };
 class RHEngine
 {
@@ -100,29 +96,21 @@ public:
     RHHumanOpponentIterator FUN_00486110(RHHumanOpponentIterator position, const RHHumanOpponent &value);
 };
 // SIZE 0x18
-struct RHHumanList
-{
-    undefined4 m_0; // 0x00
-    RHScriptNode *head; // 0x04
-    unsigned count; // 0x08
-    RHScriptNode *cursor; // 0x0c
-    undefined valid; // 0x10
-    undefined m_11[3]; // 0x11
-    int index; // 0x14
+#include "RHHumanListCore.h"
 
-    RHScriptIter begin() { return RHScriptIter(head->next); }
-    RHScriptIter end() { return RHScriptIter(head); }
-    void Clear()
+inline RHScriptIter RHHumanList::begin() { return RHScriptIter(head->next); }
+inline RHScriptIter RHHumanList::end() { return RHScriptIter(head); }
+inline void RHHumanList::Clear()
     {
         typedef RHScriptIter (RHTitbitList::*Erase)(RHScriptIter, RHScriptIter);
         (((RHTitbitList *)this)->*(Erase)&RHTitbitList::Clear)(begin(), end());
         valid = 1;
     }
-    void Insert(void *const &value)
+inline void RHHumanList::Insert(void *const &value)
     {
         ((RHUnkList *)this)->insert(RHUnkIter(head), (RHOrder *const &)value);
     }
-    void InsertRepeated(RHUnkIter position, unsigned amount, void *const &value)
+inline void RHHumanList::InsertRepeated(RHUnkIter position, unsigned amount, void *const &value)
     {
         while (amount != 0)
         {
@@ -130,7 +118,7 @@ struct RHHumanList
             --amount;
         }
     }
-    void Resize(unsigned wanted, void *value)
+inline void RHHumanList::Resize(unsigned wanted, void *value)
     {
         if (count < wanted)
             InsertRepeated(RHUnkIter(head), wanted - count, value);
@@ -146,8 +134,6 @@ struct RHHumanList
             }
         }
     }
-};
-
 // SIZE 0x49c
 class RHUnk005864a0;
 class RHUnk005bdcb0
@@ -179,111 +165,7 @@ class RHUnkHumanPositionRange
 public:
     bool FUN_0051afe0();
 };
-class RHElementActorHuman
-{
-public:
-    void FUN_00474890(void *value);
-    bool FUN_00475750(unsigned flags, RHActorTranslationSequenceCalls *sequence);
-    bool FUN_00475b00(unsigned flags, void *value);
-    void FUN_00479920(RHElementActorHuman *actor);
-    void FUN_00479970(RHSequenceElement *element);
-    void Translate(RHSequenceElement *element, RHcommand command);
-    bool Serialize(SBFile &file);
-    void FUN_0047a870(void *value);
-    void FUN_0047f4f0(void *value);
-    bool FUN_0047f420();
-    void FUN_0047a880(RHSequenceElement *element);
-    float FUN_0047a890();
-    unsigned char FUN_0047ac60();
-    void FUN_0047a8a0();
-    void FUN_0047ab00(int first, int second);
-    void FUN_0047aba0();
-    void FUN_0047a960(void *first, void *second, char force);
-    bool FUN_0047ac90(void *element, bool checkRange);
-    void FUN_0046e2e0(void *value);
-    int FUN_004838f0(bool alternate);
-    void FUN_00482150(int value, int unused, bool flag);
-    unsigned short FUN_00482240(int index, RHElementActorHuman *other);
-    void FUN_00482390(RHHumanList *result, int weaponData, bool alternate);
-    void FUN_00482600(RHHumanList *result, int weaponData);
-    void FUN_004828b0(RHHumanList *result, int weaponData);
-    void FUN_00482b90(RHHumanList *result, float angle);
-    void FUN_00482e50(RHHumanList *result, int weaponData);
-    void FUN_00482fd0(RHHumanList *result, int weaponData, bool alternate);
-    bool FUN_00483070(RHElementActorHuman *other);
-    unsigned FUN_00483160(void *context, RHElementActorHuman *target, unsigned type);
-    unsigned FUN_00483500(void *context, unsigned command, RHElementActorHuman *target);
-    void *FUN_004837f0(RHElementActorHuman *target);
-    int FUN_0047b760(void *actor, int *value);
-    int FUN_00481050(void *first, void *second, int weaponData);
-    int FUN_00480e90(void *first, void *second, int weaponData);
-    int FUN_00481d40(void *first, void *second);
-    int FUN_00481ef0(int target, void *first, int weaponData);
-    void FUN_0047f520(float mode, int weaponData);
-    void FUN_0047faf0(float mode, int weaponData);
-    int FUN_004801d0(void *first, void *second, int weaponData);
-    int FUN_004808f0(void *first, void *second, int weaponData);
-    int FUN_00481150(int weaponData);
-    void FUN_0047c420(void *value);
-    int FUN_0047c4c0(RHElementActorHuman *actor);
-    void FUN_0047ca50();
-    bool FUN_0047c600(RHElementActorHuman *actor, int mode, bool flag);
-    void FUN_0047cb00();
-    void FUN_0047cd40();
-    bool FUN_0047ce70(RHElementActorHuman *actor, void *line);
-    bool FUN_0047cf80(RHElementActorHuman *actor, void *line);
-    void FUN_0047d1b0();
-    bool FUN_0047d320(RHElementActorHuman *actor);
-    void FUN_0047d560();
-    void FUN_0047d670();
-    void FUN_0047d920(RHElementActorHuman *actor);
-    int FUN_0047e7d0(RHUnk005864a0 *element);
-    void FUN_0047e9d0(RHUnk005864a0 *element);
-    int FUN_00484a70(void *value);
-    bool FUN_00484bb0(RHElementActorHuman *actor, SBGeoPoint2D &result, void *line);
-    void Emit(SBFile &file, RHSequenceElement *element, RHcommand command);
-
-    char m_000[0x1b8]; // +0x50: position owner; +0x5c: sequence manager; +0x64: grid; +0x144: action state.
-    RHHumanList m_1b8; // +0x1b8: sequence pointer list; head +0x1bc, count +0x1c0.
-    char m_1d0[0x1c]; // +0x1d0: serialized 28-byte block.
-    undefined m_1ec[0x20]; // 0x1ec
-    RHHumanList m_20c; // +0x20c: actor pointer list; cursor +0x218, dirty +0x21c.
-    undefined m_224[0xc]; // 0x224
-    int m_230; // 0x230
-    int m_234; // 0x234
-    int m_238; // 0x238
-    short m_23c; // 0x23c
-    undefined m_23e; // 0x23e
-    undefined m_23f; // 0x23f
-    short m_240[9]; // +0x240: nine serialized words.
-    undefined m_252[2]; // 0x252
-    void *m_254; // 0x254
-    undefined m_258[8]; // 0x258
-    RHHumanList m_260; // +0x260: 8-byte opponent records; count +0x268, cursor +0x26c.
-    undefined m_278[0x10]; // 0x278
-    undefined m_288; // 0x288
-    undefined m_289; // 0x289
-    short m_28a; // 0x28a
-    int m_28c; // 0x28c
-    void *m_290; // 0x290
-    char m_294[0x1a8]; // +0x294: sight-obstacle serializer receiver.
-    char m_43c[0x40]; // +0x43c: nested serializer receiver.
-    undefined m_47c; // 0x47c
-    undefined m_47d[3]; // 0x47d
-    int m_480; // 0x480
-    int m_484; // 0x484
-    short m_488; // 0x488
-    undefined m_48a; // 0x48a
-    undefined m_48b; // 0x48b
-    int m_48c; // 0x48c
-    undefined m_490; // 0x490
-    undefined m_491; // 0x491
-    short m_492; // 0x492
-    short m_494; // 0x494
-    undefined m_496; // 0x496
-    undefined m_497; // 0x497
-    void *m_498; // 0x498
-};
+#include "RHElementActorHumanCore.h"
 
 // SIZE 0x7c
 class RHUnk005864a0
@@ -414,10 +296,10 @@ public:
     virtual void V038() = 0; // vtable+0x038
     virtual void V03c() = 0; // vtable+0x03c
     virtual void V040() = 0; // vtable+0x040
-    virtual void V044() = 0; // vtable+0x044
+    virtual void V044(int command) = 0; // vtable+0x044
     virtual bool V048() = 0; // vtable+0x048
     virtual void V04c() = 0; // vtable+0x04c
-    virtual void V050() = 0; // vtable+0x050
+    virtual bool V050(RHSequenceElement *element) = 0; // vtable+0x050
     virtual void V054() = 0; // vtable+0x054
     virtual void V058() = 0; // vtable+0x058
     virtual void V05c(void *value) = 0; // vtable+0x05c
@@ -448,11 +330,11 @@ public:
     virtual void V0c0() = 0; // vtable+0x0c0
     virtual void V0c4(int value) = 0; // vtable+0x0c4
     virtual void V0c8(int value, int amount) = 0; // vtable+0x0c8
-    virtual unsigned short V0cc() = 0; // vtable+0x0cc
+    virtual int V0cc() = 0; // vtable+0x0cc
     virtual void V0d0() = 0; // vtable+0x0d0
-    virtual void V0d4() = 0; // vtable+0x0d4
+    virtual void V0d4(short amount, void *source, bool notify) = 0; // vtable+0x0d4
     virtual void V0d8(unsigned short value, void *actor) = 0; // vtable+0x0d8
-    virtual void V0dc() = 0; // vtable+0x0dc
+    virtual void V0dc(unsigned short amount, void *source, bool notify) = 0; // vtable+0x0dc
     virtual void V0e0() = 0; // vtable+0x0e0
     virtual void V0e4() = 0; // vtable+0x0e4
     virtual void V0e8(int value, bool flag) = 0; // vtable+0x0e8
@@ -482,7 +364,7 @@ public:
     virtual void V148() = 0; // vtable+0x148
     virtual void V14c() = 0; // vtable+0x14c
     virtual void V150() = 0; // vtable+0x150
-    virtual void V154() = 0; // vtable+0x154
+    virtual void V154(RHActorTranslationSequenceCalls *sequence) = 0; // vtable+0x154
     virtual void V158() = 0; // vtable+0x158
     virtual void V15c() = 0; // vtable+0x15c
     virtual void V160() = 0; // vtable+0x160
@@ -579,17 +461,7 @@ public:
 
 SBGeoVector2D operator*(float factor, const SBGeoVector2D &point);
 
-class RHHumanActorCalls
-{
-public:
-    void FUN_0047d4c0();
-    void FUN_0047d520(void *actor, int value);
-    void FUN_00479320(RHUnk00613e90 &point);
-    int FUN_0047b8a0(const RHUnk00613e90 &point, int *value, bool mode);
-    void FUN_0047d270(void *actor);
-    void FUN_0049d780();
-    SBGeoPoint2D FUN_004237d0();
-};
+#include "RHHumanActorCalls.h"
 
 class RHUnk005c38b0;
 extern RHUnk005c38b0 *g_unk0x6c10e8;

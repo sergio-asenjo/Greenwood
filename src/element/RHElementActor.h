@@ -4,7 +4,7 @@
 #include "RHElementActor_calls.h"
 #include "Decomp.h"
 
-enum RHcommand { RHcommandUnk0 = 0 };
+#include "RHActorCommand.h"
 
 // SIZE 0x14
 struct RHHumanMapNode
@@ -103,6 +103,7 @@ class RHElementActor : public RHElement, public RHActorScriptBase
 {
 public:
     char FUN_00463200() const;
+    SBGeoVector2D FUN_00463210();
     void FUN_00463240(unsigned first, unsigned second, unsigned third);
     void FUN_00463250(unsigned value);
     void FUN_00463260(unsigned first, unsigned second, unsigned third, unsigned fourth);
@@ -118,6 +119,7 @@ public:
     void FUN_0046e7c0(unsigned short layer, void *sector);
     int FUN_0046e960();
     void FUN_0046e980(bool first, bool second);
+    bool FUN_00470160();
     unsigned short FUN_004626e0() const;
     void FUN_0046c8e0(int value);
     void FUN_0046bcb0(int value);
@@ -127,8 +129,17 @@ public:
     void FUN_00478ae0(RHUnk00613e90 &point);
     void FUN_00462700(unsigned short value);
     void FUN_00462730(RHElementActor *actor, bool value);
+    int FUN_00462a30(RHElementActor *other);
+    bool FUN_004640c0();
+    int FUN_0046ad00(void *first, void *second);
+    void GetTransitionFlags(RHSequenceElement *element, unsigned long &first, unsigned long &second, unsigned long &third);
+    bool FUN_0046b210(RHSequenceElement *element);
+    bool FUN_0046b2b0(unsigned flags, RHActorTranslationSequenceCalls *sequence);
+    void FUN_0046bb80();
+    void FUN_0046bab0();
+    void FUN_0046bbf0();
     SBGeoPoint2D FUN_00462920();
-    void FUN_00464630();
+    void FUN_00462940(int action);
     int FUN_00467200() const;
     bool FUN_00467210();
     void *FUN_00467220() const;

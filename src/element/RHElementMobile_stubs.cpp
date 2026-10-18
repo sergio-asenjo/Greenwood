@@ -1,6 +1,12 @@
 #include "SBNullstr.h"
 #include "RHElementMobile.h"
 
+class RHSprite
+{
+public:
+    bool FUN_005b9e30(void *first, void *second, bool third);
+};
+
 RHMobileBase004a8130::RHMobileBase004a8130(int) throw() {}
 RHMobileBase004a8130::~RHMobileBase004a8130() {}
 void RHMobileBase004a8130::v1() {}
@@ -36,8 +42,37 @@ bool RHUnk004aac40::v16(SBFile &) { return false; }
 RHMobileSegment::RHMobileSegment(const SBGeoPoint2D &, const SBGeoPoint2D &) {}
 RHMobileSegment::~RHMobileSegment() {}
 void RHMobileGrid::FUN_004ed370(void *, unsigned short, const RHMobileSegment &, unsigned) {}
-void RHMobileUnk0060a820::FUN_006158b0(const SBGeoPoint2D &, const SBGeoPoint2D &) {}
-void RHMobileUnk00607da0::FUN_00607990(const RHMobileUnk00607da0 &) {}
+// FUNCTION: GAME 0x006158b0
+RHMobileUnk0060a820 &RHMobileUnk0060a820::FUN_006158b0(const SBGeoPoint2D &first, const SBGeoPoint2D &second)
+{
+    ((RHMobileUnk006100e0 *)this)->RHMobileUnk006100e0::RHMobileUnk006100e0(first, second);
+    return *this;
+}
+
+// FUNCTION: GAME 0x006158d0
+RHMobileUnk0060a820 &RHMobileUnk0060a820::FUN_006158d0(const SBGeoPoint2D &point)
+{
+    ((RHMobileUnk006100e0 *)this)->RHMobileUnk006100e0::RHMobileUnk006100e0(point, *(const SBGeoPoint2D *)((const char *)&point + 8));
+    return *this;
+}
+
+// FUNCTION: GAME 0x006158f0
+RHMobileUnk0060a820 &RHMobileUnk0060a820::FUN_006158f0(const RHMobileUnk006100e0 &other)
+{
+    ((RHMobileUnk006100e0 *)this)->FUN_00610140(other);
+    return *this;
+}
+// FUNCTION: GAME 0x00607990
+void RHMobileUnk00607da0::FUN_00607990(const RHMobileUnk00607da0 &other)
+{
+    bool value = *(const bool *)((const char *)&other + 0x10);
+    *(bool *)((char *)this + 0x10) = value;
+    if (value)
+    {
+        *(SBGeoPoint2D *)this = *(const SBGeoPoint2D *)&other;
+        *(SBGeoPoint2D *)((char *)this + 8) = *(const SBGeoPoint2D *)((const char *)&other + 8);
+    }
+}
 void RHMobileUnk006100e0::FUN_00578c50() {}
 
 bool RHMobilePath::FUN_00550660(unsigned char) { return false; }
@@ -146,4 +181,8 @@ void RHMobilePointerArray::Append(void *value)
 RHMobileAreaLoad::RHMobileAreaLoad() {}
 void RHMobileAreaLoad::FUN_005a3810(SBFile &, RHMobilePointerArray &) {}
 SBGeoBoundingBox2D::SBGeoBoundingBox2D(float left, float top, float right, float bottom) : m_0(left, top), m_8(right, bottom), m_10(1) {}
-bool RHMobilePartCalls::FUN_004aafc0(void *) { return false; }
+// FUNCTION: GAME 0x004aafc0
+bool RHMobilePartCalls::FUN_004aafc0(void *value)
+{
+    return ((RHSprite *)m_50)->FUN_005b9e30(value, m_54, false);
+}

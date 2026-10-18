@@ -11,7 +11,10 @@ public:
     virtual bool Serialize(SBFile &file);
     unsigned FUN_00450070(int type) const;
     unsigned FUN_004500a0() const;
+    unsigned FUN_004500c0(unsigned skill, unsigned range) const;
     short FUN_004502e0(unsigned type) const;
+    static float Interpolat(float firstX, float secondX, float firstY, float secondY, float value);
+    int FUN_004504b0(float value) const;
     int m_04; // [0x04]; allocation size 0x08
 
     struct Profile

@@ -38,11 +38,8 @@ bool RHActorGridCalls::FUN_004f5e50(SBGeoPoint2D &, const SBGeoPoint2D &, int) {
 void *RHActorAreaCalls::FUN_0057d800(const SBGeoPoint2D &) { return 0; }
 void RHElementActor::FUN_0046bcb0(int) {}
 void RHElementActor::FUN_00478c20(RHUnk00613e90 &, bool) {}
-void RHElementActor::FUN_00478ae0(RHUnk00613e90 &) {}
 SBGeoPoint2D RHElementActor::FUN_00462920() { return SBGeoPoint2D(); }
-void RHElementActor::FUN_00464630() {}
 
-bool RHActorCrossingHumanCalls::FUN_004843a0(void *) { return false; }
 bool RHActorCrossingHumanCalls::FUN_004843d0(SBGeoPoint2D &, void *, bool) { return false; }
 // FUNCTION: GAME 0x0054e730
 void RHOrder::FUN_0054e730()
@@ -65,7 +62,10 @@ RHUnk00613e90::RHUnk00613e90(float x, float y, float z)
     m_8 = z;
 }
 
-SBGeoVector2D RHBonusInfoBase::FUN_00468f10(int) const
+// FUNCTION: GAME 0x00468f10
+SBGeoVector2D RHBonusInfoBase::FUN_00468f10(int value) const
 {
-    return SBGeoVector2D(*(const SBGeoPoint2D *)this);
+    const SBGeoPoint2D *point =
+        (const SBGeoPoint2D *)((const char *)((RHUnkPathActorInfoBase *)this)->Unk0055fa10(value) + 8);
+    return SBGeoVector2D(*point);
 }

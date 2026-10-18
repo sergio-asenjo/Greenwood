@@ -1,6 +1,8 @@
 #include "SBNullstr.h"
 #include "RHElementActorNPC_calls.h"
 #include "RHMalignityActorCalls.h"
+#include "RHMalignityOwnerCalls.h"
+#include "RHElementActorHumanCore.h"
 
 #define RHNPC_ACCESS(buffer, size, line) \
     if (file.Access(buffer, size) < 0) \
@@ -290,12 +292,80 @@ bool RHElementActorNPC::Serialize(SBFile &file)
     return ((RHNPCBaseCalls *)this)->FUN_004799e0(file);
 }
 
+#include "RHActorSequenceStorage.h"
+
+// FUNCTION: GAME 0x0048c380
+void *RHElementActorNPC::FUN_0048c380(RHElementActorHuman *target)
+{
+    if (!((RHNPCActorCalls *)this)->V48() && !RHNPC_FIELD(char, 0x1ce) && RHNPC_FIELD(void *, 0x500))
+    {
+        RHUnk0045aaf0 *sequence = (RHUnk0045aaf0 *)((char *)this + 0x14);
+        sequence->FUN_0045abc0(0xf8, 0, 0);
+        RHNPC_FIELD(char, 0x92) = 1;
+        RHNPC_FIELD(int, 0xa0) = 0;
+        RHNPC_FIELD(unsigned short, 0xa4) = 2;
+        return sequence;
+    }
+    if (((RHNPCActorCalls *)this)->V48() || RHNPC_FIELD(char, 0x1ce))
+    {
+        if (RHNPC_FIELD(int, 0x4f0) && ((RHScriptBatchCalls *)target)->Unk0049d560(0x17))
+        {
+            RHUnk0045aaf0 *sequence = (RHUnk0045aaf0 *)((char *)this + 0x14);
+            sequence->FUN_0045abc0(0x70, 0, 0);
+            RHNPC_FIELD(char, 0x92) = 1;
+            RHNPC_FIELD(int, 0xa0) = 0;
+            RHNPC_FIELD(unsigned short, 0xa4) = 2;
+            return sequence;
+        }
+        if (RHNPC_FIELD(char, 0x1ce) && ((RHScriptBatchCalls *)target)->Unk0049d560(0x1d) &&
+            *(int *)(RHNPC_FIELD(char *, 0x50) + 0x8c) == 3)
+        {
+            RHUnk0045aaf0 *sequence = (RHUnk0045aaf0 *)((char *)this + 0x14);
+            sequence->FUN_0045abc0(0x41, 0, 0);
+            RHNPC_FIELD(char, 0x92) = 1;
+            RHNPC_FIELD(int, 0xa0) = 0;
+            RHNPC_FIELD(unsigned short, 0xa4) = 2;
+            return sequence;
+        }
+        if (RHNPC_FIELD(char, 0x1ce) && ((RHScriptBatchCalls *)target)->Unk0049d560(0x1b))
+        {
+            RHUnk0045aaf0 *sequence = (RHUnk0045aaf0 *)((char *)this + 0x14);
+            sequence->FUN_0045abc0(0x66, 0, 0);
+            RHNPC_FIELD(char, 0x92) = 1;
+            RHNPC_FIELD(int, 0xa0) = 0;
+            RHNPC_FIELD(unsigned short, 0xa4) = 2;
+            return sequence;
+        }
+    }
+    return ((RHElementActorHuman *)this)->FUN_004837f0(target);
+}
+
 inline unsigned short RHNPCActorCount()
 {
     RHMalignityActorCalls **first = *(RHMalignityActorCalls ***)((char *)g_pEngine + 0x495c);
     if (!first)
         return 0;
     return (unsigned short)(*(RHMalignityActorCalls ***)((char *)g_pEngine + 0x4960) - first);
+}
+
+#include <vector>
+
+// FUNCTION: GAME 0x0048c620
+void RHElementActorNPC::FUN_0048c620(void *actor)
+{
+    RHEngine *engine = g_pEngine;
+    typedef std::vector<RHMalignityActorCalls *> Actors;
+    unsigned short count = ((Actors *)((char *)engine + 0x4d28))->size();
+    for (unsigned short index = 0; index < count; ++index)
+    {
+        RHMalignityActorCalls *npc = (*(Actors *)((char *)engine + 0x4d28))[index];
+        if (((RHMalignityOwnerCalls *)((char *)npc + 0x6e8))->FUN_00438600() >= 30)
+        {
+            int state = *(int *)((char *)npc + (*(int **)((char *)npc + 0x49c))[1] + 0x4b0);
+            if (state >= 73 && state <= 81)
+                npc->FUN_0048c700(actor, 5);
+        }
+    }
 }
 
 // FUNCTION: GAME 0x0048c6a0
@@ -306,11 +376,121 @@ void RHElementActorNPC::FUN_0048c6a0(void *actor, unsigned mode)
         (*(RHMalignityActorCalls ***)((char *)g_pEngine + 0x495c))[i]->FUN_0048ca20(actor, mode);
 }
 
+#include "RHActorPriorityCalls.h"
+#include "RHSoldierNPCCalls.h"
+
+// FUNCTION: GAME 0x0048d100
+int RHSoldierNPCCalls::FUN_0048d100(RHSoldierSequenceElement *element)
+{
+    int kind = element->m_5c;
+    if (kind == 0xb)
+    {
+        switch (element->m_10)
+        {
+        case 0x7b:
+            return 3;
+        case 0x48: case 0x77: case 0x78: case 0x79: case 0x7a:
+        case 0x7c: case 0x7d: case 0x86: case 0x87: case 0x88:
+        case 0x8f: case 0x90:
+            return 8;
+        case 0x83: case 0x84: case 0x85:
+            return 1;
+        }
+        return ((RHHumanPriorityCalls *)this)->FUN_00471f20(element);
+    }
+    return kind;
+}
+
+// FUNCTION: GAME 0x0048d390
+void RHElementActorNPC::GetTransitionFlags(RHSequenceElement *element, unsigned long &first, unsigned long &second, unsigned long &third)
+{
+    switch (*(int *)((char *)element + 0x10))
+    {
+    case 0x77:
+        first = 0x81; second = 1; break;
+    case 0x7a:
+        first = 1; second = 1; break;
+    case 0x8f:
+        first = 1; second = 1; break;
+    case 0x90:
+        first = 1; second = 0x20001; break;
+    default:
+        ((RHElementActorHuman *)this)->GetTransitionFlags(element, first, second, third);
+    }
+}
+
+// Parked: direct stores hoist the final constant; intrinsic zeroing changes the base register.
+// STUB: GAME 0x0048e580
+void RHMalignityActorCalls::FUN_0048e580()
+{
+    RHNPC_FIELD(unsigned, 0x63c) = 0;
+    RHNPC_FIELD(unsigned, 0x640) = 0;
+    RHNPC_FIELD(unsigned, 0x644) = 0;
+    RHNPC_FIELD(unsigned short, 0x648) = 0;
+    RHNPC_FIELD(unsigned, 0x64c) = 7;
+}
+
+// FUNCTION: GAME 0x0048e5b0
+void RHMalignityActorCalls::FUN_0048e5b0(unsigned operation, unsigned short value, unsigned)
+{
+    switch (operation)
+    {
+    case 1:
+        unsigned short current = RHNPC_FIELD(unsigned short, 0x4ca);
+        RHNPC_FIELD(unsigned short, 0x4ca) = value >= current ? 0 : current - value;
+    }
+}
+
+// FUNCTION: GAME 0x0048e5f0
+unsigned short RHMalignityActorCalls::FUN_0048e5f0(unsigned operation)
+{
+    switch (operation)
+    {
+    default:
+        return 0xffff;
+    case 1:
+        return RHNPC_FIELD(unsigned short, 0x4ca);
+    }
+}
+
+// FUNCTION: GAME 0x0048efa0
+int RHElementActorNPC::FUN_0048efa0()
+{
+    if (((RHNPCActorCalls *)this)->V130() == 0 &&
+        *(char *)((char *)g_pEngine + 0x4aa8) &&
+        !((RHNPCActorCalls *)this)->Vf4())
+        return 1;
+    return 0;
+}
+
+// FUNCTION: GAME 0x0048efe0
+RHNPCDetectableList::RHNPCDetectableList()
+{
+    char value;
+    *(char *)&m_0 = value;
+    RHPathHistoryNode *list = new RHPathHistoryNode;
+    list->m_next = list;
+    list->m_prev = list;
+    m_head = list;
+    m_valid = 1;
+    m_count = 0;
+    *(char *)((char *)this + 0x2a) = 0;
+    *(char *)((char *)this + 0x28) = 0;
+    *(char *)((char *)this + 0x29) = 0;
+    *(char *)((char *)this + 0x2c) = 0;
+    *(int *)((char *)this + 0x30) = 0;
+    *(int *)((char *)this + 0x24) = 7;
+}
+
 void RHElementActorNPC::Emit(SBFile &file)
 {
+    FUN_0048c380(0);
     FUN_00487ce0();
+    FUN_0048c620(this);
     FUN_0048c6a0(this, 0);
     Serialize(file);
     RHDetectable value;
     value.Serialize(file);
+    FUN_0048efa0();
+    RHNPCDetectableList detectables;
 }

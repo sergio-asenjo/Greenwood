@@ -27,11 +27,15 @@ struct RHCivilianProfileView
     int m_30; // 0x30
 };
 
+#include "RHSoldierNPCCalls.h"
+class RHSequenceElement;
+
 // SIZE 0x704
 class RHElementActorNPC
 {
 public:
     virtual bool Serialize(SBFile &file); // vtable+0x00 (serializer-only view)
+    void GetTransitionFlags(RHSequenceElement *element, unsigned long &first, unsigned long &second, unsigned long &third);
 
 private:
     char m_unkBase[0x700]; // [0x04, 0x704): RHElementActorNPC-owned, untouched here
@@ -42,6 +46,7 @@ class RHElementActorCivilian : public RHElementActorNPC
 {
 public:
     virtual bool Serialize(SBFile &file); // vtable+0x00 (serializer-only view)
+    void GetTransitionFlags(RHSequenceElement *element, unsigned long &first, unsigned long &second, unsigned long &third);
 
     bool FUN_00470ca0();
     bool FUN_00470cc0();
@@ -61,10 +66,9 @@ public:
     void FUN_00471400(int first, int second);
     void FUN_00471420(int first, int second);
     bool FUN_00471240(RHElementActorCivilian *arg);
+    int FUN_004712b0(RHSoldierSequenceElement *element);
     bool FUN_00475810(RHElementActorCivilian *arg);
     bool FUN_00485990();
-    void FUN_00471e50(int first, int second);
-    void FUN_0047e9a0(int first, int second);
 
     void Emit(SBFile &file);
 

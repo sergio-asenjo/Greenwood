@@ -192,11 +192,7 @@ public:
     undefined m_4[0x38]; // 0x04
 };
 
-class RHUnkSectorPoints
-{
-public:
-    SBGeoPoint2D &Unk0060cef0(unsigned index);
-};
+#include "RHUnkSectorPoints.h"
 
 class RHMobilePolygonPoints
 {
@@ -308,11 +304,15 @@ public:
     SBGeoPoint2D m_8;
 };
 
+class RHMobileUnk006100e0;
+
 class RHMobileUnk0060a820
 {
 public:
     RHMobileUnk0060a820 &FUN_0060a820(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
-    void FUN_006158b0(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
+    RHMobileUnk0060a820 &FUN_006158b0(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
+    RHMobileUnk0060a820 &FUN_006158d0(const SBGeoPoint2D &point);
+    RHMobileUnk0060a820 &FUN_006158f0(const RHMobileUnk006100e0 &other);
 };
 
 class RHMobileUnk00611360
@@ -354,13 +354,7 @@ public:
     char m_0[0x14];
 };
 
-class RHMobileUnk006100e0 : public SBGeoPoint2D
-{
-public:
-    ~RHMobileUnk006100e0();
-    void FUN_00578c50();
-    char m_8[8];
-};
+#include "RHMobileUnk006100e0.h"
 
 class RHSoundSource;
 class RHMobileUnk005b4fa0
@@ -741,6 +735,9 @@ class RHMobilePartCalls
 {
 public:
     bool FUN_004aafc0(void *value);
+    undefined m_00[0x50];
+    void *m_50;
+    void *m_54;
 };
 class RHPath
 {

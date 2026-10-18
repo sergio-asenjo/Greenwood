@@ -24,6 +24,35 @@ SBGeoPoint2D RHUnk0042fde0::FUN_0042fde0() const
     return m_8.Unk005fc110(m_0);
 }
 
+class RHUnk0048f0e0List
+{
+public:
+    RHUnk0048f0e0List *m_next;
+    RHUnk0048f0e0List *m_prev;
+    char m_08[0x2c];
+};
+
+class RHUnk0048f0e0
+{
+public:
+    RHUnk0048f0e0(const char *value);
+    char m_0;
+    char m_1[3];
+    RHUnk0048f0e0List *m_4;
+    int m_8;
+};
+
+// FUNCTION: GAME 0x0048f0e0
+RHUnk0048f0e0::RHUnk0048f0e0(const char *value)
+{
+    m_0 = *value;
+    RHUnk0048f0e0List *list = new RHUnk0048f0e0List;
+    list->m_next = list;
+    list->m_prev = list;
+    m_4 = list;
+    m_8 = 0;
+}
+
 // FUNCTION: GAME 0x0048f170
 void *FUN_0048f170(void *value)
 {
@@ -1057,6 +1086,37 @@ RHUnk00521500::RHUnk00521500()
     m_18 = 1;
 }
 
+class RHUnk00613e90
+{
+public:
+    void FUN_00613e90();
+};
+
+class RHUnk006079c0
+{
+public:
+    void FUN_006079c0();
+};
+
+void RHUnk00613e90::FUN_00613e90() {}
+void RHUnk006079c0::FUN_006079c0() {}
+
+class RHUnk00521550
+{
+public:
+    RHUnk00521550();
+    unsigned m_0;
+    char m_4[0x10];
+};
+
+// FUNCTION: GAME 0x00521550
+RHUnk00521550::RHUnk00521550()
+{
+    ((RHUnk00613e90 *)((char *)this + 0x14))->FUN_00613e90();
+    ((RHUnk006079c0 *)((char *)this + 0x20))->FUN_006079c0();
+    *(unsigned *)this = 0x679130;
+}
+
 void EmitRHUnk0051fc10(void *storage)
 {
     ((RHUnk0051fc10 *)storage)->RHUnk0051fc10::RHUnk0051fc10();
@@ -1242,12 +1302,6 @@ RHUnk005fc3b0 &RHUnk005fc3b0::FUN_005fc430(const SBGeoPoint2D &other)
         FUN_005fc390(other);
     }
     return *this;
-}
-
-// FUNCTION: GAME 0x005fc680
-float RHUnk005fc3b0::FUN_005fc680(const RHUnk005fc3b0 &other, float value) const
-{
-    return (other.m_y * m_x - m_y * other.m_x) / value;
 }
 
 // deferred: unannotated pending reccmp #534 (0x00607da0).

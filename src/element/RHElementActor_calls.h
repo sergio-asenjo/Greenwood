@@ -31,6 +31,7 @@ public:
 class SBGeoVector2D : public SBGeoPoint2D
 {
 public:
+    SBGeoVector2D(float x, float y);
     SBGeoVector2D(const SBGeoPoint2D &other);
     ~SBGeoVector2D() {}
 };
@@ -319,11 +320,7 @@ public:
     }
 };
 
-class RHUnkSectorScript
-{
-public:
-    bool Unk00639a30(const std::string &name);
-};
+#include "RHUnkSectorScript.h"
 
 class RHActorScriptContext
 {
@@ -344,6 +341,7 @@ public:
     void FUN_0055f290();
     void FUN_0055fa20(RHBonusProjection *projection);
     void FUN_0055fa70(void *area);
+    void FUN_00462970(int action);
 };
 class RHUnkPathActorInfoBase
 {
@@ -378,6 +376,9 @@ class RHScriptBatchCalls
 public:
     void Unk0046bcf0(int posture, int value);
     void Unk0046bd10(int state);
+    void Unk00464630();
+    void Unk0046b9e0();
+    void Unk0058a940(void *context, int value, void *element);
     void Unk005c2ec0(void *position, int layer, int kind, void *actor, int value1, int value2, int value3, int value4);
     void Unk0057ec80(void *actor);
     void Unk0057ebd0(void *actor);
@@ -432,13 +433,7 @@ public:
     void *m_28;
 };
 
-class RHActorCrossingHumanCalls
-{
-public:
-    void FUN_004846d0();
-    bool FUN_004843a0(void *area);
-    bool FUN_004843d0(SBGeoPoint2D &point, void *area, bool value);
-};
+#include "RHActorCrossingHumanCalls.h"
 
 class RHElementAreaShape
 {

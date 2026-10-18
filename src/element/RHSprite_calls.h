@@ -24,6 +24,7 @@ public:
     SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &) const;
     SBGeoPoint2D Unk005fc110(const SBGeoPoint2D &) const;
     float FUN_005fc700(float) const;
+    float FUN_005fca90(const SBGeoPoint2D &other, float scale) const;
     bool operator==(const SBGeoPoint2D &) const;
     float m_x; // 0x00
     float m_y; // 0x04
@@ -38,6 +39,9 @@ public:
     SBGeoVector2D(const SBGeoPoint2D &);
     ~SBGeoVector2D() {}
     float FUN_005fc660(const SBGeoPoint2D &) const;
+    SBGeoVector2D GetNormalized(float scale) const;
+    void Normal(bool direction, float scale);
+    bool IsBetween(unsigned char first, unsigned char last) const;
 };
 SBGeoVector2D operator*(float, const SBGeoVector2D &);
 
@@ -46,6 +50,9 @@ class RHUnk005fc3b0 : public SBGeoPoint2D
 public:
     RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &);
     RHUnk005fc3b0 &FUN_005fc5b0(float factor);
+    float Unk005fc6a0(float scale);
+    unsigned char FUN_005fcc50(float scale) const;
+    float FUN_005fc680(const RHUnk005fc3b0 &other, float scale) const;
 };
 
 // SIZE 0x14
@@ -254,6 +261,7 @@ public:
 class RHScriptBatchCalls
 {
 public:
+    bool Unk0049d560(int action);
     void Unk005c2ec0(void *, int, int, void *, int, int, int, int);
 };
 

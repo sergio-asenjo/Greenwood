@@ -71,6 +71,7 @@ public:
     void Emit(SBFile &file);
     void FUN_004b2390(int value);
     bool FUN_004b2420(void *actor) const;
+    bool FUN_004a78c0(void *actor);
     bool FUN_004b24d0(const SBGeoPoint2D &point) const;
     void FUN_004b2600(void *points, void *lines, void *actor);
     void *FUN_004b29c0(void *actor);
@@ -182,7 +183,6 @@ public:
     virtual void Vdc();
     virtual void Ve0();
     virtual unsigned short Ve4(int value);
-    unsigned short FUN_0049d5e0(int value);
 };
 
 struct RHObjectMasterIterator

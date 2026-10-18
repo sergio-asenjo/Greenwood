@@ -2,8 +2,12 @@
 #define RHELEMENTACTORPC_H
 
 #include "Decomp.h"
+#include <string>
 
 class SBFile;
+class RHSequenceElement;
+class SBGeoPoint2D;
+class RHElementActorHuman;
 class RHBonusInfo;
 struct RHBonusGlobalView;
 struct RHBonusProjection;
@@ -12,6 +16,9 @@ struct RHBonusProjection;
 class RHElementActorPC
 {
 public:
+    void GetTransitionFlags(RHSequenceElement *element, unsigned long &first, unsigned long &second, unsigned long &third);
+    void FUN_0049c270();
+    bool FUN_0049c4b0(unsigned short action);
     unsigned short FUN_0048f910();
     char FUN_0048f920();
     bool FUN_0048f930();
@@ -23,6 +30,20 @@ public:
     char FUN_0048f9e0();
     unsigned FUN_0048f9f0();
     unsigned FUN_0048fa00();
+    void AbortQuickAction(unsigned short action);
+    bool SetQuickActionSequence(void *first, void *second, unsigned short action, unsigned long id);
+    bool SetQuickActionSequence(int value, unsigned short action, unsigned long id);
+    bool SetQuickActionSequence(int value, unsigned short action, unsigned long id, void *target, unsigned short amount);
+    std::wstring GetTooltipTextForAction(int action);
+    int FUN_00493ae0(bool allow, void *unused);
+    int FUN_00494850(void *element);
+    float FUN_0049d520();
+    void FUN_00495f90(void *element);
+    void FUN_0049b930(int amount, int unused, bool mode);
+    bool FUN_00490450(void *owner, void *target);
+    void *FUN_00490e10(RHElementActorHuman *target);
+    unsigned short FUN_00493b40(void *target, const SBGeoPoint2D &point, int unused1, int unused2);
+    void FUN_0049d400(RHSequenceElement *element);
     void FUN_0049c660(unsigned short value);
     unsigned short FUN_0049f500();
     unsigned short FUN_0049ff60();
@@ -32,6 +53,8 @@ public:
     bool FUN_004a18c0(void *target);
     int FUN_0049d590(int action);
     int FUN_0049d5c0(unsigned short action);
+    unsigned short FUN_0049d5e0(int action);
+    void FUN_0049d680(int action);
     void FUN_0049d890(unsigned short action);
     void FUN_0049d960(unsigned short action);
     void FUN_0049da00(unsigned short action);
@@ -58,13 +81,13 @@ public:
     unsigned FUN_0049f6c0();
     void FUN_0049fa20(unsigned index, void *value);
     bool FUN_0049fbc0();
-    void FUN_0049fbf0(void *actor);
-    void FUN_0049fc80(int index, void *value);
+    void FUN_0049fbf0(void *actor, bool consume);
+    void FUN_0049fc80(int index, unsigned amount);
     void FUN_0049fcd0();
     void FUN_0049fe20();
     void FUN_0049ff70();
     void FUN_0049ffe0(void *first, unsigned char flag, unsigned third, unsigned fourth, unsigned fifth, unsigned sixth, unsigned seventh);
-    void FUN_004a0020(void *first, unsigned second, unsigned third, unsigned fourth, unsigned fifth, unsigned sixth, unsigned seventh);
+    void FUN_004a0020(void *first, unsigned char second, unsigned third, unsigned fourth, unsigned fifth, unsigned sixth, unsigned seventh);
     void FUN_004a0340(void *first, void *second, unsigned third, unsigned fourth, int fifth, char sixth);
     void FUN_004a05a0();
     char FUN_004a05f0(const RHElementActorPC *other);
@@ -72,7 +95,7 @@ public:
     void FUN_004a06e0(unsigned char value);
     void FUN_004a07f0(unsigned first, unsigned second, unsigned third);
     unsigned FUN_004a0a30(void *position);
-    void FUN_004a0c90(int first, int second, int third);
+    void FUN_004a0c90(int first, int second, bool third);
     void FUN_004a0cc0(RHElementActorPC *other);
     void FUN_004a0d10(void *first, void *second, unsigned third, unsigned fourth, unsigned fifth, unsigned sixth, void *seventh);
     undefined m_0[0x50]; // 0x00

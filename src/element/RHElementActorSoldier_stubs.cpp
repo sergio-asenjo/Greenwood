@@ -9,15 +9,6 @@ void RHSoldierNPCCalls::FUN_0048d790(RHSoldierSequenceElement *)
 {
 }
 
-int RHSoldierNPCCalls::FUN_0048d100(RHSoldierSequenceElement *)
-{
-    return 0;
-}
-
-void RHSoldierHumanCalls::FUN_0047e9a0(void *, void *)
-{
-}
-
 void RHSoldierNPCCalls::FUN_0048b510(void *)
 {
 }

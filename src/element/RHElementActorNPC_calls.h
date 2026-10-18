@@ -121,6 +121,7 @@ public:
 
 struct RHNPCDetectableList : public RHPathHistoryList
 {
+    RHNPCDetectableList();
     char m_18[0x1c];
 };
 
@@ -145,7 +146,7 @@ public:
     virtual void V3c() = 0;
     virtual void V40() = 0;
     virtual void V44() = 0;
-    virtual void V48() = 0;
+    virtual bool V48() = 0;
     virtual void V4c() = 0;
     virtual void V50() = 0;
     virtual void V54() = 0;
@@ -188,7 +189,7 @@ public:
     virtual void Ve8() = 0;
     virtual void Vec() = 0;
     virtual void Vf0() = 0;
-    virtual void Vf4() = 0;
+    virtual bool Vf4() = 0;
     virtual void Vf8() = 0;
     virtual void Vfc() = 0;
     virtual void V100() = 0;

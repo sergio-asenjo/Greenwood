@@ -31,6 +31,7 @@
 
 #include "SBNullstr.h"
 #include "RHElementObject.h"
+#include "RHElementActorPC.h"
 
 // FUNCTION: GAME 0x004b2190
 bool RHElementObject::Serialize(SBFile &file)
@@ -124,11 +125,7 @@ void RHElementObject::FUN_004b2390(int value)
     m_b0 = value;
 }
 
-class RHUnk0049d4f0
-{
-public:
-    bool Unk(int value);
-};
+#include "RHPCActionQueryCalls.h"
 
 // FUNCTION: GAME 0x004b2420
 bool RHElementObject::FUN_004b2420(void *actor) const
@@ -136,11 +133,11 @@ bool RHElementObject::FUN_004b2420(void *actor) const
     if (m_a8 == 0)
         return true;
     if (((RHUnk0049d4f0 *)actor)->Unk(m_a8)) {
-        if (((RHObjectPCQuantity *)actor)->FUN_0049d5e0(m_a8) - ((RHObjectPCQuantity *)actor)->Ve4(m_a8) != 0)
+        if (((RHElementActorPC *)actor)->FUN_0049d5e0(m_a8) - ((RHObjectPCQuantity *)actor)->Ve4(m_a8) != 0)
             return true;
     }
     else if (m_a8 == 13 && ((RHUnk0049d4f0 *)actor)->Unk(14)) {
-        if (((RHObjectPCQuantity *)actor)->FUN_0049d5e0(14) - ((RHObjectPCQuantity *)actor)->Ve4(14) != 0)
+        if (((RHElementActorPC *)actor)->FUN_0049d5e0(14) - ((RHObjectPCQuantity *)actor)->Ve4(14) != 0)
             return true;
     }
     return false;
@@ -271,12 +268,7 @@ void EmitRHObjectRepulsive(RHElementObject *object, void *points)
     object->FUN_004b2600(points, points, object);
 }
 
-class RHUnk0045aaf0
-{
-public:
-    RHUnk0045aaf0();
-    bool FUN_0045abc0(unsigned short value, int first, int second);
-};
+#include "RHActorSequenceStorage.h"
 
 class RHMessenger;
 RHMessenger *RHUnk00546050();
@@ -390,6 +382,13 @@ struct RHObjectMasterMap
         return (RHElementObjectMaster *&)position.node->value;
     }
 };
+
+// FUNCTION: GAME 0x004b2e50
+void FUN_004b2e50()
+{
+    char comparison, allocation;
+    ((RHObjectMasterTree *)g_unk0x006c09b0)->RHObjectMasterTree::RHObjectMasterTree(comparison, allocation);
+}
 
 // FUNCTION: GAME 0x004b2ea0
 void RHObjectMasterTree::FUN_004b2ea0()

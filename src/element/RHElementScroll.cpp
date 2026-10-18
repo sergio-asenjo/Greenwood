@@ -73,6 +73,22 @@ bool RHElementScroll::FUN_004b9f40()
     return true;
 }
 
+void RHElementScroll::FUN_004b9fa0() {}
+
+extern RHElementScroll **volatile g_unk0x6c09dc;
+extern RHElementScroll **g_unk0x006c09e0;
+
+// Parked: the target hoists the initial `mov eax,[g_unk0x006c09e0]` above the
+// prologue and compares `cmp esi,eax`; VC6 emits a memory-operand compare
+// (`cmp esi,[g_unk0x006c09e0]`) for every probed source shape (for/while,
+// named end local, hoisted init). Loop body and back-edge are exact.
+// STUB: GAME 0x004ba000
+void FUN_004ba000()
+{
+    for (RHElementScroll **current = g_unk0x6c09dc; current != g_unk0x006c09e0; ++current)
+        (*current)->FUN_004b9fa0();
+}
+
 // Parked: local coloring and projection-branch scheduling.
 // STUB: GAME 0x004ba030
 void RHElementScroll::InitializeFromMissionStream(SBFile &file)

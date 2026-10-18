@@ -104,11 +104,7 @@ public:
     bool FUN_00608400(const SBGeoPoint2D &point) const;
 };
 
-class RHUnkSectorPoints
-{
-public:
-    SBGeoPoint2D &Unk0060cef0(unsigned index);
-};
+#include "RHUnkSectorPoints.h"
 
 class RHElementAreaShape
 {

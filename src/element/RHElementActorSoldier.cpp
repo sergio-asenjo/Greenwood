@@ -33,6 +33,7 @@
 #include "SBNullstr.h"
 #include "RHElementActorSoldier.h"
 #include "RHArtificialMalignity.h"
+#include "RHElementActorHumanCore.h"
 
 #define RHSOLDIER_FIELD(type, offset) (*(type *)((char *)this + (offset)))
 #define RHSOLDIER_PROFILE(type, offset) (*(type *)(RHSOLDIER_FIELD(char *, 0xa1c) + (offset)))
@@ -110,6 +111,79 @@ void RHElementActorSoldier::FUN_004a2550(void *element)
     ((RHSoldierNPCCalls *)this)->FUN_0048b510(element);
     if (((RHSoldierActorCalls *)this)->V130() == 0)
         ++*(int *)((char *)((RHScriptBatchCalls *)g_pEngine)->Unk004e3cc0() + 0x20);
+}
+
+// Parked: identical switch operations retain rotating output registers and default argument scheduling.
+// STUB: GAME 0x004a2e00
+void RHElementActorSoldier::GetTransitionFlags(RHSequenceElement *element, unsigned long &first, unsigned long &second, unsigned long &third)
+{
+    switch (*(int *)((char *)element + 0x10))
+    {
+    case 0x83:
+        first = 0xe1; second = 1; break;
+    case 0x84: case 0x85:
+        first = 0x81; second = 1; third = 0x80; break;
+    case 0x87: case 0x88:
+        first = 0x81; second = 1; break;
+    case 0x32:
+        first = 0xa0; second = 1; third = 0x80; break;
+    case 0x89:
+        first = 1; second = 1; break;
+    case 0x54: case 0x8a: case 0x8c: case 0x8d:
+        first = 0x81; second = 1; break;
+    case 0x8b:
+        first = 0x881; second = 1; break;
+    case 0x86:
+        first = 0x81; second = 0x4001; break;
+    default:
+        RHElementActorNPC::GetTransitionFlags(element, first, second, third);
+    }
+}
+
+extern char g_unk0x6c0560[4];
+
+#include "RHActorSequenceStorage.h"
+
+// Parked: EDI is saved before the guards rather than only on their non-fallback path.
+// STUB: GAME 0x004a5190
+void *RHElementActorSoldier::FUN_004a5190(RHSoldierActorCalls *target)
+{
+    if (!((RHSoldierActorCalls *)this)->V48() && !RHSOLDIER_FIELD(char, 0x1ce))
+    {
+        if (((RHSoldierActorCalls *)this)->Vf8() && !target->V168())
+        {
+            RHUnk0045aaf0 *sequence = (RHUnk0045aaf0 *)((char *)this + 0x14);
+            sequence->FUN_0045abc0(0x23, 0, 0);
+            RHSOLDIER_FIELD(char, 0x6e5) = 1;
+            return sequence;
+        }
+        RHUnk0045aaf0 *sequence = (RHUnk0045aaf0 *)((char *)this + 0x14);
+        sequence->FUN_0045abc0(0x40, 0, 0);
+        RHSOLDIER_FIELD(int, 0xa0) = 0;
+        RHSOLDIER_FIELD(char, 0x92) = 1;
+        RHSOLDIER_FIELD(char, 0x6e5) = 1;
+        RHSOLDIER_FIELD(unsigned short, 0xa4) = 2;
+        return sequence;
+    }
+    return RHElementActorNPC::FUN_0048c380((RHElementActorHuman *)target);
+}
+
+// Parked: VC6 duplicates the EH/store return tail instead of sharing the incoming AL value.
+// STUB: GAME 0x004a5230
+void RHUnk004a5230::FUN_004a5230(bool value, bool flag)
+{
+    if (value != *(bool *)((char *)this + 0xa2d))
+    {
+        RHUnk00584d60 *element;
+        if (value == true)
+            element = new RHUnk00584d60(1, 0x83, this);
+        else if (flag == true && *(unsigned short *)(*(char **)((char *)((RHUnk005b5e00 *)*(void **)((char *)this + 0x50))->Unk() + 4) + 0x1d2) != 0xffff)
+            element = new RHUnk00584d60(1, 0x85, this);
+        else
+            element = new RHUnk00584d60(1, 0x84, this);
+        ((RHScriptBatchCalls *)*(void **)((char *)this + 0x5c))->Unk0058a940(g_unk0x6c0560, 0, element);
+    }
+    *(bool *)((char *)this + 0xa2d) = value;
 }
 
 // FUNCTION: GAME 0x004a5790
@@ -360,7 +434,7 @@ void RHElementActorSoldier::FUN_004a5a00(void *first, void *second)
 {
     if (!((RHSoldierActorCalls *)this)->V48())
     {
-        ((RHSoldierHumanCalls *)this)->FUN_0047e9a0(first, second);
+        ((RHElementActorHuman *)this)->FUN_0047e9a0((int)first, (int)second);
         if (((RHSoldierActorCalls *)this)->V130() == 1 && ((RHSoldierActorCalls *)this)->V48())
             ((RHUnk00450b60 *)g_unk0x6c07fc)->Unk(2, 0x32);
     }
@@ -451,6 +525,7 @@ void RHSoldierStimulusCalls::FUN_004a64a0(unsigned type, const RHMalignityPositi
 // build.
 void RHElementActorSoldier::Emit(SBFile &file)
 {
+    FUN_004a5190(0);
     Serialize(file);
     SetAppleSmell(false);
     FUN_004a5ba0();

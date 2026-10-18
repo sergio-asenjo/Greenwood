@@ -1,5 +1,8 @@
 #include "SBNullstr.h"
 #include "RHElementFX.h"
+#include "RHPlayerProfileAccess.h"
+
+extern unsigned char g_unk0x006c0e48[];
 
 inline void FXBlit(RHUnkFXDraw *const &draw, RHUnkFXEngine *engine, SBGeoBoundingBox2D *box,
                    const unsigned long &handle, SBGeoBoundingBox2D *source)
@@ -65,8 +68,19 @@ bool RHElementFX::Serialize(SBFile &file)
     return RHElement::Serialize(file);
 }
 
+// FUNCTION: GAME 0x004aa930
+int RHElementFX::FUN_004aa930()
+{
+    if (m_d0 || m_ac || *(float *)((char *)fx_sprite + 0x18) != g_unk0x00677488 ||
+        (*(unsigned *)((char *)this + 4) & 0xf) == 5 ||
+        ((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0()[0x50] == 1)
+        return 1;
+    return 0;
+}
+
 void RHElementFX::Emit(SBFile &file)
 {
     InitializeBackgroundRestoration();
     Serialize(file);
+    FUN_004aa930();
 }

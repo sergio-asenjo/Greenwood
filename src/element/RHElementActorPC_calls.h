@@ -8,21 +8,16 @@
 #include <vector>
 #include <string.h>
 
-// SIZE 0x0c
-class RHUnk00613e90
-{
-public:
-    RHUnk00613e90();
-    float x; // 0x00
-    float y; // 0x04
-    float z; // 0x08
-};
+#include "RHUnk00613e90.h"
 
 class RHScriptBatchCalls
 {
 public:
+    bool Unk0049d560(int action);
+    void Unk0049d6c0();
     void Unk00464630();
     void Unk0046bcf0(int state, int value);
+    void Unk00485200(int index, int amount);
     void Unk005c2ec0(void *position, int first, int second, void *actor, int third, int fourth, int fifth, int sixth);
 };
 
@@ -46,7 +41,7 @@ public:
     virtual void FUN_14() = 0;
     virtual void FUN_15() = 0;
     virtual void FUN_16() = 0;
-    virtual void FUN_17() = 0;
+    virtual void FUN_17(int command) = 0;
     virtual bool FUN_0049e720() = 0;
     virtual void FUN_19() = 0;
     virtual void FUN_20() = 0;
@@ -57,7 +52,7 @@ public:
     virtual void FUN_25() = 0;
     virtual void FUN_26() = 0;
     virtual void FUN_27() = 0;
-    virtual void FUN_28() = 0;
+    virtual void FUN_28(unsigned amount) = 0;
     virtual void FUN_29() = 0;
     virtual void FUN_30() = 0;
     virtual void FUN_31() = 0;
@@ -80,28 +75,57 @@ public:
     virtual void FUN_48() = 0;
     virtual void FUN_49() = 0;
     virtual void FUN_50() = 0;
-    virtual void FUN_51() = 0;
+    virtual short FUN_51() = 0;
     virtual void FUN_52() = 0;
     virtual void FUN_slot53(int, int, int) = 0;
     virtual void FUN_slot54() = 0;
     virtual void FUN_slot55(int, int, int) = 0;
     virtual void FUN_56() = 0;
-    virtual void FUN_57() = 0;
-    virtual void FUN_58() = 0;
+    virtual unsigned short FUN_57(unsigned action) = 0;
+    virtual void FUN_58(unsigned action, unsigned amount) = 0;
     virtual void FUN_59() = 0;
     virtual void FUN_60() = 0;
     virtual void FUN_61() = 0;
-    virtual void FUN_62() = 0;
+    virtual bool FUN_62() = 0;
     virtual void FUN_63() = 0;
     virtual void FUN_64() = 0;
     virtual void FUN_slot65(int, int, int) = 0;
+    virtual bool FUN_slot66(void *element, void *target) = 0;
+    virtual void FUN_67() = 0;
+    virtual void FUN_68() = 0;
+    virtual void FUN_69() = 0;
+    virtual void FUN_70() = 0;
+    virtual void FUN_71() = 0;
+    virtual void FUN_72() = 0;
+    virtual void FUN_73() = 0;
+    virtual void FUN_74() = 0;
+    virtual void FUN_75() = 0;
+    virtual void FUN_76() = 0;
+    virtual void FUN_77() = 0;
+    virtual void FUN_78() = 0;
+    virtual void FUN_79() = 0;
+    virtual void FUN_80() = 0;
+    virtual void FUN_81() = 0;
+    virtual void FUN_82() = 0;
+    virtual void FUN_83() = 0;
+    virtual void FUN_84() = 0;
+    virtual void FUN_85() = 0;
+    virtual void FUN_86() = 0;
+    virtual void FUN_87() = 0;
+    virtual void FUN_88() = 0;
+    virtual void FUN_89() = 0;
+    virtual void FUN_90() = 0;
+    virtual void FUN_91() = 0;
+    virtual void FUN_92(int, int, unsigned short, int) = 0;
 };
 
-class RHMalignityGeometryCalls
+class RHActorPCSequenceCalls
 {
 public:
-    bool FUN_004eff80(const RHUnk00613e90 &first, const RHUnk00613e90 &second, int mode);
+    virtual void Destroy(unsigned flags) = 0;
 };
+
+#include "RHMalignityGeometryCalls.h"
 
 class RHUnk005c38b0;
 class RHUnk5490f0;
@@ -151,11 +175,7 @@ public:
     undefined m_data[0x60c]; // 0x00
 };
 
-class RHEngineSerializationCalls
-{
-public:
-    void FUN_0048fa30();
-};
+#include "RHEngineSerializationCalls.h"
 
 class RHActorPCProfileCalls
 {
@@ -166,16 +186,13 @@ public:
     std::vector<RHPCDescription *> m_104; // 0x104
 };
 
-class RHUnkSectorScript
-{
-public:
-    bool Unk00639a30(const std::string &name);
-};
+#include "RHUnkSectorScript.h"
 
 class RHUnk005fc3b0
 {
 public:
     RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &vector);
+    float Unk005fc6a0(float value);
 };
 
 class RHActorScriptContext
@@ -246,25 +263,7 @@ public:
 };
 
 // SIZE 0x14
-class RHActorPCBoxCalls
-{
-public:
-    RHActorPCBoxCalls();
-    ~RHActorPCBoxCalls();
-    undefined m_0[0x14]; // 0x00
-};
-
-class RHUnk0045aaf0
-{
-public:
-    RHUnk0045aaf0();
-    undefined4 m_0; // 0x00
-    undefined4 m_4; // 0x04
-    undefined m_8[8]; // 0x08
-    RHActorPCBoxCalls m_10; // 0x10
-    undefined m_24[0x10]; // 0x24
-    SBGeoPoint2D m_34; // 0x34
-};
+#include "RHActorSequenceStorage.h"
 
 struct RHScriptNode;
 class RHUnk0046eb30
@@ -318,6 +317,7 @@ class RHGamePortraitCalls
 public:
     void FUN_005d9950(unsigned action);
     void FUN_005d9a60(unsigned action);
+    void FUN_005d9b70();
 };
 
 class RHActorPCWidgetCalls
@@ -368,10 +368,6 @@ public:
     undefined m_d4[0x14]; // 0xd4
 };
 
-class RHActorPCHumanCalls
-{
-public:
-    char FUN_004859b0(void *target);
-};
+#include "RHActorPCHumanCalls.h"
 
 #endif

@@ -102,26 +102,20 @@ void EmitFUN_004a7380()
     FUN_004a7380(0);
 }
 
-// Parked: byte-table + dword-table structure and both tables match; residual is
-// only VC6's case-body LAYOUT order. The target lays the bodies out as
-// 0xf,0x10,0x11,0x13,0x15,0x14,0x16,0x18,0x19 (nearly sorted by return value)
-// while any source case order that reproduces the target's dword table
-// (0x11,0x16,0x18,0x10,0xf,0x13,0x15,0x14,0x19) lays them out in source order.
-// Layout is not controllable from the case order; parked at 82.76%.
-// STUB: GAME 0x004a7460
+// FUNCTION: GAME 0x004a7460
 int FUN_004a7460(volatile int value)
 {
     switch (value)
     {
-    case 1: return 0x11;
-    case 4: return 0x16;
-    case 5: return 0x18;
-    case 11: return 0x10;
     case 12: return 0xf;
-    case 13: return 0x13;
+    case 11: return 0x10;
+    case 1: return 0x11;
+    case 13:
     case 14: return 0x13;
     case 16: return 0x15;
     case 17: return 0x14;
+    case 4: return 0x16;
+    case 5: return 0x18;
     case 19: return 0x19;
     }
     return value;

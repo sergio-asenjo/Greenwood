@@ -1,5 +1,77 @@
 #include "RHElementActor.h"
 #include "VMCore.h"
+#include "RHPathFinderCore.h"
+
+class RHActorActionCalls
+{
+public:
+    virtual void V00() = 0;
+    virtual void V04() = 0;
+    virtual void V08() = 0;
+    virtual void V0c() = 0;
+    virtual void V10() = 0;
+    virtual void V14() = 0;
+    virtual void V18() = 0;
+    virtual void V1c() = 0;
+    virtual void V20() = 0;
+    virtual void V24() = 0;
+    virtual void V28() = 0;
+    virtual void V2c() = 0;
+    virtual void V30() = 0;
+    virtual void V34() = 0;
+    virtual void V38() = 0;
+    virtual void V3c() = 0;
+    virtual void V40() = 0;
+    virtual void V44() = 0;
+    virtual void V48() = 0;
+    virtual void V4c() = 0;
+    virtual void V50() = 0;
+    virtual void V54() = 0;
+    virtual void V58() = 0;
+    virtual void V5c() = 0;
+    virtual void V60() = 0;
+    virtual void V64() = 0;
+    virtual void V68() = 0;
+    virtual void V6c() = 0;
+    virtual void V70() = 0;
+    virtual void V74() = 0;
+    virtual void V78(void *sequence, int command) = 0;
+    virtual void V7c(RHSequenceElement *, unsigned &, unsigned &, unsigned &) = 0;
+    virtual bool V80(unsigned, RHSequenceElement *) = 0;
+    virtual bool V84(unsigned, RHSequenceElement *) = 0;
+    virtual bool V88(unsigned, RHSequenceElement *) = 0;
+    virtual void V8c() = 0;
+    virtual void V90() = 0;
+    virtual void V94() = 0;
+    virtual void V98(RHSequenceElement *) = 0;
+    virtual void V9c() = 0;
+    virtual void Va0() = 0;
+    virtual void Va4() = 0;
+    virtual void Va8() = 0;
+    virtual void Vac() = 0;
+    virtual void Vb0() = 0;
+    virtual void Vb4() = 0;
+    virtual void Vb8() = 0;
+    virtual void Vbc() = 0;
+    virtual void Vc0() = 0;
+    virtual void Vc4() = 0;
+    virtual void Vc8() = 0;
+    virtual short Vcc() = 0;
+};
+
+class RHActorSequenceStateCalls
+{
+public:
+    virtual void V00() = 0;
+    virtual void V04() = 0;
+    virtual void V08() = 0;
+    virtual void V0c() = 0;
+    virtual void V10() = 0;
+    virtual void V14() = 0;
+    virtual void V18() = 0;
+    virtual void V1c() = 0;
+    virtual void V20() = 0;
+};
 
 class RHPositionInterface
 {
@@ -201,6 +273,40 @@ void RHElementActor::FUN_00462730(RHElementActor *actor, bool value)
     Position()->FUN_0055f290();
 }
 
+void *FUN_0048f170(void *value);
+
+// FUNCTION: GAME 0x00462940
+void RHElementActor::FUN_00462940(int action)
+{
+    if (action == 7 || (RHActorField<int>(Info(), 0x8c) != 12 && RHActorField<int>(Info(), 0x8c) != 13))
+        Position()->FUN_00462970(action);
+}
+
+// FUNCTION: GAME 0x00462970
+void RHBonusInfoBase::FUN_00462970(int action)
+{
+    int previous = RHActorField<int>(this, 0x88);
+    RHActorField<int>(this, 0x88) = action;
+    RHActorField<int>(this, 0x8c) = previous;
+    RHActorField<unsigned char>(this, 0xbc) = 0;
+    SBGeoVector2D offset(RHActorField<SBGeoPoint2D>(this, 0x20));
+    SBGeoBoundingBox2D *box = (SBGeoBoundingBox2D *)((RHUnkPathActorInfoBase *)this)->Unk0055fa10(RHActorField<int>(this, 0x88));
+    RHActorField<SBGeoBoundingBox2D>(this, 0xc0) = box->FUN_006090d0(offset);
+}
+
+// Parked: x87 operand loading and ordered-comparison status masks require different source shapes.
+// STUB: GAME 0x00462a30
+int RHElementActor::FUN_00462a30(RHElementActor *other)
+{
+    void *mine = Info();
+    void *theirs = other->Info();
+    if (RHActorField<float>(mine, 0x1c4) == RHActorField<float>(theirs, 0x1c4))
+        return RHActorField<unsigned>(this, 0xc) < RHActorField<unsigned>(other, 0xc);
+    if (RHActorField<float>(mine, 0x1c4) > RHActorField<float>(theirs, 0x1c4))
+        return 1;
+    return 0;
+}
+
 #define RH_ACTOR_ACCESS(value, size, line) \
     if (file.Access(&(value), size) < 0) \
     { \
@@ -306,6 +412,12 @@ bool RHElementActor::Serialize(SBFile &file)
 // FUNCTION: GAME 0x00463200
 char RHElementActor::FUN_00463200() const { return 0; }
 
+// FUNCTION: GAME 0x00463210
+SBGeoVector2D RHElementActor::FUN_00463210()
+{
+    return SBGeoVector2D(RHActorField<float>(Info(), 0x138), RHActorField<float>(Info(), 0x13c));
+}
+
 // FUNCTION: GAME 0x00463240
 void RHElementActor::FUN_00463240(unsigned first, unsigned second, unsigned third) {}
 
@@ -318,6 +430,16 @@ void RHElementActor::FUN_00463260(unsigned first, unsigned second, unsigned thir
 // FUNCTION: GAME 0x00463d90
 int RHElementActor::FUN_00463d90(unsigned value) const { return 0; }
 
+// FUNCTION: GAME 0x004640c0
+bool RHElementActor::FUN_004640c0()
+{
+    void *info = Info();
+    if (RHActorField<SBGeoPoint2D>(info, 0x48).FUN_005fc0e0(RHActorField<SBGeoPoint2D>(info, 0x24)) &&
+        RHActorField<SBGeoPoint2D>(Info(), 0x48).FUN_005fc0e0(SBGeoPoint2D(0, 0)))
+        return true;
+    return false;
+}
+
 // FUNCTION: GAME 0x00464530
 void RHActorPositionCalls::FUN_00464530(const SBGeoPoint2D &point)
 {
@@ -329,6 +451,19 @@ void RHActorPositionCalls::FUN_00464530(const SBGeoPoint2D &point)
         RHActorField<SBGeoBoundingBox2D>(this, 0xc0) = box->FUN_006090d0(displacement);
     }
     RHActorField<int>(this, 4) = 2;
+}
+
+#include "RHSequenceGenericCalls.h"
+extern char g_unk0x6c0560[4];
+
+// FUNCTION: GAME 0x00464630
+void RHScriptBatchCalls::Unk00464630()
+{
+    RHUnk00584d60 *element = new RHUnk00584d60(1, 0xa1, this);
+    RHActorField<RHUnk00584d60 *>(this, 0x138) = element;
+    RHActorField<int>(element, 0x5c) = 9;
+    RHActorField<RHScriptBatchCalls *>(this, 0x5c)->Unk0058a940(
+        g_unk0x6c0560, 0, RHActorField<RHUnk00584d60 *>(this, 0x138));
 }
 
 // GLOBAL: GAME 0x006775b4
@@ -539,7 +674,7 @@ void RHElementActor::ExecuteImmediately(RHSequenceElement *element)
                 origin.m_8 += step.m_8;
             }
         }
-        FUN_00464630();
+        ((RHScriptBatchCalls *)this)->Unk00464630();
         break;
     }
     case 170:
@@ -736,11 +871,119 @@ static void RHActorApplyCrossingFlags(RHElementActor *actor, RHElevationLine *li
     }
 }
 
+#include "RHActorPriorityCalls.h"
+
+// Parked: narrow flag load omits the target's full DWORD load and byte-extension mask.
+// STUB: GAME 0x0046abd0
+int RHActorPriorityCalls::FUN_0046abd0(void *element)
+{
+    switch (*(int *)((char *)element + 0x10))
+    {
+    case 0xad:
+    case 0xae:
+        return 7;
+    case 0x13:
+        return 0;
+    case 1:
+    case 2:
+    case 0xa:
+    case 0x15:
+    case 0x19:
+    case 0x1a:
+    case 0x1b:
+    case 0x1c:
+    case 0x47:
+    case 0xa0:
+    case 0xa4:
+    case 0xa5:
+    case 0xa6:
+    case 0xa7:
+    case 0xa9:
+        return 8;
+    case 0x14:
+        return ((unsigned char)~*(unsigned *)((char *)element + 0x88) & 2) << 2;
+    case 0xac:
+        return 5;
+    default:
+        return 10;
+    }
+}
+
 class RHUnk0046ae90
 {
 public:
     bool FUN_0046ae90(int value);
 };
+
+// Parked: nested-switch table compression and shared return-block placement differ.
+// STUB: GAME 0x0046ad00
+int RHElementActor::FUN_0046ad00(void *first, void *second)
+{
+    if (RHActorField<int>(first, 0x10) == RHActorField<int>(second, 0x10) &&
+        ((RHUnk0046ae90 *)this)->FUN_0046ae90(RHActorField<int>(first, 0x10)))
+        return 0;
+    switch (RHActorField<int>(first, 0x5c))
+    {
+    case 0: return 1;
+    case 1:
+        switch (RHActorField<int>(second, 0x5c))
+        {
+        case 2: return 3;
+        case 3: case 4: case 5: return 2;
+        default: return 1;
+        }
+    case 2:
+        switch (RHActorField<int>(second, 0x5c))
+        {
+        case 2: return 0;
+        case 3: case 4: case 5: return 2;
+        default: return 1;
+        }
+    case 3:
+        switch (RHActorField<int>(second, 0x5c))
+        {
+        case 1: return 1;
+        case 2: return 3;
+        default: return 0;
+        }
+    case 4:
+        switch (RHActorField<int>(second, 0x5c))
+        {
+        case 1: return 1;
+        case 2: case 3: return 3;
+        default: return 0;
+        }
+    case 5:
+        switch (RHActorField<int>(second, 0x5c))
+        {
+        case 2: case 5: return 3;
+        default: return 1;
+        }
+    case 6:
+        switch (RHActorField<int>(second, 0x5c))
+        {
+        case 1: case 5: return 2;
+        case 2: case 3: case 4: return 3;
+        default: return 1;
+        }
+    case 7:
+        switch (RHActorField<int>(second, 0x5c))
+        {
+        case 1: case 5: return 2;
+        case 9: case 10: return 0;
+        default: return 3;
+        }
+    case 8:
+        switch (RHActorField<int>(second, 0x5c))
+        {
+        case 0: case 1: case 5: case 7: return 2;
+        case 9: case 10: return 0;
+        default: return 3;
+        }
+    case 9: return RHActorField<int>(second, 0x5c) == 10 ? 0 : 3;
+    default: return 3;
+    }
+}
 
 // FUNCTION: GAME 0x0046ae90
 bool RHUnk0046ae90::FUN_0046ae90(int value)
@@ -751,6 +994,208 @@ bool RHUnk0046ae90::FUN_0046ae90(int value)
 void EmitRHUnk0046ae90(RHUnk0046ae90 *a)
 {
     a->FUN_0046ae90(0);
+}
+
+// Parked: branch-local flags and the action-zero shared tail retain switch/register differences.
+// STUB: GAME 0x0046aea0
+void RHElementActor::GetTransitionFlags(RHSequenceElement *element, unsigned long &first, unsigned long &second, unsigned long &third)
+{
+    switch (RHActorField<int>(element, 0x10))
+    {
+    case 0xa0:
+    case 0xa1:
+        first = 1;
+        third = 4;
+        break;
+    case 0x14:
+    case 0x15:
+        switch (RHActorField<int>(element, 0x94))
+        {
+        case 6:
+        case 7:
+            first = 0x2a3;
+            second = 0x31c1;
+            break;
+        case 10:
+            first = 0xa5;
+            second = 0x3181;
+            break;
+        case 16:
+            first = 0x85;
+            second = 0x182;
+            break;
+        case 0x23:
+        case 0x26:
+            first = 7;
+            second = 0x81;
+            break;
+        case 0x12f:
+            first = 0xa3;
+            second = 0x181;
+            break;
+        case 0x130:
+            first = 0xa5;
+            second = 0x181;
+            break;
+        case 0x131:
+            first = 0x283;
+            second = 1;
+            break;
+        case 0x122:
+            first = 0xa5;
+            second = 0x181;
+            break;
+        case 0x14:
+        case 0x15:
+        case 0x12a:
+        case 0x12b:
+            first = 7;
+            second = 0x101;
+            break;
+        }
+        break;
+    case 0x1a:
+    case 0x1b:
+    case 0x1c:
+        first = 0xa1;
+        second = 0x401;
+        break;
+    case 0x4d:
+        first = 7;
+        second = 1;
+        break;
+    case 0x4e:
+        first = 7;
+        second = 2;
+        break;
+    case 0x13:
+    {
+        void *action = RHActorField<void *>(element, 0x7c);
+        switch (RHActorField<unsigned>(action, 0x88))
+        {
+        case 1:
+        case 2:
+        case 3:
+        case 7:
+            second = 0x1041;
+            first = 0x2a7;
+            break;
+        case 4:
+        case 5:
+        {
+            void *actor = RHActorField<void *>(action, 0x0c);
+            int type;
+            if (RHActorField<void *>(*(void **)((char *)this + 0x50), 0xe0) == actor)
+            {
+                void *other = RHActorField<void *>(action, 0x10);
+                unsigned char flags = RHActorField<unsigned>(other, 0x30) >> 9;
+                if (!(flags & 1))
+                    break;
+                type = RHActorField<int>(other, 0xf0);
+            }
+            else
+            {
+                unsigned char flags = RHActorField<unsigned>(actor, 0x30) >> 9;
+                if (!(flags & 1))
+                    break;
+                type = RHActorField<int>(actor, 0xf0);
+            }
+            switch (type)
+            {
+            case 1:
+                second = 0x3041;
+                first = 0x2a7;
+                break;
+            case 2:
+            case 3:
+                second = 1;
+                break;
+            }
+            break;
+        }
+        case 0:
+            second = 0x3041;
+            first = 0x2a7;
+            break;
+        }
+        break;
+    }
+    }
+}
+
+// FUNCTION: GAME 0x0046b210
+bool RHElementActor::FUN_0046b210(RHSequenceElement *element)
+{
+    unsigned first = 0;
+    unsigned second = 0;
+    unsigned third = 0;
+    ((RHActorActionCalls *)this)->V7c(element, first, second, third);
+    if (!((RHActorActionCalls *)this)->V80(first, element))
+        return false;
+    if (!((RHActorActionCalls *)this)->V84(second, element))
+        return false;
+    if (!((RHActorActionCalls *)this)->V88(third, element))
+        return false;
+    RHActorField<unsigned>(element, 0x44) = RHActorField<unsigned>(element, 0x20);
+    return true;
+}
+
+// FUNCTION: GAME 0x0046b9e0
+void RHScriptBatchCalls::Unk0046b9e0()
+{
+    RHElementActor *actor = (RHElementActor *)this;
+    if (actor->m_130)
+    {
+        ((RHActorSequenceStateCalls *)actor->m_130)->V20();
+        if (*(unsigned char *)((char *)actor->m_130 + 4) == 4)
+        {
+            if (actor->m_130->m_10 == 0x17)
+                RHActorField<RHPathFinder *>(actor, 0x6c)->FUN_005539a0(
+                    RHActorField<RHElementActor *>(actor->m_130, 0x48));
+            else
+                ((RHActorActionCalls *)actor)->V98(actor->m_130);
+            return;
+        }
+    }
+    RHUnk00584d60 *element = new RHUnk00584d60(1, 0x4d, actor);
+    ((RHScriptBatchCalls *)RHActorField<void *>(actor, 0x5c))->Unk0058a940(g_unk0x6c0560, 0, element);
+}
+
+// FUNCTION: GAME 0x0046bab0
+void RHElementActor::FUN_0046bab0()
+{
+    if (m_130)
+    {
+        ((RHActorSequenceStateCalls *)m_130)->V1c();
+        if (*(unsigned char *)((char *)m_130 + 4) == 4)
+        {
+            if (m_130->m_10 == 0x17)
+                RHActorField<RHPathFinder *>(this, 0x6c)->FUN_00553850(
+                    RHActorField<RHElementActor *>(m_130, 0x48));
+            else
+                ((RHActorActionCalls *)this)->V98(m_130);
+            return;
+        }
+    }
+    RHUnk00584d60 *element = new RHUnk00584d60(1, 0x4e, this);
+    ((RHScriptBatchCalls *)RHActorField<void *>(this, 0x5c))->Unk0058a940(g_unk0x6c0560, 0, element);
+}
+
+// FUNCTION: GAME 0x0046bb80
+void RHElementActor::FUN_0046bb80()
+{
+    void *info = Info();
+    int kind = RHActorField<int>(info, 0x8c);
+    if (kind == 0xb || kind == 0xf || RHActorField<char>(RHActorField<void *>(info, 0xe0), 0xec) || !m_130)
+        return;
+    ((RHActorActionCalls *)m_130)->V18();
+    if (RHActorField<char>(m_130, 4) == 4)
+    {
+        if (m_130->m_10 == 0x17)
+            RHActorField<RHPathFinder *>(this, 0x6c)->FUN_00553760(RHActorField<RHElementActor *>(m_130, 0x48));
+        else
+            ((RHActorActionCalls *)this)->V98(m_130);
+    }
 }
 
 // FUNCTION: GAME 0x0046c8e0
@@ -943,6 +1388,90 @@ public:
     virtual void V9c() = 0;
     virtual void Va0(unsigned short layer, void *area) = 0;
 };
+
+#include "RHMessenger.h"
+
+RHMessenger *RHUnk00546050();
+
+// FUNCTION: GAME 0x0046b2b0
+bool RHElementActor::FUN_0046b2b0(unsigned flags, RHActorTranslationSequenceCalls *sequence)
+{
+    if (flags & 1)
+    {
+        switch (RHActorField<int>(sequence, 0x3c))
+        {
+        case 10:
+            if (!(flags & 0x40))
+            {
+                if (RHActorField<int>(sequence, 0x10) == 0x4d)
+                {
+                    RHUnk00546050()->RHUnk005460c0(RHUnk5490f0(0x22));
+                    return false;
+                }
+                ((RHActorActionCalls *)this)->V78(sequence, 0x4e);
+                RHActorField<int>(sequence, 0x3c) = 1;
+            }
+            return true;
+        case 3:
+            if (!(flags & 0x800))
+            {
+                ((RHActorActionCalls *)this)->V78(sequence, 0x47);
+                RHActorField<int>(sequence, 0x3c) = 1;
+            }
+            return true;
+        case 14:
+            if (!(flags & 0x400))
+            {
+                ((RHActorActionCalls *)this)->V78(sequence, 0x5e);
+                RHActorField<int>(sequence, 0x3c) = 1;
+            }
+            return true;
+        case 20:
+            if (!(flags & 0x10000))
+            {
+                ((RHActorActionCalls *)this)->V78(sequence, 0x62);
+                RHActorField<int>(sequence, 0x3c) = 1;
+            }
+            return true;
+        case 1:
+            return true;
+        case 4:
+            return (flags >> 7) & 1;
+        case 5:
+            return (flags >> 8) & 1;
+        case 9:
+        case 12:
+        case 13:
+            return false;
+        default:
+            return false;
+        }
+    }
+    if (flags & 2)
+    {
+        switch (RHActorField<int>(sequence, 0x3c))
+        {
+        case 1:
+            if (RHActorField<int>(sequence, 0x10) == 0x4e)
+            {
+                RHUnk00546050()->RHUnk005460c0(RHUnk5490f0(0x22));
+                return false;
+            }
+            ((RHActorActionCalls *)this)->V78(sequence, 0x4d);
+            RHActorField<int>(sequence, 0x3c) = 10;
+            return true;
+        case 4:
+            return (flags >> 7) & 1;
+        case 5:
+            return (flags >> 8) & 1;
+        case 10:
+            return true;
+        default:
+            return false;
+        }
+    }
+    return true;
+}
 
 struct RHActorTransitionType
 {
@@ -1153,8 +1682,7 @@ int RHElementActor::FUN_0046e960()
     return 0;
 }
 
-// Parked: VC6 duplicates the opposite-polarity state-call tails instead of sharing them.
-// STUB: GAME 0x0046e980
+// FUNCTION: GAME 0x0046e980
 void RHElementActor::FUN_0046e980(bool first, bool second)
 {
     switch (RHActorField<int>(this, 0x144))
@@ -1173,10 +1701,10 @@ void RHElementActor::FUN_0046e980(bool first, bool second)
             ((RHScriptBatchCalls *)this)->Unk0046bd10(2);
         break;
     case 3:
-        if (!first)
-            ((RHScriptBatchCalls *)this)->Unk0046bd10(3);
-        else
+        if (first)
             ((RHScriptBatchCalls *)this)->Unk0046bd10(2);
+        else
+            ((RHScriptBatchCalls *)this)->Unk0046bd10(3);
         break;
     case 7:
     case 8:
@@ -1189,10 +1717,10 @@ void RHElementActor::FUN_0046e980(bool first, bool second)
             ((RHScriptBatchCalls *)this)->Unk0046bd10(8);
         break;
     case 9:
-        if (!first)
-            ((RHScriptBatchCalls *)this)->Unk0046bd10(9);
-        else
+        if (first)
             ((RHScriptBatchCalls *)this)->Unk0046bd10(8);
+        else
+            ((RHScriptBatchCalls *)this)->Unk0046bd10(9);
         break;
     case 12:
     case 13:
@@ -1247,6 +1775,35 @@ void RHUnk004e52a0::FUN_004e52a0()
     ::operator delete(m_head);
     m_head = 0;
     m_count = 0;
+}
+
+class RHUnk004e52f0List
+{
+public:
+    RHUnk004e52f0List *m_next;
+    RHUnk004e52f0List *m_prev;
+    char m_08[0x18];
+};
+
+class RHUnk004e52f0
+{
+public:
+    RHUnk004e52f0(const char *value);
+    char m_0;
+    char m_1[3];
+    RHUnk004e52f0List *m_4;
+    int m_8;
+};
+
+// FUNCTION: GAME 0x004e52f0
+RHUnk004e52f0::RHUnk004e52f0(const char *value)
+{
+    m_0 = *value;
+    RHUnk004e52f0List *list = new RHUnk004e52f0List;
+    list->m_next = list;
+    list->m_prev = list;
+    m_4 = list;
+    m_8 = 0;
 }
 
 class RHUnk004e54a0
@@ -1382,7 +1939,7 @@ void RHBonusInfo::FUN_005bd650(int value1, int value2)
     *(int *)&values.cursor.node->data = value2;
 }
 
-// Parked: cached-search loads and postincrement erase scheduling differ.
+// Parked: inline postfix fixes erase scheduling, but search loads and tail placement remain different.
 // STUB: GAME 0x005bd7b0
 void RHBonusInfo::FUN_005bd7b0(int value)
 {
@@ -1504,8 +2061,45 @@ void RHActorEmitWidened(RHUnk0053bf20 *first, RHUnk00560410 *second,
     new SBGeoBoundingBox2D(*(SBGeoBoundingBox2D *)first);
 }
 
+// FUNCTION: GAME 0x00470160
+bool RHElementActor::FUN_00470160()
+{
+    return ((RHActorActionCalls *)this)->Vcc() <= 0;
+}
+
+// Parked: cursor reload/store order and unlink register allocation differ.
+// STUB: GAME 0x0046bbf0
+void RHElementActor::FUN_0046bbf0()
+{
+    if (RHActorField<void *>(this, 0x130) &&
+        RHActorField<int>(RHActorField<void *>(this, 0x130), 0x10) == 0x16)
+    {
+        RHActorField<int>(RHActorField<void *>(this, 0x130), 0x10) = 0x14;
+        RHSeqList &list = RHActorField<RHSeqList>(RHActorField<void *>(this, 0x130), 0x18);
+        for (list.m_current = list.m_head->next; list.m_current != list.m_head; list.m_current = list.m_current->next)
+            delete (RHOrder *)list.m_current->data;
+        RHScriptNode *head = list.m_head;
+        RHScriptNode *current = head->next;
+        while (current != head)
+        {
+            RHScriptNode *node = current;
+            current = current->next;
+            FUN_0048f170(node);
+            node->previous->next = node->next;
+            node->next->previous = node->previous;
+            ::operator delete(node);
+            --list.m_count;
+        }
+        list.m_valid = true;
+        ((RHActorActionCalls *)this)->V78(RHActorField<void *>(this, 0x130), 0);
+    }
+}
+
 void RHElementActor::Emit(SBFile &file, std::string &name)
 {
+    FUN_00462940(0);
+    FUN_0046bbf0();
+    FUN_0046ad00(this, this);
     FUN_00463200();
     FUN_00463240(0, 0, 0);
     FUN_00463250(0);
@@ -1518,6 +2112,7 @@ void RHElementActor::Emit(SBFile &file, std::string &name)
     FUN_0046e7c0(0, 0);
     FUN_0046e960();
     FUN_0046e980(false, false);
+    FUN_00470160();
     Serialize(file);
     ExecuteImmediately(0);
     Translate(0, RHcommandUnk0);

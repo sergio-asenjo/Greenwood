@@ -17,11 +17,7 @@ public:
     undefined m_pad54[0xac]; // 0x54
 };
 
-class RHUnkSectorScript
-{
-public:
-    bool Unk00639a30(const std::string &name);
-};
+#include "RHUnkSectorScript.h"
 
 // SIZE 0x60
 class RHScrollScript
@@ -79,6 +75,7 @@ class RHElementScroll : public RHElementObject
 public:
     void InitializeFromMissionStream(SBFile &file);
     bool FUN_004b9f40();
+    void FUN_004b9fa0();
     bool FUN_004ba470(void *first, void *second, void *third);
     bool IsRevealable() const;
     bool FUN_004ba4e0(unsigned long value);

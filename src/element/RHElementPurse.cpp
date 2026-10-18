@@ -30,6 +30,14 @@
 
 #include "SBNullstr.h"
 #include "RHElementPurse.h"
+#include "RHEngineWidenedCalls.h"
+#include "RHEngineSerializationCalls.h"
+#include "RHProjectileSoundCalls.h"
+#include <list>
+#include <algorithm>
+
+class RHEngine;
+extern RHEngine *g_pEngine;
 
 // FUNCTION: GAME 0x004b9200
 int RHElementPurse::FUN_004b9200()
@@ -41,6 +49,24 @@ int RHElementPurse::FUN_004b9200()
 int RHElementPurse::FUN_004b9210()
 {
     return 7;
+}
+
+// FUNCTION: GAME 0x004b97c0
+bool RHElementPurse::FUN_004b97c0()
+{
+    if (*((char *)this + 0x132)) {
+        bool result = ((RHProjectileRefreshCalls *)this)->FUN_004b82e0();
+        (*(RHEngineWidenedCalls **)((char *)this + 0x50))->FUN_005b7f60(3);
+        return result;
+    }
+    RHEngineWidenedCalls *sprite = *(RHEngineWidenedCalls **)((char *)this + 0x50);
+    if (*(unsigned *)((char *)sprite + 0x1dc) != 0xc5 && *(unsigned *)((char *)this + 0xb4) != 0xc5) {
+        *(unsigned *)((char *)this + 0xb4) = 0xc5;
+        sprite->FUN_005bd450();
+        (*(RHEngineWidenedCalls **)((char *)this + 0x50))->FUN_005b76e0(0xc5, 0);
+    }
+    (*(RHEngineWidenedCalls **)((char *)this + 0x50))->FUN_005b7f60(8);
+    return true;
 }
 
 // FUNCTION: GAME 0x004b9830
@@ -65,11 +91,38 @@ bool RHElementPurse::Serialize(SBFile &file)
     return RHElementProjectile::Serialize(file);
 }
 
+// FUNCTION: GAME 0x004b98a0
+unsigned short RHElementPurse::FUN_004b98a0()
+{
+    std::list<RHElementCoin *> &coins = *(std::list<RHElementCoin *> *)((char *)this + 0x15c);
+    unsigned short amount = 0;
+    for (std::list<RHElementCoin *>::iterator coin = coins.begin(); coin != coins.end(); ++coin) {
+        if (*((char *)*coin + 0x12)) {
+            amount += 10;
+            ((RHEngineSerializationCalls *)g_pEngine)->FUN_004d88e0(*coin, 0, 1);
+        }
+    }
+    coins.clear();
+    return amount;
+}
+
+// Parked: search sentinel liveness changes conditional register saves before insertion.
+// STUB: GAME 0x004b9920
+void RHElementPurse::AddChild(RHElementCoin *coin)
+{
+    std::list<RHElementCoin *> &coins = *(std::list<RHElementCoin *> *)((char *)this + 0x15c);
+    if (std::find(coins.begin(), coins.end(), coin) == coins.end())
+        coins.push_back(coin);
+}
+
 // Force emission: RHSword-style serializers are pulled in only when
 // referenced; this non-inlinable out-of-line call keeps Serialize in the build.
 void RHElementPurse::Emit(SBFile &file)
 {
     FUN_004b9200();
     FUN_004b9210();
+    FUN_004b97c0();
+    FUN_004b98a0();
+    AddChild(0);
     Serialize(file);
 }

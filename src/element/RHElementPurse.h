@@ -26,6 +26,9 @@ class RHElementPurse : public RHElementProjectile
 public:
     int FUN_004b9200();
     int FUN_004b9210();
+    bool FUN_004b97c0();
+    unsigned short FUN_004b98a0();
+    void AddChild(class RHElementCoin *coin);
     virtual bool Serialize(SBFile &file);
 
     void Emit(SBFile &file);
