@@ -100,42 +100,61 @@ public:
     virtual void Slot44() = 0;
     virtual void Slot48() = 0;
     virtual void Slot4c() = 0;
-    virtual void Slot50() = 0;
+    virtual void Slot50(RHSequenceElementCalls *element) = 0;
     virtual void Slot54(RHSequenceElementCalls *element) = 0;
 };
 
-class RHSequenceElementCalls
-{
-public:
-    virtual void Slot00() = 0;
-    virtual void Slot04() = 0;
-    virtual void Slot08() = 0;
-    virtual void Slot0c() = 0;
-    virtual void Slot10() = 0;
-    virtual void FUN_00585d00();
-    virtual void FUN_00585c80();
-    virtual void FUN_00585d40();
-    virtual void FUN_00585e30();
-    virtual void FUN_00585cc0(int value);
-    bool FUN_00585b70();
-    RHSequenceElementCalls *FUN_00585d80();
-    void FUN_00585df0(RHSequenceElementCalls *other);
-    void Emit(int value, RHSequenceElementCalls *other);
+#include "RHSequenceElementCalls.h"
+#include "RHSequenceAppendCalls.h"
+#include <list>
 
-    char m_04[0x0c];
-    int m_10;
-    char m_14[0x28];
-    int m_3c;
-    int m_40;
-    int m_44;
-    void *m_48;
-    RHSequenceElementCalls *m_4c;
-    RHSequenceElementCalls *m_50;
-    void *m_54;
-    void *m_58;
-    void *m_5c;
-    int m_60;
+struct RHSequenceAppendView
+{
+    char m_00[8];
+    std::list<RHSequenceElementCalls *> elements;
+    char m_14[4];
+    bool m_18;
 };
+
+// Parked: validity-byte store straddles the list-count load differently.
+// STUB: GAME 0x00585500
+void RHUnk00585500::Unk(void *sequence)
+{
+    RHSequenceAppendView *owner = (RHSequenceAppendView *)sequence;
+    RHSequenceElementCalls *element = (RHSequenceElementCalls *)this;
+    if (*(unsigned short *)((char *)sequence + 0x10) != 0)
+        owner->elements.back()->m_4c = element;
+    element->m_54 = sequence;
+    owner->elements.push_back(element);
+    owner->m_18 = true;
+}
+
+// FUNCTION: GAME 0x00585570
+void RHSequenceElementCalls::FUN_00585570()
+{
+    if ((int)m_58 >= 3 && (int)m_58 <= 4)
+    {
+        if (m_48)
+            ((RHImmediateElementCalls *)m_48)->Slot50(this);
+        else
+            g_pEngine->FUN_004ca410(this);
+    }
+}
+
+// FUNCTION: GAME 0x00585940
+void RHSequenceElementCalls::FUN_00585940(RHSequenceElementCalls *other)
+{
+    if (other->m_50)
+    {
+        if (m_50)
+            m_50->FUN_00585940(other);
+        else
+        {
+            m_50 = other->m_50;
+            other->m_50 = 0;
+        }
+    }
+}
 
 // FUNCTION: GAME 0x00585b70
 bool RHSequenceElementCalls::FUN_00585b70()
@@ -244,6 +263,9 @@ void RHSequenceElementCalls::FUN_00585e30()
 
 void RHSequenceElementCalls::Emit(int value, RHSequenceElementCalls *other)
 {
+    ((RHUnk00585500 *)this)->Unk(other);
+    FUN_00585570();
+    FUN_00585940(other);
     FUN_00585b70();
     RHSequenceElementCalls::FUN_00585c80();
     RHSequenceElementCalls::FUN_00585cc0(value);

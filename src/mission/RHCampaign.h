@@ -327,6 +327,16 @@ public:
     void FUN_00457950();
 };
 
+class RHCampaignUnk004579d0
+{
+public:
+    char m_allocator[4];
+    RHSectorProduction *m_first;
+    RHSectorProduction *m_last;
+    RHSectorProduction *m_end;
+    void FUN_004579d0();
+};
+
 bool FUN_00458e70(SBFile &file, RHCampaignProductionSectors &values,
                   bool (*serialize)(SBFile &, RHSectorProduction &));
 

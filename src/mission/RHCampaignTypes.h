@@ -2,6 +2,7 @@
 #define RHCAMPAIGNTYPES_H
 
 #include "RHMissionProfile.h"
+#include "RHCampaignCommandLine.h"
 #include <list>
 
 template<class T>
@@ -28,7 +29,6 @@ public:
     RHPCDescription();
     RHPCDescription(void *profile, bool playable);
     ~RHPCDescription();
-    void FUN_0055bc30();
     void FUN_0055bc90(void *profile, bool playable);
     void *FUN_00459dd0(unsigned flags);
     void FUN_00459fd0();
@@ -84,7 +84,7 @@ public:
 
 bool FUN_00453930(SBFile &file, RHMission &mission);
 bool FUN_00453940(SBFile &file, RHMission *&mission);
-bool FUN_0054cc10(RHMission *mission);
+char FUN_0054cc10(RHMission *mission);
 
 typedef RHMission RHCampaignMissionCalls;
 
@@ -301,26 +301,6 @@ public:
     RHCampaignProfiles();
     ~RHCampaignProfiles();
     void *FUN_0056d5d0(const RHProfileText &name);
-};
-
-class RHCampaignCommandLine
-{
-public:
-    char m_allocator[4];
-    char *m_chars;
-    unsigned m_length;
-    unsigned m_capacity;
-    int FUN_0045a010(const RHProfileText &value);
-    void FUN_00457be0() { ((std::string *)this)->begin(); }
-    char operator[](unsigned index)
-    {
-        if (m_length >= index && m_chars != 0)
-        {
-            FUN_00457be0();
-            return m_chars[index];
-        }
-        return *"";
-    }
 };
 
 // SIZE 0x04

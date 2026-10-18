@@ -13,6 +13,7 @@ template<> inline basic_string<unsigned short, char_traits<unsigned short>, allo
 #include <algorithm>
 #include <windows.h>
 #include <cstdlib>
+#include "RHPCStatusCore.h"
 
 namespace std {
 template<> void _Sort(RHMission **first, RHMission **last, bool (*compare)(RHMission *, RHMission *), RHMission **);
@@ -1346,6 +1347,19 @@ void RHCampaignUnk00457950::FUN_00457950()
     m_end = 0;
 }
 
+// ??1?$vector@VRHSectorProduction@@V?$allocator@VRHSectorProduction@@@std@@@std@@QAE@XZ
+// FUNCTION: GAME 0x004579d0
+void RHCampaignUnk004579d0::FUN_004579d0()
+{
+    RHSectorProduction *last = m_last;
+    for (RHSectorProduction *it = m_first; it != last; ++it)
+        it->~RHSectorProduction();
+    operator delete(m_first);
+    m_first = 0;
+    m_last = 0;
+    m_end = 0;
+}
+
 // TEMPLATE: GAME 0x00457a10
 // ?size@?$vector@VRHMission@@V?$allocator@VRHMission@@@std@@@std@@QBEIXZ
 
@@ -1835,7 +1849,7 @@ bool FUN_0054c780(RHMission *left, RHMission *right)
 // FUNCTION: GAME 0x0055bab0
 RHPCDescription::RHPCDescription()
 {
-    FUN_0055bc30();
+    ((RHPCStatus *)this)->RHPCStatus::RHPCStatus();
     m_profile = 0;
     m_44 = false;
 }

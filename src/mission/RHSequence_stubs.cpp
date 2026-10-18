@@ -14,7 +14,12 @@
 #include "SBNullstr.h"
 #include "RHSequence.h"
 
-// Target 0x00584cf0 (RHSequenceElement base ctor).
+// Target 0x00584cf0 (RHSequenceElement base ctor). Parked: the body is a
+// list-node ctor with the vptr written LAST, but the class must keep its
+// virtuals for the Serialize vcall ([vtable+0x8]). Adding __declspec(novtable)
+// to suppress the automatic top vptr store DEMOTED the counted derived ctors
+// 0x005865a0 (1 -> 0.9836) and 0x00588270 (1 -> 0.9677): the attribute
+// propagates to the derived classes and drops their own vptr store. Reverted.
 RHSequenceElement::RHSequenceElement() {}
 
 // Target 0x00584de0 (RHSequenceElement base dtor, out-of-line).
