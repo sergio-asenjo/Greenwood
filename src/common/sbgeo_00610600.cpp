@@ -234,13 +234,13 @@ void RHUnkTargetPoints::FUN_00611100(const SBGeoPoint2D &point)
 // FUNCTION: GAME 0x006112a0
 void RHUnkSectorPoints::FUN_006112a0(const SBGeoPoint2D &point, unsigned int index)
 {
-    (*this)[index] = point;
+    (*(std::vector<SBGeoPoint2D> *)this)[index] = point;
 }
 
 // FUNCTION: GAME 0x006112c0
 SBGeoPoint2D &RHUnkSectorPoints::FUN_006112c0(unsigned int index)
 {
-    return (*this)[index];
+    return (*(std::vector<SBGeoPoint2D> *)this)[index];
 }
 
 // Target pushes each point as it is fetched into an out-of-line segment constructor; the inline FUN_0060a820 wrapper caches the second point.

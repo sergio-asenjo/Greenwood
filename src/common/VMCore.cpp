@@ -684,6 +684,36 @@ void VMCore::FUN_00639370()
     }
 }
 
+// FUNCTION: GAME 0x006396c0
+void VMUnk0063a250::FUN_006396c0()
+{
+    VMUnk0063a140 *area = *(VMUnk0063a140 **)m_pad0;
+    if (area) {
+        if (*(void **)area->m_pad0)
+            operator delete(*(void **)area->m_pad0);
+        operator delete(area);
+    }
+    struct Node
+    {
+        Node *next;
+        Node *previous;
+        void *value;
+    };
+    Node *head = *(Node **)(m_pad0 + 8);
+    Node *node = head->next;
+    while (node != head) {
+        Node *removed = node;
+        node = node->next;
+        removed->previous->next = removed->next;
+        removed->next->previous = removed->previous;
+        operator delete(removed);
+        --*(int *)(m_pad0 + 12);
+    }
+    operator delete(*(Node **)(m_pad0 + 8));
+    *(Node **)(m_pad0 + 8) = 0;
+    *(int *)(m_pad0 + 12) = 0;
+}
+
 void EmitVMCoreSerializer(VMCore *core, const std::string &name, void (__cdecl *serializer)(SBFile &, void *&))
 {
     core->RegisterSerializerForType(name, serializer);

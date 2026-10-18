@@ -12,6 +12,7 @@ class RHUnk0060fbf0
 public:
     RHUnk0060fbf0();
     RHUnk0060fbf0(const RHUnk0060fbf0 &other);
+    RHUnk0060fbf0(const RHMobileUnk006100e0 &line);
     ~RHUnk0060fbf0();
     void FUN_0060fa20();
     void FUN_0060fa30(const RHUnk0060fbf0 &other);

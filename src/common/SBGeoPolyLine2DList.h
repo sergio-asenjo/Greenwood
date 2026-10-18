@@ -4,11 +4,7 @@
 #include "Decomp.h"
 #include <list>
 
-class RHPathQueryCalls
-{
-public:
-    void FUN_005c8e40(int index);
-};
+#include "RHPathQueryCalls.h"
 
 class RHMobileUnk00611360;
 

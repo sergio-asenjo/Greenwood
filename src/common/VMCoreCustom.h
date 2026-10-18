@@ -11,6 +11,7 @@ struct VMNativeStack
 class VMCoreCustom
 {
 public:
+    static int FUN_00407120(VMNativeStack *stack);
     static int FUN_004071a0(VMNativeStack *stack);
     static int FUN_00405080(VMNativeStack *stack);
     static int FUN_00405eb0(VMNativeStack *stack);
@@ -262,6 +263,7 @@ public:
     static int ITransformHandleTargetToTakeTarget(VMNativeStack *stack);
     static int IIsPCSelected(VMNativeStack *stack);
     static int IGetSelectedPC(VMNativeStack *stack);
+    static int FUN_00407380(VMNativeStack *stack);
     static int IMakePCCrouched(VMNativeStack *stack);
     static int IHasAnyPCActionWhoIsInThisLevelOrCouldMaybeComeFromSherwood(VMNativeStack *stack);
     static int IHasAnyActivePCAction(VMNativeStack *stack);

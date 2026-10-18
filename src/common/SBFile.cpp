@@ -480,6 +480,118 @@ bool FUN_005f6490(bool (*callback)(const std::string &))
     return true;
 }
 
+struct SBFileTreeCtorNode54
+{
+    SBFileTreeCtorNode54 *left;
+    SBFileTreeCtorNode54 *parent;
+    SBFileTreeCtorNode54 *right;
+    char value[0x44];
+    int color;
+};
+
+struct SBFileTreeCtorNode2c
+{
+    SBFileTreeCtorNode2c *left;
+    SBFileTreeCtorNode2c *parent;
+    SBFileTreeCtorNode2c *right;
+    char value[0x1c];
+    int color;
+};
+
+class SBFileTree005f64a0
+{
+public:
+    SBFileTree005f64a0(const char &, const char &);
+    char allocator;
+    char compare;
+    char padding[2];
+    SBFileTreeCtorNode54 *head;
+    bool multi;
+    char padding09[3];
+    unsigned size;
+};
+
+class SBFileTree005f6570
+{
+public:
+    SBFileTree005f6570(const char &, const char &);
+    char allocator;
+    char compare;
+    char padding[2];
+    SBFileTreeCtorNode2c *head;
+    bool multi;
+    char padding09[3];
+    unsigned size;
+};
+
+// GLOBAL: GAME 0x006c1380
+SBFileTreeCtorNode54 *g_unk0x006c1380 = 0;
+// GLOBAL: GAME 0x006c1384
+unsigned g_unk0x006c1384 = 0;
+// GLOBAL: GAME 0x006c1388
+SBFileTreeCtorNode2c *g_unk0x006c1388 = 0;
+// GLOBAL: GAME 0x006c138c
+unsigned g_unk0x006c138c = 0;
+
+// FUNCTION: GAME 0x005f64a0
+SBFileTree005f64a0::SBFileTree005f64a0(const char &comparison, const char &allocation)
+{
+    allocator = allocation;
+    compare = comparison;
+    multi = false;
+    std::_Lockit lock;
+    if (g_unk0x006c1380 == 0) {
+        SBFileTreeCtorNode54 *node = (SBFileTreeCtorNode54 *)operator new(0x54);
+        node->parent = 0;
+        node->color = 1;
+        g_unk0x006c1380 = node;
+        g_unk0x006c1380->left = 0;
+        g_unk0x006c1380->right = 0;
+    }
+    ++g_unk0x006c1384;
+    SBFileTreeCtorNode54 *sentinel = g_unk0x006c1380;
+    SBFileTreeCtorNode54 *node = (SBFileTreeCtorNode54 *)operator new(0x54);
+    node->parent = sentinel;
+    node->color = 0;
+    head = node;
+    size = 0;
+    head->left = head;
+    head->right = head;
+}
+
+// FUNCTION: GAME 0x005f6570
+SBFileTree005f6570::SBFileTree005f6570(const char &comparison, const char &allocation)
+{
+    allocator = allocation;
+    compare = comparison;
+    multi = false;
+    std::_Lockit lock;
+    if (g_unk0x006c1388 == 0) {
+        SBFileTreeCtorNode2c *node = (SBFileTreeCtorNode2c *)operator new(0x2c);
+        node->parent = 0;
+        node->color = 1;
+        g_unk0x006c1388 = node;
+        g_unk0x006c1388->left = 0;
+        g_unk0x006c1388->right = 0;
+    }
+    ++g_unk0x006c138c;
+    SBFileTreeCtorNode2c *sentinel = g_unk0x006c1388;
+    SBFileTreeCtorNode2c *node = (SBFileTreeCtorNode2c *)operator new(0x2c);
+    node->parent = sentinel;
+    node->color = 0;
+    head = node;
+    size = 0;
+    head->left = head;
+    head->right = head;
+}
+
+void EmitSBFileTreeCtors()
+{
+    char value = 0;
+    SBFileTree005f64a0 archives(value, value);
+    SBFileTree005f6570 entries(value, value);
+}
+
 // FUNCTION: GAME 0x005f7360
 SBFileTreeIterator SBFileTree::FUN_005f7360(const std::string &key)
 {
@@ -492,6 +604,104 @@ SBFileTreeIterator SBFileTree::FUN_005f7360(const std::string &key)
 SBFileTreeIterator SBFileTree::FUN_005f73f0(const std::string &key)
 {
     return SBFileTreeIterator(FUN_005f7650(key));
+}
+
+static inline SBFileTreeCtorNode54 *SBFileTreeMin54(SBFileTreeCtorNode54 *node)
+{
+    std::_Lockit lock;
+    while (node->left != g_unk0x006c1380)
+        node = node->left;
+    return node;
+}
+
+struct SBFileTreeInc005f74f0
+{
+    SBFileTreeCtorNode54 *m_node;
+    void Advance();
+};
+
+// FUNCTION: GAME 0x005f74f0
+void SBFileTreeInc005f74f0::Advance()
+{
+    std::_Lockit lock;
+    if (m_node->right != g_unk0x006c1380)
+        m_node = SBFileTreeMin54(m_node->right);
+    else {
+        SBFileTreeCtorNode54 *parent;
+        while (m_node == (parent = m_node->parent)->right)
+            m_node = parent;
+        if (m_node->right != parent)
+            m_node = parent;
+    }
+}
+
+// FUNCTION: GAME 0x005f7650
+SBFileTreeNode *SBFileTree::FUN_005f7650(const std::string &key)
+{
+    std::_Lockit lock;
+    SBFileTreeNode *node = m_head->m_parent;
+    SBFileTreeNode *candidate = m_head;
+    while (node != (SBFileTreeNode *)g_unk0x006c1380) {
+        if (node->m_key.compare(key) < 0)
+            node = node->m_right;
+        else {
+            candidate = node;
+            node = node->m_left;
+        }
+    }
+    return candidate;
+}
+
+// FUNCTION: GAME 0x005f7710
+SBFileTreeNode *SBFileTree::FUN_005f7710(const std::string &key)
+{
+    std::_Lockit lock;
+    SBFileTreeNode *node = m_head->m_parent;
+    SBFileTreeNode *candidate = m_head;
+    while (node != (SBFileTreeNode *)g_unk0x006c1388) {
+        if (node->m_key.compare(key) < 0)
+            node = node->m_right;
+        else {
+            candidate = node;
+            node = node->m_left;
+        }
+    }
+    return candidate;
+}
+
+static inline SBFileTreeCtorNode2c *SBFileTreeMin2c(SBFileTreeCtorNode2c *node)
+{
+    std::_Lockit lock;
+    while (node->left != g_unk0x006c1388)
+        node = node->left;
+    return node;
+}
+
+struct SBFileTreeInc005f7840
+{
+    SBFileTreeCtorNode2c *m_node;
+    void Advance();
+};
+
+// FUNCTION: GAME 0x005f7840
+void SBFileTreeInc005f7840::Advance()
+{
+    std::_Lockit lock;
+    if (m_node->right != g_unk0x006c1388)
+        m_node = SBFileTreeMin2c(m_node->right);
+    else {
+        SBFileTreeCtorNode2c *parent;
+        while (m_node == (parent = m_node->parent)->right)
+            m_node = parent;
+        if (m_node->right != parent)
+            m_node = parent;
+    }
+}
+
+void EmitSBFileTreeIncrement(SBFileTreeInc005f74f0 &archives, SBFileTreeInc005f7840 &entries)
+{
+    archives.Advance();
+    entries.Advance();
 }
 
 void SBFileTreeEmit(SBFileTree *tree, const std::string &key)

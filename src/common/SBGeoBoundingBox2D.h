@@ -14,12 +14,7 @@ public:
     float m_y;
 };
 
-class RHMobileUnk006100e0 : public SBGeoPoint2D
-{
-public:
-    ~RHMobileUnk006100e0();
-    char m_08[8];
-};
+#include "RHMobileUnk006100e0.h"
 
 class RHMobileUnk0060a820
 {

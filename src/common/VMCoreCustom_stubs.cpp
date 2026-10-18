@@ -1,17 +1,15 @@
 extern "C" int rand(void);
 
+class RHMenuDialogue
+{
+public:
+    static void Display(unsigned long id);
+};
+
 namespace VMCoreCustomDependencies
 {
-    void FUN_00577090(int, int) {}
-    int FUN_00579bd0(int) { return 0; }
-    int FUN_00579c90(int) { return 0; }
-    int FUN_00579d00(int) { return 0; }
-    int FUN_00579d70(int) { return 0; }
-    void FUN_005714a0(int) {}
-    bool FUN_005714b0(bool) { return false; }
-    bool FUN_00572a20(int) { return false; }
-    bool FUN_00575350(int) { return false; }
-    bool FUN_00573d10(int, int, int, int) { return false; }
+    // FUNCTION: GAME 0x005714a0
+    void FUN_005714a0(int value) { RHMenuDialogue::Display(value); }
     bool Call006390a0(int) { return false; }
     // FUNCTION: GAME 0x00577cf0
     bool FUN_00577cf0(int object, int value)
@@ -20,24 +18,80 @@ namespace VMCoreCustomDependencies
             return (*(unsigned *)((char *)*(void **)((char *)*(void **)((char *)object + 0x50) + 0xe0) + 0x30) >> 13) & 1;
         return *(void **)((char *)*(void **)((char *)object + 0x50) + 0xe0) == (void *)value;
     }
-    void FUN_00578830(bool) {}
-    bool FUN_00578690(int, int, int) { return false; }
-    bool FUN_00570e30(int) { return false; }
-    bool FUN_00570e50(int) { return false; }
     void Call00578c50(int) {}
     // FUNCTION: GAME 0x00578680
     int FUN_00578680(int count) { return rand() % count; }
-    int FUN_005791f0(int) { return 0; }
-    void FUN_00579000(int, int) {}
-    void FUN_005786f0(int, int, bool) {}
-    void FUN_005799d0(int, int, int) {}
-    void FUN_00579a00(int, int) {}
-    int FUN_0057a950(int) { return 0; }
-    void FUN_0057ae60(int) {}
-    void FUN_00577df0(bool) {}
-    void FUN_0057ae40(int) {}
-    bool FUN_00571e30(int) { return false; }
-    void FUN_0057b2b0(int, int, int) {}
-    bool FUN_0057b3d0(int) { return false; }
     void FUN_0057bff0(int) {}
 }
+
+class RHPatch
+{
+public:
+    void FUN_00550150();
+};
+
+class RHUnk0054f870
+{
+public:
+    void Unk00550220();
+};
+
+class RHFastFindGrid
+{
+public:
+    void DeleteStaticRepulsivePoint(unsigned long id);
+};
+
+struct RHUnkSectorGlobal;
+extern char *g_unk0x6c0fa8;
+extern RHUnkSectorGlobal *g_unk0x6c0a9c;
+
+namespace VMCoreCustomDependencies
+{
+    // FUNCTION: GAME 0x00570e30
+    bool FUN_00570e30(int value)
+    {
+        ((RHPatch *)value)->FUN_00550150();
+        g_unk0x6c0fa8[0x48d0] = 0;
+        return true;
+    }
+
+    // FUNCTION: GAME 0x00570e50
+    bool FUN_00570e50(int value)
+    {
+        ((RHUnk0054f870 *)value)->Unk00550220();
+        g_unk0x6c0fa8[0x48d0] = 0;
+        return true;
+    }
+
+    // FUNCTION: GAME 0x0057ae40
+    void FUN_0057ae40(int id)
+    {
+        ((RHFastFindGrid *)g_unk0x6c0a9c)->DeleteStaticRepulsivePoint(id);
+    }
+}
+
+class RHUnk0054b150
+{
+public:
+    void FUN_0054b150(bool flag, int mode);
+};
+
+void RHUnk0054b150::FUN_0054b150(bool, int) {}
+
+class RHUnk004032a0
+{
+public:
+    int FUN_004032a0(int first, int second);
+};
+
+int RHUnk004032a0::FUN_004032a0(int, int) { return 0; }
+
+
+class RHUnk00580220
+{
+public:
+    void FUN_00580220(int value);
+};
+
+void RHUnk00580220::FUN_00580220(int) {}

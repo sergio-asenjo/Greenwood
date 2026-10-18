@@ -18,6 +18,37 @@ void EmitSCSerialize(SCSerialize *serializer)
     serializer->ReadSCB();
 }
 
+// FUNCTION: GAME 0x00639b40
+SCSerialize::SCSerialize()
+{
+    std::allocator<char> allocator;
+    m_00 = 0;
+    m_pad04[0] = *(const char *)&allocator;
+    SCSerializeUnkNode *head = (SCSerializeUnkNode *)operator new(sizeof(SCSerializeUnkNode));
+    head->m_next = head;
+    head->m_previous = head;
+    m_08 = head;
+    m_0c = 0;
+}
+
+// FUNCTION: GAME 0x00639b70
+SCSerialize::~SCSerialize()
+{
+    SCSerializeUnkNode *head = m_08;
+    SCSerializeUnkNode *node = head->m_next;
+    while (node != head) {
+        SCSerializeUnkNode *removed = node;
+        node = node->m_next;
+        removed->m_previous->m_next = removed->m_next;
+        removed->m_next->m_previous = removed->m_previous;
+        operator delete(removed);
+        --m_0c;
+    }
+    operator delete(m_08);
+    m_08 = 0;
+    m_0c = 0;
+}
+
 // SYNTHETIC: GAME 0x0063a920
 // ??_GSCSerializeUnkObject@@UAEPAXI@Z
 

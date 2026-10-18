@@ -101,6 +101,8 @@ struct SCSerializeUnkNode
 class SCSerialize
 {
 public:
+    SCSerialize();
+    ~SCSerialize();
     FILE *m_00; // 0x00
     char m_pad04[4]; // 0x04
     SCSerializeUnkNode *m_08; // 0x08

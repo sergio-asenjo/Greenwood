@@ -26,6 +26,7 @@ namespace VMCoreCustomDependencies
     int FUN_005791d0();
     int FUN_005792d0();
     unsigned char FUN_005795b0();
+    bool FUN_00579690();
     int FUN_0057b5e0();
     unsigned char FUN_0057bfe0();
     void FUN_00577090(int, int);
@@ -37,6 +38,7 @@ namespace VMCoreCustomDependencies
     int FUN_00579d70(int);
     void FUN_005714a0(int);
     bool FUN_005714b0(bool);
+    void FUN_0057b780();
     void FUN_00570a30(int);
     bool FUN_00572a20(int);
     bool FUN_00575350(int);
@@ -2125,6 +2127,12 @@ int VMCoreCustom::IAttachScrollToNPC(VMNativeStack *stack)
     return 0;
 }
 
+// FUNCTION: GAME 0x00407120
+int VMCoreCustom::FUN_00407120(VMNativeStack *)
+{
+    return (unsigned char)VMCoreCustomDependencies::FUN_00579690();
+}
+
 // FUNCTION: GAME 0x00407130
 int VMCoreCustom::IIsBonusItemPickedUp(VMNativeStack *stack)
 {
@@ -2246,6 +2254,13 @@ int VMCoreCustom::IGetSelectedPC(VMNativeStack *stack)
     int *args = (int *)(stack->m_data + stack->m_size) - 1;
     stack->m_size -= 4;
     return (int)RHScript::GetSelectedPC(args[0]);
+}
+
+// FUNCTION: GAME 0x00407380
+int VMCoreCustom::FUN_00407380(VMNativeStack *)
+{
+    VMCoreCustomDependencies::FUN_0057b780();
+    return 0;
 }
 
 // FUNCTION: GAME 0x00407390

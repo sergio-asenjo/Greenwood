@@ -58,7 +58,7 @@ bool SBGeoBoundingBox2D::FUN_00607f00(const RHMobileUnk006100e0 &segment) const
     if (!m_00[16]) return true;
     {
         first = segment;
-        second = *(const SBGeoPoint2D *)segment.m_08;
+        second = segment.Second();
         const float *bounds = (const float *)m_00;
         if (first.m_x < bounds[0] && second.m_x < bounds[0]) return true;
         if (first.m_x > bounds[2] && second.m_x > bounds[2]) return true;
@@ -76,7 +76,7 @@ bool SBGeoBoundingBox2D::FUN_00608040(const RHMobileUnk006100e0 &segment) const
     if (!m_00[16]) return true;
     {
         first = segment;
-        second = *(const SBGeoPoint2D *)segment.m_08;
+        second = segment.Second();
         const float *bounds = (const float *)m_00;
         if (first.m_x < bounds[0] && second.m_x <= first.m_x) return true;
         if (first.m_x > bounds[2] && second.m_x >= first.m_x) return true;
@@ -94,7 +94,7 @@ bool SBGeoBoundingBox2D::FUN_00608180(const RHMobileUnk006100e0 &segment) const
     if (!m_00[16]) return true;
     {
         first = segment;
-        second = *(const SBGeoPoint2D *)segment.m_08;
+        second = segment.Second();
         const float *bounds = (const float *)m_00;
         if (first.m_x == second.m_x && (first.m_x < bounds[0] || first.m_x > bounds[2])) return true;
         if (first.m_y == second.m_y && (first.m_y < bounds[1] || first.m_y > bounds[3])) return true;

@@ -228,15 +228,7 @@ public:
 class RHUnk005ef320;
 extern RHUnk005ef320 *g_unk0x6c11d0;
 
-// SIZE 0x0a
-struct ToolboxMouseState
-{
-    short m_x; // +0x00
-    short m_y; // +0x02
-    unsigned short m_flags; // +0x04
-    unsigned short m_buttons; // +0x06
-    unsigned short m_extra; // +0x08
-};
+#include "ToolboxMouseState.h"
 
 unsigned long FUN_005f0ce0();
 bool FUN_005f1150(ToolboxMouseState &, unsigned char *);

@@ -11,11 +11,7 @@ public:
     bool FUN_0060a990(const RHMobileUnk0060a820 &other) const;
 };
 
-class RHMobileUnk006100e0
-{
-public:
-    ~RHMobileUnk006100e0();
-};
+#include "RHMobileUnk006100e0.h"
 
 // SIZE 0x10
 class SBGeoSegment2D

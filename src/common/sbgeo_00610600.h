@@ -66,11 +66,6 @@ public:
     void FUN_00611100(const SBGeoPoint2D &point);
 };
 
-class RHUnkSectorPoints : public RHUnkPolyArrayBase
-{
-public:
-    SBGeoPoint2D &FUN_006112c0(unsigned int index);
-    void FUN_006112a0(const SBGeoPoint2D &point, unsigned int index);
-};
+#include "RHUnkSectorPoints.h"
 
 #endif

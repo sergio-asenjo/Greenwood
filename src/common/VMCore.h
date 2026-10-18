@@ -37,6 +37,7 @@ class VMUnk0063a250
 {
 public:
     char m_pad0[0x10];
+    void FUN_006396c0();
     bool FUN_0063a250(int, int);
     int FUN_0063a320();
     bool FUN_0063a370(void *, int);
@@ -153,7 +154,7 @@ public:
     void FUN_00638c80();
     void FUN_00638e90();
     virtual bool FUN_006390a0();
-    virtual bool FUN_006390a0_1();
+    bool FUN_006390a0_1();
     ~VMCore();
     bool FUN_00639230();
     bool FUN_00639280(void *);

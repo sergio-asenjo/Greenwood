@@ -1,7 +1,14 @@
 #include "SBNullstr.h"
 #include "Toolbox.h"
 
-void RHUnk006114c0::FUN_00611aa0(SBFile &, void *) {}
+// FUNCTION: GAME 0x00611aa0
+void RHUnk006114c0::FUN_00611aa0(SBFile &file, void *header)
+{
+    file.Access(header, 2);
+    file.Access((char *)header + 2, 2);
+    file.Access((char *)header + 4, 4);
+    file.Access((char *)header + 8, 4);
+}
 int FUN_006277e0(void *, unsigned int *, const void *, unsigned int) { return 0; }
 int __stdcall FUN_006273d0(void *, unsigned int *, const void *, unsigned int, int, int) { return 0; }
 
@@ -41,7 +48,6 @@ ToolboxChunk **ToolboxChunks::FUN_005e31d0(unsigned int count) { return _Growmap
 
 // FUNCTION: GAME 0x0053e080
 ToolboxChunkIterator::ToolboxChunkIterator(ToolboxChunk *next, ToolboxChunk **map) : m_first(*map), m_last(*map + 512), m_next(next), m_map(map) {}
-bool FUN_005f1150(ToolboxMouseState &, unsigned char *) { return false; }
 bool FUN_005e17a0(unsigned char *) { return false; }
 void FUN_005e1380() {}
 void FUN_005e1400() {}

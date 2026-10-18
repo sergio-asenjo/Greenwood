@@ -1,6 +1,11 @@
 #include "SBNullstr.h"
 #include "SBSimpleVirtualMachine.h"
 #include <new>
+#include "RHUnkSectorScript.h"
+#include "VMCore.h"
+#include <string.h>
+
+typedef int SBSimpleVirtualMachineSizeAssert[(sizeof(SBSimpleVirtualMachine) == 0x5c) ? 1 : -1];
 
 // GLOBAL: GAME 0x006c1950
 SBSimpleUnkCodeManager g_unk0x006c1950;
@@ -45,4 +50,48 @@ bool SBSimpleVirtualMachine::Destroy()
         g_unk0x006c1960 = 0;
     }
     return true;
+}
+
+// FUNCTION: GAME 0x00639a30
+bool RHUnkSectorScript::Unk00639a30(const std::string &name)
+{
+    if (!((VMCore *)this)->FUN_00639280((void *)&name)) {
+        SBAssert(0,
+            // STRING: GAME 0x006be18c
+            "P:\\Robin Hood\\VirtualMachine\\SBSimpleVirtualMachine.cpp", 103,
+            // STRING: GAME 0x006be210
+            "Bind failed, unable to find the class %s\n", SBSimpleText(name));
+        *(bool *)((char *)this + 0x58) = false;
+        return *(volatile bool *)((char *)this + 0x58);
+    }
+    *(bool *)((char *)this + 0x58) = true;
+    return *(volatile bool *)((char *)this + 0x58);
+}
+
+// FUNCTION: GAME 0x00639a80
+SBSimpleVirtualMachine::~SBSimpleVirtualMachine()
+{
+    if (m_bound)
+        FUN_006392c0();
+}
+
+class RHUnk00639bc0
+{
+public:
+    RHUnk00639bc0 *FUN_00639bc0(int size);
+    unsigned char *m_memory;
+    int m_size;
+};
+
+// FUNCTION: GAME 0x00639bc0
+RHUnk00639bc0 *RHUnk00639bc0::FUN_00639bc0(int size)
+{
+    m_size = size;
+    if (size > 0) {
+        m_memory = (unsigned char *)operator new(size);
+        memset(m_memory, 0, size);
+    } else {
+        m_memory = 0;
+    }
+    return this;
 }
