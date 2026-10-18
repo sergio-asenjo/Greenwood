@@ -182,11 +182,7 @@ RHUnk005866a0::~RHUnk005866a0()
     }
 }
 
-class RHSequenceElementCalls
-{
-public:
-    void FUN_00585df0(RHSequenceElementCalls *other);
-};
+#include "RHSequenceElementCalls.h"
 
 // FUNCTION: GAME 0x00586840
 RHSequenceElementGeneric *RHSequenceElementGeneric::FUN_00586840()

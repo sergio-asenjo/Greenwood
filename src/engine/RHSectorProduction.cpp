@@ -1,6 +1,7 @@
 #include "SBNullstr.h"
 #include "RHSectorProduction.h"
 #include <string.h>
+#include "RHHumanStatus.h"
 
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 DECOMP_SIZE_ASSERT(RHSectorProduction::Occupant, 0x10)
@@ -55,11 +56,7 @@ public:
     void FUN_00462700(unsigned short value);
 };
 
-class RHUnk0049d4f0
-{
-public:
-    bool Unk(int value);
-};
+#include "RHPCActionQueryCalls.h"
 
 class RHUnk00452030;
 extern RHUnk00452030 *g_unk0x6c07fc;
@@ -222,13 +219,7 @@ struct RHSectorProductionActor
     int m_5f0;
 };
 
-class RHSectorProductionPC
-{
-public:
-    bool FUN_0055bb00(int value);
-    void FUN_0051d4e0(int kind, unsigned int amount);
-    void FUN_00484360(int amount);
-};
+#include "RHSectorProductionPC.h"
 
 extern double g_unk0x00677d90;
 extern double g_unk0x00677670;
@@ -653,9 +644,9 @@ void RHSectorProduction::FUN_005810c0(const RHMission *mission)
         for (Occupant *it = m_occupants.begin(); it != m_occupants.end(); ++it)
         {
             if (m_0 == 10)
-                ((RHSectorProductionPC *)it->m_0)->FUN_0051d4e0(0, amount);
+                ((RHHumanStatus *)it->m_0)->FUN_0051d4e0(0, amount);
             else if (m_0 == 9 && ((RHSectorProductionPC *)it->m_0)->FUN_0055bb00(1))
-                ((RHSectorProductionPC *)it->m_0)->FUN_0051d4e0(1, amount);
+                ((RHHumanStatus *)it->m_0)->FUN_0051d4e0(1, amount);
         }
     }
 }

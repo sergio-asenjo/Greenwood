@@ -34,11 +34,7 @@ inline void SBArray<T>::Remove(unsigned long index)
 
 extern "C" __declspec(dllimport) int __stdcall DeleteFileA(const char *);
 
-class RHGameSaveCalls
-{
-public:
-    std::string FUN_0056e6b0();
-};
+#include "RHGameSaveCalls.h"
 
 class RHSaveGameArrayCalls
 {

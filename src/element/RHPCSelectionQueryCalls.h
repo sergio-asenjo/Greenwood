@@ -1,0 +1,10 @@
+#ifndef RHPCSELECTIONQUERYCALLS_H
+#define RHPCSELECTIONQUERYCALLS_H
+
+class RHUnk00493a80
+{
+public:
+    int FUN_00493a80();
+};
+
+#endif

@@ -500,16 +500,7 @@ public:
     SBGeoPoint2D m_10; // 0x10
 };
 
-// SIZE 0x14
-class RHUnk00549250 : public RHMessage
-{
-public:
-    RHUnk00549250(int command, void *actor);
-    ~RHUnk00549250();
-    void *FUN_00549280(unsigned flags);
-    int m_0c;   // 0x0c
-    void *m_10; // 0x10
-};
+#include "RHActorMessage.h"
 
 
 // FUNCTION: GAME 0x00549030

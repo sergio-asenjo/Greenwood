@@ -2,13 +2,7 @@
 #include "RHSectorProduction.h"
 
 
-class RHSectorProductionPC
-{
-public:
-    bool FUN_0055bb00(int value);
-    void FUN_0051d4e0(int kind, unsigned int amount);
-    void FUN_00484360(int amount);
-};
+#include "RHSectorProductionPC.h"
 
 // FUNCTION: GAME 0x0055bb00
 bool RHSectorProductionPC::FUN_0055bb00(int value)
@@ -21,8 +15,6 @@ bool RHSectorProductionPC::FUN_0055bb00(int value)
             break;
     return current != last;
 }
-void RHSectorProductionPC::FUN_0051d4e0(int, unsigned int) {}
-void RHSectorProductionPC::FUN_00484360(int) {}
 
 class RHSectorProductionBonus
 {

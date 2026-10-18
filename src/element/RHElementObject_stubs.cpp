@@ -23,11 +23,8 @@ RHObjectConstructorCalls::~RHObjectConstructorCalls()
 }
 
 
-class RHUnk0045aaf0
-{
-public:
-    bool FUN_0045abc0(unsigned short value, int first, int second);
-};
+#include "SBGeoPoint2D.h"
+#include "RHActorSequenceStorage.h"
 
 // FUNCTION: GAME 0x0045abc0
 bool RHUnk0045aaf0::FUN_0045abc0(unsigned short value, int first, int second)
@@ -40,10 +37,6 @@ bool RHUnk0045aaf0::FUN_0045abc0(unsigned short value, int first, int second)
     return result;
 }
 
-unsigned short RHObjectPCQuantity::FUN_0049d5e0(int)
-{
-    return 0;
-}
 
 
 // The nested sub-object serialiser at RHElementObject+0xbc (target 0x00521210)

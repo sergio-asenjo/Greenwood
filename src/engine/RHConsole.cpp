@@ -49,21 +49,9 @@ public:
     bool Unk00456cb0(int);
 };
 
-class RHUnk00584d60
-{
-public:
-    RHUnk00584d60(unsigned short, int, void *);
-    ~RHUnk00584d60();
-    char data[0x64];
-};
+#include "RHSequenceGenericCalls.h"
 
-class RHUnk005861c0
-{
-public:
-    RHUnk005861c0(unsigned short, int, void *, unsigned short, unsigned short);
-    ~RHUnk005861c0();
-    char m_data[0x7c];
-};
+#include "RHSequenceTimedCalls.h"
 
 class RHScript
 {

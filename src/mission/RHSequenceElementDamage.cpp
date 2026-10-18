@@ -16,11 +16,7 @@ public:
     char m_4c[0x18];
 };
 
-class RHSequenceElementCalls
-{
-public:
-    void FUN_00585df0(RHSequenceElementCalls *other);
-};
+#include "RHSequenceElementCalls.h"
 
 class RHUnk586050
 {

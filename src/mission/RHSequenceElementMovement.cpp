@@ -21,16 +21,7 @@ void RHSequenceElementMovement::Emit(SBFile &file, bool pointers)
     FUN_005897e0();
 }
 
-class RHSequenceElementCalls
-{
-public:
-    virtual void FUN_00585cc0(int value);
-    virtual void FUN_00585c80();
-    virtual void FUN_00585d00();
-    virtual void FUN_00585d40();
-    virtual void FUN_00585e30();
-    void FUN_00585df0(RHSequenceElementCalls *other);
-};
+#include "RHSequenceElementCalls.h"
 
 struct RHMovementSequenceView
 {

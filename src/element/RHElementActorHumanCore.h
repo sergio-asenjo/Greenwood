@@ -1,0 +1,138 @@
+#ifndef RHELEMENTACTORHUMANCORE_H
+#define RHELEMENTACTORHUMANCORE_H
+
+#include "RHHumanListCore.h"
+#include "RHActorCommand.h"
+
+class SBFile;
+class SBGeoPoint2D;
+class RHSequenceElement;
+class RHActorTranslationSequenceCalls;
+class RHUnk00613e90;
+class RHUnk005864a0;
+
+class RHElementActorHuman
+{
+public:
+    bool FUN_00471a50();
+    unsigned short GetNewConcussionValue(unsigned short amount) const;
+    void FUN_00471e50(int amount, int source);
+    void FUN_0047e9a0(int amount, int source);
+    void FUN_00474890(void *value);
+    void FUN_004748f0(RHActorTranslationSequenceCalls *sequence);
+    void FUN_00474ad0(RHActorTranslationSequenceCalls *sequence);
+    void FUN_004752d0(RHActorTranslationSequenceCalls *sequence);
+    bool FUN_00475750(unsigned flags, RHActorTranslationSequenceCalls *sequence);
+    bool FUN_00475b00(unsigned flags, void *value);
+    void FUN_00479920(RHElementActorHuman *actor);
+    void FUN_00479970(RHSequenceElement *element);
+    void Translate(RHSequenceElement *element, RHcommand command);
+    void GetTransitionFlags(RHSequenceElement *element, unsigned long &first, unsigned long &second, unsigned long &third);
+    bool Serialize(SBFile &file);
+    void FUN_0047a870(void *value);
+    void FUN_0047f4f0(void *value);
+    bool FUN_0047f420();
+    void FUN_0047a880(RHSequenceElement *element);
+    float FUN_0047a890();
+    unsigned char FUN_0047ac60();
+    void FUN_0047a8a0();
+    void FUN_0047ab00(int first, int second);
+    void FUN_0047aba0();
+    void FUN_0047a960(void *first, void *second, char force);
+    bool FUN_0047ac90(void *element, bool checkRange);
+    void FUN_0046e2e0(void *value);
+    int FUN_004838f0(bool alternate);
+    void FUN_00483d90(RHActorTranslationSequenceCalls *sequence, unsigned flags);
+    void FUN_00482150(int value, int unused, bool flag);
+    unsigned short FUN_00482240(int index, RHElementActorHuman *other);
+    void FUN_00482390(RHHumanList *result, int weaponData, bool alternate);
+    void FUN_00482600(RHHumanList *result, int weaponData);
+    void FUN_004828b0(RHHumanList *result, int weaponData);
+    void FUN_00482b90(RHHumanList *result, float angle);
+    void FUN_00482e50(RHHumanList *result, int weaponData);
+    void FUN_00482fd0(RHHumanList *result, int weaponData, bool alternate);
+    bool FUN_00483070(RHElementActorHuman *other);
+    unsigned FUN_00483160(void *context, RHElementActorHuman *target, unsigned type);
+    unsigned FUN_00483500(void *context, unsigned command, RHElementActorHuman *target);
+    void *FUN_004837f0(RHElementActorHuman *target);
+    int FUN_0047b760(void *actor, int *value);
+    void FUN_0047b660(const RHUnk00613e90 &point);
+    int FUN_00481050(void *first, void *second, int weaponData);
+    int FUN_00480e90(void *first, void *second, int weaponData);
+    int FUN_00481d40(void *first, void *second);
+    int FUN_00481ef0(int target, void *first, int weaponData);
+    void FUN_0047f520(float mode, int weaponData);
+    void FUN_0047faf0(float mode, int weaponData);
+    int FUN_004801d0(void *first, void *second, int weaponData);
+    int FUN_004808f0(void *first, void *second, int weaponData);
+    int FUN_00481150(int weaponData);
+    void FUN_0047c420(void *value);
+    int FUN_0047c4c0(RHElementActorHuman *actor);
+    void FUN_0047ca50();
+    bool FUN_0047c600(RHElementActorHuman *actor, int mode, bool flag);
+    void FUN_0047cb00();
+    void FUN_0047cd40();
+    bool FUN_0047ce70(RHElementActorHuman *actor, void *line);
+    bool FUN_0047cf80(RHElementActorHuman *actor, void *line);
+    void FUN_0047d1b0();
+    bool FUN_0047d320(RHElementActorHuman *actor);
+    void FUN_0047d560();
+    void FUN_0047d670();
+    void FUN_0047d920(RHElementActorHuman *actor);
+    int FUN_0047e7d0(RHUnk005864a0 *element);
+    void FUN_0047e9d0(RHUnk005864a0 *element);
+    unsigned short FUN_0047ea20();
+    void FUN_0047ebc0();
+    int FUN_00484a70(void *value);
+    void FUN_00484610(RHActorTranslationSequenceCalls *sequence);
+    bool FUN_00484bb0(RHElementActorHuman *actor, SBGeoPoint2D &result, void *line);
+    void FUN_004851b0(unsigned short value, void *owner);
+    void FUN_00485940(int color, unsigned short value, bool completed, float duration);
+    void FUN_00485d20(RHSequenceElement *element);
+    void FUN_00485d90();
+    int FUN_00485e00();
+    void Emit(SBFile &file, RHSequenceElement *element, RHcommand command);
+
+    char m_000[0x1b8];
+    RHHumanList m_1b8;
+    char m_1d0[0x1c];
+    undefined m_1ec[0x20];
+    RHHumanList m_20c;
+    undefined m_224[0xc];
+    int m_230;
+    int m_234;
+    int m_238;
+    short m_23c;
+    undefined m_23e;
+    undefined m_23f;
+    short m_240[9];
+    undefined m_252[2];
+    void *m_254;
+    undefined m_258[8];
+    RHHumanList m_260;
+    undefined m_278[0x10];
+    undefined m_288;
+    undefined m_289;
+    short m_28a;
+    int m_28c;
+    void *m_290;
+    char m_294[0x1a8];
+    char m_43c[0x40];
+    undefined m_47c;
+    undefined m_47d[3];
+    int m_480;
+    int m_484;
+    short m_488;
+    undefined m_48a;
+    undefined m_48b;
+    int m_48c;
+    undefined m_490;
+    undefined m_491;
+    short m_492;
+    short m_494;
+    undefined m_496;
+    undefined m_497;
+    void *m_498;
+};
+
+#endif
