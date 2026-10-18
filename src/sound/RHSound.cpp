@@ -1592,6 +1592,7 @@ void RHSound::GetCacheStats(RHsampleCacheStats *stats, int &count)
     count = m_250;
 }
 
+// Parked: preserving loading in an aggregate adds observable stores; scalar colouring remains unresolved.
 // STUB: GAME 0x005a9c50
 bool RHSound::Serialize(SBFile &file)
 {
@@ -1683,7 +1684,7 @@ RHSoundQueue::~RHSoundQueue()
     m_08 = 0;
 }
 
-// Parked: second unlink uses eax/ecx and delays the destructor receiver load.
+// Parked: distinct unlink locals and a named payload receiver retain the EAX/ECX scheduling seam.
 // STUB: GAME 0x005aa1c0
 RHSoundQueueNode **RHSoundQueue::FUN_005aa1c0(RHSoundQueueNode **result, RHSoundQueueNode *node)
 {
@@ -1877,7 +1878,7 @@ void RHSound::FUN_005ad570(void *value)
             std::map<unsigned long, std::string>::value_type(key.id, std::string())).first;
         entry->second.assign(name, strlen(name));
     }
-    for (std::map<unsigned long, std::string>::iterator entry = files.begin(); entry != files.end(); ++entry)
+    for (std::map<unsigned long, std::string>::iterator entry = files.begin(); entry != files.end(); ((RHSoundFileTree::Iterator *)&entry)->FUN_005b1030())
         if (entry->first != 0)
             m_000.InitializeExclamationsForProfile(entry->second, entry->first & 0xffff0000);
 }
@@ -1962,6 +1963,178 @@ RHSoundFileTree::Pair RHSoundFileTree::FUN_005b0870(const Value &value)
     }
     Pair result(previous, false);
     return result;
+}
+
+namespace std
+{
+template <> void _Construct(pair<const unsigned long, string> *, const pair<const unsigned long, string> &);
+}
+
+inline void RHSoundFileTree::Lrotate(Node *x)
+{
+    RHUnk00641782Lock lock;
+    Node *y = x->m_right;
+    x->m_right = y->m_left;
+    if (y->m_left != g_unk0x006c10b4)
+        y->m_left->m_parent = x;
+    y->m_parent = x->m_parent;
+    if (x == Root())
+        Root() = y;
+    else if (x == x->m_parent->m_left)
+        x->m_parent->m_left = y;
+    else
+        x->m_parent->m_right = y;
+    y->m_left = x;
+    x->m_parent = y;
+}
+
+inline void RHSoundFileTree::Rrotate(Node *x)
+{
+    RHUnk00641782Lock lock;
+    Node *y = x->m_left;
+    x->m_left = y->m_right;
+    if (y->m_right != g_unk0x006c10b4)
+        y->m_right->m_parent = x;
+    y->m_parent = x->m_parent;
+    if (x == Root())
+        Root() = y;
+    else if (x == x->m_parent->m_right)
+        x->m_parent->m_right = y;
+    else
+        x->m_parent->m_left = y;
+    y->m_right = x;
+    x->m_parent = y;
+}
+
+static inline RHSoundFileTree::Node *RHSoundFileMin(RHSoundFileTree::Node *node)
+{
+    RHUnk00641782Lock lock;
+    while (node->m_left != g_unk0x006c10b4)
+        node = node->m_left;
+    return node;
+}
+
+// FUNCTION: GAME 0x005b1030
+void RHSoundFileTree::Iterator::FUN_005b1030()
+{
+    RHUnk00641782Lock lock;
+    if (m_node->m_right != g_unk0x006c10b4)
+        m_node = RHSoundFileMin(m_node->m_right);
+    else {
+        Node *parent;
+        while (m_node == (parent = m_node->m_parent)->m_right)
+            m_node = parent;
+        if (m_node->m_right != parent)
+            m_node = parent;
+    }
+}
+
+void EmitRHSoundFileIncrement(RHSoundFileTree::Iterator &iterator)
+{
+    iterator.FUN_005b1030();
+}
+
+// FUNCTION: GAME 0x005b1580
+RHSoundFileTree::Iterator RHSoundFileTree::FUN_005b1580(Node *x, Node *y, const Value &value)
+{
+    RHUnk00641782Lock lock;
+    Node *z = (Node *)operator new(sizeof(Node));
+    z->m_parent = y;
+    z->m_color = 0;
+    z->m_left = g_unk0x006c10b4;
+    z->m_right = g_unk0x006c10b4;
+    typedef std::pair<const unsigned long, std::string> StoredValue;
+    std::_Construct((StoredValue *)&z->m_key, *(const StoredValue *)&value);
+    ++m_size;
+    if (y == m_head || x != g_unk0x006c10b4 || value.m_key < y->m_key)
+    {
+        y->m_left = z;
+        if (y == m_head)
+        {
+            Root() = z;
+            m_head->m_right = z;
+        }
+        else if (y == m_head->m_left)
+            m_head->m_left = z;
+    }
+    else
+    {
+        y->m_right = z;
+        if (y == m_head->m_right)
+            m_head->m_right = z;
+    }
+    for (x = z; x != Root() && x->m_parent->m_color == 0; )
+        if (x->m_parent == Iterator::Left(x->m_parent->m_parent))
+        {
+            y = x->m_parent->m_parent->m_right;
+            if (y->m_color == 0)
+            {
+                x->m_parent->m_color = 1;
+                y->m_color = 1;
+                x->m_parent->m_parent->m_color = 0;
+                x = x->m_parent->m_parent;
+            }
+            else
+            {
+                if (x == x->m_parent->m_right)
+                {
+                    x = x->m_parent;
+                    Lrotate(x);
+                }
+                x->m_parent->m_color = 1;
+                x->m_parent->m_parent->m_color = 0;
+                Rrotate(x->m_parent->m_parent);
+            }
+        }
+        else
+        {
+            y = Iterator::Left(x->m_parent->m_parent);
+            if (y->m_color == 0)
+            {
+                x->m_parent->m_color = 1;
+                y->m_color = 1;
+                x->m_parent->m_parent->m_color = 0;
+                x = x->m_parent->m_parent;
+            }
+            else
+            {
+                if (x == x->m_parent->m_left)
+                {
+                    x = x->m_parent;
+                    Rrotate(x);
+                }
+                x->m_parent->m_color = 1;
+                x->m_parent->m_parent->m_color = 0;
+                Lrotate(x->m_parent->m_parent);
+            }
+        }
+    Root()->m_color = 1;
+    return Iterator(z);
+}
+
+static inline RHSoundFileTree::Node *RHSoundFileTreeMax(RHSoundFileTree::Node *node)
+{
+    RHUnk00641782Lock lock;
+    while (node->m_right != g_unk0x006c10b4)
+        node = node->m_right;
+    return node;
+}
+
+// FUNCTION: GAME 0x005b1940
+void RHSoundFileTree::Iterator::FUN_005b1940()
+{
+    RHUnk00641782Lock lock;
+    if (m_node->m_color == 0 && m_node->m_parent->m_parent == m_node)
+        m_node = m_node->m_right;
+    else if (Left(m_node) != g_unk0x006c10b4)
+        m_node = RHSoundFileTreeMax(Left(m_node));
+    else
+    {
+        Node *parent;
+        while (m_node == (parent = m_node->m_parent)->m_left)
+            m_node = parent;
+        m_node = parent;
+    }
 }
 
 void EmitRHSoundFileTree(RHSoundFileTree *tree, const RHSoundFileTree::Value &value)

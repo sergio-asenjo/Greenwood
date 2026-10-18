@@ -140,7 +140,11 @@ public:
     struct Iterator
     {
         Node *m_node; // 0x00
+        Iterator() {}
+        Iterator(Node *node) : m_node(node) {}
+        static Node *&Left(Node *value) { return value->m_left; }
         void FUN_005b1940();
+        void FUN_005b1030();
     };
     typedef std::pair<Iterator, bool> Pair;
     struct Value
@@ -151,6 +155,9 @@ public:
     Pair FUN_005af320(const Value &);
     Pair FUN_005b0870(const Value &);
     Iterator FUN_005b1580(Node *, Node *, const Value &);
+    void Lrotate(Node *);
+    void Rrotate(Node *);
+    Node *&Root() { return m_head->m_parent; }
     undefined m_00[4]; // 0x00
     Node *m_head; // 0x04
     undefined m_multi; // 0x08

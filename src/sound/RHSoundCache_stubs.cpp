@@ -34,24 +34,13 @@ unsigned int RHMapResources::FUN_00600620(unsigned long) { return 0; }
 void FUN_006416e6() {}
 void *FUN_00642580(void *destination, const void *, unsigned int) { return destination; }
 void RHSoundCacheString::FUN_00402780() {}
-RHSoundCacheGroupIterator RHSoundCacheEntryMap::FUN_005b04c0(RHSoundCacheGroupNode *, RHSoundCacheGroupNode *, const value_type &value)
-{
-    return RHSoundCacheGroupIterator((RHSoundCacheGroupNode *)insert(value).first._Mynode());
-}
 
-RHSoundCacheGroupIterator RHSoundCacheGroups::FUN_005b10e0(RHSoundCacheGroupNode *, RHSoundCacheGroupNode *, const value_type &value)
-{
-    return RHSoundCacheGroupIterator((RHSoundCacheGroupNode *)insert(value).first._Mynode());
-}
+RHUnk00641782Lock::RHUnk00641782Lock() {}
+RHUnk00641782Lock::~RHUnk00641782Lock() {}
 
-void RHSoundCacheGroupIterator::FUN_005b1480()
+RHSoundCacheGroupIterator EmitRHSoundCacheEntryInsert(RHSoundCacheEntryMap &tree, const RHSoundCacheEntryMap::value_type &value)
 {
-    --*(RHSoundCacheEntryMap::iterator *)this;
-}
-
-void RHSoundCacheGroupIterator::FUN_005b1880()
-{
-    --*(RHSoundCacheGroups::iterator *)this;
+    return RHSoundCacheGroupIterator((RHSoundCacheGroupNode *)tree.insert(value).first._Mynode());
 }
 
 void EmitRHSoundCacheInitializers(RHSoundCache &cache, const std::string &profile, unsigned long id)

@@ -20,6 +20,12 @@ struct RHSoundCacheGroupNode
     undefined4 m_14;
 };
 
+struct RHUnk00641782Lock
+{
+    RHUnk00641782Lock();
+    ~RHUnk00641782Lock();
+};
+
 struct RHSoundCacheGroupIterator
 {
     RHSoundCacheGroupNode *m_node;
@@ -27,8 +33,25 @@ struct RHSoundCacheGroupIterator
     RHSoundCacheGroupIterator(RHSoundCacheGroupNode *node) : m_node(node) {}
     RHSoundCacheGroupIterator(const RHSoundCacheGroupIterator &other) : m_node(other.m_node) {}
     bool operator==(const RHSoundCacheGroupIterator &other) const { return m_node == other.m_node; }
+    static RHSoundCacheGroupNode *&Left(RHSoundCacheGroupNode *value) { return value->m_00; }
     void FUN_005b1480();
     void FUN_005b1880();
+};
+
+template <int Kind>
+struct RHSoundCacheEraseIterator
+{
+    RHSoundCacheGroupNode *m_node;
+    RHSoundCacheEraseIterator() {}
+    RHSoundCacheEraseIterator(RHSoundCacheGroupNode *node) : m_node(node) {}
+    bool operator!=(const RHSoundCacheEraseIterator &other) const { return m_node != other.m_node; }
+    void Advance();
+    RHSoundCacheEraseIterator operator++(int)
+    {
+        RHSoundCacheEraseIterator previous = *this;
+        Advance();
+        return previous;
+    }
 };
 
 struct RHSoundCacheGroupInsert
@@ -46,8 +69,26 @@ struct RHSoundCacheGroupInsert
 class RHSoundCacheGroups : public std::map<unsigned long, RHsoundGroup *>
 {
 public:
+    typedef RHSoundCacheEraseIterator<0> EraseIterator;
+    void FUN_005aee70();
+    EraseIterator FUN_005aef90(EraseIterator, EraseIterator);
+    EraseIterator FUN_005af730(EraseIterator);
+    typedef RHSoundCacheGroupNode Node;
+    static Node *&Left(Node *node) { return node->m_00; }
+    static Node *&Parent(Node *node) { return node->m_04; }
+    static Node *&Right(Node *node) { return node->m_08; }
+    static undefined4 &Color(Node *node) { return node->m_14; }
+    void FUN_005afc70(RHSoundCacheGroupNode *);
+    RHSoundCacheGroupNode *&Head() { return *(RHSoundCacheGroupNode **)((char *)this + 4); }
+    RHSoundCacheGroupNode *&Root() { return Head()->m_04; }
+    RHSoundCacheGroupNode *&Leftmost() { return Head()->m_00; }
+    RHSoundCacheGroupNode *&Rightmost() { return Head()->m_08; }
+    EraseIterator Begin() { return EraseIterator(Leftmost()); }
+    unsigned &Count() { return *(unsigned *)((char *)this + 0x0c); }
     RHSoundCacheGroupNode *FUN_005b13e0(const unsigned long &);
     RHSoundCacheGroupIterator FUN_005b10e0(RHSoundCacheGroupNode *, RHSoundCacheGroupNode *, const value_type &);
+    void Lrotate(RHSoundCacheGroupNode *);
+    void Rrotate(RHSoundCacheGroupNode *);
     RHSoundCacheGroupIterator &FUN_005afc50(RHSoundCacheGroupIterator &, const unsigned long &);
     RHSoundCacheGroupIterator End() { return RHSoundCacheGroupIterator(*(RHSoundCacheGroupNode **)((char *)this + 4)); }
     RHSoundCacheGroupIterator Find(const unsigned long &key)

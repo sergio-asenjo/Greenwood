@@ -147,9 +147,10 @@ void RHSoundCache::UpdateCacheState(RHcacheData &cache, RHsampleCacheStats &stat
 void RHSoundCache::UpdateCacheState(std::map<unsigned long, RHSoundCacheEntry *> &entries, RHsampleCacheStats &stats, unsigned long elapsed)
 {
     typedef std::map<unsigned long, RHSoundCacheEntry *> Map;
-    typedef void (Map::const_iterator::*Increment)();
-    Increment increment = &Map::const_iterator::_Inc;
-    for (Map::iterator position = entries.begin(); position != entries.end(); (position.*increment)())
+    typedef RHSoundCacheEraseIterator<1> Iterator;
+    typedef void (Iterator::*Increment)();
+    Increment increment = &Iterator::Advance;
+    for (Map::iterator position = entries.begin(); position != entries.end(); (((Iterator *)&position)->*increment)())
     {
         RHSoundCacheEntry *entry = position->second;
         if (*(unsigned short *)((char *)entry + 0x1e) == 0 && entry->m_stamp > 0)
@@ -168,7 +169,7 @@ void RHSoundCache::UpdateCacheState(std::map<unsigned long, RHSoundCacheEntry *>
 // STUB: GAME 0x005ab660
 void RHSoundCache::FUN_005ab660(std::map<unsigned long, RHSoundCacheEntry *> &entries, RHcacheData &cache)
 {
-    for (std::map<unsigned long, RHSoundCacheEntry *>::iterator entry = entries.begin(); entry != entries.end(); ++entry)
+    for (std::map<unsigned long, RHSoundCacheEntry *>::iterator entry = entries.begin(); entry != entries.end(); ((RHSoundCacheEraseIterator<1> *)&entry)->Advance())
     {
         delete entry->second;
         entry->second = 0;
@@ -181,7 +182,7 @@ void RHSoundCache::FUN_005ab660(std::map<unsigned long, RHSoundCacheEntry *> &en
 // STUB: GAME 0x005ab6d0
 void RHSoundCache::FUN_005ab6d0(std::map<unsigned long, RHSoundCacheEntry *> &entries)
 {
-    for (std::map<unsigned long, RHSoundCacheEntry *>::iterator entry = entries.begin(); entry != entries.end(); ++entry)
+    for (std::map<unsigned long, RHSoundCacheEntry *>::iterator entry = entries.begin(); entry != entries.end(); ((RHSoundCacheEraseIterator<1> *)&entry)->Advance())
     {
         delete entry->second;
         entry->second = 0;
@@ -833,19 +834,20 @@ RHSoundCacheEntry *RHSoundCache::GetSourceCacheEntryForID(unsigned long id)
 void RHSoundCache::FUN_005aeda0()
 {
     typedef std::map<unsigned long, RHSoundCacheEntry *> Map;
-    typedef void (Map::const_iterator::*Increment)();
-    Increment increment = &Map::const_iterator::_Inc;
+    typedef RHSoundCacheEraseIterator<1> Iterator;
+    typedef void (Iterator::*Increment)();
+    Increment increment = &Iterator::Advance;
     FUN_005ab530(*(RHcacheData *)this, *(RHsampleCacheStats *)((char *)this + 0x1c));
     Map &first = *(Map *)((char *)this + 0x28);
     Map::iterator position = first.begin();
-    for (; position != first.end(); (position.*increment)())
+    for (; position != first.end(); (((Iterator *)&position)->*increment)())
     {
         RHSoundCacheEntry *entry = position->second;
         if (entry->m_sample)
             UnloadSample(entry, *(RHsampleCacheStats *)((char *)this + 0x38));
     }
     position = m_044.begin();
-    for (; position != m_044.end(); (position.*increment)())
+    for (; position != m_044.end(); (((Iterator *)&position)->*increment)())
     {
         RHSoundCacheEntry *entry = position->second;
         if (entry->m_sample)
@@ -854,7 +856,7 @@ void RHSoundCache::FUN_005aeda0()
     FUN_005ab530(*(RHcacheData *)((char *)this + 0x60), *(RHsampleCacheStats *)((char *)this + 0x7c));
     Map &last = *(Map *)((char *)this + 0x94);
     position = last.begin();
-    for (; position != last.end(); (position.*increment)())
+    for (; position != last.end(); (((Iterator *)&position)->*increment)())
     {
         RHSoundCacheEntry *entry = position->second;
         if (entry->m_sample)
@@ -862,8 +864,75 @@ void RHSoundCache::FUN_005aeda0()
     }
 }
 
+// GLOBAL: GAME 0x006c10a8
+unsigned g_unk0x006c10a8;
+
+// GLOBAL: GAME 0x006c10b0
+unsigned g_unk0x006c10b0;
+
+// FUNCTION: GAME 0x005aee70
+void RHSoundCacheGroups::FUN_005aee70()
+{
+    EraseIterator first(Leftmost());
+    EraseIterator last(Head());
+    FUN_005aef90(first, last);
+    operator delete(Head());
+    Head() = 0;
+    Count() = 0;
+    {
+        RHUnk00641782Lock lock;
+        if (--g_unk0x006c10a8 == 0) {
+            operator delete(g_unk0x006c10a4);
+            g_unk0x006c10a4 = 0;
+        }
+    }
+}
+
+// FUNCTION: GAME 0x005aeee0
+void RHSoundCacheEntryMap::FUN_005aeee0()
+{
+    EraseIterator first(Leftmost());
+    EraseIterator last(Head());
+    FUN_005af1f0(first, last);
+    operator delete(Head());
+    Head() = 0;
+    Count() = 0;
+    {
+        RHUnk00641782Lock lock;
+        if (--g_unk0x006c10b0 == 0) {
+            operator delete(g_unk0x006c10ac);
+            g_unk0x006c10ac = 0;
+        }
+    }
+}
+
 // LIBRARY: GAME 0x005aef50
 // ??1?$pair@$$CBKV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@std@@QAE@XZ
+
+// FUNCTION: GAME 0x005aef90
+RHSoundCacheGroups::EraseIterator RHSoundCacheGroups::FUN_005aef90(EraseIterator first, EraseIterator last)
+{
+    if (Count() != 0 && first.m_node == Head()->m_00 && last.m_node == Head()) {
+        RHUnk00641782Lock lock;
+        RHSoundCacheGroupNode *node = Root();
+        {
+            RHUnk00641782Lock inner;
+            for (RHSoundCacheGroupNode *next = node; next != g_unk0x006c10a4; node = next) {
+                FUN_005afc70(next->m_08);
+                next = next->m_00;
+                operator delete(node);
+            }
+        }
+        Root() = g_unk0x006c10a4;
+        Count() = 0;
+        Leftmost() = Head();
+        Rightmost() = Head();
+        return Begin();
+    }
+    while (first != last)
+        FUN_005af730(first++);
+    return first;
+}
 
 // FUNCTION: GAME 0x005af0c0
 std::pair<RHSoundCacheEntryMap::iterator, bool> RHSoundCacheEntryMap::FUN_005af0c0(const value_type &value)
@@ -903,6 +972,39 @@ std::pair<RHSoundCacheEntryMap::iterator, bool> RHSoundCacheEntryMap::FUN_005af0
     }
     std::pair<iterator, bool> result((const iterator &)previous, false);
     return result;
+}
+
+// FUNCTION: GAME 0x005af1f0
+RHSoundCacheEntryMap::EraseIterator RHSoundCacheEntryMap::FUN_005af1f0(EraseIterator first, EraseIterator last)
+{
+    if (Count() != 0 && first.m_node == Head()->m_00 && last.m_node == Head()) {
+        RHUnk00641782Lock lock;
+        RHSoundCacheGroupNode *node = Root();
+        {
+            RHUnk00641782Lock inner;
+            for (RHSoundCacheGroupNode *next = node; next != g_unk0x006c10ac; node = next) {
+                FUN_005b0380(next->m_08);
+                next = next->m_00;
+                operator delete(node);
+            }
+        }
+        Root() = g_unk0x006c10ac;
+        Count() = 0;
+        Leftmost() = Head();
+        Rightmost() = Head();
+        return Begin();
+    }
+    while (first != last)
+        FUN_005afe60(first++);
+    return first;
+}
+
+void EmitRHSoundCacheErase(RHSoundCacheGroups *groups, RHSoundCacheEntryMap *entries)
+{
+    groups->FUN_005aee70();
+    entries->FUN_005aeee0();
+    groups->FUN_005aef90(groups->Begin(), RHSoundCacheGroups::EraseIterator(groups->Head()));
+    entries->FUN_005af1f0(entries->Begin(), RHSoundCacheEntryMap::EraseIterator(entries->Head()));
 }
 
 // FUNCTION: GAME 0x005af600
@@ -945,11 +1047,177 @@ RHSoundCacheGroupInsert &RHSoundCacheGroups::FUN_005af600(RHSoundCacheGroupInser
     return output;
 }
 
+static inline RHSoundCacheGroupNode *RHSoundCacheGroupMinimum(RHSoundCacheGroupNode *node)
+{
+    RHUnk00641782Lock lock;
+    while (node->m_00 != g_unk0x006c10a4)
+        node = node->m_00;
+    return node;
+}
+
+static inline RHSoundCacheGroupNode *RHSoundCacheGroupMaximum(RHSoundCacheGroupNode *node)
+{
+    RHUnk00641782Lock lock;
+    while (node->m_08 != g_unk0x006c10a4)
+        node = node->m_08;
+    return node;
+}
+
+// FUNCTION: GAME 0x005af730
+RHSoundCacheGroups::EraseIterator RHSoundCacheGroups::FUN_005af730(EraseIterator position)
+{
+    Node *x;
+    Node *y = (position++).m_node;
+    Node *z = y;
+    RHUnk00641782Lock lock;
+    if (Left(y) == g_unk0x006c10a4)
+        x = Right(y);
+    else if (Right(y) == g_unk0x006c10a4)
+        x = Left(y);
+    else
+    {
+        y = RHSoundCacheGroupMinimum(Right(y));
+        x = Right(y);
+    }
+    {
+        if (y != z)
+        {
+            Parent(Left(z)) = y;
+            Left(y) = Left(z);
+            if (y == Right(z))
+                Parent(x) = y;
+            else
+            {
+                Parent(x) = Parent(y);
+                Left(Parent(y)) = x;
+                Right(y) = Right(z);
+                Parent(Right(z)) = y;
+            }
+            if (Root() == z)
+                Root() = y;
+            else if (Left(Parent(z)) == z)
+                Left(Parent(z)) = y;
+            else
+                Right(Parent(z)) = y;
+            Parent(y) = Parent(z);
+            std::swap(Color(y), Color(z));
+            y = z;
+        }
+        else
+        {
+            Parent(x) = Parent(y);
+            if (Root() == z)
+                Root() = x;
+            else if (Left(Parent(z)) == z)
+                Left(Parent(z)) = x;
+            else
+                Right(Parent(z)) = x;
+            if (Leftmost() == z)
+            {
+                if (Right(z) == g_unk0x006c10a4)
+                    Leftmost() = Parent(z);
+                else
+                    Leftmost() = RHSoundCacheGroupMinimum(x);
+            }
+            if (Rightmost() == z)
+            {
+                if (Left(z) == g_unk0x006c10a4)
+                    Rightmost() = Parent(z);
+                else
+                    Rightmost() = RHSoundCacheGroupMaximum(x);
+            }
+        }
+        if (Color(y) == 1)
+        {
+            while (x != Root() && Color(x) == 1)
+            {
+                if (x == Left(Parent(x)))
+                {
+                    Node *w = Right(Parent(x));
+                    if (Color(w) == 0)
+                    {
+                        Color(w) = 1;
+                        Color(Parent(x)) = 0;
+                        Lrotate(Parent(x));
+                        w = Right(Parent(x));
+                    }
+                    if (Color(Left(w)) == 1 && Color(Right(w)) == 1)
+                    {
+                        Color(w) = 0;
+                        x = Parent(x);
+                    }
+                    else
+                    {
+                        if (Color(Right(w)) == 1)
+                        {
+                            Color(Left(w)) = 1;
+                            Color(w) = 0;
+                            Rrotate(w);
+                            w = Right(Parent(x));
+                        }
+                        Color(w) = Color(Parent(x));
+                        Color(Parent(x)) = 1;
+                        Color(Right(w)) = 1;
+                        Lrotate(Parent(x));
+                        break;
+                    }
+                }
+                else
+                {
+                    Node *w = Left(Parent(x));
+                    if (Color(w) == 0)
+                    {
+                        Color(w) = 1;
+                        Color(Parent(x)) = 0;
+                        Rrotate(Parent(x));
+                        w = Left(Parent(x));
+                    }
+                    if (Color(Right(w)) == 1 && Color(Left(w)) == 1)
+                    {
+                        Color(w) = 0;
+                        x = Parent(x);
+                    }
+                    else
+                    {
+                        if (Color(Left(w)) == 1)
+                        {
+                            Color(Right(w)) = 1;
+                            Color(w) = 0;
+                            Lrotate(w);
+                            w = Left(Parent(x));
+                        }
+                        Color(w) = Color(Parent(x));
+                        Color(Parent(x)) = 1;
+                        Color(Left(w)) = 1;
+                        Rrotate(Parent(x));
+                        break;
+                    }
+                }
+            }
+            Color(x) = 1;
+        }
+    }
+    operator delete(y);
+    --Count();
+    return position;
+}
+
 // FUNCTION: GAME 0x005afc50
 RHSoundCacheGroupIterator &RHSoundCacheGroups::FUN_005afc50(RHSoundCacheGroupIterator &result, const unsigned long &key)
 {
     result.m_node = FUN_005b13e0(key);
     return result;
+}
+
+// FUNCTION: GAME 0x005afc70
+void RHSoundCacheGroups::FUN_005afc70(RHSoundCacheGroupNode *node)
+{
+    RHUnk00641782Lock lock;
+    for (RHSoundCacheGroupNode *next = node; next != g_unk0x006c10a4; node = next) {
+        FUN_005afc70(next->m_08);
+        next = next->m_00;
+        operator delete(node);
+    }
 }
 
 // GLOBAL: GAME 0x006c10a4
@@ -958,10 +1226,465 @@ RHSoundCacheGroupNode *g_unk0x006c10a4;
 // GLOBAL: GAME 0x006c10ac
 RHSoundCacheGroupNode *g_unk0x006c10ac;
 
+namespace std
+{
+template <> void _Construct(pair<const unsigned long, RHsoundGroup *> *, const pair<const unsigned long, RHsoundGroup *> &);
+}
+
+static inline RHSoundCacheGroupNode *RHSoundCacheMinimumA4(RHSoundCacheGroupNode *node)
+{
+    RHUnk00641782Lock lock;
+    while (node->m_00 != g_unk0x006c10a4)
+        node = node->m_00;
+    return node;
+}
+
+// FUNCTION: GAME 0x005afdb0
+template <> void RHSoundCacheEraseIterator<0>::Advance()
+{
+    RHUnk00641782Lock lock;
+    if (m_node->m_08 != g_unk0x006c10a4)
+        m_node = RHSoundCacheMinimumA4(m_node->m_08);
+    else
+    {
+        RHSoundCacheGroupNode *parent;
+        while (m_node == (parent = m_node->m_04)->m_08)
+            m_node = parent;
+        if (m_node->m_08 != parent)
+            m_node = parent;
+    }
+}
+
+static inline RHSoundCacheGroupNode *RHSoundCacheEntryMinimum(RHSoundCacheGroupNode *node)
+{
+    RHUnk00641782Lock lock;
+    while (node->m_00 != g_unk0x006c10ac)
+        node = node->m_00;
+    return node;
+}
+
+static inline RHSoundCacheGroupNode *RHSoundCacheEntryMaximum(RHSoundCacheGroupNode *node)
+{
+    RHUnk00641782Lock lock;
+    while (node->m_08 != g_unk0x006c10ac)
+        node = node->m_08;
+    return node;
+}
+
+// FUNCTION: GAME 0x005afe60
+RHSoundCacheEntryMap::EraseIterator RHSoundCacheEntryMap::FUN_005afe60(EraseIterator position)
+{
+    Node *x;
+    Node *y = (position++).m_node;
+    Node *z = y;
+    RHUnk00641782Lock lock;
+    if (Left(y) == g_unk0x006c10ac)
+        x = Right(y);
+    else if (Right(y) == g_unk0x006c10ac)
+        x = Left(y);
+    else
+    {
+        y = RHSoundCacheEntryMinimum(Right(y));
+        x = Right(y);
+    }
+    {
+        if (y != z)
+        {
+            Parent(Left(z)) = y;
+            Left(y) = Left(z);
+            if (y == Right(z))
+                Parent(x) = y;
+            else
+            {
+                Parent(x) = Parent(y);
+                Left(Parent(y)) = x;
+                Right(y) = Right(z);
+                Parent(Right(z)) = y;
+            }
+            if (Root() == z)
+                Root() = y;
+            else if (Left(Parent(z)) == z)
+                Left(Parent(z)) = y;
+            else
+                Right(Parent(z)) = y;
+            Parent(y) = Parent(z);
+            std::swap(Color(y), Color(z));
+            y = z;
+        }
+        else
+        {
+            Parent(x) = Parent(y);
+            if (Root() == z)
+                Root() = x;
+            else if (Left(Parent(z)) == z)
+                Left(Parent(z)) = x;
+            else
+                Right(Parent(z)) = x;
+            if (Leftmost() == z)
+            {
+                if (Right(z) == g_unk0x006c10ac)
+                    Leftmost() = Parent(z);
+                else
+                    Leftmost() = RHSoundCacheEntryMinimum(x);
+            }
+            if (Rightmost() == z)
+            {
+                if (Left(z) == g_unk0x006c10ac)
+                    Rightmost() = Parent(z);
+                else
+                    Rightmost() = RHSoundCacheEntryMaximum(x);
+            }
+        }
+        if (Color(y) == 1)
+        {
+            while (x != Root() && Color(x) == 1)
+            {
+                if (x == Left(Parent(x)))
+                {
+                    Node *w = Right(Parent(x));
+                    if (Color(w) == 0)
+                    {
+                        Color(w) = 1;
+                        Color(Parent(x)) = 0;
+                        Lrotate(Parent(x));
+                        w = Right(Parent(x));
+                    }
+                    if (Color(Left(w)) == 1 && Color(Right(w)) == 1)
+                    {
+                        Color(w) = 0;
+                        x = Parent(x);
+                    }
+                    else
+                    {
+                        if (Color(Right(w)) == 1)
+                        {
+                            Color(Left(w)) = 1;
+                            Color(w) = 0;
+                            Rrotate(w);
+                            w = Right(Parent(x));
+                        }
+                        Color(w) = Color(Parent(x));
+                        Color(Parent(x)) = 1;
+                        Color(Right(w)) = 1;
+                        Lrotate(Parent(x));
+                        break;
+                    }
+                }
+                else
+                {
+                    Node *w = Left(Parent(x));
+                    if (Color(w) == 0)
+                    {
+                        Color(w) = 1;
+                        Color(Parent(x)) = 0;
+                        Rrotate(Parent(x));
+                        w = Left(Parent(x));
+                    }
+                    if (Color(Right(w)) == 1 && Color(Left(w)) == 1)
+                    {
+                        Color(w) = 0;
+                        x = Parent(x);
+                    }
+                    else
+                    {
+                        if (Color(Left(w)) == 1)
+                        {
+                            Color(Right(w)) = 1;
+                            Color(w) = 0;
+                            Lrotate(w);
+                            w = Left(Parent(x));
+                        }
+                        Color(w) = Color(Parent(x));
+                        Color(Parent(x)) = 1;
+                        Color(Left(w)) = 1;
+                        Rrotate(Parent(x));
+                        break;
+                    }
+                }
+            }
+            Color(x) = 1;
+        }
+    }
+    operator delete(y);
+    --Count();
+    return position;
+}
+
+struct RHSoundCacheInsertStorage
+{
+    char m_00[4];
+    RHSoundCacheGroupNode *m_head;
+    unsigned m_08;
+    unsigned m_size;
+};
+
+inline void RHSoundCacheEntryMap::Lrotate(RHSoundCacheGroupNode *x)
+{
+    RHUnk00641782Lock lock;
+    RHSoundCacheGroupNode *y = x->m_08;
+    x->m_08 = y->m_00;
+    if (y->m_00 != g_unk0x006c10ac)
+        y->m_00->m_04 = x;
+    y->m_04 = x->m_04;
+    if (x == Root())
+        Root() = y;
+    else if (x == x->m_04->m_00)
+        x->m_04->m_00 = y;
+    else
+        x->m_04->m_08 = y;
+    y->m_00 = x;
+    x->m_04 = y;
+}
+
+inline void RHSoundCacheEntryMap::Rrotate(RHSoundCacheGroupNode *x)
+{
+    RHUnk00641782Lock lock;
+    RHSoundCacheGroupNode *y = x->m_00;
+    x->m_00 = y->m_08;
+    if (y->m_08 != g_unk0x006c10ac)
+        y->m_08->m_04 = x;
+    y->m_04 = x->m_04;
+    if (x == Root())
+        Root() = y;
+    else if (x == x->m_04->m_08)
+        x->m_04->m_08 = y;
+    else
+        x->m_04->m_00 = y;
+    y->m_08 = x;
+    x->m_04 = y;
+}
+
+// FUNCTION: GAME 0x005b0380
+void RHSoundCacheEntryMap::FUN_005b0380(RHSoundCacheGroupNode *node)
+{
+    RHUnk00641782Lock lock;
+    for (RHSoundCacheGroupNode *next = node; next != g_unk0x006c10ac; node = next) {
+        FUN_005b0380(next->m_08);
+        next = next->m_00;
+        operator delete(node);
+    }
+}
+
+// FUNCTION: GAME 0x005b04c0
+RHSoundCacheGroupIterator RHSoundCacheEntryMap::FUN_005b04c0(RHSoundCacheGroupNode *x, RHSoundCacheGroupNode *y, const value_type &value)
+{
+    RHUnk00641782Lock lock;
+    RHSoundCacheGroupNode *z = (RHSoundCacheGroupNode *)operator new(sizeof(RHSoundCacheGroupNode));
+    z->m_04 = y;
+    z->m_14 = 0;
+    z->m_00 = g_unk0x006c10ac;
+    z->m_08 = g_unk0x006c10ac;
+    typedef std::pair<const unsigned long, RHsoundGroup *> StoredValue;
+    std::_Construct((StoredValue *)&z->m_0c, *(const StoredValue *)&value);
+    RHSoundCacheInsertStorage *tree = (RHSoundCacheInsertStorage *)this;
+    ++tree->m_size;
+    if (y == tree->m_head || x != g_unk0x006c10ac || value.first < y->m_0c)
+    {
+        y->m_00 = z;
+        if (y == Head())
+        {
+            Root() = z;
+            Rightmost() = z;
+        }
+        else if (y == Leftmost())
+            Leftmost() = z;
+    }
+    else
+    {
+        y->m_08 = z;
+        if (y == Rightmost())
+            Rightmost() = z;
+    }
+    for (x = z; x != Root() && x->m_04->m_14 == 0; )
+        if (x->m_04 == RHSoundCacheGroupIterator::Left(x->m_04->m_04))
+        {
+            y = x->m_04->m_04->m_08;
+            if (y->m_14 == 0)
+            {
+                x->m_04->m_14 = 1;
+                y->m_14 = 1;
+                x->m_04->m_04->m_14 = 0;
+                x = x->m_04->m_04;
+            }
+            else
+            {
+                if (x == x->m_04->m_08)
+                {
+                    x = x->m_04;
+                    Lrotate(x);
+                }
+                x->m_04->m_14 = 1;
+                x->m_04->m_04->m_14 = 0;
+                Rrotate(x->m_04->m_04);
+            }
+        }
+        else
+        {
+            y = RHSoundCacheGroupIterator::Left(x->m_04->m_04);
+            if (y->m_14 == 0)
+            {
+                x->m_04->m_14 = 1;
+                y->m_14 = 1;
+                x->m_04->m_04->m_14 = 0;
+                x = x->m_04->m_04;
+            }
+            else
+            {
+                if (x == x->m_04->m_00)
+                {
+                    x = x->m_04;
+                    Rrotate(x);
+                }
+                x->m_04->m_14 = 1;
+                x->m_04->m_04->m_14 = 0;
+                Lrotate(x->m_04->m_04);
+            }
+        }
+    Root()->m_14 = 1;
+    return RHSoundCacheGroupIterator(z);
+}
+
+static inline RHSoundCacheGroupNode *RHSoundCacheMinimumAC(RHSoundCacheGroupNode *node)
+{
+    RHUnk00641782Lock lock;
+    while (node->m_00 != g_unk0x006c10ac)
+        node = node->m_00;
+    return node;
+}
+
+// FUNCTION: GAME 0x005b07c0
+template <> void RHSoundCacheEraseIterator<1>::Advance()
+{
+    RHUnk00641782Lock lock;
+    if (m_node->m_08 != g_unk0x006c10ac)
+        m_node = RHSoundCacheMinimumAC(m_node->m_08);
+    else
+    {
+        RHSoundCacheGroupNode *parent;
+        while (m_node == (parent = m_node->m_04)->m_08)
+            m_node = parent;
+        if (m_node->m_08 != parent)
+            m_node = parent;
+    }
+}
+
+inline void RHSoundCacheGroups::Lrotate(RHSoundCacheGroupNode *x)
+{
+    RHUnk00641782Lock lock;
+    RHSoundCacheGroupNode *y = x->m_08;
+    x->m_08 = y->m_00;
+    if (y->m_00 != g_unk0x006c10a4)
+        y->m_00->m_04 = x;
+    y->m_04 = x->m_04;
+    if (x == Root())
+        Root() = y;
+    else if (x == x->m_04->m_00)
+        x->m_04->m_00 = y;
+    else
+        x->m_04->m_08 = y;
+    y->m_00 = x;
+    x->m_04 = y;
+}
+
+inline void RHSoundCacheGroups::Rrotate(RHSoundCacheGroupNode *x)
+{
+    RHUnk00641782Lock lock;
+    RHSoundCacheGroupNode *y = x->m_00;
+    x->m_00 = y->m_08;
+    if (y->m_08 != g_unk0x006c10a4)
+        y->m_08->m_04 = x;
+    y->m_04 = x->m_04;
+    if (x == Root())
+        Root() = y;
+    else if (x == x->m_04->m_08)
+        x->m_04->m_08 = y;
+    else
+        x->m_04->m_00 = y;
+    y->m_08 = x;
+    x->m_04 = y;
+}
+
+// FUNCTION: GAME 0x005b10e0
+RHSoundCacheGroupIterator RHSoundCacheGroups::FUN_005b10e0(RHSoundCacheGroupNode *x, RHSoundCacheGroupNode *y, const value_type &value)
+{
+    RHUnk00641782Lock lock;
+    RHSoundCacheGroupNode *z = (RHSoundCacheGroupNode *)operator new(sizeof(RHSoundCacheGroupNode));
+    z->m_04 = y;
+    z->m_14 = 0;
+    z->m_00 = g_unk0x006c10a4;
+    z->m_08 = g_unk0x006c10a4;
+    std::_Construct((value_type *)&z->m_0c, value);
+    RHSoundCacheInsertStorage *tree = (RHSoundCacheInsertStorage *)this;
+    ++tree->m_size;
+    if (y == tree->m_head || x != g_unk0x006c10a4 || value.first < y->m_0c)
+    {
+        y->m_00 = z;
+        if (y == Head())
+        {
+            Root() = z;
+            Rightmost() = z;
+        }
+        else if (y == Leftmost())
+            Leftmost() = z;
+    }
+    else
+    {
+        y->m_08 = z;
+        if (y == Rightmost())
+            Rightmost() = z;
+    }
+    for (x = z; x != Root() && x->m_04->m_14 == 0; )
+        if (x->m_04 == RHSoundCacheGroupIterator::Left(x->m_04->m_04))
+        {
+            y = x->m_04->m_04->m_08;
+            if (y->m_14 == 0)
+            {
+                x->m_04->m_14 = 1;
+                y->m_14 = 1;
+                x->m_04->m_04->m_14 = 0;
+                x = x->m_04->m_04;
+            }
+            else
+            {
+                if (x == x->m_04->m_08)
+                {
+                    x = x->m_04;
+                    Lrotate(x);
+                }
+                x->m_04->m_14 = 1;
+                x->m_04->m_04->m_14 = 0;
+                Rrotate(x->m_04->m_04);
+            }
+        }
+        else
+        {
+            y = RHSoundCacheGroupIterator::Left(x->m_04->m_04);
+            if (y->m_14 == 0)
+            {
+                x->m_04->m_14 = 1;
+                y->m_14 = 1;
+                x->m_04->m_04->m_14 = 0;
+                x = x->m_04->m_04;
+            }
+            else
+            {
+                if (x == x->m_04->m_00)
+                {
+                    x = x->m_04;
+                    Rrotate(x);
+                }
+                x->m_04->m_14 = 1;
+                x->m_04->m_04->m_14 = 0;
+                Lrotate(x->m_04->m_04);
+            }
+        }
+    Root()->m_14 = 1;
+    return RHSoundCacheGroupIterator(z);
+}
+
 RHSoundCacheGroupNode *RHSoundCacheGroups::FUN_005b13e0(const unsigned long &key)
 {
-    RHUnk00641782 lock;
-    lock.FUN_00641782();
+    RHUnk00641782Lock lock;
     RHSoundCacheGroupNode *head = *(RHSoundCacheGroupNode **)((char *)this + 4);
     RHSoundCacheGroupNode *node = head->m_04;
     RHSoundCacheGroupNode *result = head;
@@ -975,14 +1698,12 @@ RHSoundCacheGroupNode *RHSoundCacheGroups::FUN_005b13e0(const unsigned long &key
             node = node->m_00;
         }
     }
-    lock.FUN_0064181e();
     return result;
 }
 
 RHSoundCacheGroupNode *RHSoundCacheEntryMap::FUN_005b1430(const unsigned long &key)
 {
-    RHUnk00641782 lock;
-    lock.FUN_00641782();
+    RHUnk00641782Lock lock;
     RHSoundCacheGroupNode *head = *(RHSoundCacheGroupNode **)((char *)this + 4);
     RHSoundCacheGroupNode *node = head->m_04;
     RHSoundCacheGroupNode *result = head;
@@ -996,8 +1717,57 @@ RHSoundCacheGroupNode *RHSoundCacheEntryMap::FUN_005b1430(const unsigned long &k
             node = node->m_00;
         }
     }
-    lock.FUN_0064181e();
     return result;
+}
+
+static inline RHSoundCacheGroupNode *RHSoundCacheGroupMaxAC(RHSoundCacheGroupNode *node)
+{
+    RHUnk00641782Lock lock;
+    while (node->m_08 != g_unk0x006c10ac)
+        node = node->m_08;
+    return node;
+}
+
+static inline RHSoundCacheGroupNode *RHSoundCacheGroupMaxA4(RHSoundCacheGroupNode *node)
+{
+    RHUnk00641782Lock lock;
+    while (node->m_08 != g_unk0x006c10a4)
+        node = node->m_08;
+    return node;
+}
+
+// FUNCTION: GAME 0x005b1480
+void RHSoundCacheGroupIterator::FUN_005b1480()
+{
+    RHUnk00641782Lock lock;
+    if (m_node->m_14 == 0 && m_node->m_04->m_04 == m_node)
+        m_node = m_node->m_08;
+    else if (Left(m_node) != g_unk0x006c10ac)
+        m_node = RHSoundCacheGroupMaxAC(Left(m_node));
+    else
+    {
+        RHSoundCacheGroupNode *parent;
+        while (m_node == (parent = m_node->m_04)->m_00)
+            m_node = parent;
+        m_node = parent;
+    }
+}
+
+// FUNCTION: GAME 0x005b1880
+void RHSoundCacheGroupIterator::FUN_005b1880()
+{
+    RHUnk00641782Lock lock;
+    if (m_node->m_14 == 0 && m_node->m_04->m_04 == m_node)
+        m_node = m_node->m_08;
+    else if (Left(m_node) != g_unk0x006c10a4)
+        m_node = RHSoundCacheGroupMaxA4(Left(m_node));
+    else
+    {
+        RHSoundCacheGroupNode *parent;
+        while (m_node == (parent = m_node->m_04)->m_00)
+            m_node = parent;
+        m_node = parent;
+    }
 }
 
 // LIBRARY: GAME 0x005b1a00

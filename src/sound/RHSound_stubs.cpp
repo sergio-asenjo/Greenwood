@@ -1,5 +1,13 @@
 #include "SBNullstr.h"
 #include "RHSound.h"
+
+namespace std
+{
+template <> void _Construct(pair<const unsigned long, string> *output, const pair<const unsigned long, string> &value)
+{
+    new ((void *)output) pair<const unsigned long, string>(value);
+}
+}
 #include <windows.h>
 
 // GLOBAL: GAME 0x00677000
@@ -124,5 +132,3 @@ extern "C" int __stdcall FSOUND_PlaySound(int, void *) { return 0; }
 extern "C" void __stdcall FSOUND_3D_Update() {}
 // GLOBAL: GAME 0x006c10b4
 RHSoundFileTree::Node *g_unk0x006c10b4 = 0;
-void RHSoundFileTree::Iterator::FUN_005b1940() {}
-RHSoundFileTree::Iterator RHSoundFileTree::FUN_005b1580(Node *, Node *, const Value &) { Iterator result; result.m_node = m_head; return result; }
