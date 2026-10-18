@@ -22,9 +22,6 @@ public:
 
 void RHSaveGameArrayCalls::FUN_00570360() {}
 
-// Target 0x0056e250 (initialises the 0x48-byte RHSaveGame).
-RHSaveGame::RHSaveGame(RHSaveGameManager *) {}
-
 RHSaveGame::RHSaveGame(RHSaveGameManager *, const std::string &, const std::wstring &) {}
 
 // FUNCTION: GAME 0x0056fd90
@@ -37,8 +34,6 @@ RHSaveGame::~RHSaveGame()
     ((NarrowString *)(m_data + 0x08))->~NarrowString();
 }
 
-void RHSaveGame::CopyFiles(const RHSaveGame *) {}
-void RHSaveGame::SetText(const std::wstring &) {}
 
 
 // Target 0x0064158f (operator delete).

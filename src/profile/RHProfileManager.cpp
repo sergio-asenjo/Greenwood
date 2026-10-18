@@ -9,159 +9,193 @@ class RHProfileManagerParseCalls
 {
 public:
     int FUN_0056c100(void *, unsigned, unsigned);
+    bool FUN_0056c200(void *, unsigned, unsigned);
+    unsigned FUN_0056c250(const char *);
     unsigned FUN_0056c290(void *, unsigned, unsigned);
     unsigned FUN_0056c360(void *, unsigned, unsigned);
     unsigned FUN_0056c410(void *, unsigned, unsigned);
     unsigned FUN_0056c490(void *, unsigned, unsigned);
     unsigned FUN_0056c5b0(void *, unsigned, unsigned);
     const char *FUN_0056c700(void *, unsigned, unsigned);
-    const char *FUN_0056cb00(void *, unsigned, unsigned);
-    const char *FUN_0056cc40(void *, unsigned, unsigned);
+    unsigned FUN_0056cab0(void *, unsigned, unsigned);
+    unsigned FUN_0056cb00(void *, unsigned, unsigned);
+    unsigned FUN_0056cc40(void *, unsigned, unsigned);
     unsigned FUN_0056cdb0(void *, unsigned, unsigned);
     int FUN_0056ce70(void *);
 };
 
-static const char *RHProfileToken(void *token)
+static inline const char *RHProfileToken(void *token)
 {
     const char *value = *(const char **)((char *)token + 4);
     return value ? value : "";
 }
 
-static bool RHProfileTokenEquals(const char *first, const char *second)
+static inline bool RHProfileTokenEquals(const char *first, const char *second)
 {
     return _stricmp(first, second) == 0;
 }
 
-// Parked: The parser's case-mode helper and diagnostic call ABI remain unresolved.
-// STUB: GAME 0x0056c100
+// FUNCTION: GAME 0x0056c100
 int RHProfileManagerParseCalls::FUN_0056c100(void *profile, unsigned line, unsigned column)
 {
-    const char *value = RHProfileToken(profile);
-    if (RHProfileTokenEquals(value, "head"))
+    // STRING: GAME 0x006b1bec
+    if (RHProfileTokenEquals(RHProfileToken(profile), "head"))
         return 0;
-    if (RHProfileTokenEquals(value, "throat"))
+    // STRING: GAME 0x006b1be4
+    if (RHProfileTokenEquals(RHProfileToken(profile), "throat"))
         return 1;
-    if (RHProfileTokenEquals(value, "chest"))
+    // STRING: GAME 0x006b1bdc
+    if (RHProfileTokenEquals(RHProfileToken(profile), "chest"))
         return 2;
-    if (RHProfileTokenEquals(value, "back"))
+    // STRING: GAME 0x006b1bd4
+    if (RHProfileTokenEquals(RHProfileToken(profile), "back"))
         return 3;
-    if (RHProfileTokenEquals(value, "arm"))
+    // STRING: GAME 0x006b1bcc
+    if (RHProfileTokenEquals(RHProfileToken(profile), "legs"))
         return 4;
     FUN_0056cf40((const RHProfileManager *)this,
-        "In weapon profile at (%d,%d) : type of wound %s", line, column, value);
+        // STRING: GAME 0x006b1b70
+        "In weapon profile at (%d,%d) : target of thrust not recognized (%s), defaulting to HEAD\n",
+        line, column, RHProfileToken(profile));
     return 0;
 }
 
-// Parked: The parser's shared case-mode comparison semantics are not available.
-// STUB: GAME 0x0056c200
-unsigned FUN_0056c200(const char *token)
+// FUNCTION: GAME 0x0056c200
+bool RHProfileManagerParseCalls::FUN_0056c200(void *token, unsigned, unsigned)
 {
-    if (RHProfileTokenEquals(token, "yes") || RHProfileTokenEquals(token, "x"))
-        return 1;
-    return 0;
+    // STRING: GAME 0x006b1bf8
+    if (RHProfileTokenEquals(RHProfileToken(token), "yes") ||
+        // STRING: GAME 0x006b1bf4
+        RHProfileTokenEquals(RHProfileToken(token), "x"))
+        return true;
+    return false;
 }
 
-// Parked: The fixed-width conversion's string-helper behavior is not fully recovered.
-// STUB: GAME 0x0056c250
-unsigned FUN_0056c250(const char *token)
+// FUNCTION: GAME 0x0056c250
+unsigned RHProfileManagerParseCalls::FUN_0056c250(const char *token)
 {
-    unsigned value = 0;
+    struct { unsigned word; char terminator; } value;
+    value.word = 0;
+    value.terminator = 0;
+    // STRING: GAME 0x006b1bfc
     if (!RHProfileTokenEquals(token, "NONE"))
         strncpy((char *)&value, token, 4);
-    return value;
+    return value.word;
 }
 
-// Parked: The parser's case-mode helper and diagnostic call ABI remain unresolved.
-// STUB: GAME 0x0056c290
+// FUNCTION: GAME 0x0056c290
 unsigned RHProfileManagerParseCalls::FUN_0056c290(void *profile, unsigned line, unsigned column)
 {
-    const char *value = RHProfileToken(profile);
-    if (RHProfileTokenEquals(value, "wood"))
+    // STRING: GAME 0x006af5f4
+    if (RHProfileTokenEquals(RHProfileToken(profile), "wood"))
         return 0;
-    if (RHProfileTokenEquals(value, "steel"))
+    // STRING: GAME 0x006b1c7c
+    if (RHProfileTokenEquals(RHProfileToken(profile), "steel"))
         return 1;
-    if (RHProfileTokenEquals(value, "cast iron"))
+    // STRING: GAME 0x006b1c70
+    if (RHProfileTokenEquals(RHProfileToken(profile), "cast iron"))
         return 2;
-    if (RHProfileTokenEquals(value, "steel and wood"))
+    // STRING: GAME 0x006b1c60
+    if (RHProfileTokenEquals(RHProfileToken(profile), "steel and wood"))
         return 3;
     FUN_0056cf40((const RHProfileManager *)this,
-        "In profile at (%d,%d) : type of weapon %s", line, column, value);
+        // STRING: GAME 0x006b1c04
+        "In profile at (%d,%d) : type of weapon material not recognized (%s), defaulting to WOOD\n",
+        line, column, RHProfileToken(profile));
     return 0;
 }
 
-// Parked: The parser's case-mode helper and diagnostic call ABI remain unresolved.
-// STUB: GAME 0x0056c360
+// FUNCTION: GAME 0x0056c360
 unsigned RHProfileManagerParseCalls::FUN_0056c360(void *profile, unsigned line, unsigned column)
 {
-    const char *value = RHProfileToken(profile);
-    if (RHProfileTokenEquals(value, "leather"))
+    // STRING: GAME 0x006b1cf4
+    if (RHProfileTokenEquals(RHProfileToken(profile), "leather"))
         return 0;
-    if (RHProfileTokenEquals(value, "chainmail"))
+    // STRING: GAME 0x006b1ce8
+    if (RHProfileTokenEquals(RHProfileToken(profile), "chainmail"))
         return 1;
-    if (RHProfileTokenEquals(value, "plate"))
+    // STRING: GAME 0x006b1ce0
+    if (RHProfileTokenEquals(RHProfileToken(profile), "plate"))
         return 2;
     FUN_0056cf40((const RHProfileManager *)this,
-        "In profile at (%d,%d) : type of armor %s", line, column, value);
+        // STRING: GAME 0x006b1c84
+        "In profile at (%d,%d) : type of armor material not recognized (%s), defaulting to LEATHER\n",
+        line, column, RHProfileToken(profile));
     return 0;
 }
 
-// Parked: The parser's case-mode comparison and diagnostic context remain unresolved.
-// STUB: GAME 0x0056c410
+// FUNCTION: GAME 0x0056c410
 unsigned RHProfileManagerParseCalls::FUN_0056c410(void *profile, unsigned line, unsigned column)
 {
-    const char *value = RHProfileToken(profile);
-    if (RHProfileTokenEquals(value, "friendly"))
+    // STRING: GAME 0x006b1d60
+    if (RHProfileTokenEquals(RHProfileToken(profile), "friendly"))
         return 1;
-    if (RHProfileTokenEquals(value, "hostile"))
+    // STRING: GAME 0x006b1d58
+    if (RHProfileTokenEquals(RHProfileToken(profile), "hostile"))
         return 0;
     FUN_0056cf40((const RHProfileManager *)this,
-        "In civilian profile at (%d,%d) : allegiance %s", line, column, value);
+        // STRING: GAME 0x006b1cfc
+        "In civilian profile at (%d,%d) : unknow attitude descriptor (%s), defaulting to friendly\n",
+        line, column, RHProfileToken(profile));
     return 1;
 }
 
-// Parked: The parser's case-mode comparison and diagnostic context remain unresolved.
-// STUB: GAME 0x0056c490
+// FUNCTION: GAME 0x0056c490
 unsigned RHProfileManagerParseCalls::FUN_0056c490(void *profile, unsigned line, unsigned column)
 {
-    const char *value = RHProfileToken(profile);
-    if (RHProfileTokenEquals(value, "man"))
+    // STRING: GAME 0x006b1df4
+    if (RHProfileTokenEquals(RHProfileToken(profile), "man"))
         return 0;
-    if (RHProfileTokenEquals(value, "woman"))
+    // STRING: GAME 0x006b1dec
+    if (RHProfileTokenEquals(RHProfileToken(profile), "woman"))
         return 1;
-    if (RHProfileTokenEquals(value, "old man"))
+    // STRING: GAME 0x006b1de4
+    if (RHProfileTokenEquals(RHProfileToken(profile), "old man"))
         return 2;
-    if (RHProfileTokenEquals(value, "child"))
+    // STRING: GAME 0x006b1ddc
+    if (RHProfileTokenEquals(RHProfileToken(profile), "child"))
         return 3;
-    if (RHProfileTokenEquals(value, "beggar"))
+    // STRING: GAME 0x006b1dd4
+    if (RHProfileTokenEquals(RHProfileToken(profile), "beggar"))
         return 4;
-    if (RHProfileTokenEquals(value, "vip"))
+    // STRING: GAME 0x006b1dd0
+    if (RHProfileTokenEquals(RHProfileToken(profile), "vip"))
         return 5;
     FUN_0056cf40((const RHProfileManager *)this,
-        "In civilian profile at (%d,%d) : type %s", line, column, value);
+        // STRING: GAME 0x006b1d6c
+        "In civilian profile at (%d,%d) : type of civilian not recognized (%s), defaulting to CIVILIAN_MAN\n",
+        line, column, RHProfileToken(profile));
     return 0;
 }
 
-// Parked: The parser's case-mode comparison and diagnostic context remain unresolved.
-// STUB: GAME 0x0056c5b0
+// FUNCTION: GAME 0x0056c5b0
 unsigned RHProfileManagerParseCalls::FUN_0056c5b0(void *profile, unsigned line, unsigned column)
 {
-    const char *value = RHProfileToken(profile);
-    if (RHProfileTokenEquals(value, "straight"))
+    // STRING: GAME 0x006b1eac
+    if (RHProfileTokenEquals(RHProfileToken(profile), "straight"))
         return 0;
-    if (RHProfileTokenEquals(value, "lateral"))
+    // STRING: GAME 0x006b1ea4
+    if (RHProfileTokenEquals(RHProfileToken(profile), "lateral"))
         return 1;
-    if (RHProfileTokenEquals(value, "push aside"))
+    // STRING: GAME 0x006b1e98
+    if (RHProfileTokenEquals(RHProfileToken(profile), "push aside"))
         return 2;
-    if (RHProfileTokenEquals(value, "true half circle"))
+    // STRING: GAME 0x006b1e84
+    if (RHProfileTokenEquals(RHProfileToken(profile), "true half circle"))
         return 3;
-    if (RHProfileTokenEquals(value, "true circle"))
+    // STRING: GAME 0x006b1e78
+    if (RHProfileTokenEquals(RHProfileToken(profile), "true circle"))
         return 4;
-    if (RHProfileTokenEquals(value, "false half circle"))
+    // STRING: GAME 0x006b1e64
+    if (RHProfileTokenEquals(RHProfileToken(profile), "false half circle"))
         return 5;
-    if (RHProfileTokenEquals(value, "false circle"))
+    // STRING: GAME 0x006b1e54
+    if (RHProfileTokenEquals(RHProfileToken(profile), "false circle"))
         return 6;
     FUN_0056cf40((const RHProfileManager *)this,
-        "In weapon profile at (%d,%d) : kind %s", line, column, value);
+        // STRING: GAME 0x006b1df8
+        "In weapon profile at (%d,%d) : kind of thrust not recognized (%s) defaulting to straight\n",
+        line, column, RHProfileToken(profile));
     return 0;
 }
 
@@ -198,65 +232,92 @@ const char *RHProfileManagerParseCalls::FUN_0056c700(void *profile, unsigned lin
     return 0;
 }
 
-// Parked: The parser's case-mode comparison semantics remain unresolved.
-// STUB: GAME 0x0056cab0
-char FUN_0056cab0(const char *value)
+// FUNCTION: GAME 0x0056cab0
+unsigned RHProfileManagerParseCalls::FUN_0056cab0(void *value, unsigned, unsigned)
 {
-    if (RHProfileTokenEquals(value, "left"))
+    // STRING: GAME 0x006b205c
+    if (RHProfileTokenEquals(RHProfileToken(value), "left"))
         return 0;
-    if (RHProfileTokenEquals(value, "right"))
+    // STRING: GAME 0x006b2054
+    if (RHProfileTokenEquals(RHProfileToken(value), "right"))
         return 1;
     return 2;
 }
 
-// Parked: Table traversal, fallback comparison, and diagnostic context remain unresolved.
-// STUB: GAME 0x0056cb00
-const char *RHProfileManagerParseCalls::FUN_0056cb00(void *profile, unsigned line, unsigned column)
+// FUNCTION: GAME 0x0056cb00
+unsigned RHProfileManagerParseCalls::FUN_0056cb00(void *profile, unsigned line, unsigned column)
 {
-    static const char *names[] = {
-        "historical", "attack", "rescue", "ambush", "", "pseudo", "tactical", "end"
+    unsigned short index = 0;
+    struct Entry { const char *name; unsigned value; };
+    Entry entries[] = {
+        // STRING: GAME 0x006b20ec
+        {"historical", 0},
+        // STRING: GAME 0x006b20e4
+        {"attack", 1},
+        // STRING: GAME 0x006b20dc
+        {"rescue", 2},
+        // STRING: GAME 0x006b20d4
+        {"ambush", 3},
+        // STRING: GAME 0x006b20d0
+        {"hq", 4},
+        // STRING: GAME 0x006b20c8
+        {"pseudo", 5},
+        // STRING: GAME 0x006b20bc
+        {"tactical", 6},
+        // STRING: GAME 0x006b1f0c
+        {"end", 7}
     };
-    const char *value = RHProfileToken(profile);
-    for (unsigned i = 0; i < sizeof(names) / sizeof(names[0]); ++i)
-    {
-        if (RHProfileTokenEquals(value, names[i]))
-        {
-            if (i == 7)
-                FUN_0056cf40((const RHProfileManager *)this,
-                    "In mission profile at (%d,%d) : mission type %s", line, column, value);
-            return (const char *)i;
-        }
-    }
-    FUN_0056cf40((const RHProfileManager *)this,
-        "In mission profile at (%d,%d) : mission type %s", line, column, value);
-    return (const char *)7;
+    while (!RHProfileTokenEquals(entries[index].name, RHProfileToken(profile)) &&
+        !RHProfileTokenEquals(entries[index].name, "end"))
+        ++index;
+    unsigned value = entries[index].value;
+    if (strcmp(entries[index].name, "end") == 0)
+        FUN_0056cf40((const RHProfileManager *)this,
+            // STRING: GAME 0x006b2064
+            "In mission profile at (%d,%d) : mission type not recognized (%s) defaulting to none\n",
+            line, column, RHProfileToken(profile));
+    return value;
 }
 
-// Parked: Table traversal, fallback comparison, and diagnostic context remain unresolved.
-// STUB: GAME 0x0056cc40
-const char *RHProfileManagerParseCalls::FUN_0056cc40(void *profile, unsigned line, unsigned column)
+// FUNCTION: GAME 0x0056cc40
+unsigned RHProfileManagerParseCalls::FUN_0056cc40(void *profile, unsigned line, unsigned column)
 {
-    static const char *names[] = {
-        "Cross 1", "Cross 2", "Cross 3", "Derby", "Leicester",
-        "Lincoln", "Nottingham", "Sherwood", "York", "end"
+    unsigned short index = 0;
+    struct Entry { const char *name; unsigned value; };
+    Entry entries[] = {
+        // STRING: GAME 0x006b2194
+        {"Cross 1", 1},
+        // STRING: GAME 0x006b218c
+        {"Cross 2", 2},
+        // STRING: GAME 0x006b2184
+        {"Cross 3", 3},
+        // STRING: GAME 0x006b217c
+        {"Derby", 4},
+        // STRING: GAME 0x006b2170
+        {"Leicester", 5},
+        // STRING: GAME 0x006b2168
+        {"Lincoln", 6},
+        // STRING: GAME 0x006b215c
+        {"Nottingham", 7},
+        // STRING: GAME 0x006a70a8
+        {"Sherwood", 8},
+        // STRING: GAME 0x006b2154
+        {"York", 9},
+        {"end", 10}
     };
-    const char *value = RHProfileToken(profile);
-    for (unsigned i = 0; i < sizeof(names) / sizeof(names[0]); ++i)
-    {
-        if (RHProfileTokenEquals(value, names[i]))
-        {
-            if (i == 9)
-                FUN_0056cf40((const RHProfileManager *)this,
-                    "In mission profile at (%d,%d) : mission location %s", line, column, value);
-            return (const char *)(i + 1);
-        }
-    }
-    FUN_0056cf40((const RHProfileManager *)this,
-        "In mission profile at (%d,%d) : mission location %s", line, column, value);
-    return (const char *)10;
+    while (!RHProfileTokenEquals(entries[index].name, RHProfileToken(profile)) &&
+        !RHProfileTokenEquals(entries[index].name, "end"))
+        ++index;
+    unsigned value = entries[index].value;
+    if (strcmp(entries[index].name, "end") == 0)
+        FUN_0056cf40((const RHProfileManager *)this,
+            // STRING: GAME 0x006b20f8
+            "In mission profile at (%d,%d) : mission location not recognized (%s) defaulting to none\n",
+            line, column, RHProfileToken(profile));
+    return value;
 }
 
-// Parked: Identifier validation and diagnostic formatting remain incomplete.
+// Parked: byte-accessor fallback pointer polarity still differs after two source shapes.
 // STUB: GAME 0x0056cdb0
 unsigned RHProfileManagerParseCalls::FUN_0056cdb0(void *profile, unsigned line, unsigned column)
 {
@@ -270,7 +331,7 @@ unsigned RHProfileManagerParseCalls::FUN_0056cdb0(void *profile, unsigned line, 
     return (unsigned char)value[0] | ((unsigned char)value[1] << 8);
 }
 
-// Parked: The profile comparison helper and diagnostic ABI remain unresolved.
+// Parked: canonical text access fixes the subobject load but not the fallback pointer arm schedule.
 // STUB: GAME 0x0056ce70
 int RHProfileManagerParseCalls::FUN_0056ce70(void *profile)
 {
@@ -380,6 +441,17 @@ void RHProfileManager::Emit(SBFile &file)
         SBAssert(0, "P:\\Robin Hood\\RHProfileManager.cpp", line, "Serialize failed reason is %s", reason); \
         goto failed; \
     }
+
+// FUNCTION: GAME 0x00564e60
+void RHProfileManager::FUN_00564e60(SBFile &file)
+{
+    SerializeHandToHandWeapon(file);
+    SerializeShootWeapon(file);
+    SerializeCharacters(file);
+    SerializeSoldiers(file);
+    SerializeMissions(file);
+    SerializeCivilians(file);
+}
 
 // FUNCTION: GAME 0x00564ea0
 bool RHProfileManager::SerializeCivilians(SBFile &file)

@@ -179,6 +179,39 @@ RHPlayerProfileManager::RHPlayerProfileManager() : m_00(0)
     m_2c = false;
 }
 
+// Parked: cached-list iterator assignment and advance lowering differ.
+// STUB: GAME 0x0055da70
+bool RHPlayerProfileManager::FUN_0055da70(RHPlayerProfile *profile)
+{
+    int index = FUN_0055dbc0(profile);
+    profile->DeleteSaveGameDirectory();
+    delete m_profiles[index];
+    m_profiles.m_list.erase(m_profiles.m_current);
+    m_profiles.m_dirty = true;
+    if (m_active == profile)
+        m_active = 0;
+    return true;
+}
+
+// Parked: cached-list cursor stores and inline forward advance differ.
+// STUB: GAME 0x0055dbc0
+int RHPlayerProfileManager::FUN_0055dbc0(RHPlayerProfile *profile)
+{
+    for (int index = 0; index < (int)m_profiles.m_list.size(); ++index)
+        if (m_profiles[index] == profile)
+            return index;
+    return -1;
+}
+
+// Parked: cached-list iterator resets and duplicated return tails differ.
+// STUB: GAME 0x0055dd10
+RHPlayerProfile *RHPlayerProfileManager::FUN_0055dd10(unsigned long index)
+{
+    if (index < m_profiles.m_list.size())
+        return m_profiles[index];
+    return 0;
+}
+
 // FUNCTION: GAME 0x0055de90
 const std::string &RHPlayerProfileManager::GetProfilesDirectory()
 {
@@ -296,6 +329,9 @@ void RHPlayerProfileManager::Emit()
     FUN_0052ef90();
     new RHPlayerProfileManager;
     FUN_0055e550(0);
+    FUN_0055da70(0);
+    FUN_0055dbc0(0);
+    FUN_0055dd10(0);
     Load();
     Save();
 }

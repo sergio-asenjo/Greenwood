@@ -94,6 +94,7 @@ public:
     bool SerializeCharacters(SBFile &file);
     bool SerializeSoldiers(SBFile &file);
     bool SerializeMissions(SBFile &file);
+    void FUN_00564e60(SBFile &file);
     void ImportBeamMes(RHMissionProfile *profile);
     RHMissionProfile *AddForcedMission(const std::string &first, const std::string &second, const std::string &third);
     bool SerializeProfilePointer(SBFile &file, const RHHtHWeaponProfile *&profile) const;

@@ -42,6 +42,7 @@ public:
     void SynchronizeWithFile();
     const _SYSTEMTIME &GetTime() const;
     const std::wstring &FUN_0056e780() const;
+    int FUN_0056e8b0() const;
     bool operator<(const RHSaveGame &other) const;
     void CopyFiles(const RHSaveGame *source);
     void SetText(const std::wstring &text);

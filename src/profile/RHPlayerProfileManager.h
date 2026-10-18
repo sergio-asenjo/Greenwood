@@ -68,29 +68,10 @@ public:
 
 #include "RHKeyConfig.h"
 
-// SIZE 0x08
-class SBGeoPoint2D
-{
-public:
-    SBGeoPoint2D(float x, float y);
-    ~SBGeoPoint2D();
-    bool Serialize(SBFile &file);
-    float m_x; // 0x00
-    float m_y; // 0x04
-};
+#include "RHGraphicConfig.h"
 
 // SIZE 0x0c
 #include "RHSoundConfig.h"
-
-// SIZE 0x0c
-class RHGraphicConfig
-{
-public:
-    RHGraphicConfig();
-    bool Serialize(SBFile &file);
-    undefined m_00[4]; // 0x00
-    SBGeoPoint2D m_point; // 0x04
-};
 
 // VTABLE: GAME 0x00679bd8
 // SIZE 0x74
@@ -262,6 +243,9 @@ public:
     bool FUN_0055d830();
     static const std::string &GetProfilesDirectory();
     static RHPlayerProfileManager *FUN_0052ef90();
+    bool FUN_0055da70(RHPlayerProfile *profile);
+    int FUN_0055dbc0(RHPlayerProfile *profile);
+    RHPlayerProfile *FUN_0055dd10(unsigned long index);
     void FUN_0055e550(RHPlayerProfile *profile);
     void Emit();
 

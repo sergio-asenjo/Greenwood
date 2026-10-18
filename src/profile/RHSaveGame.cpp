@@ -1,8 +1,33 @@
+#include "SBNullstr.h"
 #include "RHSaveGame.h"
+#include "RHGameSaveCalls.h"
 
 void RHSerializeName(SBFile &, const char *);
 bool FUN_005e0c90(SBFile &, std::string &);
 bool FUN_005e0ea0(SBFile &, std::wstring &);
+
+// FUNCTION: GAME 0x0056e250
+RHSaveGame::RHSaveGame(RHSaveGameManager *manager)
+{
+    typedef std::string NarrowString;
+    typedef std::wstring WideString;
+    *(RHSaveGameManager **)m_data = manager;
+    RHSaveGame_m_04 = 0xffffffff;
+    ((NarrowString *)(m_data + 0x08))->NarrowString::basic_string();
+    ((NarrowString *)(m_data + 0x18))->NarrowString::basic_string();
+    ((WideString *)(m_data + 0x28))->WideString::basic_string();
+}
+
+extern "C" __declspec(dllimport) int __stdcall CopyFileA(const char *, const char *, int);
+
+// FUNCTION: GAME 0x0056e440
+void RHSaveGame::CopyFiles(const RHSaveGame *source)
+{
+    CopyFileA(source->FUN_0056e5d0().c_str(), FUN_0056e5d0().c_str(), 0);
+    CopyFileA(((RHGameSaveCalls *)source)->FUN_0056e6b0().c_str(),
+        ((RHGameSaveCalls *)this)->FUN_0056e6b0().c_str(), 0);
+    SynchronizeWithFile();
+}
 
 // FUNCTION: GAME 0x0056e6a0
 const _SYSTEMTIME &RHSaveGame::GetTime() const
@@ -14,6 +39,27 @@ const _SYSTEMTIME &RHSaveGame::GetTime() const
 const std::wstring &RHSaveGame::FUN_0056e780() const
 {
     return *(const std::wstring *)(m_data + 0x28);
+}
+
+extern std::string g_unk0x006c0ea0;
+extern std::string g_unk0x006c0ed8;
+extern std::string g_unk0x006c0ee8;
+
+// GLOBAL: GAME 0x006c0eb8
+std::string g_unk0x006c0eb8 = "QuickSave";
+// GLOBAL: GAME 0x006c0ec8
+std::string g_unk0x006c0ec8 = "ExQuickSave";
+
+// Parked: compare expansion retains a length-alias guard and different receiver registers after two shapes.
+// STUB: GAME 0x0056e8b0
+int RHSaveGame::FUN_0056e8b0() const
+{
+    const std::string &name = *(const std::string *)(m_data + 0x08);
+    if (name.compare(g_unk0x006c0ea0) == 0 || name.compare(g_unk0x006c0ec8) == 0 ||
+        name.compare(g_unk0x006c0eb8) == 0 || name.compare(g_unk0x006c0ed8) == 0 ||
+        name.compare(g_unk0x006c0ee8) == 0)
+        return 1;
+    return 0;
 }
 
 // FUNCTION: GAME 0x0056ea20
@@ -74,6 +120,12 @@ bool RHSaveGame::SerializeHeader(SBFile &file, Header &header)
     }
     else
         return true;
+}
+
+// FUNCTION: GAME 0x0056eb80
+void RHSaveGame::SetText(const std::wstring &text)
+{
+    *(std::wstring *)(m_data + 0x28) = text;
 }
 
 // FUNCTION: GAME 0x0056ecc0
