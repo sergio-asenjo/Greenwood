@@ -3,8 +3,6 @@
 
 
 
-RHFastFindLine::RHFastFindLine() {}
-RHFastFindLine::~RHFastFindLine() {}
 void RHFastFindLine::FUN_0051faf0(SBFile &, RHFastFindPointerArray &) {}
 // FUNCTION: GAME 0x0051f450
 float RHFastFindLine::FUN_0051f450() { return ((float *)m_00)[1] > ((float *)m_00)[3] ? ((float *)m_00)[1] : ((float *)m_00)[3]; }
@@ -58,7 +56,7 @@ void RHFastFindGrid::FUN_004e99e0(void *, unsigned short, bool) {}
 void RHUnk0051e5e0::FUN_0057ca80() {}
 RHUnk0051e5e0::~RHUnk0051e5e0() {}
 void RHUnk0051e1e0::FUN_0051f0f0() {}
-RHUnk0051e1e0::~RHUnk0051e1e0() {}
+void FUN_0051f1b0() {}
 void RHUnk0051e1e0::Unk0051e230(SBFile &, RHSeqList &) {}
 RHUnk0051b6e0::RHUnk0051b6e0(RHUnk0051e1e0 *, RHUnk0051e1e0 *) {}
 RHUnk0051b6e0::~RHUnk0051b6e0() {}
@@ -88,7 +86,14 @@ void RHUnk005223f0::FUN_005223f0(SBFile &file)
     file.Access((char *)this + 0x10, 2);
 }
 void FUN_00418390(RHUnk005223f0 *) {}
-RHUnk005209d0::RHUnk005209d0(int) {}
+// FUNCTION: GAME 0x005209d0
+RHUnk005209d0::RHUnk005209d0(int type)
+{
+    ((SBGeoPoint2D *)m_04)->SBGeoPoint2D::SBGeoPoint2D();
+    *(unsigned *)this = 0x678b58;
+    *(int *)(m_04 + 8) = type;
+    m_04[0xc] = 1;
+}
 RHUnk005209d0::~RHUnk005209d0() {}
 RHUnk0051a5e0::RHUnk0051a5e0() {}
 RHUnk0051a5e0::~RHUnk0051a5e0() {}

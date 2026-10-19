@@ -5,6 +5,7 @@
 #include "Decomp.h"
 #include <vector>
 
+class SBGeoVector2D;
 class SBGeoPoint2D
 {
 public:
@@ -14,7 +15,7 @@ public:
     ~SBGeoPoint2D();
     SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
     SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
-    SBGeoPoint2D Unk005fc110(const SBGeoPoint2D &other) const;
+    SBGeoVector2D Unk005fc110(const SBGeoPoint2D &other) const;
     void Set(short x, short y)
     {
         m_x = (float)x;
@@ -22,6 +23,15 @@ public:
     }
     float m_x;
     float m_y;
+};
+
+class SBGeoVector2D : public SBGeoPoint2D
+{
+public:
+    SBGeoVector2D();
+    ~SBGeoVector2D() {}
+    SBGeoVector2D &operator=(const SBGeoVector2D &other);
+    SBGeoVector2D(const SBGeoVector2D &other);
 };
 
 class RHFastFindRepulsiveBase
@@ -52,8 +62,8 @@ public:
     RHFastFindRepulsive &operator=(const RHFastFindRepulsive &other)
     {
         Unk004fdc20(other);
-        m_14 = other.m_14;
-        m_1c = other.m_1c;
+        ((SBGeoVector2D *)&m_14)->operator=((const SBGeoVector2D &)other.m_14);
+        ((SBGeoVector2D *)&m_1c)->operator=((const SBGeoVector2D &)other.m_1c);
         m_24 = other.m_24;
         m_28 = other.m_28;
         m_2c = other.m_2c;
@@ -97,6 +107,8 @@ struct RHFastFindPointerArray
     }
 
     int size() const { return m_first == 0 ? 0 : m_last - m_first; }
+    void **begin() const { return m_first; }
+    void **end() const { return m_last; }
     void InsertLast(void *const &value)
     {
         ((SBArray<RHSaveGame *> *)this)->Insert((RHSaveGame **)m_last, 1, (RHSaveGame *const &)value);
@@ -729,17 +741,20 @@ public:
     int Unk0057cd60(SBFile &file, bool mode);
 };
 
-class RHUnk005fc3b0 : public SBGeoPoint2D
+class RHUnk005fc3b0 : public SBGeoVector2D
 {
 public:
-    RHUnk005fc3b0();
+    RHUnk005fc3b0() {}
     ~RHUnk005fc3b0() {}
-    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other);
+    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other)
+    {
+        return (RHUnk005fc3b0 &)SBGeoVector2D::operator=((const SBGeoVector2D &)other);
+    }
     float Unk005fc6a0(float value);
 };
 
 // SIZE 0x14
-class RHUnk005209d0
+class __declspec(novtable) RHUnk005209d0
 {
 public:
     RHUnk005209d0(int type);

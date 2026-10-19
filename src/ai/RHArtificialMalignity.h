@@ -454,7 +454,7 @@ public:
 };
 
 SBGeoVector2D operator*(float factor, const SBGeoVector2D &point);
-SBGeoPoint2D FUN_005fc580(const SBGeoPoint2D &point, float factor);
+SBGeoVector2D FUN_005fc580(const SBGeoVector2D &point, float factor);
 RHMalignityPosition FUN_0040ed40(const RHMalignityPosition &position, SBGeoVector2D vector);
 RHMalignityPosition FUN_0040ece0(const RHMalignityPosition &position, SBGeoPoint2D point);
 extern float g_unk0x006787f8;

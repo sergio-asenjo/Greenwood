@@ -130,7 +130,9 @@ SBEvent g_pathWakeEvent(g_pathWakeName);
 // GLOBAL: GAME 0x006c0d58
 CRITICAL_SECTION g_pathCriticalSection;
 
-// deferred: unannotated pending reccmp #534.
+// Parked (rule-28 deferral): the body matches the shared original 0x424410, but
+// binding it as one canonical view regresses every caller that binds a different
+// view class (RHUnkList/RHUnkListSeq/RHSectorActorList/RHUnk0058e7f0List...).
 RHScriptIter RHUnk004b1520List::FUN_00424410(RHScriptIter position, void *const &value)
 {
     RHScriptNode *next = position.node;
@@ -259,7 +261,7 @@ void RHPathFinder::FUN_00552d50(unsigned char speed)
 void RHPathFinder::AddPathRequest(RHpathRequest *request)
 {
     SBGeoBoundingBox2D box;
-    box = ((RHPathActorInfo *)(*(char **)((char *)request->m_1c + 0x50) + 4))->FUN_00560450();
+    ((RHMobileUnk00607da0 *)&box)->FUN_00607da0((const RHMobileUnk00607da0 &)((RHPathActorInfo *)(*(char **)((char *)request->m_1c + 0x50) + 4))->FUN_00560450());
     if (!g_pathObstacleGrid->FUN_004f5750(box, request->m_0))
     {
         request->m_34 = 1;

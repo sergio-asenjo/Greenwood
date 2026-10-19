@@ -102,7 +102,6 @@ public:
     unsigned char FUN_0048ca20(void *actor, unsigned mode);
     void FUN_0048cb90(void *actor);
     void FUN_0048d050();
-    void Unk0048d020();
     void FUN_00478c20(RHUnk00613e90 &point, bool mode);
     unsigned char FUN_0048c8e0(void *actor, unsigned mode);
     bool FUN_0048a130(void *actor);

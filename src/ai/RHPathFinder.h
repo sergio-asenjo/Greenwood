@@ -9,6 +9,7 @@
 #include "RHPathFinderCore.h"
 
 // SIZE 0x08
+class SBGeoVector2D;
 class SBGeoPoint2D
 {
 public:
@@ -17,7 +18,7 @@ public:
     SBGeoPoint2D(const SBGeoPoint2D &point);
     ~SBGeoPoint2D();
     SBGeoPoint2D &operator=(const SBGeoPoint2D &point);
-    SBGeoPoint2D Unk005fc110(const SBGeoPoint2D &point) const;
+    SBGeoVector2D Unk005fc110(const SBGeoPoint2D &point) const;
     SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &point) const;
     SBGeoPoint2D FUN_005fc200(const SBGeoPoint2D &point) const;
     bool Serialize(SBFile &file);
@@ -194,14 +195,27 @@ public:
 };
 
 // SIZE 0x08
-class RHUnk005fc3b0 : public SBGeoPoint2D
+class SBGeoVector2D : public SBGeoPoint2D
+{
+public:
+    SBGeoVector2D();
+    ~SBGeoVector2D() {}
+    float FUN_005fc660(const SBGeoPoint2D &point) const;
+    SBGeoVector2D &operator=(const SBGeoVector2D &other);
+    SBGeoVector2D(const SBGeoVector2D &other);
+};
+
+class RHUnk005fc3b0 : public SBGeoVector2D
 {
 public:
     float Unk005fc6a0(float value);
     float FUN_005fc680(const RHUnk005fc3b0 &other, float value) const;
-    RHUnk005fc3b0();
+    RHUnk005fc3b0() {}
     ~RHUnk005fc3b0() {}
-    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &point);
+    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other)
+    {
+        return (RHUnk005fc3b0 &)SBGeoVector2D::operator=((const SBGeoVector2D &)other);
+    }
 };
 
 class RHMobileUnk006091b0
@@ -210,12 +224,7 @@ public:
     RHMobileUnk006091b0 &FUN_006091b0(const SBGeoPoint2D &point);
 };
 
-class SBGeoVector2D : public SBGeoPoint2D
-{
-public:
-    ~SBGeoVector2D() {}
-    float FUN_005fc660(const SBGeoPoint2D &point) const;
-};
+
 
 #include "SBGeoPolyLine2DList.h"
 

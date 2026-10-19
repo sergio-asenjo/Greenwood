@@ -1,6 +1,7 @@
 #include "SBNullstr.h"
 #include "RHArtificialMalignity.h"
 #include "RHElementActorNPC.h"
+#include "RHArtificialIntelligenceActorCalls.h"
 #include <stdlib.h>
 #include <new>
 
@@ -800,7 +801,7 @@ void RHMalignityReactionCalls::FUN_0041a3e0()
 {
     if (*(int *)((char *)this + 0x14) >= 0x13 && *(int *)((char *)this + 0x14) <= 0x14)
         ((RHMalignityBaseView *)this)->FUN_0041a300(0);
-    ((RHMalignityActorCalls *)*(void **)((char *)this + 4))->Unk0048d020();
+    ((RHArtificialIntelligenceActorCalls *)*(void **)((char *)this + 4))->Unk0048d020();
     if (*(int *)((char *)this + 0x14) < 0x13 ||
         (*(int *)((char *)this + 0x14) > 0x14 && *(int *)((char *)this + 0x14) != 0x6c))
         ((RHArtificialIntelligence *)this)->Unk00410600();
@@ -1287,6 +1288,7 @@ public:
 
 extern float g_rhuirendererportrait_percent;
 extern float g_unk0x00677430;
+extern float g_unk0x00677598;
 
 // GLOBAL: GAME 0x0067759c
 float g_unk0x0067759c = 180.0f;
@@ -1297,7 +1299,7 @@ float g_unk0x006775a0 = 250.0f;
 // GLOBAL: GAME 0x006775a4
 float g_unk0x006775a4 = 300.0f;
 
-// Parked: range-case block placement differs; the shared 80-float entity has a conflicting initializer.
+// Parked: the inner range-switch case blocks are emitted in the opposite order.
 // STUB: GAME 0x00445510
 bool RHArtificialMalignity::FUN_00445510(RHMalignityPosition position, void *actor)
 {
@@ -1311,7 +1313,7 @@ bool RHArtificialMalignity::FUN_00445510(RHMalignityPosition position, void *act
     float distance = direction.Unk005fc6d0(0.57357645f);
     unsigned short heading = RHMalignityHeading(actor);
     float radius;
-    unsigned relativeHeading = (((RHMalignityHeadingPoint *)&direction)->FUN_005fcc50(0.57357645f) - heading) & 15;
+    unsigned relativeHeading = (direction.FUN_005fcc50(0.57357645f) - heading) & 15;
     switch (relativeHeading)
     {
     case 0:
@@ -1380,7 +1382,7 @@ bool RHArtificialMalignity::FUN_00445510(RHMalignityPosition position, void *act
     case 9:
     case 10:
     case 11:
-        radius = 80.0f;
+        radius = g_unk0x00677598;
         break;
     default:
         radius = distance;
@@ -2230,7 +2232,7 @@ bool RHArtificialMalignity::FUN_00449810(const RHMalignityPosition &position, un
         RHMalignityList &list = M(RHMalignityList, 0x2e4);
         list.FUN_005c8e40(index);
         void *actor = list.m_current->value;
-        switch ((heading - FUN_0040ec20(VirtualBase().FUN_0040cc20(actor), position).FUN_005fcc50(0.57357645f)) & 0xf)
+        switch ((heading - ((RHUnk005fc3b0 *)&FUN_0040ec20(VirtualBase().FUN_0040cc20(actor), position))->FUN_005fcc50(0.57357645f)) & 0xf)
         {
         case 0:
         case 1:

@@ -249,13 +249,14 @@ struct RHArtificialIntelligencePosition
     unsigned short m_0c; // +0x0c
 };
 
+class SBGeoVector2D;
 class SBGeoPoint2D
 {
 public:
     SBGeoPoint2D();
     ~SBGeoPoint2D();
     SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
-    SBGeoPoint2D Unk005fc110(const SBGeoPoint2D &other) const;
+    SBGeoVector2D Unk005fc110(const SBGeoPoint2D &other) const;
     SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
     SBGeoPoint2D FUN_005fc200(const SBGeoPoint2D &other) const;
     float FUN_005fc700(float scale) const;
@@ -263,24 +264,32 @@ public:
     float m_y;
 };
 
-class RHUnk005fc3b0 : public SBGeoPoint2D
-{
-public:
-    RHUnk005fc3b0();
-    ~RHUnk005fc3b0() {}
-    RHUnk005fc3b0 &Unk005fcd40(unsigned char direction, float length);
-    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other);
-    unsigned char FUN_005fcc50(float value) const;
-};
-
 class SBGeoVector2D : public SBGeoPoint2D
 {
 public:
+    SBGeoVector2D();
     SBGeoVector2D(float x, float y);
     SBGeoVector2D(const SBGeoPoint2D &point);
     float FUN_005fc660(const SBGeoPoint2D &point) const;
     ~SBGeoVector2D() {}
+    SBGeoVector2D &operator=(const SBGeoVector2D &other);
+    SBGeoVector2D(const SBGeoVector2D &other);
 };
+
+class RHUnk005fc3b0 : public SBGeoVector2D
+{
+public:
+    RHUnk005fc3b0() {}
+    ~RHUnk005fc3b0() {}
+    RHUnk005fc3b0 &Unk005fcd40(unsigned char direction, float length);
+    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other)
+    {
+        return (RHUnk005fc3b0 &)SBGeoVector2D::operator=((const SBGeoVector2D &)other);
+    }
+    unsigned char FUN_005fcc50(float value) const;
+};
+
+
 
 class SBGeoBoundingBox2D
 {

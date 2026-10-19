@@ -2295,6 +2295,10 @@ void RHUnk0044e640::FUN_0044e640()
     m_dirty = true;
 }
 
+// Parked (rule-28 deferral): the body matches the shared original 0x44e8b0, but
+// binding it as one canonical view regresses every caller that binds a different
+// view class (RHTitbitList::Clear, RHAIUnk0044e8b0 with another iterator type,
+// RHUnk004b1520List::FUN_0044e8b0, RHShadowUnk0044e8b0...).
 RHArtificialIntelligenceIterator RHAIUnk0044e8b0::FUN_0044e8b0(RHArtificialIntelligenceIterator first, RHArtificialIntelligenceIterator last)
 {
     while (first.m_node != last.m_node)

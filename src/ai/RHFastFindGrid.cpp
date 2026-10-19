@@ -2764,7 +2764,7 @@ void **FUN_004598e0(void **first, void **last, void **destination);
 __forceinline void AssignFastFindIntegers(RHFastFindPointerArray &destination,
     const RHFastFindPointerArray &source)
 {
-    if (&destination != &source)
+    if (&source != &destination)
     {
         typedef std::vector<int> Values;
         int *(Values::*erase)(int *, int *) = &Values::erase;
@@ -2776,10 +2776,10 @@ __forceinline void AssignFastFindIntegers(RHFastFindPointerArray &destination,
 __forceinline void AssignFastFindPointers(RHFastFindPointerArray &destination,
     const RHFastFindPointerArray &source)
 {
-    if (&destination != &source)
+    if (&source != &destination)
     {
-        void **last = FUN_004598e0(destination.m_last, destination.m_last, destination.m_first);
-        ((RHScriptFXArray *)&destination)->Unk005008e0(last, destination.m_last);
+        void **last = FUN_004598e0(destination.end(), destination.end(), destination.begin());
+        ((RHScriptFXArray *)&destination)->Unk005008e0(last, destination.end());
         destination.m_last = last;
         ((SBResourceSurfaceArray *)&destination)->Assign(*(const SBResourceSurfaceArray *)&source, 0);
     }
@@ -2788,10 +2788,10 @@ __forceinline void AssignFastFindPointers(RHFastFindPointerArray &destination,
 __forceinline void AssignFastFindPlain(RHFastFindPointerArray &destination,
     const RHFastFindPointerArray &source)
 {
-    if (&destination != &source)
+    if (&source != &destination)
     {
-        void **last = std::copy(destination.m_last, destination.m_last, destination.m_first);
-        ((RHScriptFXArray *)&destination)->Unk005008e0(last, destination.m_last);
+        void **last = std::copy(destination.end(), destination.end(), destination.begin());
+        ((RHScriptFXArray *)&destination)->Unk005008e0(last, destination.end());
         destination.m_last = last;
         ((SBResourceSurfaceArray *)&destination)->Assign(*(const SBResourceSurfaceArray *)&source, 0);
     }
@@ -2905,8 +2905,7 @@ __forceinline void AssignFastFindA0(RHFastFindRecordA0 &destination, const RHFas
     AssignFastFindPlain(output[4], input[4]);
 }
 
-// Parked: source/destination comparison polarity and pointer-tail reload scheduling differ.
-// STUB: GAME 0x004fe480
+// FUNCTION: GAME 0x004fe480
 void RHFastFindRecordArray::FUN_004fe480(RHFastFindRecordC0 *first, RHFastFindRecordC0 *last,
     const RHFastFindRecordC0 &value)
 {
@@ -2914,8 +2913,7 @@ void RHFastFindRecordArray::FUN_004fe480(RHFastFindRecordC0 *first, RHFastFindRe
         AssignFastFindC0(*first, value);
 }
 
-// Parked: backward-copy source/destination live ranges select different registers.
-// STUB: GAME 0x004fe5e0
+// FUNCTION: GAME 0x004fe5e0
 RHFastFindRecordC0 *RHFastFindRecordArray::FUN_004fe5e0(const RHFastFindRecordC0 *first,
     const RHFastFindRecordC0 *last, RHFastFindRecordC0 *destination)
 {
@@ -2924,8 +2922,7 @@ RHFastFindRecordC0 *RHFastFindRecordArray::FUN_004fe5e0(const RHFastFindRecordC0
     return destination;
 }
 
-// Parked: self-assignment comparisons and final raw-array clear scheduling differ.
-// STUB: GAME 0x004fe750
+// FUNCTION: GAME 0x004fe750
 void RHFastFindRecordArray::FUN_004fe750(RHFastFindRecordA0 *first, RHFastFindRecordA0 *last,
     const RHFastFindRecordA0 &value)
 {
@@ -2933,8 +2930,7 @@ void RHFastFindRecordArray::FUN_004fe750(RHFastFindRecordA0 *first, RHFastFindRe
         AssignFastFindA0(*first, value);
 }
 
-// Parked: source/destination comparison polarity and pointer-tail reload scheduling differ.
-// STUB: GAME 0x004fe880
+// FUNCTION: GAME 0x004fe880
 RHFastFindRecordA0 *RHFastFindRecordArray::FUN_004fe880(const RHFastFindRecordA0 *first,
     const RHFastFindRecordA0 *last, RHFastFindRecordA0 *destination)
 {
@@ -2959,8 +2955,7 @@ public:
     RHFastFindPointerArray m_arrays[5];
 };
 
-// Parked: source and member-array receiver live ranges choose different registers.
-// STUB: GAME 0x004fec70
+// FUNCTION: GAME 0x004fec70
 RHFastFindAssignmentC0 &RHFastFindAssignmentC0::FUN_004fec70(const RHFastFindAssignmentC0 &source)
 {
     AssignFastFindIntegers(m_arrays[0], source.m_arrays[0]);
@@ -2972,8 +2967,7 @@ RHFastFindAssignmentC0 &RHFastFindAssignmentC0::FUN_004fec70(const RHFastFindAss
     return *this;
 }
 
-// Parked: member-array receiver allocation changes the assignment schedule.
-// STUB: GAME 0x004fedb0
+// FUNCTION: GAME 0x004fedb0
 RHFastFindAssignmentA0 &RHFastFindAssignmentA0::FUN_004fedb0(const RHFastFindAssignmentA0 &source)
 {
     AssignFastFindIntegers(m_arrays[0], source.m_arrays[0]);
@@ -2982,9 +2976,10 @@ RHFastFindAssignmentA0 &RHFastFindAssignmentA0::FUN_004fedb0(const RHFastFindAss
     AssignFastFindPointers(m_arrays[3], source.m_arrays[3]);
     if (&source.m_arrays[4] != &m_arrays[4])
     {
-        void **last = std::copy(m_arrays[4].m_last, m_arrays[4].m_last, m_arrays[4].m_first);
-        m_arrays[4].m_last = last;
-        ((SBResourceSurfaceArray *)&m_arrays[4])->Assign(*(const SBResourceSurfaceArray *)&source.m_arrays[4], 0);
+        RHFastFindPointerArray &array = m_arrays[4];
+        typedef std::vector<void *> Values;
+        ((Values *)&array)->erase(array.begin(), array.end());
+        ((SBResourceSurfaceArray *)&array)->Assign(*(const SBResourceSurfaceArray *)&source.m_arrays[4], 0);
     }
     return *this;
 }
@@ -2995,16 +2990,20 @@ void SBResourceSurfaceArray::Assign(const SBResourceSurfaceArray &other, unsigne
 {
     RHFastFindPointerArray &destination = *(RHFastFindPointerArray *)this;
     const RHFastFindPointerArray &source = *(const RHFastFindPointerArray *)&other;
+    int count = 0;
     if (position == destination.size())
     {
         position = ((RHFastFindGateArray *)this)->FUN_0059fbc0();
-        int count = ((RHFastFindGateArray *)&source)->FUN_0059fbc0();
+        int index = 0;
+        count = ((RHFastFindGateArray *)&source)->FUN_0059fbc0();
         unsigned added = ((RHFastFindGateArray *)&source)->FUN_0059fbc0();
         unsigned total = ((RHFastFindGateArray *)this)->FUN_0059fbc0() + added;
-        float zero = 0;
-        ((RHUnk004ff7b0 *)this)->FUN_004ff7b0(total, zero);
+        {
+            float zero = 0;
+            ((RHUnk004ff7b0 *)this)->FUN_004ff7b0(total, zero);
+        }
         destination.m_changed = true;
-        for (int index = 0; index < count; ++index)
+        for (; index < count; ++index)
             destination.m_first[position + index] = source.m_first[index];
     }
     else
@@ -3012,10 +3011,12 @@ void SBResourceSurfaceArray::Assign(const SBResourceSurfaceArray &other, unsigne
         int oldCount = destination.size();
         int last = oldCount - 1;
         int previous = destination.size();
-        int count = source.size();
+        count = source.size();
         unsigned total = destination.size() + source.size();
-        float zero = 0;
-        ((RHUnk004ff7b0 *)this)->FUN_004ff7b0(total, zero);
+        {
+            float zero = 0;
+            ((RHUnk004ff7b0 *)this)->FUN_004ff7b0(total, zero);
+        }
         destination.m_changed = true;
         for (; last >= (int)position; --last)
             destination.m_first[count - oldCount + previous + last] = destination.m_first[last];
@@ -3070,6 +3071,46 @@ RHUnk0051e1e0::RHUnk0051e1e0()
     *(unsigned long *)this = 0x006790c0;
     *(int *)((char *)this + 0x14) = 0x400;
     *((char *)this + 0x39) = 0;
+}
+
+void FUN_0051f1b0();
+
+// FUNCTION: GAME 0x0051e220
+RHUnk0051e1e0::~RHUnk0051e1e0()
+{
+    *(unsigned long *)this = 0x006790c0;
+    FUN_0051f1b0();
+}
+
+void EmitRHUnk0051e1e0(void *storage)
+{
+    ((RHUnk0051e1e0 *)storage)->RHUnk0051e1e0::~RHUnk0051e1e0();
+}
+
+void FUN_0051f0f0();
+void FUN_0051f1b0();
+
+// FUNCTION: GAME 0x0051f4d0
+RHFastFindLine::RHFastFindLine()
+{
+    FUN_0051f0f0();
+    *(unsigned *)this = 0x6790e8;
+    *(unsigned *)((char *)this + 0x24) = 0;
+    *(unsigned *)((char *)this + 0x28) = 0;
+    *(unsigned short *)((char *)this + 0x20) = 0;
+    *(unsigned *)((char *)this + 0x14) = 0xc;
+}
+
+// FUNCTION: GAME 0x0051f520
+RHFastFindLine::~RHFastFindLine()
+{
+    *(unsigned *)this = 0x6790e8;
+    FUN_0051f1b0();
+}
+
+void EmitRHFastFindLine(void *storage)
+{
+    ((RHFastFindLine *)storage)->RHFastFindLine::~RHFastFindLine();
 }
 
 // FUNCTION: GAME 0x0051e5e0
@@ -3154,6 +3195,8 @@ RHUnk00520ae0::RHUnk00520ae0() : RHUnk005209d0(6)
     ++g_unk0x006c0bcc;
 }
 
+// SYNTHETIC: GAME 0x004fdc50
+// RHUnk00520ae0::`scalar deleting destructor'
 // FUNCTION: GAME 0x00520bf0
 RHUnk00520ae0::~RHUnk00520ae0()
 {

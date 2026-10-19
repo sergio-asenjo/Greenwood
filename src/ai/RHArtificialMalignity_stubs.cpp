@@ -41,7 +41,6 @@ void RHArtificialMalignity::FUN_00438620(unsigned short) {}
 void RHArtificialMalignity::FUN_0043b1b0(RHMalignityPosition, int) {}
 void RHArtificialMalignity::FUN_0043c960(RHMalignityPosition, int) {}
 
-void RHMalignityActorCalls::Unk0048d020() {}
 void RHMalignityActorCalls::FUN_00478c20(RHUnk00613e90 &, bool) {}
 bool RHMalignityActorCalls::FUN_0048a130(void *) { return false; }
 
@@ -90,7 +89,6 @@ int RHUnk0041a0f0::FUN_0041a0f0(int first, int second, int third)
 short RHArtificialMalignity::FUN_00440cf0(RHUnk00441dd0Record *) { return 0; }
 void RHMalignityBaseView::FUN_00412cf0(const RHMalignityPosition &, unsigned short, int) {}
 void RHArtificialMalignity::FUN_00440040(void *, RHMalignityPosition, RHUnk005fc3b0 *, int, void *) {}
-SBGeoPoint2D FUN_005fc580(const SBGeoPoint2D &point, float) { return point; }
 RHMalignityPosition FUN_0040ed40(const RHMalignityPosition &position, SBGeoVector2D) { return position; }
 RHMalignityPosition FUN_0040ece0(const RHMalignityPosition &position, SBGeoPoint2D) { return position; }
 

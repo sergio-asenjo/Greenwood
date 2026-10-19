@@ -58,7 +58,19 @@ void RHArtificialIntelligence::Unk0041ab10(unsigned short direction)
     if (*(int *)((char *)this + 0x14) == 0x18)
         Unk00412f70(direction, 0);
 }
-void RHArtificialIntelligenceActorCalls::Unk0048d020() {}
+class RHUnk0046bcb0
+{
+public:
+    void Unk(int value);
+};
+
+// FUNCTION: GAME 0x0048d020
+void RHArtificialIntelligenceActorCalls::Unk0048d020()
+{
+    *((char *)this + (*(int **)((char *)this + 0x49c))[1] + 0x6a0) = 1;
+    ((RHUnk0046bcb0 *)this)->Unk(7);
+    *((char *)this + (*(int **)((char *)this + 0x49c))[1] + 0x6a0) = 0;
+}
 
 
 class RHAIUnk00550660
