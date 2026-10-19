@@ -1,16 +1,9 @@
 #ifndef RHUNK005CBB80_H
 #define RHUNK005CBB80_H
 
-class RHPortraitRenderer0060d470
-{
-public:
-    RHPortraitRenderer0060d470();
-    ~RHPortraitRenderer0060d470();
-    unsigned int m_vptr;
-    char m_04[0x48];
-};
+#include "RHPortraitRenderer0060d470.h"
 
-class RHUnk005cbb80 : public RHPortraitRenderer0060d470
+class __declspec(novtable) RHUnk005cbb80 : public RHPortraitRenderer0060d470
 {
 public:
     RHUnk005cbb80();

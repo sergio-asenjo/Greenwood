@@ -127,7 +127,7 @@ bool RHMenuIntro::FUN_0052efa0(int, void *, void *)
 // FUNCTION: GAME 0x0052efc0
 bool RHMenuIntro::FUN_0052efc0(int, void *, void *)
 {
-    RHMenuResolution resolution(*(SBGeoPoint2D *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x54));
+    SBGeoVector2D resolution(*(SBGeoVector2D *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x54));
     if (RHMenuOptions::FUN_00538e80(m_screen->FUN_0053bf30()))
     {
         if (resolution.FUN_005fc0e0(*(SBGeoPoint2D *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x54)))

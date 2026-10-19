@@ -4,11 +4,12 @@
 #include "Decomp.h"
 #include <string>
 
+class SBGeoVector2D;
 class SBGeoPoint2D
 {
 public:
     ~SBGeoPoint2D();
-    SBGeoPoint2D Unk005fc110(const SBGeoPoint2D &other) const;
+    SBGeoVector2D Unk005fc110(const SBGeoPoint2D &other) const;
     float m_x; // 0x00
     float m_y; // 0x04
 };
@@ -17,6 +18,8 @@ class SBGeoVector2D : public SBGeoPoint2D
 {
 public:
     SBGeoVector2D(float x, float y);
+    SBGeoVector2D(const SBGeoVector2D &other);
+    SBGeoVector2D &operator=(const SBGeoVector2D &other);
 };
 
 // SIZE 0x14

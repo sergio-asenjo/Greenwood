@@ -11,7 +11,7 @@ RHMenuShortMissionDescription::RHMenuShortMissionDescription(RHMenuWindowScreen 
 {
     m_blazons = 0;
     m_mission = 0;
-    m_vptr = 0x00679940;
+    *(unsigned *)this = 0x00679940;
 }
 
 // FUNCTION: GAME 0x00540830

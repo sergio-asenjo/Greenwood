@@ -3,19 +3,9 @@
 
 #include "Decomp.h"
 #include <string>
+#include "RHPortraitRenderer0060dab0.h"
 
 class SBUIListboxUnk0061e890;
-
-class RHPortraitRenderer0060dab0
-{
-public:
-    RHPortraitRenderer0060dab0();
-    ~RHPortraitRenderer0060dab0();
-    undefined4 m_vptr;
-    undefined m_04[0x24];
-    std::wstring m_text;
-    undefined m_38[0x18];
-};
 
 class RHPortraitRenderer005cadc0 : public RHPortraitRenderer0060dab0
 {

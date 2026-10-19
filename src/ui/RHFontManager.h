@@ -45,6 +45,7 @@ struct RHFontIterator
         void *m_1c; // 0x1c
     };
     Node *m_node; // 0x00
+    RHFontIterator operator++(int);
 };
 
 // SIZE 0x08

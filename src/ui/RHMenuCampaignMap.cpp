@@ -317,35 +317,8 @@ void RHMenuCampaignMap::FUN_00528a60()
         widget->FUN_00541060();
 }
 
-class RHGameWidgetLifetimeBase
-{
-public:
-    RHGameWidgetLifetimeBase();
-    ~RHGameWidgetLifetimeBase();
-    unsigned m_vptr;
-    undefined m_data[0x7c];
-};
-
-class RHGameRenderer0060da10
-{
-public:
-    RHGameRenderer0060da10();
-    ~RHGameRenderer0060da10();
-    undefined m_data[0x4c];
-};
-
-class RHUnk00528a80 : public RHGameWidgetLifetimeBase
-{
-public:
-    RHUnk00528a80();
-    RHGameRenderer0060da10 m_renderer;
-};
-
-// FUNCTION: GAME 0x00528a80
-RHUnk00528a80::RHUnk00528a80()
-{
-    m_vptr = 0x00678c10;
-}
+// SYNTHETIC: GAME 0x00528a80
+// ??0RHGameLifetime00515f00@@QAE@XZ
 
 class SBUIUnk0060d530
 {
@@ -597,9 +570,8 @@ void *RHUnk00527870::FUN_00528c70(unsigned flags)
     return this;
 }
 
-void EmitRHMapBlink(RHUnk00528a80 *text, RHUnk00528ad0 *blink)
+void EmitRHMapBlink(RHUnk00528ad0 *blink)
 {
-    text->RHUnk00528a80::RHUnk00528a80();
     blink->FUN_00528ad0(0);
     blink->FUN_00528b70();
     blink->FUN_00528bb0();
@@ -1027,7 +999,7 @@ void RHMenuScreenView::FUN_0053bbc0(RHMenuWindow *window)
     RHPortraitRootLifetime *widget = (RHPortraitRootLifetime *)window;
     typedef void (RHPortraitRootLifetime::*SetVisible)(bool);
     SetVisible setVisible;
-    *(unsigned *)&setVisible = ((unsigned *)widget->m_vptr)[0x12];
+    *(unsigned *)&setVisible = (*(unsigned **)widget)[0x12];
     (widget->*setVisible)(false);
     widget->m_visible = false;
 }
@@ -1058,7 +1030,7 @@ void RHMenuScreenView::FUN_0053be60(RHMenuWindow *window)
     RHPortraitRootLifetime *widget = (RHPortraitRootLifetime *)window;
     typedef void (RHPortraitRootLifetime::*SetVisible)(bool);
     SetVisible setVisible;
-    *(unsigned *)&setVisible = ((unsigned *)widget->m_vptr)[0x12];
+    *(unsigned *)&setVisible = (*(unsigned **)widget)[0x12];
     (widget->*setVisible)(true);
     widget->m_visible = true;
 }
@@ -1119,7 +1091,7 @@ void (*g_rhMapWidgetsConstruct)(std::vector<void *> *, const std::vector<void *>
 // FUNCTION: GAME 0x00544b40
 bool RHMenuCampaignMap::FUN_00544b40(const RHMapTitleText &title, const RHMapBox &box, unsigned flags)
 {
-    return ((RHPortraitRootLifetime *)this)->FUN_0061a1e0(title, box, flags);
+    return ((RHPortraitRootLifetime *)this)->RHPortraitRootLifetime::FUN_0061a1e0(title, box, flags);
 }
 
 // FUNCTION: GAME 0x00607c10

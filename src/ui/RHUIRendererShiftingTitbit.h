@@ -14,6 +14,7 @@ public:
     ~SBGeoPoint2D();
     SBGeoPoint2D &operator=(const SBGeoPoint2D &);
     SBGeoPoint2D operator+(const SBGeoVector2D &) const;
+    SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &) const;
     float m_x; // +0x00
     float m_y; // +0x04
 };
@@ -26,6 +27,8 @@ public:
     SBGeoVector2D(const SBGeoPoint2D &);
     ~SBGeoVector2D() {}
     SBGeoVector2D operator-() const;
+    SBGeoVector2D(const SBGeoVector2D &other);
+    SBGeoVector2D &operator=(const SBGeoVector2D &other);
 };
 
 SBGeoVector2D operator*(float, const SBGeoVector2D &);
@@ -62,6 +65,15 @@ public:
         return ((SBUIUnk006006f0 *)this)->FUN_006006f0(id, (RHUnk005fc3b0 &)value);
     }
 };
+
+#ifndef RHUNK00600820_VIEW
+#define RHUNK00600820_VIEW
+class RHUnk00600820
+{
+public:
+    bool ResolveSurface(void *surface, unsigned int id, float *value);
+};
+#endif
 
 class SBDrawManager
 {

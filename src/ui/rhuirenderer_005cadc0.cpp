@@ -60,7 +60,7 @@ bool RHPortraitRenderer005cadc0::FUN_005cafa0(unsigned id)
             box.SetMinY(y);
             box.SetMaxY((unsigned int)font->FUN_0061e890() + y);
         }
-        drawer.FUN_00614230(font, &m_text, box, 2, 0, 1);
+        drawer.FUN_00614230(font, (std::wstring *)((char *)this + 0x28), box, 2, 0, 1);
         return true;
     }
     return false;

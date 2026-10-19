@@ -56,16 +56,12 @@ public:
     char *FUN_0055dbb0();
 };
 
-class RHUnk005fc3b0
-{
-public:
-    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &);
-};
-
 class SBGeoVector2D : public SBGeoPoint2D
 {
 public:
     SBGeoVector2D(float, float);
+    SBGeoVector2D &operator=(const SBGeoVector2D &other);
+    SBGeoVector2D(const SBGeoVector2D &other);
 };
 
 extern unsigned char g_unk0x006c0e48[];
@@ -151,7 +147,7 @@ bool RHMenuGraphics::OnOK(int, void *, void *)
         settings[1] = m_flagDBD;
         settings[2] = m_flagDBE;
         settings[3] = m_flagDBF;
-        ((RHUnk005fc3b0 *)(settings + 4))->FUN_005fc430(RHGraphicsField<SBGeoPoint2D>(this, 0xdc0));
+        ((SBGeoVector2D *)(settings + 4))->operator=(RHGraphicsField<SBGeoVector2D>(this, 0xdc0));
     }
     return false;
 }
@@ -191,17 +187,17 @@ bool RHMenuGraphics::OnScreen(int, void *widget, void *)
     if (widget == &m_widget640)
     {
         RHGraphicsField<bool>(this, 0xdc8) = true;
-        ((RHUnk005fc3b0 *)((char *)this + 0xdc0))->FUN_005fc430(SBGeoVector2D(640.0f, 480.0f));
+        ((SBGeoVector2D *)((char *)this + 0xdc0))->operator=(SBGeoVector2D(640.0f, 480.0f));
     }
     else if (widget == &m_widget800)
     {
         RHGraphicsField<bool>(this, 0xdc8) = true;
-        ((RHUnk005fc3b0 *)((char *)this + 0xdc0))->FUN_005fc430(SBGeoVector2D(800.0f, 600.0f));
+        ((SBGeoVector2D *)((char *)this + 0xdc0))->operator=(SBGeoVector2D(800.0f, 600.0f));
     }
     else if (widget == &m_widget1024)
     {
         RHGraphicsField<bool>(this, 0xdc8) = true;
-        ((RHUnk005fc3b0 *)((char *)this + 0xdc0))->FUN_005fc430(SBGeoVector2D(1024.0f, 768.0f));
+        ((SBGeoVector2D *)((char *)this + 0xdc0))->operator=(SBGeoVector2D(1024.0f, 768.0f));
     }
     return false;
 }

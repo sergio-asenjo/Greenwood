@@ -5,7 +5,7 @@ struct RHPortraitQuickEntry;
 struct RHPortraitWidgetEvent;
 class RHPortraitPCList;
 
-class RHPortraitQuickList : public RHPortraitRootList
+class __declspec(novtable) RHPortraitQuickList : public RHPortraitRootList
 {
 public:
     bool FUN_005dd1d0(RHPortraitPCList &list);

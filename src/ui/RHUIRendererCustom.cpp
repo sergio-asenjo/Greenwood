@@ -16,6 +16,13 @@
 #include "SBNullstr.h"
 #include "RHUIRendererCustom.h"
 
+class RHMobileUnk00607da0
+{
+public:
+    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
+};
+
+// Parked: false-return cleanup/EH-tail sharing and state-store scheduling differ.
 // STUB: GAME 0x005ca340
 bool RHUIRendererCustom::Render(unsigned int id)
 {
@@ -26,7 +33,7 @@ bool RHUIRendererCustom::Render(unsigned int id)
 
     m_id = id;
 
-    if (m_resource->GetSurfaceForResource(m_resourceId, id, surface0) != 1)
+    if (((RHUnk00600820 *)m_resource)->ResolveSurface((void *)m_resourceId, id, (float *)&surface0) != 1)
     {
         SBAssert(0,
                  // STRING: GAME 0x6b8c74
@@ -37,7 +44,7 @@ bool RHUIRendererCustom::Render(unsigned int id)
         return false;
     }
 
-    if (m_resource->GetSurfaceForResource(m_resourceId2, id, surface1) != 1)
+    if (((RHUnk00600820 *)m_resource)->ResolveSurface((void *)m_resourceId2, id, (float *)&surface1) != 1)
     {
         SBAssert(0, "P:\\Robin Hood\\RHuirenderercustom.cpp", 0x3a,
                  "Unable to retrieve a resource for the custom renderer");
@@ -45,10 +52,10 @@ bool RHUIRendererCustom::Render(unsigned int id)
     }
 
     {
-        SBGeoVector2D origin(m_box.m_p0);
-        box = m_box - origin;
+        SBGeoVector2D origin(*(SBGeoVector2D *)&m_box.m_p0);
+        ((RHMobileUnk00607da0 *)&box)->FUN_00607da0((const RHMobileUnk00607da0 &)(m_box - origin));
     }
-    box2 = box;
+    ((RHMobileUnk00607da0 *)&box2)->FUN_00607da0((const RHMobileUnk00607da0 &)box);
 
     box.m_flag = true;
     box2.m_flag = true;
@@ -59,13 +66,13 @@ bool RHUIRendererCustom::Render(unsigned int id)
 
     if (box2.m_p1.m_x - box.m_p1.m_x > g_unk0x00677488)
     {
-        SBGeoVector2D origin(m_box.m_p0);
+        SBGeoVector2D origin(*(SBGeoVector2D *)&m_box.m_p0);
         m_draw->Blit(surface1, &box2, m_20, &(box2 + origin), 1);
     }
 
     if (box.m_p1.m_x - box.m_p0.m_x > g_unk0x00677488)
     {
-        SBGeoVector2D origin(m_box.m_p0);
+        SBGeoVector2D origin(*(SBGeoVector2D *)&m_box.m_p0);
         m_draw->Blit(surface0, &box, m_20, &(box + origin), 1);
     }
 

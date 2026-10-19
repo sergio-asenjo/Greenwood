@@ -34,11 +34,14 @@
 //   [esi+0x38] (a surface/handle), the widget ID, and &float (out/in).
 // Signature from the target `ret 0xc` (three stack args, __thiscall) and the
 // `cmp al,1 / jne` on its return value (bool).
+#ifndef RHUNK00600820_VIEW
+#define RHUNK00600820_VIEW
 class RHUnk00600820
 {
 public:
     bool ResolveSurface(void *surface, unsigned int id, float *value);
 };
+#endif
 
 // Target 0x005e6440 and 0x005eaa40, both __FILE__ 0x006b9264
 // ("P:\Robin Hood\SBLibNG\SBDrawManager.cpp"). Called as `mov ecx,[esi+0x1c]`;

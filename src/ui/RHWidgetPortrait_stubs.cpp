@@ -13,6 +13,7 @@
 #include "SBNullstr.h"
 #include "RHWidgetPortrait.h"
 #include "SBUIRendererListbox.h"
+#include "RHGameWidgetLifetime.h"
 
 // FUNCTION: GAME 0x0049f510
 char RHUnk005d73d0Actor::FUN_0049f510()
@@ -21,23 +22,26 @@ char RHUnk005d73d0Actor::FUN_0049f510()
 }
 void RHWidgetPortrait::FUN_005d9c30() {}
 
-class RHUnk0060d9f0
-{
-public:
-    void FUN_0060d9f0();
-};
-
-void RHUnk0060d9f0::FUN_0060d9f0() {}
-
 // FUNCTION: GAME 0x005ca2f0
 RHPortraitRenderer005ca330::RHPortraitRenderer005ca330()
 {
-    ((RHUnk0060d9f0 *)this)->FUN_0060d9f0();
+    ((RHGameRenderer0060da10 *)this)->RHGameRenderer0060da10::RHGameRenderer0060da10();
     *(unsigned *)this = 0x679e6c;
     *(float *)((char *)this + 0x50) = 100.0f;
     *(float *)((char *)this + 0x4c) = 100.0f;
 }
-RHPortraitRenderer005ca330::~RHPortraitRenderer005ca330() {}
+// FUNCTION: GAME 0x005ca330
+RHPortraitRenderer005ca330::~RHPortraitRenderer005ca330()
+{
+    *(unsigned *)this = 0x679e6c;
+    ((RHGameRenderer0060da10 *)this)->RHGameRenderer0060da10::~RHGameRenderer0060da10();
+}
+// FUNCTION: GAME 0x005cca80
+RHUnk005cca80::RHUnk005cca80()
+{
+    m_4 = 0;
+    m_vptr = 0x679f30;
+}
 // FUNCTION: GAME 0x005ccb40
 RHPortraitStrategyCalls::RHPortraitStrategyCalls()
 {
@@ -54,36 +58,9 @@ RHPortraitResourceCalls *FUN_005024f0(const std::string &) { return 0; }
 RHPortraitLifetime005d6320::RHPortraitLifetime005d6320() {}
 const std::wstring &RHPortraitActorCalls::FUN_00492730() { static std::wstring value; return value; }
 
-class RHPortraitRenderer0060dad0
-{
-public:
-    ~RHPortraitRenderer0060dad0();
-};
+typedef RHPortraitRenderer0060dab0 RHPortraitRenderer0060dad0;
 
-class RHPortraitRenderer0060da10
-{
-public:
-    ~RHPortraitRenderer0060da10();
-};
-
-class RHPortraitRenderer0060d470
-{
-public:
-    RHPortraitRenderer0060d470();
-    ~RHPortraitRenderer0060d470();
-};
-
-RHPortraitRenderer0060dad0::~RHPortraitRenderer0060dad0() {}
-RHPortraitRenderer0060da10::~RHPortraitRenderer0060da10() {}
-RHPortraitRenderer0060d470::~RHPortraitRenderer0060d470() {}
-
-class RHUnk005490a0Message
-{
-public:
-    RHUnk005490a0Message(int command, int value);
-    ~RHUnk005490a0Message();
-    char data[0x10];
-};
+#include "RHPortraitRenderer0060d470.h"
 
 struct RHPortraitQuickEntry
 {

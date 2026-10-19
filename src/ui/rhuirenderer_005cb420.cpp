@@ -1,4 +1,12 @@
 #include "SBNullstr.h"
+// SIZE 0x14
+class RHMobileUnk00607da0
+{
+public:
+    void FUN_00607990(const RHMobileUnk00607da0 &other);
+    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
+    unsigned char m_00[0x14]; // 0x00
+};
 #include "rhuirenderer_005cb420.h"
 
 DECOMP_SIZE_ASSERT(SBGeoBoundingBox2D, 0x14)
@@ -84,13 +92,13 @@ void RHUnk005cba10::FUN_005cb700(SBUIListboxUnk0061e890 *font)
     SBGeoBoundingBox2D box;
     Assign assign = &std::wstring::assign;
     (text.*assign)(m_text, 0, std::wstring::npos);
-    box.FUN_00607da0(FUN_005cb550(font, true));
+    ((RHMobileUnk00607da0 *)&box)->FUN_00607da0((const RHMobileUnk00607da0 &)FUN_005cb550(font, true));
     m_characters = 0;
     m_lines += drawer.FUN_00614230(font, &text, box, m_60, m_64, 1);
     m_characters += drawer.FUN_00613e80();
     std::wstring &rest = drawer.FUN_00613e90();
     (text.*assign)(rest, 0, std::wstring::npos);
-    box.FUN_00607da0(FUN_005cb550(font, false));
+    ((RHMobileUnk00607da0 *)&box)->FUN_00607da0((const RHMobileUnk00607da0 &)FUN_005cb550(font, false));
     box.SetMinY(box.m_00.m_y - m_64);
     m_lines += drawer.FUN_00614230(font, &text, box, m_60, m_64, 1);
     m_characters += drawer.FUN_00613e80();

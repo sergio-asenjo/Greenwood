@@ -37,7 +37,7 @@ struct RHMenuSoundsEvent
     int m_0c; // 0x0c
 };
 
-class RHMenuSoundsSliderBase : public RHGameWidgetLifetimeBase
+class __declspec(novtable) RHMenuSoundsSliderBase : public RHGameWidgetLifetimeBase
 {
 public:
     RHMenuSoundsSliderBase() {}
@@ -45,7 +45,7 @@ public:
 };
 
 // SIZE 0xd8
-class RHMenuSoundsSlider : public RHMenuSoundsSliderBase
+class __declspec(novtable) RHMenuSoundsSlider : public RHMenuSoundsSliderBase
 {
 public:
     RHMenuSoundsSlider();
@@ -84,7 +84,7 @@ public:
     undefined m_00[0xcc];
 };
 
-class RHMenuSoundsLabel : public RHGameWidgetLifetimeBase
+class __declspec(novtable) RHMenuSoundsLabel : public RHGameWidgetLifetimeBase
 {
 public:
     RHMenuSoundsLabel();
@@ -92,12 +92,12 @@ public:
     RHMenuShortMissionRenderer m_renderer; // 0x80
 };
 
-class RHMenuSoundsTitle : public RHMenuSoundsLabel
+class __declspec(novtable) RHMenuSoundsTitle : public RHMenuSoundsLabel
 {
 public:
     RHMenuSoundsTitle()
     {
-        m_vptr = 0x006791a8;
+        *(unsigned *)this = 0x006791a8;
         m_fc = true;
         m_fd = true;
     }

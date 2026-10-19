@@ -84,7 +84,7 @@ bool RHMenuSounds::FUN_00543750(int, void *, void *)
 RHMenuSoundsSlider::RHMenuSoundsSlider()
 {
     m_highlighted = false;
-    m_vptr = 0x006799f0;
+    *(unsigned *)this = 0x006799f0;
 }
 
 // Parked: explicit event stores still hoist the event address before state arithmetic.

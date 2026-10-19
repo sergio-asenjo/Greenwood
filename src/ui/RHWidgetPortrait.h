@@ -62,6 +62,14 @@ public:
     RHPortraitStrategyCalls();
 };
 
+class RHUnk005cca80
+{
+public:
+    RHUnk005cca80();
+    unsigned m_vptr;
+    unsigned m_4;
+};
+
 class SBGeoBoundingBox2D;
 class RHPortraitWidgetSetupCalls
 {
@@ -93,37 +101,46 @@ public:
 
 RHPortraitResourceCalls *FUN_005024f0(const std::string &name);
 
-class RHPortraitLifetime005d6200 : public RHGameWidgetLifetimeBase
+// VTABLE: GAME 0x0067a4e4
+class RHPortraitLifetime005db4a0 : public RHGameWidgetLifetimeBase
 {
 public:
-    RHPortraitLifetime005d6200();
-    ~RHPortraitLifetime005d6200();
+    RHPortraitLifetime005db4a0() {}
+    ~RHPortraitLifetime005db4a0() {}
+    void *FUN_005db480(unsigned flags);
     RHPortraitRenderer005ca330 m_renderer;
 };
 
-class RHPortraitLifetime005d63b0 : public RHGameWidgetLifetimeBase
+class RHPortraitLifetime005d6200 : public RHPortraitLifetime005db4a0
 {
 public:
-    ~RHPortraitLifetime005d63b0();
+    ~RHPortraitLifetime005d6200() {}
+};
+
+// VTABLE: GAME 0x0067a51c
+class RHPortraitLifetime005db5a0 : public RHGameWidgetLifetimeBase
+{
+public:
+    RHPortraitLifetime005db5a0() {}
+    ~RHPortraitLifetime005db5a0() {}
+    void *FUN_005db580(unsigned flags);
     RHPortraitRenderer005cc110 m_renderer;
+};
+
+class RHPortraitLifetime005d63b0 : public RHPortraitLifetime005db5a0
+{
+public:
+    ~RHPortraitLifetime005d63b0() {}
 };
 
 class RHPortraitLifetime005d6320 : public RHPortraitLifetime005d63b0
 {
 public:
     RHPortraitLifetime005d6320();
-    ~RHPortraitLifetime005d6320();
     SBGeoBoundingBox2D m_box;
 };
 
-class RHPortraitMessageWidgetBase : public RHGameLifetime00516430
-{
-public:
-    RHPortraitMessageWidgetBase();
-    ~RHPortraitMessageWidgetBase() { m_vptr = 0x00678e50; }
-    unsigned m_strategy;
-    int m_value;
-};
+typedef RHGameLifetime00516750 RHPortraitMessageWidgetBase;
 
 class RHPortraitActorCalls
 {

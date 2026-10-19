@@ -29,10 +29,10 @@
 #include "../engine/SBUIRenderer.h"
 #include <vector>
 
-class RHPortraitRootList : public RHPortraitRootLifetime
+class __declspec(novtable) RHPortraitRootList : public RHPortraitRootLifetime
 {
 public:
-    RHPortraitRootList() { m_vptr = 0x00678ea8; }
+    RHPortraitRootList() { *(unsigned *)this = 0x00678ea8; }
     ~RHPortraitRootList();
     std::vector<RHUnk005d92c0Sub *> m_items; // 0xa0
 };
@@ -62,6 +62,7 @@ public:
 
 class RHMenuWindow;
 
+// VTABLE: GAME 0x00679a28
 // SIZE 0xc8
 class RHMenuWindow : public RHPortraitRootList
 {
@@ -125,7 +126,7 @@ public:
 struct RHMenuEvent;
 
 // SIZE 0x448
-class RHMenuYesNo : public RHMenuWindow
+class __declspec(novtable) RHMenuYesNo : public RHMenuWindow
 {
 public:
     RHMenuYesNo(RHMenuWindowScreen *screen, const std::wstring &text);

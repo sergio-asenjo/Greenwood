@@ -11,12 +11,8 @@ void RHMenuWindow_Emit(RHMenuWindow *window)
 
 // FUNCTION: GAME 0x00543e70
 RHMenuWindow::RHMenuWindow(RHMenuWindow *parent, RHMenuWindowScreen *screen, bool saveBackground)
+    : m_draw((RHUnkFXDraw *)g_unk0x6c11d0), m_screen(screen), m_parent(parent), m_resourceHeld(false)
 {
-    m_draw = (RHUnkFXDraw *)g_unk0x6c11d0;
-    m_screen = screen;
-    m_parent = parent;
-    m_resourceHeld = false;
-    m_vptr = 0x00679a28;
     if (saveBackground)
     {
         typedef unsigned long (RHUnkFXDraw::*CreateSurface)(unsigned short, unsigned short, unsigned long, bool);
@@ -42,11 +38,9 @@ void *RHMenuWindow::FUN_00543f80(unsigned flags)
     return this;
 }
 
-// Parked: the vptr store is scheduled after the EH-state store instead of before it.
-// STUB: GAME 0x005442b0
+// FUNCTION: GAME 0x005442b0
 RHMenuWindow::~RHMenuWindow()
 {
-    m_vptr = 0x00679a28;
     FUN_00544300();
 }
 

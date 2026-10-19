@@ -40,11 +40,6 @@ SBGeoBoundingBox2D SBGeoBoundingBox2D::operator+(const SBGeoVector2D &) const
     return *this;
 }
 
-bool SBResourceManager::GetSurfaceForResource(long, unsigned int, unsigned int &)
-{
-    return false;
-}
-
 void SBDrawManager::BlitAlphaKeying(unsigned long, unsigned long, unsigned long,
                                     SBGeoBoundingBox2D *, unsigned short, unsigned short,
                                     unsigned long)

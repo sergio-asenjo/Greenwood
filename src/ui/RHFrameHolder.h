@@ -26,6 +26,8 @@ class SBGeoVector2D : public SBGeoPoint2D
 public:
     SBGeoVector2D(float, float);
     ~SBGeoVector2D() {}
+    SBGeoVector2D(const SBGeoVector2D &other);
+    SBGeoVector2D &operator=(const SBGeoVector2D &other);
 };
 
 template <class T>
@@ -102,6 +104,7 @@ public:
     Pair Insert(const Value &);
     TreePair InsertTree(const Value &);
     void FUN_00508000(Node *);
+    void FUN_00503db0();
     Iterator FUN_00506ea0(Iterator, Iterator);
     Iterator FUN_00507ae0(Iterator);
     Node *&Root() { return m_head->m_parent; }

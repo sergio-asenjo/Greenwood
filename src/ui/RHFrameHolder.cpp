@@ -57,6 +57,26 @@ unsigned int RHEngine::FUN_004d2340(int type)
 // STRING: GAME 0x006b0090
 #define g_frameHolderSurfaceError "Unable to retrieve surface from resource"
 
+extern unsigned int g_unk0x006c0b28;
+
+// FUNCTION: GAME 0x00503db0
+void RHFrameHolderRowMap::FUN_00503db0()
+{
+    Iterator first(Leftmost());
+    Iterator last(m_head);
+    FUN_00506ea0(first, last);
+    operator delete(m_head);
+    m_head = 0;
+    m_size = 0;
+    {
+        RHUnk00641782 lock;
+        if (--g_unk0x006c0b28 == 0) {
+            operator delete(g_unk0x006c0b2c);
+            g_unk0x006c0b2c = 0;
+        }
+    }
+}
+
 // Parked: dictionary local slots and success-path destructor inlining differ.
 // STUB: GAME 0x00504040
 bool RHFrameHolder::InitializeSpriteBank()
@@ -1068,6 +1088,7 @@ RHFrameHolderRowMap::Iterator RHFrameHolderRowMap::FUN_00506ea0(Iterator first, 
 void EmitRHFrameHolderRowErase(RHFrameHolderRowMap *tree)
 {
     tree->FUN_00506ea0(tree->begin(), tree->End());
+    tree->FUN_00503db0();
 }
 
 // FUNCTION: GAME 0x00506fd0
@@ -1794,6 +1815,23 @@ inline void RHUnk005074d0::Rrotate(Node *x)
         x->m_parent->m_left = y;
     y->m_right = x;
     x->m_parent = y;
+}
+
+// FUNCTION: GAME 0x005093e0
+RHFrameHolderRowMap::Node *RHFrameHolderRowMap::FUN_005093e0(const unsigned long &key)
+{
+    RHUnk00641782 lock;
+    Node *node = m_head->m_parent;
+    Node *found = m_head;
+    while (node != g_unk0x006c0b2c) {
+        if (node->m_key < key)
+            node = node->m_right;
+        else {
+            found = node;
+            node = node->m_left;
+        }
+    }
+    return found;
 }
 
 // FUNCTION: GAME 0x005094a0

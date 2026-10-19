@@ -55,6 +55,8 @@ class SBGeoVector2D : public SBGeoPoint2D
 public:
     SBGeoVector2D(float x, float y);
     ~SBGeoVector2D() {}
+    SBGeoVector2D(const SBGeoVector2D &other);
+    SBGeoVector2D &operator=(const SBGeoVector2D &other);
 };
 
 // SBGeoPoint2D's vector sum (target 0x5fc190, ret 8, returns a point by value).
@@ -92,6 +94,15 @@ class SBResourceManager
 public:
     bool GetSurfaceForResource(long resourceId, unsigned int widgetId, unsigned int &surface);
 };
+
+#ifndef RHUNK00600820_VIEW
+#define RHUNK00600820_VIEW
+class RHUnk00600820
+{
+public:
+    bool ResolveSurface(void *surface, unsigned int id, float *value);
+};
+#endif
 
 // Target 0x5ec5f0, __FILE__ 0x006b9264
 // ("P:\Robin Hood\SBLibNG\SBDrawManager.cpp"). Called as `mov ecx,[esi+0x1c]`

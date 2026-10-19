@@ -8,6 +8,14 @@
 // STATUS: exact 100% — instruction-for-instruction identical to the original.
 
 #include "SBNullstr.h"
+// SIZE 0x14
+class RHMobileUnk00607da0
+{
+public:
+    void FUN_00607990(const RHMobileUnk00607da0 &other);
+    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
+    unsigned char m_00[0x14]; // 0x00
+};
 #include "RHUIRendererShifting.h"
 #include "RHPortraitRenderer005cadc0.h"
 
@@ -56,7 +64,7 @@ bool RHUIRendererShifting::Render(unsigned int id)
 
     unsigned int surface;
 
-    if (m_resource->GetSurfaceForResource(m_resourceId, id, surface) != 1)
+    if (((RHUnk00600820 *)m_resource)->ResolveSurface((void *)m_resourceId, id, (float *)&surface) != 1)
     {
         SBAssert(0,
                  // STRING: GAME 0x6b8d30
@@ -71,7 +79,7 @@ bool RHUIRendererShifting::Render(unsigned int id)
 
     if (surface != 0)
     {
-        box = m_box + SBGeoVector2D((float)m_word50, 0.0f);
+        ((RHMobileUnk00607da0 *)&box)->FUN_00607da0((const RHMobileUnk00607da0 &)(m_box + SBGeoVector2D((float)m_word50, 0.0f)));
         m_draw->BlitAlphaKeying(surface, 0, m_unk20, &box, m_word4c, m_word4e, 1);
         return true;
     }

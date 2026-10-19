@@ -32,12 +32,12 @@ public:
 };
 
 // SIZE 0x100
-class RHMenuShortMissionTitle : public RHGameWidgetLifetimeBase
+class __declspec(novtable) RHMenuShortMissionTitle : public RHGameWidgetLifetimeBase
 {
 public:
     RHMenuShortMissionTitle()
     {
-        m_vptr = 0x006791a8;
+        *(unsigned *)this = 0x006791a8;
         m_fc = true;
         m_fd = true;
     }
@@ -47,22 +47,15 @@ public:
     bool m_fd; // 0xfd
 };
 
-// SIZE 0xcc
-class RHMenuShortMissionText : public RHGameWidgetLifetimeBase
-{
-public:
-    RHMenuShortMissionText() { m_vptr = 0x00678c10; }
-
-    RHGameRenderer0060da10 m_renderer; // 0x80
-};
+typedef RHGameLifetime00515f00 RHMenuShortMissionText;
 
 // SIZE 0xd0
-class RHMenuShortMissionPicture : public RHGameWidgetLifetimeBase
+class __declspec(novtable) RHMenuShortMissionPicture : public RHGameWidgetLifetimeBase
 {
 public:
     RHMenuShortMissionPicture()
     {
-        m_vptr = 0x006775e4;
+        *(unsigned *)this = 0x006775e4;
         m_cc = 0;
     }
 
@@ -71,7 +64,7 @@ public:
 };
 
 // SIZE 0x380
-class RHMenuShortMissionDescription : public RHMenuWindow
+class __declspec(novtable) RHMenuShortMissionDescription : public RHMenuWindow
 {
 public:
     RHMenuShortMissionDescription(RHMenuWindowScreen *screen);

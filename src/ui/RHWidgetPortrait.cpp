@@ -314,20 +314,30 @@ inline int &RHPortraitMapLookup(RHUnk00514e10 &map, int key)
     return result.first.node->value.second;
 }
 
-class RHPortraitLifetime005d5350 : public RHGameWidgetLifetimeBase
+// VTABLE: GAME 0x0067a0a8
+class RHPortraitButtonBase : public RHGameWidgetLifetimeBase
+{
+public:
+    RHPortraitButtonBase() {}
+    ~RHPortraitButtonBase() {}
+    void *FUN_005d24f0(unsigned flags);
+    void FUN_005d24c0();
+    RHPortraitRenderer005cadc0 m_renderer;
+};
+
+class __declspec(novtable) RHPortraitLifetime005d5350 : public RHPortraitButtonBase
 {
 public:
     RHPortraitLifetime005d5350()
     {
-        m_vptr = 0x0067a2f0;
+        *(unsigned *)this = 0x0067a2f0;
         m_state = 6;
     }
-    ~RHPortraitLifetime005d5350();
+    ~RHPortraitLifetime005d5350() {}
     void *FUN_005d55f0(unsigned flags);
-    RHPortraitRenderer005cadc0 m_renderer;
 };
 
-class RHPortraitRadioLifetimeBase : public RHPortraitLifetime005d5350
+class __declspec(novtable) RHPortraitRadioLifetimeBase : public RHPortraitLifetime005d5350
 {
 public:
     RHPortraitRadioLifetimeBase() : m_selected(0) {}
@@ -336,7 +346,7 @@ public:
     unsigned m_strategy;
 };
 
-class RHPortraitRadioLifetime : public RHPortraitRadioLifetimeBase, public RHPortraitAnimated
+class __declspec(novtable) RHPortraitRadioLifetime : public RHPortraitRadioLifetimeBase, public RHPortraitAnimated
 {
 public:
     RHPortraitRadioLifetime();
@@ -348,7 +358,7 @@ public:
     undefined m_10e[2];
 };
 
-class RHPortraitLinkedLifetime : public RHPortraitRadioLifetime
+class __declspec(novtable) RHPortraitLinkedLifetime : public RHPortraitRadioLifetime
 {
 public:
     RHPortraitLinkedLifetime();
@@ -357,12 +367,12 @@ public:
     void *m_linked;
 };
 
+// VTABLE: GAME 0x0067a240
 class RHPortraitGroupLifetimeBase : public RHGameWidgetLifetimeBase
 {
 public:
     RHPortraitGroupLifetimeBase() : m_widgets(0), m_count(0), m_index(0)
     {
-        m_vptr = 0x0067a240;
     }
     ~RHPortraitGroupLifetimeBase();
     void *FUN_005d4410(unsigned flags);
@@ -376,7 +386,7 @@ public:
     void *m_next;
 };
 
-class RHPortraitGroupLifetime : public RHPortraitGroupLifetimeBase, public RHPortraitAnimated
+class __declspec(novtable) RHPortraitGroupLifetime : public RHPortraitGroupLifetimeBase, public RHPortraitAnimated
 {
 public:
     RHPortraitGroupLifetime();
@@ -387,27 +397,25 @@ public:
 DECOMP_SIZE_ASSERT(RHPortraitRadioLifetime, 0x110)
 DECOMP_SIZE_ASSERT(RHPortraitGroupLifetimeBase, 0xb0)
 
-class RHPortraitLifetime005d6260 : public RHGameWidgetLifetimeBase
+class RHPortraitLifetime005d6260 : public RHGameLifetime00517590
 {
 public:
-    ~RHPortraitLifetime005d6260();
-    RHGameRenderer0060da10 m_renderer;
+    ~RHPortraitLifetime005d6260() {}
 };
 
-class RHPortraitLifetime005d62c0 : public RHGameWidgetLifetimeBase
+class RHPortraitLifetime005d62c0 : public RHGameLifetime00517590
 {
 public:
-    ~RHPortraitLifetime005d62c0();
-    RHGameRenderer0060da10 m_renderer;
+    ~RHPortraitLifetime005d62c0() {}
 };
 
-class RHPortraitActionWidget : public RHPortraitLifetime005d6200
+class __declspec(novtable) RHPortraitActionWidget : public RHPortraitLifetime005d6200
 {
 public:
     RHPortraitActionWidget()
     {
         m_state = 0;
-        m_vptr = 0x0067a48c;
+        *(unsigned *)this = 0x0067a48c;
         m_messages[0] = 0;
         m_messages[1] = 0;
         m_messages[2] = 0;
@@ -416,13 +424,13 @@ public:
     int m_messages[4];
 };
 
-class RHPortraitMessageBitmap : public RHGameLifetime00515f00
+class __declspec(novtable) RHPortraitMessageBitmap : public RHGameLifetime00517590
 {
 public:
     RHPortraitMessageBitmap()
     {
         m_state = 0;
-        m_vptr = 0x0067a434;
+        *(unsigned *)this = 0x0067a434;
         m_messages[0] = 0;
         m_messages[1] = 0;
         m_messages[2] = 0;
@@ -431,13 +439,13 @@ public:
     int m_messages[4];
 };
 
-class RHPortraitMessageWidget : public RHPortraitMessageWidgetBase
+class __declspec(novtable) RHPortraitMessageWidget : public RHPortraitMessageWidgetBase
 {
 public:
     RHPortraitMessageWidget()
     {
         m_value = 0;
-        m_vptr = 0x0067a3d0;
+        *(unsigned *)this = 0x0067a3d0;
         m_messages[0] = 0;
         m_messages[1] = 0;
         m_messages[2] = 0;
@@ -447,33 +455,33 @@ public:
     int m_e4;
 };
 
-class RHPortraitBitmap : public RHPortraitLifetime005d6260
+class __declspec(novtable) RHPortraitBitmap : public RHPortraitLifetime005d6260
 {
 public:
     RHPortraitBitmap()
     {
-        m_vptr = 0x00678b60;
+        *(unsigned *)this = 0x00678b60;
         m_state = 0;
     }
 };
 
-class RHPortraitCustomBitmap : public RHGameLifetime00516a60
+class __declspec(novtable) RHPortraitCustomBitmap : public RHGameLifetime00516a60
 {
 public:
     RHPortraitCustomBitmap()
     {
-        m_vptr = 0x00678bb8;
+        *(unsigned *)this = 0x00678bb8;
         m_state = 0;
     }
     undefined m_d0[0x24];
 };
 
-class RHPortraitCustomBackground : public RHGameLifetime00516a60
+class __declspec(novtable) RHPortraitCustomBackground : public RHGameLifetime00516a60
 {
 public:
     RHPortraitCustomBackground()
     {
-        m_vptr = 0x0067a398;
+        *(unsigned *)this = 0x0067a398;
     }
     undefined m_d0[0x24];
 };
@@ -490,7 +498,7 @@ public:
     virtual void v6() = 0;
 };
 
-class RHPortraitFullLifetime : public RHPortraitRootLifetime
+class __declspec(novtable) RHPortraitFullLifetime : public RHPortraitRootLifetime
 {
 public:
     RHPortraitFullLifetime(unsigned short index, RHPortraitActorCalls *actor);
@@ -649,14 +657,14 @@ RHPortraitBoxEvent *RHPortraitInputField::FUN_005cf880(unsigned value)
     if (dirty[buffer])
     {
         dirty[buffer] = false;
-        event.m_box.FUN_00607da0(*(SBGeoBoundingBox2D *)((SBUIUnk0060d530 *)&Renderer())->FUN_0060d690());
+        ((RHMobileUnk00607da0 *)&event.m_box)->FUN_00607da0(*(RHMobileUnk00607da0 *)((SBUIUnk0060d530 *)&Renderer())->FUN_0060d690());
         event.m_next = 0;
         event.m_widget = this;
         event.m_type = 3;
     }
     else
     {
-        event.m_box.FUN_00607da0(*(SBGeoBoundingBox2D *)((SBUIUnk0060d530 *)&Renderer())->FUN_0060d690());
+        ((RHMobileUnk00607da0 *)&event.m_box)->FUN_00607da0(*(RHMobileUnk00607da0 *)((SBUIUnk0060d530 *)&Renderer())->FUN_0060d690());
         RHPortraitTextWidgetDispatch *dispatch = (RHPortraitTextWidgetDispatch *)this;
         event.m_type = dispatch->v13(dispatch->v9());
         event.m_next = 0;
@@ -1368,7 +1376,7 @@ public:
     }
 };
 
-class RHPortraitInputWidget : public RHGameWidgetLifetimeBase
+class __declspec(novtable) RHPortraitInputWidget : public RHGameWidgetLifetimeBase
 {
 public:
     RHPortraitInputWidget();
@@ -1378,7 +1386,7 @@ public:
 // FUNCTION: GAME 0x005d1ae0
 RHPortraitInputWidget::RHPortraitInputWidget()
 {
-    m_vptr = 0x0067a00c;
+    *(unsigned *)this = 0x0067a00c;
 }
 
 // FUNCTION: GAME 0x005d1b40
@@ -1390,21 +1398,13 @@ void *RHPortraitInputRenderer::FUN_005d1b40(unsigned flags)
     return this;
 }
 
-class RHPortraitButtonBase : public RHGameWidgetLifetimeBase
+class __declspec(novtable) RHPortraitStrategyButtonBase : public RHPortraitButtonBase
 {
 public:
-    RHPortraitButtonBase()
-    {
-        m_vptr = 0x0067a0a8;
-    }
-    ~RHPortraitButtonBase();
-    void *FUN_005d24f0(unsigned flags);
-    void FUN_005d24c0();
-    RHPortraitRenderer005cadc0 m_renderer;
     unsigned m_strategy;
 };
 
-class RHPortraitButton : public RHPortraitButtonBase, public RHPortraitAnimated
+class __declspec(novtable) RHPortraitButton : public RHPortraitStrategyButtonBase, public RHPortraitAnimated
 {
 public:
     RHPortraitButton();
@@ -1446,7 +1446,7 @@ RHPortraitButton::RHPortraitButton() : RHPortraitAnimated(2)
     m_strategy = 0x0067a08c;
     m_f8 = 0;
     m_fc = 0;
-    m_vptr = 0x0067a054;
+    *(unsigned *)this = 0x0067a054;
     RHUnk00514e10 &map = m_map;
     RHPortraitMapLookup(map, 0) = 1;
     RHPortraitMapLookup(map, 2) = 0;
@@ -1465,7 +1465,7 @@ void *RHPortraitButton::FUN_005d1ce0(unsigned flags)
 // STUB: GAME 0x005d1d00
 RHPortraitButton::~RHPortraitButton()
 {
-    m_vptr = 0x0067a054;
+    *(unsigned *)this = 0x0067a054;
     m_strategy = 0x0067a08c;
 }
 
@@ -1502,7 +1502,7 @@ bool RHPortraitButton::FUN_005d1e30(int mode, const std::wstring &text, int reso
         RHPortraitAssignWideText((char *)this + 0xa8, text);
         SBGeoBoundingBox2D &bounds = Box();
         if (bounds.m_second.m_x - bounds.m_first.m_x == g_unk0x00677488)
-            bounds.FUN_00607da0(*(SBGeoBoundingBox2D *)((SBUIUnk0060d530 *)renderer)->FUN_0060d690());
+            ((RHMobileUnk00607da0 *)&bounds)->FUN_00607da0(*(RHMobileUnk00607da0 *)((SBUIUnk0060d530 *)renderer)->FUN_0060d690());
     }
     ((RHPortraitRenderer005cadc0 *)((char *)this + 0x80))->FUN_005cae10(mode);
     return true;
@@ -1690,12 +1690,8 @@ int RHPortraitButton::FUN_005d23f0()
     return result;
 }
 
-// Parked: The manual vptr store is scheduled after the member EH-state setup.
-// STUB: GAME 0x005d2460
-inline RHPortraitButtonBase::~RHPortraitButtonBase()
-{
-    m_vptr = 0x0067a0a8;
-}
+// SYNTHETIC: GAME 0x005d2460
+// ??1RHPortraitButtonBase@@QAE@XZ
 
 // FUNCTION: GAME 0x005d24c0
 void RHPortraitButtonBase::FUN_005d24c0()
@@ -1704,6 +1700,7 @@ void RHPortraitButtonBase::FUN_005d24c0()
     ((RHPortraitRenderer005cadc0 *)&m_renderer)->FUN_005cafa0(id);
 }
 
+#pragma inline_depth(1)
 // FUNCTION: GAME 0x005d24f0
 void *RHPortraitButtonBase::FUN_005d24f0(unsigned flags)
 {
@@ -1712,12 +1709,14 @@ void *RHPortraitButtonBase::FUN_005d24f0(unsigned flags)
         operator delete(this);
     return this;
 }
+#pragma inline_depth()
 
+// VTABLE: GAME 0x0067a158
 class RHPortraitTextWidgetBase : public RHGameWidgetLifetimeBase
 {
 public:
-    RHPortraitTextWidgetBase() { m_vptr = 0x0067a158; }
-    ~RHPortraitTextWidgetBase();
+    RHPortraitTextWidgetBase() {}
+    ~RHPortraitTextWidgetBase() {}
     void *FUN_005d3390(unsigned flags);
     void FUN_005d2ee0(const SBGeoBoundingBox2D &box);
     void FUN_005d2f10(const SBGeoBoundingBox2D &box);
@@ -1725,12 +1724,12 @@ public:
     RHPortraitRenderer006212d0 m_renderer;
 };
 
+// VTABLE: GAME 0x0067a120
 class RHPortraitTextWidget : public RHPortraitTextWidgetBase
 {
 public:
     RHPortraitTextWidget() : m_linked(0)
     {
-        m_vptr = 0x0067a120;
         m_state = 0;
         m_indices[0] = 0;
         m_indices[1] = 0;
@@ -1765,7 +1764,7 @@ struct RHPortraitEditableStrategy
     RHPortraitWidgetEvent *FUN_005d2cb0(const RHPortraitWidgetInput &input);
 };
 
-class RHPortraitEditableWidget : public RHPortraitTextWidget, public RHPortraitEditableStrategy, public RHPortraitAnimated
+class __declspec(novtable) RHPortraitEditableWidget : public RHPortraitTextWidget, public RHPortraitEditableStrategy, public RHPortraitAnimated
 {
 public:
     RHPortraitEditableWidget();
@@ -1783,9 +1782,9 @@ DECOMP_SIZE_ASSERT(RHPortraitEditableWidget, 0x1a4)
 RHPortraitEditableWidget::RHPortraitEditableWidget() : RHPortraitAnimated(42)
 {
     RHPortraitEditableStrategy *strategy = (RHPortraitEditableStrategy *)((char *)this + 0x180);
-    ((RHPortraitStrategyCalls *)strategy)->RHPortraitStrategyCalls::RHPortraitStrategyCalls();
+    ((RHUnk005cca80 *)strategy)->RHUnk005cca80::RHUnk005cca80();
     strategy->m_vptr = 0x0067a118;
-    RHPortraitTextWidgetBase::m_vptr = 0x0067a0e0;
+    *(unsigned *)(RHPortraitTextWidgetBase *)this = 0x0067a0e0;
     RHUnk00514e10 &map = m_map;
     RHPortraitMapLookup(map, 0) = 1;
     RHPortraitMapLookup(map, 2) = 0;
@@ -1804,7 +1803,7 @@ void *RHPortraitEditableWidget::FUN_005d26f0(unsigned flags)
 // STUB: GAME 0x005d2710
 RHPortraitEditableWidget::~RHPortraitEditableWidget()
 {
-    RHPortraitTextWidgetBase::m_vptr = 0x0067a0e0;
+    *(unsigned *)(RHPortraitTextWidgetBase *)this = 0x0067a0e0;
     RHPortraitEditableStrategy::m_vptr = 0x0067a118;
 }
 
@@ -1828,13 +1827,13 @@ bool RHPortraitEditableWidget::FUN_005d2810(const SBGeoPoint2D &point, RHPortrai
         RHPortraitAssignWideText((char *)this + 0xa8, text);
         SBGeoBoundingBox2D &bounds = *(SBGeoBoundingBox2D *)((char *)this + 0x30);
         if (bounds.m_second.m_x - bounds.m_first.m_x == g_unk0x00677488)
-            bounds.FUN_00607da0(*(SBGeoBoundingBox2D *)((SBUIUnk0060d530 *)renderer)->FUN_0060d690());
+            ((RHMobileUnk00607da0 *)&bounds)->FUN_00607da0(*(RHMobileUnk00607da0 *)((SBUIUnk0060d530 *)renderer)->FUN_0060d690());
     }
     *(void **)((char *)this + 0x124) = resource;
     *(void **)((char *)this + 0x128) = resource;
     ((SBUIInputFieldUnk00621440 *)renderer)->FUN_00621440((SBUIInputFieldUnkResource *)&m_text);
     ((SBUIInputFieldUnk00621440 *)renderer)->FUN_00621c30(*(SBGeoBoundingBox2D *)&RHMapBox(10.0f, 10.0f, 403.0f, 20.0f));
-    ((RHUnk005fc3b0 *)((char *)this + 0x108))->FUN_005fc430(SBGeoPoint2D(-1.0f, -5.0f));
+    ((SBGeoVector2D *)((char *)this + 0x108))->operator=(SBGeoVector2D(-1.0f, -5.0f));
     return true;
 }
 
@@ -1974,12 +1973,8 @@ void RHPortraitTextWidget::FUN_005d2cf0(const std::wstring &text)
     ((SBUIInputFieldUnk00621440 *)&m_text)->FUN_0061e060((RHMapWideText *)&text);
 }
 
-// Parked: The manual vptr store is delayed past the member EH-state setup.
-// STUB: GAME 0x005d2e60
-inline RHPortraitTextWidgetBase::~RHPortraitTextWidgetBase()
-{
-    m_vptr = 0x0067a158;
-}
+// SYNTHETIC: GAME 0x005d2e60
+// ??1RHPortraitTextWidgetBase@@QAE@XZ
 
 // FUNCTION: GAME 0x005d2ec0
 void RHPortraitTextWidgetBase::FUN_005d2ec0()
@@ -1993,7 +1988,7 @@ void RHPortraitTextWidgetBase::FUN_005d2ee0(const SBGeoBoundingBox2D &box)
 {
     RHPortraitRendererDispatch &renderer = *(RHPortraitRendererDispatch *)&m_renderer;
     renderer.v3(box);
-    ((SBGeoBoundingBox2D *)((char *)this + 0x30))->FUN_00607da0(*(SBGeoBoundingBox2D *)((SBUIUnk0060d530 *)&renderer)->FUN_0060d690());
+    ((RHMobileUnk00607da0 *)((char *)this + 0x30))->FUN_00607da0(*(RHMobileUnk00607da0 *)((SBUIUnk0060d530 *)&renderer)->FUN_0060d690());
 }
 
 // FUNCTION: GAME 0x005d2f10
@@ -2026,11 +2021,9 @@ int RHPortraitTextWidget::FUN_005d2fa0()
     return result;
 }
 
-// Parked: Both manual vptr stores are delayed past member EH-state setup.
-// STUB: GAME 0x005d3020
+// FUNCTION: GAME 0x005d3020
 inline RHPortraitTextWidget::~RHPortraitTextWidget()
 {
-    m_vptr = 0x0067a120;
 }
 
 // Parked: Text-state switch registers and linked-widget return tails need alignment.
@@ -2139,7 +2132,7 @@ RHPortraitWidgetEvent *RHPortraitTextWidget::FUN_005d3090(const RHPortraitWidget
 RHPortraitBoxEvent *RHPortraitTextWidget::FUN_005d3290(unsigned value)
 {
     *(unsigned *)((char *)this + 0xc8) = value;
-    ((SBGeoBoundingBox2D *)((char *)this + 0x60))->FUN_00607da0(*(SBGeoBoundingBox2D *)((SBUIUnk0060d530 *)&m_renderer)->FUN_0060d690());
+    ((RHMobileUnk00607da0 *)((char *)this + 0x60))->FUN_00607da0(*(RHMobileUnk00607da0 *)((SBUIUnk0060d530 *)&m_renderer)->FUN_0060d690());
     *(void **)((char *)this + 0x78) = 0;
     *(void **)((char *)this + 0x74) = this;
     unsigned index = value & 1;
@@ -2148,8 +2141,8 @@ RHPortraitBoxEvent *RHPortraitTextWidget::FUN_005d3290(unsigned value)
         m_indices[index] == text->FUN_0061dd00() &&
         m_positions[index] == (unsigned short)text->FUN_0061df50())
     {
-        RHPortraitBoxEvent &event = *(RHPortraitBoxEvent *)((char *)this + 0x5c);
         RHPortraitTextWidgetDispatch *widget = (RHPortraitTextWidgetDispatch *)this;
+        RHPortraitBoxEvent &event = *(RHPortraitBoxEvent *)((char *)this + 0x5c);
         event.m_type = widget->v13(widget->v9());
         return &event;
     }
@@ -2175,6 +2168,7 @@ void RHPortraitTextWidget::FUN_005d3360()
     }
 }
 
+#pragma inline_depth(1)
 // FUNCTION: GAME 0x005d3390
 void *RHPortraitTextWidgetBase::FUN_005d3390(unsigned flags)
 {
@@ -2183,6 +2177,7 @@ void *RHPortraitTextWidgetBase::FUN_005d3390(unsigned flags)
         operator delete(this);
     return this;
 }
+#pragma inline_depth()
 
 // FUNCTION: GAME 0x005d33b0
 void *RHPortraitTextWidget::FUN_005d33b0(unsigned flags)
@@ -2346,7 +2341,7 @@ int RHPortraitUnk005d3880::FUN_005d3880(const SBGeoPoint2D &point)
 // FUNCTION: GAME 0x005d39a0
 RHPortraitLinkedLifetime::RHPortraitLinkedLifetime() : m_linked(0)
 {
-    m_vptr = 0x0067a1ac;
+    *(unsigned *)this = 0x0067a1ac;
     m_strategy = 0x0067a190;
 }
 
@@ -2362,7 +2357,7 @@ void *RHPortraitLinkedLifetime::FUN_005d39d0(unsigned flags)
 // FUNCTION: GAME 0x005d39f0
 RHPortraitLinkedLifetime::~RHPortraitLinkedLifetime()
 {
-    m_vptr = 0x0067a1ac;
+    *(unsigned *)this = 0x0067a1ac;
     m_strategy = 0x0067a190;
 }
 
@@ -2472,7 +2467,7 @@ int RHPortraitUnk005d3880::FUN_005d3b60(const SBGeoPoint2D &point)
 // FUNCTION: GAME 0x005d3cb0
 RHPortraitGroupLifetime::RHPortraitGroupLifetime() : RHPortraitAnimated(11)
 {
-    m_vptr = 0x0067a21c;
+    *(unsigned *)this = 0x0067a21c;
     RHUnk00514e10 &map = m_map;
     RHPortraitMapLookup(map, 0) = 1;
     RHPortraitMapLookup(map, 16) = 1;
@@ -2492,7 +2487,7 @@ void *RHPortraitGroupLifetime::FUN_005d3dc0(unsigned flags)
 // STUB: GAME 0x005d3de0
 RHPortraitGroupLifetime::~RHPortraitGroupLifetime()
 {
-    m_vptr = 0x0067a21c;
+    *(unsigned *)this = 0x0067a21c;
 }
 
 // FUNCTION: GAME 0x005d3ef0
@@ -2510,11 +2505,9 @@ RHPortraitWidgetEvent *RHPortraitUnk005d3fe0::FUN_005d3ef0(const RHPortraitWidge
     return event;
 }
 
-// Parked: The cleanup state is scheduled before the vptr store.
-// STUB: GAME 0x005d3f50
+// FUNCTION: GAME 0x005d3f50
 inline RHPortraitGroupLifetimeBase::~RHPortraitGroupLifetimeBase()
 {
-    *(volatile unsigned *)&m_vptr = 0x0067a240;
     if (m_widgets)
         m_widgets->v0(3);
     void *allocation = m_events;
@@ -2594,7 +2587,7 @@ RHPortraitWidgetEvent *RHPortraitUnk005d3fe0::FUN_005d4240(const RHPortraitWidge
 // FUNCTION: GAME 0x005d4280
 void RHPortraitUnk005d3fe0::FUN_005d4280(const SBGeoPoint2D &point)
 {
-    SBGeoPoint2D displacement = point.Unk005fc110(m_box.m_first);
+    SBGeoVector2D displacement = point.Unk005fc110(m_box.m_first);
     for (unsigned i = 0; i < m_count; ++i)
     {
         SBGeoPoint2D position(*(SBGeoPoint2D *)((char *)&m_widgets[i] + 0x30));
@@ -2608,7 +2601,7 @@ void RHPortraitUnk005d3fe0::FUN_005d4280(const SBGeoPoint2D &point)
 void RHPortraitUnk005d3fe0::FUN_005d4360(const SBGeoPoint2D &point)
 {
     SBGeoBoundingBox2D box(m_box);
-    SBGeoPoint2D displacement = point.Unk005fc110(m_box.m_first);
+    SBGeoVector2D displacement = point.Unk005fc110(m_box.m_first);
     ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(displacement);
     ((RHPortraitWidgetStrategy *)this)->v7(box);
 }
@@ -2777,7 +2770,7 @@ RHPortraitRadioLifetime::RHPortraitRadioLifetime() : RHPortraitAnimated(2)
     m_strategy = 0x0067a2d4;
     m_10c = 0;
     m_10d = 0;
-    m_vptr = 0x0067a264;
+    *(unsigned *)this = 0x0067a264;
     RHUnk00514e10 &map = m_map;
     RHPortraitMapLookup(map, 0) = 1;
     RHPortraitMapLookup(map, 2) = 0;
@@ -2796,7 +2789,7 @@ void *RHPortraitRadioLifetime::FUN_005d4ab0(unsigned flags)
 // STUB: GAME 0x005d4ad0
 RHPortraitRadioLifetime::~RHPortraitRadioLifetime()
 {
-    m_vptr = 0x0067a264;
+    *(unsigned *)this = 0x0067a264;
     m_strategy = 0x0067a2d4;
 }
 
@@ -3115,12 +3108,8 @@ int RHPortraitUnk005d3880::FUN_005d52d0()
     return result;
 }
 
-// Parked: The vptr store follows the member-cleanup receiver and state.
-// STUB: GAME 0x005d5350
-inline RHPortraitLifetime005d5350::~RHPortraitLifetime005d5350()
-{
-    *(unsigned *)this = 0x0067a0a8;
-}
+// SYNTHETIC: GAME 0x005d5350
+// ??1RHPortraitLifetime005d5350@@QAE@XZ
 
 // FUNCTION: GAME 0x005d53b0
 RHPortraitWidgetEvent *RHPortraitUnk005d3880::FUN_005d53b0(const RHPortraitWidgetInput &input)
@@ -3221,6 +3210,7 @@ RHPortraitWidgetEvent *RHPortraitUnk005d3880::FUN_005d53b0(const RHPortraitWidge
     return 0;
 }
 
+#pragma inline_depth(1)
 // FUNCTION: GAME 0x005d55f0
 void *RHPortraitLifetime005d5350::FUN_005d55f0(unsigned flags)
 {
@@ -3229,6 +3219,7 @@ void *RHPortraitLifetime005d5350::FUN_005d55f0(unsigned flags)
         operator delete(this);
     return this;
 }
+#pragma inline_depth()
 
 // FUNCTION: GAME 0x005d56c0
 RHPortraitAnimated::RHPortraitAnimated(int id) : m_id(id)
@@ -3309,7 +3300,7 @@ RHPortraitFullLifetime::RHPortraitFullLifetime(unsigned short index, RHPortraitA
     *((char *)this + 0xca9) = 0;
     m_caa = 0;
     m_cac = 0;
-    m_vptr = 0x0067a348;
+    *(unsigned *)this = 0x0067a348;
     unsigned short *counter = (unsigned short *)((char *)this + 0xc9e);
     for (int remaining = 3; remaining; --remaining, ++counter)
     {
@@ -3385,45 +3376,26 @@ void *RHPortraitFullLifetime::FUN_005d61e0(unsigned flags)
     return this;
 }
 
-// Parked: The vptr store follows the member-cleanup receiver and state.
-// STUB: GAME 0x005d6200
-RHPortraitLifetime005d6200::~RHPortraitLifetime005d6200()
-{
-    *(unsigned *)this = 0x0067a4e4;
-}
+// SYNTHETIC: GAME 0x005d6200
+// ??1RHPortraitLifetime005d6200@@QAE@XZ
 
-// Parked: The vptr store follows the member-cleanup receiver and state.
-// STUB: GAME 0x005d6260
-RHPortraitLifetime005d6260::~RHPortraitLifetime005d6260()
-{
-    *(unsigned *)this = 0x00677624;
-}
+// SYNTHETIC: GAME 0x005d6260
+// ??1RHPortraitLifetime005d6260@@QAE@XZ
 
-// Parked: The vptr store follows the member-cleanup receiver and state.
-// STUB: GAME 0x005d62c0
-RHPortraitLifetime005d62c0::~RHPortraitLifetime005d62c0()
-{
-    *(unsigned *)this = 0x00677624;
-}
+// SYNTHETIC: GAME 0x005d62c0
+// ??1RHPortraitLifetime005d62c0@@QAE@XZ
 
-// Parked: The base vptr store follows the renderer-cleanup receiver and state.
-// STUB: GAME 0x005d6320
-RHPortraitLifetime005d6320::~RHPortraitLifetime005d6320()
-{
-}
+// SYNTHETIC: GAME 0x005d6320
+// ??1RHPortraitLifetime005d6320@@QAE@XZ
 
-// Parked: The vptr store follows the member-cleanup receiver and state.
-// STUB: GAME 0x005d63b0
-inline RHPortraitLifetime005d63b0::~RHPortraitLifetime005d63b0()
-{
-    *(unsigned *)this = 0x0067a51c;
-}
+// SYNTHETIC: GAME 0x005d63b0
+// ??1RHPortraitLifetime005d63b0@@QAE@XZ
 
 // Parked: Shared bitmap destructors remain out of line and alter EH cleanup states.
 // STUB: GAME 0x005d6410
 RHPortraitFullLifetime::~RHPortraitFullLifetime()
 {
-    *(volatile unsigned *)&m_vptr = 0x0067a348;
+    *(volatile unsigned *)this = 0x0067a348;
     m_portraitResource->v6();
     if (m_portraitResource)
         m_portraitResource->v2(1);
@@ -3684,7 +3656,7 @@ bool RHWidgetPortrait::FUN_005d90c0(unsigned int index)
     ((RHUnk005d92c0Sub *)slot)->v21(((RHEngineActionCalls *)g_pEngine)->FUN_004d2300(*(void **)((char *)this + 0xe1c), index));
     *(unsigned short *)(slot + 0xec) = 24;
     *(unsigned short *)(slot + 0xee) = 10;
-    ((SBGeoBoundingBox2D *)(slot + 0xf0))->FUN_00607da0(*(SBGeoBoundingBox2D *)(slot + 0x30));
+    ((RHMobileUnk00607da0 *)(slot + 0xf0))->FUN_00607da0(*(RHMobileUnk00607da0 *)(slot + 0x30));
     if (index != 2)
     {
         *(int *)(slot + 0xd4) = *(int *)(slot + 0x1d8);
@@ -3750,7 +3722,7 @@ void RHWidgetPortrait::FUN_005d9180()
 SBGeoBoundingBox2D RHWidgetPortrait::FUN_005d9210() const
 {
     SBGeoBoundingBox2D box;
-    box.FUN_00607da0(*(const SBGeoBoundingBox2D *)((const char *)this + 0xd0));
+    ((RHMobileUnk00607da0 *)&box)->FUN_00607da0(*(const RHMobileUnk00607da0 *)((const char *)this + 0xd0));
     box.FUN_00607e90(*(const SBGeoBoundingBox2D *)((const char *)this + 0x298));
     box.FUN_00607e90(*(const SBGeoBoundingBox2D *)((const char *)this + 0x1bc));
     return box;
@@ -4721,7 +4693,7 @@ void RHPortraitWidget005dafd0::FUN_005db350()
     if (bounds.Unk00608f30() &&
         bounds.m_second.m_x - bounds.m_first.m_x > g_unk0x00677488 &&
         bounds.m_second.m_y - bounds.m_first.m_y > g_unk0x00677488)
-        ((SBGeoBoundingBox2D *)((char *)this + 0x30))->FUN_00607da0(
+        ((RHMobileUnk00607da0 *)((char *)this + 0x30))->FUN_00607da0((const RHMobileUnk00607da0 &)
             bounds.FUN_006090d0(SBGeoVector2D((float)m_ec, 0.0f)));
     if (m_ec)
     {
@@ -4738,28 +4710,11 @@ void RHPortraitWidget005dafd0::FUN_005db350()
     ((RHUIRendererShiftingTitbit *)m_renderer)->Render(v09());
 }
 
-class RHPortraitLifetime005db4a0 : public RHGameWidgetLifetimeBase
+class RHPortraitLifetime005dae40 : public RHGameLifetime00516a60
 {
 public:
-    ~RHPortraitLifetime005db4a0();
-    void *FUN_005db480(unsigned flags);
-    RHPortraitRenderer005ca330 m_renderer;
-};
-
-class RHPortraitLifetime005dae40 : public RHGameWidgetLifetimeBase
-{
-public:
-    ~RHPortraitLifetime005dae40();
+    ~RHPortraitLifetime005dae40() {}
     void *FUN_005db560(unsigned flags);
-    RHGameRenderer005c9270 m_renderer;
-};
-
-class RHPortraitLifetime005db5a0 : public RHGameWidgetLifetimeBase
-{
-public:
-    ~RHPortraitLifetime005db5a0();
-    void *FUN_005db580(unsigned flags);
-    RHPortraitRenderer005cc110 m_renderer;
 };
 
 class RHPortraitDeleting
@@ -4776,31 +4731,18 @@ public:
     void *FUN_005df010(unsigned flags);
 };
 
-class RHPortraitRenderer0060dad0
-{
-public:
-    ~RHPortraitRenderer0060dad0();
-};
+#include "RHGameWidgetLifetime.h"
 
-class RHPortraitRenderer0060da10
-{
-public:
-    ~RHPortraitRenderer0060da10();
-};
+typedef RHGameRenderer0060da10 RHPortraitRenderer0060da10;
 
-class RHPortraitRenderer0060d470
-{
-public:
-    ~RHPortraitRenderer0060d470();
-};
+typedef RHPortraitRenderer0060dab0 RHPortraitRenderer0060dad0;
 
-// Parked: same vptr/member-cleanup EH wall as the other portrait lifetime destructors.
-// STUB: GAME 0x005dae40
-RHPortraitLifetime005dae40::~RHPortraitLifetime005dae40()
-{
-    m_vptr = 0x00679000;
-}
+#include "RHPortraitRenderer0060d470.h"
 
+// SYNTHETIC: GAME 0x005dae40
+// ??1RHPortraitLifetime005dae40@@QAE@XZ
+
+#pragma inline_depth(1)
 // FUNCTION: GAME 0x005db480
 void *RHPortraitLifetime005db4a0::FUN_005db480(unsigned flags)
 {
@@ -4809,14 +4751,12 @@ void *RHPortraitLifetime005db4a0::FUN_005db480(unsigned flags)
         operator delete(this);
     return this;
 }
+#pragma inline_depth()
 
-// Parked: same vptr/member-cleanup EH wall as the other portrait lifetime destructors.
-// STUB: GAME 0x005db4a0
-RHPortraitLifetime005db4a0::~RHPortraitLifetime005db4a0()
-{
-    m_vptr = 0x0067a4e4;
-}
+// SYNTHETIC: GAME 0x005db4a0
+// ??1RHPortraitLifetime005db4a0@@QAE@XZ
 
+#pragma inline_depth(1)
 // FUNCTION: GAME 0x005db500
 void *RHPortraitDeleting::FUN_005db500(unsigned flags)
 {
@@ -4826,7 +4766,9 @@ void *RHPortraitDeleting::FUN_005db500(unsigned flags)
         operator delete(self);
     return self;
 }
+#pragma inline_depth()
 
+#pragma inline_depth(1)
 // FUNCTION: GAME 0x005db520
 void *RHPortraitDeleting::FUN_005db520(unsigned flags)
 {
@@ -4836,7 +4778,9 @@ void *RHPortraitDeleting::FUN_005db520(unsigned flags)
         operator delete(self);
     return self;
 }
+#pragma inline_depth()
 
+#pragma inline_depth(1)
 // FUNCTION: GAME 0x005db540
 void *RHPortraitDeleting::FUN_005db540(unsigned flags)
 {
@@ -4846,7 +4790,9 @@ void *RHPortraitDeleting::FUN_005db540(unsigned flags)
         operator delete(self);
     return self;
 }
+#pragma inline_depth()
 
+#pragma inline_depth(1)
 // FUNCTION: GAME 0x005db560
 void *RHPortraitLifetime005dae40::FUN_005db560(unsigned flags)
 {
@@ -4855,7 +4801,9 @@ void *RHPortraitLifetime005dae40::FUN_005db560(unsigned flags)
         operator delete(this);
     return this;
 }
+#pragma inline_depth()
 
+#pragma inline_depth(1)
 // FUNCTION: GAME 0x005db580
 void *RHPortraitLifetime005db5a0::FUN_005db580(unsigned flags)
 {
@@ -4864,14 +4812,12 @@ void *RHPortraitLifetime005db5a0::FUN_005db580(unsigned flags)
         operator delete(this);
     return this;
 }
+#pragma inline_depth()
 
-// Parked: same vptr/member-cleanup EH wall as the other portrait lifetime destructors.
-// STUB: GAME 0x005db5a0
-RHPortraitLifetime005db5a0::~RHPortraitLifetime005db5a0()
-{
-    m_vptr = 0x0067a51c;
-}
+// SYNTHETIC: GAME 0x005db5a0
+// ??1RHPortraitLifetime005db5a0@@QAE@XZ
 
+#pragma inline_depth(1)
 // FUNCTION: GAME 0x005db600
 void *RHPortraitDeleting::FUN_005db600(unsigned flags)
 {
@@ -4881,6 +4827,7 @@ void *RHPortraitDeleting::FUN_005db600(unsigned flags)
         operator delete(self);
     return self;
 }
+#pragma inline_depth()
 
 // FUNCTION: GAME 0x005db620
 void RHActorPCWidgetState::FUN_005db620(RHActorPCWidgetState *state)
@@ -4898,6 +4845,7 @@ void RHActorPCWidgetState::FUN_005db620(RHActorPCWidgetState *state)
     }
 }
 
+#pragma inline_depth(1)
 // FUNCTION: GAME 0x005db690
 void *RHPortraitDeleting::FUN_005db690(unsigned flags)
 {
@@ -4907,17 +4855,14 @@ void *RHPortraitDeleting::FUN_005db690(unsigned flags)
         operator delete(self);
     return self;
 }
+#pragma inline_depth()
 
-// FUNCTION: GAME 0x005db6b0
-RHPortraitLifetime005d6200::RHPortraitLifetime005d6200()
-{
-    m_vptr = 0x0067a4e4;
-}
+// SYNTHETIC: GAME 0x005db6b0
+// ??0RHPortraitLifetime005db4a0@@QAE@XZ
 
 // FUNCTION: GAME 0x005db700
-RHPortraitMessageWidgetBase::RHPortraitMessageWidgetBase()
+RHGameLifetime00516750::RHGameLifetime00516750()
 {
-    m_vptr = 0x00678e50;
     m_state = 6;
     *(char *)&m_strategy = 0;
 }
@@ -4938,7 +4883,7 @@ public:
 
 void FUN_005df400(RHUnk005d92c0Sub *widget);
 
-class RHPortraitRootList : public RHPortraitRootLifetime
+class __declspec(novtable) RHPortraitRootList : public RHPortraitRootLifetime
 {
 public:
     ~RHPortraitRootList();
@@ -5014,7 +4959,7 @@ void *RHPortraitDeleting::FUN_005df010(unsigned flags)
 // FUNCTION: GAME 0x005df0e0
 RHPortraitRootList::~RHPortraitRootList()
 {
-    m_vptr = 0x00678ea8;
+    *(unsigned *)this = 0x00678ea8;
 }
 
 // FUNCTION: GAME 0x005df300
@@ -5077,14 +5022,6 @@ struct RHPortraitKeyed
 {
     undefined m_00[0x40]; // 0x00
     int m_40; // 0x40
-};
-
-class RHUnk005490a0Message
-{
-public:
-    RHUnk005490a0Message(int command, int value);
-    ~RHUnk005490a0Message();
-    char data[0x10];
 };
 
 // SIZE 0x278
@@ -5230,7 +5167,7 @@ void RHWidgetPortrait::FUN_005da1f0()
     SBGeoBoundingBox2D frame;
     SBGeoBoundingBox2D bounds(P(0xd0), P(0x1c4));
     ((RHMobileUnk00607da0 *)&frame)->FUN_00607da0(*(RHMobileUnk00607da0 *)((char *)this + 0x7ec));
-    SBGeoPoint2D origin(bounds.m_first);
+    SBGeoVector2D origin(*(SBGeoVector2D *)&bounds.m_first);
     W(0x7bc).v08(SBGeoPoint2D(((bounds.m_second.m_x - bounds.m_first.m_x) - (frame.m_second.m_x - frame.m_first.m_x)) * g_unk0x006775d8,
                               ((bounds.m_second.m_y - bounds.m_first.m_y) - (frame.m_second.m_y - frame.m_first.m_y)) * g_unk0x006775d8)
                       .Unk005fc190(origin));
@@ -5249,7 +5186,7 @@ RHPortraitWidgetEvent *RHPortraitQuickList::FUN_005dd370(const void *input)
                 if (entry->m_08 == event->widget)
                 {
                     if (!entry->m_04 && entry->m_00)
-                        RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk005490a0Message(0x2d, entry->m_00));
+                        RHUnk00546050()->RHUnk005460c0(RHUnk5490f0(0x2d, entry->m_00));
                     break;
                 }
             }
@@ -5271,3 +5208,10 @@ void EmitPortraitQuickEntries(std::vector<RHPortraitQuickEntry> *entries)
     std::vector<RHPortraitQuickEntry> local;
     FUN_005df400(0);
 }
+
+#pragma inline_depth(0)
+void EmitRHPortraitLifetimeConstructors()
+{
+    RHPortraitLifetime005db4a0 first;
+}
+#pragma inline_depth()

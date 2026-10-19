@@ -1,4 +1,12 @@
 #include "SBNullstr.h"
+// SIZE 0x14
+class RHMobileUnk00607da0
+{
+public:
+    void FUN_00607990(const RHMobileUnk00607da0 &other);
+    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
+    unsigned char m_00[0x14]; // 0x00
+};
 #include "RHUIRendererShiftingTitbit.h"
 
 void EmitShiftingTitbitLifetime(RHUIRendererShiftingTitbit *value, unsigned flags)
@@ -31,6 +39,12 @@ RHUIRendererShiftingTitbit::~RHUIRendererShiftingTitbit()
     *(unsigned *)this = 0x00679ecc;
 }
 
+class TitbitVectorCopy : public SBGeoVector2D
+{
+public:
+    TitbitVectorCopy(const SBGeoPoint2D &point) : SBGeoVector2D((const SBGeoVector2D &)point) {}
+};
+
 // FUNCTION: GAME 0x005cc120
 bool RHUIRendererShiftingTitbit::Render(unsigned id)
 {
@@ -38,11 +52,11 @@ bool RHUIRendererShiftingTitbit::Render(unsigned id)
     {
         SBGeoBoundingBox2D box;
         SBGeoVector2D bankSize;
-        box = TitbitBox + SBGeoVector2D((float)TitbitWord50, 0.0f);
+        ((RHMobileUnk00607da0 *)&box)->FUN_00607da0((const RHMobileUnk00607da0 &)(TitbitBox + SBGeoVector2D((float)TitbitWord50, 0.0f)));
         ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(SBGeoVector2D(4.0f, 4.0f));
         TitbitResource->FUN_006006f0(0x10, bankSize);
         unsigned surface;
-        if (TitbitResource->GetSurfaceForResource(0x10, m_54, surface) != 1)
+        if (((RHUnk00600820 *)TitbitResource)->ResolveSurface((void *)0x10, m_54, (float *)&surface) != 1)
         {
             SBAssert(0,
                      // STRING: GAME 0x006b8d90
@@ -53,8 +67,8 @@ bool RHUIRendererShiftingTitbit::Render(unsigned id)
         SBGeoVector2D surfaceSize;
         RHUnk005ef320 *draw = g_unk0x6c11d0;
         draw->FUN_005e57e0(surface, surfaceSize);
-        ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(0.5f * (bankSize + -surfaceSize));
-        box.UnkSecondPoint(box.m_p0 + surfaceSize);
+        ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(0.5f * TitbitVectorCopy(bankSize.Unk005fc190(-surfaceSize)));
+        box.UnkSecondPoint(box.m_p0.Unk005fc190(surfaceSize));
         ((SBDrawManager *)draw)->BlitAlphaKeying(surface, 0, TitbitBlitArg, &box, TitbitWord4c, TitbitWord4e, 1);
         if (m_59)
         {

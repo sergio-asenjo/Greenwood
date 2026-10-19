@@ -15,12 +15,13 @@ float g_rhuirendererportrait_percent = 100.0f;
 // LIBRARY: GAME 0x005cac40
 // ?find@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@QBEIPBGII@Z
 
+#include "SBGeoBoundingBox2D.h"
 #include "RHUnk005cbb80.h"
 
 // FUNCTION: GAME 0x005cbb80
 RHUnk005cbb80::RHUnk005cbb80()
 {
-    m_vptr = 0x00679eac;
+    *(unsigned *)this = 0x00679eac;
     m_4c = 0;
     m_50 = 0;
     m_54 = 0;
