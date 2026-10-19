@@ -176,13 +176,13 @@ bool RHSequence::Serialize(SBFile &file, bool bArg)
                 elem = new RHUnk586050();
                 break;
             case 2:
-                elem = new RHUnk5865a0();
+                elem = new RHUnk005866a0();
                 break;
             case 3:
                 elem = new RHUnk585e70();
                 break;
             case 4:
-                elem = new RHUnk588270();
+                elem = new RHUnk00588530();
                 break;
             default:
                 elem = 0;

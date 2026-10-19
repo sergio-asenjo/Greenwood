@@ -92,16 +92,7 @@ inline RHGenericMap &RHGenericMap::Assign(const RHGenericMap &other)
 // GLOBAL: GAME 0x006c1030
 unsigned int g_unk0x006c1030;
 
-class RHUnk00584d60
-{
-public:
-    RHUnk00584d60();
-    RHUnk00584d60(unsigned short level, int command, void *actor);
-    ~RHUnk00584d60();
-    char m_00[4];
-    unsigned char m_04;
-    char m_05[0x5f];
-};
+#include "RHSequenceGenericCalls.h"
 
 inline void RHGenericMap::Initialize()
 {
@@ -121,29 +112,42 @@ inline void RHGenericMap::Initialize()
     Leftmost() = head, Rightmost() = head;
 }
 
-class RHUnk5865a0 : public RHUnk00584d60
+inline RHGenericMap::RHGenericMap()
 {
-public:
-    RHUnk5865a0();
-    RHGenericMap m_64;
-};
-
-// FUNCTION: GAME 0x005865a0
-RHUnk5865a0::RHUnk5865a0()
-{
-    m_64.Initialize();
-    *(unsigned *)this = 0x679d5c;
-    m_04 = 2;
+    Initialize();
 }
 
+inline RHGenericMap::~RHGenericMap()
+{
+    FUN_005874d0(RHGenericIterator(head->left), RHGenericIterator(head));
+    Freenode(head);
+    head = 0, count = 0;
+    {
+        RHUnk00641782 lock;
+        if (--g_unk0x006c1030 == 0)
+        {
+            Freenode(g_unk0x006c1034);
+            g_unk0x006c1034 = 0;
+        }
+    }
+}
+
+// VTABLE: GAME 0x00679d5c
 class RHUnk005866a0 : public RHUnk00584d60
 {
 public:
+    RHUnk005866a0();
     RHUnk005866a0(unsigned short level, int command, void *actor);
     ~RHUnk005866a0();
     void *FUN_00586680(unsigned int flags);
     RHGenericMap m_64;
 };
+
+// FUNCTION: GAME 0x005865a0
+RHUnk005866a0::RHUnk005866a0()
+{
+    m_04 = 2;
+}
 
 // FUNCTION: GAME 0x00586680
 void *RHUnk005866a0::FUN_00586680(unsigned int flags)
@@ -158,28 +162,12 @@ void *RHUnk005866a0::FUN_00586680(unsigned int flags)
 RHUnk005866a0::RHUnk005866a0(unsigned short level, int command, void *actor)
     : RHUnk00584d60(level, command, actor)
 {
-    m_64.Initialize();
-    *(unsigned *)this = 0x679d5c;
     m_04 = 2;
 }
 
-// Parked: head load is hoisted above the literal vptr store; target loads it after.
-// STUB: GAME 0x00586790
+// FUNCTION: GAME 0x00586790
 RHUnk005866a0::~RHUnk005866a0()
 {
-    *(unsigned *)this = 0x679d5c;
-    m_64.FUN_005874d0(RHGenericIterator(m_64.head->left), RHGenericIterator(m_64.head));
-    RHGenericMap &map = m_64;
-    map.Freenode(map.head);
-    map.head = 0, map.count = 0;
-    {
-        RHUnk00641782 lock;
-        if (--g_unk0x006c1030 == 0)
-        {
-            map.Freenode(g_unk0x006c1034);
-            g_unk0x006c1034 = 0;
-        }
-    }
 }
 
 #include "RHSequenceElementCalls.h"
@@ -529,6 +517,45 @@ RHGenericIterator RHGenericMap::FUN_005874d0(RHGenericIterator first, RHGenericI
     return begin();
 }
 
+// FUNCTION: GAME 0x005873a0
+RHGenericInsertResult RHGenericMap::FUN_005873a0(const RHGenericPair &value)
+{
+    RHGenericNode *parent = head;
+    RHGenericNode *node = parent->parent;
+    bool left = true;
+    {
+        RHUnk00641782 lock;
+        while (node != g_unk0x006c1034)
+        {
+            parent = node;
+            left = value.key < node->key;
+            node = left ? node->left : node->right;
+        }
+    }
+    if (multi)
+    {
+        RHGenericInsertResult result(FUN_00587bd0(node, parent, value), true);
+        return result;
+    }
+    RHGenericIterator previous(parent);
+    if (left)
+    {
+        if (previous.node == head->left)
+        {
+            RHGenericInsertResult result(FUN_00587bd0(node, parent, value), true);
+            return result;
+        }
+        previous.FUN_005880d0();
+    }
+    if (previous.node->key < value.key)
+    {
+        RHGenericInsertResult result(FUN_00587bd0(node, parent, value), true);
+        return result;
+    }
+    RHGenericInsertResult result(previous, false);
+    return result;
+}
+
 // FUNCTION: GAME 0x00587600
 RHGenericIterator RHGenericMap::FUN_00587600(RHGenericIterator position)
 {
@@ -810,6 +837,23 @@ RHGenericNode *RHGenericMap::FUN_00587f80(RHGenericNode *node, RHGenericNode *pa
     }
     parent->left = g_unk0x006c1034;
     return result;
+}
+
+// FUNCTION: GAME 0x00588060
+RHHumanMapNode *RHHumanMap::FUN_00588060(const int &key)
+{
+    RHUnk00641782 lock;
+    RHHumanMapNode *node = m_head->m_parent;
+    RHHumanMapNode *found = m_head;
+    while (node != (RHHumanMapNode *)g_unk0x006c1034) {
+        if (node->m_key < key)
+            node = node->m_right;
+        else {
+            found = node;
+            node = node->m_left;
+        }
+    }
+    return found;
 }
 
 // FUNCTION: GAME 0x005880b0

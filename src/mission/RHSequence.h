@@ -64,10 +64,10 @@ public:
     char m_pad1[0x7c - 0x64];
 };
 
-class RHUnk5865a0 : public RHSequenceElement
+class RHUnk005866a0 : public RHSequenceElement
 {
 public:
-    RHUnk5865a0();
+    RHUnk005866a0();
 
     char m_pad1[0x74 - 0x64];
 };
@@ -80,10 +80,10 @@ public:
     char m_pad1[0x68 - 0x64];
 };
 
-class RHUnk588270 : public RHSequenceElement
+class RHUnk00588530 : public RHSequenceElement
 {
 public:
-    RHUnk588270();
+    RHUnk00588530();
 
     char m_pad1[0x9c - 0x64];
 };

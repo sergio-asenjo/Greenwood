@@ -57,13 +57,7 @@ void RHSequenceElement::Emit(SBFile &file)
     SerializeStaticStuff(file);
 }
 
-class RHUnk00584d60
-{
-public:
-    RHUnk00584d60(unsigned short level, int command, void *actor);
-    ~RHUnk00584d60();
-    char data[0x64];
-};
+#include "RHSequenceGenericCalls.h"
 
 class RHSequenceElementCalls;
 class RHElement;
@@ -108,16 +102,31 @@ public:
 #include "RHSequenceAppendCalls.h"
 #include <list>
 
+class RHSequenceAppendList : public std::list<RHSequenceElementCalls *>
+{
+public:
+    void Append(RHSequenceElementCalls *const &element, volatile bool &dirty)
+    {
+        _Nodeptr node = _Head;
+        _Acc::_Prev(node) = _Buynode(node, _Acc::_Prev(node));
+        node = _Acc::_Prev(node);
+        _Acc::_Next(_Acc::_Prev(node)) = node;
+        allocator.construct(&_Acc::_Value(node), element);
+        unsigned count = *(volatile unsigned *)&_Size;
+        dirty = true;
+        _Size = count + 1;
+    }
+};
+
 struct RHSequenceAppendView
 {
     char m_00[8];
-    std::list<RHSequenceElementCalls *> elements;
+    RHSequenceAppendList elements;
     char m_14[4];
     bool m_18;
 };
 
-// Parked: validity-byte store straddles the list-count load differently.
-// STUB: GAME 0x00585500
+// FUNCTION: GAME 0x00585500
 void RHUnk00585500::Unk(void *sequence)
 {
     RHSequenceAppendView *owner = (RHSequenceAppendView *)sequence;
@@ -125,8 +134,7 @@ void RHUnk00585500::Unk(void *sequence)
     if (*(unsigned short *)((char *)sequence + 0x10) != 0)
         owner->elements.back()->m_4c = element;
     element->m_54 = sequence;
-    owner->elements.push_back(element);
-    owner->m_18 = true;
+    owner->elements.Append(element, owner->m_18);
 }
 
 // FUNCTION: GAME 0x00585570
@@ -293,7 +301,7 @@ RHUnk585e70::RHUnk585e70()
     m_04 = 3;
 }
 
-class RHUnk00585ea0 : public RHUnk00584d60
+class __declspec(novtable) RHUnk00585ea0 : public RHUnk00584d60
 {
 public:
     RHUnk00585ea0(unsigned short level, int command, void *actor, void *target);
@@ -307,7 +315,7 @@ RHUnk00585ea0::RHUnk00585ea0(unsigned short level, int command, void *actor, voi
 {
     *(unsigned *)this = 0x679d04;
     m_64 = target;
-    data[4] = 3;
+    m_04 = 3;
 }
 
 class RHSequenceInteractionCalls : public RHSequenceElementCalls

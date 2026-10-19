@@ -1611,7 +1611,7 @@ bool RHUnk004593f0SerializeList(SBFile &file, RHUnk0054e250List &values, void *s
 }
 
 // Parked: real wide vector insertion has register-allocation and scheduling differences.
-// STUB: GAME 0x00459620
+// LIBRARY: GAME 0x00459620
 void RHCampaignWideStrings::FUN_00459620(RHCampaignWideString *position, unsigned count,
                                         const RHCampaignWideString &value)
 {
@@ -1670,6 +1670,9 @@ int RHCampaignCommandLine::FUN_0045a010(const RHProfileText &value)
 
 // TEMPLATE: GAME 0x0045a240
 // ??4?$vector@UOccupant@RHSectorProduction@@V?$allocator@UOccupant@RHSectorProduction@@@std@@@std@@QAEAAV01@ABV01@@Z
+
+// SYNTHETIC: GAME 0x0045a420
+// RHSectorProduction::Occupant::`scalar deleting destructor'
 
 // TEMPLATE: GAME 0x0045a440
 // ?push_back@?$list@PAVRHMission@@V?$allocator@PAVRHMission@@@std@@@std@@QAEXABQAVRHMission@@@Z

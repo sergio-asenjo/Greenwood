@@ -39,6 +39,8 @@ class SBGeoVector2D : public SBGeoPoint2D
 {
 public:
     SBGeoVector2D(const SBGeoPoint2D &other);
+    SBGeoVector2D(const SBGeoVector2D &other);
+    SBGeoVector2D &operator=(const SBGeoVector2D &other);
 };
 
 class SBGeoBoundingBox2D
@@ -82,8 +84,7 @@ RHShortBriefings::RHShortBriefings(bool load)
     }
 }
 
-// Parked: the text widget vptr store follows the member-cleanup EH state; the target stores it first.
-// STUB: GAME 0x005a23a0
+// FUNCTION: GAME 0x005a23a0
 RHShortBriefings::~RHShortBriefings()
 {
 }
@@ -195,7 +196,7 @@ extern float g_unk0x006774a0;
 extern float g_unk0x006775d8;
 extern float g_unk0x006774e4;
 
-// Parked: vector temporary slots and x87/receiver instruction scheduling differ.
+// Parked: vector temporary slots, x87 operand order and receiver scheduling differ.
 // STUB: GAME 0x005a2630
 void RHShortBriefings::FUN_005a2630(RHMenuWindow *window, SBGeoBoundingBox2D &box)
 {
@@ -211,7 +212,7 @@ void RHShortBriefings::FUN_005a2630(RHMenuWindow *window, SBGeoBoundingBox2D &bo
         ((RHMobileUnk00607da0 *)&bounds)->FUN_00607da0(*(RHMobileUnk00607da0 *)((char *)&m_30 + 0x30));
         offset = SBGeoPoint2D(((box.second.x - box.first.x) - (bounds.second.x - bounds.first.x)) * g_unk0x006775d8, 10.0f);
         {
-            SBGeoVector2D displacement(offset);
+            SBGeoVector2D displacement(*(SBGeoVector2D *)&offset);
             ((RHBriefingSetupCalls *)&m_30)->V20(bounds.first.Unk005fc190(displacement));
         }
         box.SetTop(bounds.GetHeight() + box.first.y + g_unk0x006774a0);
@@ -238,21 +239,12 @@ public:
     }
 };
 
-class RHGameLifetime00515f00
-{
-public:
-    RHGameLifetime00515f00();
-    ~RHGameLifetime00515f00();
-    unsigned m_vptr;
-    char m_04[0xc8];
-};
-
-class RHBriefingPicture : public RHGameLifetime00515f00
+class __declspec(novtable) RHBriefingPicture : public RHGameLifetime00517590
 {
 public:
     RHBriefingPicture()
     {
-        m_vptr = 0x006775e4;
+        *(unsigned *)this = 0x006775e4;
         m_cc = 0;
     }
     unsigned m_cc;

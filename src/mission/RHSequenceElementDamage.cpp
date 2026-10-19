@@ -1,20 +1,7 @@
 #include "SBNullstr.h"
 #include "RHSequenceElementDamage.h"
 
-class RHUnk00584d60
-{
-public:
-    RHUnk00584d60(unsigned short level, int command, void *actor);
-    ~RHUnk00584d60();
-    char m_00[4];
-    unsigned char m_04;
-    char m_05[0x0b];
-    int m_10;
-    unsigned short m_14;
-    char m_16[0x32];
-    void *m_48;
-    char m_4c[0x18];
-};
+#include "RHSequenceGenericCalls.h"
 
 #include "RHSequenceElementCalls.h"
 
@@ -35,7 +22,7 @@ public:
     void *m_78;
 };
 
-class RHUnk005861c0 : public RHUnk00584d60
+class __declspec(novtable) RHUnk005861c0 : public RHUnk00584d60
 {
 public:
     RHUnk005861c0(unsigned short level, int command, void *actor, void *target);

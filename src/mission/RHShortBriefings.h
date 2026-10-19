@@ -1,4 +1,5 @@
 #include "SB.h"
+#include "RHGameWidgetLifetime.h"
 #include <vector>
 
 void RHSerializeName(SBFile &file, const char *name);
@@ -22,13 +23,7 @@ public:
     char m_00[0x4c];
 };
 
-class RHShortBriefingsText : public RHShortBriefingsWidgetBase
-{
-public:
-    RHShortBriefingsText() { m_vptr = 0x00678c10; }
-    ~RHShortBriefingsText() { m_vptr = 0x00677624; }
-    RHShortBriefingsRenderer m_renderer;
-};
+typedef RHGameLifetime00515f00 RHShortBriefingsText;
 
 class RHShortBriefingsCalls
 {

@@ -34,16 +34,7 @@ struct RHMovementSequenceView
     RHMovementSequenceView *next;
 };
 
-class RHUnk00584d60
-{
-public:
-    RHUnk00584d60();
-    RHUnk00584d60(unsigned short level, int command, void *actor);
-    ~RHUnk00584d60();
-    char m_00[4];
-    unsigned char m_04;
-    char m_05[0x5f];
-};
+#include "RHSequenceGenericCalls.h"
 
 class RHMovementOwned
 {
@@ -86,22 +77,21 @@ extern float g_unk0x006775d8;
     int m_94; \
     float m_98;
 
-class RHUnk588270 : public RHUnk00584d60
-{
-public:
-    RHUnk588270();
-    RH_MOVEMENT_FIELDS
-};
 
+// VTABLE: GAME 0x00679d88
 class RHUnk00588530 : public RHUnk00584d60
 {
 public:
+    RHUnk00588530();
     RHUnk00588530(unsigned short level, int command, void *actor);
     RHUnk00588530(unsigned short level, int command, void *actor, int value94, RHMovementBox *box, float value8c, int value88);
     RHUnk00588530(unsigned short level, int command, void *actor, int style, void *target, float distance, void *value);
     RHUnk00588530(unsigned short level, int command, void *actor, int value94, const SBGeoPoint2D &point, void *value78, unsigned short value74, float value8c, int value88);
     RHUnk00588530(unsigned short level, int command, void *actor, void *value78, const SBGeoPoint2D &point, void *value84, float value8c, int value88);
     RHUnk00588530(unsigned short level, int command, void *actor, const SBGeoPoint2D &point, void *value78, unsigned short value90, int value88);
+    RHUnk00588530(unsigned short priority, int command, void *element, int animation,
+                  const SBGeoPoint2D &destination, void *target, float speed, unsigned long flags);
+    RHUnk00588530(unsigned short level, int command, void *actor, int style, int value);
     ~RHUnk00588530();
     void *FUN_005882f0(unsigned int flags);
     void FUN_00588940();
@@ -117,23 +107,10 @@ public:
     RH_MOVEMENT_FIELDS
 };
 
-class RHUnk005883a0 : public RHUnk00584d60
-{
-public:
-    RHUnk005883a0(unsigned short priority, int command, void *element, int animation,
-                  const SBGeoPoint2D &destination, void *target, float speed, unsigned long flags);
-    RH_MOVEMENT_FIELDS
-};
 
-class RHUnk00588830 : public RHUnk00584d60
-{
-public:
-    RHUnk00588830(unsigned short level, int command, void *actor, int style, int value);
-    RH_MOVEMENT_FIELDS
-};
 
 // FUNCTION: GAME 0x00588270
-RHUnk588270::RHUnk588270()
+RHUnk00588530::RHUnk00588530()
 {
     m_84 = 0;
     m_7c = 0;
@@ -141,7 +118,6 @@ RHUnk588270::RHUnk588270()
     m_80 = 0;
     m_68 = 0;
     m_64 = 0;
-    *(unsigned *)this = 0x679d88;
     m_04 = 4;
     m_98 = 1.0f;
 }
@@ -165,17 +141,15 @@ RHUnk00588530::RHUnk00588530(unsigned short level, int command, void *actor)
     m_80 = 0;
     m_68 = 0;
     m_64 = 0;
-    *(unsigned *)this = 0x679d88;
     m_98 = 1.0f;
     m_04 = 4;
 }
 
 // FUNCTION: GAME 0x005883a0
-RHUnk005883a0::RHUnk005883a0(unsigned short priority, int command, void *element, int animation,
+RHUnk00588530::RHUnk00588530(unsigned short priority, int command, void *element, int animation,
                              const SBGeoPoint2D &destination, void *target, float speed, unsigned long flags)
     : RHUnk00584d60(priority, command, element)
 {
-    *(unsigned *)this = 0x679d88;
     m_84 = target;
     m_80 = 0;
     m_7c = 0;
@@ -196,7 +170,6 @@ RHUnk00588530::RHUnk00588530(unsigned short level, int command, void *actor, int
 {
     m_94 = value94;
     m_8c = value8c;
-    *(unsigned *)this = 0x679d88;
     m_88 = value88;
     m_80 = box;
     m_7c = 0;
@@ -215,7 +188,6 @@ RHUnk00588530::RHUnk00588530(unsigned short level, int command, void *actor, int
     : RHUnk00584d60(level, command, actor)
 {
     m_94 = style;
-    *(unsigned *)this = 0x679d88;
     m_8c = distance;
     m_88 = (int)value;
     m_84 = target;
@@ -234,7 +206,6 @@ RHUnk00588530::RHUnk00588530(unsigned short level, int command, void *actor, int
 {
     m_94 = value94;
     m_74 = value74;
-    *(unsigned *)this = 0x679d88;
     m_8c = value8c;
     m_88 = value88;
     m_6c = point;
@@ -252,7 +223,6 @@ RHUnk00588530::RHUnk00588530(unsigned short level, int command, void *actor, int
 RHUnk00588530::RHUnk00588530(unsigned short level, int command, void *actor, void *value78, const SBGeoPoint2D &point, void *value84, float value8c, int value88)
     : RHUnk00584d60(level, command, actor)
 {
-    *(unsigned *)this = 0x679d88;
     m_6c = point;
     m_8c = value8c;
     m_88 = value88;
@@ -270,7 +240,6 @@ RHUnk00588530::RHUnk00588530(unsigned short level, int command, void *actor, voi
 RHUnk00588530::RHUnk00588530(unsigned short level, int command, void *actor, const SBGeoPoint2D &point, void *value78, unsigned short value90, int value88)
     : RHUnk00584d60(level, command, actor)
 {
-    *(unsigned *)this = 0x679d88;
     m_6c = point;
     m_90 = value90;
     m_88 = value88;
@@ -285,7 +254,7 @@ RHUnk00588530::RHUnk00588530(unsigned short level, int command, void *actor, con
 }
 
 // FUNCTION: GAME 0x00588830
-RHUnk00588830::RHUnk00588830(unsigned short level, int command, void *actor, int style, int value)
+RHUnk00588530::RHUnk00588530(unsigned short level, int command, void *actor, int style, int value)
     : RHUnk00584d60(level, command, actor)
 {
     m_94 = style;
@@ -296,18 +265,14 @@ RHUnk00588830::RHUnk00588830(unsigned short level, int command, void *actor, int
     m_7c = 0;
     m_68 = 0;
     m_64 = 0;
-    *(unsigned *)this = 0x679d88;
     m_98 = 1.0f;
     m_04 = 4;
 }
 
-// Implicit-vptr scheduling: the EH state store lands after the null test instead of before it.
-// STUB: GAME 0x005888d0
+// FUNCTION: GAME 0x005888d0
 RHUnk00588530::~RHUnk00588530()
 {
-    *(unsigned *)this = 0x679d88;
-    RHMovementOwned **slot = &m_68;
-    delete *slot;
+    delete m_68;
 }
 
 struct RHMovementOrder
@@ -411,12 +376,24 @@ public:
     void FUN_004d2b70(void *actor);
 };
 
-class RHUnk005fc3b0 : public SBGeoPoint2D
+class SBGeoVector2D : public SBGeoPoint2D
 {
 public:
-    RHUnk005fc3b0();
+    SBGeoVector2D();
+    ~SBGeoVector2D() {}
+    SBGeoVector2D &operator=(const SBGeoVector2D &other);
+    SBGeoVector2D(const SBGeoVector2D &other);
+};
+
+class RHUnk005fc3b0 : public SBGeoVector2D
+{
+public:
+    RHUnk005fc3b0() {}
     ~RHUnk005fc3b0() {}
-    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other);
+    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other)
+    {
+        return (RHUnk005fc3b0 &)SBGeoVector2D::operator=((const SBGeoVector2D &)other);
+    }
     RHUnk005fc3b0 &FUN_005fc4d0(float factor);
     float Unk005fc6a0(float factor);
 };
