@@ -1,9 +1,35 @@
 #include "SBNullstr.h"
 #include "SBGeoPoint2D.h"
+#include "SBGeoVector2D.h"
+#include "RHMobileUnk006100e0.h"
 #include "SB.h"
 #include <math.h>
 
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
+
+// FUNCTION: GAME 0x005fc080
+SBGeoPoint2D::~SBGeoPoint2D() throw()
+{
+    ((RHMobileUnk006100e0 *)this)->FUN_00578c50();
+}
+
+// FUNCTION: GAME 0x005fc110
+SBGeoVector2D SBGeoPoint2D::Unk005fc110(const SBGeoPoint2D &other) const
+{
+    SBGeoVector2D difference;
+    difference.m_x = m_x - other.m_x;
+    difference.m_y = m_y - other.m_y;
+    return difference;
+}
+
+// FUNCTION: GAME 0x005fc190
+SBGeoPoint2D SBGeoPoint2D::Unk005fc190(const SBGeoPoint2D &other) const
+{
+    SBGeoPoint2D result;
+    result.m_x = other.m_x + m_x;
+    result.m_y = other.m_y + m_y;
+    return result;
+}
 
 // FUNCTION: GAME 0x005fc200
 SBGeoPoint2D SBGeoPoint2D::FUN_005fc200(const SBGeoPoint2D &other) const

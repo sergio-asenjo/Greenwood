@@ -22,16 +22,6 @@ unsigned int SBFileUnk00643e0c(void *, unsigned int, unsigned int, FILE *)
     return 0;
 }
 
-SBFileTreeIterator SBFileTree::FUN_005f6640(SBFileTreeIterator iterator)
-{
-    return iterator;
-}
-
-SBFileTreeIterator SBFileTree::FUN_005f6cf0(SBFileTreeIterator iterator)
-{
-    return iterator;
-}
-
 void SBFileAssert(int, const char *, int, const char *, ...)
 {
 }

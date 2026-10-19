@@ -25,6 +25,34 @@ inline const char *SBSimpleText(const std::string &text)
     return value != 0 ? value : "";
 }
 
+class RHUnk00639bc0
+{
+public:
+    RHUnk00639bc0 *FUN_00639bc0(int size);
+    void FUN_00639740();
+    unsigned char *m_memory;
+    int m_size;
+};
+
+// FUNCTION: GAME 0x00639740
+void RHUnk00639bc0::FUN_00639740()
+{
+    if (m_memory)
+        operator delete(m_memory);
+}
+
+// FUNCTION: GAME 0x00639920
+void FUN_00639920()
+{
+    ((RHUnk00639bc0 *)&g_unk0x006c1960)->FUN_00639bc0(0);
+}
+
+void EmitSBSimpleVirtualMachineGlue()
+{
+    FUN_00639920();
+    ((RHUnk00639bc0 *)&g_unk0x006c1960)->FUN_00639740();
+}
+
 // FUNCTION: GAME 0x006399a0
 bool SBSimpleVirtualMachine::Initialize(std::string &name)
 {
@@ -74,14 +102,6 @@ SBSimpleVirtualMachine::~SBSimpleVirtualMachine()
     if (m_bound)
         FUN_006392c0();
 }
-
-class RHUnk00639bc0
-{
-public:
-    RHUnk00639bc0 *FUN_00639bc0(int size);
-    unsigned char *m_memory;
-    int m_size;
-};
 
 // FUNCTION: GAME 0x00639bc0
 RHUnk00639bc0 *RHUnk00639bc0::FUN_00639bc0(int size)

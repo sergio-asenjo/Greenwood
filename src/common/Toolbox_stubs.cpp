@@ -19,14 +19,17 @@ RHUnk006114c0::RHUnk006114c0()
     *(undefined4 *)(m_24 + 0x0c) = 2;
 }
 
-// parked, unannotated: base-destructor ILT tail jump and counted callers
+// SYNTHETIC: GAME 0x00611540
+// RHUnk006114c0::`scalar deleting destructor'
+
+// FUNCTION: GAME 0x00611560
 RHUnk006114c0::~RHUnk006114c0()
 {
+    *(unsigned *)this = 0x67a880;
     FUN_00611c00();
 }
 
 void RHUnk006114c0::FUN_00611b90() {}
-void RHUnk006114c0::FUN_00611c00() {}
 void RHUnk006114c0::Unk10() {}
 bool RHUnk006114c0::Unk20(RHUnkFXDraw *draw, unsigned long surface)
 {

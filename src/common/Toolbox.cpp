@@ -31,6 +31,8 @@ float g_unk0x0067a664 = 0.001f;
 // SYNTHETIC: GAME 0x00401910
 // ??0RHProfileString@@QAE@ABV0@@Z
 
+void RHUnk006114c0::FUN_00611c00() {}
+
 // LIBRARY: GAME 0x00401c80
 // ??1?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@QAE@XZ
 

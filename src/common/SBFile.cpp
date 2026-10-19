@@ -5,6 +5,7 @@
 #include "RHCivilianProfile.h"
 #include "RHProfileFileCore.h"
 #include "SBFilePosition.h"
+#include "RHFontManager.h"
 
 // SIZE 0x10
 class RHCampaignCommandLine
@@ -57,6 +58,159 @@ DECOMP_SIZE_ASSERT(RHProfileText, 0x10)
 
 // GLOBAL: GAME 0x006c137c
 bool (*g_unk0x006c137c)(const std::string &) = 0;
+
+struct SBFileTreeCtorNode54
+{
+    SBFileTreeCtorNode54 *left;
+    SBFileTreeCtorNode54 *parent;
+    SBFileTreeCtorNode54 *right;
+    char value[0x44];
+    int color;
+};
+
+struct SBFileTreeCtorNode2c
+{
+    SBFileTreeCtorNode2c *left;
+    SBFileTreeCtorNode2c *parent;
+    SBFileTreeCtorNode2c *right;
+    char value[0x1c];
+    int color;
+};
+
+struct SBFileTreeInc005f74f0
+{
+    SBFileTreeCtorNode54 *m_node;
+    void Advance();
+    SBFileTreeInc005f74f0 operator++(int)
+    {
+        SBFileTreeInc005f74f0 previous = *this;
+        Advance();
+        return previous;
+    }
+};
+
+struct SBFileTreeInc005f7840
+{
+    SBFileTreeCtorNode2c *m_node;
+    void Advance();
+    SBFileTreeInc005f7840 operator++(int)
+    {
+        SBFileTreeInc005f7840 previous = *this;
+        Advance();
+        return previous;
+    }
+};
+
+class SBFileTree005f64a0
+{
+public:
+    typedef SBFileTreeCtorNode54 Node;
+    typedef SBFileTreeInc005f74f0 Iterator;
+    SBFileTree005f64a0(const char &, const char &);
+    void FUN_005f4db0();
+    Iterator FUN_005f6bb0(Iterator, Iterator);
+    void FUN_005f7410(Node *);
+    static Node *&Left(Node *node) { return node->left; }
+    static Node *&Parent(Node *node) { return node->parent; }
+    static Node *&Right(Node *node) { return node->right; }
+    static int &Color(Node *node) { return node->color; }
+    Node *&Root() { return head->parent; }
+    Node *&Leftmost() { return head->left; }
+    Node *&Rightmost() { return head->right; }
+    Iterator Begin()
+    {
+        Iterator result;
+        result.m_node = Leftmost();
+        return result;
+    }
+    inline void Lrotate(Node *x);
+    inline void Rrotate(Node *x);
+    char allocator;
+    char compare;
+    char padding[2];
+    SBFileTreeCtorNode54 *head;
+    bool multi;
+    char padding09[3];
+    unsigned size;
+};
+
+class SBFileTree005f6570
+{
+public:
+    typedef SBFileTreeCtorNode2c Node;
+    typedef SBFileTreeInc005f7840 Iterator;
+    SBFileTree005f6570(const char &, const char &);
+    void FUN_005f4e80();
+    Iterator FUN_005f7220(Iterator, Iterator);
+    void FUN_005f75a0(Node *);
+    static Node *&Left(Node *node) { return node->left; }
+    static Node *&Parent(Node *node) { return node->parent; }
+    static Node *&Right(Node *node) { return node->right; }
+    static int &Color(Node *node) { return node->color; }
+    Node *&Root() { return head->parent; }
+    Node *&Leftmost() { return head->left; }
+    Node *&Rightmost() { return head->right; }
+    Iterator Begin()
+    {
+        Iterator result;
+        result.m_node = Leftmost();
+        return result;
+    }
+    inline void Lrotate(Node *x);
+    inline void Rrotate(Node *x);
+    char allocator;
+    char compare;
+    char padding[2];
+    SBFileTreeCtorNode2c *head;
+    bool multi;
+    char padding09[3];
+    unsigned size;
+};
+
+extern SBFileTreeCtorNode54 *g_unk0x006c1380;
+extern unsigned g_unk0x006c1384;
+extern SBFileTreeCtorNode2c *g_unk0x006c1388;
+extern unsigned g_unk0x006c138c;
+
+// FUNCTION: GAME 0x005f4db0
+void SBFileTree005f64a0::FUN_005f4db0()
+{
+    Iterator first;
+    first.m_node = Leftmost();
+    Iterator last;
+    last.m_node = head;
+    FUN_005f6bb0(first, last);
+    operator delete(head);
+    head = 0;
+    size = 0;
+    {
+        std::_Lockit lock;
+        if (--g_unk0x006c1384 == 0) {
+            operator delete(g_unk0x006c1380);
+            g_unk0x006c1380 = 0;
+        }
+    }
+}
+
+// FUNCTION: GAME 0x005f4e80
+void SBFileTree005f6570::FUN_005f4e80()
+{
+    Iterator first;
+    first.m_node = Leftmost();
+    Iterator last;
+    last.m_node = head;
+    FUN_005f7220(first, last);
+    operator delete(head);
+    head = 0;
+    size = 0;
+    {
+        std::_Lockit lock;
+        if (--g_unk0x006c138c == 0) {
+            operator delete(g_unk0x006c1388);
+            g_unk0x006c1388 = 0;
+        }
+    }
+}
 
 // FUNCTION: GAME 0x005f5090
 int RHUnk005f4fc0::FUN_005f5090(const std::string &name, int mode)
@@ -480,50 +634,6 @@ bool FUN_005f6490(bool (*callback)(const std::string &))
     return true;
 }
 
-struct SBFileTreeCtorNode54
-{
-    SBFileTreeCtorNode54 *left;
-    SBFileTreeCtorNode54 *parent;
-    SBFileTreeCtorNode54 *right;
-    char value[0x44];
-    int color;
-};
-
-struct SBFileTreeCtorNode2c
-{
-    SBFileTreeCtorNode2c *left;
-    SBFileTreeCtorNode2c *parent;
-    SBFileTreeCtorNode2c *right;
-    char value[0x1c];
-    int color;
-};
-
-class SBFileTree005f64a0
-{
-public:
-    SBFileTree005f64a0(const char &, const char &);
-    char allocator;
-    char compare;
-    char padding[2];
-    SBFileTreeCtorNode54 *head;
-    bool multi;
-    char padding09[3];
-    unsigned size;
-};
-
-class SBFileTree005f6570
-{
-public:
-    SBFileTree005f6570(const char &, const char &);
-    char allocator;
-    char compare;
-    char padding[2];
-    SBFileTreeCtorNode2c *head;
-    bool multi;
-    char padding09[3];
-    unsigned size;
-};
-
 // GLOBAL: GAME 0x006c1380
 SBFileTreeCtorNode54 *g_unk0x006c1380 = 0;
 // GLOBAL: GAME 0x006c1384
@@ -589,7 +699,460 @@ void EmitSBFileTreeCtors()
 {
     char value = 0;
     SBFileTree005f64a0 archives(value, value);
+    archives.FUN_005f4db0();
     SBFileTree005f6570 entries(value, value);
+    entries.FUN_005f4e80();
+}
+
+static inline SBFileTreeCtorNode54 *SBFileTreeMin54(SBFileTreeCtorNode54 *node)
+{
+    std::_Lockit lock;
+    while (node->left != g_unk0x006c1380)
+        node = node->left;
+    return node;
+}
+
+static inline SBFileTreeCtorNode54 *SBFileTreeMax54(SBFileTreeCtorNode54 *node)
+{
+    std::_Lockit lock;
+    while (node->right != g_unk0x006c1380)
+        node = node->right;
+    return node;
+}
+
+inline void SBFileTree005f64a0::Lrotate(Node *x)
+{
+    std::_Lockit lock;
+    Node *y = x->right;
+    x->right = y->left;
+    if (y->left != g_unk0x006c1380)
+        y->left->parent = x;
+    y->parent = x->parent;
+    if (x == Root())
+        Root() = y;
+    else if (x == x->parent->left)
+        x->parent->left = y;
+    else
+        x->parent->right = y;
+    y->left = x;
+    x->parent = y;
+}
+
+inline void SBFileTree005f64a0::Rrotate(Node *x)
+{
+    std::_Lockit lock;
+    Node *y = x->left;
+    x->left = y->right;
+    if (y->right != g_unk0x006c1380)
+        y->right->parent = x;
+    y->parent = x->parent;
+    if (x == Root())
+        Root() = y;
+    else if (x == x->parent->right)
+        x->parent->right = y;
+    else
+        x->parent->left = y;
+    y->right = x;
+    x->parent = y;
+}
+
+// FUNCTION: GAME 0x005f6640
+SBFileTreeIterator SBFileTree::FUN_005f6640(SBFileTreeIterator iterator)
+{
+    typedef SBFileTreeCtorNode54 Node;
+    typedef SBFileTree005f64a0 Tree;
+    Tree &tree = *(Tree *)this;
+    Node *x;
+    Node *y = (*(SBFileTreeInc005f74f0 *)&iterator)++.m_node;
+    Node *z = y;
+    std::_Lockit lock;
+    if (Tree::Left(y) == g_unk0x006c1380)
+        x = Tree::Right(y);
+    else if (Tree::Right(y) == g_unk0x006c1380)
+        x = Tree::Left(y);
+    else
+    {
+        y = SBFileTreeMin54(Tree::Right(y));
+        x = Tree::Right(y);
+    }
+    {
+        if (y != z)
+        {
+            Tree::Parent(Tree::Left(z)) = y;
+            Tree::Left(y) = Tree::Left(z);
+            if (y == Tree::Right(z))
+                Tree::Parent(x) = y;
+            else
+            {
+                Tree::Parent(x) = Tree::Parent(y);
+                Tree::Left(Tree::Parent(y)) = x;
+                Tree::Right(y) = Tree::Right(z);
+                Tree::Parent(Tree::Right(z)) = y;
+            }
+            if (tree.Root() == z)
+                tree.Root() = y;
+            else if (Tree::Left(Tree::Parent(z)) == z)
+                Tree::Left(Tree::Parent(z)) = y;
+            else
+                Tree::Right(Tree::Parent(z)) = y;
+            Tree::Parent(y) = Tree::Parent(z);
+            std::swap(Tree::Color(y), Tree::Color(z));
+            y = z;
+        }
+        else
+        {
+            Tree::Parent(x) = Tree::Parent(y);
+            if (tree.Root() == z)
+                tree.Root() = x;
+            else if (Tree::Left(Tree::Parent(z)) == z)
+                Tree::Left(Tree::Parent(z)) = x;
+            else
+                Tree::Right(Tree::Parent(z)) = x;
+            if (tree.Leftmost() == z)
+            {
+                if (Tree::Right(z) == g_unk0x006c1380)
+                    tree.Leftmost() = Tree::Parent(z);
+                else
+                {
+                    tree.Leftmost() = SBFileTreeMin54(x);
+                }
+            }
+            if (tree.Rightmost() == z)
+            {
+                if (Tree::Left(z) == g_unk0x006c1380)
+                    tree.Rightmost() = Tree::Parent(z);
+                else
+                {
+                    tree.Rightmost() = SBFileTreeMax54(x);
+                }
+            }
+        }
+        if (Tree::Color(y) == 1)
+        {
+            while (x != tree.Root() && Tree::Color(x) == 1)
+            {
+                if (x == Tree::Left(Tree::Parent(x)))
+                {
+                    Node *w = Tree::Right(Tree::Parent(x));
+                    if (Tree::Color(w) == 0)
+                    {
+                        Tree::Color(w) = 1;
+                        Tree::Color(Tree::Parent(x)) = 0;
+                        tree.Lrotate(Tree::Parent(x));
+                        w = Tree::Right(Tree::Parent(x));
+                    }
+                    if (Tree::Color(Tree::Left(w)) == 1 && Tree::Color(Tree::Right(w)) == 1)
+                    {
+                        Tree::Color(w) = 0;
+                        x = Tree::Parent(x);
+                    }
+                    else
+                    {
+                        if (Tree::Color(Tree::Right(w)) == 1)
+                        {
+                            Tree::Color(Tree::Left(w)) = 1;
+                            Tree::Color(w) = 0;
+                            tree.Rrotate(w);
+                            w = Tree::Right(Tree::Parent(x));
+                        }
+                        Tree::Color(w) = Tree::Color(Tree::Parent(x));
+                        Tree::Color(Tree::Parent(x)) = 1;
+                        Tree::Color(Tree::Right(w)) = 1;
+                        tree.Lrotate(Tree::Parent(x));
+                        break;
+                    }
+                }
+                else
+                {
+                    Node *w = Tree::Left(Tree::Parent(x));
+                    if (Tree::Color(w) == 0)
+                    {
+                        Tree::Color(w) = 1;
+                        Tree::Color(Tree::Parent(x)) = 0;
+                        tree.Rrotate(Tree::Parent(x));
+                        w = Tree::Left(Tree::Parent(x));
+                    }
+                    if (Tree::Color(Tree::Right(w)) == 1 && Tree::Color(Tree::Left(w)) == 1)
+                    {
+                        Tree::Color(w) = 0;
+                        x = Tree::Parent(x);
+                    }
+                    else
+                    {
+                        if (Tree::Color(Tree::Left(w)) == 1)
+                        {
+                            Tree::Color(Tree::Right(w)) = 1;
+                            Tree::Color(w) = 0;
+                            tree.Lrotate(w);
+                            w = Tree::Left(Tree::Parent(x));
+                        }
+                        Tree::Color(w) = Tree::Color(Tree::Parent(x));
+                        Tree::Color(Tree::Parent(x)) = 1;
+                        Tree::Color(Tree::Left(w)) = 1;
+                        tree.Rrotate(Tree::Parent(x));
+                        break;
+                    }
+                }
+            }
+            Tree::Color(x) = 1;
+        }
+    }
+    ((std::string *)(y->value + 0x10))->~basic_string();
+    ((std::string *)y->value)->~basic_string();
+    operator delete(y);
+    --tree.size;
+    return iterator;
+}
+
+// FUNCTION: GAME 0x005f6bb0
+SBFileTree005f64a0::Iterator SBFileTree005f64a0::FUN_005f6bb0(Iterator first, Iterator last)
+{
+    if (size != 0 && first.m_node == head->left && last.m_node == head) {
+        std::_Lockit lock;
+        Node *node = Root();
+        {
+            std::_Lockit inner;
+            for (Node *next = node; next != g_unk0x006c1380; node = next) {
+                FUN_005f7410(next->right);
+                next = next->left;
+                ((RHFontManager::Fonts *)node->value)->~Fonts();
+                operator delete(node);
+            }
+        }
+        Root() = g_unk0x006c1380;
+        size = 0;
+        Leftmost() = head;
+        Rightmost() = head;
+        return Begin();
+    }
+    while (first.m_node != last.m_node)
+        ((SBFileTree *)this)->FUN_005f6640(SBFileTreeIterator((first++).m_node));
+    return first;
+}
+
+static inline SBFileTreeCtorNode2c *SBFileTreeMin2c(SBFileTreeCtorNode2c *node)
+{
+    std::_Lockit lock;
+    while (node->left != g_unk0x006c1388)
+        node = node->left;
+    return node;
+}
+
+static inline SBFileTreeCtorNode2c *SBFileTreeMax2c(SBFileTreeCtorNode2c *node)
+{
+    std::_Lockit lock;
+    while (node->right != g_unk0x006c1388)
+        node = node->right;
+    return node;
+}
+
+inline void SBFileTree005f6570::Lrotate(Node *x)
+{
+    std::_Lockit lock;
+    Node *y = x->right;
+    x->right = y->left;
+    if (y->left != g_unk0x006c1388)
+        y->left->parent = x;
+    y->parent = x->parent;
+    if (x == Root())
+        Root() = y;
+    else if (x == x->parent->left)
+        x->parent->left = y;
+    else
+        x->parent->right = y;
+    y->left = x;
+    x->parent = y;
+}
+
+inline void SBFileTree005f6570::Rrotate(Node *x)
+{
+    std::_Lockit lock;
+    Node *y = x->left;
+    x->left = y->right;
+    if (y->right != g_unk0x006c1388)
+        y->right->parent = x;
+    y->parent = x->parent;
+    if (x == Root())
+        Root() = y;
+    else if (x == x->parent->right)
+        x->parent->right = y;
+    else
+        x->parent->left = y;
+    y->right = x;
+    x->parent = y;
+}
+
+// FUNCTION: GAME 0x005f6cf0
+SBFileTreeIterator SBFileTree::FUN_005f6cf0(SBFileTreeIterator iterator)
+{
+    typedef SBFileTreeCtorNode2c Node;
+    typedef SBFileTree005f6570 Tree;
+    Tree &tree = *(Tree *)this;
+    Node *x;
+    Node *y = (*(SBFileTreeInc005f7840 *)&iterator)++.m_node;
+    Node *z = y;
+    std::_Lockit lock;
+    if (Tree::Left(y) == g_unk0x006c1388)
+        x = Tree::Right(y);
+    else if (Tree::Right(y) == g_unk0x006c1388)
+        x = Tree::Left(y);
+    else
+    {
+        y = SBFileTreeMin2c(Tree::Right(y));
+        x = Tree::Right(y);
+    }
+    {
+        if (y != z)
+        {
+            Tree::Parent(Tree::Left(z)) = y;
+            Tree::Left(y) = Tree::Left(z);
+            if (y == Tree::Right(z))
+                Tree::Parent(x) = y;
+            else
+            {
+                Tree::Parent(x) = Tree::Parent(y);
+                Tree::Left(Tree::Parent(y)) = x;
+                Tree::Right(y) = Tree::Right(z);
+                Tree::Parent(Tree::Right(z)) = y;
+            }
+            if (tree.Root() == z)
+                tree.Root() = y;
+            else if (Tree::Left(Tree::Parent(z)) == z)
+                Tree::Left(Tree::Parent(z)) = y;
+            else
+                Tree::Right(Tree::Parent(z)) = y;
+            Tree::Parent(y) = Tree::Parent(z);
+            std::swap(Tree::Color(y), Tree::Color(z));
+            y = z;
+        }
+        else
+        {
+            Tree::Parent(x) = Tree::Parent(y);
+            if (tree.Root() == z)
+                tree.Root() = x;
+            else if (Tree::Left(Tree::Parent(z)) == z)
+                Tree::Left(Tree::Parent(z)) = x;
+            else
+                Tree::Right(Tree::Parent(z)) = x;
+            if (tree.Leftmost() == z)
+            {
+                if (Tree::Right(z) == g_unk0x006c1388)
+                    tree.Leftmost() = Tree::Parent(z);
+                else
+                {
+                    tree.Leftmost() = SBFileTreeMin2c(x);
+                }
+            }
+            if (tree.Rightmost() == z)
+            {
+                if (Tree::Left(z) == g_unk0x006c1388)
+                    tree.Rightmost() = Tree::Parent(z);
+                else
+                {
+                    tree.Rightmost() = SBFileTreeMax2c(x);
+                }
+            }
+        }
+        if (Tree::Color(y) == 1)
+        {
+            while (x != tree.Root() && Tree::Color(x) == 1)
+            {
+                if (x == Tree::Left(Tree::Parent(x)))
+                {
+                    Node *w = Tree::Right(Tree::Parent(x));
+                    if (Tree::Color(w) == 0)
+                    {
+                        Tree::Color(w) = 1;
+                        Tree::Color(Tree::Parent(x)) = 0;
+                        tree.Lrotate(Tree::Parent(x));
+                        w = Tree::Right(Tree::Parent(x));
+                    }
+                    if (Tree::Color(Tree::Left(w)) == 1 && Tree::Color(Tree::Right(w)) == 1)
+                    {
+                        Tree::Color(w) = 0;
+                        x = Tree::Parent(x);
+                    }
+                    else
+                    {
+                        if (Tree::Color(Tree::Right(w)) == 1)
+                        {
+                            Tree::Color(Tree::Left(w)) = 1;
+                            Tree::Color(w) = 0;
+                            tree.Rrotate(w);
+                            w = Tree::Right(Tree::Parent(x));
+                        }
+                        Tree::Color(w) = Tree::Color(Tree::Parent(x));
+                        Tree::Color(Tree::Parent(x)) = 1;
+                        Tree::Color(Tree::Right(w)) = 1;
+                        tree.Lrotate(Tree::Parent(x));
+                        break;
+                    }
+                }
+                else
+                {
+                    Node *w = Tree::Left(Tree::Parent(x));
+                    if (Tree::Color(w) == 0)
+                    {
+                        Tree::Color(w) = 1;
+                        Tree::Color(Tree::Parent(x)) = 0;
+                        tree.Rrotate(Tree::Parent(x));
+                        w = Tree::Left(Tree::Parent(x));
+                    }
+                    if (Tree::Color(Tree::Right(w)) == 1 && Tree::Color(Tree::Left(w)) == 1)
+                    {
+                        Tree::Color(w) = 0;
+                        x = Tree::Parent(x);
+                    }
+                    else
+                    {
+                        if (Tree::Color(Tree::Left(w)) == 1)
+                        {
+                            Tree::Color(Tree::Right(w)) = 1;
+                            Tree::Color(w) = 0;
+                            tree.Lrotate(w);
+                            w = Tree::Left(Tree::Parent(x));
+                        }
+                        Tree::Color(w) = Tree::Color(Tree::Parent(x));
+                        Tree::Color(Tree::Parent(x)) = 1;
+                        Tree::Color(Tree::Left(w)) = 1;
+                        tree.Rrotate(Tree::Parent(x));
+                        break;
+                    }
+                }
+            }
+            Tree::Color(x) = 1;
+        }
+    }
+    ((std::string *)y->value)->~basic_string();
+    operator delete(y);
+    --tree.size;
+    return iterator;
+}
+
+// FUNCTION: GAME 0x005f7220
+SBFileTree005f6570::Iterator SBFileTree005f6570::FUN_005f7220(Iterator first, Iterator last)
+{
+    if (size != 0 && first.m_node == head->left && last.m_node == head) {
+        std::_Lockit lock;
+        Node *node = Root();
+        {
+            std::_Lockit inner;
+            for (Node *next = node; next != g_unk0x006c1388; node = next) {
+                FUN_005f75a0(next->right);
+                next = next->left;
+                ((RHProfileText *)node->value)->~RHProfileText();
+                operator delete(node);
+            }
+        }
+        Root() = g_unk0x006c1388;
+        size = 0;
+        Leftmost() = head;
+        Rightmost() = head;
+        return Begin();
+    }
+    while (first.m_node != last.m_node)
+        ((SBFileTree *)this)->FUN_005f6cf0(SBFileTreeIterator((first++).m_node));
+    return first;
 }
 
 // FUNCTION: GAME 0x005f7360
@@ -606,19 +1169,18 @@ SBFileTreeIterator SBFileTree::FUN_005f73f0(const std::string &key)
     return SBFileTreeIterator(FUN_005f7650(key));
 }
 
-static inline SBFileTreeCtorNode54 *SBFileTreeMin54(SBFileTreeCtorNode54 *node)
+// FUNCTION: GAME 0x005f7410
+void SBFileTree005f64a0::FUN_005f7410(Node *node)
 {
     std::_Lockit lock;
-    while (node->left != g_unk0x006c1380)
-        node = node->left;
-    return node;
+    for (Node *next = node; next != g_unk0x006c1380; node = next) {
+        FUN_005f7410(next->right);
+        next = next->left;
+        ((std::string *)(node->value + 0x10))->~basic_string();
+        ((std::string *)node->value)->~basic_string();
+        operator delete(node);
+    }
 }
-
-struct SBFileTreeInc005f74f0
-{
-    SBFileTreeCtorNode54 *m_node;
-    void Advance();
-};
 
 // FUNCTION: GAME 0x005f74f0
 void SBFileTreeInc005f74f0::Advance()
@@ -632,6 +1194,18 @@ void SBFileTreeInc005f74f0::Advance()
             m_node = parent;
         if (m_node->right != parent)
             m_node = parent;
+    }
+}
+
+// FUNCTION: GAME 0x005f75a0
+void SBFileTree005f6570::FUN_005f75a0(Node *node)
+{
+    std::_Lockit lock;
+    for (Node *next = node; next != g_unk0x006c1388; node = next) {
+        FUN_005f75a0(next->right);
+        next = next->left;
+        ((std::string *)node->value)->~basic_string();
+        operator delete(node);
     }
 }
 
@@ -668,20 +1242,6 @@ SBFileTreeNode *SBFileTree::FUN_005f7710(const std::string &key)
     }
     return candidate;
 }
-
-static inline SBFileTreeCtorNode2c *SBFileTreeMin2c(SBFileTreeCtorNode2c *node)
-{
-    std::_Lockit lock;
-    while (node->left != g_unk0x006c1388)
-        node = node->left;
-    return node;
-}
-
-struct SBFileTreeInc005f7840
-{
-    SBFileTreeCtorNode2c *m_node;
-    void Advance();
-};
 
 // FUNCTION: GAME 0x005f7840
 void SBFileTreeInc005f7840::Advance()

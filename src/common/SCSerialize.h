@@ -60,23 +60,12 @@ public:
     void *m_end; // 0x0c
 };
 
-// SIZE 0x10
-class RHUnk0059fba0
-{
-public:
-    RHUnk0059fba0(const char &allocator);
-    char m_00; // 0x00
-    void *m_04; // 0x04
-    void *m_08; // 0x08
-    void *m_0c; // 0x0c
-};
-
 // SIZE 0x6c
 // VTABLE: GAME 0x0067bbcc
 class SCSerializeUnkObject
 {
 public:
-    SCSerializeUnkObject() : m_5c((const char &)std::allocator<char>()) {}
+    SCSerializeUnkObject() : m_5c(std::allocator<char>()) {}
     virtual ~SCSerializeUnkObject(); // vtable+0x00
     int FUN_0063a940(FILE *, bool);
     RHProfileText m_04; // 0x04
@@ -86,7 +75,7 @@ public:
     SCSerializeUnkList m_34; // 0x34
     SCSerializeUnkList00424340 m_40; // 0x40
     SCSerializeUnkArray m_4c; // 0x4c
-    RHUnk0059fba0 m_5c; // 0x5c
+    RHProfileString m_5c; // 0x5c
 };
 
 // SIZE 0x0c
