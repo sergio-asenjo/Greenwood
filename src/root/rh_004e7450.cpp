@@ -5,6 +5,8 @@ class SBGeoVector2D : public SBGeoPoint2D
 public:
     SBGeoVector2D(float, float);
     ~SBGeoVector2D() {}
+    SBGeoVector2D(const SBGeoVector2D &other);
+    SBGeoVector2D &operator=(const SBGeoVector2D &other);
 };
 
 extern float g_unk0x006c0aa8[2];
