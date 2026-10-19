@@ -113,12 +113,6 @@ struct RHScriptPropertyInsertResult
     undefined m_padding[3]; // 0x05
 };
 
-class RHScriptPropertyMap
-{
-public:
-    RHScriptPropertyInsertResult FUN_005873a0(const RHScriptPropertyPair &value);
-};
-
 // Actor sub-object model used by RHScript::UnBlip (0x00570e70): the target
 // loads the vtable pointer from actor+0, sets ecx = actor and dispatches the
 // virtual at vtable byte offset +0x34 (`mov eax,[esi]; mov ecx,esi;
@@ -607,6 +601,7 @@ struct RHUnk00571160Position
 
 void RHUnk0048ce80(int noise, RHUnk00571160Position *position);
 
+class SBGeoVector2D;
 class SBGeoPoint2D
 {
 public:
@@ -617,7 +612,7 @@ public:
     ~SBGeoPoint2D();
     SBGeoPoint2D(const SBGeoPoint2D &other);
     SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
-    SBGeoPoint2D Unk005fc110(const SBGeoPoint2D &other) const;
+    SBGeoVector2D Unk005fc110(const SBGeoPoint2D &other) const;
     SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
     SBGeoPoint2D FUN_005fc200(const SBGeoPoint2D &other) const;
     float FUN_005fc700(float scale) const;
@@ -772,17 +767,32 @@ public:
     undefined data[0x74]; // 0x00
 };
 
-class RHUnk005fc3b0 : public SBGeoPoint2D
+class SBGeoVector2D : public SBGeoPoint2D
 {
 public:
-    RHUnk005fc3b0();
+    SBGeoVector2D(float x, float y);
+    SBGeoVector2D(const SBGeoPoint2D &point);
+    float FUN_005fc660(const SBGeoPoint2D &point) const;
+    SBGeoVector2D();
+    SBGeoVector2D &operator=(const SBGeoVector2D &other);
+    SBGeoVector2D(const SBGeoVector2D &other);
+};
+
+class RHUnk005fc3b0 : public SBGeoVector2D
+{
+public:
+    RHUnk005fc3b0() {}
     ~RHUnk005fc3b0() {}
     float Unk005fc6a0(float value);
     RHUnk005fc3b0 &Unk005fcd40(unsigned char direction, float length);
     RHUnk005fc3b0 &FUN_005fc4d0(float factor);
-    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other);
+    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other)
+    {
+        return (RHUnk005fc3b0 &)SBGeoVector2D::operator=((const SBGeoVector2D &)other);
+    }
     float FUN_005fc680(const RHUnk005fc3b0 &vector, float scale) const;
-    SBGeoPoint2D FUN_005fc8f0(int mode, float value) const;
+    SBGeoVector2D FUN_005fc8f0(bool mode, float value) const;
+    unsigned char FUN_005fcc50(float value) const;
     void Set(float x, float y) { m_x = x; m_y = y; }
 };
 
@@ -912,31 +922,17 @@ public:
     char tail[0x30];
 };
 
-class RHUnk005492a0
-{
-public:
-    RHUnk005492a0(int command, void *actor, int action);
-    ~RHUnk005492a0();
-    char data[0x14];
-};
-
 class RHUnk5490f0
 {
 public:
     RHUnk5490f0(int value);
+    RHUnk5490f0(int command, int value);
     ~RHUnk5490f0();
 private:
     void *m_vt;
     int m_unk04;
     int m_unk08;
     int m_unk0c;
-};
-class RHUnk005490a0Message
-{
-public:
-    RHUnk005490a0Message(int command, int value);
-    ~RHUnk005490a0Message();
-    char data[0x10];
 };
 class RHMessenger
 {
@@ -946,7 +942,7 @@ public:
 RHMessenger *RHUnk00546050();
 RHMessenger *__stdcall RHUnk00546050(RHUnk5490f0 *message);
 
-class RHUnk00585ea0 : public RHUnk00584d60
+class __declspec(novtable) RHUnk00585ea0 : public RHUnk00584d60
 {
 public:
     RHUnk00585ea0(unsigned short level, int command, void *actor, void *target);
@@ -961,13 +957,7 @@ public:
     void Unk(unsigned short &level, void *actor, int style, const SBGeoPoint2D &start, void *startArea, unsigned short startLayer, const SBGeoPoint2D &end, void *endArea, unsigned short endLayer, void *element, float distance, unsigned long flags, float scale);
 };
 
-class SBGeoVector2D : public SBGeoPoint2D
-{
-public:
-    SBGeoVector2D(float x, float y);
-    SBGeoVector2D(const SBGeoPoint2D &point);
-    float FUN_005fc660(const SBGeoPoint2D &point) const;
-};
+
 
 class RHUnk00560420
 {
@@ -1155,6 +1145,7 @@ class RHUnk00549250 : public RHUnk5490f0
 {
 public:
     RHUnk00549250(int command, void *actor);
+    RHUnk00549250(int command, void *actor, int action);
     ~RHUnk00549250();
     char data[4];
 };

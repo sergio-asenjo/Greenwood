@@ -88,6 +88,7 @@ struct RHUnkSpriteCacheIterator
 struct RHUnkSpriteCacheValue
 {
     RHUnkSpriteCacheValue(const std::string &key, const RHUnkSpriteScriptInfo &info);
+    ~RHUnkSpriteCacheValue();
     std::string m_key; // +0x00
     RHUnkSpriteScriptInfo m_info; // +0x10; sizeof = 0x28
 };

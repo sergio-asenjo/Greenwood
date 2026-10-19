@@ -35,6 +35,7 @@
 #include <new>
 #include <math.h>
 #include "RHHumanStatus.h"
+#include "RHGenericMap.h"
 #include "RHMalignityActorCalls.h"
 #include "RHConsoleCampaignCalls.h"
 #include "RHGameActionCalls.h"
@@ -3405,7 +3406,7 @@ void RHScript::RHUnk579f10(int value)
 void RHScript::RHUnk579f30(int value)
 {
     RHMenuPopupScroll::FUN_0053a0b0(value);
-    RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk005490a0Message(0x2e, 0));
+    RHUnk00546050()->RHUnk005460c0(RHUnk5490f0(0x2e, 0));
 }
 
 // FUNCTION: GAME 0x00575510
@@ -3538,12 +3539,12 @@ bool RHScript::SetActionAvailable(void *actor, int action, bool available)
     }
     if (available)
     {
-        RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk005492a0(29, actor, action));
+        RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(29, actor, action));
         return true;
     }
     else
     {
-        RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk005492a0(28, actor, action));
+        RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(28, actor, action));
         return true;
     }
 }
@@ -6681,7 +6682,8 @@ void RHUnk005866a0::Unk00586e00(int property, bool value)
 {
     RHScriptPropertyValue payload;
     payload.m_bool = value;
-    ((RHScriptPropertyMap *)((char *)this + 0x64))->FUN_005873a0(RHScriptPropertyPair(property, payload));
+    RHScriptPropertyPair pair(property, payload);
+    ((RHGenericMap *)((char *)this + 0x64))->FUN_005873a0(*(const RHGenericPair *)&pair);
 }
 
 // FUNCTION: GAME 0x00586e90
@@ -6689,7 +6691,8 @@ void RHUnk005866a0::Unk00586e90(int property, unsigned short value)
 {
     RHScriptPropertyValue payload;
     payload.m_int = value;
-    ((RHScriptPropertyMap *)((char *)this + 0x64))->FUN_005873a0(RHScriptPropertyPair(property, payload));
+    RHScriptPropertyPair pair(property, payload);
+    ((RHGenericMap *)((char *)this + 0x64))->FUN_005873a0(*(const RHGenericPair *)&pair);
 }
 
 // FUNCTION: GAME 0x00586ed0
@@ -6697,7 +6700,8 @@ void RHUnk005866a0::Unk00586ed0(int property, int value)
 {
     RHScriptPropertyValue payload;
     payload.m_int = value;
-    ((RHScriptPropertyMap *)((char *)this + 0x64))->FUN_005873a0(RHScriptPropertyPair(property, payload));
+    RHScriptPropertyPair pair(property, payload);
+    ((RHGenericMap *)((char *)this + 0x64))->FUN_005873a0(*(const RHGenericPair *)&pair);
 }
 
 // FUNCTION: GAME 0x00586fd0
@@ -6705,7 +6709,8 @@ void RHUnk005866a0::Unk00586fd0(int property, float value)
 {
     RHScriptPropertyValue payload;
     payload.m_float = value;
-    ((RHScriptPropertyMap *)((char *)this + 0x64))->FUN_005873a0(RHScriptPropertyPair(property, payload));
+    RHScriptPropertyPair pair(property, payload);
+    ((RHGenericMap *)((char *)this + 0x64))->FUN_005873a0(*(const RHGenericPair *)&pair);
 }
 
 // FUNCTION: GAME 0x00587010
@@ -6714,7 +6719,8 @@ void RHUnk005866a0::Unk00587010(int property, const SBGeoPoint2D &value)
     RHScriptPropertyValue payload;
     payload.m_point.x = value.m_x;
     payload.m_point.y = value.m_y;
-    ((RHScriptPropertyMap *)((char *)this + 0x64))->FUN_005873a0(RHScriptPropertyPair(property, payload));
+    RHScriptPropertyPair pair(property, payload);
+    ((RHGenericMap *)((char *)this + 0x64))->FUN_005873a0(*(const RHGenericPair *)&pair);
 }
 
 // FUNCTION: GAME 0x00588190

@@ -1,11 +1,6 @@
 #include "SBNullstr.h"
 #include "RHSpriteScriptor.h"
 
-void RHSpriteConstructValue(RHUnkSpriteCacheValue *storage, const RHUnkSpriteCacheValue &value)
-{
-    std::_Construct(storage, value);
-}
-
 // GLOBAL: GAME 0x006c0620
 std::string g_unk0x006c0620;
 // GLOBAL: GAME 0x006c0630
@@ -13,7 +8,6 @@ std::string g_unk0x006c0630;
 // GLOBAL: GAME 0x006c0b1c
 RHUnkSpriteBank *g_unk0x006c0b1c;
 
-SBGeoVector2D &SBGeoVector2D::operator=(const SBGeoVector2D &) { return *this; }
 // Parked: frame lacks four bytes and two temporary stores in count-zero vector construction.
 // STUB: GAME 0x005bed50
 RHUnkSpriteRow::RHUnkSpriteRow() : m_resources(0), m_frames(0), m_rates(0, (unsigned short)0), m_positions(0), m_flags(0, (unsigned short)0)
@@ -25,5 +19,4 @@ RHUnkSpriteRow::RHUnkSpriteRow() : m_resources(0), m_frames(0), m_rates(0, (unsi
     m_00 = 0;
     m_10 = 0;
 }
-SBGeoVector2D::SBGeoVector2D(const SBGeoVector2D &other) : SBGeoPoint2D(other) {}
 std::pair<RHUnkSpriteCacheIterator, bool> RHUnkSpriteCache::FUN_005c09c0(const RHUnkSpriteCacheValue &) { return std::pair<RHUnkSpriteCacheIterator, bool>(end(), false); }

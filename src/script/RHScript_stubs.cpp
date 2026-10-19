@@ -12,8 +12,9 @@
 #include "SBNullstr.h"
 #include "RHScript.h"
 
+struct RHUnkPathRegistry;
+extern RHUnkPathRegistry *g_unk0x6c0b9c;
 
-RHUnk005490a0Message::~RHUnk005490a0Message() {}
 
 class RHUnk0051d0e0
 {
@@ -21,10 +22,15 @@ public:
     unsigned short Find(int value);
 };
 
+// FUNCTION: GAME 0x0051d0e0
 unsigned short RHUnk0051d0e0::Find(int value)
 {
-    (void)value;
-    return 0;
+    int *first = *(int *volatile *)((char *)this + 8);
+    unsigned short count = first == 0 ? 0 : *(int **)((char *)this + 0xc) - first;
+    for (unsigned short i = 0; i < count; ++i)
+        if ((*(int **)((char *)this + 8))[i] == value)
+            return i;
+    return 0xffff;
 }
 
 void FUN_005edae0(RHUnk005ef320 *object, const char *format, int value)
@@ -171,7 +177,6 @@ bool RHUnk0057ff00::Unk(void *actor) { return actor != 0; }
 void RHUnk00419a40::Unk(int index, bool forbidden) { (void)index; (void)forbidden; }
 
 
-RHUnk005fc3b0::RHUnk005fc3b0() {}
 
 RHUnk00584d60::RHUnk00584d60(unsigned short level, int command, void *actor)
 {
@@ -180,13 +185,8 @@ RHUnk00584d60::RHUnk00584d60(unsigned short level, int command, void *actor)
     (void)actor;
 }
 RHUnk00584d60::~RHUnk00584d60() {}
+void RHUnk00584d60::FUN_00584d30() {}
 void RHUnk005a2450::FUN_005a2450(void *, void *) {}
-// Parked: 0x005492d0, 50.00%; ILT tail jump and coupled callers.
-RHUnk005492a0::~RHUnk005492a0()
-{
-    *(unsigned *)this = 0x679b6c;
-    ((RHScriptBatchCalls *)this)->FUN_00549090();
-}
 RHMessenger *__stdcall RHUnk00546050(RHUnk5490f0 *message) { (void)message; return 0; }
 RHUnk00585ea0::~RHUnk00585ea0() {}
 RHScriptIter RHUnk0046eb30::begin() { return RHScriptIter(head->next); }
@@ -212,7 +212,6 @@ void RHUnk00582640::Unk(unsigned short &level, void *actor, int style, const SBG
     (void)flags;
     (void)scale;
 }
-SBGeoPoint2D SBGeoPoint2D::Unk005fc190(const SBGeoPoint2D &other) const { return other; }
 RHScriptIter RHUnk0046eb30::Unk0057c950(RHScriptIter position, const RHUnk00571160Position &) { return position; }
 // FUNCTION: GAME 0x005b5de0
 void *RHUnk005b5e00::FUN_005b5de0()
@@ -235,7 +234,6 @@ void RHScriptBatchCalls::Unk0041bd20(int) {}
 void RHScriptBatchCalls::Unk0057ebd0(void *) {}
 void RHScriptBatchCalls::Unk0048ec00(void *) {}
 void RHScriptBatchCalls::Unk00514670() {}
-RHUnk00549250::~RHUnk00549250() {}
 void RHScriptBatchCalls::Unk0050ed40() {}
 void RHScriptBatchCalls::Unk004522e0(void *) {}
 void RHScriptBatchCalls::Unk0054cfa0(void *) {}
@@ -268,6 +266,7 @@ RHScriptBatchCalls *RHScriptBatchCalls::FUN_005209b0()
     self->m_10 = 1;
     return this;
 }
+
 void RHScriptBatchCalls::FUN_00520a70() {}
 void RHScriptBatchCalls::FUN_00549090() {}
 
@@ -276,12 +275,15 @@ void RHScriptAIStateCalls::FUN_004132d0(int, int, int) {}
 void RHScriptAIStateCalls::FUN_00410d30() {}
 void RHScriptAIStateCalls::FUN_0043a220(RHMalignityPosition, int, int, int) {}
 
-void RHArtificialIntelligencePathCursor::FUN_00550fa0(void *) {}
-
-RHScriptPropertyInsertResult RHScriptPropertyMap::FUN_005873a0(const RHScriptPropertyPair &)
+// FUNCTION: GAME 0x00550fa0
+void RHArtificialIntelligencePathCursor::FUN_00550fa0(void *value)
 {
-    RHScriptPropertyInsertResult result;
-    result.m_node = 0;
-    result.m_inserted = false;
-    return result;
+    m_id = ((RHUnk0051d0e0 *)g_unk0x6c0b9c)->Find((int)value);
+    m_path = (RHAIPathArray *)value;
+    if (value)
+    {
+        m_current = 0;
+        m_forward = 1;
+    }
 }
+

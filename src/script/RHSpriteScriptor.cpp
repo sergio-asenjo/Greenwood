@@ -34,9 +34,14 @@ struct RHSpriteInsertNode
 struct RHSpriteInsertIterator
 {
     RHSpriteInsertNode *m_node;
+    RHSpriteInsertIterator operator++(int)
+    {
+        RHSpriteInsertIterator previous = *this;
+        ((RHTreeInc005c11c0 *)this)->FUN_005c11c0();
+        return previous;
+    }
 };
 
-void RHSpriteConstructValue(RHUnkSpriteCacheValue *, const RHUnkSpriteCacheValue &);
 
 class RHSpriteInsertTree
 {
@@ -69,11 +74,50 @@ public:
         left->m_08 = node;
         node->m_04 = left;
     }
+    void FUN_005bf080();
+    RHSpriteInsertIterator FUN_005c06c0(RHSpriteInsertIterator, RHSpriteInsertIterator);
+    RHSpriteInsertIterator FUN_005c0b50(RHSpriteInsertIterator);
+    void FUN_005c10d0(RHSpriteInsertNode *);
+    static RHSpriteInsertNode *&Parent(RHSpriteInsertNode *node) { return node->m_04; }
+    static RHSpriteInsertNode *&Right(RHSpriteInsertNode *node) { return node->m_08; }
+    static int &Color(RHSpriteInsertNode *node) { return node->m_34; }
+    RHSpriteInsertNode *&Root() { return m_head->m_04; }
+    RHSpriteInsertNode *&Leftmost() { return m_head->m_00; }
+    RHSpriteInsertNode *&Rightmost() { return m_head->m_08; }
+    RHSpriteInsertIterator Begin()
+    {
+        RHSpriteInsertIterator result;
+        result.m_node = Leftmost();
+        return result;
+    }
     unsigned m_00;
     RHSpriteInsertNode *m_head;
     unsigned m_08;
     unsigned m_count;
 };
+
+static inline RHSpriteInsertNode *RHSpriteInsertMinimum(RHSpriteInsertNode *node)
+{
+    RHUnk00641782Lock lock;
+    while (node->m_00 != (RHSpriteInsertNode *)g_unk0x006c10e0)
+        node = node->m_00;
+    return node;
+}
+
+static inline RHSpriteInsertNode *RHSpriteInsertMaximum(RHSpriteInsertNode *node)
+{
+    RHUnk00641782Lock lock;
+    while (node->m_08 != (RHSpriteInsertNode *)g_unk0x006c10e0)
+        node = node->m_08;
+    return node;
+}
+
+static inline void RHSpriteDestroyValue(RHUnkSpriteCacheValue &value)
+{
+    value.m_info.m_size.~SBGeoVector2D();
+    value.m_info.m_position.~SBGeoVector2D();
+    value.m_key.~basic_string();
+}
 
 class RHProfileFile : public SBFile
 {
@@ -230,6 +274,28 @@ RHUnkSpriteScriptInfo::~RHUnkSpriteScriptInfo()
 
 // LIBRARY: GAME 0x005bec70
 // ?copy@std@@YAPAGPAG00@Z
+
+// GLOBAL: GAME 0x006c10dc
+unsigned g_unk0x006c10dc;
+
+// FUNCTION: GAME 0x005bf080
+void RHSpriteInsertTree::FUN_005bf080()
+{
+    RHSpriteInsertIterator first = Begin();
+    RHSpriteInsertIterator last;
+    last.m_node = m_head;
+    FUN_005c06c0(first, last);
+    operator delete(m_head);
+    m_head = 0;
+    m_count = 0;
+    {
+        RHUnk00641782Lock lock;
+        if (--g_unk0x006c10dc == 0) {
+            operator delete(g_unk0x006c10e0);
+            g_unk0x006c10e0 = 0;
+        }
+    }
+}
 
 // Parked: 58.91%; frame 0x228 versus 0x230 and cache/EH temporary coloring.
 // STUB: GAME 0x005bf160
@@ -414,6 +480,12 @@ bool RHSpriteScriptor::FUN_005c0490(SBFile &file, const char *profile)
     return false;
 }
 
+// Parked: the original inlines the info destructor here; its out-of-line definition stays a separate call.
+// STUB: GAME 0x005c0600
+RHUnkSpriteCacheValue::~RHUnkSpriteCacheValue()
+{
+}
+
 // FUNCTION: GAME 0x005c0690
 RHUnkSpriteCacheInsertResult RHUnkSpriteCache::FUN_005c0690(const RHUnkSpriteCacheValue &value)
 {
@@ -421,6 +493,32 @@ RHUnkSpriteCacheInsertResult RHUnkSpriteCache::FUN_005c0690(const RHUnkSpriteCac
     answer = FUN_005c09c0(value);
     RHUnkSpriteCacheInsertResult result(answer.first, answer.second);
     return result;
+}
+
+// FUNCTION: GAME 0x005c06c0
+RHSpriteInsertIterator RHSpriteInsertTree::FUN_005c06c0(RHSpriteInsertIterator first, RHSpriteInsertIterator last)
+{
+    if (m_count != 0 && first.m_node == m_head->m_00 && last.m_node == m_head) {
+        RHUnk00641782Lock lock;
+        RHSpriteInsertNode *node = Root();
+        {
+            RHUnk00641782Lock inner;
+            for (RHSpriteInsertNode *next = node; next != (RHSpriteInsertNode *)g_unk0x006c10e0; node = next) {
+                FUN_005c10d0(next->m_08);
+                next = next->m_00;
+                node->m_0c.~RHUnkSpriteCacheValue();
+                operator delete(node);
+            }
+        }
+        Root() = (RHSpriteInsertNode *)g_unk0x006c10e0;
+        m_count = 0;
+        Leftmost() = m_head;
+        Rightmost() = m_head;
+        return Begin();
+    }
+    while (first.m_node != last.m_node)
+        FUN_005c0b50(first++);
+    return first;
 }
 
 // FUNCTION: GAME 0x005c0800
@@ -435,6 +533,164 @@ RHUnkSpriteCacheIterator RHUnkSpriteCache::FUN_005c0800(const std::string &key)
 RHUnkSpriteCacheValue::RHUnkSpriteCacheValue(const std::string &key, const RHUnkSpriteScriptInfo &info)
     : m_key(key), m_info(info)
 {
+}
+
+// Parked: the original inlines the value and info destructors with their unwind states.
+// STUB: GAME 0x005c0b50
+RHSpriteInsertIterator RHSpriteInsertTree::FUN_005c0b50(RHSpriteInsertIterator position)
+{
+    RHSpriteInsertNode *x;
+    RHSpriteInsertNode *y = (position++).m_node;
+    RHSpriteInsertNode *z = y;
+    RHUnk00641782Lock lock;
+    if (Left(y) == (RHSpriteInsertNode *)g_unk0x006c10e0)
+        x = Right(y);
+    else if (Right(y) == (RHSpriteInsertNode *)g_unk0x006c10e0)
+        x = Left(y);
+    else
+    {
+        y = RHSpriteInsertMinimum(Right(y));
+        x = Right(y);
+    }
+    {
+        if (y != z)
+        {
+            Parent(Left(z)) = y;
+            Left(y) = Left(z);
+            if (y == Right(z))
+                Parent(x) = y;
+            else
+            {
+                Parent(x) = Parent(y);
+                Left(Parent(y)) = x;
+                Right(y) = Right(z);
+                Parent(Right(z)) = y;
+            }
+            if (Root() == z)
+                Root() = y;
+            else if (Left(Parent(z)) == z)
+                Left(Parent(z)) = y;
+            else
+                Right(Parent(z)) = y;
+            Parent(y) = Parent(z);
+            std::swap(Color(y), Color(z));
+            y = z;
+        }
+        else
+        {
+            Parent(x) = Parent(y);
+            if (Root() == z)
+                Root() = x;
+            else if (Left(Parent(z)) == z)
+                Left(Parent(z)) = x;
+            else
+                Right(Parent(z)) = x;
+            if (Leftmost() == z)
+            {
+                if (Right(z) == (RHSpriteInsertNode *)g_unk0x006c10e0)
+                    Leftmost() = Parent(z);
+                else
+                {
+                    Leftmost() = RHSpriteInsertMinimum(x);
+                }
+            }
+            if (Rightmost() == z)
+            {
+                if (Left(z) == (RHSpriteInsertNode *)g_unk0x006c10e0)
+                    Rightmost() = Parent(z);
+                else
+                {
+                    Rightmost() = RHSpriteInsertMaximum(x);
+                }
+            }
+        }
+        if (Color(y) == 1)
+        {
+            while (x != Root() && Color(x) == 1)
+            {
+                if (x == Left(Parent(x)))
+                {
+                    RHSpriteInsertNode *w = Right(Parent(x));
+                    if (Color(w) == 0)
+                    {
+                        Color(w) = 1;
+                        Color(Parent(x)) = 0;
+                        RotateLeft(Parent(x));
+                        w = Right(Parent(x));
+                    }
+                    if (Color(Left(w)) == 1 && Color(Right(w)) == 1)
+                    {
+                        Color(w) = 0;
+                        x = Parent(x);
+                    }
+                    else
+                    {
+                        if (Color(Right(w)) == 1)
+                        {
+                            Color(Left(w)) = 1;
+                            Color(w) = 0;
+                            RotateRight(w);
+                            w = Right(Parent(x));
+                        }
+                        Color(w) = Color(Parent(x));
+                        Color(Parent(x)) = 1;
+                        Color(Right(w)) = 1;
+                        RotateLeft(Parent(x));
+                        break;
+                    }
+                }
+                else
+                {
+                    RHSpriteInsertNode *w = Left(Parent(x));
+                    if (Color(w) == 0)
+                    {
+                        Color(w) = 1;
+                        Color(Parent(x)) = 0;
+                        RotateRight(Parent(x));
+                        w = Left(Parent(x));
+                    }
+                    if (Color(Right(w)) == 1 && Color(Left(w)) == 1)
+                    {
+                        Color(w) = 0;
+                        x = Parent(x);
+                    }
+                    else
+                    {
+                        if (Color(Left(w)) == 1)
+                        {
+                            Color(Right(w)) = 1;
+                            Color(w) = 0;
+                            RotateLeft(w);
+                            w = Left(Parent(x));
+                        }
+                        Color(w) = Color(Parent(x));
+                        Color(Parent(x)) = 1;
+                        Color(Left(w)) = 1;
+                        RotateRight(Parent(x));
+                        break;
+                    }
+                }
+            }
+            Color(x) = 1;
+        }
+    }
+    RHSpriteDestroyValue(y->m_0c);
+    operator delete(y);
+    --m_count;
+    return position;
+}
+
+// Parked: the original inlines the value and info destructors with their unwind states.
+// STUB: GAME 0x005c10d0
+void RHSpriteInsertTree::FUN_005c10d0(RHSpriteInsertNode *node)
+{
+    RHUnk00641782Lock lock;
+    for (RHSpriteInsertNode *next = node; next != (RHSpriteInsertNode *)g_unk0x006c10e0; node = next) {
+        FUN_005c10d0(next->m_08);
+        next = next->m_00;
+        RHSpriteDestroyValue(node->m_0c);
+        operator delete(node);
+    }
 }
 
 // FUNCTION: GAME 0x005c11c0
@@ -457,6 +713,11 @@ void EmitRHSpriteTreeInc(RHTreeInc005c11c0 &iterator)
     iterator.FUN_005c11c0();
 }
 
+void EmitRHSpriteInsertTreeCleanup(RHSpriteInsertTree &tree)
+{
+    tree.FUN_005bf080();
+}
+
 // FUNCTION: GAME 0x005c1290
 RHSpriteInsertIterator RHSpriteInsertTree::FUN_005c1290(RHSpriteInsertNode *node, RHSpriteInsertNode *parent, const RHUnkSpriteCacheValue &value)
 {
@@ -466,7 +727,8 @@ RHSpriteInsertIterator RHSpriteInsertTree::FUN_005c1290(RHSpriteInsertNode *node
     inserted->m_34 = 0;
     inserted->m_00 = (RHSpriteInsertNode *)g_unk0x006c10e0;
     inserted->m_08 = (RHSpriteInsertNode *)g_unk0x006c10e0;
-    RHSpriteConstructValue(&inserted->m_0c, value);
+    void (*construct)(RHUnkSpriteCacheValue *, const RHUnkSpriteCacheValue &) = std::_Construct;
+    construct(&inserted->m_0c, value);
     ++m_count;
     if (parent == m_head || node != (RHSpriteInsertNode *)g_unk0x006c10e0 ||
         ((RHCampaignCommandLine *)&value.m_key)->FUN_0045a010(*(const RHProfileText *)&parent->m_0c.m_key) < 0) {
@@ -541,6 +803,9 @@ RHUnkSpriteCacheNode *RHUnkSpriteCache::FUN_005c15a0(const std::string &key)
     }
     return candidate;
 }
+
+// TEMPLATE: GAME 0x005c19c0
+// ?_Construct@std@@YAXPAURHUnkSpriteCacheValue@@ABU2@@Z
 
 void RHSpriteScriptor::Emit(const std::string &name, const std::string &profile)
 {
