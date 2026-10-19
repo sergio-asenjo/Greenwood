@@ -1,4 +1,12 @@
 #include "SBNullstr.h"
+// SIZE 0x14
+class RHMobileUnk00607da0
+{
+public:
+    void FUN_00607990(const RHMobileUnk00607da0 &other);
+    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
+    unsigned char m_00[0x14]; // 0x00
+};
 #include "RHElementFX.h"
 #include "RHPlayerProfileAccess.h"
 
@@ -17,12 +25,12 @@ void RHElementFX::InitializeBackgroundRestoration()
     if (m_cc == -1)
     {
         {
-            SBGeoVector2D vector(fx_sprite->m_1c);
-            m_b4 = fx_sprite->Unk005bd970() + vector;
+            SBGeoVector2D vector((const SBGeoVector2D &)fx_sprite->m_1c);
+            ((RHMobileUnk00607da0 *)&m_b4)->FUN_00607da0((const RHMobileUnk00607da0 &)(fx_sprite->Unk005bd970() + vector));
         }
-        m_b4 = fx_clip.Unk006092c0(m_b4);
+        ((RHMobileUnk00607da0 *)&m_b4)->FUN_00607da0((const RHMobileUnk00607da0 &)fx_clip.Unk006092c0(m_b4));
         {
-            SBGeoVector2D vector(fx_sprite->m_1c);
+            SBGeoVector2D vector((const SBGeoVector2D &)fx_sprite->m_1c);
             m_b4 -= vector;
         }
         if (!m_b4.Unk00608f30() || m_b4.m_p0.m_x < g_unk0x00677488 || m_b4.m_p0.m_y < g_unk0x00677488)
@@ -38,7 +46,7 @@ void RHElementFX::InitializeBackgroundRestoration()
         int x = *(int *)&m_b4.m_p1.m_x;
         m_cc = fx_draw->Unk005e4ed0((int)*(float *)&x, (int)m_b4.m_p1.m_y, 0, 0);
         {
-            SBGeoVector2D vector(fx_sprite->m_1c);
+            SBGeoVector2D vector((const SBGeoVector2D &)fx_sprite->m_1c);
             FXBlit(fx_draw, (RHUnkFXEngine *)g_pEngine,
                    &(m_b4 + vector), m_cc, &m_b4);
         }

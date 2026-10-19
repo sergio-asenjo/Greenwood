@@ -14,6 +14,8 @@ class SBGeoVector2D : public SBGeoPoint2D
 public:
     SBGeoVector2D(const SBGeoPoint2D &other);
     ~SBGeoVector2D() {}
+    SBGeoVector2D(const SBGeoVector2D &other);
+    SBGeoVector2D &operator=(const SBGeoVector2D &other);
 };
 
 class SBGeoBoundingBox2D

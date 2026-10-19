@@ -19,6 +19,8 @@ class SBGeoVector2D : public SBGeoPoint2D
 public:
     SBGeoVector2D(const SBGeoPoint2D &other);
     ~SBGeoVector2D() {}
+    SBGeoVector2D(const SBGeoVector2D &other);
+    SBGeoVector2D &operator=(const SBGeoVector2D &other);
 };
 
 class SBGeoBoundingBox2D
@@ -32,6 +34,18 @@ public:
     SBGeoPoint2D m_p1; // +0x08
     bool m_flag; // +0x10
 };
+
+#ifndef RHMOBILEUNK00607DA0_VIEW
+#define RHMOBILEUNK00607DA0_VIEW
+// SIZE 0x14
+class RHMobileUnk00607da0
+{
+public:
+    void FUN_00607990(const RHMobileUnk00607da0 &other);
+    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
+    unsigned char m_00[0x14]; // 0x00
+};
+#endif
 
 class RHUnkPathActorInfoBase
 {
@@ -68,8 +82,8 @@ public:
     {
         m_20 = point;
         {
-            SBGeoVector2D vector(point);
-            m_c0 = Box() + vector;
+            SBGeoVector2D vector(*(SBGeoVector2D *)&point);
+            ((RHMobileUnk00607da0 *)&m_c0)->FUN_00607da0((const RHMobileUnk00607da0 &)(Box() + vector));
         }
         m_4 = 2;
     }

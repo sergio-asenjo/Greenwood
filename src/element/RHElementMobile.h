@@ -18,6 +18,8 @@ template <class T> inline const T &RHMobileField(const void *object, unsigned of
 #include "RHUnkWaypointRef.h"
 extern char g_unk0x6c0691;
 
+class SBGeoVector2D;
+
 // SIZE 0x08
 class SBGeoPoint2D
 {
@@ -27,7 +29,7 @@ public:
     SBGeoPoint2D(const SBGeoPoint2D &other);
     ~SBGeoPoint2D();
     SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
-    SBGeoPoint2D Unk005fc110(const SBGeoPoint2D &other) const;
+    SBGeoVector2D Unk005fc110(const SBGeoPoint2D &other) const;
     SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
     bool Serialize(SBFile &file);
     bool operator==(const SBGeoPoint2D &other) const;
@@ -44,22 +46,28 @@ class SBGeoVector2D : public SBGeoPoint2D
 {
 public:
     SBGeoVector2D();
+    SBGeoVector2D(float x, float y);
     SBGeoVector2D(const SBGeoPoint2D &other);
     ~SBGeoVector2D() {}
+    SBGeoVector2D &operator=(const SBGeoVector2D &other);
+    SBGeoVector2D(const SBGeoVector2D &other);
 };
 
-class RHUnk005fc3b0 : public SBGeoPoint2D
+class RHUnk005fc3b0 : public SBGeoVector2D
 {
 public:
-    RHUnk005fc3b0();
+    RHUnk005fc3b0() {}
     ~RHUnk005fc3b0() {}
     float Unk005fc6a0(float value);
     float FUN_005fc7c0(float value);
     unsigned char FUN_005fcc50(float value) const;
-    SBGeoPoint2D FUN_005fc8f0(int direction, float value) const;
+    SBGeoVector2D FUN_005fc8f0(bool direction, float value) const;
     SBGeoPoint2D FUN_005fc450() const;
     RHUnk005fc3b0(float x, float y);
-    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other);
+    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other)
+    {
+        return (RHUnk005fc3b0 &)SBGeoVector2D::operator=((const SBGeoVector2D &)other);
+    }
     float FUN_005fc680(const RHUnk005fc3b0 &other, float value) const;
 };
 
@@ -269,7 +277,7 @@ public:
 class RHUnk0042fde0
 {
 public:
-    SBGeoPoint2D FUN_0042fde0() const;
+    SBGeoVector2D FUN_0042fde0() const;
     SBGeoPoint2D m_0;
     SBGeoPoint2D m_8;
 };

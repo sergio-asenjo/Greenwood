@@ -289,9 +289,9 @@ void RHBonusInfoBase::FUN_00462970(int action)
     RHActorField<int>(this, 0x88) = action;
     RHActorField<int>(this, 0x8c) = previous;
     RHActorField<unsigned char>(this, 0xbc) = 0;
-    SBGeoVector2D offset(RHActorField<SBGeoPoint2D>(this, 0x20));
+    SBGeoVector2D offset(RHActorField<SBGeoVector2D>(this, 0x20));
     SBGeoBoundingBox2D *box = (SBGeoBoundingBox2D *)((RHUnkPathActorInfoBase *)this)->Unk0055fa10(RHActorField<int>(this, 0x88));
-    RHActorField<SBGeoBoundingBox2D>(this, 0xc0) = box->FUN_006090d0(offset);
+    ((RHMobileUnk00607da0 *)&RHActorField<SBGeoBoundingBox2D>(this, 0xc0))->FUN_00607da0((const RHMobileUnk00607da0 &)box->FUN_006090d0(offset));
 }
 
 // Parked: x87 operand loading and ordered-comparison status masks require different source shapes.
@@ -445,10 +445,10 @@ void RHActorPositionCalls::FUN_00464530(const SBGeoPoint2D &point)
 {
     RHActorField<SBGeoPoint2D>(this, 0x20) = point;
     {
-        SBGeoVector2D displacement(point);
+        SBGeoVector2D displacement(static_cast<const SBGeoVector2D &>(point));
         SBGeoBoundingBox2D *box = (SBGeoBoundingBox2D *)
             ((RHUnkPathActorInfoBase *)this)->Unk0055fa10(RHActorField<int>(this, 0x88));
-        RHActorField<SBGeoBoundingBox2D>(this, 0xc0) = box->FUN_006090d0(displacement);
+        ((RHMobileUnk00607da0 *)&RHActorField<SBGeoBoundingBox2D>(this, 0xc0))->FUN_00607da0((const RHMobileUnk00607da0 &)box->FUN_006090d0(displacement));
     }
     RHActorField<int>(this, 4) = 2;
 }

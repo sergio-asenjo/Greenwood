@@ -401,7 +401,7 @@ public:
 class RHUnk0042fde0
 {
 public:
-    SBGeoPoint2D FUN_0042fde0() const;
+    SBGeoVector2D FUN_0042fde0() const;
     float FUN_0060ba80(const SBGeoPoint2D &point) const;
 };
 

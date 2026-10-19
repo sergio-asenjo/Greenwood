@@ -1,4 +1,12 @@
 #include "RHElementActorAnimal.h"
+// SIZE 0x14
+class RHMobileUnk00607da0
+{
+public:
+    void FUN_00607990(const RHMobileUnk00607da0 &other);
+    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
+    unsigned char m_00[0x14]; // 0x00
+};
 #include <stdlib.h>
 
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
@@ -147,7 +155,7 @@ bool RHElementActorAnimal::GoTo(const SBGeoPoint2D &destination, unsigned short 
             animation = 10;
         else
             animation = 6;
-        m_5c->Unk0058a940(g_unk0x6c0560, 0, new RHUnk005883a0(1, 0x14, this, animation, destination, 0, 0.0f, 0));
+        m_5c->Unk0058a940(g_unk0x6c0560, 0, new RHUnk00588530(1, 0x14, this, animation, destination, 0, 0.0f, 0));
         return true;
     }
     return false;
@@ -289,5 +297,5 @@ void RHElementActorAnimal::ThisIsYourNewHome()
     RHUnk005fc3b0 half;
     float length = (unsigned short)(marrTerritoryEdgeLength[m_1d0] >> 1);
     half.FUN_005fc430(SBGeoVector2D(length, length));
-    m_1e0.FUN_00607da0(SBGeoBoundingBox2D(m_50->m_24.FUN_005fc200(half), m_50->m_24.Unk005fc190(half)));
+    ((RHMobileUnk00607da0 *)&m_1e0)->FUN_00607da0((const RHMobileUnk00607da0 &)SBGeoBoundingBox2D(m_50->m_24.FUN_005fc200(half), m_50->m_24.Unk005fc190(half)));
 }

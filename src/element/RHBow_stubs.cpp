@@ -1,11 +1,14 @@
 #include "SBNullstr.h"
 #include "RHBow.h"
+#include "RHWeapon.h"
 
-// 0x00450020 is RHBow's default ctor; unmarked (not a counted row).
 // Kept out of line so the `new RHBow` cleanup EH frame stays in SerializePointer.
+// FUNCTION: GAME 0x00450020
 RHBow::RHBow()
 {
+    ((RHWeapon *)this)->RHWeapon::RHWeapon();
     m_04 = 0;
+    *(unsigned *)this = 0x0067765c;
 }
 
 RHBow::~RHBow() {}

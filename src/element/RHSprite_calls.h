@@ -11,6 +11,7 @@ template<class T> T &RHSpriteField(void *object, unsigned offset)
 }
 
 // SIZE 0x08
+class SBGeoVector2D;
 class SBGeoPoint2D
 {
 public:
@@ -20,9 +21,10 @@ public:
     ~SBGeoPoint2D();
     bool Serialize(SBFile &file);
     SBGeoPoint2D &operator=(const SBGeoPoint2D &);
+    void FUN_005fc390(const SBGeoPoint2D &other) throw();
     SBGeoPoint2D &FUN_005fc1e0(const SBGeoPoint2D &);
     SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &) const;
-    SBGeoPoint2D Unk005fc110(const SBGeoPoint2D &) const;
+    SBGeoVector2D Unk005fc110(const SBGeoPoint2D &) const;
     float FUN_005fc700(float) const;
     float FUN_005fca90(const SBGeoPoint2D &other, float scale) const;
     bool operator==(const SBGeoPoint2D &) const;
@@ -30,28 +32,20 @@ public:
     float m_y; // 0x04
 };
 
-// SIZE 0x08
-class SBGeoVector2D : public SBGeoPoint2D
-{
-public:
-    SBGeoVector2D();
-    SBGeoVector2D(float, float);
-    SBGeoVector2D(const SBGeoPoint2D &);
-    ~SBGeoVector2D() {}
-    float FUN_005fc660(const SBGeoPoint2D &) const;
-    SBGeoVector2D GetNormalized(float scale) const;
-    void Normal(bool direction, float scale);
-    bool IsBetween(unsigned char first, unsigned char last) const;
-};
-SBGeoVector2D operator*(float, const SBGeoVector2D &);
+#include "SBGeoVector2D.h"
 
-class RHUnk005fc3b0 : public SBGeoPoint2D
+class RHUnk005fc3b0 : public SBGeoVector2D
 {
 public:
-    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &);
+    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other)
+    {
+        return (RHUnk005fc3b0 &)SBGeoVector2D::operator=((const SBGeoVector2D &)other);
+    }
     RHUnk005fc3b0 &FUN_005fc5b0(float factor);
     float Unk005fc6a0(float scale);
     unsigned char FUN_005fcc50(float scale) const;
+    SBGeoVector2D FUN_005fc8f0(bool direction, float scale) const;
+    RHUnk005fc3b0 FUN_005fc9e0(float angle, float scale);
     float FUN_005fc680(const RHUnk005fc3b0 &other, float scale) const;
 };
 

@@ -33,6 +33,15 @@
 #include "RHElementActorCivilian.h"
 #include "RHElementActorHumanCore.h"
 
+#ifndef RHMOBILEUNK00607DA0_VIEW
+#define RHMOBILEUNK00607DA0_VIEW
+class RHMobileUnk00607da0
+{
+public:
+    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
+};
+#endif
+
 DECOMP_SIZE_ASSERT(RHElementActorNPC, 0x704)
 DECOMP_SIZE_ASSERT(RHElementActorCivilian, 0x70c)
 DECOMP_SIZE_ASSERT(RHCivilianProfileView, 0x34)
@@ -164,7 +173,7 @@ void RHElementActorCivilian::FUN_00470480(SBFile &file)
         *(std::string *)m_708, *(std::string *)((char *)m_708 + 0x10), 0);
     void *global = RHCivilianField<void *>(this, 0x64);
     SBGeoVector2D extent(*RHCivilianField<SBGeoPoint2D *>(global, 0x4164));
-    RHCivilianField<SBGeoBoundingBox2D>(info, 0x98) = SBGeoBoundingBox2D(-extent, extent);
+    ((RHMobileUnk00607da0 *)&RHCivilianField<SBGeoBoundingBox2D>(info, 0x98))->FUN_00607da0((const RHMobileUnk00607da0 &)SBGeoBoundingBox2D(-extent, extent));
     RHCivilianField<unsigned short>(info, 0x94) = 0;
     RHCivilianField<unsigned long>(this, 0x54) =
         RHCivilianField<RHUnkFXDraw *>(this, 0x60)->Unk005e4ed0(
@@ -181,7 +190,7 @@ void RHElementActorCivilian::FUN_00470480(SBFile &file)
         SBGeoVector2D displacement(position);
         SBGeoBoundingBox2D *box = (SBGeoBoundingBox2D *)((RHUnkPathActorInfoBase *)base)->Unk0055fa10(
             RHCivilianField<int>(base, 0x88));
-        RHCivilianField<SBGeoBoundingBox2D>(base, 0xc0) = box->FUN_006090d0(displacement);
+        ((RHMobileUnk00607da0 *)&RHCivilianField<SBGeoBoundingBox2D>(base, 0xc0))->FUN_00607da0((const RHMobileUnk00607da0 &)box->FUN_006090d0(displacement));
         RHCivilianField<int>(base, 4) = 2;
     }
     RHCivilianField<unsigned short>(info, 0xde) = direction;
@@ -573,7 +582,7 @@ SBGeoVector2D SBGeoVector2D::operator-() const
     SBGeoVector2D opposite;
     opposite.m_x = -m_x;
     opposite.m_y = -m_y;
-    return SBGeoVector2D((const SBGeoPoint2D &)opposite);
+    return SBGeoVector2D(opposite);
 }
 
 // FUNCTION: GAME 0x00607ba0

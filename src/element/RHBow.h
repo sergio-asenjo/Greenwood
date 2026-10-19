@@ -3,7 +3,7 @@
 
 class SBFile;
 
-class RHBow
+class __declspec(novtable) RHBow
 {
 public:
     RHBow();

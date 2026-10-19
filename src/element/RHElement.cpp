@@ -16,6 +16,12 @@ DECOMP_SIZE_ASSERT(RHUnk0040f060, 0x24)
 // FUNCTION: GAME 0x00462190
 int RHElement::FUN_00462190() const { return 3; }
 
+// FUNCTION: GAME 0x004621a0
+SBGeoVector2D RHElement::FUN_004621a0() const
+{
+    return SBGeoVector2D(0, 0);
+}
+
 // FUNCTION: GAME 0x004621d0
 void RHElement::FUN_004621d0(RHUnk005df510 &point) const
 {
@@ -499,6 +505,7 @@ downwardCrossing:
 void RHElement::Emit(SBFile &file)
 {
     FUN_00462190();
+    FUN_004621a0();
     FUN_004621d0(m_74);
     FUN_004621f0();
     FUN_00462200();

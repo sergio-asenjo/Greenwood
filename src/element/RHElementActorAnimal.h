@@ -5,6 +5,7 @@
 #include "Decomp.h"
 
 // SIZE 0x08
+class SBGeoVector2D;
 class SBGeoPoint2D
 {
 public:
@@ -12,7 +13,7 @@ public:
     SBGeoPoint2D(float x, float y);
     ~SBGeoPoint2D();
     SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
-    SBGeoPoint2D Unk005fc110(const SBGeoPoint2D &point) const;
+    SBGeoVector2D Unk005fc110(const SBGeoPoint2D &point) const;
     SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &point) const;
     SBGeoPoint2D FUN_005fc200(const SBGeoPoint2D &point) const;
     float m_x; // 0x00
@@ -20,12 +21,25 @@ public:
 };
 
 // SIZE 0x08
-class RHUnk005fc3b0 : public SBGeoPoint2D
+class SBGeoVector2D : public SBGeoPoint2D
 {
 public:
-    RHUnk005fc3b0();
+    SBGeoVector2D();
+    SBGeoVector2D(float x, float y);
+    ~SBGeoVector2D() {}
+    SBGeoVector2D &operator=(const SBGeoVector2D &other);
+    SBGeoVector2D(const SBGeoVector2D &other);
+};
+
+class RHUnk005fc3b0 : public SBGeoVector2D
+{
+public:
+    RHUnk005fc3b0() {}
     ~RHUnk005fc3b0() {}
-    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &point);
+    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other)
+    {
+        return (RHUnk005fc3b0 &)SBGeoVector2D::operator=((const SBGeoVector2D &)other);
+    }
     RHUnk005fc3b0 &FUN_005fc4d0(float factor);
     float Unk005fc6a0(float value);
     void FUN_005fc7c0(float length);
@@ -33,12 +47,7 @@ public:
 };
 
 // SIZE 0x08
-class SBGeoVector2D : public SBGeoPoint2D
-{
-public:
-    SBGeoVector2D(float x, float y);
-    ~SBGeoVector2D() {}
-};
+
 
 // SIZE 0x14
 class SBGeoBoundingBox2D
@@ -123,10 +132,10 @@ public:
 };
 
 // SIZE 0x9c
-class RHUnk005883a0
+class RHUnk00588530
 {
 public:
-    RHUnk005883a0(unsigned short priority, int command, void *element, int animation,
+    RHUnk00588530(unsigned short priority, int command, void *element, int animation,
                   const SBGeoPoint2D &destination, void *target, float speed, unsigned long flags);
     undefined m_00[0x9c]; // 0x00
 };

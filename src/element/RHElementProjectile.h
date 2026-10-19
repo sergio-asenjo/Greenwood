@@ -180,6 +180,7 @@ public:
     void FUN_004b8230();
     void CopyTrajectory(RHElementProjectile *other);
     unsigned ComputeNumberOfFramesLeft() const;
+    int FUN_004b8d70(void *first, void *second, void *third);
     int FUN_004b8da0() const;
     void PlayImpactSound(const void *position, bool special) const;
 

@@ -19,7 +19,7 @@ DECOMP_SIZE_ASSERT(RHUnk004af060, 0x260)
 bool g_mobileAssertDoubleBond = false;
 
 // FUNCTION: GAME 0x0042fde0
-SBGeoPoint2D RHUnk0042fde0::FUN_0042fde0() const
+SBGeoVector2D RHUnk0042fde0::FUN_0042fde0() const
 {
     return m_8.Unk005fc110(m_0);
 }
@@ -58,6 +58,9 @@ void *FUN_0048f170(void *value)
 {
     return value;
 }
+
+// TEMPLATE: GAME 0x004aab50
+// ??1?$vector@VSBGeoPoint2D@@V?$allocator@VSBGeoPoint2D@@@std@@@std@@QAE@XZ
 
 // FUNCTION: GAME 0x004aac40
 RHUnk004aac40::RHUnk004aac40() : RHMobileBase004a8130(5)
@@ -445,7 +448,7 @@ void RHElementMobile::InitializeFromMissionStream(SBFile &file)
         ((RHUnk004af060 *)this)->Unk(((RHUnk005fc3b0 *)&m_188->FUN_004ae380())->FUN_005fcc50(1.0f));
 }
 
-static inline const SBGeoPoint2D &MobilePathDifference(SBGeoVector2D &result, float lastX, float lastY, RHMobileElement *first)
+static inline const SBGeoVector2D &MobilePathDifference(SBGeoVector2D &result, float lastX, float lastY, RHMobileElement *first)
 {
     result.m_x = lastX;
     result.m_y = lastY;
@@ -1014,6 +1017,7 @@ public:
 };
 
 void FUN_0051f0f0();
+void FUN_0051f1b0();
 
 // FUNCTION: GAME 0x0051fc10
 RHUnk0051fc10::RHUnk0051fc10()
@@ -1051,6 +1055,7 @@ class RHUnk005214b0
 {
 public:
     RHUnk005214b0();
+    ~RHUnk005214b0();
     char m_00[0x14];
     int m_14;
     char m_18[8];
@@ -1068,10 +1073,18 @@ RHUnk005214b0::RHUnk005214b0()
     m_14 = value;
 }
 
+// FUNCTION: GAME 0x005214f0
+RHUnk005214b0::~RHUnk005214b0()
+{
+    *(unsigned *)this = 0x679120;
+    FUN_0051f1b0();
+}
+
 class RHUnk00521500
 {
 public:
     RHUnk00521500();
+    ~RHUnk00521500();
     char m_00[0x14];
     int m_14;
     char m_18;
@@ -1084,6 +1097,13 @@ RHUnk00521500::RHUnk00521500()
     *(unsigned *)this = 0x679128;
     m_14 = 0x40;
     m_18 = 1;
+}
+
+// FUNCTION: GAME 0x00521540
+RHUnk00521500::~RHUnk00521500()
+{
+    *(unsigned *)this = 0x679128;
+    FUN_0051f1b0();
 }
 
 class RHUnk00613e90
@@ -1122,6 +1142,8 @@ void EmitRHUnk0051fc10(void *storage)
     ((RHUnk0051fc10 *)storage)->RHUnk0051fc10::RHUnk0051fc10();
     ((RHUnk005214b0 *)storage)->RHUnk005214b0::RHUnk005214b0();
     ((RHUnk00521500 *)storage)->RHUnk00521500::RHUnk00521500();
+    ((RHUnk005214b0 *)storage)->RHUnk005214b0::~RHUnk005214b0();
+    ((RHUnk00521500 *)storage)->RHUnk00521500::~RHUnk00521500();
 }
 
 // FUNCTION: GAME 0x005504d0
@@ -1276,15 +1298,6 @@ bool SBGeoPoint2D::FUN_005fc0e0(const SBGeoPoint2D &other) const
     return m_x != other.m_x || m_y != other.m_y;
 }
 
-// deferred: unannotated pending reccmp #534 (0x005fc110); shared point-return ABI retained.
-SBGeoPoint2D SBGeoPoint2D::Unk005fc110(const SBGeoPoint2D &other) const
-{
-    RHUnk005fc3b0 difference;
-    difference.m_x = m_x - other.m_x;
-    difference.m_y = m_y - other.m_y;
-    return SBGeoVector2D(difference);
-}
-
 // FUNCTION: GAME 0x005fc1e0
 SBGeoPoint2D &SBGeoPoint2D::FUN_005fc1e0(const SBGeoPoint2D &other)
 {
@@ -1293,18 +1306,7 @@ SBGeoPoint2D &SBGeoPoint2D::FUN_005fc1e0(const SBGeoPoint2D &other)
     return *this;
 }
 
-// deferred: unannotated pending reccmp #534 (0x005fc430).
-RHUnk005fc3b0 &RHUnk005fc3b0::FUN_005fc430(const SBGeoPoint2D &other)
-{
-    if (this != &other)
-    {
-        SBGeoPoint2D::~SBGeoPoint2D();
-        FUN_005fc390(other);
-    }
-    return *this;
-}
-
-// deferred: unannotated pending reccmp #534 (0x00607da0).
+// FUNCTION: GAME 0x00607da0
 RHMobileUnk00607da0 &RHMobileUnk00607da0::FUN_00607da0(const RHMobileUnk00607da0 &other)
 {
     if (this != &other)

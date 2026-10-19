@@ -23,7 +23,7 @@ extern undefined g_unk0x006c0e48[];
 extern "C" int rand();
 
 DECOMP_SIZE_ASSERT(RHElementActorPC, 0x60c)
-DECOMP_SIZE_ASSERT(RHUnk005492a0, 0x14)
+DECOMP_SIZE_ASSERT(RHUnk00549250, 0x14)
 DECOMP_SIZE_ASSERT(RHActorPCBoxCalls, 0x14)
 DECOMP_SIZE_ASSERT(RHActorPCWidgetState, 0xe8)
 DECOMP_SIZE_ASSERT(RHCampaignProfiles, 0x70)
@@ -178,15 +178,15 @@ RHUnk0048f280::RHUnk0048f280(void *description)
     }
     RHActorPCField<int>(this, 0x500) = 0;
     RHActorPCField<int>(this, 0x504) = 0;
-    RHActorPCField<RHUnk005492a0 *>(this, 0x4ac) = new RHUnk005492a0(1, this, 0);
-    RHActorPCField<RHUnk005492a0 *>(this, 0x4b0) = new RHUnk005492a0(1, this, 1);
-    RHActorPCField<RHUnk005492a0 *>(this, 0x4b4) = new RHUnk005492a0(1, this, 2);
-    RHActorPCField<RHUnk005492a0 *>(this, 0x4b8) = new RHUnk005492a0(3, this, 0);
-    RHActorPCField<RHUnk005492a0 *>(this, 0x4bc) = new RHUnk005492a0(3, this, 1);
-    RHActorPCField<RHUnk005492a0 *>(this, 0x4c0) = new RHUnk005492a0(3, this, 2);
-    RHActorPCField<RHUnk005492a0 *>(this, 0x4c4) = new RHUnk005492a0(10, this, 0);
-    RHActorPCField<RHUnk005492a0 *>(this, 0x4c8) = new RHUnk005492a0(10, this, 1);
-    RHActorPCField<RHUnk005492a0 *>(this, 0x4cc) = new RHUnk005492a0(10, this, 2);
+    RHActorPCField<RHUnk00549250 *>(this, 0x4ac) = new RHUnk00549250(1, this, 0);
+    RHActorPCField<RHUnk00549250 *>(this, 0x4b0) = new RHUnk00549250(1, this, 1);
+    RHActorPCField<RHUnk00549250 *>(this, 0x4b4) = new RHUnk00549250(1, this, 2);
+    RHActorPCField<RHUnk00549250 *>(this, 0x4b8) = new RHUnk00549250(3, this, 0);
+    RHActorPCField<RHUnk00549250 *>(this, 0x4bc) = new RHUnk00549250(3, this, 1);
+    RHActorPCField<RHUnk00549250 *>(this, 0x4c0) = new RHUnk00549250(3, this, 2);
+    RHActorPCField<RHUnk00549250 *>(this, 0x4c4) = new RHUnk00549250(10, this, 0);
+    RHActorPCField<RHUnk00549250 *>(this, 0x4c8) = new RHUnk00549250(10, this, 1);
+    RHActorPCField<RHUnk00549250 *>(this, 0x4cc) = new RHUnk00549250(10, this, 2);
     RHActorPCField<int>(this, 0x5cc) = 0;
     RHActorPCField<int>(this, 0x5d4) = 0;
     RHActorPCField<int>(this, 0x5d8) = 0;
@@ -231,9 +231,9 @@ void RHEngineReinforcementCalls::FUN_00491fd0(const RHbeamMe &beamMe)
     ((RHEngineSerializationCalls *)actor)->FUN_0048fa30();
     ((RHActorPCTemplateCalls *)actor)->FUN_00493660(0);
     {
-        SBGeoVector2D vector(*(SBGeoPoint2D *)((char *)actor->m_5fc + 0x84));
+        SBGeoVector2D vector(*(SBGeoVector2D *)((char *)actor->m_5fc + 0x84));
         RHBonusInfoBase &position = ((RHActorPCInfo *)actor->m_50)->Position();
-        ((RHUnk005fc3b0 *)((char *)&position + 0x80))->FUN_005fc430(vector);
+        ((SBGeoVector2D *)((char *)&position + 0x80))->operator=(vector);
     }
     actor->m_50->m_4.SetPoint(beamMe.m_point);
     ((RHActorPCInfo *)actor->m_50)->Layer(beamMe.m_8);
@@ -939,7 +939,7 @@ void RHHumanActorCalls::FUN_0049d780()
                 {
                     void *menu = RHActorPCField<void *>(this, 0x4ec);
                     if (RHActorPCField<char>(menu, 0xca9))
-                        messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk005492a0(27, this, index));
+                        messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(27, this, index));
                     else
                         ((RHWidgetPortrait *)menu)->FUN_005d9bc0();
                     if (((RHElementActorPC *)this)->FUN_0049d5c0(index) == RHActorPCField<int>(this, 0x504))
@@ -948,7 +948,7 @@ void RHHumanActorCalls::FUN_0049d780()
             }
         }
         if (restore)
-            messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk005492a0(22, this, RHActorPCField<int>(this, 0x504)));
+            messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(22, this, RHActorPCField<int>(this, 0x504)));
     }
 }
 
@@ -962,7 +962,7 @@ void RHElementActorPC::FUN_0049d890(unsigned short action)
     RHActorPCField<char>(this, 0x508 + action) = 1;
     RHActorPCWidgetCalls *menu = RHActorPCField<RHActorPCWidgetCalls *>(this, 0x4ec);
     if (RHActorPCField<char>(menu, 0xca9))
-        RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk005492a0(26, this, action));
+        RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(26, this, action));
     else
         ((RHGamePortraitCalls *)menu)->FUN_005d9950(action);
 }
@@ -976,7 +976,7 @@ void RHElementActorPC::FUN_0049d960(unsigned short action)
     {
         RHActorPCWidgetCalls *menu = RHActorPCField<RHActorPCWidgetCalls *>(this, 0x4ec);
         if (RHActorPCField<char>(menu, 0xca9))
-            RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk005492a0(27, this, action));
+            RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(27, this, action));
         else
             ((RHGamePortraitCalls *)menu)->FUN_005d9a60(action);
     }
@@ -994,7 +994,7 @@ void RHElementActorPC::FUN_0049da00(unsigned short action)
     }
     RHActorPCWidgetCalls *menu = RHActorPCField<RHActorPCWidgetCalls *>(this, 0x4ec);
     if (RHActorPCField<char>(menu, 0xca9))
-        RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk005492a0(26, this, action));
+        RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(26, this, action));
     else
         ((RHGamePortraitCalls *)menu)->FUN_005d9950(action);
 }
@@ -1007,12 +1007,12 @@ void RHElementActorPC::FUN_0049dad0(unsigned short action)
     {
         RHActorPCWidgetCalls *menu = RHActorPCField<RHActorPCWidgetCalls *>(this, 0x4ec);
         if (RHActorPCField<char>(menu, 0xca9))
-            RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk005492a0(27, this, action));
+            RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(27, this, action));
         else
             ((RHGamePortraitCalls *)menu)->FUN_005d9a60(action);
         int previous = RHActorPCField<int>(this, 0x504);
         if (FUN_0049d5c0(action) == previous)
-            RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk005492a0(22, this, previous));
+            RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(22, this, previous));
     }
 }
 
@@ -1233,9 +1233,9 @@ void RHElementActorPC::FUN_0049fa20(unsigned amount, void *source)
             ((RHActorPCVTableCalls *)this)->FUN_slot53(5, (int)source, 0);
             ((RHActorPCVTableCalls *)this)->FUN_slot55(300, (int)source, 0);
             RHMessenger *messenger = RHUnk00546050();
-            messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk005492a0(3, this, 0));
-            messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk005492a0(3, this, 1));
-            messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk005492a0(3, this, 2));
+            messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(3, this, 0));
+            messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(3, this, 1));
+            messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(3, this, 2));
             ((RHWidgetPortrait *)RHActorPCField<void *>(this, 0x4ec))->Method005d73d0();
             ((RHActorPCVTableCalls *)this)->FUN_17(3);
             ((RHUnk00450b60 *)campaign)->Unk(0, -1);
@@ -1485,8 +1485,8 @@ RHElementActorPC *RHElementActorPC::CreatePCFromMissionStream(SBFile &file)
     description->m_44 = 1;
     ((RHEngineSerializationCalls *)actor)->FUN_0048fa30();
     {
-        SBGeoVector2D vector(*(SBGeoPoint2D *)((char *)actor->m_5fc + 0x84));
-        ((RHUnk005fc3b0 *)((char *)&((RHActorPCInfo *)actor->m_50)->Position() + 0x80))->FUN_005fc430(vector);
+        SBGeoVector2D vector(*(SBGeoVector2D *)((char *)actor->m_5fc + 0x84));
+        ((SBGeoVector2D *)((char *)&((RHActorPCInfo *)actor->m_50)->Position() + 0x80))->operator=(vector);
     }
     actor->m_50->m_4.SetPoint(SBGeoPoint2D((float)x, (float)y));
     ((RHActorPCInfo *)actor->m_50)->Layer(layer);
@@ -1613,12 +1613,14 @@ void RHActorPCEngineCalls::FUN_0050efb0(void *value)
 }
 
 // FUNCTION: GAME 0x005492a0
-RHUnk005492a0::RHUnk005492a0(int command, void *actor, int action)
-    : RHMessage(2, action)
+RHUnk00549250::RHUnk00549250(int command, void *actor, int action)
+    : RHMessage(2, action), m_0c(command), m_10(actor)
 {
-    m_c = command;
-    m_10 = actor;
-    m_vptr = 0x679b6c;
+}
+
+// FUNCTION: GAME 0x005492d0
+RHUnk00549250::~RHUnk00549250()
+{
 }
 
 // FUNCTION: GAME 0x0055fa10

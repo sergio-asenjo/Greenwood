@@ -3,6 +3,7 @@
 
 #include "RHElementBonus.h"
 #include "RHMessage.h"
+#include "RHActorMessage.h"
 #include "Decomp.h"
 #include <string>
 #include <vector>
@@ -191,7 +192,6 @@ public:
 class RHUnk005fc3b0
 {
 public:
-    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &vector);
     float Unk005fc6a0(float value);
 };
 
@@ -270,16 +270,6 @@ class RHUnk0046eb30
 {
 public:
     RHScriptNode *Unk0059f720(RHScriptNode *next, RHScriptNode *previous);
-};
-
-// SIZE 0x14
-class RHUnk005492a0 : public RHMessage
-{
-public:
-    RHUnk005492a0(int command, void *actor, int action);
-    ~RHUnk005492a0();
-    int m_c; // 0x0c
-    void *m_10; // 0x10
 };
 
 class RHUnk005ef320

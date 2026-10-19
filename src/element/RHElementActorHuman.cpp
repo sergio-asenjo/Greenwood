@@ -2729,7 +2729,7 @@ bool RHElementActorHuman::FUN_00484bb0(RHElementActorHuman *actor, SBGeoPoint2D 
     unsigned count = actor->m_260.count;
     void *area = RHActorField<void *>(RHActorField<void *>(this, 0x50), 0xe0);
     RHUnk0042fde0 *segment = (RHUnk0042fde0 *)((char *)line + 4);
-    SBGeoPoint2D direction = segment->FUN_0042fde0();
+    SBGeoVector2D direction = segment->FUN_0042fde0();
     float margin = g_unk0x006774e4 / ((RHUnk005fc3b0 *)&direction)->Unk005fc6a0(1.0f);
     char allocator;
     RHHumanFloatList fractions(allocator);

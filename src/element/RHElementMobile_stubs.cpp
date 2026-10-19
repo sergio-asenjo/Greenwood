@@ -8,6 +8,9 @@ public:
 };
 
 RHMobileBase004a8130::RHMobileBase004a8130(int) throw() {}
+// SYNTHETIC: GAME 0x004a81d0
+// RHMobileBase004a8130::`scalar deleting destructor'
+
 RHMobileBase004a8130::~RHMobileBase004a8130() {}
 void RHMobileBase004a8130::v1() {}
 void RHMobileBase004a8130::v2() {}
@@ -34,6 +37,9 @@ void RHMobileBase004a8130::v22() {}
 void RHMobileBase004a8130::v23() {}
 void RHMobileBase004a8130::v24() {}
 void RHMobileBase004a8130::v25() {}
+// SYNTHETIC: GAME 0x004aac80
+// RHUnk004aac40::`scalar deleting destructor'
+// FUNCTION: GAME 0x004aaca0
 RHUnk004aac40::~RHUnk004aac40() {}
 void RHUnk004aac40::v9() {}
 void RHUnk004aac40::v10() {}
@@ -77,9 +83,9 @@ void RHMobileUnk006100e0::FUN_00578c50() {}
 
 bool RHMobilePath::FUN_00550660(unsigned char) { return false; }
 void RHMobilePath::FUN_005505c0() {}
-RHUnk005fc3b0::RHUnk005fc3b0(float x, float y) : SBGeoPoint2D(x, y) {}
-unsigned char RHUnk005fc3b0::FUN_005fcc50(float) const { return 0; }
+RHUnk005fc3b0::RHUnk005fc3b0(float x, float y) : SBGeoVector2D(x, y) {}
 float RHUnk005fc3b0::FUN_005fc7c0(float) { return 0.0f; }
+// FUNCTION: GAME 0x004e6a10
 void FUN_004b0620(RHUnk005fc3b0 *destination, const RHUnk005fc3b0 &value) { new (destination) RHUnk005fc3b0(value); }
 void FUN_004b05b0(RHUnk005fc3b0 *first, RHUnk005fc3b0 *last, const RHUnk005fc3b0 &value)
 {
@@ -128,7 +134,6 @@ void RHMobileUnk0051fd10::FUN_0051fdc0() {}
 RHMobileUnk00520b60::RHMobileUnk00520b60(const SBGeoPoint2D &, float, float) {}
 RHMobileUnk00520b60::~RHMobileUnk00520b60() {}
 void RHMobileUnk00520b60::FUN_00520c80(const SBGeoPoint2D &, const SBGeoPoint2D &) {}
-SBGeoPoint2D RHUnk005fc3b0::FUN_005fc8f0(int, float) const { return *this; }
 RHMobilePointerList::RHMobilePointerList()
 {
     m_4 = (RHMobilePointerNode *)::operator new(12);

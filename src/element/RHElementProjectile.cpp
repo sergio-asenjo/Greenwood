@@ -399,6 +399,7 @@ public:
 };
 
 #include "RHProjectileSoundCalls.h"
+#include "RHScrollObjectCalls.h"
 class RHArtificialIntelligenceSoundCalls;
 extern RHArtificialIntelligenceSoundCalls *g_unk0x006c1070;
 
@@ -428,6 +429,14 @@ unsigned RHElementProjectile::ComputeNumberOfFramesLeft() const
     return total;
 }
 
+// FUNCTION: GAME 0x004b8d70
+int RHElementProjectile::FUN_004b8d70(void *first, void *second, void *third)
+{
+    if (!m_132 && ((RHScrollObjectCalls *)this)->FUN_004b23c0(first, second, third))
+        return 1;
+    return 0;
+}
+
 // FUNCTION: GAME 0x004b8da0
 int RHElementProjectile::FUN_004b8da0() const
 {
@@ -443,5 +452,6 @@ void EmitRHProjectileMedium(RHElementProjectile *projectile, RHProjectileVector 
     vector->FUN_004b8840(*vector);
     projectile->PlayImpactSound(vector, false);
     projectile->ComputeNumberOfFramesLeft();
+    projectile->FUN_004b8d70(0, 0, 0);
     projectile->FUN_004b8da0();
 }

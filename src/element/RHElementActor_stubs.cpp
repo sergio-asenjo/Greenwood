@@ -65,7 +65,7 @@ RHUnk00613e90::RHUnk00613e90(float x, float y, float z)
 // FUNCTION: GAME 0x00468f10
 SBGeoVector2D RHBonusInfoBase::FUN_00468f10(int value) const
 {
-    const SBGeoPoint2D *point =
-        (const SBGeoPoint2D *)((const char *)((RHUnkPathActorInfoBase *)this)->Unk0055fa10(value) + 8);
-    return SBGeoVector2D(*point);
+    const SBGeoVector2D *point =
+        (const SBGeoVector2D *)((const char *)((RHUnkPathActorInfoBase *)this)->Unk0055fa10(value) + 8);
+    return *point;
 }

@@ -150,7 +150,7 @@ inline void RHElementBonus::ApplyProjection(RHBonusProjection *projection)
     m_50->m_4.FUN_0055fa20(projection);
 }
 
-// New probe: marker flip leaves null-branch placement at 92.31% and creates an effective row.
+// Parked: the null-projection branch and its edi initialization are scheduled later.
 // STUB: GAME 0x004a74f0
 RHElementBonus *RHElementBonus::CreateBonusFromMissionStream(SBFile &file)
 {

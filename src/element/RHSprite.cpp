@@ -2,6 +2,12 @@
 #include "RHSprite.h"
 #include <stdlib.h>
 
+class RHMobileUnk00607da0
+{
+public:
+    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
+};
+
 DECOMP_SIZE_ASSERT(RHSpriteListNode, 0x0c)
 DECOMP_SIZE_ASSERT(RHSpriteListIterator, 0x04)
 DECOMP_SIZE_ASSERT(RHSpriteList, 0x18)
@@ -381,7 +387,7 @@ void RHSprite::LoadPositionInfoFromFile(SBFile &file, int kind)
             box.m_00 = SBGeoPoint2D(x0 - centerX, y0 - centerY);
             box.m_10 = true;
             box.m_08 = SBGeoPoint2D(x1 - centerX, y1 - centerY);
-            RHSpriteField<SBGeoBoundingBox2D>(this, 0x98) = box;
+            ((RHMobileUnk00607da0 *)&RHSpriteField<SBGeoBoundingBox2D>(this, 0x98))->FUN_00607da0((const RHMobileUnk00607da0 &)box);
             file.Access(&index, 1);
             RHSpriteField<unsigned short>(this, 0x96) = index;
             file.Access(&x0, 2);
@@ -400,7 +406,7 @@ void RHSprite::LoadPositionInfoFromFile(SBFile &file, int kind)
             box.m_00 = SBGeoPoint2D(x0 - centerX, y0 - centerY);
             box.m_10 = true;
             box.m_08 = SBGeoPoint2D(x1 - centerX, y1 - centerY);
-            RHSpriteField<SBGeoBoundingBox2D>(this, 0xac) = box;
+            ((RHMobileUnk00607da0 *)&RHSpriteField<SBGeoBoundingBox2D>(this, 0xac))->FUN_00607da0((const RHMobileUnk00607da0 &)box);
             file.Access(&x, 2);
             file.Access(&y, 2);
             {
@@ -507,7 +513,7 @@ void RHSprite::LoadPositionInfoFromFile(SBFile &file, int kind)
                         // STRING: GAME 0x006b8770
                         "VERBOTEN : Initial animation does not exist !");
             }
-            RHSpriteField<SBGeoBoundingBox2D>(this, 0x98) = SBGeoBoundingBox2D(SBGeoVector2D(-2.0f, -2.0f), SBGeoVector2D(2.0f, 2.0f));
+            ((RHMobileUnk00607da0 *)&RHSpriteField<SBGeoBoundingBox2D>(this, 0x98))->FUN_00607da0((const RHMobileUnk00607da0 &)SBGeoBoundingBox2D(SBGeoVector2D(-2.0f, -2.0f), SBGeoVector2D(2.0f, 2.0f)));
             ((RHBonusInfoBase *)position)->FUN_0055f290();
             ((RHBonusInfo *)this)->FUN_005bd560(0, true);
         }
@@ -903,7 +909,7 @@ int RHSprite::PerformMotion(RHOrder *order, RHOrder *following, int animation, i
         else
         {
             S(SBGeoPoint2D, 0x24).FUN_005fc1e0(distance * S(SBGeoVector2D, 0x70));
-            S(SBGeoBoundingBox2D, 0xc4) = ((SBGeoBoundingBox2D *)((RHUnkPathActorInfoBase *)position)->Unk0055fa10(S(int, 0x8c)))->FUN_006090d0(SBGeoVector2D(S(SBGeoPoint2D, 0x24)));
+            ((RHMobileUnk00607da0 *)&S(SBGeoBoundingBox2D, 0xc4))->FUN_00607da0((const RHMobileUnk00607da0 &)((SBGeoBoundingBox2D *)((RHUnkPathActorInfoBase *)position)->Unk0055fa10(S(int, 0x8c)))->FUN_006090d0(SBGeoVector2D(S(SBGeoPoint2D, 0x24))));
             S(int, 8) = 2;
         }
         ((RHBonusInfoBase *)position)->FUN_0055f290();
@@ -936,7 +942,7 @@ int RHSprite::PerformMotion(RHOrder *order, RHOrder *following, int animation, i
             if (!S(bool, 0x102) && S(float, 0x7c) != g_unk0x00677488)
             {
                 S(SBGeoPoint2D, 0x24) = S(SBGeoPoint2D, 0x48);
-                S(SBGeoBoundingBox2D, 0xc4) = ((SBGeoBoundingBox2D *)((RHUnkPathActorInfoBase *)position)->Unk0055fa10(S(int, 0x8c)))->FUN_006090d0(SBGeoVector2D(S(SBGeoPoint2D, 0x48)));
+                ((RHMobileUnk00607da0 *)&S(SBGeoBoundingBox2D, 0xc4))->FUN_00607da0((const RHMobileUnk00607da0 &)((SBGeoBoundingBox2D *)((RHUnkPathActorInfoBase *)position)->Unk0055fa10(S(int, 0x8c)))->FUN_006090d0(SBGeoVector2D(S(SBGeoPoint2D, 0x48))));
                 S(int, 8) = 2;
                 ((RHBonusInfoBase *)position)->FUN_0055f290();
                 ((RHBonusInfo *)this)->FUN_005bd560(0, true);
@@ -1011,7 +1017,7 @@ int RHSprite::PerformMotion(RHOrder *order, RHOrder *following, int animation, i
         if (!S(bool, 0x102) && S(float, 0x7c) != g_unk0x00677488)
         {
             S(SBGeoPoint2D, 0x24) = S(SBGeoPoint2D, 0x48);
-            S(SBGeoBoundingBox2D, 0xc4) = ((SBGeoBoundingBox2D *)((RHUnkPathActorInfoBase *)position)->Unk0055fa10(S(int, 0x8c)))->FUN_006090d0(SBGeoVector2D(S(SBGeoPoint2D, 0x48)));
+            ((RHMobileUnk00607da0 *)&S(SBGeoBoundingBox2D, 0xc4))->FUN_00607da0((const RHMobileUnk00607da0 &)((SBGeoBoundingBox2D *)((RHUnkPathActorInfoBase *)position)->Unk0055fa10(S(int, 0x8c)))->FUN_006090d0(SBGeoVector2D(S(SBGeoPoint2D, 0x48))));
             S(int, 8) = 2;
             ((RHBonusInfoBase *)position)->FUN_0055f290();
             ((RHBonusInfo *)this)->FUN_005bd560(0, true);

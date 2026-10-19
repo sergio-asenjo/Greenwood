@@ -34,6 +34,7 @@ public:
 };
 
 class RHElevationLine;
+class SBGeoVector2D;
 
 // SIZE 0xa8
 class RHElement
@@ -41,6 +42,7 @@ class RHElement
 public:
     virtual bool Serialize(SBFile &file); // vtable+0x00
     int FUN_00462190() const;
+    SBGeoVector2D FUN_004621a0() const;
     void FUN_004621d0(RHUnk005df510 &point) const;
     void FUN_004621f0();
     char FUN_00462200() const;
@@ -226,7 +228,10 @@ class SBGeoVector2D : public SBGeoPoint2D
 {
 public:
     SBGeoVector2D();
+    SBGeoVector2D(float, float);
     ~SBGeoVector2D() {}
+    SBGeoVector2D(const SBGeoVector2D &other);
+    SBGeoVector2D &operator=(const SBGeoVector2D &other);
 };
 
 SBGeoVector2D operator*(float factor, const SBGeoVector2D &point);

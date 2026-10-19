@@ -9,6 +9,7 @@
 #include "RHActorTranslation.h"
 
 // SIZE 0x08
+class SBGeoVector2D;
 class SBGeoPoint2D
 {
 public:
@@ -22,7 +23,7 @@ public:
     bool Serialize(SBFile &file);
     bool operator==(const SBGeoPoint2D &other) const;
     bool FUN_005fc0e0(const SBGeoPoint2D &other) const;
-    SBGeoPoint2D Unk005fc110(const SBGeoPoint2D &other) const;
+    SBGeoVector2D Unk005fc110(const SBGeoPoint2D &other) const;
     float m_0; // 0x00
     float m_4; // 0x04
 };
@@ -34,6 +35,8 @@ public:
     SBGeoVector2D(float x, float y);
     SBGeoVector2D(const SBGeoPoint2D &other);
     ~SBGeoVector2D() {}
+    SBGeoVector2D(const SBGeoVector2D &other);
+    SBGeoVector2D &operator=(const SBGeoVector2D &other);
 };
 
 // SIZE 0x14

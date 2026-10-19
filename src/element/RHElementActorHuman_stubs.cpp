@@ -55,11 +55,6 @@ RHHumanFloatIterator RHHumanFloatList::FUN_0044e8b0(RHHumanFloatIterator, RHHuma
 RHHumanFloatIterator RHHumanFloatList::FUN_0046eb80() { return RHHumanFloatIterator(m_head->next); }
 void RHHumanFloatList::At(int) {}
 
-RHHumanMapNode *RHHumanMap::FUN_00588060(const int &key)
-{
-    return m_head;
-}
-
 class RHNPCBaseCalls
 {
 public:

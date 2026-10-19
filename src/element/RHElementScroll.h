@@ -99,12 +99,7 @@ public:
 };
 
 void RHSerializeName(SBFile &file, const char *name);
-class RHScrollObjectCalls
-{
-public:
-    bool FUN_004b23c0(void *, void *, void *);
-    int FUN_004b2b60(unsigned long, unsigned long, unsigned long, unsigned long) const;
-};
+#include "RHScrollObjectCalls.h"
 class RHScrollSpriteRefreshCalls
 {
 public:
