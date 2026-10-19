@@ -37,7 +37,7 @@ RHGraphicConfig::RHGraphicConfig() : m_0(1), m_1(1), m_2(0), m_3(1), m_point(800
 // FUNCTION: GAME 0x0051b9d0
 RHGraphicConfig::RHGraphicConfig(const RHGraphicConfig &other) :
     m_0(other.m_0), m_1(other.m_1), m_2(other.m_2), m_3(other.m_3),
-    m_point((const SBGeoPoint2D &)other.m_point)
+    m_point(other.m_point)
 {
 }
 

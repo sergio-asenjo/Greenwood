@@ -57,6 +57,8 @@ class SBGeoVector2D : public SBGeoPoint2D
 public:
     SBGeoVector2D(float, float);
     ~SBGeoVector2D() {}
+    SBGeoVector2D(const SBGeoVector2D &other);
+    SBGeoVector2D &operator=(const SBGeoVector2D &other);
 };
 
 extern float g_unk0x006774f4;
@@ -88,6 +90,30 @@ inline SBDrawUnk005efc10Iterator SBDrawFindSurface(SBDrawUnk005efc10 &tree, cons
     SBDrawUnk005f0090Node *head = tree.m_head;
     return (found.m_node != head && key >= found.m_node->m_key
         ? found : SBDrawUnk005efc10Iterator(head));
+}
+
+struct SBDrawTreeNode;
+extern SBDrawTreeNode *g_unk0x006c11dc;
+
+// GLOBAL: GAME 0x006c11d8
+unsigned g_unk0x006c11d8;
+
+// FUNCTION: GAME 0x005e3ed0
+void SBDrawUnk005efc10::FUN_005e3ed0()
+{
+    SBDrawUnk005efc10Iterator first(Leftmost());
+    SBDrawUnk005efc10Iterator last(m_head);
+    FUN_005efa90(first, last);
+    operator delete(m_head);
+    m_head = 0;
+    m_size = 0;
+    {
+        std::_Lockit lock;
+        if (--g_unk0x006c11d8 == 0) {
+            operator delete(g_unk0x006c11dc);
+            g_unk0x006c11dc = 0;
+        }
+    }
 }
 
 // Parked: retry-loop lookup duplication and iterator stores differ.
@@ -1350,6 +1376,7 @@ SBDrawUnk005efc10Iterator SBDrawUnk005efc10::FUN_005efcc0(SBDrawDecNode *x, SBDr
 void EmitSBDrawInsert(SBDrawUnk005efc10 &tree, const SBDrawSurfaceEntry &value)
 {
     tree.FUN_005efcc0(0, 0, value);
+    tree.FUN_005e3ed0();
 }
 
 // FUNCTION: GAME 0x005f0070

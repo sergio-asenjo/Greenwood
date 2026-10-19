@@ -6,6 +6,7 @@
 #include <iterator>
 
 // SIZE 0x08
+class SBGeoVector2D;
 class SBGeoPoint2D
 {
 public:
@@ -14,7 +15,7 @@ public:
     SBGeoPoint2D(const SBGeoPoint2D &);
     ~SBGeoPoint2D();
     SBGeoPoint2D &operator=(const SBGeoPoint2D &);
-    SBGeoPoint2D Unk005fc110(const SBGeoPoint2D &) const;
+    SBGeoVector2D Unk005fc110(const SBGeoPoint2D &) const;
     SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &) const;
     void Set(float x, float y)
     {
@@ -26,12 +27,25 @@ public:
 };
 
 // SIZE 0x08
-class RHUnk005fc3b0 : public SBGeoPoint2D
+class SBGeoVector2D : public SBGeoPoint2D
 {
 public:
-    RHUnk005fc3b0();
+    SBGeoVector2D();
+    SBGeoVector2D(float, float);
+    ~SBGeoVector2D() {}
+    SBGeoVector2D &operator=(const SBGeoVector2D &other);
+    SBGeoVector2D(const SBGeoVector2D &other);
+};
+
+class RHUnk005fc3b0 : public SBGeoVector2D
+{
+public:
+    RHUnk005fc3b0() {}
     ~RHUnk005fc3b0() {}
-    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &);
+    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other)
+    {
+        return (RHUnk005fc3b0 &)SBGeoVector2D::operator=((const SBGeoVector2D &)other);
+    }
     void FUN_005fc7c0(float);
     RHUnk005fc3b0 FUN_005fc9e0(float, float);
     float FUN_005fc680(const RHUnk005fc3b0 &, float) const;
@@ -103,13 +117,7 @@ public:
     const SBGeoPoint2D &FUN_0060c2b0(unsigned short);
 };
 
-class SBGeoVector2D : public SBGeoPoint2D
-{
-public:
-    SBGeoVector2D();
-    SBGeoVector2D(float, float);
-    ~SBGeoVector2D() {}
-};
+
 
 SBGeoVector2D operator*(float, const SBGeoVector2D &);
 class RHElementActor;
@@ -119,6 +127,12 @@ struct RHScriptIter
 {
     RHScriptNode *node;
     RHScriptIter(RHScriptNode *value) : node(value) {}
+    RHScriptIter operator++(int)
+    {
+        RHScriptIter previous = *this;
+        node = *(RHScriptNode **)node;
+        return previous;
+    }
 };
 
 class RHUnk0046eb30
@@ -160,6 +174,8 @@ public:
     int m_count; // 0x08
 
     RHScriptIter FUN_0044e850(RHScriptIter, RHScriptIter);
+    RHScriptIter FUN_0044e900(RHScriptIter position);
+    void FUN_0044e9b0();
 };
 
 class RHShadowPointStdList : public RHShadowPointListBase

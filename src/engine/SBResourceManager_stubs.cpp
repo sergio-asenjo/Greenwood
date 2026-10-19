@@ -10,7 +10,14 @@ template class SBResourceTreeStorage<0x40, 0x3c, 0x74>;
 template class SBResourceTreeStorage<0x40, 0x3c, 0x84>;
 
 
-void SBResourceArrayLifecycle44::FUN_0051d120() {}
+// FUNCTION: GAME 0x0051d120
+void SBResourceArrayLifecycle44::FUN_0051d120()
+{
+    typedef std::vector<unsigned long> Values;
+    Values *values = (Values *)this;
+    values->erase(values->begin(), values->end());
+    values->~Values();
+}
 void SBResourceArrayLifecycle84::FUN_0057c820() {}
 
 bool SBResourceManager::FUN_005fd8e0(int, unsigned long) { return false; }
@@ -24,10 +31,6 @@ bool SBResourceManager::FUN_005ff730(int, unsigned long) { return false; }
 bool SBResourceManager::FUN_005ffac0(int, unsigned long) { return false; }
 bool SBResourceManager::FUN_005ffe50(int, unsigned long) { return false; }
 
-SBResourceUnkKeyNode *SBResourceManager::Tree34::FUN_005093e0(const unsigned long &)
-{
-    return 0;
-}
 
 
 #include <vector>
@@ -61,7 +64,7 @@ void ForceResourceWideErase(std::vector<std::wstring> &values, std::wstring *fir
 }
 
 // Parked: the original reuses the separately owned 16-byte-element vector size entity.
-// STUB: GAME 0x00606270
+// LIBRARY: GAME 0x00606270
 // ?resize@?$vector@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@V?$allocator@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@@2@@std@@QAEXIABV?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@2@@Z
 
 // LIBRARY: GAME 0x00606470
@@ -76,7 +79,7 @@ std::wstring *FUN_00606780(const std::wstring *first, const std::wstring *last, 
 }
 
 // Parked: static-CRT npos loads fold to immediate -1 in narrow-string assignment.
-// STUB: GAME 0x006073b0
+// LIBRARY: GAME 0x006073b0
 // ?insert@?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@QAEXPAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@2@PBV32@1@Z
 
 // LIBRARY: GAME 0x00607660

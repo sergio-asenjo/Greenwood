@@ -86,6 +86,7 @@ public:
         Value(const unsigned long &key, const unsigned long &value) : first(key), second(value) {}
     };
     TreePair InsertTree(const Value &);
+    Node *FUN_005093e0(const unsigned long &);
 };
 
 class RHUnk005fd5c0
@@ -165,8 +166,9 @@ void SBUIUnk005fd4a0::FUN_005fd4a0(long resource)
                 SBResourceManager::Tree44::Iterator current(first);
                 while (current.m_node != last)
                     ((SBResourceUnkAdvance *)&current)->FUN_006057c0();
-                SBResourceManager::Tree44::Iterator result;
-                tree.FUN_00601210(result, first, last);
+                SBResourceManager::Tree44::Iterator firstIterator(first);
+                SBResourceManager::Tree44::Iterator lastIterator(last);
+                SBResourceManager::Tree44::Iterator result = tree.FUN_00601210(firstIterator, lastIterator);
             }
         }
     }
@@ -518,7 +520,7 @@ inline SBResourceManager::Tree44::Iterator SBResourceFindWrapped(
         ? found : SBResourceManager::Tree44::Iterator(head));
 }
 
-// Unannotated: counted callers use a different shared entity in an unassigned TU.
+// FUNCTION: GAME 0x00600820
 bool RHUnk00600820::ResolveSurface(void *surface, unsigned int indexValue, float *output)
 {
     unsigned long &id = *(unsigned long *)&surface;
@@ -749,7 +751,7 @@ inline SBResourceUnkKeyIterator SBResourceFindExternalEnd(
 inline SBResourceUnkKeyIterator SBResourceFind(
     SBResourceManager::Tree34 &tree, const unsigned long &key)
 {
-    SBResourceUnkKeyIterator found(tree.FUN_005093e0(key));
+    SBResourceUnkKeyIterator found((SBResourceUnkKeyNode *)((RHFrameHolderRowMap &)tree).FUN_005093e0(key));
     SBResourceUnkKeyNode *head = tree.m_head;
     return (found.m_node != head && key >= found.m_node->m_key
         ? found : SBResourceUnkKeyIterator(head));
@@ -870,17 +872,17 @@ inline SBResourceTreeIterator SBResourceTreeStorage<S, C, I>::Begin()
     return SBResourceTreeIterator(Leftmost());
 }
 
-template<> SBResourceTreeIterator SBResourceTreeStorage<0x20, 0x1c, 0x54>::EraseRange(SBResourceTreeLinks *first, SBResourceTreeLinks *last);
-template<> SBResourceTreeIterator SBResourceTreeStorage<0x20, 0x1c, 0x64>::EraseRange(SBResourceTreeLinks *first, SBResourceTreeLinks *last);
+template<> SBResourceTreeIterator SBResourceTreeStorage<0x20, 0x1c, 0x54>::EraseRange(SBResourceTreeIterator first, SBResourceTreeIterator last);
+template<> SBResourceTreeIterator SBResourceTreeStorage<0x20, 0x1c, 0x64>::EraseRange(SBResourceTreeIterator first, SBResourceTreeIterator last);
 
-// Parked: explicit erase-result address and head/nil-delete registers differ.
-// STUB: GAME 0x005fd010
+// FUNCTION: GAME 0x005fd010
 template<> void SBResourceTreeStorage<0x34, 0x30, 0x44>::Dispose()
 {
     SBResourceManager::Tree44 &tree = *(SBResourceManager::Tree44 *)this;
     {
-        SBResourceManager::Tree44::Iterator result;
-        tree.FUN_00601210(result, (SBResourceManager::Node<unsigned long> *)Leftmost(), tree.m_head);
+        SBResourceManager::Tree44::Iterator first((SBResourceManager::Node<unsigned long> *)m_head->m_left);
+        SBResourceManager::Tree44::Iterator last(tree.m_head);
+        SBResourceManager::Tree44::Iterator result = tree.FUN_00601210(first, last);
     }
     operator delete(m_head);
     m_head = 0;
@@ -894,44 +896,54 @@ template<> void SBResourceTreeStorage<0x34, 0x30, 0x44>::Dispose()
     }
 }
 
-// Parked: erase return storage and the later lock retain separate frame slots.
-// STUB: GAME 0x005fd080
+// FUNCTION: GAME 0x005fd080
 template<> void SBResourceTreeStorage<0x20, 0x1c, 0x54>::Dispose()
 {
-    EraseRange(m_head->m_left, m_head);
+    {
+        SBResourceTreeIterator first(m_head->m_left);
+        SBResourceTreeIterator last(m_head);
+        SBResourceTreeIterator result = EraseRange(first, last);
+    }
     operator delete(m_head);
     m_head = 0;
     m_size = 0;
-    RHUnk00641782 lock;
-    if (--g_unk0x006c1860 == 0) {
-        operator delete(g_unk0x006c185c);
-        g_unk0x006c185c = 0;
+    {
+        RHUnk00641782 lock;
+        if (--g_unk0x006c1860 == 0) {
+            operator delete(g_unk0x006c185c);
+            g_unk0x006c185c = 0;
+        }
     }
 }
 
-// Parked: erase return storage and the later lock retain separate frame slots.
-// STUB: GAME 0x005fd0f0
+// FUNCTION: GAME 0x005fd0f0
 template<> void SBResourceTreeStorage<0x20, 0x1c, 0x64>::Dispose()
 {
-    EraseRange(m_head->m_left, m_head);
+    {
+        SBResourceTreeIterator first(m_head->m_left);
+        SBResourceTreeIterator last(m_head);
+        SBResourceTreeIterator result = EraseRange(first, last);
+    }
     operator delete(m_head);
     m_head = 0;
     m_size = 0;
-    RHUnk00641782 lock;
-    if (--g_unk0x006c1868 == 0) {
-        operator delete(g_unk0x006c1864);
-        g_unk0x006c1864 = 0;
+    {
+        RHUnk00641782 lock;
+        if (--g_unk0x006c1868 == 0) {
+            operator delete(g_unk0x006c1864);
+            g_unk0x006c1864 = 0;
+        }
     }
 }
 
-// Parked: explicit erase-result address and head/nil-delete registers differ.
-// STUB: GAME 0x005fd160
+// FUNCTION: GAME 0x005fd160
 template<> void SBResourceTreeStorage<0x40, 0x3c, 0x74>::Dispose()
 {
     SBResourceManager::Tree74 &tree = *(SBResourceManager::Tree74 *)this;
     {
-        SBResourceUnkKeyIterator result;
-        tree.FUN_00601a40(result, (SBResourceUnkKeyNode *)Leftmost(), tree.m_head);
+        SBResourceUnkKeyIterator first((SBResourceUnkKeyNode *)m_head->m_left);
+        SBResourceUnkKeyIterator last(tree.m_head);
+        SBResourceUnkKeyIterator result = tree.FUN_00601a40(first, last);
     }
     operator delete(m_head);
     m_head = 0;
@@ -945,25 +957,25 @@ template<> void SBResourceTreeStorage<0x40, 0x3c, 0x74>::Dispose()
     }
 }
 
-// Parked: explicit erase output storage does not share the subsequent lock slot.
-// STUB: GAME 0x00601070
+// FUNCTION: GAME 0x00601070
 template<> void SBResourceTreeStorage<0x40, 0x3c, 0x84>::Dispose()
 {
     SBResourceManager::Tree84 &tree = *(SBResourceManager::Tree84 *)this;
     {
-        SBResourceTreeFindIterator<SBResourceManager::Node<SBResourceManager::Element> > result;
         typedef SBResourceTreeFindIterator<SBResourceManager::Node<SBResourceManager::Element> > Iterator;
-        Iterator &(SBResourceManager::Tree84::*erase)(Iterator &, SBResourceManager::Node<SBResourceManager::Element> *, SBResourceManager::Node<SBResourceManager::Element> *) = &SBResourceManager::Tree84::FUN_00601d50;
-        (tree.*erase)(result, (SBResourceManager::Node<SBResourceManager::Element> *)Leftmost(),
-            (SBResourceManager::Node<SBResourceManager::Element> *)m_head);
+        Iterator first((SBResourceManager::Node<SBResourceManager::Element> *)m_head->m_left);
+        Iterator last(tree.m_head);
+        Iterator result = tree.FUN_00601d50(first, last);
     }
     operator delete(m_head);
     m_head = 0;
     m_size = 0;
-    RHUnk00641782 lock;
-    if (--g_unk0x006c1878 == 0) {
-        operator delete(g_unk0x006c1874);
-        g_unk0x006c1874 = 0;
+    {
+        RHUnk00641782 lock;
+        if (--g_unk0x006c1878 == 0) {
+            operator delete(g_unk0x006c1874);
+            g_unk0x006c1874 = 0;
+        }
     }
 }
 
@@ -1002,10 +1014,10 @@ template<> SBResourceTreeStorage<0x34, 0x30, 0x44>::InsertResult SBResourceTreeS
 }
 
 // FUNCTION: GAME 0x00601210
-SBResourceManager::Tree44::Iterator &SBResourceManager::Tree44::FUN_00601210(Iterator &result, Node<unsigned long> *first, Node<unsigned long> *last)
+SBResourceManager::Tree44::Iterator SBResourceManager::Tree44::FUN_00601210(Iterator first, Iterator last)
 {
     SBResourceTreeStorage<0x34, 0x30, 0x44> &tree = *(SBResourceTreeStorage<0x34, 0x30, 0x44> *)this;
-    if (tree.m_size != 0 && first == (Node<unsigned long> *)tree.Leftmost() && last == m_head) {
+    if (tree.m_size != 0 && first.m_node == (Node<unsigned long> *)tree.Leftmost() && last.m_node == m_head) {
         RHUnk00641782 lock;
         SBResourceTreeLinks *node = tree.Root();
         {
@@ -1021,16 +1033,14 @@ SBResourceManager::Tree44::Iterator &SBResourceManager::Tree44::FUN_00601210(Ite
         tree.m_size = 0;
         tree.Leftmost() = (SBResourceTreeLinks *)m_head;
         tree.Rightmost() = (SBResourceTreeLinks *)m_head;
-        result.m_node = (Node<unsigned long> *)tree.Begin().m_node;
-        return result;
+        return Iterator((Node<unsigned long> *)tree.Begin().m_node);
     }
-    while (first != last) {
-        SBResourceTreeLinks *node = (SBResourceTreeLinks *)first;
+    while (first.m_node != last.m_node) {
+        SBResourceTreeLinks *node = (SBResourceTreeLinks *)first.m_node;
         ((SBResourceUnkAdvance *)&first)->FUN_006057c0();
         tree.EraseNode(node);
     }
-    result.m_node = first;
-    return result;
+    return first;
 }
 
 // FUNCTION: GAME 0x00601350
@@ -1039,12 +1049,16 @@ unsigned int SBResourceManager::Tree44::FUN_00601350(const unsigned long &key)
     Node<unsigned long> *last = FUN_00605770(key);
     Node<unsigned long> *first = FUN_00605220(key);
     unsigned int count = 0;
-    Iterator current(first);
-    while (current.m_node != last) {
-        ++count;
-        ((SBResourceUnkAdvance *)&current)->FUN_006057c0();
+    {
+        Iterator current(first);
+        while (current.m_node != last) {
+            ++count;
+            ((SBResourceUnkAdvance *)&current)->FUN_006057c0();
+        }
     }
-    FUN_00601210(current, first, last);
+    Iterator firstIterator(first);
+    Iterator lastIterator(last);
+    FUN_00601210(firstIterator, lastIterator);
     return count;
 }
 
@@ -1092,9 +1106,9 @@ template<> SBResourceTreeStorage<0x20, 0x1c, 0x54>::InsertResult SBResourceTreeS
 }
 
 // FUNCTION: GAME 0x00601520
-template<> SBResourceTreeIterator SBResourceTreeStorage<0x20, 0x1c, 0x54>::EraseRange(SBResourceTreeLinks *first, SBResourceTreeLinks *last)
+template<> SBResourceTreeIterator SBResourceTreeStorage<0x20, 0x1c, 0x54>::EraseRange(SBResourceTreeIterator firstIterator, SBResourceTreeIterator lastIterator)
 {
-    if (m_size != 0 && first == m_head->m_left && last == m_head) {
+    if (m_size != 0 && firstIterator.m_node == m_head->m_left && lastIterator.m_node == m_head) {
         RHUnk00641782 lock;
         SBResourceTreeLinks *node = m_head->m_parent;
         {
@@ -1111,12 +1125,12 @@ template<> SBResourceTreeIterator SBResourceTreeStorage<0x20, 0x1c, 0x54>::Erase
         Rightmost() = m_head;
         return Begin();
     }
-    while (first != last) {
-        SBResourceTreeLinks *node = first;
-        ((SBResourceTreeIterator54 *)&first)->FUN_00605870();
+    while (firstIterator.m_node != lastIterator.m_node) {
+        SBResourceTreeLinks *node = firstIterator.m_node;
+        ((SBResourceTreeIterator54 *)&firstIterator)->FUN_00605870();
         EraseNode(node);
     }
-    return SBResourceTreeIterator(first);
+    return firstIterator;
 }
 
 // FUNCTION: GAME 0x00601650
@@ -1163,9 +1177,9 @@ template<> SBResourceTreeStorage<0x20, 0x1c, 0x64>::InsertResult SBResourceTreeS
 }
 
 // FUNCTION: GAME 0x006017d0
-template<> SBResourceTreeIterator SBResourceTreeStorage<0x20, 0x1c, 0x64>::EraseRange(SBResourceTreeLinks *first, SBResourceTreeLinks *last)
+template<> SBResourceTreeIterator SBResourceTreeStorage<0x20, 0x1c, 0x64>::EraseRange(SBResourceTreeIterator firstIterator, SBResourceTreeIterator lastIterator)
 {
-    if (m_size != 0 && first == m_head->m_left && last == m_head) {
+    if (m_size != 0 && firstIterator.m_node == m_head->m_left && lastIterator.m_node == m_head) {
         RHUnk00641782 lock;
         SBResourceTreeLinks *node = m_head->m_parent;
         {
@@ -1183,12 +1197,12 @@ template<> SBResourceTreeIterator SBResourceTreeStorage<0x20, 0x1c, 0x64>::Erase
         Rightmost() = m_head;
         return Begin();
     }
-    while (first != last) {
-        SBResourceTreeLinks *node = first;
-        ((SBResourceTreeIterator64 *)&first)->FUN_00605920();
+    while (firstIterator.m_node != lastIterator.m_node) {
+        SBResourceTreeLinks *node = firstIterator.m_node;
+        ((SBResourceTreeIterator64 *)&firstIterator)->FUN_00605920();
         EraseNode(node);
     }
-    return SBResourceTreeIterator(first);
+    return firstIterator;
 }
 
 // FUNCTION: GAME 0x00601910
@@ -1226,10 +1240,10 @@ template<> SBResourceTreeStorage<0x40, 0x3c, 0x74>::InsertResult SBResourceTreeS
 }
 
 // FUNCTION: GAME 0x00601a40
-SBResourceUnkKeyIterator &SBResourceManager::Tree74::FUN_00601a40(SBResourceUnkKeyIterator &result, SBResourceUnkKeyNode *first, SBResourceUnkKeyNode *last)
+SBResourceUnkKeyIterator SBResourceManager::Tree74::FUN_00601a40(SBResourceUnkKeyIterator first, SBResourceUnkKeyIterator last)
 {
     SBResourceTreeStorage<0x40, 0x3c, 0x74> &tree = *(SBResourceTreeStorage<0x40, 0x3c, 0x74> *)this;
-    if (tree.m_size != 0 && first == (SBResourceUnkKeyNode *)tree.Leftmost() && last == m_head) {
+    if (tree.m_size != 0 && first.m_node == (SBResourceUnkKeyNode *)tree.Leftmost() && last.m_node == m_head) {
         RHUnk00641782 lock;
         SBResourceTreeLinks *node = tree.Root();
         {
@@ -1245,16 +1259,14 @@ SBResourceUnkKeyIterator &SBResourceManager::Tree74::FUN_00601a40(SBResourceUnkK
         tree.m_size = 0;
         tree.Leftmost() = (SBResourceTreeLinks *)m_head;
         tree.Rightmost() = (SBResourceTreeLinks *)m_head;
-        result.m_node = (SBResourceUnkKeyNode *)tree.Begin().m_node;
-        return result;
+        return SBResourceUnkKeyIterator((SBResourceUnkKeyNode *)tree.Begin().m_node);
     }
-    while (first != last) {
-        SBResourceTreeLinks *node = (SBResourceTreeLinks *)first;
+    while (first.m_node != last.m_node) {
+        SBResourceTreeLinks *node = (SBResourceTreeLinks *)first.m_node;
         ((SBResourceTreeIterator74 *)&first)->FUN_00605a20();
         tree.EraseNode(node);
     }
-    result.m_node = first;
-    return result;
+    return first;
 }
 
 // FUNCTION: GAME 0x00601b80
@@ -1263,12 +1275,16 @@ unsigned int SBResourceManager::Tree74::FUN_00601b80(const unsigned long &key)
     SBResourceUnkKeyNode *last = FUN_006059d0(key);
     SBResourceUnkKeyNode *first = FUN_00605550(key);
     unsigned int count = 0;
-    SBResourceUnkKeyIterator current(first);
-    while (current.m_node != last) {
-        ++count;
-        ((SBResourceTreeIterator74 *)&current)->FUN_00605a20();
+    {
+        SBResourceUnkKeyIterator current(first);
+        while (current.m_node != last) {
+            ++count;
+            ((SBResourceTreeIterator74 *)&current)->FUN_00605a20();
+        }
     }
-    FUN_00601a40(current, first, last);
+    SBResourceUnkKeyIterator firstIterator(first);
+    SBResourceUnkKeyIterator lastIterator(last);
+    FUN_00601a40(firstIterator, lastIterator);
     return count;
 }
 
@@ -1316,10 +1332,10 @@ template<> SBResourceTreeStorage<0x40, 0x3c, 0x84>::InsertResult SBResourceTreeS
 }
 
 // FUNCTION: GAME 0x00601d50
-SBResourceTreeFindIterator<SBResourceManager::Node<SBResourceManager::Element> > &SBResourceManager::Tree84::FUN_00601d50(SBResourceTreeFindIterator<Node<Element> > &result, Node<Element> *first, Node<Element> *last)
+SBResourceTreeFindIterator<SBResourceManager::Node<SBResourceManager::Element> > SBResourceManager::Tree84::FUN_00601d50(SBResourceTreeFindIterator<Node<Element> > first, SBResourceTreeFindIterator<Node<Element> > last)
 {
     SBResourceTreeStorage<0x40, 0x3c, 0x84> &tree = *(SBResourceTreeStorage<0x40, 0x3c, 0x84> *)this;
-    if (tree.m_size != 0 && first == (Node<Element> *)tree.Leftmost() && last == m_head) {
+    if (tree.m_size != 0 && first.m_node == (Node<Element> *)tree.Leftmost() && last.m_node == m_head) {
         RHUnk00641782 lock;
         SBResourceTreeLinks *node = tree.Root();
         {
@@ -1335,16 +1351,14 @@ SBResourceTreeFindIterator<SBResourceManager::Node<SBResourceManager::Element> >
         tree.m_size = 0;
         tree.Leftmost() = (SBResourceTreeLinks *)m_head;
         tree.Rightmost() = (SBResourceTreeLinks *)m_head;
-        result.m_node = (Node<Element> *)tree.Begin().m_node;
-        return result;
+        return SBResourceTreeFindIterator<Node<Element> >((Node<Element> *)tree.Begin().m_node);
     }
-    while (first != last) {
-        SBResourceTreeLinks *node = (SBResourceTreeLinks *)first;
+    while (first.m_node != last.m_node) {
+        SBResourceTreeLinks *node = (SBResourceTreeLinks *)first.m_node;
         ((SBResourceTreeIterator84 *)&first)->FUN_00605b20();
         tree.EraseNode(node);
     }
-    result.m_node = first;
-    return result;
+    return first;
 }
 
 // FUNCTION: GAME 0x00601e90
@@ -1353,12 +1367,16 @@ unsigned int SBResourceManager::Tree84::FUN_00601e90(const unsigned long &key)
     Node<Element> *last = FUN_00605ad0(key);
     Node<Element> *first = FUN_00605660(key);
     unsigned int count = 0;
-    SBResourceTreeFindIterator<Node<Element> > current(first);
-    while (current.m_node != last) {
-        ++count;
-        ((SBResourceTreeIterator84 *)&current)->FUN_00605b20();
+    {
+        SBResourceTreeFindIterator<Node<Element> > current(first);
+        while (current.m_node != last) {
+            ++count;
+            ((SBResourceTreeIterator84 *)&current)->FUN_00605b20();
+        }
     }
-    FUN_00601d50(current, first, last);
+    SBResourceTreeFindIterator<Node<Element> > firstIterator(first);
+    SBResourceTreeFindIterator<Node<Element> > lastIterator(last);
+    FUN_00601d50(firstIterator, lastIterator);
     return count;
 }
 

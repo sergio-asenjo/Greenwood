@@ -192,6 +192,12 @@ struct SBFontNode0061f3e0
     int m_2c; // 0x2c
 };
 
+class SBFontUnk00620c90
+{
+public:
+    SBFontUnk00620c90 *FUN_00620c90(int value);
+};
+
 // SIZE 0x04
 struct SBFontIterator0061f3e0
 {
@@ -199,6 +205,12 @@ struct SBFontIterator0061f3e0
     static SBFontNode0061f3e0 *&Left(SBFontNode0061f3e0 *value) { return value->m_00; }
     void FUN_00620e30();
     void FUN_00620ef0();
+    SBFontIterator0061f3e0 operator++(int)
+    {
+        SBFontIterator0061f3e0 previous = *this;
+        FUN_00620ef0();
+        return previous;
+    }
 };
 
 // SIZE 0x08
@@ -220,6 +232,19 @@ public:
     bool m_08; // 0x08
     undefined m_09[3]; // 0x09
     unsigned m_0c; // 0x0c
+    void FUN_0061e740();
+    SBFontIterator0061f3e0 FUN_0061efe0(SBFontIterator0061f3e0, SBFontIterator0061f3e0);
+    SBFontIterator0061f3e0 FUN_0061f550(SBFontIterator0061f3e0);
+    void FUN_0061fb40(SBFontNode0061f3e0 *);
+    SBFontNode0061f3e0 *&root() { return m_04->m_04; }
+    SBFontNode0061f3e0 *&leftmost() { return m_04->m_00; }
+    SBFontNode0061f3e0 *&rightmost() { return m_04->m_08; }
+    SBFontIterator0061f3e0 begin()
+    {
+        SBFontIterator0061f3e0 result;
+        result.m_00 = leftmost();
+        return result;
+    }
     SBFontPair0061f3e0 FUN_0061f3e0(const SBFontValue0061f120 &);
     SBFontIterator0061f3e0 FUN_00620130(SBFontNode0061f3e0 *, SBFontNode0061f3e0 *, const SBFontValue0061f120 &);
 };

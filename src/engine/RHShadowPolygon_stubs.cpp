@@ -13,8 +13,6 @@ void RHShadowPolygon::FUN_00595020() {}
 void RHShadowPolygon::FUN_005959e0() {}
 
 void RHUnk004a96a0::FUN_004a96a0(void *, void *, void *, bool) {}
-RHShadowVectorStdList::~RHShadowVectorStdList() {}
-RHScriptIter RHShadowPointListBase::FUN_0044e850(RHScriptIter, RHScriptIter last) { return last; }
 RHUnk00564020::~RHUnk00564020() {}
 void RHUnk0059f000::FUN_0059f000() {}
 void RHUnk0059ec90::FUN_0059ec90() {}
@@ -33,7 +31,6 @@ RHUnk005c9010Iterator RHUnk005c9010Iterator::FUN_0057c9c0(int)
     ++*this;
     return previous;
 }
-RHUnk005fc3b0 RHUnk005fc3b0::FUN_005fc9e0(float, float) { return *this; }
 void RHShadowUnk0060c260::FUN_0060c260(const SBGeoPoint2D &) {}
 void RHShadowUnk0060c260::FUN_0060c280() {}
 const SBGeoPoint2D &RHShadowUnk0060c260::FUN_0060c2b0(unsigned short) { return *(const SBGeoPoint2D *)m_0; }

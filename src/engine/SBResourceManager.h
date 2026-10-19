@@ -9,7 +9,6 @@ template<class T> struct SBResourceTreeFindIterator
     T *m_node;
     SBResourceTreeFindIterator() {}
     SBResourceTreeFindIterator(T *node) : m_node(node) {}
-    SBResourceTreeFindIterator(const SBResourceTreeFindIterator &other) : m_node(other.m_node) {}
 };
 
 class SBResourceSurfaceArray
@@ -159,7 +158,7 @@ public:
     InsertResult Insert(const unsigned long &);
     SBResourceTreeIterator InsertNode(SBResourceTreeLinks *, SBResourceTreeLinks *, const unsigned long &);
     SBResourceTreeIterator EraseNode(SBResourceTreeLinks *);
-    SBResourceTreeIterator EraseRange(SBResourceTreeLinks *, SBResourceTreeLinks *);
+    SBResourceTreeIterator EraseRange(SBResourceTreeIterator, SBResourceTreeIterator);
     SBResourceTreeLinks *&Root();
     SBResourceTreeLinks *&Leftmost();
     SBResourceTreeLinks *&Rightmost();
@@ -191,7 +190,6 @@ public:
             Node<unsigned long> *m_node;
             Iterator() {}
             Iterator(Node<unsigned long> *node) : m_node(node) {}
-            Iterator(const Iterator &other) : m_node(other.m_node) {}
         };
         char m_00[4];
         Node<unsigned long> *m_head;
@@ -199,7 +197,7 @@ public:
         Iterator &FUN_00602580(Iterator &, const unsigned long &);
         Iterator FUN_006013a0(const unsigned long &);
         Node<unsigned long> *FUN_00605770(const unsigned long &);
-        Iterator &FUN_00601210(Iterator &, Node<unsigned long> *, Node<unsigned long> *);
+        Iterator FUN_00601210(Iterator, Iterator);
         unsigned int FUN_00601350(const unsigned long &);
     };
     class Tree84
@@ -211,7 +209,7 @@ public:
         Node<Element> *FUN_00605ad0(const unsigned long &);
         SBResourceTreeFindIterator<Node<Element> > FUN_00601ee0(const unsigned long &);
         unsigned int FUN_00601e90(const unsigned long &);
-        SBResourceTreeFindIterator<Node<Element> > &FUN_00601d50(SBResourceTreeFindIterator<Node<Element> > &, Node<Element> *, Node<Element> *);
+        SBResourceTreeFindIterator<Node<Element> > FUN_00601d50(SBResourceTreeFindIterator<Node<Element> >, SBResourceTreeFindIterator<Node<Element> >);
         Node<Element> *&FUN_00604d30(Node<Element> *&, const unsigned long &);
     };
     struct ResourceNode
@@ -234,7 +232,6 @@ public:
     public:
         char m_00[4];
         SBResourceUnkKeyNode *m_head;
-        SBResourceUnkKeyNode *FUN_005093e0(const unsigned long &);
     };
     class Tree74
     {
@@ -244,7 +241,7 @@ public:
         SBResourceUnkKeyNode *FUN_00605550(const unsigned long &);
         SBResourceUnkKeyNode *FUN_006059d0(const unsigned long &);
         unsigned int FUN_00601b80(const unsigned long &);
-        SBResourceUnkKeyIterator &FUN_00601a40(SBResourceUnkKeyIterator &, SBResourceUnkKeyNode *, SBResourceUnkKeyNode *);
+        SBResourceUnkKeyIterator FUN_00601a40(SBResourceUnkKeyIterator, SBResourceUnkKeyIterator);
         SBResourceUnkKeyIterator FUN_00601bd0(const unsigned long &);
         SBResourceUnkKeyNode *&FUN_006042a0(SBResourceUnkKeyNode *&, const unsigned long &);
     };

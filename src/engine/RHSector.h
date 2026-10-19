@@ -16,6 +16,7 @@ class RHSector
 {
 public:
     RHSector();
+    ~RHSector();
     virtual void UnkV0(); // vtable+0x00
     int Unk0057cd60(SBFile &file, bool mode);
     void FUN_0057d390(void *draw, unsigned long surface, const SBGeoBoundingBox2D &box, float scale, unsigned short layer);
@@ -308,6 +309,7 @@ public:
 class RHUnk0057d490
 {
 public:
+    virtual ~RHUnk0057d490();
     void FUN_0057d760(void *gate, bool side);
     void Emit(void *gate, bool side);
 };
@@ -318,7 +320,7 @@ class RHUnk0057d440 : public RHSector
 {
 public:
     RHUnk0057d440();
-    ~RHUnk0057d440();
+    virtual ~RHUnk0057d440();
     virtual void UnkV0(); // vtable+0x00
     virtual void UnkV4(SBFile &file, bool mode); // vtable+0x04
     virtual void UnkV8(); // vtable+0x08
@@ -332,6 +334,7 @@ class RHUnk0057d3a0 : public RHSector
 {
 public:
     RHUnk0057d3a0();
+    virtual ~RHUnk0057d3a0();
 };
 
 // VTABLE: GAME 0x00679c14
@@ -340,6 +343,7 @@ class RHUnk0057d3f0 : public RHSector
 {
 public:
     RHUnk0057d3f0();
+    virtual ~RHUnk0057d3f0();
 };
 
 // VTABLE: GAME 0x00679c6c
@@ -348,12 +352,14 @@ class RHUnk0057ed80 : public RHSector
 {
 public:
     RHUnk0057ed80();
+    virtual ~RHUnk0057ed80();
 };
 
 class RHUnk0057dc80
 {
 public:
     RHUnk0057dc80();
+    ~RHUnk0057dc80();
     void FUN_0057d490();
     char m_00[0x30];
     int m_30;

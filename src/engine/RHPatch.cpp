@@ -136,6 +136,15 @@ bool RHUnk0054f870::Unk0054f870(SBFile &file)
     return true;
 }
 
+// FUNCTION: GAME 0x0054fe10
+void RHPatch::FUN_0054fe10()
+{
+    RHPatchDoorCalls **first = *(RHPatchDoorCalls ***)((char *)this + 0x15c);
+    unsigned count = first == 0 ? 0 : *(RHPatchDoorCalls ***)((char *)this + 0x160) - first;
+    for (unsigned i = 0; i < count; ++i)
+        (*(RHPatchDoorCalls ***)((char *)this + 0x15c))[i]->FUN_0051b660();
+}
+
 // FUNCTION: GAME 0x005502c0
 void RHPatch::Enter(RHElementActor *actor)
 {

@@ -2,9 +2,9 @@
 #include "SBUIRenderer.h"
 #include "SBUIRendererListbox.h"
 #include "SB.h"
-#include "RHUnk005cbb80.h"
 
 // SIZE 0x08
+class SBGeoVector2D;
 class SBGeoPoint2D
 {
 public:
@@ -12,16 +12,25 @@ public:
     ~SBGeoPoint2D();
     SBGeoPoint2D &operator=(const SBGeoPoint2D &);
     SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &) const;
-    SBGeoPoint2D Unk005fc110(const SBGeoPoint2D &) const;
+    SBGeoVector2D Unk005fc110(const SBGeoPoint2D &) const;
     float m_x; // 0x00
     float m_y; // 0x04
 };
 
 // SIZE 0x08
-class RHUnk005fc3b0 : public SBGeoPoint2D
+class SBGeoVector2D : public SBGeoPoint2D
 {
 public:
-    RHUnk005fc3b0();
+    SBGeoVector2D();
+    ~SBGeoVector2D() {}
+    SBGeoVector2D &operator=(const SBGeoVector2D &other);
+    SBGeoVector2D(const SBGeoVector2D &other);
+};
+
+class RHUnk005fc3b0 : public SBGeoVector2D
+{
+public:
+    RHUnk005fc3b0() {}
     ~RHUnk005fc3b0() {}
 };
 
@@ -46,11 +55,26 @@ public:
     undefined m_00[0x14]; // 0x00
 };
 
+class RHMobileUnk00607da0
+{
+public:
+    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
+};
+
 class SBResourceManager
 {
 public:
     bool GetSurfaceForResource(long, unsigned int, unsigned int &);
 };
+
+#ifndef RHUNK00600820_VIEW
+#define RHUNK00600820_VIEW
+class RHUnk00600820
+{
+public:
+    bool ResolveSurface(void *surface, unsigned int id, float *value);
+};
+#endif
 
 class SBDrawManager
 {
@@ -59,7 +83,10 @@ public:
         SBGeoBoundingBox2D *, unsigned short, unsigned short, unsigned long);
 };
 
+#include "RHUnk005cbb80.h"
+
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
+DECOMP_SIZE_ASSERT(RHPortraitRenderer0060d470, 0x4c)
 DECOMP_SIZE_ASSERT(RHUnk005fc3b0, 0x08)
 DECOMP_SIZE_ASSERT(SBGeoBoundingBox2D, 0x14)
 DECOMP_SIZE_ASSERT(RHMobileUnk006091b0, 0x14)
@@ -88,32 +115,28 @@ public:
         SBGeoBoundingBox2D *, unsigned long);
 };
 
-// Parked: the literal vptr store is hoisted before the string allocator-byte store.
-// STUB: GAME 0x0060d420
+// FUNCTION: GAME 0x0060d420
 RHPortraitRenderer0060d470::RHPortraitRenderer0060d470()
 {
-    char *bytes = (char *)this;
-    ((SBGeoBoundingBox2D *)(bytes + 8))->SBGeoBoundingBox2D::SBGeoBoundingBox2D();
-    char allocator;
-    bytes[0x28] = allocator;
-    *(unsigned *)(bytes + 0x2c) = 0;
-    *(unsigned *)(bytes + 0x30) = 0;
-    *(unsigned *)(bytes + 0x34) = 0;
-    m_vptr = 0x0067a654;
-    *(unsigned *)(bytes + 0x38) = -1;
-    *(unsigned *)(bytes + 0x3c) = 0;
+    m_widgetResource = -1;
+    m_3c = 0;
     RHMapResources *resources = g_unk0x006c1840;
-    *(unsigned *)(bytes + 0x1c) = 0;
-    *(unsigned *)(bytes + 0x40) = 0;
-    *(unsigned *)(bytes + 0x44) = 0;
-    *(unsigned *)(bytes + 0x48) = 0;
-    *(RHMapResources **)(bytes + 4) = resources;
+    m_drawManager = 0;
+    m_40 = 0;
+    m_44 = 0;
+    m_48 = 0;
+    m_resources = resources;
+}
+
+// FUNCTION: GAME 0x0060d470
+RHPortraitRenderer0060d470::~RHPortraitRenderer0060d470()
+{
 }
 
 // FUNCTION: GAME 0x0060d500
 unsigned int SBUIUnk0060d530::FUN_0060d500(unsigned int id)
 {
-    m_resource->GetSurfaceForResource(m_resourceId, id, id);
+    ((RHUnk00600820 *)m_resource)->ResolveSurface((void *)m_resourceId, id, (float *)&id);
     return id;
 }
 
@@ -164,7 +187,7 @@ void SBUIUnk0060d530::FUN_0060d6a0(const SBGeoBoundingBox2D &box)
 {
     RHUnk005fc3b0 size;
     SBGeoBoundingBox2D &position = m_box;
-    position = box;
+    ((RHMobileUnk00607da0 *)&position)->FUN_00607da0((const RHMobileUnk00607da0 &)box);
     if (position.m_p1.m_x - position.m_p0.m_x == g_unk0x00677488 && m_resourceId != -1)
     {
         if (!((SBUIUnk006006f0 *)m_resource)->FUN_006006f0(m_resourceId, size))
@@ -211,7 +234,7 @@ bool SBUIUnk0060da20::FUN_0060da20(unsigned int id)
         return false;
     }
     unsigned int surface;
-    if (m_resource->GetSurfaceForResource(m_resourceId, id, surface) != true)
+    if (((RHUnk00600820 *)m_resource)->ResolveSurface((void *)m_resourceId, id, (float *)&surface) != true)
     {
         SBAssert(0,
             // STRING: GAME 0x006bb558
@@ -232,7 +255,7 @@ bool SBUIUnk0060dae0::FUN_0060dae0(unsigned int id)
     if (id != 0xff && m_resourceId != -1)
     {
         unsigned int surface;
-        if (m_resource->GetSurfaceForResource(m_resourceId, id, surface) != true)
+        if (((RHUnk00600820 *)m_resource)->ResolveSurface((void *)m_resourceId, id, (float *)&surface) != true)
         {
             SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBUIRenderer.cpp", 0x173,
                 "Unable to retrieve a resource for the bitmap renderer");
@@ -251,7 +274,7 @@ bool SBUIUnk0060dae0::FUN_0060dae0(unsigned int id)
 // FUNCTION: GAME 0x0060db80
 unsigned int SBUIUnk0060dae0::FUN_0060db80(unsigned int id)
 {
-    m_resource->GetSurfaceForResource(m_resourceId, id, id);
+    ((RHUnk00600820 *)m_resource)->ResolveSurface((void *)m_resourceId, id, (float *)&id);
     if (((unsigned int *)(m_bytes + 0x40))[*(unsigned int *)(m_bytes + 0x48) & 1] != id)
         id = -1;
     return id;
@@ -301,6 +324,8 @@ bool SBUIUnk0060dd00::FUN_0060e0d0(void *first, void *second, void *third, void 
     *(void **)(m_bytes + 0x5c) = fourth;
     return true;
 }
+
+void RHPortraitRenderer0060d470::FUN_0060d530(unsigned int) {}
 
 void EmitSBUIRenderer(SBUIUnk0060da20 *bitmap, SBUIUnk0060dae0 *alpha,
     SBUIUnk0060d530 *base, SBUIUnk0060dd00 *text)

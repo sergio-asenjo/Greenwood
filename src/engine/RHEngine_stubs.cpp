@@ -1,12 +1,38 @@
 #include "SBNullstr.h"
 #include "RHEngine.h"
 #include "RHScript.h"
+#include "RHEngineSpriteCalls.h"
+
+void RHEngineSpriteCalls::FUN_005bd4e0() {}
 
 void RHEngineContinuationCampaignCalls::FUN_00450c10(void *, SBFile &) {}
 void FUN_00570850(void *) {}
 RHUnk004a1bc0::RHUnk004a1bc0(bool) {}
 RHUnk0057ee90::RHUnk0057ee90() {}
-RHUnk0057ee40::RHUnk0057ee40() {}
+// SYNTHETIC: GAME 0x0057eef0
+// RHUnk0057ee90::`scalar deleting destructor'
+RHUnk0057ee90::~RHUnk0057ee90() {}
+
+class RHUnk0051e5e0
+{
+public:
+    void FUN_0057ca80();
+};
+
+// FUNCTION: GAME 0x0057ee40
+RHUnk0057ee40::RHUnk0057ee40()
+{
+    ((RHUnk0051e5e0 *)this)->FUN_0057ca80();
+    *(unsigned *)((char *)this + 0x30) |= 0x90;
+    *(unsigned *)this = 0x679c7c;
+}
+
+// FUNCTION: GAME 0x0057ee80
+RHUnk0057ee40::~RHUnk0057ee40()
+{
+    *(unsigned *)this = 0x679c7c;
+    FUN_0057cbd0();
+}
 bool RHEngineMenuStateCalls::FUN_00514970() { return false; }
 bool RHEngineSequenceStateCalls::FUN_005823f0() { return false; }
 bool RHEngineSequenceStateCalls::FUN_0058a670(void *) { return false; }
@@ -64,12 +90,6 @@ public:
 };
 
 
-class RHUnk00588830
-{
-public:
-    RHUnk00588830(unsigned short level, int command, void *actor, int style, int value);
-    char m_data[0x9c];
-};
 
 
 class RHEngineBackgroundCalls

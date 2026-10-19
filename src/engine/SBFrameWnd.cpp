@@ -215,7 +215,7 @@ bool RHPortraitRootLifetime::FUN_0061a800(void *item)
     first[count] = widget;
     if (m_draw != 0)
         widget->V04(m_display);
-    SBGeoVector2D offset(*(SBGeoPoint2D *)((char *)widget + 0x30));
+    SBGeoVector2D offset(*(SBGeoVector2D *)((char *)widget + 0x30));
     widget->V20(((SBGeoBoundingBox2D *)m_bounds)->m_0.Unk005fc190(offset));
     return true;
 }
@@ -351,7 +351,7 @@ bool SBFrameWnd::FUN_0061ab10(SBFrameWidgetView *widget)
 // FUNCTION: GAME 0x0061ac80
 void SBFrameWnd::FUN_0061ac80(const SBGeoPoint2D &position)
 {
-    SBGeoPoint2D offset = position.Unk005fc110(m_bounds.m_0);
+    SBGeoVector2D offset = position.Unk005fc110(m_bounds.m_0);
     SBGeoBoundingBox2D box = m_bounds.FUN_006090d0((const SBGeoVector2D &)offset);
     V2c(box);
 }
@@ -359,7 +359,7 @@ void SBFrameWnd::FUN_0061ac80(const SBGeoPoint2D &position)
 // FUNCTION: GAME 0x0061ad20
 void SBFrameWnd::FUN_0061ad20(const SBGeoBoundingBox2D &bounds)
 {
-    SBGeoPoint2D offset = bounds.m_0.Unk005fc110(m_bounds.m_0);
+    SBGeoVector2D offset = bounds.m_0.Unk005fc110(m_bounds.m_0);
     for (unsigned index = 0; index < Size(); ++index) {
         SBFrameWidgetView *widget = m_first[index];
         SBGeoBoundingBox2D box(*(SBGeoBoundingBox2D *)((char *)widget + 0x30));

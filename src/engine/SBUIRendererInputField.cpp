@@ -522,7 +522,7 @@ void SBUIInputFieldUnk00621440::FUN_0061e4b0()
 }
 
 // Parked: global-bit branch and fixed-address tail target differ.
-// STUB: GAME 0x0061e4c0
+// LIBRARY: GAME 0x0061e4c0
 void FUN_0061e4c0()
 {
     *(unsigned char *)0x006c223c |= 1;
@@ -621,12 +621,12 @@ bool SBUIInputFieldUnk00621440::FUN_00621c30(const SBGeoBoundingBox2D &box)
     SBGeoPoint2D *origin = (SBGeoPoint2D *)(m_00 + 8);
     bool inside;
     {
-        SBGeoVector2D displacement(*origin);
+        SBGeoVector2D displacement(*(SBGeoVector2D *)origin);
         inside = ((SBGeoBoundingBox2D *)origin)->FUN_006084a0(box.FUN_006090d0(displacement));
     }
     if (inside)
     {
-        SBGeoVector2D displacement(*origin);
+        SBGeoVector2D displacement(*(SBGeoVector2D *)origin);
         ((RHMobileUnk00607da0 *)&m_70)->FUN_00607da0(*(RHMobileUnk00607da0 *)&box.FUN_006090d0(displacement));
         return true;
     }

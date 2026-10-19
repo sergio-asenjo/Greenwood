@@ -330,6 +330,7 @@ public:
 class SBGeoVector2D;
 
 // SIZE 0x08
+class SBGeoVector2D;
 class SBGeoPoint2D
 {
 public:
@@ -340,7 +341,7 @@ public:
     SBGeoPoint2D &operator=(const SBGeoPoint2D &value);
     SBGeoPoint2D &FUN_005fc250(const SBGeoPoint2D &value);
     SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &value) const;
-    SBGeoPoint2D Unk005fc110(const SBGeoPoint2D &value) const;
+    SBGeoVector2D Unk005fc110(const SBGeoPoint2D &value) const;
     SBGeoPoint2D operator+(const SBGeoVector2D &value) const;
     bool Serialize(SBFile &file);
     float m_x; // 0x00
@@ -406,13 +407,7 @@ public:
     void Unk(void *context, int value, void *sequence);
 };
 
-class RHUnk00584d60
-{
-public:
-    RHUnk00584d60(unsigned short level, int command, void *actor);
-    ~RHUnk00584d60();
-    char data[0x64];
-};
+#include "RHSequenceGenericCalls.h"
 
 class RHUnk005866a0
 {
@@ -428,6 +423,7 @@ class RHUnk00588530
 public:
     RHUnk00588530(unsigned short level, int command, void *actor, int style,
         void *target, float distance, void *value);
+    RHUnk00588530(unsigned short level, int command, void *actor, int style, int value);
     ~RHUnk00588530();
     char data[0x68];
     RHUnk00582220 *sequence;
@@ -602,12 +598,6 @@ public:
     char m_data[0x60c];
 };
 
-class RHUnk00588830
-{
-public:
-    RHUnk00588830(unsigned short level, int command, void *actor, int style, int value);
-    char m_data[0x9c];
-};
 
 // SIZE 0x08
 class SBGeoVector2D : public SBGeoPoint2D
@@ -615,15 +605,18 @@ class SBGeoVector2D : public SBGeoPoint2D
 public:
     SBGeoVector2D(float x, float y);
     SBGeoVector2D(const SBGeoPoint2D &value);
+    SBGeoVector2D();
+    SBGeoVector2D &operator=(const SBGeoVector2D &other);
+    SBGeoVector2D(const SBGeoVector2D &other);
 };
 
 DECOMP_SIZE_ASSERT(SBGeoVector2D, 0x08)
 
 // SIZE 0x08
-class RHUnk005fc3b0 : public SBGeoPoint2D
+class RHUnk005fc3b0 : public SBGeoVector2D
 {
 public:
-    RHUnk005fc3b0();
+    RHUnk005fc3b0() {}
     SBGeoVector2D FUN_005fc5d0(float value);
     float Unk005fc6a0(float value);
 };
@@ -2469,7 +2462,7 @@ extern float g_unk0x006774f4;
 extern double g_unk0x006774b8;
 
 // GLOBAL: GAME 0x00677598
-float g_unk0x00677598 = 1.5f;
+float g_unk0x00677598 = 80.0f;
 
 // FUNCTION: GAME 0x004c7cd0
 bool RHEngine::FUN_004c7cd0()
@@ -3271,13 +3264,13 @@ void RHEngine::FUN_004d5320(const void *value)
 class RHUnk004d96d0
 {
 public:
-    SBGeoPoint2D FUN_004d96d0() const;
+    SBGeoVector2D FUN_004d96d0() const;
 };
 
 class RHUnk004d96a0
 {
 public:
-    SBGeoPoint2D FUN_004d96a0() const;
+    SBGeoVector2D FUN_004d96a0() const;
 };
 
 // FUNCTION: GAME 0x004d8fd0
@@ -3313,13 +3306,13 @@ void RHScriptBatchCalls::Unk004d9330(void *actor, bool flag)
 }
 
 // FUNCTION: GAME 0x004d96a0
-SBGeoPoint2D RHUnk004d96a0::FUN_004d96a0() const
+SBGeoVector2D RHUnk004d96a0::FUN_004d96a0() const
 {
     return ((RHUnk004d96d0 *)((char *)*(void **)((char *)this + 0x50) + 4))->FUN_004d96d0();
 }
 
 // FUNCTION: GAME 0x004d96d0
-SBGeoPoint2D RHUnk004d96d0::FUN_004d96d0() const
+SBGeoVector2D RHUnk004d96d0::FUN_004d96d0() const
 {
     return ((SBGeoPoint2D *)((char *)this + 0x20))->Unk005fc110(*(SBGeoPoint2D *)((char *)this + 0x3c));
 }
@@ -4638,7 +4631,7 @@ void RHEngine::FUN_004e2390(void *actor)
     ((RHEngineReinforcementCalls *)this)->FUN_004d8460(reinforcement, 1, 1);
     FUN_0048c5b0(reinforcement, 0);
     RHUnk00582220 *sequence = new RHUnk00582220;
-    RHUnk00588830 *arrival = new RHUnk00588830(1, 0x13, reinforcement, 6, 0);
+    RHUnk00588530 *arrival = new RHUnk00588530(1, 0x13, reinforcement, 6, 0);
     *(void **)((char *)arrival + 0x7c) = door;
     *(int *)((char *)arrival + 0x88) = 2;
     ((RHUnk00585500 *)arrival)->Unk(sequence);
@@ -4792,6 +4785,20 @@ void RHEngineWidenedCalls::FUN_004e3660(char flag)
 {
     *(char *)((char *)this + 0x4e8) = flag;
     RHUnk00546050()->RHUnk005460c0(RHUnk00549250(flag ? 11 : 12, this));
+}
+
+#include "RHEngineSpriteCalls.h"
+
+// FUNCTION: GAME 0x004e36d0
+void RHEngine::FUN_004e36d0()
+{
+    void **first = *(void ***)((char *)this + 0x48dc);
+    unsigned count = first == 0 ? 0 : *(void ***)((char *)this + 0x48e0) - first;
+    for (unsigned i = 0; i < count; ++i) {
+        void *element = (*(void ***)((char *)this + 0x48dc))[i];
+        if ((*(unsigned *)((char *)element + 4) & 3) == 1)
+            (*(RHEngineSpriteCalls **)((char *)element + 0x50))->FUN_005bd4e0();
+    }
 }
 
 // FUNCTION: GAME 0x004e3720
@@ -4965,6 +4972,88 @@ void *RHUnk004e51e0::FUN_004e51e0(unsigned flags)
     if (flags & 1)
         operator delete(this);
     return this;
+}
+
+class RHUnk004e52f0
+{
+public:
+    struct Node
+    {
+        Node *next;
+        Node *previous;
+        RHUnk004cc030 value;
+    };
+    struct Iterator
+    {
+        Node *node;
+        Iterator(Node *value) : node(value) {}
+        Iterator operator++(int)
+        {
+            Iterator previous = *this;
+            node = node->next;
+            return previous;
+        }
+    };
+    RHUnk004e52f0(const char &allocator);
+    ~RHUnk004e52f0();
+    Iterator Erase(Iterator position);
+    char m_allocator[4];
+    Node *m_head;
+    unsigned m_count;
+};
+
+DECOMP_SIZE_ASSERT(RHUnk004cc030, 0x18)
+DECOMP_SIZE_ASSERT(RHUnk004e52f0::Node, 0x20)
+DECOMP_SIZE_ASSERT(RHUnk004e52f0, 0x0c)
+
+// FUNCTION: GAME 0x004e52f0
+RHUnk004e52f0::RHUnk004e52f0(const char &allocator)
+{
+    m_allocator[0] = allocator;
+    Node *node = (Node *)operator new(sizeof(Node));
+    node->next = node;
+    node->previous = node;
+    m_head = node;
+    m_count = 0;
+}
+
+// FUNCTION: GAME 0x004e5320
+RHUnk004e52f0::~RHUnk004e52f0()
+{
+    Node *last = m_head;
+    Node *current = last->next;
+    while (current != last)
+    {
+        Node *node = current;
+        current = current->next;
+        node->previous->next = node->next;
+        node->next->previous = node->previous;
+        node->value.~RHUnk004cc030();
+        operator delete(node);
+        --m_count;
+    }
+    operator delete(m_head);
+    m_head = 0;
+    m_count = 0;
+}
+
+// FUNCTION: GAME 0x004e5380
+RHUnk004e52f0::Iterator RHUnk004e52f0::Erase(Iterator position)
+{
+    Node *node = (position++).node;
+    node->previous->next = node->next;
+    node->next->previous = node->previous;
+    node->value.~RHUnk004cc030();
+    operator delete(node);
+    --m_count;
+    return position;
+}
+
+void EmitRHEnginePayloadList(RHUnk004e52f0 &list, RHUnk004e52f0::Iterator position)
+{
+    list.Erase(position);
+    char allocator = 0;
+    RHUnk004e52f0 temporary(allocator);
 }
 
 // FUNCTION: GAME 0x004e6f70
@@ -5192,6 +5281,24 @@ bool RHHikingGuide::FUN_0051d020(SBFile &file)
         }
     }
     return result;
+}
+
+class RHUnk0051d370Entry
+{
+public:
+    virtual void V00(int flag) = 0;
+};
+
+// FUNCTION: GAME 0x0051d370
+void RHUnk0051d2c0::FUN_0051d370()
+{
+    int count = m_00.size();
+    for (int i = 0; i < count; ++i) {
+        RHUnk00551da0 *entry = m_00[i];
+        if (entry)
+            ((RHUnk0051d370Entry *)((char *)entry + 0x5c))->V00(1);
+    }
+    m_00.clear();
 }
 
 // FUNCTION: GAME 0x00523620
@@ -5473,4 +5580,11 @@ void RHEngine::Emit(SBFile &file, void *&value)
     GetPC((const RHCharacterProfile *)value);
     LoadDynRes(0);
     ((RHUnk005fc3b0 *)value)->FUN_005fc5d0(1.0f);
+}
+
+void RHUnk0057ee40::FUN_0057cbd0() {}
+
+void EmitRHEngineVariants(void *storage)
+{
+    ((RHUnk0057ee40 *)storage)->RHUnk0057ee40::~RHUnk0057ee40();
 }

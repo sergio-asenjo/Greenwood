@@ -1,4 +1,12 @@
 #include "SBNullstr.h"
+// SIZE 0x14
+class RHMobileUnk00607da0
+{
+public:
+    void FUN_00607990(const RHMobileUnk00607da0 &other);
+    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
+    unsigned char m_00[0x14]; // 0x00
+};
 #include "RHGame_calls.h"
 #include "SBThreadedInput.h"
 #include "SBDrawManager.h"
@@ -254,6 +262,21 @@ void RHGame::FUN_0050e5d0(char value)
 char RHGame::FUN_0050e5e0()
 {
     return m_5e;
+}
+
+// SYNTHETIC: GAME 0x0050e6c0
+// ??0RHGameLifetime0050e6c0@@QAE@XZ
+
+// SYNTHETIC: GAME 0x0050e710
+// ??1RHGameLifetime0050e6c0@@QAE@XZ
+
+// FUNCTION: GAME 0x0050e790
+void *RHGameLifetime0050e6c0::FUN_0050e790(unsigned flags)
+{
+    this->~RHGameLifetime0050e6c0();
+    if (flags & 1)
+        operator delete(this);
+    return this;
 }
 
 extern "C" __declspec(dllimport) unsigned long __stdcall GetTickCount();
@@ -563,7 +586,7 @@ bool RHGameActionCalls::FUN_00510550(SBGeoVector2D point)
     char *target = *(char **)((char *)this + 0x1758);
     if (target)
     {
-        ((RHUnk005fc3b0 *)(target + 0x88))->FUN_005fc430(point);
+        ((SBGeoVector2D *)(target + 0x88))->operator=(point);
         return true;
     }
     return false;
@@ -1093,7 +1116,7 @@ void RHGame::FUN_00513390(void *event)
             if (portrait)
                 ((RHWidgetPortrait *)portrait)->FUN_005d9090(action);
         }
-        RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk005492a0(8, 0, action));
+        RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(8, 0, action));
     }
     else
     {
@@ -1148,14 +1171,14 @@ void RHGame::FUN_00513ff0()
     {
         unsigned short action = FUN_00514470();
         *(unsigned short *)((char *)this + 0x355c) = action;
-        messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk005492a0(5, 0, action));
+        messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(5, 0, action));
     }
     else
     {
         unsigned short action = *(unsigned short *)((char *)this + 0x355c) + 1;
         if (action == 3)
             action = 0;
-        messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk005492a0(9, 0, action));
+        messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(9, 0, action));
     }
 }
 
@@ -1179,7 +1202,7 @@ void RHGame::FUN_00513df0(void *)
     ((RHGameActionCalls *)((char *)this + 0x68))->FUN_005104d0(*(SBGeoPoint2D *)FUN_005104c0());
     (*(SBThreadedInput **)((char *)this + 0x0c))->CleanUpInputs();
     ((RHGameActionCalls *)((char *)this + 0x68))->FUN_00510550(
-        SBGeoVector2D(*(SBGeoPoint2D *)(*(SBThreadedInput **)((char *)this + 0x0c))->FUN_005104b0()));
+        SBGeoVector2D(*(SBGeoVector2D *)(*(SBThreadedInput **)((char *)this + 0x0c))->FUN_005104b0()));
     *(char *)((char *)this + 0x19cd) = 1;
     if (!*(volatile char *)((char *)this + 0x5a))
         *(char *)((char *)this + 0x3481) = 1;
@@ -1312,7 +1335,7 @@ void RHGame::FUN_00514140()
     }
     ((RHGameMenuText *)((char *)this + 0x23a4))->v21(any);
     game->FUN_00513b00(0);
-    game->FUN_0048a970(RHUnk005492a0(22, 0, *(unsigned short *)((char *)messenger + 0xa2)));
+    game->FUN_0048a970(RHUnk00549250(22, 0, *(unsigned short *)((char *)messenger + 0xa2)));
     FUN_0050eca0(m_3558 && !m_355a);
     FUN_0050eb80(m_3559 && !m_355b);
     ((RHGameMenuText *)((char *)this + 0x1ab0))->v21(((RHGameEngineCalls *)m_18)->FUN_004c7cd0());
@@ -2076,12 +2099,8 @@ public:
     RHGameWidgetEvent *FUN_00515c10(void *);
 };
 
-// Parked: The vptr store is scheduled after the member-cleanup state instead of before it.
-// STUB: GAME 0x00515b40
-RHGameLifetime00515b40::~RHGameLifetime00515b40()
-{
-    m_vptr = 0x00678ce0;
-}
+// SYNTHETIC: GAME 0x00515b40
+// ??1RHGameLifetime00515b40@@QAE@XZ
 
 // FUNCTION: GAME 0x00515ba0
 void RHUnk00515bf0::FUN_00515ba0()
@@ -2155,12 +2174,8 @@ int RHUnk00515c30::FUN_00515c90(const SBGeoPoint2D &point)
     return false;
 }
 
-// Parked: The vptr store is scheduled after the member-cleanup state instead of before it.
-// STUB: GAME 0x00515d30
-RHGameLifetime00515d30::~RHGameLifetime00515d30()
-{
-    m_vptr = 0x00678ce0;
-}
+// SYNTHETIC: GAME 0x00515d30
+// ??1RHGameLifetime00515d30@@QAE@XZ
 
 // FUNCTION: GAME 0x00515d90
 RHGameWidgetEvent *RHUnk00515c30::FUN_00515d90(const RHGameWidgetInput &input)
@@ -2244,12 +2259,8 @@ public:
     unsigned FUN_00515f80(unsigned id);
 };
 
-// Parked: The vptr store is scheduled after the member-cleanup state instead of before it.
-// STUB: GAME 0x00515f00
-RHGameLifetime00515f00::~RHGameLifetime00515f00()
-{
-    m_vptr = 0x00677624;
-}
+// SYNTHETIC: GAME 0x00515f00
+// ??1RHGameLifetime00515f00@@QAE@XZ
 
 // FUNCTION: GAME 0x00515f60
 void RHUnk00515f80::FUN_00515f60()
@@ -2276,11 +2287,8 @@ public:
     RHGameWidgetEvent *FUN_00516020(const RHGameWidgetInput &input);
 };
 
-// FUNCTION: GAME 0x00515fd0
-RHGameLifetime00515fd0::RHGameLifetime00515fd0()
-{
-    m_vptr = 0x00678f90;
-}
+// SYNTHETIC: GAME 0x00515fd0
+// ??0RHGameLifetime00515fd0@@QAE@XZ
 
 // FUNCTION: GAME 0x00516020
 RHGameWidgetEvent *RHUnk00516020::FUN_00516020(const RHGameWidgetInput &input)
@@ -2332,18 +2340,11 @@ public:
     RHGameWidgetEvent *FUN_00516200(const RHGameWidgetInput &input);
 };
 
-// FUNCTION: GAME 0x00516150
-RHGameLifetime00516150::RHGameLifetime00516150()
-{
-    m_vptr = 0x00678fc8;
-}
+// SYNTHETIC: GAME 0x00516150
+// ??0RHGameLifetime005161a0@@QAE@XZ
 
-// Parked: The vptr store is scheduled after the member-cleanup state instead of before it.
-// STUB: GAME 0x005161a0
-RHGameLifetime005161a0::~RHGameLifetime005161a0()
-{
-    m_vptr = 0x00678ce0;
-}
+// SYNTHETIC: GAME 0x005161a0
+// ??1RHGameLifetime005161a0@@QAE@XZ
 
 // FUNCTION: GAME 0x00516200
 RHGameWidgetEvent *RHUnk00516200::FUN_00516200(const RHGameWidgetInput &input)
@@ -2425,12 +2426,8 @@ int RHUnk00516330::FUN_00516390(const SBGeoPoint2D &point)
     return false;
 }
 
-// Parked: The vptr store is scheduled after the member-cleanup state instead of before it.
-// STUB: GAME 0x00516430
-RHGameLifetime00516430::~RHGameLifetime00516430()
-{
-    m_vptr = 0x00677624;
-}
+// SYNTHETIC: GAME 0x00516430
+// ??1RHGameLifetime00516430@@QAE@XZ
 
 // FUNCTION: GAME 0x00516490
 RHGameWidgetEvent *RHUnk00516330::FUN_00516490(const RHGameWidgetInput &input)
@@ -2566,12 +2563,8 @@ int RHUnk005165f0::FUN_005166b0(const SBGeoPoint2D &point)
     return false;
 }
 
-// Parked: The vptr store is scheduled after the member-cleanup state instead of before it.
-// STUB: GAME 0x00516750
-RHGameLifetime00516750::~RHGameLifetime00516750()
-{
-    m_vptr = 0x00677624;
-}
+// SYNTHETIC: GAME 0x00516750
+// ??1RHGameLifetime00516750@@QAE@XZ
 
 // FUNCTION: GAME 0x005167b0
 RHGameWidgetEvent *RHUnk005165f0::FUN_005167b0(const RHGameWidgetInput &input)
@@ -2705,12 +2698,8 @@ public:
     int FUN_00516bb0(const SBGeoPoint2D &point);
 };
 
-// Parked: The vptr store is scheduled after the member-cleanup state instead of before it.
-// STUB: GAME 0x00516a60
-RHGameLifetime00516a60::~RHGameLifetime00516a60()
-{
-    m_vptr = 0x00679000;
-}
+// SYNTHETIC: GAME 0x00516a60
+// ??1RHGameLifetime00516a60@@QAE@XZ
 
 // FUNCTION: GAME 0x00516ac0
 void RHUnk00516b50::FUN_00516ac0()
@@ -2768,12 +2757,8 @@ public:
     unsigned FUN_00516cd0(unsigned id);
 };
 
-// Parked: The vptr store is scheduled after the member-cleanup state instead of before it.
-// STUB: GAME 0x00516c50
-RHGameLifetime00516c50::~RHGameLifetime00516c50()
-{
-    m_vptr = 0x00679000;
-}
+// SYNTHETIC: GAME 0x00516c50
+// ??1RHGameLifetime00516c50@@QAE@XZ
 
 // FUNCTION: GAME 0x00516cb0
 void RHUnk00516cb0::FUN_00516cb0()
@@ -2837,11 +2822,9 @@ int RHUnk00516d20::FUN_00516d80(const SBGeoPoint2D &point)
     return false;
 }
 
-// Parked: The vptr store is scheduled after the member-cleanup state instead of before it.
-// STUB: GAME 0x00516e20
+// FUNCTION: GAME 0x00516e20
 RHGameLifetime00516e20::~RHGameLifetime00516e20()
 {
-    m_vptr = 0x00678ca8;
 }
 
 // FUNCTION: GAME 0x00516e80
@@ -2928,7 +2911,7 @@ void RHUnk00516d20::FUN_00517000()
     if (bounds.Unk00608f30() &&
         bounds.m_second.m_x - bounds.m_first.m_x > g_unk0x00677488 &&
         bounds.m_second.m_y - bounds.m_first.m_y > g_unk0x00677488)
-        ((SBGeoBoundingBox2D *)((char *)this + 0x30))->FUN_00607da0(
+        ((RHMobileUnk00607da0 *)((char *)this + 0x30))->FUN_00607da0((const RHMobileUnk00607da0 &)
             bounds.FUN_006090d0(SBGeoVector2D((float)*(unsigned short *)((char *)this + 0xe4), 0.0f)));
     if (*(unsigned short *)((char *)this + 0xe4))
     {
@@ -3021,6 +3004,7 @@ RHGameWidgetEvent *RHUnk00516d20::FUN_00517130(const RHGameWidgetInput &input)
     return event;
 }
 
+#pragma inline_depth(1)
 // FUNCTION: GAME 0x00517280
 void *RHGameLifetime00515b40::FUN_00517280(unsigned flags)
 {
@@ -3049,7 +3033,19 @@ void *RHGameLifetime00515f00::FUN_005172c0(unsigned flags)
 }
 
 // FUNCTION: GAME 0x005172e0
-void *RHGameLifetime00515fd0::FUN_005172e0(unsigned flags)
+void *RHGameLifetime00517300::FUN_005172e0(unsigned flags)
+{
+    this->~RHGameLifetime00517300();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// SYNTHETIC: GAME 0x00517300
+// ??1RHGameLifetime00517300@@QAE@XZ
+
+// FUNCTION: GAME 0x00517360
+void *RHGameLifetime00515fd0::FUN_00517360(unsigned flags)
 {
     this->~RHGameLifetime00515fd0();
     if (flags & 1)
@@ -3057,28 +3053,8 @@ void *RHGameLifetime00515fd0::FUN_005172e0(unsigned flags)
     return this;
 }
 
-// Parked: The vptr store is scheduled after the member-cleanup state instead of before it.
-// STUB: GAME 0x00517300
-RHGameLifetime00515fd0::~RHGameLifetime00515fd0()
-{
-    m_vptr = 0x00678ef8;
-}
-
-// FUNCTION: GAME 0x00517360
-void *RHGameLifetime00516150::FUN_00517360(unsigned flags)
-{
-    this->~RHGameLifetime00516150();
-    if (flags & 1)
-        operator delete(this);
-    return this;
-}
-
-// Parked: The vptr store is scheduled after the member-cleanup state instead of before it.
-// STUB: GAME 0x00517380
-RHGameLifetime00516150::~RHGameLifetime00516150()
-{
-    m_vptr = 0x00678ef8;
-}
+// SYNTHETIC: GAME 0x00517380
+// ??1RHGameLifetime00515fd0@@QAE@XZ
 
 // FUNCTION: GAME 0x005173e0
 void *RHGameLifetime005161a0::FUN_005173e0(unsigned flags)
@@ -3133,18 +3109,30 @@ void *RHGameLifetime005174a0::FUN_00517480(unsigned flags)
         operator delete(this);
     return this;
 }
+#pragma inline_depth()
 
-// Parked: The vptr store is scheduled after the member-cleanup state instead of before it.
-// STUB: GAME 0x005174a0
-RHGameLifetime005174a0::~RHGameLifetime005174a0()
+// SYNTHETIC: GAME 0x005174a0
+// ??1RHGameLifetime005174a0@@QAE@XZ
+
+class RHGameLifetime0050a460 : public RHGameLifetime005174a0
 {
-    m_vptr = 0x00678ca8;
-}
+public:
+    struct Points
+    {
+        SBGeoPoint2D m_0;
+        SBGeoPoint2D m_8;
+    };
+    undefined m_d4[0x14];
+    Points m_e8;
+};
+
+// SYNTHETIC: GAME 0x0050a460
+// ??1RHGameLifetime0050a460@@QAE@XZ
 
 // FUNCTION: GAME 0x00517500
 void *RHGameLifetimeDeleteCalls::FUN_00517500(unsigned flags)
 {
-    FUN_0050a460();
+    ((RHGameLifetime0050a460 *)this)->~RHGameLifetime0050a460();
     if (flags & 1)
         operator delete(this);
     return this;
@@ -3159,23 +3147,26 @@ void *RHGameLifetimeDeleteCalls::FUN_00517520(unsigned flags)
     return this;
 }
 
-// FUNCTION: GAME 0x00517540
-RHGameLifetime00515b40::RHGameLifetime00515b40()
+// FUNCTION: GAME 0x0044fef0
+void *RHGameLifetime00517590::FUN_0044fef0(unsigned flags)
 {
-    m_vptr = 0x00678ce0;
+    this->~RHGameLifetime00517590();
+    if (flags & 1)
+        operator delete(this);
+    return this;
 }
 
-// FUNCTION: GAME 0x00517590
-RHGameLifetime00515f00::RHGameLifetime00515f00()
-{
-    m_vptr = 0x00677624;
-}
+// SYNTHETIC: GAME 0x0044ff10
+// ??1RHGameLifetime00517590@@QAE@XZ
 
-// FUNCTION: GAME 0x005175e0
-RHGameLifetime00516c50::RHGameLifetime00516c50()
-{
-    m_vptr = 0x00679000;
-}
+// SYNTHETIC: GAME 0x00517540
+// ??0RHGameLifetime00515b40@@QAE@XZ
+
+// SYNTHETIC: GAME 0x00517590
+// ??0RHGameLifetime00517590@@QAE@XZ
+
+// SYNTHETIC: GAME 0x005175e0
+// ??0RHGameLifetime00516a60@@QAE@XZ
 
 // FUNCTION: GAME 0x00517630
 RHGameLifetime00517630::RHGameLifetime00517630()
@@ -3185,13 +3176,15 @@ RHGameLifetime00517630::RHGameLifetime00517630()
     m_d8 = 0;
     m_dc = 0;
     m_e0 = 0;
-    m_vptr = 0x00679038;
 }
+
+// SYNTHETIC: GAME 0x0050a5c0
+// ??1RHGameLifetime00517630@@QAE@XZ
 
 // FUNCTION: GAME 0x005176d0
 void *RHGameLifetimeDeleteCalls::FUN_005176d0(unsigned flags)
 {
-    FUN_0050a5c0();
+    ((RHGameLifetime00517630 *)this)->~RHGameLifetime00517630();
     if (flags & 1)
         operator delete(this);
     return this;
@@ -3199,28 +3192,36 @@ void *RHGameLifetimeDeleteCalls::FUN_005176d0(unsigned flags)
 
 void EmitRHGameWidgetLifetimes(void *widget)
 {
-    ((RHGameLifetime00515b40 *)widget)->FUN_00517280(0);
     ((RHGameLifetime00515d30 *)widget)->FUN_005172a0(0);
     ((RHGameLifetime00515f00 *)widget)->FUN_005172c0(0);
-    ((RHGameLifetime00515fd0 *)widget)->FUN_005172e0(0);
-    ((RHGameLifetime00516150 *)widget)->FUN_00517360(0);
+    ((RHGameLifetime00515fd0 *)widget)->FUN_00517360(0);
     ((RHGameLifetime005161a0 *)widget)->FUN_005173e0(0);
     ((RHGameLifetime00516430 *)widget)->FUN_00517400(0);
     ((RHGameLifetime00516750 *)widget)->FUN_00517420(0);
-    ((RHGameLifetime00516a60 *)widget)->FUN_00517440(0);
     ((RHGameLifetime00516c50 *)widget)->FUN_00517460(0);
     ((RHGameLifetime00516e20 *)widget)->~RHGameLifetime00516e20();
-    ((RHGameLifetime005174a0 *)widget)->FUN_00517480(0);
     ((RHGameLifetimeDeleteCalls *)widget)->FUN_00517500(0);
     ((RHGameLifetimeDeleteCalls *)widget)->FUN_00517520(0);
     ((RHGameLifetimeDeleteCalls *)widget)->FUN_005176d0(0);
     new RHGameLifetime00515fd0;
-    new RHGameLifetime00516150;
-    new RHGameLifetime00515b40;
-    new RHGameLifetime00515f00;
-    new RHGameLifetime00516c50;
+    new RHGameLifetime005161a0;
     new RHGameLifetime00517630;
 }
+
+#pragma inline_depth(0)
+void EmitRHGameWidgetRendered()
+{
+    RHGameLifetime00515b40 first;
+    RHGameLifetime00517590 second;
+    RHGameLifetime00516a60 third;
+    RHGameLifetime00517300 fourth;
+    RHGameLifetime005174a0 fifth;
+    RHGameLifetime00515fd0 sixth;
+    RHGameLifetime005161a0 seventh;
+    RHGameLifetime00515f00 eighth;
+    RHGameLifetime0050e6c0 ninth;
+}
+#pragma inline_depth()
 
 void (RHUnk00515bf0::*g_rhgameWidgetRender)() = &RHUnk00515bf0::FUN_00515ba0;
 unsigned (RHUnk00515f80::*g_rhgameWidgetBitmapCompare)(unsigned) = &RHUnk00515f80::FUN_00515f80;
@@ -3443,8 +3444,8 @@ bool RHGameConfig::FUN_006134a0(void *configuration)
     *(unsigned short *)((char *)this + 0x20) = *(unsigned short *)((char *)configuration + 0x20);
     *(unsigned short *)((char *)this + 0x22) = *(unsigned short *)((char *)configuration + 0x22);
     *(unsigned short *)((char *)this + 0x24) = *(unsigned short *)((char *)configuration + 0x24);
-    ((RHUnk005fc3b0 *)((char *)this + 0x28))->FUN_005fc430(
-        *(SBGeoPoint2D *)((char *)configuration + 0x28));
+    ((SBGeoVector2D *)((char *)this + 0x28))->operator=(
+        *(SBGeoVector2D *)((char *)configuration + 0x28));
     *(void **)((char *)this + 0x14) = ::operator new(*(unsigned *)((char *)this + 0x1c));
     memcpy(*(void **)((char *)this + 0x14), *(void **)((char *)configuration + 0x14),
         *(unsigned *)((char *)this + 0x1c));
@@ -3464,6 +3465,71 @@ RHMapDescription::RHMapDescription()
     // STRING: GAME 0x006beea8
     *(const char **)(m_00 + 0x18) = ".red";
     *(unsigned *)this = 0x67bbd4;
+}
+
+extern const unsigned g_unk0x0067bbd8;
+
+class RHUnk0063c840
+{
+public:
+    RHUnk0063c840();
+    unsigned m_0;
+    unsigned m_4;
+};
+
+// FUNCTION: GAME 0x0063c840
+RHUnk0063c840::RHUnk0063c840()
+{
+    m_0 = g_unk0x0067bbd8;
+    m_4 = g_unk0x0067bbd8;
+}
+
+class RHUnk0063c860
+{
+public:
+    RHUnk0063c860();
+    unsigned m_0;
+    unsigned m_4;
+};
+
+// FUNCTION: GAME 0x0063c860
+RHUnk0063c860::RHUnk0063c860()
+{
+    m_0 = 0;
+    m_4 = g_unk0x0067bbd8;
+}
+
+class RHUnk0063c880
+{
+public:
+    RHUnk0063c880();
+    unsigned m_0;
+    unsigned m_4;
+    unsigned m_8;
+    unsigned m_c;
+};
+
+// FUNCTION: GAME 0x0063c880
+RHUnk0063c880::RHUnk0063c880()
+{
+    m_0 = 0;
+    m_4 = g_unk0x0067bbd8;
+    m_8 = 0;
+    m_c = g_unk0x0067bbd8;
+}
+
+class RHUnk0063c8b0
+{
+public:
+    RHUnk0063c8b0();
+    unsigned m_0;
+    unsigned m_4;
+    std::vector<void *> m_8;
+};
+
+// FUNCTION: GAME 0x0063c8b0
+RHUnk0063c8b0::RHUnk0063c8b0() : m_0(g_unk0x0067bbd8), m_4(g_unk0x0067bbd8)
+{
 }
 
 // Parked: 65.17%; lookup register scheduling; unannotated to preserve DisplayLostLeicester.

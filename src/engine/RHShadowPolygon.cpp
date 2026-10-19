@@ -31,6 +31,79 @@ float g_unk0x00677504 = 0.573576450347900390625f;
 // GLOBAL: GAME 0x00677f9c
 float g_unk0x00677f9c = 90.0f;
 
+// FUNCTION: GAME 0x0044e7d0
+RHShadowVectorStdList::~RHShadowVectorStdList()
+{
+    RHUnk005c9010Node *last = (RHUnk005c9010Node *)m_head;
+    RHUnk005c9010Node *current = last->m_next;
+    while (current != last)
+    {
+        RHUnk005c9010Node *node = current;
+        current = current->m_next;
+        node->m_prev->m_next = node->m_next;
+        node->m_next->m_prev = node->m_prev;
+        ((SBGeoPoint2D *)((char *)node + 8))->~SBGeoPoint2D();
+        operator delete(node);
+        --m_count;
+    }
+    operator delete(m_head);
+    m_head = 0;
+    m_count = 0;
+}
+
+// FUNCTION: GAME 0x0044e850
+RHScriptIter RHShadowPointListBase::FUN_0044e850(RHScriptIter first, RHScriptIter last)
+{
+    RHUnk005c9010Node *current = (RHUnk005c9010Node *)first.node;
+    RHUnk005c9010Node *end = (RHUnk005c9010Node *)last.node;
+    while (current != end)
+    {
+        RHUnk005c9010Node *node = current;
+        current = current->m_next;
+        node->m_prev->m_next = node->m_next;
+        node->m_next->m_prev = node->m_prev;
+        ((SBGeoPoint2D *)((char *)node + 8))->~SBGeoPoint2D();
+        operator delete(node);
+        --m_count;
+    }
+    return RHScriptIter((RHScriptNode *)current);
+}
+
+// FUNCTION: GAME 0x0044e900
+RHScriptIter RHShadowPointListBase::FUN_0044e900(RHScriptIter position)
+{
+    RHUnk005c9010Node *node = (RHUnk005c9010Node *)(position++).node;
+    node->m_prev->m_next = node->m_next;
+    node->m_next->m_prev = node->m_prev;
+    ((SBGeoPoint2D *)((char *)node + 8))->~SBGeoPoint2D();
+    operator delete(node);
+    --m_count;
+    return position;
+}
+
+// FUNCTION: GAME 0x0044e9b0
+void RHShadowPointListBase::FUN_0044e9b0()
+{
+    RHUnk005c9010Node *last = (RHUnk005c9010Node *)m_head;
+    RHUnk005c9010Node *current = last->m_next;
+    while (current != last)
+    {
+        RHUnk005c9010Node *node = current;
+        current = current->m_next;
+        node->m_prev->m_next = node->m_next;
+        node->m_next->m_prev = node->m_prev;
+        ((SBGeoPoint2D *)((char *)node + 8))->~SBGeoPoint2D();
+        operator delete(node);
+        --m_count;
+    }
+}
+
+void EmitShadowPointListOperations(RHShadowPointListBase &list, RHScriptIter position)
+{
+    list.FUN_0044e900(position);
+    list.FUN_0044e9b0();
+}
+
 // Coupled park: 0x004c9d20; annotation breaks DisplayDebug.
 void RHEngine::FUN_004c9d20(void *box)
 {
@@ -2050,7 +2123,7 @@ void RHShadowMemoryVector::FUN_0059fef0(RHShadowMemoryBlock *first, RHShadowMemo
 #include <stdexcept>
 
 // Parked: exception base construction uses a pooled empty string instead of the target's shared empty-data object.
-// STUB: GAME 0x0059ff20
+// LIBRARY: GAME 0x0059ff20
 void RHShadowMemoryVector::FUN_0059ff20() const
 {
     throw std::out_of_range(
@@ -2097,7 +2170,7 @@ RHShadowMemoryBlock *RHShadowMemoryVector::FUN_005a0000(RHShadowMemoryBlock *pos
 }
 
 // Parked: exception base construction uses a pooled empty string instead of the target's shared empty-data object.
-// STUB: GAME 0x005a0200
+// LIBRARY: GAME 0x005a0200
 void RHShadowMemoryVector::FUN_005a0200() const
 {
     throw std::out_of_range("invalid vector<T> subscript");

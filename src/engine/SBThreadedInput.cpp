@@ -459,7 +459,7 @@ bool SBThreadedInput::SetCursor(unsigned short cursor, bool selfIncrement)
         g_currentCursor = cursor;
         g_currentFrame = 0;
         g_frameTime = GetTickCount();
-        SBGeoVector2D hotSpot(g_inputResources->FUN_00600450(cursor));
+        SBGeoVector2D hotSpot((const SBGeoVector2D &)g_inputResources->FUN_00600450(cursor));
         ((RHUnk005fc3b0 *)&g_hotSpot)->FUN_005fc430(hotSpot);
     }
     LeaveCriticalSection(g_inputCriticalSection);

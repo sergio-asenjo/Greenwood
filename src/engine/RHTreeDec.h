@@ -41,6 +41,14 @@ struct RHTreeDecNode10
     int m_10;
 };
 
+extern RHTreeDecNode10 *g_unk0x006c1088;
+
+struct RHTreeInc005aa7b0
+{
+    RHTreeDecNode10 *m_node;
+    void FUN_005aa7b0();
+};
+
 struct RHTreeDec005b5720
 {
     RHTreeDecNode10 *m_node;

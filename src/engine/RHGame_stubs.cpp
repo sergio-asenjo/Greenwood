@@ -1,22 +1,32 @@
 #include "SBNullstr.h"
 #include "RHGame_calls.h"
+#include "RHPortraitRenderer0060d470.h"
+
+// GLOBAL: GAME 0x0067bbd8
+extern const unsigned g_unk0x0067bbd8 = 0xffffffff;
 
 void RHGame::FUN_00512310() {}
 
 RHGameWidgetLifetimeBase::RHGameWidgetLifetimeBase() {}
 RHGameWidgetLifetimeBase::~RHGameWidgetLifetimeBase() {}
-RHGameRenderer0060dad0::RHGameRenderer0060dad0() {}
-RHGameRenderer0060dad0::~RHGameRenderer0060dad0() {}
-RHGameRenderer0060da10::RHGameRenderer0060da10() {}
-RHGameRenderer0060da10::~RHGameRenderer0060da10() {}
-RHGameRenderer005cb220::~RHGameRenderer005cb220() {}
+void RHGameWidgetLifetimeBase::FUN_0060d290(unsigned long) {}
+// FUNCTION: GAME 0x0060d9f0
+RHGameRenderer0060da10::RHGameRenderer0060da10()
+{
+    ((RHPortraitRenderer0060d470 *)this)->RHPortraitRenderer0060d470::RHPortraitRenderer0060d470();
+    m_vptr = 0x67a620;
+}
+// FUNCTION: GAME 0x0060da10
+RHGameRenderer0060da10::~RHGameRenderer0060da10()
+{
+    m_vptr = 0x67a620;
+    ((RHPortraitRenderer0060d470 *)this)->RHPortraitRenderer0060d470::~RHPortraitRenderer0060d470();
+}
 RHGameRenderer0060dab0::RHGameRenderer0060dab0() {}
 RHGameRenderer0060dab0::~RHGameRenderer0060dab0() {}
 RHGameRenderer005c9270::RHGameRenderer005c9270() {}
 RHGameRenderer005c9270::~RHGameRenderer005c9270() {}
-void RHGameLifetimeDeleteCalls::FUN_0050a460() {}
 void RHGameLifetimeDeleteCalls::FUN_0050a4f0() {}
-void RHGameLifetimeDeleteCalls::FUN_0050a5c0() {}
 
 void RHGameWidgetBaseCalls::FUN_0060d290(unsigned long) {}
 bool RHGameWidgetRendererCalls::FUN_0060d890(const SBGeoPoint2D &) { return false; }
@@ -46,7 +56,7 @@ void RHGameSyncCalls::FUN_005134c0(RHUnk00549250 &) {}
 void RHGameSyncCalls::FUN_00513b00(void *) {}
 void RHGameSyncCalls::FUN_0050ed40() {}
 void RHGameSyncCalls::FUN_00514670() {}
-void RHGameSyncCalls::FUN_0048a970(RHUnk005492a0 &) {}
+void RHGameSyncCalls::FUN_0048a970(RHUnk00549250 &) {}
 bool RHGameEngineCalls::FUN_004c7cd0() { return false; }
 bool RHGameEngineCalls::FUN_004c7cf0() { return false; }
 // FUNCTION: GAME 0x004936e0

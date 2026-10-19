@@ -83,13 +83,16 @@ class RHUnk0057ee90
 {
 public:
     RHUnk0057ee90();
-    undefined m_00[0x70];
+    virtual ~RHUnk0057ee90();
+    undefined m_00[0x6c];
 };
 
 class RHUnk0057ee40
 {
 public:
     RHUnk0057ee40();
+    ~RHUnk0057ee40();
+    void FUN_0057cbd0();
     undefined m_00[0x68];
 };
 
@@ -147,6 +150,7 @@ public:
     bool FUN_004e3cd0();
     bool FUN_004e1890();
     int FUN_004e34f0();
+    void FUN_004e36d0();
     int FUN_004e3720(void *, int, unsigned short, void *, void *);
     unsigned FUN_004e4110(unsigned value);
     bool InitializeFromMission(RHMission *mission);
@@ -512,6 +516,7 @@ class RHUnk0051d2c0
 {
 public:
     ~RHUnk0051d2c0();
+    void FUN_0051d370();
     std::vector<RHUnk00551da0 *> m_00; // 0x00
     undefined m_10[0x10]; // 0x10
 };
@@ -580,6 +585,8 @@ public:
     undefined m_00[0x30]; // 0x00
 };
 
+#ifndef RHMOBILEUNK00607DA0_VIEW
+#define RHMOBILEUNK00607DA0_VIEW
 // SIZE 0x14
 class RHMobileUnk00607da0
 {
@@ -587,5 +594,6 @@ public:
     RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
     undefined m_00[0x14]; // 0x00
 };
+#endif
 
 #endif

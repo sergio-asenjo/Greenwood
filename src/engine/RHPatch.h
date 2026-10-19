@@ -101,6 +101,12 @@ public:
     virtual void Slot16(SBFile &file);
 };
 
+class RHPatchDoorCalls
+{
+public:
+    void FUN_0051b660();
+};
+
 class RHUnk0054f870
 {
 public:
@@ -113,6 +119,7 @@ public:
     bool Serialize(SBFile &file) { return ((RHUnk0054f870 *)this)->Unk0054f870(file); }
     void Enter(RHElementActor *actor);
     void Leave(RHElementActor *actor);
+    void FUN_0054fe10();
     void FUN_00550070(bool mode);
     void FUN_00550150();
     void Emit(SBFile &file, RHElementActor *actor);

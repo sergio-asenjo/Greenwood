@@ -50,6 +50,12 @@ public:
     void *m_p;
     RHGroundInfoIter() : m_p(0) {}
     RHGroundInfoIter(void *p) : m_p(p) {}
+    RHGroundInfoIter operator++(int)
+    {
+        RHGroundInfoIter previous = *this;
+        m_p = ((RHGroundInfoNode *)m_p)->m_next;
+        return previous;
+    }
 };
 
 class RHGroundInfoList

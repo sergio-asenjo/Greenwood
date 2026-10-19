@@ -28,6 +28,7 @@
 // does not elide the matched function's EH temp frame (Hard rule 5).
 RHMessenger::RHMessenger() {}
 RHMessenger::~RHMessenger() {}
+// FUNCTION: GAME 0x00549110
 RHUnk5490f0::~RHUnk5490f0() {}
 
 // Target 0x005460c0 — __thiscall(this, RHUnk5490f0&), ends `ret 4`. A real

@@ -46,13 +46,14 @@
 #include <vector>
 #include <math.h>
 
+class SBGeoVector2D;
 class SBGeoPoint2D
 {
 public:
     SBGeoPoint2D();
     SBGeoPoint2D(const SBGeoPoint2D &other);
     ~SBGeoPoint2D();
-    SBGeoPoint2D Unk005fc110(const SBGeoPoint2D &other) const;
+    SBGeoVector2D Unk005fc110(const SBGeoPoint2D &other) const;
     float FUN_005fca90(const SBGeoPoint2D &other, float scale) const;
     SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
     bool operator==(const SBGeoPoint2D &other) const;
@@ -329,13 +330,19 @@ class SBGeoVector2D : public SBGeoPoint2D
 {
 public:
     SBGeoVector2D operator-() const;
+    SBGeoVector2D();
+    SBGeoVector2D &operator=(const SBGeoVector2D &other);
+    SBGeoVector2D(const SBGeoVector2D &other);
 };
 
-class RHUnk005fc3b0 : public SBGeoPoint2D
+class RHUnk005fc3b0 : public SBGeoVector2D
 {
 public:
-    RHUnk005fc3b0();
-    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other);
+    RHUnk005fc3b0() {}
+    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other)
+    {
+        return (RHUnk005fc3b0 &)SBGeoVector2D::operator=((const SBGeoVector2D &)other);
+    }
     float Unk005fc6a0(float value);
 };
 
@@ -353,8 +360,8 @@ extern float g_dialogueVolumeHigh;
 int RHMessenger::CheckThrustHI(const SBGeoPoint2D &a, const SBGeoPoint2D &b, const SBGeoPoint2D &c,
     const SBGeoPoint2D &d, unsigned long e, unsigned long f, unsigned long g, unsigned long h)
 {
-    SBGeoPoint2D first = d.Unk005fc110(b);
-    SBGeoPoint2D second = d.Unk005fc110(c);
+    SBGeoVector2D first = d.Unk005fc110(b);
+    SBGeoVector2D second = d.Unk005fc110(c);
     if (fabs(first.FUN_005fca90(second, 1.0f)) < g_unk0x00679b38)
     {
         if ((e <= g && g <= f && f <= h) || (g <= f && f <= h && h <= e) || (f <= h && h <= e && e <= g)
@@ -401,7 +408,7 @@ double g_unk0x00679b50 = 0.7853981852531433;
 int RHMessenger::CheckThrustDE(const SBGeoPoint2D &a, const SBGeoVector2D &b, const SBGeoPoint2D &c,
     const SBGeoPoint2D &d)
 {
-    SBGeoPoint2D first = d.Unk005fc110(c);
+    SBGeoVector2D first = d.Unk005fc110(c);
     RHUnk005fc3b0 direction;
     direction.FUN_005fc430(-b);
     float angle = direction.FUN_005fca90(first, 1.0f);
@@ -416,7 +423,7 @@ int RHMessenger::CheckThrustDE(const SBGeoPoint2D &a, const SBGeoVector2D &b, co
 int RHMessenger::CheckThrustAB(const SBGeoPoint2D &a, const SBGeoVector2D &b, const SBGeoPoint2D &c,
     const SBGeoPoint2D &d)
 {
-    SBGeoPoint2D first = c.Unk005fc110(d);
+    SBGeoVector2D first = c.Unk005fc110(d);
     RHUnk005fc3b0 direction;
     direction.FUN_005fc430(-b);
     double angle = fabs(direction.FUN_005fca90(first, 1.0f));
@@ -479,16 +486,8 @@ void RHMessenger::Emit(SBFile &file)
     SerializeLockUser(file);
 }
 
-// SIZE 0x10
-class RHUnk005490a0Message : public RHMessage
-{
-public:
-    RHUnk005490a0Message(int command, int value);
-    ~RHUnk005490a0Message();
-    int m_0c; // 0x0c
-};
-
 // SIZE 0x18
+// VTABLE: GAME 0x00679b68
 class RHUnk00549120 : public RHMessage
 {
 public:
@@ -504,11 +503,8 @@ public:
 
 
 // FUNCTION: GAME 0x00549030
-RHMessage::RHMessage(int type, int value)
+RHMessage::RHMessage(int type, int value) : m_type(type), m_value(value)
 {
-    m_type = type;
-    m_value = value;
-    m_vptr = 0x00679b60;
 }
 
 // FUNCTION: GAME 0x00549050
@@ -521,24 +517,19 @@ void *RHMessage::FUN_00549050(unsigned flags)
 }
 
 // FUNCTION: GAME 0x00549070
-RHMessage::RHMessage(int type)
+RHMessage::RHMessage(int type) : m_type(type), m_value(0)
 {
-    m_type = type;
-    m_value = 0;
-    m_vptr = 0x00679b60;
 }
 
 // FUNCTION: GAME 0x00549090
 RHMessage::~RHMessage()
 {
-    m_vptr = 0x00679b60;
 }
 
 // FUNCTION: GAME 0x005490a0
-RHUnk005490a0Message::RHUnk005490a0Message(int command, int value) : RHMessage(0, value)
+RHUnk5490f0::RHUnk5490f0(int command, int value) : RHMessage(0, value)
 {
-    m_vptr = 0x00679b64;
-    m_0c = command;
+    m_unk0c = command;
 }
 
 // FUNCTION: GAME 0x005490d0
@@ -553,14 +544,12 @@ void *RHUnk5490f0::FUN_005490d0(unsigned flags)
 // FUNCTION: GAME 0x005490f0
 RHUnk5490f0::RHUnk5490f0(int value) : RHMessage(0)
 {
-    m_vptr = 0x00679b64;
     m_unk0c = value;
 }
 
 // FUNCTION: GAME 0x00549120
 RHUnk00549120::RHUnk00549120(int value, const SBGeoPoint2D &point) : RHMessage(1), m_0c(value), m_10(point)
 {
-    m_vptr = 0x00679b68;
 }
 
 // FUNCTION: GAME 0x00549180
@@ -576,22 +565,16 @@ void *RHUnk00549120::FUN_00549180(unsigned flags)
 RHUnk00549120::RHUnk00549120(int value, const SBGeoPoint2D &point, int extra)
     : RHMessage(1, extra), m_0c(value), m_10(point)
 {
-    m_vptr = 0x00679b68;
 }
 
-// Parked: 95.00% — the literal vptr store is scheduled after the EH-state store instead of before it.
-// STUB: GAME 0x00549200
+// FUNCTION: GAME 0x00549200
 RHUnk00549120::~RHUnk00549120()
 {
-    m_vptr = 0x00679b68;
 }
 
 // FUNCTION: GAME 0x00549250
-RHUnk00549250::RHUnk00549250(int command, void *actor) : RHMessage(2)
+RHUnk00549250::RHUnk00549250(int command, void *actor) : RHMessage(2), m_0c(command), m_10(actor)
 {
-    m_0c = command;
-    m_10 = actor;
-    m_vptr = 0x00679b6c;
 }
 
 // FUNCTION: GAME 0x00549280

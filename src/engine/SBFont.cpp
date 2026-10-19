@@ -41,6 +41,11 @@ inline int &SBFontColor(SBFontNode0061fcb0 *node)
     return node->m_10;
 }
 
+inline int &SBFontColor(SBFontNode0061f3e0 *node)
+{
+    return node->m_2c;
+}
+
 inline SBFontNode0061fcb0 *SBFontCopyNodes(SBFontTree0061fcb0 *tree, SBFontNode0061fcb0 *source, SBFontNode0061fcb0 *parent)
 {
     SBFontLock lock;
@@ -122,6 +127,52 @@ SBFontTree0061f3e0 g_unk0x006c1900;
 static const char g_sbFontFile[] = "P:\\Robin Hood\\SBLibNG\\SBFont.cpp";
 // STRING: GAME 0x006bb8a0
 static const char g_sbFontMissing[] = "Warning ! Character 0x%02x is missing in the font '%s'";
+
+void *FUN_0048f170(void *value);
+
+static inline SBFontIterator0061f3e0 SBFontIterator0061f3e0Make(SBFontNode0061f3e0 *node)
+{
+    SBFontIterator0061f3e0 result;
+    result.m_00 = node;
+    return result;
+}
+
+static inline void SBFontDestroyValue(SBFontValue0061f120 &value)
+{
+    SBFontTree0061fcb0 &fonts = value.m_10;
+    SBFontIterator0061fe10 last;
+    ((SBFontUnk00620c90 *)&last)->FUN_00620c90((int)fonts.m_04);
+    SBFontIterator0061fe10 first;
+    ((SBFontUnk00620c90 *)&first)->FUN_00620c90(*(int *)FUN_0048f170(fonts.m_04));
+    fonts.FUN_0061fce0(first, last);
+    operator delete(fonts.m_04);
+    fonts.m_04 = 0;
+    fonts.m_0c = 0;
+    {
+        SBFontLock lock;
+        if (--g_unk0x006c1920 == 0) {
+            operator delete(g_unk0x006c191c);
+            g_unk0x006c191c = 0;
+        }
+    }
+    value.m_00.~basic_string();
+}
+
+// FUNCTION: GAME 0x0061e740
+void SBFontTree0061f3e0::FUN_0061e740()
+{
+    FUN_0061efe0(begin(), SBFontIterator0061f3e0Make(m_04));
+    operator delete(m_04);
+    m_04 = 0;
+    m_0c = 0;
+    {
+        SBFontLock lock;
+        if (--g_unk0x006c1918 == 0) {
+            operator delete(g_unk0x006c1914);
+            g_unk0x006c1914 = 0;
+        }
+    }
+}
 
 class SBFontUnk0061e800
 {
@@ -351,6 +402,32 @@ SBFontValue0061f120::~SBFontValue0061f120()
 {
 }
 
+// FUNCTION: GAME 0x0061efe0
+SBFontIterator0061f3e0 SBFontTree0061f3e0::FUN_0061efe0(SBFontIterator0061f3e0 first, SBFontIterator0061f3e0 last)
+{
+    if (m_0c != 0 && first.m_00 == m_04->m_00 && last.m_00 == m_04) {
+        SBFontLock lock;
+        SBFontNode0061f3e0 *node = root();
+        {
+            SBFontLock inner;
+            for (SBFontNode0061f3e0 *next = node; next != g_unk0x006c1914; node = next) {
+                FUN_0061fb40(next->m_08);
+                next = next->m_00;
+                node->m_0c.~SBFontValue0061f120();
+                operator delete(node);
+            }
+        }
+        root() = g_unk0x006c1914;
+        m_0c = 0;
+        leftmost() = m_04;
+        rightmost() = m_04;
+        return begin();
+    }
+    while (first.m_00 != last.m_00)
+        FUN_0061f550(first++);
+    return first;
+}
+
 // FUNCTION: GAME 0x0061f120
 SBFontValue0061f120::SBFontValue0061f120(const std::string &name, const SBFontTree0061fcb0 &tree)
     : m_00(name), m_10(tree)
@@ -428,6 +505,123 @@ SBFontPair0061f3e0 SBFontTree0061f3e0::FUN_0061f3e0(const SBFontValue0061f120 &v
     }
     SBFontPair0061f3e0 result(it, false);
     return result;
+}
+
+// Parked: the original inlines the value destructor with out-of-line iterator construction; this layer cannot reproduce that inline depth.
+// STUB: GAME 0x0061f550
+SBFontIterator0061f3e0 SBFontTree0061f3e0::FUN_0061f550(SBFontIterator0061f3e0 position)
+{
+    SBFontNode0061f3e0 *replacement;
+    SBFontNode0061f3e0 *removed = (position++).m_00;
+    SBFontNode0061f3e0 *original = removed;
+    SBFontLock lock;
+    if (SBFontLeft(removed) == g_unk0x006c1914) replacement = SBFontRight(removed);
+    else if (SBFontRight(removed) == g_unk0x006c1914) replacement = SBFontLeft(removed);
+    else {
+        removed = SBFontMinimum(SBFontRight(removed), g_unk0x006c1914);
+        replacement = SBFontRight(removed);
+    }
+    if (removed != original) {
+        SBFontParent(SBFontLeft(original)) = removed;
+        SBFontLeft(removed) = SBFontLeft(original);
+        if (removed == SBFontRight(original)) SBFontParent(replacement) = removed;
+        else {
+            SBFontParent(replacement) = SBFontParent(removed);
+            SBFontLeft(SBFontParent(removed)) = replacement;
+            SBFontRight(removed) = SBFontRight(original);
+            SBFontParent(SBFontRight(original)) = removed;
+        }
+        if (root() == original) root() = removed;
+        else if (SBFontLeft(SBFontParent(original)) == original) SBFontLeft(SBFontParent(original)) = removed;
+        else SBFontRight(SBFontParent(original)) = removed;
+        SBFontParent(removed) = SBFontParent(original);
+        std::swap(SBFontColor(removed), SBFontColor(original));
+        removed = original;
+    } else {
+        SBFontParent(replacement) = SBFontParent(removed);
+        if (root() == original) root() = replacement;
+        else if (SBFontLeft(SBFontParent(original)) == original) SBFontLeft(SBFontParent(original)) = replacement;
+        else SBFontRight(SBFontParent(original)) = replacement;
+        if (leftmost() == original) {
+            if (SBFontRight(original) == g_unk0x006c1914) leftmost() = SBFontParent(original);
+            else leftmost() = SBFontMinimum(replacement, g_unk0x006c1914);
+        }
+        if (rightmost() == original) {
+            if (SBFontLeft(original) == g_unk0x006c1914) rightmost() = SBFontParent(original);
+            else rightmost() = SBFontMaximum(replacement, g_unk0x006c1914);
+        }
+    }
+    if (SBFontColor(removed) == 1) {
+        while (replacement != root() && SBFontColor(replacement) == 1) {
+            if (replacement == SBFontLeft(SBFontParent(replacement))) {
+                SBFontNode0061f3e0 *sibling = SBFontRight(SBFontParent(replacement));
+                if (SBFontColor(sibling) == 0) {
+                    SBFontColor(sibling) = 1;
+                    SBFontColor(SBFontParent(replacement)) = 0;
+                    SBFontRotateLeft(this, SBFontParent(replacement), g_unk0x006c1914);
+                    sibling = SBFontRight(SBFontParent(replacement));
+                }
+                if (SBFontColor(SBFontLeft(sibling)) == 1 && SBFontColor(SBFontRight(sibling)) == 1) {
+                    SBFontColor(sibling) = 0;
+                    replacement = SBFontParent(replacement);
+                } else {
+                    if (SBFontColor(SBFontRight(sibling)) == 1) {
+                        SBFontColor(SBFontLeft(sibling)) = 1;
+                        SBFontColor(sibling) = 0;
+                        SBFontRotateRight(this, sibling, g_unk0x006c1914);
+                        sibling = SBFontRight(SBFontParent(replacement));
+                    }
+                    SBFontColor(sibling) = SBFontColor(SBFontParent(replacement));
+                    SBFontColor(SBFontParent(replacement)) = 1;
+                    SBFontColor(SBFontRight(sibling)) = 1;
+                    SBFontRotateLeft(this, SBFontParent(replacement), g_unk0x006c1914);
+                    break;
+                }
+            } else {
+                SBFontNode0061f3e0 *sibling = SBFontLeft(SBFontParent(replacement));
+                if (SBFontColor(sibling) == 0) {
+                    SBFontColor(sibling) = 1;
+                    SBFontColor(SBFontParent(replacement)) = 0;
+                    SBFontRotateRight(this, SBFontParent(replacement), g_unk0x006c1914);
+                    sibling = SBFontLeft(SBFontParent(replacement));
+                }
+                if (SBFontColor(SBFontRight(sibling)) == 1 && SBFontColor(SBFontLeft(sibling)) == 1) {
+                    SBFontColor(sibling) = 0;
+                    replacement = SBFontParent(replacement);
+                } else {
+                    if (SBFontColor(SBFontLeft(sibling)) == 1) {
+                        SBFontColor(SBFontRight(sibling)) = 1;
+                        SBFontColor(sibling) = 0;
+                        SBFontRotateLeft(this, sibling, g_unk0x006c1914);
+                        sibling = SBFontLeft(SBFontParent(replacement));
+                    }
+                    SBFontColor(sibling) = SBFontColor(SBFontParent(replacement));
+                    SBFontColor(SBFontParent(replacement)) = 1;
+                    SBFontColor(SBFontLeft(sibling)) = 1;
+                    SBFontRotateRight(this, SBFontParent(replacement), g_unk0x006c1914);
+                    break;
+                }
+            }
+        }
+        SBFontColor(replacement) = 1;
+    }
+    SBFontDestroyValue(removed->m_0c);
+    operator delete(removed);
+    --m_0c;
+    return position;
+}
+
+// Parked: the original inlines the value destructor (with its unwind state) but keeps iterator construction out of line.
+// STUB: GAME 0x0061fb40
+void SBFontTree0061f3e0::FUN_0061fb40(SBFontNode0061f3e0 *node)
+{
+    SBFontLock lock;
+    for (SBFontNode0061f3e0 *next = node; next != g_unk0x006c1914; node = next) {
+        FUN_0061fb40(next->m_08);
+        next = next->m_00;
+        SBFontDestroyValue(node->m_0c);
+        operator delete(node);
+    }
 }
 
 // FUNCTION: GAME 0x0061fcb0
@@ -847,6 +1041,7 @@ void SBFontIterator0061f3e0::FUN_00620ef0()
 void EmitSBFontIncrement(SBFontIterator0061f3e0 &iterator)
 {
     iterator.FUN_00620ef0();
+    g_unk0x006c1900.FUN_0061e740();
 }
 
 static inline SBFontNode0061fcb0 *SBFontMin0061fcb0(SBFontNode0061fcb0 *node)

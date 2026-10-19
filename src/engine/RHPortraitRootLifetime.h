@@ -81,19 +81,19 @@ struct SBFrameWidgetFindList
     }
 };
 
+// VTABLE: GAME 0x0067ad9c
 class RHPortraitRootLifetime
 {
 public:
     RHPortraitRootLifetime();
     ~RHPortraitRootLifetime();
     void *FUN_0061a070(unsigned flags);
-    bool FUN_0061a1e0(const RHMapTitleText &title, const RHMapBox &box, unsigned flags);
+    virtual bool FUN_0061a1e0(const RHMapTitleText &title, const RHMapBox &box, unsigned flags);
     bool FUN_0061a800(void *widget);
     bool FUN_0061a920(void *widget);
     bool FUN_0061aa30(void *widget);
     void *FUN_0061a6e0(const void *input);
 
-    unsigned m_vptr;
     undefined m_04[4];
     SBFrameWidgetView **m_first;
     SBFrameWidgetView **m_last;

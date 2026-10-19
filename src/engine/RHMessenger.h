@@ -22,10 +22,12 @@
 // it stays named by address (docs/05-naming.md). Defined once in
 // RHMessenger_stubs.cpp.
 // SIZE 0x10
+// VTABLE: GAME 0x00679b64
 class RHUnk5490f0 : public RHMessage
 {
 public:
     RHUnk5490f0(int value);
+    RHUnk5490f0(int command, int value);
     ~RHUnk5490f0();
     void *FUN_005490d0(unsigned flags);
     int m_unk0c; // 0x0c

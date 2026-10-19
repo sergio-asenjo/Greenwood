@@ -13,12 +13,6 @@ SBFontNode0061fcb0 *SBFontTree0061fcb0::FUN_00620c70(SBFontNode0061fcb0 *parent,
     node->m_10 = color;
     return node;
 }
-class SBFontUnk00620c90
-{
-public:
-    SBFontUnk00620c90 *FUN_00620c90(int value);
-};
-
 // FUNCTION: GAME 0x00620c90
 SBFontUnk00620c90 *SBFontUnk00620c90::FUN_00620c90(int value)
 {

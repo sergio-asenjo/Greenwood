@@ -119,6 +119,7 @@ public:
     SBDrawUnk005f0090Node *m_head;
     unsigned m_08;
     unsigned m_size;
+    void FUN_005e3ed0();
     SBDrawUnk005efc10Iterator FUN_005efa90(SBDrawUnk005efc10Iterator, SBDrawUnk005efc10Iterator);
     SBDrawUnk005efc10Iterator FUN_005ef570(SBDrawUnk005efc10Iterator);
     typedef SBDrawDecNode Node;

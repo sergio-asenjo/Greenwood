@@ -4,11 +4,12 @@
 #include "Decomp.h"
 #include "RHPortraitRootLifetime.h"
 
+class SBGeoVector2D;
 class SBGeoPoint2D
 {
 public:
     ~SBGeoPoint2D();
-    SBGeoPoint2D Unk005fc110(const SBGeoPoint2D &other) const;
+    SBGeoVector2D Unk005fc110(const SBGeoPoint2D &other) const;
     SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
     float m_x;
     float m_y;
@@ -18,6 +19,8 @@ class SBGeoVector2D : public SBGeoPoint2D
 {
 public:
     SBGeoVector2D(const SBGeoPoint2D &other);
+    SBGeoVector2D(const SBGeoVector2D &other);
+    SBGeoVector2D &operator=(const SBGeoVector2D &other);
 };
 
 class SBGeoBoundingBox2D

@@ -95,172 +95,73 @@ public:
     void *volatile m_value;
 };
 
-class RHGameWidgetLifetimeBase
-{
-public:
-    RHGameWidgetLifetimeBase();
-    ~RHGameWidgetLifetimeBase();
-    unsigned m_vptr;
-    undefined m_04[0x78];
-    int m_state;
-};
-
-class RHGameRenderer0060dad0
-{
-public:
-    RHGameRenderer0060dad0();
-    ~RHGameRenderer0060dad0();
-    undefined m_data[0x50];
-};
-
-class RHGameRenderer0060da10
-{
-public:
-    RHGameRenderer0060da10();
-    ~RHGameRenderer0060da10();
-    undefined m_data[0x4c];
-};
+#include "RHGameWidgetLifetime.h"
 
 #include "RHGameRenderer005cb220.h"
-
-class RHGameRenderer0060dab0
-{
-public:
-    RHGameRenderer0060dab0();
-    ~RHGameRenderer0060dab0();
-    undefined m_data[0x4c];
-};
-
-class RHGameRenderer005c9270
-{
-public:
-    RHGameRenderer005c9270();
-    ~RHGameRenderer005c9270();
-    undefined m_data[0x50];
-};
 
 #include "RHUIRendererShiftingClass.h"
 
 typedef RHUIRendererShifting RHGameRenderer005cbe50;
 
-class RHGameLifetime00515b40 : public RHGameWidgetLifetimeBase
+// VTABLE: GAME 0x00678ef8
+class RHGameLifetime00517300 : public RHGameWidgetLifetimeBase
 {
 public:
-    RHGameLifetime00515b40();
-    ~RHGameLifetime00515b40();
-    void *FUN_00517280(unsigned flags);
-    RHGameRenderer0060dad0 m_renderer;
-};
-
-class RHGameLifetime00515d30 : public RHGameWidgetLifetimeBase
-{
-public:
-    ~RHGameLifetime00515d30();
-    void *FUN_005172a0(unsigned flags);
-    RHGameRenderer0060dad0 m_renderer;
-};
-
-class RHGameLifetime00515f00 : public RHGameWidgetLifetimeBase
-{
-public:
-    RHGameLifetime00515f00();
-    ~RHGameLifetime00515f00();
-    void *FUN_005172c0(unsigned flags);
-    RHGameRenderer0060da10 m_renderer;
-};
-
-class RHGameLifetime00515fd0 : public RHGameWidgetLifetimeBase
-{
-public:
-    RHGameLifetime00515fd0();
-    ~RHGameLifetime00515fd0();
+    RHGameLifetime00517300() {}
+    ~RHGameLifetime00517300() {}
     void *FUN_005172e0(unsigned flags);
     RHGameRenderer005cb220 m_renderer;
 };
 
-class RHGameLifetime00516150 : public RHGameWidgetLifetimeBase
+// VTABLE: GAME 0x00678f90
+class RHGameLifetime00515fd0 : public RHGameLifetime00517300
 {
 public:
-    RHGameLifetime00516150();
-    ~RHGameLifetime00516150();
+    RHGameLifetime00515fd0() {}
+    ~RHGameLifetime00515fd0() {}
     void *FUN_00517360(unsigned flags);
-    RHGameRenderer0060dab0 m_renderer;
 };
 
-class RHGameLifetime005161a0 : public RHGameWidgetLifetimeBase
+// VTABLE: GAME 0x00678d68
+class RHGameLifetime0050e6c0 : public RHGameLifetime00517300
 {
 public:
-    ~RHGameLifetime005161a0();
-    void *FUN_005173e0(unsigned flags);
-    RHGameRenderer0060dad0 m_renderer;
+    RHGameLifetime0050e6c0() {}
+    ~RHGameLifetime0050e6c0() {}
+    void *FUN_0050e790(unsigned flags);
 };
 
-class RHGameLifetime00516430 : public RHGameWidgetLifetimeBase
+// VTABLE: GAME 0x00678ca8
+class RHGameLifetime005174a0 : public RHGameWidgetLifetimeBase
 {
 public:
-    ~RHGameLifetime00516430();
-    void *FUN_00517400(unsigned flags);
-    RHGameRenderer0060da10 m_renderer;
+    RHGameLifetime005174a0() {}
+    ~RHGameLifetime005174a0() {}
+    void *FUN_00517480(unsigned flags);
+    RHGameRenderer005cbe50 m_renderer;
 };
 
-class RHGameLifetime00516750 : public RHGameWidgetLifetimeBase
-{
-public:
-    ~RHGameLifetime00516750();
-    void *FUN_00517420(unsigned flags);
-    RHGameRenderer0060da10 m_renderer;
-};
-
-class RHGameLifetime00516a60 : public RHGameWidgetLifetimeBase
-{
-public:
-    ~RHGameLifetime00516a60();
-    void *FUN_00517440(unsigned flags);
-    RHGameRenderer005c9270 m_renderer;
-};
-
-class RHGameLifetime00516c50 : public RHGameWidgetLifetimeBase
-{
-public:
-    RHGameLifetime00516c50();
-    ~RHGameLifetime00516c50();
-    void *FUN_00517460(unsigned flags);
-    RHGameRenderer005c9270 m_renderer;
-};
-
-class RHGameLifetime00516e20 : public RHGameWidgetLifetimeBase
+class RHGameLifetime00516e20 : public RHGameLifetime005174a0
 {
 public:
     ~RHGameLifetime00516e20();
-    RHGameRenderer005cbe50 m_renderer;
 };
 
-class RHGameLifetime00517630 : public RHGameWidgetLifetimeBase
+// VTABLE: GAME 0x00679038
+class RHGameLifetime00517630 : public RHGameLifetime005174a0
 {
 public:
     RHGameLifetime00517630();
-    ~RHGameLifetime00517630();
-    RHGameRenderer005cbe50 m_renderer;
     unsigned m_d4;
     unsigned m_d8;
     unsigned m_dc;
     unsigned m_e0;
 };
 
-class RHGameLifetime005174a0 : public RHGameWidgetLifetimeBase
-{
-public:
-    ~RHGameLifetime005174a0();
-    void *FUN_00517480(unsigned flags);
-    RHGameRenderer005cbe50 m_renderer;
-};
-
 class RHGameLifetimeDeleteCalls
 {
 public:
-    void FUN_0050a460();
     void FUN_0050a4f0();
-    void FUN_0050a5c0();
     void *FUN_00517500(unsigned flags);
     void *FUN_00517520(unsigned flags);
     void *FUN_005176d0(unsigned flags);
@@ -474,7 +375,6 @@ class SBGeoPoint2D;
 class RHUnk005fc3b0
 {
 public:
-    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other);
     float Unk005fc6a0(float value);
 };
 
@@ -525,16 +425,9 @@ class RHUnk00549250 : public RHUnk5490f0
 {
 public:
     RHUnk00549250(int command, void *actor);
+    RHUnk00549250(int command, void *actor, int action);
     ~RHUnk00549250();
     char m_data[4]; // 0x10
-};
-
-class RHUnk005492a0
-{
-public:
-    RHUnk005492a0(int command, void *actor, int action);
-    ~RHUnk005492a0();
-    char m_data[0x14]; // 0x00
 };
 
 class RHGamePortraitCalls
@@ -565,7 +458,7 @@ public:
     void FUN_0050ed40();
     void FUN_00514670();
     void FUN_005146f0();
-    void FUN_0048a970(RHUnk005492a0 &);
+    void FUN_0048a970(RHUnk00549250 &);
 };
 
 class RHGameEngineCalls

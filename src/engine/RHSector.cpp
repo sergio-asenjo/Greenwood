@@ -182,6 +182,12 @@ RHSectorActorIter RHSectorActorIter::operator++(int)
     return previous;
 }
 
+RHSector::~RHSector() {}
+
+// SYNTHETIC: GAME 0x0057d590
+// RHUnk0057d490::`scalar deleting destructor'
+RHUnk0057d490::~RHUnk0057d490() {}
+
 // Parked: coordinate-width, scalar-slot and x87 scheduling differ.
 // STUB: GAME 0x0057cd60
 int RHSector::Unk0057cd60(SBFile &file, bool mode)
@@ -887,4 +893,9 @@ void EmitRHSectorVariants(void *storage)
     ((RHUnk0057d3f0 *)storage)->RHUnk0057d3f0::RHUnk0057d3f0();
     ((RHUnk0057ed80 *)storage)->RHUnk0057ed80::RHUnk0057ed80();
     ((RHUnk0057dc80 *)storage)->RHUnk0057dc80::RHUnk0057dc80();
+    ((RHUnk0057d3a0 *)storage)->RHUnk0057d3a0::~RHUnk0057d3a0();
+    ((RHUnk0057d3f0 *)storage)->RHUnk0057d3f0::~RHUnk0057d3f0();
+    ((RHUnk0057ed80 *)storage)->RHUnk0057ed80::~RHUnk0057ed80();
+    ((RHUnk0057d440 *)storage)->RHUnk0057d440::~RHUnk0057d440();
+    ((RHUnk0057dc80 *)storage)->RHUnk0057dc80::~RHUnk0057dc80();
 }

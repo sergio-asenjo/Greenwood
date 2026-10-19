@@ -145,18 +145,16 @@ void RHGroundInfoList::Dispose()
     m_count = 0;
 }
 
-// Parked: cached successor CSE changes the unlink loads and register scheduling.
-// STUB: GAME 0x0051c780
+// FUNCTION: GAME 0x0051c780
 RHGroundInfoIter RHGroundInfoList::Erase(RHGroundInfoIter position)
 {
-    RHGroundInfoNode *node = (RHGroundInfoNode *)position.m_p;
-    RHGroundInfoNode *next = node->m_next;
+    RHGroundInfoNode *node = (RHGroundInfoNode *)(position++).m_p;
     node->m_prev->m_next = node->m_next;
     node->m_next->m_prev = node->m_prev;
     node->m_data.~RHGroundInfo();
     ::operator delete(node);
     --m_count;
-    return RHGroundInfoIter(next);
+    return position;
 }
 
 // FUNCTION: GAME 0x0051c7c0

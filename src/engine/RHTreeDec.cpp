@@ -127,12 +127,6 @@ void RHTreeDec005038a0::FUN_005038a0()
     }
 }
 
-struct RHTreeInc005aa7b0
-{
-    RHTreeDecNode10 *m_node;
-    void FUN_005aa7b0();
-};
-
 static inline RHTreeDecNode10 *RHTreeMinimum1088(RHTreeDecNode10 *node)
 {
     RHUnk00641782Lock lock;

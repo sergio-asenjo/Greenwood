@@ -1,6 +1,7 @@
 #ifndef RH_DRAW_MANAGER_H
 #define RH_DRAW_MANAGER_H
 
+class SBGeoVector2D;
 class SBGeoPoint2D
 {
 public:
@@ -8,7 +9,7 @@ public:
     SBGeoPoint2D(float x, float y);
     ~SBGeoPoint2D();
     SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
-    SBGeoPoint2D Unk005fc110(const SBGeoPoint2D &other) const;
+    SBGeoVector2D Unk005fc110(const SBGeoPoint2D &other) const;
     SBGeoPoint2D &FUN_005fc1e0(const SBGeoPoint2D &other);
     float m_x; // 0x00
     float m_y; // 0x04
@@ -25,14 +26,20 @@ class SBGeoVector2D : public SBGeoPoint2D
 public:
     SBGeoVector2D(float x, float y);
     SBGeoVector2D(const SBGeoPoint2D &other);
+    SBGeoVector2D();
+    SBGeoVector2D &operator=(const SBGeoVector2D &other);
+    SBGeoVector2D(const SBGeoVector2D &other);
 };
 
 SBGeoVector2D operator*(float factor, const SBGeoVector2D &point);
 
-class RHUnk005fc3b0 : public SBGeoPoint2D
+class RHUnk005fc3b0 : public SBGeoVector2D
 {
 public:
-    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other);
+    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other)
+    {
+        return (RHUnk005fc3b0 &)SBGeoVector2D::operator=((const SBGeoVector2D &)other);
+    }
     RHUnk005fc3b0 &FUN_005fc4d0(float factor);
     float Unk005fc6a0(float value);
 };

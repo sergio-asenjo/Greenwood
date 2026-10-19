@@ -1,4 +1,12 @@
 #include "Decomp.h"
+// SIZE 0x14
+class RHMobileUnk00607da0
+{
+public:
+    void FUN_00607990(const RHMobileUnk00607da0 &other);
+    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
+    unsigned char m_00[0x14]; // 0x00
+};
 #include "RHDrawManager.h"
 #include <math.h>
 
@@ -68,9 +76,9 @@ void RHDrawManager::FillBox(const SBGeoBoundingBox2D &box, unsigned short color)
     SBGeoBoundingBox2D clipped;
     if ((unsigned char)((RHUnk00608f10 *)this)->FUN_00608f10((void *)&box))
     {
-        clipped.FUN_00607da0(FUN_006092c0(box));
+        ((RHMobileUnk00607da0 *)&clipped)->FUN_00607da0((const RHMobileUnk00607da0 &)FUN_006092c0(box));
         {
-            SBGeoVector2D offset(m_min);
+            SBGeoVector2D offset(static_cast<const SBGeoVector2D &>(m_min));
             clipped.FUN_006092a0(offset);
         }
         if (m_14 != 1.0f)
@@ -155,7 +163,7 @@ void RHDrawManager::DrawDottedLine(const SBGeoPoint2D &from, const SBGeoPoint2D 
         {
             SBGeoBoundingBox2D box;
             box.FUN_00609050(SBGeoPoint2D(start.m_x - thickness, start.m_y - thickness), SBGeoPoint2D(start.m_x + thickness, start.m_y + thickness));
-            box.FUN_00607da0(FUN_006092c0(box));
+            ((RHMobileUnk00607da0 *)&box)->FUN_00607da0((const RHMobileUnk00607da0 &)FUN_006092c0(box));
             if (box.Unk00608f30())
             {
                 box.FUN_006092a0(offset);
