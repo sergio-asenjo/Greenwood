@@ -131,6 +131,18 @@ public:
         ++_Size;
         return iterator(node);
     }
+    __forceinline iterator Erase(iterator position, volatile bool &dirty)
+    {
+        _Nodeptr node = (position++)._Mynode();
+        _Acc::_Next(_Acc::_Prev(node)) = _Acc::_Next(node);
+        _Acc::_Prev(_Acc::_Next(node)) = _Acc::_Prev(node);
+        allocator.destroy(&_Acc::_Value(node));
+        _Freenode(node);
+        size_type count = _Size - 1;
+        dirty = true;
+        _Size = count;
+        return position;
+    }
 };
 
 // SIZE 0x24
@@ -146,6 +158,11 @@ public:
     __forceinline void GoTo(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
     __forceinline std::list<RHPlayerProfile *>::iterator begin() { return m_list.begin(); }
     __forceinline std::list<RHPlayerProfile *>::iterator end() { return m_list.end(); }
+    __forceinline std::list<RHPlayerProfile *>::iterator &SetCurrent(std::list<RHPlayerProfile *>::iterator position)
+    {
+        m_current = position;
+        return m_current;
+    }
     void RemoveAll()
     {
         m_current = begin();
@@ -165,12 +182,7 @@ public:
         m_dirty = true;
     }
     __forceinline RHPlayerProfile *Current() const { return *m_current; }
-    __forceinline RHPlayerProfile *&GetProfile(int index)
-    {
-        GoTo(index);
-        return *m_current;
-    }
-    RHPlayerProfile *operator[](int index)
+    RHPlayerProfile *At(int index)
     {
         int count = m_list.size();
         if (m_dirty)
@@ -231,6 +243,91 @@ public:
         }
         return Current();
     }
+    __forceinline RHPlayerProfile *&GetProfile(int index)
+    {
+        GoTo(index);
+        return *m_current;
+    }
+    RHPlayerProfile *Lookup(int index, bool removing)
+    {
+        bool dirty = m_dirty;
+        int count = m_list.size();
+        if (dirty)
+        {
+            if (index <= (count + 1) / 2)
+            {
+                std::bidirectional_iterator_tag category;
+                {
+                    std::list<RHPlayerProfile *>::iterator first = m_list.begin();
+                    FUN_005c9010(*(RHUnk005c9010Iterator *)&SetCurrent(first), index, category);
+                }
+            }
+            else
+            {
+                std::bidirectional_iterator_tag category;
+                {
+                    std::list<RHPlayerProfile *>::iterator last = m_list.end();
+                    FUN_005c9010(*(RHUnk005c9010Iterator *)&SetCurrent(last), index - count, category);
+                }
+            }
+            m_dirty = false;
+            m_index = index;
+        }
+        else
+        {
+            int previous = m_index;
+            if (index != previous)
+            {
+                if (index < previous)
+                {
+                    if (index < (previous + 1) / 2)
+                    {
+                        std::bidirectional_iterator_tag category;
+                        {
+                            std::list<RHPlayerProfile *>::iterator first = m_list.begin();
+                            FUN_005c9010(*(RHUnk005c9010Iterator *)&SetCurrent(first), index, category);
+                        }
+                    }
+                    else
+                    {
+                        int distance = index - previous;
+                        std::bidirectional_iterator_tag category;
+                        FUN_005c9010(*(RHUnk005c9010Iterator *)&m_current, distance, category);
+                    }
+                }
+                else
+                {
+                    if (index < (previous + count) / 2)
+                    {
+                        if (removing)
+                        {
+                            std::bidirectional_iterator_tag category;
+                            FUN_005c9010(*(RHUnk005c9010Iterator *)&m_current, index - previous, category);
+                        }
+                        else
+                            std::advance(m_current, index - previous);
+                    }
+                    else
+                    {
+                        if (removing)
+                        {
+                            std::bidirectional_iterator_tag category;
+                            std::list<RHPlayerProfile *>::iterator last = m_list.end();
+                            FUN_005c9010(*(RHUnk005c9010Iterator *)&SetCurrent(last), index - count, category);
+                        }
+                        else
+                        {
+                            m_current = ((std::list<RHPlayerProfile *> &)m_list).end();
+                            std::advance(m_current, index - count);
+                        }
+                    }
+                }
+                m_index = index;
+            }
+        }
+        return Current();
+    }
+    __forceinline RHPlayerProfile *operator[](int index) { return Lookup(index, false); }
 };
 
 // SIZE 0x30

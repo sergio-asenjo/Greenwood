@@ -179,22 +179,20 @@ RHPlayerProfileManager::RHPlayerProfileManager() : m_00(0)
     m_2c = false;
 }
 
-// Parked: cached-list iterator assignment and advance lowering differ.
+// Parked: erased-list count uses eax instead of ebp for its decrement and store.
 // STUB: GAME 0x0055da70
 bool RHPlayerProfileManager::FUN_0055da70(RHPlayerProfile *profile)
 {
     int index = FUN_0055dbc0(profile);
     profile->DeleteSaveGameDirectory();
-    delete m_profiles[index];
-    m_profiles.m_list.erase(m_profiles.m_current);
-    m_profiles.m_dirty = true;
-    if (m_active == profile)
-        m_active = 0;
+    delete m_profiles.Lookup(index, true);
+    m_profiles.m_list.Erase(m_profiles.m_current, m_profiles.m_dirty);
+    profile = profile == m_active ? 0 : m_active;
+    m_active = profile;
     return true;
 }
 
-// Parked: cached-list cursor stores and inline forward advance differ.
-// STUB: GAME 0x0055dbc0
+// FUNCTION: GAME 0x0055dbc0
 int RHPlayerProfileManager::FUN_0055dbc0(RHPlayerProfile *profile)
 {
     for (int index = 0; index < (int)m_profiles.m_list.size(); ++index)
@@ -203,8 +201,7 @@ int RHPlayerProfileManager::FUN_0055dbc0(RHPlayerProfile *profile)
     return -1;
 }
 
-// Parked: cached-list iterator resets and duplicated return tails differ.
-// STUB: GAME 0x0055dd10
+// FUNCTION: GAME 0x0055dd10
 RHPlayerProfile *RHPlayerProfileManager::FUN_0055dd10(unsigned long index)
 {
     if (index < m_profiles.m_list.size())
@@ -298,7 +295,7 @@ bool RHPlayerProfileManager::Save() const
     for (int i = 0; (unsigned long)i < count; ++i)
     {
         m_profiles.GetProfile(i)->Serialize(file);
-        if (m_profiles[i] == m_active)
+        if (m_profiles.At(i) == m_active)
             active = i;
     }
     file.Access(&active, 4);

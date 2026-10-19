@@ -37,16 +37,6 @@ inline void RHProfileDestroy(T *first, T *last)
         std::_Destroy(first);
 }
 
-class RHUnk0059fba0
-{
-public:
-    RHUnk0059fba0(const char &allocator);
-    char m_00;
-    void *m_04;
-    void *m_08;
-    void *m_0c;
-};
-
 class RHScriptFXArray
 {
 public:

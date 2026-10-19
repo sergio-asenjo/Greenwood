@@ -1201,15 +1201,6 @@ bool RHProfileManager::SerializeProfilePointer(SBFile &file, const RHCharacterPr
     return true;
 }
 
-// deferred: unannotated pending reccmp #534 (0x0059fba0)
-RHUnk0059fba0::RHUnk0059fba0(const char &allocator)
-{
-    m_00 = allocator;
-    m_04 = 0;
-    m_08 = 0;
-    m_0c = 0;
-}
-
 // FUNCTION: GAME 0x005e2020
 bool FUN_005e2020(SBFile &file, unsigned long tag, int level)
 {
