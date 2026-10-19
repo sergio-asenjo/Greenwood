@@ -379,6 +379,26 @@ MERGED_GUARD_REGISTRATION_ADDRS = {
     0x0063C790,
 }
 
+# --- std::vector / _Xran out-of-line helpers ---------------------------------
+# VC6 std::vector<std::wstring>/<std::string> member instantiations and the
+# type-independent std::vector::_Xran out-of-range throw helpers. These are
+# first-party-looking map names (FUN_0059FF20 etc.) that escaped the existing
+# STD_TEMPLATE_ADDRS/CRT ranges, so a worker would otherwise treat them as game
+# bodies. Independently audited and verified (two read-only passes, byte-level
+# decoding + VC6 member/version + Windows evidence); 0x00459620 =
+# vector<wstring>::insert, 0x0059FF20/0x005A0200 = vector::_Xran (EH handlers
+# 0x66D8C0/0x66D8E0), 0x00606270 = vector<wstring>::resize, 0x006073B0 =
+# vector<string>::insert(pos,first,last). Explicit set (NOT a pattern/range rule).
+# Evidence: docs/notes/astra_stub-audit_20261018.txt and
+#           docs/notes/astra_stub-audit-verification_20261018.txt
+STD_HELPER_ADDRS = {
+    0x00459620,
+    0x0059FF20,
+    0x005A0200,
+    0x00606270,
+    0x006073B0,
+}
+
 # --- CRT/STL helpers implemented as library code -----------------------------
 CRT_HELPER_ADDRS = {
     0x00419940,  # wmemcpy
@@ -520,6 +540,8 @@ def is_library_addr(addr: int) -> bool:
     if addr in BZIP2_ADDRS or addr in ZLIB_ADDRS or addr in CRT_HELPER_ADDRS:
         return True
     if addr in MERGED_GUARD_REGISTRATION_ADDRS:
+        return True
+    if addr in STD_HELPER_ADDRS:
         return True
     if addr in STD_TEMPLATE_ADDRS:
         return True
