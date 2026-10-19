@@ -2,12 +2,12 @@
 #include "RHSound.h"
 #include "RHSoundGeometry.h"
 #include "RHSoundActorCalls.h"
+#include "RHTreeDec.h"
 #include <windows.h>
 #include <math.h>
 #include <stdio.h>
 
 void FUN_0064158f(void *memory);
-void FUN_005aa090(void *value, void *first, void *last);
 
 DECOMP_SIZE_ASSERT(RHSound, 0x294)
 DECOMP_SIZE_ASSERT(RHUnk005a7220, 0x50)
@@ -56,18 +56,21 @@ float g_unk0x00679dd4 = 0.1111111119389534f;
 class RHProfileManager;
 RHProfileManager *RHUnk00436500GetProfileManager();
 
+class SBGeoVector2D;
 class SBGeoPoint2D
 {
 public:
     SBGeoPoint2D();
     SBGeoPoint2D(const SBGeoPoint2D &);
     ~SBGeoPoint2D();
-    SBGeoPoint2D Unk005fc110(const SBGeoPoint2D &) const;
+    SBGeoVector2D Unk005fc110(const SBGeoPoint2D &) const;
     bool FUN_005fc0e0(const SBGeoPoint2D &) const;
     SBGeoPoint2D &operator=(const SBGeoPoint2D &);
     float m_x;
     float m_y;
 };
+
+#include "SBGeoVector2D.h"
 
 inline void RHUnk005aada0::Destroy(SBGeoPoint2D *first, SBGeoPoint2D *last)
 {
@@ -873,72 +876,60 @@ void RHSound::FUN_005a8420(int channel)
     }
 }
 
-// Parked: the shared pending-list owner and its EH cleanup type remain provisional.
-// STUB: GAME 0x005a8470
+// GLOBAL: GAME 0x006c1084
+unsigned g_unk0x006c1084;
+
+inline RHSoundSourceIDTree::RHSoundSourceIDTree()
+{
+    char allocator;
+    char comparison;
+    m_00[0] = allocator;
+    m_00[1] = comparison;
+    *(bool *)&m_08 = false;
+    {
+        RHUnk00641782Lock lock;
+        if (g_unk0x006c1088 == 0) {
+            Node *node = (Node *)operator new(sizeof(Node));
+            node->m_parent = 0;
+            node->m_color = 1;
+            g_unk0x006c1088 = (RHTreeDecNode10 *)node;
+            g_unk0x006c1088->m_00 = 0;
+            g_unk0x006c1088->m_08 = 0;
+        }
+        ++g_unk0x006c1084;
+        Node *sentinel = (Node *)g_unk0x006c1088;
+        Node *head = (Node *)operator new(sizeof(Node));
+        head->m_parent = sentinel;
+        head->m_color = 0;
+        m_head = head;
+        m_size = 0;
+        m_head->m_left = m_head;
+        m_head->m_right = m_head;
+    }
+}
+
+// FUNCTION: GAME 0x005a8470
 void RHSound::FUN_005a8470(void *first, void *second)
 {
-    RHUnk00641782 lock;
-    lock.FUN_00641782();
-    void **sentinel = (void **)0x006c1088;
-    unsigned long *references = (unsigned long *)0x006c1084;
-    if (*sentinel == 0)
-    {
-        *sentinel = operator new(0x14);
-        ((void **)*sentinel)[0] = 0;
-        ((void **)*sentinel)[1] = 0;
-        ((void **)*sentinel)[2] = 0;
-        ((void **)*sentinel)[4] = (void *)1;
-    }
-    void **node = (void **)operator new(0x14);
-    node[0] = node;
-    node[1] = *sentinel;
-    node[2] = node;
-    node[4] = 0;
-    ++*references;
-    lock.FUN_0064181e();
-
-    RHSoundPendingData data;
-    m_200->FUN_005b4b50(first, second, &data);
+    RHSoundSourceIDTree ids;
+    m_200->FUN_005b4b50(first, second, &ids);
     if (m_20a)
     {
-        FUN_005ad400(&data);
+        FUN_005ad400(&ids);
         m_200->FUN_005b4db0();
         m_000.FUN_005aec70();
     }
-    data.~RHSoundPendingData();
-    FUN_005aa090(&first, node[0], node);
-    FUN_0064158f(node);
-
-    lock.FUN_00641782();
-    if (--*references == 0)
-    {
-        operator delete(*sentinel);
-        *sentinel = 0;
-    }
-    lock.FUN_0064181e();
 }
 
-// Parked: the original helper's list-value type is not attributed to RHSound.
-// STUB: GAME 0x005a85e0
-void RHSound::FUN_005a85e0()
+inline RHSoundSourceIDTree::Iterator RHSoundSourceIDTree::Iterator::operator++(int)
 {
-    RHUnk00641782 lock;
-    void **value = (void **)((char *)this + 4);
-    void *memory = *value;
-    FUN_005aa090(this, *(void **)memory, memory);
-    FUN_0064158f(memory);
-    *value = 0;
-    *(void **)((char *)this + 0x0c) = 0;
-    lock.FUN_00641782();
-    unsigned long *references = (unsigned long *)0x006c1084;
-    void **sentinel = (void **)0x006c1088;
-    if (--*references == 0)
-    {
-        FUN_0064158f(*sentinel);
-        *sentinel = 0;
-    }
-    lock.FUN_0064181e();
+    Iterator previous = *this;
+    ((RHTreeInc005aa7b0 *)this)->FUN_005aa7b0();
+    return previous;
 }
+
+// SYNTHETIC: GAME 0x005a85e0
+// RHSoundSourceIDTree::~RHSoundSourceIDTree
 
 // FUNCTION: GAME 0x005a8650
 void RHSound::FUN_005a8650(const SBGeoPoint2D &position, float zoom)
@@ -1403,7 +1394,7 @@ void RHSound::FUN_005a9420()
             RHSoundQueueNode *removed = queued;
             queued = queued->m_00;
             RHSoundQueueNode *result;
-            g_unk0x006c1078.FUN_005aa1c0(&result, removed);
+            result = g_unk0x006c1078.FUN_005aa1c0(RHSoundQueueIterator(removed)).m_node;
         }
         unsigned long time = GetTickCount();
         RHSoundPendingNode *node = m_24c->m_00;
@@ -1684,22 +1675,211 @@ RHSoundQueue::~RHSoundQueue()
     m_08 = 0;
 }
 
-// Parked: distinct unlink locals and a named payload receiver retain the EAX/ECX scheduling seam.
-// STUB: GAME 0x005aa1c0
-RHSoundQueueNode **RHSoundQueue::FUN_005aa1c0(RHSoundQueueNode **result, RHSoundQueueNode *node)
+static inline RHSoundSourceIDTree::Node *RHSoundSourceIDMin(RHSoundSourceIDTree::Node *node)
 {
-    RHSoundQueueNode *previous = *(RHSoundQueueNode *volatile *)&node->m_04;
-    RHSoundQueueNode *value = *(RHSoundQueueNode *volatile *)&node->m_00;
-    RHSoundQueueNode *next = node->m_00;
-    previous->m_00 = value;
-    value = node->m_00;
-    previous = node->m_04;
-    value->m_04 = previous;
+    RHUnk00641782Lock lock;
+    while (node->m_left != (RHSoundSourceIDTree::Node *)g_unk0x006c1088)
+        node = node->m_left;
+    return node;
+}
+
+static inline RHSoundSourceIDTree::Node *RHSoundSourceIDMax(RHSoundSourceIDTree::Node *node)
+{
+    RHUnk00641782Lock lock;
+    while (node->m_right != (RHSoundSourceIDTree::Node *)g_unk0x006c1088)
+        node = node->m_right;
+    return node;
+}
+
+// FUNCTION: GAME 0x005aa090
+RHSoundSourceIDTree::Iterator RHSoundSourceIDTree::FUN_005aa090(Iterator first, Iterator last)
+{
+    if (m_size != 0 && first.m_node == m_head->m_left && last.m_node == m_head) {
+        RHUnk00641782Lock lock;
+        Node *node = Root();
+        {
+            RHUnk00641782Lock inner;
+            for (Node *next = node; next != (Node *)g_unk0x006c1088; node = next) {
+                FUN_005aa720(next->m_right);
+                next = next->m_left;
+                operator delete(node);
+            }
+        }
+        Root() = (Node *)g_unk0x006c1088;
+        m_size = 0;
+        Leftmost() = m_head;
+        Rightmost() = m_head;
+        return Begin();
+    }
+    while (first != last)
+        FUN_005aa200(first++);
+    return first;
+}
+
+// FUNCTION: GAME 0x005aa200
+RHSoundSourceIDTree::Iterator RHSoundSourceIDTree::FUN_005aa200(Iterator position)
+{
+    Node *x;
+    Node *y = (position++).m_node;
+    Node *z = y;
+    RHUnk00641782Lock lock;
+    if (Left(y) == (Node *)g_unk0x006c1088)
+        x = Right(y);
+    else if (Right(y) == (Node *)g_unk0x006c1088)
+        x = Left(y);
+    else
+    {
+        y = RHSoundSourceIDMin(Right(y));
+        x = Right(y);
+    }
+    {
+        if (y != z)
+        {
+            Parent(Left(z)) = y;
+            Left(y) = Left(z);
+            if (y == Right(z))
+                Parent(x) = y;
+            else
+            {
+                Parent(x) = Parent(y);
+                Left(Parent(y)) = x;
+                Right(y) = Right(z);
+                Parent(Right(z)) = y;
+            }
+            if (Root() == z)
+                Root() = y;
+            else if (Left(Parent(z)) == z)
+                Left(Parent(z)) = y;
+            else
+                Right(Parent(z)) = y;
+            Parent(y) = Parent(z);
+            std::swap(Color(y), Color(z));
+            y = z;
+        }
+        else
+        {
+            Parent(x) = Parent(y);
+            if (Root() == z)
+                Root() = x;
+            else if (Left(Parent(z)) == z)
+                Left(Parent(z)) = x;
+            else
+                Right(Parent(z)) = x;
+            if (Leftmost() == z)
+            {
+                if (Right(z) == (Node *)g_unk0x006c1088)
+                    Leftmost() = Parent(z);
+                else
+                {
+                    Leftmost() = RHSoundSourceIDMin(x);
+                }
+            }
+            if (Rightmost() == z)
+            {
+                if (Left(z) == (Node *)g_unk0x006c1088)
+                    Rightmost() = Parent(z);
+                else
+                {
+                    Rightmost() = RHSoundSourceIDMax(x);
+                }
+            }
+        }
+        if (Color(y) == 1)
+        {
+            while (x != Root() && Color(x) == 1)
+            {
+                if (x == Left(Parent(x)))
+                {
+                    Node *w = Right(Parent(x));
+                    if (Color(w) == 0)
+                    {
+                        Color(w) = 1;
+                        Color(Parent(x)) = 0;
+                        Lrotate(Parent(x));
+                        w = Right(Parent(x));
+                    }
+                    if (Color(Left(w)) == 1 && Color(Right(w)) == 1)
+                    {
+                        Color(w) = 0;
+                        x = Parent(x);
+                    }
+                    else
+                    {
+                        if (Color(Right(w)) == 1)
+                        {
+                            Color(Left(w)) = 1;
+                            Color(w) = 0;
+                            Rrotate(w);
+                            w = Right(Parent(x));
+                        }
+                        Color(w) = Color(Parent(x));
+                        Color(Parent(x)) = 1;
+                        Color(Right(w)) = 1;
+                        Lrotate(Parent(x));
+                        break;
+                    }
+                }
+                else
+                {
+                    Node *w = Left(Parent(x));
+                    if (Color(w) == 0)
+                    {
+                        Color(w) = 1;
+                        Color(Parent(x)) = 0;
+                        Rrotate(Parent(x));
+                        w = Left(Parent(x));
+                    }
+                    if (Color(Right(w)) == 1 && Color(Left(w)) == 1)
+                    {
+                        Color(w) = 0;
+                        x = Parent(x);
+                    }
+                    else
+                    {
+                        if (Color(Left(w)) == 1)
+                        {
+                            Color(Right(w)) = 1;
+                            Color(w) = 0;
+                            Lrotate(w);
+                            w = Left(Parent(x));
+                        }
+                        Color(w) = Color(Parent(x));
+                        Color(Parent(x)) = 1;
+                        Color(Left(w)) = 1;
+                        Rrotate(Parent(x));
+                        break;
+                    }
+                }
+            }
+            Color(x) = 1;
+        }
+    }
+    operator delete(y);
+    --m_size;
+    return position;
+}
+
+// FUNCTION: GAME 0x005aa1c0
+RHSoundQueueIterator RHSoundQueue::FUN_005aa1c0(RHSoundQueueIterator position)
+{
+    RHSoundQueueNode *node = (position++).m_node;
+    node->m_04->m_00 = node->m_00;
+    node->m_00->m_04 = node->m_04;
     ((RHSoundPendingData *)&node->m_08)->FUN_0052c5a0();
     operator delete(node);
     --m_08;
-    *result = next;
-    return result;
+    return position;
+}
+
+// FUNCTION: GAME 0x005aa720
+void RHSoundSourceIDTree::FUN_005aa720(Node *node)
+{
+    RHUnk00641782Lock lock;
+    for (Node *next = node; next != (Node *)g_unk0x006c1088; node = next) {
+        FUN_005aa720(next->m_right);
+        next = next->m_left;
+        operator delete(node);
+    }
 }
 
 // FUNCTION: GAME 0x005aa860
@@ -1883,6 +2063,27 @@ void RHSound::FUN_005ad570(void *value)
             m_000.InitializeExclamationsForProfile(entry->second, entry->first & 0xffff0000);
 }
 
+// FUNCTION: GAME 0x005ad8c0
+void RHSoundFileTree::FUN_005ad8c0()
+{
+    Iterator first(Leftmost());
+    Iterator last(m_head);
+    FUN_005af380(first, last);
+    operator delete(m_head);
+    m_head = 0;
+    m_size = 0;
+    {
+        RHUnk00641782Lock lock;
+        if (--g_unk0x006c10b8 == 0) {
+            operator delete(g_unk0x006c10b4);
+            g_unk0x006c10b4 = 0;
+        }
+    }
+}
+
+// GLOBAL: GAME 0x006c10b8
+unsigned g_unk0x006c10b8;
+
 // FUNCTION: GAME 0x005ae9f0
 RHSoundCacheEntry *RHSound::FUN_005ae9f0(unsigned long id)
 {
@@ -1921,6 +2122,39 @@ RHSoundFileTree::Pair RHSoundFileTree::FUN_005af320(const Value &value)
     answer = FUN_005b0870(value);
     Pair result(answer.first, answer.second);
     return result;
+}
+
+// FUNCTION: GAME 0x005af350
+RHSoundFileTree::RHSoundFileTree(const undefined &compare, bool multi, const undefined &allocator)
+    : m_00(allocator), m_01(compare), m_multi(multi)
+{
+    FUN_005b0f80();
+}
+
+// FUNCTION: GAME 0x005af380
+RHSoundFileTree::Iterator RHSoundFileTree::FUN_005af380(Iterator first, Iterator last)
+{
+    if (m_size != 0 && first.m_node == m_head->m_left && last.m_node == m_head) {
+        RHUnk00641782Lock lock;
+        Node *node = Root();
+        {
+            RHUnk00641782Lock inner;
+            for (Node *next = node; next != g_unk0x006c10b4; node = next) {
+                FUN_005b0ed0(next->m_right);
+                next = next->m_left;
+                ((RHProfileText *)&node->m_value)->FUN_00401ee0(true);
+                operator delete(node);
+            }
+        }
+        Root() = g_unk0x006c10b4;
+        m_size = 0;
+        Leftmost() = m_head;
+        Rightmost() = m_head;
+        return Begin();
+    }
+    while (first != last)
+        FUN_005b09a0(first++);
+    return first;
 }
 
 // FUNCTION: GAME 0x005b0870
@@ -2014,6 +2248,193 @@ static inline RHSoundFileTree::Node *RHSoundFileMin(RHSoundFileTree::Node *node)
     return node;
 }
 
+static inline RHSoundFileTree::Node *RHSoundFileTreeMax(RHSoundFileTree::Node *node)
+{
+    RHUnk00641782Lock lock;
+    while (node->m_right != g_unk0x006c10b4)
+        node = node->m_right;
+    return node;
+}
+
+// FUNCTION: GAME 0x005b09a0
+RHSoundFileTree::Iterator RHSoundFileTree::FUN_005b09a0(Iterator position)
+{
+    Node *x;
+    Node *y = (position++).m_node;
+    Node *z = y;
+    RHUnk00641782Lock lock;
+    if (Left(y) == g_unk0x006c10b4)
+        x = Right(y);
+    else if (Right(y) == g_unk0x006c10b4)
+        x = Left(y);
+    else
+    {
+        y = RHSoundFileMin(Right(y));
+        x = Right(y);
+    }
+    {
+        if (y != z)
+        {
+            Parent(Left(z)) = y;
+            Left(y) = Left(z);
+            if (y == Right(z))
+                Parent(x) = y;
+            else
+            {
+                Parent(x) = Parent(y);
+                Left(Parent(y)) = x;
+                Right(y) = Right(z);
+                Parent(Right(z)) = y;
+            }
+            if (Root() == z)
+                Root() = y;
+            else if (Left(Parent(z)) == z)
+                Left(Parent(z)) = y;
+            else
+                Right(Parent(z)) = y;
+            Parent(y) = Parent(z);
+            std::swap(Color(y), Color(z));
+            y = z;
+        }
+        else
+        {
+            Parent(x) = Parent(y);
+            if (Root() == z)
+                Root() = x;
+            else if (Left(Parent(z)) == z)
+                Left(Parent(z)) = x;
+            else
+                Right(Parent(z)) = x;
+            if (Leftmost() == z)
+            {
+                if (Right(z) == g_unk0x006c10b4)
+                    Leftmost() = Parent(z);
+                else
+                {
+                    Leftmost() = RHSoundFileMin(x);
+                }
+            }
+            if (Rightmost() == z)
+            {
+                if (Left(z) == g_unk0x006c10b4)
+                    Rightmost() = Parent(z);
+                else
+                {
+                    Rightmost() = RHSoundFileTreeMax(x);
+                }
+            }
+        }
+        if (Color(y) == 1)
+        {
+            while (x != Root() && Color(x) == 1)
+            {
+                if (x == Left(Parent(x)))
+                {
+                    Node *w = Right(Parent(x));
+                    if (Color(w) == 0)
+                    {
+                        Color(w) = 1;
+                        Color(Parent(x)) = 0;
+                        Lrotate(Parent(x));
+                        w = Right(Parent(x));
+                    }
+                    if (Color(Left(w)) == 1 && Color(Right(w)) == 1)
+                    {
+                        Color(w) = 0;
+                        x = Parent(x);
+                    }
+                    else
+                    {
+                        if (Color(Right(w)) == 1)
+                        {
+                            Color(Left(w)) = 1;
+                            Color(w) = 0;
+                            Rrotate(w);
+                            w = Right(Parent(x));
+                        }
+                        Color(w) = Color(Parent(x));
+                        Color(Parent(x)) = 1;
+                        Color(Right(w)) = 1;
+                        Lrotate(Parent(x));
+                        break;
+                    }
+                }
+                else
+                {
+                    Node *w = Left(Parent(x));
+                    if (Color(w) == 0)
+                    {
+                        Color(w) = 1;
+                        Color(Parent(x)) = 0;
+                        Rrotate(Parent(x));
+                        w = Left(Parent(x));
+                    }
+                    if (Color(Right(w)) == 1 && Color(Left(w)) == 1)
+                    {
+                        Color(w) = 0;
+                        x = Parent(x);
+                    }
+                    else
+                    {
+                        if (Color(Left(w)) == 1)
+                        {
+                            Color(Right(w)) = 1;
+                            Color(w) = 0;
+                            Lrotate(w);
+                            w = Left(Parent(x));
+                        }
+                        Color(w) = Color(Parent(x));
+                        Color(Parent(x)) = 1;
+                        Color(Left(w)) = 1;
+                        Rrotate(Parent(x));
+                        break;
+                    }
+                }
+            }
+            Color(x) = 1;
+        }
+    }
+    y->m_value.~basic_string();
+    operator delete(y);
+    --m_size;
+    return position;
+}
+
+// FUNCTION: GAME 0x005b0ed0
+void RHSoundFileTree::FUN_005b0ed0(Node *node)
+{
+    RHUnk00641782Lock lock;
+    for (Node *next = node; next != g_unk0x006c10b4; node = next) {
+        FUN_005b0ed0(next->m_right);
+        next = next->m_left;
+        node->m_value.~basic_string();
+        operator delete(node);
+    }
+}
+
+// FUNCTION: GAME 0x005b0f80
+void RHSoundFileTree::FUN_005b0f80()
+{
+    RHUnk00641782Lock lock;
+    if (g_unk0x006c10b4 == 0) {
+        Node *node = (Node *)operator new(sizeof(Node));
+        node->m_parent = 0;
+        node->m_color = 1;
+        g_unk0x006c10b4 = node;
+        g_unk0x006c10b4->m_left = 0;
+        g_unk0x006c10b4->m_right = 0;
+    }
+    ++g_unk0x006c10b8;
+    Node *sentinel = g_unk0x006c10b4;
+    Node *head = (Node *)operator new(sizeof(Node));
+    head->m_parent = sentinel;
+    head->m_color = 0;
+    m_head = head;
+    m_size = 0;
+    m_head->m_left = m_head;
+    m_head->m_right = m_head;
+}
+
 // FUNCTION: GAME 0x005b1030
 void RHSoundFileTree::Iterator::FUN_005b1030()
 {
@@ -2032,6 +2453,22 @@ void RHSoundFileTree::Iterator::FUN_005b1030()
 void EmitRHSoundFileIncrement(RHSoundFileTree::Iterator &iterator)
 {
     iterator.FUN_005b1030();
+}
+
+// FUNCTION: GAME 0x005b1540
+RHSoundSourceIDTree::Node *RHSoundSourceIDTree::FUN_005b1540(Node *node)
+{
+    RHUnk00641782Lock lock;
+    while (node->m_left != (Node *)g_unk0x006c1088)
+        node = node->m_left;
+    return node;
+}
+
+void EmitRHSoundSourceIDTree(RHSoundSourceIDTree *tree, RHSoundSourceIDTree::Node *node)
+{
+    tree->FUN_005aa720(node);
+    RHSoundSourceIDTree::FUN_005b1540(node);
+    tree->~RHSoundSourceIDTree();
 }
 
 // FUNCTION: GAME 0x005b1580
@@ -2112,14 +2549,6 @@ RHSoundFileTree::Iterator RHSoundFileTree::FUN_005b1580(Node *x, Node *y, const 
     return Iterator(z);
 }
 
-static inline RHSoundFileTree::Node *RHSoundFileTreeMax(RHSoundFileTree::Node *node)
-{
-    RHUnk00641782Lock lock;
-    while (node->m_right != g_unk0x006c10b4)
-        node = node->m_right;
-    return node;
-}
-
 // FUNCTION: GAME 0x005b1940
 void RHSoundFileTree::Iterator::FUN_005b1940()
 {
@@ -2140,6 +2569,9 @@ void RHSoundFileTree::Iterator::FUN_005b1940()
 void EmitRHSoundFileTree(RHSoundFileTree *tree, const RHSoundFileTree::Value &value)
 {
     tree->FUN_005af320(value);
+    tree->FUN_005ad8c0();
+    undefined compare;
+    RHSoundFileTree files(compare, false, compare);
 }
 
 // FUNCTION: GAME 0x005b23c0

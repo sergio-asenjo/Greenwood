@@ -233,39 +233,8 @@ void RHSoundSourceManager::Emit(SBFile &file, RHSoundSource *source, unsigned sh
     Serialize(file);
 }
 
-extern RHTreeDecNode10 *g_unk0x006c1088;
 class RHUnk00597a70;
 void FUN_0059fb00(RHUnk00597a70 **, RHUnk00597a70 *const &);
-
-class RHSoundSourceIDTree
-{
-public:
-    struct Node
-    {
-        Node *m_left;
-        Node *m_parent;
-        Node *m_right;
-        unsigned long m_key;
-        int m_color;
-        static Node *&Left(Node *node) { return node->m_left; }
-    };
-    struct Iterator
-    {
-        Node *m_node;
-        Iterator() {}
-        Iterator(Node *node) : m_node(node) {}
-    };
-    typedef std::pair<Iterator, bool> Pair;
-    char m_00[4];
-    Node *m_head;
-    unsigned m_08;
-    unsigned m_size;
-    Node *&Root() { return m_head->m_parent; }
-    void Lrotate(Node *);
-    void Rrotate(Node *);
-    Iterator FUN_005b5420(Node *, Node *, const unsigned long &);
-    Pair FUN_005b52f0(const unsigned long &);
-};
 
 // FUNCTION: GAME 0x005b52f0
 RHSoundSourceIDTree::Pair RHSoundSourceIDTree::FUN_005b52f0(const unsigned long &value)
@@ -304,42 +273,6 @@ RHSoundSourceIDTree::Pair RHSoundSourceIDTree::FUN_005b52f0(const unsigned long 
     }
     Pair result(previous, false);
     return result;
-}
-
-inline void RHSoundSourceIDTree::Lrotate(Node *x)
-{
-    RHUnk00641782Lock lock;
-    Node *y = x->m_right;
-    x->m_right = y->m_left;
-    if (y->m_left != (Node *)g_unk0x006c1088)
-        y->m_left->m_parent = x;
-    y->m_parent = x->m_parent;
-    if (x == Root())
-        Root() = y;
-    else if (x == x->m_parent->m_left)
-        x->m_parent->m_left = y;
-    else
-        x->m_parent->m_right = y;
-    y->m_left = x;
-    x->m_parent = y;
-}
-
-inline void RHSoundSourceIDTree::Rrotate(Node *x)
-{
-    RHUnk00641782Lock lock;
-    Node *y = x->m_left;
-    x->m_left = y->m_right;
-    if (y->m_right != (Node *)g_unk0x006c1088)
-        y->m_right->m_parent = x;
-    y->m_parent = x->m_parent;
-    if (x == Root())
-        Root() = y;
-    else if (x == x->m_parent->m_right)
-        x->m_parent->m_right = y;
-    else
-        x->m_parent->m_left = y;
-    y->m_right = x;
-    x->m_parent = y;
 }
 
 // FUNCTION: GAME 0x005b5420

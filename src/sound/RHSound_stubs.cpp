@@ -35,7 +35,6 @@ std::string g_unk0x006c0610;
 void RHSound::FUN_005ad400(void *) {}
 void RHSoundSourceManager::FUN_005b4b50(void *, void *, void *) {}
 RHSoundSource *RHSoundSourceManager::FUN_005b4e00(unsigned short) { return 0; }
-void FUN_005aa090(void *, void *, void *) {}
 
 // LIBRARY: GAME 0x005e39d0
 extern "C" void __stdcall FSOUND_Close() {}

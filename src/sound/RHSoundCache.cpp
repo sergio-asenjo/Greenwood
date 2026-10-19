@@ -820,7 +820,7 @@ void RHSoundCache::GetCacheStats(RHsampleCacheStats *stats)
 // FUNCTION: GAME 0x005aed30
 RHSoundCacheEntry *RHSoundCache::GetSourceCacheEntryForID(unsigned long id)
 {
-    std::map<unsigned long, RHSoundCacheEntry *>::iterator entry = m_044.find(id);
+    std::map<unsigned long, RHSoundCacheEntry *>::iterator entry = ((RHSoundCacheEntryMap &)m_044).find(id);
     if (entry != m_044.end())
         return entry->second;
     SBAssert(1, "P:\\Robin Hood\\RHsoundcache.cpp", 1782,
@@ -1220,6 +1220,29 @@ void RHSoundCacheGroups::FUN_005afc70(RHSoundCacheGroupNode *node)
     }
 }
 
+// FUNCTION: GAME 0x005afd00
+void RHSoundCacheGroups::FUN_005afd00()
+{
+    RHUnk00641782Lock lock;
+    if (g_unk0x006c10a4 == 0) {
+        Node *node = (Node *)operator new(sizeof(Node));
+        node->m_04 = 0;
+        node->m_14 = 1;
+        g_unk0x006c10a4 = node;
+        g_unk0x006c10a4->m_00 = 0;
+        g_unk0x006c10a4->m_08 = 0;
+    }
+    ++g_unk0x006c10a8;
+    Node *sentinel = g_unk0x006c10a4;
+    Node *head = (Node *)operator new(sizeof(Node));
+    head->m_04 = sentinel;
+    head->m_14 = 0;
+    Head() = head;
+    Count() = 0;
+    Head()->m_00 = Head();
+    Head()->m_08 = Head();
+}
+
 // GLOBAL: GAME 0x006c10a4
 RHSoundCacheGroupNode *g_unk0x006c10a4;
 
@@ -1465,6 +1488,29 @@ void RHSoundCacheEntryMap::FUN_005b0380(RHSoundCacheGroupNode *node)
     }
 }
 
+// FUNCTION: GAME 0x005b0410
+void RHSoundCacheEntryMap::FUN_005b0410()
+{
+    RHUnk00641782Lock lock;
+    if (g_unk0x006c10ac == 0) {
+        Node *node = (Node *)operator new(sizeof(Node));
+        node->m_04 = 0;
+        node->m_14 = 1;
+        g_unk0x006c10ac = node;
+        g_unk0x006c10ac->m_00 = 0;
+        g_unk0x006c10ac->m_08 = 0;
+    }
+    ++g_unk0x006c10b0;
+    Node *sentinel = g_unk0x006c10ac;
+    Node *head = (Node *)operator new(sizeof(Node));
+    head->m_04 = sentinel;
+    head->m_14 = 0;
+    Head() = head;
+    Count() = 0;
+    Head()->m_00 = Head();
+    Head()->m_08 = Head();
+}
+
 // FUNCTION: GAME 0x005b04c0
 RHSoundCacheGroupIterator RHSoundCacheEntryMap::FUN_005b04c0(RHSoundCacheGroupNode *x, RHSoundCacheGroupNode *y, const value_type &value)
 {
@@ -1682,6 +1728,7 @@ RHSoundCacheGroupIterator RHSoundCacheGroups::FUN_005b10e0(RHSoundCacheGroupNode
     return RHSoundCacheGroupIterator(z);
 }
 
+// FUNCTION: GAME 0x005b13e0
 RHSoundCacheGroupNode *RHSoundCacheGroups::FUN_005b13e0(const unsigned long &key)
 {
     RHUnk00641782Lock lock;
@@ -1701,6 +1748,7 @@ RHSoundCacheGroupNode *RHSoundCacheGroups::FUN_005b13e0(const unsigned long &key
     return result;
 }
 
+// FUNCTION: GAME 0x005b1430
 RHSoundCacheGroupNode *RHSoundCacheEntryMap::FUN_005b1430(const unsigned long &key)
 {
     RHUnk00641782Lock lock;
@@ -1821,6 +1869,8 @@ RHUnk005f4fc0::RHUnk005f4fc0()
 void RHSoundCache::Emit(unsigned short index, RHSoundCacheGroups &groups, const RHSoundCacheMissionProfile *profile)
 {
     RHcacheData cache;
+    groups.FUN_005afd00();
+    ((RHSoundCacheEntryMap *)&m_044)->FUN_005b0410();
     FUN_005ab410(cache);
     RHsampleCacheStats stats;
     FUN_005aec70();

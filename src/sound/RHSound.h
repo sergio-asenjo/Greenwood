@@ -81,6 +81,13 @@ public:
     virtual void Slot39(unsigned short) = 0; // vtable+0x9c
 };
 
+struct RHSoundQueueIterator
+{
+    RHSoundQueueNode *m_node;
+    RHSoundQueueIterator(RHSoundQueueNode *node = 0) : m_node(node) {}
+    RHSoundQueueIterator operator++(int);
+};
+
 // SIZE 0x0c
 struct RHSoundQueue
 {
@@ -88,7 +95,7 @@ struct RHSoundQueue
     undefined m_00[4]; // 0x00
     RHSoundQueueNode *m_04; // 0x04
     unsigned int m_08; // 0x08
-    RHSoundQueueNode **FUN_005aa1c0(RHSoundQueueNode **, RHSoundQueueNode *);
+    RHSoundQueueIterator FUN_005aa1c0(RHSoundQueueIterator);
 };
 
 #include "RHSoundSourceManagerCore.h"
@@ -145,6 +152,13 @@ public:
         static Node *&Left(Node *value) { return value->m_left; }
         void FUN_005b1940();
         void FUN_005b1030();
+        bool operator!=(const Iterator &other) const { return m_node != other.m_node; }
+        Iterator operator++(int)
+        {
+            Iterator previous = *this;
+            FUN_005b1030();
+            return previous;
+        }
     };
     typedef std::pair<Iterator, bool> Pair;
     struct Value
@@ -152,20 +166,36 @@ public:
         unsigned long m_key; // 0x00
         std::string m_value; // 0x04
     };
+    RHSoundFileTree(const undefined &, bool, const undefined &);
+    void FUN_005ad8c0();
     Pair FUN_005af320(const Value &);
     Pair FUN_005b0870(const Value &);
+    Iterator FUN_005af380(Iterator, Iterator);
+    Iterator FUN_005b09a0(Iterator);
+    void FUN_005b0ed0(Node *);
+    void FUN_005b0f80();
     Iterator FUN_005b1580(Node *, Node *, const Value &);
     void Lrotate(Node *);
     void Rrotate(Node *);
     Node *&Root() { return m_head->m_parent; }
-    undefined m_00[4]; // 0x00
+    Node *&Leftmost() { return m_head->m_left; }
+    Node *&Rightmost() { return m_head->m_right; }
+    Iterator Begin() { return Iterator(Leftmost()); }
+    static Node *&Left(Node *node) { return node->m_left; }
+    static Node *&Parent(Node *node) { return node->m_parent; }
+    static Node *&Right(Node *node) { return node->m_right; }
+    static undefined4 &Color(Node *node) { return node->m_color; }
+    undefined m_00; // 0x00
+    undefined m_01; // 0x01
+    undefined m_02[2]; // 0x02
     Node *m_head; // 0x04
-    undefined m_multi; // 0x08
+    bool m_multi; // 0x08
     undefined m_09[3]; // 0x09
     unsigned int m_size; // 0x0c
 };
 
 extern RHSoundFileTree::Node *g_unk0x006c10b4;
+extern unsigned g_unk0x006c10b8;
 
 // SIZE 0x6c
 struct RHUnk005ad570Profiles
@@ -218,6 +248,13 @@ struct RHSoundQueueNode
     RHSoundSettings m_08; // 0x08
     RHSoundChannelSettings m_20; // 0x20
 };
+
+inline RHSoundQueueIterator RHSoundQueueIterator::operator++(int)
+{
+    RHSoundQueueIterator previous = *this;
+    m_node = m_node->m_00;
+    return previous;
+}
 
 extern RHSoundQueue g_unk0x006c1078;
 unsigned long FUN_005a93c0(unsigned long, unsigned long);

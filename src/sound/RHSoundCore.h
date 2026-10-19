@@ -96,7 +96,6 @@ public:
     unsigned short FUN_005a8040();
     void FUN_005a8420(int channel);
     void FUN_005a8470(void *first, void *second);
-    void FUN_005a85e0();
     void FUN_005a8650(const SBGeoPoint2D &position, float zoom);
     void FUN_005a8700(void *position, void *zoom);
     void FUN_005ad400(void *data);

@@ -301,6 +301,7 @@ public:
     static Node *&Right(Node *node) { return node->m_08; }
     static undefined4 &Color(Node *node) { return node->m_14; }
     void FUN_005b0380(RHSoundCacheGroupNode *);
+    void FUN_005b0410();
     RHSoundCacheGroupNode *&Head() { return *(RHSoundCacheGroupNode **)((char *)this + 4); }
     RHSoundCacheGroupNode *&Root() { return Head()->m_04; }
     RHSoundCacheGroupNode *&Leftmost() { return Head()->m_00; }
@@ -308,6 +309,12 @@ public:
     EraseIterator Begin() { return EraseIterator(Leftmost()); }
     unsigned &Count() { return *(unsigned *)((char *)this + 0x0c); }
     RHSoundCacheGroupNode *FUN_005b1430(const unsigned long &);
+    iterator find(const unsigned long &key)
+    {
+        RHSoundCacheGroupNode *node = FUN_005b1430(key);
+        iterator entry = *(iterator *)&node;
+        return entry == end() || key < (*entry).first ? end() : entry;
+    }
     RHSoundCacheGroupIterator FUN_005b04c0(RHSoundCacheGroupNode *, RHSoundCacheGroupNode *, const value_type &);
     void Lrotate(RHSoundCacheGroupNode *);
     void Rrotate(RHSoundCacheGroupNode *);
