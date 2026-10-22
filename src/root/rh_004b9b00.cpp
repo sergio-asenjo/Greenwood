@@ -5,7 +5,7 @@ class RHElementScroll;
 
 // GLOBAL: GAME 0x006c09d8
 char g_unk0x006c09d8;
-extern RHElementScroll **volatile g_unk0x6c09dc;
+extern RHElementScroll **g_unk0x6c09dc;
 extern RHElementScroll **g_unk0x006c09e0;
 // GLOBAL: GAME 0x006c09e4
 int g_unk0x006c09e4;

@@ -70,16 +70,10 @@ RHUnk004fe1f0::RHUnk004fe1f0(const char *value)
     m_8 = 0;
 }
 
-// Parked: the target keeps the quotient in edx and copies to eax last
-// (sar edx,5; mov eax,edx; shr eax,0x1f; add edx,eax; mov eax,edx); VC6 emits
-// the re-scheduled copy-first form (mov eax,edx; sar eax,5; mov ecx,eax; ...)
-// for every probed source shape (int, pointer difference, named local).
-// STUB: GAME 0x004fe220
+// FUNCTION: GAME 0x004fe220
 int RHUnk004fe200::FUN_004fe220()
 {
-    if (m_4 == 0)
-        return 0;
-    return m_8 - m_4;
+    return m_4 == 0 ? 0 : m_8 - m_4;
 }
 
 // FUNCTION: GAME 0x004fe250
@@ -89,17 +83,10 @@ void RHUnk004fe200::FUN_004fe250(RHUnk004fd7f0 *first, RHUnk004fd7f0 *last)
         first->~RHUnk004fd7f0();
 }
 
-// Parked: the target keeps the quotient in edx and copies to eax last
-// (sar edx,6; mov eax,edx; shr eax,0x1f; add edx,eax; mov eax,edx); VC6 emits
-// the re-scheduled copy-first form for every probed source shape (int, named
-// local dividend, pointer difference).
-// STUB: GAME 0x004fe280
+// FUNCTION: GAME 0x004fe280
 int RHUnk004fe260::FUN_004fe280()
 {
-    if (m_4 == 0)
-        return 0;
-    int size = m_8 - m_4;
-    return size / 160;
+    return m_4 == 0 ? 0 : (m_8 - m_4) / 160;
 }
 
 // FUNCTION: GAME 0x004fe2b0

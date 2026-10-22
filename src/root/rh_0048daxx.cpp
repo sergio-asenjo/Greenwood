@@ -2,6 +2,8 @@
 // No __FILE__ or oracle evidence: class and method identity are unproven.
 // Offsets are exact from Game.exe.
 
+#include "RHSoldierNPCCalls.h"
+
 struct RHUnk0048da10
 {
     char m_0[0x10];
@@ -11,35 +13,27 @@ struct RHUnk0048da10
     RHUnk0048da10 *m_50;
 };
 
-// Parked: the target lowers the two-value membership test to the switch
-// sub-chain (sub ecx,2; je; sub ecx,0x9f; jne) and shares one false/true
-// epilogue; the && / == || != loop shapes all give the cmp-chain plus a
-// duplicated tail.
-// STUB: GAME 0x0048da40
-bool __stdcall FUN_0048da40(RHUnk0048da10 *value)
+// FUNCTION: GAME 0x0048da40
+bool RHSoldierNPCCalls::FUN_0048da40(RHUnk0048da10 *value)
 {
-    if (value->m_50 != 0)
-        return false;
-    for (;;)
+    while (value->m_50 == 0)
     {
-        RHUnk0048da10 *node = value->m_4c;
-        if (node == 0)
+        value = value->m_4c;
+        if (value == 0)
             return true;
-        switch (node->m_10)
+        switch (value->m_10)
         {
         case 2:
         case 0xa1:
-            if (node->m_50 != 0)
-                return false;
-            value = node;
             break;
         default:
             return false;
         }
     }
+    return false;
 }
 
-void EmitFUN_0048da40(RHUnk0048da10 *value)
+void EmitFUN_0048da40(RHSoldierNPCCalls *owner, RHUnk0048da10 *value)
 {
-    FUN_0048da40(value);
+    owner->FUN_0048da40(value);
 }

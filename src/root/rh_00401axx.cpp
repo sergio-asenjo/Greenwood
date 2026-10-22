@@ -6,20 +6,9 @@
 #include "SBNullstr.h"
 #include <vector>
 #include <string.h>
+#include "RHUnk00401490.h"
 
 extern char g_unk0x6c0560[4];
-
-class RHUnk00401a00
-{
-public:
-    int FUN_00401a30();
-    int FUN_00401a50(int index);
-    int FUN_00401a80(int i, int j);
-    int m_0;
-    int m_4;
-    unsigned char *m_8;
-    unsigned char *m_c;
-};
 
 // FUNCTION: GAME 0x00401a30
 int RHUnk00401a00::FUN_00401a30()
@@ -57,4 +46,23 @@ void EmitRHUnk00401a00(RHUnk00401a00 *object)
     object->FUN_00401a30();
     object->FUN_00401a50(0);
     object->FUN_00401a80(0, 0);
+}
+
+// FUNCTION: GAME 0x00402d60
+void *RHUnk00402d60::FUN_00402d60(unsigned flags)
+{
+    char *last = m_8;
+    char *first = m_4;
+    while (first != last)
+    {
+        ((std::string *)first)->~basic_string();
+        first += 0x10;
+    }
+    operator delete(m_4);
+    m_4 = 0;
+    m_8 = 0;
+    m_c = 0;
+    if (flags & 1)
+        operator delete(this);
+    return this;
 }

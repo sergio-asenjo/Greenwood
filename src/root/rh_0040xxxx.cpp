@@ -2,6 +2,8 @@
 // No __FILE__ or oracle evidence: class and method identity are unproven.
 // Member offsets are exact from Game.exe.
 
+#include "../script/RHScript.h"
+
 class RHUnk0040bf00
 {
 public:
@@ -45,18 +47,10 @@ RHUnk0040bc00::RHUnk0040bc00(const char *value)
     m_8 = 0;
 }
 
-struct RHUnk0040ed00
-{
-    float m_0;
-    float m_4;
-    int m_8;
-    short m_c;
-};
-
 // FUNCTION: GAME 0x0040eda0
-int FUN_0040eda0(const RHUnk0040ed00 *value, float a, float b, int c, short d)
+bool FUN_0040eda0(const RHMalignityPosition *value, RHMalignityPosition other)
 {
-    return value->m_0 == a && value->m_4 == b && value->m_8 == c && value->m_c == d;
+    return value->x == other.x && value->y == other.y && value->area == other.area && value->layer == other.layer;
 }
 
 void EmitRHUnk0040bf00(RHUnk0040bf00 *object)
@@ -64,7 +58,7 @@ void EmitRHUnk0040bf00(RHUnk0040bf00 *object)
     object->FUN_0040bf90(0);
 }
 
-void EmitRHUnk0040ed00(const RHUnk0040ed00 *object)
+void EmitRHUnk0040ed00(const RHMalignityPosition *object)
 {
-    FUN_0040eda0(object, 0.0f, 0.0f, 0, 0);
+    FUN_0040eda0(object, *object);
 }

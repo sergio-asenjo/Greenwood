@@ -18,6 +18,7 @@
 #include <math.h>
 #include "RHScript.h"
 #include "RHEngineWidenedCalls.h"
+#include "RHUnkTargetSpriteCalls.h"
 
 #define AT(type, off) (*(type *)((char *)this + off))
 
@@ -350,7 +351,7 @@ void RHUnk0049b390::FUN_0049b470(void *value, bool flag)
 // FUNCTION: GAME 0x0049b490
 void RHUnk0049b390::FUN_0049b490(unsigned row, unsigned flags)
 {
-    ((RHEngineWidenedCalls *)AT(void *, 0x50))->FUN_005b76e0(row, flags);
+    ((RHUnkTargetSprite *)AT(void *, 0x50))->FUN_005b76e0(row, flags);
 }
 
 // FUNCTION: GAME 0x0049b4b0
@@ -417,19 +418,19 @@ void RHUnk0049b680::FUN_0049b680(int value) { AT(int, 0x68) = value; }
 // FUNCTION: GAME 0x0049b690
 void RHUnk0049b690::FUN_0049b690(RHUnk00585500 *value) { value->Unk(this); }
 
-// Parked: named-result and bool-return probes retain the reversed shared false/true return layout.
-// STUB: GAME 0x0049bb00
+// FUNCTION: GAME 0x0049bb00
 char RHUnk0049bb00::FUN_0049bb00()
 {
     char *value = AT(char *, 0x134);
-    if (value != 0)
+    if (value == 0)
+        goto done;
+    switch (*(int *)(value + 0x24))
     {
-        if (*(int *)(value + 0x24) == 6)
-            goto found;
+    case 6:
+        return 1;
     }
+done:
     return 0;
-found:
-    return 1;
 }
 
 void RHUnk0049b3xx::Emit()
