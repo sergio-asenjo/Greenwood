@@ -41,8 +41,45 @@
 
 #include "SBNullstr.h"
 #include "RHMinimap.h"
+#include "../engine/SBUIRenderer.h"
 
-int FUN_0054ae80(const RHMinimapHighlightedElement &element);
+bool FUN_0054ae80(const RHMinimapHighlightedElement &element);
+
+extern RHMinimap *g_unk0x6c0c50;
+class RHMapResources;
+extern RHMapResources *g_unk0x006c1840;
+
+// FUNCTION: GAME 0x005493e0
+RHMinimap::RHMinimap() : m_dc(0), m_e0(false)
+{
+    *(unsigned *)this = 0x00679b70;
+    m_120 = false;
+    m_124 = 0;
+    g_unk0x6c0c50 = this;
+    m_128 = 0;
+    m_visible = true;
+    m_b0 = false;
+    m_b1 = false;
+    m_122 = false;
+    m_e1 = false;
+    m_b2 = false;
+}
+
+// FUNCTION: GAME 0x00549510
+void *RHMinimap::FUN_00549510(unsigned flags)
+{
+    this->~RHMinimap();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// FUNCTION: GAME 0x00549530
+RHMinimap::~RHMinimap()
+{
+    *(unsigned *)this = 0x00679b70;
+    ((SBUIUnk005fd4a0 *)g_unk0x006c1840)->FUN_005fd4a0(0x3d);
+}
 
 // FUNCTION: GAME 0x00549a80
 bool RHMinimap::SerializeHighlightedElement(SBFile &file, RHMinimapHighlightedElement &element){
@@ -162,7 +199,7 @@ void RHMinimap::FUN_0054a920()
 }
 
 // FUNCTION: GAME 0x0054ae80
-int FUN_0054ae80(const RHMinimapHighlightedElement &element)
+bool FUN_0054ae80(const RHMinimapHighlightedElement &element)
 {
     return element.m_0c == 0;
 }
@@ -178,6 +215,54 @@ bool RHMinimap::FUN_0054ae90(RHElement *element)
             return true;
     }
     return false;
+}
+
+// FUNCTION: GAME 0x0054b490
+void RHMinimap::FUN_0054b490(const RHMinimapHighlightedElement &element)
+{
+    if (element.m_0c == 1)
+    {
+        RHMinimapSortElement *entry = (RHMinimapSortElement *)element.m_element;
+        g_unk0x6c0c50->FUN_0054b5e0(*(SBGeoPoint2D *)((char *)entry->m_50 + 0x24), 0x12);
+    }
+}
+
+#include <algorithm>
+
+class RHUnk0054b150
+{
+public:
+    void FUN_0054b150(bool flag, bool immediate);
+};
+
+// FUNCTION: GAME 0x0054b4c0
+void RHMinimap::FUN_0054b4c0()
+{
+    if (m_dc == 0 && !m_highlighted.empty())
+    {
+        RHMinimapHighlightedElement *entry = std::find_if(m_highlighted.begin(), m_highlighted.end(), &FUN_0054ae80);
+        if (entry != m_highlighted.end())
+        {
+            unsigned remaining = m_highlighted.end() - entry - 1;
+            entry->m_0c = 1;
+            if (remaining >= 1)
+                m_dc = 25;
+            else if (m_e0 || remaining == 0)
+                m_dc = 50;
+        }
+        else
+        {
+            m_highlighted.clear();
+            if (m_e0)
+            {
+                m_e0 = false;
+                ((RHUnk0054b150 *)this)->FUN_0054b150(false, false);
+            }
+        }
+    }
+    if (m_dc != 0)
+        --m_dc;
+    std::for_each(m_highlighted.begin(), m_highlighted.end(), &RHMinimap::FUN_0054b490);
 }
 
 // Force emission: a non-inline static member defined here is emitted into the

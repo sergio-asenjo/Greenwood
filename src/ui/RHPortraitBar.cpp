@@ -54,6 +54,22 @@ RHPortraitBar::RHPortraitBar(SBUI *owner) : ui(owner), shift(0), dirty(false)
 {
 }
 
+// FUNCTION: GAME 0x0055e710
+void RHPortraitBar::AddPortrait(RHWidgetPortrait *portrait)
+{
+    RHWidgetPortrait **position = std::find(additions.begin(), additions.end(), portrait);
+    if (position == additions.end())
+    {
+        ((SBArray<RHSaveGame *> *)&additions)->InsertLast((RHSaveGame *const &)portrait);
+        RHPortraitField<bool>(portrait, 0xca9) = true;
+    }
+    position = std::find(removals.begin(), removals.end(), portrait);
+    if (position != removals.end())
+    {
+        ((std::vector<RHWidgetPortrait *> *)&removals)->erase(position);
+    }
+}
+
 // FUNCTION: GAME 0x0055e7a0
 void RHPortraitBar::FUN_0055e7a0(unsigned index)
 {
@@ -242,6 +258,24 @@ void RHPortraitBar::Resize()
     unsigned int count = portraits.GetSize() < 5 ? portraits.GetSize() : 5;
     for (unsigned int index = 0; index != count; ++index)
         ((RHPortraitCtorCalls *)portraits.m_first[(shift + index) % portraits.GetSize()])->FUN_005d6940((unsigned short)index);
+}
+
+#include "RHPCSelectionQueryCalls.h"
+
+// FUNCTION: GAME 0x0055ecb0
+void RHPortraitBar::FUN_0055ecb0(bool opened)
+{
+    for (RHWidgetPortrait **it = portraits.begin(); it != portraits.end(); ++it)
+    {
+        if (opened)
+        {
+            if (!RHPortraitField<char>(*it, 0xca7) &&
+                (char)((RHUnk00493a80 *)RHPortraitField<void *>(*it, 0xe1c))->FUN_00493a80())
+                (*it)->Method005d6690();
+        }
+        else
+            (*it)->Method005d67e0();
+    }
 }
 
 // FUNCTION: GAME 0x0055ed10

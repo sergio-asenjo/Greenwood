@@ -26,8 +26,8 @@ RHUnk005cbb80::RHUnk005cbb80()
     m_50 = 0;
     m_54 = 0;
     m_58 = 0;
-    m_5c = 0;
-    m_60 = 0;
+    m_fade[0] = 0;
+    m_fade[1] = 0;
 }
 
 // FUNCTION: GAME 0x005cbbb0
@@ -76,6 +76,41 @@ bool RHUIRendererPortrait::BlitPicture(unsigned int id, float f)
              // STRING: GAME 0x6b8cf4
              "Unable to retreive a surface for the portrait rendering.");
     return false;
+}
+
+extern float g_unk0x0067749c;
+extern float g_actorStepScale;
+
+// FUNCTION: GAME 0x005cbc80
+bool RHUnk005cbb80::FUN_005cbc80(unsigned id)
+{
+    int index = m_48 & 1;
+    if ((&m_4c)[index] != id) {
+        (&m_54)[index] = (&m_4c)[index];
+        (&m_4c)[index] = id;
+        m_3c = id;
+        *(unsigned *)&m_fade[index] = 0;
+    }
+    if (id == 0xff) {
+        (&m_40)[index] = 0;
+        return false;
+    }
+    bool result = true;
+    if (m_fade[index] < g_unk0x0067749c || (&m_54)[index] == (&m_4c)[index])
+        result = ((RHUIRendererPortrait *)this)->BlitPicture((&m_54)[index], 1.0f);
+    if ((&m_54)[index] != (&m_4c)[index]) {
+        if (m_fade[index] >= g_unk0x0067749c) {
+            m_fade[index] = 1.0f;
+            unsigned picture = (&m_4c)[index];
+            (&m_54)[index] = picture;
+            return ((RHUIRendererPortrait *)this)->BlitPicture(picture, 1.0f);
+        }
+        result = ((RHUIRendererPortrait *)this)->BlitPicture((&m_4c)[index], m_fade[index]);
+        float fade = m_fade[index];
+        m_fade[index] = fade + g_actorStepScale;
+        return result;
+    }
+    return result;
 }
 
 // Force emission: an unreferenced non-virtual member is dropped by VC6, so an

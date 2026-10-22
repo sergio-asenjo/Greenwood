@@ -52,7 +52,7 @@ bool RHUIRendererShiftingTitbit::Render(unsigned id)
     {
         SBGeoBoundingBox2D box;
         SBGeoVector2D bankSize;
-        ((RHMobileUnk00607da0 *)&box)->FUN_00607da0((const RHMobileUnk00607da0 &)(TitbitBox + SBGeoVector2D((float)TitbitWord50, 0.0f)));
+        ((RHMobileUnk00607da0 *)&box)->FUN_00607da0((const RHMobileUnk00607da0 &)TitbitBox.FUN_006090d0(SBGeoVector2D((float)TitbitWord50, 0.0f)));
         ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(SBGeoVector2D(4.0f, 4.0f));
         TitbitResource->FUN_006006f0(0x10, bankSize);
         unsigned surface;

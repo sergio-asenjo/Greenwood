@@ -3,6 +3,8 @@
 
 void RHMaskPointArray::InsertLast(const SBGeoPoint2D &) {}
 
+void RHMaskObstacleStorage::Destroy(void **, void **) {}
+
 void **RHMaskObstacleArray::Ucopy(void *const *first, void *const *last, void **dest)
 {
     for (; first != last; ++dest, ++first)

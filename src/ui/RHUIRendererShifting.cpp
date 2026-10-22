@@ -79,7 +79,7 @@ bool RHUIRendererShifting::Render(unsigned int id)
 
     if (surface != 0)
     {
-        ((RHMobileUnk00607da0 *)&box)->FUN_00607da0((const RHMobileUnk00607da0 &)(m_box + SBGeoVector2D((float)m_word50, 0.0f)));
+        ((RHMobileUnk00607da0 *)&box)->FUN_00607da0((const RHMobileUnk00607da0 &)m_box.FUN_006090d0(SBGeoVector2D((float)m_word50, 0.0f)));
         m_draw->BlitAlphaKeying(surface, 0, m_unk20, &box, m_word4c, m_word4e, 1);
         return true;
     }

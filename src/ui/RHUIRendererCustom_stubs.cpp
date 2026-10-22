@@ -16,11 +16,10 @@
 #include "SBNullstr.h"
 #include "RHUIRendererCustom.h"
 
-// Target 0x00609200, ret 0x8 (member returning a box by value, constructed from
-// m_p0 - vector and m_p1 - vector via SBGeoPoint2D::operator- at 0x005fc200).
-SBGeoBoundingBox2D SBGeoBoundingBox2D::operator-(const SBGeoVector2D &) const
+// FUNCTION: GAME 0x00609200
+SBGeoBoundingBox2D SBGeoBoundingBox2D::operator-(const SBGeoVector2D &offset) const
 {
-    return *this;
+    return SBGeoBoundingBox2D(m_p0.FUN_005fc200(offset), m_p1.FUN_005fc200(offset));
 }
 
 // Target 0x005e6440, ret 0x14 (five stack arguments, __thiscall).

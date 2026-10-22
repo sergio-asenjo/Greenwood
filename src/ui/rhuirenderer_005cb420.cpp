@@ -14,6 +14,11 @@ DECOMP_SIZE_ASSERT(SBUIInputFieldDrawUnk, 0x30)
 DECOMP_SIZE_ASSERT(RHPopupRenderer0060dbc0, 0x7c)
 DECOMP_SIZE_ASSERT(RHUnk005cba10, 0x9c)
 
+#define m_box (*(SBGeoBoundingBox2D *)((char *)this + 0x08))
+#define m_text (*(std::wstring *)((char *)this + 0x28))
+#define m_40 ((unsigned int *)((char *)this + 0x40))
+#define m_48 (*(unsigned int *)((char *)this + 0x48))
+
 extern float g_unk0x00677488;
 
 inline float Min(float first, float second)
@@ -32,6 +37,7 @@ RHUnk005cba10::RHUnk005cba10()
     m_vptr = 0x00679e9c;
 }
 
+#pragma auto_inline(off)
 // FUNCTION: GAME 0x005cb4a0
 void *RHUnk005cba10::FUN_005cb4a0(unsigned flags)
 {
@@ -41,10 +47,7 @@ void *RHUnk005cba10::FUN_005cb4a0(unsigned flags)
     return this;
 }
 
-// FUNCTION: GAME 0x005cb4c0
-RHUnk005cba10::~RHUnk005cba10()
-{
-}
+#pragma auto_inline(on)
 
 // Parked: 91.38% — the first m_64 read must not CSE with the per-branch reloads; only a volatile
 // read achieves that and it emits `mov dx;and edx,0xffff` for `xor edx,edx;mov dx`. The target

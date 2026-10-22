@@ -1,5 +1,32 @@
 #include "RHMenuShortMissionBlazons.h"
 #include "RHBriefingWindowCalls.h"
+#include "RHGameWidgetLifetime.h"
+
+// FUNCTION: GAME 0x0044edb0
+RHMenuShortMissionBlazons::RHMenuShortMissionBlazons(void *mission, void *parent)
+{
+    m_mission = mission;
+    m_parent = parent;
+    m_count = *(unsigned short *)((char *)*(void **)mission + 0x68);
+    m_10 = 0;
+    m_14 = false;
+    m_18 = 0;
+    if (m_count)
+        m_widgets = new RHGameLifetime0044fe90[m_count];
+    else
+        m_widgets = 0;
+}
+
+void EmitRHBlazonSetConstructor(void *mission, void *parent)
+{
+    RHMenuShortMissionBlazons value(mission, parent);
+}
+
+// SYNTHETIC: GAME 0x0044ee50
+// ??_ERHGameLifetime0044fe90@@QAEPAXI@Z
+
+// LIBRARY: GAME 0x00642cba
+// ??_M@YGXPAXIHP6EX0@Z@Z
 
 // GLOBAL: GAME 0x006775cc
 float g_blazonCompactWidth = 0.0714285746216774f;

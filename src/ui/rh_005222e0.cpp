@@ -16,18 +16,17 @@ public:
     char m_38;
 };
 
-// Parked: the signed /10000 lowering uses the copy-first template (ours sar eax /
-// mov edx,eax; target sar edx / mov eax,edx) and the branch store/reload shape
-// (target reloads m_38; VC6 CSEs the store) differ. Both resisted 3 shapes.
-// STUB: GAME 0x005222e0
+// FUNCTION: GAME 0x005222e0
 char RHUnk005222e0::FUN_005222e0()
 {
     int delta = (int)(*(unsigned *)((char *)g_pEngine + 0x4a94) - m_14);
     if (delta >= 0)
-        return m_38 = 100;
-    if (delta <= -10000)
-        return m_38 = 0;
-    return m_38 = (char)(delta * 100 / 10000 + 100);
+        m_38 = 100;
+    else if (delta <= -10000)
+        m_38 = 0;
+    else
+        m_38 = (char)(delta * 100 / 10000 + 100);
+    return m_38;
 }
 
 // FUNCTION: GAME 0x00522330

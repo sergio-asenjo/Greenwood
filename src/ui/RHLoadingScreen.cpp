@@ -41,6 +41,8 @@ std::string g_unk0x006c0650;
 class RHUnk005223e0
 {
 public:
+    void *FUN_005229c0(unsigned flags);
+    void *FUN_00522380(unsigned flags);
     RHUnk005223e0 *FUN_005229a0();
     void FUN_005223e0();
     void FUN_005229e0();
@@ -69,27 +71,49 @@ RHUnk005223a0::RHUnk005223a0(const RHUnk005223a0Source &source, short value)
     *(int *)((char *)this + 0x18) = 0;
 }
 
+// FUNCTION: GAME 0x00522380
+void *RHUnk005223e0::FUN_00522380(unsigned flags)
+{
+    FUN_005223e0();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
 // FUNCTION: GAME 0x005223e0
 void RHUnk005223e0::FUN_005223e0()
 {
     *(unsigned *)this = 0x679138;
 }
 
+class RHUnk005209d0
+{
+public:
+    virtual ~RHUnk005209d0();
+};
+
 class RHUnk005224c0
 {
 public:
+    void *FUN_005224a0(unsigned flags);
     ~RHUnk005224c0();
-    void FUN_00520a70();
 };
+
+// FUNCTION: GAME 0x005224a0
+void *RHUnk005224c0::FUN_005224a0(unsigned flags)
+{
+    this->~RHUnk005224c0();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
 
 // FUNCTION: GAME 0x005224c0
 RHUnk005224c0::~RHUnk005224c0()
 {
     *(unsigned *)this = 0x67913c;
-    FUN_00520a70();
+    ((RHUnk005209d0 *)this)->RHUnk005209d0::~RHUnk005209d0();
 }
-
-void RHUnk005224c0::FUN_00520a70() {}
 
 // FUNCTION: GAME 0x005229a0
 RHUnk005223e0 *RHUnk005223e0::FUN_005229a0()
@@ -102,6 +126,15 @@ RHUnk005223e0 *RHUnk005223e0::FUN_005229a0()
     *(int *)((char *)this + 0x20) = zero;
     *(unsigned *)this = 0x679144;
     g_unk0x006c0bd4 = (unsigned char *)zero;
+    return this;
+}
+
+// FUNCTION: GAME 0x005229c0
+void *RHUnk005223e0::FUN_005229c0(unsigned flags)
+{
+    FUN_005229e0();
+    if (flags & 1)
+        operator delete(this);
     return this;
 }
 

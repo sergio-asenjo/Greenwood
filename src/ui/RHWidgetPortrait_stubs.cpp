@@ -12,6 +12,7 @@
 
 #include "SBNullstr.h"
 #include "RHWidgetPortrait.h"
+
 #include "SBUIRendererListbox.h"
 #include "RHGameWidgetLifetime.h"
 
@@ -30,6 +31,15 @@ RHPortraitRenderer005ca330::RHPortraitRenderer005ca330()
     *(float *)((char *)this + 0x50) = 100.0f;
     *(float *)((char *)this + 0x4c) = 100.0f;
 }
+// FUNCTION: GAME 0x005ca310
+void *RHPortraitRenderer005ca330::FUN_005ca310(unsigned flags)
+{
+    this->~RHPortraitRenderer005ca330();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
 // FUNCTION: GAME 0x005ca330
 RHPortraitRenderer005ca330::~RHPortraitRenderer005ca330()
 {
@@ -62,12 +72,6 @@ typedef RHPortraitRenderer0060dab0 RHPortraitRenderer0060dad0;
 
 #include "RHPortraitRenderer0060d470.h"
 
-struct RHPortraitQuickEntry
-{
-    ~RHPortraitQuickEntry();
-};
-
-RHPortraitQuickEntry::~RHPortraitQuickEntry() {}
 
 class RHPortraitPCList
 {
@@ -76,8 +80,6 @@ public:
 };
 
 void RHPortraitPCList::FUN_005c8e40(unsigned) {}
-RHPortraitUnk005cf320::~RHPortraitUnk005cf320() {}
-RHPortraitUnk005cf570::~RHPortraitUnk005cf570() {}
 RHPortraitUnk005d0180::~RHPortraitUnk005d0180() {}
 void RHPortraitInputRenderer::FUN_0061d570(unsigned short, int) {}
 
@@ -102,12 +104,46 @@ unsigned RHPortraitInputRenderer::FUN_0061d950()
     return (unsigned)((top - bottom - g_unk0x006774f4) / *(unsigned short *)((char *)this + 0x80));
 }
 bool RHPortraitInputCalls::FUN_005cfc30(const void *) { return false; }
-RHPortraitRenderer006212d0::RHPortraitRenderer006212d0() {}
-RHPortraitRenderer006212d0::~RHPortraitRenderer006212d0() {}
-RHPortraitText0061db10::RHPortraitText0061db10() {}
-RHPortraitText0061db10::~RHPortraitText0061db10() {}
+DECOMP_SIZE_ASSERT(RHPortraitRenderer006212d0, 0x90)
+
+// Parked: zero/one register allocation and literal-vptr/vector-store ordering differ.
+// STUB: GAME 0x006212d0
+RHPortraitRenderer006212d0::RHPortraitRenderer006212d0()
+    : m_font(0), m_alternateFont(0), m_textObject(0), m_enabled(true)
+{
+    m_vptr = 0x0067ae60;
+    m_offset.m_x = 0;
+    m_offset.m_y = 0;
+}
+
+// Parked: non-polymorphic base model may schedule the vptr after the EH-state store.
+// STUB: GAME 0x00621380
+RHPortraitRenderer006212d0::~RHPortraitRenderer006212d0()
+{
+    m_vptr = 0x0067ae60;
+    m_promptEnabled = false;
+}
+DECOMP_SIZE_ASSERT(RHPortraitText0061db10, 0x48)
+DECOMP_SIZE_ASSERT(SBUIInputFieldCharacter, 0x08)
+
+// Parked: folded payload-construction callee and initializer-slot scheduling differ.
+// STUB: GAME 0x0061db10
+RHPortraitText0061db10::RHPortraitText0061db10()
+    : m_font(0), m_alternate(0), m_caretShown(false), m_maximum((unsigned int)-1)
+{
+    SBUIInputFieldCharacter value;
+    value.character = 0;
+    value.width = 0;
+    m_characters.insert(m_characters.begin(), value);
+    m_cursor = m_characters.begin();
+}
+
+// SYNTHETIC: GAME 0x0061dc00
+// ??_GRHPortraitText0061db10@@UAEPAXI@Z
+
+// FUNCTION: GAME 0x0061dc20
+RHPortraitText0061db10::~RHPortraitText0061db10()
+{
+}
 void RHPortraitTextLinkedCalls::FUN_0053f9f0(void *) {}
 unsigned SBUIInputFieldTextUnk::FUN_0061dd30() { return 0; }
-unsigned FUN_005fb1d0(unsigned key) { return key; }
-int FUN_005fb0f0(unsigned, unsigned short *, const void *, unsigned) { return 0; }
-void *RHPortraitTextResourceCalls::FUN_0053be80(const std::string &) { return 0; }

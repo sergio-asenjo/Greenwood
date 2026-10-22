@@ -600,7 +600,12 @@ public:
     void SetBlinking(SBResourceWidgetID, SBResourceWidgetID, SBResourceWidgetID, unsigned long);
     void RemoveBlinking(SBResourceWidgetID);
     void *FUN_005c9250(unsigned flags);
-    char m_data[0x64];
+    char m_data[0x4c];
+    BlinkingItem m_current;
+    unsigned m_currentId;
+    unsigned m_frame;
+    bool m_active;
+    char m_61[3];
     std::map<SBResourceWidgetID, BlinkingItem> m_items;
 };
 
@@ -699,6 +704,33 @@ void *RHUIRendererBlinking::FUN_005c9250(unsigned flags)
     if (flags & 1)
         operator delete(this);
     return this;
+}
+
+#include "SBUIRenderer.h"
+#include "RHGameWidgetRendererCalls.h"
+
+// FUNCTION: GAME 0x005c9320
+bool RHGameWidgetRendererCalls::FUN_005c9320(unsigned id)
+{
+    RHUIRendererBlinking *blinking = (RHUIRendererBlinking *)this;
+    if (blinking->m_active && id == blinking->m_currentId) {
+        if ((++blinking->m_frame / blinking->m_current.m_period) & 1)
+            ((SBUIUnk0060da20 *)this)->FUN_0060da20(blinking->m_current.m_second.m_value);
+        else
+            ((SBUIUnk0060da20 *)this)->FUN_0060da20(blinking->m_current.m_first.m_value);
+        return true;
+    }
+    const SBResourceWidgetID &key = *(SBResourceWidgetID *)&id;
+    if (blinking->m_items.find(key) != blinking->m_items.end()) {
+        blinking->m_currentId = id;
+        blinking->m_active = true;
+        blinking->m_current = blinking->m_items[key];
+        blinking->m_frame = 0;
+        ((SBUIUnk0060da20 *)this)->FUN_0060da20(blinking->m_current.m_first.m_value);
+        return true;
+    }
+    ((SBUIUnk0060da20 *)this)->FUN_0060da20(id);
+    return true;
 }
 
 // FUNCTION: GAME 0x005c9430

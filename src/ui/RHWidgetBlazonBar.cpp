@@ -9,6 +9,26 @@ class RHUnk00452030;
 extern RHUnk0048a970 *g_unk0x6c0b3c;
 extern RHUnk00452030 *g_unk0x6c07fc;
 
+// FUNCTION: GAME 0x005cc5d0
+RHGameBlazonWidget::RHGameBlazonWidget() : m_b0(0)
+{
+}
+
+// FUNCTION: GAME 0x005cc610
+void *RHGameBlazonWidget::FUN_005cc610(unsigned flags)
+{
+    this->~RHGameBlazonWidget();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// FUNCTION: GAME 0x005cc630
+RHGameBlazonWidget::~RHGameBlazonWidget()
+{
+    FUN_005cc840();
+}
+
 // FUNCTION: GAME 0x005cc840
 void RHGameBlazonWidget::FUN_005cc840()
 {
