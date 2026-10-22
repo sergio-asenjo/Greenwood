@@ -6,8 +6,6 @@
 #include "SBNullstr.h"
 #include "RHMenuIntro.h"
 
-// Target 0x0052e320, __thiscall.
-RHMenuIntro::~RHMenuIntro() {}
 
 
 

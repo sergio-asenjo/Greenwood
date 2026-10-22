@@ -30,6 +30,14 @@ void *RHMenuYesNo::FUN_00545590(unsigned flags)
     return this;
 }
 
+// FUNCTION: GAME 0x005455b0
+RHMenuYesNo::~RHMenuYesNo()
+{
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_144);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_244);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_344);
+}
+
 // FUNCTION: GAME 0x00545670
 bool RHMenuYesNo::AskForConfirmation(RHMenuWindowScreen *screen, const std::wstring &text)
 {

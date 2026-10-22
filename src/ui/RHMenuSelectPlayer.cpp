@@ -67,10 +67,9 @@ bool RHMenuSelectPlayer::FUN_0053e4a0(RHMenuEvent *event)
 }
 
 // FUNCTION: GAME 0x0053e7f0
-RHMenuSelectPlayer::RHMenuSelectPlayer(void *screen) : RHMenuWindowFocus(0, screen, 0, false)
+RHMenuSelectPlayer::RHMenuSelectPlayer(void *screen)
+    : RHMenuWindowFocus(0, screen, 0, false), m_profiles((RHMenuSelectPlayerProfiles *)g_unk0x006c0e48)
 {
-    m_profiles = (RHMenuSelectPlayerProfiles *)g_unk0x006c0e48;
-    m_vptr = 0x00679890;
 }
 
 // FUNCTION: GAME 0x0053e8b0

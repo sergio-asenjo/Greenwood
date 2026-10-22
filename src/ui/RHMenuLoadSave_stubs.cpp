@@ -12,8 +12,6 @@ RHMenuLoadSave::~RHMenuLoadSave() {}
 // FUNCTION: GAME 0x00463d80
 bool RHMenuLoadSave::FUN_00463d80(int, void *, void *) { return false; }
 
-// Target 0x0052ce80, __thiscall, ret 0xc.
-bool RHMenuLoadSave::FUN_0052ce80(int, void *, void *) { return false; }
 
 // Target 0x005314d0, __thiscall, ret 0xc.
 bool RHMenuLoadSave::FUN_005314d0(int, void *, void *) { return false; }
@@ -36,7 +34,6 @@ RHMenuLoadSave::RHMenuLoadSave(RHMenuScreenView *, bool) : RHMenuWindowFocus(0, 
 // Target 0x005307d0, __thiscall.
 void RHMenuLoadSave::FUN_005307d0() {}
 
-RHMenuLoadSaveText::~RHMenuLoadSaveText() {}
 RHMenuLoadSaveSlots::~RHMenuLoadSaveSlots() {}
 RHMenuLoadSaveList::~RHMenuLoadSaveList() {}
 void RHPortraitInputRenderer::FUN_0061c610(unsigned long) {}

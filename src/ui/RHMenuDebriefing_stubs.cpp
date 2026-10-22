@@ -7,10 +7,7 @@
 #include "RHMenuDebriefing.h"
 
 
-// Target 0x005292f0, __thiscall.
-RHMenuDebriefing::~RHMenuDebriefing() {}
 
 // Target 0x005294c0, __thiscall.
 bool RHMenuDebriefing::Create() { return false; }
-
 

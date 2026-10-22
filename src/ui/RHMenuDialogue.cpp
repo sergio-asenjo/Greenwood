@@ -48,6 +48,7 @@
 #include "RHMenuDialogue.h"
 #include "RHMapWindowPart.h"
 #include "RHMenuScreenView.h"
+#include "RHMenuCloseCalls.h"
 #include <stdlib.h>
 
 typedef char RHMenuDialogueSize[(sizeof(RHMenuDialogue) == 0x55c) ? 1 : -1];
@@ -63,12 +64,6 @@ class RHUnk0048a970
 {
 public:
     void Unk(int);
-};
-
-class RHMenuMovies
-{
-public:
-    bool FUN_0052b520(int, void *, void *);
 };
 
 #include "RHSoundCore.h"
@@ -187,7 +182,7 @@ bool RHMenuDialogue::HandleEvent(RHMenuEvent *event)
     if (event->m_type == 2 && event->m_widget == m_bytes + 0x240)
         handled = OnSkip(2, event->m_widget, event->m_data);
     if (event->m_type == 2 && event->m_widget == m_bytes + 0x140)
-        handled = ((RHMenuMovies *)this)->FUN_0052b520(2, event->m_widget, event->m_data);
+        handled = ((RHMenuCloseCalls *)this)->FUN_0052b520(2, event->m_widget, event->m_data);
     if (event->m_type == 0x1000 && event->m_widget == RHDialogueField<void *>(this, 0x550))
         handled = OnTimer(0x1000, event->m_widget, event->m_data);
     return handled;
@@ -405,6 +400,7 @@ void RHMenuDialogue::UpdatePortrait()
 
 #include "rhuirenderer_005cb420.h"
 #include "RHUnk005cbb80.h"
+#include "RHGameWidgetLifetime.h"
 
 class RHUnk0052b860
 {
@@ -621,26 +617,45 @@ public:
     RHGameWidgetRendererCalls m_renderer;
 };
 
-// Parked: zero register hoists to function entry and the hit flag spills; target materialises zero late.
-// STUB: GAME 0x0052bc40
+// FUNCTION: GAME 0x0052bc40
 RHDialogueWidgetEvent *RHUnk0052bd70::FUN_0052bc40(const RHDialogueWidgetInput &input)
 {
     RHDialogueButtonView *self = (RHDialogueButtonView *)this;
     if (self->m_enabled)
     {
-        if (self->m_box.FUN_006083b0(input.m_point) == true)
+        SBGeoBoundingBox2D &box = self->m_box;
+        if (box.FUN_006083b0(input.m_point) == 1 &&
+            self->m_renderer.FUN_0060d890(input.m_point.Unk005fc110(*(SBGeoPoint2D *)&box)) == 1)
         {
-            bool hit = self->m_renderer.FUN_0060d890(input.m_point.Unk005fc110(*(SBGeoPoint2D *)&self->m_box)) == true;
-            if (hit)
+            if (!(input.m_flags & 1))
             {
-                if (!(input.m_flags & 1))
-                    return self->Raise(0);
-                return self->Toggle();
+                RHDialogueWidgetEvent *event = &self->m_event;
+                self->m_event.m_next = 0;
+                self->m_event.m_value = 0;
+                self->m_event.m_widget = self;
+                event->m_type = 0;
+                return event;
             }
         }
-        if (self->m_shortcut && input.m_shortcuts->FUN_0060e240(self->m_shortcut) == 2)
-            return self->Toggle();
-        self->m_state = 0;
+        else if (!self->m_shortcut || input.m_shortcuts->FUN_0060e240(self->m_shortcut) != 2)
+        {
+            self->m_state = 0;
+            return 0;
+        }
+        RHDialogueWidgetEvent *event = &self->m_event;
+        if (self->m_event.m_type != 2 && self->m_event.m_type != 7)
+        {
+            self->m_event.m_next = 0;
+            self->m_event.m_value = 0;
+            self->m_event.m_widget = self;
+            event->m_type = 2;
+            return event;
+        }
+        self->m_event.m_next = 0;
+        self->m_event.m_value = 0;
+        self->m_event.m_widget = self;
+        event->m_type = 7;
+        return event;
     }
     return 0;
 }
@@ -671,23 +686,48 @@ void *RHDialogueWidgetLifetimeCalls::FUN_0052bec0(unsigned flags)
     return this;
 }
 
-// FUNCTION: GAME 0x0052bee0
-void *RHDialogueWidgetLifetimeCalls::FUN_0052bee0(unsigned flags)
+// VTABLE: GAME 0x00679428
+class RHDialogueLifetime0052bf00 : public RHGameWidgetLifetimeBase
 {
-    FUN_0052bf00();
+public:
+    ~RHDialogueLifetime0052bf00() {}
+    void *FUN_0052bee0(unsigned flags);
+    RHPortraitRenderer0060d470 m_renderer;
+};
+
+// VTABLE: GAME 0x00679378
+class RHDialogueLifetime0052bd90 : public RHDialogueLifetime0052bf00
+{
+public:
+    ~RHDialogueLifetime0052bd90() {}
+    void *FUN_0052bf60(unsigned flags);
+};
+
+// SYNTHETIC: GAME 0x0052bd90
+// ??1RHDialogueLifetime0052bd90@@QAE@XZ
+
+// SYNTHETIC: GAME 0x0052bf00
+// ??1RHDialogueLifetime0052bf00@@QAE@XZ
+
+#pragma inline_depth(1)
+// FUNCTION: GAME 0x0052bee0
+void *RHDialogueLifetime0052bf00::FUN_0052bee0(unsigned flags)
+{
+    this->~RHDialogueLifetime0052bf00();
     if (flags & 1)
         operator delete(this);
     return this;
 }
 
 // FUNCTION: GAME 0x0052bf60
-void *RHDialogueWidgetLifetimeCalls::FUN_0052bf60(unsigned flags)
+void *RHDialogueLifetime0052bd90::FUN_0052bf60(unsigned flags)
 {
-    FUN_0052bd90();
+    this->~RHDialogueLifetime0052bd90();
     if (flags & 1)
         operator delete(this);
     return this;
 }
+#pragma inline_depth()
 
 void RHMenuDialogueEmit(RHMenuDialogue *dialogue, RHMenuEvent *event,
                         RHUnk0052bbb0 *text, RHUnk0052bd70 *button,
@@ -716,6 +756,6 @@ void RHMenuDialogueEmit(RHMenuDialogue *dialogue, RHMenuEvent *event,
     RHDialogueWidgetLifetimeCalls *lifetime = (RHDialogueWidgetLifetimeCalls *)button;
     lifetime->FUN_0052bdf0(0);
     lifetime->FUN_0052bec0(0);
-    lifetime->FUN_0052bee0(0);
-    lifetime->FUN_0052bf60(0);
+    ((RHDialogueLifetime0052bf00 *)button)->FUN_0052bee0(0);
+    ((RHDialogueLifetime0052bd90 *)button)->FUN_0052bf60(0);
 }

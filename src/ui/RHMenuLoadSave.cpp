@@ -1,6 +1,7 @@
 // RHMenuLoadSave.cpp — menu TU (code 0x00530180..). See RHMenuLoadSave.h for the binding evidence.
 
 #include "SBNullstr.h"
+#include "RHMenuCancelCalls.h"
 #include "RHMenuLoadSave.h"
 
 // FUNCTION: GAME 0x00530180
@@ -15,7 +16,7 @@ bool RHMenuLoadSave::FUN_005301a0(RHMenuEvent *event)
 {
     bool handled = false;
     if (event->m_type == 2 && event->m_widget == (char *)this + 0x340)
-        handled = FUN_0052ce80(2, event->m_widget, event->m_data);
+        handled = ((RHMenuCancelCalls *)this)->OnCancel(2, event->m_widget, event->m_data);
     if (event->m_type == 2 && event->m_widget == (char *)this + 0x240)
         handled = FUN_005314d0(2, event->m_widget, event->m_data);
     if (event->m_type == 2 && event->m_widget == (char *)this + 0x140)
@@ -120,7 +121,7 @@ bool RHMenuLoadSave::FUN_00531740(int, void *, void *)
     {
         std::wstring &name = *(std::wstring *)((char *)this + 0x450);
         {
-            RHMapWideText text = ((SBUIInputFieldUnk00621440 *)m_field)->FUN_0061df60();
+            std::wstring text = ((SBUIInputFieldUnk00621440 *)m_field)->FUN_0061df60();
             typedef std::wstring &(std::wstring::*Assign)(const std::wstring &, unsigned, unsigned);
             Assign assign = &std::wstring::assign;
             (name.*assign)((const std::wstring &)text, 0, std::wstring::npos);
@@ -157,6 +158,11 @@ RHUnk00514e10::Pair RHMenuLoadSaveMap::FUN_00531d80(const RHUnk00514e10::Value &
 
 // FUNCTION: GAME 0x00531db0
 RHMenuLoadSaveEntry::RHMenuLoadSaveEntry(const int &key, const int &value) : m_key(key), m_value(value)
+{
+}
+
+// FUNCTION: GAME 0x00531dd0
+RHMenuLoadSaveText::~RHMenuLoadSaveText()
 {
 }
 

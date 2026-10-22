@@ -2,6 +2,7 @@
 // 0x005406ab). See RHMenuShortcuts.h for the binding evidence.
 
 #include "SBNullstr.h"
+#include "RHMenuCancelCalls.h"
 #include "RHMenuShortcuts.h"
 
 // FUNCTION: GAME 0x0053fae0
@@ -16,7 +17,7 @@ bool RHMenuShortcuts::FUN_0053fb00(RHMenuEvent *event)
 {
     bool handled = false;
     if (event->m_type == 2 && event->m_widget == &m_button540)
-        handled = FUN_0052ce80(2, event->m_widget, event->m_data);
+        handled = ((RHMenuCancelCalls *)this)->OnCancel(2, event->m_widget, event->m_data);
     if (event->m_type == 2 && event->m_widget == &m_button240)
         handled = FUN_00540540(2, event->m_widget, event->m_data);
     if (event->m_type == 2 && event->m_widget == &m_button340)
@@ -31,10 +32,9 @@ bool RHMenuShortcuts::FUN_0053fb00(RHMenuEvent *event)
 // FUNCTION: GAME 0x0053fbc0
 RHMenuShortcuts::RHMenuShortcuts(void *screen)
     : RHMenuWindowFocus(0, screen, 0, false),
-      m_keys(*(RHKeyConfig *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x34))
+      m_keys(*(RHKeyConfig *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x34)),
+      m_profile((RHMenuShortcutsProfile *)((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0())
 {
-    m_profile = (RHMenuShortcutsProfile *)((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0();
-    m_vptr = 0x006798e8;
 }
 
 // FUNCTION: GAME 0x0053fca0

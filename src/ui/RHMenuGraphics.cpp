@@ -44,11 +44,7 @@ public:
     void FUN_00544b30();
 };
 
-class RHMenuSounds
-{
-public:
-    bool FUN_0052ce80(int, void *, void *);
-};
+#include "RHMenuCancelCalls.h"
 
 class RHUnk0055dbb0
 {
@@ -84,7 +80,7 @@ bool RHMenuGraphics::HandleEvent(RHMenuEvent *event)
 {
     bool handled = false;
     if (event->m_type == 2 && event->m_widget == m_bytes + 0x540)
-        handled = ((RHMenuSounds *)this)->FUN_0052ce80(2, event->m_widget, event->m_data);
+        handled = ((RHMenuCancelCalls *)this)->OnCancel(2, event->m_widget, event->m_data);
     if (event->m_type == 2 && event->m_widget == m_bytes + 0x440)
         handled = OnOK(2, event->m_widget, event->m_data);
     if (event->m_type == 2 && event->m_widget == &m_widget640)
@@ -134,6 +130,13 @@ bool RHMenuGraphics::Display(void *ui)
 bool RHMenuGraphics::FUN_0052ce70() const
 {
     return RHGraphicsField<bool>((void *)this, 0xdc8);
+}
+
+// FUNCTION: GAME 0x0052ce80
+bool RHMenuCancelCalls::OnCancel(int, void *, void *)
+{
+    ((RHGameMenuCalls *)this)->FUN_00544b30();
+    return false;
 }
 
 // FUNCTION: GAME 0x0052ce90

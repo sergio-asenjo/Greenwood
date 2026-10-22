@@ -22,13 +22,10 @@ RHEngine *g_pEngine = 0;
 #include "rhuirenderer_005cb420.h"
 #include "RHUnk005cbb80.h"
 
-bool RHUnk005cbb80::FUN_005cbc80(unsigned) { return false; }
 
 RHMenuDialogue::RHMenuDialogue(RHMenuScreenView *, unsigned long) {}
 RHMenuDialogue::~RHMenuDialogue() {}
 bool RHMenuDialogue::Create() { return false; }
 
 void RHDialogueWidgetLifetimeCalls::FUN_0052b890() {}
-void RHDialogueWidgetLifetimeCalls::FUN_0052bd90() {}
 void RHDialogueWidgetLifetimeCalls::FUN_0052be10() {}
-void RHDialogueWidgetLifetimeCalls::FUN_0052bf00() {}

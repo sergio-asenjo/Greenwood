@@ -6,18 +6,19 @@
 #include "SBNullstr.h"
 #include "RHMenuMovies.h"
 #include "RHGameMenuCalls.h"
-
-// Target 0x00536c50, __thiscall.
-RHMenuMovies::~RHMenuMovies() {}
+#include "RHMenuCloseCalls.h"
 
 // FUNCTION: GAME 0x0052b520
-bool RHMenuMovies::FUN_0052b520(int, void *, void *)
+bool RHMenuCloseCalls::FUN_0052b520(int, void *, void *)
 {
     ((RHGameMenuCalls *)this)->FUN_00544b30();
     return true;
 }
 
-void RHMenuMovies::FUN_00537400(const std::string &) {}
 
 // Target 0x00536d30, __thiscall.
 void RHMenuMovies::FUN_00536d30() {}
+
+#include "SBDrawManager.h"
+
+void RHUnk005ef320::FUN_005e4810(int, int, int) {}

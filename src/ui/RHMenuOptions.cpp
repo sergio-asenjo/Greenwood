@@ -1,6 +1,7 @@
 // RHMenuOptions.cpp — menu TU (code 0x00538540..). See RHMenuOptions.h for the binding evidence.
 
 #include "SBNullstr.h"
+#include "RHMenuCancelCalls.h"
 #include "RHMenuOptions.h"
 
 // GLOBAL: GAME 0x006c0c1a
@@ -18,7 +19,7 @@ bool RHMenuOptions::FUN_00538560(RHMenuEvent *event)
 {
     bool handled = false;
     if (event->m_type == 2 && event->m_widget == (char *)this + 0x640)
-        handled = FUN_0052ce80(2, event->m_widget, event->m_data);
+        handled = ((RHMenuCancelCalls *)this)->OnCancel(2, event->m_widget, event->m_data);
     if (event->m_type == 2 && event->m_widget == (char *)this + 0x340)
         handled = FUN_00539250(2, event->m_widget, event->m_data);
     if (event->m_type == 2 && event->m_widget == (char *)this + 0x540)
@@ -31,7 +32,6 @@ bool RHMenuOptions::FUN_00538560(RHMenuEvent *event)
 // FUNCTION: GAME 0x00538600
 RHMenuOptions::RHMenuOptions(RHMenuScreenView *screen) : RHMenuWindowFocus(0, screen, 0, false), m_changed(false)
 {
-    m_vptr = 0x006797dc;
 }
 
 // FUNCTION: GAME 0x00538710
@@ -41,6 +41,17 @@ void *RHMenuOptions::FUN_00538710(unsigned flags)
     if (flags & 1)
         operator delete(this);
     return this;
+}
+
+// FUNCTION: GAME 0x00538730
+RHMenuOptions::~RHMenuOptions()
+{
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_title);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_subtitle);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_graphics);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_sounds);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_shortcuts);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_back);
 }
 
 // FUNCTION: GAME 0x00538e80

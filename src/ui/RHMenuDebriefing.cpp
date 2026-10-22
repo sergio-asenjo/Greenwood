@@ -37,8 +37,7 @@ public:
     virtual std::wstring GetText() const;
 };
 
-// Parked: zero register hoists into EBX; the target keeps EBX for the won flag and frame is 0x14.
-// STUB: GAME 0x00528e00
+// FUNCTION: GAME 0x00528e00
 RHMenuDebriefing::RHMenuDebriefing(RHMenuScreenView *screen, const RHDebriefingStat *stat, bool won, bool last)
     : RHMenuWindowFocus(0, screen, 0x93, 0, false),
       m_titleResource(((RHPortraitTextResourceCalls *)screen)->FUN_0053be80(std::string("MissionTitle"))),
@@ -48,7 +47,6 @@ RHMenuDebriefing::RHMenuDebriefing(RHMenuScreenView *screen, const RHDebriefingS
       m_won(won),
       m_last(last)
 {
-    m_vptr = 0x006792c8;
 }
 
 // FUNCTION: GAME 0x00529050
@@ -62,8 +60,7 @@ void *RHMenuDebriefing::FUN_00529050(unsigned flags)
 
 extern RHUnk0048a970 *g_unk0x6c0b3c;
 
-// Parked: the text copy constructor inlines _Tidy; the target calls it out-of-line.
-// STUB: GAME 0x00529070
+// FUNCTION: GAME 0x00529070
 RHMenuDebriefing::RHMenuDebriefing(RHMenuScreenView *screen, const std::wstring &text, bool won, bool last)
     : RHMenuWindowFocus(0, screen, 0x93, 0, false),
       m_titleResource(((RHPortraitTextResourceCalls *)screen)->FUN_0053be80(std::string("MissionTitle"))),
@@ -73,7 +70,16 @@ RHMenuDebriefing::RHMenuDebriefing(RHMenuScreenView *screen, const std::wstring 
       m_won(won),
       m_last(last)
 {
-    m_vptr = 0x006792c8;
+}
+
+// FUNCTION: GAME 0x005292f0
+RHMenuDebriefing::~RHMenuDebriefing()
+{
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_ok);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_titleWidget);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_textWidget);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_load);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_restart);
 }
 
 // FUNCTION: GAME 0x00529ab0

@@ -20,8 +20,6 @@ RHMenuShortcutsList::RHMenuShortcutsList() {}
 
 RHMenuShortcutsList::~RHMenuShortcutsList() {}
 
-// Target 0x0052ce80 (folded close handler), __thiscall, ret 0xc.
-bool RHMenuShortcuts::FUN_0052ce80(int, void *, void *) { return false; }
 
 // Target 0x0053fcc0, __thiscall.
 RHMenuShortcuts::~RHMenuShortcuts() {}

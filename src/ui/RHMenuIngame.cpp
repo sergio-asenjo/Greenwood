@@ -36,13 +36,8 @@ extern RHEngine *g_pEngine;
 
 // FUNCTION: GAME 0x0052d4e0
 RHMenuIngame::RHMenuIngame(RHMenuScreenView *screen, bool pause)
-    : RHMenuWindowFocus(0, screen, 0, false)
+    : RHMenuWindowFocus(0, screen, 0, false), m_pause(pause), m_pauseToken(0), m_750(false), m_751(false)
 {
-    m_pause = pause;
-    m_pauseToken = 0;
-    m_750 = false;
-    m_751 = false;
-    m_vptr = 0x006794c0;
     if (pause)
         m_pauseToken = new RHMenuIngamePauseToken(true);
     else

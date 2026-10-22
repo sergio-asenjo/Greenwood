@@ -35,7 +35,6 @@ bool RHMenuIntro::FUN_0052e0b0(RHMenuEvent *event)
 RHMenuIntro::RHMenuIntro(RHMenuScreenView *screen)
     : RHMenuWindowFocus(0, screen, 0, false), m_choice(0)
 {
-    m_vptr = 0x00679518;
 }
 
 // FUNCTION: GAME 0x0052e300
@@ -45,6 +44,20 @@ void *RHMenuIntro::FUN_0052e300(unsigned flags)
     if (flags & 1)
         operator delete(this);
     return this;
+}
+
+// FUNCTION: GAME 0x0052e320
+RHMenuIntro::~RHMenuIntro()
+{
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_140);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_240);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_340);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_740);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_440);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_540);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_640);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_940);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_840);
 }
 
 // FUNCTION: GAME 0x0052ec40

@@ -2,6 +2,7 @@
 
 #include "SBNullstr.h"
 #include "RHMenuMovies.h"
+#include "RHMenuCloseCalls.h"
 
 std::string FUN_004e4c70(const std::string &first, const char *second);
 
@@ -22,7 +23,7 @@ bool RHMenuMovies::FUN_00536af0(RHMenuEvent *event)
     if (event->m_type == 2 && event->m_widget == (char *)this + 0x340)
         handled = FUN_005372e0(2, event->m_widget, event->m_data);
     if (event->m_type == 2 && event->m_widget == (char *)this + 0x240)
-        handled = FUN_0052b520(2, event->m_widget, event->m_data);
+        handled = ((RHMenuCloseCalls *)this)->FUN_0052b520(2, event->m_widget, event->m_data);
     if (event->m_type == 2 && event->m_widget == (char *)this + 0x440)
         handled = FUN_00537370(2, event->m_widget, event->m_data);
     return handled;
@@ -31,7 +32,15 @@ bool RHMenuMovies::FUN_00536af0(RHMenuEvent *event)
 // FUNCTION: GAME 0x00536b70
 RHMenuMovies::RHMenuMovies(RHMenuScreenView *screen) : RHMenuWindowFocus(0, screen, 0, false)
 {
-    m_vptr = 0x0067972c;
+}
+
+// FUNCTION: GAME 0x00536c50
+RHMenuMovies::~RHMenuMovies()
+{
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_ok);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_title);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_intro);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_outro);
 }
 
 // FUNCTION: GAME 0x00536c30
@@ -68,4 +77,37 @@ bool RHMenuMovies::FUN_00537370(int, void *, void *)
         // STRING: GAME 0x006b0f4c
         "\\Outro.vid"));
     return false;
+}
+
+#include "SBThreadedInput.h"
+#include "SBDrawManager.h"
+#include "RHGameActionCalls.h"
+
+class RHArtificialIntelligenceSoundCalls;
+extern RHArtificialIntelligenceSoundCalls *g_unk0x006c1070;
+extern SBThreadedInput *g_unk0x6c1340;
+extern RHUnk005ef320 *g_unk0x6c11d0;
+extern char g_unk0x006c0685;
+void FUN_004013a0(const std::string &name);
+
+// Parked at 0.6400: left by the killed batch-105 run before its residual was diagnosed. The
+// movie-launch sequence is close but the remaining divergence was never established.
+// STUB: GAME 0x00537400
+void RHMenuMovies::FUN_00537400(const std::string &path)
+{
+    if (g_unk0x006c0685)
+    {
+        RHGameActionCalls *sound = (RHGameActionCalls *)g_unk0x006c1070;
+        SBThreadedInput *input = g_unk0x6c1340;
+        RHUnk005ef320 *draw = g_unk0x6c11d0;
+        sound->FUN_005a7b40(0);
+        input->SetMouseEnabled(false);
+        draw->FUN_005e4810(0x280, 0x1e0, 0x10);
+        FUN_004013a0(path);
+        draw->FUN_005e4810((int)*(float *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x54),
+            (int)*(float *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x58), 0x10);
+        input->SetMouseEnabled(true);
+        sound->FUN_005a7b40(1);
+        ((RHMapWindow *)m_screen)->FUN_0053c7e0();
+    }
 }
