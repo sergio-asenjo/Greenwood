@@ -1,5 +1,6 @@
 #include "SBNullstr.h"
 #include "Toolbox.h"
+#include "SBPicture.h"
 
 // FUNCTION: GAME 0x00611aa0
 void RHUnk006114c0::FUN_00611aa0(SBFile &file, void *header)
@@ -12,32 +13,86 @@ void RHUnk006114c0::FUN_00611aa0(SBFile &file, void *header)
 int FUN_006277e0(void *, unsigned int *, const void *, unsigned int) { return 0; }
 int __stdcall FUN_006273d0(void *, unsigned int *, const void *, unsigned int, int, int) { return 0; }
 
-// parked, unannotated: base-constructor/vptr ordering and counted callers
+// FUNCTION: GAME 0x006114c0
 RHUnk006114c0::RHUnk006114c0()
 {
-    FUN_00611b90();
+    ((SBPicture *)this)->SBPicture::SBPicture();
+    *(unsigned *)this = 0x67a880;
     *(undefined4 *)(m_24 + 0x0c) = 2;
 }
 
-// SYNTHETIC: GAME 0x00611540
-// RHUnk006114c0::`scalar deleting destructor'
+// FUNCTION: GAME 0x006114e0
+void *RHUnk006114c0::FUN_006114e0()
+{
+    return *(void **)(m_04 + 0x10);
+}
+
+// FUNCTION: GAME 0x006114f0
+unsigned int RHUnk006114c0::FUN_006114f0()
+{
+    return *(unsigned int *)(m_04 + 0x18);
+}
+
+// FUNCTION: GAME 0x00611500
+unsigned short RHUnk006114c0::FUN_00611500()
+{
+    return m_width;
+}
+
+// FUNCTION: GAME 0x00611510
+unsigned short RHUnk006114c0::FUN_00611510()
+{
+    return m_height;
+}
+
+// FUNCTION: GAME 0x00611520
+unsigned short RHUnk006114c0::FUN_00611520()
+{
+    return *(unsigned short *)m_24;
+}
+
+// FUNCTION: GAME 0x00611530
+int RHUnk006114c0::FUN_00611530()
+{
+    return *(unsigned int *)(m_04 + 0x18) != 0;
+}
+
+// FUNCTION: GAME 0x00611540
+void *RHUnk006114c0::FUN_00611540(unsigned flags)
+{
+    this->RHUnk006114c0::~RHUnk006114c0();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+#pragma inline_depth(0)
+void EmitPictureAccessors(RHUnk006114c0 *picture)
+{
+    picture->RHUnk006114c0::FUN_006114e0();
+    picture->RHUnk006114c0::FUN_006114f0();
+    picture->RHUnk006114c0::FUN_00611500();
+    picture->RHUnk006114c0::FUN_00611510();
+    picture->RHUnk006114c0::FUN_00611520();
+    picture->RHUnk006114c0::FUN_00611530();
+}
+#pragma inline_depth(8)
 
 // FUNCTION: GAME 0x00611560
 RHUnk006114c0::~RHUnk006114c0()
 {
     *(unsigned *)this = 0x67a880;
-    FUN_00611c00();
+    ((SBPicture *)this)->SBPicture::~SBPicture();
 }
 
-void RHUnk006114c0::FUN_00611b90() {}
 void RHUnk006114c0::Unk10() {}
+bool RHUnk006114c0::Unk1c(SBFile &) { return false; }
 bool RHUnk006114c0::Unk20(RHUnkFXDraw *draw, unsigned long surface)
 {
     return Unk00613530(draw, surface);
 }
 
 void RHUnkFXDraw::FUN_005e5260() {}
-void RHUnkFXDraw::FUN_005e61e0(unsigned long, unsigned long, unsigned long, unsigned long) {}
 void RHUnkFXDraw::FUN_005e6440(unsigned long, int, int, unsigned long, unsigned long) {}
 int RHUnk005f4fc0::FUN_005f5090(const RHProfileText &, int) { return 0; }
 void ToolboxChunks::FUN_005e3070() { Buyback(); }
@@ -51,9 +106,6 @@ ToolboxChunk **ToolboxChunks::FUN_005e31d0(unsigned int count) { return _Growmap
 
 // FUNCTION: GAME 0x0053e080
 ToolboxChunkIterator::ToolboxChunkIterator(ToolboxChunk *next, ToolboxChunk **map) : m_first(*map), m_last(*map + 512), m_next(next), m_map(map) {}
-bool FUN_005e17a0(unsigned char *) { return false; }
-void FUN_005e1380() {}
-void FUN_005e1400() {}
 namespace Toolbox
 {
     void FUN_005f1000() {}

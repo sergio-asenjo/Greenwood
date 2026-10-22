@@ -71,13 +71,55 @@ namespace VMCoreCustomDependencies
     }
 }
 
+extern float g_unk0x00677488;
+
 class RHUnk0054b150
 {
 public:
-    void FUN_0054b150(bool flag, int mode);
+    void FUN_0054b150(bool flag, bool immediate);
+    unsigned char m_000[0x120];
+    bool m_120;
+    bool m_121;
+    unsigned char m_122[2];
+    float m_124;
 };
 
-void RHUnk0054b150::FUN_0054b150(bool, int) {}
+// FUNCTION: GAME 0x0054b150
+void RHUnk0054b150::FUN_0054b150(bool flag, bool immediate)
+{
+    if (flag == true)
+    {
+        if (!m_120 && m_124 == g_unk0x00677488)
+        {
+            if (!immediate)
+            {
+                m_124 = 1.0f;
+                m_121 = true;
+            }
+            else
+            {
+                m_124 = 0.0f;
+                m_120 = true;
+            }
+        }
+    }
+    else if (flag == false)
+    {
+        if (m_120 == true && m_124 == g_unk0x00677488)
+        {
+            if (!immediate)
+            {
+                m_121 = false;
+                m_124 = 0.1f;
+            }
+            else
+            {
+                m_120 = false;
+                m_124 = 0.0f;
+            }
+        }
+    }
+}
 
 class RHUnk004032a0
 {

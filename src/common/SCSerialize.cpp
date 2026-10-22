@@ -52,6 +52,30 @@ SCSerialize::~SCSerialize()
 // SYNTHETIC: GAME 0x0063a920
 // ??_GSCSerializeUnkObject@@UAEPAXI@Z
 
+inline SCSerializeRecordList::~SCSerializeRecordList()
+{
+    SCSerializeRecordNode *stop = head;
+    SCSerializeRecordNode *current = stop->next;
+    while (current != stop)
+    {
+        SCSerializeRecordNode *removed = current;
+        current = current->next;
+        Erase(SCSerializeRecordIterator(removed));
+    }
+    std::allocator<SCSerializeRecordNode> allocator;
+    allocator.deallocate(head, 1);
+    head = 0;
+    count = 0;
+}
+
+// SYNTHETIC: GAME 0x0063af70
+// SCSerializeUnk0063af90::`scalar deleting destructor'
+
+// FUNCTION: GAME 0x0063af90
+SCSerializeUnk0063af90::~SCSerializeUnk0063af90()
+{
+}
+
 // FUNCTION: GAME 0x0063b2d0
 int SCSerialize::Serialize(bool writing)
 {
@@ -165,4 +189,15 @@ bool SCSerialize::CloseSCB()
 int SCSerialize::ReadSCB()
 {
     return Serialize(false);
+}
+
+// FUNCTION: GAME 0x0063b780
+SCSerializeUnk0063b780::~SCSerializeUnk0063b780()
+{
+}
+
+void EmitSCSerializeRecords(SCSerializeUnk0063af90 *records, SCSerializeUnk0063b780 *record)
+{
+    records->SCSerializeUnk0063af90::~SCSerializeUnk0063af90();
+    record->~SCSerializeUnk0063b780();
 }

@@ -26,3 +26,16 @@ int SCSerializeUnkObject::FUN_0063a940(FILE *, bool)
 {
     return 0;
 }
+SCSerializeRecordIterator SCSerializeRecordList::Erase(SCSerializeRecordIterator position)
+{
+    SCSerializeRecordNode *node = position.node;
+    SCSerializeRecordNode *next = node->next;
+    node->previous->next = next;
+    node->next->previous = node->previous;
+    node->value.~SCSerializeRecordValue();
+    operator delete(node);
+    --count;
+    return SCSerializeRecordIterator(next);
+}
+
+SCSerializeRecordValue::~SCSerializeRecordValue() {}

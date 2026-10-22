@@ -8,3 +8,4 @@ VMUnk00634ab0Record::VMUnk00634ab0Record(const VMUnk00634ab0Record &other)
 }
 
 bool VMUnk0063a250::FUN_0063a250(int, int) { return false; }
+VMCore::VMCore(VMUnk0063a490 *, VMUnk0063a140 *) {}

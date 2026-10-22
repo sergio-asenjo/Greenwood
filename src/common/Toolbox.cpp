@@ -3,6 +3,11 @@
 #include <vector>
 #include <windows.h>
 #include "SBPicture.h"
+#include "SBInput.h"
+#include "RHUnk005ef320WindowView.h"
+#include "RHMapResources.h"
+#include "RHMapWideText.h"
+#include "SBDrawManager.h"
 
 DECOMP_SIZE_ASSERT(ToolboxChunk, 0x08)
 DECOMP_SIZE_ASSERT(ToolboxChunkIterator, 0x10)
@@ -25,13 +30,14 @@ DECOMP_SIZE_ASSERT(ToolboxMouseState, 0x0a)
 ToolboxChunks g_unk0x006c1178;
 // GLOBAL: GAME 0x006a6d27
 unsigned char g_unk0x006a6d27 = 1;
+// GLOBAL: GAME 0x006b8fb2
+unsigned char g_toolboxInputActive = 1;
 // GLOBAL: GAME 0x0067a664
 float g_unk0x0067a664 = 0.001f;
 
 // SYNTHETIC: GAME 0x00401910
 // ??0RHProfileString@@QAE@ABV0@@Z
 
-void RHUnk006114c0::FUN_00611c00() {}
 
 // LIBRARY: GAME 0x00401c80
 // ??1?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@QAE@XZ
@@ -202,6 +208,167 @@ bool FUN_005e0ea0(SBFile &file, std::wstring &value)
     return true;
 }
 
+class RHElementActorPC;
+class RHEngine;
+extern RHEngine *g_pEngine;
+extern RHMapResources *g_unk0x006c1840;
+
+// FUNCTION: GAME 0x005e11d0
+std::string FUN_005e11d0(const std::wstring &wide)
+{
+    std::string text;
+    for (std::wstring::const_iterator it = wide.begin(); it != wide.end(); ++it)
+    {
+        char character = (char)*it;
+        text.insert(text.end(), character);
+    }
+    return text;
+}
+
+// FUNCTION: GAME 0x005e1380
+void FUN_005e1380()
+{
+    MSG message;
+    RHUnk005ef320WindowView *draw = (RHUnk005ef320WindowView *)g_unk0x6c11d0;
+    if (IsIconic(draw->GetWindow()) > 0 && g_unk0x006a6d27 == 1)
+    {
+        g_unk0x006a6d27 = 0;
+        SBInputUnk005fb730::mpInput->FUN_005f9ea0(0);
+        ShowCursor(1);
+    }
+    if (PeekMessageA(&message, draw->GetWindow(), 0, 0, 1))
+    {
+        TranslateMessage(&message);
+        DispatchMessageA(&message);
+    }
+}
+
+// FUNCTION: GAME 0x005e1400
+void FUN_005e1400()
+{
+    MSG message;
+    GetMessageA(&message, *(HWND *)((char *)g_unk0x6c11d0 + 0x100), 0, 0);
+    TranslateMessage(&message);
+    DispatchMessageA(&message);
+}
+
+// FUNCTION: GAME 0x005e17a0
+bool FUN_005e17a0(unsigned char *keys)
+{
+    bool altTab = keys[0x0f] > 0U && (keys[0x38] > 0U || keys[0xb8] > 0U);
+    bool ctrlEscape = keys[0x01] > 0U && (keys[0x1d] > 0U || keys[0x9d] > 0U);
+    bool ctrlAltDelete = (keys[0x1d] > 0U || keys[0x9d] > 0U) &&
+        (keys[0x38] > 0U || keys[0xb8] > 0U) && (keys[0x53] > 0U || keys[0xd3] > 0U);
+    if (altTab || ctrlEscape || ctrlAltDelete)
+    {
+        keys[0x0f] = 0;
+        keys[0x38] = 0;
+        keys[0xb8] = 0;
+        keys[0x1d] = 0;
+        keys[0x9d] = 0;
+        keys[0x01] = 0;
+        keys[0x53] = 0;
+        keys[0xd3] = 0;
+        g_unk0x006a6d27 = 0;
+        g_toolboxInputActive = 0;
+        ShowWindow(*(HWND *)((char *)g_unk0x6c11d0 + 0x100), 6);
+    }
+    if (g_toolboxInputActive == 1 && g_unk0x006a6d27 == 0)
+    {
+        g_toolboxInputActive = 0;
+        return true;
+    }
+    return altTab || ctrlEscape;
+}
+
+// FUNCTION: GAME 0x005e18a0
+bool FUN_005e18a0()
+{
+    SBInputUnk005fb730 *input = SBInputUnk005fb730::mpInput;
+    RHMapResources *resources = g_unk0x006c1840;
+    RHUnk005ef320WindowView *draw = (RHUnk005ef320WindowView *)g_unk0x6c11d0;
+    RHMapWideText message;
+    input->FUN_005f9ea0(0);
+    CloseWindow(draw->GetWindow());
+    resources->FUN_006009e0(0x25, 0x1f, message);
+    ShowCursor(1);
+    int answer = MessageBoxA(0, FUN_005e11d0((std::wstring &)message).c_str(), 0, 0x15);
+    ShowWindow(draw->GetWindow(), 9);
+    ((RHUnk005ef320 *)draw)->FUN_005e3f70();
+    if (g_pEngine)
+        *(unsigned char *)((char *)g_pEngine + 0x48d1) = 0;
+    input->FUN_005f9ea0(1);
+    ShowCursor(0);
+    return answer == 4;
+}
+
+// FUNCTION: GAME 0x005e19e0
+RHElementActorPC *FUN_005e19e0(char *text)
+{
+    unsigned int value = 0;
+    while (*text)
+    {
+        switch (*text++)
+        {
+        case '0':
+            value = value * 16;
+            break;
+        case '1':
+            value = value * 16 + 1;
+            break;
+        case '2':
+            value = value * 16 + 2;
+            break;
+        case '3':
+            value = value * 16 + 3;
+            break;
+        case '4':
+            value = value * 16 + 4;
+            break;
+        case '5':
+            value = value * 16 + 5;
+            break;
+        case '6':
+            value = value * 16 + 6;
+            break;
+        case '7':
+            value = value * 16 + 7;
+            break;
+        case '8':
+            value = value * 16 + 8;
+            break;
+        case '9':
+            value = value * 16 + 9;
+            break;
+        case 'A':
+        case 'a':
+            value = value * 16 + 10;
+            break;
+        case 'B':
+        case 'b':
+            value = value * 16 + 11;
+            break;
+        case 'C':
+        case 'c':
+            value = value * 16 + 12;
+            break;
+        case 'D':
+        case 'd':
+            value = value * 16 + 13;
+            break;
+        case 'E':
+        case 'e':
+            value = value * 16 + 14;
+            break;
+        case 'F':
+        case 'f':
+            value = value * 16 + 15;
+            break;
+        }
+    }
+    return (RHElementActorPC *)value;
+}
+
 // FUNCTION: GAME 0x005e1b20
 MD5 *Toolbox::MD5_string(MD5 *result, unsigned char *name)
 {
@@ -354,9 +521,9 @@ void Toolbox::PlaySlide(const std::string &name, unsigned short duration)
     memset(&mouse, 0, sizeof(mouse));
     unsigned char keys[256];
     memset(keys, 0, sizeof(keys));
-    draw->FUN_005e61e0(0, 0, 0, 0);
+    ((SBDrawManager *)draw)->FUN_005e61e0(0, 0, 0, 0);
     draw->FUN_005e5260();
-    draw->FUN_005e61e0(0, 0, 0, 0);
+    ((SBDrawManager *)draw)->FUN_005e61e0(0, 0, 0, 0);
     while (file.Position() < file.Size() && !cancelled)
     {
         bool advance = false;
@@ -414,7 +581,8 @@ void Toolbox::PlaySlide(const std::string &name, unsigned short duration)
         FUN_005e1400();
 }
 
-// parked, unannotated: preserves the counted PlaySlide caller
+// Parked at 0.2510: unannotated park from the asymmetric-comparator era; residual scheduling/registers.
+// STUB: GAME 0x00611710
 bool RHUnk006114c0::Unk00611710(SBFile &file)
 {
     unsigned long header[3] = {0xcccccccc, 0xcccccccc, 0xcccccccc};
@@ -465,16 +633,30 @@ bool RHUnk006114c0::Unk00611710(SBFile &file)
     return true;
 }
 
-// parked, unannotated: counted callers and surface-getter ILT operands
+// FUNCTION: GAME 0x006118b0
+bool RHUnk006114c0::FUN_006118b0(const std::string &name)
+{
+    RHUnk005f4fc0 file;
+    if (file.FUN_005f5090(name, 2))
+        return false;
+    bool saved = Unk1c(file);
+    file.FUN_005f5290();
+    return saved;
+}
+
+// FUNCTION: GAME 0x00613530
 bool RHUnk006114c0::Unk00613530(RHUnkFXDraw *draw, unsigned long surface)
 {
     RHUnk00613e90 pixels;
     SBPicture *picture = (SBPicture *)this;
     if (draw->FUN_005e56c0(surface) == picture->m_20 &&
         draw->FUN_005e5750(surface) == picture->m_22) {
-        unsigned int format = *(volatile unsigned int *)&picture->m_04;
-        if (draw->UnkField10c() == 16 && format != 3)
-            Unk00611e10(3, 0);
+        if (draw->UnkField10c() == 16)
+        {
+            unsigned int format = picture->m_04;
+            if (format != 3)
+                Unk00611e10(3, 0);
+        }
         if (draw->UnkField10c() == 15 && picture->m_04 != 2)
             Unk00611e10(2, 0);
         if (draw->Unk005e5a00(surface, pixels, 0)) {
@@ -519,6 +701,109 @@ unsigned long Toolbox::HexaAsciiToInteger(const char *text)
         result <<= 4;
     }
     return result;
+}
+
+// Parked: target is hand-written register-preserving assembly with REP MOVSW.
+// STUB: GAME 0x005e3730
+void FUN_005e3730(const unsigned short *source, unsigned short *destination, long stride,
+    unsigned short width, unsigned short rows, unsigned short fill)
+{
+    do
+    {
+        unsigned short first = *source++;
+        if (first != 0xffff && first != 0)
+        {
+            unsigned short count = first;
+            do
+                *destination++ = fill;
+            while (--count != 0);
+        }
+        unsigned short last = *source++;
+        bool empty = last == 0xffff;
+        unsigned short padding;
+        if (last != 0xffff)
+        {
+            ++last;
+            unsigned short count = last - first;
+            memcpy(destination, source, count * sizeof(unsigned short));
+            destination += count;
+            source += count;
+            padding = width - last;
+        }
+        else
+            padding = width;
+        if (padding != 0 || empty)
+            do
+                *destination++ = fill;
+            while (--padding != 0);
+        destination = (unsigned short *)((char *)destination + stride);
+    }
+    while (--rows != 0);
+}
+
+// Parked: target preserves all registers and carries the fill word through BSWAP.
+// STUB: GAME 0x005e37c0
+void FUN_005e37c0(const unsigned short *source, unsigned short *destination, long stride,
+    unsigned short width, unsigned short rows, unsigned short fill, unsigned short key)
+{
+    do
+    {
+        unsigned short first = *source++;
+        if (first != 0xffff && first != 0)
+        {
+            unsigned short count = first;
+            do
+                *destination++ = fill;
+            while (--count != 0);
+        }
+        unsigned short last = *source++;
+        bool empty = last == 0xffff;
+        unsigned short padding;
+        if (last != 0xffff)
+        {
+            ++last;
+            unsigned short count = last - first;
+            do
+            {
+                unsigned short pixel = *source++;
+                *destination++ = pixel == key ? 0 : pixel;
+            }
+            while (--count != 0);
+            padding = width - last;
+        }
+        else
+            padding = width;
+        if (padding != 0 || empty)
+            do
+                *destination++ = fill;
+            while (--padding != 0);
+        destination = (unsigned short *)((char *)destination + stride);
+    }
+    while (--rows != 0);
+}
+
+// FUNCTION: GAME 0x00624a60
+RHUnk00624a60::RHUnk00624a60()
+{
+    m_list.m_dirty = true;
+    *(unsigned *)m_00 = 0x67ae70;
+}
+
+// FUNCTION: GAME 0x00624aa0
+void *RHUnk00624a60::FUN_00624aa0(unsigned flags)
+{
+    this->RHUnk00624a60::~RHUnk00624a60();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// Parked: the ICF-folded iterator++ 0x0057c9c0 is bound to the RHElementActor * list instantiation.
+// STUB: GAME 0x00624ac0
+RHUnk00624a60::~RHUnk00624a60()
+{
+    *(unsigned *)m_00 = 0x67ae70;
+    m_list.clear();
 }
 
 // Parked: green channel extracted through ah instead of shr edx,8 / mov cl,dl.

@@ -172,6 +172,16 @@ extern unsigned g_unk0x006c1384;
 extern SBFileTreeCtorNode2c *g_unk0x006c1388;
 extern unsigned g_unk0x006c138c;
 
+extern SBFileTree g_unk0x006c1348;
+extern SBFileTree g_unk0x006c1358;
+
+// FUNCTION: GAME 0x005f4d60
+void FUN_005f4d60()
+{
+    char comparison, allocation;
+    ((SBFileTree005f64a0 *)&g_unk0x006c1348)->SBFileTree005f64a0::SBFileTree005f64a0(comparison, allocation);
+}
+
 // FUNCTION: GAME 0x005f4db0
 void SBFileTree005f64a0::FUN_005f4db0()
 {
@@ -190,6 +200,13 @@ void SBFileTree005f64a0::FUN_005f4db0()
             g_unk0x006c1380 = 0;
         }
     }
+}
+
+// FUNCTION: GAME 0x005f4e30
+void FUN_005f4e30()
+{
+    char comparison, allocation;
+    ((SBFileTree005f6570 *)&g_unk0x006c1358)->SBFileTree005f6570::SBFileTree005f6570(comparison, allocation);
 }
 
 // FUNCTION: GAME 0x005f4e80

@@ -53,6 +53,12 @@ void EmitSBSimpleVirtualMachineGlue()
     ((RHUnk00639bc0 *)&g_unk0x006c1960)->FUN_00639740();
 }
 
+// FUNCTION: GAME 0x00639960
+SBSimpleVirtualMachine::SBSimpleVirtualMachine()
+    : VMCore((VMUnk0063a490 *)&g_unk0x006c1950, (VMUnk0063a140 *)&g_unk0x006c1960), m_bound(false)
+{
+}
+
 // FUNCTION: GAME 0x006399a0
 bool SBSimpleVirtualMachine::Initialize(std::string &name)
 {
