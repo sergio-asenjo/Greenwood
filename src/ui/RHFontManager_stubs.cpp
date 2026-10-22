@@ -14,3 +14,5 @@ extern "C" int fgetc(FILE *) { return 0; }
 
 // LIBRARY: GAME 0x00643540
 extern "C" int ungetc(int, FILE *) { return 0; }
+
+void *RHFontManager::GetFont(const std::string &) const { return 0; }

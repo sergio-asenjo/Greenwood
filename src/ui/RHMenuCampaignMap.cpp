@@ -7,9 +7,20 @@
 #include "SBUIBase.h"
 #include "RHMission.h"
 #include "RHCampaignCommandLine.h"
+#include "RHFontManager.h"
+#include "RHGameMenuCalls.h"
+#define SBGEO_POINT2D_VIEW
+#include "SBGeoBoundingBox2DCore.h"
+#include "RHMenuCloseCalls.h"
 #include <windows.h>
 #include <stdio.h>
 #include <stddef.h>
+#include "RHShortMissionUpdateCalls.h"
+
+#include "RHMenuWindowClass.h"
+#include "RHUnk00528400.h"
+#include "RHMenuMissionDescription.h"
+#include "RHUnk0053bf20.h"
 
 DECOMP_SIZE_ASSERT(RHMapWideText, 0x10)
 DECOMP_SIZE_ASSERT(RHMapTitleText, 0x10)
@@ -21,6 +32,19 @@ DECOMP_SIZE_ASSERT(RHMapCampaign, 0x1b0)
 DECOMP_SIZE_ASSERT(RHMapWindow, 0x1990)
 DECOMP_SIZE_ASSERT(RHMapDescription, 0x1c)
 DECOMP_SIZE_ASSERT(RHMenuCampaignMap, 0x2704)
+
+struct RHMenuEvent
+{
+    int m_type;
+    void *m_widget;
+    void *m_data;
+};
+
+class RHUnk0048a970
+{
+public:
+    void Unk(int);
+};
 
 // deferred: unannotated pending reccmp #534; proven 100.00% when annotated.
 void RHMapWideText::Tidy(bool built)
@@ -52,6 +76,74 @@ void RHMapCampaign::FUN_004577b0()
 
 // LIBRARY: GAME 0x00525430
 // ?append@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@QAEAAV12@PBGI@Z
+
+// FUNCTION: GAME 0x00525a00
+void RHMenuCampaignMap::RouteEvent(RHMenuEvent *event)
+{
+    if (HandleEvent(event))
+        ((RHUnk0048a970 *)this)->Unk((int)event);
+}
+
+// FUNCTION: GAME 0x00525a20
+bool RHMenuCampaignMap::HandleEvent(RHMenuEvent *event)
+{
+    bool handled = false;
+    if (event->m_type == 2 && event->m_widget == (char *)this + 0xcc)
+        handled = ((RHMenuCloseCalls *)this)->FUN_0052b520(2, event->m_widget, event->m_data);
+    if (event->m_type == 2 && event->m_widget == (char *)this + 0x418)
+        handled = FUN_00528560(2, event->m_widget, event->m_data);
+    if (event->m_type == 2 && event->m_widget == (char *)this + 0x694)
+        handled = FUN_00528560(2, event->m_widget, event->m_data);
+    if (event->m_type == 2 && event->m_widget == (char *)this + 0x910)
+        handled = FUN_00528560(2, event->m_widget, event->m_data);
+    if (event->m_type == 2 && event->m_widget == (char *)this + 0xb8c)
+        handled = FUN_00528560(2, event->m_widget, event->m_data);
+    if (event->m_type == 2 && event->m_widget == (char *)this + 0xe08)
+        handled = FUN_00528560(2, event->m_widget, event->m_data);
+    if (event->m_type == 2 && event->m_widget == (char *)this + 0x1084)
+        handled = FUN_00528560(2, event->m_widget, event->m_data);
+    if (event->m_type == 2 && event->m_widget == (char *)this + 0x1300)
+        handled = FUN_00528560(2, event->m_widget, event->m_data);
+    if (event->m_type == 2 && event->m_widget == (char *)this + 0x17f8)
+        handled = FUN_00528560(2, event->m_widget, event->m_data);
+    if (event->m_type == 0 && event->m_widget == (char *)this + 0x418)
+        handled = FUN_005287d0(0, event->m_widget, event->m_data);
+    if (event->m_type == 0 && event->m_widget == (char *)this + 0x694)
+        handled = FUN_005287d0(0, event->m_widget, event->m_data);
+    if (event->m_type == 0 && event->m_widget == (char *)this + 0x910)
+        handled = FUN_005287d0(0, event->m_widget, event->m_data);
+    if (event->m_type == 0 && event->m_widget == (char *)this + 0xb8c)
+        handled = FUN_005287d0(0, event->m_widget, event->m_data);
+    if (event->m_type == 0 && event->m_widget == (char *)this + 0xe08)
+        handled = FUN_005287d0(0, event->m_widget, event->m_data);
+    if (event->m_type == 0 && event->m_widget == (char *)this + 0x1084)
+        handled = FUN_005287d0(0, event->m_widget, event->m_data);
+    if (event->m_type == 0 && event->m_widget == (char *)this + 0x1300)
+        handled = FUN_005287d0(0, event->m_widget, event->m_data);
+    if (event->m_type == 0 && event->m_widget == (char *)this + 0x17f8)
+        handled = FUN_005287d0(0, event->m_widget, event->m_data);
+    if (event->m_type == 1 && event->m_widget == (char *)this + 0x418)
+        handled = FUN_00528730(1, event->m_widget, event->m_data);
+    if (event->m_type == 1 && event->m_widget == (char *)this + 0x694)
+        handled = FUN_00528730(1, event->m_widget, event->m_data);
+    if (event->m_type == 1 && event->m_widget == (char *)this + 0x910)
+        handled = FUN_00528730(1, event->m_widget, event->m_data);
+    if (event->m_type == 1 && event->m_widget == (char *)this + 0xb8c)
+        handled = FUN_00528730(1, event->m_widget, event->m_data);
+    if (event->m_type == 1 && event->m_widget == (char *)this + 0xe08)
+        handled = FUN_00528730(1, event->m_widget, event->m_data);
+    if (event->m_type == 1 && event->m_widget == (char *)this + 0x1084)
+        handled = FUN_00528730(1, event->m_widget, event->m_data);
+    if (event->m_type == 1 && event->m_widget == (char *)this + 0x1300)
+        handled = FUN_00528730(1, event->m_widget, event->m_data);
+    if (event->m_type == 1 && event->m_widget == (char *)this + 0x17f8)
+        handled = FUN_00528730(1, event->m_widget, event->m_data);
+    if (event->m_type == 0x1000 && event->m_widget == *(void **)((char *)this + 0x26fc))
+        handled = FUN_00528520(0x1000, (unsigned)event->m_widget, (unsigned)event->m_data);
+    if (event->m_type == 0x1000 && event->m_widget == *(void **)((char *)this + 0x2700))
+        handled = FUN_00528550(0x1000, (unsigned)event->m_widget, (unsigned)event->m_data);
+    return handled;
+}
 
 // FUNCTION: GAME 0x00527a70
 void RHMenuCampaignMap::FUN_00527a70(RHMapByte state)
@@ -284,6 +376,59 @@ std::vector<void *> RHMapCampaign::FUN_005286b0()
     return *(std::vector<void *> *)((char *)this + 0x164);
 }
 
+// FUNCTION: GAME 0x00528560
+bool RHMenuCampaignMap::FUN_00528560(int, void *widget, void *)
+{
+    RHMapLocation *location = (RHMapLocation *)((RHUnk00528400 *)this)->FUN_00528480((RHUnk00528410 *)widget);
+    RHMenuMissionDescription description((RHMenuWindow *)this,
+        *(RHMenuWindowScreen **)((char *)this + 0xb4), (RHMission *)location->m_278);
+    ((RHGameMenuCalls *)((char *)this + 0x226c))->FUN_00544b30();
+    unsigned long previous = (unsigned long)(*(RHUnk0053bf20 **)((char *)this + 0xb4))->FUN_0053bf20();
+    (*(RHMenuScreenView **)((char *)this + 0xb4))->FUN_0053be40(0);
+    description.Create();
+    description.FUN_00544b80(true, true);
+    (*(RHMenuScreenView **)((char *)this + 0xb4))->FUN_0053be40(previous);
+    switch (description.GetUserChoice())
+    {
+    case 1:
+        FUN_00527c00(((RHMapCampaign *)g_unk0x6c07fc)->FUN_005286b0());
+        ((RHMapCampaign *)g_unk0x6c07fc)->FUN_004562a0();
+        break;
+    case 0:
+        ((RHGameMenuCalls *)this)->FUN_00544b30();
+        break;
+    }
+    FUN_00528810();
+    DisplayPseudoMissionDebriefing();
+    description.FUN_00544300();
+    (*(RHMapWindow **)((char *)this + 0xb4))->FUN_0053c7e0();
+    return true;
+}
+
+// FUNCTION: GAME 0x00528730
+bool RHMenuCampaignMap::FUN_00528730(int, void *, void *)
+{
+    RHMapWidget *description = (RHMapWidget *)((char *)this + 0x226c);
+    RHMenuScreenView *screen = *(RHMenuScreenView **)((char *)this + 0xb4);
+    if (screen->FUN_0053c320(description))
+    {
+        SBGeoBoundingBox2D bounds(description->V24());
+        ((RHGameMenuCalls *)description)->FUN_00544b30();
+        (*(RHMenuScreenView **)((char *)this + 0xb4))->FUN_0053c7f0((unsigned long)&bounds);
+    }
+    return true;
+}
+
+// FUNCTION: GAME 0x005287d0
+bool RHMenuCampaignMap::FUN_005287d0(int, void *widget, void *)
+{
+    RHMapLocation *location = (RHMapLocation *)((RHUnk00528400 *)this)->FUN_00528480((RHUnk00528410 *)widget);
+    RHShortMissionUpdateCalls *description = (RHShortMissionUpdateCalls *)((char *)this + 0x226c);
+    description->FUN_00540ed0((RHMission *)location->m_278);
+    ((RHMenuWindow *)description)->FUN_00544b80(false, false);
+    return true;
+}
+
 // FUNCTION: GAME 0x00528810
 void RHMenuCampaignMap::FUN_00528810()
 {
@@ -397,12 +542,6 @@ public:
     }
 };
 
-class RHPopupRenderer0060dbc0
-{
-public:
-    bool FUN_0060dd10(unsigned id);
-};
-
 class SBUIUnk0060dd00
 {
 public:
@@ -478,6 +617,41 @@ void RHUnk005254f0::FUN_00525840()
     RHMapWidgetField<unsigned>(this, 0xc4) = -1;
 }
 
+// SYNTHETIC: GAME 0x00525560
+// ??1RHGameLifetime00525560@@QAE@XZ
+
+#pragma inline_depth(1)
+// FUNCTION: GAME 0x00525860
+void *RHGameLifetime00525880::FUN_00525860(unsigned flags)
+{
+    this->~RHGameLifetime00525880();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// SYNTHETIC: GAME 0x00525880
+// ??1RHGameLifetime00525880@@QAE@XZ
+
+// FUNCTION: GAME 0x005258e0
+void *RHGameLifetime00525560::FUN_005258e0(unsigned flags)
+{
+    this->~RHGameLifetime00525560();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+#pragma inline_depth()
+
+#include "RHGameTitleLifetimeInline.h"
+
+#pragma inline_depth(0)
+void EmitRHGameTitleLifetime()
+{
+    RHGameLifetime00525880 title;
+}
+#pragma inline_depth()
+
 void RHMapTailEmit(void *object, unsigned index, const std::wstring &text)
 {
     RHUnk005254f0 *widget = (RHUnk005254f0 *)object;
@@ -487,6 +661,8 @@ void RHMapTailEmit(void *object, unsigned index, const std::wstring &text)
     widget->FUN_005257c0(index);
     widget->FUN_00525830(index);
     widget->FUN_00525840();
+    ((RHGameLifetime00525560 *)object)->FUN_00525860(0);
+    ((RHGameLifetime00525560 *)object)->FUN_005258e0(0);
 }
 
 // FUNCTION: GAME 0x00528ad0
@@ -561,14 +737,19 @@ unsigned RHUnk00528ad0::FUN_00528be0()
     return result;
 }
 
+// SYNTHETIC: GAME 0x00527870
+// ??1RHUnk00527870@@QAE@XZ
+
+#pragma inline_depth(1)
 // FUNCTION: GAME 0x00528c70
 void *RHUnk00527870::FUN_00528c70(unsigned flags)
 {
-    FUN_00527870();
+    this->~RHUnk00527870();
     if (flags & 1)
         operator delete(this);
     return this;
 }
+#pragma inline_depth()
 
 void EmitRHMapBlink(RHUnk00528ad0 *blink)
 {
@@ -638,6 +819,7 @@ class RHMapStringTree
 public:
     RHMapStringIterator FUN_0053dcb0(RHMapStringNode *, RHMapStringNode *, const std::pair<const std::string, void *> &);
     RHMapStringNode *FUN_0053dfc0(const std::string &);
+    void *&FUN_0053cd30(const std::string &);
     static RHMapStringNode *&Left(RHMapStringNode *node) { return node->m_00; }
     inline void RotateLeft(RHMapStringNode *node)
     {
@@ -1041,6 +1223,82 @@ RHMenuWindowUI *RHMenuScreenView::FUN_0053bf30()
     return (RHMenuWindowUI *)&m_sbui;
 }
 
+class RHMenuScreenFont
+{
+public:
+    virtual void Unk00();
+    virtual void Unk04();
+    virtual void Unk08();
+    virtual void Unk0c();
+    virtual void Unk10();
+    virtual void AttachToRenderContext(void *context, unsigned long flags);
+};
+
+// FUNCTION: GAME 0x0053be80
+void *RHMenuScreenView::FUN_0053be80(const std::string &name)
+{
+    RHMapStringTree &fonts = *(RHMapStringTree *)&m_196c;
+    RHMapStringIterator found;
+    found.m_node = fonts.FUN_0053dfc0(name);
+    RHMapStringIterator end;
+    RHMapStringIterator it = found.m_node == fonts.m_head
+        || ((RHCampaignCommandLine *)&name)->FUN_0045a010(*(const RHProfileText *)&found.m_node->m_0c.first) < 0
+        ? (end.m_node = fonts.m_head, end) : found;
+    if (it.m_node != (RHMapStringNode *)m_196c.m_head)
+        return it.m_node->m_0c.second;
+    RHMenuScreenFont *font = (RHMenuScreenFont *)((RHFontManager *)RHFontManager::FUN_005024f0())->GetFont(name);
+    if (font)
+    {
+        font->AttachToRenderContext(&m_surfaces, 0);
+        fonts.FUN_0053cd30(name) = font;
+    }
+    return font;
+}
+
+void *&RHMapStringTree::FUN_0053cd30(const std::string &key)
+{
+    return FUN_0053dfc0(key)->m_0c.second;
+}
+
+// FUNCTION: GAME 0x0053bf40
+void RHMenuScreenView::FUN_0053bf40(void *events)
+{
+    if (!m_191c.empty())
+    {
+        std::vector<void *> widgets = m_191c.back();
+        for (std::vector<void *>::iterator it = widgets.begin(); it != widgets.end(); ++it)
+        {
+            void *event = events;
+            while (event)
+            {
+                RHPortraitRootLifetime *widget = (RHPortraitRootLifetime *)*it;
+                typedef void (RHPortraitRootLifetime::*Dispatch)(void *);
+                Dispatch dispatch;
+                *(unsigned *)&dispatch = (*(unsigned **)widget)[0x14];
+                (widget->*dispatch)(event);
+                event = *(void **)((char *)event + 0x0c);
+            }
+        }
+    }
+}
+
+// FUNCTION: GAME 0x0053c050
+void RHMenuScreenView::FUN_0053c050()
+{
+    if (!m_191c.empty())
+    {
+        std::vector<void *> widgets = m_191c.back();
+        for (std::vector<void *>::iterator it = widgets.begin(); it != widgets.end(); ++it)
+        {
+            RHPortraitRootLifetime *widget = (RHPortraitRootLifetime *)*it;
+            typedef void (RHPortraitRootLifetime::*Notify)();
+            Notify notify;
+            *(unsigned *)&notify = (*(unsigned **)widget)[0x15];
+            (widget->*notify)();
+        }
+    }
+}
+
 // Parked: count/index register lifetimes and duplicated boolean tails differ.
 // STUB: GAME 0x0053c320
 bool RHMenuScreenView::FUN_0053c320(void *widget)
@@ -1074,6 +1332,38 @@ void RHMenuScreenView::FUN_0053c7f0(unsigned long surface)
     ((SBUI *)&m_sbui)->FUN_00618910(surface);
 }
 
+// FUNCTION: GAME 0x0053c800
+void RHMenuScreenView::FUN_0053c800()
+{
+    RHMapTreeIncIterator current;
+    RHMapTreeDecNode *head = *(RHMapTreeDecNode *volatile *)&m_196c.m_head;
+    current.m_node = head->m_00;
+    while (current.m_node != head)
+    {
+        RHPortraitRootLifetime *resource = (RHPortraitRootLifetime *)current.m_node->m_1c;
+        typedef void (RHPortraitRootLifetime::*Detach)();
+        Detach detach;
+        *(unsigned *)&detach = (*(unsigned **)resource)[6];
+        (resource->*detach)();
+        resource = (RHPortraitRootLifetime *)current.m_node->m_1c;
+        if (resource)
+        {
+            typedef void *(RHPortraitRootLifetime::*Destroy)(unsigned);
+            Destroy destroy;
+            *(unsigned *)&destroy = (*(unsigned **)resource)[2];
+            (resource->*destroy)(1);
+        }
+        current.FUN_0053dbf0();
+        head = *(RHMapTreeDecNode *volatile *)&m_196c.m_head;
+    }
+    RHMapTree &tree = *(RHMapTree *)&m_196c;
+    RHMapTreeIterator first;
+    first.node = tree.m_head->left;
+    RHMapTreeIterator last;
+    last.node = tree.m_head;
+    tree.FUN_0053d2f0(first, last);
+}
+
 // FUNCTION: GAME 0x0053cd20
 bool RHMenuScreenView::FUN_0053cd20()
 {
@@ -1102,6 +1392,7 @@ RHMapBox::RHMapBox(float x1, float y1, float x2, float y2)
 
 void RHMenuCampaignMap::Emit()
 {
+    RouteEvent(0);
     Create();
     DisplayPseudoMissionDebriefing();
     RHMapCampaign *campaign = (RHMapCampaign *)g_unk0x6c07fc;
@@ -1110,10 +1401,13 @@ void RHMenuCampaignMap::Emit()
     RHMapWindow *window = *(RHMapWindow **)((char *)this + 0xb4);
     window->FUN_0053bb30(0);
     window->FUN_0053bbe0();
+    ((RHMenuScreenView *)window)->FUN_0053c050();
+    ((RHMenuScreenView *)window)->FUN_0053bf40(0);
     RHMenuScreenView::FUN_0053bbc0((RHMenuWindow *)window);
     RHMenuScreenView::FUN_0053be60((RHMenuWindow *)window);
     window->FUN_0053c7e0();
     ((RHMenuScreenView *)window)->FUN_0053c7f0(0);
+    ((RHMenuScreenView *)window)->FUN_0053c800();
     FUN_00528520(0, 0, 0);
     FUN_00528550(0, 0, 0);
     campaign->FUN_005286b0();

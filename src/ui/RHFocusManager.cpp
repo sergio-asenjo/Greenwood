@@ -203,22 +203,23 @@ RHFocusManager::RHFocusManager(int orientation)
     }
 }
 
-// Parked: the ignored erase iterator and lock occupy separate frame slots.
-// STUB: GAME 0x004ffbb0
+// FUNCTION: GAME 0x004ffbb0
 RHFocusShortcutTree::~RHFocusShortcutTree()
 {
-    typedef RHFocusShortcutIterator (RHFocusShortcutTree::*Erase)(RHFocusShortcutIterator, RHFocusShortcutIterator);
-    Erase erase = &RHFocusShortcutTree::FUN_005008f0;
-    {
-        RHFocusShortcutIterator erased = (this->*erase)(Begin(), End());
-    }
+    RHFocusShortcutIterator first;
+    first.node = head->left;
+    RHFocusShortcutIterator last;
+    last.node = head;
+    FUN_005008f0(first, last);
     operator delete(head);
     head = 0;
     count = 0;
-    RHUnk00641782 lock;
-    if (--g_unk0x006c0abc == 0) {
-        operator delete(g_unk0x006c0ac0);
-        g_unk0x006c0ac0 = 0;
+    {
+        RHUnk00641782 lock;
+        if (--g_unk0x006c0abc == 0) {
+            operator delete(g_unk0x006c0ac0);
+            g_unk0x006c0ac0 = 0;
+        }
     }
 }
 
@@ -420,7 +421,9 @@ RHFocusEvent *RHFocusManager::FUN_00500040(RHFocusEvent *first, RHFocusEvent *se
 {
     if (first) {
         RHFocusEvent *event = first;
-        while (event != second) {
+        for (;;) {
+            if (event == second)
+                break;
             RHFocusEvent *previous = event;
             event = event->next;
             if (event == 0) {
@@ -838,35 +841,19 @@ RHFocusEvent *RHFocusManager::FUN_005008a0(RHFocusEvent *first, const void *widg
     return 0;
 }
 
-// Parked: the return iterator and outer-lock cleanup use different registers.
+// Parked: hidden return pointer and erase temporary take other registers than exact twin 0x4b32a0 (iterator base-class shape).
 // STUB: GAME 0x005008f0
 RHFocusShortcutIterator RHFocusShortcutTree::FUN_005008f0(RHFocusShortcutIterator first, RHFocusShortcutIterator last)
 {
-    if (count == 0 || first != Begin() || last != End()) {
-        while (first != last) {
-            RHFocusShortcutIterator previous = first;
-            typedef void (RHFocusShortcutIterator::*Advance)();
-            Advance advance = &RHFocusShortcutIterator::FUN_00501580;
-            (first.*advance)();
-            typedef RHFocusShortcutIterator (RHFocusShortcutTree::*Erase)(RHFocusShortcutIterator);
-            Erase erase = &RHFocusShortcutTree::FUN_00500ba0;
-            (this->*erase)(previous);
-        }
-        return first;
-    }
-    else {
+    if (count != 0 && first.node == head->left && last.node == head) {
         RHUnk00641782 lock;
         RHFocusShortcutNode *node = head->parent;
         {
             RHUnk00641782 inner;
-            RHFocusShortcutNode *next = node;
-            while (next != g_unk0x006c0ac0) {
-                typedef void (RHFocusShortcutTree::*Erase)(RHFocusShortcutNode *);
-                Erase erase = &RHFocusShortcutTree::FUN_005010c0;
-                (this->*erase)(next->right);
+            for (RHFocusShortcutNode *next = node; next != g_unk0x006c0ac0; node = next) {
+                FUN_005010c0(next->right);
                 next = next->left;
                 operator delete(node);
-                node = next;
             }
         }
         head->parent = g_unk0x006c0ac0;
@@ -875,6 +862,9 @@ RHFocusShortcutIterator RHFocusShortcutTree::FUN_005008f0(RHFocusShortcutIterato
         head->right = head;
         return Begin();
     }
+    while (first.node != last.node)
+        FUN_00500ba0(first++);
+    return first;
 }
 
 // FUNCTION: GAME 0x00500a20

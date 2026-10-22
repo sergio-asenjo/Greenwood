@@ -159,3 +159,15 @@ bool RHMenuPopupScroll::FUN_0053a840()
         return false;
     return true;
 }
+
+#include "RHSectorProductionCampaign.h"
+#include "RHGameMenuCalls.h"
+
+// FUNCTION: GAME 0x0053a860
+bool RHMenuPopupScroll::FUN_0053a860(int, void *, void *)
+{
+    *(std::wstring *)((char *)this + 0x440) =
+        *(const std::wstring *)((RHSectorProductionCampaign *)((char *)this + 0x2c4))->FUN_005cb6f0();
+    ((RHGameMenuCalls *)this)->FUN_00544b30();
+    return true;
+}

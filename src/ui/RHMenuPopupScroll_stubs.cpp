@@ -9,9 +9,6 @@
 // Target 0x00539730, __thiscall.
 RHMenuPopupScroll::~RHMenuPopupScroll() {}
 
-// Target 0x0053a860, __thiscall, ret 0xc.
-bool RHMenuPopupScroll::FUN_0053a860(int, void *, void *) { return false; }
-
 RHMenuPopupScroll::RHMenuPopupScroll(RHMenuScreenView *, const std::wstring &, const std::string &, bool)
     : RHMenuWindowFocus(0, 0, 0, false) {}
 RHMenuPopupScroll::RHMenuPopupScroll(RHMenuScreenView *, const std::wstring &, int, const std::string &, int)

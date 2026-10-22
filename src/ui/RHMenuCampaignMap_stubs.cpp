@@ -10,26 +10,25 @@ void RHMapConstructValue(std::pair<const std::string, void *> *storage, const st
 
 bool RHMapWideText::Grow(unsigned, bool) { return false; }
 void RHMapWideText::End(unsigned) {}
-RHMapDescription::~RHMapDescription() {}
+void RHMapCampaign::FUN_004562a0() {}
 bool RHMapDescription::FUN_0063cda0(unsigned) { return false; }
-// Parked: the case bodies and jump table match; VC6 puts the value in eax and
-// sinks the `xor eax,eax` to the end, while the target keeps it in ecx and
-// hoists the zero (volatile/switch(value-1) do not flip it). 0.415094.
-// STUB: GAME 0x00527cc0
-unsigned FUN_00527cc0(volatile unsigned value)
+// FUNCTION: GAME 0x00527cc0
+unsigned FUN_00527cc0(unsigned value)
 {
-    switch (value - 1)
+    unsigned index = value;
+    unsigned result = 0;
+    switch (index - 1)
     {
-    case 0: return 5;
+    case 0: result = 5; break;
     case 1:
-    case 2: return 6;
+    case 2: result = 6; break;
     case 3:
-    case 4: return 4;
+    case 4: result = 4; break;
     case 5:
-    case 6: return 9;
-    case 7: return 7;
+    case 6: result = 9; break;
+    case 7: result = 7; break;
     }
-    return 0;
+    return result;
 }
 
 // GLOBAL: GAME 0x006c0660
@@ -68,5 +67,3 @@ public:
 };
 
 void RHMapFocusWidget::FUN_00541060() {}
-
-void RHUnk00527870::FUN_00527870() {}

@@ -10,7 +10,6 @@
 // Target 0x00540850, __thiscall.
 RHMenuShortMissionDescription::~RHMenuShortMissionDescription() {}
 
-// Target 0x0060dbc0, __thiscall.
-RHMenuShortMissionRenderer::RHMenuShortMissionRenderer() {}
+void RHMenuShortMissionBlazons::FUN_0044ef60(const RHMapBox &, bool) {}
 
-RHMenuShortMissionRenderer::~RHMenuShortMissionRenderer() {}
+// Target 0x0060dbc0, __thiscall.

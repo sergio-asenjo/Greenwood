@@ -9,6 +9,7 @@
 
 // Target 0x00544ee0, __thiscall.
 RHMenuWindowFocus::~RHMenuWindowFocus() {}
+void RHMenuWindowFocus::V00() {}
 
 
 
@@ -30,10 +31,7 @@ void RHMenuScreenView::FUN_0053c390() {}
 void RHMenuScreenView::FUN_0053c650(RHMenuWindow *, bool) {}
 
 // Target 0x00545220, __thiscall, ret 8.
-RHMenuYesNo::RHMenuYesNo(RHMenuWindowScreen *screen, const std::wstring &) : RHMenuWindow(0, screen, false) {}
-
-// Target 0x005455b0, __thiscall.
-RHMenuYesNo::~RHMenuYesNo() {}
+RHMenuYesNo::RHMenuYesNo(RHMenuWindowScreen *screen, const std::wstring &) : RHMenuWindowFocus(0, screen, 0, false) {}
 
 // Target 0x00545710, __thiscall.
 void RHMenuYesNo::FUN_00545710() {}
