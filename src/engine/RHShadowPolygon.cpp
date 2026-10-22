@@ -104,19 +104,16 @@ void EmitShadowPointListOperations(RHShadowPointListBase &list, RHScriptIter pos
     list.FUN_0044e9b0();
 }
 
-// Coupled park: 0x004c9d20; annotation breaks DisplayDebug.
+// Parked at 0.9773: strength-reduced actor index addresses [edi+eax] where the target has [eax+edi].
+// STUB: GAME 0x004c9d20
 void RHEngine::FUN_004c9d20(void *box)
 {
     unsigned short count = (unsigned short)FUN_004c9d20Size();
-    if (count > 0)
+    for (unsigned short index = 0; index < count; ++index)
     {
-        unsigned remaining = count;
-        for (unsigned index = 0; remaining != 0; ++index, --remaining)
-        {
-            RHUnk004a96a0 *actor = m_48dc[index];
-            if (actor->m_10 == 0x1001 && actor->m_50->m_18 == g_unk0x00677488)
-                actor->FUN_004a96a0(m_48c4, m_475c, box, false);
-        }
+        RHUnk004a96a0 *actor = m_48dc[index];
+        if (actor->m_10 == 0x1001 && actor->m_50->m_18 == g_unk0x00677488)
+            actor->FUN_004a96a0(m_48c4, m_475c, box, false);
     }
 }
 
@@ -650,8 +647,8 @@ void RHShadowPolygon::FUN_0058f200(RHMask *mask, SBGeoBoundingBox2D &box, unsign
     unsigned short line;
     unsigned char control;
 
-    xSize = (unsigned short)(box.m_8 - box.m_0);
-    lineCount = (unsigned short)(box.m_c - box.m_4);
+    xSize = (unsigned short)(box.m_p1.m_x - box.m_p0.m_x);
+    lineCount = (unsigned short)(box.m_p1.m_y - box.m_p0.m_y);
     lineSkip = m_54 - xSize;
     pDst = (unsigned char *)(m_50 + (unsigned short)box.Value4() * m_54 + (unsigned short)box.Value0());
     pData = mask->m_data;
@@ -1039,18 +1036,19 @@ void RHShadowPolygon::FUN_00594b40(RHUnk00597a70 *item)
         m_1bc.SwapWithNext(index);
 }
 
-// Coupled park: 0x00594bf0; annotation breaks DisplayDebug.
+// Parked at 0.7417: unannotated park from the asymmetric-comparator era; residual scheduling/registers.
+// STUB: GAME 0x00594bf0
 void RHShadowPolygon::FUN_00594bf0(const SBGeoBoundingBox2D &box, float zoom, RHElementActor *actor, SBGeoPoint3D &point, RHviewParameters &view)
 {
     RHUnk005fc3b0 temporary;
     RHUnk005fc3b0 initial;
-    RHShadowField<SBGeoBoundingBox2D>(this, 0x78).SetValue0(box.m_0);
-    RHShadowField<SBGeoBoundingBox2D>(this, 0x78).SetValue8(box.m_8 - g_unk0x0067749c);
-    RHShadowField<SBGeoBoundingBox2D>(this, 0x78).SetValue4(box.m_4);
-    RHShadowField<SBGeoBoundingBox2D>(this, 0x78).SetValueC(box.m_c - g_unk0x0067749c);
+    RHShadowField<SBGeoBoundingBox2D>(this, 0x78).SetValue0(box.Value0());
+    RHShadowField<SBGeoBoundingBox2D>(this, 0x78).SetValue8(box.Value8() - g_unk0x0067749c);
+    RHShadowField<SBGeoBoundingBox2D>(this, 0x78).SetValue4(box.Value4());
+    RHShadowField<SBGeoBoundingBox2D>(this, 0x78).SetValueC(box.ValueC() - g_unk0x0067749c);
     m_8c = zoom;
-    RHShadowField<int>(this, 0x90) = (int)RHShadowField<SBGeoBoundingBox2D>(this, 0x78).m_0;
-    RHShadowField<int>(this, 0x94) = (int)RHShadowField<SBGeoBoundingBox2D>(this, 0x78).m_4;
+    RHShadowField<int>(this, 0x90) = (int)RHShadowField<SBGeoBoundingBox2D>(this, 0x78).Value0();
+    RHShadowField<int>(this, 0x94) = (int)RHShadowField<SBGeoBoundingBox2D>(this, 0x78).Value4();
     RHShadowField<RHElementActor *>(this, 0xbc) = actor;
     m_a4.m_0 = point.m_0;
     m_a4.m_4 = point.m_4;
@@ -1110,8 +1108,8 @@ bool RHShadowPolygon::FUN_00595630(const SBGeoBoundingBox2D &box)
     {
         if (RHShadowField<RHUnk005fc3b0>(this, 0xc8).m_y > g_unk0x00677488)
         {
-            float y = box.m_c;
-            corner.m_x = box.m_0;
+            float y = box.ValueC();
+            corner.m_x = box.Value0();
             corner.m_y = y;
             if (RHShadowField<RHUnk005fc3b0>(this, 0xc8).FUN_005fc680((const RHUnk005fc3b0 &)corner.Unk005fc110(RHShadowField<SBGeoPoint2D>(this, 0xb0)), 1.0f) < g_unk0x00677488)
                 return false;
@@ -1128,8 +1126,8 @@ bool RHShadowPolygon::FUN_00595630(const SBGeoBoundingBox2D &box)
         }
         else
         {
-            float y = box.m_4;
-            corner.m_x = box.m_8;
+            float y = box.Value4();
+            corner.m_x = box.Value8();
             corner.m_y = y;
             if (RHShadowField<RHUnk005fc3b0>(this, 0xc8).FUN_005fc680((const RHUnk005fc3b0 &)corner.Unk005fc110(RHShadowField<SBGeoPoint2D>(this, 0xb0)), 1.0f) < g_unk0x00677488)
                 return false;
@@ -1139,8 +1137,8 @@ bool RHShadowPolygon::FUN_00595630(const SBGeoBoundingBox2D &box)
     {
         if (RHShadowField<RHUnk005fc3b0>(this, 0xd0).m_y > g_unk0x00677488)
         {
-            float y = box.m_4;
-            corner.m_x = box.m_8;
+            float y = box.Value4();
+            corner.m_x = box.Value8();
             corner.m_y = y;
             if (RHShadowField<RHUnk005fc3b0>(this, 0xd0).FUN_005fc680((const RHUnk005fc3b0 &)corner.Unk005fc110(RHShadowField<SBGeoPoint2D>(this, 0xb0)), 1.0f) > g_unk0x00677488)
                 return false;
@@ -1157,8 +1155,8 @@ bool RHShadowPolygon::FUN_00595630(const SBGeoBoundingBox2D &box)
         }
         else
         {
-            float y = box.m_c;
-            corner.m_x = box.m_0;
+            float y = box.ValueC();
+            corner.m_x = box.Value0();
             corner.m_y = y;
             if (RHShadowField<RHUnk005fc3b0>(this, 0xd0).FUN_005fc680((const RHUnk005fc3b0 &)corner.Unk005fc110(RHShadowField<SBGeoPoint2D>(this, 0xb0)), 1.0f) > g_unk0x00677488)
                 return false;
@@ -1323,7 +1321,8 @@ void RHShadowPolygon::FUN_00597910()
     }
 }
 
-// Coupled park: 0x00597a70; annotation breaks DisplayDebug.
+// Parked at 0.3162: unannotated park from the asymmetric-comparator era; residual scheduling/registers.
+// STUB: GAME 0x00597a70
 bool RHShadowPolygon::FUN_00597a70(RHUnk00597a70 *area)
 {
     RHShadowField<RHUnk00597a70 *>(this, 0x130) = area;
@@ -1671,13 +1670,13 @@ unsigned char RHShadowPolygon::FUN_0059afc0(SBGeoPoint2D &out, SBGeoPoint2D &in,
         {
         case 1:
         {
-            y = Bounds().m_4 - g_rhuirendererportrait_percent;
+            y = Bounds().Value4() - g_rhuirendererportrait_percent;
             x = line.FUN_006104f0(y);
             out.m_x = x;
             out.m_y = y;
-            if (x > Bounds().m_8 + 1000.0f)
+            if (x > Bounds().Value8() + 1000.0f)
                 side = 2;
-            else if (x < Bounds().m_0 - 1000.0f)
+            else if (x < Bounds().Value0() - 1000.0f)
                 side = 8;
             else
                 return side;
@@ -1693,14 +1692,14 @@ unsigned char RHShadowPolygon::FUN_0059afc0(SBGeoPoint2D &out, SBGeoPoint2D &in,
         }
         case 4:
         {
-            y = Bounds().m_c;
+            y = Bounds().ValueC();
             y += g_rhuirendererportrait_percent;
             x = line.FUN_006104f0(y);
             out.m_x = x;
             out.m_y = y;
-            if (x > Bounds().m_8 + 1000.0f)
+            if (x > Bounds().Value8() + 1000.0f)
                 side = 2;
-            else if (x < Bounds().m_0 - 1000.0f)
+            else if (x < Bounds().Value0() - 1000.0f)
                 side = 8;
             else
                 return side;
@@ -1921,7 +1920,7 @@ unsigned char RHShadowPolygon::FUN_0059e9b0(RHShadowPolygonList *points)
 {
     RHUnk00613e90 point;
     SBGeoPoint2D flat;
-    RHShadowBox box;
+    SBGeoBoundingBox2D box;
     unsigned short count = (unsigned short)points->m_list.size();
     if (count > 0)
     {

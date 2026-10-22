@@ -520,3 +520,20 @@ void EmitSBPicture(SBPicture *picture, const SBPictureUnkVector2D &size)
     picture->FUN_00612e30(0, 0);
     picture->FUN_006131a0(0, 0);
 }
+
+// FUNCTION: GAME 0x00611be0
+void *SBPicture::FUN_00611be0(unsigned flags)
+{
+    this->~SBPicture();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// Parked: member destruction is explicit here, so VC6 omits the target's EH cleanup frame.
+SBPicture::~SBPicture()
+{
+    *(unsigned *)this = 0x67a8bc;
+    FUN_00611c50();
+    ((SBGeoPoint2D *)((char *)this + 0x28))->~SBGeoPoint2D();
+}

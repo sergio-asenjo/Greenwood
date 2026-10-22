@@ -43,20 +43,18 @@ void SBNativeFontCharacterTree::FUN_00616c90()
     }
 }
 
-// Parked: picture callback literals and map-cleanup temporary/register scheduling differ.
-// STUB: GAME 0x00616d00
+// FUNCTION: GAME 0x00616d00
 SBNativeFont::~SBNativeFont()
 {
 }
 
-// Parked: picture callback literals and allocator/header store scheduling differ.
-// STUB: GAME 0x00616dc0
+// FUNCTION: GAME 0x00616dc0
 SBNativeFont::SBNativeFont(const std::string &name)
 {
     m_surface = 0;
-    m_vptr = 0x0067a96c;
+    *(unsigned *)this = 0x0067a96c;
     memset(m_nativeHeader, 0, sizeof(m_nativeHeader));
-    m_spacing = 0;
+    memset(&m_spacing, 0, sizeof(m_spacing));
     ((SBFontUnk0061e840 *)this)->FUN_0061ea80(name);
 }
 
@@ -80,16 +78,12 @@ unsigned SBNativeFont::FUN_00616f40() const
     return m_nativeHeader[1];
 }
 
-// Parked: iterator temporaries add four frame bytes and shift result slots.
+// Parked: first-search iterator value occupies +0x10 instead of +0x0c; two slot operands differ.
 // STUB: GAME 0x00616f50
 const SBNativeFont::CharacterInfo *SBNativeFont::GetCharacterInfo(unsigned short character) const
 {
     SBNativeFontCharacterTree &characters = (SBNativeFontCharacterTree &)m_characters;
-    SBResourceUnkKeyIterator candidate = characters.FUN_00617e20(character);
-    SBResourceUnkKeyNode *node = candidate.m_node;
-    SBResourceUnkKeyIterator value(node);
-    SBResourceUnkKeyIterator found = node != characters.FUN_00617690().m_node &&
-        character >= *(unsigned short *)&node->m_key ? value : characters.FUN_00617690();
+    SBResourceUnkKeyIterator found = characters.Find(character);
     if (found.m_node != m_characters.m_head)
         return (const CharacterInfo *)((char *)found.m_node + 0x10);
     unsigned short space = 0x20;
@@ -105,7 +99,7 @@ const SBNativeFont::CharacterInfo *SBNativeFont::GetCharacterInfo(unsigned short
 }
 
 // FUNCTION: GAME 0x00617030
-unsigned SBNativeFont::FUN_00617030() const
+unsigned SBNativeFont::GetImplementationVersion() const
 {
     return 0x200;
 }
@@ -123,34 +117,39 @@ unsigned SBNativeFont::FUN_00617080() const
     return m_spacing;
 }
 
-// Parked: the null-result zero stores use different registers and scheduling.
-// STUB: GAME 0x00617090
+// FUNCTION: GAME 0x00617090
 long SBNativeFont::GetCharacterWidth(unsigned short character, long &left, long &right) const
 {
     const CharacterInfo *info = GetCharacterInfo(character);
+    long width;
     if (info)
     {
-        long width = info->m_width;
+        width = info->m_width;
         left = info->m_left;
         right = info->m_right;
-        return width;
     }
-    return left = right = 0;
+    else
+    {
+        width = 0;
+        left = width;
+        right = width;
+    }
+    return width;
 }
 
 // Parked: the map insertion frame is twelve bytes short and pair copies differ.
 // STUB: GAME 0x006170d0
 bool SBNativeFont::LoadFromStream(SBFile &file)
 {
-    bool loaded = ((SBFontUnk0061e840 *)this)->FUN_0061eb00(file);
-    if (!loaded)
-        return false;
+    unsigned i;
+    if (!((SBFontUnk0061e840 *)this)->FUN_0061eb00(file))
+        goto failed;
     if (file.Access(m_nativeHeader, sizeof(m_nativeHeader)))
         return false;
     if (((SBFontUnk0061e840 *)this)->FUN_0061e880() == 0x200 &&
         file.Access(&m_spacing, sizeof(m_spacing)))
         return false;
-    for (unsigned i = 0; i < m_nativeHeader[2]; ++i)
+    for (i = 0; i < m_nativeHeader[2]; ++i)
     {
         unsigned short character;
         CharacterInfo info;
@@ -158,13 +157,15 @@ bool SBNativeFont::LoadFromStream(SBFile &file)
             return false;
         if (file.Access(&info, sizeof(info)))
             return false;
-        SBNativeFontCharacterPair inserted = m_characters.FUN_006177d0(
-            SBNativeFontCharacterValue(character, info));
+        SBNativeFontCharacterPair inserted(m_characters.FUN_006177d0(
+            SBNativeFontCharacterValue(character, info)));
         *(CharacterInfo *)((char *)inserted.m_iterator.m_node + 0x10) = info;
     }
     if (!((SBNativeFontPictureCalls *)&m_pictures[0])->V10(file))
         return false;
     return ((SBNativeFontPictureCalls *)&m_pictures[1])->V10(file) != false;
+failed:
+    return false;
 }
 
 class SBGeoPoint2D
@@ -678,6 +679,25 @@ SBResourceUnkKeyIterator SBNativeFontCharacterTree::FUN_00617f80(SBNativeFontDec
     return SBResourceUnkKeyIterator((SBResourceUnkKeyNode *)z);
 }
 
+// FUNCTION: GAME 0x00618280
+SBResourceUnkKeyNode *SBNativeFontCharacterTree::FUN_00618280(const unsigned short &key)
+{
+    SBFontLock lock;
+    SBResourceUnkKeyNode *node = *(SBResourceUnkKeyNode **)((char *)m_head + 4);
+    SBResourceUnkKeyNode *result = m_head;
+    while (node != g_unk0x006c18c8)
+    {
+        if (*(unsigned short *)((char *)node + 0xc) < key)
+            node = *(SBResourceUnkKeyNode **)((char *)node + 8);
+        else
+        {
+            result = node;
+            node = *(SBResourceUnkKeyNode **)node;
+        }
+    }
+    return result;
+}
+
 // FUNCTION: GAME 0x006182d0
 void SBNativeFontDecIterator::FUN_006182d0()
 {
@@ -709,7 +729,7 @@ void EmitSBNativeFont(SBNativeFont *font, SBNativeFontRenderContext *context,
     font->AttachToRenderContext(context, 0);
     font->DetachFromRenderContext();
     font->FUN_00616f40();
-    font->FUN_00617030();
+    font->SBNativeFont::GetImplementationVersion();
     font->FUN_00617080();
     font->GetImplementationTag(tag);
     font->GetCharacterWidth(0, spacing, spacing);

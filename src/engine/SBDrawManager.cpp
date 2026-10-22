@@ -1,13 +1,30 @@
 #include "SBDrawManager.h"
 #include "SBResourceManager.h"
 #include <string>
+#include <list>
+#include <stdarg.h>
+#include <stdio.h>
+#include <string.h>
 
 extern "C" __declspec(dllimport) void __stdcall EnterCriticalSection(void *);
 extern "C" __declspec(dllimport) void __stdcall LeaveCriticalSection(void *);
 extern "C" __declspec(dllimport) void __stdcall InitializeCriticalSection(void *);
+extern "C" __declspec(dllimport) int __stdcall SetWindowTextA(void *, const char *);
+extern "C" __declspec(dllimport) void __stdcall Sleep(unsigned long);
+extern "C" __declspec(dllimport) void *__stdcall GetStockObject(int);
+extern "C" __declspec(dllimport) void *__stdcall SelectObject(void *, void *);
+extern "C" __declspec(dllimport) unsigned __stdcall SetTextAlign(void *, unsigned);
+extern "C" __declspec(dllimport) int __stdcall SetBkMode(void *, int);
+extern "C" __declspec(dllimport) unsigned long __stdcall SetBkColor(void *, unsigned long);
+extern "C" __declspec(dllimport) unsigned long __stdcall SetTextColor(void *, unsigned long);
+extern "C" __declspec(dllimport) int __stdcall TextOutA(void *, int, int, const char *, int);
+extern "C" __declspec(dllimport) int __stdcall GetClientRect(void *, long *);
+extern "C" __declspec(dllimport) int __stdcall ClientToScreen(void *, long *);
 
 void SBAssert(int, const char *, int, const char *, ...);
 std::string FUN_005f81d0(long);
+void SBSimpleUnk005f9510(void *, const char *, ...);
+extern char g_unk0x006c13c0[16];
 
 class RHUnk00613e90
 {
@@ -35,11 +52,16 @@ public:
     void Unk005e5ea0(RHUnk00613e90 &);
     unsigned short FUN_005e56c0(unsigned long);
     unsigned short FUN_005e5750(unsigned long);
-    void FUN_005e61e0(unsigned long, unsigned long, unsigned long, unsigned long);
     void FUN_005e6440(unsigned long, int, int, unsigned long, unsigned long);
     unsigned short UnkField10c() const { return m_depth; }
     char m_00[0x10c];
     unsigned short m_depth;
+};
+
+class RHMobileUnk00607da0
+{
+public:
+    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
 };
 
 class SBGeoPoint2D
@@ -92,6 +114,26 @@ inline SBDrawUnk005efc10Iterator SBDrawFindSurface(SBDrawUnk005efc10 &tree, cons
         ? found : SBDrawUnk005efc10Iterator(head));
 }
 
+// SIZE 0x14
+struct SBDrawDriverList
+{
+    std::list<std::string> m_list; // 0x00
+    std::list<std::string>::iterator m_current; // 0x0c
+    bool m_dirty; // 0x10
+    void Add(const std::string &name)
+    {
+        m_list.push_back(name);
+        m_dirty = true;
+    }
+};
+
+// FUNCTION: GAME 0x005e3b10
+int __stdcall FUN_005e3b10(void *, char *description, char *, void *context, void *)
+{
+    ((SBDrawDriverList *)context)->Add(std::string(description));
+    return 1;
+}
+
 struct SBDrawTreeNode;
 extern SBDrawTreeNode *g_unk0x006c11dc;
 
@@ -114,6 +156,12 @@ void SBDrawUnk005efc10::FUN_005e3ed0()
             g_unk0x006c11dc = 0;
         }
     }
+}
+
+// FUNCTION: GAME 0x005e3f40
+bool RHUnk005ef320::FUN_005e3f40(const std::string &title)
+{
+    return SetWindowTextA(*(void **)((char *)this + 0x100), SBDrawStringData(title)) != 0;
 }
 
 // Parked: retry-loop lookup duplication and iterator stores differ.
@@ -409,6 +457,219 @@ unsigned short SBDrawUnk005e5ec0::FUN_005e5f60(unsigned long surface)
     return *(unsigned short *)((char *)found + 0x18);
 }
 
+// FUNCTION: GAME 0x005e61e0
+bool SBDrawManager::FUN_005e61e0(unsigned long surface, const SBGeoBoundingBox2D *box, unsigned short color, unsigned long flags)
+{
+    if (surface == 0 && !*((unsigned char *)this + 0x112) && !(flags & 8))
+        surface = 1;
+    typedef SBDrawUnk005efc10Iterator (SBDrawUnk005efc10::*Find)(const unsigned long &);
+    SBDrawUnk005efc10Iterator found = ((*(SBDrawUnk005efc10 *)((char *)this + 0x54)).*static_cast<Find>(&SBDrawUnk005efc10::FUN_005efbc0))(surface);
+    if (found.m_node == *(SBDrawUnk005f0090Node **)((char *)this + 0x58))
+    {
+        SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0x6d3,
+            // STRING: GAME 0x006b9734
+            "Invalid surface for the fill");
+        return false;
+    }
+    long rectangle[4];
+    long client[4];
+    long *destination;
+    if (box)
+    {
+        const float *coordinates = (const float *)box;
+        rectangle[0] = (long)coordinates[0];
+        rectangle[2] = (long)coordinates[2];
+        rectangle[1] = (long)coordinates[1];
+        rectangle[3] = (long)coordinates[3];
+        if (rectangle[0] == rectangle[2] || rectangle[1] == rectangle[3])
+            return false;
+        destination = rectangle;
+    }
+    else
+        destination = 0;
+    if (!*((unsigned char *)this + 0x80) && *((unsigned char *)this + 0x112) == 1)
+    {
+        GetClientRect(*(void **)((char *)this + 0x100), client);
+        ClientToScreen(*(void **)((char *)this + 0x100), client);
+        ClientToScreen(*(void **)((char *)this + 0x100), client + 2);
+        if (box)
+        {
+            if (surface == 0)
+            {
+                rectangle[0] += client[0];
+                rectangle[2] += client[0];
+                rectangle[1] += client[1];
+                rectangle[3] += client[1];
+            }
+        }
+        else if (surface == 0)
+        {
+            rectangle[0] = client[0];
+            rectangle[2] = client[2];
+            rectangle[1] = client[1];
+            rectangle[3] = client[3];
+            destination = rectangle;
+        }
+    }
+    unsigned long effect[25];
+    effect[0] = 100;
+    effect[20] = color & 0xffff;
+    SBDrawUnk005e5ec0Surface *object = *(SBDrawUnk005e5ec0Surface **)((char *)found.m_node + 0x10);
+    long result = ((long (__stdcall *)(SBDrawUnk005e5ec0Surface *, long *, void *, void *, unsigned long, void *))object->m_vtable[5])(
+        object, destination, 0, 0, 0x1000400, effect);
+    if (result != 0)
+    {
+        SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0x70d,
+            // STRING: GAME 0x006b9710
+            "Error during the fill DxErr = %s", SBDrawStringData(FUN_005f81d0(result)));
+        return false;
+    }
+    return true;
+}
+
+// Parked at 0.4690; unannotated because callers retain divergent blit views.
+bool SBDrawManager::FUN_005e6440(unsigned long source, const SBGeoBoundingBox2D *sourceBox,
+    unsigned long destination, const SBGeoBoundingBox2D *destinationBox, unsigned char flags)
+{
+    unsigned char options = *(volatile unsigned char *)&flags;
+    unsigned long blitFlags = 0x200;
+    if (options & 1)
+        blitFlags = 0x8200;
+    if (source == 0 && !*((unsigned char *)this + 0x112) && !(options & 0x10))
+        source = 1;
+    if (destination == 0 && !*((unsigned char *)this + 0x112) && !(options & 8))
+        destination = 1;
+    typedef SBDrawUnk005efc10Iterator (SBDrawUnk005efc10::*Find)(const unsigned long &);
+    SBDrawUnk005efc10 &tree = *(SBDrawUnk005efc10 *)((char *)this + 0x54);
+    SBDrawUnk005f0090Node *sourceNode = (tree.*static_cast<Find>(&SBDrawUnk005efc10::FUN_005efbc0))(source).m_node;
+    SBDrawUnk005f0090Node *destinationNode = (tree.*static_cast<Find>(&SBDrawUnk005efc10::FUN_005efbc0))(destination).m_node;
+    if (sourceNode == *(SBDrawUnk005f0090Node **)((char *)this + 0x58))
+    {
+        SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0x767,
+            // STRING: GAME 0x006b97a4
+            "Invalid surface for the blit (Source)");
+        return false;
+    }
+    if (destinationNode == *(SBDrawUnk005f0090Node **)((char *)this + 0x58))
+    {
+        SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0x76d,
+            // STRING: GAME 0x006b9778
+            "Invalid surface for the blit (Destination)");
+        return false;
+    }
+    long sourceRectangle[4];
+    long destinationRectangle[4];
+    long client[4];
+    long *target;
+    if (destinationBox)
+    {
+        destinationRectangle[0] = (long)((const float *)destinationBox)[0];
+        destinationRectangle[2] = (long)((const float *)destinationBox)[2];
+        destinationRectangle[1] = (long)((const float *)destinationBox)[1];
+        destinationRectangle[3] = (long)((const float *)destinationBox)[3];
+        if (destinationRectangle[0] == destinationRectangle[2] || destinationRectangle[1] == destinationRectangle[3])
+            return false;
+        target = destinationRectangle;
+    }
+    else if (blitFlags & 0x8000)
+    {
+        destinationRectangle[0] = 0;
+        destinationRectangle[2] = destinationNode->m_width;
+        destinationRectangle[1] = 0;
+        destinationRectangle[3] = destinationNode->m_height;
+        target = destinationRectangle;
+    }
+    else
+        target = 0;
+    const float *originalSourceBox = (const float *)sourceBox;
+    if (originalSourceBox)
+    {
+        sourceRectangle[0] = (long)originalSourceBox[0];
+        sourceRectangle[2] = (long)originalSourceBox[2];
+        sourceRectangle[1] = (long)originalSourceBox[1];
+        sourceRectangle[3] = (long)originalSourceBox[3];
+        if (sourceRectangle[0] == sourceRectangle[2] || sourceRectangle[1] == sourceRectangle[3])
+            return false;
+        sourceBox = (const SBGeoBoundingBox2D *)sourceRectangle;
+    }
+    else if (blitFlags & 0x8000)
+    {
+        sourceRectangle[0] = 0;
+        sourceRectangle[2] = sourceNode->m_width;
+        sourceRectangle[1] = 0;
+        sourceRectangle[3] = sourceNode->m_height;
+        sourceBox = (const SBGeoBoundingBox2D *)sourceRectangle;
+    }
+    else
+        sourceBox = 0;
+    if (!*((unsigned char *)this + 0x80))
+    {
+        GetClientRect(*(void **)((char *)this + 0x100), client);
+        ClientToScreen(*(void **)((char *)this + 0x100), client);
+        ClientToScreen(*(void **)((char *)this + 0x100), client + 2);
+        if (originalSourceBox)
+        {
+            if (source == 0 && (*((unsigned char *)this + 0x112) == 1 || (*(volatile unsigned char *)&flags & 0x10)))
+            {
+                sourceRectangle[0] += client[0];
+                sourceRectangle[2] += client[0];
+                sourceRectangle[1] += client[1];
+                sourceRectangle[3] += client[1];
+            }
+        }
+        else if (source == 0 && (*((unsigned char *)this + 0x112) == 1 || (*(volatile unsigned char *)&flags & 0x10)))
+        {
+            sourceRectangle[0] = client[0];
+            sourceRectangle[2] = client[2];
+            sourceRectangle[1] = client[1];
+            sourceRectangle[3] = client[3];
+            sourceBox = (const SBGeoBoundingBox2D *)sourceRectangle;
+        }
+        if (destinationBox)
+        {
+            if (destination == 0 && (*((unsigned char *)this + 0x112) == 1 || (*(volatile unsigned char *)&flags & 8)))
+            {
+                destinationRectangle[0] += client[0];
+                destinationRectangle[2] += client[0];
+                destinationRectangle[1] += client[1];
+                destinationRectangle[3] += client[1];
+            }
+        }
+        else if (destination == 0 && (*((unsigned char *)this + 0x112) == 1 || (*(volatile unsigned char *)&flags & 8)))
+        {
+            destinationRectangle[1] = client[1];
+            destinationRectangle[0] = client[0];
+            destinationRectangle[2] = client[2];
+            destinationRectangle[3] = client[3];
+            target = destinationRectangle;
+        }
+    }
+    EnterCriticalSection(*(void **)((char *)destinationNode + 0x24));
+    SBDrawUnk005e5ec0Surface *object = *(SBDrawUnk005e5ec0Surface **)((char *)destinationNode + 0x10);
+    long result = ((long (__stdcall *)(SBDrawUnk005e5ec0Surface *, long *, void *, const void *, unsigned long, void *))object->m_vtable[5])(
+        object, target, *(void **)((char *)sourceNode + 0x10), sourceBox, blitFlags, 0);
+    LeaveCriticalSection(*(void **)((char *)destinationNode + 0x24));
+    if (result != 0)
+    {
+        if (result == (long)0x887601c2)
+        {
+            object = *(SBDrawUnk005e5ec0Surface **)((char *)destinationNode + 0x10);
+            ((long (__stdcall *)(SBDrawUnk005e5ec0Surface *))object->m_vtable[27])(object);
+            return false;
+        }
+        SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0x7f5,
+            // STRING: GAME 0x006b9754
+            "Error during the blit DxErr = %s", SBDrawStringData(FUN_005f81d0(result)));
+        return false;
+    }
+    return true;
+}
+
+void EmitSBDrawManagerBlit(SBDrawManager *draw, unsigned long source, unsigned long destination)
+{
+    draw->FUN_005e6440(source, 0, destination, 0, 0);
+}
+
 // FUNCTION: GAME 0x005e7880
 bool SBDrawUnk005e8450::FUN_005e7880(void *arg1, void *arg2, void *arg3,
     int arg4, int arg5, int arg6, int arg7, int arg8, int arg9)
@@ -417,35 +678,41 @@ bool SBDrawUnk005e8450::FUN_005e7880(void *arg1, void *arg2, void *arg3,
     return true;
 }
 
-template<int RedShift, int GreenShift, int GreenMask, int SourceGreenMask>
-static __forceinline unsigned short SBDrawBlendPixel(unsigned short source, unsigned short destination, unsigned short weight)
-{
-    unsigned short sourceRed = (source >> RedShift) & 0xf8;
-    unsigned short sourceGreen = (source >> GreenShift) & SourceGreenMask;
-    unsigned short sourceBlue = (source & 0x1f) << 3;
-    int red = sourceRed * weight >> 8;
-    int green = sourceGreen * weight >> 8;
-    int blue = sourceBlue * weight >> 8;
-    unsigned short inverse = 256 - weight;
-    unsigned short destinationRed = (destination >> RedShift) & 0xf8;
-    unsigned short destinationGreen = (destination >> GreenShift) & GreenMask;
-    unsigned short destinationBlue = (destination & 0x1f) << 3;
-    unsigned char finalRed = (destinationRed * inverse >> 8) + red;
-    unsigned char finalGreen = (destinationGreen * inverse >> 8) + green;
-    unsigned short finalBlue = (destinationBlue * inverse >> 8) + blue;
-    return (((finalRed & 0xf8) << 5) + (finalGreen & GreenMask)) * (1 << GreenShift) + (finalBlue >> 3);
+#define SBDRAW_BLEND_PIXEL_FUNCTION(Name, RedShift, GreenShift, GreenMask, SourceGreenMask) \
+static __forceinline unsigned short Name(unsigned short source, unsigned short destination, unsigned short weight) \
+{ \
+    unsigned short sourceRed = (source >> RedShift) & 0xf8; \
+    unsigned short sourceGreen = (source >> GreenShift) & SourceGreenMask; \
+    unsigned short sourceBlue = (source & 0x1f) << 3; \
+    int red = sourceRed * weight >> 8; \
+    int green = sourceGreen * weight >> 8; \
+    int blue = sourceBlue * weight >> 8; \
+    unsigned short inverse = 256 - weight; \
+    unsigned short destinationRed = (destination >> RedShift) & 0xf8; \
+    unsigned short destinationGreen = (destination >> GreenShift) & GreenMask; \
+    unsigned short destinationBlue = (destination & 0x1f) << 3; \
+    unsigned char finalRed = (destinationRed * inverse >> 8) + red; \
+    unsigned char finalGreen = (destinationGreen * inverse >> 8) + green; \
+    unsigned short finalBlue = (destinationBlue * inverse >> 8) + blue; \
+    return (((finalRed & 0xf8) << 5) + (finalGreen & GreenMask)) * (1 << GreenShift) + (finalBlue >> 3); \
 }
+
+SBDRAW_BLEND_PIXEL_FUNCTION(SBDrawBlendPixel15, 7, 2, 0xf8, 0xf8)
+SBDRAW_BLEND_PIXEL_FUNCTION(SBDrawBlendPixel16, 8, 3, 0xfc, 0xfc)
+SBDRAW_BLEND_PIXEL_FUNCTION(SBDrawBlendPixel16Green, 8, 3, 0xfc, 0xf8)
+
+#undef SBDRAW_BLEND_PIXEL_FUNCTION
 
 // Parked: component live ranges add a frame slot and reorder source/alpha/destination reads.
 // STUB: GAME 0x005e78c0
 bool SBDrawUnk005e8450::FUN_005e78c0(unsigned short *source, unsigned short *destination, unsigned short *alpha,
     unsigned width, unsigned height, unsigned sourceStride, unsigned destinationStride, unsigned alphaStride)
 {
-    for (unsigned rows = height; rows != 0; --rows)
+    for (unsigned rows = height; rows > 0; --rows)
     {
-        for (unsigned columns = width; columns != 0; --columns)
+        for (unsigned columns = width; columns > 0; --columns)
         {
-            *destination = SBDrawBlendPixel<7, 2, 0xf8, 0xf8>(*source, *destination, (*alpha >> 2) & 0xf8);
+            *destination = SBDrawBlendPixel15(*source, *destination, (*alpha >> 2) & 0xf8);
             ++destination;
             ++alpha;
             ++source;
@@ -462,16 +729,16 @@ bool SBDrawUnk005e8450::FUN_005e78c0(unsigned short *source, unsigned short *des
 bool SBDrawUnk005e8450::FUN_005e7a30(unsigned short *source, unsigned short *destination, unsigned short *alpha,
     unsigned width, unsigned height, unsigned sourceStride, unsigned destinationStride, unsigned alphaStride, unsigned short key)
 {
-    for (unsigned rows = height; rows != 0; --rows)
+    for (unsigned rows = height; rows > 0; --rows)
     {
-        for (unsigned columns = width; columns != 0; --columns)
+        for (unsigned columns = width; columns > 0; --columns)
         {
             if (*source != key)
             {
                 unsigned short weight = (*alpha >> 1) & 0x1f0;
                 if (weight > 255)
                     weight = 255;
-                *destination = SBDrawBlendPixel<7, 2, 0xf8, 0xf8>(*source, *destination, weight);
+                *destination = SBDrawBlendPixel15(*source, *destination, weight);
             }
             ++destination;
             ++alpha;
@@ -489,11 +756,11 @@ bool SBDrawUnk005e8450::FUN_005e7a30(unsigned short *source, unsigned short *des
 bool SBDrawUnk005e8450::FUN_005e7bc0(unsigned short *source, unsigned short *destination, unsigned short *alpha,
     unsigned width, unsigned height, unsigned sourceStride, unsigned destinationStride, unsigned alphaStride)
 {
-    for (unsigned rows = height; rows != 0; --rows)
+    for (unsigned rows = height; rows > 0; --rows)
     {
-        for (unsigned columns = width; columns != 0; --columns)
+        for (unsigned columns = width; columns > 0; --columns)
         {
-            *destination = SBDrawBlendPixel<7, 2, 0xf8, 0xf8>(*source, *destination, (*(unsigned char *)alpha & 0x1f) << 3);
+            *destination = SBDrawBlendPixel15(*source, *destination, (*(unsigned char *)alpha & 0x1f) << 3);
             ++destination;
             ++alpha;
             ++source;
@@ -534,11 +801,11 @@ bool SBDrawUnk005e8450::FUN_005e7da0(void *arg1, void *arg2, void *arg3,
 bool SBDrawUnk005e8450::FUN_005e7de0(unsigned short *source, unsigned short *destination, unsigned short *alpha,
     unsigned width, unsigned height, unsigned sourceStride, unsigned destinationStride, unsigned alphaStride)
 {
-    for (unsigned rows = height; rows != 0; --rows)
+    for (unsigned rows = height; rows > 0; --rows)
     {
-        for (unsigned columns = width; columns != 0; --columns)
+        for (unsigned columns = width; columns > 0; --columns)
         {
-            *destination = SBDrawBlendPixel<8, 3, 0xfc, 0xfc>(*source, *destination, ((unsigned char *)alpha)[1] & 0xf8);
+            *destination = SBDrawBlendPixel16(*source, *destination, ((unsigned char *)alpha)[1] & 0xf8);
             ++destination;
             ++alpha;
             ++source;
@@ -563,11 +830,11 @@ bool SBDrawUnk005e8450::FUN_005e7f60(void *arg1, void *arg2, void *arg3,
 bool SBDrawUnk005e8450::FUN_005e7fa0(unsigned short *source, unsigned short *destination, unsigned short *alpha,
     unsigned width, unsigned height, unsigned sourceStride, unsigned destinationStride, unsigned alphaStride)
 {
-    for (unsigned rows = height; rows != 0; --rows)
+    for (unsigned rows = height; rows > 0; --rows)
     {
-        for (unsigned columns = width; columns != 0; --columns)
+        for (unsigned columns = width; columns > 0; --columns)
         {
-            *destination = SBDrawBlendPixel<8, 3, 0xfc, 0xf8>(*source, *destination, (*alpha >> 3) & 0xfc);
+            *destination = SBDrawBlendPixel16Green(*source, *destination, (*alpha >> 3) & 0xfc);
             ++destination;
             ++alpha;
             ++source;
@@ -584,11 +851,11 @@ bool SBDrawUnk005e8450::FUN_005e7fa0(unsigned short *source, unsigned short *des
 bool SBDrawUnk005e8450::FUN_005e82a0(unsigned short *source, unsigned short *destination, unsigned short *alpha,
     unsigned width, unsigned height, unsigned sourceStride, unsigned destinationStride, unsigned alphaStride)
 {
-    for (unsigned rows = height; rows != 0; --rows)
+    for (unsigned rows = height; rows > 0; --rows)
     {
-        for (unsigned columns = width; columns != 0; --columns)
+        for (unsigned columns = width; columns > 0; --columns)
         {
-            *destination = SBDrawBlendPixel<8, 3, 0xfc, 0xfc>(*source, *destination, (*(unsigned char *)alpha & 0x1f) << 3);
+            *destination = SBDrawBlendPixel16(*source, *destination, (*(unsigned char *)alpha & 0x1f) << 3);
             ++destination;
             ++alpha;
             ++source;
@@ -689,6 +956,253 @@ bool SBDrawUnk005e8450::FUN_005e8670(void *source, void *destination, void *alph
     return true;
 }
 
+extern "C" double __cdecl floor(double);
+extern float g_unk0x00677488;
+extern float g_unk0x0067749c;
+extern double g_unk0x00677490;
+
+// FUNCTION: GAME 0x005e8740
+bool SBDrawUnk005e8450::FUN_005e8740(unsigned short *source, unsigned short *destination,
+    unsigned short *alpha, unsigned width, unsigned height, unsigned sourceStride,
+    unsigned destinationStride, float stretchX, float stretchY)
+{
+    unsigned short *previous = 0;
+    float vertical = 0.0f;
+    unsigned short originalWidth = width;
+    height = (unsigned short)floor(height / stretchY);
+    width = (unsigned short)floor(width / stretchX);
+    unsigned short pixel;
+    for (unsigned short row = 0; row < height; ++row) {
+        unsigned short *destinationRow = destination;
+        unsigned short *sourceRow = source;
+        unsigned short *alphaRow = alpha;
+        float horizontal = g_unk0x00677488;
+        if (previous != destination) {
+            for (unsigned short column = 0; column < width; ++column) {
+                if (previous != destination) {
+                    unsigned short foreground = *source;
+                    unsigned short opacity = (*alpha & 0x1f) << 3;
+                    unsigned short background = *destination;
+                    unsigned short inverse = 0x100 - opacity;
+                    unsigned short sourceRed = (foreground >> 8) & 0xf8;
+                    unsigned short destinationRed = (background >> 8) & 0xf8;
+                    unsigned short sourceGreen = (foreground >> 3) & 0xfc;
+                    unsigned short destinationGreen = (background >> 3) & 0xfc;
+                    unsigned short sourceBlue = (foreground & 0x1f) << 3;
+                    unsigned short destinationBlue = (background & 0x1f) << 3;
+                    sourceRed = sourceRed * opacity >> 8;
+                    destinationRed = destinationRed * inverse >> 8;
+                    sourceGreen = sourceGreen * opacity >> 8;
+                    destinationGreen = destinationGreen * inverse >> 8;
+                    sourceBlue = sourceBlue * opacity >> 8;
+                    destinationBlue = destinationBlue * inverse >> 8;
+                    pixel = (((((sourceRed & 0xf8) + (destinationRed & 0xf8)) << 5)
+                        + (sourceGreen & 0xfc) + (destinationGreen & 0xfc)) << 3)
+                        + (unsigned short)(sourceBlue >> 3) + (unsigned short)(destinationBlue >> 3);
+                    *destination = pixel;
+                }
+                previous = destination;
+                horizontal += stretchX;
+                ++source;
+                ++alpha;
+                if (horizontal >= g_unk0x0067749c) {
+                    ++destination;
+                    double repetitions = horizontal - g_unk0x0067749c;
+                    unsigned short repeat = 0;
+                    if (floor(repetitions) > g_unk0x00677490) {
+                        do {
+                            *destination++ = pixel;
+                            ++repeat;
+                        } while (repeat < floor(repetitions));
+                    }
+                    horizontal -= floor(horizontal);
+                }
+            }
+        }
+        destination = destinationRow;
+        previous = destinationRow;
+        source = sourceRow + (sourceStride >> 1);
+        alpha = alphaRow + (sourceStride >> 1);
+        vertical += stretchY;
+        if (vertical >= g_unk0x0067749c) {
+            destination += destinationStride >> 1;
+            double repetitions = vertical - g_unk0x0067749c;
+            unsigned short repeat = 0;
+            if (floor(repetitions) > g_unk0x00677490) {
+                do {
+                    memcpy(destination, destinationRow, originalWidth << 1);
+                    destination += destinationStride >> 1;
+                    ++repeat;
+                } while (repeat < floor(repetitions));
+            }
+            vertical -= floor(vertical);
+        }
+    }
+    return true;
+}
+
+#define SBDRAW_SCALED_BLEND_PIXEL(RedShift, GreenShift, SourceGreenMask, DestinationGreenMask) \
+    unsigned short sourceRed = (foreground >> RedShift) & 0xf8; \
+    unsigned short destinationRed = (background >> RedShift) & 0xf8; \
+    unsigned short sourceGreen = (foreground >> GreenShift) & SourceGreenMask; \
+    unsigned short destinationGreen = (background >> GreenShift) & DestinationGreenMask; \
+    unsigned short sourceBlue = (foreground & 0x1f) << 3; \
+    unsigned short destinationBlue = (background & 0x1f) << 3; \
+    sourceRed = sourceRed * opacity >> 8; \
+    destinationRed = destinationRed * inverse >> 8; \
+    sourceGreen = sourceGreen * opacity >> 8; \
+    destinationGreen = destinationGreen * inverse >> 8; \
+    sourceBlue = sourceBlue * opacity >> 8; \
+    destinationBlue = destinationBlue * inverse >> 8; \
+    pixel = (((((sourceRed & 0xf8) + (destinationRed & 0xf8)) << 5) \
+        + (sourceGreen & SourceGreenMask) + (destinationGreen & DestinationGreenMask)) << GreenShift) \
+        + (unsigned short)(sourceBlue >> 3) + (unsigned short)(destinationBlue >> 3);
+
+#define SBDRAW_SCALED_ALPHA_BODY(RedShift, GreenShift, SourceGreenMask, DestinationGreenMask, Opacity) \
+    unsigned short *previous = 0; \
+    float vertical = 0.0f; \
+    unsigned short originalWidth = width; \
+    height = (unsigned short)floor(height / stretchY); \
+    width = (unsigned short)floor(width / stretchX); \
+    unsigned short pixel; \
+    for (unsigned short row = 0; row < height; ++row) { \
+        unsigned short *destinationRow = destination; \
+        unsigned short *sourceRow = source; \
+        unsigned short *alphaRow = alpha; \
+        float horizontal = g_unk0x00677488; \
+        if (previous != destination) { \
+            for (unsigned short column = 0; column < width; ++column) { \
+                if (previous != destination) { \
+                    unsigned short foreground = *source; \
+                    unsigned short opacity = Opacity; \
+                    unsigned short background = *destination; \
+                    unsigned short inverse = 0x100 - opacity; \
+                    SBDRAW_SCALED_BLEND_PIXEL(RedShift, GreenShift, SourceGreenMask, DestinationGreenMask) \
+                    *destination = pixel; \
+                } \
+                previous = destination; \
+                horizontal += stretchX; \
+                ++source; \
+                ++alpha; \
+                if (horizontal >= g_unk0x0067749c) { \
+                    ++destination; \
+                    double repetitions = horizontal - g_unk0x0067749c; \
+                    unsigned short repeat = 0; \
+                    if (floor(repetitions) > g_unk0x00677490) { \
+                        do { \
+                            *destination++ = pixel; \
+                            ++repeat; \
+                        } while (repeat < floor(repetitions)); \
+                    } \
+                    horizontal -= floor(horizontal); \
+                } \
+            } \
+        } \
+        destination = destinationRow; \
+        previous = destinationRow; \
+        source = sourceRow + (sourceStride >> 1); \
+        alpha = alphaRow + (sourceStride >> 1); \
+        vertical += stretchY; \
+        if (vertical >= g_unk0x0067749c) { \
+            destination += destinationStride >> 1; \
+            double repetitions = vertical - g_unk0x0067749c; \
+            unsigned short repeat = 0; \
+            if (floor(repetitions) > g_unk0x00677490) { \
+                do { \
+                    memcpy(destination, destinationRow, originalWidth << 1); \
+                    destination += destinationStride >> 1; \
+                    ++repeat; \
+                } while (repeat < floor(repetitions)); \
+            } \
+            vertical -= floor(vertical); \
+        } \
+    } \
+    return true;
+
+#define SBDRAW_SCALED_KEYED_ALPHA_BODY(RedShift, GreenShift, SourceGreenMask, DestinationGreenMask, Opacity) \
+    unsigned short *previous = 0; \
+    float vertical = 0.0f; \
+    unsigned short originalWidth = width; \
+    height = (unsigned short)floor(height / stretchY); \
+    width = (unsigned short)floor(width / stretchX); \
+    unsigned short pixel; \
+    for (unsigned short row = 0; row < height; ++row) { \
+        unsigned short *destinationRow = destination; \
+        unsigned short *sourceRow = source; \
+        unsigned short *alphaRow = alpha; \
+        float horizontal = g_unk0x00677488; \
+        if (previous != destination) { \
+            for (unsigned short column = 0; column < width; ++column) { \
+                if (previous != destination) { \
+                    unsigned short foreground = *source; \
+                    if (foreground != (unsigned short)key) { \
+                        unsigned short opacity = Opacity; \
+                        if (opacity > 255) opacity = 255; \
+                        unsigned short inverse = 0x100 - opacity; \
+                        unsigned short background = *destination; \
+                        SBDRAW_SCALED_BLEND_PIXEL(RedShift, GreenShift, SourceGreenMask, DestinationGreenMask) \
+                        *destination = pixel; \
+                    } else \
+                        pixel = key; \
+                } \
+                previous = destination; \
+                horizontal += stretchX; \
+                ++source; \
+                ++alpha; \
+                if (horizontal >= g_unk0x0067749c) { \
+                    ++destination; \
+                    if (pixel != (unsigned short)key) { \
+                        unsigned short repeat = 0; \
+                        double repetitions = horizontal - g_unk0x0067749c; \
+                        if (floor(repetitions) > g_unk0x00677490) { \
+                            do { \
+                                *destination++ = pixel; \
+                                ++repeat; \
+                            } while (repeat < floor(repetitions)); \
+                        } \
+                    } else \
+                        destination += (unsigned short)floor(horizontal - g_unk0x0067749c); \
+                    horizontal -= floor(horizontal); \
+                } \
+            } \
+        } \
+        destination = destinationRow; \
+        previous = destinationRow; \
+        source = sourceRow + (sourceStride >> 1); \
+        alpha = alphaRow + (sourceStride >> 1); \
+        vertical += stretchY; \
+        if (vertical >= g_unk0x0067749c) { \
+            destination += destinationStride >> 1; \
+            double repetitions = vertical - g_unk0x0067749c; \
+            unsigned short repeat = 0; \
+            if (floor(repetitions) > g_unk0x00677490) { \
+                do { \
+                    memcpy(destination, destinationRow, originalWidth << 1); \
+                    destination += destinationStride >> 1; \
+                    ++repeat; \
+                } while (repeat < floor(repetitions)); \
+            } \
+            vertical -= floor(vertical); \
+        } \
+    } \
+    return true;
+
+// FUNCTION: GAME 0x005e8b10
+bool SBDrawUnk005e8450::FUN_005e8b10(unsigned short *source, unsigned short *destination,
+    unsigned short *alpha, unsigned key, unsigned width, unsigned height, unsigned sourceStride,
+    unsigned destinationStride, float stretchX, float stretchY)
+{
+    SBDRAW_SCALED_KEYED_ALPHA_BODY(8, 3, 0xfc, 0xfc, (*alpha & 0x7c0) >> 2)
+}
+
+// FUNCTION: GAME 0x005e8f20
+bool SBDrawUnk005e8450::FUN_005e8f20(unsigned short *source, unsigned short *destination,
+    unsigned short *alpha, unsigned width, unsigned height, unsigned sourceStride,
+    unsigned destinationStride, float stretchX, float stretchY)
+{
+    SBDRAW_SCALED_ALPHA_BODY(8, 3, 0xfc, 0xfc, (*alpha & 0x7c0) >> 3)
+}
+
 // FUNCTION: GAME 0x005e92f0
 bool SBDrawUnk005e8450::FUN_005e92f0(void *source, void *destination, void *alpha,
     int arg4, int width, int height, int sourceStride, int destinationStride,
@@ -707,6 +1221,14 @@ bool SBDrawUnk005e8450::FUN_005e92f0(void *source, void *destination, void *alph
     SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0x1872,
         "This method is not supported for stretching factors different of 2 or 0.5 !");
     return true;
+}
+
+// FUNCTION: GAME 0x005e93c0
+bool SBDrawUnk005e8450::FUN_005e93c0(unsigned short *source, unsigned short *destination,
+    unsigned short *alpha, unsigned width, unsigned height, unsigned sourceStride,
+    unsigned destinationStride, float stretchX, float stretchY)
+{
+    SBDRAW_SCALED_ALPHA_BODY(8, 3, 0xfc, 0xfc, (*alpha >> 8) & 0xf8)
 }
 
 // FUNCTION: GAME 0x005e9790
@@ -767,6 +1289,30 @@ bool SBDrawUnk005e8450::FUN_005e9920(void *source, void *destination, void *alph
     return true;
 }
 
+// FUNCTION: GAME 0x005e99f0
+bool SBDrawUnk005e8450::FUN_005e99f0(unsigned short *source, unsigned short *destination,
+    unsigned short *alpha, unsigned width, unsigned height, unsigned sourceStride,
+    unsigned destinationStride, float stretchX, float stretchY)
+{
+    SBDRAW_SCALED_ALPHA_BODY(7, 2, 0xfc, 0xf8, (*alpha & 0x1f) << 3)
+}
+
+// FUNCTION: GAME 0x005e9dc0
+bool SBDrawUnk005e8450::FUN_005e9dc0(unsigned short *source, unsigned short *destination,
+    unsigned short *alpha, unsigned key, unsigned width, unsigned height, unsigned sourceStride,
+    unsigned destinationStride, float stretchX, float stretchY)
+{
+    SBDRAW_SCALED_KEYED_ALPHA_BODY(7, 2, 0xf8, 0xf8, (*alpha & 0x7c0) >> 2)
+}
+
+// FUNCTION: GAME 0x005ea1d0
+bool SBDrawUnk005e8450::FUN_005ea1d0(unsigned short *source, unsigned short *destination,
+    unsigned short *alpha, unsigned width, unsigned height, unsigned sourceStride,
+    unsigned destinationStride, float stretchX, float stretchY)
+{
+    SBDRAW_SCALED_ALPHA_BODY(7, 2, 0xfc, 0xf8, (*alpha & 0x7c0) >> 3)
+}
+
 // FUNCTION: GAME 0x005ea5a0
 bool SBDrawUnk005e8450::FUN_005ea5a0(void *source, void *destination, void *alpha,
     int arg4, int width, int height, int sourceStride, int destinationStride,
@@ -786,6 +1332,117 @@ bool SBDrawUnk005e8450::FUN_005ea5a0(void *source, void *destination, void *alph
         "This method is not supported for stretching factors different of 2 or 0.5 !");
     return true;
 }
+
+// FUNCTION: GAME 0x005ea670
+bool SBDrawUnk005e8450::FUN_005ea670(unsigned short *source, unsigned short *destination,
+    unsigned short *alpha, unsigned width, unsigned height, unsigned sourceStride,
+    unsigned destinationStride, float stretchX, float stretchY)
+{
+    SBDRAW_SCALED_ALPHA_BODY(7, 2, 0xf8, 0xf8, (*alpha >> 8) & 0xf8)
+}
+
+#undef SBDRAW_SCALED_KEYED_ALPHA_BODY
+#undef SBDRAW_SCALED_ALPHA_BODY
+#undef SBDRAW_SCALED_BLEND_PIXEL
+
+static __forceinline unsigned short SBDrawScaledColor15(unsigned short color, unsigned short opacity)
+{
+    unsigned short red = (color >> 7) & 0xf8;
+    unsigned short green = (color >> 2) & 0xf8;
+    unsigned short blue = (color & 0x1f) << 3;
+    red = red * opacity >> 8;
+    green = green * opacity >> 8;
+    blue = blue * opacity >> 8;
+    return ((((red & 0xf8) << 5) | (green & 0xf8)) << 2) | ((blue >> 3) & 0x1f);
+}
+
+static __forceinline unsigned short SBDrawScaledColor16(unsigned short color, unsigned short opacity)
+{
+    unsigned short red = (color >> 8) & 0xf8;
+    unsigned short green = (color >> 3) & 0xfc;
+    unsigned short blue = (color & 0x1f) << 3;
+    red = red * opacity >> 8;
+    green = green * opacity >> 8;
+    blue = blue * opacity >> 8;
+    return ((((red & 0xfff8) << 5) | (green & 0xfc)) << 3) | ((blue >> 3) & 0x1f);
+}
+
+#define SBDRAW_SCALED_CONSTANT_BODY(Depth, Key) \
+    unsigned short *previous = 0; \
+    float vertical = 0.0f; \
+    unsigned short originalWidth = width; \
+    height = (unsigned short)floor(height / stretchY); \
+    width = (unsigned short)floor(width / stretchX); \
+    unsigned inverse = 0x100 - opacity; \
+    unsigned short foreground; \
+    unsigned short pixel; \
+    for (unsigned short row = 0; row < height; ++row) { \
+        unsigned short *destinationRow = destination; \
+        unsigned short *sourceRow = source; \
+        float horizontal = g_unk0x00677488; \
+        if (previous != destination) { \
+            for (unsigned short column = 0; column < width; ++column) { \
+                if (previous != destination && (foreground = *source) != Key) { \
+                    pixel = SBDrawScaledColor##Depth(foreground, opacity) \
+                        + SBDrawScaledColor##Depth(*destination, inverse); \
+                    *destination = pixel; \
+                } else \
+                    pixel = Key; \
+                previous = destination; \
+                horizontal += stretchX; \
+                if (horizontal >= g_unk0x0067749c) { \
+                    ++destination; \
+                    double repetitions = horizontal - g_unk0x0067749c; \
+                    unsigned short repeat = 0; \
+                    if (floor(repetitions) > g_unk0x00677490) { \
+                        do { \
+                            if (foreground != Key) *destination = pixel; \
+                            ++destination; \
+                            ++repeat; \
+                        } while (repeat < floor(repetitions)); \
+                    } \
+                    horizontal -= floor(horizontal); \
+                } \
+                ++source; \
+            } \
+        } \
+        previous = destinationRow; \
+        destination = destinationRow; \
+        source = sourceRow + (sourceStride >> 1); \
+        vertical += stretchY; \
+        if (vertical >= g_unk0x0067749c) { \
+            destination += destinationStride >> 1; \
+            double repetitions = vertical - g_unk0x0067749c; \
+            unsigned short repeat = 0; \
+            if (floor(repetitions) > g_unk0x00677490) { \
+                do { \
+                    memcpy(destination, destinationRow, originalWidth << 1); \
+                    destination += destinationStride >> 1; \
+                    ++repeat; \
+                } while (repeat < floor(repetitions)); \
+            } \
+            vertical -= floor(vertical); \
+        } \
+    } \
+    return true;
+
+// FUNCTION: GAME 0x005eb450
+bool SBDrawUnk005e8450::FUN_005eb450(unsigned short *source, unsigned short *destination,
+    unsigned opacity, unsigned width, unsigned height, unsigned sourceStride,
+    unsigned destinationStride, float stretchX, float stretchY)
+{
+    SBDRAW_SCALED_CONSTANT_BODY(15, 0x3e0)
+}
+
+// FUNCTION: GAME 0x005eb800
+bool SBDrawUnk005e8450::FUN_005eb800(unsigned short *source, unsigned short *destination,
+    unsigned opacity, unsigned width, unsigned height, unsigned sourceStride,
+    unsigned destinationStride, float stretchX, float stretchY)
+{
+    SBDRAW_SCALED_CONSTANT_BODY(16, 0x7c0)
+}
+
+#undef SBDRAW_SCALED_CONSTANT_BODY
 
 // FUNCTION: GAME 0x005ec230
 bool SBDrawUnk005e8450::FUN_005ec230(void *source, void *destination,
@@ -864,6 +1521,182 @@ bool SBDrawUnk005e8450::FUN_005ec500(void *source, void *destination,
     }
     SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0x26be,
         "This method is not supported for stretching factors different of 2 or 0.5 !");
+    return true;
+}
+
+// FUNCTION: GAME 0x005ed270
+bool RHUnk005ef320::FUN_005ed270(const RHMobileUnk00607da0 &bounds)
+{
+    if (!*(bool *)((char *)this + 0x114))
+    {
+        Sleep(1000);
+        typedef unsigned long (RHUnkFXDraw::*CreateSurface)(unsigned short, unsigned short, unsigned long, bool);
+        *(unsigned long *)((char *)this + 0x78) = (((RHUnkFXDraw *)this)->*reinterpret_cast<CreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(
+            *(unsigned short *)((char *)this + 0x10e), *(unsigned short *)((char *)this + 0x110), 0, false);
+        ((RHMobileUnk00607da0 *)((char *)this + 0x118))->FUN_00607da0(bounds);
+        *(void **)((char *)this + 0x104) = GetStockObject(10);
+        *(void **)((char *)this + 0x108) = GetStockObject(12);
+        *(short *)((char *)this + 0x12c) = 12;
+        *(bool *)((char *)this + 0x114) = true;
+        return true;
+    }
+    return false;
+}
+
+// Parked at 0.9130: the lower-bound result shares the end() temporary slot, so the frame is 8 bytes short.
+// STUB: GAME 0x005ed2f0
+bool FUN_005ed2f0(RHUnk005ef320 *draw, unsigned short x, unsigned short y, const char *format, ...)
+{
+    if (*(int *)((char *)draw + 0x48) == 0)
+    {
+        char buffer[132];
+        va_list arguments;
+        va_start(arguments, format);
+        vsprintf(buffer, format, arguments);
+        unsigned long key = 1;
+        SBDrawUnk005efc10Iterator found = SBDrawFindSurface(*(SBDrawUnk005efc10 *)((char *)draw + 0x54), key);
+        if (found == (*(SBDrawUnk005efc10 *)((char *)draw + 0x54)).End())
+            SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0x2c82,
+                // STRING: GAME 0x006b9c5c
+                "Trying to output text without any surfaces");
+        void *context;
+        SBDrawUnk005e5ec0Surface *surface = *(SBDrawUnk005e5ec0Surface **)((char *)found.m_node + 0x10);
+        long result = ((long (__stdcall *)(SBDrawUnk005e5ec0Surface *, void **))surface->m_vtable[17])(surface, &context);
+        if (result != 0)
+        {
+            SBSimpleUnk005f9510(g_unk0x006c13c0, "%d", result);
+            SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0x2c89,
+                // STRING: GAME 0x006b9c1c
+                "Unable to retrieve a drawing context from a surface DxERR=%s", SBDrawStringData(FUN_005f81d0(result)));
+        }
+        if (SelectObject(context, *(void **)((char *)draw + 0x104)))
+        {
+            SetTextAlign(context, 0);
+            SetBkMode(context, 1);
+            SetTextColor(context, 0xffffff);
+            TextOutA(context, x, y, buffer, strlen(buffer));
+            surface = *(SBDrawUnk005e5ec0Surface **)((char *)found.m_node + 0x10);
+            ((long (__stdcall *)(SBDrawUnk005e5ec0Surface *, void *))surface->m_vtable[26])(surface, context);
+        }
+        else
+        {
+            surface = *(SBDrawUnk005e5ec0Surface **)((char *)found.m_node + 0x10);
+            ((long (__stdcall *)(SBDrawUnk005e5ec0Surface *, void *))surface->m_vtable[26])(surface, context);
+        }
+    }
+    return true;
+}
+
+// Parked at 0.7968: shared lower-bound/end() temporary slot shortens the frame and moves callee saves.
+// STUB: GAME 0x005ed500
+bool FUN_005ed500(RHUnk005ef320 *draw, unsigned short x, unsigned short y, const char *format, ...)
+{
+    char buffer[132];
+    va_list arguments;
+    va_start(arguments, format);
+    vsprintf(buffer, format, arguments);
+    if (*(int *)((char *)draw + 0x4c) == 0)
+    {
+        unsigned long key = 1;
+        SBDrawUnk005efc10Iterator found = SBDrawFindSurface(*(SBDrawUnk005efc10 *)((char *)draw + 0x54), key);
+        if (found == (*(SBDrawUnk005efc10 *)((char *)draw + 0x54)).End())
+            SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0x2d25,
+                "Trying to output text without any surfaces");
+        void *context;
+        SBDrawUnk005e5ec0Surface *surface = *(SBDrawUnk005e5ec0Surface **)((char *)found.m_node + 0x10);
+        long result = ((long (__stdcall *)(SBDrawUnk005e5ec0Surface *, void **))surface->m_vtable[17])(surface, &context);
+        if (result != 0)
+        {
+            SBSimpleUnk005f9510(g_unk0x006c13c0, "%d", result);
+            SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0x2d2c,
+                "Unable to retrieve a drawing context from a surface DxERR=%s", SBDrawStringData(FUN_005f81d0(result)));
+        }
+        if (SelectObject(context, *(void **)((char *)draw + 0x108)))
+        {
+            SetTextAlign(context, 0);
+            SetBkMode(context, 1);
+            SetTextColor(context, 0);
+            TextOutA(context, x + 1, y + 1, buffer, strlen(buffer));
+            SetTextColor(context, 0xffffff);
+            TextOutA(context, x, y, buffer, strlen(buffer));
+        }
+        surface = *(SBDrawUnk005e5ec0Surface **)((char *)found.m_node + 0x10);
+        ((long (__stdcall *)(SBDrawUnk005e5ec0Surface *, void *))surface->m_vtable[26])(surface, context);
+    }
+    return true;
+}
+
+// Parked at 0.8431: rectangle locals and callee-save scheduling differ.
+// STUB: GAME 0x005edae0
+bool FUN_005edae0(RHUnk005ef320 *draw, const char *format, ...)
+{
+    if (!*(bool *)((char *)draw + 0x114))
+        return false;
+    char buffer[132];
+    va_list arguments;
+    va_start(arguments, format);
+    vsprintf(buffer, format, arguments);
+    typedef SBDrawUnk005efc10Iterator (SBDrawUnk005efc10::*Find)(const unsigned long &);
+    SBDrawUnk005efc10Iterator found = ((*(SBDrawUnk005efc10 *)((char *)draw + 0x54)).*static_cast<Find>(&SBDrawUnk005efc10::FUN_005efbc0))(
+        *(unsigned long *)((char *)draw + 0x78));
+    if (found.m_node == *(SBDrawUnk005f0090Node **)((char *)draw + 0x58))
+    {
+        SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0x2e12,
+            "Trying to output text without any surfaces");
+        return false;
+    }
+    long destination[4];
+    long source[4];
+    destination[0] = (long)*(float *)((char *)draw + 0x118);
+    destination[2] = (long)*(float *)((char *)draw + 0x120);
+    source[1] = (long)*(float *)((char *)draw + 0x11c);
+    source[3] = (long)*(float *)((char *)draw + 0x124);
+    unsigned height = *(unsigned short *)((char *)draw + 0x12c);
+    destination[1] = source[1] + height;
+    destination[3] = source[3] - height * 2;
+    source[0] = destination[0];
+    source[2] = destination[2];
+    source[3] -= height * 3;
+    SBDrawUnk005e5ec0Surface *surface = *(SBDrawUnk005e5ec0Surface **)((char *)found.m_node + 0x10);
+    long result = ((long (__stdcall *)(SBDrawUnk005e5ec0Surface *, long *, SBDrawUnk005e5ec0Surface *, long *, unsigned long, void *))surface->m_vtable[5])(
+        surface, source, surface, destination, 0x1000000, 0);
+    if (result != 0)
+        SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0x2e24,
+            // STRING: GAME 0x006b9c88
+            "Error during blitting DxERR=%s", SBDrawStringData(FUN_005f81d0(result)));
+    destination[1] = source[3];
+    unsigned long effect[25] = {0};
+    effect[0] = 100;
+    effect[20] = 0;
+    surface = *(SBDrawUnk005e5ec0Surface **)((char *)found.m_node + 0x10);
+    ((long (__stdcall *)(SBDrawUnk005e5ec0Surface *, long *, void *, void *, unsigned long, void *))surface->m_vtable[5])(
+        surface, destination, 0, 0, 0x1000400, effect);
+    void *context;
+    surface = *(SBDrawUnk005e5ec0Surface **)((char *)found.m_node + 0x10);
+    result = ((long (__stdcall *)(SBDrawUnk005e5ec0Surface *, void **))surface->m_vtable[17])(surface, &context);
+    if (result != 0)
+    {
+        SBSimpleUnk005f9510(g_unk0x006c13c0, "%d", result);
+        SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0x2e35,
+            "Unable to retrieve a drawing context from a surface DxERR=%s", SBDrawStringData(FUN_005f81d0(result)));
+    }
+    if (SelectObject(context, *(void **)((char *)draw + 0x104)))
+    {
+        SetTextAlign(context, 8);
+        SetBkColor(context, 0);
+        SetTextColor(context, 0xffffff);
+        TextOutA(context, (int)*(float *)((char *)draw + 0x118),
+            (int)(*(float *)((char *)draw + 0x124) - *(unsigned short *)((char *)draw + 0x12c) * 2), buffer, strlen(buffer));
+        surface = *(SBDrawUnk005e5ec0Surface **)((char *)found.m_node + 0x10);
+        ((long (__stdcall *)(SBDrawUnk005e5ec0Surface *, void *))surface->m_vtable[26])(surface, context);
+    }
+    else
+    {
+        surface = *(SBDrawUnk005e5ec0Surface **)((char *)found.m_node + 0x10);
+        ((long (__stdcall *)(SBDrawUnk005e5ec0Surface *, void *))surface->m_vtable[26])(surface, context);
+    }
+    if (*(unsigned char *)((char *)draw + 0x113) == 1)
+        ((RHUnkFXDraw *)draw)->FUN_005e5260();
     return true;
 }
 
@@ -1513,6 +2346,7 @@ void EmitSBDrawManager(SBDrawUnk005e8450 *draw, void *buffer)
     ((RHUnk005ef320 *)draw)->FUN_005e5d30(0);
     ((RHUnk005ef320 *)draw)->FUN_005e5bd0(0, buffer);
     ((RHUnk005ef320 *)draw)->FUN_005e3f70();
+    ((RHUnk005ef320 *)draw)->FUN_005e3f40(*(const std::string *)buffer);
     ((RHUnk005ef320 *)draw)->FUN_005eec00(0, 0, buffer, 0, 0, 0, 0, 0);
     draw->FUN_005e7880(buffer, buffer, buffer, 0, 0, 0, 0, 0, 0);
     draw->FUN_005e7d30(buffer, buffer, buffer, 0, 0, 0, 0, 0, 0);
@@ -1525,6 +2359,8 @@ void EmitSBDrawManager(SBDrawUnk005e8450 *draw, void *buffer)
     draw->FUN_005e84e0(buffer, buffer, buffer, 0, 0, 0, 0, 0, 0, 0);
     draw->FUN_005e85b0(buffer, buffer, buffer, 0, 0, 0, 0, 0, 0, 0);
     draw->FUN_005e8670(buffer, buffer, buffer, 0, 0, 0, 0, 0, 0, 0);
+    draw->FUN_005e8740((unsigned short *)buffer, (unsigned short *)buffer,
+        (unsigned short *)buffer, 0, 0, 0, 0, 0, 0);
     draw->FUN_005e92f0(buffer, buffer, buffer, 0, 0, 0, 0, 0, 0, 0);
     draw->FUN_005e9790(buffer, buffer, buffer, 0, 0, 0, 0, 0, 0, 0);
     draw->FUN_005e9860(buffer, buffer, buffer, 0, 0, 0, 0, 0, 0, 0);
@@ -2152,38 +2988,3 @@ void FUN_00624934(void *source, void *destination, int destinationRow, int width
 #undef SBDRAW_KEYING_BODY
 #undef SBDRAW_STORE_PIXEL
 #undef SBDRAW_RECTANGLE_SETUP
-
-class RHUnk00624a60List
-{
-public:
-    RHUnk00624a60List *m_next;
-    RHUnk00624a60List *m_prev;
-    char m_08[0xb4];
-};
-
-class RHUnk00624a60
-{
-public:
-    RHUnk00624a60();
-    unsigned m_vptr;
-    char m_4;
-    char m_5[3];
-    RHUnk00624a60List *m_8;
-    int m_c;
-    char m_10[4];
-    bool m_14;
-};
-
-// FUNCTION: GAME 0x00624a60
-RHUnk00624a60::RHUnk00624a60()
-{
-    char value;
-    m_4 = value;
-    RHUnk00624a60List *list = new RHUnk00624a60List;
-    list->m_next = list;
-    list->m_prev = list;
-    m_8 = list;
-    m_c = 0;
-    m_14 = 1;
-    m_vptr = 0x67ae70;
-}

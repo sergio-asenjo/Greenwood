@@ -1,7 +1,5 @@
 #include "SBNativeFont.h"
 
-SBNativeFontBase::~SBNativeFontBase() {}
-
 class SBGeoBoundingBox2D
 {
 public:
@@ -27,4 +25,3 @@ SBResourceUnkKeyIterator SBNativeFontCharacterTree::FUN_00617e20(const unsigned 
     return SBResourceUnkKeyIterator(FUN_00618280(character));
 }
 
-SBResourceUnkKeyNode *SBNativeFontCharacterTree::FUN_00618280(const unsigned short &) { return 0; }

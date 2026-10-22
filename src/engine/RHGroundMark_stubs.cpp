@@ -13,9 +13,13 @@
 #include "RHGroundMark.h"
 
 // Target 0x00606040.
-RHGroundInfo::RHGroundInfo() {}
-RHGroundInfo::RHGroundInfo(const RHGroundInfo &) {}
-RHGroundInfo::~RHGroundInfo() {}
+void *RHUnk00606040::Destroy(unsigned flags)
+{
+    this->~RHUnk00606040();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
 
 // Target 0x005c8e40.
 void RHGroundInfoList::GoTo(int) {}

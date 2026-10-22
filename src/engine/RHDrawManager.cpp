@@ -51,7 +51,7 @@ void RHDrawManager::DrawEllipsePoints(const SBDrawViewport &viewport, const SBGe
 void RHDrawManager::DrawSegment(const SBGeoSegment2D &segment, unsigned short color)
 {
     RHUnk0060fbf0 clipped;
-    clipped.FUN_0060fca0(FUN_006093f0(segment));
+    clipped.FUN_0060fca0(FUN_006093f0((const RHMobileUnk006100e0 &)segment));
     if (((SCQuadArg *)&clipped)->GetType() == 4)
     {
         SBGeoPoint2D first;
@@ -79,7 +79,7 @@ void RHDrawManager::FillBox(const SBGeoBoundingBox2D &box, unsigned short color)
         ((RHMobileUnk00607da0 *)&clipped)->FUN_00607da0((const RHMobileUnk00607da0 &)FUN_006092c0(box));
         {
             SBGeoVector2D offset(static_cast<const SBGeoVector2D &>(m_min));
-            clipped.FUN_006092a0(offset);
+            clipped -= offset;
         }
         if (m_14 != 1.0f)
         {
@@ -89,7 +89,7 @@ void RHDrawManager::FillBox(const SBGeoBoundingBox2D &box, unsigned short color)
             clipped.m_max.m_x *= m_14;
             clipped.m_max.m_y *= m_14;
         }
-        m_drawManager->FUN_005e61e0(m_18, clipped, color, 0);
+        m_drawManager->FUN_005e61e0(m_18, &clipped, color, 0);
     }
 }
 
@@ -115,7 +115,7 @@ void RHDrawManager::DrawPolyLine(const SBGeoPolyLine2DList &list, unsigned short
                 segment.Second() = list.FUN_00610cb0(i);
                 second = true;
             }
-            clipped.FUN_0060fca0(FUN_006093f0(segment));
+            clipped.FUN_0060fca0(FUN_006093f0((const RHMobileUnk006100e0 &)segment));
             if (((SCQuadArg *)&clipped)->GetType() == 4)
             {
                 SBGeoPoint2D first;
@@ -166,10 +166,10 @@ void RHDrawManager::DrawDottedLine(const SBGeoPoint2D &from, const SBGeoPoint2D 
             ((RHMobileUnk00607da0 *)&box)->FUN_00607da0((const RHMobileUnk00607da0 &)FUN_006092c0(box));
             if (box.Unk00608f30())
             {
-                box.FUN_006092a0(offset);
+                box -= offset;
                 box.SetMin(m_14 * SBGeoVector2D(box.m_min));
                 box.SetMax(m_14 * SBGeoVector2D(box.m_max));
-                m_drawManager->FUN_005e61e0(m_18, box, color, 0);
+                m_drawManager->FUN_005e61e0(m_18, &box, color, 0);
             }
             start.FUN_005fc1e0(direction);
         }

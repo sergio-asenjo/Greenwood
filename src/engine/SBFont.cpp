@@ -158,6 +158,13 @@ static inline void SBFontDestroyValue(SBFontValue0061f120 &value)
     value.m_00.~basic_string();
 }
 
+// FUNCTION: GAME 0x0061e6f0
+void FUN_0061e6f0()
+{
+    undefined comparison, allocation;
+    g_unk0x006c1900.SBFontTree0061f3e0::SBFontTree0061f3e0(comparison, allocation);
+}
+
 // FUNCTION: GAME 0x0061e740
 void SBFontTree0061f3e0::FUN_0061e740()
 {
@@ -174,31 +181,34 @@ void SBFontTree0061f3e0::FUN_0061e740()
     }
 }
 
-class SBFontUnk0061e800
-{
-public:
-    void FUN_0061e800();
-};
-
 // FUNCTION: GAME 0x0061e7b0
 SBNativeFontBase::SBNativeFontBase()
 {
     m_context = 0;
     m_08[0] = 0;
-    m_vptr = 0x67ae34;
+    *(unsigned *)this = 0x67ae34;
     memset(m_08 + 4, 0, 0xc);
     memset(m_08 + 0x10, 0, 0x2c);
 }
 
+// FUNCTION: GAME 0x0061e7e0
+void *SBNativeFontBase::FUN_0061e7e0(unsigned flags)
+{
+    this->~SBNativeFontBase();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
 // FUNCTION: GAME 0x0061e800
-void SBFontUnk0061e800::FUN_0061e800()
+SBNativeFontBase::~SBNativeFontBase()
 {
     *(unsigned *)this = 0x67ae34;
 }
 
-void EmitSBFontUnk0061e800(SBFontUnk0061e800 *a)
+void EmitSBFontUnk0061e800(SBNativeFontBase *a)
 {
-    a->FUN_0061e800();
+    a->~SBNativeFontBase();
 }
 
 // FUNCTION: GAME 0x0061e810
@@ -243,7 +253,8 @@ int SBFontUnk0061e840::FUN_0061e970()
     return m_3c;
 }
 
-// Unannotated: coupled text-width helper, register scheduling remains unmatched.
+// Parked at 0.4645: unannotated park from the asymmetric-comparator era; residual scheduling/registers.
+// STUB: GAME 0x0061e980
 int SBFontUnk0061e840::FUN_0061e980(void *value, int &first, int &second)
 {
     SBFontTextView &text = *(SBFontTextView *)value;
@@ -605,7 +616,7 @@ SBFontIterator0061f3e0 SBFontTree0061f3e0::FUN_0061f550(SBFontIterator0061f3e0 p
         }
         SBFontColor(replacement) = 1;
     }
-    SBFontDestroyValue(removed->m_0c);
+    removed->m_0c.~SBFontValue0061f120();
     operator delete(removed);
     --m_0c;
     return position;

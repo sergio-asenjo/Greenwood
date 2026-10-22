@@ -4,8 +4,31 @@
 
 DECOMP_SIZE_ASSERT(SBTrueTypeFont, 0x70)
 
-// Parked: the device-context load uses ECX instead of the target EDX.
-// STUB: GAME 0x00616840
+// FUNCTION: GAME 0x006166c0
+void *SBTrueTypeFont::FUN_006166c0(unsigned flags)
+{
+    this->SBTrueTypeFont::~SBTrueTypeFont();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// FUNCTION: GAME 0x006166e0
+SBTrueTypeFont::SBTrueTypeFont(const std::string &name)
+{
+    m_font = 0;
+    m_deviceContext = 0;
+    ((SBFontUnk0061e840 *)this)->FUN_0061ea80(name);
+    CreateSystemObjects();
+}
+
+// FUNCTION: GAME 0x00616740
+SBTrueTypeFont::~SBTrueTypeFont()
+{
+    DestroySystemObjects();
+}
+
+// FUNCTION: GAME 0x00616840
 long SBTrueTypeFont::GetCharacterWidth(unsigned short character, long &left, long &right) const
 {
     unsigned long code = character;
@@ -15,7 +38,7 @@ long SBTrueTypeFont::GetCharacterWidth(unsigned short character, long &left, lon
 }
 
 // FUNCTION: GAME 0x006168e0
-unsigned SBTrueTypeFont::FUN_006168e0() const
+unsigned SBTrueTypeFont::GetImplementationVersion() const
 {
     return 0x100;
 }
@@ -49,8 +72,11 @@ bool SBTrueTypeFont::SaveToStream(SBFile &file)
 
 void EmitSBTrueTypeFont(SBTrueTypeFont *font, SBFile &file, char (&tag)[6], long &spacing)
 {
-    font->FUN_006168e0();
+    new SBTrueTypeFont(std::string());
+    font->~SBTrueTypeFont();
+    font->SBTrueTypeFont::GetImplementationVersion();
     font->GetCharacterWidth(0, spacing, spacing);
+    font->GetBaseLine();
     font->GetImplementationTag(tag);
     font->LoadFromStream(file);
     font->SaveToStream(file);

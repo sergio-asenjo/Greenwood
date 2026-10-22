@@ -43,19 +43,80 @@
 // Kept as STUB so reccmp does not count it; the reconstruction is for reference.
 
 #include "RHGroundMark.h"
+#include "RHSpriteConstructor.h"
 
+extern RHUnk005ef320 *g_unk0x6c11d0;
+extern RHUnkSpriteBank *g_unk0x006c0b1c;
+
+#include "RHEngineWidenedCalls.h"
+
+class RHGroundMarkSpriteDelete
+{
+public:
+    virtual void *Destroy(unsigned flags) = 0;
+};
+
+// FUNCTION: GAME 0x0051bbb0
+RHGroundMark::RHGroundMark()
+{
+    m_drawManager = g_unk0x6c11d0;
+    m_spriteBank = g_unk0x006c0b1c;
+    m_sprite = new RHUnk005b5890(0);
+    m_surface = -1;
+}
+
+// FUNCTION: GAME 0x0051bc70
+void *RHGroundMark::FUN_0051bc70(unsigned flags)
+{
+    this->~RHGroundMark();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// FUNCTION: GAME 0x0051bc90
+RHGroundMark::~RHGroundMark()
+{
+    if (m_surface != -1)
+        ((RHEngineWidenedCalls *)m_drawManager)->FUN_005e5160(m_surface);
+    if (m_sprite)
+        ((RHGroundMarkSpriteDelete *)m_sprite)->Destroy(1);
+}
+
+#include "SBGeoVector2D.h"
+
+class RHSpritePositionCalls
+{
+public:
+    SBGeoVector2D FUN_004a4a10();
+};
+
+// Parked: source address uses edx rather than eax at element construction.
+// STUB: GAME 0x0051bfb0
+bool RHGroundMark::AddGroundMark(const SBGeoPoint2D &point, unsigned short type)
+{
+    RHGroundInfo info;
+    (SBGeoPoint2D &)info = point.FUN_005fc200(((RHSpritePositionCalls *)((char *)m_sprite + 4))->FUN_004a4a10());
+    info.m_a = 0;
+    info.m_b = type;
+    m_list.insert(RHGroundInfoIter(m_list.m_head->m_next), info);
+    return true;
+}
+
+// Parked: serializer scalar-slot colouring and insertion EH temporaries differ.
 // STUB: GAME 0x0051c380
 bool RHGroundMark::Serialize(SBFile &file)
 {
     RHGroundInfo info;
-    RHGroundInfoIter clearOut;
+    void *clearOut;
+    unsigned long count;
 
     // STRING: GAME 0x6b0658
     RHSerializeName(file, "RHGroundMark");
 
     if (!file.m_bLoading)
     {
-        unsigned long count = m_list.m_count;
+        count = m_list.m_count;
         if (file.Access(&count, 4) < 0)
         {
             SBString *err = file.GetError();
@@ -68,10 +129,11 @@ bool RHGroundMark::Serialize(SBFile &file)
                      reason);
             return false;
         }
+        RHGroundInfoList &list = m_list;
         for (unsigned int i = 0; i < count; i++)
         {
-            m_list.GoTo(i);
-            info = *(RHGroundInfo *)((char *)m_list.m_cur + 8);
+            list.GoTo(i);
+            info = *(RHGroundInfo *)((char *)list.m_cur + 8);
             if (file.Access(&info.m_a, 2) < 0)
             {
                 SBString *err = file.GetError();
@@ -86,14 +148,13 @@ bool RHGroundMark::Serialize(SBFile &file)
                 SBAssert(0, "P:\\Robin Hood\\RHgroundmark.cpp", 203, "Serialize failed reason is %s", reason);
                 return false;
             }
-            info.m_point.Serialize(file);
+            info.Serialize(file);
         }
     }
     else
     {
         m_list.Clear(&clearOut, m_list.m_head->m_next, m_list.m_head);
         m_list.m_valid = 1;
-        unsigned long count;
         if (file.Access(&count, 4) < 0)
         {
             SBString *err = file.GetError();
@@ -117,7 +178,7 @@ bool RHGroundMark::Serialize(SBFile &file)
                 SBAssert(0, "P:\\Robin Hood\\RHgroundmark.cpp", 215, "Serialize failed reason is %s", reason);
                 return false;
             }
-            info.m_point.Serialize(file);
+            info.Serialize(file);
             m_list.insert(m_list.end(), info);
             m_list.m_valid = 1;
         }
@@ -176,6 +237,8 @@ void *RHGroundInfoList::Clear(void *out, RHGroundInfoNode *first, RHGroundInfoNo
 
 void RHGroundMark::Emit(SBFile &file)
 {
+    RHGroundMark instance;
+    AddGroundMark(m_list.m_point, 0);
     Serialize(file);
     m_list.Dispose();
     m_list.Erase(m_list.end());
