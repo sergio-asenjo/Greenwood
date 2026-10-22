@@ -26,9 +26,9 @@ void RHElementFX::InitializeBackgroundRestoration()
     {
         {
             SBGeoVector2D vector((const SBGeoVector2D &)fx_sprite->m_1c);
-            ((RHMobileUnk00607da0 *)&m_b4)->FUN_00607da0((const RHMobileUnk00607da0 &)(fx_sprite->Unk005bd970() + vector));
+            ((RHMobileUnk00607da0 *)&m_b4)->FUN_00607da0((const RHMobileUnk00607da0 &)fx_sprite->Unk005bd970().FUN_006090d0(vector));
         }
-        ((RHMobileUnk00607da0 *)&m_b4)->FUN_00607da0((const RHMobileUnk00607da0 &)fx_clip.Unk006092c0(m_b4));
+        ((RHMobileUnk00607da0 *)&m_b4)->FUN_00607da0((const RHMobileUnk00607da0 &)fx_clip.FUN_006092c0(m_b4));
         {
             SBGeoVector2D vector((const SBGeoVector2D &)fx_sprite->m_1c);
             m_b4 -= vector;
@@ -48,9 +48,43 @@ void RHElementFX::InitializeBackgroundRestoration()
         {
             SBGeoVector2D vector((const SBGeoVector2D &)fx_sprite->m_1c);
             FXBlit(fx_draw, (RHUnkFXEngine *)g_pEngine,
-                   &(m_b4 + vector), m_cc, &m_b4);
+                   &m_b4.FUN_006090d0(vector), m_cc, &m_b4);
         }
     }
+}
+
+#include "RHEngineWidenedCalls.h"
+
+class RHPatch
+{
+public:
+    void FUN_00550070(bool mode);
+};
+
+// FUNCTION: GAME 0x004aa2f0
+bool RHElementFX::FUN_004aa2f0()
+{
+    if (*((char *)this + 0x12))
+    {
+        char *patch = (char *)m_ac;
+        if (patch)
+        {
+            int state;
+            if (patch[0] && patch[0xb])
+                state = (*(RHEngineWidenedCalls **)((char *)this + 0x50))->FUN_005b7f60(0xd);
+            else
+                state = (*(RHEngineWidenedCalls **)((char *)this + 0x50))->FUN_005b7f60(0);
+            if (state == 3 && ((char *)m_ac)[0xb])
+            {
+                ((char *)m_ac)[0xb] = 0;
+                ((RHPatch *)m_ac)->FUN_00550070(false);
+                return true;
+            }
+        }
+        else
+            (*(RHEngineWidenedCalls **)((char *)this + 0x50))->FUN_005b7f60(0);
+    }
+    return true;
 }
 
 // FUNCTION: GAME 0x004aa360
@@ -89,6 +123,7 @@ int RHElementFX::FUN_004aa930()
 void RHElementFX::Emit(SBFile &file)
 {
     InitializeBackgroundRestoration();
+    FUN_004aa2f0();
     Serialize(file);
     FUN_004aa930();
 }

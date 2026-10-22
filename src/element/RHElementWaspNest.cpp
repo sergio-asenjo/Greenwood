@@ -36,6 +36,7 @@
 #include "RHProjectileLifetime.h"
 #include "RHElementWasp.h"
 #include "RHEngineWidenedCalls.h"
+#include "RHUnkTargetSpriteCalls.h"
 #include "RHUnk004d8460Calls.h"
 
 DECOMP_SIZE_ASSERT(RHElementProjectile, 0x15c)
@@ -44,7 +45,7 @@ DECOMP_SIZE_ASSERT(RHElementWaspNest, 0x160)
 class RHArtificialIntelligenceSoundCalls;
 extern RHArtificialIntelligenceSoundCalls *g_unk0x006c1070;
 
-class RHUnk004be050 : public RHProjectileLifetime
+class __declspec(novtable) RHUnk004be050 : public RHProjectileLifetime
 {
 public:
     RHUnk004be050();
@@ -68,7 +69,7 @@ inline void RHSetWaspNestAnimation(RHElementWaspNest *nest, unsigned row)
         RHEngineWidenedCalls *sprite = *(RHEngineWidenedCalls **)((char *)nest + 0x50);
         current = row;
         sprite->FUN_005bd450();
-        (*(RHEngineWidenedCalls **)((char *)nest + 0x50))->FUN_005b76e0(row, 0);
+        (*(RHUnkTargetSprite **)((char *)nest + 0x50))->FUN_005b76e0(row, 0);
     }
 }
 

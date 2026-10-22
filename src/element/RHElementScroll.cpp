@@ -1,6 +1,14 @@
 #include "RHElementScroll.h"
 #include "VMCore.h"
 
+extern "C" int __cdecl rand();
+
+class RHSprite
+{
+public:
+    unsigned short FUN_005bdcf0(unsigned short frame);
+};
+
 // FUNCTION: GAME 0x00404780
 void RHUnk00404860::FUN_00404780()
 {
@@ -42,16 +50,13 @@ public:
 
 DECOMP_SIZE_ASSERT(RHElementObject, 0x100)
 DECOMP_SIZE_ASSERT(RHScrollScript, 0x60)
-DECOMP_SIZE_ASSERT(RHScrollUnk0040ee30, 0x14)
 DECOMP_SIZE_ASSERT(RHElementScroll, 0x170)
 
 // GLOBAL: GAME 0x006c09ec
 RHElementScroll *g_scrollExecutingScript;
 
-// FUNCTION: GAME 0x0040ee30
-RHScrollUnk0040ee30::~RHScrollUnk0040ee30()
-{
-}
+// SYNTHETIC: GAME 0x0040ee30
+// ??1SBGeoBoundingBox2D@@QAE@XZ
 
 // FUNCTION: GAME 0x004b9f40
 bool RHElementScroll::FUN_004b9f40()
@@ -68,21 +73,29 @@ bool RHElementScroll::FUN_004b9f40()
                 m_168 = 0;
             }
         }
-        ((RHScrollSpriteRefreshCalls *)Info())->FUN_005b7f60(0);
+        ((RHEngineWidenedCalls *)Info())->FUN_005b7f60(0);
     }
     return true;
 }
 
-void RHElementScroll::FUN_004b9fa0() {}
+// FUNCTION: GAME 0x004b9fa0
+void RHElementScroll::FUN_004b9fa0()
+{
+    if (m_100.m_58)
+    {
+        SetScrollExecutingScript(this);
+        ((RHUnk00404860 *)&m_160)->FUN_00404780();
+        ResetScrollExecutingScript();
+    }
+    RHSprite *sprite = (RHSprite *)m_50;
+    *(unsigned short *)((char *)sprite + 0x186) =
+        rand() % sprite->FUN_005bdcf0(*(unsigned short *)((char *)sprite + 0x184));
+}
 
-extern RHElementScroll **volatile g_unk0x6c09dc;
+extern RHElementScroll **g_unk0x6c09dc;
 extern RHElementScroll **g_unk0x006c09e0;
 
-// Parked: the target hoists the initial `mov eax,[g_unk0x006c09e0]` above the
-// prologue and compares `cmp esi,eax`; VC6 emits a memory-operand compare
-// (`cmp esi,[g_unk0x006c09e0]`) for every probed source shape (for/while,
-// named end local, hoisted init). Loop body and back-edge are exact.
-// STUB: GAME 0x004ba000
+// FUNCTION: GAME 0x004ba000
 void FUN_004ba000()
 {
     for (RHElementScroll **current = g_unk0x6c09dc; current != g_unk0x006c09e0; ++current)
@@ -260,7 +273,7 @@ void *RHElementScroll::FUN_004ba5d0()
     }
     void *element = operator new(0x100);
     if (element != 0)
-        ((RHUnk004a7150 *)element)->FUN_004a7150(0xa, 0, 1);
+        ((RHElementBonus *)element)->RHElementBonus::RHElementBonus((RHElementBonus::BonusType)0xa, false, 1);
     ((RHUnk00462730 *)element)->FUN_00462730(this, 0);
     ((RHUnk004d8460 *)g_pEngine)->FUN_004d8460(element, 0, 1);
     ((RHUnk004ba7a0 *)this)->Set(2);
@@ -332,7 +345,7 @@ public:
     int m_b0;
 };
 
-class RHUnk004ba8d0 : public RHProjectileLifetime
+class __declspec(novtable) RHUnk004ba8d0 : public RHProjectileLifetime
 {
 public:
     RHUnk004ba8d0(void *victim);
@@ -357,5 +370,4 @@ void RHElementScroll::Emit(SBFile &file)
     SetScrollExecutingScript(this);
     FUN_004ba400();
     ((RHUnk004ba7a0 *)this)->Set(0);
-    ((RHScrollUnk0040ee30 *)this)->~RHScrollUnk0040ee30();
 }

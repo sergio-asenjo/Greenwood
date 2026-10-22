@@ -37,6 +37,19 @@ bool RHUnk0045aaf0::FUN_0045abc0(unsigned short value, int first, int second)
     return result;
 }
 
+// FUNCTION: GAME 0x0045abf0
+bool RHUnk0045aaf0::FUN_0045abf0(unsigned short value, const SBGeoPoint2D &point, int third, int fourth)
+{
+    bool result = *(int *)((char *)this + 4) == 0;
+    *(int *)((char *)this + 4) = 4;
+    m_24 = 1;
+    m_2c = value;
+    m_30 = third;
+    m_34 = point;
+    *(int *)((char *)this) = fourth;
+    return result;
+}
+
 
 
 // The nested sub-object serialiser at RHElementObject+0xbc (target 0x00521210)

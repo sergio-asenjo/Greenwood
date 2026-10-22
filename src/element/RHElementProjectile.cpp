@@ -2,6 +2,7 @@
 #include "RHElementProjectile.h"
 
 #include "RHProjectileLifetime.h"
+#include "RHProjectileVector.h"
 
 // FUNCTION: GAME 0x004b4020
 RHProjectileLifetime::RHProjectileLifetime(int action, void *victim)
@@ -19,26 +20,17 @@ void EmitRHProjectileLifetime(void *storage, int action, void *victim)
     ((RHProjectileLifetime *)storage)->RHProjectileLifetime::RHProjectileLifetime(action, victim);
 }
 
-struct RHProjectileVector
+// FUNCTION: GAME 0x004b40f0
+void *RHProjectileLifetime::FUN_004b40f0(unsigned flags)
 {
-    RHProjectileVector()
-    {
-        ((RHUnk00613e90 *)this)->RHUnk00613e90::RHUnk00613e90();
-    }
-    RHProjectileVector Scaled(const float &scale) const
-    {
-        RHProjectileVector result;
-        result.x = x * scale;
-        result.y = y * scale;
-        result.z = z * scale;
-        return result;
-    }
-    int FUN_004b7fc0(const RHProjectileVector &other) const;
-    void FUN_004b8840(const RHProjectileVector &other);
-    float x;
-    float y;
-    float z;
-};
+    this->~RHProjectileLifetime();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+RHProjectileLifetime::~RHProjectileLifetime() {}
+
 
 extern float g_unk0x00677488;
 extern float g_unk0x0067749c;
@@ -174,7 +166,7 @@ struct RHProjectilePathList
 
 // Parked: vector copies coalesce; frame is 0x28 versus 0x34 and float operand order differs.
 // STUB: GAME 0x004b4260
-RHProjectileVector __stdcall FUN_004b4260(const RHProjectileVector &direction, float distance, float gravity, unsigned short frames, const void *actor)
+RHProjectileVector RHProjectileThrowCalls::FUN_004b4260(const RHProjectileVector &direction, float distance, float gravity, unsigned short frames, const void *actor)
 {
     float traveled = g_unk0x00677488;
     RHProjectileVector result;
@@ -323,11 +315,7 @@ int RHProjectileVector::FUN_004b7fc0(const RHProjectileVector &other) const
 }
 
 struct RHUnk00571160Position;
-class RHUnk00560420
-{
-public:
-    void Unk(RHUnk00571160Position *position);
-};
+#include "RHPositionProvider.h"
 
 class RHBonusInfoBase
 {
@@ -445,7 +433,7 @@ int RHElementProjectile::FUN_004b8da0() const
 
 void EmitRHProjectileMedium(RHElementProjectile *projectile, RHProjectileVector *vector)
 {
-    FUN_004b4260(*vector, 1.0f, 1.0f, 1, projectile);
+    ((RHProjectileThrowCalls *)projectile)->FUN_004b4260(*vector, 1.0f, 1.0f, 1, projectile);
     projectile->CopyTrajectory(projectile);
     vector->FUN_004b7fc0(*vector);
     projectile->FUN_004b8230();

@@ -1,5 +1,53 @@
 #include "SBNullstr.h"
+#include "RHSprite.h"
 #include "RHElementBonus.h"
+#include "RHElementObject.h"
+#include "RHEngineWidenedCalls.h"
+#include <stdlib.h>
+
+int FUN_004a7240(volatile int value);
+int FUN_004a72e0(volatile int value);
+int FUN_004a7380(volatile int value);
+int FUN_004a7460(volatile int value);
+void *FUN_004b3120(int type);
+
+DECOMP_SIZE_ASSERT(RHElementBonus, 0x100)
+DECOMP_SIZE_ASSERT(RHObjectConstructorCalls, 0x100)
+DECOMP_SIZE_ASSERT(RHBonusInfoBase, 0xdc)
+DECOMP_SIZE_ASSERT(RHBonusInfo, 0xe4)
+
+// FUNCTION: GAME 0x004a70c0
+RHElementBonus::RHElementBonus(int action, bool flag, unsigned short quantity)
+    : RHObjectConstructorCalls(3, flag, action)
+{
+    *(unsigned *)this = 0x00678328;
+    Initialize(FUN_004a7460(action), quantity);
+}
+
+// FUNCTION: GAME 0x004a7130
+void *RHElementBonus::FUN_004a7130(unsigned flags)
+{
+    this->~RHElementBonus();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// FUNCTION: GAME 0x004a7150
+RHElementBonus::RHElementBonus(BonusType type, bool flag, unsigned short quantity)
+    : RHObjectConstructorCalls(3, flag, FUN_004a7240(type))
+{
+    *(unsigned *)this = 0x00678328;
+    Initialize(FUN_004a7380(type), quantity);
+}
+
+// FUNCTION: GAME 0x004a71d0
+RHElementBonus::RHElementBonus(unsigned long type, bool flag, unsigned short quantity)
+    : RHObjectConstructorCalls(3, flag, FUN_004a72e0(type))
+{
+    *(unsigned *)this = 0x00678328;
+    Initialize(type, quantity);
+}
 
 // FUNCTION: GAME 0x004a7240
 int FUN_004a7240(volatile int value)
@@ -137,17 +185,17 @@ inline void RHElementBonus::ApplyProjection(RHBonusProjection *projection)
                      "P:\\Robin Hood\\RHElementBonus.cpp", 0x1cf,
                      // STRING: GAME 0x006aea34
                      "DA F\xc4LLT MIR NICHTS MEHR EIN ! Bonus (%d,%d) not lying on projection area !",
-                     m_50->X(), m_50->Y());
+                     Info()->X(), Info()->Y());
         }
-        if (!projection->Inside(m_50->m_4.m_20))
+        if (!projection->Inside(Info()->m_4.m_20))
         {
             SBAssert(1, "P:\\Robin Hood\\RHElementBonus.cpp", 0x1da,
                      // STRING: GAME 0x006ae9d0
                      "DA F\xc4LLT MIR NICHTS MEHR EIN ! Bonus (%d,%d) map position not lying in projection area screen box !",
-                     m_50->X(), m_50->Y());
+                     Info()->X(), Info()->Y());
         }
     }
-    m_50->m_4.FUN_0055fa20(projection);
+    Info()->m_4.FUN_0055fa20(projection);
 }
 
 // Parked: the null-projection branch and its edi initialization are scheduled later.
@@ -174,18 +222,78 @@ RHElementBonus *RHElementBonus::CreateBonusFromMissionStream(SBFile &file)
     file.Access(&projectionIndex, 2);
     file.Access(&index, 2);
     file.Access(&layer, 2);
-    bonus->m_50->m_4.SetPoint(SBGeoPoint2D((float)x, (float)y));
-    bonus->m_50->m_4.m_da = layer;
-    bonus->m_50->m_e0 = index == 0xffff ? global->m_4184 : global->m_4064[index];
+    bonus->Info()->m_4.SetPoint(SBGeoPoint2D((float)x, (float)y));
+    bonus->Info()->m_4.m_da = layer;
+    bonus->Info()->m_e0 = index == 0xffff ? global->m_4184 : global->m_4064[index];
     RHBonusProjection *projection = 0;
     if (projectionIndex != 0xffff)
         projection = global->m_4144[projectionIndex];
     bonus->ApplyProjection(projection);
-    bonus->m_50->m_4.FUN_0055f290();
-    bonus->m_50->FUN_005bd560(0, true);
-    bonus->m_50->m_4.m_28 = bonus->m_50->m_4.m_c;
-    bonus->m_50->RestorePoint();
-    RHBonusInfoBase &base = bonus->m_50->m_4;
+    bonus->Info()->m_4.FUN_0055f290();
+    bonus->Info()->FUN_005bd560(0, true);
+    bonus->Info()->m_4.m_28 = bonus->Info()->m_4.m_c;
+    bonus->Info()->RestorePoint();
+    RHBonusInfoBase &base = bonus->Info()->m_4;
     base.SetFlags(a & 0xf);
     return bonus;
+}
+
+// FUNCTION: GAME 0x004a7aa0
+void RHElementBonus::Initialize(unsigned long type, unsigned short quantity)
+{
+    *(unsigned long *)((char *)this + 0xb0) = type;
+    ((RHEngineWidenedCalls *)this)->FUN_004b2010(true, FUN_004b3120(type));
+    SetQuantity(quantity);
+    RHSprite *sprite = (RHSprite *)Info();
+    *(unsigned short *)((char *)sprite + 0x186) =
+        rand() % sprite->FUN_005bdcf0(*(unsigned short *)((char *)sprite + 0x184));
+}
+
+// FUNCTION: GAME 0x004a7b30
+void RHElementBonus::SetQuantity(unsigned short quantity)
+{
+    unsigned short amount;
+    if (*(int *)((char *)this + 0xb0) == 0x17)
+    {
+        switch (*(volatile unsigned short *)&quantity)
+        {
+        case 1: amount = 100; break;
+        case 2: amount = 500; break;
+        case 3: amount = 1000; break;
+        case 4: amount = 2500; break;
+        case 5: amount = 5000; break;
+        }
+    }
+    else
+    {
+        if (*(int *)((char *)this + 0xb0) == 0x12)
+        {
+            amount = quantity;
+            int action;
+            switch (quantity)
+            {
+            case 1: action = 0xbe; break;
+            case 2: action = 0xbf; break;
+            case 3: action = 0xc0; break;
+            case 4: action = 0xc1; break;
+            case 5: action = 0xc2; break;
+            }
+            ((RHUnkTargetSprite *)Info())->FUN_005b76e0(action, Info()->m_4.m_d4);
+        }
+        else
+            amount = quantity;
+    }
+    ((RHElementObject *)this)->FUN_004b2d60(amount);
+}
+
+// FUNCTION: GAME 0x004b2f10
+RHElementBonus::~RHElementBonus()
+{
+}
+
+void EmitBonusConstructors(void *storage)
+{
+    ((RHElementBonus *)storage)->RHElementBonus::RHElementBonus(0, false, 1);
+    ((RHElementBonus *)storage)->RHElementBonus::RHElementBonus(0UL, false, 1);
+    ((RHElementBonus *)storage)->FUN_004a7130(0);
 }

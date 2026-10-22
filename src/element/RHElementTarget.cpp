@@ -1,5 +1,14 @@
 #include "RHElementTarget.h"
 #include "VMCore.h"
+#include "RHMalignityActorCalls.h"
+#include "RHElementPositionCalls.h"
+#include "RHUnk00613e90.h"
+
+class RHScriptBatchCalls
+{
+public:
+    bool Unk0049d560(int action);
+};
 
 // FUNCTION: GAME 0x004034e0
 int RHUnkTargetScriptRef::FUN_004034e0()
@@ -241,11 +250,93 @@ void RHElementTarget::InitializeFromMissionStream(SBFile &file)
         ((RHUnkTargetScriptRef *)(m_data + 0x15c))->FUN_004034e0();
 }
 
+// FUNCTION: GAME 0x004bae60
+void RHElementTarget::FUN_004bae60(RHTargetSequenceCalls *sequence, int (RHUnkTargetScriptRef::*callback)(int))
+{
+    if (g_unk0x6c0691 && RHElementTarget_m_154)
+    {
+        RHUnkTargetScriptRef *script = this ? (RHUnkTargetScriptRef *)(m_data + 0x15c) : 0;
+        (script->*callback)(sequence->m_64);
+    }
+    sequence->V0c(0, true);
+}
+
+// FUNCTION: GAME 0x004baf50
+int RHElementTarget::FUN_004baf50(void *actor)
+{
+    if ((RHElementTarget_m_168 & 0x100) && ((RHScriptBatchCalls *)actor)->Unk0049d560(23))
+        return 0x55;
+    if ((RHElementTarget_m_168 & 0x10) && ((RHScriptBatchCalls *)actor)->Unk0049d560(9))
+        return 0x6e;
+    if (RHElementTarget_m_168 & 2)
+        return 0x70;
+    if (RHElementTarget_m_168 & 4)
+        return 0x6f;
+    if (RHElementTarget_m_168 & 0x400)
+        return 0x74;
+    if ((RHElementTarget_m_168 & 8) && ((RHMalignityActorCalls *)actor)->Vf8())
+        return 0x71;
+    return 0;
+}
+
+// FUNCTION: GAME 0x004baff0
+int RHElementTarget::FUN_004baff0(void *actor)
+{
+    if ((RHElementTarget_m_168 & 0x100) && ((RHScriptBatchCalls *)actor)->Unk0049d560(23))
+        return 0x70;
+    if ((RHElementTarget_m_168 & 0x10) && ((RHScriptBatchCalls *)actor)->Unk0049d560(9))
+        return ((RHMalignityActorCalls *)actor)->Vf8() ? 0xb6 : 0x112;
+    if (RHElementTarget_m_168 & 2)
+        return 0xc5;
+    if (RHElementTarget_m_168 & 4)
+        return 0xc6;
+    if (RHElementTarget_m_168 & 0x400)
+        return 0x5b;
+    if ((RHElementTarget_m_168 & 8) && ((RHMalignityActorCalls *)actor)->Vf8())
+        return 0x67;
+    return 0;
+}
+
+// FUNCTION: GAME 0x004bb0a0
+int RHElementTarget::FUN_004bb0a0(void *actor)
+{
+    if ((RHElementTarget_m_168 & 0x100) && ((RHScriptBatchCalls *)actor)->Unk0049d560(23))
+        return 0x33;
+    if (RHElementTarget_m_168 & 2)
+        return 0x30;
+    if (RHElementTarget_m_168 & 4)
+        return 0x2f;
+    if (RHElementTarget_m_168 & 0x400)
+        return 0x27;
+    if ((RHElementTarget_m_168 & 8) && ((RHMalignityActorCalls *)actor)->Vf8())
+        return 0x24;
+    if (RHElementTarget_m_168 & 1)
+        return 0x0e;
+    if (RHElementTarget_m_168 & 0x10)
+        return ((RHMalignityActorCalls *)actor)->Vf8() ? 0x1f : 0x36;
+    if (RHElementTarget_m_168 & 0x20)
+        return 0x0a;
+    if (RHElementTarget_m_168 & 0x40)
+        return 0x25;
+    return (RHElementTarget_m_168 & 0x80) ? 0x2d : 3;
+}
+
+// Parked: direct box access omits the canonical base getter call.
+// STUB: GAME 0x004bb180
+RHUnk00613e90 RHElementPositionCalls::FUN_004bb180()
+{
+    void *sprite = *(void **)((char *)this + 0x50);
+    RHUnk00613e90 result = *(RHUnk00613e90 *)((char *)sprite + 0x10);
+    SBGeoBoundingBox2D box(*(SBGeoBoundingBox2D *)((char *)sprite + 0x1a0));
+    result.z += box.FUN_00608f40().m_y - box.m_p0.m_y;
+    return result;
+}
+
 // FUNCTION: GAME 0x004bbf80
 bool RHElementTarget::FUN_004bbf80()
 {
     if (m_data[0x12])
-        ((RHScrollSpriteRefreshCalls *)Info())->FUN_005b7f60(*(unsigned long *)(m_data + 0x164));
+        ((RHEngineWidenedCalls *)Info())->FUN_005b7f60(*(unsigned long *)(m_data + 0x164));
     return true;
 }
 
@@ -261,6 +352,11 @@ void RHElementTarget::FUN_004bc3d0(int activator)
 
 void RHElementTarget::Emit(SBFile &file)
 {
+    FUN_004baf50(0);
+    FUN_004baff0(0);
+    FUN_004bb0a0(0);
+    FUN_004bae60(0, &RHUnkTargetScriptRef::FUN_004035d0);
+    ((RHElementPositionCalls *)this)->FUN_004bb180();
     FUN_004bbf80();
     InitializeFromMissionStream(file);
     FUN_004bc3d0(0);

@@ -1,5 +1,23 @@
 #include "SBNullstr.h"
 #include "RHElementNet.h"
+#include "RHPCActionQueryCalls.h"
+
+class RHSprite
+{
+public:
+    bool FUN_005b9e30(void *first, void *second, bool third);
+};
+
+// FUNCTION: GAME 0x004b14a0
+bool RHElementNet::FUN_004b14a0(void *point, void *pc, int focus) const
+{
+    if (*((char *)this + 0x12) && pc &&
+        *(unsigned short *)(*(char **)((char *)this + 0x50) + 0xde) != 0xffff &&
+        *(unsigned int *)((char *)g_pEngine + 0x4a00) <= 1 && focus == 3)
+        return !*((char *)this + 0x132) && ((RHUnk0049d4f0 *)pc)->Unk(0x11) &&
+               (*(RHSprite **)((char *)this + 0x50))->FUN_005b9e30(point, *(void **)((char *)this + 0x54), false);
+    return false;
+}
 
 // FUNCTION: GAME 0x004b1520
 bool RHElementNet::Serialize(SBFile &file)
@@ -72,5 +90,6 @@ bool RHElementNet::Serialize(SBFile &file)
 
 void RHElementNet::Emit(SBFile &file)
 {
+    FUN_004b14a0(0, 0, 0);
     Serialize(file);
 }

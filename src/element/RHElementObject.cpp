@@ -125,6 +125,23 @@ void RHElementObject::FUN_004b2390(int value)
     m_b0 = value;
 }
 
+#include "RHScrollObjectCalls.h"
+
+class RHEngine;
+extern RHEngine *g_pEngine;
+
+// FUNCTION: GAME 0x004b23c0
+bool RHScrollObjectCalls::FUN_004b23c0(void *first, void *second, void *third)
+{
+    if (*((char *)this + 0x12) &&
+        (second == 0 || *(void **)((char *)second + 0x268) == 0) &&
+        *(unsigned int *)((char *)g_pEngine + 0x4a00) <= 1 &&
+        (int)third == 3 &&
+        *(unsigned short *)(*(char **)((char *)this + 0x50) + 0xde) != -1)
+        return ((RHElementObject *)this)->FUN_004b24d0(*(const SBGeoPoint2D *)first);
+    return false;
+}
+
 #include "RHPCActionQueryCalls.h"
 
 // FUNCTION: GAME 0x004b2420
@@ -270,6 +287,7 @@ void EmitRHObjectRepulsive(RHElementObject *object, void *points)
     object->FUN_004b2600(points, points, object);
 }
 
+#define SBGEO_BOUNDINGBOX2D_VIEW
 #include "RHActorSequenceStorage.h"
 
 class RHMessenger;
@@ -414,7 +432,7 @@ void RHObjectMasterTree::FUN_004b2ea0()
 
 #include "RHObjectConstructorCalls.h"
 
-class RHObjectMasterLifetime : public RHObjectConstructorCalls
+class __declspec(novtable) RHObjectMasterLifetime : public RHObjectConstructorCalls
 {
 public:
     RHObjectMasterLifetime(const char *first, const char *second, unsigned short value, int type, bool flag);
@@ -453,6 +471,16 @@ void RHElementObjectMaster::DeleteMasters()
         head = tree.head;
     }
     tree.FUN_004b32a0(RHObjectMasterIterator(head->left), RHObjectMasterIterator(head));
+}
+
+// FUNCTION: GAME 0x004b3120
+void *FUN_004b3120(int type)
+{
+    RHObjectMasterTree &tree = *(RHObjectMasterTree *)g_unk0x006c09b0;
+    RHObjectMasterIterator position = tree.Find(type);
+    if (position.node != tree.head)
+        return position.node->value;
+    return 0;
 }
 
 class RHUnkTargetSprite

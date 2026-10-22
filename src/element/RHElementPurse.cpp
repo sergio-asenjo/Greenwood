@@ -31,6 +31,7 @@
 #include "SBNullstr.h"
 #include "RHElementPurse.h"
 #include "RHEngineWidenedCalls.h"
+#include "RHUnkTargetSpriteCalls.h"
 #include "RHEngineSerializationCalls.h"
 #include "RHProjectileSoundCalls.h"
 #include <list>
@@ -38,6 +39,8 @@
 
 class RHEngine;
 extern RHEngine *g_pEngine;
+class RHArtificialIntelligenceSoundCalls;
+extern RHArtificialIntelligenceSoundCalls *g_unk0x006c1070;
 
 // FUNCTION: GAME 0x004b9200
 int RHElementPurse::FUN_004b9200()
@@ -63,7 +66,7 @@ bool RHElementPurse::FUN_004b97c0()
     if (*(unsigned *)((char *)sprite + 0x1dc) != 0xc5 && *(unsigned *)((char *)this + 0xb4) != 0xc5) {
         *(unsigned *)((char *)this + 0xb4) = 0xc5;
         sprite->FUN_005bd450();
-        (*(RHEngineWidenedCalls **)((char *)this + 0x50))->FUN_005b76e0(0xc5, 0);
+        (*(RHUnkTargetSprite **)((char *)this + 0x50))->FUN_005b76e0(0xc5, 0);
     }
     (*(RHEngineWidenedCalls **)((char *)this + 0x50))->FUN_005b7f60(8);
     return true;
@@ -106,13 +109,62 @@ unsigned short RHElementPurse::FUN_004b98a0()
     return amount;
 }
 
-// Parked: search sentinel liveness changes conditional register saves before insertion.
-// STUB: GAME 0x004b9920
+struct RHPurseCoinNode
+{
+    RHPurseCoinNode *next;
+    RHPurseCoinNode *prev;
+    RHElementCoin *data;
+};
+
+struct RHPurseCoinList
+{
+    char allocator;
+    RHPurseCoinNode *head;
+    unsigned count;
+};
+
+// FUNCTION: GAME 0x004b9920
 void RHElementPurse::AddChild(RHElementCoin *coin)
 {
     std::list<RHElementCoin *> &coins = *(std::list<RHElementCoin *> *)((char *)this + 0x15c);
     if (std::find(coins.begin(), coins.end(), coin) == coins.end())
-        coins.push_back(coin);
+    {
+        RHPurseCoinList &list = *(RHPurseCoinList *)((char *)this + 0x15c);
+        RHPurseCoinNode *next = list.head;
+        RHPurseCoinNode *previous = next->prev;
+        RHPurseCoinNode *node = (RHPurseCoinNode *)::operator new(sizeof(RHPurseCoinNode));
+        node->next = next ? next : node;
+        node->prev = previous ? previous : node;
+        next->prev = node;
+        node->prev->next = node;
+        new (&node->data) RHElementCoin *(coin);
+        ++list.count;
+    }
+}
+
+// FUNCTION: GAME 0x004b9990
+void RHElementPurse::FUN_004b9990()
+{
+    char *sprite = *(char **)((char *)this + 0x50);
+    int sound;
+    switch (*(unsigned *)(sprite + 0xfc)) {
+    case 0:
+        sound = 0x1e1;
+        break;
+    case 1:
+        sound = 0x1f4;
+        break;
+    case 2:
+        sound = 0x1ed;
+        break;
+    case 7:
+        sound = 0x1e7;
+        break;
+    default:
+        sound = 0x1da;
+        break;
+    }
+    ((RHProjectileSoundCalls *)g_unk0x006c1070)->FUN_005a8070(sound, sprite + 0x24, 9);
 }
 
 // Force emission: RHSword-style serializers are pulled in only when
@@ -124,5 +176,6 @@ void RHElementPurse::Emit(SBFile &file)
     FUN_004b97c0();
     FUN_004b98a0();
     AddChild(0);
+    FUN_004b9990();
     Serialize(file);
 }
