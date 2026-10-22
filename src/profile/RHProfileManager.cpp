@@ -1,9 +1,75 @@
+#include "SBNullstr.h"
 #include "RHProfileManager.h"
 #include "RHActorProfiles.h"
 #include "RHMissionProfile.h"
 #include "RHProfileFile.h"
 #include <algorithm>
 #include <string.h>
+#include <list>
+#include "RHUnk00401490.h"
+#include <stdlib.h>
+#include "RHSoundCacheCore.h"
+#include "RHSoundCacheString.h"
+
+class RHProfilePointerList : public std::list<void *>
+{
+public:
+    struct Node
+    {
+        Node *next;
+        Node *previous;
+        void *value;
+    };
+    void InsertBefore(iterator position, void *const &value)
+    {
+        Node *next = (Node *)((char *)&*position - 8);
+        Node *previous = next->previous;
+        Node *node = (Node *)operator new(sizeof(Node));
+        node->next = next ? next : node;
+        node->previous = previous ? previous : node;
+        next->previous = node;
+        node->previous->next = node;
+        void **destination = &node->value;
+        if (destination)
+            *destination = value;
+        ++_Size;
+    }
+    RHProfilePointerList(const RHProfilePointerList &other);
+    void FUN_00564390(const RHProfilePointerList &other);
+    iterator current;
+    bool dirty;
+    int index;
+};
+
+// FUNCTION: GAME 0x00564280
+RHProfilePointerList::RHProfilePointerList(const RHProfilePointerList &other)
+{
+    iterator position = begin();
+    current = position;
+    const_iterator first = other.begin();
+    const_iterator last = other.end();
+    for (; first != last; ++first)
+        InsertBefore(position, *first);
+    dirty = true;
+}
+
+// FUNCTION: GAME 0x00564390
+void RHProfilePointerList::FUN_00564390(const RHProfilePointerList &other)
+{
+    iterator position = begin();
+    current = position;
+    const_iterator first = other.begin();
+    const_iterator last = other.end();
+    for (; first != last; ++first)
+        InsertBefore(position, *first);
+    dirty = true;
+}
+
+void EmitRHProfilePointerList(RHProfilePointerList *list, const RHProfilePointerList &other)
+{
+    new RHProfilePointerList(other);
+    list->FUN_00564390(other);
+}
 
 class RHProfileManagerParseCalls
 {
@@ -33,6 +99,628 @@ static inline const char *RHProfileToken(void *token)
 static inline bool RHProfileTokenEquals(const char *first, const char *second)
 {
     return _stricmp(first, second) == 0;
+}
+
+class RHUnk00597a70;
+void FUN_0059fb00(RHUnk00597a70 **destination, RHUnk00597a70 *const &value);
+
+class RHProfileImportBowArray
+{
+public:
+    unsigned GetSize() const { return m_first == 0 ? 0 : m_last - m_first; }
+    RHBow::Profile **Copy(RHBow::Profile **first, RHBow::Profile **last, RHBow::Profile **destination)
+    {
+        for (; first != last; ++destination, ++first)
+            FUN_0059fb00((RHUnk00597a70 **)destination, *(RHUnk00597a70 *const *)first);
+        return destination;
+    }
+    void Fill(RHBow::Profile **destination, unsigned count, RHBow::Profile *const &value)
+    {
+        for (; count > 0; --count, ++destination)
+            FUN_0059fb00((RHUnk00597a70 **)destination, *(RHUnk00597a70 *const *)&value);
+    }
+    void InsertLast(RHBow::Profile *const &value)
+    {
+        Insert(m_last, 1, value);
+    }
+    void Insert(RHBow::Profile **position, unsigned count, RHBow::Profile *const &value)
+    {
+        if ((unsigned)(m_end - m_last) < count)
+        {
+            unsigned capacity = GetSize() + (count < GetSize() ? GetSize() : count);
+            RHBow::Profile **storage = std::_Allocate((int)capacity, (RHBow::Profile **)0);
+            RHBow::Profile **destination = Copy(m_first, position, storage);
+            Fill(destination, count, value);
+            Copy(position, m_last, destination + count);
+            RHProfileDestroy(m_first, m_last);
+            std::allocator<RHBow::Profile *>().deallocate(m_first, m_end - m_first);
+            m_end = storage + capacity;
+            m_last = storage + GetSize() + count;
+            m_first = storage;
+        }
+        else if ((unsigned)(m_last - position) < count)
+        {
+            Copy(position, m_last, position + count);
+            ((RHScriptFXArray *)this)->Unk004fe450((void **)m_last, count - (m_last - position), *(void *const *)&value);
+            std::fill(position, m_last, value);
+            m_last += count;
+        }
+        else if (count > 0)
+        {
+            ((RHScriptFXArray *)this)->Unk004fe420((void **)(m_last - count), (void **)m_last, (void **)m_last);
+            std::copy_backward(position, m_last - count, m_last);
+            std::fill(position, position + count, value);
+            m_last += count;
+        }
+    }
+    int m_grow;
+    RHBow::Profile **m_first;
+    RHBow::Profile **m_last;
+    RHBow::Profile **m_end;
+};
+
+template <class T>
+class RHProfileImportArray
+{
+public:
+    unsigned GetSize() const { return m_first == 0 ? 0 : m_last - m_first; }
+    T **Copy(T **first, T **last, T **destination)
+    {
+        for (; first != last; ++destination, ++first)
+            std::_Construct(destination, *first);
+        return destination;
+    }
+    void Fill(T **destination, unsigned count, T *const &value)
+    {
+        for (; count > 0; --count, ++destination)
+            std::_Construct(destination, value);
+    }
+    void InsertLast(T *const &value) { Insert(m_last, 1, value); }
+    void Insert(T **position, unsigned count, T *const &value)
+    {
+        if ((unsigned)(m_end - m_last) < count)
+        {
+            unsigned capacity = GetSize() + (count < GetSize() ? GetSize() : count);
+            T **storage = std::_Allocate((int)capacity, (T **)0);
+            T **destination = Copy(m_first, position, storage);
+            Fill(destination, count, value);
+            Copy(position, m_last, destination + count);
+            RHProfileDestroy(m_first, m_last);
+            std::allocator<T *>().deallocate(m_first, m_end - m_first);
+            m_end = storage + capacity;
+            m_last = storage + GetSize() + count;
+            m_first = storage;
+        }
+        else if ((unsigned)(m_last - position) < count)
+        {
+            Copy(position, m_last, position + count);
+            Fill(m_last, count - (m_last - position), value);
+            std::fill(position, m_last, value);
+            m_last += count;
+        }
+        else if (count > 0)
+        {
+            Copy(m_last - count, m_last, m_last);
+            std::copy_backward(position, m_last - count, m_last);
+            std::fill(position, position + count, value);
+            m_last += count;
+        }
+    }
+    int m_grow;
+    T **m_first;
+    T **m_last;
+    T **m_end;
+};
+
+class RHProfileImportText : public RHProfileText
+{
+public:
+    RHProfileImportText(const char *value, unsigned count)
+    {
+        std::string &(std::string::*assign)(const char *, unsigned) = &std::string::assign;
+        (((std::string *)this)->*assign)(value, count);
+    }
+    explicit RHProfileImportText(const char *value)
+    {
+        std::string &(std::string::*assign)(const char *, unsigned) = &std::string::assign;
+        (((std::string *)this)->*assign)(value, strlen(value));
+    }
+};
+
+static inline void RHProfileImportAssign(std::string &destination, const std::string &value)
+{
+    std::string &(std::string::*assign)(const std::string &, unsigned, unsigned) = &std::string::assign;
+    (destination.*assign)(value, 0, std::string::npos);
+}
+
+class RHProfileStringVectors
+{
+public:
+    RHProfileStringVectors(const RHProfileText &text, const RHProfileText &delimiters)
+    {
+        vptr = 0x00679be4;
+        FUN_0056d890(text, delimiters);
+    }
+    ~RHProfileStringVectors();
+    void FUN_0056d890(const RHProfileText &text, const RHProfileText &delimiters);
+    void *FUN_0056d870(unsigned flags);
+    unsigned vptr;
+    std::vector<std::string> first;
+    std::vector<std::string> second;
+};
+
+// Parked at 0.9089: ICF-folded profile-text constructor name and case-3 register spills.
+// STUB: GAME 0x00565c10
+void RHProfileManager::FUN_00565c10(const char *name)
+{
+    RHUnk00401490 parser;
+    parser.FUN_00401550(name);
+    parser.FUN_00401b10();
+    RHUnk00401a00 &table = *(RHUnk00401a00 *)&parser;
+    for (unsigned row = 1; row < (unsigned)table.FUN_00401a30(); ++row)
+    {
+        RHCharacterProfile *profile;
+        profile = new RHCharacterProfile;
+        profile->m_00 = row - 1;
+        profile->m_8c = 10 - (short)profile->m_00;
+        for (unsigned column = 0; column < (unsigned)table.FUN_00401a50(row); ++column)
+        {
+            switch (column)
+            {
+            case 0: RHProfileImportAssign(*(std::string *)&profile->m_04, *(const std::string *)table.FUN_00401a80(row, 0)); break;
+            case 1: RHProfileImportAssign(*(std::string *)&profile->m_14, *(const std::string *)table.FUN_00401a80(row, 1)); break;
+            case 2:
+            {
+                RHProfileString &name = profile->m_24;
+                RHProfileImportAssign(name, *(const std::string *)table.FUN_00401a80(row, 2));
+                profile->m_34 = strlen(RHProfileToken(&name)) != 0;
+                break;
+            }
+            case 3:
+            {
+                RHProfileText value(RHProfileToken((void *)table.FUN_00401a80(row, 3)));
+                profile->m_35 = ((RHProfileManagerParseCalls *)this)->FUN_0056c200(&value, row, 3);
+                break;
+            }
+            case 4: profile->m_36 = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 4))); break;
+            case 5: profile->m_38 = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 5))); break;
+            case 6: profile->m_3a = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 6))); break;
+            case 7: profile->m_3c = ((RHProfileManagerParseCalls *)this)->FUN_0056c250(RHProfileToken((void *)table.FUN_00401a80(row, 7))); break;
+            case 8: profile->m_40 = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 8))); break;
+            case 9: profile->m_44 = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 9))); break;
+            case 10: profile->m_48 = (int)((RHProfileManagerParseCalls *)this)->FUN_0056c700((void *)table.FUN_00401a80(row, 10), row, 10); break;
+            case 11: profile->m_54 = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 11))); break;
+            case 12: profile->m_4c = (int)((RHProfileManagerParseCalls *)this)->FUN_0056c700((void *)table.FUN_00401a80(row, 12), row, 12); break;
+            case 13: profile->m_56 = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 13))); break;
+            case 14: profile->m_50 = (int)((RHProfileManagerParseCalls *)this)->FUN_0056c700((void *)table.FUN_00401a80(row, 14), row, 14); break;
+            case 15: profile->m_58 = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 15))); break;
+            case 16: profile->m_5c = (int)((RHProfileManagerParseCalls *)this)->FUN_0056c700((void *)table.FUN_00401a80(row, 16), row, 16); break;
+            case 17: profile->m_60 = (int)((RHProfileManagerParseCalls *)this)->FUN_0056c700((void *)table.FUN_00401a80(row, 17), row, 17); break;
+            case 18: profile->m_64 = (int)((RHProfileManagerParseCalls *)this)->FUN_0056c700((void *)table.FUN_00401a80(row, 18), row, 18); break;
+            case 19: profile->m_68 = (int)((RHProfileManagerParseCalls *)this)->FUN_0056c700((void *)table.FUN_00401a80(row, 19), row, 19); break;
+            case 20: profile->m_6c[0] = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 20))); break;
+            case 21: profile->m_70.SetValue0((float)atoi(RHProfileToken((void *)table.FUN_00401a80(row, 21)))); break;
+            case 22: profile->m_70.SetValue4((float)atoi(RHProfileToken((void *)table.FUN_00401a80(row, 22)))); break;
+            case 23: profile->m_70.SetValue8((float)atoi(RHProfileToken((void *)table.FUN_00401a80(row, 23)))); break;
+            case 24: profile->m_70.SetValueC((float)atoi(RHProfileToken((void *)table.FUN_00401a80(row, 24)))); break;
+            case 25: profile->m_84.m_x = (float)atoi(RHProfileToken((void *)table.FUN_00401a80(row, 25))); break;
+            case 26: profile->m_84.m_y = (float)atoi(RHProfileToken((void *)table.FUN_00401a80(row, 26))); break;
+            case 27: profile->m_8e = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 27))); break;
+            case 28: profile->m_94 = ((RHProfileManagerParseCalls *)this)->FUN_0056c290((void *)table.FUN_00401a80(row, 28), row, 28); break;
+            case 29: profile->m_98 = ((RHProfileManagerParseCalls *)this)->FUN_0056c360((void *)table.FUN_00401a80(row, 29), row, 29); break;
+            case 30: profile->m_92 = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 30))); break;
+            case 31: profile->m_90 = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 31))); break;
+            default:
+                FUN_0056cf40(this,
+                    // STRING: GAME 0x006b19e8
+                    "In Character Profile: column out of bound at line %d\n", row);
+            }
+        }
+        ((RHProfileImportArray<RHCharacterProfile> *)&m_characters)->InsertLast(profile);
+    }
+}
+
+// Parked at 0.5429: tokenizer/string lifetimes, stack slots and constructor boundaries.
+// STUB: GAME 0x005672d0
+void RHProfileManager::FUN_005672d0(const char *name)
+{
+    RHUnk00401490 parser;
+    parser.FUN_00401550(name);
+    parser.FUN_00401b10();
+    RHUnk00401a00 &table = *(RHUnk00401a00 *)&parser;
+    for (unsigned row = 2; row < (unsigned)table.FUN_00401a30(); ++row)
+    {
+        RHMissionProfile *profile = new RHMissionProfile;
+        for (unsigned column = 0; column < (unsigned)table.FUN_00401a50(row); ++column)
+        {
+            switch (column)
+            {
+            case 0:
+            {
+                RHProfileImportText value(RHProfileToken((void *)table.FUN_00401a80(row, 0)));
+                profile->m_00 = ((RHProfileManagerParseCalls *)this)->FUN_0056cdb0(&value, row, 0);
+                break;
+            }
+            case 1: RHProfileImportAssign(*(std::string *)&profile->m_04, *(const std::string *)table.FUN_00401a80(row, 1)); break;
+            case 2: RHProfileImportAssign(profile->m_14, *(const std::string *)table.FUN_00401a80(row, 2)); break;
+            case 3: RHProfileImportAssign(profile->m_24, *(const std::string *)table.FUN_00401a80(row, 3)); break;
+            case 4:
+            {
+                RHProfileImportText value(RHProfileToken((void *)table.FUN_00401a80(row, 4)));
+                profile->m_34 = ((RHProfileManagerParseCalls *)this)->FUN_0056cb00(&value, row, 4);
+                break;
+            }
+            case 5:
+            {
+                RHProfileImportText value(RHProfileToken((void *)table.FUN_00401a80(row, 5)));
+                *(unsigned *)(profile->m_38 + 4) = ((RHProfileManagerParseCalls *)this)->FUN_0056cc40(&value, row, 5);
+                break;
+            }
+            case 6:
+            {
+                RHProfileImportText value(RHProfileToken((void *)table.FUN_00401a80(row, 6)));
+                profile->m_38[0] = ((RHProfileManagerParseCalls *)this)->FUN_0056c200(&value, row, 6);
+                break;
+            }
+            case 7: *(short *)(profile->m_38 + 0x14) = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 7))); break;
+            case 8:
+            {
+                RHProfileImportText value(RHProfileToken((void *)table.FUN_00401a80(row, 8)));
+                profile->m_38[0x27] = ((RHProfileManagerParseCalls *)this)->FUN_0056c200(&value, row, 8);
+                break;
+            }
+            case 9: *(short *)(profile->m_38 + 0x1a) = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 9))); break;
+            case 10: break;
+            case 11: *(int *)(profile->m_38 + 8) = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 11))); break;
+            case 12: *(int *)(profile->m_38 + 12) = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 12))); break;
+            case 13:
+            {
+                RHProfileStringVectors values(RHProfileImportText(RHProfileToken((void *)table.FUN_00401a80(row, 13))), RHProfileImportText(
+                    // STRING: GAME 0x006b1a68
+                    ",;-"));
+                if (values.first.size() != 0 && values.first.front().size() != 0)
+                    for (std::string *entry = values.first.begin(); entry != values.first.end(); ++entry)
+                    {
+                        unsigned long value = ((RHProfileManagerParseCalls *)this)->FUN_0056cdb0(entry, unsigned(-1), unsigned(-1));
+                        profile->m_94.FUN_004e5820(profile->m_94.end(), value);
+                    }
+                break;
+            }
+            case 14:
+            {
+                RHProfileStringVectors values(RHProfileImportText(RHProfileToken((void *)table.FUN_00401a80(row, 14))), RHProfileImportText(
+                    ",;-"));
+                if (values.first.size() != 0 && values.first.front().size() != 0)
+                    for (std::string *entry = values.first.begin(); entry != values.first.end(); ++entry)
+                    {
+                        unsigned long value = ((RHProfileManagerParseCalls *)this)->FUN_0056cdb0(entry, unsigned(-1), unsigned(-1));
+                        profile->m_a4.FUN_004e5820(profile->m_a4.end(), value);
+                    }
+                break;
+            }
+            case 15: *(short *)(profile->m_38 + 0x10) = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 15))); break;
+            case 16: *(short *)(profile->m_38 + 0x12) = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 16))); break;
+            case 17: *(short *)(profile->m_38 + 0x16) = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 17))); break;
+            case 18: *(short *)(profile->m_38 + 0x18) = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 18))); break;
+            case 19:
+            {
+                RHProfileStringVectors values(RHProfileImportText(RHProfileToken((void *)table.FUN_00401a80(row, 19))), RHProfileImportText(
+                    ",;-"));
+                if (values.first.size() != 0 && values.first.front().size() != 0)
+                    for (std::string *entry = values.first.begin(); entry != values.first.end(); ++entry)
+                    {
+                        RHCharacterProfile *value = (RHCharacterProfile *)((RHProfileManagerParseCalls *)this)->FUN_0056ce70(entry);
+                        profile->m_74.InsertLast(value);
+                    }
+                break;
+            }
+            case 20:
+            {
+                RHProfileText value(RHProfileToken((void *)table.FUN_00401a80(row, 20)));
+                profile->m_38[0x1c] = ((RHProfileManagerParseCalls *)this)->FUN_0056c200(&value, row, 20);
+                break;
+            }
+            case 21:
+            {
+                RHProfileText value(RHProfileToken((void *)table.FUN_00401a80(row, 21)));
+                profile->m_38[0x1d] = ((RHProfileManagerParseCalls *)this)->FUN_0056c200(&value, row, 21);
+                break;
+            }
+            case 22:
+            {
+                RHProfileText value(RHProfileToken((void *)table.FUN_00401a80(row, 22)));
+                profile->m_38[0x1e] = ((RHProfileManagerParseCalls *)this)->FUN_0056c200(&value, row, 22);
+                break;
+            }
+            case 23:
+            {
+                RHProfileText value(RHProfileToken((void *)table.FUN_00401a80(row, 23)));
+                profile->m_38[0x1f] = ((RHProfileManagerParseCalls *)this)->FUN_0056c200(&value, row, 23);
+                break;
+            }
+            case 24:
+            {
+                RHProfileText value(RHProfileToken((void *)table.FUN_00401a80(row, 24)));
+                profile->m_38[0x20] = ((RHProfileManagerParseCalls *)this)->FUN_0056c200(&value, row, 24);
+                break;
+            }
+            case 25:
+            {
+                RHProfileText value(RHProfileToken((void *)table.FUN_00401a80(row, 25)));
+                profile->m_38[0x21] = ((RHProfileManagerParseCalls *)this)->FUN_0056c200(&value, row, 25);
+                break;
+            }
+            case 26:
+            {
+                RHProfileText value(RHProfileToken((void *)table.FUN_00401a80(row, 26)));
+                profile->m_38[0x22] = ((RHProfileManagerParseCalls *)this)->FUN_0056c200(&value, row, 26);
+                break;
+            }
+            case 27:
+            {
+                RHProfileText value(RHProfileToken((void *)table.FUN_00401a80(row, 27)));
+                profile->m_38[0x23] = ((RHProfileManagerParseCalls *)this)->FUN_0056c200(&value, row, 27);
+                break;
+            }
+            case 28:
+            {
+                RHProfileText value(RHProfileToken((void *)table.FUN_00401a80(row, 28)));
+                profile->m_38[0x24] = ((RHProfileManagerParseCalls *)this)->FUN_0056c200(&value, row, 28);
+                break;
+            }
+            case 29:
+            {
+                RHProfileText value(RHProfileToken((void *)table.FUN_00401a80(row, 29)));
+                profile->m_38[0x25] = ((RHProfileManagerParseCalls *)this)->FUN_0056c200(&value, row, 29);
+                break;
+            }
+            case 30:
+            {
+                RHProfileText value(RHProfileToken((void *)table.FUN_00401a80(row, 30)));
+                profile->m_38[0x26] = ((RHProfileManagerParseCalls *)this)->FUN_0056c200(&value, row, 30);
+                break;
+            }
+            case 31: profile->m_38[0x28] = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 31))); break;
+            case 32: profile->m_38[0x29] = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 32))); break;
+            case 33: profile->m_38[0x2a] = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 33))); break;
+            case 34: *(short *)(profile->m_38 + 0x2c) = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 34))); break;
+            case 35: *(short *)(profile->m_38 + 0x2e) = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 35))); break;
+            case 36: *(short *)(profile->m_38 + 0x30) = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 36))); break;
+            case 37: *(short *)(profile->m_38 + 0x32) = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 37))); break;
+            case 38: *(short *)(profile->m_38 + 0x34) = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 38))); break;
+            case 39: *(short *)(profile->m_38 + 0x36) = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 39))); break;
+            case 40: *(short *)(profile->m_38 + 0x38) = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 40))); break;
+            case 41: *(std::string *)&profile->m_c4 = *(const std::string *)table.FUN_00401a80(row, 41); break;
+            case 42: *(std::string *)&profile->m_d4 = *(const std::string *)table.FUN_00401a80(row, 42); break;
+            case 43: *(std::string *)&profile->m_e4 = *(const std::string *)table.FUN_00401a80(row, 43); break;
+            default:
+                FUN_0056cf40(this,
+                    // STRING: GAME 0x006b1a34
+                    "In Mission Profile: column out of bound at line %d\n", row);
+            }
+        }
+        m_missions.InsertLast(profile);
+    }
+    for (RHMissionProfile **profile = m_missions.begin(); profile != m_missions.end(); ++profile)
+        ImportBeamMes(*profile);
+}
+
+// Parked at 0.6427: frame/register allocation and inline insertion boundaries.
+// STUB: GAME 0x00569570
+void RHProfileManager::FUN_00569570(const char *name)
+{
+    RHUnk00401490 parser;
+    parser.FUN_00401550(name);
+    parser.FUN_00401b10();
+    RHUnk00401a00 &table = *(RHUnk00401a00 *)&parser;
+    for (unsigned row = 3; row < (unsigned)table.FUN_00401a30(); ++row)
+    {
+        RHHtHWeaponProfile *volatile &profile = (RHHtHWeaponProfile *volatile &)name;
+        profile = new RHHtHWeaponProfile;
+        for (unsigned column = 0; column < (unsigned)table.FUN_00401a50(row); ++column)
+        {
+            switch (column)
+            {
+            case 0: profile->m_00 = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 0))); break;
+            case 1: profile->m_02 = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 1))); break;
+            case 2: profile->m_04 = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 2))); break;
+            case 3: profile->m_06 = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 3))); break;
+            case 4: profile->m_08 = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 4))); break;
+            case 5: profile->m_0a = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 5))); break;
+            case 6: profile->m_0c = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 6))); break;
+            case 7: profile->m_0e = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 7))); break;
+            case 8: profile->m_10 = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 8))); break;
+            case 9: profile->m_12 = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 9))); break;
+            case 10: profile->m_14 = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 10))); break;
+            case 11:
+            {
+                std::string value(RHProfileToken((void *)table.FUN_00401a80(row, 11)));
+                profile->m_16 = ((RHProfileManagerParseCalls *)this)->FUN_0056c200(&value, row, 11);
+                break;
+            }
+            case 12:
+            {
+                std::string value(RHProfileToken((void *)table.FUN_00401a80(row, 12)));
+                profile->m_17 = ((RHProfileManagerParseCalls *)this)->FUN_0056c200(&value, row, 12);
+                break;
+            }
+            case 13: profile->m_18 = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 13))); break;
+            case 14: profile->m_1a = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 14))); break;
+            default:
+            {
+                unsigned short index = (column - 15) / 13;
+                if (index < 10)
+                {
+                    switch ((column - 15) % 13)
+                    {
+                    case 0: profile->m_1c[index].m_00 = ((RHProfileManagerParseCalls *)this)->FUN_0056c100((void *)table.FUN_00401a80(row, column), row, column); break;
+                    case 1: profile->m_1c[index].m_0c = atoi(RHProfileToken((void *)table.FUN_00401a80(row, column))); break;
+                    case 2: profile->m_1c[index].m_0e = atoi(RHProfileToken((void *)table.FUN_00401a80(row, column))); break;
+                    case 3: profile->m_1c[index].m_10 = atoi(RHProfileToken((void *)table.FUN_00401a80(row, column))); break;
+                    case 4: profile->m_1c[index].m_12 = atoi(RHProfileToken((void *)table.FUN_00401a80(row, column))); break;
+                    case 5: profile->m_1c[index].m_04 = ((RHProfileManagerParseCalls *)this)->FUN_0056c5b0((void *)table.FUN_00401a80(row, column), row, column); break;
+                    case 6: profile->m_1c[index].m_08 = ((RHProfileManagerParseCalls *)this)->FUN_0056cab0((void *)table.FUN_00401a80(row, column), row, column); break;
+                    case 7: profile->m_1c[index].m_14 = abs(atoi(RHProfileToken((void *)table.FUN_00401a80(row, column)))); break;
+                    case 8: profile->m_1c[index].m_16 = abs(atoi(RHProfileToken((void *)table.FUN_00401a80(row, column)))); break;
+                    case 9: profile->m_1c[index].m_18 = abs(atoi(RHProfileToken((void *)table.FUN_00401a80(row, column)))); break;
+                    case 10: profile->m_1c[index].m_1a = atoi(RHProfileToken((void *)table.FUN_00401a80(row, column))); break;
+                    case 11: profile->m_1c[index].m_1c = atoi(RHProfileToken((void *)table.FUN_00401a80(row, column))); break;
+                    case 12: profile->m_1c[index].m_1e = atoi(RHProfileToken((void *)table.FUN_00401a80(row, column))); break;
+                    }
+                }
+                else
+                    FUN_0056cf40(this,
+                        // STRING: GAME 0x006b1abc
+                        "In Weapon Profile: column out of bound at line %d\n", row);
+            }
+            }
+        }
+        ((RHProfileImportArray<RHHtHWeaponProfile> *)&m_handToHand)->InsertLast((RHHtHWeaponProfile *const &)profile);
+    }
+}
+
+// FUNCTION: GAME 0x0056a310
+void RHProfileManager::FUN_0056a310(const char *name)
+{
+    RHUnk00401490 parser;
+    parser.FUN_00401550(name);
+    parser.FUN_00401b10();
+    RHUnk00401a00 &table = *(RHUnk00401a00 *)&parser;
+    for (unsigned row = 2; row < (unsigned)table.FUN_00401a30(); ++row)
+    {
+        RHBow::Profile *profile = new RHBow::Profile;
+        for (unsigned column = 0; column < (unsigned)table.FUN_00401a50(row); ++column)
+        {
+            switch (column)
+            {
+            case 0:
+                profile->m_00 = abs(atoi(RHProfileToken((void *)table.FUN_00401a80(row, 0))));
+                break;
+            case 1: case 2: case 3: case 4: case 5: case 6:
+                profile->m_04[column - 1] = abs(atoi(RHProfileToken((void *)table.FUN_00401a80(row, column))));
+                break;
+            case 7: case 8: case 9: case 10: case 11: case 12:
+                profile->m_10[column - 7] = abs(atoi(RHProfileToken((void *)table.FUN_00401a80(row, column))));
+                break;
+            case 13: case 14: case 15: case 16: case 17: case 18:
+                profile->m_1c[column - 13] = abs(atoi(RHProfileToken((void *)table.FUN_00401a80(row, column))));
+                break;
+            case 19:
+                profile->m_02 = abs(atoi(RHProfileToken((void *)table.FUN_00401a80(row, 19))));
+                break;
+            case 20:
+                profile->m_78 = ((RHProfileManagerParseCalls *)this)->FUN_0056c200((void *)table.FUN_00401a80(row, 20), row, 20);
+                break;
+            case 21:
+                profile->m_28 = abs(atoi(RHProfileToken((void *)table.FUN_00401a80(row, 21))));
+                break;
+            case 22: case 23: case 24: case 25: case 26: case 27:
+                profile->m_2c[column - 22] = abs(atoi(RHProfileToken((void *)table.FUN_00401a80(row, column))));
+                break;
+            case 28: case 29: case 30: case 31: case 32: case 33:
+                profile->m_38[column - 28] = abs(atoi(RHProfileToken((void *)table.FUN_00401a80(row, column))));
+                break;
+            case 34: case 35: case 36: case 37: case 38: case 39:
+                profile->m_44[column - 34] = abs(atoi(RHProfileToken((void *)table.FUN_00401a80(row, column))));
+                break;
+            case 40:
+                profile->m_2a = abs(atoi(RHProfileToken((void *)table.FUN_00401a80(row, 40))));
+                break;
+            }
+        }
+        ((RHProfileImportBowArray *)&m_shoot)->InsertLast(profile);
+    }
+}
+
+void EmitRHProfileImporters(RHProfileManager *manager, const char *name)
+{
+    manager->FUN_00565c10(name);
+    manager->FUN_005672d0(name);
+    manager->FUN_00569570(name);
+    manager->FUN_0056aee0(name);
+}
+
+struct RHProfileSoldierFlags
+{
+    unsigned char m_0 : 1;
+    unsigned char m_1 : 1;
+    unsigned char m_2 : 1;
+    unsigned char m_3 : 1;
+    unsigned char m_4 : 1;
+    unsigned char m_5 : 1;
+};
+
+// Parked at 0.8413: frame/register layout and inlined insertion boundaries.
+// STUB: GAME 0x0056aee0
+void RHProfileManager::FUN_0056aee0(const char *name)
+{
+    RHUnk00401490 parser;
+    parser.FUN_00401550(name);
+    parser.FUN_00401b10();
+    RHUnk00401a00 &table = *(RHUnk00401a00 *)&parser;
+    for (unsigned row = 1; row < (unsigned)table.FUN_00401a30(); ++row)
+    {
+        RHSoldierProfile *profile = new RHSoldierProfile;
+        for (unsigned column = 0; column < (unsigned)table.FUN_00401a50(row); ++column)
+        {
+            switch (column)
+            {
+            case 0: RHProfileImportAssign(*(std::string *)&profile->m_00, *(const std::string *)table.FUN_00401a80(row, 0)); break;
+            case 1: RHProfileImportAssign(*(std::string *)&profile->m_10, *(const std::string *)table.FUN_00401a80(row, 1)); break;
+            case 2: RHProfileImportAssign(profile->m_20, *(const std::string *)table.FUN_00401a80(row, 2)); break;
+            case 3: profile->m_30 = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 3))); break;
+            case 4: profile->m_32 = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 4))); break;
+            case 5: profile->m_34 = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 5))); break;
+            case 6: profile->m_36 = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 6))); break;
+            case 7: profile->m_38 = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 7))); break;
+            case 8: profile->m_3a[0] = ((RHProfileManagerParseCalls *)this)->FUN_0056c200((void *)table.FUN_00401a80(row, 8), row, 8); break;
+            case 9: profile->m_3c = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 9))); break;
+            case 10: profile->m_3e = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 10))); break;
+            case 11: profile->m_40 = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 11))); break;
+            case 12:
+                if (RHProfileTokenEquals(RHProfileToken((void *)table.FUN_00401a80(row, 12)),
+                    // STRING: GAME 0x006b1b2c
+                    "knight"))
+                    profile->m_58 = 2;
+                else if (RHProfileTokenEquals(RHProfileToken((void *)table.FUN_00401a80(row, 12)),
+                    // STRING: GAME 0x006b1b24
+                    "officer"))
+                    profile->m_58 = 1;
+                else
+                    profile->m_58 = 0;
+                break;
+            case 13: profile->m_44 = ((RHProfileManagerParseCalls *)this)->FUN_0056c250(RHProfileToken((void *)table.FUN_00401a80(row, 13))); break;
+            case 14: profile->m_42 = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 14))); break;
+            case 15: ((RHProfileSoldierFlags *)profile->m_5c)->m_0 = ((RHProfileManagerParseCalls *)this)->FUN_0056c200((void *)table.FUN_00401a80(row, 15), row, 15); break;
+            case 16: ((RHProfileSoldierFlags *)profile->m_5c)->m_1 = ((RHProfileManagerParseCalls *)this)->FUN_0056c200((void *)table.FUN_00401a80(row, 16), row, 16); break;
+            case 17: ((RHProfileSoldierFlags *)profile->m_5c)->m_2 = ((RHProfileManagerParseCalls *)this)->FUN_0056c200((void *)table.FUN_00401a80(row, 17), row, 17); break;
+            case 18: ((RHProfileSoldierFlags *)profile->m_5c)->m_3 = ((RHProfileManagerParseCalls *)this)->FUN_0056c200((void *)table.FUN_00401a80(row, 18), row, 18); break;
+            case 19: ((RHProfileSoldierFlags *)profile->m_5c)->m_4 = ((RHProfileManagerParseCalls *)this)->FUN_0056c200((void *)table.FUN_00401a80(row, 19), row, 19); break;
+            case 20: profile->m_54 = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 20))); break;
+            case 21: profile->m_52 = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 21))); break;
+            case 22: profile->m_50 = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 22))); break;
+            case 23: profile->m_56 = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 23))); break;
+            case 24: ((RHProfileSoldierFlags *)profile->m_5c)->m_5 = ((RHProfileManagerParseCalls *)this)->FUN_0056c200((void *)table.FUN_00401a80(row, 24), row, 24); break;
+            case 25: profile->m_48 = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 25))); break;
+            case 26: profile->m_4c = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 26))); break;
+            case 27: profile->m_5c[1] = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 27))); break;
+            case 28: profile->m_60.SetValue0((float)atoi(RHProfileToken((void *)table.FUN_00401a80(row, 28)))); break;
+            case 29: profile->m_60.SetValue4((float)atoi(RHProfileToken((void *)table.FUN_00401a80(row, 29)))); break;
+            case 30: profile->m_60.SetValue8((float)atoi(RHProfileToken((void *)table.FUN_00401a80(row, 30)))); break;
+            case 31: profile->m_60.SetValueC((float)atoi(RHProfileToken((void *)table.FUN_00401a80(row, 31)))); break;
+            case 32: profile->m_74.m_x = (float)atoi(RHProfileToken((void *)table.FUN_00401a80(row, 32))); break;
+            case 33: profile->m_74.m_y = (float)atoi(RHProfileToken((void *)table.FUN_00401a80(row, 33))); break;
+            case 34: profile->m_7c = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 34))); break;
+            case 35: profile->m_80 = ((RHProfileManagerParseCalls *)this)->FUN_0056c290((void *)table.FUN_00401a80(row, 35), row, 35); break;
+            case 36: profile->m_84 = ((RHProfileManagerParseCalls *)this)->FUN_0056c360((void *)table.FUN_00401a80(row, 36), row, 36); break;
+            default:
+                FUN_0056cf40(this,
+                    // STRING: GAME 0x006b1af0
+                    "In Soldier Profile: column out of bound at line %d\n", row);
+            }
+        }
+        ((RHProfileImportArray<RHSoldierProfile> *)&m_soldiers)->InsertLast(profile);
+    }
 }
 
 // FUNCTION: GAME 0x0056c100
@@ -1199,6 +1887,84 @@ bool RHProfileManager::SerializeProfilePointer(SBFile &file, const RHCharacterPr
         profile = m_characters.m_first[index];
     }
     return true;
+}
+
+// FUNCTION: GAME 0x0056d7b0
+RHProfileStringVectors::~RHProfileStringVectors()
+{
+    vptr = 0x00679be4;
+}
+
+// FUNCTION: GAME 0x0056d870
+void *RHProfileStringVectors::FUN_0056d870(unsigned flags)
+{
+    this->RHProfileStringVectors::~RHProfileStringVectors();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// Parked at 0.6648: array-reference registers, string boundaries and slot colouring.
+// STUB: GAME 0x0056d890
+void RHProfileStringVectors::FUN_0056d890(const RHProfileText &text, const RHProfileText &delimiters)
+{
+    typedef void (std::vector<std::string>::*Insert)(std::string *, unsigned, const std::string &);
+    typedef std::string *(std::vector<std::string>::*Erase)(std::string *, std::string *);
+    typedef unsigned (std::string::*Find)(const char *, unsigned, unsigned) const;
+    Insert insert = &std::vector<std::string>::insert;
+    Erase erase = &std::vector<std::string>::erase;
+    Find find = &std::string::find;
+    std::string token;
+    std::vector<std::string> &tokens = first;
+    std::vector<std::string> &separators = second;
+    std::string *next = FUN_0056dbc0(tokens.end(), tokens.end(), tokens.begin());
+    ((RHSoundCacheMusicArray *)&tokens)->FUN_0056dac0(next, tokens.end());
+    *(std::string **)((char *)&tokens + 8) = next;
+    (separators.*erase)(separators.begin(), separators.end());
+    const char *current = text.m_chars;
+    for (; current != (text.m_chars ? text.m_chars + text.m_size : 0); ++current)
+    {
+        char value = *current;
+        if ((((const std::string *)&delimiters)->*find)(&value, 0, 1) == unsigned(-1))
+        {
+            RHProfileText &destination = (RHProfileText &)token;
+            if (unsigned(-1) - destination.m_size <= 1)
+                std::_Xlen();
+            unsigned length = destination.m_size + 1;
+            if (destination.FUN_00402280(length, false))
+            {
+                destination.m_chars[destination.m_size] = *current;
+                destination.m_size = length;
+                destination.m_chars[length] = 0;
+            }
+        }
+        else
+        {
+            (tokens.*insert)(tokens.end(), 1, token);
+            RHSoundCacheString &destination = (RHSoundCacheString &)token;
+            unsigned count = unsigned(-1);
+            destination.FUN_00402780();
+            if (destination.m_08 < count)
+                count = destination.m_08;
+            if (count > 0)
+            {
+                FUN_00642580(destination.m_04, destination.m_04 + count, destination.m_08 - count);
+                unsigned length = destination.m_08 - count;
+                if (((RHProfileText *)&destination)->FUN_00402280(length, false))
+                {
+                    destination.m_08 = length;
+                    destination.m_04[length] = 0;
+                }
+            }
+            (separators.*insert)(separators.end(), 1, (const std::string &)RHProfileText(current, 1));
+        }
+    }
+    (tokens.*insert)(tokens.end(), 1, token);
+}
+
+void EmitRHProfileStringVectors(RHProfileStringVectors *value)
+{
+    value->~RHProfileStringVectors();
 }
 
 // FUNCTION: GAME 0x005e2020
