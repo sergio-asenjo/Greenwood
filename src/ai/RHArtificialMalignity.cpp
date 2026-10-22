@@ -7,6 +7,12 @@
 
 void FUN_0064158f(void *memory);
 
+class RHUnk6c1040;
+extern RHUnk6c1040 *g_unk0x6c1040;
+extern char g_unk0x6c0560[4];
+extern float g_unk0x006774f0;
+extern float g_unk0x006774f4;
+
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 DECOMP_SIZE_ASSERT(RHUnk005fc3b0, 0x08)
 DECOMP_SIZE_ASSERT(RHUnk00613e90, 0x0c)
@@ -565,14 +571,35 @@ bool RHArtificialMalignity::SerializeExactlyThisAI(SBFile &file)
     return false;
 }
 
-// Parked: the target loads the value into dx (edx) and reuses eax for the base
-// pointer; VC6 reuses ax (eax) here. Inline, named unsigned-short/unsigned/int
-// locals, char*/unsigned short* pointer forms all give ax. 75.00%.
-// STUB: GAME 0x00438600
+// FUNCTION: GAME 0x00438600
 unsigned short RHMalignityOwnerCalls::FUN_00438600()
 {
-    void *value = *(void **)((char *)this + 0x334);
-    return FUN_00438710(*(unsigned short *)((char *)value + 0x32), 0.5f, 2.0f, 100);
+    return FUN_00438710(*(unsigned short *)(*(char **)((char *)this + 0x334) + 0x32),
+        0.5f, 2.0f, 100);
+}
+
+// FUNCTION: GAME 0x00438620
+void RHArtificialMalignity::FUN_00438620(unsigned short value)
+{
+    float scale = 1.0f;
+    if (((RHMalignityActorCalls *)VirtualBase().m_actor)->V130() == 0 &&
+        RHMalignityField<bool>(g_pEngine, 0x4aa8) && !((RHMalignityActorCalls *)VirtualBase().m_actor)->Vf4())
+    {
+        ((RHArtificialIntelligence *)&VirtualBase())->Unk00416710(3);
+        return;
+    }
+    if (((RHMalignityActorCalls *)VirtualBase().m_actor)->V130() == 1)
+    {
+        switch (RHMalignityField<int>(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0(), 0x1c))
+        {
+        case 0:
+        case 2:
+            scale = g_unk0x006774f4;
+            break;
+        }
+    }
+    ((RHArtificialIntelligence *)&VirtualBase())->Unk00416710(
+        (unsigned)(value * ((100 - RHMalignityField<unsigned short>(M(void *, 0x334), 0x32)) * g_unk0x006774f0) * scale + g_unk0x0067749c));
 }
 
 // FUNCTION: GAME 0x00438710
@@ -793,6 +820,7 @@ public:
     virtual void V20() = 0;
     virtual void V24(RHMalignityStimulus *stimulus) = 0;
     void FUN_00412d60(RHMalignityPosition position, int heading, int mode);
+    void FUN_0041a140(RHMalignityPosition position, unsigned value);
     void FUN_0041a3e0();
 };
 
@@ -872,7 +900,7 @@ void RHArtificialMalignity::FUN_00439e70(void *, const RHMalignityPosition &posi
     ((RHMalignityReactionCalls *)&VirtualBase())->FUN_0041a3e0();
     VirtualBase().V10(2, 0x1d);
     RHMalignityField<RHMalignityPosition>(&VirtualBase(), 0xd0) = position;
-    ((RHMalignityActorCalls *)VirtualBase().m_actor)->FUN_00487ad0(position);
+    ((RHElementActorNPC *)VirtualBase().m_actor)->FUN_00487ad0(position);
     ((RHMalignityReactionCalls *)&VirtualBase())->FUN_00412d60(RHMalignityField<RHMalignityPosition>(&VirtualBase(), 0xd0), -1, 0);
     ((RHArtificialIntelligence *)&VirtualBase())->Unk00416710(100);
 }
@@ -889,7 +917,7 @@ void RHArtificialMalignity::FUN_00439f60(const RHMalignityStimulus &stimulus)
     else
         VirtualBase().V10(2, 0x39);
     RHMalignityField<RHMalignityPosition>(&VirtualBase(), 0xd0) = position;
-    ((RHMalignityActorCalls *)VirtualBase().m_actor)->FUN_00487ad0(RHMalignityField<RHMalignityPosition>(&VirtualBase(), 0xd0));
+    ((RHElementActorNPC *)VirtualBase().m_actor)->FUN_00487ad0(RHMalignityField<RHMalignityPosition>(&VirtualBase(), 0xd0));
     RHMalignityBaseView &base = VirtualBase();
     void *actor = RHMalignityField<void *>((void *)&stimulus, 0x14);
     ((RHMalignityReactionCalls *)&base)->FUN_00412d60(base.FUN_004165e0(actor, true),
@@ -920,7 +948,7 @@ void RHArtificialMalignity::FUN_0043a170(const RHMalignityPosition &position)
     ((RHScriptBatchCalls *)&VirtualBase())->Unk00419fd0(2, 10);
     VirtualBase().V10(3, 0x8c);
     RHMalignityField<RHMalignityPosition>(&VirtualBase(), 0xd0) = position;
-    ((RHMalignityActorCalls *)VirtualBase().m_actor)->FUN_00487ad0(position);
+    ((RHElementActorNPC *)VirtualBase().m_actor)->FUN_00487ad0(position);
     ((RHMalignityReactionCalls *)&VirtualBase())->FUN_00412d60(RHMalignityField<RHMalignityPosition>(&VirtualBase(), 0xd0), -1, 0);
     FUN_00438620(50);
 }
@@ -1195,51 +1223,249 @@ void RHArtificialMalignity::FUN_00441f20()
         VirtualBase().V00(0);
 }
 
-// Parked: engine actor selection and action dispatch rely on unresolved out-of-run helpers.
-// STUB: GAME 0x004436e0
-unsigned RHArtificialMalignity::FUN_004436e0(void *, char)
+
+// SIZE 0x3c
+struct RHUnk004439a0Record
 {
-    return 0;
+    RHMalignityPosition m_position; // 0x00
+    int m_score; // 0x10
+    RHSectorActorList m_actors; // 0x14
+    void *m_target; // 0x38
+};
+
+static inline void RaiseThreat(RHUnk004439a0Record &current, int score, const RHMalignityPosition &position)
+{
+    if (current.m_score <= score)
+    {
+        current.m_score = score;
+        current.m_position = position;
+    }
 }
 
-// Parked: the sibling action requires the same unresolved actor-array and UI dispatch helpers.
-// STUB: GAME 0x00443850
-unsigned RHArtificialMalignity::FUN_00443850(void *)
+// SIZE 0x1c
+struct RHUnk00443850Record
 {
-    return 0;
+    void *m_actor; // 0x00
+    undefined m_04[0x18]; // 0x04
+};
+
+// FUNCTION: GAME 0x004436e0
+bool RHArtificialMalignity::FUN_004436e0(const RHUnk00443850Record *source, bool mode)
+{
+    RHUnk00443850Record entry = *source;
+    void *actor = entry.m_actor;
+    RHUnk004439a0Record *record = &RHMalignityField<RHUnk004439a0Record>((char *)actor + RHMalignityField<int *>(actor, 0x49c)[1], 0x708);
+    int score = RHMalignityField<RHUnk004439a0Record>(&VirtualBase(), 0x26c).m_score;
+    FUN_004439a0(record, 7);
+    ((RHArtificialMalignity *)((char *)actor + 0x6e8))->FUN_004439a0(&RHMalignityField<RHUnk004439a0Record>(&VirtualBase(), 0x26c), 0);
+    if (record->m_score <= score || record->m_score <= 2)
+        return false;
+    if (mode && score != 3)
+        return false;
+    VirtualBase().V10(3, 0x5a);
+    RHMalignityField<void *>(&VirtualBase(), 0x90) = actor;
+    void *target = RHMalignityField<void *>(&VirtualBase(), 0x90);
+    RHMalignityBaseView &base = VirtualBase();
+    ((RHMalignityReactionCalls *)&base)->FUN_00412d60(base.FUN_004165e0(target, true),
+        (int)RHMalignityField<float>(RHMalignityField<void *>(target, 0x50), 0x18), 0);
+    RHMalignityField<RHMalignityPosition>(&VirtualBase(), 0xd0) = record->m_position;
+    int threat = record->m_score;
+    RaiseThreat(RHMalignityField<RHUnk004439a0Record>(&VirtualBase(), 0x26c), threat, RHMalignityField<RHMalignityPosition>(&VirtualBase(), 0xd0));
+    ((RHArtificialIntelligence *)&VirtualBase())->Unk00416710(0x1e);
+    return true;
 }
 
-// Parked: state updates span a script list, actor references and multiple manager helpers.
+// FUNCTION: GAME 0x00443850
+bool RHArtificialMalignity::FUN_00443850(const RHUnk00443850Record *source)
+{
+    RHUnk00443850Record entry = *source;
+    void *actor = entry.m_actor;
+    RHUnk004439a0Record *record = &RHMalignityField<RHUnk004439a0Record>((char *)actor + RHMalignityField<int *>(actor, 0x49c)[1], 0x708);
+    int score = RHMalignityField<RHUnk004439a0Record>(&VirtualBase(), 0x26c).m_score;
+    FUN_004439a0(record, 7);
+    if (record->m_score <= score || record->m_score < 2)
+        return false;
+    VirtualBase().V10(3, 0x95);
+    RHMalignityField<void *>(&VirtualBase(), 0x90) = actor;
+    void *target = RHMalignityField<void *>(&VirtualBase(), 0x90);
+    RHMalignityBaseView &base = VirtualBase();
+    ((RHMalignityReactionCalls *)&base)->FUN_00412d60(base.FUN_004165e0(target, true),
+        (int)RHMalignityField<float>(RHMalignityField<void *>(target, 0x50), 0x18), 0);
+    RHMalignityField<RHMalignityPosition>(&VirtualBase(), 0xd0) = record->m_position;
+    int threat = record->m_score;
+    RaiseThreat(RHMalignityField<RHUnk004439a0Record>(&VirtualBase(), 0x26c), threat, RHMalignityField<RHMalignityPosition>(&VirtualBase(), 0xd0));
+    ((RHArtificialIntelligence *)&VirtualBase())->Unk00416710(0x1e);
+    return true;
+}
+
+// Parked 83%: the actor-cursor, target-notify and threat-copy loads keep swapped scratch registers.
 // STUB: GAME 0x004439a0
-void RHArtificialMalignity::FUN_004439a0(void *, unsigned char)
+void RHArtificialMalignity::FUN_004439a0(RHUnk004439a0Record *record, unsigned char flags)
 {
+    int count = record->m_actors.m_count;
+    for (unsigned short index = 0; index < (unsigned short)count; ++index)
+    {
+        RHSectorActorList &actors = record->m_actors;
+        actors.Unk005c8e40(index);
+        void *actor = actors.m_current->value;
+        RHUnk004439a0Record &own = RHMalignityField<RHUnk004439a0Record>(&VirtualBase(), 0x26c);
+        if (own.m_actors.Unk004b8f80((RHElementActor *)actor, true) == -1)
+        {
+            if (flags & 1)
+            {
+                RHSectorActorList &list = RHMalignityField<RHUnk004439a0Record>(&VirtualBase(), 0x26c).m_actors;
+                ((RHAIUnk0044e8b0 *)&list)->FUN_00424410(RHMalignityIterator(list.m_head), (RHElementActor *)actor);
+                list.m_dirty = true;
+            }
+            ((RHMalignityActorCalls *)VirtualBase().m_actor)->FUN_0048ca20(actor, 1);
+        }
+    }
+    if ((flags & 2) && record->m_target)
+    {
+        RHMalignityBaseView &base = VirtualBase();
+        if (!RHMalignityField<void *>(&base, 0x2a4))
+        {
+            RHMalignityField<void *>(&base, 0x2a4) = record->m_target;
+            RHMalignityField<bool>(&base, 0x2a8) = false;
+            ((RHMalignityActorCalls *)VirtualBase().m_actor)->FUN_0048c700(record->m_target, 4);
+        }
+    }
+    if (flags & 4)
+    {
+        RHMalignityPosition position = record->m_position;
+        int score = record->m_score;
+        RHUnk004439a0Record &own = RHMalignityField<RHUnk004439a0Record>(&VirtualBase(), 0x26c);
+        if (own.m_score <= score)
+        {
+            own.m_score = score;
+            own.m_position = position;
+        }
+    }
 }
 
-// Parked: threat selection, actor allocation and movement notification depend on out-of-run helpers.
-// STUB: GAME 0x00443af0
-void RHArtificialMalignity::FUN_00443af0(unsigned)
+// FUNCTION: GAME 0x00443af0
+void RHArtificialMalignity::FUN_00443af0(unsigned value)
 {
+    void *target;
+    if (RHMalignityField<RHSectorActorList>(&VirtualBase(), 0x2b4).m_count > 0)
+    {
+        RHSectorActorList &threats = RHMalignityField<RHSectorActorList>(&VirtualBase(), 0x2b4);
+        threats.Unk005c8e40(0);
+        target = threats.m_current->value;
+        if ((RHMalignityField<unsigned>(target, 4) & 0x1f) == 0x14 &&
+            RHMalignityField<int>(RHMalignityField<void *>(target, 0xa1c), 0x58) == 0 && target)
+            goto selected;
+    }
+    target = FUN_00443e20(((RHMalignityActorCalls *)VirtualBase().m_actor)->V130(), 200, 2, 0);
+selected:
+    ((RHMalignityReactionCalls *)&VirtualBase())->FUN_0041a140(RHMalignityField<RHMalignityPosition>(&VirtualBase(), 0xd0), value);
+    VirtualBase().V10(3, 0x73);
+    if (!target)
+        ((RHArtificialIntelligence *)&VirtualBase())->Unk00412f70((RHMalignityField<short>(RHMalignityField<void *>(VirtualBase().m_actor, 0x50), 0xd8) + 5) % 16, 0);
+    else
+    {
+        RHMalignityBaseView &own = VirtualBase();
+        ((RHMalignityReactionCalls *)&own)->FUN_00412d60(own.FUN_004165e0(target, true),
+            (int)RHMalignityField<float>(RHMalignityField<void *>(target, 0x50), 0x18), 0);
+    }
+    ((RHArtificialIntelligence *)&VirtualBase())->Unk00416710(0x14);
 }
 
-// Parked: actor-array filtering depends on engine globals and multiple external virtual/helper bindings.
-// STUB: GAME 0x00443c40
-void *RHArtificialMalignity::FUN_00443c40(void *)
+struct RHArtificialIntelligenceStaticArray
 {
+    int m_grow;
+    void **m_first;
+    void **m_last;
+    unsigned size() { return m_first == 0 ? 0 : m_last - m_first; }
+    void *operator[](unsigned index) { return m_first[index]; }
+};
+
+struct RHMalignityTeam
+{
+    undefined m_00[8];
+    RHArtificialIntelligenceStaticArray actors;
+    undefined m_14[0xc];
+};
+
+// FUNCTION: GAME 0x00443c40
+void *RHArtificialMalignity::FUN_00443c40(void *value)
+{
+    int team = ((RHMalignityActorCalls *)VirtualBase().m_actor)->V130();
+    unsigned short count = (unsigned short)RHMalignityField<RHMalignityTeam[1]>(g_pEngine, 0x4d00)[team].actors.size();
+    for (unsigned short index = 0; index < count; ++index)
+    {
+        RHMalignityActorCalls *actor = (RHMalignityActorCalls *)RHMalignityField<RHMalignityTeam[1]>(g_pEngine, 0x4d00)[team].actors[index];
+        if (RHMalignityField<int>(RHMalignityField<void *>(actor, 0xa1c), 0x58) == 1 && actor->V11c() &&
+            ((RHMalignityActorCalls *)VirtualBase().m_actor)->FUN_0048a130(actor) &&
+            !RHMalignityField<bool>((char *)actor + RHMalignityField<int *>(actor, 0x49c)[1], 0x660) &&
+            !actor->FUN_0048c8e0(value, 1))
+            return actor;
+    }
     return 0;
 }
 
-// Parked: the sibling actor-array filter adds geometry and script comparisons through external helpers.
-// STUB: GAME 0x00443d10
-void *RHArtificialMalignity::FUN_00443d10(void *)
+bool FUN_0040eda0(const RHMalignityPosition *value, RHMalignityPosition other);
+
+// FUNCTION: GAME 0x00443d10
+void *RHArtificialMalignity::FUN_00443d10(const RHMalignityPosition *position)
 {
+    int team = ((RHMalignityActorCalls *)VirtualBase().m_actor)->V130();
+    unsigned short count = (unsigned short)RHMalignityField<RHMalignityTeam[1]>(g_pEngine, 0x4d00)[team].actors.size();
+    for (unsigned short index = 0; index < count; ++index)
+    {
+        RHMalignityActorCalls *actor = (RHMalignityActorCalls *)RHMalignityField<RHMalignityTeam[1]>(g_pEngine, 0x4d00)[team].actors[index];
+        if (RHMalignityField<int>(RHMalignityField<void *>(actor, 0xa1c), 0x58) == 1 && actor->V11c() &&
+            ((RHMalignityActorCalls *)VirtualBase().m_actor)->FUN_0048a130(actor) &&
+            !RHMalignityField<bool>((char *)actor + RHMalignityField<int *>(actor, 0x49c)[1], 0x660) &&
+            FUN_0040eda0(&RHMalignityField<RHMalignityPosition>((char *)actor + RHMalignityField<int *>(actor, 0x49c)[1], 0x56c), *position))
+            return actor;
+    }
     return 0;
 }
 
-// Parked: nearest-actor selection depends on engine arrays, geometry conversion and virtual filters.
-// STUB: GAME 0x00443e20
-void *RHArtificialMalignity::FUN_00443e20(unsigned, unsigned, unsigned, int)
+// FUNCTION: GAME 0x00443e20
+void *RHArtificialMalignity::FUN_00443e20(int team, unsigned short radius, unsigned char flags, int type)
 {
-    return 0;
+    unsigned best = radius * radius;
+    void *result = 0;
+    unsigned short count = (unsigned short)RHMalignityField<RHMalignityTeam[1]>(g_pEngine, 0x4cc0)[team].actors.size();
+    for (unsigned short index = 0; index < count; ++index)
+    {
+        RHMalignityActorCalls *actor = (RHMalignityActorCalls *)RHMalignityField<RHMalignityTeam[1]>(g_pEngine, 0x4cc0)[team].actors.m_first[index];
+        bool eligible = actor != VirtualBase().m_actor;
+        eligible &= !actor->V48();
+        eligible &= !RHMalignityField<bool>(actor, 0x1ce) & RHMalignityField<bool>(actor, 0x12);
+        if ((type == 3 || ((RHMalignityField<unsigned>(actor, 4) & 0x1f) == 0x14 &&
+                           RHMalignityField<int>(RHMalignityField<void *>(actor, 0xa1c), 0x58) == type)) &&
+            eligible)
+        {
+            if ((flags & 1) && ((RHMalignityField<unsigned>(actor, 4) & 0xf) != 4 ||
+                                RHMalignityField<int>((char *)actor + RHMalignityField<int *>(actor, 0x49c)[1], 0x4a8) != 1))
+                continue;
+            if (flags & 2)
+            {
+                if ((RHMalignityField<unsigned>(actor, 4) & 0xf) != 4)
+                    continue;
+                switch (RHMalignityField<int>((char *)actor + RHMalignityField<int *>(actor, 0x49c)[1], 0x4a8))
+                {
+                case 1:
+                    break;
+                case 3:
+                    if (RHMalignityField<int>((char *)actor + RHMalignityField<int *>(actor, 0x49c)[1], 0x4b0) == 0x6d)
+                        break;
+                default:
+                    continue;
+                }
+            }
+            unsigned distance = (unsigned)VirtualBase().FUN_0041a010(actor);
+            if (distance <= best)
+            {
+                best = distance;
+                result = actor;
+            }
+        }
+    }
+    return result;
 }
 
 // Parked: route generation builds nested geometry/list temporaries and requires unresolved helper ABIs.
@@ -1261,16 +1487,33 @@ void RHArtificialMalignity::FUN_00444bb0(void *)
 {
 }
 
-// Parked: path initialization depends on a separate set of engine and actor-manager bindings.
-// STUB: GAME 0x004450a0
-void RHArtificialMalignity::FUN_004450a0()
+// FUNCTION: GAME 0x004450a0
+void RHArtificialMalignity::FUN_004450a0(void *target)
 {
+    RHMalignityActorCalls **first = RHMalignityField<RHMalignityActorCalls **>(g_pEngine, 0x495c);
+    unsigned short count;
+    if (!first)
+        count = 0;
+    else
+        count = RHMalignityField<RHMalignityActorCalls **>(g_pEngine, 0x4960) - first;
+    for (unsigned short index = 0; index < count; ++index)
+    {
+        RHMalignityActorCalls *actor = RHMalignityField<RHMalignityActorCalls **>(g_pEngine, 0x495c)[index];
+        if ((RHMalignityField<unsigned>(actor, 4) & 0x1f) == 0x14 && actor != VirtualBase().m_actor && actor != target &&
+            (RHMalignityField<int>(M(void *, 0x334), 0x58) == 1 || actor != RHMalignityField<void *>(&VirtualBase(), 0x90)))
+        {
+            if (actor->FUN_0048a350(target) || (target != VirtualBase().m_actor && actor->FUN_0048a350(VirtualBase().m_actor)))
+                ((RHMalignityAlertCalls *)((char *)actor + RHMalignityField<int *>(actor, 0x49c)[1] + 0x49c))->FUN_0042c890(0x2c, target);
+        }
+    }
 }
 
-// Parked: this short helper's ownership/signature and member-field binding remain unverified.
-// STUB: GAME 0x00445180
-void RHArtificialMalignity::FUN_00445180()
+// FUNCTION: GAME 0x00445180
+void RHArtificialMalignity::FUN_00445180(void *value)
 {
+    ((RHMalignityReactionCalls *)&VirtualBase())->FUN_0041a3e0();
+    RHUnk00585ea0 *action = new RHUnk00585ea0(1, 0x23, *(void **)((char *)&VirtualBase() + 4), value);
+    ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940(g_unk0x6c0560, 0, action);
 }
 
 // Parked: path-state processing uses out-of-run actor callbacks and global engine data.
@@ -1299,8 +1542,7 @@ float g_unk0x006775a0 = 250.0f;
 // GLOBAL: GAME 0x006775a4
 float g_unk0x006775a4 = 300.0f;
 
-// Parked: the inner range-switch case blocks are emitted in the opposite order.
-// STUB: GAME 0x00445510
+// FUNCTION: GAME 0x00445510
 bool RHArtificialMalignity::FUN_00445510(RHMalignityPosition position, void *actor)
 {
     RHUnk005fc3b0 direction;
@@ -1329,8 +1571,7 @@ bool RHArtificialMalignity::FUN_00445510(RHMalignityPosition position, void *act
             radius = g_unk0x006775a0;
             break;
         default:
-            radius = g_unk0x00677430;
-            break;
+            goto radius100;
         }
         break;
     case 1:
@@ -1340,8 +1581,7 @@ bool RHArtificialMalignity::FUN_00445510(RHMalignityPosition position, void *act
         case 2:
         case 8:
         case 14:
-            radius = g_unk0x00677430;
-            break;
+            goto radius100;
         case 3:
         case 9:
             radius = g_unk0x006775a0;
@@ -1355,14 +1595,15 @@ bool RHArtificialMalignity::FUN_00445510(RHMalignityPosition position, void *act
     case 14:
         switch (RHMalignityField<int>(actor, 0x144))
         {
-        case 2:
-        case 8:
-        case 14:
-            radius = g_unk0x00677430;
-            break;
         case 3:
         case 9:
             radius = g_unk0x0067759c;
+            break;
+        case 2:
+        case 8:
+        case 14:
+radius100:
+            radius = g_unk0x00677430;
             break;
         default:
             radius = g_rhuirendererportrait_percent;
@@ -1483,6 +1724,16 @@ float g_unk0x00677564 = 500.0f;
 template <bool InlineHead>
 struct RHMalignityEraseList : public RHMalignityList
 {
+    RHMalignityNode *At(int wanted)
+    {
+        FUN_005c8e40(wanted);
+        return m_current;
+    }
+    RHMalignityNode *SeekAt(int wanted)
+    {
+        SeekErase(wanted);
+        return m_current;
+    }
     void SeekErase(int wanted)
     {
         int count = m_count;
@@ -1491,12 +1742,14 @@ struct RHMalignityEraseList : public RHMalignityList
             if (wanted <= (count + 1) / 2)
             {
                 m_current = InlineHead ? m_head->next : (RHMalignityNode *)((RHUnk0046eb30 *)this)->FUN_0046eb80().node;
-                FUN_005c9010((RHUnk005c9010Iterator &)m_current, wanted, std::bidirectional_iterator_tag());
+                std::bidirectional_iterator_tag category;
+                FUN_005c9010((RHUnk005c9010Iterator &)m_current, wanted, category);
             }
             else
             {
                 m_current = m_head;
-                FUN_005c9010((RHUnk005c9010Iterator &)m_current, wanted - count, std::bidirectional_iterator_tag());
+                std::bidirectional_iterator_tag category;
+                FUN_005c9010((RHUnk005c9010Iterator &)m_current, wanted - count, category);
             }
             m_dirty = false;
             m_index = wanted;
@@ -1509,17 +1762,25 @@ struct RHMalignityEraseList : public RHMalignityList
                 if (wanted < (previous + 1) / 2)
                 {
                     m_current = InlineHead ? m_head->next : (RHMalignityNode *)((RHUnk0046eb30 *)this)->FUN_0046eb80().node;
-                    FUN_005c9010((RHUnk005c9010Iterator &)m_current, wanted, std::bidirectional_iterator_tag());
+                    std::bidirectional_iterator_tag category;
+                    FUN_005c9010((RHUnk005c9010Iterator &)m_current, wanted, category);
                 }
                 else
-                    FUN_005c9010((RHUnk005c9010Iterator &)m_current, wanted - previous, std::bidirectional_iterator_tag());
+                {
+                    std::bidirectional_iterator_tag category;
+                    FUN_005c9010((RHUnk005c9010Iterator &)m_current, wanted - previous, category);
+                }
             }
             else if (wanted < (previous + count) / 2)
-                FUN_005c9010((RHUnk005c9010Iterator &)m_current, wanted - previous, std::bidirectional_iterator_tag());
+            {
+                std::bidirectional_iterator_tag category;
+                FUN_005c9010((RHUnk005c9010Iterator &)m_current, wanted - previous, category);
+            }
             else
             {
                 m_current = m_head;
-                FUN_005c9010((RHUnk005c9010Iterator &)m_current, wanted - count, std::bidirectional_iterator_tag());
+                std::bidirectional_iterator_tag category;
+                FUN_005c9010((RHUnk005c9010Iterator &)m_current, wanted - count, category);
             }
             m_index = wanted;
         }
@@ -1565,15 +1826,6 @@ class RHMalignityGuardCalls
 {
 public:
     void FUN_0049fbb0(void *actor);
-};
-
-struct RHArtificialIntelligenceStaticArray
-{
-    int m_grow;
-    void **m_first;
-    void **m_last;
-    unsigned size() { return m_first == 0 ? 0 : m_last - m_first; }
-    void *operator[](unsigned index) { return m_first[index]; }
 };
 
 extern RHArtificialIntelligenceStaticArray g_unk0x006c06d0;
@@ -1673,13 +1925,6 @@ public:
     virtual void V164() = 0;
     virtual bool V168() = 0;
     unsigned m_04;
-};
-
-struct RHMalignityTeam
-{
-    undefined m_00[8];
-    RHArtificialIntelligenceStaticArray actors;
-    undefined m_14[0xc];
 };
 
 // FUNCTION: GAME 0x004460f0
@@ -1814,6 +2059,80 @@ void RHArtificialMalignity::FUN_00446700()
     }
 }
 
+struct RHMalignitySearchList
+{
+    int m_allocator;
+    RHMalignityNode *m_head;
+    int m_count;
+    RHMalignityNode *m_current;
+    bool m_dirty;
+    int m_index;
+    bool m_forward;
+    int m_result;
+    void *m_value;
+
+    void FindForward(void *value)
+    {
+        RHMalignityNode *head = m_head;
+        int count = m_count;
+        m_value = value;
+        m_forward = true;
+        m_current = head->next;
+        int index = 0;
+        while (index < count)
+        {
+            if (m_current->value == m_value)
+                break;
+            m_current = m_current->next;
+            ++index;
+        }
+        if (index < count)
+        {
+            m_result = index;
+            m_dirty = false;
+            m_index = index;
+        }
+        else
+        {
+            m_dirty = true;
+            m_result = -1;
+        }
+    }
+};
+
+// Parked at 0.7739: extra stack slot and list-search register/scheduling residuals.
+// STUB: GAME 0x00430020
+void RHArtificialMalignity::FUN_00430020()
+{
+    RHSectorActorList &list = M(RHSectorActorList, 0x2e4);
+    RHMalignityNode *last = list.m_head;
+    RHMalignityNode *node = last->next;
+    while (node != last)
+    {
+        RHMalignityNode *current = node;
+        node = node->next;
+        ((RHUnk0046eb30 *)&list)->erase(RHScriptIter((RHScriptNode *)current));
+    }
+    list.m_dirty = true;
+    unsigned short count = RHMalignityField<RHMalignityList>(VirtualBase().m_actor, 0x504).size();
+    for (unsigned short i = 0; i < count; ++i)
+    {
+        RHMalignityList &weapons = RHMalignityField<RHMalignityList>(VirtualBase().m_actor, 0x504);
+        weapons.FUN_005c8e40(i);
+        if (RHMalignityField<bool>(weapons.m_current, 0x12))
+        {
+            void *value = ((RHMalignityActorCalls *)VirtualBase().m_actor)->FUN_0048ee90(i);
+            if (!((RHMalignityTargetCalls *)value)->V048())
+            {
+                RHMalignitySearchList &search = (RHMalignitySearchList &)list;
+                search.FindForward(value);
+                if (search.m_result == -1)
+                    ((RHMalignityList *)&list)->InsertLast(value);
+            }
+        }
+    }
+}
+
 class RHMalignityVirtualView : public virtual RHMalignityBaseView
 {
 };
@@ -1944,7 +2263,7 @@ void RHArtificialMalignity::FUN_00446d20()
         VirtualBase().V00(0);
 }
 
-struct RHMalignitySearchList
+struct RHMalignitySearchListSearch
 {
     undefined4 m_allocator; // 0x00
     RHMalignityNode *m_head; // 0x04
@@ -2029,9 +2348,9 @@ struct RHMalignitySearchList
 // STUB: GAME 0x00446eb0
 void RHArtificialMalignity::FUN_00446eb0(void *actor)
 {
-    if (!RHMalignityField<RHMalignitySearchList>(this, 0x1dc).m_count)
+    if (!RHMalignityField<RHMalignitySearchListSearch>(this, 0x1dc).m_count)
         return;
-    RHMalignitySearchList &list = RHMalignityField<RHMalignitySearchList>(this, 0x1dc);
+    RHMalignitySearchListSearch &list = RHMalignityField<RHMalignitySearchListSearch>(this, 0x1dc);
     short found = (short)list.FindForward(actor);
     if (found == -1)
         return;
@@ -2122,10 +2441,10 @@ void *RHArtificialMalignity::FUN_004474e0()
 struct RHUnkSectorGlobal;
 extern RHUnkSectorGlobal *g_unk0x6c0a9c;
 
-class RHMalignityPathGeometry
+class RHUnkPathGeometry
 {
 public:
-    bool FUN_004f9170(const SBGeoPoint2D &first, const SBGeoPoint2D &second, unsigned short layer, void *radius);
+    bool Unk004f9170(const SBGeoPoint2D &a, const SBGeoPoint2D &b, unsigned short layer, void *radius);
 };
 
 class RHUnkPathActorInfoBase
@@ -2155,7 +2474,7 @@ bool RHArtificialMalignity::FUN_00447640(RHMalignityPosition &target)
     target = FUN_0040ed40(position, direction);
     void *actor = VirtualBase().m_actor;
     void *radius = ((RHUnkPathActorInfoBase *)((char *)RHMalignityField<void *>(actor, 0x50) + 4))->Current();
-    return ((RHMalignityPathGeometry *)g_unk0x6c0a9c)->FUN_004f9170(VirtualBase().FUN_0040cbf0(position),
+    return ((RHUnkPathGeometry *)g_unk0x6c0a9c)->Unk004f9170(VirtualBase().FUN_0040cbf0(position),
         VirtualBase().FUN_0040cbf0(target), target.layer, radius);
 }
 
@@ -2297,6 +2616,19 @@ class RHMalignityAbilityCalls
 public:
     unsigned short FUN_005c1b50(int index);
 };
+
+extern float g_unk0x00677438;
+
+// Parked: effective; actor pointer lands in EAX instead of reusing ECX.
+// STUB: GAME 0x00433010
+unsigned short RHArtificialMalignity::FUN_00433010()
+{
+    unsigned short limit = 200 - RHMalignityField<unsigned short>(M(void *, 0x334), 0x34) * 2;
+    unsigned short value = (unsigned short)(((RHMalignityAbilityCalls *)RHMalignityField<void *>(VirtualBase().m_actor, 0x25c))->FUN_005c1b50(1) + g_unk0x00677438);
+    if (limit < value)
+        return value;
+    return limit;
+}
 
 // FUNCTION: GAME 0x0044a090
 bool RHArtificialMalignity::FUN_0044a090()
@@ -2874,52 +3206,18 @@ float RHMalignityActorCalls::FUN_0048db80(void *position, void *actor)
     return remainder;
 }
 
-// Parked: list iteration, tagged geometry, map bounds, EH cleanup, and hazard-dependent radius adjustment are unreconstructed.
+// Parked: the inlined GoTo branches swap ecx/edx for the head and tag loads, changing the tail-merge point.
 // STUB: GAME 0x0048e420
 void RHMalignityActorCalls::FUN_0048e420(void *actor)
 {
-    RHMalignityList &list = RHMalignityField<RHMalignityList>(this, 0x504);
-    int count = list.m_count;
-    int index = 0;
-    if (actor)
+    int count = RHMalignityField<RHMalignityList>(this, 0x504).m_count;
+    for (unsigned short index = 0; index < (unsigned short)count; ++index)
     {
-        for (; index < count; ++index)
-        {
-            list.FUN_005c8e40(index);
-            if (list.m_current->value == actor)
-                break;
-        }
+        if (actor && actor != RHMalignityField<RHMalignityEraseList<false> >(this, 0x504).At(index)->value)
+            continue;
+        RHMalignityField<bool>(RHMalignityField<RHMalignityEraseList<false> >(this, 0x504).At(index), 0x12) = false;
+        RHMalignityField<bool>(RHMalignityField<RHMalignityEraseList<false> >(this, 0x504).SeekAt(index), 0x10) = false;
     }
-    if (list.m_dirty)
-    {
-        list.m_current = list.m_head->next;
-        FUN_005c9010((RHUnk005c9010Iterator &)list.m_current, index, std::bidirectional_iterator_tag());
-        list.m_dirty = false;
-    }
-    else if (index != list.m_index)
-    {
-        int previous = list.m_index;
-        if (index < previous)
-        {
-            if (index < (previous + 1) / 2)
-            {
-                list.m_current = list.m_head->next;
-                FUN_005c9010((RHUnk005c9010Iterator &)list.m_current, index, std::bidirectional_iterator_tag());
-            }
-            else
-                FUN_005c9010((RHUnk005c9010Iterator &)list.m_current, index - previous, std::bidirectional_iterator_tag());
-        }
-        else if (index < (previous + count) / 2)
-            FUN_005c9010((RHUnk005c9010Iterator &)list.m_current, index - previous, std::bidirectional_iterator_tag());
-        else
-        {
-            list.m_current = list.m_head;
-            FUN_005c9010((RHUnk005c9010Iterator &)list.m_current, index - count, std::bidirectional_iterator_tag());
-        }
-        list.m_index = index;
-    }
-    if (list.m_current && list.m_current != list.m_head)
-        RHMalignityField<unsigned char>(list.m_current->value, 0x12) = 0;
 }
 
 // FUNCTION: GAME 0x0048e610
@@ -2956,35 +3254,43 @@ void RHMalignityActorCalls::FUN_0048e650(unsigned operation, unsigned short valu
     }
 }
 
-// Reconstructed gates and actor-profile checks; geometry, event allocation and dispatch remain incomplete.
+SBGeoVector2D operator*(float factor, const SBGeoVector2D &point);
+
+// GLOBAL: GAME 0x00677df0
+float g_unk0x00677df0 = 70.0f;
+
+// Parked: geometry argument scheduling and point-to-vector copy identity differ.
 // STUB: GAME 0x0048e670
 bool RHMalignityActorCalls::FUN_0048e670(void *actor)
 {
     if (RHMalignityField<unsigned char>(this, 0x652))
         return false;
-    void *profile = RHMalignityField<void *>(this, 0x50);
-    void *base = (char *)this + (*(int **)RHMalignityField<void *>(this, 0x49c))[1];
-    if (RHMalignityField<int>(base, 0x4a8) != 1)
+    if (RHMalignityField<int>((char *)this + ((int *)RHMalignityField<void *>(this, 0x49c))[1], 0x4a8) != 1)
         return false;
     if ((RHMalignityField<unsigned>(this, 4) & 31) == 0x14 || RHMalignityField<unsigned>(this, 0x4f0) < 200)
         return false;
+    void *profile = RHMalignityField<void *>(this, 0x50);
     if (RHMalignityField<float>(profile, 0x10) == RHMalignityField<float>(profile, 0x2c) &&
         RHMalignityField<float>(profile, 0x14) == RHMalignityField<float>(profile, 0x30) &&
         RHMalignityField<float>(profile, 0x18) == RHMalignityField<float>(profile, 0x34))
         return false;
-    void *otherProfile = RHMalignityField<void *>(actor, 0x50);
     if ((RHMalignityField<unsigned>(actor, 4) & 0xf) == 0xc &&
-        RHMalignityField<unsigned char>(base, 0x7e4) == 1)
+        RHMalignityField<unsigned char>((char *)this + ((int *)RHMalignityField<void *>(this, 0x49c))[1], 0x7e4) == 1)
         return false;
-    if (RHMalignityField<void *>(profile, 0xe0) != RHMalignityField<void *>(otherProfile, 0xe0))
+    if (RHMalignityField<void *>(RHMalignityField<void *>(actor, 0x50), 0xe0) != RHMalignityField<void *>(profile, 0xe0))
         return false;
-    RHMalignityPosition own = RHMalignityPositionOf(profile);
-    RHMalignityPosition other = RHMalignityPositionOf(otherProfile);
-    SBGeoPoint2D displacement = FUN_0040ec20(own, other);
-    if (displacement.FUN_005fc700(1.0f) > 70.0f)
+    SBGeoVector2D displacement(RHMalignityField<SBGeoPoint2D>(RHMalignityField<void *>(this, 0x50), 0x24)
+        .Unk005fc110(RHMalignityField<SBGeoPoint2D>(RHMalignityField<void *>(actor, 0x50), 0x24))
+        .Unk005fc190(20.0f * FUN_004135b0()));
+    if (displacement.FUN_005fc700(1.0f) > g_unk0x00677df0)
         return false;
-    unsigned difference = (RHMalignityHeading(actor) - 0x0c) & 0xf;
-    return difference < 2 || difference == 0xf;
+    short heading = RHMalignityField<short>(RHMalignityField<void *>(actor, 0x50), 0xd8);
+    int difference = (((RHUnk005fc3b0 *)&displacement)->FUN_005fcc50(0.57357645f) - heading) & 0xf;
+    if (difference < 0)
+        return false;
+    if (difference <= 1 || difference == 0xf)
+        return true;
+    return false;
 }
 
 // Reconstructed point projection and action setup; the target's selection and cleanup paths remain incomplete.
@@ -3068,7 +3374,7 @@ class RHMalignitySegmentTemporary
 public:
     RHMalignitySegmentTemporary(const SBGeoPoint2D &first, const SBGeoPoint2D &second)
     {
-        ((RHMobileUnk0060a820 *)this)->FUN_0060a820(first, second);
+        ((SBGeoSegment2D *)this)->SBGeoSegment2D::SBGeoSegment2D(first, second);
     }
     ~RHMalignitySegmentTemporary()
     {
@@ -3151,10 +3457,54 @@ struct RHMalignityOwnedList
 
 DECOMP_SIZE_ASSERT(RHMalignityOwnedList, 0x10)
 
+// SIZE 0x10
+struct RHMalignityOwnedPointList
+{
+    std::list<RHMalignityOwnedPoint *> m_list; // 0x00
+    std::list<RHMalignityOwnedPoint *>::iterator m_current; // 0x0c
+    void FUN_004e6540();
+};
+
+DECOMP_SIZE_ASSERT(RHMalignityOwnedPointList, 0x10)
+
+// SIZE 0x10
+struct RHMalignityOwnedRecordList
+{
+    std::list<RHMalignityOwnedRecord *> m_list; // 0x00
+    std::list<RHMalignityOwnedRecord *>::iterator m_current; // 0x0c
+    void FUN_004e6620();
+};
+
+DECOMP_SIZE_ASSERT(RHMalignityOwnedRecordList, 0x10)
+
+// FUNCTION: GAME 0x004e6540
+void RHMalignityOwnedPointList::FUN_004e6540()
+{
+    std::list<RHMalignityOwnedPoint *>::iterator end;
+    for (m_current = m_list.begin(); end = m_list.end(), m_current != end; ++m_current)
+    {
+        if (*m_current)
+            delete *m_current;
+    }
+    m_list.clear();
+}
+
 // FUNCTION: GAME 0x004e65b0
 void RHMalignityOwnedList::FUN_004e65b0()
 {
     std::list<RHMalignityOwnedValue *>::iterator end;
+    for (m_current = m_list.begin(); end = m_list.end(), m_current != end; ++m_current)
+    {
+        if (*m_current)
+            delete *m_current;
+    }
+    m_list.clear();
+}
+
+// FUNCTION: GAME 0x004e6620
+void RHMalignityOwnedRecordList::FUN_004e6620()
+{
+    std::list<RHMalignityOwnedRecord *>::iterator end;
     for (m_current = m_list.begin(); end = m_list.end(), m_current != end; ++m_current)
     {
         if (*m_current)
@@ -3245,6 +3595,26 @@ RHUnk00521770 *RHUnk00521770::FUN_00521770()
     return this;
 }
 
+// FUNCTION: GAME 0x005217a0
+void *RHUnk00521770::FUN_005217a0(unsigned flags)
+{
+    FUN_005217c0();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+typedef std::vector<unsigned short> RHUnk00521770Values;
+
+// FUNCTION: GAME 0x005217c0
+void RHUnk00521770::FUN_005217c0()
+{
+    m_vtable = 0x679134;
+    RHUnk00521770Values &values = *(RHUnk00521770Values *)&m_18;
+    values.clear();
+    values.~RHUnk00521770Values();
+}
+
 // FUNCTION: GAME 0x00560450
 const SBGeoBoundingBox2D &RHPathActorInfo::FUN_00560450()
 {
@@ -3282,7 +3652,9 @@ void RHArtificialMalignity::Emit(SBFile &file)
     ((RHMalignityActorCalls *)Base().m_actor)->FUN_0048ebe0();
     ((RHPathActorInfo *)this)->FUN_00560450();
     ((RHUnk00608f10 *)this)->FUN_00608f10(0);
+    ((RHMalignityOwnedPointList *)this)->FUN_004e6540();
     ((RHMalignityOwnedList *)this)->FUN_004e65b0();
+    ((RHMalignityOwnedRecordList *)this)->FUN_004e6620();
     ((RHCampaignIndexList<false> *)this)->FUN_004fe2e0(RHScriptIter(0), *(unsigned short *)this);
     ((RHUnk00521770 *)this)->FUN_00521770();
     ((RHMalignityEngineCalls *)this)->FUN_004da8d0(*(SBGeoBoundingBox2D *)this);

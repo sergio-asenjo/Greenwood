@@ -20,9 +20,7 @@ extern "C" void __cdecl srand(unsigned) {}
 extern "C" long __cdecl time(long *) { return 0; }
 
 
-void RHArtificialIntelligence::Unk00422b70(int, int) {}
 bool RHArtificialIntelligence::Unk00419b20(int) { return false; }
-void RHArtificialIntelligence::Unk00419970(int, int, int) {}
 bool RHArtificialIntelligenceActorCalls::Unk00470ce0() { return false; }
 std::string FUN_00420d40(int) { return std::string(); }
 bool RHArtificialIntelligence::Unk00412240(const RHUnk00571160Position &, unsigned short, float) { return false; }
@@ -39,14 +37,14 @@ unsigned char RHArtificialIntelligence::Unk00419c50()
     return (unsigned char)(rand() % 100 + 1);
 }
 
-// Parked: effective-only; VC6 sinks the flag store into the idiv latency window.
-// STUB: GAME 0x00419c80
+// FUNCTION: GAME 0x00419c80
 unsigned char RHArtificialIntelligence::Unk00419c80()
 {
     if (!*(char *)((char *)this + 0x25f))
     {
+        int value = rand();
         *(char *)((char *)this + 0x25f) = 1;
-        *(char *)((char *)this + 0x25e) = (char)(rand() % 100 + 1);
+        *(char *)((char *)this + 0x25e) = (char)(value % 100 + 1);
     }
     return *(char *)((char *)this + 0x25e);
 }
@@ -91,3 +89,4 @@ int RHAIUnk00550660::Unk00550660(int value)
         return 1;
     return 0;
 }
+void RHArtificialIntelligence::FUN_00411a00(unsigned) {}

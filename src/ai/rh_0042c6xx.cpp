@@ -36,6 +36,47 @@ RHUnk0042c6e0Value RHUnk0042c6e0::FUN_0042c6e0()
     return result;
 }
 
+struct RHMalignityPosition
+{
+    float x;
+    float y;
+    void *area;
+    unsigned short layer;
+};
+
+struct RHMalignityActorDescription
+{
+    char m_00[0x18];
+    float m_18;
+};
+
+struct RHMalignityActor
+{
+    char m_00[0x50];
+    RHMalignityActorDescription *m_50;
+    float GetValue18() const { return m_50->m_18; }
+};
+
+class RHMalignityBaseView
+{
+public:
+    RHMalignityPosition FUN_004165e0(void *actor, bool mode);
+};
+
+class RHMalignityReactionCalls
+{
+public:
+    void FUN_00412d60(RHMalignityPosition position, int heading, int mode);
+    void FUN_0042c7d0(RHMalignityActor *actor, int mode);
+};
+
+// FUNCTION: GAME 0x0042c7d0
+void RHMalignityReactionCalls::FUN_0042c7d0(RHMalignityActor *actor, int mode)
+{
+    FUN_00412d60(((RHMalignityBaseView *)this)->FUN_004165e0(actor, true),
+        (int)actor->GetValue18(), mode);
+}
+
 struct RHUnk0042c830Value
 {
     float m_00;

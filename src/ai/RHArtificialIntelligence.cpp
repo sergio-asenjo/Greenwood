@@ -1,17 +1,114 @@
 #include "SBNullstr.h"
 #include "RHArtificialIntelligence.h"
 
+// GLOBAL: GAME 0x006c078a
+unsigned short g_unk0x006c078a;
+// GLOBAL: GAME 0x006c06c2
+unsigned short g_unk0x006c06c2;
+// GLOBAL: GAME 0x006c0738
+bool g_unk0x006c0738;
+// GLOBAL: GAME 0x006c06c0
+bool g_unk0x006c06c0;
+
+struct RHAIConsiderationThreshold
+{
+    unsigned short weight;
+    short value;
+};
+
+// GLOBAL: GAME 0x006c07b4
+RHAIConsiderationThreshold g_unk0x006c07b4;
+
 template <class T> inline T &RHAIField(void *object, unsigned offset)
 {
     return *(T *)((char *)object + offset);
 }
 
-// Parked: list semantics and return address are established, but ABI owner remains provisional.
-// STUB: GAME 0x00423c20
+#include <list>
+
+class RHArtificialIntelligenceSeekList : public std::list<RHArtificialIntelligenceElement *>
+{
+public:
+    iterator Begin()
+    {
+        _Nodeptr sentinel = _Head;
+        _Nodeptr first = *(_Nodeptr volatile *)&sentinel->_Next;
+        return iterator(first);
+    }
+    iterator End()
+    {
+        _Nodeptr sentinel = *(_Nodeptr volatile *)&_Head;
+        return iterator(sentinel);
+    }
+    struct Cursor : std::list<RHArtificialIntelligenceElement *>::iterator
+    {
+        Cursor &Assign(_Nodeptr value)
+        {
+            *(_Nodeptr volatile *)this = value;
+            return *this;
+        }
+    };
+    void Seek(int wanted)
+    {
+        int size = _Size;
+        if (m_dirty)
+        {
+            if (wanted <= (size + 1) / 2)
+            {
+                m_cursor = Begin();
+                std::bidirectional_iterator_tag category;
+                FUN_005c9010((RHUnk005c9010Iterator &)m_cursor, wanted, category);
+            }
+            else
+            {
+                m_cursor = End();
+                std::bidirectional_iterator_tag category;
+                FUN_005c9010((RHUnk005c9010Iterator &)m_cursor, wanted - size, category);
+            }
+            m_dirty = false;
+            m_index = wanted;
+        }
+        else
+        {
+            int previous = m_index;
+            if (wanted != previous)
+            {
+                if (wanted < previous)
+                {
+                    if (wanted < (previous + 1) / 2)
+                    {
+                        std::bidirectional_iterator_tag category;
+                        FUN_005c9010((RHUnk005c9010Iterator &)((Cursor &)m_cursor).Assign(*(_Nodeptr volatile *)&_Head->_Next), wanted, category);
+                    }
+                    else
+                    {
+                        int distance = wanted - previous;
+                        std::bidirectional_iterator_tag category;
+                        FUN_005c9010((RHUnk005c9010Iterator &)m_cursor, distance, category);
+                    }
+                }
+                else if (wanted < (size + previous) / 2)
+                    std::advance(m_cursor, wanted - previous);
+                else
+                {
+                    m_cursor = End();
+                    std::advance(m_cursor, wanted - size);
+                }
+                m_index = wanted;
+            }
+        }
+    }
+    iterator m_cursor;
+    bool m_dirty;
+    int m_index;
+};
+
+// FUNCTION: GAME 0x00423c20
 RHArtificialIntelligenceElement *&RHArtificialIntelligenceList::FUN_00423c20(int wanted)
 {
-    GoTo(wanted);
-    return m_current.m_node->m_data;
+    RHArtificialIntelligenceSeekList *self = (RHArtificialIntelligenceSeekList *)this;
+    self->Seek(wanted);
+    return *self->m_cursor;
 }
 
 struct RHMalignityPosition;
@@ -132,6 +229,8 @@ void RHUnk00424060List::Clear()
     count = 0;
 }
 
+// GLOBAL: GAME 0x006c06ca
+unsigned char g_unk0x006c06ca;
 // GLOBAL: GAME 0x006c06d0
 RHArtificialIntelligenceStaticArray g_unk0x006c06d0;
 // GLOBAL: GAME 0x006c07de
@@ -269,6 +368,12 @@ class RHArtificialIntelligenceForbiddenRemark
 {
 public:
     ~RHArtificialIntelligenceForbiddenRemark() {}
+    int remark;
+    unsigned short flags;
+    void *voice;
+    unsigned short actorID;
+    bool soldier;
+    unsigned deadline;
 };
 
 // GLOBAL: GAME 0x006a73c8
@@ -636,6 +741,38 @@ void RHArtificialIntelligence::Unk00410600()
     ((RHMalignityBaseView *)this)->FUN_0041a300(0);
 }
 
+struct RHAIPathArray
+{
+    int m_grow;
+    void **m_first;
+    void **m_last;
+    unsigned size() { return m_first ? m_last - m_first : 0; }
+};
+
+// FUNCTION: GAME 0x004121a0
+void RHArtificialIntelligence::FUN_004121a0()
+{
+    RHArtificialIntelligencePathCursor *cursor = (RHArtificialIntelligencePathCursor *)((char *)m_actor + RHAIField<int>(RHAIField<void *>(m_actor, 0x49c), 4) + 0x4cc);
+    V10(1, 13);
+    RHAIPathArray *path = cursor->m_path;
+    if (path && (unsigned short)path->size() == 1)
+    {
+        RHAIField<char>(this, 0x16d) = 1;
+        return;
+    }
+    cursor->Unk005505c0();
+    if (Unk00419cc0())
+    {
+        unsigned short flags = RHAIField<unsigned short>(this, 0x22c) | 4;
+        void *waypoint = RHAIField<void **>(RHAIField<void *>(cursor, 4), 4)[cursor->m_current];
+        Unk00412c80(waypoint, flags);
+        return;
+    }
+    unsigned short flags = RHAIField<unsigned short>(this, 0x22c) | 0x404;
+    void *waypoint = RHAIField<void **>(RHAIField<void *>(cursor, 4), 4)[cursor->m_current];
+    Unk00412c80(waypoint, flags);
+}
+
 // FUNCTION: GAME 0x00412c80
 bool RHArtificialIntelligence::Unk00412c80(void *waypoint, unsigned short flags)
 {
@@ -676,7 +813,7 @@ public:
 class RHUnk0058a3d0
 {
 public:
-    void Unk(void *context, int value, void *sequence);
+    void *Unk(void *context, int value, void *sequence);
 };
 
 class RHUnk6c1040;
@@ -1112,8 +1249,11 @@ bool RHArtificialIntelligence::Unk00414be0(SBFile &file)
         RHScriptNode *last = (RHScriptNode *)stimuli.m_head;
         while (first.node != last)
         {
-            typedef RHScriptIter (RHSectorActorIter::*Increment)(int);
-            ((RHUnk0046eb30 *)&stimuli)->erase((((RHSectorActorIter *)&first)->*(Increment)&RHSectorActorIter::operator++)(0));
+            typedef std::list<RHElementActor *>::iterator Native;
+            typedef Native (Native::*Increment)(int);
+            typedef RHScriptIter (RHSectorActorIter::*Forward)(int);
+            Increment increment = &Native::operator++;
+            ((RHUnk0046eb30 *)&stimuli)->erase((((RHSectorActorIter *)&first)->*(Forward)increment)(0));
         }
         stimuli.m_dirty = true;
         for (i = 0; i < count; ++i)
@@ -1212,7 +1352,44 @@ void RHArtificialIntelligence::Unk00416710(unsigned value)
     ((RHArtificialIntelligenceActorCalls *)m_actor)->Unk0048b450(value, 0);
 }
 
-// deferred: unannotated pending reccmp #534
+// FUNCTION: GAME 0x00416740
+short FUN_00416740()
+{
+    const unsigned short &weight = g_unk0x006c078a;
+    const unsigned short &value = g_unk0x006c06c2;
+    short result;
+    if (weight > 0)
+        result = (int)(unsigned short)value / (int)(unsigned short)weight;
+    else if (g_unk0x006c0738 == g_unk0x006c06c0)
+        result = 50;
+    else
+        result = g_unk0x006c0738 ? 0 : 100;
+    if (g_unk0x006c07b4.weight > 0)
+    {
+        short weighted = *(unsigned long *)&g_unk0x006c07b4 * result;
+        weighted += g_unk0x006c07b4.value;
+        weighted += value;
+        result = weighted / (g_unk0x006c07b4.weight + (int)(unsigned short)weight);
+    }
+    if (result < 0)
+        result = 0;
+    else if (result > 100)
+        result = 100;
+    g_unk0x006c078a = 0;
+    g_unk0x006c06c2 = 0;
+    g_unk0x006c07b4.weight = 0;
+    g_unk0x006c07b4.value = 0;
+    g_unk0x006c0738 = false;
+    g_unk0x006c06c0 = false;
+    return result;
+}
+
+short EmitRHAIConsiderations()
+{
+    return FUN_00416740();
+}
+
+// FUNCTION: GAME 0x00416b30
 bool FUN_00416b30(void *&value, SBFile &file)
 {
     unsigned short index;
@@ -1251,7 +1428,7 @@ bool FUN_00416b30(void *&value, SBFile &file)
         {
             SBString *err = file.GetError();
             const char *reason = err->m_chars ? err->m_chars : "";
-            SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp",
+            SBAssert(0, g_unk0x006a73c8,
                      4820, "Serialize failed reason is %s", reason);
             return false;
         }
@@ -1515,7 +1692,7 @@ void RHArtificialIntelligence::FUN_00417580()
     ((RHMobileUnk00607da0 *)&fill)->FUN_00607da0((const RHMobileUnk00607da0 &)clip.FUN_006092c0(fill));
     if (fill.Unk00608f30())
     {
-        fill.FUN_006092a0((SBGeoVector2D)clip.first);
+        fill -= (SBGeoVector2D)clip.first;
         fill.FUN_006091d0(scale);
         FUN_00417ab0(fill, 255, 0, 0, draw->m_drawManager, false);
     }
@@ -1524,7 +1701,7 @@ void RHArtificialIntelligence::FUN_00417580()
     ((RHMobileUnk00607da0 *)&outline)->FUN_00607da0((const RHMobileUnk00607da0 &)clip.FUN_006092c0(outline));
     if (outline.Unk00608f30())
     {
-        outline.FUN_006092a0((SBGeoVector2D)clip.first);
+        outline -= (SBGeoVector2D)clip.first;
         outline.FUN_006091d0(scale);
         FUN_00417ca0(outline, 255, 255, 255, draw->m_drawManager, 0, false);
     }
@@ -1577,7 +1754,7 @@ void FUN_00417ab0(const SBGeoBoundingBox2D &box, unsigned char red, unsigned cha
         *(unsigned short *)((char *)draw + 0x10c));
     unsigned short dark = FUN_00417a40((unsigned char)(g_unk0x006774d0 * r), (unsigned char)(g_unk0x006774d0 * g),
         (unsigned char)(g_unk0x006774d0 * b), *(unsigned short *)((char *)draw + 0x10c));
-    draw->FUN_005e61e0(0, box, color, 0);
+    draw->FUN_005e61e0(0, &box, color, 0);
     if (shade)
     {
         upperRight.m_x = box.last.m_x;
@@ -2072,7 +2249,7 @@ void RHArtificialIntelligence::Unk00418c40(int remark, unsigned flags)
 }
 
 // FUNCTION: GAME 0x004195f0
-void RHArtificialIntelligence::Unk004195f0(unsigned flags)
+void RHArtificialIntelligence::Unk004195f0(unsigned short flags)
 {
     if ((flags & 0x100) > 0)
         ((RHScriptBatchCalls *)this)->Unk0040d980(59);
@@ -2082,6 +2259,85 @@ void RHArtificialIntelligence::Unk004195f0(unsigned flags)
         ((RHScriptBatchCalls *)this)->Unk0040d980(61);
     else if ((flags & 0x1000) > 0)
         ((RHScriptBatchCalls *)this)->Unk0040d980(68);
+}
+
+extern unsigned *g_unk0x006c08a4;
+
+// Parked: narrowed actor loads and speech-field store scheduling differ.
+// STUB: GAME 0x00419970
+void RHArtificialIntelligence::Unk00419970(int remark, int time, int flags)
+{
+    if (flags & 0x1000)
+        flags |= (unsigned char)(RHAIField<unsigned>(m_actor, 4) & 0x1f) == 0x14 ? 4 : 2;
+    RHArtificialIntelligenceForbiddenRemark *speech = (RHArtificialIntelligenceForbiddenRemark *)operator new(sizeof(RHArtificialIntelligenceForbiddenRemark));
+    speech->remark = remark;
+    speech->soldier = (unsigned char)(RHAIField<unsigned>(m_actor, 4) & 0x1f) == 0x14;
+    speech->flags = flags;
+    speech->deadline = *g_unk0x006c08a4 + (unsigned short)time;
+    speech->voice = m_actor->V178();
+    speech->actorID = RHAIField<unsigned>(m_actor, 0x0c);
+    RHArtificialIntelligenceNode *head = g_unk0x006c07b8.m_head;
+    RHArtificialIntelligenceNode *previous = head->m_prev;
+    RHArtificialIntelligenceNode *node = (RHArtificialIntelligenceNode *)operator new(sizeof(RHArtificialIntelligenceNode));
+    node->m_next = head ? head : node;
+    node->m_prev = previous ? previous : node;
+    head->m_prev = node;
+    node->m_prev->m_next = node;
+    RHArtificialIntelligenceElement **destination = &node->m_data;
+    if (destination)
+        *destination = (RHArtificialIntelligenceElement *)speech;
+    ++g_unk0x006c07b8.m_count;
+    g_unk0x006c07b8.m_dirty = true;
+}
+
+struct RHAIActorSelectionList : RHArtificialIntelligenceList
+{
+    bool searched;
+    int found;
+    RHArtificialIntelligenceElement *value;
+};
+
+#include "RHUnk00419a40.h"
+
+// Parked: cached-search dispatch retains a constant register and an extra spill.
+// STUB: GAME 0x00419a40
+void RHUnk00419a40::Unk(int remark, bool enabled)
+{
+    RHAIActorSelectionList &list = RHAIField<RHAIActorSelectionList>(this, 0x230);
+    list.value = (RHArtificialIntelligenceElement *)remark;
+    list.searched = true;
+    list.m_current.m_node = list.m_head->m_next;
+    int index = 0;
+    int count = list.m_count;
+    for (; index < count; ++index, ++list.m_current)
+        if (list.m_current.m_node->m_data == list.value)
+            break;
+    if (index < count)
+    {
+        list.found = index;
+        list.m_dirty = false;
+        list.m_index = index;
+    }
+    else
+    {
+        list.m_dirty = true;
+        list.found = -1;
+    }
+    if (enabled)
+    {
+        if (list.found == -1)
+            list.InsertLast((void *)remark);
+    }
+    else if (list.found != -1)
+    {
+        ((RHSeqList *)&list)->GoTo(list.found);
+        RHArtificialIntelligenceNode *node = list.m_current.m_node;
+        node->m_prev->m_next = node->m_next;
+        node->m_next->m_prev = node->m_prev;
+        operator delete(node);
+        --list.m_count;
+        list.m_dirty = true;
+    }
 }
 
 class RHAIUnk00550660
@@ -2177,6 +2433,66 @@ unsigned short RHArtificialIntelligence::Unk0041a420()
     return rand() % 70 + 70;
 }
 
+#include "RHMalignityActorCalls.h"
+
+// Parked: receiver and scan-index registers are exchanged throughout the body.
+// STUB: GAME 0x00418bc0
+void RHScriptBatchCalls::Unk00418bc0()
+{
+    RHArtificialIntelligence *ai = (RHArtificialIntelligence *)this;
+    ((RHMalignityActorCalls *)ai->m_actor)->FUN_0048e420(0);
+    unsigned index = 0;
+    unsigned count = RHAIField<unsigned>(this, 0x180);
+    bool found = false;
+    if ((unsigned short)count > 0)
+    {
+        RHArtificialIntelligenceValueList<RHStimulus> &stimuli = RHAIField<RHArtificialIntelligenceValueList<RHStimulus> >(this, 0x178);
+        for (; (unsigned short)index < (unsigned short)count; ++index)
+        {
+            if (stimuli[(unsigned short)index].m_20 == 20)
+            {
+                found = true;
+                break;
+            }
+        }
+    }
+    void *pending = RHAIField<void *>(this, 0xc);
+    RHAIField<char>(this, 0x1c4) = 0;
+    if (pending && !found && !RHAIField<char>(ai->m_actor, 0x1ce))
+        Unk0040d980(21);
+}
+
+// Parked: null-count tail merging and the bonus-flag boolean materialization differ.
+// STUB: GAME 0x0041a490
+void RHArtificialIntelligence::FUN_0041a490()
+{
+    unsigned short count = (unsigned short)RHAIField<RHArtificialIntelligenceStaticArray>(g_pEngine, 0x48d8).size();
+    if (count > 0)
+    {
+        int offset = 0;
+        unsigned remaining = (unsigned short)count;
+        do
+        {
+            void *object = RHAIField<void *>(RHAIField<void *>(g_pEngine, 0x48dc), offset);
+            if ((RHAIField<unsigned>(object, 4) & 3) == 3 && RHAIField<char>(object, 0x12) &&
+                (RHAIField<int>(object, 0xb0) == 3 ||
+                 RHAIField<int>(object, 0xb0) == 8 && !RHAIField<bool>(this, 0x2ac)))
+            {
+                if (!((RHMalignityActorCalls *)m_actor)->FUN_0048c8e0(object, 2))
+                    ((RHMalignityActorCalls *)m_actor)->FUN_0048c700(object, 2);
+            }
+            offset += 4;
+        } while (--remaining);
+    }
+}
+
+void EmitRHAIFresh603(RHArtificialIntelligence *value)
+{
+    value->FUN_004121a0();
+    ((RHScriptBatchCalls *)value)->Unk00418bc0();
+    value->FUN_0041a490();
+}
+
 struct RHUnk0041a930Value
 {
     int m_00;
@@ -2233,6 +2549,78 @@ void RHArtificialIntelligence::Unk0041a960(unsigned short direction)
             ++index;
         } while (--count);
     }
+}
+
+class RHUnk00613e90;
+void FUN_0059fb20(RHUnk00613e90 *, const RHUnk00613e90 &);
+
+struct RHArtificialIntelligenceHistoryEntry
+{
+    int m_property;
+    unsigned short m_value;
+    unsigned m_time;
+};
+
+struct RHArtificialIntelligenceHistoryNode
+{
+    RHArtificialIntelligenceHistoryNode *m_next;
+    RHArtificialIntelligenceHistoryNode *m_prev;
+    RHArtificialIntelligenceHistoryEntry m_data;
+};
+
+struct RHArtificialIntelligenceHistory
+{
+    int m_allocator;
+    RHArtificialIntelligenceHistoryNode *m_head;
+    int m_count;
+    RHArtificialIntelligenceHistoryNode *m_current;
+    bool m_dirty;
+
+    void InsertLast(const RHArtificialIntelligenceHistoryEntry &value)
+    {
+        RHArtificialIntelligenceHistoryNode *head = m_head;
+        RHArtificialIntelligenceHistoryNode *previous = head->m_prev;
+        RHArtificialIntelligenceHistoryNode *node = (RHArtificialIntelligenceHistoryNode *)::operator new(0x14);
+        node->m_next = head ? head : node;
+        node->m_prev = previous ? previous : node;
+        head->m_prev = node;
+        node->m_prev->m_next = node;
+        FUN_0059fb20((RHUnk00613e90 *)&node->m_data, (const RHUnk00613e90 &)value);
+        ++m_count;
+        m_dirty = true;
+    }
+    void RemoveFirst()
+    {
+        RHArtificialIntelligenceHistoryNode *first = m_head->m_next;
+        first->m_prev->m_next = first->m_next;
+        first->m_next->m_prev = first->m_prev;
+        ::operator delete(first);
+        --m_count;
+        m_dirty = true;
+    }
+};
+
+// Parked: effective; incremented count lands in EDX instead of ECX.
+// STUB: GAME 0x00422b70
+void RHArtificialIntelligence::Unk00422b70(int property, int value)
+{
+    RHArtificialIntelligenceHistory &history = RHAIField<RHArtificialIntelligenceHistory>(this, 0x34c);
+    RHArtificialIntelligenceHistoryEntry entry;
+    entry.m_property = property;
+    RHArtificialIntelligenceHistoryNode *head = history.m_head;
+    entry.m_value = (unsigned short)value;
+    entry.m_time = *(unsigned *)((char *)g_pEngine + 0x4a94);
+    RHArtificialIntelligenceHistoryNode *previous = head->m_prev;
+    RHArtificialIntelligenceHistoryNode *node = (RHArtificialIntelligenceHistoryNode *)::operator new(0x14);
+    node->m_next = head ? head : node;
+    node->m_prev = previous ? previous : node;
+    head->m_prev = node;
+    node->m_prev->m_next = node;
+    FUN_0059fb20((RHUnk00613e90 *)&node->m_data, (const RHUnk00613e90 &)entry);
+    ++history.m_count;
+    history.m_dirty = true;
+    if (history.m_count > 26)
+        history.RemoveFirst();
 }
 
 // FUNCTION: GAME 0x00424340
@@ -2333,19 +2721,22 @@ public:
     void FUN_0042c750(int level, const RHUnk0042c750Value *value);
 };
 
-// Parked: the second `return 0` needs full-width `xor eax,eax`; VC6 emits a
-// 16-bit `xor ax,ax` for a 16-bit return and (int)0/(short)0 do not flip it.
-// All other instructions match. 0.827586.
-// STUB: GAME 0x0042c730
+struct RHUnk0042c730Vector
+{
+    int m_0;
+    int *m_first;
+    int *m_last;
+
+    unsigned size() const { return m_first == 0 ? 0 : m_last - m_first; }
+};
+
+// FUNCTION: GAME 0x0042c730
 unsigned short RHUnk0042c730::FUN_0042c730()
 {
-    char *outer = *(char **)((char *)this + 4);
+    RHUnk0042c730Vector *outer = *(RHUnk0042c730Vector **)((char *)this + 4);
     if (!outer)
         return 0;
-    int *begin = *(int **)(outer + 4);
-    if (!begin)
-        return 0;
-    return (unsigned short)(*(int **)(outer + 8) - begin);
+    return outer->size();
 }
 
 // FUNCTION: GAME 0x0042c750
@@ -2474,14 +2865,6 @@ void RHArtificialIntelligencePathCursor::Unk005505b0(unsigned short waypoint)
     RHAIField<unsigned char>(this, 0) = (unsigned char)waypoint;
 }
 
-struct RHAIPathArray
-{
-    int m_grow;
-    void **m_first;
-    void **m_last;
-    unsigned size() { return m_first ? m_last - m_first : 0; }
-};
-
 // Parked: repeated array-size tests and register scheduling.
 // STUB: GAME 0x005505c0
 RHArtificialIntelligencePathCursor &RHArtificialIntelligencePathCursor::Unk005505c0()
@@ -2584,6 +2967,7 @@ RHUnk005fc3b0 &RHUnk005fc3b0::Unk005fcd40(unsigned char direction, float length)
 
 void RHArtificialIntelligence::Emit(SBFile &file, RHArtificialIntelligencePosition &position)
 {
+    ((RHUnk00419a40 *)this)->Unk(0, false);
     FUN_00417ed0(0, false);
     FUN_00417580();
     SerializePosition(position, file);

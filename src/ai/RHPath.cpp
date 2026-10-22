@@ -39,7 +39,8 @@ int RHUnkWaypointRef::Unk00408750(RHElementMobile *mobile)
 }
 
 // Parked: frame layout, register allocation and coupled calls.
-// deferred: 0x004dab90, unannotated pending reccmp #534.
+// Parked at 0.4604: unannotated park from the asymmetric-comparator era; residual scheduling/registers.
+// STUB: GAME 0x004dab90
 void RHUnkPathEngine::Unk004dab90(RHPathArray *path, unsigned short index)
 {
     SBGeoPoint2D previous;
@@ -91,22 +92,24 @@ void RHUnkPathEngine::Unk004dab90(RHPathArray *path, unsigned short index)
 }
 
 // Parked: temporary cleanup scheduling and coupled calls.
-// deferred: 0x004f9170, unannotated pending reccmp #534.
+// FUNCTION: GAME 0x004f9170
 bool RHUnkPathGeometry::Unk004f9170(const SBGeoPoint2D &a, const SBGeoPoint2D &b, unsigned short layer, void *radius)
 {
     SBGeoBoundingBox2D *box = (SBGeoBoundingBox2D *)radius;
     bool blocked;
     {
-        SBGeoVector2D vector(b);
+        SBGeoVector2D vector((const SBGeoVector2D &)b);
         blocked = !((RHPathObstacleGrid *)this)->FUN_004f5750(box->FUN_006090d0(vector), layer);
     }
     if (blocked)
         return false;
-    return ((RHEngineReinforcementCalls *)this)->FUN_004f6c20(a, (SBGeoPoint2D &)b, layer, SBGeoVector2D(box->m_8));
+    SBGeoVector2D extent((const SBGeoVector2D &)box->m_p1);
+    return ((RHEngineReinforcementCalls *)this)->FUN_004f6c20(a, (SBGeoPoint2D &)b, layer, extent);
 }
 
 // Parked: container cleanup, frame layout and coupled calls.
-// deferred: 0x004f9260, unannotated pending reccmp #534.
+// Parked at 0.4945: unannotated park from the asymmetric-comparator era; residual scheduling/registers.
+// STUB: GAME 0x004f9260
 bool RHUnkPathGeometry::Unk004f9260(const SBGeoPoint2D &a, const SBGeoPoint2D &b, unsigned short layer)
 {
     RHMalignitySegment segment(SBGeoVector2D(0, 0), SBGeoVector2D(0, 0));

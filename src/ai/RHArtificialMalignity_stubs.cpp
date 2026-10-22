@@ -4,11 +4,17 @@
 
 extern float g_unk0x006774f0;
 
+SBGeoVector2D RHMalignityActorCalls::FUN_004135b0()
+{
+    RHUnk005fc3b0 direction;
+    direction.Unk005fcd40(RHMalignityField<unsigned short>(RHMalignityField<void *>(this, 0x50), 0xd8), 0.57357645f);
+    return direction;
+}
+
 bool RHArtificialMalignity::FUN_00438cb0(int, bool) { return false; }
 
 #include "RHMalignityVisibilityCalls.h"
 
-bool RHMalignityVisibilityCalls::FUN_004860b0() { return false; }
 
 class RHMalignityRemarkCalls
 {
@@ -32,42 +38,49 @@ public:
     virtual void V20() = 0;
     virtual void V24(RHMalignityStimulus *stimulus) = 0;
     void FUN_00412d60(RHMalignityPosition position, int heading, int mode);
+    void FUN_0041a140(RHMalignityPosition position, unsigned value);
     void FUN_0041a3e0();
 };
 
 void RHMalignityReactionCalls::FUN_00412d60(RHMalignityPosition, int, int) {}
-void RHMalignityActorCalls::FUN_00487ad0(const RHMalignityPosition &) {}
-void RHArtificialMalignity::FUN_00438620(unsigned short) {}
+void RHMalignityReactionCalls::FUN_0041a140(RHMalignityPosition, unsigned) {}
 void RHArtificialMalignity::FUN_0043b1b0(RHMalignityPosition, int) {}
 void RHArtificialMalignity::FUN_0043c960(RHMalignityPosition, int) {}
 
 void RHMalignityActorCalls::FUN_00478c20(RHUnk00613e90 &, bool) {}
 bool RHMalignityActorCalls::FUN_0048a130(void *) { return false; }
 
-// Parked: temp kept in eax (target) vs esp (ours); VC6 re-materialises the base
-// and schedules x2 before z2. 5 shapes tried.
-// STUB: GAME 0x0041a010
+static inline RHUnk00613e90 &RHMalignityScaleHeight(RHUnk00613e90 &vector)
+{
+    float scaled = vector.y;
+    scaled *= g_unk0x006774ec;
+    vector.y = scaled;
+    return vector;
+}
+
+static inline float RHMalignityScaledSquare(RHUnk00613e90 &vector)
+{
+    RHMalignityScaleHeight(vector);
+    return vector.x * vector.x + vector.z * vector.z + vector.y * vector.y;
+}
+
+// FUNCTION: GAME 0x0041a010
 float RHMalignityBaseView::FUN_0041a010(void *actor)
 {
-    RHUnk00613e90 difference = RHMalignityField<RHUnk00613e90>(RHMalignityField<void *>(actor, 0x50), 0x10).FUN_005df550(RHMalignityField<RHUnk00613e90>(RHMalignityField<void *>(m_actor, 0x50), 0x10));
-    float scaled = difference.y;
-    scaled *= g_unk0x006774ec;
-    difference.y = scaled;
-    return difference.x * difference.x + difference.z * difference.z + scaled * scaled;
+    return RHMalignityScaledSquare(RHMalignityField<RHUnk00613e90>(RHMalignityField<void *>(actor, 0x50), 0x10).FUN_005df550(RHMalignityField<RHUnk00613e90>(RHMalignityField<void *>(m_actor, 0x50), 0x10)));
 }
 
-// Parked: same base-register/scheduling residual as 0x0041a010 (sqrt form).
-// STUB: GAME 0x0041a060
+// FUNCTION: GAME 0x0041a060
 float RHMalignityBaseView::FUN_0041a060(void *actor)
 {
-    RHUnk00613e90 difference = RHMalignityField<RHUnk00613e90>(RHMalignityField<void *>(actor, 0x50), 0x10).FUN_005df550(RHMalignityField<RHUnk00613e90>(RHMalignityField<void *>(m_actor, 0x50), 0x10));
-    float scaled = difference.y;
-    scaled *= g_unk0x006774ec;
-    difference.y = scaled;
-    return (float)sqrt(difference.x * difference.x + difference.z * difference.z + scaled * scaled);
+    return (float)sqrt(RHMalignityScaledSquare(RHMalignityField<RHUnk00613e90>(RHMalignityField<void *>(actor, 0x50), 0x10).FUN_005df550(RHMalignityField<RHUnk00613e90>(RHMalignityField<void *>(m_actor, 0x50), 0x10))));
 }
 
-float RHMalignityBaseView::FUN_0041a0b0(void *) { return 0.0f; }
+// FUNCTION: GAME 0x0041a0b0
+float RHMalignityBaseView::FUN_0041a0b0(void *actor)
+{
+    return RHMalignityScaleHeight(RHMalignityField<RHUnk00613e90>(RHMalignityField<void *>(actor, 0x50), 0x10).FUN_005df550(RHMalignityField<RHUnk00613e90>(RHMalignityField<void *>(m_actor, 0x50), 0x10))).FUN_005df680();
+}
 
 class RHUnk0041a0f0
 {
@@ -87,10 +100,38 @@ int RHUnk0041a0f0::FUN_0041a0f0(int first, int second, int third)
 }
 // STUB: GAME 0x00440cf0
 short RHArtificialMalignity::FUN_00440cf0(RHUnk00441dd0Record *) { return 0; }
-void RHMalignityBaseView::FUN_00412cf0(const RHMalignityPosition &, unsigned short, int) {}
+
+extern unsigned char g_unk0x006c06ca;
+
+// FUNCTION: GAME 0x00412cf0
+void RHMalignityBaseView::FUN_00412cf0(const RHMalignityPosition &position, unsigned short heading, int mode)
+{
+    *(bool *)((char *)this + 0x72) = true;
+    *(bool *)((char *)this + 0x73) = ~((unsigned char)mode >> 6) & 1;
+    if (g_unk0x006c06ca < 10)
+        *(unsigned short *)((char *)this + 0x74) = heading;
+    else
+        *(unsigned short *)((char *)this + 0x74) = (100 - g_unk0x006c06ca) * heading / 100;
+    ((RHArtificialIntelligence *)this)->Unk00412240((const RHUnk00571160Position &)position, mode | 0x80, 1.0f);
+}
 void RHArtificialMalignity::FUN_00440040(void *, RHMalignityPosition, RHUnk005fc3b0 *, int, void *) {}
-RHMalignityPosition FUN_0040ed40(const RHMalignityPosition &position, SBGeoVector2D) { return position; }
-RHMalignityPosition FUN_0040ece0(const RHMalignityPosition &position, SBGeoPoint2D) { return position; }
+// FUNCTION: GAME 0x0040ed40
+RHMalignityPosition FUN_0040ed40(const RHMalignityPosition &position, SBGeoVector2D vector)
+{
+    RHMalignityPosition result = position;
+    result.x -= vector.m_x;
+    result.y -= vector.m_y;
+    return result;
+}
+
+// FUNCTION: GAME 0x0040ece0
+RHMalignityPosition FUN_0040ece0(const RHMalignityPosition &position, SBGeoPoint2D point)
+{
+    RHMalignityPosition result = position;
+    result.x += point.m_x;
+    result.y += point.m_y;
+    return result;
+}
 
 RHMalignityPosition RHMalignityBaseView::FUN_004165e0(void *, bool)
 {
@@ -104,7 +145,13 @@ SBGeoPoint2D RHMalignityBaseView::FUN_0040cbf0(const RHMalignityPosition &positi
     return SBGeoPoint2D(position.x, position.y);
 }
 
-void RHMalignityNodeValue::FUN_0040eab0(int) {}
+// FUNCTION: GAME 0x0040eab0
+void *RHMalignityNodeValue::FUN_0040eab0(int mode)
+{
+    if (mode & 1)
+        operator delete(this);
+    return this;
+}
 RHMalignityIterator RHAIUnk0044e8b0::FUN_0044e8b0(RHMalignityIterator, RHMalignityIterator last) { return last; }
 RHScriptIter RHAIUnk0044e8b0::FUN_0044e8b0(RHScriptIter, RHScriptIter last) { return last; }
 RHMalignityIterator RHAIUnk0044e8b0::FUN_0046eb80() { return RHMalignityIterator(0); }
@@ -144,7 +191,6 @@ void RHMalignityGuardCalls::FUN_0049fbb0(void *actor)
     *(void **)((char *)this + 0x5e8) = actor;
 }
 void *RHArtificialMalignity::FUN_00445d40() { return 0; }
-void RHArtificialMalignity::FUN_00430020() {}
 void RHArtificialMalignity::FUN_004303e0() {}
 bool RHMalignityActorCalls::FUN_0048a350(void *) { return false; }
 
@@ -159,18 +205,11 @@ void RHArtificialMalignity::FUN_00430300(int) {}
 
 void RHArtificialMalignity::FUN_0044a830(void *) {}
 
-class RHMalignityPathGeometry
-{
-public:
-    bool FUN_004f9170(const SBGeoPoint2D &first, const SBGeoPoint2D &second, unsigned short layer, void *radius);
-};
-
 
 class RHMalignityDirection : public RHUnk005fc3b0
 {
 };
 
-bool RHMalignityPathGeometry::FUN_004f9170(const SBGeoPoint2D &, const SBGeoPoint2D &, unsigned short, void *) { return false; }
 
 class RHMalignityHeadingPoint : public SBGeoPoint2D
 {
@@ -215,3 +254,7 @@ void EmitRHMalignityAbilityCalls(RHMalignityAbilityCalls *self)
     int (RHMalignityAbilityCalls::*f)(float, int, int) = &RHMalignityAbilityCalls::FUN_005c2130;
     (self->*f)(0.0f, 0, 0);
 }
+
+RHMalignityOwnedPoint::~RHMalignityOwnedPoint() {}
+
+RHMalignityOwnedRecord::~RHMalignityOwnedRecord() {}

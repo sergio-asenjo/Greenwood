@@ -1,9 +1,37 @@
 #include "SBNullstr.h"
 #include "RHFastFindGrid.h"
 
+typedef std::vector<void *> RHFastFindPointerVector;
+
+bool RHFastFindGrid::IsReachableImpact(const RHUnk00613e90 &, const RHUnk00613e90 &, RHUnk00613e90 &, void *&, int)
+{
+    return false;
+}
+
+// FUNCTION: GAME 0x0051e630
+void *RHUnk0051e5e0::FUN_0051e630(unsigned flags)
+{
+    this->RHUnk0051e5e0::~RHUnk0051e5e0();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// FUNCTION: GAME 0x0051e650
+RHUnk0051e5e0::~RHUnk0051e5e0()
+{
+    *(unsigned long *)this = 0x006790c8;
+    RHFastFindPointerVector *second = (RHFastFindPointerVector *)((char *)this + 0x78);
+    second->clear();
+    second->~RHFastFindPointerVector();
+    RHFastFindPointerVector *lines = (RHFastFindPointerVector *)&m_lines;
+    lines->clear();
+    lines->~RHFastFindPointerVector();
+    ((RHSector *)this)->RHSector::~RHSector();
+}
 
 
-void RHFastFindLine::FUN_0051faf0(SBFile &, RHFastFindPointerArray &) {}
+
 // FUNCTION: GAME 0x0051f450
 float RHFastFindLine::FUN_0051f450() { return ((float *)m_00)[1] > ((float *)m_00)[3] ? ((float *)m_00)[1] : ((float *)m_00)[3]; }
 // FUNCTION: GAME 0x0051f470
@@ -19,44 +47,35 @@ DECOMP_SIZE_ASSERT(RHUnk0051aa00, 0xbc)
 DECOMP_SIZE_ASSERT(RHUnk005209d0, 0x14)
 DECOMP_SIZE_ASSERT(RHUnk00520ae0, 0x40)
 
-class RHUnk00608650
+// FUNCTION: GAME 0x0060ad50
+bool RHMalignitySegment::FUN_0060ad50(const SBGeoBoundingBox2D &box)
 {
-public:
-    bool FUN_00608650(const RHMalignitySegment &segment);
-};
+    return box.FUN_00608650((const RHMobileUnk006100e0 &)*this);
+}
 
-bool RHUnk00608650::FUN_00608650(const RHMalignitySegment &) { return false; }
-
-bool RHMalignitySegment::FUN_0060ad50(const SBGeoBoundingBox2D &) { return false; }
-
-class RHUnk005243a0
-{
-public:
-    bool FUN_005243a0(void *point);
-    bool FUN_005246c0(void *point, undefined4 mode);
-};
-
-bool RHUnk005243a0::FUN_005243a0(void *) { return false; }
-bool RHUnk005243a0::FUN_005246c0(void *, undefined4) { return false; }
 
 void RHFastFindGrid::FUN_004faf40(SBFile &) {}
 void RHFastFindGrid::FUN_004fb230(SBFile &) {}
-RHUnk0057e4d0::RHUnk0057e4d0() {}
-RHUnk0057e4d0::~RHUnk0057e4d0() {}
 void RHFastFindGrid::FUN_004e8bd0(void *, unsigned short, bool) {}
 void RHFastFindSector::UnkSlot0() {}
 void RHFastFindSector::UnkSlot4() {}
 void RHFastFindSector::UnkSlot8() {}
 void RHFastFindSector::UnkSlotc() {}
 void RHFastFindSector::UnkSlot10(SBFile &, RHFastFindGrid *) {}
-void RHUnk00522470::FUN_00520a90(SBFile &) {}
+
+// FUNCTION: GAME 0x00520a90
+void RHUnk00522470::FUN_00520a90(SBFile &file)
+{
+    short x;
+    short y;
+    file.Access(&x, 2);
+    file.Access(&y, 2);
+    *(float *)(m_00 + 4) = x;
+    *(float *)(m_00 + 8) = y;
+}
 RHSectorScript::RHSectorScript() {}
 RHSectorScript::~RHSectorScript() {}
 void RHFastFindGrid::FUN_004e99e0(void *, unsigned short, bool) {}
-void RHUnk0051e5e0::FUN_0057ca80() {}
-RHUnk0051e5e0::~RHUnk0051e5e0() {}
-void RHUnk0051e1e0::FUN_0051f0f0() {}
-void FUN_0051f1b0() {}
 void RHUnk0051e1e0::Unk0051e230(SBFile &, RHSeqList &) {}
 RHUnk0051b6e0::RHUnk0051b6e0(RHUnk0051e1e0 *, RHUnk0051e1e0 *) {}
 RHUnk0051b6e0::~RHUnk0051b6e0() {}
@@ -89,21 +108,34 @@ void FUN_00418390(RHUnk005223f0 *) {}
 // FUNCTION: GAME 0x005209d0
 RHUnk005209d0::RHUnk005209d0(int type)
 {
-    ((SBGeoPoint2D *)m_04)->SBGeoPoint2D::SBGeoPoint2D();
     *(unsigned *)this = 0x678b58;
-    *(int *)(m_04 + 8) = type;
-    m_04[0xc] = 1;
+    m_0c = type;
+    m_10 = 1;
 }
-RHUnk005209d0::~RHUnk005209d0() {}
-RHUnk0051a5e0::RHUnk0051a5e0() {}
+
+// FUNCTION: GAME 0x00520a00
+RHUnk005209d0::RHUnk005209d0(SBGeoPoint2D point, int type) : SBGeoPoint2D(point)
+{
+    *(unsigned *)this = 0x678b58;
+    m_0c = type;
+    m_10 = 1;
+}
+
+// FUNCTION: GAME 0x00520a70
+RHUnk005209d0::~RHUnk005209d0()
+{
+    *(unsigned *)this = 0x678b58;
+}
+// FUNCTION: GAME 0x0051a5e0
+RHUnk0051a5e0::RHUnk0051a5e0()
+{
+    *(int *)m_04 = 0;
+}
 RHUnk0051a5e0::~RHUnk0051a5e0() {}
 RHUnk0051aa00::~RHUnk0051aa00() {}
 
 bool RHUnk0051a5e0::FUN_0051abe0(bool, RHElementActor *, bool, bool, bool) { return false; }
 bool RHUnk0051a5e0::Serialize(SBFile &) { return true; }
-
-// STUB: GAME 0x0051abe0
-bool RHUnk0051aa00::FUN_0051abe0(bool, RHElementActor *, bool, bool, bool) { return false; }
 
 // The target annotation remains owned by RHGate::Serialize.
 bool RHUnk0051aa00::Serialize(SBFile &file)
@@ -161,8 +193,31 @@ bool RHUnk0051aa00::Serialize(SBFile &file)
     return true;
 }
 
-// STUB: GAME 0x0051b870
-bool RHUnk0051aa00::FUN_0051b870(bool, RHElementActor *, bool, bool, bool) { return false; }
+class RHScriptBatchCalls
+{
+public:
+    bool Unk0049d560(int action);
+};
+
+// FUNCTION: GAME 0x0051b870
+bool RHUnk0051aa00::FUN_0051b870(bool first, RHElementActor *actor, bool second, bool third, bool)
+{
+    if ((*(unsigned *)((char *)actor + 0x4) & 0xf) != 0xc ||
+        !((RHScriptBatchCalls *)actor)->Unk0049d560(0x16))
+        return false;
+    if (first)
+    {
+        if (*(char *)(*(char **)((char *)this + 0x88) + 0x39))
+            goto check;
+    }
+    else if (*(char *)(*(char **)((char *)this + 0x8c) + 0x39))
+        goto check;
+    return true;
+check:
+    if (second)
+        return *(int *)(*(char **)((char *)actor + 0x50) + 0x8c) == 0x10;
+    return third;
+}
 
 // FUNCTION: GAME 0x0057cd50
 bool RHUnk0051aa00::FUN_0057cd50(undefined4) { return true; }

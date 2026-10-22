@@ -419,7 +419,7 @@ void RHPathFinder::FUN_00553850(RHElementActor *actor)
     }
 }
 
-// Parked: redundant command comparisons are eliminated by the rebuilt compiler.
+// Parked: the second command comparison and common return tail remain non-exact.
 // STUB: GAME 0x005539a0
 void RHPathFinder::FUN_005539a0(RHElementActor *actor)
 {
@@ -429,17 +429,26 @@ void RHPathFinder::FUN_005539a0(RHElementActor *actor)
         RHpathRequest *request = m_10[index];
         if (request->m_1c == actor)
         {
-            if (request->m_28 == 6 || request->m_28 == 10)
+            switch (request->m_28)
+            {
+            case 6:
                 request->m_28 = 16;
-            else
+                break;
+            case 10:
                 request->m_28 = 16;
+                break;
+            default:
+                request->m_28 = 16;
+            }
             request->m_24 = ((RHUnk00560410 *)(*(char **)((char *)actor + 0x50) + 4))->FUN_00560410(10);
-            return;
+            goto done;
         }
     }
+done:
+    return;
 }
 
-// Parked: branch-local zero loads are hoisted and return cleanup tails are reordered.
+// Parked: zero-load sharing and forward-success branch polarity differ.
 // STUB: GAME 0x00553a10
 bool RHPathFinder::FUN_00553a10(const SBGeoPoint2D &point, SBGeoPoint2D &node, unsigned char place, SBGeoVector2D &half, bool forward)
 {
@@ -449,7 +458,7 @@ bool RHPathFinder::FUN_00553a10(const SBGeoPoint2D &point, SBGeoPoint2D &node, u
     vector.FUN_005fc430(point.Unk005fc110(FUN_00553d20(node, place, half)));
     if (forward)
     {
-        float zero = g_unk0x00677488;
+        float zero = *(volatile float *)&g_unk0x00677488;
         switch (place)
         {
         case 1:
@@ -477,13 +486,13 @@ bool RHPathFinder::FUN_00553a10(const SBGeoPoint2D &point, SBGeoPoint2D &node, u
             second.y = -1.0f;
             break;
         }
-        if (first.FUN_005fc680(vector, 1.0f) >= g_unk0x00677488 ||
-            second.FUN_005fc680(vector, 1.0f) < g_unk0x00677488)
-            return false;
+        if (first.FUN_005fc680(vector, 1.0f) < g_unk0x00677488 &&
+            second.FUN_005fc680(vector, 1.0f) >= g_unk0x00677488)
+            return true;
     }
     else
     {
-        float zero = g_unk0x00677488;
+        float zero = *(volatile float *)&g_unk0x00677488;
         switch (place)
         {
         case 1:
@@ -511,11 +520,11 @@ bool RHPathFinder::FUN_00553a10(const SBGeoPoint2D &point, SBGeoPoint2D &node, u
             second.y = 1.0f;
             break;
         }
-        if (first.FUN_005fc680(vector, 1.0f) > g_unk0x00677488 ||
-            second.FUN_005fc680(vector, 1.0f) <= g_unk0x00677488)
-            return false;
+        if (first.FUN_005fc680(vector, 1.0f) <= g_unk0x00677488 &&
+            second.FUN_005fc680(vector, 1.0f) > g_unk0x00677488)
+            return true;
     }
-    return true;
+    return false;
 }
 
 // FUNCTION: GAME 0x00553d20
@@ -944,7 +953,8 @@ void RHPathFinder::FUN_00556230(unsigned short graph, unsigned short sector, uns
     FUN_005559b0(graph, ConvertSector(sector), state, list);
 }
 
-// Parked: 43.31%, list frame/cursor scheduling; unannotated for rule 28.
+// Parked at 0.4409: unannotated park from the asymmetric-comparator era; residual scheduling/registers.
+// STUB: GAME 0x00556260
 void RHPathFinder::FUN_00556260()
 {
     RHPathWorkList list;
@@ -1162,8 +1172,13 @@ bool RHPathFinder::Serialize(SBFile &file)
     RHSerializeName(file,
                     // STRING: GAME 0x006b16b0
                     "RHPathFinder");
-    unsigned short graphCount = g_pathGraphFirst == 0 ? 0 : g_pathGraphLast - g_pathGraphFirst;
     RHpathRequest *request;
+    unsigned short graphCount;
+    RHPathGraphArray **first = g_pathGraphFirst;
+    if (first == 0)
+        graphCount = 0;
+    else
+        graphCount = g_pathGraphLast - first;
     if (file.m_bLoading)
     {
         FUN_00554750();
@@ -1172,13 +1187,13 @@ bool RHPathFinder::Serialize(SBFile &file)
         requests.clear();
         unsigned short count;
         PATH_ACCESS(&count, 2, 5490)
-        for (unsigned short i = 0; i < count; ++i)
+        for (unsigned short i = 0; i < (unsigned short)count; ++i)
         {
             request = new RHpathRequest;
             PATH_REQUEST_FIELDS(request, 5495)
             requests.insert(requests.end(), request);
         }
-        for (unsigned short graph = 0; graph < graphCount; ++graph)
+        for (unsigned short graph = 0; graph < (unsigned short)graphCount; ++graph)
         {
             unsigned short size = g_pathGraphFirst[graph]->size();
             for (unsigned short node = 0; node < size; ++node)
@@ -1205,8 +1220,8 @@ bool RHPathFinder::Serialize(SBFile &file)
         PATH_ACCESS(&count, 2, 5546)
         for (; i < m_10.count; ++i)
         {
-            RHpathRequest *current = m_10[i];
-            PATH_ACCESS(&current->m_28, 4, 5552)
+            request = m_10[i];
+            PATH_ACCESS(&request->m_28, 4, 5552)
             PATH_ACCESS(&request->m_2c, 1, 5553)
             PATH_ACCESS(&request->m_34, 1, 5554)
             PATH_ACCESS(&request->m_30, 4, 5555)
@@ -1221,7 +1236,7 @@ bool RHPathFinder::Serialize(SBFile &file)
             g_pEngine->SerializeElementPointer(file, request->m_20);
             ((RHPathSequenceSerializer *)g_unk0x6c1040)->FUN_0058b7c0(file, request->m_18);
         }
-        for (unsigned short graph = 0; graph < graphCount; ++graph)
+        for (unsigned short graph = 0; graph < (unsigned short)graphCount; ++graph)
         {
             unsigned short size = g_pathGraphFirst[graph]->size();
             for (unsigned short node = 0; node < size; ++node)
