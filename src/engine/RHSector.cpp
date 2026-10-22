@@ -14,12 +14,8 @@ DECOMP_SIZE_ASSERT(RHSectorLift, 0x108)
 DECOMP_SIZE_ASSERT(RHUnk0057d440, 0x5c)
 DECOMP_SIZE_ASSERT(RHSectorDoor, 0x35)
 DECOMP_SIZE_ASSERT(RHSectorBuilding, 0x11c)
-
-class SBGeoBoundingBox2D
-{
-public:
-    void Unk00607dc0(const SBGeoPoint2D &point);
-};
+DECOMP_SIZE_ASSERT(RHUnk0057d490, 0xf0)
+DECOMP_SIZE_ASSERT(RHBuildingActorList, 0x24)
 
 class RHScrollScript
 {
@@ -60,6 +56,9 @@ float g_unk0x679cc4 = 0.00034836700069718063f;
 
 // GLOBAL: GAME 0x6c0691
 char g_unk0x6c0691;
+
+// GLOBAL: GAME 0x006c1016
+unsigned short g_unk0x006c1016;
 
 inline void *RHUnkSectorLookup(unsigned short sector)
 {
@@ -116,6 +115,11 @@ RHUnk00522540::RHUnk00522540()
     m_18 = 0;
 }
 
+// FUNCTION: GAME 0x00522580
+RHUnk00522540::~RHUnk00522540()
+{
+}
+
 // FUNCTION: GAME 0x005225a0
 void RHUnk00522540::Unk005225a0(SBFile &file)
 {
@@ -127,8 +131,8 @@ void RHUnk00522540::Unk005225a0(SBFile &file)
     file.Access(&scratch, 2);
     file.Access(&flag, 1);
     file.Access(&value, 2);
-    m_4.m_x = x;
-    m_4.m_y = y;
+    m_x = x;
+    m_y = y;
     m_10 = RHUnkSectorLookup(sector);
     m_c = *(unsigned short *)((char *)m_10 + 0x36);
     m_14 = flag;
@@ -139,6 +143,38 @@ void RHUnk00522540::Unk005225a0(SBFile &file)
 bool RHUnk00522540::FUN_00522680(SBFile &file)
 {
     return g_pEngine->FUN_004c3d90(file, m_18);
+}
+
+// FUNCTION: GAME 0x0057ca80
+RHSector::RHSector()
+{
+    m_30 = 0;
+    m_38 = g_unk0x006c1016++;
+    m_34 = true;
+    m_36 = 0xffff;
+}
+
+// FUNCTION: GAME 0x0057caf0
+void *RHSector::FUN_0057caf0(unsigned flags)
+{
+    this->~RHSector();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// FUNCTION: GAME 0x0057cbd0
+RHSector::~RHSector()
+{
+}
+
+// FUNCTION: GAME 0x0057ccd0
+RHSector::RHSector(int type)
+{
+    m_38 = g_unk0x006c1016++;
+    m_30 = type;
+    m_34 = true;
+    m_36 = 0xffff;
 }
 
 class RHUnk0057c920List
@@ -174,19 +210,8 @@ RHUnk0057c920::RHUnk0057c920()
     m_10 = 1;
 }
 
-// FUNCTION: GAME 0x0057c9c0
-RHSectorActorIter RHSectorActorIter::operator++(int)
-{
-    RHSectorActorIter previous = *this;
-    m_p = m_p->m_next;
-    return previous;
-}
-
-RHSector::~RHSector() {}
-
-// SYNTHETIC: GAME 0x0057d590
-// RHUnk0057d490::`scalar deleting destructor'
-RHUnk0057d490::~RHUnk0057d490() {}
+// TEMPLATE: GAME 0x0057c9c0
+// ??Eiterator@?$list@PAVRHElementActor@@V?$allocator@PAVRHElementActor@@@std@@@std@@QAE?AV012@H@Z
 
 // Parked: coordinate-width, scalar-slot and x87 scheduling differ.
 // STUB: GAME 0x0057cd60
@@ -270,6 +295,183 @@ void RHUnk0057d490::FUN_0057d760(void *gate, bool side)
 {
     ((RHMotionAreaList<void *> *)((char *)this + 0x5c))->InsertLast(gate);
     ((RHMotionAreaList<bool> *)((char *)this + 0x80))->InsertLast(side);
+}
+
+// FUNCTION: GAME 0x0057dc20
+void RHUnk0057d490::FUN_0057dc20(void *, unsigned long, const SBGeoBoundingBox2D &, float, unsigned short)
+{
+    int count = *(int *)((char *)this + 0x64);
+    if ((unsigned short)count > 0)
+    {
+        unsigned index = 0;
+        unsigned remaining = (unsigned short)count;
+        RHSectorActorList &gates = *(RHSectorActorList *)((char *)this + 0x5c);
+        do
+        {
+            gates.Unk005c8e40(index);
+            RHElementActor *gate = gates.CurrentValue();
+            if (gate->m_4 == 1)
+            {
+                RHSector *sector = *(RHSector **)((char *)gate + 0xac);
+                if (sector && *((char *)*(void **)((char *)sector + 0x58) + 8))
+                    sector->DisplayAlpha(0x60d0, 0x60, false);
+            }
+            ++index;
+        } while (--remaining);
+    }
+}
+
+// FUNCTION: GAME 0x0057e4d0
+RHSectorBuilding::RHSectorBuilding()
+{
+    *(int *)((char *)this + 0x30) = 0x2003;
+    m_f0 = 0xffff;
+}
+
+// FUNCTION: GAME 0x0057e560
+void *RHSectorBuilding::FUN_0057e560(unsigned flags)
+{
+    this->RHSectorBuilding::~RHSectorBuilding();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// FUNCTION: GAME 0x0057e580
+RHSectorBuilding::~RHSectorBuilding()
+{
+}
+
+// Parked: insertion adds a four-byte frame slot and changes helper/receiver allocation.
+// STUB: GAME 0x0057e710
+int RHSectorBuilding::FUN_0057e710(SBFile &file, RHUnkSectorLiftGrid *grid)
+{
+    int start = ((ToolboxPositionFile *)&file)->FUN_005f5440();
+    unsigned short count;
+    file.Access(&count, 2);
+    for (unsigned i = 0; (unsigned short)i < count; ++i)
+    {
+        RHUnk0051aa00 *door = new RHUnk0051aa00;
+        door->Unk0051b2a0(file, this);
+        grid->m_4080.InsertLast(door);
+    }
+    return ((ToolboxPositionFile *)&file)->FUN_005f5440() - start;
+}
+
+// FUNCTION: GAME 0x0057eb80
+void RHSectorBuilding::FUN_0057eb80(void *, unsigned long, const SBGeoBoundingBox2D &, float, unsigned short)
+{
+    unsigned count = ((RHSectorActorList *)((char *)this + 0x5c))->m_count;
+    for (unsigned index = 0; index < count; ++index)
+    {
+        RHSectorActorList &gates = *(RHSectorActorList *)((char *)this + 0x5c);
+        gates.Unk005c8e40(index);
+        RHSector *sector = *(RHSector **)((char *)gates.CurrentValue() + 0xac);
+        if (sector && *((char *)*(void **)((char *)sector + 0x58) + 8))
+            sector->DisplayAlpha(0x60d0, 0x60, false);
+    }
+}
+
+class RHSectorOccupantVisibility
+{
+public:
+    virtual void V00() = 0;
+    virtual void V04() = 0;
+    virtual void V08() = 0;
+    virtual void V0c() = 0;
+    virtual void V10() = 0;
+    virtual void V14() = 0;
+    virtual void V18() = 0;
+    virtual void V1c() = 0;
+    virtual void V20() = 0;
+    virtual void V24() = 0;
+    virtual void V28() = 0;
+    virtual void V2c() = 0;
+    virtual void V30() = 0;
+    virtual void V34() = 0;
+    virtual void V38() = 0;
+    virtual void V3c() = 0;
+    virtual void V40() = 0;
+    virtual void V44() = 0;
+    virtual bool V48() = 0;
+};
+
+// FUNCTION: GAME 0x0057ebd0
+void RHSectorBuilding::Enter(RHElementActor *actor)
+{
+    RHSectorActorList &occupants = *(RHSectorActorList *)&m_occupants;
+    occupants.insert(RHSectorActorIter(occupants.m_head), actor);
+    occupants.m_valid = 1;
+    *((char *)actor + 0x12) = 0;
+    if ((actor->m_4 & 0xf) == 0xc)
+    {
+        if (actor->m_5cc)
+            Enter(actor->m_5cc);
+        int count = *(int *)((char *)this + 0xfc);
+        if ((unsigned short)count > 0)
+        {
+            unsigned index = 0;
+            unsigned remaining = (unsigned short)count;
+            do
+            {
+                occupants.Unk005c8e40(index);
+                RHElementActor *occupant = occupants.CurrentValue();
+                if ((occupant->m_4 & 7) == 4 &&
+                    (((RHSectorOccupantVisibility *)occupant)->V48() || *((char *)occupant + 0x1ce)) &&
+                    *(int *)((char *)occupant + 0x254) == 0)
+                    *((char *)occupant + 0x12) = 1;
+                ++index;
+            } while (--remaining != 0);
+        }
+    }
+}
+
+// Parked: erase hidden-result registers and the later occupant-scan register/receiver lifetimes differ.
+// STUB: GAME 0x0057ec80
+void RHSectorBuilding::Leave(RHElementActor *actor)
+{
+    int count = *(int *)((char *)this + 0xfc);
+    for (unsigned short index = 0; index < (unsigned short)count; ++index)
+    {
+        RHSectorActorList &occupants = *(RHSectorActorList *)&m_occupants;
+        occupants.Unk005c8e40(index);
+        if (occupants.CurrentValue() == actor)
+        {
+            occupants.Unk005c8e40(index);
+            RHSectorActorIter position = occupants.Current();
+            occupants.erase(position);
+            occupants.m_valid = 1;
+            break;
+        }
+    }
+    *((char *)actor + 0x12) = 1;
+    if ((actor->m_4 & 0xf) == 0xc)
+    {
+        if (actor->m_5cc)
+            Leave(actor->m_5cc);
+        int insideCount = *(int *)((char *)this + 0xfc);
+        for (unsigned short index = 0; index < (unsigned short)insideCount; ++index)
+        {
+            RHSectorActorList &occupants = *(RHSectorActorList *)&m_occupants;
+            occupants.Unk005c8e40(index);
+            if ((occupants.CurrentValue()->m_4 & 0xf) == 0xc)
+                return;
+        }
+        if ((unsigned short)insideCount > 0)
+        {
+            unsigned index = 0;
+            unsigned remaining = (unsigned short)insideCount;
+            do
+            {
+                RHSectorActorList &occupants = *(RHSectorActorList *)&m_occupants;
+                occupants.Unk005c8e40(index);
+                RHElementActor *occupant = occupants.CurrentValue();
+                if (*((char *)occupant + 0x12))
+                    *((char *)occupant + 0x12) = 0;
+                ++index;
+            } while (--remaining != 0);
+        }
+    }
 }
 
 // FUNCTION: GAME 0x0057ed80
@@ -479,7 +681,7 @@ int RHSectorLift::Unk0057e060(SBFile &file, RHUnkSectorLiftGrid *grid)
     for (unsigned short i = 0; i < count; ++i)
     {
         RHUnk0051aa00 *gate = new RHUnk0051aa00;
-        gate->Unk0051b2a0(file, false);
+        gate->Unk0051b2a0(file, 0);
         if (gate->m_1c > maximum)
         {
             m_100 = gate;
@@ -542,16 +744,16 @@ bool RHSectorLift::Serialize(SBFile &file)
     return true;
 }
 
-// STUB: GAME 0x0057e970
+// FUNCTION: GAME 0x0057e970
 bool RHSectorBuilding::Serialize(SBFile &file)
 {
     // STRING: GAME 0x006b72b8
     RHSerializeName(file, "RHSectorBuilding");
-    unsigned short count;
+    unsigned count;
     RHElementActor *actor;
     if (!file.m_bLoading)
     {
-        count = (unsigned short)m_f4.m_count;
+        count = ((RHSectorActorList *)&m_occupants)->m_count;
         if (file.Access(&count, 2) < 0)
         {
             SBString *err = file.GetError();
@@ -559,20 +761,28 @@ bool RHSectorBuilding::Serialize(SBFile &file)
             SBAssert(0, "P:\\Robin Hood\\RHsector.cpp", 0x6bb, "Serialize failed reason is %s", reason);
             return false;
         }
-        for (unsigned short i = 0; i < count; ++i)
+        for (unsigned short i = 0; i < (unsigned short)count; ++i)
         {
-            m_f4.Unk005c8e40(i);
-            actor = m_f4.CurrentValue();
+            RHSectorActorList &list = *(RHSectorActorList *)&m_occupants;
+            list.Unk005c8e40(i);
+            actor = list.CurrentValue();
             if (!g_pEngine->FUN_004c3af0(file, (void *&)actor))
                 return false;
         }
     }
     else
     {
-        RHSectorActorList &list = m_f4;
-        RHSectorActorIter it = list.begin();
-        while (it.m_p != list.m_head)
-            ((RHUnk0046eb30 *)&list)->erase(RHScriptIter((RHScriptNode *)(it++).m_p));
+        RHSectorActorList &list = *(RHSectorActorList *)&m_occupants;
+        {
+            typedef std::list<RHElementActor *>::iterator Iterator;
+            typedef Iterator (Iterator::*Increment)(int);
+            typedef Iterator (RHUnk0046eb30::*Erase)(Iterator);
+            Increment increment = &Iterator::operator++;
+            Iterator last = ((std::list<RHElementActor *> *)&list)->end();
+            Iterator first = ((std::list<RHElementActor *> *)&list)->begin();
+            while (first != last)
+                (((RHUnk0046eb30 *)&list)->*(Erase)&RHUnk0046eb30::erase)((first.*increment)(0));
+        }
         list.m_valid = 1;
         if (file.Access(&count, 2) < 0)
         {
@@ -581,11 +791,11 @@ bool RHSectorBuilding::Serialize(SBFile &file)
             SBAssert(0, "P:\\Robin Hood\\RHsector.cpp", 0x6ca, "Serialize failed reason is %s", reason);
             return false;
         }
-        for (unsigned short i = 0; i < count; ++i)
+        for (unsigned short i = 0; i < (unsigned short)count; ++i)
         {
             if (!g_pEngine->FUN_004c3af0(file, (void *&)actor))
                 return false;
-            list.insert(RHSectorActorIter(list.m_head), actor);
+            ((std::list<RHElementActor *> *)&list)->push_back(actor);
             list.m_valid = 1;
         }
     }
@@ -618,18 +828,18 @@ bool RHSectorDoor::Serialize(SBFile &file)
 // STUB: GAME 0x0057f360
 void RHSectorArchery::InitializeFromMissionStream(SBFile &file)
 {
-    unsigned short sector;
+    unsigned sector;
     file.Access(&sector, 2);
-    m_78 = RHUnkSectorLookup(sector);
+    *(void *volatile *)&m_78 = RHUnkSectorLookup((unsigned short)sector);
     unsigned short scratch;
     file.Access(&scratch, 2);
     Unk0057cd60(file, false);
-    unsigned short count;
+    unsigned count;
     file.Access(&count, 2);
-    m_58.Resize(count);
+    m_58.Resize((unsigned short)count);
     m_7c = 0xffff;
     m_80 = 0;
-    for (unsigned short i = 0; i < count; ++i)
+    for (unsigned short i = 0; i < (unsigned short)count; ++i)
     {
         RHUnk00522540 *point = new RHUnk00522540;
         point->Unk005225a0(file);
@@ -640,12 +850,41 @@ void RHSectorArchery::InitializeFromMissionStream(SBFile &file)
                 m_7c = i;
             ++m_80;
             m_7e = i;
-            if (i == 0 || i == count - 1)
+            if (i == 0 || i == (unsigned short)count - 1)
                 SBAssert(1, "P:\\Robin Hood\\RHsector.cpp", 0x8e4,
                          // STRING: GAME 0x6b72dc
                          "Archery path with shooting point at end detected - this is not allowed!");
         }
     }
+}
+
+// FUNCTION: GAME 0x0057ee90
+RHUnk0057ee90::RHUnk0057ee90()
+{
+    m_30 = 0x4000;
+}
+
+// SYNTHETIC: GAME 0x0057eef0
+// RHUnk0057ee90::`scalar deleting destructor'
+
+// FUNCTION: GAME 0x0057ef10
+RHUnk0057ee90::~RHUnk0057ee90()
+{
+}
+
+// FUNCTION: GAME 0x0057f230
+RHSectorArchery::RHSectorArchery()
+{
+    m_82 = 0;
+    m_30 = 0x800;
+}
+
+// SYNTHETIC: GAME 0x0057f270
+// RHSectorArchery::`scalar deleting destructor'
+
+// FUNCTION: GAME 0x0057f290
+RHSectorArchery::~RHSectorArchery()
+{
 }
 
 // FUNCTION: GAME 0x0057f520
@@ -708,16 +947,16 @@ void RHSectorScript::InitializeFromMissionStream(SBFile &file)
     }
 }
 
-// STUB: GAME 0x0057fae0
+// FUNCTION: GAME 0x0057fae0
 bool RHSectorScript::Serialize(SBFile &file)
 {
     // STRING: GAME 0x006b7388
     RHSerializeName(file, "RHSectorScript");
-    unsigned short count;
+    unsigned int count;
     RHElementActor *actor;
     if (!file.m_bLoading)
     {
-        count = (unsigned short)m_cc.m_count;
+        count = ((RHSectorActorList *)m_cc)->m_count;
         if (file.Access(&count, 2) < 0)
         {
             SBString *err = file.GetError();
@@ -725,19 +964,21 @@ bool RHSectorScript::Serialize(SBFile &file)
             SBAssert(0, "P:\\Robin Hood\\RHsector.cpp", 0x990, "Serialize failed reason is %s", reason);
             return false;
         }
-        for (unsigned short i = 0; i < count; ++i)
+        for (unsigned short i = 0; i < (unsigned short)count; ++i)
         {
-            m_cc.Unk005c8e40(i);
-            actor = m_cc.CurrentValue();
+            RHSectorActorList &list = *(RHSectorActorList *)m_cc;
+            list.Unk005c8e40(i);
+            actor = list.CurrentValue();
             if (!g_pEngine->FUN_004c3af0(file, (void *&)actor))
                 return false;
         }
     }
     else
     {
-        RHSectorActorList &list = m_cc;
-        RHSectorActorNode *it = list.m_head->m_next;
-        while (it != list.m_head)
+        RHSectorActorList &list = *(RHSectorActorList *)m_cc;
+        RHSectorActorNode *last = list.m_head;
+        RHSectorActorNode *it = last->m_next;
+        while (it != last)
         {
             RHSectorActorNode *previous = it;
             it = it->m_next;
@@ -751,11 +992,11 @@ bool RHSectorScript::Serialize(SBFile &file)
             SBAssert(0, "P:\\Robin Hood\\RHsector.cpp", 0x99f, "Serialize failed reason is %s", reason);
             return false;
         }
-        for (unsigned short i = 0; i < count; ++i)
+        for (unsigned short i = 0; i < (unsigned short)count; ++i)
         {
             if (!g_pEngine->FUN_004c3af0(file, (void *&)actor))
                 return false;
-            list.insert(RHSectorActorIter(list.m_head), actor);
+            ((std::list<RHElementActor *> *)&list)->push_back(actor);
             list.m_valid = 1;
         }
     }
@@ -767,7 +1008,7 @@ bool RHSectorScript::Serialize(SBFile &file)
 // FUNCTION: GAME 0x0057fcc0
 void RHSectorScript::Enter(RHElementActor *actor)
 {
-    RHSectorActorList &list = m_cc;
+    RHSectorActorList &list = *(RHSectorActorList *)m_cc;
     if (list.FindValue(actor) != -1)
     {
         SBAssert(0, "P:\\Robin Hood\\RHsector.cpp", 0x9c5,
@@ -797,7 +1038,7 @@ void RHSectorScript::Enter(RHElementActor *actor)
 // STUB: GAME 0x0057fdb0
 void RHSectorScript::Leave(RHElementActor *actor)
 {
-    RHSectorActorList &list = m_cc;
+    RHSectorActorList &list = *(RHSectorActorList *)m_cc;
     unsigned short index = (unsigned short)list.Find(actor);
     if (index == 0xffff)
     {
@@ -829,6 +1070,7 @@ void RHSectorScript::Emit(RHElementActor *actor)
 {
     Enter(actor);
     Leave(actor);
+    FUN_0057ff00(actor);
 }
 
 void RHSectorScript::Emit(SBFile &file)
@@ -840,12 +1082,25 @@ void RHSectorScript::Emit(SBFile &file)
 void RHSectorBuilding::Emit(SBFile &file)
 {
     Serialize(file);
+    FUN_0057e710(file, 0);
 }
 
 void RHSectorArchery::Emit(SBFile &file)
 {
     InitializeFromMissionStream(file);
     Serialize(file);
+}
+
+#include "RHElementAreaShape.h"
+
+// FUNCTION: GAME 0x0057ff00
+bool RHSectorScript::FUN_0057ff00(RHElementActor *actor)
+{
+    if (*(unsigned short *)((char *)actor->m_50 + 0xde) != m_36)
+        return false;
+    if (actor->FUN_004626e0() != m_c8)
+        return false;
+    return (this ? (RHElementAreaShape *)((char *)this + 4) : 0)->FUN_0060c660(*(SBGeoPoint2D *)((char *)actor->m_50 + 0x24));
 }
 
 void RHSectorLift::Emit(SBFile &file)
@@ -861,6 +1116,7 @@ void RHSectorLift::Emit(SBFile &file)
 void RHUnk0057d490::Emit(void *gate, bool side)
 {
     FUN_0057d760(gate, side);
+    FUN_0057dc20(0, 0, *(SBGeoBoundingBox2D *)gate, 0, 0);
 }
 
 void RHSectorLift::Emit(SBFile &file, RHUnkSectorLiftGrid *grid)
@@ -889,6 +1145,8 @@ SBGeoPoint2D &RHUnkSectorPoints::Unk0060cef0(unsigned int index)
 
 void EmitRHSectorVariants(void *storage)
 {
+    void *(RHSector::*destroy)(unsigned) = &RHSector::FUN_0057caf0;
+    (((RHSector *)storage)->*destroy)(0);
     ((RHUnk0057d3a0 *)storage)->RHUnk0057d3a0::RHUnk0057d3a0();
     ((RHUnk0057d3f0 *)storage)->RHUnk0057d3f0::RHUnk0057d3f0();
     ((RHUnk0057ed80 *)storage)->RHUnk0057ed80::RHUnk0057ed80();

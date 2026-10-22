@@ -5,9 +5,19 @@
 class __declspec(novtable) RHUnk0060f8a0
 {
 public:
+    void *FUN_0060f880(unsigned flags);
     virtual ~RHUnk0060f8a0();
     std::string m_04;
 };
+
+// FUNCTION: GAME 0x0060f880
+void *RHUnk0060f8a0::FUN_0060f880(unsigned flags)
+{
+    this->RHUnk0060f8a0::~RHUnk0060f8a0();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
 
 // FUNCTION: GAME 0x0060f8a0
 RHUnk0060f8a0::~RHUnk0060f8a0()

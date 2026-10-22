@@ -1,9 +1,29 @@
 #include "SBNullstr.h"
+namespace std {
+extern template class basic_string<char>;
+}
 #include "SBResourceManager.h"
 #include "RHUIRendererPortrait.h"
 #include "RHSaveGame.h"
 #include <list>
 #include "SBUIRenderer.h"
+#include "RHScriptListCore.h"
+
+inline SBResourceFileList::SBResourceFileList(const std::allocator<void *> &value) : m_allocator(value)
+{
+    m_head = ((RHUnk0046eb30 *)this)->Unk0059f720(0, 0);
+    m_count = 0;
+    m_dirty = true;
+}
+
+inline SBResourceFileList::~SBResourceFileList()
+{
+    while (m_head->next != m_head)
+        ((RHUnk0046eb30 *)this)->erase(((RHUnk0046eb30 *)this)->begin());
+    ::operator delete(m_head);
+    m_head = 0;
+    m_count = 0;
+}
 
 struct SBResourceUnkIterator
 {
@@ -87,6 +107,7 @@ public:
     };
     TreePair InsertTree(const Value &);
     Node *FUN_005093e0(const unsigned long &);
+    void FUN_00503db0();
 };
 
 class RHUnk005fd5c0
@@ -131,6 +152,27 @@ public:
     SBResourceTreeLinks *m_node;
     void FUN_00605b20();
 };
+
+class RHUnk005ef320;
+template<> void SBResourceTreeStorage<0x18, 0x14, 0x34>::Dispose()
+{
+    ((RHFrameHolderRowMap *)this)->FUN_00503db0();
+}
+
+extern RHUnk005ef320 *g_unk0x6c11d0;
+extern RHMapResources *g_unk0x006c1840;
+
+DECOMP_SIZE_ASSERT(SBResourceFileList, 0x24)
+DECOMP_SIZE_ASSERT(SBResourceManager, 0x94)
+
+// FUNCTION: GAME 0x005fced0
+SBResourceManager::SBResourceManager()
+{
+    *(unsigned int *)m_00 = 0x67a840;
+    *(RHUnk005ef320 **)(m_00 + 4) = g_unk0x6c11d0;
+    g_unk0x006c1840 = (RHMapResources *)this;
+    *(unsigned int *)(m_00 + 0x0c) = 1;
+}
 
 // FUNCTION: GAME 0x005fd4a0
 void SBUIUnk005fd4a0::FUN_005fd4a0(long resource)
@@ -220,14 +262,14 @@ bool SBResourceManager::FUN_005fd710(SBFile &file)
         ((RHFrameHolderRowMap *)&m_34)->InsertTree(value);
         switch (type) {
         case 0x20434950: if (!FUN_005fdcc0((int)&file, zero)) return false; break;
-        case 0x204f4452: if (!FUN_005ffac0((int)&file, zero)) return false; break;
+        case 0x204f4452: if (!FUN_005ffac0(&file, zero)) return false; break;
         case 0x20525543: if (!FUN_005fef60((int)&file, zero)) return false; break;
         case 0x43434950: if (!FUN_005fe000((int)&file, zero)) return false; break;
-        case 0x44494c53: if (!FUN_005ff3a0((int)&file, zero)) return false; break;
+        case 0x44494c53: if (!FUN_005ff3a0(&file, zero)) return false; break;
         case 0x45564157: if (!FUN_005fe970((int)&file, zero)) return false; break;
-        case 0x4654504e: if (!FUN_005fd8e0((int)&file, zero)) return false; break;
-        case 0x4c474f54: if (!FUN_005ffe50((int)&file, zero)) return false; break;
-        case 0x4e545442: if (!FUN_005ff730((int)&file, zero)) return false; break;
+        case 0x4654504e: if (!FUN_005fd8e0(&file, zero)) return false; break;
+        case 0x4c474f54: if (!FUN_005ffe50(&file, zero)) return false; break;
+        case 0x4e545442: if (!FUN_005ff730(&file, zero)) return false; break;
         case 0x54584554: if (!FUN_005fe380((int)&file, zero)) return false; break;
         default:
             char name[6];
@@ -238,6 +280,169 @@ bool SBResourceManager::FUN_005fd710(SBFile &file)
                 "Unsupported resource type in resource file (%s)", name);
             return false;
         }
+    }
+    return true;
+}
+
+#include "RHEngineWidenedCalls.h"
+#include "RHUnk006114c0.h"
+#include "SBPicture.h"
+#include "SBFilePosition.h"
+#include "RHProfileFileCore.h"
+#include "RHUnk004ff7b0.h"
+
+class RHScriptFXArray
+{
+public:
+    void **Unk004fe420(void **, void **, void **);
+    void Unk005008e0(void **, void **);
+};
+#include "RHUnk0059fae0.h"
+
+inline RHUnk0059fae0Storage::~RHUnk0059fae0Storage()
+{
+    ((RHScriptFXArray *)this)->Unk005008e0((void **)m_4, (void **)m_8);
+    operator delete(m_4);
+}
+
+struct SBResourceFileRecord
+{
+    SBResourceFileRecord(unsigned long id, SBFile *file, unsigned long position, unsigned long type)
+        : m_id(id), m_file(file), m_position(position), m_type(type) {}
+    unsigned long m_id;
+    SBFile *m_file;
+    unsigned long m_position;
+    unsigned long m_type;
+};
+
+class SBResourceLoaderStorage
+{
+public:
+    SBResourceLoaderStorage(const std::allocator<unsigned long> &allocator = std::allocator<unsigned long>())
+        : m_allocator(allocator), m_first(0), m_last(0), m_end(0) {}
+    ~SBResourceLoaderStorage()
+    {
+        operator delete(m_first);
+        m_first = 0;
+        m_last = 0;
+        m_end = 0;
+    }
+    unsigned long *begin() { return m_first; }
+    std::allocator<unsigned long> m_allocator;
+    unsigned long *m_first;
+    unsigned long *m_last;
+    unsigned long *m_end;
+};
+
+// SIZE 0x20
+class SBResourceLoaderArray
+{
+public:
+    SBResourceLoaderArray() : m_changed(true) {}
+    ~SBResourceLoaderArray()
+    {
+        typedef std::vector<int> Values;
+        int *(Values::*erase)(int *, int *) = &Values::erase;
+        (((Values *)&m_values)->*erase)((int *)m_values.m_first, (int *)m_values.m_last);
+    }
+    unsigned long &operator[](int index) { return m_values.begin()[index]; }
+    SBResourceLoaderStorage m_values;
+    unsigned long *m_search;
+    bool m_changed;
+    char m_15[0x0b];
+};
+
+// SIZE 0x20
+class SBResourceLoaderCopy
+{
+public:
+    SBResourceLoaderCopy(const RHUnk0059fae0 &other)
+    {
+        ((SBResourceSurfaceArray *)this)->FUN_006069e0(*(const SBResourceSurfaceArray *)&other);
+    }
+    inline ~SBResourceLoaderCopy();
+    std::vector<unsigned short> m_values;
+    char m_10[0x10];
+};
+
+#pragma inline_depth(0)
+inline SBResourceLoaderCopy::~SBResourceLoaderCopy()
+{
+    typedef std::vector<int> Values;
+    int *(Values::*erase)(int *, int *) = &Values::erase;
+    int **range = (int **)&m_values;
+    (((Values *)&m_values)->*erase)(range[1], range[2]);
+}
+#pragma inline_depth(8)
+
+typedef std::pair<unsigned long, RHUnk0059fae0> SBResourcePictureEntry;
+typedef std::pair<const unsigned long, SBResourceLoaderCopy> SBResourcePictureValue;
+
+struct SBResourcePictureMap
+{
+    typedef SBResourceTreeStorage<0x34, 0x30, 0x44>::InsertResult InsertResult;
+    InsertResult insert(const SBResourcePictureValue &value)
+    {
+        return m_tree.Insert(value.first);
+    }
+    SBResourceTreeStorage<0x34, 0x30, 0x44> m_tree;
+};
+
+// Parked at 0.6871: temporary insertion improves stack-slot colouring but frame offsets still differ.
+// STUB: GAME 0x005fd8e0
+bool SBResourceManager::FUN_005fd8e0(SBFile *file, unsigned long id)
+{
+    SBResourcePictureEntry entry;
+    SBResourceLoaderArray surfaces;
+    RHUnk006114c0 picture;
+    Tree44::Iterator found;
+    found = m_44.FUN_006013a0(id);
+    if (found.m_node != m_44.m_head) {
+        FUN_006001d0(found);
+        m_44.FUN_00601350(id);
+    }
+    unsigned long &nextId = *(unsigned long *)(m_00 + 0xc);
+    if (id == 0) {
+        entry.first = nextId;
+        unsigned long position = ((ToolboxPositionFile *)file)->FUN_005f5440();
+        // STRING: GAME 0x006bb460
+        SBResourceFileRecord record(nextId++, file, position, *(const unsigned long *)"NPTF");
+        ((SBResourceTreeStorage<0x20, 0x1c, 0x54> *)&m_54)->Insert(record.m_id);
+    } else {
+        ResourceNode *node = m_54.FUN_00601650(id).m_node;
+        file = node->m_file;
+        ((RHProfileFile *)file)->FUN_005f5370(node->m_position, 0);
+        entry.first = id;
+    }
+    unsigned long flags;
+    file->Access(&flags, 4);
+    unsigned long mask;
+    file->Access(&mask, 4);
+    {
+        unsigned long zero = 0;
+        ((RHUnk004ff7b0 *)&surfaces)->FUN_004ff7b0(6, *(const float *)&zero);
+    }
+    surfaces.m_changed = true;
+    for (int i = 0; i < 6; ++i) {
+        if ((1 << i) & mask) {
+            unsigned long format = (flags & 2) ? 2 : 1;
+            picture.Unk00611710(*file);
+            if (!(flags & 1) || id != 0) {
+                surfaces[i] = (*(RHEngineWidenedCalls **)(m_00 + 4))->FUN_005e4ed0(picture.m_width, picture.m_height, format, false);
+                picture.Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces[i]);
+            }
+            ((SBPicture *)&picture)->FUN_00611c50();
+        } else
+            surfaces[i] = 0;
+    }
+    if (!(flags & 1) || id != 0) {
+        {
+            typedef std::vector<int> Values;
+            int *(Values::*erase)(int *, int *) = &Values::erase;
+            (((Values *)&entry.second.m_values)->*erase)((int *)entry.second.m_values.m_4, (int *)entry.second.m_values.m_8);
+            ((SBResourceSurfaceArray *)&entry.second)->Assign(*(const SBResourceSurfaceArray *)&surfaces, 0);
+        }
+        ((SBResourcePictureMap *)&m_44)->insert(SBResourcePictureValue(entry));
     }
     return true;
 }
@@ -329,6 +534,243 @@ FUN_005ff390::FUN_005ff390()
 {
 }
 
+// Parked at 0.6871: temporary insertion improves stack-slot colouring but frame offsets still differ.
+// STUB: GAME 0x005ff3a0
+bool SBResourceManager::FUN_005ff3a0(SBFile *file, unsigned long id)
+{
+    SBResourcePictureEntry entry;
+    SBResourceLoaderArray surfaces;
+    RHUnk006114c0 picture;
+    Tree44::Iterator found;
+    found = m_44.FUN_006013a0(id);
+    if (found.m_node != m_44.m_head) {
+        FUN_006001d0(found);
+        m_44.FUN_00601350(id);
+    }
+    unsigned long &nextId = *(unsigned long *)(m_00 + 0xc);
+    if (id == 0) {
+        entry.first = nextId;
+        unsigned long position = ((ToolboxPositionFile *)file)->FUN_005f5440();
+        // STRING: GAME 0x006bb4e8
+        SBResourceFileRecord record(nextId++, file, position, *(const unsigned long *)"SLID");
+        ((SBResourceTreeStorage<0x20, 0x1c, 0x54> *)&m_54)->Insert(record.m_id);
+    } else {
+        ResourceNode *node = m_54.FUN_00601650(id).m_node;
+        file = node->m_file;
+        ((RHProfileFile *)file)->FUN_005f5370(node->m_position, 0);
+        entry.first = id;
+    }
+    unsigned long flags;
+    file->Access(&flags, 4);
+    unsigned long mask;
+    file->Access(&mask, 4);
+    {
+        unsigned long zero = 0;
+        ((RHUnk004ff7b0 *)&surfaces)->FUN_004ff7b0(6, *(const float *)&zero);
+    }
+    surfaces.m_changed = true;
+    for (int i = 0; i < 6; ++i) {
+        if ((1 << i) & mask) {
+            unsigned long format = (flags & 2) ? 2 : 1;
+            picture.Unk00611710(*file);
+            if (!(flags & 1) || id != 0) {
+                surfaces[i] = (*(RHEngineWidenedCalls **)(m_00 + 4))->FUN_005e4ed0(picture.m_width, picture.m_height, format, false);
+                picture.Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces[i]);
+            }
+            ((SBPicture *)&picture)->FUN_00611c50();
+        } else
+            surfaces[i] = 0;
+    }
+    if (!(flags & 1) || id != 0) {
+        {
+            typedef std::vector<int> Values;
+            int *(Values::*erase)(int *, int *) = &Values::erase;
+            (((Values *)&entry.second.m_values)->*erase)((int *)entry.second.m_values.m_4, (int *)entry.second.m_values.m_8);
+            ((SBResourceSurfaceArray *)&entry.second)->Assign(*(const SBResourceSurfaceArray *)&surfaces, 0);
+        }
+        ((SBResourcePictureMap *)&m_44)->insert(SBResourcePictureValue(entry));
+    }
+    return true;
+}
+
+// Parked at 0.6871: temporary insertion improves stack-slot colouring but frame offsets still differ.
+// STUB: GAME 0x005ff730
+bool SBResourceManager::FUN_005ff730(SBFile *file, unsigned long id)
+{
+    SBResourcePictureEntry entry;
+    SBResourceLoaderArray surfaces;
+    RHUnk006114c0 picture;
+    Tree44::Iterator found;
+    found = m_44.FUN_006013a0(id);
+    if (found.m_node != m_44.m_head) {
+        FUN_006001d0(found);
+        m_44.FUN_00601350(id);
+    }
+    unsigned long &nextId = *(unsigned long *)(m_00 + 0xc);
+    if (id == 0) {
+        entry.first = nextId;
+        unsigned long position = ((ToolboxPositionFile *)file)->FUN_005f5440();
+        // STRING: GAME 0x006bb4f0
+        SBResourceFileRecord record(nextId++, file, position, *(const unsigned long *)"BTTN");
+        ((SBResourceTreeStorage<0x20, 0x1c, 0x54> *)&m_54)->Insert(record.m_id);
+    } else {
+        ResourceNode *node = m_54.FUN_00601650(id).m_node;
+        file = node->m_file;
+        ((RHProfileFile *)file)->FUN_005f5370(node->m_position, 0);
+        entry.first = id;
+    }
+    unsigned long flags;
+    file->Access(&flags, 4);
+    unsigned long mask;
+    file->Access(&mask, 4);
+    {
+        unsigned long zero = 0;
+        ((RHUnk004ff7b0 *)&surfaces)->FUN_004ff7b0(4, *(const float *)&zero);
+    }
+    surfaces.m_changed = true;
+    for (int i = 0; i < 4; ++i) {
+        if ((1 << i) & mask) {
+            unsigned long format = (flags & 2) ? 2 : 1;
+            picture.Unk00611710(*file);
+            if (!(flags & 1) || id != 0) {
+                surfaces[i] = (*(RHEngineWidenedCalls **)(m_00 + 4))->FUN_005e4ed0(picture.m_width, picture.m_height, format, false);
+                picture.Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces[i]);
+            }
+            ((SBPicture *)&picture)->FUN_00611c50();
+        } else
+            surfaces[i] = 0;
+    }
+    if (!(flags & 1) || id != 0) {
+        {
+            typedef std::vector<int> Values;
+            int *(Values::*erase)(int *, int *) = &Values::erase;
+            (((Values *)&entry.second.m_values)->*erase)((int *)entry.second.m_values.m_4, (int *)entry.second.m_values.m_8);
+            ((SBResourceSurfaceArray *)&entry.second)->Assign(*(const SBResourceSurfaceArray *)&surfaces, 0);
+        }
+        ((SBResourcePictureMap *)&m_44)->insert(SBResourcePictureValue(entry));
+    }
+    return true;
+}
+
+// Parked at 0.6871: temporary insertion improves stack-slot colouring but frame offsets still differ.
+// STUB: GAME 0x005ffac0
+bool SBResourceManager::FUN_005ffac0(SBFile *file, unsigned long id)
+{
+    SBResourcePictureEntry entry;
+    SBResourceLoaderArray surfaces;
+    RHUnk006114c0 picture;
+    Tree44::Iterator found;
+    found = m_44.FUN_006013a0(id);
+    if (found.m_node != m_44.m_head) {
+        FUN_006001d0(found);
+        m_44.FUN_00601350(id);
+    }
+    unsigned long &nextId = *(unsigned long *)(m_00 + 0xc);
+    if (id == 0) {
+        entry.first = nextId;
+        unsigned long position = ((ToolboxPositionFile *)file)->FUN_005f5440();
+        // STRING: GAME 0x006bb4f8
+        SBResourceFileRecord record(nextId++, file, position, *(const unsigned long *)"RDO ");
+        ((SBResourceTreeStorage<0x20, 0x1c, 0x54> *)&m_54)->Insert(record.m_id);
+    } else {
+        ResourceNode *node = m_54.FUN_00601650(id).m_node;
+        file = node->m_file;
+        ((RHProfileFile *)file)->FUN_005f5370(node->m_position, 0);
+        entry.first = id;
+    }
+    unsigned long flags;
+    file->Access(&flags, 4);
+    unsigned long mask;
+    file->Access(&mask, 4);
+    {
+        unsigned long zero = 0;
+        ((RHUnk004ff7b0 *)&surfaces)->FUN_004ff7b0(7, *(const float *)&zero);
+    }
+    surfaces.m_changed = true;
+    for (int i = 0; i < 7; ++i) {
+        if ((1 << i) & mask) {
+            unsigned long format = (flags & 2) ? 2 : 1;
+            picture.Unk00611710(*file);
+            if (!(flags & 1) || id != 0) {
+                surfaces[i] = (*(RHEngineWidenedCalls **)(m_00 + 4))->FUN_005e4ed0(picture.m_width, picture.m_height, format, false);
+                picture.Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces[i]);
+            }
+            ((SBPicture *)&picture)->FUN_00611c50();
+        } else
+            surfaces[i] = 0;
+    }
+    if (!(flags & 1) || id != 0) {
+        {
+            typedef std::vector<int> Values;
+            int *(Values::*erase)(int *, int *) = &Values::erase;
+            (((Values *)&entry.second.m_values)->*erase)((int *)entry.second.m_values.m_4, (int *)entry.second.m_values.m_8);
+            ((SBResourceSurfaceArray *)&entry.second)->Assign(*(const SBResourceSurfaceArray *)&surfaces, 0);
+        }
+        ((SBResourcePictureMap *)&m_44)->insert(SBResourcePictureValue(entry));
+    }
+    return true;
+}
+
+// Parked at 0.6471: temporary insertion improves stack-slot colouring but frame offsets still differ.
+// STUB: GAME 0x005ffe50
+bool SBResourceManager::FUN_005ffe50(SBFile *file, unsigned long id)
+{
+    SBResourcePictureEntry entry;
+    SBResourceLoaderArray surfaces;
+    RHUnk006114c0 picture;
+    Tree44::Iterator found;
+    found = m_44.FUN_006013a0(id);
+    if (found.m_node != m_44.m_head) {
+        FUN_006001d0(found);
+        m_44.FUN_00601350(id);
+    }
+    unsigned long &nextId = *(unsigned long *)(m_00 + 0xc);
+    if (id == 0) {
+        entry.first = nextId;
+        unsigned long position = ((ToolboxPositionFile *)file)->FUN_005f5440();
+        // STRING: GAME 0x006bb500
+        SBResourceFileRecord record(nextId++, file, position, *(const unsigned long *)"TOGL");
+        ((SBResourceTreeStorage<0x20, 0x1c, 0x54> *)&m_54)->Insert(record.m_id);
+    } else {
+        ResourceNode *node = m_54.FUN_00601650(id).m_node;
+        file = node->m_file;
+        ((RHProfileFile *)file)->FUN_005f5370(node->m_position, 0);
+        entry.first = id;
+    }
+    unsigned long flags;
+    file->Access(&flags, 4);
+    unsigned long mask;
+    file->Access(&mask, 4);
+    {
+        unsigned long zero = 0;
+        ((RHUnk004ff7b0 *)&surfaces)->FUN_004ff7b0(5, *(const float *)&zero);
+    }
+    surfaces.m_changed = true;
+    for (int i = 0; i < 5; ++i) {
+        if ((1 << i) & mask) {
+            picture.Unk00611710(*file);
+            if (!(flags & 1) || id != 0) {
+                surfaces[i] = (*(RHEngineWidenedCalls **)(m_00 + 4))->FUN_005e4ed0(picture.m_width, picture.m_height, 0, false);
+                picture.Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces[i]);
+            }
+            ((SBPicture *)&picture)->FUN_00611c50();
+        } else
+            surfaces[i] = 0;
+    }
+    if (!(flags & 1) || id != 0) {
+        {
+            typedef std::vector<int> Values;
+            int *(Values::*erase)(int *, int *) = &Values::erase;
+            (((Values *)&entry.second.m_values)->*erase)((int *)entry.second.m_values.m_4, (int *)entry.second.m_values.m_8);
+            ((SBResourceSurfaceArray *)&entry.second)->Assign(*(const SBResourceSurfaceArray *)&surfaces, 0);
+        }
+        ((SBResourcePictureMap *)&m_44)->insert(SBResourcePictureValue(entry));
+    }
+    return true;
+}
+
+
+
 inline SBResourceUnkIterator SBResourceFind(SBResourceUnk00605440 &tree, const unsigned long &key)
 {
     SBResourceUnkIterator found(tree.FUN_00605440(key));
@@ -337,7 +779,6 @@ inline SBResourceUnkIterator SBResourceFind(SBResourceUnk00605440 &tree, const u
         ? found : SBResourceUnkIterator(head));
 }
 
-#include "RHEngineWidenedCalls.h"
 
 // FUNCTION: GAME 0x006001d0
 void SBResourceManager::FUN_006001d0(Tree44::Iterator &position)
@@ -2274,40 +2715,54 @@ void SBResourceConstructMouse(SBResourceMousePair *output, const SBResourceMouse
     new (output) SBResourceMousePair(value);
 }
 
+// FUNCTION: GAME 0x006065c0
 template<> SBResourceTextArray<wchar_t>::SBResourceTextArray(const SBResourceTextArray &other)
 {
-    const Text *first = other.m_values.begin();
     const Text *last = other.m_values.end();
-    m_values.clear();
+    const Text *first = other.m_values.begin();
+    Clear();
     void (Values::*insert)(Text *, const Text *, const Text *) = &Values::insert;
     (m_values.*insert)(m_values.begin(), first, last);
     m_changed = true;
 }
 
+// FUNCTION: GAME 0x006066a0
 template<> SBResourceTextArray<char>::SBResourceTextArray(const SBResourceTextArray &other)
 {
-    const Text *first = other.m_values.begin();
     const Text *last = other.m_values.end();
-    m_values.clear();
+    const Text *first = other.m_values.begin();
+    Clear();
     void (Values::*insert)(Text *, const Text *, const Text *) = &Values::insert;
     (m_values.*insert)(m_values.begin(), first, last);
     m_changed = true;
 }
 
-// Parked: member allocator stores, scalar-destruction calls and EH layout differ.
-// STUB: GAME 0x00605e60
+// FUNCTION: GAME 0x00605e60
 void SBResourceConstructArray74(unsigned long *output, const unsigned long &value)
 {
     typedef std::pair<const unsigned long, SBResourceTextArray<wchar_t> > Value;
     new (output) Value((const Value &)value);
 }
 
-// Parked: member construction/EH and scalar destruction differ; narrow npos folds.
-// STUB: GAME 0x00605f50
+// FUNCTION: GAME 0x00605f50
 void SBResourceConstructArray84(unsigned long *output, const unsigned long &value)
 {
     typedef std::pair<const unsigned long, SBResourceTextArray<char> > Value;
     new (output) Value((const Value &)value);
+}
+
+// FUNCTION: GAME 0x00606ea0
+template<> void SBResourceTextArray<wchar_t>::Resize(unsigned int count)
+{
+    m_values.resize(count);
+    m_changed = true;
+}
+
+// FUNCTION: GAME 0x006072a0
+template<> void SBResourceTextArray<char>::Resize(unsigned int count)
+{
+    m_values.resize(count);
+    m_changed = true;
 }
 
 // FUNCTION: GAME 0x006068e0
@@ -2329,12 +2784,6 @@ void SBResourceWideValues::FUN_00606960()
     m_values.erase(m_values.begin(), m_values.end());
 }
 
-class RHScriptFXArray
-{
-public:
-    void **Unk004fe420(void **, void **, void **);
-    void Unk005008e0(void **, void **);
-};
 
 class RHUnk00597a70;
 void FUN_0059fb00(RHUnk00597a70 **, RHUnk00597a70 *const &);
@@ -2413,8 +2862,19 @@ void EmitSBResourceSurfaceCopy(SBResourceSurfaceArray *values, const SBResourceS
     values->FUN_006069e0(other);
 }
 
+#pragma inline_depth(0)
+void EmitSBResourceTextCopies(void *output, const SBResourceTextArray<wchar_t> &wide, const SBResourceTextArray<char> &narrow)
+{
+    new (output) SBResourceTextArray<wchar_t>(wide);
+    new (output) SBResourceTextArray<char>(narrow);
+}
+#pragma inline_depth(8)
+
 void EmitSBResourceManager(SBResourceManager *resource)
 {
+    new (resource) SBResourceManager();
+    ((SBResourceTextArray<wchar_t> *)resource)->Resize(0);
+    ((SBResourceTextArray<char> *)resource)->Resize(0);
     ((SBResourceUnk005fe790 *)resource)->~SBResourceUnk005fe790();
     ((SBResourceUnk005fe880 *)resource)->~SBResourceUnk005fe880();
     SBResourceManager::Tree44::Iterator position;

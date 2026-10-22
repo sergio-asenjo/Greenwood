@@ -16,15 +16,9 @@ bool RHSectorProductionPC::FUN_0055bb00(int value)
     return current != last;
 }
 
-class RHSectorProductionBonus
-{
-public:
-    RHSectorProductionBonus(int action, int flags, unsigned short count);
-    RHSectorProductionBonus(unsigned long relic, int flags, int count);
-};
+#include "RHSpriteConstructor.h"
 
-RHSectorProductionBonus::RHSectorProductionBonus(int, int, unsigned short) {}
-RHSectorProductionBonus::RHSectorProductionBonus(unsigned long, int, int) {}
+RHUnk005b5890::RHUnk005b5890(int) {}
 
 class RHSectorProductionActorList
 {

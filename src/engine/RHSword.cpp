@@ -43,8 +43,7 @@ char RHSword::FUN_005c1b60() const
     return *((const char *)m_unk4 + 0x16);
 }
 
-// Parked: index/profile/kind use eax/edx/ecx instead of edx/ecx/eax.
-// STUB: GAME 0x005c1d70
+// FUNCTION: GAME 0x005c1d70
 unsigned RHHumanWeaponCalls::FUN_005c1d70(int index)
 {
     if (index < 10) {
@@ -52,6 +51,7 @@ unsigned RHHumanWeaponCalls::FUN_005c1d70(int index)
         int kind = profile->m_1c[index].m_04;
         if (kind == 1 || (kind > 2 && kind <= 6))
             return profile->m_1c[index].m_08;
+        return 2;
     }
     return 2;
 }

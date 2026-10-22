@@ -24,7 +24,7 @@ extern RHUnkSectorGlobal *g_unk0x6c0a9c;
 class RHFastFindGrid
 {
 public:
-    void FUN_004fc590();
+    void EmptyAllScriptSectors();
     void FUN_004fc660();
 };
 
@@ -79,16 +79,7 @@ struct RHSectorProductionInfo : RHSectorProductionInfoHead, RHSectorProductionPo
 {
 };
 
-// SIZE 0x100
-class RHSectorProductionBonus
-{
-public:
-    RHSectorProductionBonus(int action, int flags, unsigned short count);
-    RHSectorProductionBonus(unsigned long relic, int flags, int count);
-    char m_00[0x50];
-    char *m_50;
-    char m_54[0xac];
-};
+#include "RHElementBonusCore.h"
 
 class RHSectorProductionRelics : public std::vector<unsigned long>
 {
@@ -514,20 +505,20 @@ void RHSectorProduction::FUN_00580b70()
         Point point = *it;
         unsigned short count = amount >= 5 ? 5 : amount;
         amount -= count;
-        RHSectorProductionBonus *bonus = new RHSectorProductionBonus(action, 0, count);
-        ((RHActorPositionCalls *)(bonus->m_50 + 4))->FUN_00464530(point.m_point);
-        ((RHSectorProductionInfo *)bonus->m_50)->SetLayer(point.m_8);
+        RHElementBonus *bonus = new RHElementBonus(action, false, count);
+        ((RHActorPositionCalls *)((char *)bonus->Info() + 4))->FUN_00464530(point.m_point);
+        ((RHSectorProductionInfo *)bonus->Info())->SetLayer(point.m_8);
         ((RHElementActor *)bonus)->FUN_00462700(point.m_a);
         if (point.m_c == 0xffff)
-            ((RHBonusInfoBase *)(bonus->m_50 + 4))->FUN_0055fa20(0);
+            ((RHBonusInfoBase *)((char *)bonus->Info() + 4))->FUN_0055fa20(0);
         else
         {
             RHBonusProjection **table = (RHBonusProjection **)((RHSectorProductionGlobal *)g_unk0x6c0a9c)->m_4140.m_first;
             RHBonusProjection *projection = table[point.m_c];
-            ((RHBonusInfoBase *)(bonus->m_50 + 4))->FUN_0055fa20(projection);
+            ((RHBonusInfoBase *)((char *)bonus->Info() + 4))->FUN_0055fa20(projection);
         }
-        ((RHBonusInfoBase *)(bonus->m_50 + 4))->FUN_0055f290();
-        ((RHBonusInfo *)bonus->m_50)->FUN_005bd560(0, true);
+        ((RHBonusInfoBase *)((char *)bonus->Info() + 4))->FUN_0055f290();
+        bonus->Info()->FUN_005bd560(0, true);
         ((RHUnk004d8460 *)engine)->FUN_004d8460(bonus, 0, 1);
     }
     m_30 = m_2c >= m_points.size() * 5 ? 1 : 0;
@@ -562,7 +553,7 @@ void RHSectorProduction::FUN_00580d20(const RHMission *mission)
         break;
     }
     FUN_00580dc0();
-    ((RHFastFindGrid *)g_unk0x6c0a9c)->FUN_004fc590();
+    ((RHFastFindGrid *)g_unk0x6c0a9c)->EmptyAllScriptSectors();
     ((RHFastFindGrid *)g_unk0x6c0a9c)->FUN_004fc660();
 }
 
@@ -598,20 +589,20 @@ void RHSectorProduction::FUN_00580e80()
     for (Points::iterator it = m_points.begin(); it != m_points.end() && index < relics.size(); ++it)
     {
         Point point = *it;
-        RHSectorProductionBonus *bonus = new RHSectorProductionBonus(relics.At(index), 0, 1);
-        ((RHActorPositionCalls *)(bonus->m_50 + 4))->FUN_00464530(point.m_point);
-        ((RHSectorProductionInfo *)bonus->m_50)->SetLayer(point.m_8);
+        RHElementBonus *bonus = new RHElementBonus(relics.At(index), false, 1);
+        ((RHActorPositionCalls *)((char *)bonus->Info() + 4))->FUN_00464530(point.m_point);
+        ((RHSectorProductionInfo *)bonus->Info())->SetLayer(point.m_8);
         ((RHElementActor *)bonus)->FUN_00462700(point.m_a);
         if (point.m_c == 0xffff)
-            ((RHBonusInfoBase *)(bonus->m_50 + 4))->FUN_0055fa20(0);
+            ((RHBonusInfoBase *)((char *)bonus->Info() + 4))->FUN_0055fa20(0);
         else
         {
             RHBonusProjection **table = (RHBonusProjection **)((RHSectorProductionGlobal *)g_unk0x6c0a9c)->m_4140.m_first;
             RHBonusProjection *projection = table[point.m_c];
-            ((RHBonusInfoBase *)(bonus->m_50 + 4))->FUN_0055fa20(projection);
+            ((RHBonusInfoBase *)((char *)bonus->Info() + 4))->FUN_0055fa20(projection);
         }
-        ((RHBonusInfoBase *)(bonus->m_50 + 4))->FUN_0055f290();
-        ((RHBonusInfo *)bonus->m_50)->FUN_005bd560(0, true);
+        ((RHBonusInfoBase *)((char *)bonus->Info() + 4))->FUN_0055f290();
+        bonus->Info()->FUN_005bd560(0, true);
         ((RHUnk004d8460 *)engine)->FUN_004d8460(bonus, 1, 1);
         ++index;
     }
@@ -793,6 +784,75 @@ bool RHSectorProduction::FUN_005818c0(SBFile &file, Occupants &occupants,
         }
     }
     return true;
+}
+
+class RHEngineWidenedCalls
+{
+public:
+    void FUN_005e5160(unsigned count);
+};
+
+class RHUnk00581c40Linked
+{
+public:
+    virtual ~RHUnk00581c40Linked();
+};
+
+#include "RHSpriteConstructor.h"
+
+class RHUnk005ef320;
+extern RHUnk005ef320 *g_unk0x6c11d0;
+class RHUnkSpriteBank;
+extern RHUnkSpriteBank *g_unk0x006c0b1c;
+
+class RHUnk00581c40
+{
+public:
+    RHUnk00581c40();
+    ~RHUnk00581c40();
+    void *FUN_00581c20(unsigned flags);
+    unsigned m_vptr;
+    void *m_4;
+    void *m_8;
+    unsigned m_c;
+    unsigned m_10;
+    int m_14;
+    char m_18;
+    char m_19;
+    short m_1a;
+};
+
+// FUNCTION: GAME 0x00581b90
+RHUnk00581c40::RHUnk00581c40()
+{
+    m_vptr = 0x679cd0;
+    m_8 = g_unk0x6c11d0;
+    m_c = (unsigned)g_unk0x006c0b1c;
+    m_4 = new RHUnk005b5890(0);
+    m_10 = 0xffffffff;
+    m_14 = 0;
+    m_1a = 0;
+    m_18 = 1;
+}
+
+// FUNCTION: GAME 0x00581c20
+void *RHUnk00581c40::FUN_00581c20(unsigned flags)
+{
+    this->~RHUnk00581c40();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// FUNCTION: GAME 0x00581c40
+RHUnk00581c40::~RHUnk00581c40()
+{
+    unsigned count = m_10;
+    m_vptr = 0x679cd0;
+    if (count)
+        ((RHEngineWidenedCalls *)m_8)->FUN_005e5160(count);
+    if (m_4)
+        delete (RHUnk00581c40Linked *)m_4;
 }
 
 void RHSectorProduction::Emit(SBFile &file)

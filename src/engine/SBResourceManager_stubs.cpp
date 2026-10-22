@@ -20,16 +20,11 @@ void SBResourceArrayLifecycle44::FUN_0051d120()
 }
 void SBResourceArrayLifecycle84::FUN_0057c820() {}
 
-bool SBResourceManager::FUN_005fd8e0(int, unsigned long) { return false; }
 bool SBResourceManager::FUN_005fdcc0(int, unsigned long) { return false; }
 bool SBResourceManager::FUN_005fe000(int, unsigned long) { return false; }
 bool SBResourceManager::FUN_005fe380(int, unsigned long) { return false; }
 bool SBResourceManager::FUN_005fe970(int, unsigned long) { return false; }
 bool SBResourceManager::FUN_005fef60(int, unsigned long) { return false; }
-bool SBResourceManager::FUN_005ff3a0(int, unsigned long) { return false; }
-bool SBResourceManager::FUN_005ff730(int, unsigned long) { return false; }
-bool SBResourceManager::FUN_005ffac0(int, unsigned long) { return false; }
-bool SBResourceManager::FUN_005ffe50(int, unsigned long) { return false; }
 
 
 

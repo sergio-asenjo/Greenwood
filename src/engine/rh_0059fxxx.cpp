@@ -69,26 +69,9 @@ RHUnk0059f900::RHUnk0059f900()
     m_10 = 1;
 }
 
-class RHUnk0059fae0
-{
-public:
-    RHUnk0059fae0();
-    char m_0;
-    char m_1[3];
-    int m_4;
-    int m_8;
-    int m_c;
-    char m_10[4];
-    bool m_14;
-};
+#include "RHUnk0059fae0.h"
 
 // FUNCTION: GAME 0x0059fae0
-RHUnk0059fae0::RHUnk0059fae0()
+RHUnk0059fae0::RHUnk0059fae0() : m_14(1)
 {
-    char value;
-    m_0 = value;
-    m_4 = 0;
-    m_8 = 0;
-    m_c = 0;
-    m_14 = 1;
 }
