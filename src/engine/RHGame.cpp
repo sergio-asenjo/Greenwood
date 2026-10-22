@@ -11,6 +11,68 @@ public:
 #include "SBThreadedInput.h"
 #include "SBDrawManager.h"
 #include "../ui/RHWidgetPortraitClass.h"
+#include "../ui/RHPortraitBar.h"
+class RHUnk00493a80
+{
+public:
+    int FUN_00493a80();
+};
+
+class SBGeoPoint2D;
+struct RHGameWidgetInput;
+
+struct RHGameWidgetEvent
+{
+    int type;
+    void *widget;
+    unsigned value;
+    void *next;
+};
+
+struct RHGameWidgetView
+{
+    undefined m_00[4];
+    char m_04;
+    char m_05;
+    char m_06;
+    undefined m_07[0x4c - 7];
+    RHGameWidgetEvent m_event;
+    undefined m_5c[0x7c - 0x5c];
+    int m_7c;
+    undefined m_80[0x4c];
+    char m_cc;
+};
+
+class RHUnk005165f0 : public RHGameWidgetView
+{
+public:
+    int FUN_005165f0();
+    RHGameWidgetEvent *FUN_00516670(void *);
+    int FUN_005166b0(const SBGeoPoint2D &point);
+    void FUN_005169f0(char selected);
+    RHGameWidgetEvent *FUN_005167b0(const RHGameWidgetInput &input);
+};
+
+class RHGameWidgetSelectCalls
+{
+public:
+    virtual void v00(); virtual void v01(); virtual void v02(); virtual void v03();
+    virtual void v04(); virtual void v05(); virtual void v06(); virtual void v07();
+    virtual void v08(); virtual void v09(); virtual void v10(); virtual void v11();
+    virtual void v12(); virtual void v13(); virtual void v14(); virtual void v15();
+    virtual void v16(); virtual void v17(); virtual void v18(); virtual void v19();
+    virtual void v20();
+    virtual void v21(int value);
+};
+
+class RHArtificialIntelligenceSoundCalls;
+extern RHArtificialIntelligenceSoundCalls *g_unk0x006c1070;
+
+class RHSound
+{
+public:
+    void PlayJingle(int jingle);
+};
 #include <vector>
 #include <algorithm>
 #include <memory.h>
@@ -24,7 +86,7 @@ DECOMP_SIZE_ASSERT(RHGameSaveHeader, 0x0c)
 DECOMP_SIZE_ASSERT(SBArray<RHSaveGame *>, 0x10)
 DECOMP_SIZE_ASSERT(RHGameSaveOwner, 0x04)
 DECOMP_SIZE_ASSERT(RHMapDescription::Entry, 0x48)
-DECOMP_SIZE_ASSERT(RHGameConfig, 0x38)
+DECOMP_SIZE_ASSERT(RHUnk006114c0, 0x38)
 DECOMP_SIZE_ASSERT(RHGameConfigTriple, 0x0c)
 
 // GLOBAL: GAME 0x006c12b6
@@ -182,14 +244,7 @@ void RHGameCampaignView::FUN_00456540(bool flag, RHGameMission *mission)
 
 #include "RHFrameDictionary.h"
 
-class RHPortraitRootList
-{
-public:
-    ~RHPortraitRootList();
-    void *FUN_0050e770(unsigned flags);
-    unsigned m_vptr;
-    undefined m_04[0xac];
-};
+#include "RHPortraitRootList.h"
 
 // FUNCTION: GAME 0x00509c10
 void *RHUnk005069a0::FUN_00509c10(unsigned flags)
@@ -263,6 +318,35 @@ char RHGame::FUN_0050e5e0()
 {
     return m_5e;
 }
+
+// VTABLE: GAME 0x00678d18
+class RHUnk0051d790 : public RHPortraitRootList
+{
+public:
+    ~RHUnk0051d790();
+    void *FUN_0050e660(unsigned flags);
+    bool FUN_0051d8a0();
+    void FUN_0051dba0(RHGameLifetime005161a0 *widgets, const SBGeoPoint2D &position, int style);
+    void FUN_0051dd10(RHGameLifetime005161a0 *widgets);
+    void FUN_0051dd40(const SBGeoPoint2D &position);
+    void FUN_0051ddb0(const SBGeoBoundingBox2D &bounds);
+    RHGameLifetime00517300 m_b0;
+    RHGameLifetime00517300 m_180;
+    RHGameLifetime005161a0 m_250[5];
+    RHGameLifetime005161a0 m_660[5];
+};
+
+// FUNCTION: GAME 0x0050e660
+void *RHUnk0051d790::FUN_0050e660(unsigned flags)
+{
+    this->~RHUnk0051d790();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// SYNTHETIC: GAME 0x0050e680
+// ??0RHPortraitRootList@@QAE@XZ
 
 // SYNTHETIC: GAME 0x0050e6c0
 // ??0RHGameLifetime0050e6c0@@QAE@XZ
@@ -436,6 +520,17 @@ void RHGame::FUN_0050ed10(bool value)
     FUN_0050eb80(value);
     FUN_00514c50();
     ((RHGameSyncCalls *)this)->FUN_0050ed40();
+}
+
+#include "RHUnk005db7e0.h"
+
+// FUNCTION: GAME 0x0050ef90
+void *RHUnk005db7e0::FUN_0050ef90(unsigned flags)
+{
+    this->~RHUnk005db7e0();
+    if (flags & 1)
+        operator delete(this);
+    return this;
 }
 
 #include "RHPortraitBar.h"
@@ -783,7 +878,7 @@ bool RHGame::Serialize(unsigned long mode, RHSaveGame *saveGame, bool loading)
         }
         else
         {
-            RHGameConfig settings;
+            RHUnk006114c0 settings;
             settings.FUN_006134a0((char *)m_18 + 0xe4);
             settings.FUN_00611960(settingsFile);
             settingsFile.FUN_005f5290();
@@ -885,12 +980,11 @@ void RHGame::FUN_00512c90(void *value)
         ((RHGameWidgetCalls *)((char *)this + 0x29b4))->FUN_0051df00(0);
 }
 
-// Parked: CloseWindow is an unresolved USER32 import under the fixed link line.
-// STUB: GAME 0x00513070
-void RHGame::FUN_00513070(void *value)
+// FUNCTION: GAME 0x00513070
+void RHGame::FUN_00513070(void *)
 {
-    void *handle = *(void **)((char *)value + 0x10);
-    RHGameWindowCalls::CloseWindow(*(void **)((char *)handle + 0x100));
+    void *handle = *(void **)((char *)this + 0x10);
+    ::CloseWindow(*(HWND *)((char *)handle + 0x100));
     g_unk0x006a6d27 = 0;
 }
 
@@ -1076,10 +1170,51 @@ void RHGame::FUN_00512cb0(void *)
     (*(SBThreadedInput **)((char *)this + 0x0c))->CleanUpInputs();
 }
 
-// Parked: The original routine has nested string and UI cleanup with recovered stack corruption.
+class RHMenuYesNo
+{
+public:
+    static bool AskForConfirmation(RHMenuWindowScreen *screen, const std::wstring &text);
+};
+
+class RHUnk0063a1d0
+{
+public:
+    unsigned FUN_0063a1d0();
+};
+
+// Parked: the early-return string cleanup is merged with the final cleanup instead of retaining both copies.
 // STUB: GAME 0x00512eb0
 void RHGame::FUN_00512eb0(void *)
 {
+    RHGameContinueCalls *profile = (RHGameContinueCalls *)
+        ((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0();
+    RHGameMission *mission = ((RHGameCampaignView *)g_unk0x6c07fc)->m_178;
+    std::string name;
+    if (((RHEngine *)m_18)->FUN_004c7c90() == false)
+    {
+        *(char *)((char *)this + 0x63) = 1;
+        return;
+    }
+    if (*((char *)RHUnk00546050() + 0x14))
+        name = g_unk0x006c0ec8;
+    else
+        name = g_unk0x006c0eb8;
+    RHSaveGame *saveGame = (RHSaveGame *)((RHUnk0056fb70 *)profile)->FUN_0056fb70(&name);
+    if (saveGame)
+    {
+        if (((RHUnk0063a1d0 *)saveGame)->FUN_0063a1d0() != **(unsigned long **)mission)
+        {
+            bool confirmed;
+            {
+                RHMenuScreenView dialog(0, 0, true, true, (char *)this + 0x68);
+                confirmed = RHMenuYesNo::AskForConfirmation(&dialog, FUN_005e23d0(0x105));
+            }
+            if (confirmed != true)
+                return;
+        }
+        *(int *)((char *)this + 0x3550) = 7;
+        *(RHSaveGame **)((char *)this + 0x3554) = saveGame;
+    }
 }
 
 class RHGameSelectionArray
@@ -1127,34 +1262,198 @@ void RHGame::FUN_00513390(void *event)
     FUN_005140b0();
 }
 
-// Parked: The selector reads external control state and synchronizes paired widget modes.
-// STUB: GAME 0x00513b00
-void RHGame::FUN_00513b00()
+// FUNCTION: GAME 0x00513b00
+void RHGame::FUN_00513b00(int value)
 {
+    switch (((RHEngine *)m_18)->FUN_004ded90(0) & 0xff)
+    {
+    case 0:
+    {
+        RHUnk005165f0 *first = (RHUnk005165f0 *)((char *)this + 0x1eac);
+        ((RHUnk005165f0 *)((char *)this + 0x1f7c))->m_05 = 0;
+        ((RHUnk005165f0 *)((char *)this + 0x1eac))->m_05 = 0;
+        ((RHGameWidgetSelectCalls *)first)->v21(0);
+        ((RHGameWidgetSelectCalls *)((char *)this + 0x1f7c))->v21(0);
+        first->FUN_005169f0(0);
+        ((RHUnk005165f0 *)((char *)this + 0x1f7c))->FUN_005169f0(0);
+        break;
+    }
+    case 2:
+        ((RHGameWidgetSelectCalls *)((char *)this + 0x1eac))->v21(1);
+        ((RHUnk005165f0 *)((char *)this + 0x1eac))->m_05 = 1;
+        ((RHUnk005165f0 *)((char *)this + 0x1eac))->FUN_005169f0(0);
+        ((RHGameWidgetSelectCalls *)((char *)this + 0x1f7c))->v21(0);
+        ((RHUnk005165f0 *)((char *)this + 0x1f7c))->m_05 = 0;
+        ((RHUnk005165f0 *)((char *)this + 0x1f7c))->FUN_005169f0(0);
+        break;
+    case 1:
+        ((RHGameWidgetSelectCalls *)((char *)this + 0x1eac))->v21(0);
+        ((RHUnk005165f0 *)((char *)this + 0x1eac))->m_05 = 0;
+        ((RHUnk005165f0 *)((char *)this + 0x1eac))->FUN_005169f0(0);
+        ((RHGameWidgetSelectCalls *)((char *)this + 0x1f7c))->v21(1);
+        ((RHUnk005165f0 *)((char *)this + 0x1f7c))->m_05 = 1;
+        ((RHUnk005165f0 *)((char *)this + 0x1f7c))->FUN_005169f0(0);
+        break;
+    case 3:
+        ((RHGameWidgetSelectCalls *)((char *)this + 0x1eac))->v21(1);
+        ((RHUnk005165f0 *)((char *)this + 0x1eac))->m_05 = 1;
+        ((RHUnk005165f0 *)((char *)this + 0x1eac))->FUN_005169f0(0);
+        ((RHGameWidgetSelectCalls *)((char *)this + 0x1f7c))->v21(1);
+        ((RHUnk005165f0 *)((char *)this + 0x1f7c))->m_05 = 1;
+        ((RHUnk005165f0 *)((char *)this + 0x1f7c))->FUN_005169f0(0);
+        break;
+    }
 }
 
-// Parked: The actor/team branches call distinct owners and menu transitions.
-// STUB: GAME 0x005134c0
-void RHGame::FUN_005134c0(void *)
+// FUNCTION: GAME 0x005134c0
+void RHGame::FUN_005134c0(void *event)
 {
+    void *actor = *(void **)((char *)event + 0x10);
+    if (!m_5a)
+    {
+        if (!actor)
+        {
+            (*(RHPortraitBar **)((char *)this + 0x196c))->FUN_0055ecb0(false);
+            return;
+        }
+        (*(RHPortraitBar **)((char *)this + 0x196c))->SetPortraitOpened(actor, false);
+        return;
+    }
+    if (actor)
+    {
+        ((RHEngineReinforcementCalls *)actor)->FUN_004936a0(1);
+        ((RHGameSyncCalls *)this)->FUN_005146f0();
+    }
+    else
+    {
+        ((RHGameActionCalls *)this)->FUN_0050eff0();
+        ((RHGameSyncCalls *)this)->FUN_005146f0();
+    }
 }
 
-// Parked: The target contains actor iteration, portrait dispatch, and messenger cleanup.
-// STUB: GAME 0x00513520
-void RHGame::FUN_00513520(void *)
+// FUNCTION: GAME 0x00513520
+void RHGame::FUN_00513520(void *event)
 {
+    void *actor = *(void **)((char *)event + 0x10);
+    if (!m_5a)
+    {
+        if (!actor)
+        {
+            (*(RHPortraitBar **)((char *)this + 0x196c))->FUN_0055ecb0(true);
+            return;
+        }
+        char visible = (char)((RHUnk00493a80 *)actor)->FUN_00493a80();
+        if (visible)
+            (*(RHPortraitBar **)((char *)this + 0x196c))->SetPortraitOpened(actor, true);
+        return;
+    }
+
+    if (!actor)
+    {
+        unsigned count = (unsigned char)((RHGameSelectionArray *)((char *)g_pEngine + 0x493c))->Size();
+        for (; count != 0; --count)
+        {
+            RHGameActorView *view = ((RHGameSelectionArray *)((char *)g_pEngine + 0x493c))->GetForPortrait((unsigned char)(count - 1));
+            RHWidgetPortrait *portrait = *(RHWidgetPortrait **)((char *)view + 0x4ec);
+            char visible = (char)((RHUnk00493a80 *)view)->FUN_00493a80();
+            if (visible)
+            {
+                ((RHActorPCTemplateCalls *)view)->FUN_00493660(1);
+                portrait->Method005d6690();
+            }
+        }
+    }
+    else
+    {
+        char visible = (char)((RHUnk00493a80 *)actor)->FUN_00493a80();
+        if (visible)
+        {
+            ((RHActorPCTemplateCalls *)actor)->FUN_00493660(1);
+            ((RHWidgetPortrait *)*(void **)((char *)actor + 0x4ec))->Method005d6690();
+        }
+    }
+    ((RHGameSyncCalls *)this)->FUN_005146f0();
 }
 
-// Parked: The input polling loop and its nested SEH cleanup remain unrecovered.
-// STUB: GAME 0x005138b0
-void RHGame::FUN_005138b0()
+class RHConsole
 {
+public:
+    static RHConsole *GetInstance();
+    bool HandleCharacter(unsigned short character);
+    bool Flag5b6() const { return m_5b6; }
+    unsigned char m_00[0x5b6];
+    bool m_5b6;
+};
+
+extern bool g_mouseEnabled;
+unsigned short FUN_005f1000();
+bool FUN_005edae0(RHUnk005ef320 *, const char *, ...);
+
+class RHUnk005ef390
+{
+public:
+    void FUN_005ef390();
+};
+
+// FUNCTION: GAME 0x005138b0
+void RHGame::FUN_005138b0(void *)
+{
+    if (RHConsole::GetInstance()->Flag5b6() &&
+        *(int *)((char *)this + 0x1ff8) != 8 &&
+        *(int *)((char *)this + 0x1ff8) != 5)
+        return;
+    m_5d = g_mouseEnabled;
+    ((SBThreadedInput *)*(void **)((char *)this + 0x0c))->SetMouseEnabled(false);
+    if (RHConsole::GetInstance()->m_5b6)
+    {
+        ((RHUnk005ef390 *)*(void **)((char *)this + 0x10))->FUN_005ef390();
+        // STRING: GAME 0x006b0550
+        FUN_005edae0((RHUnk005ef320 *)*(void **)((char *)this + 0x10), "Enter Code:");
+    }
+    ((RHUnk005ef320 *)*(void **)((char *)this + 0x10))->FUN_005ef380(1);
+    ((RHGameActionCalls *)*(void **)((char *)this + 0x10))->FUN_005e5260();
+    bool done;
+    do
+    {
+        done = !RHConsole::GetInstance()->HandleCharacter(FUN_005f1000());
+        ((RHGameActionCalls *)*(void **)((char *)this + 0x10))->FUN_005e5260();
+    } while (!done);
+    RHUnk00546050()->RHUnk005460c0(RHUnk5490f0(0x25));
 }
 
-// Parked: The actor scan and messaging branches have nested SEH and dynamic helper dispatch.
-// STUB: GAME 0x00513210
-void RHGame::FUN_00513210(void *)
+// FUNCTION: GAME 0x00513210
+void RHGame::FUN_00513210(void *event)
 {
+    char keep = 1;
+    void *actor = *(void **)((char *)event + 0x10);
+    unsigned action = *(unsigned *)((char *)event + 0x08);
+    if (!actor)
+    {
+        unsigned count = (unsigned char)((RHGameSelectionArray *)((char *)g_pEngine + 0x493c))->Size();
+        for (unsigned index = 0; index < count; ++index)
+        {
+            RHGameActorView *view = ((RHGameSelectionArray *)((char *)g_pEngine + 0x493c))->GetForPortrait((unsigned char)index);
+            RHGamePortraitCalls *portrait = ((RHGameSyncCalls *)this)->FUN_0050f140(view);
+            if (portrait)
+                ((RHWidgetPortrait *)portrait)->FUN_005d9090(action);
+            char hit = (char)((RHEngineActionCalls *)m_18)->FUN_004d2300(view, action);
+            if (hit)
+                keep = 0;
+        }
+        if (keep)
+            RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(8, 0, action));
+    }
+    else
+    {
+        RHGamePortraitCalls *portrait = ((RHGameSyncCalls *)this)->FUN_0050f140(actor);
+        if (portrait)
+            ((RHWidgetPortrait *)portrait)->FUN_005d9090(action);
+        char hit = (char)((RHEngineActionCalls *)m_18)->FUN_004d2300(actor, action);
+        keep = hit == 0;
+    }
+    if (*(char *)((char *)m_18 + 0x71))
+        ((RHSound *)g_unk0x006c1070)->PlayJingle(keep ? 4 : 5);
+    FUN_005140b0();
 }
 
 // Parked: two complete reconstructions hoist the first two vptr reads before the widget state stores.
@@ -1208,10 +1507,45 @@ void RHGame::FUN_00513df0(void *)
         *(char *)((char *)this + 0x3481) = 1;
 }
 
-// Parked: Resource discovery loops through temporary strings and profile-owned allocations.
-// STUB: GAME 0x00513670
-void RHGame::FUN_00513670()
+#include "SBPictureTargaCore.h"
+
+class RHGameScreenshotCalls
 {
+public:
+    void FUN_004da390(SBPicture &picture);
+};
+
+extern "C" int sprintf(char *, const char *, ...);
+bool FUN_005f6400(const std::string &name);
+
+// FUNCTION: GAME 0x00513670
+void RHGame::FUN_00513670(void *)
+{
+    SBPictureTarga picture;
+    char capture = *((char *)RHUnk00546050() + 0x16);
+    if (capture)
+        ((RHGameScreenshotCalls *)m_18)->FUN_004da390(picture);
+    else
+    {
+        picture.FUN_00611c80(*(SBPictureUnkDrawManager **)((char *)this + 0x10), 0);
+        if (*((char *)RHUnk00546050() + 0x14))
+            picture.FUN_00612d80(3, 3);
+    }
+    char filename[48];
+    unsigned short index = 0;
+    bool available;
+    do
+    {
+        sprintf(filename,
+            // STRING: GAME 0x006b0540
+            "screen%03li.tga", (unsigned)index);
+        available = !FUN_005f6400(std::string(filename));
+        if (available)
+            break;
+        ++index;
+    } while (index < 999);
+    picture.SaveToFile(std::string(filename));
+    picture.FUN_00611c50();
 }
 
 // FUNCTION: GAME 0x00513a60
@@ -2068,28 +2402,6 @@ public:
     virtual bool v19(const RHGameWidgetInput &input);
 };
 
-struct RHGameWidgetEvent
-{
-    int type;
-    void *widget;
-    unsigned value;
-    void *next;
-};
-
-struct RHGameWidgetView
-{
-    undefined m_00[4];
-    char m_04;
-    char m_05;
-    char m_06;
-    undefined m_07[0x4c - 7];
-    RHGameWidgetEvent m_event;
-    undefined m_5c[0x7c - 0x5c];
-    int m_7c;
-    undefined m_80[0x4c];
-    char m_cc;
-};
-
 class RHUnk00515bf0 : public RHGameWidgetView
 {
 public:
@@ -2498,45 +2810,24 @@ RHGameWidgetEvent *RHUnk00516330::FUN_00516490(const RHGameWidgetInput &input)
     return 0;
 }
 
-class RHUnk005165f0 : public RHGameWidgetView
-{
-public:
-    int FUN_005165f0();
-    RHGameWidgetEvent *FUN_00516670(void *);
-    int FUN_005166b0(const SBGeoPoint2D &point);
-    void FUN_005169f0(char selected);
-    RHGameWidgetEvent *FUN_005167b0(const RHGameWidgetInput &input);
-};
-
-static inline int RHGameToggleFinal(int result, int selected, const char &enabled)
-{
-    if ((result == selected || result == 3) && enabled != (char)selected)
-        result = 255;
-    return result;
-}
-
-// Parked: Two switch arms branch through the result guard instead of directly to the byte test.
-// STUB: GAME 0x005165f0
+// FUNCTION: GAME 0x005165f0
 int RHUnk005165f0::FUN_005165f0()
 {
     if (!m_04)
         return 0;
     int result;
-    int selected = 1;
     switch (m_7c)
     {
-    case 5:
-        if (m_05 == selected)
-            return 2;
+    case 5: if (m_05 == 1) return 2; result = 1; break;
     case 6:
-    case 7: result = selected; break;
-    case 8:
-        if (m_05 == selected)
-            return 4;
+    case 7: result = 1; break;
+    case 8: if (m_05 == 1) return 4; result = 3; break;
     case 9:
     case 10: result = 3; break;
     }
-    return RHGameToggleFinal(result, selected, m_06);
+    if ((result == 1 || result == 3) && m_06 != 1)
+        result = 255;
+    return result;
 }
 
 // FUNCTION: GAME 0x00516670
@@ -2665,7 +2956,7 @@ RHGameWidgetEvent *RHUnk005165f0::FUN_005167b0(const RHGameWidgetInput &input)
 }
 
 // FUNCTION: GAME 0x005169f0
-void RHUnk005165f0::FUN_005169f0(char selected)
+inline void RHUnk005165f0::FUN_005169f0(char selected)
 {
     if (selected == 1)
     {
@@ -3147,6 +3438,9 @@ void *RHGameLifetimeDeleteCalls::FUN_00517520(unsigned flags)
     return this;
 }
 
+// SYNTHETIC: GAME 0x0044fe90
+// ??1RHGameLifetime0044fe90@@QAE@XZ
+
 // FUNCTION: GAME 0x0044fef0
 void *RHGameLifetime00517590::FUN_0044fef0(unsigned flags)
 {
@@ -3220,6 +3514,8 @@ void EmitRHGameWidgetRendered()
     RHGameLifetime005161a0 seventh;
     RHGameLifetime00515f00 eighth;
     RHGameLifetime0050e6c0 ninth;
+    RHGameLifetime0044fe90 tenth;
+    RHPortraitRootList eleventh;
 }
 #pragma inline_depth()
 
@@ -3266,6 +3562,181 @@ void EmitRHGameTree(RHUnk00514e10 *tree, RHUnk00514e10::Iterator *entry, const i
     tree->FUN_00514e10(key);
     tree->FUN_00514e50();
     entry->FUN_005159d0();
+}
+
+// FUNCTION: GAME 0x0051d790
+RHUnk0051d790::~RHUnk0051d790()
+{
+    FUN_005df300((RHUnk005d92c0Sub *)&m_b0);
+    FUN_005df300((RHUnk005d92c0Sub *)&m_180);
+    FUN_0051dd10(m_250);
+    FUN_0051dd10(m_660);
+}
+
+class RHUnk0051dd10View
+{
+public:
+    virtual void V00() = 0;
+    virtual void V04() = 0;
+    virtual void V08() = 0;
+    virtual void V0c() = 0;
+    virtual void V10() = 0;
+    virtual void V14() = 0;
+    virtual void V18() = 0;
+    virtual void V1c() = 0;
+    virtual void V20() = 0;
+    virtual void V24() = 0;
+    virtual void V28() = 0;
+    virtual void V2c() = 0;
+    virtual bool V30(void *widget) = 0;
+    virtual bool V34(void *widget) = 0; // vtable+0x34
+    virtual void V38(void *widget) = 0;
+};
+
+// FUNCTION: GAME 0x0051dd10
+void RHUnk0051d790::FUN_0051dd10(RHGameLifetime005161a0 *widgets)
+{
+    for (int i = 0; i < 5; ++i)
+        ((RHUnk0051dd10View *)this)->V34(&widgets[i]);
+}
+
+class SBFrameWnd
+{
+public:
+    void FUN_0061ac80(const SBGeoPoint2D &position);
+    void FUN_0061ad20(const SBGeoBoundingBox2D &bounds);
+};
+
+class RHUnkFXDraw
+{
+public:
+    unsigned short FUN_005e56c0(unsigned long surface);
+    unsigned short FUN_005e5750(unsigned long surface);
+};
+
+extern RHUnk005ef320 *g_unk0x6c11d0;
+extern float g_unk0x006c0bb0[2];
+extern wchar_t g_unk0x006c0b50[1];
+
+class RHMobileUnk006091b0
+{
+public:
+    RHMobileUnk006091b0 &FUN_006091b0(const SBGeoPoint2D &offset);
+};
+
+class RHGameStatusWidgetView
+{
+public:
+    virtual void V00() = 0;
+    virtual void V04() = 0;
+    virtual void V08() = 0;
+    virtual void V0c() = 0;
+    virtual void V10() = 0;
+    virtual void V14() = 0;
+    virtual void V18() = 0;
+    virtual void V1c() = 0;
+    virtual void V20() = 0;
+    virtual void V24() = 0;
+    virtual void V28() = 0;
+    virtual void V2c() = 0;
+    virtual bool V30(const std::wstring &resource, const SBGeoBoundingBox2D &bounds, int flags, int style) = 0;
+};
+
+class RHMapBox
+{
+public:
+    RHMapBox(float left, float top, float right, float bottom);
+    SBGeoPoint2D m_first;
+    SBGeoPoint2D m_second;
+    int m_10;
+};
+
+// FUNCTION: GAME 0x0051d8a0
+bool RHUnk0051d790::FUN_0051d8a0()
+{
+    bool initialized;
+    {
+        std::wstring title(g_unk0x006c0b50);
+        initialized = RHPortraitRootLifetime::FUN_0061a1e0((const RHMapTitleText &)title,
+            RHMapBox(0.0f, 0.0f, 91.0f, 42.0f), 0);
+    }
+    if (initialized)
+    {
+        {
+            std::wstring title(g_unk0x006c0b50);
+            ((RHGameStatusWidgetView *)&m_b0)->V30(title,
+                (const SBGeoBoundingBox2D &)RHMapBox(0.0f, 0.0f, 91.0f, 24.0f), 0, 0xda);
+        }
+        {
+            std::wstring title(g_unk0x006c0b50);
+            ((RHGameStatusWidgetView *)&m_180)->V30(title,
+                (const SBGeoBoundingBox2D &)RHMapBox(0.0f, 0.0f, 91.0f, 42.0f), 0, 0xdb);
+        }
+        ((RHUnk0051dd10View *)this)->V30(&m_b0);
+        ((RHUnk0051dd10View *)this)->V30(&m_180);
+        FUN_0051dba0(m_250, SBGeoPoint2D(5.0f, 5.0f), 0xd9);
+        FUN_0051dba0(m_660, SBGeoPoint2D(5.0f, 22.0f), 0xd8);
+        return true;
+    }
+    return false;
+}
+
+// FUNCTION: GAME 0x0051dba0
+void RHUnk0051d790::FUN_0051dba0(RHGameLifetime005161a0 *widgets, const SBGeoPoint2D &position, int style)
+{
+    SBGeoBoundingBox2D bounds(position, position);
+    int remaining = 5;
+    do
+    {
+        {
+            std::wstring resource(g_unk0x006c0b50);
+            ((RHGameStatusWidgetView *)widgets)->V30(resource, bounds, 0, style);
+        }
+        ((RHUnk0051dd10View *)this)->V30(widgets);
+        ((RHUnk0051dd10View *)this)->V38(widgets);
+        ((RHMobileUnk006091b0 *)&bounds)->FUN_006091b0(SBGeoVector2D(16.0f, 0.0f));
+        ++widgets;
+    } while (--remaining);
+}
+
+// FUNCTION: GAME 0x0051dd40
+void RHUnk0051d790::FUN_0051dd40(const SBGeoPoint2D &position)
+{
+    ((SBFrameWnd *)this)->FUN_0061ac80(position.Unk005fc190(*(SBGeoPoint2D *)g_unk0x006c0bb0));
+}
+
+inline float RHGameBoundsRight(const SBGeoBoundingBox2D &bounds)
+{
+    return bounds.m_second.m_x;
+}
+
+inline float RHGameBoundsBottom(const SBGeoBoundingBox2D &bounds)
+{
+    return bounds.m_second.m_y;
+}
+
+// FUNCTION: GAME 0x0051ddb0
+void RHUnk0051d790::FUN_0051ddb0(const SBGeoBoundingBox2D &bounds)
+{
+    RHUnkFXDraw *draw = (RHUnkFXDraw *)g_unk0x6c11d0;
+    SBGeoVector2D offset;
+    if (RHGameBoundsRight(bounds) > draw->FUN_005e56c0(0))
+        offset.m_x = draw->FUN_005e56c0(0) - RHGameBoundsRight(bounds);
+    else
+        offset.m_x = 0.0f;
+    if (RHGameBoundsBottom(bounds) > draw->FUN_005e5750(0))
+        offset.m_y = draw->FUN_005e5750(0) - RHGameBoundsBottom(bounds);
+    else
+        offset.m_y = 0.0f;
+    ((SBFrameWnd *)this)->FUN_0061ad20(bounds.FUN_006090d0(offset));
+}
+
+void EmitRHHumanStatusBounds(RHUnk0051d790 *status, const SBGeoBoundingBox2D &bounds)
+{
+    status->FUN_0051d8a0();
+    status->FUN_0051dba0(status->m_250, bounds.m_first, 0);
+    status->FUN_0051dd40(bounds.m_first);
+    status->FUN_0051ddb0(bounds);
 }
 
 // FUNCTION: GAME 0x0051df00
@@ -3433,7 +3904,7 @@ bool RHGameSaveCalls::FUN_0056e850()
 }
 
 // FUNCTION: GAME 0x006134a0
-bool RHGameConfig::FUN_006134a0(void *configuration)
+bool RHUnk006114c0::FUN_006134a0(void *configuration)
 {
     if (*(unsigned *)((char *)this + 0x1c))
         ::operator delete(*(void **)((char *)this + 0x14));
@@ -3452,19 +3923,18 @@ bool RHGameConfig::FUN_006134a0(void *configuration)
     return true;
 }
 
+DECOMP_SIZE_ASSERT(RHMapDescription, 0x1c)
+DECOMP_SIZE_ASSERT(RHMapDescription::Entry, 0x48)
+DECOMP_SIZE_ASSERT(RHUnk0063c8b0, 0x18)
+
 // FUNCTION: GAME 0x0063c7c0
 RHMapDescription::RHMapDescription()
 {
-    std::allocator<Entry> allocator;
-    m_00[4] = *(char *)&allocator;
-    *(Entry **)(m_00 + 8) = 0;
-    *(Entry **)(m_00 + 0xc) = 0;
-    *(Entry **)(m_00 + 0x10) = 0;
     // STRING: GAME 0x006beeb0
-    *(const char **)(m_00 + 0x14) = "RHLevel";
+    m_14 = "RHLevel";
     // STRING: GAME 0x006beea8
-    *(const char **)(m_00 + 0x18) = ".red";
-    *(unsigned *)this = 0x67bbd4;
+    m_18 = ".red";
+    m_00 = 0x67bbd4;
 }
 
 extern const unsigned g_unk0x0067bbd8;
@@ -3518,34 +3988,37 @@ RHUnk0063c880::RHUnk0063c880()
     m_c = g_unk0x0067bbd8;
 }
 
-class RHUnk0063c8b0
-{
-public:
-    RHUnk0063c8b0();
-    unsigned m_0;
-    unsigned m_4;
-    std::vector<void *> m_8;
-};
-
 // FUNCTION: GAME 0x0063c8b0
 RHUnk0063c8b0::RHUnk0063c8b0() : m_0(g_unk0x0067bbd8), m_4(g_unk0x0067bbd8)
 {
 }
 
-// Parked: 65.17%; lookup register scheduling; unannotated to preserve DisplayLostLeicester.
+// Parked: vector clear still calls the out-of-line Entry destructor instead of expanding nested cleanup.
+// STUB: GAME 0x0063c8e0
+RHMapDescription::~RHMapDescription()
+{
+    m_00 = 0x67bbd4;
+    m_04.clear();
+}
+
+// Parked: lookup keeps last in EDI instead of EBX and lacks the target's short-lived EDI index.
+// STUB: GAME 0x0063c9e0
 RHMapDescription::Entry *RHMapDescription::FUN_0063c9e0(unsigned id)
 {
-    Entry *first = *(Entry *volatile *)((char *)this + 0x08);
-    unsigned count = first == 0 ? 0 : *(Entry *volatile *)((char *)this + 0x0c) - first;
+    Entry *begin = ((Entry *volatile *)&m_04)[1];
+    unsigned count = begin == 0 ? 0 : ((Entry *volatile *)&m_04)[2] - begin;
     if (count != 0)
     {
-        Entry *last = *(Entry **)((char *)this + 0x0c);
+        Entry *last = m_04.end();
         if (id <= last[-1].m_44)
         {
-            first = *(Entry **)((char *)this + 0x08);
+            Entry *first = m_04.begin();
             if (id >= first->m_44)
             {
-                Entry *entry = first + (id < count ? id : count - 1);
+                unsigned index = id;
+                if (index >= count)
+                    index = count - 1;
+                Entry *entry = first + index;
                 if (entry->m_44 == id)
                     return entry;
                 for (entry = first; entry != last; ++entry)
@@ -3560,6 +4033,14 @@ RHMapDescription::Entry *RHMapDescription::FUN_0063c9e0(unsigned id)
     }
     return 0;
 }
+
+#pragma inline_depth(0)
+void EmitRHMapRecordDestructors(RHMapDescription::Entry *entry, RHUnk0063c8b0 *record)
+{
+    entry->~Entry();
+    record->~RHUnk0063c8b0();
+}
+#pragma inline_depth(8)
 
 void RHGame::Emit(SBFile &file)
 {

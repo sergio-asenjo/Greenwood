@@ -3,35 +3,50 @@
 #include "RHScript.h"
 #include "RHEngineSpriteCalls.h"
 
-void RHEngineSpriteCalls::FUN_005bd4e0() {}
 
-void RHEngineContinuationCampaignCalls::FUN_00450c10(void *, SBFile &) {}
-void FUN_00570850(void *) {}
-RHUnk004a1bc0::RHUnk004a1bc0(bool) {}
-RHUnk0057ee90::RHUnk0057ee90() {}
-// SYNTHETIC: GAME 0x0057eef0
-// RHUnk0057ee90::`scalar deleting destructor'
-RHUnk0057ee90::~RHUnk0057ee90() {}
+void RHEngine::FUN_004d3d00(void *, void *, unsigned, unsigned, unsigned, unsigned) {}
+void RHEngine::FUN_004d3e90(void *, void *, unsigned, unsigned, unsigned, unsigned) {}
 
-class RHUnk0051e5e0
+class RHEngineSoundCalls
 {
 public:
-    void FUN_0057ca80();
+    void FUN_005a5060(void *source, void *first, void *second, unsigned third, unsigned volume);
+};
+
+void RHEngineSoundCalls::FUN_005a5060(void *, void *, void *, unsigned, unsigned) {}
+
+void FUN_00570850(void *) {}
+RHUnk004a1bc0::RHUnk004a1bc0(bool) {}
+
+class RHSector
+{
+public:
+    RHSector();
+    ~RHSector();
 };
 
 // FUNCTION: GAME 0x0057ee40
 RHUnk0057ee40::RHUnk0057ee40()
 {
-    ((RHUnk0051e5e0 *)this)->FUN_0057ca80();
+    ((RHSector *)this)->RHSector::RHSector();
     *(unsigned *)((char *)this + 0x30) |= 0x90;
     *(unsigned *)this = 0x679c7c;
+}
+
+// FUNCTION: GAME 0x0057ee60
+void *RHUnk0057ee40::FUN_0057ee60(unsigned flags)
+{
+    this->~RHUnk0057ee40();
+    if (flags & 1)
+        operator delete(this);
+    return this;
 }
 
 // FUNCTION: GAME 0x0057ee80
 RHUnk0057ee40::~RHUnk0057ee40()
 {
     *(unsigned *)this = 0x679c7c;
-    FUN_0057cbd0();
+    ((RHSector *)this)->RHSector::~RHSector();
 }
 bool RHEngineMenuStateCalls::FUN_00514970() { return false; }
 bool RHEngineSequenceStateCalls::FUN_005823f0() { return false; }
@@ -39,7 +54,24 @@ bool RHEngineSequenceStateCalls::FUN_0058a670(void *) { return false; }
 
 RHUnk0051d2c0::~RHUnk0051d2c0() {}
 int RHHikingGuide::FUN_0051cac0(SBFile &) { return 0; }
-bool RHUnk00551da0::FUN_00551da0(SBFile &) { return true; }
+class RHScrollScript
+{
+public:
+    bool FUN_006348f0(SBFile &file);
+};
+
+extern char g_unk0x6c0691;
+void RHSerializeName(SBFile &file, const char *name);
+
+// FUNCTION: GAME 0x00551da0
+bool RHUnk00551da0::FUN_00551da0(SBFile &file)
+{
+    // STRING: GAME 0x006b15a4
+    RHSerializeName(file, "RHWayPoint");
+    if (g_unk0x6c0691 == 1 && *(unsigned char *)((char *)this + 0x6e) == 1)
+        return ((RHScrollScript *)this)->FUN_006348f0(file);
+    return true;
+}
 void RHUnk004e51e0::FUN_00454bb0() {}
 
 struct RHbeamMe;
@@ -64,8 +96,69 @@ public:
 RHUnk0054eab0::RHUnk0054eab0() {}
 void RHUnk0054eab0::FUN_0054eea0(SBFile &, void *) {}
 void RHEngineGridCalls::FUN_004efd10(void *, unsigned short, bool) {}
-short RHEngineGridCalls::FUN_004e9760(const SBGeoPoint2D &, const SBGeoPoint2D &, void *&, unsigned short &) { return 0; }
-short RHEngineGridCalls::FUN_004e9920(const SBGeoPoint2D &, const SBGeoPoint2D &, void *&, unsigned short &) { return 0; }
+short RHEngineGridCalls::FUN_004e8fc0(const SBGeoPoint2D &, const SBGeoPoint2D &, short, void *&) { return -1; }
+
+// FUNCTION: GAME 0x004e9760
+short RHEngineGridCalls::FUN_004e9760(const SBGeoPoint2D &point, const SBGeoPoint2D &origin, void *&sector, unsigned short &layer)
+{
+    for (short i = *(short *)((char *)this + 0x3e9c) - 1; i >= 0; --i)
+    {
+        short result = FUN_004e8fc0(point, origin, i, sector);
+        if (result != -2)
+        {
+            if (result > 0 && (unsigned char)(*(unsigned *)((char *)sector + 0x30) >> 10) & 1)
+            {
+                sector = *(void **)((char *)sector + 0x58);
+                if ((unsigned char)(*(unsigned *)((char *)sector + 0x30) >> 9) & 1)
+                {
+                    layer = *(unsigned short *)((char *)sector + 0x36);
+                    return *(short *)((char *)sector + 0x38);
+                }
+            }
+            layer = i;
+            return result;
+        }
+    }
+    layer = 0xffff;
+    return -1;
+}
+
+// FUNCTION: GAME 0x004e9920
+short RHEngineGridCalls::FUN_004e9920(const SBGeoPoint2D &point, const SBGeoPoint2D &origin, void *&sector, unsigned short &layer)
+{
+    bool first = true;
+    short found;
+    for (short i = *(short *)((char *)this + 0x3e9c) - 1; i >= 0; --i)
+    {
+        short result = FUN_004e8fc0(point, origin, i, sector);
+        if (first)
+        {
+            if (result != -2)
+            {
+                found = result;
+                first = false;
+                layer = i;
+            }
+        }
+        else if (result != -2)
+        {
+            if (result > 0 && (unsigned char)(*(unsigned *)((char *)sector + 0x30) >> 10) & 1)
+            {
+                sector = *(void **)((char *)sector + 0x58);
+                if ((unsigned char)(*(unsigned *)((char *)sector + 0x30) >> 9) & 1)
+                {
+                    layer = *(unsigned short *)((char *)sector + 0x36);
+                    return *(short *)((char *)sector + 0x38);
+                }
+            }
+            layer = i;
+            return result;
+        }
+    }
+    if (!first)
+        return found;
+    return -2;
+}
 
 class RHEngineReinforcementCalls
 {
@@ -110,7 +203,6 @@ RHUnk0046ffe0::RHUnk0046ffe0(bool) {}
 RHUnk004ab090::RHUnk004ab090() {}
 RHUnk004b9b70::RHUnk004b9b70() {}
 RHUnk004bac30::RHUnk004bac30() {}
-RHUnk004a8130::RHUnk004a8130(bool) {}
 
 void RHEngineMissionElementCalls::Unk00() {}
 void RHEngineMissionElementCalls::Unk04() {}
@@ -132,14 +224,10 @@ void RHEngineMissionElementCalls::Unk3c(SBFile &) {}
 #include "RHEngineWidenedCalls.h"
 
 bool RHEngineWidenedCalls::FUN_004b2010(char, void *) { return false; }
-void RHEngineWidenedCalls::FUN_00556260() {}
-void *FUN_004b3120(int) { return 0; }
 void RHEngineWidenedCalls::FUN_004eb120(SBFile &, void *) {}
 void RHEngineWidenedCalls::FUN_00558670(SBFile &) {}
-void RHEngineWidenedCalls::FUN_005bd450() {}
-bool RHEngineWidenedCalls::FUN_005b76e0(unsigned, unsigned) { return false; }
-void RHEngineWidenedCalls::FUN_005b7f60(unsigned long) {}
 void RHEngineWidenedCalls::FUN_005e5160(unsigned) {}
+unsigned long RHEngineWidenedCalls::FUN_005e4ed0(unsigned short, unsigned short, unsigned long, bool) { return 0; }
 class RHEngineActorUpdateCalls
 {
 public:
@@ -147,3 +235,10 @@ public:
 };
 
 void RHEngineActorUpdateCalls::FUN_004af2a0() {}
+
+void RHSound::FUN_005a8070(unsigned short, const SBGeoPoint2D &, unsigned) {}
+void RHEngineReset51bd90::FUN_0051bd90() {}
+void RHEngineReset581c70::FUN_00581c70() {}
+void RHEngineReset5c2570::FUN_005c2570() {}
+
+void *RHUnk0051e790::FUN_0051e790(RHElementActorPC *, void *, const SBGeoPoint2D &, int) { return 0; }

@@ -45,7 +45,7 @@ public:
     void Unk0050ed40();
     void Unk004520e0(int, int);
     void Unk004d9330(void *, bool);
-    void Unk0058a940(void *, int, void *);
+    void *Unk0058a940(void *, int, void *);
     bool Unk00456cb0(int);
 };
 
@@ -384,6 +384,16 @@ char g_consoleAttributes;
 char g_consoleBabylon;
 // GLOBAL: GAME 0x006c07dd
 char g_consoleFrozen;
+// GLOBAL: GAME 0x006c0808
+RHConsole *g_unk0x6c0808;
+
+// FUNCTION: GAME 0x0045bbe0
+RHConsole *RHConsole::GetInstance()
+{
+    if (!g_unk0x6c0808)
+        g_unk0x6c0808 = new RHConsole;
+    return g_unk0x6c0808;
+}
 
 // FUNCTION: GAME 0x0045bc50
 void RHConsole::FUN_0045bc50(char *destination, const char *source)
@@ -619,11 +629,13 @@ void RHConsole::FUN_0045d8b0(unsigned, char **)
 // STUB: GAME 0x0045d920
 void RHConsole::FUN_0045d920(unsigned, char **)
 {
+    typedef void (__cdecl *Message)(RHUnk005ef320 *, const char *);
+    Message output = reinterpret_cast<Message>(&FUN_005edae0);
     RHConsoleActor *actor = RHConsoleField<RHConsoleActor *>(m_engine, 0xd4);
     if (actor && (RHConsoleField<volatile unsigned>(actor, 4) & 0xf) == 4)
     {
         // STRING: GAME 0x006ad298
-        FUN_005edae0(m_engine->m_draw, "Honolulu");
+        output(m_engine->m_draw, "Honolulu");
         if (actor && RHConsoleField<char>(actor, 0x12))
         {
             g_consoleHonolulu = RHConsoleField<RHConsoleActor *>(m_engine, 0xd4);
@@ -631,23 +643,23 @@ void RHConsole::FUN_0045d920(unsigned, char **)
             RHConsoleHumanBase(g_consoleHonolulu)->v15(4);
             ((RHScriptBatchCalls *)m_engine)->Unk004d9330(0, false);
             // STRING: GAME 0x006ad280
-            FUN_005edae0(m_engine->m_draw, "Bye, I'm on holiday.");
+            output(m_engine->m_draw, "Bye, I'm on holiday.");
         }
         else if (g_consoleHonolulu && !RHConsoleField<char>(g_consoleHonolulu, 0x12))
         {
             RHConsoleField<char>(g_consoleHonolulu, 0x12) = 1;
             ((RHConsoleHumanFlags *)RHConsoleHumanBase(g_consoleHonolulu))->clear(4);
             // STRING: GAME 0x006ad274
-            FUN_005edae0(m_engine->m_draw, "I'm back!");
+            output(m_engine->m_draw, "I'm back!");
         }
         else
         {
             // STRING: GAME 0x006ad228
-            FUN_005edae0(m_engine->m_draw, "Cheat couldn't be performed. There are two possibilities to do this cheat:");
+            output(m_engine->m_draw, "Cheat couldn't be performed. There are two possibilities to do this cheat:");
             // STRING: GAME 0x006ad1dc
-            FUN_005edae0(m_engine->m_draw, "(1) Enable a view cone, then use this cheat to send this guy to Honolulu");
+            output(m_engine->m_draw, "(1) Enable a view cone, then use this cheat to send this guy to Honolulu");
             // STRING: GAME 0x006ad17c
-            FUN_005edae0(m_engine->m_draw, "(2) If (1) already done: Disable view cone, use this cheat to get last guy back from Honolulu.");
+            output(m_engine->m_draw, "(2) If (1) already done: Disable view cone, use this cheat to get last guy back from Honolulu.");
         }
     }
 }
@@ -700,25 +712,27 @@ void RHConsole::FUN_0045db20(unsigned, char **)
 // FUNCTION: GAME 0x0045db80
 void RHConsole::FUN_0045db80(unsigned, char **)
 {
+    typedef void (__cdecl *Message)(RHUnk005ef320 *, const char *);
+    Message output = reinterpret_cast<Message>(&FUN_005edae0);
     // STRING: GAME 0x006ad438
-    FUN_005edae0(m_engine->m_draw, "noise");
+    output(m_engine->m_draw, "noise");
     RHConsoleEngine *engine = m_engine;
     engine->m_4b34 ^= 1;
     if (engine->m_4b34)
     {
         // STRING: GAME 0x006ad420
-        FUN_005edae0(m_engine->m_draw, "Noise display enabled.");
+        output(m_engine->m_draw, "Noise display enabled.");
         // STRING: GAME 0x006ad408
-        FUN_005edae0(m_engine->m_draw, "  White circles: Noises");
+        output(m_engine->m_draw, "  White circles: Noises");
         // STRING: GAME 0x006ad3c0
-        FUN_005edae0(m_engine->m_draw, "  Black circles: Deafness because of covering noises, explosions etc...");
+        output(m_engine->m_draw, "  Black circles: Deafness because of covering noises, explosions etc...");
         // STRING: GAME 0x006ad364
-        FUN_005edae0(m_engine->m_draw, "  A NPC can hear a nois when he resp. his black circle is entirely within a white circle.");
+        output(m_engine->m_draw, "  A NPC can hear a nois when he resp. his black circle is entirely within a white circle.");
     }
     else
     {
         // STRING: GAME 0x006ad34c
-        FUN_005edae0(m_engine->m_draw, "Noise display disabled.");
+        output(m_engine->m_draw, "Noise display disabled.");
     }
 }
 
@@ -1071,15 +1085,17 @@ void RHConsole::FUN_0045e8d0(unsigned, char **)
 // FUNCTION: GAME 0x0045eaa0
 void RHConsole::FUN_0045eaa0(unsigned count, char **arguments)
 {
+    typedef void (__cdecl *Message)(RHUnk005ef320 *, const char *);
+    Message output = reinterpret_cast<Message>(&FUN_005edae0);
     unsigned amount = 100;
     char buffer[1024];
     // STRING: GAME 0x006ada38
-    FUN_005edae0(m_engine->m_draw, "Amulets [amount]");
+    output(m_engine->m_draw, "Amulets [amount]");
     if (count >= 2)
         FUN_0064324d(arguments[1], "%u", &amount);
     // STRING: GAME 0x006ada10
     sprintf(buffer, "%u amulets added to the campaign.", amount);
-    FUN_005edae0(m_engine->m_draw, buffer);
+    output(m_engine->m_draw, buffer);
     ((RHScriptBatchCalls *)g_unk0x6c07fc)->Unk004520e0(0, amount);
 }
 
@@ -1092,14 +1108,16 @@ void RHConsole::FUN_0045eb40(unsigned, char **)
 // FUNCTION: GAME 0x0045eb50
 void RHConsole::FUN_0045eb50(unsigned, char **)
 {
+    typedef void (__cdecl *Message)(RHUnk005ef320 *, const char *);
+    Message output = reinterpret_cast<Message>(&FUN_005edae0);
     char buffer[1024];
     // STRING: GAME 0x006ada94
-    FUN_005edae0(m_engine->m_draw, "San Petrus");
+    output(m_engine->m_draw, "San Petrus");
     unsigned count = RHConsoleField<volatile unsigned>(m_engine, 0x4a00);
     if (count == 0)
     {
         // STRING: GAME 0x006ada70
-        FUN_005edae0(m_engine->m_draw, "You must select at least one PC.");
+        output(m_engine->m_draw, "You must select at least one PC.");
     }
     else
     {
@@ -1110,7 +1128,7 @@ void RHConsole::FUN_0045eb50(unsigned, char **)
             ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940(g_unk0x6c0560, 0, element);
             // STRING: GAME 0x006ada4c
             sprintf(buffer, "%s has been recalled by San Petrus.", RHConsoleField<RHConsoleProfile *>(actor, 0x5fc)->m_name.c_str());
-            FUN_005edae0(m_engine->m_draw, buffer);
+            output(m_engine->m_draw, buffer);
         }
     }
 }
@@ -1171,9 +1189,11 @@ void RHConsole::FUN_0045f050(unsigned, char **)
 // FUNCTION: GAME 0x0045f0c0
 void RHConsole::FUN_0045f0c0(unsigned count, char **arguments)
 {
+    typedef void (__cdecl *Message)(RHUnk005ef320 *, const char *);
+    Message output = reinterpret_cast<Message>(&FUN_005edae0);
     unsigned amount = 0;
     // STRING: GAME 0x006adbb8
-    FUN_005edae0(m_engine->m_draw, "Money !");
+    output(m_engine->m_draw, "Money !");
     if (count >= 2)
     {
         char *argument = arguments[1];
@@ -1195,15 +1215,15 @@ void RHConsole::FUN_0045f0c0(unsigned count, char **arguments)
     else
     {
         // STRING: GAME 0x006adb6c
-        FUN_005edae0(m_engine->m_draw, "Try also the following :");
+        output(m_engine->m_draw, "Try also the following :");
         // STRING: GAME 0x006adb60
-        FUN_005edae0(m_engine->m_draw, "CASH CENT");
+        output(m_engine->m_draw, "CASH CENT");
         // STRING: GAME 0x006adb50
-        FUN_005edae0(m_engine->m_draw, "CASH THOUSAND");
+        output(m_engine->m_draw, "CASH THOUSAND");
         // STRING: GAME 0x006adb3c
-        FUN_005edae0(m_engine->m_draw, "CASH TENTHOUSAND");
+        output(m_engine->m_draw, "CASH TENTHOUSAND");
         // STRING: GAME 0x006adb24
-        FUN_005edae0(m_engine->m_draw, "CASH HUNDREDTHOUSAND");
+        output(m_engine->m_draw, "CASH HUNDREDTHOUSAND");
         amount = 1000;
     }
     ((RHUnk00450b60 *)g_unk0x6c07fc)->Unk(1, amount);
