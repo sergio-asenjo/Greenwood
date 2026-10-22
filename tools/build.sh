@@ -96,6 +96,6 @@ WINEDEBUG=-all \
   INCLUDE="$MSVCZ\\VC98\\INCLUDE" \
   LIB="$MSVCZ\\VC98\\LIB" \
   wine "$MSVC/VC98/Bin/CL.EXE" "${FLAGS[@]}" /Fd"$OUTZ\\vc60.pdb" /Fo"$OUTZ\\" "${INCDIRS[@]}" "${LINKSRCS[@]}" \
-    /link /DEBUG /OUT:"$OUTZ\\$NAME" /PDB:"$OUTZ\\Game.pdb"
+    /link /DEBUG /OUT:"$OUTZ\\$NAME" /PDB:"$OUTZ\\Game.pdb" user32.lib gdi32.lib
 
 echo "done: $OUT/$NAME + $OUT/Game.pdb"
