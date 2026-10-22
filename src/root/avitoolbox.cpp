@@ -2,6 +2,7 @@
 #include "avitoolbox.h"
 #include <string.h>
 #include "RHSoundCore.h"
+#include "SBDrawManagerCore.h"
 
 // GLOBAL: GAME 0x006772d0
 void (__stdcall *g_unk0x006772d0)(RHUnkBink *);
@@ -46,9 +47,9 @@ bool FUN_00401130(const char *name)
     unsigned long y = (480 - *(unsigned long *)(summary + 4)) / 2;
     unsigned short depth = draw->m_10c;
     unsigned long format = 9 + (depth == 16);
-    draw->FUN_005e61e0(0, 0, 0, 0);
+    ((SBDrawManager *)draw)->FUN_005e61e0(0, 0, 0, 0);
     draw->FUN_005e5260();
-    draw->FUN_005e61e0(0, 0, 0, 0);
+    ((SBDrawManager *)draw)->FUN_005e61e0(0, 0, 0, 0);
     if (movie)
     {
         int (__stdcall *wait)(RHUnkBink *) = g_unk0x006772dc;
@@ -66,7 +67,7 @@ bool FUN_00401130(const char *name)
             {
                 g_unk0x006772f4(movie);
                 if (redraw == true)
-                    draw->FUN_005e61e0(0, 0, 0, 0);
+                    ((SBDrawManager *)draw)->FUN_005e61e0(0, 0, 0, 0);
                 if (draw->Unk005e5a00(0, viewport, 0))
                 {
                     g_unk0x006772d4(movie, viewport.m_10, viewport.m_08, viewport.m_06, 0, y, format | 0x80000000);
