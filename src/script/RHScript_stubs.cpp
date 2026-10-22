@@ -33,13 +33,6 @@ unsigned short RHUnk0051d0e0::Find(int value)
     return 0xffff;
 }
 
-void FUN_005edae0(RHUnk005ef320 *object, const char *format, int value)
-{
-    (void)object;
-    (void)format;
-    (void)value;
-}
-
 class RHUnk0057c710
 {
 public:
@@ -129,26 +122,12 @@ int RHUnk004b9f30::Get()
 
 
 
-void RHUnk0048ce80(int noise, RHUnk00571160Position *position)
-{
-    (void)noise;
-    (void)position;
-}
-
 SBGeoPoint2D RHUnk005758d0(const SBGeoPoint2D &point)
 {
     return point;
 }
 
-RHUnk00582220::RHUnk00582220() {}
-RHUnk00582220::~RHUnk00582220() {}
 
-void RHUnk0058a3d0::Unk(void *context, int value, void *sequence)
-{
-    (void)context;
-    (void)value;
-    (void)sequence;
-}
 
 // FUNCTION: GAME 0x00522470
 RHUnk00522470::RHUnk00522470()
@@ -173,18 +152,9 @@ RHBonusProjection *RHUnk0057d800::Unk(const SBGeoPoint2D &point)
     return 0;
 }
 
-bool RHUnk0057ff00::Unk(void *actor) { return actor != 0; }
-void RHUnk00419a40::Unk(int index, bool forbidden) { (void)index; (void)forbidden; }
 
 
 
-RHUnk00584d60::RHUnk00584d60(unsigned short level, int command, void *actor)
-{
-    (void)level;
-    (void)command;
-    (void)actor;
-}
-RHUnk00584d60::~RHUnk00584d60() {}
 void RHUnk00584d60::FUN_00584d30() {}
 void RHUnk005a2450::FUN_005a2450(void *, void *) {}
 RHMessenger *__stdcall RHUnk00546050(RHUnk5490f0 *message) { (void)message; return 0; }
@@ -220,19 +190,13 @@ void *RHUnk005b5e00::FUN_005b5de0()
         return *(void **)((char *)this + 0x158);
     return *(void **)((char *)this + 0x154);
 }
-void RHScriptBatchCalls::Unk00418bc0() {}
-void RHScriptBatchCalls::Unk0048c4d0() {}
-void RHScriptBatchCalls::Unk0057ec80(void *) {}
-void RHScriptBatchCalls::Unk005c2ec0(void *, int, int, void *, int, int, int, int) {}
-void RHScriptBatchCalls::Unk0058a940(void *, int, void *) {}
+int RHScriptBatchCalls::Unk005c2ec0(void *, int, int, void *, int, int, int, int) { return -1; }
 RHUnk005861c0::~RHUnk005861c0() {}
 RHUnk005883a0::RHUnk005883a0(unsigned short, int, void *, int, const SBGeoPoint2D &, int, int, int) {}
 RHUnk005883a0::~RHUnk005883a0() {}
 void RHScriptRecordWorld::Unk004fc8f0(SBGeoPoint2D &, SBGeoPoint2D &, const SBGeoPoint2D *, unsigned short) {}
 RHUnk00613e90 RHScriptRecordWorld::Unk004fbdd0(const RHUnk00571160Position &) { return RHUnk00613e90(); }
 void RHScriptBatchCalls::Unk0041bd20(int) {}
-void RHScriptBatchCalls::Unk0057ebd0(void *) {}
-void RHScriptBatchCalls::Unk0048ec00(void *) {}
 void RHScriptBatchCalls::Unk00514670() {}
 void RHScriptBatchCalls::Unk0050ed40() {}
 void RHScriptBatchCalls::Unk004522e0(void *) {}
@@ -247,7 +211,6 @@ RHScriptActionCursor RHScriptActionCursor::operator++(int)
 }
 
 void RHScriptBatchCalls::FUN_0058bbe0(void *, int) {}
-void RHScriptBatchCalls::FUN_00456d20() {}
 struct RHUnk005209b0Layout
 {
     unsigned int m_vptr;
@@ -272,7 +235,6 @@ void RHScriptBatchCalls::FUN_00549090() {}
 
 bool RHScriptAIStateCalls::FUN_00410620(RHScriptStimulusValue) { return false; }
 void RHScriptAIStateCalls::FUN_004132d0(int, int, int) {}
-void RHScriptAIStateCalls::FUN_00410d30() {}
 void RHScriptAIStateCalls::FUN_0043a220(RHMalignityPosition, int, int, int) {}
 
 // FUNCTION: GAME 0x00550fa0
@@ -286,4 +248,4 @@ void RHArtificialIntelligencePathCursor::FUN_00550fa0(void *value)
         m_forward = 1;
     }
 }
-
+RHUnkSequenceOrder::~RHUnkSequenceOrder() {}

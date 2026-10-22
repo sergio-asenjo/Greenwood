@@ -27,6 +27,8 @@
 
 #include "SBNullstr.h"
 #include "RHScript.h"
+#include "RHElementActorNPC.h"
+#include "RHSectorBuilding.h"
 #include "RHGame.h"
 #include "RHEngine.h"
 #include "RHScriptLists.h"
@@ -76,13 +78,14 @@ struct RHUnk579e80State
     int index;
     int value;
 };
-void FUN_005edae0(RHUnk005ef320 *, const char *, int);
+bool FUN_005edae0(RHUnk005ef320 *, const char *, ...);
 class RHMenuPopupScroll
 {
 public:
     static void FUN_0053a0b0(int id);
 };
 
+extern unsigned char g_unk0x006c06ca;
 extern unsigned short g_unk0x006c07e2;
 extern unsigned short g_unk0x006c07e4;
 extern unsigned short g_unk0x006c07e6;
@@ -109,6 +112,42 @@ void RHScriptBatchCalls::Unk0040d980(int state)
     *(unsigned short *)value.m_00 = 0;
     value.m_type = 0;
     ((RHScriptStimulusDispatch *)this)->v09(value);
+}
+
+class RHScriptAIStateDispatch
+{
+public:
+    virtual void v00(int value) = 0;
+};
+
+// FUNCTION: GAME 0x00410d30
+void RHScriptAIStateCalls::FUN_00410d30()
+{
+    if (*(bool *)((char *)this + 0x16c))
+    {
+        *(bool *)((char *)this + 0x16c) = false;
+        if (g_unk0x006c06ca < 100)
+            ((RHScriptBatchCalls *)this)->Unk0040d980(4);
+        else if (g_unk0x006c06ca < 111)
+            ((RHScriptAIStateDispatch *)this)->v00(0);
+    }
+    if (*(bool *)((char *)this + 0x16d))
+    {
+        *(bool *)((char *)this + 0x16d) = false;
+        if (g_unk0x006c06ca < 100)
+            ((RHScriptBatchCalls *)this)->Unk0040d980(3);
+        else if (g_unk0x006c06ca < 111)
+            ((RHScriptAIStateDispatch *)this)->v00(0);
+    }
+    if (*(bool *)((char *)this + 0x16e))
+    {
+        *(bool *)((char *)this + 0x16e) = false;
+        if (g_unk0x006c06ca < 100)
+            ((RHScriptBatchCalls *)this)->Unk0040d980(5);
+        else if (g_unk0x006c06ca < 111)
+            ((RHScriptAIStateDispatch *)this)->v00(0);
+    }
+    --g_unk0x006c06ca;
 }
 
 // FUNCTION: GAME 0x00413640
@@ -215,7 +254,12 @@ void RHUnk004169c0::Unk(int state, int value)
     }
 }
 
-// Parked: 0x004188f0, 74.89%; register scheduling and coupled call operands.
+static inline unsigned short RHScriptActorHeading(void *ai)
+{
+    return *(unsigned short *)((char *)*(void **)((char *)*(void **)((char *)ai + 4) + 0x50) + 0xd8);
+}
+
+// FUNCTION: GAME 0x004188f0
 bool RHScriptBatchCalls::Unk004188f0(void *path)
 {
     RHUnk005fc3b0 direction;
@@ -226,9 +270,10 @@ bool RHScriptBatchCalls::Unk004188f0(void *path)
         ((RHArtificialIntelligencePathCursor *)((char *)this + 0x30))->Unk00550f60(0xffff);
         RHUnk00571160Position position;
         ((RHUnk00560420 *)((char *)*(void **)((char *)*(void **)((char *)this + 4) + 0x50) + 4))->Unk(&position);
-        *(RHUnk00571160Position *)((char *)*(void **)((char *)this + 4) + 0x4dc) = position;
-        direction.Unk005fcd40(*(unsigned short *)((char *)*(void **)((char *)*(void **)((char *)this + 4) + 0x50) + 0xd8), 0.5735764503479004f);
-        ((RHUnk005fc3b0 *)((char *)*(void **)((char *)this + 4) + 0x4d4))->FUN_005fc430(direction);
+        RHUnk00571160Position *destination = (RHUnk00571160Position *)((char *)*(void **)((char *)this + 4) + 0x4dc);
+        *destination = position;
+        direction.Unk005fcd40(RHScriptActorHeading(this), 0.5735764503479004f);
+        *(SBGeoVector2D *)((char *)*(void **)((char *)this + 4) + 0x4d4) = direction;
         *(bool *)((char *)this + 0x173) = false;
         if (!*(bool *)((char *)this + 0x1c4))
         {
@@ -272,7 +317,23 @@ bool RHScriptBatchCalls::Unk004188f0(void *path)
     return true;
 }
 
-// Parked: 0x00418a80, 92.86%; receiver scheduling and coupled call operands.
+struct RHScriptActorFacing
+{
+    undefined m_00[0x4d4];
+    RHUnk005fc3b0 m_4d4;
+};
+
+static inline RHScriptStimulusDispatch *RHScriptDispatcher(void *ai)
+{
+    return (RHScriptStimulusDispatch *)ai;
+}
+
+static inline RHScriptActorFacing *RHScriptFacingActor(void *ai)
+{
+    return *(RHScriptActorFacing **)((char *)ai + 4);
+}
+
+// FUNCTION: GAME 0x00418a80
 bool RHScriptBatchCalls::Unk00418a80(RHUnk00571160Position position, int facing)
 {
     RHUnk005fc3b0 direction;
@@ -281,7 +342,7 @@ bool RHScriptBatchCalls::Unk00418a80(RHUnk00571160Position position, int facing)
     *(bool *)((char *)this + 0x70) = false;
     *(RHUnk00571160Position *)((char *)*(void **)((char *)this + 4) + 0x4dc) = position;
     direction.Unk005fcd40((unsigned short)facing, 0.5735764503479004f);
-    ((RHUnk005fc3b0 *)((char *)*(void **)((char *)this + 4) + 0x4d4))->FUN_005fc430(direction);
+    RHScriptFacingActor(this)->m_4d4.FUN_005fc430(direction);
     *(bool *)((char *)this + 0x173) = false;
     *(bool *)((char *)this + 0x70) = false;
     *(bool *)((char *)this + 0x16f) = false;
@@ -296,7 +357,7 @@ bool RHScriptBatchCalls::Unk00418a80(RHUnk00571160Position position, int facing)
             stimulus.m_20 = 0x15;
             *(unsigned short *)stimulus.m_00 = 0;
             stimulus.m_type = 0;
-            ((RHScriptStimulusDispatch *)this)->v09(stimulus);
+            RHScriptDispatcher(this)->v09(stimulus);
             break;
         }
         }
@@ -317,14 +378,12 @@ void RHUnk00418b80::Unk(bool value)
     ((RHArtificialIntelligence *)this)->Unk00410600();
 }
 
-// Parked: clock/duration register allocation differs from the target.
-// STUB: GAME 0x00419fd0
+// FUNCTION: GAME 0x00419fd0
 void RHScriptBatchCalls::Unk00419fd0(int value, int duration)
 {
     Unk00419fb0(value);
-    unsigned time = *g_unk0x006c08a4;
+    *(unsigned *)((char *)this + 0x264) = *g_unk0x006c08a4 + (unsigned short)duration;
     *(bool *)((char *)this + 0x268) = true;
-    *(unsigned *)((char *)this + 0x264) = time + (unsigned short)duration;
 }
 
 // FUNCTION: GAME 0x004242b0
@@ -336,7 +395,8 @@ RHScriptNode *RHScriptPositionList::Unk004242b0(RHScriptNode *next, RHScriptNode
     return node;
 }
 
-// Parked: 0x00444440, 64.15%; receiver scheduling and coupled callers.
+// Parked at 0.6415: unannotated park from the asymmetric-comparator era; residual scheduling/registers.
+// STUB: GAME 0x00444440
 void RHScriptBatchCalls::Unk00444440(bool attentive)
 {
     *(bool *)((char *)this + 0x346) = attentive;
@@ -517,17 +577,25 @@ bool RHScriptBatchCalls::Unk0049d560(int action)
     return found;
 }
 
-// deferred: 0x004af1d0, exact body; unannotated pending reccmp #534.
+// SIZE 0x10
+struct RHUnk004af1d0Children
+{
+    undefined m_00[4]; // 0x00
+    void **first; // 0x04
+    void **last; // 0x08
+    void **end; // 0x0c
+    unsigned int size() const { return first == 0 ? 0 : last - first; }
+    void *operator[](unsigned int index) { return *(first + index); }
+};
+
+// Parked: index/element registers swap (EDX/EAX vs EAX/EDX); effective only.
+// STUB: GAME 0x004af1d0
 void RHUnk004af1d0::Unk(bool value)
 {
     *(bool *)((char *)this + 0x12) = value;
-    for (unsigned int index = 0; index <
-        (*(void ***)((char *)this + 0xb0) == 0 ? 0 :
-         *(void ***)((char *)this + 0xb4) - *(void ***)((char *)this + 0xb0)); ++index)
-    {
-        void *actor = (*(void ***)((char *)this + 0xb0))[index];
-        *(bool *)((char *)actor + 0x12) = value;
-    }
+    RHUnk004af1d0Children &children = *(RHUnk004af1d0Children *)((char *)this + 0xac);
+    for (unsigned int index = 0; index < children.size(); ++index)
+        *(bool *)((char *)children[index] + 0x12) = value;
 }
 
 // FUNCTION: GAME 0x004baea0
@@ -1704,7 +1772,7 @@ bool RHScript::IsInside(void *actor, void *sector)
         {
             return false;
         }
-        return ((RHUnk0057ff00 *)sector)->Unk(actor);
+        return ((RHSectorScript *)sector)->FUN_0057ff00((RHElementActor *)actor);
     }
     SBAssert(0, "P:\\Robin Hood\\RHScript.cpp", 1786,
              // STRING: GAME 0x006b2d84
@@ -3986,7 +4054,7 @@ void RHScript::SetActorPosture(void *actor, int posture)
         if ((*(unsigned int *)((char *)actor + 4) & 15) == 4)
         {
             ((RHScriptBatchCalls *)((char *)actor + 0x49c + (*(int **)((char *)actor + 0x49c))[1]))->Unk0040d980(15);
-            ((RHScriptBatchCalls *)actor)->Unk0048c4d0();
+            ((RHElementActorNPC *)actor)->FUN_0048c4d0();
         }
         ((RHUnk00570e70Vtbl *)actor)->v17(18);
         ((RHScriptBatchCalls *)actor)->Unk00464630();
@@ -4003,7 +4071,7 @@ void RHScript::SetActorPosture(void *actor, int posture)
         if ((*(unsigned int *)((char *)actor + 4) & 15) == 4)
         {
             ((RHScriptBatchCalls *)((char *)actor + 0x49c + (*(int **)((char *)actor + 0x49c))[1]))->Unk0040d980(15);
-            ((RHScriptBatchCalls *)actor)->Unk0048c4d0();
+            ((RHElementActorNPC *)actor)->FUN_0048c4d0();
         }
         ((RHScriptBatchCalls *)actor)->Unk00464630();
         return;
@@ -4401,7 +4469,7 @@ bool RHScript::CleanFromHisBuildingBeforeTeleport(void *actor)
                      "Script Error: You tried to clean an actor from a building who was on open air");
             return false;
         }
-        ((RHScriptBatchCalls *)area)->Unk0057ec80(actor);
+        ((RHSectorBuilding *)area)->Leave((RHElementActor *)actor);
         return true;
     }
     SBAssert(0, "P:\\Robin Hood\\RHScript.cpp", 5569,
@@ -4812,7 +4880,7 @@ void RHScript::PutActorInBulding(void *actor, void *building)
     ((RHScriptActorPositionFields *)actor)->position->area = building;
     ((RHActorPositionCalls *)((char *)((RHScriptActorPositionFields *)actor)->position + 4))->FUN_00464530(*(SBGeoPoint2D *)(location + 0x20));
     ((RHBonusInfoBase *)((char *)((RHScriptActorPositionFields *)actor)->position + 4))->FUN_0055f290();
-    ((RHScriptBatchCalls *)building)->Unk0057ebd0(actor);
+    ((RHSectorBuilding *)building)->Enter((RHElementActor *)actor);
     if ((*(unsigned int *)((char *)actor + 4) & 15) == 12)
         ((RHScriptBatchCalls *)actor)->Unk0049d6c0();
 }
@@ -5615,7 +5683,7 @@ void RHScript::RHUnk5798a0(void *object, bool value)
 
 class RHElementScroll;
 extern RHElementScroll *g_scrollExecutingScript;
-extern RHElementScroll **volatile g_unk0x6c09dc;
+extern RHElementScroll **g_unk0x6c09dc;
 
 // GLOBAL: GAME 0x006c09e0
 RHElementScroll **g_unk0x006c09e0;
@@ -6946,7 +7014,7 @@ public:
 class RHUnk0054b150
 {
 public:
-    void FUN_0054b150(bool flag, int mode);
+    void FUN_0054b150(bool flag, bool immediate);
 };
 
 class RHUnk004032a0

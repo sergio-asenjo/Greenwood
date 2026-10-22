@@ -297,6 +297,17 @@ void RHSpriteInsertTree::FUN_005bf080()
     }
 }
 
+// GLOBAL: GAME 0x006c10d8
+RHSpriteScriptor *g_unk0x006c10d8;
+
+// FUNCTION: GAME 0x005bf0f0
+RHSpriteScriptor *RHSpriteScriptor::GetInstance()
+{
+    if (!g_unk0x006c10d8)
+        g_unk0x006c10d8 = new RHSpriteScriptor;
+    return g_unk0x006c10d8;
+}
+
 // Parked: 58.91%; frame 0x228 versus 0x230 and cache/EH temporary coloring.
 // STUB: GAME 0x005bf160
 RHUnkSpriteScriptInfo RHSpriteScriptor::LoadSpriteScript(RHframeKind kind, const std::string &name, const std::string &profile)
