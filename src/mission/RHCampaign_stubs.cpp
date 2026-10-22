@@ -54,11 +54,52 @@ void RHCampaignWideStrings::Insert(RHCampaignWideString *, unsigned, const RHCam
 
 void RHCampaignUnk00457950::Value::FUN_0051c0c0() {}
 
-void RHPCDescription::FUN_0055bc90(void *, bool) {}
 RHPCDescription::~RHPCDescription() {}
-void RHPCDescription::FUN_00459fd0() {}
-bool FUN_00452040(RHMission *) { return false; }
-bool FUN_00452090(RHMission *) { return false; }
+
+// FUNCTION: GAME 0x00459fd0
+void RHPCDescription::FUN_00459fd0()
+{
+    unsigned short *chars = *(unsigned short **)(m_0 + 0x30);
+    if (chars)
+    {
+        unsigned char &refs = ((unsigned char *)chars)[-1];
+        if (refs == 0 || refs == 255)
+            operator delete(chars - 1);
+        else
+            --refs;
+    }
+    *(unsigned short **)(m_0 + 0x30) = 0;
+    *(unsigned *)(m_0 + 0x34) = 0;
+    *(unsigned *)(m_0 + 0x38) = 0;
+}
+
+// FUNCTION: GAME 0x00452040
+bool FUN_00452040(RHMission *mission)
+{
+    if ((mission->m_profile->m_34 == 1 || mission->m_profile->m_34 == 5) && mission->m_4 == 0)
+    {
+        if (*(unsigned short *)((char *)mission->m_profile + 0x4e) < (unsigned)(rand() % 101))
+        {
+            mission->m_4 = 0;
+            return true;
+        }
+    }
+    return false;
+}
+
+// FUNCTION: GAME 0x00452090
+bool FUN_00452090(RHMission *mission)
+{
+    if (mission->m_profile->m_34 != 1 && mission->m_profile->m_34 != 5 && mission->m_4 == 0)
+    {
+        if (*(unsigned short *)((char *)mission->m_profile + 0x4e) < (unsigned)(rand() % 101))
+        {
+            mission->m_4 = 0;
+            return true;
+        }
+    }
+    return false;
+}
 // FUNCTION: GAME 0x0054cc10
 char FUN_0054cc10(RHMission *mission)
 {

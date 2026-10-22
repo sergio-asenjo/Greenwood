@@ -103,6 +103,8 @@ public:
     void FUN_005892a0(int replacement, int action, float distance, const SBGeoPoint2D &origin);
     void FUN_00589490(int replacement, int action, float distance, const SBGeoPoint2D &origin);
     RHUnk00588530 *FUN_00589810();
+    void FUN_00589c00(int state, int value);
+    void FUN_00589c70(int priority);
     void EmitMovement();
     RH_MOVEMENT_FIELDS
 };
@@ -410,13 +412,7 @@ public:
     void FUN_005859e0(RHOrder *order, unsigned short index);
 };
 
-class RHSectorActorIter
-{
-public:
-    RHMovementOrderNode *m_p;
-    RHSectorActorIter(RHMovementOrderNode *node) : m_p(node) {}
-    RHSectorActorIter operator++(int);
-};
+#include "RHSectorActorIterator.h"
 
 extern float g_unk0x00677438;
 extern float g_unk0x00677488;
@@ -451,7 +447,7 @@ void RHUnk00588530::FUN_00588940()
         RHMovementOrderList &orders = RHMovementField<RHMovementOrderList>(this, 0x18);
         ((RHSpriteList *)&orders)->FUN_005c8e40(i);
         delete (RHOrder *)orders.current.node->value;
-        RHMovementOrderNode *node = (RHSectorActorIter(orders.current.node)++).m_p;
+        RHMovementOrderNode *node = (RHMovementOrderNode *)(RHSectorActorIter((RHSectorActorNode *)orders.current.node)++).m_p;
         node->previous->next = node->next;
         node->next->previous = node->previous;
         operator delete(node);
@@ -678,7 +674,7 @@ void RHUnk00588530::FUN_005892a0(int replacement, int action, float distance, co
 // GLOBAL: GAME 0x00679db4
 float g_unk0x00679db4 = 1.01f;
 
-// Parked: initial count load, loop branches and floating multiply operand order differ.
+// Parked: initial count scheduling and loop branches differ.
 // STUB: GAME 0x00589490
 void RHUnk00588530::FUN_00589490(int replacement, int action, float distance, const SBGeoPoint2D &origin)
 {
@@ -690,7 +686,7 @@ void RHUnk00588530::FUN_00589490(int replacement, int action, float distance, co
     float length;
     distance += m_8c;
     RHMovementOrderList &orders = RHMovementField<RHMovementOrderList>(this, 0x18);
-    for (int i = (unsigned short)orders.count - 1; i >= 0; --i)
+    for (int i = (orders.count & 0xffff) - 1; i >= 0; --i)
     {
         ((RHSpriteList *)&orders)->FUN_005c8e40(i);
         RHOrder *order = (RHOrder *)orders.current.node->value;
@@ -715,7 +711,8 @@ void RHUnk00588530::FUN_00589490(int replacement, int action, float distance, co
                 length = direction.Unk005fc6a0(0.57357645f);
             else
                 length = direction.Unk005fc6a0(1.0f);
-            if (length * g_unk0x00679db4 < distance)
+            float scaledLength = length;
+            if (scaledLength * g_unk0x00679db4 < distance)
             {
                 distance -= length;
                 continue;
@@ -845,4 +842,42 @@ bool RHSequenceElementMovement::Serialize(SBFile &file, bool pointers)
     else if (file.m_bLoading)
         m_64 = 0;
     return true;
+}
+
+class RHMovementStateListener
+{
+public:
+    virtual void V00();
+    virtual void V04();
+    virtual void V08();
+    virtual void V0c(int state, int value);
+};
+
+// FUNCTION: GAME 0x00589c00
+void RHUnk00588530::FUN_00589c00(int state, int value)
+{
+    if (RHMovementField<int>(this, 0x58) == state)
+        return;
+    switch (state)
+    {
+    case 6:
+        FUN_00588b20();
+        if (m_64)
+            ((RHMovementStateListener *)m_64)->V0c(6, 2);
+        break;
+    case 4:
+        FUN_00588b20();
+        if (RHMovementField<int>(this, 0x10) == 0x16)
+            RHMovementField<int>(this, 0x10) = 0x14;
+        break;
+    }
+    ((RHSequenceElementCalls *)this)->FUN_00585320(state, value);
+}
+
+// FUNCTION: GAME 0x00589c70
+void RHUnk00588530::FUN_00589c70(int priority)
+{
+    if (RHMovementField<int>(this, 0x5c) >= priority && RHMovementField<int>(this, 0x58) == 2)
+        FUN_00588940();
+    ((RHSequenceElementCalls *)this)->FUN_00585450(priority);
 }

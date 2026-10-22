@@ -24,6 +24,7 @@ class RHScriptBatchCalls
 public:
     void Unk00455400(void *description);
     void Unk004555f0(void *description);
+    void FUN_00456d20();
 };
 
 DECOMP_SIZE_ASSERT(RHMission, 0x0c)
@@ -40,8 +41,21 @@ DECOMP_SIZE_ASSERT(SBGeoBoundingBox2D, 0x14)
 DECOMP_SIZE_ASSERT(RHCampaignCharacterData, 0x9c)
 DECOMP_SIZE_ASSERT(RHSaveGame::Header, 0x0c)
 
+#include "RHElementActorPC.h"
+
+class RHMessenger;
+RHMessenger *RHUnk00546050();
+
 // LIBRARY: GAME 0x0044e940
 // ?_Construct@std@@YAXPAGABG@Z
+
+// FUNCTION: GAME 0x00436500
+RHProfileManager *RHUnk00436500GetProfileManager()
+{
+    if (!g_unk0x6c0e84)
+        g_unk0x6c0e84 = new RHCampaignProfiles;
+    return (RHProfileManager *)g_unk0x6c0e84;
+}
 
 // FUNCTION: GAME 0x0044ea70
 void RHCampaignArrayOps::FUN_0044ea70()
@@ -50,11 +64,67 @@ void RHCampaignArrayOps::FUN_0044ea70()
                                        ((std::vector<void *> *)this)->end());
 }
 
-class RHUnk0044fd00
+struct RHCampaignWidgetEvent
+{
+    int type;
+    void *widget;
+    unsigned value;
+    void *next;
+};
+
+#include "SBUIKeyboardCalls.h"
+
+struct RHCampaignWidgetInput
+{
+    undefined m_00[0x0a];
+    unsigned short flags;
+    RHGameWidgetInputCalls *shortcuts;
+};
+
+class RHGameWidgetRendererCalls
+{
+public:
+    bool FUN_0060d890(const SBGeoPoint2D &point);
+};
+
+struct RHCampaignWidgetView
+{
+    undefined m_00[4];
+    char m_04;
+    undefined m_05[0x4c - 5];
+    RHCampaignWidgetEvent m_event;
+    undefined m_5c[0x7c - 0x5c];
+    int m_7c;
+};
+
+class RHUnk0044fd00 : public RHCampaignWidgetView
 {
 public:
     void FUN_0044fd00(int value);
     int FUN_0044fd10();
+    void FUN_0044fd20();
+    RHCampaignWidgetEvent *FUN_0044fd40(const RHCampaignWidgetInput &input);
+};
+
+class RHUnk0044fd20Dispatch
+{
+public:
+    virtual void v0();
+    virtual void v1();
+    virtual void v2();
+    virtual void v3();
+    virtual void v4();
+    virtual void v5();
+    virtual void v6();
+    virtual void v7();
+    virtual void v8();
+    virtual unsigned V24();
+};
+
+class SBUIUnk0060da20
+{
+public:
+    bool FUN_0060da20(unsigned id);
 };
 
 // FUNCTION: GAME 0x0044fd00
@@ -69,24 +139,68 @@ int RHUnk0044fd00::FUN_0044fd10()
     return *(int *)((char *)this + 0xcc);
 }
 
+// FUNCTION: GAME 0x0044fd20
+void RHUnk0044fd00::FUN_0044fd20()
+{
+    ((SBUIUnk0060da20 *)((char *)this + 0x80))->FUN_0060da20(((RHUnk0044fd20Dispatch *)this)->V24());
+}
+
+// FUNCTION: GAME 0x0044fd40
+RHCampaignWidgetEvent *RHUnk0044fd00::FUN_0044fd40(const RHCampaignWidgetInput &input)
+{
+    if (m_04)
+    {
+        SBGeoBoundingBox2D &box = *(SBGeoBoundingBox2D *)((char *)this + 0x30);
+        if (box.FUN_006083b0(*(SBGeoPoint2D *)&input) == 1 &&
+            ((RHGameWidgetRendererCalls *)((char *)this + 0x80))->FUN_0060d890(
+                ((SBGeoPoint2D *)&input)->Unk005fc110(*(SBGeoPoint2D *)&box)) == 1)
+        {
+            if (!(input.flags & 1))
+            {
+                RHCampaignWidgetEvent *event = &m_event;
+                m_event.next = 0;
+                m_event.value = 0;
+                m_event.widget = this;
+                event->type = 0;
+                return event;
+            }
+        }
+        else if (!*(unsigned short *)((char *)this + 0x0a) ||
+            input.shortcuts->FUN_0060e240(*(unsigned short *)((char *)this + 0x0a)) != 2)
+        {
+            m_7c = 0;
+            return 0;
+        }
+        RHCampaignWidgetEvent *event = &m_event;
+        if (m_event.type != 2 && m_event.type != 7)
+        {
+            m_event.next = 0;
+            m_event.value = 0;
+            m_event.widget = this;
+            event->type = 2;
+            return event;
+        }
+        m_event.next = 0;
+        m_event.value = 0;
+        m_event.widget = this;
+        event->type = 7;
+        return event;
+    }
+    return 0;
+}
+
 class RHUnk0044fe70
 {
 public:
     int FUN_0044fe70();
 };
 
-// Parked: correct layout, but VC6 allocates the condition byte to dl where the
-// target uses al (mov al,[ecx+4]; test al,al; mov eax,0xff; je ...). Ternary
-// gives al but hoists the default to the false arm; the result-local form
-// gives the hoisted default but dl. Register-colouring seam, no shape found.
-// STUB: GAME 0x0044fe70
+// FUNCTION: GAME 0x0044fe70
 int RHUnk0044fe70::FUN_0044fe70()
 {
-    char flag = *(char *)((char *)this + 4);
-    int result = 0xff;
-    if (flag)
-        result = *(int *)((char *)this + 0xcc);
-    return result;
+    if (!*(char *)((char *)this + 4))
+        return 0xff;
+    return *(int *)((char *)this + 0xcc);
 }
 
 void EmitRHUnk0044fd00(RHUnk0044fd00 *a, RHUnk0044fe70 *b)
@@ -94,6 +208,14 @@ void EmitRHUnk0044fd00(RHUnk0044fd00 *a, RHUnk0044fe70 *b)
     a->FUN_0044fd00(0);
     a->FUN_0044fd10();
     b->FUN_0044fe70();
+}
+
+// FUNCTION: GAME 0x00450c10
+void RHCampaign::FUN_00450c10(SBArray<RHElement *> &elements, std::vector<RHbeamMe> &beamMes)
+{
+    for (RHPCDescription **it = m_114.begin(); it != m_114.end(); ++it)
+        (*it)->m_44 = false;
+    CreatePlayableCharacterSet(elements, beamMes);
 }
 
 // Parked: 49.95%.
@@ -784,6 +906,9 @@ RHbeamMe::RHbeamMe(const RHbeamMe &value)
 {
 }
 
+// FUNCTION: GAME 0x00454bb0
+RHbeamMe::~RHbeamMe() {}
+
 // Parked: four-byte EH frame excess and annotated helper operands.
 // STUB: GAME 0x00454c00
 bool RHCampaign::FUN_00454c00(RHbeamMe beamMe, unsigned short character)
@@ -1144,6 +1269,30 @@ void RHCampaign::FUN_00456af0(const void *object)
     std::vector<unsigned long> &relics = *(std::vector<unsigned long> *)((char *)this + 0x84);
     unsigned long type = *(const unsigned long *)((const char *)object + 0xb0);
     relics.insert(relics.end(), 1, type);
+}
+
+// FUNCTION: GAME 0x00456d20
+void RHScriptBatchCalls::FUN_00456d20()
+{
+    RHUnk00546050();
+    unsigned index = 0;
+    for (;; ++index)
+    {
+        RHEngine *engine = g_pEngine;
+        RHElementActorPC **first = *(RHElementActorPC **volatile *)((char *)engine + 0x493c);
+        if (index == (unsigned char)(first == 0 ? 0 : *(RHElementActorPC ***)((char *)engine + 0x4940) - first))
+            break;
+        RHElementActorPC *actor = (*(RHElementActorPC ***)((char *)g_pEngine + 0x493c))[(unsigned char)index];
+        int action = actor->FUN_0049d590(4);
+        if (action != -1)
+        {
+            if (*(unsigned short *)((char *)*(void **)((char *)actor + 0x600) + 0x28) != 0 &&
+                *(int *)((char *)this + 0x98) >= 50)
+                actor->FUN_0049d960(action);
+            else
+                actor->FUN_0049d890(action);
+        }
+    }
 }
 
 // FUNCTION: GAME 0x00456db0
@@ -1665,9 +1814,35 @@ int RHCampaignCommandLine::FUN_0045a010(const RHProfileText &value)
     return text.compare(0, text.size(), chars, length);
 }
 
+class RHUnk00457990
+{
+public:
+    void FUN_00457990();
+    char m_0[4];
+    RHSectorProduction::Occupant *m_4;
+    RHSectorProduction::Occupant *m_8;
+    RHSectorProduction::Occupant *m_c;
+};
+
+// FUNCTION: GAME 0x00457990
+void RHUnk00457990::FUN_00457990()
+{
+    typedef RHSectorProduction::Occupant Occupant;
+    Occupant *last = m_8;
+    Occupant *first = m_4;
+    while (first != last)
+    {
+        first->~Occupant();
+        ++first;
+    }
+    operator delete(m_4);
+    m_4 = 0;
+    m_8 = 0;
+    m_c = 0;
+}
+
 // TEMPLATE: GAME 0x0045a060
 // ??4?$vector@UPoint@RHSectorProduction@@V?$allocator@UPoint@RHSectorProduction@@@std@@@std@@QAEAAV01@ABV01@@Z
-
 // TEMPLATE: GAME 0x0045a240
 // ??4?$vector@UOccupant@RHSectorProduction@@V?$allocator@UOccupant@RHSectorProduction@@@std@@@std@@QAEAAV01@ABV01@@Z
 
@@ -1860,7 +2035,7 @@ RHPCDescription::RHPCDescription()
 // FUNCTION: GAME 0x0055bad0
 RHPCDescription::RHPCDescription(void *profile, bool playable)
 {
-    FUN_0055bc90(profile, playable);
+    ((RHPCStatus *)this)->RHPCStatus::RHPCStatus(*(const RHCharacterProfile *)profile, playable);
     m_profile = profile;
     m_44 = false;
 }

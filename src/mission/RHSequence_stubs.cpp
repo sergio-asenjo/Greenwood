@@ -56,3 +56,4 @@ RHSeqIter RHUnkListSeq::insert(RHSeqIter pos, RHSequence *const &value)
 {
     return pos;
 }
+void RHUnk00582220::Slot00() {}

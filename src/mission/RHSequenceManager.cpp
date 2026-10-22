@@ -10,7 +10,7 @@ DECOMP_SIZE_ASSERT(RHSequenceManager, 0x1b4)
 // FUNCTION: GAME 0x0046eb20
 int RHUnk0046eb30::FUN_0046eb20()
 {
-    return ((RHManagerList<void *> *)this)->count;
+    return ((RHManagerList<void *> *)this)->Count();
 }
 
 // FUNCTION: GAME 0x0046eb70
@@ -22,10 +22,56 @@ char *RHUnk0046eb30::FUN_0046eb70()
 // FUNCTION: GAME 0x0046eb80
 RHScriptIter RHUnk0046eb30::FUN_0046eb80()
 {
-    return RHScriptIter((RHScriptNode *)((RHManagerList<void *> *)this)->head->next);
+    return RHScriptIter((RHScriptNode *)((RHManagerList<void *> *)this)->Head()->next);
 }
 
-// Parked: frame 0x10 versus 0x14, plus container/EH differences.
+#include "RHSequenceGenericCalls.h"
+#include "RHSequenceAppendCalls.h"
+
+class RHUnk00582620
+{
+public:
+    bool FUN_00582530();
+};
+
+class RHUnk0058a3d0
+{
+public:
+    void *Unk(void *context, int value, void *sequence);
+};
+
+// Parked: list-constructor inlining and folded helper identities remain to be matched.
+// STUB: GAME 0x00589fb0
+RHSequenceManager::RHSequenceManager()
+{
+    g_unk0x6c1040 = (RHUnk6c1040 *)this;
+}
+
+// FUNCTION: GAME 0x0058a3d0
+void *RHUnk0058a3d0::Unk(void *context, int value, void *sequence)
+{
+    ((RHSequenceManager *)this)->m_4.push_back((RHSequence *)sequence);
+    ((RHUnk00582620 *)sequence)->FUN_00582530();
+    return sequence;
+}
+
+class RHScriptBatchCalls
+{
+public:
+    void *Unk0058a940(void *context, int value, void *element);
+};
+
+// FUNCTION: GAME 0x0058a940
+void *RHScriptBatchCalls::Unk0058a940(void *context, int value, void *element)
+{
+    RHUnk00582220 *sequence = new RHUnk00582220;
+    ((RHUnk00584d60 *)element)->m_14 = 1;
+    ((RHUnk00585500 *)element)->Unk(sequence);
+    ((RHUnk0058a3d0 *)this)->Unk(context, value, sequence);
+    return sequence;
+}
+
+// Parked: resize count/difference register lifetimes remain non-exact.
 // STUB: GAME 0x0058a9c0
 bool RHSequenceManager::Serialize(SBFile &file)
 {
@@ -49,9 +95,10 @@ bool RHSequenceManager::Serialize(SBFile &file)
         return false;
     }
     unsigned count;
+    RHSequenceElement *element;
     if (!file.m_bLoading)
     {
-        count = m_4.count;
+        count = m_4.Count();
         if (file.Access(&count, 4) < 0)
         {
             SBString *error = file.GetError();
@@ -75,19 +122,20 @@ bool RHSequenceManager::Serialize(SBFile &file)
             SBAssert(0, "P:\\Robin Hood\\RHsequencemanager.cpp", 382, "Serialize failed reason is %s", error->m_chars ? error->m_chars : "");
             return false;
         }
-        int size = sequences.count;
-        if ((int)count <= size)
+        int size = sequences.Count();
+        int wanted = count;
+        if (wanted <= size)
         {
             typedef std::list<RHSequence *>::iterator SequenceIterator;
             typedef SequenceIterator (RHUnk0046eb30::*Erase)(SequenceIterator);
-            for (int remaining = size - count; remaining > 0; --remaining)
+            for (int remaining = size - wanted; remaining > 0; --remaining)
                 (((RHUnk0046eb30 *)&sequences)->*(Erase)&RHUnk0046eb30::erase)(--((std::list<RHSequence *> *)&sequences)->end());
         }
         else
         {
             typedef std::list<RHSequence *>::iterator SequenceIterator;
             typedef SequenceIterator (RHUnkList::*Insert)(SequenceIterator, RHSequence *const &);
-            for (int remaining = count - size; remaining > 0; --remaining)
+            for (int remaining = wanted - size; remaining > 0; --remaining)
                 (((RHUnkList *)&sequences)->*(Insert)&RHUnkList::insert)(((std::list<RHSequence *> *)&sequences)->end(), (RHSequence *)0);
         }
         sequences.valid = 1;
@@ -105,7 +153,7 @@ bool RHSequenceManager::Serialize(SBFile &file)
     }
     if (!file.m_bLoading)
     {
-        count = m_28.count;
+        count = m_28.Count();
         if (file.Access(&count, 4) < 0)
         {
             SBString *error = file.GetError();
@@ -114,7 +162,7 @@ bool RHSequenceManager::Serialize(SBFile &file)
         }
         for (unsigned i = 0; i < count; ++i)
         {
-            RHSequenceElement *element = m_28[i];
+            element = m_28[i];
             SerializeSequenceElementPointer(file, &element);
         }
     }
@@ -130,7 +178,6 @@ bool RHSequenceManager::Serialize(SBFile &file)
         }
         for (unsigned i = 0; i < count; ++i)
         {
-            RHSequenceElement *element;
             SerializeSequenceElementPointer(file, &element);
             elements.push_back(element);
         }
@@ -264,8 +311,8 @@ bool RHSequenceManager::PreSerializePointer(SBFile &file, RHSequence **sequence)
 // STUB: GAME 0x0058b280
 bool RHSequenceManager::SetAllPreSerializedPointers()
 {
-    unsigned sequences = m_4.count;
-    while (m_4c.count > 0)
+    unsigned sequences = m_4.Count();
+    while (m_4c.Count() > 0)
     {
         RHOrder **destination = m_4c[0];
         int id = m_70[0];
@@ -277,13 +324,13 @@ bool RHSequenceManager::SetAllPreSerializedPointers()
             if (i >= (unsigned short)sequences)
                 break;
             RHManagerSequenceView *sequence = (RHManagerSequenceView *)m_4[i];
-            unsigned elements = sequence->m_8.count;
+            unsigned elements = sequence->m_8.Count();
             for (unsigned short j = 0; !found; ++j)
             {
                 if (j >= (unsigned short)elements)
                     break;
                 RHManagerElementView *element = (RHManagerElementView *)sequence->m_8[j];
-                unsigned orders = element->m_18.count;
+                unsigned orders = element->m_18.Count();
                 for (unsigned short k = 0; !found; ++k)
                 {
                     if (k >= (unsigned short)orders)
@@ -302,7 +349,7 @@ bool RHSequenceManager::SetAllPreSerializedPointers()
                 // STRING: GAME 0x006b76ac
                 "Unable to set pre-serialized order pointer (%d).", id);
     }
-    while (m_94.count > 0)
+    while (m_94.Count() > 0)
     {
         RHSequenceElement **destination = m_94[0];
         int id = m_dc[0];
@@ -316,7 +363,7 @@ bool RHSequenceManager::SetAllPreSerializedPointers()
             if (i >= (unsigned short)sequences)
                 break;
             RHManagerSequenceView *sequence = (RHManagerSequenceView *)m_4[i];
-            unsigned elements = sequence->m_8.count;
+            unsigned elements = sequence->m_8.Count();
             for (unsigned short j = 0; !found; ++j)
             {
                 if (j >= (unsigned short)elements)
@@ -334,7 +381,7 @@ bool RHSequenceManager::SetAllPreSerializedPointers()
                 // STRING: GAME 0x006b7670
                 "Unable to set pre-serialized sequence element pointer (%d).", id);
     }
-    while (m_100.count > 0)
+    while (m_100.Count() > 0)
     {
         RHSequence **destination = m_100[0];
         int id = m_124[0];
@@ -357,10 +404,10 @@ bool RHSequenceManager::SetAllPreSerializedPointers()
                 // STRING: GAME 0x006b763c
                 "Unable to set pre-serialized sequence pointer (%d).", id);
     }
-    for (unsigned short i = 0; i < (unsigned short)m_4.count; ++i)
+    for (unsigned short i = 0; i < (unsigned short)m_4.Count(); ++i)
     {
         RHManagerSequenceView *sequence = (RHManagerSequenceView *)m_4[i];
-        unsigned short elements = (unsigned short)sequence->m_8.count;
+        unsigned short elements = (unsigned short)sequence->m_8.Count();
         if (elements > 0)
         {
             RHSequenceElement *previous = sequence->m_8[0];
@@ -419,13 +466,13 @@ bool RHPathSequenceSerializer::FUN_0058b7c0(SBFile &file, void *&value)
             return true;
         }
         bool found = false;
-        unsigned sequences = manager->m_4.count;
+        unsigned sequences = manager->m_4.Count();
         for (unsigned short i = 0; !found; ++i)
         {
             if (i >= (unsigned short)sequences)
                 break;
             RHManagerSequenceView *sequence = (RHManagerSequenceView *)manager->m_4[i];
-            unsigned elements = sequence->m_8.count;
+            unsigned elements = sequence->m_8.Count();
             for (unsigned short j = 0; !found; ++j)
             {
                 if (j >= (unsigned short)elements)

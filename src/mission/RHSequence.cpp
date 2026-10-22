@@ -62,10 +62,82 @@
 
 #include "SBNullstr.h"
 #include "RHSequence.h"
+#include "RHSequenceGenericCalls.h"
 
 // The 4-byte global read/written by SerializeStaticStuff (original 0x006b7480).
 // GLOBAL: GAME 0x006b7480
 int g_unk0x6b7480;
+
+struct RHScriptIter;
+class RHUnk0046eb30
+{
+public:
+    RHScriptIter FUN_0046eb80();
+};
+
+inline void ClearRHSequenceElementRange(std::list<RHSequenceElement *> *list)
+{
+    typedef std::list<RHSequenceElement *>::iterator Iterator;
+    typedef Iterator (RHUnk0046eb30::*Begin)();
+    Iterator (std::list<RHSequenceElement *>::*eraseRange)(Iterator, Iterator) = &std::list<RHSequenceElement *>::erase;
+    (list->*eraseRange)((((RHUnk0046eb30 *)list)->*(Begin)&RHUnk0046eb30::FUN_0046eb80)(), list->end());
+}
+
+inline void RHSequenceElementList::clear()
+{
+    iterator position = begin();
+    iterator last = end();
+    iterator (std::list<RHSequenceElement *>::*eraseOne)(iterator) = &std::list<RHSequenceElement *>::erase;
+    while (position != last)
+        (this->*eraseOne)(position++);
+    m_dirty = true;
+}
+
+inline void RHSequenceElementList::DeleteAll()
+{
+    for (m_cursor = begin(); m_cursor != end(); ++m_cursor)
+        delete (RHUnkSequenceOrder *)*m_cursor;
+    clear();
+}
+
+inline RHSequenceElementList::~RHSequenceElementList()
+{
+    for (m_cursor = begin(); m_cursor != end(); ++m_cursor)
+        delete (RHUnkSequenceOrder *)*m_cursor;
+    ClearRHSequenceElementRange(this);
+}
+
+inline RHSequenceElementListStorage::~RHSequenceElementListStorage()
+{
+    ClearRHSequenceElementRange(this);
+}
+
+// FUNCTION: GAME 0x00582220
+RHUnk00582220::RHUnk00582220()
+{
+    m_04 = g_unk0x6b7480++;
+    m_2c = 0;
+    m_2e = 0;
+    m_30 = 0;
+    m_32 = 0;
+    m_34 = 0;
+}
+
+// FUNCTION: GAME 0x00582280
+void *RHUnk00582220::FUN_00582280(unsigned int flags)
+{
+    this->~RHUnk00582220();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// Parked: list teardown inline depth and range-erase scheduling differ.
+// STUB: GAME 0x005822a0
+RHUnk00582220::~RHUnk00582220()
+{
+    m_elements.DeleteAll();
+}
 
 // STUB: GAME 0x005843c0
 bool RHSequence::Serialize(SBFile &file, bool bArg)
@@ -170,7 +242,7 @@ bool RHSequence::Serialize(SBFile &file, bool bArg)
             switch (type & 0xff)
             {
             case 0:
-                elem = new RHSequenceElement();
+                elem = (RHSequenceElement *)new RHUnk00584d60();
                 break;
             case 1:
                 elem = new RHUnk586050();

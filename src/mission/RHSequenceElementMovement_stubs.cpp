@@ -1,4 +1,7 @@
 #include "SBNullstr.h"
+#include "RHSequenceElementCalls.h"
+
+void RHSequenceElementCalls::FUN_00585320(int, int) {}
 
 class RHMovementEngineCalls
 {

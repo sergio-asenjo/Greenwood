@@ -32,6 +32,32 @@
 #include "RHProfileManager.h"
 #include "RHMission.h"
 #include "RHMissionProfile.h"
+#include "RHCampaignMissionStatus.h"
+
+class RHUnk00452030;
+extern RHUnk00452030 *g_unk0x6c07fc;
+
+static inline unsigned long RHMissionRequiredAt(RHMissionArray<unsigned long> &values, unsigned long index)
+{
+    if ((unsigned long)(values.end() - values.begin()) <= index)
+        ((RHMissionRequiredBounds *)&values)->FUN_0054cdd0();
+    return values.begin()[index];
+}
+
+// Parked: container/index registers differ and VC6 removes the checked-access branch.
+// STUB: GAME 0x0054c6f0
+bool RHMission::AreRequiredMissionStatusValid(bool value) const
+{
+    RHUnk00451f00 *campaign = (RHUnk00451f00 *)g_unk0x6c07fc;
+    RHMissionArray<unsigned long> *required = value == true ? &m_profile->m_94 : &m_profile->m_a4;
+    for (unsigned long index = 0; required->GetSize() > index; ++index)
+    {
+        bool status = campaign->FUN_00451ff0(RHMissionRequiredAt(*required, index))->m_8;
+        if (status != value)
+            return false;
+    }
+    return true;
+}
 
 // FUNCTION: GAME 0x0054cbf0
 int RHMission::FUN_0054cbf0()
@@ -117,6 +143,7 @@ bool RHMission::Serialize(SBFile &file)
 // object; this out-of-line call keeps RHMission::Serialize in the build.
 void RHMission::Emit(SBFile &file)
 {
+    AreRequiredMissionStatusValid(true);
     FUN_0054cbf0();
     FUN_0054cc20();
     Serialize(file);

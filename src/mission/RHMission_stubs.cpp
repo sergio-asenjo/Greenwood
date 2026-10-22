@@ -12,8 +12,6 @@
 
 #include "SBNullstr.h"
 #include "RHMission.h"
+#include "RHCampaignMissionStatus.h"
 
-// Target 0x00436500 — singleton accessor: if global 0x6c0e84 is null it `new`s
-// 0x70 bytes and constructs through 0x005644c0, then returns the global. No
-// __FILE__ evidence of its own, so the neutral name stands (provisional).
-RHProfileManager *RHUnk00436500GetProfileManager() { return 0; }
+void RHMissionRequiredBounds::FUN_0054cdd0() {}

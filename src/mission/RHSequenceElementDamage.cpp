@@ -47,7 +47,7 @@ public:
 // FUNCTION: GAME 0x00586050
 RHUnk586050::RHUnk586050()
 {
-    ((RHSequenceElement *)this)->RHSequenceElement::RHSequenceElement();
+    ((RHUnk00584d60 *)this)->RHUnk00584d60::RHUnk00584d60();
     m_74 = 11;
     m_64 = 0;
     m_68 = 0;

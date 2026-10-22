@@ -126,6 +126,117 @@ struct RHSequenceAppendView
     bool m_18;
 };
 
+// FUNCTION: GAME 0x00584cf0
+RHUnk00584d60::RHUnk00584d60()
+{
+    m_04 = 0;
+    m_4c = 0;
+    m_50 = 0;
+    m_54 = 0;
+    m_60 = false;
+}
+
+// FUNCTION: GAME 0x00584d40
+void *RHUnk00584d60::FUN_00584d40(unsigned int flags)
+{
+    this->~RHUnk00584d60();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// FUNCTION: GAME 0x00584d60
+RHUnk00584d60::RHUnk00584d60(unsigned short level, int command, void *actor)
+    : m_10(command), m_14(level), m_48(actor)
+{
+    m_08 = g_unk0x6b74d8++;
+    m_4c = 0;
+    m_50 = 0;
+    m_54 = 0;
+    m_0c = 0;
+    m_04 = 0;
+    m_60 = false;
+    m_58 = 3;
+    m_5c = 11;
+}
+
+// Parked: list teardown inlining and the base iterator increment differ.
+// STUB: GAME 0x00584de0
+RHUnk00584d60::~RHUnk00584d60()
+{
+    m_orders.DeleteAll();
+}
+
+class RHSequenceStopOwner
+{
+public:
+    virtual void Slot00() = 0;
+    virtual void Slot04() = 0;
+    virtual void Slot08() = 0;
+    virtual void Slot0c() = 0;
+    virtual void Slot10() = 0;
+    virtual void Slot14() = 0;
+    virtual void Slot18() = 0;
+    virtual void Slot1c() = 0;
+    virtual void Slot20() = 0;
+    virtual void Slot24() = 0;
+    virtual void Slot28() = 0;
+    virtual void Slot2c() = 0;
+    virtual void Slot30() = 0;
+    virtual void Slot34() = 0;
+    virtual void Slot38() = 0;
+    virtual void Slot3c() = 0;
+    virtual void Slot40() = 0;
+    virtual void Slot44() = 0;
+    virtual void Slot48() = 0;
+    virtual void Slot4c() = 0;
+    virtual void Slot50() = 0;
+    virtual void Slot54() = 0;
+    virtual void Slot58() = 0;
+    virtual void Slot5c() = 0;
+    virtual void Slot60() = 0;
+    virtual void Slot64() = 0;
+    virtual void Slot68() = 0;
+    virtual void Slot6c() = 0;
+    virtual void Slot70() = 0;
+    virtual void Slot74() = 0;
+    virtual void Slot78() = 0;
+    virtual void Slot7c() = 0;
+    virtual void Slot80() = 0;
+    virtual void Slot84() = 0;
+    virtual void Slot88() = 0;
+    virtual void Slot8c() = 0;
+    virtual void Slot90() = 0;
+    virtual int Slot94(RHSequenceElementCalls *element) = 0;
+    unsigned char m_04;
+};
+
+// FUNCTION: GAME 0x00585450
+void RHSequenceElementCalls::FUN_00585450(int priority)
+{
+    if (m_5c == 11) {
+        RHSequenceStopOwner *owner = (RHSequenceStopOwner *)m_48;
+        if (!owner || (owner->m_04 & 3) || (m_5c = owner->Slot94(this)) == 10)
+            m_5c = 8;
+    }
+    if (m_5c >= priority) {
+        if (m_58 == 2 && (unsigned char)m_04[0] == 4) {
+            if (m_4c)
+                m_4c->Slot0c(6, 1);
+        } else
+            Slot0c(6, 1);
+    } else if (m_4c) {
+        m_4c->Slot10(priority);
+        if (m_4c && m_4c->m_58 == 6)
+            m_4c = 0;
+    }
+    if (m_50) {
+        m_50->Slot10(priority);
+        if (m_50 && m_50->m_58 == 6)
+            m_50 = 0;
+    }
+}
+
 // FUNCTION: GAME 0x00585500
 void RHUnk00585500::Unk(void *sequence)
 {
@@ -296,18 +407,12 @@ public:
 // FUNCTION: GAME 0x00585e70
 RHUnk585e70::RHUnk585e70()
 {
-    ((RHSequenceElement *)this)->RHSequenceElement::RHSequenceElement();
+    ((RHUnk00584d60 *)this)->RHUnk00584d60::RHUnk00584d60();
     *(unsigned *)this = 0x679d04;
     m_04 = 3;
 }
 
-class __declspec(novtable) RHUnk00585ea0 : public RHUnk00584d60
-{
-public:
-    RHUnk00585ea0(unsigned short level, int command, void *actor, void *target);
-    ~RHUnk00585ea0();
-    void *m_64;
-};
+#include "RHSequenceInteractionAction.h"
 
 // FUNCTION: GAME 0x00585ea0
 RHUnk00585ea0::RHUnk00585ea0(unsigned short level, int command, void *actor, void *target)
