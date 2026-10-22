@@ -4,12 +4,20 @@
 #include <cstdlib>
 #include <algorithm>
 
-DECOMP_SIZE_ASSERT(RHCharacterProfile, 0x38)
+DECOMP_SIZE_ASSERT(RHCharacterProfile, 0x9c)
 DECOMP_SIZE_ASSERT(RHUnk00452030, 0x144)
 DECOMP_SIZE_ASSERT(RHPCStatus, 0x40)
 DECOMP_SIZE_ASSERT(RHUnk00423b10, 0x10)
 DECOMP_SIZE_ASSERT(RHPCWideText, 0x10)
 DECOMP_SIZE_ASSERT(RHMapWideText, 0x10)
+
+class RHUnk0055dbb0
+{
+public:
+    char *FUN_0055dbb0();
+};
+
+extern undefined g_unk0x006c0e48[];
 
 void (RHPCWideText::*g_rhpcWideEos)(unsigned) = &RHPCWideText::FUN_004239c0;
 RHPCWideText &(RHPCWideText::*g_rhpcWideAppend)(const std::wstring &, unsigned, unsigned) = &RHPCWideText::FUN_0055c680;
@@ -116,6 +124,59 @@ RHPCStatus::RHPCStatus() : m_14(100), m_16(0), m_18(0), m_1a(0), m_1c(0),
     m_1e(0), m_20(0), m_22(0), m_24(0), m_26(0), m_28(0), m_3c(0xffff)
 {
     *(unsigned long *)this = 0x00679bd4;
+}
+
+// FUNCTION: GAME 0x0055bc90
+RHPCStatus::RHPCStatus(const RHCharacterProfile &profile, bool random) : RHHumanStatus(profile),
+    m_14(100), m_16(0), m_18(0), m_1a(0), m_1c(0), m_1e(0), m_20(0), m_22(0), m_24(0), m_26(0),
+    m_28(0), m_2c(GenerateName(profile)), m_3c(0xffff)
+{
+    *(unsigned long *)this = 0x00679bd4;
+    if (random)
+    {
+        unsigned short counts[3];
+        *(unsigned long *)counts = *(const unsigned long *)profile.m_54;
+        counts[2] = profile.m_54[2];
+        int i;
+        switch (*(int *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x1c))
+        {
+        case 0:
+            for (i = 0; i < 3; ++i)
+            {
+                switch (counts[i])
+                {
+                case 6:
+                    counts[i] = 8;
+                    break;
+                case 12:
+                    counts[i] = 15;
+                    break;
+                }
+            }
+            break;
+        case 2:
+            for (i = 0; i < 3; ++i)
+            {
+                switch (counts[i])
+                {
+                case 6:
+                    counts[i] = 4;
+                    break;
+                case 12:
+                    counts[i] = 9;
+                    break;
+                }
+            }
+            break;
+        }
+        for (i = 0; i < 3; ++i)
+            SetAmmoAmount(profile.m_48[i], counts[i]);
+    }
+    else
+    {
+        for (int i = 0; i < 3; ++i)
+            SetAmmoAmount(profile.m_48[i], 0);
+    }
 }
 
 // FUNCTION: GAME 0x0055bdf0
