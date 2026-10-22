@@ -39,7 +39,13 @@ RHSoundSource *RHSoundSourceManager::FUN_005b4e00(unsigned short) { return 0; }
 // LIBRARY: GAME 0x005e39d0
 extern "C" void __stdcall FSOUND_Close() {}
 
-RHSoundPendingData::RHSoundPendingData(const RHSoundSettings &settings) : m_00(settings) {}
+// FUNCTION: GAME 0x005a5f60
+RHSoundPendingData::RHSoundPendingData(const RHSoundSettings &settings) : m_00(settings)
+{
+    m_18 = -2;
+    m_1c = 0;
+    m_20 = 0;
+}
 
 int RHSoundChannels::FUN_0045a490() { return Size(); }
 

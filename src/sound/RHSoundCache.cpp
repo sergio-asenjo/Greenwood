@@ -48,7 +48,8 @@ void RHSoundCacheMusicArray::FUN_0056dac0(RHSoundCacheMusic *first, RHSoundCache
         first->~basic_string();
 }
 
-// unannotated: 0x0056dbc0 is called by InitializeMusic; register scheduling remains unmatched.
+// Parked at 0.9283: unannotated park from the asymmetric-comparator era; residual scheduling/registers.
+// STUB: GAME 0x0056dbc0
 RHSoundCacheMusic *FUN_0056dbc0(RHSoundCacheMusic *first, RHSoundCacheMusic *last, RHSoundCacheMusic *destination)
 {
     for (; first != last; ++first, ++destination)
@@ -165,29 +166,31 @@ void RHSoundCache::UpdateCacheState(std::map<unsigned long, RHSoundCacheEntry *>
     }
 }
 
-// Reconstructed cache-map and backing-array teardown; sample accounting remains incomplete.
-// STUB: GAME 0x005ab660
-void RHSoundCache::FUN_005ab660(std::map<unsigned long, RHSoundCacheEntry *> &entries, RHcacheData &cache)
+// FUNCTION: GAME 0x005ab660
+void RHSoundCache::FUN_005ab660(RHSoundCacheGroups &groups, RHcacheData &cache)
 {
-    for (std::map<unsigned long, RHSoundCacheEntry *>::iterator entry = entries.begin(); entry != entries.end(); ((RHSoundCacheEraseIterator<1> *)&entry)->Advance())
+    RHSoundCacheGroups::EraseIterator group = groups.Begin();
+    RHSoundCacheGroups::EraseIterator end;
+    while (end = RHSoundCacheGroups::EraseIterator(groups.Head()), group != end)
     {
-        delete entry->second;
-        entry->second = 0;
+        delete group.m_node->m_10;
+        group.Advance();
     }
-    entries.clear();
+    groups.FUN_005aef90(groups.Begin(), RHSoundCacheGroups::EraseIterator(groups.Head()));
     FUN_005ab4e0(cache);
 }
 
-// Reconstructed map-entry destruction and clear; target-specific node helpers remain unresolved.
-// STUB: GAME 0x005ab6d0
-void RHSoundCache::FUN_005ab6d0(std::map<unsigned long, RHSoundCacheEntry *> &entries)
+// FUNCTION: GAME 0x005ab6d0
+void RHSoundCache::FUN_005ab6d0(RHSoundCacheEntryMap &entries)
 {
-    for (std::map<unsigned long, RHSoundCacheEntry *>::iterator entry = entries.begin(); entry != entries.end(); ((RHSoundCacheEraseIterator<1> *)&entry)->Advance())
+    RHSoundCacheEntryMap::EraseIterator entry = entries.Begin();
+    RHSoundCacheEntryMap::EraseIterator end;
+    while (end = RHSoundCacheEntryMap::EraseIterator(entries.Head()), entry != end)
     {
-        delete entry->second;
-        entry->second = 0;
+        delete (RHUnk005b1ca0 *)entry.m_node->m_10;
+        entry.Advance();
     }
-    entries.clear();
+    entries.FUN_005af1f0(entries.Begin(), RHSoundCacheEntryMap::EraseIterator(entries.Head()));
 }
 
 // Parked 25.48%: the candidate map lookup is reconstructed, but argument-slot lifetime, sample-state updates, and entry return scheduling differ.
@@ -578,12 +581,12 @@ void RHSoundCache::FUN_005ae1c0(bool clear)
 {
     if (clear)
     {
-        FUN_005ab660(*(std::map<unsigned long, RHSoundCacheEntry *> *)&m_00c, *(RHcacheData *)this);
-        FUN_005ab6d0(*(std::map<unsigned long, RHSoundCacheEntry *> *)((char *)this + 0x28));
-        FUN_005ab660(*(std::map<unsigned long, RHSoundCacheEntry *> *)&m_06c, *(RHcacheData *)((char *)this + 0x60));
-        FUN_005ab6d0(*(std::map<unsigned long, RHSoundCacheEntry *> *)((char *)this + 0x94));
+        FUN_005ab660(m_00c, *(RHcacheData *)this);
+        FUN_005ab6d0(*(RHSoundCacheEntryMap *)((char *)this + 0x28));
+        FUN_005ab660(m_06c, *(RHcacheData *)((char *)this + 0x60));
+        FUN_005ab6d0(*(RHSoundCacheEntryMap *)((char *)this + 0x94));
     }
-    FUN_005ab6d0(m_044);
+    FUN_005ab6d0(*(RHSoundCacheEntryMap *)&m_044);
     ClearSoundMusic(m_0b0);
     ClearSoundMusic(m_0dc);
     ClearSoundMusic(m_108);

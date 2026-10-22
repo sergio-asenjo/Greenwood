@@ -56,6 +56,8 @@ float g_unk0x00679dd4 = 0.1111111119389534f;
 class RHProfileManager;
 RHProfileManager *RHUnk00436500GetProfileManager();
 
+#ifndef SBGEO_POINT2D_VIEW
+#define SBGEO_POINT2D_VIEW
 class SBGeoVector2D;
 class SBGeoPoint2D
 {
@@ -69,6 +71,7 @@ public:
     float m_x;
     float m_y;
 };
+#endif
 
 #include "SBGeoVector2D.h"
 
@@ -360,35 +363,35 @@ bool RHSound::InitializeSound(unsigned short driver, bool spatial, std::string &
     return true;
 }
 
-// deferred: 0x005a6fb0 coupled callers; SIB operand order remains unmatched.
+// FUNCTION: GAME 0x005a6fb0
 void RHSound::FUN_005a6fb0(int channel, int type, RHSoundCacheEntry *entry, void *value, void *value2, void *value3)
 {
     if (channel != -1)
     {
-        RHSoundCacheEntry *previous = m_21c.m_04[channel].m_08;
+        RHSoundCacheEntry *previous = m_21c[channel].m_08;
         if (previous)
             --*(unsigned short *)((char *)previous + 0x1e);
-        m_21c.m_04[channel].m_00 = 0;
-        m_21c.m_04[channel].m_08 = 0;
-        m_21c.m_04[channel].m_0c = 0;
-        m_21c.m_04[channel].m_0c = 0;
-        m_21c.m_04[channel].m_04 = 0;
+        m_21c[channel].m_00 = 0;
+        m_21c[channel].m_08 = 0;
+        m_21c[channel].m_0c = 0;
+        m_21c[channel].m_0c = 0;
+        m_21c[channel].m_04 = 0;
         switch (type)
         {
         case 1:
             if (value)
-                m_21c.m_04[channel].m_0c = value;
+                m_21c[channel].m_0c = value;
             break;
         case 5:
-            m_21c.m_04[channel].m_04 = value3;
-            m_21c.m_04[channel].m_0c = value2;
+            m_21c[channel].m_04 = value3;
+            m_21c[channel].m_0c = value2;
             break;
         }
-        m_21c.m_04[channel].m_00 = type;
+        m_21c[channel].m_00 = type;
         if (entry)
         {
-            m_21c.m_04[channel].m_08 = entry;
-            ++*(unsigned short *)((char *)m_21c.m_04[channel].m_08 + 0x1e);
+            m_21c[channel].m_08 = entry;
+            ++*(unsigned short *)((char *)m_21c[channel].m_08 + 0x1e);
         }
     }
 }
@@ -1583,7 +1586,7 @@ void RHSound::GetCacheStats(RHsampleCacheStats *stats, int &count)
     count = m_250;
 }
 
-// Parked: preserving loading in an aggregate adds observable stores; scalar colouring remains unresolved.
+// Parked: serialized scalar stack-slot colouring differs; direct bool forwarding matches.
 // STUB: GAME 0x005a9c50
 bool RHSound::Serialize(SBFile &file)
 {
@@ -1641,7 +1644,7 @@ bool RHSound::Serialize(SBFile &file)
         m_200->Serialize(file);
         if (loading)
         {
-            Activate(0, m_213 != 0);
+            Activate(0, m_213);
             if (g_unk0x006c0685)
             {
                 m_27a = 0;
