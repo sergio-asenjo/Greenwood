@@ -1,4 +1,7 @@
 #include "RHUnk0060c2xx.h"
+#include "RHUnk0060c2c0.h"
+
+DECOMP_SIZE_ASSERT(RHUnk0060c2c0, 0x2c)
 
 unsigned long RHUnk0060c2xx::FUN_0060c250() const
 {
@@ -39,17 +42,6 @@ const SBGeoPoint2D &RHUnk0060c2xx::FUN_0060c2b0(unsigned long index) const
 {
     return FUN_00610cb0(index);
 }
-
-// SIZE 0x2c
-class RHUnk0060c2c0 : public RHMobileUnk00611360
-{
-public:
-    RHUnk0060c2c0();
-    unsigned short m_24; // 0x24
-    unsigned short m_26; // 0x26
-    bool m_28; // 0x28
-    bool m_29; // 0x29
-};
 
 // FUNCTION: GAME 0x0060c2c0
 RHUnk0060c2c0::RHUnk0060c2c0()

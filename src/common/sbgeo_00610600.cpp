@@ -6,6 +6,33 @@ DECOMP_SIZE_ASSERT(SBGeoSegment2D, 0x10)
 DECOMP_SIZE_ASSERT(SBGeoPolyLine2DList, 0x28)
 DECOMP_SIZE_ASSERT(RHMobileUnk00611360, 0x24)
 
+#include "SBGeoIntersection2D.h"
+
+// FUNCTION: GAME 0x0060a980
+bool SBGeoSegment2D::FUN_0060a980(const RHMobileUnk0060a820 &other) const
+{
+    return other.FUN_00615910(*this);
+}
+
+// FUNCTION: GAME 0x0060ad60
+RHUnk0060fbf0 SBGeoSegment2D::FUN_0060ad60(const RHMobileUnk006100e0 &other) const
+{
+    return other.FUN_006101c0((const RHMobileUnk006100e0 &)*this);
+}
+
+// FUNCTION: GAME 0x0060ad80
+RHUnk0060fbf0 SBGeoSegment2D::FUN_0060ad80(const RHMobileUnk0060a820 &other) const
+{
+    return other.FUN_00615ca0(*this);
+}
+
+void EmitSBGeoSegmentIntersection(SBGeoSegment2D *segment, const RHMobileUnk006100e0 &other)
+{
+    segment->FUN_0060a980((const RHMobileUnk0060a820 &)other);
+    segment->FUN_0060ad60(other);
+    segment->FUN_0060ad80((const RHMobileUnk0060a820 &)other);
+}
+
 inline void SBGeoPolyLine2DList::Seek(int wanted)
 {
     int size = _Size;
@@ -243,8 +270,7 @@ SBGeoPoint2D &RHUnkSectorPoints::FUN_006112c0(unsigned int index)
     return (*(std::vector<SBGeoPoint2D> *)this)[index];
 }
 
-// Target pushes each point as it is fetched into an out-of-line segment constructor; the inline FUN_0060a820 wrapper caches the second point.
-// STUB: GAME 0x006112d0
+// FUNCTION: GAME 0x006112d0
 SBGeoSegment2D RHMobileUnk00611360::FUN_006112d0(unsigned long index) const
 {
     SBGeoSegment2D segment(((RHUnkSectorPoints *)this)->FUN_006112c0(index), ((RHUnkSectorPoints *)this)->FUN_006112c0(index + 1));

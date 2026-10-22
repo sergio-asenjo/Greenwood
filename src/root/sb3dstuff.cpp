@@ -7,12 +7,11 @@
 extern float g_unk0x006785d8;
 
 // FUNCTION: GAME 0x005df4c0
-RHUnk00613e90 &RHUnk00613e90::FUN_005df4c0(const RHUnk00613e90 &from, const RHUnk00613e90 &to)
+RHUnk00613e90::RHUnk00613e90(const RHUnk00613e90 &from, const RHUnk00613e90 &to)
 {
     m_0 = to.m_0 - from.m_0;
     m_4 = to.m_4 - from.m_4;
     m_8 = to.m_8 - from.m_8;
-    return *this;
 }
 
 // FUNCTION: GAME 0x005df510
@@ -287,7 +286,7 @@ float EmitSB3DGeometry(RHUnk00613e90 &vector, RHUnk005df860 &plane)
     RHUnk005df860 initializedPlane;
     RHUnk005dfd00 bounds;
     bounds.FUN_005dfc80(0.0f, 0.0f, 0.0f);
-    vector.FUN_005df4c0(vector, vector);
+    RHUnk00613e90 difference(vector, vector);
     vector.FUN_005df5a0(vector);
     vector.FUN_005df5f0(vector);
     vector.FUN_005df610(vector);

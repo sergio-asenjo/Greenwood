@@ -156,8 +156,7 @@ extern float g_unk0x00677488;
 // GLOBAL: GAME 0x00677b98
 float g_unk0x00677b98 = 3.1415927410125732421875f;
 
-// Parked: quadrant-arm x87 load order differs.
-// STUB: GAME 0x005fca90
+// FUNCTION: GAME 0x005fca90
 float SBGeoPoint2D::FUN_005fca90(const SBGeoPoint2D &other, float scale) const
 {
     SBGeoVector2D first(m_x, m_y / scale);
@@ -169,8 +168,11 @@ float SBGeoPoint2D::FUN_005fca90(const SBGeoPoint2D &other, float scale) const
     float angle = atan(cross / dot);
     if (dot >= g_unk0x00677488)
         return angle;
-    if (cross > g_unk0x00677488)
-        return angle + g_unk0x00677b98;
+    if (cross > g_unk0x00677488) {
+        float result = angle;
+        result += g_unk0x00677b98;
+        return result;
+    }
     return angle - g_unk0x00677b98;
 }
 

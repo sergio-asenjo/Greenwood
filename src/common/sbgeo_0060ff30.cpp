@@ -1,5 +1,28 @@
 #include "sbgeo_0060ff30.h"
 #include <string.h>
+#include "SBGeoBoxLine.h"
+
+RHBoxLine00610070::RHBoxLine00610070(const RHMobileUnk006100e0 &segment)
+{
+    Second().SBGeoPoint2D::SBGeoPoint2D();
+    SBGeoPoint2D::operator=(segment);
+    Second() = segment.Second();
+}
+
+bool RHBoxIntersection00608800::FUN_00608800(const RHBoxLine00610070 &line) const
+{
+    const float *bounds = (const float *)this;
+    if (!((const unsigned char *)this)[16]) return false;
+    float dx = line.Second().m_x - line.m_x;
+    float dy = line.Second().m_y - line.m_y;
+    if (dx == 0 && (line.m_x < bounds[0] || line.m_x > bounds[2])) return false;
+    if (dy == 0 && (line.m_y < bounds[1] || line.m_y > bounds[3])) return false;
+    float a = dx * (bounds[1] - line.m_y) - dy * (bounds[0] - line.m_x);
+    float b = dx * (bounds[1] - line.m_y) - dy * (bounds[2] - line.m_x);
+    float c = dx * (bounds[3] - line.m_y) - dy * (bounds[0] - line.m_x);
+    float d = dx * (bounds[3] - line.m_y) - dy * (bounds[2] - line.m_x);
+    return !((a > 0 && b > 0 && c > 0 && d > 0) || (a < 0 && b < 0 && c < 0 && d < 0));
+}
 
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 DECOMP_SIZE_ASSERT(RHMobileUnk006100e0, 0x10)

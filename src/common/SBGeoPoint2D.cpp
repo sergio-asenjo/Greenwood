@@ -7,6 +7,15 @@
 
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 
+// FUNCTION: GAME 0x0044e990
+void *SBGeoPoint2D::FUN_0044e990(unsigned flags)
+{
+    this->SBGeoPoint2D::~SBGeoPoint2D();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
 // FUNCTION: GAME 0x005fc080
 SBGeoPoint2D::~SBGeoPoint2D() throw()
 {
