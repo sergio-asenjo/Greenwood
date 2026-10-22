@@ -43,6 +43,15 @@ SBUIUnk0060e1b0::SBUIUnk0060e1b0(int capacity)
     self.second = 2;
 }
 
+// FUNCTION: GAME 0x0060e210
+void *SBUIUnk0060e1b0::FUN_0060e210(unsigned flags)
+{
+    this->~SBUIUnk0060e1b0();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
 // FUNCTION: GAME 0x0060e230
 SBUIUnk0060e1b0::~SBUIUnk0060e1b0()
 {

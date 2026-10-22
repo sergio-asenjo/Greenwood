@@ -3,22 +3,9 @@
 #include "SB.h"
 #include "SBGeoBoundingBox2D.h"
 
-#include "RHPortraitRenderer0060d470.h"
+#include "RHPortraitInputRenderer.h"
 
-// VTABLE: GAME 0x0067ae1c
-class RHPortraitInputRenderer : public RHPortraitRenderer0060d470
-{
-public:
-    RHPortraitInputRenderer();
-    ~RHPortraitInputRenderer();
-    void *FUN_0061c590(unsigned flags);
-    char m_4c[0x18];
-    int m_64;
-    int m_68;
-    SBGeoPoint2D m_6c;
-    char m_74[0xe];
-    unsigned short m_82;
-};
+DECOMP_SIZE_ASSERT(RHPortraitInputRenderer, 0x84)
 
 // FUNCTION: GAME 0x0061c530
 RHPortraitInputRenderer::RHPortraitInputRenderer() : m_64(-1), m_68(-1), m_82(0x14)

@@ -16,7 +16,6 @@ DECOMP_SIZE_ASSERT(RHMapBox, 0x14)
 DECOMP_SIZE_ASSERT(RHMobileUnk006100e0, 0x10)
 DECOMP_SIZE_ASSERT(RHMobileUnk00607da0, 0x14)
 DECOMP_SIZE_ASSERT(SBUIInputFieldDrawUnk, 0x30)
-DECOMP_SIZE_ASSERT(RHMapWideText, 0x10)
 
 void SBAssert(int, const char *, int, const char *, ...);
 namespace std { void _Xlen(); }
@@ -68,17 +67,15 @@ unsigned int SBUIInputFieldTextUnk::FUN_0061df50()
     return m_0c - 1;
 }
 
-// Parked: the linked-list copy is captured, but the compiler emits a larger temporary string frame and different allocator/copy operations; three shapes scored 34.75%, 36.24%, and 45.85%.
+// Parked: string construction and return-copy inline boundaries differ.
 // STUB: GAME 0x0061df60
-RHMapWideText SBUIInputFieldUnk00621440::FUN_0061df60()
+std::wstring SBUIInputFieldUnk00621440::FUN_0061df60()
 {
     std::wstring temporary;
-    SBUIInputFieldNode *head = *(SBUIInputFieldNode **)((char *)this + 8);
-    for (SBUIInputFieldNode *node = head->m_00; node != head; node = node->m_00)
-        temporary.append(1, (wchar_t)node->m_08);
-    RHMapWideText result;
-    result.FUN_004580c0(temporary, 0, std::wstring::npos);
-    return result;
+    for (SBUIInputFieldNode *node = (*(SBUIInputFieldNode **)((char *)this + 8))->m_00->m_00;
+         node != *(SBUIInputFieldNode **)((char *)this + 8); node = node->m_00)
+        temporary.append(&node->m_08, 1);
+    return temporary;
 }
 
 // SYNTHETIC: GAME 0x004d7770
@@ -95,19 +92,14 @@ std::wstring FUN_005d0880(const std::wstring &left, const std::wstring &right)
     return result;
 }
 
-// Parked: geometry temporaries and counted helper operands differ.
-// STUB: GAME 0x006084a0
+// FUNCTION: GAME 0x006084a0
 bool SBGeoBoundingBox2D::FUN_006084a0(const SBGeoBoundingBox2D &other)
 {
-    RHMobileUnk006100e0 span;
-    SBGeoPoint2D first(0, 0);
-    SBGeoPoint2D second(0, 0);
-    ((RHMobileUnk0060a820 *)&span)->FUN_0060a820(first, second);
+    SBGeoSegment2D span(SBGeoPoint2D(0, 0), SBGeoPoint2D(0, 0));
     if (!other.m_10)
         return false;
-    RHMobileUnk006100e0 candidate;
-    ((RHMobileUnk0060a820 *)&candidate)->FUN_0060a820(other.m_00, other.m_08);
-    ((SBUIInputFieldBoxCalls *)&span)->FUN_0060a860(candidate);
+    ((SBUIInputFieldBoxCalls *)&span)->FUN_0060a860(
+        (const RHMobileUnk006100e0 &)SBGeoSegment2D(other.m_00, other.m_08));
     return ((SBUIInputFieldBoxCalls *)this)->FUN_00608450(*(SBGeoBoundingBox2D *)&span);
 }
 
@@ -117,19 +109,16 @@ SBUIInputFieldDrawUnk::SBUIInputFieldDrawUnk()
 {
 }
 
-// Parked: one counted branch displacement still differs after two loop shapes.
-// STUB: GAME 0x00613c50
+// FUNCTION: GAME 0x00613c50
 int FUN_00613c50(const unsigned short *left, const unsigned short *right, unsigned int count)
 {
-    if (count > 0)
+    while (count > 0)
     {
-        do
-        {
-            if (*left != *right)
-                return *left < *right ? -1 : 1;
-            ++left;
-            ++right;
-        } while (--count);
+        if (*left != *right)
+            return *left < *right ? -1 : 1;
+        ++left;
+        ++right;
+        --count;
     }
     return 0;
 }
@@ -203,7 +192,14 @@ bool SBUIInputFieldDrawUnk::FUN_00614bf0(void *font, std::wstring *text, const S
         SetSBUIInputFieldBoxX(box, first, first + (width + padding));
         flags = (flags & ~6) | 1;
     }
-    return FUN_00614230(font, text, box, flags, 0, 0) != 0;
+    bool rendered = FUN_00614230(font, text, box, flags, 0, 0) != 0;
+    return rendered;
+}
+
+// FUNCTION: GAME 0x00614d70
+void SBUIInputFieldDrawUnk::FUN_00614d70(char value)
+{
+    m_14 = value;
 }
 
 #include <vector>
@@ -283,7 +279,11 @@ void SBUIInputFieldSplitUnk::FUN_00614e60(const std::wstring &text, const std::w
         {
             tokens.Append(token);
             token.erase(0, (unsigned)-1);
-            separatorTokens.Append(std::wstring(character, 1));
+            std::wstring separator;
+            typedef std::wstring &(std::wstring::*Assign)(const unsigned short *, unsigned int);
+            Assign assign = &std::wstring::assign;
+            (separator.*assign)(character, 1);
+            separatorTokens.Append(separator);
         }
     }
     tokens.Append(token);
@@ -294,6 +294,8 @@ void EmitSBUIInputFieldSplit(SBUIInputFieldSplitUnk *split, const std::wstring &
     split->FUN_00614e40(0);
     split->FUN_00614e60(text, text);
 }
+
+#include "SBUIInputFieldCharacters.h"
 
 // FUNCTION: GAME 0x0061dd00
 unsigned int SBUIInputFieldTextUnk::FUN_0061dd00()
@@ -310,12 +312,12 @@ unsigned int SBUIInputFieldTextUnk::FUN_0061dd00()
     return total;
 }
 
-// Parked: scalar-slot scheduling and counted font/copy operands differ.
+// Parked: string insert/copy inline boundaries and scalar-slot scheduling differ.
 // STUB: GAME 0x0061dd50
-RHMapWideText SBUIInputFieldTextUnk::FUN_0061dd50(unsigned int direction, unsigned int width)
+std::wstring SBUIInputFieldTextUnk::FUN_0061dd50(unsigned int direction, unsigned int width)
 {
-    RHMapWideText result;
     unsigned int total = 0;
+    std::wstring result;
     SBUIInputFieldNode *node = m_10;
     if (direction == 1 && node != m_08)
         node = node->m_00;
@@ -329,29 +331,12 @@ RHMapWideText SBUIInputFieldTextUnk::FUN_0061dd50(unsigned int direction, unsign
             break;
         if (direction == 0)
         {
-            if (std::wstring::npos - result.m_size <= 1)
-                std::_Xlen();
-            unsigned int size = result.m_size + 1;
-            if (result.Grow(size, false))
-            {
-                wmemmove(result.m_chars + 1, result.m_chars, result.m_size);
-                wmemcpy(result.m_chars, &character, 1);
-                result.m_chars[result.m_size = size] = 0;
-            }
+            result.insert(0, &character, 1);
             node = node->m_04;
         }
         else if (direction == 1)
         {
-            unsigned int offset = result.m_size;
-            if (std::wstring::npos - result.m_size <= 1)
-                std::_Xlen();
-            unsigned int size = result.m_size + 1;
-            if (result.Grow(size, false))
-            {
-                wmemmove(result.m_chars + offset + 1, result.m_chars + offset, result.m_size - offset);
-                wmemcpy(result.m_chars + offset, &character, 1);
-                result.m_chars[result.m_size = size] = 0;
-            }
+            result.insert(result.size(), &character, 1);
             node = node->m_00;
         }
     }
@@ -363,99 +348,91 @@ char SBUIInputFieldTextUnk::FUN_0061e230()
     return m_1c;
 }
 
-// Parked: list traversal and node relinking are present, but VC6 emits a different cursor branch and link-store order; five shapes scored 57.78%, 58.43%, 58.14%, 58.14%, and 67.44%.
-// STUB: GAME 0x0061e2b0
+// FUNCTION: GAME 0x0061e2b0
 void SBUIInputFieldTextUnk::FUN_0061e2b0(unsigned int index)
 {
-    SBUIInputFieldNode *node;
-    if (index == 0xffffffff)
+    SBUIInputFieldCharacters &characters = *(SBUIInputFieldCharacters *)((char *)this + 4);
+    SBUIInputFieldCharacters::iterator current;
+    if (index != 0xffffffff)
     {
-        node = m_10;
+        if (index >= m_0c - 1)
+            return;
+        current = characters.begin();
+        std::advance(current, index + 1);
     }
     else
     {
-        if (m_0c - 1 <= index)
-            return;
-        node = m_08->m_00;
-        for (unsigned int count = index + 1; count != 0; --count)
-            node = node->m_00;
+        current = *(SBUIInputFieldCharacters::iterator *)&m_10;
     }
-    if (node != m_08 && node != m_08->m_00)
+    if (current != characters.end() && current != characters.begin())
     {
-        if (node == m_10)
-            m_10 = m_10->m_04;
-        node->m_04->m_00 = node->m_00;
-        node->m_00->m_04 = node->m_04;
-        operator delete(node);
-        --m_0c;
+        if (current == *(SBUIInputFieldCharacters::iterator *)&m_10)
+            --*(SBUIInputFieldCharacters::iterator *)&m_10;
+        characters.erase(current);
     }
 }
 
-class SBUIInputFieldUnk0061e180
-{
-public:
-    char m_00[8];
-    SBUIInputFieldNode *m_08;
-    unsigned int m_0c;
-    SBUIInputFieldNode *m_10;
-    SBFontUnk0061e840 *m_14;
-    char m_18[8];
-    unsigned int m_20;
-    bool Insert(unsigned short character);
-};
+#include "SBUIInputFieldText.h"
 
-// Parked: insertion semantics are identified, but VC6 register allocation and local character storage differ; five shapes scored 20.56%, 20.56%, 5.36%, 37.40%, and 15.65%.
+// Parked: node and font registers are interchanged across list insertion.
 // STUB: GAME 0x0061e180
-bool SBUIInputFieldUnk0061e180::Insert(unsigned short character)
+bool RHPortraitText0061db10::Insert(unsigned short character)
 {
-    unsigned int characterValue = character;
-    if (m_20 != 0xffffffff && m_20 <= m_0c)
+    RHPortraitText0061db10 &text = *this;
+    if (text.m_maximum != 0xffffffff && text.m_maximum <= text.m_characters.size())
         return false;
     if (character == 0)
         return false;
-    SBUIInputFieldNode *position = m_10;
-    if (position != m_08)
-        position = position->m_00;
-    int width = m_14->FUN_0061e850((unsigned short)characterValue) + m_14->v8();
-    SBUIInputFieldNode *node = (SBUIInputFieldNode *)operator new(0x10);
-    SBUIInputFieldNode *previous = position->m_04;
-    node->m_00 = position;
-    node->m_04 = previous;
-    previous->m_00 = node;
-    position->m_04 = node;
-    node->m_08 = (unsigned short)characterValue;
-    node->m_0c = width;
-    ++m_0c;
-    m_10 = node;
+    SBUIInputFieldCharacters::iterator position = text.m_cursor;
+    if (position != text.m_characters.end())
+        ++position;
+    SBUIInputFieldCharacter value;
+    value.character = character;
+    value.width = ((SBFontUnk0061e840 *)text.m_font)->FUN_0061e850(character)
+        + ((SBFontUnk0061e840 *)text.m_font)->v8();
+    text.m_cursor = text.m_characters.insert(position, value);
     return true;
 }
 
 // Parked: the switch dispatch still differs in branch-table and register setup.
 // STUB: GAME 0x0061e240
-void SBUIInputFieldTextUnk::FUN_0061e240(unsigned int direction)
+void RHPortraitText0061db10::FUN_0061e240(unsigned int direction)
 {
-    SBUIInputFieldNode *head = m_08;
-    SBUIInputFieldNode *node = m_10;
+    SBUIInputFieldNode *&cursor = *(SBUIInputFieldNode **)&m_cursor;
     switch (direction)
     {
-    case 0:
-        if (node != head->m_00)
-            m_10 = node->m_04;
-        return;
     case 1:
+    {
+        SBUIInputFieldNode *first = (*(SBUIInputFieldNode *volatile *)((char *)this + 8))->m_00;
+        SBUIInputFieldNode *node = cursor;
+        if (node != first)
+            cursor = node->m_04;
+        return;
+    }
+    case 0:
+    {
+        SBUIInputFieldNode *head = (SBUIInputFieldNode *)m_characters.end()._Mynode();
+        SBUIInputFieldNode *node = cursor;
         if (node != head)
         {
-            node = node->m_00;
-            m_10 = node;
-            if (node == head)
-                m_10 = node->m_04;
+            cursor = node->m_00;
+            if (cursor == head)
+            {
+                SBUIInputFieldNode *last = cursor;
+                cursor = last->m_04;
+            }
         }
         return;
+    }
     case 2:
-        m_10 = head->m_00;
+    {
+        SBUIInputFieldNode *head = (SBUIInputFieldNode *)m_characters.end()._Mynode();
+        cursor = head->m_00;
         return;
+    }
     case 3:
-        m_10 = head->m_04;
+        cursor = (SBUIInputFieldNode *)m_characters.end()._Mynode();
+        cursor = cursor->m_04;
         return;
     }
 }
@@ -464,61 +441,43 @@ void SBUIInputFieldTextUnk::FUN_0061e240(unsigned int direction)
 void SBUIInputFieldTextUnk::FUN_0061e320(unsigned char value)
 {
     m_1c = value;
-    FUN_0061e240(3);
+    ((RHPortraitText0061db10 *)this)->FUN_0061e240(3);
 }
 
 // Parked: the list reset and text-node insertion semantics are identified, but the temporary list node/container helper setup does not match the target.
 // STUB: GAME 0x0061e060
-void SBUIInputFieldUnk00621440::FUN_0061e060(RHMapWideText *text)
+void SBUIInputFieldUnk00621440::FUN_0061e060(const std::wstring &text)
 {
-    SBUIInputFieldNode *head = *(SBUIInputFieldNode **)((char *)this + 8);
-    SBUIInputFieldNode *node = head->m_00;
-    while (node != head)
+    SBUIInputFieldCharacters &characters = *(SBUIInputFieldCharacters *)((char *)this + 4);
+    typedef SBUIInputFieldCharacters::iterator (SBUIInputFieldCharacters::*Erase)(SBUIInputFieldCharacters::iterator);
+    Erase erase = &SBUIInputFieldCharacters::erase;
+    for (SBUIInputFieldCharacters::iterator current = characters.begin(); current != characters.end();)
+        (characters.*erase)(current++);
+    SBUIInputFieldCharacter value;
+    value.character = 0;
+    value.width = 0;
+    characters.insert(characters.end(), value);
+    for (std::wstring::const_iterator character = text.begin(); character != text.end(); ++character)
     {
-        SBUIInputFieldNode *next = node->m_00;
-        node->m_04->m_00 = next;
-        next->m_04 = node->m_04;
-        operator delete(node);
-        node = next;
+        value.character = *character;
+        SBFontUnk0061e840 *font = *(SBFontUnk0061e840 **)((char *)this + 0x14);
+        value.width = font->FUN_0061e850(*character) + font->v8();
+        characters.insert(characters.end(), value);
     }
-    *(unsigned int *)((char *)this + 0x0c) = 0;
-    SBUIInputFieldNode *empty = (SBUIInputFieldNode *)operator new(0x10);
-    empty->m_00 = head;
-    empty->m_04 = head->m_04;
-    head->m_04->m_00 = empty;
-    head->m_04 = empty;
-    empty->m_08 = 0;
-    empty->m_0c = 0;
-    ++*(unsigned int *)((char *)this + 0x0c);
-    SBFontUnk0061e840 *font = *(SBFontUnk0061e840 **)((char *)this + 0x14);
-    for (unsigned int i = 0; i != text->m_size; ++i)
-    {
-        unsigned short character = text->m_chars[i];
-        SBUIInputFieldNode *inserted = (SBUIInputFieldNode *)operator new(0x10);
-        SBUIInputFieldNode *previous = head->m_04;
-        inserted->m_00 = head;
-        inserted->m_04 = previous;
-        previous->m_00 = inserted;
-        head->m_04 = inserted;
-        inserted->m_08 = character;
-        inserted->m_0c = font->FUN_0061e850(character) + font->v8();
-        ++*(unsigned int *)((char *)this + 0x0c);
-    }
-    *(SBUIInputFieldNode **)((char *)this + 0x10) = head->m_00;
+    SBUIInputFieldCharacters::iterator first = characters.begin();
+    *(SBUIInputFieldNode **)((char *)this + 0x10) = *(SBUIInputFieldNode **)&first;
 }
 
-// Parked: copy-on-write assignment is modeled, but the generated return-temporary layout and inlined string-copy branches still differ; three shapes scored 26.67%, 26.67%, and 80.15%.
-// STUB: GAME 0x0061e340
+// FUNCTION: GAME 0x0061e340
 void SBUIInputFieldUnk00621440::FUN_0061e340()
 {
-    RHMapWideText text = FUN_0061df60();
-    *(std::wstring *)((char *)this + 0x38) = (const std::wstring &)text;
+    *(std::wstring *)((char *)this + 0x38) = (const std::wstring &)FUN_0061df60();
 }
 
 // FUNCTION: GAME 0x0061e4b0
 void SBUIInputFieldUnk00621440::FUN_0061e4b0()
 {
-    FUN_0061e060((RHMapWideText *)((char *)this + 0x38));
+    FUN_0061e060(*(const std::wstring *)((char *)this + 0x38));
 }
 
 // Parked: global-bit branch and fixed-address tail target differ.
@@ -545,50 +504,55 @@ void SBUIInputFieldUnk00621440::FUN_00621440(SBUIInputFieldUnkResource *resource
     m_68 = m_6c->m_18;
 }
 
+inline std::wstring *SBUIInputFieldTextAddress(const std::wstring &text)
+{
+    return const_cast<std::wstring *>(&text);
+}
+
 // Parked: renderer temporary/EH layout and counted helper operands differ.
 // STUB: GAME 0x00621470
 bool SBUIInputFieldUnk00621440::FUN_00621470(unsigned int id)
 {
-    RHMapWideText before;
-    RHMapWideText after;
-    SBGeoPoint2D offset;
+    std::wstring before;
+    std::wstring after;
+    SBGeoVector2D offset;
     SBUIInputFieldDrawUnk draw;
     void *font = m_84 == 1 ? (void *)m_64 : m_68;
-    float height = m_70.m_08.m_y - m_70.m_00.m_y;
+    SBGeoBoundingBox2D &box = m_70;
+    float height = box.m_08.m_y - box.m_00.m_y;
     offset.m_x = 0;
     offset.m_y = (height - ((SBUIInputFieldFontHeight *)font)->v7()) * g_unk0x006775d8;
     if (!((SBUIUnk0060dae0 *)this)->FUN_0060dae0(id))
         return false;
     if (!m_84)
         return false;
-    SBUIInputFieldTextUnk *text = (SBUIInputFieldTextUnk *)m_6c;
-    unsigned int width = text->FUN_0061dd00();
-    float available = m_70.m_08.m_x - m_70.m_00.m_x;
-    int shift = available <= width ? (int)(available - width) : 0;
+    unsigned int width = ((SBUIInputFieldTextUnk *)m_6c)->FUN_0061dd00();
+    int shift = box.m_08.m_x - box.m_00.m_x <= width
+        ? (int)(box.m_08.m_x - box.m_00.m_x - width) : 0;
     unsigned int cursor = width + shift;
     typedef std::wstring &(std::wstring::*Assign)(const std::wstring &, unsigned, unsigned);
     Assign assign = &std::wstring::assign;
-    (((std::wstring *)&before)->*assign)((const std::wstring &)text->FUN_0061dd50(0, cursor), 0, std::wstring::npos);
-    (((std::wstring *)&after)->*assign)((const std::wstring &)text->FUN_0061dd50(1, (unsigned int)(available - width - shift)), 0, std::wstring::npos);
-    unsigned int surface = 0;
-    if (m_00[0x60] == 1 && !text->FUN_0061e230())
+    (before.*assign)(((SBUIInputFieldTextUnk *)m_6c)->FUN_0061dd50(0, cursor), 0, std::wstring::npos);
+    (after.*assign)(((SBUIInputFieldTextUnk *)m_6c)->FUN_0061dd50(1,
+        (unsigned int)(box.m_08.m_x - box.m_00.m_x - width - shift)), 0, std::wstring::npos);
+    unsigned int surface;
+    if (m_00[0x60] == 1 && !((SBUIInputFieldTextUnk *)m_6c)->FUN_0061e230())
     {
-        SBGeoPoint2D position = m_70.m_00.Unk005fc190(offset);
-        std::wstring joined = FUN_005d0880(*(std::wstring *)&before, *(std::wstring *)&after);
-        draw.FUN_00614bf0(font, &joined, position, 1);
+        draw.FUN_00614bf0(font,
+            SBUIInputFieldTextAddress(FUN_005d0880(*(std::wstring *)&before, *(std::wstring *)&after)),
+            m_70.m_00.Unk005fc190(offset), 1);
         std::wstring *value = (std::wstring *)(m_00 + 0x50);
         int textWidth = ((SBFontUnk0061e840 *)font)->FUN_0061ea50(value);
-        SBGeoPoint2D left(m_70.m_00.m_y, m_70.m_08.m_x - textWidth);
-        SBGeoPoint2D location = left.Unk005fc190(offset);
-        draw.FUN_00614bf0(font, value, location, 1);
+        draw.FUN_00614bf0(font, value,
+            SBGeoPoint2D(m_70.m_08.m_x - textWidth, m_70.m_00.m_y).Unk005fc190(offset), 1);
     }
     else
     {
-        SBGeoPoint2D position = m_70.m_00.Unk005fc190(offset);
-        std::wstring joined = FUN_005d0880(*(std::wstring *)&before, *(std::wstring *)&after);
-        draw.FUN_00614bf0(font, &joined, position, 1);
+        draw.FUN_00614bf0(font,
+            SBUIInputFieldTextAddress(FUN_005d0880(*(std::wstring *)&before, *(std::wstring *)&after)),
+            m_70.m_00.Unk005fc190(offset), 1);
     }
-    if (text->FUN_0061e230())
+    if (((SBUIInputFieldTextUnk *)m_6c)->FUN_0061e230())
     {
         SBGeoPoint2D position;
         RHUnk00600820 *resources = *(RHUnk00600820 **)(m_00 + 4);
@@ -601,18 +565,39 @@ bool SBUIInputFieldUnk00621440::FUN_00621470(unsigned int id)
                 "Unable to retrieve a resource for the input field renderer");
             return false;
         }
-        SBGeoVector2D displacement(SBGeoPoint2D((float)cursor, 0));
-        position = m_70.m_00.Unk005fc190(displacement);
+        position = box.m_00.Unk005fc190(SBGeoVector2D((const SBGeoVector2D &)SBGeoPoint2D((float)cursor, 0)));
         RHUnkFXDraw *manager = *(RHUnkFXDraw **)(m_00 + 0x1c);
-        SBGeoPoint2D upper(position.m_x, position.m_y);
-        SBGeoPoint2D lower(position.m_x + manager->FUN_005e56c0(surface),
+        RHMapBox bounds(position.m_x, position.m_y,
+            position.m_x + manager->FUN_005e56c0(surface),
             position.m_y + manager->FUN_005e5750(surface));
-        RHMapBox bounds(upper.m_x, upper.m_y, lower.m_x, lower.m_y);
         SBGeoBoundingBox2D clipped = ((SBGeoBoundingBox2D *)&bounds)->FUN_006090d0(m_88);
         ((SBDrawManager *)manager)->BlitAlphaKeying(surface, 0,
             *(unsigned int *)(m_00 + 0x20), &clipped, 0x1f, 0x41, 1);
     }
     return true;
+}
+
+#include "RHUnk005fc400.h"
+
+class RHMobileUnk006091b0
+{
+public:
+    RHMobileUnk006091b0 &FUN_006091b0(const SBGeoPoint2D &);
+    SBGeoPoint2D m_0;
+    SBGeoPoint2D m_8;
+};
+
+// FUNCTION: GAME 0x00621b80
+void SBUIInputFieldUnk00621440::FUN_00621b80(const SBGeoBoundingBox2D &box)
+{
+    RHUnk005fc400 displacement(*(SBGeoPoint2D *)((SBUIUnk0060d530 *)this)->FUN_0060d690(), m_70.m_00);
+    ((SBUIUnk0060d530 *)this)->FUN_0060d6a0(box);
+    {
+        const SBGeoVector2D &origin = SBGeoVector2D(*(SBGeoVector2D *)&m_70.m_00);
+        m_70 -= origin;
+    }
+    ((RHMobileUnk006091b0 *)&m_70)->FUN_006091b0(displacement);
+    FUN_00621c30(m_70);
 }
 
 // FUNCTION: GAME 0x00621c30
@@ -649,6 +634,7 @@ void SBUIInputFieldEmit(SBUIInputFieldUnk00621440 *renderer)
     renderer->FUN_00621430(0);
     renderer->FUN_00621440(0);
     renderer->FUN_00621470(0);
+    renderer->FUN_00621b80(renderer->m_70);
     renderer->FUN_00621c30(renderer->m_70);
 }
 

@@ -3,6 +3,8 @@
 #include "SBUIRendererListbox.h"
 #include "SB.h"
 
+#ifndef SBGEO_POINT2D_VIEW
+#define SBGEO_POINT2D_VIEW
 // SIZE 0x08
 class SBGeoVector2D;
 class SBGeoPoint2D
@@ -16,6 +18,7 @@ public:
     float m_x; // 0x00
     float m_y; // 0x04
 };
+#endif
 
 // SIZE 0x08
 class SBGeoVector2D : public SBGeoPoint2D
@@ -34,6 +37,8 @@ public:
     ~RHUnk005fc3b0() {}
 };
 
+#ifndef SBGEO_BOUNDINGBOX2D_VIEW
+#define SBGEO_BOUNDINGBOX2D_VIEW
 // SIZE 0x14
 class SBGeoBoundingBox2D
 {
@@ -46,6 +51,7 @@ public:
     SBGeoPoint2D m_p1; // 0x08
     bool m_flag; // 0x10
 };
+#endif
 
 // SIZE 0x14
 class RHMobileUnk006091b0
@@ -169,7 +175,7 @@ bool SBUIUnk0060d530::FUN_0060d550(long resourceId)
                 "Unable to retrieve the size of a resource");
             return false;
         }
-        if (position.m_p1.m_x - position.m_p0.m_x == g_unk0x00677488
+        if (((volatile SBGeoBoundingBox2D &)position).m_p1.m_x - ((volatile SBGeoBoundingBox2D &)position).m_p0.m_x == g_unk0x00677488
             || position.m_p1.m_x - position.m_p0.m_x != size.m_x)
             position.SetEnd(position.m_p0.Unk005fc190(size));
     }
@@ -198,7 +204,9 @@ void SBUIUnk0060d530::FUN_0060d6a0(const SBGeoBoundingBox2D &box)
         }
         else
         {
-            position.SetEnd((*(SBGeoPoint2D *)(m_bytes + 0x10)).Unk005fc190(size));
+            SBGeoPoint2D endpoint = (*(SBGeoPoint2D *)(m_bytes + 0x10)).Unk005fc190(size);
+            position.m_flag = true;
+            *(SBGeoPoint2D *)(m_bytes + 0x10) = endpoint;
         }
     }
 }

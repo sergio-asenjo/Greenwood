@@ -4,24 +4,113 @@
 DECOMP_SIZE_ASSERT(SBUI, 0x17f8)
 DECOMP_SIZE_ASSERT(RHMapWindowPart, 0x17f8)
 
-class SBGeoPoint2D
+extern float g_unk0x0067749c;
+extern "C" void *__cdecl memset(void *destination, int value, unsigned int size);
+
+class RHUnk006283e0
 {
 public:
-    SBGeoPoint2D();
-    ~SBGeoPoint2D();
+    bool FUN_006283e0();
+    char m_00[0x80];
     float m_x;
     float m_y;
+    char m_88[8];
+    float m_left;
+    float m_bottom;
+    float m_right;
+    float m_top;
 };
+
+void EmitRHUnk006283e0(RHUnk006283e0 *input)
+{
+    input->FUN_006283e0();
+}
+
+#include "SBUIFrameStorage.h"
+
+DECOMP_SIZE_ASSERT(RHUnk00627cc0, 0x58)
+
+namespace std
+{
+// FUNCTION: GAME 0x00628670
+template <> vector<RHUnk00627cc0>::~vector()
+{
+    _Destroy(_First, _Last);
+    allocator.deallocate(_First, _End - _First);
+    _First = 0;
+    _Last = 0;
+    _End = 0;
+}
+}
+
+void EmitSBUIFrameStorage(RHUnk00628480 *cursor)
+{
+    cursor->FUN_00628480();
+}
 
 class SBGeoBoundingBox2D
 {
 public:
     SBGeoBoundingBox2D();
-    ~SBGeoBoundingBox2D();
+    ~SBGeoBoundingBox2D() {}
+    int FUN_00609050(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
     SBGeoPoint2D m_0;
     SBGeoPoint2D m_8;
     undefined m_10[4];
 };
+
+class SBUIMouseFrameArray : public std::vector<RHUnk00627cc0>
+{
+public:
+    SBUIMouseFrameArray() : m_dirty(true) {}
+    ~SBUIMouseFrameArray() { clear(); }
+    RHUnk00627cc0 *m_cursor;
+    bool m_dirty;
+    bool m_cursorValid;
+    int m_index;
+    RHUnk00627cc0 m_current;
+};
+
+class __declspec(novtable) SBUIMouseStorage
+{
+public:
+    SBUIMouseStorage() {}
+    ~SBUIMouseStorage() {}
+    virtual void *FUN_00627ae0(unsigned flags) = 0;
+    unsigned m_04;
+    unsigned short m_08;
+    unsigned short m_0a;
+    SBUIMouseFrameArray m_frames;
+};
+
+// VTABLE: GAME 0x0067ae78
+class RHUnk006279d0 : public SBUIMouseStorage
+{
+public:
+    RHUnk006279d0();
+    ~RHUnk006279d0();
+    virtual void *FUN_00627ae0(unsigned flags);
+    bool FUN_00627ee0(unsigned long surface);
+    void FUN_00628500();
+    SBGeoPoint2D m_position;
+    SBGeoVector2D m_delta;
+    SBGeoBoundingBox2D m_bounds;
+    unsigned short m_events;
+    unsigned short m_a6;
+    RHUnkFXDraw *m_draw;
+    unsigned long m_display;
+    unsigned m_b0;
+    unsigned m_b4;
+    unsigned short m_b8;
+    unsigned short m_ba;
+    unsigned short m_bc;
+    unsigned short m_be;
+    unsigned short m_c0;
+    unsigned short m_c2;
+    unsigned short m_c4;
+};
+
+DECOMP_SIZE_ASSERT(RHUnk006279d0, 0xc8)
 
 template <class T>
 class SBUIArrayLifetime : public std::vector<T>
@@ -45,7 +134,7 @@ public:
     SBUIUnk0060e1b0 m_input;
     undefined m_45[0x170f];
     bool m_1754;
-    SBUIWindowTooltip *m_tooltip;
+    RHUnk006279d0 *m_tooltip;
     unsigned short m_175c;
     unsigned short m_175e;
     unsigned short m_1760;
@@ -72,8 +161,7 @@ public:
 
 DECOMP_SIZE_ASSERT(SBUILifetime, 0x17f8)
 
-// Parked: the box-array ctor/dtor pointers are the unannotated 0x6079c0 ctor and the folded 0x40ee30 dtor.
-// STUB: GAME 0x00618580
+// FUNCTION: GAME 0x00618580
 SBUILifetime::SBUILifetime()
     : m_input(0x1f4), m_1754(true), m_tooltip(0), m_175c(0), m_175e(0), m_1760(0), m_1762(0),
       m_font(0), m_alternate(0), m_177c(0), m_1780(0), m_1784(0x4b), m_1788(false),
@@ -140,6 +228,19 @@ class SBArray
 public:
     void Insert(T *position, unsigned count, const T &value);
 };
+
+class RHUnk006286e0 : public std::vector<int>
+{
+public:
+    void FUN_006286e0(const RHUnk006286e0 &other);
+    int *m_cursor;
+    bool m_dirty;
+};
+
+void EmitRHUnk006286e0(RHUnk006286e0 *values)
+{
+    values->FUN_006286e0(*values);
+}
 
 struct SBUIWindowArray
 {
@@ -466,7 +567,7 @@ void SBUIUnkSurface::FUN_0061b4c0(SBUIUnkSurfacePair &surfaces)
     SBUIUnkPack pack = image.m_depth == 15 ? FUN_0061b460 : FUN_0061b490;
     unsigned short *destination = image.m_data;
     unsigned short *source = mask.m_data;
-    for (unsigned y = 0; y != height; ++y) {
+    for (unsigned y = height; y != 0; --y) {
         for (unsigned x = 0; x != width; ++x)
             destination[x] = source[x] == 0 ? (unsigned short)pack(0, 0xff, 0) : destination[x];
         destination += pitch;
@@ -901,4 +1002,124 @@ void EmitSBUI(SBUI *ui, SBUIWindowView *window, SBUIFontView *font)
     ((SBUIUnkTree *)ui)->FUN_0061c320(0);
     ((SBUIUnkTree *)ui)->FUN_0061c370(0);
     ((SBUIUnkTreeIterator *)ui)->FUN_0061bf30();
+}
+
+void EmitSBUIMouseLifetime(RHUnk006279d0 *mouse, unsigned flags)
+{
+    mouse->RHUnk006279d0::RHUnk006279d0();
+    mouse->FUN_00627ae0(flags);
+    mouse->FUN_00627ee0(0);
+    mouse->FUN_00628500();
+}
+
+// FUNCTION: GAME 0x006279d0
+RHUnk006279d0::RHUnk006279d0()
+{
+    m_bc = 0x0f;
+    m_c0 = 0x0f;
+    m_c4 = 0x0f;
+    m_ba = 0;
+    m_be = 0;
+    m_c2 = 0;
+    memset(&m_b0, 0, 10);
+}
+
+// Parked: exact wrapper, but the owning out-of-line destructor is not yet exact.
+// STUB: GAME 0x00627ae0
+void *RHUnk006279d0::FUN_00627ae0(unsigned flags)
+{
+    this->RHUnk006279d0::~RHUnk006279d0();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// Parked at 0.9916: the folded 0x00570330 vector destructor is bound under the unsigned short name.
+// STUB: GAME 0x00627b00
+RHUnk006279d0::~RHUnk006279d0()
+{
+}
+
+// FUNCTION: GAME 0x00627ee0
+bool RHUnk006279d0::FUN_00627ee0(unsigned long surface)
+{
+    m_draw = (RHUnkFXDraw *)g_unk0x6c11d0;
+    m_display = surface;
+    m_bounds.FUN_00609050(SBGeoPoint2D(0, 0),
+        SBGeoPoint2D((float)m_draw->FUN_005e56c0(0), (float)m_draw->FUN_005e5750(0)));
+    return true;
+}
+
+// FUNCTION: GAME 0x006283e0
+bool RHUnk006283e0::FUN_006283e0()
+{
+    double bound = m_left;
+    if (m_x < bound)
+    {
+        float value = m_left;
+        m_x = value;
+    }
+    bound = m_right;
+    if (m_x >= bound)
+        m_x = m_right - g_unk0x0067749c;
+    bound = m_bottom;
+    if (m_y < bound)
+    {
+        float value = m_bottom;
+        m_y = value;
+    }
+    bound = m_top;
+    if (m_y >= bound)
+        m_y = m_top - g_unk0x0067749c;
+    return true;
+}
+
+// Parked: word-load and register scheduling differ in the frame-advance prefix.
+// STUB: GAME 0x00628480
+bool RHUnk00628480::FUN_00628480()
+{
+    ++m_tick;
+    unsigned offset = m_frame * 0x58;
+    RHUnk00627cc0 *frames = *(RHUnk00627cc0 *volatile *)&m_frames;
+    unsigned long *durations = *(unsigned long **)((char *)frames + offset + 0x34);
+    if (m_tick >= durations[m_value])
+    {
+        ++m_tick;
+        ++m_value;
+    }
+    const std::vector<unsigned long> &values = *(const std::vector<unsigned long> *)((char *)m_frames + offset + 0x10);
+    if (m_value >= (int)values.size())
+        m_value = 0;
+    return true;
+}
+
+// FUNCTION: GAME 0x00628500
+void RHUnk006279d0::FUN_00628500()
+{
+    m_events = 0;
+    m_ba = 0;
+    m_be = 0;
+    m_c2 = 0;
+    memset(&m_b0, 0, 10);
+}
+
+// FUNCTION: GAME 0x006286e0
+void RHUnk006286e0::FUN_006286e0(const RHUnk006286e0 &other)
+{
+    int index = 0;
+    int offset = size();
+    int count = other.size();
+    unsigned total = size() + other.size();
+    int value = 0;
+    if (size() < total)
+        ((SBArray<RHSaveGame *> *)this)->Insert((RHSaveGame **)end(), total - size(), (RHSaveGame *const &)value);
+    else if (total < size())
+    {
+        int *(std::vector<int>::*eraseRange)(int *, int *) = &std::vector<int>::erase;
+        (this->*eraseRange)(begin() + total, end());
+    }
+    m_dirty = true;
+    for (; index < count; ++index, ++offset)
+        begin()[offset] = other.begin()[index];
+    m_dirty = true;
 }
