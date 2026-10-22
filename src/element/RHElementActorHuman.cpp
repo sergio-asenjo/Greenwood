@@ -29,6 +29,27 @@ class RHUnk0048a970;
 extern RHUnk0048a970 *g_unk0x6c0b3c;
 extern char g_unk0x6c0691;
 
+// FUNCTION: GAME 0x0047a450
+bool RHElementActorHuman::FUN_0047a450(RHElementActorHuman *other)
+{
+    void *current = *(void **)((char *)this + 0x134);
+    if (!current)
+        goto rejected;
+    switch (*(int *)((char *)current + 0x24))
+    {
+    case 3:
+    case 6:
+    case 0x59:
+        break;
+    default:
+rejected:
+        return false;
+    }
+    return ((SBGeoPoint2D *)(*(char **)((char *)other + 0x50) + 0x24))->Unk005fc110(
+        *(SBGeoPoint2D *)(*(char **)((char *)this + 0x50) + 0x24)).FUN_005fc660(
+            ((RHMalignityActorCalls *)this)->FUN_004135b0()) > g_unk0x00677488;
+}
+
 // GLOBAL: GAME 0x006b793c
 int g_unk0x006b793c[16] = { 0, 1, 2, 3, 1, 4, 5, 6, 2, 5, 7, 8, 3, 6, 8, 9 };
 // GLOBAL: GAME 0x006b797c
@@ -62,18 +83,57 @@ DECOMP_SIZE_ASSERT(RHHumanFloatList, 0x18)
 // GLOBAL: GAME 0x00677554
 float g_unk0x677554 = 60.0f;
 
-// Parked: shared boolean tail fixes control flow but loses the target's named position-base load.
-// STUB: GAME 0x00471a50
+inline bool RHHumanAtDestination(void *info)
+{
+    void *position = (char *)info + 4;
+    return RHActorField<SBGeoPoint2D>(position, 0x20).FUN_005fc0e0(RHActorField<SBGeoPoint2D>(position, 0x3c));
+}
+
+// FUNCTION: GAME 0x00471a50
 bool RHElementActorHuman::FUN_00471a50()
 {
     void *info = RHActorField<void *>(this, 0x50);
     if (RHActorField<SBGeoPoint2D>(info, 0x48).FUN_005fc0e0(RHActorField<SBGeoPoint2D>(info, 0x24)) &&
-        RHActorField<SBGeoPoint2D>(RHActorField<void *>(this, 0x50), 0x48).FUN_005fc0e0(SBGeoPoint2D(0, 0)))
-        return true;
-    void *position = (char *)RHActorField<void *>(this, 0x50) + 4;
-    if (RHActorField<SBGeoPoint2D>(position, 0x20).FUN_005fc0e0(RHActorField<SBGeoPoint2D>(position, 0x3c)))
+        RHActorField<SBGeoPoint2D>(RHActorField<void *>(this, 0x50), 0x48).FUN_005fc0e0(SBGeoPoint2D(0, 0)) ||
+        RHHumanAtDestination(RHActorField<void *>(this, 0x50)))
         return true;
     return false;
+}
+
+inline bool RHHumanPositionUnchanged(void *base)
+{
+    return RHActorField<float>(base, 0x0c) == RHActorField<float>(base, 0x28) &&
+        RHActorField<float>(base, 0x10) == RHActorField<float>(base, 0x2c) &&
+        RHActorField<float>(base, 0x14) == RHActorField<float>(base, 0x30);
+}
+
+// FUNCTION: GAME 0x00471b00
+bool RHElementActorHuman::FUN_00471b00()
+{
+    if (RHActorField<unsigned short>(this, 0x1c8) > 0 && ((RHHumanVirtualCalls *)this)->V0c0() > 0)
+    {
+        short remaining = RHActorField<short>(this, 0x1ca);
+        if (remaining == 0)
+        {
+            ((RHHumanVirtualCalls *)this)->V0d8(-1, 0);
+            remaining = ((RHHumanVirtualCalls *)this)->V0c0();
+        }
+        else
+            --remaining;
+        RHActorField<unsigned short>(this, 0x1ca) = remaining;
+    }
+    FUN_00485d90();
+    if (!((RHElementActor *)this)->FUN_00464230())
+        return false;
+    FUN_0047ef70();
+    if ((((RHActorField<unsigned>(this, 0x0c) & 31) ^ RHActorField<unsigned>(g_pEngine, 0x4a94)) & 63) == 0 &&
+        m_260.count == 0 && RHHumanPositionUnchanged((char *)RHActorField<void *>(this, 0x50) + 4))
+    {
+        unsigned amount = (int)((RHHumanVirtualCalls *)this)->V12c() / 10;
+        unsigned short previous = RHActorField<unsigned short>(this, 0x1cc);
+        RHActorField<unsigned short>(this, 0x1cc) = previous - (amount > previous ? previous : amount);
+    }
+    return true;
 }
 
 // FUNCTION: GAME 0x00471e50
@@ -493,6 +553,77 @@ void RHHumanActorCalls::FUN_00479320(RHUnk00613e90 &point)
     }
 }
 
+// Parked at 0.9831: base-height initialization scheduling differs.
+// STUB: GAME 0x00479430
+void RHHumanActorCalls::FUN_00479430(RHUnk00613e90 &point, float height)
+{
+    SBGeoPoint2D projected;
+    {
+        void *sprite = RHActorField<void *>(this, 0x50);
+        const SBGeoVector2D &offset = SBGeoVector2D(*(SBGeoVector2D *)((RHUnk005b5e00 *)sprite)->Unk005bdd30(
+            RHActorField<unsigned short>(sprite, 0x184)));
+        projected = RHActorField<SBGeoPoint2D>(RHActorField<void *>(this, 0x50), 0x1c).Unk005fc190(offset);
+    }
+    volatile float base = RHActorField<float>(RHActorField<void *>(this, 0x50), 0x18);
+    point.x = projected.m_x;
+    point.y = base + projected.m_y;
+    if (height >= g_unk0x00677488)
+        point.z = base + height;
+    else
+    {
+        switch (RHActorField<int>(RHActorField<void *>(this, 0x50), 0x8c))
+        {
+        case 1: case 4: case 5: case 6: case 9: case 11: case 14: case 15:
+        case 21: case 23: case 24:
+        {
+            bool alternate = ((RHHumanVirtualCalls *)this)->V0f4();
+            float z = base;
+            if (alternate)
+                z += g_unk0x00677b48;
+            else
+                z += g_unk0x00677560;
+            point.z = z;
+            break;
+        }
+        case 19:
+        {
+            float z = base;
+            z += g_unk0x00677560;
+            point.z = z;
+            break;
+        }
+        case 16:
+        {
+            float z = base;
+            z += g_unk0x00677b4c;
+            point.z = z;
+            break;
+        }
+        case 7:
+        {
+            float z = point.z;
+            z += g_unk0x00677b50;
+            point.z = z;
+            break;
+        }
+        case 8: case 10: case 20: case 22:
+        {
+            float z = base;
+            z += g_unk0x00677438;
+            point.z = z;
+            break;
+        }
+        case 3: case 12: case 13: case 17: case 18:
+        {
+            float z = base;
+            z += g_unk0x0067748c;
+            point.z = z;
+            break;
+        }
+        }
+    }
+}
+
 // FUNCTION: GAME 0x00478ae0
 void RHElementActor::FUN_00478ae0(RHUnk00613e90 &point)
 {
@@ -604,25 +735,26 @@ void RHElementActorHuman::FUN_0047a880(RHSequenceElement *element)
     ((RHElementActor *)this)->ExecuteImmediately(element);
 }
 
-// Parked: the wrapper's indirect receiver load and call shape remain unmatched.
-// STUB: GAME 0x0047a890
+// FUNCTION: GAME 0x0047a890
 float RHElementActorHuman::FUN_0047a890()
 {
-    RHUnk005bdcb0 *target = *(RHUnk005bdcb0 **)((char *)this + 0x50);
-    return target->FUN_005bdcb0();
+    float value = ((RHSprite *)(*(void **)((char *)this + 0x50)))->FUN_005bdcb0();
+    return value;
 }
-
-// Parked: bool and switch probes still reverse or duplicate the shared false-return block.
-// STUB: GAME 0x0047ac60
+// FUNCTION: GAME 0x0047ac60
 unsigned char RHElementActorHuman::FUN_0047ac60()
 {
     void *value = *(void **)((char *)this + 0x134);
-    if (value != 0)
+    if (value == 0)
+        goto done;
+    switch (*(int *)((char *)value + 0x24))
     {
-        int type = *(int *)((char *)value + 0x24);
-        if (type == 0x30 || type == 0x6c || type == 0x73)
-            return 1;
+    case 0x30:
+    case 0x6c:
+    case 0x73:
+        return 1;
     }
+done:
     return 0;
 }
 
@@ -1012,28 +1144,73 @@ int RHElementActorHuman::FUN_00481050(void *first, void *second, int weaponData)
     return position->FUN_005b8050(first, second, 0, 0);
 }
 
-// Parked: the target's surrounding-object query and return ABI are incomplete.
+#include "RHSoldierHumanCalls.h"
+
+// Parked: opponent-query registers, loop lowering, and masked-flag load widths differ.
 // STUB: GAME 0x00481d40
 int RHElementActorHuman::FUN_00481d40(void *first, void *second)
 {
-    RHUnkHumanPositionProvider *position =
-        (RHUnkHumanPositionProvider *)RHActorField<void *>(this, 0x50);
     if (RHActorField<char>(this, 0x148))
     {
+        RHUnk005c38b0 *context = g_unk0x6c10e8;
+        RHUnk00613e90 point;
+        ((RHSoldierHumanCalls *)this)->FUN_00478e50(point);
+        typedef void (RHScriptBatchCalls::*Effect)(void *, unsigned short, int, void *, int, int, int, int);
+        (((RHScriptBatchCalls *)context)->*(Effect)&RHScriptBatchCalls::Unk005c2ec0)(&point,
+            RHActorField<unsigned short>(RHActorField<void *>(this, 0x50), 0xde),
+            2, this, 0, 0, 0, -1);
         m_288 = 0;
-        for (unsigned short index = 0; index < m_260.count; ++index)
+        if (*(volatile unsigned *)&m_260.count != 0)
         {
-            RHHumanOpponent &opponent = RHHumanOpponentAt(m_260, index);
-            if ((RHActorField<unsigned>(opponent.m_actor, 4) & 0x1f) == 0x14)
-                ((RHScriptBatchCalls *)g_unk0x6c10e8)->Unk0040d980(0x38);
+            RHScriptNode *node = m_260.head->next;
+            RHElementActorHuman *other = (RHElementActorHuman *)node->data;
+            if (other && (other->m_260.count ? other->m_260.head->next->data : 0) == this)
+            {
+                RHElementActorHuman *opponent = (RHElementActorHuman *)node->data;
+                opponent->m_288 = 1;
+                opponent->m_289 = 1;
+            }
+        }
+        unsigned count = m_260.count;
+        if ((unsigned short)count > 0)
+        {
+            count &= 0xffff;
+            RHHumanList &opponents = m_260;
+            for (int index = 0; count != 0; ++index, --count)
+            {
+                ((RHTitbitList *)&opponents)->At(index);
+                void *actor = opponents.cursor->data;
+                if ((unsigned char)(RHActorField<unsigned>(actor, 4) & 0x1f) == 0x14)
+                {
+                    void *script = (char *)actor + 0x6e8;
+                    ((RHScriptBatchCalls *)((char *)script + RHActorField<int *>(script, 0)[1]))->Unk0040d980(0x38);
+                }
+            }
         }
     }
-    int result = position->FUN_005b8050(first, second, 0, 0);
+    int result;
     short &delay = *(short *)((char *)this + 0x1cc);
-    delay = delay > 5 ? delay - 5 : 0;
-    if (result == 3 && (RHActorField<unsigned>(this, 4) & 0x1f) == 0x14)
-        ((RHScriptBatchCalls *)g_unk0x6c10e8)->Unk0040d980(0x39);
+    if (!((RHUnkHumanPositionProvider *)RHActorField<void *>(this, 0x50))->FUN_005b8240(first, second))
+    {
+        result = ((RHSprite *)RHActorField<void *>(this, 0x50))->PerformAction((RHOrder *)first, (int)second, 0, false);
+        delay = delay - 5 > 0 ? delay - 5 : 0;
+    }
+    else
+    {
+        delay = delay - 5 > 0 ? delay - 5 : 0;
+        if (delay == 0)
+            result = ((RHSprite *)RHActorField<void *>(this, 0x50))->PerformAction((RHOrder *)first, (int)second, 0, false);
+        else
+            goto waiting;
+    }
+    if (result == 3 && (unsigned char)(RHActorField<unsigned>(this, 4) & 0x1f) == 0x14)
+    {
+        void *script = (char *)this + 0x6e8;
+        ((RHScriptBatchCalls *)((char *)script + RHActorField<int *>(script, 0)[1]))->Unk0040d980(0x39);
+    }
     return result;
+waiting:
+    return 2;
 }
 
 // Parked: event construction, nested point cleanup, and message dispatch remain approximate.
@@ -1613,39 +1790,46 @@ void RHHumanActorCalls::FUN_0047d520(void *actor, int value)
     RHElementActorHuman *self = (RHElementActorHuman *)this;
     if (self->m_260.count == 0)
         return;
-    void *selected = actor;
-    void *current = ((RHHumanOpponentNode *)self->m_260.head->next)->value.m_actor;
-    if (current == selected)
+    if (((RHHumanOpponentNode *)self->m_260.head->next)->value.m_actor == actor)
     {
-        self->m_290 = selected;
+        self->m_290 = actor;
         self->m_28c = value;
     }
 }
 
-// Residual: list cursor/dirty-state maintenance and the post-removal refresh path are incomplete.
+// Parked effective: the first-opponent count test swaps the eax/ecx load registers.
 // STUB: GAME 0x0047d270
-void RHHumanActorCalls::FUN_0047d270(void *actor)
+bool RHHumanActorCalls::FUN_0047d270(void *actor)
 {
     RHElementActorHuman *self = (RHElementActorHuman *)this;
-    RHHumanOpponentNode *head = (RHHumanOpponentNode *)self->m_260.head;
-    RHHumanOpponentNode *node = head->next;
-    unsigned index = 0;
-    while (node != head && index < self->m_260.count)
+    unsigned count = self->m_260.count;
+    for (unsigned i = 0; i < count; ++i)
     {
-        if (node->value.m_actor == actor)
+        RHHumanList &list = self->m_260;
+        ((RHTitbitList *)&list)->At(i);
+        if (actor == list.cursor->data)
         {
-            node->previous->next = node->next;
-            node->next->previous = node->previous;
-            if (self->m_260.cursor == (RHScriptNode *)node)
-                self->m_260.cursor = (RHScriptNode *)node->next;
+            ((RHTitbitList *)&list)->At(i);
+            RHScriptNode *node = list.cursor;
+            node->prev->next = node->next;
+            node->next->prev = node->prev;
             ::operator delete(node);
-            --self->m_260.count;
-            self->m_260.valid = 1;
-            return;
+            --list.count;
+            list.valid = 1;
+            self->FUN_0047ebc0();
+            if (self->m_260.count != 0)
+            {
+                RHHumanOpponentNode *first =
+                    (RHHumanOpponentNode *)self->m_260.head->next;
+                if (((RHElementActorHuman *)first->value.m_actor)->m_260.count != 0)
+                    FUN_0047d4c0();
+            }
+            else
+                self->FUN_0047ca50();
+            return true;
         }
-        node = node->next;
-        ++index;
     }
+    return false;
 }
 
 // Residual: the target's cached iterator search, insertion schedule, and changed-state path differ.
@@ -1671,11 +1855,22 @@ bool RHElementActorHuman::FUN_0047ce70(RHElementActorHuman *actor, void *line)
     return true;
 }
 
-// Residual: the target performs an indexed list search and updates the cached line entry directly.
+// Parked: cached-list lookup and line-update scheduling need codegen alignment.
 // STUB: GAME 0x0047cf80
 bool RHElementActorHuman::FUN_0047cf80(RHElementActorHuman *actor, void *line)
 {
-    return FUN_0047ce70(actor, line);
+    unsigned count = m_260.count;
+    for (unsigned index = 0; index < count; ++index)
+    {
+        RHHumanList &opponents = m_260;
+        void *opponent = RHHumanOpponentAt(opponents, index).m_actor;
+        if (*(RHElementActorHuman *volatile *)&actor == opponent)
+        {
+            RHHumanOpponentAt(opponents, index).m_line = line;
+            return true;
+        }
+    }
+    return false;
 }
 
 // Residual: owner visibility and cached line validation are only approximated by the endpoint checks.
@@ -1816,22 +2011,64 @@ void RHElementActorHuman::FUN_0047ca50()
     }
 }
 
-// Residual: the indexed cursor repositioning and validity-cache branches are incomplete.
+static inline RHHumanOpponent &RHHumanStrengthOpponentAt(RHHumanList &list, int wanted)
+{
+    int size = list.count;
+    if (list.valid)
+    {
+        std::bidirectional_iterator_tag category;
+        if (wanted <= (size + 1) / 2)
+            FUN_005c9010((RHUnk005c9010Iterator &)(list.cursor = list.head->next), wanted, category);
+        else
+            FUN_005c9010((RHUnk005c9010Iterator &)(list.cursor = list.head), wanted - size, category);
+        list.valid = 0;
+        list.index = wanted;
+    }
+    else
+    {
+        int previous = list.index;
+        if (wanted != previous)
+        {
+            std::bidirectional_iterator_tag category;
+            if (wanted < previous)
+            {
+                if (wanted < (previous + 1) / 2)
+                    FUN_005c9010((RHUnk005c9010Iterator &)(list.cursor = list.head->next), wanted, category);
+                else
+                    FUN_005c9010((RHUnk005c9010Iterator &)list.cursor, wanted - previous, category);
+            }
+            else
+            {
+                if (wanted < (previous + size) / 2)
+                {
+                    int distance = wanted - previous;
+                    while (distance > 0) { list.cursor = list.cursor->next; --distance; }
+                    while (distance < 0) { list.cursor = list.cursor->prev; ++distance; }
+                }
+                else
+                {
+                    list.cursor = list.head;
+                    int distance = wanted - size;
+                    while (distance > 0) { list.cursor = list.cursor->next; --distance; }
+                    while (distance < 0) { list.cursor = list.cursor->prev; ++distance; }
+                }
+            }
+            list.index = wanted;
+        }
+    }
+    return ((RHHumanOpponentNode *)list.cursor)->value;
+}
+
+// Parked: the iterator tag occupies an extra saved register and reset-load scheduling differs.
 // STUB: GAME 0x0047d320
 bool RHElementActorHuman::FUN_0047d320(RHElementActorHuman *actor)
 {
-    for (unsigned index = 0; index < m_260.count; ++index)
+    unsigned count = m_260.count;
+    for (unsigned index = 0; index < count; ++index)
     {
-        RHHumanOpponentNode *node = (RHHumanOpponentNode *)m_260.head->next;
-        for (unsigned current = 0; current < index; ++current)
-            node = node->next;
-        if (node->value.m_actor == actor)
-        {
-            m_260.cursor = (RHScriptNode *)node;
-            m_260.index = index;
-            m_260.valid = 1;
+        void *opponent = RHHumanStrengthOpponentAt(m_260, index).m_actor;
+        if (*(RHElementActorHuman *volatile *)&actor == opponent)
             return true;
-        }
     }
     return false;
 }
@@ -2198,42 +2435,72 @@ void RHElementActorHuman::FUN_00482fd0(RHHumanList *result, int weaponData, bool
     }
 }
 
-// Parked: the target's multi-branch action selection and return-value propagation remain incomplete.
+#include "RHElementActorCivilianCore.h"
+#include "RHPortraitActorCalls.h"
+#include "RHMalignityVisibilityCalls.h"
+
+// Parked: recovered action eligibility needs byte-local and branch-layout alignment.
 // STUB: GAME 0x00483160
-unsigned RHElementActorHuman::FUN_00483160(void *context, RHElementActorHuman *target, unsigned type)
+bool RHElementActorHuman::FUN_00483160(void *context, RHElementActorHuman *target, unsigned type)
 {
-    bool eligible = RHActorField<char>(this, 0x12) != 0;
-    if (!eligible)
-        return 0;
-    if (type != 5 && type != 16 && RHActorField<int>(*(void **)0x006c0a88, 0x4a00) > 1)
-        return 0;
-    if (type == 3)
+    if (!RHActorField<char>(this, 0x12))
+        return false;
+    if (type != 5 && type != 16 && RHActorField<unsigned>(g_pEngine, 0x4a00) > 1)
+        return false;
+    switch (type)
     {
-        if (RHActorField<char>(this, 8))
-        {
-        union { unsigned long address; void (RHHumanAddressCalls::*call)(void *, int); } actionCall;
-        actionCall.address = 0x5b9e30;
-        (((RHHumanAddressCalls *)context)->*actionCall.call)(
-            RHActorField<void *>(this, 0x54), 0);
-        }
-        return 0;
-    }
-    if (type != 16)
-        return 0;
+    case 16:
+    {
     bool armed = ((RHScriptBatchCalls *)target)->Unk0049d560(0x19) ||
         ((RHScriptBatchCalls *)target)->Unk0049d560(0x1a);
-    union { unsigned long address; bool (RHHumanAddressCalls::*call)(); } visibleCall;
-    visibleCall.address = 0x4860b0;
-    bool visible = (((RHHumanAddressCalls *)this)->*visibleCall.call)();
-    if (armed && visible)
-    {
-        union { unsigned long address; void (RHHumanAddressCalls::*call)(void *, int); } actionCall;
-        actionCall.address = 0x5b9e30;
-        (((RHHumanAddressCalls *)context)->*actionCall.call)(
-            RHActorField<void *>(this, 0x54), RHActorField<char>(this, 8));
-        return 0;
+    bool action17 = ((RHScriptBatchCalls *)target)->Unk0049d560(0x17);
+    bool action1d = ((RHScriptBatchCalls *)target)->Unk0049d560(0x1d);
+    bool action18 = ((RHScriptBatchCalls *)target)->Unk0049d560(0x18);
+    bool action1b = ((RHScriptBatchCalls *)target)->Unk0049d560(0x1b);
+    bool standing = !((RHHumanVirtualCalls *)this)->V048() &&
+        (RHActorField<unsigned>(this, 4) & 31) == 20 && !((RHHumanVirtualCalls *)this)->V0f8();
+    if (!((RHHumanVirtualCalls *)this)->V048())
+        ((RHHumanVirtualCalls *)this)->V0f8();
+    bool teamZero = ((RHHumanVirtualCalls *)this)->V130() == 0;
+    if (armed && (RHActorField<char>(this, 8) || !((RHHumanVirtualCalls *)this)->V0f4()))
+        return RHActorField<RHSprite *>(this, 0x50)->FUN_005b9e30(context, RHActorField<void *>(this, 0x54), RHActorField<bool>(this, 8));
+    if (((RHHumanVirtualCalls *)target)->V0f8() &&
+        (RHActorField<char>(this, 8) || ((RHActorField<unsigned>(this, 4) & 31) == 4 &&
+            ((RHElementActorCivilian *)this)->FUN_00470ca0())))
+        return RHActorField<RHSprite *>(this, 0x50)->FUN_005b9e30(context, RHActorField<void *>(this, 0x54), RHActorField<bool>(this, 8));
+    bool compatible = ((RHHumanVirtualCalls *)target)->V168() || !((RHHumanVirtualCalls *)this)->V0f8();
+    bool available = !((RHHumanVirtualCalls *)this)->V048() ||
+        ((RHActorField<unsigned>(this, 4) & 15) == 4 && RHActorField<int>(this, 0x4f0) != 0);
+    bool permitted = RHActorField<char>(this, 8) || (compatible && available);
+    if ((action17 && permitted) || (action1d && (RHActorField<char>(this, 8) || standing)))
+        return RHActorField<RHSprite *>(this, 0x50)->FUN_005b9e30(context, RHActorField<void *>(this, 0x54), RHActorField<bool>(this, 8));
+    if (action18 && (RHActorField<char>(this, 8) || (!((RHHumanVirtualCalls *)this)->V048() &&
+            (RHActorField<unsigned>(this, 4) & 31) != 4 && teamZero)))
+        return RHActorField<RHSprite *>(this, 0x50)->FUN_005b9e30(context, RHActorField<void *>(this, 0x54), RHActorField<bool>(this, 8));
+    if (action1b && (RHActorField<char>(this, 8) || ((RHActorField<unsigned>(this, 4) & 15) == 4 &&
+            !((RHHumanVirtualCalls *)this)->V048() && !((RHHumanVirtualCalls *)this)->V0f8() &&
+            !((RHHumanVirtualCalls *)this)->V0f4())))
+        return RHActorField<RHSprite *>(this, 0x50)->FUN_005b9e30(context, RHActorField<void *>(this, 0x54), RHActorField<bool>(this, 8));
+    return false;
     }
-    return 0;
+    case 3:
+        if (!RHActorField<char>(this, 8) && !((RHHumanVirtualCalls *)this)->V048() &&
+            ((RHHumanVirtualCalls *)this)->V130() == 0 &&
+            (RHActorField<unsigned>(this, 4) & 31) != 4 && RHActorField<char>(this, 0x1ce) &&
+            ((RHActorField<unsigned>(this, 4) & 15) != 12 ||
+                !((RHUnk005d73d0Actor *)this)->FUN_0049f510()) &&
+            ((RHScriptBatchCalls *)target)->Unk0049d560(0x18))
+            return RHActorField<RHSprite *>(this, 0x50)->FUN_005b9e30(context, RHActorField<void *>(this, 0x54), false);
+        if (RHActorField<char>(this, 8) || !((RHMalignityVisibilityCalls *)this)->FUN_004860b0() ||
+            RHActorField<int>(RHActorField<void *>(this, 0x50), 0x8c) == 7 || RHActorField<short>(this, 0x23c) != 0 ||
+            ((RHHumanVirtualCalls *)this)->V0f4() || RHActorField<char>(this, 0xa6) ||
+            (!((RHScriptBatchCalls *)target)->Unk0049d560(0x19) &&
+                !((RHScriptBatchCalls *)target)->Unk0049d560(0x1a)))
+            return false;
+        return RHActorField<RHSprite *>(this, 0x50)->FUN_005b9e30(context, RHActorField<void *>(this, 0x54), false);
+    default:
+        return false;
+    }
 }
 
 // Parked: action allocation, coordinate/heading setup, and enqueue ABI remain mismatched.
@@ -2494,51 +2761,6 @@ void RHElementActorHuman::FUN_0047e9d0(RHUnk005864a0 *element)
     ((RHHumanVirtualCalls *)this)->V0d8(value, (void *)element->FUN_005864a0());
 }
 
-static inline RHHumanOpponent &RHHumanStrengthOpponentAt(RHHumanList &list, int wanted)
-{
-    int size = list.count;
-    if (list.valid)
-    {
-        std::bidirectional_iterator_tag category;
-        if (wanted <= (size + 1) / 2)
-            FUN_005c9010((RHUnk005c9010Iterator &)(list.cursor = list.head->next), wanted, category);
-        else
-            FUN_005c9010((RHUnk005c9010Iterator &)(list.cursor = list.head), wanted - size, category);
-        list.valid = 0;
-        list.index = wanted;
-    }
-    else
-    {
-        int previous = list.index;
-        if (wanted != previous)
-        {
-            std::bidirectional_iterator_tag category;
-            if (wanted < previous)
-            {
-                if (wanted < (previous + 1) / 2)
-                    FUN_005c9010((RHUnk005c9010Iterator &)(list.cursor = list.head->next), wanted, category);
-                else
-                    FUN_005c9010((RHUnk005c9010Iterator &)list.cursor, wanted - previous, category);
-            }
-            else
-            {
-                int distance;
-                if (wanted < (previous + size) / 2)
-                    distance = wanted - previous;
-                else
-                {
-                    list.cursor = list.head;
-                    distance = wanted - size;
-                }
-                while (distance > 0) { list.cursor = list.cursor->next; --distance; }
-                while (distance < 0) { list.cursor = list.cursor->prev; ++distance; }
-            }
-            list.index = wanted;
-        }
-    }
-    return ((RHHumanOpponentNode *)list.cursor)->value;
-}
-
 // Parked: cached-list branch merging and the V124 return-width view differ.
 // STUB: GAME 0x0047ea20
 unsigned short RHElementActorHuman::FUN_0047ea20()
@@ -2704,6 +2926,91 @@ void RHElementActorHuman::FUN_00484610(RHActorTranslationSequenceCalls *sequence
     }
 }
 
+class RHPathQueryCalls
+{
+public:
+    void FUN_005c8e40(int index);
+};
+
+// FUNCTION: GAME 0x004847c0
+void *RHElementActorHuman::FUN_004847c0(float maximum, void *filter) const
+{
+    void *area = RHActorField<void *>(RHActorField<void *>((void *)this, 0x50), 0xe0);
+    float nearest = 1.0e15f;
+    void *result = 0;
+    unsigned count = RHActorField<unsigned>(area, 0xd0);
+    for (unsigned index = 0; index < count; ++index)
+    {
+        RHHumanList &list = RHActorField<RHHumanList>(area, 0xc8);
+        ((RHPathQueryCalls *)&list)->FUN_005c8e40(index);
+        void *entry = list.cursor->data;
+        if (!filter || RHActorField<void *>(RHActorField<void *>(entry, 0x20), 0x1c) == filter)
+        {
+            float distance = ((RHUnk0042fde0 *)((char *)entry + 4))->FUN_0060b7a0(
+                RHActorField<SBGeoPoint2D>(RHActorField<void *>((void *)this, 0x50), 0x24));
+            if (distance < nearest && distance < maximum)
+            {
+                nearest = distance;
+                result = entry;
+            }
+        }
+    }
+    return result;
+}
+
+class RHMalignityAbilityCalls
+{
+public:
+    unsigned short FUN_005c1b50(int index);
+    int FUN_005c2130(float value, int first, int second);
+};
+
+extern float g_unk0x006774c8;
+
+inline float RHHumanJumpHeight(void *line)
+{
+    return RHActorField<float>(line, 0x30);
+}
+
+inline void *RHHumanSector(const RHElementActorHuman *actor)
+{
+    return RHActorField<void *>(RHActorField<void *>((void *)actor, 0x50), 0xe0);
+}
+
+inline const SBGeoPoint2D &RHHumanPosition(const RHElementActorHuman *actor)
+{
+    return RHActorField<SBGeoPoint2D>(RHActorField<void *>((void *)actor, 0x50), 0x24);
+}
+
+inline void RHHumanJumpCenter(void *line, SBGeoPoint2D &center)
+{
+    center.m_x = (RHActorField<float>(line, 0x0c) + RHActorField<float>(line, 4)) * g_unk0x006775d8;
+    center.m_y = (RHActorField<float>(line, 0x10) + RHActorField<float>(line, 8)) * g_unk0x006775d8;
+}
+
+// FUNCTION: GAME 0x00484870
+void *RHElementActorHuman::FUN_00484870(RHElementActorHuman *actor)
+{
+    void *sector = RHActorField<void *>(RHActorField<void *>(this, 0x50), 0xe0);
+    if (sector == RHActorField<void *>(RHActorField<void *>(actor, 0x50), 0xe0))
+        return 0;
+    float maximum = ((RHMalignityAbilityCalls *)RHActorField<void *>(this, 0x25c))->FUN_005c1b50(2);
+    void *line = actor->FUN_004847c0(maximum, RHHumanSector(this));
+    if (!line)
+        return 0;
+    void *linked = RHActorField<void *>(line, 0x20);
+    if ((float)fabs(RHHumanJumpHeight(linked) - RHHumanJumpHeight(line)) > g_unk0x006774c8)
+        return 0;
+    SBGeoPoint2D first;
+    SBGeoPoint2D second;
+    RHHumanJumpCenter(linked, second);
+    RHHumanJumpCenter(line, first);
+    if (((RHUnk0042fde0 *)((char *)line + 4))->FUN_0060b7a0(RHHumanPosition(actor)) +
+        ((RHUnk005fc3b0 *)&second.Unk005fc110(first))->Unk005fc6a0(1.0f) > maximum)
+        return 0;
+    return linked;
+}
+
 // Parked: cached-cursor reset and advance paths merge differently.
 // STUB: GAME 0x00484a70
 int RHElementActorHuman::FUN_00484a70(void *value)
@@ -2829,6 +3136,63 @@ void RHElementActorHuman::FUN_004851b0(unsigned short value, void *owner)
 
 extern float g_unk0x006774a0;
 
+inline int RHHumanFindActor(void *actor, RHElementActorHuman *const &value)
+{
+    RHHumanList &list = RHActorField<RHHumanList>(actor, 0x19c);
+    typedef std::list<RHElementActorHuman *> Actors;
+    Actors::iterator &cursor = (Actors::iterator &)list.cursor;
+    RHScriptNode *head = list.head;
+    int count = list.count;
+    RHActorField<RHElementActorHuman *>(actor, 0x1bc) = value;
+    RHActorField<undefined>(actor, 0x1b4) = 1;
+    list.cursor = head->next;
+    int index = 0;
+    while (index < count)
+    {
+        if (*cursor == RHActorField<RHElementActorHuman *>(actor, 0x1bc))
+            break;
+        ++index;
+        ++cursor;
+    }
+    if (index < count)
+    {
+        RHActorField<int>(actor, 0x1b8) = index;
+        list.valid = 0;
+        list.index = index;
+    }
+    else
+    {
+        list.valid = 1;
+        RHActorField<int>(actor, 0x1b8) = -1;
+    }
+    return RHActorField<int>(actor, 0x1b8);
+}
+
+inline unsigned short RHHumanCandidateCount(void *engine)
+{
+    void **first = RHActorField<void **>(engine, 0x48dc);
+    return first ? RHActorField<void **>(engine, 0x48e0) - first : 0;
+}
+
+// Parked at 0.6095: engine-vector register allocation and cached-list cursor reload differ.
+// STUB: GAME 0x004857b0
+void RHElementActorHuman::FUN_004857b0(RHHumanList &result)
+{
+    unsigned short remaining = m_23c;
+    unsigned short count = RHHumanCandidateCount(g_pEngine);
+    for (unsigned short index = 0; index < count && remaining > 0; ++index)
+    {
+        void *actor = RHActorField<void **>(g_pEngine, 0x48dc)[index];
+        if ((RHActorField<unsigned>(actor, 4) & 3) == 3 &&
+            RHActorField<int>(actor, 0xb0) == 9 && RHHumanFindActor(actor, this) != -1)
+        {
+            ((std::list<void *> *)&result)->push_back(actor);
+            result.valid = 1;
+            --remaining;
+        }
+    }
+}
+
 // FUNCTION: GAME 0x00485940
 void RHElementActorHuman::FUN_00485940(int color, unsigned short value, bool completed, float duration)
 {
@@ -2841,32 +3205,141 @@ void RHElementActorHuman::FUN_00485940(int color, unsigned short value, bool com
     RHActorField<unsigned short>(this, 0xa4) = value;
 }
 
-// Parked: kind-mask widths and duplicated virtual-call/return paths differ.
+inline unsigned RHHumanKind(void *actor, unsigned mask)
+{
+    return RHActorField<volatile unsigned>(actor, 4) & mask;
+}
+
+// Parked at 0.5524: kind-mask registers and virtual-call/return paths differ.
 // STUB: GAME 0x004859b0
 char RHActorPCHumanCalls::FUN_004859b0(void *target)
 {
     RHHumanVirtualCalls *actor = RHActorField<RHHumanVirtualCalls *>(target, 0x12c);
-    unsigned type = RHActorField<unsigned>(actor, 4) & 15;
+    unsigned type = RHHumanKind(actor, 15);
     if ((unsigned char)type == 4)
     {
-        if ((unsigned char)(RHActorField<unsigned>(this, 4) & 31) == (unsigned char)type)
+        unsigned own = RHHumanKind(this, 31);
+        if ((unsigned char)own == (unsigned char)type)
             return 0;
-        if (actor->V130() == ((RHHumanVirtualCalls *)this)->V130())
-            return 0;
+        int camp = actor->V130();
+        return ((RHHumanVirtualCalls *)this)->V130() != camp;
     }
     else
     {
         if (RHActorField<int>(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0(), 0x1c) == 2)
-            return 1;
-        if ((unsigned char)(RHActorField<unsigned>(this, 4) & 31) == 4)
+            goto accepted;
+        unsigned own = RHHumanKind(this, 31);
+        if ((unsigned char)own == 4)
             return 0;
-        if (actor->V130() == ((RHHumanVirtualCalls *)this)->V130())
-            return 0;
+        int camp = actor->V130();
+        if (((RHHumanVirtualCalls *)this)->V130() != camp)
+            goto accepted;
     }
+    return 0;
+accepted:
     return 1;
 }
 
 #include <algorithm>
+
+// Parked at 0.7273: layer word-store width and accessor scheduling differ.
+// STUB: GAME 0x00485a40
+void RHElementActorHuman::FUN_00485a40(void *result, unsigned short &heading)
+{
+    SBGeoPoint2D point;
+    void *line = RHActorField<void *>(RHActorField<void *>(this, 0x50), 0xf4);
+    void *sector;
+    volatile unsigned short layer;
+    bool forward;
+    if ((char)((RHElementActor *)this)->FUN_0046e960() && line)
+    {
+        if (RHActorField<char>(this, 0x1a4))
+        {
+            layer = RHActorField<unsigned short>(line, 0x16);
+            sector = RHActorField<void *>(line, 0x10);
+            point = RHActorField<SBGeoPoint2D>(line, 0x20);
+            switch (RHActorField<int>(line, 0x88))
+            {
+            case 2: case 4: case 6:
+                forward = false;
+                break;
+            default:
+                forward = true;
+            }
+        }
+        else
+        {
+            layer = RHActorField<unsigned short>(line, 0x14);
+            sector = RHActorField<void *>(line, 0x0c);
+            point = RHActorField<SBGeoPoint2D>(line, 0x18);
+            switch (RHActorField<int>(line, 0x88))
+            {
+            case 2: case 4: case 6:
+                forward = true;
+                break;
+            default:
+                forward = false;
+            }
+        }
+    }
+    else
+    {
+        sector = RHHumanSector(this);
+        layer = RHActorField<unsigned short>(RHActorField<void *>(this, 0x50), 0xde);
+        point = RHHumanPosition(this);
+        forward = RHActorField<float>(RHActorField<void *>(this, 0x50), 0x140) > g_unk0x00677488;
+    }
+    unsigned flags = RHActorField<unsigned>(sector, 0x30);
+    if ((unsigned char)(flags >> 9) & 1)
+    {
+        if (forward)
+        {
+            void *&exit = RHActorField<void *>(sector, 0x104);
+            sector = RHActorField<void *>(exit, 0x0c);
+            layer = RHActorField<unsigned short>(exit, 0x14);
+            point = RHActorField<SBGeoPoint2D>(exit, 0x18);
+            unsigned short direction = ((RHUnk005fc3b0 *)&RHActorField<SBGeoPoint2D>(exit, 0x18).Unk005fc110(
+                RHActorField<SBGeoPoint2D>(exit, 0x94)))->FUN_005fcc50(0.57357645f);
+            heading = direction;
+        }
+        else
+        {
+            void *&exit = RHActorField<void *>(sector, 0x100);
+            sector = RHActorField<void *>(exit, 0x0c);
+            layer = RHActorField<unsigned short>(exit, 0x14);
+            point = RHActorField<SBGeoPoint2D>(exit, 0x18);
+            unsigned short direction = ((RHUnk005fc3b0 *)&RHActorField<SBGeoPoint2D>(exit, 0x18).Unk005fc110(
+                RHActorField<SBGeoPoint2D>(exit, 0x94)))->FUN_005fcc50(0.57357645f);
+            heading = direction;
+        }
+    }
+    else if (((unsigned char)(flags >> 13) & 1) && RHActorField<char>(this, 0x1a4))
+    {
+        RHHumanList &lines = RHActorField<RHHumanList>(sector, 0x5c);
+        unsigned short count = lines.count;
+        if (count > 1)
+        {
+            void *exit;
+            do
+            {
+                ((RHPathQueryCalls *)&lines)->FUN_005c8e40(rand() % count);
+                exit = lines.cursor->data;
+            } while (exit == line);
+            layer = RHActorField<unsigned short>(exit, 0x14);
+            sector = RHActorField<void *>(exit, 0x0c);
+            point = RHActorField<SBGeoPoint2D>(exit, 0x18);
+            heading = ((RHUnk005fc3b0 *)&RHActorField<SBGeoPoint2D>(exit, 0x18).Unk005fc110(
+                RHActorField<SBGeoPoint2D>(exit, 0x20)))->FUN_005fcc50(0.57357645f);
+        }
+    }
+    else
+        heading = RHActorField<unsigned short>(RHActorField<void *>(this, 0x50), 0xd8);
+    float x = point.m_x;
+    RHActorField<float>(result, 4) = point.m_y;
+    RHActorField<float>(result, 0) = x;
+    RHActorField<void *>(result, 8) = sector;
+    RHActorField<unsigned short>(result, 0x0c) = layer;
+}
 
 // FUNCTION: GAME 0x00485d20
 void RHElementActorHuman::FUN_00485d20(RHSequenceElement *element)
@@ -2887,15 +3360,14 @@ void RHElementActorHuman::FUN_00485d20(RHSequenceElement *element)
     }
 }
 
-// Parked: virtual-call argument loads use different registers and scheduling.
-// STUB: GAME 0x00485d90
+// FUNCTION: GAME 0x00485d90
 void RHElementActorHuman::FUN_00485d90()
 {
     if (m_1b8.count > 0)
     {
         int state = RHActorField<int>(RHActorField<void *>(this, 0x50), 0x1dc);
         if ((state == 0x59 || state == 0x5c) &&
-            ((RHHumanVirtualCalls *)this)->V050((RHSequenceElement *)m_1b8.head->next->data))
+            ((RHHumanVirtualCalls *)this)->V050(((std::list<RHSequenceElement *> *)&m_1b8)->front()))
         {
             RHScriptNode *node = m_1b8.head->next;
             node->prev->next = node->next;
@@ -2924,17 +3396,137 @@ int RHElementActorHuman::FUN_00485e00()
     return !empty;
 }
 
-// Parked: full-width return and shared-OR probes still fold SHR/TEST into a high-byte bit test.
-// STUB: GAME 0x00485e60
+// FUNCTION: GAME 0x00485e60
 bool RHArtificialIntelligenceActorCalls::Unk00485e60()
 {
     void *data = *(void **)((char *)this + 0x50);
-    if (*(void **)((char *)data + 0xf4))
-        return true;
-    void *area = *(void **)((char *)data + 0xe0);
-    if ((*(unsigned *)((char *)area + 0x30) >> 13) & 1)
-        return true;
-    return false;
+    return *(void **)((char *)data + 0xf4) != 0 ||
+        ((unsigned short)(*(unsigned *)((char *)(*(void **)((char *)data + 0xe0)) + 0x30) >> 13) & 1) != 0;
+}
+
+// FUNCTION: GAME 0x00485e90
+void RHElementActorHuman::FUN_00485e90(int value)
+{
+    int previous = RHActorField<int>(RHActorField<void *>(this, 0x50), 0x8c);
+    bool wasBlocking = previous == 3 || previous == 13 || previous == 12 || previous == 18 || previous == 17;
+    ((RHElementActor *)this)->FUN_00462940(value);
+    bool isBlocking = value == 3 || value == 13 || value == 12 || value == 18 || value == 17;
+    if (wasBlocking)
+    {
+        if (!isBlocking)
+            g_pEngine->FUN_004e39b0(this, false);
+    }
+    else if (isBlocking)
+        g_pEngine->FUN_004e39b0(this, true);
+}
+
+class RHHumanVisibilityDispatch
+{
+public:
+    virtual void V00() = 0;
+    virtual void V04() = 0;
+    virtual void V08() = 0;
+    virtual void V0c() = 0;
+    virtual void V10() = 0;
+    virtual void V14() = 0;
+    virtual void V18() = 0;
+    virtual void V1c() = 0;
+    virtual void V20() = 0;
+    virtual void V24() = 0;
+    virtual void V28() = 0;
+    virtual void V2c() = 0;
+    virtual void V30() = 0;
+    virtual void V34() = 0;
+    virtual void V38() = 0;
+    virtual void V3c() = 0;
+    virtual void V40() = 0;
+    virtual void V44() = 0;
+    virtual bool V48() = 0;
+};
+
+class RHMapBox
+{
+public:
+    RHMapBox(float left, float top, float right, float bottom);
+    SBGeoPoint2D m_first;
+    SBGeoPoint2D m_second;
+    int m_10;
+};
+
+class RHMobileUnk006091b0
+{
+public:
+    RHMobileUnk006091b0 &FUN_006091b0(const SBGeoPoint2D &point);
+};
+
+class RHMobileUnk00607da0
+{
+public:
+    void FUN_00607990(const RHMobileUnk00607da0 &other);
+    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
+    undefined m_00[0x14];
+};
+
+class RHMalignityGridCalls
+{
+public:
+    bool FUN_004f5e50(SBGeoBoundingBox2D &box, const SBGeoPoint2D &point, unsigned short layer);
+};
+
+class RHUnkPathActorInfoBase
+{
+public:
+    void *Unk0055fa10(int value);
+};
+
+inline SBGeoBoundingBox2D *RHHumanPositionBounds(void *base)
+{
+    return (SBGeoBoundingBox2D *)((RHUnkPathActorInfoBase *)base)->Unk0055fa10(RHActorField<int>(base, 0x88));
+}
+
+inline unsigned short RHHumanLayer(const RHElementActorHuman *actor)
+{
+    return RHActorField<unsigned short>(RHActorField<void *>((void *)actor, 0x50), 0xde);
+}
+
+inline void RHHumanUpdatePosition(void *base, const SBGeoPoint2D &point)
+{
+    RHActorField<SBGeoPoint2D>(base, 0x20) = point;
+    {
+        SBGeoVector2D offset((const SBGeoVector2D &)point);
+        ((RHMobileUnk00607da0 *)((char *)base + 0xc0))->FUN_00607da0(
+            (const RHMobileUnk00607da0 &)RHHumanPositionBounds(base)->FUN_006090d0(offset));
+    }
+    RHActorField<int>(base, 4) = 2;
+}
+
+// FUNCTION: GAME 0x00485f20
+void RHElementActorHuman::FUN_00485f20()
+{
+    RHMapBox bounds(-10.0f, -5.0f, 10.0f, 5.0f);
+    {
+        SBGeoVector2D offset(RHActorField<SBGeoVector2D>(RHActorField<void *>(this, 0x50), 0x24));
+        ((RHMobileUnk006091b0 *)&bounds)->FUN_006091b0(offset);
+    }
+    if (((RHMalignityGridCalls *)RHActorField<void *>(this, 0x64))->FUN_004f5e50(
+        (SBGeoBoundingBox2D &)bounds, RHHumanPosition(this), RHHumanLayer(this)))
+    {
+        RHHumanUpdatePosition((char *)RHActorField<void *>(this, 0x50) + 4,
+            ((SBGeoBoundingBox2D *)&bounds)->FUN_00608f40());
+        ((RHBonusInfoBase *)((char *)RHActorField<void *>(this, 0x50) + 4))->FUN_0055f290();
+        ((RHBonusInfo *)RHActorField<void *>(this, 0x50))->FUN_005bd560(0, true);
+    }
+}
+
+// FUNCTION: GAME 0x004860b0
+bool RHMalignityVisibilityCalls::FUN_004860b0()
+{
+    int state = *(int *)(*(char **)((char *)this + 0x50) + 0x8c);
+    return ((RHHumanVisibilityDispatch *)this)->V48() ||
+        *((char *)this + 0x1ce) ||
+        *(short *)((char *)this + 0x23c) != 0 ||
+        state == 0x12 || state == 7 ||
+        (*(unsigned *)((char *)this + 4) & 0xf) == 0xc && ((RHUnk005d73d0Actor *)this)->FUN_0049f510();
 }
 
 // FUNCTION: GAME 0x00486110
@@ -3022,19 +3614,10 @@ undefined4 RHUnk00586f70::FUN_00587340(int key)
 void RHManagerListCalls::FUN_0058bed0()
 {
     RHHumanList &list = *(RHHumanList *)this;
-    for (list.cursor = list.head->next; list.cursor != list.head; list.cursor = list.cursor->next)
+    for (list.cursor = list.head->next; list.cursor != list.head; *(RHScriptNode *volatile *)&list.cursor = list.cursor->next)
         delete (RHUnk0058bed0Object *)list.cursor->data;
-    RHScriptNode *sentinel = list.head;
-    RHScriptNode *current = sentinel->next;
-    while (current != sentinel)
-    {
-        RHScriptNode *previous = current;
-        current = current->next;
-        previous->prev->next = previous->next;
-        previous->next->prev = previous->prev;
-        ::operator delete(previous);
-        --list.count;
-    }
+    std::list<RHUnk0058bed0Object *> &storage = *(std::list<RHUnk0058bed0Object *> *)this;
+    storage.erase(storage.begin(), storage.end());
 }
 
 // FUNCTION: GAME 0x005a8220
@@ -3108,12 +3691,17 @@ unsigned short RHUnk005c1d50::FUN_005c1dd0(int index, void *actor)
 void RHElementActorHuman::Emit(SBFile &file, RHSequenceElement *element, RHcommand command)
 {
     FUN_00471a50();
+    FUN_00471b00();
     GetNewConcussionValue(0);
     FUN_004851b0(0, 0);
+    FUN_004857b0(*(RHHumanList *)element);
     FUN_00485940(0, 0, false, 0.0f);
+    FUN_00485a40(element, *(unsigned short *)element);
     FUN_00485d20(element);
     FUN_00485d90();
     FUN_00485e00();
+    FUN_00485e90(0);
+    FUN_00485f20();
     FUN_00474890(element);
     FUN_004748f0((RHActorTranslationSequenceCalls *)element);
     FUN_00475750(command, (RHActorTranslationSequenceCalls *)element);
@@ -3131,6 +3719,8 @@ void RHElementActorHuman::Emit(SBFile &file, RHSequenceElement *element, RHcomma
     FUN_0047e7d0((RHUnk005864a0 *)element);
     FUN_0047d920(this);
     FUN_00484a70(element);
+    FUN_004847c0(0.0f, element);
+    FUN_00484870(this);
     FUN_00484bb0(this, *(SBGeoPoint2D *)element, element);
     ((RHSound *)this)->FUN_005a8220(0, 0, 0, *(SBGeoPoint2D *)element);
     ((RHSound *)this)->FUN_005a8330(0, 0, 0, *(SBGeoPoint2D *)element);

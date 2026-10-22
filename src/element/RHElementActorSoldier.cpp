@@ -142,6 +142,7 @@ void RHElementActorSoldier::GetTransitionFlags(RHSequenceElement *element, unsig
 
 extern char g_unk0x6c0560[4];
 
+#define SBGEO_BOUNDINGBOX2D_VIEW
 #include "RHActorSequenceStorage.h"
 
 // Parked: EDI is saved before the guards rather than only on their non-fallback path.

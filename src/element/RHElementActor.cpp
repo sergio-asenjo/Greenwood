@@ -1,6 +1,7 @@
 #include "RHElementActor.h"
 #include "VMCore.h"
 #include "RHPathFinderCore.h"
+#include "RHSectorBuilding.h"
 
 class RHActorActionCalls
 {
@@ -106,21 +107,6 @@ struct RHUnk004b1520List
     int m_14;
     RHScriptIter end() { return RHScriptIter(m_04); }
     RHScriptIter FUN_00424410(RHScriptIter position, void *const &value);
-};
-
-struct RHSectorActorNode;
-class RHSectorActorConstIter
-{
-public:
-    RHSectorActorNode *m_p;
-    RHSectorActorConstIter(RHSectorActorNode *value) : m_p(value) {}
-};
-
-class RHSectorActorIter : public RHSectorActorConstIter
-{
-public:
-    RHSectorActorIter(RHSectorActorNode *value) : RHSectorActorConstIter(value) {}
-    RHSectorActorIter operator++(int);
 };
 
 class RHActorValueList
@@ -275,6 +261,14 @@ void RHElementActor::FUN_00462730(RHElementActor *actor, bool value)
 
 void *FUN_0048f170(void *value);
 
+#include "RHUnk005bb520.h"
+
+// FUNCTION: GAME 0x00462920
+SBGeoPoint2D RHElementActor::FUN_00462920()
+{
+    return ((RHUnk005bb520 *)*(void **)((char *)this + 0x50))->FUN_005bb520();
+}
+
 // FUNCTION: GAME 0x00462940
 void RHElementActor::FUN_00462940(int action)
 {
@@ -294,15 +288,19 @@ void RHBonusInfoBase::FUN_00462970(int action)
     ((RHMobileUnk00607da0 *)&RHActorField<SBGeoBoundingBox2D>(this, 0xc0))->FUN_00607da0((const RHMobileUnk00607da0 &)box->FUN_006090d0(offset));
 }
 
-// Parked: x87 operand loading and ordered-comparison status masks require different source shapes.
-// STUB: GAME 0x00462a30
+static inline float RHActorSortKey(void *info)
+{
+    return RHActorField<float>(info, 0x1c4);
+}
+
+// FUNCTION: GAME 0x00462a30
 int RHElementActor::FUN_00462a30(RHElementActor *other)
 {
     void *mine = Info();
     void *theirs = other->Info();
-    if (RHActorField<float>(mine, 0x1c4) == RHActorField<float>(theirs, 0x1c4))
+    if (RHActorSortKey(mine) == RHActorSortKey(theirs))
         return RHActorField<unsigned>(this, 0xc) < RHActorField<unsigned>(other, 0xc);
-    if (RHActorField<float>(mine, 0x1c4) > RHActorField<float>(theirs, 0x1c4))
+    if (RHActorSortKey(mine) < RHActorSortKey(theirs))
         return 1;
     return 0;
 }
@@ -440,6 +438,26 @@ bool RHElementActor::FUN_004640c0()
     return false;
 }
 
+extern float g_unk0x00677488;
+
+// Parked: null-result stack copy and distance-receiver addition differ.
+// STUB: GAME 0x00464150
+float RHElementActor::FUN_00464150()
+{
+    SBGeoPoint2D point;
+    if (!m_120)
+        return g_unk0x00677488;
+    point = RHActorField<SBGeoPoint2D>(Info(), 0x24);
+    if (point.FUN_005fc0e0(m_128))
+    {
+        m_128 = point;
+        RHActorDistanceCalls *distance = (RHActorDistanceCalls *)((char *)m_120 + 4);
+        RHActorField<float>(this, 0x124) = distance->FUN_0060cab0(point, 1.7434468f);
+    }
+    float result = RHActorField<float>(this, 0x124);
+    return result;
+}
+
 // FUNCTION: GAME 0x00464530
 void RHActorPositionCalls::FUN_00464530(const SBGeoPoint2D &point)
 {
@@ -451,6 +469,20 @@ void RHActorPositionCalls::FUN_00464530(const SBGeoPoint2D &point)
         ((RHMobileUnk00607da0 *)&RHActorField<SBGeoBoundingBox2D>(this, 0xc0))->FUN_00607da0((const RHMobileUnk00607da0 &)box->FUN_006090d0(displacement));
     }
     RHActorField<int>(this, 4) = 2;
+}
+
+// FUNCTION: GAME 0x004645f0
+void RHElementActor::FUN_004645f0()
+{
+    if (m_130)
+    {
+        m_148 = 1;
+        m_134 = ((RHActorSequenceCursor *)m_130)->FUN_005855a0();
+        if (m_134)
+            m_140 = 2;
+        else
+            ((RHActorSequenceCursor *)m_130)->V0c(0, 1);
+    }
 }
 
 #include "RHSequenceGenericCalls.h"
@@ -1501,7 +1533,7 @@ void RHElementActor::FUN_0046d5f0(void *door, bool reverse)
         building = true;
         if (RHActorField<RHActorTransitionType>(this, 4).kind == 20)
             ((RHUnk0048a970 *)((char *)this + 0x6e8))->Unk(0);
-        ((RHScriptBatchCalls *)area)->Unk0057ec80(this);
+        ((RHSectorBuilding *)area)->Leave(this);
     }
     else
     {
@@ -1536,7 +1568,7 @@ void RHElementActor::FUN_0046d5f0(void *door, bool reverse)
     {
         if (RHActorField<RHActorTransitionType>(this, 4).kind == 20)
             ((RHUnk0048a970 *)((char *)this + 0x6e8))->Unk(1);
-        ((RHScriptBatchCalls *)area)->Unk0057ebd0(this);
+        ((RHSectorBuilding *)area)->Enter(this);
     }
     if (RHActorField<RHPatch *>(door, 0xb0))
         RHActorField<RHPatch *>(door, 0xb0)->FUN_00550150();
@@ -1777,35 +1809,6 @@ void RHUnk004e52a0::FUN_004e52a0()
     m_count = 0;
 }
 
-class RHUnk004e52f0List
-{
-public:
-    RHUnk004e52f0List *m_next;
-    RHUnk004e52f0List *m_prev;
-    char m_08[0x18];
-};
-
-class RHUnk004e52f0
-{
-public:
-    RHUnk004e52f0(const char *value);
-    char m_0;
-    char m_1[3];
-    RHUnk004e52f0List *m_4;
-    int m_8;
-};
-
-// FUNCTION: GAME 0x004e52f0
-RHUnk004e52f0::RHUnk004e52f0(const char *value)
-{
-    m_0 = *value;
-    RHUnk004e52f0List *list = new RHUnk004e52f0List;
-    list->m_next = list;
-    list->m_prev = list;
-    m_4 = list;
-    m_8 = 0;
-}
-
 class RHUnk004e54a0
 {
 public:
@@ -1984,20 +1987,22 @@ SBGeoVector2D::SBGeoVector2D(const SBGeoPoint2D &other) : SBGeoPoint2D()
 
 extern float g_unk0x00677488;
 
-// Parked: x87 spills and branch scheduling differ.
+// Parked: the scaled-y spill and shared positive-x comparison branch differ.
 // STUB: GAME 0x005fc700
 float SBGeoPoint2D::FUN_005fc700(float scale) const
 {
     scale = m_4 / scale;
     if (m_0 > g_unk0x00677488)
     {
-        float other = scale > g_unk0x00677488 ? scale : -scale;
-        return other < m_0 ? m_0 : other;
+        if (scale > g_unk0x00677488)
+            return scale < m_0 ? m_0 : scale;
+        scale = -scale;
+        return scale < m_0 ? m_0 : scale;
     }
     if (scale > g_unk0x00677488)
-        return -m_0 >= scale ? -m_0 : scale;
+        return -m_0 > scale ? -m_0 : scale;
     scale = -scale;
-    return -m_0 >= scale ? -m_0 : scale;
+    return -m_0 > scale ? -m_0 : scale;
 }
 
 // FUNCTION: GAME 0x00607a70
@@ -2097,6 +2102,7 @@ void RHElementActor::FUN_0046bbf0()
 
 void RHElementActor::Emit(SBFile &file, std::string &name)
 {
+    FUN_00464150();
     FUN_00462940(0);
     FUN_0046bbf0();
     FUN_0046ad00(this, this);
@@ -2121,16 +2127,6 @@ void RHElementActor::Emit(SBFile &file, std::string &name)
     FUN_004626e0();
     FUN_00468ee0(0);
     FUN_00467210();
-}
-
-RHOrder::RHOrder()
-{
-    memset(m_04, 0, sizeof(m_04));
-    m_24 = 0x123;
-    m_28 = m_29 = m_2b = m_2c = m_2d = m_2e = 0;
-    m_2a = 1;
-    m_30 = m_38 = 0;
-    m_34 = 0;
 }
 
 void __stdcall FUN_0048a970(RHElementActor *) {}

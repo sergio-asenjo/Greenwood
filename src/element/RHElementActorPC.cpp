@@ -8,6 +8,7 @@
 #include "RHHumanActorCalls.h"
 #include "RHWidgetPortraitClass.h"
 #include "RHActorMessage.h"
+#include "RHActorTranslation.h"
 #include "RHPCSelectionQueryCalls.h"
 #include "RHMalignityVisibilityCalls.h"
 #include "RHElementActorHumanCore.h"
@@ -17,14 +18,21 @@
 #include "RHUnk005fc400.h"
 #include "RHBow.h"
 #include "RHTitbits.h"
+#include "RHMalignityPosition.h"
+#include "RHUnk004a6310.h"
+#include "RHProjectileInitCalls.h"
+#include "RHUnk004d8460Calls.h"
+#include "RHProjectileVector.h"
 
 extern undefined g_unk0x006c0e48[];
 
 extern "C" int rand();
 
+class RHActorTranslationSequenceCalls;
+
 DECOMP_SIZE_ASSERT(RHElementActorPC, 0x60c)
 DECOMP_SIZE_ASSERT(RHUnk00549250, 0x14)
-DECOMP_SIZE_ASSERT(RHActorPCBoxCalls, 0x14)
+DECOMP_SIZE_ASSERT(SBGeoBoundingBox2D, 0x14)
 DECOMP_SIZE_ASSERT(RHActorPCWidgetState, 0xe8)
 DECOMP_SIZE_ASSERT(RHCampaignProfiles, 0x70)
 DECOMP_SIZE_ASSERT(RHActorPCProfileNode, 0x18)
@@ -74,6 +82,28 @@ RHUnk0045aaf0::RHUnk0045aaf0()
 {
     m_0 = 0;
     m_4 = 0;
+}
+
+// FUNCTION: GAME 0x0045ab50
+RHUnk0045aaf0::~RHUnk0045aaf0()
+{
+}
+
+// FUNCTION: GAME 0x0048ec00
+void RHScriptBatchCalls::Unk0048ec00(void *scroll)
+{
+    RHTitbits *titbits = (RHTitbits *)g_unk0x6c10e8;
+    if (scroll == RHActorPCField<void *>(this, 0x500))
+        return;
+    if (!scroll)
+        titbits->FUN_005c8120(0xe, (RHElement *)this);
+    RHActorPCField<void *>(this, 0x500) = scroll;
+    if (scroll)
+    {
+        titbits->FUN_005c8120(0xe, (RHElement *)this);
+        RHUnk00613e90 position;
+        ((RHScriptBatchCalls *)titbits)->Unk005c2ec0(&position, 0, 0xe, this, 0, 0, 0, -1);
+    }
 }
 
 // Parked: flat subobjects omit the original member-cleanup EH states.
@@ -397,8 +427,7 @@ int RHUnk00493a80::FUN_00493a80()
     return 0;
 }
 
-// Parked: compiler folds the shifted bit predicate into TEST AH,20h.
-// STUB: GAME 0x00493ae0
+// FUNCTION: GAME 0x00493ae0
 int RHElementActorPC::FUN_00493ae0(bool allow, void *unused)
 {
     if (((RHActorPCVTableCalls *)this)->FUN_0049e720() ||
@@ -408,7 +437,7 @@ int RHElementActorPC::FUN_00493ae0(bool allow, void *unused)
     void *sprite = m_50;
     if (RHActorPCField<int>(sprite, 0x8c) == 0x12)
         return 0;
-    if (!allow && ((RHActorPCField<unsigned>(RHActorPCField<void *>(sprite, 0xe0), 0x30) >> 13) & 1))
+    if (!allow && ((unsigned short)(RHActorPCField<unsigned>(RHActorPCField<void *>(sprite, 0xe0), 0x30) >> 13) & 1))
         return 0;
     return 1;
 }
@@ -1034,31 +1063,61 @@ char RHElementActorPC::FUN_0049e720()
     return true;
 }
 
-// Parked: action routing calls three out-of-run helpers whose ownership and operand bindings are unresolved.
-// STUB: GAME 0x0049e760
+// FUNCTION: GAME 0x0049e760
 void RHElementActorPC::FUN_0049e760(int value)
 {
     int action = RHActorPCField<int>(m_50, 0x8c);
-    if (action > 13 && action <= 16)
-        FUN_0049e8f0(value);
+    if (action != 11)
+    {
+        if (action > 13 && action <= 16)
+        {
+            FUN_0049e8f0(value);
+            return;
+        }
+    }
+    else
+    {
+        ((RHPCCombatCalls *)this)->FUN_0049bb20(12, 1);
+    }
+    ((RHElementActorHuman *)this)->FUN_004748f0((RHActorTranslationSequenceCalls *)value);
 }
 
-// Parked: the out-of-run callback calls still bind as unmatched offsets, and their receiver scheduling differs.
-// STUB: GAME 0x0049e7b0
+// FUNCTION: GAME 0x0049e7b0
 void RHElementActorPC::FUN_0049e7b0(int value)
 {
     int action = RHActorPCField<int>(m_50, 0x8c);
-    if (action > 13 && action <= 16)
-        FUN_0049e8f0(value);
+    if (action != 11)
+    {
+        if (action > 13 && action <= 16)
+        {
+            FUN_0049e8f0(value);
+            return;
+        }
+    }
+    else
+    {
+        ((RHPCCombatCalls *)this)->FUN_0049bb20(12, 1);
+    }
+    ((RHElementActorHuman *)this)->FUN_00474ad0((RHActorTranslationSequenceCalls *)value);
 }
 
-// Parked: the out-of-run callback calls still bind as unmatched offsets, and their receiver scheduling differs.
-// STUB: GAME 0x0049e800
+// FUNCTION: GAME 0x0049e800
 void RHElementActorPC::FUN_0049e800(int value)
 {
     int action = RHActorPCField<int>(m_50, 0x8c);
-    if (action > 13 && action <= 16)
-        FUN_0049e8f0(value);
+    if (action != 11)
+    {
+        if (action > 13 && action <= 16)
+        {
+            FUN_0049e8f0(value);
+            return;
+        }
+    }
+    else
+    {
+        ((RHPCCombatCalls *)this)->FUN_0049bb20(12, 1);
+    }
+    ((RHElementActorHuman *)this)->FUN_00483c90((RHActorTranslationSequenceCalls *)value);
 }
 
 // Parked: the out-of-run callback calls still bind as unmatched offsets, and their receiver scheduling differs.
@@ -1081,17 +1140,87 @@ void RHElementActorPC::FUN_0049e8a0(int first, int second)
     (void)second;
 }
 
-// Parked: both action branches allocate exception-cleaned helper objects and update external manager state.
-// STUB: GAME 0x0049e8f0
-void RHElementActorPC::FUN_0049e8f0(int)
+class RHUnk6c1040;
+extern RHUnk6c1040 *g_unk0x6c1040;
+extern char g_unk0x6c0560[4];
+
+#include "RHSequenceGenericCalls.h"
+
+// FUNCTION: GAME 0x0049e8f0
+void RHElementActorPC::FUN_0049e8f0(int value)
 {
+    RHActorTranslationSequenceCalls *sequence = (RHActorTranslationSequenceCalls *)value;
+    RHOrder *order;
+    switch (RHActorPCField<int>(m_50, 0x8c))
+    {
+    case 16:
+    {
+        order = new RHOrder;
+        order->m_24 = 0x12d;
+        order->m_2a = 0;
+        *(RHUnk00613e90 *)(order->m_04 + 4) = RHActorPCField<RHUnk00613e90>(RHActorPCField<void *>(RHActorPCField<void *>(this, 0x254), 0x50), 0x10);
+        RHActorPCField<int>(sequence, 0x5c) = 0;
+        RHUnk00584d60 *event = new RHUnk00584d60(1, 0x2d, RHActorPCField<void *>(this, 0x254));
+        RHActorPCField<void *>(RHActorPCField<void *>(this, 0x254), 0x5cc) = 0;
+        RHActorPCField<void *>(this, 0x254) = 0;
+        ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940(g_unk0x6c0560, 0, event);
+        break;
+    }
+    case 14:
+    case 15:
+        order = new RHOrder;
+        order->m_2a = 0;
+        order->m_24 = 0x2c;
+        if (RHActorPCField<void *>(this, 0x5cc))
+        {
+            RHUnk00584d60 *event = new RHUnk00584d60(1, 0x2d, RHActorPCField<void *>(this, 0x5cc));
+            ((RHMalignityActorCalls *)RHActorPCField<void *>(this, 0x5cc))->V154(event);
+            ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940(g_unk0x6c0560, 0, event);
+        }
+        break;
+    default:
+        order = (RHOrder *)value;
+        break;
+    }
+    sequence->FUN_00585970(order);
+    ((RHMalignityActorCalls *)this)->V154(sequence);
 }
 
-// Parked: geometry construction and collision checks depend on out-of-run helpers and nested EH cleanup.
-// STUB: GAME 0x0049eab0
-bool RHElementActorPC::FUN_0049eab0()
+class RHMobileUnk006091b0
 {
-    return false;
+public:
+    RHMobileUnk006091b0 &FUN_006091b0(const SBGeoPoint2D &point);
+};
+
+class RHMalignityGridCalls
+{
+public:
+    bool FUN_004f5e50(SBGeoBoundingBox2D &box, const SBGeoPoint2D &other, unsigned short layer);
+};
+
+// Parked: geometry temporary colouring and folded vector-constructor identity differ.
+// STUB: GAME 0x0049eab0
+bool RHElementActorPC::FUN_0049eab0(SBGeoPoint2D &result)
+{
+    RHUnk00613e90 origin;
+    SBGeoBoundingBox2D bounds;
+    ((RHHumanActorCalls *)this)->FUN_00479430(origin, -666.0f);
+    void *profile = (char *)m_50 + 4;
+    ((RHMobileUnk00607da0 *)&bounds)->FUN_00607da0(
+        *(const RHMobileUnk00607da0 *)((RHUnkPathActorInfoBase *)profile)->Unk0055fa10(
+            RHActorPCField<int>(profile, 0x88)));
+    ((RHMobileUnk006091b0 *)&bounds)->FUN_006091b0(SBGeoVector2D(SBGeoPoint2D(origin.x, origin.y)));
+    unsigned short layer = RHActorPCField<unsigned short>(m_50, 0xde);
+    bool successful = ((RHMalignityGridCalls *)g_unk0x6c0a9c)->FUN_004f5e50(bounds,
+        SBGeoPoint2D(origin.x, origin.y), layer) == true;
+    if (successful)
+    {
+        result = bounds.FUN_00608f40();
+        successful = true;
+    }
+    else
+        successful = false;
+    return successful;
 }
 
 // FUNCTION: GAME 0x0049ec20
@@ -1121,34 +1250,187 @@ void RHElementActorPC::FUN_0049ec50(unsigned action, unsigned short amount)
     }
 }
 
-// Parked: this behavior factory allocates and initializes an object through out-of-run helpers with EH cleanup.
-// STUB: GAME 0x0049ece0
-void RHElementActorPC::FUN_0049ece0(unsigned)
+class RHElementApple
 {
+public:
+    RHElementApple(RHElementActorHuman *actor);
+    char m_data[0x15c];
+};
+
+enum RHobjectType
+{
+};
+
+struct RHElementObjectTypeBits
+{
+    RHobjectType type : 4;
+};
+
+static inline RHobjectType RHActorPCObjectType(const void *element)
+{
+    return ((const RHElementObjectTypeBits *)((const char *)element + 4))->type;
 }
 
-// Parked: the sibling behavior factory has distinct constructors, constants and EH cleanup outside this run.
-// STUB: GAME 0x0049eeb0
-void RHElementActorPC::FUN_0049eeb0(unsigned)
+// FUNCTION: GAME 0x0049ece0
+void RHElementActorPC::FUN_0049ece0(const void *target)
 {
+    RHUnk00613e90 origin;
+    RHUnk00613e90 destination;
+    RHUnk00613e90 direction;
+    ((RHHumanActorCalls *)this)->FUN_00479430(origin, -666.0f);
+    if (RHActorPCObjectType(target) == 4)
+        ((RHElementActor *)target)->FUN_00478c20(destination, false);
+    else
+        destination = ((RHElementPositionCalls *)target)->FUN_004bb180();
+    direction = RHUnk00613e90(origin, destination);
+    RHElementApple *apple = new RHElementApple((RHElementActorHuman *)this);
+    ((RHUnk004a6310 *)apple)->FUN_004a6310(1);
+    ((RHActorPCVTableCalls *)apple)->FUN_28(1);
+    *(RHProjectileVector *)&direction = ((RHProjectileThrowCalls *)apple)->FUN_004b4260(*(RHProjectileVector *)&direction, 15.0f, 0.8f, 0, RHActorPCObjectType(target) == 4 ? target : 0);
+    ((RHActorPCVTableCalls *)apple)->FUN_34(origin, direction);
+    ((RHActorPCVTableCalls *)apple)->FUN_10();
+    void *sprite = RHActorPCField<void *>(this, 0x50);
+    RHMalignityPosition position;
+    position.x = RHActorPCField<float>(sprite, 0x24);
+    position.y = RHActorPCField<float>(sprite, 0x28);
+    position.layer = RHActorPCField<unsigned short>(sprite, 0xde);
+    position.area = RHActorPCField<void *>(sprite, 0xe0);
+    RHActorPCField<RHMalignityPosition>(apple, 0x118) = position;
+    ((RHUnk004d8460 *)g_pEngine)->FUN_004d8460(apple, 0, 1);
+    ((RHActorPCVTableCalls *)this)->FUN_56(0xb, 1, 1);
 }
 
-// Parked: construction, virtual initialization and dispatch depend on several out-of-run factories.
-// STUB: GAME 0x0049f080
-void RHElementActorPC::FUN_0049f080(void *)
+class RHUnk004ba8d0
 {
+public:
+    RHUnk004ba8d0(void *victim);
+    char m_data[0x15c];
+};
+
+// FUNCTION: GAME 0x0049eeb0
+void RHElementActorPC::FUN_0049eeb0(const void *target)
+{
+    RHUnk00613e90 origin;
+    RHUnk00613e90 destination;
+    RHUnk00613e90 direction;
+    ((RHHumanActorCalls *)this)->FUN_00479430(origin, -666.0f);
+    if (RHActorPCObjectType(target) == 4)
+        ((RHElementActor *)target)->FUN_00478c20(destination, false);
+    else
+        destination = ((RHElementPositionCalls *)target)->FUN_004bb180();
+    direction = RHUnk00613e90(origin, destination);
+    RHUnk004ba8d0 *projectile = new RHUnk004ba8d0(this);
+    ((RHUnk004ba900 *)projectile)->FUN_004ba900(1);
+    ((RHActorPCVTableCalls *)projectile)->FUN_28(1);
+    *(RHProjectileVector *)&direction = ((RHProjectileThrowCalls *)projectile)->FUN_004b4260(*(RHProjectileVector *)&direction, 0.001f, 0.1f, 1, RHActorPCObjectType(target) == 4 ? target : 0);
+    ((RHActorPCVTableCalls *)projectile)->FUN_34(origin, direction);
+    ((RHActorPCVTableCalls *)projectile)->FUN_10();
+    void *sprite = RHActorPCField<void *>(this, 0x50);
+    RHMalignityPosition position;
+    position.x = RHActorPCField<float>(sprite, 0x24);
+    position.y = RHActorPCField<float>(sprite, 0x28);
+    position.layer = RHActorPCField<unsigned short>(sprite, 0xde);
+    position.area = RHActorPCField<void *>(sprite, 0xe0);
+    RHActorPCField<RHMalignityPosition>(projectile, 0x118) = position;
+    ((RHUnk004d8460 *)g_pEngine)->FUN_004d8460(projectile, 0, 1);
+    ((RHActorPCVTableCalls *)this)->FUN_56(5, 1, 1);
 }
 
-// Parked: construction, virtual initialization and dispatch depend on several out-of-run factories.
-// STUB: GAME 0x0049f210
-void RHElementActorPC::FUN_0049f210(void *)
+class RHElementPurse
 {
+public:
+    RHElementPurse(void *victim);
+    char m_data[0x16c];
+};
+
+// FUNCTION: GAME 0x0049f080
+void RHElementActorPC::FUN_0049f080(const RHUnk00613e90 &point)
+{
+    RHUnk00613e90 origin;
+    RHUnk00613e90 direction;
+    ((RHHumanActorCalls *)this)->FUN_00479430(origin, -666.0f);
+    direction = RHUnk00613e90(origin, point);
+    RHElementPurse *projectile = new RHElementPurse(this);
+    ((RHUnk004b91a0 *)projectile)->FUN_004b91a0(1);
+    ((RHActorPCVTableCalls *)projectile)->FUN_28(1);
+    RHActorPCField<unsigned short>(projectile, 0x168) = 5;
+    *(RHProjectileVector *)&direction = ((RHProjectileThrowCalls *)projectile)->FUN_004b4260(*(RHProjectileVector *)&direction, 15.0f, 0.2f, 0, 0);
+    ((RHActorPCVTableCalls *)projectile)->FUN_34(origin, direction);
+    ((RHActorPCVTableCalls *)projectile)->FUN_10();
+    void *sprite = RHActorPCField<void *>(this, 0x50);
+    RHMalignityPosition position;
+    position.x = RHActorPCField<float>(sprite, 0x24);
+    position.y = RHActorPCField<float>(sprite, 0x28);
+    position.layer = RHActorPCField<unsigned short>(sprite, 0xde);
+    position.area = RHActorPCField<void *>(sprite, 0xe0);
+    RHActorPCField<RHMalignityPosition>(projectile, 0x118) = position;
+    ((RHUnk004d8460 *)g_pEngine)->FUN_004d8460(projectile, 0, 1);
+    ((RHActorPCVTableCalls *)this)->FUN_56(4, 1, 1);
+    ((RHUnk00450b60 *)g_unk0x6c07fc)->Unk(1, -50);
 }
 
-// Parked: construction, virtual initialization and dispatch depend on several out-of-run factories.
-// STUB: GAME 0x0049f380
-void RHElementActorPC::FUN_0049f380(void *)
+class RHUnk004be050
 {
+public:
+    RHUnk004be050();
+    char m_data[0x160];
+};
+
+// FUNCTION: GAME 0x0049f210
+void RHElementActorPC::FUN_0049f210(const RHUnk00613e90 &point)
+{
+    RHUnk00613e90 origin;
+    RHUnk00613e90 direction;
+    ((RHHumanActorCalls *)this)->FUN_00479430(origin, -666.0f);
+    direction = RHUnk00613e90(origin, point);
+    RHUnk004be050 *projectile = new RHUnk004be050;
+    ((RHUnk004be080 *)projectile)->FUN_004be080(1);
+    ((RHActorPCVTableCalls *)projectile)->FUN_28(1);
+    *(RHProjectileVector *)&direction = ((RHProjectileThrowCalls *)projectile)->FUN_004b4260(*(RHProjectileVector *)&direction, 50.0f, 0.5f, 0, 0);
+    ((RHActorPCVTableCalls *)projectile)->FUN_34(origin, direction);
+    ((RHActorPCVTableCalls *)projectile)->FUN_10();
+    void *sprite = RHActorPCField<void *>(this, 0x50);
+    RHMalignityPosition position;
+    position.x = RHActorPCField<float>(sprite, 0x24);
+    position.y = RHActorPCField<float>(sprite, 0x28);
+    position.layer = RHActorPCField<unsigned short>(sprite, 0xde);
+    position.area = RHActorPCField<void *>(sprite, 0xe0);
+    RHActorPCField<RHMalignityPosition>(projectile, 0x118) = position;
+    ((RHUnk004d8460 *)g_pEngine)->FUN_004d8460(projectile, 0, 1);
+    ((RHActorPCVTableCalls *)this)->FUN_56(0x13, 1, 1);
+}
+
+class RHElementNet
+{
+public:
+    RHElementNet(void *victim);
+    void FUN_004b1730();
+    char m_data[0x1c8];
+};
+
+// FUNCTION: GAME 0x0049f380
+void RHElementActorPC::FUN_0049f380(const RHUnk00613e90 &point)
+{
+    RHUnk00613e90 origin;
+    RHUnk00613e90 direction;
+    ((RHHumanActorCalls *)this)->FUN_00479430(origin, -666.0f);
+    direction = RHUnk00613e90(origin, point);
+    RHElementNet *projectile = new RHElementNet(0);
+    ((RHUnk004b0980 *)projectile)->FUN_004b0980(1);
+    ((RHActorPCVTableCalls *)projectile)->FUN_28(1);
+    *(RHProjectileVector *)&direction = ((RHProjectileThrowCalls *)projectile)->FUN_004b4260(*(RHProjectileVector *)&direction, 30.0f, 0.6f, 0, 0);
+    ((RHActorPCVTableCalls *)projectile)->FUN_34(origin, direction);
+    projectile->FUN_004b1730();
+    ((RHActorPCVTableCalls *)projectile)->FUN_10();
+    void *sprite = RHActorPCField<void *>(this, 0x50);
+    RHMalignityPosition position;
+    position.x = RHActorPCField<float>(sprite, 0x24);
+    position.y = RHActorPCField<float>(sprite, 0x28);
+    position.layer = RHActorPCField<unsigned short>(sprite, 0xde);
+    position.area = RHActorPCField<void *>(sprite, 0xe0);
+    RHActorPCField<RHMalignityPosition>(projectile, 0x118) = position;
+    ((RHUnk004d8460 *)g_pEngine)->FUN_004d8460(projectile, 0, 1);
+    ((RHActorPCVTableCalls *)this)->FUN_56(0x11, 1, 1);
 }
 
 // FUNCTION: GAME 0x0049f500
@@ -1262,10 +1544,23 @@ bool RHElementActorPC::FUN_0049fbc0()
     return false;
 }
 
-// Parked: two full resource-transfer shapes retain the wrong carried registers and spill the action index.
+// Parked: VC6 spills the action kind instead of the remaining-room temporary, shifting every carried register.
 // STUB: GAME 0x0049fbf0
-void RHElementActorPC::FUN_0049fbf0(void *, bool)
+void RHElementActorPC::FUN_0049fbf0(void *actor, bool consume)
 {
+    unsigned kind = RHActorPCField<unsigned>(actor, 0xa8);
+    unsigned short count = ((RHActorPCVTableCalls *)this)->FUN_57(kind);
+    unsigned room = FUN_0049d5e0(kind) - count;
+    count = RHActorPCField<unsigned short>(actor, 0xae);
+    if (room < count && consume)
+    {
+        ((RHActorPCVTableCalls *)actor)->FUN_28(count - room);
+        count = (unsigned short)room;
+    }
+    else
+        ((RHEngineSerializationCalls *)g_pEngine)->FUN_004d88e0(actor, 0, 1);
+    if (consume)
+        ((RHActorPCVTableCalls *)this)->FUN_58(kind, count);
 }
 
 // FUNCTION: GAME 0x0049fc80
@@ -1283,12 +1578,54 @@ void RHElementActorPC::FUN_0049fcd0()
 {
 }
 
-// Parked: this action allocates EH-managed message objects and depends on out-of-run engine helpers.
+class RHElementActor;
+class RHUnk0046bd20
+{
+public:
+    int FUN_0046bd20();
+};
+
+class RHSectorActorList
+{
+public:
+    int Unk004b8f80(RHElementActor *const &value, bool mode);
+};
+
+#include "RHSequenceInteractionAction.h"
+
+// Parked: VC6 allocates a dedicated zero register for the five null compares (cmp reg,ebx) where the target uses test; EH new-state frames also differ (0.47514).
 // STUB: GAME 0x0049fe20
 void RHElementActorPC::FUN_0049fe20()
 {
+    void *owner = RHActorPCField<void *>(this, 0x268);
+    if (!owner)
+        return;
+    RHElementActor *self = (RHElementActor *)this;
+    RHSectorActorList *list = (RHSectorActorList *)((char *)g_pEngine + 0x49f8);
+    bool listed;
+    if (self)
+        listed = list->Unk004b8f80(self, true) != -1;
+    else
+        listed = RHActorPCField<void *>(g_pEngine, 0x4a00) != 0;
+    if (listed == true)
+        return;
+    int state = ((RHUnk0046bd20 *)this)->FUN_0046bd20();
+    if (state >= 0x3b && state <= 0x43)
+        return;
+    int action = ((RHPCCombatCalls *)this)->FUN_00485240(1);
+    void *element;
+    if (action == 0x34)
+        element = new RHUnk00584d60(1, 0x34, this);
+    else if (action > 0x3a && action <= 0x43)
+    {
+        void *target = RHActorPCField<void *>(this, 0x268);
+        void *extra = target ? *(void **)(**(char ***)((char *)this + 0x264) + 8) : 0;
+        element = new RHUnk00585ea0(1, action, this, extra);
+    }
+    else
+        return;
+    ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940(g_unk0x6c0560, 0, element);
 }
-
 // FUNCTION: GAME 0x0049ff60
 unsigned short RHElementActorPC::FUN_0049ff60()
 {
@@ -1380,10 +1717,33 @@ void RHElementActorPC::FUN_004a0670()
     }
 }
 
-// Parked: the method scans an engine actor array and constructs temporary vectors for every candidate.
-// STUB: GAME 0x004a06e0
-void RHElementActorPC::FUN_004a06e0(unsigned char)
+class RHUnk004a06e0Array
 {
+public:
+    void **m_first;
+    void **m_last;
+};
+
+extern float g_rhuirendererportrait_percent;
+
+// FUNCTION: GAME 0x004a06e0
+void RHElementActorPC::FUN_004a06e0(unsigned char value)
+{
+    SBGeoPoint2D origin(*(SBGeoPoint2D *)((char *)RHActorPCField<void *>(this, 0x50) + 0x24));
+    RHUnk004a06e0Array &actors = *(RHUnk004a06e0Array *)((char *)g_pEngine + 0x48dc);
+    unsigned short count = actors.m_first == 0 ? 0 : actors.m_last - actors.m_first;
+    for (unsigned short index = 0; index < count; ++index)
+    {
+        void **first = ((RHUnk004a06e0Array *)((char *)g_pEngine + 0x48dc))->m_first;
+        RHElementActorPC *actor = (RHElementActorPC *)first[index];
+        if ((RHActorPCField<unsigned>(actor, 4) & 3) == 3 &&
+            RHActorPCField<int>(actor, 0xb0) == 8)
+        {
+            if (origin.Unk005fc110(*(SBGeoPoint2D *)((char *)RHActorPCField<void *>(actor, 0x50) + 0x24))
+                    .FUN_005fc700(1.0f) < g_rhuirendererportrait_percent)
+                RHActorPCField<char>(actor, 0xfc) = (char)value;
+        }
+    }
 }
 
 // Parked: complex EH-managed geometry setup and virtual dispatch depend on unassigned helper entities.
@@ -1392,11 +1752,68 @@ void RHElementActorPC::FUN_004a07f0(unsigned, unsigned, unsigned)
 {
 }
 
-// Parked: distance tests depend on out-of-run geometry, settings and projection helpers.
+extern float g_unk0x00677db8;
+
+// GLOBAL: GAME 0x00677fa4
+float g_unk0x00677fa4 = 1.3f;
+
+// Parked: two independent x87 loads are scheduled before their target positions.
 // STUB: GAME 0x004a0a30
-unsigned RHElementActorPC::FUN_004a0a30(void *)
+bool RHElementActorPC::FUN_004a0a30(RHUnk00613e90 &position)
 {
-    return 0;
+    RHUnk00613e90 origin;
+    RHUnk00613e90 difference;
+    ((RHMalignityActorCalls *)this)->FUN_00478c20(origin, false);
+    float factor = 1.9499999f;
+    int animation = RHActorPCField<volatile int>(m_50, 0x8c);
+    if (animation != 0x10)
+        factor = 1.5f;
+    switch (RHActorPCField<int>(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0(), 0x1c))
+    {
+    case 0:
+    {
+        float value = factor;
+        factor = value * g_unk0x00677fa4;
+        break;
+    }
+    case 2:
+    {
+        float value = factor;
+        factor = value * g_unk0x00677db8;
+        break;
+    }
+    }
+    difference = position.FUN_005df550(origin);
+    float y = difference.y;
+    difference.y = y * g_unk0x006774ec;
+    if (difference.z >= g_unk0x00677488)
+    {
+        unsigned range = RHActorPCField<unsigned short>(g_pEngine, 0x4cc0);
+        if (difference.x * difference.x + difference.z * difference.z + difference.y * difference.y <
+            (range * range) * factor * factor &&
+            ((RHMalignityGeometryCalls *)g_unk0x6c0a9c)->FUN_004eff80(origin, position, 2))
+        {
+            if (RHActorPCField<int>(m_50, 0x8c) == 0x10)
+                ((RHActorPCVTableCalls *)this)->FUN_slot65(0xf, 0, 0xff);
+            return true;
+        }
+    }
+    else
+    {
+        SBGeoVector2D planar(difference.x, difference.y);
+        unsigned short radius = RHActorPCField<unsigned short>(g_pEngine, 0x4cc0);
+        float range = -difference.z;
+        range += (int)radius;
+        range *= factor;
+        if (planar.Unk005fc6d0(1.0f) < range * range &&
+            ((RHMalignityGeometryCalls *)g_unk0x6c0a9c)->FUN_004eff80(origin, position, 2))
+        {
+            if (RHActorPCField<int>(m_50, 0x8c) == 0x10)
+                ((RHActorPCVTableCalls *)this)->FUN_slot65(0xf, 0, 0xff);
+            return true;
+        }
+    }
+    return false;
 }
 
 // FUNCTION: GAME 0x004a0c90
@@ -1609,7 +2026,7 @@ bool RHElementActorPC::FUN_004a18c0(void *target)
 // FUNCTION: GAME 0x0050efb0
 void RHActorPCEngineCalls::FUN_0050efb0(void *value)
 {
-    m_196c->FUN_0055e710(value);
+    m_196c->AddPortrait((RHWidgetPortrait *)value);
 }
 
 // FUNCTION: GAME 0x005492a0

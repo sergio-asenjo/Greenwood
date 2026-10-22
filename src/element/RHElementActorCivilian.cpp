@@ -91,6 +91,15 @@ char RHElementActorCivilian::FUN_004701a0()
     return RHCivilianField<char>((char *)this + offset, 0x4c0);
 }
 
+#include "RHArtificialIntelligenceCore.h"
+
+// FUNCTION: GAME 0x004701c0
+void RHElementActorCivilian::FUN_004701c0(int remark, unsigned flags)
+{
+    int *table = RHCivilianField<int *>(this, 0x49c);
+    ((RHArtificialIntelligence *)((char *)this + table[1] + 0x49c))->Unk00418c40(remark, flags);
+}
+
 // FUNCTION: GAME 0x004701f0
 int RHElementActorCivilian::FUN_004701f0()
 {
@@ -124,6 +133,45 @@ bool FUN_00470350(const std::vector<unsigned short> &values)
         if (FUN_00470e30(*it))
             ++count;
     return count != 0;
+}
+
+class RHSprite
+{
+public:
+    int PerformAction(RHOrder *order, int animation, int progression, bool reset);
+};
+
+// FUNCTION: GAME 0x00470390
+int RHElementActorCivilian::FUN_00470390(RHOrder *order)
+{
+    if (m_149)
+        return 2;
+    if (order)
+    {
+        int command = RHCivilianField<int>(order, 0x24);
+        switch (command)
+        {
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+            return RHCivilianField<RHSprite *>(this, 0x50)->PerformAction(order, 0, 0, false);
+        case 0x108:
+            return RHCivilianField<RHSprite *>(this, 0x50)->PerformAction(order, command, 0, false);
+        case 0x109:
+        {
+            int result = RHCivilianField<RHSprite *>(this, 0x50)->PerformAction(order, 0x109, 0, false);
+            if (result == 3)
+                FUN_00471090();
+            return result;
+        }
+        case 0x10a:
+            return RHCivilianField<RHSprite *>(this, 0x50)->PerformAction(order, 0x10a, 0, false);
+        }
+        return RHElementActorNPC::FUN_0048d510(order);
+    }
+    return 3;
 }
 
 // FUNCTION: GAME 0x00470460
@@ -328,7 +376,7 @@ bool RHElementActorCivilian::FUN_00470d00(void *first, void *second, int kind)
 #include "../ui/RHMinimap.h"
 
 // GLOBAL: GAME 0x006c09dc
-RHElementScroll ** volatile g_unk0x6c09dc;
+RHElementScroll **g_unk0x6c09dc;
 
 // FUNCTION: GAME 0x00470e30
 bool FUN_00470e30(unsigned int index)
@@ -371,14 +419,12 @@ bool RHElementActorCivilian::FUN_00470e50(void *first, void *second, int kind)
 // GLOBAL: GAME 0x006c0c50
 RHMinimap *g_unk0x6c0c50;
 
-// Parked: inline argument and receiver probes still change the argument-load/save-register schedule.
-// STUB: GAME 0x00471060
+// FUNCTION: GAME 0x00471060
 void FUN_00471060(unsigned int index)
 {
     RHElementScroll **scrolls = g_unk0x6c09dc;
-    RHElementScroll *scroll = scrolls[index];
     RHMinimap *minimap = g_unk0x6c0c50;
-    minimap->FUN_0054a440(scroll->FUN_004ba5d0());
+    minimap->FUN_0054a440(scrolls[index]->FUN_004ba5d0());
 }
 
 // GLOBAL: GAME 0x006c0874
@@ -485,7 +531,7 @@ public:
     void FUN_00471590(unsigned char flags);
 };
 
-bool RHElementActorCivilian::FUN_00475810(RHElementActorCivilian *) { return false; }
+bool RHElementActorCivilian::FUN_004646e0(RHElementActorCivilian *) { return false; }
 
 // FUNCTION: GAME 0x00471240
 bool RHElementActorCivilian::FUN_00471240(RHElementActorCivilian *arg)
@@ -598,6 +644,7 @@ void RHElementActorCivilian::Emit(SBFile &file)
     FUN_00470180();
     FUN_00470190(0, 0, 0, 0, 0, 0, 0);
     FUN_004701a0();
+    FUN_004701c0(0, 0);
     FUN_004701f0();
     FUN_00470460();
     FUN_00470cc0();
@@ -607,4 +654,75 @@ void RHElementActorCivilian::Emit(SBFile &file)
     FUN_00471240(0);
     FUN_004712b0(0);
     FUN_00485990();
+}
+
+class RHCivilianVisibilityDispatch
+{
+public:
+    virtual void V00() = 0;
+    virtual void V04() = 0;
+    virtual void V08() = 0;
+    virtual void V0c() = 0;
+    virtual void V10() = 0;
+    virtual void V14() = 0;
+    virtual void V18() = 0;
+    virtual void V1c() = 0;
+    virtual void V20() = 0;
+    virtual void V24() = 0;
+    virtual void V28() = 0;
+    virtual void V2c() = 0;
+    virtual void V30() = 0;
+    virtual void V34() = 0;
+    virtual void V38() = 0;
+    virtual void V3c() = 0;
+    virtual void V40() = 0;
+    virtual void V44() = 0;
+    virtual bool V48() = 0;
+};
+
+// FUNCTION: GAME 0x00475810
+bool RHElementActorCivilian::FUN_00475810(RHElementActorCivilian *arg)
+{
+    m_149 = 0;
+    int kind = RHCivilianField<int>(arg, 0x10);
+    if (((RHCivilianVisibilityDispatch *)this)->V48() || RHCivilianField<char>(this, 0x1ce) ||
+        RHCivilianField<short>(this, 0x23c) != 0)
+    {
+        switch (kind)
+        {
+        case 0x26:
+        case 0x27:
+        case 0x28:
+        case 0x2a:
+        case 0x2b:
+        case 0x4a:
+        case 0xa1:
+            break;
+        case 0x2c:
+            if (((RHCivilianVisibilityDispatch *)this)->V48() || RHCivilianField<char>(this, 0x1ce) ||
+                RHCivilianField<short>(this, 0x23c) != 1)
+                return false;
+            break;
+        default:
+            return false;
+        }
+    }
+    bool result;
+    if (kind == 0x23 && (RHCivilianField<unsigned>(this, 4) & 0xf) == 0xc)
+    {
+        switch (RHCivilianField<int>(RHCivilianField<void *>(this, 0x50), 0x1dc))
+        {
+        case 0x55:
+        case 0x57:
+        case 0x5a:
+        case 0x5d:
+        case 0x5e:
+            result = false;
+            ((RHElementActorHuman *)this)->FUN_00485d20((RHSequenceElement *)arg);
+            goto done;
+        }
+    }
+    result = FUN_004646e0(arg);
+done:
+    return result;
 }
