@@ -18,6 +18,5 @@ RHSpriteOrderIterator RHSpriteOrderList::FUN_0046eb30(RHSpriteOrderIterator valu
 bool SBGeoBoundingBox2D::FUN_00609050(const SBGeoPoint2D &, const SBGeoPoint2D &) { return false; }
 
 void RHSpriteOrderNode::CopyData(RHOrder **destination, RHOrder *const *source) { *destination = *source; }
-SBGeoVector2D RHSpritePositionCalls::FUN_004a4a10() { return SBGeoVector2D(0.0f, 0.0f); }
 
 double FUN_006433ab(double value) throw() { return floor(value); }

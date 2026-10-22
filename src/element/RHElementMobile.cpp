@@ -1,6 +1,9 @@
 #include "SBNullstr.h"
 #include "RHElementMobile.h"
+#include "RHUnk0051f0f0.h"
 #include <stdlib.h>
+
+extern "C" double __cdecl fabs(double);
 
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 DECOMP_SIZE_ASSERT(SBGeoVector2D, 0x08)
@@ -14,6 +17,9 @@ DECOMP_SIZE_ASSERT(RHMobileBase004a8130, 0xfc)
 DECOMP_SIZE_ASSERT(RHUnk004aac40, 0x104)
 DECOMP_SIZE_ASSERT(RHElementMobile, 0x260)
 DECOMP_SIZE_ASSERT(RHUnk004af060, 0x260)
+
+RHMobileElementBase::RHMobileElementBase(int, int) {}
+RHMobileElementBase::~RHMobileElementBase() {}
 
 // GLOBAL: GAME 0x006c0960
 bool g_mobileAssertDoubleBond = false;
@@ -279,6 +285,27 @@ bool RHElementMobile::ExecuteMacroCommand()
             "VERBOTEN : Unknown mobile element waypoint command !");
         return false;
     }
+}
+
+#define SBGEO_BOUNDINGBOX2D_VIEW
+#include "RHActorSequenceStorage.h"
+
+// Parked: the compiler-generated static cleanup callback has no unique bindable symbol.
+// STUB: GAME 0x004ac750
+RHUnk0045aaf0 *RHElementMobile::FUN_004ac750(void *actor)
+{
+    static RHUnk0045aaf0 changeMouse;
+    if (actor != 0 && RHMobileField<void *>(this, 0x1fc) != actor)
+    {
+        changeMouse.FUN_0045abc0(0x11, 0, 0);
+        return &changeMouse;
+    }
+    return 0;
+}
+
+void EmitRHMobileMouseFocus(RHElementMobile *element)
+{
+    element->FUN_004ac750(0);
 }
 
 // Parked: holder/count register roles and argument/index scheduling differ.
@@ -991,7 +1018,7 @@ void RHMobileGrid::FUN_004ea7b0(RHMobilePointerList &output, RHMobilePolygon &po
         float cross = outgoing.FUN_005fc680(incoming, 1.0f);
         if (reverse ? cross < g_unk0x00677488 : cross > g_unk0x00677488)
         {
-            RHMobileUnk00520b60 *vertex = new RHMobileUnk00520b60(second, 0, 5.0f);
+            RHUnk00520ae0 *vertex = new RHUnk00520ae0(second, 0, 5.0f);
             vertex->FUN_00520c80(incoming.FUN_005fc8f0(0, 1.0f), outgoing.FUN_005fc8f0(0, 1.0f));
             output.Append(vertex);
         }
@@ -1005,6 +1032,8 @@ class RHUnk0051fc10
 {
 public:
     RHUnk0051fc10();
+    ~RHUnk0051fc10();
+    void *FUN_0051fc40(unsigned flags);
     char m_00[0x14];
     int m_14;
     char m_18[8];
@@ -1016,13 +1045,10 @@ public:
     int m_30;
 };
 
-void FUN_0051f0f0();
-void FUN_0051f1b0();
-
 // FUNCTION: GAME 0x0051fc10
 RHUnk0051fc10::RHUnk0051fc10()
 {
-    FUN_0051f0f0();
+    ((RHUnk0051f0f0 *)this)->RHUnk0051f0f0::RHUnk0051f0f0();
     *(unsigned *)this = 0x6790f0;
     m_20 = 0;
     m_28 = 0;
@@ -1031,7 +1057,38 @@ RHUnk0051fc10::RHUnk0051fc10()
     m_24 = 1;
 }
 
-void FUN_0051f0f0() {}
+// FUNCTION: GAME 0x0051fc40
+void *RHUnk0051fc10::FUN_0051fc40(unsigned flags)
+{
+    this->~RHUnk0051fc10();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// FUNCTION: GAME 0x0051fc60
+RHUnk0051fc10::~RHUnk0051fc10()
+{
+    *(unsigned *)this = 0x6790f0;
+    if (m_20)
+        operator delete((void *)m_28);
+    ((RHUnk0051f0f0 *)this)->RHUnk0051f0f0::~RHUnk0051f0f0();
+}
+
+// SYNTHETIC: GAME 0x0051fc90
+// RHMobileUnk0051fd10::`scalar deleting destructor'
+
+// FUNCTION: GAME 0x0051fcb0
+RHMobileUnk0051fd10::~RHMobileUnk0051fd10()
+{
+}
+
+// FUNCTION: GAME 0x0051fd10
+RHMobileUnk0051fd10::RHMobileUnk0051fd10(float first, float second)
+{
+    m_14 |= 0x80;
+    ((RHMobileUnk0051fd90 *)this)->FUN_0051fd90(first, second);
+}
 
 // FUNCTION: GAME 0x0051fd90
 void RHMobileUnk0051fd90::FUN_0051fd90(float first, float second)
@@ -1040,6 +1097,30 @@ void RHMobileUnk0051fd90::FUN_0051fd90(float first, float second)
     m_28 = first;
     m_2c = g_unk0x0067749c / (m_24 - first);
     m_30 = -(m_2c * first);
+}
+
+// FUNCTION: GAME 0x0051fdc0
+void RHMobileUnk0051fd10::FUN_0051fdc0()
+{
+    m_3c.FUN_005fc430(((RHUnk0042fde0 *)((char *)this + 4))->FUN_0042fde0());
+    m_3c.FUN_005fc7c0(1.0f);
+    if (m_14 & 1)
+        m_34.FUN_005fc430(m_3c.FUN_005fc8f0(true, 1.0f));
+    else
+        m_34.FUN_005fc430(m_3c.FUN_005fc8f0(false, 1.0f));
+}
+
+// FUNCTION: GAME 0x0051fea0
+bool RHMobileUnk0051fd10::FUN_0051fea0(const SBGeoPoint2D &point, float &distance)
+{
+    distance = point.Unk005fc110(*(SBGeoPoint2D *)((char *)this + 4)).FUN_005fc660(m_34);
+    if (!((unsigned short)((unsigned)m_14 >> 8) & 1))
+    {
+        if (distance < g_unk0x00677488)
+            return false;
+    }
+    double absolute = fabs(distance);
+    return absolute < m_24 && ((RHUnk0042fde0 *)((char *)this + 4))->FUN_0060b640(point);
 }
 
 // FUNCTION: GAME 0x00520c50
@@ -1051,21 +1132,10 @@ void RHMobileUnk00520c50::FUN_00520c50(float first, float second)
     m_2c = -(m_28 * first);
 }
 
-class RHUnk005214b0
-{
-public:
-    RHUnk005214b0();
-    ~RHUnk005214b0();
-    char m_00[0x14];
-    int m_14;
-    char m_18[8];
-    unsigned short m_20;
-};
-
 // FUNCTION: GAME 0x005214b0
 RHUnk005214b0::RHUnk005214b0()
 {
-    FUN_0051f0f0();
+    ((RHUnk0051f0f0 *)this)->RHUnk0051f0f0::RHUnk0051f0f0();
     int value = m_14;
     *(unsigned *)this = 0x679120;
     value |= 2;
@@ -1073,16 +1143,26 @@ RHUnk005214b0::RHUnk005214b0()
     m_14 = value;
 }
 
+// FUNCTION: GAME 0x005214d0
+void *RHUnk005214b0::FUN_005214d0(unsigned flags)
+{
+    this->RHUnk005214b0::~RHUnk005214b0();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
 // FUNCTION: GAME 0x005214f0
 RHUnk005214b0::~RHUnk005214b0()
 {
     *(unsigned *)this = 0x679120;
-    FUN_0051f1b0();
+    ((RHUnk0051f0f0 *)this)->RHUnk0051f0f0::~RHUnk0051f0f0();
 }
 
 class RHUnk00521500
 {
 public:
+    void *FUN_00521520(unsigned flags);
     RHUnk00521500();
     ~RHUnk00521500();
     char m_00[0x14];
@@ -1093,47 +1173,65 @@ public:
 // FUNCTION: GAME 0x00521500
 RHUnk00521500::RHUnk00521500()
 {
-    FUN_0051f0f0();
+    ((RHUnk0051f0f0 *)this)->RHUnk0051f0f0::RHUnk0051f0f0();
     *(unsigned *)this = 0x679128;
     m_14 = 0x40;
     m_18 = 1;
+}
+
+// FUNCTION: GAME 0x00521520
+void *RHUnk00521500::FUN_00521520(unsigned flags)
+{
+    this->~RHUnk00521500();
+    if (flags & 1)
+        operator delete(this);
+    return this;
 }
 
 // FUNCTION: GAME 0x00521540
 RHUnk00521500::~RHUnk00521500()
 {
     *(unsigned *)this = 0x679128;
-    FUN_0051f1b0();
+    ((RHUnk0051f0f0 *)this)->RHUnk0051f0f0::~RHUnk0051f0f0();
 }
 
-class RHUnk00613e90
+class RHUnk00521550Part
 {
 public:
-    void FUN_00613e90();
+    RHUnk00521550Part();
+    char m_0[0xc];
 };
-
-class RHUnk006079c0
-{
-public:
-    void FUN_006079c0();
-};
-
-void RHUnk00613e90::FUN_00613e90() {}
-void RHUnk006079c0::FUN_006079c0() {}
 
 class RHUnk00521550
 {
 public:
     RHUnk00521550();
+    void *FUN_00521570(unsigned flags);
+    ~RHUnk00521550();
     unsigned m_0;
     char m_4[0x10];
+    RHUnk00521550Part m_14;
+    SBGeoBoundingBox2D m_20;
 };
 
 // FUNCTION: GAME 0x00521550
 RHUnk00521550::RHUnk00521550()
 {
-    ((RHUnk00613e90 *)((char *)this + 0x14))->FUN_00613e90();
-    ((RHUnk006079c0 *)((char *)this + 0x20))->FUN_006079c0();
+    *(unsigned *)this = 0x679130;
+}
+
+// FUNCTION: GAME 0x00521570
+void *RHUnk00521550::FUN_00521570(unsigned flags)
+{
+    this->~RHUnk00521550();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// FUNCTION: GAME 0x00521590
+RHUnk00521550::~RHUnk00521550()
+{
     *(unsigned *)this = 0x679130;
 }
 
@@ -1144,6 +1242,8 @@ void EmitRHUnk0051fc10(void *storage)
     ((RHUnk00521500 *)storage)->RHUnk00521500::RHUnk00521500();
     ((RHUnk005214b0 *)storage)->RHUnk005214b0::~RHUnk005214b0();
     ((RHUnk00521500 *)storage)->RHUnk00521500::~RHUnk00521500();
+    ((RHUnk0051fc10 *)storage)->FUN_0051fc40(0);
+    ((RHUnk00521550 *)storage)->FUN_00521570(0);
 }
 
 // FUNCTION: GAME 0x005504d0
@@ -1343,10 +1443,21 @@ RHMobileUnk006091b0 &RHMobileUnk006091b0::FUN_006091b0(const SBGeoPoint2D &value
 // ?_Construct@std@@YAXPADABD@Z
 
 // FUNCTION: GAME 0x0060a820
-RHMobileUnk0060a820 &RHMobileUnk0060a820::FUN_0060a820(const SBGeoPoint2D &first, const SBGeoPoint2D &second)
+SBGeoSegment2D::SBGeoSegment2D(const SBGeoPoint2D &first, const SBGeoPoint2D &second)
 {
-    FUN_006158b0(first, second);
-    return *this;
+    ((RHMobileUnk0060a820 *)this)->FUN_006158b0(first, second);
+}
+
+#include "RHGameInputTranslator.h"
+
+// FUNCTION: GAME 0x0060a880
+bool RHGameInputSegment::FUN_0060a880(const SBGeoPoint2D &point) const
+{
+    if (!SBGeoBoundingBox2D(*(const SBGeoSegment2D *)this).FUN_00608400(point))
+        return false;
+    const SBGeoPoint2D &first = *(const SBGeoPoint2D *)m_00;
+    return ((const RHUnk005fc3b0 &)((const SBGeoPoint2D *)(m_00 + 8))->Unk005fc110(first)).FUN_005fc680(
+        (const RHUnk005fc3b0 &)point.Unk005fc110(first), 1.0f) == g_unk0x00677488;
 }
 
 // FUNCTION: GAME 0x006100e0

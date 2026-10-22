@@ -2,12 +2,6 @@
 #include "RHSprite.h"
 #include <stdlib.h>
 
-class RHMobileUnk00607da0
-{
-public:
-    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
-};
-
 DECOMP_SIZE_ASSERT(RHSpriteListNode, 0x0c)
 DECOMP_SIZE_ASSERT(RHSpriteListIterator, 0x04)
 DECOMP_SIZE_ASSERT(RHSpriteList, 0x18)
@@ -39,6 +33,7 @@ public:
     unsigned short FUN_005046a0(unsigned long);
     unsigned short FUN_005046c0(unsigned long);
     RHUnk005069a0 *FUN_00505170(unsigned long);
+    bool FUN_005058a0(unsigned long);
 };
 
 // GLOBAL: GAME 0x006c0cd4
@@ -69,6 +64,32 @@ unsigned RHSpriteEngineCalls::FUN_004d9090()
     if (!g_unk0x006c0cd4)
         return 0;
     return g_unk0x006c0cd8 - g_unk0x006c0cd4;
+}
+
+extern int g_unk0x6c0c6c;
+
+// FUNCTION: GAME 0x0054e510
+RHOrder::RHOrder() : m_34(g_unk0x6c0c6c)
+{
+    ++g_unk0x6c0c6c;
+    m_24 = 0x123;
+    m_28 = 0;
+    m_2a = 1;
+    m_2b = 0;
+    m_2c = 0;
+    m_29 = 0;
+    m_2e[0] = 0;
+    m_38 = 0;
+    m_30 = 0;
+    SBGeoPoint2D &point = m_14;
+    point.m_x = 0.0f;
+    point.m_y = 0.0f;
+    RHUnk00613e90 &vector = m_08;
+    vector.m_0 = 0.0f;
+    vector.m_4 = 0.0f;
+    vector.m_8 = 0.0f;
+    m_2d = 0;
+    m_04 = 0;
 }
 
 // FUNCTION: GAME 0x0054e5e0
@@ -261,7 +282,8 @@ void RHSprite::FUN_005b5ea0(SBFile &file, int kind)
     LoadPositionInfoFromFile(file, kind);
 }
 
-// deferred: unannotated pending reccmp #534
+// Parked: frame is 8 bytes larger (extra spilled locals); jump offsets shift throughout.
+// STUB: GAME 0x005b5ed0
 bool RHUnk005b5ed0::FUN_005b5ed0(SBFile &file)
 {
 #define sprite (*this)
@@ -554,12 +576,11 @@ bool RHSprite::FUN_005b7300(int animation, int progression)
     return true;
 }
 
-// deferred: 0x005b76e0, unannotated pending reccmp #534
+// FUNCTION: GAME 0x005b76e0
 bool RHUnkTargetSprite::FUN_005b76e0(unsigned animation, unsigned short direction)
 {
-    unsigned short frame = ((RHSpriteFrameTable *)((RHUnk005b5e00 *)this)->Unk())->Frame(animation);
+    unsigned short frame = RHSpriteField<unsigned short *>(((RHUnk005b5e00 *)this)->Unk(), 4)[animation] + direction;
     RHSpriteField<int>(this, 0x1dc) = animation;
-    frame += (unsigned short)direction;
     RHSpriteField<unsigned short>(this, 0x184) = frame;
     RHSpriteField<unsigned short>(this, 0x186) = 0;
     RHSpriteField<unsigned short>(this, 0x188) = 0;
@@ -727,6 +748,59 @@ bool RHSprite::FUN_005b7820(int progression)
     return false;
 }
 
+#include "RHEngineWidenedCalls.h"
+
+// FUNCTION: GAME 0x005b7f60
+int RHEngineWidenedCalls::FUN_005b7f60(unsigned long progression)
+{
+    RHSprite *sprite = (RHSprite *)this;
+    if (RHSpriteField<char>(g_pEngine, 0x4d84))
+        return 2;
+    int result = 2;
+    bool finished = sprite->FUN_005b7820(progression);
+    if (sprite->m_188 == 0 && sprite->m_186 == sprite->FUN_005bdcd0(sprite->m_184))
+        result = 0;
+    if (finished == true)
+        result = 3;
+    return result;
+}
+
+// FUNCTION: GAME 0x005b7e40
+bool RHSprite::FUN_005b7e40(float modulation, int progression)
+{
+    if (!RHSpriteField<char>(g_pEngine, 0x4d84) && (progression == 0 || progression == 6)) {
+        ++m_188;
+        if (m_188 > (unsigned short)(FUN_005bdbf0(m_184, m_186) * modulation)) {
+            ++m_186;
+            m_188 = 0;
+        }
+        if (m_186 >= FUN_005bdcf0(m_184))
+            m_186 = 0;
+        unsigned short frame = m_186;
+        if (frame == FUN_005bdcf0(m_184) - 1 &&
+            (m_188 == (unsigned short)(FUN_005bdbf0(m_184, frame) * modulation) || FUN_005bdbf0(m_184, m_186) == 0))
+            return true;
+    }
+    return false;
+}
+
+// FUNCTION: GAME 0x005b7fd0
+int RHSprite::FUN_005b7fd0(float modulation, int progression)
+{
+    if (RHSpriteField<char>(g_pEngine, 0x4d84))
+        return 2;
+    int result = 2;
+    bool finished = FUN_005b7e40(modulation, progression);
+    if (m_188 == 0 && m_186 == FUN_005bdcd0(m_184))
+        result = 0;
+    if (finished == true)
+    {
+        ((RHEngineWidenedCalls *)this)->FUN_005bd450();
+        result = 3;
+    }
+    return result;
+}
+
 // FUNCTION: GAME 0x005b8050
 int RHSprite::PerformAction(RHOrder *order, int animation, int progression, bool reset)
 {
@@ -776,10 +850,42 @@ int RHSprite::PerformAction(RHOrder *order, int animation, int progression, bool
         result = 0;
     if (finished == true)
     {
-        FUN_005bd450();
+        ((RHEngineWidenedCalls *)this)->FUN_005bd450();
         result = 3;
     }
     return result;
+}
+
+// FUNCTION: GAME 0x005b8420
+unsigned short RHSprite::FUN_005b8420()
+{
+    if (m_186 >= m_18c)
+    {
+        if (m_186 > m_18c || m_188 > m_18e)
+            return 0xffff;
+        return m_18e - m_188;
+    }
+    unsigned short total = FUN_005bdbf0(m_184, m_186) - m_188;
+    for (unsigned short frame = m_186 + 1; frame < m_18c; ++frame)
+        total += FUN_005bdbf0(m_184, frame);
+    total += m_18e;
+    return total;
+}
+
+// FUNCTION: GAME 0x005b84b0
+unsigned short RHSprite::FUN_005b84b0(int animation)
+{
+    unsigned short row = ((RHSpriteFrameTable *)((RHUnk005b5e00 *)this)->Unk())->m_04[animation];
+    unsigned short action = FUN_005bdcd0(row);
+    unsigned short count = FUN_005bdcf0(row);
+    unsigned short total = 0;
+    for (unsigned short frame = 0; frame <= action; ++frame)
+    {
+        if (frame >= count)
+            break;
+        total += FUN_005bdbf0(row, frame);
+    }
+    return total;
 }
 
 // Parked: local coloring, register allocation and control flow do not match.
@@ -839,7 +945,7 @@ int RHSprite::PerformMotion(RHOrder *order, RHOrder *following, int animation, i
         {
             m_184 = ((RHSpriteFrameTable *)((RHUnk005b5e00 *)this)->Unk())->Frame(animation) + m_d8;
             FUN_005b7300(animation, progression);
-            FUN_005bd450();
+            ((RHEngineWidenedCalls *)this)->FUN_005bd450();
             return 3;
         }
         m_150 = O(int, 0x34);
@@ -1091,6 +1197,19 @@ void RHSprite::FUN_005bb180(unsigned short, unsigned long, unsigned short, unsig
 {
 }
 
+#include "RHUnk005bb520.h"
+
+// FUNCTION: GAME 0x005bb520
+SBGeoPoint2D RHUnk005bb520::FUN_005bb520()
+{
+    SBGeoPoint2D result;
+    {
+        const SBGeoVector2D &offset = SBGeoVector2D(*(SBGeoVector2D *)((RHUnk005b5e00 *)this)->Unk005bdd30(RHSpriteField<unsigned short>(this, 0x184)));
+        result = RHSpriteField<SBGeoPoint2D>(this, 0x1c).Unk005fc190(offset);
+    }
+    return result;
+}
+
 // SIZE 0x64
 struct RHSpriteFrameEntry
 {
@@ -1104,21 +1223,58 @@ struct RHSpriteFrameEntry
 };
 DECOMP_SIZE_ASSERT(RHSpriteFrameEntry, 0x64)
 
-// deferred: 0x005bd450, unannotated pending reccmp #534
-bool RHSprite::FUN_005bd450()
+// FUNCTION: GAME 0x005bd3a0
+bool RHSprite::FUN_005bd3a0(RHSprite &other)
 {
-    void *holder = ((RHUnk005b5e00 *)this)->FUN_005b5de0();
-    if (RHSpriteField<void *>(this, 0x154))
+    RHSpriteField<int>(this, 0x154) = RHSpriteField<int>(&other, 0x154);
+    RHSpriteField<int>(this, 0x158) = RHSpriteField<int>(&other, 0x158);
+    RHSpriteField<int>(this, 0x15c) = RHSpriteField<int>(&other, 0x15c);
+    RHSpriteField<int>(this, 0x160) = RHSpriteField<int>(&other, 0x160);
+    RHSpriteField<std::string>(this, 0x164) = RHSpriteField<std::string>(&other, 0x164);
+    m_19a = other.m_19a;
+    m_19c = other.m_19c;
+    RHSpriteField<SBGeoVector2D>(this, 0x84) = RHSpriteField<SBGeoVector2D>(&other, 0x84);
+    ((RHMobileUnk00607da0 *)&RHSpriteField<SBGeoBoundingBox2D>(this, 0x98))->FUN_00607da0(
+        *(const RHMobileUnk00607da0 *)((RHUnkPathActorInfoBase *)((char *)&other + 4))->Unk0055fa10(RHSpriteField<int>(&other, 0x8c)));
+    RHSpriteField<char>(this, 0x195) = 0;
+    return true;
+}
+
+// SIZE 0x10
+struct RHSpriteFrameVector
+{
+    undefined m_00[4]; // 0x00
+    RHSpriteFrameEntry *first; // 0x04
+    RHSpriteFrameEntry *last; // 0x08
+    RHSpriteFrameEntry *end; // 0x0c
+    unsigned size() const { return first == 0 ? 0 : last - first; }
+};
+
+// FUNCTION: GAME 0x005bd450
+bool RHEngineWidenedCalls::FUN_005bd450()
+{
+    RHSpriteFrameVector *frames = (RHSpriteFrameVector *)((RHUnk005b5e00 *)this)->FUN_005b5de0();
+    if (RHSpriteField<void *>(this, 0x154) && frames->size() != 0)
     {
-        RHSpriteFrameEntry *entries = RHSpriteField<RHSpriteFrameEntry *>(holder, 4);
-        if (entries && RHSpriteField<RHSpriteFrameEntry *>(holder, 8) - entries != 0)
-        {
-            unsigned *current = entries[m_184].first;
-            for (; current != RHSpriteField<RHSpriteFrameEntry *>(holder, 4)[m_184].last; ++current)
-                RHSpriteField<RHSpriteFrameCalls *>(this, 0x1d0)->FUN_00505940(*current);
-        }
+        for (unsigned *current = frames->first[((RHSprite *)this)->m_184].first;
+             current != frames->first[((RHSprite *)this)->m_184].last; ++current)
+            RHSpriteField<RHSpriteFrameCalls *>(this, 0x1d0)->FUN_00505940(*current);
     }
     return true;
+}
+
+#include "RHEngineSpriteCalls.h"
+
+// FUNCTION: GAME 0x005bd4e0
+void RHEngineSpriteCalls::FUN_005bd4e0()
+{
+    RHSpriteFrameVector *frames = (RHSpriteFrameVector *)((RHUnk005b5e00 *)this)->FUN_005b5de0();
+    if (frames->size() != 0)
+    {
+        for (unsigned *current = frames->first[((RHSprite *)this)->m_184].first;
+             current != frames->first[((RHSprite *)this)->m_184].last; ++current)
+            RHSpriteField<RHFrameHolder *>(this, 0x1d0)->FUN_005058a0(*current);
+    }
 }
 
 // FUNCTION: GAME 0x005bd5b0
@@ -1260,14 +1416,13 @@ const SBGeoPoint2D *RHSprite::FUN_005bdd90()
     return FUN_005bdc80(m_184, m_186);
 }
 
-// Parked: zero-extension register differs (target `xor ecx,ecx; mov cx,[..]`;
-// ours `mov ax,[..]; and eax,0xffff`), plus the entries load placement.
-// STUB: GAME 0x005bddb0
+// FUNCTION: GAME 0x005bddb0
 unsigned short RHSprite::FUN_005bddb0(unsigned index)
 {
     void *holder = ((RHUnk005b5e00 *)this)->FUN_005b5de0();
-    unsigned short animation = RHSpriteField<unsigned short *>(((RHUnk005b5e00 *)this)->Unk(), 4)[index];
-    return RHSpriteField<unsigned short *>(holder, 4)[animation * 0x64 + 0x10];
+    unsigned short *table = RHSpriteField<unsigned short *>(((RHUnk005b5e00 *)this)->Unk(), 4);
+    unsigned short animation = table[index];
+    return *(unsigned short *)((char *)RHSpriteField<void *>(holder, 4) + animation * 0x64 + 0x10);
 }
 
 // FUNCTION: GAME 0x005bddf0
@@ -1311,7 +1466,8 @@ void RHSprite::FUN_005bdf30()
     void *holder = ((RHUnk005b5e00 *)this)->FUN_005b5de0();
     undefined *entries = RHSpriteField<undefined *>(holder, 4);
     unsigned *table = RHSpriteField<unsigned *>(entries + m_184 * 0x64, 0x18);
-    ((RHFrameHolder *)RHSpriteField<RHFrameHolder *>(this, 0x1d0))->FUN_00505170(table[m_186]);
+    ((RHFrameHolder *)RHSpriteField<RHFrameHolder *>(this, 0x1d0))->FUN_00505170(
+        table[*(volatile unsigned short *)((char *)this + 0x186)]);
 }
 
 // Duplicate of the annotated RHUnk00613e90 (float, float, float) constructor (0x005df4f0).
@@ -1329,6 +1485,11 @@ SBGeoVector2D::SBGeoVector2D(float x, float y) : SBGeoPoint2D(x, y)
 
 void RHSprite::Emit(SBFile &file)
 {
+    ((RHEngineWidenedCalls *)this)->FUN_005b7f60(0);
+    FUN_005b7fd0(1.0f, 0);
+    FUN_005b8420();
+    FUN_005b84b0(0);
+    ((RHUnk005bb520 *)this)->FUN_005bb520();
     FUN_005bddf0();
     FUN_005bde70();
     FUN_0049b2c0();

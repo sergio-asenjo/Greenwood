@@ -7,11 +7,26 @@ public:
     bool FUN_005b9e30(void *first, void *second, bool third);
 };
 
-RHMobileBase004a8130::RHMobileBase004a8130(int) throw() {}
+// FUNCTION: GAME 0x004a8130
+RHMobileBase004a8130::RHMobileBase004a8130(int type) : RHMobileElementBase(type, 0)
+{
+    RHMobileField<unsigned short>(this, 0x10) = 0x1001;
+    RHMobileField<unsigned>(this, 0xa8) = 1;
+    RHMobileField<unsigned char>(this, 0x12) = 1;
+    RHMobileField<unsigned>(this, 0xac) = 0;
+    m_cc = -1;
+    m_c8 = 0;
+    m_d0 = 0;
+    RHMobileField<unsigned>(this, 0xb0) = 0x11b;
+}
+
 // SYNTHETIC: GAME 0x004a81d0
 // RHMobileBase004a8130::`scalar deleting destructor'
 
-RHMobileBase004a8130::~RHMobileBase004a8130() {}
+// FUNCTION: GAME 0x004a81f0
+RHMobileBase004a8130::~RHMobileBase004a8130()
+{
+}
 void RHMobileBase004a8130::v1() {}
 void RHMobileBase004a8130::v2() {}
 void RHMobileBase004a8130::v3() {}
@@ -84,8 +99,6 @@ void RHMobileUnk006100e0::FUN_00578c50() {}
 bool RHMobilePath::FUN_00550660(unsigned char) { return false; }
 void RHMobilePath::FUN_005505c0() {}
 RHUnk005fc3b0::RHUnk005fc3b0(float x, float y) : SBGeoVector2D(x, y) {}
-float RHUnk005fc3b0::FUN_005fc7c0(float) { return 0.0f; }
-// FUNCTION: GAME 0x004e6a10
 void FUN_004b0620(RHUnk005fc3b0 *destination, const RHUnk005fc3b0 &value) { new (destination) RHUnk005fc3b0(value); }
 void FUN_004b05b0(RHUnk005fc3b0 *first, RHUnk005fc3b0 *last, const RHUnk005fc3b0 &value)
 {
@@ -128,12 +141,82 @@ void RHMobilePointList::FUN_005c9010(RHMobilePointNode *&node, int distance, uns
 }
 
 unsigned short RHMobilePolygonPoints::FUN_0060ce80() const { return 0; }
-RHMobileUnk0051fd10::RHMobileUnk0051fd10(float, float) {}
-RHMobileUnk0051fd10::~RHMobileUnk0051fd10() {}
-void RHMobileUnk0051fd10::FUN_0051fdc0() {}
-RHMobileUnk00520b60::RHMobileUnk00520b60(const SBGeoPoint2D &, float, float) {}
-RHMobileUnk00520b60::~RHMobileUnk00520b60() {}
-void RHMobileUnk00520b60::FUN_00520c80(const SBGeoPoint2D &, const SBGeoPoint2D &) {}
+void RHMobileUnk0051fd10::FUN_00520480() {}
+// FUNCTION: GAME 0x0060b640
+bool RHUnk0042fde0::FUN_0060b640(const SBGeoPoint2D &point) const
+{
+    RHUnk005fc3b0 offset;
+    RHUnk005fc3b0 direction;
+    direction.FUN_005fc430(FUN_0042fde0());
+    offset.FUN_005fc430(point.Unk005fc110(m_0));
+    if (offset.FUN_005fc660(direction) < g_unk0x00677488)
+        return false;
+    offset.FUN_005fc430(point.Unk005fc110(m_8));
+    return offset.FUN_005fc660(direction) <= g_unk0x00677488;
+}
+
+#include "RHUnk005fc400.h"
+#include "SBGeoSegment2D.h"
+
+// TEMPLATE: GAME 0x004e6a10
+// ?_Construct@std@@YAXPAVSBGeoSegment2D@@ABV2@@Z
+
+void (*g_mobileSegmentConstruct)(SBGeoSegment2D *, const SBGeoSegment2D &) = &std::_Construct;
+
+extern "C" double __cdecl fabs(double);
+extern "C" double __cdecl sqrt(double);
+SBGeoVector2D operator*(float factor, const SBGeoVector2D &point);
+
+// FUNCTION: GAME 0x0060b7a0
+float RHUnk0042fde0::FUN_0060b7a0(const SBGeoPoint2D &point) const
+{
+    if (FUN_0060b640(point))
+    {
+        RHUnk005fc400 offset(m_0, point);
+        SBGeoVector2D normal = ((RHUnk005fc3b0 *)&FUN_0042fde0())->FUN_005fc8f0(true, 1.0f);
+        ((RHUnk005fc3b0 *)&normal)->FUN_005fc7c0(1.0f);
+        float distance = (float)fabs(((SBGeoVector2D *)&offset)->FUN_005fc660(normal));
+        return distance;
+    }
+    float first = point.Unk005fc110(m_0).Unk005fc6d0(1.0f);
+    float last = point.Unk005fc110(m_8).Unk005fc6d0(1.0f);
+    float distance = (float)sqrt(first < last ? first : last);
+    return distance;
+}
+
+// FUNCTION: GAME 0x0060b910
+void RHUnk0042fde0::FUN_0060b910(SBGeoPoint2D &output, const SBGeoPoint2D &point) const
+{
+    SBGeoVector2D direction = FUN_0042fde0();
+    if (point.Unk005fc110(m_8).FUN_005fc660(direction) >= g_unk0x00677488)
+        output = m_8;
+    else
+    {
+        float projection = point.Unk005fc110(m_0).FUN_005fc660(direction);
+        if (projection <= g_unk0x00677488)
+            output = m_0;
+        else
+            output = m_0.Unk005fc190(operator*(projection / direction.Unk005fc6d0(1.0f), direction));
+    }
+}
+
+// FUNCTION: GAME 0x0060ba80
+float RHUnk0042fde0::FUN_0060ba80(const SBGeoPoint2D &point) const
+{
+    {
+        SBGeoVector2D direction = FUN_0042fde0();
+        if (point.Unk005fc110(m_8).FUN_005fc660(direction) >= g_unk0x00677488)
+            goto last;
+        float projection = point.Unk005fc110(m_0).FUN_005fc660(direction);
+        if (projection <= g_unk0x00677488)
+            goto first;
+        return projection / direction.Unk005fc6d0(1.0f);
+    }
+last:
+    return g_unk0x0067749c;
+first:
+    return g_unk0x00677488;
+}
 RHMobilePointerList::RHMobilePointerList()
 {
     m_4 = (RHMobilePointerNode *)::operator new(12);
@@ -190,4 +273,230 @@ SBGeoBoundingBox2D::SBGeoBoundingBox2D(float left, float top, float right, float
 bool RHMobilePartCalls::FUN_004aafc0(void *value)
 {
     return ((RHSprite *)m_50)->FUN_005b9e30(value, m_54, false);
+}
+
+
+class RHUnk00521550Part
+{
+public:
+    RHUnk00521550Part();
+    char m_0[0xc];
+};
+
+RHUnk00521550Part::RHUnk00521550Part() {}
+
+#include "SBGeoIntersection2D.h"
+
+// Parked: vector-use stack slots differ despite matching construction order.
+// STUB: GAME 0x00615910
+bool RHMobileUnk0060a820::FUN_00615910(const SBGeoSegment2D &segment) const
+{
+    SBGeoBoundingBox2D box;
+    RHUnk005fc3b0 second;
+    RHUnk005fc3b0 direction;
+    RHUnk005fc3b0 first;
+    box.FUN_00607e30((const RHMalignitySegment &)segment);
+    if (box.FUN_00608730((const RHMobileUnk006100e0 &)*this))
+    {
+        const RHMobileUnk006100e0 &ray = (const RHMobileUnk006100e0 &)*this;
+        const RHMobileUnk006100e0 &line = (const RHMobileUnk006100e0 &)segment;
+        direction.FUN_005fc430(ray.Second().Unk005fc110(ray));
+        first.FUN_005fc430(line.Unk005fc110(ray));
+        second.FUN_005fc430(line.Second().Unk005fc110(ray));
+        if (direction.FUN_005fc680(first, 1.0f) >= g_unk0x00677488 &&
+                direction.FUN_005fc680(second, 1.0f) <= g_unk0x00677488 ||
+            direction.FUN_005fc680(first, 1.0f) <= g_unk0x00677488 &&
+                direction.FUN_005fc680(second, 1.0f) >= g_unk0x00677488)
+        {
+            if (first.FUN_005fc680(second, 1.0f) > g_unk0x00677488)
+            {
+                if (direction.FUN_005fc680(second, 1.0f) >= g_unk0x00677488)
+                    return true;
+                return false;
+            }
+            if (direction.FUN_005fc680(second, 1.0f) <= g_unk0x00677488)
+                return true;
+            return false;
+        }
+        return false;
+    }
+    return false;
+}
+
+extern double g_unk0x00677490;
+
+// GLOBAL: GAME 0x0067a938
+double g_unk0x0067a938 = 9.999999717180685e-10;
+
+// Parked: slope temporaries and collinear branch expansion differ.
+// STUB: GAME 0x00615ca0
+RHUnk0060fbf0 RHMobileUnk0060a820::FUN_00615ca0(const SBGeoSegment2D &segment) const
+{
+    const RHMobileUnk006100e0 &ray = (const RHMobileUnk006100e0 &)*this;
+    const RHMobileUnk006100e0 &line = (const RHMobileUnk006100e0 &)segment;
+    SBGeoPoint2D point;
+    SBGeoSegment2D clipped(SBGeoPoint2D(0.0f, 0.0f), SBGeoPoint2D(0.0f, 0.0f));
+    RHUnk0060fbf0 result;
+    double dx = ray.Second().m_x - ray.m_x;
+    double otherDx = line.Second().m_x - line.m_x;
+    if (dx != g_unk0x00677490)
+    {
+        double slope = (ray.Second().m_y - ray.m_y) / dx;
+        double offset = ray.m_y - ray.m_x * slope;
+        if (otherDx != g_unk0x00677490)
+        {
+            double otherSlope = (line.Second().m_y - line.m_y) / otherDx;
+            double otherOffset = line.m_y - line.m_x * otherSlope;
+            if (slope != otherSlope)
+            {
+                double x = (otherOffset - offset) / (slope - otherSlope);
+                if ((ray.m_x < ray.Second().m_x ? x >= ray.m_x - g_unk0x0067a938 : x <= ray.m_x + g_unk0x0067a938) &&
+                    (x <= line.m_x + g_unk0x0067a938 && x >= line.Second().m_x - g_unk0x0067a938 ||
+                     x >= line.m_x - g_unk0x0067a938 && x <= line.Second().m_x + g_unk0x0067a938))
+                {
+                    point.m_x = x;
+                    point.m_y = x * slope + offset;
+                    result.FUN_0060fdc0(point);
+                }
+                else
+                    result.FUN_0060fdb0();
+                return result;
+            }
+            if (offset != otherOffset)
+            {
+                result.FUN_0060fdb0();
+                return result;
+            }
+            const float &origin = ray.m_x;
+            const float &direction = ray.Second().m_x;
+            const float &first = line.m_x;
+            const float &second = line.Second().m_x;
+            if (origin < direction)
+            {
+                if (first < origin && second < origin)
+                    result.FUN_0060fdb0();
+                else if (first >= origin && second >= origin)
+                    result.FUN_0060fe20(line);
+                else if (first <= origin && second > origin)
+                {
+                    clipped.First() = ray;
+                    clipped.Second() = line.Second();
+                    result.FUN_0060fe20((const RHMobileUnk006100e0 &)clipped);
+                }
+                else if (first > origin && second <= origin)
+                {
+                    clipped.First() = ray;
+                    clipped.Second() = line;
+                    result.FUN_0060fe20((const RHMobileUnk006100e0 &)clipped);
+                }
+                else if (first == origin && second < origin || first < origin && second == origin)
+                    result.FUN_0060fdc0(ray);
+            }
+            else
+            {
+                if (first > origin && second > origin)
+                    result.FUN_0060fdb0();
+                else if (first <= origin && second <= origin)
+                    result.FUN_0060fe20(line);
+                else if (first >= origin && second < origin)
+                {
+                    clipped.First() = ray;
+                    clipped.Second() = line.Second();
+                    result.FUN_0060fe20((const RHMobileUnk006100e0 &)clipped);
+                }
+                else if (first < origin && second >= origin)
+                {
+                    clipped.First() = ray;
+                    clipped.Second() = line;
+                    result.FUN_0060fe20((const RHMobileUnk006100e0 &)clipped);
+                }
+                else if (first == origin && second > origin || first > origin && second == origin)
+                    result.FUN_0060fdc0(ray);
+            }
+            return result;
+        }
+        else
+        {
+            double y = line.m_x * slope + offset;
+            if ((ray.m_x < ray.Second().m_x ? line.m_x >= ray.m_x - g_unk0x0067a938 : line.m_x <= ray.m_x + g_unk0x0067a938) &&
+                (y <= line.m_y + g_unk0x0067a938 && y >= line.Second().m_y - g_unk0x0067a938 ||
+                 y >= line.m_y - g_unk0x0067a938 && y <= line.Second().m_y + g_unk0x0067a938))
+            {
+                point.m_x = line.m_x;
+                point.m_y = y;
+                result.FUN_0060fdc0(point);
+            }
+            else
+                result.FUN_0060fdb0();
+            return result;
+        }
+    }
+    else if (otherDx != g_unk0x00677490)
+    {
+        double slope = (line.Second().m_y - line.m_y) / otherDx;
+        double y = ray.m_x * slope + (line.m_y - line.m_x * slope);
+        if ((ray.m_y < ray.Second().m_y ? y >= ray.m_y - g_unk0x0067a938 : y <= ray.m_y + g_unk0x0067a938) &&
+            (ray.m_x <= line.m_x + g_unk0x0067a938 && ray.m_x >= line.Second().m_x - g_unk0x0067a938 ||
+             ray.m_x >= line.m_x - g_unk0x0067a938 && ray.m_x <= line.Second().m_x + g_unk0x0067a938))
+        {
+            point.m_x = ray.m_x;
+            point.m_y = y;
+            result.FUN_0060fdc0(point);
+        }
+        else
+            result.FUN_0060fdb0();
+        return result;
+    }
+    else if (ray.m_x != line.m_x)
+    {
+        result.FUN_0060fdb0();
+        return result;
+    }
+    const float &origin = ray.m_y;
+    const float &direction = ray.Second().m_y;
+    const float &first = line.m_y;
+    const float &second = line.Second().m_y;
+    if (direction > origin)
+    {
+        if (first < origin && second < origin)
+            result.FUN_0060fdb0();
+        else if (first >= origin && second >= origin)
+            result.FUN_0060fe20(line);
+        else if (first <= origin && second > origin)
+        {
+            clipped.First() = ray;
+            clipped.Second() = line.Second();
+            result.FUN_0060fe20((const RHMobileUnk006100e0 &)clipped);
+        }
+        else if (first > origin && second <= origin)
+        {
+            clipped.First() = ray;
+            clipped.Second() = line;
+            result.FUN_0060fe20((const RHMobileUnk006100e0 &)clipped);
+        }
+        else if (first == origin && second < origin || first < origin && second == origin)
+            result.FUN_0060fdc0(ray);
+    }
+    else
+    {
+        if (first > origin && second > origin)
+            result.FUN_0060fdb0();
+        else if (first <= origin && second <= origin)
+            result.FUN_0060fe20(line);
+        else if (first >= origin && second < origin)
+        {
+            clipped.First() = ray;
+            clipped.Second() = line.Second();
+            result.FUN_0060fe20((const RHMobileUnk006100e0 &)clipped);
+        }
+        else if (first < origin && second >= origin)
+        {
+            clipped.First() = ray;
+            clipped.Second() = line;
+            result.FUN_0060fe20((const RHMobileUnk006100e0 &)clipped);
+        }
+        else if (first == origin && second > origin || first > origin && second == origin)
+            result.FUN_0060fdc0(ray);
+    }
+    return result;
 }
