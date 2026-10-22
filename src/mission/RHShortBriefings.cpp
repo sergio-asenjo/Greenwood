@@ -95,11 +95,7 @@ public:
     RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
 };
 
-class RHMapWideText
-{
-public:
-    void Tidy(bool built);
-};
+#include "RHMapWideText.h"
 
 class RHBriefingWideText
 {
@@ -219,24 +215,17 @@ void RHShortBriefings::FUN_005a2630(RHMenuWindow *window, SBGeoBoundingBox2D &bo
     }
 }
 
-class RHBriefingTitleBase
-{
-public:
-    RHBriefingTitleBase();
-    ~RHBriefingTitleBase();
-    unsigned m_vptr;
-    char m_04[0xfc];
-};
-
-class RHBriefingTitle : public RHBriefingTitleBase
+class __declspec(novtable) RHBriefingTitle : public RHGameLifetime00525880
 {
 public:
     RHBriefingTitle()
     {
-        m_vptr = 0x006791a8;
-        m_04[0xf8] = true;
-        m_04[0xf9] = true;
+        *(unsigned *)this = 0x006791a8;
+        m_fc = true;
+        m_fd = true;
     }
+    bool m_fc;
+    bool m_fd;
 };
 
 class __declspec(novtable) RHBriefingPicture : public RHGameLifetime00517590

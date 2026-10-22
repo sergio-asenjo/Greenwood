@@ -7,21 +7,12 @@ RHShortBriefingsRenderer::RHShortBriefingsRenderer() {}
 RHShortBriefingsRenderer::~RHShortBriefingsRenderer() {}
 void RHShortBriefingsCalls::FUN_005a2450(void *, void *) {}
 
-class RHBriefingTitleBase
+#include "SBGeoBoundingBox2DCore.h"
+
+// FUNCTION: GAME 0x00607ad0
+SBGeoBoundingBox2D::SBGeoBoundingBox2D(const SBGeoPoint2D &point)
 {
-public:
-    RHBriefingTitleBase();
-    ~RHBriefingTitleBase();
-};
-
-RHBriefingTitleBase::RHBriefingTitleBase() {}
-RHBriefingTitleBase::~RHBriefingTitleBase() {}
-
-class SBGeoPoint2D;
-class SBGeoBoundingBox2D
-{
-public:
-    SBGeoBoundingBox2D(const SBGeoPoint2D &point);
-};
-
-SBGeoBoundingBox2D::SBGeoBoundingBox2D(const SBGeoPoint2D &) {}
+    m_p0 = point;
+    m_p1 = point;
+    m_flag = true;
+}
