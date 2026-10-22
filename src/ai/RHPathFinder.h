@@ -104,19 +104,7 @@ public:
     RHScriptIter FUN_0046eb80();
 };
 
-struct RHSectorActorNode;
-class RHSectorActorConstIter
-{
-public:
-    RHSectorActorNode *m_p; // 0x00
-    RHSectorActorConstIter(RHSectorActorNode *node) : m_p(node) {}
-};
-class RHSectorActorIter : public RHSectorActorConstIter
-{
-public:
-    RHSectorActorIter(RHSectorActorNode *node) : RHSectorActorConstIter(node) {}
-    RHSectorActorIter operator++(int);
-};
+#include "RHSectorActorIterator.h"
 
 // SIZE 0x24
 class RHPathWorkList
@@ -208,6 +196,7 @@ public:
 class RHUnk005fc3b0 : public SBGeoVector2D
 {
 public:
+    RHUnk005fc3b0 &FUN_005fc5b0(float);
     float Unk005fc6a0(float value);
     float FUN_005fc680(const RHUnk005fc3b0 &other, float value) const;
     RHUnk005fc3b0() {}

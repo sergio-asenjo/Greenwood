@@ -55,11 +55,26 @@ public:
     void *m_0;
 };
 
+class RHTargetSequenceCalls
+{
+public:
+    virtual void V00() = 0;
+    virtual void V04() = 0;
+    virtual void V08() = 0;
+    virtual void V0c(void *actor, bool active) = 0;
+    undefined m_04[0x60];
+    int m_64;
+};
+
 class RHElementTarget
 {
 public:
     void InitializeFromMissionStream(SBFile &file);
     bool FUN_004bbf80();
+    int FUN_004baf50(void *actor);
+    int FUN_004baff0(void *actor);
+    int FUN_004bb0a0(void *actor);
+    void FUN_004bae60(RHTargetSequenceCalls *sequence, int (RHUnkTargetScriptRef::*callback)(int));
     void FUN_004bc3d0(int activator);
     void Emit(SBFile &file);
     RHUnkTargetSprite *&Info() { return *(RHUnkTargetSprite **)(m_data + 0x50); }

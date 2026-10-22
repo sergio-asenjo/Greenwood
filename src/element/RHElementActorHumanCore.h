@@ -15,12 +15,16 @@ class RHElementActorHuman
 {
 public:
     bool FUN_00471a50();
+    bool FUN_00471b00();
+    void FUN_00471c00(unsigned short amount, void *source, bool force);
+    void FUN_0047ef70();
     unsigned short GetNewConcussionValue(unsigned short amount) const;
     void FUN_00471e50(int amount, int source);
     void FUN_0047e9a0(int amount, int source);
     void FUN_00474890(void *value);
     void FUN_004748f0(RHActorTranslationSequenceCalls *sequence);
     void FUN_00474ad0(RHActorTranslationSequenceCalls *sequence);
+    void FUN_00483c90(RHActorTranslationSequenceCalls *sequence);
     void FUN_004752d0(RHActorTranslationSequenceCalls *sequence);
     bool FUN_00475750(unsigned flags, RHActorTranslationSequenceCalls *sequence);
     bool FUN_00475b00(unsigned flags, void *value);
@@ -30,6 +34,7 @@ public:
     void GetTransitionFlags(RHSequenceElement *element, unsigned long &first, unsigned long &second, unsigned long &third);
     bool Serialize(SBFile &file);
     void FUN_0047a870(void *value);
+    bool FUN_0047a450(RHElementActorHuman *other);
     void FUN_0047f4f0(void *value);
     bool FUN_0047f420();
     void FUN_0047a880(RHSequenceElement *element);
@@ -52,7 +57,7 @@ public:
     void FUN_00482e50(RHHumanList *result, int weaponData);
     void FUN_00482fd0(RHHumanList *result, int weaponData, bool alternate);
     bool FUN_00483070(RHElementActorHuman *other);
-    unsigned FUN_00483160(void *context, RHElementActorHuman *target, unsigned type);
+    bool FUN_00483160(void *context, RHElementActorHuman *target, unsigned type);
     unsigned FUN_00483500(void *context, unsigned command, RHElementActorHuman *target);
     void *FUN_004837f0(RHElementActorHuman *target);
     int FUN_0047b760(void *actor, int *value);
@@ -85,12 +90,18 @@ public:
     void FUN_0047ebc0();
     int FUN_00484a70(void *value);
     void FUN_00484610(RHActorTranslationSequenceCalls *sequence);
+    void *FUN_004847c0(float maximum, void *filter) const;
+    void *FUN_00484870(RHElementActorHuman *actor);
     bool FUN_00484bb0(RHElementActorHuman *actor, SBGeoPoint2D &result, void *line);
     void FUN_004851b0(unsigned short value, void *owner);
+    void FUN_004857b0(RHHumanList &result);
     void FUN_00485940(int color, unsigned short value, bool completed, float duration);
+    void FUN_00485a40(void *result, unsigned short &heading);
     void FUN_00485d20(RHSequenceElement *element);
     void FUN_00485d90();
     int FUN_00485e00();
+    void FUN_00485e90(int value);
+    void FUN_00485f20();
     void Emit(SBFile &file, RHSequenceElement *element, RHcommand command);
 
     char m_000[0x1b8];

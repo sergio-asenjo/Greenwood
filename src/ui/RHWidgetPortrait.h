@@ -16,6 +16,7 @@
 
 #include "SB.h"
 #include "Decomp.h"
+#include <list>
 #include "../engine/RHGame_calls.h"
 
 #include "RHRendererGeometry.h"
@@ -39,6 +40,7 @@ void RHSerializeName(SBFile &file, const char *name);
 class RHPortraitRenderer005ca330
 {
 public:
+    void *FUN_005ca310(unsigned flags);
     RHPortraitRenderer005ca330();
     ~RHPortraitRenderer005ca330();
     undefined m_data[0x5c];
@@ -148,20 +150,6 @@ public:
     const std::wstring &FUN_00492730();
 };
 
-class RHPortraitUnk005cf320
-{
-public:
-    ~RHPortraitUnk005cf320();
-    void *FUN_005d09b0(unsigned flags);
-};
-
-class RHPortraitUnk005cf570
-{
-public:
-    ~RHPortraitUnk005cf570();
-    void *FUN_005d09d0(unsigned flags);
-};
-
 class RHPortraitUnk005d0180
 {
 public:
@@ -169,20 +157,69 @@ public:
     void *FUN_005d09f0(unsigned flags);
 };
 
-class RHPortraitInputRenderer
+#include "RHPortraitInputRenderer.h"
+
+class RHPortraitInputRendererMember : public RHPortraitInputRenderer
 {
 public:
-    RHPortraitInputRenderer();
-    ~RHPortraitInputRenderer();
-    void *FUN_005d1b40(unsigned flags);
-    void FUN_0061c610(unsigned long surface);
-    void FUN_0061d570(unsigned short position, int limit);
-    unsigned FUN_0061d5e0();
-    SBGeoBoundingBox2D FUN_0061d3f0(unsigned short line, int value);
-    SBGeoBoundingBox2D FUN_0061d7c0();
-    SBGeoBoundingBox2D FUN_0061d620();
-    unsigned FUN_0061d950();
-    unsigned m_vptr;
+    RHPortraitInputRendererMember()
+    {
+        *(unsigned *)this = 0x0067a044;
+    }
+};
+
+// VTABLE: GAME 0x0067a00c
+class RHPortraitInputWidget : public RHGameWidgetLifetimeBase
+{
+public:
+    RHPortraitInputWidget();
+    ~RHPortraitInputWidget();
+    void *FUN_005d09b0(unsigned flags);
+    RHPortraitInputRendererMember m_renderer;
+};
+
+class RHPortraitTextLines
+{
+public:
+    RHPortraitTextLines();
+    ~RHPortraitTextLines()
+    {
+        m_list.clear();
+    }
+    std::list<std::wstring> m_list;
+    std::list<std::wstring>::iterator m_current;
+    bool m_dirty;
+    int m_index;
+    undefined m_18[8];
+    std::wstring m_text;
+};
+
+class RHPortraitItemIndices
+{
+public:
+    ~RHPortraitItemIndices()
+    {
+        m_list.clear();
+    }
+    std::list<unsigned long> m_list;
+    std::list<unsigned long>::iterator m_current;
+    bool m_dirty;
+    int m_index;
+};
+
+// VTABLE: GAME 0x00679fd4
+class RHPortraitUnk005cf570 : public RHPortraitInputWidget
+{
+public:
+    ~RHPortraitUnk005cf570();
+    void *FUN_005d09d0(unsigned flags);
+    RHPortraitTextLines m_first;
+    RHPortraitTextLines m_second;
+    RHPortraitItemIndices m_items;
+    undefined m_17c[0x28];
+    SBGeoPoint2D m_point;
+    SBGeoBoundingBox2D m_firstBox;
+    SBGeoBoundingBox2D m_secondBox;
 };
 
 class RHPortraitInputCalls
@@ -191,21 +228,24 @@ public:
     bool FUN_005cfc30(const void *input);
 };
 
-class RHPortraitRenderer006212d0
+#include "RHPortraitRenderer0060dab0.h"
+
+class RHPortraitRenderer006212d0 : public RHPortraitRenderer0060dab0
 {
 public:
     RHPortraitRenderer006212d0();
     ~RHPortraitRenderer006212d0();
-    undefined m_data[0x90];
+    std::wstring m_prompt;
+    bool m_promptEnabled;
+    void *m_font;
+    void *m_alternateFont;
+    void *m_textObject;
+    SBGeoBoundingBox2D m_bounds;
+    bool m_enabled;
+    SBGeoVector2D m_offset;
 };
 
-class RHPortraitText0061db10
-{
-public:
-    RHPortraitText0061db10();
-    ~RHPortraitText0061db10();
-    undefined m_data[0x48];
-};
+#include "SBUIInputFieldText.h"
 
 #include "RHFocusManager.h"
 
@@ -217,11 +257,7 @@ public:
     void FUN_0053f9f0(void *stop);
 };
 
-class RHPortraitTextResourceCalls
-{
-public:
-    void *FUN_0053be80(const std::string &name);
-};
+typedef RHMenuScreenView RHPortraitTextResourceCalls;
 
 struct SBUIInputFieldUnkResource;
 
@@ -232,9 +268,9 @@ class SBUIInputFieldUnk00621440
 public:
     bool FUN_00621470(unsigned int id);
     void FUN_0061e340();
-    void FUN_0061e060(RHMapWideText *text);
+    void FUN_0061e060(const std::wstring &text);
     void FUN_0061e4b0();
-    RHMapWideText FUN_0061df60();
+    std::wstring FUN_0061df60();
     void FUN_00621440(SBUIInputFieldUnkResource *resource);
     bool FUN_00621c30(const SBGeoBoundingBox2D &box);
 };
@@ -247,17 +283,11 @@ public:
     unsigned FUN_0061dd00();
     unsigned FUN_0061df50();
     unsigned FUN_0061dd30();
-    void FUN_0061e240(unsigned direction);
     void FUN_0061e2b0(unsigned index);
 };
 
-class SBUIInputFieldUnk0061e180
-{
-public:
-    bool Insert(unsigned short character);
-};
-
 #include "SBUIKeyboardCalls.h"
+#include "RHMenuScreenView.h"
 
 unsigned FUN_005fb1d0(unsigned key);
 int FUN_005fb0f0(unsigned key, unsigned short *characters, const void *state, unsigned flags);

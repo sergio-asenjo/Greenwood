@@ -22,7 +22,6 @@ public:
     void FUN_005e5260();
     bool Unk005e5a00(unsigned long, RHUnk00613e90 &, unsigned long);
     void Unk005e5ea0(RHUnk00613e90 &);
-    void FUN_005e61e0(unsigned long, unsigned long, unsigned long, unsigned long);
     char m_00[0x10c];
     unsigned short m_10c; // +0x10c, WORD
 };

@@ -14,12 +14,14 @@
 class RHScriptBatchCalls
 {
 public:
+    void *Unk0058a940(void *context, int value, void *element);
     bool Unk0049d560(int action);
     void Unk0049d6c0();
     void Unk00464630();
     void Unk0046bcf0(int state, int value);
     void Unk00485200(int index, int amount);
-    void Unk005c2ec0(void *position, int first, int second, void *actor, int third, int fourth, int fifth, int sixth);
+    int Unk005c2ec0(void *position, int first, int second, void *actor, int third, int fourth, int fifth, int sixth);
+    void Unk0048ec00(void *scroll);
 };
 
 class RHActorPCVTableCalls
@@ -59,7 +61,7 @@ public:
     virtual void FUN_31() = 0;
     virtual void FUN_32() = 0;
     virtual void FUN_33() = 0;
-    virtual void FUN_34() = 0;
+    virtual void FUN_34(const RHUnk00613e90 &point, const RHUnk00613e90 &direction) = 0;
     virtual void FUN_35() = 0;
     virtual void FUN_36() = 0;
     virtual void FUN_37() = 0;
@@ -81,7 +83,7 @@ public:
     virtual void FUN_slot53(int, int, int) = 0;
     virtual void FUN_slot54() = 0;
     virtual void FUN_slot55(int, int, int) = 0;
-    virtual void FUN_56() = 0;
+    virtual void FUN_56(int, int, int) = 0;
     virtual unsigned short FUN_57(unsigned action) = 0;
     virtual void FUN_58(unsigned action, unsigned amount) = 0;
     virtual void FUN_59() = 0;
@@ -248,7 +250,10 @@ class RHElementActor
 {
 public:
     void InitializeScript(std::string &name);
+    void FUN_00478c20(RHUnk00613e90 &point, bool value);
 };
+
+#include "RHElementPositionCalls.h"
 
 template<class T>
 inline T &RHActorPCField(void *actor, unsigned offset)
@@ -288,10 +293,14 @@ extern RHUnk00452030 *g_unk0x6c07fc;
 extern char g_unk0x6c0691;
 bool FUN_005e0c90(SBFile &file, std::string &value);
 
-class RHActorPCMenuCalls
+#include "RHPortraitBar.h"
+typedef RHPortraitBar RHActorPCMenuCalls;
+
+class RHPCCombatCalls
 {
 public:
-    void FUN_0055e710(void *value);
+    void FUN_0049bb20(int action, int flag);
+    int FUN_00485240(int value);
 };
 
 class RHActorPCEngineCalls

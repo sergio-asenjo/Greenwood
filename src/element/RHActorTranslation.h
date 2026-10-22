@@ -31,14 +31,6 @@ public:
     void *m_38; // 0x38
 };
 
-class RHActorTranslationSequenceCalls
-{
-public:
-    virtual void V00() = 0; // vtable+0x00
-    virtual void V04() = 0; // vtable+0x04
-    virtual void V08() = 0; // vtable+0x08
-    virtual void V0c(int value, bool mode) = 0; // vtable+0x0c
-    void FUN_00585970(RHOrder *order);
-};
+#include "RHActorTranslationSequenceCalls.h"
 
 #endif

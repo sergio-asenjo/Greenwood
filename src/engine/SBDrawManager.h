@@ -2,9 +2,12 @@
 #define SB_DRAW_MANAGER_H
 
 #include <utility>
+#include <string>
+#include "SBDrawManagerCore.h"
 
 class SBGeoVector2D;
 class RHUnk00613e90;
+class RHMobileUnk00607da0;
 
 class SBDrawUnk005fc3b0Point
 {
@@ -31,6 +34,7 @@ class RHUnk005ef320
 public:
     unsigned short Unk(int red, int green, int blue);
     bool FUN_005ef380(int value);
+    bool FUN_005e3f40(const std::string &);
     bool FUN_005e3f70();
     bool FUN_005e5890(unsigned long, void **, unsigned long);
     void FUN_005e57e0(unsigned, SBGeoVector2D &);
@@ -39,6 +43,8 @@ public:
     bool FUN_005ee640(void *, SBDrawUnk005fc3b0Point &);
     bool FUN_005eec00(unsigned long, unsigned long, void *, unsigned long,
         unsigned long, unsigned long, unsigned long, unsigned long);
+    void FUN_005e4810(int width, int height, int depth);
+    bool FUN_005ed270(const RHMobileUnk00607da0 &bounds);
 };
 
 class SBDrawUnk005f0090Node
@@ -65,6 +71,7 @@ struct SBDrawUnk005efc10Iterator
     SBDrawUnk005f0090Node *m_node;
     SBDrawUnk005efc10Iterator() {}
     SBDrawUnk005efc10Iterator(SBDrawUnk005f0090Node *node) : m_node(node) {}
+    bool operator==(const SBDrawUnk005efc10Iterator &other) const { return m_node == other.m_node; }
     bool operator!=(const SBDrawUnk005efc10Iterator &other) const { return m_node != other.m_node; }
     void FUN_005effc0();
     SBDrawUnk005efc10Iterator &operator++()
@@ -134,6 +141,7 @@ public:
     SBDrawUnk005f0090Node *&Leftmost() { return *(SBDrawUnk005f0090Node **)m_head; }
     SBDrawUnk005f0090Node *&Rightmost() { return *(SBDrawUnk005f0090Node **)((char *)m_head + 8); }
     SBDrawUnk005efc10Iterator Begin() { return SBDrawUnk005efc10Iterator(Leftmost()); }
+    SBDrawUnk005efc10Iterator End() { return SBDrawUnk005efc10Iterator(m_head); }
     SBDrawUnk005efc10Iterator FUN_005efc10(const unsigned long &);
     SBDrawUnk005efc10Iterator FUN_005efbc0(const unsigned long &);
     SBDrawUnk005efc10Iterator FUN_005f0070(const unsigned long &);
@@ -171,6 +179,26 @@ public:
     bool FUN_005e8670(void *source, void *destination, void *alpha, int arg4,
         int width, int height, int sourceStride, int destinationStride,
         float stretchX, float stretchY);
+    bool FUN_005e8740(unsigned short *, unsigned short *, unsigned short *, unsigned,
+        unsigned, unsigned, unsigned, float, float);
+    bool FUN_005e8b10(unsigned short *, unsigned short *, unsigned short *, unsigned,
+        unsigned, unsigned, unsigned, unsigned, float, float);
+    bool FUN_005e8f20(unsigned short *, unsigned short *, unsigned short *, unsigned,
+        unsigned, unsigned, unsigned, float, float);
+    bool FUN_005e93c0(unsigned short *, unsigned short *, unsigned short *, unsigned,
+        unsigned, unsigned, unsigned, float, float);
+    bool FUN_005e99f0(unsigned short *, unsigned short *, unsigned short *, unsigned,
+        unsigned, unsigned, unsigned, float, float);
+    bool FUN_005e9dc0(unsigned short *, unsigned short *, unsigned short *, unsigned,
+        unsigned, unsigned, unsigned, unsigned, float, float);
+    bool FUN_005ea1d0(unsigned short *, unsigned short *, unsigned short *, unsigned,
+        unsigned, unsigned, unsigned, float, float);
+    bool FUN_005ea670(unsigned short *, unsigned short *, unsigned short *, unsigned,
+        unsigned, unsigned, unsigned, float, float);
+    bool FUN_005eb450(unsigned short *, unsigned short *, unsigned, unsigned,
+        unsigned, unsigned, unsigned, float, float);
+    bool FUN_005eb800(unsigned short *, unsigned short *, unsigned, unsigned,
+        unsigned, unsigned, unsigned, float, float);
     bool FUN_005e92f0(void *source, void *destination, void *alpha, int arg4,
         int width, int height, int sourceStride, int destinationStride,
         float stretchX, float stretchY);

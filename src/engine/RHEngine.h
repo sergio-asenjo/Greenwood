@@ -12,6 +12,7 @@ class RHCharacterProfile;
 class RHElementActorPC;
 class RHMission;
 class SBGeoPoint2D;
+class SBGeoBoundingBox2D;
 class RHDialogueSet;
 struct RHUnkSectorGlobal;
 struct RHbeamMe;
@@ -53,6 +54,24 @@ public:
     bool FUN_0058a7d0(void *element);
 };
 
+class RHEngineReset51bd90
+{
+public:
+    void FUN_0051bd90();
+};
+
+class RHEngineReset581c70
+{
+public:
+    void FUN_00581c70();
+};
+
+class RHEngineReset5c2570
+{
+public:
+    void FUN_005c2570();
+};
+
 // SIZE 0x1a0
 class RHUnk0054eab0
 {
@@ -68,6 +87,7 @@ public:
     void FUN_004eb830(SBFile &file);
     void FUN_004ebab0(SBFile &file);
     void FUN_004efd10(void *value, unsigned short layer, bool mode);
+    short FUN_004e8fc0(const SBGeoPoint2D &point, const SBGeoPoint2D &origin, short layer, void *&sector);
     short FUN_004e9760(const SBGeoPoint2D &point, const SBGeoPoint2D &origin, void *&sector, unsigned short &layer);
     short FUN_004e9920(const SBGeoPoint2D &point, const SBGeoPoint2D &origin, void *&sector, unsigned short &layer);
 };
@@ -79,20 +99,12 @@ public:
     virtual bool Serialize(SBFile &file, bool mode);
 };
 
-class RHUnk0057ee90
-{
-public:
-    RHUnk0057ee90();
-    virtual ~RHUnk0057ee90();
-    undefined m_00[0x6c];
-};
-
 class RHUnk0057ee40
 {
 public:
+    void *FUN_0057ee60(unsigned flags);
     RHUnk0057ee40();
     ~RHUnk0057ee40();
-    void FUN_0057cbd0();
     undefined m_00[0x68];
 };
 
@@ -102,6 +114,14 @@ void FUN_005e20c0(SBFile &file);
 void FUN_004be5c0(SBFile &file, void *&value);
 
 // SIZE 0x4944 (partial layout)
+class RHElementActorPC;
+
+class RHUnk0051e790
+{
+public:
+    void *FUN_0051e790(RHElementActorPC *pc, void *position, const SBGeoPoint2D &point, int flags);
+};
+
 class RHEngine
 {
 public:
@@ -109,15 +129,18 @@ public:
     int FUN_0049b590(void *actor);
     void TurnPathFinderOff();
     bool FUN_004c0340(SBGeoPoint2D &point);
+    bool FUN_004c04a0();
     void FUN_004d1640(unsigned first, unsigned second, unsigned third, unsigned fourth, unsigned fifth, unsigned sixth, unsigned seventh);
     unsigned short FUN_004d16b0(void *first, void *second, unsigned third);
     bool FUN_004d1840();
     bool FUN_004d1aa0();
     void FUN_004d1d00();
     void FUN_004d1f50();
-    void FUN_004d21b0();
+    void FUN_004d21b0(bool enabled, bool queued);
     void FUN_004c8120(void *actor);
     unsigned int FUN_004d2340(int type);
+    void FUN_004d2d60(unsigned surface, const SBGeoBoundingBox2D &bounds, float scale,
+        unsigned short layer, bool first, bool second, bool third);
     void FUN_004c38d0(SBFile &file, unsigned *value);
     void FUN_004dee70(float *point);
     void FUN_004dce20(void *actor);
@@ -132,14 +155,14 @@ public:
     void FUN_004dfcf0(char flag);
     void FUN_004df950(const SBGeoPoint2D &point, char flag);
     void FUN_004dfe70(const SBGeoPoint2D &point, char flag);
-    void *FUN_004e04c0(int type, const SBGeoPoint2D &point, int index, void *actor);
+    void *FUN_004e04c0(int type, const SBGeoPoint2D &point, bool useCache, bool notify);
     void FUN_004e0550(const SBGeoPoint2D &point, void *actor, int index);
     void FUN_004e0770(const SBGeoPoint2D &point, void *actor, int index);
-    void FUN_004e0bf0(const SBGeoPoint2D &point, void *actor, char flag);
-    void FUN_004e14a0(const SBGeoPoint2D &point, int value, char flag);
-    void FUN_004e1630(const SBGeoPoint2D &point, char flag);
-    void FUN_004e09d0(const SBGeoPoint2D &point, void *actor, char flag);
-    void FUN_004e0d80(const SBGeoPoint2D &point, void *actor, char flag);
+    void FUN_004e0bf0(const SBGeoPoint2D &point, bool flag, bool);
+    void FUN_004e14a0(const SBGeoPoint2D &point, bool flag, bool);
+    void FUN_004e1630(const SBGeoPoint2D &point, bool flag);
+    void FUN_004e09d0(const SBGeoPoint2D &point, bool queued, bool immediate);
+    void FUN_004e0d80(const SBGeoPoint2D &point, bool queued, bool immediate);
     void FUN_004e17c0(unsigned value, void *actor);
     void FUN_004e0030(const SBGeoPoint2D &point, void *actor, char flag);
     void FUN_004e0fb0(const SBGeoPoint2D &point, void *actor, char flag, int value);
@@ -166,7 +189,13 @@ public:
     bool FUN_004c7e10(void *first, int second, void **result);
     void FUN_004e3c20(void *point);
     void FUN_004d8fd0(RHPCDescription *description);
+    void FUN_004d52d0(void *first, void *second, unsigned third);
     void FUN_004d5320(const void *value);
+    bool FUN_004c02d0();
+    void FUN_004d3d00(void *first, void *second, unsigned third, unsigned fourth, unsigned fifth, unsigned sixth);
+    void FUN_004d3e90(void *first, void *second, unsigned third, unsigned fourth, unsigned fifth, unsigned sixth);
+    void FUN_004d7800(void *first, void *second, unsigned third);
+    void FUN_004d7820(void *first, void *second, unsigned third);
     void FUN_004e3100(int action);
     unsigned char FUN_004ded90(void *actor);
     void FUN_004e3d20(int index, int value);
@@ -199,11 +228,14 @@ public:
     int FUN_004cac00(void *first, void *second, int third, char fourth);
     unsigned short FUN_004cc100(void *first, void *second);
     int FUN_004cc970(void *first, void *second, void *third);
-    void FUN_004ccad0(void *first, void *second);
+    void FUN_004ccad0(const SBGeoPoint2D &first, bool second);
     void FUN_004cd400();
     void FUN_004e35f0(SBFile &file);
     void FUN_004e2390(void *actor);
-    void FUN_004cd600(void *a, void *b);
+    void FUN_004e1fc0();
+    bool FUN_004e21e0(void *actor);
+    void *FUN_004e2150(RHUnk0051e790 *target, const SBGeoPoint2D &point);
+    void FUN_004cd600(const SBGeoPoint2D &a, bool b);
     void FUN_004cdab0(void *a);
     void FUN_004cdcc0();
     void FUN_004cde00();
@@ -375,10 +407,10 @@ public:
 };
 
 // SIZE 0xfc
-class RHUnk004a8130 : public RHEngineMissionElementCalls
+class RHMobileBase004a8130 : public RHEngineMissionElementCalls
 {
 public:
-    RHUnk004a8130(bool flag);
+    RHMobileBase004a8130(int type);
     undefined m_04[0xf8]; // 0x04
 };
 
@@ -419,12 +451,7 @@ public:
     char FUN_004a6060() const;
 };
 
-class RHUnk004a6310
-{
-public:
-    bool FUN_004a6310(char flag);
-    int FUN_004a6370() const;
-};
+#include "RHUnk004a6310.h"
 
 class RHUnk004a7d70
 {
@@ -442,30 +469,7 @@ public:
     bool FUN_004a7f80();
 };
 
-class RHUnk004b0980
-{
-public:
-    bool FUN_004b0980(char flag);
-};
-
-class RHUnk004b91a0
-{
-public:
-    bool FUN_004b91a0(char flag);
-};
-
-class RHUnk004be080
-{
-public:
-    bool FUN_004be080(char flag);
-};
-
-class RHUnk004ba900
-{
-public:
-    bool FUN_004ba900(char flag);
-    int FUN_004ba970();
-};
+#include "RHProjectileInitCalls.h"
 
 #include "RHPlayerProfileAccess.h"
 
@@ -476,12 +480,6 @@ public:
 };
 
 void FUN_005709a0(void *value, unsigned index);
-class RHEngineContinuationCampaignCalls
-{
-public:
-    void FUN_00450c10(void *actors, SBFile &file);
-};
-
 void FUN_00570850(void *actor);
 
 class RHMissionArrayStorage

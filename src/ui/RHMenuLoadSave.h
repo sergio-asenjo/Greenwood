@@ -30,7 +30,6 @@ public:
     void FUN_00531a80();
     void FUN_00531bd0();
     bool FUN_00463d80(int msg, void *widget, void *data);
-    bool FUN_0052ce80(int msg, void *widget, void *data);
     bool FUN_005314d0(int msg, void *widget, void *data);
     bool FUN_005316a0(int msg, void *widget, void *data);
     bool FUN_00531710(int msg, void *widget, void *data);
@@ -88,14 +87,13 @@ public:
     virtual unsigned long V24() = 0;
 };
 
-class RHMenuLoadSaveText
+// VTABLE: GAME 0x00679608
+class RHMenuLoadSaveText : public RHGameWidgetLifetimeBase
 {
 public:
     ~RHMenuLoadSaveText();
     void *FUN_00532cd0(unsigned flags);
     void FUN_00531e30();
-    unsigned m_vptr;
-    undefined m_04[0x7c];
     RHPortraitInputRenderer m_renderer;
 };
 

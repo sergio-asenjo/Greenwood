@@ -11,6 +11,7 @@ class RHUnkIter;
 class RHPathWorkList;
 class SBGeoPolyLine2DList;
 class SBGeoPoint2D;
+class SBGeoBoundingBox2D;
 class RHElementActor;
 class SBGeoVector2D;
 
@@ -52,6 +53,8 @@ public:
     static float EstimateDistance(SBGeoPoint2D &first, SBGeoPoint2D &last);
     void FUN_00554750();
     void FUN_00556260();
+    void FUN_005596d0(const SBGeoBoundingBox2D &bounds, float scale, unsigned short layer);
+    void FUN_00559e00(const SBGeoBoundingBox2D &bounds, float scale, unsigned short layer);
     void FUN_005559b0(unsigned short graph, unsigned short node, unsigned short state, RHPathWorkList &list);
     void FUN_00556230(unsigned short graph, unsigned short sector, unsigned short state, RHPathWorkList &list);
     void FUN_00555a10(unsigned short graph, unsigned short node, unsigned state, RHPathWorkList &list);

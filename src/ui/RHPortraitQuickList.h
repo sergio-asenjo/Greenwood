@@ -5,6 +5,9 @@ struct RHPortraitQuickEntry;
 struct RHPortraitWidgetEvent;
 class RHPortraitPCList;
 
+#include "RHWidgetPortraitClass.h"
+#include "RHPortraitRootList.h"
+
 class __declspec(novtable) RHPortraitQuickList : public RHPortraitRootList
 {
 public:

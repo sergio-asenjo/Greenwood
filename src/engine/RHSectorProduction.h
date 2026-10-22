@@ -3,6 +3,8 @@
 #include <vector>
 
 // SIZE 0x08
+class SBGeoVector2D;
+
 class SBGeoPoint2D
 {
 public:
@@ -13,6 +15,7 @@ public:
     SBGeoPoint2D(const SBGeoPoint2D &other);
     SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
     bool Serialize(SBFile &file);
+    SBGeoVector2D Unk005fc110(const SBGeoPoint2D &other) const;
 };
 
 void RHSerializeName(SBFile &file, const char *name);

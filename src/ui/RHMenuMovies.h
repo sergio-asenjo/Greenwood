@@ -15,6 +15,7 @@
 #include "RHMenuShortMissionDescription.h"
 
 // SIZE 0x540
+// VTABLE: GAME 0x0067972c
 class RHMenuMovies : public RHMenuWindowFocus
 {
 public:
@@ -25,7 +26,6 @@ public:
     void FUN_00536ad0(RHMenuEvent *event);
     bool FUN_00536af0(RHMenuEvent *event);
     void *FUN_00536c30(unsigned flags);
-    bool FUN_0052b520(int msg, void *widget, void *data);
     bool FUN_005372e0(int msg, void *widget, void *data);
     bool FUN_00537370(int msg, void *widget, void *data);
     void FUN_00537400(const std::string &path);

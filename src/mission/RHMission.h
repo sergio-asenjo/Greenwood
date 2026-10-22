@@ -31,6 +31,7 @@ class RHMission
 {
 public:
     bool Serialize(SBFile &file);
+    bool AreRequiredMissionStatusValid(bool value) const;
 
     void Emit(SBFile &file);
 

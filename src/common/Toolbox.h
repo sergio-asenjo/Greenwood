@@ -146,7 +146,6 @@ public:
     void FUN_005e5260();
     unsigned short FUN_005e56c0(unsigned long);
     unsigned short FUN_005e5750(unsigned long);
-    void FUN_005e61e0(unsigned long, unsigned long, unsigned long, unsigned long);
     void FUN_005e6440(unsigned long, int, int, unsigned long, unsigned long);
     bool Unk005e5a00(unsigned long, class RHUnk00613e90 &, unsigned long);
     void Unk005e5ea0(class RHUnk00613e90 &);
@@ -155,46 +154,7 @@ public:
     unsigned short m_depth; // +0x10c
 };
 
-// SIZE 0x38
-class RHUnk006114c0
-{
-public:
-    RHUnk006114c0();
-    virtual ~RHUnk006114c0(); // vtable+0x00
-    virtual void Unk04(); // vtable+0x04
-    virtual void Unk08(); // vtable+0x08
-    virtual void Unk0c(); // vtable+0x0c
-    virtual void Unk10(); // vtable+0x10
-    virtual void Unk14(); // vtable+0x14
-    virtual void Unk18(); // vtable+0x18
-    virtual void Unk1c(); // vtable+0x1c
-    virtual bool Unk20(RHUnkFXDraw *, unsigned long); // vtable+0x20
-    // FUNCTION: GAME 0x006114e0
-    virtual void *FUN_006114e0() { return *(void **)(m_04 + 0x10); } // vtable+0x24
-    // FUNCTION: GAME 0x006114f0
-    virtual unsigned int FUN_006114f0() { return *(unsigned int *)(m_04 + 0x18); } // vtable+0x28
-    // FUNCTION: GAME 0x00611500
-    virtual unsigned short FUN_00611500() { return m_width; } // vtable+0x2c
-    // FUNCTION: GAME 0x00611510
-    virtual unsigned short FUN_00611510() { return m_height; } // vtable+0x30
-    // FUNCTION: GAME 0x00611520
-    virtual unsigned short FUN_00611520() { return *(unsigned short *)m_24; } // vtable+0x34
-    // FUNCTION: GAME 0x00611530
-    virtual int FUN_00611530() { return *(unsigned int *)(m_04 + 0x18) != 0; } // vtable+0x38
-    bool Unk00611710(SBFile &);
-    bool Unk00613530(RHUnkFXDraw *, unsigned long);
-    bool Unk00611e10(unsigned long, unsigned long);
-    RHUnk006114c0 *Unk00612ad0(const SBGeoPoint2D &, const SBGeoVector2D &);
-    void FUN_00611aa0(SBFile &, void *);
-    void FUN_00611b90();
-    void FUN_00611c00();
-    unsigned short UnkField20() const { return m_width; }
-    unsigned short UnkField22() const { return m_height; }
-    undefined m_04[0x1c]; // 0x04
-    unsigned short m_width; // +0x20
-    unsigned short m_height; // +0x22
-    undefined m_24[0x14]; // 0x24
-};
+#include "RHUnk006114c0.h"
 
 // SIZE 0x18
 class RHUnk00613e90
@@ -250,6 +210,8 @@ namespace Toolbox
 void RHSerializeName(SBFile &, const char *);
 void FUN_005e1d50(SBFile &, unsigned long, int);
 void FUN_005e20c0(SBFile &);
+void FUN_005e3730(const unsigned short *, unsigned short *, long, unsigned short, unsigned short, unsigned short);
+void FUN_005e37c0(const unsigned short *, unsigned short *, long, unsigned short, unsigned short, unsigned short, unsigned short);
 
 // SIZE 0xb4
 struct RHTextChunk
@@ -371,6 +333,9 @@ public:
 class RHUnk00624a60
 {
 public:
+    RHUnk00624a60();
+    void *FUN_00624aa0(unsigned flags);
+    ~RHUnk00624a60();
     void FUN_00624c40(const char *text, unsigned int &position, RHTextChunk *chunk);
     const char *FUN_00624ed0(unsigned short index);
     unsigned short FUN_006250d0(const char *text);

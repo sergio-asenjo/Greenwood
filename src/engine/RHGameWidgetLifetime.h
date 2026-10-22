@@ -45,6 +45,21 @@ public:
     undefined m_data[0x4c];
 };
 
+#ifndef RHPOPUPRENDERER0060DBC0_VIEW
+#define RHPOPUPRENDERER0060DBC0_VIEW
+// SIZE 0x7c
+class RHPopupRenderer0060dbc0
+{
+public:
+    RHPopupRenderer0060dbc0();
+    ~RHPopupRenderer0060dbc0();
+    bool FUN_0060dd10(unsigned id);
+    undefined m_data[0x7c];
+};
+#endif
+
+typedef RHPopupRenderer0060dbc0 RHGameRenderer0060dbc0;
+
 class RHGameRenderer005c9270
 {
 public:
@@ -88,6 +103,19 @@ public:
     ~RHGameLifetime00517590() {}
     void *FUN_0044fef0(unsigned flags);
     RHGameRenderer0060da10 m_renderer;
+};
+
+class RHGameLifetime0044fe90 : public RHGameLifetime00517590
+{
+public:
+    // FUNCTION: GAME 0x0044fca0
+    RHGameLifetime0044fe90()
+    {
+        *(unsigned *)this = 0x006775e4;
+        m_cc = 0;
+    }
+    ~RHGameLifetime0044fe90() {}
+    int m_cc;
 };
 
 // VTABLE: GAME 0x00678c10
@@ -134,6 +162,31 @@ class RHGameLifetime00516c50 : public RHGameLifetime00516a60
 public:
     ~RHGameLifetime00516c50() {}
     void *FUN_00517460(unsigned flags);
+};
+
+// VTABLE: GAME 0x006791e0
+class RHGameLifetime00525880 : public RHGameWidgetLifetimeBase
+{
+public:
+    RHGameLifetime00525880();
+    ~RHGameLifetime00525880() {}
+    void *FUN_00525860(unsigned flags);
+    RHGameRenderer0060dbc0 m_renderer;
+};
+
+class RHGameLifetime00525560 : public RHGameLifetime00525880
+{
+public:
+    RHGameLifetime00525560()
+    {
+        *(unsigned *)this = 0x006791a8;
+        m_fc = true;
+        m_fd = true;
+    }
+    ~RHGameLifetime00525560() {}
+    void *FUN_005258e0(unsigned flags);
+    bool m_fc;
+    bool m_fd;
 };
 
 #endif

@@ -6,9 +6,10 @@ class RHScriptBatchCalls
 public:
     bool Unk0049d560(int action);
     void Unk004d9330(void *actor, bool flag);
-    void Unk0058a940(void *context, int value, void *element);
-    void Unk005c2ec0(void *position, int first, int second, void *actor,
+    void *Unk0058a940(void *context, int value, void *element);
+    int Unk005c2ec0(void *position, int first, int second, void *actor,
         int third, int fourth, int fifth, int sixth);
+    void Unk0046b9e0();
 };
 
 #endif

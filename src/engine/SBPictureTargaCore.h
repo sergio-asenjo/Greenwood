@@ -8,14 +8,7 @@ class SBFile;
 struct SBPictureInfo;
 struct SBPictureTGAHeader;
 
-class SBPictureTargaBase : public SBPicture
-{
-public:
-    SBPictureTargaBase();
-    ~SBPictureTargaBase();
-};
-
-class SBPictureTarga : public SBPictureTargaBase
+class SBPictureTarga : public SBPicture
 {
 public:
     SBPictureTarga();

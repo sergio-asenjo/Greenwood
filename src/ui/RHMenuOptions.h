@@ -21,6 +21,7 @@
 class RHArtificialIntelligenceSoundCalls;
 extern RHArtificialIntelligenceSoundCalls *g_unk0x006c1070;
 
+// VTABLE: GAME 0x006797dc
 class RHMenuOptions : public RHMenuWindowFocus
 {
 public:
@@ -32,7 +33,6 @@ public:
     void FUN_00538540(RHMenuEvent *event);
     bool FUN_00538560(RHMenuEvent *event);
     void *FUN_00538710(unsigned flags);
-    bool FUN_0052ce80(int msg, void *widget, void *data);
     bool FUN_00539250(int msg, void *widget, void *data);
     bool FUN_005393c0(int msg, void *widget, void *data);
     bool FUN_005393f0(int msg, void *widget, void *data);

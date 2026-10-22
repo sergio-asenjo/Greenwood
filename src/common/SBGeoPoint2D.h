@@ -1,6 +1,8 @@
 #ifndef SB_GEO_POINT_2D_H
 #define SB_GEO_POINT_2D_H
 
+#define SBGEO_POINT2D_VIEW
+
 #include "Decomp.h"
 
 class SBFile;
@@ -14,6 +16,7 @@ public:
     SBGeoPoint2D(float x, float y) throw();
     SBGeoPoint2D(const SBGeoPoint2D &other) throw();
     ~SBGeoPoint2D() throw();
+    void *FUN_0044e990(unsigned flags);
     SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
     SBGeoVector2D Unk005fc110(const SBGeoPoint2D &other) const;
     SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;

@@ -26,6 +26,7 @@ public:
 extern char g_unk0x006c0685;
 extern SBThreadedInput *g_unk0x6c1340;
 
+// VTABLE: GAME 0x00679518
 class RHMenuIntro : public RHMenuWindowFocus
 {
 public:

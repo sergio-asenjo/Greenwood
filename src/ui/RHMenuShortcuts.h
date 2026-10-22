@@ -58,6 +58,7 @@ class RHUnk0048a970;
 extern RHUnk0048a970 *g_unk0x6c0b3c;
 
 // SIZE 0x874
+// VTABLE: GAME 0x006798e8
 class RHMenuShortcuts : public RHMenuWindowFocus
 {
 public:
@@ -68,7 +69,6 @@ public:
     static void FUN_00540480(void *ui);
     void FUN_0053fae0(RHMenuEvent *event);
     bool FUN_0053fb00(RHMenuEvent *event);
-    bool FUN_0052ce80(int msg, void *widget, void *data);
     bool FUN_00540540(int msg, void *widget, void *data);
     bool FUN_00540590(int msg, void *widget, void *data);
     bool FUN_005405e0(int msg, void *widget, void *data);

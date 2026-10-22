@@ -45,6 +45,7 @@ public:
 };
 
 // SIZE 0x15ac
+// VTABLE: GAME 0x00679890
 class RHMenuSelectPlayer : public RHMenuWindowFocus
 {
 public:

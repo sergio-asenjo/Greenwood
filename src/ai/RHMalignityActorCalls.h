@@ -2,6 +2,7 @@
 #define RHMALIGNITYACTORCALLS_H
 
 class RHUnk00613e90;
+class SBGeoVector2D;
 struct RHMalignityPosition;
 
 class RHMalignityActorCalls
@@ -84,6 +85,15 @@ public:
     virtual void V128() = 0;
     virtual void V12c() = 0;
     virtual int V130() = 0; // vtable+0x130
+    virtual void V134() = 0;
+    virtual void V138() = 0;
+    virtual void V13c() = 0;
+    virtual void V140() = 0;
+    virtual void V144() = 0;
+    virtual void V148() = 0;
+    virtual void V14c() = 0;
+    virtual void V150() = 0;
+    virtual void V154(void *value) = 0; // vtable+0x154
     bool FUN_0048a260(const RHUnk00613e90 &point);
     float FUN_0048db80(void *position, void *actor);
     void FUN_0048e420(void *actor);
@@ -95,9 +105,9 @@ public:
     void FUN_0048e630(unsigned operation, unsigned short value);
     void FUN_0048e650(unsigned operation, unsigned short value);
     bool FUN_0048e670(void *actor);
+    SBGeoVector2D FUN_004135b0();
     void FUN_0048e870(void *actor);
     void FUN_0048ebe0();
-    void FUN_00487ad0(const RHMalignityPosition &position);
     void FUN_0048c700(void *actor, unsigned mode);
     unsigned char FUN_0048ca20(void *actor, unsigned mode);
     void FUN_0048cb90(void *actor);
@@ -106,6 +116,7 @@ public:
     unsigned char FUN_0048c8e0(void *actor, unsigned mode);
     bool FUN_0048a130(void *actor);
     bool FUN_0048a350(void *actor);
+    void *FUN_0048ee90(unsigned short index);
 };
 
 #endif

@@ -155,6 +155,7 @@ public:
     void FUN_00638e90();
     virtual bool FUN_006390a0();
     bool FUN_006390a0_1();
+    VMCore(VMUnk0063a490 *code, VMUnk0063a140 *memory);
     ~VMCore();
     bool FUN_00639230();
     bool FUN_00639280(void *);

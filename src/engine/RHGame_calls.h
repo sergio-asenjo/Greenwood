@@ -173,15 +173,7 @@ public:
     void FUN_0060d290(unsigned long hardware);
 };
 
-class RHGameWidgetRendererCalls
-{
-public:
-    virtual void v0();
-    virtual void v1();
-    virtual void v2(unsigned long hardware);
-    bool FUN_0060d890(const SBGeoPoint2D &point);
-    bool FUN_005c9320(unsigned id);
-};
+#include "RHGameWidgetRendererCalls.h"
 
 #include "SBUIKeyboardCalls.h"
 
@@ -343,6 +335,7 @@ public:
     bool FUN_004c7c90();
     int FUN_004deeb0(const SBGeoPoint2D &point, SBGeoPoint2D &result);
     bool FUN_004c4570(SBFile &file);
+    unsigned char FUN_004ded90(void *actor);
     RHDialogueSet *GetDynResources(unsigned long resources);
 };
 
@@ -383,15 +376,7 @@ struct RHGameConfigTriple
     float values[3];
 };
 
-class RHGameConfig
-{
-public:
-    RHGameConfig();
-    ~RHGameConfig();
-    bool FUN_006134a0(void *configuration);
-    bool FUN_00611960(SBFile &file);
-    char m_00[0x38];
-};
+#include "RHUnk006114c0.h"
 
 class RHGameTextCalls
 {
@@ -516,11 +501,6 @@ public:
     void FUN_0051e020(void *widgets, unsigned value, bool empty);
 };
 
-class RHGameWindowCalls
-{
-public:
-    static int __stdcall CloseWindow(void *);
-};
 
 extern unsigned char g_unk0x006a6d27;
 extern unsigned char g_unk0x006c12b6;
@@ -548,26 +528,7 @@ public:
     unsigned long m_08; // 0x08
 };
 
-class RHMapWideText
-{
-public:
-    std::allocator<unsigned short> m_allocator;
-    unsigned short *m_chars;
-    unsigned m_size;
-    unsigned m_capacity;
-    RHMapWideText(const std::allocator<unsigned short> &allocator = std::allocator<unsigned short>()) : m_allocator(allocator) { Tidy(false); }
-    void Tidy(bool);
-    ~RHMapWideText()
-    {
-        if (m_chars == 0)
-            ;
-        else if (*((unsigned char *)m_chars - 1) == 0 || *((unsigned char *)m_chars - 1) == 255)
-            operator delete(m_chars - 1);
-        else
-            --*((unsigned char *)m_chars - 1);
-        m_chars = 0, m_size = 0, m_capacity = 0;
-    }
-};
+#include "RHMapWideText.h"
 
 #include "RHMapDescription.h"
 

@@ -71,11 +71,7 @@ class RHDialogueWidgetLifetimeCalls
 {
 public:
     void FUN_0052b890();
-    void FUN_0052bd90();
     void FUN_0052be10();
-    void FUN_0052bf00();
     void *FUN_0052bdf0(unsigned);
     void *FUN_0052bec0(unsigned);
-    void *FUN_0052bee0(unsigned);
-    void *FUN_0052bf60(unsigned);
 };

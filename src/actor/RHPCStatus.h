@@ -9,7 +9,7 @@
 
 class RHMapWideText;
 
-// SIZE 0x38
+// SIZE 0x9c
 class RHCharacterProfile
 {
 public:
@@ -17,6 +17,10 @@ public:
     char *m_18; // [0x18]
     undefined m_1c[0x19]; // 0x1c
     char m_35; // [0x35]
+    undefined m_36[0x12]; // 0x36
+    int m_48[3]; // 0x48
+    unsigned short m_54[3]; // 0x54
+    undefined m_5a[0x42]; // 0x5a
 };
 
 // SIZE 0x144
@@ -97,17 +101,7 @@ public:
     unsigned m_capacity; // 0x0c
 };
 
-// SIZE 0x10
-class RHMapWideText
-{
-public:
-    std::allocator<unsigned short> m_allocator; // 0x00
-    unsigned short *m_chars; // 0x04
-    unsigned m_size; // 0x08
-    unsigned m_capacity; // 0x0c
-    void Tidy(bool);
-    void FUN_004580c0(const std::wstring &text, unsigned first, unsigned count);
-};
+#include "RHMapWideText.h"
 
 inline void RHPCWideText::TidyExternal(bool built)
 {

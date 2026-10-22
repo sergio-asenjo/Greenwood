@@ -6,6 +6,12 @@
 
 #include "RHActorCommand.h"
 
+class RHActorDistanceCalls
+{
+public:
+    float FUN_0060cab0(const SBGeoPoint2D &, float);
+};
+
 // SIZE 0x14
 struct RHHumanMapNode
 {
@@ -63,13 +69,7 @@ public:
 };
 
 // SIZE 0x0c
-class RHUnk0053bf20
-{
-public:
-    void *FUN_0053bf20() const;
-    undefined m_0[8]; // 0x00
-    void *m_8; // 0x08
-};
+#include "RHUnk0053bf20.h"
 
 #include "RHActorDirectionCalls.h"
 
@@ -131,6 +131,8 @@ public:
     void FUN_00462730(RHElementActor *actor, bool value);
     int FUN_00462a30(RHElementActor *other);
     bool FUN_004640c0();
+    float FUN_00464150();
+    void FUN_004645f0();
     int FUN_0046ad00(void *first, void *second);
     void GetTransitionFlags(RHSequenceElement *element, unsigned long &first, unsigned long &second, unsigned long &third);
     bool FUN_0046b210(RHSequenceElement *element);

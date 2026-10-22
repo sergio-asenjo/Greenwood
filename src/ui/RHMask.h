@@ -7,7 +7,10 @@ class SBGeoPoint2D
 public:
     SBGeoPoint2D(float, float);
     ~SBGeoPoint2D();
+    void *FUN_0044e990(unsigned flags);
     SBGeoPoint2D &operator=(const SBGeoPoint2D &);
+    float X() const { return m_x; }
+    float Y() const { return m_y; }
 
     float m_x;
     float m_y;
@@ -27,6 +30,7 @@ SBGeoPoint2D operator+(const SBGeoPoint2D &, const SBGeoVector2D &);
 class SBGeoBoundingBox2D
 {
 public:
+    SBGeoBoundingBox2D();
     void UnkSetOrigin(const SBGeoPoint2D &point)
     {
         m_flag = true;
@@ -39,17 +43,128 @@ public:
         m_p1 = m_p0 + vector;
     }
 
+    bool FUN_00608400(const SBGeoPoint2D &point) const;
+
     SBGeoPoint2D m_p0;
     SBGeoPoint2D m_p1;
     bool m_flag;
 };
 
-class RHMaskPointArray
+class SBGeoPoint3D
+{
+public:
+    float m_x;
+    float m_y;
+    float m_z;
+};
+
+class RHElementAreaShape
+{
+public:
+    bool FUN_0060c660(const SBGeoPoint2D &point) const;
+};
+
+class RHShadowUnk005df9e0
+{
+public:
+    float FUN_005df9e0(float, float);
+};
+
+class RHMaskPointStorage
+{
+public:
+    ~RHMaskPointStorage()
+    {
+        Destroy(m_first, m_last);
+        m_allocator.deallocate(m_first, m_end - m_first);
+        m_first = 0;
+        m_last = 0;
+        m_end = 0;
+    }
+
+    void Destroy(SBGeoPoint2D *first, SBGeoPoint2D *last)
+    {
+        for (; first != last; ++first)
+            first->FUN_0044e990(0);
+    }
+
+    SBGeoPoint2D *begin() { return m_first; }
+    SBGeoPoint2D *end() { return m_last; }
+
+    std::allocator<SBGeoPoint2D> m_allocator;
+    SBGeoPoint2D *m_first;
+    SBGeoPoint2D *m_last;
+    SBGeoPoint2D *m_end;
+};
+
+class RHMobileUnk00611360 : public RHMaskPointStorage
+{
+public:
+    RHMobileUnk00611360();
+    ~RHMobileUnk00611360();
+    unsigned long FUN_00610f30() const;
+    int m_10;
+    bool m_14;
+    char m_18[4];
+    SBGeoPoint2D m_1c;
+};
+
+class RHUnkSectorPoints
+{
+public:
+    SBGeoPoint2D &FUN_006112c0(unsigned int index);
+};
+
+class RHMobileUnk006100e0
+{
+public:
+    ~RHMobileUnk006100e0();
+    float FUN_00610520(float x);
+};
+
+class SBGeoSegment2D
+{
+public:
+    SBGeoSegment2D(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
+    ~SBGeoSegment2D()
+    {
+        ((RHMobileUnk006100e0 *)this)->~RHMobileUnk006100e0();
+    }
+    SBGeoPoint2D &First() { return *(SBGeoPoint2D *)&m_00[0]; }
+    SBGeoPoint2D &Second() { return *(SBGeoPoint2D *)&m_00[8]; }
+    float FUN_00610520(float x) { return ((RHMobileUnk006100e0 *)this)->FUN_00610520(x); }
+    void Set(const SBGeoPoint2D &first, const SBGeoPoint2D &second)
+    {
+        First() = first;
+        Second() = second;
+    }
+    unsigned char m_00[0x10];
+};
+
+class RHMaskObstacle
+{
+public:
+    char m_00[0x24];
+    SBGeoBoundingBox2D m_24; // +0x24
+    char m_38[0x44];
+    RHElementAreaShape m_7c; // +0x7c
+    char m_7d[0x2b];
+    RHShadowUnk005df9e0 m_a8; // +0xa8
+    char m_a9[0x57];
+    RHShadowUnk005df9e0 m_100; // +0x100
+};
+
+class RHMaskPointArray : public RHMobileUnk00611360
 {
 public:
     void InsertLast(const SBGeoPoint2D &);
-    char m_bytes[0x24];
+    SBGeoPoint2D *FUN_00524840(SBGeoPoint2D *first, SBGeoPoint2D *last);
 };
+
+inline RHMobileUnk00611360::~RHMobileUnk00611360()
+{
+    ((RHMaskPointArray *)this)->FUN_00524840(begin(), end());
+}
 
 class RHSequenceElement;
 class RHSeqList
@@ -58,9 +173,51 @@ public:
     static void CopyData(RHSequenceElement **, RHSequenceElement *const *);
 };
 
-class RHMaskObstacleArray
+void **FUN_004598e0(void **first, void **last, void **destination);
+
+class RHMaskObstacleStorage
 {
 public:
+    RHMaskObstacleStorage(const std::allocator<void *> &allocator)
+        : m_allocator(allocator), m_first(0), m_last(0), m_end(0)
+    {
+    }
+
+    ~RHMaskObstacleStorage()
+    {
+        Destroy(m_first, m_last);
+        m_allocator.deallocate(m_first, m_end - m_first);
+        m_first = 0;
+        m_last = 0;
+        m_end = 0;
+    }
+
+    void Destroy(void **first, void **last);
+    void **begin() { return m_first; }
+    void **end() { return m_last; }
+
+    std::allocator<void *> m_allocator;
+    void **m_first;
+    void **m_last;
+    void **m_end;
+};
+
+class RHMaskObstacleArray : public RHMaskObstacleStorage
+{
+public:
+    ~RHMaskObstacleArray()
+    {
+        Erase(begin(), end());
+    }
+
+    void **Erase(void **first, void **last)
+    {
+        void **result = FUN_004598e0(last, end(), first);
+        Destroy(result, end());
+        m_last = result;
+        return first;
+    }
+
     unsigned int size() const { return m_first == 0 ? 0 : m_last - m_first; }
     void **Ucopy(void *const *, void *const *, void **);
 
@@ -123,10 +280,11 @@ public:
         m_dirty = true;
     }
 
-    int m_grow;
-    void **m_first;
-    void **m_last;
-    void **m_end;
+    RHMaskObstacleArray(const std::allocator<void *> &allocator = std::allocator<void *>())
+        : RHMaskObstacleStorage(allocator), m_dirty(true)
+    {
+    }
+
     int m_10;
     bool m_dirty;
 };
@@ -148,11 +306,16 @@ public:
 class RHMask
 {
 public:
+    RHMask();
+    ~RHMask();
     void InitializeFromProtoStream(SBFile &, RHFastFindGrid *);
     void Emit(SBFile &, RHFastFindGrid *);
+    bool IsAppliedToPointCharacter(const SBGeoPoint2D &point) const;
+    bool IsAppliedToPointProjectile(const SBGeoPoint2D &point) const;
+    bool IsAppliedToPoint(const SBGeoPoint3D &point, bool flag) const;
     unsigned char FUN_00524800(unsigned long index);
 
-    char m_pad0[4];
+    bool m_00; // +0x00
     unsigned long m_flags; // +0x04
     SBGeoBoundingBox2D m_box; // +0x08
     float m_1c; // +0x1c

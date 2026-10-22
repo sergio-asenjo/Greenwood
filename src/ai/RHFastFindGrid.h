@@ -6,6 +6,7 @@
 #include <vector>
 
 class SBGeoVector2D;
+class RHSectorBuilding;
 class SBGeoPoint2D
 {
 public:
@@ -21,6 +22,8 @@ public:
         m_x = (float)x;
         m_y = (float)y;
     }
+    float X() const { return m_x; }
+    float Y() const { return m_y; }
     float m_x;
     float m_y;
 };
@@ -186,17 +189,23 @@ public:
     void InitializeReinforcementPointsFromMissionStream(SBFile &file);
     void InitializeJumpStuffFromProtoStream(SBFile &file);
     void InitializeScriptStuffFromMissionStream(SBFile &file);
+    void InitializeMaskFromProtoStream(SBFile &file);
+    void Convert2DTo3D(class RHUnk00613e90 &point, const SBGeoPoint2D &position, int type);
+    bool IsReachableImpact(const class RHUnk00613e90 &from, const class RHUnk00613e90 &to, class RHUnk00613e90 &impact,
+        void *&obstacle, int type);
+    class RHUnk00613e90 PositionToPoint3D(struct RHUnk00571160Position &position);
     void FUN_004faf40(SBFile &file);
-    void FUN_004fc590();
+    void EmptyAllScriptSectors();
     void FUN_004fc660();
     bool FUN_004fc8f0(void *first, void *second, void *third, void *fourth);
-    bool FUN_004fcfd0(void *value);
+    void *GetPatch(void *value);
     void FUN_004fb1d0(SBFile &file);
     void FUN_004fb230(SBFile &file);
     void FUN_004e8bd0(void *sector, unsigned short layer, bool mode);
     void FUN_004fad80(void *gate);
     void FUN_004ebfe0(void *point, unsigned short layer, bool mode);
     void FUN_004e99e0(void *sector, unsigned short layer, bool mode);
+    void FUN_004e9d00(unsigned char enabled, unsigned short layer, void *sector);
     void FUN_004ed690(void *point, unsigned short layer, bool mode);
     void FUN_004ef8e0(class RHUnk005a3450 *area, unsigned short layer, bool mode);
     bool Unk004efbb0(SBFile &file, void **value);
@@ -302,6 +311,7 @@ public:
     void Unk00607dc0(const SBGeoPoint2D &point);
     void FUN_00607e30(const class RHMalignitySegment &segment);
     bool FUN_00608400(const SBGeoPoint2D &) const;
+    bool FUN_00608650(const class RHMobileUnk006100e0 &) const;
     SBGeoPoint2D FUN_00608f40() const;
     int FUN_00609050(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
     SBGeoBoundingBox2D &operator=(const SBGeoBoundingBox2D &other);
@@ -320,9 +330,10 @@ public:
 class RHFastFindLine
 {
 public:
+    void *FUN_0051f500(unsigned flags);
     RHFastFindLine();
     ~RHFastFindLine();
-    void FUN_0051faf0(SBFile &, RHFastFindPointerArray &);
+    int FUN_0051faf0(SBFile &, RHFastFindPointerArray &);
     float FUN_0051f450();
     float FUN_0051f470();
     float FUN_0051f490();
@@ -370,16 +381,20 @@ public:
     char m_1a7;
 };
 
-class RHUnk0057e4d0 : public RHFastFindSector
-{
-public:
-    RHUnk0057e4d0();
-    ~RHUnk0057e4d0();
-    char m_3c[0xe0];
-};
-
 class RHElementActor;
 
+#include <list>
+
+class RHFastFindCursorList : public std::list<void *>
+{
+public:
+    RHFastFindCursorList() : m_dirty(true) {}
+    iterator m_cursor;
+    bool m_dirty;
+    int m_index;
+};
+
+// VTABLE: GAME 0x0067909c
 // SIZE 0x94
 class RHUnk0051a5e0
 {
@@ -395,7 +410,11 @@ public:
     short m_16; // +0x16
     SBGeoPoint2D m_18; // +0x18
     SBGeoPoint2D m_20; // +0x20
-    undefined m_28[0x60]; // +0x28
+    undefined m_28[4]; // +0x28
+    RHFastFindCursorList m_2c; // +0x2c
+    undefined m_44[0xc]; // +0x44
+    RHFastFindCursorList m_50; // +0x50
+    undefined m_68[0x20]; // +0x68
     int m_88; // +0x88
     undefined m_8c[8]; // +0x8c
 };
@@ -411,7 +430,7 @@ public:
     virtual bool Serialize(SBFile &file); // vtable+0x04
     virtual bool FUN_0051b870(bool, RHElementActor *, bool, bool, bool); // vtable+0x08
     virtual bool FUN_0057cd50(undefined4); // vtable+0x0c
-    void Unk0051b2a0(SBFile &file, bool mode);
+    void Unk0051b2a0(SBFile &file, RHSectorBuilding *building);
     SBGeoPoint2D m_94; // +0x94
     int m_9c; // +0x9c
     int m_a0; // +0xa0
@@ -511,6 +530,7 @@ public:
     void **Unk004fe420(void **first, void **last, void **destination);
     void Unk004fe450(void **destination, unsigned int count, void *const &value);
     void Unk005008e0(void **first, void **last);
+    void Unk004ff210(void *const *first, void *const *last);
     unsigned int Size() { return first == 0 ? 0 : last - first; }
 };
 
@@ -599,6 +619,7 @@ class RHSectorScript
 public:
     RHSectorScript();
     ~RHSectorScript();
+    bool FUN_0057ff00(RHElementActor *actor);
     void InitializeFromMissionStream(SBFile &file);
     char m_00[0x30];
     unsigned long m_flags;
@@ -616,7 +637,7 @@ class RHUnk0051e5e0
 public:
     RHUnk0051e5e0();
     ~RHUnk0051e5e0();
-    void FUN_0057ca80();
+    void *FUN_0051e630(unsigned flags);
     int Unk0051e700(SBFile &file);
     bool FUN_0051e7b0(unsigned int index, RHElementActor *actor, bool mode);
     void Unk0051e800();
@@ -640,8 +661,8 @@ public:
 class RHUnk0051e1e0
 {
 public:
+    void *FUN_0051e200(unsigned flags);
     RHUnk0051e1e0();
-    void FUN_0051f0f0();
     ~RHUnk0051e1e0();
     void Unk0051e230(SBFile &file, RHSeqList &sectors);
     char m_00[0x1c];
@@ -738,6 +759,8 @@ public:
 class RHSector
 {
 public:
+    RHSector();
+    ~RHSector();
     int Unk0057cd60(SBFile &file, bool mode);
 };
 
@@ -751,15 +774,24 @@ public:
         return (RHUnk005fc3b0 &)SBGeoVector2D::operator=((const SBGeoVector2D &)other);
     }
     float Unk005fc6a0(float value);
+    float FUN_005fc680(const RHUnk005fc3b0 &other, float value) const;
 };
 
 // SIZE 0x14
-class __declspec(novtable) RHUnk005209d0
+class __declspec(novtable) RHUnk005209d0 : public SBGeoPoint2D
 {
 public:
     RHUnk005209d0(int type);
+    RHUnk005209d0(SBGeoPoint2D point, int type);
+    RHUnk005209d0(const RHUnk005209d0 &other)
+        : SBGeoPoint2D(other), m_0c(other.m_0c), m_10(other.m_10)
+    {
+        *(unsigned *)this = 0x678b58;
+    }
     virtual ~RHUnk005209d0(); // vtable+0x00
-    undefined m_04[0x10]; // +0x04
+    void *FUN_004fdc70(unsigned flags);
+    int m_0c; // +0x0c
+    undefined m_10; // +0x10
 };
 
 // VTABLE: GAME 0x00678b54
@@ -768,10 +800,16 @@ class RHUnk00520ae0 : public RHUnk005209d0
 {
 public:
     RHUnk00520ae0();
+    RHUnk00520ae0(const SBGeoPoint2D &point, float first, float second);
     virtual ~RHUnk00520ae0(); // vtable+0x00
+    void FUN_00520c80(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
     RHUnk005fc3b0 m_14; // +0x14
     RHUnk005fc3b0 m_1c; // +0x1c
-    undefined m_24[0x11]; // +0x24
+    int m_24;
+    int m_28;
+    int m_2c;
+    int m_30;
+    undefined m_34; // +0x34
     undefined m_35; // +0x35
     undefined m_36; // +0x36
     undefined m_37; // +0x37
@@ -779,13 +817,7 @@ public:
     unsigned long m_id; // +0x3c
 };
 
-class RHUnk004ff7b0
-{
-public:
-    void FUN_004ff7b0(unsigned int count, const float &value);
-    char m_00[4];
-    float *m_first;
-};
+#include "RHUnk004ff7b0.h"
 
 class RHUnk005223f0
 {

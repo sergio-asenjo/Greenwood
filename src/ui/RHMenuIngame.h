@@ -18,6 +18,7 @@
 
 typedef RHShortBriefings RHMenuIngamePauseToken;
 
+// VTABLE: GAME 0x006794c0
 class RHMenuIngame : public RHMenuWindowFocus
 {
 public:

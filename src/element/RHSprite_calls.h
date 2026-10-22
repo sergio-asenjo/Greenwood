@@ -10,6 +10,8 @@ template<class T> T &RHSpriteField(void *object, unsigned offset)
     return *(T *)((char *)object + offset);
 }
 
+#ifndef SBGEO_POINT2D_VIEW
+#define SBGEO_POINT2D_VIEW
 // SIZE 0x08
 class SBGeoVector2D;
 class SBGeoPoint2D
@@ -31,6 +33,7 @@ public:
     float m_x; // 0x00
     float m_y; // 0x04
 };
+#endif
 
 #include "SBGeoVector2D.h"
 
@@ -49,6 +52,7 @@ public:
     float FUN_005fc680(const RHUnk005fc3b0 &other, float scale) const;
 };
 
+#define SBGEO_BOUNDINGBOX2D_VIEW
 // SIZE 0x14
 class SBGeoBoundingBox2D
 {
@@ -67,23 +71,7 @@ public:
     bool m_10; // 0x10
 };
 
-struct RHBonusProjection;
-class RHBonusInfoBase
-{
-public:
-    void FUN_0055f290();
-    void FUN_0055fa20(RHBonusProjection *);
-};
-class RHBonusInfo
-{
-public:
-    void FUN_005bd560(void *, bool);
-};
-class RHUnkPathActorInfoBase
-{
-public:
-    void *Unk0055fa10(int);
-};
+#include "RHBonusInfo.h"
 class RHMobilePosition
 {
 public:
@@ -141,6 +129,8 @@ class RHUnk00613e90
 {
 public:
     RHUnk00613e90();
+    RHUnk00613e90 FUN_005df550(const RHUnk00613e90 &other) const;
+    float FUN_005df680() const;
     float m_0; // 0x00
     float m_4; // 0x04
     float m_8; // 0x08
@@ -151,6 +141,7 @@ public:
 class RHOrder
 {
 public:
+    RHOrder();
     RHOrder(RHOrder &);
     virtual ~RHOrder(); // vtable+0x00
     undefined4 m_04; // 0x04
@@ -256,7 +247,10 @@ class RHScriptBatchCalls
 {
 public:
     bool Unk0049d560(int action);
-    void Unk005c2ec0(void *, int, int, void *, int, int, int, int);
+    int Unk005c2ec0(void *, int, int, void *, int, int, int, int);
+    void Unk00419fb0(int value);
+    void Unk0040d980(int stimulus);
+    void Unk00418bc0();
 };
 
 extern float g_unk0x00677488;

@@ -19,6 +19,7 @@
 #define RHTITBITS_H
 
 #include "SB.h"
+#include <string>
 
 // Target 0x004593f0-style engine helper: serialises other engine objects.
 // Class identity of the engine is RHEngine (thiscall receiver read from the

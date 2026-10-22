@@ -61,9 +61,35 @@ struct RHMinimapSortElement
 // then the creation id.
 bool FUN_00549ae0(const RHMinimapSortElement *a, const RHMinimapSortElement *b);
 
-class RHMinimap
+#include "../engine/RHPortraitRootLifetime.h"
+#ifndef SBGEO_POINT2D_VIEW
+#define SBGEO_POINT2D_VIEW
+class SBGeoPoint2D
 {
 public:
+    SBGeoPoint2D();
+    ~SBGeoPoint2D();
+    SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
+    float m_x;
+    float m_y;
+};
+#endif
+#ifndef SBGEO_BOUNDINGBOX2D_VIEW
+#include "../common/SBGeoBoundingBox2DCore.h"
+#endif
+#ifndef SBGEOVECTOR2D_H
+#include "../common/SBGeoVector2D.h"
+#endif
+#include <vector>
+
+// SIZE 0x12c
+class __declspec(novtable) RHMinimap : public RHPortraitRootLifetime
+{
+public:
+    RHMinimap();
+    ~RHMinimap();
+    void *FUN_00549510(unsigned flags);
+
     // Windows codegen hands this NO `this` and returns with a plain `ret`
     // (caller cleans the two stack args, `add esp,0x8` at 0x0054999b), so on
     // this build it is a static member — the same shape as
@@ -81,4 +107,27 @@ public:
     void FUN_0054a640(const void *arg);                                        // ret 4
     void FUN_0054a920();                                                       // ret
     bool FUN_0054ae90(RHElement *element);
+    static void FUN_0054b490(const RHMinimapHighlightedElement &element);
+    void FUN_0054b4c0();
+    void FUN_0054b5e0(const SBGeoPoint2D &point, unsigned short color);
+
+    undefined m_a0[0x10];
+    bool m_b0;
+    bool m_b1;
+    bool m_b2;
+    SBGeoPoint2D m_b4;
+    SBGeoPoint2D m_bc;
+    SBGeoVector2D m_c4;
+    std::vector<RHMinimapHighlightedElement> m_highlighted;
+    int m_dc;
+    bool m_e0;
+    bool m_e1;
+    SBGeoBoundingBox2D m_e4;
+    SBGeoBoundingBox2D m_f8;
+    SBGeoBoundingBox2D m_10c;
+    bool m_120;
+    bool m_121;
+    bool m_122;
+    float m_124;
+    int m_128;
 };

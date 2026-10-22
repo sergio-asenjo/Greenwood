@@ -11,24 +11,67 @@ void RHSerializeName(SBFile &file, const char *name);
 class RHMissionArrayStorage;
 class SBGeoBoundingBox2D;
 
+#ifndef SBGEO_POINT2D_VIEW
+#define SBGEO_POINT2D_VIEW
+class SBGeoPoint2D
+{
+public:
+    float m_x;
+    float m_y;
+    SBGeoPoint2D();
+    ~SBGeoPoint2D();
+    SBGeoPoint2D(const SBGeoPoint2D &other);
+    SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
+    bool Serialize(SBFile &file);
+};
+#endif
+
+#include "RHUnk0060c2c0.h"
+#include "SBGeoBoundingBox2DCore.h"
+
+// VTABLE: GAME 0x00679bf4
 // SIZE 0x58
-class RHSector
+class RHSector : public RHUnk0060c2c0
 {
 public:
     RHSector();
+    RHSector(int type);
     ~RHSector();
+    void *FUN_0057caf0(unsigned flags);
     virtual void UnkV0(); // vtable+0x00
     int Unk0057cd60(SBFile &file, bool mode);
     void FUN_0057d390(void *draw, unsigned long surface, const SBGeoBoundingBox2D &box, float scale, unsigned short layer);
-    undefined m_pad4[0x2c]; // 0x04
+    void DisplayAlpha(unsigned long color, unsigned long alpha, bool mode);
     int m_30; // 0x30
-    undefined m_pad34[0x24]; // 0x34
+    bool m_34;
+    unsigned short m_36;
+    unsigned short m_38;
+    SBGeoBoundingBox2D m_3c;
+    undefined m_50[8];
 };
 
 template <class T>
-class RHSectorArray : public std::vector<T>
+class RHSectorArrayStorage : public std::vector<T>
 {
 public:
+    ~RHSectorArrayStorage() { clear(); }
+};
+
+template <class T>
+class RHSectorArray : public RHSectorArrayStorage<T>
+{
+public:
+    RHSectorArray() { m_dirty = 1; }
+    ~RHSectorArray()
+    {
+        int count = size();
+        for (int i = 0; i < count; ++i)
+        {
+            if ((*this)[i] != 0)
+                delete (*this)[i];
+        }
+        erase(begin(), end());
+    }
     char m_pad10[4];
     char m_dirty; // [0x14]
     char m_pad15[3];
@@ -44,10 +87,13 @@ public:
 
 class RHUnk00522540;
 
+// VTABLE: GAME 0x00679c9c
 // SIZE 0x84
 class RHSectorArchery : public RHSector
 {
 public:
+    RHSectorArchery();
+    virtual ~RHSectorArchery();
     void InitializeFromMissionStream(SBFile &file);
     bool Serialize(SBFile &file);
     void Emit(SBFile &file);
@@ -70,28 +116,15 @@ struct RHUnkSectorGlobal
 
 extern RHUnkSectorGlobal *g_unk0x6c0a9c;
 
-class SBGeoPoint2D
-{
-public:
-    float m_x;
-    float m_y;
-    SBGeoPoint2D();
-    ~SBGeoPoint2D();
-    SBGeoPoint2D(const SBGeoPoint2D &other);
-    SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
-    bool Serialize(SBFile &file);
-};
-
 // VTABLE: GAME 0x00679140
 // SIZE 0x1c
-class RHUnk00522540
+class RHUnk00522540 : public SBGeoPoint2D
 {
 public:
     RHUnk00522540();
     virtual ~RHUnk00522540(); // vtable+0x00
     void Unk005225a0(SBFile &file);
     bool FUN_00522680(SBFile &file);
-    SBGeoPoint2D m_4; // 0x04
     undefined2 m_c; // 0x0c
     undefined2 m_e; // 0x0e
     void *m_10; // 0x10
@@ -103,6 +136,7 @@ public:
 
 // SIZE 0x2c
 #include "RHUnkSectorPoints.h"
+#include "RHUnk00613e90.h"
 
 #include "RHUnkSectorScript.h"
 
@@ -125,6 +159,7 @@ enum RHUnkSectorActorType
 class RHElementActor
 {
 public:
+    unsigned short FUN_004626e0() const;
     char m_pad0[4];
     unsigned int m_4; // [0x04]
     char m_pad8[0x48];
@@ -137,131 +172,10 @@ public:
     RHUnkSectorActorType UnkType() const { return (RHUnkSectorActorType)(m_4 & 0xf); }
 };
 
-struct RHSectorActorNode
-{
-    RHSectorActorNode *m_next;
-    RHSectorActorNode *m_prev;
-    RHElementActor *m_data;
-};
+#include "RHSectorBuilding.h"
+#include "RHSectorActorList.h"
 
-struct RHSectorActorAccess
-{
-    static RHSectorActorNode *&Next(RHSectorActorNode *p) { return p->m_next; }
-    static RHElementActor *&Value(RHSectorActorNode *p) { return p->m_data; }
-};
-
-class RHSectorActorConstIter
-{
-public:
-    RHSectorActorNode *m_p;
-    RHSectorActorConstIter(RHSectorActorNode *p) : m_p(p) {}
-};
-
-class RHSectorActorIter : public RHSectorActorConstIter
-{
-public:
-    RHSectorActorIter(RHSectorActorNode *p) : RHSectorActorConstIter(p) {}
-    RHSectorActorIter operator++(int);
-    RHElementActor *&operator*() const { return RHSectorActorAccess::Value(m_p); }
-};
-
-class RHSectorActorList
-{
-public:
-    char m_pad0[4];
-    RHSectorActorNode *m_head; // [0x04]
-    int m_count; // [0x08]
-    RHSectorActorIter m_cur; // [0x0c]
-    char m_valid; // [0x10]
-    char m_pad11[3];
-    int m_index; // [0x14]
-    char m_searchValid; // [0x18]
-    char m_pad19[3];
-    int m_searchIndex; // [0x1c]
-    RHElementActor *m_searchValue; // [0x20]
-
-    int Unk004b8f80(RHElementActor *const &actor, bool mode);
-    RHSectorActorIter insert(RHSectorActorIter pos, RHElementActor *const &actor);
-    RHSectorActorIter erase(RHSectorActorIter pos);
-    void Unk005c8e40(int index);
-
-    int FindValue(RHElementActor *actor) { return Unk004b8f80(actor, true); }
-    RHSectorActorIter begin() { return RHSectorActorIter(RHSectorActorAccess::Next(m_head)); }
-    RHSectorActorIter Current() const { return m_cur; }
-    RHElementActor *CurrentValue() const { return *m_cur; }
-
-    int Find(RHElementActor *actor)
-    {
-        int count = m_count;
-        m_searchValue = actor;
-        m_searchValid = 1;
-        m_cur = begin();
-        int index = 0;
-        for (; index < count; ++index, m_cur++)
-        {
-            if (CurrentValue() == m_searchValue)
-                break;
-        }
-        if (index < count)
-        {
-            m_searchIndex = index;
-            m_valid = 0;
-            m_index = index;
-        }
-        else
-        {
-            m_valid = 1;
-            m_searchIndex = -1;
-        }
-        return m_searchIndex;
-    }
-};
-
-// SIZE 0x11c
-class RHSectorBuilding
-{
-public:
-    bool Serialize(SBFile &file);
-    void Emit(SBFile &file);
-    undefined m_pad0[0xf4]; // 0x00
-    RHSectorActorList m_f4; // 0xf4
-    undefined m_118; // 0x118
-    undefined m_pad119[3]; // 0x119
-};
-
-class RHUnkSectorScriptRef
-{
-public:
-    int Unk004089f0(RHElementActor *actor);
-    int Unk00408af0(RHElementActor *actor);
-    int Unk00408900();
-    void *m_0; // 0x00
-};
-
-// SIZE 0xf8
-class RHSectorScript
-{
-public:
-    void Enter(RHElementActor *actor);
-    void Leave(RHElementActor *actor);
-    void InitializeFromMissionStream(SBFile &file);
-    bool Serialize(SBFile &file);
-    void Emit(RHElementActor *actor);
-    void Emit(SBFile &file);
-
-    char m_pad0[0x36];
-    unsigned short m_36; // [0x36]
-    char m_pad38[0x80];
-    char m_b8; // [0xb8]
-    char m_padb9[7];
-    char *m_c0; // [0xc0]
-    RHUnkSectorScriptRef m_c4; // [0xc4]
-    unsigned short m_c8; // [0xc8]
-    char m_padca[2];
-    RHSectorActorList m_cc; // [0xcc]
-    char m_padf0[4];
-    int m_f4; // [0xf4]
-};
+#include "RHSectorScript.h"
 
 extern RHElementActor *g_unk0x6c100c;
 
@@ -306,14 +220,6 @@ public:
     int Unk();
 };
 
-class RHUnk0057d490
-{
-public:
-    virtual ~RHUnk0057d490();
-    void FUN_0057d760(void *gate, bool side);
-    void Emit(void *gate, bool side);
-};
-
 // VTABLE: GAME 0x00679c24
 // SIZE 0x5c
 class RHUnk0057d440 : public RHSector
@@ -355,9 +261,22 @@ public:
     virtual ~RHUnk0057ed80();
 };
 
+// VTABLE: GAME 0x00679c8c
+// SIZE 0x70
+class RHUnk0057ee90 : public RHSector
+{
+public:
+    RHUnk0057ee90();
+    virtual ~RHUnk0057ee90();
+    int m_58;           // 0x58
+    SBGeoPoint2D m_5c;  // 0x5c
+    RHUnk00613e90 m_64; // 0x64
+};
+
 class RHUnk0057dc80
 {
 public:
+    void *FUN_0057dcc0(unsigned flags);
     RHUnk0057dc80();
     ~RHUnk0057dc80();
     void FUN_0057d490();
@@ -377,7 +296,7 @@ class RHUnk0051aa00
 public:
     RHUnk0051aa00();
     ~RHUnk0051aa00();
-    void Unk0051b2a0(SBFile &file, bool mode);
+    void Unk0051b2a0(SBFile &file, RHSectorBuilding *building);
     char m_pad0[0x1c];
     float m_1c; // [0x1c]
     char m_pad20[0x9c];
@@ -390,7 +309,7 @@ public:
     char m_pad10[4];
     char m_dirty; // [0x14]
     char m_pad15[3];
-    void InsertLast(RHUnk0051aa00 *const &value)
+    void InsertLast(RHUnk0051aa00 *value)
     {
         insert(end(), 1, value);
         m_dirty = 1;

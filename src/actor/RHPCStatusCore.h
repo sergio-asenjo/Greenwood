@@ -12,6 +12,7 @@ class __declspec(novtable) RHPCStatus : public RHHumanStatus
 {
 public:
     RHPCStatus();
+    RHPCStatus(const RHCharacterProfile &profile, bool random);
     unsigned short *GetAmmoCounter(int action);
     void SetAmmoAmount(int action, unsigned short amount);
     static std::wstring GenerateName(const RHCharacterProfile &profile);

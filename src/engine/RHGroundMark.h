@@ -10,9 +10,9 @@
 //   - RHGroundInfo = SBGeoPoint2D (8 bytes) + two unsigned shorts.
 
 #include "SB.h"
+#include <memory>
 
-inline void *operator new(unsigned int, void *p) { return p; }
-
+#define SBGEO_POINT2D_VIEW
 class SBGeoPoint2D
 {
 public:
@@ -23,19 +23,11 @@ public:
     ~SBGeoPoint2D();
     SBGeoPoint2D(const SBGeoPoint2D &other);
     SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
+    SBGeoPoint2D FUN_005fc200(const SBGeoPoint2D &other) const;
     bool Serialize(SBFile &file);
 };
 
-struct RHGroundInfo
-{
-    SBGeoPoint2D m_point;
-    unsigned short m_a;
-    unsigned short m_b;
-
-    RHGroundInfo();
-    RHGroundInfo(const RHGroundInfo &other);
-    ~RHGroundInfo();
-};
+#include "RHGroundInfo.h"
 
 struct RHGroundInfoNode
 {
@@ -58,16 +50,64 @@ public:
     }
 };
 
-class RHGroundInfoList
+class RHGroundInfoListStorage
 {
 public:
-    char m_pad0[4];
+    RHGroundInfoListStorage(const std::allocator<RHGroundInfo> &allocator) : m_allocator(allocator)
+    {
+        RHGroundInfoNode *node = (RHGroundInfoNode *)::operator new(sizeof(RHGroundInfoNode));
+        node->m_next = node;
+        node->m_prev = node;
+        m_head = node;
+        m_count = 0;
+    }
+    ~RHGroundInfoListStorage()
+    {
+        RHGroundInfoNode *last = m_head;
+        RHGroundInfoNode *current = last->m_next;
+        while (current != last)
+        {
+            RHGroundInfoNode *node = current;
+            current = current->m_next;
+            node->m_prev->m_next = node->m_next;
+            node->m_next->m_prev = node->m_prev;
+            node->m_data.Destroy(0);
+            ::operator delete(node);
+            --m_count;
+        }
+        ::operator delete(m_head);
+        m_head = 0;
+        m_count = 0;
+    }
+    std::allocator<RHGroundInfo> m_allocator;
     RHGroundInfoNode *m_head; // [0x04]
     int m_count;              // [0x08]
-    RHGroundInfoNode *m_cur;  // [0x0c]
-    char m_valid;             // [0x10]
+};
+
+class RHGroundInfoList : public RHGroundInfoListStorage
+{
+public:
+    RHGroundInfoList() : RHGroundInfoListStorage(std::allocator<RHGroundInfo>()), m_valid(true) {}
+    // FUNCTION: GAME 0x0051c660
+    ~RHGroundInfoList()
+    {
+        RHGroundInfoNode *last = m_head;
+        RHGroundInfoNode *current = last->m_next;
+        while (current != last)
+        {
+            RHGroundInfoNode *node = current;
+            current = current->m_next;
+            Erase(RHGroundInfoIter(node));
+        }
+    }
+    RHGroundInfoNode *m_cur;
+    bool m_valid;
     char m_pad1[3];
-    int m_index;              // [0x14]
+    int m_index;
+    char m_18[8];
+    SBGeoPoint2D m_point;
+    unsigned short m_a;
+    unsigned short m_b;
 
     void GoTo(int i);
     void *Clear(void *out, RHGroundInfoNode *first, RHGroundInfoNode *last);
@@ -84,7 +124,7 @@ public:
         return s;
     }
 
-    void Construct(RHGroundInfo *p, const RHGroundInfo &v)
+    static void Construct(RHGroundInfo *p, const RHGroundInfo &v)
     {
         new (p) RHGroundInfo(v);
     }
@@ -96,18 +136,31 @@ public:
         s = s->m_prev;
         s->m_prev->m_next = s;
         Construct(&s->m_data, x);
+        m_valid = true;
         ++m_count;
         return RHGroundInfoIter(s);
     }
 };
 
+class RHUnk005b5890;
+class RHUnk005ef320;
+class RHUnkSpriteBank;
+
+// VTABLE: GAME 0x006790b4
 class RHGroundMark
 {
 public:
+    RHGroundMark();
+    ~RHGroundMark();
+    virtual void *FUN_0051bc70(unsigned flags);
+    bool AddGroundMark(const SBGeoPoint2D &point, unsigned short type);
     bool Serialize(SBFile &file);
     void Emit(SBFile &file);
 
-    char m_pad0[0x14];
+    RHUnk005b5890 *m_sprite;
+    int m_surface;
+    RHUnk005ef320 *m_drawManager;
+    RHUnkSpriteBank *m_spriteBank;
     RHGroundInfoList m_list;
 };
 

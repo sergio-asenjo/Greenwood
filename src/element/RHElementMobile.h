@@ -19,6 +19,7 @@ template <class T> inline const T &RHMobileField(const void *object, unsigned of
 extern char g_unk0x6c0691;
 
 class SBGeoVector2D;
+class SBGeoSegment2D;
 
 // SIZE 0x08
 class SBGeoPoint2D
@@ -28,6 +29,7 @@ public:
     SBGeoPoint2D(float x, float y);
     SBGeoPoint2D(const SBGeoPoint2D &other);
     ~SBGeoPoint2D();
+    void *FUN_0044e990(unsigned flags);
     SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
     SBGeoVector2D Unk005fc110(const SBGeoPoint2D &other) const;
     SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
@@ -35,6 +37,7 @@ public:
     bool operator==(const SBGeoPoint2D &other) const;
     bool FUN_005fc0e0(const SBGeoPoint2D &other) const;
     float FUN_005fc700(float value) const;
+    float Unk005fc6d0(float value) const;
     SBGeoPoint2D &FUN_005fc1e0(const SBGeoPoint2D &other);
     void FUN_005fc390(const SBGeoPoint2D &other) throw();
     float m_x; // 0x00
@@ -51,6 +54,7 @@ public:
     ~SBGeoVector2D() {}
     SBGeoVector2D &operator=(const SBGeoVector2D &other);
     SBGeoVector2D(const SBGeoVector2D &other);
+    float FUN_005fc660(const SBGeoPoint2D &other) const;
 };
 
 class RHUnk005fc3b0 : public SBGeoVector2D
@@ -59,7 +63,7 @@ public:
     RHUnk005fc3b0() {}
     ~RHUnk005fc3b0() {}
     float Unk005fc6a0(float value);
-    float FUN_005fc7c0(float value);
+    void FUN_005fc7c0(float value);
     unsigned char FUN_005fcc50(float value) const;
     SBGeoVector2D FUN_005fc8f0(bool direction, float value) const;
     SBGeoPoint2D FUN_005fc450() const;
@@ -97,53 +101,6 @@ public:
     void *m_ec;
 };
 
-// SIZE 0xfc
-class RHMobileBase004a8130
-{
-public:
-    RHMobileBase004a8130(int type) throw();
-    virtual ~RHMobileBase004a8130(); // vtable+0x00
-    virtual void v1(); // vtable+0x04
-    virtual void v2(); // vtable+0x08
-    virtual void v3(); // vtable+0x0c
-    virtual void v4(); // vtable+0x10
-    virtual void v5(); // vtable+0x14
-    virtual void v6(); // vtable+0x18
-    virtual void v7(); // vtable+0x1c
-    virtual void v8(); // vtable+0x20
-    virtual void v9(); // vtable+0x24
-    virtual void v10(); // vtable+0x28
-    virtual void v11(); // vtable+0x2c
-    virtual void v12(); // vtable+0x30
-    virtual void v13(); // vtable+0x34
-    virtual void v14(SBFile &file); // vtable+0x38
-    virtual void v15(); // vtable+0x3c
-    virtual bool v16(SBFile &file); // vtable+0x40
-    virtual void v17(bool value); // vtable+0x44
-    virtual void v18(); // vtable+0x48
-    virtual void v19(); // vtable+0x4c
-    virtual void v20(); // vtable+0x50
-    virtual void v21(); // vtable+0x54
-    virtual void v22(); // vtable+0x58
-    virtual void v23(); // vtable+0x5c
-    virtual void v24(); // vtable+0x60
-    virtual void v25(); // vtable+0x64
-    undefined m_4[0xf8]; // 0x04
-};
-
-// VTABLE: GAME 0x00678508
-// SIZE 0x104
-class RHUnk004aac40 : public RHMobileBase004a8130
-{
-public:
-    RHUnk004aac40();
-    virtual ~RHUnk004aac40(); // vtable+0x00
-    virtual void v9(); // vtable+0x24
-    virtual void v10(); // vtable+0x28
-    virtual bool v16(SBFile &file); // vtable+0x40
-    float m_fc; // 0xfc
-    RHElementMobile *m_100; // 0x100
-};
 
 struct RHMobileElement
 {
@@ -212,22 +169,43 @@ public:
     }
 };
 
-class RHMobileUnk0051fd10
+class __declspec(novtable) RHUnk005214b0
+{
+public:
+    void *FUN_005214d0(unsigned flags);
+    RHUnk005214b0();
+    virtual ~RHUnk005214b0(); // vtable+0x00
+    char m_04[0x10];
+    int m_14;
+    char m_18[8];
+    unsigned short m_20;
+};
+
+// VTABLE: GAME 0x006790f8
+// SIZE 0x44
+class RHMobileUnk0051fd10 : public RHUnk005214b0
 {
 public:
     RHMobileUnk0051fd10(float first, float second);
-    ~RHMobileUnk0051fd10();
+    virtual ~RHMobileUnk0051fd10(); // vtable+0x00
+    virtual void FUN_00520480(); // vtable+0x04
     void FUN_0051fdc0();
-    undefined m_0[0x44]; // 0x00
+    bool FUN_0051fea0(const SBGeoPoint2D &point, float &distance);
+    float m_24; // 0x24
+    float m_28; // 0x28
+    float m_2c; // 0x2c
+    float m_30; // 0x30
+    RHUnk005fc3b0 m_34; // 0x34
+    RHUnk005fc3b0 m_3c; // 0x3c
 };
 
-class RHMobileUnk00520b60
+class RHUnk00520ae0
 {
 public:
-    RHMobileUnk00520b60(const SBGeoPoint2D &point, float first, float second);
-    ~RHMobileUnk00520b60();
+    RHUnk00520ae0(const SBGeoPoint2D &point, float first, float second);
+    virtual ~RHUnk00520ae0();
     void FUN_00520c80(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
-    undefined m_0[0x40]; // 0x00
+    undefined m_4[0x3c]; // 0x04
 };
 
 struct RHMobilePointerNode
@@ -278,6 +256,10 @@ class RHUnk0042fde0
 {
 public:
     SBGeoVector2D FUN_0042fde0() const;
+    bool FUN_0060b640(const SBGeoPoint2D &point) const;
+    float FUN_0060b7a0(const SBGeoPoint2D &point) const;
+    void FUN_0060b910(SBGeoPoint2D &output, const SBGeoPoint2D &point) const;
+    float FUN_0060ba80(const SBGeoPoint2D &point) const;
     SBGeoPoint2D m_0;
     SBGeoPoint2D m_8;
 };
@@ -314,23 +296,70 @@ public:
 
 class RHMobileUnk006100e0;
 
-class RHMobileUnk0060a820
+#include "RHMobileSegmentCalls.h"
+
+class RHMobilePointAllocator
 {
 public:
-    RHMobileUnk0060a820 &FUN_0060a820(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
-    RHMobileUnk0060a820 &FUN_006158b0(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
-    RHMobileUnk0060a820 &FUN_006158d0(const SBGeoPoint2D &point);
-    RHMobileUnk0060a820 &FUN_006158f0(const RHMobileUnk006100e0 &other);
+    void deallocate(SBGeoPoint2D *pointer, unsigned)
+    {
+        operator delete(pointer);
+    }
 };
 
-class RHMobileUnk00611360
+class RHMobilePointStorage
 {
 public:
-    void FUN_00611360(const SBGeoPoint2D &value);
-    unsigned short Size() const { SBGeoPoint2D *first = *(SBGeoPoint2D *volatile *)&m_4; if (!first) return 0; return (unsigned short)(m_8 - first); }
-    int m_0;
+    ~RHMobilePointStorage()
+    {
+        Destroy(m_4, m_8);
+        m_0.deallocate(m_4, m_c - m_4);
+        m_4 = 0;
+        m_8 = 0;
+        m_c = 0;
+    }
+
+    void Destroy(SBGeoPoint2D *first, SBGeoPoint2D *last)
+    {
+        for (; first != last; ++first)
+            first->FUN_0044e990(0);
+    }
+
+    SBGeoPoint2D *begin() { return m_4; }
+    SBGeoPoint2D *end() { return m_8; }
+
+    static SBGeoPoint2D *Copy(SBGeoPoint2D *first, SBGeoPoint2D *last, SBGeoPoint2D *destination)
+    {
+        for (; first != last; ++destination, ++first)
+            *destination = *first;
+        return destination;
+    }
+
+    SBGeoPoint2D *Erase(SBGeoPoint2D *first, SBGeoPoint2D *last)
+    {
+        SBGeoPoint2D *destination = Copy(last, end(), first);
+        Destroy(destination, end());
+        m_8 = destination;
+        return first;
+    }
+
+    RHMobilePointAllocator m_0;
     SBGeoPoint2D *m_4;
     SBGeoPoint2D *m_8;
+    SBGeoPoint2D *m_c;
+};
+
+class RHMobileUnk00611360 : public RHMobilePointStorage
+{
+public:
+    RHMobileUnk00611360();
+    ~RHMobileUnk00611360() { Erase(begin(), end()); }
+    void FUN_00611360(const SBGeoPoint2D &value);
+    unsigned short Size() const { SBGeoPoint2D *first = *(SBGeoPoint2D *volatile *)&m_4; if (!first) return 0; return (unsigned short)(m_8 - first); }
+    int m_10;
+    bool m_14;
+    undefined m_18[4];
+    SBGeoPoint2D m_1c;
 };
 
 class RHMobileUnk004b06f0
@@ -507,19 +536,86 @@ struct RHMobileSoundNode
 
 #include "RHSoundCore.h"
 
+class RHMalignitySegment;
+
 // SIZE 0x14
 class SBGeoBoundingBox2D
 {
 public:
     SBGeoBoundingBox2D();
+    SBGeoBoundingBox2D(const SBGeoSegment2D &segment);
     SBGeoBoundingBox2D(float left, float top, float right, float bottom);
     SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &value) const;
     bool FUN_00608400(const SBGeoPoint2D &value) const;
     void Unk00607dc0(const SBGeoPoint2D &point);
     void FUN_00607e90(const SBGeoBoundingBox2D &other);
+    void FUN_00607e30(const RHMalignitySegment &segment);
+    bool FUN_00608730(const RHMobileUnk006100e0 &line) const;
     SBGeoPoint2D m_0; // 0x00
     SBGeoPoint2D m_8; // 0x08
     undefined m_10; // 0x10
+};
+
+class RHMobileElementBase
+{
+public:
+    RHMobileElementBase(int type, int value);
+    virtual ~RHMobileElementBase();
+    undefined m_04[0xb0]; // 0x04
+};
+
+// VTABLE: GAME 0x006784a0
+// SIZE 0xfc
+class RHMobileBase004a8130 : public RHMobileElementBase
+{
+public:
+    RHMobileBase004a8130(int type);
+    virtual ~RHMobileBase004a8130(); // vtable+0x00
+    virtual void v1(); // vtable+0x04
+    virtual void v2(); // vtable+0x08
+    virtual void v3(); // vtable+0x0c
+    virtual void v4(); // vtable+0x10
+    virtual void v5(); // vtable+0x14
+    virtual void v6(); // vtable+0x18
+    virtual void v7(); // vtable+0x1c
+    virtual void v8(); // vtable+0x20
+    virtual void v9(); // vtable+0x24
+    virtual void v10(); // vtable+0x28
+    virtual void v11(); // vtable+0x2c
+    virtual void v12(); // vtable+0x30
+    virtual void v13(); // vtable+0x34
+    virtual void v14(SBFile &file); // vtable+0x38
+    virtual void v15(); // vtable+0x3c
+    virtual bool v16(SBFile &file); // vtable+0x40
+    virtual void v17(bool value); // vtable+0x44
+    virtual void v18(); // vtable+0x48
+    virtual void v19(); // vtable+0x4c
+    virtual void v20(); // vtable+0x50
+    virtual void v21(); // vtable+0x54
+    virtual void v22(); // vtable+0x58
+    virtual void v23(); // vtable+0x5c
+    virtual void v24(); // vtable+0x60
+    virtual void v25(); // vtable+0x64
+    SBGeoBoundingBox2D m_b4; // 0xb4
+    char m_c8; // 0xc8
+    int m_cc; // 0xcc
+    char m_d0; // 0xd0
+    RHMobileUnk00611360 m_d4; // 0xd4
+    undefined m_f8[4]; // 0xf8
+};
+
+// VTABLE: GAME 0x00678508
+// SIZE 0x104
+class RHUnk004aac40 : public RHMobileBase004a8130
+{
+public:
+    RHUnk004aac40();
+    virtual ~RHUnk004aac40(); // vtable+0x00
+    virtual void v9(); // vtable+0x24
+    virtual void v10(); // vtable+0x28
+    virtual bool v16(SBFile &file); // vtable+0x40
+    float m_fc; // 0xfc
+    RHElementMobile *m_100; // 0x100
 };
 
 class RHElevationLine
@@ -627,6 +723,7 @@ public:
     void FUN_004abfe0();
     void TranslateGeometry(const SBGeoVector2D &value);
     void FUN_004af210(class RHMobileEvent *event);
+    class RHUnk0045aaf0 *FUN_004ac750(void *actor);
     bool FUN_004ac7c0(void *value, void *unused, int type);
     unsigned short Size() const { RHMobileElement **first = *(RHMobileElement **volatile *)&m_b0; if (!first) return 0; return (unsigned short)(m_b4 - first); }
     void Emit(SBFile &file);

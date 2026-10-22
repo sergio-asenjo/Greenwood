@@ -70,14 +70,14 @@ public:
     void FUN_00513ff0();
     void FUN_00513390(void *);
     void FUN_00513520(void *);
-    void FUN_005138b0();
+    void FUN_005138b0(void *event);
     void FUN_00513210(void *);
     void FUN_00513e60();
     unsigned short FUN_00514470();
     void FUN_00512eb0(void *);
-    void FUN_00513b00();
+    void FUN_00513b00(int value);
     void FUN_00512cb0(void *event);
-    void FUN_00513670();
+    void FUN_00513670(void *event);
     void FUN_00514c50();
     void Emit(SBFile &file);
 

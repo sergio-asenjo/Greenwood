@@ -128,7 +128,7 @@ public:
 class RHScriptBatchCalls
 {
 public:
-    void Unk0058a940(void *context, int value, void *element);
+    void *Unk0058a940(void *context, int value, void *element);
 };
 
 // SIZE 0x9c

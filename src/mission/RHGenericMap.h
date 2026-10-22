@@ -1,6 +1,8 @@
 #ifndef RHGENERICMAP_H
 #define RHGENERICMAP_H
 
+#include <new>
+
 struct RHGenericValue
 {
     unsigned int m_0;

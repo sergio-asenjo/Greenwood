@@ -43,6 +43,9 @@ struct RHConsoleEngine
 class RHConsole
 {
 public:
+    RHConsole();
+    static RHConsole *GetInstance();
+    bool HandleCharacter(unsigned short character);
     static void FUN_0045bc50(char *, const char *);
     void FUN_0045bff0();
     char **FUN_0045c360(signed char *, unsigned &);
@@ -113,8 +116,7 @@ public:
 };
 
 void FUN_005ede40(RHUnk005ef320 *, const char *, ...);
-void FUN_005edae0(RHUnk005ef320 *, const char *);
-void FUN_005edae0(RHUnk005ef320 *, const char *, int);
+bool FUN_005edae0(RHUnk005ef320 *, const char *, ...);
 unsigned FUN_0057aa20();
 extern RHUnk005ef320 *g_unk0x6c11d0;
 extern char g_unk0x006c07de;

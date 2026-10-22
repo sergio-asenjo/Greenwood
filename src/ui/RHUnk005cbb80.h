@@ -14,8 +14,7 @@ public:
     unsigned int m_50;
     unsigned int m_54;
     unsigned int m_58;
-    unsigned int m_5c;
-    unsigned int m_60;
+    float m_fade[2];
 };
 
 #endif

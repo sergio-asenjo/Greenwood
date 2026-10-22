@@ -22,6 +22,10 @@ public:
     SBGeoPoint2D m_p0;
     SBGeoPoint2D m_p1;
     bool m_flag;
+    void SetValue0(float value) { m_flag = true; m_p0.m_x = value; }
+    void SetValue4(float value) { m_flag = true; m_p0.m_y = value; }
+    void SetValue8(float value) { m_flag = true; m_p1.m_x = value; }
+    void SetValueC(float value) { m_flag = true; m_p1.m_y = value; }
 };
 
 class RHCharacterProfile

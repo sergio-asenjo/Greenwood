@@ -2,6 +2,8 @@
 #define RHRENDERERGEOMETRY_H
 
 class SBGeoVector2D;
+#ifndef SBGEO_POINT2D_VIEW
+#define SBGEO_POINT2D_VIEW
 class SBGeoPoint2D
 {
 public:
@@ -18,6 +20,7 @@ public:
     float m_x;
     float m_y;
 };
+#endif
 
 class SBGeoVector2D : public SBGeoPoint2D
 {
@@ -30,10 +33,13 @@ public:
     SBGeoVector2D &operator=(const SBGeoVector2D &other);
 };
 
+#ifndef SBGEO_BOUNDINGBOX2D_VIEW
+#define SBGEO_BOUNDINGBOX2D_VIEW
 class SBGeoBoundingBox2D
 {
 public:
     SBGeoBoundingBox2D();
+    SBGeoBoundingBox2D(const SBGeoPoint2D &point);
     SBGeoBoundingBox2D(const SBGeoBoundingBox2D &other);
     SBGeoBoundingBox2D(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
     ~SBGeoBoundingBox2D() {}
@@ -53,5 +59,6 @@ public:
     SBGeoPoint2D m_second;
     bool m_10;
 };
+#endif
 
 #endif

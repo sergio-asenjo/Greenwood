@@ -108,18 +108,7 @@ public:
 
 #include "RHUnkSectorPoints.h"
 
-class RHElementAreaShape
-{
-public:
-    bool FUN_0060c660(const SBGeoPoint2D &point) const;
-    unsigned FUN_0060ce80() const;
-    const SBGeoPoint2D &FUN_0060cef0(unsigned index) const
-    {
-        return ((RHUnkSectorPoints *)this)->Unk0060cef0(index);
-    }
-    undefined m_00[0x24]; // 0x00
-    undefined2 m_24; // 0x24
-};
+#include "RHElementAreaShape.h"
 
 class RHElementArea
 {
@@ -211,18 +200,7 @@ public:
     undefined m_18[0xc]; // 0x18
 };
 
-class RHElementGrid
-{
-public:
-    void FUN_004e89d0(void *list, int cell, unsigned mask);
-    undefined m_00[0x3e98]; // 0x00
-    unsigned short m_3e98; // 0x3e98
-    unsigned short m_3e9a; // 0x3e9a
-    undefined m_3e9c[0x1a0]; // 0x3e9c
-    undefined *m_403c; // 0x403c
-    undefined m_4040[0x148]; // 0x4040
-    void *m_4188; // 0x4188
-};
+#include "RHElementGrid.h"
 
 class SBGeoVector2D : public SBGeoPoint2D
 {

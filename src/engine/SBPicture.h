@@ -18,6 +18,9 @@ public:
 class SBPicture
 {
 public:
+    SBPicture();
+    ~SBPicture();
+    void *FUN_00611be0(unsigned flags);
     char m_pad0[4];
     int m_04;
     char m_pad08[0x0c];

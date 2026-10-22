@@ -30,52 +30,7 @@ struct RHCivilianProfileView
 #include "RHSoldierNPCCalls.h"
 class RHSequenceElement;
 
-// SIZE 0x704
-class RHElementActorNPC
-{
-public:
-    virtual bool Serialize(SBFile &file); // vtable+0x00 (serializer-only view)
-    void GetTransitionFlags(RHSequenceElement *element, unsigned long &first, unsigned long &second, unsigned long &third);
-
-private:
-    char m_unkBase[0x700]; // [0x04, 0x704): RHElementActorNPC-owned, untouched here
-};
-
-// SIZE 0x70c
-class RHElementActorCivilian : public RHElementActorNPC
-{
-public:
-    virtual bool Serialize(SBFile &file); // vtable+0x00 (serializer-only view)
-    void GetTransitionFlags(RHSequenceElement *element, unsigned long &first, unsigned long &second, unsigned long &third);
-
-    bool FUN_00470ca0();
-    bool FUN_00470cc0();
-    bool FUN_00470ce0();
-    unsigned short FUN_00470180();
-    void FUN_00470190(unsigned, unsigned, unsigned, unsigned, unsigned, unsigned, unsigned);
-    char FUN_004701a0();
-    int FUN_004701f0();
-    int FUN_00470460();
-    bool FUN_00470310();
-    void FUN_00470a10(SBFile &file);
-    void FUN_00470480(SBFile &file);
-    bool FUN_00470d00(void *first, void *second, int kind);
-    bool FUN_00470e50(void *first, void *second, int kind);
-    void *FUN_00470f70(void *element);
-    void FUN_00471090();
-    void FUN_00471400(int first, int second);
-    void FUN_00471420(int first, int second);
-    bool FUN_00471240(RHElementActorCivilian *arg);
-    int FUN_004712b0(RHSoldierSequenceElement *element);
-    bool FUN_00475810(RHElementActorCivilian *arg);
-    bool FUN_00485990();
-
-    void Emit(SBFile &file);
-
-private:
-    undefined4 m_unk704; // 0x704
-    RHCivilianProfileView *m_708; // 0x708
-};
+#include "RHElementActorCivilianCore.h"
 
 
 // SIZE 0x19e
@@ -135,6 +90,9 @@ public:
     SBGeoPoint2D m_p1; // 0x08
     bool m_flag; // 0x10
 };
+#define SBGEO_POINT2D_VIEW
+#define SBGEOVECTOR2D_H
+#define SBGEO_BOUNDINGBOX2D_VIEW
 
 // SIZE 0x70
 class RHCampaignProfiles

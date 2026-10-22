@@ -86,7 +86,8 @@ public:
         ~Fonts();
     };
     void LoadConfiguration(const std::string &name);
-    void *FUN_005024f0();
+    static void *FUN_005024f0();
+    void *GetFont(const std::string &name) const;
     static std::string Get(FILE *file, char delimiter);
     void TrimString(std::string &value);
     void Emit(const std::string &name);

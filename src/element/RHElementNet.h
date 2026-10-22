@@ -54,6 +54,9 @@ public:
 class RHElementNet : public RHElementProjectile
 {
 public:
+    RHElementNet(void *victim);
+    void FUN_004b1730();
+    bool FUN_004b14a0(void *point, void *pc, int focus) const;
     virtual bool Serialize(SBFile &file);
     void Emit(SBFile &file);
 

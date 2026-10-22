@@ -29,18 +29,29 @@ public:
     virtual void V14(void *renderer, bool alternate) = 0;
 };
 
-class SBUIWindowTooltip
+class SBUIWindowTooltipPart
 {
 public:
-    void FUN_00627ee0(unsigned long display);
-    void FUN_00628500();
+    SBUIWindowTooltipPart()
+    {
+        m_0 = 0;
+        m_4 = 0;
+        m_8 = 0;
+    }
+
+    int m_0;
+    int m_4;
+    short m_8;
 };
+
+class RHUnk006279d0;
 
 class SBInputKeyboardState;
 
 class SBUIUnk0060e1b0
 {
 public:
+    void *FUN_0060e210(unsigned flags);
     SBUIUnk0060e1b0(int capacity);
     ~SBUIUnk0060e1b0();
     void FUN_0060e460();
@@ -81,7 +92,7 @@ public:
     undefined m_39[0xb];
     SBUIUnk0060e1b0 m_input;
     undefined m_45[0x1713];
-    SBUIWindowTooltip *m_tooltip;
+    RHUnk006279d0 *m_tooltip;
     unsigned short m_175c;
     unsigned short m_175e;
     unsigned short m_1760;

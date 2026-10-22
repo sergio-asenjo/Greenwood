@@ -4,7 +4,10 @@
 #include "Decomp.h"
 #include <string>
 #include "RHPortraitRenderer005cadc0.h"
+#include "RHMenuScreenView.h"
 
+#ifndef SBGEO_POINT2D_VIEW
+#define SBGEO_POINT2D_VIEW
 class SBGeoPoint2D
 {
 public:
@@ -13,7 +16,10 @@ public:
     float m_x; // 0x00
     float m_y; // 0x04
 };
+#endif
 
+#ifndef SBGEO_BOUNDINGBOX2D_VIEW
+#define SBGEO_BOUNDINGBOX2D_VIEW
 // SIZE 0x14
 class SBGeoBoundingBox2D
 {
@@ -34,6 +40,7 @@ public:
     SBGeoPoint2D m_08; // 0x08
     bool m_10;         // 0x10
 };
+#endif
 
 // SIZE 0x14
 class RHMapBox
@@ -64,11 +71,7 @@ public:
     RHMapBox m_1c;     // 0x1c
 };
 
-class RHPortraitTextResourceCalls
-{
-public:
-    void *FUN_0053be80(const std::string &name);
-};
+typedef RHMenuScreenView RHPortraitTextResourceCalls;
 
 class SBUIUnk0060d530
 {

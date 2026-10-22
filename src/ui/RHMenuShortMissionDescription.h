@@ -21,31 +21,10 @@
 
 #include "RHMenuShortMissionBlazons.h"
 
-// SIZE 0x7c
-class RHMenuShortMissionRenderer
-{
-public:
-    RHMenuShortMissionRenderer();
-    ~RHMenuShortMissionRenderer();
-
-    undefined m_00[0x7c]; // 0x00
-};
+typedef RHGameRenderer0060dbc0 RHMenuShortMissionRenderer;
 
 // SIZE 0x100
-class __declspec(novtable) RHMenuShortMissionTitle : public RHGameWidgetLifetimeBase
-{
-public:
-    RHMenuShortMissionTitle()
-    {
-        *(unsigned *)this = 0x006791a8;
-        m_fc = true;
-        m_fd = true;
-    }
-
-    RHMenuShortMissionRenderer m_renderer; // 0x80
-    bool m_fc; // 0xfc
-    bool m_fd; // 0xfd
-};
+#include "RHMenuShortMissionTitle.h"
 
 typedef RHGameLifetime00515f00 RHMenuShortMissionText;
 
@@ -71,6 +50,7 @@ public:
     ~RHMenuShortMissionDescription();
     void *FUN_00540830(unsigned flags);
     void FUN_00540d20();
+    std::wstring FUN_00540d50();
 
     RHMenuShortMissionTitle m_title; // 0xc8
     RHMenuShortMissionText m_text; // 0x1c8

@@ -2,6 +2,8 @@
 #define RHWIDGETPORTRAITCLASS_H
 
 #include "SB.h"
+#include "Decomp.h"
+#include <string>
 
 class SBGeoPoint2D;
 class SBGeoBoundingBox2D;
@@ -61,13 +63,13 @@ public:
     bool Serialize(SBFile &file);
     void Emit(SBFile &file);
 
-    bool FUN_005d75c0(int first, int second, int third);
-    bool FUN_005d7730(int value);
-    bool FUN_005d7810(unsigned int index, void *value);
-    bool FUN_005d7930(int value);
-    bool FUN_005d7a30(int value);
-    bool FUN_005d7b30(int value);
-    bool FUN_005d7c40(int index, void *value, int mode);
+    bool FUN_005d75c0(long first, long second, long third);
+    bool FUN_005d7730(long id);
+    bool FUN_005d7810(unsigned int index, long id, void *value, int first, int second, int third);
+    bool FUN_005d7930(long id);
+    bool FUN_005d7a30(long id);
+    bool FUN_005d7b30(long id);
+    bool FUN_005d7c40(unsigned int index, long id, int first, int second, int third, int fourth, int fifth, const std::wstring &text);
     bool FUN_005d7ea0();
     bool FUN_005d8430();
     void FUN_005d8ed0(int value, int height);

@@ -131,99 +131,7 @@ struct RHUnk00441dd0Record
     RHUnk00441dd0Record() : m_2a(0), m_2b(0), m_2c(0), m_2e(0x1a0a), m_30(0), m_34(0), m_38(0), m_3c(0) {}
 };
 
-class RHArtificialMalignity
-{
-public:
-    // Entry this: vbptr -0x358; virtual-base displacement from vbtable +0x04.
-    // Direct fields: list -0x32c; interval WORD -0x32e; waypoint WORD -0x306.
-    // Virtual-base fields: actor +0x04; friend +0x1fc; saved friend +0x200.
-    // Virtual-base fields: direction BYTE +0x32; rate BYTE +0x2c; tick +0x1c8.
-    // InitOneAI: WORD -0x222; bytes -0x78/-0x77/-0x50; array -0x4c.
-    void InitOneAI();
-    bool SerializeExactlyThisAI(SBFile &file);
-    void InitializeFriendCheck(unsigned short actor, unsigned short delay, unsigned short waypoint);
-    void FUN_00439cb0(const RHMalignityPosition &position, unsigned short radius);
-    void FUN_00439e70(void *actor, const RHMalignityPosition &position);
-    void FUN_00439f60(const RHMalignityStimulus &stimulus);
-    void FUN_0043a080(const RHMalignityPosition &position);
-    void FUN_0043a170(const RHMalignityPosition &position);
-    void FUN_00438620(unsigned short value);
-    void FUN_0043b1b0(RHMalignityPosition position, int mode);
-    void FUN_0043c960(RHMalignityPosition position, int mode);
-    short FUN_00440cf0(RHUnk00441dd0Record *record);
-    int FUN_00441020(RHUnk00441dd0Record *record, RHMalignityList *list);
-    void FUN_00441f20();
-    unsigned FUN_004436e0(void *record, char mode);
-    unsigned FUN_00443850(void *record);
-    void FUN_004439a0(void *record, unsigned char flags);
-    void FUN_00443af0(unsigned value);
-    void *FUN_00443c40(void *value);
-    void *FUN_00443d10(void *position);
-    void *FUN_00443e20(unsigned index, unsigned radius, unsigned flags, int type);
-    unsigned FUN_00443fa0(unsigned first, unsigned second, unsigned third, unsigned fourth);
-    void FUN_004444a0();
-    void FUN_00444bb0(void *record);
-    void FUN_004450a0();
-    void FUN_00445180();
-    bool FUN_00445510(RHMalignityPosition position, void *actor);
-    void FUN_004457c0(const RHMalignityPosition &position);
-    bool FUN_00438cb0(int command, bool mode);
-    void FUN_004459b0();
-    void FUN_00445b40();
-    void *FUN_00445d40();
-    bool FUN_004460f0();
-    void FUN_004461a0(void *target, void *actor);
-    void FUN_00446700();
-    bool FUN_004468a0();
-    void FUN_004469e0();
-    void FUN_00446d20();
-    void FUN_00446eb0(void *actor);
-    void FUN_00447030(void *guard);
-    void FUN_00447420(void *target);
-    void FUN_00447490(void *target);
-    void *FUN_004474e0();
-    bool FUN_00447640(RHMalignityPosition &target);
-    void FUN_00447da0(RHMalignityPosition &position, unsigned short &heading);
-    unsigned short FUN_00449170();
-    bool FUN_00449810(const RHMalignityPosition &position, unsigned short heading);
-    bool FUN_00449ac0();
-    unsigned short FUN_00449d40(void *group);
-    bool FUN_0044a090();
-    void FUN_0044a760(void *actor);
-    void FUN_0044a830(void *actor);
-    void FUN_0044b000();
-    bool FUN_0044b120(const RHMalignityPosition &position);
-    void *FUN_0044b7b0();
-    void FUN_0044b800();
-    void FUN_0044b810(void *point);
-    void FUN_0044b840(void *point);
-    bool FUN_0044b870(void *area, unsigned short id);
-    void FUN_0044ca90();
-    bool FUN_0044cf00();
-    void FUN_00430020();
-    void FUN_004303e0();
-    void FUN_0044d0b0();
-    void FUN_00430300(int mode);
-    void *FUN_0043d780(unsigned short flags);
-    bool FUN_0043f340(void *actor);
-    bool FUN_0043f540(void *actor);
-    void FUN_0043fa80(void *target, void *actor);
-    void FUN_0043fc60(void *target, void *actor);
-    void FUN_00440040(void *target, RHMalignityPosition position, RHUnk005fc3b0 *direction, int mode, void *actor);
-    RHUnk00441dd0Record *FUN_00441dd0();
-    bool FUN_0044afa0(void *actor);
-    void Emit(SBFile &file);
-
-    RHMalignityBaseView &VirtualBase()
-    {
-        return *(RHMalignityBaseView *)((char *)this + (*(int **)this)[1]);
-    }
-
-    RHMalignityBaseView &Base()
-    {
-        return *(RHMalignityBaseView *)((char *)this + (*(int **)((char *)this - 0x358))[1] - 0x358);
-    }
-};
+#include "RHArtificialMalignityCore.h"
 
 unsigned FUN_00445210(float first, unsigned second, unsigned third, unsigned fourth, float fifth, unsigned sixth, void *seventh, unsigned eighth);
 
@@ -266,7 +174,7 @@ void *FUN_0048f170(void *value);
 class RHMalignityNodeValue
 {
 public:
-    void FUN_0040eab0(int mode);
+    void *FUN_0040eab0(int mode);
 };
 
 class RHPath
@@ -320,11 +228,26 @@ public:
 // SIZE 0x10
 struct RHMalignityOwnedList;
 
+// SIZE 0x0c
+struct RHMalignityOwnedPoint
+{
+    undefined4 m_00; // 0x00
+    SBGeoPoint2D m_04; // 0x04
+    ~RHMalignityOwnedPoint();
+};
+
+struct RHMalignityOwnedRecord
+{
+    ~RHMalignityOwnedRecord();
+};
+
 // SIZE 0x3c
 class RHUnk00521770
 {
 public:
     RHUnk00521770 *FUN_00521770();
+    void *FUN_005217a0(unsigned flags);
+    void FUN_005217c0();
     undefined4 m_vtable; // 0x00
     undefined m_04[8]; // 0x04
     undefined4 m_0c; // 0x0c
@@ -378,11 +301,7 @@ struct RHMalignityMessageNode
 
 #include "RHMobileUnk006100e0.h"
 
-class RHMobileUnk0060a820
-{
-public:
-    RHMobileUnk0060a820 &FUN_0060a820(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
-};
+#include "SBGeoSegment2D.h"
 
 class RHMobileUnk006091b0
 {

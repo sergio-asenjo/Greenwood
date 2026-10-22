@@ -6,6 +6,7 @@
 #include <deque>
 #include <vector>
 #include <list>
+#include <string>
 
 class SBUILifetime
 {
@@ -69,6 +70,7 @@ public:
     static void *FUN_0053b730(long background, unsigned short color);
     void FUN_0053c140(unsigned long flags);
     void FUN_0053be40(unsigned long value);
+    void *FUN_0053be80(const std::string &name);
     void FUN_0053bb80(RHMenuWindow *window, bool display, bool modal);
     void FUN_0053b1f0(RHMenuWindow *window);
     void FUN_0053c390();
@@ -76,8 +78,11 @@ public:
     static void FUN_0053bbc0(RHMenuWindow *window);
     static void FUN_0053be60(RHMenuWindow *window);
     RHMenuWindowUI *FUN_0053bf30();
+    void FUN_0053bf40(void *events);
+    void FUN_0053c050();
     bool FUN_0053c320(void *widget);
     void FUN_0053c7f0(unsigned long surface);
+    void FUN_0053c800();
     bool FUN_0053cd20();
 
     void *m_ui;

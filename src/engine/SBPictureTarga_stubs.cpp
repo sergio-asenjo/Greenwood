@@ -6,9 +6,3 @@
 #include "SBNullstr.h"
 #include "SBPictureTarga.h"
 
-
-// Target 0x00611b90, __thiscall.
-SBPictureTargaBase::SBPictureTargaBase() {}
-
-// Target 0x00611c00, __thiscall.
-SBPictureTargaBase::~SBPictureTargaBase() {}

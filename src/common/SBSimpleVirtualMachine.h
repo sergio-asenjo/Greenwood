@@ -17,6 +17,7 @@ class SBSimpleVirtualMachine : public VMCore
 public:
     static bool Initialize(std::string &);
     static bool Destroy();
+    SBSimpleVirtualMachine();
     ~SBSimpleVirtualMachine();
     std::string m_name;
     bool m_bound;

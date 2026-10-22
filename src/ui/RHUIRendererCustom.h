@@ -48,14 +48,12 @@ public:
     ~SBGeoPoint2D();
 
     SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
+    SBGeoPoint2D FUN_005fc200(const SBGeoPoint2D &other) const;
 
     float m_x; // +0
     float m_y; // +4
 };
 
-// SBGeoVector2D — a point-shaped displacement. The (float,float) ctor and the
-// SBGeoVector2D overload of SBGeoBoundingBox2D::operator+ are defined once in
-// RHUIRendererShifting_stubs.cpp; this TU only declares them.
 class SBGeoVector2D : public SBGeoPoint2D
 {
 public:
@@ -80,7 +78,7 @@ public:
     SBGeoBoundingBox2D &operator=(const SBGeoBoundingBox2D &other);
 
     SBGeoBoundingBox2D operator-(const SBGeoVector2D &vector) const;
-    SBGeoBoundingBox2D operator+(const SBGeoVector2D &vector) const;
+    SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &vector) const;
 
     SBGeoPoint2D m_p0; // +0
     SBGeoPoint2D m_p1; // +8

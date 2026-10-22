@@ -10,9 +10,11 @@ class RHEngine;
 extern RHEngine *g_pEngine;
 struct RHUnkSectorGlobal;
 extern RHUnkSectorGlobal *g_unk0x6c0a9c;
+class SBGeoPoint2D;
 class RHUnkPathGeometry
 {
 public:
+    bool Unk004f9170(const SBGeoPoint2D &a, const SBGeoPoint2D &b, unsigned short layer, void *radius);
     bool Unk004fbec0(SBFile &file, void *&value);
     bool Unk004fc030(SBFile &file, void *&value);
 };
@@ -26,20 +28,7 @@ struct RHScriptIter
     RHScriptIter(RHScriptNode *value) : node(value) {}
 };
 
-struct RHSectorActorNode;
-class RHSectorActorConstIter
-{
-public:
-    RHSectorActorNode *m_p;
-    RHSectorActorConstIter(RHSectorActorNode *node) : m_p(node) {}
-};
-
-class RHSectorActorIter : public RHSectorActorConstIter
-{
-public:
-    RHSectorActorIter(RHSectorActorNode *node) : RHSectorActorConstIter(node) {}
-    RHSectorActorIter operator++(int);
-};
+#include "RHSectorActorIterator.h"
 
 class RHUnk0046eb30
 {
@@ -301,20 +290,14 @@ public:
     SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &other) const;
     SBGeoBoundingBox2D FUN_006092c0(const SBGeoBoundingBox2D &other) const;
     bool Unk00608f30() const;
-    void FUN_006092a0(const SBGeoVector2D &offset);
+    SBGeoBoundingBox2D &operator-=(const SBGeoVector2D &offset);
     SBGeoBoundingBox2D &FUN_006091d0(float scale);
     SBGeoPoint2D first;
     SBGeoPoint2D last;
     bool valid;
 };
 
-class SBDrawManager
-{
-public:
-    void FUN_005e61e0(unsigned long surface, const SBGeoBoundingBox2D &box, unsigned short color, unsigned long flags);
-    bool FUN_005ecbd0(unsigned long surface, const SBGeoPoint2D &first, const SBGeoPoint2D &second, unsigned short color);
-    void FUN_005ecdc0(unsigned long surface, const SBGeoBoundingBox2D &box, unsigned short color, unsigned long flags);
-};
+#include "SBDrawManagerCore.h"
 
 struct RHUnk00571160Position
 {
@@ -324,11 +307,7 @@ struct RHUnk00571160Position
     short layer;
 };
 
-class RHUnk00560420
-{
-public:
-    void Unk(RHUnk00571160Position *position);
-};
+#include "RHPositionProvider.h"
 
 struct RHAIPathArray;
 
@@ -549,6 +528,7 @@ public:
     void Unk00419fb0(int value);
     void Unk0040d980(int value);
     void Unk0041ac50();
+    void Unk00418bc0();
 };
 
 class RHElementActor;
@@ -558,66 +538,7 @@ public:
     int Unk004b8f80(RHElementActor *const &value, bool mode);
 };
 
-class RHArtificialIntelligence
-{
-public:
-    virtual void V00(int value) = 0;
-    virtual void V04(int value) = 0;
-    virtual bool V08(SBFile &file) = 0;
-    virtual void V0c() = 0;
-    virtual void V10(int first, int second) = 0;
-    virtual void V14() = 0;
-    virtual void V18() = 0;
-    virtual void V1c() = 0;
-    virtual void V20() = 0;
-    virtual void V24() = 0;
-    virtual bool V28() = 0;
-    virtual void V2c() = 0;
-    virtual void V30() = 0;
-    virtual void V34() = 0;
-    virtual void V38() = 0;
-    virtual void V3c() = 0;
-    virtual void V40(unsigned short first, unsigned short second, unsigned short third) = 0;
-    bool InitState();
-    void Unk00416710(unsigned value);
-    unsigned short Unk0041a420();
-    void Unk00486f60();
-    static bool SerializeAllAI(SBFile &file);
-    static bool SerializeListOfPointersToActorsNPC(RHArtificialIntelligenceList &list, SBFile &file);
-    static bool SerializeListOfPointersToHumans(RHArtificialIntelligenceList &list, SBFile &file);
-    static bool SerializeListOfPointersToObjects(RHArtificialIntelligenceList &list, SBFile &file);
-    static bool SerializePosition(RHArtificialIntelligencePosition &position, SBFile &file);
-    void Emit(SBFile &file, RHArtificialIntelligencePosition &position);
-    void Unk00410010(bool mode);
-    bool Unk00414be0(SBFile &file);
-    bool Unk00418600(unsigned short path);
-    void *FUN_00417ed0(SBGeoPoint2D *position, bool active);
-    void FUN_00417580();
-    void Unk00418c40(int remark, unsigned flags);
-    void Unk00410600();
-    bool Unk00412c80(void *waypoint, unsigned short flags);
-    bool Unk00412f40(RHUnk005fc3b0 *direction, int mode);
-    bool Unk00412f70(unsigned short value, int mode);
-    bool Unk00412240(const RHUnk00571160Position &position, unsigned short flags, float length);
-    bool Unk00419cc0();
-    void Unk0041a960(unsigned short direction);
-    void Unk00422b70(int property, int value);
-    void Unk004195f0(unsigned flags);
-    bool Unk00419b20(int remark);
-    void Unk00419970(int remark, int time, int flags);
-    unsigned char Unk00419c50();
-    unsigned char Unk00419c80();
-    void Unk0041ab10(unsigned short direction);
-
-    RHArtificialIntelligenceActor *m_actor; // +0x04
-    char m_08[0x20];
-    int m_initialAction; // +0x28
-    char m_2c[0x143];
-    char m_16f; // +0x16f
-    char m_170; // +0x170
-    char m_171[2];
-    char m_173; // +0x173
-};
+#include "RHArtificialIntelligenceCore.h"
 
 class RHStimulus
 {

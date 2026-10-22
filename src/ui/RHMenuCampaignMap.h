@@ -13,30 +13,7 @@ typedef unsigned char undefined;
 typedef unsigned short undefined2;
 typedef unsigned int undefined4;
 
-// SIZE 0x10
-class RHMapWideText
-{
-public:
-    std::allocator<unsigned short> m_allocator; // 0x00
-    unsigned short *m_chars; // 0x04
-    unsigned m_size; // 0x08
-    unsigned m_capacity; // 0x0c
-    RHMapWideText(const std::allocator<unsigned short> &allocator = std::allocator<unsigned short>())
-        : m_allocator(allocator) { Tidy(false); }
-    void Tidy(bool);
-    bool Grow(unsigned, bool);
-    void End(unsigned);
-    ~RHMapWideText()
-    {
-        if (m_chars == 0)
-            ;
-        else if (*((unsigned char *)m_chars - 1) == 0 || *((unsigned char *)m_chars - 1) == 255)
-            operator delete(m_chars - 1);
-        else
-            --*((unsigned char *)m_chars - 1);
-        m_chars = 0, m_size = 0, m_capacity = 0;
-    }
-};
+#include "RHMapWideText.h"
 
 // SIZE 0x10
 class RHMapTitleText
@@ -63,6 +40,7 @@ public:
 };
 
 // SIZE 0x08
+#define SBGEO_POINT2D_VIEW
 class SBGeoPoint2D
 {
 public:
@@ -72,18 +50,11 @@ public:
     float m_y; // 0x04
 };
 
-// SIZE 0x14
-class RHMapBox
-{
-public:
-    RHMapBox(float, float, float, float);
-    ~RHMapBox() {}
-    SBGeoPoint2D m_0; // 0x00
-    SBGeoPoint2D m_8; // 0x08
-    bool m_10; // 0x10
-};
+#include "RHMapBox.h"
 
 // SIZE 0xcc
+class SBGeoBoundingBox2D;
+
 class RHMapWidget
 {
 public:
@@ -96,7 +67,7 @@ public:
     virtual void V18(); // vtable+0x18
     virtual void V1c(); // vtable+0x1c
     virtual void V20(); // vtable+0x20
-    virtual void V24(); // vtable+0x24
+    virtual const SBGeoBoundingBox2D &V24();
     virtual void V28(); // vtable+0x28
     virtual void V2c(const RHMapTitleText &); // vtable+0x2c
     virtual bool V30(const std::wstring &, const RHMapBox &, unsigned, unsigned); // vtable+0x30
@@ -128,6 +99,7 @@ class RHMapCampaign
 public:
     std::vector<void *> FUN_00528050();
     std::vector<void *> FUN_005286b0();
+    void FUN_004562a0();
     unsigned FUN_004577a0();
     void FUN_004577b0();
     RHMapByte UnkState() const { return m_100; }
@@ -143,22 +115,7 @@ public:
 #include "RHMapWindowPart.h"
 
 // SIZE 0x1990
-class RHMapWindow
-{
-public:
-    static unsigned long FUN_0053b6b0(unsigned long source, bool colorize, bool pause);
-    static void FUN_0053b330(unsigned long surface, unsigned short amount, float factor);
-    unsigned FUN_0053baa0(unsigned);
-    void FUN_0053bb30(unsigned);
-    void FUN_0053bbe0();
-    void FUN_0053c7e0();
-    typedef RHMenuScreenTimer Timer;
-    undefined m_00[0x191c]; // 0x00
-    std::deque<std::vector<void *> > m_191c; // 0x191c
-    undefined m_194c[0x34]; // 0x194c
-    std::list<Timer> m_1980; // 0x1980
-    unsigned m_198c; // 0x198c
-};
+#include "RHMapWindowClass.h"
 
 #include "RHMapDescription.h"
 

@@ -5,6 +5,7 @@ class SBGeoPoint2D
 public:
     SBGeoPoint2D();
     ~SBGeoPoint2D();
+    SBGeoPoint2D &FUN_005fc250(const SBGeoPoint2D &other);
     float m_x;
     float m_y;
 };
@@ -23,8 +24,8 @@ class SBGeoBoundingBox2D
 public:
     ~SBGeoBoundingBox2D() {}
     SBGeoBoundingBox2D &operator=(const SBGeoBoundingBox2D &other);
-    SBGeoBoundingBox2D operator+(const SBGeoVector2D &vector) const;
-    SBGeoBoundingBox2D Unk006092c0(const SBGeoBoundingBox2D &other) const;
+    SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &vector) const;
+    SBGeoBoundingBox2D FUN_006092c0(const SBGeoBoundingBox2D &other) const;
     SBGeoBoundingBox2D &operator-=(const SBGeoVector2D &vector);
     bool Unk00608f30() const;
     SBGeoPoint2D m_p0;
@@ -78,6 +79,7 @@ class RHElementFX : public RHElement
 public:
     void InitializeBackgroundRestoration();
     virtual bool Serialize(SBFile &file);
+    bool FUN_004aa2f0();
     int FUN_004aa930();
     void Emit(SBFile &file);
 

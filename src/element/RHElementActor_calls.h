@@ -24,6 +24,7 @@ public:
     bool operator==(const SBGeoPoint2D &other) const;
     bool FUN_005fc0e0(const SBGeoPoint2D &other) const;
     SBGeoVector2D Unk005fc110(const SBGeoPoint2D &other) const;
+    SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
     float m_0; // 0x00
     float m_4; // 0x04
 };
@@ -43,6 +44,7 @@ public:
 class SBGeoBoundingBox2D
 {
 public:
+    SBGeoBoundingBox2D(const SBGeoPoint2D &first, const SBGeoPoint2D &last);
     SBGeoBoundingBox2D(const SBGeoBoundingBox2D &other);
     SBGeoPoint2D FUN_00608f40() const;
     bool FUN_00608400(const SBGeoPoint2D &point) const;
@@ -377,14 +379,13 @@ class RHUnk005c38b0;
 class RHScriptBatchCalls
 {
 public:
+    void Unk0040d980(int stimulus);
     void Unk0046bcf0(int posture, int value);
     void Unk0046bd10(int state);
     void Unk00464630();
     void Unk0046b9e0();
-    void Unk0058a940(void *context, int value, void *element);
-    void Unk005c2ec0(void *position, int layer, int kind, void *actor, int value1, int value2, int value3, int value4);
-    void Unk0057ec80(void *actor);
-    void Unk0057ebd0(void *actor);
+    void *Unk0058a940(void *context, int value, void *element);
+    int Unk005c2ec0(void *position, int layer, int kind, void *actor, int value1, int value2, int value3, int value4);
 };
 extern RHUnk005c38b0 *g_unk0x6c10e8;
 extern RHElementActor *g_unk0x6c100c;
@@ -438,11 +439,7 @@ public:
 
 #include "RHActorCrossingHumanCalls.h"
 
-class RHElementAreaShape
-{
-public:
-    bool FUN_0060c660(const SBGeoPoint2D &point) const;
-};
+#include "RHElementAreaShape.h"
 
 class RHPatch
 {
@@ -452,12 +449,7 @@ public:
     void FUN_00550150();
 };
 
-class RHSectorScript
-{
-public:
-    void Enter(RHElementActor *actor);
-    void Leave(RHElementActor *actor);
-};
+#include "RHSectorScript.h"
 
 void __stdcall FUN_0048a970(RHElementActor *actor);
 
@@ -478,11 +470,21 @@ public:
 class RHUnk0058a3d0
 {
 public:
-    void Unk(void *context, int value, void *sequence);
+    void *Unk(void *context, int value, void *sequence);
 };
 
 extern char g_unk0x6c0560[4];
 
 extern char g_unk0x6c0691;
+
+class RHActorSequenceCursor
+{
+public:
+    RHOrder *FUN_005855a0();
+    virtual void V00();
+    virtual void V04();
+    virtual void V08();
+    virtual void V0c(int first, int second);
+};
 
 #endif

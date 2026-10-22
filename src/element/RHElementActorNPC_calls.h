@@ -26,11 +26,7 @@ extern RHEngine *g_pEngine;
 struct RHUnkSectorGlobal;
 extern RHUnkSectorGlobal *g_unk0x6c0a9c;
 
-class RHArtificialIntelligence
-{
-public:
-    bool Unk00414be0(SBFile &file);
-};
+#include "RHArtificialIntelligenceCore.h"
 
 class RHNPCBaseCalls
 {
@@ -94,30 +90,8 @@ public:
     }
 };
 
-struct RHScriptNode
-{
-    RHScriptNode *next;
-    RHScriptNode *prev;
-    void *data;
-};
-struct RHScriptIter
-{
-    RHScriptNode *node;
-    RHScriptIter(RHScriptNode *value) : node(value) {}
-};
-class RHUnk0046eb30
-{
-public:
-    RHScriptIter erase(RHScriptIter position);
-};
-struct RHSectorActorNode;
-class RHSectorActorIter
-{
-public:
-    RHSectorActorNode *m_p;
-    RHSectorActorIter(RHSectorActorNode *node) : m_p(node) {}
-    RHSectorActorIter operator++(int);
-};
+#include "RHScriptListCore.h"
+#include "RHSectorActorIterator.h"
 
 struct RHNPCDetectableList : public RHPathHistoryList
 {
@@ -190,9 +164,9 @@ public:
     virtual void Vec() = 0;
     virtual void Vf0() = 0;
     virtual bool Vf4() = 0;
-    virtual void Vf8() = 0;
+    virtual bool Vf8() = 0;
     virtual void Vfc() = 0;
-    virtual void V100() = 0;
+    virtual void V100(int first, int second) = 0;
     virtual void V104() = 0;
     virtual void V108() = 0;
     virtual void V10c() = 0;

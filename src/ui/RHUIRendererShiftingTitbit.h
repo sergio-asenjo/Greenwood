@@ -44,7 +44,7 @@ public:
     SBGeoBoundingBox2D();
     ~SBGeoBoundingBox2D() {}
     SBGeoBoundingBox2D &operator=(const SBGeoBoundingBox2D &);
-    SBGeoBoundingBox2D operator+(const SBGeoVector2D &) const;
+    SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &) const;
     SBGeoBoundingBox2D &operator+=(const SBGeoVector2D &);
     void UnkSecondPoint(const SBGeoPoint2D &point)
     {

@@ -3,6 +3,8 @@
 
 #include <string>
 
+class SBFile;
+
 class RHProfileText
 {
 public:
@@ -12,6 +14,13 @@ public:
         FUN_00401ee0(false);
     }
     ~RHProfileText() { FUN_00401ee0(true); }
+    RHProfileText(const char *value, unsigned count, const std::allocator<char> &allocator = std::allocator<char>())
+    {
+        m_allocator = *(const char *)&allocator;
+        FUN_00401ee0(false);
+        std::string &(std::string::*assign)(const char *, unsigned) = &std::string::assign;
+        (((std::string *)this)->*assign)(value, count);
+    }
     explicit RHProfileText(const char *value, const std::allocator<char> &allocator = std::allocator<char>())
     {
         m_allocator = *(const char *)&allocator;

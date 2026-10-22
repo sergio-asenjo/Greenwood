@@ -5,6 +5,66 @@
 #include "SB.h"
 #include "RHCivilianProfile.h"
 #include "RHArtificialIntelligence.h"
+#include <list>
+
+struct SCSerializeRecordNode;
+
+class SCSerializeRecordValue
+{
+public:
+    ~SCSerializeRecordValue();
+    unsigned char m_00[8];
+    std::list<unsigned> m_08;
+    std::string m_14;
+    std::string m_24;
+    unsigned m_34;
+};
+
+struct SCSerializeRecordIterator
+{
+    SCSerializeRecordNode *node;
+    SCSerializeRecordIterator(SCSerializeRecordNode *value) : node(value) {}
+};
+
+class SCSerializeRecordList
+{
+public:
+    inline ~SCSerializeRecordList();
+    SCSerializeRecordIterator Erase(SCSerializeRecordIterator position);
+    unsigned allocator;
+    SCSerializeRecordNode *head;
+    unsigned count;
+};
+
+struct SCSerializeRecordNode
+{
+    SCSerializeRecordNode *next;
+    SCSerializeRecordNode *previous;
+    SCSerializeRecordValue value;
+};
+
+// VTABLE: GAME 0x0067bbd0
+class SCSerializeUnk0063af90
+{
+public:
+    virtual ~SCSerializeUnk0063af90();
+    std::string m_04;
+    unsigned char m_14[0x10];
+    SCSerializeRecordList m_24;
+    unsigned char m_30[8];
+    SCSerializeRecordList m_38;
+    unsigned char m_44[8];
+};
+
+class SCSerializeUnk0063b780
+{
+public:
+    ~SCSerializeUnk0063b780();
+    unsigned char m_00[8];
+    std::list<unsigned> m_08;
+    std::string m_14;
+    unsigned char m_24[0x10];
+};
 
 int SCSerializeUnk00643c56(FILE *);
 extern "C" FILE *SCSerializeUnk00643c43(const char *, const char *);

@@ -34,6 +34,7 @@
 // zeroes both dwords; 0x5fc060 stores the two incoming dwords; 0x5fc080 is its
 // (empty, ICF-merged) destructor; 0x5fc090 is operator= and 0x5fc190 is
 // operator+(const SBGeoVector2D&). Zeta: SBGeoPoint2D(float,float) etc.
+#define SBGEO_POINT2D_VIEW
 class SBGeoPoint2D
 {
 public:
@@ -67,22 +68,7 @@ SBGeoPoint2D operator+(const SBGeoPoint2D &point, const SBGeoVector2D &vector);
 // destructor 0x5fc080-family; operator= 0x607da0 (Destroy+Copy, ret 4);
 // Copy 0x607990; operator+ 0x6090d0 (ret 8, member returning a box by value,
 // built from the two SBGeoPoint2D+SBGeoVector2D sums).
-class SBGeoBoundingBox2D
-{
-public:
-    SBGeoBoundingBox2D();
-    SBGeoBoundingBox2D(const SBGeoPoint2D &p0, const SBGeoPoint2D &p1);
-    ~SBGeoBoundingBox2D() {}
-
-    SBGeoBoundingBox2D &operator=(const SBGeoBoundingBox2D &other);
-    void Copy(const SBGeoBoundingBox2D &other);
-
-    SBGeoBoundingBox2D operator+(const SBGeoVector2D &vector) const;
-
-    SBGeoPoint2D m_p0; // +0
-    SBGeoPoint2D m_p1; // +8
-    bool m_flag;       // +0x10
-};
+#include "SBGeoBoundingBox2DCore.h"
 
 // Target 0x600820, __FILE__ 0x006bb368
 // ("P:\Robin Hood\SBLibNG\SBResourceManager.cpp"). Called as `mov ecx,[esi+4]`

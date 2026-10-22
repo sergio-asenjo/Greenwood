@@ -25,6 +25,7 @@
 // type-mangled). This TU only declares `extern RHUnk6c1040 *g_unk0x6c1040` and
 // reinterprets +0x190.
 #include "RHOrder.h"
+#include <list>
 
 class RHSequenceElement;
 class RHSequence;
@@ -173,6 +174,44 @@ public:
     short m_30;            // [0x30]
     short m_32;            // [0x32]
     char m_34;             // [0x34]
+};
+
+// SIZE 0x14
+class RHSequenceElementListStorage : public std::list<RHSequenceElement *>
+{
+public:
+    RHSequenceElementListStorage() : m_dirty(true) {}
+    ~RHSequenceElementListStorage();
+    iterator m_cursor; // 0x0c
+    bool m_dirty;      // 0x10
+};
+
+class RHSequenceElementList : public RHSequenceElementListStorage
+{
+public:
+    ~RHSequenceElementList();
+    void DeleteAll();
+    void clear();
+};
+
+// VTABLE: GAME 0x00679cd4
+// SIZE 0x3c
+class RHUnk00582220
+{
+public:
+    RHUnk00582220();
+    ~RHUnk00582220();
+    void *FUN_00582280(unsigned int flags);
+    virtual void Slot00();
+    int m_04;                        // 0x04
+    RHSequenceElementList m_elements; // 0x08
+    char m_1c[0x10];                 // 0x1c
+    short m_2c;                      // 0x2c
+    short m_2e;                      // 0x2e
+    short m_30;                      // 0x30
+    short m_32;                      // 0x32
+    char m_34;                       // 0x34
+    char m_35[7];                    // 0x35
 };
 
 // Serialises a type-name tag into the stream; target 0x005e1b70. Defined once

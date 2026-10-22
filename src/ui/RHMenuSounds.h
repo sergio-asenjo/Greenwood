@@ -37,18 +37,13 @@ struct RHMenuSoundsEvent
     int m_0c; // 0x0c
 };
 
-class __declspec(novtable) RHMenuSoundsSliderBase : public RHGameWidgetLifetimeBase
-{
-public:
-    RHMenuSoundsSliderBase() {}
-    RHGameRenderer0060dad0 m_renderer; // 0x80
-};
-
+// VTABLE: GAME 0x006799f0
 // SIZE 0xd8
-class __declspec(novtable) RHMenuSoundsSlider : public RHMenuSoundsSliderBase
+class RHMenuSoundsSlider : public RHGameLifetime00515b40
 {
 public:
     RHMenuSoundsSlider();
+    ~RHMenuSoundsSlider() {}
     RHMenuSoundsEvent *FUN_00543bb0(const RHMenuSoundsInput &input);
     RHMenuSoundsEvent *MakeEvent(int type);
     int FUN_00543d10();
@@ -84,15 +79,8 @@ public:
     undefined m_00[0xcc];
 };
 
-class __declspec(novtable) RHMenuSoundsLabel : public RHGameWidgetLifetimeBase
-{
-public:
-    RHMenuSoundsLabel();
-
-    RHMenuShortMissionRenderer m_renderer; // 0x80
-};
-
-class __declspec(novtable) RHMenuSoundsTitle : public RHMenuSoundsLabel
+#pragma inline_depth(0)
+class __declspec(novtable) RHMenuSoundsTitle : public RHGameLifetime00525880
 {
 public:
     RHMenuSoundsTitle()
@@ -105,12 +93,14 @@ public:
     bool m_fc; // 0xfc
     bool m_fd; // 0xfd
 };
+#pragma inline_depth()
 
 // SIZE 0xc
 #include "RHSoundConfig.h"
 typedef RHSoundConfig RHMenuSoundsSettings;
 
 // SIZE 0x119c
+// VTABLE: GAME 0x00679998
 class RHMenuSounds : public RHMenuWindowFocus
 {
 public:
@@ -121,7 +111,6 @@ public:
     static bool FUN_00543460(void *ui);
     void FUN_00541370(RHMenuEvent *event);
     bool FUN_00541390(RHMenuEvent *event);
-    bool FUN_0052ce80(int msg, void *widget, void *data);
     bool FUN_00543520(int msg, void *widget, void *data);
     bool FUN_00543750(int msg, void *widget, void *data);
 

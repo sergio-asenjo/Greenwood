@@ -30,6 +30,8 @@ public:
     virtual bool Serialize(SBFile &file);
     char FUN_004a6640();
     void FUN_004a6a70(void *target);
+    bool FUN_004a6aa0(void *target);
+    void *InteractionTarget() const { return *(void *const *)((const char *)this + 0x12c); }
     void FUN_004a6b80(void *target, bool flag);
     int FUN_004a6ff0();
 
@@ -42,7 +44,7 @@ private:
     char m_162;   // [0x162]
     char m_163;   // [0x163]
     short m_164;  // [0x164]
-    char m_166;   // [0x166]
+    bool m_166;   // [0x166]
 };
 
 // Target 0x005e1b70 (RHSerializeName): serialises a type-name tag into the

@@ -6,7 +6,7 @@
 
 class RHElementWaspNest;
 
-class RHUnk004bc4d0 : public RHProjectileLifetime
+class __declspec(novtable) RHUnk004bc4d0 : public RHProjectileLifetime
 {
 public:
     RHUnk004bc4d0();

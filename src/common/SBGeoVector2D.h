@@ -1,6 +1,10 @@
 #ifndef SBGEOVECTOR2D_H
 #define SBGEOVECTOR2D_H
 
+#ifndef SBGEO_POINT2D_VIEW
+#include "SBGeoPoint2D.h"
+#endif
+
 // SIZE 0x08
 class SBGeoVector2D : public SBGeoPoint2D
 {

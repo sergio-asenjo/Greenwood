@@ -45,12 +45,6 @@ public:
     void *m_0;
 };
 
-class RHUnk004a7150
-{
-public:
-    void FUN_004a7150(int, int, int);
-};
-
 class RHUnk00462730
 {
 public:
@@ -58,16 +52,6 @@ public:
 };
 
 #include "RHUnk004d8460Calls.h"
-
-// SIZE 0x14
-class RHScrollUnk0040ee30
-{
-public:
-    ~RHScrollUnk0040ee30();
-    SBGeoPoint2D m_0; // 0x00
-    SBGeoPoint2D m_8; // 0x08
-    undefined m_10; // 0x10
-};
 
 // SIZE 0x170
 class RHElementScroll : public RHElementObject
@@ -100,11 +84,7 @@ public:
 
 void RHSerializeName(SBFile &file, const char *name);
 #include "RHScrollObjectCalls.h"
-class RHScrollSpriteRefreshCalls
-{
-public:
-    void FUN_005b7f60(unsigned long value);
-};
+#include "RHEngineWidenedCalls.h"
 bool FUN_005e0c90(SBFile &file, std::string &value);
 extern char g_unk0x6c0691;
 extern RHElementScroll *g_scrollExecutingScript;

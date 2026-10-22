@@ -43,6 +43,7 @@ void FUN_00529e60(RHMapWindow *screen, const RHMapWideText &text, bool won, bool
 #include "RHUnk0056fb70.h"
 
 // SIZE 0x67c
+// VTABLE: GAME 0x006792c8
 class RHMenuDebriefing : public RHMenuWindowFocus
 {
 public:

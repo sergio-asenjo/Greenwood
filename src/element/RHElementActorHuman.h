@@ -21,7 +21,10 @@ public:
     void ExecuteImmediately(RHSequenceElement *element);
     void GetTransitionFlags(RHSequenceElement *element, unsigned long &first, unsigned long &second, unsigned long &third);
     void FUN_0046bcb0(int value);
+    void FUN_00462940(int value);
     void FUN_00468f40(void *value);
+    int FUN_0046e960();
+    bool FUN_00464230();
     void FUN_0046bd40(RHSequenceElement *element);
     bool FUN_0046b760(unsigned flags, void *value);
     bool FUN_0046b2b0(unsigned flags, RHActorTranslationSequenceCalls *sequence);
@@ -33,6 +36,7 @@ class RHEngine
 public:
     bool FUN_004c3bd0(SBFile &file, void *&value);
     bool SerializeNestedB(SBFile &file, void *value);
+    void FUN_004e39b0(void *actor, bool value);
 };
 extern RHEngine *g_pEngine;
 struct RHUnkSectorGlobal;
@@ -136,10 +140,12 @@ inline void RHHumanList::Resize(unsigned wanted, void *value)
     }
 // SIZE 0x49c
 class RHUnk005864a0;
-class RHUnk005bdcb0
+class RHSprite
 {
 public:
+    int PerformAction(RHOrder *order, int animation, int progression, bool reset);
     float FUN_005bdcb0();
+    bool FUN_005b9e30(void *first, void *second, bool third);
 };
 class RHUnkHumanPlacementA
 {
@@ -259,6 +265,7 @@ class RHMalignityActorCalls
 {
 public:
     void FUN_0048c700(void *actor, unsigned mode);
+    SBGeoVector2D FUN_004135b0();
 };
 
 // SIZE 0x4964
@@ -327,13 +334,13 @@ public:
     virtual void V0b4() = 0; // vtable+0x0b4
     virtual void V0b8() = 0; // vtable+0x0b8
     virtual void V0bc(unsigned value, void *actor) = 0; // vtable+0x0bc
-    virtual void V0c0() = 0; // vtable+0x0c0
+    virtual unsigned short V0c0() = 0; // vtable+0x0c0
     virtual void V0c4(int value) = 0; // vtable+0x0c4
     virtual void V0c8(int value, int amount) = 0; // vtable+0x0c8
     virtual int V0cc() = 0; // vtable+0x0cc
     virtual void V0d0() = 0; // vtable+0x0d0
     virtual void V0d4(short amount, void *source, bool notify) = 0; // vtable+0x0d4
-    virtual void V0d8(unsigned short value, void *actor) = 0; // vtable+0x0d8
+    virtual void V0d8(short value, void *actor) = 0; // vtable+0x0d8
     virtual void V0dc(unsigned short amount, void *source, bool notify) = 0; // vtable+0x0dc
     virtual void V0e0() = 0; // vtable+0x0e0
     virtual void V0e4() = 0; // vtable+0x0e4
@@ -354,7 +361,7 @@ public:
     virtual void V120() = 0; // vtable+0x120
     virtual unsigned short V124() = 0; // vtable+0x124
     virtual void V128() = 0; // vtable+0x128
-    virtual void V12c() = 0; // vtable+0x12c
+    virtual unsigned short V12c() = 0; // vtable+0x12c
     virtual int V130() = 0; // vtable+0x130
     virtual void V134() = 0; // vtable+0x134
     virtual void V138() = 0; // vtable+0x138
@@ -379,6 +386,8 @@ class SBGeoBoundingBox2D
 public:
     SBGeoBoundingBox2D(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
     bool FUN_00608400(const SBGeoPoint2D &point) const;
+    SBGeoPoint2D FUN_00608f40() const;
+    SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &offset) const;
     SBGeoPoint2D m_00; // 0x00
     SBGeoPoint2D m_08; // 0x08
     undefined m_10; // 0x10
@@ -403,6 +412,7 @@ class RHUnk0042fde0
 public:
     SBGeoVector2D FUN_0042fde0() const;
     float FUN_0060ba80(const SBGeoPoint2D &point) const;
+    float FUN_0060b7a0(const SBGeoPoint2D &point) const;
 };
 
 // SIZE 0x0c

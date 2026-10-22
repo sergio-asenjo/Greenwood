@@ -18,6 +18,7 @@ class RHPortraitBar
 {
 public:
     RHPortraitBar(SBUI *owner);
+    void AddPortrait(RHWidgetPortrait *portrait);
     void FUN_0055e7a0(unsigned index);
     RHWidgetPortrait *FUN_0055e7e0(const void *actor) const;
     int GetPortraitIndex(const RHWidgetPortrait *portrait) const;
@@ -27,6 +28,7 @@ public:
     void MakePlacement();
     void RemovePortrait(RHWidgetPortrait *portrait);
     void RemoveAllPortraits();
+    void FUN_0055ecb0(bool opened);
     void FUN_0055ebf0();
     void Resize();
     void SetPortraitOpened(const void *actor, bool opened);

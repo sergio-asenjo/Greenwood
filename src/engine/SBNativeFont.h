@@ -3,6 +3,7 @@
 
 #include "SBFont.h"
 #include "SBResourceManager.h"
+#include <functional>
 
 struct SBNativeFontCharacterInfo
 {
@@ -48,10 +49,10 @@ class SBNativeFontCharacterTree : public SBResourceUnkTreeEnd
 public:
     SBNativeFontCharacterTree()
     {
+        std::less<unsigned short> comparison;
         std::allocator<unsigned char> allocator;
-        std::allocator<unsigned char> comparison;
-        m_00[1] = *(unsigned char *)&comparison;
         m_00[0] = *(unsigned char *)&allocator;
+        m_00[1] = *(unsigned char *)&comparison;
         *(bool *)&m_08 = false;
         SBFontLock lock;
         if (!g_unk0x006c18c8) {
@@ -62,8 +63,9 @@ public:
             *(void **)node = 0;
             *(void **)((char *)g_unk0x006c18c8 + 8) = 0;
         }
-        ++g_unk0x006c18c4;
+        unsigned references = g_unk0x006c18c4;
         SBResourceUnkKeyNode *parent = g_unk0x006c18c8;
+        g_unk0x006c18c4 = references + 1;
         SBResourceUnkKeyNode *node = (SBResourceUnkKeyNode *)operator new(0x24);
         *(SBResourceUnkKeyNode **)((char *)node + 4) = parent;
         *(unsigned *)((char *)node + 0x20) = 0;
@@ -74,20 +76,30 @@ public:
     }
     ~SBNativeFontCharacterTree()
     {
-        FUN_006176a0(SBResourceUnkKeyIterator(*(SBResourceUnkKeyNode **)m_head),
-            SBResourceUnkKeyIterator(m_head));
-        operator delete(m_head);
+        SBResourceUnkKeyIterator first;
+        first.m_node = *(SBResourceUnkKeyNode **)m_head;
+        SBResourceUnkKeyIterator last;
+        last.m_node = m_head;
+        FUN_006176a0(first, last);
+        std::allocator<SBNativeFontDecNode> allocator;
+        allocator.deallocate((SBNativeFontDecNode *)m_head, 1);
         m_head = 0;
         m_count = 0;
         {
             SBFontLock lock;
             if (--g_unk0x006c18c4 == 0) {
-                operator delete(g_unk0x006c18c8);
+                allocator.deallocate((SBNativeFontDecNode *)g_unk0x006c18c8, 1);
                 g_unk0x006c18c8 = 0;
             }
         }
     }
     SBResourceUnkKeyIterator FUN_00617e20(const unsigned short &);
+    SBResourceUnkKeyIterator Find(const unsigned short &character)
+    {
+        SBResourceUnkKeyIterator value(FUN_00617e20(character).m_node);
+        SBResourceUnkKeyNode *node = value.m_node;
+        return node == FUN_00617690().m_node || character < *(unsigned short *)&node->m_key ? FUN_00617690() : value;
+    }
     SBResourceUnkKeyNode *FUN_00618280(const unsigned short &);
     SBNativeFontCharacterPair FUN_006177d0(const SBNativeFontCharacterValue &);
     SBResourceUnkKeyIterator FUN_00617f80(SBNativeFontDecNode *, SBNativeFontDecNode *, const SBNativeFontCharacterValue &);
@@ -131,26 +143,20 @@ class SBNativeFontRenderContext
 public:
     virtual void V00();
     virtual void V04();
-    virtual void V08();
+    virtual void *V08();
     virtual unsigned long V0c(void *, void *, bool);
-    virtual void V10();
+    virtual void V10(void *context);
     virtual void V14(unsigned long);
 };
 
 class SBGeoPoint2D;
 class SBGeoBoundingBox2D;
 
-class RHUnk006114c0
-{
-public:
-    RHUnk006114c0();
-    virtual ~RHUnk006114c0();
-    unsigned char m_bytes[0x34];
-};
+#include "RHUnk006114c0.h"
 
 #include "SBNativeFontBase.h"
 
-class SBNativeFont : public SBNativeFontBase
+class __declspec(novtable) SBNativeFont : public SBNativeFontBase
 {
 public:
     typedef SBNativeFontCharacterInfo CharacterInfo;
@@ -161,7 +167,7 @@ public:
     void AttachToRenderContext(SBNativeFontRenderContext *, unsigned long);
     void DetachFromRenderContext();
     unsigned FUN_00616f40() const;
-    unsigned FUN_00617030() const;
+    virtual unsigned GetImplementationVersion() const;
     unsigned FUN_00617080() const;
     const CharacterInfo *GetCharacterInfo(unsigned short) const;
     void GetImplementationTag(char (&tag)[6]) const;

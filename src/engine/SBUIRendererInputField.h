@@ -4,6 +4,8 @@
 #include "Decomp.h"
 #include <string>
 
+#ifndef SBGEO_POINT2D_VIEW
+#define SBGEO_POINT2D_VIEW
 // SIZE 0x08
 class SBGeoPoint2D
 {
@@ -17,6 +19,7 @@ public:
     float m_x; // 0x00
     float m_y; // 0x04
 };
+#endif
 
 // SIZE 0x08
 class SBGeoVector2D : public SBGeoPoint2D
@@ -29,6 +32,8 @@ public:
     SBGeoVector2D &operator=(const SBGeoVector2D &other);
 };
 
+#ifndef SBGEO_BOUNDINGBOX2D_VIEW
+#define SBGEO_BOUNDINGBOX2D_VIEW
 // SIZE 0x14
 class SBGeoBoundingBox2D
 {
@@ -36,11 +41,14 @@ public:
     SBGeoBoundingBox2D();
     ~SBGeoBoundingBox2D() {}
     SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &) const;
+    SBGeoBoundingBox2D &operator-=(const SBGeoVector2D &);
     bool FUN_006084a0(const SBGeoBoundingBox2D &);
+    bool FUN_00608400(const SBGeoPoint2D &) const;
     SBGeoPoint2D m_00; // 0x00
     SBGeoPoint2D m_08; // 0x08
     char m_10; // 0x10
 };
+#endif
 
 // SIZE 0x14
 class RHMapBox
@@ -52,11 +60,9 @@ public:
     bool m_10; // 0x10
 };
 
-class RHMobileUnk0060a820
-{
-public:
-    RHMobileUnk0060a820 &FUN_0060a820(const SBGeoPoint2D &, const SBGeoPoint2D &);
-};
+class RHMobileUnk006100e0;
+
+#include "SBGeoSegment2D.h"
 
 #include "RHMobileUnk006100e0.h"
 
@@ -72,7 +78,7 @@ class SBUIInputFieldBoxCalls
 {
 public:
     bool FUN_00608450(const SBGeoBoundingBox2D &);
-    void FUN_0060a860(const RHMobileUnk006100e0 &);
+    SBUIInputFieldBoxCalls &FUN_0060a860(const RHMobileUnk006100e0 &other);
 };
 
 // SIZE 0x30
@@ -81,6 +87,7 @@ class SBUIInputFieldDrawUnk
 public:
     SBUIInputFieldDrawUnk();
     bool FUN_00614bf0(void *, std::wstring *, const SBGeoPoint2D &, unsigned int);
+    void FUN_00614d70(char value);
     unsigned short FUN_00614230(void *, std::wstring *, const SBGeoBoundingBox2D &, unsigned int, unsigned int, unsigned int);
     void FUN_00613c90(void *, void *, void *, void *);
     unsigned short FUN_00613ea0(void *, std::wstring *, const SBGeoBoundingBox2D &, unsigned int, unsigned int);
@@ -91,41 +98,6 @@ public:
     char m_14; // 0x14
     unsigned int m_18; // 0x18
     RHMapBox m_1c; // 0x1c
-};
-
-// SIZE 0x10
-class RHMapWideText
-{
-public:
-    RHMapWideText() { Tidy(false); }
-    RHMapWideText(const RHMapWideText &other) : m_allocator(other.m_allocator)
-    {
-        Tidy(false);
-        typedef std::wstring &(std::wstring::*Assign)(const std::wstring &, unsigned, unsigned);
-        Assign assign = &std::wstring::assign;
-        (((std::wstring *)this)->*assign)((const std::wstring &)other, 0, std::wstring::npos);
-    }
-    ~RHMapWideText()
-    {
-        if (m_chars)
-        {
-            unsigned char &references = *((unsigned char *)m_chars - 1);
-            if (references == 0 || references == 255)
-                operator delete(m_chars - 1);
-            else
-                --references;
-        }
-        m_chars = 0;
-        m_size = 0;
-        m_capacity = 0;
-    }
-    void Tidy(bool);
-    bool Grow(unsigned int, bool);
-    void FUN_004580c0(const std::wstring &, unsigned int, unsigned int);
-    std::allocator<unsigned short> m_allocator; // 0x00
-    unsigned short *m_chars; // 0x04
-    unsigned int m_size; // 0x08
-    unsigned int m_capacity; // 0x0c
 };
 
 // SIZE 0x10
@@ -151,11 +123,10 @@ public:
     char m_1c; // 0x1c
 
     unsigned int FUN_0061dd00();
-    RHMapWideText FUN_0061dd50(unsigned int, unsigned int);
+    std::wstring FUN_0061dd50(unsigned int, unsigned int);
     char FUN_0061e230();
     unsigned int FUN_0061df50();
     void FUN_0061e320(unsigned char);
-    void FUN_0061e240(unsigned int);
     void FUN_0061e2b0(unsigned int);
 };
 
@@ -191,10 +162,11 @@ public:
     void FUN_00621430(unsigned int);
     void FUN_00621440(SBUIInputFieldUnkResource *);
     bool FUN_00621470(unsigned int);
+    void FUN_00621b80(const SBGeoBoundingBox2D &);
     bool FUN_00621c30(const SBGeoBoundingBox2D &);
     void FUN_0061e4b0();
-    RHMapWideText FUN_0061df60();
-    void FUN_0061e060(RHMapWideText *);
+    std::wstring FUN_0061df60();
+    void FUN_0061e060(const std::wstring &);
     void FUN_0061e340();
 };
 

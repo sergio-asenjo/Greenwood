@@ -12,6 +12,8 @@ class RHUnk00613e90;
 class RHUnkFXDraw
 {
 public:
+    unsigned short FUN_005e56c0(unsigned long surface);
+    unsigned short FUN_005e5750(unsigned long surface);
     void FUN_005e5260();
     void Unk005e5160(unsigned long surface);
     unsigned long Unk005e4ed0(int width, int height, int, int);

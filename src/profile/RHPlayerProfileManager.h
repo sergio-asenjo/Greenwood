@@ -8,21 +8,7 @@
 
 class RHElementActor;
 class RHUnk00597a70;
-struct RHSectorActorNode;
-
-// SIZE 0x04
-class RHSectorActorConstIter
-{
-public:
-    RHSectorActorNode *m_p; // 0x00
-};
-
-// SIZE 0x04
-class RHSectorActorIter : public RHSectorActorConstIter
-{
-public:
-    RHSectorActorIter operator++(int);
-};
+#include "RHSectorActorIterator.h"
 
 // SIZE 0x24
 class RHSectorActorList

@@ -29,13 +29,7 @@
 #include "../engine/SBUIRenderer.h"
 #include <vector>
 
-class __declspec(novtable) RHPortraitRootList : public RHPortraitRootLifetime
-{
-public:
-    RHPortraitRootList() { *(unsigned *)this = 0x00678ea8; }
-    ~RHPortraitRootList();
-    std::vector<RHUnk005d92c0Sub *> m_items; // 0xa0
-};
+#include "RHPortraitRootList.h"
 
 class RHUnk005ef320;
 extern RHUnk005ef320 *g_unk0x6c11d0;
@@ -62,53 +56,13 @@ public:
 
 class RHMenuWindow;
 
-// VTABLE: GAME 0x00679a28
-// SIZE 0xc8
-class RHMenuWindow : public RHPortraitRootList
-{
-public:
-    RHMenuWindow(RHMenuWindow *parent, RHMenuWindowScreen *screen, bool saveBackground);
-    ~RHMenuWindow();
-    void *FUN_00543f80(unsigned flags);
-    void FUN_00544300();
-    void FUN_00544b80(bool display, bool modal);
-
-    RHUnkFXDraw *m_draw; // 0xb0
-    RHMenuWindowScreen *m_screen; // 0xb4
-    RHMenuWindow *m_parent; // 0xb8
-    long m_resource; // 0xbc
-    unsigned long m_saveSurface; // 0xc0
-    bool m_resourceHeld; // 0xc4
-};
+#include "RHMenuWindowClass.h"
 
 // Base of the focus-managed menus (code 0x00544c50.., outside this TU).
 // SIZE 0x140
-class RHMenuWindowFocus
-{
-public:
-    RHMenuWindowFocus(RHMenuWindow *parent, void *screen, int orientation, bool wrap);
-    RHMenuWindowFocus(RHMenuWindow *parent, void *screen, long resource, int orientation, bool wrap);
-    ~RHMenuWindowFocus();
-    void FUN_00544b80(bool display, bool modal) { ((RHMenuWindow *)this)->FUN_00544b80(display, modal); }
-
-    unsigned m_vptr; // 0x00
-    undefined m_04[0xb0]; // 0x04
-    RHMenuWindowScreen *m_screen; // 0xb4
-    undefined m_b8[0x88]; // 0xb8
-};
+#include "RHMenuFocusClass.h"
 
 // SIZE 0x100
-class RHPortraitButton
-{
-public:
-    RHPortraitButton();
-    ~RHPortraitButton();
-    void SetEnabled(bool enabled) { m_enabled = enabled; }
-
-    undefined m_00[4]; // 0x00
-    bool m_enabled; // 0x04
-    undefined m_05[0xfb]; // 0x05
-};
 
 // SIZE 0x1a4
 class RHPortraitEditableWidget
@@ -125,8 +79,11 @@ public:
 
 struct RHMenuEvent;
 
+#include "RHGameWidgetLifetime.h"
+
+// VTABLE: GAME 0x00679ad8
 // SIZE 0x448
-class __declspec(novtable) RHMenuYesNo : public RHMenuWindow
+class RHMenuYesNo : public RHMenuWindowFocus
 {
 public:
     RHMenuYesNo(RHMenuWindowScreen *screen, const std::wstring &text);
@@ -140,7 +97,12 @@ public:
     bool OnYes(int message, void *widget, void *data);
     static bool AskForConfirmation(RHMenuWindowScreen *screen, const std::wstring &text);
 
-    undefined m_c8[0x380]; // 0xc8
+    undefined m_140[4]; // 0x140
+    RHGameLifetime00525880 m_144; // 0x144
+    undefined m_240[4]; // 0x240
+    RHPortraitButton m_244; // 0x244
+    RHPortraitButton m_344; // 0x344
+    undefined m_444[4]; // 0x444
 };
 
 // SIZE 0x8

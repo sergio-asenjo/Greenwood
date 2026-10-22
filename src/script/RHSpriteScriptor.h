@@ -181,6 +181,8 @@ class RHSpriteScriptor
 {
 public:
     enum RHframeKind { FRAME_0, FRAME_1, FRAME_2, FRAME_3 };
+    RHSpriteScriptor();
+    static RHSpriteScriptor *GetInstance();
     RHUnkSpriteScriptInfo LoadSpriteScript(RHframeKind kind, const std::string &name, const std::string &profile);
     bool FUN_005c0490(SBFile &file, const char *profile);
     void FUN_005bfef0(SBFile &file, unsigned short count, std::vector<RHUnkSpriteRow> &rows, std::vector<unsigned short> &indices);

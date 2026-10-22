@@ -33,10 +33,12 @@ struct RHProjectileCtorList
     int index;
 };
 
-class RHProjectileLifetime : public RHObjectConstructorCalls
+class __declspec(novtable) RHProjectileLifetime : public RHObjectConstructorCalls
 {
 public:
     RHProjectileLifetime(int action, void *victim);
+    ~RHProjectileLifetime();
+    void *FUN_004b40f0(unsigned flags);
     RHProjectilePointLifetime point100;
     RHProjectilePointLifetime point10c;
     unsigned char data118[8];

@@ -79,6 +79,11 @@ class RHProfileManager
 {
 public:
     bool SerializeShootWeapon(SBFile &file);
+    void FUN_0056a310(const char *name);
+    void FUN_00565c10(const char *name);
+    void FUN_005672d0(const char *name);
+    void FUN_00569570(const char *name);
+    void FUN_0056aee0(const char *name);
     bool SerializeHandToHandWeapon(SBFile &file);
     bool SerializeCivilians(SBFile &file);
     bool SerializeCharacters(SBFile &file);

@@ -34,8 +34,9 @@ public:
     virtual void V44();
     virtual void V48();
     virtual void V4c();
-    virtual void V50();
+    virtual void RouteEvent(struct RHMenuEvent *event);
     virtual void V54();
+    bool HandleEvent(struct RHMenuEvent *event);
     bool Create();
     void DisplayPseudoMissionDebriefing();
     bool FUN_00544b40(const RHMapTitleText &, const RHMapBox &, unsigned);
@@ -45,6 +46,9 @@ public:
     void FUN_005284b0();
     bool FUN_00528520(unsigned, unsigned, unsigned);
     bool FUN_00528550(unsigned, unsigned, unsigned);
+    bool FUN_00528560(int, void *, void *);
+    bool FUN_00528730(int, void *, void *);
+    bool FUN_005287d0(int, void *, void *);
     void FUN_00528810();
     void FUN_00528a60();
     void Emit();

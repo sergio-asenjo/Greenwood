@@ -4,6 +4,9 @@
 class SBFile;
 class RHSequenceElement;
 class RHElementActorHuman;
+class RHActorTranslationSequenceCalls;
+struct RHMalignityPosition;
+struct RHAnimalNoisePosition;
 
 class RHDetectable
 {
@@ -41,12 +44,21 @@ public:
     void FUN_00486f30(unsigned char status);
     void FUN_00486f70();
     void FUN_00487aa0(void *target);
+    void FUN_00487ad0(const RHMalignityPosition &position);
     void FUN_00487b70();
     void FUN_00487ce0();
     bool FUN_004887a0(int kind);
     void *FUN_0048c380(RHElementActorHuman *target);
+    void FUN_0048c4d0();
     static void FUN_0048c620(void *actor);
     static void FUN_0048c6a0(void *actor, unsigned mode);
+    static void Noise(int type, RHAnimalNoisePosition &position, float radius, void *source);
+    bool FUN_0048d460(unsigned flags, RHActorTranslationSequenceCalls *sequence);
+    void FUN_0048d990(unsigned short amount, void *source, bool force);
+    void FUN_0048da80(RHSequenceElement *element);
+    void FUN_0048ec70();
+    void FUN_0048ed90(unsigned short state);
+    int FUN_0048d510(class RHOrder *order);
     int FUN_0048efa0();
     static void SetUniversalFrameCounter(unsigned long &counter);
     enum
@@ -80,7 +92,9 @@ public:
         OffsetByte6e5 = 0x6e5,
         ObjectSize = 0x704
     };
-    char m_04[0x700];
+    char m_04[0x145];
+    unsigned char m_149;
+    char m_14a[0x5ba];
 };
 
 #endif

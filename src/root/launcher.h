@@ -23,7 +23,6 @@ RH_LAUNCHER_CALL(005e4ca0, void, ());
 RH_LAUNCHER_CALL(005fa240, void, (int value, HWND window));
 RH_LAUNCHER_CALL(0055dea0, void, ());
 RH_LAUNCHER_CALL(0055dbb0, char *, ());
-RH_LAUNCHER_CALL(005fced0, void, ());
 RH_LAUNCHER_CALL(005f0750, void, ());
 RH_LAUNCHER_CALL(005e41d0, void, (int width, int height, bool flag));
 RH_LAUNCHER_CALL(005e4810, void, (int width, int height, int depth));

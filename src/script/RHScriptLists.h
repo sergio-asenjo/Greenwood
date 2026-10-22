@@ -2,6 +2,10 @@
 #define RHSCRIPT_LISTS_H
 
 #include <iterator>
+#include "RHScript.h"
+
+struct RHUnk005c9010Iterator;
+void FUN_005c9010(RHUnk005c9010Iterator &, int, std::bidirectional_iterator_tag);
 
 struct RHScriptListNode
 {

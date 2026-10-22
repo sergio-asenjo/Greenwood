@@ -1,3 +1,6 @@
+#ifndef RHSCRIPT_H
+#define RHSCRIPT_H
+
 // RHScript — declarations for RHScript.cpp (decompiled TU).
 //
 // BINDING (0x00570a90 -> RHScript::IsActorCharacter(void*)):
@@ -66,6 +69,7 @@ public:
     bool InitState();
     void Unk00416710(unsigned value);
     bool Unk00412240(const RHUnk00571160Position &position, unsigned short flags, float length);
+    bool Unk00412f70(unsigned short direction, int mode);
 };
 
 class RHUnk0046bd20
@@ -636,7 +640,7 @@ public:
 class RHUnk0058a3d0
 {
 public:
-    void Unk(void *context, int value, void *sequence);
+    void *Unk(void *context, int value, void *sequence);
 };
 
 class RHScriptSequenceVtable
@@ -739,19 +743,10 @@ struct RHScriptActorPositionFields
     RHScriptPositionFields *position;
 };
 
-class RHUnk0057ff00
-{
-public:
-    bool Unk(void *actor);
-};
 
 #include "RHCampaignPropertyCalls.h"
 
-class RHUnk00419a40
-{
-public:
-    void Unk(int index, bool forbidden);
-};
+#include "RHUnk00419a40.h"
 
 // SIZE 0x74
 class RHUnk005866a0
@@ -837,14 +832,7 @@ public:
     void Unk(int state, bool flag);
 };
 
-// SIZE 0x10
-struct RHMalignityPosition
-{
-    float x; // 0x00
-    float y; // 0x04
-    void *area; // 0x08
-    unsigned short layer; // 0x0c
-};
+#include "RHMalignityPosition.h"
 
 class RHMalignityBaseView
 {
@@ -942,13 +930,7 @@ public:
 RHMessenger *RHUnk00546050();
 RHMessenger *__stdcall RHUnk00546050(RHUnk5490f0 *message);
 
-class __declspec(novtable) RHUnk00585ea0 : public RHUnk00584d60
-{
-public:
-    RHUnk00585ea0(unsigned short level, int command, void *actor, void *target);
-    ~RHUnk00585ea0();
-    char tail[4];
-};
+#include "RHSequenceInteractionAction.h"
 
 void RHUnk00574690(void *actor, RHUnk00571160Position *position, void *location);
 class RHUnk00582640
@@ -959,11 +941,7 @@ public:
 
 
 
-class RHUnk00560420
-{
-public:
-    void Unk(RHUnk00571160Position *position);
-};
+#include "RHPositionProvider.h"
 
 class RHUnk005b5e00
 {
@@ -998,15 +976,12 @@ public:
     int Unk004e3e20(int index);
     void Unk0040d980(int state);
     void Unk0048cbc0();
-    void Unk0048c4d0();
     void Unk0046bcf0(int state, int value);
-    void Unk0057ec80(void *actor);
-    void Unk005c2ec0(void *position, int first, int second, void *actor, int third, int fourth, int fifth, int sixth);
-    void Unk0058a940(void *context, int value, void *element);
+    int Unk005c2ec0(void *position, int first, int second, void *actor, int third, int fourth, int fifth, int sixth);
+    void *Unk0058a940(void *context, int value, void *element);
     void Unk0041bd20(int style);
     bool Unk00489e80(void *target);
     void Unk0049d6c0();
-    void Unk0057ebd0(void *actor);
     void Unk0048ec00(void *scroll);
     void Unk004d9330(void *actor, bool flag);
     void Unk0057ff70(float height);
@@ -1045,6 +1020,7 @@ class RHUnk00613e90
 public:
     RHUnk00613e90();
     RHUnk00613e90 FUN_005df550(const RHUnk00613e90 &other) const;
+    float FUN_005df680() const;
     float x;
     float y;
     float z;
@@ -1053,12 +1029,7 @@ public:
 #include "RHSequenceTimedCalls.h"
 
 class RHElementActor;
-class RHSectorScript
-{
-public:
-    void Enter(RHElementActor *actor);
-    void Leave(RHElementActor *actor);
-};
+#include "RHSectorScript.h"
 
 struct RHScriptZoneAccess
 {
@@ -1175,21 +1146,7 @@ struct RHScriptActionCursor
     RHScriptActionCursor operator++(int);
 };
 
-struct RHSectorActorNode;
-
-class RHSectorActorConstIter
-{
-public:
-    RHSectorActorNode *m_p;
-    RHSectorActorConstIter(RHSectorActorNode *node) : m_p(node) {}
-};
-
-class RHSectorActorIter : public RHSectorActorConstIter
-{
-public:
-    RHSectorActorIter(RHSectorActorNode *node) : RHSectorActorConstIter(node) {}
-    RHSectorActorIter operator++(int);
-};
+#include "RHSectorActorIterator.h"
 
 class RHScriptFXArray
 {
@@ -1205,3 +1162,5 @@ public:
     void Unk005008e0(void **first, void **last);
     unsigned int Size() { return first == 0 ? 0 : last - first; }
 };
+
+#endif

@@ -6,7 +6,9 @@ class SBGeoBoundingBox2D;
 class RHMenuShortMissionBlazons
 {
 public:
+    RHMenuShortMissionBlazons(void *mission, void *parent);
     ~RHMenuShortMissionBlazons();
+    void FUN_0044ef60(const class RHMapBox &bounds, bool value);
     unsigned long ComputeNumberOfBlazonsPerRow(const SBGeoBoundingBox2D &bounds, bool &normal) const;
     void *m_mission;
     void *m_parent;

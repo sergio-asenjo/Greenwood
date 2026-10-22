@@ -12,6 +12,7 @@
 // (its own vptr + untouched fields), so RHElementObject's members start there.
 
 #include "SB.h"
+#include <string>
 
 class SBGeoPoint2D;
 
@@ -71,6 +72,7 @@ public:
     void Emit(SBFile &file);
     void FUN_004b2390(int value);
     bool FUN_004b2420(void *actor) const;
+    bool FUN_004a7840(void *point, void *actor, int focus);
     bool FUN_004a78c0(void *actor);
     bool FUN_004b24d0(const SBGeoPoint2D &point) const;
     void FUN_004b2600(void *points, void *lines, void *actor);
@@ -227,6 +229,11 @@ public:
     RHObjectMasterNode *&Rightmost() { return head->right; }
     RHObjectMasterIterator Begin() { return RHObjectMasterIterator(Leftmost()); }
     RHObjectMasterIterator End() { return RHObjectMasterIterator(head); }
+    RHObjectMasterIterator Find(const int &key)
+    {
+        RHObjectMasterIterator position(FUN_004b3e60(key));
+        return position.node == head || key < position.node->key ? End() : position;
+    }
     static RHObjectMasterNode *&Left(RHObjectMasterNode *node) { return node->left; }
     static RHObjectMasterNode *&Right(RHObjectMasterNode *node) { return node->right; }
     static RHObjectMasterNode *&Parent(RHObjectMasterNode *node) { return node->parent; }

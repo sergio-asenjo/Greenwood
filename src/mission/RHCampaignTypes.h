@@ -3,7 +3,10 @@
 
 #include "RHMissionProfile.h"
 #include "RHCampaignCommandLine.h"
+#include "RHMission.h"
 #include <list>
+
+class RHSectorProduction;
 
 template<class T>
 class SBArray
@@ -29,44 +32,12 @@ public:
     RHPCDescription();
     RHPCDescription(void *profile, bool playable);
     ~RHPCDescription();
-    void FUN_0055bc90(void *profile, bool playable);
     void *FUN_00459dd0(unsigned flags);
     void FUN_00459fd0();
     bool FUN_0055bb30(SBFile &file);
 };
 
-class RHCampaignArrayOps
-{
-public:
-    char m_allocator[4];
-    void **m_first;
-    void **m_last;
-    void **m_end;
-    unsigned size() const { return m_first ? m_last - m_first : 0; }
-    unsigned capacity() const { return m_first ? m_end - m_first : 0; }
-    static __forceinline void **ConstructCopy(void *const *first, void *const *last, void **destination)
-    {
-        for (; first != last; ++first, ++destination)
-            if (destination)
-                *destination = *first;
-        return destination;
-    }
-    void FUN_0044ea70();
-    unsigned FUN_004580a0()
-    {
-        typedef std::vector<int> Values;
-        unsigned (Values::*capacity)() const = &Values::capacity;
-        return (((const Values *)this)->*capacity)();
-    }
-    RHCampaignArrayOps &FUN_00457a30(const RHCampaignArrayOps &value)
-    {
-        typedef std::vector<int> Values;
-        Values &(Values::*assign)(const Values &) = &Values::operator=;
-        (((Values *)this)->*assign)((const Values &)value);
-        return *this;
-    }
-    void FUN_00570330();
-};
+#include "RHCampaignArrayOps.h"
 
 class RHCampaignMissionValues
 {
@@ -352,6 +323,7 @@ struct RHbeamMe
     int m_1c; // 0x1c
     RHCampaignBeamText m_text; // 0x20
     RHbeamMe() {}
+    ~RHbeamMe();
     RHbeamMe(const RHbeamMe &value);
     RHbeamMe &operator=(const RHbeamMe &value)
     {
@@ -514,6 +486,7 @@ class SBGeoBoundingBox2D
 public:
     SBGeoBoundingBox2D(const SBGeoBoundingBox2D &value);
     SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &value) const;
+    bool FUN_006083b0(const SBGeoPoint2D &point) const;
     SBGeoPoint2D m_0; // 0x00
     SBGeoPoint2D m_8; // 0x08
     undefined m_10; // 0x10

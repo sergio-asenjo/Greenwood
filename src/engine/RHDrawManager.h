@@ -66,13 +66,16 @@ class RHUnk00608f10
 {
 public:
     int FUN_00608f10(void *value);
+    bool FUN_006082a0(void *value);
 };
 
 class SBGeoBoundingBox2D
 {
 public:
     SBGeoBoundingBox2D();
+    SBGeoBoundingBox2D(const SBGeoBoundingBox2D &other);
     SBGeoBoundingBox2D &FUN_00607da0(const SBGeoBoundingBox2D &other);
+    void FUN_00607d90();
     bool FUN_00608400(const SBGeoPoint2D &point) const;
     bool Unk00608f30() const;
     int FUN_00609050(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
@@ -86,9 +89,10 @@ public:
         m_10 = true;
         m_max = point;
     }
-    void FUN_006092a0(const SBGeoVector2D &offset);
+    SBGeoBoundingBox2D &operator-=(const SBGeoVector2D &offset);
     SBGeoBoundingBox2D FUN_006092c0(const SBGeoBoundingBox2D &other) const;
-    RHUnk0060fbf0 FUN_006093f0(const SBGeoSegment2D &segment) const;
+    RHUnk0060fbf0 FUN_006093f0(const RHMobileUnk006100e0 &segment) const;
+    RHUnk0060fbf0 FUN_00609440(const RHMobileUnk006100e0 &segment, double first, double last) const;
     SBGeoPoint2D m_min; // 0x00
     SBGeoPoint2D m_max; // 0x08
     bool m_10; // 0x10
@@ -106,14 +110,7 @@ public:
     unsigned short *m_pixels; // 0x10
 };
 
-class SBDrawManager
-{
-public:
-    unsigned char m_00[0x10c]; // 0x000
-    unsigned short m_10c; // 0x10c
-    void FUN_005e61e0(unsigned long surface, const SBGeoBoundingBox2D &box, unsigned short color, unsigned long flags);
-    bool FUN_005ecbd0(unsigned long surface, const SBGeoPoint2D &first, const SBGeoPoint2D &second, unsigned short color);
-};
+#include "SBDrawManagerCore.h"
 
 // SIZE 0x20
 class RHDrawManager : public SBGeoBoundingBox2D

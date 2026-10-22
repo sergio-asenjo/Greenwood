@@ -4,6 +4,10 @@
 #include <string>
 #include "Decomp.h"
 
+#ifndef SBGEO_BOUNDINGBOX2D_VIEW
+#include "SBGeoBoundingBox2D.h"
+#endif
+
 class RHMapResources;
 
 // VTABLE: GAME 0x0067a654

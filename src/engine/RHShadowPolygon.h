@@ -4,6 +4,7 @@
 #include "SB.h"
 #include "Decomp.h"
 #include <iterator>
+#include <memory>
 
 // SIZE 0x08
 class SBGeoVector2D;
@@ -52,27 +53,8 @@ public:
 };
 
 // SIZE 0x14
-class SBGeoBoundingBox2D
-{
-public:
-    float m_0; // 0x00
-    float m_4; // 0x04
-    float m_8; // 0x08
-    float m_c; // 0x0c
-    bool m_10; // 0x10
-    float Value0() const { return m_0; }
-    float Value4() const { return m_4; }
-    float Value8() const { return m_8; }
-    float ValueC() const { return m_c; }
-    const SBGeoPoint2D &Min() const { return *(const SBGeoPoint2D *)&m_0; }
-    const SBGeoPoint2D &Max() const { return *(const SBGeoPoint2D *)&m_8; }
-    void FUN_00607d90();
-    void Unk00607dc0(const SBGeoPoint2D &);
-    void SetValue0(float value) { m_10 = true; m_0 = value; }
-    void SetValue4(float value) { m_10 = true; m_4 = value; }
-    void SetValue8(float value) { m_10 = true; m_8 = value; }
-    void SetValueC(float value) { m_10 = true; m_c = value; }
-};
+#define SBGEO_POINT2D_VIEW
+#include "SBGeoBoundingBox2DCore.h"
 
 // SIZE 0x0c
 class SBGeoPoint3D
@@ -291,17 +273,6 @@ public:
     RHShadowIterator *FUN_0059f1a0();
 };
 
-// SIZE 0x14
-class RHShadowBox
-{
-public:
-    RHShadowBox();
-    ~RHShadowBox() {}
-    SBGeoPoint2D m_min; // 0x00
-    SBGeoPoint2D m_max; // 0x08
-    bool m_10; // 0x10
-};
-
 class RHUnk00608f10
 {
 public:
@@ -318,14 +289,7 @@ public:
 };
 
 
-struct RHSectorActorNode;
-class RHSectorActorIter
-{
-public:
-    RHSectorActorNode *m_p;
-    RHSectorActorIter(RHSectorActorNode *node) : m_p(node) {}
-    RHSectorActorIter operator++(int);
-};
+#include "RHSectorActorIterator.h"
 
 // SIZE 0x0c
 struct RHUnk005c9010Node
@@ -375,10 +339,16 @@ struct RHUnk0058e7f0List
 
     ~RHUnk0058e7f0List()
     {
+        typedef std::list<RHElementActor *>::iterator Native;
+        typedef Native (Native::*Increment)(int);
+        typedef RHSectorActorIter (RHSectorActorIter::*Forward)(int);
+        Increment increment = &Native::operator++;
         RHUnk005c9010Node *last = m_head;
         RHSectorActorIter current((RHSectorActorNode *)last->m_next);
         while (current.m_p != (RHSectorActorNode *)last)
-            FUN_0046eb30(current++);
+        {
+            FUN_0046eb30((current.*(Forward)increment)(0));
+        }
         delete m_head;
         m_head = 0;
         m_count = 0;
@@ -430,10 +400,16 @@ public:
 
     void EraseAll()
     {
+        typedef std::list<RHElementActor *>::iterator Native;
+        typedef Native (Native::*Increment)(int);
+        typedef RHSectorActorIter (RHSectorActorIter::*Forward)(int);
+        Increment increment = &Native::operator++;
         RHUnk005c9010Node *last = m_list.m_head;
         RHSectorActorIter current((RHSectorActorNode *)last->m_next);
         while (current.m_p != (RHSectorActorNode *)last)
-            m_list.FUN_0046eb30(current++);
+        {
+            m_list.FUN_0046eb30((current.*(Forward)increment)(0));
+        }
         m_dirty = true;
     }
 

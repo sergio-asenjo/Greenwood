@@ -84,13 +84,13 @@ template<class T> struct RHManagerNode
 };
 
 // SIZE 0x24
-template<class T> class RHManagerList
+template<class T> class RHManagerList : public std::list<T>
 {
 public:
     typedef typename std::list<T>::iterator Iterator;
-    undefined4 allocator; // +0x00
-    RHManagerNode<T> *head; // +0x04
-    int count; // +0x08
+    RHManagerList() : valid(1) {}
+    RHManagerNode<T> *Head() const { return (RHManagerNode<T> *)_Head; }
+    int Count() const { return _Size; }
     Iterator cursor; // +0x0c
     char valid; // +0x10
     undefined padding[3]; // 0x11
@@ -116,7 +116,7 @@ public:
     }
     T &Get(int wanted)
     {
-        int size = count;
+        int size = Count();
         if (valid)
         {
             if (wanted <= (size + 1) / 2)
@@ -214,7 +214,7 @@ template<class T> class RHManagerCopyList : public RHManagerList<T>
 public:
     void push_back(const T &value)
     {
-        RHManagerNode<T> *next = head;
+        RHManagerNode<T> *next = Head();
         RHManagerNode<T> *previous = next->previous;
         RHManagerNode<T> *node = (RHManagerNode<T> *)::operator new(sizeof(RHManagerNode<T>));
         node->next = next ? next : node;
@@ -222,15 +222,18 @@ public:
         next->previous = node;
         node->previous->next = node;
         RHSeqList::CopyData((RHSequenceElement **)&node->value, (RHSequenceElement *const *)&value);
-        ++count;
+        ++_Size;
         valid = 1;
     }
 };
 
+// VTABLE: GAME 0x00679db8
 // SIZE 0x1b4
 class RHSequenceManager
 {
 public:
+    RHSequenceManager();
+    virtual void Slot00();
     bool Serialize(SBFile &file);
     bool PreSerializePointer(SBFile &file, RHOrder **order);
     bool PreSerializePointer(SBFile &file, RHSequenceElement **element, bool launch);
@@ -242,7 +245,6 @@ public:
     }
     void Emit(SBFile &file);
 
-    int m_0; // +0x00
     RHManagerList<RHSequence *> m_4; // +0x04
     RHManagerList<RHSequenceElement *> m_28; // +0x28
     RHManagerList<RHOrder **> m_4c; // +0x4c

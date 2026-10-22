@@ -169,8 +169,8 @@ public:
     void FUN_005ab530(struct RHcacheData &, RHsampleCacheStats &);
     void UpdateCacheState(struct RHcacheData &, RHsampleCacheStats &, unsigned long);
     void UpdateCacheState(std::map<unsigned long, RHSoundCacheEntry *> &, RHsampleCacheStats &, unsigned long);
-    void FUN_005ab660(std::map<unsigned long, RHSoundCacheEntry *> &, struct RHcacheData &);
-    void FUN_005ab6d0(std::map<unsigned long, RHSoundCacheEntry *> &);
+    void FUN_005ab660(RHSoundCacheGroups &, struct RHcacheData &);
+    void FUN_005ab6d0(class RHSoundCacheEntryMap &);
     RHSoundCacheEntry *GetSample(bool, std::map<unsigned long, RHSoundCacheEntry *> &, void *, unsigned long, unsigned long, unsigned long, bool);
     RHSoundCacheEntry *GetFXSample(bool, unsigned long, int);
     bool FUN_005ae320(unsigned long);
