@@ -114,7 +114,7 @@ struct SBInputMouseState
 };
 
 // GLOBAL: GAME 0x006c12ac
-static bool g_mouseEnabled;
+bool g_mouseEnabled;
 
 // GLOBAL: GAME 0x006c1300
 SBInputPosition g_inputPosition;
