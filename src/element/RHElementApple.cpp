@@ -40,7 +40,6 @@ typedef char RHAppleInteractionSize[(sizeof(RHUnk00585ea0) == 0x68) ? 1 : -1];
 
 class RHUnk6c1040;
 extern RHUnk6c1040 *g_unk0x6c1040;
-extern char g_unk0x6c0560[4];
 
 class RHScriptBatchCalls
 {
@@ -56,7 +55,7 @@ bool RHElementApple::FUN_004a63a0(void *target)
     if (((RHScriptBatchCalls *)target)->Unk004baea0() & 0x40)
     {
         RHUnk00585ea0 *action = new RHUnk00585ea0(1, 0x99, target, InteractionTarget());
-        ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940(g_unk0x6c0560, 0, action);
+        ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940("", 0, action);
         return true;
     }
     return false;
@@ -95,6 +94,7 @@ void *RHElementApple::FUN_004a6650(unsigned flags)
     return this;
 }
 
+// FUNCTION: GAME 0x004a7ec0
 RHElementApple::~RHElementApple() {}
 
 void EmitRHElementApple(void *storage, RHElementActorHuman *actor)

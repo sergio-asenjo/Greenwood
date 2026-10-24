@@ -72,7 +72,6 @@ class RHEngine;
 struct RHUnkSectorGlobal;
 extern RHEngine *g_pEngine;
 extern RHUnkSectorGlobal *g_unk0x6c0a9c;
-extern float g_unk0x00677488;
 
 class RHElementFX : public RHElement
 {

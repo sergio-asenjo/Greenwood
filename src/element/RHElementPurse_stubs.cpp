@@ -12,4 +12,3 @@
 #include "SBNullstr.h"
 #include "RHElementPurse.h"
 
-RHElementPurse::RHElementPurse(void *) {}

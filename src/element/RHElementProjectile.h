@@ -43,8 +43,6 @@ struct RHScriptIter
 {
     RHScriptNode *node;
     RHScriptIter(RHScriptNode *value) : node(value) {}
-    RHScriptIter(const RHScriptIter &other) : node(other.node) {}
-    RHScriptIter &operator=(const RHScriptIter &other) { node = other.node; return *this; }
 };
 
 class RHUnk0046eb30

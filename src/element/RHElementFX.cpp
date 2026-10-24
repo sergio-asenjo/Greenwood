@@ -33,7 +33,7 @@ void RHElementFX::InitializeBackgroundRestoration()
             SBGeoVector2D vector((const SBGeoVector2D &)fx_sprite->m_1c);
             m_b4 -= vector;
         }
-        if (!m_b4.Unk00608f30() || m_b4.m_p0.m_x < g_unk0x00677488 || m_b4.m_p0.m_y < g_unk0x00677488)
+        if (!m_b4.Unk00608f30() || m_b4.m_p0.m_x < 0.0f || m_b4.m_p0.m_y < 0.0f)
         {
             m_cc = -1;
             SBAssert(0,
@@ -113,7 +113,7 @@ bool RHElementFX::Serialize(SBFile &file)
 // FUNCTION: GAME 0x004aa930
 int RHElementFX::FUN_004aa930()
 {
-    if (m_d0 || m_ac || *(float *)((char *)fx_sprite + 0x18) != g_unk0x00677488 ||
+    if (m_d0 || m_ac || *(float *)((char *)fx_sprite + 0x18) != 0.0f ||
         (*(unsigned *)((char *)this + 4) & 0xf) == 5 ||
         ((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0()[0x50] == 1)
         return 1;

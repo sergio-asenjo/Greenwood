@@ -220,7 +220,7 @@ bool RHElementMobile::ExecuteMacroCommand()
         m_19c = speed;
         m_194 -= 5;
         m_190 += 4;
-        ((RHUnk004af1d0 *)this)->Unk(speed != g_unk0x00677488);
+        ((RHUnk004af1d0 *)this)->Unk(speed != 0.0f);
         return true;
     }
     case 130:
@@ -228,7 +228,7 @@ bool RHElementMobile::ExecuteMacroCommand()
         SBGeoPoint2D position;
         SBGeoPoint2D destination;
         m_1a0 = *(float *)m_190;
-        if (m_1a0 == g_unk0x00677488)
+        if (m_1a0 == 0.0f)
             m_1a0 = 0.1f;
         m_190 += 4;
         unsigned short waypoint = *(unsigned short *)m_190;
@@ -245,7 +245,7 @@ bool RHElementMobile::ExecuteMacroCommand()
         position = m_50->m_24;
         float distance = ((RHUnk005fc3b0 *)&destination.Unk005fc110(position))->Unk005fc6a0(1.0f);
         m_194 -= 7;
-        m_1a4 = (m_19c + m_1a0) * (m_1a0 - m_19c) * g_unk0x006775d8 / distance;
+        m_1a4 = (m_19c + m_1a0) * (m_1a0 - m_19c) * 0.5f / distance;
         return true;
     }
     case 131:
@@ -470,7 +470,7 @@ void RHElementMobile::InitializeFromMissionStream(SBFile &file)
         RHMobileField<bool>(this, 0xa8) = true;
     count = Size();
     for (i = 0; i < count; ++i)
-        RHMobileField<float>(m_b0[i], 0xfc) = m_19c == g_unk0x00677488 ? 1000000.0f : g_unk0x0067749c / m_19c;
+        RHMobileField<float>(m_b0[i], 0xfc) = m_19c == 0.0f ? 1000000.0f : 1.0f / m_19c;
     if (RHMobileField<bool>(this, 0x1f0))
         ((RHUnk004af060 *)this)->Unk(((RHUnk005fc3b0 *)&m_188->FUN_004ae380())->FUN_005fcc50(1.0f));
 }
@@ -781,7 +781,7 @@ void RHElementMobile::CheckForLineCrossing()
             lines.GoTo(index);
             SBGeoPoint2D &first = lines.cursor->data->m_4;
             movement.FUN_005fc430(m_50->m_40.Unk005fc110(first));
-            if (((RHUnk005fc3b0 *)&((RHUnk0042fde0 *)&first)->FUN_0042fde0())->FUN_005fc680(movement, 1.0f) == g_unk0x00677488)
+            if (((RHUnk005fc3b0 *)&((RHUnk0042fde0 *)&first)->FUN_0042fde0())->FUN_005fc680(movement, 1.0f) == 0.0f)
             {
                 lines.GoTo(index);
                 ((RHUnk0046eb30 *)&lines)->erase(RHScriptIter(lines.cursor));
@@ -1016,7 +1016,7 @@ void RHMobileGrid::FUN_004ea7b0(RHMobilePointerList &output, RHMobilePolygon &po
         next = points.FUN_0060cef0(index < count ? index : index - count);
         outgoing.FUN_005fc430(next.Unk005fc110(second));
         float cross = outgoing.FUN_005fc680(incoming, 1.0f);
-        if (reverse ? cross < g_unk0x00677488 : cross > g_unk0x00677488)
+        if (reverse ? cross < 0.0f : cross > 0.0f)
         {
             RHUnk00520ae0 *vertex = new RHUnk00520ae0(second, 0, 5.0f);
             vertex->FUN_00520c80(incoming.FUN_005fc8f0(0, 1.0f), outgoing.FUN_005fc8f0(0, 1.0f));
@@ -1095,7 +1095,7 @@ void RHMobileUnk0051fd90::FUN_0051fd90(float first, float second)
 {
     m_24 = first + second;
     m_28 = first;
-    m_2c = g_unk0x0067749c / (m_24 - first);
+    m_2c = 1.0f / (m_24 - first);
     m_30 = -(m_2c * first);
 }
 
@@ -1116,7 +1116,7 @@ bool RHMobileUnk0051fd10::FUN_0051fea0(const SBGeoPoint2D &point, float &distanc
     distance = point.Unk005fc110(*(SBGeoPoint2D *)((char *)this + 4)).FUN_005fc660(m_34);
     if (!((unsigned short)((unsigned)m_14 >> 8) & 1))
     {
-        if (distance < g_unk0x00677488)
+        if (distance < 0.0f)
             return false;
     }
     double absolute = fabs(distance);
@@ -1128,7 +1128,7 @@ void RHMobileUnk00520c50::FUN_00520c50(float first, float second)
 {
     m_24 = first + second;
     m_30 = first;
-    m_28 = g_unk0x0067749c / (m_24 - first);
+    m_28 = 1.0f / (m_24 - first);
     m_2c = -(m_28 * first);
 }
 
@@ -1287,8 +1287,8 @@ void RHMobilePosition::FUN_0055fc20(bool updateDirection)
         if (!(state & 1))
         {
             movement.FUN_005fc430(RHMobileField<SBGeoPoint2D>(this, 0x44).Unk005fc110(RHMobileField<SBGeoPoint2D>(this, 0x20)));
-            stationary = movement.FUN_005fc700(1.0f) < g_unk0x0067749c;
-            if (movement.m_x == g_unk0x00677488 && movement.m_y == g_unk0x00677488)
+            stationary = movement.FUN_005fc700(1.0f) < 1.0f;
+            if (movement.m_x == 0.0f && movement.m_y == 0.0f)
                 project = false;
             else
                 movement.FUN_005fc7c0(1.0f);
@@ -1301,7 +1301,7 @@ void RHMobilePosition::FUN_0055fc20(bool updateDirection)
             {
                 float height = (RHMobileField<float>(area, 0x4c) * movement.m_x +
                     RHMobileField<float>(area, 0x50) * movement.m_y) /
-                    (g_unk0x0067749c - RHMobileField<float>(area, 0x50));
+                    (1.0f - RHMobileField<float>(area, 0x50));
                 elevation = height;
                 y = height + movement.m_y;
             }
@@ -1457,7 +1457,7 @@ bool RHGameInputSegment::FUN_0060a880(const SBGeoPoint2D &point) const
         return false;
     const SBGeoPoint2D &first = *(const SBGeoPoint2D *)m_00;
     return ((const RHUnk005fc3b0 &)((const SBGeoPoint2D *)(m_00 + 8))->Unk005fc110(first)).FUN_005fc680(
-        (const RHUnk005fc3b0 &)point.Unk005fc110(first), 1.0f) == g_unk0x00677488;
+        (const RHUnk005fc3b0 &)point.Unk005fc110(first), 1.0f) == 0.0f;
 }
 
 // FUNCTION: GAME 0x006100e0

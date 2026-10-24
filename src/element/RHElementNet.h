@@ -3,40 +3,36 @@
 
 #include "SB.h"
 #include "RHEngine.h"
-#include <iterator>
+#include "RHProjectileLifetime.h"
+#include "RHFastFindGeometry.h"
+#include "RHRepulsivePoint.h"
+#include <memory>
 
-class RHElementProjectile
+struct RHNetListStorage
 {
-public:
-    virtual bool Serialize(SBFile &file);
-    char m_04[0x158];
-};
+    RHNetListStorage(const std::allocator<void *> &allocator = std::allocator<void *>())
+        : m_00(allocator), m_04(BuyHead()), m_08(0), m_10(true)
+    {
+    }
+    ~RHNetListStorage()
+    {
+        FUN_0044e8b0(RHScriptIter(m_04->next), end());
+        operator delete(m_04);
+        m_04 = 0;
+        m_08 = 0;
+    }
+    static RHScriptNode *BuyHead()
+    {
+        RHScriptNode *head = (RHScriptNode *)operator new(sizeof(RHScriptNode));
+        head->next = head;
+        head->previous = head;
+        return head;
+    }
 
-struct RHScriptNode
-{
-    RHScriptNode *next;
-    RHScriptNode *previous;
-    void *data;
-};
-struct RHScriptIter
-{
-    RHScriptNode *node;
-    RHScriptIter() {}
-    RHScriptIter(RHScriptNode *value) : node(value) {}
-};
-
-class RHUnk0046eb30
-{
-public:
-    RHScriptIter FUN_0046eb80();
-};
-
-struct RHUnk004b1520List
-{
-    char m_00[4];
+    std::allocator<void *> m_00;
     RHScriptNode *m_04;
     int m_08;
-    RHScriptIter m_0c;
+    RHScriptNode *m_0c;
     bool m_10;
     int m_14;
 
@@ -45,23 +41,22 @@ struct RHUnk004b1520List
     RHScriptIter FUN_00424410(RHScriptIter position, void *const &value);
 };
 
-class RHTitbitList
-{
-public:
-    void At(int index);
-};
-
-class RHElementNet : public RHElementProjectile
+class __declspec(novtable) RHElementNet : public RHProjectileLifetime
 {
 public:
     RHElementNet(void *victim);
+    ~RHElementNet();
+    void *FUN_004b0860(unsigned flags);
+    void FUN_004b1270();
+    void FUN_004b1380(RHNetListStorage &points, RHNetListStorage &lines, void *actor);
     void FUN_004b1730();
+    bool FUN_004b19d0();
     bool FUN_004b14a0(void *point, void *pc, int focus) const;
     virtual bool Serialize(SBFile &file);
     void Emit(SBFile &file);
 
-    char m_15c[0x40];
-    RHUnk004b1520List m_19c;
+    RHUnk00520ae0 m_15c;
+    RHNetListStorage m_19c;
     char m_1b4[0x0c];
     int m_1c0;
     char m_1c4;

@@ -5,7 +5,6 @@
 #include <stdlib.h>
 
 RHProfileManager *RHUnk00436500GetProfileManager();
-extern float g_rhuirendererportrait_percent;
 
 // FUNCTION: GAME 0x00450070
 unsigned RHBow::FUN_00450070(int type) const
@@ -35,7 +34,7 @@ unsigned RHBow::FUN_004500c0(unsigned skill, unsigned range) const
     int type = FUN_004504b0(distance);
     unsigned maximum = FUN_00450070(type);
     if (range <= maximum) {
-        unsigned percent = (unsigned)(distance / maximum * g_rhuirendererportrait_percent);
+        unsigned percent = (unsigned)(distance / maximum * 100.0f);
         int first;
         int second;
         float secondX;

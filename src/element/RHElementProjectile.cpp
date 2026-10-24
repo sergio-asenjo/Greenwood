@@ -32,15 +32,7 @@ void *RHProjectileLifetime::FUN_004b40f0(unsigned flags)
 RHProjectileLifetime::~RHProjectileLifetime() {}
 
 
-extern float g_unk0x00677488;
-extern float g_unk0x0067749c;
-extern float g_unk0x006775d8;
-extern float g_actorEffectOffset;
 
-// GLOBAL: GAME 0x006787e8
-float g_unk0x006787e8 = -8.01f;
-// GLOBAL: GAME 0x006787ec
-float g_unk0x006787ec = 16.02f;
 
 struct RHProjectilePathStep
 {
@@ -168,12 +160,12 @@ struct RHProjectilePathList
 // STUB: GAME 0x004b4260
 RHProjectileVector RHProjectileThrowCalls::FUN_004b4260(const RHProjectileVector &direction, float distance, float gravity, unsigned short frames, const void *actor)
 {
-    float traveled = g_unk0x00677488;
+    float traveled = 0.0f;
     RHProjectileVector result;
     if (frames == 0) {
         float acceleration = gravity;
-        traveled = g_unk0x00677488;
-        acceleration *= g_unk0x006787ec;
+        traveled = 0.0f;
+        acceleration *= 16.02f;
         while (traveled < distance) {
             ++frames;
             traveled += frames * acceleration;
@@ -181,18 +173,18 @@ RHProjectileVector RHProjectileThrowCalls::FUN_004b4260(const RHProjectileVector
         frames *= 2;
     }
     if (frames == 1)
-        result = direction.Scaled(g_unk0x006775d8);
+        result = direction.Scaled(0.5f);
     else {
         struct RawVector { float x; float y; float z; };
-        RawVector half = *(RawVector *)&direction.Scaled(g_unk0x006775d8);
-        float scale = g_unk0x0067749c / (frames + 1);
+        RawVector half = *(RawVector *)&direction.Scaled(0.5f);
+        float scale = 1.0f / (frames + 1);
         result = ((RHProjectileVector *)&half)->Scaled(scale);
-        result.z -= (frames * gravity) * g_unk0x006787e8;
+        result.z -= (frames * gravity) * (-8.01f);
     }
     if (actor) {
         struct RawVector { float x; float y; float z; };
-        RawVector half = *(RawVector *)&((const RHProjectileVector *)((char *)*(void **)((char *)actor + 0x50) + 0x138))->Scaled(g_unk0x006775d8);
-        RHProjectileVector offset = ((RHProjectileVector *)&half)->Scaled(g_actorEffectOffset);
+        RawVector half = *(RawVector *)&((const RHProjectileVector *)((char *)*(void **)((char *)actor + 0x50) + 0x138))->Scaled(0.5f);
+        RHProjectileVector offset = ((RHProjectileVector *)&half)->Scaled(4.0f);
         result.x += offset.x;
         result.y += offset.y;
         result.z += offset.z;
@@ -402,7 +394,7 @@ void RHElementProjectile::PlayImpactSound(const void *position, bool special) co
         if (sound == -1)
             return;
     }
-    ((RHProjectileSoundCalls *)g_unk0x006c1070)->FUN_005a8070(sound, position, 9);
+    ((RHSound *)g_unk0x006c1070)->FUN_005a8070(sound, *(const SBGeoPoint2D *)position, 9);
 }
 
 // FUNCTION: GAME 0x004b8bd0

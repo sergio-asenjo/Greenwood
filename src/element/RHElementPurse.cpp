@@ -42,6 +42,29 @@ extern RHEngine *g_pEngine;
 class RHArtificialIntelligenceSoundCalls;
 extern RHArtificialIntelligenceSoundCalls *g_unk0x006c1070;
 
+DECOMP_SIZE_ASSERT(RHElementPurse, 0x16c)
+
+// FUNCTION: GAME 0x0049d390
+RHElementPurse::~RHElementPurse()
+{
+}
+
+// FUNCTION: GAME 0x004b90f0
+RHElementPurse::RHElementPurse(void *victim) : RHProjectileLifetime(4, victim), m_unk168(0)
+{
+    *(unsigned long *)this = 0x00678800;
+    *(unsigned long *)((char *)this + 0xb0) = 7;
+}
+
+// FUNCTION: GAME 0x004b9180
+void *RHElementPurse::FUN_004b9180(unsigned flags)
+{
+    this->~RHElementPurse();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
 // FUNCTION: GAME 0x004b9200
 int RHElementPurse::FUN_004b9200()
 {
@@ -91,7 +114,7 @@ bool RHElementPurse::Serialize(SBFile &file)
         return false;
     }
 
-    return RHElementProjectile::Serialize(file);
+    return ((RHElementProjectile *)this)->RHElementProjectile::Serialize(file);
 }
 
 // FUNCTION: GAME 0x004b98a0
@@ -164,18 +187,19 @@ void RHElementPurse::FUN_004b9990()
         sound = 0x1da;
         break;
     }
-    ((RHProjectileSoundCalls *)g_unk0x006c1070)->FUN_005a8070(sound, sprite + 0x24, 9);
+    ((RHSound *)g_unk0x006c1070)->FUN_005a8070(sound, *(const SBGeoPoint2D *)(sprite + 0x24), 9);
 }
 
 // Force emission: RHSword-style serializers are pulled in only when
 // referenced; this non-inlinable out-of-line call keeps Serialize in the build.
 void RHElementPurse::Emit(SBFile &file)
 {
+    FUN_004b9180(0);
     FUN_004b9200();
     FUN_004b9210();
     FUN_004b97c0();
     FUN_004b98a0();
     AddChild(0);
     FUN_004b9990();
-    Serialize(file);
+    RHElementPurse::Serialize(file);
 }

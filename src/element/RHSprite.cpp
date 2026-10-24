@@ -44,12 +44,6 @@ RHSpriteGraphEntry *g_unk0x006c0cd8 = 0;
 // STRING: GAME 0x006b8748
 #define g_spriteFile "P:\\Robin Hood\\RHsprite.cpp"
 
-// GLOBAL: GAME 0x00677db8
-float g_unk0x00677db8 = 0.7f;
-// GLOBAL: GAME 0x00679e40
-float g_unk0x00679e40 = 0.6f;
-// GLOBAL: GAME 0x006774ec
-float g_unk0x006774ec = 1.7434468269348145f;
 
 // FUNCTION: GAME 0x0049b2c0
 int RHSprite::FUN_0049b2c0()
@@ -147,7 +141,6 @@ void RHSpritePositionCalls::FUN_0055f550()
 bool RHSpritePositionCalls::FUN_00560460()
 {
 #define P(type, offset) RHSpriteField<type>(this, offset)
-    extern float g_unk0x00677438;
     if (P(bool, 0xfe))
     {
         if (P(bool, 0xfc))
@@ -160,7 +153,7 @@ bool RHSpritePositionCalls::FUN_00560460()
                 return P(SBGeoVector2D, 0x6c).FUN_005fc660(P(SBGeoPoint2D, 0x44).Unk005fc110(P(SBGeoPoint2D, 0x20))) <= P(float, 0x78);
             SBGeoVector2D direction(P(SBGeoPoint2D, 0x6c));
             SBGeoPoint2D delta = P(SBGeoPoint2D, 0x44).Unk005fc110(P(SBGeoPoint2D, 0x20));
-            float y = delta.m_y * g_unk0x006774ec;
+            float y = delta.m_y * 1.7434468269348145f;
             delta.m_y = y;
             return direction.FUN_005fc660(delta) <= P(float, 0x78);
         }
@@ -169,17 +162,17 @@ bool RHSpritePositionCalls::FUN_00560460()
         {
             SBGeoPoint2D delta = P(SBGeoPoint2D, 0x44).Unk005fc110(P(SBGeoPoint2D, 0x20));
             float radius = RHSpriteField<float>(RHSpriteField<void *>(actor, 0x50), 0x11c);
-            bool finished = delta.FUN_005fc700(1.0f) < radius + P(float, 0x118) + g_unk0x00677438;
+            bool finished = delta.FUN_005fc700(1.0f) < radius + P(float, 0x118) + 10.0f;
             if (finished)
                 return true;
         }
-        return P(SBGeoPoint2D, 0x44).Unk005fc110(P(SBGeoPoint2D, 0x20)).FUN_005fc700(1.0f) < g_unk0x00677438;
+        return P(SBGeoPoint2D, 0x44).Unk005fc110(P(SBGeoPoint2D, 0x20)).FUN_005fc700(1.0f) < 10.0f;
     }
     if (!P(bool, 0x7c))
         return P(SBGeoVector2D, 0x6c).FUN_005fc660(P(SBGeoPoint2D, 0x44).Unk005fc110(P(SBGeoPoint2D, 0x20))) <= P(float, 0x78);
     SBGeoVector2D direction(P(SBGeoPoint2D, 0x6c));
     SBGeoPoint2D delta = P(SBGeoPoint2D, 0x44).Unk005fc110(P(SBGeoPoint2D, 0x20));
-    float y = delta.m_y * g_unk0x006774ec;
+    float y = delta.m_y * 1.7434468269348145f;
     delta.m_y = y;
     return direction.FUN_005fc660(delta) <= P(float, 0x78);
 #undef P
@@ -194,8 +187,7 @@ void RHSpritePositionCalls::FUN_00560780(float distance, unsigned short duration
     scaled.m_4 = distance * RHSpriteField<float>(this, 0x64);
     scaled.m_8 = distance * RHSpriteField<float>(this, 0x68);
     RHUnk00613e90 copy = scaled;
-    extern float g_unk0x0067749c;
-    distance = g_unk0x0067749c / duration;
+    distance = 1.0f / duration;
     RHUnk00613e90 velocity;
     velocity.m_0 = copy.m_0 * distance;
     velocity.m_4 = distance * copy.m_4;
@@ -403,8 +395,8 @@ void RHSprite::LoadPositionInfoFromFile(SBFile &file, int kind)
                     // STRING: GAME 0x006b8924
                     "VERBOTEN : Pathfinder graph does not contain the index %d corresponding to box ((%d,%d),(%d,%d)) !",
                     index, x0, y0, x1, y1);
-            float centerX = (x0 + x1) * g_unk0x006775d8;
-            float centerY = (y0 + y1) * g_unk0x006775d8;
+            float centerX = (x0 + x1) * 0.5f;
+            float centerY = (y0 + y1) * 0.5f;
             box.m_10 = true;
             box.m_00 = SBGeoPoint2D(x0 - centerX, y0 - centerY);
             box.m_10 = true;
@@ -421,8 +413,8 @@ void RHSprite::LoadPositionInfoFromFile(SBFile &file, int kind)
                     // STRING: GAME 0x006b88b4
                     "VERBOTEN : Pathfinder graph does not contain the (alternate) index %d corresponding to box ((%d,%d),(%d,%d)) !",
                     index, x0, y0, x1, y1);
-            centerX = (x0 + x1) * g_unk0x006775d8;
-            centerY = (y0 + y1) * g_unk0x006775d8;
+            centerX = (x0 + x1) * 0.5f;
+            centerY = (y0 + y1) * 0.5f;
             ((RHUnk005fc3b0 *)&RHSpriteField<SBGeoPoint2D>(this, 0x84))->FUN_005fc430(SBGeoVector2D(centerX, centerY));
             box.m_10 = true;
             box.m_00 = SBGeoPoint2D(x0 - centerX, y0 - centerY);
@@ -973,7 +965,7 @@ int RHSprite::PerformMotion(RHOrder *order, RHOrder *following, int animation, i
     m_184 = m_d8 + ((RHSpriteFrameTable *)((RHUnk005b5e00 *)this)->Unk())->Frame(animation);
     FUN_005b7300(animation, progression);
     bool finished = FUN_005b7820(progression);
-    float distance = m_188 == 0 ? (float)FUN_005bdc20(m_184, m_186) : g_unk0x00677488;
+    float distance = m_188 == 0 ? (float)FUN_005bdc20(m_184, m_186) : 0.0f;
     if (method == 3)
     {
         distance *= 2;
@@ -982,7 +974,7 @@ int RHSprite::PerformMotion(RHOrder *order, RHOrder *following, int animation, i
             distance = (distance + FUN_005bdc20(m_184, m_186)) * 2;
     }
     distance *= speed;
-    if (distance != g_unk0x00677488)
+    if (distance != 0.0f)
     {
         moved = true;
         if (m_d8 != S(unsigned short, 0xda))
@@ -993,8 +985,8 @@ int RHSprite::PerformMotion(RHOrder *order, RHOrder *following, int animation, i
                 FUN_005b7820(progression);
             }
             else
-                distance *= g_unk0x00679e40;
-            if (distance < g_unk0x00677db8)
+                distance *= 0.6f;
+            if (distance < 0.7f)
                 distance = 0.7f;
         }
         void *actor = RHSpriteField<void *>(O(void *, 0x38), 0x48);
@@ -1021,7 +1013,7 @@ int RHSprite::PerformMotion(RHOrder *order, RHOrder *following, int animation, i
         ((RHBonusInfoBase *)position)->FUN_0055f290();
         ((RHBonusInfo *)this)->FUN_005bd560(0, true);
         calls->FUN_00560780(distance, FUN_005bdbf0(m_184, m_186) + 1);
-        if (S(int, 0xfc) == 5 && distance > g_unk0x006774f4)
+        if (S(int, 0xfc) == 5 && distance > 2.0f)
         {
             if (m_228 >= 2)
             {
@@ -1037,15 +1029,15 @@ int RHSprite::PerformMotion(RHOrder *order, RHOrder *following, int animation, i
     if (method == 5)
     {
         bool ready = calls->FUN_00560460();
-        if (ready && distance != g_unk0x00677488
-            && (S(SBGeoPoint2D, 0x70).m_x != g_unk0x00677488 || S(SBGeoPoint2D, 0x70).m_y != g_unk0x00677488))
+        if (ready && distance != 0.0f
+            && (S(SBGeoPoint2D, 0x70).m_x != 0.0f || S(SBGeoPoint2D, 0x70).m_y != 0.0f))
         {
             S(int, 0xc) = 1;
             ((RHUnk005fc3b0 *)&S(SBGeoPoint2D, 0x70))->FUN_005fc430(SBGeoVector2D(0.0f, 0.0f));
             S(int, 0xc) = 2;
             S(RHUnk005df4f0, 0x64) = RHUnk005df4f0(0.0f, 0.0f, 0.0f);
             S(int, 0xc) = 7;
-            if (!S(bool, 0x102) && S(float, 0x7c) != g_unk0x00677488)
+            if (!S(bool, 0x102) && S(float, 0x7c) != 0.0f)
             {
                 S(SBGeoPoint2D, 0x24) = S(SBGeoPoint2D, 0x48);
                 ((RHMobileUnk00607da0 *)&S(SBGeoBoundingBox2D, 0xc4))->FUN_00607da0((const RHMobileUnk00607da0 &)((SBGeoBoundingBox2D *)((RHUnkPathActorInfoBase *)position)->Unk0055fa10(S(int, 0x8c)))->FUN_006090d0(SBGeoVector2D(S(SBGeoPoint2D, 0x48))));
@@ -1069,16 +1061,16 @@ int RHSprite::PerformMotion(RHOrder *order, RHOrder *following, int animation, i
             {
                 RHOrder *candidate = orders.Value((unsigned short)selected);
                 if (RHSpriteField<int>(candidate, 0x24) != O(int, 0x24)
-                    && (RHSpriteField<SBGeoPoint2D>(candidate, 0x14).m_x != g_unk0x00677488
-                        || RHSpriteField<SBGeoPoint2D>(candidate, 0x14).m_y != g_unk0x00677488))
+                    && (RHSpriteField<SBGeoPoint2D>(candidate, 0x14).m_x != 0.0f
+                        || RHSpriteField<SBGeoPoint2D>(candidate, 0x14).m_y != 0.0f))
                 {
                     replacement = RHSpriteField<int>(candidate, 0x24);
                     break;
                 }
                 if (selected == 1
-                    && (RHSpriteField<RHUnk005df4f0>(candidate, 8).m_0 != g_unk0x00677488
-                        || RHSpriteField<RHUnk005df4f0>(candidate, 8).m_4 != g_unk0x00677488
-                        || RHSpriteField<RHUnk005df4f0>(candidate, 8).m_8 != g_unk0x00677488))
+                    && (RHSpriteField<RHUnk005df4f0>(candidate, 8).m_0 != 0.0f
+                        || RHSpriteField<RHUnk005df4f0>(candidate, 8).m_4 != 0.0f
+                        || RHSpriteField<RHUnk005df4f0>(candidate, 8).m_8 != 0.0f))
                     return 3;
             }
             if (selected >= count || replacement == 0x11b)
@@ -1120,7 +1112,7 @@ int RHSprite::PerformMotion(RHOrder *order, RHOrder *following, int animation, i
     }
     else if (moved && calls->FUN_00560460() == true)
     {
-        if (!S(bool, 0x102) && S(float, 0x7c) != g_unk0x00677488)
+        if (!S(bool, 0x102) && S(float, 0x7c) != 0.0f)
         {
             S(SBGeoPoint2D, 0x24) = S(SBGeoPoint2D, 0x48);
             ((RHMobileUnk00607da0 *)&S(SBGeoBoundingBox2D, 0xc4))->FUN_00607da0((const RHMobileUnk00607da0 &)((SBGeoBoundingBox2D *)((RHUnkPathActorInfoBase *)position)->Unk0055fa10(S(int, 0x8c)))->FUN_006090d0(SBGeoVector2D(S(SBGeoPoint2D, 0x48))));

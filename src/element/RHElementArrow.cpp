@@ -53,7 +53,6 @@ void RHElementArrow::FUN_004a6a70(void *target)
 
 class RHUnk6c1040;
 extern RHUnk6c1040 *g_unk0x6c1040;
-extern char g_unk0x6c0560[4];
 
 class RHScriptBatchCalls
 {
@@ -71,7 +70,7 @@ bool RHElementArrow::FUN_004a6aa0(void *target)
         if (((RHScriptBatchCalls *)target)->Unk004baea0() & 1)
         {
             RHUnk00585ea0 *action = new RHUnk00585ea0(1, 0x93, target, InteractionTarget());
-            ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940(g_unk0x6c0560, 0, action);
+            ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940("", 0, action);
             m_166 = 0;
             return true;
         }

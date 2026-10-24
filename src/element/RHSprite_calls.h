@@ -253,9 +253,6 @@ public:
     void Unk00418bc0();
 };
 
-extern float g_unk0x00677488;
-extern float g_unk0x006774f4;
-extern float g_unk0x006775d8;
 class RHUnk005c38b0;
 extern RHUnk005c38b0 *g_unk0x6c10e8;
 double FUN_006433ab(double) throw();

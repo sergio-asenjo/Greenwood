@@ -2,7 +2,6 @@
 #include "RHElement.h"
 #include "../engine/RHEngineWidenedCalls.h"
 
-extern float g_unk0x0067749c;
 
 class RHSprite
 {
@@ -28,7 +27,7 @@ bool RHElementFXMasked::FUN_004aaf20()
     if (m_12 && (!m_100 || !*((char *)m_100 + 0xa8)))
     {
         float alpha = m_fc;
-        if (alpha == g_unk0x0067749c)
+        if (alpha == 1.0f)
             ((RHEngineWidenedCalls *)m_50)->FUN_005b7f60(0);
         else
             ((RHSprite *)m_50)->FUN_005b7fd0(alpha, 0);

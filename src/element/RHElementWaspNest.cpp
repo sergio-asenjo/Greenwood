@@ -98,7 +98,7 @@ bool RHElementWaspNest::FUN_004be1a0()
         if (m_unk15c > 0)
         {
             void *sprite = *(void **)((char *)this + 0x50);
-            ((RHProjectileSoundCalls *)g_unk0x006c1070)->FUN_005a8070(0x1fb, (char *)sprite + 0x24, 9);
+            ((RHSound *)g_unk0x006c1070)->FUN_005a8070(0x1fb, *(const SBGeoPoint2D *)((char *)sprite + 0x24), 9);
         }
         return true;
     }

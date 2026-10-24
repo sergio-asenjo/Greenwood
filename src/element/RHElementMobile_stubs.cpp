@@ -94,7 +94,7 @@ void RHMobileUnk00607da0::FUN_00607990(const RHMobileUnk00607da0 &other)
         *(SBGeoPoint2D *)((char *)this + 8) = *(const SBGeoPoint2D *)((const char *)&other + 8);
     }
 }
-void RHMobileUnk006100e0::FUN_00578c50() {}
+void RHMobileUnk006100e0::FUN_00578c50() throw() {}
 
 bool RHMobilePath::FUN_00550660(unsigned char) { return false; }
 void RHMobilePath::FUN_005505c0() {}
@@ -149,10 +149,10 @@ bool RHUnk0042fde0::FUN_0060b640(const SBGeoPoint2D &point) const
     RHUnk005fc3b0 direction;
     direction.FUN_005fc430(FUN_0042fde0());
     offset.FUN_005fc430(point.Unk005fc110(m_0));
-    if (offset.FUN_005fc660(direction) < g_unk0x00677488)
+    if (offset.FUN_005fc660(direction) < 0.0f)
         return false;
     offset.FUN_005fc430(point.Unk005fc110(m_8));
-    return offset.FUN_005fc660(direction) <= g_unk0x00677488;
+    return offset.FUN_005fc660(direction) <= 0.0f;
 }
 
 #include "RHUnk005fc400.h"
@@ -188,12 +188,12 @@ float RHUnk0042fde0::FUN_0060b7a0(const SBGeoPoint2D &point) const
 void RHUnk0042fde0::FUN_0060b910(SBGeoPoint2D &output, const SBGeoPoint2D &point) const
 {
     SBGeoVector2D direction = FUN_0042fde0();
-    if (point.Unk005fc110(m_8).FUN_005fc660(direction) >= g_unk0x00677488)
+    if (point.Unk005fc110(m_8).FUN_005fc660(direction) >= 0.0f)
         output = m_8;
     else
     {
         float projection = point.Unk005fc110(m_0).FUN_005fc660(direction);
-        if (projection <= g_unk0x00677488)
+        if (projection <= 0.0f)
             output = m_0;
         else
             output = m_0.Unk005fc190(operator*(projection / direction.Unk005fc6d0(1.0f), direction));
@@ -205,17 +205,17 @@ float RHUnk0042fde0::FUN_0060ba80(const SBGeoPoint2D &point) const
 {
     {
         SBGeoVector2D direction = FUN_0042fde0();
-        if (point.Unk005fc110(m_8).FUN_005fc660(direction) >= g_unk0x00677488)
+        if (point.Unk005fc110(m_8).FUN_005fc660(direction) >= 0.0f)
             goto last;
         float projection = point.Unk005fc110(m_0).FUN_005fc660(direction);
-        if (projection <= g_unk0x00677488)
+        if (projection <= 0.0f)
             goto first;
         return projection / direction.Unk005fc6d0(1.0f);
     }
 last:
-    return g_unk0x0067749c;
+    return 1.0f;
 first:
-    return g_unk0x00677488;
+    return 0.0f;
 }
 RHMobilePointerList::RHMobilePointerList()
 {
@@ -303,18 +303,18 @@ bool RHMobileUnk0060a820::FUN_00615910(const SBGeoSegment2D &segment) const
         direction.FUN_005fc430(ray.Second().Unk005fc110(ray));
         first.FUN_005fc430(line.Unk005fc110(ray));
         second.FUN_005fc430(line.Second().Unk005fc110(ray));
-        if (direction.FUN_005fc680(first, 1.0f) >= g_unk0x00677488 &&
-                direction.FUN_005fc680(second, 1.0f) <= g_unk0x00677488 ||
-            direction.FUN_005fc680(first, 1.0f) <= g_unk0x00677488 &&
-                direction.FUN_005fc680(second, 1.0f) >= g_unk0x00677488)
+        if (direction.FUN_005fc680(first, 1.0f) >= 0.0f &&
+                direction.FUN_005fc680(second, 1.0f) <= 0.0f ||
+            direction.FUN_005fc680(first, 1.0f) <= 0.0f &&
+                direction.FUN_005fc680(second, 1.0f) >= 0.0f)
         {
-            if (first.FUN_005fc680(second, 1.0f) > g_unk0x00677488)
+            if (first.FUN_005fc680(second, 1.0f) > 0.0f)
             {
-                if (direction.FUN_005fc680(second, 1.0f) >= g_unk0x00677488)
+                if (direction.FUN_005fc680(second, 1.0f) >= 0.0f)
                     return true;
                 return false;
             }
-            if (direction.FUN_005fc680(second, 1.0f) <= g_unk0x00677488)
+            if (direction.FUN_005fc680(second, 1.0f) <= 0.0f)
                 return true;
             return false;
         }
@@ -323,7 +323,6 @@ bool RHMobileUnk0060a820::FUN_00615910(const SBGeoSegment2D &segment) const
     return false;
 }
 
-extern double g_unk0x00677490;
 
 // GLOBAL: GAME 0x0067a938
 double g_unk0x0067a938 = 9.999999717180685e-10;
@@ -339,11 +338,11 @@ RHUnk0060fbf0 RHMobileUnk0060a820::FUN_00615ca0(const SBGeoSegment2D &segment) c
     RHUnk0060fbf0 result;
     double dx = ray.Second().m_x - ray.m_x;
     double otherDx = line.Second().m_x - line.m_x;
-    if (dx != g_unk0x00677490)
+    if (dx != 0.0)
     {
         double slope = (ray.Second().m_y - ray.m_y) / dx;
         double offset = ray.m_y - ray.m_x * slope;
-        if (otherDx != g_unk0x00677490)
+        if (otherDx != 0.0)
         {
             double otherSlope = (line.Second().m_y - line.m_y) / otherDx;
             double otherOffset = line.m_y - line.m_x * otherSlope;
@@ -431,7 +430,7 @@ RHUnk0060fbf0 RHMobileUnk0060a820::FUN_00615ca0(const SBGeoSegment2D &segment) c
             return result;
         }
     }
-    else if (otherDx != g_unk0x00677490)
+    else if (otherDx != 0.0)
     {
         double slope = (line.Second().m_y - line.m_y) / otherDx;
         double y = ray.m_x * slope + (line.m_y - line.m_x * slope);
