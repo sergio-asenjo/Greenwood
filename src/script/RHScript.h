@@ -60,6 +60,8 @@ public:
 };
 
 struct RHUnk00571160Position;
+class RHUnk005fc3b0;
+class SBGeoPoint2D;
 
 class RHArtificialIntelligence
 {
@@ -69,14 +71,14 @@ public:
     bool InitState();
     void Unk00416710(unsigned value);
     bool Unk00412240(const RHUnk00571160Position &position, unsigned short flags, float length);
+    bool Unk00412f40(RHUnk005fc3b0 *direction, int mode);
+    void Unk00418c40(int remark, unsigned flags);
+    void FUN_00413240(SBGeoPoint2D point, int first, int second);
+    void FUN_004132d0(int first, int mode, int second);
     bool Unk00412f70(unsigned short direction, int mode);
 };
 
-class RHUnk0046bd20
-{
-public:
-    int FUN_0046bd20();
-};
+#include "RHUnk0046bd20.h"
 
 class RHSoundSource;
 class SBGeoPoint2D;
@@ -619,6 +621,7 @@ public:
     SBGeoVector2D Unk005fc110(const SBGeoPoint2D &other) const;
     SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
     SBGeoPoint2D FUN_005fc200(const SBGeoPoint2D &other) const;
+    SBGeoPoint2D &FUN_005fc250(const SBGeoPoint2D &other);
     float FUN_005fc700(float scale) const;
     float Unk005fc6d0(float value) const;
     bool FUN_005fc0e0(const SBGeoPoint2D &other) const;
@@ -771,6 +774,7 @@ public:
     SBGeoVector2D();
     SBGeoVector2D &operator=(const SBGeoVector2D &other);
     SBGeoVector2D(const SBGeoVector2D &other);
+    bool IsBetween(unsigned char first, unsigned char last) const;
 };
 
 class RHUnk005fc3b0 : public SBGeoVector2D
@@ -779,6 +783,7 @@ public:
     RHUnk005fc3b0() {}
     ~RHUnk005fc3b0() {}
     float Unk005fc6a0(float value);
+    void FUN_005fc7c0(float value);
     RHUnk005fc3b0 &Unk005fcd40(unsigned char direction, float length);
     RHUnk005fc3b0 &FUN_005fc4d0(float factor);
     RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other)
@@ -826,11 +831,7 @@ public:
     void Unk(int index);
 };
 
-class RHUnk00413640
-{
-public:
-    void Unk(int state, bool flag);
-};
+#include "RHAIStateCalls.h"
 
 #include "RHMalignityPosition.h"
 
@@ -842,6 +843,17 @@ public:
     virtual void V08() = 0;
     virtual void V0c() = 0;
     virtual void V10(int state, int substate) = 0;
+    virtual void V14() = 0;
+    virtual void V18() = 0;
+    virtual void V1c() = 0;
+    virtual void V20() = 0;
+    virtual void V24() = 0;
+    virtual void V28() = 0;
+    virtual void V2c() = 0;
+    virtual void V30() = 0;
+    virtual void V34() = 0;
+    virtual void V38() = 0;
+    virtual void V3c(int mode) = 0;
     SBGeoPoint2D FUN_0040cc20(void *actor);
     RHMalignityPosition FUN_004165e0(void *actor, bool mode);
     SBGeoPoint2D FUN_0040cbf0(const RHMalignityPosition &position);
@@ -859,7 +871,6 @@ class RHScriptAIStateCalls
 {
 public:
     bool FUN_00410620(RHScriptStimulusValue value);
-    void FUN_004132d0(int first, int second, int third);
     void FUN_00410d30();
     void FUN_0043a220(RHMalignityPosition position, int first, int second, int third);
 };
@@ -1015,16 +1026,7 @@ public:
     void FUN_00549090();
 };
 
-class RHUnk00613e90
-{
-public:
-    RHUnk00613e90();
-    RHUnk00613e90 FUN_005df550(const RHUnk00613e90 &other) const;
-    float FUN_005df680() const;
-    float x;
-    float y;
-    float z;
-};
+#include "RHUnk00613e90.h"
 
 #include "RHSequenceTimedCalls.h"
 

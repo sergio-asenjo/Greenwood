@@ -33,16 +33,6 @@ unsigned short RHUnk0051d0e0::Find(int value)
     return 0xffff;
 }
 
-class RHUnk0057c710
-{
-public:
-    void Ensure();
-};
-
-void RHUnk0057c710::Ensure()
-{
-}
-
 class RHUnk005793e0
 {
 public:
@@ -182,7 +172,30 @@ void RHUnk00582640::Unk(unsigned short &level, void *actor, int style, const SBG
     (void)flags;
     (void)scale;
 }
-RHScriptIter RHUnk0046eb30::Unk0057c950(RHScriptIter position, const RHUnk00571160Position &) { return position; }
+#include <new>
+
+struct RHScriptPositionNode
+{
+    RHScriptNode *next;
+    RHScriptNode *prev;
+    RHUnk00571160Position value;
+};
+
+DECOMP_SIZE_ASSERT(RHScriptPositionNode, 0x18)
+
+// FUNCTION: GAME 0x0057c950
+RHScriptIter RHUnk0046eb30::Unk0057c950(RHScriptIter position, const RHUnk00571160Position &value)
+{
+    RHScriptNode *previous = position.node->prev;
+    RHScriptPositionNode *node = (RHScriptPositionNode *)operator new(sizeof(RHScriptPositionNode));
+    node->next = position.node ? position.node : (RHScriptNode *)node;
+    node->prev = previous ? previous : (RHScriptNode *)node;
+    position.node->prev = (RHScriptNode *)node;
+    node->prev->next = (RHScriptNode *)node;
+    new ((void *)&node->value) RHUnk00571160Position(value);
+    ++count;
+    return RHScriptIter((RHScriptNode *)node);
+}
 // FUNCTION: GAME 0x005b5de0
 void *RHUnk005b5e00::FUN_005b5de0()
 {
@@ -234,7 +247,6 @@ void RHScriptBatchCalls::FUN_00520a70() {}
 void RHScriptBatchCalls::FUN_00549090() {}
 
 bool RHScriptAIStateCalls::FUN_00410620(RHScriptStimulusValue) { return false; }
-void RHScriptAIStateCalls::FUN_004132d0(int, int, int) {}
 void RHScriptAIStateCalls::FUN_0043a220(RHMalignityPosition, int, int, int) {}
 
 // FUNCTION: GAME 0x00550fa0

@@ -43,18 +43,11 @@
 #include "RHGameActionCalls.h"
 
 extern unsigned *g_unk0x006c08a4;
-extern float g_unk0x00677488;
-extern float g_unk0x0067749c;
 class RHUnk6c1040;
 extern RHUnk6c1040 *g_unk0x6c1040;
 extern RHUnk0048a970 *g_unk0x6c0b3c;
 
 extern RHEngine *g_pEngine;
-class RHUnk0057c710
-{
-public:
-    void Ensure();
-};
 class RHUnk005793e0
 {
 public:
@@ -151,9 +144,8 @@ void RHScriptAIStateCalls::FUN_00410d30()
 }
 
 // FUNCTION: GAME 0x00413640
-void RHUnk00413640::Unk(int state, bool flag)
+void RHUnk00413640::Unk(int state, unsigned char flags)
 {
-    unsigned char flags = *(unsigned char *)&flag;
     void *actor = *(void **)((char *)this + 4);
     if ((*(unsigned *)((char *)actor + 4) & 0x1f) == 0x14 &&
         state != *(int *)((char *)this + 0x18))
@@ -247,7 +239,7 @@ void RHUnk004169c0::Unk(int state, int value)
         *(unsigned short *)stimulus.m_00 = 0;
         stimulus.m_type = 0;
         ((RHScriptAIStateCalls *)this)->FUN_00410620(stimulus);
-        ((RHScriptAIStateCalls *)this)->FUN_004132d0(7, 0, 2);
+        ((RHArtificialIntelligence *)this)->FUN_004132d0(7, 0, 2);
         ((RHScriptAIStateCalls *)this)->FUN_00410d30();
         break;
     }
@@ -537,7 +529,7 @@ void RHScriptBatchCalls::Unk00486f50(void *, bool)
 // FUNCTION: GAME 0x00489e80
 bool RHScriptBatchCalls::Unk00489e80(void *target)
 {
-    return FUN_00489680(target) > g_unk0x00677488;
+    return FUN_00489680(target) > 0.0f;
 }
 
 // FUNCTION: GAME 0x0048a970
@@ -677,15 +669,8 @@ extern RHEngine *g_pEngine;
 void **g_unk0x6c0f34;
 // GLOBAL: GAME 0x006c0f38
 void **g_unk0x6c0f38;
-// GLOBAL: GAME 0x006775d8
-float g_unk0x006775d8 = 0.5f;
-// GLOBAL: GAME 0x006774f4
-float g_unk0x006774f4 = 2.0f;
-extern float g_unk0x0067749c;
 class RHUnk6c1040;
 extern RHUnk6c1040 *g_unk0x6c1040;
-// GLOBAL: GAME 0x006c0560
-char g_unk0x6c0560[4];
 // GLOBAL: GAME 0x006c0f50
 RHUnk0046eb30 g_unk0x6c0f50;
 // GLOBAL: GAME 0x006c0fb0
@@ -1240,7 +1225,7 @@ bool RHScript::Thanx()
     g_unk0x6c0f50.valid = true;
     if (*(unsigned short *)((char *)sequence + 0x10) > 0)
     {
-        ((RHUnk0058a3d0 *)g_unk0x6c1040)->Unk(g_unk0x6c0560, 0, sequence);
+        ((RHUnk0058a3d0 *)g_unk0x6c1040)->Unk("", 0, sequence);
     }
     else
     {
@@ -1309,7 +1294,7 @@ void RHScript::MakeNoise(void *location, int noise)
 // FUNCTION: GAME 0x00571200
 bool RHScript::SetZoomLevel(float zoom)
 {
-    if (zoom != g_unk0x006775d8 && zoom != g_unk0x0067749c && zoom != g_unk0x006774f4)
+    if (zoom != 0.5f && zoom != 1.0f && zoom != 2.0f)
     {
         SBAssert(0, "P:\\Robin Hood\\RHScript.cpp", 1040,
                  // STRING: GAME 0x006b2834
@@ -2276,7 +2261,7 @@ bool RHScript::RecordSetZoom(float zoom)
                  "Script Error: to declare a fire at sequence you must initialize the sequence at first");
         return false;
     }
-    if (zoom != g_unk0x006775d8 && zoom != g_unk0x0067749c && zoom != g_unk0x006774f4)
+    if (zoom != 0.5f && zoom != 1.0f && zoom != 2.0f)
     {
         SBAssert(0, "P:\\Robin Hood\\RHScript.cpp", 2429,
                  // STRING: GAME 0x006b3754
@@ -4553,7 +4538,7 @@ bool RHScript::InflictPain(void *actor, int amount, bool flag)
             element = new RHUnk005861c0(1, 38, actor, amount, 100);
         else
             element = new RHUnk005861c0(1, 38, actor, amount, 0);
-        ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940(g_unk0x6c0560, 0, element);
+        ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940("", 0, element);
         return true;
     }
     SBAssert(0, "P:\\Robin Hood\\RHScript.cpp", 5707,
@@ -5161,7 +5146,7 @@ void RHScript::SendMessage(void *actor, int message)
     element->Unk00586ed0(3, message);
     element->Unk00586ed0(4, 0);
     element->Unk00586ed0(5, 0);
-    ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940(g_unk0x6c0560, 0, element);
+    ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940("", 0, element);
 }
 
 // FUNCTION: GAME 0x00578e50
@@ -5195,7 +5180,7 @@ void RHScript::SendMessageWithArguments(void *actor, int message, int first, int
     element->Unk00586ed0(3, message);
     element->Unk00586ed0(4, first);
     element->Unk00586ed0(5, second);
-    ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940(g_unk0x6c0560, 0, element);
+    ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940("", 0, element);
 }
 
 namespace VMCoreCustomDependencies
@@ -5367,12 +5352,8 @@ void *RHScript::GetPCFromMissionTeam(unsigned long index)
 {
     char *campaign = (char *)g_unk0x6c07fc;
     char *mission = **(char ***)(campaign + 0x17c);
-    char *profiles = mission + 0x74;
-    unsigned int *first = *(unsigned int **)(profiles + 4);
-    if (first == 0 || (unsigned int)(*(unsigned int **)(profiles + 8) - first) <= index)
-        ((RHUnk0057c710 *)profiles)->Ensure();
-    first = *(unsigned int **)(profiles + 4);
-    return g_pEngine->GetPC((RHCharacterProfile *)first[index]);
+    const std::vector<RHCharacterProfile *> &team = *(const std::vector<RHCharacterProfile *> *)(mission + 0x74);
+    return g_pEngine->GetPC(team.at(index));
 }
 
 // Parked: splitting the mission lookup and changing the result lifetime still changes prologue and return registers.
@@ -6826,7 +6807,7 @@ SBGeoPoint2D &SBGeoPoint2D::operator=(const SBGeoPoint2D &other)
 float RHUnk005fc3b0::Unk005fc6a0(float value)
 {
     float y;
-    if (value != g_unk0x0067749c)
+    if (value != 1.0f)
         y = m_y / value;
     else
         y = m_y;
@@ -6837,7 +6818,7 @@ float RHUnk005fc3b0::Unk005fc6a0(float value)
 float SBGeoPoint2D::Unk005fc6d0(float value) const
 {
     float y;
-    if (value != g_unk0x0067749c)
+    if (value != 1.0f)
         y = m_y / value;
     else
         y = m_y;
@@ -7017,11 +6998,7 @@ public:
     void FUN_0054b150(bool flag, bool immediate);
 };
 
-class RHUnk004032a0
-{
-public:
-    int FUN_004032a0(int first, int second);
-};
+#include "RHActorScriptContext.h"
 
 
 class RHUnk00580220
@@ -7066,7 +7043,7 @@ void FUN_00577090(int first, int second)
 // FUNCTION: GAME 0x00578690
 bool FUN_00578690(int object, int first, int second)
 {
-    return ((RHUnk004032a0 *)((char *)object + 0x108))->FUN_004032a0(first, second) != 0;
+    return ((RHActorScriptContext *)((char *)object + 0x108))->FilterAIEvent((void *)first, second) != 0;
 }
 
 // FUNCTION: GAME 0x005786f0
@@ -7107,3 +7084,6 @@ void FUN_00579a00(int first, int second)
     ((RHUnk00580220 *)production)->FUN_00580220(second);
 }
 }
+
+// TEMPLATE: GAME 0x0057c710
+// ?_Xran@?$vector@PAVRHCharacterProfile@@V?$allocator@PAVRHCharacterProfile@@@std@@@std@@IBEXXZ
