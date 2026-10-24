@@ -20,26 +20,7 @@
 
 DECOMP_SIZE_ASSERT(RHSoundGeometry, 0xc8)
 
-extern float g_unk0x00677598;
 
-// GLOBAL: GAME 0x00677dd0
-float g_unk0x00677dd0 = 400.0f;
-// GLOBAL: GAME 0x0067767c
-float g_unk0x0067767c = 360.0f;
-// GLOBAL: GAME 0x006773e0
-float g_unk0x006773e0 = 640.0f;
-// GLOBAL: GAME 0x00679ddc
-float g_unk0x00679ddc = 240.0f;
-// GLOBAL: GAME 0x00679de0
-float g_unk0x00679de0 = 800.0f;
-// GLOBAL: GAME 0x00679de4
-float g_unk0x00679de4 = 960.0f;
-// GLOBAL: GAME 0x00679de8
-float g_unk0x00679de8 = 320.0f;
-// GLOBAL: GAME 0x00679dec
-float g_unk0x00679dec = 120.0f;
-// GLOBAL: GAME 0x00679df0
-float g_unk0x00679df0 = 1200.0f;
 
 // The numeric .rdata constants GetVolumeForAltitude reads. The original is a
 // fixed-base EXE, so these appear as absolute literals (`ds:0x67749c` etc.)
@@ -48,17 +29,11 @@ float g_unk0x00679df0 = 1200.0f;
 // is unproven (no Windows-side string/tag names them), so they keep the
 // address-based placeholder convention (docs/05-naming.md).
 //
-// GLOBAL: GAME 0x0067749c
-float g_unk0x0067749c = 1.0f;
 //
-// GLOBAL: GAME 0x006774a8
-double g_unk0x006774a8 = 0.25;
 //
 // GLOBAL: GAME 0x006774b8
 double g_unk0x006774b8 = 0.5;
 //
-// GLOBAL: GAME 0x00677488
-float g_unk0x00677488 = 0.0f;
 //
 // GLOBAL: GAME 0x00677d90
 double g_unk0x00677d90 = 1.0;
@@ -80,35 +55,34 @@ float RHUnk005b2ff0Geometry::FUN_005b2560(const SBGeoPoint2D &point, const RHUnk
 {
     float distance = (float)fabs(*(const float *)&point);
     if (distance < range.m_08)
-        return g_unk0x00677488;
+        return 0.0f;
     if (distance >= range.m_00)
-        return *(const float *)&point >= g_unk0x00677488 ? 1 : -1;
-    return *(const float *)&point >= g_unk0x00677488
+        return *(const float *)&point >= 0.0f ? 1 : -1;
+    return *(const float *)&point >= 0.0f
         ? (distance - range.m_08) / (range.m_00 - range.m_08)
         : -((distance - range.m_08) / (range.m_00 - range.m_08));
 }
 
-// Parked: zoom-copy scheduling and x87 factor lifetime differ.
-// STUB: GAME 0x005b2f30
+// FUNCTION: GAME 0x005b2f30
 void RHSoundGeometry::RHUnk005b2f30(float value)
 {
     m_8 = value;
-    if (value < g_unk0x0067749c)
+    if (value < 1.0f)
     {
-        float factor = g_unk0x0067749c - (value + value);
-        m_b8 = factor * g_unk0x00677dd0 + g_unk0x00679df0;
-        float range = factor * g_unk0x00679dec + g_unk0x0067767c;
+        float factor = 1.0f - (value + value);
+        m_b8 = factor * 400.0f + 1200.0f;
+        float range = factor * 120.0f + 360.0f;
         m_bc = range;
-        m_c0 = factor * g_unk0x00679de8 + g_unk0x00679de4;
+        m_c0 = factor * 320.0f + 960.0f;
         m_c4 = range;
     }
     else
     {
-        float factor = g_unk0x0067749c - value;
-        m_b8 = factor * g_unk0x00677dd0 + g_unk0x00679de0;
-        float range = factor * g_unk0x00677598 + g_unk0x00679ddc;
+        float factor = 1.0f - value;
+        m_b8 = factor * 400.0f + 800.0f;
+        float range = factor * 80.0f + 240.0f;
         m_bc = range;
-        m_c0 = factor * g_unk0x00679de8 + g_unk0x006773e0;
+        m_c0 = factor * 320.0f + 640.0f;
         m_c4 = range;
     }
 }
@@ -126,21 +100,21 @@ float RHSoundGeometry::GetVolumeForAltitude(float altitude, RHsoundSourceAltitud
     case RH_ALTITUDE_3:
         return altitude;
     default:
-        if (m_8 > g_unk0x0067749c)
+        if (m_8 > 1.0f)
         {
             switch (type)
             {
             case RH_ALTITUDE_1:
-                return (g_unk0x00677d90 - (double)(m_8 - g_unk0x0067749c) * g_unk0x006774b8) * altitude;
+                return (g_unk0x00677d90 - (double)(m_8 - 1.0f) * g_unk0x006774b8) * altitude;
             case RH_ALTITUDE_2:
-                return (g_unk0x006774b8 - (double)(m_8 - g_unk0x0067749c) * g_unk0x006774a8) * altitude;
+                return (g_unk0x006774b8 - (double)(m_8 - 1.0f) * 0.25) * altitude;
             default:
                 SBAssert(1,
                          "P:\\Robin Hood\\RHsoundgeometry.cpp",
                          0x291,
                          // STRING: GAME 0x6b8668
                          "Unknown altitude for sound source !");
-                return g_unk0x00677488;
+                return 0.0f;
             }
         }
         switch (type)
@@ -150,7 +124,7 @@ float RHSoundGeometry::GetVolumeForAltitude(float altitude, RHsoundSourceAltitud
         case RH_ALTITUDE_2:
             return (float)(g_unk0x006774b8 / m_8) * altitude;
         default:
-            return g_unk0x00677488;
+            return 0.0f;
         }
     }
 }

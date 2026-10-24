@@ -97,6 +97,7 @@ public:
         Iterator(Node *node) : m_node(node) {}
         bool operator!=(const Iterator &other) const { return m_node != other.m_node; }
         Iterator operator++(int);
+        Iterator &operator++();
     };
     typedef std::pair<Iterator, bool> Pair;
     RHSoundSourceIDTree();

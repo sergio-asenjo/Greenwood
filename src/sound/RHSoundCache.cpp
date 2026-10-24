@@ -147,13 +147,12 @@ void RHSoundCache::UpdateCacheState(RHcacheData &cache, RHsampleCacheStats &stat
 // STUB: GAME 0x005ab5e0
 void RHSoundCache::UpdateCacheState(std::map<unsigned long, RHSoundCacheEntry *> &entries, RHsampleCacheStats &stats, unsigned long elapsed)
 {
-    typedef std::map<unsigned long, RHSoundCacheEntry *> Map;
-    typedef RHSoundCacheEraseIterator<1> Iterator;
-    typedef void (Iterator::*Increment)();
-    Increment increment = &Iterator::Advance;
-    for (Map::iterator position = entries.begin(); position != entries.end(); (((Iterator *)&position)->*increment)())
+    RHSoundCacheEntryMap &map = (RHSoundCacheEntryMap &)entries;
+    RHSoundCacheEntryMap::EraseIterator position = map.Begin();
+    RHSoundCacheEntryMap::EraseIterator end;
+    while (end = RHSoundCacheEntryMap::EraseIterator(map.Head()), position != end)
     {
-        RHSoundCacheEntry *entry = position->second;
+        RHSoundCacheEntry *entry = (RHSoundCacheEntry *)position.m_node->m_10;
         if (*(unsigned short *)((char *)entry + 0x1e) == 0 && entry->m_stamp > 0)
         {
             if (entry->m_stamp < elapsed)
@@ -163,8 +162,11 @@ void RHSoundCache::UpdateCacheState(std::map<unsigned long, RHSoundCacheEntry *>
             if (entry->m_stamp == 0)
                 UnloadSample(entry, stats);
         }
+        position.Advance();
     }
 }
+
+#include "RHShadowMemoryBlock.h"
 
 // FUNCTION: GAME 0x005ab660
 void RHSoundCache::FUN_005ab660(RHSoundCacheGroups &groups, RHcacheData &cache)
@@ -173,7 +175,12 @@ void RHSoundCache::FUN_005ab660(RHSoundCacheGroups &groups, RHcacheData &cache)
     RHSoundCacheGroups::EraseIterator end;
     while (end = RHSoundCacheGroups::EraseIterator(groups.Head()), group != end)
     {
-        delete group.m_node->m_10;
+        RHShadowMemoryBlock *value = (RHShadowMemoryBlock *)group.m_node->m_10;
+        if (value)
+        {
+            value->FUN_0059f4e0();
+            operator delete(value);
+        }
         group.Advance();
     }
     groups.FUN_005aef90(groups.Begin(), RHSoundCacheGroups::EraseIterator(groups.Head()));
@@ -193,15 +200,15 @@ void RHSoundCache::FUN_005ab6d0(RHSoundCacheEntryMap &entries)
     entries.FUN_005af1f0(entries.Begin(), RHSoundCacheEntryMap::EraseIterator(entries.Head()));
 }
 
-// Parked 25.48%: the candidate map lookup is reconstructed, but argument-slot lifetime, sample-state updates, and entry return scheduling differ.
-// STUB: GAME 0x005ab730
+// FUNCTION: GAME 0x005ab730
 RHSoundCacheEntry *RHSoundCache::GetSample(bool load, std::map<unsigned long, RHSoundCacheEntry *> &entries, void *stats, unsigned long stamp, unsigned long lifetime, unsigned long id, bool spatial)
 {
-    std::map<unsigned long, RHSoundCacheEntry *>::iterator found = entries.lower_bound(id);
-    if (found == entries.end() || found->first != id)
+    RHSoundCacheEntryMap &map = (RHSoundCacheEntryMap &)entries;
+    RHSoundCacheEntryMap::iterator found = map.find(id);
+    if (found == map.end())
         return 0;
     RHSoundCacheEntry *entry = found->second;
-    entry->m_stamp = (unsigned short)stamp;
+    entry->m_loop = spatial;
     if (load)
     {
         if (entry->m_sample)
@@ -210,10 +217,10 @@ RHSoundCacheEntry *RHSoundCache::GetSample(bool load, std::map<unsigned long, RH
             entry->m_stamp = (unsigned short)(entry->m_stamp + lifetime);
             return entry;
         }
-        FUN_005ab7e0(entry, stats, (unsigned short)lifetime, spatial);
+        FUN_005ab7e0(entry, stats, (unsigned short)stamp, m_134);
     }
     else if (entry->m_duration == 0)
-        FUN_005ab7e0(entry, stats, (unsigned short)lifetime, spatial);
+        FUN_005ab7e0(entry, stats, (unsigned short)stamp, m_134);
     return entry;
 }
 
@@ -335,28 +342,42 @@ void RHSoundCache::InitializeFXCache()
         AddSoundEntry(index++, std::string("iha_") + materials[heavyImpact % 12] + ".wav", combat);
 }
 
-// String/list temporaries and EH slots remain unmatched.
-// STUB: GAME 0x005aca40
+struct RHSoundCacheGroupListView
+{
+    std::list<unsigned long> m_list;
+    RHSoundCacheListIterator m_cursor;
+    bool m_dirty;
+    int m_index;
+    void Append(const unsigned long &value)
+    {
+        m_list.push_back(value);
+        m_dirty = true;
+    }
+};
+
+DECOMP_SIZE_ASSERT(RHSoundCacheGroupListView, 0x18)
+
+// FUNCTION: GAME 0x005aca40
 void RHSoundCache::FUN_005aca40(SBFile &file, RHsoundGroup *group, unsigned long count)
 {
-    while (count != 0)
+    while (count > 0)
     {
         unsigned long bank, resource;
-        unsigned short flags, length;
+        unsigned short flags;
+        unsigned int length;
         file.Access(&bank, 4);
         file.Access(&resource, 4);
         file.Access(&flags, 2);
         file.Access(&length, 2);
-        char *text = (char *)operator new(length + 5);
-        text[length] = 0;
-        file.Access(text, length);
-        if (length > 4 && text[length - 4] != '.')
+        char *text = (char *)operator new((unsigned short)length + 5);
+        text[(unsigned short)length] = 0;
+        file.Access(text, (unsigned short)length);
+        if ((unsigned short)length > 4 && text[(unsigned short)length - 4] != '.')
             strcat(text, ".wav");
         if (group)
         {
-            unsigned long index = AddSoundEntry(std::string(text), *(RHcacheData *)this);
-            group->m_04.FUN_00424410(RHSoundCacheListIterator(group->m_04.m_04), index);
-            group->m_04.m_10 = true;
+            RHSoundCacheGroupListView &samples = (RHSoundCacheGroupListView &)group->m_04;
+            samples.Append(AddSoundEntry(std::string(text), *(RHcacheData *)this));
         }
         operator delete(text);
         --count;
@@ -477,15 +498,15 @@ void RHSoundCache::InitializeMusic(const RHSoundCacheMissionProfile *profile)
     fight.push_back(red);
     if (g_unk0x006c0686)
     {
-        if (((const RHSoundCacheTextView *)&green)->compare(g_unk0x6c0560) == 0)
+        if (((const RHSoundCacheTextView *)&green)->compare("") == 0)
             SBAssert(0, "P:\\Robin Hood\\RHsoundcache.cpp", 1039,
                 // STRING: GAME 0x006b8370
                 "RHSoundCache: missing green music loop");
-        if (yellow.compare(g_unk0x6c0560) == 0)
+        if (yellow.compare("") == 0)
             SBAssert(0, "P:\\Robin Hood\\RHsoundcache.cpp", 1044,
                 // STRING: GAME 0x006b8348
                 "RHSoundCache: missing yellow music loop");
-        if (red.compare(g_unk0x6c0560) == 0)
+        if (red.compare("") == 0)
             SBAssert(0, "P:\\Robin Hood\\RHsoundcache.cpp", 1049,
                 // STRING: GAME 0x006b8320
                 "RHSoundCache: missing red music loop");
@@ -635,7 +656,7 @@ RHSoundCacheEntry *RHSoundCache::GetFXSample(bool load, unsigned long id, int ma
     case 1:
         {
             int count = group->m_04.m_08;
-            unsigned short wanted = (unsigned short)((rand() * ((unsigned short)count + group->m_28)) * g_unk0x00677f7c);
+            unsigned short wanted = (unsigned short)((rand() * ((unsigned short)count + group->m_28)) * 0.00003051850944757461548f);
             if (wanted >= (unsigned short)count)
                 goto done;
             index = group->m_04[wanted];
@@ -716,7 +737,7 @@ missing:
     return 0;
 random:
     {
-        unsigned short wanted = (unsigned short)((rand() * ((unsigned short)count + group->m_28)) * g_unk0x00677f7c);
+        unsigned short wanted = (unsigned short)((rand() * ((unsigned short)count + group->m_28)) * 0.00003051850944757461548f);
         if (wanted >= (unsigned short)count)
             goto missing;
         entry = m_060 + ((RHSoundCacheSpeechList *)&group->m_04)->SpeechAt(wanted);
@@ -832,8 +853,7 @@ RHSoundCacheEntry *RHSoundCache::GetSourceCacheEntryForID(unsigned long id)
     return 0;
 }
 
-// Parked: loop-back node reloads precede sentinel reloads; effective-only match.
-// STUB: GAME 0x005aeda0
+// FUNCTION: GAME 0x005aeda0
 void RHSoundCache::FUN_005aeda0()
 {
     typedef std::map<unsigned long, RHSoundCacheEntry *> Map;
@@ -843,14 +863,15 @@ void RHSoundCache::FUN_005aeda0()
     FUN_005ab530(*(RHcacheData *)this, *(RHsampleCacheStats *)((char *)this + 0x1c));
     Map &first = *(Map *)((char *)this + 0x28);
     Map::iterator position = first.begin();
-    for (; position != first.end(); (((Iterator *)&position)->*increment)())
+    Map::iterator end;
+    for (; end = first.end(), position != end; (((Iterator *)&position)->*increment)())
     {
         RHSoundCacheEntry *entry = position->second;
         if (entry->m_sample)
             UnloadSample(entry, *(RHsampleCacheStats *)((char *)this + 0x38));
     }
     position = m_044.begin();
-    for (; position != m_044.end(); (((Iterator *)&position)->*increment)())
+    for (; end = m_044.end(), position != end; (((Iterator *)&position)->*increment)())
     {
         RHSoundCacheEntry *entry = position->second;
         if (entry->m_sample)
@@ -859,7 +880,7 @@ void RHSoundCache::FUN_005aeda0()
     FUN_005ab530(*(RHcacheData *)((char *)this + 0x60), *(RHsampleCacheStats *)((char *)this + 0x7c));
     Map &last = *(Map *)((char *)this + 0x94);
     position = last.begin();
-    for (; position != last.end(); (((Iterator *)&position)->*increment)())
+    for (; end = last.end(), position != end; (((Iterator *)&position)->*increment)())
     {
         RHSoundCacheEntry *entry = position->second;
         if (entry->m_sample)

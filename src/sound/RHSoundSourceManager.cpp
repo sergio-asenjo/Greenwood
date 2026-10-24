@@ -3,6 +3,7 @@
 #include "RHSoundCacheCore.h"
 #include "RHSoundCacheEntry.h"
 #include "RHTreeDec.h"
+#include "RHCampaignPointerArray.h"
 
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 DECOMP_SIZE_ASSERT(RHSoundSourcePointStorage, 0x10)
@@ -65,6 +66,34 @@ void RHSoundSourceManager::RHUnk005b4ae0()
     for (short index = m_sources.GetSize() - 1; index >= 0; --index)
         FUN_005b4f00(m_sources.m_first[index]);
     m_sources.RemoveAll();
+}
+
+void FUN_005e1d50(SBFile &file, unsigned long tag, int level);
+void FUN_005e20c0(SBFile &file);
+
+// STUB: GAME 0x005b4b50
+void RHSoundSourceManager::FUN_005b4b50(void *input, void *mask, void *output)
+{
+    SBFile &file = *(SBFile *)input;
+    FUN_005e1d50(file, 0x4c4f5544, 2);
+    unsigned short count;
+    file.Access(&count, 2);
+    RHSoundSourceArray &sources = m_sources;
+    for (unsigned int index = 0; (unsigned short)index < count; ++index) {
+        RHSoundSource *source = new RHSoundSource;
+        source->FUN_005b3f30(file);
+        if (source->m_04 & (unsigned long)mask) {
+            unsigned long id = source->m_0c;
+            ((RHSoundSourceIDTree *)output)->FUN_005b52f0(id);
+        }
+        else {
+            delete source;
+            source = 0;
+        }
+        ((RHCampaignPointerArray<RHSoundSource *> *)&sources)->insert(sources.m_last, 1, source);
+        sources.m_changed = true;
+    }
+    FUN_005e20c0(file);
 }
 
 // FUNCTION: GAME 0x005b4db0

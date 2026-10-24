@@ -30,6 +30,7 @@ class SBGeoPoint2D
 public:
     SBGeoPoint2D();
     ~SBGeoPoint2D();
+    SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
     bool Serialize(SBFile &file);
     float m_x; // 0x00
     float m_y; // 0x04
@@ -47,7 +48,19 @@ public:
         m_last = 0;
         m_end = 0;
     }
-    ~RHSoundSourcePointStorage();
+    ~RHSoundSourcePointStorage()
+    {
+        SBGeoPoint2D *last = m_last;
+        for (SBGeoPoint2D *point = m_first; point != last; ++point)
+            point->~SBGeoPoint2D();
+        operator delete(m_first);
+        m_first = 0;
+        m_last = 0;
+        m_end = 0;
+    }
+
+    SBGeoPoint2D *begin() { return m_first; }
+    SBGeoPoint2D *end() { return m_last; }
 
     undefined m_allocator; // 0x00
     SBGeoPoint2D *m_first; // 0x04
@@ -60,6 +73,14 @@ class RHSoundSourcePoints
 {
 public:
     RHSoundSourcePoints() : m_changed(true) {}
+    ~RHSoundSourcePoints()
+    {
+        SBGeoPoint2D *next = std::copy(m_storage.end(), m_storage.end(), m_storage.begin());
+        SBGeoPoint2D *last = m_storage.end();
+        for (SBGeoPoint2D *point = next; point != last; ++point)
+            point->~SBGeoPoint2D();
+        m_storage.m_last = next;
+    }
     RHSoundSourcePointStorage m_storage; // 0x00
     undefined4 m_10; // 0x10
     bool m_changed; // 0x14
@@ -100,7 +121,8 @@ public:
     float FUN_005b3a10(const SBGeoPoint2D &first, const SBGeoPoint2D &second, unsigned char &visible);
     unsigned short FUN_005b3c40(const void *point);
     void FUN_005b3f30(SBFile &file);
-    virtual ~RHSoundSource(); // vtable+0x00
+    ~RHSoundSource();
+    virtual bool FUN_00463200() const { return false; } // vtable+0x00
     virtual bool Serialize(SBFile &file); // vtable+0x04
 
     undefined4 m_04; // 0x04

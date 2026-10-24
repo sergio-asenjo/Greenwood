@@ -127,7 +127,7 @@ public:
     void GetCacheStats(RHsampleCacheStats *, int &);
     void FUN_005a87f0(RHSoundSource *);
     void FUN_005a8810(void *);
-    void FUN_005a8070(unsigned short index, const SBGeoPoint2D &point, unsigned value);
+    bool FUN_005a8070(unsigned long index, const SBGeoPoint2D &point, unsigned value);
     bool FUN_005a8880(RHSoundSource *);
     bool FUN_005a88a0(void *);
     bool FUN_005a8220(int, int, int, const SBGeoPoint2D &);

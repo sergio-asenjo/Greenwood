@@ -27,31 +27,17 @@ DECOMP_SIZE_ASSERT(RHSoundQueueNode, 0x40)
 DECOMP_SIZE_ASSERT(RHSoundVirtualSlot39, 0x04)
 DECOMP_SIZE_ASSERT(RHUnk005aada0, 0x10)
 
-extern float g_unk0x0067749c;
 extern double g_unk0x00677d90;
 extern float g_unk0x006774a0;
 
 // GLOBAL: GAME 0x00677670
 double g_unk0x00677670 = 2.0;
-// GLOBAL: GAME 0x00679e08
-static double g_unk0x00679e08 = 127.5;
-// GLOBAL: GAME 0x00679e10
-static double g_unk0x00679e10 = 0.02;
 
-// GLOBAL: GAME 0x00679dd8
-static float g_unk0x00679dd8 = 3.6f;
 
-// GLOBAL: GAME 0x00679e18
-static double g_unk0x00679e18 = 255.0;
 
-// GLOBAL: GAME 0x00679e20
-static double g_unk0x00679e20 = 90.0;
 
 extern double g_unk0x006774b8;
-extern float g_dialogueVolumeHigh;
 
-// GLOBAL: GAME 0x00679dd4
-float g_unk0x00679dd4 = 0.1111111119389534f;
 
 class RHProfileManager;
 RHProfileManager *RHUnk00436500GetProfileManager();
@@ -117,20 +103,7 @@ public:
 DECOMP_SIZE_ASSERT(RHUnk005b2410, 0x10)
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 
-extern float g_unk0x006774ec;
-// GLOBAL: GAME 0x006774f0
-float g_unk0x006774f0 = 0.01f;
 
-// GLOBAL: GAME 0x00679df4
-static float g_unk0x00679df4 = 128.0f;
-// GLOBAL: GAME 0x00679df8
-static float g_unk0x00679df8 = 126.0f;
-// GLOBAL: GAME 0x00679dfc
-static float g_unk0x00679dfc = 63.0f;
-// GLOBAL: GAME 0x00679e00
-static float g_unk0x00679e00 = -63.0f;
-// GLOBAL: GAME 0x00679e04
-static float g_unk0x00679e04 = 0.003921568859368563f;
 
 void RHSerializeName(SBFile &, const char *);
 
@@ -167,7 +140,23 @@ inline RHSoundPendingData::~RHSoundPendingData()
 {
 }
 
-void FUN_005aa990(RHSoundPendingData *, const RHSoundPendingData *);
+#include <list>
+
+namespace std
+{
+template <> void _Construct(RHSoundPendingData *, const RHSoundPendingData &);
+}
+
+struct RHUnk005aa9f0
+{
+    RHSoundSettings m_00;
+    RHSoundChannelSettings m_18;
+};
+
+namespace std
+{
+template <> void _Construct(RHUnk005aa9f0 *, const RHUnk005aa9f0 &);
+}
 
 // STUB: GAME 0x005a6520
 bool RHSound::FUN_005a6520(unsigned long &driver)
@@ -455,7 +444,7 @@ void RHSound::FUN_005a7110(RHSoundSource *source)
     head->m_04 = node;
     RHSoundPendingNode *linkedPrevious = node->m_04;
     linkedPrevious->m_00 = node;
-    FUN_005aa990(&node->m_08, &sound);
+    std::_Construct(&node->m_08, sound);
     ++m_250;
 }
 
@@ -482,7 +471,7 @@ void RHSound::FUN_005a7220(void *value)
         {
             float scale = source->m_48;
             int minimum = source->m_44;
-            source->m_4a = (unsigned short)(((rand() * scale) * g_unk0x00677f7c) * (source->m_46 - minimum)
+            source->m_4a = (unsigned short)(((rand() * scale) * 0.00003051850944757461548f) * (source->m_46 - minimum)
                 / scale + minimum);
         }
         break;
@@ -596,7 +585,7 @@ void RHSound::FUN_005a74e0(unsigned long position)
         int channel = m_25c;
         FUN_005a90d0(m_254, channel);
     }
-    if (name.compare(g_unk0x6c0560) != 0)
+    if (name.compare("") != 0)
         m_258 = OpenStream(name, m_254, false, position);
     else
     {
@@ -611,18 +600,18 @@ void RHSound::FUN_005a7660(bool dialogue)
 {
     RHUnk005a9260 settings;
     settings = *(RHUnk005a9260 *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x44);
-    float first = *(unsigned short *)((char *)&settings + 6) * g_unk0x00679dd4;
-    float second = *(unsigned short *)((char *)&settings + 4) * g_unk0x00679dd4;
-    float third = *(unsigned short *)((char *)&settings + 2) * g_unk0x00679dd4;
-    float fourth = *(unsigned short *)&settings * g_unk0x00679dd4;
+    float first = *(unsigned short *)((char *)&settings + 6) * 0.1111111119389534f;
+    float second = *(unsigned short *)((char *)&settings + 4) * 0.1111111119389534f;
+    float third = *(unsigned short *)((char *)&settings + 2) * 0.1111111119389534f;
+    float fourth = *(unsigned short *)&settings * 0.1111111119389534f;
     if (dialogue)
     {
         float firstVolume = first;
-        first = firstVolume * g_dialogueVolumeHigh;
+        first = firstVolume * 0.3f;
         float secondVolume = second;
-        second = secondVolume * g_dialogueVolumeHigh;
+        second = secondVolume * 0.3f;
         float fourthVolume = fourth;
-        fourth = fourthVolume * g_dialogueVolumeHigh;
+        fourth = fourthVolume * 0.3f;
     }
     float *geometry = (float *)&m_138;
     geometry[4] = second;
@@ -678,7 +667,7 @@ bool RHSound::InitializeSoundEngine(std::string &error)
 {
     if (g_unk0x006c0685)
     {
-        if (FSOUND_GetVersion() != g_unk0x00679dd8)
+        if (FSOUND_GetVersion() != 3.6f)
             SBAssert(1, "P:\\Robin Hood\\RHsound.cpp", 1027,
                 // STRING: GAME 0x006b7e14
                 "Invalid DLL version ! Need FMOD %.02f\n", 3.6f);
@@ -866,6 +855,46 @@ unsigned short RHSound::FUN_005a8040()
     return 0;
 }
 
+// FUNCTION: GAME 0x005a8070
+bool RHSound::FUN_005a8070(unsigned long id, const SBGeoPoint2D &position, unsigned kind)
+{
+    if (m_20b) {
+        RHUnk005aa9f0 sound;
+        sound.m_00.m_00 = 2;
+        *(SBGeoPoint2D *)sound.m_00.m_04 = position;
+        sound.m_00.m_0c = (void *)id;
+        sound.m_00.m_10[0] = (unsigned char)kind;
+        unsigned long duration = FUN_005a93e0((RHSoundPendingData &)sound.m_00);
+        if (duration == 0)
+            return false;
+        if (duration < 800) {
+            if (m_138.FUN_005b2ff0(sound.m_00, m_000.FUN_005ae320(id), sound.m_18)) {
+                RHSoundQueueNode *head = g_unk0x006c1078.m_04;
+                RHSoundQueueNode *previous = head->m_04;
+                RHSoundQueueNode *node = (RHSoundQueueNode *)operator new(sizeof(RHSoundQueueNode));
+                RHSoundQueueNode *nextLink = head;
+                if (!head)
+                    nextLink = node;
+                node->m_00 = nextLink;
+                RHSoundQueueNode *previousLink = previous;
+                if (!previous)
+                    previousLink = node;
+                node->m_04 = previousLink;
+                head->m_04 = node;
+                RHSoundQueueNode *linkedPrevious = node->m_04;
+                linkedPrevious->m_00 = node;
+                std::_Construct((RHUnk005aa9f0 *)&node->m_08, sound);
+                ++g_unk0x006c1080;
+            }
+        }
+        else {
+            RHSoundPendingData pending(sound.m_00);
+            ((std::list<RHSoundPendingData> *)((char *)this + 0x248))->push_back(pending);
+        }
+    }
+    return true;
+}
+
 // FUNCTION: GAME 0x005a8420
 void RHSound::FUN_005a8420(int channel)
 {
@@ -970,21 +999,20 @@ void RHSound::FUN_005a8700(void *position, void *zoom)
     }
 }
 
-// Parked: compiler cleanup and list-node lifetime layout still differ.
-// STUB: GAME 0x005a8780
+// FUNCTION: GAME 0x005a8780
 void RHSound::FUN_005a8780()
 {
-    RHSoundPendingNode *head = m_24c;
-    RHSoundPendingNode *node = head->m_00;
-    while (node != head)
+    RHSoundPendingNode *node = m_24c->m_00;
+    while (node != m_24c)
     {
-        if (node->m_08.m_00.m_00 == 1)
+        RHSoundPendingData &sound = node->m_08;
+        if (sound.m_00.m_00 == 1)
         {
+            FUN_005a8420(sound.m_18);
             RHSoundPendingNode *next = node->m_00;
-            FUN_005a8420(node->m_08.m_18);
             node->m_04->m_00 = node->m_00;
             node->m_00->m_04 = node->m_04;
-            node->m_08.FUN_0052c5a0();
+            sound.FUN_0052c5a0();
             FUN_0064158f(node);
             --m_250;
             node = next;
@@ -1013,17 +1041,15 @@ bool RHSound::FUN_005a88a0(void *source)
     return true;
 }
 
-// STUB: GAME 0x005a88e0
+// FUNCTION: GAME 0x005a88e0
 void RHSound::PlayJingle(int jingle)
 {
     if (m_20a)
     {
         std::string path;
-        std::string directory;
-        directory =
+        path = std::string(
             // STRING: GAME 0x006b7f5c
-            "Data\\Sounds\\";
-        path = FUN_004e4c70(directory, g_unk0x006b79ac[jingle]);
+            "Data\\Sounds\\") + g_unk0x006b79ac[jingle];
         FUN_005a90d0(m_268, m_26c);
         m_26c = -1;
         m_268 = FSOUND_Stream_OpenFile(SoundStringData(path), 0x2000, 0);
@@ -1091,7 +1117,7 @@ void RHArtificialIntelligenceSoundCalls::Unk005a8b70(int category, void *profile
         head->m_04 = node;
         RHSoundPendingNode *linkedPrevious = node->m_04;
         linkedPrevious->m_00 = node;
-        FUN_005aa990(&node->m_08, &data);
+        std::_Construct(&node->m_08, data);
         ++sound->m_250;
     }
     else if (actor)
@@ -1142,14 +1168,14 @@ bool RHArtificialIntelligenceSoundCalls::Unk005a8d10(RHArtificialIntelligenceAct
 unsigned long RHSound::OpenStream(const std::string &name, void *&stream, bool loop, unsigned long position)
 {
     std::string path;
-    path = FUN_004e4b40(FUN_004e4b40(FUN_004e4b40(g_unk0x006c0610, std::string("\\")), name), std::string(
+    path = g_unk0x006c0610 + std::string("\\") + name + std::string(
         // STRING: GAME 0x006b7fa4
-        ".wav"));
-    stream = FSOUND_Stream_OpenFile(SoundStringData(path), (loop ? 2 : 1) | 0x1002050, 0);
+        ".wav");
+    stream = FSOUND_Stream_OpenFile(path.c_str(), (loop ? 2 : 1) | 0x1002050, 0);
     if (!stream)
         SBAssert(1, "P:\\Robin Hood\\RHsound.cpp", 2069,
             // STRING: GAME 0x006b7f6c
-            "FATAL: MISSING FILE \"%s\". Unable to open music stream !", SoundStringData(path));
+            "FATAL: MISSING FILE \"%s\". Unable to open music stream !", path.c_str());
     unsigned long length = FSOUND_Stream_GetLengthMs(stream);
     while (length == 0)
     {
@@ -1214,7 +1240,7 @@ bool RHSound::FUN_005a9170(unsigned long id)
             return false;
         int channel = result & 0xfff;
         float volume = m_138.m_10;
-        volume *= g_unk0x00679148;
+        volume *= 255.0f;
         if (!FSOUND_SetVolume(channel, (unsigned short)volume))
             SBAssert(1, "P:\\Robin Hood\\RHsound.cpp", 2200,
                 // STRING: GAME 0x006b8050
@@ -1361,13 +1387,13 @@ void RHSound::FUN_005a9420()
             switch (m_280)
             {
             case 0:
-                m_284 = (unsigned short)(rand() * (unsigned short)m_000.m_0b0.Size() * g_unk0x00677f7c);
+                m_284 = (unsigned short)(rand() * (unsigned short)m_000.m_0b0.Size() * 0.00003051850944757461548f);
                 break;
             case 1:
-                m_284 = (unsigned short)(rand() * (unsigned short)m_000.m_0dc.Size() * g_unk0x00677f7c);
+                m_284 = (unsigned short)(rand() * (unsigned short)m_000.m_0dc.Size() * 0.00003051850944757461548f);
                 break;
             case 2:
-                m_284 = (unsigned short)(rand() * (unsigned short)m_000.m_108.Size() * g_unk0x00677f7c);
+                m_284 = (unsigned short)(rand() * (unsigned short)m_000.m_108.Size() * 0.00003051850944757461548f);
                 break;
             }
             FUN_005a74e0(0);
@@ -1536,7 +1562,6 @@ bool RHSound::PlayDialog(std::string &name)
     return true;
 }
 
-extern float g_unk0x00677488;
 
 // FUNCTION: GAME 0x005a9b30
 float RHSound::GetDialogVolume()
@@ -1547,13 +1572,10 @@ float RHSound::GetDialogVolume()
         float right;
         FSOUND_GetCurrentLevels(m_274, &left, &right);
         float sum = left + right;
-        float level = sum < g_unk0x0067749c ? sum : 1.0f;
-        if (m_138.FUN_005b3500() > g_unk0x0067749c)
-            return g_unk0x00679148 / m_138.FUN_005b3500() * level;
-        float divisor = g_unk0x0067749c;
-        return g_unk0x00679148 / divisor * level;
+        float level = sum < 1.0f ? sum : 1.0f;
+        return 255.0f / (m_138.FUN_005b3500() > 1.0f ? m_138.FUN_005b3500() : 1.0f) * level;
     }
-    return g_unk0x00677488;
+    return 0.0f;
 }
 
 // FUNCTION: GAME 0x005a9bf0
@@ -1902,25 +1924,20 @@ void RHSoundChannels::FUN_005aa920()
     m_0c = 0;
 }
 
-// FUNCTION: GAME 0x005aa990
-void FUN_005aa990(RHSoundPendingData *destination, const RHSoundPendingData *source)
+// TEMPLATE: GAME 0x005aa990
+// ?_Construct@std@@YAXPAURHSoundPendingData@@ABU2@@Z
+template <> void std::_Construct(RHSoundPendingData *destination, const RHSoundPendingData &source)
 {
-    new (destination) RHSoundPendingData(*source);
+    new (destination) RHSoundPendingData(source);
 }
-
-// SIZE 0x38
-struct RHUnk005aa9f0
-{
-    RHSoundSettings m_00;
-    RHSoundChannelSettings m_18;
-};
 
 DECOMP_SIZE_ASSERT(RHUnk005aa9f0, 0x38)
 
-// FUNCTION: GAME 0x005aa9f0
-void FUN_005aa9f0(RHUnk005aa9f0 *destination, const RHUnk005aa9f0 *source)
+// TEMPLATE: GAME 0x005aa9f0
+// ?_Construct@std@@YAXPAURHUnk005aa9f0@@ABU2@@Z
+template <> void std::_Construct(RHUnk005aa9f0 *destination, const RHUnk005aa9f0 &source)
 {
-    new (destination) RHUnk005aa9f0(*source);
+    new (destination) RHUnk005aa9f0(source);
 }
 
 void EmitSoundChannelCleanup(RHSoundChannels *channels)
@@ -2020,6 +2037,35 @@ void EmitSoundPointCleanup(RHUnk005aada0 *points)
 void EmitSoundPointSearchCleanup(RHUnk005aa860 *points)
 {
     points->~RHUnk005aa860();
+}
+
+inline RHSoundSourceIDTree::Iterator &RHSoundSourceIDTree::Iterator::operator++()
+{
+    RHUnk00641782Lock lock;
+    if (m_node->m_right != (Node *)g_unk0x006c1088)
+        m_node = FUN_005b1540(m_node->m_right);
+    else {
+        Node *parent;
+        while (m_node == (parent = m_node->m_parent)->m_right)
+            m_node = parent;
+        if (m_node->m_right != parent)
+            m_node = parent;
+    }
+    return *this;
+}
+
+// FUNCTION: GAME 0x005ad400
+void RHSound::FUN_005ad400(void *data)
+{
+    RHSoundSourceIDTree &ids = *(RHSoundSourceIDTree *)data;
+    for (RHSoundSourceIDTree::Iterator entry = ids.Begin(); entry.m_node != ids.m_head; ++entry) {
+        unsigned long id = entry.m_node->m_key;
+        char name[16];
+        sprintf(name,
+            // STRING: GAME 0x006b8304
+            "snd_%03d.wav", id);
+        m_000.AddSoundEntry(id, std::string(name), m_000.m_044);
+    }
 }
 
 // STUB: GAME 0x005ad570
@@ -2609,18 +2655,18 @@ bool RHSoundGeometryView::FUN_005b2ff0(const RHSoundSettings &sound, bool flag, 
         }
         else
         {
-            RHUnk005b2410 bounds((float)source->m_14, source->m_1a * g_unk0x00679e04,
-                (float)source->m_12, source->m_18 * g_unk0x00679e04);
+            RHUnk005b2410 bounds((float)source->m_14, source->m_1a * 0.003921568859368563f,
+                (float)source->m_12, source->m_18 * 0.003921568859368563f);
             geometry->FUN_005b2a30(source, bounds);
             settings.m_00 = altitude->GetVolumeForAltitude(
                 geometry->FUN_005b2510(*(float *)((char *)this + 0xb4), bounds),
                 (RHsoundSourceAltitude)*(int *)&source->m_40) * m_10;
-            if (settings.m_00 < g_unk0x006774f0)
+            if (settings.m_00 < 0.01f)
                 return false;
             settings.m_04 = geometry->FUN_005b25e0(bounds);
             settings.m_08 = geometry->FUN_005b27e0(bounds);
             float volume = settings.m_00;
-            settings.m_0c = 64 - (unsigned short)(volume * g_unk0x00679e00);
+            settings.m_0c = 64 - (unsigned short)(volume * (-63.0f));
         }
     }
     else
@@ -2641,7 +2687,7 @@ bool RHSoundGeometryView::FUN_005b2ff0(const RHSoundSettings &sound, bool flag, 
         RHUnk005b2410 bounds(nearDistance, 0.0f, farDistance, 1.0f);
         point = ((const SBGeoPoint2D *)sound.m_04)->Unk005fc110(*(SBGeoPoint2D *)this);
         float y = point.m_y;
-        point.m_y = y * g_unk0x006774ec;
+        point.m_y = y * 1.7434468269348145f;
         float distance = (float)sqrt(point.m_x * point.m_x + point.m_y * point.m_y);
         float volume = altitude->GetVolumeForAltitude(geometry->FUN_005b2510(distance, bounds), RH_ALTITUDE_0);
         if (sound.m_00 >= 2)
@@ -2654,26 +2700,25 @@ bool RHSoundGeometryView::FUN_005b2ff0(const RHSoundSettings &sound, bool flag, 
             else
                 volume *= m_10;
         }
-        if (volume < g_unk0x006774f0)
+        if (volume < 0.01f)
             return false;
         settings.m_00 = volume;
         settings.m_04 = geometry->FUN_005b2560(point, bounds);
         settings.m_08 = geometry->FUN_005b2560(point, bounds);
         float channelVolume = settings.m_00;
         if (flag)
-            channelVolume *= g_unk0x00679dfc;
+            channelVolume *= 63.0f;
         else
-            channelVolume = channelVolume * g_unk0x00679df8 + g_unk0x00679df4;
+            channelVolume = channelVolume * 126.0f + 128.0f;
         settings.m_0c = (unsigned short)channelVolume;
     }
     return true;
 }
 
-// Parked: floating-point store scheduling remains unmatched.
-// STUB: GAME 0x005b33b0
+// FUNCTION: GAME 0x005b33b0
 void RHSoundGeometryView::FUN_005b33b0(RHSoundChannelSettings &settings)
 {
-    if (settings.m_00 < g_unk0x00679e10)
+    if (settings.m_00 < 0.02)
     {
         settings.m_0e = 0;
         settings.m_10 = 128;
@@ -2681,18 +2726,18 @@ void RHSoundGeometryView::FUN_005b33b0(RHSoundChannelSettings &settings)
         return;
     }
     float volume = settings.m_00;
-    settings.m_0e = (unsigned short)(volume * g_unk0x00679148);
+    settings.m_0e = (unsigned short)(volume * 255.0f);
     float pan = settings.m_04;
-    settings.m_10 = (unsigned short)((pan + g_unk0x0067749c) * g_unk0x00679e08);
+    settings.m_10 = (unsigned short)((pan + 1.0f) * 127.5);
     float depth = settings.m_08;
-    settings.m_12 = (unsigned short)((depth + g_unk0x0067749c) * g_unk0x00679e08);
+    settings.m_12 = (unsigned short)((depth + 1.0f) * 127.5);
 }
 
 // FUNCTION: GAME 0x005b3420
 void RHSoundGeometryView::FUN_005b3420(RHSoundChannelSettings &settings)
 {
     FUN_005b33b0(settings);
-    if (settings.m_00 < g_unk0x00679e10)
+    if (settings.m_00 < 0.02)
     {
         settings.m_14[1] = 10000.0f;
         settings.m_14[0] = 0;
@@ -2711,11 +2756,11 @@ unsigned short RHSoundGeometryView::FUN_005b3490(bool spatial)
     if (spatial)
     {
         float value = *(float *)((char *)this + 8);
-        return (unsigned short)((g_unk0x00679e18 - (value - g_unk0x006774b8) * g_unk0x00679e20)
+        return (unsigned short)((255.0 - (value - g_unk0x006774b8) * 90.0)
             * *(float *)((char *)this + 0x14)) >> 1;
     }
     float value = *(float *)((char *)this + 0x14);
-    return (unsigned short)(value * g_unk0x00679148) >> 1;
+    return (unsigned short)(value * 255.0f) >> 1;
 }
 
 // FUNCTION: GAME 0x005b34e0
@@ -2723,14 +2768,14 @@ unsigned short RHSoundGeometryView::FUN_005b34e0()
 {
     float value = m_10;
     *(float *)((char *)this + 0x18) = value;
-    return (unsigned short)(*(float *)((char *)this + 0x18) * g_unk0x00679148);
+    return (unsigned short)(*(float *)((char *)this + 0x18) * 255.0f);
 }
 
 // FUNCTION: GAME 0x005b3500
 unsigned short RHSoundGeometryView::FUN_005b3500()
 {
     float value = *(float *)((char *)this + 0x1c);
-    return (unsigned short)(value * g_unk0x00679148);
+    return (unsigned short)(value * 255.0f);
 }
 
 void RHSound::Emit(SBFile &file, std::string &name, RHSoundChannelSettings &settings)

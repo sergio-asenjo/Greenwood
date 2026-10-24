@@ -259,7 +259,6 @@ inline RHSoundQueueIterator RHSoundQueueIterator::operator++(int)
 extern RHSoundQueue g_unk0x006c1078;
 unsigned long FUN_005a93c0(unsigned long, unsigned long);
 
-extern float g_unk0x00679148;
 extern char g_unk0x006c0685;
 extern unsigned long g_unk0x006c1080;
 extern std::string g_unk0x006c0610;

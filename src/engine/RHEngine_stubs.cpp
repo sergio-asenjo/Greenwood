@@ -246,7 +246,6 @@ public:
 
 void RHEngineActorUpdateCalls::FUN_004af2a0() {}
 
-void RHSound::FUN_005a8070(unsigned short, const SBGeoPoint2D &, unsigned) {}
 void RHEngineReset51bd90::FUN_0051bd90() {}
 void RHEngineReset581c70::FUN_00581c70() {}
 void RHEngineReset5c2570::FUN_005c2570() {}

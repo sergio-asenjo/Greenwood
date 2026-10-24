@@ -251,8 +251,6 @@ extern RHSoundCacheGroupNode *g_unk0x006c10ac;
 
 extern RHSoundCacheMusic g_unk0x006c1090;
 extern bool g_unk0x006c0686;
-extern char g_unk0x6c0560[4];
-extern float g_unk0x00677f7c;
 
 // SIZE 0x24
 struct RHUnk005b1ca0

@@ -6,8 +6,6 @@
 #define m_40 (*(unsigned int *)((char *)this + 0x40))
 #define m_1c (*(RHUnk005b4700 *)((char *)this + 0x1c))
 
-void FUN_0064158f(void *memory);
-
 // STRING: GAME 0x006b869c
 #define RH_SOUND_FILE "P:\\Robin Hood\\RHsoundsource.cpp"
 
@@ -19,33 +17,16 @@ void FUN_0064158f(void *memory);
         return false; \
     }
 
-// Parked: per-point destructor and exception-state ordering remain approximate.
-// STUB: GAME 0x005b3920
+// FUNCTION: GAME 0x005b3920
 RHSoundSource::~RHSoundSource()
 {
-    SBGeoPoint2D *first = m_10.m_0c.m_storage.m_first;
-    SBGeoPoint2D *last = m_10.m_0c.m_storage.m_last;
-    while (first != last)
-    {
-        first->~SBGeoPoint2D();
-        ++first;
-    }
-    m_10.m_0c.m_storage.m_last = m_10.m_0c.m_storage.m_first;
-    FUN_0064158f(m_10.m_0c.m_storage.m_first);
-    m_10.m_0c.m_storage.m_first = 0;
-    m_10.m_0c.m_storage.m_last = 0;
-    m_10.m_0c.m_storage.m_end = 0;
 }
-
-// GLOBAL: GAME 0x00679e30
-double g_unk0x679e30 = 1.743446795621098;
-
 
 // FUNCTION: GAME 0x005b39e0
 float RHSoundSource::FUN_005b39e0(const SBGeoPoint2D &second, const SBGeoPoint2D &first)
 {
     float x = first.m_x - second.m_x;
-    float y = (first.m_y - second.m_y) * g_unk0x679e30;
+    float y = (first.m_y - second.m_y) * 1.743446795621098;
     return (float)sqrt(y * y + x * x);
 }
 
@@ -194,6 +175,14 @@ void RHSoundSource::FUN_005b3f30(SBFile &file)
     RH_SOUND_READ(m_40, 1);
     RH_SOUND_READ(m_04, 4);
 #undef RH_SOUND_READ
+}
+
+// Parked: three out-of-line size calls bind to the original's folded vector-of-vectors entity.
+// STUB: GAME 0x005b4700
+void RHUnk005b4700::FUN_005b4700(int count)
+{
+    ((std::vector<SBGeoPoint2D> *)this)->resize(count);
+    *(bool *)((char *)this + 0x14) = true;
 }
 
 void RHSoundSourceEmit(RHSoundSource *source, SBFile &file)
