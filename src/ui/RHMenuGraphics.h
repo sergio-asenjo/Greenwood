@@ -71,13 +71,22 @@ public:
     bool m_enabled;
 };
 
+#include "RHMenuWindow.h"
+#include "RHGameTitleLifetimeInline.h"
+#include "RHPortraitLinkedLifetimeView.h"
+#include "RHPortraitRadioLifetimeView.h"
+#include "../engine/RHGraphicConfigClass.h"
+
 class RHMenuScreenView;
 
-class RHMenuGraphics
+// VTABLE: GAME 0x00679468
+// SIZE 0xdcc
+class RHMenuGraphics : public RHMenuWindowFocus
 {
 public:
     RHMenuGraphics(RHMenuScreenView *screen);
     ~RHMenuGraphics();
+    void *FUN_0052c3a0(unsigned flags);
     bool Create();
     static bool Display(void *ui);
     bool FUN_0052ce70() const;
@@ -90,9 +99,15 @@ public:
 
     void Emit();
 
-    // Total size is irrelevant: the fields the matched function touches are
-    // reached through the offset aliases below.
-    char m_bytes[0xdcc];
+    RHGameLifetime00525560 m_label140; // 0x140
+    RHGameLifetime00525560 m_label240; // 0x240
+    RHGameLifetime00525560 m_label340; // 0x340
+    RHPortraitButton m_ok; // 0x440
+    RHPortraitButton m_cancel; // 0x540
+    RHPortraitLinkedLifetime m_screens[3]; // 0x640
+    RHPortraitRadioLifetime m_options[4]; // 0x97c
+    RHGraphicConfig m_config; // 0xdbc
+    bool m_dc8; // 0xdc8
 };
 
 // Screen width in pixels (target `fld DWORD PTR [esi+0xdc0]`).

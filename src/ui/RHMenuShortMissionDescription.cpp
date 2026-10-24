@@ -35,11 +35,8 @@ public:
 
 // FUNCTION: GAME 0x00540730
 RHMenuShortMissionDescription::RHMenuShortMissionDescription(RHMenuWindowScreen *screen)
-    : RHMenuWindow(0, screen, false)
+    : RHMenuWindow(0, screen, false), m_blazons(0), m_mission(0)
 {
-    m_blazons = 0;
-    m_mission = 0;
-    *(unsigned *)this = 0x00679940;
 }
 
 // FUNCTION: GAME 0x00540830
@@ -49,6 +46,15 @@ void *RHMenuShortMissionDescription::FUN_00540830(unsigned flags)
     if (flags & 1)
         operator delete(this);
     return this;
+}
+
+// FUNCTION: GAME 0x00540850
+RHMenuShortMissionDescription::~RHMenuShortMissionDescription()
+{
+    FUN_00540d20();
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_title);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_text);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_picture);
 }
 
 // FUNCTION: GAME 0x00540d20

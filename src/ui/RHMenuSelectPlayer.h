@@ -23,8 +23,6 @@
 class RHMenuSelectPlayerProfiles : public RHPlayerProfileManager
 {
 public:
-    void FUN_0055d930(unsigned long index);
-    void FUN_0055e410(unsigned long index);
 
     undefined m_00[0xc]; // 0x00
     unsigned m_count; // 0x0c

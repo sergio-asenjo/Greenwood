@@ -46,6 +46,17 @@ void *RHMenuShortcuts::FUN_0053fca0(unsigned flags)
     return this;
 }
 
+// FUNCTION: GAME 0x0053fcc0
+RHMenuShortcuts::~RHMenuShortcuts()
+{
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_button140);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_button240);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_button340);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_button440);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_button540);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_list);
+}
+
 // FUNCTION: GAME 0x00540480
 void RHMenuShortcuts::FUN_00540480(void *ui)
 {

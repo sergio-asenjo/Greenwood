@@ -7,9 +7,6 @@
 #include "RHMenuIngame.h"
 
 
-// Target 0x0052d620, __thiscall.
-RHMenuIngame::~RHMenuIngame() {}
-
 // Target 0x0052d750, __thiscall.
 void RHMenuIngame::FUN_0052d750() {}
 

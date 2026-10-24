@@ -46,7 +46,7 @@ public:
     void Unk(int);
 };
 
-// deferred: unannotated pending reccmp #534; proven 100.00% when annotated.
+// unannotated: 0x004238c0 is std::wstring::_Tidy (std-only); binding this view regresses its std callers.
 void RHMapWideText::Tidy(bool built)
 {
     if (built && m_chars != 0)
@@ -336,23 +336,24 @@ void RHMenuCampaignMap::DisplayPseudoMissionDebriefing()
     }
 }
 
-// STUB: GAME 0x005284b0
+#define m_locations ((RHMapLocation *)((char *)this + 0x19c))
+
+// FUNCTION: GAME 0x005284b0
 void RHMenuCampaignMap::FUN_005284b0()
 {
-    unsigned zero = 0;
-    char *location = (char *)this + 0x19c;
-    for (unsigned count = 10; count != 0; --count, location += 0x27c)
+    for (unsigned i = 0; i < 10; ++i)
     {
-        ((RHMapWidget *)location)->V54(zero);
-        V38(location + 0xe0);
-        V38(location + 0x1ac);
-        *(undefined *)(location + 0x1b0) = zero;
-        *(undefined4 *)(location + 0x278) = zero;
+        ((RHMapWidget *)&m_locations[i])->V54(false);
+        V38(&m_locations[i].m_e0);
+        V38(&m_locations[i].m_1ac);
+        m_locations[i].m_1ac.m_04[0] = 0;
+        m_locations[i].m_278 = 0;
     }
     RHMapWidget *arrow = (RHMapWidget *)((char *)this + 0x1a74);
-    for (unsigned arrows = 10; arrows != 0; --arrows, ++arrow)
+    for (unsigned count = 10; count != 0; --count, ++arrow)
         V38(arrow);
 }
+#undef m_locations
 
 // FUNCTION: GAME 0x00528520
 bool RHMenuCampaignMap::FUN_00528520(unsigned, unsigned, unsigned)
@@ -1255,6 +1256,8 @@ void *RHMenuScreenView::FUN_0053be80(const std::string &name)
     return font;
 }
 
+// map operator[] glue: the original inlines insert under an EH frame.
+// STUB: GAME 0x0053cd30
 void *&RHMapStringTree::FUN_0053cd30(const std::string &key)
 {
     return FUN_0053dfc0(key)->m_0c.second;
@@ -1299,14 +1302,13 @@ void RHMenuScreenView::FUN_0053c050()
     }
 }
 
-// Parked: count/index register lifetimes and duplicated boolean tails differ.
-// STUB: GAME 0x0053c320
+// FUNCTION: GAME 0x0053c320
 bool RHMenuScreenView::FUN_0053c320(void *widget)
 {
     void **first = *(void ***)((char *)this + 0x18);
     *(bool *)((char *)this + 0x28) = false;
     *(void **)((char *)this + 0x30) = widget;
-    int count = first ? *(void ***)((char *)this + 0x1c) - first : 0;
+    int count = first == 0 ? 0 : *(void ***)((char *)this + 0x1c) - first;
     void **&cursor = *(void ***)((char *)this + 0x24);
     cursor = first;
     int index = 0;
@@ -1314,10 +1316,49 @@ bool RHMenuScreenView::FUN_0053c320(void *widget)
     for (; index < count; ++index, ++cursor)
         if (*cursor == widget)
             break;
-    if (index >= count)
-        index = -1;
-    *(int *)((char *)this + 0x2c) = index;
-    return index != -1;
+    *(int *)((char *)this + 0x2c) = index < count ? index : -1;
+    return *(int *)((char *)this + 0x2c) != -1;
+}
+
+struct RHMenuScreenTimerEvent
+{
+    int type;
+    unsigned timer;
+    void *data;
+    RHMenuScreenTimerEvent *next;
+};
+
+// FUNCTION: GAME 0x0053c5b0
+void RHMenuScreenView::FUN_0053c5b0()
+{
+    unsigned now = GetTickCount();
+    RHMenuScreenTimerEvent *first = 0;
+    RHMenuScreenTimerEvent *last = 0;
+    for (std::list<RHMenuScreenTimer>::iterator it = m_1980.begin(); it != m_1980.end(); ++it)
+    {
+        if (now - it->m_08 >= it->m_04)
+        {
+            RHMenuScreenTimerEvent *event = new RHMenuScreenTimerEvent;
+            it->m_08 = now;
+            event->data = 0;
+            event->next = 0;
+            event->timer = it->m_00;
+            event->type = 0x1000;
+            if (!first)
+                first = event;
+            else
+                last->next = event;
+            last = event;
+        }
+    }
+    FUN_0053bf40(first);
+    RHMenuScreenTimerEvent *current = first;
+    while (current)
+    {
+        RHMenuScreenTimerEvent *event = current;
+        current = current->next;
+        delete event;
+    }
 }
 
 // FUNCTION: GAME 0x0053c7e0
@@ -1403,6 +1444,7 @@ void RHMenuCampaignMap::Emit()
     window->FUN_0053bbe0();
     ((RHMenuScreenView *)window)->FUN_0053c050();
     ((RHMenuScreenView *)window)->FUN_0053bf40(0);
+    ((RHMenuScreenView *)window)->FUN_0053c5b0();
     RHMenuScreenView::FUN_0053bbc0((RHMenuWindow *)window);
     RHMenuScreenView::FUN_0053be60((RHMenuWindow *)window);
     window->FUN_0053c7e0();

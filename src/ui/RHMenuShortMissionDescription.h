@@ -29,21 +29,11 @@ typedef RHGameRenderer0060dbc0 RHMenuShortMissionRenderer;
 typedef RHGameLifetime00515f00 RHMenuShortMissionText;
 
 // SIZE 0xd0
-class __declspec(novtable) RHMenuShortMissionPicture : public RHGameWidgetLifetimeBase
-{
-public:
-    RHMenuShortMissionPicture()
-    {
-        *(unsigned *)this = 0x006775e4;
-        m_cc = 0;
-    }
-
-    RHGameRenderer0060da10 m_renderer; // 0x80
-    int m_cc; // 0xcc
-};
+typedef RHGameLifetime0044fe90 RHMenuShortMissionPicture;
 
 // SIZE 0x380
-class __declspec(novtable) RHMenuShortMissionDescription : public RHMenuWindow
+// VTABLE: GAME 0x00679940
+class RHMenuShortMissionDescription : public RHMenuWindow
 {
 public:
     RHMenuShortMissionDescription(RHMenuWindowScreen *screen);

@@ -63,13 +63,7 @@ public:
     bool m_highlighted; // 0xd4
 };
 
-class RHPortraitLinkedLifetime
-{
-public:
-    RHPortraitLinkedLifetime();
-    ~RHPortraitLinkedLifetime();
-    undefined m_00[0x114];
-};
+#include "RHPortraitLinkedLifetimeView.h"
 
 class RHPortraitGroupLifetime
 {

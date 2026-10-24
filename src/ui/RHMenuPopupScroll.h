@@ -14,11 +14,13 @@
 #include "SB.h"
 #include "Decomp.h"
 #include "RHMenuWindow.h"
+#include "RHMenuMissionDescription.h"
 
+// VTABLE: GAME 0x00679834
 class RHMenuPopupScroll : public RHMenuWindowFocus
 {
 public:
-    RHMenuPopupScroll(RHMenuScreenView *screen, const std::wstring &text, const std::string &title, bool flag);
+    RHMenuPopupScroll(RHMenuScreenView *screen, const std::wstring &text, const std::string &title, int flags);
     RHMenuPopupScroll(RHMenuScreenView *screen, const std::wstring &text, int id, const std::string &title, int flags);
     void FUN_00539b30();
     const std::wstring &FUN_0053a820();
@@ -29,9 +31,16 @@ public:
     void *FUN_00539710(unsigned flags);
     bool FUN_0053a860(int msg, void *widget, void *data);
 
-    undefined m_140[0x318]; // 0x140
-    static void FUN_0053a000(void *text, void *title, bool flag);
-    static void FUN_0053a380(RHMenuScreenView *screen, const std::wstring &text, const std::string &title, bool flag);
+    void *m_resource; // 0x140
+    RHPortraitButton m_ok; // 0x144
+    RHMissionDescriptionText m_title; // 0x244
+    RHGameLifetime00515f00 m_text; // 0x364
+    std::wstring m_message; // 0x430
+    std::wstring m_left; // 0x440
+    unsigned long m_450; // 0x450
+    int m_flags; // 0x454
+    static void FUN_0053a000(void *text, void *title, int flag);
+    static void FUN_0053a380(RHMenuScreenView *screen, const std::wstring &text, const std::string &title, int flag);
     static bool FUN_0053a840();
     static void FUN_0053a0b0(int id);
     static void FUN_0053a1d0(const std::vector<int> &ids);

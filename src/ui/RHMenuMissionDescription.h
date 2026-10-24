@@ -5,33 +5,9 @@
 #include "rhuirenderer_005cb420.h"
 #include "RHMenuShortMissionTitle.h"
 #include "RHMenuShortMissionBlazons.h"
+#include "RHMissionDescriptionText.h"
 
 class RHMission;
-
-// VTABLE: GAME 0x006793f0
-class RHMissionDescriptionTextBase : public RHGameWidgetLifetimeBase
-{
-public:
-    RHMissionDescriptionTextBase() {}
-    ~RHMissionDescriptionTextBase() {}
-    RHUnk005cba10 m_renderer;
-};
-
-class __declspec(novtable) RHMissionDescriptionText : public RHMissionDescriptionTextBase
-{
-public:
-    RHMissionDescriptionText()
-    {
-        *(unsigned *)this = 0x006793b8;
-        m_dirtyFirst = true;
-        m_dirtySecond = true;
-    }
-    ~RHMissionDescriptionText()
-    {
-    }
-    bool m_dirtyFirst;
-    bool m_dirtySecond;
-};
 
 // VTABLE: GAME 0x00679678
 class RHMenuMissionDescription : public RHMenuWindowFocus

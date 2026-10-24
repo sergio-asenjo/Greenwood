@@ -7,9 +7,6 @@
 #include "SBNullstr.h"
 #include "RHMenuShortMissionDescription.h"
 
-// Target 0x00540850, __thiscall.
-RHMenuShortMissionDescription::~RHMenuShortMissionDescription() {}
-
 void RHMenuShortMissionBlazons::FUN_0044ef60(const RHMapBox &, bool) {}
 
 // Target 0x0060dbc0, __thiscall.

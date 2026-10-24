@@ -81,6 +81,17 @@ void *RHMenuSelectPlayer::FUN_0053e8b0(unsigned flags)
     return this;
 }
 
+// FUNCTION: GAME 0x0053e8d0
+RHMenuSelectPlayer::~RHMenuSelectPlayer()
+{
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_button140);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_button240);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_button340);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_button440);
+    for (int i = 0; i < 10; i++)
+        ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_entries[i]);
+}
+
 // FUNCTION: GAME 0x0053ede0
 void RHMenuSelectPlayer::FUN_0053ede0(void *ui)
 {

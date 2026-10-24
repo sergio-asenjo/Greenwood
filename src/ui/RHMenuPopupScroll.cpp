@@ -20,6 +20,17 @@ bool RHMenuPopupScroll::FUN_00539500(RHMenuEvent *event)
     return handled;
 }
 
+// Inline budget differs: m_left's _Tidy inlines here while the literal string assign stays out of line.
+// STUB: GAME 0x00539530
+RHMenuPopupScroll::RHMenuPopupScroll(RHMenuScreenView *screen, const std::wstring &text, const std::string &title, int flags)
+    : RHMenuWindowFocus(0, screen, 0x93, 0, false), m_resource(0), m_message(text), m_450(0), m_flags(flags)
+{
+    if (title.size() == 0)
+        m_resource = screen->FUN_0053be80(std::string("PopupScroll"));
+    else
+        m_resource = screen->FUN_0053be80(title);
+}
+
 // FUNCTION: GAME 0x00539710
 void *RHMenuPopupScroll::FUN_00539710(unsigned flags)
 {
@@ -29,13 +40,36 @@ void *RHMenuPopupScroll::FUN_00539710(unsigned flags)
     return this;
 }
 
+// FUNCTION: GAME 0x00539730
+RHMenuPopupScroll::RHMenuPopupScroll(RHMenuScreenView *screen, const std::wstring &text, int id, const std::string &title, int flags)
+    : RHMenuWindowFocus(0, screen, 0x93, 0, false),
+      m_resource(screen->FUN_0053be80(std::string("PopupScroll"))),
+      m_message(text),
+      m_450(FUN_0053a610(id)),
+      m_flags(flags)
+{
+    if (title.size() == 0)
+        m_resource = screen->FUN_0053be80(std::string("PopupScroll"));
+    else
+        m_resource = screen->FUN_0053be80(title);
+}
+
+// FUNCTION: GAME 0x00539980
+RHMenuPopupScroll::~RHMenuPopupScroll()
+{
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_ok);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_title);
+    if (m_450 != 0)
+        ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_text);
+}
+
 extern RHUnk0048a970 *g_unk0x6c0b3c;
 
 // GLOBAL: GAME 0x006b0f8c
 unsigned long g_unk0x006b0f8c = 0xffffffff;
 
 // FUNCTION: GAME 0x0053a000
-void RHMenuPopupScroll::FUN_0053a000(void *text, void *title, bool flag)
+void RHMenuPopupScroll::FUN_0053a000(void *text, void *title, int flag)
 {
     bool paused = FUN_0053a840();
     RHMenuScreenView screen(0, 0, paused, paused, (char *)g_unk0x6c0b3c + 0x68);
@@ -61,9 +95,8 @@ void RHMenuPopupScroll::FUN_0053a1d0(const std::vector<int> &ids)
         FUN_0053a4c0(&screen, *id, std::string(), 4);
 }
 
-// Parked: the loop-invariant screen/title/flag arguments take different callee-saved registers.
-// STUB: GAME 0x0053a380
-void RHMenuPopupScroll::FUN_0053a380(RHMenuScreenView *screen, const std::wstring &message, const std::string &title, bool flag)
+// FUNCTION: GAME 0x0053a380
+void RHMenuPopupScroll::FUN_0053a380(RHMenuScreenView *screen, const std::wstring &message, const std::string &title, int flag)
 {
     std::wstring text(message);
     while (text.length() != 0) {
@@ -121,16 +154,18 @@ unsigned long RHMenuPopupScroll::FUN_0053a5f0()
     return (char)((SBResourceManager *)g_unk0x006c1840)->FUN_00600f10(0xa4) ? 0xa4 : 0;
 }
 
-// Parked: retained resource receiver and array-base reloads have different register lifetimes.
+// Parked: the out-of-range array reload allocates EDX/EAX in the opposite order.
 // STUB: GAME 0x0053a610
 unsigned long RHMenuPopupScroll::FUN_0053a610(unsigned long index)
 {
     RHPopupScrollSet *set = (RHPopupScrollSet *)g_pEngine->GetDynResources(0);
+    SBResourceManager *manager = (SBResourceManager *)g_unk0x006c1840;
     if (set != 0)
     {
-        if (set->m_first != 0 && index < (unsigned)(set->m_last - set->m_first))
-            return set->m_first[index];
-        ((SBResourceManager *)g_unk0x006c1840)->FUN_00600f10(set->m_first[index]);
+        std::vector<int> &ids = *(std::vector<int> *)((char *)set + 0x1c);
+        if (index < ids.size())
+            return *(set->m_first + index);
+        manager->FUN_00600f10(*(ids.begin() + index));
     }
     return FUN_0053a5f0();
 }

@@ -39,7 +39,37 @@ public:
 // The engine singleton pointer read from the global at 0x006c0a88.
 extern RHEngine *g_pEngine;
 
-class RHMenuDialogue
+#include "RHMenuFocusClass.h"
+#include "RHMissionDescriptionText.h"
+#include "RHUnk005cbb80.h"
+#include "RHGameWidgetLifetime.h"
+
+// VTABLE: GAME 0x00679428
+class RHDialogueLifetime0052bf00 : public RHGameWidgetLifetimeBase
+{
+public:
+    ~RHDialogueLifetime0052bf00() {}
+    void *FUN_0052bee0(unsigned flags);
+    RHUnk005cbb80 m_renderer;
+};
+
+// VTABLE: GAME 0x00679378
+class RHDialogueLifetime0052bd90 : public RHDialogueLifetime0052bf00
+{
+public:
+    RHDialogueLifetime0052bd90()
+    {
+        m_e4 = 0;
+    }
+    ~RHDialogueLifetime0052bd90() {}
+    void *FUN_0052bf60(unsigned flags);
+    unsigned m_e4;
+};
+
+class RHSound;
+
+// VTABLE: GAME 0x00679320
+class RHMenuDialogue : public RHMenuWindowFocus
 {
 public:
     RHMenuDialogue(class RHMenuScreenView *, unsigned long);
@@ -61,17 +91,14 @@ public:
     // Windows codegen calls this WITHOUT a `this` (no `mov ecx, this` at the
     // ctor call site, 0x0052a7b0), so on this build it is a static member.
     static RHDialogue *GetDialogue(unsigned long id);
-    unsigned char m_bytes[0x548];
-    RHDialogue *m_dialogue;
-    unsigned m_sentence;
-    unsigned char m_tail[0xc];
+    RHPortraitButton m_close; // 0x140
+    RHPortraitButton m_skip; // 0x240
+    RHMissionDescriptionText m_text; // 0x340
+    RHDialogueLifetime0052bd90 m_portrait; // 0x460
+    RHDialogue *m_dialogue; // 0x548
+    unsigned m_sentence; // 0x54c
+    unsigned long m_timer; // 0x550
+    int m_554; // 0x554
+    RHSound *m_sound; // 0x558
 };
 
-class RHDialogueWidgetLifetimeCalls
-{
-public:
-    void FUN_0052b890();
-    void FUN_0052be10();
-    void *FUN_0052bdf0(unsigned);
-    void *FUN_0052bec0(unsigned);
-};

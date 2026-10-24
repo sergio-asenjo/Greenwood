@@ -7,6 +7,5 @@
 #include "RHMenuNewPlayer.h"
 
 // Target 0x00537790, __thiscall.
-RHMenuNewPlayer::~RHMenuNewPlayer() {}
 
 

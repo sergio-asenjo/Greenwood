@@ -23,9 +23,5 @@ RHEngine *g_pEngine = 0;
 #include "RHUnk005cbb80.h"
 
 
-RHMenuDialogue::RHMenuDialogue(RHMenuScreenView *, unsigned long) {}
-RHMenuDialogue::~RHMenuDialogue() {}
 bool RHMenuDialogue::Create() { return false; }
 
-void RHDialogueWidgetLifetimeCalls::FUN_0052b890() {}
-void RHDialogueWidgetLifetimeCalls::FUN_0052be10() {}

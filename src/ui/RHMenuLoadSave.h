@@ -94,6 +94,9 @@ public:
     ~RHMenuLoadSaveText();
     void *FUN_00532cd0(unsigned flags);
     void FUN_00531e30();
+    RHMenuEvent *FUN_00532040(unsigned value);
+    int FUN_00533cd0(const SBGeoPoint2D &point);
+    bool FUN_00533d80(const SBGeoPoint2D &point);
     RHPortraitInputRenderer m_renderer;
 };
 
@@ -102,6 +105,7 @@ class RHMenuLoadSaveSlots
 public:
     ~RHMenuLoadSaveSlots();
     void *FUN_00532cf0(unsigned flags);
+    RHMenuEvent *FUN_00532d30(const SBGeoPoint2D &point);
 };
 
 class RHMenuLoadSaveList

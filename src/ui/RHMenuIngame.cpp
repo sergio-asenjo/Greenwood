@@ -53,6 +53,20 @@ void *RHMenuIngame::FUN_0052d600(unsigned flags)
     return this;
 }
 
+// FUNCTION: GAME 0x0052d620
+RHMenuIngame::~RHMenuIngame()
+{
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_continue);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_load);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_save);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_options);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_restart);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_quit);
+    m_pauseToken->DestroyWidgets();
+    if (m_pause)
+        delete m_pauseToken;
+}
+
 extern RHUnk0048a970 *g_unk0x6c0b3c;
 
 // FUNCTION: GAME 0x0052dc20

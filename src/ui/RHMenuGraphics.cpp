@@ -23,42 +23,11 @@
 
 #include "SBNullstr.h"
 #include "RHMenuGraphics.h"
+#ifndef SBGEO_BOUNDINGBOX2D_VIEW
 #include "SBGeoBoundingBox2D.h"
-
-struct RHMenuEvent
-{
-    int m_type;
-    void *m_widget;
-    void *m_data;
-};
-
-class RHUnk0048a970
-{
-public:
-    void Unk(int);
-};
-
-class RHGameMenuCalls
-{
-public:
-    void FUN_00544b30();
-};
+#endif
 
 #include "RHMenuCancelCalls.h"
-
-class RHUnk0055dbb0
-{
-public:
-    char *FUN_0055dbb0();
-};
-
-class SBGeoVector2D : public SBGeoPoint2D
-{
-public:
-    SBGeoVector2D(float, float);
-    SBGeoVector2D &operator=(const SBGeoVector2D &other);
-    SBGeoVector2D(const SBGeoVector2D &other);
-};
 
 extern unsigned char g_unk0x006c0e48[];
 
@@ -79,9 +48,9 @@ void RHMenuGraphics::RouteEvent(RHMenuEvent *event)
 bool RHMenuGraphics::HandleEvent(RHMenuEvent *event)
 {
     bool handled = false;
-    if (event->m_type == 2 && event->m_widget == m_bytes + 0x540)
+    if (event->m_type == 2 && event->m_widget == (char *)this + 0x540)
         handled = ((RHMenuCancelCalls *)this)->OnCancel(2, event->m_widget, event->m_data);
-    if (event->m_type == 2 && event->m_widget == m_bytes + 0x440)
+    if (event->m_type == 2 && event->m_widget == (char *)this + 0x440)
         handled = OnOK(2, event->m_widget, event->m_data);
     if (event->m_type == 2 && event->m_widget == &m_widget640)
         handled = OnScreen(2, event->m_widget, event->m_data);
@@ -108,13 +77,38 @@ bool RHMenuGraphics::HandleEvent(RHMenuEvent *event)
     return handled;
 }
 
-#include "RHMenuScreenView.h"
-
-class RHMenuWindow
+// FUNCTION: GAME 0x0052c220
+RHMenuGraphics::RHMenuGraphics(RHMenuScreenView *screen)
+    : RHMenuWindowFocus(0, screen, 0, false),
+      m_config(*(const RHGraphicConfig *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x50)),
+      m_dc8(false)
 {
-public:
-    void FUN_00544b80(bool, bool);
-};
+}
+
+// FUNCTION: GAME 0x0052c3a0
+void *RHMenuGraphics::FUN_0052c3a0(unsigned flags)
+{
+    this->~RHMenuGraphics();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// FUNCTION: GAME 0x0052c3c0
+RHMenuGraphics::~RHMenuGraphics()
+{
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_label140);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_label240);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_label340);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_ok);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_cancel);
+    for (int i = 0; i < 3; i++)
+        ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_screens[i]);
+    for (int j = 0; j < 4; j++)
+        ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_options[j]);
+}
+
+#include "RHMenuScreenView.h"
 
 // FUNCTION: GAME 0x0052cda0
 bool RHMenuGraphics::Display(void *ui)

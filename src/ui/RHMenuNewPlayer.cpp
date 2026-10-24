@@ -21,6 +21,12 @@ bool RHMenuNewPlayer::FUN_00537590(RHMenuEvent *event)
     return handled;
 }
 
+// FUNCTION: GAME 0x005375f0
+RHMenuNewPlayer::RHMenuNewPlayer(RHMenuScreenView *screen)
+    : RHMenuWindowFocus(0, screen, 0x93, 1, false), m_ok(false)
+{
+}
+
 // FUNCTION: GAME 0x00537770
 void *RHMenuNewPlayer::FUN_00537770(unsigned flags)
 {
@@ -28,6 +34,22 @@ void *RHMenuNewPlayer::FUN_00537770(unsigned flags)
     if (flags & 1)
         operator delete(this);
     return this;
+}
+
+// FUNCTION: GAME 0x00537790
+RHMenuNewPlayer::~RHMenuNewPlayer()
+{
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_title);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_cancelButton);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_okButton);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_nameLabel);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_difficultyLabel);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_name);
+    for (int i = 0; i < 3; i++)
+    {
+        ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_radios[i]);
+        ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_radioLabels[i]);
+    }
 }
 
 // FUNCTION: GAME 0x00538280
@@ -62,6 +84,9 @@ bool RHMenuNewPlayer::FUN_00538410(int, void *, void *)
     ((RHGameMenuCalls *)this)->FUN_00544b30();
     return true;
 }
+
+// SYNTHETIC: GAME 0x00538430
+// ??0RHGameLifetime00525560@@QAE@XZ
 
 void EmitRHMenuNewPlayerAccessors(RHMenuNewPlayer *menu)
 {

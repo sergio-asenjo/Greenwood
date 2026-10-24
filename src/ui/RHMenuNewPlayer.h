@@ -12,18 +12,16 @@
 #include "SB.h"
 #include "Decomp.h"
 #include "RHMenuWindow.h"
+#include "RHPortraitLinkedLifetimeView.h"
+#include "RHGameTitleLifetimeInline.h"
 
 // SIZE 0x114
-struct RHMenuNewPlayerRadio
-{
-    undefined m_00[0x7c]; // 0x00
-    bool m_selected; // 0x7c
-    undefined m_7d[0x97]; // 0x7d
-};
-
+// VTABLE: GAME 0x00679784
+// SIZE 0xe24
 class RHMenuNewPlayer : public RHMenuWindowFocus
 {
 public:
+    RHMenuNewPlayer(RHMenuScreenView *screen);
     int FUN_00538280() const;
     bool FUN_005383e0();
     ~RHMenuNewPlayer();
@@ -33,9 +31,14 @@ public:
     bool FUN_005383f0(int msg, void *widget, void *data);
     bool FUN_00538410(int msg, void *widget, void *data);
 
-    undefined m_140[0x500]; // 0x140
-    RHMenuNewPlayerRadio m_radios[3]; // 0x640
-    undefined m_97c[0x4a4]; // 0x97c
+    RHGameLifetime00525560 m_title; // 0x140
+    RHGameLifetime00525560 m_nameLabel; // 0x240
+    RHGameLifetime00525560 m_difficultyLabel; // 0x340
+    RHPortraitEditableWidget m_name; // 0x440
+    RHPortraitLinkedLifetime m_radios[3]; // 0x5e4
+    RHGameLifetime00525560 m_radioLabels[3]; // 0x920
+    RHPortraitButton m_okButton; // 0xc20
+    RHPortraitButton m_cancelButton; // 0xd20
     bool m_ok; // 0xe20
 };
 

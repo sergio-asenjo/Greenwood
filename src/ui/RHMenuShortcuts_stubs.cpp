@@ -21,9 +21,6 @@ RHMenuShortcutsList::RHMenuShortcutsList() {}
 RHMenuShortcutsList::~RHMenuShortcutsList() {}
 
 
-// Target 0x0053fcc0, __thiscall.
-RHMenuShortcuts::~RHMenuShortcuts() {}
-
 // Target 0x0053fdd0, __thiscall.
 void RHMenuShortcuts::FUN_0053fdd0()
 {

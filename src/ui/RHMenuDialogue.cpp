@@ -49,6 +49,7 @@
 #include "RHMapWindowPart.h"
 #include "RHMenuScreenView.h"
 #include "RHMenuCloseCalls.h"
+#include "RHMapWindowClass.h"
 #include <stdlib.h>
 
 typedef char RHMenuDialogueSize[(sizeof(RHMenuDialogue) == 0x55c) ? 1 : -1];
@@ -72,12 +73,6 @@ class RHGameMenuCalls
 {
 public:
     void FUN_00544b30();
-};
-
-class RHMenuWindow
-{
-public:
-    void FUN_00544b80(bool, bool);
 };
 
 extern RHUnk0048a970 *g_unk0x6c0b3c;
@@ -151,16 +146,9 @@ public:
     virtual int V3c();
 };
 
-extern float g_unk0x006774f0;
 
-// GLOBAL: GAME 0x006774fc
-float g_dialogueVolumeHigh = 0.3f;
 
-// GLOBAL: GAME 0x00679460
-float g_dialogueVolumeMedium = 0.15f;
 
-// GLOBAL: GAME 0x00679464
-float g_dialogueVolumeLow = 0.02f;
 
 template<class T>
 static T &RHDialogueField(void *object, unsigned offset)
@@ -179,13 +167,28 @@ void RHMenuDialogue::RouteEvent(RHMenuEvent *event)
 bool RHMenuDialogue::HandleEvent(RHMenuEvent *event)
 {
     bool handled = false;
-    if (event->m_type == 2 && event->m_widget == m_bytes + 0x240)
+    if (event->m_type == 2 && event->m_widget == (char *)this + 0x240)
         handled = OnSkip(2, event->m_widget, event->m_data);
-    if (event->m_type == 2 && event->m_widget == m_bytes + 0x140)
+    if (event->m_type == 2 && event->m_widget == (char *)this + 0x140)
         handled = ((RHMenuCloseCalls *)this)->FUN_0052b520(2, event->m_widget, event->m_data);
     if (event->m_type == 0x1000 && event->m_widget == RHDialogueField<void *>(this, 0x550))
         handled = OnTimer(0x1000, event->m_widget, event->m_data);
     return handled;
+}
+
+class RHArtificialIntelligenceSoundCalls;
+extern RHArtificialIntelligenceSoundCalls *g_unk0x006c1070;
+
+// FUNCTION: GAME 0x0052a6e0
+RHMenuDialogue::RHMenuDialogue(RHMenuScreenView *screen, unsigned long id)
+    : RHMenuWindowFocus(0, screen, 0x93, 1, false),
+      m_dialogue(GetDialogue(id)),
+      m_sentence(-1),
+      m_timer(-1),
+      m_554(0),
+      m_sound((RHSound *)g_unk0x006c1070)
+{
+    m_sound->FUN_005a99b0();
 }
 
 // FUNCTION: GAME 0x0052a810
@@ -195,6 +198,18 @@ void *RHMenuDialogue::FUN_0052a810(unsigned flags)
     if (flags & 1)
         operator delete(this);
     return this;
+}
+
+// FUNCTION: GAME 0x0052a830
+RHMenuDialogue::~RHMenuDialogue()
+{
+    m_sound->CloseDialog();
+    m_sound->FUN_005a99c0();
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_skip);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_close);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_text);
+    ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_portrait);
+    ((RHMapWindow *)m_screen)->FUN_0053bb30(m_timer);
 }
 
 // FUNCTION: GAME 0x0052afd0
@@ -355,11 +370,11 @@ void RHMenuDialogue::UpdateDialogue()
     unsigned long portrait;
     if (GetNextSentence(text, sound, portrait) == true)
     {
-        ((RHDialogueTextView *)(m_bytes + 0x340))->V2c(text);
+        ((RHDialogueTextView *)((char *)this + 0x340))->V2c(text);
         if (portrait > 15)
             portrait = 15;
-        ((SBUIUnk0060d530 *)(m_bytes + 0x4e0))->FUN_0060d550(g_dialoguePortraits[portrait]);
-        ((RHDialoguePortraitView *)(m_bytes + 0x460))->V38(0);
+        ((SBUIUnk0060d530 *)((char *)this + 0x4e0))->FUN_0060d550(g_dialoguePortraits[portrait]);
+        ((RHDialoguePortraitView *)((char *)this + 0x460))->V38(0);
         RHSound *player = RHDialogueField<RHSound *>(this, 0x558);
         if (!player->IsDialogFinished())
             RHDialogueField<RHSound *>(this, 0x558)->CloseDialog();
@@ -375,17 +390,17 @@ void RHMenuDialogue::UpdatePortrait()
 {
     float volume = RHDialogueField<RHSound *>(this, 0x558)->GetDialogVolume();
     int frame;
-    if (volume < g_unk0x006774f0)
+    if (volume < 0.01f)
         frame = 0;
-    else if (volume < g_dialogueVolumeLow)
+    else if (volume < 0.02f)
         frame = 1;
-    else if (volume < g_dialogueVolumeMedium)
+    else if (volume < 0.15f)
         frame = 2;
-    else if (volume < g_dialogueVolumeHigh)
+    else if (volume < 0.3f)
         frame = 3;
     else
         frame = 4;
-    RHDialoguePortraitView *portrait = (RHDialoguePortraitView *)(m_bytes + 0x460);
+    RHDialoguePortraitView *portrait = (RHDialoguePortraitView *)((char *)this + 0x460);
     if (frame == portrait->V3c())
         ++RHDialogueField<int>(this, 0x554);
     else
@@ -400,6 +415,7 @@ void RHMenuDialogue::UpdatePortrait()
 
 #include "rhuirenderer_005cb420.h"
 #include "RHUnk005cbb80.h"
+#include "RHMissionDescriptionText.h"
 #include "RHGameWidgetLifetime.h"
 
 class RHUnk0052b860
@@ -668,40 +684,31 @@ unsigned RHUnk0052bd70::FUN_0052bd70()
     return RHDialogueField<unsigned>(this, 0xe4);
 }
 
+// SYNTHETIC: GAME 0x0052b890
+// ??1RHMissionDescriptionText@@QAE@XZ
+
+// SYNTHETIC: GAME 0x0052be10
+// ??1RHMissionDescriptionTextBase@@QAE@XZ
+
+#pragma inline_depth(1)
 // FUNCTION: GAME 0x0052bdf0
-void *RHDialogueWidgetLifetimeCalls::FUN_0052bdf0(unsigned flags)
+void *RHMissionDescriptionTextBase::FUN_0052bdf0(unsigned flags)
 {
-    FUN_0052be10();
+    this->~RHMissionDescriptionTextBase();
     if (flags & 1)
         operator delete(this);
     return this;
 }
 
 // FUNCTION: GAME 0x0052bec0
-void *RHDialogueWidgetLifetimeCalls::FUN_0052bec0(unsigned flags)
+void *RHMissionDescriptionText::FUN_0052bec0(unsigned flags)
 {
-    FUN_0052b890();
+    this->~RHMissionDescriptionText();
     if (flags & 1)
         operator delete(this);
     return this;
 }
-
-// VTABLE: GAME 0x00679428
-class RHDialogueLifetime0052bf00 : public RHGameWidgetLifetimeBase
-{
-public:
-    ~RHDialogueLifetime0052bf00() {}
-    void *FUN_0052bee0(unsigned flags);
-    RHPortraitRenderer0060d470 m_renderer;
-};
-
-// VTABLE: GAME 0x00679378
-class RHDialogueLifetime0052bd90 : public RHDialogueLifetime0052bf00
-{
-public:
-    ~RHDialogueLifetime0052bd90() {}
-    void *FUN_0052bf60(unsigned flags);
-};
+#pragma inline_depth()
 
 // SYNTHETIC: GAME 0x0052bd90
 // ??1RHDialogueLifetime0052bd90@@QAE@XZ
@@ -753,9 +760,8 @@ void RHMenuDialogueEmit(RHMenuDialogue *dialogue, RHMenuEvent *event,
     button->FUN_0052bc40(*(RHDialogueWidgetInput *)0);
     renderer->FUN_0052b860();
     renderer->FUN_0052bc20();
-    RHDialogueWidgetLifetimeCalls *lifetime = (RHDialogueWidgetLifetimeCalls *)button;
-    lifetime->FUN_0052bdf0(0);
-    lifetime->FUN_0052bec0(0);
+    ((RHMissionDescriptionTextBase *)button)->FUN_0052bdf0(0);
+    ((RHMissionDescriptionText *)button)->FUN_0052bec0(0);
     ((RHDialogueLifetime0052bf00 *)button)->FUN_0052bee0(0);
     ((RHDialogueLifetime0052bd90 *)button)->FUN_0052bf60(0);
 }

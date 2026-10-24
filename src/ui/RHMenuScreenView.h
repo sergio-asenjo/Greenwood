@@ -81,6 +81,7 @@ public:
     void FUN_0053bf40(void *events);
     void FUN_0053c050();
     bool FUN_0053c320(void *widget);
+    void FUN_0053c5b0();
     void FUN_0053c7f0(unsigned long surface);
     void FUN_0053c800();
     bool FUN_0053cd20();
