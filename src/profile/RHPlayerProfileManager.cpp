@@ -179,6 +179,12 @@ RHPlayerProfileManager::RHPlayerProfileManager() : m_00(0)
     m_2c = false;
 }
 
+// FUNCTION: GAME 0x0055d930
+void RHPlayerProfileManager::FUN_0055d930(unsigned long index)
+{
+    FUN_0055da70(m_profiles[index]);
+}
+
 // Parked: erased-list count uses eax instead of ebp for its decrement and store.
 // STUB: GAME 0x0055da70
 bool RHPlayerProfileManager::FUN_0055da70(RHPlayerProfile *profile)
@@ -303,6 +309,17 @@ bool RHPlayerProfileManager::Save() const
     return true;
 }
 
+// FUNCTION: GAME 0x0055e410
+void RHPlayerProfileManager::FUN_0055e410(unsigned long index)
+{
+    if (index >= m_profiles.m_list.size())
+    {
+        m_active = 0;
+        return;
+    }
+    FUN_0055e550(m_profiles[index]);
+}
+
 // FUNCTION: GAME 0x0055e550
 void RHPlayerProfileManager::FUN_0055e550(RHPlayerProfile *profile)
 {
@@ -325,6 +342,8 @@ void RHPlayerProfileManager::Emit()
 {
     FUN_0052ef90();
     new RHPlayerProfileManager;
+    FUN_0055d930(0);
+    FUN_0055e410(0);
     FUN_0055e550(0);
     FUN_0055da70(0);
     FUN_0055dbc0(0);

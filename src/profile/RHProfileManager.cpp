@@ -11,6 +11,88 @@
 #include "RHSoundCacheCore.h"
 #include "RHSoundCacheString.h"
 
+class RHProfilePointerList005640c0 : public std::list<void *>
+{
+public:
+    struct Node
+    {
+        Node *next;
+        Node *previous;
+        void *value;
+    };
+    void InsertBefore(iterator position, void *const &value)
+    {
+        Node *next = (Node *)((char *)&*position - 8);
+        Node *previous = next->previous;
+        Node *node = (Node *)operator new(sizeof(Node));
+        node->next = next ? next : node;
+        node->previous = previous ? previous : node;
+        next->previous = node;
+        node->previous->next = node;
+        void **destination = &node->value;
+        if (destination)
+            *destination = value;
+        ++_Size;
+    }
+    RHProfilePointerList005640c0(const RHProfilePointerList005640c0 &other);
+    iterator current;
+    bool dirty;
+    int index;
+};
+
+// FUNCTION: GAME 0x005640c0
+RHProfilePointerList005640c0::RHProfilePointerList005640c0(const RHProfilePointerList005640c0 &other)
+{
+    iterator position = begin();
+    current = position;
+    const_iterator first = other.begin();
+    const_iterator last = other.end();
+    for (; first != last; ++first)
+        InsertBefore(position, *first);
+    dirty = true;
+}
+
+class RHProfilePointerList005641a0 : public std::list<void *>
+{
+public:
+    struct Node
+    {
+        Node *next;
+        Node *previous;
+        void *value;
+    };
+    void InsertBefore(iterator position, void *const &value)
+    {
+        Node *next = (Node *)((char *)&*position - 8);
+        Node *previous = next->previous;
+        Node *node = (Node *)operator new(sizeof(Node));
+        node->next = next ? next : node;
+        node->previous = previous ? previous : node;
+        next->previous = node;
+        node->previous->next = node;
+        void **destination = &node->value;
+        if (destination)
+            *destination = value;
+        ++_Size;
+    }
+    RHProfilePointerList005641a0(const RHProfilePointerList005641a0 &other);
+    iterator current;
+    bool dirty;
+    int index;
+};
+
+// FUNCTION: GAME 0x005641a0
+RHProfilePointerList005641a0::RHProfilePointerList005641a0(const RHProfilePointerList005641a0 &other)
+{
+    iterator position = begin();
+    current = position;
+    const_iterator first = other.begin();
+    const_iterator last = other.end();
+    for (; first != last; ++first)
+        InsertBefore(position, *first);
+    dirty = true;
+}
+
 class RHProfilePointerList : public std::list<void *>
 {
 public:
@@ -67,6 +149,8 @@ void RHProfilePointerList::FUN_00564390(const RHProfilePointerList &other)
 
 void EmitRHProfilePointerList(RHProfilePointerList *list, const RHProfilePointerList &other)
 {
+    new RHProfilePointerList005640c0(*(const RHProfilePointerList005640c0 *)&other);
+    new RHProfilePointerList005641a0(*(const RHProfilePointerList005641a0 *)&other);
     new RHProfilePointerList(other);
     list->FUN_00564390(other);
 }

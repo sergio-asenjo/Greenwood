@@ -36,12 +36,6 @@ extern "C" __declspec(dllimport) int __stdcall DeleteFileA(const char *);
 
 #include "RHGameSaveCalls.h"
 
-class RHSaveGameArrayCalls
-{
-public:
-    void FUN_00570360();
-};
-
 class RHGameContinueCalls
 {
 public:
@@ -127,10 +121,7 @@ std::string RHSaveGameManager::GetNextSaveGameFileName()
 // FUNCTION: GAME 0x0056fb30
 RHSaveGame *RHSaveGameManager::GetSaveGame(unsigned long index) const
 {
-    SBArray<RHSaveGame *> &games = *(SBArray<RHSaveGame *> *)&m_saveGames;
-    if (games.GetSize() <= index)
-        ((RHSaveGameArrayCalls *)&games)->FUN_00570360();
-    return games.m_first[index];
+    return ((const std::vector<RHSaveGame *> &)m_saveGames).at(index);
 }
 
 // FUNCTION: GAME 0x0056fb70
@@ -233,3 +224,6 @@ bool RHSaveGameManager::Serialize(SBFile &file)
 
     return true;
 }
+
+// TEMPLATE: GAME 0x00570360
+// ?_Xran@?$vector@PAVRHSaveGame@@V?$allocator@PAVRHSaveGame@@@std@@@std@@IBEXXZ

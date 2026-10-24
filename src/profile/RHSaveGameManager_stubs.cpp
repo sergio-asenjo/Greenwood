@@ -14,14 +14,6 @@
 #include "SBNullstr.h"
 #include "RHSaveGame.h"
 
-class RHSaveGameArrayCalls
-{
-public:
-    void FUN_00570360();
-};
-
-void RHSaveGameArrayCalls::FUN_00570360() {}
-
 RHSaveGame::RHSaveGame(RHSaveGameManager *, const std::string &, const std::wstring &) {}
 
 // FUNCTION: GAME 0x0056fd90
