@@ -41,14 +41,7 @@ struct RHMalignityWaypoint
     }
 };
 
-// SIZE 0x0c
-struct RHMalignityArray
-{
-    int m_grow; // +0x00
-    void **m_first; // +0x04
-    void **m_last; // +0x08
-    unsigned short size() { return m_first ? m_last - m_first : 0; }
-};
+#include "RHMalignityArray.h"
 
 // SIZE 0x0c
 struct RHMalignityNode
@@ -136,10 +129,8 @@ struct RHUnk00441dd0Record
 unsigned FUN_00445210(float first, unsigned second, unsigned third, unsigned fourth, float fifth, unsigned sixth, void *seventh, unsigned eighth);
 
 RHUnk00613e90 FUN_00414360(const RHMalignityPosition &position, bool mode);
-SBGeoPoint2D FUN_0040ec20(const RHMalignityPosition &first, RHMalignityPosition second);
+SBGeoVector2D FUN_0040ec20(const RHMalignityPosition &first, RHMalignityPosition second);
 #include "RHActorAreaCalls.h"
-extern float g_unk0x00677488;
-extern float g_unk0x0067749c;
 extern float g_unk0x006774a0;
 template <bool InlineHead>
 class RHCampaignIndexList
@@ -264,8 +255,6 @@ public:
     bool m_39; // 0x39
 };
 
-extern float g_unk0x006774ec;
-extern float g_unk0x00677504;
 extern undefined g_unk0x006c0e48[];
 
 // SIZE 0x14
@@ -376,7 +365,6 @@ SBGeoVector2D operator*(float factor, const SBGeoVector2D &point);
 SBGeoVector2D FUN_005fc580(const SBGeoVector2D &point, float factor);
 RHMalignityPosition FUN_0040ed40(const RHMalignityPosition &position, SBGeoVector2D vector);
 RHMalignityPosition FUN_0040ece0(const RHMalignityPosition &position, SBGeoPoint2D point);
-extern float g_unk0x006787f8;
 
 class RHFastFindTacticalArray
 {
@@ -401,7 +389,6 @@ public:
 };
 typedef SBArray<RHSaveGame *> RHMalignityResetArray;
 extern unsigned *g_unk0x006c08a4;
-extern float g_unk0x006774e4;
 
 template <class T>
 inline T &RHMalignityField(void *object, int offset)

@@ -2,30 +2,31 @@
 // No __FILE__ or oracle evidence: class and method identity are unproven.
 // Member offsets are exact from Game.exe.
 
+#include "Decomp.h"
+
 struct RHUnk0042c6e0Value
 {
-    int m_00;
-    int m_04;
+    float m_00;
+    float m_04;
     int m_08;
-    int m_0c;
+    unsigned short m_0c;
 };
+
+DECOMP_SIZE_ASSERT(RHUnk0042c6e0Value, 0x10)
 
 class RHUnk0042c6e0
 {
 public:
     RHUnk0042c6e0Value FUN_0042c6e0();
     int m_0;
-    int m_4;
-    int m_8;
+    float m_4;
+    float m_8;
     unsigned short m_c;
     unsigned short m_e;
     int m_10;
 };
 
-// Parked: by-value struct return shape reaches 13.33%; the target keeps m_4/m_8/
-// m_c in stack slots while VC6 allocates ebx/edi and no frame. Explicit-pointer
-// and named-local shapes also failed (20.00%/22.22%).
-// STUB: GAME 0x0042c6e0
+// FUNCTION: GAME 0x0042c6e0
 RHUnk0042c6e0Value RHUnk0042c6e0::FUN_0042c6e0()
 {
     RHUnk0042c6e0Value result;
@@ -36,13 +37,7 @@ RHUnk0042c6e0Value RHUnk0042c6e0::FUN_0042c6e0()
     return result;
 }
 
-struct RHMalignityPosition
-{
-    float x;
-    float y;
-    void *area;
-    unsigned short layer;
-};
+#include "RHMalignityPosition.h"
 
 struct RHMalignityActorDescription
 {
@@ -66,7 +61,7 @@ public:
 class RHMalignityReactionCalls
 {
 public:
-    void FUN_00412d60(RHMalignityPosition position, int heading, int mode);
+    void FUN_00412d60(RHMalignityPosition position, short heading, int mode);
     void FUN_0042c7d0(RHMalignityActor *actor, int mode);
 };
 
@@ -82,8 +77,10 @@ struct RHUnk0042c830Value
     float m_00;
     float m_04;
     int m_08;
-    int m_0c;
+    unsigned short m_0c;
 };
+
+DECOMP_SIZE_ASSERT(RHUnk0042c830Value, 0x10)
 
 struct RHUnk0042c830Source
 {
@@ -94,10 +91,7 @@ struct RHUnk0042c830Source
     unsigned short m_6c;
 };
 
-// Parked: by-value __stdcall return gets the frame (sub esp,0x10; push esi) but
-// allocates an extra push edi and spills to [esp+0x20] where the target uses the
-// arg2 slot [esp+0x1c]. Explicit-pointer shapes scored 0.00-13.33%.
-// STUB: GAME 0x0042c830
+// FUNCTION: GAME 0x0042c830
 RHUnk0042c830Value __stdcall FUN_0042c830(const RHUnk0042c830Source *source)
 {
     RHUnk0042c830Value result;

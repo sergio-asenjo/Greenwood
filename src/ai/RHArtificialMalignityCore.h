@@ -22,6 +22,9 @@ public:
     void FUN_0043a170(const RHMalignityPosition &position);
     void FUN_00438620(unsigned short value);
     unsigned short FUN_00433010();
+    void FUN_00433790(const RHMalignityPosition &position);
+    bool FUN_00435bd0();
+    int FUN_00436400(SBFile &file);
     void FUN_0043b1b0(RHMalignityPosition position, int mode);
     void FUN_0043c960(RHMalignityPosition position, int mode);
     short FUN_00440cf0(RHUnk00441dd0Record *record);

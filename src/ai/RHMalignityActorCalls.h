@@ -20,7 +20,7 @@ public:
     virtual void V24() = 0;
     virtual void V28() = 0;
     virtual void V2c() = 0;
-    virtual void V30() = 0;
+    virtual void V30(RHUnk00613e90 &point) = 0;
     virtual void V34() = 0;
     virtual void V38() = 0;
     virtual void V3c() = 0;
@@ -61,7 +61,7 @@ public:
     virtual void Vc8() = 0;
     virtual unsigned Vcc() = 0; // vtable+0xcc
     virtual void Vd0() = 0;
-    virtual void Vd4(unsigned short value, int duration, bool first, bool second) = 0; // vtable+0xd4
+    virtual void Vd4(unsigned short value, bool first, bool second) = 0; // vtable+0xd4
     virtual void Vd8() = 0;
     virtual void Vdc() = 0;
     virtual void Ve0() = 0;
@@ -94,6 +94,11 @@ public:
     virtual void V14c() = 0;
     virtual void V150() = 0;
     virtual void V154(void *value) = 0; // vtable+0x154
+    virtual void V158() = 0;
+    virtual void V15c() = 0;
+    virtual void V160() = 0;
+    virtual void V164() = 0;
+    virtual bool V168() = 0; // vtable+0x168
     bool FUN_0048a260(const RHUnk00613e90 &point);
     float FUN_0048db80(void *position, void *actor);
     void FUN_0048e420(void *actor);
@@ -112,7 +117,6 @@ public:
     unsigned char FUN_0048ca20(void *actor, unsigned mode);
     void FUN_0048cb90(void *actor);
     void FUN_0048d050();
-    void FUN_00478c20(RHUnk00613e90 &point, bool mode);
     unsigned char FUN_0048c8e0(void *actor, unsigned mode);
     bool FUN_0048a130(void *actor);
     bool FUN_0048a350(void *actor);

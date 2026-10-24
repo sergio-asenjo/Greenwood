@@ -2,12 +2,12 @@
 #include "RHArtificialMalignity.h"
 #include <math.h>
 
-extern float g_unk0x006774f0;
 
+// FUNCTION: GAME 0x004135b0
 SBGeoVector2D RHMalignityActorCalls::FUN_004135b0()
 {
     RHUnk005fc3b0 direction;
-    direction.Unk005fcd40(RHMalignityField<unsigned short>(RHMalignityField<void *>(this, 0x50), 0xd8), 0.57357645f);
+    direction.Unk005fcd40(RHMalignityHeading(this), 0.57357645f);
     return direction;
 }
 
@@ -37,23 +37,42 @@ public:
     virtual void V1c() = 0;
     virtual void V20() = 0;
     virtual void V24(RHMalignityStimulus *stimulus) = 0;
-    void FUN_00412d60(RHMalignityPosition position, int heading, int mode);
+    void FUN_00412d60(RHMalignityPosition position, short heading, int mode);
     void FUN_0041a140(RHMalignityPosition position, unsigned value);
     void FUN_0041a3e0();
 };
 
-void RHMalignityReactionCalls::FUN_00412d60(RHMalignityPosition, int, int) {}
+SBGeoVector2D FUN_0040ec60(const RHMalignityPosition &first, SBGeoPoint2D second);
+
+// FUNCTION: GAME 0x00412d60
+void RHMalignityReactionCalls::FUN_00412d60(RHMalignityPosition position, short heading, int mode)
+{
+    RHUnk00613e90 delta;
+    SBGeoVector2D direction;
+    if (heading == -1)
+    {
+        delta = FUN_00414360(position, true).FUN_005df550(*(RHUnk00613e90 *)((char *)RHMalignityField<void *>(*(void **)((char *)this + 4), 0x50) + 0x10));
+        float x = delta.x;
+        direction.m_x = x;
+        float y = delta.y;
+        direction.m_y = y;
+    }
+    else
+    {
+        direction = FUN_0040ec60(position, ((RHMalignityBaseView *)this)->FUN_0040cc20(*(void **)((char *)this + 4)));
+        float height = RHMalignityField<float>(RHMalignityField<void *>(*(void **)((char *)this + 4), 0x50), 0x18);
+        direction.m_y += heading - height;
+    }
+    ((RHArtificialIntelligence *)this)->Unk00412f40((RHUnk005fc3b0 *)&direction, mode);
+}
 void RHMalignityReactionCalls::FUN_0041a140(RHMalignityPosition, unsigned) {}
 void RHArtificialMalignity::FUN_0043b1b0(RHMalignityPosition, int) {}
 void RHArtificialMalignity::FUN_0043c960(RHMalignityPosition, int) {}
 
-void RHMalignityActorCalls::FUN_00478c20(RHUnk00613e90 &, bool) {}
-bool RHMalignityActorCalls::FUN_0048a130(void *) { return false; }
-
 static inline RHUnk00613e90 &RHMalignityScaleHeight(RHUnk00613e90 &vector)
 {
     float scaled = vector.y;
-    scaled *= g_unk0x006774ec;
+    scaled *= 1.7434468269348145f;
     vector.y = scaled;
     return vector;
 }
@@ -96,7 +115,7 @@ int RHUnk0041a0f0::FUN_0041a0f0(int first, int second, int third)
 {
     int base = first & 0xffff;
     int span = (second & 0xffff) - base;
-    return (int)((float)span * ((third & 0xff) * g_unk0x006774f0) + base);
+    return (int)((float)span * ((third & 0xff) * 0.01f) + base);
 }
 // STUB: GAME 0x00440cf0
 short RHArtificialMalignity::FUN_00440cf0(RHUnk00441dd0Record *) { return 0; }
@@ -115,6 +134,12 @@ void RHMalignityBaseView::FUN_00412cf0(const RHMalignityPosition &position, unsi
     ((RHArtificialIntelligence *)this)->Unk00412240((const RHUnk00571160Position &)position, mode | 0x80, 1.0f);
 }
 void RHArtificialMalignity::FUN_00440040(void *, RHMalignityPosition, RHUnk005fc3b0 *, int, void *) {}
+// FUNCTION: GAME 0x0040ec60
+SBGeoVector2D FUN_0040ec60(const RHMalignityPosition &first, SBGeoPoint2D second)
+{
+    return SBGeoVector2D(first.x - second.m_x, first.y - second.m_y);
+}
+
 // FUNCTION: GAME 0x0040ed40
 RHMalignityPosition FUN_0040ed40(const RHMalignityPosition &position, SBGeoVector2D vector)
 {
@@ -133,11 +158,6 @@ RHMalignityPosition FUN_0040ece0(const RHMalignityPosition &position, SBGeoPoint
     return result;
 }
 
-RHMalignityPosition RHMalignityBaseView::FUN_004165e0(void *, bool)
-{
-    RHMalignityPosition position;
-    return position;
-}
 
 // FUNCTION: GAME 0x0040cbf0
 SBGeoPoint2D RHMalignityBaseView::FUN_0040cbf0(const RHMalignityPosition &position)
@@ -161,9 +181,10 @@ void RHAIUnk0044e8b0::FUN_0045a440(void *const &) {}
 bool RHMalignityGeometryCalls::FUN_004eff80(const RHUnk00613e90 &, const RHUnk00613e90 &, int) { return false; }
 RHUnk00613e90 RHMalignityVectorCalls::FUN_005df550(const RHUnk00613e90 &) { return RHUnk00613e90(); }
 
-SBGeoPoint2D FUN_0040ec20(const RHMalignityPosition &, RHMalignityPosition)
+// FUNCTION: GAME 0x0040ec20
+SBGeoVector2D FUN_0040ec20(const RHMalignityPosition &first, RHMalignityPosition second)
 {
-    return SBGeoPoint2D();
+    return SBGeoVector2D(first.x - second.x, first.y - second.y);
 }
 
 RHMalignitySegment::RHMalignitySegment(const SBGeoPoint2D &, const SBGeoPoint2D &) {}
@@ -219,11 +240,6 @@ public:
 
 unsigned char RHMalignityHeadingPoint::FUN_005fcc50(float) const { return 0; }
 
-RHMalignityHeadingPoint FUN_0040ec20(const SBGeoPoint2D &, RHMalignityPosition)
-{
-    RHMalignityHeadingPoint point;
-    return point;
-}
 
 class RHMalignityAbilityCalls
 {
