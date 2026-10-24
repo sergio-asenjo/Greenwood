@@ -50,7 +50,10 @@ public:
     void FUN_004121a0();
     void FUN_00411a00(unsigned flags);
     bool Unk00412c80(void *waypoint, unsigned short flags);
+    void FUN_00412e90(SBGeoPoint2D point, int mode);
     bool Unk00412f40(RHUnk005fc3b0 *direction, int mode);
+    void FUN_00413240(SBGeoPoint2D point, int first, int second);
+    void FUN_004132d0(int first, int mode, int second);
     bool Unk00412f70(unsigned short value, int mode);
     bool Unk00412240(const RHUnk00571160Position &position, unsigned short flags, float length);
     bool Unk00419cc0();

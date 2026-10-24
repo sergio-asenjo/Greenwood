@@ -20,7 +20,6 @@ extern "C" void __cdecl srand(unsigned) {}
 extern "C" long __cdecl time(long *) { return 0; }
 
 
-bool RHArtificialIntelligence::Unk00419b20(int) { return false; }
 bool RHArtificialIntelligenceActorCalls::Unk00470ce0() { return false; }
 std::string FUN_00420d40(int) { return std::string(); }
 bool RHArtificialIntelligence::Unk00412240(const RHUnk00571160Position &, unsigned short, float) { return false; }

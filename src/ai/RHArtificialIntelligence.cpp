@@ -111,7 +111,9 @@ RHArtificialIntelligenceElement *&RHArtificialIntelligenceList::FUN_00423c20(int
     return *self->m_cursor;
 }
 
-struct RHMalignityPosition;
+#include "RHMalignityPosition.h"
+
+SBGeoVector2D FUN_0040ec20(const RHMalignityPosition &first, RHMalignityPosition second);
 
 class RHMalignityBaseView
 {
@@ -785,6 +787,12 @@ bool RHArtificialIntelligence::Unk00412c80(void *waypoint, unsigned short flags)
     return Unk00412240(destination, flags, 1.0f);
 }
 
+// FUNCTION: GAME 0x00412e90
+void RHArtificialIntelligence::FUN_00412e90(SBGeoPoint2D point, int mode)
+{
+    Unk00412f40((RHUnk005fc3b0 *)&FUN_0040ec20(*(const RHMalignityPosition *)&point, ((RHMalignityBaseView *)this)->FUN_004165e0(m_actor, true)), mode);
+}
+
 // FUNCTION: GAME 0x00412f40
 bool RHArtificialIntelligence::Unk00412f40(RHUnk005fc3b0 *direction, int mode)
 {
@@ -818,7 +826,6 @@ public:
 
 class RHUnk6c1040;
 extern RHUnk6c1040 *g_unk0x6c1040;
-extern char g_unk0x6c0560[4];
 
 // FUNCTION: GAME 0x00412f70
 bool RHArtificialIntelligence::Unk00412f70(unsigned short direction, int mode)
@@ -836,8 +843,16 @@ bool RHArtificialIntelligence::Unk00412f70(unsigned short direction, int mode)
     RHUnk005866a0 *command = new RHUnk005866a0(1, (unsigned char)mode ? 28 : 26, m_actor);
     command->Unk00586e90(0, direction);
     ((RHUnk00585500 *)command)->Unk(sequence);
-    ((RHUnk0058a3d0 *)g_unk0x6c1040)->Unk(g_unk0x6c0560, 0, sequence);
+    ((RHUnk0058a3d0 *)g_unk0x6c1040)->Unk("", 0, sequence);
     return true;
+}
+
+// FUNCTION: GAME 0x00413240
+void RHArtificialIntelligence::FUN_00413240(SBGeoPoint2D point, int first, int second)
+{
+    SBGeoPoint2D origin = RHAIField<SBGeoPoint2D>(RHAIField<void *>(m_actor, 0x50), 0x24);
+    RHAIField<SBGeoPoint2D>(this, 0xf4) = point;
+    FUN_004132d0(first, 1, second);
 }
 
 // Parked: switch tail merging and register scheduling.
@@ -1659,7 +1674,6 @@ public:
 };
 
 extern float g_unk0x006774cc;
-extern float g_unk0x006774c8;
 extern float g_unk0x006774a0;
 
 void FUN_00417ab0(const SBGeoBoundingBox2D &box, unsigned char red, unsigned char green, unsigned char blue,
@@ -1688,7 +1702,7 @@ void RHArtificialIntelligence::FUN_00417580()
     else
         value = (unsigned short)(first > second ? first : second);
     fill.FUN_00609050(center.FUN_005fc200(SBGeoVector2D(20.0f, 2.0f)),
-        center.Unk005fc190(SBGeoVector2D(((unsigned short)value * g_unk0x006774cc) * g_unk0x006774c8 - g_unk0x006774a0, 0.0f)));
+        center.Unk005fc190(SBGeoVector2D(((unsigned short)value * g_unk0x006774cc) * 40.0f - g_unk0x006774a0, 0.0f)));
     ((RHMobileUnk00607da0 *)&fill)->FUN_00607da0((const RHMobileUnk00607da0 &)clip.FUN_006092c0(fill));
     if (fill.Unk00608f30())
     {
@@ -1726,8 +1740,6 @@ unsigned short FUN_00417a40(unsigned char red, unsigned char green, unsigned cha
     return 0;
 }
 
-// GLOBAL: GAME 0x006774d0
-double g_unk0x006774d0 = 0.7;
 
 // Parked: 82.07%; dark-color x87 operand order and shaded-edge register scheduling differ.
 // STUB: GAME 0x00417ab0
@@ -1752,8 +1764,8 @@ void FUN_00417ab0(const SBGeoBoundingBox2D &box, unsigned char red, unsigned cha
         brightBlue = 255;
     unsigned short bright = FUN_00417a40((unsigned char)brightRed, (unsigned char)brightGreen, (unsigned char)brightBlue,
         *(unsigned short *)((char *)draw + 0x10c));
-    unsigned short dark = FUN_00417a40((unsigned char)(g_unk0x006774d0 * r), (unsigned char)(g_unk0x006774d0 * g),
-        (unsigned char)(g_unk0x006774d0 * b), *(unsigned short *)((char *)draw + 0x10c));
+    unsigned short dark = FUN_00417a40((unsigned char)(0.7 * r), (unsigned char)(0.7 * g),
+        (unsigned char)(0.7 * b), *(unsigned short *)((char *)draw + 0x10c));
     draw->FUN_005e61e0(0, &box, color, 0);
     if (shade)
     {
@@ -1779,8 +1791,8 @@ void FUN_00417ca0(const SBGeoBoundingBox2D &box, unsigned char red, unsigned cha
     SBGeoPoint2D first;
     SBGeoPoint2D last;
     unsigned short color = FUN_00417a40(red, green, blue, *(unsigned short *)((char *)draw + 0x10c));
-    unsigned short dark = FUN_00417a40((unsigned char)(red * g_unk0x006774d0), (unsigned char)(green * g_unk0x006774d0),
-        (unsigned char)(blue * g_unk0x006774d0), *(unsigned short *)((char *)draw + 0x10c));
+    unsigned short dark = FUN_00417a40((unsigned char)(red * 0.7), (unsigned char)(green * 0.7),
+        (unsigned char)(blue * 0.7), *(unsigned short *)((char *)draw + 0x10c));
     float size = thickness;
     first.m_y = box.first.m_y - size - 1.0f;
     first.m_x = box.first.m_x - size - 1.0f;
@@ -1799,16 +1811,6 @@ void EmitArtificialIntelligenceDebug(SBGeoBoundingBox2D &box)
     FUN_00417ab0(box, 0, 0, 0, (SBDrawManager *)&box, false);
     FUN_00417ca0(box, 0, 0, 0, (SBDrawManager *)&box, 0, false);
 }
-
-struct RHMalignityPosition
-{
-    float x;
-    float y;
-    void *area;
-    unsigned short layer;
-};
-
-SBGeoPoint2D FUN_0040ec20(const RHMalignityPosition &first, RHMalignityPosition second);
 
 class RHArtificialIntelligenceDoorCalls
 {
@@ -2263,6 +2265,11 @@ void RHArtificialIntelligence::Unk004195f0(unsigned short flags)
 
 extern unsigned *g_unk0x006c08a4;
 
+static inline unsigned char RHAIActorKind(void *actor)
+{
+    return RHAIField<unsigned>(actor, 4) & 0x1f;
+}
+
 // Parked: narrowed actor loads and speech-field store scheduling differ.
 // STUB: GAME 0x00419970
 void RHArtificialIntelligence::Unk00419970(int remark, int time, int flags)
@@ -2288,6 +2295,48 @@ void RHArtificialIntelligence::Unk00419970(int remark, int time, int flags)
         *destination = (RHArtificialIntelligenceElement *)speech;
     ++g_unk0x006c07b8.m_count;
     g_unk0x006c07b8.m_dirty = true;
+}
+
+// STUB: GAME 0x00419b20
+bool RHArtificialIntelligence::Unk00419b20(int remark)
+{
+    unsigned short count = (unsigned short)g_unk0x006c07b8.m_count;
+    for (unsigned short index = 0; index < count; ++index)
+    {
+        ((RHSeqList *)&g_unk0x006c07b8)->GoTo(index);
+        RHArtificialIntelligenceForbiddenRemark *speech = (RHArtificialIntelligenceForbiddenRemark *)g_unk0x006c07b8.m_current.m_node->m_data;
+        if (speech->deadline < *g_unk0x006c08a4)
+        {
+            ((RHSeqList *)&g_unk0x006c07b8)->GoTo(index);
+            delete (RHArtificialIntelligenceForbiddenRemark *)g_unk0x006c07b8.m_current.m_node->m_data;
+            RHArtificialIntelligenceNode *node = g_unk0x006c07b8.m_current.m_node;
+            node->m_prev->m_next = node->m_next;
+            node->m_next->m_prev = node->m_prev;
+            operator delete(node);
+            --g_unk0x006c07b8.m_count;
+            g_unk0x006c07b8.m_dirty = true;
+            --index;
+            --count;
+        }
+        else if (speech->remark == remark)
+        {
+            RHArtificialIntelligence *self = this;
+            if ((unsigned)(speech->flags & 1) > 0 &&
+                (unsigned char)speech->soldier == (unsigned char)((unsigned char)RHAIActorKind(self->m_actor) == 0x14) &&
+                speech->voice == self->m_actor->V178())
+                return true;
+            if ((unsigned)(speech->flags & 8) > 0 && speech->actorID == RHAIField<unsigned>(self->m_actor, 0xc))
+                return true;
+            if ((unsigned char)RHAIActorKind(self->m_actor) == 0x14)
+            {
+                if ((unsigned)(speech->flags & 4) > 0)
+                    return true;
+            }
+            else if ((unsigned)(speech->flags & 2) > 0)
+                return true;
+        }
+    }
+    return false;
 }
 
 struct RHAIActorSelectionList : RHArtificialIntelligenceList
@@ -2434,6 +2483,81 @@ unsigned short RHArtificialIntelligence::Unk0041a420()
 }
 
 #include "RHMalignityActorCalls.h"
+
+#include "RHAIStateCalls.h"
+
+// Parked: complete panic procedure; temporary layout and EH scheduling remain unmatched.
+// STUB: GAME 0x004132d0
+void RHArtificialIntelligence::FUN_004132d0(int first, int mode, int second)
+{
+    RHAIField<unsigned char>(this, 0xfd) = (unsigned char)mode;
+    bool start = RHAIField<int>(this, 0x14) != 0xe0 && RHAIField<int>(this, 0x14) != 0xdd;
+    void *destination;
+    if ((unsigned char)mode)
+    {
+        destination = FUN_00417ed0(&RHAIField<SBGeoPoint2D>(this, 0xf4), false);
+        if (!destination)
+        {
+            destination = FUN_00417ed0(0, false);
+            RHAIField<unsigned char>(this, 0xfd) = 0;
+        }
+    }
+    else
+        destination = FUN_00417ed0(0, false);
+    Unk00410600();
+    ((RHScriptBatchCalls *)this)->Unk00419fb0(3);
+    if (destination)
+    {
+        if ((RHAIField<unsigned>(m_actor, 4) & 0x1f) == 4)
+            Unk00418c40(0x53, 0);
+        V10(6, 0xdd);
+        ((RHUnk00413640 *)this)->Unk(second, 0);
+        RHAIField<unsigned char>(this, 0xfc) = 0;
+        {
+            RHUnk00571160Position position;
+            position.x = RHAIField<float>(destination, 0x20);
+            position.y = RHAIField<float>(destination, 0x24);
+            position.area = RHAIField<void *>(destination, 0x10);
+            position.layer = RHAIField<unsigned short>(destination, 0x16);
+            RHUnk00571160Position next = position;
+            Unk00412240(next, 1, 1.0f);
+        }
+        if (RHAIField<unsigned char>(this, 0x16c) != 1)
+            return;
+        RHAIField<unsigned char>(this, 0x16c) = 0;
+        if (RHAIField<unsigned char>(this, 0xfd))
+        {
+            destination = FUN_00417ed0(0, false);
+            RHAIField<unsigned char>(this, 0xfd) = 0;
+            RHUnk00571160Position position;
+            position.x = RHAIField<float>(destination, 0x20);
+            position.y = RHAIField<float>(destination, 0x24);
+            position.area = RHAIField<void *>(destination, 0x10);
+            position.layer = RHAIField<unsigned short>(destination, 0x16);
+            RHUnk00571160Position next = position;
+            Unk00412240(next, 1, 1.0f);
+            if (RHAIField<unsigned char>(this, 0x16c) != 1)
+                return;
+            RHAIField<unsigned char>(this, 0x16c) = 0;
+        }
+    }
+    RHMalignityPosition own = ((RHMalignityBaseView *)this)->FUN_004165e0(m_actor, true);
+    if ((unsigned char)mode)
+        start |= ((RHMalignityActorCalls *)m_actor)->FUN_004135b0().FUN_005fc660(
+            FUN_0040ec20(RHAIField<RHMalignityPosition>(this, 0xf4), own)) > 0.0f;
+    if (start)
+    {
+        V10(6, 0xe0);
+        Unk00418c40((RHAIField<unsigned>(m_actor, 4) & 0x1f) == 4 ? 0x53 : 0x2e, 0);
+        ((RHUnk00413640 *)this)->Unk(second, 0);
+        RHAIField<unsigned char>(this, 0xfc) = (unsigned char)((unsigned char)first + 1);
+        RHStimulus stimulus;
+        stimulus.Unk004188d0(3);
+        ((RHArtificialIntelligenceDispatchView *)this)->V24(&stimulus);
+    }
+    else if (RHAIField<unsigned char>(this, 0xfc) < (unsigned char)first)
+        RHAIField<unsigned char>(this, 0xfc) = (unsigned char)first;
+}
 
 // Parked: receiver and scan-index registers are exchanged throughout the body.
 // STUB: GAME 0x00418bc0

@@ -169,13 +169,13 @@ bool RHPathObstacleGrid::FUN_004f5890(SBGeoBoundingBox2D &box, unsigned short se
     {
         float x;
         float y;
-        if (box.last.x < g_unk0x00677488)
+        if (box.last.x < 0.0f)
             x = -box.first.x;
         else if (m_3e84.last.x < box.first.x)
             x = -(box.last.x - m_3e84.last.x);
         else
             x = 0.0f;
-        if (box.last.y < g_unk0x00677488)
+        if (box.last.y < 0.0f)
             y = -box.first.y;
         else if (m_3e84.last.y < box.first.y)
             y = -(box.last.y - m_3e84.last.y);
@@ -197,20 +197,20 @@ bool RHPathObstacleGrid::FUN_004f5890(SBGeoBoundingBox2D &box, unsigned short se
             char *line = (char *)list.cursor->data;
             SBGeoPoint2D *origin = (SBGeoPoint2D *)(line + 4);
             SBGeoVector2D *normal = (SBGeoVector2D *)(line + 0x34);
-            if (normal->FUN_005fc660(box.FUN_00608f40().Unk005fc110(*origin)) > g_unk0x00677488)
+            if (normal->FUN_005fc660(box.FUN_00608f40().Unk005fc110(*origin)) > 0.0f)
             {
                 float distance = normal->FUN_005fc660(origin->Unk005fc110(box.first));
-                if (distance > g_unk0x006787f8)
-                    ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(operator*(distance + g_unk0x0067749c, *(SBGeoVector2D *)normal));
+                if (distance > (-0.10000000149011612f))
+                    ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(operator*(distance + 1.0f, *(SBGeoVector2D *)normal));
                 distance = normal->FUN_005fc660(origin->Unk005fc110(box.last));
-                if (distance > g_unk0x006787f8)
-                    ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(operator*(distance + g_unk0x0067749c, *(SBGeoVector2D *)normal));
+                if (distance > (-0.10000000149011612f))
+                    ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(operator*(distance + 1.0f, *(SBGeoVector2D *)normal));
                 distance = normal->FUN_005fc660(origin->Unk005fc110(SBGeoPoint2D(box.last.x, box.first.y)));
-                if (distance > g_unk0x006787f8)
-                    ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(operator*(distance + g_unk0x0067749c, *(SBGeoVector2D *)normal));
+                if (distance > (-0.10000000149011612f))
+                    ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(operator*(distance + 1.0f, *(SBGeoVector2D *)normal));
                 distance = normal->FUN_005fc660(origin->Unk005fc110(SBGeoPoint2D(box.first.x, box.last.y)));
-                if (distance > g_unk0x006787f8)
-                    ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(operator*(distance + g_unk0x0067749c, *(SBGeoVector2D *)normal));
+                if (distance > (-0.10000000149011612f))
+                    ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(operator*(distance + 1.0f, *(SBGeoVector2D *)normal));
             }
             ++index;
             --count;
@@ -458,7 +458,7 @@ bool RHPathFinder::FUN_00553a10(const SBGeoPoint2D &point, SBGeoPoint2D &node, u
     vector.FUN_005fc430(point.Unk005fc110(FUN_00553d20(node, place, half)));
     if (forward)
     {
-        float zero = *(volatile float *)&g_unk0x00677488;
+        float zero = 0.0f;
         switch (place)
         {
         case 1:
@@ -486,13 +486,13 @@ bool RHPathFinder::FUN_00553a10(const SBGeoPoint2D &point, SBGeoPoint2D &node, u
             second.y = -1.0f;
             break;
         }
-        if (first.FUN_005fc680(vector, 1.0f) < g_unk0x00677488 &&
-            second.FUN_005fc680(vector, 1.0f) >= g_unk0x00677488)
+        if (first.FUN_005fc680(vector, 1.0f) < 0.0f &&
+            second.FUN_005fc680(vector, 1.0f) >= 0.0f)
             return true;
     }
     else
     {
-        float zero = *(volatile float *)&g_unk0x00677488;
+        float zero = 0.0f;
         switch (place)
         {
         case 1:
@@ -520,8 +520,8 @@ bool RHPathFinder::FUN_00553a10(const SBGeoPoint2D &point, SBGeoPoint2D &node, u
             second.y = 1.0f;
             break;
         }
-        if (first.FUN_005fc680(vector, 1.0f) <= g_unk0x00677488 &&
-            second.FUN_005fc680(vector, 1.0f) > g_unk0x00677488)
+        if (first.FUN_005fc680(vector, 1.0f) <= 0.0f &&
+            second.FUN_005fc680(vector, 1.0f) > 0.0f)
             return true;
     }
     return false;
@@ -1072,17 +1072,17 @@ bool FUN_00557f90(const SBGeoPoint2D &point, const void *node)
     const SBGeoPoint2D &origin = *(const SBGeoPoint2D *)node;
     const RHUnk005fc3b0 &first = *(const RHUnk005fc3b0 *)((const char *)node + 0x6c);
     RHPathSetVector(vector, point.x - g_unk0x006c0db8.x - origin.x, point.y - g_unk0x006c0db8.y - origin.y);
-    if (first.FUN_005fc680(vector, 1.0f) > g_unk0x00677488 ||
-        ((const RHUnk005fc3b0 *)((const char *)node + 0x74))->FUN_005fc680(vector, 1.0f) > g_unk0x00677488 ||
+    if (first.FUN_005fc680(vector, 1.0f) > 0.0f ||
+        ((const RHUnk005fc3b0 *)((const char *)node + 0x74))->FUN_005fc680(vector, 1.0f) > 0.0f ||
         (RHPathSetVector(vector, point.x + g_unk0x006c0db8.x - origin.x, point.y - g_unk0x006c0db8.y - origin.y),
-            first.FUN_005fc680(vector, 1.0f) > g_unk0x00677488) ||
-        ((const RHUnk005fc3b0 *)((const char *)node + 0x74))->FUN_005fc680(vector, 1.0f) > g_unk0x00677488 ||
+            first.FUN_005fc680(vector, 1.0f) > 0.0f) ||
+        ((const RHUnk005fc3b0 *)((const char *)node + 0x74))->FUN_005fc680(vector, 1.0f) > 0.0f ||
         (RHPathSetVector(vector, point.x + g_unk0x006c0db8.x - origin.x, point.y + g_unk0x006c0db8.y - origin.y),
-            first.FUN_005fc680(vector, 1.0f) > g_unk0x00677488) ||
-        ((const RHUnk005fc3b0 *)((const char *)node + 0x74))->FUN_005fc680(vector, 1.0f) > g_unk0x00677488 ||
+            first.FUN_005fc680(vector, 1.0f) > 0.0f) ||
+        ((const RHUnk005fc3b0 *)((const char *)node + 0x74))->FUN_005fc680(vector, 1.0f) > 0.0f ||
         (RHPathSetVector(vector, point.x - g_unk0x006c0db8.x - origin.x, point.y + g_unk0x006c0db8.y - origin.y),
-            first.FUN_005fc680(vector, 1.0f) > g_unk0x00677488) ||
-        ((const RHUnk005fc3b0 *)((const char *)node + 0x74))->FUN_005fc680(vector, 1.0f) > g_unk0x00677488)
+            first.FUN_005fc680(vector, 1.0f) > 0.0f) ||
+        ((const RHUnk005fc3b0 *)((const char *)node + 0x74))->FUN_005fc680(vector, 1.0f) > 0.0f)
         return true;
     return false;
 }

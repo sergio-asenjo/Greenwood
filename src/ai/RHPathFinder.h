@@ -218,9 +218,6 @@ public:
 #include "SBGeoPolyLine2DList.h"
 
 SBGeoVector2D operator*(float factor, const SBGeoVector2D &point);
-extern float g_unk0x00677488;
-extern float g_unk0x0067749c;
-extern float g_unk0x006787f8;
 
 class RHSeqList
 {

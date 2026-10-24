@@ -243,6 +243,7 @@ class SBGeoPoint2D
 {
 public:
     SBGeoPoint2D();
+    SBGeoPoint2D(const SBGeoPoint2D &other);
     ~SBGeoPoint2D();
     SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
     SBGeoVector2D Unk005fc110(const SBGeoPoint2D &other) const;

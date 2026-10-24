@@ -7,15 +7,12 @@
 #include "RHPathQueryCalls.h"
 #include "RHSectorActorIterator.h"
 
-extern float g_unk0x00677488;
 
 // GLOBAL: GAME 0x006c06f0
 RHFastFindTacticalArray g_unk0x006c06f0;
 // GLOBAL: GAME 0x006c0718
 RHFastFindTacticalArray g_unk0x006c0718;
 
-// GLOBAL: GAME 0x006790d8
-float g_unk0x006790d8 = -40.0f;
 
 // GLOBAL: GAME 0x006c0bcc
 unsigned long g_unk0x006c0bcc;
@@ -1697,11 +1694,7 @@ public:
 
 DECOMP_SIZE_ASSERT(RHFastFindPathGate, 0x88)
 
-class RHActorGridCalls
-{
-public:
-    bool FUN_004f9a80(void *, RHElementActor *, const SBGeoPoint2D &, void *, unsigned short, const SBGeoPoint2D &, void *, unsigned, int);
-};
+#include "RHActorGridCalls.h"
 
 struct RHUnk004b1520List
 {
@@ -2216,7 +2209,6 @@ struct RHFastFindAreaPlane
     float m_fc;
 };
 
-extern float g_unk0x0067749c;
 
 // FUNCTION: GAME 0x004fbd30
 void RHFastFindGrid::Convert2DTo3D(RHUnk00613e90 &point, const SBGeoPoint2D &position, int type)
@@ -2241,9 +2233,9 @@ RHUnk00613e90 RHFastFindGrid::PositionToPoint3D(RHUnk00571160Position &position)
         plane = (RHFastFindAreaPlane *)((RHActorAreaCalls *)position.area)->FUN_0057d800(point);
     float z;
     if (!plane)
-        z = g_unk0x00677488;
+        z = 0.0f;
     else
-        z = (plane->m_f4 * position.x + position.y * plane->m_f8 + plane->m_fc) / (g_unk0x0067749c - plane->m_f8);
+        z = (plane->m_f4 * position.x + position.y * plane->m_f8 + plane->m_fc) / (1.0f - plane->m_f8);
     result.x = position.x;
     result.y = z + position.y;
     result.z = z;
@@ -3444,7 +3436,7 @@ void RHUnk0051e5e0::Unk0051e800()
         float *destination = (*(RHUnk004ff7b0 *)((char *)this + 0x78)).m_first;
         float distance = height - *(float *)((char *)line + 0x30);
         destination[i] = distance;
-        if (distance < g_unk0x006790d8 && (*((char *)this + 0x9c) || *((char *)line->m_other->m_sector + 0x9c)))
+        if (distance < (-40.0f) && (*((char *)this + 0x9c) || *((char *)line->m_other->m_sector + 0x9c)))
             *((char *)line + 0x39) = 1;
     }
 }
@@ -3456,7 +3448,7 @@ float RHUnk0051e5e0::FUN_0051e890(RHUnk0051e1e0 *line)
     for (unsigned int index = 0; index < count; ++index)
         if (m_lines.m_first[index] == line)
             return (*(RHUnk004ff7b0 *)((char *)this + 0x78)).m_first[index];
-    return g_unk0x00677488;
+    return 0.0f;
 }
 
 // FUNCTION: GAME 0x0051faf0
@@ -3526,7 +3518,7 @@ void RHUnk00520ae0::FUN_00520c80(const SBGeoPoint2D &first, const SBGeoPoint2D &
     m_0c &= ~4;
     m_14.FUN_005fc430(first);
     m_1c.FUN_005fc430(second);
-    m_34 = ((const RHUnk005fc3b0 &)first).FUN_005fc680((const RHUnk005fc3b0 &)second, 1.0f) < g_unk0x00677488;
+    m_34 = ((const RHUnk005fc3b0 &)first).FUN_005fc680((const RHUnk005fc3b0 &)second, 1.0f) < 0.0f;
 }
 
 // FUNCTION: GAME 0x005224d0
