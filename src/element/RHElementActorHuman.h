@@ -24,11 +24,14 @@ public:
     void FUN_00462940(int value);
     void FUN_00468f40(void *value);
     int FUN_0046e960();
+    int FUN_00463d90(unsigned value) const;
     bool FUN_00464230();
     void FUN_0046bd40(RHSequenceElement *element);
     bool FUN_0046b760(unsigned flags, void *value);
     bool FUN_0046b2b0(unsigned flags, RHActorTranslationSequenceCalls *sequence);
-    void FUN_00478c20(RHUnk00613e90 &point, bool value);
+    bool FUN_0046b4b0(unsigned flags, RHActorTranslationSequenceCalls *sequence);
+    void FUN_00478c20(RHUnk00613e90 &point, int posture);
+    void FUN_00478960(RHUnk00613e90 &point);
     void FUN_00478ae0(RHUnk00613e90 &point);
 };
 class RHEngine
@@ -150,26 +153,39 @@ public:
 class RHUnkHumanPlacementA
 {
 public:
-    void *FUN_005c1b20(int value);
+    RHUnkHumanPlacementA(int value);
+    unsigned m_vptr;
+    void *m_profile;
 };
 class RHUnkHumanPlacementB
 {
 public:
-    void *FUN_00450040(int value);
+    RHUnkHumanPlacementB(int value);
+    unsigned m_vptr;
+    void *m_profile;
 };
 class RHUnkHumanPositionProvider
 {
 public:
-    void FUN_00560420(void *position);
     bool FUN_005b8240(void *first, void *second);
     int FUN_005b8050(void *first, void *second, int, int);
     void FUN_005bd450();
     void *FUN_005b5e00();
 };
+struct RHMalignityPosition;
+SBGeoVector2D FUN_0040ec60(const RHMalignityPosition &first, SBGeoPoint2D second);
+
 class RHUnkHumanPositionRange
 {
 public:
-    bool FUN_0051afe0();
+    bool FUN_0051afe0(RHUnk00571160Position position);
+
+    char m_00[0xc];
+    void *m_0c; // 0x0c
+    void *m_10; // 0x10
+    char m_14[4];
+    SBGeoPoint2D m_18; // 0x18
+    SBGeoPoint2D m_20; // 0x20
 };
 #include "RHElementActorHumanCore.h"
 
@@ -429,11 +445,7 @@ struct RHHumanFloatIterator
     RHHumanFloatNode *node; // 0x00
 };
 class RHMission;
-class RHUnk004e52a0
-{
-public:
-    void FUN_004e52a0();
-};
+#include "RHUnk004e52a0.h"
 // SIZE 0x18
 class RHHumanFloatList
 {

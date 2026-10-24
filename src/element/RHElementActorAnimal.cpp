@@ -139,8 +139,8 @@ void RHElementActorAnimal::Think(RHanimalStimulusType stimulus)
 // FUNCTION: GAME 0x0046edd0
 bool RHElementActorAnimal::GoTo(const SBGeoPoint2D &destination, unsigned short flags)
 {
-    if (destination.m_x > g_unk0x00677488 && g_pEngine->m_4730 > destination.m_x &&
-        destination.m_y > g_unk0x00677488 && g_pEngine->m_4734 > destination.m_y)
+    if (destination.m_x > 0.0f && g_pEngine->m_4730 > destination.m_x &&
+        destination.m_y > 0.0f && g_pEngine->m_4734 > destination.m_y)
     {
         if (flags & 0x10)
         {
@@ -155,7 +155,7 @@ bool RHElementActorAnimal::GoTo(const SBGeoPoint2D &destination, unsigned short 
             animation = 10;
         else
             animation = 6;
-        m_5c->Unk0058a940(g_unk0x6c0560, 0, new RHUnk00588530(1, 0x14, this, animation, destination, 0, 0.0f, 0));
+        m_5c->Unk0058a940("", 0, new RHUnk00588530(1, 0x14, this, animation, destination, 0, 0.0f, 0));
         return true;
     }
     return false;
@@ -220,7 +220,7 @@ void RHElementActorAnimal::Startle()
     case 3:
     case 5:
         direction.FUN_005fc430(m_50->m_24.Unk005fc110(m_1c8));
-        if (direction.m_x != g_unk0x00677488 || direction.m_y != g_unk0x00677488)
+        if (direction.m_x != 0.0f || direction.m_y != 0.0f)
         {
             direction.FUN_005fc7c0(1.0f);
             direction.FUN_005fc4d0(marrWalkDistance[m_1d0]);

@@ -35,11 +35,7 @@ struct RHSoldierProfileFlags
     unsigned char m_bit3 : 1;
 };
 
-struct RHSoldierTransition
-{
-    char m_00[0x40];
-    int m_40;
-};
+struct RHSoldierTransition;
 
 #include "RHSoldierNPCCalls.h"
 

@@ -192,6 +192,30 @@ int RHActorScriptContext::FUN_004030a0()
     return value;
 }
 
+// FUNCTION: GAME 0x00403190
+int RHActorScriptContext::ActionChange(int action, int previous)
+{
+    ((VMCore *)m_0)->FUN_006392e0(&action, 4);
+    ((VMCore *)m_0)->FUN_006392e0(&previous, 4);
+    // STRING: GAME 0x006a6bac
+    ((VMCore *)m_0)->FUN_00639300(&std::string("ActionChange"));
+    int value;
+    ((VMCore *)m_0)->FUN_00639360(value);
+    return value;
+}
+
+// FUNCTION: GAME 0x004032a0
+int RHActorScriptContext::FilterAIEvent(void *event, int argument)
+{
+    ((VMCore *)m_0)->FUN_006392e0(&event, 4);
+    ((VMCore *)m_0)->FUN_006392e0(&argument, 4);
+    // STRING: GAME 0x006a6bbc
+    ((VMCore *)m_0)->FUN_00639300(&std::string("FilterAIEvent"));
+    int value;
+    ((VMCore *)m_0)->FUN_00639360(value);
+    return value;
+}
+
 // FUNCTION: GAME 0x004033b0
 void RHActorScriptContext::FUN_004033b0(int message, int argument1, int argument2)
 {
@@ -438,7 +462,6 @@ bool RHElementActor::FUN_004640c0()
     return false;
 }
 
-extern float g_unk0x00677488;
 
 // Parked: null-result stack copy and distance-receiver addition differ.
 // STUB: GAME 0x00464150
@@ -446,7 +469,7 @@ float RHElementActor::FUN_00464150()
 {
     SBGeoPoint2D point;
     if (!m_120)
-        return g_unk0x00677488;
+        return 0.0f;
     point = RHActorField<SBGeoPoint2D>(Info(), 0x24);
     if (point.FUN_005fc0e0(m_128))
     {
@@ -486,7 +509,6 @@ void RHElementActor::FUN_004645f0()
 }
 
 #include "RHSequenceGenericCalls.h"
-extern char g_unk0x6c0560[4];
 
 // FUNCTION: GAME 0x00464630
 void RHScriptBatchCalls::Unk00464630()
@@ -495,13 +517,11 @@ void RHScriptBatchCalls::Unk00464630()
     RHActorField<RHUnk00584d60 *>(this, 0x138) = element;
     RHActorField<int>(element, 0x5c) = 9;
     RHActorField<RHScriptBatchCalls *>(this, 0x5c)->Unk0058a940(
-        g_unk0x6c0560, 0, RHActorField<RHUnk00584d60 *>(this, 0x138));
+        "", 0, RHActorField<RHUnk00584d60 *>(this, 0x138));
 }
 
 // GLOBAL: GAME 0x006775b4
 float g_actorStepScale = 0.25f;
-// GLOBAL: GAME 0x006777c4
-float g_actorEffectOffset = 4.0f;
 
 class RHActorSequenceAccessors
 {
@@ -615,8 +635,8 @@ void RHElementActor::ExecuteImmediately(RHSequenceElement *element)
                 RHUnk00613e90 delta = destination.FUN_005df550(origin);
                 RHUnk00613e90 scaled;
                 scaled.FUN_00467990(delta.m_0 * g_actorStepScale, delta.m_4 * g_actorStepScale, delta.m_8 * g_actorStepScale);
-                origin.m_0 -= g_actorEffectOffset;
-                origin.m_4 -= g_actorEffectOffset;
+                origin.m_0 -= 4.0f;
+                origin.m_4 -= 4.0f;
                 step = scaled;
                 for (unsigned i = 0; i < 5; ++i)
                 {
@@ -686,8 +706,8 @@ void RHElementActor::ExecuteImmediately(RHSequenceElement *element)
             scaled.m_4 = delta.m_4 * g_actorStepScale;
             scaled.m_0 = delta.m_0 * g_actorStepScale;
             step = scaled;
-            origin.m_0 -= g_actorEffectOffset;
-            origin.m_4 -= g_actorEffectOffset;
+            origin.m_0 -= 4.0f;
+            origin.m_4 -= 4.0f;
             for (unsigned i = 0; i < 5; ++i)
             {
                 switch (i)
@@ -1190,7 +1210,7 @@ void RHScriptBatchCalls::Unk0046b9e0()
         }
     }
     RHUnk00584d60 *element = new RHUnk00584d60(1, 0x4d, actor);
-    ((RHScriptBatchCalls *)RHActorField<void *>(actor, 0x5c))->Unk0058a940(g_unk0x6c0560, 0, element);
+    ((RHScriptBatchCalls *)RHActorField<void *>(actor, 0x5c))->Unk0058a940("", 0, element);
 }
 
 // FUNCTION: GAME 0x0046bab0
@@ -1210,7 +1230,7 @@ void RHElementActor::FUN_0046bab0()
         }
     }
     RHUnk00584d60 *element = new RHUnk00584d60(1, 0x4e, this);
-    ((RHScriptBatchCalls *)RHActorField<void *>(this, 0x5c))->Unk0058a940(g_unk0x6c0560, 0, element);
+    ((RHScriptBatchCalls *)RHActorField<void *>(this, 0x5c))->Unk0058a940("", 0, element);
 }
 
 // FUNCTION: GAME 0x0046bb80
@@ -1505,6 +1525,80 @@ bool RHElementActor::FUN_0046b2b0(unsigned flags, RHActorTranslationSequenceCall
     return true;
 }
 
+#include "RHSequenceInteractionCalls.h"
+
+// STUB: GAME 0x0046b4b0
+bool RHElementActor::FUN_0046b4b0(unsigned flags, RHActorTranslationSequenceCalls *element)
+{
+    int weapon;
+    if ((flags & 1) && (weapon = RHActorField<int>(this, 0x144)) != 0)
+    {
+        RHOrder *order;
+        int action = RHActorField<int>(RHActorField<void *>(this, 0x50), 0x8c);
+        switch (action)
+        {
+        case 1:
+        {
+            switch (weapon)
+            {
+            case 1:
+                if (flags & 0x100)
+                    return true;
+                order = new RHOrder;
+                order->m_24 = 2;
+                break;
+            case 2:
+                if ((flags & 2) || (unsigned char)((RHSequenceInteractionCalls *)element)->FUN_00585f70())
+                    return true;
+                order = new RHOrder;
+                order->m_24 = 8;
+                break;
+            case 3:
+                if ((flags & 4) || (unsigned char)((RHSequenceInteractionCalls *)element)->FUN_00585f70())
+                    return true;
+                order = new RHOrder;
+                order->m_24 = 12;
+                break;
+            case 12:
+                if (flags & 0x200)
+                    return true;
+                if (RHActorField<int>(element, 0x10) == 0x6a)
+                {
+                    ((RHActorTranslationSequenceCalls *)element)->V0c(0, true);
+                    return false;
+                }
+                order = new RHOrder;
+                order->m_24 = 0xad;
+                break;
+            case 17:
+                if (flags & 0x4000)
+                    return true;
+                order = new RHOrder;
+                order->m_24 = 0xfd;
+                break;
+            default:
+                return false;
+            }
+            break;
+        }
+        case 10:
+        {
+            if (weapon != 2 || (flags & 2) ||
+                (unsigned char)((RHSequenceInteractionCalls *)element)->FUN_00585f70())
+                return true;
+            order = new RHOrder;
+            order->m_24 = 0x11;
+            break;
+        }
+        default:
+            return true;
+        }
+        ((RHActorTranslationSequenceCalls *)element)->FUN_00585970(order);
+        RHActorField<int>(element, 0x40) = 0;
+    }
+    return true;
+}
+
 struct RHActorTransitionType
 {
     unsigned kind : 5;
@@ -1673,7 +1767,7 @@ bool RHElementActor::FUN_0046e270()
             ((RHUnk0046bcb0 *)m_150)->Unk(8);
         m_150 = 0;
         m_130->FUN_00585970(0, true);
-        ((RHUnk0058a3d0 *)*(void **)((char *)this + 0x5c))->Unk(g_unk0x6c0560, 0, m_15c);
+        ((RHUnk0058a3d0 *)*(void **)((char *)this + 0x5c))->Unk("", 0, m_15c);
         FUN_0046c8e0(0);
         return true;
     }
@@ -1985,21 +2079,20 @@ SBGeoVector2D::SBGeoVector2D(const SBGeoPoint2D &other) : SBGeoPoint2D()
     FUN_005fc390(other);
 }
 
-extern float g_unk0x00677488;
 
 // Parked: the scaled-y spill and shared positive-x comparison branch differ.
 // STUB: GAME 0x005fc700
 float SBGeoPoint2D::FUN_005fc700(float scale) const
 {
     scale = m_4 / scale;
-    if (m_0 > g_unk0x00677488)
+    if (m_0 > 0.0f)
     {
-        if (scale > g_unk0x00677488)
+        if (scale > 0.0f)
             return scale < m_0 ? m_0 : scale;
         scale = -scale;
         return scale < m_0 ? m_0 : scale;
     }
-    if (scale > g_unk0x00677488)
+    if (scale > 0.0f)
         return -m_0 > scale ? -m_0 : scale;
     scale = -scale;
     return -m_0 > scale ? -m_0 : scale;
@@ -2072,8 +2165,13 @@ bool RHElementActor::FUN_00470160()
     return ((RHActorActionCalls *)this)->Vcc() <= 0;
 }
 
-// Parked: cursor reload/store order and unlink register allocation differ.
-// STUB: GAME 0x0046bbf0
+struct RHUnk0046bbf0OrderList
+{
+    std::list<RHOrder *> m_list;
+    std::list<RHOrder *>::iterator m_current;
+};
+
+// FUNCTION: GAME 0x0046bbf0
 void RHElementActor::FUN_0046bbf0()
 {
     if (RHActorField<void *>(this, 0x130) &&
@@ -2081,8 +2179,10 @@ void RHElementActor::FUN_0046bbf0()
     {
         RHActorField<int>(RHActorField<void *>(this, 0x130), 0x10) = 0x14;
         RHSeqList &list = RHActorField<RHSeqList>(RHActorField<void *>(this, 0x130), 0x18);
-        for (list.m_current = list.m_head->next; list.m_current != list.m_head; list.m_current = list.m_current->next)
-            delete (RHOrder *)list.m_current->data;
+        RHUnk0046bbf0OrderList &orders = (RHUnk0046bbf0OrderList &)list;
+        std::list<RHOrder *>::iterator end;
+        for (orders.m_current = orders.m_list.begin(); end = orders.m_list.end(), orders.m_current != end; ++orders.m_current)
+            delete *orders.m_current;
         RHScriptNode *head = list.m_head;
         RHScriptNode *current = head->next;
         while (current != head)

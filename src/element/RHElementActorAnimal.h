@@ -206,9 +206,7 @@ public:
     undefined m_21d[0x3]; // 0x21d
 };
 
-extern float g_unk0x00677488;
 extern RHEngine *g_pEngine;
 extern RHUnkSectorGlobal *g_unk0x6c0a9c;
-extern char g_unk0x6c0560[4];
 
 #endif

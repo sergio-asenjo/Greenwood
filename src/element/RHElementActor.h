@@ -76,14 +76,7 @@ public:
 #include "SBGeoIntersection2D.h"
 
 // SIZE 0x0c
-class RHUnk004e52a0
-{
-public:
-    void FUN_004e52a0();
-    undefined m_0[4]; // 0x00
-    RHScriptNode *m_head; // 0x04
-    undefined4 m_count; // 0x08
-};
+#include "RHUnk004e52a0.h"
 
 // SIZE 0x58c
 class RHUnk004679c0
@@ -125,7 +118,8 @@ public:
     void FUN_0046bcb0(int value);
     const SBGeoPoint2D &FUN_004679b0() const;
     SBGeoVector2D FUN_00468ee0(int value) const;
-    void FUN_00478c20(RHUnk00613e90 &point, bool value);
+    void FUN_00478c20(RHUnk00613e90 &point, int posture);
+    void FUN_00478960(RHUnk00613e90 &point);
     void FUN_00478ae0(RHUnk00613e90 &point);
     void FUN_00462700(unsigned short value);
     void FUN_00462730(RHElementActor *actor, bool value);
@@ -137,6 +131,7 @@ public:
     void GetTransitionFlags(RHSequenceElement *element, unsigned long &first, unsigned long &second, unsigned long &third);
     bool FUN_0046b210(RHSequenceElement *element);
     bool FUN_0046b2b0(unsigned flags, RHActorTranslationSequenceCalls *sequence);
+    bool FUN_0046b4b0(unsigned flags, RHActorTranslationSequenceCalls *sequence);
     void FUN_0046bb80();
     void FUN_0046bab0();
     void FUN_0046bbf0();

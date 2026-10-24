@@ -4,27 +4,19 @@
 #include "RHActorAreaCalls.h"
 #include <stdlib.h>
 #include <math.h>
+#include <vector>
 #include "RHActorPCHumanCalls.h"
 #include "RHPlayerProfileAccess.h"
 #include "RHSequenceGenericCalls.h"
+#include "RHSequenceInteractionAction.h"
 
 extern undefined g_unk0x006c0e48[0x2c];
 
-extern float g_unk0x0067749c;
-extern float g_unk0x00677f7c;
-extern char g_unk0x6c0560[4];
-extern float g_unk0x00677488;
-extern float g_unk0x006774e4;
-extern float g_unk0x006774f0;
-extern float g_unk0x0067748c;
-extern float g_unk0x006775d8;
 
 // GLOBAL: GAME 0x006ae494
 float g_unk0x006ae494[16] = { 0, 6.1f, 11.3f, 14.8f, 16, 14.8f, 11.3f, 6.1f, 0, -6.1f, -11.3f, -14.8f, -16, -14.8f, -11.3f, -6.1f };
 // GLOBAL: GAME 0x006ae4d4
 float g_unk0x006ae4d4[16] = { -9.18f, -8.49f, -6.48f, -3.5f, 0, 3.5f, 6.48f, 8.49f, 9.18f, 8.49f, 6.48f, 3.5f, 0, -3.5f, -6.48f, -8.49f };
-// GLOBAL: GAME 0x00677b48
-float g_unk0x00677b48 = 45.0f;
 class RHUnk0048a970;
 extern RHUnk0048a970 *g_unk0x6c0b3c;
 extern char g_unk0x6c0691;
@@ -47,7 +39,7 @@ rejected:
     }
     return ((SBGeoPoint2D *)(*(char **)((char *)other + 0x50) + 0x24))->Unk005fc110(
         *(SBGeoPoint2D *)(*(char **)((char *)this + 0x50) + 0x24)).FUN_005fc660(
-            ((RHMalignityActorCalls *)this)->FUN_004135b0()) > g_unk0x00677488;
+            ((RHMalignityActorCalls *)this)->FUN_004135b0()) > 0.0f;
 }
 
 // GLOBAL: GAME 0x006b793c
@@ -79,6 +71,8 @@ DECOMP_SIZE_ASSERT(SBGeoVector2D, 0x08)
 DECOMP_SIZE_ASSERT(RHHumanFloatNode, 0x0c)
 DECOMP_SIZE_ASSERT(RHHumanFloatIterator, 0x04)
 DECOMP_SIZE_ASSERT(RHHumanFloatList, 0x18)
+DECOMP_SIZE_ASSERT(RHUnkHumanPlacementA, 0x08)
+DECOMP_SIZE_ASSERT(RHUnkHumanPlacementB, 0x08)
 
 // GLOBAL: GAME 0x00677554
 float g_unk0x677554 = 60.0f;
@@ -347,8 +341,17 @@ void RHElementActorHuman::FUN_00474ad0(RHActorTranslationSequenceCalls *sequence
         ((RHHumanVirtualCalls *)this)->V154(sequence);
 }
 
-// Parked: doorway reload and geometry-copy registers differ after two shapes.
-// STUB: GAME 0x004752d0
+inline SBGeoPoint2D &RHHumanDoorPoint(void *area)
+{
+    return RHActorField<SBGeoPoint2D>(RHActorField<void *>(area, 0x100), 0x18);
+}
+
+inline RHActorAreaCalls *RHHumanDoorArea(void *area)
+{
+    return RHActorField<RHActorAreaCalls *>(RHActorField<void *>(area, 0x100), 0xc);
+}
+
+// FUNCTION: GAME 0x004752d0
 void RHElementActorHuman::FUN_004752d0(RHActorTranslationSequenceCalls *sequence)
 {
     ((RHHumanVirtualCalls *)this)->V164();
@@ -356,16 +359,15 @@ void RHElementActorHuman::FUN_004752d0(RHActorTranslationSequenceCalls *sequence
     RHActorTranslationSequenceCalls *previous = RHActorField<RHActorTranslationSequenceCalls *>(sequence, 0x50);
     if (previous)
         previous->V0c(6, true);
-    void *door = RHActorField<void *>(area, 0x100);
-    SBGeoPoint2D point(RHActorField<SBGeoPoint2D>(door, 0x18));
-    void *projection = ((RHActorAreaCalls *)RHActorField<void *>(door, 0xc))->FUN_0057d800(point);
+    SBGeoPoint2D point(RHHumanDoorPoint(area));
+    void *projection = RHHumanDoorArea(area)->FUN_0057d800(point);
     RHUnk00613e90 position;
     position.x = point.m_x;
     if (projection)
     {
         position.z = (point.m_x * RHActorField<float>(projection, 0xf4) +
             point.m_y * RHActorField<float>(projection, 0xf8) + RHActorField<float>(projection, 0xfc)) /
-            (g_unk0x0067749c - RHActorField<float>(projection, 0xf8));
+            (1.0f - RHActorField<float>(projection, 0xf8));
         position.y = point.m_y + position.z;
     }
     else
@@ -448,6 +450,76 @@ bool RHElementActorHuman::FUN_00475750(unsigned flags, RHActorTranslationSequenc
 }
 
 // Parked: the second switch duplicates the default state-store tail before its virtual-call cases.
+#include "RHSoldierHumanCalls.h"
+
+// STUB: GAME 0x00475970
+bool RHElementActorHuman::FUN_00475970(unsigned flags, void *value)
+{
+    RHSoldierTransition *element = (RHSoldierTransition *)value;
+    switch (*(int *)((char *)this + 0x144))
+    {
+    case 4:
+        if ((flags & 1) && !(flags & 8))
+        {
+            ((RHHumanVirtualCalls *)this)->V078(element, 0x20);
+            element->m_40 = 0;
+        }
+        return true;
+    case 5:
+    {
+        unsigned char storedFlags = (unsigned char)flags;
+        if ((storedFlags & 1) && !(storedFlags & 0x10))
+        {
+            ((RHHumanVirtualCalls *)this)->V078(element, 0x21);
+            if (!(storedFlags & 8))
+            {
+                ((RHHumanVirtualCalls *)this)->V078(element, 0x20);
+                element->m_40 = 0;
+                return true;
+            }
+            element->m_40 = 4;
+        }
+        return true;
+    }
+    case 7: case 8: case 9:
+        if (!(flags & 1) || (flags & 0x20))
+            return true;
+        ((RHHumanVirtualCalls *)this)->V078(element, 0x33);
+        element->m_40 = 0;
+        return true;
+    case 10:
+        if (!(flags & 0x40))
+        {
+            ((RHHumanVirtualCalls *)this)->V078(element, 0x36);
+            element->m_40 = 7;
+        }
+        return true;
+    case 11:
+        return true;
+    case 12: case 13: case 14:
+        if (!(flags & 1) || (flags & 0x200))
+            return true;
+        ((RHHumanVirtualCalls *)this)->V078(element, 0x6b);
+        element->m_40 = 0;
+        return true;
+    case 15:
+        if ((flags & 1) && !(flags & 0x800))
+        {
+            ((RHHumanVirtualCalls *)this)->V078(element, 0x8b);
+            element->m_40 = 0;
+        }
+        return true;
+    case 16:
+        if (!(flags & 1) || (flags & 0x1000))
+            return true;
+        ((RHHumanVirtualCalls *)this)->V078(element, 0x8e);
+        element->m_40 = 0;
+        return true;
+    default:
+        return ((RHElementActor *)this)->FUN_0046b4b0(flags, (RHActorTranslationSequenceCalls *)element);
+    }
+}
+
 // STUB: GAME 0x00475b00
 bool RHElementActorHuman::FUN_00475b00(unsigned flags, void *value)
 {
@@ -493,16 +565,6 @@ struct RHHumanHeading
     unsigned m_heading : 4;
 };
 
-// GLOBAL: GAME 0x006774e0
-float g_unk0x006774e0 = 30.0f;
-// GLOBAL: GAME 0x00677560
-float g_unk0x00677560 = 25.0f;
-// GLOBAL: GAME 0x00677b4c
-float g_unk0x00677b4c = 65.0f;
-// GLOBAL: GAME 0x00677b50
-float g_unk0x00677b50 = 55.0f;
-extern float g_unk0x00677438;
-extern float g_unk0x0067748c;
 
 // FUNCTION: GAME 0x00479320
 void RHHumanActorCalls::FUN_00479320(RHUnk00613e90 &point)
@@ -516,45 +578,44 @@ void RHHumanActorCalls::FUN_00479320(RHUnk00613e90 &point)
         bool alternate = ((RHHumanVirtualCalls *)this)->V0f4();
         float height = point.z;
         if (alternate)
-            height += g_unk0x006774e0;
+            height += 30.0f;
         else
-            height += g_unk0x00677560;
+            height += 25.0f;
         point.z = height;
         break;
     }
     case 16:
     {
         float height = point.z;
-        height += g_unk0x00677b4c;
+        height += 65.0f;
         point.z = height;
         break;
     }
     case 7:
     {
         float height = point.z;
-        height += g_unk0x00677b50;
+        height += 55.0f;
         point.z = height;
         break;
     }
     case 8: case 10: case 20: case 22:
     {
         float height = point.z;
-        height += g_unk0x00677438;
+        height += 10.0f;
         point.z = height;
         break;
     }
     case 3: case 12: case 13: case 17: case 18:
     {
         float height = point.z;
-        height += g_unk0x0067748c;
+        height += 5.0f;
         point.z = height;
         break;
     }
     }
 }
 
-// Parked at 0.9831: base-height initialization scheduling differs.
-// STUB: GAME 0x00479430
+// FUNCTION: GAME 0x00479430
 void RHHumanActorCalls::FUN_00479430(RHUnk00613e90 &point, float height)
 {
     SBGeoPoint2D projected;
@@ -564,10 +625,12 @@ void RHHumanActorCalls::FUN_00479430(RHUnk00613e90 &point, float height)
             RHActorField<unsigned short>(sprite, 0x184)));
         projected = RHActorField<SBGeoPoint2D>(RHActorField<void *>(this, 0x50), 0x1c).Unk005fc190(offset);
     }
-    volatile float base = RHActorField<float>(RHActorField<void *>(this, 0x50), 0x18);
+    float base = RHActorField<float>(RHActorField<void *>(this, 0x50), 0x18);
     point.x = projected.m_x;
-    point.y = base + projected.m_y;
-    if (height >= g_unk0x00677488)
+    float y = base;
+    y += projected.m_y;
+    point.y = y;
+    if (height >= 0.0f)
         point.z = base + height;
     else
     {
@@ -579,48 +642,187 @@ void RHHumanActorCalls::FUN_00479430(RHUnk00613e90 &point, float height)
             bool alternate = ((RHHumanVirtualCalls *)this)->V0f4();
             float z = base;
             if (alternate)
-                z += g_unk0x00677b48;
+                z += 45.0f;
             else
-                z += g_unk0x00677560;
+                z += 25.0f;
             point.z = z;
             break;
         }
         case 19:
         {
             float z = base;
-            z += g_unk0x00677560;
+            z += 25.0f;
             point.z = z;
             break;
         }
         case 16:
         {
             float z = base;
-            z += g_unk0x00677b4c;
+            z += 65.0f;
             point.z = z;
             break;
         }
         case 7:
         {
             float z = point.z;
-            z += g_unk0x00677b50;
+            z += 55.0f;
             point.z = z;
             break;
         }
         case 8: case 10: case 20: case 22:
         {
             float z = base;
-            z += g_unk0x00677438;
+            z += 10.0f;
             point.z = z;
             break;
         }
         case 3: case 12: case 13: case 17: case 18:
         {
             float z = base;
-            z += g_unk0x0067748c;
+            z += 5.0f;
             point.z = z;
             break;
         }
         }
+    }
+}
+
+SBGeoVector2D FUN_005fc580(const SBGeoVector2D &point, float factor);
+
+// FUNCTION: GAME 0x00478960
+void RHElementActor::FUN_00478960(RHUnk00613e90 &point)
+{
+    point = RHActorField<RHUnk00613e90>(RHActorField<void *>(this, 0x50), 0x10);
+    switch (RHActorField<int>(RHActorField<void *>(this, 0x50), 0x8c))
+    {
+    case 1: case 4: case 5: case 6: case 9: case 11: case 14: case 15: case 21: case 23: case 24:
+        if (((RHHumanVirtualCalls *)this)->V0f4())
+        {
+            float height = point.z;
+            point.z = height + g_unk0x677554;
+        }
+        else
+            point.z += 45.0f;
+        break;
+    case 19:
+    {
+        SBGeoVector2D offset = FUN_005fc580(((RHMalignityActorCalls *)this)->FUN_004135b0(), 40.0f);
+        point.x += offset.m_x;
+        point.y += offset.m_y;
+        point.z += 45.0f;
+        break;
+    }
+    case 16:
+        point.z += 85.0f;
+        break;
+    case 7: case 8: case 10: case 20: case 22:
+        point.z += 25.0f;
+        break;
+    case 3: case 12: case 13: case 17: case 18:
+        point.z += 2.0f;
+        break;
+    }
+}
+
+// Residual: VC6 places the unscaled direction arm after the shared return tail.
+// STUB: GAME 0x00478c20
+void RHElementActor::FUN_00478c20(RHUnk00613e90 &point, int posture)
+{
+    point = RHActorField<RHUnk00613e90>(RHActorField<void *>(this, 0x50), 0x10);
+    if (!posture)
+        posture = RHActorField<int>(RHActorField<void *>(this, 0x50), 0x8c);
+    switch (posture)
+    {
+    case 1: case 4: case 5: case 6: case 9: case 11: case 14: case 15: case 21: case 23: case 24:
+        if (((RHHumanVirtualCalls *)this)->V0f4())
+        {
+            float height = point.z;
+            point.z = height + g_unk0x677554;
+            return;
+        }
+        point.z += 45.0f;
+        return;
+    case 16:
+        point.z += 85.0f;
+        return;
+    case 8: case 10: case 20: case 22:
+        point.z += 25.0f;
+        return;
+    case 3: case 12: case 13: case 17: case 18:
+    {
+        void *info = RHActorField<void *>(this, 0x50);
+        short direction = RHActorField<short>(info, 0xd8);
+        if (!RHActorField<unsigned char>(info, 0xc0))
+        {
+            point.x += g_unk0x006ae494[direction];
+            point.y += g_unk0x006ae4d4[direction];
+        }
+        else
+        {
+            point.x += g_unk0x006ae494[direction] * 0.5f;
+            point.y += g_unk0x006ae4d4[direction] * 0.5f;
+        }
+        point.z += 5.0f;
+        return;
+    }
+    case 19:
+    {
+        SBGeoVector2D offset = FUN_005fc580(((RHMalignityActorCalls *)this)->FUN_004135b0(), 40.0f);
+        point.x += offset.m_x;
+        point.y += offset.m_y;
+        point.z += 45.0f;
+        break;
+    }
+    }
+}
+
+inline int RHHumanBowAnimation(int type)
+{
+    switch (type)
+    {
+    case 0:
+        return 0x5d;
+    case 1:
+        return 0x5e;
+    case 2:
+        return 0xed;
+    }
+    return type;
+}
+
+// Residual: VC6 keeps the shoot type enregistered and rotates the frame-index registers.
+// STUB: GAME 0x004795f0
+void RHHumanActorCalls::FUN_004795f0(RHUnk00613e90 &point, int type, short direction)
+{
+    void *sprite = RHActorField<void *>(this, 0x50);
+    float height = RHActorField<float>(sprite, 0x18);
+    int animation = RHHumanBowAnimation(type);
+    if (direction == -1)
+        direction = RHActorField<short>(sprite, 0xd8);
+    SBGeoPoint2D projected = RHActorField<SBGeoPoint2D>(RHActorField<void *>(this, 0x50), 0x1c).Unk005fc190(
+        SBGeoVector2D(*(SBGeoVector2D *)((RHUnk005b5e00 *)sprite)->Unk005bdd30(
+            RHActorField<short *>(((RHUnk005b5e00 *)sprite)->Unk(), 4)[animation] + direction)));
+    point.x = projected.m_x;
+    float y = height;
+    y += projected.m_y;
+    point.y = y;
+    point.z = height;
+    switch (type)
+    {
+    case 0:
+        point.z += 40.0f;
+        break;
+    case 1:
+        point.z += 50.0f;
+        break;
+    case 2:
+    {
+        SBGeoVector2D forward = FUN_005fc580(((RHMalignityActorCalls *)this)->FUN_004135b0(), 20.0f);
+        point.x += forward.m_x;
+        point.y += forward.m_y;
+        point.z += 40.0f;
+        break;
+    }
     }
 }
 
@@ -636,19 +838,19 @@ void RHElementActor::FUN_00478ae0(RHUnk00613e90 &point)
         if (((RHHumanVirtualCalls *)this)->V0f4())
         {
             float height = point.z;
-            point.z = height + g_unk0x0067748c;
+            point.z = height + 5.0f;
         }
         else
         {
             float height = point.z;
-            point.z = height + g_unk0x0067748c;
+            point.z = height + 5.0f;
         }
         break;
     }
     case 7: case 16:
     {
         float height = point.z;
-        point.z = height + g_unk0x00677b48;
+        point.z = height + 45.0f;
         break;
     }
     case 3: case 12: case 13: case 17: case 18:
@@ -657,11 +859,11 @@ void RHElementActor::FUN_00478ae0(RHUnk00613e90 &point)
         if (RHActorField<unsigned char>(info, 0xc0))
         {
             float x = g_unk0x006ae494[direction];
-            point.x -= x * g_unk0x006775d8;
+            point.x -= x * 0.5f;
             float y = g_unk0x006ae4d4[direction];
-            point.y -= y * g_unk0x006775d8;
+            point.y -= y * 0.5f;
             float height = point.z;
-            point.z = height + g_unk0x0067748c;
+            point.z = height + 5.0f;
             break;
         }
         point.x -= g_unk0x006ae494[direction];
@@ -670,7 +872,7 @@ void RHElementActor::FUN_00478ae0(RHUnk00613e90 &point)
     case 8: case 10: case 20: case 22:
     {
         float height = point.z;
-        point.z = height + g_unk0x0067748c;
+        point.z = height + 5.0f;
     }
     }
 }
@@ -694,7 +896,7 @@ void RHElementActorHuman::FUN_00479920(RHElementActorHuman *actor)
 
 #include "RHEngineSerializationCalls.h"
 
-class RHUnk004b1270
+class RHElementNet
 {
 public:
     void FUN_004b1270();
@@ -715,7 +917,7 @@ void RHElementActorHuman::FUN_00479970(RHSequenceElement *element)
         if (RHActorField<int>(value, 0xb0) == 9 && RHActorField<char>(value, 0x12))
         {
             ((RHEngineSerializationCalls *)g_pEngine)->FUN_004d88e0(value, 0, 1);
-            ((RHUnk004b1270 *)value)->FUN_004b1270();
+            ((RHElementNet *)value)->FUN_004b1270();
             if (((RHHumanTypeView *)this)->Type() == 12)
                 ((RHHumanVirtualCalls *)this)->V0e8(17, true);
         }
@@ -758,70 +960,73 @@ done:
     return 0;
 }
 
-// Parked: unsigned countdown fixes branches but the target spills an unsigned divisor then uses signed fidiv.
-// STUB: GAME 0x0047a8a0
+// FUNCTION: GAME 0x0047a8a0
 void RHElementActorHuman::FUN_0047a8a0()
 {
-    int &remaining = *(int *)((char *)this + 0x480);
-    int &duration = *(int *)((char *)this + 0x484);
+    unsigned &remaining = *(unsigned *)((char *)this + 0x480);
+    unsigned &duration = *(unsigned *)((char *)this + 0x484);
     unsigned short &frame = *(unsigned short *)((char *)this + 0x488);
     unsigned char &completed = *(unsigned char *)((char *)this + 0x48a);
     float &progress = *(float *)((char *)this + 0x48c);
 
-    if (remaining == 0)
-        return;
-
-    --remaining;
-    if (remaining == 0)
+    if (remaining > 0)
     {
-        completed = 1;
-        progress = 1.0f;
-        return;
+        --remaining;
+        if (remaining > 0)
+        {
+            if (completed)
+                frame = (unsigned short)((int)((float)remaining * g_unk0x677554 / (float)duration) + 0x28);
+            else
+                frame = (unsigned short)((int)(((float)duration - (float)remaining) * g_unk0x677554 / (float)duration) + 0x28);
+        }
+        else
+        {
+            completed = 1;
+            progress = 1.0f;
+        }
     }
-
-    float elapsed = completed ? (float)(duration - remaining) : (float)remaining;
-    frame = (unsigned short)((int)(elapsed * g_unk0x677554 / duration) + 0x28);
 }
 
-// Parked: allocation exception-state cleanup and object constructors remain approximate.
-// STUB: GAME 0x0047ab00
+// FUNCTION: GAME 0x0047ab00
 void RHElementActorHuman::FUN_0047ab00(int first, int second)
 {
-    RHUnkHumanPlacementA *firstNode =
-        (RHUnkHumanPlacementA *)::operator new(8);
-    void *firstValue = firstNode ? firstNode->FUN_005c1b20(first) : 0;
-    *(void **)((char *)this + 0x25c) = firstValue;
+    *(RHUnkHumanPlacementA **)((char *)this + 0x25c) = new RHUnkHumanPlacementA(first);
 
     if (second != -1)
     {
-        RHUnkHumanPlacementB *secondNode =
-            (RHUnkHumanPlacementB *)::operator new(8);
-        void *secondValue = secondNode ? secondNode->FUN_00450040(second) : 0;
-        *(void **)((char *)this + 0x258) = secondValue;
+        *(RHUnkHumanPlacementB **)((char *)this + 0x258) = new RHUnkHumanPlacementB(second);
     }
 }
 
-// Parked: the position-range helper entity and its stack-passed coordinates remain unresolved.
-// STUB: GAME 0x0047aba0
+struct RHHumanPositionRangeArray
+{
+    unsigned allocator;
+    RHUnkHumanPositionRange **first;
+    RHUnkHumanPositionRange **last;
+    unsigned Size() const
+    {
+        if (!first)
+            return 0;
+        return last - first;
+    }
+    RHUnkHumanPositionRange *At(unsigned short index) { return first[index]; }
+};
+
+// FUNCTION: GAME 0x0047aba0
 void RHElementActorHuman::FUN_0047aba0()
 {
     if (*(unsigned char *)((char *)this + 0x110) != 0)
         return;
 
-    float position[4];
-    RHUnkHumanPositionProvider *provider =
-        (RHUnkHumanPositionProvider *)(*(char **)((char *)this + 0x50) + 4);
-    provider->FUN_00560420(position);
-
-    char *global = (char *)g_unk0x6c0a9c;
-    void **first = *(void ***)(global + 0x4084);
-    void **last = *(void ***)(global + 0x4088);
-    unsigned short count = first ? (unsigned short)(last - first) : 0;
+    RHHumanPositionRangeArray &ranges = RHActorField<RHHumanPositionRangeArray>(g_unk0x6c0a9c, 0x4080);
+    RHUnk00571160Position position;
+    ((RHUnk00560420 *)(*(char **)((char *)this + 0x50) + 4))->Unk(&position);
+    unsigned short count = (unsigned short)ranges.Size();
     for (unsigned short index = 0; index < count; ++index)
     {
-        void *entry = first[index];
+        RHUnkHumanPositionRange *entry = ranges.At(index);
         if (*(int *)((char *)entry + 4) == 1 &&
-            ((RHUnkHumanPositionRange *)entry)->FUN_0051afe0())
+            entry->FUN_0051afe0(position))
         {
             *(unsigned char *)((char *)this + 0x110) = 1;
             return;
@@ -970,6 +1175,144 @@ struct RHUnk0047c420Message
 
 DECOMP_SIZE_ASSERT(RHUnk0047c420Message, 0x2c)
 
+// STUB: GAME 0x00474d60
+void RHElementActorHuman::FUN_00474d60(RHActorTranslationSequenceCalls *sequence, unsigned flags)
+{
+    if (flags == 4)
+    {
+        int weapon = RHActorField<int>(this, 0x144);
+        if (weapon == 10 || weapon == 11)
+            return;
+        RHOrder *order = new RHOrder;
+        order->m_24 = 0x4e;
+        order->m_2a = 0;
+        sequence->FUN_00585970(order);
+        return;
+    }
+    int first;
+    int second;
+    int third;
+    int fourth;
+    ((RHHumanVirtualCalls *)this)->V164();
+    switch (RHActorField<int>(RHActorField<void *>(this, 0x50), 0x8c))
+    {
+    case 1: case 6: case 8: case 11: case 14: case 15:
+    case 19: case 21: case 23: case 24:
+        switch (RHActorField<unsigned>(this, 0x144))
+        {
+        case 4: case 5: case 6:
+            first = 0x70; second = 0x72; third = 0x75; fourth = 0x72;
+            break;
+        case 7: case 8: case 9: case 10: case 11: case 15:
+            first = 0x69; second = 0x6b; third = 0x6e; fourth = 0x66;
+            break;
+        default:
+            first = 0x29; second = 0x2c; third = 0x31; fourth = 0x2c;
+            break;
+        }
+        break;
+    case 10: case 20: case 22:
+        first = 0x2b; second = 0x2e; third = 0x31; fourth = 0x2e;
+        break;
+    case 3: case 7: case 9: case 16: case 17: case 18:
+        if (((RHHumanVirtualCalls *)this)->V048() && !((RHHumanVirtualCalls *)this)->V0f4())
+            ((RHHumanVirtualCalls *)this)->V044(12);
+    case 12: case 13:
+        if (!((RHHumanVirtualCalls *)this)->V0f4() || (short)((RHHumanVirtualCalls *)this)->V0cc() > 0)
+        {
+            sequence->V0c(0, true);
+            return;
+        }
+        first = 0x29;
+        second = 0x29;
+        break;
+    case 4: case 5:
+        FUN_004752d0(sequence);
+        return;
+    default:
+        return;
+    }
+    if (((RHHumanVirtualCalls *)this)->V048())
+    {
+        FUN_0047ca50();
+        if ((unsigned char)(RHActorField<unsigned>((void *)((RHUnk005864a0 *)sequence)->FUN_005864a0(), 4) & 0x1f) == 0x14)
+        {
+            void *actor = (void *)((RHUnk005864a0 *)sequence)->FUN_005864a0();
+            RHUnk0047c420Message message;
+            message.m_20 = 0x42;
+            *(unsigned short *)&message.m_00 = 0;
+            message.m_1c = 0;
+            ((RHHumanVirtualCalls *)((char *)actor + 0x6e8 + RHActorField<int *>(actor, 0x6e8)[1]))->V024(&message);
+        }
+        if (!((RHHumanVirtualCalls *)this)->V0f4() &&
+            ((RHHumanWeaponCalls *)((RHUnk005864a0 *)sequence)->FUN_005864b0())->FUN_005c1db0(((RHUnk005864a0 *)sequence)->FUN_005864d0()) != 0)
+        {
+            RHOrder *order = new RHOrder;
+            order->m_24 = second;
+            order->m_2a = 0;
+            sequence->FUN_00585970(order);
+        }
+        else
+        {
+            RHOrder *order = new RHOrder;
+            order->m_24 = first;
+            order->m_2a = 0;
+            sequence->FUN_00585970(order);
+        }
+        ((RHHumanVirtualCalls *)this)->V154(sequence);
+    }
+    else
+    {
+        if ((flags & 1) && (unsigned char)(RHActorField<unsigned>((void *)((RHUnk005864a0 *)sequence)->FUN_005864a0(), 4) & 0x1f) == 0x14)
+        {
+            void *actor = (void *)((RHUnk005864a0 *)sequence)->FUN_005864a0();
+            RHUnk0047c420Message message;
+            message.m_20 = 0x41;
+            *(unsigned short *)&message.m_00 = 0;
+            message.m_1c = 0;
+            ((RHHumanVirtualCalls *)((char *)actor + 0x6e8 + RHActorField<int *>(actor, 0x6e8)[1]))->V024(&message);
+        }
+        if (RHActorField<char>(this, 0x1ce))
+        {
+            FUN_0047ca50();
+            RHOrder *order = new RHOrder;
+            order->m_24 = second;
+            order->m_2a = 0;
+            sequence->FUN_00585970(order);
+            ((RHHumanVirtualCalls *)this)->V154(sequence);
+        }
+        else if (flags & 2)
+        {
+            RHOrder *order = new RHOrder;
+            order->m_24 = second;
+            order->m_2a = 0;
+            sequence->FUN_00585970(order);
+            ((RHHumanVirtualCalls *)this)->V154(sequence);
+        }
+        else if (flags & 1)
+        {
+            RHOrder *order = new RHOrder;
+            order->m_24 = fourth;
+            order->m_2a = 0;
+            sequence->FUN_00585970(order);
+        }
+    }
+    if (!((RHHumanVirtualCalls *)this)->V048() && !RHActorField<char>(this, 0x1ce) && (flags & 2))
+    {
+        RHOrder *order = new RHOrder;
+        order->m_24 = third;
+        order->m_2a = 0;
+        sequence->FUN_00585970(order);
+        if (RHActorField<void *>(this, 0x268) && RHActorField<unsigned short>(this, 0x1c8) > 40)
+        {
+            order = new RHOrder;
+            order->m_24 = 0x67;
+            order->m_2a = 0;
+            sequence->FUN_00585970(order);
+        }
+    }
+}
+
 #include "RHMalignityGeometryCalls.h"
 
 class RHHumanAddressCalls
@@ -1030,21 +1373,16 @@ void *RHUnkHumanPositionProvider::FUN_005b5e00()
     return 0;
 }
 
-// GLOBAL: GAME 0x0067a830
-double g_unk0x0067a830 = 2.546479018608091;
 
 // FUNCTION: GAME 0x005fcdb0
 unsigned char FUN_005fcdb0(float value)
 {
-    if (value >= g_unk0x00677488)
-        return (int)(value * g_unk0x0067a830) & 0xf;
+    if (value >= 0.0f)
+        return (int)(value * 2.546479018608091) & 0xf;
     return 0xf - FUN_005fcdb0(-value);
 }
 
-float FUN_005fcdf0(unsigned short)
-{
-    return 0.0f;
-}
+double FUN_005fcdf0(unsigned short value);
 
 // FUNCTION: GAME 0x0047f4f0
 void RHElementActorHuman::FUN_0047f4f0(void *)
@@ -1055,93 +1393,107 @@ void RHElementActorHuman::FUN_0047f4f0(void *)
     *(unsigned short *)((char *)this + 0x1c8) = 0;
 }
 
-// Parked: x87 comparison and random-helper ABI remain approximate.
+class RHMalignityAbilityCalls
+{
+public:
+    unsigned short FUN_005c1b50(int index);
+    int FUN_005c2130(float value, int first, int second);
+};
+
+// Parked: opponent-front and position-copy register scheduling remain different.
 // STUB: GAME 0x0047f420
 bool RHElementActorHuman::FUN_0047f420()
 {
-    RHElementActorHuman *other = 0;
+    RHElementActorHuman *other;
     if (m_260.count != 0)
         other = (RHElementActorHuman *)m_260.head->next->data;
-    char *otherPosition = (char *)RHActorField<void *>(other, 0x50) + 0x10;
-    char *ourPosition = (char *)RHActorField<void *>(this, 0x50) + 0x10;
-    float x = *(float *)(otherPosition + 0x00) - *(float *)(ourPosition + 0x00);
-    float y = *(float *)(otherPosition + 0x04) - *(float *)(ourPosition + 0x04);
-    float z = *(float *)(otherPosition + 0x08) - *(float *)(ourPosition + 0x08);
-    float distance = (float)sqrt(x * x + y * y + z * z);
-    RHHumanWeaponCalls *weapon = (RHHumanWeaponCalls *)RHActorField<void *>(this, 0x25c);
-    if ((float)weapon->FUN_005c1b50(2) < distance)
-        return (float)weapon->FUN_005c1b50(2) > distance;
+    else
+        other = 0;
+    RHUnk00613e90 otherPosition = RHActorField<RHUnk00613e90>(RHActorField<void *>(other, 0x50), 0x10);
+    RHUnk00613e90 &ourPosition = RHActorField<RHUnk00613e90>(RHActorField<void *>(this, 0x50), 0x10);
+    float x = otherPosition.x - ourPosition.x;
+    float y = otherPosition.y - ourPosition.y;
+    float z = otherPosition.z - ourPosition.z;
+    float distance = (float)sqrt((z * z + x * x) + y * y);
+    if (RHActorField<RHMalignityAbilityCalls *>(this, 0x25c)->FUN_005c1b50(2) < distance &&
+        RHActorField<RHMalignityAbilityCalls *>(other, 0x25c)->FUN_005c1b50(2) > distance)
+        return true;
     return false;
 }
 
-// Parked: helper signatures and actor-state cleanup remain provisional.
+// Parked: argument reload scheduling and duplicate angle-result return blocks remain different.
 // STUB: GAME 0x00480e90
 int RHElementActorHuman::FUN_00480e90(void *first, void *second, int weaponData)
 {
-    RHUnkHumanPositionProvider *position =
-        (RHUnkHumanPositionProvider *)RHActorField<void *>(this, 0x50);
-    RHHumanWeaponCalls *weapon =
-        (RHHumanWeaponCalls *)RHActorField<void *>(this, 0x25c);
-    unsigned short kind = weapon->FUN_005c1d50(weaponData);
-    unsigned short direction = weapon->FUN_005c1d70(weaponData);
-    int result = weaponData;
-    if (kind >= 3 && kind <= 4)
-        result = FUN_00481050(first, second, weaponData);
-    else if (kind >= 5 && kind <= 6)
-        result = position->FUN_005b8050(first, second, 0, 0);
-    if (kind == 3 || kind == 5)
-        FUN_0047faf0((float)result, weaponData);
-    else if (kind == 4 || kind == 6)
-        FUN_0047f520((float)result, weaponData);
-    if (!position->FUN_005b8240(first, second))
-        return result;
-    if (direction > 1)
-        return result;
-    float &minimum = *(float *)((char *)this + 0x234);
-    float maximum = *(float *)((char *)this + 0x238);
-    if ((direction == 0 && maximum <= minimum) ||
-        (direction == 1 && minimum <= maximum))
-        return result;
-    float delta = (float)weapon->FUN_005c1f50(weaponData);
-    if (direction == 1)
-        delta = -delta;
-    float candidate = minimum + delta;
-    unsigned char candidateAngle = FUN_005fcdb0(candidate);
-    unsigned char maximumAngle = FUN_005fcdb0(maximum);
-    if ((direction == 0 && candidate < maximum) ||
-        (direction == 1 && maximum < candidate) || candidateAngle == maximumAngle)
-        minimum = candidate;
-    else
-        minimum = maximum;
+    int kind = RHActorField<RHUnk005c1d50 *>(this, 0x25c)->FUN_005c1d50(weaponData);
+    int direction = RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1d70(weaponData);
+    int result;
+    switch (kind)
+    {
+    case 3:
+    case 4:
+        result = FUN_00481050(first, *(void *volatile *)&second, weaponData);
+        break;
+    case 5:
+    case 6:
+        result = RHActorField<RHSprite *>(this, 0x50)->PerformAction((RHOrder *)first, (int)*(void *volatile *)&second, 0, false);
+        break;
+    default:
+        result = (int)second;
+        break;
+    }
+    switch (kind)
+    {
+    case 3:
+    case 5:
+        FUN_0047faf0(result, weaponData);
+        break;
+    case 4:
+    case 6:
+        FUN_0047f520(result, weaponData);
+        break;
+    }
+    if (((RHUnkHumanPositionProvider *)RHActorField<void *>(this, 0x50))->FUN_005b8240(first, second) == true &&
+        ((direction == 0 && m_234 < m_238) || (direction == 1 && m_234 > m_238)))
+    {
+        float candidate = m_234;
+        float step;
+        if (direction == 1)
+            step = -RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1f50(weaponData);
+        else
+            step = RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1f50(weaponData);
+        candidate += step;
+        unsigned char candidateAngle = FUN_005fcdb0(candidate);
+        unsigned char maximumAngle = FUN_005fcdb0(m_238);
+        if ((direction == 0 && candidate < m_238) || (direction == 1 && candidate > m_238) ||
+            candidateAngle == maximumAngle)
+            m_234 = candidate;
+        else
+            m_234 = m_238;
+    }
     return result;
 }
 
-// Parked: the target's profile mutations and engine-table lookup are approximate.
-// STUB: GAME 0x00481050
+#include "RHEngineWidenedCalls.h"
+
+// FUNCTION: GAME 0x00481050
 int RHElementActorHuman::FUN_00481050(void *first, void *second, int weaponData)
 {
-    RHUnkHumanPositionProvider *position =
-        (RHUnkHumanPositionProvider *)RHActorField<void *>(this, 0x50);
-    RHHumanWeaponCalls *weapon =
-        (RHHumanWeaponCalls *)RHActorField<void *>(this, 0x25c);
-    if (!position->FUN_005b8240(first, second))
-        return position->FUN_005b8050(first, second, 0, 0);
-    unsigned short direction = weapon->FUN_005c1d70(weaponData);
-    unsigned char heading = FUN_005fcdb0(*(float *)((char *)this + 0x234));
-    *(unsigned short *)((char *)RHActorField<void *>(this, 0x50) + 0xd4) = heading & 0xf;
-    *(unsigned short *)((char *)RHActorField<void *>(this, 0x50) + 0xd6) = heading & 0xf;
-    position->FUN_005bd450();
-    unsigned index = RHActorField<unsigned>(RHActorField<void *>(this, 0x50), 0x1dc);
-    void *table = position->FUN_005b5e00();
-    if (table)
-        *(unsigned short *)((char *)RHActorField<void *>(this, 0x50) + 0x184) =
-            ((unsigned short *)((char *)table + 4))[index] + heading;
-    float minimum = *(float *)((char *)this + 0x234);
-    float maximum = *(float *)((char *)this + 0x238);
-    if ((direction == 0 && maximum <= minimum) ||
-        (direction == 1 && minimum <= maximum))
-        return 2;
-    return position->FUN_005b8050(first, second, 0, 0);
+    if (!((RHUnkHumanPositionProvider *)RHActorField<void *>(this, 0x50))->FUN_005b8240(first, second))
+        return RHActorField<RHSprite *>(this, 0x50)->PerformAction((RHOrder *)first, (int)second, 0, false);
+    int direction = RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1d70(weaponData);
+    unsigned short heading = FUN_005fcdb0(m_234);
+    char *sprite = (char *)RHActorField<void *>(this, 0x50) + 4;
+    *(unsigned short *)(sprite + 0xd4) = heading & 0xf;
+    *(unsigned short *)(sprite + 0xd6) = heading & 0xf;
+    void *position = RHActorField<void *>(this, 0x50);
+    ((RHEngineWidenedCalls *)position)->FUN_005bd450();
+    unsigned index = RHActorField<unsigned>(position, 0x1dc);
+    void *table = ((RHUnk005b5e00 *)position)->Unk();
+    RHActorField<unsigned short>(position, 0x184) = RHActorField<unsigned short *>(table, 4)[index] + heading;
+    if ((direction == 0 && m_234 >= m_238) || (direction == 1 && m_234 <= m_238))
+        return RHActorField<RHSprite *>(this, 0x50)->PerformAction((RHOrder *)first, (int)second, 0, false);
+    return 2;
 }
 
 #include "RHSoldierHumanCalls.h"
@@ -1150,6 +1502,7 @@ int RHElementActorHuman::FUN_00481050(void *first, void *second, int weaponData)
 // STUB: GAME 0x00481d40
 int RHElementActorHuman::FUN_00481d40(void *first, void *second)
 {
+    struct Kind5 { unsigned value : 5; };
     if (RHActorField<char>(this, 0x148))
     {
         RHUnk005c38b0 *context = g_unk0x6c10e8;
@@ -1180,7 +1533,7 @@ int RHElementActorHuman::FUN_00481d40(void *first, void *second)
             {
                 ((RHTitbitList *)&opponents)->At(index);
                 void *actor = opponents.cursor->data;
-                if ((unsigned char)(RHActorField<unsigned>(actor, 4) & 0x1f) == 0x14)
+                if (((Kind5 *)((char *)actor + 4))->value == 0x14)
                 {
                     void *script = (char *)actor + 0x6e8;
                     ((RHScriptBatchCalls *)((char *)script + RHActorField<int *>(script, 0)[1]))->Unk0040d980(0x38);
@@ -1203,7 +1556,7 @@ int RHElementActorHuman::FUN_00481d40(void *first, void *second)
         else
             goto waiting;
     }
-    if (result == 3 && (unsigned char)(RHActorField<unsigned>(this, 4) & 0x1f) == 0x14)
+    if (result == 3 && ((Kind5 *)((char *)this + 4))->value == 0x14)
     {
         void *script = (char *)this + 0x6e8;
         ((RHScriptBatchCalls *)((char *)script + RHActorField<int *>(script, 0)[1]))->Unk0040d980(0x39);
@@ -1213,38 +1566,63 @@ waiting:
     return 2;
 }
 
-// Parked: event construction, nested point cleanup, and message dispatch remain approximate.
-// STUB: GAME 0x00481ef0
-int RHElementActorHuman::FUN_00481ef0(int target, void *first, int weaponData)
+#include "RHSequenceTimedCalls.h"
+
+class RHUnk004237d0
 {
-    RHHumanWeaponCalls *weapon =
-        (RHHumanWeaponCalls *)RHActorField<void *>(this, 0x25c);
-    int result = ((RHUnkHumanPositionProvider *)RHActorField<void *>(this, 0x50))
-        ->FUN_005b8050(first, (void *)target, 0, 0);
-    if (result != 0)
-        return result;
-    RHElementActorHuman *other = (RHElementActorHuman *)target;
-    char *ownPosition = (char *)RHActorField<void *>(this, 0x50) + 0x10;
-    char *otherPosition = (char *)RHActorField<void *>(other, 0x50) + 0x10;
-    float x = *(float *)ownPosition - *(float *)otherPosition;
-    float y = *(float *)(ownPosition + 4) - *(float *)(otherPosition + 4);
-    float z = *(float *)(ownPosition + 8) - *(float *)(otherPosition + 8);
-    float distance = (float)sqrt(x * x + y * y + z * z);
-    if (distance < weapon->FUN_005c1e80(weaponData) ||
-        distance > weapon->FUN_005c1ea0(weaponData))
-        return result;
-    void *event = operator new(0x7c);
-    ((RHScriptBatchCalls *)g_unk0x6c10e8)->Unk0058a940((void *)0x6c0560, 0, event);
+public:
+    SBGeoPoint2D FUN_004237d0();
+};
+
+class RHPositionInterface
+{
+public:
+    bool Turn();
+};
+
+class RHUnk6c1040;
+extern RHUnk6c1040 *g_unk0x6c1040;
+
+static inline void RHHumanSetTargetHeading(void *position, unsigned short heading)
+{
+    RHActorField<unsigned short>(position, 0xd6) = heading & 0xf;
+}
+
+// FUNCTION: GAME 0x00481ef0
+int RHElementActorHuman::FUN_00481ef0(RHOrder *order, int animation, int weaponData)
+{
+    RHHumanSetTargetHeading((char *)RHActorField<void *>(this, 0x50) + 4,
+        ((RHUnk005fc3b0 *)&((RHUnk004237d0 *)RHActorField<void *>(order, 0x30))->FUN_004237d0().Unk005fc110(
+            ((RHUnk004237d0 *)this)->FUN_004237d0()))->FUN_005fcc50(0.57357645f));
+    ((RHPositionInterface *)((char *)RHActorField<void *>(this, 0x50) + 4))->Turn();
+    int result = RHActorField<RHSprite *>(this, 0x50)->PerformAction(order, animation, 0, false);
+    if (result == 0)
+    {
+        RHUnk00613e90 delta;
+        delta = RHActorField<RHUnk00613e90>(RHActorField<void *>(this, 0x50), 0x10);
+        RHUnk00613e90 &target = RHActorField<RHUnk00613e90>(RHActorField<void *>(RHActorField<void *>(order, 0x30), 0x50), 0x10);
+        delta.x -= target.x;
+        delta.y -= target.y;
+        delta.z -= target.z;
+        float distance = (float)sqrt((delta.z * delta.z + delta.y * delta.y) + delta.x * delta.x);
+        if (RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1e80(weaponData) <= distance &&
+            RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1ea0(weaponData) >= distance)
+        {
+            RHUnk005861c0 *element = new RHUnk005861c0(1, 0x27, RHActorField<void *>(order, 0x30), this,
+                RHActorField<RHSword *>(this, 0x25c), weaponData);
+            ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940("", 0, element);
+        }
+    }
     return result;
 }
 
 // Parked: target filtering, iterator-cache mutations, and EH cleanup differ.
 // STUB: GAME 0x0047f520
-void RHElementActorHuman::FUN_0047f520(float mode, int weaponData)
+void RHElementActorHuman::FUN_0047f520(int mode, int weaponData)
 {
     RHHumanWeaponCalls *weapon =
         (RHHumanWeaponCalls *)RHActorField<void *>(this, 0x25c);
-    if (mode == 0.0f)
+    if (mode == 0)
     {
         unsigned short direction = weapon->FUN_005c1d70(weaponData);
         float heading = FUN_005fcdf0(
@@ -1256,23 +1634,23 @@ void RHElementActorHuman::FUN_0047f520(float mode, int weaponData)
         FUN_00482390(&m_20c, weaponData, true);
         return;
     }
-    if (mode == 2.8025969e-45f)
+    if (mode == 2)
     {
         if (m_20c.count > 0)
             FUN_00482600(&m_20c, weaponData);
         return;
     }
-    if (mode == 4.2038954e-45f)
+    if (mode == 3)
         m_20c.Clear();
 }
 
 // Parked: its cached range setup and actor-notification path remain approximate.
 // STUB: GAME 0x0047faf0
-void RHElementActorHuman::FUN_0047faf0(float mode, int weaponData)
+void RHElementActorHuman::FUN_0047faf0(int mode, int weaponData)
 {
     RHHumanWeaponCalls *weapon =
         (RHHumanWeaponCalls *)RHActorField<void *>(this, 0x25c);
-    if (mode == 0.0f)
+    if (mode == 0)
     {
         unsigned short direction = weapon->FUN_005c1d70(weaponData);
         float heading = FUN_005fcdf0(
@@ -1284,12 +1662,12 @@ void RHElementActorHuman::FUN_0047faf0(float mode, int weaponData)
         FUN_00482600(&m_20c, weaponData);
         return;
     }
-    if (mode == 2.8025969e-45f)
+    if (mode == 2)
     {
         FUN_00482390(&m_20c, weaponData, false);
         return;
     }
-    if (mode == 4.2038954e-45f)
+    if (mode == 3)
         m_20c.Clear();
 }
 
@@ -1306,7 +1684,7 @@ int RHElementActorHuman::FUN_004801d0(void *first, void *second, int weaponData)
         ((RHHumanWeaponCalls *)RHActorField<void *>(this, 0x25c))->FUN_005c1d70(weaponData);
     if (direction > 1)
         return 0;
-    FUN_0047faf0((float)result, weaponData);
+    FUN_0047faf0(result, weaponData);
     return result;
 }
 
@@ -1797,8 +2175,12 @@ void RHHumanActorCalls::FUN_0047d520(void *actor, int value)
     }
 }
 
-// Parked effective: the first-opponent count test swaps the eax/ecx load registers.
-// STUB: GAME 0x0047d270
+static inline RHElementActorHuman *RHHumanFirstOpponent(RHElementActorHuman *actor)
+{
+    return actor->m_260.count ? (RHElementActorHuman *)((RHHumanOpponentNode *)actor->m_260.head->next)->value.m_actor : 0;
+}
+
+// FUNCTION: GAME 0x0047d270
 bool RHHumanActorCalls::FUN_0047d270(void *actor)
 {
     RHElementActorHuman *self = (RHElementActorHuman *)this;
@@ -1819,9 +2201,8 @@ bool RHHumanActorCalls::FUN_0047d270(void *actor)
             self->FUN_0047ebc0();
             if (self->m_260.count != 0)
             {
-                RHHumanOpponentNode *first =
-                    (RHHumanOpponentNode *)self->m_260.head->next;
-                if (((RHElementActorHuman *)first->value.m_actor)->m_260.count != 0)
+                RHElementActorHuman *first = RHHumanFirstOpponent(self);
+                if (first->m_260.count != 0)
                     FUN_0047d4c0();
             }
             else
@@ -1832,26 +2213,47 @@ bool RHHumanActorCalls::FUN_0047d270(void *actor)
     return false;
 }
 
-// Residual: the target's cached iterator search, insertion schedule, and changed-state path differ.
+// Parked: the first opponent's count loads use different registers.
 // STUB: GAME 0x0047ce70
 bool RHElementActorHuman::FUN_0047ce70(RHElementActorHuman *actor, void *line)
 {
-    for (RHHumanOpponentNode *node = (RHHumanOpponentNode *)m_260.head->next;
-        node != (RHHumanOpponentNode *)m_260.head; node = node->next)
+    unsigned count = m_260.count;
+    for (unsigned index = 0; index < count; ++index)
     {
-        if (node->value.m_actor == actor)
+        RHHumanList &opponents = m_260;
+        ((RHTitbitList *)&opponents)->At(index);
+        if (*(RHElementActorHuman *volatile *)&actor == ((RHHumanOpponentNode *)opponents.cursor)->value.m_actor)
         {
-            node->value.m_line = line;
-            m_260.valid = 1;
+            if (index)
+            {
+                ((RHTitbitList *)&opponents)->At(index);
+                RHHumanOpponent &selected = ((RHHumanOpponentNode *)opponents.cursor)->value;
+                ((RHTitbitList *)&opponents)->At(0);
+                RHHumanOpponentNode *first = (RHHumanOpponentNode *)opponents.cursor;
+                RHHumanOpponent previous = first->value;
+                first->value = selected;
+                ((RHTitbitList *)&opponents)->At(index);
+                ((RHHumanOpponentNode *)opponents.cursor)->value = previous;
+                ((RHTitbitList *)&opponents)->At(0);
+                ((RHHumanOpponentNode *)opponents.cursor)->value.m_line = line;
+            }
             return false;
         }
     }
     RHHumanOpponent value;
     value.m_actor = actor;
     value.m_line = line;
-    ((RHHumanOpponentListCalls *)&m_260)->FUN_00486110(
-        RHHumanOpponentIterator((RHHumanOpponentNode *)m_260.head), value);
-    ((RHHumanActorCalls *)this)->FUN_0047d4c0();
+    RHHumanList &opponents = m_260;
+    ((RHHumanOpponentListCalls *)&opponents)->FUN_00486110(
+        RHHumanOpponentIterator((RHHumanOpponentNode *)opponents.head->next), value);
+    opponents.valid = 1;
+    FUN_0047ebc0();
+    if (m_260.count)
+    {
+        RHElementActorHuman *other = RHHumanFirstOpponent(this);
+        if (other->m_260.count)
+            ((RHHumanActorCalls *)this)->FUN_0047d4c0();
+    }
     return true;
 }
 
@@ -1873,41 +2275,111 @@ bool RHElementActorHuman::FUN_0047cf80(RHElementActorHuman *actor, void *line)
     return false;
 }
 
-// Residual: owner visibility and cached line validation are only approximated by the endpoint checks.
-// STUB: GAME 0x0047d1b0
+// FUNCTION: GAME 0x0047d1b0
 void RHElementActorHuman::FUN_0047d1b0()
 {
-    void *owner = RHActorField<void *>(this, 0x50);
     unsigned count = m_260.count;
     for (unsigned index = 0; index < count; ++index)
     {
-        RHHumanOpponentNode *node = (RHHumanOpponentNode *)m_260.head->next;
-        for (unsigned current = 0; current < index; ++current)
-            node = node->next;
-        RHElementActorHuman *other = (RHElementActorHuman *)node->value.m_actor;
-        void *otherOwner = RHActorField<void *>(other, 0x50);
-        if (RHActorField<void *>(owner, 0xe0) == RHActorField<void *>(otherOwner, 0xe0))
-            node->value.m_line = 0;
-        else if (node->value.m_line == 0)
-            node->value.m_line = otherOwner;
+        RHHumanList &opponents = m_260;
+        ((RHTitbitList *)&opponents)->At(index);
+        RHHumanOpponent &opponent = ((RHHumanOpponentNode *)opponents.cursor)->value;
+        RHElementActorHuman *other = (RHElementActorHuman *)opponent.m_actor;
+        void *otherArea = RHActorField<void *>(RHActorField<void *>(other, 0x50), 0xe0);
+        void *ownArea = RHActorField<void *>(RHActorField<void *>(this, 0x50), 0xe0);
+        if (otherArea == ownArea)
+        {
+            if (opponent.m_line)
+            {
+clearLine:
+                opponent.m_line = 0;
+                other->FUN_0047cf80(this, 0);
+            }
+        }
+        else if (!opponent.m_line || RHActorField<void *>(opponent.m_line, 0x1c) != ownArea ||
+            RHActorField<void *>(RHActorField<void *>(opponent.m_line, 0x20), 0x1c) != otherArea)
+        {
+            void *ownLine = FUN_00484870(other);
+            if (!ownLine)
+                goto clearLine;
+            void *otherLine = other->FUN_00484870(this);
+            if (!otherLine || ownLine != RHActorField<void *>(otherLine, 0x20))
+                goto clearLine;
+            opponent.m_line = ownLine;
+            other->FUN_0047cf80(this, otherLine);
+        }
     }
 }
 
-// Residual: the target builds a randomized distance threshold and rearranges opponent entries.
+static inline RHHumanOpponent &RHHumanPrunedOpponentAt(RHHumanList &list, int wanted)
+{
+    int size = list.count;
+    if (list.valid)
+    {
+        if (wanted <= (size + 1) / 2)
+            FUN_005c9010((RHUnk005c9010Iterator &)(list.cursor = list.head->next), wanted, std::bidirectional_iterator_tag());
+        else
+            FUN_005c9010((RHUnk005c9010Iterator &)(list.cursor = list.head), wanted - size, std::bidirectional_iterator_tag());
+        list.valid = 0;
+        list.index = wanted;
+    }
+    else
+    {
+        int previous = list.index;
+        if (wanted != previous)
+        {
+            if (wanted < previous)
+            {
+                if (wanted < (previous + 1) / 2)
+                    FUN_005c9010((RHUnk005c9010Iterator &)(list.cursor = list.head->next), wanted, std::bidirectional_iterator_tag());
+                else
+                    FUN_005c9010((RHUnk005c9010Iterator &)list.cursor, wanted - previous, std::bidirectional_iterator_tag());
+            }
+            else if (wanted < (previous + size) / 2)
+                FUN_005c9010((RHUnk005c9010Iterator &)list.cursor, wanted - previous, std::bidirectional_iterator_tag());
+            else
+            {
+                list.cursor = list.head;
+                int distance = wanted - size;
+                while (distance > 0) { list.cursor = list.cursor->next; --distance; }
+                while (distance < 0) { list.cursor = list.cursor->prev; ++distance; }
+            }
+            list.index = wanted;
+        }
+    }
+    return ((RHHumanOpponentNode *)list.cursor)->value;
+}
+
+// Parked: cached cursor address liveness adds a frame slot and changes traversal registers.
 // STUB: GAME 0x0047cb00
 void RHElementActorHuman::FUN_0047cb00()
 {
-    unsigned count = m_260.count;
-    for (unsigned index = 0; index < count; ++index)
+    float maximum = ((RHMalignityAbilityCalls *)RHActorField<void *>(this, 0x25c))->FUN_005c1b50(3);
+    bool changed = false;
+    for (int index = (int)m_260.count - 1; index >= 0; --index)
     {
-        RHHumanOpponentNode *node = (RHHumanOpponentNode *)m_260.head->next;
-        for (unsigned current = 0; current < index; ++current)
-            node = node->next;
-        RHElementActorHuman *other = (RHElementActorHuman *)node->value.m_actor;
-        if (other && other->m_260.count == 0)
-            ((RHHumanActorCalls *)this)->FUN_0047d270(other);
+        RHHumanList &opponents = m_260;
+        ((RHTitbitList *)&opponents)->At(index);
+        RHElementActorHuman *other = (RHElementActorHuman *)opponents.cursor->data;
+        float distance = ((RHUnk005fc3b0 *)&RHActorField<SBGeoPoint2D>(RHActorField<void *>(other, 0x50), 0x24).Unk005fc110(
+            RHActorField<SBGeoPoint2D>(RHActorField<void *>(this, 0x50), 0x24)))->Unk005fc6a0(1.0f);
+        if (distance > maximum &&
+            (float)((RHMalignityAbilityCalls *)RHActorField<void *>(other, 0x25c))->FUN_005c1b50(3) < distance)
+        {
+            RHHumanPrunedOpponentAt(opponents, index);
+            RHScriptNode *node = opponents.cursor;
+            node->prev->next = node->next;
+            node->next->prev = node->prev;
+            ::operator delete(node);
+            --opponents.count;
+            opponents.valid = 1;
+            ((RHHumanActorCalls *)other)->FUN_0047d270(this);
+            other->FUN_0047cd40();
+            changed = true;
+        }
     }
-    FUN_0047d1b0();
+    if (changed)
+        FUN_0047cd40();
 }
 
 // Parked: sequence pointer registers and message-construction scheduling differ.
@@ -1920,7 +2392,7 @@ void RHElementActorHuman::FUN_0047cd40()
         if (sequence && RHActorField<unsigned char>(sequence, 4) == 4)
             RHActorField<int>(sequence, 0x94) = RHActorField<int>(sequence, 0x94) == 0x12f ? 6 : 10;
         RHUnk00584d60 *event = new RHUnk00584d60(1, 0x33, this);
-        ((RHScriptBatchCalls *)RHActorField<void *>(this, 0x5c))->Unk0058a940(g_unk0x6c0560, 0, event);
+        ((RHScriptBatchCalls *)RHActorField<void *>(this, 0x5c))->Unk0058a940("", 0, event);
         if ((RHActorField<unsigned>(this, 4) & 0xf) == 0xc)
             ((RHHumanActorCalls *)this)->FUN_0049d780();
         else if ((RHActorField<unsigned>(this, 4) & 0x1f) == 0x14)
@@ -1984,30 +2456,35 @@ void RHElementActorHuman::FUN_0047d670()
     ((RHHumanActorCalls *)this)->FUN_0047d520(node->value.m_actor, 0xc);
 }
 
-// Residual: iterator invalidation, sequence-list cleanup, and the type-specific notification differ.
-// STUB: GAME 0x0047ca50
+// FUNCTION: GAME 0x0047ca50
 void RHElementActorHuman::FUN_0047ca50()
 {
     unsigned count = m_260.count;
     for (unsigned index = 0; index < count; ++index)
     {
-        RHHumanOpponentNode *node = (RHHumanOpponentNode *)m_260.head->next;
-        for (unsigned current = 0; current < index; ++current)
-            node = node->next;
-        ((RHHumanActorCalls *)node->value.m_actor)->FUN_0047d270(this);
+        RHHumanList &opponents = m_260;
+        ((RHTitbitList *)&opponents)->At(index);
+        ((RHHumanActorCalls *)opponents.cursor->data)->FUN_0047d270(this);
     }
-    m_260.Clear();
+    RHHumanList &opponents = m_260;
+    RHScriptNode *sentinel = opponents.head;
+    RHScriptNode *current = sentinel->next;
+    while (current != sentinel)
+    {
+        RHScriptNode *previous = current;
+        current = current->next;
+        ((RHUnk0046eb30 *)&opponents)->erase(RHScriptIter(previous));
+    }
+    opponents.valid = 1;
     if (((RHHumanVirtualCalls *)this)->V048())
         return;
-    unsigned type = RHActorField<unsigned>(this, 4) & 0xf;
-    if (type == 0xc)
+    struct Kind4 { unsigned value : 4; };
+    struct Kind5 { unsigned value : 5; };
+    if (((Kind4 *)((char *)this + 4))->value == 0xc)
         ((RHHumanActorCalls *)this)->FUN_0049d780();
-    else if ((RHActorField<unsigned>(this, 4) & 0x1f) == 0x14)
+    else if (((Kind5 *)((char *)this + 4))->value == 0x14)
     {
-        void *actor = RHActorField<void *>(this, 0x49c);
-        union { unsigned long address; void (RHHumanAddressCalls::*call)(void *, int); } actionCall;
-        actionCall.address = 0x40d980;
-        (((RHHumanAddressCalls *)((char *)actor + 0x49c))->*actionCall.call)(0, 0x18);
+        ((RHScriptBatchCalls *)((char *)this + 0x49c + RHActorField<int *>(this, 0x49c)[1]))->Unk0040d980(0x18);
     }
 }
 
@@ -2016,11 +2493,10 @@ static inline RHHumanOpponent &RHHumanStrengthOpponentAt(RHHumanList &list, int 
     int size = list.count;
     if (list.valid)
     {
-        std::bidirectional_iterator_tag category;
         if (wanted <= (size + 1) / 2)
-            FUN_005c9010((RHUnk005c9010Iterator &)(list.cursor = list.head->next), wanted, category);
+            FUN_005c9010((RHUnk005c9010Iterator &)(list.cursor = list.head->next), wanted, std::bidirectional_iterator_tag());
         else
-            FUN_005c9010((RHUnk005c9010Iterator &)(list.cursor = list.head), wanted - size, category);
+            FUN_005c9010((RHUnk005c9010Iterator &)(list.cursor = list.head), wanted - size, std::bidirectional_iterator_tag());
         list.valid = 0;
         list.index = wanted;
     }
@@ -2029,13 +2505,12 @@ static inline RHHumanOpponent &RHHumanStrengthOpponentAt(RHHumanList &list, int 
         int previous = list.index;
         if (wanted != previous)
         {
-            std::bidirectional_iterator_tag category;
             if (wanted < previous)
             {
                 if (wanted < (previous + 1) / 2)
-                    FUN_005c9010((RHUnk005c9010Iterator &)(list.cursor = list.head->next), wanted, category);
+                    FUN_005c9010((RHUnk005c9010Iterator &)(list.cursor = list.head->next), wanted, std::bidirectional_iterator_tag());
                 else
-                    FUN_005c9010((RHUnk005c9010Iterator &)list.cursor, wanted - previous, category);
+                    FUN_005c9010((RHUnk005c9010Iterator &)list.cursor, wanted - previous, std::bidirectional_iterator_tag());
             }
             else
             {
@@ -2073,77 +2548,70 @@ bool RHElementActorHuman::FUN_0047d320(RHElementActorHuman *actor)
     return false;
 }
 
-// Residual: allocation, event construction, and command-specific event identifiers differ.
-// STUB: GAME 0x0047d560
-void RHElementActorHuman::FUN_0047d560()
+// FUNCTION: GAME 0x0047d560
+bool RHElementActorHuman::FUN_0047d560()
 {
-    unsigned command = (unsigned)m_28c;
-    if (command == 0xb)
+    bool changed = false;
+    RHUnk00585ea0 *event;
+    if (m_28c != 0xb)
     {
-        m_28c = 0xb;
-        m_290 = 0;
-        return;
-    }
-    if (command >= 0xc && command <= 0xe)
-    {
-        void *event = ::operator new(0x68);
-        if (event)
+        switch (m_28c)
         {
-            union { unsigned long address; void (RHHumanAddressCalls::*initialize)(int, int, void *, void *); } initCall;
-            initCall.address = 0x585ea0;
-            (((RHHumanAddressCalls *)event)->*initCall.initialize)(1,
-                command == 0xc ? 0x39 : command == 0xd ? 0x3a : 0x35, this, m_290);
+        case 0xc:
+            event = new RHUnk00585ea0(1, 0x39, this, m_290);
+            goto dispatch;
+        case 0xd:
+            event = new RHUnk00585ea0(1, 0x3a, this, m_290);
+            goto dispatch;
+        case 0xe:
+            event = new RHUnk00585ea0(1, 0x35, this, m_290);
+dispatch:
+            ((RHScriptBatchCalls *)RHActorField<void *>(this, 0x5c))->Unk0058a940("", 0, event);
+            changed = true;
         }
-        union { unsigned long address; void (RHHumanAddressCalls::*dispatch)(const char *, int, void *); } dispatchCall;
-        dispatchCall.address = 0x58a940;
-        (((RHHumanAddressCalls *)RHActorField<void *>(this, 0x5c))->*dispatchCall.dispatch)(
-            (const char *)0x6c0560, 0, event);
     }
     m_28c = 0xb;
     m_290 = 0;
+    return changed;
 }
 
-// Residual: the temporary's 0x005df4f0 constructor call and 0x005c2ec0 argument/register schedule differ.
-// STUB: GAME 0x00482150
-void RHElementActorHuman::FUN_00482150(int value, int, bool flag)
+// FUNCTION: GAME 0x00482150
+void RHElementActorHuman::FUN_00482150(int value, int second, bool flag)
 {
     if (((RHHumanVirtualCalls *)this)->V048())
         return;
-    char pointStorage[0xc];
-    short amount = (short)value;
-    if (amount < 0)
+    int amount = value;
+    if ((short)amount < 0)
         amount = 0;
+    struct Kind4 { unsigned value : 4; };
     if (RHActorField<char>(g_unk0x6c0b3c, 0x5a) &&
-        (RHActorField<unsigned>(this, 4) & 0xf) == 0xc)
+        ((Kind4 *)((char *)this + 4))->value == 0xc)
     {
         short current = (short)((RHHumanVirtualCalls *)this)->V0cc();
-        if (amount < current && g_unk0x6c0691)
+        if ((short)amount < current && g_unk0x6c0691)
             return;
     }
     if (flag)
     {
         short current = (short)((RHHumanVirtualCalls *)this)->V0cc();
-        if (amount <= current)
+        if ((short)amount <= current)
         {
             unsigned short frame = *(unsigned short *)((char *)RHActorField<void *>(this, 0x50) + 0xde);
+            RHUnk00613e90 point(0.0f, 0.0f, 2.0f);
             RHUnk005c38b0 *context = g_unk0x6c10e8;
-            volatile float *point = (volatile float *)pointStorage;
-            point[0] = 0.0f;
-            point[1] = 0.0f;
-            point[2] = 2.0f;
-            ((RHScriptBatchCalls *)context)->Unk005c2ec0(
-                pointStorage, frame, 4, this, current - amount, 0, 0, -1);
+            typedef void (RHScriptBatchCalls::*Effect)(void *, unsigned short, int, void *, int, int, int, int);
+            (((RHScriptBatchCalls *)context)->*(Effect)&RHScriptBatchCalls::Unk005c2ec0)(
+                &point, frame, 4, this, ((RHHumanVirtualCalls *)this)->V0cc() - amount, 0, 0, -1);
         }
     }
-    ((RHHumanVirtualCalls *)this)->V0c4(RHActorField<char>(this, 0x496) ? 100 : amount);
+    ((RHHumanVirtualCalls *)this)->V0c4(RHActorField<char>(this, 0x496) ? 100 : (short)amount);
     if (((RHHumanVirtualCalls *)this)->V048())
     {
-        ((RHHumanVirtualCalls *)this)->V05c(pointStorage);
+        ((RHHumanVirtualCalls *)this)->V05c((void *)second);
     }
 }
 
-// Residual: the 0x005fc3b0 local-cleanup frame and the two scaled-term register schedules differ.
-// STUB: GAME 0x00482240
+// FUNCTION: GAME 0x00482240
 unsigned short RHElementActorHuman::FUN_00482240(int index, RHElementActorHuman *other)
 {
     RHUnk005fc3b0 point;
@@ -2151,265 +2619,286 @@ unsigned short RHElementActorHuman::FUN_00482240(int index, RHElementActorHuman 
     unsigned short chance = RHActorField<RHUnk005c1d50 *>(this, 0x25c)->FUN_005c1dd0(index, this);
     if ((int)chance > (short)((RHHumanVirtualCalls *)other)->V0cc())
         chance = ((RHHumanVirtualCalls *)other)->V0cc();
+    unsigned short adjustedChance;
     if (otherWeapon)
     {
-        unsigned short opponentWeaponChance = RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1d70(0);
+        unsigned short opponentWeaponChance = RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1d70(index);
         opponentWeaponChance = ((RHHumanWeaponCalls *)otherWeapon)->FUN_005c1b70(
             other, this, opponentWeaponChance);
         int remaining = 100 - opponentWeaponChance;
         float adjusted = (float)remaining;
         adjusted *= chance;
-        adjusted *= g_unk0x006774f0;
-        int adjustedChance = (int)adjusted;
+        adjusted *= 0.01f;
+        adjustedChance = (unsigned short)adjusted;
         if (adjustedChance > 0)
             chance = adjustedChance;
     }
-    unsigned short weaponChance = RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1db0(0);
+    else
+        adjustedChance = index;
+    unsigned short weaponChance = RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1db0(index);
     if (otherWeapon)
     {
         unsigned short modifier = *(unsigned short *)(*(char **)((char *)otherWeapon + 4) + 0x12);
-        int adjustedWeaponChance = (int)((100 - modifier) * weaponChance * g_unk0x006774f0);
-        if (adjustedWeaponChance > 0)
-            weaponChance = adjustedWeaponChance;
+        weaponChance = (unsigned short)((float)(100 - modifier) * weaponChance * 0.01f);
+        if (adjustedChance > 0)
+            weaponChance = adjustedChance;
     }
     (void)point;
     return chance + weaponChance;
 }
 
-// Parked: geometry return normalization and rejection polarity remain unresolved after two shapes.
-// STUB: GAME 0x00483070
+// FUNCTION: GAME 0x00483070
 bool RHElementActorHuman::FUN_00483070(RHElementActorHuman *other)
 {
-    unsigned flags = RHActorField<unsigned>(other, 4);
-    if ((flags & 7) != 4 || !RHActorField<char>(other, 0x12) || other == this ||
+    struct Kind3 { unsigned value : 3; };
+    struct Kind4 { unsigned value : 4; };
+    struct Kind5 { unsigned value : 5; };
+    if (((Kind3 *)((char *)other + 4))->value != 4 || !RHActorField<char>(other, 0x12) || other == this ||
         RHActorField<char>(other, 0x1ce) || ((RHHumanVirtualCalls *)other)->V048() ||
         RHActorField<int>(RHActorField<void *>(other, 0x50), 0x8c) == 22 ||
         other->m_23c != 0)
         return false;
-    if ((RHActorField<unsigned>(other, 4) & 31) == 20 &&
+    if (((Kind5 *)((char *)other + 4))->value == 20 &&
         ((RHHumanVirtualCalls *)other)->V0f8() &&
-        (RHActorField<unsigned>(this, 4) & 15) == 12 &&
-        ((RHHumanVirtualCalls *)this)->V168())
+        ((Kind4 *)((char *)this + 4))->value == 12 &&
+        !((RHHumanVirtualCalls *)this)->V168())
         return false;
     RHUnk00613e90 first;
     RHUnk00613e90 second;
     ((RHHumanActorCalls *)this)->FUN_00479320(first);
     ((RHHumanActorCalls *)other)->FUN_00479320(second);
-    return ((RHMalignityGeometryCalls *)g_unk0x6c0a9c)->FUN_004eff80(first, second, 1);
+    typedef unsigned char (RHMalignityGeometryCalls::*Geometry)(const RHUnk00613e90 &, const RHUnk00613e90 &, int);
+    Geometry geometry = (Geometry)&RHMalignityGeometryCalls::FUN_004eff80;
+    if ((((RHMalignityGeometryCalls *)g_unk0x6c0a9c)->*geometry)(first, second, 1))
+        return true;
+    return false;
 }
 
-// Parked: the target's nested vector/EH lifetimes and integer-angle conversion still differ.
-// STUB: GAME 0x00482390
+static inline unsigned short RHHumanScanHeading(void *actor)
+{
+    return RHActorField<unsigned short>(RHActorField<void *>(actor, 0x50), 0xd8);
+}
+
+// FUNCTION: GAME 0x00482390
 void RHElementActorHuman::FUN_00482390(RHHumanList *result, int weaponData, bool alternate)
 {
-    void *weapon = RHActorField<void *>(this, 0x25c);
-    union { unsigned long address; unsigned short (RHHumanAddressCalls::*call)(int); } shortCall;
-    shortCall.address = 0x5c1d70;
-    (((RHHumanAddressCalls *)weapon)->*shortCall.call)(weaponData);
-    RHHumanEngineActorArray *actors = (RHHumanEngineActorArray *)*(void **)0x006c0a88;
-    unsigned short count = actors->Size();
-    for (unsigned short i = 0; i < count; ++i)
+    RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1d70(weaponData);
+    for (unsigned i = 0; i < (unsigned short)RHActorField<std::vector<RHElementActorHuman *> >(g_pEngine, 0x4918).size(); ++i)
     {
-        RHElementActorHuman *candidate = (RHElementActorHuman *)actors->m_first[i];
+        RHElementActorHuman *candidate = RHActorField<std::vector<RHElementActorHuman *> >(g_pEngine, 0x4918)[(unsigned short)i];
         if (!FUN_00483070(candidate))
             continue;
-        SBGeoPoint2D origin = RHActorField<SBGeoPoint2D>(RHActorField<void *>(this, 0x50), 0x24);
-        SBGeoPoint2D destination = RHActorField<SBGeoPoint2D>(RHActorField<void *>(candidate, 0x50), 0x24);
-        SBGeoPoint2D delta = origin.Unk005fc110(destination);
-        float distance = ((RHUnk005fc3b0 *)&delta)->Unk005fc6a0(1.0f);
-        if (distance >= 150.0f)
-            continue;
-        shortCall.address = 0x5c1ea0;
-        unsigned short reach = (((RHHumanAddressCalls *)weapon)->*shortCall.call)(weaponData);
-        if (alternate && RHActorField<void *>(candidate, 0x134) &&
-            RHActorField<int>(RHActorField<void *>(candidate, 0x134), 0x24) == 0x12f)
+        SBGeoVector2D delta;
         {
-            union { unsigned long address; unsigned short (RHHumanAddressCalls::*call)(); } modifierCall;
-            modifierCall.address = 0x5c1f50;
-            reach = (((RHHumanAddressCalls *)weapon)->*modifierCall.call)();
+            SBGeoVector2D own(RHActorField<SBGeoVector2D>(RHActorField<void *>(this, 0x50), 0x24));
+            delta = own;
         }
-        if (distance > (float)reach)
-            continue;
-        result->Insert(candidate);
+        {
+            SBGeoVector2D other(RHActorField<SBGeoVector2D>(RHActorField<void *>(candidate, 0x50), 0x24));
+            delta.FUN_005fc250(other);
+        }
+        if (delta.FUN_005fc700(1.0f) < 150.0f)
+        {
+            float distance = ((RHUnk005fc3b0 *)&delta)->Unk005fc6a0(1.0f);
+            unsigned short reach = RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1ea0(weaponData);
+            if (alternate && RHActorField<void *>(candidate, 0x134) &&
+                RHActorField<int>(RHActorField<void *>(candidate, 0x134), 0x24) == 0x12f)
+            {
+                short facing = RHActorField<short>(RHActorField<void *>(this, 0x50), 0xd8);
+                unsigned short turn = (((RHUnk005fc3b0 *)&delta)->FUN_005fcc50(1.0f) - facing + 16) % 16;
+                float angle = turn * 5 * 3.1415927f;
+                reach = angle / (RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1f50(weaponData) * 8.0f) +
+                    reach + 10.0f;
+            }
+            if (reach >= distance)
+            {
+                ((std::list<RHElementActorHuman *> *)result)->push_back(candidate);
+                result->valid = 1;
+            }
+        }
     }
 }
 
-// Parked: x87 angle normalization, endpoint wrapping, and EH cleanup remain mismatched.
-// STUB: GAME 0x00482600
+// FUNCTION: GAME 0x00482600
 void RHElementActorHuman::FUN_00482600(RHHumanList *result, int weaponData)
 {
-    void *weapon = RHActorField<void *>(this, 0x25c);
-    union { unsigned long address; unsigned short (RHHumanAddressCalls::*call)(int); } shortCall;
-    union { unsigned long address; float (RHHumanAddressCalls::*call)(int); } floatCall;
-    shortCall.address = 0x5c1d70;
-    unsigned short side = (((RHHumanAddressCalls *)weapon)->*shortCall.call)(weaponData);
-    unsigned short heading = RHActorField<unsigned short>(RHActorField<void *>(this, 0x50), 0xd8);
-    float facing = ((float (*)(unsigned short))0x005fcdf0)(heading);
-    floatCall.address = 0x5c1ed0;
-    float radius = (((RHHumanAddressCalls *)weapon)->*floatCall.call)(weaponData);
-    unsigned char minimumAngle;
-    unsigned char maximumAngle;
+    unsigned side = RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1d70(weaponData);
+    float facing = FUN_005fcdf0(RHHumanScanHeading(this));
+    unsigned char first;
+    unsigned char last;
     if (side == 1)
     {
-        m_230 = radius + facing;
+        m_230 = RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1ed0(weaponData) + facing;
         m_238 = m_230 - 3.1415927f;
-        minimumAngle = ((unsigned char (*)(float))0x005fcdb0)(m_238);
-        maximumAngle = ((unsigned char (*)(float))0x005fcdb0)(m_230);
+        first = FUN_005fcdb0(m_238);
+        last = FUN_005fcdb0(m_230);
     }
     else
     {
-        m_230 = facing - radius;
+        m_230 = facing - RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1ed0(weaponData);
         m_238 = m_230 + 3.1415927f;
-        minimumAngle = ((unsigned char (*)(float))0x005fcdb0)(m_230);
-        maximumAngle = ((unsigned char (*)(float))0x005fcdb0)(m_238);
+        first = FUN_005fcdb0(m_230);
+        last = FUN_005fcdb0(m_238);
     }
-    m_234 = heading;
-    RHHumanEngineActorArray *actors = (RHHumanEngineActorArray *)*(void **)0x006c0a88;
-    for (unsigned i = 0; i < actors->Size(); ++i)
+    m_234 = facing;
+    for (unsigned i = 0; i < (unsigned short)RHActorField<std::vector<RHElementActorHuman *> >(g_pEngine, 0x4918).size(); ++i)
     {
-        RHElementActorHuman *candidate = (RHElementActorHuman *)actors->m_first[i & 0xffff];
+        RHElementActorHuman *candidate = RHActorField<std::vector<RHElementActorHuman *> >(g_pEngine, 0x4918)[(unsigned short)i];
         if (!FUN_00483070(candidate))
             continue;
-        SBGeoPoint2D origin = RHActorField<SBGeoPoint2D>(RHActorField<void *>(this, 0x50), 0x24);
-        SBGeoPoint2D destination = RHActorField<SBGeoPoint2D>(RHActorField<void *>(candidate, 0x50), 0x24);
-        SBGeoPoint2D delta = origin.Unk005fc110(destination);
-        float distance = ((RHUnk005fc3b0 *)&delta)->Unk005fc6a0(1.0f);
-        if (distance >= 150.0f)
-            continue;
-        distance = ((RHUnk005fc3b0 *)&delta)->Unk005fc6a0(1.0f);
-        shortCall.address = 0x5c1e80;
-        unsigned short minimumDistance = (((RHHumanAddressCalls *)weapon)->*shortCall.call)(weaponData);
-        shortCall.address = 0x5c1ea0;
-        unsigned short maximumDistance = (((RHHumanAddressCalls *)weapon)->*shortCall.call)(weaponData);
-        if (distance < minimumDistance || distance > maximumDistance)
-            continue;
-        if (!((bool (*)(unsigned char, unsigned char))0x005fcd70)(minimumAngle, maximumAngle))
-            continue;
-        result->Insert(candidate);
+        SBGeoVector2D delta;
+        {
+            SBGeoVector2D other(RHActorField<SBGeoVector2D>(RHActorField<void *>(candidate, 0x50), 0x24));
+            delta = other;
+        }
+        {
+            SBGeoVector2D own(RHActorField<SBGeoVector2D>(RHActorField<void *>(this, 0x50), 0x24));
+            delta.FUN_005fc250(own);
+        }
+        if (delta.FUN_005fc700(1.0f) < 150.0f)
+        {
+            float distance = ((RHUnk005fc3b0 *)&delta)->Unk005fc6a0(1.0f);
+            if (RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1e80(weaponData) <= distance &&
+                RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1ea0(weaponData) >= distance &&
+                delta.IsBetween(first, last))
+            {
+                ((std::list<RHElementActorHuman *> *)result)->push_back(candidate);
+                result->valid = 1;
+            }
+        }
     }
 }
 
-// Parked: x87 sector endpoints, wrapped-angle checks, and EH cleanup remain mismatched.
-// STUB: GAME 0x004828b0
+// FUNCTION: GAME 0x004828b0
 void RHElementActorHuman::FUN_004828b0(RHHumanList *result, int weaponData)
 {
-    void *weapon = RHActorField<void *>(this, 0x25c);
-    union { unsigned long address; unsigned short (RHHumanAddressCalls::*call)(int); } shortCall;
-    union { unsigned long address; float (RHHumanAddressCalls::*call)(int); } floatCall;
-    shortCall.address = 0x5c1d70;
-    unsigned short side = (((RHHumanAddressCalls *)weapon)->*shortCall.call)(weaponData);
-    unsigned short heading = RHActorField<unsigned short>(RHActorField<void *>(this, 0x50), 0xd8);
-    float facing = ((float (*)(unsigned short))0x005fcdf0)(heading);
-    floatCall.address = 0x5c1ed0;
-    float radius = (((RHHumanAddressCalls *)weapon)->*floatCall.call)(weaponData);
-    union { unsigned long address; float (RHHumanAddressCalls::*call)(int); } secondRadiusCall;
-    secondRadiusCall.address = 0x5c1f10;
-    float innerRadius = (((RHHumanAddressCalls *)weapon)->*secondRadiusCall.call)(weaponData);
+    unsigned side = RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1d70(weaponData);
+    float facing = FUN_005fcdf0(RHHumanScanHeading(this));
     unsigned char minimumAngle;
     unsigned char maximumAngle;
     if (side == 1)
     {
-        m_230 = radius + facing;
-        m_238 = facing - innerRadius;
-        minimumAngle = ((unsigned char (*)(float))0x005fcdb0)(m_238);
-        maximumAngle = ((unsigned char (*)(float))0x005fcdb0)(m_230);
+        m_230 = RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1ed0(weaponData) + facing;
+        m_238 = facing - RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1f10(weaponData);
+        minimumAngle = FUN_005fcdb0(m_238);
+        maximumAngle = FUN_005fcdb0(m_230);
     }
     else
     {
-        m_230 = facing - radius;
-        m_238 = innerRadius + facing;
-        minimumAngle = ((unsigned char (*)(float))0x005fcdb0)(m_230);
-        maximumAngle = ((unsigned char (*)(float))0x005fcdb0)(m_238);
+        m_230 = facing - RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1ed0(weaponData);
+        m_238 = RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1f10(weaponData) + facing;
+        minimumAngle = FUN_005fcdb0(m_230);
+        maximumAngle = FUN_005fcdb0(m_238);
     }
-    m_234 = heading;
-    RHHumanEngineActorArray *actors = (RHHumanEngineActorArray *)*(void **)0x006c0a88;
-    for (unsigned i = 0; i < actors->Size(); ++i)
+    m_234 = facing;
+    for (unsigned long i = 0; i < (unsigned short)RHActorField<std::vector<RHElementActorHuman *> >(g_pEngine, 0x4918).size(); ++i)
     {
-        RHElementActorHuman *candidate = (RHElementActorHuman *)actors->m_first[i & 0xffff];
-        if (candidate == this || (RHActorField<unsigned>(candidate, 4) & 7) != 4 ||
-            !RHActorField<char>(candidate, 0x12))
+        RHElementActorHuman *candidate = RHActorField<std::vector<RHElementActorHuman *> >(g_pEngine, 0x4918)[(unsigned short)i];
+        struct Kind3 { unsigned value : 3; };
+        if (((Kind3 *)((char *)candidate + 4))->value != 4 ||
+            RHActorField<char>(candidate, 0x12) != 1 || candidate == this || !candidate)
             continue;
-        if (!FUN_00483070(candidate))
-            continue;
-        SBGeoPoint2D origin = RHActorField<SBGeoPoint2D>(RHActorField<void *>(this, 0x50), 0x24);
-        SBGeoPoint2D destination = RHActorField<SBGeoPoint2D>(RHActorField<void *>(candidate, 0x50), 0x24);
-        SBGeoPoint2D delta = origin.Unk005fc110(destination);
-        float distance = ((RHUnk005fc3b0 *)&delta)->Unk005fc6a0(1.0f);
-        if (distance >= 150.0f)
-            continue;
-        distance = ((RHUnk005fc3b0 *)&delta)->Unk005fc6a0(1.0f);
-        shortCall.address = 0x5c1e80;
-        unsigned short minimumDistance = (((RHHumanAddressCalls *)weapon)->*shortCall.call)(weaponData);
-        if (distance < minimumDistance)
-            continue;
-        shortCall.address = 0x5c1ea0;
-        unsigned short maximumDistance = (((RHHumanAddressCalls *)weapon)->*shortCall.call)(weaponData);
-        if (distance > maximumDistance)
-            continue;
-        if (!((bool (*)(unsigned char, unsigned char))0x005fcd70)(minimumAngle, maximumAngle))
-            continue;
-        result->Insert(candidate);
+        SBGeoVector2D delta;
+        {
+            SBGeoVector2D other(RHActorField<SBGeoVector2D>(RHActorField<void *>(candidate, 0x50), 0x24));
+            delta = other;
+        }
+        {
+            SBGeoVector2D own(RHActorField<SBGeoVector2D>(RHActorField<void *>(this, 0x50), 0x24));
+            delta.FUN_005fc250(own);
+        }
+        if (delta.FUN_005fc700(1.0f) < 150.0f)
+        {
+            float distance = ((RHUnk005fc3b0 *)&delta)->Unk005fc6a0(1.0f);
+            if (RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1e80(weaponData) <= distance &&
+                RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1ea0(weaponData) >= distance &&
+                delta.IsBetween(minimumAngle, maximumAngle))
+            {
+                ((std::list<RHElementActorHuman *> *)result)->push_back(candidate);
+                result->valid = 1;
+            }
+        }
     }
 }
 
-// Parked: the target's trigonometric vector setup and vector-call sequence remain unresolved.
-// STUB: GAME 0x00482b90
-void RHElementActorHuman::FUN_00482b90(RHHumanList *result, float angle)
+#include "SBGeoVectorRotation.h"
+#include "RHSword.h"
+
+// FUNCTION: GAME 0x00482b90
+void RHElementActorHuman::FUN_00482b90(RHHumanList *result, int weaponData)
 {
-    void *weapon = RHActorField<void *>(this, 0x25c);
-    union { unsigned long address; unsigned short (RHHumanAddressCalls::*call)(float); } shortCall;
-    shortCall.address = 0x5c1e80;
-    unsigned short distance = (((RHHumanAddressCalls *)weapon)->*shortCall.call)(angle);
-    shortCall.address = 0x5c1ea0;
-    unsigned short hit = (((RHHumanAddressCalls *)weapon)->*shortCall.call)(angle);
-    shortCall.address = 0x5c1f90;
-    unsigned short weight = (((RHHumanAddressCalls *)weapon)->*shortCall.call)(angle);
-    SBGeoPoint2D center = RHActorField<SBGeoPoint2D>(RHActorField<void *>(this, 0x50), 0x24);
-    SBGeoPoint2D direction;
-    direction.m_x = 1.0f;
-    direction.m_y = 0.0f;
-    direction = direction.FUN_005fc200(center);
-    RHHumanEngineActorArray *actors = (RHHumanEngineActorArray *)*(void **)0x006c0a88;
-    for (unsigned i = 0; i < actors->Size(); ++i)
+    SBGeoVector2D direction;
+    unsigned i = 0;
+    SBGeoVector2D perpendicular;
+    unsigned minimum = RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1e80(weaponData);
+    unsigned maximum = RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1ea0(weaponData);
+    unsigned width = RHActorField<RHSword *>(this, 0x25c)->FUN_005c1f90(weaponData);
+    direction = ((RHMalignityActorCalls *)this)->FUN_004135b0();
+    perpendicular = direction;
+    ((RHEngineCameraRotationCalls *)&perpendicular)->FUN_005fc9a0(1.5707963705062866211f, 1.0f);
+    ((RHUnk005fc3b0 *)&direction)->FUN_005fc7c0(1.0f);
+    ((RHUnk005fc3b0 *)&perpendicular)->FUN_005fc7c0(1.0f);
+    for (; i < (unsigned short)RHActorField<std::vector<RHElementActorHuman *> >(g_pEngine, 0x4918).size(); ++i)
     {
-        RHElementActorHuman *candidate = (RHElementActorHuman *)actors->m_first[i & 0xffff];
+        RHElementActorHuman *candidate = RHActorField<std::vector<RHElementActorHuman *> >(g_pEngine, 0x4918)[(unsigned short)i];
         if (!FUN_00483070(candidate))
             continue;
-        SBGeoPoint2D position = RHActorField<SBGeoPoint2D>(RHActorField<void *>(candidate, 0x50), 0x24);
-        SBGeoPoint2D delta = center.Unk005fc110(position);
-        float along = delta.m_x * direction.m_x + delta.m_y * direction.m_y;
-        float across = ((RHUnk005fc3b0 *)&delta)->Unk005fc6a0(1.0f);
-        if (along >= (float)distance && across <= (float)hit + (float)weight)
-            result->Insert(candidate);
+        RHElementActorHuman *victim = candidate;
+        SBGeoVector2D delta;
+        {
+            SBGeoVector2D other(RHActorField<SBGeoVector2D>(RHActorField<void *>(victim, 0x50), 0x24));
+            delta = other;
+        }
+        {
+            SBGeoVector2D own(RHActorField<SBGeoVector2D>(RHActorField<void *>(this, 0x50), 0x24));
+            delta.FUN_005fc250(own);
+        }
+        if (delta.FUN_005fc700(1.0f) < 150.0f)
+        {
+            float along = delta.FUN_005fc660(direction);
+            float across = delta.FUN_005fc660(perpendicular);
+            if (minimum <= along && maximum >= along && (unsigned)abs((int)across) <= width / 2)
+            {
+                RHScriptNode *node = result->head;
+                node->prev = ((RHUnk0046eb30 *)result)->Unk0059f720(node, node->prev);
+                node = node->prev;
+                RHScriptNode *previous = node->prev;
+                *(RHScriptNode *volatile *)&previous->next = node;
+                RHSequenceElement *const &payload = *(RHSequenceElement *const *)&victim;
+                RHSeqList::CopyData((RHSequenceElement **)&node->data, &payload);
+                unsigned count = result->count + 1;
+                result->valid = 1;
+                result->count = count;
+            }
+        }
     }
 }
 
 // Parked: the list-node access and nested vector/EH cleanup shape still differ.
+// Parked: VC6 jump-threads the null first-opponent test that the target keeps.
 // STUB: GAME 0x00482e50
 void RHElementActorHuman::FUN_00482e50(RHHumanList *result, int weaponData)
 {
-    if (m_260.count == 0)
-        return;
-    if (m_260.head == 0)
-        return;
-    RHScriptNode *node = m_260.head->next;
-    if (node == m_260.head)
-        return;
-    RHElementActorHuman *focus = (RHElementActorHuman *)node->data;
-    if (focus == 0)
-        return;
-    SBGeoPoint2D origin = RHActorField<SBGeoPoint2D>(RHActorField<void *>(this, 0x50), 0x24);
-    SBGeoPoint2D destination = RHActorField<SBGeoPoint2D>(RHActorField<void *>(focus, 0x50), 0x24);
-    SBGeoPoint2D delta = origin.Unk005fc110(destination);
-    float distance = ((RHUnk005fc3b0 *)&delta)->Unk005fc6a0(1.0f);
-    void *weapon = RHActorField<void *>(this, 0x25c);
-    union { unsigned long address; unsigned short (RHHumanAddressCalls::*call)(int); } shortCall;
-    shortCall.address = 0x5c1e80;
-    unsigned short low = (((RHHumanAddressCalls *)weapon)->*shortCall.call)(weaponData);
-    shortCall.address = 0x5c1ea0;
-    unsigned short high = (((RHHumanAddressCalls *)weapon)->*shortCall.call)(weaponData);
-    if (distance >= (float)low && distance <= (float)high)
-        result->Insert(focus);
+    RHElementActorHuman *target = RHHumanFirstOpponent(this);
+    if (target)
+    {
+        SBGeoVector2D delta;
+        {
+            SBGeoVector2D own(RHActorField<SBGeoVector2D>(RHActorField<void *>(this, 0x50), 0x24));
+            delta = own;
+        }
+        {
+            SBGeoVector2D other(RHActorField<SBGeoVector2D>(RHActorField<void *>(target, 0x50), 0x24));
+            delta.FUN_005fc250(other);
+        }
+        float distance = ((RHUnk005fc3b0 *)&delta)->Unk005fc6a0(1.0f);
+        if (RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1e80(weaponData) <= distance &&
+            RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1ea0(weaponData) >= distance)
+        {
+            ((std::list<RHElementActorHuman *> *)result)->push_back(target);
+            result->valid = 1;
+        }
+    }
 }
 
 // FUNCTION: GAME 0x00482fd0
@@ -2422,9 +2911,7 @@ void RHElementActorHuman::FUN_00482fd0(RHHumanList *result, int weaponData, bool
     case 1: FUN_004828b0(result, weaponData); return;
     case 2:
     {
-        union { int integer; float real; } angle;
-        angle.integer = weaponData;
-        FUN_00482b90(result, angle.real);
+        FUN_00482b90(result, weaponData);
         return;
     }
     case 3:
@@ -2541,64 +3028,57 @@ unsigned RHElementActorHuman::FUN_00483500(void *context, unsigned command, RHEl
     return (((RHHumanAddressCalls *)context)->*fallbackCall.call)(this, command, target);
 }
 
-// Parked: virtual dispatch and early-return cleanup still differ from the target.
+#define SBGEO_BOUNDINGBOX2D_VIEW
+#include "RHActorSequenceStorage.h"
+
+// Parked: group-comparison registers and sequence-address scheduling remain different.
 // STUB: GAME 0x004837f0
 void *RHElementActorHuman::FUN_004837f0(RHElementActorHuman *target)
 {
-    void *sequence = (char *)this + 0x14;
+    RHUnk0045aaf0 *sequence;
+    bool alternate;
     if (RHActorField<char>(this, 0x1ce) &&
         ((RHScriptBatchCalls *)target)->Unk0049d560(0x18))
     {
-        unsigned type = RHActorField<unsigned>(this, 4);
-        bool sameGroup = (type & 15) == 12;
-        if (!sameGroup && (type & 31) == 20)
-            sameGroup = ((RHHumanVirtualCalls *)target)->V130() ==
-                ((RHHumanVirtualCalls *)this)->V130();
-        if (sameGroup)
+        struct Kind4 { unsigned value : 4; };
+        struct Kind5 { unsigned value : 5; };
+        if (((Kind4 *)((char *)this + 4))->value == 12 ||
+            ((Kind5 *)((char *)this + 4))->value == 20 &&
+            ((RHHumanVirtualCalls *)this)->V130() == ((RHHumanVirtualCalls *)target)->V130())
         {
-            union { unsigned long address; void (RHHumanAddressCalls::*call)(int, int, int); } queueCall;
-            queueCall.address = 0x45abc0;
-            (((RHHumanAddressCalls *)sequence)->*queueCall.call)(0x5d, 0, 0);
-            RHActorField<char>(this, 0x92) = 1;
-            RHActorField<int>(this, 0xa0) = 0;
-            RHActorField<unsigned short>(this, 0xa4) = 2;
-            return sequence;
+            sequence = (RHUnk0045aaf0 *)((char *)this + 0x14);
+            sequence->FUN_0045abc0(0x5d, 0, 0);
+            goto changed;
         }
     }
     if (!RHActorField<char>(this, 0x1ce) &&
         !((RHHumanVirtualCalls *)this)->V048())
     {
-        union { unsigned long address; void *(RHHumanAddressCalls::*call)(void *); } fallbackCall;
-        fallbackCall.address = 0x00463d90;
-        return (((RHHumanAddressCalls *)this)->*fallbackCall.call)(target);
+        goto fallback;
     }
     if (!((RHScriptBatchCalls *)target)->Unk0049d560(0x19) &&
         !((RHScriptBatchCalls *)target)->Unk0049d560(0x1a))
     {
-        union { unsigned long address; void *(RHHumanAddressCalls::*call)(void *); } fallbackCall;
-        fallbackCall.address = 0x00463d90;
-        return (((RHHumanAddressCalls *)this)->*fallbackCall.call)(target);
+        goto fallback;
     }
     if (RHActorField<int>(RHActorField<void *>(this, 0x50), 0x8c) != 7)
     {
-        if (((RHHumanVirtualCalls *)this)->V0f0())
+        alternate = ((RHHumanVirtualCalls *)this)->V0f0();
+        sequence = (RHUnk0045aaf0 *)((char *)this + 0x14);
+        if (alternate)
         {
-            union { unsigned long address; void (RHHumanAddressCalls::*call)(int, int, int); } queueCall;
-            queueCall.address = 0x45abc0;
-            (((RHHumanAddressCalls *)sequence)->*queueCall.call)(0x5c, 0, 0);
+            sequence->FUN_0045abc0(0x5c, 0, 0);
             return sequence;
         }
-        union { unsigned long address; void (RHHumanAddressCalls::*call)(int, int, int); } queueCall;
-        queueCall.address = 0x45abc0;
-        (((RHHumanAddressCalls *)sequence)->*queueCall.call)(0x5b, 0, 0);
+        sequence->FUN_0045abc0(0x5b, 0, 0);
+changed:
         RHActorField<char>(this, 0x92) = 1;
         RHActorField<int>(this, 0xa0) = 0;
         RHActorField<unsigned short>(this, 0xa4) = 2;
         return sequence;
     }
-    union { unsigned long address; void *(RHHumanAddressCalls::*call)(void *); } fallbackCall;
-    fallbackCall.address = 0x463d90;
-    return (((RHHumanAddressCalls *)this)->*fallbackCall.call)(target);
+fallback:
+    return (void *)((RHElementActor *)this)->FUN_00463d90((unsigned)target);
 }
 
 // deferred: coupled to RHScript::StopActor pending reccmp #534.
@@ -2660,7 +3140,7 @@ void RHElementActorHuman::FUN_0047d920(RHElementActorHuman *actor)
         element->Unk00586ed0(33, (int)actor);
         element->Unk00586ed0(24, 0);
         element->Unk00586e00(34, false);
-        ((RHScriptBatchCalls *)RHActorField<void *>(this, 0x5c))->Unk0058a940(g_unk0x6c0560, 0, element);
+        ((RHScriptBatchCalls *)RHActorField<void *>(this, 0x5c))->Unk0058a940("", 0, element);
     }
 }
 
@@ -2714,9 +3194,6 @@ int RHElementActorHuman::FUN_0047e7d0(RHUnk005864a0 *element)
     return result;
 }
 
-class RHUnk6c1040;
-extern RHUnk6c1040 *g_unk0x6c1040;
-
 // FUNCTION: GAME 0x0047b660
 void RHElementActorHuman::FUN_0047b660(const RHUnk00613e90 &point)
 {
@@ -2730,7 +3207,7 @@ void RHElementActorHuman::FUN_0047b660(const RHUnk00613e90 &point)
             RHActorField<int>(RHActorField<void *>(this, 0x134), 0x24) == 0x5c)
         {
             RHUnk00584d60 *element = new RHUnk00584d60(1, 0x21, this);
-            ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940(g_unk0x6c0560, 0, element);
+            ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940("", 0, element);
         }
         break;
     case 1:
@@ -2738,7 +3215,7 @@ void RHElementActorHuman::FUN_0047b660(const RHUnk00613e90 &point)
             RHActorField<int>(RHActorField<void *>(this, 0x134), 0x24) == 0x59)
         {
             RHUnk00584d60 *element = new RHUnk00584d60(1, 0x22, this);
-            ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940(g_unk0x6c0560, 0, element);
+            ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940("", 0, element);
         }
         break;
     }
@@ -2765,7 +3242,7 @@ void RHElementActorHuman::FUN_0047e9d0(RHUnk005864a0 *element)
 // STUB: GAME 0x0047ea20
 unsigned short RHElementActorHuman::FUN_0047ea20()
 {
-    unsigned total = 0;
+    unsigned short total = 0;
     unsigned count = m_260.count;
     for (unsigned i = 0; i < count; ++i)
         total += ((RHHumanVirtualCalls *)RHHumanStrengthOpponentAt(m_260, i).m_actor)->V124();
@@ -2958,14 +3435,6 @@ void *RHElementActorHuman::FUN_004847c0(float maximum, void *filter) const
     return result;
 }
 
-class RHMalignityAbilityCalls
-{
-public:
-    unsigned short FUN_005c1b50(int index);
-    int FUN_005c2130(float value, int first, int second);
-};
-
-extern float g_unk0x006774c8;
 
 inline float RHHumanJumpHeight(void *line)
 {
@@ -2984,8 +3453,8 @@ inline const SBGeoPoint2D &RHHumanPosition(const RHElementActorHuman *actor)
 
 inline void RHHumanJumpCenter(void *line, SBGeoPoint2D &center)
 {
-    center.m_x = (RHActorField<float>(line, 0x0c) + RHActorField<float>(line, 4)) * g_unk0x006775d8;
-    center.m_y = (RHActorField<float>(line, 0x10) + RHActorField<float>(line, 8)) * g_unk0x006775d8;
+    center.m_x = (RHActorField<float>(line, 0x0c) + RHActorField<float>(line, 4)) * 0.5f;
+    center.m_y = (RHActorField<float>(line, 0x10) + RHActorField<float>(line, 8)) * 0.5f;
 }
 
 // FUNCTION: GAME 0x00484870
@@ -2999,7 +3468,7 @@ void *RHElementActorHuman::FUN_00484870(RHElementActorHuman *actor)
     if (!line)
         return 0;
     void *linked = RHActorField<void *>(line, 0x20);
-    if ((float)fabs(RHHumanJumpHeight(linked) - RHHumanJumpHeight(line)) > g_unk0x006774c8)
+    if ((float)fabs(RHHumanJumpHeight(linked) - RHHumanJumpHeight(line)) > 40.0f)
         return 0;
     SBGeoPoint2D first;
     SBGeoPoint2D second;
@@ -3037,7 +3506,7 @@ bool RHElementActorHuman::FUN_00484bb0(RHElementActorHuman *actor, SBGeoPoint2D 
     void *area = RHActorField<void *>(RHActorField<void *>(this, 0x50), 0xe0);
     RHUnk0042fde0 *segment = (RHUnk0042fde0 *)((char *)line + 4);
     SBGeoVector2D direction = segment->FUN_0042fde0();
-    float margin = g_unk0x006774e4 / ((RHUnk005fc3b0 *)&direction)->Unk005fc6a0(1.0f);
+    float margin = 15.0f / ((RHUnk005fc3b0 *)&direction)->Unk005fc6a0(1.0f);
     char allocator;
     RHHumanFloatList fractions(allocator);
     float position = segment->FUN_0060ba80(RHActorField<SBGeoPoint2D>(RHActorField<void *>(this, 0x50), 0x24));
@@ -3057,9 +3526,9 @@ bool RHElementActorHuman::FUN_00484bb0(RHElementActorHuman *actor, SBGeoPoint2D 
     switch (fractions.m_count)
     {
     case 0:
-        if (position >= g_unk0x0067749c)
+        if (position >= 1.0f)
             result = RHActorField<SBGeoPoint2D>(line, 0x0c);
-        else if (position <= g_unk0x00677488)
+        else if (position <= 0.0f)
             result = *(SBGeoPoint2D *)segment;
         else
             result = ((SBGeoPoint2D *)segment)->Unk005fc190(operator*(position, (const SBGeoVector2D &)direction));
@@ -3086,15 +3555,15 @@ bool RHElementActorHuman::FUN_00484bb0(RHElementActorHuman *actor, SBGeoPoint2D 
     default:
         return false;
     }
-    if (position >= g_unk0x00677488 && position <= g_unk0x0067749c &&
+    if (position >= 0.0f && position <= 1.0f &&
         (position <= lower || position >= margin))
     {
         result = RHActorField<SBGeoPoint2D>(RHActorField<void *>(this, 0x50), 0x24);
         return true;
     }
-    if (lower >= g_unk0x00677488)
+    if (lower >= 0.0f)
     {
-        if (margin <= g_unk0x0067749c)
+        if (margin <= 1.0f)
         {
             result = ((SBGeoPoint2D *)segment)->Unk005fc190(operator*(margin, (const SBGeoVector2D &)direction));
             SBGeoPoint2D alternate = ((SBGeoPoint2D *)segment)->Unk005fc190(operator*(lower, (const SBGeoVector2D &)direction));
@@ -3107,7 +3576,7 @@ bool RHElementActorHuman::FUN_00484bb0(RHElementActorHuman *actor, SBGeoPoint2D 
         fractions.FUN_0044e8b0(fractions.FUN_0046eb80(), RHHumanFloatIterator(fractions.m_head));
         return true;
     }
-    if (margin <= g_unk0x0067749c)
+    if (margin <= 1.0f)
     {
         result = ((SBGeoPoint2D *)segment)->Unk005fc190(operator*(margin, (const SBGeoVector2D &)direction));
         fractions.Release();
@@ -3287,7 +3756,7 @@ void RHElementActorHuman::FUN_00485a40(void *result, unsigned short &heading)
         sector = RHHumanSector(this);
         layer = RHActorField<unsigned short>(RHActorField<void *>(this, 0x50), 0xde);
         point = RHHumanPosition(this);
-        forward = RHActorField<float>(RHActorField<void *>(this, 0x50), 0x140) > g_unk0x00677488;
+        forward = RHActorField<float>(RHActorField<void *>(this, 0x50), 0x140) > 0.0f;
     }
     unsigned flags = RHActorField<unsigned>(sector, 0x30);
     if ((unsigned char)(flags >> 9) & 1)
@@ -3544,22 +4013,12 @@ RHHumanOpponentIterator RHHumanOpponentListCalls::FUN_00486110(RHHumanOpponentIt
     return RHHumanOpponentIterator(node);
 }
 
-// Parked: count setup and loop scheduling differ.
-// STUB: GAME 0x0048c5b0
+// FUNCTION: GAME 0x0048c5b0
 void FUN_0048c5b0(void *actor, int value)
 {
     unsigned short count = ((RHHumanEngineActorArray *)g_pEngine)->Size();
-    if (count > 0)
-    {
-        int remaining = count;
-        int offset = 0;
-        do
-        {
-            RHMalignityActorCalls **actors = RHActorField<RHMalignityActorCalls **>(g_pEngine, 0x495c);
-            RHActorField<RHMalignityActorCalls *>(actors, offset)->FUN_0048c700(actor, value);
-            offset += 4;
-        } while (--remaining);
-    }
+    for (unsigned short i = 0; i < count; ++i)
+        ((RHHumanEngineActorArray *)g_pEngine)->m_first[i]->FUN_0048c700(actor, value);
     if (value == 1)
         RHActorField<undefined>(actor, 0x23f) = 1;
 }
@@ -3609,15 +4068,20 @@ undefined4 RHUnk00586f70::FUN_00587340(int key)
     return *(volatile int *)&key;
 }
 
-// Parked: cursor reload ordering and unlink registers differ.
-// STUB: GAME 0x0058bed0
+struct RHUnk0058bed0List
+{
+    std::list<RHUnk0058bed0Object *> m_list;
+    std::list<RHUnk0058bed0Object *>::iterator m_current;
+};
+
+// FUNCTION: GAME 0x0058bed0
 void RHManagerListCalls::FUN_0058bed0()
 {
-    RHHumanList &list = *(RHHumanList *)this;
-    for (list.cursor = list.head->next; list.cursor != list.head; *(RHScriptNode *volatile *)&list.cursor = list.cursor->next)
-        delete (RHUnk0058bed0Object *)list.cursor->data;
-    std::list<RHUnk0058bed0Object *> &storage = *(std::list<RHUnk0058bed0Object *> *)this;
-    storage.erase(storage.begin(), storage.end());
+    RHUnk0058bed0List &self = *(RHUnk0058bed0List *)this;
+    std::list<RHUnk0058bed0Object *>::iterator end;
+    for (self.m_current = self.m_list.begin(); end = self.m_list.end(), self.m_current != end; ++self.m_current)
+        delete *self.m_current;
+    self.m_list.clear();
 }
 
 // FUNCTION: GAME 0x005a8220
@@ -3628,7 +4092,7 @@ bool RHSound::FUN_005a8220(int first, int second, int third, const SBGeoPoint2D 
         RHSoundSettings sound;
         sound.m_00 = 3;
         *(SBGeoPoint2D *)sound.m_04 = point;
-        int variant = (rand() * 2) * g_unk0x00677f7c;
+        int variant = (rand() * 2) * 0.00003051850944757461548f;
         *(undefined *)sound.m_10 = 0;
         sound.m_0c = (void *)(variant + (g_unk0x006b793c[third + second * 4] + first * 10) * 2);
         RHSoundChannelSettings settings;
@@ -3673,9 +4137,9 @@ unsigned short RHUnk005c1d50::FUN_005c1dd0(int index, void *actor)
     float scale;
     if ((RHActorField<unsigned>(actor, 4) & 31) == 20 &&
         RHActorField<int>(RHActorField<void *>(actor, 0xa1c), 0x58) == 0)
-        scale = ((RHHumanVirtualCalls *)actor)->V124() * g_unk0x006774f0 + g_unk0x0067749c;
+        scale = ((RHHumanVirtualCalls *)actor)->V124() * 0.01f + 1.0f;
     else
-        scale = g_unk0x0067749c;
+        scale = 1.0f;
     switch (index)
     {
     case 0: case 1: case 2: case 3: case 4:

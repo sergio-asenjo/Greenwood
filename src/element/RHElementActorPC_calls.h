@@ -195,13 +195,10 @@ class RHUnk005fc3b0
 {
 public:
     float Unk005fc6a0(float value);
+    unsigned char FUN_005fcc50(float scale) const;
 };
 
-class RHActorScriptContext
-{
-public:
-    int FUN_004030a0();
-};
+#include "RHActorScriptContext.h"
 
 class RHActorPCInfo : public RHBonusInfo
 {
@@ -250,7 +247,7 @@ class RHElementActor
 {
 public:
     void InitializeScript(std::string &name);
-    void FUN_00478c20(RHUnk00613e90 &point, bool value);
+    void FUN_00478c20(RHUnk00613e90 &point, int posture);
 };
 
 #include "RHElementPositionCalls.h"

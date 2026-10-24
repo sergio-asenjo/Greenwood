@@ -146,6 +146,7 @@ class RHSequenceManager
 public:
     bool PreSerializePointer(SBFile &file, RHOrder **order);
     bool PreSerializePointer(SBFile &file, RHSequenceElement **element, bool launch);
+    bool FUN_0058bd70(void *actor, int command);
 };
 class RHSequence
 {
@@ -327,13 +328,7 @@ public:
 
 #include "RHUnkSectorScript.h"
 
-class RHActorScriptContext
-{
-public:
-    int FUN_004030a0();
-    void FUN_004033b0(int message, int argument1, int argument2);
-    RHUnkSectorScript *m_0;
-};
+#include "RHActorScriptContext.h"
 
 struct RHBonusProjection;
 
@@ -362,15 +357,7 @@ public:
 };
 class RHElementActor;
 
-class RHActorGridCalls
-{
-public:
-    short FUN_004e8fc0(const SBGeoPoint2D &point, const SBGeoPoint2D &origin, short layer, void *&area);
-    unsigned short FUN_004e9800(const SBGeoPoint2D &point, void *&area, int &layer);
-    bool FUN_004f5e50(SBGeoPoint2D &point, const SBGeoPoint2D &other, int layer);
-    bool FUN_004f9a80(void *sectors, RHElementActor *actor, const SBGeoPoint2D &start, void *startArea,
-        unsigned short startLayer, const SBGeoPoint2D &end, void *endArea, unsigned endLayer, int mode);
-};
+#include "RHActorGridCalls.h"
 class RHElementActor;
 
 #include "RHActorAreaCalls.h"
@@ -390,7 +377,6 @@ public:
 extern RHUnk005c38b0 *g_unk0x6c10e8;
 extern RHElementActor *g_unk0x6c100c;
 extern float g_actorStepScale;
-extern float g_actorEffectOffset;
 
 class RHActorScriptBase : public RHUnkSectorScript
 {
@@ -473,7 +459,6 @@ public:
     void *Unk(void *context, int value, void *sequence);
 };
 
-extern char g_unk0x6c0560[4];
 
 extern char g_unk0x6c0691;
 

@@ -42,7 +42,6 @@ short RHActorGridCalls::FUN_004e8fc0(const SBGeoPoint2D &, const SBGeoPoint2D &,
 bool RHActorGridCalls::FUN_004f5e50(SBGeoPoint2D &, const SBGeoPoint2D &, int) { return false; }
 void *RHActorAreaCalls::FUN_0057d800(const SBGeoPoint2D &) { return 0; }
 void RHElementActor::FUN_0046bcb0(int) {}
-void RHElementActor::FUN_00478c20(RHUnk00613e90 &, bool) {}
 
 bool RHActorCrossingHumanCalls::FUN_004843d0(SBGeoPoint2D &, void *, bool) { return false; }
 // FUNCTION: GAME 0x0054e730

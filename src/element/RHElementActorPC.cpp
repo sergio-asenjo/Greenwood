@@ -41,9 +41,6 @@ DECOMP_SIZE_ASSERT(RHPCDescription, 0x48)
 DECOMP_SIZE_ASSERT(RHUnk0048f280, 0x60c)
 
 extern RHUnk005c38b0 *g_unk0x6c10e8;
-extern float g_unk0x006774ec;
-extern float g_unk0x00677484;
-extern float g_unk0x00677f9c;
 extern double g_unk0x00677d90;
 std::wstring FUN_005e23d0(unsigned long id);
 
@@ -51,8 +48,6 @@ std::wstring FUN_005e23d0(unsigned long id);
 float g_unk0x00677f88 = 75.0f;
 RHMessenger *RHUnk00546050();
 
-// GLOBAL: GAME 0x00677fa0
-float g_unk0x00677fa0 = 562500.0f;
 
 // STRING: GAME 0x006ae5e0
 #define g_actorPCFile "P:\\Robin Hood\\RHelementactorpc.cpp"
@@ -475,11 +470,7 @@ void RHElementActorPC::FUN_0049c660(unsigned short value)
         RHActorPCField<unsigned short>(this, 0x55a) = 0xffff;
 }
 
-extern float g_unk0x00677488;
-extern float g_rhuirendererportrait_percent;
 
-// GLOBAL: GAME 0x00677f98
-float g_unk0x00677f98 = 140.0f;
 
 // FUNCTION: GAME 0x00490450
 bool RHElementActorPC::FUN_00490450(void *owner, void *target)
@@ -861,11 +852,11 @@ float RHElementActorPC::FUN_0049d520()
         if (actions[index] == 0x16)
         {
             if (RHActorPCField<int>(m_50, 0x8c) == 0x10)
-                return g_unk0x00677f98;
-            return g_rhuirendererportrait_percent;
+                return 140.0f;
+            return 100.0f;
         }
     }
-    return g_unk0x00677488;
+    return 0.0f;
 }
 
 // FUNCTION: GAME 0x0049d590
@@ -1120,29 +1111,46 @@ void RHElementActorPC::FUN_0049e800(int value)
     ((RHElementActorHuman *)this)->FUN_00483c90((RHActorTranslationSequenceCalls *)value);
 }
 
-// Parked: the out-of-run callback calls still bind as unmatched offsets, and their receiver scheduling differs.
-// STUB: GAME 0x0049e850
+// FUNCTION: GAME 0x0049e850
 void RHElementActorPC::FUN_0049e850(int first, int second)
 {
     int action = RHActorPCField<int>(m_50, 0x8c);
-    if (action > 13 && action <= 16)
-        FUN_0049e8f0(first);
-    (void)second;
+    if (action != 11)
+    {
+        if (action > 13 && action <= 16)
+        {
+            FUN_0049e8f0(first);
+            return;
+        }
+    }
+    else
+    {
+        ((RHPCCombatCalls *)this)->FUN_0049bb20(12, 1);
+    }
+    ((RHElementActorHuman *)this)->FUN_00483d90((RHActorTranslationSequenceCalls *)first, second);
 }
 
-// Parked: the out-of-run callback calls still bind as unmatched offsets, and their receiver scheduling differs.
-// STUB: GAME 0x0049e8a0
+// FUNCTION: GAME 0x0049e8a0
 void RHElementActorPC::FUN_0049e8a0(int first, int second)
 {
     int action = RHActorPCField<int>(m_50, 0x8c);
-    if (action > 13 && action <= 16)
-        FUN_0049e8f0(first);
-    (void)second;
+    if (action != 11)
+    {
+        if (action > 13 && action <= 16)
+        {
+            FUN_0049e8f0(first);
+            return;
+        }
+    }
+    else
+    {
+        ((RHPCCombatCalls *)this)->FUN_0049bb20(12, 1);
+    }
+    ((RHElementActorHuman *)this)->FUN_00474d60((RHActorTranslationSequenceCalls *)first, second);
 }
 
 class RHUnk6c1040;
 extern RHUnk6c1040 *g_unk0x6c1040;
-extern char g_unk0x6c0560[4];
 
 #include "RHSequenceGenericCalls.h"
 
@@ -1163,7 +1171,7 @@ void RHElementActorPC::FUN_0049e8f0(int value)
         RHUnk00584d60 *event = new RHUnk00584d60(1, 0x2d, RHActorPCField<void *>(this, 0x254));
         RHActorPCField<void *>(RHActorPCField<void *>(this, 0x254), 0x5cc) = 0;
         RHActorPCField<void *>(this, 0x254) = 0;
-        ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940(g_unk0x6c0560, 0, event);
+        ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940("", 0, event);
         break;
     }
     case 14:
@@ -1175,7 +1183,7 @@ void RHElementActorPC::FUN_0049e8f0(int value)
         {
             RHUnk00584d60 *event = new RHUnk00584d60(1, 0x2d, RHActorPCField<void *>(this, 0x5cc));
             ((RHMalignityActorCalls *)RHActorPCField<void *>(this, 0x5cc))->V154(event);
-            ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940(g_unk0x6c0560, 0, event);
+            ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940("", 0, event);
         }
         break;
     default:
@@ -1198,7 +1206,7 @@ public:
     bool FUN_004f5e50(SBGeoBoundingBox2D &box, const SBGeoPoint2D &other, unsigned short layer);
 };
 
-// Parked: geometry temporary colouring and folded vector-constructor identity differ.
+// Parked: the vector temporary is passed by a recomputed address and later geometry loads use other scratch registers.
 // STUB: GAME 0x0049eab0
 bool RHElementActorPC::FUN_0049eab0(SBGeoPoint2D &result)
 {
@@ -1209,7 +1217,7 @@ bool RHElementActorPC::FUN_0049eab0(SBGeoPoint2D &result)
     ((RHMobileUnk00607da0 *)&bounds)->FUN_00607da0(
         *(const RHMobileUnk00607da0 *)((RHUnkPathActorInfoBase *)profile)->Unk0055fa10(
             RHActorPCField<int>(profile, 0x88)));
-    ((RHMobileUnk006091b0 *)&bounds)->FUN_006091b0(SBGeoVector2D(SBGeoPoint2D(origin.x, origin.y)));
+    ((RHMobileUnk006091b0 *)&bounds)->FUN_006091b0(SBGeoVector2D((const SBGeoVector2D &)SBGeoPoint2D(origin.x, origin.y)));
     unsigned short layer = RHActorPCField<unsigned short>(m_50, 0xde);
     bool successful = ((RHMalignityGridCalls *)g_unk0x6c0a9c)->FUN_004f5e50(bounds,
         SBGeoPoint2D(origin.x, origin.y), layer) == true;
@@ -1579,11 +1587,7 @@ void RHElementActorPC::FUN_0049fcd0()
 }
 
 class RHElementActor;
-class RHUnk0046bd20
-{
-public:
-    int FUN_0046bd20();
-};
+#include "RHUnk0046bd20.h"
 
 class RHSectorActorList
 {
@@ -1624,7 +1628,7 @@ void RHElementActorPC::FUN_0049fe20()
     }
     else
         return;
-    ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940(g_unk0x6c0560, 0, element);
+    ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940("", 0, element);
 }
 // FUNCTION: GAME 0x0049ff60
 unsigned short RHElementActorPC::FUN_0049ff60()
@@ -1644,9 +1648,9 @@ void RHElementActorPC::FUN_0049ff70()
     Position source = *(Position *)((char *)m_50 + 0x10);
     Position destination = source;
     float height = source.z;
-    source.z = height + g_unk0x00677484;
+    source.z = height + 50.0f;
     height = destination.z;
-    destination.z = height + g_unk0x00677f9c;
+    destination.z = height + 90.0f;
     ((RHMalignityGeometryCalls *)m_64)->FUN_004eff80(*(RHUnk00613e90 *)&destination, *(RHUnk00613e90 *)&source, 1);
 }
 
@@ -1690,9 +1694,9 @@ char RHElementActorPC::FUN_004a05f0(const RHElementActorPC *other)
     float deltaX = position[0] - RHActorPCField<float>(m_50, 0x10);
     float deltaY = position[1] - RHActorPCField<float>(m_50, 0x14);
     position[2] -= RHActorPCField<float>(m_50, 0x18);
-    deltaY *= g_unk0x006774ec;
+    deltaY *= 1.7434468269348145f;
     float distance = deltaY * deltaY + position[2] * position[2] + deltaX * deltaX;
-    if (distance >= g_unk0x00677fa0)
+    if (distance >= 562500.0f)
         return 0;
     return 1;
 }
@@ -1724,7 +1728,6 @@ public:
     void **m_last;
 };
 
-extern float g_rhuirendererportrait_percent;
 
 // FUNCTION: GAME 0x004a06e0
 void RHElementActorPC::FUN_004a06e0(unsigned char value)
@@ -1740,7 +1743,7 @@ void RHElementActorPC::FUN_004a06e0(unsigned char value)
             RHActorPCField<int>(actor, 0xb0) == 8)
         {
             if (origin.Unk005fc110(*(SBGeoPoint2D *)((char *)RHActorPCField<void *>(actor, 0x50) + 0x24))
-                    .FUN_005fc700(1.0f) < g_rhuirendererportrait_percent)
+                    .FUN_005fc700(1.0f) < 100.0f)
                 RHActorPCField<char>(actor, 0xfc) = (char)value;
         }
     }
@@ -1752,10 +1755,7 @@ void RHElementActorPC::FUN_004a07f0(unsigned, unsigned, unsigned)
 {
 }
 
-extern float g_unk0x00677db8;
 
-// GLOBAL: GAME 0x00677fa4
-float g_unk0x00677fa4 = 1.3f;
 
 // Parked: two independent x87 loads are scheduled before their target positions.
 // STUB: GAME 0x004a0a30
@@ -1763,7 +1763,7 @@ bool RHElementActorPC::FUN_004a0a30(RHUnk00613e90 &position)
 {
     RHUnk00613e90 origin;
     RHUnk00613e90 difference;
-    ((RHMalignityActorCalls *)this)->FUN_00478c20(origin, false);
+    ((RHElementActor *)this)->FUN_00478c20(origin, 0);
     float factor = 1.9499999f;
     int animation = RHActorPCField<volatile int>(m_50, 0x8c);
     if (animation != 0x10)
@@ -1773,20 +1773,20 @@ bool RHElementActorPC::FUN_004a0a30(RHUnk00613e90 &position)
     case 0:
     {
         float value = factor;
-        factor = value * g_unk0x00677fa4;
+        factor = value * 1.3f;
         break;
     }
     case 2:
     {
         float value = factor;
-        factor = value * g_unk0x00677db8;
+        factor = value * 0.7f;
         break;
     }
     }
     difference = position.FUN_005df550(origin);
     float y = difference.y;
-    difference.y = y * g_unk0x006774ec;
-    if (difference.z >= g_unk0x00677488)
+    difference.y = y * 1.7434468269348145f;
+    if (difference.z >= 0.0f)
     {
         unsigned range = RHActorPCField<unsigned short>(g_pEngine, 0x4cc0);
         if (difference.x * difference.x + difference.z * difference.z + difference.y * difference.y <

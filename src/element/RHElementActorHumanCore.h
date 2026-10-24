@@ -7,6 +7,7 @@
 class SBFile;
 class SBGeoPoint2D;
 class RHSequenceElement;
+class RHOrder;
 class RHActorTranslationSequenceCalls;
 class RHUnk00613e90;
 class RHUnk005864a0;
@@ -24,9 +25,11 @@ public:
     void FUN_00474890(void *value);
     void FUN_004748f0(RHActorTranslationSequenceCalls *sequence);
     void FUN_00474ad0(RHActorTranslationSequenceCalls *sequence);
+    void FUN_00474d60(RHActorTranslationSequenceCalls *sequence, unsigned flags);
     void FUN_00483c90(RHActorTranslationSequenceCalls *sequence);
     void FUN_004752d0(RHActorTranslationSequenceCalls *sequence);
     bool FUN_00475750(unsigned flags, RHActorTranslationSequenceCalls *sequence);
+    bool FUN_00475970(unsigned flags, void *element);
     bool FUN_00475b00(unsigned flags, void *value);
     void FUN_00479920(RHElementActorHuman *actor);
     void FUN_00479970(RHSequenceElement *element);
@@ -53,7 +56,7 @@ public:
     void FUN_00482390(RHHumanList *result, int weaponData, bool alternate);
     void FUN_00482600(RHHumanList *result, int weaponData);
     void FUN_004828b0(RHHumanList *result, int weaponData);
-    void FUN_00482b90(RHHumanList *result, float angle);
+    void FUN_00482b90(RHHumanList *result, int weaponData);
     void FUN_00482e50(RHHumanList *result, int weaponData);
     void FUN_00482fd0(RHHumanList *result, int weaponData, bool alternate);
     bool FUN_00483070(RHElementActorHuman *other);
@@ -65,9 +68,9 @@ public:
     int FUN_00481050(void *first, void *second, int weaponData);
     int FUN_00480e90(void *first, void *second, int weaponData);
     int FUN_00481d40(void *first, void *second);
-    int FUN_00481ef0(int target, void *first, int weaponData);
-    void FUN_0047f520(float mode, int weaponData);
-    void FUN_0047faf0(float mode, int weaponData);
+    int FUN_00481ef0(RHOrder *order, int animation, int weaponData);
+    void FUN_0047f520(int mode, int weaponData);
+    void FUN_0047faf0(int mode, int weaponData);
     int FUN_004801d0(void *first, void *second, int weaponData);
     int FUN_004808f0(void *first, void *second, int weaponData);
     int FUN_00481150(int weaponData);
@@ -81,7 +84,7 @@ public:
     bool FUN_0047cf80(RHElementActorHuman *actor, void *line);
     void FUN_0047d1b0();
     bool FUN_0047d320(RHElementActorHuman *actor);
-    void FUN_0047d560();
+    bool FUN_0047d560();
     void FUN_0047d670();
     void FUN_0047d920(RHElementActorHuman *actor);
     int FUN_0047e7d0(RHUnk005864a0 *element);
@@ -110,9 +113,9 @@ public:
     undefined m_1ec[0x20];
     RHHumanList m_20c;
     undefined m_224[0xc];
-    int m_230;
-    int m_234;
-    int m_238;
+    float m_230;
+    float m_234;
+    float m_238;
     short m_23c;
     undefined m_23e;
     undefined m_23f;

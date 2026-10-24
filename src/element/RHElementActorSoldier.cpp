@@ -140,7 +140,6 @@ void RHElementActorSoldier::GetTransitionFlags(RHSequenceElement *element, unsig
     }
 }
 
-extern char g_unk0x6c0560[4];
 
 #define SBGEO_BOUNDINGBOX2D_VIEW
 #include "RHActorSequenceStorage.h"
@@ -182,7 +181,7 @@ void RHUnk004a5230::FUN_004a5230(bool value, bool flag)
             element = new RHUnk00584d60(1, 0x85, this);
         else
             element = new RHUnk00584d60(1, 0x84, this);
-        ((RHScriptBatchCalls *)*(void **)((char *)this + 0x5c))->Unk0058a940(g_unk0x6c0560, 0, element);
+        ((RHScriptBatchCalls *)*(void **)((char *)this + 0x5c))->Unk0058a940("", 0, element);
     }
     *(bool *)((char *)this + 0xa2d) = value;
 }
@@ -236,7 +235,7 @@ bool RHElementActorSoldier::FUN_004a5340(unsigned flags, RHSoldierTransition *el
         element->m_40 = 5;
         return true;
     }
-    return ((RHSoldierHumanCalls *)this)->FUN_00475b00(flags, element);
+    return ((RHElementActorHuman *)this)->FUN_00475b00(flags, element);
 }
 
 // FUNCTION: GAME 0x004a53d0
@@ -245,7 +244,7 @@ bool RHElementActorSoldier::FUN_004a53d0(unsigned flags, RHSoldierTransition *el
     if (RHSOLDIER_FIELD(unsigned char, 0xa2c) == 1 && (flags & 1) && !(flags & 0x80))
         ((RHSoldierActorCalls *)this)->V78(element, 0x84);
     if (RHSOLDIER_FIELD(int, 0x144) != 6)
-        return ((RHSoldierHumanCalls *)this)->FUN_00475970(flags, element);
+        return ((RHElementActorHuman *)this)->FUN_00475970(flags, element);
     if ((flags & 1) && !(flags & 0x10000))
     {
         ((RHSoldierActorCalls *)this)->V78(element, 0x25);
@@ -453,8 +452,6 @@ unsigned short RHElementActorSoldier::FUN_004a5b90()
     return RHSOLDIER_PROFILE(unsigned short, 0x7c);
 }
 
-extern float g_unk0x006774f0;
-extern float g_unk0x0067749c;
 
 // FUNCTION: GAME 0x004a5ba0
 unsigned short RHElementActorSoldier::FUN_004a5ba0()
@@ -464,7 +461,7 @@ unsigned short RHElementActorSoldier::FUN_004a5ba0()
             RHSOLDIER_PROFILE(unsigned short, 0x3c), 0.5f, 2.0f, 100);
     return ((RHMalignityOwnerCalls *)((char *)this + 0x6e8))->FUN_00438710(
         RHSOLDIER_PROFILE(unsigned short, 0x3c), 0.5f, 2.0f, 100) *
-        (g_unk0x0067749c - *(unsigned char *)(RHSOLDIER_VBASE + 0x24) * g_unk0x006774f0);
+        (1.0f - *(unsigned char *)(RHSOLDIER_VBASE + 0x24) * 0.01f);
 }
 
 // FUNCTION: GAME 0x004a5c30

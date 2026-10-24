@@ -158,9 +158,6 @@ unsigned char g_unk0x006c08ac[32] = {0};
 unsigned char g_unk0x006c08cc[32] = {0};
 // GLOBAL: GAME 0x006c0884
 unsigned char g_unk0x006c0884[32] = {0};
-// GLOBAL: GAME 0x00677d7c
-float g_unk0x00677d7c = 1.0f / 36.0f;
-extern float g_unk0x0067749c;
 
 inline void RHNPCColorChannels(unsigned long color, unsigned char &red, unsigned char &green, unsigned char &blue)
 {
@@ -187,9 +184,9 @@ void RHElementActorNPC::FUN_00486940(unsigned long first, unsigned long second, 
     int i = 0;
     int count = 32;
     do {
-        g_unk0x006c08ac[i] = redStart * (g_unk0x0067749c - i * g_unk0x00677d7c) + redEnd * (i * g_unk0x00677d7c);
-        g_unk0x006c08cc[i] = greenStart * (g_unk0x0067749c - i * g_unk0x00677d7c) + greenEnd * (i * g_unk0x00677d7c);
-        g_unk0x006c0884[i] = blueStart * (g_unk0x0067749c - i * g_unk0x00677d7c) + blueEnd * (i * g_unk0x00677d7c);
+        g_unk0x006c08ac[i] = redStart * (1.0f - i * (1.0f / 36.0f)) + redEnd * (i * (1.0f / 36.0f));
+        g_unk0x006c08cc[i] = greenStart * (1.0f - i * (1.0f / 36.0f)) + greenEnd * (i * (1.0f / 36.0f));
+        g_unk0x006c0884[i] = blueStart * (1.0f - i * (1.0f / 36.0f)) + blueEnd * (i * (1.0f / 36.0f));
         ++i;
     } while (--count);
 }
@@ -318,11 +315,7 @@ void RHElementActorNPC::SetUniversalFrameCounter(unsigned long &counter)
 
 #include "RHSoldierNPCCalls.h"
 
-class RHUnk00413640
-{
-public:
-    void Unk(int state, bool flag);
-};
+#include "RHAIStateCalls.h"
 
 class RHNPCAIStateCalls
 {
@@ -884,8 +877,6 @@ void RHElementActorNPC::Emit(SBFile &file)
 
 #include "RHArtificialMalignityCore.h"
 
-// GLOBAL: GAME 0x006775c8
-float g_unk0x006775c8 = 700.0f;
 
 // Parked at 0.6974: actor/receiver registers and tag comparison width differ.
 // STUB: GAME 0x0048c4d0
@@ -901,7 +892,7 @@ void RHElementActorNPC::FUN_0048c4d0()
             char *ai = (char *)this + 0x49c;
             if (!*(char *)(ai + (*(int **)ai)[1] + 0x2ac) ||
                 (*(RHUnk00613e90 *)(*(char **)((char *)this + 0x50) + 0x10)).FUN_005df550(
-                    *(RHUnk00613e90 *)(*(char **)((char *)actor + 0x50) + 0x10)).FUN_005df680() > g_unk0x006775c8)
+                    *(RHUnk00613e90 *)(*(char **)((char *)actor + 0x50) + 0x10)).FUN_005df680() > 700.0f)
             {
                 if (!actor->FUN_0048c8e0(this, 1))
                     actor->FUN_0048c700(this, 1);
