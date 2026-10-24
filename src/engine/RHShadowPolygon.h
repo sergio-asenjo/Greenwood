@@ -962,11 +962,6 @@ public:
 extern RHEngine *g_pEngine;
 struct RHUnkSectorGlobal;
 extern RHUnkSectorGlobal *g_unk0x6c0a9c;
-extern float g_unk0x00677488;
-extern float g_unk0x006775d8;
-extern float g_unk0x0067749c;
-extern float g_unk0x006774c8;
-extern float g_rhuirendererportrait_percent;
 
 template<class T>
 inline T &RHShadowField(void *object, unsigned offset)
@@ -1011,7 +1006,6 @@ public:
     static RHDrawManager *mpDrawManager;
 };
 
-extern float g_unk0x00677438;
 
 // SIZE 0x14
 class RHMapBox
@@ -1166,14 +1160,7 @@ public:
     RHShadowMemoryNode *FUN_0059fcc0(RHShadowMemoryNode *next, RHShadowMemoryNode *previous);
 };
 
-class RHShadowMemoryBlock
-{
-public:
-    unsigned char m_data[0x2c];
-    void FUN_0059f4e0();
-    RHShadowMemoryBlock *FUN_005a0ed0(unsigned flags);
-    RHShadowMemoryBlock &FUN_005a0ef0(const RHShadowMemoryBlock &source);
-};
+#include "RHShadowMemoryBlock.h"
 
 class RHShadowMemoryVector
 {

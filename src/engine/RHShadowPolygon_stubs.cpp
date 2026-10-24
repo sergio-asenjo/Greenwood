@@ -1,8 +1,6 @@
 #include "SBNullstr.h"
 #include "RHShadowPolygon.h"
 
-void RHShadowMemoryBlock::FUN_0059f4e0() {}
-
 void RHShadowPolygon::FUN_0058d990() {}
 void RHShadowPolygon::FUN_0058ec60() {}
 void RHShadowPolygon::FUN_0058ffa0(RHUnk00597a70 *) {}
@@ -13,11 +11,6 @@ void RHShadowPolygon::FUN_00595020() {}
 void RHShadowPolygon::FUN_005959e0() {}
 
 void RHUnk004a96a0::FUN_004a96a0(void *, void *, void *, bool) {}
-RHUnk00564020::~RHUnk00564020() {}
-void RHUnk0059f000::FUN_0059f000() {}
-void RHUnk0059ec90::FUN_0059ec90() {}
-RHShadowIterator *RHUnk0059f000::FUN_0059f1a0() { return 0; }
-RHShadowEvent *RHUnk0059ec90::FUN_0059ee30() { return 0; }
 void RHShadowPolygonList::FUN_005c8e40(int) {}
 RHUnk005c9010Iterator RHUnk0058e7f0List::FUN_0044e8b0(RHUnk005c9010Iterator, RHUnk005c9010Iterator last) { return last; }
 RHScriptIter RHShadowUnk0044e8b0::FUN_0044e8b0(RHScriptIter, RHScriptIter last) { return last; }
@@ -43,8 +36,20 @@ void RHShadowPolygon::FUN_0059ce90(RHUnk005977e0 *) {}
 void RHShadowPolygon::FUN_0059d7f0(RHUnk005977e0 *) {}
 RHShadowViewport::RHShadowViewport() {}
 RHShadowPointNodeList::~RHShadowPointNodeList() {}
-RHShadowPointNode *RHShadowPointNodeList::FUN_004243e0(RHShadowPointNode *next, RHShadowPointNode *) { return next; }
-void FUN_0059fb00(RHUnk00597a70 **, RHUnk00597a70 *const &) {}
+// FUNCTION: GAME 0x004243e0
+RHShadowPointNode *RHShadowPointNodeList::FUN_004243e0(RHShadowPointNode *next, RHShadowPointNode *previous)
+{
+    RHShadowPointNode *node = (RHShadowPointNode *)operator new(sizeof(RHShadowPointNode));
+    node->m_next = next ? next : node;
+    node->m_prev = previous ? previous : node;
+    return node;
+}
+
+void FUN_0059fb00(RHUnk00597a70 **destination, RHUnk00597a70 *const &value)
+{
+    if (destination)
+        *destination = value;
+}
 // FUNCTION: GAME 0x0059fb20
 void FUN_0059fb20(RHUnk00613e90 *destination, const RHUnk00613e90 &value)
 {

@@ -22,14 +22,8 @@ DECOMP_SIZE_ASSERT(RHShadowUnk0060c260, 0x30)
 DECOMP_SIZE_ASSERT(RHMapBox, 0x14)
 DECOMP_SIZE_ASSERT(RHShadowPolygon, 0x218)
 
-// GLOBAL: GAME 0x006774c8
-float g_unk0x006774c8 = 40.0f;
 
-// GLOBAL: GAME 0x00677504
-float g_unk0x00677504 = 0.573576450347900390625f;
 
-// GLOBAL: GAME 0x00677f9c
-float g_unk0x00677f9c = 90.0f;
 
 // FUNCTION: GAME 0x0044e7d0
 RHShadowVectorStdList::~RHShadowVectorStdList()
@@ -104,6 +98,43 @@ void EmitShadowPointListOperations(RHShadowPointListBase &list, RHScriptIter pos
     list.FUN_0044e9b0();
 }
 
+inline void RHShadowDestroyCachedList(RHUnk0058e7f0List &list)
+{
+    RHUnk005c9010Node *last = list.m_head;
+    RHUnk005c9010Node *current = last->m_next;
+    while (current != last)
+    {
+        RHUnk005c9010Node *node = current;
+        current = current->m_next;
+        node->m_prev->m_next = node->m_next;
+        node->m_next->m_prev = node->m_prev;
+        operator delete(node);
+        --list.m_count;
+    }
+    {
+        typedef std::list<RHElementActor *>::iterator Native;
+        typedef Native (Native::*Increment)(int);
+        typedef RHSectorActorIter (RHSectorActorIter::*Forward)(int);
+        Increment increment = &Native::operator++;
+        RHUnk005c9010Node *end = list.m_head;
+        RHUnk005c9010Node *cursor = end->m_next;
+        while (cursor != end)
+        {
+            RHUnk005c9010Node *value = cursor;
+            cursor = cursor->m_next;
+            RHSectorActorIter position((RHSectorActorNode *)value);
+            RHUnk005c9010Node *node = (RHUnk005c9010Node *)(position.*(Forward)increment)(0).m_p;
+            node->m_prev->m_next = node->m_next;
+            node->m_next->m_prev = node->m_prev;
+            operator delete(node);
+            --list.m_count;
+        }
+    }
+    operator delete(list.m_head);
+    list.m_head = 0;
+    list.m_count = 0;
+}
+
 // Parked at 0.9773: strength-reduced actor index addresses [edi+eax] where the target has [eax+edi].
 // STUB: GAME 0x004c9d20
 void RHEngine::FUN_004c9d20(void *box)
@@ -112,9 +143,15 @@ void RHEngine::FUN_004c9d20(void *box)
     for (unsigned short index = 0; index < count; ++index)
     {
         RHUnk004a96a0 *actor = m_48dc[index];
-        if (actor->m_10 == 0x1001 && actor->m_50->m_18 == g_unk0x00677488)
+        if (actor->m_10 == 0x1001 && actor->m_50->m_18 == 0.0f)
             actor->FUN_004a96a0(m_48c4, m_475c, box, false);
     }
+}
+
+// FUNCTION: GAME 0x00564020
+RHUnk00564020::~RHUnk00564020()
+{
+    RHShadowDestroyCachedList(*(RHUnk0058e7f0List *)this);
 }
 
 // FUNCTION: GAME 0x0058c590
@@ -561,7 +598,7 @@ void RHShadowPolygon::FUN_0058d7e0(unsigned short color, int x, int y1, int y2, 
 void RHShadowPolygon::DisplayDebug(const SBGeoBoundingBox2D &box, float zoom, RHElementActor *actor, SBGeoPoint3D &point, RHviewParameters &view, unsigned long flags)
 {
     const float *bounds = (const float *)&box;
-    if (bounds[0] < g_unk0x00677488 || bounds[1] < g_unk0x00677488)
+    if (bounds[0] < 0.0f || bounds[1] < 0.0f)
         SBAssert(1,
                  // STRING: GAME 0x006b7728
                  "P:\\Robin Hood\\rhshadowpolygon.cpp",
@@ -588,7 +625,7 @@ void RHShadowPolygon::DisplayDebug(const SBGeoBoundingBox2D &box, float zoom, RH
             FUN_0058ffa0(area);
             if (*(unsigned long *)&m_8c == 0x3f800000)
                 FUN_00590c90(area);
-            else if (m_8c > g_unk0x0067749c)
+            else if (m_8c > 1.0f)
                 FUN_005934b0(area);
             else
                 FUN_00592080(area);
@@ -605,7 +642,7 @@ void RHShadowPolygon::FUN_0058ea70()
         SBGeoPoint2D center;
         for (short index = -50; index <= 50; ++index)
         {
-            float offset = index * g_unk0x00677438;
+            float offset = index * 10.0f;
             float limit = m_a0 * 0.35f;
             if (offset < limit && -offset < limit)
             {
@@ -1043,9 +1080,9 @@ void RHShadowPolygon::FUN_00594bf0(const SBGeoBoundingBox2D &box, float zoom, RH
     RHUnk005fc3b0 temporary;
     RHUnk005fc3b0 initial;
     RHShadowField<SBGeoBoundingBox2D>(this, 0x78).SetValue0(box.Value0());
-    RHShadowField<SBGeoBoundingBox2D>(this, 0x78).SetValue8(box.Value8() - g_unk0x0067749c);
+    RHShadowField<SBGeoBoundingBox2D>(this, 0x78).SetValue8(box.Value8() - 1.0f);
     RHShadowField<SBGeoBoundingBox2D>(this, 0x78).SetValue4(box.Value4());
-    RHShadowField<SBGeoBoundingBox2D>(this, 0x78).SetValueC(box.ValueC() - g_unk0x0067749c);
+    RHShadowField<SBGeoBoundingBox2D>(this, 0x78).SetValueC(box.ValueC() - 1.0f);
     m_8c = zoom;
     RHShadowField<int>(this, 0x90) = (int)RHShadowField<SBGeoBoundingBox2D>(this, 0x78).Value0();
     RHShadowField<int>(this, 0x94) = (int)RHShadowField<SBGeoBoundingBox2D>(this, 0x78).Value4();
@@ -1057,7 +1094,7 @@ void RHShadowPolygon::FUN_00594bf0(const SBGeoBoundingBox2D &box, float zoom, RH
     RHShadowField<float>(this, 0xb4) = point.m_4;
     RHUnk005fc3b0 &direction = RHShadowField<RHUnk005fc3b0>(this, 0x98);
     direction.FUN_005fc430(RHShadowField<SBGeoPoint2D>(&view, 0x48));
-    if (direction.m_x == g_unk0x00677488 && direction.m_y == g_unk0x00677488)
+    if (direction.m_x == 0.0f && direction.m_y == 0.0f)
     {
         direction.m_x = 1.0f;
         direction.m_y = 0.0f;
@@ -1074,7 +1111,7 @@ void RHShadowPolygon::FUN_00594bf0(const SBGeoBoundingBox2D &box, float zoom, RH
     RHShadowField<RHUnk005fc3b0>(this, 0xd0).m_y = RHShadowField<RHUnk005fc3b0>(this, 0xd0).m_y * 0.573576450347900390625f;
     RHShadowField<RHShadowUnk0060c260>(this, 0xd8).FUN_0060c280();
     RHShadowField<SBGeoBoundingBox2D>(this, 0x108).FUN_00607d90();
-    float sector = g_unk0x00677f9c / m_a0;
+    float sector = 90.0f / m_a0;
     unsigned short count = (unsigned short)(int)ceil(extent / sector);
     float step = extent / (count + 1);
     RHShadowField<RHShadowUnk0060c260>(this, 0xd8).FUN_0060c260(RHShadowField<SBGeoPoint2D>(this, 0xb0));
@@ -1104,24 +1141,24 @@ void RHShadowPolygon::FUN_00594bf0(const SBGeoBoundingBox2D &box, float zoom, RH
 bool RHShadowPolygon::FUN_00595630(const SBGeoBoundingBox2D &box)
 {
     SBGeoPoint2D corner;
-    if (RHShadowField<RHUnk005fc3b0>(this, 0xc8).m_x > g_unk0x00677488)
+    if (RHShadowField<RHUnk005fc3b0>(this, 0xc8).m_x > 0.0f)
     {
-        if (RHShadowField<RHUnk005fc3b0>(this, 0xc8).m_y > g_unk0x00677488)
+        if (RHShadowField<RHUnk005fc3b0>(this, 0xc8).m_y > 0.0f)
         {
             float y = box.ValueC();
             corner.m_x = box.Value0();
             corner.m_y = y;
-            if (RHShadowField<RHUnk005fc3b0>(this, 0xc8).FUN_005fc680((const RHUnk005fc3b0 &)corner.Unk005fc110(RHShadowField<SBGeoPoint2D>(this, 0xb0)), 1.0f) < g_unk0x00677488)
+            if (RHShadowField<RHUnk005fc3b0>(this, 0xc8).FUN_005fc680((const RHUnk005fc3b0 &)corner.Unk005fc110(RHShadowField<SBGeoPoint2D>(this, 0xb0)), 1.0f) < 0.0f)
                 return false;
         }
-        else if (RHShadowField<RHUnk005fc3b0>(this, 0xc8).FUN_005fc680((const RHUnk005fc3b0 &)box.Max().Unk005fc110(RHShadowField<SBGeoPoint2D>(this, 0xb0)), 1.0f) < g_unk0x00677488)
+        else if (RHShadowField<RHUnk005fc3b0>(this, 0xc8).FUN_005fc680((const RHUnk005fc3b0 &)box.Max().Unk005fc110(RHShadowField<SBGeoPoint2D>(this, 0xb0)), 1.0f) < 0.0f)
             return false;
     }
     else
     {
-        if (RHShadowField<RHUnk005fc3b0>(this, 0xc8).m_y > g_unk0x00677488)
+        if (RHShadowField<RHUnk005fc3b0>(this, 0xc8).m_y > 0.0f)
         {
-            if (RHShadowField<RHUnk005fc3b0>(this, 0xc8).FUN_005fc680((const RHUnk005fc3b0 &)box.Min().Unk005fc110(RHShadowField<SBGeoPoint2D>(this, 0xb0)), 1.0f) < g_unk0x00677488)
+            if (RHShadowField<RHUnk005fc3b0>(this, 0xc8).FUN_005fc680((const RHUnk005fc3b0 &)box.Min().Unk005fc110(RHShadowField<SBGeoPoint2D>(this, 0xb0)), 1.0f) < 0.0f)
                 return false;
         }
         else
@@ -1129,28 +1166,28 @@ bool RHShadowPolygon::FUN_00595630(const SBGeoBoundingBox2D &box)
             float y = box.Value4();
             corner.m_x = box.Value8();
             corner.m_y = y;
-            if (RHShadowField<RHUnk005fc3b0>(this, 0xc8).FUN_005fc680((const RHUnk005fc3b0 &)corner.Unk005fc110(RHShadowField<SBGeoPoint2D>(this, 0xb0)), 1.0f) < g_unk0x00677488)
+            if (RHShadowField<RHUnk005fc3b0>(this, 0xc8).FUN_005fc680((const RHUnk005fc3b0 &)corner.Unk005fc110(RHShadowField<SBGeoPoint2D>(this, 0xb0)), 1.0f) < 0.0f)
                 return false;
         }
     }
-    if (RHShadowField<RHUnk005fc3b0>(this, 0xd0).m_x > g_unk0x00677488)
+    if (RHShadowField<RHUnk005fc3b0>(this, 0xd0).m_x > 0.0f)
     {
-        if (RHShadowField<RHUnk005fc3b0>(this, 0xd0).m_y > g_unk0x00677488)
+        if (RHShadowField<RHUnk005fc3b0>(this, 0xd0).m_y > 0.0f)
         {
             float y = box.Value4();
             corner.m_x = box.Value8();
             corner.m_y = y;
-            if (RHShadowField<RHUnk005fc3b0>(this, 0xd0).FUN_005fc680((const RHUnk005fc3b0 &)corner.Unk005fc110(RHShadowField<SBGeoPoint2D>(this, 0xb0)), 1.0f) > g_unk0x00677488)
+            if (RHShadowField<RHUnk005fc3b0>(this, 0xd0).FUN_005fc680((const RHUnk005fc3b0 &)corner.Unk005fc110(RHShadowField<SBGeoPoint2D>(this, 0xb0)), 1.0f) > 0.0f)
                 return false;
         }
-        else if (RHShadowField<RHUnk005fc3b0>(this, 0xd0).FUN_005fc680((const RHUnk005fc3b0 &)box.Min().Unk005fc110(RHShadowField<SBGeoPoint2D>(this, 0xb0)), 1.0f) > g_unk0x00677488)
+        else if (RHShadowField<RHUnk005fc3b0>(this, 0xd0).FUN_005fc680((const RHUnk005fc3b0 &)box.Min().Unk005fc110(RHShadowField<SBGeoPoint2D>(this, 0xb0)), 1.0f) > 0.0f)
             return false;
     }
     else
     {
-        if (RHShadowField<RHUnk005fc3b0>(this, 0xd0).m_y > g_unk0x00677488)
+        if (RHShadowField<RHUnk005fc3b0>(this, 0xd0).m_y > 0.0f)
         {
-            if (RHShadowField<RHUnk005fc3b0>(this, 0xd0).FUN_005fc680((const RHUnk005fc3b0 &)box.Max().Unk005fc110(RHShadowField<SBGeoPoint2D>(this, 0xb0)), 1.0f) > g_unk0x00677488)
+            if (RHShadowField<RHUnk005fc3b0>(this, 0xd0).FUN_005fc680((const RHUnk005fc3b0 &)box.Max().Unk005fc110(RHShadowField<SBGeoPoint2D>(this, 0xb0)), 1.0f) > 0.0f)
                 return false;
         }
         else
@@ -1158,7 +1195,7 @@ bool RHShadowPolygon::FUN_00595630(const SBGeoBoundingBox2D &box)
             float y = box.ValueC();
             corner.m_x = box.Value0();
             corner.m_y = y;
-            if (RHShadowField<RHUnk005fc3b0>(this, 0xd0).FUN_005fc680((const RHUnk005fc3b0 &)corner.Unk005fc110(RHShadowField<SBGeoPoint2D>(this, 0xb0)), 1.0f) > g_unk0x00677488)
+            if (RHShadowField<RHUnk005fc3b0>(this, 0xd0).FUN_005fc680((const RHUnk005fc3b0 &)corner.Unk005fc110(RHShadowField<SBGeoPoint2D>(this, 0xb0)), 1.0f) > 0.0f)
                 return false;
         }
     }
@@ -1366,9 +1403,9 @@ bool RHShadowPolygon::FUN_00597a70(RHUnk00597a70 *area)
         plane = (RHShadowUnk005df9e0 *)(RHShadowField<RHUnk00597a70 *>(this, 0x130)->m_0 + 0xa8);
     }
     unsigned short count = (unsigned short)m_158.m_list.size();
-    if (height <= g_unk0x00677488)
+    if (height <= 0.0f)
     {
-        height -= g_unk0x006774c8;
+        height -= 40.0f;
         for (unsigned short index = 0; index < count; ++index)
         {
             RHUnk005977e0 *obstacle = (RHUnk005977e0 *)m_158[index];
@@ -1395,8 +1432,8 @@ bool RHShadowPolygon::FUN_00597a70(RHUnk00597a70 *area)
                 if (!FUN_00598230(obstacle, 0, false))
                     return false;
             }
-            height -= g_unk0x006774c8;
-            bool above = height > g_unk0x00677488;
+            height -= 40.0f;
+            bool above = height > 0.0f;
             unsigned remaining = (unsigned short)obstacle->m_34.m_list.size();
             while (remaining != 0)
             {
@@ -1425,7 +1462,7 @@ bool RHShadowPolygon::FUN_00597a70(RHUnk00597a70 *area)
                 if (!FUN_00598b90(obstacle, 0))
                     return false;
             }
-            height += g_unk0x006774c8;
+            height += 40.0f;
         }
         return true;
     }
@@ -1440,8 +1477,8 @@ bool RHShadowPolygon::FUN_00597a70(RHUnk00597a70 *area)
             if (!FUN_00598230(obstacle, plane, false))
                 return false;
         }
-        height -= g_unk0x006774c8;
-        bool above = height > g_unk0x00677488;
+        height -= 40.0f;
+        bool above = height > 0.0f;
         unsigned remaining = (unsigned short)obstacle->m_34.m_list.size();
         while (remaining != 0)
         {
@@ -1469,7 +1506,7 @@ bool RHShadowPolygon::FUN_00597a70(RHUnk00597a70 *area)
             if (!FUN_00598b90(obstacle, plane))
                 return false;
         }
-        height += g_unk0x006774c8;
+        height += 40.0f;
     }
     return true;
 }
@@ -1478,14 +1515,14 @@ bool RHShadowPolygon::FUN_00597a70(RHUnk00597a70 *area)
 // STUB: GAME 0x005994f0
 unsigned char RHShadowPolygon::FUN_005994f0(const SBGeoPoint3D &point, SBGeoPoint2D &out, bool project, bool above)
 {
-    if (point.m_8 != g_unk0x00677488)
+    if (point.m_8 != 0.0f)
     {
         float height = point.m_8 - m_b8;
-        if (height < g_unk0x006775d8 && height > -0.5f)
+        if (height < 0.5f && height > -0.5f)
             return 3;
         if (above)
         {
-            if (point.m_8 > g_unk0x00677488)
+            if (point.m_8 > 0.0f)
             {
                 if (point.m_8 > m_b8)
                 {
@@ -1503,7 +1540,7 @@ unsigned char RHShadowPolygon::FUN_005994f0(const SBGeoPoint3D &point, SBGeoPoin
                 }
             }
         }
-        else if (point.m_8 < g_unk0x00677488)
+        else if (point.m_8 < 0.0f)
         {
             if (point.m_8 < m_b8)
             {
@@ -1670,7 +1707,7 @@ unsigned char RHShadowPolygon::FUN_0059afc0(SBGeoPoint2D &out, SBGeoPoint2D &in,
         {
         case 1:
         {
-            y = Bounds().Value4() - g_rhuirendererportrait_percent;
+            y = Bounds().Value4() - 100.0f;
             x = line.FUN_006104f0(y);
             out.m_x = x;
             out.m_y = y;
@@ -1693,7 +1730,7 @@ unsigned char RHShadowPolygon::FUN_0059afc0(SBGeoPoint2D &out, SBGeoPoint2D &in,
         case 4:
         {
             y = Bounds().ValueC();
-            y += g_rhuirendererportrait_percent;
+            y += 100.0f;
             x = line.FUN_006104f0(y);
             out.m_x = x;
             out.m_y = y;
@@ -1727,7 +1764,7 @@ bool RHShadowPolygon::FUN_0059b1f0(undefined *object)
     {
         sight->m_4c.Locate(index);
         RHShadowVertex vertex = *(RHShadowVertex *)&sight->m_4c.m_current.m_node->m_data;
-        if (vertex.m_08 >= g_unk0x006774c8)
+        if (vertex.m_08 >= 40.0f)
             return true;
     }
     return false;
@@ -1743,7 +1780,7 @@ bool RHShadowPolygon::FUN_0059b380(undefined *object)
     {
         sight->m_4c.Locate(index);
         RHShadowVertex vertex = *(RHShadowVertex *)&sight->m_4c.m_current.m_node->m_data;
-        if (g_unk0x006774c8 >= vertex.m_0c)
+        if (40.0f >= vertex.m_0c)
             return true;
     }
     return false;
@@ -1759,7 +1796,7 @@ bool RHShadowPolygon::FUN_0059b510(undefined *object, RHShadowUnk005df9e0 *plane
     {
         sight->m_4c.Locate(index);
         RHShadowVertex vertex = *(RHShadowVertex *)&sight->m_4c.m_current.m_node->m_data;
-        if (plane->FUN_005df9e0(vertex.m_00, vertex.m_04) + g_unk0x006774c8 <= vertex.m_08)
+        if (plane->FUN_005df9e0(vertex.m_00, vertex.m_04) + 40.0f <= vertex.m_08)
             return true;
     }
     return false;
@@ -1775,7 +1812,7 @@ bool RHShadowPolygon::FUN_0059b6b0(undefined *object, RHShadowUnk005df9e0 *plane
     {
         sight->m_4c.Locate(index);
         RHShadowVertex vertex = *(RHShadowVertex *)&sight->m_4c.m_current.m_node->m_data;
-        if (plane->FUN_005df9e0(vertex.m_00, vertex.m_04) + g_unk0x006774c8 >= vertex.m_0c)
+        if (plane->FUN_005df9e0(vertex.m_00, vertex.m_04) + 40.0f >= vertex.m_0c)
             return true;
     }
     return false;
@@ -1856,12 +1893,12 @@ float RHShadowPolygon::FUN_0059df10(RHUnk0059df10Object *object)
             float limit = m_a0 * 0.35f;
             if (height < limit && -height < limit)
                 return sqrt(m_a0 * m_a0 - height * height * 8.163265228271484f);
-            return g_unk0x00677488;
+            return 0.0f;
         }
-        if (height < m_a0 && height > g_unk0x00677488)
+        if (height < m_a0 && height > 0.0f)
             return height * 0.8f;
     }
-    return g_unk0x00677488;
+    return 0.0f;
 }
 
 // FUNCTION: GAME 0x0059e780
@@ -1899,13 +1936,13 @@ bool RHShadowPolygon::FUN_0059e7e0(undefined *field, RHUnk00564020 *boundary)
         vertices->FUN_005c8e40(corner);
         RHShadowVertex vertex = *(RHShadowVertex *)&vertices->m_current.m_node->m_data;
         point.Set(vertex.m_00, vertex.m_04);
-        if (left && RHShadowField<RHUnk005fc3b0>(this, 0xc8).FUN_005fc680((const RHUnk005fc3b0 &)point.Unk005fc110(RHShadowField<SBGeoPoint2D>(this, 0xb0)), 1.0f) > g_unk0x00677488)
+        if (left && RHShadowField<RHUnk005fc3b0>(this, 0xc8).FUN_005fc680((const RHUnk005fc3b0 &)point.Unk005fc110(RHShadowField<SBGeoPoint2D>(this, 0xb0)), 1.0f) > 0.0f)
         {
             if (!right)
                 return true;
             left = false;
         }
-        if (right && RHShadowField<RHUnk005fc3b0>(this, 0xd0).FUN_005fc680((const RHUnk005fc3b0 &)point.Unk005fc110(RHShadowField<SBGeoPoint2D>(this, 0xb0)), 1.0f) < g_unk0x00677488)
+        if (right && RHShadowField<RHUnk005fc3b0>(this, 0xd0).FUN_005fc680((const RHUnk005fc3b0 &)point.Unk005fc110(RHShadowField<SBGeoPoint2D>(this, 0xb0)), 1.0f) < 0.0f)
         {
             if (!left)
                 return true;
@@ -2014,15 +2051,21 @@ void RHShadowPolygon::FUN_0059eab0(RHShadowEvent *event)
 // FUNCTION: GAME 0x0059ec40
 unsigned char RHShadowPolygon::FUN_0059ec40(SBGeoPoint2D *a, SBGeoPoint2D *b)
 {
-    if (b->m_x != g_unk0x00677488)
+    if (b->m_x != 0.0f)
     {
-        if (b->m_x > g_unk0x00677488)
+        if (b->m_x > 0.0f)
             return 2;
         return 8;
     }
-    if (b->m_y > g_unk0x00677488)
+    if (b->m_y > 0.0f)
         return 4;
     return 1;
+}
+
+// FUNCTION: GAME 0x0059f4e0
+void RHShadowMemoryBlock::FUN_0059f4e0()
+{
+    RHShadowDestroyCachedList(*(RHUnk0058e7f0List *)((char *)this + 4));
 }
 
 // FUNCTION: GAME 0x0059fbe0
@@ -2453,6 +2496,20 @@ public:
 class RHShadowMemoryAssignmentList : public RHShadowMemoryList
 {
 public:
+    RHShadowMemoryRange &At(int index)
+    {
+        ((RHShadowPolygonList *)this)->FUN_005c8e40(index);
+        return m_current->m_value;
+    }
+    void RemoveFirst()
+    {
+        RHShadowMemoryNode *node = m_head->m_next;
+        node->m_previous->m_next = node->m_next;
+        node->m_next->m_previous = node->m_previous;
+        operator delete(node);
+        --m_count;
+        m_dirty = true;
+    }
     void Assign(const RHShadowMemoryAssignmentList &source, bool constructValue, bool destroyNode = false)
     {
         if (&source != this)
@@ -2681,6 +2738,278 @@ inline void RHShadowMoveBlocks(RHShadowMemoryBlock *first, RHShadowMemoryBlock *
             (to.m_ranges.*insert)(from.m_ranges, 0);
         }
     }
+}
+
+#include "RHShadowPoolLifetime.h"
+#include "RHUnk004e52a0.h"
+#include <vector>
+
+class RHShadowPoolClearList : public RHUnk004e3fd0
+{
+public:
+    RHShadowPoolClearList(const std::allocator<RHShadowMemoryRange> &allocator) : RHUnk004e3fd0((const char *)&allocator) {}
+    ~RHShadowPoolClearList()
+    {
+        ((RHShadowUnk0044e8b0 *)this)->FUN_0044e8b0(
+            RHScriptIter((RHScriptNode *)m_4->m_next), RHScriptIter((RHScriptNode *)m_4));
+        operator delete(m_4);
+        m_4 = 0;
+        m_8 = 0;
+    }
+};
+
+class RHShadowPoolClearRanges
+{
+public:
+    RHShadowPoolClearRanges() : m_list(std::allocator<RHShadowMemoryRange>()), m_dirty(true) {}
+    ~RHShadowPoolClearRanges()
+    {
+        ((RHShadowUnk0044e8b0 *)&m_list)->FUN_0044e8b0(
+            RHScriptIter((RHScriptNode *)m_list.m_4->m_next), RHScriptIter((RHScriptNode *)m_list.m_4));
+    }
+    RHShadowPoolClearList m_list;
+    RHShadowMemoryNode *m_current;
+    bool m_dirty;
+    char m_unknown[23];
+};
+
+class RHShadowPoolAllocatedList : public RHUnk0059f900
+{
+public:
+    ~RHShadowPoolAllocatedList()
+    {
+        ((RHUnk004e52a0 *)this)->FUN_004e52a0();
+    }
+};
+
+class RHShadowPoolAllocatedRanges
+{
+public:
+    ~RHShadowPoolAllocatedRanges()
+    {
+        void (std::list<RHMission *>::*clear)() = &std::list<RHMission *>::clear;
+        (((std::list<RHMission *> *)&m_list)->*clear)();
+    }
+    RHShadowPoolAllocatedList m_list;
+    char m_unknown[20];
+};
+
+template<class Ranges>
+class RHShadowPoolDescriptor
+{
+public:
+    unsigned long m_available;
+    Ranges m_ranges;
+};
+
+inline RHShadowMemoryBlock *RHShadowPoolCopy(RHShadowMemoryBlock *first, RHShadowMemoryBlock *last, RHShadowMemoryBlock *destination)
+{
+    for (; first != last; ++first, ++destination)
+    {
+        RHShadowMemoryBlock &(RHShadowMemoryBlock::*assign)(const RHShadowMemoryBlock &) = &RHShadowMemoryBlock::FUN_005a0ef0;
+        (destination->*assign)(*first);
+    }
+    return destination;
+}
+
+class RHShadowPoolBlocks : public RHShadowMemoryVector
+{
+public:
+    void Append(const RHShadowMemoryBlock &block, bool second)
+    {
+        if (second)
+            FUN_005a0000(m_last, block);
+        else
+            FUN_0059fcf0(m_last, block);
+        m_dirty = true;
+    }
+    void Clear()
+    {
+        RHShadowMemoryBlock *destination = RHShadowPoolCopy(m_last, m_last, m_first);
+        FUN_0059fef0(destination, m_last);
+        m_last = destination;
+        m_dirty = true;
+    }
+    char m_unknown[4];
+    bool m_dirty;
+    char m_pad[3];
+};
+
+class RHShadowPoolPointers : public RHShadowPointerVector
+{
+public:
+    unsigned Size() const { return m_first == 0 ? 0 : m_last - m_first; }
+    void Remove(unsigned index, bool second)
+    {
+        if (m_first == 0 || Size() <= index)
+        {
+            if (second)
+                ((RHShadowMemoryVector *)this)->FUN_005a0200();
+            else
+                ((RHShadowMemoryVector *)this)->FUN_0059ff20();
+        }
+        FUN_0059fc80(m_first + index);
+        m_dirty = true;
+    }
+    void Append(void *const &allocation)
+    {
+        typedef std::vector<unsigned long> Vector;
+        unsigned long *(Vector::*insert)(unsigned long *, const unsigned long &) = &Vector::insert;
+        (((Vector *)this)->*insert)((unsigned long *)m_last, (const unsigned long &)allocation);
+        m_dirty = true;
+    }
+    char m_unknown[4];
+    bool m_dirty;
+    char m_pad[3];
+};
+
+template<int Kind, class Item>
+class RHShadowPool
+{
+public:
+    unsigned m_unknown;
+    unsigned m_capacity;
+    RHShadowPoolBlocks m_blocks;
+    char m_gap[0x30];
+    RHShadowPoolPointers m_pointers;
+};
+
+DECOMP_SIZE_ASSERT(RHShadowPoolClearRanges, 0x28)
+DECOMP_SIZE_ASSERT(RHShadowPoolAllocatedRanges, 0x28)
+DECOMP_SIZE_ASSERT(RHShadowPoolDescriptor<RHShadowPoolClearRanges>, 0x2c)
+DECOMP_SIZE_ASSERT(RHShadowPoolBlocks, 0x18)
+DECOMP_SIZE_ASSERT(RHShadowPoolPointers, 0x18)
+
+// Parked: pointer-loop strength reduction, descriptor-copy induction and destructor temporaries differ.
+// STUB: GAME 0x0059ec90
+void RHUnk0059ec90::FUN_0059ec90()
+{
+    RHShadowPool<0, RHShadowEvent> &pool = *(RHShadowPool<0, RHShadowEvent> *)this;
+    RHShadowPoolDescriptor<RHShadowPoolClearRanges> block;
+    for (unsigned index = pool.m_pointers.Size() - 1; index > 0; --index)
+    {
+        operator delete(pool.m_pointers.m_first[index]);
+        pool.m_pointers.Remove(index, false);
+    }
+    pool.m_blocks.Clear();
+    block.m_available = pool.m_capacity;
+    RHShadowMemoryRange range;
+    range.m_first = 0;
+    range.m_last = pool.m_capacity;
+    RHShadowMemoryList &list = *(RHShadowMemoryList *)&block.m_ranges.m_list;
+    RHShadowMemoryNode *head = list.m_head;
+    RHShadowMemoryNode *node = list.FUN_0059fcc0(head, head->m_previous);
+    head->m_previous = node;
+    node->m_previous->m_next = node;
+    typedef std::pair<const unsigned long, RHsoundGroup *> Pair;
+    void (__cdecl *construct)(Pair *, const Pair &) = &std::_Construct;
+    construct((Pair *)&node->m_value, (const Pair &)range);
+    ++list.m_count;
+    block.m_ranges.m_dirty = true;
+    pool.m_blocks.FUN_005a02e0(pool.m_blocks.m_last, 1, (const RHShadowMemoryBlock &)block);
+    pool.m_blocks.m_dirty = true;
+}
+
+// Parked: iterator-result slot coloring and scalar register scheduling differ.
+// STUB: GAME 0x0059ee30
+RHShadowEvent *RHUnk0059ec90::FUN_0059ee30()
+{
+    RHShadowPool<0, RHShadowEvent> &pool = *(RHShadowPool<0, RHShadowEvent> *)this;
+    unsigned index;
+    for (index = 0; index < pool.m_pointers.Size(); ++index)
+        if (((RHShadowPoolDescriptor<RHShadowMemoryAssignmentList> *)pool.m_blocks.m_first)[index].m_available > 0)
+            goto foundEvent;
+    {
+        RHShadowPoolDescriptor<RHShadowPoolAllocatedRanges> block;
+        block.m_available = pool.m_capacity;
+        RHShadowMemoryRange range;
+        range.m_first = 0;
+        range.m_last = pool.m_capacity;
+        ((RHHumanOpponentListCalls *)&block.m_ranges)->FUN_00486110(
+                RHHumanOpponentIterator((RHHumanOpponentNode *)block.m_ranges.m_list.m_4), (const RHHumanOpponent &)range);
+        block.m_ranges.m_list.m_10 = true;
+        pool.m_blocks.Append((const RHShadowMemoryBlock &)block, false);
+        RHShadowEvent *allocation = (RHShadowEvent *)operator new(sizeof(RHShadowEvent) * pool.m_capacity);
+        pool.m_pointers.Append((void *const &)allocation);
+        index = pool.m_pointers.Size() - 1;
+    }
+foundEvent:
+    RHShadowEvent *allocation = (RHShadowEvent *)pool.m_pointers.m_first[index];
+    --((RHShadowPoolDescriptor<RHShadowMemoryAssignmentList> *)pool.m_blocks.m_first)[index].m_available;
+    unsigned offset = ((RHShadowPoolDescriptor<RHShadowMemoryAssignmentList> *)pool.m_blocks.m_first)[index].m_ranges.m_head->m_next->m_value.m_first;
+    ((RHShadowPoolDescriptor<RHShadowMemoryAssignmentList> *)pool.m_blocks.m_first)[index].m_ranges.At(0).m_first = offset + 1;
+    --((RHShadowPoolDescriptor<RHShadowMemoryAssignmentList> *)pool.m_blocks.m_first)[index].m_ranges.At(0).m_last;
+    if (((RHShadowPoolDescriptor<RHShadowMemoryAssignmentList> *)pool.m_blocks.m_first)[index].m_ranges.At(0).m_last == 0)
+    {
+        ((RHShadowPoolDescriptor<RHShadowMemoryAssignmentList> *)pool.m_blocks.m_first)[index].m_ranges.RemoveFirst();
+    }
+    return allocation + offset;
+}
+
+// Parked: pointer-loop strength reduction, descriptor-copy induction and destructor temporaries differ.
+// STUB: GAME 0x0059f000
+void RHUnk0059f000::FUN_0059f000()
+{
+    RHShadowPool<1, RHShadowAlphaIterator> &pool = *(RHShadowPool<1, RHShadowAlphaIterator> *)this;
+    RHShadowPoolDescriptor<RHShadowPoolClearRanges> block;
+    for (unsigned index = pool.m_pointers.Size() - 1; index > 0; --index)
+    {
+        operator delete(pool.m_pointers.m_first[index]);
+        pool.m_pointers.Remove(index, true);
+    }
+    pool.m_blocks.Clear();
+    block.m_available = pool.m_capacity;
+    RHShadowMemoryRange range;
+    range.m_first = 0;
+    range.m_last = pool.m_capacity;
+    RHShadowMemoryList &list = *(RHShadowMemoryList *)&block.m_ranges.m_list;
+    RHShadowMemoryNode *head = list.m_head;
+    RHShadowMemoryNode *node = list.FUN_0059fcc0(head, head->m_previous);
+    head->m_previous = node;
+    node->m_previous->m_next = node;
+    typedef std::pair<const unsigned long, RHsoundGroup *> Pair;
+    void (__cdecl *construct)(Pair *, const Pair &) = &std::_Construct;
+    construct((Pair *)&node->m_value, (const Pair &)range);
+    ++list.m_count;
+    block.m_ranges.m_dirty = true;
+    pool.m_blocks.FUN_005a0600(pool.m_blocks.m_last, 1, (const RHShadowMemoryBlock &)block);
+    pool.m_blocks.m_dirty = true;
+}
+
+// Parked: iterator-result slot coloring and scalar register scheduling differ.
+// STUB: GAME 0x0059f1a0
+RHShadowIterator *RHUnk0059f000::FUN_0059f1a0()
+{
+    RHShadowPool<1, RHShadowAlphaIterator> &pool = *(RHShadowPool<1, RHShadowAlphaIterator> *)this;
+    unsigned index;
+    for (index = 0; index < pool.m_pointers.Size(); ++index)
+        if (((RHShadowPoolDescriptor<RHShadowMemoryAssignmentList> *)pool.m_blocks.m_first)[index].m_available > 0)
+            goto foundIterator;
+    {
+        RHShadowPoolDescriptor<RHShadowPoolAllocatedRanges> block;
+        block.m_available = pool.m_capacity;
+        RHShadowMemoryRange range;
+        range.m_first = 0;
+        range.m_last = pool.m_capacity;
+        ((RHHumanOpponentListCalls *)&block.m_ranges)->FUN_00486110(
+                RHHumanOpponentIterator((RHHumanOpponentNode *)block.m_ranges.m_list.m_4), (const RHHumanOpponent &)range);
+        block.m_ranges.m_list.m_10 = true;
+        pool.m_blocks.Append((const RHShadowMemoryBlock &)block, true);
+        RHShadowAlphaIterator *allocation = (RHShadowAlphaIterator *)operator new(sizeof(RHShadowAlphaIterator) * pool.m_capacity);
+        pool.m_pointers.Append((void *const &)allocation);
+        index = pool.m_pointers.Size() - 1;
+    }
+foundIterator:
+    RHShadowAlphaIterator *allocation = (RHShadowAlphaIterator *)pool.m_pointers.m_first[index];
+    --((RHShadowPoolDescriptor<RHShadowMemoryAssignmentList> *)pool.m_blocks.m_first)[index].m_available;
+    unsigned offset = ((RHShadowPoolDescriptor<RHShadowMemoryAssignmentList> *)pool.m_blocks.m_first)[index].m_ranges.m_head->m_next->m_value.m_first;
+    ((RHShadowPoolDescriptor<RHShadowMemoryAssignmentList> *)pool.m_blocks.m_first)[index].m_ranges.At(0).m_first = offset + 1;
+    --((RHShadowPoolDescriptor<RHShadowMemoryAssignmentList> *)pool.m_blocks.m_first)[index].m_ranges.At(0).m_last;
+    if (((RHShadowPoolDescriptor<RHShadowMemoryAssignmentList> *)pool.m_blocks.m_first)[index].m_ranges.At(0).m_last == 0)
+    {
+        ((RHShadowPoolDescriptor<RHShadowMemoryAssignmentList> *)pool.m_blocks.m_first)[index].m_ranges.RemoveFirst();
+    }
+    return allocation + offset;
 }
 
 void rh_shadow_memory_emit(RHShadowMemoryList *list, RHShadowMemoryVector *blocks,

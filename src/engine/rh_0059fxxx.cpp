@@ -36,25 +36,7 @@ RHUnk0059f6f0::RHUnk0059f6f0()
     m_14 = 1;
 }
 
-class RHUnk0059f900List
-{
-public:
-    RHUnk0059f900List *m_next;
-    RHUnk0059f900List *m_prev;
-    char m_08[0x08];
-};
-
-class RHUnk0059f900
-{
-public:
-    RHUnk0059f900();
-    char m_0;
-    char m_1[3];
-    RHUnk0059f900List *m_4;
-    int m_8;
-    char m_c[4];
-    bool m_10;
-};
+#include "RHShadowPoolLifetime.h"
 
 // FUNCTION: GAME 0x0059f900
 RHUnk0059f900::RHUnk0059f900()
