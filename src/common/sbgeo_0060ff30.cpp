@@ -28,8 +28,6 @@ DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 DECOMP_SIZE_ASSERT(RHMobileUnk006100e0, 0x10)
 DECOMP_SIZE_ASSERT(RHUnk0060fbf0, 0x0c)
 
-// GLOBAL: GAME 0x00677490
-double g_unk0x00677490 = 0.0;
 
 // GLOBAL: GAME 0x0067a878
 double g_unk0x0067a878 = 9.999999717180685e-10;
@@ -81,11 +79,11 @@ RHUnk0060fbf0 RHMobileUnk006100e0::FUN_006101c0(const RHMobileUnk006100e0 &other
     RHUnk0060fbf0 result;
     double dx = Second().m_x - m_x;
     double otherDx = other.Second().m_x - other.m_x;
-    if (dx != g_unk0x00677490)
+    if (dx != 0.0)
     {
         double slope = (Second().m_y - m_y) / dx;
         double offset = m_y - m_x * slope;
-        if (otherDx != g_unk0x00677490)
+        if (otherDx != 0.0)
         {
             double otherSlope = (other.Second().m_y - other.m_y) / otherDx;
             double otherOffset = other.m_y - other.m_x * otherSlope;
@@ -122,7 +120,7 @@ RHUnk0060fbf0 RHMobileUnk006100e0::FUN_006101c0(const RHMobileUnk006100e0 &other
                 result.FUN_0060fdb0();
         }
     }
-    else if (otherDx != g_unk0x00677490)
+    else if (otherDx != 0.0)
     {
         double otherSlope = (other.Second().m_y - other.m_y) / otherDx;
         double otherOffset = other.m_y - other.m_x * otherSlope;
@@ -147,7 +145,7 @@ RHUnk0060fbf0 RHMobileUnk006100e0::FUN_006101c0(const RHMobileUnk006100e0 &other
 float RHMobileUnk006100e0::FUN_006104f0(float y)
 {
     float dx = Second().m_x - m_x;
-    if (dx != g_unk0x00677490)
+    if (dx != 0.0)
         return dx * (y - m_y) / (Second().m_y - m_y) + m_x;
     return m_x;
 }
@@ -156,7 +154,7 @@ float RHMobileUnk006100e0::FUN_006104f0(float y)
 float RHMobileUnk006100e0::FUN_00610520(float x)
 {
     float dy = Second().m_y - m_y;
-    if (dy != g_unk0x00677490)
+    if (dy != 0.0)
         return dy * (x - m_x) / (Second().m_x - m_x) + m_y;
     return m_y;
 }

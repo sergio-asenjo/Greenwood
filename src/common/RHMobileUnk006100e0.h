@@ -10,7 +10,7 @@ public:
     RHMobileUnk006100e0(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
     RHMobileUnk006100e0(const RHMobileUnk006100e0 &other);
     ~RHMobileUnk006100e0();
-    void FUN_00578c50();
+    void FUN_00578c50() throw();
     void FUN_0060ff30(const RHMobileUnk006100e0 &other);
     RHMobileUnk006100e0 &FUN_00610140(const RHMobileUnk006100e0 &other);
     void FUN_00610160(const SBGeoPoint2D &vector);

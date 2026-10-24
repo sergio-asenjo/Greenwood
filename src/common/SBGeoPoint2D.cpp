@@ -17,7 +17,7 @@ void *SBGeoPoint2D::FUN_0044e990(unsigned flags)
 }
 
 // FUNCTION: GAME 0x005fc080
-SBGeoPoint2D::~SBGeoPoint2D() throw()
+SBGeoPoint2D::~SBGeoPoint2D()
 {
     ((RHMobileUnk006100e0 *)this)->FUN_00578c50();
 }

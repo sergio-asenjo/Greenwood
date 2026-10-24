@@ -18,6 +18,8 @@ public:
 };
 #endif
 
+#if !defined(SBGEO_VECTOR2D_VIEW) && !defined(SBGEOVECTOR2D_H)
+#define SBGEO_VECTOR2D_VIEW
 class SBGeoVector2D : public SBGeoPoint2D
 {
 public:
@@ -25,6 +27,7 @@ public:
     SBGeoVector2D(const SBGeoVector2D &other);
     SBGeoVector2D &operator=(const SBGeoVector2D &other);
 };
+#endif
 
 #ifndef SBGEO_BOUNDINGBOX2D_VIEW
 #define SBGEO_BOUNDINGBOX2D_VIEW

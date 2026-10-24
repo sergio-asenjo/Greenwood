@@ -61,12 +61,11 @@ SBGeoVector2D SBGeoVector2D::GetNormalized(float scale) const
     return result;
 }
 
-extern float g_unk0x0067749c;
 
 // FUNCTION: GAME 0x005fc880
 void SBGeoVector2D::Normal(bool direction, float scale)
 {
-    if (scale == g_unk0x0067749c)
+    if (scale == 1.0f)
     {
         float x = m_x;
         if (direction)
@@ -100,7 +99,7 @@ void SBGeoVector2D::Normal(bool direction, float scale)
 SBGeoVector2D RHUnk005fc3b0::FUN_005fc8f0(bool direction, float scale) const
 {
     SBGeoVector2D result;
-    if (scale == g_unk0x0067749c)
+    if (scale == 1.0f)
     {
         if (direction)
         {
@@ -151,10 +150,6 @@ RHUnk005fc3b0 RHUnk005fc3b0::FUN_005fc9e0(float angle, float scale)
     return result;
 }
 
-extern float g_unk0x00677488;
-
-// GLOBAL: GAME 0x00677b98
-float g_unk0x00677b98 = 3.1415927410125732421875f;
 
 // FUNCTION: GAME 0x005fca90
 float SBGeoPoint2D::FUN_005fca90(const SBGeoPoint2D &other, float scale) const
@@ -163,25 +158,19 @@ float SBGeoPoint2D::FUN_005fca90(const SBGeoPoint2D &other, float scale) const
     SBGeoVector2D second(other.m_x, other.m_y / scale);
     float dot = first.FUN_005fc660(second);
     float cross = ((RHUnk005fc3b0 *)&first)->FUN_005fc680((const RHUnk005fc3b0 &)second, 1.0f);
-    if (cross == g_unk0x00677488)
-        return dot > g_unk0x00677488 ? 0.0f : 3.1415927410125732421875f;
+    if (cross == 0.0f)
+        return dot > 0.0f ? 0.0f : 3.1415927410125732421875f;
     float angle = atan(cross / dot);
-    if (dot >= g_unk0x00677488)
+    if (dot >= 0.0f)
         return angle;
-    if (cross > g_unk0x00677488) {
+    if (cross > 0.0f) {
         float result = angle;
-        result += g_unk0x00677b98;
+        result += 3.1415927f;
         return result;
     }
-    return angle - g_unk0x00677b98;
+    return angle - 3.1415927f;
 }
 
-// GLOBAL: GAME 0x0067a820
-float g_unk0x0067a820 = 0.4142135679721832f;
-// GLOBAL: GAME 0x0067a824
-float g_unk0x0067a824 = 0.19509032368659973f;
-// GLOBAL: GAME 0x0067a828
-float g_unk0x0067a828 = 0.9807852506637573f;
 
 // Parked: x87 product lifetimes and quadrant-branch layout differ.
 // STUB: GAME 0x005fcc50
@@ -189,27 +178,27 @@ unsigned char RHUnk005fc3b0::FUN_005fcc50(float scale) const
 {
     scale *= m_x;
     float x = scale;
-    x *= g_unk0x0067a828;
+    x *= 0.9807852506637573f;
     float firstY = m_y;
-    firstY *= g_unk0x0067a824;
+    firstY *= 0.19509032368659973f;
     x -= firstY;
     float y = scale;
-    y *= g_unk0x0067a824;
+    y *= 0.19509032368659973f;
     float secondY = m_y;
-    secondY *= g_unk0x0067a828;
+    secondY *= 0.9807852506637573f;
     y += secondY;
     bool negativeX;
     bool positiveY;
     bool steep;
     bool narrow;
-    if (x < g_unk0x00677488)
+    if (x < 0.0f)
     {
         x = -x;
         negativeX = true;
     }
     else
         negativeX = false;
-    if (y > g_unk0x00677488)
+    if (y > 0.0f)
         positiveY = true;
     else
     {
@@ -219,13 +208,13 @@ unsigned char RHUnk005fc3b0::FUN_005fcc50(float scale) const
     if (y < x)
     {
         steep = true;
-        x *= g_unk0x0067a820;
+        x *= 0.4142135679721832f;
         narrow = y > x;
     }
     else
     {
         steep = false;
-        y *= g_unk0x0067a820;
+        y *= 0.4142135679721832f;
         narrow = x > y;
     }
     unsigned char sector = 0;

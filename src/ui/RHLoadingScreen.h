@@ -1,26 +1,7 @@
 #include <string>
 #include "Decomp.h"
 #include "RHMission.h"
-
-// SIZE 0x08
-class SBGeoPoint2D
-{
-public:
-    SBGeoPoint2D(float, float);
-    ~SBGeoPoint2D();
-    float m_x; // 0x00
-    float m_y; // 0x04
-};
-
-// SIZE 0x08
-class SBGeoVector2D : public SBGeoPoint2D
-{
-public:
-    SBGeoVector2D(float, float);
-    ~SBGeoVector2D() {}
-    SBGeoVector2D(const SBGeoVector2D &other);
-    SBGeoVector2D &operator=(const SBGeoVector2D &other);
-};
+#include "SBGeoVector2D.h"
 
 // SIZE 0x18
 class RHUnk00613e90
@@ -107,4 +88,3 @@ bool FUN_005f6400(const std::string &);
 extern std::string g_unk0x006c05f0;
 extern std::string g_unk0x006c0650;
 extern unsigned char *g_unk0x006c0bd4;
-extern float g_unk0x00679148;

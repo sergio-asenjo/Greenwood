@@ -1,5 +1,6 @@
 #ifndef SBGEOVECTOR2D_H
 #define SBGEOVECTOR2D_H
+#define SBGEO_VECTOR2D_VIEW
 
 #ifndef SBGEO_POINT2D_VIEW
 #include "SBGeoPoint2D.h"

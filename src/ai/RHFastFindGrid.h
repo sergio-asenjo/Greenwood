@@ -5,37 +5,8 @@
 #include "Decomp.h"
 #include <vector>
 
-class SBGeoVector2D;
 class RHSectorBuilding;
-class SBGeoPoint2D
-{
-public:
-    SBGeoPoint2D();
-    SBGeoPoint2D(const SBGeoPoint2D &);
-    SBGeoPoint2D(float x, float y);
-    ~SBGeoPoint2D();
-    SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
-    SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
-    SBGeoVector2D Unk005fc110(const SBGeoPoint2D &other) const;
-    void Set(short x, short y)
-    {
-        m_x = (float)x;
-        m_y = (float)y;
-    }
-    float X() const { return m_x; }
-    float Y() const { return m_y; }
-    float m_x;
-    float m_y;
-};
-
-class SBGeoVector2D : public SBGeoPoint2D
-{
-public:
-    SBGeoVector2D();
-    ~SBGeoVector2D() {}
-    SBGeoVector2D &operator=(const SBGeoVector2D &other);
-    SBGeoVector2D(const SBGeoVector2D &other);
-};
+#include "RHFastFindGeometry.h"
 
 class RHFastFindRepulsiveBase
 {
@@ -764,58 +735,7 @@ public:
     int Unk0057cd60(SBFile &file, bool mode);
 };
 
-class RHUnk005fc3b0 : public SBGeoVector2D
-{
-public:
-    RHUnk005fc3b0() {}
-    ~RHUnk005fc3b0() {}
-    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other)
-    {
-        return (RHUnk005fc3b0 &)SBGeoVector2D::operator=((const SBGeoVector2D &)other);
-    }
-    float Unk005fc6a0(float value);
-    float FUN_005fc680(const RHUnk005fc3b0 &other, float value) const;
-};
-
-// SIZE 0x14
-class __declspec(novtable) RHUnk005209d0 : public SBGeoPoint2D
-{
-public:
-    RHUnk005209d0(int type);
-    RHUnk005209d0(SBGeoPoint2D point, int type);
-    RHUnk005209d0(const RHUnk005209d0 &other)
-        : SBGeoPoint2D(other), m_0c(other.m_0c), m_10(other.m_10)
-    {
-        *(unsigned *)this = 0x678b58;
-    }
-    virtual ~RHUnk005209d0(); // vtable+0x00
-    void *FUN_004fdc70(unsigned flags);
-    int m_0c; // +0x0c
-    undefined m_10; // +0x10
-};
-
-// VTABLE: GAME 0x00678b54
-// SIZE 0x40
-class RHUnk00520ae0 : public RHUnk005209d0
-{
-public:
-    RHUnk00520ae0();
-    RHUnk00520ae0(const SBGeoPoint2D &point, float first, float second);
-    virtual ~RHUnk00520ae0(); // vtable+0x00
-    void FUN_00520c80(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
-    RHUnk005fc3b0 m_14; // +0x14
-    RHUnk005fc3b0 m_1c; // +0x1c
-    int m_24;
-    int m_28;
-    int m_2c;
-    int m_30;
-    undefined m_34; // +0x34
-    undefined m_35; // +0x35
-    undefined m_36; // +0x36
-    undefined m_37; // +0x37
-    undefined m_38; // +0x38
-    unsigned long m_id; // +0x3c
-};
+#include "RHRepulsivePoint.h"
 
 #include "RHUnk004ff7b0.h"
 

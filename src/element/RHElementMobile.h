@@ -18,62 +18,8 @@ template <class T> inline const T &RHMobileField(const void *object, unsigned of
 #include "RHUnkWaypointRef.h"
 extern char g_unk0x6c0691;
 
-class SBGeoVector2D;
 class SBGeoSegment2D;
-
-// SIZE 0x08
-class SBGeoPoint2D
-{
-public:
-    SBGeoPoint2D();
-    SBGeoPoint2D(float x, float y);
-    SBGeoPoint2D(const SBGeoPoint2D &other);
-    ~SBGeoPoint2D();
-    void *FUN_0044e990(unsigned flags);
-    SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
-    SBGeoVector2D Unk005fc110(const SBGeoPoint2D &other) const;
-    SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
-    bool Serialize(SBFile &file);
-    bool operator==(const SBGeoPoint2D &other) const;
-    bool FUN_005fc0e0(const SBGeoPoint2D &other) const;
-    float FUN_005fc700(float value) const;
-    float Unk005fc6d0(float value) const;
-    SBGeoPoint2D &FUN_005fc1e0(const SBGeoPoint2D &other);
-    void FUN_005fc390(const SBGeoPoint2D &other) throw();
-    float m_x; // 0x00
-    float m_y; // 0x04
-};
-
-// SIZE 0x08
-class SBGeoVector2D : public SBGeoPoint2D
-{
-public:
-    SBGeoVector2D();
-    SBGeoVector2D(float x, float y);
-    SBGeoVector2D(const SBGeoPoint2D &other);
-    ~SBGeoVector2D() {}
-    SBGeoVector2D &operator=(const SBGeoVector2D &other);
-    SBGeoVector2D(const SBGeoVector2D &other);
-    float FUN_005fc660(const SBGeoPoint2D &other) const;
-};
-
-class RHUnk005fc3b0 : public SBGeoVector2D
-{
-public:
-    RHUnk005fc3b0() {}
-    ~RHUnk005fc3b0() {}
-    float Unk005fc6a0(float value);
-    void FUN_005fc7c0(float value);
-    unsigned char FUN_005fcc50(float value) const;
-    SBGeoVector2D FUN_005fc8f0(bool direction, float value) const;
-    SBGeoPoint2D FUN_005fc450() const;
-    RHUnk005fc3b0(float x, float y);
-    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other)
-    {
-        return (RHUnk005fc3b0 &)SBGeoVector2D::operator=((const SBGeoVector2D &)other);
-    }
-    float FUN_005fc680(const RHUnk005fc3b0 &other, float value) const;
-};
+#include "RHFastFindGeometry.h"
 
 class RHUnk005bd5b0
 {
@@ -199,14 +145,7 @@ public:
     RHUnk005fc3b0 m_3c; // 0x3c
 };
 
-class RHUnk00520ae0
-{
-public:
-    RHUnk00520ae0(const SBGeoPoint2D &point, float first, float second);
-    virtual ~RHUnk00520ae0();
-    void FUN_00520c80(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
-    undefined m_4[0x3c]; // 0x04
-};
+#include "RHRepulsivePoint.h"
 
 struct RHMobilePointerNode
 {
@@ -383,13 +322,7 @@ void FUN_004b0620(RHUnk005fc3b0 *destination, const RHUnk005fc3b0 &value);
 void FUN_004b05b0(RHUnk005fc3b0 *first, RHUnk005fc3b0 *last, const RHUnk005fc3b0 &value);
 void FUN_004b05e0(RHUnk005fc3b0 *first, RHUnk005fc3b0 *last, RHUnk005fc3b0 *destination);
 
-class RHMobileUnk00607da0
-{
-public:
-    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
-    void FUN_00607990(const RHMobileUnk00607da0 &other);
-    char m_0[0x14];
-};
+#include "RHMobileUnk00607da0.h"
 
 #include "RHMobileUnk006100e0.h"
 
@@ -756,10 +689,7 @@ public:
     void Unk(int direction);
 };
 
-extern float g_unk0x00677488;
-extern float g_unk0x006775d8;
 extern bool g_mobileAssertDoubleBond;
-extern float g_unk0x0067749c;
 
 void RHSerializeName(SBFile &file, const char *name);
 class RHEngine

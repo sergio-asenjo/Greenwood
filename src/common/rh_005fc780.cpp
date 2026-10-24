@@ -1,4 +1,3 @@
-extern float g_unk0x00677488;
 
 class RHUnk005fc780
 {
@@ -13,13 +12,13 @@ public:
 float RHUnk005fc780::FUN_005fc780(float divisor)
 {
     float b = m_4 / divisor;
-    if (m_0 > g_unk0x00677488)
+    if (m_0 > 0.0f)
     {
-        if (b > g_unk0x00677488)
+        if (b > 0.0f)
             return m_0 + b;
         return m_0 - b;
     }
-    if (b > g_unk0x00677488)
+    if (b > 0.0f)
         return b - m_0;
     return -m_0 - b;
 }
