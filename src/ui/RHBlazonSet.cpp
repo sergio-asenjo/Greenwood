@@ -28,14 +28,8 @@ void EmitRHBlazonSetConstructor(void *mission, void *parent)
 // LIBRARY: GAME 0x00642cba
 // ??_M@YGXPAXIHP6EX0@Z@Z
 
-// GLOBAL: GAME 0x006775cc
-float g_blazonCompactWidth = 0.0714285746216774f;
 
-// GLOBAL: GAME 0x006775d0
-float g_blazonMinimumHeight = 42.0f;
 
-// GLOBAL: GAME 0x006775d4
-float g_blazonNormalWidth = 0.0270270276814699f;
 
 class RHBlazonWidgetDeletionCalls
 {
@@ -58,10 +52,10 @@ RHMenuShortMissionBlazons::~RHMenuShortMissionBlazons()
 unsigned long RHMenuShortMissionBlazons::ComputeNumberOfBlazonsPerRow(const SBGeoBoundingBox2D &bounds, bool &normal) const
 {
     const float *box = (const float *)&bounds;
-    unsigned long count = (long)((box[2] - box[0]) * g_blazonNormalWidth);
+    unsigned long count = (long)((box[2] - box[0]) * 0.0270270276814699f);
     normal = true;
-    if (count <= m_count || box[3] - box[1] < g_blazonMinimumHeight) {
-        count = (long)((box[2] - box[0]) * g_blazonCompactWidth);
+    if (count <= m_count || box[3] - box[1] < 42.0f) {
+        count = (long)((box[2] - box[0]) * 0.0714285746216774f);
         normal = false;
     }
     return count;

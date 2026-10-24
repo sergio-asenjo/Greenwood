@@ -44,6 +44,7 @@ class RHFontInsertTree
 {
 public:
     RHFontInsertIterator FUN_005034d0(RHFontInsertNode *, RHFontInsertNode *, const std::pair<const std::string, void *> &);
+    RHFontInsertIterator FUN_00502b90(const std::string &key);
     RHFontInsertNode *FUN_005037e0(const std::string &);
     static RHFontInsertNode *&Left(RHFontInsertNode *node) { return node->m_00; }
     inline void RotateLeft(RHFontInsertNode *node)
@@ -387,6 +388,14 @@ RHFontInsertIterator RHFontInsertTree::FUN_00502a50(RHFontInsertIterator first, 
     return first;
 }
 
+// FUNCTION: GAME 0x00502b90
+RHFontInsertIterator RHFontInsertTree::FUN_00502b90(const std::string &key)
+{
+    RHFontInsertIterator result = RHFontInsertMake(FUN_005037e0(key));
+    return RHFontInsertNodeOf(result) == m_head || key < RHFontInsertNodeOf(result)->m_0c.first
+        ? RHFontInsertMake(m_head) : result;
+}
+
 // Parked: pair-construction inlining and frame/register allocation differ.
 // STUB: GAME 0x00502c20
 RHFontInsertResult RHFontMap::FUN_00502c20(const std::pair<const std::string, void *> &value)
@@ -720,6 +729,7 @@ RHFontInsertNode *RHFontInsertTree::FUN_005037e0(const std::string &key)
 void EmitRHFontLowerBound(RHFontInsertTree &tree, const std::string &key)
 {
     tree.FUN_005037e0(key);
+    tree.FUN_00502b90(key);
 }
 
 // FUNCTION: GAME 0x005c1270

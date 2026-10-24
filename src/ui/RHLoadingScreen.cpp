@@ -31,8 +31,6 @@ DECOMP_SIZE_ASSERT(RHLoadingScreen, 0x24)
 
 // GLOBAL: GAME 0x006c0bd4
 unsigned char *g_unk0x006c0bd4;
-// GLOBAL: GAME 0x00679148
-float g_unk0x00679148 = 255.0f;
 // GLOBAL: GAME 0x006c05f0
 std::string g_unk0x006c05f0;
 // GLOBAL: GAME 0x006c0650
@@ -258,7 +256,7 @@ void RHLoadingScreen::GenerateSand(SBFile &file)
     }
     m_draw->Unk005e5ea0(viewport);
     m_draw->Unk005e5160(surface);
-    float scale = g_unk0x00679148 / (maximum - minimum);
+    float scale = 255.0f / (maximum - minimum);
     sand = g_unk0x006c0bd4;
     m_height *= m_width;
     for (unsigned long i = 0; i < m_height; ++i)
