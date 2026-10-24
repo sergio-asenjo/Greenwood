@@ -8,7 +8,6 @@
 #include <string.h>
 #include "RHUnk00401490.h"
 
-extern char g_unk0x6c0560[4];
 
 // FUNCTION: GAME 0x00401a30
 int RHUnk00401a00::FUN_00401a30()
@@ -36,7 +35,7 @@ int RHUnk00401a00::FUN_00401a80(int i, int j)
 // FUNCTION: GAME 0x00401aa0
 int FUN_00401aa0(const std::vector<std::string> &values)
 {
-    if (!values.empty() && strcmp(values[0].c_str(), g_unk0x6c0560) != 0)
+    if (!values.empty() && strcmp(values[0].c_str(), "") != 0)
         return 0;
     return 1;
 }

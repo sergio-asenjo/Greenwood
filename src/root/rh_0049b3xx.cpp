@@ -149,7 +149,6 @@ extern RHUnk00452030 *g_unk0x6c07fc;
 extern RHUnkSectorGlobal *g_unk0x6c0a9c;
 extern RHUnk005c38b0 *g_unk0x6c10e8;
 extern RHEngine *g_pEngine;
-extern float g_unk0x00677488;
 
 // SIZE 0x14
 class SBGeoBoundingBox2D
@@ -207,7 +206,7 @@ float RHUnk0049b100::FUN_0049b150()
 // FUNCTION: GAME 0x0049b180
 int RHUnk0049b100::FUN_0049b180()
 {
-    if (m_0 == g_unk0x00677488 && m_4 == g_unk0x00677488 && m_8 == g_unk0x00677488)
+    if (m_0 == 0.0f && m_4 == 0.0f && m_8 == 0.0f)
         return 0;
     return 1;
 }
@@ -215,7 +214,7 @@ int RHUnk0049b100::FUN_0049b180()
 // FUNCTION: GAME 0x0049b1c0
 int RHUnk0049b100::FUN_0049b1c0()
 {
-    if (m_0 == g_unk0x00677488 && m_4 == g_unk0x00677488 && m_8 == g_unk0x00677488)
+    if (m_0 == 0.0f && m_4 == 0.0f && m_8 == 0.0f)
         return 1;
     return 0;
 }
