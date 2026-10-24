@@ -71,7 +71,6 @@ namespace VMCoreCustomDependencies
     }
 }
 
-extern float g_unk0x00677488;
 
 class RHUnk0054b150
 {
@@ -89,7 +88,7 @@ void RHUnk0054b150::FUN_0054b150(bool flag, bool immediate)
 {
     if (flag == true)
     {
-        if (!m_120 && m_124 == g_unk0x00677488)
+        if (!m_120 && m_124 == 0.0f)
         {
             if (!immediate)
             {
@@ -105,7 +104,7 @@ void RHUnk0054b150::FUN_0054b150(bool flag, bool immediate)
     }
     else if (flag == false)
     {
-        if (m_120 == true && m_124 == g_unk0x00677488)
+        if (m_120 == true && m_124 == 0.0f)
         {
             if (!immediate)
             {
@@ -120,15 +119,6 @@ void RHUnk0054b150::FUN_0054b150(bool flag, bool immediate)
         }
     }
 }
-
-class RHUnk004032a0
-{
-public:
-    int FUN_004032a0(int first, int second);
-};
-
-int RHUnk004032a0::FUN_004032a0(int, int) { return 0; }
-
 
 class RHUnk00580220
 {

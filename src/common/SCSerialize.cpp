@@ -7,8 +7,6 @@
 typedef int SCSerializeSizeAssert[(sizeof(SCSerialize) == 0x10) ? 1 : -1];
 typedef int SCSerializeObjectSizeAssert[(sizeof(SCSerializeUnkObject) == 0x6c) ? 1 : -1];
 
-// GLOBAL: GAME 0x00677594
-const float g_unk0x00677594 = 1.5f;
 
 void EmitSCSerialize(SCSerialize *serializer)
 {
@@ -106,7 +104,7 @@ int SCSerialize::Serialize(bool writing)
                 "Trying to load a corrupted file script file\n");
             return result;
         }
-        if (version != g_unk0x00677594) {
+        if (version != 1.5f) {
             SBAssert(1, "P:\\Robin Hood\\VirtualMachine\\SCSerialize.cpp", 0x12f,
                 // STRING: GAME 0x006be2ec
                 "File version of .scb not good expecting %f got %f.\n", 1.5, (double)version);

@@ -4,6 +4,7 @@
 #include <windows.h>
 #include "SBPicture.h"
 #include "SBInput.h"
+#include "SBThreadedInput.h"
 #include "RHUnk005ef320WindowView.h"
 #include "RHMapResources.h"
 #include "RHMapWideText.h"
@@ -450,6 +451,18 @@ void FUN_005e20c0(SBFile &file)
     g_unk0x006c1178.pop_back();
 }
 
+// FUNCTION: GAME 0x005e23d0
+std::wstring FUN_005e23d0(unsigned long id)
+{
+    RHMapResources *resources = g_unk0x006c1840;
+    std::wstring text;
+    if (!resources->FUN_006009e0(0xf443b, id, (RHMapWideText &)text))
+        text =
+            // STRING: GAME 0x006b91d0
+            L"Bad menu text ID...";
+    return text;
+}
+
 // Parked: crop receiver and draw-argument reload scheduling differ.
 // STUB: GAME 0x005e24f0
 void Toolbox::DisplayPicture(const char *name, bool wait)
@@ -494,8 +507,7 @@ void Toolbox::DisplayPicture(const char *name, bool wait)
     file.FUN_005f5290();
     if (wait)
     {
-        extern void FUN_005f1000();
-        FUN_005f1000();
+        SBThreadedInput::GetChar();
     }
 }
 

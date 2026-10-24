@@ -10,6 +10,7 @@ class RHElementScroll;
 
 namespace VMCoreCustomDependencies
 {
+    void FUN_00576170();
     int FUN_0057b150();
     int FUN_00576a30();
     int FUN_00576af0();
@@ -268,6 +269,13 @@ int VMCoreCustom::FUN_00404db0(VMNativeStack *stack)
     int *args = (int *)(stack->m_data + stack->m_size) - 1;
     stack->m_size -= 4;
     return VMCoreCustomDependencies::FUN_005714b0(args[0] != 0);
+}
+
+// FUNCTION: GAME 0x00404de0
+int VMCoreCustom::FUN_00404de0(VMNativeStack *stack)
+{
+    VMCoreCustomDependencies::FUN_00576170();
+    return 0;
 }
 
 // FUNCTION: GAME 0x00404df0

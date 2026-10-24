@@ -793,6 +793,18 @@ struct VMUnk0063a320Node
     VMUnk0063a400 *m_value;
 };
 
+// STUB: GAME 0x0063a250
+bool VMUnk0063a250::FUN_0063a250(int address, int size)
+{
+    VMUnk0063a400 *record = new VMUnk0063a400(*(VMUnk0063a140 **)m_pad0);
+    *(VMUnk0063a140 **)m_pad0 = new VMUnk0063a140;
+    record->m_08 = address;
+    ((VMUnk0063a140 *)&record->m_0c)->FUN_0063a140(size, true);
+    std::list<VMUnk0063a400 *> &records = *(std::list<VMUnk0063a400 *> *)(m_pad0 + 4);
+    records.push_back(record);
+    return true;
+}
+
 // FUNCTION: GAME 0x0063a320
 int VMUnk0063a250::FUN_0063a320()
 {

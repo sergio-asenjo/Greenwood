@@ -317,12 +317,14 @@ int SBFile::Access(void *buffer, int size)
     return 0;
 }
 
-// Parked: seek branch-local offset loading and register allocation differ.
+// Parked: switch default is placed before the origin-2 case instead of after origin-0.
 // STUB: GAME 0x005f5370
 int RHProfileFile::FUN_005f5370(int offset, int origin)
 {
-    int position = offset;
-    if (SBFile_embedded) {
+    int position;
+    if (!SBFile_embedded)
+        position = offset;
+    else {
         switch (origin) {
         case 2:
             position = SBFile_start + *(int *)((char *)this + 8) - offset;
@@ -334,6 +336,9 @@ int RHProfileFile::FUN_005f5370(int offset, int origin)
             break;
         case 0:
             position = SBFile_start + offset;
+            break;
+        default:
+            position = offset;
             break;
         }
     }

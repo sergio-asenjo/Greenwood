@@ -19,8 +19,3 @@ extern "C" unsigned int wcslen(const unsigned short *value)
         ++end;
     return end - value;
 }
-
-std::wstring FUN_005e23d0(unsigned long id)
-{
-    return std::wstring();
-}

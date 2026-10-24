@@ -44,11 +44,30 @@ public:
     int *FUN_0063a3b0(int);
 };
 
-class VMUnk0063a140;
+class VMUnk0063a140
+{
+public:
+    VMUnk0063a140()
+    {
+        *(int *)(m_pad0 + 4) = 0;
+        *(void **)m_pad0 = 0;
+    }
+    char m_pad0[8];
+    int FUN_0063a140(int, bool);
+    int *FUN_0063a1e0(int);
+    void FUN_0063a1f0(int, unsigned char *, int);
+};
 
 class VMUnk0063a400
 {
 public:
+    VMUnk0063a400(VMUnk0063a140 *area) : m_00(area)
+    {
+        m_10 = 0;
+        m_0c = 0;
+        m_18 = 0;
+        m_14 = 0;
+    }
     VMUnk0063a140 *m_00;
     int m_04;
     int m_08;
@@ -57,15 +76,6 @@ public:
     void *m_14;
     int m_18;
     void FUN_0063a400();
-};
-
-class VMUnk0063a140
-{
-public:
-    char m_pad0[8];
-    int FUN_0063a140(int, bool);
-    int *FUN_0063a1e0(int);
-    void FUN_0063a1f0(int, unsigned char *, int);
 };
 
 struct VMQuad;

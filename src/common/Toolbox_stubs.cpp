@@ -106,7 +106,3 @@ ToolboxChunk **ToolboxChunks::FUN_005e31d0(unsigned int count) { return _Growmap
 
 // FUNCTION: GAME 0x0053e080
 ToolboxChunkIterator::ToolboxChunkIterator(ToolboxChunk *next, ToolboxChunk **map) : m_first(*map), m_last(*map + 512), m_next(next), m_map(map) {}
-namespace Toolbox
-{
-    void FUN_005f1000() {}
-}
