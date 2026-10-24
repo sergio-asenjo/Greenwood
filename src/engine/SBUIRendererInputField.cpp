@@ -19,7 +19,6 @@ DECOMP_SIZE_ASSERT(SBUIInputFieldDrawUnk, 0x30)
 
 void SBAssert(int, const char *, int, const char *, ...);
 namespace std { void _Xlen(); }
-extern float g_unk0x006775d8;
 void FUN_0048be30();
 
 class RHUnkFXDraw
@@ -521,7 +520,7 @@ bool SBUIInputFieldUnk00621440::FUN_00621470(unsigned int id)
     SBGeoBoundingBox2D &box = m_70;
     float height = box.m_08.m_y - box.m_00.m_y;
     offset.m_x = 0;
-    offset.m_y = (height - ((SBUIInputFieldFontHeight *)font)->v7()) * g_unk0x006775d8;
+    offset.m_y = (height - ((SBUIInputFieldFontHeight *)font)->v7()) * 0.5f;
     if (!((SBUIUnk0060dae0 *)this)->FUN_0060dae0(id))
         return false;
     if (!m_84)

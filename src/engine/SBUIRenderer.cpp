@@ -101,7 +101,6 @@ DECOMP_SIZE_ASSERT(SBUIUnk0060da20, 0x4c)
 DECOMP_SIZE_ASSERT(SBUIUnk0060dae0, 0x50)
 DECOMP_SIZE_ASSERT(SBUIUnk0060dd00, 0x7c)
 
-extern float g_unk0x00677488;
 class RHMapResources;
 extern RHMapResources *g_unk0x006c1840;
 
@@ -175,7 +174,7 @@ bool SBUIUnk0060d530::FUN_0060d550(long resourceId)
                 "Unable to retrieve the size of a resource");
             return false;
         }
-        if (((volatile SBGeoBoundingBox2D &)position).m_p1.m_x - ((volatile SBGeoBoundingBox2D &)position).m_p0.m_x == g_unk0x00677488
+        if (((volatile SBGeoBoundingBox2D &)position).m_p1.m_x - ((volatile SBGeoBoundingBox2D &)position).m_p0.m_x == 0.0f
             || position.m_p1.m_x - position.m_p0.m_x != size.m_x)
             position.SetEnd(position.m_p0.Unk005fc190(size));
     }
@@ -194,7 +193,7 @@ void SBUIUnk0060d530::FUN_0060d6a0(const SBGeoBoundingBox2D &box)
     RHUnk005fc3b0 size;
     SBGeoBoundingBox2D &position = m_box;
     ((RHMobileUnk00607da0 *)&position)->FUN_00607da0((const RHMobileUnk00607da0 &)box);
-    if (position.m_p1.m_x - position.m_p0.m_x == g_unk0x00677488 && m_resourceId != -1)
+    if (position.m_p1.m_x - position.m_p0.m_x == 0.0f && m_resourceId != -1)
     {
         if (!((SBUIUnk006006f0 *)m_resource)->FUN_006006f0(m_resourceId, size))
         {
@@ -217,7 +216,7 @@ void SBUIUnk0060d530::FUN_0060d780(const SBGeoPoint2D &point)
     RHUnk005fc3b0 size;
     SBGeoBoundingBox2D &position = m_box;
     ((RHMobileUnk006091b0 *)&position)->FUN_006091b0(point.Unk005fc110(position.m_p0));
-    if ((!position.Unk00608f30() || position.m_p1.m_x - position.m_p0.m_x == g_unk0x00677488)
+    if ((!position.Unk00608f30() || position.m_p1.m_x - position.m_p0.m_x == 0.0f)
         && m_resourceId != -1)
     {
         if (!((SBUIUnk006006f0 *)m_resource)->FUN_006006f0(m_resourceId, size))

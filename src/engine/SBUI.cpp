@@ -4,7 +4,6 @@
 DECOMP_SIZE_ASSERT(SBUI, 0x17f8)
 DECOMP_SIZE_ASSERT(RHMapWindowPart, 0x17f8)
 
-extern float g_unk0x0067749c;
 extern "C" void *__cdecl memset(void *destination, int value, unsigned int size);
 
 class RHUnk006283e0
@@ -365,7 +364,7 @@ inline void SBUIFlagArray::Clear()
     dirty = true;
 }
 
-// Parked: the clear path loads the first window through the frame base, not the array base.
+// Parked at 0.9929: the clear path loads the first window through the frame base, not the array base.
 // STUB: GAME 0x00619ad0
 bool RHMapWindowPart::FUN_00619ad0(void *item)
 {
@@ -1024,8 +1023,7 @@ RHUnk006279d0::RHUnk006279d0()
     memset(&m_b0, 0, 10);
 }
 
-// Parked: exact wrapper, but the owning out-of-line destructor is not yet exact.
-// STUB: GAME 0x00627ae0
+// FUNCTION: GAME 0x00627ae0
 void *RHUnk006279d0::FUN_00627ae0(unsigned flags)
 {
     this->RHUnk006279d0::~RHUnk006279d0();
@@ -1034,8 +1032,7 @@ void *RHUnk006279d0::FUN_00627ae0(unsigned flags)
     return this;
 }
 
-// Parked at 0.9916: the folded 0x00570330 vector destructor is bound under the unsigned short name.
-// STUB: GAME 0x00627b00
+// FUNCTION: GAME 0x00627b00
 RHUnk006279d0::~RHUnk006279d0()
 {
 }
@@ -1061,7 +1058,7 @@ bool RHUnk006283e0::FUN_006283e0()
     }
     bound = m_right;
     if (m_x >= bound)
-        m_x = m_right - g_unk0x0067749c;
+        m_x = m_right - 1.0f;
     bound = m_bottom;
     if (m_y < bound)
     {
@@ -1070,7 +1067,7 @@ bool RHUnk006283e0::FUN_006283e0()
     }
     bound = m_top;
     if (m_y >= bound)
-        m_y = m_top - g_unk0x0067749c;
+        m_y = m_top - 1.0f;
     return true;
 }
 
@@ -1123,3 +1120,9 @@ void RHUnk006286e0::FUN_006286e0(const RHUnk006286e0 &other)
         begin()[offset] = other.begin()[index];
     m_dirty = true;
 }
+
+// TEMPLATE: GAME 0x00619d50
+// ?_Xran@?$vector@PAVSBUIWindowView@@V?$allocator@PAVSBUIWindowView@@@std@@@std@@IBEXXZ
+
+// TEMPLATE: GAME 0x00619e30
+// ?_Xran@?$vector@DV?$allocator@D@std@@@std@@IBEXXZ

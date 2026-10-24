@@ -246,7 +246,7 @@ bool SBPicture::FUN_006122b0(int)
 }
 
 // FUNCTION: GAME 0x00612300
-bool SBPicture::FUN_00612300(const SBPictureUnkVector2D &size, int mode)
+bool SBPicture::FUN_00612300(const SBGeoVector2D &size, int mode)
 {
     switch (m_04) {
     case 2:
@@ -266,9 +266,10 @@ bool SBPicture::FUN_00612300(const SBPictureUnkVector2D &size, int mode)
 }
 
 // FUNCTION: GAME 0x00612350
-bool SBPicture::FUN_00612350(const SBPictureUnkVector2D &size)
+bool SBPicture::FUN_00612350(const SBGeoVector2D &size)
 {
-    unsigned short *picture = (unsigned short *)operator new((int)(size.GetX() * size.GetY()) * 2);
+    float allocationWidth = size.m_x;
+    unsigned short *picture = (unsigned short *)operator new((int)(allocationWidth * size.GetY()) * 2);
     unsigned short *source = (unsigned short *)m_14;
     if (!picture) {
         SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBPicture.cpp", 0x253,
@@ -277,8 +278,8 @@ bool SBPicture::FUN_00612350(const SBPictureUnkVector2D &size)
         return false;
     }
     unsigned short width = (int)size.GetX();
-    float x = g_unk0x00677488;
-    float y = g_unk0x00677488;
+    float x = 0.0f;
+    float y = 0.0f;
     float stepX = size.GetX() / m_20;
     float stepY = size.GetY() / m_22;
     for (unsigned short row = 0; row < m_22; ++row) {
@@ -338,11 +339,12 @@ unsigned short SBPicture::FUN_006125c0(unsigned short *pixels, unsigned short st
         | ((blue / (width * height)) & 31);
 }
 
-// Folded 0.0f for-guards bind the pooled literal, not g_unk0x00677488; do/while guards reorder the store.
-// STUB: GAME 0x00612690
-bool SBPicture::FUN_00612690(const SBPictureUnkVector2D &size)
+// FUNCTION: GAME 0x00612690
+bool SBPicture::FUN_00612690(const SBGeoVector2D &size)
 {
-    unsigned short *picture = (unsigned short *)operator new((int)(size.GetX() * size.GetY()) * 2);
+    float allocationWidth = size.GetX();
+    double allocationHeight = size.GetY();
+    unsigned short *picture = (unsigned short *)operator new((int)(allocationWidth * (float)allocationHeight) * 2);
     unsigned short *source = (unsigned short *)m_14;
     if (!picture) {
         SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBPicture.cpp", 0x305,
@@ -355,7 +357,8 @@ bool SBPicture::FUN_00612690(const SBPictureUnkVector2D &size)
     float y = 0.0f;
     for (unsigned short row = 0; row < size.GetY(); ++row) {
         float x = 0.0f;
-        for (unsigned short column = 0; column < size.GetX(); ++column) {
+        double columnValue;
+        for (unsigned short column = 0; (columnValue = column, (float)columnValue < size.GetX()); ++column) {
             int blockHeight = (int)stepY;
             int blockWidth = (int)stepX;
             picture[column + row * width] = FUN_006124f0(source + m_24 * (int)y + (int)x, m_24,
@@ -373,11 +376,12 @@ bool SBPicture::FUN_00612690(const SBPictureUnkVector2D &size)
     return true;
 }
 
-// Folded 0.0f for-guards bind the pooled literal, not g_unk0x00677488; do/while guards reorder the store.
-// STUB: GAME 0x006128b0
-bool SBPicture::FUN_006128b0(const SBPictureUnkVector2D &size)
+// FUNCTION: GAME 0x006128b0
+bool SBPicture::FUN_006128b0(const SBGeoVector2D &size)
 {
-    unsigned short *picture = (unsigned short *)operator new((int)(size.GetX() * size.GetY()) * 2);
+    float allocationWidth = size.GetX();
+    double allocationHeight = size.GetY();
+    unsigned short *picture = (unsigned short *)operator new((int)(allocationWidth * (float)allocationHeight) * 2);
     unsigned short *source = (unsigned short *)m_14;
     if (!picture) {
         SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBPicture.cpp", 0x34c,
@@ -390,7 +394,8 @@ bool SBPicture::FUN_006128b0(const SBPictureUnkVector2D &size)
     float y = 0.0f;
     for (unsigned short row = 0; row < size.GetY(); ++row) {
         float x = 0.0f;
-        for (unsigned short column = 0; column < size.GetX(); ++column) {
+        double columnValue;
+        for (unsigned short column = 0; (columnValue = column, (float)columnValue < size.GetX()); ++column) {
             int blockHeight = (int)stepY;
             int blockWidth = (int)stepX;
             picture[row * width + column] = FUN_006125c0(source + m_24 * (int)y + (int)x, m_24,
@@ -501,7 +506,7 @@ bool SBPicture::FUN_006131a0(unsigned short width, unsigned short height)
     return true;
 }
 
-void EmitSBPicture(SBPicture *picture, const SBPictureUnkVector2D &size)
+void EmitSBPicture(SBPicture *picture, const SBGeoVector2D &size)
 {
     picture->FUN_00611bd0(0);
     picture->FUN_00611c50();

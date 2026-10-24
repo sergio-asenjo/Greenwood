@@ -1784,7 +1784,7 @@ SBResourceTreeFindIterator<SBResourceManager::Node<SBResourceManager::Element> >
             for (SBResourceTreeLinks *next = node; next != g_unk0x006c1874; node = next) {
                 tree.Destroy(next->m_right);
                 next = next->m_left;
-                ((SBResourceArrayLifecycle84 *)((char *)node + 0x10))->FUN_0057c820();
+                ((SBResourceArrayLifecycle84 *)((char *)node + 0x10))->~SBResourceArrayLifecycle84();
                 operator delete(node);
             }
         }
@@ -2055,7 +2055,7 @@ template<> void SBResourceTreeStorage<0x40, 0x3c, 0x84>::Destroy(SBResourceTreeL
     for (SBResourceTreeLinks *next = node; next != g_unk0x006c1874; node = next) {
         Destroy(next->m_right);
         next = next->m_left;
-        ((SBResourceArrayLifecycle84 *)((char *)node + 0x10))->FUN_0057c820();
+        ((SBResourceArrayLifecycle84 *)((char *)node + 0x10))->~SBResourceArrayLifecycle84();
         operator delete(node);
     }
 }
@@ -2194,7 +2194,7 @@ template<> struct SBResourceTreeTraits<0x84>
     static SBResourceTreeLinks *Nil() { return g_unk0x006c1874; }
     static void Construct(unsigned long *output, const unsigned long &value) { SBResourceConstructArray84(output, value); }
     static void Advance(SBResourceTreeLinks *&node) { ((SBResourceTreeIterator84 *)&node)->FUN_00605b20(); }
-    static void DestroyValue(SBResourceTreeLinks *node) { ((SBResourceArrayLifecycle84 *)((char *)node + 0x10))->FUN_0057c820(); }
+    static void DestroyValue(SBResourceTreeLinks *node) { ((SBResourceArrayLifecycle84 *)((char *)node + 0x10))->~SBResourceArrayLifecycle84(); }
 };
 
 template<unsigned int S, unsigned int C, unsigned int I>

@@ -1,5 +1,8 @@
 #include "SBNullstr.h"
 #include "SBResourceManager.h"
+#include "Decomp.h"
+
+DECOMP_SIZE_ASSERT(SBResourceArrayLifecycle84, 0x2c)
 
 void FUN_0064158f(void *) {}
 
@@ -18,7 +21,11 @@ void SBResourceArrayLifecycle44::FUN_0051d120()
     values->erase(values->begin(), values->end());
     values->~Values();
 }
-void SBResourceArrayLifecycle84::FUN_0057c820() {}
+// STUB: GAME 0x0057c820
+SBResourceArrayLifecycle84::~SBResourceArrayLifecycle84()
+{
+    m_values.clear();
+}
 
 bool SBResourceManager::FUN_005fdcc0(int, unsigned long) { return false; }
 bool SBResourceManager::FUN_005fe000(int, unsigned long) { return false; }

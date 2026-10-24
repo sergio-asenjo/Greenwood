@@ -6,6 +6,8 @@
 
 #ifndef SBGEO_POINT2D_VIEW
 #define SBGEO_POINT2D_VIEW
+class SBGeoVector2D;
+
 // SIZE 0x08
 class SBGeoPoint2D
 {
@@ -15,22 +17,27 @@ public:
     SBGeoPoint2D(const SBGeoPoint2D &);
     ~SBGeoPoint2D();
     SBGeoPoint2D &operator=(const SBGeoPoint2D &);
+    SBGeoVector2D Unk005fc110(const SBGeoPoint2D &) const;
     SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &) const;
     float m_x; // 0x00
     float m_y; // 0x04
 };
 #endif
 
+#ifndef SBGEO_VECTOR2D_VIEW
+#define SBGEO_VECTOR2D_VIEW
 // SIZE 0x08
 class SBGeoVector2D : public SBGeoPoint2D
 {
 public:
     SBGeoVector2D();
+    SBGeoVector2D(float, float);
     SBGeoVector2D(const SBGeoPoint2D &);
     ~SBGeoVector2D() {}
     SBGeoVector2D(const SBGeoVector2D &other);
     SBGeoVector2D &operator=(const SBGeoVector2D &other);
 };
+#endif
 
 #ifndef SBGEO_BOUNDINGBOX2D_VIEW
 #define SBGEO_BOUNDINGBOX2D_VIEW
@@ -66,13 +73,7 @@ class RHMobileUnk006100e0;
 
 #include "RHMobileUnk006100e0.h"
 
-// SIZE 0x14
-class RHMobileUnk00607da0
-{
-public:
-    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &);
-    undefined m_00[0x14]; // 0x00
-};
+#include "RHMobileUnk00607da0.h"
 
 class SBUIInputFieldBoxCalls
 {

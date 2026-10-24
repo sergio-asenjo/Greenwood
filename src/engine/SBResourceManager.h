@@ -146,7 +146,10 @@ public:
 class SBResourceArrayLifecycle84
 {
 public:
-    void FUN_0057c820();
+    std::vector<std::string> m_values;
+    char m_10[12];
+    std::string m_text;
+    ~SBResourceArrayLifecycle84();
 };
 
 struct SBResourceTreeIterator

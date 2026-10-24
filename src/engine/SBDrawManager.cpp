@@ -83,8 +83,6 @@ public:
     SBGeoVector2D &operator=(const SBGeoVector2D &other);
 };
 
-extern float g_unk0x006774f4;
-extern float g_unk0x006775d8;
 
 struct SBDrawUnk005e56c0Iterator
 {
@@ -902,12 +900,12 @@ bool SBDrawUnk005e8450::FUN_005e84e0(void *source, void *destination, void *alph
     int arg4, int width, int height, int sourceStride, int destinationStride,
     float stretchX, float stretchY)
 {
-    if (stretchX == g_unk0x006774f4 && stretchY == g_unk0x006774f4) {
+    if (stretchX == 2.0f && stretchY == 2.0f) {
         FUN_00622fd4(source, destination, alpha, width, height,
             sourceStride, destinationStride, sourceStride);
         return true;
     }
-    if (stretchX == g_unk0x006775d8 && stretchY == g_unk0x006775d8) {
+    if (stretchX == 0.5f && stretchY == 0.5f) {
         FUN_00623128(source, destination, alpha, width, height,
             sourceStride, destinationStride, sourceStride);
         return true;
@@ -923,11 +921,11 @@ bool SBDrawUnk005e8450::FUN_005e85b0(void *source, void *destination, void *alph
     int arg4, int width, int height, int sourceStride, int destinationStride,
     float stretchX, float stretchY)
 {
-    if (stretchX == g_unk0x006774f4 && stretchY == g_unk0x006774f4) {
+    if (stretchX == 2.0f && stretchY == 2.0f) {
         FUN_00623360(source, destination, width, height, sourceStride, destinationStride);
         return true;
     }
-    if (stretchX == g_unk0x006775d8 && stretchY == g_unk0x006775d8) {
+    if (stretchX == 0.5f && stretchY == 0.5f) {
         FUN_0062348c(source, destination, width, height, sourceStride, destinationStride);
         return true;
     }
@@ -941,12 +939,12 @@ bool SBDrawUnk005e8450::FUN_005e8670(void *source, void *destination, void *alph
     int arg4, int width, int height, int sourceStride, int destinationStride,
     float stretchX, float stretchY)
 {
-    if (stretchX == g_unk0x006774f4 && stretchY == g_unk0x006774f4) {
+    if (stretchX == 2.0f && stretchY == 2.0f) {
         FUN_00622ca0(source, destination, alpha, width, height,
             sourceStride, destinationStride, sourceStride);
         return true;
     }
-    if (stretchX == g_unk0x006775d8 && stretchY == g_unk0x006775d8) {
+    if (stretchX == 0.5f && stretchY == 0.5f) {
         FUN_00622db4(source, destination, alpha, width, height,
             sourceStride, destinationStride, sourceStride);
         return true;
@@ -957,9 +955,6 @@ bool SBDrawUnk005e8450::FUN_005e8670(void *source, void *destination, void *alph
 }
 
 extern "C" double __cdecl floor(double);
-extern float g_unk0x00677488;
-extern float g_unk0x0067749c;
-extern double g_unk0x00677490;
 
 // FUNCTION: GAME 0x005e8740
 bool SBDrawUnk005e8450::FUN_005e8740(unsigned short *source, unsigned short *destination,
@@ -976,7 +971,7 @@ bool SBDrawUnk005e8450::FUN_005e8740(unsigned short *source, unsigned short *des
         unsigned short *destinationRow = destination;
         unsigned short *sourceRow = source;
         unsigned short *alphaRow = alpha;
-        float horizontal = g_unk0x00677488;
+        float horizontal = 0.0f;
         if (previous != destination) {
             for (unsigned short column = 0; column < width; ++column) {
                 if (previous != destination) {
@@ -1005,11 +1000,11 @@ bool SBDrawUnk005e8450::FUN_005e8740(unsigned short *source, unsigned short *des
                 horizontal += stretchX;
                 ++source;
                 ++alpha;
-                if (horizontal >= g_unk0x0067749c) {
+                if (horizontal >= 1.0f) {
                     ++destination;
-                    double repetitions = horizontal - g_unk0x0067749c;
+                    double repetitions = horizontal - 1.0f;
                     unsigned short repeat = 0;
-                    if (floor(repetitions) > g_unk0x00677490) {
+                    if (floor(repetitions) > 0.0) {
                         do {
                             *destination++ = pixel;
                             ++repeat;
@@ -1024,11 +1019,11 @@ bool SBDrawUnk005e8450::FUN_005e8740(unsigned short *source, unsigned short *des
         source = sourceRow + (sourceStride >> 1);
         alpha = alphaRow + (sourceStride >> 1);
         vertical += stretchY;
-        if (vertical >= g_unk0x0067749c) {
+        if (vertical >= 1.0f) {
             destination += destinationStride >> 1;
-            double repetitions = vertical - g_unk0x0067749c;
+            double repetitions = vertical - 1.0f;
             unsigned short repeat = 0;
-            if (floor(repetitions) > g_unk0x00677490) {
+            if (floor(repetitions) > 0.0) {
                 do {
                     memcpy(destination, destinationRow, originalWidth << 1);
                     destination += destinationStride >> 1;
@@ -1069,7 +1064,7 @@ bool SBDrawUnk005e8450::FUN_005e8740(unsigned short *source, unsigned short *des
         unsigned short *destinationRow = destination; \
         unsigned short *sourceRow = source; \
         unsigned short *alphaRow = alpha; \
-        float horizontal = g_unk0x00677488; \
+        float horizontal = 0.0f; \
         if (previous != destination) { \
             for (unsigned short column = 0; column < width; ++column) { \
                 if (previous != destination) { \
@@ -1084,11 +1079,11 @@ bool SBDrawUnk005e8450::FUN_005e8740(unsigned short *source, unsigned short *des
                 horizontal += stretchX; \
                 ++source; \
                 ++alpha; \
-                if (horizontal >= g_unk0x0067749c) { \
+                if (horizontal >= 1.0f) { \
                     ++destination; \
-                    double repetitions = horizontal - g_unk0x0067749c; \
+                    double repetitions = horizontal - 1.0f; \
                     unsigned short repeat = 0; \
-                    if (floor(repetitions) > g_unk0x00677490) { \
+                    if (floor(repetitions) > 0.0) { \
                         do { \
                             *destination++ = pixel; \
                             ++repeat; \
@@ -1103,11 +1098,11 @@ bool SBDrawUnk005e8450::FUN_005e8740(unsigned short *source, unsigned short *des
         source = sourceRow + (sourceStride >> 1); \
         alpha = alphaRow + (sourceStride >> 1); \
         vertical += stretchY; \
-        if (vertical >= g_unk0x0067749c) { \
+        if (vertical >= 1.0f) { \
             destination += destinationStride >> 1; \
-            double repetitions = vertical - g_unk0x0067749c; \
+            double repetitions = vertical - 1.0f; \
             unsigned short repeat = 0; \
-            if (floor(repetitions) > g_unk0x00677490) { \
+            if (floor(repetitions) > 0.0) { \
                 do { \
                     memcpy(destination, destinationRow, originalWidth << 1); \
                     destination += destinationStride >> 1; \
@@ -1130,7 +1125,7 @@ bool SBDrawUnk005e8450::FUN_005e8740(unsigned short *source, unsigned short *des
         unsigned short *destinationRow = destination; \
         unsigned short *sourceRow = source; \
         unsigned short *alphaRow = alpha; \
-        float horizontal = g_unk0x00677488; \
+        float horizontal = 0.0f; \
         if (previous != destination) { \
             for (unsigned short column = 0; column < width; ++column) { \
                 if (previous != destination) { \
@@ -1149,19 +1144,19 @@ bool SBDrawUnk005e8450::FUN_005e8740(unsigned short *source, unsigned short *des
                 horizontal += stretchX; \
                 ++source; \
                 ++alpha; \
-                if (horizontal >= g_unk0x0067749c) { \
+                if (horizontal >= 1.0f) { \
                     ++destination; \
                     if (pixel != (unsigned short)key) { \
                         unsigned short repeat = 0; \
-                        double repetitions = horizontal - g_unk0x0067749c; \
-                        if (floor(repetitions) > g_unk0x00677490) { \
+                        double repetitions = horizontal - 1.0f; \
+                        if (floor(repetitions) > 0.0) { \
                             do { \
                                 *destination++ = pixel; \
                                 ++repeat; \
                             } while (repeat < floor(repetitions)); \
                         } \
                     } else \
-                        destination += (unsigned short)floor(horizontal - g_unk0x0067749c); \
+                        destination += (unsigned short)floor(horizontal - 1.0f); \
                     horizontal -= floor(horizontal); \
                 } \
             } \
@@ -1171,11 +1166,11 @@ bool SBDrawUnk005e8450::FUN_005e8740(unsigned short *source, unsigned short *des
         source = sourceRow + (sourceStride >> 1); \
         alpha = alphaRow + (sourceStride >> 1); \
         vertical += stretchY; \
-        if (vertical >= g_unk0x0067749c) { \
+        if (vertical >= 1.0f) { \
             destination += destinationStride >> 1; \
-            double repetitions = vertical - g_unk0x0067749c; \
+            double repetitions = vertical - 1.0f; \
             unsigned short repeat = 0; \
-            if (floor(repetitions) > g_unk0x00677490) { \
+            if (floor(repetitions) > 0.0) { \
                 do { \
                     memcpy(destination, destinationRow, originalWidth << 1); \
                     destination += destinationStride >> 1; \
@@ -1208,12 +1203,12 @@ bool SBDrawUnk005e8450::FUN_005e92f0(void *source, void *destination, void *alph
     int arg4, int width, int height, int sourceStride, int destinationStride,
     float stretchX, float stretchY)
 {
-    if (stretchX == g_unk0x006774f4 && stretchY == g_unk0x006774f4) {
+    if (stretchX == 2.0f && stretchY == 2.0f) {
         FUN_00622924(source, destination, alpha, width, height,
             sourceStride, destinationStride, sourceStride);
         return true;
     }
-    if (stretchX == g_unk0x006775d8 && stretchY == g_unk0x006775d8) {
+    if (stretchX == 0.5f && stretchY == 0.5f) {
         FUN_00622a7c(source, destination, alpha, width, height,
             sourceStride, destinationStride, sourceStride);
         return true;
@@ -1236,12 +1231,12 @@ bool SBDrawUnk005e8450::FUN_005e9790(void *source, void *destination, void *alph
     int arg4, int width, int height, int sourceStride, int destinationStride,
     float stretchX, float stretchY)
 {
-    if (stretchX == g_unk0x006774f4 && stretchY == g_unk0x006774f4) {
+    if (stretchX == 2.0f && stretchY == 2.0f) {
         FUN_00624030(source, destination, alpha, width, height,
             sourceStride, destinationStride, sourceStride);
         return true;
     }
-    if (stretchX == g_unk0x006775d8 && stretchY == g_unk0x006775d8) {
+    if (stretchX == 0.5f && stretchY == 0.5f) {
         FUN_00624184(source, destination, alpha, width, height,
             sourceStride, destinationStride, sourceStride);
         return true;
@@ -1256,11 +1251,11 @@ bool SBDrawUnk005e8450::FUN_005e9860(void *source, void *destination, void *alph
     int arg4, int width, int height, int sourceStride, int destinationStride,
     float stretchX, float stretchY)
 {
-    if (stretchX == g_unk0x006774f4 && stretchY == g_unk0x006774f4) {
+    if (stretchX == 2.0f && stretchY == 2.0f) {
         FUN_006243c0(source, destination, width, height, sourceStride, destinationStride);
         return true;
     }
-    if (stretchX == g_unk0x006775d8 && stretchY == g_unk0x006775d8) {
+    if (stretchX == 0.5f && stretchY == 0.5f) {
         FUN_006244ec(source, destination, width, height, sourceStride, destinationStride);
         return true;
     }
@@ -1274,12 +1269,12 @@ bool SBDrawUnk005e8450::FUN_005e9920(void *source, void *destination, void *alph
     int arg4, int width, int height, int sourceStride, int destinationStride,
     float stretchX, float stretchY)
 {
-    if (stretchX == g_unk0x006774f4 && stretchY == g_unk0x006774f4) {
+    if (stretchX == 2.0f && stretchY == 2.0f) {
         FUN_00623cfc(source, destination, alpha, width, height,
             sourceStride, destinationStride, sourceStride);
         return true;
     }
-    if (stretchX == g_unk0x006775d8 && stretchY == g_unk0x006775d8) {
+    if (stretchX == 0.5f && stretchY == 0.5f) {
         FUN_00623e10(source, destination, alpha, width, height,
             sourceStride, destinationStride, sourceStride);
         return true;
@@ -1318,12 +1313,12 @@ bool SBDrawUnk005e8450::FUN_005ea5a0(void *source, void *destination, void *alph
     int arg4, int width, int height, int sourceStride, int destinationStride,
     float stretchX, float stretchY)
 {
-    if (stretchX == g_unk0x006774f4 && stretchY == g_unk0x006774f4) {
+    if (stretchX == 2.0f && stretchY == 2.0f) {
         FUN_00623978(source, destination, alpha, width, height,
             sourceStride, destinationStride, sourceStride);
         return true;
     }
-    if (stretchX == g_unk0x006775d8 && stretchY == g_unk0x006775d8) {
+    if (stretchX == 0.5f && stretchY == 0.5f) {
         FUN_00623ad4(source, destination, alpha, width, height,
             sourceStride, destinationStride, sourceStride);
         return true;
@@ -1379,7 +1374,7 @@ static __forceinline unsigned short SBDrawScaledColor16(unsigned short color, un
     for (unsigned short row = 0; row < height; ++row) { \
         unsigned short *destinationRow = destination; \
         unsigned short *sourceRow = source; \
-        float horizontal = g_unk0x00677488; \
+        float horizontal = 0.0f; \
         if (previous != destination) { \
             for (unsigned short column = 0; column < width; ++column) { \
                 if (previous != destination && (foreground = *source) != Key) { \
@@ -1390,11 +1385,11 @@ static __forceinline unsigned short SBDrawScaledColor16(unsigned short color, un
                     pixel = Key; \
                 previous = destination; \
                 horizontal += stretchX; \
-                if (horizontal >= g_unk0x0067749c) { \
+                if (horizontal >= 1.0f) { \
                     ++destination; \
-                    double repetitions = horizontal - g_unk0x0067749c; \
+                    double repetitions = horizontal - 1.0f; \
                     unsigned short repeat = 0; \
-                    if (floor(repetitions) > g_unk0x00677490) { \
+                    if (floor(repetitions) > 0.0) { \
                         do { \
                             if (foreground != Key) *destination = pixel; \
                             ++destination; \
@@ -1410,11 +1405,11 @@ static __forceinline unsigned short SBDrawScaledColor16(unsigned short color, un
         destination = destinationRow; \
         source = sourceRow + (sourceStride >> 1); \
         vertical += stretchY; \
-        if (vertical >= g_unk0x0067749c) { \
+        if (vertical >= 1.0f) { \
             destination += destinationStride >> 1; \
-            double repetitions = vertical - g_unk0x0067749c; \
+            double repetitions = vertical - 1.0f; \
             unsigned short repeat = 0; \
-            if (floor(repetitions) > g_unk0x00677490) { \
+            if (floor(repetitions) > 0.0) { \
                 do { \
                     memcpy(destination, destinationRow, originalWidth << 1); \
                     destination += destinationStride >> 1; \
@@ -1449,12 +1444,12 @@ bool SBDrawUnk005e8450::FUN_005ec230(void *source, void *destination,
     int width, int height, int sourceStride, int destinationStride,
     float stretchX, float stretchY, unsigned arg9, unsigned arg10)
 {
-    if (stretchX == g_unk0x006774f4 && stretchY == g_unk0x006774f4) {
+    if (stretchX == 2.0f && stretchY == 2.0f) {
         FUN_00622380(source, destination, width, height, sourceStride,
             destinationStride, arg10 & 0xffff, arg9 & 0xffff);
         return true;
     }
-    if (stretchX == g_unk0x006775d8 && stretchY == g_unk0x006775d8) {
+    if (stretchX == 0.5f && stretchY == 0.5f) {
         FUN_00622478(source, destination, width, height, sourceStride,
             destinationStride, arg10 & 0xffff, arg9 & 0xffff);
         return true;
@@ -1469,12 +1464,12 @@ bool SBDrawUnk005e8450::FUN_005ec320(void *source, void *destination,
     int width, int height, int sourceStride, int destinationStride,
     float stretchX, float stretchY, unsigned arg9, unsigned arg10)
 {
-    if (stretchX == g_unk0x006774f4 && stretchY == g_unk0x006774f4) {
+    if (stretchX == 2.0f && stretchY == 2.0f) {
         FUN_006220ec(source, destination, width, height, sourceStride,
             destinationStride, arg10 & 0xffff, arg9 & 0xffff);
         return true;
     }
-    if (stretchX == g_unk0x006775d8 && stretchY == g_unk0x006775d8) {
+    if (stretchX == 0.5f && stretchY == 0.5f) {
         FUN_006221e4(source, destination, width, height, sourceStride,
             destinationStride, arg10 & 0xffff, arg9 & 0xffff);
         return true;
@@ -1489,12 +1484,12 @@ bool SBDrawUnk005e8450::FUN_005ec410(void *source, void *destination,
     int width, int height, int sourceStride, int destinationStride,
     float stretchX, float stretchY, unsigned arg9, unsigned arg10)
 {
-    if (stretchX == g_unk0x006774f4 && stretchY == g_unk0x006774f4) {
+    if (stretchX == 2.0f && stretchY == 2.0f) {
         FUN_00623668(source, destination, width, height, sourceStride,
             destinationStride, arg10 & 0xffff, arg9 & 0xffff);
         return true;
     }
-    if (stretchX == g_unk0x006775d8 && stretchY == g_unk0x006775d8) {
+    if (stretchX == 0.5f && stretchY == 0.5f) {
         FUN_0062376c(source, destination, width, height, sourceStride,
             destinationStride, arg10 & 0xffff, arg9 & 0xffff);
         return true;
@@ -1509,12 +1504,12 @@ bool SBDrawUnk005e8450::FUN_005ec500(void *source, void *destination,
     int width, int height, int sourceStride, int destinationStride,
     float stretchX, float stretchY, unsigned arg9, unsigned arg10)
 {
-    if (stretchX == g_unk0x006774f4 && stretchY == g_unk0x006774f4) {
+    if (stretchX == 2.0f && stretchY == 2.0f) {
         FUN_0062261c(source, destination, width, height, sourceStride,
             destinationStride, arg10 & 0xffff, arg9 & 0xffff);
         return true;
     }
-    if (stretchX == g_unk0x006775d8 && stretchY == g_unk0x006775d8) {
+    if (stretchX == 0.5f && stretchY == 0.5f) {
         FUN_00622720(source, destination, width, height, sourceStride,
             destinationStride, arg10 & 0xffff, arg9 & 0xffff);
         return true;
@@ -2458,6 +2453,44 @@ inline unsigned short SBDrawScalarScale(unsigned short pixel, unsigned short alp
         src = (unsigned short *)((char *)src + sourceStride); \
         dst = (unsigned short *)((char *)dst + destinationStride); \
     } while ((rows = (unsigned short)(rows - 1)) != 0);
+
+// FUNCTION: GAME 0x00621d80
+__declspec(naked) void FUN_00621d80()
+{
+    __asm {
+        push ebp
+        _emit 0x89
+        _emit 0xe5
+        pushad
+        pushfd
+        pop eax
+        _emit 0x89
+        _emit 0xc3
+        xor eax, 00200000h
+        push eax
+        popfd
+        pushfd
+        pop eax
+        _emit 0x39
+        _emit 0xd8
+        je unsupported
+        _emit 0x31
+        _emit 0xc0
+        cpuid
+        mov eax, 1
+        cpuid
+        test edx, 00080000h
+        je unsupported
+        mov eax, 1
+        jmp $ + 7
+    unsupported:
+        _emit 0x31
+        _emit 0xc0
+        popad
+        pop ebp
+        ret
+    }
+}
 
 // Parked: handwritten pusha/bswap register packing differs from VC6 C++.
 // STUB: GAME 0x00621db8
