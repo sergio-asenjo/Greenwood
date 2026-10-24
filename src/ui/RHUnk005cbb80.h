@@ -7,7 +7,6 @@ class __declspec(novtable) RHUnk005cbb80 : public RHPortraitRenderer0060d470
 {
 public:
     RHUnk005cbb80();
-    ~RHUnk005cbb80();
     void *FUN_005cbbb0(unsigned flags);
     bool FUN_005cbc80(unsigned id);
     unsigned int m_4c;

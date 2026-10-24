@@ -19,7 +19,6 @@ DECOMP_SIZE_ASSERT(RHUnk005cba10, 0x9c)
 #define m_40 ((unsigned int *)((char *)this + 0x40))
 #define m_48 (*(unsigned int *)((char *)this + 0x48))
 
-extern float g_unk0x00677488;
 
 inline float Min(float first, float second)
 {
@@ -59,7 +58,7 @@ SBGeoBoundingBox2D RHUnk005cba10::FUN_005cb550(SBUIListboxUnk0061e890 *font, boo
     float height = m_dropped.m_y;
     float lines = height / (unsigned int)(font->FUN_0061e890() - *(volatile unsigned short *)&m_64);
     unsigned int count = (unsigned int)lines;
-    if (lines - count != g_unk0x00677488)
+    if (lines - count != 0.0f)
         lines = count + 1;
     if (clip)
     {
@@ -119,7 +118,7 @@ void RHUnk005cba10::FUN_005cb9d0(unsigned long width, unsigned long height)
 // FUNCTION: GAME 0x005cba10
 bool RHUnk005cba10::FUN_005cba10(unsigned id)
 {
-    if (m_dropped.m_x == g_unk0x00677488 && m_dropped.m_y == g_unk0x00677488)
+    if (m_dropped.m_x == 0.0f && m_dropped.m_y == 0.0f)
         return FUN_0060dd10(id);
     if (id == 0xff)
     {
@@ -147,7 +146,7 @@ bool RHUnk005cba10::FUN_005cba10(unsigned id)
     }
     if (font)
     {
-        if (m_box.m_08.m_x - m_box.m_00.m_x > g_unk0x00677488)
+        if (m_box.m_08.m_x - m_box.m_00.m_x > 0.0f)
         {
             FUN_005cb700(font);
             return true;

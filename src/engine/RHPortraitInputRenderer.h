@@ -13,7 +13,7 @@ public:
     void *FUN_0061c590(unsigned flags);
     void *FUN_005d1b40(unsigned flags);
     void FUN_0061c610(unsigned long surface);
-    void FUN_0061d570(unsigned short position, int limit);
+    bool FUN_0061d570(unsigned short position, int limit);
     unsigned FUN_0061d5e0();
     SBGeoBoundingBox2D FUN_0061d3f0(unsigned short line, int value);
     SBGeoBoundingBox2D FUN_0061d7c0();

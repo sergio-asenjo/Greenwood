@@ -6,7 +6,6 @@ DECOMP_SIZE_ASSERT(SBUIInputFieldDrawUnk, 0x30)
 DECOMP_SIZE_ASSERT(RHPortraitRenderer0060dab0, 0x50)
 DECOMP_SIZE_ASSERT(RHPortraitRenderer005cadc0, 0x58)
 
-extern float g_unk0x006775d8;
 
 // FUNCTION: GAME 0x005cadc0
 RHPortraitRenderer005cadc0::RHPortraitRenderer005cadc0()
@@ -56,7 +55,7 @@ bool RHPortraitRenderer005cadc0::FUN_005cafa0(unsigned id)
         {
             float height = box.m_08.m_y - box.m_00.m_y;
             float top = box.m_00.m_y;
-            float y = (height - (unsigned int)font->FUN_0061e890()) * g_unk0x006775d8 + top;
+            float y = (height - (unsigned int)font->FUN_0061e890()) * 0.5f + top;
             box.SetMinY(y);
             box.SetMaxY((unsigned int)font->FUN_0061e890() + y);
         }

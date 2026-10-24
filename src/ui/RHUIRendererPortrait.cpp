@@ -9,8 +9,6 @@
 #include "SBNullstr.h"
 #include "RHUIRendererPortrait.h"
 
-// GLOBAL: GAME 0x0067755c
-float g_rhuirendererportrait_percent = 100.0f;
 
 // LIBRARY: GAME 0x005cac40
 // ?find@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@QBEIPBGII@Z
@@ -30,6 +28,7 @@ RHUnk005cbb80::RHUnk005cbb80()
     m_fade[1] = 0;
 }
 
+#pragma inline_depth(1)
 // FUNCTION: GAME 0x005cbbb0
 void *RHUnk005cbb80::FUN_005cbbb0(unsigned flags)
 {
@@ -38,11 +37,10 @@ void *RHUnk005cbb80::FUN_005cbbb0(unsigned flags)
         operator delete(this);
     return this;
 }
+#pragma inline_depth()
 
-// FUNCTION: GAME 0x005cbbd0
-RHUnk005cbb80::~RHUnk005cbb80()
-{
-}
+// SYNTHETIC: GAME 0x005cbbd0
+// ??1RHUnk005cbb80@@QAE@XZ
 
 // FUNCTION: GAME 0x005cbbe0
 bool RHUIRendererPortrait::BlitPicture(unsigned int id, float f)
@@ -50,7 +48,7 @@ bool RHUIRendererPortrait::BlitPicture(unsigned int id, float f)
     // The copy through a float temp reproduces the original x87 operand order
     // (fld value before the named multiplier) — see Hard rule 16.
     float value = f;
-    int frame = (int)(value * g_rhuirendererportrait_percent);
+    int frame = (int)(value * 100.0f);
 
     if (m_resource->ResolveSurface(m_surface, id, &f) == 1)
     {
@@ -78,7 +76,6 @@ bool RHUIRendererPortrait::BlitPicture(unsigned int id, float f)
     return false;
 }
 
-extern float g_unk0x0067749c;
 extern float g_actorStepScale;
 
 // FUNCTION: GAME 0x005cbc80
@@ -96,10 +93,10 @@ bool RHUnk005cbb80::FUN_005cbc80(unsigned id)
         return false;
     }
     bool result = true;
-    if (m_fade[index] < g_unk0x0067749c || (&m_54)[index] == (&m_4c)[index])
+    if (m_fade[index] < 1.0f || (&m_54)[index] == (&m_4c)[index])
         result = ((RHUIRendererPortrait *)this)->BlitPicture((&m_54)[index], 1.0f);
     if ((&m_54)[index] != (&m_4c)[index]) {
-        if (m_fade[index] >= g_unk0x0067749c) {
+        if (m_fade[index] >= 1.0f) {
             m_fade[index] = 1.0f;
             unsigned picture = (&m_4c)[index];
             (&m_54)[index] = picture;

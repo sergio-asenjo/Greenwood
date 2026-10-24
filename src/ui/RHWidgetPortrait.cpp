@@ -33,6 +33,8 @@
 #include "../engine/RHGame_calls.h"
 #include "../engine/SBUIRenderer.h"
 #include "../element/RHElementActorPC.h"
+#include "RHPortraitDrawCalls.h"
+#include "../engine/SBUIRendererListbox.h"
 
 DECOMP_SIZE_ASSERT(RHWidgetPortrait, 0xe58)
 DECOMP_SIZE_ASSERT(RHUnk005d92c0Sub, 0x04)
@@ -41,9 +43,6 @@ DECOMP_SIZE_ASSERT(RHUnk005d92c0Elem, 0x104)
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 DECOMP_SIZE_ASSERT(SBGeoVector2D, 0x08)
 
-extern float g_unk0x00677438;
-// GLOBAL: GAME 0x0067a554
-float g_unk0x0067a554 = 52.0f;
 
 #define W(O) (*(RHUnk005d92c0Sub *)((char *)this + (O)))
 #define P(O) (*(SBGeoPoint2D *)((char *)this + (O)))
@@ -70,7 +69,6 @@ public:
     RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
 };
 
-extern float g_unk0x006775d8;
 extern RHUnk00514e10::Node *g_unk0x006c0b48;
 extern unsigned g_unk0x006c0b4c;
 
@@ -305,7 +303,6 @@ public:
     virtual void v3(const SBGeoBoundingBox2D &box) = 0;
 };
 
-extern float g_unk0x00677488;
 
 inline void RHPortraitAssignWideText(void *destination, const std::wstring &text)
 {
@@ -658,40 +655,39 @@ public:
     virtual int v13(unsigned id) = 0;
 };
 
-// Parked: cached buffer-index register and event lifetime scheduling differ.
-// STUB: GAME 0x005cf880
+// FUNCTION: GAME 0x005cf880
 RHPortraitBoxEvent *RHPortraitInputField::FUN_005cf880(unsigned value)
 {
     unsigned buffer = value & 1;
-    unsigned short *positions = (unsigned short *)((char *)this + 0x18e);
-    unsigned short *anchors = (unsigned short *)((char *)this + 0x192);
-    unsigned short *carets = (unsigned short *)((char *)this + 0x196);
-    bool *dirty = (bool *)((char *)this + 0x19a);
-    if (m_18c == carets[buffer] && m_18a == anchors[buffer]
-        && m_188 == positions[buffer] && !dirty[buffer])
+    if (m_18c == ((unsigned short *)((char *)this + 0x196))[buffer]
+        && m_18a == ((unsigned short *)((char *)this + 0x192))[buffer]
+        && m_188 == ((unsigned short *)((char *)this + 0x18e))[buffer]
+        && !((bool *)((char *)this + 0x19a))[buffer])
         return 0;
-    RHPortraitBoxEvent &event = *(RHPortraitBoxEvent *)((char *)this + 0x5c);
-    if (dirty[buffer])
+    RHPortraitBoxEvent *event;
+    if (((bool *)((char *)this + 0x19a))[buffer])
     {
-        dirty[buffer] = false;
-        ((RHMobileUnk00607da0 *)&event.m_box)->FUN_00607da0(*(RHMobileUnk00607da0 *)((SBUIUnk0060d530 *)&Renderer())->FUN_0060d690());
-        event.m_next = 0;
-        event.m_widget = this;
-        event.m_type = 3;
+        ((bool *)((char *)this + 0x19a))[buffer] = false;
+        ((RHMobileUnk00607da0 *)((char *)this + 0x60))->FUN_00607da0(*(RHMobileUnk00607da0 *)((SBUIUnk0060d530 *)&Renderer())->FUN_0060d690());
+        event = (RHPortraitBoxEvent *)((char *)this + 0x5c);
+        *(void **)((char *)this + 0x78) = 0;
+        *(void **)((char *)this + 0x74) = this;
+        event->m_type = 3;
     }
     else
     {
-        ((RHMobileUnk00607da0 *)&event.m_box)->FUN_00607da0(*(RHMobileUnk00607da0 *)((SBUIUnk0060d530 *)&Renderer())->FUN_0060d690());
+        ((RHMobileUnk00607da0 *)((char *)this + 0x60))->FUN_00607da0(*(RHMobileUnk00607da0 *)((SBUIUnk0060d530 *)&Renderer())->FUN_0060d690());
         RHPortraitTextWidgetDispatch *dispatch = (RHPortraitTextWidgetDispatch *)this;
-        event.m_type = dispatch->v13(dispatch->v9());
-        event.m_next = 0;
-        event.m_widget = this;
+        event = (RHPortraitBoxEvent *)((char *)this + 0x5c);
+        event->m_type = dispatch->v13(dispatch->v9());
+        *(void **)((char *)this + 0x78) = 0;
+        *(void **)((char *)this + 0x74) = this;
     }
-    *(unsigned *)((char *)this + 0xc8) = value;
-    carets[buffer] = m_18c;
-    anchors[buffer] = m_18a;
-    positions[buffer] = m_188;
-    return &event;
+    *(unsigned *)((char *)&Renderer() + 0x48) = value;
+    ((unsigned short *)((char *)this + 0x196))[buffer] = m_18c;
+    ((unsigned short *)((char *)this + 0x192))[buffer] = m_18a;
+    ((unsigned short *)((char *)this + 0x18e))[buffer] = m_188;
+    return event;
 }
 
 void EmitPortraitInputReset(RHPortraitInputField *field)
@@ -699,6 +695,16 @@ void EmitPortraitInputReset(RHPortraitInputField *field)
     field->FUN_005cf300();
     field->FUN_005cf380();
     field->FUN_005cf880(0);
+}
+
+// FUNCTION: GAME 0x005cfc30
+int RHPortraitInputCalls::FUN_005cfc30(const void *input)
+{
+    const SBGeoPoint2D &point = *(const SBGeoPoint2D *)input;
+    if (((SBGeoBoundingBox2D *)((char *)this + 0x30))->FUN_006083b0(point) &&
+        !((RHPortraitInputRenderer *)((char *)this + 0x80))->FUN_0061d7c0().FUN_00608400(point))
+        return 1;
+    return 0;
 }
 
 class RHPortraitUnk005d06d0
@@ -776,7 +782,7 @@ RHPortraitWidgetEvent *RHPortraitInputField::FUN_005d0a10(const RHPortraitWidget
 {
     RHPortraitWidgetEvent *result = 0;
     Renderer().FUN_0061d570(m_18c, m_13c);
-    if (((RHPortraitInputCalls *)this)->FUN_005cfc30(&input))
+    if ((unsigned char)((RHPortraitInputCalls *)this)->FUN_005cfc30(&input))
     {
         result = &m_event;
         m_state = 1;
@@ -1044,7 +1050,7 @@ RHPortraitWidgetEvent *RHPortraitInputField::FUN_005d1090(const RHPortraitWidget
         m_event.value = position;
         m_event.next = 0;
     }
-    if (((RHPortraitInputCalls *)this)->FUN_005cfc30(&input))
+    if ((unsigned char)((RHPortraitInputCalls *)this)->FUN_005cfc30(&input))
     {
         if (input.flags & 1)
         {
@@ -1176,7 +1182,7 @@ RHPortraitWidgetEvent *RHPortraitInputField::FUN_005d14e0(const RHPortraitWidget
                 result = event;
             }
         }
-        if (((RHPortraitInputCalls *)this)->FUN_005cfc30(&input))
+        if ((unsigned char)((RHPortraitInputCalls *)this)->FUN_005cfc30(&input))
             m_state = 2;
         else if (input.flags & 1)
         {
@@ -1518,7 +1524,7 @@ bool RHPortraitButton::FUN_005d1e30(int mode, const std::wstring &text, int reso
         *(int *)((char *)this + 0xa4) = 0;
         RHPortraitAssignWideText((char *)this + 0xa8, text);
         SBGeoBoundingBox2D &bounds = Box();
-        if (bounds.m_second.m_x - bounds.m_first.m_x == g_unk0x00677488)
+        if (bounds.m_second.m_x - bounds.m_first.m_x == 0.0f)
             ((RHMobileUnk00607da0 *)&bounds)->FUN_00607da0(*(RHMobileUnk00607da0 *)((SBUIUnk0060d530 *)renderer)->FUN_0060d690());
     }
     ((RHPortraitRenderer005cadc0 *)((char *)this + 0x80))->FUN_005cae10(mode);
@@ -1842,7 +1848,7 @@ bool RHPortraitEditableWidget::FUN_005d2810(const SBGeoPoint2D &point, RHPortrai
         *(int *)((char *)this + 0xa4) = 0;
         RHPortraitAssignWideText((char *)this + 0xa8, text);
         SBGeoBoundingBox2D &bounds = *(SBGeoBoundingBox2D *)((char *)this + 0x30);
-        if (bounds.m_second.m_x - bounds.m_first.m_x == g_unk0x00677488)
+        if (bounds.m_second.m_x - bounds.m_first.m_x == 0.0f)
             ((RHMobileUnk00607da0 *)&bounds)->FUN_00607da0(*(RHMobileUnk00607da0 *)((SBUIUnk0060d530 *)renderer)->FUN_0060d690());
     }
     *(void **)((char *)this + 0x124) = resource;
@@ -2721,14 +2727,14 @@ RHPortraitWidgetEvent *RHPortraitUnk005d3fe0::FUN_005d46e0(const RHPortraitWidge
     {
         SBGeoBoundingBox2D &box = *(SBGeoBoundingBox2D *)((char *)&m_widgets[m_count - 1] + 0x30);
         float right = m_box.m_second.m_x;
-        float position = right - (box.m_second.m_x - box.m_first.m_x) * g_unk0x006775d8;
+        float position = right - (box.m_second.m_x - box.m_first.m_x) * 0.5f;
         local.point.m_x = position;
     }
     else if (m_box.m_first.m_x >= input.point.m_x)
     {
         SBGeoBoundingBox2D &box = *(SBGeoBoundingBox2D *)((char *)m_widgets + 0x30);
         float left = m_box.m_first.m_x;
-        float position = left + (box.m_second.m_x - box.m_first.m_x) * g_unk0x006775d8;
+        float position = left + (box.m_second.m_x - box.m_first.m_x) * 0.5f;
         local.point.m_x = position;
     }
     else
@@ -2736,13 +2742,13 @@ RHPortraitWidgetEvent *RHPortraitUnk005d3fe0::FUN_005d46e0(const RHPortraitWidge
     if (m_box.m_second.m_y <= input.point.m_y)
     {
         float bottom = m_box.m_second.m_y;
-        float position = bottom - (*(volatile float *)&m_box.m_second.m_y - m_box.m_first.m_y) * g_unk0x006775d8;
+        float position = bottom - (*(volatile float *)&m_box.m_second.m_y - m_box.m_first.m_y) * 0.5f;
         local.point.m_y = position;
     }
     else if (m_box.m_first.m_y >= input.point.m_y)
     {
         float top = *(volatile float *)&m_box.m_first.m_y;
-        float position = top + (m_box.m_second.m_y - m_box.m_first.m_y) * g_unk0x006775d8;
+        float position = top + (m_box.m_second.m_y - m_box.m_first.m_y) * 0.5f;
         local.point.m_y = position;
     }
     else
@@ -2807,7 +2813,7 @@ bool RHPortraitUnk005d3880::FUN_005d4bb0(int mode, const std::wstring &text, con
         *(int *)((char *)this + 0xa4) = 0;
         RHPortraitAssignWideText((char *)this + 0xa8, text);
         SBGeoBoundingBox2D &bounds = *(SBGeoBoundingBox2D *)((char *)this + 0x30);
-        if (bounds.m_second.m_x - bounds.m_first.m_x == g_unk0x00677488)
+        if (bounds.m_second.m_x - bounds.m_first.m_x == 0.0f)
             ((RHMobileUnk00607da0 *)&bounds)->FUN_00607da0(*(RHMobileUnk00607da0 *)((SBUIUnk0060d530 *)renderer)->FUN_0060d690());
     }
     ((RHPortraitRenderer005cadc0 *)((char *)this + 0x80))->FUN_005cae10(mode);
@@ -3678,7 +3684,7 @@ void RHWidgetPortrait::FUN_005d8ed0(int value, int height)
 {
     float maximum = (float)(unsigned short)height;
     m_16c = (float)(unsigned short)value;
-    if (maximum != g_unk0x00677488)
+    if (maximum != 0.0f)
         m_170 = maximum;
 }
 
@@ -3853,9 +3859,9 @@ bool RHWidgetPortrait::Method005d6690()
         W(0).v15(&W(0x514));
     P(0xe20) = P(0xcdc);
     float x = P(0xe20).m_x;
-    P(0xe20).m_x = x + g_unk0x0067a554;
+    P(0xe20).m_x = x + 52.0f;
     float y = P(0xe20).m_y;
-    P(0xe20).m_y = y + g_unk0x00677438;
+    P(0xe20).m_y = y + 10.0f;
     W(0x97c).v08(P(0xd2c));
     W(0xa80).v08(P(0xd40));
     W(0xb84).v08(P(0xd54));
@@ -3882,9 +3888,9 @@ bool RHWidgetPortrait::Method005d67e0()
             W(0).v14(&W(0x514));
         P(0xe20) = P(0xd90);
         float x = P(0xe20).m_x;
-        P(0xe20).m_x = x + g_unk0x0067a554;
+        P(0xe20).m_x = x + 52.0f;
         float y = P(0xe20).m_y;
-        P(0xe20).m_y = y + g_unk0x00677438;
+        P(0xe20).m_y = y + 10.0f;
         W(0x97c).v08(P(0xde0));
         W(0xa80).v08(P(0xdf4));
         W(0xb84).v08(P(0xe08));
@@ -4799,8 +4805,8 @@ void RHPortraitWidget005dafd0::FUN_005db350()
 {
     SBGeoBoundingBox2D &bounds = m_box;
     if (bounds.Unk00608f30() &&
-        bounds.m_second.m_x - bounds.m_first.m_x > g_unk0x00677488 &&
-        bounds.m_second.m_y - bounds.m_first.m_y > g_unk0x00677488)
+        bounds.m_second.m_x - bounds.m_first.m_x > 0.0f &&
+        bounds.m_second.m_y - bounds.m_first.m_y > 0.0f)
         ((RHMobileUnk00607da0 *)((char *)this + 0x30))->FUN_00607da0((const RHMobileUnk00607da0 &)
             bounds.FUN_006090d0(SBGeoVector2D((float)m_ec, 0.0f)));
     if (m_ec)
@@ -5295,8 +5301,8 @@ void RHWidgetPortrait::FUN_005da1f0()
     SBGeoBoundingBox2D bounds(P(0xd0), P(0x1c4));
     ((RHMobileUnk00607da0 *)&frame)->FUN_00607da0(*(RHMobileUnk00607da0 *)((char *)this + 0x7ec));
     SBGeoVector2D origin(*(SBGeoVector2D *)&bounds.m_first);
-    W(0x7bc).v08(SBGeoPoint2D(((bounds.m_second.m_x - bounds.m_first.m_x) - (frame.m_second.m_x - frame.m_first.m_x)) * g_unk0x006775d8,
-                              ((bounds.m_second.m_y - bounds.m_first.m_y) - (frame.m_second.m_y - frame.m_first.m_y)) * g_unk0x006775d8)
+    W(0x7bc).v08(SBGeoPoint2D(((bounds.m_second.m_x - bounds.m_first.m_x) - (frame.m_second.m_x - frame.m_first.m_x)) * 0.5f,
+                              ((bounds.m_second.m_y - bounds.m_first.m_y) - (frame.m_second.m_y - frame.m_first.m_y)) * 0.5f)
                       .Unk005fc190(origin));
 }
 
@@ -5342,3 +5348,78 @@ void EmitRHPortraitLifetimeConstructors()
     RHPortraitLifetime005db4a0 first;
 }
 #pragma inline_depth()
+
+// Parked: the vector argument uses the constructor result instead of its stack address.
+// STUB: GAME 0x0061d3f0
+SBGeoBoundingBox2D RHPortraitInputRenderer::FUN_0061d3f0(unsigned short line, int value)
+{
+    SBGeoBoundingBox2D box;
+    SBGeoBoundingBox2D &bounds = m_position;
+    float width = bounds.m_second.m_x - bounds.m_first.m_x;
+    unsigned index = line;
+    ((RHMobileUnk00607da0 *)&box)->FUN_00607da0((const RHMobileUnk00607da0 &)RHMapBox(
+        0.0f, (float)((unsigned)((SBUIListboxUnk0061d980 *)this)->m_4c->FUN_0061e890() * index),
+        width - ((RHUnkFXDraw *)m_drawManager)->FUN_005e56c0(m_68),
+        (float)((unsigned)((SBUIListboxUnk0061d980 *)this)->m_4c->FUN_0061e890() * (index + 1))));
+    if (value & 0x1000)
+    {
+        box.m_10 = true;
+        box.m_first.m_x += m_82;
+    }
+    return box.FUN_006090d0(SBGeoVector2D((const SBGeoVector2D &)bounds.m_first));
+}
+
+// FUNCTION: GAME 0x0061d570
+bool RHPortraitInputRenderer::FUN_0061d570(unsigned short position, int value)
+{
+    unsigned short limit = (unsigned short)value;
+    *(unsigned short *)((char *)this + 0x80) = limit;
+    unsigned short visible = (unsigned short)FUN_0061d5e0();
+    if (visible > limit)
+    {
+        *(float *)((char *)this + 0x74) = 1.0f;
+        *(float *)((char *)this + 0x78) = 0.0f;
+    }
+    else
+    {
+        *(float *)((char *)this + 0x74) = (float)visible / limit;
+        *(float *)((char *)this + 0x78) = (float)position / limit;
+    }
+    return true;
+}
+
+// Parked: repeated-height evaluation, right-edge spills and EH-state scheduling differ.
+// STUB: GAME 0x0061d620
+SBGeoBoundingBox2D RHPortraitInputRenderer::FUN_0061d620()
+{
+    SBGeoBoundingBox2D box;
+    float height = m_position.m_second.m_y - m_position.m_first.m_y;
+    ((RHMobileUnk00607da0 *)&box)->FUN_00607da0((const RHMobileUnk00607da0 &)RHMapBox(
+        0.0f, (height - 2.0f) * *(float *)((char *)this + 0x78),
+        ((RHUnkFXDraw *)m_drawManager)->FUN_005e56c0(m_64),
+        (m_position.m_second.m_y - m_position.m_first.m_y - 2.0f) *
+        (*(float *)((char *)this + 0x74) + *(float *)((char *)this + 0x78))));
+    float right = m_position.m_second.m_x;
+    float top = m_position.m_first.m_y + 1.0f;
+    right -= 1.0f;
+    ((RHMobileUnk00607da0 *)&box)->FUN_00607da0((const RHMobileUnk00607da0 &)box.FUN_006090d0(
+        SBGeoVector2D(right - ((RHUnkFXDraw *)m_drawManager)->FUN_005e56c0(m_64), top)));
+    return box;
+}
+
+// Parked: the empty return needs the canonical four-float box constructor, not a copy.
+// STUB: GAME 0x0061d7c0
+SBGeoBoundingBox2D RHPortraitInputRenderer::FUN_0061d7c0()
+{
+    SBGeoBoundingBox2D box;
+    if (m_68 == -1)
+        return (const SBGeoBoundingBox2D &)RHMapBox(0.0f, 0.0f, 0.0f, 0.0f);
+    ((RHMobileUnk00607da0 *)&box)->FUN_00607da0((const RHMobileUnk00607da0 &)RHMapBox(
+        0.0f, 0.0f, ((RHUnkFXDraw *)m_drawManager)->FUN_005e56c0(m_68),
+        m_position.m_second.m_y - m_position.m_first.m_y));
+    float top = m_position.m_first.m_y;
+    float right = m_position.m_second.m_x;
+    ((RHMobileUnk00607da0 *)&box)->FUN_00607da0((const RHMobileUnk00607da0 &)box.FUN_006090d0(
+        SBGeoVector2D(right - ((RHUnkFXDraw *)m_drawManager)->FUN_005e56c0(m_68), top)));
+    return box;
+}

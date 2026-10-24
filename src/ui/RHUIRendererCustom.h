@@ -160,4 +160,3 @@ public:
 // `fcomp ds:0x677488`). It is already pinned with a `// GLOBAL:` marker in
 // RHSoundGeometry.cpp, so it is only declared here (a second definition would
 // be a duplicate symbol).
-extern float g_unk0x00677488;

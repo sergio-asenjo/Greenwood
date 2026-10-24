@@ -21,6 +21,9 @@ void *RHGameRenderer005cb220::FUN_005cb240(unsigned flags)
     return this;
 }
 
+// SYNTHETIC: GAME 0x005cb260
+// ??1RHGameRenderer005cb220@@QAE@XZ
+
 // FUNCTION: GAME 0x005cb270
 bool RHGameRenderer005cb220::FUN_005cb270(unsigned id)
 {

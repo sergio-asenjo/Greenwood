@@ -64,13 +64,13 @@ bool RHUIRendererCustom::Render(unsigned int id)
     box.m_p1.m_x = box.m_p1.m_x * ratio;
     box2.m_p0.m_x = box.m_p1.m_x;
 
-    if (box2.m_p1.m_x - box.m_p1.m_x > g_unk0x00677488)
+    if (box2.m_p1.m_x - box.m_p1.m_x > 0.0f)
     {
         SBGeoVector2D origin(*(SBGeoVector2D *)&m_box.m_p0);
         m_draw->Blit(surface1, &box2, m_20, &box2.FUN_006090d0(origin), 1);
     }
 
-    if (box.m_p1.m_x - box.m_p0.m_x > g_unk0x00677488)
+    if (box.m_p1.m_x - box.m_p0.m_x > 0.0f)
     {
         SBGeoVector2D origin(*(SBGeoVector2D *)&m_box.m_p0);
         m_draw->Blit(surface0, &box, m_20, &box.FUN_006090d0(origin), 1);

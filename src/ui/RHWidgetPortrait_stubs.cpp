@@ -81,7 +81,6 @@ public:
 
 void RHPortraitPCList::FUN_005c8e40(unsigned) {}
 RHPortraitUnk005d0180::~RHPortraitUnk005d0180() {}
-void RHPortraitInputRenderer::FUN_0061d570(unsigned short, int) {}
 
 // FUNCTION: GAME 0x0061d5e0
 unsigned RHPortraitInputRenderer::FUN_0061d5e0()
@@ -91,19 +90,14 @@ unsigned RHPortraitInputRenderer::FUN_0061d5e0()
     return (unsigned)(span / count);
 }
 
-SBGeoBoundingBox2D RHPortraitInputRenderer::FUN_0061d3f0(unsigned short, int) { return SBGeoBoundingBox2D(); }
-SBGeoBoundingBox2D RHPortraitInputRenderer::FUN_0061d7c0() { return SBGeoBoundingBox2D(); }
-SBGeoBoundingBox2D RHPortraitInputRenderer::FUN_0061d620() { return SBGeoBoundingBox2D(); }
-extern float g_unk0x006774f4;
 
 // FUNCTION: GAME 0x0061d950
 unsigned RHPortraitInputRenderer::FUN_0061d950()
 {
     float top = *(float *)((char *)this + 0x14);
     float bottom = *(float *)((char *)this + 0xc);
-    return (unsigned)((top - bottom - g_unk0x006774f4) / *(unsigned short *)((char *)this + 0x80));
+    return (unsigned)((top - bottom - 2.0f) / *(unsigned short *)((char *)this + 0x80));
 }
-bool RHPortraitInputCalls::FUN_005cfc30(const void *) { return false; }
 DECOMP_SIZE_ASSERT(RHPortraitRenderer006212d0, 0x90)
 
 // Parked: zero/one register allocation and literal-vptr/vector-store ordering differ.

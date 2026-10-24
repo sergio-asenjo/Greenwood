@@ -225,7 +225,7 @@ public:
 class RHPortraitInputCalls
 {
 public:
-    bool FUN_005cfc30(const void *input);
+    int FUN_005cfc30(const void *input);
 };
 
 #include "RHPortraitRenderer0060dab0.h"

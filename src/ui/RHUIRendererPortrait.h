@@ -84,7 +84,6 @@ public:
 // The .rdata multiplier applied to the float argument (target `fmul ds:0x67755c`,
 // a 100.0f constant). It needs named storage or reccmp cannot resolve the operand
 // (Hard rule 26). The definition and // GLOBAL: marker live in the .cpp.
-extern float g_rhuirendererportrait_percent;
 
 // VC6's float->int CRT helper. Defined once, with a // LIBRARY: seed, in
 // RHMenuGraphics_stubs.cpp; this TU only declares it (a second definition would
