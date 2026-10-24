@@ -2,14 +2,14 @@
 #include "SBUIRendererInputField.h"
 #include "RHGamePad.h"
 #include "RHFontManager.h"
+#include "RHMessenger.h"
+#include "RHEngine.h"
+#include "RHActorMessage.h"
+#include "RHMouseMessage.h"
+#include "SBThreadedInput.h"
+#include "RHElementActorHumanCore.h"
 #include <string.h>
 #include <iterator>
-
-class RHUnk0055dbb0
-{
-public:
-    char *FUN_0055dbb0();
-};
 
 extern unsigned char g_unk0x006c0e48[];
 
@@ -50,107 +50,13 @@ extern RHUnk005ef320 *g_unk0x6c11d0;
 extern RHEngine *g_pEngine;
 RHMessenger *RHUnk00546050();
 
-class RHElementActorPC;
-
-struct RHGamePadListNode
-{
-    RHGamePadListNode *next;
-    RHGamePadListNode *previous;
-    RHElementActorPC *value;
-};
-
-struct RHScriptIter
-{
-    RHGamePadListNode *node;
-};
-
-class RHUnk0046eb30
+class RHUnk005fc3b0 : public SBGeoVector2D
 {
 public:
-    RHScriptIter FUN_0046eb80();
-};
-
-struct RHUnk005c9010Iterator;
-void FUN_005c9010(RHUnk005c9010Iterator &current, int distance, std::bidirectional_iterator_tag category);
-
-struct RHGamePadSelection
-{
-    unsigned m_allocator;
-    RHGamePadListNode *m_head;
-    unsigned m_count;
-    RHScriptIter m_current;
-    bool m_dirty;
-    int m_index;
-    void Move(int wanted, int count)
-    {
-        int previous = m_index;
-        if (wanted < previous)
-        {
-            if (wanted < (previous + 1) / 2)
-            {
-                m_current = ((RHUnk0046eb30 *)this)->FUN_0046eb80();
-                std::bidirectional_iterator_tag category;
-                FUN_005c9010((RHUnk005c9010Iterator &)m_current, wanted, category);
-            }
-            else
-            {
-                std::bidirectional_iterator_tag category;
-                FUN_005c9010((RHUnk005c9010Iterator &)m_current, wanted - previous, category);
-            }
-        }
-        else if (wanted < (previous + count) / 2)
-        {
-            std::bidirectional_iterator_tag category;
-            FUN_005c9010((RHUnk005c9010Iterator &)m_current, wanted - previous, category);
-        }
-        else
-        {
-            m_current.node = m_head;
-            std::bidirectional_iterator_tag category;
-            FUN_005c9010((RHUnk005c9010Iterator &)m_current, wanted - count, category);
-        }
-        m_index = wanted;
-    }
-    RHElementActorPC *At(int wanted)
-    {
-        int count = m_count;
-        if (m_dirty)
-        {
-            if (wanted <= (count + 1) / 2)
-            {
-                m_current = ((RHUnk0046eb30 *)this)->FUN_0046eb80();
-                std::bidirectional_iterator_tag category;
-                FUN_005c9010((RHUnk005c9010Iterator &)m_current, wanted, category);
-            }
-            else
-            {
-                m_current.node = m_head;
-                std::bidirectional_iterator_tag category;
-                FUN_005c9010((RHUnk005c9010Iterator &)m_current, wanted - count, category);
-            }
-            m_dirty = false;
-            m_index = wanted;
-        }
-        else if (wanted != m_index)
-            Move(wanted, count);
-        return m_current.node->value;
-    }
-};
-
-struct RHGamePadEngine
-{
-    char m_0000[0x493c];
-    RHElementActorPC **m_493c;
-    RHElementActorPC **m_4940;
-    char m_4944[0xb4];
-    RHGamePadSelection m_selection;
-    unsigned PCCount() const
-    {
-        RHElementActorPC **first = *(RHElementActorPC **const volatile *)&m_493c;
-        if (!first)
-            return 0;
-        return m_4940 - first;
-    }
+    RHUnk005fc3b0 &FUN_005fc4d0(float factor);
+    float Unk005fc6a0(float value);
+    void FUN_005fc7c0(float value);
+    unsigned char FUN_005fcc50(float scale) const;
 };
 
 // GLOBAL: GAME 0x006c0b54
@@ -243,13 +149,172 @@ void RHGamePad::ProcessGamepadInput()
     SBInputJoystickState state;
     bool lost;
     m_input->FUN_005fb770(m_joystick, &state, &lost);
-    FUN_00518b30(state);
-    FUN_00518ed0(state);
-    FUN_00519620(state);
-    FUN_00519c70(state);
-    FUN_005191e0(state);
-    FUN_00519840(state);
+    ManageScrollAxis(state);
+    ManageMoveAxis(state);
+    ManageMouseAxis(state);
+    ManageQA(state);
+    ManageCharacterSelect(state);
+    ManageActionSelect(state);
     m_previous = state;
+}
+
+// FUNCTION: GAME 0x00518b30
+void RHGamePad::ManageScrollAxis(SBInputJoystickState &state)
+{
+    switch (state.m_pov[0])
+    {
+    case 0:
+        if (!state.m_buttons[5])
+        {
+            m_messenger->RHUnk005460c0(RHUnk5490f0(2));
+            break;
+        }
+        m_messenger->RHUnk005460c0(RHUnk5490f0(5));
+        return;
+    case 4500:
+        m_messenger->RHUnk005460c0(RHUnk5490f0(3));
+        m_messenger->RHUnk005460c0(RHUnk5490f0(2));
+        break;
+    case 9000:
+        m_messenger->RHUnk005460c0(RHUnk5490f0(3));
+        break;
+    case 13500:
+        m_messenger->RHUnk005460c0(RHUnk5490f0(3));
+        m_messenger->RHUnk005460c0(RHUnk5490f0(1));
+        break;
+    case 18000:
+        if (!state.m_buttons[5])
+        {
+            m_messenger->RHUnk005460c0(RHUnk5490f0(1));
+            break;
+        }
+        m_messenger->RHUnk005460c0(RHUnk5490f0(6));
+        return;
+    case 22500:
+        m_messenger->RHUnk005460c0(RHUnk5490f0(1));
+        m_messenger->RHUnk005460c0(RHUnk5490f0(4));
+        break;
+    case 27000:
+        m_messenger->RHUnk005460c0(RHUnk5490f0(4));
+        break;
+    case 31500:
+        m_messenger->RHUnk005460c0(RHUnk5490f0(4));
+        m_messenger->RHUnk005460c0(RHUnk5490f0(2));
+        break;
+    default:
+        return;
+    }
+    m_engine->SelectFollowElement(0);
+}
+
+// FUNCTION: GAME 0x00518ed0
+void RHGamePad::ManageMoveAxis(SBInputJoystickState &state)
+{
+    if (((RHGamePadEngine *)m_engine)->m_selection.m_count)
+    {
+        RHGamePadSelection &selection = ((RHGamePadEngine *)m_engine)->m_selection;
+        selection.GoTo(0);
+        RHElementActorPC *pc = selection.m_current.node->value;
+        long x = state.m_axes[0];
+        if (x || state.m_axes[1])
+        {
+            SBGeoVector2D move((float)x, (float)state.m_axes[1]);
+            bool fast = ((RHUnk005fc3b0 &)move).Unk005fc6a0(1.0f) > 28000.0f;
+            ((RHUnk005fc3b0 &)move).FUN_005fc7c0(1.0f);
+            if (fast)
+                ((RHUnk005fc3b0 &)move).FUN_005fc4d0(75.0f);
+            else
+                ((RHUnk005fc3b0 &)move).FUN_005fc4d0(25.0f);
+            CheckValidityOfPosition(move, fast);
+        }
+        if (!*(int *)((char *)pc + 0x268) && !state.m_buttons[10] && m_previous.m_buttons[10])
+        {
+            int mode = *(int *)(*(char **)((char *)pc + 0x50) + 0x8c);
+            m_messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0x25, 0, mode != 10));
+        }
+        if (*(int *)((char *)pc + 0x268) && !state.m_buttons[10] && m_previous.m_buttons[10])
+            m_messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549120(3, *(SBGeoPoint2D *)&g_inputPosition, 2));
+    }
+}
+
+// FUNCTION: GAME 0x00519620
+void RHGamePad::ManageMouseAxis(SBInputJoystickState &state)
+{
+    SBGeoVector2D move;
+    if (!((RHGamePadEngine *)m_engine)->GetSelection().GetCount() || !*(int *)((char *)((RHGamePadEngine *)m_engine)->GetSelection().Selected() + 0x268))
+    {
+        if (state.m_axes[6] - 0x7fff)
+            move.m_y = (state.m_axes[6] - 0x7fff) * 0.00061050063f;
+        if (state.m_axes[5] - 0x8000)
+            move.m_x = (state.m_axes[5] - 0x7fff) * 0.00061050063f;
+        SBThreadedInput::ReachPosition((*(SBGeoPoint2D *)&g_inputPosition).Unk005fc190(move));
+        if (state.m_buttons[11] && !m_previous.m_buttons[11])
+            SBThreadedInput::PushButton(SBButtonLeft);
+        if (!state.m_buttons[11] && m_previous.m_buttons[11])
+            SBThreadedInput::ReleaseButton(SBButtonLeft);
+    }
+    if (((RHGamePadEngine *)m_engine)->GetSelection().GetCount() > 0 && *(int *)((char *)((RHGamePadEngine *)m_engine)->GetSelection().Selected() + 0x268))
+    {
+        if (state.m_axes[6] - 0x7fff)
+            move.m_y = (state.m_axes[6] - 0x7fff) * 0.00061050063f;
+        if (state.m_axes[5] - 0x8000)
+            move.m_x = (state.m_axes[5] - 0x7fff) * 0.00061050063f;
+        if (move.m_x == 0.0f && move.m_y == 0.0f)
+        {
+            if (m_points.size())
+                RecognizeSwing();
+        }
+        else
+            m_points.Append(move);
+    }
+}
+
+static inline int *RHGamePadActions(RHElementActorPC *pc)
+{
+    return *(int **)((char *)pc + 0x5fc);
+}
+
+static inline unsigned RHGamePadOpponentCount(RHElementActorPC *pc)
+{
+    return *(unsigned *)((char *)pc + 0x268);
+}
+
+static inline unsigned short RHGamePadFacing(RHElementActorPC *pc)
+{
+    return *(unsigned short *)(*(char **)((char *)pc + 0x50) + 0xd8);
+}
+
+// FUNCTION: GAME 0x00519840
+void RHGamePad::ManageActionSelect(SBInputJoystickState &state)
+{
+    if (((RHGamePadEngine *)m_engine)->m_selection.m_count)
+    {
+        RHGamePadSelection &selection = ((RHGamePadEngine *)m_engine)->m_selection;
+        selection.GoTo(0);
+        RHElementActorPC *pc = selection.m_current.node->value;
+        if (!RHGamePadOpponentCount(pc))
+        {
+            if (!state.m_buttons[1] && m_previous.m_buttons[1])
+                m_messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0x16, pc, RHGamePadActions(pc)[0x12]));
+            if (!state.m_buttons[0] && m_previous.m_buttons[0])
+                m_messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0x16, pc, RHGamePadActions(pc)[0x13]));
+            if (!state.m_buttons[2] && m_previous.m_buttons[2])
+                m_messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0x16, pc, RHGamePadActions(pc)[0x14]));
+        }
+        else
+        {
+            if (!state.m_buttons[1] && m_previous.m_buttons[1])
+                ChooseOpponent(pc, (RHGamePadFacing(pc) + 8) % 16, 1);
+            if (!state.m_buttons[0] && m_previous.m_buttons[0])
+                ChooseOpponent(pc, (RHGamePadFacing(pc) + 15) % 16, -1);
+            if (!state.m_buttons[2] && m_previous.m_buttons[2])
+                ChooseOpponent(pc, RHGamePadFacing(pc) + 1, 1);
+        }
+    }
+    if (state.m_buttons[3] && !m_previous.m_buttons[3])
+        m_messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549120(3, *(SBGeoPoint2D *)&g_inputPosition, 0x80));
+    if (!state.m_buttons[3] && m_previous.m_buttons[3])
+        m_messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549120(3, *(SBGeoPoint2D *)&g_inputPosition, 2));
 }
 
 // Parked: target keeps a second frame slot for the clean-cursor seek and holds the count in ECX.
@@ -271,6 +336,98 @@ unsigned char RHGamePad::GetSelectedIndexPC()
     return 0xff;
 }
 
+
+static inline SBGeoPoint2D &RHGamePadPosition(RHElementActorPC *actor)
+{
+    return *(SBGeoPoint2D *)(*(char **)((char *)actor + 0x50) + 0x24);
+}
+
+static inline unsigned short RHGamePadLayer(RHElementActorPC *pc)
+{
+    return *(unsigned short *)(*(char **)((char *)pc + 0x50) + 0xde);
+}
+
+static inline char *RHGamePadSector(unsigned short index)
+{
+    if (index == 0xffff)
+        return *(char **)((char *)g_unk0x6c0a9c + 0x4184);
+    return (*(char ***)((char *)g_unk0x6c0a9c + 0x4064))[index];
+}
+
+static inline float RHGamePadMapWidth(RHEngine *engine)
+{
+    return *(float *)((char *)engine + 0x4730);
+}
+
+static inline float RHGamePadMapHeight(RHEngine *engine)
+{
+    return *(float *)((char *)engine + 0x4734);
+}
+
+// Parked: target keeps the null constant in EBP for sector/patch tests and stores.
+// STUB: GAME 0x00519a90
+bool RHGamePad::CheckValidityOfPosition(SBGeoVector2D &move, bool fast)
+{
+    char *sector;
+    RHGamePadSelection &selection = ((RHGamePadEngine *)m_engine)->m_selection;
+    selection.GoTo(0);
+    RHElementActorPC *pc = selection.m_current.node->value;
+    SBGeoPoint2D position(RHGamePadPosition(pc));
+    SBGeoPoint2D destination = position.Unk005fc190(move);
+    bool valid = false;
+    unsigned short layer = RHGamePadLayer(pc);
+    if (*(unsigned *)((char *)m_engine + 0x4a94) % 5 == 0)
+    {
+        sector = 0;
+        char *patch = 0;
+        if (!(destination.m_x < RHGamePadMapWidth(m_engine) && destination.m_y < RHGamePadMapHeight(m_engine)
+            && ((RHEngineGridCalls *)g_unk0x6c0a9c)->FUN_004e9760(destination, position, (void *&)sector, layer) >= 0))
+            sector = 0;
+        else if (sector && (unsigned short)(*(unsigned long *)(sector + 0x30) >> 2) & 1)
+        {
+            patch = *(char **)(sector + 0x58);
+            sector = RHGamePadSector(*(unsigned short *)(patch + 0x13e));
+            layer = *(unsigned short *)(patch + 0x13c);
+        }
+        valid = patch || (sector && ((((unsigned short)*(unsigned long *)(sector + 0x30) & 1) && ((unsigned short)(*(unsigned long *)(sector + 0x30) >> 1) & 1))
+            || ((unsigned short)(*(unsigned long *)(sector + 0x30) >> 12) & 1) || (*(unsigned long *)(sector + 0x30) & 0x8000) == 0x8000));
+        if (valid)
+            m_engine->FUN_004e3720(&destination, fast ? 10 : 6, layer, sector, patch);
+    }
+    return valid;
+}
+
+static inline RHGamePadSelection &RHGamePadOpponents(RHElementActorPC *pc)
+{
+    return *(RHGamePadSelection *)((char *)pc + 0x260);
+}
+
+// FUNCTION: GAME 0x0051a3c0
+void RHGamePad::ChooseOpponent(RHElementActorPC *pc, unsigned short direction, short step)
+{
+    if (RHGamePadOpponents(pc).m_count > 1)
+    {
+        for (;;)
+        {
+            for (unsigned short i = 1; i < RHGamePadOpponents(pc).m_count; ++i)
+            {
+                RHGamePadSelection &opponents = RHGamePadOpponents(pc);
+                opponents.GoTo(i);
+                RHElementActorPC *opponent = opponents.m_current.node->value;
+                bool found = (unsigned short)((const RHUnk005fc3b0 &)RHGamePadPosition(opponent).Unk005fc110(RHGamePadPosition(pc))).FUN_005fcc50(1.0f) == direction;
+                if (found)
+                {
+                    ((RHElementActorHuman *)pc)->FUN_0047d920((RHElementActorHuman *)opponent);
+                    return;
+                }
+            }
+            if (direction - step < 0)
+                direction += step + 16;
+            else
+                direction = (direction + step) % 16;
+        }
+    }
+}
 
 // FUNCTION: GAME 0x0051a4e0
 char *RHUnk0051a4e0::FUN_0051a4e0()

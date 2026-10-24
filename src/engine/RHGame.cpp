@@ -937,8 +937,6 @@ bool RHGame::Serialize(SBFile &file)
 
 #include "RHGameInputTranslator.h"
 
-extern float g_unk0x00677480;
-extern float g_unk0x0067749c;
 extern float g_unk0x677554;
 
 // Parked: named coordinate temporaries recover the frame but retain x87 store and call-view seams.
@@ -954,21 +952,21 @@ void RHGame::GenerateDeadZoneForMouseInput()
     first.m_x = 0.0f;
     first.m_y = resolution.m_y - g_unk0x677554;
     second.m_x = 0.0f;
-    second.m_y = resolution.m_y - g_unk0x00677480;
+    second.m_y = resolution.m_y - 3.0f;
     translator->AddToDeadZone(first, second);
     first.m_x = 2.0f;
-    first.m_y = resolution.m_y - g_unk0x0067749c;
+    first.m_y = resolution.m_y - 1.0f;
     second.m_x = 60.0f;
-    second.m_y = resolution.m_y - g_unk0x0067749c;
+    second.m_y = resolution.m_y - 1.0f;
     translator->AddToDeadZone(first, second);
     first.m_x = resolution.m_x - g_unk0x677554;
-    first.m_y = resolution.m_y - g_unk0x0067749c;
-    second.m_x = resolution.m_x - g_unk0x00677480;
-    second.m_y = resolution.m_y - g_unk0x0067749c;
+    first.m_y = resolution.m_y - 1.0f;
+    second.m_x = resolution.m_x - 3.0f;
+    second.m_y = resolution.m_y - 1.0f;
     translator->AddToDeadZone(first, second);
-    first.m_x = resolution.m_x - g_unk0x0067749c;
-    first.m_y = resolution.m_y - g_unk0x00677480;
-    second.m_x = resolution.m_x - g_unk0x0067749c;
+    first.m_x = resolution.m_x - 1.0f;
+    first.m_y = resolution.m_y - 3.0f;
+    second.m_x = resolution.m_x - 1.0f;
     second.m_y = resolution.m_y - g_unk0x677554;
     translator->AddToDeadZone(first, second);
 }
@@ -1386,7 +1384,6 @@ public:
 };
 
 extern bool g_mouseEnabled;
-unsigned short FUN_005f1000();
 bool FUN_005edae0(RHUnk005ef320 *, const char *, ...);
 
 class RHUnk005ef390
@@ -1415,7 +1412,7 @@ void RHGame::FUN_005138b0(void *)
     bool done;
     do
     {
-        done = !RHConsole::GetInstance()->HandleCharacter(FUN_005f1000());
+        done = !RHConsole::GetInstance()->HandleCharacter(SBThreadedInput::GetChar());
         ((RHGameActionCalls *)*(void **)((char *)this + 0x10))->FUN_005e5260();
     } while (!done);
     RHUnk00546050()->RHUnk005460c0(RHUnk5490f0(0x25));
@@ -2366,7 +2363,6 @@ void RHUnk00514e10::Iterator::FUN_00515a90()
 
 #include "SBUIRenderer.h"
 
-extern float g_unk0x00677488;
 
 struct RHGameWidgetInput
 {
@@ -3200,8 +3196,8 @@ void RHUnk00516d20::FUN_00517000()
 {
     SBGeoBoundingBox2D &bounds = *(SBGeoBoundingBox2D *)((char *)this + 0xe8);
     if (bounds.Unk00608f30() &&
-        bounds.m_second.m_x - bounds.m_first.m_x > g_unk0x00677488 &&
-        bounds.m_second.m_y - bounds.m_first.m_y > g_unk0x00677488)
+        bounds.m_second.m_x - bounds.m_first.m_x > 0.0f &&
+        bounds.m_second.m_y - bounds.m_first.m_y > 0.0f)
         ((RHMobileUnk00607da0 *)((char *)this + 0x30))->FUN_00607da0((const RHMobileUnk00607da0 &)
             bounds.FUN_006090d0(SBGeoVector2D((float)*(unsigned short *)((char *)this + 0xe4), 0.0f)));
     if (*(unsigned short *)((char *)this + 0xe4))

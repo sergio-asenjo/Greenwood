@@ -122,7 +122,6 @@ void RHGamePortraitCalls::FUN_005d6690() {}
 
 // LIBRARY: GAME 0x00642a00
 // __chkstk
-unsigned short FUN_005f1000() { return 0; }
 class SBPicture;
 
 class RHGameScreenshotCalls

@@ -177,6 +177,7 @@ static bool g_unk0x006c1204;
 class SBInputListStorage : public std::list<SBThreadedInputElement>
 {
 public:
+    iterator InsertWithCount(iterator position, const SBThreadedInputElement &element);
     static __forceinline _Nodeptr BuyNode(_Nodeptr next, _Nodeptr previous)
     {
         std::allocator<SBThreadedInputElement> allocator;
@@ -354,6 +355,51 @@ static inline void RemoveFirstInput()
     g_inputChanged = true;
 }
 
+#include "SBInput.h"
+
+int FUN_005fb030(unsigned scanCode, unsigned short *output, int capacity, int mode);
+
+// STUB: GAME 0x005f1000
+unsigned short SBThreadedInput::GetChar()
+{
+    for (;;)
+    {
+        while (FUN_005f0ce0() == 0)
+            SBInputUnk005fb730::mpInput->FUN_005fbfc0();
+        EnterCriticalSection(g_inputCriticalSection);
+        SBInputNode *node = g_inputHead->m_next;
+        SBInputNode *next = node->m_next;
+        SBThreadedInputElement element = node->m_value;
+        node->m_previous->m_next = next;
+        node->m_next->m_previous = node->m_previous;
+        operator delete(node);
+        --g_inputCount;
+        g_inputChanged = true;
+        LeaveCriticalSection(g_inputCriticalSection);
+        if (element.m_keyboard != true || element.m_data != 0)
+            continue;
+        unsigned short characters[2];
+        if (FUN_005fb030(element.m_offset, characters, 2, 1) > 0)
+        {
+            unsigned short character = *(unsigned char *)characters;
+            if (character != 0)
+                return character;
+        }
+        else
+        {
+            switch (element.m_offset)
+            {
+            case 200: return 0x101;
+            case 208: return 0x102;
+            case 205: return 0x104;
+            case 203: return 0x103;
+            case 211: return 0x105;
+            case 210: return 0x108;
+            }
+        }
+    }
+}
+
 // Parked: queue-consumer helper layering and conditional register saves differ from the original.
 // STUB: GAME 0x005f1150
 bool FUN_005f1150(ToolboxMouseState &mouse, unsigned char *keyboard)
@@ -489,14 +535,14 @@ void SBThreadedInput::PopMouseBackground(bool wait)
     unsigned long flags = wait == true ? 8 : 0;
     if ((*(unsigned long *)((char *)this + 0x10) - 1 & 1) == 0) {
         SBGeoBoundingBox2D &box = *(SBGeoBoundingBox2D *)((char *)this + 0x14);
-        if (box.Unk00608f30() && box.m_max.m_x - box.m_min.m_x > g_unk0x00677488 &&
-            box.m_max.m_y - box.m_min.m_y > g_unk0x00677488)
+        if (box.Unk00608f30() && box.m_max.m_x - box.m_min.m_x > 0.0f &&
+            box.m_max.m_y - box.m_min.m_y > 0.0f)
             ((RHUnk005e6440 *)g_inputDrawManager)->Blit(g_backgroundEven,
                 (SBGeoBoundingBox2D *)((char *)this + 0x3c), 0, &box, flags);
     } else {
         SBGeoBoundingBox2D &box = *(SBGeoBoundingBox2D *)((char *)this + 0x28);
-        if (box.Unk00608f30() && box.m_max.m_x - box.m_min.m_x > g_unk0x00677488 &&
-            box.m_max.m_y - box.m_min.m_y > g_unk0x00677488)
+        if (box.Unk00608f30() && box.m_max.m_x - box.m_min.m_x > 0.0f &&
+            box.m_max.m_y - box.m_min.m_y > 0.0f)
             ((RHUnk005e6440 *)g_inputDrawManager)->Blit(g_backgroundOdd,
                 (SBGeoBoundingBox2D *)((char *)this + 0x50), 0, &box, flags);
     }
@@ -720,13 +766,13 @@ bool SBThreadedInput::CalculatePosition()
     if (g_inputPosition.m_x < g_inputClipping.m_min.m_x)
         g_inputPosition.m_x = g_inputClipping.m_min.m_x;
     if (g_inputClipping.m_max.m_x <= g_inputPosition.m_x)
-        g_inputPosition.m_x = g_inputClipping.m_max.m_x - g_unk0x0067749c;
+        g_inputPosition.m_x = g_inputClipping.m_max.m_x - 1.0f;
     if ((double)g_inputPosition.m_y < g_inputClipping.m_min.m_y) {
         float y = g_inputClipping.m_min.m_y;
         g_inputPosition.m_y = y;
     }
     if ((double)g_inputPosition.m_y >= g_inputClipping.m_max.m_y)
-        g_inputPosition.m_y = g_inputClipping.m_max.m_y - g_unk0x0067749c;
+        g_inputPosition.m_y = g_inputClipping.m_max.m_y - 1.0f;
     return true;
 }
 
@@ -802,8 +848,7 @@ void SBThreadedInput::SetInstantRefreshMode(bool enabled)
     g_instantRefresh = enabled;
 }
 
-// Parked: the first insertion must remain out of line while the second is expanded.
-// STUB: GAME 0x005f4950
+// FUNCTION: GAME 0x005f4950
 bool SBThreadedInput::ReachPosition(const SBGeoPoint2D &position)
 {
     if (!g_inputClipping.FUN_00608400(position))
@@ -813,12 +858,17 @@ bool SBThreadedInput::ReachPosition(const SBGeoPoint2D &position)
     element.m_keyboard = false;
     element.m_offset = 0;
     element.m_data = (short)(position.m_x - g_inputPosition.m_x);
-    g_inputPosition.m_x = position.m_x;
-    InsertInput(element);
+    float x = position.m_x;
+    g_inputPosition.m_x = x;
+    typedef SBInputListStorage::iterator (SBInputListStorage::*Insert)(SBInputListStorage::iterator, const SBThreadedInputElement &);
+    Insert insert = &SBInputListStorage::InsertWithCount;
+    (((SBInputListStorage *)&g_inputList)->*insert)(SBInputListStorage::Position(g_inputHead), element);
+    g_inputChanged = true;
     element.m_keyboard = false;
     element.m_offset = 4;
     element.m_data = (short)(position.m_y - g_inputPosition.m_y);
-    g_inputPosition.m_y = position.m_y;
+    float y = position.m_y;
+    g_inputPosition.m_y = y;
     InsertInput(element);
     LeaveCriticalSection(g_inputCriticalSection);
     return true;
@@ -904,6 +954,14 @@ RHUnk005f4c90::RHUnk005f4c90()
     m_4 = list;
     m_8 = 0;
     m_10 = 1;
+}
+
+// FUNCTION: GAME 0x005f4cc0
+SBInputListStorage::iterator SBInputListStorage::InsertWithCount(iterator position, const SBThreadedInputElement &element)
+{
+    iterator result = Insert(position, element);
+    ++_Size;
+    return result;
 }
 
 void SBThreadedInput::Emit()

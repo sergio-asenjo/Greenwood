@@ -46,6 +46,7 @@
 #include <vector>
 #include <math.h>
 
+#define SBGEO_POINT2D_VIEW
 class SBGeoVector2D;
 class SBGeoPoint2D
 {
@@ -351,10 +352,7 @@ inline float RHMessengerLength(const SBGeoPoint2D &vector)
     return ((RHUnk005fc3b0 *)&vector)->Unk005fc6a0(1.0f);
 }
 
-// GLOBAL: GAME 0x00679b38
-double g_unk0x00679b38 = 1.5707963705062866;
 
-extern float g_dialogueVolumeHigh;
 
 // FUNCTION: GAME 0x00547f00
 int RHMessenger::CheckThrustHI(const SBGeoPoint2D &a, const SBGeoPoint2D &b, const SBGeoPoint2D &c,
@@ -362,7 +360,7 @@ int RHMessenger::CheckThrustHI(const SBGeoPoint2D &a, const SBGeoPoint2D &b, con
 {
     SBGeoVector2D first = d.Unk005fc110(b);
     SBGeoVector2D second = d.Unk005fc110(c);
-    if (fabs(first.FUN_005fca90(second, 1.0f)) < g_unk0x00679b38)
+    if (fabs(first.FUN_005fca90(second, 1.0f)) < 1.5707963705062866)
     {
         if ((e <= g && g <= f && f <= h) || (g <= f && f <= h && h <= e) || (f <= h && h <= e && e <= g)
             || (h <= e && e <= g && g <= f))
@@ -376,33 +374,21 @@ int RHMessenger::CheckThrustHI(const SBGeoPoint2D &a, const SBGeoPoint2D &b, con
 int RHMessenger::CheckThrustFG(const SBGeoPoint2D &a, const SBGeoPoint2D &b, const SBGeoPoint2D &c, float x, float y)
 {
     float length = RHMessengerLength(c.Unk005fc110(b));
-    if (x / length > g_dialogueVolumeHigh)
+    if (x / length > 0.3f)
     {
-        if (y / length <= g_dialogueVolumeHigh)
+        if (y / length <= 0.3f)
             return 7;
     }
-    else if (y / length > g_dialogueVolumeHigh)
+    else if (y / length > 0.3f)
         return 8;
     return 0;
 }
 
-// GLOBAL: GAME 0x00677b84
-float g_unk0x00677b84 = 0.785398185f;
 
-// GLOBAL: GAME 0x00677b7c
-float g_unk0x00677b7c = 2.35619450f;
 
-// GLOBAL: GAME 0x00679b40
-float g_unk0x00679b40 = -2.35619450f;
 
-// GLOBAL: GAME 0x00679b44
-float g_unk0x00679b44 = -0.785398185f;
 
-// GLOBAL: GAME 0x00679b48
-double g_unk0x00679b48 = 2.35619455575943;
 
-// GLOBAL: GAME 0x00679b50
-double g_unk0x00679b50 = 0.7853981852531433;
 
 // FUNCTION: GAME 0x00548120
 int RHMessenger::CheckThrustDE(const SBGeoPoint2D &a, const SBGeoVector2D &b, const SBGeoPoint2D &c,
@@ -412,9 +398,9 @@ int RHMessenger::CheckThrustDE(const SBGeoPoint2D &a, const SBGeoVector2D &b, co
     RHUnk005fc3b0 direction;
     direction.FUN_005fc430(-b);
     float angle = direction.FUN_005fca90(first, 1.0f);
-    if (angle > g_unk0x00677b84 && angle < g_unk0x00677b7c)
+    if (angle > 0.785398185f && angle < 2.35619450f)
         return 6;
-    if (angle < g_unk0x00679b44 && angle > g_unk0x00679b40)
+    if (angle < (-0.785398185f) && angle > (-2.35619450f))
         return 5;
     return 0;
 }
@@ -427,9 +413,9 @@ int RHMessenger::CheckThrustAB(const SBGeoPoint2D &a, const SBGeoVector2D &b, co
     RHUnk005fc3b0 direction;
     direction.FUN_005fc430(-b);
     double angle = fabs(direction.FUN_005fca90(first, 1.0f));
-    if (angle < g_unk0x00679b50)
+    if (angle < 0.7853981852531433)
         return 3;
-    if (angle > g_unk0x00679b48)
+    if (angle > 2.35619455575943)
         return 2;
     return 0;
 }
@@ -486,18 +472,7 @@ void RHMessenger::Emit(SBFile &file)
     SerializeLockUser(file);
 }
 
-// SIZE 0x18
-// VTABLE: GAME 0x00679b68
-class RHUnk00549120 : public RHMessage
-{
-public:
-    RHUnk00549120(int value, const SBGeoPoint2D &point);
-    RHUnk00549120(int value, const SBGeoPoint2D &point, int extra);
-    ~RHUnk00549120();
-    void *FUN_00549180(unsigned flags);
-    int m_0c;          // 0x0c
-    SBGeoPoint2D m_10; // 0x10
-};
+#include "RHMouseMessage.h"
 
 #include "RHActorMessage.h"
 

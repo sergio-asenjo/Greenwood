@@ -37,6 +37,7 @@ public:
     static bool FUN_005f0d20(int index, SBInputMouseState &mouse, unsigned char *keyboard);
     static void FUN_005f1a90();
     bool CleanUpInputs();
+    static unsigned short GetChar();
     static bool FUN_005f0c20(bool keyboard, SBThreadedInputEvent &event);
     static void PushButton(SBButton button);
     static void ReleaseButton(SBButton button);

@@ -394,6 +394,8 @@ class RHPlayerProfileManager
 {
 public:
     bool Save() const;
+    void FUN_0055d930(unsigned long index);
+    void FUN_0055e410(unsigned long index);
 };
 
 class RHGameContinueCalls

@@ -122,8 +122,7 @@ bool RHKeyConfig::Serialize(SBFile &file)
 
 std::string FUN_004e4b40(const std::string &first, const std::string &second);
 
-// Parked: preset-path temporary slots and asymmetric string construction differ.
-// STUB: GAME 0x0051ece0
+// FUNCTION: GAME 0x0051ece0
 void RHKeyConfig::SetToPreset(unsigned short preset, bool flag)
 {
     std::string path;
@@ -132,30 +131,34 @@ void RHKeyConfig::SetToPreset(unsigned short preset, bool flag)
     switch (preset)
     {
     case 1:
-        path = FUN_004e4b40(std::string(
+    {
+        path = std::string(
             // STRING: GAME 0x006b06fc
-            "data\\configuration\\"), std::string(
+            "data\\configuration\\") + std::string(
             // STRING: GAME 0x006b0710
-            "keyset2.cfg"));
+            "keyset2.cfg");
         break;
+    }
     case 0:
-        path = FUN_004e4b40(std::string("data\\configuration\\"), std::string(
+    {
+        path = std::string("data\\configuration\\") + std::string(
             // STRING: GAME 0x006b06f0
-            "keyset1.cfg"));
+            "keyset1.cfg");
         break;
+    }
     default:
         break;
     }
     if (file.FUN_005f5090(path, mode) != 0)
+    {
         SBAssert(0, "P:\\Robin Hood\\RHkeyconfig.cpp", 0xfd,
             // STRING: GAME 0x006b06d4
             "Unable to locate file '%s'", path.c_str());
-    else
-    {
-        Serialize(file);
-        file.FUN_005f5290();
-        m_count = preset + 2;
+        return;
     }
+    Serialize(file);
+    file.FUN_005f5290();
+    m_count = preset + 2;
 }
 
 void RHKeyConfig::Emit(SBFile &file)
