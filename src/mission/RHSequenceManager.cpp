@@ -497,6 +497,28 @@ bool RHPathSequenceSerializer::FUN_0058b7c0(SBFile &file, void *&value)
     return true;
 }
 
+#include "RHSequenceElementCalls.h"
+
+// FUNCTION: GAME 0x0058bb80
+void RHSequenceManager::FUN_0058bb80(RHSequenceElement *element)
+{
+    if (!((RHSequenceElementCalls *)element)->FUN_00585b70())
+        m_28.push_back(element);
+}
+
+// FUNCTION: GAME 0x0058bd70
+bool RHSequenceManager::FUN_0058bd70(void *actor, int command)
+{
+    unsigned count = m_28.Count();
+    for (unsigned short i = 0; i < (unsigned short)count; ++i)
+    {
+        RHSequenceElementCalls *element = (RHSequenceElementCalls *)m_28[i];
+        if (element->m_48 == actor && (command == 0 || element->m_10 == command))
+            return true;
+    }
+    return false;
+}
+
 void RHSequenceManager::Emit(SBFile &file)
 {
     RHOrder *order = 0;

@@ -189,8 +189,6 @@ public:
 
 extern wchar_t g_unk0x006c0b50[1];
 extern float g_unk0x006774a0;
-extern float g_unk0x006775d8;
-extern float g_unk0x006774e4;
 
 // Parked: vector temporary slots, x87 operand order and receiver scheduling differ.
 // STUB: GAME 0x005a2630
@@ -206,7 +204,7 @@ void RHShortBriefings::FUN_005a2630(RHMenuWindow *window, SBGeoBoundingBox2D &bo
         ((RHBriefingParentCalls *)window)->V30(&m_30);
         SBGeoPoint2D offset;
         ((RHMobileUnk00607da0 *)&bounds)->FUN_00607da0(*(RHMobileUnk00607da0 *)((char *)&m_30 + 0x30));
-        offset = SBGeoPoint2D(((box.second.x - box.first.x) - (bounds.second.x - bounds.first.x)) * g_unk0x006775d8, 10.0f);
+        offset = SBGeoPoint2D(((box.second.x - box.first.x) - (bounds.second.x - bounds.first.x)) * 0.5f, 10.0f);
         {
             SBGeoVector2D displacement(*(SBGeoVector2D *)&offset);
             ((RHBriefingSetupCalls *)&m_30)->V20(bounds.first.Unk005fc190(displacement));
@@ -253,8 +251,6 @@ public:
     void Insert(T *position, unsigned count, const T &value);
 };
 
-// GLOBAL: GAME 0x00677480
-float g_unk0x00677480 = 3.0f;
 
 // FUNCTION: GAME 0x005a2820
 void RHShortBriefings::CreateWidgets(RHMenuWindow *window, const SBGeoBoundingBox2D &box)
@@ -287,7 +283,7 @@ void RHShortBriefings::FUN_005a28c0(RHMenuWindow *window, SBGeoBoundingBox2D &bo
         void *font = value.m_4 ? inactive : active;
         SBGeoBoundingBox2D bounds;
         ((RHMobileUnk00607da0 *)&bounds)->FUN_00607da0((const RHMobileUnk00607da0 &)box);
-        bounds.first.x = g_unk0x006774e4 + bounds.first.x;
+        bounds.first.x = 15.0f + bounds.first.x;
         bounds.active = true;
         typedef RHBriefingReturnedText (RHShortBriefings::*GetText)(const ShortBriefing &) const;
         GetText getText = reinterpret_cast<GetText>(&RHShortBriefings::GetShortBriefingText);
@@ -315,7 +311,7 @@ void RHShortBriefings::FUN_005a28c0(RHMenuWindow *window, SBGeoBoundingBox2D &bo
             ((SBArray<RHSaveGame *> *)&widgets)->Insert(widgets.end(), 1, widget);
             ((RHBriefingParentCalls *)window)->V30(picture);
         }
-        box.SetTop(height + box.first.y + g_unk0x00677480);
+        box.SetTop(height + box.first.y + 3.0f);
     }
 }
 

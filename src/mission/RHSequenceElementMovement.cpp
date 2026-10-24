@@ -42,14 +42,13 @@ public:
     virtual ~RHMovementOwned();
 };
 
-extern float g_unk0x006775d8;
 
 struct RHMovementBox
 {
     void Center(SBGeoPoint2D &point) const
     {
-        point.m_x = (m_0c + m_04) * g_unk0x006775d8;
-        point.m_y = (m_10 + m_08) * g_unk0x006775d8;
+        point.m_x = (m_0c + m_04) * 0.5f;
+        point.m_y = (m_10 + m_08) * 0.5f;
     }
     char m_00[4];
     float m_04;
@@ -58,7 +57,6 @@ struct RHMovementBox
     float m_10;
 };
 
-extern float g_unk0x006775d8;
 
 #define RH_MOVEMENT_FIELDS \
     void *m_64; \
@@ -414,8 +412,6 @@ public:
 
 #include "RHSectorActorIterator.h"
 
-extern float g_unk0x00677438;
-extern float g_unk0x00677488;
 
 // Parked: receiver/index registers and iterator/point argument scheduling differ.
 // STUB: GAME 0x00588940
@@ -458,9 +454,9 @@ void RHUnk00588530::FUN_00588940()
     position = RHMovementField<SBGeoPoint2D>(RHMovementField<void *>(owner, 0x50), 0x24);
     direction.FUN_005fc430(RHMovementField<SBGeoPoint2D>(order, 0x14).Unk005fc110(position));
     float distance = direction.Unk005fc6a0(1.0f);
-    if (distance > g_unk0x00677438)
+    if (distance > 10.0f)
     {
-        direction.FUN_005fc4d0(g_unk0x00677438 / distance);
+        direction.FUN_005fc4d0(10.0f / distance);
         m_6c = position.Unk005fc190(direction);
     }
 }
@@ -631,7 +627,7 @@ void RHUnk00588530::FUN_005890c0()
 // STUB: GAME 0x005892a0
 void RHUnk00588530::FUN_005892a0(int replacement, int action, float distance, const SBGeoPoint2D &origin)
 {
-    if (distance == g_unk0x00677488)
+    if (distance == 0.0f)
         distance = 0.01f;
     SBGeoPoint2D previous(origin);
     RHUnk005fc3b0 direction;
@@ -656,7 +652,7 @@ void RHUnk00588530::FUN_005892a0(int replacement, int action, float distance, co
                 order->m_24 = replacement;
                 order->m_2a = 1;
                 RHMovementField<SBGeoPoint2D>(order, 0x14) = previous;
-                if (length != g_unk0x00677488)
+                if (length != 0.0f)
                 {
                     direction.FUN_005fc4d0(distance / length);
                     RHMovementField<SBGeoPoint2D>(order, 0x14).FUN_005fc1e0(direction);
@@ -666,19 +662,17 @@ void RHUnk00588530::FUN_005892a0(int replacement, int action, float distance, co
             }
         }
         SBGeoPoint2D &point = RHMovementField<SBGeoPoint2D>(order, 0x14);
-        if (point.m_x != g_unk0x00677488 || point.m_y != g_unk0x00677488)
+        if (point.m_x != 0.0f || point.m_y != 0.0f)
             previous = point;
     }
 }
 
-// GLOBAL: GAME 0x00679db4
-float g_unk0x00679db4 = 1.01f;
 
 // Parked: initial count scheduling and loop branches differ.
 // STUB: GAME 0x00589490
 void RHUnk00588530::FUN_00589490(int replacement, int action, float distance, const SBGeoPoint2D &origin)
 {
-    if (distance == g_unk0x00677488)
+    if (distance == 0.0f)
         distance = 0.01f;
     bool scaled = ((unsigned)m_88 >> 16) & 1;
     SBGeoPoint2D previous;
@@ -700,7 +694,7 @@ void RHUnk00588530::FUN_00589490(int replacement, int action, float distance, co
             ((RHSpriteList *)&orders)->FUN_005c8e40((unsigned short)j);
             order = (RHOrder *)orders.current.node->value;
             SBGeoPoint2D &point = RHMovementField<SBGeoPoint2D>(order, 0x14);
-            if (point.m_x != g_unk0x00677488 || point.m_y != g_unk0x00677488)
+            if (point.m_x != 0.0f || point.m_y != 0.0f)
                 goto foundPoint;
         }
         goto useOrigin;
@@ -712,7 +706,7 @@ void RHUnk00588530::FUN_00589490(int replacement, int action, float distance, co
             else
                 length = direction.Unk005fc6a0(1.0f);
             float scaledLength = length;
-            if (scaledLength * g_unk0x00679db4 < distance)
+            if (scaledLength * 1.01f < distance)
             {
                 distance -= length;
                 continue;
@@ -721,7 +715,7 @@ void RHUnk00588530::FUN_00589490(int replacement, int action, float distance, co
             order->m_24 = action;
             order->m_2a = 1;
             RHMovementField<SBGeoPoint2D>(order, 0x14) = previous;
-            if (length != g_unk0x00677488)
+            if (length != 0.0f)
             {
                 direction.FUN_005fc4d0(distance / length);
                 RHMovementField<SBGeoPoint2D>(order, 0x14).FUN_005fc1e0(direction);
@@ -745,7 +739,7 @@ void RHUnk00588530::FUN_00589490(int replacement, int action, float distance, co
             order->m_24 = action;
             order->m_2a = 1;
             RHMovementField<SBGeoPoint2D>(order, 0x14) = previous;
-            if (length != g_unk0x00677488)
+            if (length != 0.0f)
             {
                 direction.FUN_005fc4d0(distance / length);
                 RHMovementField<SBGeoPoint2D>(order, 0x14).FUN_005fc1e0(direction);

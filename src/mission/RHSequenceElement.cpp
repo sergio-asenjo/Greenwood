@@ -423,15 +423,7 @@ RHUnk00585ea0::RHUnk00585ea0(unsigned short level, int command, void *actor, voi
     m_04 = 3;
 }
 
-class RHSequenceInteractionCalls : public RHSequenceElementCalls
-{
-public:
-    RHSequenceInteractionCalls *FUN_00585ed0();
-    bool FUN_00585f40(SBFile &file, bool pointers);
-    int FUN_00585f70();
-    void Emit(SBFile &file, bool pointers);
-    void *m_64;
-};
+#include "RHSequenceInteractionCalls.h"
 
 // FUNCTION: GAME 0x00585ed0
 RHSequenceInteractionCalls *RHSequenceInteractionCalls::FUN_00585ed0()

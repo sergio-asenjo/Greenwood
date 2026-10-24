@@ -19,7 +19,14 @@ int __cdecl wsprintfW(unsigned short *buffer, const unsigned short *format, ...)
     return 0;
 }
 
+// FUNCTION: GAME 0x005e2bf0
 std::wstring FUN_005e2bf0(int value)
 {
-    return std::wstring();
+    unsigned hours = (unsigned)value / 3600;
+    unsigned minutes = ((unsigned)value - hours * 3600) / 60;
+    unsigned short buffer[128];
+    wsprintfW(buffer,
+        // STRING: GAME 0x006b9238
+        L"%02i:%02i", hours, minutes);
+    return std::wstring(buffer);
 }

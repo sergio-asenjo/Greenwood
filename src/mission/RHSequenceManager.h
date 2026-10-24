@@ -239,6 +239,8 @@ public:
     bool PreSerializePointer(SBFile &file, RHSequenceElement **element, bool launch);
     bool PreSerializePointer(SBFile &file, RHSequence **sequence);
     bool SetAllPreSerializedPointers();
+    void FUN_0058bb80(RHSequenceElement *element);
+    bool FUN_0058bd70(void *actor, int command);
     bool SerializeSequenceElementPointer(SBFile &file, RHSequenceElement **element)
     {
         return ((RHPathSequenceSerializer *)this)->FUN_0058b7c0(file, (void *&)*element);

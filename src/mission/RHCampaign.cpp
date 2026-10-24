@@ -227,7 +227,7 @@ void RHCampaign::CreateGang()
             (*it)->FUN_00459dd0(1);
     ((RHMissionArrayStorage *)&m_114)->FUN_004609a0(m_114.begin(), m_114.end());
     ((RHMissionArrayStorage *)&m_104)->FUN_004609a0(m_104.begin(), m_104.end());
-    bool defaultGang = g_unk0x6c05cc.FUN_0045a010(RHCampaignText(g_unk0x6c0560)) == 0;
+    bool defaultGang = g_unk0x6c05cc.FUN_0045a010(RHCampaignText("")) == 0;
     if (defaultGang)
     {
         if (g_unk0x6c0e84 == 0)
@@ -863,7 +863,7 @@ void RHCampaign::CreatePlayableCharacterSet(SBArray<RHElement *> &elements, std:
                     if (*(unsigned short *)&position->data == character)
                         ((RHUnk0046eb30 *)&available)->erase(RHScriptIter(position));
                 }
-                g_unk0x6c0a50.m_progress += g_unk0x00677438 / (int)characters;
+                g_unk0x6c0a50.m_progress += 10.0f / (int)characters;
                 g_unk0x6c0a50.FUN_00523300();
                 allowAmbiguous = false;
                 --remaining;
@@ -886,7 +886,7 @@ void RHCampaign::CreatePlayableCharacterSet(SBArray<RHElement *> &elements, std:
                     FUN_004552f0(elements, *it, available.Front());
                     available.Remove(available.m_head->next);
                     --remaining;
-                    g_unk0x6c0a50.m_progress += g_unk0x00677438 / (int)characters;
+                    g_unk0x6c0a50.m_progress += 10.0f / (int)characters;
                     g_unk0x6c0a50.FUN_00523300();
                     if (available.m_count == 0)
                         break;
@@ -1947,8 +1947,8 @@ void RHEngine::FUN_004e3770(RHElement *element)
 {
     char *info = RHCampaignField<char *>(element, 0x50);
     SBGeoPoint2D point(RHCampaignField<SBGeoPoint2D>(info, 0x24));
-    point.m_x += rand() * g_unk0x00677f7c * g_unk0x00677438 - g_unk0x0067748c;
-    point.m_y += rand() * g_unk0x00677f7c * g_unk0x00677438 - g_unk0x0067748c;
+    point.m_x += rand() * 0.00003051850944757461548f * 10.0f - 5.0f;
+    point.m_y += rand() * 0.00003051850944757461548f * 10.0f - 5.0f;
     char *position = RHCampaignField<char *>(element, 0x50) + 4;
     SBGeoBoundingBox2D box(*(SBGeoBoundingBox2D *)((RHUnkPathActorInfoBase *)position)->Unk0055fa10(
         RHCampaignField<int>(position, 0x88)));
@@ -2073,7 +2073,10 @@ RHSaveGame::Header::Header()
     m_08 = 0xbad;
 }
 
-// LIBRARY: GAME 0x00570330
+// LIBRARY: GAME 0x00570330 FOLDED
+// ??1?$vector@HV?$allocator@H@std@@@std@@QAE@XZ
+
+// LIBRARY: GAME 0x00570330 FOLDED
 // ??1?$vector@GV?$allocator@G@std@@@std@@QAE@XZ
 
 void RHCampaignArrayOps::FUN_00570330()

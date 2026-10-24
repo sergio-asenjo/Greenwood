@@ -289,7 +289,6 @@ public:
 
 RHProfileManager *RHUnk00436500GetProfileManager();
 
-extern char g_unk0x6c0560[4];
 extern RHCampaignCommandLine g_unk0x6c05cc;
 extern RHCampaignProfiles *g_unk0x6c0e84;
 
@@ -468,7 +467,6 @@ public:
 
 extern RHEngine *g_pEngine;
 extern RHCampaignLoadingProgress g_unk0x6c0a50;
-extern float g_unk0x00677438;
 
 // SIZE 0x08
 class SBGeoVector2D : public SBGeoPoint2D
@@ -556,7 +554,5 @@ T &RHCampaignField(void *object, unsigned offset)
     return *(T *)((char *)object + offset);
 }
 
-extern float g_unk0x0067748c;
-extern float g_unk0x00677f7c;
 
 #endif
