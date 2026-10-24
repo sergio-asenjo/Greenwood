@@ -251,7 +251,6 @@ struct RHConsolePCList
 
 class RHUnk6c1040;
 extern RHUnk6c1040 *g_unk0x6c1040;
-extern char g_unk0x6c0560[4];
 
 class RHUnk00450b60
 {
@@ -370,8 +369,6 @@ struct RHConsoleHumanFlags
 
 extern double g_unk0x00677670;
 
-// GLOBAL: GAME 0x00677668
-double g_consoleBlockExponent = 5.0;
 
 // GLOBAL: GAME 0x006c080c
 RHConsoleActor *g_consoleHonolulu;
@@ -537,8 +534,7 @@ void RHConsole::FUN_0045d5f0(unsigned, char **)
     }
 }
 
-// Parked: the pre-destructor EH-state store is omitted once the state-zero register matches.
-// STUB: GAME 0x0045d650
+// FUNCTION: GAME 0x0045d650
 void RHConsole::FUN_0045d650(unsigned, char **)
 {
     unsigned soldierCount = 0;
@@ -562,7 +558,7 @@ void RHConsole::FUN_0045d650(unsigned, char **)
             Assign assign = &SBGeoPoint2D::operator=;
             (point.*assign)(*position);
             ++soldierCount;
-            ((RHScriptBatchCalls *)((char *)m_engine + 0x43f8))->Unk0058a940(g_unk0x6c0560, 0, element);
+            ((RHScriptBatchCalls *)((char *)m_engine + 0x43f8))->Unk0058a940("", 0, element);
         }
     }
     // STRING: GAME 0x006ad0e8
@@ -816,7 +812,7 @@ void RHConsole::FUN_0045dd90(unsigned, char **)
         if ((RHConsoleField<volatile unsigned>(actor, 4) & 0xf) == 0xc)
         {
             RHConsoleSequenceElement *element = new RHConsoleSequenceElement(1, 0x26, actor, 0, 100, 0);
-            ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940(g_unk0x6c0560, 0, element);
+            ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940("", 0, element);
         }
     }
     // STRING: GAME 0x006ad4f4
@@ -834,7 +830,7 @@ void RHConsole::FUN_0045de60(unsigned, char **)
     RHConsoleField<RHConsoleBlockAllocator *>(m_engine, 0x42f0)->FUN_00506070(&after);
     // STRING: GAME 0x006ad510
     FUN_005ede40(m_engine->m_draw, "Free Blocks map after optimisation (%d merge)", merges);
-    int size = (int)pow(g_unk0x00677670, g_consoleBlockExponent);
+    int size = (int)pow(g_unk0x00677670, 5.0);
     typedef void (__cdecl *Message)(RHUnk005ef320 *, const char *);
     Message output = (Message)&FUN_005ede40;
     for (int index = 0; index < 17; ++index)
@@ -891,7 +887,7 @@ void RHConsole::FUN_0045e2e0(unsigned, char **)
             actor->v55(100, false, false);
             actor->v17(3);
             RHUnk00584d60 *element = new RHUnk00584d60(1, 0xa1, actor);
-            ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940(g_unk0x6c0560, 0, element);
+            ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940("", 0, element);
         }
     }
     // STRING: GAME 0x006ad7c4
@@ -1026,7 +1022,7 @@ void RHConsole::FUN_0045e6f0(unsigned, char **)
         actor->v55(100, false, false);
         actor->v17(3);
         RHUnk00584d60 *element = new RHUnk00584d60(1, 0xa1, actor);
-        ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940(g_unk0x6c0560, 0, element);
+        ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940("", 0, element);
         ((RHScriptBatchCalls *)m_engine)->Unk004d9330(0, false);
         // STRING: GAME 0x006ad974
         FUN_005edae0(m_engine->m_draw, "Sleep well...");
@@ -1046,7 +1042,7 @@ void RHConsole::FUN_0045e7e0(unsigned, char **)
         actor->v53(0, false, true);
         actor->v17(12);
         RHUnk00584d60 *element = new RHUnk00584d60(1, 0xa1, actor);
-        ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940(g_unk0x6c0560, 0, element);
+        ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940("", 0, element);
         ((RHScriptBatchCalls *)m_engine)->Unk004d9330(0, false);
         // STRING: GAME 0x006ad984
         FUN_005edae0(m_engine->m_draw, "Sleep well... forever!");
@@ -1067,7 +1063,7 @@ void RHConsole::FUN_0045e8d0(unsigned, char **)
         {
             RHElementActorPC *actor = RHConsoleField<RHConsolePCList>(m_engine, 0x49f8).getFirst();
             RHUnk005861c0 *element = new RHUnk005861c0(1, 0x26, actor, 10000, 0);
-            ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940(g_unk0x6c0560, 0, element);
+            ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940("", 0, element);
         }
         else
         {
@@ -1125,7 +1121,7 @@ void RHConsole::FUN_0045eb50(unsigned, char **)
         {
             RHElementActorPC *actor = RHConsoleField<RHConsolePCList>(m_engine, 0x49f8).get((unsigned short)index);
             RHUnk005861c0 *element = new RHUnk005861c0(1, 0x26, actor, 10000, 0);
-            ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940(g_unk0x6c0560, 0, element);
+            ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940("", 0, element);
             // STRING: GAME 0x006ada4c
             sprintf(buffer, "%s has been recalled by San Petrus.", RHConsoleField<RHConsoleProfile *>(actor, 0x5fc)->m_name.c_str());
             output(m_engine->m_draw, buffer);

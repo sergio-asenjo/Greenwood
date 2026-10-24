@@ -9,6 +9,7 @@ class SBFile;
 class RHElement;
 class RHPCDescription;
 class RHCharacterProfile;
+class RHElementActor;
 class RHElementActorPC;
 class RHMission;
 class SBGeoPoint2D;
@@ -130,7 +131,6 @@ public:
     void TurnPathFinderOff();
     bool FUN_004c0340(SBGeoPoint2D &point);
     bool FUN_004c04a0();
-    void FUN_004d1640(unsigned first, unsigned second, unsigned third, unsigned fourth, unsigned fifth, unsigned sixth, unsigned seventh);
     unsigned short FUN_004d16b0(void *first, void *second, unsigned third);
     bool FUN_004d1840();
     bool FUN_004d1aa0();
@@ -150,8 +150,8 @@ public:
     void FUN_004df070(void *value, char flag);
     void FUN_004df330(const SBGeoPoint2D &point, void *actor, int index);
     void FUN_004df550(const SBGeoPoint2D &point, void *actor, int flag, void *provided);
-    void FUN_004df7b0(const SBGeoPoint2D &point, char flag);
-    void FUN_004dfb50(const SBGeoPoint2D &point, char flag);
+    void FUN_004df7b0(const SBGeoPoint2D &point, bool flag);
+    void FUN_004dfb50(const SBGeoPoint2D &point, bool flag);
     void FUN_004dfcf0(char flag);
     void FUN_004df950(const SBGeoPoint2D &point, char flag);
     void FUN_004dfe70(const SBGeoPoint2D &point, char flag);
@@ -189,6 +189,7 @@ public:
     bool FUN_004c7e10(void *first, int second, void **result);
     void FUN_004e3c20(void *point);
     void FUN_004d8fd0(RHPCDescription *description);
+    void SelectFollowElement(RHElementActor *actor);
     void FUN_004d52d0(void *first, void *second, unsigned third);
     void FUN_004d5320(const void *value);
     bool FUN_004c02d0();
@@ -509,13 +510,25 @@ public:
     undefined4 m_00; // 0x00
 };
 
+class RHUnk0051d370Entry
+{
+public:
+    virtual void V00(int flag) = 0;
+};
+
+class RHUnk0051d2c0Storage : public std::vector<RHUnk00551da0 *>
+{
+public:
+    ~RHUnk0051d2c0Storage() { clear(); }
+};
+
 // SIZE 0x20
 class RHUnk0051d2c0
 {
 public:
     ~RHUnk0051d2c0();
     void FUN_0051d370();
-    std::vector<RHUnk00551da0 *> m_00; // 0x00
+    RHUnk0051d2c0Storage m_00; // 0x00
     undefined m_10[0x10]; // 0x10
 };
 
@@ -583,15 +596,6 @@ public:
     undefined m_00[0x30]; // 0x00
 };
 
-#ifndef RHMOBILEUNK00607DA0_VIEW
-#define RHMOBILEUNK00607DA0_VIEW
-// SIZE 0x14
-class RHMobileUnk00607da0
-{
-public:
-    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
-    undefined m_00[0x14]; // 0x00
-};
-#endif
+#include "RHMobileUnk00607da0.h"
 
 #endif

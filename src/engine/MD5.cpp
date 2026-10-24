@@ -4,7 +4,6 @@
 
 typedef char MD5SizeCheck[sizeof(MD5) == 0x6c ? 1 : -1];
 
-extern char g_unk0x6c0560[4];
 
 // GLOBAL: GAME 0x006bb5ac
 unsigned char g_md5Padding[64] = {0x80};
@@ -59,7 +58,8 @@ char *MD5::hex_digest()
 {
     char *result = (char *)::operator new(33);
     if (!finalized)
-        return g_unk0x6c0560;
+        // STRING: GAME 0x006c0560
+        return "";
     for (int i = 0; i < 16; ++i)
     {
         // STRING: GAME 0x006bb5ec

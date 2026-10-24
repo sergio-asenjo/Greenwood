@@ -51,8 +51,6 @@ RHElementActor *g_unk0x6c100c;
 // GLOBAL: GAME 0x6c0a9c
 RHUnkSectorGlobal *g_unk0x6c0a9c;
 
-// GLOBAL: GAME 0x679cc4
-float g_unk0x679cc4 = 0.00034836700069718063f;
 
 // GLOBAL: GAME 0x6c0691
 char g_unk0x6c0691;
@@ -920,7 +918,7 @@ void RHSectorScript::InitializeFromMissionStream(SBFile &file)
     {
         point = points.Unk0060cef0(i);
         float y = point.m_y;
-        point.m_y = y + g_unk0x679cc4;
+        point.m_y = y + 0.00034836700069718063f;
         points.Unk0060ced0(point, i);
     }
     file.Access(&m_c8, 2);

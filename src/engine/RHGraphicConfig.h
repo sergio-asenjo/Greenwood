@@ -14,21 +14,7 @@
 
 #include "RHSprite_calls.h"
 
-class RHGraphicConfig
-{
-public:
-    RHGraphicConfig();
-    RHGraphicConfig(const RHGraphicConfig &other);
-    bool Serialize(SBFile &file);
-
-    void Emit(SBFile &file);
-
-    char m_0;             // [0x0]
-    char m_1;             // [0x1]
-    char m_2;             // [0x2]
-    char m_3;             // [0x3]
-    SBGeoVector2D m_point; // [0x4]
-};
+#include "RHGraphicConfigClass.h"
 
 // Serialises a type-name tag into the stream; target 0x005e1b70. Defined once
 // in RHElementObject_stubs.cpp; declared here so the call resolves.

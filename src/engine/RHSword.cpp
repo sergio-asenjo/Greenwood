@@ -29,13 +29,8 @@
 #include "RHProfileManager.h"
 
 RHProfileManager *RHUnk00436500GetProfileManager();
-extern float g_unk0x00677488;
 
-// GLOBAL: GAME 0x00679e50
-double g_swordDegreesScale = 0.0027777777777777779;
 
-// GLOBAL: GAME 0x00677b88
-double g_swordFullTurn = 6.2831854820251465;
 
 // FUNCTION: GAME 0x005c1b60
 char RHSword::FUN_005c1b60() const
@@ -84,30 +79,30 @@ unsigned short RHHumanWeaponCalls::FUN_005c1ea0(int index)
 float RHHumanWeaponCalls::FUN_005c1ed0(int index)
 {
     if (index < 10) {
-        double turns = *(const unsigned short *)(*(const char *const *)((const char *)this + 4) + index * 32 + 0x30) * g_swordDegreesScale;
-        return turns * g_swordFullTurn;
+        double turns = *(const unsigned short *)(*(const char *const *)((const char *)this + 4) + index * 32 + 0x30) * 0.0027777777777777779;
+        return turns * 6.2831854820251465;
     }
-    return g_unk0x00677488;
+    return 0.0f;
 }
 
 // FUNCTION: GAME 0x005c1f10
 float RHHumanWeaponCalls::FUN_005c1f10(int index)
 {
     if (index < 10) {
-        double turns = *(const unsigned short *)(*(const char *const *)((const char *)this + 4) + index * 32 + 0x32) * g_swordDegreesScale;
-        return turns * g_swordFullTurn;
+        double turns = *(const unsigned short *)(*(const char *const *)((const char *)this + 4) + index * 32 + 0x32) * 0.0027777777777777779;
+        return turns * 6.2831854820251465;
     }
-    return g_unk0x00677488;
+    return 0.0f;
 }
 
 // FUNCTION: GAME 0x005c1f50
 float RHHumanWeaponCalls::FUN_005c1f50(int index)
 {
     if (index < 10) {
-        double turns = *(const unsigned short *)(*(const char *const *)((const char *)this + 4) + index * 32 + 0x34) * g_swordDegreesScale;
-        return turns * g_swordFullTurn;
+        double turns = *(const unsigned short *)(*(const char *const *)((const char *)this + 4) + index * 32 + 0x34) * 0.0027777777777777779;
+        return turns * 6.2831854820251465;
     }
-    return g_unk0x00677488;
+    return 0.0f;
 }
 
 // FUNCTION: GAME 0x005c1f90

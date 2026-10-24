@@ -50,9 +50,19 @@ RHUnk0057ee40::~RHUnk0057ee40()
 }
 bool RHEngineMenuStateCalls::FUN_00514970() { return false; }
 bool RHEngineSequenceStateCalls::FUN_005823f0() { return false; }
-bool RHEngineSequenceStateCalls::FUN_0058a670(void *) { return false; }
 
-RHUnk0051d2c0::~RHUnk0051d2c0() {}
+// FUNCTION: GAME 0x0051d2c0
+RHUnk0051d2c0::~RHUnk0051d2c0()
+{
+    int count = m_00.size();
+    for (int index = 0; index < count; ++index)
+    {
+        RHUnk00551da0 *entry = m_00[index];
+        if (entry)
+            ((RHUnk0051d370Entry *)((char *)entry + 0x5c))->V00(1);
+    }
+    m_00.clear();
+}
 int RHHikingGuide::FUN_0051cac0(SBFile &) { return 0; }
 class RHScrollScript
 {

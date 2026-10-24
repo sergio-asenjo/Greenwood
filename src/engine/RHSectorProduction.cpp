@@ -865,3 +865,6 @@ void RHSectorProduction::Emit(SBFile &file)
     Point point;
     (m_points.*insert)(m_points.end(), 1, point);
 }
+
+// TEMPLATE: GAME 0x00581220
+// ?_Xran@?$vector@KV?$allocator@K@std@@@std@@IBEXXZ

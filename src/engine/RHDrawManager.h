@@ -15,8 +15,6 @@ public:
     float m_y; // 0x04
 };
 
-extern float g_unk0x00677488;
-extern float g_unk0x0067749c;
 extern double g_unk0x006774b8;
 extern float g_actorStepScale;
 extern double g_unk0x00677670;

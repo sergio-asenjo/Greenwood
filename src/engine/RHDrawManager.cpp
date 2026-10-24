@@ -144,12 +144,12 @@ void RHDrawManager::DrawDottedLine(const SBGeoPoint2D &from, const SBGeoPoint2D 
     float length = ((RHUnk005fc3b0 *)&direction)->Unk005fc6a0(1.0f);
     if (length < phase)
     {
-        if (length != g_unk0x00677488)
+        if (length != 0.0f)
             phase -= length;
     }
     else
     {
-        ((RHUnk005fc3b0 *)&direction)->FUN_005fc4d0(g_unk0x0067749c / length);
+        ((RHUnk005fc3b0 *)&direction)->FUN_005fc4d0(1.0f / length);
         SBGeoPoint2D start;
         start.m_x = direction.m_x * phase + from.m_x;
         start.m_y = direction.m_y * phase + from.m_y;
@@ -211,7 +211,7 @@ void RHDrawManager::DrawEllipse(const SBDrawViewport &viewport, const SBGeoPoint
     DrawEllipsePoints(viewport, position, x, y, color);
     while (a2 * (y - g_unk0x006774b8) > b2 * (x + 1))
     {
-        if (d < g_unk0x00677488)
+        if (d < 0.0f)
         {
             d += b2 * (2 * x + 3);
             x++;
@@ -227,7 +227,7 @@ void RHDrawManager::DrawEllipse(const SBDrawViewport &viewport, const SBGeoPoint
     d = b2 * pow(x + g_unk0x006774b8, g_unk0x00677670) + a2 * pow(y - 1, g_unk0x00677670) - b2 * a2;
     while (y > 0)
     {
-        if (d < g_unk0x00677488)
+        if (d < 0.0f)
         {
             d += a2 * (3 - 2 * y) + b2 * (2 * x + 2);
             x++;
@@ -264,7 +264,7 @@ void RHDrawManager::DrawCircle(const SBDrawViewport &viewport, const SBGeoPoint2
     DrawEllipsePoints(viewport, position, x, y, color);
     while (a2 * (y - g_unk0x006774b8) > b2 * (x + 1))
     {
-        if (d < g_unk0x00677488)
+        if (d < 0.0f)
         {
             d += b2 * (2 * x + 3);
             x++;
@@ -280,7 +280,7 @@ void RHDrawManager::DrawCircle(const SBDrawViewport &viewport, const SBGeoPoint2
     d = b2 * pow(x + g_unk0x006774b8, g_unk0x00677670) + a2 * pow(y - 1, g_unk0x00677670) - b2 * a2;
     while (y > 0)
     {
-        if (d < g_unk0x00677488)
+        if (d < 0.0f)
         {
             d += a2 * (3 - 2 * y) + b2 * (2 * x + 2);
             x++;

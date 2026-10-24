@@ -140,7 +140,6 @@ public:
 
 #include "RHUnkSectorScript.h"
 
-extern float g_unk0x679cc4;
 extern char g_unk0x6c0691;
 
 struct RHUnkSectorPosition
