@@ -1,17 +1,22 @@
 #ifndef RHARTIFICIALMALIGNITYCORE_H
 #define RHARTIFICIALMALIGNITYCORE_H
 
+#include "RHArtificialIntelligenceCore.h"
+#include "RHMalignityTargetList.h"
+
 class SBFile;
 class RHUnk005fc3b0;
 struct RHMalignityPosition;
 struct RHMalignityStimulus;
 struct RHMalignityList;
-struct RHMalignityBaseView;
 struct RHUnk00441dd0Record;
 
-class RHArtificialMalignity
+class RHArtificialMalignity : public virtual RHArtificialIntelligence
 {
 public:
+    RHArtificialMalignity();
+    ~RHArtificialMalignity();
+    virtual void V0c();
     void InitOneAI();
     bool SerializeExactlyThisAI(SBFile &file);
     void InitializeFriendCheck(unsigned short actor, unsigned short delay, unsigned short waypoint);
@@ -90,13 +95,16 @@ public:
     RHUnk00441dd0Record *FUN_00441dd0();
     bool FUN_0044afa0(void *actor);
     void Emit(SBFile &file);
-    RHMalignityBaseView &VirtualBase()
+    char m_04[0x2e0];
+    RHMalignityTargetList m_targets;
+    char m_308[0x4c];
+    RHArtificialIntelligence &VirtualBase()
     {
-        return *(RHMalignityBaseView *)((char *)this + (*(int **)this)[1]);
+        return *(RHArtificialIntelligence *)((char *)this + (*(int **)this)[1]);
     }
-    RHMalignityBaseView &Base()
+    RHArtificialIntelligence &Base()
     {
-        return *(RHMalignityBaseView *)((char *)this + (*(int **)((char *)this - 0x358))[1] - 0x358);
+        return *(RHArtificialIntelligence *)((char *)this + (*(int **)((char *)this - 0x358))[1] - 0x358);
     }
 };
 

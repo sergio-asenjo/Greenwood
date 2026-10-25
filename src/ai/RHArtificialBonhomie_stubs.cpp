@@ -49,7 +49,7 @@ void RHArtificialBonhomie::FUN_0040de30()
     *((unsigned char *)this - 0x18) = 0;
     RHMalignityField<RHMalignityActorCalls *>(RHBonhomieBase(this), 4)->FUN_0048d050();
     if (RHMalignityField<RHElementActorCivilian *>(RHBonhomieBase(this), 4)->FUN_00470ca0())
-        ((RHMalignityBaseView *)RHBonhomieBase(this))->V3c(1);
+        ((RHArtificialIntelligence *)RHBonhomieBase(this))->V3c(1);
     char *base = RHBonhomieBase(this);
     if (!(RHMalignityField<unsigned char>(base, 0x174) > 0) &&
         RHBonhomieHasWaypoints(RHBonhomieActorPath(RHMalignityField<void *>(base, 4))))
@@ -58,7 +58,7 @@ void RHArtificialBonhomie::FUN_0040de30()
         RHMalignityField<unsigned char>(RHBonhomieBase(this), 0x70) = 1;
         RHMalignityField<int>(RHBonhomieBase(this), 0x1c) = RHMalignityField<int>(RHBonhomieBase(this), 0x14);
         if (activate)
-            ((RHMalignityBaseView *)RHBonhomieBase(this))->V00(0);
+            ((RHArtificialIntelligence *)RHBonhomieBase(this))->V00(0);
     }
     else
     {
@@ -66,7 +66,7 @@ void RHArtificialBonhomie::FUN_0040de30()
         if (activate)
         {
             ((RHArtificialIntelligence *)RHBonhomieBase(this))->Unk00416710(rand() % 40 + 20);
-            ((RHMalignityBaseView *)RHBonhomieBase(this))->V10(1, 0xb);
+            ((RHArtificialIntelligence *)RHBonhomieBase(this))->V10(1, 0xb);
             RHMalignityField<int>(RHBonhomieBase(this), 0x1c) = RHMalignityField<int>(RHBonhomieBase(this), 0x14);
         }
     }
@@ -121,7 +121,7 @@ bool RHBonhomieSpeechReceiver::FUN_0040e290(RHMalignityPosition position, int mo
         int state = RHMalignityField<int>(actor, (*(int **)((char *)actor + 0x49c))[1] + 0x4a8);
         if (state == 1)
         {
-            unsigned distance = (unsigned)(int)((RHMalignityBaseView *)((char *)this + (*(int **)this)[1]))->FUN_0041a0b0(actor);
+            unsigned distance = (unsigned)(int)((RHArtificialIntelligence *)((char *)this + (*(int **)this)[1]))->FUN_0041a0b0(actor);
             if (RHMalignityField<unsigned short>(RHMalignityField<void *>(actor, 0x50), 0xde) !=
                 RHMalignityField<unsigned short>(RHMalignityField<void *>(RHMalignityField<void *>((char *)this + (*(int **)this)[1], 4), 0x50), 0xde))
                 distance += 1000;
@@ -136,12 +136,12 @@ bool RHBonhomieSpeechReceiver::FUN_0040e290(RHMalignityPosition position, int mo
                     if (RHMalignityField<void *>(ownSprite, 0xe0) != area)
                     {
                         unsigned short layer = RHMalignityField<unsigned short>(sprite, 0xde);
-                        SBGeoPoint2D targetPoint = ((RHMalignityBaseView *)((char *)this + (*(int **)this)[1]))->FUN_0040cc20(actor);
+                        SBGeoPoint2D targetPoint = ((RHArtificialIntelligence *)((char *)this + (*(int **)this)[1]))->FUN_0040cc20(actor);
                         void *ownActor = RHMalignityField<void *>((char *)this + (*(int **)this)[1], 4);
                         ownSprite = RHMalignityField<void *>(ownActor, 0x50);
                         unsigned short ownLayer = RHMalignityField<unsigned short>(ownSprite, 0xde);
                         void *ownArea = RHMalignityField<void *>(ownSprite, 0xe0);
-                        SBGeoPoint2D ownPoint = ((RHMalignityBaseView *)((char *)this + (*(int **)this)[1]))->FUN_0040cc20(ownActor);
+                        SBGeoPoint2D ownPoint = ((RHArtificialIntelligence *)((char *)this + (*(int **)this)[1]))->FUN_0040cc20(ownActor);
                         if (!((RHActorGridCalls *)g_unk0x6c0a9c)->FUN_004f9a80(&sectors,
                             (RHElementActor *)RHMalignityField<void *>((char *)this + (*(int **)this)[1], 4),
                             ownPoint, ownArea, ownLayer, targetPoint, area, layer, 0))
@@ -168,12 +168,12 @@ bool RHBonhomieSpeechReceiver::FUN_0040e290(RHMalignityPosition position, int mo
         RHBonhomieClearMessages(RHMalignityField<void *>((char *)this + (*(int **)this)[1], 4));
         return false;
     }
-    ((RHMalignityBaseView *)((char *)this + (*(int **)this)[1]))->V10(3, 0x8e);
+    ((RHArtificialIntelligence *)((char *)this + (*(int **)this)[1]))->V10(3, 0x8e);
     RHMalignityField<void *>((char *)this + (*(int **)this)[1], 0x90) = best;
     RHMalignityPosition destination;
     unsigned short heading;
     ((RHElementActorHuman *)RHMalignityField<void *>((char *)this + (*(int **)this)[1], 0x90))->FUN_00485a40(&destination, heading);
-    ((RHMalignityBaseView *)((char *)this + (*(int **)this)[1]))->FUN_00412cf0(destination, 0x46, 1);
+    ((RHArtificialIntelligence *)((char *)this + (*(int **)this)[1]))->FUN_00412cf0(destination, 0x46, 1);
     if (RHMalignityField<unsigned char>((char *)this + (*(int **)this)[1], 0x16c))
     {
         RHMalignityField<unsigned char>((char *)this + (*(int **)this)[1], 0x16c) = 0;

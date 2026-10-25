@@ -53,24 +53,7 @@ struct RHMalignityNode
 
 class RHSequenceElement;
 class RHElementActor;
-// SIZE 0x24
-class RHSectorActorList
-{
-public:
-    void Unk005c8e40(int index);
-    int Unk004b8f80(RHElementActor *const &value, bool mode);
-    undefined4 m_allocator; // 0x00
-    RHMalignityNode *m_head; // 0x04
-    int m_count; // 0x08
-    RHMalignityNode *volatile m_current; // 0x0c
-    bool m_dirty; // 0x10
-    undefined m_11[3]; // 0x11
-    int m_index; // 0x14
-    bool m_forward; // 0x18
-    undefined m_19[3]; // 0x19
-    volatile int m_result; // 0x1c
-    RHElementActor *volatile m_value; // 0x20
-};
+#include "RHSectorActorList.h"
 
 // SIZE 0x18
 struct RHMalignityList
@@ -84,7 +67,7 @@ struct RHMalignityList
     int m_index; // +0x14
 
     void Clear();
-    void FUN_005c8e40(int index);
+    __forceinline void FUN_005c8e40(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
     void Seek(int wanted);
     void RemoveFirst();
     int size() { return m_count; }

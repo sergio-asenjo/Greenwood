@@ -115,13 +115,6 @@ RHArtificialIntelligenceElement *&RHArtificialIntelligenceList::FUN_00423c20(int
 
 SBGeoVector2D FUN_0040ec20(const RHMalignityPosition &first, RHMalignityPosition second);
 
-class RHMalignityBaseView
-{
-public:
-    void FUN_0041a300(void *actor);
-    RHMalignityPosition FUN_004165e0(void *actor, bool mode);
-};
-
 class RHSeekPoint
 {
 public:
@@ -740,7 +733,7 @@ void RHArtificialIntelligence::Unk00410600()
     RHArtificialIntelligenceActorCalls *actor = (RHArtificialIntelligenceActorCalls *)m_actor;
     RHAIField<char>(this, 0x7e) = 0;
     actor->Unk0048b4e0(1);
-    ((RHMalignityBaseView *)this)->FUN_0041a300(0);
+    FUN_0041a300(0);
 }
 
 struct RHAIPathArray
@@ -790,7 +783,7 @@ bool RHArtificialIntelligence::Unk00412c80(void *waypoint, unsigned short flags)
 // FUNCTION: GAME 0x00412e90
 void RHArtificialIntelligence::FUN_00412e90(SBGeoPoint2D point, int mode)
 {
-    Unk00412f40((RHUnk005fc3b0 *)&FUN_0040ec20(*(const RHMalignityPosition *)&point, ((RHMalignityBaseView *)this)->FUN_004165e0(m_actor, true)), mode);
+    Unk00412f40((RHUnk005fc3b0 *)&FUN_0040ec20(*(const RHMalignityPosition *)&point, FUN_004165e0(m_actor, true)), mode);
 }
 
 // FUNCTION: GAME 0x00412f40
@@ -1264,7 +1257,7 @@ bool RHArtificialIntelligence::Unk00414be0(SBFile &file)
         RHScriptNode *last = (RHScriptNode *)stimuli.m_head;
         while (first.node != last)
         {
-            typedef std::list<RHElementActor *>::iterator Native;
+            typedef RHProfilePointerList::iterator Native;
             typedef Native (Native::*Increment)(int);
             typedef RHScriptIter (RHSectorActorIter::*Forward)(int);
             Increment increment = &Native::operator++;
@@ -1846,7 +1839,7 @@ void *RHArtificialIntelligence::FUN_00417ed0(SBGeoPoint2D *position, bool active
         if (position)
         {
             SBGeoPoint2D offset = FUN_0040ec20(*(RHMalignityPosition *)position,
-                ((RHMalignityBaseView *)this)->FUN_004165e0(m_actor, true));
+                FUN_004165e0(m_actor, true));
             if (((SBGeoVector2D &)direction).FUN_005fc660(offset) >= 0.0f)
                 continue;
         }
@@ -1857,7 +1850,7 @@ void *RHArtificialIntelligence::FUN_00417ed0(SBGeoPoint2D *position, bool active
         destination.y = RHAIField<float>(door, 0x1c);
         destination.area = RHAIField<void *>(door, 0x0c);
         destination.layer = RHAIField<unsigned short>(door, 0x14);
-        SBGeoPoint2D offset = FUN_0040ec20(destination, ((RHMalignityBaseView *)this)->FUN_004165e0(m_actor, true));
+        SBGeoPoint2D offset = FUN_0040ec20(destination, FUN_004165e0(m_actor, true));
         direction.FUN_005fc430(offset);
         int distance = (int)direction.FUN_005fc700(1.0f);
         void *profile = RHAIField<void *>(m_actor, 0x50);
@@ -2541,7 +2534,7 @@ void RHArtificialIntelligence::FUN_004132d0(int first, int mode, int second)
             RHAIField<unsigned char>(this, 0x16c) = 0;
         }
     }
-    RHMalignityPosition own = ((RHMalignityBaseView *)this)->FUN_004165e0(m_actor, true);
+    RHMalignityPosition own = FUN_004165e0(m_actor, true);
     if ((unsigned char)mode)
         start |= ((RHMalignityActorCalls *)m_actor)->FUN_004135b0().FUN_005fc660(
             FUN_0040ec20(RHAIField<RHMalignityPosition>(this, 0xf4), own)) > 0.0f;

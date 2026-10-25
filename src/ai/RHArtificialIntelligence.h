@@ -1,5 +1,6 @@
 #ifndef RHARTIFICIALINTELLIGENCE_H
 #define RHARTIFICIALINTELLIGENCE_H
+#include "RHSectorActorList.h"
 
 #include "SB.h"
 #include "RHSoundActorCalls.h"
@@ -43,14 +44,14 @@ class RHSeqList
 {
 public:
     static void CopyData(RHSequenceElement **dst, RHSequenceElement *const *src);
-    void GoTo(int index);
+    __forceinline void GoTo(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
 };
 struct RHTitbitNode;
 class RHTitbitList
 {
 public:
     void Clear(void *out, RHTitbitNode *first, RHTitbitNode *last);
-    void At(int index);
+    __forceinline void At(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
 };
 struct RHUnk005c9010Iterator;
 void FUN_005c9010(RHUnk005c9010Iterator &current, int distance, std::bidirectional_iterator_tag category);
@@ -533,11 +534,6 @@ public:
 };
 
 class RHElementActor;
-class RHSectorActorList
-{
-public:
-    int Unk004b8f80(RHElementActor *const &value, bool mode);
-};
 
 #include "RHArtificialIntelligenceCore.h"
 

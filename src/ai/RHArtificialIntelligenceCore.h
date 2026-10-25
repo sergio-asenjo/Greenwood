@@ -8,6 +8,7 @@ class RHArtificialIntelligenceActor;
 class RHArtificialIntelligenceList;
 struct RHArtificialIntelligencePosition;
 struct RHUnk00571160Position;
+struct RHMalignityPosition;
 
 class RHArtificialIntelligence
 {
@@ -65,6 +66,16 @@ public:
     unsigned char Unk00419c50();
     unsigned char Unk00419c80();
     void Unk0041ab10(unsigned short direction);
+    SBGeoPoint2D FUN_0040cc20(void *actor);
+    RHMalignityPosition FUN_004165e0(void *actor, bool mode);
+    SBGeoPoint2D FUN_0040cbf0(const RHMalignityPosition &position);
+    void FUN_0041a300(void *actor);
+    void FUN_0041ab30();
+    bool FUN_00419e10(void *actor);
+    float FUN_0041a010(void *actor);
+    float FUN_0041a060(void *actor);
+    float FUN_0041a0b0(void *actor);
+    void FUN_00412cf0(const RHMalignityPosition &position, unsigned short heading, int mode);
 
     RHArtificialIntelligenceActor *m_actor;
     char m_08[0x20];
@@ -74,6 +85,7 @@ public:
     char m_170;
     char m_171[2];
     char m_173;
+    char m_174[0x218];
 };
 
 #endif

@@ -59,7 +59,7 @@ void RHMalignityReactionCalls::FUN_00412d60(RHMalignityPosition position, short 
     }
     else
     {
-        direction = FUN_0040ec60(position, ((RHMalignityBaseView *)this)->FUN_0040cc20(*(void **)((char *)this + 4)));
+        direction = FUN_0040ec60(position, ((RHArtificialIntelligence *)this)->FUN_0040cc20(*(void **)((char *)this + 4)));
         float height = RHMalignityField<float>(RHMalignityField<void *>(*(void **)((char *)this + 4), 0x50), 0x18);
         direction.m_y += heading - height;
     }
@@ -84,19 +84,19 @@ static inline float RHMalignityScaledSquare(RHUnk00613e90 &vector)
 }
 
 // FUNCTION: GAME 0x0041a010
-float RHMalignityBaseView::FUN_0041a010(void *actor)
+float RHArtificialIntelligence::FUN_0041a010(void *actor)
 {
     return RHMalignityScaledSquare(RHMalignityField<RHUnk00613e90>(RHMalignityField<void *>(actor, 0x50), 0x10).FUN_005df550(RHMalignityField<RHUnk00613e90>(RHMalignityField<void *>(m_actor, 0x50), 0x10)));
 }
 
 // FUNCTION: GAME 0x0041a060
-float RHMalignityBaseView::FUN_0041a060(void *actor)
+float RHArtificialIntelligence::FUN_0041a060(void *actor)
 {
     return (float)sqrt(RHMalignityScaledSquare(RHMalignityField<RHUnk00613e90>(RHMalignityField<void *>(actor, 0x50), 0x10).FUN_005df550(RHMalignityField<RHUnk00613e90>(RHMalignityField<void *>(m_actor, 0x50), 0x10))));
 }
 
 // FUNCTION: GAME 0x0041a0b0
-float RHMalignityBaseView::FUN_0041a0b0(void *actor)
+float RHArtificialIntelligence::FUN_0041a0b0(void *actor)
 {
     return RHMalignityScaleHeight(RHMalignityField<RHUnk00613e90>(RHMalignityField<void *>(actor, 0x50), 0x10).FUN_005df550(RHMalignityField<RHUnk00613e90>(RHMalignityField<void *>(m_actor, 0x50), 0x10))).FUN_005df680();
 }
@@ -123,7 +123,7 @@ short RHArtificialMalignity::FUN_00440cf0(RHUnk00441dd0Record *) { return 0; }
 extern unsigned char g_unk0x006c06ca;
 
 // FUNCTION: GAME 0x00412cf0
-void RHMalignityBaseView::FUN_00412cf0(const RHMalignityPosition &position, unsigned short heading, int mode)
+void RHArtificialIntelligence::FUN_00412cf0(const RHMalignityPosition &position, unsigned short heading, int mode)
 {
     *(bool *)((char *)this + 0x72) = true;
     *(bool *)((char *)this + 0x73) = ~((unsigned char)mode >> 6) & 1;
@@ -160,7 +160,7 @@ RHMalignityPosition FUN_0040ece0(const RHMalignityPosition &position, SBGeoPoint
 
 
 // FUNCTION: GAME 0x0040cbf0
-SBGeoPoint2D RHMalignityBaseView::FUN_0040cbf0(const RHMalignityPosition &position)
+SBGeoPoint2D RHArtificialIntelligence::FUN_0040cbf0(const RHMalignityPosition &position)
 {
     return SBGeoPoint2D(position.x, position.y);
 }

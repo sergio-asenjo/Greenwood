@@ -28,12 +28,15 @@ public:
 
 struct RHMalignityPosition;
 struct RHMalignityStimulus;
+class RHElementActorHuman;
+struct RHBonhomieActorBase;
 
 class RHBonhomieSpeechReceiver
 {
 public:
     bool FUN_0040d150(const RHMalignityStimulus &stimulus);
-    void FUN_0040d440(void *target);
+    RHBonhomieActorBase ActorBase();
+    void FUN_0040d440(RHElementActorHuman *target);
     void FUN_0040d690(const RHMalignityStimulus &stimulus);
     void FUN_0040d800(void *actor);
     bool FUN_0040e290(RHMalignityPosition position, int mode);

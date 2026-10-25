@@ -52,11 +52,7 @@ struct RHMalignityActor
     float GetValue18() const { return m_50->m_18; }
 };
 
-class RHMalignityBaseView
-{
-public:
-    RHMalignityPosition FUN_004165e0(void *actor, bool mode);
-};
+#include "RHArtificialIntelligenceCore.h"
 
 class RHMalignityReactionCalls
 {
@@ -68,7 +64,7 @@ public:
 // FUNCTION: GAME 0x0042c7d0
 void RHMalignityReactionCalls::FUN_0042c7d0(RHMalignityActor *actor, int mode)
 {
-    FUN_00412d60(((RHMalignityBaseView *)this)->FUN_004165e0(actor, true),
+    FUN_00412d60(((RHArtificialIntelligence *)this)->FUN_004165e0(actor, true),
         (int)actor->GetValue18(), mode);
 }
 
