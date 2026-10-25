@@ -3,6 +3,17 @@
 #include "SBNullstr.h"
 #include "RHMenuCancelCalls.h"
 #include "RHMenuLoadSave.h"
+#include <list>
+#include "RHGameSaveCalls.h"
+#include "RHUnk006114c0.h"
+#include "RHEngineBackgroundCalls.h"
+#include "RHEngineWidenedCalls.h"
+#include "RHPortraitUnk005d5950.h"
+#include "ToolboxWideString.h"
+
+extern undefined g_unk0x006c0e48[];
+extern wchar_t g_unk0x006c0b50[1];
+extern RHUnk005ef320 *g_unk0x6c11d0;
 
 // FUNCTION: GAME 0x00530180
 void RHMenuLoadSave::FUN_00530180(RHMenuEvent *event)
@@ -82,6 +93,69 @@ int RHMenuLoadSave::FUN_00531230()
     return *(int *)((char *)this + 0x8c0);
 }
 
+static __forceinline unsigned long &RHMenuLoadSaveIndexAt(RHSectorActorList *list, int index)
+{
+    list->Unk005c8e40(index);
+    return **(std::list<unsigned long>::iterator *)&list->m_cur;
+}
+
+// Parked: the trimmed temporary inlines its tidy call and the zero register is not hoisted.
+// STUB: GAME 0x00531240
+void RHMenuLoadSave::FUN_00531240()
+{
+    bool done = false;
+    bool load = *(bool *)((char *)this + 0x8b8);
+    if (!load || *(unsigned short *)((char *)this + 0x6f0) != 0)
+    {
+        if (load)
+        {
+            *(RHSaveGame **)((char *)this + 0x8c0) = (*(RHSaveGameManager **)((char *)this + 0x8b4))->GetSaveGame(
+                RHMenuLoadSaveIndexAt((RHSectorActorList *)((char *)this + 0x6e8), *(unsigned short *)((char *)this + 0x760)));
+            *(int *)((char *)this + 0x8bc) = 0;
+            done = true;
+        }
+        else
+        {
+            std::wstring &name = *(std::wstring *)((char *)this + 0x450);
+            name = ((SBUIInputFieldUnk00621440 *)m_field)->FUN_0061df60();
+            std::wstring text(name);
+            text = Toolbox::TrimWideString(text);
+            if (text.size())
+            {
+                if (*(unsigned short *)((char *)this + 0x760) != 0xffff)
+                {
+                    bool confirmed = RHMenuYesNo::AskForConfirmation(m_screen, FUN_005e23d0(0x21));
+                    ((RHMapWindow *)m_screen)->FUN_0053c7e0();
+                    if (confirmed)
+                    {
+                        RHSaveGame *save = (*(RHSaveGameManager **)((char *)this + 0x8b4))->GetSaveGame(
+                            RHMenuLoadSaveIndexAt((RHSectorActorList *)((char *)this + 0x6e8), *(unsigned short *)((char *)this + 0x760)));
+                        save->SetText(text);
+                        *(RHSaveGame **)((char *)this + 0x8c0) = save;
+                        done = true;
+                        *(int *)((char *)this + 0x8bc) = 1;
+                    }
+                    else
+                    {
+                        *(RHSaveGame **)((char *)this + 0x8c0) = 0;
+                        *(int *)((char *)this + 0x8bc) = 2;
+                    }
+                }
+                else
+                {
+                    RHSaveGameManager *manager = *(RHSaveGameManager **)((char *)this + 0x8b4);
+                    *(RHSaveGame **)((char *)this + 0x8c0) = manager->GetSaveGame(manager->CreateSaveGame(text));
+                    done = true;
+                    *(int *)((char *)this + 0x8bc) = 1;
+                    ((RHPlayerProfileManager *)g_unk0x006c0e48)->Save();
+                }
+            }
+        }
+        if (done)
+            ((RHGameMenuCalls *)this)->FUN_00544b30();
+    }
+}
+
 // FUNCTION: GAME 0x005316a0
 bool RHMenuLoadSave::FUN_005316a0(int, void *, void *)
 {
@@ -138,6 +212,65 @@ bool RHMenuLoadSave::FUN_00531740(int, void *, void *)
         *(bool *)((char *)this + 0x144) = text.size() && spaces != text.size();
     }
     return false;
+}
+
+// Parked: the empty-name wide-string construction inlines its copy and terminator calls.
+// STUB: GAME 0x00531a80
+void RHMenuLoadSave::FUN_00531a80()
+{
+    if (*(volatile unsigned short *)((char *)this + 0x760) != 0xffff)
+    {
+        RHSaveGame *save = (*(RHSaveGameManager **)((char *)this + 0x8b4))->GetSaveGame(
+            RHMenuLoadSaveIndexAt((RHSectorActorList *)((char *)this + 0x6e8), *(unsigned short *)((char *)this + 0x760)));
+        if (!*(bool *)((char *)this + 0x8b8))
+            ((RHGameMenuText *)((char *)this + 0x440))->v11(save->FUN_0056e780());
+        *(bool *)((char *)this + 0x144) = true;
+        *(bool *)((char *)this + 0x244) = true;
+    }
+    else
+    {
+        if (!*(bool *)((char *)this + 0x8b8))
+            ((RHGameMenuText *)((char *)this + 0x440))->v11(std::wstring(g_unk0x006c0b50));
+        *(bool *)((char *)this + 0x144) = false;
+        *(bool *)((char *)this + 0x244) = false;
+    }
+}
+
+#include "RHPortraitDrawCalls.h"
+
+typedef unsigned long (RHUnkFXDraw::*RHMenuCreateSurface)(unsigned short, unsigned short, unsigned long, bool);
+
+// FUNCTION: GAME 0x00531bd0
+void RHMenuLoadSave::FUN_00531bd0()
+{
+    if (*(bool *)((char *)this + 0x8b8) == true || *(int *)((char *)this + 0x8c4) != -1)
+    {
+        RHEngineWidenedCalls *draw = (RHEngineWidenedCalls *)g_unk0x6c11d0;
+        if (*(int *)((char *)this + 0x8c4) != -1)
+        {
+            draw->FUN_005e5160(*(int *)((char *)this + 0x8c4));
+            ((RHPortraitUnk005d5950 *)((char *)this + 0x7e4))->FUN_005d5940();
+            *(int *)((char *)this + 0x8c4) = -1;
+        }
+        if (*(unsigned short *)((char *)this + 0x760) != 0xffff)
+        {
+            RHSaveGameManager *manager = (RHSaveGameManager *)((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0();
+            RHSaveGame *save = manager->GetSaveGame(
+                RHMenuLoadSaveIndexAt((RHSectorActorList *)((char *)this + 0x6e8), *(unsigned short *)((char *)this + 0x760)));
+            RHUnk006114c0 picture;
+            bool loaded = ((RHEngineBackgroundCalls *)&picture)->FUN_00611660(((RHGameSaveCalls *)save)->FUN_0056e6b0());
+            if (loaded)
+            {
+                *(int *)((char *)this + 0x8c4) = (((RHUnkFXDraw *)draw)->*reinterpret_cast<RHMenuCreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(
+                    picture.m_width, picture.m_height, 0, false);
+                picture.Unk00613530((RHUnkFXDraw *)draw, *(int *)((char *)this + 0x8c4));
+                ((RHPortraitUnk005d5950 *)((char *)this + 0x7e4))->FUN_005d5950(*(int *)((char *)this + 0x8c4));
+                *(bool *)((char *)this + 0x7e8) = true;
+            }
+            return;
+        }
+    }
+    *(bool *)((char *)this + 0x7e8) = false;
 }
 
 // FUNCTION: GAME 0x00531d60
@@ -340,6 +473,65 @@ RHMenuEvent *RHMenuLoadSaveSlots::FUN_00532d30(const SBGeoPoint2D &point)
     return result;
 }
 
+// Parked: the zero and scroll registers are exchanged against the inlined wheel handler.
+// STUB: GAME 0x00533800
+RHMenuEvent *RHMenuLoadSaveText::FUN_00533800(const SBGeoPoint2D &input)
+{
+    RHMenuEvent *scroll = 0;
+    if (((SBGeoBoundingBox2D *)((char *)this + 0x30))->FUN_00608400(input))
+    {
+        short wheel = *(const short *)((const char *)&input + 8);
+        unsigned short &line = *(unsigned short *)((char *)this + 0x180);
+        if (wheel > 0)
+        {
+            if (line > 0)
+            {
+                --line;
+                m_renderer.FUN_0061d570(line, *(int *)((char *)this + 0x130));
+                scroll = (RHMenuEvent *)((char *)this + 0x4c);
+                *(void **)((char *)this + 0x58) = 0;
+                *(void **)((char *)this + 0x50) = this;
+                *(void **)((char *)this + 0x54) = 0;
+                scroll->m_type = 13;
+            }
+        }
+        else if (wheel < 0)
+        {
+            unsigned limit = *(unsigned *)((char *)this + 0x130);
+            RHPortraitInputRenderer &renderer = m_renderer;
+            unsigned short current = line;
+            if (renderer.FUN_0061d5e0() + current + 1 <= limit)
+            {
+                line = current + 1;
+                renderer.FUN_0061d570(line, *(int *)((char *)this + 0x130));
+                scroll = (RHMenuEvent *)((char *)this + 0x4c);
+                *(void **)((char *)this + 0x58) = 0;
+                *(void **)((char *)this + 0x50) = this;
+                *(void **)((char *)this + 0x54) = 0;
+                scroll->m_type = 12;
+            }
+        }
+        if ((unsigned char)FUN_00533cd0(input))
+            m_state = 2;
+        else if (*(const unsigned short *)((const char *)&input + 0xa) & 1)
+        {
+            m_state = 4;
+            RHMenuWindowUI *ui = *(RHMenuWindowUI *const *)((const char *)&input + 0x10);
+            ui->m_17f0 = 0;
+            ui->m_17f4 = 0;
+        }
+        return scroll;
+    }
+    if (*(const unsigned short *)((const char *)&input + 0xa) & 1)
+    {
+        m_state = 0;
+        RHMenuWindowUI *ui = *(RHMenuWindowUI *const *)((const char *)&input + 0x10);
+        ui->m_17f0 = 0;
+        ui->m_17f4 = 0;
+    }
+    return 0;
+}
+
 // FUNCTION: GAME 0x00533cd0
 int RHMenuLoadSaveText::FUN_00533cd0(const SBGeoPoint2D &point)
 {
@@ -370,4 +562,42 @@ void EmitRHMenuLoadSaveHelpers(RHMenuLoadSaveListBase *list, RHMenuLoadSaveMap *
     slots->FUN_00532cf0(0);
     slots->FUN_00532d30(*(const SBGeoPoint2D *)list);
     box->FUN_00532d10(0);
+}
+
+// FUNCTION: GAME 0x00533f70
+RHMenuEvent *RHMenuLoadSaveText::FUN_00533f70(const SBGeoPoint2D &input)
+{
+    RHMenuEvent *scroll = 0;
+    short wheel = *(const short *)((const char *)&input + 8);
+    unsigned short &line = *(unsigned short *)((char *)this + 0x180);
+    if (wheel > 0)
+    {
+        if (line > 0)
+        {
+            --line;
+            m_renderer.FUN_0061d570(line, *(int *)((char *)this + 0x130));
+            *(void **)((char *)this + 0x58) = 0;
+            *(void **)((char *)this + 0x50) = this;
+            scroll = (RHMenuEvent *)((char *)this + 0x4c);
+            *(void **)((char *)this + 0x54) = 0;
+            scroll->m_type = 13;
+        }
+    }
+    else if (wheel < 0)
+    {
+        unsigned limit = *(unsigned *)((char *)this + 0x130);
+        RHPortraitInputRenderer &renderer = m_renderer;
+        unsigned short current = line;
+        if (renderer.FUN_0061d5e0() + current + 1 <= limit)
+        {
+            line = current + 1;
+            renderer.FUN_0061d570(line, *(int *)((char *)this + 0x130));
+            *(void **)((char *)this + 0x58) = 0;
+            *(void **)((char *)this + 0x50) = this;
+            scroll = (RHMenuEvent *)((char *)this + 0x4c);
+            *(void **)((char *)this + 0x54) = 0;
+            scroll->m_type = 12;
+        }
+    }
+    return scroll;
 }

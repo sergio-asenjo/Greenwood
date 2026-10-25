@@ -19,14 +19,8 @@ bool RHMenuLoadSave::FUN_005314d0(int, void *, void *) { return false; }
 
 
 
-// Target 0x00531240, __thiscall.
-void RHMenuLoadSave::FUN_00531240() {}
 
-// Target 0x00531a80, __thiscall.
-void RHMenuLoadSave::FUN_00531a80() {}
 
-// Target 0x00531bd0, __thiscall.
-void RHMenuLoadSave::FUN_00531bd0() {}
 
 // Target 0x00530320, __thiscall, ret 8.
 RHMenuLoadSave::RHMenuLoadSave(RHMenuScreenView *, bool) : RHMenuWindowFocus(0, 0, 0, false) {}

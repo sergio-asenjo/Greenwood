@@ -27,7 +27,7 @@ public:
 class RHUnkFXDraw
 {
 public:
-    unsigned long Unk005e4ed0(int, int, int, int);
+    unsigned long Unk005e4ed0(int, int, int, bool);
     void Unk005e5160(unsigned long);
     bool Unk005e5a00(unsigned long, RHUnk00613e90 &, unsigned long);
     void Unk005e5ea0(RHUnk00613e90 &);

@@ -68,7 +68,7 @@ bool RHMenuSelectPlayer::FUN_0053e4a0(RHMenuEvent *event)
 
 // FUNCTION: GAME 0x0053e7f0
 RHMenuSelectPlayer::RHMenuSelectPlayer(void *screen)
-    : RHMenuWindowFocus(0, screen, 0, false), m_profiles((RHMenuSelectPlayerProfiles *)g_unk0x006c0e48)
+    : RHMenuWindowFocus(0, screen, 0, false), m_profiles((RHPlayerProfileManager *)g_unk0x006c0e48)
 {
 }
 
@@ -129,7 +129,7 @@ bool RHMenuSelectPlayer::FUN_0053f2a0(int, void *, void *)
     if (confirmed)
     {
         m_profiles->FUN_0055d930((unsigned short)FUN_0053efe0());
-        if (m_profiles->m_count > 0)
+        if (m_profiles->m_profiles.size() > 0)
             m_profiles->FUN_0055e410(0);
         FUN_0053f040();
         FUN_0053f9a0();
@@ -174,10 +174,10 @@ bool RHMenuSelectPlayer::FUN_0053f620(int, void *, void *)
 // FUNCTION: GAME 0x0053f9a0
 void RHMenuSelectPlayer::FUN_0053f9a0()
 {
-    m_button240.SetEnabled(m_profiles->m_count < 10);
-    m_button140.SetEnabled(m_profiles->m_count > 0);
-    m_button440.SetEnabled(m_profiles->m_count > 0);
-    m_button340.SetEnabled(m_profiles->m_count > 0);
+    m_button240.SetEnabled(m_profiles->m_profiles.size() < 10);
+    m_button140.SetEnabled(m_profiles->m_profiles.size() > 0);
+    m_button440.SetEnabled(m_profiles->m_profiles.size() > 0);
+    m_button340.SetEnabled(m_profiles->m_profiles.size() > 0);
 }
 
 // FUNCTION: GAME 0x0053f9f0

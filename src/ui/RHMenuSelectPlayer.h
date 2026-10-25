@@ -20,14 +20,6 @@
 #include "Decomp.h"
 #include "RHMenuWindow.h"
 
-class RHMenuSelectPlayerProfiles : public RHPlayerProfileManager
-{
-public:
-
-    undefined m_00[0xc]; // 0x00
-    unsigned m_count; // 0x0c
-};
-
 // SIZE 0x160
 class RHMenuSelectPlayerWidget
 {
@@ -69,7 +61,7 @@ public:
     RHPortraitButton m_button340; // 0x340
     RHPortraitButton m_button440; // 0x440
     RHPortraitEditableWidget m_entries[10]; // 0x540
-    RHMenuSelectPlayerProfiles *m_profiles; // 0x15a8
+    RHPlayerProfileManager *m_profiles; // 0x15a8
 };
 
 #endif

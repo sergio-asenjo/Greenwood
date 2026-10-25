@@ -97,6 +97,8 @@ public:
     RHMenuEvent *FUN_00532040(unsigned value);
     int FUN_00533cd0(const SBGeoPoint2D &point);
     bool FUN_00533d80(const SBGeoPoint2D &point);
+    RHMenuEvent *FUN_00533800(const SBGeoPoint2D &input);
+    RHMenuEvent *FUN_00533f70(const SBGeoPoint2D &input);
     RHPortraitInputRenderer m_renderer;
 };
 
