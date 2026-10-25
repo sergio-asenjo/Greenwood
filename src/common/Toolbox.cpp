@@ -1,6 +1,7 @@
 #include "SBNullstr.h"
 #include "Toolbox.h"
 #include <vector>
+#include <math.h>
 #include <windows.h>
 #include "SBPicture.h"
 #include "SBInput.h"
@@ -207,6 +208,17 @@ bool FUN_005e0ea0(SBFile &file, std::wstring &value)
         operator delete(buffer);
     }
     return true;
+}
+
+// FUNCTION: GAME 0x005e10b0
+std::wstring Toolbox::Convert(const std::string &text)
+{
+    wchar_t buffer[256];
+    buffer[0] = 0;
+    buffer[255] = 0;
+    if (text.size() < 63)
+        MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, text.c_str(), -1, buffer, 255);
+    return std::wstring(buffer);
 }
 
 class RHElementActorPC;
@@ -451,6 +463,19 @@ void FUN_005e20c0(SBFile &file)
     g_unk0x006c1178.pop_back();
 }
 
+// FUNCTION: GAME 0x005e2340
+std::wstring Toolbox::TrimWideString(const std::wstring &text)
+{
+    unsigned size = text.size();
+    int last = size - 1;
+    while (last >= 0 && text[last] == L' ')
+        --last;
+    unsigned first = 0;
+    while (first < size && text[first] == L' ')
+        ++first;
+    return text.substr(first, last >= 0 ? last - first + 1 : 0);
+}
+
 // FUNCTION: GAME 0x005e23d0
 std::wstring FUN_005e23d0(unsigned long id)
 {
@@ -591,6 +616,57 @@ void Toolbox::PlaySlide(const std::string &name, unsigned short duration)
     file.FUN_005f5290();
     while (!g_unk0x006a6d27)
         FUN_005e1400();
+}
+
+// FUNCTION: GAME 0x005e2d10
+void Toolbox::HSV_To_RGB(float h, float s, float v, float &r, float &g, float &b)
+{
+    if (s == 0.0f)
+    {
+        r = v;
+        g = v;
+        b = v;
+        return;
+    }
+    h *= 1.0f / 60.0f;
+    double i = floor(h);
+    float f = h - i;
+    float p = v * (1.0f - s);
+    float q = v * (1.0f - s * f);
+    float t = v * (1.0f - s * (1.0f - f));
+    switch ((unsigned short)i)
+    {
+    case 0:
+        r = v;
+        g = t;
+        b = p;
+        break;
+    case 1:
+        r = q;
+        g = v;
+        b = p;
+        break;
+    case 2:
+        r = p;
+        g = v;
+        b = t;
+        break;
+    case 3:
+        r = p;
+        g = q;
+        b = v;
+        break;
+    case 4:
+        r = t;
+        g = p;
+        b = v;
+        break;
+    case 5:
+        r = v;
+        g = p;
+        b = q;
+        break;
+    }
 }
 
 // Parked at 0.2510: unannotated park from the asymmetric-comparator era; residual scheduling/registers.
@@ -810,8 +886,7 @@ void *RHUnk00624a60::FUN_00624aa0(unsigned flags)
     return this;
 }
 
-// Parked: the ICF-folded iterator++ 0x0057c9c0 is bound to the RHElementActor * list instantiation.
-// STUB: GAME 0x00624ac0
+// FUNCTION: GAME 0x00624ac0
 RHUnk00624a60::~RHUnk00624a60()
 {
     *(unsigned *)m_00 = 0x67ae70;

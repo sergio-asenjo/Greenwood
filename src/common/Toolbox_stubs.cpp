@@ -95,7 +95,8 @@ bool RHUnk006114c0::Unk20(RHUnkFXDraw *draw, unsigned long surface)
 void RHUnkFXDraw::FUN_005e5260() {}
 void RHUnkFXDraw::FUN_005e6440(unsigned long, int, int, unsigned long, unsigned long) {}
 int RHUnk005f4fc0::FUN_005f5090(const RHProfileText &, int) { return 0; }
-void ToolboxChunks::FUN_005e3070() { Buyback(); }
+// FUNCTION: GAME 0x005e3070
+void ToolboxChunks::FUN_005e3070() { _Buyback(); }
 // LIBRARY: GAME 0x005e2ea0
 // ?substr@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@QBE?AV12@II@Z
 

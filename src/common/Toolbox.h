@@ -141,7 +141,7 @@ public:
 class RHUnkFXDraw
 {
 public:
-    unsigned long Unk005e4ed0(int, int, int, int);
+    unsigned long Unk005e4ed0(int, int, int, bool);
     void Unk005e5160(unsigned long);
     void FUN_005e5260();
     unsigned short FUN_005e56c0(unsigned long);
@@ -172,19 +172,7 @@ public:
     undefined m_14[4]; // 0x14
 };
 
-// SIZE 0x58
-class RHUnk005f4fc0 : public SBFile
-{
-public:
-    RHUnk005f4fc0();
-    ~RHUnk005f4fc0();
-    int FUN_005f5090(const std::string &, int);
-    int FUN_005f5090(const RHProfileText &, int);
-    void FUN_005f5290();
-    unsigned int Position() const { return *(const unsigned int *)((const char *)this + 0xc); }
-    unsigned int Size() const { return *(const unsigned int *)((const char *)this + 8); }
-    undefined m_14[0x44]; // 0x14
-};
+#include "RHUnk005f4fc0.h"
 
 #include "SBFilePosition.h"
 class RHUnk005ef320;
@@ -198,12 +186,15 @@ bool FUN_005e17a0(unsigned char *);
 void FUN_005e1380();
 void FUN_005e1400();
 
+#include "ToolboxWideString.h"
+
 namespace Toolbox
 {
     MD5 *MD5_string(MD5 *, unsigned char *);
     unsigned long HexaAsciiToInteger(const char *);
     void DisplayPicture(const char *, bool);
     void PlaySlide(const std::string &, unsigned short);
+    void HSV_To_RGB(float h, float s, float v, float &r, float &g, float &b);
     void Emit();
 }
 
