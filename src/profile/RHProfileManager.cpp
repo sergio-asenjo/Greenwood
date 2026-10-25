@@ -1152,13 +1152,8 @@ void SBArray<RHSaveGame *>::Insert(RHSaveGame **position, unsigned int count, RH
     }
 }
 
-// FUNCTION: GAME 0x004598e0
-void **FUN_004598e0(void **first, void **last, void **destination)
-{
-    for (; first != last; ++destination, ++first)
-        *destination = *first;
-    return destination;
-}
+// TEMPLATE: GAME 0x004598e0
+// ?copy@std@@YAPAPAVRHMission@@PBQAV2@0PAPAV2@@Z
 
 // FUNCTION: GAME 0x00460900
 int RHProfileText::FUN_00460900(unsigned int first, unsigned int count, const char *value, unsigned int size) const

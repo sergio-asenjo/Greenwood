@@ -12,7 +12,7 @@ class RHMissionProfile;
 class RHSoldierProfile;
 class RHProfileManager;
 
-void **FUN_004598e0(void **first, void **last, void **destination);
+#include "RHCopyPointers.h"
 void FUN_0056cf40(const RHProfileManager *, const char *, ...);
 
 template <class T>

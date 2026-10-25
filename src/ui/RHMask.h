@@ -173,7 +173,7 @@ public:
     static void CopyData(RHSequenceElement **, RHSequenceElement *const *);
 };
 
-void **FUN_004598e0(void **first, void **last, void **destination);
+#include "RHCopyPointers.h"
 
 class RHMaskObstacleStorage
 {

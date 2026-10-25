@@ -84,9 +84,12 @@ void FUN_0064158f(void *);
 class RHUnkFXDraw
 {
 public:
+    unsigned long Unk005e4ed0(int width, int height, int format, bool system);
     unsigned short FUN_005e56c0(unsigned long);
     unsigned short FUN_005e5750(unsigned long);
 };
+
+typedef unsigned long (RHUnkFXDraw::*RHResourceCreateSurface)(unsigned short, unsigned short, unsigned long, bool);
 
 class RHFrameHolderRowMap
 {
@@ -428,7 +431,7 @@ bool SBResourceManager::FUN_005fd8e0(SBFile *file, unsigned long id)
             unsigned long format = (flags & 2) ? 2 : 1;
             picture.Unk00611710(*file);
             if (!(flags & 1) || id != 0) {
-                surfaces[i] = (*(RHEngineWidenedCalls **)(m_00 + 4))->FUN_005e4ed0(picture.m_width, picture.m_height, format, false);
+                surfaces[i] = ((*(RHUnkFXDraw **)(m_00 + 4))->*reinterpret_cast<RHResourceCreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(picture.m_width, picture.m_height, format, false);
                 picture.Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces[i]);
             }
             ((SBPicture *)&picture)->FUN_00611c50();
@@ -574,7 +577,7 @@ bool SBResourceManager::FUN_005ff3a0(SBFile *file, unsigned long id)
             unsigned long format = (flags & 2) ? 2 : 1;
             picture.Unk00611710(*file);
             if (!(flags & 1) || id != 0) {
-                surfaces[i] = (*(RHEngineWidenedCalls **)(m_00 + 4))->FUN_005e4ed0(picture.m_width, picture.m_height, format, false);
+                surfaces[i] = ((*(RHUnkFXDraw **)(m_00 + 4))->*reinterpret_cast<RHResourceCreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(picture.m_width, picture.m_height, format, false);
                 picture.Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces[i]);
             }
             ((SBPicture *)&picture)->FUN_00611c50();
@@ -633,7 +636,7 @@ bool SBResourceManager::FUN_005ff730(SBFile *file, unsigned long id)
             unsigned long format = (flags & 2) ? 2 : 1;
             picture.Unk00611710(*file);
             if (!(flags & 1) || id != 0) {
-                surfaces[i] = (*(RHEngineWidenedCalls **)(m_00 + 4))->FUN_005e4ed0(picture.m_width, picture.m_height, format, false);
+                surfaces[i] = ((*(RHUnkFXDraw **)(m_00 + 4))->*reinterpret_cast<RHResourceCreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(picture.m_width, picture.m_height, format, false);
                 picture.Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces[i]);
             }
             ((SBPicture *)&picture)->FUN_00611c50();
@@ -692,7 +695,7 @@ bool SBResourceManager::FUN_005ffac0(SBFile *file, unsigned long id)
             unsigned long format = (flags & 2) ? 2 : 1;
             picture.Unk00611710(*file);
             if (!(flags & 1) || id != 0) {
-                surfaces[i] = (*(RHEngineWidenedCalls **)(m_00 + 4))->FUN_005e4ed0(picture.m_width, picture.m_height, format, false);
+                surfaces[i] = ((*(RHUnkFXDraw **)(m_00 + 4))->*reinterpret_cast<RHResourceCreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(picture.m_width, picture.m_height, format, false);
                 picture.Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces[i]);
             }
             ((SBPicture *)&picture)->FUN_00611c50();
@@ -750,7 +753,7 @@ bool SBResourceManager::FUN_005ffe50(SBFile *file, unsigned long id)
         if ((1 << i) & mask) {
             picture.Unk00611710(*file);
             if (!(flags & 1) || id != 0) {
-                surfaces[i] = (*(RHEngineWidenedCalls **)(m_00 + 4))->FUN_005e4ed0(picture.m_width, picture.m_height, 0, false);
+                surfaces[i] = ((*(RHUnkFXDraw **)(m_00 + 4))->*reinterpret_cast<RHResourceCreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(picture.m_width, picture.m_height, 0, false);
                 picture.Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces[i]);
             }
             ((SBPicture *)&picture)->FUN_00611c50();
@@ -835,8 +838,7 @@ unsigned short SBResourceManager::FUN_00600390(unsigned long id)
     return found->m_1a;
 }
 
-// Parked: anonymous static-destructor callback cannot be uniquely annotation-bound.
-// STUB: GAME 0x00600450
+// FUNCTION: GAME 0x00600450
 const SBGeoPoint2D &SBResourceManager::FUN_00600450(unsigned long id)
 {
     // GLOBAL: GAME 0x006c1848
@@ -854,6 +856,8 @@ const SBGeoPoint2D &SBResourceManager::FUN_00600450(unsigned long id)
     return *(SBGeoPoint2D *)((char *)found + 0x10);
 }
 
+// LIBRARY: GAME 0x00600540
+// $E16
 
 template<class T> struct SBResourceUnkArrayIterator
 {
@@ -2787,7 +2791,7 @@ void SBResourceWideValues::FUN_00606960()
 
 class RHUnk00597a70;
 void FUN_0059fb00(RHUnk00597a70 **, RHUnk00597a70 *const &);
-void **FUN_004598e0(void **, void **, void **);
+#include "RHCopyPointers.h"
 
 struct SBResourceArrayStorage
 {

@@ -2875,7 +2875,7 @@ void RHUnk004fdf40::FUN_004fdf40()
 
 #include "SBResourceManager.h"
 
-void **FUN_004598e0(void **first, void **last, void **destination);
+#include "RHCopyPointers.h"
 
 __forceinline void AssignFastFindIntegers(RHFastFindPointerArray &destination,
     const RHFastFindPointerArray &source)

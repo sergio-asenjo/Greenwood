@@ -106,7 +106,6 @@ char FUN_0054cc10(RHMission *mission)
     return mission->FUN_0054cbf0();
 }
 bool RHCampaignMissionCalls::FUN_0054c8a0(std::string &) { return false; }
-void RHCampaignMissionList::FUN_005c8e40(unsigned) {}
 void RHCampaignText::FUN_004021c0(const char *, unsigned) {}
 RHCampaignProfiles::~RHCampaignProfiles() {}
 

@@ -1,5 +1,6 @@
 #ifndef RHCAMPAIGNTYPES_H
 #define RHCAMPAIGNTYPES_H
+#include "RHSectorActorList.h"
 
 #include "RHMissionProfile.h"
 #include "RHCampaignCommandLine.h"
@@ -160,10 +161,10 @@ public:
     Node *m_cursor;
     bool m_dirty;
     void FUN_0045a440(const RHMission *const &value);
-    void FUN_005c8e40(unsigned index);
+    __forceinline void FUN_005c8e40(unsigned index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
 };
 
-void **FUN_004598e0(void **first, void **last, void **destination);
+#include "RHCopyPointers.h"
 
 // SIZE 0x10
 class RHCampaignMissionCandidates
@@ -285,6 +286,7 @@ class RHProfileManager
 {
 public:
     bool SerializeProfilePointer(SBFile &file, const RHCharacterProfile *&profile) const;
+    RHMissionProfile *AddForcedMission(const std::string &first, const std::string &second, const std::string &third);
 };
 
 RHProfileManager *RHUnk00436500GetProfileManager();
