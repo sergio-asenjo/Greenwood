@@ -46,7 +46,7 @@ public:
 class RHUnkFXDraw
 {
 public:
-    unsigned long Unk005e4ed0(int, int, int, int);
+    unsigned long Unk005e4ed0(int, int, int, bool);
 };
 
 class RHUnk005e6440
@@ -76,6 +76,7 @@ extern RHUnkSectorGlobal *g_unk0x6c0a9c;
 class RHElementFX : public RHElement
 {
 public:
+    void RestoreBackground();
     void InitializeBackgroundRestoration();
     virtual bool Serialize(SBFile &file);
     bool FUN_004aa2f0();

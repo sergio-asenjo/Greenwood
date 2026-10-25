@@ -19,6 +19,26 @@ inline void FXBlit(RHUnkFXDraw *const &draw, RHUnkFXEngine *engine, SBGeoBoundin
     ((RHUnk005e6440 *)draw)->Blit(surface, box, handle, source, 0);
 }
 
+inline void FXRestore(RHUnkFXDraw *const &draw, RHUnkFXEngine *engine, const unsigned long &handle,
+                      SBGeoBoundingBox2D *box, SBGeoBoundingBox2D *target)
+{
+    unsigned long surface = engine->m_48c4;
+    ((RHUnk005e6440 *)draw)->Blit(handle, box, surface, target, 0);
+}
+
+// FUNCTION: GAME 0x004a9df0
+void RHElementFX::RestoreBackground()
+{
+    if (m_cc != -1)
+    {
+        {
+            SBGeoVector2D vector((const SBGeoVector2D &)fx_sprite->m_1c);
+            FXRestore(fx_draw, (RHUnkFXEngine *)g_pEngine, m_cc, &m_b4, &m_b4.FUN_006090d0(vector));
+        }
+        m_c8 = 0;
+    }
+}
+
 // FUNCTION: GAME 0x004aa0a0
 void RHElementFX::InitializeBackgroundRestoration()
 {

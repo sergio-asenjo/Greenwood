@@ -29,7 +29,7 @@ public:
 class RHUnkFXDraw
 {
 public:
-    unsigned long Unk005e4ed0(int width, int height, int flags, int retain);
+    unsigned long Unk005e4ed0(int width, int height, int flags, bool retain);
 };
 
 class RHUnk005df4f0 : public RHBonusTriple

@@ -11,4 +11,3 @@ SBGeoBoundingBox2D &SBGeoBoundingBox2D::operator-=(const SBGeoVector2D &vector)
 }
 // FUNCTION: GAME 0x00608f30
 bool SBGeoBoundingBox2D::Unk00608f30() const { return m_flag; }
-unsigned long RHUnkFXDraw::Unk005e4ed0(int, int, int, int) { return 0; }
