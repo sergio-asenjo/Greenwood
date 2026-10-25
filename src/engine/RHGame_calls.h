@@ -170,7 +170,7 @@ public:
 class RHGameWidgetBaseCalls
 {
 public:
-    void FUN_0060d290(unsigned long hardware);
+    void FUN_0060d290(const SBGeoPoint2D &position);
 };
 
 #include "RHGameWidgetRendererCalls.h"
@@ -290,29 +290,7 @@ extern RHUnk00452030 *g_unk0x6c07fc;
 class RHEngine;
 extern RHEngine *g_pEngine;
 
-class RHUnk005f4fc0 : public SBFile
-{
-public:
-    RHUnk005f4fc0();
-    ~RHUnk005f4fc0();
-    int FUN_005f5090(const std::string &name, int mode);
-    void FUN_005f5290();
-    char m_14[0x44];
-};
-
-class RHSaveGame
-{
-public:
-    struct Header
-    {
-        Header();
-        unsigned long m_00;
-        unsigned long m_04;
-        unsigned long m_08;
-    };
-    std::string FUN_0056e5d0() const;
-    static bool SerializeHeader(SBFile &file, Header &header);
-};
+#include "RHSaveGame.h"
 
 #include "RHGameSaveCalls.h"
 
@@ -352,16 +330,7 @@ public:
     bool CopyBackupTo(SBFile &file) const;
 };
 
-template<class T>
-class SBArray
-{
-public:
-    int m_grow; // 0x00
-    T *m_first; // 0x04
-    T *m_last; // 0x08
-    T *m_end; // 0x0c
-    void Insert(T *position, unsigned count, const T &value);
-};
+#include "RHSaveGameManager.h"
 
 class SBGeoPoint2D;
 
@@ -390,13 +359,7 @@ public:
     char *FUN_0055dbb0();
 };
 
-class RHPlayerProfileManager
-{
-public:
-    bool Save() const;
-    void FUN_0055d930(unsigned long index);
-    void FUN_0055e410(unsigned long index);
-};
+#include "RHPlayerProfileManager.h"
 
 class RHGameContinueCalls
 {
@@ -509,12 +472,7 @@ extern unsigned char g_unk0x006c12b6;
 
 #include "RHGameActionCalls.h"
 
-class RHElementActor;
-class RHSectorActorList
-{
-public:
-    int Unk004b8f80(RHElementActor *const &, bool);
-};
+#include "RHSectorActorList.h"
 
 void FUN_0053a830();
 

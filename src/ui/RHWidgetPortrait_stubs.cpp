@@ -73,13 +73,6 @@ typedef RHPortraitRenderer0060dab0 RHPortraitRenderer0060dad0;
 #include "RHPortraitRenderer0060d470.h"
 
 
-class RHPortraitPCList
-{
-public:
-    void FUN_005c8e40(unsigned index);
-};
-
-void RHPortraitPCList::FUN_005c8e40(unsigned) {}
 RHPortraitUnk005d0180::~RHPortraitUnk005d0180() {}
 
 // FUNCTION: GAME 0x0061d5e0

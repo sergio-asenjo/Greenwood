@@ -2419,7 +2419,7 @@ void RHUnk00515bf0::FUN_00515ba0()
 // FUNCTION: GAME 0x00515bc0
 void RHUnk00515bf0::FUN_00515bc0(unsigned long hardware)
 {
-    ((RHGameWidgetBaseCalls *)this)->FUN_0060d290(hardware);
+    ((RHGameWidgetBaseCalls *)this)->FUN_0060d290(*(const SBGeoPoint2D *)hardware);
     ((RHGameWidgetRendererCalls *)((char *)this + 0x80))->v2(hardware);
 }
 

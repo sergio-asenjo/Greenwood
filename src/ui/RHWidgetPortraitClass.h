@@ -64,6 +64,7 @@ public:
     void Emit(SBFile &file);
 
     bool FUN_005d75c0(long first, long second, long third);
+    void SetScrollState(long value);
     bool FUN_005d7730(long id);
     bool FUN_005d7810(unsigned int index, long id, void *value, int first, int second, int third);
     bool FUN_005d7930(long id);
@@ -96,7 +97,9 @@ private:
     undefined m_pad0[0x16c]; // 0x00
     float m_16c;           // [0x16c]
     float m_170;           // [0x170]
-    undefined m_pad1[0x7bc - 0x174]; // 0x174
+    long m_174;
+    long m_178;
+    undefined m_pad1[0x7bc - 0x17c]; // 0x17c
     RHUnk005d92c0Sub m_7bc; // [0x7bc]
     char m_7c0;            // [0x7c0]
     undefined m_pad2[0xa50 - 0x7c1]; // 0x7c1
