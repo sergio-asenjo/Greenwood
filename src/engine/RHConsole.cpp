@@ -67,11 +67,7 @@ struct RHConsoleProfile
     char m_35;
 };
 
-class RHSectorActorList
-{
-public:
-    void Unk005c8e40(int);
-};
+#include "RHSectorActorList.h"
 
 struct RHConsoleListNode
 {

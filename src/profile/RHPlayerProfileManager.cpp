@@ -1,6 +1,9 @@
 #include "SBNullstr.h"
 #include "RHPlayerProfileManager.h"
+#include "RHPlayerProfile.h"
+#include "RHSectorActorList.h"
 #include <stdio.h>
+#include <stddef.h>
 
 DECOMP_SIZE_ASSERT(RHSaveGameManager, 0x18)
 DECOMP_SIZE_ASSERT(RHKeyConfig, 0x08)
@@ -13,9 +16,24 @@ DECOMP_SIZE_ASSERT(RHPlayerProfileManager, 0x30)
 DECOMP_SIZE_ASSERT(RHSectorActorConstIter, 0x04)
 DECOMP_SIZE_ASSERT(RHSectorActorIter, 0x04)
 DECOMP_SIZE_ASSERT(RHSectorActorList, 0x24)
-DECOMP_SIZE_ASSERT(RHUnk005c9010Node, 0x0c)
-DECOMP_SIZE_ASSERT(RHUnk005c9010Iterator, 0x04)
 DECOMP_SIZE_ASSERT(RHPlayerProfileListStorage, 0x0c)
+DECOMP_SIZE_ASSERT(RHProfilePointerList::iterator, 0x04)
+DECOMP_SIZE_ASSERT(RHPlayerProfileListStorage::Node, 0x0c)
+DECOMP_SIZE_ASSERT(RHProfileListCursor, 0x18)
+DECOMP_STATIC_ASSERT(offsetof(RHPlayerProfileListStorage::Node, _Next) == 0x00)
+DECOMP_STATIC_ASSERT(offsetof(RHPlayerProfileListStorage::Node, _Prev) == 0x04)
+DECOMP_STATIC_ASSERT(offsetof(RHPlayerProfileListStorage::Node, _Value) == 0x08)
+DECOMP_STATIC_ASSERT(offsetof(RHProfileListCursor, m_current) == 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(RHProfileListCursor, m_dirty) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHProfileListCursor, m_index) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(RHPlayerProfileManager, m_profiles) == 0x04)
+DECOMP_STATIC_ASSERT(offsetof(RHPlayerProfileManager, m_active) == 0x28)
+DECOMP_STATIC_ASSERT(offsetof(RHPlayerProfileManager, m_2c) == 0x2c)
+DECOMP_SIZE_ASSERT(RHUnk005f4fc0, 0x58)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005f4fc0, m_18) == 0x18)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005f4fc0, m_28) == 0x28)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005f4fc0, m_30) == 0x30)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005f4fc0, m_3c) == 0x3c)
 
 void RHSerializeName(SBFile &file, const char *name);
 std::wstring FUN_005e23d0(unsigned long id);
@@ -174,7 +192,6 @@ bool RHPlayerProfile::Serialize(SBFile &file)
 // FUNCTION: GAME 0x0055d630
 RHPlayerProfileManager::RHPlayerProfileManager() : m_00(0)
 {
-    m_profiles.m_dirty = true;
     m_active = 0;
     m_2c = false;
 }
@@ -192,7 +209,7 @@ bool RHPlayerProfileManager::FUN_0055da70(RHPlayerProfile *profile)
     int index = FUN_0055dbc0(profile);
     profile->DeleteSaveGameDirectory();
     delete m_profiles.Lookup(index, true);
-    m_profiles.m_list.Erase(m_profiles.m_current, m_profiles.m_dirty);
+    m_profiles.Erase(m_profiles.m_current, m_profiles.m_dirty);
     profile = profile == m_active ? 0 : m_active;
     m_active = profile;
     return true;
@@ -201,7 +218,7 @@ bool RHPlayerProfileManager::FUN_0055da70(RHPlayerProfile *profile)
 // FUNCTION: GAME 0x0055dbc0
 int RHPlayerProfileManager::FUN_0055dbc0(RHPlayerProfile *profile)
 {
-    for (int index = 0; index < (int)m_profiles.m_list.size(); ++index)
+    for (int index = 0; index < (int)m_profiles.size(); ++index)
         if (m_profiles[index] == profile)
             return index;
     return -1;
@@ -210,7 +227,7 @@ int RHPlayerProfileManager::FUN_0055dbc0(RHPlayerProfile *profile)
 // FUNCTION: GAME 0x0055dd10
 RHPlayerProfile *RHPlayerProfileManager::FUN_0055dd10(unsigned long index)
 {
-    if (index < m_profiles.m_list.size())
+    if (index < m_profiles.size())
         return m_profiles[index];
     return 0;
 }
@@ -221,8 +238,18 @@ const std::string &RHPlayerProfileManager::GetProfilesDirectory()
     return g_unk0x006c05e0;
 }
 
-// Parked: owner reload uses edx at the store instead of ebp before the file read.
-// STUB: GAME 0x0055dea0
+inline void RHPlayerProfileList::RemoveAll()
+{
+    m_current = begin();
+    while (m_current != end())
+    {
+        delete *m_current;
+        AdvanceCurrent();
+    }
+    Clear();
+}
+
+// FUNCTION: GAME 0x0055dea0
 bool RHPlayerProfileManager::Load()
 {
     RHUnk005f4fc0 file;
@@ -262,13 +289,12 @@ bool RHPlayerProfileManager::Load()
     if (count > 0)
     {
         RHPlayerProfileList &profiles = m_profiles;
-        unsigned long remaining = count;
-        while (remaining != 0)
+        const unsigned long total = count;
+        for (unsigned long index = 0; index < total; ++index)
         {
             RHPlayerProfile *profile = new RHPlayerProfile;
             profile->Serialize(file);
             profiles.InsertLast(profile);
-            --remaining;
         }
         file.Access(&active, 4);
         m_active = active >= 0 ? m_profiles.GetProfile(active) : 0;
@@ -296,7 +322,7 @@ bool RHPlayerProfileManager::Save() const
     file.m_version = 6;
     file.Access(&file.m_version, 4);
     file.Access((void *)&m_00, 4);
-    unsigned long count = m_profiles.m_list.size();
+    unsigned long count = m_profiles.size();
     file.Access(&count, 4);
     for (int i = 0; (unsigned long)i < count; ++i)
     {
@@ -312,7 +338,7 @@ bool RHPlayerProfileManager::Save() const
 // FUNCTION: GAME 0x0055e410
 void RHPlayerProfileManager::FUN_0055e410(unsigned long index)
 {
-    if (index >= m_profiles.m_list.size())
+    if (index >= m_profiles.size())
     {
         m_active = 0;
         return;
@@ -326,11 +352,8 @@ void RHPlayerProfileManager::FUN_0055e550(RHPlayerProfile *profile)
     m_active = profile;
 }
 
-// Parked at 93.46%: user dtor stores the vptr; the implicit dtor omits it but inlines into Load.
-// STUB: GAME 0x0055e560
-RHPlayerProfile::~RHPlayerProfile()
-{
-}
+// SYNTHETIC: GAME 0x0055e560
+// ??1RHPlayerProfile@@QAE@XZ
 
 void RHPlayerProfile::Emit(SBFile &file)
 {

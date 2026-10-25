@@ -11,7 +11,54 @@ void RHSector::DisplayAlpha(unsigned long, unsigned long, bool) {}
 
 RHSectorActorIter RHSectorActorList::insert(RHSectorActorIter pos, RHElementActor *const &) { return pos; }
 RHSectorActorIter RHSectorActorList::erase(RHSectorActorIter pos) { return pos; }
-void RHSectorActorList::Unk005c8e40(int) {}
+// FUNCTION: GAME 0x005c8e40
+void RHProfileListCursor::GoTo(int wanted)
+{
+    int count = size();
+    if (m_dirty)
+    {
+        if (wanted <= (count + 1) / 2)
+        {
+            m_current = begin();
+            std::advance(m_current, wanted);
+        }
+        else
+        {
+            m_current = end();
+            std::advance(m_current, wanted - count);
+        }
+        m_dirty = false;
+        m_index = wanted;
+    }
+    else
+    {
+        int previous = m_index;
+        if (wanted != previous)
+        {
+            if (wanted < previous)
+            {
+                if (wanted < (previous + 1) / 2)
+                {
+                    m_current = begin();
+                    std::advance(m_current, wanted);
+                }
+                else
+                    std::advance(m_current, wanted - previous);
+            }
+            else
+            {
+                if (wanted < (previous + count) / 2)
+                    std::advance(m_current, wanted - previous);
+                else
+                {
+                    m_current = end();
+                    std::advance(m_current, wanted - count);
+                }
+            }
+            m_index = wanted;
+        }
+    }
+}
 
 // SYNTHETIC: GAME 0x00522560
 // RHUnk00522540::`scalar deleting destructor'

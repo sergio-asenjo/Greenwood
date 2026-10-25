@@ -11,7 +11,6 @@ void RHShadowPolygon::FUN_00595020() {}
 void RHShadowPolygon::FUN_005959e0() {}
 
 void RHUnk004a96a0::FUN_004a96a0(void *, void *, void *, bool) {}
-void RHShadowPolygonList::FUN_005c8e40(int) {}
 RHUnk005c9010Iterator RHUnk0058e7f0List::FUN_0044e8b0(RHUnk005c9010Iterator, RHUnk005c9010Iterator last) { return last; }
 RHScriptIter RHShadowUnk0044e8b0::FUN_0044e8b0(RHScriptIter, RHScriptIter last) { return last; }
 RHUnk005c9010Iterator RHUnk0058e7f0List::FUN_0046eb30(RHUnk005c9010Iterator current) { return current; }
@@ -60,8 +59,11 @@ RHShadowViewport::~RHShadowViewport() {}
 
 void FUN_005c9010(RHUnk005c9010Iterator &current, int distance, std::bidirectional_iterator_tag)
 {
-    for (; 0 < distance; --distance)
-        ++current;
-    for (; distance < 0; ++distance)
-        --current;
+    RHAdvanceProfileCursor((RHProfilePointerList::iterator &)current, distance, std::bidirectional_iterator_tag());
+}
+
+void RHAdvanceProfileCursor(RHProfilePointerList::iterator &current, int distance,
+                            std::bidirectional_iterator_tag category)
+{
+    std::_Advance(current, distance, category);
 }

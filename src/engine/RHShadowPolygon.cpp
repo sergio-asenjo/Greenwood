@@ -112,7 +112,7 @@ inline void RHShadowDestroyCachedList(RHUnk0058e7f0List &list)
         --list.m_count;
     }
     {
-        typedef std::list<RHElementActor *>::iterator Native;
+        typedef RHProfilePointerList::iterator Native;
         typedef Native (Native::*Increment)(int);
         typedef RHSectorActorIter (RHSectorActorIter::*Forward)(int);
         Increment increment = &Native::operator++;
@@ -2732,8 +2732,8 @@ inline void RHShadowMoveBlocks(RHShadowMemoryBlock *first, RHShadowMemoryBlock *
         to.m_tag = from.m_tag;
         if (&from.m_ranges != &to.m_ranges)
         {
-            void (std::list<RHMission *>::*clear)() = &std::list<RHMission *>::clear;
-            (((std::list<RHMission *> *)&to.m_ranges)->*clear)();
+            void (RHProfilePointerList::*clear)() = &RHProfilePointerList::clear;
+            (((RHProfilePointerList *)&to.m_ranges)->*clear)();
             void (RHShadowMemoryAssignmentList::*insert)(const RHShadowMemoryAssignmentList &, int) = &RHShadowMemoryAssignmentList::FUN_005a1140;
             (to.m_ranges.*insert)(from.m_ranges, 0);
         }
@@ -2787,8 +2787,8 @@ class RHShadowPoolAllocatedRanges
 public:
     ~RHShadowPoolAllocatedRanges()
     {
-        void (std::list<RHMission *>::*clear)() = &std::list<RHMission *>::clear;
-        (((std::list<RHMission *> *)&m_list)->*clear)();
+        void (RHProfilePointerList::*clear)() = &RHProfilePointerList::clear;
+        (((RHProfilePointerList *)&m_list)->*clear)();
     }
     RHShadowPoolAllocatedList m_list;
     char m_unknown[20];

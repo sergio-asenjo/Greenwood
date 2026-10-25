@@ -2,6 +2,7 @@
 #define RHSECTORACTORLIST_H
 
 #include "RHSectorActorIterator.h"
+#include "SBListCursor.h"
 
 class RHElementActor;
 
@@ -19,6 +20,8 @@ struct RHSectorActorAccess
 };
 
 inline RHElementActor *&RHSectorActorIter::operator*() const { return RHSectorActorAccess::Value(m_p); }
+inline RHSectorActorIter &RHSectorActorIter::operator++() { m_p = m_p->m_next; return *this; }
+inline RHSectorActorIter &RHSectorActorIter::operator--() { m_p = m_p->m_prev; return *this; }
 
 class RHSectorActorList
 {
@@ -38,7 +41,10 @@ public:
     int Unk004b8f80(RHElementActor *const &actor, bool mode);
     RHSectorActorIter insert(RHSectorActorIter pos, RHElementActor *const &actor);
     RHSectorActorIter erase(RHSectorActorIter pos);
-    void Unk005c8e40(int index);
+    __forceinline void Unk005c8e40(int index)
+    {
+        ((RHProfileListCursor *)this)->GoTo(index);
+    }
     int FindValue(RHElementActor *actor) { return Unk004b8f80(actor, true); }
     RHSectorActorIter begin() { return RHSectorActorIter(RHSectorActorAccess::Next(m_head)); }
     RHSectorActorIter Current() const { return m_cur; }

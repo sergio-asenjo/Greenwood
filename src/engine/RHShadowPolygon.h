@@ -1,5 +1,6 @@
 #ifndef RHSHADOWPOLYGON_H
 #define RHSHADOWPOLYGON_H
+#include "RHSectorActorList.h"
 
 #include "SB.h"
 #include "Decomp.h"
@@ -339,7 +340,7 @@ struct RHUnk0058e7f0List
 
     ~RHUnk0058e7f0List()
     {
-        typedef std::list<RHElementActor *>::iterator Native;
+        typedef RHProfilePointerList::iterator Native;
         typedef Native (Native::*Increment)(int);
         typedef RHSectorActorIter (RHSectorActorIter::*Forward)(int);
         Increment increment = &Native::operator++;
@@ -378,7 +379,7 @@ public:
     bool m_dirty; // +0x10
     int m_index; // +0x14
 
-    void FUN_005c8e40(int);
+    __forceinline void FUN_005c8e40(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
 
     ~RHShadowPolygonList()
     {
@@ -400,7 +401,7 @@ public:
 
     void EraseAll()
     {
-        typedef std::list<RHElementActor *>::iterator Native;
+        typedef RHProfilePointerList::iterator Native;
         typedef Native (Native::*Increment)(int);
         typedef RHSectorActorIter (RHSectorActorIter::*Forward)(int);
         Increment increment = &Native::operator++;

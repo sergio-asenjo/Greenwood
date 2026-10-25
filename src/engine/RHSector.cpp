@@ -208,8 +208,11 @@ RHUnk0057c920::RHUnk0057c920()
     m_10 = 1;
 }
 
-// TEMPLATE: GAME 0x0057c9c0
-// ??Eiterator@?$list@PAVRHElementActor@@V?$allocator@PAVRHElementActor@@@std@@@std@@QAE?AV012@H@Z
+// TEMPLATE: GAME 0x0057c9c0 FOLDED
+// ??Eiterator@?$list@URHTextChunk@@V?$allocator@URHTextChunk@@@std@@@std@@QAE?AV012@H@Z
+
+// TEMPLATE: GAME 0x0057c9c0 FOLDED
+// ??Eiterator@?$list@PAVRHPlayerProfile@@V?$allocator@PAVRHPlayerProfile@@@std@@@std@@QAE?AV012@H@Z
 
 // Parked: coordinate-width, scalar-slot and x87 scheduling differ.
 // STUB: GAME 0x0057cd60
@@ -775,7 +778,9 @@ bool RHSectorBuilding::Serialize(SBFile &file)
             typedef std::list<RHElementActor *>::iterator Iterator;
             typedef Iterator (Iterator::*Increment)(int);
             typedef Iterator (RHUnk0046eb30::*Erase)(Iterator);
-            Increment increment = &Iterator::operator++;
+            typedef RHProfilePointerList::iterator Native;
+            Native (Native::*advance)(int) = &Native::operator++;
+            Increment increment = (Increment)advance;
             Iterator last = ((std::list<RHElementActor *> *)&list)->end();
             Iterator first = ((std::list<RHElementActor *> *)&list)->begin();
             while (first != last)

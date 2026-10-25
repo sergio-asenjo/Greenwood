@@ -19,11 +19,3 @@ bool RHSectorProductionPC::FUN_0055bb00(int value)
 #include "RHSpriteConstructor.h"
 
 RHUnk005b5890::RHUnk005b5890(int) {}
-
-class RHSectorProductionActorList
-{
-public:
-    void GoTo(int index);
-};
-
-void RHSectorProductionActorList::GoTo(int) {}

@@ -1,4 +1,5 @@
 #include "SBNullstr.h"
+#include "RHSectorActorList.h"
 #include "RHSectorProduction.h"
 #include <string.h>
 #include "RHHumanStatus.h"
@@ -108,7 +109,7 @@ struct RHSectorProductionActorNode
 class RHSectorProductionActorList
 {
 public:
-    void GoTo(int index);
+    __forceinline void GoTo(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
     char m_00[8];
     int m_count;
     RHSectorProductionActorNode *m_c;
