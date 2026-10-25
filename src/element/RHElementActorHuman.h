@@ -1,5 +1,6 @@
 #ifndef RHELEMENTACTORHUMAN_H
 #define RHELEMENTACTORHUMAN_H
+#include "RHSectorActorList.h"
 
 #include "SB.h"
 #include "Decomp.h"
@@ -76,7 +77,7 @@ class RHTitbitList
 {
 public:
     void Clear(void *result, RHTitbitNode *first, RHTitbitNode *last);
-    void At(int index);
+    __forceinline void At(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
 };
 // SIZE 0x08
 struct RHHumanOpponent
@@ -458,7 +459,7 @@ public:
     {
         if (m_head)
         {
-            typedef std::list<RHMission *> Missions;
+            typedef RHProfilePointerList Missions;
             void (Missions::*clear)() = &Missions::clear;
             (((Missions *)this)->*clear)();
             ((RHUnk004e52a0 *)this)->FUN_004e52a0();
@@ -467,7 +468,7 @@ public:
     RHHumanFloatIterator FUN_00424410(RHHumanFloatIterator position, const float &value);
     RHHumanFloatIterator FUN_0044e8b0(RHHumanFloatIterator first, RHHumanFloatIterator last);
     RHHumanFloatIterator FUN_0046eb80();
-    void At(int index);
+    __forceinline void At(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
     void Release()
     {
         FUN_0044e8b0(RHHumanFloatIterator(m_head->next), RHHumanFloatIterator(m_head));

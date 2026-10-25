@@ -379,6 +379,12 @@ SBGeoVector2D operator*(float factor, const SBGeoVector2D &point)
     return result;
 }
 
+// FUNCTION: GAME 0x0060c650
+bool RHElementAreaShape::FUN_0060c650(const SBGeoBoundingBox2D &box) const
+{
+    return box.FUN_00608d60(*(const RHUnkSectorPoints *)this);
+}
+
 // Parked: crossing products remain live on the x87 stack.
 // STUB: GAME 0x0060c660
 bool RHElementAreaShape::FUN_0060c660(const SBGeoPoint2D &point) const

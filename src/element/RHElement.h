@@ -1,4 +1,5 @@
 #include "SB.h"
+#include "RHSectorActorList.h"
 #include "Decomp.h"
 
 // SIZE 0x0c
@@ -100,10 +101,13 @@ public:
     void *m_f8; // 0xf8
 };
 
+class RHUnkSectorPoints;
+
 class SBGeoBoundingBox2D
 {
 public:
     bool FUN_00608400(const SBGeoPoint2D &point) const;
+    bool FUN_00608d60(const RHUnkSectorPoints &polygon) const;
 };
 
 #include "RHUnkSectorPoints.h"
@@ -179,7 +183,7 @@ public:
     {
         erase(begin(), RHElementAreaIter(m_04));
     }
-    void GoTo(int index);
+    __forceinline void GoTo(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
     RHElementAreaNode *m_0c; // 0x0c
     bool m_10; // 0x10
     undefined m_11[3]; // 0x11
@@ -192,7 +196,7 @@ class RHUnk0040f060 : public RHElementAreaListBase
 public:
     RHUnk0040f060();
     ~RHUnk0040f060() { Clear(); }
-    void GoTo(int index);
+    __forceinline void GoTo(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
     RHElementAreaNode *m_0c; // 0x0c
     bool m_10; // 0x10
     undefined m_11[3]; // 0x11

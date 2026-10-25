@@ -7,6 +7,4 @@ RHElementAreaListBase::~RHElementAreaListBase() {}
 void RHElementAreaListBase::Clear() {}
 RHElementAreaIter RHElementAreaListBase::begin() { return RHElementAreaIter(m_04->next); }
 RHElementAreaIter RHElementAreaListBase::erase(RHElementAreaIter first, RHElementAreaIter) { return first; }
-void RHElementAreaList::GoTo(int) {}
-void RHUnk0040f060::GoTo(int) {}
 RHUnk0040f060::RHUnk0040f060() : RHElementAreaListBase(*(const char *)this) {}

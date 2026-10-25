@@ -342,6 +342,12 @@ public:
     void FUN_0055fa20(RHBonusProjection *projection);
     void FUN_0055fa70(void *area);
     void FUN_00462970(int action);
+    void SetFlagFd() { *((char *)this + 0xfd) = 1; }
+    void ResetTarget(const SBGeoPoint2D &point)
+    {
+        *(SBGeoPoint2D *)((char *)this + 0x44) = point;
+        *(int *)((char *)this + 8) = 0;
+    }
 };
 class RHUnkPathActorInfoBase
 {

@@ -135,6 +135,7 @@ public:
     void FUN_0046bb80();
     void FUN_0046bab0();
     void FUN_0046bbf0();
+    void FUN_0046bd40(RHSequenceElement *element);
     SBGeoPoint2D FUN_00462920();
     void FUN_00462940(int action);
     int FUN_00467200() const;

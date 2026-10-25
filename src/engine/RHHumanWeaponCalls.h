@@ -12,7 +12,7 @@ public:
     float FUN_005c1ed0(int index);
     float FUN_005c1f10(int index);
     unsigned short FUN_005c1b50(int index);
-    unsigned short FUN_005c1b70(void *actor, void *target, unsigned short value);
+    unsigned short FUN_005c1b70(void *actor, void *target, unsigned value);
     unsigned short FUN_005c1db0(int index);
 };
 

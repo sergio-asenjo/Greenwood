@@ -2622,9 +2622,8 @@ unsigned short RHElementActorHuman::FUN_00482240(int index, RHElementActorHuman 
     unsigned short adjustedChance;
     if (otherWeapon)
     {
-        unsigned short opponentWeaponChance = RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1d70(index);
-        opponentWeaponChance = ((RHHumanWeaponCalls *)otherWeapon)->FUN_005c1b70(
-            other, this, opponentWeaponChance);
+        unsigned short opponentWeaponChance = ((RHHumanWeaponCalls *)otherWeapon)->FUN_005c1b70(
+            other, this, RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1d70(index));
         int remaining = 100 - opponentWeaponChance;
         float adjusted = (float)remaining;
         adjusted *= chance;
@@ -3158,8 +3157,8 @@ int RHElementActorHuman::FUN_0047e7d0(RHUnk005864a0 *element)
     }
     else if (RHActorField<RHHumanWeaponCalls *>(this, 0x25c))
     {
-        unsigned short chance = RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1d70(element->FUN_005864d0());
-        chance = RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1b70(this, (void *)element->FUN_005864a0(), chance);
+        unsigned short chance = RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1b70(
+            this, (void *)element->FUN_005864a0(), RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1d70(element->FUN_005864d0()));
         if (rand() % 99 + 1 > chance)
         {
             chance = weapon->FUN_005c1dd0(element->FUN_005864d0(), (void *)element->FUN_005864a0());
@@ -3310,6 +3309,30 @@ int RHElementActorHuman::FUN_004838f0(bool alternate)
     }
 }
 
+class RHSequenceElementDamage
+{
+public:
+    bool FUN_005864e0();
+};
+
+// FUNCTION: GAME 0x00483c90
+void RHElementActorHuman::FUN_00483c90(RHActorTranslationSequenceCalls *sequence)
+{
+    switch (RHActorField<int>(RHActorField<void *>(this, 0x50), 0x8c))
+    {
+    case 3: case 7: case 9: case 12: case 13: case 16: case 17: case 18:
+        sequence->V0c(0, true);
+        return;
+    }
+    ((RHHumanVirtualCalls *)this)->V164();
+    RHOrder *order = new RHOrder;
+    order->m_24 = FUN_004838f0(((RHSequenceElementDamage *)sequence)->FUN_005864e0());
+    order->m_2a = 0;
+    order->m_30 = (void *)((RHUnk005864a0 *)sequence)->FUN_005864a0();
+    sequence->FUN_00585970(order);
+    ((RHHumanVirtualCalls *)this)->V154(sequence);
+}
+
 #include "RHSectorProductionPC.h"
 
 // FUNCTION: GAME 0x00484360
@@ -3403,11 +3426,7 @@ void RHElementActorHuman::FUN_00484610(RHActorTranslationSequenceCalls *sequence
     }
 }
 
-class RHPathQueryCalls
-{
-public:
-    void FUN_005c8e40(int index);
-};
+#include "RHPathQueryCalls.h"
 
 // FUNCTION: GAME 0x004847c0
 void *RHElementActorHuman::FUN_004847c0(float maximum, void *filter) const
@@ -4121,6 +4140,46 @@ bool RHSound::FUN_005a8330(int first, int second, int third, const SBGeoPoint2D 
             return false;
     }
     return true;
+}
+
+extern float g_unk0x006774a0;
+
+// Parked: the original spills the facing direction to the actor argument slot; VC6 keeps it in EBX.
+// STUB: GAME 0x005c1b70
+unsigned short RHHumanWeaponCalls::FUN_005c1b70(void *actor, void *target, unsigned value)
+{
+    unsigned short direction = RHActorField<unsigned short>(RHActorField<void *>(actor, 0x50), 0xd8);
+    unsigned short facing = ((RHUnk005fc3b0 *)&((RHUnk004237d0 *)target)->FUN_004237d0().Unk005fc110(
+        ((RHUnk004237d0 *)actor)->FUN_004237d0()))->FUN_005fcc50(0.57357645f);
+    float targetZ = RHActorField<float>(RHActorField<void *>(target, 0x50), 0x18);
+    float actorZ = RHActorField<float>(RHActorField<void *>(actor, 0x50), 0x18);
+    if (targetZ >= actorZ + g_unk0x006774a0)
+        return *(unsigned short *)(*(char **)((char *)this + 4) + 8);
+    unsigned short side = direction;
+    switch (value)
+    {
+    case 0:
+        side = facing + 4;
+        break;
+    case 1:
+        side = facing - 4;
+        break;
+    case 2:
+        side = facing;
+        break;
+    }
+    switch ((side - direction) & 0xf)
+    {
+    case 0: case 1: case 15:
+        return *(unsigned short *)(*(char **)((char *)this + 4) + 0xa);
+    case 2: case 3: case 4: case 5:
+        return *(unsigned short *)(*(char **)((char *)this + 4) + 0x10);
+    case 6: case 7: case 8: case 9: case 10:
+        return *(unsigned short *)(*(char **)((char *)this + 4) + 0xe);
+    case 11: case 12: case 13: case 14:
+        return *(unsigned short *)(*(char **)((char *)this + 4) + 0xc);
+    }
+    return 0;
 }
 
 // FUNCTION: GAME 0x005c1d50

@@ -1,4 +1,5 @@
 #include "RHElementActor.h"
+#include "RHSectorActorList.h"
 #include "VMCore.h"
 #include "RHPathFinderCore.h"
 #include "RHSectorBuilding.h"
@@ -87,7 +88,7 @@ class RHSeqList
 {
 public:
     RHSeqList(const char &allocator);
-    void GoTo(int index);
+    __forceinline void GoTo(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
     char m_00[4];
     RHScriptNode *m_head;
     int m_count;
@@ -1248,6 +1249,63 @@ void RHElementActor::FUN_0046bb80()
         else
             ((RHActorActionCalls *)this)->V98(m_130);
     }
+}
+
+class RHShadowPointListBase
+{
+public:
+    RHScriptIter FUN_0044e850(RHScriptIter, RHScriptIter);
+};
+
+inline void *RHFirstSequenceOrder(RHSequenceElement *element)
+{
+    if (RHActorField<int>(element, 0x20) > 0)
+    {
+        RHSectorActorList &orders = RHActorField<RHSectorActorList>(element, 0x18);
+        orders.Unk005c8e40(0);
+        return orders.CurrentValue();
+    }
+    return 0;
+}
+
+inline void RHClearActorPoints(RHActorPointList &points)
+{
+    ((RHShadowPointListBase *)&points)->FUN_0044e850(((RHUnk0046eb30 *)&points)->FUN_0046eb80(),
+                                                     RHScriptIter((RHScriptNode *)points.head));
+    points.dirty = 1;
+}
+
+// Parked: info+4 position accesses fold into single displacements; the original keeps the add.
+// STUB: GAME 0x0046bd40
+void RHElementActor::FUN_0046bd40(RHSequenceElement *element)
+{
+    if (!m_130 || !RHFirstSequenceOrder(m_130) || RHActorField<int>(RHFirstSequenceOrder(m_130), 0x24) != 0x12e)
+    {
+        RHClearActorPoints(m_17c);
+        m_170 = 0;
+    }
+    if (RHActorField<unsigned char>(element, 4) == 4 && (RHActorField<unsigned char>(element, 0x88) & 2))
+    {
+        if (((SBGeoBoundingBox2D *)((char *)g_unk0x6c0a9c + 0x3e84))->FUN_00608400(RHActorField<SBGeoPoint2D>(Info(), 0x24)))
+        {
+            Position()->SetFlagFd();
+            RHActorField<char>(this, 0x12) = 1;
+            RHActorField<char>(this, 0x88) = 0;
+        }
+        else
+        {
+            RHActorField<char>(this, 0x12) = 0;
+            RHActorField<char>(this, 0x88) = 1;
+        }
+    }
+    if (m_130 == element)
+    {
+        Position()->ResetTarget(SBGeoPoint2D(0.0f, 0.0f));
+        m_130 = 0;
+        m_134 = 0;
+    }
+    if (m_138 == element)
+        m_138 = 0;
 }
 
 // FUNCTION: GAME 0x0046c8e0

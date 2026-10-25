@@ -1589,11 +1589,7 @@ void RHElementActorPC::FUN_0049fcd0()
 class RHElementActor;
 #include "RHUnk0046bd20.h"
 
-class RHSectorActorList
-{
-public:
-    int Unk004b8f80(RHElementActor *const &value, bool mode);
-};
+#include "RHSectorActorList.h"
 
 #include "RHSequenceInteractionAction.h"
 
@@ -1757,8 +1753,7 @@ void RHElementActorPC::FUN_004a07f0(unsigned, unsigned, unsigned)
 
 
 
-// Parked: two independent x87 loads are scheduled before their target positions.
-// STUB: GAME 0x004a0a30
+// FUNCTION: GAME 0x004a0a30
 bool RHElementActorPC::FUN_004a0a30(RHUnk00613e90 &position)
 {
     RHUnk00613e90 origin;
@@ -1784,13 +1779,12 @@ bool RHElementActorPC::FUN_004a0a30(RHUnk00613e90 &position)
     }
     }
     difference = position.FUN_005df550(origin);
-    float y = difference.y;
-    difference.y = y * 1.7434468269348145f;
+    difference.y = difference.ScaledY(1.7434468269348145f);
     if (difference.z >= 0.0f)
     {
         unsigned range = RHActorPCField<unsigned short>(g_pEngine, 0x4cc0);
-        if (difference.x * difference.x + difference.z * difference.z + difference.y * difference.y <
-            (range * range) * factor * factor &&
+        float distance = difference.x * difference.x + difference.z * difference.z + difference.y * difference.y;
+        if (distance < (range * range) * factor * factor &&
             ((RHMalignityGeometryCalls *)g_unk0x6c0a9c)->FUN_004eff80(origin, position, 2))
         {
             if (RHActorPCField<int>(m_50, 0x8c) == 0x10)
