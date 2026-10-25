@@ -99,7 +99,6 @@ class RHMapCampaign
 public:
     std::vector<void *> FUN_00528050();
     std::vector<void *> FUN_005286b0();
-    void FUN_004562a0();
     unsigned FUN_004577a0();
     void FUN_004577b0();
     RHMapByte UnkState() const { return m_100; }

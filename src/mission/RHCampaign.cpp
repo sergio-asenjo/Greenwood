@@ -592,9 +592,9 @@ bool RHCampaign::Serialize(SBFile &file)
         if (file.m_bLoading)
         {
             RHCampaignMissionList &missions = *(RHCampaignMissionList *)((char *)this + 0x184);
-            typedef void (std::list<RHMission *>::*Clear)();
-            Clear clear = &std::list<RHMission *>::clear;
-            (((std::list<RHMission *> *)&missions)->*clear)();
+            typedef void (RHProfilePointerList::*Clear)();
+            Clear clear = &RHProfilePointerList::clear;
+            (((RHProfilePointerList *)&missions)->*clear)();
             missions.m_dirty = true;
             if (!RHCampaignAccess(file, &count, 4, 1121))
                 return false;
@@ -708,6 +708,125 @@ bool FUN_00453940(SBFile &file, RHMission *&mission)
             return true;
         }
         mission = ((RHCampaign *)g_unk0x6c07fc)->m_144.begin() + (unsigned short)index;
+    }
+    return true;
+}
+
+class RHUnk0054cda0;
+void FUN_0054cda0(RHUnk0054cda0 *value);
+
+class RHSequenceElement;
+class RHSeqList
+{
+public:
+    static void CopyData(RHSequenceElement **destination, RHSequenceElement *const *source);
+};
+
+inline void RHCampaignPushMission(RHCampaignMissionList &missions, RHMission *const &value)
+{
+    RHCampaignMissionList::Node *head = missions.m_head;
+    RHCampaignMissionList::Node *last = head->previous;
+    RHCampaignMissionList::Node *node = (RHCampaignMissionList::Node *)operator new(0xc);
+    node->next = head != 0 ? head : node;
+    node->previous = last != 0 ? last : node;
+    head->previous = node;
+    node->previous->next = node;
+    RHSeqList::CopyData((RHSequenceElement **)&node->value, (RHSequenceElement *const *)&value);
+    ++missions.m_count;
+    missions.m_dirty = true;
+}
+
+// Parked: effective only; the incremented list count lands in edx where the target uses ecx.
+// STUB: GAME 0x004539f0
+RHMission *RHCampaign::FUN_004539f0()
+{
+    if (m_17c)
+    {
+        m_174 = m_178;
+        m_178 = m_17c;
+        m_17c = 0;
+    }
+    else
+    {
+        ((RHGameCampaignView *)this)->FUN_00451a90();
+        std::for_each((RHUnk0054cda0 **)m_154.begin(), (RHUnk0054cda0 **)m_154.end(), FUN_0054cda0);
+        if (m_154.size() == 1 && !*((char *)m_154[0]->m_profile + 0x38))
+        {
+            FUN_00455650();
+            m_174 = m_178;
+            m_178 = m_154[0];
+        }
+        else
+        {
+            FUN_00455650();
+            m_174 = m_178;
+            m_178 = m_144.begin();
+        }
+    }
+    if (m_178 != m_144.begin())
+        ((RHGameCampaignView *)this)->FUN_00453b70((RHGameMission *)m_178);
+    if (m_178 != m_144.begin())
+    {
+        RHCampaignMissionList &previous = *(RHCampaignMissionList *)((char *)this + 0x184);
+        RHCampaignPushMission(previous, m_178);
+        if ((int)previous.m_count > 3)
+        {
+            ((std::list<RHMission *> *)&previous)->pop_front();
+            previous.m_dirty = true;
+        }
+    }
+    return m_178;
+}
+
+__forceinline void RHCampaignInsertMission(std::vector<RHMission> &missions, const RHMission &value)
+{
+    typedef std::vector<RHMission> Missions;
+    void (Missions::*insert)(RHMission *, unsigned int, const RHMission &) = &Missions::insert;
+    (missions.*insert)(missions.end(), 1, value);
+}
+
+// FUNCTION: GAME 0x00453bd0
+void RHCampaign::ForceNextMission(const std::string &first, const std::string &second, bool create)
+{
+    for (RHMission *mission = m_144.begin(); mission != m_144.end(); ++mission)
+    {
+        if (!_stricmp(mission->m_profile->m_04.c_str(), second.c_str()) &&
+            !_stricmp(mission->m_profile->m_14.c_str(), first.c_str()))
+        {
+            m_17c = mission;
+            FUN_00455650();
+            return;
+        }
+    }
+    if (create)
+    {
+        RHCampaignInsertMission(m_144, RHMission(RHUnk00436500GetProfileManager()->AddForcedMission(second, first, first)));
+        m_17c = m_144.end() - 1;
+    }
+    FUN_00455650();
+}
+
+class RHCampaignUnk00457480
+{
+public:
+    bool FUN_00457480(int value, void *container);
+    bool FUN_004574b0(int action, void *container);
+};
+
+// FUNCTION: GAME 0x00453cd0
+bool RHCampaign::FUN_00453cd0()
+{
+    RHMissionProfile *profile = m_17c->m_profile;
+    unsigned int count = profile->m_74.GetSize();
+    for (unsigned int i = 0; i < count; ++i)
+    {
+        if (!((RHCampaignUnk00457480 *)this)->FUN_00457480((int)profile->m_74.begin()[i], &m_1b0))
+            return false;
+    }
+    for (unsigned long *action = profile->m_84.begin(); action != profile->m_84.end(); ++action)
+    {
+        if (!((RHCampaignUnk00457480 *)this)->FUN_004574b0(*action, &m_1b0))
+            return false;
     }
     return true;
 }
@@ -1033,6 +1152,17 @@ void RHCampaign::FUN_00455650()
     }
 }
 
+// FUNCTION: GAME 0x00455810
+void RHCampaign::FUN_00455810()
+{
+    FUN_004559f0();
+    for (std::vector<RHPCDescription *>::iterator first = m_114.begin(); first != m_114.end(); ++first)
+    {
+        if (*((char *)(*first)->m_profile + 0x35))
+            m_1b0.push_back(*first);
+    }
+}
+
 // FUNCTION: GAME 0x004559f0
 void RHCampaign::FUN_004559f0()
 {
@@ -1108,6 +1238,31 @@ void RHCampaign::FUN_00455b80(RHPCDescription *character)
             SBArray<RHSaveGame *> &reservists = *(SBArray<RHSaveGame *> *)&m_124;
             reservists.Insert(reservists.m_last, 1, *(RHSaveGame **)first);
             m_114.erase(first);
+            return;
+        }
+    }
+}
+
+// FUNCTION: GAME 0x00455bf0
+void RHCampaign::FUN_00455bf0(RHPCDescription *character)
+{
+    std::vector<RHPCDescription *>::iterator first = m_124.begin();
+    std::vector<RHPCDescription *>::iterator last = m_124.end();
+    for (; first != last; ++first)
+    {
+        RHPCDescription *reservist = *first;
+        if (reservist == character)
+        {
+            ((RHPCStatus *)reservist)->FUN_0051d550(0, 1.5f);
+            ((RHPCStatus *)reservist)->FUN_0051d550(1, 1.5f);
+            *(short *)((char *)reservist + 0x14) = (short)(*(short *)((char *)reservist + 0x14) * 1.5f);
+            if (*(short *)((char *)reservist + 0x14) > 100)
+                *(short *)((char *)reservist + 0x14) = 100;
+            ((RHPCStatus *)reservist)->FUN_0055c390();
+            reservist->m_3c = -1;
+            SBArray<RHSaveGame *> &gang = *(SBArray<RHSaveGame *> *)&m_114;
+            gang.Insert(gang.m_last, 1, *(RHSaveGame **)&reservist);
+            m_124.erase(first);
             return;
         }
     }
@@ -1209,12 +1364,29 @@ unsigned short RHGameCampaignView::FUN_00456270()
     return count;
 }
 
+// FUNCTION: GAME 0x004562a0
+void RHCampaign::FUN_004562a0()
+{
+    m_154.insert(m_154.end(), m_164.begin(), m_164.end());
+    FUN_004564e0(m_164);
+}
+
 // FUNCTION: GAME 0x004564e0
 void RHCampaign::FUN_004564e0(std::vector<RHMission *> &missions)
 {
     for (RHMission **it = missions.begin(); it != missions.end(); ++it)
         (*it)->m_4 = 0;
     missions.erase(missions.begin(), missions.end());
+}
+
+// Parked: erase inlines the sector destructor with out-of-line 0x457990/0x457950 member vector dtors; ours inlines differently.
+// STUB: GAME 0x00456820
+void RHCampaign::CreateProductionSectors()
+{
+    std::vector<RHSectorProduction> &sectors = *(std::vector<RHSectorProduction> *)((char *)this + 0x74);
+    sectors.erase(sectors.begin(), sectors.end());
+    for (int type = 0; type < 13; ++type)
+        ((RHCampaignProductionSectors &)sectors).Insert(sectors.end(), 1, RHSectorProduction(type));
 }
 
 // FUNCTION: GAME 0x00456a10
@@ -1415,12 +1587,6 @@ bool RHCampaign::LoadFromSaveGame(const RHSaveGame *saveGame)
     return result;
 }
 
-class RHCampaignUnk00457480
-{
-public:
-    bool FUN_00457480(int value, void *container);
-};
-
 // FUNCTION: GAME 0x00457480
 bool RHCampaignUnk00457480::FUN_00457480(int value, void *container)
 {
@@ -1431,6 +1597,55 @@ bool RHCampaignUnk00457480::FUN_00457480(int value, void *container)
         if (*(int *)((char *)*first + 0x40) == value)
             return true;
         ++first;
+    }
+    return false;
+}
+
+// FUNCTION: GAME 0x004574b0
+bool RHCampaignUnk00457480::FUN_004574b0(int action, void *container)
+{
+    int *first = *(int **)((char *)container + 4);
+    int *last = *(int **)((char *)container + 8);
+    for (; first != last; ++first)
+    {
+        char *profile = *(char **)((char *)*first + 0x40);
+        int *primary = (int *)(profile + 0x48);
+        unsigned int i;
+        for (i = 0; i < 3; ++i)
+        {
+            if (primary[i] == action)
+                return true;
+        }
+        if (action == 2)
+        {
+            for (i = 0; i < 3; ++i)
+            {
+                if (primary[i] == 3)
+                    return true;
+            }
+        }
+        else if (action == 13)
+        {
+            for (i = 0; i < 3; ++i)
+            {
+                if (primary[i] == 14)
+                    return true;
+            }
+        }
+        int *secondary = (int *)(profile + 0x5c);
+        for (i = 0; i < 4; ++i)
+        {
+            if (secondary[i] == action)
+                return true;
+        }
+        if (action == 25)
+        {
+            for (i = 0; i < 4; ++i)
+            {
+                if (secondary[i] == 26)
+                    return true;
+            }
+        }
     }
     return false;
 }
@@ -1984,7 +2199,7 @@ void RHEngine::FUN_004e3770(RHElement *element)
 // ?_Destroy@?$vector@UOccupant@RHSectorProduction@@V?$allocator@UOccupant@RHSectorProduction@@@std@@@std@@IAEXPAUOccupant@RHSectorProduction@@0@Z
 
 // TEMPLATE: GAME 0x004e6c10
-// ?clear@?$list@PAVRHMission@@V?$allocator@PAVRHMission@@@std@@@std@@QAEXXZ
+// ?clear@?$list@PAVRHPlayerProfile@@V?$allocator@PAVRHPlayerProfile@@@std@@@std@@QAEXXZ
 
 // FUNCTION: GAME 0x004e7210
 void FUN_004e7210(RHMission **first, RHMission **last,
@@ -2152,7 +2367,7 @@ void RHCampaign::Emit(std::vector<RHMission *> &missions)
     void (Missions::*volatile insertMissionCount)(RHMission *, unsigned, const RHMission &) = &Missions::insert;
     RHMission *(Missions::*volatile eraseMissions)(RHMission *, RHMission *) = &Missions::erase;
     typedef std::list<RHMission *> MissionList;
-    void (MissionList::*volatile clearMissions)() = &MissionList::clear;
+    void (RHProfilePointerList::*volatile clearMissions)() = &RHProfilePointerList::clear;
     void (MissionList::*volatile pushMission)(RHMission *const &) = &MissionList::push_back;
     typedef std::vector<unsigned long> Indices;
     unsigned long *(Indices::*volatile insertIndex)(unsigned long *, const unsigned long &) = &Indices::insert;

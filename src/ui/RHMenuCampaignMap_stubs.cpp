@@ -10,7 +10,6 @@ void RHMapConstructValue(std::pair<const std::string, void *> *storage, const st
 
 bool RHMapWideText::Grow(unsigned, bool) { return false; }
 void RHMapWideText::End(unsigned) {}
-void RHMapCampaign::FUN_004562a0() {}
 bool RHMapDescription::FUN_0063cda0(unsigned) { return false; }
 // FUNCTION: GAME 0x00527cc0
 unsigned FUN_00527cc0(unsigned value)

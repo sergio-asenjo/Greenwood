@@ -6,6 +6,7 @@
 #include "RHGameInputTranslator.h"
 #include "SBUIBase.h"
 #include "RHMission.h"
+#include "RHCampaignCore.h"
 #include "RHCampaignCommandLine.h"
 #include "RHFontManager.h"
 #include "RHGameMenuCalls.h"
@@ -393,7 +394,7 @@ bool RHMenuCampaignMap::FUN_00528560(int, void *widget, void *)
     {
     case 1:
         FUN_00527c00(((RHMapCampaign *)g_unk0x6c07fc)->FUN_005286b0());
-        ((RHMapCampaign *)g_unk0x6c07fc)->FUN_004562a0();
+        ((RHCampaign *)g_unk0x6c07fc)->FUN_004562a0();
         break;
     case 0:
         ((RHGameMenuCalls *)this)->FUN_00544b30();
@@ -1053,7 +1054,7 @@ void RHMapTree::FUN_0053ad50()
 class RHUnkFXDraw
 {
 public:
-    unsigned long Unk005e4ed0(int, int, int, int);
+    unsigned long Unk005e4ed0(int, int, int, bool);
     unsigned short FUN_005e56c0(unsigned long);
     unsigned short FUN_005e5750(unsigned long);
     void FUN_005e6440(unsigned long, int, int, unsigned long, unsigned long);
