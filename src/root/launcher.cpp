@@ -69,6 +69,35 @@ LRESULT CALLBACK FUN_004094f0(HWND window, UINT message, WPARAM first, LPARAM se
     return DefWindowProcA(window, message, first, second);
 }
 
+// FUNCTION: GAME 0x00409d10
+char **FUN_00409d10(char *command, unsigned *count)
+{
+    unsigned spaces = 0;
+    for (unsigned position = 0; command[position]; ++position)
+    {
+        if (command[position] == ' ')
+        {
+            ++spaces;
+            command[position] = 0;
+        }
+    }
+    unsigned total = spaces + 1;
+    *count = total;
+    char **arguments = (char **)operator new(total * sizeof(char *));
+    unsigned index = 0;
+    arguments[0] = command;
+    unsigned slot = 1;
+    for (--total; total; ++index)
+    {
+        if (!command[index])
+        {
+            arguments[slot++] = command + index + 1;
+            --total;
+        }
+    }
+    return arguments;
+}
+
 // Parked: launcher reconstruction still lacks verified engine helpers, switches and slideshow flow.
 // Reconstructed body and analysis: docs/notes/launcher_0x0040a230_*.
 // STUB: GAME 0x0040a230

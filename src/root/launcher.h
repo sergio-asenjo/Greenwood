@@ -86,7 +86,7 @@ public:
 };
 
 void FUN_004090d0();
-char **FUN_00409d10(const char *command, unsigned *counts);
+char **FUN_00409d10(char *command, unsigned *count);
 bool FUN_00409d70(char **arguments, unsigned *index, unsigned count);
 void FUN_0040a0d0();
 unsigned FUN_005e1440();
