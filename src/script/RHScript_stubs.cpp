@@ -33,17 +33,6 @@ unsigned short RHUnk0051d0e0::Find(int value)
     return 0xffff;
 }
 
-class RHUnk005793e0
-{
-public:
-    void *GetValue();
-};
-
-void *RHUnk005793e0::GetValue()
-{
-    return 0;
-}
-
 // FUNCTION: GAME 0x005fc030
 SBGeoPoint2D::SBGeoPoint2D()
 {

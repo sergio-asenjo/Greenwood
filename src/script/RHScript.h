@@ -1,5 +1,6 @@
 #ifndef RHSCRIPT_H
 #define RHSCRIPT_H
+#include "RHSectorActorList.h"
 
 // RHScript — declarations for RHScript.cpp (decompiled TU).
 //
@@ -63,20 +64,7 @@ struct RHUnk00571160Position;
 class RHUnk005fc3b0;
 class SBGeoPoint2D;
 
-class RHArtificialIntelligence
-{
-public:
-    void Unk00410600();
-    void Unk00410010(bool mode);
-    bool InitState();
-    void Unk00416710(unsigned value);
-    bool Unk00412240(const RHUnk00571160Position &position, unsigned short flags, float length);
-    bool Unk00412f40(RHUnk005fc3b0 *direction, int mode);
-    void Unk00418c40(int remark, unsigned flags);
-    void FUN_00413240(SBGeoPoint2D point, int first, int second);
-    void FUN_004132d0(int first, int mode, int second);
-    bool Unk00412f70(unsigned short direction, int mode);
-};
+#include "RHArtificialIntelligenceCore.h"
 
 #include "RHUnk0046bd20.h"
 
@@ -437,7 +425,7 @@ public:
     static int GetNumberOfBeamMes();
     static void *GetPCFromMissionTeam(unsigned long index);
     static char RHUnk5793a0(void *actor);
-    static void *RHUnk5793e0();
+    static bool RHUnk5793e0();
     static void *RHUnk5793f0();
     static void *RHUnk579410();
     static int GetCustomCampaignValue(int index);
@@ -803,7 +791,7 @@ public:
     RHScriptNode *head;
     int count;
     RHScriptNode *cursor;
-    void GoTo(int index);
+    __forceinline void GoTo(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
     static void CopyData(RHSequenceElement **destination, RHSequenceElement *const *source);
 };
 
@@ -834,38 +822,6 @@ public:
 #include "RHAIStateCalls.h"
 
 #include "RHMalignityPosition.h"
-
-class RHMalignityBaseView
-{
-public:
-    virtual void V00(int mode) = 0;
-    virtual void V04(int mode) = 0;
-    virtual void V08() = 0;
-    virtual void V0c() = 0;
-    virtual void V10(int state, int substate) = 0;
-    virtual void V14() = 0;
-    virtual void V18() = 0;
-    virtual void V1c() = 0;
-    virtual void V20() = 0;
-    virtual void V24() = 0;
-    virtual void V28() = 0;
-    virtual void V2c() = 0;
-    virtual void V30() = 0;
-    virtual void V34() = 0;
-    virtual void V38() = 0;
-    virtual void V3c(int mode) = 0;
-    SBGeoPoint2D FUN_0040cc20(void *actor);
-    RHMalignityPosition FUN_004165e0(void *actor, bool mode);
-    SBGeoPoint2D FUN_0040cbf0(const RHMalignityPosition &position);
-    void FUN_0041a300(void *actor);
-    void FUN_0041ab30();
-    bool FUN_00419e10(void *actor);
-    float FUN_0041a010(void *actor);
-    float FUN_0041a060(void *actor);
-    float FUN_0041a0b0(void *actor);
-    void FUN_00412cf0(const RHMalignityPosition &position, unsigned short heading, int mode);
-    void *m_actor;
-};
 
 class RHScriptAIStateCalls
 {
@@ -903,13 +859,7 @@ public:
     virtual void v04(int state, int value); // vtable+0x10
 };
 
-class RHSoundSource;
-
-class RHSoundSourceManager
-{
-public:
-    RHSoundSource *GetSoundSource(unsigned short id);
-};
+#include "RHSoundSourceManagerCore.h"
 
 class RHUnk00588530
 {

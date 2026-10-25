@@ -41,6 +41,7 @@
 #include "RHMalignityActorCalls.h"
 #include "RHConsoleCampaignCalls.h"
 #include "RHGameActionCalls.h"
+#include "RHCampaignCore.h"
 
 extern unsigned *g_unk0x006c08a4;
 class RHUnk6c1040;
@@ -48,11 +49,6 @@ extern RHUnk6c1040 *g_unk0x6c1040;
 extern RHUnk0048a970 *g_unk0x6c0b3c;
 
 extern RHEngine *g_pEngine;
-class RHUnk005793e0
-{
-public:
-    void *GetValue();
-};
 class RHUnk0051d0e0
 {
 public:
@@ -228,7 +224,7 @@ void RHUnk004169c0::Unk(int state, int value)
         stimulus.m_type = 0;
         ((RHScriptAIStateCalls *)this)->FUN_00410620(stimulus);
         ((RHScriptAIStateCalls *)((char *)*(void **)((char *)this + 4) + 0x6e8))->FUN_0043a220(
-            ((RHMalignityBaseView *)this)->FUN_004165e0(*(void **)((char *)this + 4), true), 300, 0, 0x29a);
+            ((RHArtificialIntelligence *)this)->FUN_004165e0(*(void **)((char *)this + 4), true), 300, 0, 0x29a);
         ((RHScriptAIStateCalls *)this)->FUN_00410d30();
         break;
     }
@@ -5370,9 +5366,9 @@ char RHScript::RHUnk5793a0(void *actor)
 }
 
 // FUNCTION: GAME 0x005793e0
-void *RHScript::RHUnk5793e0()
+bool RHScript::RHUnk5793e0()
 {
-    return ((RHUnk005793e0 *)g_unk0x6c07fc)->GetValue();
+    return ((RHCampaign *)g_unk0x6c07fc)->FUN_00453cd0();
 }
 
 // FUNCTION: GAME 0x005793f0
@@ -7007,13 +7003,6 @@ public:
     void FUN_00580220(int value);
 };
 
-class RHSectorProduction;
-class RHCampaign
-{
-public:
-    RHSectorProduction *FUN_00456a10(unsigned long index);
-    unsigned short FUN_00455af0();
-};
 
 class RHUnk00580330
 {
