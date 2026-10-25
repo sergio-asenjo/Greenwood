@@ -18,16 +18,7 @@
 #include "SBPicture.h"
 #include <string>
 
-class RHUnk005f4fc0 : public SBFile
-{
-public:
-    RHUnk005f4fc0();
-    ~RHUnk005f4fc0();
-    int FUN_005f5090(const std::string &name, int mode);
-    void FUN_005f5290();
-
-    char m_14[0x44]; // [0x14, 0x58)
-};
+#include "RHUnk005f4fc0.h"
 
 // SIZE 0x14
 struct SBPictureTGAHeader

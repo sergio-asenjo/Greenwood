@@ -7,20 +7,7 @@
 class RHSaveGameManager;
 struct _SYSTEMTIME;
 
-class RHUnk005f4fc0 : public SBFile
-{
-public:
-    RHUnk005f4fc0();
-    ~RHUnk005f4fc0();
-    int FUN_005f5090(const std::string &name, int mode);
-    int FUN_005f5d60(const std::string &, int);
-    FILE *FUN_005f58c0(const std::string &, const char *);
-    void FUN_005f5290();
-    bool FUN_005f6200(void *value);
-    int FUN_005f6220(std::string &value);
-
-    char m_14[0x44]; // [0x14, 0x58)
-};
+#include "RHUnk005f4fc0.h"
 
 class RHSaveGame
 {

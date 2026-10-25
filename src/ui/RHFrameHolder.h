@@ -181,16 +181,7 @@ public:
     bool FUN_00600920(unsigned long, unsigned long, unsigned long &);
 };
 
-// SIZE 0x58
-class RHUnk005f4fc0 : public SBFile
-{
-public:
-    RHUnk005f4fc0();
-    ~RHUnk005f4fc0();
-    int FUN_005f5090(const std::string &, int);
-    int FUN_005f5d60(const std::string &, int);
-    undefined m_14[0x44]; // 0x14
-};
+#include "RHUnk005f4fc0.h"
 
 class RHEngine
 {
