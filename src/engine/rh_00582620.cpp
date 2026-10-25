@@ -4,6 +4,12 @@
 #include "RHSequenceManager.h"
 #include "RHSequenceElementCalls.h"
 
+inline unsigned RHSequenceDispatchCount(unsigned short first, unsigned short last, unsigned &index)
+{
+    index = first;
+    return last - (unsigned)first;
+}
+
 class RHUnk00582620
 {
 public:
@@ -30,7 +36,7 @@ bool RHUnk00582620::FUN_00582530()
     return true;
 }
 
-// STUB: GAME 0x00582560
+// FUNCTION: GAME 0x00582560
 void RHUnk00582620::FUN_00582560()
 {
     unsigned short count = (unsigned short)m_list.Count();
@@ -48,8 +54,8 @@ void RHUnk00582620::FUN_00582560()
         unsigned short last = m_2c;
         if (first < last)
         {
-            unsigned remaining = last - (unsigned)first;
-            unsigned index = first;
+            unsigned index;
+            unsigned remaining = RHSequenceDispatchCount(first, last, index);
             do
             {
                 RHSequenceElementCalls *element = (RHSequenceElementCalls *)m_list[index];
