@@ -1,5 +1,6 @@
 #include "SBNullstr.h"
 #include "SBInput.h"
+#include <list>
 
 void SBAssert(int, const char *, int, const char *, ...);
 
@@ -133,6 +134,26 @@ int __stdcall FUN_005fae50(void *value, SBInputUnk005fb730 *input)
 {
     input->FUN_005fae70(value);
     return 1;
+}
+
+// SIZE 0x10
+struct SBInputDeviceGuid
+{
+    unsigned long m_data[4];
+};
+
+// FUNCTION: GAME 0x005fae70
+void SBInputUnk005fb730::FUN_005fae70(void *value)
+{
+    int &count = *(int *)((char *)this + 0x10);
+    if (count < 16)
+    {
+        std::string name((const char *)value + 0x28);
+        ((std::list<std::string> *)((char *)this + 0x14))->push_back(name);
+        *(bool *)((char *)this + 0x24) = true;
+        ((SBInputDeviceGuid *)((char *)this + 0x44))[count] = *(const SBInputDeviceGuid *)((const char *)value + 4);
+        ++count;
+    }
 }
 
 #include "VMCore.h"
