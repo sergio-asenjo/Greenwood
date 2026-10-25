@@ -484,33 +484,40 @@ done:
 }
 
 #include <vector>
+#include <list>
 
-// Parked: the initial edi save precedes the zero-result register setup.
-// STUB: GAME 0x00500130
+typedef std::list<RHFocusGroupableEntry> RHFocusGroupList;
+
+DECOMP_SIZE_ASSERT(RHFocusGroupList, 0x0c)
+DECOMP_SIZE_ASSERT(RHFocusGroupList::iterator, 0x04)
+DECOMP_SIZE_ASSERT(RHFocusGroupableEntry, 0x08)
+DECOMP_SIZE_ASSERT(RHFocusGroupableNode, 0x10)
+
+// FUNCTION: GAME 0x00500130
 RHFocusEvent *RHFocusManager::FUN_00500130()
 {
     RHFocusEvent *result = 0;
-    RHFocusNode<RHFocusGroupableView> *head = *(RHFocusNode<RHFocusGroupableView> *volatile *)&m_groupHead;
-    RHFocusNode<RHFocusGroupableView> *cursor = *(RHFocusNode<RHFocusGroupableView> *volatile *)&m_groupCursor;
-    RHFocusGroupableNode *next;
+    RHFocusGroupList &groups = *(RHFocusGroupList *)&m_groupAllocator;
+    RHFocusGroupList::iterator &cursor = *(RHFocusGroupList::iterator *)&m_groupCursor;
+    RHFocusGroupList::iterator next;
     typedef RHFocusEvent *(RHFocusManager::*Link)(RHFocusEvent *, RHFocusEvent *) const;
     Link link = &RHFocusManager::FUN_00500040;
-    if (cursor == head) {
-        next = (RHFocusGroupableNode *)head->next;
+    if (cursor == groups.end()) {
+        next = groups.begin();
     }
     else {
-        next = (RHFocusGroupableNode *)cursor->next;
+        next = cursor;
+        ++next;
         m_groupCursor->value->V08(true);
         result = m_groupCursor->value->V14(false);
         result = (this->*link)(result, m_groupCursor->value->V18(false));
     }
-    for (int index = 0; index != m_groupCount; ++index, next = next->next) {
-        RHFocusGroupableNode *loopHead = (RHFocusGroupableNode *)m_groupHead;
-        if (next == loopHead)
-            next = loopHead->next;
-        if (*((bool *)next->value.widget->V04() + 4) && next->value.sleeping == true) {
-            m_groupCursor = (RHFocusNode<RHFocusGroupableView> *)next;
-            next->value.widget->V08(false);
+    for (int index = 0; index != groups.size(); ++index, ++next) {
+        if (next == groups.end())
+            next = groups.begin();
+        if (*((bool *)next->widget->V04() + 4) && next->sleeping == true) {
+            cursor = next;
+            next->widget->V08(false);
             return (this->*link)(result, m_groupCursor->value->V14(true));
         }
     }
@@ -780,15 +787,28 @@ void RHFocusManager::FUN_00500790(bool value)
     m_40[1] = value;
 }
 
-// Parked: the initial edi save precedes the zero-result register setup.
-// STUB: GAME 0x005007a0
+struct RHFocusGroupSnapshot
+{
+    RHFocusNode<RHFocusGroupableView> *head;
+    RHFocusNode<RHFocusGroupableView> *cursor;
+};
+
+inline RHFocusGroupSnapshot RHFocusGroupCursor(const RHFocusManager &manager)
+{
+    RHFocusGroupSnapshot result;
+    result.head = manager.m_groupHead;
+    result.cursor = manager.m_groupCursor;
+    return result;
+}
+
+// FUNCTION: GAME 0x005007a0
 RHFocusEvent *RHFocusManager::FUN_005007a0(RHFocusGroupableView *widget)
 {
     RHFocusEvent *result = 0;
     typedef RHFocusEvent *(RHFocusManager::*Link)(RHFocusEvent *, RHFocusEvent *) const;
     Link link = &RHFocusManager::FUN_00500040;
-    RHFocusNode<RHFocusGroupableView> *head = *(RHFocusNode<RHFocusGroupableView> *volatile *)&m_groupHead;
-    if (m_groupCursor != head) {
+    RHFocusGroupSnapshot group = RHFocusGroupCursor(*this);
+    if (group.cursor != group.head) {
         m_groupCursor->value->V08(true);
         result = (this->*link)(0, m_groupCursor->value->V14(false));
         result = (this->*link)(result, m_groupCursor->value->V18(false));
