@@ -1,5 +1,6 @@
 #ifndef RHSOUNDCACHE_H
 #define RHSOUNDCACHE_H
+#include "RHSectorActorList.h"
 
 #include "SB.h"
 #include "Decomp.h"
@@ -56,7 +57,7 @@ struct RHSoundCacheList
         m_10 = true;
     }
     ~RHSoundCacheList();
-    void FUN_005c8e40(int);
+    __forceinline void FUN_005c8e40(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
     RHSoundCacheListIterator FUN_0046eb80();
     RHSoundCacheListIterator FUN_00424410(RHSoundCacheListIterator, const unsigned long &);
     __forceinline RHSoundCacheListIterator begin()
@@ -155,24 +156,7 @@ struct RHUnk00641782
 };
 
 
-// SIZE 0x58
-class RHUnk005f4fc0 : public SBFile
-{
-public:
-    RHUnk005f4fc0();
-    ~RHUnk005f4fc0();
-    int FUN_005f5090(const std::string &, int);
-    void FUN_005f5290();
-    undefined m_14[4]; // 0x14
-    std::string m_18; // 0x18
-    bool m_28; // 0x28
-    undefined m_29[7]; // 0x29
-    undefined4 m_30; // 0x30
-    undefined4 m_34; // 0x34
-    undefined4 m_38; // 0x38
-    bool m_3c; // 0x3c
-    undefined m_3d[0x1b]; // 0x3d
-};
+#include "RHUnk005f4fc0.h"
 
 class RHProfileFile
 {

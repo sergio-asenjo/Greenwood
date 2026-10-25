@@ -12,7 +12,6 @@ void *FUN_00643705(void *memory, unsigned int size) { return realloc(memory, siz
 
 RHsoundGroup::~RHsoundGroup() {}
 RHSoundCacheList::~RHSoundCacheList() {}
-void RHSoundCacheList::FUN_005c8e40(int) {}
 RHSoundCacheListIterator RHSoundCacheList::FUN_0046eb80() { return RHSoundCacheListIterator(m_04->m_next); }
 RHSoundCacheListIterator RHSoundCacheList::FUN_00424410(RHSoundCacheListIterator position, const unsigned long &value)
 {

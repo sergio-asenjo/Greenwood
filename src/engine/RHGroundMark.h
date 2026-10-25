@@ -10,6 +10,7 @@
 //   - RHGroundInfo = SBGeoPoint2D (8 bytes) + two unsigned shorts.
 
 #include "SB.h"
+#include "RHSectorActorList.h"
 #include <memory>
 
 #define SBGEO_POINT2D_VIEW
@@ -109,7 +110,7 @@ public:
     unsigned short m_a;
     unsigned short m_b;
 
-    void GoTo(int i);
+    __forceinline void GoTo(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
     void *Clear(void *out, RHGroundInfoNode *first, RHGroundInfoNode *last);
     RHGroundInfoIter Erase(RHGroundInfoIter position);
     void Dispose();

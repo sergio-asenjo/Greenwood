@@ -1,5 +1,6 @@
 #ifndef RHELEMENTPROJECTILE_H
 #define RHELEMENTPROJECTILE_H
+#include "RHSectorActorList.h"
 
 #include "SB.h"
 #include "RHEngine.h"
@@ -66,7 +67,7 @@ public:
 class RHTitbitList
 {
 public:
-    void At(int index);
+    __forceinline void At(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
 };
 
 struct RHProjectileList

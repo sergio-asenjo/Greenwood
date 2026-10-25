@@ -1,5 +1,6 @@
 #ifndef RHELEMENTMOBILE_H
 #define RHELEMENTMOBILE_H
+#include "RHSectorActorList.h"
 
 #include "SB.h"
 #include "Decomp.h"
@@ -159,7 +160,7 @@ class RHMobilePointerList
 public:
     RHMobilePointerList();
     ~RHMobilePointerList();
-    void FUN_005c8e40(int index);
+    __forceinline void FUN_005c8e40(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
     void Append(void *value)
     {
         RHMobilePointerNode *head = m_4;
@@ -402,7 +403,7 @@ struct RHMobilePointIterator
 class RHMobilePointList
 {
 public:
-    void FUN_005c8e40(int index);
+    __forceinline void FUN_005c8e40(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
     RHMobilePointIterator FUN_0046eb80();
     static void FUN_005c9010(RHMobilePointNode *&node, int distance, unsigned count);
     void GoToInline(int index, unsigned count)
@@ -620,7 +621,7 @@ class RHUnk0040f060 : public RHMobileLineStorage
 {
 public:
     RHUnk0040f060();
-    void GoTo(int index);
+    __forceinline void GoTo(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
     ~RHUnk0040f060()
     {
         RHScriptNode *sentinel = head;

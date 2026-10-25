@@ -1,5 +1,6 @@
 #ifndef RHFASTFINDGRID_H
 #define RHFASTFINDGRID_H
+#include "RHSectorActorList.h"
 
 #include "SB.h"
 #include "Decomp.h"
@@ -432,7 +433,7 @@ class RHSeqList
 public:
     RHSeqList(const char &allocator);
     static void CopyData(RHSequenceElement **destination, RHSequenceElement *const *source);
-    void GoTo(int index);
+    __forceinline void GoTo(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
     char m_00[4];
     RHSeqNode *m_head;
     int m_count;

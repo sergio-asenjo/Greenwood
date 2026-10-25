@@ -1,5 +1,6 @@
 #ifndef RHSEQUENCEMANAGER_H
 #define RHSEQUENCEMANAGER_H
+#include "RHSectorActorList.h"
 
 #include "RHOrder.h"
 #include "Decomp.h"
@@ -73,7 +74,7 @@ class RHSeqList
 {
 public:
     static void CopyData(RHSequenceElement **destination, RHSequenceElement *const *source);
-    void GoTo(int index);
+    __forceinline void GoTo(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
 };
 
 template<class T> struct RHManagerNode

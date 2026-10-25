@@ -1,5 +1,6 @@
 #ifndef RHSPRITE_H
 #define RHSPRITE_H
+#include "RHSectorActorList.h"
 
 #include "RHSprite_calls.h"
 #include "Decomp.h"
@@ -34,7 +35,7 @@ class RHSpriteList
 public:
     RHSpriteListIterator erase(RHSpriteListIterator);
     RHSpriteListIterator begin();
-    void FUN_005c8e40(int);
+    __forceinline void FUN_005c8e40(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
     void Find(const int &value, int &found, RHSpriteListNode *sentinel, int size)
     {
         int i;

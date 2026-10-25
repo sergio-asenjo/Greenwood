@@ -1,4 +1,5 @@
 #include "SBNullstr.h"
+#include "RHSectorActorList.h"
 #include "RHSequenceElementMovement.h"
 #include <iterator>
 #include "RHActorTranslation.h"
@@ -401,7 +402,7 @@ public:
 class RHSpriteList
 {
 public:
-    void FUN_005c8e40(int index);
+    __forceinline void FUN_005c8e40(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
 };
 
 class RHSpriteSequenceCalls

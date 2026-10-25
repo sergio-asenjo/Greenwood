@@ -17,6 +17,7 @@
 
 #ifndef RHTITBITS_H
 #define RHTITBITS_H
+#include "RHSectorActorList.h"
 
 #include "SB.h"
 #include <string>
@@ -96,7 +97,7 @@ public:
     char m_valid;            // [0x10]
     int m_index;             // [0x14]
 
-    void At(int i); // target 0x005c8e40 (out-of-line at the write call site)
+    __forceinline void At(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
 
     void Advance(int distance)
     {

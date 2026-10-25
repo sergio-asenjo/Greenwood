@@ -127,7 +127,6 @@ void RHMobileUnk004b06f0::FUN_004aff00(RHUnk005fc3b0 *first, RHUnk005fc3b0 *last
         first->~RHUnk005fc3b0();
 }
 
-void RHMobilePointList::FUN_005c8e40(int index) { GoToInline(index, (unsigned short)m_8); }
 RHMobilePointIterator RHMobilePointList::FUN_0046eb80()
 {
     RHMobilePointIterator result;
@@ -236,15 +235,6 @@ RHMobilePointerList::~RHMobilePointerList()
     }
     ::operator delete(m_4);
 }
-void RHMobilePointerList::FUN_005c8e40(int index)
-{
-    m_c = m_4->next;
-    for (int i = 0; i < index; ++i)
-        m_c = m_c->next;
-    m_14 = index;
-    m_10 = false;
-}
-
 SBGeoPoint2D RHUnk005fc3b0::FUN_005fc450() const { return *this; }
 
 RHMobilePointerArray::RHMobilePointerArray() : m_4(0), m_8(0), m_c(0), m_14(true) {}

@@ -34,59 +34,6 @@ bool RHSequenceElement::Serialize(SBFile &, bool) { return true; }
 
 // Targets 0x00586050 / 0x005865a0 / 0x00585e70 / 0x00588270.
 
-static inline void RHSequenceAdvance(RHSeqNode *&node, int distance)
-{
-    for (; distance > 0; --distance)
-        node = node->m_next;
-    for (; distance < 0; ++distance)
-        node = node->m_prev;
-}
-
-void RHSeqList::GoTo(int wanted)
-{
-    int count = m_count;
-    if (m_valid)
-    {
-        if (wanted <= (count + 1) / 2)
-        {
-            m_cur = m_head->m_next;
-            RHSequenceAdvance(m_cur, wanted);
-        }
-        else
-        {
-            m_cur = m_head;
-            RHSequenceAdvance(m_cur, wanted - count);
-        }
-        m_valid = false;
-        m_index = wanted;
-    }
-    else
-    {
-        int previous = m_index;
-        if (wanted != previous)
-        {
-            if (wanted < previous)
-            {
-                if (wanted < (previous + 1) / 2)
-                {
-                    m_cur = m_head->m_next;
-                    RHSequenceAdvance(m_cur, wanted);
-                }
-                else
-                    RHSequenceAdvance(m_cur, wanted - previous);
-            }
-            else if (wanted < (previous + count) / 2)
-                RHSequenceAdvance(m_cur, wanted - previous);
-            else
-            {
-                m_cur = m_head;
-                RHSequenceAdvance(m_cur, wanted - count);
-            }
-            m_index = wanted;
-        }
-    }
-}
-
 // Inlined SBList<RHSequenceElement*>::insert(iterator, T* const&). The node is
 // 0xc bytes ({next, prev, data}); only the tail links through CopyData.
 RHSeqIter RHSeqList::insert(RHSeqIter pos, RHSequenceElement *const &value)

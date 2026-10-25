@@ -1,4 +1,5 @@
 #include "sb3dstuff.h"
+#include "RHSectorActorList.h"
 #include "Decomp.h"
 #include <iterator>
 
@@ -73,7 +74,7 @@ void FUN_005c9010(RHUnkSightVertexIter &position, int distance, std::bidirection
 class RHUnkSightVertexList
 {
 public:
-    void GoTo(int index);
+    __forceinline void GoTo(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
     RHUnkSightVertex &At(int index, std::bidirectional_iterator_tag category)
     {
         if (m_dirty)

@@ -1,5 +1,6 @@
 #ifndef RH_GAME_PAD_H
 #define RH_GAME_PAD_H
+#include "RHSectorActorList.h"
 
 #include "Decomp.h"
 #include "SBInput.h"
@@ -81,7 +82,7 @@ struct RHGamePadSelection
         }
         m_index = wanted;
     }
-    void GoTo(int index);
+    __forceinline void GoTo(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
     unsigned GetCount() const { return m_count; }
     RHElementActorPC *GetCurrent() const { return m_current.node->value; }
     RHElementActorPC *Selected()

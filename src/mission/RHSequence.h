@@ -25,6 +25,7 @@
 // type-mangled). This TU only declares `extern RHUnk6c1040 *g_unk0x6c1040` and
 // reinterprets +0x190.
 #include "RHOrder.h"
+#include "RHSectorActorList.h"
 #include <list>
 
 class RHSequenceElement;
@@ -112,7 +113,7 @@ public:
     char m_pad1[3];
     int m_index; // [0x14]
 
-    void GoTo(int i); // target 0x005c8e40
+    __forceinline void GoTo(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
 
     RHSeqIter end() { return RHSeqIter(m_head); }
 

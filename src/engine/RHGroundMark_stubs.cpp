@@ -20,6 +20,3 @@ void *RHUnk00606040::Destroy(unsigned flags)
         operator delete(this);
     return this;
 }
-
-// Target 0x005c8e40.
-void RHGroundInfoList::GoTo(int) {}

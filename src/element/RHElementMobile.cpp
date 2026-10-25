@@ -838,7 +838,10 @@ void RHElementMobile::CheckForLineCrossing()
 // TEMPLATE: GAME 0x004afb80
 // ??1?$vector@VSBGeoVector2D@@V?$allocator@VSBGeoVector2D@@@std@@@std@@QAE@XZ
 
-// TEMPLATE: GAME 0x004afd50
+// TEMPLATE: GAME 0x004afd50 FOLDED
+// ?size@?$vector@VSBGeoPoint2D@@V?$allocator@VSBGeoPoint2D@@@std@@@std@@QBEIXZ
+
+// TEMPLATE: GAME 0x004afd50 FOLDED
 // ?size@?$vector@VSBGeoVector2D@@V?$allocator@VSBGeoVector2D@@@std@@@std@@QBEIXZ
 
 unsigned RHMobileUnk004b06f0::FUN_004afd50() const

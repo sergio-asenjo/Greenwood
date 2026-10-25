@@ -1,5 +1,6 @@
 #ifndef RHPATHFINDER_H
 #define RHPATHFINDER_H
+#include "RHSectorActorList.h"
 
 #include "SB.h"
 #include "Decomp.h"
@@ -93,7 +94,7 @@ class RHTitbitList
 {
 public:
     void Clear(void *out, RHTitbitNode *first, RHTitbitNode *last);
-    void At(int index);
+    __forceinline void At(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
 };
 
 class RHUnk0046eb30

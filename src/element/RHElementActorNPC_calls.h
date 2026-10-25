@@ -1,5 +1,6 @@
 #ifndef RHELEMENTACTORNPC_CALLS_H
 #define RHELEMENTACTORNPC_CALLS_H
+#include "RHSectorActorList.h"
 
 #include "RHSprite.h"
 
@@ -62,7 +63,7 @@ public:
 class RHTitbitList
 {
 public:
-    void At(int index);
+    __forceinline void At(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
 };
 
 class RHPathHistoryList

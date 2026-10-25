@@ -520,53 +520,6 @@ void RHTitbitList::Resize(long count)
     m_valid = 1;
 }
 
-void RHTitbitList::At(int index)
-{
-    std::list<RHTitbit> &list = *(std::list<RHTitbit> *)this;
-    std::list<RHTitbit>::iterator &current = *(std::list<RHTitbit>::iterator *)&m_cur;
-    long count = list.size();
-    if (m_valid)
-    {
-        if (index <= (count + 1) / 2)
-        {
-            current = list.begin();
-            std::advance(current, (long)index);
-        }
-        else
-        {
-            current = list.end();
-            std::advance(current, index - count);
-        }
-        m_valid = 0;
-        m_index = index;
-    }
-    else
-    {
-        long previous = m_index;
-        if (index != previous)
-        {
-            if (index < previous)
-            {
-                if (index < (previous + 1) / 2)
-                {
-                    current = list.begin();
-                    std::advance(current, (long)index);
-                }
-                else
-                    std::advance(current, index - previous);
-            }
-            else if (index < (previous + count) / 2)
-                std::advance(current, index - previous);
-            else
-            {
-                current = list.end();
-                std::advance(current, index - count);
-            }
-            m_index = index;
-        }
-    }
-}
-
 #include <map>
 
 class RHGameRenderer005c9270

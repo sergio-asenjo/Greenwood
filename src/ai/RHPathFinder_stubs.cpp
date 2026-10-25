@@ -15,7 +15,6 @@ SBGeoPoint2D SBGeoBoundingBox2D::FUN_00608f40() const
     return SBGeoPoint2D(center);
 }
 void RHPathFinder::FUN_00555a10(unsigned short, unsigned short, unsigned, RHPathWorkList &) {}
-void RHPathQueryCalls::FUN_005c8e40(int) {}
 RHUnkIter RHPathRequestList::FUN_0046eb80() { return RHUnkIter(head->next); }
 
 bool FUN_00558210(const SBGeoPoint2D &) { return false; }
