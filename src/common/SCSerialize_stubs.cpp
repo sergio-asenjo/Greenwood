@@ -11,7 +11,7 @@ FILE *SCSerializeUnk00643c43(const char *, const char *)
     return 0;
 }
 
-int SCSerializeUnk00642a2f(const char *, ...)
+int SCSerializeUnk00642a2f(const char *, ...) throw()
 {
     return 0;
 }

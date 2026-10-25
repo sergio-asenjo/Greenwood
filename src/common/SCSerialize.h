@@ -68,7 +68,7 @@ public:
 
 int SCSerializeUnk00643c56(FILE *);
 extern "C" FILE *SCSerializeUnk00643c43(const char *, const char *);
-int SCSerializeUnk00642a2f(const char *, ...);
+int SCSerializeUnk00642a2f(const char *, ...) throw();
 
 // SIZE 0x0c
 class SCSerializeUnkList

@@ -1,14 +1,14 @@
 #include "SBNullstr.h"
 #include "SCType.h"
 
-int SCSerializeUnk00642a2f(const char *, ...);
+int SCSerializeUnk00642a2f(const char *, ...) throw();
 
 void EmitSCType(const SCType *type, std::string &name)
 {
     type->GetTypeName(name);
 }
 
-// STUB: GAME 0x00639c10
+// FUNCTION: GAME 0x00639c10
 void SCType::GetTypeName(std::string &name) const
 {
     unsigned char type = m_type;

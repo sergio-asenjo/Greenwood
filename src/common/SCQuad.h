@@ -53,7 +53,7 @@ public:
     void InitializeVMQuadSymbolWithSCQuadArg(unsigned short &, SCQuadArg &);
 };
 
-int SCSerializeUnk00642a2f(const char *, ...);
+int SCSerializeUnk00642a2f(const char *, ...) throw();
 int SCQuadUnk00644112(FILE *, const char *, ...);
 const char *SCQuadUnk0063c760(int);
 
