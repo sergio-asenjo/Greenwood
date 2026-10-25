@@ -16,7 +16,7 @@ public:
     unsigned short FUN_005e5750(unsigned long surface);
     void FUN_005e5260();
     void Unk005e5160(unsigned long surface);
-    unsigned long Unk005e4ed0(int width, int height, int, int);
+    unsigned long Unk005e4ed0(int width, int height, int, bool);
     bool Unk005e5a00(unsigned long surface, RHUnk00613e90 &view, unsigned long flags);
     void Unk005e5ea0(RHUnk00613e90 &view);
     void FUN_005e6440(unsigned long surface, int first, int second, unsigned long third, unsigned long flags);

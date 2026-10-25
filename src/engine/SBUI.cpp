@@ -3,6 +3,11 @@
 
 DECOMP_SIZE_ASSERT(SBUI, 0x17f8)
 DECOMP_SIZE_ASSERT(RHMapWindowPart, 0x17f8)
+DECOMP_SIZE_ASSERT(SBUIWindowArray, 0x20)
+DECOMP_SIZE_ASSERT(SBUIFlagArray, 0x20)
+DECOMP_STATIC_ASSERT(offsetof(SBUI, m_windows) == 4)
+DECOMP_STATIC_ASSERT(offsetof(SBUI, m_flags) == 0x24)
+DECOMP_STATIC_ASSERT(offsetof(SBUI, m_input) == 0x44)
 
 extern "C" void *__cdecl memset(void *destination, int value, unsigned int size);
 
@@ -183,11 +188,11 @@ void *SBUI::FUN_006186d0(unsigned flags)
 // FUNCTION: GAME 0x00618850
 void RHMapWindowPart::FUN_00618850(void *frame)
 {
-    unsigned count = m_first == 0 ? 0 : m_last - m_first;
+    unsigned count = m_windows._First == 0 ? 0 : m_windows._Last - m_windows._First;
     unsigned long *counter = (unsigned long *)frame;
     unsigned long value = counter != 0 ? *counter : 0;
     for (unsigned index = 0; index < count; ++index)
-        m_first[index]->V1c();
+        m_windows._First[index]->V1c();
     ((RHUnkFXDraw *)m_draw)->FUN_005e6440(m_surface, 0, 0, 0, 0);
     FUN_006189e0(value++);
     g_unk0x6c1340->FUN_005f1700();
@@ -202,16 +207,16 @@ void RHMapWindowPart::FUN_00618850(void *frame)
 // FUNCTION: GAME 0x00618910
 void SBUI::FUN_00618910(unsigned long surface)
 {
-    unsigned count = m_first == 0 ? 0 : m_last - m_first;
+    unsigned count = m_windows._First == 0 ? 0 : m_windows._Last - m_windows._First;
     ((RHUnkFXDraw *)m_draw)->FUN_005e6440(m_surface, surface, 0, surface, 0);
     for (unsigned index = 0; index < count; ++index)
-        m_first[index]->V18(surface);
+        m_windows._First[index]->V18(surface);
     g_unk0x6c1340->FUN_005f1700();
     ((RHUnkFXDraw *)g_unk0x6c11d0)->FUN_005e5260();
     g_unk0x6c1340->PopMouseBackground(false);
     ((RHUnkFXDraw *)m_draw)->FUN_005e6440(m_surface, surface, 0, surface, 0);
     for (index = 0; index < count; ++index)
-        m_first[index]->V18(surface);
+        m_windows._First[index]->V18(surface);
     g_unk0x6c1340->FUN_005f1700();
     ((RHUnkFXDraw *)g_unk0x6c11d0)->FUN_005e5260();
     g_unk0x6c1340->PopMouseBackground(false);
@@ -241,91 +246,53 @@ void EmitRHUnk006286e0(RHUnk006286e0 *values)
     values->FUN_006286e0(*values);
 }
 
-struct SBUIWindowArray
+inline void SBUIFlagArray::Insert(char *position, unsigned count, const char &value)
 {
-    unsigned allocator;
-    SBUIWindowView **first;
-    SBUIWindowView **last;
-    SBUIWindowView **end;
-    SBUIWindowView **cursor;
-    bool dirty;
-    bool cursorValid;
-    undefined m_16[2];
-    int index;
-    SBUIWindowView *current;
-
-    int Size() const { return first == 0 ? 0 : last - first; }
-    int Find(SBUIWindowView *window)
-    {
-        dirty = false;
-        current = window;
-        int count = first == 0 ? 0 : last - first;
-        cursor = first;
-        cursorValid = true;
-        int position = 0;
-        for (; position < count; ++position, ++cursor)
-            if (*cursor == window)
-                break;
-        return position < count ? position : -1;
-    }
-};
-
-class SBUIFlagArray : public std::vector<char>
-{
-public:
-    char *cursor;
-    bool dirty;
-    void FUN_00619d00();
-    inline void Clear();
-
-    void Insert(char *position, unsigned count, const char &value)
-    {
-        typedef char *(std::vector<char>::*Copy)(const char *, const char *, char *);
-        typedef void (std::vector<char>::*Fill)(char *, unsigned, const char &);
-        typedef void (std::vector<char>::*Destroy)(char *, char *);
-        Copy copy = &SBUIFlagArray::_Ucopy;
-        Fill fill = &SBUIFlagArray::_Ufill;
-        Destroy destroy = &SBUIFlagArray::_Destroy;
-        if ((unsigned)(_End - _Last) < count) {
-            unsigned capacity = size() + (count < size() ? size() : count);
-            char *storage = allocator.allocate(capacity, 0);
-            char *destination = storage;
-            for (char *source = _First; source != position; ++destination, ++source) {
-                void (*construct)(char *, const char &) = &std::_Construct;
-                construct(destination, *source);
-            }
-            (this->*fill)(destination, count, value);
-            (this->*copy)(position, _Last, destination + count);
-            (this->*destroy)(_First, _Last);
-            allocator.deallocate(_First, _End - _First);
-            _End = storage + capacity;
-            _Last = storage + size() + count;
-            _First = storage;
-        } else if ((unsigned)(_Last - position) < count) {
-            (this->*copy)(position, _Last, position + count);
-            (this->*fill)(_Last, count - (_Last - position), value);
-            std::fill(position, _Last, value);
-            _Last += count;
-        } else if (count > 0) {
-            (this->*copy)(_Last - count, _Last, _Last);
-            std::copy_backward(position, _Last - count, _Last);
-            std::fill(position, position + count, value);
-            _Last += count;
+    typedef char *(std::vector<char>::*Copy)(const char *, const char *, char *);
+    typedef void (std::vector<char>::*Fill)(char *, unsigned, const char &);
+    typedef void (std::vector<char>::*Destroy)(char *, char *);
+    Copy copy = &SBUIFlagArray::_Ucopy;
+    Fill fill = &SBUIFlagArray::_Ufill;
+    Destroy destroy = &SBUIFlagArray::_Destroy;
+    if ((unsigned)(_End - _Last) < count) {
+        unsigned capacity = size() + (count < size() ? size() : count);
+        char *storage = allocator.allocate(capacity, 0);
+        char *destination = storage;
+        for (char *source = _First; source != position; ++destination, ++source) {
+            void (*construct)(char *, const char &) = &std::_Construct;
+            construct(destination, *source);
         }
+        (this->*fill)(destination, count, value);
+        (this->*copy)(position, _Last, destination + count);
+        (this->*destroy)(_First, _Last);
+        allocator.deallocate(_First, _End - _First);
+        _End = storage + capacity;
+        _Last = storage + size() + count;
+        _First = storage;
+    } else if ((unsigned)(_Last - position) < count) {
+        (this->*copy)(position, _Last, position + count);
+        (this->*fill)(_Last, count - (_Last - position), value);
+        std::fill(position, _Last, value);
+        _Last += count;
+    } else if (count > 0) {
+        (this->*copy)(_Last - count, _Last, _Last);
+        std::copy_backward(position, _Last - count, _Last);
+        std::fill(position, position + count, value);
+        _Last += count;
     }
-};
+}
 
 // FUNCTION: GAME 0x00619800
 bool SBUI::FUN_00619800(SBUIWindowView *window)
 {
-    SBUIWindowArray &windows = *(SBUIWindowArray *)((char *)this + 4);
+    SBUIWindowArray &windows = m_windows;
     windows.index = windows.Find(window);
     if (windows.index == -1) {
         ((SBArray<RHSaveGame *> *)&windows)->Insert(
-            (RHSaveGame **)windows.last, 1, (RHSaveGame *const &)window);
+            (RHSaveGame **)windows._Last, 1, (RHSaveGame *const &)window);
         windows.dirty = true;
         char flag = 1;
-        SBUIFlagArray &flags = *(SBUIFlagArray *)((char *)this + 0x24);
+        SBUIFlagArray &flags = m_flags;
         flags.Insert(flags.end(), 1, flag);
         flags.dirty = true;
         window->AttachToDisplay(m_display);
@@ -337,16 +304,16 @@ bool SBUI::FUN_00619800(SBUIWindowView *window)
 // FUNCTION: GAME 0x00619a00
 void SBUI::FUN_00619a00(SBUIWindowView *window)
 {
-    m_index = Find(window);
-    if (m_index != -1) {
-        int index = m_index;
-        unsigned char flag = m_flags[index];
+    m_windows.index = m_windows.Find(window);
+    if (m_windows.index != -1) {
+        int index = m_windows.index;
+        unsigned char flag = m_flags._First[index];
         for (; index < Size() - 1; ++index) {
-            m_first[index] = m_first[index + 1];
-            m_flags[index] = m_flags[index + 1];
+            m_windows._First[index] = m_windows._First[index + 1];
+            m_flags._First[index] = m_flags._First[index + 1];
         }
-        m_first[Size() - 1] = window;
-        m_flags[Size() - 1] = flag;
+        m_windows._First[Size() - 1] = window;
+        m_flags._First[Size() - 1] = flag;
     }
 }
 
@@ -356,38 +323,38 @@ public:
     void Unk005008e0(void **first, void **last);
 };
 
-inline void SBUIFlagArray::Clear()
+inline void SBUIWindowArray::Clear()
 {
-    char *destination = std::copy(_Last, _Last, _First);
-    ((RHScriptFXArray *)this)->Unk005008e0((void **)destination, (void **)_Last);
+    SBUIWindowView **destination = std::copy(end(), end(), begin());
+    ((RHScriptFXArray *)this)->Unk005008e0((void **)destination, (void **)end());
     _Last = destination;
     dirty = true;
 }
 
-// Parked at 0.9929: the clear path loads the first window through the frame base, not the array base.
-// STUB: GAME 0x00619ad0
+inline void SBUIFlagArray::Clear()
+{
+    char *destination = std::copy(end(), end(), begin());
+    ((RHScriptFXArray *)this)->Unk005008e0((void **)destination, (void **)end());
+    _Last = destination;
+    dirty = true;
+}
+
+// FUNCTION: GAME 0x00619ad0
 bool RHMapWindowPart::FUN_00619ad0(void *item)
 {
     SBUIWindowView *window = (SBUIWindowView *)item;
     if (window == 0) {
-        SBUIWindowArray &windows = *(SBUIWindowArray *)((char *)this + 4);
-        SBUIWindowView **destination = std::copy(m_last, m_last, windows.first);
-        ((RHScriptFXArray *)&windows)->Unk005008e0((void **)destination, (void **)windows.last);
-        windows.last = destination;
-        windows.dirty = true;
-        ((SBUIFlagArray *)((char *)this + 0x24))->Clear();
+        SBUIWindowArray &windows = m_windows;
+        windows.Clear();
+        m_flags.Clear();
         return true;
     }
-    SBUIWindowView **first = *(SBUIWindowView **volatile *)&m_first;
-    SBUIWindowArray &windows = *(SBUIWindowArray *)((char *)this + 4);
-    for (unsigned short index = 0; index < (first == 0 ? 0 : windows.last - first); ++index) {
-        if (m_first[index] == window) {
-            std::vector<SBUIWindowView *> &all = *(std::vector<SBUIWindowView *> *)&windows;
-            all.erase(&all.at(index));
-            windows.dirty = true;
-            SBUIFlagArray &flags = *(SBUIFlagArray *)((char *)this + 0x24);
-            flags.erase(&flags.at(index));
-            flags.dirty = true;
+    SBUIWindowView **first = *(SBUIWindowView **volatile *)&m_windows._First;
+    SBUIWindowArray &windows = m_windows;
+    for (unsigned short index = 0; index < (first == 0 ? 0 : windows._Last - first); ++index) {
+        if (m_windows._First[index] == window) {
+            windows.Remove(index);
+            m_flags.Remove(index);
             return true;
         }
     }
@@ -401,7 +368,7 @@ bool SBUI::FUN_00619c20(unsigned long display)
     m_display = display;
     unsigned count = Size();
     for (unsigned index = 0; index < count; ++index)
-        m_first[index]->AttachToDisplay(display);
+        m_windows._First[index]->AttachToDisplay(display);
     if (m_tooltip != 0)
         m_tooltip->FUN_00627ee0(display);
     return true;

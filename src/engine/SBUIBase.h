@@ -2,6 +2,7 @@
 #define SBUIBASE_H
 
 #include "Decomp.h"
+#include <vector>
 
 class RHUnk005ef320;
 
@@ -60,6 +61,59 @@ public:
     bool EmitRefresh(const SBInputKeyboardState &input);
 };
 
+struct SBUIWindowArray : public std::vector<SBUIWindowView *>
+{
+    friend class SBUI;
+    friend class RHMapWindowPart;
+    SBUIWindowView **cursor;
+    bool dirty;
+    bool cursorValid;
+    undefined m_16[2];
+    int index;
+    SBUIWindowView *current;
+
+    inline void Clear();
+    void Remove(long position)
+    {
+        erase(&at(position));
+        dirty = true;
+    }
+    int Size() const { return _First == 0 ? 0 : _Last - _First; }
+    int Find(SBUIWindowView *window)
+    {
+        dirty = false;
+        current = window;
+        int count = _First == 0 ? 0 : _Last - _First;
+        cursor = _First;
+        cursorValid = true;
+        int position = 0;
+        for (; position < count; ++position, ++cursor)
+            if (*cursor == window)
+                break;
+        return position < count ? position : -1;
+    }
+};
+
+class SBUIFlagArray : public std::vector<char>
+{
+public:
+    friend class SBUI;
+    char *cursor;
+    bool dirty;
+    bool cursorValid;
+    undefined m_16[2];
+    int index;
+    char current;
+    void FUN_00619d00();
+    inline void Clear();
+    void Remove(long position)
+    {
+        erase(&at(position));
+        dirty = true;
+    }
+    inline void Insert(char *position, unsigned count, const char &value);
+};
+
 class SBUI
 {
 public:
@@ -73,23 +127,8 @@ public:
     void FUN_00619c80(SBUIFontView *font, SBUIFontView *alternate);
 
     unsigned m_vptr;
-    unsigned m_allocator;
-    SBUIWindowView **m_first;
-    SBUIWindowView **m_last;
-    SBUIWindowView **m_end;
-    SBUIWindowView **m_cursor;
-    bool m_dirty;
-    bool m_cursorValid;
-    undefined m_1a[2];
-    int m_index;
-    SBUIWindowView *m_current;
-    unsigned m_byteAllocator;
-    unsigned char *m_flags;
-    unsigned char *m_flagsLast;
-    unsigned char *m_flagsEnd;
-    unsigned char *m_flagsCursor;
-    bool m_flagsDirty;
-    undefined m_39[0xb];
+    SBUIWindowArray m_windows;
+    SBUIFlagArray m_flags;
     SBUIUnk0060e1b0 m_input;
     undefined m_45[0x1713];
     RHUnk006279d0 *m_tooltip;
@@ -109,21 +148,12 @@ public:
 
     int Size() const
     {
-        SBUIWindowView **first = *(SBUIWindowView **volatile *)&m_first;
-        return first == 0 ? 0 : m_last - first;
+        SBUIWindowView **first = *(SBUIWindowView **volatile *)&m_windows._First;
+        return first == 0 ? 0 : m_windows._Last - first;
     }
     int Find(SBUIWindowView *window)
     {
-        m_dirty = false;
-        m_current = window;
-        int count = m_first == 0 ? 0 : m_last - m_first;
-        m_cursor = m_first;
-        m_cursorValid = true;
-        int index = 0;
-        for (; index < count; ++index, ++m_cursor)
-            if (*m_cursor == window)
-                break;
-        return index < count ? index : -1;
+        return m_windows.Find(window);
     }
 };
 
