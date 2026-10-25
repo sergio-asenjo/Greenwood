@@ -49,9 +49,6 @@ int RHSoundChannels::FUN_0045a490() { return Size(); }
 
 // FUNCTION: GAME 0x005b2410
 RHUnk005b2410::RHUnk005b2410(float first, float second, float third, float fourth) : m_00(first), m_04(second), m_08(third), m_0c(fourth) {}
-float RHUnk005b2ff0Geometry::FUN_005b25e0(const RHUnk005b2410 &) { return 0; }
-float RHUnk005b2ff0Geometry::FUN_005b27e0(const RHUnk005b2410 &) { return 0; }
-void RHUnk005b2ff0Geometry::FUN_005b2a30(RHUnk005a7220 *, RHUnk005b2410 &) {}
 
 // LIBRARY: GAME 0x00643030
 extern "C" double _CIpow() { return 0; }

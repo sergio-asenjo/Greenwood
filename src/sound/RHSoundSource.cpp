@@ -1,6 +1,16 @@
 #include "SBNullstr.h"
 #include "RHSoundSource.h"
+#include "RHSoundGeometryCalls.h"
+#define SBGEO_POINT2D_VIEW
+#include "RHUnk005fc3b0.h"
+#include "SBGeoSegment2D.h"
+#include "SBGeoIntersection2D.h"
+#include "RHUnk00613e90.h"
+#include "RHUnk0053bf20.h"
+#include "SCQuad.h"
 #include <math.h>
+
+extern double g_unk0x00677688;
 
 #define m_08 (*(unsigned int *)((char *)this + 0x08))
 #define m_40 (*(unsigned int *)((char *)this + 0x40))
@@ -17,6 +27,16 @@
         return false; \
     }
 
+// FUNCTION: GAME 0x005b35e0
+void RHUnk005b35e0::FUN_005b35e0(unsigned int count, const SBGeoPoint2D &value)
+{
+    std::vector<SBGeoPoint2D> &values = *(std::vector<SBGeoPoint2D> *)this;
+    if (values.size() < count)
+        values.insert(values.end(), count - values.size(), value);
+    else if (count < values.size())
+        values.erase(values.begin() + count, values.end());
+}
+
 // FUNCTION: GAME 0x005b3920
 RHSoundSource::~RHSoundSource()
 {
@@ -30,15 +50,26 @@ float RHSoundSource::FUN_005b39e0(const SBGeoPoint2D &second, const SBGeoPoint2D
     return (float)sqrt(y * y + x * x);
 }
 
-// Parked: the geometry construction and visibility helpers are not reproduced.
-// STUB: GAME 0x005b3a10
-float RHSoundSource::FUN_005b3a10(
-    const SBGeoPoint2D &first, const SBGeoPoint2D &second, unsigned char &visible)
+// FUNCTION: GAME 0x005b3a10
+float RHSoundSource::FUN_005b3a10(SBGeoSegment2D &segment, SBGeoPoint2D &point, bool &visible)
 {
-    visible = 1;
-    return FUN_005b39e0(first, second);
+    RHUnk005fc3b0 normal;
+    RHMobileUnk006100e0 line(SBGeoPoint2D(0, 0), SBGeoPoint2D(0, 0));
+    RHUnk0060fbf0 intersection;
+    normal.FUN_005fc430(((RHUnk005fc3b0 &)segment.Second().Unk005fc110(segment.First())).FUN_005fc8f0(true, 1.0f));
+    normal.m_y *= g_unk0x00677688;
+    normal.FUN_005fc7c0(1.0f);
+    (SBGeoPoint2D &)line = point;
+    line.Second() = point.Unk005fc190(normal);
+    intersection.FUN_0060fca0(segment.FUN_0060ad60(line));
+    if (((SCQuadArg *)&intersection)->GetType() != 1)
+    {
+        visible = false;
+        return 0.0f;
+    }
+    visible = true;
+    return FUN_005b39e0(*(SBGeoPoint2D *)((RHUnk0053bf20 *)&intersection)->FUN_0053bf20(), point);
 }
-
 
 // FUNCTION: GAME 0x005b3c20
 unsigned short RHSoundSource::FUN_005b3c20(unsigned short index)
@@ -51,27 +82,50 @@ unsigned short RHSoundSource::FUN_005b3c20(unsigned short index)
     return maximum - index;
 }
 
-// Parked: temporary geometry lifetimes, visibility testing and minimum-distance scheduling differ.
+// Parked: count and loop offset take swapped ebp/edi roles, and the first minimum test uses fcom instead of fld st(0)/fcomp.
 // STUB: GAME 0x005b3c40
-unsigned short RHSoundSource::FUN_005b3c40(const void *point)
+unsigned short RHSoundSource::FUN_005b3c40(RHUnk00613e90 &position)
 {
+    bool visible;
+    float nearest;
+    SBGeoPoint2D unused;
+    int count = 0;
+    SBGeoPoint2D listener;
+    SBGeoPoint2D previous;
+    SBGeoPoint2D current;
+    SBGeoSegment2D segment(SBGeoPoint2D(0, 0), SBGeoPoint2D(0, 0));
     if (!m_4c)
         return 0;
-
-    SBGeoPoint2D *first = m_10.m_0c.m_storage.m_first;
-    SBGeoPoint2D *last = m_10.m_0c.m_storage.m_last;
-    if (!first || first == last)
-        return 0;
-
-    const SBGeoPoint2D &center = *(const SBGeoPoint2D *)point;
-    float nearest = 102400.0f;
-    for (SBGeoPoint2D *current = first; current != last; ++current)
+    listener.m_x = position.x;
+    listener.m_y = position.y - position.z;
+    if (m_10.m_0c.m_storage.m_first)
+        count = m_10.m_0c.m_storage.m_last - m_10.m_0c.m_storage.m_first;
+    switch ((unsigned short)count)
     {
-        float distance = FUN_005b39e0(center, *current);
+    case 0:
+        return 0;
+    case 1:
+        return FUN_005b3c20((unsigned short)FUN_005b39e0(m_10.m_0c.m_storage.m_first[0], listener));
+    }
+    nearest = 1000000.0f;
+    for (unsigned short i = 0; i < (unsigned short)count; ++i)
+    {
+        float distance = FUN_005b39e0(m_10.m_0c.m_storage.m_first[i], listener);
         if (distance < nearest)
             nearest = distance;
     }
-    return FUN_005b3c20((unsigned int)nearest);
+    previous = m_10.m_0c.m_storage.m_first[0];
+    for (unsigned short j = 1; j < (unsigned short)count; ++j)
+    {
+        current = m_10.m_0c.m_storage.m_first[j];
+        segment.First() = previous;
+        segment.Second() = current;
+        float distance = FUN_005b3a10(segment, listener, visible);
+        if (visible && distance < nearest)
+            nearest = distance;
+        previous = current;
+    }
+    return FUN_005b3c20((unsigned short)nearest);
 }
 
 // FUNCTION: GAME 0x005b4210
@@ -177,8 +231,7 @@ void RHSoundSource::FUN_005b3f30(SBFile &file)
 #undef RH_SOUND_READ
 }
 
-// Parked: three out-of-line size calls bind to the original's folded vector-of-vectors entity.
-// STUB: GAME 0x005b4700
+// FUNCTION: GAME 0x005b4700
 void RHUnk005b4700::FUN_005b4700(int count)
 {
     ((std::vector<SBGeoPoint2D> *)this)->resize(count);

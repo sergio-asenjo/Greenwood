@@ -25,11 +25,17 @@ inline void RHSoundSourceArray::InsertLast(RHSoundSource *const &value)
 }
 
 // SIZE 0x08
+class SBGeoVector2D;
+class SBGeoSegment2D;
+class RHUnk00613e90;
 class SBGeoPoint2D
 {
 public:
     SBGeoPoint2D();
+    SBGeoPoint2D(float x, float y);
     ~SBGeoPoint2D();
+    SBGeoVector2D Unk005fc110(const SBGeoPoint2D &other) const;
+    SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
     SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
     bool Serialize(SBFile &file);
     float m_x; // 0x00
@@ -118,8 +124,8 @@ public:
     RHSoundSource();
     float FUN_005b39e0(const SBGeoPoint2D &second, const SBGeoPoint2D &first);
     unsigned short FUN_005b3c20(unsigned short index);
-    float FUN_005b3a10(const SBGeoPoint2D &first, const SBGeoPoint2D &second, unsigned char &visible);
-    unsigned short FUN_005b3c40(const void *point);
+    float FUN_005b3a10(SBGeoSegment2D &segment, SBGeoPoint2D &point, bool &visible);
+    unsigned short FUN_005b3c40(RHUnk00613e90 &position);
     void FUN_005b3f30(SBFile &file);
     ~RHSoundSource();
     virtual bool FUN_00463200() const { return false; } // vtable+0x00

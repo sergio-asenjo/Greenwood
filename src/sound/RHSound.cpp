@@ -1,6 +1,5 @@
 #include "SBNullstr.h"
 #include "RHSound.h"
-#include "RHSoundGeometry.h"
 #include "RHSoundActorCalls.h"
 #include "RHTreeDec.h"
 #include <windows.h>
@@ -60,6 +59,7 @@ public:
 #endif
 
 #include "SBGeoVector2D.h"
+#include "RHSoundGeometry.h"
 
 inline void RHUnk005aada0::Destroy(SBGeoPoint2D *first, SBGeoPoint2D *last)
 {
@@ -2642,7 +2642,7 @@ RHSoundSettings::RHSoundSettings(const RHSoundSettings &other)
 // FUNCTION: GAME 0x005b2ff0
 bool RHSoundGeometryView::FUN_005b2ff0(const RHSoundSettings &sound, bool flag, RHSoundChannelSettings &settings)
 {
-    RHUnk005b2ff0Geometry *geometry = (RHUnk005b2ff0Geometry *)this;
+    RHSoundGeometry *geometry = (RHSoundGeometry *)this;
     RHSoundGeometry *altitude = (RHSoundGeometry *)this;
     if (sound.m_00 == 1)
     {

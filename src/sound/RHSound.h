@@ -105,28 +105,6 @@ struct RHSoundQueue
 #include "RHSoundSettings.h"
 
 // SIZE 0x50
-struct RHUnk005a7220
-{
-    undefined m_00[8]; // 0x00
-    int m_08; // 0x08
-    unsigned long m_0c; // 0x0c
-    bool m_10; // 0x10
-    undefined m_11; // 0x11
-    unsigned short m_12; // 0x12
-    unsigned short m_14; // 0x14
-    undefined m_16[2]; // 0x16
-    unsigned short m_18; // 0x18
-    unsigned short m_1a; // 0x1a
-    undefined m_1c[0x24]; // 0x1c
-    int m_40; // 0x40
-    unsigned short m_44; // 0x44
-    unsigned short m_46; // 0x46
-    unsigned short m_48; // 0x48
-    unsigned short m_4a; // 0x4a
-    bool m_4c; // 0x4c
-    undefined m_4d[3]; // 0x4d
-};
-
 // SIZE 0x0c
 #include "RHSoundConfig.h"
 typedef RHSoundConfig RHUnk005a9260;
