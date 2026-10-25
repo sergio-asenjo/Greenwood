@@ -28,7 +28,7 @@ public:
     void Unk005e5ea0(RHUnk00613e90 &);
     unsigned short FUN_005e56c0(unsigned long);
     unsigned short FUN_005e5750(unsigned long);
-    unsigned long Unk005e4ed0(int, int, int, int);
+    unsigned long Unk005e4ed0(int, int, int, bool);
 };
 
 class RHMobileUnk00607da0

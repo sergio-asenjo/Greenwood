@@ -1,4 +1,5 @@
 #include "SBNullstr.h"
+#include "RHSectorActorList.h"
 #include "RHSaveGame.h"
 #include "RHSaveGameManager.h"
 #include "RHEngine.h"
@@ -61,7 +62,7 @@ public:
     RHScriptNode *head;
     int count;
     RHScriptNode *cursor;
-    void GoTo(int index);
+    __forceinline void GoTo(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
     static void CopyData(RHSequenceElement **destination, RHSequenceElement *const *source);
 };
 
@@ -100,7 +101,7 @@ void FUN_005c9010(RHUnk005c9010Iterator &current, int distance, std::bidirection
 class RHTitbitList
 {
 public:
-    void At(int index);
+    __forceinline void At(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
 };
 
 class RHEngineActorOrderCalls
@@ -734,19 +735,14 @@ void FUN_0048c5b0(void *actor, int value);
 class RHUnkFXDraw
 {
 public:
-    unsigned long Unk005e4ed0(int, int, int, int);
+    unsigned long Unk005e4ed0(int, int, int, bool);
     char m_00[0x10c];
     unsigned short m_depth;
 };
 
 #include "RHUnk006114c0.h"
 
-class RHEngineBackgroundCalls
-{
-public:
-    bool FUN_00611660(const std::string &path);
-    bool FUN_004e7fa0(unsigned short width, unsigned short height);
-};
+#include "RHEngineBackgroundCalls.h"
 
 // SIZE 0x14
 class SBGeoBoundingBox2D
@@ -5077,7 +5073,6 @@ unsigned RHEngine::FUN_004e1f30(unsigned value)
     }
 }
 
-#include "RHSectorActorList.h"
 
 
 // Parked at 0.8621: iterator-call argument scheduling differs.

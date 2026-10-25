@@ -195,12 +195,7 @@ public:
 
 
 
-class RHEngineBackgroundCalls
-{
-public:
-    bool FUN_00611660(const std::string &path);
-    bool FUN_004e7fa0(unsigned short width, unsigned short height);
-};
+#include "RHEngineBackgroundCalls.h"
 
 class RHEngineBeamCalls
 {
@@ -237,7 +232,6 @@ bool RHEngineWidenedCalls::FUN_004b2010(char, void *) { return false; }
 void RHEngineWidenedCalls::FUN_004eb120(SBFile &, void *) {}
 void RHEngineWidenedCalls::FUN_00558670(SBFile &) {}
 void RHEngineWidenedCalls::FUN_005e5160(unsigned) {}
-unsigned long RHEngineWidenedCalls::FUN_005e4ed0(unsigned short, unsigned short, unsigned long, bool) { return 0; }
 class RHEngineActorUpdateCalls
 {
 public:

@@ -16,7 +16,6 @@ public:
     void FUN_0050efd0(void *actor);
     void FUN_004e3660(char flag);
     void FUN_005e5160(unsigned surface);
-    unsigned long FUN_005e4ed0(unsigned short width, unsigned short height, unsigned long format, bool system);
 };
 
 #endif

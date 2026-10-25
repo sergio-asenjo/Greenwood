@@ -44,7 +44,7 @@ public:
 class RHUnkFXDraw
 {
 public:
-    unsigned long Unk005e4ed0(int, int, int, int);
+    unsigned long Unk005e4ed0(int width, int height, int format, bool system);
     bool FUN_005e4f70(unsigned long, unsigned short, unsigned short, unsigned long);
     void Unk005e5160(unsigned long);
     void FUN_005e5260();
@@ -200,6 +200,23 @@ bool RHUnk005ef320::FUN_005e3f70()
             return false;
         }
     }
+}
+
+// FUNCTION: GAME 0x005e4ed0
+unsigned long RHUnkFXDraw::Unk005e4ed0(int width, int height, int format, bool system)
+{
+    EnterCriticalSection(this);
+    unsigned long surface = *(unsigned long *)(m_00 + 0x50);
+    if (FUN_005e4f70(surface, width, height, format) == true)
+    {
+        ++*(unsigned long *)(m_00 + 0x50);
+        if (system)
+            ((std::list<unsigned long> *)(m_00 + 0x64))->push_back(surface);
+        LeaveCriticalSection(this);
+        return surface;
+    }
+    LeaveCriticalSection(this);
+    return (unsigned long)-1;
 }
 
 // Parked: insert-result temporary adds eight bytes to the target frame.
