@@ -33,14 +33,13 @@ RHUnk005cba10::RHUnk005cba10()
 {
     m_characters = 0;
     m_lines = 0;
-    m_vptr = 0x00679e9c;
 }
 
 #pragma auto_inline(off)
 // FUNCTION: GAME 0x005cb4a0
 void *RHUnk005cba10::FUN_005cb4a0(unsigned flags)
 {
-    this->~RHUnk005cba10();
+    this->RHUnk005cba10::~RHUnk005cba10();
     if (flags & 1)
         operator delete(this);
     return this;

@@ -46,7 +46,7 @@ void *RHUIRendererShifting::FUN_005cbe30(unsigned flags)
 RHUIRendererShifting::~RHUIRendererShifting()
 {
     *(unsigned *)this = 0x00679ebc;
-    ((RHPortraitRenderer0060dab0 *)this)->~RHPortraitRenderer0060dab0();
+    ((RHPortraitRenderer0060dab0 *)this)->RHPortraitRenderer0060dab0::~RHPortraitRenderer0060dab0();
 }
 
 // FUNCTION: GAME 0x005cbe60

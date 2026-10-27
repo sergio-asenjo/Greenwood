@@ -2,7 +2,6 @@
 #define RHUIRENDERER_005CB420_H
 
 #include "Decomp.h"
-#include "RHPortraitRenderer0060dab0.h"
 #include <string>
 
 #ifndef SBGEO_POINT2D_VIEW
@@ -23,6 +22,7 @@ public:
 class SBGeoVector2D : public SBGeoPoint2D
 {
 public:
+    SBGeoVector2D();
     SBGeoVector2D(float x, float y);
     SBGeoVector2D(const SBGeoVector2D &other);
     SBGeoVector2D &operator=(const SBGeoVector2D &other);
@@ -61,6 +61,8 @@ public:
 };
 #endif
 
+#include "RHPortraitRenderer0060dab0.h"
+
 // SIZE 0x14
 #include "RHMapBox.h"
 
@@ -85,36 +87,14 @@ public:
     RHMapBox m_1c;     // 0x1c
 };
 
-#ifndef RHPOPUPRENDERER0060DBC0_VIEW
-#define RHPOPUPRENDERER0060DBC0_VIEW
-// SIZE 0x7c
-class RHPopupRenderer0060dbc0 : public RHPortraitRenderer0060dab0
-{
-public:
-    RHPopupRenderer0060dbc0();
-    ~RHPopupRenderer0060dbc0();
-    void *FUN_0060dc00(unsigned flags);
-    bool FUN_0060dd10(unsigned id);
-    SBUIListboxUnk0061e890 *m_50;       // 0x50
-    SBUIListboxUnk0061e890 *m_54;       // 0x54
-    SBUIListboxUnk0061e890 *m_58;       // 0x58
-    SBUIListboxUnk0061e890 *m_5c;       // 0x5c
-    unsigned int m_60;                  // 0x60
-    unsigned short m_64;                // 0x64
-    undefined m_66[2];                  // 0x66
-    std::wstring m_68;                  // 0x68
-    char m_78;                          // 0x78
-    undefined m_79[3];                  // 0x79
-};
-#endif
+#include "RHPopupRenderer0060dbc0.h"
 
 // SIZE 0x9c
+// VTABLE: GAME 0x00679e9c
 class RHUnk005cba10 : public RHPopupRenderer0060dbc0
 {
 public:
     RHUnk005cba10();
-    // FUNCTION: GAME 0x005cb4c0
-    ~RHUnk005cba10() {}
     void *FUN_005cb4a0(unsigned flags);
     SBGeoBoundingBox2D FUN_005cb550(SBUIListboxUnk0061e890 *font, bool clip) const;
     void FUN_005cb700(SBUIListboxUnk0061e890 *font);
@@ -125,5 +105,8 @@ public:
     unsigned int m_characters;  // 0x94
     unsigned int m_lines;       // 0x98
 };
+
+// SYNTHETIC: GAME 0x005cb4c0
+// RHUnk005cba10::~RHUnk005cba10
 
 #endif

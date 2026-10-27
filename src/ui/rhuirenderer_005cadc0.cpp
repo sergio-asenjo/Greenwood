@@ -10,7 +10,6 @@ DECOMP_SIZE_ASSERT(RHPortraitRenderer005cadc0, 0x58)
 // FUNCTION: GAME 0x005cadc0
 RHPortraitRenderer005cadc0::RHPortraitRenderer005cadc0()
 {
-    m_vptr = 0x00679e7c;
     m_enabled = 0;
     m_disabled = 0;
 }
@@ -18,7 +17,7 @@ RHPortraitRenderer005cadc0::RHPortraitRenderer005cadc0()
 // FUNCTION: GAME 0x005cade0
 void *RHPortraitRenderer005cadc0::FUN_005cade0(unsigned flags)
 {
-    this->~RHPortraitRenderer005cadc0();
+    this->RHPortraitRenderer005cadc0::~RHPortraitRenderer005cadc0();
     if (flags & 1)
         operator delete(this);
     return this;
@@ -27,7 +26,6 @@ void *RHPortraitRenderer005cadc0::FUN_005cade0(unsigned flags)
 // FUNCTION: GAME 0x005cae00
 RHPortraitRenderer005cadc0::~RHPortraitRenderer005cadc0()
 {
-    m_vptr = 0x00679e7c;
 }
 
 // FUNCTION: GAME 0x005cae10

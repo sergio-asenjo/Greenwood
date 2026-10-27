@@ -20,17 +20,6 @@ public:
     undefined m_b8[0x88];
 };
 
-class RHPortraitButton
-{
-public:
-    RHPortraitButton();
-    ~RHPortraitButton();
-    bool FUN_005d1e30(int mode, const std::wstring &text, int resource);
-    void SetEnabled(bool enabled) { m_enabled = enabled; }
-
-    undefined m_00[4];
-    bool m_enabled;
-    undefined m_05[0xfb];
-};
+#include "RHPortraitButton.h"
 
 #endif

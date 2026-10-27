@@ -20,13 +20,12 @@ std::wstring &SBUIInputFieldDrawUnk::FUN_00613e90() { return m_00; }
 RHPopupRenderer0060dbc0::RHPopupRenderer0060dbc0()
     : m_50(0), m_54(0), m_58(0), m_5c(0), m_60(2), m_64(0), m_78(0)
 {
-    m_vptr = 0x67a860;
 }
 
 // FUNCTION: GAME 0x0060dc00
 void *RHPopupRenderer0060dbc0::FUN_0060dc00(unsigned flags)
 {
-    this->~RHPopupRenderer0060dbc0();
+    this->RHPopupRenderer0060dbc0::~RHPopupRenderer0060dbc0();
     if (flags & 1)
         operator delete(this);
     return this;
@@ -35,7 +34,6 @@ void *RHPopupRenderer0060dbc0::FUN_0060dc00(unsigned flags)
 // FUNCTION: GAME 0x0060dc80
 RHPopupRenderer0060dbc0::~RHPopupRenderer0060dbc0()
 {
-    m_vptr = 0x67a860;
 }
 
 // FUNCTION: GAME 0x0060dd10

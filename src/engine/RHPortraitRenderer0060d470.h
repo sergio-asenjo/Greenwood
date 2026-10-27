@@ -16,7 +16,7 @@ class RHPortraitRenderer0060d470
 {
 public:
     RHPortraitRenderer0060d470();
-    ~RHPortraitRenderer0060d470();
+    virtual ~RHPortraitRenderer0060d470();
     virtual void FUN_0060d530(unsigned int surface);
     RHMapResources *m_resources;   // 0x04
     SBGeoBoundingBox2D m_position; // 0x08

@@ -32,7 +32,7 @@ RHUnk005cbb80::RHUnk005cbb80()
 // FUNCTION: GAME 0x005cbbb0
 void *RHUnk005cbb80::FUN_005cbbb0(unsigned flags)
 {
-    this->~RHUnk005cbb80();
+    this->RHUnk005cbb80::~RHUnk005cbb80();
     if (flags & 1)
         operator delete(this);
     return this;
@@ -40,7 +40,7 @@ void *RHUnk005cbb80::FUN_005cbbb0(unsigned flags)
 #pragma inline_depth()
 
 // SYNTHETIC: GAME 0x005cbbd0
-// ??1RHUnk005cbb80@@QAE@XZ
+// ??1RHUnk005cbb80@@UAE@XZ
 
 // FUNCTION: GAME 0x005cbbe0
 bool RHUIRendererPortrait::BlitPicture(unsigned int id, float f)

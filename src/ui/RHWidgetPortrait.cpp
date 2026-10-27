@@ -55,14 +55,7 @@ public:
     RHMobileUnk006091b0 &FUN_006091b0(const SBGeoPoint2D &point);
 };
 
-class RHMapBox
-{
-public:
-    RHMapBox(float left, float top, float right, float bottom);
-    SBGeoPoint2D m_first;
-    SBGeoPoint2D m_second;
-    int m_10;
-};
+#include "RHMapBox.h"
 
 class RHMobileUnk00607da0
 {
@@ -70,41 +63,7 @@ public:
     RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
 };
 
-extern RHUnk00514e10::Node *g_unk0x006c0b48;
-extern unsigned g_unk0x006c0b4c;
-
-inline void RHPortraitClearMap(RHUnk00514e10 &map)
-{
-    map.FUN_00514ec0(RHUnk00514e10::Iterator(map.m_head->left), RHUnk00514e10::Iterator(map.m_head));
-    void *allocation = map.m_head;
-    operator delete(allocation);
-    map.m_head = 0;
-    map.m_size = 0;
-}
-
-class RHPortraitAnimated
-{
-public:
-    RHPortraitAnimated(int id);
-    ~RHPortraitAnimated()
-    {
-        RHUnk00514e10 &map = m_map;
-        RHPortraitClearMap(map);
-        {
-            RHUnk00641782 guard;
-            if (--g_unk0x006c0b4c == 0)
-            {
-                void *allocation = g_unk0x006c0b48;
-                operator delete(allocation);
-                g_unk0x006c0b48 = 0;
-            }
-        }
-    }
-    int m_id;
-    RHUnk00514e10 m_map;
-    int m_state;
-    char m_handled;
-};
+#include "RHPortraitAnimated.h"
 
 struct RHPortraitWidgetEvent;
 
@@ -116,13 +75,7 @@ public:
     RHUnk00514e10::Node *m_head;
 };
 
-struct RHPortraitWidgetEvent
-{
-    int type;
-    void *widget;
-    int value;
-    RHPortraitWidgetEvent *next;
-};
+#include "RHPortraitUnk005d3880.h"
 
 class RHPortraitBoxEvent
 {
@@ -170,42 +123,6 @@ public:
     virtual void v7(const SBGeoBoundingBox2D &box) = 0;
     virtual void v8(const SBGeoPoint2D &point) = 0;
     undefined m_04[0xd8 - 4];
-};
-
-class RHPortraitUnk005d3880
-{
-public:
-    int FUN_005d3880(const SBGeoPoint2D &point);
-    RHPortraitWidgetEvent *FUN_005d3a10(const RHPortraitWidgetInput &input);
-    void FUN_005d3a60(const RHPortraitWidgetInput &input);
-    void FUN_005d3a80(const void *stop);
-    void FUN_005d3ab0(RHPortraitUnk005d3880 *linked);
-    bool FUN_005d3b00(char value);
-    void *FUN_005d3b10();
-    RHPortraitWidgetEvent *FUN_005d3b20(const void *input);
-    int FUN_005d3b60(const SBGeoPoint2D &point);
-    int FUN_005d4db0(const SBGeoPoint2D &point);
-    RHPortraitWidgetEvent *FUN_005d4d60(const RHPortraitWidgetInput &input);
-    RHPortraitWidgetEvent *FUN_005d4e50(const RHPortraitWidgetInput &input);
-    RHPortraitWidgetEvent *FUN_005d4ec0(const RHPortraitWidgetInput &input);
-    RHPortraitWidgetEvent *FUN_005d4f30(const RHPortraitWidgetInput &input);
-    RHPortraitWidgetEvent *FUN_005d4f80(const RHPortraitWidgetInput &input);
-    RHPortraitWidgetEvent *FUN_005d4fe0(const RHPortraitWidgetInput &input);
-    RHPortraitWidgetEvent *FUN_005d4cb0(const RHPortraitWidgetInput &input);
-    bool FUN_005d4bb0(int mode, const std::wstring &text, const SBGeoPoint2D &origin, int resource);
-    int FUN_005d5230();
-    int FUN_005d52d0();
-    RHPortraitWidgetEvent *FUN_005d53b0(const RHPortraitWidgetInput &input);
-    undefined m_00[0x4c];
-    RHPortraitWidgetEvent m_event;
-    undefined m_5c[0x7c - 0x5c];
-    int m_state;
-    undefined m_80[0xb8 - 0x80];
-    void *m_b8;
-    undefined m_bc[0xd8 - 0xbc];
-    char m_selected;
-    undefined m_d9[0x110 - 0xd9];
-    RHPortraitUnk005d3880 *m_linked;
 };
 
 class RHPortraitUnk005d3fe0
@@ -319,16 +236,7 @@ inline int &RHPortraitMapLookup(RHUnk00514e10 &map, int key)
     return result.first.node->value.second;
 }
 
-// VTABLE: GAME 0x0067a0a8
-class RHPortraitButtonBase : public RHGameWidgetLifetimeBase
-{
-public:
-    RHPortraitButtonBase() {}
-    ~RHPortraitButtonBase() {}
-    void *FUN_005d24f0(unsigned flags);
-    void FUN_005d24c0();
-    RHPortraitRenderer005cadc0 m_renderer;
-};
+#include "RHPortraitButtonBase.h"
 
 class __declspec(novtable) RHPortraitLifetime005d5350 : public RHPortraitButtonBase
 {
@@ -483,7 +391,6 @@ public:
         *(unsigned *)this = 0x00678bb8;
         m_state = 0;
     }
-    undefined m_d0[0x24];
 };
 
 class __declspec(novtable) RHPortraitCustomBackground : public RHGameLifetime00516a60
@@ -493,7 +400,6 @@ public:
     {
         *(unsigned *)this = 0x0067a398;
     }
-    undefined m_d0[0x24];
 };
 
 class RHPortraitResourceInterface
@@ -1423,50 +1329,13 @@ RHPortraitInputWidget::RHPortraitInputWidget()
 // FUNCTION: GAME 0x005d1b40
 void *RHPortraitInputRenderer::FUN_005d1b40(unsigned flags)
 {
-    this->~RHPortraitInputRenderer();
+    this->RHPortraitInputRenderer::~RHPortraitInputRenderer();
     if (flags & 1)
         operator delete(this);
     return this;
 }
 
-class RHPortraitButton;
-
-class __declspec(novtable) RHPortraitButtonStrategy
-{
-public:
-    RHPortraitButtonStrategy()
-    {
-        ((RHPortraitStrategyCalls *)this)->RHPortraitStrategyCalls::RHPortraitStrategyCalls();
-    }
-    virtual RHPortraitWidgetEvent *FUN_005d1de0();
-    virtual RHPortraitButton *FUN_005d1f30();
-    virtual void FUN_005d1f40(bool value);
-    virtual int FUN_005d1f50(const SBGeoPoint2D &point);
-    virtual int FUN_005d1ff0();
-    virtual RHPortraitWidgetEvent *FUN_005d2370(bool value);
-    virtual RHPortraitWidgetEvent *FUN_005d23d0(bool value);
-};
-
-// VTABLE: GAME 0x0067a054 RHPortraitButtonBase
-// VTABLE: GAME 0x0067a08c RHPortraitButtonStrategy
-class RHPortraitButton : public RHPortraitButtonBase, public RHPortraitAnimated, public RHPortraitButtonStrategy
-{
-public:
-    RHPortraitButton();
-    ~RHPortraitButton();
-    void *FUN_005d1ce0(unsigned flags);
-    bool FUN_005d1e30(int mode, const std::wstring &text, int resource);
-    RHPortraitWidgetEvent *FUN_005d2000(const RHPortraitWidgetInput &input);
-    RHPortraitWidgetEvent *FUN_005d2090(const RHPortraitWidgetInput &input);
-    RHPortraitWidgetEvent *FUN_005d2120(const RHPortraitWidgetInput &input);
-    RHPortraitWidgetEvent *FUN_005d21f0(const RHPortraitWidgetInput &input);
-    RHPortraitWidgetEvent *FUN_005d22c0(const RHPortraitWidgetInput &input);
-    int FUN_005d23f0();
-    SBGeoBoundingBox2D &Box() { return *(SBGeoBoundingBox2D *)((char *)this + 0x30); }
-    RHPortraitWidgetEvent &Event() { return *(RHPortraitWidgetEvent *)((char *)this + 0x4c); }
-    int m_f8;
-    char m_fc;
-};
+#include "RHPortraitButton.h"
 
 DECOMP_SIZE_ASSERT(RHPortraitButton, 0x100)
 DECOMP_SIZE_ASSERT(RHPortraitButtonStrategy, 0x04)
@@ -1518,7 +1387,7 @@ bool RHPortraitButton::FUN_005d1e30(int mode, const std::wstring &text, int reso
         RHMapBox box(0.0f, 0.0f, 0.0f, 0.0f);
         if (!resource)
             resource = -1;
-        ((RHPortraitWidgetSetupCalls *)this)->FUN_0060d130(text, *(SBGeoBoundingBox2D *)&box, false);
+        ((RHGameWidgetLifetimeBase *)this)->Create(text, *(SBGeoBoundingBox2D *)&box, 0);
         RHPortraitRendererDispatch *renderer = (RHPortraitRendererDispatch *)((char *)this + 0x80);
         renderer->v3(*(SBGeoBoundingBox2D *)&box);
         ((SBUIUnk0060d530 *)renderer)->FUN_0060d550(resource);
@@ -1724,6 +1593,12 @@ void RHPortraitButtonBase::FUN_005d24c0()
     ((RHPortraitRenderer005cadc0 *)&m_renderer)->FUN_005cafa0(id);
 }
 
+// FUNCTION: GAME 0x005d24e0
+void RHPortraitButtonBase::FUN_005d24e0()
+{
+    ((SBUIUnk0060d530 *)&m_renderer)->FUN_0060d520();
+}
+
 #pragma inline_depth(1)
 // FUNCTION: GAME 0x005d24f0
 void *RHPortraitButtonBase::FUN_005d24f0(unsigned flags)
@@ -1843,7 +1718,7 @@ bool RHPortraitEditableWidget::FUN_005d2810(const SBGeoPoint2D &point, RHPortrai
     {
         std::wstring text(g_unk0x006c0b50);
         SBGeoBoundingBox2D box(point, point);
-        ((RHPortraitWidgetSetupCalls *)this)->FUN_0060d130(text, box, false);
+        ((RHGameWidgetLifetimeBase *)this)->Create(text, box, 0);
         renderer->v3(box);
         ((SBUIUnk0060d530 *)renderer)->FUN_0060d550(0xbf);
         *(int *)((char *)this + 0xa4) = 0;
@@ -2804,7 +2679,7 @@ bool RHPortraitUnk005d3880::FUN_005d4bb0(int mode, const std::wstring &text, con
         const SBGeoBoundingBox2D *box = &local;
         if (resource == 0)
             resource = -1;
-        ((RHPortraitWidgetSetupCalls *)this)->FUN_0060d130(text, *box, false);
+        ((RHGameWidgetLifetimeBase *)this)->Create(text, *box, 0);
         RHPortraitRendererDispatch *renderer = (RHPortraitRendererDispatch *)((char *)this + 0x80);
         renderer->v3(*box);
         ((SBUIUnk0060d530 *)renderer)->FUN_0060d550(resource);
@@ -3705,15 +3580,9 @@ bool RHGamePortraitCalls::FUN_005d8f20(unsigned index)
     return true;
 }
 
-class RHTitbits
-{
-public:
-    bool IsRunningForQA(unsigned long id);
-    short FUN_005c7fb0(unsigned long id);
-};
+#include "RHTitbitsCore.h"
 
-class RHUnk005c38b0;
-extern RHUnk005c38b0 *g_unk0x6c10e8;
+extern RHTitbits *g_unk0x6c10e8;
 
 // Parked: The retained resource-owner load uses edi before the ecx receiver copy.
 // STUB: GAME 0x005d8fa0
@@ -3786,18 +3655,6 @@ void RHGamePortraitCalls::FUN_005d9140(unsigned int index)
     *(unsigned short *)((char *)this + 0xc98 + index * 2) = 6;
     *(unsigned short *)((char *)this + 0xc9e + index * 2) = 5;
 }
-
-class SBResourceWidgetID
-{
-public:
-    int m_value;
-};
-
-class RHUIRendererBlinking
-{
-public:
-    void SetBlinking(SBResourceWidgetID id, SBResourceWidgetID first, SBResourceWidgetID second, unsigned long period);
-};
 
 // Parked: By-value resource IDs materialize register constants instead of immediate pushes.
 // STUB: GAME 0x005d9160
@@ -5055,7 +4912,7 @@ void *RHPortraitDeleting::FUN_005dee10(unsigned flags)
 void *RHPortraitDeleting::FUN_005dee30(unsigned flags)
 {
     RHPortraitRenderer0060dad0 *self = (RHPortraitRenderer0060dad0 *)this;
-    self->~RHPortraitRenderer0060dad0();
+    self->RHPortraitRenderer0060dad0::~RHPortraitRenderer0060dad0();
     if (flags & 1)
         operator delete(self);
     return self;
@@ -5075,7 +4932,7 @@ void *RHPortraitDeleting::FUN_005deff0(unsigned flags)
 void *RHPortraitDeleting::FUN_005df010(unsigned flags)
 {
     RHPortraitRenderer0060d470 *self = (RHPortraitRenderer0060d470 *)this;
-    self->~RHPortraitRenderer0060d470();
+    self->RHPortraitRenderer0060d470::~RHPortraitRenderer0060d470();
     if (flags & 1)
         operator delete(self);
     return self;
@@ -5258,7 +5115,7 @@ bool RHPortraitQuickList::FUN_005dd1d0(RHPortraitPCList &list)
                 }
             }
         }
-        entry->m_1a8.m_04[0] = enabled;
+        entry->m_1a8.m_04 = enabled;
     }
     return true;
 }

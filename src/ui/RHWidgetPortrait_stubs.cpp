@@ -47,17 +47,14 @@ RHPortraitRenderer005ca330::~RHPortraitRenderer005ca330()
     ((RHGameRenderer0060da10 *)this)->RHGameRenderer0060da10::~RHGameRenderer0060da10();
 }
 // FUNCTION: GAME 0x005cca80
-RHUnk005cca80::RHUnk005cca80()
+RHUnk005cca80::RHUnk005cca80() : m_4(0)
 {
-    m_4 = 0;
-    m_vptr = 0x679f30;
 }
 // FUNCTION: GAME 0x005ccb40
 RHPortraitStrategyCalls::RHPortraitStrategyCalls()
 {
     *(unsigned *)this = 0x679f38;
 }
-bool RHPortraitWidgetSetupCalls::FUN_0060d130(const std::wstring &, const SBGeoBoundingBox2D &, bool) { return true; }
 RHPortraitRootLifetime::RHPortraitRootLifetime() {}
 RHPortraitRootLifetime::~RHPortraitRootLifetime() {}
 RHPortraitResourceCollection::RHPortraitResourceCollection(bool) {}
@@ -93,21 +90,21 @@ unsigned RHPortraitInputRenderer::FUN_0061d950()
 }
 DECOMP_SIZE_ASSERT(RHPortraitRenderer006212d0, 0x90)
 
-// Parked: zero/one register allocation and literal-vptr/vector-store ordering differ.
+// Parked: zero/one register allocation and vector-store ordering differ.
 // STUB: GAME 0x006212d0
 RHPortraitRenderer006212d0::RHPortraitRenderer006212d0()
     : m_font(0), m_alternateFont(0), m_textObject(0), m_enabled(true)
 {
-    m_vptr = 0x0067ae60;
     m_offset.m_x = 0;
     m_offset.m_y = 0;
 }
 
-// Parked: non-polymorphic base model may schedule the vptr after the EH-state store.
-// STUB: GAME 0x00621380
+// SYNTHETIC: GAME 0x00621360
+// ??_GRHPortraitRenderer006212d0@@UAEPAXI@Z
+
+// FUNCTION: GAME 0x00621380
 RHPortraitRenderer006212d0::~RHPortraitRenderer006212d0()
 {
-    m_vptr = 0x0067ae60;
     m_promptEnabled = false;
 }
 DECOMP_SIZE_ASSERT(RHPortraitText0061db10, 0x48)

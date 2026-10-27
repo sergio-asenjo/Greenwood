@@ -6,7 +6,7 @@
 class SBFrameWidgetView;
 class RHUnk005ef320;
 class RHMapTitleText;
-class RHMapBox;
+#include "RHMapBox.h"
 
 struct SBFrameInputEvent
 {

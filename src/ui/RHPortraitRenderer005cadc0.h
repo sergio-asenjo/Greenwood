@@ -7,6 +7,7 @@
 
 class SBUIListboxUnk0061e890;
 
+// VTABLE: GAME 0x00679e7c
 class RHPortraitRenderer005cadc0 : public RHPortraitRenderer0060dab0
 {
 public:

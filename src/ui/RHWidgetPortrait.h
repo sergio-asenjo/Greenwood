@@ -17,9 +17,8 @@
 #include "SB.h"
 #include "Decomp.h"
 #include <list>
-#include "../engine/RHGame_calls.h"
-
 #include "RHRendererGeometry.h"
+#include "../engine/RHGame_calls.h"
 
 #include "RHWidgetPortraitClass.h"
 
@@ -58,26 +57,19 @@ public:
     undefined m_data[0x70];
 };
 
-class RHPortraitStrategyCalls
-{
-public:
-    RHPortraitStrategyCalls();
-};
+#include "RHPortraitStrategyCalls.h"
 
+// VTABLE: GAME 0x00679f30
 class RHUnk005cca80
 {
 public:
     RHUnk005cca80();
-    unsigned m_vptr;
+    virtual void *V00() = 0;
+    virtual void *V04(bool enabled) = 0;
     unsigned m_4;
 };
 
 class SBGeoBoundingBox2D;
-class RHPortraitWidgetSetupCalls
-{
-public:
-    bool FUN_0060d130(const std::wstring &text, const SBGeoBoundingBox2D &box, bool value);
-};
 
 #include "RHPortraitRootLifetime.h"
 
@@ -230,6 +222,7 @@ public:
 
 #include "RHPortraitRenderer0060dab0.h"
 
+// VTABLE: GAME 0x0067ae60
 class RHPortraitRenderer006212d0 : public RHPortraitRenderer0060dab0
 {
 public:

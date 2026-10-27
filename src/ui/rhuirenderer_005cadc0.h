@@ -3,7 +3,6 @@
 
 #include "Decomp.h"
 #include <string>
-#include "RHPortraitRenderer005cadc0.h"
 #include "RHMenuScreenView.h"
 
 #ifndef SBGEO_POINT2D_VIEW
@@ -43,14 +42,9 @@ public:
 #endif
 
 // SIZE 0x14
-class RHMapBox
-{
-public:
-    RHMapBox(float, float, float, float);
-    SBGeoPoint2D m_0; // 0x00
-    SBGeoPoint2D m_8; // 0x08
-    bool m_10;        // 0x10
-};
+#include "RHMapBox.h"
+
+#include "RHPortraitRenderer005cadc0.h"
 
 class SBUIListboxUnk0061e890
 {
