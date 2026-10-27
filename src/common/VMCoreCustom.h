@@ -1,12 +1,7 @@
 #ifndef VMCORECUSTOM_H
 #define VMCORECUSTOM_H
 
-struct VMNativeStack
-{
-    char *m_data;
-    int m_size;
-    int m_result;
-};
+#include "VMNativeStack.h"
 
 class VMCoreCustom
 {

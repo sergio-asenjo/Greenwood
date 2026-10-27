@@ -11,19 +11,19 @@ int VMUnk0063a140::FUN_0063a140(int size, bool preserve)
         unsigned char *buffer = new unsigned char[size];
         memset(buffer, 0, size);
         if (preserve) {
-            int count = *(int *)(m_pad0 + 4);
+            int count = m_size;
             if (size < count)
                 count = size;
-            memcpy(buffer, *(unsigned char **)m_pad0, count);
+            memcpy(buffer, m_memory, count);
         }
-        if (*(unsigned char **)m_pad0 != 0)
-            operator delete(*(unsigned char **)m_pad0);
-        *(unsigned char **)m_pad0 = buffer;
-        *(int *)(m_pad0 + 4) = size;
+        if (m_memory != 0)
+            operator delete(m_memory);
+        m_memory = buffer;
+        m_size = size;
         return size;
     }
-    *(unsigned char **)m_pad0 = 0;
-    *(int *)(m_pad0 + 4) = 0;
+    m_memory = 0;
+    m_size = 0;
     return size;
 }
 
@@ -36,13 +36,13 @@ unsigned RHUnk0063a1d0::FUN_0063a1d0()
 // FUNCTION: GAME 0x0063a1e0
 int *VMUnk0063a140::FUN_0063a1e0(int offset)
 {
-    return (int *)(*(unsigned char **)m_pad0 + offset);
+    return (int *)(m_memory + offset);
 }
 
 // FUNCTION: GAME 0x0063a1f0
 void VMUnk0063a140::FUN_0063a1f0(int offset, unsigned char *source, int size)
 {
-    memcpy(*(unsigned char **)m_pad0 + offset, source, size);
+    memcpy(m_memory + offset, source, size);
 }
 
 void EmitVMArray(VMUnk0063a140 *array)

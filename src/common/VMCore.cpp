@@ -3,6 +3,19 @@
 #include "SCQuad.h"
 #include "SB.h"
 #include <new>
+#include <stddef.h>
+
+typedef int VMArraySizeAssert[(sizeof(VMUnk0063a140) == 8) ? 1 : -1];
+typedef int VMActivationSizeAssert[(sizeof(VMUnk0063a400) == 0x1c) ? 1 : -1];
+typedef int VMStackSizeAssert[(sizeof(VMUnk0063a250) == 0x10) ? 1 : -1];
+typedef int VMNativeStackSizeAssert[(sizeof(VMNativeStack) == 0x0c) ? 1 : -1];
+typedef int VMCoreSizeAssert[(sizeof(VMCore) == 0x48) ? 1 : -1];
+typedef int VMActivationAreaOffsetAssert[(offsetof(VMUnk0063a400, m_0c) == 0x0c) ? 1 : -1];
+typedef int VMActivationLocalOffsetAssert[(offsetof(VMUnk0063a400, m_14) == 0x14) ? 1 : -1];
+typedef int VMStackRecordsOffsetAssert[(offsetof(VMUnk0063a250, m_records) == 4) ? 1 : -1];
+typedef int VMCoreStackOffsetAssert[(offsetof(VMCore, m_0c) == 0x0c) ? 1 : -1];
+typedef int VMCoreAreaOffsetAssert[(offsetof(VMCore, m_1c) == 0x1c) ? 1 : -1];
+typedef int VMCoreNativeOffsetAssert[(offsetof(VMCore, m_native) == 0x30) ? 1 : -1];
 
 // GLOBAL: GAME 0x006c1940
 int g_unk0x006c1940 = 0;
@@ -60,30 +73,6 @@ void VMCore::FUN_00634c20()
     ++m_24;
 }
 
-class VMUnk00634d30Object
-{
-public:
-    char m_pad0[4];
-    int m_04;
-    char m_pad08[4];
-    VMUnk0063a140 m_0c;
-    VMUnk0063a140 m_14;
-};
-
-class VMUnk00634d30Node
-{
-public:
-    char m_pad0[8];
-    VMUnk00634d30Object *m_08;
-};
-
-class VMUnk00634d30Stack
-{
-public:
-    char m_pad0[4];
-    VMUnk00634d30Node *m_04;
-};
-
 inline int *VMCore::GetSymbolValuePtr(unsigned short &value)
 {
     unsigned short flags = value & 0xc000;
@@ -92,11 +81,11 @@ inline int *VMCore::GetSymbolValuePtr(unsigned short &value)
     if (flags == 0x4000)
         return m_1c.FUN_0063a1e0(value & 0x3fff);
     if (flags == 0x8000) {
-        VMUnk00634d30Object *object = (*(VMUnk00634d30Stack **)(m_0c.m_pad0 + 8))->m_04->m_08;
+        VMUnk0063a400 *object = m_0c.m_records.back();
         return object->m_0c.FUN_0063a1e0(value & 0x3fff);
     }
     if (flags == 0xc000) {
-        VMUnk00634d30Object *object = (*(VMUnk00634d30Stack **)(m_0c.m_pad0 + 8))->m_04->m_08;
+        VMUnk0063a400 *object = m_0c.m_records.back();
         return object->m_14.FUN_0063a1e0(value & 0x3fff);
     }
     SBAssert(0, "P:\\Robin Hood\\VirtualMachine\\VMCore.cpp", 0x516,
@@ -115,9 +104,9 @@ void VMCore::FUN_00634c30()
 // FUNCTION: GAME 0x00634d30
 void VMCore::FUN_00634d30()
 {
-    (*(VMUnk00634d30Stack **)(m_0c.m_pad0 + 8))->m_04->m_08->m_0c.FUN_0063a140(
+    m_0c.m_records.back()->m_0c.FUN_0063a140(
         ((unsigned short *)m_28)[2], false);
-    (*(VMUnk00634d30Stack **)(m_0c.m_pad0 + 8))->m_04->m_08->m_14.FUN_0063a140(
+    m_0c.m_records.back()->m_14.FUN_0063a140(
         ((unsigned short *)m_28)[3], false);
     ++m_24;
 }
@@ -149,9 +138,11 @@ void VMCore::FUN_00634dd0()
 void VMCore::FUN_00634de0()
 {
     int *value = GetSymbolValuePtr(((unsigned short *)m_28)[2]);
-    if (*(int *)(m_0c.m_pad0 + 12) != 1) {
-        VMUnk00634d30Node *node = (*(VMUnk00634d30Stack **)(m_0c.m_pad0 + 8))->m_04;
-        (*(VMUnk00634d30Node **)(node->m_pad0 + 4))->m_08->m_04 = *value;
+    if (m_0c.m_records.size() != 1) {
+        std::list<VMUnk0063a400 *>::iterator previous = m_0c.m_records.end();
+        --previous;
+        --previous;
+        (*previous)->m_04 = *value;
     }
     m_2c = *value;
     m_24 = m_0c.FUN_0063a320();
@@ -177,7 +168,7 @@ void VMCore::FUN_00634fa0()
 void VMCore::FUN_00635090()
 {
     int *value = GetSymbolValuePtr(((unsigned short *)m_28)[2]);
-    *value = (*(VMUnk00634d30Stack **)(m_0c.m_pad0 + 8))->m_04->m_08->m_04;
+    *value = m_0c.m_records.back()->m_04;
     ++m_24;
 }
 
@@ -186,8 +177,8 @@ void VMCore::FUN_00635090()
 void VMCore::FUN_00635150()
 {
     int *value = GetSymbolValuePtr(((unsigned short *)m_28)[2]);
-    *(int *)(*(char **)m_pad30 + *(int *)(m_pad30 + 4)) = *value;
-    *(int *)(m_pad30 + 4) += 4;
+    *(int *)(m_native.m_data + m_native.m_size) = *value;
+    m_native.m_size += 4;
     ++m_24;
 }
 
@@ -195,15 +186,15 @@ void VMCore::FUN_00635150()
 void VMCore::FUN_00635210()
 {
     int index = m_24;
-    int result = g_unk0x006c1944[m_28[1]](m_pad30);
+    int result = g_unk0x006c1944[m_28[1]](&m_native);
     m_24 = index + 1;
-    *(int *)(m_pad30 + 8) = result;
+    m_native.m_result = result;
 }
 
 // FUNCTION: GAME 0x00635240
 void VMCore::FUN_00635240()
 {
-    *GetSymbolValuePtr(((unsigned short *)m_28)[2]) = *(int *)(m_pad30 + 8);
+    *GetSymbolValuePtr(((unsigned short *)m_28)[2]) = m_native.m_result;
     ++m_24;
 }
 
@@ -515,39 +506,17 @@ bool VMCore::FUN_006390a0_1()
     return false;
 }
 
+// FUNCTION: GAME 0x006390b0
+VMCore::VMCore(VMUnk0063a490 *code, VMUnk0063a140 *memory)
+    : m_04(code), m_08(memory), m_24(0), m_28(0), m_2c(0), m_3c(1), m_40(0), m_44(0)
+{
+}
+
 // FUNCTION: GAME 0x00639170
 VMCore::~VMCore()
 {
     if (--g_unk0x006c1940 == 0 && g_unk0x006c1944)
         operator delete(g_unk0x006c1944);
-    if (*(void **)m_pad30)
-        operator delete(*(void **)m_pad30);
-    if (*(void **)m_1c.m_pad0)
-        operator delete(*(void **)m_1c.m_pad0);
-    VMUnk0063a140 *area = *(VMUnk0063a140 **)m_0c.m_pad0;
-    if (area) {
-        if (*(void **)area->m_pad0)
-            operator delete(*(void **)area->m_pad0);
-        operator delete(area);
-    }
-    struct Node {
-        Node *next;
-        Node *previous;
-        void *value;
-    };
-    Node *head = *(Node **)(m_0c.m_pad0 + 8);
-    Node *node = head->next;
-    while (node != head) {
-        Node *erased = node;
-        node = node->next;
-        erased->previous->next = erased->next;
-        erased->next->previous = erased->previous;
-        operator delete(erased);
-        --*(int *)(m_0c.m_pad0 + 12);
-    }
-    operator delete(*(Node **)(m_0c.m_pad0 + 8));
-    *(Node **)(m_0c.m_pad0 + 8) = 0;
-    *(int *)(m_0c.m_pad0 + 12) = 0;
 }
 
 // FUNCTION: GAME 0x00639230
@@ -685,35 +654,14 @@ void VMCore::FUN_00639370()
     }
 }
 
-// FUNCTION: GAME 0x006396c0
-void VMUnk0063a250::FUN_006396c0()
-{
-    VMUnk0063a140 *area = *(VMUnk0063a140 **)m_pad0;
-    if (area) {
-        if (*(void **)area->m_pad0)
-            operator delete(*(void **)area->m_pad0);
-        operator delete(area);
-    }
-    struct Node
-    {
-        Node *next;
-        Node *previous;
-        void *value;
-    };
-    Node *head = *(Node **)(m_pad0 + 8);
-    Node *node = head->next;
-    while (node != head) {
-        Node *removed = node;
-        node = node->next;
-        removed->previous->next = removed->next;
-        removed->next->previous = removed->previous;
-        operator delete(removed);
-        --*(int *)(m_pad0 + 12);
-    }
-    operator delete(*(Node **)(m_pad0 + 8));
-    *(Node **)(m_pad0 + 8) = 0;
-    *(int *)(m_pad0 + 12) = 0;
-}
+// SYNTHETIC: GAME 0x006396c0
+// VMUnk0063a250::~VMUnk0063a250
+
+// SYNTHETIC: GAME 0x00639740
+// VMUnk0063a140::~VMUnk0063a140
+
+// SYNTHETIC: GAME 0x00639bc0
+// VMUnk0063a140::VMUnk0063a140
 
 void EmitVMCoreSerializer(VMCore *core, const std::string &name, void (__cdecl *serializer)(SBFile &, void *&))
 {
@@ -786,56 +734,44 @@ void EmitVMUnk00634bb0(VMUnk00634bb0 *value)
     value->FUN_00634bb0();
 }
 
-struct VMUnk0063a320Node
-{
-    VMUnk0063a320Node *m_next;
-    VMUnk0063a320Node *m_previous;
-    VMUnk0063a400 *m_value;
-};
-
-// STUB: GAME 0x0063a250
+// FUNCTION: GAME 0x0063a250
 bool VMUnk0063a250::FUN_0063a250(int address, int size)
 {
-    VMUnk0063a400 *record = new VMUnk0063a400(*(VMUnk0063a140 **)m_pad0);
-    *(VMUnk0063a140 **)m_pad0 = new VMUnk0063a140;
+    VMUnk0063a400 *record = new VMUnk0063a400(m_area);
+    m_area = new VMUnk0063a140;
     record->m_08 = address;
-    ((VMUnk0063a140 *)&record->m_0c)->FUN_0063a140(size, true);
-    std::list<VMUnk0063a400 *> &records = *(std::list<VMUnk0063a400 *> *)(m_pad0 + 4);
-    records.push_back(record);
+    record->m_0c.FUN_0063a140(size, true);
+    m_records.push_back(record);
     return true;
 }
 
 // FUNCTION: GAME 0x0063a320
 int VMUnk0063a250::FUN_0063a320()
 {
-    VMUnk0063a400 *value = (*(VMUnk0063a320Node **)(m_pad0 + 8))->m_previous->m_value;
+    VMUnk0063a400 *value = m_records.back();
     int result = value->m_08;
     if (value) {
-        value->FUN_0063a400();
+        value->~VMUnk0063a400();
         operator delete(value);
     }
-    VMUnk0063a320Node *node = (*(VMUnk0063a320Node **)(m_pad0 + 8))->m_previous;
-    node->m_previous->m_next = node->m_next;
-    node->m_next->m_previous = node->m_previous;
-    operator delete(node);
-    --*(int *)(m_pad0 + 12);
+    m_records.pop_back();
     return result;
 }
 
 // FUNCTION: GAME 0x0063a370
 bool VMUnk0063a250::FUN_0063a370(void *source, int size)
 {
-    int previous = ((RHUnk0063a1d0 *)*(VMUnk0063a140 **)m_pad0)->FUN_0063a1d0();
-    (*(VMUnk0063a140 **)m_pad0)->FUN_0063a140(previous + size, true);
-    (*(VMUnk0063a140 **)m_pad0)->FUN_0063a1f0(previous, (unsigned char *)source, size);
+    int previous = ((RHUnk0063a1d0 *)m_area)->FUN_0063a1d0();
+    m_area->FUN_0063a140(previous + size, true);
+    m_area->FUN_0063a1f0(previous, (unsigned char *)source, size);
     return true;
 }
 
 // FUNCTION: GAME 0x0063a3b0
 int *VMUnk0063a250::FUN_0063a3b0(int offset)
 {
-    VMUnk00634d30Object *object = (*(VMUnk00634d30Stack **)(m_pad0 + 8))->m_04->m_08;
-    return (*(VMUnk0063a140 **)object)->FUN_0063a1e0(offset);
+    VMUnk0063a400 *object = m_records.back();
+    return object->m_00->FUN_0063a1e0(offset);
 }
 
 void EmitVMUnk0063a3b0(VMUnk0063a250 *stack)
@@ -843,23 +779,10 @@ void EmitVMUnk0063a3b0(VMUnk0063a250 *stack)
     stack->FUN_0063a3b0(0);
 }
 
-// FUNCTION: GAME 0x0063a400
-void VMUnk0063a400::FUN_0063a400()
-{
-    VMUnk0063a140 *area = m_00;
-    if (area) {
-        void *buffer = *(void **)area->m_pad0;
-        if (buffer)
-            operator delete(buffer);
-        operator delete(area);
-    }
-    if (m_14)
-        operator delete(m_14);
-    if (m_0c)
-        operator delete(m_0c);
-}
+// SYNTHETIC: GAME 0x0063a400
+// VMUnk0063a400::~VMUnk0063a400
 
 void EmitVMUnk0063a400(VMUnk0063a400 *record)
 {
-    record->FUN_0063a400();
+    record->~VMUnk0063a400();
 }

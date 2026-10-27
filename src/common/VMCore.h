@@ -2,6 +2,10 @@
 #define VMCORE_H
 
 #include <string>
+#include <list>
+#include <string.h>
+#include "VMNativeStack.h"
+#include "VMStringStorage.h"
 
 class SBFile;
 
@@ -23,36 +27,26 @@ struct VMUnk00634ab0Record
     VMUnk00634ab0Record(const VMUnk00634ab0Record &);
 };
 
-class VMUnk00634bb0
-{
-public:
-    char m_pad0[4];
-    unsigned char *m_04;
-    int m_08;
-    int m_0c;
-    void FUN_00634bb0();
-};
-
-class VMUnk0063a250
-{
-public:
-    char m_pad0[0x10];
-    void FUN_006396c0();
-    bool FUN_0063a250(int, int);
-    int FUN_0063a320();
-    bool FUN_0063a370(void *, int);
-    int *FUN_0063a3b0(int);
-};
-
 class VMUnk0063a140
 {
 public:
-    VMUnk0063a140()
+    VMUnk0063a140(int size = 0)
     {
-        *(int *)(m_pad0 + 4) = 0;
-        *(void **)m_pad0 = 0;
+        m_size = size;
+        if (size > 0) {
+            m_memory = new unsigned char[size];
+            memset(m_memory, 0, size);
+        } else {
+            m_memory = 0;
+        }
     }
-    char m_pad0[8];
+    ~VMUnk0063a140()
+    {
+        if (m_memory)
+            operator delete(m_memory);
+    }
+    unsigned char *m_memory;
+    int m_size;
     int FUN_0063a140(int, bool);
     int *FUN_0063a1e0(int);
     void FUN_0063a1f0(int, unsigned char *, int);
@@ -61,21 +55,26 @@ public:
 class VMUnk0063a400
 {
 public:
-    VMUnk0063a400(VMUnk0063a140 *area) : m_00(area)
-    {
-        m_10 = 0;
-        m_0c = 0;
-        m_18 = 0;
-        m_14 = 0;
-    }
+    VMUnk0063a400(VMUnk0063a140 *area) : m_00(area) {}
+    ~VMUnk0063a400() { delete m_00; }
     VMUnk0063a140 *m_00;
     int m_04;
     int m_08;
-    void *m_0c;
-    int m_10;
-    void *m_14;
-    int m_18;
-    void FUN_0063a400();
+    VMUnk0063a140 m_0c;
+    VMUnk0063a140 m_14;
+};
+
+class VMUnk0063a250
+{
+public:
+    VMUnk0063a250() : m_area(new VMUnk0063a140) {}
+    ~VMUnk0063a250() { delete m_area; }
+    VMUnk0063a140 *m_area;
+    std::list<VMUnk0063a400 *> m_records;
+    bool FUN_0063a250(int, int);
+    int FUN_0063a320();
+    bool FUN_0063a370(void *, int);
+    int *FUN_0063a3b0(int);
 };
 
 struct VMQuad;
@@ -107,7 +106,7 @@ public:
     int m_24;
     int *m_28;
     int m_2c;
-    char m_pad30[0x0c];
+    VMNativeStack m_native;
     char m_3c;
     char m_pad3d[3];
     VMUnk0063a490Result *m_40;

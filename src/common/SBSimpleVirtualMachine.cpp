@@ -11,7 +11,7 @@ typedef int SBSimpleVirtualMachineSizeAssert[(sizeof(SBSimpleVirtualMachine) == 
 SBSimpleUnkCodeManager g_unk0x006c1950;
 
 // GLOBAL: GAME 0x006c1960
-unsigned char *g_unk0x006c1960 = 0;
+VMUnk0063a140 g_unk0x006c1960;
 
 // GLOBAL: GAME 0x006c1969
 bool g_unk0x006c1969 = false;
@@ -25,37 +25,23 @@ inline const char *SBSimpleText(const std::string &text)
     return value != 0 ? value : "";
 }
 
-class RHUnk00639bc0
-{
-public:
-    RHUnk00639bc0 *FUN_00639bc0(int size);
-    void FUN_00639740();
-    unsigned char *m_memory;
-    int m_size;
-};
-
-// FUNCTION: GAME 0x00639740
-void RHUnk00639bc0::FUN_00639740()
-{
-    if (m_memory)
-        operator delete(m_memory);
-}
-
+#pragma inline_depth(0)
 // FUNCTION: GAME 0x00639920
 void FUN_00639920()
 {
-    ((RHUnk00639bc0 *)&g_unk0x006c1960)->FUN_00639bc0(0);
+    g_unk0x006c1960.VMUnk0063a140::VMUnk0063a140(0);
 }
+#pragma inline_depth(8)
 
 void EmitSBSimpleVirtualMachineGlue()
 {
     FUN_00639920();
-    ((RHUnk00639bc0 *)&g_unk0x006c1960)->FUN_00639740();
+    g_unk0x006c1960.~VMUnk0063a140();
 }
 
 // FUNCTION: GAME 0x00639960
 SBSimpleVirtualMachine::SBSimpleVirtualMachine()
-    : VMCore((VMUnk0063a490 *)&g_unk0x006c1950, (VMUnk0063a140 *)&g_unk0x006c1960), m_bound(false)
+    : VMCore((VMUnk0063a490 *)&g_unk0x006c1950, &g_unk0x006c1960), m_bound(false)
 {
 }
 
@@ -79,9 +65,9 @@ bool SBSimpleVirtualMachine::Destroy()
 {
     g_unk0x006c1969 = false;
     g_unk0x006c1950.Destroy();
-    if (g_unk0x006c1960 != 0) {
-        operator delete(g_unk0x006c1960);
-        g_unk0x006c1960 = 0;
+    if (g_unk0x006c1960.m_memory != 0) {
+        operator delete(g_unk0x006c1960.m_memory);
+        g_unk0x006c1960.m_memory = 0;
     }
     return true;
 }
@@ -107,17 +93,4 @@ SBSimpleVirtualMachine::~SBSimpleVirtualMachine()
 {
     if (m_bound)
         FUN_006392c0();
-}
-
-// FUNCTION: GAME 0x00639bc0
-RHUnk00639bc0 *RHUnk00639bc0::FUN_00639bc0(int size)
-{
-    m_size = size;
-    if (size > 0) {
-        m_memory = (unsigned char *)operator new(size);
-        memset(m_memory, 0, size);
-    } else {
-        m_memory = 0;
-    }
-    return this;
 }
