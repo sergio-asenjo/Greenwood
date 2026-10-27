@@ -110,6 +110,78 @@ RHMenuGraphics::~RHMenuGraphics()
 
 #include "RHMenuScreenView.h"
 
+#include "RHMapWidget.h"
+#include "RHMenuCampaignMapClass.h"
+#include "RHSaveGameManager.h"
+#include "RHPortraitUnk005d3880.h"
+
+extern wchar_t g_unk0x006c0b50[1];
+std::wstring FUN_005e23d0(unsigned long);
+
+inline void RHGraphicsInsert(std::vector<void *> &widgets, void *const &widget)
+{
+    ((SBArray<RHSaveGame *> *)&widgets)->Insert((RHSaveGame **)widgets.end(), 1, (RHSaveGame *const &)widget);
+}
+
+// FUNCTION: GAME 0x0052c5b0
+bool RHMenuGraphics::Create()
+{
+    if (((RHMenuWindow *)this)->FUN_00544b40(g_unk0x006c0b50, RHMapBox(0.0f, 0.0f, 640.0f, 480.0f), 0))
+    {
+        void *title = m_screen->FUN_0053be80(std::string("MissionTitle"));
+        void *normal = m_screen->FUN_0053be80(std::string(
+            // STRING: GAME 0x006b0994
+            "Default"));
+        void *edit = m_screen->FUN_0053be80(std::string("EditField"));
+        std::vector<void *> widgets;
+        ((RHMapWidget *)&m_label140)->V30(FUN_005e23d0(0x1c), RHMapBox(0.0f, 0.0f, 490.0f, 480.0f), 0, unsigned(-1));
+        ((SBUIUnk0060dd00 *)&m_label140.m_renderer)->FUN_0060e0d0(title, title, title, title);
+        ((RHMenuCampaignMap *)this)->V30(&m_label140);
+        ((RHMapWidget *)&m_label240)->V30(FUN_005e23d0(0x2a), RHMapBox(0.0f, 80.0f, 490.0f, 480.0f), 0, unsigned(-1));
+        ((SBUIUnk0060dd00 *)&m_label240.m_renderer)->FUN_0060e0d0(normal, normal, normal, normal);
+        ((RHMenuCampaignMap *)this)->V30(&m_label240);
+        ((RHMapWidget *)&m_label340)->V30(FUN_005e23d0(0x2e), RHMapBox(0.0f, 230.0f, 490.0f, 480.0f), 0, unsigned(-1));
+        ((SBUIUnk0060dd00 *)&m_label340.m_renderer)->FUN_0060e0d0(normal, normal, normal, normal);
+        ((RHMenuCampaignMap *)this)->V30(&m_label340);
+        m_ok.FUN_005d1e30((int)m_screen, FUN_005e23d0(0xf), 0xbe);
+        m_cancel.FUN_005d1e30((int)m_screen, FUN_005e23d0(0x10), 0xbe);
+        RHGraphicsInsert(widgets, &m_ok);
+        RHGraphicsInsert(widgets, &m_cancel);
+        ((RHMenuCampaignMap *)this)->V30(&m_ok);
+        ((RHMenuCampaignMap *)this)->V30(&m_cancel);
+        ((RHFocusManager *)((char *)this + 0xc8))->FUN_004ffc70((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_ok, true);
+        RHFocusManager &focus = *(RHFocusManager *)((char *)this + 0xc8);
+        focus.FUN_004ffc70((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_cancel, true);
+        focus.FUN_004ffce0((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_ok, 0x1c);
+        focus.FUN_004ffce0((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_ok, 0x9c);
+        focus.FUN_004ffce0((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_cancel, 1);
+        ((RHMenuWindow *)this)->FUN_00544380(widgets, 2);
+        widgets.erase(widgets.begin(), widgets.end());
+        for (unsigned long i = 0; i != 3; ++i)
+        {
+            ((RHPortraitUnk005d3880 *)&m_screens[i])->FUN_005d4bb0((int)m_screen, FUN_005e23d0(i + 0x2b), SBGeoPoint2D(30.0f, 100.0f), 0xbf);
+            ((RHPortraitUnk005d3880 *)&m_screens[i])->FUN_005d3ab0((RHPortraitUnk005d3880 *)&m_screens[(i + 1) % 3]);
+            *(void **)((char *)&m_screens[i] + 0xd0) = edit;
+            RHGraphicsInsert(widgets, &m_screens[i]);
+            ((RHMenuCampaignMap *)this)->V30(&m_screens[i]);
+        }
+        ((RHMenuWindow *)this)->FUN_00544800(widgets, 2);
+        widgets.erase(widgets.begin(), widgets.end());
+        for (int j = 0; j != 4; ++j)
+        {
+            ((RHPortraitUnk005d3880 *)&m_options[j])->FUN_005d4bb0((int)m_screen, FUN_005e23d0(j + 0x2f), SBGeoPoint2D(30.0f, 250.0f), 0xbf);
+            *(void **)((char *)&m_options[j] + 0xd0) = edit;
+            RHGraphicsInsert(widgets, &m_options[j]);
+            ((RHMenuCampaignMap *)this)->V30(&m_options[j]);
+        }
+        ((RHMenuWindow *)this)->FUN_00544800(widgets, 2);
+        widgets.erase(widgets.begin(), widgets.end());
+        SynchronizeWidgets();
+        return true;
+    }
+    return false;
+}
+
 // FUNCTION: GAME 0x0052cda0
 bool RHMenuGraphics::Display(void *ui)
 {

@@ -39,6 +39,7 @@ public:
     RHMenuShortMissionDescription(RHMenuWindowScreen *screen);
     ~RHMenuShortMissionDescription();
     void *FUN_00540830(unsigned flags);
+    bool Create();
     void FUN_00540d20();
     std::wstring FUN_00540d50();
 

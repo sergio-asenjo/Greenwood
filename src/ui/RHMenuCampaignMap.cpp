@@ -233,7 +233,7 @@ bool RHMenuCampaignMap::Create()
     {
         // STRING: GAME 0x006b09fc
         RHMapTitleText title(L"Campaign Map");
-        created = FUN_00544b40(title, RHMapBox(0.0f, 0.0f, 629.0f, 480.0f), 0);
+        created = ((RHMenuWindow *)this)->FUN_00544b40(*(const std::wstring *)&title, RHMapBox(0.0f, 0.0f, 629.0f, 480.0f), 0);
     }
     if (created)
     {
@@ -739,6 +739,16 @@ unsigned RHUnk00528ad0::FUN_00528be0()
     return result;
 }
 
+// FUNCTION: GAME 0x005276d0
+RHUnk005276d0::RHUnk005276d0()
+{
+}
+
+// FUNCTION: GAME 0x005277b0
+RHUnk005276d0::~RHUnk005276d0()
+{
+}
+
 // SYNTHETIC: GAME 0x00527870
 // ??1RHUnk00527870@@QAE@XZ
 
@@ -762,13 +772,7 @@ void EmitRHMapBlink(RHUnk00528ad0 *blink)
     ((RHUnk00527870 *)blink)->FUN_00528c70(0);
 }
 
-class RHUnk00641782
-{
-public:
-    RHUnk00641782();
-    ~RHUnk00641782();
-    unsigned char m_00;
-};
+#include "RHUnk00641782.h"
 
 struct RHMapTreeNode
 {
@@ -1051,6 +1055,8 @@ void RHMapTree::FUN_0053ad50()
     }
 }
 
+class RHUnk00613e90;
+
 class RHUnkFXDraw
 {
 public:
@@ -1058,6 +1064,8 @@ public:
     unsigned short FUN_005e56c0(unsigned long);
     unsigned short FUN_005e5750(unsigned long);
     void FUN_005e6440(unsigned long, int, int, unsigned long, unsigned long);
+    bool Unk005e5a00(unsigned long, RHUnk00613e90 &, unsigned long);
+    void Unk005e5ea0(RHUnk00613e90 &);
 };
 
 class RHUnk005ef320;
@@ -1131,6 +1139,90 @@ RHMenuScreenView::RHMenuScreenView(unsigned long flags, long background, unsigne
     FUN_0053c140(flags);
 }
 
+class RHMobileUnk006091b0
+{
+public:
+    RHMobileUnk006091b0 &FUN_006091b0(const SBGeoPoint2D &offset);
+};
+
+// FUNCTION: GAME 0x0053b1f0
+void RHMenuScreenView::FUN_0053b1f0(RHMenuWindow *window)
+{
+    RHUnkFXDraw *draw = (RHUnkFXDraw *)g_unk0x6c11d0;
+    SBGeoVector2D offset;
+    SBGeoBoundingBox2D box(((RHMapWidget *)window)->V24());
+    float width = box.m_p1.m_x - box.m_p0.m_x;
+    offset.m_x = (float)(unsigned short)(draw->FUN_005e56c0(0) >> 1) - width * 0.5f;
+    float height = box.m_p1.m_y - box.m_p0.m_y;
+    offset.m_y = (float)(unsigned short)(draw->FUN_005e5750(0) >> 1) - height * 0.5f;
+    {
+        SBGeoVector2D origin((const SBGeoVector2D &)box.m_p0);
+        offset.FUN_005fc250(origin);
+    }
+    ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(offset);
+    ((RHMapWidget *)window)->V2c((const RHMapTitleText &)box);
+}
+
+#include "SBPictureUnkView.h"
+
+DECOMP_SIZE_ASSERT(SBPictureUnkView, 0x18)
+
+// GLOBAL: GAME 0x00677680
+float g_unk0x00677680 = 1.0f / 64.0f;
+
+// GLOBAL: GAME 0x00677684
+float g_unk0x00677684 = 1.0f / 32.0f;
+
+// FUNCTION: GAME 0x0053b330
+bool RHMapWindow::FUN_0053b330(unsigned long surface, unsigned short amount, float factor)
+{
+    RHUnkFXDraw *draw = (RHUnkFXDraw *)g_unk0x6c11d0;
+    SBPictureUnkView view;
+    if (!draw->Unk005e5a00(surface, (RHUnk00613e90 &)view, 0))
+        return false;
+    unsigned long pitch = view.m_pitch >> 1;
+    unsigned short *row = view.m_data;
+    float r, g, b, h, s, v;
+    if (*(unsigned short *)((char *)draw + 0x10c) == 16)
+    {
+        for (unsigned short y = 0; y < view.m_height; ++y)
+        {
+            for (unsigned short x = 0; x < view.m_width; ++x)
+            {
+                unsigned short color = row[x];
+                r = ((color >> 11) * g_unk0x00677684) * factor * 2.0f;
+                g = (((color >> 5) & 63) * g_unk0x00677680) * factor;
+                b = ((color & 31) * g_unk0x00677684) * factor;
+                RHMenuScreenView::RGB_To_HSV(r, g, b, h, s, v);
+                RHMenuScreenView::HSV_To_RGB(amount, s, v, r, g, b);
+                row[x] = (((unsigned short)(r * 32.0f) << 6) | ((unsigned short)(g * 64.0f) & 63)) << 5
+                    | ((unsigned short)(b * 32.0f) & 31);
+            }
+            row += pitch;
+        }
+    }
+    else
+    {
+        for (unsigned short y = 0; y < view.m_height; ++y)
+        {
+            for (unsigned short x = 0; x < view.m_width; ++x)
+            {
+                unsigned short color = row[x];
+                r = ((((color >> 10) & 31) * g_unk0x00677684) * factor) * 2.0f;
+                g = (((color >> 5) & 31) * g_unk0x00677684) * factor;
+                b = ((color & 31) * g_unk0x00677684) * factor;
+                RHMenuScreenView::RGB_To_HSV(r, g, b, h, s, v);
+                RHMenuScreenView::HSV_To_RGB(amount, s, v, r, g, b);
+                row[x] = ((((unsigned short)(r * 32.0f) & 31) << 5) | ((unsigned short)(g * 32.0f) & 31)) << 5
+                    | ((unsigned short)(b * 32.0f) & 31);
+            }
+            row += pitch;
+        }
+    }
+    draw->Unk005e5ea0((RHUnk00613e90 &)view);
+    return true;
+}
+
 // FUNCTION: GAME 0x0053b6b0
 unsigned long RHMapWindow::FUN_0053b6b0(unsigned long source, bool colorize, bool pause)
 {
@@ -1144,6 +1236,40 @@ unsigned long RHMapWindow::FUN_0053b6b0(unsigned long source, bool colorize, boo
     if (colorize)
         FUN_0053b330(surface, 0x96, 0.2f);
     return surface;
+}
+
+#include "SBResourceManager.h"
+#include "SBDrawManagerCore.h"
+#include "SBUIUnk005fd4a0.h"
+
+// FUNCTION: GAME 0x0053b730
+void *RHMenuScreenView::FUN_0053b730(long background, unsigned short color)
+{
+    RHUnkFXDraw *draw = (RHUnkFXDraw *)g_unk0x6c11d0;
+    SBGeoBoundingBox2D source;
+    SBGeoBoundingBox2D destination;
+    typedef unsigned long (RHUnkFXDraw::*CreateSurface)(unsigned short, unsigned short, unsigned long, bool);
+    unsigned long surface = (draw->*reinterpret_cast<CreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(
+        draw->FUN_005e56c0(0), draw->FUN_005e5750(0), 0, false);
+    unsigned long texture;
+    ((SBResourceManager *)g_unk0x006c1840)->FUN_00600920(background, 0, texture);
+    ((RHMobileUnk00607da0 *)&source)->FUN_00607da0((const RHMobileUnk00607da0 &)
+        RHMapBox(0, 0, draw->FUN_005e56c0(texture), draw->FUN_005e5750(texture)));
+    ((RHMobileUnk00607da0 *)&destination)->FUN_00607da0((const RHMobileUnk00607da0 &)
+        RHMapBox(0, 0, draw->FUN_005e56c0(0), draw->FUN_005e5750(0)));
+    ((SBDrawManager *)draw)->FUN_005e61e0(surface, &destination, color, 0);
+    ((RHMobileUnk00607da0 *)&source)->FUN_00607da0((const RHMobileUnk00607da0 &)source.FUN_006092c0(destination));
+    ((RHMobileUnk00607da0 *)&destination)->FUN_00607da0((const RHMobileUnk00607da0 &)source.FUN_006090d0(
+        SBGeoVector2D(((destination.m_p1.m_x - destination.m_p0.m_x) - (source.m_p1.m_x - source.m_p0.m_x)) * 0.5f,
+            ((destination.m_p1.m_y - destination.m_p0.m_y) - (source.m_p1.m_y - source.m_p0.m_y)) * 0.5f)));
+    float height = source.m_p1.m_y - source.m_p0.m_y;
+    float width = source.m_p1.m_x - source.m_p0.m_x;
+    ((RHMobileUnk00607da0 *)&source)->FUN_00607da0((const RHMobileUnk00607da0 &)source.FUN_006090d0(
+        SBGeoVector2D((draw->FUN_005e56c0(texture) - width) * 0.5f,
+            (draw->FUN_005e5750(texture) - height) * 0.5f)));
+    ((SBDrawManager *)draw)->FUN_005e6440(texture, &source, surface, &destination, 0);
+    ((SBUIUnk005fd4a0 *)g_unk0x006c1840)->FUN_005fd4a0(background);
+    return (void *)surface;
 }
 
 // FUNCTION: GAME 0x0053baa0
@@ -1406,6 +1532,89 @@ void RHMenuScreenView::FUN_0053c800()
     tree.FUN_0053d2f0(first, last);
 }
 
+#include <math.h>
+
+extern float g_unk0x677554;
+
+// FUNCTION: GAME 0x0053ca30
+void RHMenuScreenView::HSV_To_RGB(float h, float s, float v, float &r, float &g, float &b)
+{
+    if (s == 0.0f)
+    {
+        r = v;
+        g = v;
+        b = v;
+        return;
+    }
+    h *= 1.0f / 60.0f;
+    double i = floor(h);
+    float f = h - i;
+    float p = v * (1.0f - s);
+    float q = v * (1.0f - s * f);
+    float t = v * (1.0f - s * (1.0f - f));
+    switch ((unsigned short)i)
+    {
+    case 0:
+        r = v;
+        g = t;
+        b = p;
+        break;
+    case 1:
+        r = q;
+        g = v;
+        b = p;
+        break;
+    case 2:
+        r = p;
+        g = v;
+        b = t;
+        break;
+    case 3:
+        r = p;
+        g = q;
+        b = v;
+        break;
+    case 4:
+        r = t;
+        g = p;
+        b = v;
+        break;
+    case 5:
+        r = v;
+        g = p;
+        b = q;
+        break;
+    }
+}
+
+// FUNCTION: GAME 0x0053cbc0
+void RHMenuScreenView::RGB_To_HSV(float r, float g, float b, float &h, float &s, float &v)
+{
+    float maximum = max(r, max(g, b));
+    float minimum = min(r, min(g, b));
+    v = maximum;
+    if (maximum != 0.0f)
+    {
+        s = (maximum - minimum) / maximum;
+        float delta = maximum - minimum;
+        if (r == maximum)
+            h = (g - b) / delta;
+        else if (g == maximum)
+            h = 2.0f + (b - r) / delta;
+        else if (b == maximum)
+            h = 4.0f + (r - g) / delta;
+        float hue = h;
+        h = hue * g_unk0x677554;
+        if (h < 0.0f)
+            h += 360.0f;
+    }
+    else
+    {
+        s = 0.0f;
+        h = 360.0f;
+    }
+}
+
 // FUNCTION: GAME 0x0053cd20
 bool RHMenuScreenView::FUN_0053cd20()
 {
@@ -1420,20 +1629,11 @@ bool RHMenuScreenView::FUN_0053cd20()
 
 void (*g_rhMapWidgetsConstruct)(std::vector<void *> *, const std::vector<void *> &) = &std::_Construct;
 
-// FUNCTION: GAME 0x00544b40
-bool RHMenuCampaignMap::FUN_00544b40(const RHMapTitleText &title, const RHMapBox &box, unsigned flags)
-{
-    return ((RHPortraitRootLifetime *)this)->RHPortraitRootLifetime::FUN_0061a1e0(title, box, flags);
-}
-
-// FUNCTION: GAME 0x00607c10
-RHMapBox::RHMapBox(float x1, float y1, float x2, float y2)
-    : m_0(x1, y1), m_8(x2, y2), m_10(true)
-{
-}
-
 void RHMenuCampaignMap::Emit()
 {
+    float h, s, v;
+    RHMenuScreenView::HSV_To_RGB(0, 0, 0, h, s, v);
+    RHMenuScreenView::RGB_To_HSV(0, 0, 0, h, s, v);
     RouteEvent(0);
     Create();
     DisplayPseudoMissionDebriefing();

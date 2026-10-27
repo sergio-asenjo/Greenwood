@@ -4,7 +4,7 @@
 #include <vector>
 
 class RHMapTitleText;
-class RHMapBox;
+#include "RHMapBox.h"
 
 struct RHMapByte
 {
@@ -39,7 +39,6 @@ public:
     bool HandleEvent(struct RHMenuEvent *event);
     bool Create();
     void DisplayPseudoMissionDebriefing();
-    bool FUN_00544b40(const RHMapTitleText &, const RHMapBox &, unsigned);
     void FUN_00527a70(RHMapByte);
     void FUN_00527ae0(RHMapByte);
     void FUN_00527c00(const std::vector<void *> &);

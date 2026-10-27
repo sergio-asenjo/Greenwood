@@ -26,6 +26,3 @@ extern "C" __int64 _ftol()
 // Target 0x0052c220, __thiscall.
 
 // Target 0x0052c3c0, __thiscall.
-
-// Target 0x0052c5b0, __thiscall.
-bool RHMenuGraphics::Create() { return false; }

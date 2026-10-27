@@ -9,6 +9,9 @@
 #include "RHShortMissionUpdateCalls.h"
 #include "RHMission.h"
 #include "RHGameBlazonWidget.h"
+#include "RHMapWidget.h"
+#include "RHMenuCampaignMapClass.h"
+#include "SBUIRenderer.h"
 
 extern RHEngine *g_pEngine;
 extern RHMapResources *g_unk0x006c1840;
@@ -55,6 +58,30 @@ RHMenuShortMissionDescription::~RHMenuShortMissionDescription()
     ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_title);
     ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_text);
     ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_picture);
+}
+
+extern wchar_t g_unk0x006c0b50[1];
+
+// FUNCTION: GAME 0x00540970
+bool RHMenuShortMissionDescription::Create()
+{
+    if (FUN_00544b40(
+            // STRING: GAME 0x006b1070
+            L"Short mission description",
+            RHMapBox(0.0f, 0.0f, 220.0f, 100.0f), 0))
+    {
+        void *font = m_screen->FUN_0053be80(std::string("PopupScroll"));
+        ((RHMapWidget *)&m_text)->V30(g_unk0x006c0b50, RHMapBox(0.0f, 0.0f, 0.0f, 0.0f), 0, 0x85);
+        ((RHMenuCampaignMap *)this)->V30(&m_text);
+        ((RHMapWidget *)&m_picture)->V30(g_unk0x006c0b50, RHMapBox(9.0f, 8.0f, 9.0f, 8.0f), 0, 0x117);
+        ((RHMenuCampaignMap *)this)->V30(&m_picture);
+        ((RHMapWidget *)&m_title)->V30(g_unk0x006c0b50, RHMapBox(48.0f, 5.0f, 215.0f, 80.0f), 0, unsigned(-1));
+        ((SBUIUnk0060dd00 *)&m_title.m_renderer)->FUN_0060e0d0(font, font, font, font);
+        m_title.m_renderer.SetM64(2);
+        ((RHMenuCampaignMap *)this)->V30(&m_title);
+        return true;
+    }
+    return false;
 }
 
 // FUNCTION: GAME 0x00540d20

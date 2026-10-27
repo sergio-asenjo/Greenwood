@@ -114,7 +114,7 @@ bool RHMenuMissionDescription::FUN_00535800(int, void *, void *)
     menu.FUN_00544b80(true, true);
     menu.FUN_00544300();
     ((RHGameBlazonValue *)m_930)->FUN_0044f960(0);
-    *(volatile char *)&m_buy.m_enabled = (char)((RHGameCampaignView *)g_unk0x6c07fc)->FUN_00456230((RHGameMission *)m_mission);
+    *(volatile char *)&m_buy.m_04 = (char)((RHGameCampaignView *)g_unk0x6c07fc)->FUN_00456230((RHGameMission *)m_mission);
     ((RHMapWindow *)m_screen)->FUN_0053c7e0();
     return true;
 }

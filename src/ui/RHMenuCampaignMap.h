@@ -44,44 +44,21 @@ public:
 class SBGeoPoint2D
 {
 public:
+    SBGeoPoint2D();
     ~SBGeoPoint2D();
     SBGeoPoint2D(float, float);
+    SBGeoPoint2D &FUN_005fc250(const SBGeoPoint2D &other);
     float m_x; // 0x00
     float m_y; // 0x04
 };
 
 #include "RHMapBox.h"
 
-// SIZE 0xcc
-class SBGeoBoundingBox2D;
+#include "SBGeoBoundingBox2DCore.h"
 
-class RHMapWidget
-{
-public:
-    virtual void V00(); // vtable+0x00
-    virtual void V04(); // vtable+0x04
-    virtual void V08(); // vtable+0x08
-    virtual void V0c(); // vtable+0x0c
-    virtual void V10(); // vtable+0x10
-    virtual void V14(); // vtable+0x14
-    virtual void V18(); // vtable+0x18
-    virtual void V1c(); // vtable+0x1c
-    virtual void V20(); // vtable+0x20
-    virtual const SBGeoBoundingBox2D &V24();
-    virtual void V28(); // vtable+0x28
-    virtual void V2c(const RHMapTitleText &); // vtable+0x2c
-    virtual bool V30(const std::wstring &, const RHMapBox &, unsigned, unsigned); // vtable+0x30
-    virtual void V34(); // vtable+0x34
-    virtual void V38(); // vtable+0x38
-    virtual void V3c(); // vtable+0x3c
-    virtual void V40(); // vtable+0x40
-    virtual void V44(); // vtable+0x44
-    virtual void V48(); // vtable+0x48
-    virtual void V4c(); // vtable+0x4c
-    virtual void V50(); // vtable+0x50
-    virtual void V54(bool); // vtable+0x54
-    char m_04[0xc8]; // +0x04; sizeof = 0xcc
-};
+// SIZE 0xcc
+
+#include "RHMapWidget.h"
 
 // SIZE 0x27c
 class RHMapLocation

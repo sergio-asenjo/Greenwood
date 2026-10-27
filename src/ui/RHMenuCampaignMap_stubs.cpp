@@ -35,8 +35,6 @@ std::string g_unk0x006c0660;
 // GLOBAL: GAME 0x006c1840
 RHMapResources *g_unk0x006c1840;
 
-void RHMapWindow::FUN_0053b330(unsigned long, unsigned short, float) {}
-
 struct RHMapTreeNode;
 
 struct RHMapTreeIterator
@@ -56,7 +54,6 @@ SBUILifetime::~SBUILifetime() {}
 
 RHMapScreenTree::~RHMapScreenTree() {}
 
-void *RHMenuScreenView::FUN_0053b730(long, unsigned short) { return 0; }
 void RHMenuScreenView::FUN_0053c140(unsigned long) {}
 
 class RHMapFocusWidget
