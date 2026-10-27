@@ -1,6 +1,7 @@
 #include "SBNullstr.h"
 #include "RHShadowPolygon.h"
 #include <math.h>
+#include <stddef.h>
 
 DECOMP_SIZE_ASSERT(RHUnk005c9010Node, 0x0c)
 DECOMP_SIZE_ASSERT(RHUnk005c9010Iterator, 0x04)
@@ -21,6 +22,12 @@ DECOMP_SIZE_ASSERT(SBGeoPoint3D, 0x0c)
 DECOMP_SIZE_ASSERT(RHShadowUnk0060c260, 0x30)
 DECOMP_SIZE_ASSERT(RHMapBox, 0x14)
 DECOMP_SIZE_ASSERT(RHShadowPolygon, 0x218)
+DECOMP_SIZE_ASSERT(std::vector<RHElement *>, 0x10)
+DECOMP_SIZE_ASSERT(RHEngine, 0x4944)
+DECOMP_STATIC_ASSERT(offsetof(RHEngine, m_elements) == 0x48d8)
+DECOMP_STATIC_ASSERT(offsetof(RHEngine, m_475c) == 0x475c)
+DECOMP_STATIC_ASSERT(offsetof(RHEngine, m_48c4) == 0x48c4)
+DECOMP_STATIC_ASSERT(offsetof(RHEngine, m_493c) == 0x493c)
 
 
 
@@ -135,14 +142,13 @@ inline void RHShadowDestroyCachedList(RHUnk0058e7f0List &list)
     list.m_count = 0;
 }
 
-// Parked at 0.9773: strength-reduced actor index addresses [edi+eax] where the target has [eax+edi].
-// STUB: GAME 0x004c9d20
+// FUNCTION: GAME 0x004c9d20
 void RHEngine::FUN_004c9d20(void *box)
 {
-    unsigned short count = (unsigned short)FUN_004c9d20Size();
+    unsigned short count = (unsigned short)m_elements.size();
     for (unsigned short index = 0; index < count; ++index)
     {
-        RHUnk004a96a0 *actor = m_48dc[index];
+        RHUnk004a96a0 *actor = (RHUnk004a96a0 *)m_elements[index];
         if (actor->m_10 == 0x1001 && actor->m_50->m_18 == 0.0f)
             actor->FUN_004a96a0(m_48c4, m_475c, box, false);
     }

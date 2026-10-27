@@ -1,6 +1,7 @@
 #ifndef RHSHADOWPOLYGON_H
 #define RHSHADOWPOLYGON_H
 #include "RHSectorActorList.h"
+#include "RHEngine.h"
 
 #include "SB.h"
 #include "Decomp.h"
@@ -105,38 +106,12 @@ public:
 SBGeoVector2D operator*(float, const SBGeoVector2D &);
 class RHElementActor;
 class RHviewParameters;
-struct RHScriptNode;
-struct RHScriptIter
-{
-    RHScriptNode *node;
-    RHScriptIter(RHScriptNode *value) : node(value) {}
-    RHScriptIter operator++(int)
-    {
-        RHScriptIter previous = *this;
-        node = *(RHScriptNode **)node;
-        return previous;
-    }
-};
-
-class RHUnk0046eb30
-{
-public:
-    RHScriptIter FUN_0046eb80();
-    RHScriptNode *Unk0059f720(RHScriptNode *next, RHScriptNode *previous);
-};
+#include "RHScriptListCore.h"
 
 class RHShadowUnk0044e8b0
 {
 public:
     RHScriptIter FUN_0044e8b0(RHScriptIter, RHScriptIter);
-};
-
-// SIZE 0x14
-class RHMobileUnk00607da0
-{
-public:
-    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
-    undefined m_00[0x14]; // 0x00
 };
 
 // SIZE 0x14
@@ -230,11 +205,7 @@ public:
     float m_54;
 };
 
-class RHUnk00564020
-{
-public:
-    ~RHUnk00564020();
-};
+#include "RHSpriteListStorage.h"
 
 // SIZE 0x1c
 struct RHShadowIterator
@@ -941,25 +912,6 @@ public:
     void FUN_004a96a0(void *, void *, void *, bool);
 };
 
-class RHEngine
-{
-public:
-    undefined m_pad0[0x475c]; // 0x00
-    void *m_475c; // 0x475c
-    undefined m_pad4760[0x164]; // 0x4760
-    void *m_48c4; // 0x48c4
-    undefined m_pad48c8[0x14]; // 0x48c8
-    RHUnk004a96a0 **m_48dc; // 0x48dc
-    RHUnk004a96a0 **m_48e0; // 0x48e0
-    void FUN_004c9d20(void *);
-    unsigned FUN_004c9d20Size()
-    {
-        if (m_48dc == 0)
-            return 0;
-        return m_48e0 - m_48dc;
-    }
-};
-
 extern RHEngine *g_pEngine;
 struct RHUnkSectorGlobal;
 extern RHUnkSectorGlobal *g_unk0x6c0a9c;
@@ -1009,15 +961,7 @@ public:
 
 
 // SIZE 0x14
-class RHMapBox
-{
-public:
-    RHMapBox(float, float, float, float);
-    ~RHMapBox() {}
-    SBGeoPoint2D m_0; // 0x00
-    SBGeoPoint2D m_8; // 0x08
-    bool m_10; // 0x10
-};
+#include "RHMapBox.h"
 
 class __single_inheritance RHShadowPolygon;
 typedef void (RHShadowPolygon::*RHShadowDrawLine)(unsigned short, int, int, int, int, int);

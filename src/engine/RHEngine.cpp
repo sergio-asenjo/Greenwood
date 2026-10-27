@@ -98,11 +98,7 @@ public:
 struct RHUnk005c9010Iterator;
 void FUN_005c9010(RHUnk005c9010Iterator &current, int distance, std::bidirectional_iterator_tag category);
 
-class RHTitbitList
-{
-public:
-    __forceinline void At(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
-};
+#include "RHTitbitsCore.h"
 
 class RHEngineActorOrderCalls
 {
@@ -369,6 +365,7 @@ extern void **g_unk0x6c0f34;
 extern void **g_unk0x6c0f38;
 
 #include "RHEngineWidenedCalls.h"
+#include "RHElementObject.h"
 #include "RHUnkTargetSpriteCalls.h"
 #include "RHPortraitBar.h"
 
@@ -795,9 +792,6 @@ char *g_unk0x006c0664 = 0;
 // GLOBAL: GAME 0x006c0a7c
 int g_unk0x006c0a7c = 0;
 
-// GLOBAL: GAME 0x006774a0
-float g_unk0x006774a0 = 20.0f;
-
 // GLOBAL: GAME 0x006c081c
 unsigned g_unk0x006c081c = 0;
 
@@ -817,7 +811,7 @@ unsigned g_unk0x006c081c = 0;
             value = 0; \
             return true; \
         } \
-        value = FUN_004622e0(index, g_pEngine->m_48d8); \
+        value = FUN_004622e0(index, &g_pEngine->m_elements); \
         return true; \
     } \
     else \
@@ -991,7 +985,7 @@ void RHEngineReinforcementCalls::FUN_004936a0(int value)
 }
 
 #define RHENGINE_OBJECT_CREATE(type, row, flag) \
-    if (((RHEngineWidenedCalls *)this)->FUN_004b2010(flag, FUN_004b3120(type)) == true) \
+    if (((RHElementObject *)this)->Create(flag, *(const RHElementObject *)FUN_004b3120(type)) == true) \
     { \
         unsigned &current = *(unsigned *)((char *)this + 0xb4); \
         if (current != row) \
@@ -1067,7 +1061,7 @@ char RHUnk004a6000::FUN_004a6060() const
 }
 
 // FUNCTION: GAME 0x004a6310
-bool RHUnk004a6310::FUN_004a6310(char flag)
+bool RHUnk004a6310::FUN_004a6310(bool flag)
 {
     RHENGINE_OBJECT_CREATE(4, 0xc4, flag)
 }
@@ -1134,9 +1128,9 @@ RHUnk004a6670::RHUnk004a6670(void *victim, int value) : RHProjectileLifetime(1, 
 }
 
 // FUNCTION: GAME 0x004a66d0
-bool RHUnk004a66d0::FUN_004a66d0(char flag)
+bool RHUnk004a66d0::FUN_004a66d0(bool flag)
 {
-    return ((RHEngineWidenedCalls *)this)->FUN_004b2010(flag, FUN_004b3120(5));
+    return ((RHElementObject *)this)->Create(flag, *(const RHElementObject *)FUN_004b3120(5));
 }
 
 class RHUnk004a7b00
@@ -1278,13 +1272,13 @@ void EmitRHUnk004a7e90(void *storage, void *victim)
 }
 
 // FUNCTION: GAME 0x004a7d70
-bool RHUnk004a7d70::FUN_004a7d70(char flag)
+bool RHUnk004a7d70::FUN_004a7d70(bool flag)
 {
     RHENGINE_OBJECT_CREATE(13, 0xbe, flag)
 }
 
 // FUNCTION: GAME 0x004a7ed0
-bool RHUnk004a7ed0::FUN_004a7ed0(char flag)
+bool RHUnk004a7ed0::FUN_004a7ed0(bool flag)
 {
     RHENGINE_OBJECT_CREATE(8, 0xc4, flag)
 }
@@ -1353,7 +1347,7 @@ bool RHUnk004ba900::FUN_004ba980(void *target)
 }
 
 // FUNCTION: GAME 0x004b0980
-bool RHUnk004b0980::FUN_004b0980(char flag)
+bool RHUnk004b0980::FUN_004b0980(bool flag)
 {
     RHENGINE_OBJECT_CREATE(9, 0xc4, flag)
 }
@@ -1376,15 +1370,15 @@ void EmitRHUnk004b09e0(RHUnk004b09e0 *a)
 }
 
 // FUNCTION: GAME 0x004b91a0
-bool RHUnk004b91a0::FUN_004b91a0(char flag)
+bool RHUnk004b91a0::FUN_004b91a0(bool flag)
 {
     RHENGINE_OBJECT_CREATE(7, 0xc4, flag)
 }
 
 // FUNCTION: GAME 0x004ba900
-bool RHUnk004ba900::FUN_004ba900(char flag)
+bool RHUnk004ba900::FUN_004ba900(bool flag)
 {
-    if (((RHEngineWidenedCalls *)this)->FUN_004b2010(flag, FUN_004b3120(6)) == true)
+    if (((RHElementObject *)this)->Create(flag, *(const RHElementObject *)FUN_004b3120(6)) == true)
     {
         unsigned &current = *(unsigned *)((char *)this + 0xb4);
         if (current != 0xc4)
@@ -1401,7 +1395,7 @@ bool RHUnk004ba900::FUN_004ba900(char flag)
 }
 
 // FUNCTION: GAME 0x004be080
-bool RHUnk004be080::FUN_004be080(char flag)
+bool RHUnk004be080::FUN_004be080(bool flag)
 {
     RHENGINE_OBJECT_CREATE(11, 0xc4, flag)
 }
@@ -1458,9 +1452,9 @@ inline void RHSetWaspState(RHUnk004bc5b0 *wasp, unsigned type, unsigned row)
 }
 
 // FUNCTION: GAME 0x004bc5b0
-bool RHUnk004bc5b0::FUN_004bc5b0(char flag)
+bool RHUnk004bc5b0::FUN_004bc5b0(bool flag)
 {
-    if (!((RHEngineWidenedCalls *)this)->FUN_004b2010(flag, FUN_004b3120(10)))
+    if (!((RHElementObject *)this)->Create(flag, *(const RHElementObject *)FUN_004b3120(10)))
         return false;
     if (m_parent)
     {
@@ -1788,7 +1782,7 @@ void RHEngine::InitializeActorsFromMissionStream(SBFile &file, std::vector<RHbea
     for (unsigned short i = 0; i < count; ++i)
     {
         g_unk0x006c0a7c = 9;
-        g_unk0x6c0a50.m_progress += g_unk0x006774a0 / (int)count;
+        g_unk0x6c0a50.m_progress += 20.0f / (int)count;
         g_unk0x6c0a50.FUN_00523300();
         switch (FUN_005e1d00(file))
         {
@@ -1922,7 +1916,7 @@ void RHEngine::InitializeBuildingTenantsFromMissionStream(SBFile &file)
         {
             unsigned short index;
             file.Access(&index, 2);
-            void *actor = (*(void ***)(m_48d8 + 4))[index];
+            void *actor = m_elements[index];
             if ((*(unsigned *)((char *)actor + 4) & 7) == 4)
                 ((RHEngineBuildingCalls *)building)->FUN_0057e680(actor);
             else
@@ -2180,8 +2174,11 @@ void RHEngine::FUN_004c28c0(const std::string &name)
     RHUnkFXDraw *draw = *(RHUnkFXDraw **)((char *)this + 0xdc);
     unsigned long surface = draw->Unk005e4ed0((int)width, (int)height, 0, 0);
     *(unsigned long *)((char *)this + 0x48c4) = surface;
+    extern float g_unk0x00677680;
+    float backgroundWidth = width;
+    float backgroundHeight = height;
     ((RHEngineBackgroundCalls *)((char *)this + 0x11c))->FUN_004e7fa0(
-        (int)(width * 0.015625f), (int)(height * 0.015625f));
+        (int)(backgroundWidth * g_unk0x00677680), (int)(backgroundHeight * g_unk0x00677680));
     map.Unk00611e10(draw->m_depth == 16 ? 3 : 2, 0);
     map.Unk00613530(draw, surface);
     g_unk0x006c0a7c = 7;
@@ -4229,19 +4226,11 @@ void RHEngine::FUN_004de1e0()
     }
 }
 
-class RHEngineUnk00466xx
-{
-public:
-    void FUN_005c7970();
-};
-
-void RHEngineUnk00466xx::FUN_005c7970() {}
-
 // FUNCTION: GAME 0x004debe0
 void RHEngine::FUN_004debe0()
 {
     *(bool *)((char *)this + 0x6c) = true;
-    ((RHEngineUnk00466xx *)((char *)this + 0x4668))->FUN_005c7970();
+    ((RHTitbits *)((char *)this + 0x4668))->ResetBlinking();
 }
 
 // Parked: layer/point receiver scheduling and sector-bit lowering differ.

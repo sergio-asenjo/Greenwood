@@ -6,7 +6,6 @@ class SBFile;
 class RHEngineWidenedCalls
 {
 public:
-    bool FUN_004b2010(char flag, void *description);
     void FUN_004c7f60(const void *point);
     void FUN_005563f0(unsigned value);
     void FUN_004eb120(SBFile &file, void *pathFinder);

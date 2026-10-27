@@ -19,6 +19,7 @@ public:
     float m_x;
     float m_y;
     SBGeoPoint2D();
+    SBGeoPoint2D(float x, float y);
     ~SBGeoPoint2D();
     SBGeoPoint2D(const SBGeoPoint2D &other);
     SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
@@ -86,6 +87,7 @@ public:
 };
 
 class RHUnk00522540;
+struct RHUnk00571160Position;
 
 // VTABLE: GAME 0x00679c9c
 // SIZE 0x84
@@ -96,6 +98,7 @@ public:
     virtual ~RHSectorArchery();
     void InitializeFromMissionStream(SBFile &file);
     bool Serialize(SBFile &file);
+    bool IsInside(const RHUnk00571160Position &position);
     void Emit(SBFile &file);
     RHSectorArray<RHUnk00522540 *> m_58; // [0x58]
     char m_pad70[8];

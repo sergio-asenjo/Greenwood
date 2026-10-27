@@ -228,7 +228,6 @@ void RHEngineMissionElementCalls::Unk3c(SBFile &) {}
 
 #include "RHEngineWidenedCalls.h"
 
-bool RHEngineWidenedCalls::FUN_004b2010(char, void *) { return false; }
 void RHEngineWidenedCalls::FUN_004eb120(SBFile &, void *) {}
 void RHEngineWidenedCalls::FUN_00558670(SBFile &) {}
 void RHEngineWidenedCalls::FUN_005e5160(unsigned) {}

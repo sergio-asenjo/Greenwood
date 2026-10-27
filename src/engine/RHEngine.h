@@ -28,7 +28,6 @@ public:
 
 extern RHCampaignLoadingProgress g_unk0x6c0a50;
 extern int g_unk0x006c0a7c;
-extern float g_unk0x006774a0;
 unsigned long FUN_005e1d00(SBFile &file);
 void FUN_005e2300(SBFile &file);
 
@@ -127,6 +126,7 @@ class RHEngine
 {
 public:
     bool TurnPathFinderOn();
+    void FUN_004c9d20(void *box);
     int FUN_0049b590(void *actor);
     void TurnPathFinderOff();
     bool FUN_004c0340(SBGeoPoint2D &point);
@@ -271,8 +271,13 @@ public:
     }
     void Emit(SBFile &file, void *&value);
 
-    undefined m_0000[0x48d8]; // 0x0000
-    undefined m_48d8[0x64]; // 0x48d8
+    undefined m_0000[0x475c];
+    void *m_475c;
+    undefined m_4760[0x164];
+    void *m_48c4;
+    undefined m_48c8[0x10];
+    std::vector<RHElement *> m_elements;
+    undefined m_48e8[0x54];
     void **m_493c; // 0x493c
     void **m_4940; // 0x4940
 };
@@ -442,7 +447,7 @@ public:
 class RHUnk004a66d0
 {
 public:
-    bool FUN_004a66d0(char flag);
+    bool FUN_004a66d0(bool flag);
 };
 
 class RHUnk004a6000
@@ -457,13 +462,13 @@ public:
 class RHUnk004a7d70
 {
 public:
-    bool FUN_004a7d70(char flag);
+    bool FUN_004a7d70(bool flag);
 };
 
 class RHUnk004a7ed0
 {
 public:
-    bool FUN_004a7ed0(char flag);
+    bool FUN_004a7ed0(bool flag);
     int FUN_004a7f30();
     void FUN_004a7f40(int first, int second, int third);
     void FUN_004a7f50();
@@ -577,7 +582,7 @@ public:
 class RHUnk004bc5b0
 {
 public:
-    bool FUN_004bc5b0(char flag);
+    bool FUN_004bc5b0(bool flag);
     undefined m_00[0x50]; // 0x00
     void *m_sprite; // 0x50
     undefined m_54[0x5c]; // 0x54

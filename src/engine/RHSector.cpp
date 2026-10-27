@@ -912,6 +912,19 @@ bool RHSectorArchery::Serialize(SBFile &file)
     return true;
 }
 
+#include "RHElementAreaShape.h"
+#include "RHUnk00571160Position.h"
+
+// FUNCTION: GAME 0x0057f5d0
+bool RHSectorArchery::IsInside(const RHUnk00571160Position &position)
+{
+    SBGeoPoint2D point(position.x, position.y);
+    unsigned short layer = *(volatile unsigned short *)&((RHSector *)m_78)->m_36;
+    if (layer != (unsigned short)position.layer)
+        return false;
+    return ((RHElementAreaShape *)(RHUnk0060c2c0 *)this)->FUN_0060c660(point);
+}
+
 // FUNCTION: GAME 0x0057f8c0
 void RHSectorScript::InitializeFromMissionStream(SBFile &file)
 {

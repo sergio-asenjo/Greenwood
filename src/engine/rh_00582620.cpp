@@ -1,7 +1,7 @@
 // Anonymous cluster at 0x0058253x / 0x0058262x.
 // No __FILE__ or oracle evidence: class and method identity are unproven.
 
-#include "RHSequenceManager.h"
+#include "RHSequenceDispatch.h"
 #include "RHSequenceElementCalls.h"
 
 inline unsigned RHSequenceDispatchCount(unsigned short first, unsigned short last, unsigned &index)
@@ -9,21 +9,6 @@ inline unsigned RHSequenceDispatchCount(unsigned short first, unsigned short las
     index = first;
     return last - (unsigned)first;
 }
-
-class RHUnk00582620
-{
-public:
-    bool FUN_00582530();
-    void FUN_00582560();
-    void FUN_00582620(int arg);
-    char m_00[8];
-    RHManagerList<RHSequenceElement *> m_list;
-    unsigned short m_2c;
-    unsigned short m_2e;
-    short m_30;
-    char m_32[2];
-    char m_34;
-};
 
 // FUNCTION: GAME 0x00582530
 bool RHUnk00582620::FUN_00582530()
