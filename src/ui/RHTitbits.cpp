@@ -40,7 +40,7 @@ struct RHTitbitCursor : std::iterator<std::bidirectional_iterator_tag, RHTitbit>
     RHTitbit &operator*() { return node->m_data; }
 };
 
-class RHTitbitAccess
+template<bool rewind, bool outlined> class RHTitbitAccessMode
 {
 public:
     RHTitbitCursor Begin()
@@ -61,9 +61,15 @@ public:
         {
             if (index <= (count + 1) / 2)
             {
-                m_current = Begin();
                 std::bidirectional_iterator_tag category;
-                FUN_005c9010((RHUnk005c9010Iterator &)m_current, index, category);
+                if (rewind)
+                    FUN_005c9010((RHUnk005c9010Iterator &)m_current.AssignNode(
+                        *(RHTitbitNode *volatile *)&((RHTitbitList *)this)->m_head->m_next), index, category);
+                else
+                {
+                    m_current = Begin();
+                    FUN_005c9010((RHUnk005c9010Iterator &)m_current, index, category);
+                }
             }
             else
             {
@@ -101,7 +107,7 @@ public:
                 }
                 else if (index < (previous + count) / 2)
                 {
-                    if (removing)
+                    if (removing || outlined)
                     {
                         std::bidirectional_iterator_tag category;
                         FUN_005c9010((RHUnk005c9010Iterator &)m_current, index - previous, category);
@@ -131,6 +137,8 @@ public:
     int m_index;
 };
 
+typedef RHTitbitAccessMode<false, false> RHTitbitAccess;
+
 // Parked: second cached traversal is outlined and leaves the frame four bytes short.
 // STUB: GAME 0x005c3440
 bool RHTitbits::RemoveQuickActionTitbitsFor(RHElementActorPC *actor, unsigned short action)
@@ -149,6 +157,53 @@ bool RHTitbits::RemoveQuickActionTitbitsFor(RHElementActorPC *actor, unsigned sh
             list.Get(index, true);
             ((RHUnk0046eb30 *)&list)->erase(RHScriptIter((RHScriptNode *)list.m_current.node));
             list.m_dirty = true;
+        }
+    }
+    return removed;
+}
+
+// Parked: duplicate traversal outlining and dirty-path cursor scheduling differ.
+// STUB: GAME 0x005c3680
+bool RHTitbits::FUN_005c3680()
+{
+    bool removed = false;
+    for (short index = ((std::list<RHTitbit> *)&m_list)->size() - 1; index != -1; --index)
+    {
+        RHTitbit entry;
+        entry = ((RHTitbitAccess *)&m_list)->Get(index, true);
+        if (entry.m_00 == 8)
+        {
+            removed = true;
+            RHTitbitAccess &list = *(RHTitbitAccess *)&m_list;
+            ((RHTitbitAccessMode<true, false> *)&list)->Get(index, true);
+            ((RHUnk0046eb30 *)&list)->erase(*(RHScriptIter *)&list.m_current);
+            list.m_dirty = true;
+        }
+    }
+    return removed;
+}
+
+// FUNCTION: GAME 0x005c38b0
+bool RHTitbits::RemoveUnconsciousStarsIf(RHElementActor *actor)
+{
+    bool removed = false;
+    for (unsigned short i = ((std::list<RHTitbit> *)&m_list)->size(); i != 0; --i)
+    {
+        int index = i - 1;
+        RHTitbit entry;
+        entry = m_list.Item(index);
+        if (entry.m_00 == 1 && entry.m_0c == (int)actor && !*(bool *)((char *)actor + 0x1ce))
+        {
+            removed = true;
+            RHTitbitAccess &list = *(RHTitbitAccess *)&m_list;
+            ((RHTitbitAccessMode<false, true> *)&list)->Get(index, false);
+            RHTitbitNode *node = list.m_current.node;
+            node->m_prev->m_next = node->m_next;
+            node->m_next->m_prev = node->m_prev;
+            ::operator delete(node);
+            int remaining = ((RHTitbitList *)&list)->m_count - 1;
+            list.m_dirty = true;
+            ((RHTitbitList *)&list)->m_count = remaining;
         }
     }
     return removed;
@@ -303,6 +358,68 @@ bool RHTitbits::Serialize(SBFile &file)
     return true;
 }
 
+// FUNCTION: GAME 0x005c72a0
+void RHTitbits::FUN_005c72a0()
+{
+    if (m_a4 <= 0)
+        m_a4 = 15;
+    else
+        --m_a4;
+    m_a8 += 1.0f;
+    if (m_a8 > 10.0f)
+        m_a8 -= 10.0f;
+    m_00 = 0;
+    for (short index = ((std::list<RHTitbit> *)&m_list)->size() - 1; index >= 0; --index)
+    {
+        RHTitbit &entry = m_list.Item(index);
+        float &depth = *(float *)&entry.m_24;
+        switch (entry.m_00)
+        {
+        case 8:
+            depth = *(float *)(*(char **)((char *)entry.m_0c + 0x50) + 0x1c4) - 0.01f;
+            break;
+        case 15:
+            depth = *(float *)(*(char **)((char *)entry.m_0c + 0x50) + 0x1c4) + 0.01f;
+            break;
+        case 1: case 2: case 13: case 14:
+            if (entry.m_0c)
+                depth = *(float *)(*(char **)((char *)entry.m_0c + 0x50) + 0x1c4) + 0.01f;
+            break;
+        case 9: case 16:
+            depth = *(float *)(*(char **)((char *)entry.m_0c + 0x50) + 0x1c4) + 0.01f;
+            break;
+        case 3: case 17:
+            if (entry.m_0c)
+                depth = *(float *)(*(char **)((char *)entry.m_0c + 0x50) + 0x1c4) - 0.01f;
+            break;
+        }
+    }
+    m_list.Sort();
+}
+
+// FUNCTION: GAME 0x005c77f0
+void RHTitbits::SetBlinking(RHElementActorPC *actor, unsigned short action, bool blinking)
+{
+    unsigned long id = *(unsigned long *)((char *)actor + 0x538 + action * 4);
+    if (id == -1)
+        return;
+    unsigned count = m_list.m_count;
+    for (int index = 0; (unsigned)index < count; ++index)
+    {
+        RHTitbit &entry = ((RHTitbitAccessMode<true, false> *)&m_list)->Get(index, false);
+        if (entry.m_2c == id)
+            *(bool *)&entry.m_28 = blinking;
+    }
+}
+
+// FUNCTION: GAME 0x005c7970
+void RHTitbits::ResetBlinking()
+{
+    unsigned count = m_list.m_count;
+    for (int index = 0; (unsigned)index < count; ++index)
+        *(bool *)&((RHTitbitAccess *)&m_list)->Get(index).m_28 = false;
+}
+
 // FUNCTION: GAME 0x005c7fb0
 short RHTitbits::FUN_005c7fb0(unsigned long id)
 {
@@ -347,6 +464,7 @@ bool RHTitbits::FUN_005c8340(int kind, RHElement *element)
     return false;
 }
 
+#define SBGEO_POINT2D_VIEW
 class SBGeoPoint2D
 {
 public:
@@ -358,6 +476,7 @@ public:
     float m_y;
 };
 
+#define SBGEO_VECTOR2D_VIEW
 class SBGeoVector2D : public SBGeoPoint2D
 {
 public:
@@ -366,6 +485,7 @@ public:
     SBGeoVector2D &operator=(const SBGeoVector2D &other);
 };
 
+#define SBGEO_BOUNDINGBOX2D_VIEW
 class SBGeoBoundingBox2D
 {
 public:
@@ -374,13 +494,7 @@ public:
     char m_flag;
 };
 
-class RHMapBox
-{
-public:
-    SBGeoPoint2D m_0;
-    SBGeoPoint2D m_8;
-    bool m_10;
-};
+#include "RHMapBox.h"
 
 class SBUIInputFieldDrawUnk
 {
@@ -520,47 +634,7 @@ void RHTitbitList::Resize(long count)
     m_valid = 1;
 }
 
-#include <map>
-
-class RHGameRenderer005c9270
-{
-public:
-    RHGameRenderer005c9270();
-    ~RHGameRenderer005c9270();
-    undefined m_data[0x50];
-};
-
-class SBResourceWidgetID
-{
-public:
-    int m_value;
-    bool operator<(const SBResourceWidgetID &other) const
-    {
-        return m_value < other.m_value;
-    }
-};
-
-class RHUIRendererBlinking
-{
-public:
-    struct BlinkingItem
-    {
-        BlinkingItem() {}
-        unsigned long m_period;
-        SBResourceWidgetID m_first;
-        SBResourceWidgetID m_second;
-    };
-    void SetBlinking(SBResourceWidgetID, SBResourceWidgetID, SBResourceWidgetID, unsigned long);
-    void RemoveBlinking(SBResourceWidgetID);
-    void *FUN_005c9250(unsigned flags);
-    char m_data[0x4c];
-    BlinkingItem m_current;
-    unsigned m_currentId;
-    unsigned m_frame;
-    bool m_active;
-    char m_61[3];
-    std::map<SBResourceWidgetID, BlinkingItem> m_items;
-};
+#include "RHGameWidgetLifetime.h"
 
 typedef std::map<SBResourceWidgetID, RHUIRendererBlinking::BlinkingItem> RHBlinkingMap;
 typedef std::_Tree<SBResourceWidgetID,
@@ -568,6 +642,34 @@ typedef std::_Tree<SBResourceWidgetID,
     std::map<SBResourceWidgetID, RHUIRendererBlinking::BlinkingItem>::_Kfn,
     std::less<SBResourceWidgetID>,
     std::allocator<RHUIRendererBlinking::BlinkingItem> > RHBlinkingTree;
+
+template<> inline void RHBlinkingTree::_Init()
+{
+    std::_Lockit lock;
+    if (_Nil == 0)
+    {
+        _Nil = _Buynode(0, _Black);
+        _Left(_Nil) = 0, _Right(_Nil) = 0;
+    }
+    ++_Nilrefs;
+    _Head = _Buynode(_Nil, _Red), _Size = 0;
+    _Lmost() = _Head, _Rmost() = _Head;
+}
+
+template<> inline RHBlinkingTree::~_Tree()
+{
+    erase(begin(), end());
+    _Freenode(_Head);
+    _Head = 0, _Size = 0;
+    {
+        std::_Lockit lock;
+        if (--_Nilrefs == 0)
+        {
+            _Freenode(_Nil);
+            _Nil = 0;
+        }
+    }
+}
 
 typedef int RHBlinkingItemSize[(sizeof(RHUIRendererBlinking::BlinkingItem) == 0x0c) ? 1 : -1];
 typedef int RHBlinkingMapSize[(sizeof(RHBlinkingMap) == 0x10) ? 1 : -1];
@@ -650,13 +752,26 @@ template<> RHBlinkingMap::_Pairib RHBlinkingMap::insert(const value_type &value)
     return _Pairib(result.first, result.second);
 }
 
+// FUNCTION: GAME 0x005c9170
+RHUIRendererBlinking::RHUIRendererBlinking() : m_currentId(0), m_frame(0), m_active(false)
+{
+    m_vptr = 0x679e5c;
+}
+
 // FUNCTION: GAME 0x005c9250
 void *RHUIRendererBlinking::FUN_005c9250(unsigned flags)
 {
-    ((RHGameRenderer005c9270 *)this)->~RHGameRenderer005c9270();
+    this->~RHUIRendererBlinking();
     if (flags & 1)
         operator delete(this);
     return this;
+}
+
+// Parked: the inlined tree teardown sets its EH state before the end/begin loads.
+// STUB: GAME 0x005c9270
+RHUIRendererBlinking::~RHUIRendererBlinking()
+{
+    m_vptr = 0x679e5c;
 }
 
 #include "SBUIRenderer.h"
@@ -1139,6 +1254,8 @@ void RHTitbits::Emit(SBFile &file)
     RenderText(*(std::wstring *)0, *(SBGeoPoint2D *)0);
     RenderText(*(std::wstring *)0, *(SBGeoBoundingBox2D *)0, 0);
     IsRunningForQA(0);
+    FUN_005c72a0();
+    SetBlinking(0, 0, false);
     m_list.FUN_005c8980();
     m_list.FUN_005c8bf0(m_list);
     m_list.Resize(0);
