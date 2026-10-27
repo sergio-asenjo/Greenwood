@@ -15,7 +15,7 @@ class RHGameWidgetLifetimeBase
 public:
     RHGameWidgetLifetimeBase();
     ~RHGameWidgetLifetimeBase();
-    virtual void FUN_0060d290(unsigned long hardware);
+    virtual void *FUN_005dee10(unsigned flags);
     bool Create(const std::wstring &name, const SBGeoBoundingBox2D &box, unsigned long flags);
     bool m_04;
     bool m_05;
@@ -148,7 +148,7 @@ class RHGameLifetime00517590 : public RHGameWidgetLifetimeBase
 public:
     RHGameLifetime00517590() {}
     ~RHGameLifetime00517590() {}
-    void *FUN_0044fef0(unsigned flags);
+    virtual void *FUN_005dee10(unsigned flags);
     RHGameRenderer0060da10 m_renderer;
 };
 
@@ -180,7 +180,7 @@ class RHGameLifetime00516430 : public RHGameLifetime00517590
 public:
     RHGameLifetime00516430() { m_state = 0; }
     ~RHGameLifetime00516430() {}
-    void *FUN_00517400(unsigned flags);
+    virtual void *FUN_005dee10(unsigned flags);
 };
 
 // VTABLE: GAME 0x00678e50

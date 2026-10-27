@@ -1327,15 +1327,18 @@ RHPortraitInputWidget::RHPortraitInputWidget()
 }
 
 // FUNCTION: GAME 0x005d1b40
-void *RHPortraitInputRenderer::FUN_005d1b40(unsigned flags)
+void *RHPortraitInputRendererMember::FUN_005d1b40(unsigned flags)
 {
-    this->RHPortraitInputRenderer::~RHPortraitInputRenderer();
+    this->RHPortraitInputRendererMember::~RHPortraitInputRendererMember();
     if (flags & 1)
         operator delete(this);
     return this;
 }
 
 #include "RHPortraitButton.h"
+
+// STUB: GAME 0x005d1b60 SYMBOL
+// ??1RHPortraitInputRendererMember@@UAE@XZ
 
 DECOMP_SIZE_ASSERT(RHPortraitButton, 0x100)
 DECOMP_SIZE_ASSERT(RHPortraitButtonStrategy, 0x04)
@@ -4697,7 +4700,6 @@ public:
     void *FUN_005db540(unsigned flags);
     void *FUN_005db600(unsigned flags);
     void *FUN_005db690(unsigned flags);
-    void *FUN_005dee10(unsigned flags);
     void *FUN_005dee30(unsigned flags);
     void *FUN_005deff0(unsigned flags);
     void *FUN_005df010(unsigned flags);
@@ -4899,9 +4901,9 @@ RHPortraitRecord005dec40 &RHPortraitRecord005dec40::operator=(const RHPortraitRe
 }
 
 // FUNCTION: GAME 0x005dee10
-void *RHPortraitDeleting::FUN_005dee10(unsigned flags)
+void *RHGameWidgetLifetimeBase::FUN_005dee10(unsigned flags)
 {
-    RHGameWidgetLifetimeBase *self = (RHGameWidgetLifetimeBase *)this;
+    RHGameWidgetLifetimeBase *self = this;
     self->~RHGameWidgetLifetimeBase();
     if (flags & 1)
         operator delete(self);

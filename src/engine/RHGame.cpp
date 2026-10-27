@@ -3353,7 +3353,7 @@ void *RHGameLifetime005161a0::FUN_005173e0(unsigned flags)
 }
 
 // FUNCTION: GAME 0x00517400
-void *RHGameLifetime00516430::FUN_00517400(unsigned flags)
+void *RHGameLifetime00516430::FUN_005dee10(unsigned flags)
 {
     this->~RHGameLifetime00516430();
     if (flags & 1)
@@ -3481,7 +3481,7 @@ void *RHGameLifetimeDeleteCalls::FUN_00517520(unsigned flags)
 // ??1RHGameLifetime0044fe90@@QAE@XZ
 
 // FUNCTION: GAME 0x0044fef0
-void *RHGameLifetime00517590::FUN_0044fef0(unsigned flags)
+void *RHGameLifetime00517590::FUN_005dee10(unsigned flags)
 {
     this->~RHGameLifetime00517590();
     if (flags & 1)
@@ -3529,7 +3529,7 @@ void EmitRHGameWidgetLifetimes(void *widget)
     ((RHGameLifetime00515f00 *)widget)->FUN_005172c0(0);
     ((RHGameLifetime00515fd0 *)widget)->FUN_00517360(0);
     ((RHGameLifetime005161a0 *)widget)->FUN_005173e0(0);
-    ((RHGameLifetime00516430 *)widget)->FUN_00517400(0);
+    ((RHGameLifetime00516430 *)widget)->RHGameLifetime00516430::FUN_005dee10(0);
     ((RHGameLifetime00516750 *)widget)->FUN_00517420(0);
     ((RHGameLifetime00516c50 *)widget)->FUN_00517460(0);
     ((RHGameLifetime00516e20 *)widget)->~RHGameLifetime00516e20();

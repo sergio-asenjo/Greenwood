@@ -754,7 +754,7 @@ RHUnk005276d0::~RHUnk005276d0()
 
 #pragma inline_depth(1)
 // FUNCTION: GAME 0x00528c70
-void *RHUnk00527870::FUN_00528c70(unsigned flags)
+void *RHUnk00527870::FUN_005dee10(unsigned flags)
 {
     this->~RHUnk00527870();
     if (flags & 1)
@@ -769,7 +769,7 @@ void EmitRHMapBlink(RHUnk00528ad0 *blink)
     blink->FUN_00528b70();
     blink->FUN_00528bb0();
     blink->FUN_00528be0();
-    ((RHUnk00527870 *)blink)->FUN_00528c70(0);
+    ((RHUnk00527870 *)blink)->RHUnk00527870::FUN_005dee10(0);
 }
 
 #include "RHUnk00641782.h"

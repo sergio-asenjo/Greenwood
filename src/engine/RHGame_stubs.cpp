@@ -8,7 +8,6 @@ extern const unsigned g_unk0x0067bbd8 = 0xffffffff;
 
 void RHGame::FUN_00512310() {}
 
-void RHGameWidgetLifetimeBase::FUN_0060d290(unsigned long) {}
 // FUNCTION: GAME 0x0060d9f0
 RHGameRenderer0060da10::RHGameRenderer0060da10()
 {

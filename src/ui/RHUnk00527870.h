@@ -10,7 +10,7 @@ class RHUnk00527870 : public RHGameLifetime00516430
 public:
     RHUnk00527870() : m_cc(false), m_cd(false), m_d0(GetTickCount()), m_d4(0), m_d8(0), m_dc(true) {}
     ~RHUnk00527870() {}
-    void *FUN_00528c70(unsigned flags);
+    virtual void *FUN_005dee10(unsigned flags);
     bool m_cc;
     bool m_cd;
     unsigned long m_d0;

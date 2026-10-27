@@ -2,6 +2,23 @@
 #include "RHGameWidgetLifetime.h"
 #include "RHMobileUnk00607da0.h"
 #include <string.h>
+#include <stddef.h>
+
+struct RHWidgetLifetimeAlignment
+{
+    char prefix;
+    RHGameWidgetLifetimeBase value;
+};
+
+DECOMP_SIZE_ASSERT(RHGameWidgetLifetimeBase, 0x80)
+DECOMP_SIZE_ASSERT(RHGameLifetime00517590, 0xcc)
+DECOMP_SIZE_ASSERT(RHGameLifetime00516430, 0xcc)
+DECOMP_STATIC_ASSERT(offsetof(RHWidgetLifetimeAlignment, value) == 4)
+DECOMP_STATIC_ASSERT(offsetof(RHGameWidgetLifetimeBase, m_10) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHGameWidgetLifetimeBase, m_30) == 0x30)
+DECOMP_STATIC_ASSERT(offsetof(RHGameWidgetLifetimeBase, m_60) == 0x60)
+DECOMP_STATIC_ASSERT(offsetof(RHGameWidgetLifetimeBase, m_state) == 0x7c)
+DECOMP_STATIC_ASSERT(offsetof(RHGameLifetime00517590, m_renderer) == 0x80)
 
 // FUNCTION: GAME 0x0060cfb0
 RHGameWidgetLifetimeBase::RHGameWidgetLifetimeBase()
