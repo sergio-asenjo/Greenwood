@@ -12,6 +12,8 @@
 #include "SB.h"
 #include "Decomp.h"
 #include "RHMenuWindow.h"
+#include "SBList.h"
+#include "RHPortraitAnimated.h"
 
 // SIZE 0x8c8
 class RHMenuLoadSave : public RHMenuWindowFocus
@@ -22,11 +24,12 @@ public:
     bool FUN_005301a0(RHMenuEvent *event);
     void *FUN_005304f0(unsigned flags);
     RHMenuLoadSave(RHMenuScreenView *screen, bool save);
-    void FUN_005307d0();
+    bool FUN_005307d0();
     static RHMenuLoadSaveResult FUN_00531110(RHMenuWindowUI *ui, bool save);
     int FUN_00531220();
     int FUN_00531230();
     void FUN_00531240();
+    void PopulateSaveGameList();
     void FUN_00531a80();
     void FUN_00531bd0();
     bool FUN_00463d80(int msg, void *widget, void *data);
@@ -91,7 +94,8 @@ public:
 class RHMenuLoadSaveText : public RHGameWidgetLifetimeBase
 {
 public:
-    ~RHMenuLoadSaveText();
+    // FUNCTION: GAME 0x00531dd0
+    ~RHMenuLoadSaveText() {}
     void *FUN_00532cd0(unsigned flags);
     void FUN_00531e30();
     RHMenuEvent *FUN_00532040(unsigned value);
@@ -102,19 +106,48 @@ public:
     RHPortraitInputRenderer m_renderer;
 };
 
-class RHMenuLoadSaveSlots
+// VTABLE: GAME 0x00679640
+// SIZE 0x1c8
+template<class Renderer, class Item> class SBWidgetListBox : public RHMenuLoadSaveText
 {
 public:
-    ~RHMenuLoadSaveSlots();
+    SBWidgetListBox();
+    // FUNCTION: GAME 0x00531e60
+    ~SBWidgetListBox() {}
     void *FUN_00532cf0(unsigned flags);
     RHMenuEvent *FUN_00532d30(const SBGeoPoint2D &point);
+    SBList<unsigned long> m_104;
+    SBList<std::wstring> m_128;
+    SBList<unsigned long> m_158;
+    unsigned short m_17c;
+    unsigned short m_17e;
+    unsigned short m_180;
+    unsigned short m_182[2];
+    unsigned short m_186[2];
+    unsigned short m_18a[2];
+    bool m_18e[2];
+    undefined m_190[8];
+    SBGeoPoint2D m_198;
+    SBGeoBoundingBox2D m_1a0;
+    SBGeoBoundingBox2D m_1b4;
 };
 
-class RHMenuLoadSaveList
+typedef SBWidgetListBox<RHPortraitInputRenderer, unsigned long> RHMenuLoadSaveSlots;
+
+// VTABLE: GAME 0x006795d0
+// VTABLE: GAME 0x006795c8 RHUnk005cca80
+// SIZE 0x200
+class RHMenuLoadSaveList : public RHMenuLoadSaveSlots, public RHPortraitAnimated, public RHUnk005cca80
 {
 public:
-    ~RHMenuLoadSaveList();
+    // STUB: GAME 0x00532710
+    ~RHMenuLoadSaveList() {}
     void *FUN_00532d10(unsigned flags);
+    void RemoveAll();
+    void AddItem(const std::wstring &text, unsigned long value, unsigned long flags);
+    bool m_1ec;
+    bool m_1ed;
+    undefined m_1ee[0x12];
 };
 
 #endif

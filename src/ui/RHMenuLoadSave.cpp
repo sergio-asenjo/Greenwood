@@ -10,6 +10,11 @@
 #include "RHEngineWidenedCalls.h"
 #include "RHPortraitUnk005d5950.h"
 #include "ToolboxWideString.h"
+#include "RHScriptListCore.h"
+#include "RHMapWidget.h"
+#include "RHMenuCampaignMapClass.h"
+#include "SBUIRendererListbox.h"
+#include "RHCopyPointers.h"
 
 extern undefined g_unk0x006c0e48[];
 extern wchar_t g_unk0x006c0b50[1];
@@ -59,6 +64,110 @@ void *RHMenuLoadSave::FUN_005304f0(unsigned flags)
         operator delete(this);
     return this;
 }
+
+inline void RHLoadSaveInsertWidget(std::vector<void *> &widgets, void *const &widget)
+{
+    ((SBArray<RHSaveGame *> *)&widgets)->Insert((RHSaveGame **)widgets.end(), 1, (RHSaveGame *const &)widget);
+}
+
+class RHLoadSaveWidgetVector : public std::vector<void *>
+{
+public:
+    void Clear()
+    {
+        iterator last = FUN_004598e0(end(), end(), begin());
+        typedef void (RHLoadSaveWidgetVector::*Destroy)(iterator, iterator);
+        Destroy destroy = &RHLoadSaveWidgetVector::_Destroy;
+        (this->*destroy)(last, end());
+        _Last = last;
+    }
+};
+
+#define m_accept (*(RHPortraitButton *)((char *)this + 0x140))
+#define m_remove (*(RHPortraitButton *)((char *)this + 0x240))
+#define m_cancel (*(RHPortraitButton *)((char *)this + 0x340))
+#define m_picture (*(RHMapWidget *)((char *)this + 0x7e4))
+#define m_slots (*(RHMenuLoadSaveList *)((char *)this + 0x5e4))
+#define m_text (*(RHPortraitEditableWidget *)((char *)this + 0x440))
+
+// STUB: GAME 0x005307d0
+bool RHMenuLoadSave::FUN_005307d0()
+{
+    if (((RHMenuWindow *)this)->FUN_00544b40(g_unk0x006c0b50, RHMapBox(0.0f, 0.0f, 640.0f, 480.0f), 0))
+    {
+        m_screen->FUN_0053be80(std::string("Default"));
+        SBUIListboxUnk0061e890 *normal = (SBUIListboxUnk0061e890 *)m_screen->FUN_0053be80(std::string(
+            // STRING: GAME 0x006b0e3c
+            "ListDefault"));
+        SBUIListboxUnk0061e890 *focused = (SBUIListboxUnk0061e890 *)m_screen->FUN_0053be80(std::string(
+            // STRING: GAME 0x006b0e30
+            "ListFocused"));
+        SBUIListboxUnk0061e890 *selected = (SBUIListboxUnk0061e890 *)m_screen->FUN_0053be80(std::string(
+            // STRING: GAME 0x006b0e20
+            "ListSelected"));
+        RHLoadSaveWidgetVector widgets;
+        m_accept.FUN_005d1e30((int)m_screen, FUN_005e23d0(*(bool *)((char *)this + 0x8b8) ? 10 : 11), 0xbe);
+        m_remove.FUN_005d1e30((int)m_screen, FUN_005e23d0(8), 0xbe);
+        m_cancel.FUN_005d1e30((int)m_screen, FUN_005e23d0(0x10), 0xbe);
+        ((RHMenuCampaignMap *)this)->V30(&m_accept);
+        ((RHMenuCampaignMap *)this)->V30(&m_remove);
+        ((RHMenuCampaignMap *)this)->V30(&m_cancel);
+        ((RHFocusManager *)((char *)this + 0xc8))->FUN_004ffc70((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_accept, true);
+        RHFocusManager &focus = *(RHFocusManager *)((char *)this + 0xc8);
+        focus.FUN_004ffc70((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_remove, true);
+        focus.FUN_004ffc70((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_cancel, true);
+        focus.FUN_004ffce0((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_accept, 0x1c);
+        focus.FUN_004ffce0((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_accept, 0x9c);
+        focus.FUN_004ffce0((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_cancel, 1);
+        RHLoadSaveInsertWidget(widgets, &m_accept);
+        RHLoadSaveInsertWidget(widgets, &m_remove);
+        RHLoadSaveInsertWidget(widgets, &m_cancel);
+        ((RHMenuWindow *)this)->FUN_00544380(widgets, 2);
+        widgets.Clear();
+        *(bool *)((char *)this + 0x144) = false;
+        *(bool *)((char *)this + 0x244) = false;
+        {
+            std::wstring text(g_unk0x006c0b50);
+            m_picture.V30(text, RHMapBox(460.0f, 0.0f, 460.0f, 0.0f), 0, 0xa4);
+        }
+        ((RHMenuCampaignMap *)this)->V30(&m_picture);
+        RHLoadSaveInsertWidget(widgets, &m_picture);
+        ((RHMenuWindow *)this)->FUN_00544600(widgets, 2);
+        widgets.Clear();
+        if (*(bool *)((char *)this + 0x8b8))
+        {
+            {
+                std::wstring text(g_unk0x006c0b50);
+                ((RHMapWidget *)&m_slots)->V30(text, RHMapBox(30.0f, 10.0f, 450.0f, 460.0f), 0, 0xc9);
+            }
+            ((SBUIListboxUnk0061d980 *)&m_slots.m_renderer)->FUN_0061d980(normal, focused, selected, false);
+            ((RHMenuCampaignMap *)this)->V30(&m_slots);
+            focus.FUN_004ffc20(&m_slots ? (RHFocusFocusableView *)((char *)this + 0x7ac) : 0);
+        }
+        else
+        {
+            ((RHMapWidget *)&m_slots)->V30(g_unk0x006c0b50, RHMapBox(30.0f, 10.0f, 450.0f, 430.0f), 0, 0xc9);
+            ((SBUIListboxUnk0061d980 *)&m_slots.m_renderer)->FUN_0061d980(normal, focused, selected, false);
+            ((RHMenuCampaignMap *)this)->V30(&m_slots);
+            focus.FUN_004ffc20(&m_slots ? (RHFocusFocusableView *)((char *)this + 0x7ac) : 0);
+            m_text.FUN_005d2810(SBGeoPoint2D(30.0f, 440.0f), (RHMenuScreenView *)m_screen);
+            m_text.SetMaximum(45);
+            ((RHMenuCampaignMap *)this)->V30(&m_text);
+            m_text.Activate(m_screen->FUN_0053bf30());
+        }
+        PopulateSaveGameList();
+        FUN_00531bd0();
+        return true;
+    }
+    return false;
+}
+
+#undef m_accept
+#undef m_remove
+#undef m_cancel
+#undef m_picture
+#undef m_slots
+#undef m_text
 
 // FUNCTION: GAME 0x00531110
 RHMenuLoadSaveResult RHMenuLoadSave::FUN_00531110(RHMenuWindowUI *ui, bool save)
@@ -156,6 +265,79 @@ void RHMenuLoadSave::FUN_00531240()
     }
 }
 
+template<class T> inline T &SBList<T>::Get(int wanted)
+{
+    RHUnk0046eb30 &list = *(RHUnk0046eb30 *)this;
+    int size = list.count;
+    if (list.valid)
+    {
+        if (wanted <= (size + 1) / 2)
+        {
+            list.cursor = list.FUN_0046eb80().node;
+            std::bidirectional_iterator_tag category;
+            FUN_005c9010((RHUnk005c9010Iterator &)list.cursor, wanted, category);
+        }
+        else
+        {
+            list.cursor = list.head;
+            std::bidirectional_iterator_tag category;
+            FUN_005c9010((RHUnk005c9010Iterator &)list.cursor, wanted - size, category);
+        }
+        list.valid = false;
+        list.index = wanted;
+    }
+    else
+    {
+        int previous = list.index;
+        if (wanted != previous)
+        {
+            if (wanted < previous)
+            {
+                if (wanted < (previous + 1) / 2)
+                {
+                    list.cursor = list.FUN_0046eb80().node;
+                    std::bidirectional_iterator_tag category;
+                    FUN_005c9010((RHUnk005c9010Iterator &)list.cursor, wanted, category);
+                }
+                else
+                {
+                    std::bidirectional_iterator_tag category;
+                    FUN_005c9010((RHUnk005c9010Iterator &)list.cursor, wanted - previous, category);
+                }
+            }
+            else if (wanted < (previous + size) / 2)
+            {
+                std::bidirectional_iterator_tag category;
+                FUN_005c9010((RHUnk005c9010Iterator &)list.cursor, wanted - previous, category);
+            }
+            else
+            {
+                list.cursor = list.head;
+                std::bidirectional_iterator_tag category;
+                FUN_005c9010((RHUnk005c9010Iterator &)list.cursor, wanted - size, category);
+            }
+            list.index = wanted;
+        }
+    }
+    return *m_current;
+}
+
+// STUB: GAME 0x005314d0
+bool RHMenuLoadSave::FUN_005314d0(int, void *, void *)
+{
+    bool confirmed = RHMenuYesNo::AskForConfirmation(m_screen, FUN_005e23d0(0x20));
+    if (confirmed)
+    {
+        unsigned long index = ((SBList<unsigned long> *)((char *)this + 0x6e8))->Get(*(unsigned short *)((char *)this + 0x760));
+        (*(RHSaveGameManager **)((char *)this + 0x8b4))->RemoveSaveGame(index);
+        ((RHPlayerProfileManager *)g_unk0x006c0e48)->Save();
+        PopulateSaveGameList();
+        FUN_00531a80();
+    }
+    ((RHMapWindow *)m_screen)->FUN_0053c7e0();
+    return false;
+}
+
 // FUNCTION: GAME 0x005316a0
 bool RHMenuLoadSave::FUN_005316a0(int, void *, void *)
 {
@@ -212,6 +394,56 @@ bool RHMenuLoadSave::FUN_00531740(int, void *, void *)
         *(bool *)((char *)this + 0x144) = text.size() && spaces != text.size();
     }
     return false;
+}
+
+class RHUnk00597a70;
+void FUN_0059fb00(RHUnk00597a70 **destination, RHUnk00597a70 *const &value);
+
+inline void RHLoadSaveAppendFlag(RHUnk0046eb30 &list, const unsigned long &value)
+{
+    RHScriptNode *position = list.head;
+    RHScriptNode *node = list.Unk0059f720(position, position->prev);
+    position->prev = node;
+    node->prev->next = node;
+    FUN_0059fb00((RHUnk00597a70 **)&node->data, (RHUnk00597a70 *const &)value);
+    ++list.count;
+    list.valid = true;
+}
+
+inline void RHMenuLoadSaveList::RemoveAll()
+{
+    m_128.RemoveAll();
+    m_104.RemoveAll();
+    m_158.RemoveAll();
+    m_17c = 0xffff;
+    m_17e = 0xffff;
+    m_180 = 0;
+    m_18e[0] = true;
+    m_18e[1] = true;
+}
+
+inline void RHMenuLoadSaveList::AddItem(const std::wstring &text, unsigned long value, unsigned long flags)
+{
+    m_128.InsertLast(text);
+    m_104.InsertLast(value);
+    RHLoadSaveAppendFlag(*(RHUnk0046eb30 *)&m_158, flags);
+}
+
+// FUNCTION: GAME 0x005318c0
+void RHMenuLoadSave::PopulateSaveGameList()
+{
+    RHSaveGameManager *manager = (RHSaveGameManager *)((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0();
+    manager->SortSaveGames();
+    ((RHMenuLoadSaveList *)((char *)this + 0x5e4))->RemoveAll();
+    for (unsigned long index = 0; index < manager->GetSaveGameCount(); ++index)
+    {
+        RHSaveGame *save = manager->GetSaveGame(index);
+        if ((*(bool *)((char *)this + 0x8b8) == true && !((RHGameSaveCalls *)save)->FUN_0056e790() && !((RHGameSaveCalls *)save)->FUN_0056e7f0()) ||
+            (*(bool *)((char *)this + 0x8b8) == false && !(unsigned char)save->FUN_0056e8b0()))
+        {
+            ((RHMenuLoadSaveList *)((char *)this + 0x5e4))->AddItem(save->FUN_0056e780(), index, 0);
+        }
+    }
 }
 
 // Parked: the empty-name wide-string construction inlines its copy and terminator calls.
@@ -291,11 +523,6 @@ RHUnk00514e10::Pair RHMenuLoadSaveMap::FUN_00531d80(const RHUnk00514e10::Value &
 
 // FUNCTION: GAME 0x00531db0
 RHMenuLoadSaveEntry::RHMenuLoadSaveEntry(const int &key, const int &value) : m_key(key), m_value(value)
-{
-}
-
-// FUNCTION: GAME 0x00531dd0
-RHMenuLoadSaveText::~RHMenuLoadSaveText()
 {
 }
 
@@ -418,36 +645,40 @@ void EmitRHMenuLoadSaveUnk00532c50(RHMenuLoadSaveUnk00532c50 *a)
     a->FUN_00532c60(false);
 }
 
+#pragma inline_depth(1)
 // FUNCTION: GAME 0x00532cd0
 void *RHMenuLoadSaveText::FUN_00532cd0(unsigned flags)
 {
-    this->~RHMenuLoadSaveText();
+    this->RHMenuLoadSaveText::~RHMenuLoadSaveText();
     if (flags & 1)
         operator delete(this);
     return this;
 }
 
+#pragma inline_depth(0)
 // FUNCTION: GAME 0x00532cf0
-void *RHMenuLoadSaveSlots::FUN_00532cf0(unsigned flags)
+template<class Renderer, class Item> void *SBWidgetListBox<Renderer, Item>::FUN_00532cf0(unsigned flags)
 {
-    this->~RHMenuLoadSaveSlots();
+    this->~SBWidgetListBox();
     if (flags & 1)
         operator delete(this);
     return this;
 }
 
+#pragma inline_depth(1)
 // FUNCTION: GAME 0x00532d10
 void *RHMenuLoadSaveList::FUN_00532d10(unsigned flags)
 {
-    this->~RHMenuLoadSaveList();
+    this->RHMenuLoadSaveList::~RHMenuLoadSaveList();
     if (flags & 1)
         operator delete(this);
     return this;
 }
+#pragma inline_depth()
 
 // Parked: both byte predicates emit TEST AL,AL instead of CMP AL,BL.
 // STUB: GAME 0x00532d30
-RHMenuEvent *RHMenuLoadSaveSlots::FUN_00532d30(const SBGeoPoint2D &point)
+template<class Renderer, class Item> RHMenuEvent *SBWidgetListBox<Renderer, Item>::FUN_00532d30(const SBGeoPoint2D &point)
 {
     RHMenuEvent *result = 0;
     ((RHMenuLoadSaveText *)this)->m_renderer.FUN_0061d570(
@@ -532,6 +763,25 @@ RHMenuEvent *RHMenuLoadSaveText::FUN_00533800(const SBGeoPoint2D &input)
     return 0;
 }
 
+// STUB: GAME 0x00533950
+template<class Renderer, class Item> SBWidgetListBox<Renderer, Item>::SBWidgetListBox()
+{
+    m_17c = 0xffff;
+    m_17e = 0xffff;
+    m_180 = 0;
+    m_198.m_x = -1.0f;
+    m_198.m_y = -1.0f;
+    m_182[0] = 0xffff;
+    m_182[1] = 0xffff;
+    m_186[0] = 0xffff;
+    m_186[1] = 0xffff;
+    m_18a[0] = 0xffff;
+    m_18a[1] = 0xffff;
+    m_18e[0] = false;
+    m_18e[1] = false;
+    m_state = 0;
+}
+
 // FUNCTION: GAME 0x00533cd0
 int RHMenuLoadSaveText::FUN_00533cd0(const SBGeoPoint2D &point)
 {
@@ -547,6 +797,7 @@ bool RHMenuLoadSaveText::FUN_00533d80(const SBGeoPoint2D &point)
     return m_renderer.FUN_0061d7c0().FUN_00608400(point);
 }
 
+#pragma inline_depth(0)
 void EmitRHMenuLoadSaveHelpers(RHMenuLoadSaveListBase *list, RHMenuLoadSaveMap *map, RHMenuLoadSaveText *text,
     RHMenuLoadSaveSlots *slots, RHMenuLoadSaveList *box, const int &key)
 {
@@ -559,10 +810,12 @@ void EmitRHMenuLoadSaveHelpers(RHMenuLoadSaveListBase *list, RHMenuLoadSaveMap *
     text->FUN_00532cd0(0);
     text->FUN_00533cd0(*(const SBGeoPoint2D *)list);
     text->FUN_00533d80(*(const SBGeoPoint2D *)list);
+    slots->RHMenuLoadSaveSlots::SBWidgetListBox();
     slots->FUN_00532cf0(0);
     slots->FUN_00532d30(*(const SBGeoPoint2D *)list);
     box->FUN_00532d10(0);
 }
+#pragma inline_depth()
 
 // FUNCTION: GAME 0x00533f70
 RHMenuEvent *RHMenuLoadSaveText::FUN_00533f70(const SBGeoPoint2D &input)
