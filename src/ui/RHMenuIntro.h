@@ -21,6 +21,7 @@ class SBThreadedInput
 {
 public:
     void SetMouseEnabled(bool enabled);
+    static void SetTheClippingBox(SBGeoBoundingBox2D box);
 };
 
 extern char g_unk0x006c0685;
@@ -32,6 +33,8 @@ class RHMenuIntro : public RHMenuWindowFocus
 public:
     RHMenuIntro(RHMenuScreenView *screen);
     ~RHMenuIntro();
+    bool Create();
+    void UpdatePlayerProfile();
     void FUN_0052e090(RHMenuEvent *event);
     bool FUN_0052e0b0(RHMenuEvent *event);
     void *FUN_0052e300(unsigned flags);

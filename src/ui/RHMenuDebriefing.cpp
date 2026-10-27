@@ -2,6 +2,12 @@
 
 #include "SBNullstr.h"
 #include "RHMenuDebriefing.h"
+#include "RHMapBox.h"
+#include "RHMapWidget.h"
+#include "RHMenuCampaignMapClass.h"
+#include "RHFocusManager.h"
+#include "RHSaveGameManager.h"
+#include "SBUIRenderer.h"
 
 extern std::string g_unk0x006c0ed8;
 
@@ -80,6 +86,68 @@ RHMenuDebriefing::~RHMenuDebriefing()
     ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_textWidget);
     ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_load);
     ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_restart);
+}
+
+extern wchar_t g_unk0x006c0b50[1];
+std::wstring FUN_005e23d0(unsigned long);
+
+inline void RHDebriefingSetText(RHPortraitButton &button, const std::wstring &text)
+{
+    typedef std::wstring &(std::wstring::*Assign)(const std::wstring &, unsigned, unsigned);
+    Assign assign = &std::wstring::assign;
+    button.m_08 = true;
+    (button.m_20.*assign)(text, 0, std::wstring::npos);
+}
+
+inline void RHDebriefingInsert(std::vector<void *> &widgets, void *const &widget)
+{
+    ((SBArray<RHSaveGame *> *)&widgets)->Insert((RHSaveGame **)widgets.end(), 1, (RHSaveGame *const &)widget);
+}
+
+// FUNCTION: GAME 0x005294c0
+bool RHMenuDebriefing::Create()
+{
+    if (((RHMenuWindow *)this)->FUN_00544b40(
+            // STRING: GAME 0x006b0a6c
+            L"Debriefing",
+            RHMapBox(0.0f, 0.0f, 496.0f, 463.0f), 0))
+    {
+        void *titleResource = m_titleResource;
+        void *debriefResource = m_debriefResource;
+        std::vector<void *> widgets;
+        m_ok.FUN_005d1e30((int)m_screen, g_unk0x006c0b50, 0x91);
+        ((RHUnk005d92c0Sub *)&m_ok)->v08(SBGeoPoint2D(0.0f, 384.0f));
+        RHDebriefingSetText(m_ok, FUN_005e23d0(0x14c));
+        ((RHMenuCampaignMap *)this)->V30(&m_ok);
+        ((RHFocusManager *)((char *)this + 0xc8))->FUN_004ffc70((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_ok, false);
+        RHFocusManager &focus = *(RHFocusManager *)((char *)this + 0xc8);
+        focus.FUN_004ffce0((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_ok, 0x1c);
+        focus.FUN_004ffce0((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_ok, 0x9c);
+        m_restart.FUN_005d1e30((int)m_screen, g_unk0x006c0b50, 0x116);
+        m_load.FUN_005d1e30((int)m_screen, g_unk0x006c0b50, 0x115);
+        RHDebriefingSetText(m_restart, FUN_005e23d0(0x150));
+        RHDebriefingSetText(m_load, FUN_005e23d0(10));
+        ((RHUnk005d92c0Sub *)&m_restart)->v08((*(const SBGeoPoint2D *)&m_ok.Box()).Unk005fc190(SBGeoVector2D(50.0f, 0.0f)));
+        ((RHUnk005d92c0Sub *)&m_load)->v08((*(const SBGeoPoint2D *)&m_ok.Box()).Unk005fc190(SBGeoVector2D(100.0f, 0.0f)));
+        ((RHMenuCampaignMap *)this)->V30(&m_restart);
+        ((RHMenuCampaignMap *)this)->V30(&m_load);
+        if (!m_last)
+        {
+            ((RHMenuCampaignMap *)this)->V38(&m_restart);
+            ((RHMenuCampaignMap *)this)->V38(&m_load);
+        }
+        RHDebriefingInsert(widgets, &m_ok);
+        ((RHMenuWindow *)this)->FUN_005449e0(widgets, 0);
+        ((RHMapWidget *)&m_titleWidget)->V30(m_title, RHMapBox(50.0f, 50.0f, 450.0f, 200.0f), 0, unsigned(-1));
+        ((RHMapWidget *)&m_textWidget)->V30(m_text, RHMapBox(50.0f, 90.0f, 450.0f, 375.0f), 0, unsigned(-1));
+        ((SBUIUnk0060dd00 *)&m_titleWidget.m_renderer)->FUN_0060e0d0(titleResource, titleResource, titleResource, titleResource);
+        ((SBUIUnk0060dd00 *)&m_textWidget.m_renderer)->FUN_0060e0d0(debriefResource, debriefResource, debriefResource, debriefResource);
+        m_textWidget.m_renderer.SetM60(4);
+        ((RHMenuCampaignMap *)this)->V30(&m_titleWidget);
+        ((RHMenuCampaignMap *)this)->V30(&m_textWidget);
+        return true;
+    }
+    return false;
 }
 
 // FUNCTION: GAME 0x00529ab0

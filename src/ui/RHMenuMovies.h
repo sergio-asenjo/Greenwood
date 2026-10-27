@@ -21,7 +21,7 @@ class RHMenuMovies : public RHMenuWindowFocus
 public:
     RHMenuMovies(RHMenuScreenView *screen);
     ~RHMenuMovies();
-    void FUN_00536d30();
+    bool FUN_00536d30();
     static void FUN_00537220(RHMenuWindowUI *ui);
     void FUN_00536ad0(RHMenuEvent *event);
     bool FUN_00536af0(RHMenuEvent *event);

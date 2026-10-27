@@ -27,7 +27,7 @@ public:
     void FUN_0052d3e0(RHMenuEvent *event);
     bool FUN_0052d400(RHMenuEvent *event);
     void *FUN_0052d600(unsigned flags);
-    void FUN_0052d750();
+    bool FUN_0052d750();
     static void FUN_0052dc20();
     RHMenuLoadSaveResult *FUN_0052dce0();
     bool FUN_0052dfd0();

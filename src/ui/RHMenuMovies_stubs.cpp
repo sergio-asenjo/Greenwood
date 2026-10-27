@@ -16,8 +16,6 @@ bool RHMenuCloseCalls::FUN_0052b520(int, void *, void *)
 }
 
 
-// Target 0x00536d30, __thiscall.
-void RHMenuMovies::FUN_00536d30() {}
 
 #include "SBDrawManager.h"
 

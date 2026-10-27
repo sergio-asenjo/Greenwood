@@ -22,7 +22,7 @@ class RHMenuPopupScroll : public RHMenuWindowFocus
 public:
     RHMenuPopupScroll(RHMenuScreenView *screen, const std::wstring &text, const std::string &title, int flags);
     RHMenuPopupScroll(RHMenuScreenView *screen, const std::wstring &text, int id, const std::string &title, int flags);
-    void FUN_00539b30();
+    bool FUN_00539b30();
     const std::wstring &FUN_0053a820();
     static std::wstring FUN_0053a660(int id);
     ~RHMenuPopupScroll();

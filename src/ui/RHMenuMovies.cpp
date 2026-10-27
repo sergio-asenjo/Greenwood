@@ -3,6 +3,13 @@
 #include "SBNullstr.h"
 #include "RHMenuMovies.h"
 #include "RHMenuCloseCalls.h"
+#include "RHMapBox.h"
+#include "RHMapWidget.h"
+#include "RHMenuCampaignMapClass.h"
+#include "RHFocusManager.h"
+#include "RHSaveGameManager.h"
+#include "SBUIRenderer.h"
+#include "RHGame_calls.h"
 
 std::string FUN_004e4c70(const std::string &first, const char *second);
 
@@ -50,6 +57,50 @@ void *RHMenuMovies::FUN_00536c30(unsigned flags)
     if (flags & 1)
         operator delete(this);
     return this;
+}
+
+extern wchar_t g_unk0x006c0b50[1];
+std::wstring FUN_005e23d0(unsigned long);
+
+inline void RHMoviesInsert(std::vector<void *> &widgets, void *const &widget)
+{
+    ((SBArray<RHSaveGame *> *)&widgets)->Insert((RHSaveGame **)widgets.end(), 1, (RHSaveGame *const &)widget);
+}
+
+// Parked: inline budget differs, so zero stays register-cached and the frame is 8 bytes larger.
+// STUB: GAME 0x00536d30
+bool RHMenuMovies::FUN_00536d30()
+{
+    if (((RHMenuWindow *)this)->FUN_00544b40(g_unk0x006c0b50, RHMapBox(0.0f, 0.0f, 640.0f, 480.0f), 0))
+    {
+        void *font = m_screen->FUN_0053be80(std::string("MissionTitle"));
+        std::vector<void *> widgets;
+        m_ok.FUN_005d1e30((int)m_screen, FUN_005e23d0(15), 0xbe);
+        ((RHMenuCampaignMap *)this)->V30(&m_ok);
+        ((RHFocusManager *)((char *)this + 0xc8))->FUN_004ffc70((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_ok, true);
+        RHFocusManager &focus = *(RHFocusManager *)((char *)this + 0xc8);
+        focus.FUN_004ffce0((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_ok, 1);
+        focus.FUN_004ffce0((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_ok, 0x1c);
+        focus.FUN_004ffce0((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_ok, 0x9c);
+        RHMoviesInsert(widgets, &m_ok);
+        ((RHMenuWindow *)this)->FUN_00544380(widgets, 2);
+        widgets.clear();
+        m_intro.FUN_005d1e30((int)m_screen, g_unk0x006c0b50, 0x129);
+        m_outro.FUN_005d1e30((int)m_screen, g_unk0x006c0b50, 0x12a);
+        ((RHMenuCampaignMap *)this)->V30(&m_intro);
+        ((RHMenuCampaignMap *)this)->V30(&m_outro);
+        ((RHUnk005d92c0Sub *)&m_intro)->v08(SBGeoPoint2D(110.0f, 80.0f));
+        RHMoviesInsert(widgets, &m_intro);
+        RHMoviesInsert(widgets, &m_outro);
+        ((RHMenuWindow *)this)->FUN_00544800(widgets, 30);
+        ((RHMapWidget *)&m_title)->V30(FUN_005e23d0(2), RHMapBox(0.0f, 0.0f, 500.0f, 480.0f), 0, unsigned(-1));
+        ((SBUIUnk0060dd00 *)&m_title.m_renderer)->FUN_0060e0d0(font, font, font, font);
+        ((RHMenuCampaignMap *)this)->V30(&m_title);
+        if (*(unsigned *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x2c) < 100)
+            ((RHMenuCampaignMap *)this)->V38(&m_outro);
+        return true;
+    }
+    return false;
 }
 
 // FUNCTION: GAME 0x00537220

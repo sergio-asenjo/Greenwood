@@ -7,15 +7,5 @@
 #include "RHMenuSelectPlayer.h"
 
 
-// Target 0x0053e9e0, __thiscall.
-void RHMenuSelectPlayer::FUN_0053e9e0() {}
-
-// Target 0x0053f040, __thiscall.
-void RHMenuSelectPlayer::FUN_0053f040() {}
 
 
-// Target 0x0053f410, __thiscall, ret 0xc.
-bool RHMenuSelectPlayer::FUN_0053f410(int, void *, void *) { return false; }
-
-// Target 0x0053f6d0, __thiscall, ret 0xc.
-bool RHMenuSelectPlayer::FUN_0053f6d0(int, void *, void *) { return false; }

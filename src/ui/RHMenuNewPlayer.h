@@ -22,7 +22,9 @@ class RHMenuNewPlayer : public RHMenuWindowFocus
 {
 public:
     RHMenuNewPlayer(RHMenuScreenView *screen);
+    bool Create();
     int FUN_00538280() const;
+    std::wstring GetName() const;
     bool FUN_005383e0();
     ~RHMenuNewPlayer();
     void FUN_00537570(RHMenuEvent *event);

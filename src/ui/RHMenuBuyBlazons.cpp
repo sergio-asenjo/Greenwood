@@ -1,8 +1,18 @@
 #include "SBNullstr.h"
+#include "RHRendererGeometry.h"
 #include "RHMenuBuyBlazons.h"
 #include "RHMenuScreenView.h"
 #include "RHMapBox.h"
 #include "SBUIRenderer.h"
+#include "RHMapWidget.h"
+#include "RHMenuCampaignMapClass.h"
+#include "RHFocusManager.h"
+#include "RHSaveGameManager.h"
+#include "RHMission.h"
+#include "RHMissionStat.h"
+#include "RHGameMenuCalls.h"
+#include "RHWidgetPortraitClass.h"
+#include <wchar.h>
 
 extern wchar_t g_unk0x006c0b50[1];
 std::wstring FUN_005e23d0(unsigned long);
@@ -70,4 +80,60 @@ RHMenuBuyBlazons::~RHMenuBuyBlazons()
     ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_ok);
     ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_title);
     ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_cancel);
+}
+
+inline void RHBuyBlazonsInsert(std::vector<void *> &widgets, void *const &widget)
+{
+    ((SBArray<RHSaveGame *> *)&widgets)->Insert((RHSaveGame **)widgets.end(), 1, (RHSaveGame *const &)widget);
+}
+
+// FUNCTION: GAME 0x00524dd0
+bool RHMenuBuyBlazons::Create(RHMission *mission, RHMenuShortMissionBlazons *blazons)
+{
+    if (((RHMenuWindow *)this)->FUN_00544b40(
+            // STRING: GAME 0x006b0914
+            L"Buy blazons background",
+            RHMapBox(0.0f, 0.0f, 400.0f, 200.0f), 0))
+    {
+        std::vector<void *> widgets;
+        ((RHMenuCampaignMap *)this)->V30(&m_cancel);
+        ((RHMenuCampaignMap *)this)->V30(&m_ok);
+        ((RHMenuCampaignMap *)this)->V30(&m_title);
+        ((RHUnk005d92c0Sub *)&m_ok)->v08(SBGeoPoint2D(0.0f, 135.0f));
+        RHBuyBlazonsInsert(widgets, &m_ok);
+        RHBuyBlazonsInsert(widgets, &m_cancel);
+        ((RHMenuWindow *)this)->FUN_005449e0(widgets, 20);
+        ((RHFocusManager *)((char *)this + 0xc8))->FUN_004ffc70((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_ok, false);
+        RHFocusManager &focus = *(RHFocusManager *)((char *)this + 0xc8);
+        focus.FUN_004ffc70((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_cancel, false);
+        focus.FUN_004ffce0((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_ok, 0x1c);
+        focus.FUN_004ffce0((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_ok, 0x9c);
+        focus.FUN_004ffce0((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_cancel, 1);
+        m_440 = mission;
+        m_444 = blazons;
+        UpdateState();
+        return true;
+    }
+    return false;
+}
+
+// FUNCTION: GAME 0x005250c0
+void RHMenuBuyBlazons::UpdateState()
+{
+    if (g_unk0x6c07fc->Get(1) >= m_440->GetM6())
+    {
+        std::wstring text;
+        unsigned short buffer[0x100];
+        swprintf(buffer, FUN_005e23d0(0xf4).c_str(), g_unk0x6c07fc->Get(1));
+        text = buffer;
+        text += L"\n";
+        swprintf(buffer, FUN_005e23d0(0xf0).c_str(), m_440->GetM6());
+        text += buffer;
+        text += L"\n";
+        text += FUN_005e23d0(0xef);
+        ((RHMapWidget *)&m_title)->V2c((const RHMapTitleText &)text);
+        ((RHMenuCampaignMap *)this)->V1c();
+    }
+    else
+        ((RHGameMenuCalls *)this)->FUN_00544b30();
 }

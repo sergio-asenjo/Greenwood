@@ -11,8 +11,6 @@
 
 
 
-// Target 0x0052ee20, __thiscall, ret 0xc.
-bool RHMenuIntro::FUN_0052ee20(int, void *, void *) { return false; }
 
 
 

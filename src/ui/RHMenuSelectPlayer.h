@@ -25,6 +25,25 @@ class RHMenuSelectPlayerWidget
 {
 public:
     void FUN_0053f9f0(RHMenuSelectPlayerWidget *stop);
+    void Select()
+    {
+        RHMenuSelectPlayerWidget *linked = m_parent;
+        if (linked)
+        {
+            m_state = 2;
+            if (this != linked)
+            {
+                if (linked->m_state == 2 || linked->m_state == 13)
+                {
+                    ((SBUIInputFieldTextUnk *)linked->m_110)->FUN_0061e320(0);
+                    linked->m_state = 0;
+                }
+                linked = linked->m_parent;
+                if (linked)
+                    linked->FUN_0053f9f0(this);
+            }
+        }
+    }
 
     undefined m_00[0x7c]; // 0x00
     int m_state; // 0x7c
@@ -44,8 +63,9 @@ public:
     void FUN_0053e480(RHMenuEvent *event);
     bool FUN_0053e4a0(RHMenuEvent *event);
     void *FUN_0053e8b0(unsigned flags);
-    void FUN_0053e9e0();
+    bool FUN_0053e9e0();
     static void FUN_0053ede0(void *ui);
+    static std::wstring GetProfileInfo(const RHPlayerProfile *profile);
     int FUN_0053efe0();
     bool FUN_0053f690(int msg, void *widget, void *data);
     void FUN_0053f040();

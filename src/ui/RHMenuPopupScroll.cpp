@@ -3,6 +3,12 @@
 
 #include "SBNullstr.h"
 #include "RHMenuPopupScroll.h"
+#include "RHMapBox.h"
+#include "RHMapWidget.h"
+#include "RHMenuCampaignMapClass.h"
+#include "RHFocusManager.h"
+#include "RHSaveGameManager.h"
+#include "SBUIRenderer.h"
 
 // FUNCTION: GAME 0x005394e0
 void RHMenuPopupScroll::FUN_005394e0(RHMenuEvent *event)
@@ -61,6 +67,56 @@ RHMenuPopupScroll::~RHMenuPopupScroll()
     ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_title);
     if (m_450 != 0)
         ((RHPortraitRootList *)this)->FUN_005df300((RHUnk005d92c0Sub *)&m_text);
+}
+
+extern wchar_t g_unk0x006c0b50[1];
+std::wstring FUN_005e23d0(unsigned long);
+
+inline void RHPopupScrollSetText(RHPortraitButton &button, const std::wstring &text)
+{
+    button.m_08 = true;
+    button.m_20 = text;
+}
+
+inline void RHPopupScrollInsert(std::vector<void *> &widgets, void *const &widget)
+{
+    ((SBArray<RHSaveGame *> *)&widgets)->Insert((RHSaveGame **)widgets.end(), 1, (RHSaveGame *const &)widget);
+}
+
+// FUNCTION: GAME 0x00539b30
+bool RHMenuPopupScroll::FUN_00539b30()
+{
+    if (((RHMenuWindow *)this)->FUN_00544b40(g_unk0x006c0b50, RHMapBox(0.0f, 0.0f, 496.0f, 463.0f), 0))
+    {
+        void *resource = m_resource;
+        std::vector<void *> widgets;
+        m_ok.FUN_005d1e30((int)m_screen, g_unk0x006c0b50, 0x91);
+        RHPopupScrollSetText(m_ok, FUN_005e23d0(0x14c));
+        ((RHMapWidget *)&m_title)->V30(m_message, RHMapBox(50.0f, 50.0f, 450.0f, 375.0f), 0, unsigned(-1));
+        RHUnk005cba10 &renderer = m_title.m_renderer;
+        ((SBUIUnk0060dd00 *)&renderer)->FUN_0060e0d0(resource, resource, resource, resource);
+        m_title.m_renderer.SetM60(m_flags);
+        ((RHMenuCampaignMap *)this)->V30(&m_ok);
+        ((RHMenuCampaignMap *)this)->V30(&m_title);
+        ((RHFocusManager *)((char *)this + 0xc8))->FUN_004ffc70((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_ok, false);
+        RHFocusManager &focus = *(RHFocusManager *)((char *)this + 0xc8);
+        focus.FUN_004ffce0((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_ok, 0x1c);
+        focus.FUN_004ffce0((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_ok, 0x9c);
+        focus.FUN_004ffce0((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_ok, 1);
+        ((RHUnk005d92c0Sub *)&m_ok)->v08(SBGeoPoint2D(0.0f, 380.0f));
+        RHPopupScrollInsert(widgets, &m_ok);
+        ((RHMenuWindow *)this)->FUN_005449e0(widgets, 0);
+        if (m_450 != 0)
+        {
+            ((RHMapWidget *)&m_text)->V30(g_unk0x006c0b50, RHMapBox(50.0f, 50.0f, 50.0f, 50.0f), 0, m_450);
+            ((RHMenuCampaignMap *)this)->V30(&m_text);
+            ((RHUnk005d92c0Sub *)&m_text)->v08(SBGeoPoint2D(446.0f, 50.0f).FUN_005fc200(SBGeoVector2D(m_text.Box().Width(), 0.0f)));
+            renderer.FUN_005cb9d0((int)(m_text.Box().Width() + 20.0f), (int)(m_text.Box().Height() + 15.0f));
+            focus.FUN_004ffd20(&m_text);
+        }
+        return true;
+    }
+    return false;
 }
 
 extern RHUnk0048a970 *g_unk0x6c0b3c;
