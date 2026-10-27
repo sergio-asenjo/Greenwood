@@ -4,7 +4,7 @@
 #include "RHSaveGame.h"
 #include "RHSaveGameManager.h"
 #include "RHKeyConfig.h"
-#include "RHGraphicConfig.h"
+#include "RHGraphicConfigClass.h"
 #include "RHSoundConfig.h"
 
 // VTABLE: GAME 0x00679bd8
@@ -19,6 +19,12 @@ public:
     void CreateSaveGameDirectory() const;
     void DeleteSaveGameDirectory() const;
     const std::wstring &GetName() const;
+    unsigned long GetM1c() const { return m_1c; }
+    unsigned long GetM20() const { return m_20; }
+    unsigned long GetM24() const { return m_24; }
+    unsigned long GetM28() const { return m_28; }
+    unsigned long GetM2c() const { return m_2c; }
+    unsigned long GetM30() const { return m_30; }
     void SetName(const std::wstring &name);
     virtual std::string GetSaveGameDirectory() const;
     void FUN_0055cc80();

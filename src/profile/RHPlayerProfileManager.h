@@ -17,6 +17,7 @@ public:
         return m_current;
     }
     void RemoveAll();
+    void DeleteAt(int index);
     __forceinline RHPlayerProfile *Current() const { return *m_current; }
     RHPlayerProfile *At(int index)
     {
@@ -84,7 +85,7 @@ public:
         GoTo(index);
         return *m_current;
     }
-    RHPlayerProfile *Lookup(int index, bool removing)
+    RHPlayerProfile *Lookup(int index)
     {
         bool dirty = m_dirty;
         int count = size();
@@ -135,27 +136,12 @@ public:
                 {
                     if (index < (previous + count) / 2)
                     {
-                        if (removing)
-                        {
-                            std::bidirectional_iterator_tag category;
-                            RHAdvanceProfileCursor(m_current, index - previous, category);
-                        }
-                        else
-                            std::advance(m_current, index - previous);
+                        std::advance(m_current, index - previous);
                     }
                     else
                     {
-                        if (removing)
-                        {
-                            std::bidirectional_iterator_tag category;
-                            std::list<RHPlayerProfile *>::iterator last = end();
-                            RHAdvanceProfileCursor(SetCurrent(last), index - count, category);
-                        }
-                        else
-                        {
-                            m_current = end();
-                            std::advance(m_current, index - count);
-                        }
+                        m_current = end();
+                        std::advance(m_current, index - count);
                     }
                 }
                 m_index = index;
@@ -163,7 +149,7 @@ public:
         }
         return Current();
     }
-    __forceinline RHPlayerProfile *operator[](int index) { return Lookup(index, false); }
+    __forceinline RHPlayerProfile *operator[](int index) { return Lookup(index); }
 };
 
 // SIZE 0x30
@@ -171,6 +157,7 @@ class RHPlayerProfileManager
 {
 public:
     RHPlayerProfileManager();
+    RHPlayerProfile *AddProfile(const std::wstring &name, unsigned long difficulty);
     bool Load();
     bool Save() const;
     bool FUN_0055d830();

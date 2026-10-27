@@ -1,9 +1,14 @@
 #include "SBNullstr.h"
 #include "RHPlayerProfileManager.h"
+#include "RHSaveGameManager.h"
+#include "RHKeyConfig.h"
+#include "RHGraphicConfig.h"
 #include "RHPlayerProfile.h"
+#include "RHPlayerProfileListDelete.h"
 #include "RHSectorActorList.h"
 #include <stdio.h>
 #include <stddef.h>
+#include <windows.h>
 
 DECOMP_SIZE_ASSERT(RHSaveGameManager, 0x18)
 DECOMP_SIZE_ASSERT(RHKeyConfig, 0x08)
@@ -95,38 +100,36 @@ std::wstring RHPlayerProfile::ConvertDifficultyLevelToWideString(unsigned long d
     return FUN_005e23d0(id);
 }
 
-// Parked: CreateDirectoryA IAT call and returned-string cleanup scheduling differ.
-// STUB: GAME 0x0055cc80
+// FUNCTION: GAME 0x0055cc80
 void RHPlayerProfile::CreateSaveGameDirectory() const
 {
-    RHSaveGameManager *base = (RHSaveGameManager *)this;
-    std::string path = base->GetSaveGameDirectory();
-    (*(int (__stdcall **)(const char *, void *))0x006770d0)(path.c_str(), 0);
+    CreateDirectoryA(GetSaveGameDirectory().c_str(), 0);
 }
 
-// Parked: file-search local/frame layout and string cleanup remain different.
-// STUB: GAME 0x0055ccd0
+// FUNCTION: GAME 0x0055ccd0
 void RHPlayerProfile::DeleteSaveGameDirectory() const
 {
-    char directory[256];
-    sprintf(directory, "%s\\Profile_%03i", RHPlayerProfileManager::GetProfilesDirectory().c_str(), m_18);
-    char path[256];
-    sprintf(path, "%s\\*", directory);
-    char data[0x130];
-    int handle = (*(int (__stdcall **)(const char *, void *))0x006770c0)(path, data);
-    if (handle != -1)
+    std::string directory;
+    std::string pattern;
+    directory = GetSaveGameDirectory();
+    pattern = directory + "\\" +
+        // STRING: GAME 0x006b17b8
+        "*";
+    WIN32_FIND_DATAA data;
+    HANDLE handle = FindFirstFileA(pattern.c_str(), &data);
+    if (handle != INVALID_HANDLE_VALUE)
     {
         do
         {
-            const char *name = data + 0x2c;
-            if (name[0] != '.' || (name[1] != 0 && (name[1] != '.' || name[2] != 0)))
+            if (!(data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
             {
-                std::string file = std::string(directory) + "\\" + name;
-                (*(int (__stdcall **)(const char *))0x006770cc)(file.c_str());
+                std::string file = directory + "\\" + data.cFileName;
+                DeleteFileA(file.c_str());
             }
-        } while ((*(int (__stdcall **)(int, void *))0x006770c8)(handle, data));
-        (*(int (__stdcall **)(int))0x006771a4)(handle);
+        } while (FindNextFileA(handle, &data));
+        FindClose(handle);
     }
+    RemoveDirectoryA(directory.c_str());
 }
 
 // FUNCTION: GAME 0x0055cf40
@@ -196,20 +199,52 @@ RHPlayerProfileManager::RHPlayerProfileManager() : m_00(0)
     m_2c = false;
 }
 
+#include "RHPortraitDrawCalls.h"
+
+class RHUnk005ef320;
+extern RHUnk005ef320 *g_unk0x6c11d0;
+
+// FUNCTION: GAME 0x0055d670
+RHPlayerProfile *RHPlayerProfileManager::AddProfile(const std::wstring &name, unsigned long difficulty)
+{
+    RHPlayerProfile *profile = new RHPlayerProfile(m_00++, name, difficulty);
+    RHGraphicConfig graphics;
+    if (m_active)
+        graphics.m_point = m_active->m_graphics.m_point;
+    else
+    {
+        RHUnkFXDraw *draw = (RHUnkFXDraw *)g_unk0x6c11d0;
+        if (*(bool *)((char *)draw + 0x115))
+            graphics.m_point = SBGeoVector2D(draw->FUN_005e56c0(0), draw->FUN_005e5750(0));
+        else
+            graphics.m_point = SBGeoVector2D(800.0f, 600.0f);
+    }
+    profile->m_graphics = graphics;
+    m_profiles.InsertLast(profile);
+    return profile;
+}
+
+// FUNCTION: GAME 0x0055d830
+bool RHPlayerProfileManager::FUN_0055d830()
+{
+    m_active = AddProfile(L"Robin", 1);
+    m_2c = true;
+    CreateDirectoryA(g_unk0x006c05e0.c_str(), 0);
+    return Save();
+}
+
 // FUNCTION: GAME 0x0055d930
 void RHPlayerProfileManager::FUN_0055d930(unsigned long index)
 {
     FUN_0055da70(m_profiles[index]);
 }
 
-// Parked: erased-list count uses eax instead of ebp for its decrement and store.
-// STUB: GAME 0x0055da70
+// FUNCTION: GAME 0x0055da70
 bool RHPlayerProfileManager::FUN_0055da70(RHPlayerProfile *profile)
 {
     int index = FUN_0055dbc0(profile);
     profile->DeleteSaveGameDirectory();
-    delete m_profiles.Lookup(index, true);
-    m_profiles.Erase(m_profiles.m_current, m_profiles.m_dirty);
+    m_profiles.DeleteAt(index);
     profile = profile == m_active ? 0 : m_active;
     m_active = profile;
     return true;

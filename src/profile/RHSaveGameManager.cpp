@@ -18,6 +18,7 @@
 #include "SBNullstr.h"
 #include "RHSaveGameManager.h"
 #include <vector>
+#include <algorithm>
 
 template <class T>
 inline SBArray<T>::~SBArray()
@@ -223,6 +224,14 @@ bool RHSaveGameManager::Serialize(SBFile &file)
         (*it)->Serialize(file);
 
     return true;
+}
+
+bool FUN_00570320(const RHSaveGame *first, const RHSaveGame *second);
+
+// FUNCTION: GAME 0x005700d0
+void RHSaveGameManager::SortSaveGames()
+{
+    std::sort(m_saveGames.begin(), m_saveGames.end(), FUN_00570320);
 }
 
 // TEMPLATE: GAME 0x00570360

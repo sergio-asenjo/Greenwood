@@ -59,6 +59,7 @@ public:
     unsigned long GetSaveGameCount() const;
     void RemoveSaveGame(unsigned long index);
     void RemoveSaveGameFile(const RHSaveGame *saveGame);
+    void SortSaveGames();
 };
 
 void RHSerializeName(SBFile &file, const char *name);
