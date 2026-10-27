@@ -3416,6 +3416,49 @@ public:
 // SYNTHETIC: GAME 0x0050a460
 // ??1RHGameLifetime0050a460@@QAE@XZ
 
+class RHGameLifetime0050a4f0Tree : public RHUnk00514e10
+{
+public:
+    static void Freenode(Node *node) { operator delete(node); }
+    ~RHGameLifetime0050a4f0Tree()
+    {
+        FUN_00514ec0(Iterator(m_head->left), Iterator(m_head));
+        Freenode(m_head);
+        m_head = 0;
+        m_size = 0;
+        {
+            RHUnk00641782 lock;
+            if (--g_unk0x006c0b4c == 0)
+            {
+                Freenode(g_unk0x006c0b48);
+                g_unk0x006c0b48 = 0;
+            }
+        }
+    }
+};
+
+class RHGameLifetime0050a4f0Map
+{
+public:
+    undefined m_00[4];
+    RHGameLifetime0050a4f0Tree m_tree;
+};
+
+// SYNTHETIC: GAME 0x0050e5f0
+// ??1RHGameLifetime0050a4f0Map@@QAE@XZ
+
+// FUNCTION: GAME 0x0050a620
+RHPortraitBar::~RHPortraitBar()
+{
+}
+
+class RHGameLifetime0050a4f0 : public RHGameLifetime00515b40, public RHGameLifetime0050a4f0Map
+{
+};
+
+// SYNTHETIC: GAME 0x0050a4f0
+// ??1RHGameLifetime0050a4f0@@QAE@XZ
+
 // FUNCTION: GAME 0x00517500
 void *RHGameLifetimeDeleteCalls::FUN_00517500(unsigned flags)
 {
@@ -3428,7 +3471,7 @@ void *RHGameLifetimeDeleteCalls::FUN_00517500(unsigned flags)
 // FUNCTION: GAME 0x00517520
 void *RHGameLifetimeDeleteCalls::FUN_00517520(unsigned flags)
 {
-    FUN_0050a4f0();
+    ((RHGameLifetime0050a4f0 *)this)->~RHGameLifetime0050a4f0();
     if (flags & 1)
         operator delete(this);
     return this;
@@ -3512,6 +3555,7 @@ void EmitRHGameWidgetRendered()
     RHGameLifetime0050e6c0 ninth;
     RHGameLifetime0044fe90 tenth;
     RHPortraitRootList eleventh;
+    RHGameLifetime0050a4f0Map twelfth;
 }
 #pragma inline_depth()
 
@@ -3638,14 +3682,7 @@ public:
     virtual bool V30(const std::wstring &resource, const SBGeoBoundingBox2D &bounds, int flags, int style) = 0;
 };
 
-class RHMapBox
-{
-public:
-    RHMapBox(float left, float top, float right, float bottom);
-    SBGeoPoint2D m_first;
-    SBGeoPoint2D m_second;
-    int m_10;
-};
+#include "RHMapBox.h"
 
 // FUNCTION: GAME 0x0051d8a0
 bool RHUnk0051d790::FUN_0051d8a0()

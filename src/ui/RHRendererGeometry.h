@@ -42,6 +42,7 @@ class SBGeoBoundingBox2D
 {
 public:
     SBGeoBoundingBox2D();
+    SBGeoBoundingBox2D(float, float, float, float);
     SBGeoBoundingBox2D(const SBGeoPoint2D &point);
     SBGeoBoundingBox2D(const SBGeoBoundingBox2D &other);
     SBGeoBoundingBox2D(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
@@ -56,6 +57,7 @@ public:
     SBGeoBoundingBox2D operator-(const SBGeoVector2D &offset) const;
     float Width() const { return m_second.m_x - m_first.m_x; }
     float Height() const { return m_second.m_y - m_first.m_y; }
+    const SBGeoPoint2D &Max() const { return m_second; }
     void SetMax(const SBGeoPoint2D &point)
     {
         m_10 = true;

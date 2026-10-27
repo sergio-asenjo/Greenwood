@@ -3,14 +3,44 @@
 
 #include "Decomp.h"
 #include "RHPortraitRenderer0060dab0.h"
+#include <string>
+#include <map>
 
+class SBGeoBoundingBox2D;
+
+// VTABLE: GAME 0x0067a630
+// SIZE 0x80
 class RHGameWidgetLifetimeBase
 {
 public:
     RHGameWidgetLifetimeBase();
     ~RHGameWidgetLifetimeBase();
     virtual void FUN_0060d290(unsigned long hardware);
-    undefined m_04[0x78];
+    bool Create(const std::wstring &name, const SBGeoBoundingBox2D &box, unsigned long flags);
+    bool m_04;
+    bool m_05;
+    bool m_06;
+    bool m_07;
+    bool m_08;
+    short m_0a;
+    unsigned long m_0c;
+    std::wstring m_10;
+    std::wstring m_20;
+#ifdef SBGEO_BOUNDINGBOX2D_VIEW
+    const SBGeoBoundingBox2D &Box() const { return m_30; }
+    SBGeoBoundingBox2D m_30;
+#else
+    undefined m_30[0x14];
+#endif
+    undefined m_44[8];
+    unsigned long m_4c[4];
+    undefined m_5c[4];
+#ifdef SBGEO_BOUNDINGBOX2D_VIEW
+    SBGeoBoundingBox2D m_60;
+#else
+    undefined m_60[0x14];
+#endif
+    undefined m_74[8];
     int m_state;
 };
 
@@ -45,28 +75,45 @@ public:
     undefined m_data[0x4c];
 };
 
-#ifndef RHPOPUPRENDERER0060DBC0_VIEW
-#define RHPOPUPRENDERER0060DBC0_VIEW
-// SIZE 0x7c
-class RHPopupRenderer0060dbc0
-{
-public:
-    RHPopupRenderer0060dbc0();
-    ~RHPopupRenderer0060dbc0();
-    bool FUN_0060dd10(unsigned id);
-    undefined m_data[0x7c];
-};
-#endif
+#include "RHPopupRenderer0060dbc0.h"
 
 typedef RHPopupRenderer0060dbc0 RHGameRenderer0060dbc0;
 
-class RHGameRenderer005c9270
+class SBResourceWidgetID
 {
 public:
-    RHGameRenderer005c9270();
-    ~RHGameRenderer005c9270();
-    undefined m_data[0x50];
+    int m_value;
+    bool operator<(const SBResourceWidgetID &other) const
+    {
+        return m_value < other.m_value;
+    }
 };
+
+// SIZE 0x74
+class RHUIRendererBlinking : public RHGameRenderer0060da10
+{
+public:
+    struct BlinkingItem
+    {
+        BlinkingItem() {}
+        unsigned long m_period;
+        SBResourceWidgetID m_first;
+        SBResourceWidgetID m_second;
+    };
+    RHUIRendererBlinking();
+    ~RHUIRendererBlinking();
+    void SetBlinking(SBResourceWidgetID, SBResourceWidgetID, SBResourceWidgetID, unsigned long);
+    void RemoveBlinking(SBResourceWidgetID);
+    void *FUN_005c9250(unsigned flags);
+    BlinkingItem m_current;
+    unsigned m_currentId;
+    unsigned m_frame;
+    bool m_active;
+    char m_61[3];
+    std::map<SBResourceWidgetID, BlinkingItem> m_items;
+};
+
+typedef RHUIRendererBlinking RHGameRenderer005c9270;
 
 // VTABLE: GAME 0x00678ce0
 class RHGameLifetime00515b40 : public RHGameWidgetLifetimeBase
@@ -131,6 +178,7 @@ public:
 class RHGameLifetime00516430 : public RHGameLifetime00517590
 {
 public:
+    RHGameLifetime00516430() { m_state = 0; }
     ~RHGameLifetime00516430() {}
     void *FUN_00517400(unsigned flags);
 };

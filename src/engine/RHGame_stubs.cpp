@@ -8,8 +8,6 @@ extern const unsigned g_unk0x0067bbd8 = 0xffffffff;
 
 void RHGame::FUN_00512310() {}
 
-RHGameWidgetLifetimeBase::RHGameWidgetLifetimeBase() {}
-RHGameWidgetLifetimeBase::~RHGameWidgetLifetimeBase() {}
 void RHGameWidgetLifetimeBase::FUN_0060d290(unsigned long) {}
 // FUNCTION: GAME 0x0060d9f0
 RHGameRenderer0060da10::RHGameRenderer0060da10()
@@ -25,9 +23,6 @@ RHGameRenderer0060da10::~RHGameRenderer0060da10()
 }
 RHGameRenderer0060dab0::RHGameRenderer0060dab0() {}
 RHGameRenderer0060dab0::~RHGameRenderer0060dab0() {}
-RHGameRenderer005c9270::RHGameRenderer005c9270() {}
-RHGameRenderer005c9270::~RHGameRenderer005c9270() {}
-void RHGameLifetimeDeleteCalls::FUN_0050a4f0() {}
 
 #include "RHMobileUnk00607da0.h"
 
@@ -39,7 +34,6 @@ void RHGameWidgetBaseCalls::FUN_0060d290(const SBGeoPoint2D &position)
     SBGeoVector2D origin((const SBGeoVector2D &)box.m_first);
     ((RHMobileUnk00607da0 *)&box)->FUN_00607da0(*(RHMobileUnk00607da0 *)&(box - origin).FUN_006090d0(offset));
 }
-bool RHGameWidgetRendererCalls::FUN_0060d890(const SBGeoPoint2D &) { return false; }
 
 namespace std
 {

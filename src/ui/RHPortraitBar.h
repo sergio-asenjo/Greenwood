@@ -18,6 +18,7 @@ class RHPortraitBar
 {
 public:
     RHPortraitBar(SBUI *owner);
+    ~RHPortraitBar();
     void AddPortrait(RHWidgetPortrait *portrait);
     void FUN_0055e7a0(unsigned index);
     RHWidgetPortrait *FUN_0055e7e0(const void *actor) const;
