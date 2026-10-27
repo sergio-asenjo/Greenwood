@@ -14,11 +14,7 @@ public:
     static bool SerializeStaticStuff(SBFile &file);
 };
 
-class RHSequenceElement
-{
-public:
-    static bool SerializeStaticStuff(SBFile &file);
-};
+class RHSequenceElement;
 
 class RHManagerListCalls
 {
@@ -47,8 +43,6 @@ struct RHScriptIter
 {
     RHScriptNode *node;
     RHScriptIter(RHScriptNode *value) : node(value) {}
-    RHScriptIter(const RHScriptIter &other) : node(other.node) {}
-    RHScriptIter &operator=(const RHScriptIter &other) { node = other.node; return *this; }
 };
 
 class RHUnk0046eb30
@@ -61,11 +55,7 @@ public:
     RHScriptIter erase(RHScriptIter position);
 };
 
-class RHTitbitList
-{
-public:
-    void Clear(void *result, RHTitbitNode *first, RHTitbitNode *last);
-};
+#include "RHTitbitsCore.h"
 
 struct RHUnk005c9010Iterator;
 void FUN_005c9010(RHUnk005c9010Iterator &current, int distance, std::bidirectional_iterator_tag category);

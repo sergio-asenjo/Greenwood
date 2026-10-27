@@ -39,13 +39,7 @@ struct RHPathHistoryNode
     RHPathHistory m_data; // +0x08
 };
 
-struct RHTitbitNode;
-class RHTitbitList
-{
-public:
-    void Clear(void *out, RHTitbitNode *first, RHTitbitNode *last);
-    __forceinline void At(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
-};
+#include "RHTitbitsCore.h"
 
 class RHPathHistoryIter
 {

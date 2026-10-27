@@ -16,6 +16,12 @@ struct RHScriptIter
 {
     RHScriptNode *node;
     RHScriptIter(RHScriptNode *value) : node(value) {}
+    RHScriptIter operator++(int)
+    {
+        RHScriptIter previous = *this;
+        node = node->next;
+        return previous;
+    }
 };
 
 struct RHUnk005c9010Iterator;

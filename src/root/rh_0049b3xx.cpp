@@ -22,19 +22,7 @@
 
 #define AT(type, off) (*(type *)((char *)this + off))
 
-class RHUnk0049b100
-{
-public:
-    float FUN_0049b100();
-    float FUN_0049b110();
-    float FUN_0049b120();
-    void FUN_0049b130(float scale);
-    float FUN_0049b150();
-    int FUN_0049b180();
-    int FUN_0049b1c0();    float m_0;
-    float m_4;
-    float m_8;
-};
+#include "RHUnk0049b100.h"
 
 class RHUnk0049b200
 {
@@ -142,12 +130,12 @@ public:
 };
 
 class RHUnk00452030;
-class RHUnk005c38b0;
+class RHTitbits;
 class RHEngine;
 struct RHUnkSectorGlobal;
 extern RHUnk00452030 *g_unk0x6c07fc;
 extern RHUnkSectorGlobal *g_unk0x6c0a9c;
-extern RHUnk005c38b0 *g_unk0x6c10e8;
+extern RHTitbits *g_unk0x6c10e8;
 extern RHEngine *g_pEngine;
 
 // SIZE 0x14
@@ -387,7 +375,7 @@ RHUnk00452030 *FUN_0049b520() { return g_unk0x6c07fc; }
 RHUnkSectorGlobal *FUN_0049b530() { return g_unk0x6c0a9c; }
 
 // FUNCTION: GAME 0x0049b540
-RHUnk005c38b0 *FUN_0049b540() { return g_unk0x6c10e8; }
+RHTitbits *FUN_0049b540() { return g_unk0x6c10e8; }
 
 // FUNCTION: GAME 0x0049b550
 unsigned RHUnk0049b550::FUN_0049b550()

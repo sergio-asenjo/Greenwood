@@ -368,7 +368,7 @@ class RHElementActor;
 
 #include "RHActorAreaCalls.h"
 class RHElementActor;
-class RHUnk005c38b0;
+class RHTitbits;
 class RHScriptBatchCalls
 {
 public:
@@ -380,7 +380,7 @@ public:
     void *Unk0058a940(void *context, int value, void *element);
     int Unk005c2ec0(void *position, int layer, int kind, void *actor, int value1, int value2, int value3, int value4);
 };
-extern RHUnk005c38b0 *g_unk0x6c10e8;
+extern RHTitbits *g_unk0x6c10e8;
 extern RHElementActor *g_unk0x6c100c;
 extern float g_actorStepScale;
 

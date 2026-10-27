@@ -2193,13 +2193,7 @@ void RHFastFindGrid::InitializeMaskFromProtoStream(SBFile &file)
 #include "RHUnk00613e90.h"
 #include "RHActorAreaCalls.h"
 
-struct RHUnk00571160Position
-{
-    float x;
-    float y;
-    void *area;
-    short layer;
-};
+#include "RHUnk00571160Position.h"
 
 struct RHFastFindAreaPlane
 {

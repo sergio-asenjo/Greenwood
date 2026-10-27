@@ -60,11 +60,7 @@ public:
     RHPathHistoryIter(RHPathHistoryNode *node) : m_p(node) {}
 };
 
-class RHTitbitList
-{
-public:
-    __forceinline void At(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
-};
+#include "RHTitbitsCore.h"
 
 class RHPathHistoryList
 {

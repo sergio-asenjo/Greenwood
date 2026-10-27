@@ -130,7 +130,7 @@ public:
 
 #include "RHMalignityGeometryCalls.h"
 
-class RHUnk005c38b0;
+class RHTitbits;
 class RHUnk5490f0;
 class RHMessenger
 {

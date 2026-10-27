@@ -64,11 +64,7 @@ public:
     static void CopyData(RHSequenceElement **destination, RHSequenceElement *const *source);
 };
 
-class RHTitbitList
-{
-public:
-    __forceinline void At(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
-};
+#include "RHTitbitsCore.h"
 
 struct RHProjectileList
 {

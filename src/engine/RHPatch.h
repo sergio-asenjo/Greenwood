@@ -73,11 +73,7 @@ public:
 };
 
 struct RHTitbitNode;
-class RHTitbitList
-{
-public:
-    void Clear(void *result, RHTitbitNode *first, RHTitbitNode *last);
-};
+#include "RHTitbitsCore.h"
 
 class RHPatchVirtualCalls
 {

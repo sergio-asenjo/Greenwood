@@ -47,12 +47,7 @@ public:
     __forceinline void GoTo(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
 };
 struct RHTitbitNode;
-class RHTitbitList
-{
-public:
-    void Clear(void *out, RHTitbitNode *first, RHTitbitNode *last);
-    __forceinline void At(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
-};
+#include "RHTitbitsCore.h"
 struct RHUnk005c9010Iterator;
 void FUN_005c9010(RHUnk005c9010Iterator &current, int distance, std::bidirectional_iterator_tag category);
 
@@ -301,13 +296,7 @@ public:
 
 #include "SBDrawManagerCore.h"
 
-struct RHUnk00571160Position
-{
-    float x;
-    float y;
-    void *area;
-    short layer;
-};
+#include "RHUnk00571160Position.h"
 
 #include "RHPositionProvider.h"
 

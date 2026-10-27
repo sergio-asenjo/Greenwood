@@ -21,6 +21,7 @@ public:
     SBGeoVector2D Unk005fc110(const SBGeoPoint2D &other) const;
     SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
     float Unk005fc6d0(float scale) const;
+    float FUN_005fc700(float scale) const;
     SBGeoPoint2D FUN_005fc200(const SBGeoPoint2D &other) const;
     SBGeoPoint2D &FUN_005fc250(const SBGeoPoint2D &other);
     void FUN_005fc270();

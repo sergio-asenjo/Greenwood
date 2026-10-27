@@ -12,18 +12,6 @@ class RHPlayerProfileListStorage : public RHProfilePointerList
 public:
     typedef _Node Node;
 
-    __forceinline iterator Erase(iterator position, volatile bool &dirty)
-    {
-        _Nodeptr node = (position++)._Mynode();
-        _Acc::_Next(_Acc::_Prev(node)) = _Acc::_Next(node);
-        _Acc::_Prev(_Acc::_Next(node)) = _Acc::_Prev(node);
-        allocator.destroy(&_Acc::_Value(node));
-        _Freenode(node);
-        size_type count = _Size - 1;
-        dirty = true;
-        _Size = count;
-        return position;
-    }
 };
 
 void RHAdvanceProfileCursor(RHProfilePointerList::iterator &current, int distance,

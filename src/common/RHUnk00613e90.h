@@ -13,9 +13,9 @@ public:
     {
         return y * scale;
     }
-    float x;
-    float y;
-    float z;
+    union { float x; float m_0; };
+    union { float y; float m_4; };
+    union { float z; float m_8; };
 };
 
 #endif
