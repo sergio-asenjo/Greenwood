@@ -1,27 +1,7 @@
 #include "SBNullstr.h"
-#include "RHShortBriefings.h"
-
-class RHShortBriefingVectorEmission : public std::vector<RHShortBriefings::ShortBriefing>
-{
-public:
-    static void Emit()
-    {
-        typedef RHShortBriefings::ShortBriefing Value;
-        void (std::vector<Value>::*volatile fill)(Value *, unsigned, const Value &) = &RHShortBriefingVectorEmission::_Ufill;
-        Value *(std::vector<Value>::*volatile copy)(const Value *, const Value *, Value *) = &RHShortBriefingVectorEmission::_Ucopy;
-        Value *(__cdecl *volatile assign)(Value *, Value *, Value *) = &std::copy;
-    }
-};
-
-// TEMPLATE: GAME 0x0054c320
-// ?insert@?$vector@UShortBriefing@RHShortBriefings@@V?$allocator@UShortBriefing@RHShortBriefings@@@std@@@std@@QAEXPAUShortBriefing@RHShortBriefings@@IABU34@@Z
-
-// TEMPLATE: GAME 0x0054c570
-// ?_Ufill@?$vector@UShortBriefing@RHShortBriefings@@V?$allocator@UShortBriefing@RHShortBriefings@@@std@@@std@@IAEXPAUShortBriefing@RHShortBriefings@@IABU34@@Z
-
-// TEMPLATE: GAME 0x0054c5a0
-// ?copy@std@@YAPAUShortBriefing@RHShortBriefings@@PAU23@00@Z
-
+#define SBGEO_POINT2D_VIEW
+#define SBGEO_VECTOR2D_VIEW
+#define SBGEO_BOUNDINGBOX2D_VIEW
 class SBGeoPoint2D
 {
 public:
@@ -57,6 +37,29 @@ public:
     void SetTop(float value) { first.y = value; active = true; }
     void SetBottom(float value) { second.y = value; active = true; }
 };
+
+#include "RHShortBriefings.h"
+
+class RHShortBriefingVectorEmission : public std::vector<RHShortBriefings::ShortBriefing>
+{
+public:
+    static void Emit()
+    {
+        typedef RHShortBriefings::ShortBriefing Value;
+        void (std::vector<Value>::*volatile fill)(Value *, unsigned, const Value &) = &RHShortBriefingVectorEmission::_Ufill;
+        Value *(std::vector<Value>::*volatile copy)(const Value *, const Value *, Value *) = &RHShortBriefingVectorEmission::_Ucopy;
+        Value *(__cdecl *volatile assign)(Value *, Value *, Value *) = &std::copy;
+    }
+};
+
+// TEMPLATE: GAME 0x0054c320
+// ?insert@?$vector@UShortBriefing@RHShortBriefings@@V?$allocator@UShortBriefing@RHShortBriefings@@@std@@@std@@QAEXPAUShortBriefing@RHShortBriefings@@IABU34@@Z
+
+// TEMPLATE: GAME 0x0054c570
+// ?_Ufill@?$vector@UShortBriefing@RHShortBriefings@@V?$allocator@UShortBriefing@RHShortBriefings@@@std@@@std@@IAEXPAUShortBriefing@RHShortBriefings@@IABU34@@Z
+
+// TEMPLATE: GAME 0x0054c5a0
+// ?copy@std@@YAPAUShortBriefing@RHShortBriefings@@PAU23@00@Z
 
 class RHDialogueSet;
 class RHEngine
@@ -188,7 +191,6 @@ public:
 };
 
 extern wchar_t g_unk0x006c0b50[1];
-extern float g_unk0x006774a0;
 
 // Parked: vector temporary slots, x87 operand order and receiver scheduling differ.
 // STUB: GAME 0x005a2630
@@ -209,22 +211,11 @@ void RHShortBriefings::FUN_005a2630(RHMenuWindow *window, SBGeoBoundingBox2D &bo
             SBGeoVector2D displacement(*(SBGeoVector2D *)&offset);
             ((RHBriefingSetupCalls *)&m_30)->V20(bounds.first.Unk005fc190(displacement));
         }
-        box.SetTop(bounds.GetHeight() + box.first.y + g_unk0x006774a0);
+        box.SetTop(bounds.GetHeight() + box.first.y + 20.0f);
     }
 }
 
-class __declspec(novtable) RHBriefingTitle : public RHGameLifetime00525880
-{
-public:
-    RHBriefingTitle()
-    {
-        *(unsigned *)this = 0x006791a8;
-        m_fc = true;
-        m_fd = true;
-    }
-    bool m_fc;
-    bool m_fd;
-};
+typedef RHGameLifetime00525560 RHBriefingTitle;
 
 class __declspec(novtable) RHBriefingPicture : public RHGameLifetime00517590
 {

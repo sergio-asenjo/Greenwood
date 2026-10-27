@@ -16,49 +16,7 @@
 // the ctor at 0x0054cf60 zeroes +0x28..+0x37 and the element serializer
 // (0x004593f0) walks [this+0x04, this+0x08) with a 16-byte stride. Modelled
 // with named fields so the wstring getters can re-derive the target offsets.
-class RHUnk0054e250List
-{
-public:
-    char m_pad0[4];
-    std::wstring *m_first; // [this+0x04]
-    std::wstring *m_last;  // [this+0x08]
-    std::wstring *m_end;   // [this+0x0c]
-
-    unsigned size() const { return m_first == 0 ? 0 : (unsigned)(m_last - m_first); }
-};
-
-class RHMissionStat
-{
-public:
-    // Virtual so the object layout carries the vptr at +0x00 the target
-    // instructions imply (the first serialised int is at +0x04).
-    virtual bool Serialize(SBFile &file);
-
-    void Emit(SBFile &file);
-
-    void FUN_0054cfa0(const void *source);
-    void FUN_0054d150(const void *value);
-    void FUN_0054d310(std::wstring &text) const;
-    void FUN_0054d550(std::wstring &text) const;
-    void FUN_0054d760(std::wstring &text) const;
-    void FUN_0054d9c0(std::wstring &text) const;
-    void FUN_0054db50(std::wstring &text) const;
-    void FUN_0054dd10(std::wstring &text) const;
-    void FUN_0054dee0(std::wstring &text) const;
-    std::wstring FUN_0054e090() const;
-
-    int m_f04; // [0x04]
-    int m_f08; // [0x08]
-    int m_f0c; // [0x0c]
-    int m_f10; // [0x10]
-    int m_f14; // [0x14]
-    int m_f18; // [0x18]
-    int m_f1c; // [0x1c]
-    int m_f20; // [0x20]
-    int m_f24; // [0x24]
-
-    RHUnk0054e250List m_list; // [0x28]
-};
+#include "RHMissionStatCore.h"
 
 // Target 0x005e1b70 (RHSerializeName): serialises a type-name tag into the
 // stream. Declared identically in include/RHElementObject.h; no TU includes

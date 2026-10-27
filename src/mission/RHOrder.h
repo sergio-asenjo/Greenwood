@@ -13,6 +13,7 @@
 // Embedded point sub-object (two 4-byte fields). Its Serialize is the target
 // 0x005fc2a0 (__FILE__ P:\Robin Hood\SBLibNG\SBGeoPoint2D.cpp); defined once in
 // RHGraphicConfig_stubs.cpp.
+#ifndef SBGEO_POINT2D_VIEW
 class SBGeoPoint2D
 {
 public:
@@ -21,6 +22,7 @@ public:
 private:
     char m_unk[0x8];
 };
+#endif
 
 // Vector sub-object (three 4-byte fields). Its Serialize is the target
 // 0x005df510 (three 4-byte Access calls; oracle: SBGeoVector3D::Serialize).
@@ -36,6 +38,7 @@ public:
 };
 
 class RHElement;
+class RHSequenceElementCalls;
 
 // The engine singleton's element-pointer serialiser. Target 0x004c3a10
 // (thiscall receiver read from 0x006c0a88). Defined once in
@@ -44,6 +47,7 @@ class RHEngine
 {
 public:
     bool SerializeElementPointer(SBFile &file, RHElement *&element); // 0x004c3a10
+    void FUN_004ca410(RHSequenceElementCalls *element);
 };
 
 extern RHEngine *g_pEngine;

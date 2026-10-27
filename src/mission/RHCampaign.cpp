@@ -1467,6 +1467,19 @@ void RHScriptBatchCalls::FUN_00456d20()
     }
 }
 
+// FUNCTION: GAME 0x00456cb0
+bool RHCampaign::IsInGang(const RHCharacterProfile *profile) const
+{
+    RHPCDescription **first = *(RHPCDescription ***)((const char *)this + 0x118);
+    RHPCDescription **last = *(RHPCDescription ***)((const char *)this + 0x11c);
+    for (; first != last; ++first)
+    {
+        if (*(const RHCharacterProfile **)((char *)*first + 0x40) == profile)
+            return true;
+    }
+    return false;
+}
+
 // FUNCTION: GAME 0x00456db0
 unsigned RHCampaign::FUN_00456db0() const
 {

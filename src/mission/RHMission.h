@@ -37,7 +37,8 @@ public:
 
     RHMissionProfile *m_profile; // [0x0]
     short m_4;                   // [0x4]
-    short m_6;                   // [0x6]
+    unsigned short GetM6() const { return m_6; }
+    unsigned short m_6;          // [0x6]
     int m_8;                     // [0x8]
     RHMission();
     RHMission(const RHMission &value);

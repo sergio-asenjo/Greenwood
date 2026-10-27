@@ -8,6 +8,7 @@
 
 class SBFile;
 class RHPCDescription;
+class RHCharacterProfile;
 class RHElement;
 class RHSectorProduction;
 class RHSaveGame;
@@ -34,6 +35,8 @@ public:
     bool m_1c0; // 0x1c0
 
     void CreateGang();
+    void FUN_004522e0(RHPCDescription *description);
+    bool IsInGang(const RHCharacterProfile *profile) const;
     void SelectMissions(bool forced);
     void SelectMissionsByLocation(std::vector<RHMission *> &missions);
     void SelectMissionsByObligation(std::vector<RHMission *> &missions);

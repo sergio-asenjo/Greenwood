@@ -34,7 +34,7 @@
 extern template class std::basic_string<unsigned short>;
 
 // FUNCTION: GAME 0x0054cfa0
-void RHMissionStat::FUN_0054cfa0(const void *source)
+void RHMissionStat::AddNewPC(const RHPCDescription *source)
 {
     const std::wstring &value = *(const std::wstring *)((const char *)source + 0x2c);
     ((std::vector<std::wstring> *)&m_list)->push_back(value);

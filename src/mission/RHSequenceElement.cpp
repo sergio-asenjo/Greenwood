@@ -62,15 +62,6 @@ void RHSequenceElement::Emit(SBFile &file)
 class RHSequenceElementCalls;
 class RHElement;
 
-class RHEngine
-{
-public:
-    void FUN_004ca410(RHSequenceElementCalls *element);
-    bool SerializeElementPointer(SBFile &file, RHElement *&element);
-};
-
-extern RHEngine *g_pEngine;
-
 class RHImmediateElementCalls
 {
 public:
@@ -93,7 +84,7 @@ public:
     virtual void Slot40() = 0;
     virtual void Slot44() = 0;
     virtual void Slot48() = 0;
-    virtual void Slot4c() = 0;
+    virtual void Slot4c(RHSequenceElementCalls *element) = 0;
     virtual void Slot50(RHSequenceElementCalls *element) = 0;
     virtual void Slot54(RHSequenceElementCalls *element) = 0;
 };
@@ -211,6 +202,83 @@ public:
     unsigned char m_04;
 };
 
+#include "RHSequenceDispatch.h"
+
+class RHSequenceStateOrders : public RHSequenceOrderList
+{
+public:
+    void Clear()
+    {
+        iterator position = begin();
+        iterator last = end();
+        typedef iterator (RHUnk0046eb30::*Erase)(iterator);
+        while (position != last)
+            (((RHUnk0046eb30 *)this)->*(Erase)&RHUnk0046eb30::erase)(position++);
+        m_dirty = true;
+    }
+    void DeleteOrders()
+    {
+        m_cursor = begin();
+        if (m_cursor != end())
+        {
+            do
+            {
+                delete *m_cursor;
+            }
+            while (++m_cursor != end());
+        }
+        Clear();
+    }
+};
+
+// STUB: GAME 0x00585320
+void RHSequenceElementCalls::FUN_00585320(int state, int value)
+{
+    int previous = m_58;
+    if (previous == state)
+        return;
+    m_58 = state;
+    if (state == 2)
+        ++*(unsigned short *)((char *)m_54 + 0x32);
+    else if (previous == 2)
+        --*(unsigned short *)((char *)m_54 + 0x32);
+    switch (state)
+    {
+    case 5:
+        FUN_00585710();
+    case 6:
+        ((RHSequenceStateOrders *)((char *)this + 0x18))->DeleteOrders();
+        if (m_48)
+            ((RHImmediateElementCalls *)m_48)->Slot4c(this);
+        if (value & 2)
+        {
+            if (m_4c)
+                m_4c->Slot0c(state, 2);
+        }
+        else if (value & 1)
+        {
+            RHSequenceElementCalls *next = this;
+            do
+            {
+                next = next->m_4c;
+            }
+            while (next && *(volatile unsigned short *)next->m_14 == *(volatile unsigned short *)m_14);
+            if (next)
+                next->Slot0c(state, 2);
+        }
+        break;
+    case 0:
+        if (previous >= 2 && previous <= 4)
+        {
+            if (m_48)
+                ((RHImmediateElementCalls *)m_48)->Slot4c(this);
+            ((RHUnk00582620 *)m_54)->FUN_00582620((int)this);
+            FUN_00585710();
+        }
+        break;
+    }
+}
+
 // FUNCTION: GAME 0x00585450
 void RHSequenceElementCalls::FUN_00585450(int priority)
 {
@@ -257,6 +325,34 @@ void RHSequenceElementCalls::FUN_00585570()
             ((RHImmediateElementCalls *)m_48)->Slot50(this);
         else
             g_pEngine->FUN_004ca410(this);
+    }
+}
+
+struct RHSequenceStateActorInfo
+{
+    char m_00[0x8c];
+    int m_8c;
+};
+
+struct RHSequenceStateActor
+{
+    char m_00[0x50];
+    RHSequenceStateActorInfo *m_50;
+};
+
+// STUB: GAME 0x00585710
+void RHSequenceElementCalls::FUN_00585710()
+{
+    if (m_50)
+    {
+        if (m_50->m_10 == 22 && m_50->m_48 &&
+            ((RHSequenceStateActor *)m_48)->m_50->m_8c != ((RHSequenceStateActor *)m_50->m_48)->m_50->m_8c)
+        {
+            ((RHSequenceStateOrders *)((char *)m_50 + 0x18))->DeleteOrders();
+            m_50->m_10 = 20;
+        }
+        ((RHSequenceManager *)g_unk0x6c1040)->FUN_0058bb80((RHSequenceElement *)m_50);
+        m_50 = 0;
     }
 }
 

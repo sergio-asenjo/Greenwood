@@ -1,5 +1,6 @@
 #include "SBNullstr.h"
 #include "RHSequenceManager.h"
+#include "RHSequenceElement.h"
 
 DECOMP_SIZE_ASSERT(RHUnk00582220, 0x3c)
 DECOMP_SIZE_ASSERT(RHManagerList<void *>, 0x24)
