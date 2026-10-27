@@ -26,11 +26,7 @@ extern RHEngine *g_pEngine;
 extern RHUnk00452030 *g_unk0x6c07fc;
 RHMessenger *RHUnk00546050();
 
-class RHCampaign
-{
-public:
-    void FUN_00456e60();
-};
+#include "RHCampaignCore.h"
 
 class RHUnk004a5230
 {
@@ -46,7 +42,6 @@ public:
     void Unk004520e0(int, int);
     void Unk004d9330(void *, bool);
     void *Unk0058a940(void *, int, void *);
-    bool Unk00456cb0(int);
 };
 
 #include "RHSequenceGenericCalls.h"
@@ -467,7 +462,242 @@ void RHConsole::FUN_0045cc60(unsigned, char **)
     }
 }
 
-void RHConsole::FUN_0045bff0() {}
+#include "RHCampaignPointerArray.h"
+
+class RHUnk00597a70;
+void FUN_0059fb00(RHUnk00597a70 **destination, RHUnk00597a70 *const &value);
+
+struct RHConsoleHelpCommand
+{
+    unsigned count;
+    char **words;
+    char *description;
+    void (RHConsole::*callback)(unsigned, char **);
+};
+
+struct RHConsoleHelpArray
+{
+    unsigned allocator;
+    RHConsoleHelpCommand **first;
+    RHConsoleHelpCommand **last;
+    RHConsoleHelpCommand **end;
+    RHConsoleHelpCommand **cursor;
+    bool dirty;
+    unsigned size() const { return first == 0 ? 0 : last - first; }
+    void insert(RHConsoleHelpCommand *const &value)
+    {
+        RHScriptFXArray *array = (RHScriptFXArray *)this;
+        RHConsoleHelpCommand **position = last;
+        if ((unsigned)(end - last) < 1)
+        {
+            unsigned growth = size() > 1 ? size() : 1;
+            int capacity = size() + growth;
+            RHConsoleHelpCommand **storage = std::_Allocate(capacity, (RHConsoleHelpCommand **)0);
+            RHConsoleHelpCommand **destination = storage;
+            for (RHConsoleHelpCommand **source = first; source != position; ++source, ++destination)
+                FUN_0059fb00((RHUnk00597a70 **)destination, *(RHUnk00597a70 *const *)source);
+            array->Unk004fe450((void **)destination, 1, reinterpret_cast<void *const &>(value));
+            ++destination;
+            array->Unk004fe420((void **)position, (void **)last, (void **)destination);
+            array->Unk005008e0((void **)first, (void **)last);
+            delete[] first;
+            end = storage + capacity;
+            last = storage + size() + 1;
+            first = storage;
+        }
+        else if ((unsigned)(last - position) < 1)
+        {
+            array->Unk004fe420((void **)position, (void **)last, (void **)(position + 1));
+            array->Unk004fe450((void **)last, 1 - (last - position), reinterpret_cast<void *const &>(value));
+            RHConsoleHelpCommand **fillEnd = last;
+            for (RHConsoleHelpCommand **destination = position; destination != fillEnd; ++destination)
+                *destination = value;
+            ++last;
+        }
+        else
+        {
+            array->Unk004fe420((void **)(last - 1), (void **)last, (void **)last);
+            RHConsoleHelpCommand **source = last - 1;
+            RHConsoleHelpCommand **destination = last;
+            while (position != source)
+                *--destination = *--source;
+            for (destination = position; destination != position + 1; ++destination)
+                *destination = value;
+            ++last;
+        }
+        dirty = true;
+    }
+};
+
+// FUNCTION: GAME 0x0045b620
+void RHConsole::FUN_0045b620(const char *text, void (RHConsole::*callback)(unsigned, char **), const char *description)
+{
+    RHConsoleHelpCommand *command = new RHConsoleHelpCommand;
+    char *line = new char[strlen(text) + 1];
+    strcpy(line, text);
+    unsigned count;
+    char **words = FUN_0045c360((signed char *)line, count);
+    command->count = count;
+    command->words = new char *[count];
+    for (unsigned index = 0; index < count; ++index)
+    {
+        command->words[index] = new char[strlen(words[index]) + 1];
+        strcpy(command->words[index], words[index]);
+    }
+    command->callback = callback;
+    command->description = new char[strlen(description) + 1];
+    strcpy(command->description, description);
+    ((RHConsoleHelpArray *)m_5b8)->insert(command);
+    delete[] line;
+}
+
+// FUNCTION: GAME 0x0045b900
+void RHConsole::FUN_0045b900(const char *text, void (RHConsole::*callback)(unsigned, char **), const char *description)
+{
+    RHConsoleHelpCommand *command = new RHConsoleHelpCommand;
+    char *line = new char[strlen(text) + 1];
+    strcpy(line, text);
+    unsigned count;
+    char **words = FUN_0045c360((signed char *)line, count);
+    command->count = count;
+    command->words = new char *[count];
+    for (unsigned index = 0; index < count; ++index)
+    {
+        command->words[index] = new char[strlen(words[index]) + 1];
+        strcpy(command->words[index], words[index]);
+    }
+    command->callback = callback;
+    command->description = new char[strlen(description) + 1];
+    strcpy(command->description, description);
+    ((RHConsoleHelpArray *)m_5d8)->insert(command);
+    delete[] line;
+}
+
+// FUNCTION: GAME 0x0045bff0
+void RHConsole::FUN_0045bff0()
+{
+    RHConsoleHelpArray *commands = (RHConsoleHelpArray *)FUN_00460600();
+    typedef void (__cdecl *Message)(RHUnk005ef320 *, const char *);
+    Message output = (Message)&FUN_005ede40;
+    // STRING: GAME 0x006ac910
+    output(m_engine->m_draw, "Robin Hood Console Help File.");
+    // STRING: GAME 0x006ac8ec
+    output(m_engine->m_draw, "Available command in this release:");
+    unsigned count = commands->size();
+    for (unsigned index = 0; index < count; ++index)
+    {
+        RHConsoleHelpCommand *command = commands->first[index];
+        char text[256];
+        int length = 0;
+        unsigned words = command->count;
+        for (unsigned word = 0; word < words; ++word)
+        {
+            strcpy(text + length, command->words[word]);
+            length += strlen(command->words[word]);
+            // STRING: GAME 0x006ac8e8
+            strcpy(text + length, " ");
+            ++length;
+        }
+        if (length + strlen(command->description) < 256)
+            strcpy(text + length, command->description);
+        else
+            strncpy(text + length, command->description, 255 - length);
+        output(m_engine->m_draw, text);
+    }
+    output(m_engine->m_draw, "");
+}
+
+#include "MD5.h"
+#include "RHGameInputTranslator.h"
+
+namespace Toolbox
+{
+    MD5 *MD5_string(MD5 *result, unsigned char *name);
+}
+
+// FUNCTION: GAME 0x0045c1a0
+bool RHConsole::ExecuteCommand()
+{
+    RHConsoleHelpArray *commands = (RHConsoleHelpArray *)FUN_00460600();
+    signed char *line = (signed char *)m_04;
+    unsigned argumentCount;
+    char **arguments = FUN_0045c360(line, argumentCount);
+    if (m_5b6)
+    {
+        MD5 temporary(MD5::UninitializedStorage);
+        MD5 digest = *Toolbox::MD5_string(&temporary, (unsigned char *)line);
+        // STRING: GAME 0x006ac948
+        if (strcmp(digest.hex_digest(), "8f986776f01f52c1225231ae93ab634f") == 0)
+        {
+            m_5b6 = 0;
+            RHGameInputTranslator::mpInstance->DeityCall();
+            typedef void (__cdecl *Message)(RHUnk005ef320 *, const char *);
+            // STRING: GAME 0x006ac930
+            ((Message)&FUN_005ede40)(m_engine->m_draw, "Praised be His Name.");
+        }
+    }
+    RHConsoleHelpCommand **first = commands->first;
+    unsigned count = commands->size();
+    for (unsigned index = 0; index < count; ++index)
+    {
+        bool matches = true;
+        for (unsigned word = 0; word < argumentCount; ++word)
+        {
+            if (word < first[index]->count && strcmp(arguments[word], first[index]->words[word]) != 0)
+            {
+                matches = false;
+                break;
+            }
+        }
+        if (matches)
+        {
+            (this->*first[index]->callback)(argumentCount, arguments);
+            break;
+        }
+    }
+    *(unsigned short *)((char *)this + 0x88) = 0;
+    *line = 0;
+    delete[] arguments;
+    return true;
+}
+
+// FUNCTION: GAME 0x0045c3d0
+void RHConsole::CheckForCompletion(char *destination, char *source, unsigned short &position)
+{
+    short start = position - 1;
+    RHConsoleHelpArray *commands = (RHConsoleHelpArray *)FUN_00460600();
+    if (m_5b6)
+        return;
+    for (; start >= 0 && source[start] != ' '; --start)
+    {
+    }
+    if (start < 0)
+        start = 0;
+    else
+        ++start;
+    char prefix[132];
+    prefix[0] = 0;
+    strncpy(prefix, source + start, position - start);
+    prefix[position - start] = 0;
+    unsigned current = *(unsigned *)((char *)this + 0x680);
+    unsigned count = commands->size();
+    for (unsigned checked = 0; checked < count; ++checked)
+    {
+        ++current;
+        if (current >= count)
+            current = 0;
+        char *word = commands->first[current]->words[0];
+        if (strncmp(prefix, word, strlen(prefix)) == 0)
+        {
+            if (strlen(word) > strlen(prefix))
+                FUN_0045bc50(destination + position + strlen(word) - strlen(prefix), source + position);
+            strncpy(destination + start, word, strlen(word) + 1);
+            position = start + strlen(word);
+            *(unsigned *)((char *)this + 0x680) = current;
+            return;
+        }
+    }
+}
 
 // FUNCTION: GAME 0x0045ccb0
 void RHConsole::FUN_0045ccb0(unsigned, char **)
@@ -486,11 +716,86 @@ void RHConsole::FUN_0045ccc0(const std::string &name)
         RHConsoleProfile *profile = RHConsoleField<RHConsoleProfile *>(actor, 0x5fc);
         if (profile->m_name.compare(name) == 0)
         {
-            if (!profile->m_35 || !((RHScriptBatchCalls *)g_unk0x6c07fc)->Unk00456cb0((int)profile))
+            if (!profile->m_35 || !((RHCampaign *)g_unk0x6c07fc)->IsInGang((const RHCharacterProfile *)profile))
                 RHScript::AddPCToGang(actor);
             break;
         }
     }
+}
+
+#include "RHCampaignCommandLine.h"
+#include "RHCivilianProfile.h"
+
+inline bool RHConsoleMissionMatches(RHProfileText &name, const RHProfileText &value)
+{
+    return name.FUN_00460900(0, name.m_size, value.c_str(), value.m_size) == 0;
+}
+
+// STUB: GAME 0x0045cda0
+void RHConsole::FUN_0045cda0(unsigned, char **)
+{
+    RHCampaign *campaign = (RHCampaign *)g_unk0x6c07fc;
+    RHMission *mission = campaign->m_178;
+    if (RHConsoleField<int>(mission->m_profile, 0x3c) == 8)
+        return;
+    // STRING: GAME 0x006ad08c
+    FUN_005edae0(m_engine->m_draw, "Mission won !");
+    RHConsoleField<bool>(this, 0x684) = true;
+    ((RHUnk00450b60 *)campaign)->Unk(1,
+        RHConsoleField<int>(m_engine, 0x4a68) - RHConsoleField<int>(m_engine, 0x4a60)
+        + RHConsoleField<int>(m_engine, 0x4a64));
+    if (RHConsoleField<RHCampaignCommandLine>(mission->m_profile, 0x14).FUN_0045a010(
+        // STRING: GAME 0x006ad080
+        RHProfileText("S01_Not_VL", strlen("S01_Not_VL"))) == 0)
+    {
+        FUN_0045ccc0(std::string("Stutely"));
+        FUN_0045ccc0(std::string("Paysan A"));
+        FUN_0045ccc0(std::string("Paysan B"));
+        FUN_0045ccc0(std::string("Paysan C"));
+    }
+    else if (RHConsoleField<RHCampaignCommandLine>(mission->m_profile, 0x14).FUN_0045a010(
+        // STRING: GAME 0x006ad074
+        RHProfileText("S02_Lei_MP", strlen("S02_Lei_MP"))) == 0)
+        FUN_0045ccc0(std::string("Will Ecarlate"));
+    else if (RHConsoleMissionMatches(RHConsoleField<RHProfileText>(mission->m_profile, 0x14),
+        // STRING: GAME 0x006ad068
+        RHProfileText("S03_FoB_MP", strlen("S03_FoB_MP"))))
+        FUN_0045ccc0(std::string("Petit Jean"));
+    else if (RHConsoleMissionMatches(RHConsoleField<RHProfileText>(mission->m_profile, 0x14),
+        // STRING: GAME 0x006ad05c
+        RHProfileText("S04_Der_EC", strlen("S04_Der_EC"))))
+        FUN_0045ccc0(std::string("Frere Tuck"));
+    else if (RHConsoleMissionMatches(RHConsoleField<RHProfileText>(mission->m_profile, 0x14),
+        // STRING: GAME 0x006ad050
+        RHProfileText("S05_Yrk_EC", strlen("S05_Yrk_EC"))))
+        FUN_0045ccc0(std::string("Lady Marianne"));
+    else if (RHConsoleMissionMatches(RHConsoleField<RHProfileText>(mission->m_profile, 0x14),
+        // STRING: GAME 0x006ad044
+        RHProfileText("H07_Not_MK", strlen("H07_Not_MK"))))
+    {
+        FUN_0045ccc0(std::string("Paysan A"));
+        FUN_0045ccc0(std::string("Paysan B"));
+        FUN_0045ccc0(std::string("Paysan C"));
+    }
+    RHCampaignPointerArray<void *> *actors = (RHCampaignPointerArray<void *> *)((char *)m_engine + 0x48d8);
+    int amount = 0;
+    unsigned count = actors->size();
+    if (count)
+    {
+        void **actor = actors->m_first;
+        do
+        {
+            void *value = *actor;
+            if (RHConsoleField<bool>(value, 0x12) &&
+                (RHConsoleField<unsigned>(value, 4) & 0xf) == 3 &&
+                RHConsoleField<int>(value, 0xb0) == 0x12)
+                amount += RHConsoleField<unsigned short>(value, 0xae);
+            ++actor;
+        } while (--count);
+    }
+    ((RHUnk00450b60 *)campaign)->Unk(3, amount);
+    ((RHScriptBatchCalls *)g_unk0x6c0b3c)->Unk0050ed40();
+    ((RHScriptBatchCalls *)m_engine)->Unk004e3220(1);
 }
 
 // FUNCTION: GAME 0x0045d580
@@ -1431,6 +1736,38 @@ void RHConsole::FUN_00460410(unsigned, char **)
     m_engine->m_4bdc = !m_engine->m_4bdc;
 }
 
+#include "RHSaveGame.h"
+
+// FUNCTION: GAME 0x00460460
+void RHConsole::FUN_00460460(unsigned count, char **arguments)
+{
+    typedef void (__cdecl *Message)(RHUnk005ef320 *, const char *);
+    Message output = (Message)&FUN_005ede40;
+    if (count == 2)
+    {
+        RHUnk005f4fc0 file;
+        if (file.FUN_005f5090(std::string(arguments[1]), 1) == 0)
+        {
+            RHSaveGame::Header header;
+            RHSaveGame::SerializeHeader(file, header);
+            ((RHCampaign *)g_unk0x6c07fc)->Serialize(file);
+            file.FUN_005f5290();
+            // STRING: GAME 0x006adf70
+            output(m_engine->m_draw, "Campaign values loaded !");
+        }
+        else
+        {
+            // STRING: GAME 0x006adf64
+            output(m_engine->m_draw, "Kaputt !");
+        }
+    }
+    else
+    {
+        // STRING: GAME 0x006adf38
+        output(m_engine->m_draw, "Verboten : Please enter a valid filename !");
+    }
+}
+
 // FUNCTION: GAME 0x00460600
 void *RHConsole::FUN_00460600()
 {
@@ -1440,6 +1777,12 @@ void *RHConsole::FUN_00460600()
 void EmitRHConsole(RHConsole *console, signed char *line, unsigned &count, char **arguments)
 {
     RHConsole::FUN_0045bc50((char *)line, (char *)line);
+    console->CheckForCompletion((char *)line, (char *)line, *(unsigned short *)line);
+    console->ExecuteCommand();
+    console->FUN_0045b620((char *)line, &RHConsole::FUN_00460460, (char *)line);
+    console->FUN_0045b900((char *)line, &RHConsole::FUN_00460460, (char *)line);
+    console->FUN_00460460(count, arguments);
+    console->FUN_0045cda0(count, arguments);
     console->FUN_0045e527(count, arguments);
     console->FUN_0045c360(line, count);
     console->FUN_0045cc20(count, arguments);

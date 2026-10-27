@@ -46,13 +46,18 @@ public:
     RHConsole();
     static RHConsole *GetInstance();
     bool HandleCharacter(unsigned short character);
+    void FUN_0045b620(const char *, void (RHConsole::*)(unsigned, char **), const char *);
+    void FUN_0045b900(const char *, void (RHConsole::*)(unsigned, char **), const char *);
     static void FUN_0045bc50(char *, const char *);
     void FUN_0045bff0();
+    void CheckForCompletion(char *destination, char *source, unsigned short &position);
+    bool ExecuteCommand();
     char **FUN_0045c360(signed char *, unsigned &);
     void FUN_0045ccc0(const std::string &);
     void FUN_0045cc20(unsigned, char **);
     void FUN_0045cc60(unsigned, char **);
     void FUN_0045ccb0(unsigned, char **);
+    void FUN_0045cda0(unsigned, char **);
     void FUN_0045d580(unsigned, char **);
     void FUN_0045d5c0(unsigned, char **);
     void FUN_0045d5f0(unsigned, char **);
@@ -106,6 +111,7 @@ public:
     void FUN_004603b0(unsigned, char **);
     void FUN_004603e0(unsigned, char **);
     void FUN_00460410(unsigned, char **);
+    void FUN_00460460(unsigned, char **);
     void *FUN_00460600();
     RHConsoleEngine *m_engine;
     unsigned char m_04[0x5b2];
