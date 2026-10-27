@@ -1,6 +1,9 @@
 #include "SBNullstr.h"
 #include "SCSerialize.h"
 
+// TEMPLATE: GAME 0x0057c9c0 FOLDED
+// ??Eiterator@?$list@PAVSCFunctionArg@@V?$allocator@PAVSCFunctionArg@@@std@@@std@@QAE?AV012@H@Z
+
 int SCSerializeUnk00643c56(FILE *)
 {
     return 0;
@@ -22,9 +25,26 @@ SCSerializeUnkArray::~SCSerializeUnkArray() {}
 
 SCSerializeUnkObject::~SCSerializeUnkObject() {}
 
-int SCSerializeUnkObject::FUN_0063a940(FILE *, bool)
+SCSerializeRecordList::SCSerializeRecordList(unsigned nodeSize)
 {
-    return 0;
+    std::allocator<char> value;
+    *(char *)&allocator = *(const char *)&value;
+    head = (SCSerializeRecordNode *)operator new(nodeSize);
+    head->next = head;
+    head->previous = head;
+    count = 0;
+}
+
+void SCSerializeUnkList::PushBack(void *value)
+{
+    SCSerializeUnkNode *head = (SCSerializeUnkNode *)m_head;
+    SCSerializeUnkNode *node = (SCSerializeUnkNode *)((RHUnk0046eb30 *)this)->Unk0059f720(
+        (RHScriptNode *)head, (RHScriptNode *)head->m_previous);
+    head->m_previous = node;
+    node->m_previous->m_next = node;
+    if (&node->m_object)
+        node->m_object = (SCSerializeUnkObject *)value;
+    ++m_count;
 }
 SCSerializeRecordIterator SCSerializeRecordList::Erase(SCSerializeRecordIterator position)
 {
@@ -32,10 +52,13 @@ SCSerializeRecordIterator SCSerializeRecordList::Erase(SCSerializeRecordIterator
     SCSerializeRecordNode *next = node->next;
     node->previous->next = next;
     node->next->previous = node->previous;
-    node->value.~SCSerializeRecordValue();
+    node->value.~SCSerializeNamedType();
     operator delete(node);
     --count;
     return SCSerializeRecordIterator(next);
 }
 
 SCSerializeRecordValue::~SCSerializeRecordValue() {}
+
+// FUNCTION: GAME 0x0063b8a0
+SCSerializeNamedType::~SCSerializeNamedType() {}

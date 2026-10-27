@@ -6,17 +6,24 @@
 #include "RHCivilianProfile.h"
 #include "RHArtificialIntelligence.h"
 #include <list>
+#include "SCType.h"
+#include "SCQuad.h"
+#include <vector>
 
 struct SCSerializeRecordNode;
 
-class SCSerializeRecordValue
+class SCSerializeNamedType : public SCType
+{
+public:
+    ~SCSerializeNamedType();
+    std::string m_24;
+};
+
+class SCSerializeRecordValue : public SCSerializeNamedType
 {
 public:
     ~SCSerializeRecordValue();
-    unsigned char m_00[8];
-    std::list<unsigned> m_08;
-    std::string m_14;
-    std::string m_24;
+    int FUN_0063a5c0(FILE *file, bool writing);
     unsigned m_34;
 };
 
@@ -29,6 +36,7 @@ struct SCSerializeRecordIterator
 class SCSerializeRecordList
 {
 public:
+    explicit SCSerializeRecordList(unsigned nodeSize = sizeof(SCSerializeRecordValue) + 8);
     inline ~SCSerializeRecordList();
     SCSerializeRecordIterator Erase(SCSerializeRecordIterator position);
     unsigned allocator;
@@ -40,20 +48,7 @@ struct SCSerializeRecordNode
 {
     SCSerializeRecordNode *next;
     SCSerializeRecordNode *previous;
-    SCSerializeRecordValue value;
-};
-
-// VTABLE: GAME 0x0067bbd0
-class SCSerializeUnk0063af90
-{
-public:
-    virtual ~SCSerializeUnk0063af90();
-    std::string m_04;
-    unsigned char m_14[0x10];
-    SCSerializeRecordList m_24;
-    unsigned char m_30[8];
-    SCSerializeRecordList m_38;
-    unsigned char m_44[8];
+    SCSerializeNamedType value;
 };
 
 class SCSerializeUnk0063b780
@@ -64,6 +59,24 @@ public:
     std::list<unsigned> m_08;
     std::string m_14;
     unsigned char m_24[0x10];
+};
+
+// VTABLE: GAME 0x0067bbd0
+class SCSerializeUnk0063af90
+{
+public:
+    SCSerializeUnk0063af90() : m_24(0x3c), m_38(0x40) {}
+    virtual ~SCSerializeUnk0063af90();
+    int FUN_0063b070(FILE *file, bool writing);
+    std::string m_04;
+    int m_14;
+    int m_18;
+    int m_1c;
+    int m_20;
+    SCSerializeRecordList m_24;
+    int m_30;
+    int m_34;
+    SCSerializeRecordList m_38;
 };
 
 int SCSerializeUnk00643c56(FILE *);
@@ -81,6 +94,7 @@ public:
         m_count = 0;
     }
     ~SCSerializeUnkList();
+    void PushBack(void *value);
     char m_allocator; // 0x00
     RHScriptNode *m_head; // 0x04
     int m_count; // 0x08
@@ -115,9 +129,9 @@ public:
     }
     ~SCSerializeUnkArray();
     char m_allocator; // 0x00
-    void *m_first; // 0x04
-    void *m_last; // 0x08
-    void *m_end; // 0x0c
+    VMQuad *m_first; // 0x04
+    VMQuad *m_last; // 0x08
+    VMQuad *m_end; // 0x0c
 };
 
 // SIZE 0x6c

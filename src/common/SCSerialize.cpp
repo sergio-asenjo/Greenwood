@@ -6,6 +6,8 @@
 
 typedef int SCSerializeSizeAssert[(sizeof(SCSerialize) == 0x10) ? 1 : -1];
 typedef int SCSerializeObjectSizeAssert[(sizeof(SCSerializeUnkObject) == 0x6c) ? 1 : -1];
+typedef int SCSerializeRecordSizeAssert[(sizeof(SCSerializeRecordValue) == 0x38) ? 1 : -1];
+typedef int SCSerializeFunctionSizeAssert[(sizeof(SCSerializeUnk0063af90) == 0x44) ? 1 : -1];
 
 
 void EmitSCSerialize(SCSerialize *serializer)
@@ -14,6 +16,11 @@ void EmitSCSerialize(SCSerialize *serializer)
     serializer->OpenSCB(0, false);
     serializer->CloseSCB();
     serializer->ReadSCB();
+}
+
+void EmitSCSerializeRecordValue(SCSerializeRecordValue *record)
+{
+    record->FUN_0063a5c0(0, false);
 }
 
 // FUNCTION: GAME 0x00639b40
@@ -47,8 +54,101 @@ SCSerialize::~SCSerialize()
     m_0c = 0;
 }
 
+// STUB: GAME 0x0063a5c0
+int SCSerializeRecordValue::FUN_0063a5c0(FILE *file, bool writing)
+{
+    int result;
+    int length;
+    char text[256];
+    if (writing) {
+        result = SCType::Serialize(file, writing);
+        length = strlen(m_24.c_str());
+        result += SBFileUnk00643cd3(&length, 1, 4, file);
+        result += SBFileUnk00643cd3(m_24.c_str(), length, 1, file);
+        result += SBFileUnk00643cd3(&m_34, 1, 4, file);
+    } else {
+        result = SCType::Serialize(file, false);
+        result += SBFileUnk00643e0c(&length, 1, 4, file);
+        result += SBFileUnk00643e0c(text, length, 1, file);
+        result += SBFileUnk00643e0c(&m_34, 1, 4, file);
+        text[length] = 0;
+        m_24.append(text);
+    }
+    return result;
+}
+
 // SYNTHETIC: GAME 0x0063a920
 // ??_GSCSerializeUnkObject@@UAEPAXI@Z
+
+// STUB: GAME 0x0063a940
+int SCSerializeUnkObject::FUN_0063a940(FILE *file, bool writing)
+{
+    int result;
+    int length;
+    int count;
+    char text[256];
+    if (writing) {
+        length = strlen(m_04.c_str());
+        result = SBFileUnk00643cd3(&length, 1, 4, file);
+        result += SBFileUnk00643cd3(m_04.c_str(), length, 1, file);
+        length = strlen(m_14.c_str());
+        result += SBFileUnk00643cd3(&length, 1, 4, file);
+        result += SBFileUnk00643cd3(m_14.c_str(), length, 1, file);
+        count = m_28.m_count;
+        result += SBFileUnk00643cd3(&count, 1, 4, file);
+        result += SBFileUnk00643cd3(&m_24, 1, 4, file);
+        SCSerializeUnkNode *head = (SCSerializeUnkNode *)m_28.m_head;
+        for (SCSerializeUnkNode *node = head->m_next; node != (SCSerializeUnkNode *)m_28.m_head; node = node->m_next)
+            ((SCSerializeRecordValue *)node->m_object)->FUN_0063a5c0(file, writing);
+        count = m_34.m_count;
+        result += SBFileUnk00643cd3(&count, 1, 4, file);
+        head = (SCSerializeUnkNode *)m_34.m_head;
+        for (node = head->m_next; node != (SCSerializeUnkNode *)m_34.m_head; node = node->m_next)
+            result += ((SCSerializeUnk0063af90 *)node->m_object)->FUN_0063b070(file, writing);
+        count = m_40.m_count;
+        result += SBFileUnk00643cd3(&count, 1, 4, file);
+        head = (SCSerializeUnkNode *)m_40.m_head;
+        for (node = head->m_next; node != (SCSerializeUnkNode *)m_40.m_head; node = node->m_next)
+            ((SCQuad *)&node->m_object)->Serialize(file, writing, true);
+    } else {
+        result = SBFileUnk00643e0c(&length, 1, 4, file);
+        result += SBFileUnk00643e0c(text, length, 1, file);
+        text[length] = 0;
+        ((std::string *)&m_04)->append(text);
+        result += SBFileUnk00643e0c(&length, 1, 4, file);
+        result += SBFileUnk00643e0c(text, length, 1, file);
+        text[length] = 0;
+        ((std::string *)&m_14)->append(text);
+        result += SBFileUnk00643e0c(&count, 1, 4, file);
+        result += SBFileUnk00643e0c(&m_24, 1, 4, file);
+        for (int index = 0; index < count; ++index) {
+            SCSerializeRecordValue *record = new SCSerializeRecordValue;
+            record->FUN_0063a5c0(file, false);
+            m_28.PushBack(record);
+        }
+        result += SBFileUnk00643e0c(&count, 1, 4, file);
+        for (index = 0; index < count; ++index) {
+            SCSerializeUnk0063af90 *record = new SCSerializeUnk0063af90;
+            record->FUN_0063b070(file, false);
+            m_34.PushBack(record);
+        }
+        result += SBFileUnk00643e0c(&count, 1, 4, file);
+        std::vector<VMQuad> &quads = *(std::vector<VMQuad> *)&m_4c;
+        VMQuad value;
+        if (quads.size() < (unsigned)count) {
+            void (std::vector<VMQuad>::*insert)(VMQuad *, unsigned, const VMQuad &) = &std::vector<VMQuad>::insert;
+            (quads.*insert)(quads.end(), count - quads.size(), value);
+        } else if ((unsigned)count < quads.size()) {
+            VMQuad *(std::vector<VMQuad>::*erase)(VMQuad *, VMQuad *) = &std::vector<VMQuad>::erase;
+            (quads.*erase)(quads.begin() + count, quads.end());
+        }
+        for (index = 0; index < count; ++index) {
+            result += SBFileUnk00643e0c(&quads[index].m_00, 1, 1, file);
+            result += SBFileUnk00643e0c(&quads[index].m_04, 8, 1, file);
+        }
+    }
+    return result;
+}
 
 inline SCSerializeRecordList::~SCSerializeRecordList()
 {
@@ -72,6 +172,37 @@ inline SCSerializeRecordList::~SCSerializeRecordList()
 // FUNCTION: GAME 0x0063af90
 SCSerializeUnk0063af90::~SCSerializeUnk0063af90()
 {
+}
+
+// STUB: GAME 0x0063b070
+int SCSerializeUnk0063af90::FUN_0063b070(FILE *file, bool writing)
+{
+    int result;
+    int length;
+    char text[256];
+    if (writing) {
+        length = strlen(m_04.c_str());
+        result = SBFileUnk00643cd3(&length, 1, 4, file);
+        result += SBFileUnk00643cd3(m_04.c_str(), length, 1, file);
+        result += SBFileUnk00643cd3(&m_14, 1, 4, file);
+        result += SBFileUnk00643cd3(&m_18, 1, 4, file);
+        result += SBFileUnk00643cd3(&m_1c, 1, 4, file);
+        result += SBFileUnk00643cd3(&m_20, 1, 4, file);
+        result += SBFileUnk00643cd3(&m_30, 1, 4, file);
+        result += SBFileUnk00643cd3(&m_34, 1, 4, file);
+    } else {
+        result = SBFileUnk00643e0c(&length, 1, 4, file);
+        result += SBFileUnk00643e0c(text, length, 1, file);
+        text[length] = 0;
+        m_04.append(text);
+        result += SBFileUnk00643e0c(&m_14, 1, 4, file);
+        result += SBFileUnk00643e0c(&m_18, 1, 4, file);
+        result += SBFileUnk00643e0c(&m_1c, 1, 4, file);
+        result += SBFileUnk00643e0c(&m_20, 1, 4, file);
+        result += SBFileUnk00643e0c(&m_30, 1, 4, file);
+        result += SBFileUnk00643e0c(&m_34, 1, 4, file);
+    }
+    return result;
 }
 
 // FUNCTION: GAME 0x0063b2d0
@@ -196,6 +327,7 @@ SCSerializeUnk0063b780::~SCSerializeUnk0063b780()
 
 void EmitSCSerializeRecords(SCSerializeUnk0063af90 *records, SCSerializeUnk0063b780 *record)
 {
+    records->FUN_0063b070(0, false);
     records->SCSerializeUnk0063af90::~SCSerializeUnk0063af90();
     record->~SCSerializeUnk0063b780();
 }
