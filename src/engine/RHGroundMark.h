@@ -25,6 +25,8 @@ public:
     SBGeoPoint2D(const SBGeoPoint2D &other);
     SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
     SBGeoPoint2D FUN_005fc200(const SBGeoPoint2D &other) const;
+    SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
+    float FUN_005fc700(float scale) const;
     bool Serialize(SBFile &file);
 };
 
@@ -143,7 +145,7 @@ public:
     }
 };
 
-class RHUnk005b5890;
+class RHSprite;
 class RHUnk005ef320;
 class RHUnkSpriteBank;
 
@@ -158,7 +160,7 @@ public:
     bool Serialize(SBFile &file);
     void Emit(SBFile &file);
 
-    RHUnk005b5890 *m_sprite;
+    RHSprite *m_sprite;
     int m_surface;
     RHUnk005ef320 *m_drawManager;
     RHUnkSpriteBank *m_spriteBank;

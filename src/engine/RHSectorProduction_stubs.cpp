@@ -15,7 +15,3 @@ bool RHSectorProductionPC::FUN_0055bb00(int value)
             break;
     return current != last;
 }
-
-#include "RHSpriteConstructor.h"
-
-RHUnk005b5890::RHUnk005b5890(int) {}

@@ -139,8 +139,9 @@ public:
         m_dirty = false;
         m_1c = value;
         int count = FUN_0059fbc0();
-        m_15 = true;
-        m_cursor = m_first;
+        void **first = *(void **volatile *)&m_first;
+        *(volatile bool *)&m_15 = true;
+        m_cursor = first;
         int index;
         for (index = 0; index < count; ++index, ++m_cursor)
         {
@@ -308,8 +309,7 @@ unsigned int RHSectorProduction::FUN_00580500()
     return m_occupants.size();
 }
 
-// Parked: the occupant-insert argument address takes edx where the target keeps ecx.
-// STUB: GAME 0x00580520
+// FUNCTION: GAME 0x00580520
 void RHSectorProduction::FUN_00580520()
 {
     RHSectorProductionScript *script = (RHSectorProductionScript *)m_8;
@@ -799,7 +799,7 @@ public:
     virtual ~RHUnk00581c40Linked();
 };
 
-#include "RHSpriteConstructor.h"
+#include "RHSpriteCore.h"
 
 class RHUnk005ef320;
 extern RHUnk005ef320 *g_unk0x6c11d0;
@@ -829,7 +829,7 @@ RHUnk00581c40::RHUnk00581c40()
     m_vptr = 0x679cd0;
     m_8 = g_unk0x6c11d0;
     m_c = (unsigned)g_unk0x006c0b1c;
-    m_4 = new RHUnk005b5890(0);
+    m_4 = new RHSprite(0);
     m_10 = 0xffffffff;
     m_14 = 0;
     m_1a = 0;

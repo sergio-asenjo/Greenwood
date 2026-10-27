@@ -5,6 +5,7 @@
 #include "Decomp.h"
 #include <vector>
 
+#define SBGEO_POINT2D_VIEW
 // SIZE 0x08
 class SBGeoPoint2D
 {
@@ -19,6 +20,7 @@ public:
 };
 
 // SIZE 0x08
+#define SBGEO_VECTOR2D_VIEW
 class SBGeoVector2D : public SBGeoPoint2D
 {
 public:
@@ -39,20 +41,7 @@ public:
     unsigned short *m_end; // 0x0c
 };
 
-// SIZE 0x64
-struct RHUnkSpriteRow
-{
-    RHUnkSpriteRow();
-    undefined2 m_00; // 0x00
-    float m_04; // 0x04
-    SBGeoPoint2D m_position; // 0x08
-    undefined2 m_10; // 0x10
-    std::vector<int> m_resources; // 0x14
-    std::vector<unsigned short> m_frames; // 0x24
-    std::vector<unsigned short> m_rates; // 0x34
-    std::vector<SBGeoVector2D> m_positions; // 0x44
-    std::vector<unsigned short> m_flags; // 0x54
-};
+#include "RHSpriteRow.h"
 
 // SIZE 0x18
 struct RHUnkSpriteScriptInfo

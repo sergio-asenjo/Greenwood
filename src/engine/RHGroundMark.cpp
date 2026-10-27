@@ -43,7 +43,7 @@
 // Kept as STUB so reccmp does not count it; the reconstruction is for reference.
 
 #include "RHGroundMark.h"
-#include "RHSpriteConstructor.h"
+#include "RHSpriteCore.h"
 
 extern RHUnk005ef320 *g_unk0x6c11d0;
 extern RHUnkSpriteBank *g_unk0x006c0b1c;
@@ -61,7 +61,7 @@ RHGroundMark::RHGroundMark()
 {
     m_drawManager = g_unk0x6c11d0;
     m_spriteBank = g_unk0x006c0b1c;
-    m_sprite = new RHUnk005b5890(0);
+    m_sprite = new RHSprite(0);
     m_surface = -1;
 }
 
@@ -85,11 +85,6 @@ RHGroundMark::~RHGroundMark()
 
 #include "SBGeoVector2D.h"
 
-class RHSpritePositionCalls
-{
-public:
-    SBGeoVector2D FUN_004a4a10();
-};
 
 // Parked: source address uses edx rather than eax at element construction.
 // STUB: GAME 0x0051bfb0

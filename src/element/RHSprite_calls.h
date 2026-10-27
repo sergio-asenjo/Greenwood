@@ -26,6 +26,7 @@ public:
     void FUN_005fc390(const SBGeoPoint2D &other) throw();
     SBGeoPoint2D &FUN_005fc1e0(const SBGeoPoint2D &);
     SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &) const;
+    SBGeoPoint2D FUN_005fc200(const SBGeoPoint2D &) const;
     SBGeoVector2D Unk005fc110(const SBGeoPoint2D &) const;
     float FUN_005fc700(float) const;
     float FUN_005fca90(const SBGeoPoint2D &other, float scale) const;
@@ -37,6 +38,7 @@ public:
 
 #include "SBGeoVector2D.h"
 
+#define RHUNK005FC3B0_VIEW
 class RHUnk005fc3b0 : public SBGeoVector2D
 {
 public:
@@ -45,6 +47,8 @@ public:
         return (RHUnk005fc3b0 &)SBGeoVector2D::operator=((const SBGeoVector2D &)other);
     }
     RHUnk005fc3b0 &FUN_005fc5b0(float factor);
+    bool IsZero() const { return m_x == 0.0f && m_y == 0.0f; }
+    void FUN_005fc7c0(float scale);
     float Unk005fc6a0(float scale);
     unsigned char FUN_005fcc50(float scale) const;
     SBGeoVector2D FUN_005fc8f0(bool direction, float scale) const;
@@ -59,10 +63,12 @@ class SBGeoBoundingBox2D
 public:
     SBGeoBoundingBox2D();
     SBGeoBoundingBox2D(const SBGeoPoint2D &, const SBGeoPoint2D &);
+    SBGeoBoundingBox2D(const SBGeoBoundingBox2D &);
     ~SBGeoBoundingBox2D() {}
+    void Unk00607dc0(const SBGeoPoint2D &);
     SBGeoBoundingBox2D &operator=(const SBGeoBoundingBox2D &);
     bool FUN_00608400(const SBGeoPoint2D &) const;
-    bool FUN_00609050(const SBGeoPoint2D &, const SBGeoPoint2D &);
+    int FUN_00609050(const SBGeoPoint2D &, const SBGeoPoint2D &);
     SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &) const;
     bool Serialize(SBFile &);
     void FUN_00607d90();
@@ -72,16 +78,7 @@ public:
 };
 
 #include "RHBonusInfo.h"
-class RHMobilePosition
-{
-public:
-    void FUN_0055fc20(bool);
-};
-class RHUnkPathGeometry
-{
-public:
-    bool Unk004fbec0(SBFile &, void *&);
-};
+#include "RHPositionInterface.h"
 
 class RHEngine;
 struct RHUnkSectorGlobal;
@@ -92,17 +89,6 @@ public:
     unsigned FUN_004d9090();
 };
 
-class RHSpritePositionCalls
-{
-public:
-    SBGeoVector2D FUN_004a4a10();
-    void FUN_0055f550();
-    bool FUN_00560460();
-    void FUN_00560780(float, unsigned short);
-    bool FUN_00561040(void *, float, unsigned short &, bool);
-    bool FUN_00563e90();
-    void FUN_00563ea0();
-};
 
 // SIZE 0x0c
 class RHUnk005df4f0
@@ -124,17 +110,6 @@ public:
     bool FUN_004f6c20(const SBGeoPoint2D &, SBGeoPoint2D &, unsigned short, const SBGeoPoint2D &);
 };
 
-// SIZE 0x0c
-class RHUnk00613e90
-{
-public:
-    RHUnk00613e90();
-    RHUnk00613e90 FUN_005df550(const RHUnk00613e90 &other) const;
-    float FUN_005df680() const;
-    float m_0; // 0x00
-    float m_4; // 0x04
-    float m_8; // 0x08
-};
 
 // VTABLE: GAME 0x00679bc8
 // SIZE 0x3c
@@ -253,8 +228,8 @@ public:
     void Unk00418bc0();
 };
 
-class RHUnk005c38b0;
-extern RHUnk005c38b0 *g_unk0x6c10e8;
+class RHTitbits;
+extern RHTitbits *g_unk0x6c10e8;
 double FUN_006433ab(double) throw();
 
 #endif

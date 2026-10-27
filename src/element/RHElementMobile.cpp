@@ -1267,64 +1267,6 @@ RHMobileUnk005504d0::RHMobileUnk005504d0()
     m_8 = 0xffff;
 }
 
-// Parked: position-state x87 scheduling and temporary lifetimes require comparison.
-// STUB: GAME 0x0055fc20
-void RHMobilePosition::FUN_0055fc20(bool updateDirection)
-{
-    unsigned &state = RHMobileField<unsigned>(this, 8);
-    if (state == 7)
-        return;
-    bool stationary = false;
-    float &x = RHMobileField<float>(this, 0x60);
-    float &y = RHMobileField<float>(this, 0x64);
-    float &elevation = RHMobileField<float>(this, 0x68);
-    RHUnk005fc3b0 &movement = RHMobileField<RHUnk005fc3b0>(this, 0x6c);
-    if ((state >> 1) & 1)
-    {
-        movement.m_x = x;
-        movement.m_y = y - elevation;
-    }
-    else
-    {
-        bool project = true;
-        if (!(state & 1))
-        {
-            movement.FUN_005fc430(RHMobileField<SBGeoPoint2D>(this, 0x44).Unk005fc110(RHMobileField<SBGeoPoint2D>(this, 0x20)));
-            stationary = movement.FUN_005fc700(1.0f) < 1.0f;
-            if (movement.m_x == 0.0f && movement.m_y == 0.0f)
-                project = false;
-            else
-                movement.FUN_005fc7c0(1.0f);
-        }
-        if (project)
-        {
-            void *area = RHMobileField<void *>(this, 0xec);
-            x = movement.m_x;
-            if (area)
-            {
-                float height = (RHMobileField<float>(area, 0x4c) * movement.m_x +
-                    RHMobileField<float>(area, 0x50) * movement.m_y) /
-                    (1.0f - RHMobileField<float>(area, 0x50));
-                elevation = height;
-                y = height + movement.m_y;
-            }
-            else
-            {
-                y = movement.m_y;
-                elevation = 0;
-            }
-        }
-    }
-    if (updateDirection && !stationary)
-    {
-        if (RHMobileField<bool>(this, 0x74))
-            RHMobileField<unsigned short>(this, 0xd6) = (RHUnk005fc3b0(x, y).FUN_005fcc50(1.0f) ^ 8) & 15;
-        else
-            RHMobileField<unsigned short>(this, 0xd6) = RHUnk005fc3b0(x, y).FUN_005fcc50(1.0f) & 15;
-    }
-    state = 7;
-}
-
 // Parked: cached-list cursor lowering and counted geometry callees remain non-exact.
 // STUB: GAME 0x005a5960
 void RHMobileUnk005a5960::FUN_005a5960(const SBGeoPoint2D &value)
