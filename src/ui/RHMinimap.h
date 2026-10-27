@@ -13,6 +13,7 @@
 #include "SB.h"
 
 class RHElement;
+class RHUnkFXDraw;
 
 struct RHMinimapHighlightedElement
 {
@@ -68,8 +69,13 @@ class SBGeoPoint2D
 {
 public:
     SBGeoPoint2D();
+    SBGeoPoint2D(float x, float y);
     ~SBGeoPoint2D();
     SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
+    SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
+    SBGeoPoint2D FUN_005fc200(const SBGeoPoint2D &other) const;
+    bool operator==(const SBGeoPoint2D &other) const;
+    SBGeoPoint2D &Set(float x, float y) { m_x = x; m_y = y; return *this; }
     float m_x;
     float m_y;
 };
@@ -100,18 +106,23 @@ public:
     // target's `ret N`; the argument types stay neutral because the owning
     // widget base class is not established (see the parks in RHMinimap.cpp).
     bool FUN_00549c10(const void *name, const void *box, unsigned long flags); // ret 0xc
-    bool FUN_00549e00(const void *point);                                      // ret 4
+    void FUN_00549e00(const void *point);                                      // ret 4
     void FUN_00549f50();                                                       // ret
-    void FUN_0054a0f0(const void *arg);                                        // ret 4
+    bool FUN_0054a0f0(const void *arg);                                        // ret 4
     void FUN_0054a440(const void *element);                                    // ret 4
     void FUN_0054a640(const void *arg);                                        // ret 4
     void FUN_0054a920();                                                       // ret
     bool FUN_0054ae90(RHElement *element);
+    bool IsRealPoint(const SBGeoPoint2D &point);
+    bool RealToMap(const SBGeoPoint2D &point, SBGeoPoint2D &result);
     static void FUN_0054b490(const RHMinimapHighlightedElement &element);
     void FUN_0054b4c0();
     void FUN_0054b5e0(const SBGeoPoint2D &point, unsigned short color);
 
-    undefined m_a0[0x10];
+    unsigned long m_surface;
+    unsigned long m_a4;
+    RHUnkFXDraw *m_minimapDraw;
+    char *m_engine;
     bool m_b0;
     bool m_b1;
     bool m_b2;

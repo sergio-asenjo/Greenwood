@@ -146,21 +146,50 @@ bool FUN_00549ae0(const RHMinimapSortElement *a, const RHMinimapSortElement *b){
     return a->m_0c < b->m_0c;
 }
 
-// Parked: the body is the widget's Create — it calls the unmodelled widget base
-// class (vtable slot +0x24, 0x61a1e0/0x61ad20) and its resource/geometry helper
-// set, none of which this TU can establish from its own evidence.
+#include "RHMobileUnk00607da0.h"
+#include "SBResourceManager.h"
+#include "SBDrawManagerCore.h"
+#include "RHPortraitDrawCalls.h"
+#include "RHMapWidget.h"
+#include "SBFrameWnd.h"
+#include "RHPlayerProfileAccess.h"
+
+extern undefined g_unk0x006c0e48[];
+extern float g_unk0x006c0c58[2];
+
 // STUB: GAME 0x00549c10
-bool RHMinimap::FUN_00549c10(const void *, const void *, unsigned long)
+bool RHMinimap::FUN_00549c10(const void *name, const void *box, unsigned long flags)
 {
-    return false;
+    SBGeoBoundingBox2D bounds;
+    RHPortraitRootLifetime::FUN_0061a1e0(*(const RHMapTitleText *)name, *(const RHMapBox *)box, flags);
+    m_minimapDraw = (RHUnkFXDraw *)g_unk0x6c11d0;
+    m_engine = (char *)g_pEngine;
+    m_surface = *(unsigned long *)(m_engine + 0x48c8);
+    unsigned long surface;
+    ((SBResourceManager *)m_resource)->FUN_00600920(0x3d, 1, surface);
+    m_c4 = SBGeoVector2D(m_minimapDraw->FUN_005e56c0(m_surface), m_minimapDraw->FUN_005e5750(m_surface));
+    ((RHMobileUnk00607da0 *)&bounds)->FUN_00607da0((const RHMobileUnk00607da0 &)((RHMapWidget *)this)->V24());
+    bounds.SetMax(bounds.m_p0.Unk005fc190(SBGeoVector2D(m_minimapDraw->FUN_005e56c0(surface),
+        m_minimapDraw->FUN_005e5750(surface))));
+    ((SBFrameWnd *)this)->FUN_0061ad20(bounds);
+    ((RHMobileUnk00607da0 *)&m_10c)->FUN_00607da0((const RHMobileUnk00607da0 &)bounds);
+    FUN_0054a0f0(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x6c);
+    return true;
 }
 
-// Parked: same widget base dependency (0x61ad20, 0x600920, virtual +0x24), plus
-// an EH frame with three local-object states.
-// STUB: GAME 0x00549e00
-bool RHMinimap::FUN_00549e00(const void *)
+// FUNCTION: GAME 0x00549e00
+void RHMinimap::FUN_00549e00(const void *box)
 {
-    return false;
+    SBGeoBoundingBox2D bounds;
+    ((SBFrameWnd *)this)->FUN_0061ad20(*(const SBGeoBoundingBox2D *)box);
+    unsigned long surface;
+    ((SBResourceManager *)m_resource)->FUN_00600920(0x3d, 1, surface);
+    ((RHMobileUnk00607da0 *)&bounds)->FUN_00607da0((const RHMobileUnk00607da0 &)((RHMapWidget *)this)->V24());
+    bounds.SetMax(bounds.m_p0.Unk005fc190(SBGeoVector2D(m_minimapDraw->FUN_005e56c0(surface),
+        m_minimapDraw->FUN_005e5750(surface))));
+    ((SBFrameWnd *)this)->FUN_0061ad20(bounds);
+    ((RHMobileUnk00607da0 *)&m_10c)->FUN_00607da0((const RHMobileUnk00607da0 &)bounds);
+    FUN_0054a0f0(&m_e4.m_p0);
 }
 
 // Parked: same widget base dependency (0x54b150, 0x6090d0/0x609200 geometry and
@@ -170,11 +199,32 @@ void RHMinimap::FUN_00549f50()
 {
 }
 
-// Parked: same widget base dependency (static std::string globals 0x6c0c58 /
-// 0x6c0e48 and the 0x5fc0xx/0x608f10 helper family).
-// STUB: GAME 0x0054a0f0
-void RHMinimap::FUN_0054a0f0(const void *)
+// FUNCTION: GAME 0x0054a0f0
+bool RHMinimap::FUN_0054a0f0(const void *arg)
 {
+    const SBGeoPoint2D &point = *(const SBGeoPoint2D *)arg;
+    SBGeoBoundingBox2D inner(point.Unk005fc190(*(SBGeoPoint2D *)g_unk0x006c0c58),
+        point.Unk005fc190(m_c4).FUN_005fc200(*(SBGeoPoint2D *)g_unk0x006c0c58));
+    SBGeoBoundingBox2D bounds(point, point.Unk005fc190(m_c4));
+    SBGeoBoundingBox2D screen(SBGeoVector2D(0, 0),
+        *(SBGeoPoint2D *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x54));
+    if ((unsigned char)((RHUnk00608f10 *)&screen)->FUN_00608f10(&inner))
+    {
+        ((RHMobileUnk00607da0 *)&m_e4)->FUN_00607da0((const RHMobileUnk00607da0 &)bounds);
+        char *profile = ((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0();
+        *(SBGeoPoint2D *)(profile + 0x6c) = m_e4.m_p0;
+        return true;
+    }
+    if (point == SBGeoPoint2D(65536.0f, 65536.0f) ||
+        !(unsigned char)((RHUnk00608f10 *)&screen)->FUN_00608f10(&bounds))
+    {
+        float left = m_10c.m_p0.m_x;
+        float bottom = m_10c.m_p1.m_y;
+        float width = m_c4.m_x;
+        m_e4.SetMin(SBGeoVector2D(left - width, bottom));
+        m_e4.SetMax(m_e4.m_p0.Unk005fc190(m_c4));
+    }
+    return false;
 }
 
 // Parked: VC6 vector-insert specialisation over the 8-byte HighlightedElement
@@ -215,6 +265,50 @@ bool RHMinimap::FUN_0054ae90(RHElement *element)
             return true;
     }
     return false;
+}
+
+#include "SBPictureUnkView.h"
+#include "SBDrawViewport.h"
+#include "SBDrawUnk005e5ec0.h"
+
+// FUNCTION: GAME 0x0054aec0
+bool RHMinimap::IsRealPoint(const SBGeoPoint2D &point)
+{
+    SBPictureUnkView view;
+    unsigned long surface;
+    if (!m_120)
+        ((SBResourceManager *)m_resource)->FUN_00600920(0x3d, 1, surface);
+    else
+        surface = m_surface;
+    if (surface && m_minimapDraw->Unk005e5a00(surface, (RHUnk00613e90 &)view, 0))
+    {
+        unsigned x = *(const unsigned *)&point.m_x;
+        unsigned short pixel = ((SBDrawViewport *)&view)->GetPixel((unsigned short)*(const float *)&x, (unsigned short)point.m_y);
+        m_minimapDraw->Unk005e5ea0((RHUnk00613e90 &)view);
+        if (pixel != ((SBDrawUnk005e5ec0 *)m_minimapDraw)->FUN_005e5f60(surface))
+            return true;
+    }
+    return false;
+}
+
+// STUB: GAME 0x0054afe0
+bool RHMinimap::RealToMap(const SBGeoPoint2D &point, SBGeoPoint2D &result)
+{
+    SBGeoBoundingBox2D bounds;
+    ((RHMobileUnk00607da0 *)&bounds)->FUN_00607da0((const RHMobileUnk00607da0 &)m_e4);
+    ((RHMobileUnk00607da0 *)&bounds)->FUN_00607da0((const RHMobileUnk00607da0 &)
+        SBGeoBoundingBox2D(bounds.m_p0.Unk005fc190(*(SBGeoPoint2D *)g_unk0x006c0c58),
+            bounds.m_p1.FUN_005fc200(*(SBGeoPoint2D *)g_unk0x006c0c58)));
+    float x = *(const volatile float *)&point.m_x;
+    const char *engine = m_engine;
+    float width = *(const volatile float *)(engine + 0x4730);
+    x /= width;
+    float y = *(const volatile float *)&point.m_y;
+    float height = *(const volatile float *)(engine + 0x4734);
+    y /= height;
+    result.Set((float)(int)((bounds.m_p1.m_x - bounds.m_p0.m_x) * x + bounds.m_p0.m_x),
+        (float)(int)((bounds.m_p1.m_y - bounds.m_p0.m_y) * y + bounds.m_p0.m_y));
+    return true;
 }
 
 // FUNCTION: GAME 0x0054b490
@@ -265,6 +359,35 @@ void RHMinimap::FUN_0054b4c0()
     std::for_each(m_highlighted.begin(), m_highlighted.end(), &RHMinimap::FUN_0054b490);
 }
 
+// FUNCTION: GAME 0x0054b5e0
+void RHMinimap::FUN_0054b5e0(const SBGeoPoint2D &point, unsigned short color)
+{
+    SBGeoPoint2D position;
+    unsigned long surface;
+    ((SBResourceManager *)m_resource)->FUN_00600920(0x1e, color, surface);
+    RealToMap(point, position);
+    position = position.FUN_005fc200(SBGeoVector2D(m_minimapDraw->FUN_005e56c0(surface) >> 1,
+        m_minimapDraw->FUN_005e5750(surface) >> 1));
+    if (((RHMapWidget *)this)->V24().FUN_00608400(position) == true)
+    {
+        SBGeoBoundingBox2D destination;
+        SBGeoBoundingBox2D source(SBGeoVector2D(0, 0),
+            SBGeoVector2D(m_minimapDraw->FUN_005e56c0(surface), m_minimapDraw->FUN_005e5750(surface)));
+        {
+            SBGeoVector2D offset((const SBGeoVector2D &)position);
+            ((RHMobileUnk00607da0 *)&destination)->FUN_00607da0((const RHMobileUnk00607da0 &)
+                source.FUN_006090d0(offset));
+        }
+        ((SBDrawManager *)m_minimapDraw)->FUN_005e6000(destination, source);
+        if (destination.m_p1.m_x - destination.m_p0.m_x > 0.0f &&
+            destination.m_p1.m_y - destination.m_p0.m_y > 0.0f)
+        {
+            unsigned long display = m_display;
+            ((SBDrawManager *)m_minimapDraw)->FUN_005e6440(surface, &source, display, &destination, 1);
+        }
+    }
+}
+
 // Force emission: a non-inline static member defined here is emitted into the
 // object; this out-of-line call keeps RHMinimap::SerializeHighlightedElement in
 // the build.
@@ -283,4 +406,6 @@ void RHMinimapSortEmit(RHMinimapSortElement *a, RHMinimapSortElement *b)
 void RHMinimapHighlightEmit(RHMinimap *minimap, RHElement *element)
 {
     minimap->FUN_0054ae90(element);
+    minimap->RealToMap(minimap->m_b4, minimap->m_bc);
+    minimap->IsRealPoint(minimap->m_b4);
 }

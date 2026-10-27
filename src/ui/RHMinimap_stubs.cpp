@@ -13,5 +13,3 @@
 
 #include "SBNullstr.h"
 #include "RHMinimap.h"
-
-void RHMinimap::FUN_0054b5e0(const SBGeoPoint2D &, unsigned short) {}
