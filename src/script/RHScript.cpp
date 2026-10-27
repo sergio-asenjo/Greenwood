@@ -28,6 +28,7 @@
 #include "SBNullstr.h"
 #include "RHScript.h"
 #include "RHElementActorNPC.h"
+#include "RHElementActorPC.h"
 #include "RHSectorBuilding.h"
 #include "RHGame.h"
 #include "RHEngine.h"
@@ -457,19 +458,6 @@ void RHScriptBatchCalls::Unk004520e0(int index, int value)
         FUN_00456d20();
 }
 
-// FUNCTION: GAME 0x00456cb0
-bool RHScriptBatchCalls::Unk00456cb0(int type)
-{
-    void **first = *(void ***)((char *)this + 0x118);
-    void **last = *(void ***)((char *)this + 0x11c);
-    for (; first != last; ++first)
-    {
-        if (*(int *)((char *)*first + 0x40) == type)
-            return true;
-    }
-    return false;
-}
-
 // FUNCTION: GAME 0x00456ce0
 bool RHScriptBatchCalls::Unk00456ce0(void *type)
 {
@@ -653,6 +641,8 @@ void *g_unk0x6c0f78;
 // GLOBAL: GAME 0x006c07fc
 RHUnk00452030 *g_unk0x6c07fc;
 
+#include "RHTitbitsCore.h"
+
 // GLOBAL: GAME 0x006c0fa4
 unsigned short g_unk0x6c0fa4;
 // GLOBAL: GAME 0x006c0fa8
@@ -674,7 +664,7 @@ RHUnk0046eb30 g_unk0x6c0fb0;
 // GLOBAL: GAME 0x006c0fe8
 RHUnkList g_unk0x6c0fe8;
 // GLOBAL: GAME 0x006c10e8
-RHUnk005c38b0 *g_unk0x6c10e8;
+RHTitbits *g_unk0x6c10e8;
 // GLOBAL: GAME 0x006c0f7c
 void *g_unk0x6c0f7c;
 // GLOBAL: GAME 0x006c0b3c
@@ -1555,7 +1545,7 @@ bool RHScript::SetActorLocation(void *actor, void *location)
         if ((*(unsigned int *)((char *)actor + 4) & 7) == 4)
         {
             ((RHElementActorHuman *)actor)->FUN_0047ca50();
-            g_unk0x6c10e8->Unk(actor);
+            g_unk0x6c10e8->RemoveUnconsciousStarsIf((RHElementActor *)actor);
         }
         if ((*(unsigned int *)((char *)actor + 4) & 15) == 12)
         {
@@ -3610,6 +3600,72 @@ bool RHScript::IsActionAvailable(void *actor, int action)
     }
     char *entry = (char *)actor + (unsigned short)action;
     return *(char *)(entry + 0x508) == 0 && *(char *)(entry + 0x50b) == 0;
+}
+
+static inline void RHSetCameraCorner(SBGeoPoint2D &corner, float x, float y)
+{
+    corner.m_x = x;
+    corner.m_y = y;
+}
+
+static inline void RHSetCameraCornerTruncated(SBGeoPoint2D &corner, float x, float y)
+{
+    float truncatedY = (float)(int)y;
+    float truncatedX = (float)(int)x;
+    RHSetCameraCorner(corner, truncatedX, truncatedY);
+}
+
+static inline float RHCameraValue(const char *engine, unsigned offset)
+{
+    return *(const float *)(engine + offset);
+}
+
+// FUNCTION: GAME 0x005758d0
+SBGeoPoint2D RHUnk005758d0(const SBGeoPoint2D &point)
+{
+    SBGeoPoint2D corner;
+    char *engine = g_unk0x6c0fa8;
+    bool clampY = false;
+    bool clampX = false;
+    float &zoom = *(float *)(engine + 0x475c);
+    RHSetCameraCornerTruncated(corner, point.m_x - RHCameraValue(engine, 0x4728) / (zoom + zoom),
+                               point.m_y - RHCameraValue(engine, 0x472c) / (zoom + zoom));
+    if (corner.m_x < 0.0f)
+    {
+        corner.m_x = 0;
+        clampX = true;
+    }
+    if (corner.m_y < 0.0f)
+    {
+        corner.m_y = 0;
+        clampY = true;
+    }
+    if (RHCameraValue(engine, 0x4728) / zoom + corner.m_x > RHCameraValue(engine, 0x4730))
+    {
+        if (clampX == true)
+        {
+            zoom = 1.0f;
+            return SBGeoPoint2D(0.0f, 0.0f);
+        }
+        corner.m_x = RHCameraValue(engine, 0x4730) - RHCameraValue(engine, 0x4728) / zoom;
+    }
+    if ((RHCameraValue(engine, 0x472c) - 80.0f) / zoom + corner.m_y > RHCameraValue(engine, 0x4734))
+    {
+        if (clampY == true)
+        {
+            zoom = 1.0f;
+            return SBGeoPoint2D(0.0f, 0.0f);
+        }
+        corner.m_y = RHCameraValue(engine, 0x4734) - (RHCameraValue(engine, 0x472c) - 80.0f) / zoom;
+    }
+    if (zoom == 0.5f)
+    {
+        if ((int)corner.m_x & 1)
+            corner.m_x -= 1.0f;
+        if ((int)corner.m_y & 1)
+            corner.m_y -= 1.0f;
+    }
+    return corner;
 }
 
 // FUNCTION: GAME 0x00575af0
@@ -6267,30 +6323,27 @@ void RHScript::SetNPCEmoticon(void *actor, int emoticon, int duration)
     }
 }
 
-class RHMissionStat
-{
-public:
-    void FUN_0054cfa0(const void *source);
-};
+#include "RHMissionStatCore.h"
 
-// Parked: the campaign-call argument push precedes mov ecx,edi; the target loads the receiver first.
-// STUB: GAME 0x0057afe0
+// FUNCTION: GAME 0x0057afe0
 void RHScript::AddPCToGang(void *actor)
 {
     RHScriptBatchCalls *engine = (RHScriptBatchCalls *)g_pEngine;
-    RHScriptBatchCalls *campaign = (RHScriptBatchCalls *)g_unk0x6c07fc;
+    RHCampaign *campaign = (RHCampaign *)g_unk0x6c07fc;
     if ((*(unsigned int *)((char *)actor + 4) & 15) != 12)
         SBAssert(0, "P:\\Robin Hood\\RHScript.cpp", 8763,
                  // STRING: GAME 0x006b6c10
                  "OULALA ! Script error ! Are you trying to add a background animation to Robin's gang ?");
-    if (((RHUnk00570e70Vtbl *)actor)->v62() && campaign->Unk00456cb0(*(int *)((char *)actor + 0x5fc)))
+    RHElementActorPC *pc = (RHElementActorPC *)actor;
+    void *value;
+    if (((RHUnk00570e70Vtbl *)pc)->IsVIP() && campaign->IsInGang((RHCharacterProfile *)(value = pc->m_5fc)))
         SBAssert(0, "P:\\Robin Hood\\RHScript.cpp", 8770,
-                 // STRING: GAME 0x006b6bbc
-                 "OULALA ! Script error ! Are you trying to add a PC a second time to Robin's gang ?");
-    void *description = *(void *volatile *)((char *)actor + 0x5f8);
-    campaign->Unk004522e0(description);
-    actor = *(void **)((char *)actor + 0x5f8);
-    ((RHMissionStat *)engine->Unk004e3cc0())->FUN_0054cfa0(actor);
+                  // STRING: GAME 0x006b6bbc
+                  "OULALA ! Script error ! Are you trying to add a PC a second time to Robin's gang ?");
+    value = pc->m_5f8;
+    campaign->FUN_004522e0((RHPCDescription *)value);
+    value = pc->m_5f8;
+    ((RHMissionStat *)engine->Unk004e3cc0())->AddNewPC((RHPCDescription *)value);
 }
 
 // FUNCTION: GAME 0x0057b080
@@ -6504,7 +6557,7 @@ bool RHScript::HasAnyPCActionWhoIsInThisLevelOrCouldMaybeComeFromSherwood(int ac
         {
             if (!((RHUnk00570e70Vtbl *)actor)->v18())
                 return true;
-            if (!((RHUnk00570e70Vtbl *)actor)->v62())
+            if (!((RHUnk00570e70Vtbl *)actor)->IsVIP())
             {
                 char *chief = *(char **)((char *)actor + 0x4ec);
                 if (chief != 0 && *(char *)(chief + 0xca9))

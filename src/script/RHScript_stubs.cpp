@@ -11,6 +11,7 @@
 
 #include "SBNullstr.h"
 #include "RHScript.h"
+#include "RHCampaignCore.h"
 
 struct RHUnkPathRegistry;
 extern RHUnkPathRegistry *g_unk0x6c0b9c;
@@ -101,10 +102,6 @@ int RHUnk004b9f30::Get()
 
 
 
-SBGeoPoint2D RHUnk005758d0(const SBGeoPoint2D &point)
-{
-    return point;
-}
 
 
 
@@ -124,7 +121,6 @@ RHUnk00522470::~RHUnk00522470()
     *(unsigned *)this = 0x67913c;
     ((RHScriptBatchCalls *)this)->FUN_00520a70();
 }
-void RHUnk005c38b0::Unk(void *actor) { (void)actor; }
 RHBonusProjection *RHUnk0057d800::Unk(const SBGeoPoint2D &point)
 {
     (void)point;
@@ -201,7 +197,7 @@ RHUnk00613e90 RHScriptRecordWorld::Unk004fbdd0(const RHUnk00571160Position &) { 
 void RHScriptBatchCalls::Unk0041bd20(int) {}
 void RHScriptBatchCalls::Unk00514670() {}
 void RHScriptBatchCalls::Unk0050ed40() {}
-void RHScriptBatchCalls::Unk004522e0(void *) {}
+void RHCampaign::FUN_004522e0(RHPCDescription *) {}
 void RHScriptBatchCalls::Unk0054cfa0(void *) {}
 
 float RHScriptBatchCalls::FUN_00489680(void *) { return 0.0f; }

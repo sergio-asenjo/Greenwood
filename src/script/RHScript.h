@@ -182,7 +182,7 @@ public:
     virtual void v59(int property, int value);
     virtual void v60();
     virtual bool v61();
-    virtual bool v62();
+    virtual bool IsVIP() const;
     virtual void v63();
     virtual void v64();
     virtual void v65();
@@ -681,12 +681,6 @@ public:
     void Unk();
 };
 
-class RHUnk005c38b0
-{
-public:
-    void Unk(void *actor);
-};
-
 #include "RHEngineWidenedCalls.h"
 
 class RHUnk00418b80
@@ -955,8 +949,6 @@ public:
     void Unk0050ed40();
     void Unk00450be0(int property, int value);
     int Unk004ec910(void *location, float radius, float strength, int value);
-    bool Unk00456cb0(int type);
-    void Unk004522e0(void *description);
     RHScriptBatchCalls *Unk004e3cc0();
     void Unk0054cfa0(void *description);
     void Unk00485200(int index, int amount);
