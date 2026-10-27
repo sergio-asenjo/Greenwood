@@ -11,7 +11,7 @@ class RHMapWindow
 {
 public:
     static unsigned long FUN_0053b6b0(unsigned long source, bool colorize, bool pause);
-    static void FUN_0053b330(unsigned long surface, unsigned short amount, float factor);
+    static bool FUN_0053b330(unsigned long surface, unsigned short amount, float factor);
     unsigned FUN_0053baa0(unsigned);
     void FUN_0053bb30(unsigned);
     void FUN_0053bbe0();

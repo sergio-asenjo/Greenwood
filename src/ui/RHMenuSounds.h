@@ -84,8 +84,8 @@ public:
         m_fd = true;
     }
 
-    bool m_fc; // 0xfc
-    bool m_fd; // 0xfd
+    bool m_fc;
+    bool m_fd;
 };
 #pragma inline_depth()
 

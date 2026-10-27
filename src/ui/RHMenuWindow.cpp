@@ -7,6 +7,10 @@
 void RHMenuWindow_Emit(RHMenuWindow *window)
 {
     window->FUN_00544300();
+    std::vector<void *> widgets;
+    window->FUN_00544380(widgets, 0);
+    window->FUN_00544600(widgets, 0);
+    window->FUN_00544800(widgets, 0);
 }
 
 // FUNCTION: GAME 0x00543e70
@@ -59,6 +63,112 @@ void RHMenuWindow::FUN_00544300()
         m_draw->Unk005e5160(m_saveSurface);
         m_saveSurface = (unsigned long)-1;
     }
+}
+
+#include "RHMapWidget.h"
+
+// FUNCTION: GAME 0x00544380
+void RHMenuWindow::FUN_00544380(const std::vector<void *> &widgets, unsigned spacing)
+{
+    unsigned height = 0;
+    unsigned width = 0;
+    SBGeoPoint2D position;
+    std::vector<void *>::const_iterator it = widgets.begin();
+    for (; it != widgets.end(); ++it)
+    {
+        SBGeoBoundingBox2D box(*(SBGeoBoundingBox2D *)((char *)*it + 0x30));
+        height += box.Height();
+        if (box.Width() > width)
+            width = box.Width();
+    }
+    height += (widgets.size() - 1) * spacing;
+    position = ((RHMapWidget *)this)->V24().Max().FUN_005fc200(SBGeoVector2D(width, height));
+    for (it = widgets.begin(); it != widgets.end(); ++it)
+    {
+        SBGeoPoint2D current(position);
+        SBGeoBoundingBox2D box(*(SBGeoBoundingBox2D *)((char *)*it + 0x30));
+        current.FUN_005fc1e0(SBGeoVector2D(0.0f, (box.Width() - width) * 0.5f));
+        ((RHUnk005d92c0Sub *)*it)->v08(current);
+        position.FUN_005fc1e0(SBGeoVector2D(0.0f, box.Height() + spacing));
+    }
+}
+
+// FUNCTION: GAME 0x00544600
+void RHMenuWindow::FUN_00544600(const std::vector<void *> &widgets, unsigned spacing)
+{
+    unsigned width = 0;
+    SBGeoPoint2D position;
+    std::vector<void *>::const_iterator it = widgets.begin();
+    for (; it != widgets.end(); ++it)
+    {
+        SBGeoBoundingBox2D box(*(SBGeoBoundingBox2D *)((char *)*it + 0x30));
+        if (box.Width() > width)
+            width = box.Width();
+    }
+    float right = ((RHMapWidget *)this)->V24().m_second.m_x;
+    position.m_x = right - width;
+    position.m_y = ((RHMapWidget *)this)->V24().m_first.m_y;
+    for (it = widgets.begin(); it != widgets.end(); ++it)
+    {
+        SBGeoPoint2D current(position);
+        SBGeoBoundingBox2D box(*(SBGeoBoundingBox2D *)((char *)*it + 0x30));
+        current.FUN_005fc1e0(SBGeoVector2D(0.0f, (box.Width() - width) * 0.5f));
+        ((RHUnk005d92c0Sub *)*it)->v08(current);
+        position.FUN_005fc1e0(SBGeoVector2D(0.0f, box.Height() + spacing));
+    }
+}
+
+// FUNCTION: GAME 0x00544800
+unsigned RHMenuWindow::FUN_00544800(const std::vector<void *> &widgets, unsigned spacing)
+{
+    SBGeoPoint2D position;
+    unsigned height = 0;
+    unsigned width;
+    if (widgets.size() >= 1)
+    {
+        position = ((SBGeoBoundingBox2D *)((char *)widgets.front() + 0x30))->m_first;
+        width = ((SBGeoBoundingBox2D *)((char *)widgets.front() + 0x30))->Width();
+    }
+    else
+        width = spacing;
+    for (std::vector<void *>::const_iterator it = widgets.begin(); it != widgets.end(); ++it)
+    {
+        SBGeoPoint2D current(position);
+        SBGeoBoundingBox2D box(*(SBGeoBoundingBox2D *)((char *)*it + 0x30));
+        current.FUN_005fc1e0(SBGeoVector2D((width - box.Width()) * 0.5f, 0.0f));
+        ((RHUnk005d92c0Sub *)*it)->v08(current);
+        position.FUN_005fc1e0(SBGeoVector2D(0.0f, box.Height() + spacing));
+        height += box.Height();
+    }
+    if (!widgets.empty())
+        height += (widgets.size() - 1) * spacing;
+    return height;
+}
+
+// FUNCTION: GAME 0x005449e0
+void RHMenuWindow::FUN_005449e0(const std::vector<void *> &widgets, unsigned spacing)
+{
+    unsigned width = 0;
+    SBGeoPoint2D position;
+    std::vector<void *>::const_iterator it = widgets.begin();
+    std::vector<void *>::const_iterator end = widgets.end();
+    for (; it != end; ++it)
+        width += ((SBGeoBoundingBox2D *)((char *)*it + 0x30))->Width();
+    width += (widgets.size() - 1) * spacing;
+    position.m_x = (((RHMapWidget *)this)->V24().Width() - width) * 0.5f;
+    it = widgets.begin();
+    position.m_y = ((SBGeoBoundingBox2D *)((char *)*it + 0x30))->m_first.m_y;
+    for (; it != widgets.end(); ++it)
+    {
+        ((RHUnk005d92c0Sub *)*it)->v08(position);
+        position.FUN_005fc1e0(SBGeoVector2D(((SBGeoBoundingBox2D *)((char *)*it + 0x30))->Width() + spacing, 0.0f));
+    }
+}
+
+// FUNCTION: GAME 0x00544b40
+bool RHMenuWindow::FUN_00544b40(const std::wstring &title, const RHMapBox &box, unsigned flags)
+{
+    return RHPortraitRootLifetime::FUN_0061a1e0(*(const RHMapTitleText *)&title, box, flags);
 }
 
 class RHBriefingNarrowText;

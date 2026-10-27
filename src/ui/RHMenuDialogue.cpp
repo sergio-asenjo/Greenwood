@@ -45,6 +45,7 @@
 //   original does (load, scale, pop edi, pop esi, combine).
 
 #include "SBNullstr.h"
+#include "rhuirenderer_005cb420.h"
 #include "RHMenuDialogue.h"
 #include "RHMapWindowPart.h"
 #include "RHMenuScreenView.h"
@@ -413,7 +414,6 @@ void RHMenuDialogue::UpdatePortrait()
     portrait->V38(frame);
 }
 
-#include "rhuirenderer_005cb420.h"
 #include "RHUnk005cbb80.h"
 #include "RHMissionDescriptionText.h"
 #include "RHGameWidgetLifetime.h"

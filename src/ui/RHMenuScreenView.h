@@ -84,6 +84,8 @@ public:
     void FUN_0053c5b0();
     void FUN_0053c7f0(unsigned long surface);
     void FUN_0053c800();
+    static void HSV_To_RGB(float h, float s, float v, float &r, float &g, float &b);
+    static void RGB_To_HSV(float r, float g, float b, float &h, float &s, float &v);
     bool FUN_0053cd20();
 
     void *m_ui;

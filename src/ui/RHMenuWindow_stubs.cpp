@@ -21,17 +21,9 @@ RHMenuScreenView::~RHMenuScreenView() {}
 RHMenuResolution::RHMenuResolution(const SBGeoPoint2D &) {}
 
 
-// Target 0x0053b1f0, __thiscall, ret 4.
-void RHMenuScreenView::FUN_0053b1f0(RHMenuWindow *) {}
 
 // Target 0x0053c390, __thiscall.
 void RHMenuScreenView::FUN_0053c390() {}
 
 // Target 0x0053c650, __thiscall, ret 8.
 void RHMenuScreenView::FUN_0053c650(RHMenuWindow *, bool) {}
-
-// Target 0x00545220, __thiscall, ret 8.
-RHMenuYesNo::RHMenuYesNo(RHMenuWindowScreen *screen, const std::wstring &) : RHMenuWindowFocus(0, screen, 0, false) {}
-
-// Target 0x00545710, __thiscall.
-void RHMenuYesNo::FUN_00545710() {}

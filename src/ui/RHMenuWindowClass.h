@@ -16,6 +16,11 @@ public:
     ~RHMenuWindow();
     void *FUN_00543f80(unsigned flags);
     void FUN_00544300();
+    void FUN_00544380(const std::vector<void *> &widgets, unsigned spacing);
+    void FUN_00544600(const std::vector<void *> &widgets, unsigned spacing);
+    unsigned FUN_00544800(const std::vector<void *> &widgets, unsigned spacing);
+    void FUN_005449e0(const std::vector<void *> &widgets, unsigned spacing);
+    bool FUN_00544b40(const std::wstring &title, const RHMapBox &box, unsigned flags);
     void FUN_00544b80(bool display, bool modal);
 
     RHUnkFXDraw *m_draw;
