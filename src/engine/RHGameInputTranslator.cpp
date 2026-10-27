@@ -62,6 +62,231 @@ public:
 // GLOBAL: GAME 0x006c0b54
 RHGameInputTranslator *RHGameInputTranslator::mpInstance = 0;
 
+static inline bool RHGameInputUserLocked(const RHMessenger *messenger)
+{
+    return *(const bool *)((const char *)messenger + 0x23);
+}
+
+// FUNCTION: GAME 0x00517900
+void RHGameInputTranslator::TranslateMouseInput(SBGeoPoint2D &point, short wheel)
+{
+    RHMessenger *messenger = RHUnk00546050();
+    if (RHGameInputUserLocked(messenger) != true)
+    {
+        if (point.m_x == 0.0f && !IsInDeadZone(point))
+            messenger->RHUnk005460c0(RHUnk5490f0(4));
+        float x = point.m_x;
+        if (*(float *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x54) - 1.0f <= x && !IsInDeadZone(point))
+            messenger->RHUnk005460c0(RHUnk5490f0(3));
+        if (point.m_y == 0.0f && !IsInDeadZone(point))
+            messenger->RHUnk005460c0(RHUnk5490f0(2));
+        float y = point.m_y;
+        if (*(float *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x58) - 1.0f <= y && !IsInDeadZone(point))
+            messenger->RHUnk005460c0(RHUnk5490f0(1));
+        if (wheel > 0)
+            messenger->RHUnk005460c0(RHUnk5490f0(5));
+        if (wheel < 0)
+            messenger->RHUnk005460c0(RHUnk5490f0(6));
+    }
+}
+
+#include "RHGameSyncCalls.h"
+#include "SBInputKeyboardState.h"
+
+class RHUnk0048a970;
+extern RHUnk0048a970 *g_unk0x6c0b3c;
+
+// FUNCTION: GAME 0x00517af0
+bool RHGameInputTranslator::TranslateKeyboardInput(SBInputKeyboardState &keys, unsigned long flags)
+{
+    bool handled = false;
+    RHMessenger *messenger = RHUnk00546050();
+    if (keys[m_keys[0x21]] == 0 && m_previousKeys[m_keys[0x21]] > 0)
+    {
+        handled = (messenger->RHUnk005460c0(RHUnk5490f0(0x15)), true);
+    }
+    if (keys[m_keys[0x1f]] == 0 && m_previousKeys[m_keys[0x1f]] > 0)
+    {
+        handled = (messenger->RHUnk005460c0(RHUnk5490f0(0x23)), true);
+    }
+    if ((flags & 4) && keys[m_keys[0x1d]] == 0 && m_previousKeys[m_keys[0x1d]] > 0)
+    {
+        handled = (messenger->RHUnk005460c0(RHUnk5490f0(0x26)), true);
+    }
+    if ((flags & 1) && keys[m_keys[0x1b]] == 0 && m_previousKeys[m_keys[0x1b]] > 0)
+    {
+        handled = (messenger->RHUnk005460c0(RHUnk5490f0(0xc)), true);
+    }
+    if ((flags & 2) && keys[m_keys[0x1a]] == 0 && m_previousKeys[m_keys[0x1a]] > 0)
+    {
+        handled = (messenger->RHUnk005460c0(RHUnk5490f0(0xb)), true);
+    }
+    if (flags & 8)
+    {
+        if (keys[m_keys[0x20]] == 0 && m_previousKeys[m_keys[0x20]] > 0)
+        {
+            handled = (messenger->RHUnk005460c0(RHUnk5490f0(0x24)), true);
+        }
+        if (keys[0xf] > 0 && keys[0x38] > 0)
+        {
+            handled = (messenger->RHUnk005460c0(RHUnk5490f0(0x28)), true);
+        }
+        if (keys[1] > 0 && keys[0x1d] > 0)
+        {
+            handled = (messenger->RHUnk005460c0(RHUnk5490f0(0x28)), true);
+        }
+        if (keys[1] > 0 && keys[0x9d] > 0)
+        {
+            handled = (messenger->RHUnk005460c0(RHUnk5490f0(0x28)), true);
+        }
+        if (keys[m_keys[0x1e]] == 0 && m_previousKeys[m_keys[0x1e]] > 0)
+        {
+            handled = (messenger->RHUnk005460c0(RHUnk5490f0(0x17)), true);
+        }
+        if (RHGameInputUserLocked(messenger) == true)
+        {
+            memcpy(m_previousKeys, &keys, sizeof(m_previousKeys));
+        }
+        else
+        {
+            if (keys[m_keys[0x10]] > 0 && m_previousKeys[m_keys[0x10]] == 0)
+            {
+                handled = (messenger->RHUnk005460c0(RHUnk5490f0(0xd)), true);
+            }
+            if (keys[m_keys[0x19]] > 0 && m_previousKeys[m_keys[0x19]] == 0)
+            {
+                handled = (messenger->RHUnk005460c0(RHUnk5490f0(0xe)), true);
+            }
+            if (keys[m_keys[0x15]] > 0 && m_previousKeys[m_keys[0x15]] == 0)
+            {
+                handled = (messenger->RHUnk005460c0(RHUnk5490f0(0xf)), true);
+            }
+            if (keys[m_keys[0x10]] == 0 && m_previousKeys[m_keys[0x10]] > 0)
+            {
+                handled = (messenger->RHUnk005460c0(RHUnk5490f0(0x10)), true);
+            }
+            if (keys[m_keys[0x19]] == 0 && m_previousKeys[m_keys[0x19]] > 0)
+            {
+                handled = (messenger->RHUnk005460c0(RHUnk5490f0(0x11)), true);
+            }
+            if (keys[m_keys[0x15]] == 0 && m_previousKeys[m_keys[0x15]] > 0)
+            {
+                handled = (messenger->RHUnk005460c0(RHUnk5490f0(0x12)), true);
+            }
+            if (keys[m_keys[0x23]] == 0 && m_previousKeys[m_keys[0x23]] > 0)
+            {
+                handled = (messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0x26, 0)), true);
+            }
+            if (keys[m_keys[0x11]] == 0 && m_previousKeys[m_keys[0x11]] > 0)
+            {
+                handled = (messenger->RHUnk005460c0(RHUnk5490f0(0x27)), true);
+            }
+            if (keys[m_keys[0x24]] == 0 && m_previousKeys[m_keys[0x24]] > 0)
+            {
+                handled = (messenger->RHUnk005460c0(RHUnk5490f0(0x14)), true);
+            }
+            if (keys[m_keys[0x17]] == 0 && m_previousKeys[m_keys[0x17]] > 0)
+            {
+                handled = (messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(1, 0)), true);
+            }
+            if (keys[m_keys[0x18]] == 0 && m_previousKeys[m_keys[0x18]] > 0)
+            {
+                handled = (messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(4, 0)), true);
+            }
+            if (keys[m_keys[0xd]] == 0 && m_previousKeys[m_keys[0xd]] > 0)
+            {
+                handled = (messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0x12, 0)), true);
+            }
+            if (keys[m_keys[0xc]] == 0 && m_previousKeys[m_keys[0xc]] > 0)
+            {
+                handled = (messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0xd, 0)), true);
+            }
+            if (keys[m_keys[0x22]] == 0 && m_previousKeys[m_keys[0x22]] > 0)
+            {
+                handled = (messenger->RHUnk005460c0(RHUnk5490f0(0x13)), true);
+            }
+            if (keys[m_keys[4]] > 0)
+            {
+                handled = (messenger->RHUnk005460c0(RHUnk5490f0(4)), true);
+            }
+            if (keys[m_keys[5]] > 0)
+            {
+                handled = (messenger->RHUnk005460c0(RHUnk5490f0(3)), true);
+            }
+            if (keys[m_keys[2]] > 0)
+            {
+                handled = (messenger->RHUnk005460c0(RHUnk5490f0(2)), true);
+            }
+            if (keys[m_keys[3]] > 0)
+            {
+                handled = (messenger->RHUnk005460c0(RHUnk5490f0(1)), true);
+            }
+            if (keys[m_keys[1]] == 0 && m_previousKeys[m_keys[1]] > 0)
+            {
+                handled = (messenger->RHUnk005460c0(RHUnk5490f0(6)), true);
+            }
+            if (keys[m_keys[0]] == 0 && m_previousKeys[m_keys[0]] > 0)
+            {
+                handled = (messenger->RHUnk005460c0(RHUnk5490f0(5)), true);
+            }
+            if (keys[m_keys[0x12]] == 0 && m_previousKeys[m_keys[0x12]] > 0)
+            {
+                handled = (messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0x15, 0, 0)), true);
+            }
+            if (keys[m_keys[0x13]] == 0 && m_previousKeys[m_keys[0x13]] > 0)
+            {
+                handled = (messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0x15, 0, 1)), true);
+            }
+            if (keys[m_keys[0x14]] == 0 && m_previousKeys[m_keys[0x14]] > 0)
+            {
+                handled = (messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0x15, 0, 2)), true);
+            }
+            if (keys[m_keys[7]] == 0 && m_previousKeys[m_keys[7]] > 0)
+            {
+                void *actor = (void *)((RHGameSyncCalls *)g_unk0x6c0b3c)->FUN_0050f160(0);
+                if (actor)
+                {
+                    handled = (messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0xe, actor)), true);
+                }
+            }
+            if (keys[m_keys[8]] == 0 && m_previousKeys[m_keys[8]] > 0)
+            {
+                void *actor = (void *)((RHGameSyncCalls *)g_unk0x6c0b3c)->FUN_0050f160(1);
+                if (actor)
+                {
+                    handled = (messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0xe, actor)), true);
+                }
+            }
+            if (keys[m_keys[9]] == 0 && m_previousKeys[m_keys[9]] > 0)
+            {
+                void *actor = (void *)((RHGameSyncCalls *)g_unk0x6c0b3c)->FUN_0050f160(2);
+                if (actor)
+                {
+                    handled = (messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0xe, actor)), true);
+                }
+            }
+            if (keys[m_keys[0xa]] == 0 && m_previousKeys[m_keys[0xa]] > 0)
+            {
+                void *actor = (void *)((RHGameSyncCalls *)g_unk0x6c0b3c)->FUN_0050f160(3);
+                if (actor)
+                {
+                    handled = (messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0xe, actor)), true);
+                }
+            }
+            if (keys[m_keys[0xb]] == 0 && m_previousKeys[m_keys[0xb]] > 0)
+            {
+                void *actor = (void *)((RHGameSyncCalls *)g_unk0x6c0b3c)->FUN_0050f160(4);
+                if (actor)
+                {
+                    handled = (messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0xe, actor)), true);
+                }
+            }
+        }
+    }
+    memcpy(m_previousKeys, &keys, sizeof(m_previousKeys));
+    return handled;
+}
+
 // FUNCTION: GAME 0x005185b0
 void RHGameInputTranslator::ResetState()
 {
@@ -442,8 +667,10 @@ bool RHUnk0051a4e0::FUN_0051a680(int first, int second, int third, int fourth, i
     return false;
 }
 
-void EmitRHGameInputTranslator(RHGameInputTranslator *translator, const SBGeoPoint2D &point)
+void EmitRHGameInputTranslator(RHGameInputTranslator *translator, SBGeoPoint2D &point, SBInputKeyboardState &keys)
 {
+    translator->TranslateMouseInput(point, 0);
+    translator->TranslateKeyboardInput(keys, 0);
     translator->ResetState();
     translator->ClearDeadZone();
     translator->AddToDeadZone(point, point);

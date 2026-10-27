@@ -17,7 +17,7 @@ class RHGameInputTranslator
 public:
     RHGameInputTranslator();
     void TranslateMouseInput(SBGeoPoint2D &point, short wheel);
-    bool TranslateKeyboardInput(SBInputKeyboardState &state, unsigned long time);
+    bool TranslateKeyboardInput(SBInputKeyboardState &state, unsigned long flags);
     void ResetState();
     void ClearDeadZone();
     void AddToDeadZone(const SBGeoPoint2D &first, const SBGeoPoint2D &second);

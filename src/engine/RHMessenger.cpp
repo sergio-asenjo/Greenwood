@@ -460,6 +460,92 @@ int RHMessenger::CheckThrustC(unsigned long a, unsigned long b, unsigned long c,
     return 4;
 }
 
+#include "RHPlayerProfileAccess.h"
+#include "SBDrawViewport.h"
+
+extern unsigned char g_unk0x006c0e48[];
+class RHUnk005ef320;
+extern RHUnk005ef320 *g_unk0x6c11d0;
+
+inline float RHMessengerHeight(char *config)
+{
+    return *(float *)(config + 8);
+}
+
+inline unsigned short RHMessengerBlend(unsigned short source, unsigned short destination, unsigned short strength,
+    int redMask, int greenMask)
+{
+    unsigned short red = source & redMask;
+    unsigned short green = source & greenMask;
+    unsigned short blue = source & 0x1f;
+    unsigned short targetRed = (((destination & redMask) * strength) >> 5) & redMask;
+    unsigned short targetGreen = (((destination & greenMask) * strength) >> 5) & greenMask;
+    unsigned short targetBlue = (((destination & 0x1f) * strength) >> 5) & 0x1f;
+    unsigned long resultRed = targetRed + (unsigned long)red;
+    if (resultRed >= (unsigned long)redMask)
+        resultRed = redMask;
+    unsigned long resultGreen = targetGreen + (unsigned long)green;
+    if (resultGreen >= (unsigned long)greenMask)
+        resultGreen = greenMask;
+    unsigned long resultBlue = targetBlue + (unsigned long)blue;
+    if (resultBlue >= 0x1f)
+        resultBlue = 0x1f;
+    return (unsigned short)(resultBlue | resultGreen | resultRed);
+}
+
+// STUB: GAME 0x00548480
+void RHMessenger::DrawMouseTrailPattern(const SBGeoPoint2D &point, unsigned short strength, SBDrawViewport &viewport)
+{
+    char *config = ((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x50;
+    short count = (short)(RHMessengerField<unsigned short>(this, 0x58) <
+        RHMessengerHeight(config) - (unsigned short)point.m_y ?
+        RHMessengerField<unsigned short>(this, 0x58) :
+        RHMessengerHeight(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x50) - (unsigned short)point.m_y);
+    unsigned short level = strength * 32 / 100;
+    if (!level)
+        return;
+    if (level > 32)
+        level = 32;
+    unsigned short *pattern = RHMessengerField<unsigned short *>(this, 0x50) +
+        (level - 1) * RHMessengerField<unsigned short>(this, 0x58);
+    unsigned long pitch = viewport.m_pitch >> 1;
+    unsigned short *pixel = viewport.m_pixels + (unsigned short)point.m_y * pitch + (unsigned short)point.m_x;
+    if (RHMessengerField<unsigned short>(g_unk0x6c11d0, 0x10c) == 16)
+    {
+        if (count <= 0)
+            return;
+        int remaining = count;
+        int i = 0;
+        do
+        {
+            unsigned short source = pattern[i];
+            int blend = (32 - (unsigned short)((RHMessengerField<unsigned short *>(this, 0x54)[i] * level) >> 5)) * 2;
+            if (blend > 32)
+                blend = 32;
+            *pixel = RHMessengerBlend(source, *pixel, (unsigned short)blend, 0xf800, 0x7e0);
+            pixel += pitch;
+            ++i;
+        } while (--remaining);
+    }
+    else
+    {
+        if (count <= 0)
+            return;
+        int remaining = count;
+        int i = 0;
+        do
+        {
+            unsigned short source = pattern[i];
+            int blend = (32 - (unsigned short)((RHMessengerField<unsigned short *>(this, 0x54)[i] * level) >> 5)) * 2;
+            if (blend > 32)
+                blend = 32;
+            *pixel = RHMessengerBlend(source, *pixel, (unsigned short)blend, 0x7c00, 0x3e0);
+            pixel += pitch;
+            ++i;
+        } while (--remaining);
+    }
+}
+
 // Force emission: a non-inline member function defined here is emitted into the
 // object; this out-of-line call keeps RHMessenger::Serialize and
 // RHMessenger::SerializeLockUser in the build.

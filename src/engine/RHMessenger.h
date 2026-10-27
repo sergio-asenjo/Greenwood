@@ -36,6 +36,7 @@ public:
 class RHReceiverInterface;
 class SBGeoPoint2D;
 class SBGeoVector2D;
+class SBDrawViewport;
 
 class RHMessenger
 {
@@ -82,6 +83,7 @@ public:
     int CheckThrustDE(const SBGeoPoint2D &a, const SBGeoVector2D &b, const SBGeoPoint2D &c, const SBGeoPoint2D &d);
     int CheckThrustAB(const SBGeoPoint2D &a, const SBGeoVector2D &b, const SBGeoPoint2D &c, const SBGeoPoint2D &d);
     int CheckThrustC(unsigned long a, unsigned long b, unsigned long c, unsigned long d);
+    void DrawMouseTrailPattern(const SBGeoPoint2D &point, unsigned short strength, SBDrawViewport &viewport);
 
 private:
     char m_unk00[0x2e];   // [0x00, 0x2e): vptr + opaque; the 4-byte tail at
