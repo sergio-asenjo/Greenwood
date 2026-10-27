@@ -1667,7 +1667,6 @@ public:
 };
 
 extern float g_unk0x006774cc;
-extern float g_unk0x006774a0;
 
 void FUN_00417ab0(const SBGeoBoundingBox2D &box, unsigned char red, unsigned char green, unsigned char blue,
                  SBDrawManager *draw, bool shade);
@@ -1695,7 +1694,7 @@ void RHArtificialIntelligence::FUN_00417580()
     else
         value = (unsigned short)(first > second ? first : second);
     fill.FUN_00609050(center.FUN_005fc200(SBGeoVector2D(20.0f, 2.0f)),
-        center.Unk005fc190(SBGeoVector2D(((unsigned short)value * g_unk0x006774cc) * 40.0f - g_unk0x006774a0, 0.0f)));
+        center.Unk005fc190(SBGeoVector2D(((unsigned short)value * g_unk0x006774cc) * 40.0f - 20.0f, 0.0f)));
     ((RHMobileUnk00607da0 *)&fill)->FUN_00607da0((const RHMobileUnk00607da0 &)clip.FUN_006092c0(fill));
     if (fill.Unk00608f30())
     {

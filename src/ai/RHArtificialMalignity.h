@@ -114,7 +114,6 @@ unsigned FUN_00445210(float first, unsigned second, unsigned third, unsigned fou
 RHUnk00613e90 FUN_00414360(const RHMalignityPosition &position, bool mode);
 SBGeoVector2D FUN_0040ec20(const RHMalignityPosition &first, RHMalignityPosition second);
 #include "RHActorAreaCalls.h"
-extern float g_unk0x006774a0;
 template <bool InlineHead>
 class RHCampaignIndexList
 {

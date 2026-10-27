@@ -27,7 +27,6 @@ DECOMP_SIZE_ASSERT(RHSoundVirtualSlot39, 0x04)
 DECOMP_SIZE_ASSERT(RHUnk005aada0, 0x10)
 
 extern double g_unk0x00677d90;
-extern float g_unk0x006774a0;
 
 // GLOBAL: GAME 0x00677670
 double g_unk0x00677670 = 2.0;
@@ -1090,8 +1089,8 @@ void RHArtificialIntelligenceSoundCalls::Unk005a8b70(int category, void *profile
             location = *(SBGeoPoint2D *)&sound->m_138;
             if (sound->m_210)
             {
-                location.m_x -= g_unk0x006774a0;
-                location.m_y -= g_unk0x006774a0;
+                location.m_x -= 20.0f;
+                location.m_y -= 20.0f;
             }
         }
         else

@@ -221,7 +221,7 @@ RHUnk00613e90 FUN_00414360(const RHMalignityPosition &position, bool mode)
                 ((RHSectorActorList *)&list)->Unk005c8e40(index);
                 void *candidate = list.m_current->value;
                 RHMalignityPosition location = RHMalignityPositionOf(candidate);
-                bool close = FUN_0040ec20(location, position).FUN_005fc700(1.0f) < g_unk0x006774a0;
+                bool close = FUN_0040ec20(location, position).FUN_005fc700(1.0f) < 20.0f;
                 if (close)
                 {
                     found = candidate;
