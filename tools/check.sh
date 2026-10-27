@@ -63,7 +63,7 @@ do_help() {
   echo "  entities/data/vtables: --all explicitly requests a whole-target survey"
   echo "  tools/check.sh listing <source.cpp> (isolated compiler diagnostic, no clean/link)"
   echo "  tools/check.sh headers [-j N] [--list]  (header self-containment sweep, allowlisted failures)"
-  echo "  tools/check.sh duplicates              (fail if an original address is annotated twice)"
+  echo "  tools/check.sh duplicates              (check_duplicate_markers.py; live folded-template proof)"
   echo "  verbose <address>: concise by default; full evidence saved under build/diagnostics/"
   echo "  verbose options: --max-lines <n> (default 80), --full, --no-build (existing artifacts only)"
   echo "  Default/build/report are concise too: --full opts into complete output; --max-lines <n> bounds excerpts."
@@ -90,7 +90,7 @@ case "$cmd" in
   data|vtables) shift; do_diagnostic validate_entities.py "$cmd" "$@" ;;
   listing) shift; "$ROOT/tools/build.sh" --listing "$@" ;;
   headers) shift; "$ROOT/tools/check_header_selfcontainment.sh" "$@" ;;
-  duplicates) shift; "$ROOT/tools/check_duplicate_markers.sh" "$@" ;;
+  duplicates) shift; do_diagnostic check_duplicate_markers.py "$@" ;;
   clean)   clean_build; echo "cleaned $BUILD (build outputs only)" ;;
   help|-h|--help)
     do_help

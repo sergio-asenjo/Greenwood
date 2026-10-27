@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "target": "GAME",
+  "original_sha256": "b0963242470d96cdd8021e2cb81ccbc5e26b4fb2cb122febdec50ad30774f08e",
+  "groups": [
+    {
+      "original": "0x004afd50",
+      "canonical_symbol": "?size@?$vector@VSBGeoVector2D@@V?$allocator@VSBGeoVector2D@@@std@@@std@@QBEIXZ",
+      "members": [
+        {
+          "path": "src/element/RHElementMobile.cpp",
+          "symbol": "?size@?$vector@VSBGeoPoint2D@@V?$allocator@VSBGeoPoint2D@@@std@@@std@@QBEIXZ"
+        },
+        {
+          "path": "src/element/RHElementMobile.cpp",
+          "symbol": "?size@?$vector@VSBGeoVector2D@@V?$allocator@VSBGeoVector2D@@@std@@@std@@QBEIXZ"
+        }
+      ]
+    },
+    {
+      "original": "0x0057c9c0",
+      "canonical_symbol": "??Eiterator@?$list@PAVRHPlayerProfile@@V?$allocator@PAVRHPlayerProfile@@@std@@@std@@QAE?AV012@H@Z",
+      "members": [
+        {
+          "path": "src/common/SCSerialize_stubs.cpp",
+          "symbol": "??Eiterator@?$list@PAVSCFunctionArg@@V?$allocator@PAVSCFunctionArg@@@std@@@std@@QAE?AV012@H@Z"
+        },
+        {
+          "path": "src/engine/RHSector.cpp",
+          "symbol": "??Eiterator@?$list@PAVRHPlayerProfile@@V?$allocator@PAVRHPlayerProfile@@@std@@@std@@QAE?AV012@H@Z"
+        },
+        {
+          "path": "src/engine/RHSector.cpp",
+          "symbol": "??Eiterator@?$list@URHTextChunk@@V?$allocator@URHTextChunk@@@std@@@std@@QAE?AV012@H@Z"
+        }
+      ]
+    }
+  ]
+}
