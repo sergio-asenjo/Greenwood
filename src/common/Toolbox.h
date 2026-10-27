@@ -201,8 +201,10 @@ namespace Toolbox
 void RHSerializeName(SBFile &, const char *);
 void FUN_005e1d50(SBFile &, unsigned long, int);
 void FUN_005e20c0(SBFile &);
-void FUN_005e3730(const unsigned short *, unsigned short *, long, unsigned short, unsigned short, unsigned short);
-void FUN_005e37c0(const unsigned short *, unsigned short *, long, unsigned short, unsigned short, unsigned short, unsigned short);
+void FUN_005e3730(const unsigned short *, unsigned short *, long, unsigned long, unsigned long, unsigned long);
+void FUN_005e37c0(const unsigned short *, unsigned short *, long, unsigned long, unsigned long, unsigned long, unsigned long);
+void FUN_005e3869(const unsigned short *, unsigned short *, long, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long);
+void FUN_005e3919(const unsigned short *, unsigned short *, long, unsigned long, unsigned long, unsigned long, unsigned long);
 
 // SIZE 0xb4
 struct RHTextChunk

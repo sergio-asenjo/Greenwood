@@ -794,8 +794,9 @@ unsigned long Toolbox::HexaAsciiToInteger(const char *text)
 // Parked: target is hand-written register-preserving assembly with REP MOVSW.
 // STUB: GAME 0x005e3730
 void FUN_005e3730(const unsigned short *source, unsigned short *destination, long stride,
-    unsigned short width, unsigned short rows, unsigned short fill)
+    unsigned long width, unsigned long height, unsigned long fill)
 {
+    unsigned short rows = height;
     do
     {
         unsigned short first = *source++;
@@ -832,8 +833,10 @@ void FUN_005e3730(const unsigned short *source, unsigned short *destination, lon
 // Parked: target preserves all registers and carries the fill word through BSWAP.
 // STUB: GAME 0x005e37c0
 void FUN_005e37c0(const unsigned short *source, unsigned short *destination, long stride,
-    unsigned short width, unsigned short rows, unsigned short fill, unsigned short key)
+    unsigned long width, unsigned long height, unsigned long fill, unsigned long keyValue)
 {
+    unsigned short rows = height;
+    unsigned short key = keyValue;
     do
     {
         unsigned short first = *source++;
@@ -855,6 +858,95 @@ void FUN_005e37c0(const unsigned short *source, unsigned short *destination, lon
             {
                 unsigned short pixel = *source++;
                 *destination++ = pixel == key ? 0 : pixel;
+            }
+            while (--count != 0);
+            padding = width - last;
+        }
+        else
+            padding = width;
+        if (padding != 0 || empty)
+            do
+                *destination++ = fill;
+            while (--padding != 0);
+        destination = (unsigned short *)((char *)destination + stride);
+    }
+    while (--rows != 0);
+}
+
+// STUB: GAME 0x005e3869
+void FUN_005e3869(const unsigned short *source, unsigned short *destination, long stride,
+    unsigned long width, unsigned long height, unsigned long fillValue, unsigned long keyValue, unsigned long shadow)
+{
+    unsigned short rows = height;
+    unsigned short fill = fillValue;
+    unsigned short key = keyValue;
+    do
+    {
+        unsigned short first = *source++;
+        if (first != 0xffff && first != 0)
+        {
+            unsigned short count = first;
+            do
+                *destination++ = fill;
+            while (--count != 0);
+        }
+        unsigned short last = *source++;
+        bool empty = last == 0xffff;
+        unsigned short padding;
+        if (last != 0xffff)
+        {
+            ++last;
+            unsigned short count = last - first;
+            do
+            {
+                unsigned short pixel = *source++;
+                *destination++ = pixel == key || pixel == fill ? pixel : shadow;
+            }
+            while (--count != 0);
+            padding = width - last;
+        }
+        else
+            padding = width;
+        if (padding != 0 || empty)
+            do
+                *destination++ = fill;
+            while (--padding != 0);
+        destination = (unsigned short *)((char *)destination + stride);
+    }
+    while (--rows != 0);
+}
+
+// STUB: GAME 0x005e3919
+void FUN_005e3919(const unsigned short *source, unsigned short *destination, long stride,
+    unsigned long width, unsigned long height, unsigned long fill, unsigned long keyValue)
+{
+    unsigned short rows = height;
+    unsigned short key = keyValue;
+    do
+    {
+        unsigned short first = *source++;
+        if (first != 0xffff && first != 0)
+        {
+            unsigned short count = first;
+            do
+                *destination++ = fill;
+            while (--count != 0);
+        }
+        unsigned short last = *source++;
+        bool empty = last == 0xffff;
+        unsigned short padding;
+        if (last != 0xffff)
+        {
+            ++last;
+            unsigned short count = last - first;
+            do
+            {
+                unsigned short pixel = *source++;
+                if (pixel == 31)
+                    pixel = key;
+                else if (pixel == key)
+                    ++pixel;
+                *destination++ = pixel;
             }
             while (--count != 0);
             padding = width - last;
