@@ -220,6 +220,31 @@ void RHFrameHolder::FUN_00504b10(unsigned long data, unsigned long size, unsigne
 
 extern RHUnk005ef320 *g_unk0x6c11d0;
 
+// STUB: GAME 0x005046e0
+void RHFrameHolder::ApplyFogEffect(unsigned short *pixels, unsigned long count, unsigned short percent, unsigned short color)
+{
+    unsigned short key = g_pEngine->FUN_004d2340(15);
+    int remainder = 100 - percent;
+    int red = (color >> 11) * remainder / 100;
+    int green = ((color >> 5) & 62) * remainder / 100;
+    int blue = (color & 31) * remainder / 100;
+    if (count > 0)
+    {
+        unsigned int remaining = count;
+        do
+        {
+            unsigned short value = *pixels;
+            if (value != 0x7c0 && value != key)
+            {
+                *pixels = (((((value >> 5) & 62) * percent / 100 + green) << 5) & 0x7c0) |
+                    ((((value >> 11) * percent / 100 + red) & 31) << 11) |
+                    ((((value & 31) * percent / 100) + blue) & 31);
+            }
+            ++pixels;
+        } while (--remaining);
+    }
+}
+
 // Parked: green and countdown locals swap argument-slot coloring despite matching channel operations.
 // STUB: GAME 0x00504830
 bool RHUnk005069a0::FUN_00504830(unsigned short percent, unsigned short color)
@@ -359,32 +384,145 @@ void RHFrameHolder::FUN_00504c50(unsigned long data, unsigned short width, unsig
     }
 }
 
-// Parked: target scheduling differs for selector and row-stride operands.
-// STUB: GAME 0x005050a0
+#include "SBDrawViewport.h"
+
+void FUN_005e3730(const unsigned short *, unsigned short *, long, unsigned long, unsigned long, unsigned long);
+void FUN_005e37c0(const unsigned short *, unsigned short *, long, unsigned long, unsigned long, unsigned long, unsigned long);
+void FUN_005e3869(const unsigned short *, unsigned short *, long, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long);
+void FUN_005e3919(const unsigned short *, unsigned short *, long, unsigned long, unsigned long, unsigned long, unsigned long);
+
+// FUNCTION: GAME 0x00504cd0
+unsigned long RHFrameHolder::FUN_00504cd0(SBDrawViewport &viewport, unsigned long frame, int variant)
+{
+    if (FUN_00504680(frame) == 0xffff)
+    {
+        unsigned int key = g_pEngine->FUN_004d2340(15);
+        if (FUN_00504660(frame))
+        {
+            long pitch = viewport.m_pitch;
+            unsigned short *pixels = viewport.m_pixels;
+            FUN_005e3919((unsigned short *)FUN_00504600(frame), pixels,
+                pitch - FUN_005046a0(frame) * 2, FUN_005046a0(frame), FUN_005046c0(frame), 0x7c0, key);
+        }
+        else
+        {
+            long pitch = viewport.m_pitch;
+            unsigned short *pixels = viewport.m_pixels;
+            FUN_005e3730((unsigned short *)FUN_00504600(frame), pixels,
+                pitch - FUN_005046a0(frame) * 2, FUN_005046a0(frame), FUN_005046c0(frame), 0x7c0);
+        }
+        switch (variant)
+        {
+        case 1:
+        {
+            unsigned short width = viewport.m_width;
+            unsigned short height = viewport.m_height;
+            unsigned short *pixels = viewport.m_pixels;
+            ApplyFogEffect(pixels, height * width, 50, g_unk0x6c11d0->Unk(0, 30, 60));
+            break;
+        }
+        case 2:
+            ApplyFogEffect(viewport.m_pixels, viewport.m_height * viewport.m_width, 60, 0xffff);
+            break;
+        }
+        if (viewport.m_depth != 16)
+        {
+            unsigned long pitch = viewport.m_pitch;
+            unsigned short *pixels = viewport.m_pixels;
+            FUN_00504bd0((unsigned long)pixels, FUN_005046a0(frame), FUN_005046c0(frame), pitch, key);
+        }
+    }
+    else
+    {
+        long pitch = viewport.m_pitch;
+        unsigned short *pixels = viewport.m_pixels;
+        FUN_005050a0((unsigned short *)FUN_00504600(frame), (unsigned long *)pixels,
+            pitch - FUN_005046a0(frame) * 2, FUN_005046a0(frame), FUN_005046c0(frame), FUN_00504680(frame), variant);
+    }
+    return 0;
+}
+
+// FUNCTION: GAME 0x00504eb0
+unsigned long RHFrameHolder::FUN_00504eb0(SBDrawViewport &viewport, unsigned long frame, int variant)
+{
+    if (FUN_00504680(frame) == 0xffff)
+    {
+        double fill = viewport.m_depth == 16 ? 1984.0 : 3.0;
+        g_pEngine->FUN_004d2340(15);
+        long pitch = viewport.m_pitch;
+        unsigned short *pixels = viewport.m_pixels;
+        FUN_005e37c0((unsigned short *)FUN_00504600(frame), pixels,
+            pitch - FUN_005046a0(frame) * 2, FUN_005046a0(frame), FUN_005046c0(frame), (unsigned short)fill, 31);
+    }
+    return 0;
+}
+
+// FUNCTION: GAME 0x00504f70
+unsigned long RHFrameHolder::FUN_00504f70(SBDrawViewport &viewport, unsigned long frame, unsigned long shadow, int variant)
+{
+    if (FUN_00504680(frame) == 0xffff)
+    {
+        double fill = viewport.m_depth == 16 ? 1984.0 : 3.0;
+        unsigned int key = g_pEngine->FUN_004d2340(15);
+        long pitch = viewport.m_pitch;
+        unsigned short *pixels = viewport.m_pixels;
+        FUN_005e3869((unsigned short *)FUN_00504600(frame), pixels,
+            pitch - FUN_005046a0(frame) * 2, FUN_005046a0(frame), FUN_005046c0(frame), (unsigned short)fill, key, shadow);
+        switch (variant)
+        {
+        case 1:
+        {
+            unsigned short width = viewport.m_width;
+            unsigned short height = viewport.m_height;
+            unsigned short *pixels = viewport.m_pixels;
+            ApplyFogEffect(pixels, height * width, 50, g_unk0x6c11d0->Unk(0, 30, 60));
+            break;
+        }
+        case 2:
+            ApplyFogEffect(viewport.m_pixels, viewport.m_height * viewport.m_width, 60, 0xffff);
+            break;
+        }
+    }
+    return 0;
+}
+
+// FUNCTION: GAME 0x005050a0
 void RHFrameHolder::FUN_005050a0(unsigned short *pixels, unsigned long *output,
-    unsigned short outputPitch, unsigned short width, unsigned short height, unsigned int tableIndex, int selector)
+    unsigned short outputPitch, unsigned short width, unsigned short height, unsigned short tableIndex, int selector)
 {
     unsigned long table;
-    if (selector == 0)
-        table = *(unsigned long *)((char *)this + 0x1c) + (tableIndex & 0xffff) * 0x14;
-    else if (selector == 1)
-        table = *(unsigned long *)((char *)this + 0x2c) + (tableIndex & 0xffff) * 0x14;
-    else if (selector == 2)
-        table = *(unsigned long *)((char *)this + 0x3c) + (tableIndex & 0xffff) * 0x14;
-    else
-        table = tableIndex;
-
-    unsigned int outputPadding = outputPitch >> 1;
-    for (unsigned int row = 0; row < height; ++row)
+    switch (selector)
     {
-        for (unsigned int column = 0; column < (width + 3) / 4; ++column)
+    case 0:
+        table = *(unsigned long *)((char *)this + 0x1c) + tableIndex * 0x14;
+        break;
+    case 1:
+        table = *(unsigned long *)((char *)this + 0x2c) + tableIndex * 0x14;
+        break;
+    case 2:
+        table = *(unsigned long *)((char *)this + 0x3c) + tableIndex * 0x14;
+        break;
+    }
+
+    outputPitch >>= 1;
+    if (height > 0)
+    {
+        unsigned int rows = height;
+        do
         {
-            unsigned short color = *pixels++;
-            unsigned long lookup = *(unsigned long *)(table + 4) + color * 8;
-            *output++ = *(unsigned long *)lookup;
-            *output++ = *(unsigned long *)(lookup + 4);
-        }
-        output = (unsigned long *)((char *)output + outputPadding * 2);
+            if (width > 0)
+            {
+                unsigned int columns = (width + 3u) >> 2;
+                do
+                {
+                    unsigned short color = *pixels++;
+                    unsigned long lookup = *(unsigned long *)(table + 4) + color * 8;
+                    *(__int64 *)output = *(__int64 *)lookup;
+                    output += 2;
+                } while (--columns);
+            }
+            output = (unsigned long *)((char *)output + outputPitch * 2);
+        } while (--rows);
     }
 }
 

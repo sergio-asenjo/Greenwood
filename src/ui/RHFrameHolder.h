@@ -11,9 +11,11 @@ std::map<unsigned short, unsigned short>::_Pairib
 std::map<unsigned short, unsigned short>::insert(const value_type &value);
 
 // SIZE 0x08
+#define SBGEO_POINT2D_VIEW
 class SBGeoPoint2D
 {
 public:
+    SBGeoPoint2D();
     SBGeoPoint2D(float, float);
     ~SBGeoPoint2D();
     float m_x; // 0x00
@@ -359,6 +361,8 @@ public:
     unsigned short m_depth; // 0x10c
 };
 
+class SBDrawViewport;
+
 // SIZE 0xec
 class RHFrameHolder
 {
@@ -370,7 +374,11 @@ public:
     void FUN_00504c50(unsigned long, unsigned short, unsigned short, unsigned short, unsigned short);
     void FUN_00504bd0(unsigned long, unsigned short, unsigned short, unsigned short, unsigned short);
     void FUN_00504b10(unsigned long, unsigned long, unsigned short);
-    void FUN_005050a0(unsigned short *, unsigned long *, unsigned short, unsigned short, unsigned short, unsigned int, int);
+    void ApplyFogEffect(unsigned short *, unsigned long, unsigned short, unsigned short);
+    unsigned long FUN_00504cd0(SBDrawViewport &, unsigned long, int);
+    unsigned long FUN_00504eb0(SBDrawViewport &, unsigned long, int);
+    unsigned long FUN_00504f70(SBDrawViewport &, unsigned long, unsigned long, int);
+    void FUN_005050a0(unsigned short *, unsigned long *, unsigned short, unsigned short, unsigned short, unsigned short, int);
     bool FUN_00504660(unsigned long);
     unsigned long FUN_00504600(unsigned long);
     bool FUN_005058a0(unsigned long);

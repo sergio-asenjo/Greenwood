@@ -524,35 +524,51 @@ RHFocusEvent *RHFocusManager::FUN_00500130()
     return result;
 }
 
-// Parked: counter initialization is hoisted before the group-hide event chain.
-// STUB: GAME 0x005001e0
+struct RHFocusGroupRange
+{
+    RHFocusNode<RHFocusGroupableView> *head;
+    RHFocusNode<RHFocusGroupableView> *first;
+};
+
+inline RHFocusGroupRange RHFocusReadGroupRange(RHFocusManager &manager)
+{
+    RHFocusGroupRange result;
+    result.head = manager.m_groupHead;
+    result.first = result.head->next;
+    return result;
+}
+
+// FUNCTION: GAME 0x005001e0
 RHFocusEvent *RHFocusManager::FUN_005001e0()
 {
-    unsigned index = 0;
     RHFocusEvent *result = 0;
-    RHFocusNode<RHFocusGroupableView> *head = *(RHFocusNode<RHFocusGroupableView> *volatile *)&m_groupHead;
-    RHFocusNode<RHFocusGroupableView> *cursor = *(RHFocusNode<RHFocusGroupableView> *volatile *)&m_groupCursor;
-    RHFocusNode<RHFocusGroupableView> *first = *(RHFocusNode<RHFocusGroupableView> *volatile *)&head->next;
-    RHFocusGroupableNode *previous;
-    if (cursor != first && cursor != head)
-        previous = (RHFocusGroupableNode *)cursor->previous;
-    else
-        previous = (RHFocusGroupableNode *)head->previous;
+    RHFocusGroupRange group = RHFocusReadGroupRange(*this);
+    RHFocusGroupList::iterator &cursor = *(RHFocusGroupList::iterator *)&m_groupCursor;
+    RHFocusGroupList::iterator previous;
+    if (cursor != *(RHFocusGroupList::iterator *)&group.first && cursor != *(RHFocusGroupList::iterator *)&group.head) {
+        previous = cursor;
+        --previous;
+    }
+    else {
+        previous = *(RHFocusGroupList::iterator *)&group.head;
+        --previous;
+    }
     typedef RHFocusEvent *(RHFocusManager::*Link)(RHFocusEvent *, RHFocusEvent *) const;
     Link link = &RHFocusManager::FUN_00500040;
-    if (m_groupCursor != head) {
+    if (m_groupCursor != group.head) {
         m_groupCursor->value->V08(true);
         result = m_groupCursor->value->V14(false);
         result = (this->*link)(result, m_groupCursor->value->V18(false));
     }
-    for (; index != m_groupCount; ++index, previous = previous->previous) {
-        if (*((bool *)previous->value.widget->V04() + 4) && previous->value.sleeping == true) {
-            m_groupCursor = (RHFocusNode<RHFocusGroupableView> *)previous;
-            previous->value.widget->V08(false);
-            return (this->*link)(result, m_groupCursor->value->V14(true));
+    for (unsigned index = 0; index != m_groupCount; ++index, --previous) {
+        if (*((bool *)previous->widget->V04() + 4) && previous->sleeping == true) {
+            cursor = previous;
+            previous->widget->V08(false);
+            result = (this->*link)(result, m_groupCursor->value->V14(true));
+            break;
         }
-        if (previous == (RHFocusGroupableNode *)m_groupHead->next)
-            previous = (RHFocusGroupableNode *)m_groupHead;
+        if (previous == *(RHFocusGroupList::iterator *)&m_groupHead->next)
+            previous = *(RHFocusGroupList::iterator *)&m_groupHead;
     }
     return result;
 }
@@ -603,8 +619,7 @@ done:
     return result;
 }
 
-// Parked: the final virtual-table load uses edx instead of eax.
-// STUB: GAME 0x005003a0
+// FUNCTION: GAME 0x005003a0
 RHFocusEvent *RHFocusManager::FUN_005003a0(const void *input)
 {
     RHFocusEvent *result = 0;
@@ -648,7 +663,8 @@ RHFocusEvent *RHFocusManager::FUN_005003a0(const void *input)
                     result = (this->*link)(0, m_groupCursor->value->V14(false));
                     result = (this->*link)(result, m_groupCursor->value->V18(false));
                     result = (this->*link)(result, m_groupCursor->value->V00());
-                    m_groupCursor = m_groupHead;
+                    RHFocusNode<RHFocusGroupableView> *end = *(RHFocusNode<RHFocusGroupableView> *volatile *)&m_groupHead;
+                    m_groupCursor = end;
                 }
             }
             else if (action == 5) {
