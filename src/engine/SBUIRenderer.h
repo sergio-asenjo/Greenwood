@@ -24,11 +24,8 @@ public:
     undefined m_bytes[0x3c]; // 0x00
     unsigned int FUN_0060d500(unsigned int);
     void FUN_0060d520();
-    void FUN_0060d530(unsigned int);
     bool FUN_0060d550(long);
     void *FUN_0060d690();
-    void FUN_0060d6a0(const SBGeoBoundingBox2D &);
-    void FUN_0060d780(const SBGeoPoint2D &);
 };
 
 // SIZE 0x4c

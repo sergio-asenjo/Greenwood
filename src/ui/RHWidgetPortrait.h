@@ -151,13 +151,14 @@ public:
 
 #include "RHPortraitInputRenderer.h"
 
+// VTABLE: GAME 0x0067a044
 class RHPortraitInputRendererMember : public RHPortraitInputRenderer
 {
 public:
     RHPortraitInputRendererMember()
     {
-        *(unsigned *)this = 0x0067a044;
     }
+    void *FUN_005d1b40(unsigned flags);
 };
 
 // VTABLE: GAME 0x0067a00c
@@ -222,21 +223,7 @@ public:
 
 #include "RHPortraitRenderer0060dab0.h"
 
-// VTABLE: GAME 0x0067ae60
-class RHPortraitRenderer006212d0 : public RHPortraitRenderer0060dab0
-{
-public:
-    RHPortraitRenderer006212d0();
-    ~RHPortraitRenderer006212d0();
-    std::wstring m_prompt;
-    bool m_promptEnabled;
-    void *m_font;
-    void *m_alternateFont;
-    void *m_textObject;
-    SBGeoBoundingBox2D m_bounds;
-    bool m_enabled;
-    SBGeoVector2D m_offset;
-};
+#include "RHPortraitRenderer006212d0.h"
 
 #include "SBUIInputFieldText.h"
 

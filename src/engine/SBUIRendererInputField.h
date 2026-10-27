@@ -154,10 +154,8 @@ public:
     char m_84; // 0x84
     SBGeoVector2D m_88; // 0x88
 
-    void FUN_00621430(unsigned int);
     void FUN_00621440(SBUIInputFieldUnkResource *);
     bool FUN_00621470(unsigned int);
-    void FUN_00621b80(const SBGeoBoundingBox2D &);
     bool FUN_00621c30(const SBGeoBoundingBox2D &);
     void FUN_0061e4b0();
     std::wstring FUN_0061df60();

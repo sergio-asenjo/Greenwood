@@ -9,6 +9,7 @@
 #endif
 
 class RHMapResources;
+class SBGeoPoint2D;
 
 // VTABLE: GAME 0x0067a654
 // SIZE 0x4c
@@ -18,6 +19,8 @@ public:
     RHPortraitRenderer0060d470();
     virtual ~RHPortraitRenderer0060d470();
     virtual void FUN_0060d530(unsigned int surface);
+    virtual void FUN_0060d780(const SBGeoPoint2D &point);
+    virtual void FUN_0060d6a0(const SBGeoBoundingBox2D &box);
     RHMapResources *m_resources;   // 0x04
     SBGeoBoundingBox2D m_position; // 0x08
     void *m_drawManager;           // 0x1c

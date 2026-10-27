@@ -11,7 +11,6 @@ public:
     RHPortraitInputRenderer();
     ~RHPortraitInputRenderer();
     void *FUN_0061c590(unsigned flags);
-    void *FUN_005d1b40(unsigned flags);
     void FUN_0061c610(unsigned long surface);
     bool FUN_0061d570(unsigned short position, int limit);
     unsigned FUN_0061d5e0();

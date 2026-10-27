@@ -3,7 +3,8 @@
 
 #include "RHPortraitRenderer0060d470.h"
 
-class __declspec(novtable) RHUnk005cbb80 : public RHPortraitRenderer0060d470
+// VTABLE: GAME 0x00679eac
+class RHUnk005cbb80 : public RHPortraitRenderer0060d470
 {
 public:
     RHUnk005cbb80();

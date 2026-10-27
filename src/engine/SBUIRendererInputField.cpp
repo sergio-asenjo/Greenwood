@@ -3,12 +3,18 @@
 #include "SBUIRenderer.h"
 #include "SBFont.h"
 #include "SBUIRendererListbox.h"
+#include "RHPortraitRenderer006212d0.h"
+#include <stddef.h>
 
 DECOMP_SIZE_ASSERT(SBUIInputFieldNode, 0x10)
 DECOMP_SIZE_ASSERT(SBUIInputFieldTextUnk, 0x20)
 DECOMP_SIZE_ASSERT(SBUIInputFieldUnkObject, 0x04)
 DECOMP_SIZE_ASSERT(SBUIInputFieldUnkResource, 0x1c)
 DECOMP_SIZE_ASSERT(SBUIInputFieldUnk00621440, 0x90)
+DECOMP_SIZE_ASSERT(RHPortraitRenderer006212d0, 0x90)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitRenderer006212d0, m_prompt) == 0x50)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitRenderer006212d0, m_bounds) == 0x70)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitRenderer006212d0, m_offset) == 0x88)
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 DECOMP_SIZE_ASSERT(SBGeoVector2D, 0x08)
 DECOMP_SIZE_ASSERT(SBGeoBoundingBox2D, 0x14)
@@ -488,9 +494,9 @@ void FUN_0061e4c0()
 }
 
 // FUNCTION: GAME 0x00621430
-void SBUIInputFieldUnk00621440::FUN_00621430(unsigned int value)
+void RHPortraitRenderer006212d0::FUN_0060d530(unsigned int value)
 {
-    ((SBUIUnk0060d530 *)this)->FUN_0060d530(value);
+    RHPortraitRenderer0060d470::FUN_0060d530(value);
 }
 
 // FUNCTION: GAME 0x00621440
@@ -587,16 +593,16 @@ public:
 };
 
 // FUNCTION: GAME 0x00621b80
-void SBUIInputFieldUnk00621440::FUN_00621b80(const SBGeoBoundingBox2D &box)
+void RHPortraitRenderer006212d0::FUN_0060d6a0(const SBGeoBoundingBox2D &box)
 {
-    RHUnk005fc400 displacement(*(SBGeoPoint2D *)((SBUIUnk0060d530 *)this)->FUN_0060d690(), m_70.m_00);
-    ((SBUIUnk0060d530 *)this)->FUN_0060d6a0(box);
+    RHUnk005fc400 displacement(*(SBGeoPoint2D *)((SBUIUnk0060d530 *)this)->FUN_0060d690(), m_bounds.m_00);
+    RHPortraitRenderer0060d470::FUN_0060d6a0(box);
     {
-        const SBGeoVector2D &origin = SBGeoVector2D(*(SBGeoVector2D *)&m_70.m_00);
-        m_70 -= origin;
+        const SBGeoVector2D &origin = SBGeoVector2D(*(SBGeoVector2D *)&m_bounds.m_00);
+        m_bounds -= origin;
     }
-    ((RHMobileUnk006091b0 *)&m_70)->FUN_006091b0(displacement);
-    FUN_00621c30(m_70);
+    ((RHMobileUnk006091b0 *)&m_bounds)->FUN_006091b0(displacement);
+    ((SBUIInputFieldUnk00621440 *)this)->FUN_00621c30(m_bounds);
 }
 
 // FUNCTION: GAME 0x00621c30
@@ -630,10 +636,10 @@ void SBUIInputFieldEmit(SBUIInputFieldUnk00621440 *renderer)
     SBUIInputFieldDrawUnk draw;
     draw.FUN_00614bf0(0, 0, renderer->m_70.m_00, 0);
     FUN_005d0880(draw.m_00, draw.m_00);
-    renderer->FUN_00621430(0);
+    ((RHPortraitRenderer006212d0 *)renderer)->RHPortraitRenderer006212d0::FUN_0060d530(0);
     renderer->FUN_00621440(0);
     renderer->FUN_00621470(0);
-    renderer->FUN_00621b80(renderer->m_70);
+    ((RHPortraitRenderer006212d0 *)renderer)->RHPortraitRenderer006212d0::FUN_0060d6a0(renderer->m_70);
     renderer->FUN_00621c30(renderer->m_70);
 }
 

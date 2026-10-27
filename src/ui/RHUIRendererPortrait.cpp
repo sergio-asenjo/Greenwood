@@ -15,11 +15,15 @@
 
 #include "SBGeoBoundingBox2D.h"
 #include "RHUnk005cbb80.h"
+#include <stddef.h>
+
+DECOMP_SIZE_ASSERT(RHUnk005cbb80, 0x64)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005cbb80, m_4c) == 0x4c)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005cbb80, m_fade) == 0x5c)
 
 // FUNCTION: GAME 0x005cbb80
 RHUnk005cbb80::RHUnk005cbb80()
 {
-    *(unsigned *)this = 0x00679eac;
     m_4c = 0;
     m_50 = 0;
     m_54 = 0;

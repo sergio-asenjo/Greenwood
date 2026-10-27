@@ -2,6 +2,7 @@
 #include "SBUIRenderer.h"
 #include "SBUIRendererListbox.h"
 #include "SB.h"
+#include <stddef.h>
 
 #ifndef SBGEO_POINT2D_VIEW
 #define SBGEO_POINT2D_VIEW
@@ -94,6 +95,16 @@ public:
 
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 DECOMP_SIZE_ASSERT(RHPortraitRenderer0060d470, 0x4c)
+struct RHPortraitRendererAlignment
+{
+    char prefix;
+    RHPortraitRenderer0060d470 value;
+};
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitRendererAlignment, value) == 4)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitRenderer0060d470, m_resources) == 4)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitRenderer0060d470, m_position) == 8)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitRenderer0060d470, m_drawManager) == 0x1c)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitRenderer0060d470, m_name) == 0x28)
 DECOMP_SIZE_ASSERT(RHUnk005fc3b0, 0x08)
 DECOMP_SIZE_ASSERT(SBGeoBoundingBox2D, 0x14)
 DECOMP_SIZE_ASSERT(RHMobileUnk006091b0, 0x14)
@@ -153,10 +164,10 @@ void SBUIUnk0060d530::FUN_0060d520()
 }
 
 // FUNCTION: GAME 0x0060d530
-void SBUIUnk0060d530::FUN_0060d530(unsigned int surface)
+void RHPortraitRenderer0060d470::FUN_0060d530(unsigned int surface)
 {
-    *(RHUnk005ef320 **)(m_bytes + 0x1c) = g_unk0x6c11d0;
-    *(unsigned int *)(m_bytes + 0x20) = surface;
+    m_drawManager = g_unk0x6c11d0;
+    m_hardware = surface;
 }
 
 // STUB: GAME 0x0060d550
@@ -189,8 +200,9 @@ void *SBUIUnk0060d530::FUN_0060d690()
 }
 
 // STUB: GAME 0x0060d6a0
-void SBUIUnk0060d530::FUN_0060d6a0(const SBGeoBoundingBox2D &box)
+void RHPortraitRenderer0060d470::FUN_0060d6a0(const SBGeoBoundingBox2D &box)
 {
+    unsigned char *m_bytes = (unsigned char *)this;
     RHUnk005fc3b0 size;
     SBGeoBoundingBox2D &position = m_box;
     ((RHMobileUnk00607da0 *)&position)->FUN_00607da0((const RHMobileUnk00607da0 &)box);
@@ -212,8 +224,9 @@ void SBUIUnk0060d530::FUN_0060d6a0(const SBGeoBoundingBox2D &box)
 }
 
 // FUNCTION: GAME 0x0060d780
-void SBUIUnk0060d530::FUN_0060d780(const SBGeoPoint2D &point)
+void RHPortraitRenderer0060d470::FUN_0060d780(const SBGeoPoint2D &point)
 {
+    unsigned char *m_bytes = (unsigned char *)this;
     RHUnk005fc3b0 size;
     SBGeoBoundingBox2D &position = m_box;
     ((RHMobileUnk006091b0 *)&position)->FUN_006091b0(point.Unk005fc110(position.m_p0));
@@ -379,18 +392,16 @@ bool SBUIUnk0060dd00::FUN_0060e0d0(void *first, void *second, void *third, void 
     return true;
 }
 
-void RHPortraitRenderer0060d470::FUN_0060d530(unsigned int) {}
-
 void EmitSBUIRenderer(SBUIUnk0060da20 *bitmap, SBUIUnk0060dae0 *alpha,
     SBUIUnk0060d530 *base, SBUIUnk0060dd00 *text)
 {
     base->FUN_0060d500(0);
     base->FUN_0060d520();
-    base->FUN_0060d530(0);
+    ((RHPortraitRenderer0060d470 *)base)->RHPortraitRenderer0060d470::FUN_0060d530(0);
     base->FUN_0060d550(0);
     base->FUN_0060d690();
-    base->FUN_0060d6a0(*(SBGeoBoundingBox2D *)base);
-    base->FUN_0060d780(*(SBGeoPoint2D *)base);
+    ((RHPortraitRenderer0060d470 *)base)->RHPortraitRenderer0060d470::FUN_0060d6a0(*(SBGeoBoundingBox2D *)base);
+    ((RHPortraitRenderer0060d470 *)base)->RHPortraitRenderer0060d470::FUN_0060d780(*(SBGeoPoint2D *)base);
     bitmap->FUN_0060da20(0);
     ((RHPortraitRenderer0060d470 *)bitmap)->RHPortraitRenderer0060d470::RHPortraitRenderer0060d470();
     alpha->FUN_0060dae0(0);
