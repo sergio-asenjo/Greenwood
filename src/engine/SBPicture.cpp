@@ -5,6 +5,26 @@
 #include <new>
 #include <vector>
 #include <algorithm>
+#include <stddef.h>
+
+struct SBPictureAlignment
+{
+    char prefix;
+    SBPicture value;
+};
+
+DECOMP_SIZE_ASSERT(SBPicture, 0x30)
+DECOMP_SIZE_ASSERT(SBPictureInfo, 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(SBPictureInfo, m_height) == 2)
+DECOMP_STATIC_ASSERT(offsetof(SBPictureInfo, m_depth) == 4)
+DECOMP_STATIC_ASSERT(offsetof(SBPictureInfo, m_size) == 8)
+DECOMP_STATIC_ASSERT(offsetof(SBPictureAlignment, value) == 4)
+DECOMP_STATIC_ASSERT(offsetof(SBPicture, m_04) == 4)
+DECOMP_STATIC_ASSERT(offsetof(SBPicture, m_pad08) == 8)
+DECOMP_STATIC_ASSERT(offsetof(SBPicture, m_14) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(SBPicture, m_1c) == 0x1c)
+DECOMP_STATIC_ASSERT(offsetof(SBPicture, m_20) == 0x20)
+DECOMP_STATIC_ASSERT(offsetof(SBPicture, m_28) == 0x28)
 
 // LIBRARY: GAME 0x006136a0
 // ?_Sort@std@@YAXPAG0P6A_NGG@Z0@Z
@@ -25,9 +45,9 @@ public:
 };
 
 // FUNCTION: GAME 0x00611bd0
-void *SBPicture::FUN_00611bd0(int)
+const SBPictureInfo &SBPicture::GetInfoFromFile(const std::string &)
 {
-    return m_pad08;
+    return *(const SBPictureInfo *)m_pad08;
 }
 
 // FUNCTION: GAME 0x00611be0
@@ -42,7 +62,7 @@ void *SBPicture::FUN_00611be0(unsigned flags)
 // FUNCTION: GAME 0x00611c00
 SBPicture::~SBPicture()
 {
-    FUN_00611c50();
+    SBPicture::FUN_00611c50();
 }
 
 // FUNCTION: GAME 0x00611c50
@@ -510,7 +530,7 @@ bool SBPicture::FUN_006131a0(unsigned short width, unsigned short height)
 
 void EmitSBPicture(SBPicture *picture, const SBGeoVector2D &size)
 {
-    picture->FUN_00611bd0(0);
+    picture->GetInfoFromFile(std::string());
     picture->FUN_00611c50();
     picture->FUN_00611c80(0, 0);
     ((RHUnk006114c0 *)picture)->Unk00611e10(0, 0);

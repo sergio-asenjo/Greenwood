@@ -31,7 +31,6 @@ public:
     virtual unsigned short FUN_00611520(); // vtable+0x34
     virtual int FUN_00611530(); // vtable+0x38
     bool Unk00611710(SBFile &);
-    bool Unk00613530(RHUnkFXDraw *, unsigned long);
     bool Unk00611e10(unsigned long, unsigned long);
     RHUnk006114c0 *Unk00612ad0(const SBGeoPoint2D &, const SBGeoVector2D &);
     void FUN_00611aa0(SBFile &, void *);

@@ -1,6 +1,17 @@
 #ifndef SBPICTURE_H
 #define SBPICTURE_H
 
+#include <string>
+
+class SBFile;
+struct SBPictureInfo
+{
+    unsigned short m_width;
+    unsigned short m_height;
+    unsigned short m_depth;
+    unsigned int m_size;
+};
+class RHUnkFXDraw;
 class SBPictureUnkDrawManager;
 class SBGeoVector2D;
 
@@ -11,6 +22,20 @@ public:
     SBPicture();
     ~SBPicture();
     virtual void *FUN_00611be0(unsigned flags);
+    virtual void FUN_00611c50();
+    virtual const SBPictureInfo &GetInfoFromFile(const std::string &name);
+    virtual bool LoadFromFile(const std::string &name);
+    virtual bool LoadFromStream(SBFile &file);
+    virtual bool FUN_00611c80(SBPictureUnkDrawManager *, unsigned long);
+    virtual bool SaveToFile(const std::string &name);
+    virtual bool SaveToStream(SBFile &file);
+    virtual bool Unk00613530(RHUnkFXDraw *, unsigned long);
+    virtual void *FUN_006114e0();
+    virtual unsigned int FUN_006114f0();
+    virtual unsigned short FUN_00611500();
+    virtual unsigned short FUN_00611510();
+    virtual unsigned short FUN_00611520();
+    virtual int FUN_00611530();
     int m_04;
     char m_pad08[0x0c];
     unsigned char *m_14;
@@ -26,9 +51,6 @@ public:
     float m_28[2];
 #endif
 
-    void *FUN_00611bd0(int);
-    void FUN_00611c50();
-    bool FUN_00611c80(SBPictureUnkDrawManager *, unsigned long);
     bool FUN_00611ea0(int);
     bool FUN_00611f70(int);
     bool FUN_00612040(int);

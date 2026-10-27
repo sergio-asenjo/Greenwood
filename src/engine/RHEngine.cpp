@@ -738,6 +738,7 @@ public:
 };
 
 #include "RHUnk006114c0.h"
+#include "SBPicture.h"
 
 #include "RHEngineBackgroundCalls.h"
 
@@ -2180,7 +2181,7 @@ void RHEngine::FUN_004c28c0(const std::string &name)
     ((RHEngineBackgroundCalls *)((char *)this + 0x11c))->FUN_004e7fa0(
         (int)(backgroundWidth * g_unk0x00677680), (int)(backgroundHeight * g_unk0x00677680));
     map.Unk00611e10(draw->m_depth == 16 ? 3 : 2, 0);
-    map.Unk00613530(draw, surface);
+    ((SBPicture *)&map)->SBPicture::Unk00613530(draw, surface);
     g_unk0x006c0a7c = 7;
     g_unk0x6c0a50.m_progress += 5.0f;
     g_unk0x6c0a50.FUN_00523300();
@@ -2203,7 +2204,7 @@ void RHEngine::FUN_004c28c0(const std::string &name)
     ((RHEngineBackgroundCalls *)&minimap)->FUN_00611660(minimapPath);
     surface = draw->Unk005e4ed0(*(int *)&minimap.m_width, *(int *)&minimap.m_height, 0, 0);
     *(unsigned long *)((char *)this + 0x48c8) = surface;
-    minimap.Unk00613530(draw, surface);
+    ((SBPicture *)&minimap)->SBPicture::Unk00613530(draw, surface);
     g_unk0x006c0a7c = 7;
     g_unk0x6c0a50.m_progress += 5.0f;
     g_unk0x6c0a50.FUN_00523300();

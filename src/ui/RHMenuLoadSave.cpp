@@ -15,6 +15,7 @@
 #include "RHMenuCampaignMapClass.h"
 #include "SBUIRendererListbox.h"
 #include "RHCopyPointers.h"
+#include "SBPicture.h"
 
 extern undefined g_unk0x006c0e48[];
 extern wchar_t g_unk0x006c0b50[1];
@@ -495,7 +496,7 @@ void RHMenuLoadSave::FUN_00531bd0()
             {
                 *(int *)((char *)this + 0x8c4) = (((RHUnkFXDraw *)draw)->*reinterpret_cast<RHMenuCreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(
                     picture.m_width, picture.m_height, 0, false);
-                picture.Unk00613530((RHUnkFXDraw *)draw, *(int *)((char *)this + 0x8c4));
+                ((SBPicture *)&picture)->SBPicture::Unk00613530((RHUnkFXDraw *)draw, *(int *)((char *)this + 0x8c4));
                 ((RHPortraitUnk005d5950 *)((char *)this + 0x7e4))->FUN_005d5950(*(int *)((char *)this + 0x8c4));
                 *(bool *)((char *)this + 0x7e8) = true;
             }

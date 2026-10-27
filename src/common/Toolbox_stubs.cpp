@@ -22,39 +22,39 @@ RHUnk006114c0::RHUnk006114c0()
 }
 
 // FUNCTION: GAME 0x006114e0
-void *RHUnk006114c0::FUN_006114e0()
+void *SBPicture::FUN_006114e0()
 {
-    return *(void **)(m_04 + 0x10);
+    return m_14;
 }
 
 // FUNCTION: GAME 0x006114f0
-unsigned int RHUnk006114c0::FUN_006114f0()
+unsigned int SBPicture::FUN_006114f0()
 {
-    return *(unsigned int *)(m_04 + 0x18);
+    return m_1c;
 }
 
 // FUNCTION: GAME 0x00611500
-unsigned short RHUnk006114c0::FUN_00611500()
+unsigned short SBPicture::FUN_00611500()
 {
-    return m_width;
+    return m_20;
 }
 
 // FUNCTION: GAME 0x00611510
-unsigned short RHUnk006114c0::FUN_00611510()
+unsigned short SBPicture::FUN_00611510()
 {
-    return m_height;
+    return m_22;
 }
 
 // FUNCTION: GAME 0x00611520
-unsigned short RHUnk006114c0::FUN_00611520()
+unsigned short SBPicture::FUN_00611520()
 {
-    return *(unsigned short *)m_24;
+    return m_24;
 }
 
 // FUNCTION: GAME 0x00611530
-int RHUnk006114c0::FUN_00611530()
+int SBPicture::FUN_00611530()
 {
-    return *(unsigned int *)(m_04 + 0x18) != 0;
+    return m_1c != 0;
 }
 
 // FUNCTION: GAME 0x00611540
@@ -67,14 +67,14 @@ void *RHUnk006114c0::FUN_00611540(unsigned flags)
 }
 
 #pragma inline_depth(0)
-void EmitPictureAccessors(RHUnk006114c0 *picture)
+void EmitPictureAccessors(SBPicture *picture)
 {
-    picture->RHUnk006114c0::FUN_006114e0();
-    picture->RHUnk006114c0::FUN_006114f0();
-    picture->RHUnk006114c0::FUN_00611500();
-    picture->RHUnk006114c0::FUN_00611510();
-    picture->RHUnk006114c0::FUN_00611520();
-    picture->RHUnk006114c0::FUN_00611530();
+    picture->SBPicture::FUN_006114e0();
+    picture->SBPicture::FUN_006114f0();
+    picture->SBPicture::FUN_00611500();
+    picture->SBPicture::FUN_00611510();
+    picture->SBPicture::FUN_00611520();
+    picture->SBPicture::FUN_00611530();
 }
 #pragma inline_depth(8)
 
@@ -89,7 +89,7 @@ void RHUnk006114c0::Unk10() {}
 bool RHUnk006114c0::Unk1c(SBFile &) { return false; }
 bool RHUnk006114c0::Unk20(RHUnkFXDraw *draw, unsigned long surface)
 {
-    return Unk00613530(draw, surface);
+    return ((SBPicture *)this)->SBPicture::Unk00613530(draw, surface);
 }
 
 void RHUnkFXDraw::FUN_005e5260() {}

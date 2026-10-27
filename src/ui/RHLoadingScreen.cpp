@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "RHLoadingScreen.h"
+#include "SBPicture.h"
 
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 DECOMP_SIZE_ASSERT(SBGeoVector2D, 0x08)
@@ -176,7 +177,7 @@ unsigned long RHLoadingScreen::CreateSurfaceForPicture(SBFile &file)
     unsigned long width = picture.UnkField20();
     unsigned long height = picture.UnkField22();
     if (width <= m_width && height <= m_height)
-        picture.Unk00613530(m_draw, surface);
+        ((SBPicture *)&picture)->SBPicture::Unk00613530(m_draw, surface);
     else
     {
         unsigned long x = (width - m_width + 1) / 2;

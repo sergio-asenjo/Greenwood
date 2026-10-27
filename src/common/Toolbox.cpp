@@ -519,7 +519,7 @@ void Toolbox::DisplayPicture(const char *name, bool wait)
     unsigned long pictureWidth = picture.UnkField20();
     unsigned long pictureHeight = picture.UnkField22();
     if (pictureWidth <= width && pictureHeight <= height)
-        picture.Unk00613530(draw, surface);
+        ((SBPicture *)&picture)->SBPicture::Unk00613530(draw, surface);
     else
     {
         unsigned int x = (pictureWidth - width + 1) / 2;
@@ -567,7 +567,7 @@ void Toolbox::PlaySlide(const std::string &name, unsigned short duration)
         picture.Unk00611710(file);
         typedef unsigned long (RHUnkFXDraw::*CreateSurface)(unsigned short, unsigned short, unsigned long, bool);
         unsigned long surface = (draw->*reinterpret_cast<CreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(picture.UnkField20(), picture.UnkField22(), 0, false);
-        picture.Unk00613530(draw, surface);
+        ((SBPicture *)&picture)->SBPicture::Unk00613530(draw, surface);
         draw->FUN_005e6440(surface, 0, 0, 0, 0);
         draw->FUN_005e5260();
         draw->FUN_005e6440(surface, 0, 0, 0, 0);
@@ -733,7 +733,7 @@ bool RHUnk006114c0::FUN_006118b0(const std::string &name)
 }
 
 // FUNCTION: GAME 0x00613530
-bool RHUnk006114c0::Unk00613530(RHUnkFXDraw *draw, unsigned long surface)
+bool SBPicture::Unk00613530(RHUnkFXDraw *draw, unsigned long surface)
 {
     RHUnk00613e90 pixels;
     SBPicture *picture = (SBPicture *)this;
@@ -743,10 +743,10 @@ bool RHUnk006114c0::Unk00613530(RHUnkFXDraw *draw, unsigned long surface)
         {
             unsigned int format = picture->m_04;
             if (format != 3)
-                Unk00611e10(3, 0);
+                ((RHUnk006114c0 *)this)->Unk00611e10(3, 0);
         }
         if (draw->UnkField10c() == 15 && picture->m_04 != 2)
-            Unk00611e10(2, 0);
+            ((RHUnk006114c0 *)this)->Unk00611e10(2, 0);
         if (draw->Unk005e5a00(surface, pixels, 0)) {
             unsigned int gap = (pixels.m_pitch >> 1) - picture->m_20;
             unsigned short *destination = pixels.m_data;

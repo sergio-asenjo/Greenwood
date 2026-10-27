@@ -53,7 +53,6 @@ public:
     bool Unk00611710(SBFile &);
     bool Unk00611e10(unsigned long, unsigned long);
     RHUnk006114c0 *Unk00612ad0(const SBGeoPoint2D &, const SBGeoVector2D &);
-    bool Unk00613530(RHUnkFXDraw *, unsigned long);
     unsigned short UnkField20() const { return m_width; }
     unsigned short UnkField22() const { return m_height; }
     undefined m_04[0x1c]; // 0x04

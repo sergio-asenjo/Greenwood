@@ -46,28 +46,6 @@ struct SBPictureTGAHeader
     }
 };
 
-// SIZE 0xc
-struct SBPictureInfo
-{
-    unsigned short m_width; // 0x00
-    unsigned short m_height; // 0x02
-    unsigned short m_depth; // 0x04
-    unsigned int m_size; // 0x08
-};
-
-class SBPictureTargaVirtuals
-{
-public:
-    virtual void V00();
-    virtual void V04();
-    virtual void V08();
-    virtual void V0c();
-    virtual bool LoadFromStream(SBFile &file);
-    virtual void V14();
-    virtual void V18();
-    virtual bool SaveToStream(SBFile &file);
-};
-
 #include "SBPictureTargaCore.h"
 
 #endif

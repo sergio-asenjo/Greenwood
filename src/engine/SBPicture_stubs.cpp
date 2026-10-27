@@ -11,6 +11,26 @@ SBPicture::SBPicture() : m_04(0xffff), m_14(0), m_1c(0)
     *(unsigned short *)m_pad08 = 0;
 }
 
+bool SBPicture::LoadFromFile(const std::string &)
+{
+    return false;
+}
+
+bool SBPicture::LoadFromStream(SBFile &)
+{
+    return false;
+}
+
+bool SBPicture::SaveToFile(const std::string &)
+{
+    return false;
+}
+
+bool SBPicture::SaveToStream(SBFile &)
+{
+    return false;
+}
+
 #include "SBPictureUnkView.h"
 
 class SBPictureUnkDrawManager

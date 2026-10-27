@@ -432,7 +432,7 @@ bool SBResourceManager::FUN_005fd8e0(SBFile *file, unsigned long id)
             picture.Unk00611710(*file);
             if (!(flags & 1) || id != 0) {
                 surfaces[i] = ((*(RHUnkFXDraw **)(m_00 + 4))->*reinterpret_cast<RHResourceCreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(picture.m_width, picture.m_height, format, false);
-                picture.Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces[i]);
+                ((SBPicture *)&picture)->SBPicture::Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces[i]);
             }
             ((SBPicture *)&picture)->FUN_00611c50();
         } else
@@ -578,7 +578,7 @@ bool SBResourceManager::FUN_005ff3a0(SBFile *file, unsigned long id)
             picture.Unk00611710(*file);
             if (!(flags & 1) || id != 0) {
                 surfaces[i] = ((*(RHUnkFXDraw **)(m_00 + 4))->*reinterpret_cast<RHResourceCreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(picture.m_width, picture.m_height, format, false);
-                picture.Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces[i]);
+                ((SBPicture *)&picture)->SBPicture::Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces[i]);
             }
             ((SBPicture *)&picture)->FUN_00611c50();
         } else
@@ -637,7 +637,7 @@ bool SBResourceManager::FUN_005ff730(SBFile *file, unsigned long id)
             picture.Unk00611710(*file);
             if (!(flags & 1) || id != 0) {
                 surfaces[i] = ((*(RHUnkFXDraw **)(m_00 + 4))->*reinterpret_cast<RHResourceCreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(picture.m_width, picture.m_height, format, false);
-                picture.Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces[i]);
+                ((SBPicture *)&picture)->SBPicture::Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces[i]);
             }
             ((SBPicture *)&picture)->FUN_00611c50();
         } else
@@ -696,7 +696,7 @@ bool SBResourceManager::FUN_005ffac0(SBFile *file, unsigned long id)
             picture.Unk00611710(*file);
             if (!(flags & 1) || id != 0) {
                 surfaces[i] = ((*(RHUnkFXDraw **)(m_00 + 4))->*reinterpret_cast<RHResourceCreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(picture.m_width, picture.m_height, format, false);
-                picture.Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces[i]);
+                ((SBPicture *)&picture)->SBPicture::Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces[i]);
             }
             ((SBPicture *)&picture)->FUN_00611c50();
         } else
@@ -754,7 +754,7 @@ bool SBResourceManager::FUN_005ffe50(SBFile *file, unsigned long id)
             picture.Unk00611710(*file);
             if (!(flags & 1) || id != 0) {
                 surfaces[i] = ((*(RHUnkFXDraw **)(m_00 + 4))->*reinterpret_cast<RHResourceCreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(picture.m_width, picture.m_height, 0, false);
-                picture.Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces[i]);
+                ((SBPicture *)&picture)->SBPicture::Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces[i]);
             }
             ((SBPicture *)&picture)->FUN_00611c50();
         } else

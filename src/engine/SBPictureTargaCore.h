@@ -14,7 +14,7 @@ class SBPictureTarga : public SBPicture
 public:
     SBPictureTarga();
     ~SBPictureTarga();
-    void *FUN_006150f0(unsigned flags);
+    virtual void *FUN_00611be0(unsigned flags);
     const SBPictureInfo &GetInfoFromFile(const std::string &name);
     bool LoadFromFile(const std::string &name);
     bool LoadFromStream(SBFile &file);

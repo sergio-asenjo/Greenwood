@@ -3,6 +3,11 @@
 #include "SBNullstr.h"
 #include "SBPictureTarga.h"
 #include <string.h>
+#include <stddef.h>
+
+DECOMP_SIZE_ASSERT(SBPictureTarga, 0x30)
+DECOMP_STATIC_ASSERT(offsetof(SBPictureTarga, m_14) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(SBPictureTarga, m_28) == 0x28)
 
 // FUNCTION: GAME 0x006150d0
 SBPictureTarga::SBPictureTarga()
@@ -10,7 +15,7 @@ SBPictureTarga::SBPictureTarga()
 }
 
 // FUNCTION: GAME 0x006150f0
-void *SBPictureTarga::FUN_006150f0(unsigned flags)
+void *SBPictureTarga::FUN_00611be0(unsigned flags)
 {
     this->~SBPictureTarga();
     if (flags & 1)
@@ -52,7 +57,7 @@ bool SBPictureTarga::LoadFromFile(const std::string &name)
     RHUnk005f4fc0 file;
     if (file.FUN_005f5090(name, 1))
         return false;
-    bool loaded = ((SBPictureTargaVirtuals *)this)->LoadFromStream(file);
+    bool loaded = LoadFromStream(file);
     file.FUN_005f5290();
     return loaded;
 }
@@ -112,7 +117,7 @@ bool SBPictureTarga::SaveToFile(const std::string &name)
     RHUnk005f4fc0 file;
     if (file.FUN_005f5090(name, 2))
         return false;
-    bool saved = ((SBPictureTargaVirtuals *)this)->SaveToStream(file);
+    bool saved = SaveToStream(file);
     file.FUN_005f5290();
     return saved;
 }
@@ -187,7 +192,7 @@ void SBPictureTarga::SerializeHeader(SBFile &file, SBPictureTGAHeader &header)
 void EmitSBPictureTarga(SBPictureTarga *picture)
 {
     SBPictureTarga local;
-    picture->FUN_006150f0(0);
+    picture->FUN_00611be0(0);
     picture->GetInfoFromFile(std::string());
     picture->LoadFromFile(std::string());
     picture->SaveToFile(std::string());
