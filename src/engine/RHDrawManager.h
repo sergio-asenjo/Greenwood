@@ -97,16 +97,7 @@ public:
 };
 
 // SIZE 0x14
-class SBDrawViewport
-{
-public:
-    unsigned char m_00[4]; // 0x00
-    unsigned short m_width; // 0x04
-    unsigned short m_height; // 0x06
-    unsigned long m_pitch; // 0x08
-    unsigned char m_0c[4]; // 0x0c
-    unsigned short *m_pixels; // 0x10
-};
+#include "SBDrawViewport.h"
 
 #include "SBDrawManagerCore.h"
 

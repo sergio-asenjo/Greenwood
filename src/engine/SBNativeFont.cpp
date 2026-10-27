@@ -202,15 +202,7 @@ public:
     bool active;
 };
 
-class RHMapBox
-{
-public:
-    RHMapBox(float left, float top, float right, float bottom);
-    ~RHMapBox() {}
-    SBGeoPoint2D first;
-    SBGeoPoint2D second;
-    bool active;
-};
+#include "RHMapBox.h"
 
 class RHMobileUnk00607da0
 {

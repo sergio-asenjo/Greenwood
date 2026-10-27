@@ -5,6 +5,7 @@
 #include "RHPortraitRootLifetime.h"
 
 class SBGeoVector2D;
+#ifndef SBGEO_POINT2D_VIEW
 class SBGeoPoint2D
 {
 public:
@@ -14,7 +15,9 @@ public:
     float m_x;
     float m_y;
 };
+#endif
 
+#ifndef SBGEOVECTOR2D_H
 class SBGeoVector2D : public SBGeoPoint2D
 {
 public:
@@ -22,7 +25,9 @@ public:
     SBGeoVector2D(const SBGeoVector2D &other);
     SBGeoVector2D &operator=(const SBGeoVector2D &other);
 };
+#endif
 
+#ifndef SBGEO_BOUNDINGBOX2D_VIEW
 class SBGeoBoundingBox2D
 {
 public:
@@ -34,6 +39,7 @@ public:
     SBGeoPoint2D m_8;
     undefined m_10;
 };
+#endif
 
 class RHMobileUnk006091b0
 {
@@ -41,11 +47,7 @@ public:
     RHMobileUnk006091b0 &FUN_006091b0(const SBGeoPoint2D &offset);
 };
 
-class RHMobileUnk00607da0
-{
-public:
-    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
-};
+#include "RHMobileUnk00607da0.h"
 
 class RHUnk00608f10
 {

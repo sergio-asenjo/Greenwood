@@ -4,13 +4,13 @@
 class SBPictureUnkDrawManager;
 class SBGeoVector2D;
 
+// VTABLE: GAME 0x0067a8bc
 class SBPicture
 {
 public:
     SBPicture();
     ~SBPicture();
-    void *FUN_00611be0(unsigned flags);
-    char m_pad0[4];
+    virtual void *FUN_00611be0(unsigned flags);
     int m_04;
     char m_pad08[0x0c];
     unsigned char *m_14;
@@ -20,7 +20,11 @@ public:
     unsigned short m_22;
     unsigned short m_24;
     char m_26[2];
+#ifdef SBGEO_VECTOR2D_VIEW
+    SBGeoVector2D m_28;
+#else
     float m_28[2];
+#endif
 
     void *FUN_00611bd0(int);
     void FUN_00611c50();

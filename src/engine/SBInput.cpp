@@ -20,18 +20,7 @@ public:
     float m_y;
 };
 
-class SBDrawViewport
-{
-public:
-    unsigned short *operator[](const SBGeoPoint2D &point) const;
-    unsigned short GetPixel(unsigned short x, unsigned short y) const;
-    unsigned char m_00[4];
-    unsigned short m_width;
-    unsigned short m_height;
-    unsigned long m_pitch;
-    unsigned char m_0c[4];
-    unsigned short *m_pixels;
-};
+#include "SBDrawViewport.h"
 
 // GLOBAL: GAME 0x006c1838
 SBInputUnk005fb730 *SBInputUnk005fb730::mpInput = 0;

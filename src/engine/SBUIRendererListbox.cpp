@@ -20,7 +20,7 @@ RHPortraitInputRenderer::~RHPortraitInputRenderer()
 // FUNCTION: GAME 0x0061c590
 void *RHPortraitInputRenderer::FUN_0061c590(unsigned flags)
 {
-    this->~RHPortraitInputRenderer();
+    this->RHPortraitInputRenderer::~RHPortraitInputRenderer();
     if (flags & 1)
         operator delete(this);
     return this;

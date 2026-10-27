@@ -15,11 +15,7 @@ public:
 
 class SBUIListboxUnk0061e890;
 
-class SBUIUnk005fd4a0
-{
-public:
-    void FUN_005fd4a0(long);
-};
+#include "SBUIUnk005fd4a0.h"
 
 // SIZE 0x3c
 class SBUIUnk0060d530

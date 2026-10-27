@@ -7,7 +7,6 @@
 // FUNCTION: GAME 0x006150d0
 SBPictureTarga::SBPictureTarga()
 {
-    *(unsigned *)m_pad0 = 0x0067a8fc;
 }
 
 // FUNCTION: GAME 0x006150f0
@@ -22,7 +21,6 @@ void *SBPictureTarga::FUN_006150f0(unsigned flags)
 // FUNCTION: GAME 0x00615110
 SBPictureTarga::~SBPictureTarga()
 {
-    *(unsigned *)m_pad0 = 0x0067a8fc;
 }
 
 // Parked: header byte/word loads and product registers allocate differently.

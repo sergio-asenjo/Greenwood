@@ -70,6 +70,8 @@ public:
     SBGeoPoint2D();
     SBGeoPoint2D(float, float);
     ~SBGeoPoint2D();
+    SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
+    SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
     float m_x;
     float m_y;
 };
@@ -77,6 +79,7 @@ public:
 class SBGeoVector2D : public SBGeoPoint2D
 {
 public:
+    SBGeoVector2D();
     SBGeoVector2D(float, float);
     ~SBGeoVector2D() {}
     SBGeoVector2D(const SBGeoVector2D &other);
@@ -470,6 +473,40 @@ unsigned short SBDrawUnk005e5ec0::FUN_005e5f60(unsigned long surface)
         return 0;
     }
     return *(unsigned short *)((char *)found + 0x18);
+}
+
+#define SBGEO_POINT2D_VIEW
+#include "SBGeoBoundingBox2DCore.h"
+
+// STUB: GAME 0x005e6000
+bool SBDrawManager::FUN_005e6000(SBGeoBoundingBox2D &destination, SBGeoBoundingBox2D &source)
+{
+    SBGeoVector2D offset;
+    offset.m_x = destination.m_p0.m_x < 0.0f ? -destination.m_p0.m_x : 0.0f;
+    offset.m_y = destination.m_p0.m_y < 0.0f ? -destination.m_p0.m_y : 0.0f;
+    destination.SetMin(destination.m_p0.Unk005fc190(offset));
+    source.SetMin(source.m_p0.Unk005fc190(offset));
+    {
+        float maximum = destination.m_p1.m_x;
+        float width;
+        *(volatile float *)&width = (float)m_10e;
+        if (maximum > *(const float *)&width)
+            offset.m_x = *(const float *)&width - destination.m_p1.m_x;
+        else
+            offset.m_x = 0.0f;
+    }
+    {
+        float maximum = destination.m_p1.m_y;
+        float height;
+        *(volatile float *)&height = (float)m_110;
+        if (maximum > *(const float *)&height)
+            offset.m_y = *(const float *)&height - destination.m_p1.m_y;
+        else
+            offset.m_y = 0.0f;
+    }
+    destination.SetMax(destination.m_p1.Unk005fc190(offset));
+    source.SetMax(source.m_p1.Unk005fc190(offset));
+    return true;
 }
 
 // FUNCTION: GAME 0x005e61e0

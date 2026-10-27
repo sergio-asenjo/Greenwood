@@ -46,6 +46,7 @@ class SBGeoBoundingBox2D
 {
 public:
     SBGeoBoundingBox2D();
+    SBGeoBoundingBox2D(float, float, float, float);
     ~SBGeoBoundingBox2D() {}
     SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &) const;
     SBGeoBoundingBox2D &operator-=(const SBGeoVector2D &);
@@ -58,14 +59,7 @@ public:
 #endif
 
 // SIZE 0x14
-class RHMapBox
-{
-public:
-    RHMapBox(float, float, float, float);
-    SBGeoPoint2D m_0; // 0x00
-    SBGeoPoint2D m_8; // 0x08
-    bool m_10; // 0x10
-};
+#include "RHMapBox.h"
 
 class RHMobileUnk006100e0;
 

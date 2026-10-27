@@ -8,6 +8,7 @@ class SBFile;
 struct SBPictureInfo;
 struct SBPictureTGAHeader;
 
+// VTABLE: GAME 0x0067a8fc
 class SBPictureTarga : public SBPicture
 {
 public:

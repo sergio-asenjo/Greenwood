@@ -71,6 +71,7 @@ class SBResourceManager
 {
 public:
     bool GetSurfaceForResource(long, unsigned int, unsigned int &);
+    bool FUN_00600920(unsigned long, unsigned long, unsigned long &);
 };
 
 #ifndef RHUNK00600820_VIEW
@@ -229,6 +230,52 @@ void SBUIUnk0060d530::FUN_0060d780(const SBGeoPoint2D &point)
             position.SetEnd((*(SBGeoPoint2D *)(m_bytes + 0x10)).Unk005fc190(size));
         }
     }
+}
+
+#include "RHGameWidgetRendererCalls.h"
+
+class RHUnk00613e90
+{
+public:
+    RHUnk00613e90();
+    ~RHUnk00613e90();
+    unsigned char m_00[0x18];
+};
+
+#include "SBDrawViewport.h"
+
+class RHUnkFXDraw
+{
+public:
+    bool Unk005e5a00(unsigned long surface, RHUnk00613e90 &view, unsigned long flags);
+    void Unk005e5ea0(RHUnk00613e90 &view);
+};
+
+#include "SBDrawUnk005e5ec0.h"
+
+// Parked: the target spills point.m_x through an integer move into the dead argument slot.
+// STUB: GAME 0x0060d890
+bool RHGameWidgetRendererCalls::FUN_0060d890(const SBGeoPoint2D &point)
+{
+    RHUnk00613e90 view;
+    unsigned long surface;
+    char *self = (char *)this;
+    if (*(long *)(self + 0x3c) > 0)
+        (*(RHUnk00600820 **)(self + 4))->ResolveSurface((void *)*(long *)(self + 0x38), *(long *)(self + 0x3c), (float *)&surface);
+    else
+        (*(SBResourceManager **)(self + 4))->FUN_00600920(*(long *)(self + 0x38), 0, surface);
+    if ((surface
+            || ((*(SBResourceManager **)(self + 4))->FUN_00600920(*(long *)(self + 0x38), 1, surface), surface)
+            || ((*(SBResourceManager **)(self + 4))->FUN_00600920(*(long *)(self + 0x38), 2, surface), surface)
+            || ((*(SBResourceManager **)(self + 4))->FUN_00600920(*(long *)(self + 0x38), 3, surface), surface))
+        && (*(RHUnkFXDraw **)(self + 0x1c))->Unk005e5a00(surface, view, 0))
+    {
+        unsigned short pixel = ((SBDrawViewport *)&view)->GetPixel((unsigned short)point.m_x, (unsigned short)point.m_y);
+        (*(RHUnkFXDraw **)(self + 0x1c))->Unk005e5ea0(view);
+        if (pixel != (*(SBDrawUnk005e5ec0 **)(self + 0x1c))->FUN_005e5f60(surface))
+            return true;
+    }
+    return false;
 }
 
 // FUNCTION: GAME 0x0060da20

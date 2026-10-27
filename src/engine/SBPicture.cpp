@@ -1,4 +1,5 @@
 #include "SBNullstr.h"
+#include "../common/SBGeoVector2D.h"
 #include "SBPicture.h"
 #include "RHLoadingScreen.h"
 #include <new>
@@ -11,21 +12,7 @@
 // LIBRARY: GAME 0x006137d0
 // ?_Insertion_sort_1@std@@YAXPAG0P6A_NGG@Z0@Z
 
-// SIZE 0x18
-class SBPictureUnkView
-{
-public:
-    SBPictureUnkView();
-    ~SBPictureUnkView();
-    char m_00[4];
-    unsigned short m_width;
-    unsigned short m_height;
-    unsigned long m_pitch;
-    unsigned short m_depth;
-    char m_0e[2];
-    unsigned short *m_data;
-    char m_14[4];
-};
+#include "SBPictureUnkView.h"
 
 class SBPictureUnkDrawManager
 {
@@ -41,6 +28,21 @@ public:
 void *SBPicture::FUN_00611bd0(int)
 {
     return m_pad08;
+}
+
+// FUNCTION: GAME 0x00611be0
+void *SBPicture::FUN_00611be0(unsigned flags)
+{
+    this->~SBPicture();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// FUNCTION: GAME 0x00611c00
+SBPicture::~SBPicture()
+{
+    FUN_00611c50();
 }
 
 // FUNCTION: GAME 0x00611c50
@@ -524,21 +526,4 @@ void EmitSBPicture(SBPicture *picture, const SBGeoVector2D &size)
     picture->FUN_00612d80(0, 0);
     picture->FUN_00612e30(0, 0);
     picture->FUN_006131a0(0, 0);
-}
-
-// FUNCTION: GAME 0x00611be0
-void *SBPicture::FUN_00611be0(unsigned flags)
-{
-    this->~SBPicture();
-    if (flags & 1)
-        operator delete(this);
-    return this;
-}
-
-// Parked: member destruction is explicit here, so VC6 omits the target's EH cleanup frame.
-SBPicture::~SBPicture()
-{
-    *(unsigned *)this = 0x67a8bc;
-    FUN_00611c50();
-    ((SBGeoPoint2D *)((char *)this + 0x28))->~SBGeoPoint2D();
 }
