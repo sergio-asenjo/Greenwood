@@ -33,10 +33,10 @@ public:
     bool m_flag;
 };
 
-class RHUnkFXSprite
+class RHSprite
 {
 public:
-    SBGeoBoundingBox2D Unk005bd970();
+    SBGeoBoundingBox2D GetGlobalBoundingBox();
     char m_00[0x1c];
     SBGeoPoint2D m_1c;
     float m_24;
@@ -93,6 +93,6 @@ public:
     char m_d0;                    // +0xd0
 };
 
-#define fx_sprite (*(RHUnkFXSprite **)((char *)this + 0x50))
+#define fx_sprite (*(RHSprite **)((char *)this + 0x50))
 #define fx_draw (*(RHUnkFXDraw **)((char *)this + 0x60))
 #define fx_clip (*(SBGeoBoundingBox2D *)((char *)(*(void **)((char *)this + 0x64)) + 0x3e84))

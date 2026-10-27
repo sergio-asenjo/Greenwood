@@ -258,6 +258,7 @@ void RHMobilePointerArray::Append(void *value)
 }
 RHMobileAreaLoad::RHMobileAreaLoad() {}
 void RHMobileAreaLoad::FUN_005a3810(SBFile &, RHMobilePointerArray &) {}
+// FUNCTION: GAME 0x00607c10
 SBGeoBoundingBox2D::SBGeoBoundingBox2D(float left, float top, float right, float bottom) : m_0(left, top), m_8(right, bottom), m_10(1) {}
 // FUNCTION: GAME 0x004aafc0
 bool RHMobilePartCalls::FUN_004aafc0(void *value)

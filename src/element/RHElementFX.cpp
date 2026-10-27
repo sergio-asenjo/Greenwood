@@ -46,7 +46,7 @@ void RHElementFX::InitializeBackgroundRestoration()
     {
         {
             SBGeoVector2D vector((const SBGeoVector2D &)fx_sprite->m_1c);
-            ((RHMobileUnk00607da0 *)&m_b4)->FUN_00607da0((const RHMobileUnk00607da0 &)fx_sprite->Unk005bd970().FUN_006090d0(vector));
+            ((RHMobileUnk00607da0 *)&m_b4)->FUN_00607da0((const RHMobileUnk00607da0 &)fx_sprite->GetGlobalBoundingBox().FUN_006090d0(vector));
         }
         ((RHMobileUnk00607da0 *)&m_b4)->FUN_00607da0((const RHMobileUnk00607da0 &)fx_clip.FUN_006092c0(m_b4));
         {

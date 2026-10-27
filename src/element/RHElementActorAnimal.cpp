@@ -284,11 +284,94 @@ void RHElementActorAnimal::Flee(bool run)
 {
 }
 
-// Not attempted: std::list local frame and nine-argument path query 0x4f9a80.
-// STUB: GAME 0x0046faf0
-void *RHElementActorAnimal::GetNearestSeekPoint(unsigned short layer)
+#include "RHSeqList.h"
+#include "RHScriptListCore.h"
+#include "RHActorGridCalls.h"
+
+class RHFastFindTacticalArray;
+extern RHFastFindTacticalArray g_unk0x006c06f0;
+
+struct RHAnimalSeekPosition
 {
-    return 0;
+    float x;
+    float y;
+    void *area;
+    unsigned layer;
+};
+
+inline RHAnimalSeekPosition RHAnimalSeekPositionAt(void *point)
+{
+    return *(RHAnimalSeekPosition *)((char *)point + 4);
+}
+
+inline void RHAnimalSetSeekPoint(SBGeoPoint2D &point, float x, float y)
+{
+    point.m_x = x;
+    point.m_y = y;
+}
+
+class RHAnimalSeekList : public RHSeqList
+{
+public:
+    RHAnimalSeekList(const char &allocator) : RHSeqList(allocator) { m_valid = true; }
+    ~RHAnimalSeekList()
+    {
+        RHSeqNode *head = m_head;
+        RHSeqNode *node = head->m_next;
+        while (node != head)
+        {
+            RHSeqNode *removed = node;
+            node = node->m_next;
+            removed->m_prev->m_next = removed->m_next;
+            removed->m_next->m_prev = removed->m_prev;
+            operator delete(removed);
+            --m_count;
+        }
+        head = m_head;
+        node = head->m_next;
+        while (node != head)
+        {
+            RHSeqNode *removed = node;
+            node = node->m_next;
+            ((RHUnk0046eb30 *)this)->erase(RHScriptIter((RHScriptNode *)removed));
+        }
+        operator delete(m_head);
+        m_head = 0;
+        m_count = 0;
+    }
+};
+
+// STUB: GAME 0x0046faf0
+void *RHElementActorAnimal::GetNearestSeekPoint(unsigned short radius)
+{
+    SBGeoPoint2D point;
+    char allocator;
+    RHAnimalSeekList sectors(allocator);
+    SBGeoPoint2D origin;
+    RHActorGridCalls *grid = (RHActorGridCalls *)g_unk0x6c0a9c;
+    void *result = 0;
+    float nearest = 65535.0f;
+    origin = m_50->m_24;
+    origin.m_x += rand() % (radius * 2) - radius;
+    origin.m_y += rand() % (radius * 2) - radius;
+    void **first = *(void ***)((char *)&g_unk0x006c06f0 + 4);
+    unsigned short count = first ? *(void ***)((char *)&g_unk0x006c06f0 + 8) - first : 0;
+    for (unsigned index = 0; index < count; ++index)
+    {
+        void *seek = (*(void ***)((char *)&g_unk0x006c06f0 + 4))[index];
+        RHAnimalSetSeekPoint(point, RHAnimalSeekPositionAt(seek).x, RHAnimalSeekPositionAt(seek).y);
+        float distance = origin.Unk005fc110(point).FUN_005fc700(1.0f);
+        if (distance < nearest &&
+            ((void *)m_50->m_e0 == RHAnimalSeekPositionAt(seek).area ||
+             grid->FUN_004f9a80(&sectors, (RHElementActor *)this, m_50->m_24,
+                 (void *)m_50->m_e0, m_50->m_de, point,
+                 RHAnimalSeekPositionAt(seek).area, RHAnimalSeekPositionAt(seek).layer, 0)))
+        {
+            nearest = distance;
+            result = seek;
+        }
+    }
+    return result;
 }
 
 // FUNCTION: GAME 0x0046fe00

@@ -242,7 +242,7 @@ RHElementBonus *RHElementBonus::CreateBonusFromMissionStream(SBFile &file)
 void RHElementBonus::Initialize(unsigned long type, unsigned short quantity)
 {
     *(unsigned long *)((char *)this + 0xb0) = type;
-    ((RHEngineWidenedCalls *)this)->FUN_004b2010(true, FUN_004b3120(type));
+    ((RHElementObject *)this)->Create(true, *(const RHElementObject *)FUN_004b3120(type));
     SetQuantity(quantity);
     RHSprite *sprite = (RHSprite *)Info();
     *(unsigned short *)((char *)sprite + 0x186) =

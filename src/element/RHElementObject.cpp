@@ -33,6 +33,118 @@
 #include "RHElementObject.h"
 #include "RHElementActorPC.h"
 
+class SBGeoPoint2D
+{
+public:
+    SBGeoPoint2D();
+    SBGeoPoint2D(float x, float y);
+    ~SBGeoPoint2D();
+    SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
+    SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
+    SBGeoPoint2D FUN_005fc200(const SBGeoPoint2D &other) const;
+    float x;
+    float y;
+};
+
+class SBGeoVector2D : public SBGeoPoint2D
+{
+public:
+    SBGeoVector2D(float x, float y);
+    ~SBGeoVector2D() {}
+    SBGeoVector2D(const SBGeoVector2D &other);
+    SBGeoVector2D &operator=(const SBGeoVector2D &other);
+};
+
+class SBGeoBoundingBox2D
+{
+public:
+    SBGeoBoundingBox2D();
+    bool FUN_00608400(const SBGeoPoint2D &point) const;
+    SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &offset) const;
+    void SetFirst(const SBGeoPoint2D &point)
+    {
+        active = true;
+        first = point;
+    }
+    void SetSecond(const SBGeoPoint2D &point)
+    {
+        active = true;
+        second = point;
+    }
+    SBGeoPoint2D first;
+    SBGeoPoint2D second;
+    bool active;
+};
+
+#include "RHMobileUnk00607da0.h"
+
+class RHUnkFXDraw
+{
+public:
+    unsigned long Unk005e4ed0(int width, int height, int flags, bool retain);
+    unsigned short FUN_005e56c0(unsigned long surface);
+    unsigned short FUN_005e5750(unsigned long surface);
+};
+
+class RHUnkPathActorInfoBase
+{
+public:
+    void *Unk0055fa10(int value);
+};
+
+class RHObjectSpriteInfo
+{
+public:
+    SBGeoBoundingBox2D &Box() { return *(SBGeoBoundingBox2D *)((RHUnkPathActorInfoBase *)this)->Unk0055fa10(m_88); }
+    void SetPoint(const SBGeoPoint2D &point)
+    {
+        m_20 = point;
+        {
+            SBGeoVector2D vector(*(SBGeoVector2D *)&point);
+            ((RHMobileUnk00607da0 *)&m_c0)->FUN_00607da0((const RHMobileUnk00607da0 &)Box().FUN_006090d0(vector));
+        }
+        m_4 = 2;
+    }
+    unsigned m_0;
+    unsigned m_4;
+    char m_pad8[0x18];
+    SBGeoPoint2D m_20;
+    char m_pad28[0x60];
+    int m_88;
+    char m_pad8c[0x34];
+    SBGeoBoundingBox2D m_c0;
+};
+
+class RHSprite
+{
+public:
+    bool FUN_005bd3a0(RHSprite &other);
+    unsigned m_0;
+    RHObjectSpriteInfo m_4;
+};
+
+// FUNCTION: GAME 0x004b2010
+bool RHElementObject::Create(bool flag, const RHElementObject &source)
+{
+    m_b8 = (int)&source;
+    *(short *)((char *)this + 0x10) = *(const short *)((const char *)&source + 0x10);
+    *(bool *)((char *)this + 0x12) = flag;
+    m_b0 = source.m_b0;
+    typedef unsigned long (RHUnkFXDraw::*CreateSurface)(unsigned short, unsigned short, int, int);
+    RHUnkFXDraw *&draw = *(RHUnkFXDraw **)((char *)this + 0x60);
+    const unsigned long *surfaces = (const unsigned long *)((const char *)&source + 0x54);
+    if (surfaces[0] != (unsigned long)-1)
+        *(unsigned long *)((char *)this + 0x54) = (draw->*reinterpret_cast<CreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(
+            draw->FUN_005e56c0(surfaces[0]), draw->FUN_005e5750(surfaces[0]), 0, 0);
+    if (surfaces[1] != (unsigned long)-1)
+        *(unsigned long *)((char *)this + 0x58) = (draw->*reinterpret_cast<CreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(
+            draw->FUN_005e56c0(surfaces[1]), draw->FUN_005e5750(surfaces[1]), 0, 0);
+    (*(RHSprite **)((char *)this + 0x50))->FUN_005bd3a0(**(RHSprite **)((const char *)&source + 0x50));
+    (*(RHSprite **)((char *)this + 0x50))->m_4.SetPoint(SBGeoPoint2D(0.0f, 0.0f));
+    m_ad = source.m_ad;
+    return true;
+}
+
 // FUNCTION: GAME 0x004b2190
 bool RHElementObject::Serialize(SBFile &file)
 {
@@ -164,48 +276,6 @@ void EmitRHObjectQuantity(const RHElementObject *object, void *actor)
 {
     object->FUN_004b2420(actor);
 }
-
-class SBGeoPoint2D
-{
-public:
-    SBGeoPoint2D();
-    SBGeoPoint2D(float x, float y);
-    ~SBGeoPoint2D();
-    SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
-    SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
-    SBGeoPoint2D FUN_005fc200(const SBGeoPoint2D &other) const;
-    float x;
-    float y;
-};
-
-class SBGeoVector2D : public SBGeoPoint2D
-{
-public:
-    SBGeoVector2D(float x, float y);
-    ~SBGeoVector2D() {}
-    SBGeoVector2D(const SBGeoVector2D &other);
-    SBGeoVector2D &operator=(const SBGeoVector2D &other);
-};
-
-class SBGeoBoundingBox2D
-{
-public:
-    SBGeoBoundingBox2D();
-    bool FUN_00608400(const SBGeoPoint2D &point) const;
-    void SetFirst(const SBGeoPoint2D &point)
-    {
-        active = true;
-        first = point;
-    }
-    void SetSecond(const SBGeoPoint2D &point)
-    {
-        active = true;
-        second = point;
-    }
-    SBGeoPoint2D first;
-    SBGeoPoint2D second;
-    bool active;
-};
 
 // FUNCTION: GAME 0x004b24d0
 bool RHElementObject::FUN_004b24d0(const SBGeoPoint2D &point) const
@@ -494,12 +564,6 @@ class RHCivilianSpriteView
 public:
     unsigned short FUN_005bdef0();
     unsigned short FUN_005bdf20();
-};
-
-class RHUnkFXDraw
-{
-public:
-    unsigned long Unk005e4ed0(int width, int height, int flags, bool retain);
 };
 
 // FUNCTION: GAME 0x004b3170

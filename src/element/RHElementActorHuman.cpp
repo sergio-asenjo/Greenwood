@@ -1388,7 +1388,7 @@ double FUN_005fcdf0(unsigned short value);
 void RHElementActorHuman::FUN_0047f4f0(void *)
 {
     FUN_0047ca50();
-    g_unk0x6c10e8->Unk(this);
+    g_unk0x6c10e8->RemoveUnconsciousStarsIf((RHElementActor *)this);
     *(char *)((char *)this + 0x1ce) = 0;
     *(unsigned short *)((char *)this + 0x1c8) = 0;
 }
@@ -1505,7 +1505,7 @@ int RHElementActorHuman::FUN_00481d40(void *first, void *second)
     struct Kind5 { unsigned value : 5; };
     if (RHActorField<char>(this, 0x148))
     {
-        RHUnk005c38b0 *context = g_unk0x6c10e8;
+        RHTitbits *context = g_unk0x6c10e8;
         RHUnk00613e90 point;
         ((RHSoldierHumanCalls *)this)->FUN_00478e50(point);
         typedef void (RHScriptBatchCalls::*Effect)(void *, unsigned short, int, void *, int, int, int, int);
@@ -2213,8 +2213,7 @@ bool RHHumanActorCalls::FUN_0047d270(void *actor)
     return false;
 }
 
-// Parked: the first opponent's count loads use different registers.
-// STUB: GAME 0x0047ce70
+// FUNCTION: GAME 0x0047ce70
 bool RHElementActorHuman::FUN_0047ce70(RHElementActorHuman *actor, void *line)
 {
     unsigned count = m_260.count;
@@ -2250,7 +2249,8 @@ bool RHElementActorHuman::FUN_0047ce70(RHElementActorHuman *actor, void *line)
     FUN_0047ebc0();
     if (m_260.count)
     {
-        RHElementActorHuman *other = RHHumanFirstOpponent(this);
+        RHHumanOpponentNode *first = (RHHumanOpponentNode *)m_260.head->next;
+        RHElementActorHuman *other = *(RHElementActorHuman *volatile *)&first->value.m_actor;
         if (other->m_260.count)
             ((RHHumanActorCalls *)this)->FUN_0047d4c0();
     }
@@ -2598,7 +2598,7 @@ void RHElementActorHuman::FUN_00482150(int value, int second, bool flag)
         {
             unsigned short frame = *(unsigned short *)((char *)RHActorField<void *>(this, 0x50) + 0xde);
             RHUnk00613e90 point(0.0f, 0.0f, 2.0f);
-            RHUnk005c38b0 *context = g_unk0x6c10e8;
+            RHTitbits *context = g_unk0x6c10e8;
             typedef void (RHScriptBatchCalls::*Effect)(void *, unsigned short, int, void *, int, int, int, int);
             (((RHScriptBatchCalls *)context)->*(Effect)&RHScriptBatchCalls::Unk005c2ec0)(
                 &point, frame, 4, this, ((RHHumanVirtualCalls *)this)->V0cc() - amount, 0, 0, -1);
@@ -3622,7 +3622,6 @@ void RHElementActorHuman::FUN_004851b0(unsigned short value, void *owner)
     FUN_0047d1b0();
 }
 
-extern float g_unk0x006774a0;
 
 inline int RHHumanFindActor(void *actor, RHElementActorHuman *const &value)
 {
@@ -3684,8 +3683,7 @@ void RHElementActorHuman::FUN_004857b0(RHHumanList &result)
 // FUNCTION: GAME 0x00485940
 void RHElementActorHuman::FUN_00485940(int color, unsigned short value, bool completed, float duration)
 {
-    double ticks = duration;
-    ticks *= g_unk0x006774a0;
+    float ticks = duration * 20.0f;
     RHActorField<bool>(this, 0x48a) = completed;
     RHActorField<float>(this, 0x48c) = duration;
     RHActorField<int>(this, 0x480) = RHActorField<int>(this, 0x484) = (int)ticks;
@@ -3932,14 +3930,7 @@ public:
     virtual bool V48() = 0;
 };
 
-class RHMapBox
-{
-public:
-    RHMapBox(float left, float top, float right, float bottom);
-    SBGeoPoint2D m_first;
-    SBGeoPoint2D m_second;
-    int m_10;
-};
+#include "RHMapBox.h"
 
 class RHMobileUnk006091b0
 {
@@ -4142,7 +4133,6 @@ bool RHSound::FUN_005a8330(int first, int second, int third, const SBGeoPoint2D 
     return true;
 }
 
-extern float g_unk0x006774a0;
 
 // Parked: the original spills the facing direction to the actor argument slot; VC6 keeps it in EBX.
 // STUB: GAME 0x005c1b70
@@ -4153,7 +4143,7 @@ unsigned short RHHumanWeaponCalls::FUN_005c1b70(void *actor, void *target, unsig
         ((RHUnk004237d0 *)actor)->FUN_004237d0()))->FUN_005fcc50(0.57357645f);
     float targetZ = RHActorField<float>(RHActorField<void *>(target, 0x50), 0x18);
     float actorZ = RHActorField<float>(RHActorField<void *>(actor, 0x50), 0x18);
-    if (targetZ >= actorZ + g_unk0x006774a0)
+    if (targetZ >= actorZ + 20.0f)
         return *(unsigned short *)(*(char **)((char *)this + 4) + 8);
     unsigned short side = direction;
     switch (value)

@@ -10,6 +10,7 @@ class SBGeoPoint2D;
 class RHElementActorHuman;
 class RHUnk00613e90;
 class RHBonusInfo;
+class RHPCDescription;
 struct RHBonusGlobalView;
 struct RHBonusProjection;
 
@@ -108,7 +109,8 @@ public:
     undefined m_101[3]; // 0x101
     unsigned m_104; // +0x104
     void *m_108; // +0x108
-    undefined m_10c[0x4f0]; // 0x10c
+    undefined m_10c[0x4ec];
+    RHPCDescription *m_5f8;
     void *m_5fc; // +0x5fc
     void *m_600; // +0x600
     undefined m_604[8]; // 0x604

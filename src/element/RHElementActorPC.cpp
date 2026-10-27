@@ -40,7 +40,7 @@ DECOMP_SIZE_ASSERT(RHUnk00613e90, 0x0c)
 DECOMP_SIZE_ASSERT(RHPCDescription, 0x48)
 DECOMP_SIZE_ASSERT(RHUnk0048f280, 0x60c)
 
-extern RHUnk005c38b0 *g_unk0x6c10e8;
+extern RHTitbits *g_unk0x6c10e8;
 extern double g_unk0x00677d90;
 std::wstring FUN_005e23d0(unsigned long id);
 

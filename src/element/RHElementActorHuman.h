@@ -73,12 +73,7 @@ public:
 void RHSerializeName(SBFile &file, const char *name);
 
 struct RHTitbitNode;
-class RHTitbitList
-{
-public:
-    void Clear(void *result, RHTitbitNode *first, RHTitbitNode *last);
-    __forceinline void At(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
-};
+#include "RHTitbitsCore.h"
 // SIZE 0x08
 struct RHHumanOpponent
 {
@@ -401,6 +396,7 @@ public:
 class SBGeoBoundingBox2D
 {
 public:
+    SBGeoBoundingBox2D(float, float, float, float);
     SBGeoBoundingBox2D(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
     bool FUN_00608400(const SBGeoPoint2D &point) const;
     SBGeoPoint2D FUN_00608f40() const;
@@ -486,8 +482,8 @@ SBGeoVector2D operator*(float factor, const SBGeoVector2D &point);
 
 #include "RHHumanActorCalls.h"
 
-class RHUnk005c38b0;
-extern RHUnk005c38b0 *g_unk0x6c10e8;
+class RHTitbits;
+extern RHTitbits *g_unk0x6c10e8;
 
 #include "RHHumanWeaponCalls.h"
 

@@ -69,6 +69,7 @@ class RHElementObject : public RHElement
 public:
     virtual bool Serialize(SBFile &file);
 
+    bool Create(bool flag, const RHElementObject &source);
     void Emit(SBFile &file);
     void FUN_004b2390(int value);
     bool FUN_004b2420(void *actor) const;

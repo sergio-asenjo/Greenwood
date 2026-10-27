@@ -1,7 +1,6 @@
 #include "SBNullstr.h"
 #include "RHElementFX.h"
 
-SBGeoBoundingBox2D RHUnkFXSprite::Unk005bd970() { return *(SBGeoBoundingBox2D *)0; }
 // FUNCTION: GAME 0x006092a0
 SBGeoBoundingBox2D &SBGeoBoundingBox2D::operator-=(const SBGeoVector2D &vector)
 {

@@ -409,7 +409,8 @@ void RHElementActorSoldier::FUN_004a5770(RHSoldierSequenceElement *element)
     ((RHSoldierNPCCalls *)this)->FUN_0048d790(element);
 }
 
-extern RHUnk005c38b0 *g_unk0x6c10e8;
+class RHTitbits;
+extern RHTitbits *g_unk0x6c10e8;
 
 // FUNCTION: GAME 0x004a5810
 void RHElementActorSoldier::SetAppleSmell(bool enabled)
