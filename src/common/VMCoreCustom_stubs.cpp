@@ -10,6 +10,8 @@ namespace VMCoreCustomDependencies
 {
     // FUNCTION: GAME 0x005714a0
     void FUN_005714a0(int value) { RHMenuDialogue::Display(value); }
+    // TEMPLATE: GAME 0x006390a0 FOLDED
+    // ?Call006390a0@VMCoreCustomDependencies@@YA_NH@Z
     bool Call006390a0(int) { return false; }
     // FUNCTION: GAME 0x00577cf0
     bool FUN_00577cf0(int object, int value)

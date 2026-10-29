@@ -25,14 +25,9 @@ SCSerializeUnkArray::~SCSerializeUnkArray() {}
 
 SCSerializeUnkObject::~SCSerializeUnkObject() {}
 
-SCSerializeRecordList::SCSerializeRecordList(unsigned nodeSize)
+// FUNCTION: GAME 0x0063af90
+SCSerializeUnk0063af90::~SCSerializeUnk0063af90()
 {
-    std::allocator<char> value;
-    *(char *)&allocator = *(const char *)&value;
-    head = (SCSerializeRecordNode *)operator new(nodeSize);
-    head->next = head;
-    head->previous = head;
-    count = 0;
 }
 
 void SCSerializeUnkList::PushBack(void *value)
@@ -46,18 +41,6 @@ void SCSerializeUnkList::PushBack(void *value)
         node->m_object = (SCSerializeUnkObject *)value;
     ++m_count;
 }
-SCSerializeRecordIterator SCSerializeRecordList::Erase(SCSerializeRecordIterator position)
-{
-    SCSerializeRecordNode *node = position.node;
-    SCSerializeRecordNode *next = node->next;
-    node->previous->next = next;
-    node->next->previous = node->previous;
-    node->value.~SCSerializeNamedType();
-    operator delete(node);
-    --count;
-    return SCSerializeRecordIterator(next);
-}
-
 SCSerializeRecordValue::~SCSerializeRecordValue() {}
 
 // FUNCTION: GAME 0x0063b8a0

@@ -100,10 +100,15 @@ void ToolboxChunks::FUN_005e3070() { _Buyback(); }
 // LIBRARY: GAME 0x005e2ea0
 // ?substr@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@QBE?AV12@II@Z
 
-// FUNCTION: GAME 0x005e31d0
-ToolboxChunk **ToolboxChunks::FUN_005e31d0(unsigned int count) { return _Growmap(count); }
+// TEMPLATE: GAME 0x005e31d0 FOLDED
+// ?_Growmap@?$deque@UToolboxChunk@@V?$allocator@UToolboxChunk@@@std@@@std@@IAEPAPAUToolboxChunk@@I@Z
 // TEMPLATE: GAME 0x0053dca0
 // ??0const_iterator@?$deque@UToolboxChunk@@V?$allocator@UToolboxChunk@@@std@@@std@@QAE@XZ
 
-// FUNCTION: GAME 0x0053e080
-ToolboxChunkIterator::ToolboxChunkIterator(ToolboxChunk *next, ToolboxChunk **map) : m_first(*map), m_last(*map + 512), m_next(next), m_map(map) {}
+// TEMPLATE: GAME 0x0053e080 FOLDED
+// ??0?$ToolboxDequeIterator@UToolboxChunk@@@@QAE@PAUToolboxChunk@@PAPAU1@@Z
+template <class T>
+ToolboxDequeIterator<T>::ToolboxDequeIterator(T *next, T **map)
+    : m_first(*map), m_last(*map + (4096 < sizeof(T) ? 1 : 4096 / sizeof(T))), m_next(next), m_map(map) {}
+
+template struct ToolboxDequeIterator<ToolboxChunk>;

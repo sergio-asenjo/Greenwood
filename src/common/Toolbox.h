@@ -16,21 +16,22 @@ struct ToolboxChunk
     unsigned long m_size; // +0x04
 };
 
-// SIZE 0x10
-struct ToolboxChunkIterator
+template <class T>
+struct ToolboxDequeIterator
 {
-    ToolboxChunkIterator(ToolboxChunk *, ToolboxChunk **);
-    ToolboxChunk *m_first; // +0x00
-    ToolboxChunk *m_last; // +0x04
-    ToolboxChunk *m_next; // +0x08
-    ToolboxChunk **m_map; // +0x0c
+    ToolboxDequeIterator(T *, T **);
+    T *m_first;
+    T *m_last;
+    T *m_next;
+    T **m_map;
 };
+
+typedef ToolboxDequeIterator<ToolboxChunk> ToolboxChunkIterator;
 
 class ToolboxChunks : public std::deque<ToolboxChunk>
 {
 public:
     void FUN_005e3070();
-    ToolboxChunk **FUN_005e31d0(unsigned int);
     void Buyback()
     {
         ToolboxChunk *block = (ToolboxChunk *)operator new(4096);
@@ -52,7 +53,9 @@ public:
         else
         {
             int count = _Last._Map - _First._Map + 1;
-            ToolboxChunk **map = FUN_005e31d0(2 * count);
+            typedef std::deque<ToolboxChunk> Chunks;
+            ToolboxChunk **(Chunks::*grow)(unsigned int) = &ToolboxChunks::_Growmap;
+            ToolboxChunk **map = (this->*grow)(2 * count);
             map[count] = block;
             ToolboxChunkIterator cursor(_First._Next, map);
             *(ToolboxChunkIterator *)&_First = cursor;

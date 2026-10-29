@@ -4,7 +4,7 @@
 int FUN_00579a20();
 void FUN_005785d0(void *value);
 void FUN_005782a0(void *object, bool value);
-void FUN_005785b0(void *first, void *second);
+void FUN_005785b0(unsigned long id, bool first);
 unsigned FUN_0057aa20();
 class RHElementScroll;
 
@@ -307,7 +307,7 @@ int VMCoreCustom::FUN_00404e50(VMNativeStack *stack)
     char *data = stack->m_data;
     int top = stack->m_size;
     stack->m_size -= 8;
-    ((void (*)(void *, bool))FUN_005785b0)(*(void **)(data + top - 8), *(int *)(data + size - 4) != 0);
+    FUN_005785b0(*(unsigned long *)(data + top - 8), *(int *)(data + size - 4) != 0);
     return 0;
 }
 
@@ -576,8 +576,7 @@ int VMCoreCustom::FUN_00405370(VMNativeStack *stack)
     return VMCoreCustomDependencies::FUN_00573d10(*(int *)(data + top - 16), *(int *)(data + top - 12), *(int *)(data + top - 8), *(int *)(data + size - 4));
 }
 
-// Parked: cdecl stack argument conflicts with the existing virtual VMCore callee binding.
-// STUB: GAME 0x004053b0
+// FUNCTION: GAME 0x004053b0
 int VMCoreCustom::FUN_004053b0(VMNativeStack *stack)
 {
     int *args = (int *)(stack->m_data + stack->m_size) - 1;

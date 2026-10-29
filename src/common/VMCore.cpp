@@ -495,7 +495,8 @@ void VMCore::FUN_00638e90()
     ++m_24;
 }
 
-// FUNCTION: GAME 0x006390a0
+// TEMPLATE: GAME 0x006390a0 FOLDED
+// ?FUN_006390a0@VMCore@@UAE_NXZ
 bool VMCore::FUN_006390a0()
 {
     return false;

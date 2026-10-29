@@ -17,7 +17,8 @@ char g_unk0x006be404[] = "+I\0-I\0*I\0/I\0+F\0-F\0*F\0/F\0"
 #define SCQUAD_VALUE(argument) (((RHUnk0063a1d0 &)(argument)).FUN_0063a1d0())
 #define SCQUAD_ARGUMENT(argument) ((argument).Serialize(file, writing, false))
 
-// FUNCTION: GAME 0x0063b9a0
+// TEMPLATE: GAME 0x0063b9a0 FOLDED
+// ?GetType@SCQuadArg@@QAEEXZ
 unsigned char SCQuadArg::GetType()
 {
     return m_00;

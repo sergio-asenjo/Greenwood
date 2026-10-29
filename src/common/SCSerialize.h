@@ -10,8 +10,6 @@
 #include "SCQuad.h"
 #include <vector>
 
-struct SCSerializeRecordNode;
-
 class SCSerializeNamedType : public SCType
 {
 public:
@@ -27,29 +25,57 @@ public:
     unsigned m_34;
 };
 
-struct SCSerializeRecordIterator
-{
-    SCSerializeRecordNode *node;
-    SCSerializeRecordIterator(SCSerializeRecordNode *value) : node(value) {}
-};
-
-class SCSerializeRecordList
-{
-public:
-    explicit SCSerializeRecordList(unsigned nodeSize = sizeof(SCSerializeRecordValue) + 8);
-    inline ~SCSerializeRecordList();
-    SCSerializeRecordIterator Erase(SCSerializeRecordIterator position);
-    unsigned allocator;
-    SCSerializeRecordNode *head;
-    unsigned count;
-};
-
+template <class Value>
 struct SCSerializeRecordNode
 {
     SCSerializeRecordNode *next;
     SCSerializeRecordNode *previous;
-    SCSerializeNamedType value;
+    Value value;
 };
+
+template <class Value>
+struct SCSerializeRecordIterator
+{
+    SCSerializeRecordNode<Value> *node;
+    SCSerializeRecordIterator(SCSerializeRecordNode<Value> *value) : node(value) {}
+    SCSerializeRecordIterator operator++(int);
+};
+
+template <class Value>
+class SCSerializeRecordList
+{
+public:
+    SCSerializeRecordList()
+    {
+        std::allocator<char> value;
+        *(char *)&allocator = *(const char *)&value;
+        head = BuyNode(0, 0);
+        count = 0;
+    }
+    inline ~SCSerializeRecordList();
+    SCSerializeRecordNode<Value> *BuyNode(SCSerializeRecordNode<Value> *next, SCSerializeRecordNode<Value> *previous);
+    inline SCSerializeRecordIterator<Value> Erase(SCSerializeRecordIterator<Value> position);
+    unsigned allocator;
+    SCSerializeRecordNode<Value> *head;
+    unsigned count;
+};
+
+template <class Value>
+inline SCSerializeRecordList<Value>::~SCSerializeRecordList()
+{
+    SCSerializeRecordNode<Value> *stop = head;
+    SCSerializeRecordNode<Value> *current = stop->next;
+    while (current != stop)
+    {
+        SCSerializeRecordNode<Value> *removed = current;
+        current = current->next;
+        Erase(SCSerializeRecordIterator<Value>(removed));
+    }
+    std::allocator<SCSerializeRecordNode<Value> > allocator;
+    allocator.deallocate(head, 1);
+    head = 0;
+    count = 0;
+}
 
 class SCSerializeUnk0063b780
 {
@@ -65,7 +91,7 @@ public:
 class SCSerializeUnk0063af90
 {
 public:
-    SCSerializeUnk0063af90() : m_24(0x3c), m_38(0x40) {}
+    SCSerializeUnk0063af90() {}
     virtual ~SCSerializeUnk0063af90();
     int FUN_0063b070(FILE *file, bool writing);
     std::string m_04;
@@ -73,10 +99,10 @@ public:
     int m_18;
     int m_1c;
     int m_20;
-    SCSerializeRecordList m_24;
+    SCSerializeRecordList<SCSerializeNamedType> m_24;
     int m_30;
     int m_34;
-    SCSerializeRecordList m_38;
+    SCSerializeRecordList<SCSerializeRecordValue> m_38;
 };
 
 int SCSerializeUnk00643c56(FILE *);

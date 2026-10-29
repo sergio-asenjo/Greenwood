@@ -8,6 +8,11 @@ typedef int SCSerializeSizeAssert[(sizeof(SCSerialize) == 0x10) ? 1 : -1];
 typedef int SCSerializeObjectSizeAssert[(sizeof(SCSerializeUnkObject) == 0x6c) ? 1 : -1];
 typedef int SCSerializeRecordSizeAssert[(sizeof(SCSerializeRecordValue) == 0x38) ? 1 : -1];
 typedef int SCSerializeFunctionSizeAssert[(sizeof(SCSerializeUnk0063af90) == 0x44) ? 1 : -1];
+typedef int SCSerializeNamedTypeSizeAssert[(sizeof(SCSerializeNamedType) == 0x34) ? 1 : -1];
+typedef int SCSerializeNamedNodeSizeAssert[(sizeof(SCSerializeRecordNode<SCSerializeNamedType>) == 0x3c) ? 1 : -1];
+typedef int SCSerializeValueNodeSizeAssert[(sizeof(SCSerializeRecordNode<SCSerializeRecordValue>) == 0x40) ? 1 : -1];
+typedef int SCSerializeNamedListSizeAssert[(sizeof(SCSerializeRecordList<SCSerializeNamedType>) == 0x0c) ? 1 : -1];
+typedef int SCSerializeValueListSizeAssert[(sizeof(SCSerializeRecordList<SCSerializeRecordValue>) == 0x0c) ? 1 : -1];
 
 
 void EmitSCSerialize(SCSerialize *serializer)
@@ -80,6 +85,9 @@ int SCSerializeRecordValue::FUN_0063a5c0(FILE *file, bool writing)
 // SYNTHETIC: GAME 0x0063a920
 // ??_GSCSerializeUnkObject@@UAEPAXI@Z
 
+// TEMPLATE: GAME 0x00507630
+// ?insert@?$vector@UVMQuad@@V?$allocator@UVMQuad@@@std@@@std@@QAEXPAUVMQuad@@IABU3@@Z
+
 // STUB: GAME 0x0063a940
 int SCSerializeUnkObject::FUN_0063a940(FILE *file, bool writing)
 {
@@ -150,29 +158,8 @@ int SCSerializeUnkObject::FUN_0063a940(FILE *file, bool writing)
     return result;
 }
 
-inline SCSerializeRecordList::~SCSerializeRecordList()
-{
-    SCSerializeRecordNode *stop = head;
-    SCSerializeRecordNode *current = stop->next;
-    while (current != stop)
-    {
-        SCSerializeRecordNode *removed = current;
-        current = current->next;
-        Erase(SCSerializeRecordIterator(removed));
-    }
-    std::allocator<SCSerializeRecordNode> allocator;
-    allocator.deallocate(head, 1);
-    head = 0;
-    count = 0;
-}
-
 // SYNTHETIC: GAME 0x0063af70
 // SCSerializeUnk0063af90::`scalar deleting destructor'
-
-// FUNCTION: GAME 0x0063af90
-SCSerializeUnk0063af90::~SCSerializeUnk0063af90()
-{
-}
 
 // STUB: GAME 0x0063b070
 int SCSerializeUnk0063af90::FUN_0063b070(FILE *file, bool writing)
@@ -330,4 +317,74 @@ void EmitSCSerializeRecords(SCSerializeUnk0063af90 *records, SCSerializeUnk0063b
     records->FUN_0063b070(0, false);
     records->SCSerializeUnk0063af90::~SCSerializeUnk0063af90();
     record->~SCSerializeUnk0063b780();
+}
+
+template <class Value>
+inline SCSerializeRecordIterator<Value> SCSerializeRecordIterator<Value>::operator++(int)
+{
+    SCSerializeRecordIterator previous = *this;
+    node = node->next;
+    return previous;
+}
+
+template <class Value>
+inline SCSerializeRecordIterator<Value> SCSerializeRecordList<Value>::Erase(SCSerializeRecordIterator<Value> position)
+{
+    SCSerializeRecordNode<Value> *node = (position++).node;
+    node->previous->next = node->next;
+    node->next->previous = node->previous;
+    SCSerializeNamedType &value = node->value;
+    value.~SCSerializeNamedType();
+    operator delete(node);
+    --count;
+    return position;
+}
+
+template <class Value>
+SCSerializeRecordNode<Value> *SCSerializeRecordList<Value>::BuyNode(SCSerializeRecordNode<Value> *next, SCSerializeRecordNode<Value> *previous)
+{
+    SCSerializeRecordNode<Value> *node = (SCSerializeRecordNode<Value> *)operator new(sizeof(SCSerializeRecordNode<Value>));
+    node->next = next != 0 ? next : node;
+    node->previous = previous != 0 ? previous : node;
+    return node;
+}
+
+void EmitSCSerializeRecordList(SCSerializeRecordList<SCSerializeNamedType> *records)
+{
+    records->~SCSerializeRecordList();
+}
+
+// TEMPLATE: GAME 0x0063b800
+// ?BuyNode@?$SCSerializeRecordList@VSCSerializeNamedType@@@@QAEPAU?$SCSerializeRecordNode@VSCSerializeNamedType@@@@PAU2@0@Z
+
+// TEMPLATE: GAME 0x0063b830
+// ?BuyNode@?$SCSerializeRecordList@VSCSerializeRecordValue@@@@QAEPAU?$SCSerializeRecordNode@VSCSerializeRecordValue@@@@PAU2@0@Z
+
+// TEMPLATE: GAME 0x0063b720
+// ??1?$SCSerializeRecordList@VSCSerializeNamedType@@@@QAE@XZ
+
+// TEMPLATE: GAME 0x0063b860 FOLDED
+// ?Erase@?$SCSerializeRecordList@VSCSerializeNamedType@@@@QAE?AU?$SCSerializeRecordIterator@VSCSerializeNamedType@@@@U2@@Z
+
+// TEMPLATE: GAME 0x0063b860 FOLDED
+// ?Erase@?$SCSerializeRecordList@VSCSerializeRecordValue@@@@QAE?AU?$SCSerializeRecordIterator@VSCSerializeRecordValue@@@@U2@@Z
+
+void EmitSCSerializeRecordErase(SCSerializeRecordList<SCSerializeNamedType> *records, SCSerializeRecordIterator<SCSerializeNamedType> position)
+{
+    SCSerializeRecordIterator<SCSerializeNamedType> (SCSerializeRecordList<SCSerializeNamedType>::*erase)(SCSerializeRecordIterator<SCSerializeNamedType>) = &SCSerializeRecordList<SCSerializeNamedType>::Erase;
+    (records->*erase)(position);
+}
+
+void EmitSCSerializeRecordNodeAllocation(SCSerializeRecordList<SCSerializeNamedType> *named, SCSerializeRecordList<SCSerializeRecordValue> *value)
+{
+    SCSerializeRecordNode<SCSerializeNamedType> *(SCSerializeRecordList<SCSerializeNamedType>::*buyNamed)(SCSerializeRecordNode<SCSerializeNamedType> *, SCSerializeRecordNode<SCSerializeNamedType> *) = &SCSerializeRecordList<SCSerializeNamedType>::BuyNode;
+    (named->*buyNamed)(0, 0);
+    SCSerializeRecordNode<SCSerializeRecordValue> *(SCSerializeRecordList<SCSerializeRecordValue>::*buyValue)(SCSerializeRecordNode<SCSerializeRecordValue> *, SCSerializeRecordNode<SCSerializeRecordValue> *) = &SCSerializeRecordList<SCSerializeRecordValue>::BuyNode;
+    (value->*buyValue)(0, 0);
+}
+
+void EmitSCSerializeRecordValueErase(SCSerializeRecordList<SCSerializeRecordValue> *value, SCSerializeRecordIterator<SCSerializeRecordValue> position)
+{
+    SCSerializeRecordIterator<SCSerializeRecordValue> (SCSerializeRecordList<SCSerializeRecordValue>::*erase)(SCSerializeRecordIterator<SCSerializeRecordValue>) = &SCSerializeRecordList<SCSerializeRecordValue>::Erase;
+    (value->*erase)(position);
 }

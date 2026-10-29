@@ -8,6 +8,11 @@
 extern "C" void *malloc(unsigned int);
 
 // LIBRARY: GAME 0x006428b5
+// ??2@YAPAXI@Z
+
+// LIBRARY: GAME 0x0064158f
+// ??3@YAXPAX@Z
+
 void *operator new(unsigned int size)
 {
     return malloc(size);
