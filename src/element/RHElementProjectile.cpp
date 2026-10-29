@@ -192,6 +192,78 @@ RHProjectileVector RHProjectileThrowCalls::FUN_004b4260(const RHProjectileVector
     return result;
 }
 
+#include "SBGeoPoint2D.h"
+#include "SBGeoSegment2D.h"
+#include "SBGeoIntersection2D.h"
+#include "RHUnk005fc3b0.h"
+#include "RHUnkSectorPoints.h"
+#include "RHUnk0053bf20.h"
+#include "SCQuad.h"
+
+DECOMP_SIZE_ASSERT(RHUnk00613e90, 0x0c)
+DECOMP_SIZE_ASSERT(RHProjectileVector, 0x0c)
+DECOMP_SIZE_ASSERT(RHProjectileSerializedStep, 0x14)
+DECOMP_SIZE_ASSERT(RHProjectilePathStep, 0x14)
+DECOMP_SIZE_ASSERT(RHProjectilePathList, 0x18)
+
+// STUB: GAME 0x004b5ab0
+void RHElementProjectile::AddTrajectoryFallIntoHole(void *material)
+{
+    m_134 = true;
+    unsigned count = m_138.m_count;
+    if (count >= 2) {
+        RHProjectilePathList &path = *(RHProjectilePathList *)&m_138;
+        ((RHProfileListCursor *)&path)->GoTo(count - 1);
+        RHProjectileVector last = *(RHProjectileVector *)path.cursor->data;
+        ((RHProfileListCursor *)&path)->GoTo(count - 2);
+        RHProjectileVector previous = *(RHProjectileVector *)path.cursor->data;
+        SBGeoPoint2D end(last.x, last.y - last.z);
+        SBGeoPoint2D start(previous.x, previous.y - previous.z);
+        RHUnk0060fbf0 intersection;
+        RHMobileUnk006100e0 line(end, start);
+        SBGeoPoint2D lowest(end);
+        lowest.m_y += 2000.0f;
+        bool found = false;
+        bool alternate = false;
+        SBGeoSegment2D edge(SBGeoPoint2D(0.0f, 0.0f), SBGeoPoint2D(0.0f, 0.0f));
+        edge.First() = start;
+        RHUnkSectorPoints &points = *(RHUnkSectorPoints *)((char *)material + 4);
+        unsigned size = points.Unk0060ce80();
+        for (unsigned index = 0; index < size; ++index) {
+            if (alternate) {
+                edge.First() = points.Unk0060cef0(index);
+                alternate = false;
+            }
+            else {
+                edge.Second() = points.Unk0060cef0(index);
+                alternate = true;
+            }
+            intersection.FUN_0060fca0(line.FUN_006101c0(edge.Line()));
+            if (((SCQuadArg *)&intersection)->GetType() == 1 &&
+                ((SBGeoPoint2D *)((RHUnk0053bf20 *)&intersection)->FUN_0053bf20())->m_y > end.m_y &&
+                ((SBGeoPoint2D *)((RHUnk0053bf20 *)&intersection)->FUN_0053bf20())->m_y < lowest.m_y) {
+                lowest = *(SBGeoPoint2D *)((RHUnk0053bf20 *)&intersection)->FUN_0053bf20();
+                found = true;
+            }
+        }
+        if (found) {
+            ((RHProfileListCursor *)&path)->GoTo(count - 1);
+            float scale = (unsigned short)((RHProjectileSerializedStep *)path.cursor->data)->m_0c /
+                ((RHUnk005fc3b0 *)&end.Unk005fc110(start))->Unk005fc6a0(1.0f);
+            RHProjectileSerializedStep *step = new RHProjectileSerializedStep;
+            step->m_0e = 0;
+            ((RHProjectileVector *)step)->Set(lowest.m_x, lowest.m_y + last.z, last.z);
+            step->m_0c = ((RHUnk005fc3b0 *)&lowest.Unk005fc110(end))->Unk005fc6a0(1.0f) * scale;
+            ((SBListCursorStorage<std::list<RHProjectileSerializedStep *> > *)&path)->InsertLast(step);
+        }
+    }
+}
+
+void EmitRHProjectileFall(RHElementProjectile *projectile, void *material)
+{
+    projectile->AddTrajectoryFallIntoHole(material);
+}
+
 // Parked: allocation and cached-cursor live ranges select different registers and schedules.
 // STUB: GAME 0x004b5ee0
 void RHElementProjectile::CopyTrajectory(RHElementProjectile *other)
@@ -213,6 +285,51 @@ void RHElementProjectile::CopyTrajectory(RHElementProjectile *other)
     m_133 = other->m_133;
     m_12c = other->m_12c;
     m_130 = other->m_130;
+}
+
+// FUNCTION: GAME 0x004b6170
+void RHElementProjectile::ComputeTrajectoryJump(const RHProjectileVector &from, const RHProjectileVector &to)
+{
+    RHProjectileVector direction;
+    RHProjectileVector velocity;
+    RHProjectileVector nextVelocity;
+    RHProjectileVector position;
+    RHProjectileVector nextPosition;
+    RHProjectilePathList &path = *(RHProjectilePathList *)&m_138;
+    path.Clear();
+    *(RHProjectileVector *)&m_100 = from;
+    direction = to;
+    direction.x -= from.x;
+    direction.y -= from.y;
+    direction.z -= from.z;
+    velocity = ((RHProjectileThrowCalls *)this)->FUN_004b4260(direction, 0.5f, 0.7f, 0, 0);
+    position = from;
+    for (unsigned short count = 0; count < 50; ++count) {
+        nextVelocity.z = velocity.z - 11.214f;
+        if (position.z < 0.0f && nextVelocity.z <= 0.0f)
+            return;
+        nextPosition.x = position.x + velocity.x * 2.0f;
+        nextPosition.y = position.y + velocity.y * 2.0f;
+        nextPosition.z = position.z + velocity.z * 2.0f;
+        RHProjectileSerializedStep *step = new RHProjectileSerializedStep;
+        path.PushBack((RHProjectilePathStep *)step);
+        step->m_0c = 4;
+        if (((RHUnk00613e90 *)&direction)->FUN_005df5f0(
+                ((RHUnk00613e90 *)&nextPosition)->FUN_005df550((const RHUnk00613e90 &)to)) > -0.1f) {
+            *(RHProjectileVector *)step = to;
+            return;
+        }
+        else {
+            *(RHProjectileVector *)step = nextPosition;
+            velocity.z = nextVelocity.z;
+            position = nextPosition;
+        }
+    }
+}
+
+void EmitRHProjectileTrajectory(RHElementProjectile *projectile, const RHProjectileVector &from, const RHProjectileVector &to)
+{
+    projectile->ComputeTrajectoryJump(from, to);
 }
 
 #define RH_PROJECTILE_ACCESS(field, width, line) \
@@ -259,7 +376,7 @@ bool RHElementProjectile::Serialize(SBFile &file)
         {
             RHProjectileList &list = m_138;
             ((RHTitbitList *)&list)->At(i);
-            RHUnk00613e90 *value = (RHUnk00613e90 *)list.m_cursor.node->data;
+            RHProjectileSerializedStep *value = (RHProjectileSerializedStep *)list.m_cursor.node->data;
             RH_PROJECTILE_ACCESS(value->m_0c, 2, 1433);
             RH_PROJECTILE_ACCESS(value->m_0e, 1, 1434);
             RH_PROJECTILE_ACCESS(value->m_10, 4, 1435);
@@ -272,7 +389,7 @@ bool RHElementProjectile::Serialize(SBFile &file)
         m_138.Resize(count);
         for (unsigned i = 0; i < count; ++i)
         {
-            RHUnk00613e90 *value = new RHUnk00613e90;
+            RHProjectileSerializedStep *value = new RHProjectileSerializedStep;
             RH_PROJECTILE_ACCESS(value->m_0c, 2, 1448);
             RH_PROJECTILE_ACCESS(value->m_0e, 1, 1449);
             RH_PROJECTILE_ACCESS(value->m_10, 4, 1450);
@@ -304,6 +421,75 @@ int RHProjectileVector::FUN_004b7fc0(const RHProjectileVector &other) const
     if (x == other.x && y == other.y && z == other.z)
         return 0;
     return 1;
+}
+
+#include "RHElementPositionCalls.h"
+#include "RHScriptEngineCalls.h"
+#include "RHElementObjectTypeBits.h"
+
+static inline RHobjectType RHProjectileObjectType(const void *element)
+{
+    return (RHobjectType)((const RHElementObjectTypeBits *)((const char *)element + 4))->type;
+}
+
+// STUB: GAME 0x004b8000
+void *RHElementProjectile::FUN_004b8000() const
+{
+    unsigned mask;
+    switch (*(const int *)((const char *)this + 0xb0)) {
+    case 4:
+        mask = 0x40;
+        break;
+    case 5:
+        mask = 1;
+        break;
+    case 6:
+        mask = 0x20;
+        break;
+    default:
+        return 0;
+    }
+    RHEngine *engine = g_pEngine;
+    void *result = 0;
+    RHUnk00613e90 movement;
+    char *sprite = *(char **)((char *)this + 0x50);
+    movement = *(RHUnk00613e90 *)(sprite + 0x10);
+    movement.x -= *(float *)(sprite + 0x2c);
+    movement.y -= *(float *)(sprite + 0x30);
+    movement.z -= *(float *)(sprite + 0x34);
+    float length = movement.Norm();
+    void **first = *(void ***)((char *)engine + 0x48dc);
+    unsigned size;
+    if (!first)
+        size = 0;
+    else
+        size = *(void ***)((char *)engine + 0x48e0) - first;
+    for (unsigned index = 0; index < size; ++index) {
+        char *target = (char *)(*(void ***)((char *)engine + 0x48dc))[index];
+        if (RHProjectileObjectType(target) == 9) {
+            RHProjectileVector center = *(RHProjectileVector *)&((RHElementPositionCalls *)target)->FUN_004bb180();
+            RHUnk00613e90 distance;
+            RHUnk00613e90 delta;
+            sprite = *(char **)((char *)this + 0x50);
+            distance = ((RHUnk00613e90 *)&center)->DistanceVectorToLine(*(RHUnk00613e90 *)(sprite + 0x10), *(RHUnk00613e90 *)(sprite + 0x2c));
+            sprite = *(char **)((char *)this + 0x50);
+            delta = *(RHUnk00613e90 *)(sprite + 0x10);
+            delta.x -= center.x;
+            delta.y -= center.y;
+            delta.z -= center.z;
+            if (*(bool *)(target + 0x12) && distance.Norm() <= 15.0f && delta.Norm() <= length &&
+                (mask & ((RHScriptBatchCalls *)target)->Unk004baea0()) > 0) {
+                result = target;
+                break;
+            }
+        }
+    }
+    return result;
+}
+
+void *EmitRHProjectileTarget(RHElementProjectile *projectile)
+{
+    return projectile->FUN_004b8000();
 }
 
 struct RHUnk00571160Position;
@@ -423,6 +609,41 @@ int RHElementProjectile::FUN_004b8da0() const
     return -1;
 }
 
+#include "RHHumanActorCalls.h"
+
+static inline RHobjectType RHProjectileBaseType(const void *element)
+{
+    return (RHobjectType)(((const RHElementObjectTypeBits *)((const char *)element + 4))->type & 7);
+}
+
+// STUB: GAME 0x004b8db0
+bool RHElementProjectile::WillHit(void *target)
+{
+    RHUnk00613e90 center;
+    if (RHProjectileBaseType(target) == 4)
+        ((RHHumanActorCalls *)target)->FUN_00479320(center);
+    else if (RHProjectileObjectType(target) == 9)
+        center = ((RHElementPositionCalls *)target)->FUN_004bb180();
+    else
+        center = *(RHUnk00613e90 *)(*(char **)((char *)target + 0x50) + 0x10);
+    RHUnk00613e90 first;
+    RHUnk00613e90 second;
+    unsigned count = m_138.m_count;
+    if (count)
+        first = *(RHUnk00613e90 *)m_138.m_head->next->data;
+    for (unsigned index = 1; index < count; ++index) {
+        RHProjectilePathList &path = *(RHProjectilePathList *)&m_138;
+        ((RHProfileListCursor *)&path)->GoTo(index);
+        second = *(RHUnk00613e90 *)path.cursor->data;
+        float length = second.FUN_005df550(first).Norm();
+        if (first.FUN_005df550(center).Norm() < length &&
+            center.DistanceVectorToLine(first, second).Norm() <= 15.0f)
+            return true;
+        first = second;
+    }
+    return false;
+}
+
 void EmitRHProjectileMedium(RHElementProjectile *projectile, RHProjectileVector *vector)
 {
     ((RHProjectileThrowCalls *)projectile)->FUN_004b4260(*vector, 1.0f, 1.0f, 1, projectile);
@@ -434,4 +655,5 @@ void EmitRHProjectileMedium(RHElementProjectile *projectile, RHProjectileVector 
     projectile->ComputeNumberOfFramesLeft();
     projectile->FUN_004b8d70(0, 0, 0);
     projectile->FUN_004b8da0();
+    projectile->WillHit(projectile);
 }

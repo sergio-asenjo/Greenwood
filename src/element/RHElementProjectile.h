@@ -4,6 +4,7 @@
 
 #include "SB.h"
 #include "RHEngine.h"
+#include "RHUnk00613e90.h"
 #include <iterator>
 
 class RHElementObject
@@ -22,10 +23,13 @@ public:
     bool Serialize(SBFile &file);
 };
 
-class RHUnk00613e90
+class RHProjectileSerializedStep
 {
 public:
-    RHUnk00613e90();
+    RHProjectileSerializedStep()
+    {
+        ((RHUnk00613e90 *)this)->RHUnk00613e90::RHUnk00613e90();
+    }
     RHUnk005df510 m_00;
     short m_0c;
     char m_0e;
@@ -167,14 +171,20 @@ public:
 extern RHEngine *g_pEngine;
 void RHSerializeName(SBFile &file, const char *name);
 
+struct RHProjectileVector;
+
 class RHElementProjectile : public RHElementObject
 {
 public:
     virtual bool Serialize(SBFile &file);
     void Emit(SBFile &file);
     void FUN_004b8230();
+    void *FUN_004b8000() const;
     void CopyTrajectory(RHElementProjectile *other);
+    void AddTrajectoryFallIntoHole(void *material);
+    void ComputeTrajectoryJump(const RHProjectileVector &from, const RHProjectileVector &to);
     unsigned ComputeNumberOfFramesLeft() const;
+    bool WillHit(void *target);
     int FUN_004b8d70(void *first, void *second, void *third);
     int FUN_004b8da0() const;
     void PlayImpactSound(const void *position, bool special) const;

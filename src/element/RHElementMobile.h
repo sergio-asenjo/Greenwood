@@ -109,7 +109,10 @@ public:
 class RHMobilePolygonPoints
 {
 public:
-    unsigned short FUN_0060ce80() const;
+    unsigned short FUN_0060ce80() const
+    {
+        return ((RHUnkSectorPoints *)this)->Unk0060ce80();
+    }
     const SBGeoPoint2D &FUN_0060cef0(unsigned index) const
     {
         return ((RHUnkSectorPoints *)this)->Unk0060cef0(index);
@@ -192,17 +195,7 @@ public:
     void SetFieldD6(int value) { *(unsigned short *)((char *)this + 0xd6) = (unsigned short)value; }
 };
 
-class RHUnk0042fde0
-{
-public:
-    SBGeoVector2D FUN_0042fde0() const;
-    bool FUN_0060b640(const SBGeoPoint2D &point) const;
-    float FUN_0060b7a0(const SBGeoPoint2D &point) const;
-    void FUN_0060b910(SBGeoPoint2D &output, const SBGeoPoint2D &point) const;
-    float FUN_0060ba80(const SBGeoPoint2D &point) const;
-    SBGeoPoint2D m_0;
-    SBGeoPoint2D m_8;
-};
+#include "RHUnk0042fde0.h"
 
 class RHMobileUnk0051fd90
 {
@@ -592,57 +585,9 @@ public:
 
 void *FUN_0048f170(void *value);
 
-class RHMobileLineStorage
-{
-public:
-    ~RHMobileLineStorage()
-    {
-        RHScriptNode *sentinel = head;
-        RHScriptNode *current = sentinel->next;
-        while (current != sentinel)
-        {
-            RHScriptNode *node = current;
-            current = current->next;
-            node->previous->next = node->next;
-            node->next->previous = node->previous;
-            ::operator delete(node);
-            --count;
-        }
-        ::operator delete(head);
-        head = 0;
-        count = 0;
-    }
-    int m_0;
-    RHScriptNode *head;
-    unsigned count;
-};
-
-class RHUnk0040f060 : public RHMobileLineStorage
-{
-public:
-    RHUnk0040f060();
-    __forceinline void GoTo(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
-    ~RHUnk0040f060()
-    {
-        RHScriptNode *sentinel = head;
-        RHScriptNode *current = sentinel->next;
-        while (current != sentinel)
-        {
-            RHScriptNode *node = current;
-            current = current->next;
-            FUN_0048f170(node);
-            node->previous->next = node->next;
-            node->next->previous = node->previous;
-            ::operator delete(node);
-            --count;
-        }
-    }
-    RHScriptNode *cursor;
-    bool dirty;
-    char m_11[3];
-    int index;
-    char m_18[0xc];
-};
+#include "RHTransientPointerList.h"
+#include "RHMobileVectorArray.h"
+typedef RHTransientPointerList<RHElevationLine> RHMobileLineTransientList;
 
 // SIZE 0x260
 class RHElementMobile
@@ -677,7 +622,8 @@ public:
     float m_19c; // 0x19c
     float m_1a0; // 0x1a0
     float m_1a4; // 0x1a4
-    undefined m_1a8[0x44]; // 0x1a8
+    undefined m_1a8[0x20]; // 0x1a8
+    RHMobileVectorArray m_1c8; // 0x1c8
     unsigned m_1ec; // 0x1ec
     undefined m_1f0[0x68]; // 0x1f0
     undefined m_258[8]; // 0x258

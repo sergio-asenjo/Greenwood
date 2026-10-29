@@ -11,7 +11,8 @@ DECOMP_SIZE_ASSERT(RHElementAreaNode, 0x0c)
 DECOMP_SIZE_ASSERT(RHElementAreaIter, 0x04)
 DECOMP_SIZE_ASSERT(RHElementAreaListBase, 0x0c)
 DECOMP_SIZE_ASSERT(RHElementAreaList, 0x18)
-DECOMP_SIZE_ASSERT(RHUnk0040f060, 0x24)
+DECOMP_SIZE_ASSERT(RHElementAreaTransientList, 0x24)
+DECOMP_SIZE_ASSERT(RHElementAreaTransientList::Node, 0x0c)
 
 // FUNCTION: GAME 0x00462190
 int RHElement::FUN_00462190() const { return 3; }
@@ -200,7 +201,7 @@ void RHElement::CrossElevationLine(RHElevationLine *line)
 
     bool failed = true;
     {
-        RHUnk0040f060 areas;
+        RHElementAreaTransientList areas;
         SBAssert(0, "P:\\Robin Hood\\RHelement.cpp", 485,
                  // STRING: GAME 0x006ae150
                  "VERBOTEN : Illegal bond crossing : (%f,%f) - (%f,%f) !\n",
@@ -208,10 +209,10 @@ void RHElement::CrossElevationLine(RHElevationLine *line)
         const SBGeoPoint2D &point = *(SBGeoPoint2D *)((char *)m_50 + 0x24);
         RHElementGrid *grid = *(RHElementGrid **)((char *)this + 0x64);
         grid->FUN_004e89d0(&areas, point.CellY() * grid->m_3e98 + point.CellX(), 0x20);
-        for (unsigned count = (unsigned short)areas.m_08, index = 0; count != 0; ++index, --count)
+        for (unsigned count = (unsigned short)areas.Count(), index = 0; count != 0; ++index, --count)
         {
             areas.GoTo(index);
-            RHElementArea *area = areas.m_0c->data;
+            RHElementArea *area = areas.cursor->_Value;
             if (*(unsigned short *)(area->m_58 + 0x15a) == *(unsigned short *)((char *)m_50 + 0xde)
                 && area->m_3c.FUN_00608400(*(SBGeoPoint2D *)((char *)m_50 + 0x24))
                 && (area ? &area->m_04 : 0)->FUN_0060c660(*(SBGeoPoint2D *)((char *)m_50 + 0x24)))
@@ -348,16 +349,16 @@ void RHBonusInfoBase::FUN_0055fa70(void *area)
     }
     else
     {
-        RHUnk0040f060 areas;
+        RHElementAreaTransientList areas;
         m_ec = 0;
         m_f8 = ((RHElementGrid *)g_unk0x6c0a9c)->m_4188;
         RHElementGrid *grid = (RHElementGrid *)g_unk0x6c0a9c;
         grid->FUN_004e89d0(&areas, (grid->m_3e9a * m_da + m_20.CellY()) * grid->m_3e98 + m_20.CellX(), 0x10);
-        unsigned short count = (unsigned short)areas.m_08;
+        unsigned short count = (unsigned short)areas.Count();
         for (unsigned short index = 0; index < count; ++index)
         {
             areas.GoTo(index);
-            RHElementArea *value = areas.m_0c->data;
+            RHElementArea *value = areas.cursor->_Value;
             if (value->m_3c.FUN_00608400(m_20)
                 && (value ? &value->m_04 : 0)->FUN_0060c660(m_20))
             {

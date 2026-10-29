@@ -1,23 +1,79 @@
 #include "SBNullstr.h"
 #include "RHElementActor.h"
+#include "RHUnk0060bd40.h"
+#include "SBGeoSegment2D.h"
 
 extern int g_unk0x6c0c6c;
 
 
-void RHUnk0060fbf0::FUN_0060fa20() {}
-void RHUnk0060fbf0::FUN_0060fa30(const RHUnk0060fbf0 &) {}
+// FUNCTION: GAME 0x0060fa20
+void RHUnk0060fbf0::FUN_0060fa20()
+{
+    FUN_0060fce0();
+}
+
+// FUNCTION: GAME 0x0060fa30
+void RHUnk0060fbf0::FUN_0060fa30(const RHUnk0060fbf0 &other)
+{
+    switch (other.FUN_0063b9a0())
+    {
+    case 1:
+        m_8 = new SBGeoPoint2D(*(const SBGeoPoint2D *)other.FUN_0053bf20());
+        break;
+    case 4:
+        m_8 = new SBGeoSegment2D(*(const SBGeoSegment2D *)other.FUN_0053bf20());
+        break;
+    case 3:
+        m_8 = new RHMobileUnk0060a820(*(const RHMobileUnk0060a820 *)other.FUN_0053bf20());
+        break;
+    case 2:
+        m_8 = new RHMobileUnk006100e0(*(const RHMobileUnk006100e0 *)other.FUN_0053bf20());
+        break;
+    case 5:
+        m_8 = new SBGeoPolyLine2DList(*(const SBGeoPolyLine2DList *)other.FUN_0053bf20());
+        break;
+    case 6:
+        m_8 = new RHUnk0060bd40(*(const RHUnk0060bd40 *)other.FUN_0053bf20());
+        break;
+    }
+    m_0 = other.FUN_0063b9a0();
+    m_2 = other.FUN_0060fcc0();
+    m_4 = other.FUN_0060fcd0();
+}
 
 
 void RHActorString::FUN_00402780() {}
 bool RHActorString::FUN_00402280(unsigned, bool) { return true; }
-// Parked: multi-view (no marker). SBFile::GetError and RHProfileString call this
-// address as std::basic_string<...>::_Eos; any marker here demotes 26 prior
-// exacts. Body: *(unsigned*)(this+8)=size; ((char*)m_4)[size]=0.
-void RHActorString::FUN_00402260(unsigned) {}
-void RHActorString::FUN_00401ee0(bool) {}
+// TEMPLATE: GAME 0x00402260 FOLDED
+// ?FUN_00402260@RHActorString@@QAEXI@Z
+void RHActorString::FUN_00402260(unsigned length)
+{
+    m_8 = length;
+    m_4[length] = 0;
+}
+
+// TEMPLATE: GAME 0x00401ee0 FOLDED
+// ?FUN_00401ee0@RHActorString@@QAEX_N@Z
+void RHActorString::FUN_00401ee0(bool release)
+{
+    if (release && m_4 != 0)
+    {
+        unsigned char *reference = (unsigned char *)m_4 - 1;
+        if (*reference != 0 && *reference != 255)
+            --*reference;
+        else
+            operator delete(reference);
+    }
+    m_4 = 0;
+    m_8 = 0;
+    m_c = 0;
+}
 
 // LIBRARY: GAME 0x006416e6
 // ?_Xran@std@@YAXXZ
+
+// VTABLE: GAME 0x0067bd30
+// class std::logic_error
 
 // VTABLE: GAME 0x0067bd40
 // class std::out_of_range
@@ -29,8 +85,12 @@ void RHActorString::FUN_00401ee0(bool) {}
 // STUB: GAME 0x0068ade8 SYMBOL
 // __TI3?AVout_of_range@std@@
 
+// Throw-info data; bound by name only.
+// STUB: GAME 0x0068ae60 SYMBOL
+// __TI2?AVlogic_error@std@@
+
 // LIBRARY: GAME 0x00642580
-extern "C" void *memmove(void *destination, const void *, size_t) { return destination; }
+// _memmove
 
 // FUNCTION: GAME 0x006090d0
 SBGeoBoundingBox2D SBGeoBoundingBox2D::FUN_006090d0(const SBGeoVector2D &offset) const

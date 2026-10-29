@@ -203,6 +203,9 @@ RHSprite::RHSprite(unsigned long owner) : RHPositionInterface(owner)
     m_195 = true;
 }
 
+// SYNTHETIC: GAME 0x005b5a90
+// RHSprite::`scalar deleting destructor'
+
 // STUB: GAME 0x005b5bf0
 RHSprite::~RHSprite()
 {
@@ -555,6 +558,9 @@ bool RHUnkTargetSprite::FUN_005b76e0(unsigned animation, unsigned short directio
 
 // SYNTHETIC: GAME 0x005b7600
 // ??1RHUnkSpriteRow@@QAE@XZ
+
+// TEMPLATE: GAME 0x005be610
+// ??4RHUnkSpriteRow@@QAEAAU0@ABU0@@Z
 
 // FUNCTION: GAME 0x005b7720
 void RHSprite::FUN_005b7720(int animation)
@@ -1109,25 +1115,31 @@ void RHSprite::FUN_005b94d0(unsigned short, void *, void *, void *, int)
 {
 }
 
-// Parked: frame-bounding-box update (2 args); same register/EH scheduling wall as 0x5b9ce0.
-// STUB: GAME 0x005b9b60
-bool RHSprite::FUN_005b9b60(unsigned short, unsigned short)
+#include "RHUnk00608f10.h"
+
+// FUNCTION: GAME 0x005b9b60
+unsigned char RHSprite::FUN_005b9b60(const SBGeoBoundingBox2D &view, float scale)
 {
-    return false;
+    SBGeoVector2D size;
+    void *holder = ((RHUnk005b5e00 *)this)->FUN_005b5de0();
+    float height = (float)FUN_005bdd70();
+    size.m_x = (float)FUN_005bdd50();
+    size.m_y = height;
+    if (!((RHPositionInterface *)((char *)this + 4))->IsSpriteValid())
+        ((RHPositionInterface *)((char *)this + 4))->ComputePositionSprite();
+    SBGeoPoint2D &position = RHSpriteField<SBGeoPoint2D>(this, 0x1c);
+#define FRAMEPOINT() (*(std::vector<RHUnkSpriteRow> *)holder)[m_184].m_positions[m_186]
+    m_1a0.FUN_00609050(position.Unk005fc190(FRAMEPOINT()), position.Unk005fc190(FRAMEPOINT()).Unk005fc190(size));
+#undef FRAMEPOINT
+    return ((RHUnk00608f10 *)&view)->FUN_00608f10(&m_1a0);
 }
 
-// Parked: VC6 keeps &size in ebx and this+0x1c in ebp across the geometry calls; the
-// EH-state store and the deref/lea register split do not reproduce (44.68%).
-// STUB: GAME 0x005b9ce0
+// FUNCTION: GAME 0x005b9ce0
 void RHSprite::FUN_005b9ce0()
 {
     void *holder = ((RHUnk005b5e00 *)this)->FUN_005b5de0();
-    SBGeoVector2D size((float)FUN_005bdd50(), (float)FUN_005bdd70());
-    SBGeoPoint2D &position = RHSpriteField<SBGeoPoint2D>(this, 0x1c);
-#define FRAMEPOINT() RHSpriteField<SBGeoPoint2D *>(RHSpriteField<undefined *>(holder, 4) + m_184 * 0x64, 0x48)[m_186]
-    SBGeoPoint2D a = position.Unk005fc190(FRAMEPOINT());
-    SBGeoPoint2D b = a.Unk005fc190(size);
-    RHSpriteField<SBGeoBoundingBox2D>(this, 0x1a0).FUN_00609050(position.Unk005fc190(FRAMEPOINT()), b);
+#define FRAMEPOINT() (*(std::vector<RHUnkSpriteRow> *)holder)[m_184].m_positions[m_186]
+    m_1a0.FUN_00609050(RHSpriteField<SBGeoPoint2D>(this, 0x1c).Unk005fc190(FRAMEPOINT()), RHSpriteField<SBGeoPoint2D>(this, 0x1c).Unk005fc190(FRAMEPOINT()).Unk005fc190(SBGeoVector2D((float)FUN_005bdd50(), (float)FUN_005bdd70())));
 #undef FRAMEPOINT
 }
 
@@ -1138,23 +1150,169 @@ bool RHSprite::FUN_005b9e30(void *, void *, bool)
     return false;
 }
 
-// Parked: 4-arg blit-box generation (GenerateBlitBox candidate); geometry/EH wall.
-// STUB: GAME 0x005ba130
-bool RHSprite::FUN_005ba130(void *, float, void *, void *)
+static __forceinline void RHSpriteSetVector(SBGeoVector2D &value, float x, float y)
 {
-    return false;
+    value.m_x = x;
+    value.m_y = y;
 }
 
-// Parked: 5-arg blit-box generation (GenerateBlitBox overload candidate); geometry/EH wall.
+// FUNCTION: GAME 0x005ba130
+bool RHSprite::FUN_005ba130(const SBGeoBoundingBox2D &view, float scale, SBGeoBoundingBox2D &source, SBGeoBoundingBox2D &destination)
+{
+    SBGeoVector2D size;
+    SBGeoVector2D offset;
+    SBGeoPoint2D origin;
+    SBGeoPoint2D previous;
+    SBGeoPoint2D position;
+    ((RHUnk005b5e00 *)this)->FUN_005b5de0();
+    unsigned row = m_184;
+    position = RHSpriteField<SBGeoPoint2D>(this, 0x1c).Unk005fc190(
+        (*(std::vector<RHUnkSpriteRow> *)((RHUnk005b5e00 *)this)->FUN_005b5de0())[row].m_positions[m_186]);
+    RHSpriteSetVector(size, (float)m_19a, (float)m_19c);
+    origin = view.m_00;
+    destination.FUN_00609050(position, position.Unk005fc190(size));
+    previous = destination.m_00;
+    ((RHMobileUnk00607da0 *)&destination)->FUN_00607da0((const RHMobileUnk00607da0 &)view.FUN_006092c0(destination));
+    if (!destination.Unk00608f30())
+        return false;
+    offset = destination.m_00.Unk005fc110(previous);
+    if (scale == 0.5f)
+    {
+        int left = (int)(destination.m_00.m_x - origin.m_x);
+        int top = (int)(destination.m_00.m_y - origin.m_y);
+        int right = (int)(destination.m_08.m_x - origin.m_x);
+        int bottom = (int)(destination.m_08.m_y - origin.m_y);
+        int x = (int)floor(offset.m_x);
+        int y = (int)floor(offset.m_y);
+        if (left & 1)
+        {
+            ++left;
+            ++x;
+        }
+        if (top & 1)
+        {
+            ++top;
+            ++y;
+        }
+        if (!(right & 1))
+            --right;
+        if (!(bottom & 1))
+            --bottom;
+        destination.FUN_00609050(SBGeoPoint2D((float)(left >> 1), (float)(top >> 1)), SBGeoPoint2D((float)(right >> 1), (float)(bottom >> 1)));
+        RHSpriteSetVector(offset, (float)x, (float)y);
+        source.FUN_00609050(offset, SBGeoPoint2D((destination.m_08.m_x - destination.m_00.m_x) * 2.0f, (destination.m_08.m_y - destination.m_00.m_y) * 2.0f).Unk005fc190(offset));
+    }
+    else
+    {
+        source.FUN_00609050(offset, SBGeoPoint2D(destination.m_08.m_x - destination.m_00.m_x, destination.m_08.m_y - destination.m_00.m_y).Unk005fc190(offset));
+        if (scale == 2.0f)
+            destination.FUN_00609050(SBGeoPoint2D((destination.m_00.GetX() - origin.m_x) * 2.0f, (destination.m_00.GetY() - origin.m_y) * 2.0f), SBGeoPoint2D((destination.m_08.GetX() - origin.m_x) * 2.0f, (destination.m_08.GetY() - origin.m_y) * 2.0f));
+        else
+            destination.FUN_00609050(destination.m_00.Unk005fc110(origin), destination.m_08.Unk005fc110(origin));
+    }
+    return destination.FUN_006090a0() && source.FUN_006090a0();
+}
+
 // STUB: GAME 0x005ba6c0
-void RHSprite::FUN_005ba6c0(void *, float, void *, void *, void *)
+bool RHSprite::FUN_005ba6c0(const SBGeoBoundingBox2D &view, float scale, SBGeoBoundingBox2D &source, SBGeoBoundingBox2D &destination, SBGeoVector2D &shift)
 {
+    SBGeoVector2D size;
+    SBGeoVector2D offset;
+    SBGeoPoint2D origin;
+    SBGeoPoint2D previous;
+    SBGeoPoint2D position;
+    unsigned row = m_184;
+    SBGeoVector2D *positions = (*(std::vector<RHUnkSpriteRow> *)((RHUnk005b5e00 *)this)->FUN_005b5de0())[row].m_positions.begin();
+    position = RHSpriteField<SBGeoPoint2D>(this, 0x1c).FUN_005fc200(shift).Unk005fc190(positions[m_186]);
+    RHSpriteSetVector(size, (float)m_19a, (float)m_19c);
+    size.FUN_005fc1e0(SBGeoVector2D((const SBGeoVector2D &)shift.Unk005fc190(SBGeoVector2D(3.0f, 0.0f))));
+    origin = view.m_00;
+    destination.FUN_00609050(position, position.Unk005fc190(size));
+    previous = destination.m_00;
+    ((RHMobileUnk00607da0 *)&destination)->FUN_00607da0((const RHMobileUnk00607da0 &)view.FUN_006092c0(destination));
+    if (!destination.Unk00608f30())
+        return false;
+    offset = destination.m_00.Unk005fc110(previous);
+    if (scale == 0.5f)
+    {
+        int left = (int)(destination.m_00.m_x - origin.m_x);
+        int top = (int)(destination.m_00.m_y - origin.m_y);
+        int right = (int)(destination.m_08.m_x - origin.m_x);
+        int bottom = (int)(destination.m_08.m_y - origin.m_y);
+        int x = (int)floor(offset.m_x);
+        int y = (int)floor(offset.m_y);
+        if (left & 1)
+        {
+            ++left;
+            ++x;
+        }
+        if (top & 1)
+        {
+            ++top;
+            ++y;
+        }
+        if (!(right & 1))
+            --right;
+        if (!(bottom & 1))
+            --bottom;
+        destination.FUN_00609050(SBGeoPoint2D((float)(left >> 1), (float)(top >> 1)), SBGeoPoint2D((float)(right >> 1), (float)(bottom >> 1)));
+        RHSpriteSetVector(offset, (float)x, (float)y);
+        source.FUN_00609050(offset, SBGeoPoint2D((destination.m_08.m_x - destination.m_00.m_x) * 2.0f, (destination.m_08.m_y - destination.m_00.m_y) * 2.0f).Unk005fc190(offset));
+    }
+    else
+    {
+        source.FUN_00609050(offset, SBGeoPoint2D(destination.m_08.m_x - destination.m_00.m_x, destination.m_08.m_y - destination.m_00.m_y).Unk005fc190(offset));
+        if (scale == 2.0f)
+            destination.FUN_00609050(SBGeoPoint2D((destination.m_00.GetX() - origin.m_x) * 2.0f, (destination.m_00.GetY() - origin.m_y) * 2.0f), SBGeoPoint2D((destination.m_08.GetX() - origin.m_x) * 2.0f, (destination.m_08.GetY() - origin.m_y) * 2.0f));
+        else
+            destination.FUN_00609050(destination.m_00.Unk005fc110(origin), destination.m_08.Unk005fc110(origin));
+    }
+    return source.FUN_006090a0() && destination.FUN_006090a0();
 }
 
-// Parked: 5-arg script-row initializer (InitializeScriptFromLoadedFrame candidate); allocates.
-// STUB: GAME 0x005bad10
-void RHSprite::FUN_005bad10(void *, unsigned short, unsigned short, unsigned short, void *)
+template<class T>
+static __forceinline void RHSpriteResize(std::vector<T> &values, unsigned count, const T &value)
 {
+    unsigned (std::vector<T>::*size)() const = &std::vector<T>::size;
+    void (std::vector<T>::*insert)(T *, unsigned, const T &) = &std::vector<T>::insert;
+    T *(std::vector<T>::*erase)(T *, T *) = &std::vector<T>::erase;
+    if ((values.*size)() < count)
+        (values.*insert)(values.end(), count - (values.*size)(), value);
+    else if (count < (values.*size)())
+        (values.*erase)(values.begin() + count, values.end());
+}
+
+// STUB: GAME 0x005bad10
+bool RHSprite::FUN_005bad10(unsigned long first, unsigned short count, unsigned short rate, unsigned short sound, const void *offsets)
+{
+    RHSpriteField<std::vector<RHUnkSpriteRow> *>(this, 0x154) = new std::vector<RHUnkSpriteRow>;
+    m_19c = 0;
+    m_19a = 0;
+#define ROWS() (*RHSpriteField<std::vector<RHUnkSpriteRow> *>(this, 0x154))
+    RHSpriteResize(ROWS(), 1, RHUnkSpriteRow());
+    RHSpriteResize(ROWS()[0].m_frames, count, (unsigned short)0);
+    RHSpriteResize(ROWS()[0].m_rates, count, (unsigned short)0);
+    RHSpriteResize(ROWS()[0].m_resources, count, 0);
+    RHSpriteResize(ROWS()[0].m_positions, count, SBGeoVector2D());
+    RHSpriteResize(ROWS()[0].m_flags, count, (unsigned short)0);
+    ROWS()[0].m_00 = 0;
+    SBGeoPoint2D &position = ROWS()[0].m_position;
+    position.m_x = 0.0f;
+    position.m_y = 0.0f;
+    for (int i = 0; i < count; ++i)
+    {
+        if (RHSpriteField<RHFrameHolder *>(this, 0x1d0)->FUN_005046a0(first + i) > m_19a)
+            m_19a = RHSpriteField<RHFrameHolder *>(this, 0x1d0)->FUN_005046a0(first + i);
+        if (RHSpriteField<RHFrameHolder *>(this, 0x1d0)->FUN_005046c0(first + i) > m_19c)
+            m_19c = RHSpriteField<RHFrameHolder *>(this, 0x1d0)->FUN_005046c0(first + i);
+        ROWS()[0].m_frames[i] = rate;
+        ROWS()[0].m_rates[i] = sound;
+        ROWS()[0].m_resources[i] = first + i;
+        ROWS()[0].m_positions[i] = (*(const std::vector<SBGeoVector2D> *)offsets)[i];
+        ROWS()[0].m_flags[i] = 0;
+    }
+#undef ROWS
+    return true;
 }
 
 // Parked: 6-arg script-row initializer (InitializeScriptRowFromLoadedFrame candidate).
@@ -1490,11 +1648,11 @@ void RHSprite::Emit(SBFile &file)
     ((RHSpritePositionCalls *)this)->FUN_00563e90();
     ((RHSpritePositionCalls *)this)->FUN_00563ea0();
     FUN_005b94d0(0, 0, 0, 0, 0);
-    FUN_005b9b60(0, 0);
+    FUN_005b9b60(m_1a0, 0.0f);
     FUN_005b9ce0();
     FUN_005b9e30(0, 0, false);
-    FUN_005ba130(0, 0.0f, 0, 0);
-    FUN_005ba6c0(0, 0.0f, 0, 0, 0);
+    FUN_005ba130(m_1a0, 0.0f, m_1a0, m_1a0);
+    FUN_005ba6c0(m_1a0, 0.0f, m_1a0, m_1a0, *(SBGeoVector2D *)&m_1a0.m_00);
     FUN_005bad10(0, 0, 0, 0, 0);
     FUN_005bb180(0, 0, 0, 0, 0, 0);
 }

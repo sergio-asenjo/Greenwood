@@ -24,14 +24,19 @@ class RHElementWasp : public RHElementObject
 public:
     struct VictimCandidature
     {
+        VictimCandidature(unsigned distance, void *actor) : m_00(distance), m_04(actor) {}
         unsigned int m_00;
         void *m_04;
     };
     struct VictimCandidatureOrdering
     {
-        int operator()(const VictimCandidature &first, const VictimCandidature &second) const;
+        bool operator()(const VictimCandidature &first, const VictimCandidature &second) const;
     };
     virtual bool Serialize(SBFile &file);
+    void ChangeDirection();
+    void ChangeVictim();
+    void *ChooseVictim() const;
+    bool Hourglass();
     void FUN_004bd0f0(void *element);
     void Emit(SBFile &file);
 

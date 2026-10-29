@@ -190,19 +190,8 @@ public:
     int m_14; // 0x14
 };
 
-// SIZE 0x24
-class RHUnk0040f060 : public RHElementAreaListBase
-{
-public:
-    RHUnk0040f060();
-    ~RHUnk0040f060() { Clear(); }
-    __forceinline void GoTo(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
-    RHElementAreaNode *m_0c; // 0x0c
-    bool m_10; // 0x10
-    undefined m_11[3]; // 0x11
-    int m_14; // 0x14
-    undefined m_18[0xc]; // 0x18
-};
+#include "RHTransientPointerList.h"
+typedef RHTransientPointerList<RHElementArea> RHElementAreaTransientList;
 
 #include "RHElementGrid.h"
 

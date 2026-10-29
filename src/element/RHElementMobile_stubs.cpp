@@ -62,6 +62,10 @@ bool RHUnk004aac40::v16(SBFile &) { return false; }
 
 RHMobileSegment::RHMobileSegment(const SBGeoPoint2D &, const SBGeoPoint2D &) {}
 RHMobileSegment::~RHMobileSegment() {}
+DECOMP_SIZE_ASSERT(RHMobileUnk0060a820, 0x10)
+// TEMPLATE: GAME 0x004611c0 FOLDED
+// ??1RHMobileUnk0060a820@@QAE@XZ
+RHMobileUnk0060a820::~RHMobileUnk0060a820() {}
 void RHMobileGrid::FUN_004ed370(void *, unsigned short, const RHMobileSegment &, unsigned) {}
 // FUNCTION: GAME 0x006158b0
 RHMobileUnk0060a820 &RHMobileUnk0060a820::FUN_006158b0(const SBGeoPoint2D &first, const SBGeoPoint2D &second)
@@ -71,10 +75,9 @@ RHMobileUnk0060a820 &RHMobileUnk0060a820::FUN_006158b0(const SBGeoPoint2D &first
 }
 
 // FUNCTION: GAME 0x006158d0
-RHMobileUnk0060a820 &RHMobileUnk0060a820::FUN_006158d0(const SBGeoPoint2D &point)
+RHMobileUnk0060a820::RHMobileUnk0060a820(const RHMobileUnk0060a820 &other)
+    : RHMobileUnk006100e0(other, other.Second())
 {
-    ((RHMobileUnk006100e0 *)this)->RHMobileUnk006100e0::RHMobileUnk006100e0(point, *(const SBGeoPoint2D *)((const char *)&point + 8));
-    return *this;
 }
 
 // FUNCTION: GAME 0x006158f0
@@ -133,13 +136,14 @@ RHMobilePointIterator RHMobilePointList::FUN_0046eb80()
     result.node = m_4->next;
     return result;
 }
+// TEMPLATE: GAME 0x005c9010 FOLDED
+// ?FUN_005c9010@RHMobilePointList@@SAXAAPAURHMobilePointNode@@HI@Z
 void RHMobilePointList::FUN_005c9010(RHMobilePointNode *&node, int distance, unsigned)
 {
     while (distance > 0) { node = node->next; --distance; }
     while (distance < 0) { node = node->previous; ++distance; }
 }
 
-unsigned short RHMobilePolygonPoints::FUN_0060ce80() const { return 0; }
 void RHMobileUnk0051fd10::FUN_00520480() {}
 // FUNCTION: GAME 0x0060b640
 bool RHUnk0042fde0::FUN_0060b640(const SBGeoPoint2D &point) const
@@ -274,6 +278,8 @@ public:
     char m_0[0xc];
 };
 
+// TEMPLATE: GAME 0x00613e90 FOLDED
+// ??0RHUnk00521550Part@@QAE@XZ
 RHUnk00521550Part::RHUnk00521550Part() {}
 
 #include "SBGeoIntersection2D.h"
@@ -290,7 +296,7 @@ bool RHMobileUnk0060a820::FUN_00615910(const SBGeoSegment2D &segment) const
     if (box.FUN_00608730((const RHMobileUnk006100e0 &)*this))
     {
         const RHMobileUnk006100e0 &ray = (const RHMobileUnk006100e0 &)*this;
-        const RHMobileUnk006100e0 &line = (const RHMobileUnk006100e0 &)segment;
+        const RHMobileUnk006100e0 &line = segment.Line();
         direction.FUN_005fc430(ray.Second().Unk005fc110(ray));
         first.FUN_005fc430(line.Unk005fc110(ray));
         second.FUN_005fc430(line.Second().Unk005fc110(ray));
@@ -323,7 +329,7 @@ double g_unk0x0067a938 = 9.999999717180685e-10;
 RHUnk0060fbf0 RHMobileUnk0060a820::FUN_00615ca0(const SBGeoSegment2D &segment) const
 {
     const RHMobileUnk006100e0 &ray = (const RHMobileUnk006100e0 &)*this;
-    const RHMobileUnk006100e0 &line = (const RHMobileUnk006100e0 &)segment;
+    const RHMobileUnk006100e0 &line = segment.Line();
     SBGeoPoint2D point;
     SBGeoSegment2D clipped(SBGeoPoint2D(0.0f, 0.0f), SBGeoPoint2D(0.0f, 0.0f));
     RHUnk0060fbf0 result;
@@ -371,13 +377,13 @@ RHUnk0060fbf0 RHMobileUnk0060a820::FUN_00615ca0(const SBGeoSegment2D &segment) c
                 {
                     clipped.First() = ray;
                     clipped.Second() = line.Second();
-                    result.FUN_0060fe20((const RHMobileUnk006100e0 &)clipped);
+                    result.FUN_0060fe20(clipped.Line());
                 }
                 else if (first > origin && second <= origin)
                 {
                     clipped.First() = ray;
                     clipped.Second() = line;
-                    result.FUN_0060fe20((const RHMobileUnk006100e0 &)clipped);
+                    result.FUN_0060fe20(clipped.Line());
                 }
                 else if (first == origin && second < origin || first < origin && second == origin)
                     result.FUN_0060fdc0(ray);
@@ -392,13 +398,13 @@ RHUnk0060fbf0 RHMobileUnk0060a820::FUN_00615ca0(const SBGeoSegment2D &segment) c
                 {
                     clipped.First() = ray;
                     clipped.Second() = line.Second();
-                    result.FUN_0060fe20((const RHMobileUnk006100e0 &)clipped);
+                    result.FUN_0060fe20(clipped.Line());
                 }
                 else if (first < origin && second >= origin)
                 {
                     clipped.First() = ray;
                     clipped.Second() = line;
-                    result.FUN_0060fe20((const RHMobileUnk006100e0 &)clipped);
+                    result.FUN_0060fe20(clipped.Line());
                 }
                 else if (first == origin && second > origin || first > origin && second == origin)
                     result.FUN_0060fdc0(ray);
@@ -456,13 +462,13 @@ RHUnk0060fbf0 RHMobileUnk0060a820::FUN_00615ca0(const SBGeoSegment2D &segment) c
         {
             clipped.First() = ray;
             clipped.Second() = line.Second();
-            result.FUN_0060fe20((const RHMobileUnk006100e0 &)clipped);
+            result.FUN_0060fe20(clipped.Line());
         }
         else if (first > origin && second <= origin)
         {
             clipped.First() = ray;
             clipped.Second() = line;
-            result.FUN_0060fe20((const RHMobileUnk006100e0 &)clipped);
+            result.FUN_0060fe20(clipped.Line());
         }
         else if (first == origin && second < origin || first < origin && second == origin)
             result.FUN_0060fdc0(ray);
@@ -477,16 +483,32 @@ RHUnk0060fbf0 RHMobileUnk0060a820::FUN_00615ca0(const SBGeoSegment2D &segment) c
         {
             clipped.First() = ray;
             clipped.Second() = line.Second();
-            result.FUN_0060fe20((const RHMobileUnk006100e0 &)clipped);
+            result.FUN_0060fe20(clipped.Line());
         }
         else if (first < origin && second >= origin)
         {
             clipped.First() = ray;
             clipped.Second() = line;
-            result.FUN_0060fe20((const RHMobileUnk006100e0 &)clipped);
+            result.FUN_0060fe20(clipped.Line());
         }
         else if (first == origin && second > origin || first > origin && second == origin)
             result.FUN_0060fdc0(ray);
     }
     return result;
+}
+#include "RHMobileVectorArray.h"
+
+DECOMP_SIZE_ASSERT(RHMobileVectorArray, 0x24)
+DECOMP_SIZE_ASSERT(RHElementMobile, 0x260)
+DECOMP_STATIC_ASSERT(offsetof(RHElementMobile, m_1c8) == 0x1c8)
+
+// FUNCTION: GAME 0x004afac0
+RHMobileVectorArray::~RHMobileVectorArray()
+{
+    Destroy();
+}
+
+void EmitRHMobileVectorArrayDestructor(RHMobileVectorArray *array)
+{
+    array->~RHMobileVectorArray();
 }

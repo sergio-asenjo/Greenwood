@@ -33,11 +33,7 @@ public:
     virtual bool V48();
 };
 
-class RHUnk0046bcb0
-{
-public:
-    void Unk(int value);
-};
+#include "RHActorCancelCalls.h"
 
 class RHScriptBatchCalls
 {

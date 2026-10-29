@@ -17,6 +17,8 @@ DECOMP_SIZE_ASSERT(RHMobileBase004a8130, 0xfc)
 DECOMP_SIZE_ASSERT(RHUnk004aac40, 0x104)
 DECOMP_SIZE_ASSERT(RHElementMobile, 0x260)
 DECOMP_SIZE_ASSERT(RHUnk004af060, 0x260)
+DECOMP_SIZE_ASSERT(RHMobileLineTransientList, 0x24)
+DECOMP_SIZE_ASSERT(RHMobileLineTransientList::Node, 0x0c)
 
 RHMobileElementBase::RHMobileElementBase(int, int) {}
 RHMobileElementBase::~RHMobileElementBase() {}
@@ -59,7 +61,8 @@ RHUnk0048f0e0::RHUnk0048f0e0(const char *value)
     m_8 = 0;
 }
 
-// FUNCTION: GAME 0x0048f170
+// TEMPLATE: GAME 0x0048f170 FOLDED
+// ?FUN_0048f170@@YAPAXPAX@Z
 void *FUN_0048f170(void *value)
 {
     return value;
@@ -737,17 +740,17 @@ void RHElementMobile::FUN_004af210(RHMobileEvent *event)
 // STUB: GAME 0x004af540
 void RHElementMobile::CheckForLineCrossing()
 {
-    RHUnk0040f060 lines;
+    RHMobileLineTransientList lines;
     if (!m_50->m_24.FUN_005fc0e0(m_50->m_40))
         return;
     ((RHMobileGrid *)*(void **)((char *)this + 0x64))->FUN_004ed370(&lines, m_50->m_de, RHMobileSegment(m_50->m_40, m_50->m_24), 12);
-    unsigned short count = (unsigned short)lines.count;
+    unsigned short count = (unsigned short)lines.Count();
     if (count)
     {
         for (unsigned short i = 0; i < count; ++i)
         {
             lines.GoTo(i);
-            RHElevationLine *line = lines.cursor->data;
+            RHElevationLine *line = lines.cursor->_Value;
             unsigned flags = line->m_14;
             if ((flags >> 2) & 1)
             {
@@ -756,7 +759,7 @@ void RHElementMobile::CheckForLineCrossing()
                 for (unsigned short j = i + 1; j < count; ++j)
                 {
                     lines.GoTo(j);
-                    RHElevationLine *other = lines.cursor->data;
+                    RHElevationLine *other = lines.cursor->_Value;
                     if (other->m_14 == flags &&
                         ((first == other->m_4 && second == other->m_c) ||
                          (second == other->m_4 && first == other->m_c)))
@@ -767,7 +770,7 @@ void RHElementMobile::CheckForLineCrossing()
                             // STRING: GAME 0x006ae298
                             "Double bond : (%f,%f) - (%f,%f) !\n", other->m_4.m_x, other->m_4.m_y, other->m_c.m_x, other->m_c.m_y);
                         lines.GoTo(j);
-                        ((RHUnk0046eb30 *)&lines)->erase(RHScriptIter(lines.cursor));
+                        ((RHUnk0046eb30 *)&lines)->erase(RHScriptIter((RHScriptNode *)lines.cursor));
                         --j;
                         --count;
                         lines.dirty = true;
@@ -779,12 +782,12 @@ void RHElementMobile::CheckForLineCrossing()
         {
             RHUnk005fc3b0 movement;
             lines.GoTo(index);
-            SBGeoPoint2D &first = lines.cursor->data->m_4;
+            SBGeoPoint2D &first = lines.cursor->_Value->m_4;
             movement.FUN_005fc430(m_50->m_40.Unk005fc110(first));
             if (((RHUnk005fc3b0 *)&((RHUnk0042fde0 *)&first)->FUN_0042fde0())->FUN_005fc680(movement, 1.0f) == 0.0f)
             {
                 lines.GoTo(index);
-                ((RHUnk0046eb30 *)&lines)->erase(RHScriptIter(lines.cursor));
+                ((RHUnk0046eb30 *)&lines)->erase(RHScriptIter((RHScriptNode *)lines.cursor));
                 --index;
                 --count;
                 lines.dirty = true;
@@ -792,7 +795,7 @@ void RHElementMobile::CheckForLineCrossing()
         }
         if (count == 1)
         {
-            ((RHElement *)this)->CrossElevationLine(lines.head->next->data);
+            ((RHElement *)this)->CrossElevationLine(lines.Head()->_Next->_Value);
             ((RHMobilePosition *)((char *)m_50 + 4))->FUN_0055fc20(false);
             FUN_004af170(m_50->m_ec);
         }
@@ -804,29 +807,29 @@ void RHElementMobile::CheckForLineCrossing()
                 for (unsigned short j = index; j < count; ++j)
                 {
                     lines.GoTo(j);
-                    RHElevationLine *line = lines.cursor->data;
+                    RHElevationLine *line = lines.cursor->_Value;
                     if (line->m_28 == area)
                     {
                         area = line->m_24;
                         lines.GoTo(index);
-                        RHElevationLine *&destination = lines.cursor->data;
+                        RHElevationLine *&destination = lines.cursor->_Value;
                         lines.GoTo(j);
-                        RHElevationLine *value = lines.cursor->data;
-                        lines.cursor->data = destination;
+                        RHElevationLine *value = lines.cursor->_Value;
+                        lines.cursor->_Value = destination;
                         lines.GoTo(index);
-                        lines.cursor->data = value;
+                        lines.cursor->_Value = value;
                         break;
                     }
                     if (line->m_24 == area)
                     {
                         area = line->m_28;
                         lines.GoTo(index);
-                        RHElevationLine *&destination = lines.cursor->data;
+                        RHElevationLine *&destination = lines.cursor->_Value;
                         lines.GoTo(j);
-                        RHElevationLine *value = lines.cursor->data;
-                        lines.cursor->data = destination;
+                        RHElevationLine *value = lines.cursor->_Value;
+                        lines.cursor->_Value = destination;
                         lines.GoTo(index);
-                        lines.cursor->data = value;
+                        lines.cursor->_Value = value;
                         break;
                     }
                 }
@@ -1409,7 +1412,6 @@ bool RHGameInputSegment::FUN_0060a880(const SBGeoPoint2D &point) const
 RHMobileUnk006100e0::~RHMobileUnk006100e0()
 {
     FUN_00578c50();
-    ((SBGeoPoint2D *)m_8)->~SBGeoPoint2D();
 }
 
 // FUNCTION: GAME 0x00611360

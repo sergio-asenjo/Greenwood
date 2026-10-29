@@ -1,11 +1,7 @@
 #include "SBNullstr.h"
 #include "RHElementObject.h"
 
-class RHUnk00452030
-{
-public:
-    int Get(int index);
-};
+#include "RHCampaignValueCalls.h"
 extern RHUnk00452030 *g_unk0x6c07fc;
 
 class RHEngine;

@@ -1265,18 +1265,11 @@ public:
     char m_data[0x15c];
 };
 
-enum RHobjectType
-{
-};
-
-struct RHElementObjectTypeBits
-{
-    RHobjectType type : 4;
-};
+#include "RHElementObjectTypeBits.h"
 
 static inline RHobjectType RHActorPCObjectType(const void *element)
 {
-    return ((const RHElementObjectTypeBits *)((const char *)element + 4))->type;
+    return (RHobjectType)((const RHElementObjectTypeBits *)((const char *)element + 4))->type;
 }
 
 // FUNCTION: GAME 0x0049ece0

@@ -176,6 +176,8 @@ DECOMP_SIZE_ASSERT(RHUnk0053bf20, 0x0c)
 DECOMP_SIZE_ASSERT(RHUnk00560410, 0x92)
 DECOMP_SIZE_ASSERT(RHUnk0060fbf0, 0x0c)
 DECOMP_SIZE_ASSERT(RHUnk004e52a0, 0x0c)
+DECOMP_SIZE_ASSERT(RHActorTransientList, 0x24)
+DECOMP_SIZE_ASSERT(RHActorTransientList::Node, 0x0c)
 DECOMP_SIZE_ASSERT(RHUnk004679c0, 0x58c)
 DECOMP_SIZE_ASSERT(RHElementActor, 0x1b8)
 DECOMP_SIZE_ASSERT(RHOrder, 0x3c)
@@ -615,7 +617,7 @@ void RHElementActor::ExecuteImmediately(RHSequenceElement *element)
     case 24:
     {
         RHUnk00613e90 unused;
-        RHUnk0040f060 areas;
+        RHActorTransientList areas;
         SBGeoPoint2D point;
         RHUnk00613e90 origin;
         RHUnk00613e90 destination;
@@ -1318,7 +1320,7 @@ void RHElementActor::FUN_0046c8e0(int value)
 // STUB: GAME 0x0046c8f0
 void RHElementActor::CheckForLineCrossing()
 {
-    RHUnk0040f060 lines;
+    RHActorTransientList lines;
     void *position = Info();
     SBGeoPoint2D &current = RHActorField<SBGeoPoint2D>(position, 0x24);
     SBGeoPoint2D &previous = RHActorField<SBGeoPoint2D>(position, 0x40);
@@ -1332,7 +1334,7 @@ void RHElementActor::CheckForLineCrossing()
     ((RHMobileGrid *)grid)->FUN_004ed370(&lines,
         RHActorField<unsigned short>(position, 0xde), RHMobileSegment(previous, current), 8);
 
-    RHScriptNode *head = lines.head;
+    RHScriptNode *head = (RHScriptNode *)lines.Head();
     for (RHScriptNode *node = head->next; node != head; node = node->next)
     {
         RHElevationLine *line = (RHElevationLine *)node->data;
@@ -1352,7 +1354,7 @@ void RHElementActor::CheckForLineCrossing()
                     other->previous->next = next;
                     next->previous = other->previous;
                     ::operator delete(other);
-                    --lines.count;
+                    --lines.Count();
                     RHActorField<unsigned char>(&lines, 0x10) = 1;
                 }
                 other = next;
@@ -1373,13 +1375,13 @@ void RHElementActor::CheckForLineCrossing()
             filter->previous->next = next;
             next->previous = filter->previous;
             ::operator delete(filter);
-            --lines.count;
+            --lines.Count();
             RHActorField<unsigned char>(&lines, 0x10) = 1;
         }
         filter = next;
     }
 
-    unsigned short count = (unsigned short)lines.count;
+    unsigned short count = (unsigned short)lines.Count();
     if (count == 0)
         return;
     if (count == 1)
@@ -1942,7 +1944,8 @@ void RHActorCrossingHumanCalls::FUN_004846d0()
     }
 }
 
-// FUNCTION: GAME 0x004e52a0
+// TEMPLATE: GAME 0x004e52a0 FOLDED
+// ?FUN_004e52a0@RHUnk004e52a0@@QAEXXZ
 void RHUnk004e52a0::FUN_004e52a0()
 {
     RHScriptNode *head = m_head;
@@ -1959,24 +1962,6 @@ void RHUnk004e52a0::FUN_004e52a0()
     ::operator delete(m_head);
     m_head = 0;
     m_count = 0;
-}
-
-class RHUnk004e54a0
-{
-public:
-    const char *FUN_004e54a0();
-};
-
-// FUNCTION: GAME 0x004e54a0
-const char *RHUnk004e54a0::FUN_004e54a0()
-{
-    const char *value = *(const char **)((char *)this + 0x10);
-    return value ? value : "";
-}
-
-void EmitRHUnk004e54a0(RHUnk004e54a0 *a)
-{
-    a->FUN_004e54a0();
 }
 
 // Parked: receiver/layer registers and sector-flag shift/test lowering differ.
@@ -2017,10 +2002,25 @@ unsigned short RHActorGridCalls::FUN_004e9800(const SBGeoPoint2D &point, void *&
     return 0xffff;
 }
 
-// FUNCTION: GAME 0x0053bf20
+// TEMPLATE: GAME 0x0053bf20 FOLDED
+// ?FUN_0053bf20@RHUnk0053bf20@@QBEPAXXZ
 void *RHUnk0053bf20::FUN_0053bf20() const
 {
     return m_8;
+}
+
+// TEMPLATE: GAME 0x0053bf20 FOLDED
+// ?FUN_0053bf20@RHUnk0060fbf0@@QBEPAXXZ
+void *RHUnk0060fbf0::FUN_0053bf20() const
+{
+    return m_8;
+}
+
+// TEMPLATE: GAME 0x0063b9a0 FOLDED
+// ?FUN_0063b9a0@RHUnk0060fbf0@@QBEEXZ
+unsigned char RHUnk0060fbf0::FUN_0063b9a0() const
+{
+    return m_0;
 }
 
 // FUNCTION: GAME 0x00560410
@@ -2117,12 +2117,6 @@ RHUnk00613e90 RHUnk00613e90::FUN_005df550(const RHUnk00613e90 &other) const
 {
     RHUnk00613e90 result(m_0 - other.m_0, m_4 - other.m_4, m_8 - other.m_8);
     return result;
-}
-
-// FUNCTION: GAME 0x005fc040
-SBGeoPoint2D::SBGeoPoint2D(const SBGeoPoint2D &other)
-{
-    FUN_005fc390(other);
 }
 
 // FUNCTION: GAME 0x005fc0b0

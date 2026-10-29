@@ -10,6 +10,7 @@
 
 // SIZE 0x08
 class SBGeoVector2D;
+#define SBGEO_POINT2D_VIEW
 class SBGeoPoint2D
 {
 public:
@@ -41,6 +42,7 @@ public:
 };
 
 // SIZE 0x14
+#define SBGEO_BOUNDINGBOX2D_VIEW
 class SBGeoBoundingBox2D
 {
 public:
@@ -76,32 +78,8 @@ public:
     RHScriptIter erase(RHScriptIter position);
 };
 
-class RHUnk0040f060
-{
-public:
-    RHUnk0040f060();
-    ~RHUnk0040f060()
-    {
-        RHScriptNode *sentinel = head;
-        RHScriptNode *current = sentinel->next;
-        while (current != sentinel)
-        {
-            RHScriptNode *previous = current;
-            current = current->next;
-            ((RHUnk0046eb30 *)this)->erase(RHScriptIter(previous));
-        }
-        RHScriptIter iterator(head->next);
-        while (iterator.node != head)
-            ((RHUnk0046eb30 *)this)->erase(iterator++);
-        ::operator delete(head);
-        head = 0;
-        count = 0;
-    }
-    int m_0;
-    RHScriptNode *head;
-    int count;
-    char m_c[0x18];
-};
+#include "RHTransientPointerList.h"
+typedef RHTransientPointerList<void> RHActorTransientList;
 
 class RHElement
 {
@@ -453,11 +431,7 @@ struct RHActorEngineFlags
 
 enum RHActorUnkType { RHActorUnkType12 = 12 };
 
-class RHUnk0046bcb0
-{
-public:
-    void Unk(int value);
-};
+#include "RHActorCancelCalls.h"
 
 class RHUnk0058a3d0
 {

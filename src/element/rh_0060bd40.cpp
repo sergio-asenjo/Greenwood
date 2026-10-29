@@ -1,18 +1,7 @@
 #include "RHUnk0060c2xx.h"
+#include "RHUnk0060bd40.h"
 
-class RHUnk0060bd40 : public SBGeoPolyLine2DList
-{
-public:
-    RHUnk0060bd40();
-    RHUnk0060bd40(const RHUnk0060bd40 &other);
-    RHUnk0060bd40(const RHUnkSectorPoints &other);
-    void FUN_0060bc80(const RHUnk0060bd40 &other);
-    void FUN_0060bce0(const RHUnkSectorPoints &other);
-    short m_28;
-    short m_2a;
-    char m_2c;
-    char m_2d;
-};
+DECOMP_SIZE_ASSERT(RHUnk0060bd40, 0x30)
 
 // FUNCTION: GAME 0x0060bc80
 void RHUnk0060bd40::FUN_0060bc80(const RHUnk0060bd40 &other)
@@ -59,4 +48,21 @@ RHUnk0060bd40::RHUnk0060bd40(const RHUnk0060bd40 &other) : SBGeoPolyLine2DList()
 RHUnk0060bd40::RHUnk0060bd40(const RHUnkSectorPoints &other) : SBGeoPolyLine2DList()
 {
     FUN_0060bce0(other);
+}
+
+// SYNTHETIC: GAME 0x0044c780
+// RHUnk0060bd40::~RHUnk0060bd40
+
+// TEMPLATE: GAME 0x0048f170 FOLDED
+// ?_Next@_Acc@?$list@VSBGeoPoint2D@@V?$allocator@VSBGeoPoint2D@@@std@@@std@@SAAAPAU_Node@23@PAU423@@Z
+
+// TEMPLATE: GAME 0x0046eb80 FOLDED
+// ?begin@?$list@VSBGeoPoint2D@@V?$allocator@VSBGeoPoint2D@@@std@@@std@@QAE?AViterator@12@XZ
+
+// TEMPLATE: GAME 0x0044e850 FOLDED
+// ?erase@?$list@VSBGeoPoint2D@@V?$allocator@VSBGeoPoint2D@@@std@@@std@@QAE?AViterator@12@V312@0@Z
+
+void EmitPolygonListDestroy(RHUnk0060bd40 *value)
+{
+    value->~RHUnk0060bd40();
 }

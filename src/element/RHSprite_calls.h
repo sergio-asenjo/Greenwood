@@ -31,6 +31,8 @@ public:
     float FUN_005fc700(float) const;
     float FUN_005fca90(const SBGeoPoint2D &other, float scale) const;
     bool operator==(const SBGeoPoint2D &) const;
+    float GetX() const { return m_x; }
+    float GetY() const { return m_y; }
     float m_x; // 0x00
     float m_y; // 0x04
 };
@@ -69,6 +71,9 @@ public:
     SBGeoBoundingBox2D &operator=(const SBGeoBoundingBox2D &);
     bool FUN_00608400(const SBGeoPoint2D &) const;
     int FUN_00609050(const SBGeoPoint2D &, const SBGeoPoint2D &);
+    bool Unk00608f30() const;
+    bool FUN_006090a0() const;
+    SBGeoBoundingBox2D FUN_006092c0(const SBGeoBoundingBox2D &) const;
     SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &) const;
     bool Serialize(SBFile &);
     void FUN_00607d90();

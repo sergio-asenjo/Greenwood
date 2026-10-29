@@ -40,7 +40,19 @@ bool RHSpritePositionCalls::FUN_00561040(void *, float, unsigned short &, bool) 
 // FUNCTION: GAME 0x0054e6d0
 RHOrder::~RHOrder() {}
 RHSpriteOrderIterator RHSpriteOrderList::FUN_0046eb80() { return RHSpriteOrderIterator(head->next); }
-RHSpriteOrderIterator RHSpriteOrderList::FUN_0046eb30(RHSpriteOrderIterator value) { return value; }
+// TEMPLATE: GAME 0x0046eb30 FOLDED
+// ?FUN_0046eb30@RHSpriteOrderList@@QAE?AURHSpriteOrderIterator@@U2@@Z
+RHSpriteOrderIterator RHSpriteOrderList::FUN_0046eb30(RHSpriteOrderIterator position)
+{
+    RHSpriteOrderIterator erased = position;
+    position.node = position.node->next;
+    RHSpriteOrderNode *node = erased.node;
+    node->previous->next = node->next;
+    node->next->previous = node->previous;
+    operator delete(node);
+    --count;
+    return position;
+}
 
 void RHSpriteOrderNode::CopyData(RHOrder **destination, RHOrder *const *source) { *destination = *source; }
 

@@ -1,6 +1,8 @@
 #ifndef RHPROJECTILEVECTOR_H
 #define RHPROJECTILEVECTOR_H
 
+#include "RHUnk00613e90.h"
+
 struct RHProjectileVector
 {
     RHProjectileVector()
@@ -16,6 +18,12 @@ struct RHProjectileVector
         return result;
     }
     int FUN_004b7fc0(const RHProjectileVector &other) const;
+    void Set(float first, float second, float third)
+    {
+        x = first;
+        y = second;
+        z = third;
+    }
     void FUN_004b8840(const RHProjectileVector &other);
     float x;
     float y;

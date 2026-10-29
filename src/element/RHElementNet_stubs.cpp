@@ -1,6 +1,8 @@
 #include "SBNullstr.h"
 #include "RHElementNet.h"
 
+// TEMPLATE: GAME 0x0044e8b0 FOLDED
+// ?FUN_0044e8b0@RHNetListStorage@@QAE?AURHScriptIter@@U2@0@Z
 RHScriptIter RHNetListStorage::FUN_0044e8b0(RHScriptIter first, RHScriptIter last)
 {
     RHScriptNode *node = first.node;
@@ -16,6 +18,8 @@ RHScriptIter RHNetListStorage::FUN_0044e8b0(RHScriptIter first, RHScriptIter las
     return RHScriptIter(node);
 }
 
+// TEMPLATE: GAME 0x00424410 FOLDED
+// ?FUN_00424410@RHNetListStorage@@QAE?AURHScriptIter@@U2@ABQAX@Z
 RHScriptIter RHNetListStorage::FUN_00424410(RHScriptIter position, void *const &value)
 {
     RHScriptNode *next = position.node;

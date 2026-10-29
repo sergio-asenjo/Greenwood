@@ -312,12 +312,12 @@ public:
     unsigned short FUN_005bddf0();
     unsigned short FUN_005bde70();
     void FUN_005b94d0(unsigned short, void *, void *, void *, int);
-    bool FUN_005b9b60(unsigned short, unsigned short);
+    unsigned char FUN_005b9b60(const SBGeoBoundingBox2D &, float);
     void FUN_005b9ce0();
     bool FUN_005b9e30(void *, void *, bool);
-    bool FUN_005ba130(void *, float, void *, void *);
-    void FUN_005ba6c0(void *, float, void *, void *, void *);
-    void FUN_005bad10(void *, unsigned short, unsigned short, unsigned short, void *);
+    bool FUN_005ba130(const SBGeoBoundingBox2D &, float, SBGeoBoundingBox2D &, SBGeoBoundingBox2D &);
+    bool FUN_005ba6c0(const SBGeoBoundingBox2D &, float, SBGeoBoundingBox2D &, SBGeoBoundingBox2D &, SBGeoVector2D &);
+    bool FUN_005bad10(unsigned long, unsigned short, unsigned short, unsigned short, const void *);
     void FUN_005bb180(unsigned short, unsigned long, unsigned short, unsigned short, unsigned short, void *);
     void Emit(SBFile &);
 };

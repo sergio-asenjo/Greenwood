@@ -44,7 +44,23 @@ bool RHUnkHumanPositionRange::FUN_0051afe0(RHUnk00571160Position position)
 
 int RHHumanActorCalls::FUN_0047b8a0(const RHUnk00613e90 &, int *, bool) { return 0; }
 SBGeoPoint2D RHHumanActorCalls::FUN_004237d0() { return *(SBGeoPoint2D *)this; }
-RHHumanFloatIterator RHHumanFloatList::FUN_00424410(RHHumanFloatIterator position, const float &) { return position; }
+
+// TEMPLATE: GAME 0x00424410 FOLDED
+// ?FUN_00424410@RHHumanFloatList@@QAE?AURHHumanFloatIterator@@U2@ABM@Z
+RHHumanFloatIterator RHHumanFloatList::FUN_00424410(RHHumanFloatIterator position, const float &value)
+{
+    RHHumanFloatNode *next = position.node;
+    RHHumanFloatNode *previous = next->previous;
+    RHHumanFloatNode *node = (RHHumanFloatNode *)operator new(sizeof(RHHumanFloatNode));
+    node->next = next ? next : node;
+    node->previous = previous ? previous : node;
+    next->previous = node;
+    node->previous->next = node;
+    new (&node->value) float(value);
+    ++m_count;
+    return RHHumanFloatIterator(node);
+}
+
 RHHumanFloatIterator RHHumanFloatList::FUN_0044e8b0(RHHumanFloatIterator, RHHumanFloatIterator last) { return last; }
 RHHumanFloatIterator RHHumanFloatList::FUN_0046eb80() { return RHHumanFloatIterator(m_head->next); }
 
