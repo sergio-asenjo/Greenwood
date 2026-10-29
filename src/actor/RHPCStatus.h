@@ -23,15 +23,7 @@ public:
     undefined m_5a[0x42]; // 0x5a
 };
 
-// SIZE 0x144
-class RHUnk00452030
-{
-public:
-    bool FUN_004565c0(const std::wstring &name);
-    void FUN_00456670(const std::wstring &name);
-    undefined m_00[0x134]; // 0x00
-    std::vector<std::wstring> m_134; // 0x134
-};
+#include "RHCampaignValueCalls.h"
 
 // SIZE 0x10
 class RHUnk00423b10

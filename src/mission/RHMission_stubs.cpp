@@ -12,6 +12,3 @@
 
 #include "SBNullstr.h"
 #include "RHMission.h"
-#include "RHCampaignMissionStatus.h"
-
-void RHMissionRequiredBounds::FUN_0054cdd0() {}

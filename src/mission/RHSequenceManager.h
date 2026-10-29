@@ -183,6 +183,110 @@ public:
     }
 };
 
+template<class T, bool InitialInline, bool SearchInline, bool TailInline>
+class RHManagerListSeek : public RHManagerList<T>
+{
+public:
+    typedef typename RHManagerList<T>::Iterator Iterator;
+    typedef typename std::list<T>::_Nodeptr Nodeptr;
+    Iterator InlineBegin()
+    {
+        Nodeptr first = *(Nodeptr volatile *)&_Head->_Next;
+        return Iterator(first);
+    }
+    Iterator InlineEnd()
+    {
+        return Iterator(*(Nodeptr volatile *)&_Head);
+    }
+    T TakeFirst()
+    {
+        Seek(0);
+        T value = *cursor;
+        ((std::list<T> *)this)->pop_front();
+        valid = 1;
+        return value;
+    }
+    void Remove(unsigned short wanted)
+    {
+        Seek(wanted);
+        ((std::list<T> *)this)->erase(cursor);
+        valid = 1;
+    }
+    void Seek(int wanted)
+    {
+        int size = Count();
+        if (valid)
+        {
+            if (wanted <= (size + 1) / 2)
+            {
+                if (InitialInline)
+                    cursor = InlineBegin();
+                else
+                    cursor = begin();
+                std::bidirectional_iterator_tag category;
+                RHAdvanceProfileCursor((RHProfilePointerList::iterator &)cursor, wanted, category);
+            }
+            else
+            {
+                cursor = InlineEnd();
+                std::bidirectional_iterator_tag category;
+                RHAdvanceProfileCursor((RHProfilePointerList::iterator &)cursor, wanted - size, category);
+            }
+            valid = 0;
+            index = wanted;
+        }
+        else
+        {
+            int previous = index;
+            if (wanted != previous)
+            {
+                if (wanted < previous)
+                {
+                    if (wanted < (previous + 1) / 2)
+                    {
+                        if (SearchInline)
+                        {
+                            cursor = InlineBegin();
+                            std::bidirectional_iterator_tag category;
+                            RHAdvanceProfileCursor((RHProfilePointerList::iterator &)cursor, wanted, category);
+                        }
+                        else
+                        {
+                            Iterator &current = cursor;
+                            typedef Iterator (RHUnk0046eb30::*Begin)();
+                            current = (((RHUnk0046eb30 *)this)->*(Begin)&RHUnk0046eb30::FUN_0046eb80)();
+                            std::bidirectional_iterator_tag category;
+                            RHAdvanceProfileCursor((RHProfilePointerList::iterator &)current, wanted, category);
+                        }
+                    }
+                    else
+                    {
+                        std::bidirectional_iterator_tag category;
+                        RHAdvanceProfileCursor((RHProfilePointerList::iterator &)cursor, wanted - previous, category);
+                    }
+                }
+                else if (wanted < (size + previous) / 2)
+                {
+                    std::bidirectional_iterator_tag category;
+                    RHAdvanceProfileCursor((RHProfilePointerList::iterator &)cursor, wanted - previous, category);
+                }
+                else
+                {
+                    cursor = InlineEnd();
+                    if (TailInline)
+                        std::advance(cursor, wanted - size);
+                    else
+                    {
+                        std::bidirectional_iterator_tag category;
+                        RHAdvanceProfileCursor((RHProfilePointerList::iterator &)cursor, wanted - size, category);
+                    }
+                }
+                index = wanted;
+            }
+        }
+    }
+};
+
 // SIZE 0x2c
 class RHManagerSequenceView
 {
@@ -230,6 +334,7 @@ public:
     bool PreSerializePointer(SBFile &file, RHSequenceElement **element, bool launch);
     bool PreSerializePointer(SBFile &file, RHSequence **sequence);
     bool SetAllPreSerializedPointers();
+    void FUN_0058ba60();
     void FUN_0058bb80(RHSequenceElement *element);
     bool FUN_0058bd70(void *actor, int command);
     bool SerializeSequenceElementPointer(SBFile &file, RHSequenceElement **element)

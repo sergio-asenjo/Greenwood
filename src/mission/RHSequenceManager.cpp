@@ -20,7 +20,8 @@ char *RHUnk0046eb30::FUN_0046eb70()
     return (char *)(*(void **)this) + 8;
 }
 
-// FUNCTION: GAME 0x0046eb80
+// TEMPLATE: GAME 0x0046eb80 FOLDED
+// ?FUN_0046eb80@RHUnk0046eb30@@QAE?AURHScriptIter@@XZ
 RHScriptIter RHUnk0046eb30::FUN_0046eb80()
 {
     return RHScriptIter((RHScriptNode *)((RHManagerList<void *> *)this)->Head()->next);
@@ -499,12 +500,44 @@ bool RHPathSequenceSerializer::FUN_0058b7c0(SBFile &file, void *&value)
 }
 
 #include "RHSequenceElementCalls.h"
+#include "RHSequenceCancellationCalls.h"
+
+// FUNCTION: GAME 0x0058ba60
+void RHSequenceManager::FUN_0058ba60()
+{
+    while (m_28.Count() > 0)
+    {
+        RHSequenceElementCalls *element = (RHSequenceElementCalls *)((RHManagerListSeek<RHSequenceElement *, true, false, false> *)&m_28)->TakeFirst();
+        element->FUN_00585570();
+    }
+}
 
 // FUNCTION: GAME 0x0058bb80
 void RHSequenceManager::FUN_0058bb80(RHSequenceElement *element)
 {
     if (!((RHSequenceElementCalls *)element)->FUN_00585b70())
         m_28.push_back(element);
+}
+
+// STUB: GAME 0x0058bbe0
+void RHSequenceCancellationCalls::FUN_0058bbe0(void *actor, int value)
+{
+    RHManagerList<RHSequenceElement *> &elements = ((RHSequenceManager *)this)->m_28;
+    unsigned short count = elements.Count();
+    for (unsigned short i = 0; i < count; ++i)
+    {
+        RHSequenceElementCalls *element = (RHSequenceElementCalls *)elements[i];
+        if (element->m_48 == actor)
+        {
+            element->Slot10(value);
+            if (element->m_58 == 6)
+            {
+                ((RHManagerListSeek<RHSequenceElement *, true, true, true> *)&elements)->Remove(i);
+                --i;
+                --count;
+            }
+        }
+    }
 }
 
 // FUNCTION: GAME 0x0058bd70

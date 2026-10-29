@@ -12,7 +12,6 @@ public:
     RHGameMission *m_178;
     RHGameMission *m_17c;
     RHGameMission *m_180;
-    void FUN_00451a90();
     void FUN_00453b70(RHGameMission *mission);
     int FUN_00456190(RHGameMission *mission);
     int FUN_004561d0(RHGameMission *mission);

@@ -22,15 +22,7 @@ inline const char *RHCampaignStringChars(const std::string &value)
 
 #include "RHMission.h"
 
-class RHUnk00452030
-{
-public:
-    char m_pad0[0x108];
-    void **m_108;
-    void **m_10c;
-    int Get(int index);
-    int FUN_00453d60(const void *value);
-};
+#include "RHCampaignValueCalls.h"
 
 extern RHUnk00452030 *g_unk0x6c07fc;
 

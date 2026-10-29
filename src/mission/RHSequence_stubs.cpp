@@ -48,9 +48,26 @@ RHSeqIter RHSeqList::insert(RHSeqIter pos, RHSequenceElement *const &value)
     return RHSeqIter(node);
 }
 
-// Target 0x00424410: std::list<RHSequence*>::insert (`ret 0xc`, ecx = the list).
+struct RHSequenceListNode
+{
+    RHSequenceListNode *next;
+    RHSequenceListNode *previous;
+    RHSequence *value;
+};
+
+// TEMPLATE: GAME 0x00424410 FOLDED
+// ?insert@RHUnkListSeq@@QAE?AVRHSeqIter@@V2@ABQAVRHSequence@@@Z
 RHSeqIter RHUnkListSeq::insert(RHSeqIter pos, RHSequence *const &value)
 {
-    return pos;
+    RHSequenceListNode *next = (RHSequenceListNode *)pos.m_p;
+    RHSequenceListNode *previous = next->previous;
+    RHSequenceListNode *node = (RHSequenceListNode *)operator new(sizeof(RHSequenceListNode));
+    node->next = next ? next : node;
+    node->previous = previous ? previous : node;
+    next->previous = node;
+    node->previous->next = node;
+    new (&node->value) RHSequence *(value);
+    ++m_8;
+    return RHSeqIter(node);
 }
 void RHUnk00582220::Slot00() {}

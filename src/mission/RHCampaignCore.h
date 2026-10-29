@@ -35,6 +35,7 @@ public:
     bool m_1c0; // 0x1c0
 
     void CreateGang();
+    void DetermineAccessibleMissions();
     void FUN_004522e0(RHPCDescription *description);
     bool IsInGang(const RHCharacterProfile *profile) const;
     void SelectMissions(bool forced);

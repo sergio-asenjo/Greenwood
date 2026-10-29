@@ -166,68 +166,44 @@ public:
 
 #include "RHCopyPointers.h"
 
-// SIZE 0x10
-class RHCampaignMissionCandidates
+inline void RHCampaignAssignMissions(std::vector<RHMission *> &result, const std::vector<RHMission *> &value)
 {
-public:
-    std::allocator<RHMission *> m_allocator; // 0x00
-    RHMission **m_first; // 0x04
-    RHMission **m_last; // 0x08
-    RHMission **m_end; // 0x0c
-    RHCampaignMissionCandidates(const std::allocator<RHMission *> &allocator = std::allocator<RHMission *>())
-        : m_allocator(allocator), m_first(0), m_last(0), m_end(0) {}
-    RHCampaignMissionCandidates(const std::vector<RHMission *> &value)
+    if (&result != &value)
     {
-        *(char *)&m_allocator = *(const char *)&value;
-        m_first = std::_Allocate((int)value.size(), (RHMission **)0);
-        m_last = (RHMission **)((RHScriptFXArray *)this)->Unk004fe420(
-            (void **)value.begin(), (void **)value.end(), (void **)m_first);
-        m_end = m_last;
-    }
-    ~RHCampaignMissionCandidates() { ((RHCampaignArrayOps *)this)->FUN_00570330(); }
-    operator std::vector<RHMission *> &() { return *(std::vector<RHMission *> *)this; }
-    RHMission **begin() { return m_first; }
-    RHMission **end() { return m_last; }
-    unsigned size() { return m_first == 0 ? 0 : m_last - m_first; }
-    RHMission *&operator[](unsigned index) { return m_first[index]; }
-    __forceinline void Assign(const std::vector<RHMission *> &value)
-    {
-        if ((const void *)this != &value)
+        RHFastFindGateArray *source = (RHFastFindGateArray *)&value;
+        RHFastFindGateArray *sizes = (RHFastFindGateArray *)&result;
+        RHCampaignPointerArray<RHMission *> *storage = (RHCampaignPointerArray<RHMission *> *)&result;
+        RHScriptFXArray *array = (RHScriptFXArray *)&result;
+        unsigned sourceCount = source->FUN_0059fbc0();
+        if (sourceCount <= sizes->FUN_0059fbc0())
         {
-            RHFastFindGateArray *source = (RHFastFindGateArray *)&value;
-            RHFastFindGateArray *sizes = (RHFastFindGateArray *)this;
-            RHCampaignPointerArray<RHMission *> *storage = (RHCampaignPointerArray<RHMission *> *)this;
-            RHScriptFXArray *array = (RHScriptFXArray *)this;
-            if (source->FUN_0059fbc0() <= sizes->FUN_0059fbc0())
+            RHMission **last = (RHMission **)FUN_004598e0((void **)value.begin(), (void **)value.end(), (void **)result.begin());
+            array->Unk005008e0((void **)last, (void **)result.end());
+            unsigned nextSize = source->FUN_0059fbc0();
+            storage->m_last = result.begin() + nextSize;
+        }
+        else
+        {
+            unsigned sourceSize = source->FUN_0059fbc0();
+            if (sourceSize <= ((RHCampaignArrayOps *)&result)->FUN_004580a0())
             {
-                RHMission **last = (RHMission **)FUN_004598e0((void **)value.begin(), (void **)value.end(), (void **)begin());
-                array->Unk005008e0((void **)last, (void **)end());
+                RHMission *const *middle = value.begin() + sizes->FUN_0059fbc0();
+                FUN_004598e0((void **)value.begin(), (void **)middle, (void **)result.begin());
+                array->Unk004fe420((void **)middle, (void **)value.end(), (void **)result.end());
                 unsigned nextSize = source->FUN_0059fbc0();
-                storage->m_last = begin() + nextSize;
+                storage->m_last = result.begin() + nextSize;
             }
             else
             {
-                unsigned sourceSize = source->FUN_0059fbc0();
-                if (sourceSize <= ((RHCampaignArrayOps *)this)->FUN_004580a0())
-                {
-                    RHMission *const *middle = value.begin() + sizes->FUN_0059fbc0();
-                    FUN_004598e0((void **)value.begin(), (void **)middle, (void **)begin());
-                    array->Unk004fe420((void **)middle, (void **)value.end(), (void **)end());
-                    unsigned nextSize = source->FUN_0059fbc0();
-                    storage->m_last = begin() + nextSize;
-                }
-                else
-                {
-                    array->Unk005008e0((void **)begin(), (void **)end());
-                    operator delete(begin());
-                    storage->m_first = std::_Allocate((int)source->FUN_0059fbc0(), (RHMission **)0);
-                    storage->m_last = (RHMission **)array->Unk004fe420((void **)value.begin(), (void **)value.end(), (void **)begin());
-                    storage->m_end = end();
-                }
+                array->Unk005008e0((void **)result.begin(), (void **)result.end());
+                operator delete(result.begin());
+                storage->m_first = std::_Allocate((int)source->FUN_0059fbc0(), (RHMission **)0);
+                storage->m_last = (RHMission **)array->Unk004fe420((void **)value.begin(), (void **)value.end(), (void **)result.begin());
+                storage->m_end = result.end();
             }
         }
     }
-};
+}
 
 class RHCampaignText
 {

@@ -25,12 +25,6 @@ public:
 
 typedef RHGameLifetime00515f00 RHShortBriefingsText;
 
-class RHShortBriefingsCalls
-{
-public:
-    void FUN_005a2450(void *first, void *second);
-};
-
 class RHShortBriefings
 {
 public:
@@ -68,6 +62,7 @@ public:
 
     RHShortBriefings(bool load);
     ~RHShortBriefings();
+    void AddShortBriefing(unsigned long id, bool first);
 
     bool Serialize(SBFile &file);
     bool HasShortBriefing(unsigned long id) const;

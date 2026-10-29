@@ -48,11 +48,31 @@ void EmitRHMissionProfileCtor(RHMission *mission, const RHMissionProfile *profil
 extern "C" int __cdecl rand() { return 0; }
 
 
-void RHCampaignWideString::Tidy(bool) {}
+// TEMPLATE: GAME 0x004238c0 FOLDED
+// ?Tidy@RHCampaignWideString@@QAEX_N@Z
+void RHCampaignWideString::Tidy(bool built)
+{
+    if (built && m_chars != 0)
+    {
+        unsigned char &references = *((unsigned char *)m_chars - 1);
+        if (references == 0 || references == 255)
+            operator delete(m_chars - 1);
+        else
+            --references;
+    }
+    m_chars = 0;
+    m_length = 0;
+    m_capacity = 0;
+}
 void RHCampaignWideStrings::Destroy(RHCampaignWideString *, RHCampaignWideString *) {}
 void RHCampaignWideStrings::Insert(RHCampaignWideString *, unsigned, const RHCampaignWideString &) {}
 
-void RHCampaignUnk00457950::Value::FUN_0051c0c0() {}
+// TEMPLATE: GAME 0x0051c0c0 FOLDED
+// ?FUN_0051c0c0@Value@RHCampaignUnk00457950@@QAEXXZ
+void RHCampaignUnk00457950::Value::FUN_0051c0c0()
+{
+    ((SBGeoPoint2D *)this)->~SBGeoPoint2D();
+}
 
 RHPCDescription::~RHPCDescription() {}
 
@@ -105,7 +125,6 @@ char FUN_0054cc10(RHMission *mission)
 {
     return mission->FUN_0054cbf0();
 }
-bool RHCampaignMissionCalls::FUN_0054c8a0(std::string &) { return false; }
 void RHCampaignText::FUN_004021c0(const char *, unsigned) {}
 RHCampaignProfiles::~RHCampaignProfiles() {}
 

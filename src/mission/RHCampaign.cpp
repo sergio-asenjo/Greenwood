@@ -30,7 +30,7 @@ public:
 DECOMP_SIZE_ASSERT(RHMission, 0x0c)
 DECOMP_SIZE_ASSERT(RHCampaign, 0x1c4)
 DECOMP_SIZE_ASSERT(RHGameCampaignView, 0x184)
-DECOMP_SIZE_ASSERT(RHCampaignMissionCandidates, 0x10)
+DECOMP_SIZE_ASSERT(std::vector<RHMission *>, 0x10)
 DECOMP_SIZE_ASSERT(RHCampaignBeamText, 0x10)
 DECOMP_SIZE_ASSERT(RHbeamMe, 0x30)
 DECOMP_SIZE_ASSERT(RHUnk0048f280, 0x60c)
@@ -317,21 +317,43 @@ void RHCampaign::CreateGang()
 }
 
 // Parked: receiver scheduling and early-exit vector cleanup differ.
+// FUNCTION: GAME 0x00451a90
+void RHCampaign::DetermineAccessibleMissions()
+{
+    std::vector<RHMission *> scratch;
+    RHMission *mission = m_144.begin() + 1;
+    for (; mission != m_144.end(); ++mission)
+    {
+        if (mission->IsAccessible())
+        {
+            RHMission **found = std::find(m_154.begin(), m_154.end(), mission);
+            if (found == m_154.end())
+            {
+                SBArray<RHSaveGame *> &missions = *(SBArray<RHSaveGame *> *)&m_154;
+                missions.Insert(missions.m_last, 1, (RHSaveGame *const &)mission);
+                mission->m_8 = 0;
+            }
+        }
+    }
+    SelectMissions(false);
+    SelectMissions(true);
+}
+
 // STUB: GAME 0x00451b70
 void RHCampaign::SelectMissions(bool forced)
 {
     unsigned attempts = 10;
-    RHCampaignMissionCandidates candidates;
+    std::vector<RHMission *> candidates;
     do
     {
         if (forced)
         {
             if (m_164.size() == 0)
                 return;
-            candidates.Assign(m_164);
+            RHCampaignAssignMissions(candidates, m_164);
         }
         else
-            candidates.Assign(m_154);
+            RHCampaignAssignMissions(candidates, m_154);
         if (candidates.size() > 1)
             FUN_004526f0(candidates);
         if (candidates.size() > 1)
@@ -368,20 +390,29 @@ void RHCampaign::SelectMissions(bool forced)
             ((RHCampaignArrayOps *)&candidates)->FUN_00457a30((const RHCampaignArrayOps &)m_154);
             FUN_00455f00(candidates);
         }
-        if (candidates.size() > 1)
+        unsigned candidateCount = candidates.begin() == 0 ? 0 : candidates.end() - candidates.begin();
+        if (candidateCount > 1)
         {
-            unsigned index = rand() % candidates.size();
-            std::vector<RHMission *> &missions = forced ? m_164 : m_154;
+            unsigned index = rand() % candidateCount;
+            std::vector<RHMission *> *missions;
             if (forced)
-                ((RHMissionArrayStorage *)&missions)->FUN_004609a0(missions.begin(), missions.end());
+            {
+                missions = &m_164;
+                typedef std::vector<int> Values;
+                int *(Values::*erase)(int *, int *) = &Values::erase;
+                (((Values *)missions)->*erase)((int *)missions->begin(), (int *)missions->end());
+            }
             else
             {
-                for (RHMission **it = missions.begin(); it != missions.end(); ++it)
+                for (RHMission **it = m_154.begin(); it != m_154.end(); ++it)
                     if (*it != candidates[index])
                         (*it)->m_4 = 0;
-                ((RHCampaignArrayOps *)&missions)->FUN_0044ea70();
+                missions = &m_154;
+                ((RHCampaignArrayOps *)missions)->FUN_0044ea70();
             }
-            ((RHMissionArrayStorage *)&missions)->FUN_004e5820(missions.end(), (const unsigned long &)candidates[index]);
+            typedef std::vector<unsigned long> Values;
+            unsigned long *(Values::*insert)(unsigned long *, const unsigned long &) = &Values::insert;
+            (((Values *)missions)->*insert)((unsigned long *)missions->end(), (const unsigned long &)candidates[index]);
             return;
         }
     }
@@ -430,20 +461,20 @@ void RHCampaign::FUN_004526f0(std::vector<RHMission *> &missions)
 // STUB: GAME 0x00452810
 void RHCampaign::FUN_00452810(std::vector<RHMission *> &missions)
 {
-    RHCampaignMissionCandidates previous(missions);
+    std::vector<RHMission *> previous(missions);
     missions.erase(std::remove_if(missions.begin(), missions.end(), FUN_00452040), missions.end());
     if (missions.empty())
-        ((RHCampaignMissionCandidates *)&missions)->Assign(previous);
+        RHCampaignAssignMissions(missions, previous);
 }
 
 // Parked: container scheduling and counted helper operands.
 // STUB: GAME 0x00452a50
 void RHCampaign::FUN_00452a50(std::vector<RHMission *> &missions)
 {
-    RHCampaignMissionCandidates previous(missions);
+    std::vector<RHMission *> previous(missions);
     missions.erase(std::remove_if(missions.begin(), missions.end(), FUN_00452090), missions.end());
     if (missions.empty())
-        ((RHCampaignMissionCandidates *)&missions)->Assign(previous);
+        RHCampaignAssignMissions(missions, previous);
 }
 
 // FUNCTION: GAME 0x00452c90
@@ -748,7 +779,7 @@ RHMission *RHCampaign::FUN_004539f0()
     }
     else
     {
-        ((RHGameCampaignView *)this)->FUN_00451a90();
+        DetermineAccessibleMissions();
         std::for_each((RHUnk0054cda0 **)m_154.begin(), (RHUnk0054cda0 **)m_154.end(), FUN_0054cda0);
         if (m_154.size() == 1 && !*((char *)m_154[0]->m_profile + 0x38))
         {
@@ -1554,7 +1585,7 @@ void RHCampaign::FUN_00456e60()
         case 1: status.assign("WON", 3); break;
         case 2: status = "LOST"; break;
         }
-        if (((RHCampaignMissionCalls *)&mission)->FUN_0054c8a0(reason))
+        if (mission.IsAccessible(reason))
             accessible = "ACCESSIBLE";
         else
             accessible = "NOT ACCESSIBLE";
@@ -2095,7 +2126,7 @@ void RHCampaignMissionList::FUN_0045a440(const RHMission *const &value)
     ++m_count;
 }
 
-// TEMPLATE: GAME 0x0045a490
+// TEMPLATE: GAME 0x0045a490 FOLDED
 // ?size@?$vector@UPoint@RHSectorProduction@@V?$allocator@UPoint@RHSectorProduction@@@std@@@std@@QBEIXZ
 
 // TEMPLATE: GAME 0x0045a4b0
@@ -2207,9 +2238,6 @@ void RHEngine::FUN_004e3770(RHElement *element)
 
 // LIBRARY: GAME 0x004e5820
 // ?insert@?$vector@KV?$allocator@K@std@@@std@@QAEPAKPAKABK@Z
-
-// TEMPLATE: GAME 0x004e6ba0
-// ?_Destroy@?$vector@UOccupant@RHSectorProduction@@V?$allocator@UOccupant@RHSectorProduction@@@std@@@std@@IAEXPAUOccupant@RHSectorProduction@@0@Z
 
 // TEMPLATE: GAME 0x004e6c10
 // ?clear@?$list@PAVRHPlayerProfile@@V?$allocator@PAVRHPlayerProfile@@@std@@@std@@QAEXXZ

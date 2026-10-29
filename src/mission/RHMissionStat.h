@@ -27,11 +27,7 @@ void RHSerializeName(SBFile &file, const char *name);
 std::wstring FUN_005e23d0(unsigned long id);
 
 // Target 0x00452030 (defined in RHScript.cpp): campaign-value accessor.
-class RHUnk00452030
-{
-public:
-    int Get(int index);
-};
+#include "RHCampaignValueCalls.h"
 
 // Defined and annotated (GLOBAL 0x006c07fc) in RHScript.cpp.
 extern RHUnk00452030 *g_unk0x6c07fc;

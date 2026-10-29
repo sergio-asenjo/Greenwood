@@ -37,25 +37,101 @@
 class RHUnk00452030;
 extern RHUnk00452030 *g_unk0x6c07fc;
 
-static inline unsigned long RHMissionRequiredAt(RHMissionArray<unsigned long> &values, unsigned long index)
-{
-    if ((unsigned long)(values.end() - values.begin()) <= index)
-        ((RHMissionRequiredBounds *)&values)->FUN_0054cdd0();
-    return values.begin()[index];
-}
-
-// Parked: container/index registers differ and VC6 removes the checked-access branch.
-// STUB: GAME 0x0054c6f0
+// FUNCTION: GAME 0x0054c6f0
 bool RHMission::AreRequiredMissionStatusValid(bool value) const
 {
     RHUnk00451f00 *campaign = (RHUnk00451f00 *)g_unk0x6c07fc;
-    RHMissionArray<unsigned long> *required = value == true ? &m_profile->m_94 : &m_profile->m_a4;
-    for (unsigned long index = 0; required->GetSize() > index; ++index)
+    std::vector<unsigned long> *required = (std::vector<unsigned long> *)(value == true ? &m_profile->m_94 : &m_profile->m_a4);
+    for (unsigned index = 0; index < required->size(); ++index)
     {
-        bool status = campaign->FUN_00451ff0(RHMissionRequiredAt(*required, index))->m_8;
+        bool status = campaign->FUN_00451ff0(required->at(index))->m_8 != 0;
         if (status != value)
             return false;
     }
+    return true;
+}
+
+#include "RHCampaignValueCalls.h"
+#include "RHCampaignCore.h"
+
+// FUNCTION: GAME 0x0054c800
+bool RHMission::IsAccessible() const
+{
+    char *campaign = (char *)g_unk0x6c07fc;
+    void **first = *(void ***)(campaign + 0x118);
+    unsigned count = first == 0 ? 0 : *(void ***)(campaign + 0x11c) - first;
+    char difficulty = *(campaign + 0x100);
+    unsigned value = g_unk0x6c07fc->Get(1);
+    const char *profile = (const char *)m_profile;
+    if (value >= *(const unsigned *)(profile + 0x40) &&
+        (*(const unsigned *)(profile + 0x44) >= value || *(const unsigned *)(profile + 0x44) == 200000) &&
+        count >= *(const unsigned short *)(profile + 0x48) &&
+        *(const unsigned short *)(profile + 0x4a) >= count &&
+        (unsigned short)m_4 < *(const unsigned short *)(profile + 0x4c) &&
+        (*(profile + 0x54) != 1 || *(profile + 0x55 + difficulty)) &&
+        AreRequiredMissionStatusValid(true))
+        return AreRequiredMissionStatusValid(false) ? true : false;
+    return false;
+}
+
+// FUNCTION: GAME 0x0054c8a0
+bool RHMission::IsAccessible(std::string &reason) const
+{
+    char *campaign = (char *)g_unk0x6c07fc;
+    unsigned count = ((RHCampaign *)campaign)->m_114.size();
+    char difficulty = *(campaign + 0x100);
+    unsigned value = g_unk0x6c07fc->Get(1);
+    const char *profile = (const char *)m_profile;
+    if (value < *(const unsigned *)(profile + 0x40))
+    {
+        // STRING: GAME 0x006b12c8
+        reason.assign("Not enough money");
+        return false;
+    }
+    else if (*(const unsigned *)(profile + 0x44) < value && *(const unsigned *)(profile + 0x44) != 200000)
+    {
+        // STRING: GAME 0x006b12b8
+        reason.assign("Too much money");
+        return false;
+    }
+    else if (count < *(const unsigned short *)(profile + 0x48))
+    {
+        // STRING: GAME 0x006b12a0
+        reason.assign("Not enough gang members");
+        return false;
+    }
+    else if (*(const unsigned short *)(profile + 0x4a) < count)
+    {
+        // STRING: GAME 0x006b1288
+        reason.assign("Too many gang members");
+        return false;
+    }
+    else if ((unsigned short)m_4 >= *(const unsigned short *)(profile + 0x4c))
+    {
+        // STRING: GAME 0x006b1274
+        reason.assign("Age limit exceeded");
+        return false;
+    }
+    else if (*(profile + 0x54) == 1 && !*(profile + 0x55 + difficulty))
+    {
+        // STRING: GAME 0x006b1254
+        reason.assign("Incompatible with ARES state");
+        return false;
+    }
+    else if (!AreRequiredMissionStatusValid(true))
+    {
+        // STRING: GAME 0x006b122c
+        reason.assign("Some missions are required to be played");
+        return false;
+    }
+    else if (!AreRequiredMissionStatusValid(false))
+    {
+        // STRING: GAME 0x006b1200
+        reason.assign("Some missions are required not to be played");
+        return false;
+    }
+    // STRING: GAME 0x006b11fc
+    reason.assign("OK");
     return true;
 }
 

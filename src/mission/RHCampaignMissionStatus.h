@@ -17,10 +17,4 @@ public:
     RHUnk00451f10 *m_14c;
 };
 
-class RHMissionRequiredBounds
-{
-public:
-    void FUN_0054cdd0();
-};
-
 #endif

@@ -45,7 +45,8 @@ public:
     RHMission(const RHMissionProfile *profile);
     int FUN_0054cbf0();
     int FUN_0054cc20();
-    bool FUN_0054c8a0(std::string &reason);
+    bool IsAccessible(std::string &reason) const;
+    bool IsAccessible() const;
 };
 
 // Serialises a type-name tag into the stream; target 0x005e1b70. Defined once

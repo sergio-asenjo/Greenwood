@@ -112,6 +112,15 @@ inline RHSequenceElementListStorage::~RHSequenceElementListStorage()
     ClearRHSequenceElementRange(this);
 }
 
+// TEMPLATE: GAME 0x0044e8b0 FOLDED
+// ?erase@?$list@PAVRHSequenceElement@@V?$allocator@PAVRHSequenceElement@@@std@@@std@@QAE?AViterator@12@V312@0@Z
+
+// TEMPLATE: GAME 0x0046eb30 FOLDED
+// ?erase@?$list@PAVRHSequenceElement@@V?$allocator@PAVRHSequenceElement@@@std@@@std@@QAE?AViterator@12@V312@@Z
+
+// TEMPLATE: GAME 0x0046eb30 FOLDED
+// ?erase@?$list@PAVRHUnkSequenceOrder@@V?$allocator@PAVRHUnkSequenceOrder@@@std@@@std@@QAE?AViterator@12@V312@@Z
+
 // FUNCTION: GAME 0x00582220
 RHUnk00582220::RHUnk00582220()
 {

@@ -34,11 +34,17 @@ public:
     SBGeoPoint2D second;
     bool active;
     float GetHeight() const { return second.y - first.y; }
+    float GetWidth() const { return second.x - first.x; }
+    float GetTop() const { return first.y; }
     void SetTop(float value) { first.y = value; active = true; }
     void SetBottom(float value) { second.y = value; active = true; }
 };
 
 #include "RHShortBriefings.h"
+
+DECOMP_SIZE_ASSERT(RHShortBriefings, 0x100)
+DECOMP_SIZE_ASSERT(RHShortBriefings::ShortBriefing, 0x08)
+DECOMP_SIZE_ASSERT(RHShortBriefings::ShortBriefingVector, 0x10)
 
 class RHShortBriefingVectorEmission : public std::vector<RHShortBriefings::ShortBriefing>
 {
@@ -60,6 +66,9 @@ public:
 
 // TEMPLATE: GAME 0x0054c5a0
 // ?copy@std@@YAPAUShortBriefing@RHShortBriefings@@PAU23@00@Z
+
+// TEMPLATE: GAME 0x00509ba0 FOLDED
+// ?_Construct@std@@YAXPAUShortBriefing@RHShortBriefings@@ABU23@@Z
 
 class RHDialogueSet;
 class RHEngine
@@ -83,13 +92,69 @@ RHShortBriefings::RHShortBriefings(bool load)
     {
         RHDialogueSetView *resources = (RHDialogueSetView *)g_pEngine->GetDynResources(0);
         for (unsigned long count = resources->m_3c; count; --count)
-            ((RHShortBriefingsCalls *)this)->FUN_005a2450((void *)(resources->m_3c - count), (void *)1);
+            AddShortBriefing(resources->m_3c - count, true);
     }
 }
 
 // FUNCTION: GAME 0x005a23a0
 RHShortBriefings::~RHShortBriefings()
 {
+}
+
+class RHShortBriefingInsertion : public std::vector<RHShortBriefings::ShortBriefing>
+{
+public:
+    void Insert(RHShortBriefings::ShortBriefing *position, unsigned count,
+                const RHShortBriefings::ShortBriefing &value)
+    {
+        typedef RHShortBriefings::ShortBriefing Value;
+        typedef std::vector<Value> Vector;
+        RHShortBriefings::ShortBriefingVector &storage = *(RHShortBriefings::ShortBriefingVector *)this;
+        void (Vector::*fill)(Value *, unsigned, const Value &) = &RHShortBriefingInsertion::_Ufill;
+        Value *(Vector::*copy)(const Value *, const Value *, Value *) = &RHShortBriefingInsertion::_Ucopy;
+        void (Vector::*destroy)(Value *, Value *) = &RHShortBriefingInsertion::_Destroy;
+        if ((unsigned)(storage.m_end - storage.m_last) < count) {
+            unsigned grow = count < size() ? size() : count;
+            int capacity = size() + grow;
+            Value *buffer = std::_Allocate(capacity, (Value *)0);
+            Value *destination = buffer;
+            for (Value *source = storage.m_first; source != position; ++source, ++destination) {
+                void (__cdecl *construct)(Value *, const Value &) = &std::_Construct;
+                construct(destination, *source);
+            }
+            (this->*fill)(destination, count, value);
+            (this->*copy)(position, storage.m_last, destination + count);
+            (this->*destroy)(storage.m_first, storage.m_last);
+            operator delete(storage.m_first);
+            storage.m_end = buffer + capacity;
+            storage.m_last = buffer + size() + count;
+            storage.m_first = buffer;
+        }
+        else if ((unsigned)(storage.m_last - position) < count) {
+            (this->*copy)(position, storage.m_last, position + count);
+            (this->*fill)(storage.m_last, count - (storage.m_last - position), value);
+            std::fill(position, storage.m_last, value);
+            storage.m_last += count;
+        }
+        else if (count > 0) {
+            (this->*copy)(storage.m_last - count, storage.m_last, storage.m_last);
+            std::copy_backward(position, storage.m_last - count, storage.m_last);
+            std::fill(position, position + count, value);
+            storage.m_last += count;
+        }
+    }
+};
+
+// FUNCTION: GAME 0x005a2450
+void RHShortBriefings::AddShortBriefing(unsigned long id, bool first)
+{
+    if (!HasShortBriefing(id)) {
+        ShortBriefing value;
+        value.m_0 = id;
+        value.m_4 = false;
+        std::vector<ShortBriefing> &values = *(std::vector<ShortBriefing> *)(first ? &m_0 : &m_10);
+        ((RHShortBriefingInsertion *)&values)->Insert(values.end(), 1, value);
+    }
 }
 
 class RHMobileUnk00607da0
@@ -100,55 +165,12 @@ public:
 
 #include "RHMapWideText.h"
 
-class RHBriefingWideText
+class RHBriefingWideText : public std::basic_string<unsigned short>
 {
 public:
     RHBriefingWideText(const unsigned short *text,
-        const std::allocator<unsigned short> &allocator = std::allocator<unsigned short>()) : m_allocator(allocator)
-    {
-        ((RHMapWideText *)this)->Tidy(false);
-        typedef std::basic_string<unsigned short> String;
-        String &(String::*assign)(const unsigned short *, unsigned) = &String::assign;
-        (((String *)this)->*assign)(text, wcslen(text));
-    }
-    ~RHBriefingWideText() { ((RHMapWideText *)this)->Tidy(true); }
-    std::allocator<unsigned short> m_allocator;
-    unsigned short *m_chars;
-    unsigned m_size;
-    unsigned m_capacity;
-};
-
-class RHBriefingReturnedText
-{
-public:
-    ~RHBriefingReturnedText() { ((RHMapWideText *)this)->Tidy(true); }
-    std::allocator<unsigned short> m_allocator;
-    unsigned short *m_chars;
-    unsigned m_size;
-    unsigned m_capacity;
-};
-
-class RHProfileText
-{
-public:
-    void FUN_00401ee0(bool built);
-};
-
-class RHBriefingNarrowText
-{
-public:
-    RHBriefingNarrowText(const char *text, const std::allocator<char> &allocator = std::allocator<char>()) : m_allocator(allocator)
-    {
-        ((RHProfileText *)this)->FUN_00401ee0(false);
-        typedef std::string String;
-        String &(String::*assign)(const char *, unsigned) = &String::assign;
-        (((String *)this)->*assign)(text, strlen(text));
-    }
-    ~RHBriefingNarrowText() { ((RHProfileText *)this)->FUN_00401ee0(true); }
-    std::allocator<char> m_allocator;
-    char *m_chars;
-    unsigned m_size;
-    unsigned m_capacity;
+        const std::allocator<unsigned short> &allocator = std::allocator<unsigned short>())
+        : std::basic_string<unsigned short>(text, allocator) {}
 };
 
 class RHBriefingSetupCalls
@@ -171,29 +193,19 @@ public:
     virtual void V38(bool enabled);
 };
 
-class RHBriefingParentCalls
+#include "RHBriefingWindowCalls.h"
+
+typedef RHBriefingWindowCalls RHBriefingParentCalls;
+
+class RHBriefingNarrowText : public std::string
 {
 public:
-    virtual void V00();
-    virtual void V04();
-    virtual void V08();
-    virtual void V0c();
-    virtual void V10();
-    virtual void V14();
-    virtual void V18();
-    virtual void V1c();
-    virtual void V20();
-    virtual void V24();
-    virtual void V28();
-    virtual void V2c();
-    virtual void V30(void *widget);
-    void *FUN_00544b60(const RHBriefingNarrowText &name);
+    RHBriefingNarrowText(const char *text) : std::basic_string<char>(text) {}
 };
 
 extern wchar_t g_unk0x006c0b50[1];
 
-// Parked: vector temporary slots, x87 operand order and receiver scheduling differ.
-// STUB: GAME 0x005a2630
+// FUNCTION: GAME 0x005a2630
 void RHShortBriefings::FUN_005a2630(RHMenuWindow *window, SBGeoBoundingBox2D &box)
 {
     if (GetShortBriefingNumber(true) > 0 && GetShortBriefingNumber(false) > 0) {
@@ -206,27 +218,18 @@ void RHShortBriefings::FUN_005a2630(RHMenuWindow *window, SBGeoBoundingBox2D &bo
         ((RHBriefingParentCalls *)window)->V30(&m_30);
         SBGeoPoint2D offset;
         ((RHMobileUnk00607da0 *)&bounds)->FUN_00607da0(*(RHMobileUnk00607da0 *)((char *)&m_30 + 0x30));
-        offset = SBGeoPoint2D(((box.second.x - box.first.x) - (bounds.second.x - bounds.first.x)) * 0.5f, 10.0f);
+        offset = SBGeoPoint2D((box.GetWidth() - bounds.GetWidth()) * 0.5f, 10.0f);
         {
-            SBGeoVector2D displacement(*(SBGeoVector2D *)&offset);
+            SBGeoVector2D displacement = *(SBGeoVector2D *)&offset;
             ((RHBriefingSetupCalls *)&m_30)->V20(bounds.first.Unk005fc190(displacement));
         }
-        box.SetTop(bounds.GetHeight() + box.first.y + 20.0f);
+        box.SetTop(box.GetTop() + bounds.GetHeight() + 20.0f);
     }
 }
 
 typedef RHGameLifetime00525560 RHBriefingTitle;
 
-class __declspec(novtable) RHBriefingPicture : public RHGameLifetime00517590
-{
-public:
-    RHBriefingPicture()
-    {
-        *(unsigned *)this = 0x006775e4;
-        m_cc = 0;
-    }
-    unsigned m_cc;
-};
+typedef RHGameLifetime0044fe90 RHBriefingPicture;
 
 class SBUIUnk0060dd00
 {
@@ -257,14 +260,13 @@ void EmitRHShortBriefingWidgets(RHShortBriefings *briefings, RHMenuWindow *windo
     briefings->CreateWidgets(window, box);
 }
 
-// Parked: the frame is twelve bytes larger; receiver colors and wide-string temporaries differ.
 // STUB: GAME 0x005a28c0
 void RHShortBriefings::FUN_005a28c0(RHMenuWindow *window, SBGeoBoundingBox2D &box, bool mode)
 {
     // STRING: GAME 0x006b77e4
-    void *active = ((RHBriefingParentCalls *)window)->FUN_00544b60("ActiveShortBriefing");
+    void *active = ((RHBriefingParentCalls *)window)->FUN_00544b60(RHBriefingNarrowText("ActiveShortBriefing"));
     // STRING: GAME 0x006b77cc
-    void *inactive = ((RHBriefingParentCalls *)window)->FUN_00544b60("InactiveShortBriefing");
+    void *inactive = ((RHBriefingParentCalls *)window)->FUN_00544b60(RHBriefingNarrowText("InactiveShortBriefing"));
     ShortBriefingVector &values = mode ? m_0 : m_10;
     std::vector<RHSaveGame *> created;
     m_fc = window;
@@ -276,33 +278,29 @@ void RHShortBriefings::FUN_005a28c0(RHMenuWindow *window, SBGeoBoundingBox2D &bo
         ((RHMobileUnk00607da0 *)&bounds)->FUN_00607da0((const RHMobileUnk00607da0 &)box);
         bounds.first.x = 15.0f + bounds.first.x;
         bounds.active = true;
-        typedef RHBriefingReturnedText (RHShortBriefings::*GetText)(const ShortBriefing &) const;
-        GetText getText = reinterpret_cast<GetText>(&RHShortBriefings::GetShortBriefingText);
-        ((RHBriefingSetupCalls *)title)->V30((const RHMapWideText &)(this->*getText)(value), bounds, false, (unsigned long)-1);
+        ((RHBriefingSetupCalls *)title)->V30((const RHMapWideText &)GetShortBriefingText(value), bounds, false, (unsigned long)-1);
         SBUIUnk0060dd00 *renderer = (SBUIUnk0060dd00 *)((char *)title + 0x80);
         renderer->FUN_0060e0d0(font, font, font, font);
         *(unsigned *)((char *)title + 0xe0) = 4;
         float height;
         bounds.SetBottom((height = (unsigned)renderer->FUN_0060dcd0()) + bounds.first.y);
         ((RHBriefingSetupCalls *)title)->V1c(bounds);
-        RHSaveGame *widget = (RHSaveGame *)title;
-        ((SBArray<RHSaveGame *> *)&created)->Insert(created.end(), 1, widget);
+        ((SBArray<RHSaveGame *> *)&created)->Insert(created.end(), 1, (RHSaveGame *)title);
         std::vector<RHSaveGame *> &widgets = *(std::vector<RHSaveGame *> *)&m_20;
-        ((SBArray<RHSaveGame *> *)&widgets)->Insert(widgets.end(), 1, widget);
+        ((SBArray<RHSaveGame *> *)&widgets)->Insert(widgets.end(), 1, (RHSaveGame *)title);
         ((RHBriefingParentCalls *)window)->V30(title);
         if (value.m_4 == 1) {
             SBGeoBoundingBox2D pictureBounds;
             RHBriefingPicture *picture = new RHBriefingPicture;
             ((RHMobileUnk00607da0 *)&pictureBounds)->FUN_00607da0(
                 (const RHMobileUnk00607da0 &)SBGeoBoundingBox2D(box.first));
-            ((RHBriefingSetupCalls *)picture)->V30((const RHMapWideText &)RHBriefingWideText((const unsigned short *)g_unk0x006c0b50),
+            ((RHBriefingSetupCalls *)picture)->V30((const RHMapWideText &)std::basic_string<unsigned short>((const unsigned short *)g_unk0x006c0b50),
                 pictureBounds, false, 0x8e);
             ((RHBriefingSetupCalls *)picture)->V38(!value.m_4);
-            widget = (RHSaveGame *)picture;
-            ((SBArray<RHSaveGame *> *)&widgets)->Insert(widgets.end(), 1, widget);
+            ((SBArray<RHSaveGame *> *)&widgets)->Insert(widgets.end(), 1, (RHSaveGame *)picture);
             ((RHBriefingParentCalls *)window)->V30(picture);
         }
-        box.SetTop(height + box.first.y + 3.0f);
+        box.SetTop(height + box.GetTop() + 3.0f);
     }
 }
 

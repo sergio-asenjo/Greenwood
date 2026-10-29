@@ -15,8 +15,25 @@
 #include "SBNullstr.h"
 #include "RHOrder.h"
 
-// Target 0x00424410: list insert (`ret 0xc`, ecx = the list).
+struct RHOrderListNode
+{
+    RHOrderListNode *next;
+    RHOrderListNode *previous;
+    RHOrder *value;
+};
+
+// TEMPLATE: GAME 0x00424410 FOLDED
+// ?insert@RHUnkList@@QAE?AVRHUnkIter@@V2@ABQAVRHOrder@@@Z
 RHUnkIter RHUnkList::insert(RHUnkIter pos, RHOrder *const &value)
 {
-    return pos;
+    RHOrderListNode *next = (RHOrderListNode *)pos.m_p;
+    RHOrderListNode *previous = next->previous;
+    RHOrderListNode *node = (RHOrderListNode *)operator new(sizeof(RHOrderListNode));
+    node->next = next ? next : node;
+    node->previous = previous ? previous : node;
+    next->previous = node;
+    node->previous->next = node;
+    new (&node->value) RHOrder *(value);
+    ++m_8;
+    return RHUnkIter(node);
 }
