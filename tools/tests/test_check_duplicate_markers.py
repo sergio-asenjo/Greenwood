@@ -263,7 +263,10 @@ def test_invalid_json_and_duplicate_metadata_fail(tmp_path, text):
 
 def test_production_membership_is_valid():
     registered = checker.load_membership(checker.MEMBERSHIP)
-    assert sorted(len(group["members"]) for group in registered.values()) == [2, 3]
+    sizes = {address: len(group["members"]) for address, group in registered.items()}
+    assert sizes[0x004AFD50] == 2
+    assert sizes[0x0057C9C0] == 11
+    assert all(size >= 2 for size in sizes.values())
 
 
 @pytest.mark.parametrize(
