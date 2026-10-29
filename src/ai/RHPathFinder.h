@@ -10,6 +10,7 @@
 #include "RHPathFinderCore.h"
 
 // SIZE 0x08
+#define SBGEO_POINT2D_VIEW
 class SBGeoVector2D;
 class SBGeoPoint2D
 {
@@ -149,22 +150,7 @@ public:
     }
 };
 
-// SIZE 0x24
-class RHMalignityQueryList
-{
-public:
-    RHMalignityQueryList();
-    ~RHMalignityQueryList() { FUN_004e6c10(); FUN_004e52a0(); }
-    void FUN_004e6c10();
-    void FUN_004e52a0();
-    undefined4 allocator; // 0x00
-    RHScriptNode *head; // 0x04
-    int count; // 0x08
-    RHScriptNode *cursor; // 0x0c
-    bool valid; // 0x10
-    int index; // 0x14
-    undefined m_18[0x0c]; // 0x18
-};
+#include "RHMalignityQueryList.h"
 
 class RHMalignityGridCalls
 {
@@ -172,11 +158,7 @@ public:
     void FUN_004ed070(RHMalignityQueryList &list, unsigned short layer, const SBGeoBoundingBox2D &box, unsigned mask);
 };
 
-class RHUnk00608f10
-{
-public:
-    int FUN_00608f10(void *value);
-};
+#include "RHUnk00608f10.h"
 
 // SIZE 0x08
 class SBGeoVector2D : public SBGeoPoint2D
@@ -221,11 +203,7 @@ public:
     static void CopyData(RHSequenceElement **destination, RHSequenceElement *const *source);
 };
 
-class RHUnk0046bcb0
-{
-public:
-    void Unk(int value);
-};
+#include "RHActorCancelCalls.h"
 
 class RHScriptBatchCalls
 {
@@ -336,11 +314,7 @@ struct RHPathSearchNode
 
 typedef SBGeoPolyLine2DList RHPathPointList;
 
-class RHUnk0053bf20
-{
-public:
-    void *FUN_0053bf20() const;
-};
+#include "RHUnk0053bf20.h"
 
 bool FUN_005547c0(unsigned short graph, unsigned short sector, unsigned short direction, const SBGeoPoint2D &first, const SBGeoPoint2D &last);
 void FUN_005557c0();

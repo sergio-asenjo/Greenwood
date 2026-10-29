@@ -185,3 +185,9 @@ bool RHBonhomieSpeechReceiver::FUN_0040e290(RHMalignityPosition position, int mo
     ((RHArtificialIntelligence *)((char *)this + (*(int **)this)[1]))->Unk00418c40(0x53, 0);
     return true;
 }
+
+// TEMPLATE: GAME 0x0044e8b0 FOLDED
+// ?erase@?$list@PAXV?$allocator@PAX@std@@@std@@QAE?AViterator@12@V312@0@Z
+
+// TEMPLATE: GAME 0x0046eb30 FOLDED
+// ?erase@?$list@PAXV?$allocator@PAX@std@@@std@@QAE?AViterator@12@V312@@Z

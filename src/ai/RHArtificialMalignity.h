@@ -177,12 +177,7 @@ public:
     const SBGeoBoundingBox2D &FUN_00560450();
 };
 
-class RHUnk00608f10
-{
-public:
-    int FUN_00608f10(void *value);
-    bool FUN_006082a0(void *value);
-};
+#include "RHUnk00608f10.h"
 
 class RHUnk0055dbb0
 {
@@ -209,9 +204,13 @@ struct RHMalignityOwnedPoint
     ~RHMalignityOwnedPoint();
 };
 
-struct RHMalignityOwnedRecord
+#include "SBGeoSegmentArray.h"
+#include <vector>
+
+struct RHMalignityOwnedRecord : public SBGeoSegmentArray
 {
     ~RHMalignityOwnedRecord();
+    std::vector<unsigned short> m_values;
 };
 
 // SIZE 0x3c
@@ -324,16 +323,7 @@ public:
     ~RHUnk004dab90Rectangle();
 };
 
-// SIZE 0x24
-class RHMalignityQueryList : public RHMalignityList
-{
-public:
-    RHMalignityQueryList();
-    ~RHMalignityQueryList() { FUN_004e6c10(); FUN_004e52a0(); }
-    void FUN_004e6c10();
-    void FUN_004e52a0();
-    undefined m_18[0x0c]; // 0x18
-};
+#include "RHMalignityQueryList.h"
 
 class RHMalignityGridCalls
 {

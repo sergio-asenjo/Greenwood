@@ -52,20 +52,18 @@ public:
 void RHPathUnk0048f180(RHPathHistory *dst, const RHPathHistory *src);
 
 // SIZE 0x18
-class RHPathHistoryList
+class RHPathHistoryList : public RHMotionAreaListStorage<RHPathHistory>
 {
 public:
-    int m_0; // +0x00
-    RHPathHistoryNode *m_head; // +0x04
-    int m_count; // +0x08
     RHPathHistoryNode *m_cur; // +0x0c
     char m_valid; // +0x10
     char m_pad11[3];
     int m_index; // +0x14
 
     RHPathHistoryNode *Unk00551de0(RHPathHistoryNode *next, RHPathHistoryNode *prev);
-    RHPathHistoryIter begin() { return RHPathHistoryIter(m_head->m_next); }
-    RHPathHistoryIter end() { return RHPathHistoryIter(m_head); }
+    RHPathHistoryNode *Head() { return (RHPathHistoryNode *)_Head; }
+    RHPathHistoryIter begin() { return RHPathHistoryIter(Head()->m_next); }
+    RHPathHistoryIter end() { return RHPathHistoryIter(Head()); }
     RHPathHistoryIter insert(RHPathHistoryIter pos, const RHPathHistory &value)
     {
         RHPathHistoryNode *node = pos.m_p;
@@ -73,7 +71,7 @@ public:
         node = node->m_prev;
         node->m_prev->m_next = node;
         RHPathUnk0048f180(&node->m_data, &value);
-        ++m_count;
+        ++_Size;
         return RHPathHistoryIter(node);
     }
     RHPathHistoryIter erase(RHPathHistoryIter first, RHPathHistoryIter last)
@@ -98,6 +96,7 @@ public:
 class RHPath
 {
 public:
+    ~RHPath();
     bool TestIfPathIsFine(RHElementActor *actor);
     bool SerializeStatus(SBFile &file);
     void Emit(SBFile &file, RHElementActor *actor);
@@ -226,10 +225,12 @@ public:
     bool FUN_004f6c20(const SBGeoPoint2D &a, SBGeoPoint2D &b, unsigned short layer, const SBGeoPoint2D &point);
 };
 
+#include "RHMalignityQueryList.h"
+
 class RHMalignityGridCalls
 {
 public:
-    void FUN_004ed070(class RHMalignityQueryList &list, unsigned short layer, const SBGeoBoundingBox2D &box, unsigned mask);
+    void FUN_004ed070(RHMalignityQueryList &list, unsigned short layer, const SBGeoBoundingBox2D &box, unsigned mask);
 };
 
 // SIZE 0x10
@@ -238,7 +239,6 @@ class RHMalignitySegment
 public:
     RHMalignitySegment(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
     ~RHMalignitySegment();
-    bool FUN_0060a990(const RHMalignitySegment &other);
     SBGeoPoint2D m_0; // 0x00
     SBGeoPoint2D m_8; // 0x08
 };
@@ -283,16 +283,6 @@ public:
     int m_index; // 0x14
 };
 
-// SIZE 0x24
-class RHMalignityQueryList : public RHPathHelperList
-{
-public:
-    RHMalignityQueryList();
-    ~RHMalignityQueryList() { FUN_004e6c10(); FUN_004e52a0(); }
-    void FUN_004e6c10();
-    void FUN_004e52a0();
-    undefined m_18[0x0c]; // 0x18
-};
 
 // SIZE 0x50
 class RHUnk004dab90Rectangle : public RHMalignityRectangle

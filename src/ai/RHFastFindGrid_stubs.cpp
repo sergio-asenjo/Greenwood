@@ -40,10 +40,10 @@ float RHFastFindLine::FUN_0051f470() { return ((float *)m_00)[1] > ((float *)m_0
 float RHFastFindLine::FUN_0051f490() { return ((float *)m_00)[2] > ((float *)m_00)[4] ? ((float *)m_00)[4] : ((float *)m_00)[2]; }
 // FUNCTION: GAME 0x0051f4b0
 float RHFastFindLine::FUN_0051f4b0() { return ((float *)m_00)[2] > ((float *)m_00)[4] ? ((float *)m_00)[2] : ((float *)m_00)[4]; }
-bool RHFastFindSegmentCalls::FUN_0060a990(const RHMalignitySegment &) { return false; }
 
-DECOMP_SIZE_ASSERT(RHUnk0051a5e0, 0x94)
+DECOMP_SIZE_ASSERT(RHUnk0051a5e0, 0x88)
 DECOMP_SIZE_ASSERT(RHUnk0051aa00, 0xbc)
+DECOMP_SIZE_ASSERT(RHUnk0051b6e0, 0x90)
 DECOMP_SIZE_ASSERT(RHUnk005209d0, 0x14)
 DECOMP_SIZE_ASSERT(RHUnk00520ae0, 0x40)
 
@@ -77,7 +77,6 @@ RHSectorScript::RHSectorScript() {}
 RHSectorScript::~RHSectorScript() {}
 void RHFastFindGrid::FUN_004e99e0(void *, unsigned short, bool) {}
 void RHUnk0051e1e0::Unk0051e230(SBFile &, RHSeqList &) {}
-RHUnk0051b6e0::RHUnk0051b6e0(RHUnk0051e1e0 *, RHUnk0051e1e0 *) {}
 RHUnk0051b6e0::~RHUnk0051b6e0() {}
 RHUnk005a3450::RHUnk005a3450() {}
 RHUnk005a3450::RHUnk005a3450(int) {}
@@ -131,67 +130,13 @@ RHUnk0051a5e0::RHUnk0051a5e0()
 {
     *(int *)m_04 = 0;
 }
-RHUnk0051a5e0::~RHUnk0051a5e0() {}
 RHUnk0051aa00::~RHUnk0051aa00() {}
 
+// FUNCTION: GAME 0x0051a680
 bool RHUnk0051a5e0::FUN_0051abe0(bool, RHElementActor *, bool, bool, bool) { return false; }
+// TEMPLATE: GAME 0x0057cd50 FOLDED
+// ?Serialize@RHUnk0051a5e0@@UAE_NAAVSBFile@@@Z
 bool RHUnk0051a5e0::Serialize(SBFile &) { return true; }
-
-// The target annotation remains owned by RHGate::Serialize.
-bool RHUnk0051aa00::Serialize(SBFile &file)
-{
-    RHSerializeName(file, "RHDoor");
-    if (file.Access(&m_8c[0], 1) < 0)
-    {
-        SBString *err = file.GetError();
-        const char *reason = err->m_chars ? err->m_chars : "";
-        SBAssert(0, "P:\\Robin Hood\\RHGate.cpp", 413, "Serialize failed reason is %s", reason);
-        return false;
-    }
-    if (file.Access(&m_8c[1], 1) < 0)
-    {
-        SBString *err = file.GetError();
-        const char *reason = err->m_chars ? err->m_chars : "";
-        SBAssert(0, "P:\\Robin Hood\\RHGate.cpp", 414, "Serialize failed reason is %s", reason);
-        return false;
-    }
-    if (file.Access(&m_8c[2], 1) < 0)
-    {
-        SBString *err = file.GetError();
-        const char *reason = err->m_chars ? err->m_chars : "";
-        SBAssert(0, "P:\\Robin Hood\\RHGate.cpp", 415, "Serialize failed reason is %s", reason);
-        return false;
-    }
-    if (file.Access(&m_8c[3], 1) < 0)
-    {
-        SBString *err = file.GetError();
-        const char *reason = err->m_chars ? err->m_chars : "";
-        SBAssert(0, "P:\\Robin Hood\\RHGate.cpp", 416, "Serialize failed reason is %s", reason);
-        return false;
-    }
-    if (file.Access(&m_b4[0], 1) < 0)
-    {
-        SBString *err = file.GetError();
-        const char *reason = err->m_chars ? err->m_chars : "";
-        SBAssert(0, "P:\\Robin Hood\\RHGate.cpp", 418, "Serialize failed reason is %s", reason);
-        return false;
-    }
-    if (file.Access(&m_b4[2], 2) < 0)
-    {
-        SBString *err = file.GetError();
-        const char *reason = err->m_chars ? err->m_chars : "";
-        SBAssert(0, "P:\\Robin Hood\\RHGate.cpp", 419, "Serialize failed reason is %s", reason);
-        return false;
-    }
-    if (file.Access(&m_b4[4], 2) < 0)
-    {
-        SBString *err = file.GetError();
-        const char *reason = err->m_chars ? err->m_chars : "";
-        SBAssert(0, "P:\\Robin Hood\\RHGate.cpp", 420, "Serialize failed reason is %s", reason);
-        return false;
-    }
-    return true;
-}
 
 class RHScriptBatchCalls
 {
@@ -200,7 +145,7 @@ public:
 };
 
 // FUNCTION: GAME 0x0051b870
-bool RHUnk0051aa00::FUN_0051b870(bool first, RHElementActor *actor, bool second, bool third, bool)
+bool RHUnk0051b6e0::FUN_0051abe0(bool first, RHElementActor *actor, bool second, bool third, bool)
 {
     if ((*(unsigned *)((char *)actor + 0x4) & 0xf) != 0xc ||
         !((RHScriptBatchCalls *)actor)->Unk0049d560(0x16))
@@ -219,10 +164,5 @@ check:
     return third;
 }
 
-// FUNCTION: GAME 0x0057cd50
-bool RHUnk0051aa00::FUN_0057cd50(undefined4) { return true; }
-
 struct RHFastFindRecordC0;
-struct RHFastFindRecordA0;
 void FUN_004fe9d0(RHFastFindRecordC0 *, const RHFastFindRecordC0 &) {}
-void FUN_004feb10(RHFastFindRecordA0 *, const RHFastFindRecordA0 &) {}

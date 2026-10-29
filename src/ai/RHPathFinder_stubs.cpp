@@ -1,5 +1,32 @@
 #include "SBNullstr.h"
 #include "RHPathFinder.h"
+#include "SBGeoSegment2D.h"
+#include "SBGeoSegmentVector.h"
+#include "RHGameInputTranslator.h"
+
+// FUNCTION: GAME 0x004e6ba0
+void SBGeoSegmentVector::DestroyElements(SBGeoSegment2D *first, SBGeoSegment2D *last)
+{
+    for (; first != last; ++first)
+        ((RHGameInputSegment *)first)->FUN_004611c0();
+}
+
+// TEMPLATE: GAME 0x0055b9f0
+// ?Copy@SBGeoSegmentVector@@SAPAVSBGeoSegment2D@@PAV2@00@Z
+
+// FUNCTION: GAME 0x0055b970
+SBGeoSegment2D *SBGeoSegmentVector::Erase(SBGeoSegment2D *first, SBGeoSegment2D *last)
+{
+    SBGeoSegment2D *end = m_last;
+    SBGeoSegment2D *next = first;
+    for (; last != end; ++last, ++next)
+        *next = *last;
+    end = m_last;
+    for (SBGeoSegment2D *entry = next; entry != end; ++entry)
+        ((RHGameInputSegment *)entry)->FUN_004611c0();
+    m_last = next;
+    return first;
+}
 
 void RHPathFinder::FUN_005596d0(const SBGeoBoundingBox2D &, float, unsigned short) {}
 void RHPathFinder::FUN_00559e00(const SBGeoBoundingBox2D &, float, unsigned short) {}

@@ -26,7 +26,6 @@ void SBGeoBoundingBox2D::FUN_00607e30(const RHMalignitySegment &segment)
     Unk00607dc0(*(const SBGeoPoint2D *)&segment);
     Unk00607dc0(*(const SBGeoPoint2D *)((const char *)&segment + 8));
 }
-bool RHMalignitySegment::FUN_0060a990(const RHMalignitySegment &) { return false; }
 RHPathHelperList::RHPathHelperList(const char &allocator)
 {
     *(char *)&m_0 = allocator;

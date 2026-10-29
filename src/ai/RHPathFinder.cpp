@@ -6,7 +6,9 @@ extern "C" __declspec(dllimport) __declspec(noreturn) void __stdcall ExitThread(
 #include "RHActorDirectionCalls.h"
 #include "RHMovementPathFinderCalls.h"
 #include "SBGeoSegment2D.h"
+#include "SBGeoSegmentVector.h"
 #include <iterator>
+#include "RHMotionAreaList.h"
 
 struct RHUnk005c9010Iterator;
 void FUN_005c9010(RHUnk005c9010Iterator &, int, std::bidirectional_iterator_tag);
@@ -130,9 +132,8 @@ SBEvent g_pathWakeEvent(g_pathWakeName);
 // GLOBAL: GAME 0x006c0d58
 CRITICAL_SECTION g_pathCriticalSection;
 
-// Parked (rule-28 deferral): the body matches the shared original 0x424410, but
-// binding it as one canonical view regresses every caller that binds a different
-// view class (RHUnkList/RHUnkListSeq/RHSectorActorList/RHUnk0058e7f0List...).
+// TEMPLATE: GAME 0x00424410 FOLDED
+// ?FUN_00424410@RHUnk004b1520List@@QAE?AURHScriptIter@@U2@ABQAX@Z
 RHScriptIter RHUnk004b1520List::FUN_00424410(RHScriptIter position, void *const &value)
 {
     RHScriptNode *next = position.node;
@@ -187,14 +188,14 @@ bool RHPathObstacleGrid::FUN_004f5890(SBGeoBoundingBox2D &box, unsigned short se
     do
     {
         ((RHMalignityGridCalls *)this)->FUN_004ed070(list, sector, box, 2);
-        unsigned short count = (unsigned short)list.count;
+        unsigned short count = (unsigned short)list.Count();
         if (count == 0)
             return true;
         int index = 0;
         while (count != 0)
         {
             ((RHPathQueryCalls *)&list)->FUN_005c8e40(index);
-            char *line = (char *)list.cursor->data;
+            char *line = (char *)list.cursor->_Value;
             SBGeoPoint2D *origin = (SBGeoPoint2D *)(line + 4);
             SBGeoVector2D *normal = (SBGeoVector2D *)(line + 0x34);
             if (normal->FUN_005fc660(box.FUN_00608f40().Unk005fc110(*origin)) > 0.0f)
@@ -215,20 +216,147 @@ bool RHPathObstacleGrid::FUN_004f5890(SBGeoBoundingBox2D &box, unsigned short se
             ++index;
             --count;
         }
-        RHScriptNode *node = list.head->next;
-        while (node != list.head)
+        RHScriptNode *head = (RHScriptNode *)list.Head();
+        RHScriptNode *node = head->next;
+        while (node != head)
         {
             RHScriptNode *current = node;
             node = node->next;
             current->previous->next = current->next;
             current->next->previous = current->previous;
             operator delete(current);
-            --list.count;
+            --list.Count();
         }
-        list.valid = true;
+        list.dirty = true;
         ++iteration;
     } while (iteration < 50);
     return false;
+}
+
+class RHUnk005595b0
+{
+public:
+    RHUnk005595b0();
+    ~RHUnk005595b0();
+    char m_0[0x10];
+    RHMotionAreaList<void *> m_10;
+};
+
+DECOMP_SIZE_ASSERT(RHUnk005595b0, 0x34)
+
+class RHUnk005594f0Array : public std::vector<unsigned char>
+{
+public:
+    RHUnk005594f0Array() : m_dirty(true) {}
+    ~RHUnk005594f0Array() { Destroy(); }
+    void Destroy() { clear(); }
+    unsigned char *m_current;
+    bool m_dirty;
+    bool m_forward;
+    long m_index;
+    unsigned char m_value;
+};
+
+class RHUnk005594f0
+{
+public:
+    RHUnk005594f0();
+    ~RHUnk005594f0();
+    SBGeoPoint2D m_0;
+    char m_8[0x18];
+    RHMotionAreaList<void *> m_20;
+    RHMotionAreaList<void *> m_44;
+    int m_68;
+    SBGeoVector2D m_6c;
+    SBGeoVector2D m_74;
+    RHUnk005594f0Array m_7c;
+};
+
+DECOMP_SIZE_ASSERT(RHUnk005594f0, 0x9c)
+
+// FUNCTION: GAME 0x00552900
+RHUnk005594f0::~RHUnk005594f0()
+{
+}
+
+// TEMPLATE: GAME 0x0055b9c0
+// ?erase@?$vector@EV?$allocator@E@std@@@std@@QAEPAEPAE0@Z
+
+// FUNCTION: GAME 0x00552a70
+RHUnk005595b0::~RHUnk005595b0()
+{
+}
+
+class RHUnk005595e0
+{
+public:
+    RHUnk005595e0();
+    ~RHUnk005595e0();
+    int m_0;
+    RHMotionAreaList<void *> m_4;
+    RHMotionAreaList<void *> m_28;
+};
+
+DECOMP_SIZE_ASSERT(RHUnk005595e0, 0x4c)
+
+// TEMPLATE: GAME 0x0055b510
+// ?insert@?$list@_NV?$allocator@_N@std@@@std@@QAE?AViterator@12@V312@AB_N@Z
+
+// FUNCTION: GAME 0x00552b10
+RHUnk005595e0::~RHUnk005595e0()
+{
+}
+
+#include "SBGeoSegmentArray.h"
+
+class RHUnk00552c40Array : public SBGeoSegmentVector
+{
+public:
+    ~RHUnk00552c40Array() { Destroy(); }
+    void Destroy()
+    {
+        SBGeoSegment2D *(*copy)(SBGeoSegment2D *, SBGeoSegment2D *, SBGeoSegment2D *) = Copy;
+        SBGeoSegment2D *next = copy(end(), end(), begin());
+        DestroyElements(next, end());
+        m_last = next;
+    }
+    SBGeoSegment2D *m_current;
+    bool m_dirty;
+    int m_index;
+    SBGeoSegment2D m_value;
+};
+
+class RHUnk00552c40
+{
+public:
+    ~RHUnk00552c40();
+    RHMotionAreaList<void *> m_list;
+    char m_24[4];
+    RHUnk00552c40Array m_segments;
+};
+
+DECOMP_SIZE_ASSERT(RHUnk00552c40Array, 0x2c)
+DECOMP_SIZE_ASSERT(RHUnk00552c40, 0x54)
+DECOMP_SIZE_ASSERT(SBGeoSegmentVector, 0x10)
+DECOMP_STATIC_ASSERT(offsetof(SBGeoSegmentVector, m_first) == 0x04)
+DECOMP_STATIC_ASSERT(offsetof(SBGeoSegmentVector, m_last) == 0x08)
+DECOMP_STATIC_ASSERT(offsetof(SBGeoSegmentVector, m_end) == 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk00552c40Array, m_current) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk00552c40Array, m_dirty) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk00552c40Array, m_value) == 0x1c)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk00552c40, m_segments) == 0x28)
+
+// FUNCTION: GAME 0x00552c40
+RHUnk00552c40::~RHUnk00552c40()
+{
+}
+
+void EmitRHUnk00552c40(RHUnk00552c40 *value)
+{
+    typedef SBGeoSegment2D *(SBGeoSegmentVector::*Erase)(SBGeoSegment2D *, SBGeoSegment2D *);
+    Erase erase = &SBGeoSegmentVector::Erase;
+    (value->m_segments.*erase)(value->m_segments.begin(), value->m_segments.end());
+    delete value;
 }
 
 // FUNCTION: GAME 0x00552d50
@@ -1093,38 +1221,19 @@ float RHPathFinder::EstimateDistance(SBGeoPoint2D &first, SBGeoPoint2D &last)
     return ((RHUnk005fc3b0 *)&last.Unk005fc110(first))->Unk005fc6a0(1.0f);
 }
 
-class RHUnk005595b0List
+// FUNCTION: GAME 0x005594f0
+RHUnk005594f0::RHUnk005594f0()
 {
-public:
-    RHUnk005595b0List *m_next;
-    RHUnk005595b0List *m_prev;
-    char m_08[0x04];
-};
-
-class RHUnk005595b0
-{
-public:
-    RHUnk005595b0();
-    char m_0[0x10];
-    char m_10;
-    char m_11[3];
-    RHUnk005595b0List *m_14;
-    int m_18;
-    char m_1c[4];
-    bool m_20;
-};
+}
 
 // FUNCTION: GAME 0x005595b0
 RHUnk005595b0::RHUnk005595b0()
 {
-    char value;
-    m_10 = value;
-    RHUnk005595b0List *list = new RHUnk005595b0List;
-    list->m_next = list;
-    list->m_prev = list;
-    m_14 = list;
-    m_18 = 0;
-    m_20 = 1;
+}
+
+// FUNCTION: GAME 0x005595e0
+RHUnk005595e0::RHUnk005595e0()
+{
 }
 
 // FUNCTION: GAME 0x00559660

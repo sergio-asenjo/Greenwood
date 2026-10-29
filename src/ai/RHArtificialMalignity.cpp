@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <new>
 
-void FUN_0064158f(void *memory);
 
 class RHUnk6c1040;
 extern RHUnk6c1040 *g_unk0x6c1040;
@@ -1963,7 +1962,7 @@ void RHArtificialMalignity::FUN_00445b40()
         current = current->next;
         removed->previous->next = removed->next;
         removed->next->previous = removed->previous;
-        FUN_0064158f(removed);
+        operator delete(removed);
         --list.m_count;
     }
     list.m_dirty = true;
@@ -2339,7 +2338,7 @@ inline void RHMalignityList::RemoveFirst()
     RHMalignityNode *node = m_head->next;
     node->previous->next = node->next;
     node->next->previous = node->previous;
-    FUN_0064158f(node);
+    operator delete(node);
     --m_count;
     m_dirty = true;
 }
@@ -3045,7 +3044,7 @@ bool RHArtificialMalignity::FUN_0044cf00()
         RHMalignityNode *removed = (RHMalignityNode *)(position++).m_p;
         removed->previous->next = removed->next;
         removed->next->previous = removed->previous;
-        FUN_0064158f(removed);
+        operator delete(removed);
         --list.m_count;
         list.m_dirty = true;
     }
@@ -3058,7 +3057,7 @@ bool RHArtificialMalignity::FUN_0044cf00()
     RHMalignityNode *removed = list.m_current;
     removed->previous->next = removed->next;
     removed->next->previous = removed->previous;
-    FUN_0064158f(removed);
+    operator delete(removed);
     --list.m_count;
     list.m_dirty = true;
     FUN_0044a760(RHMalignityField<void *>(&VirtualBase(), 0x88));
@@ -3331,7 +3330,7 @@ unsigned char RHMalignityActorCalls::FUN_0048ca20(void *actor, unsigned mode)
             RHMalignityNode *next = removed->next;
             removed->previous->next = next;
             next->previous = removed->previous;
-            FUN_0064158f(removed);
+            operator delete(removed);
             --list.m_count;
             list.m_dirty = true;
             return true;
@@ -3763,13 +3762,13 @@ bool RHMalignityGridCalls::FUN_004f5e50(SBGeoBoundingBox2D &box, const SBGeoPoin
     {
         FUN_004ed370(lines, layer, RHMalignitySegmentTemporary(box.FUN_00608f40(), point).Value(), 2);
         FUN_004ed070(lines, layer, box, 2);
-        unsigned short count = lines.m_count;
+        unsigned short count = (unsigned short)lines.Count();
         if (count == 0)
             return true;
         for (unsigned short index = 0; index < count; ++index)
         {
             ((RHSectorActorList *)&lines)->Unk005c8e40(index);
-            void *line = lines.m_current->value;
+            void *line = lines.cursor->_Value;
             SBGeoPoint2D &anchor = RHMalignityField<SBGeoPoint2D>(line, 4);
             SBGeoVector2D &normal = RHMalignityField<SBGeoVector2D>(line, 0x34);
             if (normal.FUN_005fc660(anchor.Unk005fc110(point)) > 0.0f)
@@ -3788,7 +3787,7 @@ bool RHMalignityGridCalls::FUN_004f5e50(SBGeoBoundingBox2D &box, const SBGeoPoin
                     ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(operator*(distance + 1.0f, normal));
             }
         }
-        RHMalignityNode *head = lines.m_head;
+        RHMalignityNode *head = (RHMalignityNode *)lines.Head();
         RHMalignityNode *it = head->next;
         while (it != head)
         {
@@ -3797,9 +3796,9 @@ bool RHMalignityGridCalls::FUN_004f5e50(SBGeoBoundingBox2D &box, const SBGeoPoin
             node->previous->next = node->next;
             node->next->previous = node->previous;
             delete node;
-            --lines.m_count;
+            --lines.Count();
         }
-        lines.m_dirty = true;
+        lines.dirty = true;
     }
     return false;
 }

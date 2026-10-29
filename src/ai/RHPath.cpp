@@ -1,4 +1,5 @@
 #include "RHPath.h"
+#include "SBGeoSegment2D.h"
 #include "VMCore.h"
 
 DECOMP_SIZE_ASSERT(RHPathArray, 0x10)
@@ -124,10 +125,15 @@ bool RHUnkPathGeometry::Unk004f9260(const SBGeoPoint2D &a, const SBGeoPoint2D &b
     for (unsigned short i = 0; i < count; ++i)
     {
         lines.FUN_005c8e40(i);
-        if (RHPathField<RHMalignitySegment>(lines.m_cur->m_data, 4).FUN_0060a990(segment))
+        if (RHPathField<SBGeoSegment2D>(lines.m_cur->m_data, 4).IsIntersecting((const SBGeoSegment2D &)segment))
             return false;
     }
     return true;
+}
+
+// FUNCTION: GAME 0x00550510
+RHPath::~RHPath()
+{
 }
 
 // FUNCTION: GAME 0x00550690
@@ -233,7 +239,7 @@ bool RHPath::SerializeStatus(SBFile &file)
     {
         index = m_4 == 0 ? 0xffff : m_8;
         RH_PATH_ACCESS(index, 2, 362);
-        count = m_c.m_count;
+        count = m_c.size();
         RH_PATH_ACCESS(count, 2, 366);
         for (index = 0; index < (unsigned short)count; ++index)
         {
@@ -286,6 +292,9 @@ unsigned int RHWaypoint::LoadDataFromFile(SBFile &file)
     }
     return size;
 }
+
+// TEMPLATE: GAME 0x0057c9c0 FOLDED
+// ??Eiterator@?$list@URHPathHistory@@V?$allocator@URHPathHistory@@@std@@@std@@QAE?AV012@H@Z
 
 void RHPath::Emit(SBFile &file, RHElementActor *actor)
 {

@@ -1,6 +1,7 @@
 #include "SBNullstr.h"
 #include "RHArtificialMalignity.h"
 #include <math.h>
+#include <stddef.h>
 
 
 // FUNCTION: GAME 0x004135b0
@@ -172,10 +173,43 @@ void *RHMalignityNodeValue::FUN_0040eab0(int mode)
         operator delete(this);
     return this;
 }
-RHMalignityIterator RHAIUnk0044e8b0::FUN_0044e8b0(RHMalignityIterator, RHMalignityIterator last) { return last; }
+
+// TEMPLATE: GAME 0x0044e8b0 FOLDED
+// ?FUN_0044e8b0@RHAIUnk0044e8b0@@QAE?AURHMalignityIterator@@U2@0@Z
+RHMalignityIterator RHAIUnk0044e8b0::FUN_0044e8b0(RHMalignityIterator first, RHMalignityIterator last)
+{
+    RHMalignityNode *node = first.node;
+    while (node != last.node)
+    {
+        RHMalignityNode *erased = node;
+        node = node->next;
+        erased->previous->next = erased->next;
+        erased->next->previous = erased->previous;
+        operator delete(erased);
+        --*(unsigned *)((char *)this + 8);
+    }
+    return RHMalignityIterator(node);
+}
+
 RHScriptIter RHAIUnk0044e8b0::FUN_0044e8b0(RHScriptIter, RHScriptIter last) { return last; }
 RHMalignityIterator RHAIUnk0044e8b0::FUN_0046eb80() { return RHMalignityIterator(0); }
-RHMalignityIterator RHAIUnk0044e8b0::FUN_00424410(RHMalignityIterator position, void *const &) { return position; }
+
+// TEMPLATE: GAME 0x00424410 FOLDED
+// ?FUN_00424410@RHAIUnk0044e8b0@@QAE?AURHMalignityIterator@@U2@ABQAX@Z
+RHMalignityIterator RHAIUnk0044e8b0::FUN_00424410(RHMalignityIterator position, void *const &value)
+{
+    RHMalignityNode *next = position.node;
+    RHMalignityNode *previous = next->previous;
+    RHMalignityNode *node = (RHMalignityNode *)operator new(sizeof(RHMalignityNode));
+    node->next = next ? next : node;
+    node->previous = previous ? previous : node;
+    next->previous = node;
+    node->previous->next = node;
+    new (&node->value) void *(value);
+    ++*(unsigned *)((char *)this + 8);
+    return RHMalignityIterator(node);
+}
+
 void RHAIUnk0044e8b0::FUN_0045a440(void *const &) {}
 
 bool RHMalignityGeometryCalls::FUN_004eff80(const RHUnk00613e90 &, const RHUnk00613e90 &, int) { return false; }
@@ -194,9 +228,6 @@ RHMalignityRectangle::~RHMalignityRectangle() {}
 void RHMalignityArrayCalls::FUN_0059fba0(const unsigned &) {}
 void RHMalignityArrayCalls::FUN_004e60a0(void *, unsigned, const unsigned &) {}
 void RHMalignityArrayCalls::FUN_004e62b0(void *, unsigned, const RHMalignitySegment &) {}
-RHMalignityQueryList::RHMalignityQueryList() {}
-void RHMalignityQueryList::FUN_004e6c10() {}
-void RHMalignityQueryList::FUN_004e52a0() {}
 void RHMalignityGridCalls::FUN_004ed370(RHMalignityQueryList &, unsigned short, const RHMalignitySegment &, unsigned) {}
 void RHMalignityGridCalls::FUN_004ed070(RHMalignityQueryList &, unsigned short, const SBGeoBoundingBox2D &, unsigned) {}
 
@@ -273,4 +304,15 @@ void EmitRHMalignityAbilityCalls(RHMalignityAbilityCalls *self)
 
 RHMalignityOwnedPoint::~RHMalignityOwnedPoint() {}
 
-RHMalignityOwnedRecord::~RHMalignityOwnedRecord() {}
+// FUNCTION: GAME 0x004e6ab0
+RHMalignityOwnedRecord::~RHMalignityOwnedRecord()
+{
+    m_values.clear();
+}
+
+DECOMP_SIZE_ASSERT(SBGeoSegmentArray, 0x2c)
+DECOMP_SIZE_ASSERT(RHMalignityOwnedRecord, 0x3c)
+DECOMP_STATIC_ASSERT(offsetof(SBGeoSegmentArray, m_current) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(SBGeoSegmentArray, m_dirty) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(SBGeoSegmentArray, m_value) == 0x1c)
+DECOMP_STATIC_ASSERT(offsetof(RHMalignityOwnedRecord, m_values) == 0x2c)

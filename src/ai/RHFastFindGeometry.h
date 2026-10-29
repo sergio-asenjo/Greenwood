@@ -4,6 +4,7 @@
 #include "SB.h"
 
 class SBGeoVector2D;
+#define SBGEO_POINT2D_VIEW
 class SBGeoPoint2D
 {
 public:
@@ -56,6 +57,7 @@ public:
     }
     float Unk005fc6a0(float value);
     void FUN_005fc7c0(float value);
+    RHUnk005fc3b0 &FUN_005fc4d0(float factor);
     unsigned char FUN_005fcc50(float value) const;
     SBGeoVector2D FUN_005fc8f0(bool direction, float value) const;
     SBGeoPoint2D FUN_005fc450() const;

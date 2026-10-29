@@ -31,7 +31,7 @@ public:
     virtual void V50() = 0;
     virtual void V54() = 0;
     virtual void V58() = 0;
-    virtual void V5c() = 0;
+    virtual void V5c(void *element) = 0;
     virtual void V60() = 0;
     virtual void V64() = 0;
     virtual void V68() = 0;

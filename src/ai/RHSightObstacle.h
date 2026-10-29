@@ -3,25 +3,19 @@
 #include "Decomp.h"
 #include <iterator>
 
-// SIZE 0x08
-class SBGeoPoint2D
-{
-public:
-    SBGeoPoint2D();
-    ~SBGeoPoint2D();
-    SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
-    bool Serialize(SBFile &file);
-    float m_x; // 0x00
-    float m_y; // 0x04
-};
+#include "SBGeoPoint2D.h"
+
+#include "RHUnk00613e90.h"
 
 class SBGeoPolyLine2DList;
+class SBGeoVector2D;
 
 // SIZE 0x14
 class SBGeoBoundingBox2D
 {
 public:
     bool Serialize(SBFile &file);
+    void FUN_00607d90();
     void Unk00607dc0(const SBGeoPoint2D &point);
     void FUN_00607e50(SBGeoPolyLine2DList *list);
     int FUN_00609050(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
@@ -45,6 +39,20 @@ public:
 // SIZE 0x10
 struct RHUnkSightVertex
 {
+    __forceinline RHUnk00613e90 Upper() const
+    {
+        float x = m_00;
+        float y = m_04;
+        float z = m_08;
+        return RHUnk00613e90(x, y, z);
+    }
+    __forceinline RHUnk00613e90 Lower() const
+    {
+        float x = m_00;
+        float y = m_04;
+        float z = m_0c;
+        return RHUnk00613e90(x, y, z);
+    }
     float m_00; // 0x00
     float m_04; // 0x04
     float m_08; // 0x08
@@ -75,6 +83,11 @@ class RHUnkSightVertexList
 {
 public:
     __forceinline void GoTo(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
+    RHUnkSightVertex &operator[](int index)
+    {
+        GoTo(index);
+        return m_current.node->data;
+    }
     RHUnkSightVertex &At(int index, std::bidirectional_iterator_tag category)
     {
         if (m_dirty)
@@ -159,6 +172,11 @@ class RHSightObstacle
 public:
     bool Serialize(SBFile &file);
     void Emit(SBFile &file);
+    void Translate(const RHUnk00613e90 &offset);
+    void FUN_005a3ec0();
+    void UpdateBox(const RHUnk00613e90 &position, const SBGeoVector2D &direction, const RHUnk00613e90 &size);
+    void UpdateVertex(int index, const RHUnkSightVertex &vertex);
+    void UpdatePlanes(const RHUnkSightVertex &first, const RHUnkSightVertex &second, const RHUnkSightVertex &third);
     undefined4 m_00; // 0x00
     undefined m_04[8]; // 0x04
     RHUnk005dfd00 m_0c; // 0x0c

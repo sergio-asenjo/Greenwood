@@ -51,32 +51,7 @@ struct RHTitbitNode;
 struct RHUnk005c9010Iterator;
 void FUN_005c9010(RHUnk005c9010Iterator &current, int distance, std::bidirectional_iterator_tag category);
 
-struct RHArtificialIntelligenceElement
-{
-    char m_00[4];
-    unsigned m_flags; // +0x04
-};
-
-struct RHArtificialIntelligenceNode
-{
-    RHArtificialIntelligenceNode *m_next; // +0x00
-    RHArtificialIntelligenceNode *m_prev; // +0x04
-    RHArtificialIntelligenceElement *m_data; // +0x08
-};
-
-struct RHArtificialIntelligenceIterator : std::iterator<std::bidirectional_iterator_tag, RHArtificialIntelligenceElement *>
-{
-    RHArtificialIntelligenceNode *m_node;
-    RHArtificialIntelligenceIterator() {}
-    RHArtificialIntelligenceIterator(RHArtificialIntelligenceNode *node) : m_node(node) {}
-    RHArtificialIntelligenceIterator &operator=(const RHArtificialIntelligenceIterator &other)
-    {
-        m_node = other.m_node;
-        return *this;
-    }
-    RHArtificialIntelligenceIterator &operator++() { m_node = m_node->m_next; return *this; }
-    RHArtificialIntelligenceIterator &operator--() { m_node = m_node->m_prev; return *this; }
-};
+#include "RHArtificialIntelligenceTripleList.h"
 
 class RHArtificialIntelligenceList
 {
@@ -328,18 +303,6 @@ public:
 class RHArtificialIntelligenceActor;
 std::string FUN_00420d40(int remark);
 
-struct RHArtificialIntelligenceTriple
-{
-    int m_00;
-    int m_04;
-    int m_08;
-};
-
-class RHArtificialIntelligenceTripleList
-{
-public:
-    RHArtificialIntelligenceIterator insert(RHArtificialIntelligenceIterator position, const RHArtificialIntelligenceTriple &value);
-};
 
 class RHStimulus;
 struct RHArtificialIntelligenceStimulusNode

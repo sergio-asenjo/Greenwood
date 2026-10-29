@@ -55,11 +55,7 @@ void RHArtificialIntelligence::Unk0041ab10(unsigned short direction)
     if (*(int *)((char *)this + 0x14) == 0x18)
         Unk00412f70(direction, 0);
 }
-class RHUnk0046bcb0
-{
-public:
-    void Unk(int value);
-};
+#include "RHActorCancelCalls.h"
 
 // FUNCTION: GAME 0x0048d020
 void RHArtificialIntelligenceActorCalls::Unk0048d020()

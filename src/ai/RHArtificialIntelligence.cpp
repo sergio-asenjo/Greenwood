@@ -1060,6 +1060,12 @@ template <class T> struct RHArtificialIntelligenceValueNode
 
 template <class T> struct RHArtificialIntelligenceValueList
 {
+    struct Iterator
+    {
+        RHArtificialIntelligenceValueNode<T> *node;
+        Iterator(RHArtificialIntelligenceValueNode<T> *value) : node(value) {}
+    };
+    Iterator Insert(Iterator position, const T &value);
     int m_allocator;
     RHArtificialIntelligenceValueNode<T> *m_head;
     unsigned m_count;
@@ -1079,6 +1085,29 @@ template <class T> struct RHArtificialIntelligenceValueList
         return m_current->m_value;
     }
 };
+
+// TEMPLATE: GAME 0x004242e0
+// ?Insert@?$RHArtificialIntelligenceValueList@VRHStimulus@@@@QAE?AUIterator@1@U21@ABVRHStimulus@@@Z
+template <class T>
+typename RHArtificialIntelligenceValueList<T>::Iterator RHArtificialIntelligenceValueList<T>::Insert(Iterator position, const T &value)
+{
+    RHArtificialIntelligenceValueNode<T> *previous = position.node->m_previous;
+    RHArtificialIntelligenceValueNode<T> *node = (RHArtificialIntelligenceValueNode<T> *)operator new(sizeof(RHArtificialIntelligenceValueNode<T>));
+    node->m_next = position.node ? position.node : node;
+    node->m_previous = previous ? previous : node;
+    position.node->m_previous = node;
+    node->m_previous->m_next = node;
+    new (&node->m_value) T(value);
+    ++m_count;
+    return Iterator(node);
+}
+
+RHArtificialIntelligenceValueList<RHStimulus>::Iterator EmitAIStimulusInsert(RHArtificialIntelligenceValueList<RHStimulus> &list, RHArtificialIntelligenceValueList<RHStimulus>::Iterator position, const RHStimulus &value)
+{
+    typedef RHArtificialIntelligenceValueList<RHStimulus> List;
+    List::Iterator (List::*insert)(List::Iterator, const RHStimulus &) = &List::Insert;
+    return (list.*insert)(position, value);
+}
 
 #define RHAI_LOCAL_ACCESS(address, size, line) \
     if (file.Access(address, size) < 0) \
@@ -3049,7 +3078,8 @@ RHScriptNode *RHUnk0046eb30::Unk0059f720(RHScriptNode *next, RHScriptNode *previ
     return node;
 }
 
-// deferred: unannotated pending reccmp #534
+// TEMPLATE: GAME 0x0059fb00 FOLDED
+// ?CopyData@RHSeqList@@SAXPAPAVRHSequenceElement@@PBQAV2@@Z
 void RHSeqList::CopyData(RHSequenceElement **destination, RHSequenceElement *const *source)
 {
     if (destination)
