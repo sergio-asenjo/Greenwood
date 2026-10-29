@@ -105,3 +105,24 @@ int __stdcall FUN_0040a230(HINSTANCE, HINSTANCE, char *, int)
 {
     return 0;
 }
+
+#include <list>
+
+// FUNCTION: GAME 0x0040bc30
+void RHUnk0040bc30::FUN_0040bc30()
+{
+    typedef std::list<std::string> Strings;
+    ((Strings *)this)->~Strings();
+}
+
+// TEMPLATE: GAME 0x0040bcc0
+// ?clear@?$list@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@QAEXXZ
+
+void EmitLauncherStringList(const std::allocator<std::string> &allocator)
+{
+    typedef std::list<std::string> Strings;
+    Strings *strings = new Strings(allocator);
+    void (Strings::*clear)() = &Strings::clear;
+    (strings->*clear)();
+    delete strings;
+}

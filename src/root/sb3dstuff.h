@@ -1,4 +1,5 @@
 #include "SB.h"
+#include "RHUnk00613e90.h"
 
 class RHUnk005df510
 {
@@ -32,7 +33,16 @@ class RHUnk005dfd00
 {
 public:
     RHUnk005dfd00();
-    void FUN_005dfc80(float x, float y, float z);
+    void FUN_005dfc80(RHUnk00613e90 point);
+    void Reset()
+    {
+        m_00 = 0x7149f2ca;
+        m_04 = 0xf149f2ca;
+        m_08 = 0x7149f2ca;
+        m_0c = 0xf149f2ca;
+        m_10 = 0x7149f2ca;
+        m_14 = 0xf149f2ca;
+    }
     int m_00;
     int m_04;
     int m_08;

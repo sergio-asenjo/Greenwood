@@ -57,6 +57,27 @@ float RHUnk00613e90::FUN_005df680() const
     return y > z ? y : z;
 }
 
+// STUB: GAME 0x005df6e0
+RHUnk00613e90 RHUnk00613e90::DistanceVectorToLine(const RHUnk00613e90 &first, const RHUnk00613e90 &second)
+{
+    RHUnk00613e90 direction;
+    RHUnk00613e90 offset;
+    direction = second.FUN_005df550(first);
+    float scale = 1.0f / direction.Norm();
+    direction.x *= scale;
+    direction.y *= scale;
+    direction.z *= scale;
+    offset = FUN_005df550(first);
+    struct Components { float x; float y; float z; };
+    Components projection = *(Components *)&direction.Scaled(offset.FUN_005df5f0(direction));
+    return (const RHUnk00613e90 &)*(Components *)&offset.FUN_005df550((const RHUnk00613e90 &)projection);
+}
+
+void EmitRHDistanceVectorToLine(RHUnk00613e90 *value)
+{
+    value->DistanceVectorToLine(*value, *value);
+}
+
 // FUNCTION: GAME 0x005df820
 RHUnk005df860::RHUnk005df860()
 {
@@ -213,8 +234,11 @@ RHUnk005dfd00::RHUnk005dfd00()
 }
 
 // FUNCTION: GAME 0x005dfc80
-void RHUnk005dfd00::FUN_005dfc80(float x, float y, float z)
+void RHUnk005dfd00::FUN_005dfc80(RHUnk00613e90 point)
 {
+    float x = point.x;
+    float y = point.y;
+    float z = point.z;
     float *fields = (float *)this;
     if (fields[0] > x)
         fields[0] = x;
@@ -285,7 +309,7 @@ float EmitSB3DGeometry(RHUnk00613e90 &vector, RHUnk005df860 &plane)
 {
     RHUnk005df860 initializedPlane;
     RHUnk005dfd00 bounds;
-    bounds.FUN_005dfc80(0.0f, 0.0f, 0.0f);
+    bounds.FUN_005dfc80(RHUnk00613e90(0.0f, 0.0f, 0.0f));
     RHUnk00613e90 difference(vector, vector);
     vector.FUN_005df5a0(vector);
     vector.FUN_005df5f0(vector);
