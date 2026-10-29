@@ -245,11 +245,7 @@ class RHSequenceElement;
 // rhscript.cpp TU from 3 agreeing / 22 other callers, which is a hint, not a
 // name. Modelled as a provisional class method so the caller emits
 // `mov ecx,[g]; push index; call`. Defined once in RHScript_stubs.cpp.
-class RHUnk00452030
-{
-public:
-    int Get(int index);
-};
+#include "RHCampaignValueCalls.h"
 
 // Callee 0x004ba7a0 — __thiscall, one stack arg, plain `ret 4`: a 0x32-byte
 // setter that stores the arg to [this+0x164], and when it equals 3 forwards to
@@ -579,11 +575,7 @@ public:
     void Unk(int direction);
 };
 
-class RHUnk0046bcb0
-{
-public:
-    void Unk(int value);
-};
+#include "RHActorCancelCalls.h"
 
 struct RHUnk00571160Position
 {
@@ -596,6 +588,7 @@ struct RHUnk00571160Position
 void RHUnk0048ce80(int noise, RHUnk00571160Position *position);
 
 class SBGeoVector2D;
+#define SBGEO_POINT2D_VIEW
 class SBGeoPoint2D
 {
 public:
@@ -793,12 +786,6 @@ public:
 
 #include "RHEngineAccessors.h"
 
-class RHUnk005a2450
-{
-public:
-    void FUN_005a2450(void *first, void *second);
-};
-
 #include "RHPCActionQueryCalls.h"
 
 class RHUnk004af1d0
@@ -961,7 +948,6 @@ public:
     void Unk00419fd0(int value, int duration);
     void Unk0041ac50();
     float FUN_00489680(void *target);
-    void FUN_0058bbe0(void *actor, int value);
     void FUN_00456d20();
     RHScriptBatchCalls *FUN_005209b0();
     void FUN_00520a70();

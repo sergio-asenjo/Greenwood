@@ -132,6 +132,7 @@ public:
     {
         void (std::vector<SBGeoPoint2D>::*volatile destroy)(SBGeoPoint2D *, SBGeoPoint2D *) = &RHSpritePointVectorEmission::_Destroy;
         void (std::vector<SBGeoPoint2D>::*volatile insert)(SBGeoPoint2D *, unsigned int, const SBGeoPoint2D &) = &RHSpritePointVectorEmission::insert;
+        SBGeoPoint2D *(std::vector<SBGeoPoint2D>::*volatile insertOne)(SBGeoPoint2D *, const SBGeoPoint2D &) = &RHSpritePointVectorEmission::insert;
         SBGeoPoint2D *(std::vector<SBGeoPoint2D>::*volatile copy)(const SBGeoPoint2D *, const SBGeoPoint2D *, SBGeoPoint2D *) = &RHSpritePointVectorEmission::_Ucopy;
         void (std::vector<SBGeoPoint2D>::*volatile fill)(SBGeoPoint2D *, unsigned int, const SBGeoPoint2D &) = &RHSpritePointVectorEmission::_Ufill;
     }
@@ -187,6 +188,9 @@ DECOMP_SIZE_ASSERT(RHUnkSpriteFrameHeader, 0x0e)
 
 // TEMPLATE: GAME 0x004afd70
 // ?insert@?$vector@VSBGeoVector2D@@V?$allocator@VSBGeoVector2D@@@std@@@std@@QAEPAVSBGeoVector2D@@PAV3@ABV3@@Z
+
+// TEMPLATE: GAME 0x004afbc0
+// ?insert@?$vector@VSBGeoPoint2D@@V?$allocator@VSBGeoPoint2D@@@std@@@std@@QAEPAVSBGeoPoint2D@@PAV3@ABV3@@Z
 
 // TEMPLATE: GAME 0x004aff00
 // ?_Destroy@?$vector@VSBGeoVector2D@@V?$allocator@VSBGeoVector2D@@@std@@@std@@IAEXPAVSBGeoVector2D@@0@Z
@@ -272,7 +276,10 @@ RHUnkSpriteScriptInfo::~RHUnkSpriteScriptInfo()
 // LIBRARY: GAME 0x005bec50
 // ?capacity@?$vector@GV?$allocator@G@std@@@std@@QBEIXZ
 
-// LIBRARY: GAME 0x005bec70
+// LIBRARY: GAME 0x005bec70 FOLDED
+// ?copy@std@@YAPAGPBG0PAG@Z
+
+// LIBRARY: GAME 0x005bec70 FOLDED
 // ?copy@std@@YAPAGPAG00@Z
 
 // GLOBAL: GAME 0x006c10dc

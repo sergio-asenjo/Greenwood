@@ -33,6 +33,7 @@
 #include "RHGame.h"
 #include "RHEngine.h"
 #include "RHScriptLists.h"
+#include "RHSequenceCancellationCalls.h"
 #include <list>
 #include <string>
 #include <new>
@@ -477,7 +478,7 @@ void RHUnk0046bcb0::Unk(int value)
     RHUnk0046bcb0Dispatch *order = *(RHUnk0046bcb0Dispatch **)((char *)this + 0x130);
     if (order && order != *(RHUnk0046bcb0Dispatch **)((char *)this + 0x138))
         order->v04(value);
-    ((RHScriptBatchCalls *)g_unk0x6c1040)->FUN_0058bbe0(this, value);
+    ((RHSequenceCancellationCalls *)g_unk0x6c1040)->FUN_0058bbe0(this, value);
 }
 
 // FUNCTION: GAME 0x0046bcf0
@@ -4977,19 +4978,15 @@ bool RHScript::RecordDeactivateMobileElement(int index)
                          "RecordDeactivateMobileElement");
 }
 
-// FUNCTION: GAME 0x005785b0
-void FUN_005785b0(void *first, void *second)
-{
-    RHUnk005a2450 *manager =
-        (RHUnk005a2450 *)((RHUnk004e3760 *)g_unk0x6c0fa8)->Get();
-    manager->FUN_005a2450(first, second);
-}
+#include "RHShortBriefings.h"
 
-class RHShortBriefings
+// FUNCTION: GAME 0x005785b0
+void FUN_005785b0(unsigned long id, bool first)
 {
-public:
-    void DoneShortBriefing(unsigned long id);
-};
+    RHShortBriefings *manager =
+        (RHShortBriefings *)((RHUnk004e3760 *)g_unk0x6c0fa8)->Get();
+    manager->AddShortBriefing(id, first);
+}
 
 // FUNCTION: GAME 0x005785d0
 void FUN_005785d0(void *value)

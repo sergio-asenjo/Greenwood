@@ -131,8 +131,9 @@ RHBonusProjection *RHUnk0057d800::Unk(const SBGeoPoint2D &point)
 
 
 void RHUnk00584d60::FUN_00584d30() {}
-void RHUnk005a2450::FUN_005a2450(void *, void *) {}
 RHMessenger *__stdcall RHUnk00546050(RHUnk5490f0 *message) { (void)message; return 0; }
+// TEMPLATE: GAME 0x00585e90 FOLDED
+// ??1RHUnk00585ea0@@QAE@XZ
 RHUnk00585ea0::~RHUnk00585ea0() {}
 RHScriptIter RHUnk0046eb30::begin() { return RHScriptIter(head->next); }
 void RHUnk00574690(void *actor, RHUnk00571160Position *position, void *location)
@@ -189,6 +190,8 @@ void *RHUnk005b5e00::FUN_005b5de0()
     return *(void **)((char *)this + 0x154);
 }
 int RHScriptBatchCalls::Unk005c2ec0(void *, int, int, void *, int, int, int, int) { return -1; }
+// TEMPLATE: GAME 0x00585e90 FOLDED
+// ??1RHUnk005861c0@@QAE@XZ
 RHUnk005861c0::~RHUnk005861c0() {}
 RHUnk005883a0::RHUnk005883a0(unsigned short, int, void *, int, const SBGeoPoint2D &, int, int, int) {}
 RHUnk005883a0::~RHUnk005883a0() {}
@@ -208,7 +211,6 @@ RHScriptActionCursor RHScriptActionCursor::operator++(int)
     return previous;
 }
 
-void RHScriptBatchCalls::FUN_0058bbe0(void *, int) {}
 struct RHUnk005209b0Layout
 {
     unsigned int m_vptr;
