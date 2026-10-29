@@ -7,35 +7,6 @@
 #include <map>
 #include <stdio.h>
 
-// SIZE 0x10
-class RHFontText
-{
-public:
-    std::allocator<char> m_allocator; // 0x00
-    char *m_chars; // 0x04
-    unsigned m_size; // 0x08
-    unsigned m_capacity; // 0x0c
-    RHFontText(const RHFontText &value);
-    RHFontText(const std::allocator<char> &allocator = std::allocator<char>()) : m_allocator(allocator)
-    {
-        ((RHProfileText *)this)->FUN_00401ee0(false);
-    }
-    ~RHFontText()
-    {
-        if (m_chars == 0)
-            ;
-        else if (*((unsigned char *)m_chars - 1) == 0 || *((unsigned char *)m_chars - 1) == 255)
-            m_allocator.deallocate(m_chars - 1, m_capacity + 1);
-        else
-            --*((unsigned char *)m_chars - 1);
-        m_chars = 0, m_size = 0, m_capacity = 0;
-    }
-    void Assign(const std::string &value)
-    {
-        ((RHProfileText *)this)->FUN_00401ce0(value, 0, std::string::npos);
-    }
-};
-
 // SIZE 0x04
 struct RHFontIterator
 {

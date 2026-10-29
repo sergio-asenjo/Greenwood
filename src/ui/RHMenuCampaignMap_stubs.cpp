@@ -3,9 +3,10 @@
 #include "RHMenuScreenView.h"
 #include "RHUnk00527870.h"
 
+// FUNCTION: GAME 0x0053e280
 void RHMapConstructValue(std::pair<const std::string, void *> *storage, const std::pair<const std::string, void *> &value)
 {
-    std::_Construct(storage, value);
+    new ((void *)storage) std::pair<const std::string, void *>(value);
 }
 
 bool RHMapWideText::Grow(unsigned, bool) { return false; }
@@ -34,21 +35,6 @@ unsigned FUN_00527cc0(unsigned value)
 std::string g_unk0x006c0660;
 // GLOBAL: GAME 0x006c1840
 RHMapResources *g_unk0x006c1840;
-
-struct RHMapTreeNode;
-
-struct RHMapTreeIterator
-{
-    RHMapTreeNode *node;
-};
-
-class RHMapTree
-{
-public:
-    RHMapTreeIterator FUN_0053d2f0(RHMapTreeIterator first, RHMapTreeIterator last);
-};
-
-RHMapTreeIterator RHMapTree::FUN_0053d2f0(RHMapTreeIterator first, RHMapTreeIterator) { return first; }
 
 SBUILifetime::~SBUILifetime() {}
 

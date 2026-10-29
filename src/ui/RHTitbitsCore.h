@@ -36,7 +36,7 @@ public:
         FUN_005c8980();
         m_valid = 1;
     }
-    void Clear(void *out, RHTitbitNode *first, RHTitbitNode *last); // 0x0044e8b0
+    void *Clear(void *out, RHTitbitNode *first, RHTitbitNode *last);
 };
 
 class RHTitbits

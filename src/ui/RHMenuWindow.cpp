@@ -171,18 +171,12 @@ bool RHMenuWindow::FUN_00544b40(const std::wstring &title, const RHMapBox &box, 
     return RHPortraitRootLifetime::FUN_0061a1e0(*(const RHMapTitleText *)&title, box, flags);
 }
 
-class RHBriefingNarrowText;
-
-class RHBriefingParentCalls
-{
-public:
-    void *FUN_00544b60(const RHBriefingNarrowText &name);
-};
+#include "RHBriefingWindowCalls.h"
 
 // FUNCTION: GAME 0x00544b60
-void *RHBriefingParentCalls::FUN_00544b60(const RHBriefingNarrowText &name)
+void *RHBriefingWindowCalls::FUN_00544b60(const std::string &name)
 {
-    return (*(RHPortraitTextResourceCalls **)((char *)this + 0xb4))->FUN_0053be80(*(const std::string *)&name);
+    return (*(RHPortraitTextResourceCalls **)((char *)this + 0xb4))->FUN_0053be80(name);
 }
 
 // FUNCTION: GAME 0x00544b80

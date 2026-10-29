@@ -3,8 +3,6 @@
 #include "RHProfileFileCore.h"
 #include <string.h>
 
-void FUN_0064158f(void *);
-
 DECOMP_SIZE_ASSERT(RHFrameHolderRecord, 0x14)
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 DECOMP_SIZE_ASSERT(SBGeoVector2D, 0x08)
@@ -585,7 +583,7 @@ bool RHSpriteFrameCalls::FUN_00505940(unsigned index)
     RHFrameHolder *holder = (RHFrameHolder *)this;
     if (holder->m_frames.m_first[index].m_10 && holder->m_frames.m_first[index].m_data)
     {
-        FUN_0064158f((void *)holder->m_frames.m_first[index].m_data);
+        operator delete((void *)holder->m_frames.m_first[index].m_data);
         holder->m_frames.m_first[index].m_data = 0;
     }
     return true;
@@ -1283,6 +1281,146 @@ RHFrameHolderRecord *RHUnk00506e00::FUN_00507320(RHFrameHolderRecord *first, RHF
 // TEMPLATE: GAME 0x00507360
 // ?_Destroy@?$vector@VRHUnk005069a0@@V?$allocator@VRHUnk005069a0@@@std@@@std@@IAEXPAVRHUnk005069a0@@0@Z
 
+struct RHFrameTreeLinksB24
+{
+    RHFrameTreeLinksB24 *m_left;
+    RHFrameTreeLinksB24 *m_parent;
+    RHFrameTreeLinksB24 *m_right;
+};
+
+extern RHFrameTreeLinksB24 *g_unk0x006c0b24;
+
+struct RHTreeInc00509910
+{
+    RHFrameTreeLinksB24 *m_node;
+    void FUN_00509910();
+};
+
+struct RHFrameHolderStringNode
+{
+    RHFrameHolderStringNode *m_00;
+    RHFrameHolderStringNode *m_04;
+    RHFrameHolderStringNode *m_08;
+    std::pair<const std::string, void *> m_0c;
+    int m_20;
+};
+
+static inline RHFrameHolderStringNode *FrameHolderStringNil()
+{
+    return (RHFrameHolderStringNode *)g_unk0x006c0b24;
+}
+
+struct RHFrameHolderStringIterator
+{
+    RHFrameHolderStringNode *m_node;
+    RHFrameHolderStringIterator operator++(int)
+    {
+        RHFrameHolderStringIterator previous = *this;
+        ((RHTreeInc00509910 *)this)->FUN_00509910();
+        return previous;
+    }
+};
+
+class RHFrameHolderStringMap
+{
+public:
+    RHFrameHolderStringIterator FUN_00507390(RHFrameHolderStringIterator, RHFrameHolderStringIterator);
+    RHFrameHolderStringIterator FUN_00508370(RHFrameHolderStringIterator);
+    void FUN_005088a0(RHFrameHolderStringNode *);
+    inline void RotateLeft(RHFrameHolderStringNode *node)
+    {
+        RHUnk00641782 lock;
+        RHFrameHolderStringNode *right = node->m_08;
+        node->m_08 = right->m_00;
+        if (right->m_00 != FrameHolderStringNil()) right->m_00->m_04 = node;
+        right->m_04 = node->m_04;
+        if (node == m_head->m_04) m_head->m_04 = right;
+        else if (node == node->m_04->m_00) node->m_04->m_00 = right;
+        else node->m_04->m_08 = right;
+        right->m_00 = node;
+        node->m_04 = right;
+    }
+    inline void RotateRight(RHFrameHolderStringNode *node)
+    {
+        RHUnk00641782 lock;
+        RHFrameHolderStringNode *left = node->m_00;
+        node->m_00 = left->m_08;
+        if (left->m_08 != FrameHolderStringNil()) left->m_08->m_04 = node;
+        left->m_04 = node->m_04;
+        if (node == m_head->m_04) m_head->m_04 = left;
+        else if (node == node->m_04->m_08) node->m_04->m_08 = left;
+        else node->m_04->m_00 = left;
+        left->m_08 = node;
+        node->m_04 = left;
+    }
+    static RHFrameHolderStringNode *&Left(RHFrameHolderStringNode *node) { return node->m_00; }
+    static RHFrameHolderStringNode *&Parent(RHFrameHolderStringNode *node) { return node->m_04; }
+    static RHFrameHolderStringNode *&Right(RHFrameHolderStringNode *node) { return node->m_08; }
+    static int &Color(RHFrameHolderStringNode *node) { return node->m_20; }
+    RHFrameHolderStringNode *&Root() { return m_head->m_04; }
+    RHFrameHolderStringNode *&Leftmost() { return m_head->m_00; }
+    RHFrameHolderStringNode *&Rightmost() { return m_head->m_08; }
+    undefined m_00[4];
+    RHFrameHolderStringNode *m_head;
+    bool m_08;
+    undefined m_09[3];
+    unsigned m_count;
+};
+
+static inline RHFrameHolderStringNode *FrameHolderStringMinimum(RHFrameHolderStringNode *node)
+{
+    RHUnk00641782 lock;
+    while (node->m_00 != FrameHolderStringNil())
+        node = node->m_00;
+    return node;
+}
+
+static inline RHFrameHolderStringNode *FrameHolderStringMaximum(RHFrameHolderStringNode *node)
+{
+    RHUnk00641782 lock;
+    while (node->m_08 != FrameHolderStringNil())
+        node = node->m_08;
+    return node;
+}
+
+static inline RHFrameHolderStringNode *FrameHolderStringNodeOf(const RHFrameHolderStringIterator &iterator)
+{
+    return iterator.m_node;
+}
+
+static inline RHFrameHolderStringIterator FrameHolderStringMake(RHFrameHolderStringNode *node)
+{
+    RHFrameHolderStringIterator result;
+    result.m_node = node;
+    return result;
+}
+
+// FUNCTION: GAME 0x00507390
+RHFrameHolderStringIterator RHFrameHolderStringMap::FUN_00507390(RHFrameHolderStringIterator first, RHFrameHolderStringIterator last)
+{
+    if (m_count != 0 && FrameHolderStringNodeOf(first) == m_head->m_00 && FrameHolderStringNodeOf(last) == m_head) {
+        RHUnk00641782 lock;
+        RHFrameHolderStringNode *node = Root();
+        {
+            RHUnk00641782 inner;
+            for (RHFrameHolderStringNode *next = node; next != FrameHolderStringNil(); node = next) {
+                FUN_005088a0(next->m_08);
+                next = next->m_00;
+                ((std::string &)node->m_0c.first).~basic_string();
+                operator delete(node);
+            }
+        }
+        Root() = FrameHolderStringNil();
+        m_count = 0;
+        Leftmost() = m_head;
+        Rightmost() = m_head;
+        return FrameHolderStringMake(Leftmost());
+    }
+    while (first.m_node != last.m_node)
+        FUN_00508370(first++);
+    return first;
+}
+
 // FUNCTION: GAME 0x005074d0
 RHUnk005074d0::Pair RHUnk005074d0::FUN_005074d0(const Value &value)
 {
@@ -1528,6 +1666,162 @@ void RHFrameHolderRowMap::FUN_00508000(Node *node)
     {
         FUN_00508000(next->m_right);
         next = next->m_left;
+        operator delete(node);
+    }
+}
+
+// FUNCTION: GAME 0x00508370
+RHFrameHolderStringIterator RHFrameHolderStringMap::FUN_00508370(RHFrameHolderStringIterator position)
+{
+    RHFrameHolderStringNode *x;
+    RHFrameHolderStringNode *y = FrameHolderStringNodeOf(position++);
+    RHFrameHolderStringNode *z = y;
+    RHUnk00641782 lock;
+    if (Left(y) == FrameHolderStringNil())
+        x = Right(y);
+    else if (Right(y) == FrameHolderStringNil())
+        x = Left(y);
+    else
+    {
+        y = FrameHolderStringMinimum(Right(y));
+        x = Right(y);
+    }
+    {
+        if (y != z)
+        {
+            Parent(Left(z)) = y;
+            Left(y) = Left(z);
+            if (y == Right(z))
+                Parent(x) = y;
+            else
+            {
+                Parent(x) = Parent(y);
+                Left(Parent(y)) = x;
+                Right(y) = Right(z);
+                Parent(Right(z)) = y;
+            }
+            if (Root() == z)
+                Root() = y;
+            else if (Left(Parent(z)) == z)
+                Left(Parent(z)) = y;
+            else
+                Right(Parent(z)) = y;
+            Parent(y) = Parent(z);
+            std::swap(Color(y), Color(z));
+            y = z;
+        }
+        else
+        {
+            Parent(x) = Parent(y);
+            if (Root() == z)
+                Root() = x;
+            else if (Left(Parent(z)) == z)
+                Left(Parent(z)) = x;
+            else
+                Right(Parent(z)) = x;
+            if (Leftmost() == z)
+            {
+                if (Right(z) == FrameHolderStringNil())
+                    Leftmost() = Parent(z);
+                else
+                {
+                    Leftmost() = FrameHolderStringMinimum(x);
+                }
+            }
+            if (Rightmost() == z)
+            {
+                if (Left(z) == FrameHolderStringNil())
+                    Rightmost() = Parent(z);
+                else
+                {
+                    Rightmost() = FrameHolderStringMaximum(x);
+                }
+            }
+        }
+        if (Color(y) == 1)
+        {
+            while (x != Root() && Color(x) == 1)
+            {
+                if (x == Left(Parent(x)))
+                {
+                    RHFrameHolderStringNode *w = Right(Parent(x));
+                    if (Color(w) == 0)
+                    {
+                        Color(w) = 1;
+                        Color(Parent(x)) = 0;
+                        RotateLeft(Parent(x));
+                        w = Right(Parent(x));
+                    }
+                    if (Color(Left(w)) == 1 && Color(Right(w)) == 1)
+                    {
+                        Color(w) = 0;
+                        x = Parent(x);
+                    }
+                    else
+                    {
+                        if (Color(Right(w)) == 1)
+                        {
+                            Color(Left(w)) = 1;
+                            Color(w) = 0;
+                            RotateRight(w);
+                            w = Right(Parent(x));
+                        }
+                        Color(w) = Color(Parent(x));
+                        Color(Parent(x)) = 1;
+                        Color(Right(w)) = 1;
+                        RotateLeft(Parent(x));
+                        break;
+                    }
+                }
+                else
+                {
+                    RHFrameHolderStringNode *w = Left(Parent(x));
+                    if (Color(w) == 0)
+                    {
+                        Color(w) = 1;
+                        Color(Parent(x)) = 0;
+                        RotateRight(Parent(x));
+                        w = Left(Parent(x));
+                    }
+                    if (Color(Right(w)) == 1 && Color(Left(w)) == 1)
+                    {
+                        Color(w) = 0;
+                        x = Parent(x);
+                    }
+                    else
+                    {
+                        if (Color(Left(w)) == 1)
+                        {
+                            Color(Right(w)) = 1;
+                            Color(w) = 0;
+                            RotateLeft(w);
+                            w = Left(Parent(x));
+                        }
+                        Color(w) = Color(Parent(x));
+                        Color(Parent(x)) = 1;
+                        Color(Left(w)) = 1;
+                        RotateRight(Parent(x));
+                        break;
+                    }
+                }
+            }
+            Color(x) = 1;
+        }
+    }
+    ((std::string &)y->m_0c.first).~basic_string();
+    operator delete(y);
+    --m_count;
+    return position;
+}
+
+// FUNCTION: GAME 0x005088a0
+void RHFrameHolderStringMap::FUN_005088a0(RHFrameHolderStringNode *node)
+{
+    RHUnk00641782 lock;
+    for (RHFrameHolderStringNode *next = node; next != FrameHolderStringNil(); node = next) {
+        FUN_005088a0(next->m_08);
+        next = next->m_00;
+        ((std::string &)node->m_0c.first).~basic_string();
         operator delete(node);
     }
 }
@@ -2098,21 +2392,8 @@ void RHFrameHolderRowMap::Iterator::FUN_00509860()
     }
 }
 
-struct RHFrameTreeLinksB24
-{
-    RHFrameTreeLinksB24 *m_left;
-    RHFrameTreeLinksB24 *m_parent;
-    RHFrameTreeLinksB24 *m_right;
-};
-
 // GLOBAL: GAME 0x006c0b24
 RHFrameTreeLinksB24 *g_unk0x006c0b24 = 0;
-
-struct RHTreeInc00509910
-{
-    RHFrameTreeLinksB24 *m_node;
-    void FUN_00509910();
-};
 
 static inline RHFrameTreeLinksB24 *FrameHolderMinimumB24(RHFrameTreeLinksB24 *node)
 {

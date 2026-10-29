@@ -97,11 +97,7 @@ public:
 
 #include "RHMapResources.h"
 
-class RHUnk00452030
-{
-public:
-    int Get(int);
-};
+#include "RHCampaignValueCalls.h"
 extern RHUnk00452030 *g_unk0x6c07fc;
 extern std::string g_unk0x006c0660;
 extern char *g_unk0x006c0664;

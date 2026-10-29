@@ -7,6 +7,8 @@
 #include <vector>
 #include <list>
 
+class RHMenuWindow;
+
 class RHMapWindow
 {
 public:
@@ -18,7 +20,7 @@ public:
     void FUN_0053c7e0();
     typedef RHMenuScreenTimer Timer;
     undefined m_00[0x191c];
-    std::deque<std::vector<void *> > m_191c;
+    std::deque<std::vector<RHMenuWindow *> > m_191c;
     undefined m_194c[0x34];
     std::list<Timer> m_1980;
     unsigned m_198c;

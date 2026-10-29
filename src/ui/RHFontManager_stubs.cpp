@@ -1,9 +1,10 @@
 #include "SBNullstr.h"
 #include "RHFontManager.h"
 
+// FUNCTION: GAME 0x00503960
 void RHFontConstructValue(std::pair<const std::string, void *> *storage, const std::pair<const std::string, void *> &value)
 {
-    std::_Construct(storage, value);
+    new ((void *)storage) std::pair<const std::string, void *>(value);
 }
 
 // FUNCTION: GAME 0x005f5460

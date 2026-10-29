@@ -1,6 +1,13 @@
 #ifndef RHFOCUSMANAGER_H
 #define RHFOCUSMANAGER_H
 
+#include <list>
+#include <vector>
+#ifndef SBGEO_POINT2D_VIEW
+#include "RHRendererPoint.h"
+#endif
+#include "RHFocusShortcutTree.h"
+
 struct RHFocusEvent
 {
     unsigned type;
@@ -35,9 +42,25 @@ template <class T> struct RHFocusNode
     T *value;
 };
 
+template<class Group, class Focus>
+struct RHFocusCursors
+{
+    RHFocusCursors(std::list<Group> &groups, std::list<Focus> &focusable)
+        : group(groups.end()), focus(focusable.end()), enabled(true), wrap(true) {}
+    typename std::list<Group>::iterator group;
+    typename std::list<Focus>::iterator focus;
+    bool enabled;
+    bool wrap;
+};
+
 class RHFocusManager
 {
 public:
+    struct Groupable
+    {
+        RHFocusGroupableView *widget;
+        bool sleeping;
+    };
     RHFocusManager(int orientation);
     void FUN_004ffc20(RHFocusFocusableView *widget);
     void FUN_004ffc70(RHFocusGroupableView *widget, bool sleeping);
@@ -65,24 +88,16 @@ public:
     static RHFocusEvent *FUN_005008a0(RHFocusEvent *first, const void *widget);
 
     unsigned m_navigation[4];
-    unsigned m_groupAllocator;
-    RHFocusNode<RHFocusGroupableView> *m_groupHead;
-    unsigned m_groupCount;
-    unsigned m_focusAllocator;
-    RHFocusNode<RHFocusFocusableView> *m_focusHead;
-    unsigned m_focusCount;
-    unsigned m_ignoreAllocator;
-    const void **m_ignoreFirst;
-    const void **m_ignoreLast;
-    const void **m_ignoreEnd;
-    RHFocusNode<RHFocusGroupableView> *m_groupCursor;
-    RHFocusNode<RHFocusFocusableView> *m_focusCursor;
-    unsigned char m_40[0x18];
-    unsigned short *m_shortcutFirst;
-    unsigned short *m_shortcutLast;
-    unsigned short *m_shortcutEnd;
-    float m_position[2];
+    std::list<Groupable> m_groups;
+    std::list<RHFocusFocusableView *> m_focus;
+    std::vector<const void *> m_ignored;
+    RHFocusCursors<Groupable, RHFocusFocusableView *> m_cursors;
+    RHFocusShortcutTree m_shortcuts;
+    std::vector<unsigned short> m_pressed;
+    SBGeoPoint2D m_point;
     void *m_ui;
 };
+
+typedef RHFocusManager::Groupable RHFocusGroupableEntry;
 
 #endif

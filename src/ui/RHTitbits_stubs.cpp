@@ -14,9 +14,25 @@
 #include "SBNullstr.h"
 #include "RHTitbits.h"
 
-// Target 0x00613e90.
+// TEMPLATE: GAME 0x00613e90 FOLDED
+// ??0RHUnk00613e90@@QAE@XZ
 RHUnk00613e90::RHUnk00613e90() {}
 
 
-// Target 0x0044e8b0.
-void RHTitbitList::Clear(void *, RHTitbitNode *, RHTitbitNode *) {}
+// TEMPLATE: GAME 0x0044e8b0 FOLDED
+// ?Clear@RHTitbitList@@QAEPAXPAXPAURHTitbitNode@@1@Z
+void *RHTitbitList::Clear(void *out, RHTitbitNode *first, RHTitbitNode *last)
+{
+    RHTitbitNode *node = first;
+    while (node != last)
+    {
+        RHTitbitNode *erased = node;
+        node = node->m_next;
+        erased->m_prev->m_next = erased->m_next;
+        erased->m_next->m_prev = erased->m_prev;
+        operator delete(erased);
+        --m_count;
+    }
+    *(RHTitbitNode **)out = node;
+    return out;
+}

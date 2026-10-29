@@ -1,30 +1,52 @@
 #include "RHFocusManager.h"
 #include <utility>
 
-class RHUnk00641782
-{
-public:
-    RHUnk00641782();
-    ~RHUnk00641782();
-    unsigned char m_00;
-};
+#include "RHUnk00641782.h"
 
-struct RHFocusShortcutValue
-{
-    unsigned short key;
-    RHFocusGroupableView *widget;
-};
+// TEMPLATE: GAME 0x0046eb30 FOLDED
+// ?erase@?$list@UGroupable@RHFocusManager@@V?$allocator@UGroupable@RHFocusManager@@@std@@@std@@QAE?AViterator@12@V312@@Z
 
-struct RHFocusShortcutNode
+// TEMPLATE: GAME 0x0046eb30 FOLDED
+// ?erase@?$list@PAVRHFocusFocusableView@@V?$allocator@PAVRHFocusFocusableView@@@std@@@std@@QAE?AViterator@12@V312@@Z
+
+// TEMPLATE: GAME 0x0057c9c0 FOLDED
+// ??Eiterator@?$list@UGroupable@RHFocusManager@@V?$allocator@UGroupable@RHFocusManager@@@std@@@std@@QAE?AV012@H@Z
+
+inline void RHFocusShortcutTree::RotateLeft(RHFocusShortcutNode *node)
 {
-    RHFocusShortcutNode *left;
-    RHFocusShortcutNode *parent;
-    RHFocusShortcutNode *right;
-    unsigned short key;
-    unsigned short m_0e;
-    RHFocusGroupableView *widget;
-    int color;
-};
+    RHUnk00641782 lock;
+    RHFocusShortcutNode *right = node->right;
+    node->right = right->left;
+    if (right->left != g_unk0x006c0ac0)
+        right->left->parent = node;
+    right->parent = node->parent;
+    if (node == head->parent)
+        head->parent = right;
+    else if (node == node->parent->left)
+        node->parent->left = right;
+    else
+        node->parent->right = right;
+    right->left = node;
+    node->parent = right;
+}
+
+inline void RHFocusShortcutTree::RotateRight(RHFocusShortcutNode *node)
+{
+    RHUnk00641782 lock;
+    RHFocusShortcutNode *left = node->left;
+    node->left = left->right;
+    if (left->right != g_unk0x006c0ac0)
+        left->right->parent = node;
+    left->parent = node->parent;
+    if (node == head->parent)
+        head->parent = left;
+    else if (node == node->parent->right)
+        node->parent->right = left;
+    else
+        node->parent->left = left;
+    left->right = node;
+    node->parent = left;
+}
 
 // GLOBAL: GAME 0x006c0abc
 unsigned g_unk0x006c0abc = 0;
@@ -32,196 +54,63 @@ unsigned g_unk0x006c0abc = 0;
 // GLOBAL: GAME 0x006c0ac0
 RHFocusShortcutNode *g_unk0x006c0ac0 = 0;
 
-class RHFocusShortcutPosition
+inline RHFocusShortcutTree::RHFocusShortcutTree(const std::less<unsigned short> &compare, const std::allocator<RHFocusShortcutValue> &allocator)
+    : m_compare(compare), m_allocator(allocator)
 {
-public:
-    RHFocusShortcutPosition(RHFocusShortcutNode *value = 0) : node(value) {}
-    RHFocusShortcutNode *node;
-};
-
-class RHFocusShortcutIterator : public RHFocusShortcutPosition
-{
-public:
-    RHFocusShortcutIterator(RHFocusShortcutNode *value = 0) : RHFocusShortcutPosition(value) {}
-    void FUN_005014c0();
-    void FUN_00501580();
-    bool operator==(const RHFocusShortcutIterator &other) const { return node == other.node; }
-    bool operator!=(const RHFocusShortcutIterator &other) const { return !(*this == other); }
-    RHFocusShortcutIterator operator++(int)
-    {
-        RHFocusShortcutIterator previous = *this;
-        typedef void (RHFocusShortcutIterator::*Advance)();
-        Advance advance = &RHFocusShortcutIterator::FUN_00501580;
-        (this->*advance)();
-        return previous;
+    multi = false;
+    std::_Lockit lock;
+    if (g_unk0x006c0ac0 == 0) {
+        RHFocusShortcutNode *nil = (RHFocusShortcutNode *)operator new(sizeof(RHFocusShortcutNode));
+        nil->parent = 0;
+        nil->color = 1;
+        g_unk0x006c0ac0 = nil;
+        nil->left = 0;
+        g_unk0x006c0ac0->right = 0;
     }
-};
-
-typedef std::pair<RHFocusShortcutIterator, bool> RHFocusShortcutInsertResult;
-
-class RHFocusShortcutTree
-{
-public:
-    static RHFocusShortcutNode *&Left(RHFocusShortcutNode *node) { return node->left; }
-    static RHFocusShortcutNode *&Parent(RHFocusShortcutNode *node) { return node->parent; }
-    RHFocusShortcutIterator Begin() { return RHFocusShortcutIterator(head->left); }
-    RHFocusShortcutIterator End() { return RHFocusShortcutIterator(head); }
-    void RotateLeft(RHFocusShortcutNode *node)
-    {
-        RHUnk00641782 lock;
-        RHFocusShortcutNode *right = node->right;
-        node->right = right->left;
-        if (right->left != g_unk0x006c0ac0)
-            right->left->parent = node;
-        right->parent = node->parent;
-        if (node == head->parent)
-            head->parent = right;
-        else if (node == node->parent->left)
-            node->parent->left = right;
-        else
-            node->parent->right = right;
-        right->left = node;
-        node->parent = right;
-    }
-    void RotateRight(RHFocusShortcutNode *node)
-    {
-        RHUnk00641782 lock;
-        RHFocusShortcutNode *left = node->left;
-        node->left = left->right;
-        if (left->right != g_unk0x006c0ac0)
-            left->right->parent = node;
-        left->parent = node->parent;
-        if (node == head->parent)
-            head->parent = left;
-        else if (node == node->parent->right)
-            node->parent->right = left;
-        else
-            node->parent->left = left;
-        left->right = node;
-        node->parent = left;
-    }
-    ~RHFocusShortcutTree();
-    RHFocusShortcutIterator FUN_005008f0(RHFocusShortcutIterator first, RHFocusShortcutIterator last);
-    RHFocusShortcutIterator FUN_00500a20(const unsigned short &key);
-    RHFocusShortcutInsertResult FUN_00500a70(const RHFocusShortcutValue &value);
-    RHFocusShortcutIterator FUN_00500ba0(RHFocusShortcutIterator position);
-    void FUN_005010c0(RHFocusShortcutNode *node);
-    RHFocusShortcutIterator FUN_00501150(RHFocusShortcutNode *child, RHFocusShortcutNode *parent, const RHFocusShortcutValue &value);
-    RHFocusShortcutNode *FUN_00501450(const unsigned short &key);
-    unsigned char m_00[4];
-    RHFocusShortcutNode *head;
-    bool multi;
-    unsigned count;
-};
-
-// Parked: explicit container cleanup differs from the original member-constructor EH states.
-// STUB: GAME 0x004ffa20
-RHFocusManager::RHFocusManager(int orientation)
-{
-    m_groupHead = 0;
-    m_focusHead = 0;
-    RHFocusShortcutTree *tree = (RHFocusShortcutTree *)((char *)this + 0x44);
-    tree->head = 0;
-    bool referenced = false;
-    unsigned char allocator = 0;
-    try {
-        *(unsigned char *)&m_groupAllocator = allocator;
-        RHFocusNode<RHFocusGroupableView> *group = (RHFocusNode<RHFocusGroupableView> *)operator new(16);
-        group->next = group;
-        group->previous = group;
-        m_groupHead = group;
-        m_groupCount = 0;
-        *(unsigned char *)&m_focusAllocator = allocator;
-        RHFocusNode<RHFocusFocusableView> *focus = (RHFocusNode<RHFocusFocusableView> *)operator new(12);
-        focus->next = focus;
-        focus->previous = focus;
-        m_focusHead = focus;
-        m_focusCount = 0;
-        *(unsigned char *)&m_ignoreAllocator = allocator;
-        m_ignoreFirst = 0;
-        m_ignoreLast = 0;
-        m_ignoreEnd = 0;
-        m_groupCursor = m_groupHead;
-        m_focusCursor = m_focusHead;
-        m_40[0] = true;
-        m_40[1] = true;
-        tree->m_00[0] = allocator;
-        tree->m_00[1] = allocator;
-        tree->multi = false;
-        {
-            RHUnk00641782 lock;
-            if (g_unk0x006c0ac0 == 0) {
-                RHFocusShortcutNode *nil = (RHFocusShortcutNode *)operator new(sizeof(RHFocusShortcutNode));
-                nil->parent = 0;
-                nil->color = 1;
-                g_unk0x006c0ac0 = nil;
-                nil->left = 0;
-                g_unk0x006c0ac0->right = 0;
-            }
-            ++g_unk0x006c0abc;
-            referenced = true;
-            RHFocusShortcutNode *head = (RHFocusShortcutNode *)operator new(sizeof(RHFocusShortcutNode));
-            head->parent = g_unk0x006c0ac0;
-            head->color = 0;
-            tree->head = head;
-            tree->count = 0;
-            head->left = head;
-            tree->head->right = tree->head;
-        }
-        m_40[0x14] = allocator;
-        m_shortcutFirst = 0;
-        m_shortcutLast = 0;
-        m_shortcutEnd = 0;
-        m_position[0] = -1.0f;
-        m_position[1] = -1.0f;
-        m_ui = 0;
-        if (orientation == 0) {
-            m_navigation[0] = 2;
-            m_navigation[1] = 4;
-            m_navigation[2] = 1;
-            m_navigation[3] = 3;
-        }
-        else {
-            m_navigation[0] = 1;
-            m_navigation[1] = 3;
-            m_navigation[2] = 2;
-            m_navigation[3] = 4;
-        }
-    }
-    catch (...) {
-        operator delete(tree->head);
-        if (referenced) {
-            RHUnk00641782 lock;
-            if (--g_unk0x006c0abc == 0) {
-                operator delete(g_unk0x006c0ac0);
-                g_unk0x006c0ac0 = 0;
-            }
-        }
-        operator delete(m_focusHead);
-        operator delete(m_groupHead);
-        throw;
-    }
-}
-
-// FUNCTION: GAME 0x004ffbb0
-RHFocusShortcutTree::~RHFocusShortcutTree()
-{
-    RHFocusShortcutIterator first;
-    first.node = head->left;
-    RHFocusShortcutIterator last;
-    last.node = head;
-    FUN_005008f0(first, last);
-    operator delete(head);
-    head = 0;
+    ++g_unk0x006c0abc;
+    head = BuyNode(g_unk0x006c0ac0, 0);
     count = 0;
-    {
-        RHUnk00641782 lock;
-        if (--g_unk0x006c0abc == 0) {
-            operator delete(g_unk0x006c0ac0);
-            g_unk0x006c0ac0 = 0;
-        }
+    head->left = head;
+    head->right = head;
+}
+
+// FUNCTION: GAME 0x004ffa20
+RHFocusManager::RHFocusManager(int orientation)
+    : m_cursors(m_groups, m_focus),
+      m_point(-1.0f, -1.0f), m_ui(0)
+{
+    if (orientation == 0) {
+        m_navigation[0] = 2;
+        m_navigation[1] = 4;
+        m_navigation[2] = 1;
+        m_navigation[3] = 3;
+    }
+    else {
+        m_navigation[0] = 1;
+        m_navigation[1] = 3;
+        m_navigation[2] = 2;
+        m_navigation[3] = 4;
     }
 }
+
+// TEMPLATE: GAME 0x004ffbb0
+// ??1RHFocusShortcutTree@@QAE@XZ
+
+#define m_groupAllocator (*(unsigned *)((char *)this + 0x10))
+#define m_groupHead (*(RHFocusNode<RHFocusGroupableView> **)((char *)this + 0x14))
+#define m_groupCount (*(unsigned *)((char *)this + 0x18))
+#define m_focusHead (*(RHFocusNode<RHFocusFocusableView> **)((char *)this + 0x20))
+#define m_focusCount (*(unsigned *)((char *)this + 0x24))
+#define m_ignoreFirst (*(const void ***)((char *)this + 0x2c))
+#define m_ignoreLast (*(const void ***)((char *)this + 0x30))
+#define m_ignoreEnd (*(const void ***)((char *)this + 0x34))
+#define m_groupCursor (*(RHFocusNode<RHFocusGroupableView> **)((char *)this + 0x38))
+#define m_focusCursor (*(RHFocusNode<RHFocusFocusableView> **)((char *)this + 0x3c))
+#define m_40 ((unsigned char *)this + 0x40)
+#define m_shortcutFirst (*(unsigned short **)((char *)this + 0x58))
+#define m_shortcutLast (*(unsigned short **)((char *)this + 0x5c))
+#define m_shortcutEnd (*(unsigned short **)((char *)this + 0x60))
+#define m_position ((float *)((char *)this + 0x64))
 
 // FUNCTION: GAME 0x004ffc20
 void RHFocusManager::FUN_004ffc20(RHFocusFocusableView *widget)
@@ -239,12 +128,6 @@ void RHFocusManager::FUN_004ffc20(RHFocusFocusableView *widget)
     ++m_focusCount;
     *(RHFocusManager **)((char *)widget + 4) = this;
 }
-
-struct RHFocusGroupableEntry
-{
-    RHFocusGroupableView *widget;
-    bool sleeping;
-};
 
 struct RHFocusGroupableNode
 {
@@ -285,9 +168,19 @@ void RHFocusManager::FUN_004ffce0(RHFocusGroupableView *widget, unsigned short k
     result.first.node->widget = widget;
 }
 
+#undef m_40
 #include "RHCampaign.h"
+#define m_40 ((unsigned char *)this + 0x40)
 
 DECOMP_SIZE_ASSERT(RHFocusManager, 0x70)
+DECOMP_STATIC_ASSERT(offsetof(RHFocusManager, m_groups) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHFocusManager, m_focus) == 0x1c)
+DECOMP_STATIC_ASSERT(offsetof(RHFocusManager, m_ignored) == 0x28)
+DECOMP_STATIC_ASSERT(offsetof(RHFocusManager, m_cursors) == 0x38)
+DECOMP_STATIC_ASSERT(offsetof(RHFocusManager, m_shortcuts) == 0x44)
+DECOMP_STATIC_ASSERT(offsetof(RHFocusManager, m_pressed) == 0x54)
+DECOMP_STATIC_ASSERT(offsetof(RHFocusManager, m_point) == 0x64)
+DECOMP_STATIC_ASSERT(offsetof(RHFocusManager, m_ui) == 0x6c)
 DECOMP_SIZE_ASSERT(RHFocusShortcutNode, 0x18)
 DECOMP_SIZE_ASSERT(RHFocusShortcutTree, 0x10)
 DECOMP_SIZE_ASSERT(RHFocusShortcutIterator, 0x04)
@@ -533,7 +426,7 @@ struct RHFocusGroupRange
 inline RHFocusGroupRange RHFocusReadGroupRange(RHFocusManager &manager)
 {
     RHFocusGroupRange result;
-    result.head = manager.m_groupHead;
+    result.head = *(RHFocusNode<RHFocusGroupableView> **)((char *)&manager + 0x14);
     result.first = result.head->next;
     return result;
 }
@@ -812,8 +705,8 @@ struct RHFocusGroupSnapshot
 inline RHFocusGroupSnapshot RHFocusGroupCursor(const RHFocusManager &manager)
 {
     RHFocusGroupSnapshot result;
-    result.head = manager.m_groupHead;
-    result.cursor = manager.m_groupCursor;
+    result.head = *(RHFocusNode<RHFocusGroupableView> **)((char *)&manager + 0x14);
+    result.cursor = *(RHFocusNode<RHFocusGroupableView> **)((char *)&manager + 0x38);
     return result;
 }
 
@@ -877,8 +770,7 @@ RHFocusEvent *RHFocusManager::FUN_005008a0(RHFocusEvent *first, const void *widg
     return 0;
 }
 
-// Parked: hidden return pointer and erase temporary take other registers than exact twin 0x4b32a0 (iterator base-class shape).
-// STUB: GAME 0x005008f0
+// FUNCTION: GAME 0x005008f0
 RHFocusShortcutIterator RHFocusShortcutTree::FUN_005008f0(RHFocusShortcutIterator first, RHFocusShortcutIterator last)
 {
     if (count != 0 && first.node == head->left && last.node == head) {
@@ -892,10 +784,10 @@ RHFocusShortcutIterator RHFocusShortcutTree::FUN_005008f0(RHFocusShortcutIterato
                 operator delete(node);
             }
         }
-        head->parent = g_unk0x006c0ac0;
+        Root() = g_unk0x006c0ac0;
         count = 0;
-        head->left = head;
-        head->right = head;
+        Leftmost() = head;
+        Rightmost() = head;
         return Begin();
     }
     while (first.node != last.node)
@@ -951,149 +843,143 @@ RHFocusShortcutInsertResult RHFocusShortcutTree::FUN_00500a70(const RHFocusShort
     return result;
 }
 
-// Parked: the tree receiver stays in ebx and changes erase-node live ranges.
-// STUB: GAME 0x00500ba0
-RHFocusShortcutIterator RHFocusShortcutTree::FUN_00500ba0(RHFocusShortcutIterator position)
+static inline RHFocusShortcutNode *FocusShortcutMin(RHFocusShortcutNode *node)
 {
-    RHFocusShortcutNode *removed = position.node;
-    typedef void (RHFocusShortcutIterator::*Advance)();
-    Advance advance = &RHFocusShortcutIterator::FUN_00501580;
-    (position.*advance)();
-    RHFocusShortcutNode *replacement = removed;
     RHUnk00641782 lock;
-    RHFocusShortcutNode *child;
-    if (replacement->left == g_unk0x006c0ac0)
-        child = replacement->right;
-    else if (replacement->right == g_unk0x006c0ac0)
-        child = replacement->left;
-    else {
-        replacement = replacement->right;
-        {
-            RHUnk00641782 inner;
-            while (replacement->left != g_unk0x006c0ac0)
-                replacement = replacement->left;
-        }
-        child = replacement->right;
-    }
-    if (replacement != removed) {
-        removed->left->parent = replacement;
-        replacement->left = removed->left;
-        if (replacement == removed->right)
-            child->parent = replacement;
-        else {
-            child->parent = replacement->parent;
-            replacement->parent->left = child;
-            replacement->right = removed->right;
-            removed->right->parent = replacement;
-        }
-        if (head->parent == removed)
-            head->parent = replacement;
-        else if (removed->parent->left == removed)
-            removed->parent->left = replacement;
-        else
-            removed->parent->right = replacement;
-        replacement->parent = removed->parent;
-        int color = replacement->color;
-        replacement->color = removed->color;
-        removed->color = color;
-        replacement = removed;
-    }
-    else {
-        child->parent = replacement->parent;
-        if (head->parent == removed)
-            head->parent = child;
-        else if (removed->parent->left == removed)
-            removed->parent->left = child;
-        else
-            removed->parent->right = child;
-        if (head->left == removed) {
-            if (removed->right == g_unk0x006c0ac0)
-                head->left = removed->parent;
-            else {
-                RHFocusShortcutNode *minimum = child;
-                {
-                    RHUnk00641782 inner;
-                    while (minimum->left != g_unk0x006c0ac0)
-                        minimum = minimum->left;
-                }
-                head->left = minimum;
-            }
-        }
-        if (head->right == removed) {
-            if (removed->left == g_unk0x006c0ac0)
-                head->right = removed->parent;
-            else {
-                RHFocusShortcutNode *maximum = child;
-                {
-                    RHUnk00641782 inner;
-                    while (maximum->right != g_unk0x006c0ac0)
-                        maximum = maximum->right;
-                }
-                head->right = maximum;
-            }
-        }
-    }
-    if (replacement->color == 1) {
-        while (child != head->parent && child->color == 1) {
-            if (child == child->parent->left) {
-                RHFocusShortcutNode *sibling = child->parent->right;
-                if (sibling->color == 0) {
-                    sibling->color = 1;
-                    child->parent->color = 0;
-                    RotateLeft(child->parent);
-                    sibling = child->parent->right;
-                }
-                if (sibling->left->color == 1 && sibling->right->color == 1) {
-                    sibling->color = 0;
-                    child = child->parent;
-                }
-                else {
-                    if (sibling->right->color == 1) {
-                        sibling->left->color = 1;
-                        sibling->color = 0;
-                        RotateRight(sibling);
-                        sibling = child->parent->right;
-                    }
-                    sibling->color = child->parent->color;
-                    child->parent->color = 1;
-                    sibling->right->color = 1;
-                    RotateLeft(child->parent);
-                    break;
-                }
-            }
-            else {
-                RHFocusShortcutNode *sibling = child->parent->left;
-                if (sibling->color == 0) {
-                    sibling->color = 1;
-                    child->parent->color = 0;
-                    RotateRight(child->parent);
-                    sibling = child->parent->left;
-                }
-                if (sibling->right->color == 1 && sibling->left->color == 1) {
-                    sibling->color = 0;
-                    child = child->parent;
-                }
-                else {
-                    if (sibling->left->color == 1) {
-                        sibling->right->color = 1;
-                        sibling->color = 0;
-                        RotateLeft(sibling);
-                        sibling = child->parent->left;
-                    }
-                    sibling->color = child->parent->color;
-                    child->parent->color = 1;
-                    sibling->left->color = 1;
-                    RotateRight(child->parent);
-                    break;
-                }
-            }
-        }
-        child->color = 1;
-    }
-    operator delete(replacement);
-    --count;
-    return position;
+    while (node->left != g_unk0x006c0ac0)
+        node = node->left;
+    return node;
 }
+
+static inline RHFocusShortcutNode *FocusShortcutMax(RHFocusShortcutNode *node)
+{
+    RHUnk00641782 lock;
+    while (node->right != g_unk0x006c0ac0)
+        node = node->right;
+    return node;
+}
+
+// FUNCTION: GAME 0x00500ba0
+RHFocusShortcutIterator RHFocusShortcutTree::FUN_00500ba0(RHFocusShortcutIterator entry)
+{
+    RHFocusShortcutNode *removed = (entry++).node;
+    RHFocusShortcutNode *original = removed;
+    RHFocusShortcutNode *replacement;
+    RHUnk00641782 lock;
+    if (Left(removed) == g_unk0x006c0ac0)
+        replacement = Right(removed);
+    else if (Right(removed) == g_unk0x006c0ac0)
+        replacement = Left(removed);
+    else {
+        removed = FocusShortcutMin(Right(removed));
+        replacement = Right(removed);
+    }
+    if (removed != original) {
+        Parent(Left(original)) = removed;
+        Left(removed) = Left(original);
+        if (removed == Right(original))
+            Parent(replacement) = removed;
+        else {
+            Parent(replacement) = Parent(removed);
+            Left(Parent(removed)) = replacement;
+            Right(removed) = Right(original);
+            Parent(Right(original)) = removed;
+        }
+        if (Root() == original)
+            Root() = removed;
+        else if (Left(Parent(original)) == original)
+            Left(Parent(original)) = removed;
+        else
+            Right(Parent(original)) = removed;
+        Parent(removed) = Parent(original);
+        int color = Color(removed);
+        Color(removed) = Color(original);
+        Color(original) = color;
+        removed = original;
+    }
+    else {
+        Parent(replacement) = Parent(removed);
+        if (Root() == original)
+            Root() = replacement;
+        else if (Left(Parent(original)) == original)
+            Left(Parent(original)) = replacement;
+        else
+            Right(Parent(original)) = replacement;
+        if (Leftmost() == original) {
+            if (Right(original) == g_unk0x006c0ac0)
+                Leftmost() = Parent(original);
+            else
+                Leftmost() = FocusShortcutMin(replacement);
+        }
+        if (Rightmost() == original) {
+            if (Left(original) == g_unk0x006c0ac0)
+                Rightmost() = Parent(original);
+            else
+                Rightmost() = FocusShortcutMax(replacement);
+        }
+    }
+    if (Color(removed) == 1) {
+        while (replacement != Root() && Color(replacement) == 1) {
+            if (replacement == Left(Parent(replacement))) {
+                RHFocusShortcutNode *sibling = Right(Parent(replacement));
+                if (Color(sibling) == 0) {
+                    Color(sibling) = 1;
+                    Color(Parent(replacement)) = 0;
+                    RotateLeft(Parent(replacement));
+                    sibling = Right(Parent(replacement));
+                }
+                if (Color(Left(sibling)) == 1 && Color(Right(sibling)) == 1) {
+                    Color(sibling) = 0;
+                    replacement = Parent(replacement);
+                }
+                else {
+                    if (Color(Right(sibling)) == 1) {
+                        Color(Left(sibling)) = 1;
+                        Color(sibling) = 0;
+                        RotateRight(sibling);
+                        sibling = Right(Parent(replacement));
+                    }
+                    Color(sibling) = Color(Parent(replacement));
+                    Color(Parent(replacement)) = 1;
+                    Color(Right(sibling)) = 1;
+                    RotateLeft(Parent(replacement));
+                    break;
+                }
+            }
+            else {
+                RHFocusShortcutNode *sibling = Left(Parent(replacement));
+                if (Color(sibling) == 0) {
+                    Color(sibling) = 1;
+                    Color(Parent(replacement)) = 0;
+                    RotateRight(Parent(replacement));
+                    sibling = Left(Parent(replacement));
+                }
+                if (Color(Right(sibling)) == 1 && Color(Left(sibling)) == 1) {
+                    Color(sibling) = 0;
+                    replacement = Parent(replacement);
+                }
+                else {
+                    if (Color(Left(sibling)) == 1) {
+                        Color(Right(sibling)) = 1;
+                        Color(sibling) = 0;
+                        RotateLeft(sibling);
+                        sibling = Left(Parent(replacement));
+                    }
+                    Color(sibling) = Color(Parent(replacement));
+                    Color(Parent(replacement)) = 1;
+                    Color(Left(sibling)) = 1;
+                    RotateRight(Parent(replacement));
+                    break;
+                }
+            }
+        }
+        Color(replacement) = 1;
+    }
+    operator delete(removed);
+    --count;
+    return entry;
+}
+
 
 // FUNCTION: GAME 0x005010c0
 void RHFocusShortcutTree::FUN_005010c0(RHFocusShortcutNode *node)

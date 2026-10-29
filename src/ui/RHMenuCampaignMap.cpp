@@ -47,7 +47,11 @@ public:
     void Unk(int);
 };
 
-// unannotated: 0x004238c0 is std::wstring::_Tidy (std-only); binding this view regresses its std callers.
+// TEMPLATE: GAME 0x004238c0 FOLDED
+// ?_Tidy@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@AAEX_N@Z
+
+// TEMPLATE: GAME 0x004238c0 FOLDED
+// ?Tidy@RHMapWideText@@QAEX_N@Z
 void RHMapWideText::Tidy(bool built)
 {
     if (built && m_chars != 0)
@@ -314,7 +318,7 @@ void RHMenuCampaignMap::DisplayPseudoMissionDebriefing()
                          "Warning: unable to load the resource description for the mission '%s'\n", &mission);
             SetCurrentDirectoryA(directory);
             RHMapDescription::Entry *entry = description.FUN_0063c9e0(mission);
-            unsigned resource = won ? entry->m_30 : entry->m_38;
+            unsigned resource = won ? entry->m_2c.m_4 : entry->m_2c.m_c;
             RHMapResources *resources = g_unk0x006c1840;
             if (!resources->FUN_00600fc0(resource) || !resources->FUN_006009e0(resource, 0, message))
             {
@@ -816,6 +820,7 @@ struct RHMapStringNode
 struct RHMapStringIterator
 {
     RHMapStringNode *m_node;
+    RHMapStringIterator operator++(int);
 };
 
 void RHMapConstructValue(std::pair<const std::string, void *> *, const std::pair<const std::string, void *> &);
@@ -826,7 +831,15 @@ public:
     RHMapStringIterator FUN_0053dcb0(RHMapStringNode *, RHMapStringNode *, const std::pair<const std::string, void *> &);
     RHMapStringNode *FUN_0053dfc0(const std::string &);
     void *&FUN_0053cd30(const std::string &);
+    RHMapStringIterator FUN_0053d610(RHMapStringIterator);
+    void FUN_0053db40(RHMapStringNode *);
     static RHMapStringNode *&Left(RHMapStringNode *node) { return node->m_00; }
+    static RHMapStringNode *&Parent(RHMapStringNode *node) { return node->m_04; }
+    static RHMapStringNode *&Right(RHMapStringNode *node) { return node->m_08; }
+    static int &Color(RHMapStringNode *node) { return node->m_20; }
+    RHMapStringNode *&Root() { return m_head->m_04; }
+    RHMapStringNode *&Leftmost() { return m_head->m_00; }
+    RHMapStringNode *&Rightmost() { return m_head->m_08; }
     inline void RotateLeft(RHMapStringNode *node)
     {
         RHUnk00641782 lock;
@@ -901,6 +914,220 @@ struct RHMapTreeIncIterator
     RHMapTreeDecNode *m_node;
     void FUN_0053dbf0();
 };
+
+inline RHMapStringIterator RHMapStringIterator::operator++(int)
+{
+    RHMapStringIterator previous = *this;
+    ((RHMapTreeIncIterator *)this)->FUN_0053dbf0();
+    return previous;
+}
+
+static inline RHMapStringNode *RHMapStringMinimum(RHMapStringNode *node)
+{
+    RHUnk00641782 lock;
+    while (node->m_00 != (RHMapStringNode *)g_unk0x006c0c28)
+        node = node->m_00;
+    return node;
+}
+
+static inline RHMapStringNode *RHMapStringMaximum(RHMapStringNode *node)
+{
+    RHUnk00641782 lock;
+    while (node->m_08 != (RHMapStringNode *)g_unk0x006c0c28)
+        node = node->m_08;
+    return node;
+}
+
+static inline RHMapStringNode *RHMapStringNodeOf(const RHMapStringIterator &iterator)
+{
+    return iterator.m_node;
+}
+
+// FUNCTION: GAME 0x0053d2f0
+RHMapTreeIterator RHMapTree::FUN_0053d2f0(RHMapTreeIterator first, RHMapTreeIterator last)
+{
+    RHMapStringTree &tree = *(RHMapStringTree *)this;
+    RHMapStringIterator &position = *(RHMapStringIterator *)&first;
+    if (tree.m_count != 0 && position.m_node == tree.Leftmost() && (RHMapStringNode *)last.node == tree.m_head) {
+        RHUnk00641782 lock;
+        RHMapStringNode *node = tree.Root();
+        {
+            RHUnk00641782 inner;
+            for (RHMapStringNode *next = node; next != (RHMapStringNode *)g_unk0x006c0c28; node = next) {
+                tree.FUN_0053db40(next->m_08);
+                next = next->m_00;
+                ((RHProfileText *)&node->m_0c.first)->~RHProfileText();
+                operator delete(node);
+            }
+        }
+        tree.Root() = (RHMapStringNode *)g_unk0x006c0c28;
+        tree.m_count = 0;
+        tree.Leftmost() = tree.m_head;
+        tree.Rightmost() = tree.m_head;
+        RHMapTreeIterator result;
+        result.node = (RHMapTreeNode *)tree.Leftmost();
+        return result;
+    }
+    while (first.node != last.node)
+        tree.FUN_0053d610(position++);
+    return first;
+}
+
+// FUNCTION: GAME 0x0053d610
+RHMapStringIterator RHMapStringTree::FUN_0053d610(RHMapStringIterator position)
+{
+    RHMapStringNode *x;
+    RHMapStringNode *y = RHMapStringNodeOf(position++);
+    RHMapStringNode *z = y;
+    RHUnk00641782 lock;
+    if (Left(y) == (RHMapStringNode *)g_unk0x006c0c28)
+        x = Right(y);
+    else if (Right(y) == (RHMapStringNode *)g_unk0x006c0c28)
+        x = Left(y);
+    else
+    {
+        y = RHMapStringMinimum(Right(y));
+        x = Right(y);
+    }
+    {
+        if (y != z)
+        {
+            Parent(Left(z)) = y;
+            Left(y) = Left(z);
+            if (y == Right(z))
+                Parent(x) = y;
+            else
+            {
+                Parent(x) = Parent(y);
+                Left(Parent(y)) = x;
+                Right(y) = Right(z);
+                Parent(Right(z)) = y;
+            }
+            if (Root() == z)
+                Root() = y;
+            else if (Left(Parent(z)) == z)
+                Left(Parent(z)) = y;
+            else
+                Right(Parent(z)) = y;
+            Parent(y) = Parent(z);
+            std::swap(Color(y), Color(z));
+            y = z;
+        }
+        else
+        {
+            Parent(x) = Parent(y);
+            if (Root() == z)
+                Root() = x;
+            else if (Left(Parent(z)) == z)
+                Left(Parent(z)) = x;
+            else
+                Right(Parent(z)) = x;
+            if (Leftmost() == z)
+            {
+                if (Right(z) == (RHMapStringNode *)g_unk0x006c0c28)
+                    Leftmost() = Parent(z);
+                else
+                {
+                    Leftmost() = RHMapStringMinimum(x);
+                }
+            }
+            if (Rightmost() == z)
+            {
+                if (Left(z) == (RHMapStringNode *)g_unk0x006c0c28)
+                    Rightmost() = Parent(z);
+                else
+                {
+                    Rightmost() = RHMapStringMaximum(x);
+                }
+            }
+        }
+        if (Color(y) == 1)
+        {
+            while (x != Root() && Color(x) == 1)
+            {
+                if (x == Left(Parent(x)))
+                {
+                    RHMapStringNode *w = Right(Parent(x));
+                    if (Color(w) == 0)
+                    {
+                        Color(w) = 1;
+                        Color(Parent(x)) = 0;
+                        RotateLeft(Parent(x));
+                        w = Right(Parent(x));
+                    }
+                    if (Color(Left(w)) == 1 && Color(Right(w)) == 1)
+                    {
+                        Color(w) = 0;
+                        x = Parent(x);
+                    }
+                    else
+                    {
+                        if (Color(Right(w)) == 1)
+                        {
+                            Color(Left(w)) = 1;
+                            Color(w) = 0;
+                            RotateRight(w);
+                            w = Right(Parent(x));
+                        }
+                        Color(w) = Color(Parent(x));
+                        Color(Parent(x)) = 1;
+                        Color(Right(w)) = 1;
+                        RotateLeft(Parent(x));
+                        break;
+                    }
+                }
+                else
+                {
+                    RHMapStringNode *w = Left(Parent(x));
+                    if (Color(w) == 0)
+                    {
+                        Color(w) = 1;
+                        Color(Parent(x)) = 0;
+                        RotateRight(Parent(x));
+                        w = Left(Parent(x));
+                    }
+                    if (Color(Right(w)) == 1 && Color(Left(w)) == 1)
+                    {
+                        Color(w) = 0;
+                        x = Parent(x);
+                    }
+                    else
+                    {
+                        if (Color(Left(w)) == 1)
+                        {
+                            Color(Right(w)) = 1;
+                            Color(w) = 0;
+                            RotateLeft(w);
+                            w = Left(Parent(x));
+                        }
+                        Color(w) = Color(Parent(x));
+                        Color(Parent(x)) = 1;
+                        Color(Left(w)) = 1;
+                        RotateRight(Parent(x));
+                        break;
+                    }
+                }
+            }
+            Color(x) = 1;
+        }
+    }
+    ((std::string &)y->m_0c.first).~basic_string();
+    operator delete(y);
+    --m_count;
+    return position;
+}
+
+// FUNCTION: GAME 0x0053db40
+void RHMapStringTree::FUN_0053db40(RHMapStringNode *node)
+{
+    RHUnk00641782 lock;
+    for (RHMapStringNode *next = node; next != (RHMapStringNode *)g_unk0x006c0c28; node = next) {
+        FUN_0053db40(next->m_08);
+        next = next->m_00;
+        ((std::string &)node->m_0c.first).~basic_string();
+        operator delete(node);
+    }
+}
 
 // FUNCTION: GAME 0x0053dbf0
 void RHMapTreeIncIterator::FUN_0053dbf0()
@@ -1319,8 +1546,8 @@ void RHMapWindow::FUN_0053bbe0()
 {
     while (!m_191c.empty())
     {
-        std::vector<void *> &widgets = m_191c.back();
-        for (std::vector<void *>::iterator it = widgets.begin(); it != widgets.end(); ++it)
+        std::vector<RHMenuWindow *> &widgets = m_191c.back();
+        for (std::vector<RHMenuWindow *>::iterator it = widgets.begin(); it != widgets.end(); ++it)
             ((RHMapWindowPart *)((char *)this + 0x10))->FUN_00619ad0(*it);
         m_191c.pop_back();
     }
@@ -1395,8 +1622,8 @@ void RHMenuScreenView::FUN_0053bf40(void *events)
 {
     if (!m_191c.empty())
     {
-        std::vector<void *> widgets = m_191c.back();
-        for (std::vector<void *>::iterator it = widgets.begin(); it != widgets.end(); ++it)
+        std::vector<RHMenuWindow *> widgets = m_191c.back();
+        for (std::vector<RHMenuWindow *>::iterator it = widgets.begin(); it != widgets.end(); ++it)
         {
             void *event = events;
             while (event)
@@ -1417,8 +1644,8 @@ void RHMenuScreenView::FUN_0053c050()
 {
     if (!m_191c.empty())
     {
-        std::vector<void *> widgets = m_191c.back();
-        for (std::vector<void *>::iterator it = widgets.begin(); it != widgets.end(); ++it)
+        std::vector<RHMenuWindow *> widgets = m_191c.back();
+        for (std::vector<RHMenuWindow *>::iterator it = widgets.begin(); it != widgets.end(); ++it)
         {
             RHPortraitRootLifetime *widget = (RHPortraitRootLifetime *)*it;
             typedef void (RHPortraitRootLifetime::*Notify)();
@@ -1532,6 +1759,31 @@ void RHMenuScreenView::FUN_0053c800()
     tree.FUN_0053d2f0(first, last);
 }
 
+#include <algorithm>
+
+// FUNCTION: GAME 0x0053c870
+void RHMenuScreenView::FUN_0053c870(RHMenuWindow *window)
+{
+    typedef std::deque<std::vector<RHMenuWindow *> >::iterator Iterator;
+    Iterator (Iterator::*subtract)(int) const = &Iterator::operator-;
+    std::vector<RHMenuWindow *> &windows = *(m_191c.end().*subtract)(1);
+    if (window == (m_191c.end().*subtract)(1)->front())
+    {
+        for (unsigned i = 0; i < windows.size(); ++i)
+            ((RHMapWindowPart *)&m_sbui)->FUN_00619ad0(windows.at(i));
+        typedef std::deque<std::vector<RHMenuWindow *> > Frames;
+        void (Frames::*pop)() = &Frames::pop_back;
+        (m_191c.*pop)();
+        if (!m_191c.empty())
+            std::for_each(m_191c.back().begin(), (m_191c.end().*subtract)(1)->end(), FUN_0053be60);
+    }
+    else
+    {
+        ((RHMapWindowPart *)&m_sbui)->FUN_00619ad0(window);
+        windows.erase(std::remove(windows.begin(), windows.end(), window), windows.end());
+    }
+}
+
 #include <math.h>
 
 extern float g_unk0x677554;
@@ -1622,12 +1874,12 @@ bool RHMenuScreenView::FUN_0053cd20()
 }
 
 // LIBRARY: GAME 0x0053e170
-// ?_Add@const_iterator@?$deque@V?$vector@PAXV?$allocator@PAX@std@@@std@@V?$allocator@V?$vector@PAXV?$allocator@PAX@std@@@std@@@2@@std@@IAEXH@Z
+// ?_Add@const_iterator@?$deque@V?$vector@PAVRHMenuWindow@@V?$allocator@PAVRHMenuWindow@@@std@@@std@@V?$allocator@V?$vector@PAVRHMenuWindow@@V?$allocator@PAVRHMenuWindow@@@std@@@std@@@2@@std@@IAEXH@Z
 
 // LIBRARY: GAME 0x0053e1e0
-// ?_Construct@std@@YAXPAV?$vector@PAXV?$allocator@PAX@std@@@1@ABV21@@Z
+// ?_Construct@std@@YAXPAV?$vector@PAVRHMenuWindow@@V?$allocator@PAVRHMenuWindow@@@std@@@1@ABV21@@Z
 
-void (*g_rhMapWidgetsConstruct)(std::vector<void *> *, const std::vector<void *> &) = &std::_Construct;
+void (*g_rhMapWidgetsConstruct)(std::vector<RHMenuWindow *> *, const std::vector<RHMenuWindow *> &) = &std::_Construct;
 
 void RHMenuCampaignMap::Emit()
 {
@@ -1661,3 +1913,52 @@ void EmitRHMapTree(RHMapTree *tree)
 {
     tree->FUN_0053ad50();
 }
+
+RHMenuWindow *&EmitRHMenuWindowArrayAccess(std::vector<RHMenuWindow *> &windows, unsigned index)
+{
+    return windows.at(index);
+}
+
+void EmitRHMenuWindowFramePop(std::deque<std::vector<RHMenuWindow *> > &frames)
+{
+    typedef std::deque<std::vector<RHMenuWindow *> > Frames;
+    void (Frames::*pop)() = &Frames::pop_back;
+    (frames.*pop)();
+}
+
+void EmitRHMenuWindowFramePush(std::deque<std::vector<RHMenuWindow *> > &frames,
+    const std::vector<RHMenuWindow *> &windows)
+{
+    typedef std::deque<std::vector<RHMenuWindow *> > Frames;
+    void (Frames::*push)(const std::vector<RHMenuWindow *> &) = &Frames::push_back;
+    (frames.*push)(windows);
+}
+
+// TEMPLATE: GAME 0x0053cde0
+// ?push_back@?$deque@V?$vector@PAVRHMenuWindow@@V?$allocator@PAVRHMenuWindow@@@std@@@std@@V?$allocator@V?$vector@PAVRHMenuWindow@@V?$allocator@PAVRHMenuWindow@@@std@@@std@@@2@@std@@QAEXABV?$vector@PAVRHMenuWindow@@V?$allocator@PAVRHMenuWindow@@@std@@@2@@Z
+
+// TEMPLATE: GAME 0x0053e080 FOLDED
+// ??0const_iterator@?$deque@V?$vector@PAVRHMenuWindow@@V?$allocator@PAVRHMenuWindow@@@std@@@std@@V?$allocator@V?$vector@PAVRHMenuWindow@@V?$allocator@PAVRHMenuWindow@@@std@@@std@@@2@@std@@QAE@PAV?$vector@PAVRHMenuWindow@@V?$allocator@PAVRHMenuWindow4481ded3
+
+// TEMPLATE: GAME 0x005e31d0 FOLDED
+// ?_Growmap@?$deque@V?$vector@PAVRHMenuWindow@@V?$allocator@PAVRHMenuWindow@@@std@@@std@@V?$allocator@V?$vector@PAVRHMenuWindow@@V?$allocator@PAVRHMenuWindow@@@std@@@std@@@2@@std@@IAEPAPAV?$vector@PAVRHMenuWindow@@V?$allocator@PAVRHMenuWindow@@@std@@@2@I@Z
+
+// TEMPLATE: GAME 0x0053d0b0
+// ?pop_back@?$deque@V?$vector@PAVRHMenuWindow@@V?$allocator@PAVRHMenuWindow@@@std@@@std@@V?$allocator@V?$vector@PAVRHMenuWindow@@V?$allocator@PAVRHMenuWindow@@@std@@@std@@@2@@std@@QAEXXZ
+
+// TEMPLATE: GAME 0x0053d210
+// ?_Xran@?$vector@PAVRHMenuWindow@@V?$allocator@PAVRHMenuWindow@@@std@@@std@@IBEXXZ
+
+std::deque<std::vector<RHMenuWindow *> >::iterator EmitRHMenuWindowFrameOffset(
+    std::deque<std::vector<RHMenuWindow *> >::iterator position, int offset)
+{
+    typedef std::deque<std::vector<RHMenuWindow *> >::iterator Iterator;
+    Iterator (Iterator::*subtract)(int) const = &Iterator::operator-;
+    return (position.*subtract)(offset);
+}
+
+// TEMPLATE: GAME 0x0053d430
+// ??Giterator@?$deque@V?$vector@PAVRHMenuWindow@@V?$allocator@PAVRHMenuWindow@@@std@@@std@@V?$allocator@V?$vector@PAVRHMenuWindow@@V?$allocator@PAVRHMenuWindow@@@std@@@std@@@2@@std@@QBE?AV012@H@Z
+
+// TEMPLATE: GAME 0x0046eb30 FOLDED
+// ?erase@?$list@URHMenuScreenTimer@@V?$allocator@URHMenuScreenTimer@@@std@@@std@@QAE?AViterator@12@V312@@Z

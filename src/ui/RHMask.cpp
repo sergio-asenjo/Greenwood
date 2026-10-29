@@ -17,6 +17,9 @@ RHMask::RHMask()
     m_00 = true;
 }
 
+// SYNTHETIC: GAME 0x00523ba0
+// RHMobileUnk00611360::~RHMobileUnk00611360
+
 // FUNCTION: GAME 0x00523c60
 RHMask::~RHMask()
 {
@@ -251,11 +254,7 @@ bool RHUnk00524910::FUN_00524930(int value)
     return handled;
 }
 
-class RHUnk00452030
-{
-public:
-    int Get(int index);
-};
+#include "RHCampaignValueCalls.h"
 
 class RHUnk00450b60
 {

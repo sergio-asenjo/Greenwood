@@ -47,9 +47,15 @@ public:
     RHMenuSoundsEvent *FUN_00543bb0(const RHMenuSoundsInput &input);
     RHMenuSoundsEvent *MakeEvent(int type);
     int FUN_00543d10();
+    __forceinline void Select()
+    {
+        m_highlighted = true;
+        if (m_parent)
+            m_parent->FUN_00543dc0(this);
+    }
 
-    // FUNCTION: GAME 0x00543dc0
-    void FUN_00543dc0(RHMenuSoundsSlider *stop)
+    void FUN_00543dc0(RHMenuSoundsSlider *stop);
+    void Deselect(RHMenuSoundsSlider *stop)
     {
         if (stop != this)
         {
@@ -101,7 +107,8 @@ public:
     RHMenuSounds(void *screen);
     ~RHMenuSounds();
     void *FUN_00541780(unsigned flags);
-    void FUN_00541a90();
+    bool Create();
+    void SynchronizeWidgets();
     static bool FUN_00543460(void *ui);
     void FUN_00541370(RHMenuEvent *event);
     bool FUN_00541390(RHMenuEvent *event);

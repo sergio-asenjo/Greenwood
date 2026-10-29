@@ -21,6 +21,12 @@ extern undefined g_unk0x006c0e48[];
 extern wchar_t g_unk0x006c0b50[1];
 extern RHUnk005ef320 *g_unk0x6c11d0;
 
+// TEMPLATE: GAME 0x00533c70
+// ??1?$list@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@V?$allocator@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@@2@@std@@QAE@XZ
+
+// TEMPLATE: GAME 0x00533e00
+// ?insert@?$list@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@V?$allocator@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@@2@@std@@QAE?AViterator@12@V312@ABV?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@2@@Z
+
 // FUNCTION: GAME 0x00530180
 void RHMenuLoadSave::FUN_00530180(RHMenuEvent *event)
 {
@@ -429,6 +435,21 @@ inline void RHMenuLoadSaveList::AddItem(const std::wstring &text, unsigned long 
     m_104.InsertLast(value);
     RHLoadSaveAppendFlag(*(RHUnk0046eb30 *)&m_158, flags);
 }
+
+// TEMPLATE: GAME 0x00424410 FOLDED
+// ?insert@?$list@KV?$allocator@K@std@@@std@@QAE?AViterator@12@V312@ABK@Z
+
+// TEMPLATE: GAME 0x0044e8b0 FOLDED
+// ?erase@?$list@KV?$allocator@K@std@@@std@@QAE?AViterator@12@V312@0@Z
+
+// TEMPLATE: GAME 0x0046eb30 FOLDED
+// ?erase@?$list@KV?$allocator@K@std@@@std@@QAE?AViterator@12@V312@@Z
+
+// TEMPLATE: GAME 0x00533e60
+// ?erase@?$list@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@V?$allocator@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@@2@@std@@QAE?AViterator@12@V312@0@Z
+
+// TEMPLATE: GAME 0x00533ef0
+// ?erase@?$list@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@V?$allocator@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@@2@@std@@QAE?AViterator@12@V312@@Z
 
 // FUNCTION: GAME 0x005318c0
 void RHMenuLoadSave::PopulateSaveGameList()

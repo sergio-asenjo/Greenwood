@@ -14,6 +14,8 @@ public:
 };
 
 unsigned short SBUIInputFieldDrawUnk::FUN_00614230(void *, std::wstring *, const SBGeoBoundingBox2D &, unsigned int, unsigned short, unsigned int) { return 0; }
+// TEMPLATE: GAME 0x00613e90 FOLDED
+// ?FUN_00613e90@SBUIInputFieldDrawUnk@@QAEAAV?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@XZ
 std::wstring &SBUIInputFieldDrawUnk::FUN_00613e90() { return m_00; }
 
 // FUNCTION: GAME 0x0060dbc0

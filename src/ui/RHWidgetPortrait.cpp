@@ -1165,44 +1165,42 @@ bool RHPortraitInputField::FUN_005d1790(const RHPortraitWidgetInput &input)
     return Renderer().FUN_0061d7c0().FUN_00608400(input.point);
 }
 
-// Parked: Scroll locals and renderer stores have different register allocation and scheduling.
-// STUB: GAME 0x005d1810
+// FUNCTION: GAME 0x005d1810
 RHPortraitWidgetEvent *RHPortraitInputField::FUN_005d1810(const RHPortraitWidgetInput &input)
 {
-    RHPortraitWidgetEvent *result = 0;
-    short delta = input.wheel;
-    if (delta > 0)
+    RHPortraitWidgetEvent *scroll = 0;
+    short wheel = input.wheel;
+    unsigned short &line = m_18c;
+    if (wheel > 0)
     {
-        if (m_18c > 0)
+        if (line > 0)
         {
-            --m_18c;
-            Renderer().FUN_0061d570(m_18c, m_13c);
+            --line;
+            Renderer().FUN_0061d570(line, m_13c);
             m_event.next = 0;
             m_event.widget = this;
-            RHPortraitWidgetEvent *event = &m_event;
+            scroll = &m_event;
             m_event.value = 0;
-            event->type = 13;
-            return event;
+            scroll->type = 13;
         }
     }
-    else if (delta < 0)
+    else if (wheel < 0)
     {
         unsigned limit = m_13c;
-        unsigned short line = m_18c;
         RHPortraitInputRenderer &renderer = Renderer();
-        if (renderer.FUN_0061d5e0() + line + 1 <= limit)
+        unsigned short current = line;
+        if (renderer.FUN_0061d5e0() + current + 1 <= limit)
         {
-            m_18c = line + 1;
-            renderer.FUN_0061d570(m_18c, m_13c);
+            line = current + 1;
+            renderer.FUN_0061d570(line, m_13c);
             m_event.next = 0;
             m_event.widget = this;
-            RHPortraitWidgetEvent *event = &m_event;
+            scroll = &m_event;
             m_event.value = 0;
-            event->type = 12;
-            return event;
+            scroll->type = 12;
         }
     }
-    return result;
+    return scroll;
 }
 
 struct RHPortraitTextLine
@@ -5186,6 +5184,45 @@ RHPortraitWidgetEvent *RHPortraitQuickList::FUN_005dd370(const void *input)
     }
     return events;
 }
+
+#include "RHAction.h"
+
+RHaction &EmitRHRequirementActionArrayAccess(std::vector<RHaction> &actions, unsigned index)
+{
+    return actions.at(index);
+}
+
+void EmitRHRequirementActionArrayInsert(std::vector<RHaction> &actions,
+    RHaction *position, unsigned count, const RHaction &value)
+{
+    typedef std::vector<RHaction> Actions;
+    void (Actions::*insert)(RHaction *, unsigned, const RHaction &) = &Actions::insert;
+    (actions.*insert)(position, count, value);
+}
+
+// TEMPLATE: GAME 0x004582d0 FOLDED
+// ?insert@?$vector@W4RHaction@@V?$allocator@W4RHaction@@@std@@@std@@QAEXPAW4RHaction@@IABW43@@Z
+
+class RHWidgetRequirements
+{
+public:
+    static std::vector<RHaction> PurifyActions(const std::vector<RHaction> &actions);
+};
+
+// FUNCTION: GAME 0x005dd430
+std::vector<RHaction> RHWidgetRequirements::PurifyActions(const std::vector<RHaction> &actions)
+{
+    std::vector<RHaction> result;
+    for (std::vector<RHaction>::const_iterator it = actions.begin(); it != actions.end(); ++it)
+    {
+        if (std::find(result.begin(), result.end(), *it) == result.end())
+            result.push_back(*it);
+    }
+    return result;
+}
+
+// TEMPLATE: GAME 0x005dda30
+// ?_Xran@?$vector@W4RHaction@@V?$allocator@W4RHaction@@@std@@@std@@IBEXXZ
 
 // TEMPLATE: GAME 0x005dd530
 // ??1?$vector@URHPortraitQuickEntry@@V?$allocator@URHPortraitQuickEntry@@@std@@@std@@QAE@XZ

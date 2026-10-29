@@ -7,25 +7,7 @@
 class RHMenuWindowUI;
 struct RHFocusEvent;
 
-class SBGeoPoint2D
-{
-public:
-    SBGeoPoint2D();
-    ~SBGeoPoint2D();
-    float m_x; // 0x00
-    float m_y; // 0x04
-};
-
-// SIZE 0x70
-class RHFocusManager
-{
-public:
-    RHFocusManager(int orientation);
-    ~RHFocusManager();
-    RHFocusEvent *FUN_005002a0(RHFocusEvent *events, const void *input, void *ui);
-    RHFocusEvent *FUN_00500750();
-    undefined m_00[0x70]; // 0x00
-};
+#include "RHFocusManager.h"
 
 #include "RHPortraitRootLifetime.h"
 

@@ -75,6 +75,7 @@ public:
     void FUN_0053b1f0(RHMenuWindow *window);
     void FUN_0053c390();
     void FUN_0053c650(RHMenuWindow *window, bool display);
+    void FUN_0053c870(RHMenuWindow *window);
     static void FUN_0053bbc0(RHMenuWindow *window);
     static void FUN_0053be60(RHMenuWindow *window);
     RHMenuWindowUI *FUN_0053bf30();
@@ -96,7 +97,7 @@ public:
     undefined m_1808[0x10c];
     unsigned long m_1914;
     SBThreadedInput *m_input;
-    std::deque<std::vector<void *> > m_191c;
+    std::deque<std::vector<RHMenuWindow *> > m_191c;
     SBUIUnkSurface m_surfaces;
     RHMapScreenTree m_196c;
     bool m_197c;

@@ -135,7 +135,7 @@ struct RHSoundCacheString
 };
 
 void FUN_006416e6();
-void *FUN_00642580(void *, const void *, unsigned int);
+#include <string.h>
 
 // SIZE 0x10
 class RHCampaignText
@@ -177,7 +177,7 @@ struct RHFontTrimText
             count = available;
         if (count > 0)
         {
-            FUN_00642580(m_chars + position, m_chars + position + count, available - count);
+            memmove(m_chars + position, m_chars + position + count, available - count);
             unsigned length = m_size - count;
             if (((RHProfileText *)this)->FUN_00402280(length, false))
                 ((RHProfileText *)this)->FUN_00402260(length);
@@ -190,59 +190,15 @@ DECOMP_SIZE_ASSERT(RHSoundCacheString, 0x10)
 DECOMP_SIZE_ASSERT(RHCampaignCommandLine, 0x10)
 DECOMP_SIZE_ASSERT(RHCampaignText, 0x10)
 
-DECOMP_SIZE_ASSERT(RHFontText, 0x10)
+DECOMP_SIZE_ASSERT(std::string, 0x10)
 DECOMP_SIZE_ASSERT(RHFontIterator, 0x04)
 DECOMP_SIZE_ASSERT(RHFontInsertResult, 0x08)
 DECOMP_SIZE_ASSERT(RHFontMap, 0x0c)
 DECOMP_SIZE_ASSERT(RHFontManager, 0x0c)
 DECOMP_SIZE_ASSERT(RHFontManager::Fonts, 0x20)
 
-// Parked: copy/zero register allocation and range-error call operand.
-// STUB: GAME 0x004577c0
-RHFontText::RHFontText(const RHFontText &value)
-    : m_allocator(value.m_allocator)
-{
-    m_chars = 0;
-    m_size = 0;
-    m_capacity = 0;
-    unsigned size = value.m_size;
-    unsigned count = std::string::npos;
-    if (count < size)
-        size = count;
-    if (this == &value)
-    {
-        if (m_size < size)
-            FUN_006416e6();
-        ((RHSoundCacheString *)this)->FUN_00402780();
-        unsigned available = m_size - size;
-        if (available < count)
-            count = available;
-        if (count > 0)
-        {
-            char *first = m_chars + size;
-            FUN_00642580(first, first + count, available - count);
-            unsigned length = m_size - count;
-            if (((RHProfileText *)this)->FUN_00402280(length, false))
-                ((RHProfileText *)this)->FUN_00402260(length);
-        }
-        ((RHSoundCacheString *)this)->FUN_00402780();
-    }
-    else if (size > 0 && size == value.m_size && (unsigned char)(value.m_chars ? value.m_chars : "")[-1] < 254)
-    {
-        m_chars = 0;
-        m_size = 0;
-        m_capacity = 0;
-        m_chars = value.m_chars ? value.m_chars : (char *)"";
-        m_size = value.m_size;
-        m_capacity = value.m_capacity;
-        ++m_chars[-1];
-    }
-    else if (((RHProfileText *)this)->FUN_00402280(size, true))
-    {
-        memcpy(m_chars, value.m_chars ? value.m_chars : "", size);
-        ((RHProfileText *)this)->FUN_00402260(size);
-    }
-}
+// TEMPLATE: GAME 0x004577c0
+// ??0?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAE@ABV01@@Z
 
 // FUNCTION: GAME 0x00501ca0
 void RHFontInsertTree::FUN_00501ca0()
@@ -748,6 +704,6 @@ void RHFontManager::Emit(const std::string &name)
 {
     LoadConfiguration(name);
     FUN_005024f0();
-    RHFontText text;
-    RHFontText copy(text);
+    std::string text;
+    std::string copy(text);
 }

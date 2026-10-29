@@ -1,6 +1,8 @@
 #ifndef RHBRIEFINGWINDOWCALLS_H
 #define RHBRIEFINGWINDOWCALLS_H
 
+#include <string>
+
 class RHBriefingWindowCalls
 {
 public:
@@ -16,8 +18,9 @@ public:
     virtual void V24();
     virtual void V28();
     virtual void V2c();
-    virtual void V30();
+    virtual void V30(void *widget);
     virtual void V34(void *widget);
+    void *FUN_00544b60(const std::string &name);
 };
 
 #endif
