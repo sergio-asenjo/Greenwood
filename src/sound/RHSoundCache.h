@@ -189,7 +189,7 @@ struct RHSoundCacheTextView
 };
 
 void FUN_006416e6();
-void *FUN_00642580(void *, const void *, unsigned int);
+#include <string.h>
 void *FUN_00643705(void *, unsigned int);
 
 // SIZE 0x10

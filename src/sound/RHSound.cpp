@@ -6,7 +6,6 @@
 #include <math.h>
 #include <stdio.h>
 
-void FUN_0064158f(void *memory);
 
 DECOMP_SIZE_ASSERT(RHSound, 0x294)
 DECOMP_SIZE_ASSERT(RHUnk005a7220, 0x50)
@@ -118,7 +117,11 @@ static inline const char *SoundStringData(const std::string &name)
     return chars ? chars : "";
 }
 
-// deferred: 0x00402260 unannotated pending reccmp #534
+// TEMPLATE: GAME 0x00402260 FOLDED
+// ?_Eos@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AAEXI@Z
+
+// TEMPLATE: GAME 0x00402260 FOLDED
+// ?FUN_00402260@RHProfileText@@QAEXI@Z
 void RHProfileText::FUN_00402260(unsigned int size)
 {
     m_size = size;
@@ -128,6 +131,14 @@ void RHProfileText::FUN_00402260(unsigned int size)
 // LIBRARY: GAME 0x0040bb20
 // ?append@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAEAAV12@ABV12@II@Z
 
+// TEMPLATE: GAME 0x0052c5a0 FOLDED
+// ??1RHMalignityOwnedPoint@@QAE@XZ
+
+// TEMPLATE: GAME 0x0052c5a0 FOLDED
+// ??1Occupant@RHSectorProduction@@QAE@XZ
+
+// TEMPLATE: GAME 0x0052c5a0 FOLDED
+// ?FUN_0052c5a0@RHSoundPendingData@@QAEXXZ
 void RHSoundPendingData::FUN_0052c5a0()
 {
     ((SBGeoPoint2D *)((char *)this + 4))->~SBGeoPoint2D();
@@ -1012,7 +1023,7 @@ void RHSound::FUN_005a8780()
             node->m_04->m_00 = node->m_00;
             node->m_00->m_04 = node->m_04;
             sound.FUN_0052c5a0();
-            FUN_0064158f(node);
+            operator delete(node);
             --m_250;
             node = next;
         }

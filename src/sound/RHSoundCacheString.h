@@ -5,7 +5,7 @@
 #include "RHCivilianProfile.h"
 
 void FUN_006416e6();
-void *FUN_00642580(void *, const void *, unsigned int);
+#include <string.h>
 
 struct RHSoundCacheString
 {
@@ -43,7 +43,7 @@ struct RHSoundCacheString
             count = available;
         if (0 < count)
         {
-            FUN_00642580(m_04 + position, m_04 + position + count, available - count);
+            memmove(m_04 + position, m_04 + position + count, available - count);
             unsigned int size = m_08 - count;
             if (((RHProfileText *)this)->FUN_00402280(size, false))
                 ((RHProfileText *)this)->FUN_00402260(size);

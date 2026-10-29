@@ -38,10 +38,11 @@ std::string FUN_004e4b40(const std::string &first, const std::string &second)
     return result;
 }
 
-// TEMPLATE: GAME 0x005014a0
+// TEMPLATE: GAME 0x005014a0 FOLDED
 // ?_Buynode@?$_Tree@KU?$pair@$$CBKPAVRHSoundCacheEntry@@@std@@U_Kfn@?$map@KPAVRHSoundCacheEntry@@U?$less@K@std@@V?$allocator@PAVRHSoundCacheEntry@@@3@@2@U?$less@K@2@V?$allocator@PAVRHSoundCacheEntry@@@2@@std@@IAEPAU_Node@12@PAU312@W4_Redbl@12@@Z
 
-// FUNCTION: GAME 0x0056dac0
+// TEMPLATE: GAME 0x0056dac0 FOLDED
+// ?FUN_0056dac0@RHSoundCacheMusicArray@@QAEXPAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@0@Z
 void RHSoundCacheMusicArray::FUN_0056dac0(RHSoundCacheMusic *first, RHSoundCacheMusic *last)
 {
     for (; first != last; ++first)
@@ -1886,6 +1887,9 @@ RHUnk005f4fc0::RHUnk005f4fc0()
 
 // LIBRARY: GAME 0x005f77d0
 // ?_Ucopy@?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@IAEPAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@2@PBV32@0PAV32@@Z
+
+// TEMPLATE: GAME 0x005f7810
+// ?_Ufill@?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@IAEXPAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@2@IABV32@@Z
 
 // LIBRARY: GAME 0x005f7a40
 // ?copy_backward@std@@YAPAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@1@PAV21@00@Z

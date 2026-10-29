@@ -13,14 +13,18 @@ void *FUN_00643705(void *memory, unsigned int size) { return realloc(memory, siz
 RHsoundGroup::~RHsoundGroup() {}
 RHSoundCacheList::~RHSoundCacheList() {}
 RHSoundCacheListIterator RHSoundCacheList::FUN_0046eb80() { return RHSoundCacheListIterator(m_04->m_next); }
+// TEMPLATE: GAME 0x00424410 FOLDED
+// ?FUN_00424410@RHSoundCacheList@@QAE?AURHSoundCacheListIterator@@U2@ABK@Z
 RHSoundCacheListIterator RHSoundCacheList::FUN_00424410(RHSoundCacheListIterator position, const unsigned long &value)
 {
-    RHSoundCacheListNode *node = new RHSoundCacheListNode;
-    node->m_next = position.m_node;
-    node->m_previous = position.m_node->m_previous;
-    node->m_value = value;
+    RHSoundCacheListNode *next = position.m_node;
+    RHSoundCacheListNode *previous = next->m_previous;
+    RHSoundCacheListNode *node = (RHSoundCacheListNode *)operator new(sizeof(RHSoundCacheListNode));
+    node->m_next = next ? next : node;
+    node->m_previous = previous ? previous : node;
+    next->m_previous = node;
     node->m_previous->m_next = node;
-    position.m_node->m_previous = node;
+    new (&node->m_value) unsigned long(value);
     ++m_08;
     return RHSoundCacheListIterator(node);
 }
@@ -31,7 +35,6 @@ unsigned int RHMapResources::FUN_00600620(unsigned long) { return 0; }
 
 
 void FUN_006416e6() {}
-void *FUN_00642580(void *destination, const void *, unsigned int) { return destination; }
 void RHSoundCacheString::FUN_00402780() {}
 
 RHUnk00641782Lock::RHUnk00641782Lock() {}
