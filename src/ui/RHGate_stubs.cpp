@@ -1,5 +1,5 @@
 #include "SBNullstr.h"
-#include "RHGate.h"
+#include "../engine/RHGate.h"
 
 void RHGateEmit(RHUnk0051aa00 *gate, SBFile &file)
 {

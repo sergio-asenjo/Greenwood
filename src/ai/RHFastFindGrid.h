@@ -349,7 +349,7 @@ public:
     char m_1a7;
 };
 
-#include "RHGate.h"
+#include "../engine/RHGate.h"
 
 class RHScriptRecordWorld
 {
