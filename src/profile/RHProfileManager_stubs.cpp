@@ -5,7 +5,11 @@
 #include "RHProfileFile.h"
 #include <algorithm>
 
-// deferred: unannotated pending reccmp #534 (0x00401ee0)
+// TEMPLATE: GAME 0x00401ee0 FOLDED
+// ?_Tidy@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AAEX_N@Z
+
+// TEMPLATE: GAME 0x00401ee0 FOLDED
+// ?FUN_00401ee0@RHProfileText@@QAEX_N@Z
 void RHProfileText::FUN_00401ee0(bool release)
 {
     if (release && m_chars != 0)

@@ -236,3 +236,6 @@ void RHSaveGameManager::SortSaveGames()
 
 // TEMPLATE: GAME 0x00570360
 // ?_Xran@?$vector@PAVRHSaveGame@@V?$allocator@PAVRHSaveGame@@@std@@@std@@IBEXXZ
+
+// TEMPLATE: GAME 0x00570470
+// ?_Sort@std@@YAXPAPAVRHSaveGame@@0P6A_NPBV2@1@Z0@Z

@@ -1120,7 +1120,8 @@ int RHProfileManagerParseCalls::FUN_0056ce70(void *profile)
     return 0;
 }
 
-// FUNCTION: GAME 0x004582d0
+// TEMPLATE: GAME 0x004582d0 FOLDED
+// ?Insert@?$SBArray@PAVRHSaveGame@@@@QAEXPAPAVRHSaveGame@@IABQAV2@@Z
 void SBArray<RHSaveGame *>::Insert(RHSaveGame **position, unsigned int count, RHSaveGame *const &value)
 {
     if ((unsigned int)(m_end - m_last) < count)
@@ -1152,7 +1153,10 @@ void SBArray<RHSaveGame *>::Insert(RHSaveGame **position, unsigned int count, RH
     }
 }
 
-// TEMPLATE: GAME 0x004598e0
+// TEMPLATE: GAME 0x004598e0 FOLDED
+// ?copy@std@@YAPAHPBH0PAH@Z
+
+// TEMPLATE: GAME 0x004598e0 FOLDED
 // ?copy@std@@YAPAPAVRHMission@@PBQAV2@0PAPAV2@@Z
 
 // FUNCTION: GAME 0x00460900
@@ -1170,7 +1174,41 @@ int RHProfileText::FUN_00460900(unsigned int first, unsigned int count, const ch
     return count != size;
 }
 
-// deferred: unannotated pending reccmp #534 (0x005008e0)
+// TEMPLATE: GAME 0x005008e0 FOLDED
+// ?_Destroy@?$vector@GV?$allocator@G@std@@@std@@IAEXPAG0@Z
+
+// TEMPLATE: GAME 0x005008e0 FOLDED
+// ?_Destroy@?$vector@KV?$allocator@K@std@@@std@@IAEXPAK0@Z
+
+// TEMPLATE: GAME 0x005008e0 FOLDED
+// ?_Destroy@?$vector@PAVRHPCDescription@@V?$allocator@PAVRHPCDescription@@@std@@@std@@IAEXPAPAVRHPCDescription@@0@Z
+
+// TEMPLATE: GAME 0x005008e0 FOLDED
+// ?_Destroy@?$vector@HV?$allocator@H@std@@@std@@IAEXPAH0@Z
+
+// TEMPLATE: GAME 0x005008e0 FOLDED
+// ?_Destroy@?$vector@PAVRHReceiverInterface@@V?$allocator@PAVRHReceiverInterface@@@std@@@std@@IAEXPAPAVRHReceiverInterface@@0@Z
+
+// TEMPLATE: GAME 0x005008e0 FOLDED
+// ?_Destroy@?$vector@DV?$allocator@D@std@@@std@@IAEXPAD0@Z
+
+// TEMPLATE: GAME 0x005008e0 FOLDED
+// ?_Destroy@?$vector@VRHMission@@V?$allocator@VRHMission@@@std@@@std@@IAEXPAVRHMission@@0@Z
+
+// TEMPLATE: GAME 0x005008e0 FOLDED
+// ?_Destroy@?$vector@PAVRHMission@@V?$allocator@PAVRHMission@@@std@@@std@@IAEXPAPAVRHMission@@0@Z
+
+// TEMPLATE: GAME 0x005008e0 FOLDED
+// ?_Destroy@?$vector@UShortBriefing@RHShortBriefings@@V?$allocator@UShortBriefing@RHShortBriefings@@@std@@@std@@IAEXPAUShortBriefing@RHShortBriefings@@0@Z
+
+// TEMPLATE: GAME 0x005008e0 FOLDED
+// ?_Destroy@?$vector@PAVRHSaveGame@@V?$allocator@PAVRHSaveGame@@@std@@@std@@IAEXPAPAVRHSaveGame@@0@Z
+
+// TEMPLATE: GAME 0x005008e0 FOLDED
+// ?_Destroy@?$vector@PAXV?$allocator@PAX@std@@@std@@IAEXPAPAX0@Z
+
+// TEMPLATE: GAME 0x005008e0 FOLDED
+// ?Unk005008e0@RHScriptFXArray@@QAEXPAPAX0@Z
 void RHScriptFXArray::Unk005008e0(void **, void **) {}
 
 void RHProfileManager::Emit(SBFile &file)
@@ -2027,7 +2065,7 @@ void RHProfileStringVectors::FUN_0056d890(const RHProfileText &text, const RHPro
                 count = destination.m_08;
             if (count > 0)
             {
-                FUN_00642580(destination.m_04, destination.m_04 + count, destination.m_08 - count);
+                memmove(destination.m_04, destination.m_04 + count, destination.m_08 - count);
                 unsigned length = destination.m_08 - count;
                 if (((RHProfileText *)&destination)->FUN_00402280(length, false))
                 {
