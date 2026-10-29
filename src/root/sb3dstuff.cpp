@@ -68,9 +68,8 @@ RHUnk00613e90 RHUnk00613e90::DistanceVectorToLine(const RHUnk00613e90 &first, co
     direction.y *= scale;
     direction.z *= scale;
     offset = FUN_005df550(first);
-    struct Components { float x; float y; float z; };
-    Components projection = *(Components *)&direction.Scaled(offset.FUN_005df5f0(direction));
-    return (const RHUnk00613e90 &)*(Components *)&offset.FUN_005df550((const RHUnk00613e90 &)projection);
+    RHUnk00613e90 projection = direction.Scaled(offset.FUN_005df5f0(direction));
+    return offset.FUN_005df550(projection);
 }
 
 void EmitRHDistanceVectorToLine(RHUnk00613e90 *value)
