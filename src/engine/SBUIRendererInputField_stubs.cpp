@@ -30,4 +30,9 @@ unsigned short SBUIInputFieldDrawUnk::FUN_00614230(void *, std::wstring *, const
 // FUNCTION: GAME 0x0045ac40
 const short *RHKeyConfig::GetKeys() const { return m_keys; }
 
-void RHGameInputSegment::FUN_004611c0() {}
+// TEMPLATE: GAME 0x004611c0 FOLDED
+// ?FUN_004611c0@RHGameInputSegment@@QAEXXZ
+void RHGameInputSegment::FUN_004611c0()
+{
+    ((RHMobileUnk006100e0 *)this)->~RHMobileUnk006100e0();
+}

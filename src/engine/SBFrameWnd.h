@@ -49,11 +49,7 @@ public:
 
 #include "RHMobileUnk00607da0.h"
 
-class RHUnk00608f10
-{
-public:
-    int FUN_00608f10(void *bounds);
-};
+#include "RHUnk00608f10.h"
 
 class RHUnk005ef320;
 extern RHUnk005ef320 *g_unk0x6c11d0;

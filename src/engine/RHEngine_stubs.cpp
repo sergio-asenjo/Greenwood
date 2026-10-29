@@ -18,12 +18,7 @@ void RHEngineSoundCalls::FUN_005a5060(void *, void *, void *, unsigned, unsigned
 void FUN_00570850(void *) {}
 RHUnk004a1bc0::RHUnk004a1bc0(bool) {}
 
-class RHSector
-{
-public:
-    RHSector();
-    ~RHSector();
-};
+#include "RHSectorCore.h"
 
 // FUNCTION: GAME 0x0057ee40
 RHUnk0057ee40::RHUnk0057ee40()
@@ -54,14 +49,14 @@ bool RHEngineSequenceStateCalls::FUN_005823f0() { return false; }
 // FUNCTION: GAME 0x0051d2c0
 RHUnk0051d2c0::~RHUnk0051d2c0()
 {
-    int count = m_00.size();
+    int count = size();
     for (int index = 0; index < count; ++index)
     {
-        RHUnk00551da0 *entry = m_00[index];
+        RHUnk00551da0 *entry = (*this)[index];
         if (entry)
             ((RHUnk0051d370Entry *)((char *)entry + 0x5c))->V00(1);
     }
-    m_00.clear();
+    clear();
 }
 int RHHikingGuide::FUN_0051cac0(SBFile &) { return 0; }
 class RHScrollScript

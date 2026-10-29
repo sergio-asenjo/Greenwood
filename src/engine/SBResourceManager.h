@@ -46,10 +46,7 @@ public:
     SBResourceSurfaceArray() : m_changed(true) {}
     SBResourceSurfaceArray(const SBResourceSurfaceArray &other)
     {
-        const unsigned long *first = other.m_values.begin();
-        const unsigned long *last = other.m_values.end();
-        m_values.insert(m_values.begin(), first, last);
-        m_changed = true;
+        FUN_006069e0(other);
     }
     ~SBResourceSurfaceArray() { m_values.erase(m_values.begin(), m_values.end()); }
     int Size() const { return m_values.begin() == 0 ? 0 : m_values.end() - m_values.begin(); }
@@ -181,6 +178,10 @@ public:
     void Lrotate(SBResourceTreeLinks *);
     void Rrotate(SBResourceTreeLinks *);
     static int &Color(SBResourceTreeLinks *);
+    static SBResourceTreeLinks *&Left(SBResourceTreeLinks *);
+    static SBResourceTreeLinks *&Right(SBResourceTreeLinks *);
+    static SBResourceTreeLinks *&Parent(SBResourceTreeLinks *);
+    static SBResourceTreeLinks *PostAdvance(SBResourceTreeLinks *&);
     static SBResourceTreeLinks *Minimum(SBResourceTreeLinks *);
     static SBResourceTreeLinks *Maximum(SBResourceTreeLinks *);
 };

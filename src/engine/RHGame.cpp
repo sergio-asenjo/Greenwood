@@ -123,31 +123,6 @@ public:
     virtual void V3c(void *widget) = 0;
 };
 
-// Parked: 66.67%; string cleanup, iterator scheduling, and annotated SelectMissions calls.
-// STUB: GAME 0x00451a90
-void RHGameCampaignView::FUN_00451a90()
-{
-    std::wstring scratch;
-    RHGameMission *mission = *(RHGameMission **)((char *)this + 0x148) + 1;
-    for (; mission != *(RHGameMission **)((char *)this + 0x14c); ++mission)
-    {
-        if (mission->FUN_0054c800())
-        {
-            RHGameMission **first = *(RHGameMission ***)((char *)this + 0x158);
-            RHGameMission **last = *(RHGameMission ***)((char *)this + 0x15c);
-            first = std::find(first, last, mission);
-            if (first == last)
-            {
-                ((SBArray<RHSaveGame *> *)((char *)this + 0x154))->Insert(
-                    *(RHSaveGame ***)((char *)this + 0x15c), 1, (RHSaveGame *const &)mission);
-                mission->m_08 = 0;
-            }
-        }
-    }
-    ((RHCampaign *)this)->SelectMissions(false);
-    ((RHCampaign *)this)->SelectMissions(true);
-}
-
 // FUNCTION: GAME 0x00453b70
 void RHGameCampaignView::FUN_00453b70(RHGameMission *mission)
 {
@@ -236,7 +211,7 @@ void RHGameCampaignView::FUN_00456540(bool flag, RHGameMission *mission)
 // TEMPLATE: GAME 0x00509b60
 // ?copy_backward@std@@YAPAVRHUnk005069a0@@PAV2@00@Z
 
-// TEMPLATE: GAME 0x00509ba0
+// TEMPLATE: GAME 0x00509ba0 FOLDED
 // ?_Construct@std@@YAXPAU?$pair@$$CBKPAURHsoundGroup@@@1@ABU21@@Z
 
 // TEMPLATE: GAME 0x00509bc0
@@ -639,7 +614,7 @@ void RHGame::DisplayLostLeicester()
         SBAssert(0, "P:\\Robin Hood\\RHgame.cpp", 1224,
                  "Warning: unable to load the resource description for the mission '%s'\n", &mission);
     SetCurrentDirectoryA(directory);
-    unsigned resource = description.FUN_0063c9e0(mission)->m_38;
+    unsigned resource = description.FUN_0063c9e0(mission)->m_2c.m_c;
     RHMapResources *resources = g_unk0x006c1840;
     if (!resources->FUN_00600fc0(resource) || !resources->FUN_006009e0(resource, 0, message))
     {
@@ -1766,7 +1741,7 @@ void RHGame::UpdateBlazons(RHMenuCampaignMap *map, RHMenuMissionDescription *des
                 campaign->FUN_00456540(true, mission);
                 campaign->FUN_00453b70(mission);
                 campaign->m_17c = 0;
-                campaign->FUN_00451a90();
+                ((RHCampaign *)campaign)->DetermineAccessibleMissions();
                 if (buy)
                     ((RHGameMenuCalls *)buy)->FUN_00544b30();
                 if (description)
@@ -3886,7 +3861,7 @@ void EmitRHUnk005364f0(RHUnk005364f0 *a)
 // FUNCTION: GAME 0x00544b30
 void RHGameMenuCalls::FUN_00544b30()
 {
-    (*(RHGameMenuOwner **)((char *)this + 0xb4))->FUN_0053c870(this);
+    (*(RHMenuScreenView **)((char *)this + 0xb4))->FUN_0053c870((RHMenuWindow *)this);
 }
 
 // FUNCTION: GAME 0x0056e230
@@ -3959,26 +3934,30 @@ bool RHUnk006114c0::FUN_006134a0(void *configuration)
 DECOMP_SIZE_ASSERT(RHMapDescription, 0x1c)
 DECOMP_SIZE_ASSERT(RHMapDescription::Entry, 0x48)
 DECOMP_SIZE_ASSERT(RHUnk0063c8b0, 0x18)
+DECOMP_SIZE_ASSERT(RHUnk0063e360, 0x14)
+DECOMP_SIZE_ASSERT(RHUnk0063c840, 0x08)
+DECOMP_SIZE_ASSERT(RHUnk0063c880, 0x10)
+DECOMP_SIZE_ASSERT(RHUnk0063c860, 0x08)
+
+// STRING: GAME 0x006beeb0
+#define RH_MAP_DESCRIPTION_PREFIX "RHLevel"
+// STRING: GAME 0x006beea8
+#define RH_MAP_DESCRIPTION_EXTENSION ".red"
 
 // FUNCTION: GAME 0x0063c7c0
-RHMapDescription::RHMapDescription()
+RHMapDescription::RHMapDescription() : m_14(RH_MAP_DESCRIPTION_PREFIX), m_18(RH_MAP_DESCRIPTION_EXTENSION)
 {
-    // STRING: GAME 0x006beeb0
-    m_14 = "RHLevel";
-    // STRING: GAME 0x006beea8
-    m_18 = ".red";
-    m_00 = 0x67bbd4;
 }
+
+// SYNTHETIC: GAME 0x0063c7f0
+// RHMapDescription::`scalar deleting destructor'
 
 extern const unsigned g_unk0x0067bbd8;
 
-class RHUnk0063c840
+// FUNCTION: GAME 0x0063c810
+RHUnk0063e360::RHUnk0063e360() : m_0(g_unk0x0067bbd8), m_4(0)
 {
-public:
-    RHUnk0063c840();
-    unsigned m_0;
-    unsigned m_4;
-};
+}
 
 // FUNCTION: GAME 0x0063c840
 RHUnk0063c840::RHUnk0063c840()
@@ -3987,30 +3966,12 @@ RHUnk0063c840::RHUnk0063c840()
     m_4 = g_unk0x0067bbd8;
 }
 
-class RHUnk0063c860
-{
-public:
-    RHUnk0063c860();
-    unsigned m_0;
-    unsigned m_4;
-};
-
 // FUNCTION: GAME 0x0063c860
 RHUnk0063c860::RHUnk0063c860()
 {
     m_0 = 0;
     m_4 = g_unk0x0067bbd8;
 }
-
-class RHUnk0063c880
-{
-public:
-    RHUnk0063c880();
-    unsigned m_0;
-    unsigned m_4;
-    unsigned m_8;
-    unsigned m_c;
-};
 
 // FUNCTION: GAME 0x0063c880
 RHUnk0063c880::RHUnk0063c880()
@@ -4030,16 +3991,13 @@ RHUnk0063c8b0::RHUnk0063c8b0() : m_0(g_unk0x0067bbd8), m_4(g_unk0x0067bbd8)
 // STUB: GAME 0x0063c8e0
 RHMapDescription::~RHMapDescription()
 {
-    m_00 = 0x67bbd4;
     m_04.clear();
 }
 
-// Parked: lookup keeps last in EDI instead of EBX and lacks the target's short-lived EDI index.
-// STUB: GAME 0x0063c9e0
+// FUNCTION: GAME 0x0063c9e0
 RHMapDescription::Entry *RHMapDescription::FUN_0063c9e0(unsigned id)
 {
-    Entry *begin = ((Entry *volatile *)&m_04)[1];
-    unsigned count = begin == 0 ? 0 : ((Entry *volatile *)&m_04)[2] - begin;
+    unsigned count = m_04.size();
     if (count != 0)
     {
         Entry *last = m_04.end();
@@ -4051,10 +4009,10 @@ RHMapDescription::Entry *RHMapDescription::FUN_0063c9e0(unsigned id)
                 unsigned index = id;
                 if (index >= count)
                     index = count - 1;
-                Entry *entry = first + index;
+                Entry *entry = &m_04[index];
                 if (entry->m_44 == id)
                     return entry;
-                for (entry = first; entry != last; ++entry)
+                for (entry = m_04.begin(); entry != last; ++entry)
                 {
                     if (id < entry->m_44)
                         return 0;
@@ -4067,13 +4025,145 @@ RHMapDescription::Entry *RHMapDescription::FUN_0063c9e0(unsigned id)
     return 0;
 }
 
+// FUNCTION: GAME 0x0063d1a0
+void RHMapDescription::FUN_0063d1a0(std::string &path, unsigned mission)
+{
+    path = m_14;
+    while (mission != 0)
+    {
+        path += char(mission);
+        mission >>= 8;
+    }
+    path += m_18;
+}
+
+class RHMapRecordVectorCalls : public std::vector<RHUnk0063c8b0>
+{
+public:
+    typedef void (std::vector<RHUnk0063c8b0>::*Destroy)(RHUnk0063c8b0 *, RHUnk0063c8b0 *);
+    typedef RHUnk0063c8b0 *(std::vector<RHUnk0063c8b0>::*Copy)(const RHUnk0063c8b0 *, const RHUnk0063c8b0 *, RHUnk0063c8b0 *);
+    static Destroy GetDestroy() { return &RHMapRecordVectorCalls::_Destroy; }
+    static Copy GetCopy() { return &RHMapRecordVectorCalls::_Ucopy; }
+};
+
+class RHMapPointerVectorCalls : public std::vector<void *>
+{
+public:
+    typedef void **(std::vector<void *>::*Copy)(void *const *, void *const *, void **);
+    static Copy GetCopy() { return &RHMapPointerVectorCalls::_Ucopy; }
+};
+
+// TEMPLATE: GAME 0x0063d410
+// ?size@?$vector@VRHUnk0063c8b0@@V?$allocator@VRHUnk0063c8b0@@@std@@@std@@QBEIXZ
+
+// TEMPLATE: GAME 0x0063d4d0
+// ?insert@?$vector@VRHUnk0063c8b0@@V?$allocator@VRHUnk0063c8b0@@@std@@@std@@QAEXPAVRHUnk0063c8b0@@IABV3@@Z
+
+// TEMPLATE: GAME 0x0063d800
+// ?erase@?$vector@VRHUnk0063c8b0@@V?$allocator@VRHUnk0063c8b0@@@std@@@std@@QAEPAVRHUnk0063c8b0@@PAV3@0@Z
+
+// TEMPLATE: GAME 0x0063d880
+// ?_Destroy@?$vector@VRHUnk0063c8b0@@V?$allocator@VRHUnk0063c8b0@@@std@@@std@@IAEXPAVRHUnk0063c8b0@@0@Z
+
+// TEMPLATE: GAME 0x0063dc40
+// ?_Construct@std@@YAXPAVRHUnk0063c8b0@@ABV2@@Z
+
+// TEMPLATE: GAME 0x0063e140
+// ?_Ucopy@?$vector@VRHUnk0063c8b0@@V?$allocator@VRHUnk0063c8b0@@@std@@@std@@IAEPAVRHUnk0063c8b0@@PBV3@0PAV3@@Z
+
+// SYNTHETIC: GAME 0x0063e180
+// RHUnk0063c8b0::`scalar deleting destructor'
+
+// TEMPLATE: GAME 0x0063e360
+// ??4RHUnk0063e360@@QAEAAV0@ABV0@@Z
+
+// TEMPLATE: GAME 0x0063e500
+// ??4?$vector@VRHUnk0063c8b0@@V?$allocator@VRHUnk0063c8b0@@@std@@@std@@QAEAAV01@ABV01@@Z
+
+// TEMPLATE: GAME 0x0063e780
+// ??4RHUnk0063c8b0@@QAEAAV0@ABV0@@Z
+
+// TEMPLATE: GAME 0x0063e930
+// ?capacity@?$vector@VRHUnk0063c8b0@@V?$allocator@VRHUnk0063c8b0@@@std@@@std@@QBEIXZ
+
+// TEMPLATE: GAME 0x0063e960
+// ?copy@std@@YAPAVRHUnk0063c8b0@@PBV2@0PAV2@@Z
+
+// TEMPLATE: GAME 0x0063f0a0
+// ??0?$vector@VRHUnk0063c8b0@@V?$allocator@VRHUnk0063c8b0@@@std@@@std@@QAE@ABV01@@Z
+
+// TEMPLATE: GAME 0x0063f2c0
+// ??1?$vector@VRHUnk0063c8b0@@V?$allocator@VRHUnk0063c8b0@@@std@@@std@@QAE@XZ
+
 #pragma inline_depth(0)
-void EmitRHMapRecordDestructors(RHMapDescription::Entry *entry, RHUnk0063c8b0 *record)
+void EmitRHMapRecordDestructors(RHMapDescription::Entry *entry, RHUnk0063c8b0 *record,
+    std::vector<RHUnk0063c8b0> *records)
 {
     entry->~Entry();
     record->~RHUnk0063c8b0();
+    typedef std::vector<RHUnk0063c8b0> Records;
+    records->~Records();
+}
+void EmitRHMapRecordCopies(void *destination, void *valuesDestination,
+    const std::vector<RHUnk0063c8b0> &source, const RHUnk0063e360 &values)
+{
+    new (destination) std::vector<RHUnk0063c8b0>(source);
+    new (valuesDestination) RHUnk0063e360(values);
 }
 #pragma inline_depth(8)
+
+void EmitRHMapEntryValues(void *destination)
+{
+    new (destination) RHUnk0063e360;
+}
+
+void EmitRHMapRecordDestroy(std::vector<RHUnk0063c8b0> *records)
+{
+    RHMapRecordVectorCalls::Destroy destroy = RHMapRecordVectorCalls::GetDestroy();
+    (records->*destroy)(records->begin(), records->end());
+}
+
+RHUnk0063c8b0 *EmitRHMapRecordCopy(std::vector<RHUnk0063c8b0> *records,
+    const RHUnk0063c8b0 *first, const RHUnk0063c8b0 *last, RHUnk0063c8b0 *destination)
+{
+    RHMapRecordVectorCalls::Copy construct = RHMapRecordVectorCalls::GetCopy();
+    RHUnk0063c8b0 *(*copy)(const RHUnk0063c8b0 *, const RHUnk0063c8b0 *, RHUnk0063c8b0 *) = &std::copy;
+    (records->*construct)(first, last, destination);
+    return copy(first, last, destination);
+}
+
+void EmitRHMapRecordOperations(std::vector<RHUnk0063c8b0> *records, RHUnk0063c8b0 *first,
+    RHUnk0063c8b0 *last, unsigned count, const RHUnk0063c8b0 &value)
+{
+    typedef std::vector<RHUnk0063c8b0> Records;
+    unsigned (Records::*size)() const = &Records::size;
+    unsigned (Records::*capacity)() const = &Records::capacity;
+    void (Records::*insert)(RHUnk0063c8b0 *, unsigned, const RHUnk0063c8b0 &) = &Records::insert;
+    RHUnk0063c8b0 *(Records::*erase)(RHUnk0063c8b0 *, RHUnk0063c8b0 *) = &Records::erase;
+    (records->*insert)(first, count + (records->*size)() + (records->*capacity)(), value);
+    (records->*erase)(first, last);
+}
+
+RHUnk0063e360 &EmitRHMapEntryValuesAssign(RHUnk0063e360 *values, const RHUnk0063e360 &source)
+{
+    RHUnk0063e360 &(RHUnk0063e360::*assign)(const RHUnk0063e360 &) = &RHUnk0063e360::operator=;
+    return (values->*assign)(source);
+}
+
+std::vector<RHUnk0063c8b0> &EmitRHMapRecordAssign(std::vector<RHUnk0063c8b0> *records,
+    const std::vector<RHUnk0063c8b0> &source)
+{
+    typedef std::vector<RHUnk0063c8b0> Records;
+    Records &(Records::*assign)(const Records &) = &Records::operator=;
+    return (records->*assign)(source);
+}
+
+void **EmitRHMapPointerCopy(std::vector<void *> *values, void *const *first,
+    void *const *last, void **destination)
+{
+    RHMapPointerVectorCalls::Copy copy = RHMapPointerVectorCalls::GetCopy();
+    return (values->*copy)(first, last, destination);
+}
 
 void RHGame::Emit(SBFile &file)
 {

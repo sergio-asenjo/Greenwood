@@ -1,7 +1,7 @@
 #include "SBNullstr.h"
 #include "RHGate.h"
 
-void RHGate::Emit(SBFile &file)
+void RHGateEmit(RHUnk0051aa00 *gate, SBFile &file)
 {
-    Serialize(file);
+    gate->Serialize(file);
 }

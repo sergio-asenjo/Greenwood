@@ -507,49 +507,7 @@ public:
 void FUN_004e70a0(void **position, void *value, bool (*compare)(void *, void *));
 void FUN_004e6f70(void **first, void **last, bool (*compare)(void *, void *), void **value);
 
-// SIZE 0x04 (call view)
-class RHUnk00551da0
-{
-public:
-    bool FUN_00551da0(SBFile &file);
-    undefined4 m_00; // 0x00
-};
-
-class RHUnk0051d370Entry
-{
-public:
-    virtual void V00(int flag) = 0;
-};
-
-class RHUnk0051d2c0Storage : public std::vector<RHUnk00551da0 *>
-{
-public:
-    ~RHUnk0051d2c0Storage() { clear(); }
-};
-
-// SIZE 0x20
-class RHUnk0051d2c0
-{
-public:
-    ~RHUnk0051d2c0();
-    void FUN_0051d370();
-    RHUnk0051d2c0Storage m_00; // 0x00
-    undefined m_10[0x10]; // 0x10
-};
-
-// SIZE 0x1c (partial layout)
-class RHHikingGuide
-{
-public:
-    int FUN_0051cac0(SBFile &file);
-    void FUN_0051cd10(SBFile &file);
-    bool FUN_0051d020(SBFile &file);
-    undefined4 m_00; // 0x00
-    std::vector<RHUnk0051d2c0 *> m_04; // 0x04
-    undefined4 m_14; // 0x14
-    char m_18; // 0x18
-    undefined m_19[3]; // 0x19
-};
+#include "RHHikingGuideStorage.h"
 
 #include "RHFrameDictionary.h"
 

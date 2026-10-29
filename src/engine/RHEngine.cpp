@@ -352,7 +352,7 @@ DECOMP_SIZE_ASSERT(RHUnk004bc5b0, 0x160)
 DECOMP_SIZE_ASSERT(RHUnk004e51e0, 0x30)
 DECOMP_SIZE_ASSERT(RHUnk00551da0, 0x04)
 DECOMP_SIZE_ASSERT(RHUnk0051d2c0, 0x20)
-DECOMP_SIZE_ASSERT(RHHikingGuide, 0x1c)
+DECOMP_SIZE_ASSERT(RHHikingGuide, 0x24)
 DECOMP_SIZE_ASSERT(RHUnk005f4fc0, 0x58)
 DECOMP_SIZE_ASSERT(RHUnk0054eab0, 0x1a0)
 DECOMP_SIZE_ASSERT(RHUnk004a1bc0, 0xdd0)
@@ -410,6 +410,7 @@ class SBGeoVector2D;
 
 // SIZE 0x08
 class SBGeoVector2D;
+#define SBGEO_POINT2D_VIEW
 class SBGeoPoint2D
 {
 public:
@@ -509,11 +510,7 @@ public:
     char tail[0x30];
 };
 
-class RHUnk0046bcb0
-{
-public:
-    void Unk(int value);
-};
+#include "RHActorCancelCalls.h"
 
 #include "RHScriptEngineCalls.h"
 
@@ -2347,11 +2344,7 @@ bool RHEngine::FUN_004c4490(SBFile &file, void *&value)
 
 #undef RHENGINE_POINTER_BODY
 
-class RHUnk00452030
-{
-public:
-    int FUN_00453d60(const void *description);
-};
+#include "RHCampaignValueCalls.h"
 
 class RHUnk0048a970;
 extern RHUnk0048a970 *g_unk0x6c0b3c;
@@ -2918,27 +2911,57 @@ int RHEngine::FUN_004cac00(void *first, void *second, int third, char fourth)
     return 1;
 }
 
+struct RHUnk004cc030Value
+{
+    unsigned m_00;
+    unsigned m_04;
+};
+
 struct RHUnk004cc030Node
 {
     RHUnk004cc030Node *next;
     RHUnk004cc030Node *previous;
-    unsigned value;
-    unsigned unused;
+    RHUnk004cc030Value value;
 };
 
 class RHUnk004cc030
 {
 public:
     void *FUN_004e6a90(unsigned flags);
-    char prefix[4];
+    char m_00;
+    char m_01[3];
     SBGeoPoint2D point;
     char enabled;
     char padding[3];
     RHUnk004cc030Node *head;
     unsigned count;
     RHUnk004cc030();
+    RHUnk004cc030(const RHUnk004cc030 &other);
     ~RHUnk004cc030();
 };
+
+inline RHUnk004cc030::RHUnk004cc030(const RHUnk004cc030 &other)
+    : m_00(other.m_00), point(other.point), enabled(other.enabled)
+{
+    RHUnk004cc030Node *sentinel = (RHUnk004cc030Node *)operator new(sizeof(RHUnk004cc030Node));
+    sentinel->next = sentinel;
+    sentinel->previous = sentinel;
+    head = sentinel;
+    count = 0;
+    RHUnk004cc030Node *position = sentinel->next;
+    RHUnk004cc030Node *last = other.head;
+    for (RHUnk004cc030Node *source = last->next; source != last; source = source->next)
+    {
+        RHUnk004cc030Node *previous = position->previous;
+        RHUnk004cc030Node *node = (RHUnk004cc030Node *)operator new(sizeof(RHUnk004cc030Node));
+        node->next = position != 0 ? position : node;
+        node->previous = previous != 0 ? previous : node;
+        position->previous = node;
+        node->previous->next = node;
+        new (&node->value) RHUnk004cc030Value(source->value);
+        ++count;
+    }
+}
 
 // Parked: 74.07%; constructor frame/argument-slot layout differs after local-node source shape.
 // FUNCTION: GAME 0x004cc030
@@ -3405,24 +3428,12 @@ void RHEngine::FUN_004d1d00()
     }
 }
 
-// Parked: the vector range uses a custom insertion routine and distinct comparison ordering.
-// STUB: GAME 0x004d1f50
+// FUNCTION: GAME 0x004d1f50
 void RHEngine::FUN_004d1f50()
 {
     void **first = *(void ***)((char *)this + 0x499c);
     void **last = *(void ***)((char *)this + 0x49a0);
-    for (void **it = first; it && it + 1 < last; ++it)
-    {
-        for (void **next = it + 1; next < last; ++next)
-        {
-            if (FUN_004d1810(*next, *it))
-            {
-                void *value = *it;
-                *it = *next;
-                *next = value;
-            }
-        }
-    }
+    std::sort(first, last, FUN_004d1810);
 }
 
 // FUNCTION: GAME 0x004d21b0
@@ -3471,6 +3482,8 @@ void RHEngine::FUN_004d21b0(bool enabled, bool queued)
         RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(6, 0));
 }
 
+// TEMPLATE: GAME 0x00613e90 FOLDED
+// ??0RHEngineSpritePoint@@QAE@XZ
 RHEngineSpritePoint::RHEngineSpritePoint()
 {
 }
@@ -5516,11 +5529,7 @@ unsigned RHEngineReinforcementCalls::FUN_004e4460(void **value, int insert)
 #include "SBGeoSegment2D.h"
 #include "RHGameInputTranslator.h"
 
-class SBUIInputFieldBoxCalls
-{
-public:
-    SBUIInputFieldBoxCalls &FUN_0060a860(const RHMobileUnk006100e0 &other);
-};
+#include "SBUIInputFieldBoxCalls.h"
 
 // SIZE 0x10
 struct RHUnk004e4500Segments
@@ -5609,7 +5618,7 @@ void RHUnk004e5230::FUN_004e5230()
     char *first = m_4;
     while (first != last)
     {
-        ((RHMobileUnk006100e0 *)first)->~RHMobileUnk006100e0();
+        ((RHGameInputSegment *)first)->FUN_004611c0();
         first += 0x10;
     }
     operator delete(m_4);
@@ -5641,6 +5650,8 @@ public:
     RHUnk004e52f0(const char &allocator);
     ~RHUnk004e52f0();
     Iterator Erase(Iterator position);
+    Iterator FUN_004e5fe0(Iterator position, const RHUnk004cc030 &value);
+    Iterator FUN_004e6040(Iterator first, Iterator last);
     char m_allocator[4];
     Node *m_head;
     unsigned m_count;
@@ -5700,6 +5711,169 @@ void EmitRHEnginePayloadList(RHUnk004e52f0 &list, RHUnk004e52f0::Iterator positi
     RHUnk004e52f0 temporary(allocator);
 }
 
+RHElementActorPC *&EmitRHEnginePCArrayAccess(std::vector<RHElementActorPC *> &actors, unsigned index)
+{
+    return actors.at(index);
+}
+
+// TEMPLATE: GAME 0x004e5aa0
+// ?_Xran@?$vector@PAVRHElementActorPC@@V?$allocator@PAVRHElementActorPC@@@std@@@std@@IBEXXZ
+
+class RHElementActorNPC;
+class RHElementMobile;
+class RHElementFX;
+class RHElementActorSoldier;
+
+RHElement *&EmitRHEngineElementArrayAccess(std::vector<RHElement *> &elements, unsigned index)
+{
+    RHElement *&(std::vector<RHElement *>::*at)(unsigned) = &std::vector<RHElement *>::at;
+    return (elements.*at)(index);
+}
+
+RHElementActor *&EmitRHEngineActorArrayAccess(std::vector<RHElementActor *> &actors, unsigned index)
+{
+    return actors.at(index);
+}
+
+RHElementActorNPC *&EmitRHEngineNPCArrayAccess(std::vector<RHElementActorNPC *> &actors, unsigned index)
+{
+    return actors.at(index);
+}
+
+RHElementMobile *&EmitRHEngineMobileArrayAccess(std::vector<RHElementMobile *> &elements, unsigned index)
+{
+    return elements.at(index);
+}
+
+RHElementFX *&EmitRHEngineFXArrayAccess(std::vector<RHElementFX *> &elements, unsigned index)
+{
+    return elements.at(index);
+}
+
+RHElementActorHuman *&EmitRHEngineHumanArrayAccess(std::vector<RHElementActorHuman *> &actors, unsigned index)
+{
+    return actors.at(index);
+}
+
+RHElementActorSoldier *&EmitRHEngineSoldierArrayAccess(std::vector<RHElementActorSoldier *> &actors, unsigned index)
+{
+    return actors.at(index);
+}
+
+// TEMPLATE: GAME 0x004e5200
+// ?at@?$vector@PAVRHElement@@V?$allocator@PAVRHElement@@@std@@@std@@QAEAAPAVRHElement@@I@Z
+
+// TEMPLATE: GAME 0x004e53c0
+// ?_Xran@?$vector@PAVRHElement@@V?$allocator@PAVRHElement@@@std@@@std@@IBEXXZ
+
+// TEMPLATE: GAME 0x004e54a0
+// ?what@logic_error@std@@UBEPBDXZ
+
+// TEMPLATE: GAME 0x004e54b0
+// ??0logic_error@std@@QAE@ABV01@@Z
+
+// TEMPLATE: GAME 0x004e5610
+// ?_Doraise@logic_error@std@@MBEXXZ
+
+// TEMPLATE: GAME 0x004e5630
+// ??1out_of_range@std@@UAE@XZ
+
+// TEMPLATE: GAME 0x004e5680
+// ?_Doraise@out_of_range@std@@MBEXXZ
+
+// TEMPLATE: GAME 0x004e56a0
+// ??_Eout_of_range@std@@UAEPAXI@Z
+
+// TEMPLATE: GAME 0x004e56c0
+// ??0out_of_range@std@@QAE@ABV01@@Z
+
+// TEMPLATE: GAME 0x004e59c0
+// ?_Xran@?$vector@PAVRHElementActor@@V?$allocator@PAVRHElementActor@@@std@@@std@@IBEXXZ
+
+// TEMPLATE: GAME 0x004e5b80
+// ?_Xran@?$vector@PAVRHElementActorNPC@@V?$allocator@PAVRHElementActorNPC@@@std@@@std@@IBEXXZ
+
+// TEMPLATE: GAME 0x004e5c60
+// ?_Xran@?$vector@PAVRHElementMobile@@V?$allocator@PAVRHElementMobile@@@std@@@std@@IBEXXZ
+
+// TEMPLATE: GAME 0x004e5d40
+// ?_Xran@?$vector@PAVRHElementFX@@V?$allocator@PAVRHElementFX@@@std@@@std@@IBEXXZ
+
+// TEMPLATE: GAME 0x004e5e20
+// ?_Xran@?$vector@PAVRHElementActorHuman@@V?$allocator@PAVRHElementActorHuman@@@std@@@std@@IBEXXZ
+
+// TEMPLATE: GAME 0x004e5f00
+// ?_Xran@?$vector@PAVRHElementActorSoldier@@V?$allocator@PAVRHElementActorSoldier@@@std@@@std@@IBEXXZ
+
+// FUNCTION: GAME 0x004e5fe0
+RHUnk004e52f0::Iterator RHUnk004e52f0::FUN_004e5fe0(Iterator position, const RHUnk004cc030 &value)
+{
+    Node *next = position.node;
+    Node *previous = next->previous;
+    Node *node = (Node *)operator new(sizeof(Node));
+    node->next = next != 0 ? next : node;
+    node->previous = previous != 0 ? previous : node;
+    next->previous = node;
+    node->previous->next = node;
+    std::_Construct(&node->value, value);
+    ++m_count;
+    return Iterator(node);
+}
+
+// FUNCTION: GAME 0x004e6040
+RHUnk004e52f0::Iterator RHUnk004e52f0::FUN_004e6040(Iterator first, Iterator last)
+{
+    Node *current = first.node;
+    Node *end = last.node;
+    while (current != end)
+    {
+        Node *node = current;
+        current = current->next;
+        node->previous->next = node->next;
+        node->next->previous = node->previous;
+        node->value.~RHUnk004cc030();
+        operator delete(node);
+        --m_count;
+    }
+    return Iterator(current);
+}
+
+// FUNCTION: GAME 0x004e6690
+void FUN_004e6690(void **first, void **last,
+                  bool (*compare)(void *, void *), int)
+{
+    void (*sort)(void **, void **, bool (*)(void *, void *), void **) = &std::_Sort;
+    if (last - first <= std::_SORT_MAX)
+        std::_Insertion_sort(first, last, compare);
+    else
+    {
+        void **rangeLast = last;
+        void **rangeFirst = first;
+        while (std::_SORT_MAX < rangeLast - rangeFirst)
+        {
+            void **middle = std::_Unguarded_partition(rangeFirst, rangeLast,
+                std::_Median(*rangeFirst, *(rangeFirst + (rangeLast - rangeFirst) / 2), *(rangeLast - 1), compare), compare);
+            if (rangeLast - middle <= middle - rangeFirst)
+            {
+                sort(middle, rangeLast, compare, (void **)0);
+                rangeLast = middle;
+            }
+            else
+            {
+                sort(rangeFirst, middle, compare, (void **)0);
+                rangeFirst = middle;
+            }
+        }
+        std::_Insertion_sort(first, first + std::_SORT_MAX, compare);
+        for (first += std::_SORT_MAX; first != last; ++first)
+            std::_Unguarded_insert(first, (void *)*first, compare);
+    }
+}
+
+// Parked: inlined inner-list copy keeps p in EDI; target holds p in ESI and reuses the source register.
+// STUB: GAME 0x004e6930
+// ?_Construct@std@@YAXPAVRHUnk004cc030@@ABV2@@Z
+
 // TEMPLATE: GAME 0x004e6f70
 // ?_Sort@std@@YAXPAPAX0P6A_NPAX1@Z0@Z
 void FUN_004e6f70(void **first, void **last, bool (*compare)(void *, void *), void **value)
@@ -5720,6 +5894,14 @@ void FUN_004e6f70(void **first, void **last, bool (*compare)(void *, void *), vo
         }
     }
 }
+
+void EmitRHEngineConstSort(void **first, void **last, bool (*compare)(const void *, const void *))
+{
+    std::_Sort(first, last, compare, (void **)0);
+}
+
+// TEMPLATE: GAME 0x004e70e0
+// ?_Sort@std@@YAXPAPAX0P6A_NPBX1@Z0@Z
 
 // FUNCTION: GAME 0x004e70a0
 void FUN_004e70a0(void **position, void *value, bool (*compare)(void *, void *))
@@ -5900,7 +6082,7 @@ void RHHikingGuide::FUN_0051cd10(SBFile &file)
     for (int i = 0; i < count; ++i)
         delete m_04[i];
     m_04.erase(m_04.begin(), m_04.end());
-    m_18 = 1;
+    m_04.m_dirty = true;
     unsigned short loaded;
     file.Access(&loaded, 2);
     for (unsigned short index = 0; index < loaded; ++index)
@@ -5918,10 +6100,10 @@ bool RHHikingGuide::FUN_0051d020(SBFile &file)
     for (unsigned short i = 0; i < count; ++i)
     {
         RHUnk0051d2c0 *group = m_04[i];
-        unsigned short entries = group->m_00.size();
+        unsigned short entries = group->size();
         for (unsigned short j = 0; j < entries; ++j)
         {
-            RHUnk00551da0 *entry = group->m_00[j];
+            RHUnk00551da0 *entry = (*group)[j];
             result |= entry->FUN_00551da0(file);
         }
     }
@@ -5931,13 +6113,14 @@ bool RHHikingGuide::FUN_0051d020(SBFile &file)
 // FUNCTION: GAME 0x0051d370
 void RHUnk0051d2c0::FUN_0051d370()
 {
-    int count = m_00.size();
-    for (int i = 0; i < count; ++i) {
-        RHUnk00551da0 *entry = m_00[i];
+    int count = size();
+    for (int index = 0; index < count; ++index)
+    {
+        RHUnk00551da0 *entry = (*this)[index];
         if (entry)
             ((RHUnk0051d370Entry *)((char *)entry + 0x5c))->V00(1);
     }
-    m_00.clear();
+    clear();
 }
 
 // FUNCTION: GAME 0x00523620
@@ -6238,3 +6421,13 @@ void EmitRHEngineVariants(void *storage)
 {
     ((RHUnk0057ee40 *)storage)->RHUnk0057ee40::~RHUnk0057ee40();
 }
+
+void EmitRHEngineWordArrayClear(std::vector<unsigned short> &values)
+{
+    typedef std::vector<unsigned short> Values;
+    void (Values::*clear)() = &Values::clear;
+    (values.*clear)();
+}
+
+// TEMPLATE: GAME 0x004e6bd0
+// ?clear@?$vector@GV?$allocator@G@std@@@std@@QAEXXZ

@@ -51,7 +51,7 @@ void RHDrawManager::DrawEllipsePoints(const SBDrawViewport &viewport, const SBGe
 void RHDrawManager::DrawSegment(const SBGeoSegment2D &segment, unsigned short color)
 {
     RHUnk0060fbf0 clipped;
-    clipped.FUN_0060fca0(FUN_006093f0((const RHMobileUnk006100e0 &)segment));
+    clipped.FUN_0060fca0(FUN_006093f0(segment.Line()));
     if (((SCQuadArg *)&clipped)->GetType() == 4)
     {
         SBGeoPoint2D first;
@@ -115,7 +115,7 @@ void RHDrawManager::DrawPolyLine(const SBGeoPolyLine2DList &list, unsigned short
                 segment.Second() = list.FUN_00610cb0(i);
                 second = true;
             }
-            clipped.FUN_0060fca0(FUN_006093f0((const RHMobileUnk006100e0 &)segment));
+            clipped.FUN_0060fca0(FUN_006093f0(segment.Line()));
             if (((SCQuadArg *)&clipped)->GetType() == 4)
             {
                 SBGeoPoint2D first;

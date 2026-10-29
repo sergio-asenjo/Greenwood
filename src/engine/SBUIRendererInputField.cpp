@@ -66,6 +66,9 @@ DECOMP_SIZE_ASSERT(SBUIInputFieldFontHeight, 0x04)
 // GLOBAL: GAME 0x006775dc
 // ?_C@?1??_Nullstr@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@CAPBGXZ@4GB
 
+// TEMPLATE: GAME 0x0046eb30 FOLDED
+// ?erase@?$list@USBUIInputFieldCharacter@@V?$allocator@USBUIInputFieldCharacter@@@std@@@std@@QAE?AViterator@12@V312@@Z
+
 // FUNCTION: GAME 0x0061df50
 unsigned int SBUIInputFieldTextUnk::FUN_0061df50()
 {
@@ -104,7 +107,7 @@ bool SBGeoBoundingBox2D::FUN_006084a0(const SBGeoBoundingBox2D &other)
     if (!other.m_10)
         return false;
     ((SBUIInputFieldBoxCalls *)&span)->FUN_0060a860(
-        (const RHMobileUnk006100e0 &)SBGeoSegment2D(other.m_00, other.m_08));
+        SBGeoSegment2D(other.m_00, other.m_08).Line());
     return ((SBUIInputFieldBoxCalls *)this)->FUN_00608450(*(SBGeoBoundingBox2D *)&span);
 }
 

@@ -17,11 +17,7 @@ public:
     void FUN_004e2390(void *actor);
 };
 class RHMessenger;
-class RHUnk00452030
-{
-public:
-    int Get(int);
-};
+#include "RHCampaignValueCalls.h"
 extern RHEngine *g_pEngine;
 extern RHUnk00452030 *g_unk0x6c07fc;
 RHMessenger *RHUnk00546050();

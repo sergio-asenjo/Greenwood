@@ -1,6 +1,7 @@
 #ifndef RH_DRAW_MANAGER_H
 #define RH_DRAW_MANAGER_H
 
+#define SBGEO_POINT2D_VIEW
 class SBGeoVector2D;
 class SBGeoPoint2D
 {
@@ -48,11 +49,7 @@ public:
 
 #include "SBGeoIntersection2D.h"
 
-class RHUnk0053bf20
-{
-public:
-    void *FUN_0053bf20() const;
-};
+#include "RHUnk0053bf20.h"
 
 class SCQuadArg
 {
@@ -60,12 +57,7 @@ public:
     unsigned char GetType();
 };
 
-class RHUnk00608f10
-{
-public:
-    int FUN_00608f10(void *value);
-    bool FUN_006082a0(void *value);
-};
+#include "RHUnk00608f10.h"
 
 class SBGeoBoundingBox2D
 {

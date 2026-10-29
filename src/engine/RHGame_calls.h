@@ -150,14 +150,9 @@ struct RHGameMission
     unsigned short m_04; // 0x04
     unsigned short m_06; // 0x06
     unsigned m_08; // 0x08
-    bool FUN_0054c800();
 };
 
-class RHUnk00452030
-{
-public:
-    int Get(int index);
-};
+#include "RHCampaignValueCalls.h"
 
 class RHUnk00450b60
 {
@@ -175,12 +170,6 @@ public:
 };
 
 #include "RHGameCampaignView.h"
-
-class RHGameMenuOwner
-{
-public:
-    void FUN_0053c870(void *menu);
-};
 
 class RHGameMenuText
 {
@@ -260,18 +249,7 @@ public:
     RHDialogueSet *GetDynResources(unsigned long resources);
 };
 
-class RHCampaign
-{
-public:
-    std::vector<RHPCDescription *> *FUN_004553f0();
-    unsigned short GetNumberOfPeasantsToConvertToBlazons() const;
-    void FUN_00455b20(RHPCDescription *character);
-    void FUN_00455b80(RHPCDescription *character);
-    void FUN_004559f0();
-    void SelectMissions(bool forced);
-    bool Serialize(SBFile &file);
-    bool CopyBackupTo(SBFile &file) const;
-};
+#include "RHCampaignCore.h"
 
 #include "RHSaveGameManager.h"
 

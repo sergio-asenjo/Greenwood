@@ -869,3 +869,5 @@ void RHSectorProduction::Emit(SBFile &file)
 
 // TEMPLATE: GAME 0x00581220
 // ?_Xran@?$vector@KV?$allocator@K@std@@@std@@IBEXXZ
+// TEMPLATE: GAME 0x0051c0c0 FOLDED
+// ??1Point@RHSectorProduction@@QAE@XZ

@@ -5,6 +5,7 @@
 // SIZE 0x08
 class SBGeoVector2D;
 
+#ifndef SBGEO_POINT2D_VIEW
 #define SBGEO_POINT2D_VIEW
 class SBGeoPoint2D
 {
@@ -21,6 +22,7 @@ public:
     SBGeoPoint2D FUN_005fc200(const SBGeoPoint2D &other) const;
     float FUN_005fc700(float scale) const;
 };
+#endif
 
 void RHSerializeName(SBFile &file, const char *name);
 

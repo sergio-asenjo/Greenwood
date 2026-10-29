@@ -4,8 +4,6 @@
 
 DECOMP_SIZE_ASSERT(SBResourceArrayLifecycle84, 0x2c)
 
-void FUN_0064158f(void *) {}
-
 template class SBResourceTreeStorage<0x34, 0x30, 0x44>;
 template class SBResourceTreeStorage<0x20, 0x1c, 0x54>;
 template class SBResourceTreeStorage<0x20, 0x1c, 0x64>;
@@ -13,7 +11,8 @@ template class SBResourceTreeStorage<0x40, 0x3c, 0x74>;
 template class SBResourceTreeStorage<0x40, 0x3c, 0x84>;
 
 
-// FUNCTION: GAME 0x0051d120
+// TEMPLATE: GAME 0x0051d120 FOLDED
+// ?FUN_0051d120@SBResourceArrayLifecycle44@@QAEXXZ
 void SBResourceArrayLifecycle44::FUN_0051d120()
 {
     typedef std::vector<unsigned long> Values;
@@ -21,7 +20,7 @@ void SBResourceArrayLifecycle44::FUN_0051d120()
     values->erase(values->begin(), values->end());
     values->~Values();
 }
-// STUB: GAME 0x0057c820
+// FUNCTION: GAME 0x0057c820
 SBResourceArrayLifecycle84::~SBResourceArrayLifecycle84()
 {
     m_values.clear();
@@ -36,6 +35,23 @@ bool SBResourceManager::FUN_005fef60(int, unsigned long) { return false; }
 
 
 #include <vector>
+
+extern template class std::basic_string<char>;
+
+// TEMPLATE: GAME 0x00606070
+// ?resize@?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@QAEXIABV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@2@@Z
+
+// TEMPLATE: GAME 0x0045a490 FOLDED
+// ?size@?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@QBEIXZ
+
+// TEMPLATE: GAME 0x0056dac0 FOLDED
+// ?_Destroy@?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@IAEXPAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@2@0@Z
+
+void ForceResourceNarrowResize(std::vector<std::string> &values, unsigned int count, const std::string &value)
+{
+    void (std::vector<std::string>::*resize)(unsigned int, const std::string &) = &std::vector<std::string>::resize;
+    (values.*resize)(count, value);
+}
 
 void ForceWideRangeInsert(std::vector<std::wstring> &values, std::wstring *position,
                           const std::wstring *first, const std::wstring *last)

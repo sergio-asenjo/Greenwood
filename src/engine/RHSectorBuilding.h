@@ -3,21 +3,30 @@
 
 #include <list>
 #include "RHSectorActorIterator.h"
+#include "RHSectorCore.h"
+#include "RHMotionAreaList.h"
 
 class RHElementActor;
 class SBFile;
 class SBGeoBoundingBox2D;
 class RHUnkSectorLiftGrid;
 
-class RHUnk0057d490
+// VTABLE: GAME 0x00679c34
+class RHUnk0057d490 : public RHSector
 {
 public:
     RHUnk0057d490();
     virtual ~RHUnk0057d490();
     void FUN_0057d760(void *gate, bool side);
-    void FUN_0057dc20(void *draw, unsigned long surface, const SBGeoBoundingBox2D &box, float scale, unsigned short layer);
+    virtual void FUN_0057d390(void *draw, unsigned long surface, const SBGeoBoundingBox2D &box, float scale, unsigned short layer);
     void Emit(void *gate, bool side);
-    char m_04[0xec];
+    char m_58[4];
+    RHMotionAreaList<void *> m_gates;
+    RHMotionAreaList<bool> m_sides;
+    RHMotionAreaList<void *> m_areas;
+    RHMotionAreaList<void *> m_c8;
+    bool m_ec;
+    char m_ed[3];
 };
 
 class RHBuildingActorList : public std::list<RHElementActor *>
@@ -38,12 +47,11 @@ class RHSectorBuilding : public RHUnk0057d490
 public:
     RHSectorBuilding();
     virtual ~RHSectorBuilding();
-    void *FUN_0057e560(unsigned flags);
-    void FUN_0057eb80(void *draw, unsigned long surface, const SBGeoBoundingBox2D &box, float scale, unsigned short layer);
+    virtual void FUN_0057d390(void *draw, unsigned long surface, const SBGeoBoundingBox2D &box, float scale, unsigned short layer);
     void Enter(RHElementActor *actor);
     void Leave(RHElementActor *actor);
     bool Serialize(SBFile &file);
-    int FUN_0057e710(SBFile &file, RHUnkSectorLiftGrid *grid);
+    virtual int FUN_0057e710(SBFile &file, RHUnkSectorLiftGrid *grid);
     void Emit(SBFile &file);
     unsigned short m_f0;
     char m_f2[2];

@@ -68,16 +68,7 @@ public:
 };
 
 // SIZE 0x0c
-class RHUnk00613e90
-{
-public:
-    RHUnk00613e90();
-    RHUnk00613e90 FUN_005df550(const RHUnk00613e90 &other) const;
-    float FUN_005df5f0(const RHUnk00613e90 &other) const;
-    float m_0; // 0x00
-    float m_4; // 0x04
-    float m_8; // 0x08
-};
+#include "RHUnk00613e90.h"
 
 class RHUnkSightPlane
 {
@@ -114,15 +105,6 @@ public:
     RHScriptIter FUN_0044e8b0(RHScriptIter, RHScriptIter);
 };
 
-// SIZE 0x14
-class RHShadowAreaBox
-{
-public:
-    SBGeoPoint2D m_min; // 0x00
-    SBGeoPoint2D m_max; // 0x08
-    bool m_10; // 0x10
-};
-
 // SIZE 0x0c
 class RHShadowPointListBase
 {
@@ -134,18 +116,6 @@ public:
     RHScriptIter FUN_0044e850(RHScriptIter, RHScriptIter);
     RHScriptIter FUN_0044e900(RHScriptIter position);
     void FUN_0044e9b0();
-};
-
-class RHShadowPointStdList : public RHShadowPointListBase
-{
-public:
-    ~RHShadowPointStdList()
-    {
-        FUN_0044e850(((RHUnk0046eb30 *)this)->FUN_0046eb80(), RHScriptIter(m_head));
-        operator delete(m_head);
-        m_head = 0;
-        m_count = 0;
-    }
 };
 
 class RHShadowVectorStdList : public RHShadowPointListBase
@@ -183,14 +153,16 @@ struct RHShadowVertex
     float m_0c; // 0x0c
 };
 
+#include "RHUnk0060bd40.h"
+
 class RHUnk00597a70
 {
 public:
     undefined *m_0; // 0x00
-    RHShadowAreaBox m_4; // 0x04
-    RHShadowAreaBox m_18; // 0x18
-    RHShadowAreaBox m_2c; // 0x2c
-    RHShadowPointList<RHShadowPointStdList> m_40; // 0x40
+    SBGeoBoundingBox2D m_4; // 0x04
+    SBGeoBoundingBox2D m_18; // 0x18
+    SBGeoBoundingBox2D m_2c; // 0x2c
+    RHUnk0060bd40 m_40; // 0x40
     RHShadowPointList<RHShadowVectorStdList> m_70; // 0x70
     ~RHUnk00597a70();
 };
@@ -238,27 +210,13 @@ struct RHShadowEvent
     int m_10; // 0x10
 };
 
-class RHUnk0059f000
-{
-public:
-    void FUN_0059f000();
-    RHShadowIterator *FUN_0059f1a0();
-};
+class RHUnk0059f000;
 
-class RHUnk00608f10
-{
-public:
-    int FUN_00608f10(void *value);
-};
+#include "RHUnk00608f10.h"
 
 #include "RHMobileUnk006100e0.h"
 
-class RHUnk0059ec90
-{
-public:
-    void FUN_0059ec90();
-    RHShadowEvent *FUN_0059ee30();
-};
+class RHUnk0059ec90;
 
 
 #include "RHSectorActorIterator.h"
@@ -389,6 +347,12 @@ public:
     {
         FUN_005c8e40(index);
         return m_current.m_node->m_data;
+    }
+
+    RHShadowVertex &VertexAt(int index)
+    {
+        FUN_005c8e40(index);
+        return *(RHShadowVertex *)&m_current.m_node->m_data;
     }
 
     void RemoveAt(int index)
@@ -827,6 +791,8 @@ public:
     RHShadowPointNode *FUN_004243e0(RHShadowPointNode *, RHShadowPointNode *);
 };
 
+#include "RHArtificialIntelligenceTripleList.h"
+
 // SIZE 0x2c
 class RHShadowProjection
 {
@@ -853,6 +819,39 @@ public:
         ++m_list.m_count;
         m_dirty = true;
     }
+
+    void Insert(const RHUnk00613e90 &value)
+    {
+        ((RHArtificialIntelligenceTripleList *)&m_list)->insert(RHArtificialIntelligenceIterator((RHArtificialIntelligenceNode *)m_list.m_head), (const RHArtificialIntelligenceTriple &)value);
+        m_dirty = true;
+    }
+
+    void InsertPoint(float x, float y, float z)
+    {
+        RHUnk00613e90 point(x, y, z);
+        Insert(point);
+    }
+
+    void InsertPointCopy(float x, float y, float z)
+    {
+        RHUnk00613e90 point(x, y, z);
+        InsertCopy(point);
+    }
+
+    void InsertCopy(const RHUnk00613e90 &value)
+    {
+        RHShadowPointNode *head = m_list.m_head;
+        RHShadowPointNode *previous = head->m_prev;
+        RHShadowPointNode *node = (RHShadowPointNode *)operator new(0x14);
+        node->m_next = head ? head : node;
+        node->m_prev = previous ? previous : node;
+        head->m_prev = node;
+        node->m_prev->m_next = node;
+        if (&node->m_data)
+            node->m_data = value;
+        ++m_list.m_count;
+        m_dirty = true;
+    }
 };
 
 // SIZE 0x04
@@ -870,6 +869,18 @@ struct RHShadowEdgeNode
     RHShadowEdge m_data; // 0x08
 };
 
+struct RHShadowEdgeIterator
+{
+    RHShadowEdgeNode *m_node;
+    RHShadowEdgeIterator(RHShadowEdgeNode *node) : m_node(node) {}
+    RHShadowEdgeIterator &operator--()
+    {
+        m_node = m_node->m_prev;
+        return *this;
+    }
+    RHShadowEdge &operator*() const { return m_node->m_data; }
+};
+
 // SIZE 0x18 (accessed prefix)
 class RHShadowEdgeList
 {
@@ -881,6 +892,7 @@ public:
     bool m_dirty; // 0x10
     int m_index; // 0x14
     int size() { return m_count; }
+    RHShadowEdge &back() { return *--RHShadowEdgeIterator(m_head); }
 };
 
 // SIZE 0x4c
@@ -1082,11 +1094,7 @@ public:
     void FUN_0059d7f0(RHUnk005977e0 *);
 };
 
-struct RHShadowMemoryRange
-{
-    unsigned long m_first;
-    unsigned long m_last;
-};
+#include "RHShadowMemoryBlock.h"
 
 struct RHShadowMemoryNode
 {
@@ -1105,15 +1113,17 @@ public:
     RHShadowMemoryNode *FUN_0059fcc0(RHShadowMemoryNode *next, RHShadowMemoryNode *previous);
 };
 
-#include "RHShadowMemoryBlock.h"
-
 class RHShadowMemoryVector
 {
 public:
-    unsigned char m_allocator;
+    RHShadowMemoryVector(const std::allocator<RHShadowMemoryBlock> &allocator = std::allocator<RHShadowMemoryBlock>())
+        : m_allocator(allocator), m_first(0), m_last(0), m_end(0) {}
+    std::allocator<RHShadowMemoryBlock> m_allocator;
     RHShadowMemoryBlock *m_first;
     RHShadowMemoryBlock *m_last;
     RHShadowMemoryBlock *m_end;
+    RHShadowMemoryBlock *begin() { return m_first; }
+    RHShadowMemoryBlock *end() { return m_last; }
     void FUN_0059fc40();
     RHShadowMemoryBlock *FUN_0059fcf0(RHShadowMemoryBlock *position, const RHShadowMemoryBlock &value);
     void FUN_0059ff20() const;
@@ -1142,6 +1152,92 @@ public:
         for (; first != last; ++first)
             std::_Destroy(first);
     }
+};
+
+class RHShadowPoolVectorStorage : public RHShadowMemoryVector
+{
+public:
+    ~RHShadowPoolVectorStorage();
+};
+
+class RHShadowPoolBlocks : public RHShadowPoolVectorStorage
+{
+public:
+    RHShadowPoolBlocks();
+    ~RHShadowPoolBlocks();
+    void Append(const RHShadowMemoryBlock &block, bool second);
+    void Clear();
+    void Destroy();
+    RHShadowMemoryBlock *m_current;
+    bool m_dirty;
+    int m_index;
+    RHShadowMemoryBlock m_value;
+};
+
+class RHShadowPoolPointers : public std::vector<void *>
+{
+public:
+    ~RHShadowPoolPointers();
+    unsigned Size() const { return size(); }
+    void Remove(unsigned index, bool second);
+    void Append(void *const &allocation);
+    void **m_current;
+    bool m_dirty;
+    int m_index;
+    void *m_value;
+};
+
+class RHShadowIteratorPoolVectorStorage
+{
+public:
+    RHShadowIteratorPoolVectorStorage(const std::allocator<RHShadowIteratorMemoryBlock> &allocator = std::allocator<RHShadowIteratorMemoryBlock>())
+        : m_allocator(allocator), m_first(0), m_last(0), m_end(0) {}
+    ~RHShadowIteratorPoolVectorStorage();
+    std::allocator<RHShadowIteratorMemoryBlock> m_allocator;
+    RHShadowIteratorMemoryBlock *m_first;
+    RHShadowIteratorMemoryBlock *m_last;
+    RHShadowIteratorMemoryBlock *m_end;
+    RHShadowIteratorMemoryBlock *begin() { return m_first; }
+    RHShadowIteratorMemoryBlock *end() { return m_last; }
+};
+
+class RHShadowIteratorPoolBlocks : public RHShadowIteratorPoolVectorStorage
+{
+public:
+    RHShadowIteratorPoolBlocks();
+    ~RHShadowIteratorPoolBlocks();
+    void Append(const RHShadowMemoryBlock &block, bool second);
+    void Clear();
+    void Destroy();
+    void FUN_005a0600(RHShadowIteratorMemoryBlock *position, unsigned count, const RHShadowMemoryBlock &value);
+    RHShadowIteratorMemoryBlock *m_current;
+    bool m_dirty;
+    int m_index;
+    RHShadowIteratorMemoryBlock m_value;
+};
+
+// VTABLE: GAME 0x00679dc0
+class RHUnk0059ec90
+{
+public:
+    virtual ~RHUnk0059ec90();
+    unsigned m_capacity;
+    RHShadowPoolBlocks m_blocks;
+    RHShadowPoolPointers m_pointers;
+    void FUN_0059ec90();
+    RHShadowEvent *FUN_0059ee30();
+};
+
+// VTABLE: GAME 0x00679dbc
+class RHUnk0059f000
+{
+public:
+    virtual ~RHUnk0059f000();
+    unsigned m_capacity;
+    RHShadowIteratorPoolBlocks m_blocks;
+    RHShadowPoolPointers m_pointers;
+    void FUN_0059f000();
+    RHShadowIterator *FUN_0059f1a0();
 };
 
 #endif

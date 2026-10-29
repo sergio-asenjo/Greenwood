@@ -1,3 +1,4 @@
+#include "SBNullstr.h"
 #include "RHGameInputTranslator.h"
 #include "SBUIRendererInputField.h"
 #include "RHGamePad.h"
@@ -42,7 +43,6 @@ class RHUnk0051a4e0
 {
 public:
     char *FUN_0051a4e0();
-    bool FUN_0051a680(int first, int second, int third, int fourth, int fifth);
 };
 
 class RHUnk005ef320;
@@ -353,7 +353,7 @@ RHGamePad::RHGamePad()
 {
     RHUnk0051a4e0 *joysticks = m_input->FUN_005fafc0();
     void *window = *(void **)((char *)g_unk0x6c11d0 + 0x100);
-    m_joystick = m_input->FUN_005fb410(*(RHFontText *)joysticks->FUN_0051a4e0(), 5, window);
+    m_joystick = m_input->FUN_005fb410(*(std::string *)joysticks->FUN_0051a4e0(), 5, window);
     memset(&m_previous, 0, sizeof(m_previous));
     m_68 = 0;
     m_64 = false;
@@ -661,12 +661,6 @@ char *RHUnk0051a4e0::FUN_0051a4e0()
     return (char *)(*(void **)value) + 8;
 }
 
-// FUNCTION: GAME 0x0051a680
-bool RHUnk0051a4e0::FUN_0051a680(int first, int second, int third, int fourth, int fifth)
-{
-    return false;
-}
-
 void EmitRHGameInputTranslator(RHGameInputTranslator *translator, SBGeoPoint2D &point, SBInputKeyboardState &keys)
 {
     translator->TranslateMouseInput(point, 0);
@@ -690,5 +684,4 @@ void EmitRHGamePad()
 void EmitRHUnk0051a4e0(RHUnk0051a4e0 *a)
 {
     a->FUN_0051a4e0();
-    a->FUN_0051a680(0, 0, 0, 0, 0);
 }

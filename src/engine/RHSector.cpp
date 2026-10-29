@@ -2,6 +2,7 @@
 #include "RHEngine.h"
 #include "VMCore.h"
 #include "SBFilePosition.h"
+#include <stddef.h>
 
 extern RHEngine *g_pEngine;
 
@@ -15,6 +16,14 @@ DECOMP_SIZE_ASSERT(RHUnk0057d440, 0x5c)
 DECOMP_SIZE_ASSERT(RHSectorDoor, 0x35)
 DECOMP_SIZE_ASSERT(RHSectorBuilding, 0x11c)
 DECOMP_SIZE_ASSERT(RHUnk0057d490, 0xf0)
+DECOMP_SIZE_ASSERT(RHMotionAreaList<void *>, 0x24)
+DECOMP_SIZE_ASSERT(RHMotionAreaList<bool>, 0x24)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0057d490, m_gates) == 0x5c)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0057d490, m_sides) == 0x80)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0057d490, m_areas) == 0xa4)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0057d490, m_c8) == 0xc8)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0057d490, m_ec) == 0xec)
+DECOMP_STATIC_ASSERT(offsetof(RHSectorLift, m_f0) == 0xf0)
 DECOMP_SIZE_ASSERT(RHBuildingActorList, 0x24)
 
 class RHScrollScript
@@ -45,6 +54,9 @@ public:
     RHScriptIter erase(RHScriptIter position);
 };
 
+// TEMPLATE: GAME 0x00486190
+// ?_Destroy@std@@YAXPAVSBGeoPoint2D@@@Z
+
 // GLOBAL: GAME 0x6c100c
 RHElementActor *g_unk0x6c100c;
 
@@ -64,6 +76,9 @@ inline void *RHUnkSectorLookup(unsigned short sector)
         return g_unk0x6c0a9c->m_4184;
     return g_unk0x6c0a9c->m_4064[sector];
 }
+
+// TEMPLATE: GAME 0x0044e8b0 FOLDED
+// ?erase@?$list@PAVRHElementActor@@V?$allocator@PAVRHElementActor@@@std@@@std@@QAE?AViterator@12@V312@0@Z
 
 // FUNCTION: GAME 0x00408900
 int RHUnkSectorScriptRef::Unk00408900()
@@ -96,15 +111,18 @@ int RHUnkSectorScriptRef::Unk00408af0(RHElementActor *actor)
     return value;
 }
 
-// deferred: 0x0046eb30, parked body; shared by counted callers.
+// TEMPLATE: GAME 0x0046eb30 FOLDED
+// ?erase@RHUnk0046eb30@@QAE?AURHScriptIter@@U2@@Z
 RHScriptIter RHUnk0046eb30::erase(RHScriptIter position)
 {
-    RHScriptNode *next = *(RHScriptNode *volatile *)&position.node->next;
-    position.node->prev->next = position.node->next;
-    position.node->next->prev = position.node->prev;
-    operator delete(position.node);
+    RHScriptIter erased = position;
+    position.node = position.node->next;
+    RHScriptNode *node = erased.node;
+    node->prev->next = node->next;
+    node->next->prev = node->prev;
+    operator delete(node);
     --count;
-    return RHScriptIter(next);
+    return position;
 }
 
 // FUNCTION: GAME 0x00522540
@@ -152,14 +170,11 @@ RHSector::RHSector()
     m_36 = 0xffff;
 }
 
-// FUNCTION: GAME 0x0057caf0
-void *RHSector::FUN_0057caf0(unsigned flags)
-{
-    this->~RHSector();
-    if (flags & 1)
-        operator delete(this);
-    return this;
-}
+// SYNTHETIC: GAME 0x0057caf0
+// RHSector::`scalar deleting destructor'
+
+// SYNTHETIC: GAME 0x0057cb10
+// RHUnk0060c2c0::~RHUnk0060c2c0
 
 // FUNCTION: GAME 0x0057cbd0
 RHSector::~RHSector()
@@ -276,21 +291,6 @@ RHUnk0057d440::RHUnk0057d440()
     m_30 = 0x400;
 }
 
-#include <list>
-
-template <class T>
-class RHMotionAreaList : public std::list<T>
-{
-public:
-    void *m_cursor;
-    char m_dirty;
-    void InsertLast(const T &value)
-    {
-        insert(end(), value);
-        m_dirty = 1;
-    }
-};
-
 // FUNCTION: GAME 0x0057d760
 void RHUnk0057d490::FUN_0057d760(void *gate, bool side)
 {
@@ -299,7 +299,7 @@ void RHUnk0057d490::FUN_0057d760(void *gate, bool side)
 }
 
 // FUNCTION: GAME 0x0057dc20
-void RHUnk0057d490::FUN_0057dc20(void *, unsigned long, const SBGeoBoundingBox2D &, float, unsigned short)
+void RHUnk0057d490::FUN_0057d390(void *, unsigned long, const SBGeoBoundingBox2D &, float, unsigned short)
 {
     int count = *(int *)((char *)this + 0x64);
     if ((unsigned short)count > 0)
@@ -329,14 +329,8 @@ RHSectorBuilding::RHSectorBuilding()
     m_f0 = 0xffff;
 }
 
-// FUNCTION: GAME 0x0057e560
-void *RHSectorBuilding::FUN_0057e560(unsigned flags)
-{
-    this->RHSectorBuilding::~RHSectorBuilding();
-    if (flags & 1)
-        operator delete(this);
-    return this;
-}
+// SYNTHETIC: GAME 0x0057e560
+// RHSectorBuilding::`scalar deleting destructor'
 
 // FUNCTION: GAME 0x0057e580
 RHSectorBuilding::~RHSectorBuilding()
@@ -360,7 +354,7 @@ int RHSectorBuilding::FUN_0057e710(SBFile &file, RHUnkSectorLiftGrid *grid)
 }
 
 // FUNCTION: GAME 0x0057eb80
-void RHSectorBuilding::FUN_0057eb80(void *, unsigned long, const SBGeoBoundingBox2D &, float, unsigned short)
+void RHSectorBuilding::FUN_0057d390(void *, unsigned long, const SBGeoBoundingBox2D &, float, unsigned short)
 {
     unsigned count = ((RHSectorActorList *)((char *)this + 0x5c))->m_count;
     for (unsigned index = 0; index < count; ++index)
@@ -482,10 +476,8 @@ RHUnk0057ed80::RHUnk0057ed80()
 }
 
 // FUNCTION: GAME 0x0057dc80
-RHUnk0057dc80::RHUnk0057dc80()
+RHSectorLift::RHSectorLift()
 {
-    FUN_0057d490();
-    *(unsigned *)this = 0x679c44;
     m_f4 = 0;
     m_f6 = 0;
     m_f9 = 0;
@@ -494,7 +486,6 @@ RHUnk0057dc80::RHUnk0057dc80()
     m_30 = 0x203;
 }
 
-void RHUnk0057dc80::FUN_0057d490() {}
 
 // FUNCTION: GAME 0x0057dcf0
 int RHSectorLift::FUN_0057dcf0(int animation)
@@ -669,7 +660,7 @@ int RHSectorLift::Unk0057e060(SBFile &file, RHUnkSectorLiftGrid *grid)
         m_f0 = 1;
     }
     RHUnk0057d440 *sector = new RHUnk0057d440;
-    sector->UnkV4(file, false);
+    sector->Unk0057cd60(file, false);
     sector->m_30 = 0x440;
     sector->m_58 = this;
     float minimum = 3.4028234663852886e38f;
@@ -683,15 +674,15 @@ int RHSectorLift::Unk0057e060(SBFile &file, RHUnkSectorLiftGrid *grid)
     {
         RHUnk0051aa00 *gate = new RHUnk0051aa00;
         gate->Unk0051b2a0(file, 0);
-        if (gate->m_1c > maximum)
+        if (gate->m_18.m_y > maximum)
         {
             m_100 = gate;
-            maximum = gate->m_1c;
+            maximum = gate->m_18.m_y;
         }
-        if (gate->m_1c < minimum)
+        if (gate->m_18.m_y < minimum)
         {
             m_104 = gate;
-            minimum = gate->m_1c;
+            minimum = gate->m_18.m_y;
         }
         gates.InsertLast(gate);
     }
@@ -836,7 +827,7 @@ void RHSectorArchery::InitializeFromMissionStream(SBFile &file)
     *(void *volatile *)&m_78 = RHUnkSectorLookup((unsigned short)sector);
     unsigned short scratch;
     file.Access(&scratch, 2);
-    Unk0057cd60(file, false);
+    RHSector::Unk0057cd60(file, false);
     unsigned count;
     file.Access(&count, 2);
     m_58.Resize((unsigned short)count);
@@ -928,7 +919,7 @@ bool RHSectorArchery::IsInside(const RHUnk00571160Position &position)
 // FUNCTION: GAME 0x0057f8c0
 void RHSectorScript::InitializeFromMissionStream(SBFile &file)
 {
-    ((RHSector *)this)->Unk0057cd60(file, false);
+    ((RHSector *)this)->RHSector::Unk0057cd60(file, false);
     SBGeoPoint2D point;
     RHUnkSectorPoints &points = *(RHUnkSectorPoints *)((char *)this + 4);
     unsigned int count = (unsigned short)points.Unk0060ce80();
@@ -1131,8 +1122,13 @@ void RHSectorLift::Emit(SBFile &file)
 
 void RHUnk0057d490::Emit(void *gate, bool side)
 {
+    typedef std::list<bool> Flags;
+    typedef Flags::iterator (Flags::*Insert)(Flags::iterator, const bool &);
+    Insert insert = &Flags::insert;
+    Flags &flags = *(Flags *)((char *)this + 0x80);
+    (flags.*insert)(flags.end(), side);
     FUN_0057d760(gate, side);
-    FUN_0057dc20(0, 0, *(SBGeoBoundingBox2D *)gate, 0, 0);
+    FUN_0057d390(0, 0, *(SBGeoBoundingBox2D *)gate, 0, 0);
 }
 
 void RHSectorLift::Emit(SBFile &file, RHUnkSectorLiftGrid *grid)
@@ -1161,15 +1157,14 @@ SBGeoPoint2D &RHUnkSectorPoints::Unk0060cef0(unsigned int index)
 
 void EmitRHSectorVariants(void *storage)
 {
-    void *(RHSector::*destroy)(unsigned) = &RHSector::FUN_0057caf0;
-    (((RHSector *)storage)->*destroy)(0);
+    delete (RHSector *)storage;
     ((RHUnk0057d3a0 *)storage)->RHUnk0057d3a0::RHUnk0057d3a0();
     ((RHUnk0057d3f0 *)storage)->RHUnk0057d3f0::RHUnk0057d3f0();
     ((RHUnk0057ed80 *)storage)->RHUnk0057ed80::RHUnk0057ed80();
-    ((RHUnk0057dc80 *)storage)->RHUnk0057dc80::RHUnk0057dc80();
+    ((RHSectorLift *)storage)->RHSectorLift::RHSectorLift();
     ((RHUnk0057d3a0 *)storage)->RHUnk0057d3a0::~RHUnk0057d3a0();
     ((RHUnk0057d3f0 *)storage)->RHUnk0057d3f0::~RHUnk0057d3f0();
     ((RHUnk0057ed80 *)storage)->RHUnk0057ed80::~RHUnk0057ed80();
     ((RHUnk0057d440 *)storage)->RHUnk0057d440::~RHUnk0057d440();
-    ((RHUnk0057dc80 *)storage)->RHUnk0057dc80::~RHUnk0057dc80();
+    ((RHSectorLift *)storage)->RHSectorLift::~RHSectorLift();
 }

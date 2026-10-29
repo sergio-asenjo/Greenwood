@@ -275,6 +275,7 @@ public:
 
 #include "RHPlaneCalls.h"
 
+#define SBGEO_BOUNDINGBOX2D_VIEW
 class SBGeoBoundingBox2D
 {
 public:
@@ -315,11 +316,6 @@ public:
 
 #include "RHMobileUnk006100e0.h"
 
-class RHFastFindSegmentCalls
-{
-public:
-    bool FUN_0060a990(const RHMalignitySegment &);
-};
 
 class RHUnk005a3450
 {
@@ -353,65 +349,7 @@ public:
     char m_1a7;
 };
 
-class RHElementActor;
-
-#include <list>
-
-class RHFastFindCursorList : public std::list<void *>
-{
-public:
-    RHFastFindCursorList() : m_dirty(true) {}
-    iterator m_cursor;
-    bool m_dirty;
-    int m_index;
-};
-
-// VTABLE: GAME 0x0067909c
-// SIZE 0x94
-class RHUnk0051a5e0
-{
-public:
-    RHUnk0051a5e0();
-    ~RHUnk0051a5e0();
-    virtual bool FUN_0051abe0(bool, RHElementActor *, bool, bool, bool); // vtable+0x00
-    virtual bool Serialize(SBFile &file); // vtable+0x04
-    undefined m_04[8]; // +0x04
-    RHFastFindSector *m_0c; // +0x0c
-    RHFastFindSector *m_10; // +0x10
-    unsigned short m_14; // +0x14
-    short m_16; // +0x16
-    SBGeoPoint2D m_18; // +0x18
-    SBGeoPoint2D m_20; // +0x20
-    undefined m_28[4]; // +0x28
-    RHFastFindCursorList m_2c; // +0x2c
-    undefined m_44[0xc]; // +0x44
-    RHFastFindCursorList m_50; // +0x50
-    undefined m_68[0x20]; // +0x68
-    int m_88; // +0x88
-    undefined m_8c[8]; // +0x8c
-};
-
-// VTABLE: GAME 0x006790a4
-// SIZE 0xbc
-class RHUnk0051aa00 : public RHUnk0051a5e0
-{
-public:
-    RHUnk0051aa00();
-    ~RHUnk0051aa00();
-    virtual bool FUN_0051abe0(bool, RHElementActor *, bool, bool, bool); // vtable+0x00
-    virtual bool Serialize(SBFile &file); // vtable+0x04
-    virtual bool FUN_0051b870(bool, RHElementActor *, bool, bool, bool); // vtable+0x08
-    virtual bool FUN_0057cd50(undefined4); // vtable+0x0c
-    void Unk0051b2a0(SBFile &file, RHSectorBuilding *building);
-    SBGeoPoint2D m_94; // +0x94
-    int m_9c; // +0x9c
-    int m_a0; // +0xa0
-    int m_a4; // +0xa4
-    int m_a8; // +0xa8
-    undefined m_ac[4]; // +0xac
-    int m_b0; // +0xb0
-    undefined m_b4[8]; // +0xb4
-};
+#include "RHGate.h"
 
 class RHScriptRecordWorld
 {
@@ -615,6 +553,7 @@ public:
     RHUnk0051e1e0();
     ~RHUnk0051e1e0();
     void Unk0051e230(SBFile &file, RHSeqList &sectors);
+    unsigned short GetLayer() const { return m_layer; }
     char m_00[0x1c];
     void *m_owner;
     RHUnk0051e1e0 *m_other;
@@ -624,14 +563,6 @@ public:
     char m_2e[0xa];
     bool m_mode;
     char m_39[3];
-};
-
-class RHUnk0051b6e0
-{
-public:
-    RHUnk0051b6e0(RHUnk0051e1e0 *first, RHUnk0051e1e0 *second);
-    ~RHUnk0051b6e0();
-    char m_00[0x90];
 };
 
 #define fastfind_lifts (*(RHFastFindPointerArray *)((char *)this + 0x40c0))
@@ -706,13 +637,7 @@ public:
     int Unk();
 };
 
-class RHSector
-{
-public:
-    RHSector();
-    ~RHSector();
-    int Unk0057cd60(SBFile &file, bool mode);
-};
+#include "RHSectorCore.h"
 
 #include "RHRepulsivePoint.h"
 

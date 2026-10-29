@@ -79,8 +79,6 @@ public:
     void FUN_005fdc70();
 };
 
-void FUN_0064158f(void *);
-
 class RHUnkFXDraw
 {
 public:
@@ -167,6 +165,9 @@ extern RHMapResources *g_unk0x006c1840;
 
 DECOMP_SIZE_ASSERT(SBResourceFileList, 0x24)
 DECOMP_SIZE_ASSERT(SBResourceManager, 0x94)
+
+// TEMPLATE: GAME 0x004e6c50
+// ?erase@?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@QAEPAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@2@PAV32@0@Z
 
 // FUNCTION: GAME 0x005fced0
 SBResourceManager::SBResourceManager()
@@ -1857,7 +1858,7 @@ template<> void SBResourceTreeStorage<0x18, 0x14, 0x34>::Initialize()
     m_head->m_right = m_head;
 }
 
-// Parked: erase successor/frame scheduling and payload cleanup differ.
+// Parked: payload cleanup keeps an extra frame slot and swaps the node/tree registers.
 // STUB: GAME 0x00601fe0
 // ?EraseNode@?$SBResourceTreeStorage@$0DE@$0DA@$0EE@@@QAE?AUSBResourceTreeIterator@@PAUSBResourceTreeLinks@@@Z
 
@@ -1907,8 +1908,7 @@ template<> void SBResourceTreeStorage<0x34, 0x30, 0x44>::Initialize()
 // TEMPLATE: GAME 0x00602760
 // ?InsertNode@?$SBResourceTreeStorage@$0DE@$0DA@$0EE@@@QAE?AUSBResourceTreeIterator@@PAUSBResourceTreeLinks@@0ABK@Z
 
-// Parked: erase successor/color scheduling and carried registers differ.
-// STUB: GAME 0x00602a60
+// TEMPLATE: GAME 0x00602a60
 // ?EraseNode@?$SBResourceTreeStorage@$0CA@$0BM@$0FE@@@QAE?AUSBResourceTreeIterator@@PAUSBResourceTreeLinks@@@Z
 
 // FUNCTION: GAME 0x00602f80
@@ -1948,8 +1948,7 @@ template<> void SBResourceTreeStorage<0x20, 0x1c, 0x54>::Initialize()
 // TEMPLATE: GAME 0x006030c0
 // ?InsertNode@?$SBResourceTreeStorage@$0CA@$0BM@$0FE@@@QAE?AUSBResourceTreeIterator@@PAUSBResourceTreeLinks@@0ABK@Z
 
-// Parked: color-swap and rotation register scheduling differ.
-// STUB: GAME 0x006033c0
+// TEMPLATE: GAME 0x006033c0
 // ?EraseNode@?$SBResourceTreeStorage@$0CA@$0BM@$0GE@@@QAE?AUSBResourceTreeIterator@@PAUSBResourceTreeLinks@@@Z
 
 // FUNCTION: GAME 0x006038c0
@@ -1990,7 +1989,7 @@ template<> void SBResourceTreeStorage<0x20, 0x1c, 0x64>::Initialize()
 // TEMPLATE: GAME 0x00603a00
 // ?InsertNode@?$SBResourceTreeStorage@$0CA@$0BM@$0GE@@@QAE?AUSBResourceTreeIterator@@PAUSBResourceTreeLinks@@0ABK@Z
 
-// Parked: erase frame scheduling and wide payload cleanup differ.
+// Parked: payload cleanup keeps an extra frame slot and swaps the node/tree registers.
 // STUB: GAME 0x00603d00
 // ?EraseNode@?$SBResourceTreeStorage@$0EA@$0DM@$0HE@@@QAE?AUSBResourceTreeIterator@@PAUSBResourceTreeLinks@@@Z
 
@@ -2040,7 +2039,7 @@ template<> void SBResourceTreeStorage<0x40, 0x3c, 0x74>::Initialize()
 // TEMPLATE: GAME 0x00604490
 // ?InsertNode@?$SBResourceTreeStorage@$0EA@$0DM@$0HE@@@QAE?AUSBResourceTreeIterator@@PAUSBResourceTreeLinks@@0ABK@Z
 
-// Parked: erase frame scheduling and narrow payload cleanup differ.
+// Parked: payload cleanup keeps an extra frame slot and swaps the node/tree registers.
 // STUB: GAME 0x00604790
 // ?EraseNode@?$SBResourceTreeStorage@$0EA@$0DM@$0IE@@@QAE?AUSBResourceTreeIterator@@PAUSBResourceTreeLinks@@@Z
 
@@ -2202,6 +2201,14 @@ template<> struct SBResourceTreeTraits<0x84>
 };
 
 template<unsigned int S, unsigned int C, unsigned int I>
+inline SBResourceTreeLinks *SBResourceTreeStorage<S, C, I>::PostAdvance(SBResourceTreeLinks *&node)
+{
+    SBResourceTreeIterator previous(node);
+    SBResourceTreeTraits<I>::Advance(node);
+    return previous.m_node;
+}
+
+template<unsigned int S, unsigned int C, unsigned int I>
 inline int &SBResourceTreeStorage<S, C, I>::Color(SBResourceTreeLinks *node)
 {
     return *(int *)((char *)node + C);
@@ -2308,6 +2315,24 @@ SBResourceTreeIterator SBResourceTreeStorage<S, C, I>::InsertNode(SBResourceTree
 }
 
 template<unsigned int S, unsigned int C, unsigned int I>
+inline SBResourceTreeLinks *&SBResourceTreeStorage<S, C, I>::Left(SBResourceTreeLinks *node)
+{
+    return node->m_left;
+}
+
+template<unsigned int S, unsigned int C, unsigned int I>
+inline SBResourceTreeLinks *&SBResourceTreeStorage<S, C, I>::Right(SBResourceTreeLinks *node)
+{
+    return node->m_right;
+}
+
+template<unsigned int S, unsigned int C, unsigned int I>
+inline SBResourceTreeLinks *&SBResourceTreeStorage<S, C, I>::Parent(SBResourceTreeLinks *node)
+{
+    return node->m_parent;
+}
+
+template<unsigned int S, unsigned int C, unsigned int I>
 inline SBResourceTreeLinks *SBResourceTreeStorage<S, C, I>::Minimum(SBResourceTreeLinks *node)
 {
     RHUnk00641782 lock;
@@ -2328,113 +2353,140 @@ inline SBResourceTreeLinks *SBResourceTreeStorage<S, C, I>::Maximum(SBResourceTr
 template<unsigned int S, unsigned int C, unsigned int I>
 SBResourceTreeIterator SBResourceTreeStorage<S, C, I>::EraseNode(SBResourceTreeLinks *node)
 {
-    SBResourceTreeLinks *z = node;
-    SBResourceTreeTraits<I>::Advance(node);
-    SBResourceTreeLinks *y = z;
+    SBResourceTreeLinks *y = PostAdvance(node);
+    SBResourceTreeLinks *z = y;
     RHUnk00641782 lock;
     SBResourceTreeLinks *x;
-    if (SBResourceLeft(y) == SBResourceTreeTraits<I>::Nil())
-        x = SBResourceRight(y);
-    else if (SBResourceRight(y) == SBResourceTreeTraits<I>::Nil())
-        x = SBResourceLeft(y);
-    else {
-        y = Minimum(SBResourceRight(y));
-        x = y->m_right;
+    if (Left(y) == SBResourceTreeTraits<I>::Nil())
+        x = Right(y);
+    else if (Right(y) == SBResourceTreeTraits<I>::Nil())
+        x = Left(y);
+    else
+    {
+        y = Minimum(Right(y));
+        x = Right(y);
     }
-    if (y != z) {
-        z->m_left->m_parent = y;
-        y->m_left = z->m_left;
-        if (y == z->m_right)
-            x->m_parent = y;
-        else {
-            x->m_parent = y->m_parent;
-            y->m_parent->m_left = x;
-            y->m_right = z->m_right;
-            z->m_right->m_parent = y;
-        }
-        if (Root() == z)
-            Root() = y;
-        else if (z->m_parent->m_left == z)
-            z->m_parent->m_left = y;
-        else
-            z->m_parent->m_right = y;
-        y->m_parent = z->m_parent;
-        std::swap(Color(z), Color(y));
-        y = z;
-    } else {
-        x->m_parent = y->m_parent;
-        if (Root() == z)
-            Root() = x;
-        else if (z->m_parent->m_left == z)
-            z->m_parent->m_left = x;
-        else
-            z->m_parent->m_right = x;
-        if (Leftmost() == z) {
-            if (z->m_right == SBResourceTreeTraits<I>::Nil())
-                Leftmost() = z->m_parent;
+    {
+        if (y != z)
+        {
+            Parent(Left(z)) = y;
+            Left(y) = Left(z);
+            if (y == Right(z))
+                Parent(x) = y;
             else
-                Leftmost() = Minimum(x);
-        }
-        if (Rightmost() == z) {
-            if (z->m_left == SBResourceTreeTraits<I>::Nil())
-                Rightmost() = z->m_parent;
+            {
+                Parent(x) = Parent(y);
+                Left(Parent(y)) = x;
+                Right(y) = Right(z);
+                Parent(Right(z)) = y;
+            }
+            if (Root() == z)
+                Root() = y;
+            else if (Left(Parent(z)) == z)
+                Left(Parent(z)) = y;
             else
-                Rightmost() = Maximum(x);
+                Right(Parent(z)) = y;
+            Parent(y) = Parent(z);
+            std::swap(Color(y), Color(z));
+            y = z;
         }
-    }
-    if (Color(y) == 1) {
-        while (x != Root() && Color(x) == 1) {
-            if (x == x->m_parent->m_left) {
-                SBResourceTreeLinks *w = x->m_parent->m_right;
-                if (Color(w) == 0) {
-                    Color(w) = 1;
-                    Color(x->m_parent) = 0;
-                    Lrotate(x->m_parent);
-                    w = x->m_parent->m_right;
+        else
+        {
+            Parent(x) = Parent(y);
+            if (Root() == z)
+                Root() = x;
+            else if (Left(Parent(z)) == z)
+                Left(Parent(z)) = x;
+            else
+                Right(Parent(z)) = x;
+            if (Leftmost() == z)
+            {
+                if (Right(z) == SBResourceTreeTraits<I>::Nil())
+                    Leftmost() = Parent(z);
+                else
+                {
+                    Leftmost() = Minimum(x);
                 }
-                if (Color(w->m_left) == 1 && Color(w->m_right) == 1) {
-                    Color(w) = 0;
-                    x = x->m_parent;
-                } else {
-                    if (Color(w->m_right) == 1) {
-                        Color(w->m_left) = 1;
-                        Color(w) = 0;
-                        Rrotate(w);
-                        w = x->m_parent->m_right;
-                    }
-                    Color(w) = Color(x->m_parent);
-                    Color(x->m_parent) = 1;
-                    Color(w->m_right) = 1;
-                    Lrotate(x->m_parent);
-                    break;
-                }
-            } else {
-                SBResourceTreeLinks *w = x->m_parent->m_left;
-                if (Color(w) == 0) {
-                    Color(w) = 1;
-                    Color(x->m_parent) = 0;
-                    Rrotate(x->m_parent);
-                    w = x->m_parent->m_left;
-                }
-                if (Color(w->m_right) == 1 && Color(w->m_left) == 1) {
-                    Color(w) = 0;
-                    x = x->m_parent;
-                } else {
-                    if (Color(w->m_left) == 1) {
-                        Color(w->m_right) = 1;
-                        Color(w) = 0;
-                        Lrotate(w);
-                        w = x->m_parent->m_left;
-                    }
-                    Color(w) = Color(x->m_parent);
-                    Color(x->m_parent) = 1;
-                    Color(w->m_left) = 1;
-                    Rrotate(x->m_parent);
-                    break;
+            }
+            if (Rightmost() == z)
+            {
+                if (Left(z) == SBResourceTreeTraits<I>::Nil())
+                    Rightmost() = Parent(z);
+                else
+                {
+                    Rightmost() = Maximum(x);
                 }
             }
         }
-        Color(x) = 1;
+        if (Color(y) == 1)
+        {
+            while (x != Root() && Color(x) == 1)
+            {
+                if (x == Left(Parent(x)))
+                {
+                    SBResourceTreeLinks *w = Right(Parent(x));
+                    if (Color(w) == 0)
+                    {
+                        Color(w) = 1;
+                        Color(Parent(x)) = 0;
+                        Lrotate(Parent(x));
+                        w = Right(Parent(x));
+                    }
+                    if (Color(Left(w)) == 1 && Color(Right(w)) == 1)
+                    {
+                        Color(w) = 0;
+                        x = Parent(x);
+                    }
+                    else
+                    {
+                        if (Color(Right(w)) == 1)
+                        {
+                            Color(Left(w)) = 1;
+                            Color(w) = 0;
+                            Rrotate(w);
+                            w = Right(Parent(x));
+                        }
+                        Color(w) = Color(Parent(x));
+                        Color(Parent(x)) = 1;
+                        Color(Right(w)) = 1;
+                        Lrotate(Parent(x));
+                        break;
+                    }
+                }
+                else
+                {
+                    SBResourceTreeLinks *w = Left(Parent(x));
+                    if (Color(w) == 0)
+                    {
+                        Color(w) = 1;
+                        Color(Parent(x)) = 0;
+                        Rrotate(Parent(x));
+                        w = Left(Parent(x));
+                    }
+                    if (Color(Right(w)) == 1 && Color(Left(w)) == 1)
+                    {
+                        Color(w) = 0;
+                        x = Parent(x);
+                    }
+                    else
+                    {
+                        if (Color(Left(w)) == 1)
+                        {
+                            Color(Right(w)) = 1;
+                            Color(w) = 0;
+                            Lrotate(w);
+                            w = Left(Parent(x));
+                        }
+                        Color(w) = Color(Parent(x));
+                        Color(Parent(x)) = 1;
+                        Color(Left(w)) = 1;
+                        Rrotate(Parent(x));
+                        break;
+                    }
+                }
+            }
+            Color(x) = 1;
+        }
     }
     SBResourceTreeTraits<I>::DestroyValue(y);
     operator delete(y);

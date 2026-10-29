@@ -1,5 +1,4 @@
 #include "SBNullstr.h"
-#include "RHGate.h"
 #include "RHFastFindGrid.h"
 #include "RHMalignityActorCalls.h"
 
@@ -15,11 +14,72 @@ public:
     bool FUN_0057deb0(RHElementActor *actor, bool mode);
 };
 
-class RHSectorLift
+#include "RHSectorLift.h"
+
+// GLOBAL: GAME 0x006c0b68
+RHFastFindCursorList g_gateLinks;
+
+// TEMPLATE: GAME 0x00424410 FOLDED
+// ?insert@?$list@PAURHGateLink@@V?$allocator@PAURHGateLink@@@std@@@std@@QAE?AViterator@12@V312@ABQAURHGateLink@@@Z
+
+// TEMPLATE: GAME 0x0046eb30 FOLDED
+// ?erase@?$list@PAURHGateLink@@V?$allocator@PAURHGateLink@@@std@@@std@@QAE?AViterator@12@V312@@Z
+
+// TEMPLATE: GAME 0x0057c9c0 FOLDED
+// ??Eiterator@?$list@PAURHGateLink@@V?$allocator@PAURHGateLink@@@std@@@std@@QAE?AV012@H@Z
+
+// FUNCTION: GAME 0x0051a690
+void RHUnk0051a5e0::Link(RHUnk0051a5e0 *other)
 {
-public:
-    bool FUN_0057de30(RHElementActor *actor);
-};
+    RHGateLink *link = 0;
+    if (m_10 == other->FirstSector())
+    {
+        link = new RHGateLink;
+        g_gateLinks.InsertLast(link);
+        m_2c.InsertLast(link);
+        other->m_2c.Append(link);
+        link->distance = ((RHUnk005fc3b0 &)m_20.Unk005fc110(other->m_20)).Unk005fc6a0(1.0f);
+        link->sector = m_10;
+        link->second = this;
+        link->first = other;
+    }
+    if (m_10 == other->SecondSector())
+    {
+        link = new RHGateLink;
+        g_gateLinks.InsertLast(link);
+        m_2c.InsertLast(link);
+        other->m_50.InsertValue(link);
+        link->distance = ((RHUnk005fc3b0 &)m_20.Unk005fc110(other->m_18)).Unk005fc6a0(1.0f);
+        link->sector = m_10;
+        link->second = this;
+        link->first = other;
+    }
+    if (m_0c == other->FirstSector())
+    {
+        link = new RHGateLink;
+        g_gateLinks.InsertLast(link);
+        m_50.InsertLast(link);
+        other->m_2c.Append(link);
+        link->distance = ((RHUnk005fc3b0 &)m_18.Unk005fc110(other->m_20)).Unk005fc6a0(1.0f);
+        link->sector = m_0c;
+        link->second = this;
+        link->first = other;
+    }
+    if (m_0c == other->SecondSector())
+    {
+        link = new RHGateLink;
+        g_gateLinks.InsertLast(link);
+        m_50.InsertLast(link);
+        other->m_50.InsertValue(link);
+        link->distance = ((RHUnk005fc3b0 &)m_18.Unk005fc110(other->m_18)).Unk005fc6a0(1.0f);
+        link->sector = m_0c;
+        link->second = this;
+        link->first = other;
+    }
+}
+
+// SYNTHETIC: GAME 0x0051aa90
+// RHUnk0051a5e0::~RHUnk0051a5e0
 
 // Parked: permission-call cross-jumping and common return block placement differ.
 // STUB: GAME 0x0051abe0
@@ -126,12 +186,12 @@ fail:
 }
 
 // FUNCTION: GAME 0x0051ae30
-bool RHGate::Serialize(SBFile &file)
+bool RHUnk0051aa00::Serialize(SBFile &file)
 {
     // STRING: GAME 0x006b05fc
     RHSerializeName(file, "RHDoor");
 
-    if (file.Access(&m_8c, 1) < 0)
+    if (file.Access(&m_8c[0], 1) < 0)
     {
         SBString *err = file.GetError();
         const char *reason = err->m_chars ? err->m_chars : "";
@@ -142,7 +202,7 @@ bool RHGate::Serialize(SBFile &file)
         return false;
     }
 
-    if (file.Access(&m_8d, 1) < 0)
+    if (file.Access(&m_8c[1], 1) < 0)
     {
         SBString *err = file.GetError();
         const char *reason = err->m_chars ? err->m_chars : "";
@@ -150,7 +210,7 @@ bool RHGate::Serialize(SBFile &file)
         return false;
     }
 
-    if (file.Access(&m_8e, 1) < 0)
+    if (file.Access(&m_8c[2], 1) < 0)
     {
         SBString *err = file.GetError();
         const char *reason = err->m_chars ? err->m_chars : "";
@@ -158,7 +218,7 @@ bool RHGate::Serialize(SBFile &file)
         return false;
     }
 
-    if (file.Access(&m_8f, 1) < 0)
+    if (file.Access(&m_8c[3], 1) < 0)
     {
         SBString *err = file.GetError();
         const char *reason = err->m_chars ? err->m_chars : "";
@@ -166,7 +226,7 @@ bool RHGate::Serialize(SBFile &file)
         return false;
     }
 
-    if (file.Access(&m_b4, 1) < 0)
+    if (file.Access(&m_b4[0], 1) < 0)
     {
         SBString *err = file.GetError();
         const char *reason = err->m_chars ? err->m_chars : "";
@@ -174,7 +234,7 @@ bool RHGate::Serialize(SBFile &file)
         return false;
     }
 
-    if (file.Access(&m_b6, 2) < 0)
+    if (file.Access(&m_b4[2], 2) < 0)
     {
         SBString *err = file.GetError();
         const char *reason = err->m_chars ? err->m_chars : "";
@@ -182,7 +242,7 @@ bool RHGate::Serialize(SBFile &file)
         return false;
     }
 
-    if (file.Access(&m_b8, 2) < 0)
+    if (file.Access(&m_b4[4], 2) < 0)
     {
         SBString *err = file.GetError();
         const char *reason = err->m_chars ? err->m_chars : "";
@@ -191,4 +251,73 @@ bool RHGate::Serialize(SBFile &file)
     }
 
     return true;
+}
+
+// STUB: GAME 0x0051b110
+void RHUnk0051aa00::AdaptPoints()
+{
+    switch (m_88)
+    {
+    case 2:
+    {
+        SBGeoVector2D direction = m_20.Unk005fc110(m_94);
+        ((RHUnk005fc3b0 &)direction).FUN_005fc7c0(1.0f);
+        ((RHUnk005fc3b0 &)direction).FUN_005fc4d0(60.0f);
+        m_20 = m_94;
+        m_20.FUN_005fc1e0(direction);
+        break;
+    }
+    case 4:
+        if (*(int *)((char *)m_10 + 0xf0) == 3)
+        {
+            SBGeoVector2D direction = m_20.Unk005fc110(m_94);
+            ((RHUnk005fc3b0 &)direction).FUN_005fc7c0(1.0f);
+            ((RHUnk005fc3b0 &)direction).FUN_005fc4d0(60.0f);
+            m_20 = m_94;
+            m_20.FUN_005fc1e0(direction);
+        }
+        break;
+    case 6:
+        if (*(int *)((char *)m_10 + 0xf0) == 3)
+        {
+            SBGeoVector2D direction = m_20.Unk005fc110(m_94);
+            ((RHUnk005fc3b0 &)direction).FUN_005fc7c0(1.0f);
+            ((RHUnk005fc3b0 &)direction).FUN_005fc4d0(65.0f);
+            m_20 = m_94;
+            m_20.FUN_005fc1e0(direction);
+        }
+        break;
+    }
+}
+
+#include "RHSectorBuilding.h"
+
+// STUB: GAME 0x0051b6e0
+RHUnk0051b6e0::RHUnk0051b6e0(RHUnk0051e1e0 *first, RHUnk0051e1e0 *second)
+{
+    *(int *)m_04 = 2;
+    m_04[4] = 1;
+    m_88 = first;
+    m_8c = second;
+    m_20 = *(SBGeoPoint2D *)((char *)first + 4);
+    {
+        SBGeoVector2D direction(*(SBGeoVector2D *)((char *)first + 0xc));
+        m_20.FUN_005fc1e0(direction);
+    }
+    m_20.m_x *= 0.5f;
+    m_20.m_y *= 0.5f;
+    m_18 = *(SBGeoPoint2D *)((char *)second + 4);
+    {
+        SBGeoVector2D direction(*(SBGeoVector2D *)((char *)second + 0xc));
+        m_18.FUN_005fc1e0(direction);
+    }
+    m_18.m_x *= 0.5f;
+    m_18.m_y *= 0.5f;
+    m_10 = (RHFastFindSector *)first->m_owner;
+    m_0c = (RHFastFindSector *)second->m_owner;
+    ((RHUnk0057d490 *)m_10)->FUN_0057d760(this, false);
+    ((RHUnk0057d490 *)m_0c)->FUN_0057d760(this, true);
+    m_16 = first->GetLayer();
+    m_14 = second->GetLayer();
+    *(float *)m_28 = ((RHUnk005fc3b0 &)m_20.Unk005fc110(m_18)).Unk005fc6a0(1.0f) + 200.0f;
 }

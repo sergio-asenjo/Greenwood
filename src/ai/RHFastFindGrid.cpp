@@ -497,17 +497,9 @@ public:
 
 DECOMP_SIZE_ASSERT(RHFastFindUniqueList, 0x24)
 
-class SBUIInputFieldBoxCalls
-{
-public:
-    bool FUN_00608450(const SBGeoBoundingBox2D &);
-};
+#include "SBUIInputFieldBoxCalls.h"
 
-class RHUnk00608f10
-{
-public:
-    int FUN_00608f10(void *value);
-};
+#include "RHUnk00608f10.h"
 
 class RHEngine;
 extern RHEngine *g_pEngine;
@@ -732,8 +724,8 @@ bool RHFastFindGrid::FUN_004ecc60(RHFastFindUniqueList &owners, RHFastFindUnique
         for (unsigned short j = 0; j < lineCount; ++j) {
             void **lineValues = *(void **volatile *)&owner->m_lines.m_first;
             void *line = lineValues[j];
-            bool intersects = box.FUN_00608650((const RHMobileUnk006100e0 &)SBGeoSegment2D(
-                *(const SBGeoSegment2D *)(line ? (char *)line + 4 : 0)));
+            bool intersects = box.FUN_00608650(SBGeoSegment2D(
+                *(const SBGeoSegment2D *)(line ? (char *)line + 4 : 0)).Line());
             if (intersects) {
                 lines.InsertLastCall(line);
                 if (!added) {
@@ -850,7 +842,7 @@ void RHFastFindGrid::FUN_004ed370(RHFastFindUniqueList &output, unsigned short l
     for (unsigned short i = previousCount; i < count; ++i) {
         ((RHSeqList *)&output)->GoTo(i);
         void *value = output.m_current->value;
-        if (!((RHFastFindSegmentCalls *)((char *)value + 4))->FUN_0060a990(segment)) {
+        if (!((SBGeoSegment2D *)((char *)value + 4))->IsIntersecting((const SBGeoSegment2D &)segment)) {
             ((RHSeqList *)&output)->GoTo(i);
             RHFastFindUniqueNode *node = output.m_current;
             node->previous->next = node->next;
@@ -1188,13 +1180,13 @@ void RHFastFindGrid::FUN_004eea50(RHFastFindUniqueList &output, unsigned short l
     {
         RHFastFindMobileOwner *owner = owners.m_first[i];
         if (*(unsigned short *)(owner->m_position + 0xde) == layer &&
-            owner->m_bounds.FUN_00608650((const RHMobileUnk006100e0 &)segment))
+            owner->m_bounds.FUN_00608650(reinterpret_cast<const RHMobileUnk006100e0 &>(segment)))
         {
             unsigned short obstacleCount = owner->m_first == 0 ? 0 : owner->m_last - owner->m_first;
             for (unsigned short j = 0; j < obstacleCount; ++j)
             {
                 void *value = owner->m_first[j];
-                if (((SBGeoBoundingBox2D *)((char *)value + 0x24))->FUN_00608650((const RHMobileUnk006100e0 &)segment))
+                if (((SBGeoBoundingBox2D *)((char *)value + 0x24))->FUN_00608650(reinterpret_cast<const RHMobileUnk006100e0 &>(segment)))
                 {
                     if (output.Find(value) == -1)
                         output.InsertLastExternal(value);
@@ -1287,7 +1279,7 @@ void RHFastFindGrid::FUN_004eef30(RHFastFindUniqueList &output, unsigned short l
     {
         ((RHSeqList *)&output)->GoTo(i);
         void *value = output.m_current->value;
-        if (!((SBGeoBoundingBox2D *)((char *)value + 0x24))->FUN_00608650((const RHMobileUnk006100e0 &)segment))
+        if (!((SBGeoBoundingBox2D *)((char *)value + 0x24))->FUN_00608650(reinterpret_cast<const RHMobileUnk006100e0 &>(segment)))
         {
             output.GoToSegment(i);
             ((RHUnk0046eb30 *)&output)->erase(RHScriptIter((RHScriptNode *)output.m_current));
@@ -2587,6 +2579,25 @@ public:
     RHFastFindPointerArray m_arrays[5];
 };
 
+#include "SBResourceManager.h"
+
+class RHFastFindRangeArray : public std::vector<unsigned long>
+{
+public:
+    RHFastFindRangeArray() : m_changed(true) {}
+    RHFastFindRangeArray(const RHFastFindRangeArray &other)
+    {
+        ((RHScriptFXArray *)this)->Unk004ff210((void *const *)other.begin(), (void *const *)other.end());
+        m_changed = true;
+    }
+    ~RHFastFindRangeArray() { erase(begin(), end()); }
+    unsigned long *m_search;
+    bool m_changed;
+    bool m_searching;
+    int m_index;
+    unsigned long m_value;
+};
+
 class RHFastFindClearedWordRecord : public std::vector<unsigned short>
 {
 public:
@@ -2648,11 +2659,12 @@ public:
 class RHUnk004fda20
 {
 public:
-    RHFastFindClearedPointerRecord m_00;
-    RHFastFindClearedWordRecord m_20;
-    RHFastFindClearedPointerRecord m_40;
-    RHFastFindClearedPointerRecord m_60;
-    RHFastFindClearedPointerRecord m_80;
+    RHUnk004fda20();
+    RHFastFindRangeArray m_00;
+    RHFastFindRangeArray m_20;
+    RHFastFindRangeArray m_40;
+    RHFastFindRangeArray m_60;
+    SBResourceSurfaceArray m_80;
     ~RHUnk004fda20();
     RHUnk004fda20 &operator=(const RHUnk004fda20 &other)
     {
@@ -2790,19 +2802,8 @@ RHUnk004fd7f0::~RHUnk004fd7f0()
 {
 }
 
-class RHUnk004fd9a0
-{
-public:
-    RHFastFindDefaultArray m_00;
-    RHFastFindDefaultArray m_20;
-    RHFastFindDefaultArray m_40;
-    RHFastFindDefaultArray m_60;
-    RHFastFindDefaultArray m_80;
-    RHUnk004fd9a0();
-};
-
 // FUNCTION: GAME 0x004fd9a0
-RHUnk004fd9a0::RHUnk004fd9a0()
+RHUnk004fda20::RHUnk004fda20()
 {
 }
 
@@ -2867,8 +2868,6 @@ void RHUnk004fdf40::FUN_004fdf40()
     m_c = 0;
 }
 
-#include "SBResourceManager.h"
-
 #include "RHCopyPointers.h"
 
 __forceinline void AssignFastFindIntegers(RHFastFindPointerArray &destination,
@@ -2913,14 +2912,28 @@ struct RHFastFindRecordC0
     char m_data[0xc0];
 };
 
-// SIZE 0xa0
-struct RHFastFindRecordA0
-{
-    char m_data[0xa0];
-};
+typedef RHUnk004fda20 RHFastFindRecordA0;
+
+DECOMP_SIZE_ASSERT(RHFastFindRangeArray, 0x20)
+DECOMP_SIZE_ASSERT(RHFastFindRecordC0, 0xc0)
+DECOMP_SIZE_ASSERT(RHFastFindRecordA0, 0xa0)
+
+// TEMPLATE: GAME 0x0051d120 FOLDED
+// ??1RHFastFindRangeArray@@QAE@XZ
+
+// TEMPLATE: GAME 0x0051d120 FOLDED
+// ??1SBResourceSurfaceArray@@QAE@XZ
+
+// LIBRARY: GAME 0x00570330 FOLDED
+// ??1?$vector@KV?$allocator@K@std@@@std@@QAE@XZ
 
 void FUN_004fe9d0(RHFastFindRecordC0 *destination, const RHFastFindRecordC0 &value);
-void FUN_004feb10(RHFastFindRecordA0 *destination, const RHFastFindRecordA0 &value);
+
+// FUNCTION: GAME 0x004feb10
+void FUN_004feb10(RHFastFindRecordA0 *destination, const RHFastFindRecordA0 &value)
+{
+    new (destination) RHFastFindRecordA0(value);
+}
 
 class RHFastFindRecordArray
 {
@@ -2975,7 +2988,32 @@ void RHFastFindRecordArray::Unk004fe3f0(RHFastFindRecordA0 *destination, unsigne
         FUN_004feb10(destination, value);
 }
 
-// deferred: unannotated pending reccmp #534
+// TEMPLATE: GAME 0x004fe420 FOLDED
+// ?_Ucopy@?$vector@KV?$allocator@K@std@@@std@@IAEPAKPBK0PAK@Z
+
+// TEMPLATE: GAME 0x004fe420 FOLDED
+// ?_Ucopy@?$vector@PAVRHPCDescription@@V?$allocator@PAVRHPCDescription@@@std@@@std@@IAEPAPAVRHPCDescription@@PBQAV3@0PAPAV3@@Z
+
+// TEMPLATE: GAME 0x004fe420 FOLDED
+// ?_Ucopy@?$vector@PAXV?$allocator@PAX@std@@@std@@IAEPAPAXPBQAX0PAPAX@Z
+
+// TEMPLATE: GAME 0x004fe420 FOLDED
+// ?_Ucopy@?$vector@PAVRHReceiverInterface@@V?$allocator@PAVRHReceiverInterface@@@std@@@std@@IAEPAPAVRHReceiverInterface@@PBQAV3@0PAPAV3@@Z
+
+// TEMPLATE: GAME 0x004fe420 FOLDED
+// ?_Ucopy@?$vector@PAVRHUnk0051aa00@@V?$allocator@PAVRHUnk0051aa00@@@std@@@std@@IAEPAPAVRHUnk0051aa00@@PBQAV3@0PAPAV3@@Z
+
+// TEMPLATE: GAME 0x004fe420 FOLDED
+// ?_Ucopy@?$vector@PAVRHMission@@V?$allocator@PAVRHMission@@@std@@@std@@IAEPAPAVRHMission@@PBQAV3@0PAPAV3@@Z
+
+// TEMPLATE: GAME 0x004fe420 FOLDED
+// ?_Ucopy@?$vector@PAVRHSaveGame@@V?$allocator@PAVRHSaveGame@@@std@@@std@@IAEPAPAVRHSaveGame@@PBQAV3@0PAPAV3@@Z
+
+// TEMPLATE: GAME 0x004fe420 FOLDED
+// ?_Ucopy@?$vector@HV?$allocator@H@std@@@std@@IAEPAHPBH0PAH@Z
+
+// TEMPLATE: GAME 0x004fe420 FOLDED
+// ?Unk004fe420@RHScriptFXArray@@QAEPAPAXPAPAX00@Z
 void **RHScriptFXArray::Unk004fe420(void **first, void **last, void **destination)
 {
     for (; first != last; ++first, ++destination)
@@ -2984,7 +3022,23 @@ void **RHScriptFXArray::Unk004fe420(void **first, void **last, void **destinatio
     return destination;
 }
 
-// deferred: 0x004fe450, exact body; unannotated pending reccmp #534.
+// TEMPLATE: GAME 0x004fe450 FOLDED
+// ?_Ufill@?$vector@KV?$allocator@K@std@@@std@@IAEXPAKIABK@Z
+
+// TEMPLATE: GAME 0x004fe450 FOLDED
+// ?_Ufill@?$vector@PAVRHPCDescription@@V?$allocator@PAVRHPCDescription@@@std@@@std@@IAEXPAPAVRHPCDescription@@IABQAV3@@Z
+
+// TEMPLATE: GAME 0x004fe450 FOLDED
+// ?_Ufill@?$vector@PAVRHReceiverInterface@@V?$allocator@PAVRHReceiverInterface@@@std@@@std@@IAEXPAPAVRHReceiverInterface@@IABQAV3@@Z
+
+// TEMPLATE: GAME 0x004fe450 FOLDED
+// ?_Ufill@?$vector@PAVRHUnk0051aa00@@V?$allocator@PAVRHUnk0051aa00@@@std@@@std@@IAEXPAPAVRHUnk0051aa00@@IABQAV3@@Z
+
+// TEMPLATE: GAME 0x004fe450 FOLDED
+// ?_Ufill@?$vector@PAVRHSaveGame@@V?$allocator@PAVRHSaveGame@@@std@@@std@@IAEXPAPAVRHSaveGame@@IABQAV3@@Z
+
+// TEMPLATE: GAME 0x004fe450 FOLDED
+// ?Unk004fe450@RHScriptFXArray@@QAEXPAPAXIABQAX@Z
 void RHScriptFXArray::Unk004fe450(void **destination, unsigned int count, void *const &value)
 {
     for (; count > 0; --count, ++destination)
@@ -3390,7 +3444,7 @@ RHUnk0051e5e0::RHUnk0051e5e0()
 int RHUnk0051e5e0::Unk0051e700(SBFile &file)
 {
     int start = ((ToolboxPositionFile *)&file)->FUN_005f5440();
-    ((RHSector *)this)->Unk0057cd60(file, false);
+    ((RHSector *)this)->RHSector::Unk0057cd60(file, false);
     unsigned short sector;
     file.Access(&sector, 2);
     *(void **)((char *)this + 0x98) = RHFastFindLookup(sector);
@@ -3406,8 +3460,8 @@ bool RHUnk0051e5e0::FUN_0051e7b0(unsigned int index, RHElementActor *actor, bool
     RHUnk0051e1e0 *line = (RHUnk0051e1e0 *)m_lines.m_first[index];
     if (line->m_owner == *(void **)((char *)*(void **)((char *)actor + 0x50) + 0xe0))
     {
-        RHUnk0051a5e0 *gate = (RHUnk0051a5e0 *)line->m_gate;
-        if (gate->FUN_0051abe0(line == *(RHUnk0051e1e0 **)gate->m_8c, actor, mode, true, false))
+        RHUnk0051b6e0 *gate = (RHUnk0051b6e0 *)line->m_gate;
+        if (gate->FUN_0051abe0(line == gate->m_8c, actor, mode, true, false))
             return true;
     }
     return false;
@@ -3531,7 +3585,10 @@ void RHUnk00522470::Unk005224d0(SBFile &file)
     *(void **)((char *)this + 0x24) = value;
 }
 
-// LIBRARY: GAME 0x0059fbc0
+// LIBRARY: GAME 0x0059fbc0 FOLDED
+// ?size@?$vector@HV?$allocator@H@std@@@std@@QBEIXZ
+
+// LIBRARY: GAME 0x0059fbc0 FOLDED
 // ?size@?$vector@KV?$allocator@K@std@@@std@@QBEIXZ
 
 // FUNCTION: GAME 0x005df860

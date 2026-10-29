@@ -69,12 +69,7 @@ class RHMobileUnk006100e0;
 
 #include "RHMobileUnk00607da0.h"
 
-class SBUIInputFieldBoxCalls
-{
-public:
-    bool FUN_00608450(const SBGeoBoundingBox2D &);
-    SBUIInputFieldBoxCalls &FUN_0060a860(const RHMobileUnk006100e0 &other);
-};
+#include "SBUIInputFieldBoxCalls.h"
 
 // SIZE 0x30
 class SBUIInputFieldDrawUnk

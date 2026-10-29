@@ -1,7 +1,6 @@
 #include "RHDrawManager.h"
 
 // Target 0x0060fc90.
-RHUnk0060fbf0::~RHUnk0060fbf0() {}
 
 class RHMobileUnk00607da0
 {
@@ -26,7 +25,6 @@ SBGeoBoundingBox2D SBGeoBoundingBox2D::FUN_006092c0(const SBGeoBoundingBox2D &ot
     return result;
 }
 
-RHUnk0060fbf0 SBGeoBoundingBox2D::FUN_00609440(const RHMobileUnk006100e0 &, double, double) const { return RHUnk0060fbf0(); }
 
 // Target 0x005e61e0.
 

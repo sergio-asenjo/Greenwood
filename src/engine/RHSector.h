@@ -27,29 +27,7 @@ public:
 };
 #endif
 
-#include "RHUnk0060c2c0.h"
-#include "SBGeoBoundingBox2DCore.h"
-
-// VTABLE: GAME 0x00679bf4
-// SIZE 0x58
-class RHSector : public RHUnk0060c2c0
-{
-public:
-    RHSector();
-    RHSector(int type);
-    ~RHSector();
-    void *FUN_0057caf0(unsigned flags);
-    virtual void UnkV0(); // vtable+0x00
-    int Unk0057cd60(SBFile &file, bool mode);
-    void FUN_0057d390(void *draw, unsigned long surface, const SBGeoBoundingBox2D &box, float scale, unsigned short layer);
-    void DisplayAlpha(unsigned long color, unsigned long alpha, bool mode);
-    int m_30; // 0x30
-    bool m_34;
-    unsigned short m_36;
-    unsigned short m_38;
-    SBGeoBoundingBox2D m_3c;
-    undefined m_50[8];
-};
+#include "RHSectorCore.h"
 
 template <class T>
 class RHSectorArrayStorage : public std::vector<T>
@@ -190,31 +168,7 @@ public:
     bool m_b4;
 };
 
-// SIZE 0x108
-class RHSectorLift
-{
-public:
-    int FUN_0057dcf0(int animation);
-    int FUN_0057dd90(int animation);
-    bool FUN_0057de30(RHElementActor *actor);
-    bool FUN_0057dec0();
-    bool FUN_0057def0();
-    int Unk0057e060(SBFile &file, class RHUnkSectorLiftGrid *grid);
-    bool Serialize(SBFile &file);
-    void Emit(SBFile &file);
-    void Emit(SBFile &file, class RHUnkSectorLiftGrid *grid);
-
-    char m_pad0[0xf0];
-    int m_f0; // [0xf0]
-    short m_f4; // [0xf4]
-    short m_f6; // [0xf6]
-    char m_f8; // [0xf8]
-    char m_f9; // [0xf9]
-    short m_fa; // [0xfa]
-    int m_fc; // [0xfc]
-    class RHUnk0051aa00 *m_100; // [0x100]
-    class RHUnk0051aa00 *m_104; // [0x104]
-};
+#include "RHSectorLift.h"
 
 class RHUnk005f5440
 {
@@ -229,10 +183,6 @@ class RHUnk0057d440 : public RHSector
 public:
     RHUnk0057d440();
     virtual ~RHUnk0057d440();
-    virtual void UnkV0(); // vtable+0x00
-    virtual void UnkV4(SBFile &file, bool mode); // vtable+0x04
-    virtual void UnkV8(); // vtable+0x08
-    virtual void UnkVc(); // vtable+0x0c
     RHSectorLift *m_58; // [0x58]
 };
 
@@ -275,34 +225,7 @@ public:
     RHUnk00613e90 m_64; // 0x64
 };
 
-class RHUnk0057dc80
-{
-public:
-    void *FUN_0057dcc0(unsigned flags);
-    RHUnk0057dc80();
-    ~RHUnk0057dc80();
-    void FUN_0057d490();
-    char m_00[0x30];
-    int m_30;
-    char m_34[0xc0];
-    unsigned short m_f4;
-    unsigned short m_f6;
-    char m_f8;
-    char m_f9;
-    char m_fa[2];
-    int m_fc;
-};
-
-class RHUnk0051aa00
-{
-public:
-    RHUnk0051aa00();
-    ~RHUnk0051aa00();
-    void Unk0051b2a0(SBFile &file, RHSectorBuilding *building);
-    char m_pad0[0x1c];
-    float m_1c; // [0x1c]
-    char m_pad20[0x9c];
-};
+#include "RHGate.h"
 
 class RHSectorLiftArray : public std::vector<RHUnk0051aa00 *>
 {

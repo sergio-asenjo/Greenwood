@@ -2,16 +2,6 @@
 #include "RHSoundCacheCore.h"
 #include "RHTreeDec.h"
 
-struct RHTreeDecNode14
-{
-    RHTreeDecNode14 *m_00;
-    RHTreeDecNode14 *m_04;
-    RHTreeDecNode14 *m_08;
-    int m_0c;
-    int m_10;
-    int m_14;
-};
-
 // GLOBAL: GAME 0x006c1088
 RHTreeDecNode10 *g_unk0x006c1088 = 0;
 // GLOBAL: GAME 0x006c0a3c
@@ -58,12 +48,6 @@ static inline RHTreeDecNode34 *RHTreeDecMax34(RHTreeDecNode34 *node)
     return node;
 }
 
-struct RHTreeDec004bde30
-{
-    RHTreeDecNode14 *m_node;
-    void FUN_004bde30();
-};
-
 // FUNCTION: GAME 0x004bde30
 void RHTreeDec004bde30::FUN_004bde30()
 {
@@ -80,12 +64,6 @@ void RHTreeDec004bde30::FUN_004bde30()
         m_node = parent;
     }
 }
-
-struct RHTreeInc004bdef0
-{
-    RHTreeDecNode14 *m_node;
-    void FUN_004bdef0();
-};
 
 static inline RHTreeDecNode14 *RHTreeMinimumA3c(RHTreeDecNode14 *node)
 {

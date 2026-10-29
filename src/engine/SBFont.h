@@ -8,12 +8,7 @@ class SBFile;
 void FUN_005f8030(int, const char *, int, const char *, ...);
 
 // SIZE 0x01
-class SBFontLock
-{
-public:
-    SBFontLock();
-    ~SBFontLock();
-};
+typedef std::_Lockit SBFontLock;
 
 // SIZE 0x0c
 struct SBFontTextView
@@ -170,6 +165,7 @@ public:
     SBFontIterator0061fe10 FUN_00620440(SBFontIterator0061fe10);
     SBFontNode0061fcb0 *FUN_00620d60(SBFontNode0061fcb0 *, SBFontNode0061fcb0 *);
     SBFontNode0061fcb0 *FUN_00620c70(SBFontNode0061fcb0 *, int);
+    static SBFontNode0061fcb0 *Maximum(SBFontNode0061fcb0 *);
 };
 
 // SIZE 0x20

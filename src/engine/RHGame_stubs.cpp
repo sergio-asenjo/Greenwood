@@ -42,26 +42,6 @@ namespace std
     }
 }
 
-// FUNCTION: GAME 0x0054c800
-bool RHGameMission::FUN_0054c800()
-{
-    char *campaign = (char *)g_unk0x6c07fc;
-    void **first = *(void ***)(campaign + 0x118);
-    unsigned count = first == 0 ? 0 : *(void ***)(campaign + 0x11c) - first;
-    char difficulty = *(campaign + 0x100);
-    unsigned value = g_unk0x6c07fc->Get(1);
-    char *profile = (char *)m_profile;
-    if (value >= *(unsigned *)(profile + 0x40) &&
-        (*(unsigned *)(profile + 0x44) >= value || *(unsigned *)(profile + 0x44) == 200000) &&
-        count >= *(unsigned short *)(profile + 0x48) &&
-        *(unsigned short *)(profile + 0x4a) >= count &&
-        m_04 < *(unsigned short *)(profile + 0x4c) &&
-        (*(profile + 0x54) != 1 || *(profile + 0x55 + difficulty)) &&
-        ((RHMission *)this)->AreRequiredMissionStatusValid(true))
-        return ((RHMission *)this)->AreRequiredMissionStatusValid(false) ? true : false;
-    return false;
-}
-void RHGameMenuOwner::FUN_0053c870(void *) {}
 void RHGameBlazonValue::FUN_0044f960(int) {}
 struct RHGameBlazonEntry
 {

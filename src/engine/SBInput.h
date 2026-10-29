@@ -5,7 +5,6 @@
 
 struct SBInputUnkDevice;
 struct SBInputJoystickState;
-class RHFontText;
 class RHUnk0051a4e0;
 
 struct SBInputUnkDeviceTable
@@ -47,7 +46,7 @@ public:
     bool FUN_005f9ea0(unsigned char);
     void FUN_005fae70(void *);
     RHUnk0051a4e0 *FUN_005fafc0();
-    unsigned char FUN_005fb410(RHFontText name, unsigned short, void *window);
+    unsigned char FUN_005fb410(std::string name, unsigned short, void *window);
     bool FUN_005fb730(unsigned char);
     bool FUN_005fb770(unsigned char, void *, bool *);
     bool FUN_005fb980(void *);
