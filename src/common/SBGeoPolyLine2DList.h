@@ -8,18 +8,13 @@
 
 class RHMobileUnk00611360;
 
-// SIZE 0x10
-struct RHUnkPolyLineTail
-{
-    undefined m_00[8]; // 0x00
-    SBGeoPoint2D m_08; // 0x08
-};
-
 // SIZE 0x28
 class RHUnkPolyLineBase : public std::list<SBGeoPoint2D>
 {
 public:
     RHUnkPolyLineBase() : m_dirty(true) {}
+    ~RHUnkPolyLineBase() { Destroy(); }
+    void Destroy() { clear(); }
     iterator Begin()
     {
         _Nodeptr sentinel = _Head;
@@ -42,7 +37,8 @@ public:
     iterator m_cursor; // 0x0c
     bool m_dirty; // 0x10
     int m_index; // 0x14
-    RHUnkPolyLineTail m_18; // 0x18
+    undefined m_18[8]; // 0x18
+    SBGeoPoint2D m_20; // 0x20
 };
 
 class SBGeoPolyLine2DList : public RHUnkPolyLineBase

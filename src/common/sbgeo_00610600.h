@@ -7,6 +7,7 @@
 
 #ifndef SBGEO_POINT2D_VIEW
 #define SBGEO_POINT2D_VIEW
+class SBGeoVector2D;
 class SBGeoPoint2D
 {
 public:
@@ -15,6 +16,7 @@ public:
     SBGeoPoint2D(const SBGeoPoint2D &other);
     ~SBGeoPoint2D();
     SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
+    SBGeoVector2D Unk005fc110(const SBGeoPoint2D &other) const;
     float m_x; // 0x00
     float m_y; // 0x04
 };
@@ -23,11 +25,7 @@ public:
 struct RHUnk005c9010Iterator;
 void FUN_005c9010(RHUnk005c9010Iterator &, int, std::bidirectional_iterator_tag);
 
-class RHUnk0053bf20
-{
-public:
-    void *FUN_0053bf20() const;
-};
+#include "RHUnk0053bf20.h"
 
 #include "SBGeoSegment2D.h"
 
@@ -35,31 +33,16 @@ public:
 
 class RHMobileUnk00611360;
 
-// SIZE 0x0c
-struct RHUnkPolyArrayTail
-{
-    undefined m_00[4];  // 0x00
-    SBGeoPoint2D m_04;  // 0x04
-};
-
 class RHUnkPolyArrayBase : public std::vector<SBGeoPoint2D>
 {
 public:
     RHUnkPolyArrayBase() : m_dirty(true) {}
-    ~RHUnkPolyArrayBase()
-    {
-        iterator result = std::copy(end(), end(), begin());
-        iterator last = end();
-        for (iterator position = result; position != last; ++position)
-        {
-            void (*destroy)(SBGeoPoint2D *) = std::_Destroy;
-            destroy(position);
-        }
-        _Last = result;
-    }
+    ~RHUnkPolyArrayBase() { Destroy(); }
+    void Destroy() { clear(); }
     undefined4 m_10;    // 0x10
     bool m_dirty;       // 0x14
-    RHUnkPolyArrayTail m_18; // 0x18
+    undefined4 m_18;    // 0x18
+    SBGeoPoint2D m_1c;  // 0x1c
 };
 
 // SIZE 0x24

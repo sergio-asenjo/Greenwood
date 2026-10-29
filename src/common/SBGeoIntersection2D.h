@@ -13,9 +13,11 @@ public:
     RHUnk0060fbf0();
     RHUnk0060fbf0(const RHUnk0060fbf0 &other);
     RHUnk0060fbf0(const RHMobileUnk006100e0 &line);
-    ~RHUnk0060fbf0();
+    ~RHUnk0060fbf0() { FUN_0060fce0(); }
     void FUN_0060fa20();
     void FUN_0060fa30(const RHUnk0060fbf0 &other);
+    unsigned char FUN_0063b9a0() const;
+    void *FUN_0053bf20() const;
     RHUnk0060fbf0 &FUN_0060fca0(const RHUnk0060fbf0 &other);
     unsigned short FUN_0060fcc0() const;
     unsigned short FUN_0060fcd0() const;

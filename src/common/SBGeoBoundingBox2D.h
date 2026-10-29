@@ -7,6 +7,7 @@
 
 #ifndef SBGEO_POINT2D_VIEW
 #define SBGEO_POINT2D_VIEW
+class SBGeoVector2D;
 class SBGeoPoint2D
 {
 public:
@@ -14,6 +15,7 @@ public:
     SBGeoPoint2D(float, float);
     ~SBGeoPoint2D();
     SBGeoPoint2D &operator=(const SBGeoPoint2D &);
+    SBGeoVector2D Unk005fc110(const SBGeoPoint2D &) const;
     float m_x;
     float m_y;
 };
@@ -22,13 +24,8 @@ public:
 #include "RHMobileUnk006100e0.h"
 
 #include "SBGeoSegment2D.h"
-#include "SBGeoBoxLine.h"
 
-class SBUIInputFieldBoxCalls
-{
-public:
-    SBUIInputFieldBoxCalls &FUN_0060a860(const RHMobileUnk006100e0 &other);
-};
+#include "SBUIInputFieldBoxCalls.h"
 
 class RHUnk0060fbf0;
 class RHMobileUnk00611360;
@@ -47,6 +44,7 @@ public:
     bool FUN_00608400(const SBGeoPoint2D &) const;
     bool FUN_00608650(const RHMobileUnk006100e0 &) const;
     bool FUN_00608730(const RHMobileUnk006100e0 &) const;
+    bool FUN_00608800(const RHMobileUnk006100e0 &line) const;
     bool FUN_00608c70(const RHMobileUnk00611360 &) const;
     bool FUN_00608d60(const RHUnkSectorPoints &) const;
     RHUnk0060fbf0 FUN_006093f0(const RHMobileUnk006100e0 &segment) const;
@@ -54,10 +52,6 @@ public:
     char m_00[0x14];
 };
 
-class RHUnk00608f10
-{
-public:
-    bool FUN_006082a0(void *);
-};
+#include "RHUnk00608f10.h"
 
 #endif

@@ -10,7 +10,10 @@ class RHElementAreaShape
 public:
     bool FUN_0060c650(const SBGeoBoundingBox2D &box) const;
     bool FUN_0060c660(const SBGeoPoint2D &point) const;
-    unsigned FUN_0060ce80() const;
+    unsigned FUN_0060ce80() const
+    {
+        return ((RHUnkSectorPoints *)this)->Unk0060ce80();
+    }
     const SBGeoPoint2D &FUN_0060cef0(unsigned index) const
     {
         return ((RHUnkSectorPoints *)this)->Unk0060cef0(index);

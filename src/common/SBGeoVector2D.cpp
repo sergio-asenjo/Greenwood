@@ -254,3 +254,5 @@ void EmitSBGeoVector2D(SBGeoVector2D *vector)
     ((RHUnk005fc3b0 *)vector)->FUN_005fc8f0(true, 1.0f);
     ((RHUnk005fc3b0 *)vector)->FUN_005fc9e0(0.0f, 1.0f);
 }
+// TEMPLATE: GAME 0x0051c0c0 FOLDED
+// ??1SBGeoVector2D@@QAE@XZ

@@ -14,7 +14,7 @@ class SBGeoPoint2D
 public:
     SBGeoPoint2D() throw();
     SBGeoPoint2D(float x, float y);
-    SBGeoPoint2D(const SBGeoPoint2D &other) throw();
+    SBGeoPoint2D(const SBGeoPoint2D &other);
     ~SBGeoPoint2D();
     void *FUN_0044e990(unsigned flags);
     SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
@@ -27,6 +27,7 @@ public:
     void FUN_005fc270();
     bool Serialize(SBFile &file);
     void FUN_005fc330();
+    void FUN_005fc390(const SBGeoPoint2D &other) throw();
     void Emit(SBFile &file);
     float GetX() const { return m_x; }
     float GetY() const { return m_y; }

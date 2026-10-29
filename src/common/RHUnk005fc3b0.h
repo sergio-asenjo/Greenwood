@@ -13,6 +13,8 @@ public:
         return (RHUnk005fc3b0 &)SBGeoVector2D::operator=((const SBGeoVector2D &)other);
     }
     void FUN_005fc7c0(float value);
+    float Unk005fc6a0(float value);
+    float FUN_005fc680(const RHUnk005fc3b0 &other, float value) const;
     SBGeoVector2D FUN_005fc8f0(bool direction, float value) const;
 };
 

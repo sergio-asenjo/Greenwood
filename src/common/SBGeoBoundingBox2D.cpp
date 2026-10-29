@@ -109,9 +109,9 @@ bool RHUnk00608f10::FUN_006082a0(void *value)
     const SBGeoBoundingBox2D &other = *(const SBGeoBoundingBox2D *)value;
     SBGeoSegment2D segment(SBGeoPoint2D(0.0f, 0.0f), SBGeoPoint2D(0.0f, 0.0f));
     if (box.m_00[16] && other.m_00[16]) {
-        ((SBUIInputFieldBoxCalls *)&segment)->FUN_0060a860((const RHMobileUnk006100e0 &)
-            SBGeoSegment2D(*(const SBGeoPoint2D *)other.m_00, *(const SBGeoPoint2D *)(other.m_00 + 8)));
-        bool rejected = box.FUN_00607f00((const RHMobileUnk006100e0 &)segment);
+        ((SBUIInputFieldBoxCalls *)&segment)->FUN_0060a860(
+            SBGeoSegment2D(*(const SBGeoPoint2D *)other.m_00, *(const SBGeoPoint2D *)(other.m_00 + 8)).Line());
+        bool rejected = box.FUN_00607f00(segment.Line());
         return rejected;
     }
     return true;
@@ -149,7 +149,7 @@ bool SBGeoBoundingBox2D::FUN_00608650(const RHMobileUnk006100e0 &segment) const
     if (!m_00[16]) return false;
     if (FUN_00607f00(segment)) return false;
     if (FUN_00608400(segment) || FUN_00608400(segment.Second())) return true;
-    return ((const RHBoxIntersection00608800 *)this)->FUN_00608800(RHBoxLine00610070(segment));
+    return FUN_00608800(RHMobileUnk006100e0((const SBGeoSegment2D &)segment));
 }
 
 // FUNCTION: GAME 0x00608730
@@ -158,7 +158,44 @@ bool SBGeoBoundingBox2D::FUN_00608730(const RHMobileUnk006100e0 &segment) const
     if (!m_00[16]) return false;
     if (FUN_00608040(segment)) return false;
     if (FUN_00608400(segment)) return true;
-    return ((const RHBoxIntersection00608800 *)this)->FUN_00608800(RHBoxLine00610070(segment));
+    return FUN_00608800(RHMobileUnk006100e0((const RHLineSource00610000 &)segment));
+}
+
+#include "RHUnk005fc3b0.h"
+
+// FUNCTION: GAME 0x00608800
+bool SBGeoBoundingBox2D::FUN_00608800(const RHMobileUnk006100e0 &line) const
+{
+    SBGeoPoint2D rightBottom;
+    SBGeoPoint2D leftTop;
+    SBGeoPoint2D first;
+    SBGeoPoint2D second;
+    SBGeoVector2D direction;
+    if (!m_00[16])
+        return false;
+    if (FUN_00608180(line))
+        return false;
+    else
+    {
+        first = line;
+        second = line.Second();
+        direction = second.Unk005fc110(first);
+        const float *bounds = (const float *)m_00;
+        rightBottom = SBGeoPoint2D(bounds[2], bounds[1]);
+        leftTop = SBGeoPoint2D(bounds[0], bounds[3]);
+        float side = ((RHUnk005fc3b0 *)&direction)->FUN_005fc680(
+            (const RHUnk005fc3b0 &)((const SBGeoPoint2D *)m_00)->Unk005fc110(first), 1.0f);
+        if (side == 0.0f)
+            return true;
+        if (side > 0.0f)
+            return ((RHUnk005fc3b0 *)&direction)->FUN_005fc680((const RHUnk005fc3b0 &)rightBottom.Unk005fc110(first), 1.0f) <= 0.0f ||
+                ((RHUnk005fc3b0 *)&direction)->FUN_005fc680((const RHUnk005fc3b0 &)((const SBGeoPoint2D *)(m_00 + 8))->Unk005fc110(first), 1.0f) <= 0.0f ||
+                ((RHUnk005fc3b0 *)&direction)->FUN_005fc680((const RHUnk005fc3b0 &)leftTop.Unk005fc110(first), 1.0f) <= 0.0f;
+        else
+            return ((RHUnk005fc3b0 *)&direction)->FUN_005fc680((const RHUnk005fc3b0 &)rightBottom.Unk005fc110(first), 1.0f) >= 0.0f ||
+                ((RHUnk005fc3b0 *)&direction)->FUN_005fc680((const RHUnk005fc3b0 &)((const SBGeoPoint2D *)(m_00 + 8))->Unk005fc110(first), 1.0f) >= 0.0f ||
+                ((RHUnk005fc3b0 *)&direction)->FUN_005fc680((const RHUnk005fc3b0 &)leftTop.Unk005fc110(first), 1.0f) >= 0.0f;
+    }
 }
 
 #include "sbgeo_00610600.h"
@@ -178,14 +215,13 @@ bool SBGeoBoundingBox2D::FUN_00608c70(const RHMobileUnk00611360 &line) const
     if (intersecting)
         return true;
     for (index = 0; !intersecting && index < last; ++index)
-        intersecting = FUN_00608650((const RHMobileUnk006100e0 &)line.FUN_006112d0(index));
+        intersecting = FUN_00608650(line.FUN_006112d0(index).Line());
     return intersecting;
 }
 
 #include "RHElementAreaShape.h"
 
-// Parked: native array cleanup calls cdecl _Destroy instead of the target's flags-zero point destructor.
-// STUB: GAME 0x00608d60
+// FUNCTION: GAME 0x00608d60
 bool SBGeoBoundingBox2D::FUN_00608d60(const RHUnkSectorPoints &polygon) const
 {
     RHUnkSectorPoints &points = (RHUnkSectorPoints &)polygon;
@@ -195,8 +231,9 @@ bool SBGeoBoundingBox2D::FUN_00608d60(const RHUnkSectorPoints &polygon) const
         return FUN_00608400(points.Unk0060cef0(0));
     if (FUN_00608c70(RHMobileUnk00611360((const RHMobileUnk00611360 &)polygon)))
         return true;
-    if (FUN_00608650((const RHMobileUnk006100e0 &)SBGeoSegment2D(
-            points.Unk0060cef0(0), points.Unk0060cef0(points.Unk0060ce80() - 1))))
+    if (FUN_00608650(reinterpret_cast<const RHMobileUnk006100e0 &>(
+            static_cast<const SBGeoSegment2D &>(SBGeoSegment2D(
+                points.Unk0060cef0(0), points.Unk0060cef0(points.Unk0060ce80() - 1))))))
         return true;
     return ((const RHElementAreaShape *)&polygon)->FUN_0060c660(*(const SBGeoPoint2D *)this);
 }
@@ -225,4 +262,133 @@ RHUnk0060fbf0 SBGeoBoundingBox2D::FUN_006093f0(const RHMobileUnk006100e0 &segmen
     if (FUN_00607f00(segment))
         return RHUnk0060fbf0();
     return FUN_00609440(segment, 0.0, 1.0);
+}
+
+// STUB: GAME 0x00609440
+RHUnk0060fbf0 SBGeoBoundingBox2D::FUN_00609440(const RHMobileUnk006100e0 &line, double firstLimit, double lastLimit) const
+{
+    SBGeoPoint2D first;
+    SBGeoPoint2D last;
+    SBGeoPoint2D clippedFirst;
+    SBGeoPoint2D clippedLast;
+    const float *bounds = (const float *)m_00;
+    float right = bounds[2];
+    float left = bounds[0];
+    float bottom = bounds[1];
+    float top = bounds[3];
+    double enter = firstLimit;
+    double leave = lastLimit;
+    first = line;
+    last = line.Second();
+    float dx = last.m_x - first.m_x;
+    float dy = last.m_y - first.m_y;
+    if (dx == 0.0f)
+    {
+        clippedFirst = first;
+        clippedLast = last;
+        if ((firstLimit < 0.0 && first.m_y < last.m_y) || first.m_y < bottom)
+            clippedFirst.m_y = bottom;
+        else if ((firstLimit < 0.0 && first.m_y > last.m_y) || first.m_y > top)
+            clippedFirst.m_y = top;
+        if ((lastLimit > 1.0 && first.m_y > last.m_y) || last.m_y < bottom)
+            clippedLast.m_y = bottom;
+        else if ((lastLimit > 1.0 && first.m_y < last.m_y) || last.m_y > top)
+            clippedLast.m_y = top;
+        return RHUnk0060fbf0(SBGeoSegment2D(clippedFirst, clippedLast).Line());
+    }
+    if (dy == 0.0f)
+    {
+        clippedFirst = first;
+        clippedLast = last;
+        if ((firstLimit < 0.0 && first.m_x < last.m_x) || first.m_x < left)
+            clippedFirst.m_x = left;
+        else if ((firstLimit < 0.0 && first.m_x > last.m_x) || first.m_x > right)
+            clippedFirst.m_x = right;
+        if ((lastLimit > 1.0 && first.m_x > last.m_x) || last.m_x < left)
+            clippedLast.m_x = left;
+        else if ((lastLimit > 1.0 && first.m_x < last.m_x) || last.m_x > right)
+            clippedLast.m_x = right;
+        return RHUnk0060fbf0(SBGeoSegment2D(clippedFirst, clippedLast).Line());
+    }
+    bool rejected = false;
+    double distance;
+    if (dx > 0.0f)
+    {
+        if (firstLimit < 0.0 || first.m_x < left)
+        {
+            distance = (left - first.m_x) / dx;
+            if (distance > enter) enter = distance;
+        }
+        if (enter > leave) rejected = true;
+        else
+        {
+            if (lastLimit > 1.0 || last.m_x > right)
+            {
+                distance = (right - first.m_x) / dx;
+                if (distance < leave) leave = distance;
+            }
+            if (enter > leave) rejected = true;
+        }
+    }
+    else
+    {
+        if (firstLimit < 0.0 || first.m_x > right)
+        {
+            distance = (right - first.m_x) / dx;
+            if (distance > enter) enter = distance;
+        }
+        if (enter > leave) rejected = true;
+        else
+        {
+            if (lastLimit > 1.0 || last.m_x < left)
+            {
+                distance = (left - first.m_x) / dx;
+                if (distance < leave) leave = distance;
+            }
+            if (enter > leave) rejected = true;
+        }
+    }
+    if (dy > 0.0f)
+    {
+        if (!rejected && (firstLimit < 0.0 || first.m_y < bottom))
+        {
+            distance = (bottom - first.m_y) / dy;
+            if (distance > enter) enter = distance;
+        }
+        if (enter > leave) rejected = true;
+        else
+        {
+            if (lastLimit > 1.0 || last.m_y > top)
+            {
+                distance = (top - first.m_y) / dy;
+                if (distance < leave) leave = distance;
+            }
+            if (enter > leave) rejected = true;
+        }
+    }
+    else
+    {
+        if (!rejected && (firstLimit < 0.0 || first.m_y > top))
+        {
+            distance = (top - first.m_y) / dy;
+            if (distance > enter) enter = distance;
+        }
+        if (enter > leave) rejected = true;
+        else
+        {
+            if (lastLimit > 1.0 || last.m_y < bottom)
+            {
+                distance = (bottom - first.m_y) / dy;
+                if (distance < leave) leave = distance;
+            }
+            if (enter > leave) rejected = true;
+        }
+    }
+    if (rejected)
+        return RHUnk0060fbf0();
+    clippedFirst.m_x = dx * enter + first.m_x;
+    clippedFirst.m_y = dy * enter + first.m_y;
+    clippedLast.m_x = dx * leave + first.m_x;
+    clippedLast.m_y = dy * leave + first.m_y;
+        return RHUnk0060fbf0(SBGeoSegment2D(clippedFirst, clippedLast).Line());
 }

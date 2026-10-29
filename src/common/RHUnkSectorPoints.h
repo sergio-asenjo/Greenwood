@@ -15,7 +15,7 @@ public:
     void FUN_006112a0(const SBGeoPoint2D &point, unsigned int index);
     void FUN_0060ce90(const SBGeoPoint2D &point, unsigned int index);
     void FUN_0060ceb0(const SBGeoPoint2D &point);
-    void FUN_0060c2e0();
+    unsigned short FUN_0060c2e0();
     undefined m_00[0x24];
     unsigned short m_24;
     unsigned short m_26;

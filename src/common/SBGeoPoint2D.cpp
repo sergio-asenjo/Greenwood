@@ -7,13 +7,23 @@
 
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 
-// FUNCTION: GAME 0x0044e990
+// TEMPLATE: GAME 0x0044e990 FOLDED
+// ??_GSBGeoPoint2D@@QAEPAXI@Z
+
+// TEMPLATE: GAME 0x0044e990 FOLDED
+// ?FUN_0044e990@SBGeoPoint2D@@QAEPAXI@Z
 void *SBGeoPoint2D::FUN_0044e990(unsigned flags)
 {
     this->SBGeoPoint2D::~SBGeoPoint2D();
     if (flags & 1)
         operator delete(this);
     return this;
+}
+
+// FUNCTION: GAME 0x005fc040
+SBGeoPoint2D::SBGeoPoint2D(const SBGeoPoint2D &other)
+{
+    FUN_005fc390(other);
 }
 
 // FUNCTION: GAME 0x005fc080
