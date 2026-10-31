@@ -9,19 +9,7 @@
 class RHEngine;
 extern RHEngine *g_pEngine;
 
-struct RHMalignityAlertPayload;
-
-struct RHMalignityStimulus
-{
-    RHMalignityStimulus() : m_type(0), m_24(0), m_28(0) {}
-    RHMalignityStimulus(unsigned value, const RHMalignityAlertPayload &payload);
-    ~RHMalignityStimulus() {}
-    undefined m_00[0x1c];
-    unsigned m_type;
-    unsigned m_20;
-    void *m_24;
-    char m_28;
-};
+#include "RHMalignityStimulus.h"
 
 struct RHMalignityWaypoint
 {

@@ -246,13 +246,6 @@ void *RHArtificialMalignity::FUN_00445d40() { return 0; }
 void RHArtificialMalignity::FUN_004303e0() {}
 bool RHMalignityActorCalls::FUN_0048a350(void *) { return false; }
 
-class RHMalignityAreaCalls
-{
-public:
-    bool FUN_0060be00(const void *point);
-};
-
-bool RHMalignityAreaCalls::FUN_0060be00(const void *) { return false; }
 void RHArtificialMalignity::FUN_00430300(int) {}
 
 void RHArtificialMalignity::FUN_0044a830(void *) {}

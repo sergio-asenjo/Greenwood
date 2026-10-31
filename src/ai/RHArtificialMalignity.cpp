@@ -1,8 +1,10 @@
 #include "SBNullstr.h"
+extern float g_unk0x006774e4;
 #include "RHArtificialMalignity.h"
 #include "RHElementActorNPC.h"
 #include "RHElementActorHumanCore.h"
 #include "RHArtificialIntelligenceActorCalls.h"
+#include "RHUnk0060c2xx.h"
 #include <stddef.h>
 #include <stdlib.h>
 #include <new>
@@ -735,7 +737,7 @@ void RHArtificialMalignity::InitializeFriendCheck(unsigned short actor, unsigned
         point = FUN_00414360(F(RHMalignityPosition, 0x4dc), true);
         if (!((RHMalignityActorCalls *)Base().m_actor)->FUN_0048a260(point))
         {
-            point.z += 15.0f;
+            point.z += g_unk0x006774e4;
             if (!((RHMalignityActorCalls *)Base().m_actor)->FUN_0048a260(point))
             {
                 SBAssert(1, "P:\\Robin Hood\\RHartificialmalignity.cpp", 11387,
@@ -766,7 +768,7 @@ void RHArtificialMalignity::InitializeFriendCheck(unsigned short actor, unsigned
             RHUnk00613e90 point;
             point = FUN_00414360(entry->Position(), true);
             RHUnk00613e90 elevated = point;
-            elevated.z = point.z + 15.0f;
+            elevated.z = point.z + g_unk0x006774e4;
             if (((RHMalignityActorCalls *)Base().m_actor)->FUN_0048a260(elevated))
                 break;
         }
@@ -831,6 +833,66 @@ void RHMalignityReactionCalls::FUN_0041a3e0()
     if (*(int *)((char *)this + 0x14) < 0x13 ||
         (*(int *)((char *)this + 0x14) > 0x14 && *(int *)((char *)this + 0x14) != 0x6c))
         ((RHArtificialIntelligence *)this)->Unk00410600();
+}
+
+// FUNCTION: GAME 0x00438f80
+void RHArtificialMalignity::FUN_00438f80(const RHMalignityStimulus &stimulus)
+{
+    switch (stimulus.m_20)
+    {
+    case 0x27:
+        RHMalignityField<unsigned short>(this, 0x14) = 3;
+        break;
+    case 0x0b:
+    case 0x10:
+    case 0x12:
+        RHMalignityField<unsigned short>(this, 0x14) = 4;
+        break;
+    case 9:
+        RHMalignityField<unsigned short>(this, 0x14) = 6;
+        break;
+    case 0x0c:
+        RHMalignityField<unsigned short>(this, 0x14) = 7;
+        break;
+    case 0x16:
+    case 0x22:
+    case 0x24:
+    case 0x25:
+    case 0x26:
+    case 0x2b:
+        RHMalignityField<unsigned short>(this, 0x14) = 8;
+        break;
+    case 0:
+    case 8:
+    case 0x0e:
+    case 0x17:
+    case 0x19:
+    case 0x23:
+        RHMalignityField<unsigned short>(this, 0x14) = 10;
+        break;
+    case 2:
+    {
+        struct Payload
+        {
+            unsigned m_00[4];
+            unsigned m_10;
+            unsigned m_14;
+            unsigned m_18;
+        };
+        Payload payload = *(const Payload *)&stimulus;
+        if (payload.m_10 != 13)
+        {
+            RHMalignityField<unsigned short>(this, 0x14) = 2;
+            break;
+        }
+    }
+    case 0x20:
+        RHMalignityField<unsigned short>(this, 0x14) = 9;
+        break;
+    case 10:
+        RHMalignityField<unsigned short>(this, 0x14) = 2;
+        break;
+    }
 }
 
 struct RHMalignityPriorityPosition
@@ -2976,12 +3038,6 @@ void RHArtificialMalignity::FUN_0044b840(void *point)
         ++RHMalignityField<unsigned short>(point, 0x82);
 }
 
-class RHMalignityAreaCalls
-{
-public:
-    bool FUN_0060be00(const void *point);
-};
-
 // FUNCTION: GAME 0x0044b870
 bool RHArtificialMalignity::FUN_0044b870(void *area, unsigned short id)
 {
@@ -2993,7 +3049,7 @@ bool RHArtificialMalignity::FUN_0044b870(void *area, unsigned short id)
         if ((void *)actor != VirtualBase().m_actor &&
             RHMalignityField<unsigned short>(RHMalignityField<void *>(actor, 0x50), 0xde) == id &&
             !actor->V048() && !RHMalignityField<bool>(actor, 0x1ce) &&
-            ((RHMalignityAreaCalls *)area)->FUN_0060be00((char *)RHMalignityField<void *>(actor, 0x50) + 0x24))
+            ((RHUnk0060c2xx *)area)->FUN_0060be00(*(const SBGeoPoint2D *)((char *)RHMalignityField<void *>(actor, 0x50) + 0x24)))
             return true;
     }
     return false;
@@ -3129,6 +3185,26 @@ void RHArtificialMalignity::FUN_0044d0b0()
         VirtualBase().V00(2);
         break;
     }
+}
+
+namespace VMCoreCustomDependencies
+{
+    int FUN_0057b150();
+}
+
+// FUNCTION: GAME 0x0044d6c0
+unsigned short RHArtificialMalignity::FUN_0044d6c0()
+{
+    switch (VMCoreCustomDependencies::FUN_0057b150())
+    {
+    case 0:
+        return 13 - ((RHMalignityActorCalls *)VirtualBase().m_actor)->V124() / 10;
+    case 1:
+        return 10 - ((RHMalignityActorCalls *)VirtualBase().m_actor)->V124() / 10;
+    case 2:
+        return 0;
+    }
+    return 1;
 }
 
 // STUB: GAME 0x0048a130
@@ -3869,6 +3945,8 @@ int RHUnk00608f10::FUN_00608f10(void *value)
 
 void RHArtificialMalignity::Emit(SBFile &file)
 {
+    FUN_0044d6c0();
+    FUN_00438f80(*(RHMalignityStimulus *)this);
     FUN_00445b40();
     FUN_004461a0(0, 0);
     FUN_00446700();

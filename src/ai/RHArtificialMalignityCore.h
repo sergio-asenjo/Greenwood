@@ -50,6 +50,7 @@ public:
     bool FUN_00445510(RHMalignityPosition position, void *actor);
     void FUN_004457c0(const RHMalignityPosition &position);
     bool FUN_00438cb0(int command, bool mode);
+    void FUN_00438f80(const RHMalignityStimulus &stimulus);
     void FUN_004459b0();
     void FUN_00445b40();
     void *FUN_00445d40();
@@ -85,6 +86,7 @@ public:
     void FUN_00430020();
     void FUN_004303e0();
     void FUN_0044d0b0();
+    unsigned short FUN_0044d6c0();
     void FUN_00430300(int mode);
     void *FUN_0043d780(unsigned short flags);
     bool FUN_0043f340(void *actor);

@@ -8,6 +8,7 @@ class RHUnk0060c2c0 : public RHMobileUnk00611360
 {
 public:
     RHUnk0060c2c0();
+    float FUN_0060cab0(const SBGeoPoint2D &point, float scale);
     unsigned short m_24;
     unsigned short m_26;
     bool m_28;

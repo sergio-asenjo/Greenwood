@@ -6,6 +6,7 @@
 class RHUnk0060c2xx : public SBGeoPolyLine2DList
 {
 public:
+    bool FUN_0060be00(const SBGeoPoint2D &point) const;
     unsigned long FUN_0060c250() const;
     void FUN_0060c260(const SBGeoPoint2D &point);
     void FUN_0060c280();

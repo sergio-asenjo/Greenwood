@@ -81,7 +81,7 @@ public:
     virtual void V118() = 0;
     virtual bool V11c() = 0; // vtable+0x11c
     virtual void V120() = 0;
-    virtual void V124() = 0;
+    virtual unsigned short V124() = 0;
     virtual void V128() = 0;
     virtual void V12c() = 0;
     virtual int V130() = 0; // vtable+0x130

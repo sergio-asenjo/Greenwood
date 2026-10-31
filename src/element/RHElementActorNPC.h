@@ -48,6 +48,7 @@ public:
     void FUN_00487b70();
     void FUN_00487ce0();
     bool FUN_004887a0(int kind);
+    void FUN_00488a40(unsigned char index, unsigned short timer);
     void *FUN_0048c380(RHElementActorHuman *target);
     void FUN_0048c4d0();
     static void FUN_0048c620(void *actor);

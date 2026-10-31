@@ -307,6 +307,52 @@ bool RHElementActorNPC::FUN_004887a0(int kind)
     return false;
 }
 
+#include "RHMalignityPosition.h"
+#include "RHMalignityStimulus.h"
+
+struct RHNPCDetectableTimerPayload
+{
+    RHMalignityPosition position;
+    int mode;
+    unsigned short timer;
+    char m_16[6];
+};
+
+DECOMP_SIZE_ASSERT(RHMalignityStimulus, 0x2c)
+DECOMP_SIZE_ASSERT(RHDetectable, 0x14)
+DECOMP_SIZE_ASSERT(RHNPCCachedList, 0x18)
+DECOMP_SIZE_ASSERT(RHNPCDetectableTimerPayload, 0x1c)
+
+// FUNCTION: GAME 0x00488a40
+void RHElementActorNPC::FUN_00488a40(unsigned char index, unsigned short timer)
+{
+    RHMalignityStimulus stimulus;
+    if (!((RHNPCActorCalls *)(*(RHArtificialIntelligence *)((char *)this + (*(int **)((char *)this + 0x49c))[1] + 0x49c)).m_actor)->V48())
+    {
+        RHNPCCachedList &list = RHNPC_FIELD(RHNPCCachedList, 0x504);
+        ((RHSectorActorList *)&list)->Unk005c8e40(index);
+        RHDetectable &value = *(RHDetectable *)&list.current.node->data;
+        char previous = value.m_09;
+        value.m_09 = timer > 0;
+        if (!previous && value.m_09 && !value.m_08)
+        {
+            RHNPCDetectableTimerPayload payload;
+            payload.mode = *(void **)((char *)value.m_00 + 0x268) ? 13 : 3;
+            payload.position = ((RHArtificialIntelligence *)((char *)this + (*(int **)((char *)this + 0x49c))[1] + 0x49c))->FUN_004165e0(value.m_00, true);
+            payload.timer = timer;
+            stimulus.m_20 = 2;
+            *(RHNPCDetectableTimerPayload *)stimulus.m_00 = payload;
+            stimulus.m_type = 1;
+            ((RHArtificialIntelligence *)((char *)this + (*(int **)((char *)this + 0x49c))[1] + 0x49c))->V24(&stimulus);
+        }
+    }
+}
+
+void EmitRHNPCDetectableTimer(RHElementActorNPC &actor)
+{
+    actor.FUN_00488a40(0, 0);
+}
+
 // FUNCTION: GAME 0x0048b440
 void RHElementActorNPC::SetUniversalFrameCounter(unsigned long &counter)
 {
