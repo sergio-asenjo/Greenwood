@@ -15,6 +15,7 @@ public:
     SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
     SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
     SBGeoPoint2D FUN_005fc200(const SBGeoPoint2D &other) const;
+    SBGeoPoint2D &FUN_005fc1e0(const SBGeoPoint2D &other);
     SBGeoVector2D Unk005fc110(const SBGeoPoint2D &other) const;
     float FUN_005fc700(float scale) const;
     bool Serialize(SBFile &file);
@@ -48,6 +49,8 @@ public:
     SBGeoBoundingBox2D();
     bool Serialize(SBFile &file);
     void FUN_00607d90();
+    void Unk00607dc0(const SBGeoPoint2D &point);
+    bool FUN_00608400(const SBGeoPoint2D &point) const;
     SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &offset) const;
     SBGeoPoint2D m_p0;
     SBGeoPoint2D m_p1;
@@ -228,7 +231,7 @@ public:
     unsigned short m_100; // +0x100
     char m_pad102[2];
     SBGeoBoundingBox2D m_104; // +0x104
-    int m_118; // +0x118
+    float m_118; // +0x118
     float m_11c; // +0x11c
     RHElement *m_120; // +0x120
     char m_124; // +0x124
@@ -246,17 +249,19 @@ public:
     bool FUN_00560460();
     bool WithinTargetRadius(float radius, const SBGeoVector2D &delta)
     {
-        return delta.FUN_005fc700(1.0f) < radius + *(float *)&m_118 + 10.0f;
+        return delta.FUN_005fc700(1.0f) < radius + m_118 + 10.0f;
     }
     void FUN_00560780(float distance, unsigned short duration);
     bool FUN_00561040(void *, float, unsigned short &, bool);
     bool FUN_00563e90();
     void FUN_00563ea0();
+    bool FUN_00563ed0(const SBGeoPoint2D &point);
 };
 
 class RHMobilePosition : public RHPositionInterface
 {
 public:
+    void FUN_004abf20(const SBGeoPoint2D &offset);
     void FUN_0055fc20(bool updateDirection);
 };
 

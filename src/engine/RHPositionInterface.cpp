@@ -8,6 +8,23 @@ public:
     void FUN_0055f290();
 };
 
+// FUNCTION: GAME 0x004abf20
+void RHMobilePosition::FUN_004abf20(const SBGeoPoint2D &offset)
+{
+    m_20.FUN_005fc1e0(offset);
+    {
+        SBGeoVector2D position((const SBGeoVector2D &)m_20);
+        ((RHMobileUnk00607da0 *)&m_c0)->FUN_00607da0(
+            (const RHMobileUnk00607da0 &)Box().FUN_006090d0(position));
+    }
+    m_4 = 2;
+}
+
+void EmitRHMobilePositionOffset(RHMobilePosition *position, const SBGeoPoint2D &offset)
+{
+    position->FUN_004abf20(offset);
+}
+
 // FUNCTION: GAME 0x0055eee0
 RHPositionInterface::RHPositionInterface(unsigned long owner)
 {
@@ -514,4 +531,27 @@ bool RHSpritePositionCalls::FUN_00560460()
 void RHSpritePositionCalls::FUN_00560780(float distance, unsigned short duration)
 {
     m_134 = Divided(Scaled(distance, m_60), duration);
+}
+
+// FUNCTION: GAME 0x00563ed0
+bool RHSpritePositionCalls::FUN_00563ed0(const SBGeoPoint2D &point)
+{
+    SBGeoBoundingBox2D &bounds = m_104;
+    if (bounds.FUN_00608400(point))
+    {
+        ++m_100;
+        if (m_118 > 1.0f)
+            m_118 -= 0.2f;
+        return false;
+    }
+    bounds.Unk00607dc0(point.Unk005fc190(SBGeoVector2D(0.49f, 0.49f)));
+    bounds.Unk00607dc0(point.FUN_005fc200(SBGeoVector2D(0.49f, 0.49f)));
+    m_100 = 0;
+    *(unsigned *)&m_118 = *(unsigned *)&m_11c;
+    return true;
+}
+
+void EmitRHSpritePositionBounds(RHSpritePositionCalls *position, const SBGeoPoint2D &point)
+{
+    position->FUN_00563ed0(point);
 }
