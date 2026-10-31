@@ -9,6 +9,7 @@
 class SBGeoVector2D;
 class SBGeoSegment2D;
 class RHMalignitySegment;
+class RHMobileUnk006100e0;
 class SBFile;
 SBGeoPoint2D operator+(const SBGeoPoint2D &, const SBGeoVector2D &);
 
@@ -32,6 +33,9 @@ public:
     void FUN_00607e30(const RHMalignitySegment &);
     SBGeoPoint2D FUN_00608f40() const;
     bool FUN_00608400(const SBGeoPoint2D &) const;
+    bool FUN_006084a0(const SBGeoBoundingBox2D &);
+    bool FUN_00608650(const RHMobileUnk006100e0 &) const;
+    SBGeoBoundingBox2D &operator-=(const SBGeoVector2D &);
     int FUN_00609050(const SBGeoPoint2D &, const SBGeoPoint2D &);
     bool Unk00608f30() const;
     bool FUN_006090a0() const;

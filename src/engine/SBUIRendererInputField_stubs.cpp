@@ -10,7 +10,7 @@ void FUN_0048be30()
 bool SBUIInputFieldBoxCalls::FUN_00608450(const SBGeoSegment2D &other)
 {
     SBGeoBoundingBox2D &box = *(SBGeoBoundingBox2D *)this;
-    if (!box.m_10)
+    if (!box.m_flag)
         return false;
     return box.FUN_00608400(other.First()) && box.FUN_00608400(other.Second());
 }

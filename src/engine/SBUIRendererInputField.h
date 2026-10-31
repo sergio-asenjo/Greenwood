@@ -39,24 +39,7 @@ public:
 };
 #endif
 
-#ifndef SBGEO_BOUNDINGBOX2D_VIEW
-#define SBGEO_BOUNDINGBOX2D_VIEW
-// SIZE 0x14
-class SBGeoBoundingBox2D
-{
-public:
-    SBGeoBoundingBox2D();
-    SBGeoBoundingBox2D(float, float, float, float);
-    ~SBGeoBoundingBox2D() {}
-    SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &) const;
-    SBGeoBoundingBox2D &operator-=(const SBGeoVector2D &);
-    bool FUN_006084a0(const SBGeoBoundingBox2D &);
-    bool FUN_00608400(const SBGeoPoint2D &) const;
-    SBGeoPoint2D m_00; // 0x00
-    SBGeoPoint2D m_08; // 0x08
-    char m_10; // 0x10
-};
-#endif
+#include "SBGeoBoundingBox2DCore.h"
 
 // SIZE 0x14
 #include "RHMapBox.h"

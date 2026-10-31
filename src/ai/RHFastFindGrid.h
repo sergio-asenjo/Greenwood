@@ -143,23 +143,7 @@ public:
 
 #include "RHPlaneCalls.h"
 
-#define SBGEO_BOUNDINGBOX2D_VIEW
-class SBGeoBoundingBox2D
-{
-public:
-    SBGeoBoundingBox2D();
-    ~SBGeoBoundingBox2D() {}
-    void Unk00607dc0(const SBGeoPoint2D &point);
-    void FUN_00607e30(const class RHMalignitySegment &segment);
-    bool FUN_00608400(const SBGeoPoint2D &) const;
-    bool FUN_00608650(const class RHMobileUnk006100e0 &) const;
-    SBGeoPoint2D FUN_00608f40() const;
-    int FUN_00609050(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
-    SBGeoBoundingBox2D &operator=(const SBGeoBoundingBox2D &other);
-    SBGeoPoint2D m_first;
-    SBGeoPoint2D m_second;
-    char m_10[4];
-};
+#include "SBGeoBoundingBox2DCore.h"
 
 class RHMalignitySegment
 {

@@ -99,10 +99,10 @@ std::wstring FUN_005d0880(const std::wstring &left, const std::wstring &right)
 bool SBGeoBoundingBox2D::FUN_006084a0(const SBGeoBoundingBox2D &other)
 {
     SBGeoSegment2D span(SBGeoPoint2D(0, 0), SBGeoPoint2D(0, 0));
-    if (!other.m_10)
+    if (!other.m_flag)
         return false;
     ((SBUIInputFieldBoxCalls *)&span)->FUN_0060a860(
-        SBGeoSegment2D(other.m_00, other.m_08).Line());
+        SBGeoSegment2D(other.m_p0, other.m_p1).Line());
     return ((SBUIInputFieldBoxCalls *)this)->FUN_00608450(span);
 }
 
@@ -157,16 +157,16 @@ bool FUN_006141e0(float threshold, const std::wstring &text, void *font)
 
 inline void SetSBUIInputFieldBoxX(SBGeoBoundingBox2D &box, float first, float last)
 {
-    box.m_00.m_x = first;
-    box.m_08.m_x = last;
-    box.m_10 = true;
+    box.m_p0.m_x = first;
+    box.m_p1.m_x = last;
+    box.m_flag = true;
 }
 
 inline void SetSBUIInputFieldBoxY(SBGeoBoundingBox2D &box, float first, float last)
 {
-    box.m_00.m_y = first;
-    box.m_08.m_y = last;
-    box.m_10 = true;
+    box.m_p0.m_y = first;
+    box.m_p1.m_y = last;
+    box.m_flag = true;
 }
 
 // Parked: x87 operand order, alignment flags and result-slot scheduling differ.
@@ -526,7 +526,7 @@ bool SBUIInputFieldUnk00621440::FUN_00621470(unsigned int id)
     SBUIInputFieldDrawUnk draw;
     void *font = m_84 == 1 ? (void *)m_64 : m_68;
     SBGeoBoundingBox2D &box = m_70;
-    float height = box.m_08.m_y - box.m_00.m_y;
+    float height = box.m_p1.m_y - box.m_p0.m_y;
     offset.m_x = 0;
     offset.m_y = (height - ((SBUIInputFieldFontHeight *)font)->v7()) * 0.5f;
     if (!((SBUIUnk0060dae0 *)this)->FUN_0060dae0(id))
@@ -534,30 +534,30 @@ bool SBUIInputFieldUnk00621440::FUN_00621470(unsigned int id)
     if (!m_84)
         return false;
     unsigned int width = ((SBUIInputFieldTextUnk *)m_6c)->FUN_0061dd00();
-    int shift = box.m_08.m_x - box.m_00.m_x <= width
-        ? (int)(box.m_08.m_x - box.m_00.m_x - width) : 0;
+    int shift = box.m_p1.m_x - box.m_p0.m_x <= width
+        ? (int)(box.m_p1.m_x - box.m_p0.m_x - width) : 0;
     unsigned int cursor = width + shift;
     typedef std::wstring &(std::wstring::*Assign)(const std::wstring &, unsigned, unsigned);
     Assign assign = &std::wstring::assign;
     (before.*assign)(((SBUIInputFieldTextUnk *)m_6c)->FUN_0061dd50(0, cursor), 0, std::wstring::npos);
     (after.*assign)(((SBUIInputFieldTextUnk *)m_6c)->FUN_0061dd50(1,
-        (unsigned int)(box.m_08.m_x - box.m_00.m_x - width - shift)), 0, std::wstring::npos);
+        (unsigned int)(box.m_p1.m_x - box.m_p0.m_x - width - shift)), 0, std::wstring::npos);
     unsigned int surface;
     if (m_00[0x60] == 1 && !((SBUIInputFieldTextUnk *)m_6c)->FUN_0061e230())
     {
         draw.FUN_00614bf0(font,
             SBUIInputFieldTextAddress(FUN_005d0880(*(std::wstring *)&before, *(std::wstring *)&after)),
-            m_70.m_00.Unk005fc190(offset), 1);
+            m_70.m_p0.Unk005fc190(offset), 1);
         std::wstring *value = (std::wstring *)(m_00 + 0x50);
         int textWidth = ((SBFontUnk0061e840 *)font)->FUN_0061ea50(value);
         draw.FUN_00614bf0(font, value,
-            SBGeoPoint2D(m_70.m_08.m_x - textWidth, m_70.m_00.m_y).Unk005fc190(offset), 1);
+            SBGeoPoint2D(m_70.m_p1.m_x - textWidth, m_70.m_p0.m_y).Unk005fc190(offset), 1);
     }
     else
     {
         draw.FUN_00614bf0(font,
             SBUIInputFieldTextAddress(FUN_005d0880(*(std::wstring *)&before, *(std::wstring *)&after)),
-            m_70.m_00.Unk005fc190(offset), 1);
+            m_70.m_p0.Unk005fc190(offset), 1);
     }
     if (((SBUIInputFieldTextUnk *)m_6c)->FUN_0061e230())
     {
@@ -572,7 +572,7 @@ bool SBUIInputFieldUnk00621440::FUN_00621470(unsigned int id)
                 "Unable to retrieve a resource for the input field renderer");
             return false;
         }
-        position = box.m_00.Unk005fc190(SBGeoVector2D((const SBGeoVector2D &)SBGeoPoint2D((float)cursor, 0)));
+        position = box.m_p0.Unk005fc190(SBGeoVector2D((const SBGeoVector2D &)SBGeoPoint2D((float)cursor, 0)));
         RHUnkFXDraw *manager = *(RHUnkFXDraw **)(m_00 + 0x1c);
         RHMapBox bounds(position.m_x, position.m_y,
             position.m_x + manager->FUN_005e56c0(surface),
@@ -597,10 +597,10 @@ public:
 // FUNCTION: GAME 0x00621b80
 void RHPortraitRenderer006212d0::FUN_0060d6a0(const SBGeoBoundingBox2D &box)
 {
-    RHUnk005fc400 displacement(*(SBGeoPoint2D *)((SBUIUnk0060d530 *)this)->FUN_0060d690(), m_bounds.m_00);
+    RHUnk005fc400 displacement(*(SBGeoPoint2D *)((SBUIUnk0060d530 *)this)->FUN_0060d690(), m_bounds.m_p0);
     RHPortraitRenderer0060d470::FUN_0060d6a0(box);
     {
-        const SBGeoVector2D &origin = SBGeoVector2D(*(SBGeoVector2D *)&m_bounds.m_00);
+        const SBGeoVector2D &origin = SBGeoVector2D(*(SBGeoVector2D *)&m_bounds.m_p0);
         m_bounds -= origin;
     }
     ((RHMobileUnk006091b0 *)&m_bounds)->FUN_006091b0(displacement);
@@ -636,7 +636,7 @@ void SBUIInputFieldEmit(SBUIInputFieldUnk00621440 *renderer)
     text->FUN_0061dd50(0, 0);
     ((SBGeoBoundingBox2D *)renderer)->FUN_006084a0(renderer->m_70);
     SBUIInputFieldDrawUnk draw;
-    draw.FUN_00614bf0(0, 0, renderer->m_70.m_00, 0);
+    draw.FUN_00614bf0(0, 0, renderer->m_70.m_p0, 0);
     FUN_005d0880(draw.m_00, draw.m_00);
     ((RHPortraitRenderer006212d0 *)renderer)->RHPortraitRenderer006212d0::FUN_0060d530(0);
     renderer->FUN_00621440(0);
