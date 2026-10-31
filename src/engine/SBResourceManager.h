@@ -34,16 +34,25 @@ template<class T> struct SBResourceTreeFindIterator
     SBResourceTreeFindIterator(T *node) : m_node(node) {}
 };
 
+class SBResourceScalarVector : public std::vector<unsigned long>
+{
+public:
+    SBResourceScalarVector() {}
+    SBResourceScalarVector(const std::allocator<unsigned long> &allocator);
+};
+
 class SBResourceSurfaceArray
 {
 public:
-    std::vector<unsigned long> m_values;
+    SBResourceScalarVector m_values;
     unsigned long *m_search;
     bool m_changed;
     bool m_searching;
     int m_index;
     unsigned long m_value;
     SBResourceSurfaceArray() : m_changed(true) {}
+    SBResourceSurfaceArray(const std::allocator<unsigned long> &allocator)
+        : m_values(allocator), m_changed(true) {}
     SBResourceSurfaceArray(const SBResourceSurfaceArray &other)
     {
         FUN_006069e0(other);
@@ -131,22 +140,54 @@ public:
     void FUN_0051d120();
 };
 
-class SBResourceArrayLifecycle74
+class SBResourceArrayLifecycle74 : public std::vector<std::wstring>
 {
 public:
-    std::vector<std::wstring> m_values;
+    void Destroy() { clear(); }
     char m_10[12];
     std::wstring m_text;
     ~SBResourceArrayLifecycle74();
 };
 
-class SBResourceArrayLifecycle84
+class SBResourceUnk005fe790
 {
 public:
-    std::vector<std::string> m_values;
+    unsigned long m_key;
+    SBResourceArrayLifecycle74 m_value;
+    ~SBResourceUnk005fe790();
+};
+
+class SBResourceUnk005fe880
+{
+public:
+    unsigned long m_key;
+    SBResourceArrayLifecycle74 m_value;
+    ~SBResourceUnk005fe880();
+};
+
+class SBResourceArrayLifecycle84 : public std::vector<std::string>
+{
+public:
+    void Destroy() { clear(); }
     char m_10[12];
     std::string m_text;
     ~SBResourceArrayLifecycle84();
+};
+
+class SBResourceUnk005fed80
+{
+public:
+    unsigned long m_key;
+    SBResourceArrayLifecycle84 m_value;
+    ~SBResourceUnk005fed80();
+};
+
+class SBResourceUnk005fee70
+{
+public:
+    unsigned long m_key;
+    SBResourceArrayLifecycle84 m_value;
+    ~SBResourceUnk005fee70();
 };
 
 struct SBResourceTreeIterator

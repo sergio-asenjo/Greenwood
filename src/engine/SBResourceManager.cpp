@@ -453,84 +453,12 @@ bool SBResourceManager::FUN_005fd8e0(SBFile *file, unsigned long id)
 
 #include <vector>
 
-struct SBResourceWideString : std::wstring {};
-
-class SBResourceUnk005fed80
-{
-public:
-    char m_00[4];
-    std::vector<std::string> m_values;
-    char m_14[0xc];
-    std::string m_text;
-    ~SBResourceUnk005fed80();
-};
-
-class SBResourceUnk005fe790
-{
-public:
-    char m_00[4];
-    std::vector<SBResourceWideString> m_values;
-    char m_14[0xc];
-    std::wstring m_text;
-    ~SBResourceUnk005fe790();
-};
-
-class SBResourceUnk005fe880
-{
-public:
-    char m_00[4];
-    std::vector<SBResourceWideString> m_values;
-    char m_14[0xc];
-    std::wstring m_text;
-    ~SBResourceUnk005fe880();
-};
-
-class SBResourceUnk005fee70
-{
-public:
-    char m_00[4];
-    std::vector<std::string> m_values;
-    char m_14[0xc];
-    std::string m_text;
-    ~SBResourceUnk005fee70();
-};
-
 // FUNCTION: GAME 0x005fdc70
 void SBResourceUnk005fdc70::FUN_005fdc70()
 {
     std::vector<unsigned long> &values = *(std::vector<unsigned long> *)((char *)this + 4);
     values.clear();
     values.~vector();
-}
-
-// Parked: vector erase invokes _Tidy instead of the target out-of-line string destructor; this/EH and iterator registers differ.
-// STUB: GAME 0x005fe790
-SBResourceUnk005fe790::~SBResourceUnk005fe790()
-{
-    m_values.clear();
-}
-
-// Parked: vector erase invokes _Tidy instead of the target out-of-line string destructor; this/EH and iterator registers differ.
-// STUB: GAME 0x005fe880
-SBResourceUnk005fe880::~SBResourceUnk005fe880()
-{
-    m_values.clear();
-}
-
-// Parked: target EH, iterator scheduling, and the static-CRT npos data load differ from this source shape.
-// STUB: GAME 0x005fed80
-SBResourceUnk005fed80::~SBResourceUnk005fed80()
-{
-    std::vector<std::string> &values = m_values;
-    values.erase(values.begin(), values.end());
-}
-
-// Parked: target EH, iterator scheduling, and the static-CRT npos data load differ from this source shape.
-// STUB: GAME 0x005fee70
-SBResourceUnk005fee70::~SBResourceUnk005fee70()
-{
-    std::vector<std::string> &values = m_values;
-    values.erase(values.begin(), values.end());
 }
 
 // FUNCTION: GAME 0x005ff390
@@ -2751,12 +2679,6 @@ void SBResourceTreeIterator84::FUN_00605b20()
 
 #include <new>
 
-// FUNCTION: GAME 0x00605bd0
-SBResourceArrayLifecycle74::~SBResourceArrayLifecycle74()
-{
-    m_values.clear();
-}
-
 // Parked: target expands SBArray insertion with separately owned size/copy/destroy helpers.
 // STUB: GAME 0x00605ce0
 void SBResourceConstructArray44(unsigned long *output, const unsigned long &value)
@@ -2841,75 +2763,12 @@ void SBResourceWideValues::FUN_00606960()
 }
 
 
-class RHUnk00597a70;
-void FUN_0059fb00(RHUnk00597a70 **, RHUnk00597a70 *const &);
-#include "RHCopyPointers.h"
-
-struct SBResourceArrayStorage
-{
-    char m_allocator[4];
-    unsigned long *m_first;
-    unsigned long *m_last;
-    unsigned long *m_end;
-    unsigned long *begin() { return m_first; }
-    unsigned long *end() { return m_last; }
-    unsigned int Size()
-    {
-        unsigned int (std::vector<unsigned long>::*size)() const = &std::vector<unsigned long>::size;
-        return (((std::vector<unsigned long> *)this)->*size)();
-    }
-    static unsigned long *Copy(unsigned long *first, unsigned long *last, unsigned long *output)
-    {
-        while (first != last) {
-            *output = *first;
-            ++output;
-            ++first;
-        }
-        return output;
-    }
-};
-
-// Parked: source-bound registers, insertion temporaries and allocation scheduling differ.
-// STUB: GAME 0x006069e0
+// FUNCTION: GAME 0x006069e0
 void SBResourceSurfaceArray::FUN_006069e0(const SBResourceSurfaceArray &other)
 {
-    const unsigned long *sourceFirst = other.m_values.begin();
     const unsigned long *sourceLast = other.m_values.end();
-    SBResourceArrayStorage &values = *(SBResourceArrayStorage *)&m_values;
-    values.m_last = SBResourceArrayStorage::Copy(values.end(), values.end(), values.begin());
-    unsigned int count = sourceLast - sourceFirst;
-    unsigned long *position = values.begin();
-    RHScriptFXArray *array = (RHScriptFXArray *)&values;
-    if ((unsigned int)(values.m_end - values.m_last) < count) {
-        unsigned int size = values.m_first == 0 ? 0 : values.m_last - values.m_first;
-        unsigned int grow = count < size ? size : count;
-        int capacity = (values.m_first == 0 ? 0 : values.m_last - values.m_first) + grow;
-        unsigned long *storage = std::_Allocate(capacity, (unsigned long *)0);
-        unsigned long *output = storage;
-        for (unsigned long *first = values.begin(); first != position; ++output, ++first)
-            FUN_0059fb00((RHUnk00597a70 **)output, *(RHUnk00597a70 *const *)first);
-        for (const unsigned long *source = sourceFirst; source != sourceLast; ++output, ++source)
-            FUN_0059fb00((RHUnk00597a70 **)output, *(RHUnk00597a70 *const *)source);
-        array->Unk004fe420((void **)position, (void **)values.end(), (void **)output);
-        array->Unk005008e0((void **)values.begin(), (void **)values.end());
-        operator delete(values.m_first);
-        values.m_end = storage + capacity;
-        values.m_last = storage + values.Size() + count;
-        values.m_first = storage;
-    } else if ((unsigned int)(values.m_last - position) < count) {
-        array->Unk004fe420((void **)position, (void **)values.end(), (void **)(position + count));
-        array->Unk004fe420((void **)(sourceFirst + (values.m_last - position)), (void **)sourceLast, (void **)values.end());
-        FUN_004598e0((void **)sourceFirst, (void **)(sourceFirst + (values.m_last - position)), (void **)position);
-        values.m_last += count;
-    } else if (count > 0) {
-        array->Unk004fe420((void **)(values.end() - count), (void **)values.end(), (void **)values.end());
-        unsigned long *first = values.end() - count;
-        unsigned long *output = values.end();
-        while (first != position)
-            *--output = *--first;
-        FUN_004598e0((void **)sourceFirst, (void **)sourceLast, (void **)position);
-        values.m_last += count;
-    }
+    const unsigned long *sourceFirst = other.m_values.begin();
+    m_values.assign(sourceFirst, sourceLast);
     m_changed = true;
 }
 

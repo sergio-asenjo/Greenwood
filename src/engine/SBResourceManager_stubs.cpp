@@ -2,7 +2,19 @@
 #include "SBResourceManager.h"
 #include "Decomp.h"
 
+extern template class std::basic_string<char>;
+
+// TEMPLATE: GAME 0x00634bb0 FOLDED
+// ??1?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAE@XZ
+
 DECOMP_SIZE_ASSERT(SBResourceArrayLifecycle84, 0x2c)
+DECOMP_SIZE_ASSERT(SBResourceArrayLifecycle74, 0x2c)
+DECOMP_SIZE_ASSERT(SBResourceUnk005fe790, 0x30)
+DECOMP_SIZE_ASSERT(SBResourceUnk005fe880, 0x30)
+DECOMP_SIZE_ASSERT(SBResourceUnk005fed80, 0x30)
+DECOMP_SIZE_ASSERT(SBResourceUnk005fee70, 0x30)
+DECOMP_STATIC_ASSERT(offsetof(SBResourceUnk005fe790, m_value) == 4)
+DECOMP_STATIC_ASSERT(offsetof(SBResourceUnk005fe880, m_value) == 4)
 
 template class SBResourceTreeStorage<0x34, 0x30, 0x44>;
 template class SBResourceTreeStorage<0x20, 0x1c, 0x54>;
@@ -20,10 +32,36 @@ void SBResourceArrayLifecycle44::FUN_0051d120()
     values->erase(values->begin(), values->end());
     values->~Values();
 }
-// FUNCTION: GAME 0x0057c820
-SBResourceArrayLifecycle84::~SBResourceArrayLifecycle84()
+#include "SBResourceTextArrayLifetime.h"
+
+// FUNCTION: GAME 0x005fe790
+SBResourceUnk005fe790::~SBResourceUnk005fe790()
 {
-    m_values.clear();
+}
+
+// FUNCTION: GAME 0x005fe880
+SBResourceUnk005fe880::~SBResourceUnk005fe880()
+{
+}
+
+void EmitResourceWideArrayDestruction(SBResourceArrayLifecycle74 *values)
+{
+    delete[] values;
+}
+
+// FUNCTION: GAME 0x005fed80
+SBResourceUnk005fed80::~SBResourceUnk005fed80()
+{
+}
+
+// FUNCTION: GAME 0x005fee70
+SBResourceUnk005fee70::~SBResourceUnk005fee70()
+{
+}
+
+void EmitResourceNarrowArrayDestruction(SBResourceArrayLifecycle84 *values)
+{
+    delete[] values;
 }
 
 bool SBResourceManager::FUN_005fdcc0(int, unsigned long) { return false; }
@@ -36,7 +74,9 @@ bool SBResourceManager::FUN_005fef60(int, unsigned long) { return false; }
 
 #include <vector>
 
-extern template class std::basic_string<char>;
+// TEMPLATE: GAME 0x005b1ba0
+// ?clear@?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@QAEXXZ
+template class std::vector<std::string>;
 
 // TEMPLATE: GAME 0x00606070
 // ?resize@?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@QAEXIABV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@2@@Z
