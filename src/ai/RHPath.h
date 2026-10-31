@@ -22,10 +22,11 @@ struct RHPathArray
 // SIZE 0x14
 struct RHPathHistory
 {
-    int m_0; // +0x00
-    int m_4; // +0x04
+    float m_0; // +0x00
+    float m_4; // +0x04
     void *m_8; // +0x08
-    int m_c; // +0x0c
+    unsigned short m_c; // +0x0c
+    char m_pade[2];
     char m_10; // +0x10
     char m_pad11;
     unsigned short m_12; // +0x12
@@ -99,6 +100,15 @@ public:
     ~RHPath();
     bool TestIfPathIsFine(RHElementActor *actor);
     bool SerializeStatus(SBFile &file);
+    RHWaypoint *LookupNextWaypoint() const;
+    void ResetHistory();
+    void InitializeHistoryEntriesOnPath();
+    unsigned short GetWaypointCount() const
+    {
+        if (m_4 == 0)
+            return 0;
+        return m_4->size();
+    }
     void Emit(SBFile &file, RHElementActor *actor);
 
     char m_0; // +0x00
@@ -201,15 +211,7 @@ struct RHUnkPathEngineView
 };
 
 // SIZE 0x08
-class SBGeoVector2D : public SBGeoPoint2D
-{
-public:
-    SBGeoVector2D(const SBGeoPoint2D &point);
-    SBGeoVector2D(float x, float y);
-    ~SBGeoVector2D() {}
-    SBGeoVector2D(const SBGeoVector2D &other);
-    SBGeoVector2D &operator=(const SBGeoVector2D &other);
-};
+#include "RHUnk005fc3b0.h"
 
 #include "SBGeoBoundingBox2DCore.h"
 

@@ -226,6 +226,17 @@ struct RHPathRequestNode
     RHpathRequest *request; // +0x08
 };
 
+inline RHPathRequestList::RHPathRequestList(const std::allocator<void *> &value)
+    : allocator(value)
+{
+    RHPathRequestNode *node = (RHPathRequestNode *)operator new(sizeof(RHPathRequestNode));
+    node->next = node;
+    node->previous = node;
+    head = node;
+    count = 0;
+    valid = 1;
+}
+
 inline RHUnkIter RHPathRequestList::begin()
 {
     return RHUnkIter(((RHUnk0046eb30 *)this)->FUN_0046eb80().node);
@@ -286,10 +297,17 @@ struct RHPathSectorConversion
 
 struct RHPathGraphArray
 {
-    int grow; // 0x00
+    RHPathGraphArray(const std::allocator<void *> &value = std::allocator<void *>())
+        : allocator(value), first(0), last(0), end(0), dirty(true) {}
+    std::allocator<void *> allocator; // 0x00
     void **first; // 0x04
     void **last; // 0x08
     void **end; // 0x0c
+    void **cursor; // 0x10
+    bool dirty; // 0x14
+    bool forward; // 0x15
+    int index; // 0x18
+    void *value; // 0x1c
     unsigned size() const { return first ? last - first : 0; }
 };
 

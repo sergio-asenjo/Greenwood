@@ -3,6 +3,7 @@
 
 #include "Decomp.h"
 #include <windows.h>
+#include <memory>
 
 class SBFile;
 struct RHpathRequest;
@@ -19,7 +20,9 @@ class SBGeoVector2D;
 class RHPathRequestList
 {
 public:
-    int allocator; // +0x00
+    RHPathRequestList(const std::allocator<void *> &value = std::allocator<void *>());
+    ~RHPathRequestList();
+    std::allocator<void *> allocator; // +0x00
     RHPathRequestNode *head; // +0x04
     int count; // +0x08
     RHPathRequestNode *cursor; // +0x0c
@@ -40,6 +43,7 @@ public:
 class RHPathFinder
 {
 public:
+    RHPathFinder();
     void AddPathRequest(RHpathRequest *request);
     void FUN_00553760(RHElementActor *actor);
     void FUN_00553850(RHElementActor *actor);

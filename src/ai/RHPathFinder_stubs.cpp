@@ -4,6 +4,12 @@
 #include "SBGeoSegmentVector.h"
 #include "RHGameInputTranslator.h"
 
+RHPathRequestList::~RHPathRequestList()
+{
+    ((std::list<void *> *)this)->clear();
+    ((std::list<void *> *)this)->~list();
+}
+
 // FUNCTION: GAME 0x004e6ba0
 void SBGeoSegmentVector::DestroyElements(SBGeoSegment2D *first, SBGeoSegment2D *last)
 {

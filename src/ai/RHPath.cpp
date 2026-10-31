@@ -255,6 +255,65 @@ bool RHPath::SerializeStatus(SBFile &file)
     return true;
 }
 
+// FUNCTION: GAME 0x00550fd0
+RHWaypoint *RHPath::LookupNextWaypoint() const
+{
+    if (GetWaypointCount() == 1)
+        return (*m_4)[0];
+    if ((unsigned char)m_0 == 0)
+        return (*m_4)[1];
+    if ((unsigned char)m_0 != GetWaypointCount() - 1 && m_2)
+        return (*m_4)[(unsigned short)((unsigned char)m_0 + 1)];
+    return (*m_4)[(unsigned short)((unsigned char)m_0 - 1)];
+}
+
+// FUNCTION: GAME 0x00551060
+void RHPath::ResetHistory()
+{
+    if (m_4)
+    {
+        m_c.RHMotionAreaListStorage<RHPathHistory>::clear();
+        m_c.m_valid = 1;
+    }
+}
+
+RHWaypoint *EmitRHPathLookup(RHPath &path)
+{
+    path.ResetHistory();
+    return path.LookupNextWaypoint();
+}
+
+// FUNCTION: GAME 0x005510b0
+void RHPath::InitializeHistoryEntriesOnPath()
+{
+    SBGeoVector2D direction;
+    SBGeoPoint2D current;
+    SBGeoPoint2D next;
+    unsigned short distance = 0;
+    for (unsigned short index = 0; index < (unsigned char)m_0; ++index)
+    {
+        RHPathHistory history;
+        RHWaypoint *waypoint = (*m_4)[index];
+        history.m_0 = current.m_x = waypoint->m_64;
+        history.m_4 = current.m_y = waypoint->m_66;
+        history.m_8 = waypoint->m_68;
+        history.m_c = waypoint->m_6c;
+        history.m_12 = distance;
+        waypoint = (*m_4)[(unsigned short)(index + 1)];
+        ((RHUnkPathPointSet *)&next)->Set(waypoint->m_64, waypoint->m_66);
+        direction = next.Unk005fc110(current);
+        history.m_10 = ((RHUnk005fc3b0 *)&direction)->FUN_005fcc50(0.57357645f);
+        m_c.push_back(history);
+        m_c.m_valid = 1;
+        distance += ((RHUnk005fc3b0 *)&direction)->Unk005fc6a0(0.57357645f);
+    }
+}
+
+void EmitRHPathHistory(RHPath &path)
+{
+    path.InitializeHistoryEntriesOnPath();
+}
+
 // FUNCTION: GAME 0x00551bb0
 unsigned int RHWaypoint::LoadDataFromFile(SBFile &file)
 {

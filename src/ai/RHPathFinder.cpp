@@ -81,6 +81,7 @@ DECOMP_SIZE_ASSERT(RHMalignityQueryList, 0x24)
 DECOMP_SIZE_ASSERT(RHUnk005fc3b0, 0x08)
 DECOMP_SIZE_ASSERT(RHPathSearchNode, 0x20)
 DECOMP_SIZE_ASSERT(RHPathStateArray, 0x20)
+DECOMP_SIZE_ASSERT(RHPathGraphArray, 0x20)
 DECOMP_SIZE_ASSERT(RHPathPointList, 0x28)
 
 // GLOBAL: GAME 0x006c0d40
@@ -113,6 +114,12 @@ void *g_unk0x006c0d70;
 void *g_unk0x006c0d9c;
 // GLOBAL: GAME 0x006c0da0
 RHPathGraphArray *g_unk0x006c0da0;
+// GLOBAL: GAME 0x006c0dac
+RHPathGraphArray *g_unk0x006c0dac;
+// GLOBAL: GAME 0x006c0ca4
+unsigned short g_unk0x006c0ca4;
+class RHUnkSectorGlobal;
+extern RHUnkSectorGlobal *g_unk0x6c0a9c;
 // GLOBAL: GAME 0x006c0db0
 RHPathSearchNode *g_unk0x006c0db0;
 // GLOBAL: GAME 0x006c0db8
@@ -231,6 +238,19 @@ bool RHPathObstacleGrid::FUN_004f5890(SBGeoBoundingBox2D &box, unsigned short se
         ++iteration;
     } while (iteration < 50);
     return false;
+}
+
+// FUNCTION: GAME 0x00552290
+RHPathFinder::RHPathFinder()
+{
+    g_unk0x006c0ca4 = 1;
+    g_pathObstacleGrid = (RHPathObstacleGrid *)g_unk0x6c0a9c;
+    m_c = 2;
+    g_pathStatus = 0;
+    g_pathThreadDone = 0;
+    g_unk0x006c0da0 = new RHPathGraphArray;
+    g_unk0x006c0dac = new RHPathGraphArray;
+    InitializeCriticalSection(&g_pathCriticalSection);
 }
 
 class RHUnk005595b0
@@ -1363,6 +1383,7 @@ bool RHPathFinder::Serialize(SBFile &file)
 
 void RHPathFinder::Emit(SBFile &file, RHpathRequest *request)
 {
+    new RHPathFinder;
     FUN_00553760((RHElementActor *)request->m_1c);
     FUN_00553850((RHElementActor *)request->m_1c);
     FUN_005539a0((RHElementActor *)request->m_1c);
