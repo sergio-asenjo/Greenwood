@@ -3,6 +3,8 @@
 
 #include "Decomp.h"
 #include "RHMapWindowPart.h"
+#include "SBDrawManagerCore.h"
+#include "SBDrawViewport.h"
 
 class RHUnk005ef320;
 extern RHUnk005ef320 *g_unk0x6c11d0;
@@ -17,8 +19,6 @@ public:
     void FUN_005e5260();
     void Unk005e5160(unsigned long surface);
     unsigned long Unk005e4ed0(int width, int height, int, bool);
-    bool Unk005e5a00(unsigned long surface, RHUnk00613e90 &view, unsigned long flags);
-    void Unk005e5ea0(RHUnk00613e90 &view);
     void FUN_005e6440(unsigned long surface, int first, int second, unsigned long third, unsigned long flags);
 };
 

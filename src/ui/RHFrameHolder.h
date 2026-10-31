@@ -10,27 +10,8 @@ template <>
 std::map<unsigned short, unsigned short>::_Pairib
 std::map<unsigned short, unsigned short>::insert(const value_type &value);
 
-// SIZE 0x08
-#define SBGEO_POINT2D_VIEW
-class SBGeoPoint2D
-{
-public:
-    SBGeoPoint2D();
-    SBGeoPoint2D(float, float);
-    ~SBGeoPoint2D();
-    float m_x; // 0x00
-    float m_y; // 0x04
-};
-
-// SIZE 0x08
-class SBGeoVector2D : public SBGeoPoint2D
-{
-public:
-    SBGeoVector2D(float, float);
-    ~SBGeoVector2D() {}
-    SBGeoVector2D(const SBGeoVector2D &other);
-    SBGeoVector2D &operator=(const SBGeoVector2D &other);
-};
+#include "SBGeoPoint2D.h"
+#include "SBGeoVector2D.h"
 
 template <class T>
 class SBArray
@@ -185,18 +166,7 @@ public:
 
 #include "RHUnk005f4fc0.h"
 
-class RHEngine
-{
-public:
-    unsigned int FUN_004d2340(int);
-    undefined m_00[0x4790]; // 0x00
-    undefined m_4790; // 0x4790
-    undefined m_4791; // 0x4791
-    undefined m_4792[0x312]; // 0x4792
-    undefined m_4aa4; // 0x4aa4
-    undefined m_4aa5; // 0x4aa5
-    undefined2 m_4aa6; // 0x4aa6
-};
+class RHEngine;
 
 extern RHEngine *g_pEngine;
 bool FUN_005f6400(const std::string &);
@@ -335,28 +305,13 @@ public:
     unsigned int m_size; // 0x0c
 };
 
-// SIZE 0x18
-class RHUnk00613e90
-{
-public:
-    RHUnk00613e90();
-    ~RHUnk00613e90();
-    undefined m_00[4]; // 0x00
-    unsigned short m_width; // 0x04
-    unsigned short m_height; // 0x06
-    unsigned long m_pitch; // 0x08
-    unsigned short m_depth; // 0x0c
-    undefined m_0e[2]; // 0x0e
-    unsigned short *m_data; // 0x10
-    undefined m_14[4]; // 0x14
-};
+#include "SBDrawManagerCore.h"
+#include "SBDrawViewport.h"
 
 // SIZE 0x10e
 class RHUnkFXDraw
 {
 public:
-    bool Unk005e5a00(unsigned long, RHUnk00613e90 &, unsigned long);
-    void Unk005e5ea0(RHUnk00613e90 &);
     undefined m_00[0x10c]; // 0x00
     unsigned short m_depth; // 0x10c
 };

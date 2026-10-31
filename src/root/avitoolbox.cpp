@@ -31,7 +31,7 @@ bool FUN_00401130(const char *name)
     bool redraw;
     bool cancelled;
     redraw = false;
-    RHUnk00613e90 viewport;
+    SBDrawViewport viewport;
     ToolboxMouseState mouse;
     memset(&mouse, 0, sizeof(mouse));
     unsigned char keys[256];
@@ -68,10 +68,10 @@ bool FUN_00401130(const char *name)
                 g_unk0x006772f4(movie);
                 if (redraw == true)
                     ((SBDrawManager *)draw)->FUN_005e61e0(0, 0, 0, 0);
-                if (draw->Unk005e5a00(0, viewport, 0))
+                if (((SBDrawManager *)draw)->FUN_005e5a00(0, viewport, 0))
                 {
-                    g_unk0x006772d4(movie, viewport.m_10, viewport.m_08, viewport.m_06, 0, y, format | 0x80000000);
-                    draw->Unk005e5ea0(viewport);
+                    g_unk0x006772d4(movie, viewport.m_pixels, viewport.m_pitch, viewport.m_height, 0, y, format | 0x80000000);
+                    ((SBDrawManager *)draw)->FUN_005e5ea0(viewport);
                     draw->FUN_005e5260();
                     FUN_005e1380();
                     while (wait(movie)) {}

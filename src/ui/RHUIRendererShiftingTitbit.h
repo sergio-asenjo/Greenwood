@@ -75,12 +75,7 @@ public:
 };
 #endif
 
-class SBDrawManager
-{
-public:
-    void BlitAlphaKeying(unsigned long, unsigned long, unsigned long,
-                         SBGeoBoundingBox2D *, unsigned short, unsigned short, unsigned long);
-};
+#include "SBDrawManagerCore.h"
 
 class RHUnk005ef320
 {

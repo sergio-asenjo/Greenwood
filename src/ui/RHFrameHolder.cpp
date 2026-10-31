@@ -1,4 +1,17 @@
 #include "RHFrameHolder.h"
+
+class RHEngine
+{
+public:
+    unsigned int FUN_004d2340(int);
+    undefined m_00[0x4790];
+    undefined m_4790;
+    undefined m_4791;
+    undefined m_4792[0x312];
+    undefined m_4aa4;
+    undefined m_4aa5;
+    undefined2 m_4aa6;
+};
 #include "RHFrameHolderCalls.h"
 #include "RHProfileFileCore.h"
 #include <string.h>
@@ -18,7 +31,7 @@ DECOMP_SIZE_ASSERT(RHUnk00641782, 0x01)
 DECOMP_SIZE_ASSERT(RHUnk00507500, 0x10)
 DECOMP_SIZE_ASSERT(RHUnk00507500::Node, 0x14)
 DECOMP_SIZE_ASSERT(RHFrameHolderRowMap::Node, 0x18)
-DECOMP_SIZE_ASSERT(RHUnk00613e90, 0x18)
+DECOMP_SIZE_ASSERT(SBDrawViewport, 0x18)
 DECOMP_SIZE_ASSERT(RHUnkFXDraw, 0x10e)
 
 // GLOBAL: GAME 0x006c0b2c
@@ -593,14 +606,14 @@ bool RHSpriteFrameCalls::FUN_00505940(unsigned index)
 // STUB: GAME 0x00505980
 unsigned long RHFrameHolder::FUN_00505980(unsigned long surface, unsigned long &size, unsigned short &width, unsigned short &height, long &x, long &y)
 {
-    RHUnk00613e90 pixels;
+    SBDrawViewport pixels;
     unsigned int used = 0;
-    if (!Draw()->Unk005e5a00(surface, pixels, 0))
+    if (!((SBDrawManager *)Draw())->FUN_005e5a00(surface, pixels, 0))
         return 0;
     if (Draw()->m_depth != 16)
-        FUN_00504c50((unsigned long)pixels.m_data, pixels.m_width, pixels.m_height, pixels.m_pitch, 31);
+        FUN_00504c50((unsigned long)pixels.m_pixels, pixels.m_width, pixels.m_height, pixels.m_pitch, 31);
     unsigned int pitch = pixels.m_pitch >> 1;
-    unsigned short *row = pixels.m_data;
+    unsigned short *row = pixels.m_pixels;
     width = pixels.m_width;
     height = pixels.m_height;
     unsigned int left = ~0u;
@@ -627,7 +640,7 @@ unsigned long RHFrameHolder::FUN_00505980(unsigned long surface, unsigned long &
     y = top;
     width = right - left + 1;
     height = bottom - top + 1;
-    row = pixels.m_data + top * pitch + left;
+    row = pixels.m_pixels + top * pitch + left;
     unsigned short *temporary = (unsigned short *)operator new(width * height * 4);
     unsigned short *source = row;
     unsigned int rowOffset = 0;
@@ -670,8 +683,8 @@ unsigned long RHFrameHolder::FUN_00505980(unsigned long surface, unsigned long &
     memcpy(result, temporary, size);
     operator delete(temporary);
     if (Draw()->m_depth != 16)
-        FUN_00504bd0((unsigned long)pixels.m_data, pixels.m_width, pixels.m_height, pixels.m_pitch, 31);
-    Draw()->Unk005e5ea0(pixels);
+        FUN_00504bd0((unsigned long)pixels.m_pixels, pixels.m_width, pixels.m_height, pixels.m_pitch, 31);
+    ((SBDrawManager *)Draw())->FUN_005e5ea0(pixels);
     return (unsigned long)result;
 }
 

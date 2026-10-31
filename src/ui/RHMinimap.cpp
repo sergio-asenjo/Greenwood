@@ -267,24 +267,23 @@ bool RHMinimap::FUN_0054ae90(RHElement *element)
     return false;
 }
 
-#include "SBPictureUnkView.h"
 #include "SBDrawViewport.h"
 #include "SBDrawUnk005e5ec0.h"
 
 // FUNCTION: GAME 0x0054aec0
 bool RHMinimap::IsRealPoint(const SBGeoPoint2D &point)
 {
-    SBPictureUnkView view;
+    SBDrawViewport view;
     unsigned long surface;
     if (!m_120)
         ((SBResourceManager *)m_resource)->FUN_00600920(0x3d, 1, surface);
     else
         surface = m_surface;
-    if (surface && m_minimapDraw->Unk005e5a00(surface, (RHUnk00613e90 &)view, 0))
+    if (surface && ((SBDrawManager *)m_minimapDraw)->FUN_005e5a00(surface, view, 0))
     {
         unsigned x = *(const unsigned *)&point.m_x;
-        unsigned short pixel = ((SBDrawViewport *)&view)->GetPixel((unsigned short)*(const float *)&x, (unsigned short)point.m_y);
-        m_minimapDraw->Unk005e5ea0((RHUnk00613e90 &)view);
+        unsigned short pixel = view.GetPixel((unsigned short)*(const float *)&x, (unsigned short)point.m_y);
+        ((SBDrawManager *)m_minimapDraw)->FUN_005e5ea0(view);
         if (pixel != ((SBDrawUnk005e5ec0 *)m_minimapDraw)->FUN_005e5f60(surface))
             return true;
     }

@@ -10,7 +10,7 @@ public:
 #include "RHDrawManager.h"
 #include <math.h>
 
-DECOMP_SIZE_ASSERT(SBDrawViewport, 0x14)
+DECOMP_SIZE_ASSERT(SBDrawViewport, 0x18)
 DECOMP_SIZE_ASSERT(RHDrawManager, 0x20)
 
 // GLOBAL: GAME 0x006c0814

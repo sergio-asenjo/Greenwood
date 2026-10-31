@@ -7,25 +7,12 @@
 #include <iterator>
 #include "SBResourceManager.h"
 #include "RHScriptListCore.h"
-
-class RHUnk00613e90
-{
-public:
-    RHUnk00613e90();
-    ~RHUnk00613e90();
-    unsigned char m_00[8];
-    unsigned long m_pitch;
-    unsigned short m_depth;
-    unsigned char m_0e[2];
-    unsigned short *m_data;
-    unsigned char m_14[4];
-};
+#include "SBDrawManagerCore.h"
+#include "SBDrawViewport.h"
 
 class RHUnkFXDraw
 {
 public:
-    bool Unk005e5a00(unsigned long, RHUnk00613e90 &, unsigned long);
-    void Unk005e5ea0(RHUnk00613e90 &);
     unsigned short FUN_005e56c0(unsigned long);
     unsigned short FUN_005e5750(unsigned long);
     unsigned long Unk005e4ed0(int, int, int, bool);
@@ -603,22 +590,22 @@ void SBThreadedInput::AccumulateColor15(unsigned short &red, unsigned short &gre
 // FUNCTION: GAME 0x005f4200
 bool SBThreadedInput::BlitDouble(unsigned long source, const SBGeoBoundingBox2D &sourceBox, unsigned long destination, const SBGeoBoundingBox2D &destinationBox, unsigned long flags)
 {
-    RHUnk00613e90 destinationView;
-    RHUnk00613e90 sourceView;
-    if (!g_inputDrawManager->Unk005e5a00(source, sourceView, 0))
+    SBDrawViewport destinationView;
+    SBDrawViewport sourceView;
+    if (!((SBDrawManager *)g_inputDrawManager)->FUN_005e5a00(source, sourceView, 0))
         return false;
-    if (!g_inputDrawManager->Unk005e5a00(destination, destinationView, 0)) {
-        g_inputDrawManager->Unk005e5ea0(sourceView);
+    if (!((SBDrawManager *)g_inputDrawManager)->FUN_005e5a00(destination, destinationView, 0)) {
+        ((SBDrawManager *)g_inputDrawManager)->FUN_005e5ea0(sourceView);
         return false;
     }
     unsigned long sourcePitch = sourceView.m_pitch >> 1;
     float sourceX = sourceBox.m_min.m_x;
     float sourceY = sourceBox.m_min.m_y;
-    unsigned short *sourceRow = sourceView.m_data + (int)sourceX + (int)sourceY * sourcePitch;
+    unsigned short *sourceRow = sourceView.m_pixels + (int)sourceX + (int)sourceY * sourcePitch;
     unsigned long destinationPitch = destinationView.m_pitch >> 1;
     float destinationX = destinationBox.m_min.m_x;
     float destinationY = destinationBox.m_min.m_y;
-    unsigned long *destinationRow = (unsigned long *)(destinationView.m_data + (int)destinationX + (int)destinationY * destinationPitch);
+    unsigned long *destinationRow = (unsigned long *)(destinationView.m_pixels + (int)destinationX + (int)destinationY * destinationPitch);
     unsigned short width = (unsigned short)(destinationBox.m_max.m_x - destinationBox.m_min.m_x);
     width >>= 1;
     unsigned short height = (unsigned short)(destinationBox.m_max.m_y - destinationBox.m_min.m_y);
@@ -641,21 +628,21 @@ bool SBThreadedInput::BlitDouble(unsigned long source, const SBGeoBoundingBox2D 
             destinationRow = destinationStart + destinationPitch;
         } while (--rows != 0);
     }
-    g_inputDrawManager->Unk005e5ea0(sourceView);
-    g_inputDrawManager->Unk005e5ea0(destinationView);
+    ((SBDrawManager *)g_inputDrawManager)->FUN_005e5ea0(sourceView);
+    ((SBDrawManager *)g_inputDrawManager)->FUN_005e5ea0(destinationView);
     return true;
 }
 
 // FUNCTION: GAME 0x005f43d0
 void SBThreadedInput::ChangeShadowIntoPulse(unsigned long surface, const SBGeoBoundingBox2D &box, unsigned short level)
 {
-    RHUnk00613e90 view;
-    if (!g_inputDrawManager->Unk005e5a00(surface, view, 0))
+    SBDrawViewport view;
+    if (!((SBDrawManager *)g_inputDrawManager)->FUN_005e5a00(surface, view, 0))
         return;
     unsigned long pitch = view.m_pitch >> 1;
     float x = box.m_min.m_x;
     float y = box.m_min.m_y;
-    unsigned short *row = view.m_data + (unsigned short)x + (unsigned short)y * pitch;
+    unsigned short *row = view.m_pixels + (unsigned short)x + (unsigned short)y * pitch;
     unsigned short width = (unsigned short)(box.m_max.m_x - box.m_min.m_x);
     unsigned short height = (unsigned short)(box.m_max.m_y - box.m_min.m_y);
     int bounded;
@@ -687,7 +674,7 @@ void SBThreadedInput::ChangeShadowIntoPulse(unsigned long surface, const SBGeoBo
             row += pitch;
         } while (--rows != 0);
     }
-    g_inputDrawManager->Unk005e5ea0(view);
+    ((SBDrawManager *)g_inputDrawManager)->FUN_005e5ea0(view);
 }
 
 // GLOBAL: GAME 0x006c1208

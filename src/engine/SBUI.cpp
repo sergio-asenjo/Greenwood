@@ -502,45 +502,30 @@ unsigned long FUN_0061b490(unsigned long red, unsigned long green, unsigned long
     return ((((red & 0xf8) << 5) | (green & 0xfc)) << 3) | ((blue >> 3) & 0x1f);
 }
 
-class SBPictureUnkView
-{
-public:
-    SBPictureUnkView();
-    ~SBPictureUnkView();
-    char m_00[4];
-    unsigned short m_width;
-    unsigned short m_height;
-    unsigned long m_pitch;
-    unsigned short m_depth;
-    char m_0e[2];
-    unsigned short *m_data;
-    char m_14[4];
-};
-
 typedef unsigned long (*SBUIUnkPack)(unsigned long, unsigned long, unsigned long);
 
 // Parked: this/surface registers swap (esi/edi) and the inner-loop prologue schedules differently.
 // STUB: GAME 0x0061b4c0
 void SBUIUnkSurface::FUN_0061b4c0(SBUIUnkSurfacePair &surfaces)
 {
-    SBPictureUnkView image;
-    SBPictureUnkView mask;
-    ((RHUnkFXDraw *)m_draw)->Unk005e5a00(surfaces.first, (RHUnk00613e90 &)image, 0);
-    ((RHUnkFXDraw *)m_draw)->Unk005e5a00(surfaces.second, (RHUnk00613e90 &)mask, 0);
+    SBDrawViewport image;
+    SBDrawViewport mask;
+    ((SBDrawManager *)m_draw)->FUN_005e5a00(surfaces.first, image, 0);
+    ((SBDrawManager *)m_draw)->FUN_005e5a00(surfaces.second, mask, 0);
     unsigned width = image.m_width;
     unsigned height = image.m_height;
     unsigned long pitch = image.m_pitch >> 1;
     SBUIUnkPack pack = image.m_depth == 15 ? FUN_0061b460 : FUN_0061b490;
-    unsigned short *destination = image.m_data;
-    unsigned short *source = mask.m_data;
+    unsigned short *destination = image.m_pixels;
+    unsigned short *source = mask.m_pixels;
     for (unsigned y = height; y != 0; --y) {
         for (unsigned x = 0; x != width; ++x)
             destination[x] = source[x] == 0 ? (unsigned short)pack(0, 0xff, 0) : destination[x];
         destination += pitch;
         source += pitch;
     }
-    ((RHUnkFXDraw *)m_draw)->Unk005e5ea0((RHUnk00613e90 &)image);
-    ((RHUnkFXDraw *)m_draw)->Unk005e5ea0((RHUnk00613e90 &)mask);
+    ((SBDrawManager *)m_draw)->FUN_005e5ea0(image);
+    ((SBDrawManager *)m_draw)->FUN_005e5ea0(mask);
     ((SBDrawUnk005e5ec0 *)m_draw)->FUN_005e5ec0(surfaces.first, pack(0, 0xff, 0));
 }
 

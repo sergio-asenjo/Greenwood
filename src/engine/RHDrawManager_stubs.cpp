@@ -1,7 +1,5 @@
 #include "RHDrawManager.h"
 
-// Target 0x0060fc90.
-
 class RHMobileUnk00607da0
 {
 public:

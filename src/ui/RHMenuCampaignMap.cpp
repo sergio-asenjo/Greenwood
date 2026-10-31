@@ -1282,7 +1282,8 @@ void RHMapTree::FUN_0053ad50()
     }
 }
 
-class RHUnk00613e90;
+#include "SBDrawManagerCore.h"
+#include "SBDrawViewport.h"
 
 class RHUnkFXDraw
 {
@@ -1291,8 +1292,6 @@ public:
     unsigned short FUN_005e56c0(unsigned long);
     unsigned short FUN_005e5750(unsigned long);
     void FUN_005e6440(unsigned long, int, int, unsigned long, unsigned long);
-    bool Unk005e5a00(unsigned long, RHUnk00613e90 &, unsigned long);
-    void Unk005e5ea0(RHUnk00613e90 &);
 };
 
 class RHUnk005ef320;
@@ -1390,9 +1389,7 @@ void RHMenuScreenView::FUN_0053b1f0(RHMenuWindow *window)
     ((RHMapWidget *)window)->V2c((const RHMapTitleText &)box);
 }
 
-#include "SBPictureUnkView.h"
-
-DECOMP_SIZE_ASSERT(SBPictureUnkView, 0x18)
+DECOMP_SIZE_ASSERT(SBDrawViewport, 0x18)
 
 // GLOBAL: GAME 0x00677680
 float g_unk0x00677680 = 1.0f / 64.0f;
@@ -1404,11 +1401,11 @@ float g_unk0x00677684 = 1.0f / 32.0f;
 bool RHMapWindow::FUN_0053b330(unsigned long surface, unsigned short amount, float factor)
 {
     RHUnkFXDraw *draw = (RHUnkFXDraw *)g_unk0x6c11d0;
-    SBPictureUnkView view;
-    if (!draw->Unk005e5a00(surface, (RHUnk00613e90 &)view, 0))
+    SBDrawViewport view;
+    if (!((SBDrawManager *)draw)->FUN_005e5a00(surface, view, 0))
         return false;
     unsigned long pitch = view.m_pitch >> 1;
-    unsigned short *row = view.m_data;
+    unsigned short *row = view.m_pixels;
     float r, g, b, h, s, v;
     if (*(unsigned short *)((char *)draw + 0x10c) == 16)
     {
@@ -1446,7 +1443,7 @@ bool RHMapWindow::FUN_0053b330(unsigned long surface, unsigned short amount, flo
             row += pitch;
         }
     }
-    draw->Unk005e5ea0((RHUnk00613e90 &)view);
+    ((SBDrawManager *)draw)->FUN_005e5ea0(view);
     return true;
 }
 

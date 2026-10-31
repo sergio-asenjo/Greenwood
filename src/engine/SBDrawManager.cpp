@@ -5,6 +5,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
+#include "SBDrawViewport.h"
 
 extern "C" __declspec(dllimport) void __stdcall EnterCriticalSection(void *);
 extern "C" __declspec(dllimport) void __stdcall LeaveCriticalSection(void *);
@@ -26,21 +27,6 @@ std::string FUN_005f81d0(long);
 void SBSimpleUnk005f9510(void *, const char *, ...);
 extern char g_unk0x006c13c0[16];
 
-class RHUnk00613e90
-{
-public:
-    RHUnk00613e90();
-    ~RHUnk00613e90();
-    char m_00[4];
-    unsigned short m_width;
-    char m_06[2];
-    unsigned long m_pitch;
-    unsigned short m_depth;
-    char m_0e[2];
-    unsigned short *m_data;
-    char m_14[4];
-};
-
 class RHUnkFXDraw
 {
 public:
@@ -48,8 +34,6 @@ public:
     bool FUN_005e4f70(unsigned long, unsigned short, unsigned short, unsigned long);
     void Unk005e5160(unsigned long);
     void FUN_005e5260();
-    bool Unk005e5a00(unsigned long, RHUnk00613e90 &, unsigned long);
-    void Unk005e5ea0(RHUnk00613e90 &);
     unsigned short FUN_005e56c0(unsigned long);
     unsigned short FUN_005e5750(unsigned long);
     void FUN_005e6440(unsigned long, int, int, unsigned long, unsigned long);
@@ -340,7 +324,7 @@ bool RHUnk005ef320::FUN_005e5890(unsigned long surface, void **dc, unsigned long
 
 // Parked: constant-one register allocation and hidden-result scheduling differ.
 // STUB: GAME 0x005e5a00
-bool RHUnkFXDraw::Unk005e5a00(unsigned long surface, RHUnk00613e90 &view, unsigned long flags)
+bool SBDrawManager::FUN_005e5a00(unsigned long surface, SBDrawViewport &view, unsigned long flags)
 {
     bool locked = true;
     if (surface == 0 && ((!*((char *)this + 0x112) && !(flags & 16))
@@ -374,13 +358,13 @@ bool RHUnkFXDraw::Unk005e5a00(unsigned long surface, RHUnk00613e90 &view, unsign
         return false;
     }
     *((bool *)found + 0x20) = locked;
-    view.m_data = (unsigned short *)description[9];
+    view.m_pixels = (unsigned short *)description[9];
     view.m_width = (unsigned short)description[3];
     *(unsigned short *)((char *)&view + 6) = (unsigned short)description[2];
     *((bool *)&view + 0x14) = locked;
     view.m_pitch = description[4];
     *(unsigned long *)&view = surface;
-    view.m_depth = m_depth;
+    view.m_depth = m_10c;
     *(unsigned short *)((char *)&view + 0xe) = *(unsigned short *)((char *)found + 0x18);
     return locked;
 }
@@ -434,7 +418,7 @@ bool RHUnk005ef320::FUN_005e5d30(unsigned long surface)
 }
 
 // FUNCTION: GAME 0x005e5ea0
-void RHUnkFXDraw::Unk005e5ea0(RHUnk00613e90 &view)
+void SBDrawManager::FUN_005e5ea0(SBDrawViewport &view)
 {
     *(char *)((char *)&view + 0x14) = 0;
     ((RHUnk005ef320 *)this)->FUN_005e5d30(*(unsigned long *)&view);
@@ -1755,8 +1739,8 @@ bool RHUnk005ef320::FUN_005eec00(unsigned long destination, unsigned long source
     unsigned long scale, unsigned long offsetX, unsigned long offsetY, unsigned long color, unsigned long alpha)
 {
     SBDrawUnk005fc3b0Point point;
-    RHUnk00613e90 destinationView;
-    RHUnk00613e90 sourceView;
+    SBDrawViewport destinationView;
+    SBDrawViewport sourceView;
     if (source == 0 && !*(unsigned char *)((char *)this + 0x112)) {
         source = 1;
         if (destination == 0) destination = 1;
@@ -1769,7 +1753,7 @@ bool RHUnk005ef320::FUN_005eec00(unsigned long destination, unsigned long source
     tint |= (((color >> 8) & 0xff) * alpha) & 0xff00;
     unsigned long inverseAlpha = 0x100 - alpha;
     RHUnkFXDraw *draw = (RHUnkFXDraw *)this;
-    if (!draw->Unk005e5a00(source, sourceView, 0)) {
+    if (!((SBDrawManager *)draw)->FUN_005e5a00(source, sourceView, 0)) {
         SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0x33f6,
             // STRING: GAME 0x006b98b4
             "Cannot get source surface viewport");
@@ -1788,18 +1772,18 @@ bool RHUnk005ef320::FUN_005eec00(unsigned long destination, unsigned long source
         break;
     }
     unsigned long sourcePitch = sourceView.m_pitch >> 1;
-    unsigned short *sourceData = sourceView.m_data;
+    unsigned short *sourceData = sourceView.m_pixels;
     unsigned long destinationPitch;
     unsigned short *destinationData;
     if (destination != source) {
-        if (!draw->Unk005e5a00(destination, destinationView, 0)) {
-            draw->Unk005e5ea0(sourceView);
+        if (!((SBDrawManager *)draw)->FUN_005e5a00(destination, destinationView, 0)) {
+            ((SBDrawManager *)draw)->FUN_005e5ea0(sourceView);
             SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0x342a,
                 "Cannot get source surface viewport");
             return false;
         }
         destinationPitch = destinationView.m_pitch >> 1;
-        destinationData = destinationView.m_data;
+        destinationData = destinationView.m_pixels;
     } else {
         destinationPitch = sourcePitch;
         destinationData = sourceData;
@@ -1872,8 +1856,8 @@ bool RHUnk005ef320::FUN_005eec00(unsigned long destination, unsigned long source
                 sourcePitch * 2, right - x + 1, inverseAlpha, tint);
         }
     }
-    if (source != destination) draw->Unk005e5ea0(destinationView);
-    draw->Unk005e5ea0(sourceView);
+    if (source != destination) ((SBDrawManager *)draw)->FUN_005e5ea0(destinationView);
+    ((SBDrawManager *)draw)->FUN_005e5ea0(sourceView);
     return true;
 }
 

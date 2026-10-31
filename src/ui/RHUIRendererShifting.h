@@ -95,13 +95,7 @@ public:
 // with seven stack arguments (ret 0x1c). Zeta names it
 // SBDrawManager::BlitAlphaKeying(unsigned long, SBGeoBoundingBox2D*,
 // unsigned long, unsigned long, unsigned short, unsigned short, unsigned long).
-class SBDrawManager
-{
-public:
-    void BlitAlphaKeying(unsigned long surface, unsigned long a, unsigned long b,
-                         SBGeoBoundingBox2D *box, unsigned short c, unsigned short d,
-                         unsigned long e);
-};
+#include "SBDrawManagerCore.h"
 
 #include "RHUIRendererShiftingClass.h"
 

@@ -2,26 +2,13 @@
 #define AVITOOLBOX_H
 
 #include "SB.h"
-
-class RHUnk00613e90
-{
-public:
-    RHUnk00613e90();
-    ~RHUnk00613e90();
-    char m_00[6];
-    unsigned short m_06; // +0x06, WORD
-    unsigned long m_08; // +0x08, DWORD
-    char m_0c[4];
-    void *m_10; // +0x10, pointer; object size 0x18
-    char m_14[4];
-};
+#include "SBDrawManagerCore.h"
+#include "SBDrawViewport.h"
 
 class RHUnkFXDraw
 {
 public:
     void FUN_005e5260();
-    bool Unk005e5a00(unsigned long, RHUnk00613e90 &, unsigned long);
-    void Unk005e5ea0(RHUnk00613e90 &);
     char m_00[0x10c];
     unsigned short m_10c; // +0x10c, WORD
 };
