@@ -1,4 +1,5 @@
 #include "SBNullstr.h"
+extern float g_unk0x006774e4;
 #define SBGEO_POINT2D_VIEW
 #define SBGEO_VECTOR2D_VIEW
 #define SBGEO_BOUNDINGBOX2D_VIEW
@@ -276,7 +277,7 @@ void RHShortBriefings::FUN_005a28c0(RHMenuWindow *window, SBGeoBoundingBox2D &bo
         void *font = value.m_4 ? inactive : active;
         SBGeoBoundingBox2D bounds;
         ((RHMobileUnk00607da0 *)&bounds)->FUN_00607da0((const RHMobileUnk00607da0 &)box);
-        bounds.first.x = 15.0f + bounds.first.x;
+        bounds.first.x = g_unk0x006774e4 + bounds.first.x;
         bounds.active = true;
         ((RHBriefingSetupCalls *)title)->V30((const RHMapWideText &)GetShortBriefingText(value), bounds, false, (unsigned long)-1);
         SBUIUnk0060dd00 *renderer = (SBUIUnk0060dd00 *)((char *)title + 0x80);

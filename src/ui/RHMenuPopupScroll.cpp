@@ -2,6 +2,7 @@
 // RHMenuPopupScroll.h for the binding evidence.
 
 #include "SBNullstr.h"
+extern float g_unk0x006774e4;
 #include "RHMenuPopupScroll.h"
 #include "RHMapBox.h"
 #include "RHMapWidget.h"
@@ -111,7 +112,7 @@ bool RHMenuPopupScroll::FUN_00539b30()
             ((RHMapWidget *)&m_text)->V30(g_unk0x006c0b50, RHMapBox(50.0f, 50.0f, 50.0f, 50.0f), 0, m_450);
             ((RHMenuCampaignMap *)this)->V30(&m_text);
             ((RHUnk005d92c0Sub *)&m_text)->v08(SBGeoPoint2D(446.0f, 50.0f).FUN_005fc200(SBGeoVector2D(m_text.Box().Width(), 0.0f)));
-            renderer.FUN_005cb9d0((int)(m_text.Box().Width() + 20.0f), (int)(m_text.Box().Height() + 15.0f));
+            renderer.FUN_005cb9d0((int)(m_text.Box().Width() + 20.0f), (int)(m_text.Box().Height() + g_unk0x006774e4));
             focus.FUN_004ffd20(&m_text);
         }
         return true;
