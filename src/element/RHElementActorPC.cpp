@@ -25,6 +25,8 @@
 #include "RHProjectileVector.h"
 
 extern undefined g_unk0x006c0e48[];
+class RHEngine;
+extern RHEngine *g_pEngine;
 
 extern "C" int rand();
 
@@ -420,6 +422,36 @@ int RHUnk00493a80::FUN_00493a80()
         RHActorPCField<char>(this, 0x4e8) == 1)
         return 1;
     return 0;
+}
+
+// FUNCTION: GAME 0x004936f0
+bool RHElementActorPC::FUN_004936f0()
+{
+    RHEngine *engine = g_pEngine;
+    if (!RHActorPCField<unsigned char>(this, 0x58c))
+    {
+        if (!((RHElementActorHuman *)this)->FUN_00471b00())
+            return false;
+        RHActorPCVTableCalls *actor = (RHActorPCVTableCalls *)this;
+        if (RHActorPCField<unsigned char>(this, 0x5f4) && actor->FUN_51() < 100)
+        {
+            int amount = actor->FUN_51() < 75 ? 75 : actor->FUN_51() + 1;
+            actor->FUN_slot53(amount, 0, 1);
+            return true;
+        }
+        if (actor->FUN_51() < 100 &&
+            RHActorPCField<int>(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0(), 0x1c) == 0 &&
+            RHActorPCField<unsigned>(engine, 0x4a94) % 100 == 0 &&
+            RHActorPCField<int>(this, 0x268) == 0 &&
+            !((RHUnk005d73d0Actor *)this)->FUN_0049f510())
+            actor->FUN_slot53(actor->FUN_51() + 1, 0, 1);
+    }
+    return true;
+}
+
+void EmitRHActorPCRecovery(RHElementActorPC *actor)
+{
+    actor->FUN_004936f0();
 }
 
 // FUNCTION: GAME 0x00493ae0

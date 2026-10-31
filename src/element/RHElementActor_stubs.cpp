@@ -137,4 +137,3 @@ RHOrder *RHActorSequenceCursor::FUN_005855a0()
 {
     return 0;
 }
-float RHActorDistanceCalls::FUN_0060cab0(const SBGeoPoint2D &, float) { return 0.0f; }

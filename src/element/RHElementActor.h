@@ -6,12 +6,6 @@
 
 #include "RHActorCommand.h"
 
-class RHActorDistanceCalls
-{
-public:
-    float FUN_0060cab0(const SBGeoPoint2D &, float);
-};
-
 // SIZE 0x14
 struct RHHumanMapNode
 {

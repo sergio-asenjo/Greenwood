@@ -38,6 +38,7 @@ public:
     bool SetQuickActionSequence(int value, unsigned short action, unsigned long id, void *target, unsigned short amount);
     std::wstring GetTooltipTextForAction(int action);
     int FUN_00493ae0(bool allow, void *unused);
+    bool FUN_004936f0();
     int FUN_00494850(void *element);
     float FUN_0049d520();
     void FUN_00495f90(void *element);

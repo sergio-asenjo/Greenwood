@@ -466,7 +466,7 @@ bool RHElementActor::FUN_004640c0()
 }
 
 
-// Parked: null-result stack copy and distance-receiver addition differ.
+// Parked: point-copy scheduling and distance-receiver addition differ.
 // STUB: GAME 0x00464150
 float RHElementActor::FUN_00464150()
 {
@@ -477,7 +477,7 @@ float RHElementActor::FUN_00464150()
     if (point.FUN_005fc0e0(m_128))
     {
         m_128 = point;
-        RHActorDistanceCalls *distance = (RHActorDistanceCalls *)((char *)m_120 + 4);
+        RHUnk0060c2c0 *distance = (RHUnk0060c2c0 *)((char *)m_120 + 4);
         RHActorField<float>(this, 0x124) = distance->FUN_0060cab0(point, 1.7434468f);
     }
     float result = RHActorField<float>(this, 0x124);
@@ -2168,6 +2168,12 @@ RHUnk0060fbf0::RHUnk0060fbf0()
 RHUnk0060fbf0::RHUnk0060fbf0(const RHUnk0060fbf0 &other)
 {
     FUN_0060fa30(other);
+}
+
+// FUNCTION: GAME 0x0060fc90
+RHUnk0060fbf0::~RHUnk0060fbf0()
+{
+    FUN_0060fa20();
 }
 
 // FUNCTION: GAME 0x0060fca0

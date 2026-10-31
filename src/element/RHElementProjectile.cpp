@@ -1,4 +1,5 @@
 #include "SBNullstr.h"
+extern float g_unk0x006774e4;
 #include "RHElementProjectile.h"
 
 #include "RHProjectileLifetime.h"
@@ -477,7 +478,7 @@ void *RHElementProjectile::FUN_004b8000() const
             delta.x -= center.x;
             delta.y -= center.y;
             delta.z -= center.z;
-            if (*(bool *)(target + 0x12) && distance.Norm() <= 15.0f && delta.Norm() <= length &&
+            if (*(bool *)(target + 0x12) && distance.Norm() <= g_unk0x006774e4 && delta.Norm() <= length &&
                 (mask & ((RHScriptBatchCalls *)target)->Unk004baea0()) > 0) {
                 result = target;
                 break;
@@ -637,7 +638,7 @@ bool RHElementProjectile::WillHit(void *target)
         second = *(RHUnk00613e90 *)path.cursor->data;
         float length = second.FUN_005df550(first).Norm();
         if (first.FUN_005df550(center).Norm() < length &&
-            center.DistanceVectorToLine(first, second).Norm() <= 15.0f)
+            center.DistanceVectorToLine(first, second).Norm() <= g_unk0x006774e4)
             return true;
         first = second;
     }

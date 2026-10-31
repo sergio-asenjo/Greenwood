@@ -80,7 +80,7 @@ public:
     virtual void FUN_50() = 0;
     virtual short FUN_51() = 0;
     virtual void FUN_52() = 0;
-    virtual void FUN_slot53(int, int, int) = 0;
+    virtual void FUN_slot53(short, int, int) = 0;
     virtual void FUN_slot54() = 0;
     virtual void FUN_slot55(int, int, int) = 0;
     virtual void FUN_56(int, int, int) = 0;

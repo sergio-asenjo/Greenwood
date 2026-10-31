@@ -386,8 +386,7 @@ bool RHElementAreaShape::FUN_0060c650(const SBGeoBoundingBox2D &box) const
     return box.FUN_00608d60(*(const RHUnkSectorPoints *)this);
 }
 
-// Parked: crossing products remain live on the x87 stack.
-// STUB: GAME 0x0060c660
+// FUNCTION: GAME 0x0060c660
 bool RHElementAreaShape::FUN_0060c660(const SBGeoPoint2D &point) const
 {
     SBGeoPoint2D previous;
@@ -434,7 +433,7 @@ bool RHElementAreaShape::FUN_0060c660(const SBGeoPoint2D &point) const
                 {
                     first = (current.m_0 - oldX) * (y - oldY);
                     second = (current.m_4 - oldY) * (x - oldX);
-                    if (second <= first)
+                    if (!((double)first < (double)second))
                     {
 upwardCrossing:
                         if (single && inside)
@@ -472,7 +471,7 @@ upwardCrossing:
                 {
                     first = (current.m_0 - oldX) * (y - oldY);
                     second = (current.m_4 - oldY) * (x - oldX);
-                    if (second >= first)
+                    if (!((double)first > (double)second))
                     {
 downwardCrossing:
                         if (single && inside)

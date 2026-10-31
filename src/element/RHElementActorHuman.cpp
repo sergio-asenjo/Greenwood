@@ -1,4 +1,5 @@
 #include "SBNullstr.h"
+extern float g_unk0x006774e4;
 #include "RHElementActorHuman.h"
 #include "RHActorCrossingHumanCalls.h"
 #include "RHActorAreaCalls.h"
@@ -9,6 +10,10 @@
 #include "RHPlayerProfileAccess.h"
 #include "RHSequenceGenericCalls.h"
 #include "RHSequenceInteractionAction.h"
+
+// TEMPLATE: GAME 0x0044ea00
+// ?insert@?$list@PAVRHElementActorHuman@@V?$allocator@PAVRHElementActorHuman@@@std@@@std@@QAEXViterator@12@Vconst_iterator@12@1@Z
+template class std::list<RHElementActorHuman *>;
 
 extern undefined g_unk0x006c0e48[0x2c];
 
@@ -3525,7 +3530,7 @@ bool RHElementActorHuman::FUN_00484bb0(RHElementActorHuman *actor, SBGeoPoint2D 
     void *area = RHActorField<void *>(RHActorField<void *>(this, 0x50), 0xe0);
     RHUnk0042fde0 *segment = (RHUnk0042fde0 *)((char *)line + 4);
     SBGeoVector2D direction = segment->FUN_0042fde0();
-    float margin = 15.0f / ((RHUnk005fc3b0 *)&direction)->Unk005fc6a0(1.0f);
+    float margin = g_unk0x006774e4 / ((RHUnk005fc3b0 *)&direction)->Unk005fc6a0(1.0f);
     char allocator;
     RHHumanFloatList fractions(allocator);
     float position = segment->FUN_0060ba80(RHActorField<SBGeoPoint2D>(RHActorField<void *>(this, 0x50), 0x24));
