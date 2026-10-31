@@ -37,6 +37,7 @@ public:
     void CreateGang();
     void DetermineAccessibleMissions();
     void FUN_004522e0(RHPCDescription *description);
+    RHPCDescription *FUN_004524b0(unsigned short index);
     bool IsInGang(const RHCharacterProfile *profile) const;
     void SelectMissions(bool forced);
     void SelectMissionsByLocation(std::vector<RHMission *> &missions);

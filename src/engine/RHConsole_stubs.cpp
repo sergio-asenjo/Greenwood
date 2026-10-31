@@ -31,7 +31,3 @@ void FUN_005ede40(RHUnk005ef320 *, const char *, ...)
 {
 }
 
-void *RHConsoleCampaignCalls::FUN_004524b0(unsigned short)
-{
-    return 0;
-}

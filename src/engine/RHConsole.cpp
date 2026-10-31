@@ -1612,7 +1612,7 @@ void RHConsole::FUN_004600b0(unsigned, char **)
 {
     // STRING: GAME 0x006add8c
     FUN_005ede40(m_engine->m_draw, "New member !");
-    ((RHConsoleCampaignCalls *)g_unk0x6c07fc)->FUN_004524b0(0xffff);
+    ((RHCampaign *)g_unk0x6c07fc)->FUN_004524b0(0xffff);
 }
 
 // FUNCTION: GAME 0x004600e0

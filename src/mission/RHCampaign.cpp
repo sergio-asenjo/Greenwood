@@ -423,6 +423,47 @@ void RHCampaign::SelectMissions(bool forced)
 }
 
 // Parked: register allocation and a counted callee operand.
+// TEMPLATE: GAME 0x004582d0 FOLDED
+// ?insert@?$vector@PAVRHPCDescription@@V?$allocator@PAVRHPCDescription@@@std@@@std@@QAEXPAPAVRHPCDescription@@IABQAV3@@Z
+
+// LIBRARY: GAME 0x0059fbc0 FOLDED
+// ?size@?$vector@PAVRHPCDescription@@V?$allocator@PAVRHPCDescription@@@std@@@std@@QBEIXZ
+
+// FUNCTION: GAME 0x004522e0
+void RHCampaign::FUN_004522e0(RHPCDescription *description)
+{
+    m_114.push_back(description);
+    if (!FUN_00455d10(description))
+        m_104.push_back(description);
+}
+
+// Parked: the original stops inlining the candidate vector _Destroy only on the final return path.
+// STUB: GAME 0x004524b0
+RHPCDescription *RHCampaign::FUN_004524b0(unsigned short index)
+{
+    unsigned reservists = m_124.size();
+    if (reservists != 0 && (rand() & 1))
+    {
+        FUN_00455bf0(m_124[rand() % reservists]);
+        m_1c0 = true;
+        return m_114.back();
+    }
+    if (g_unk0x6c0e84 == 0)
+        g_unk0x6c0e84 = new RHCampaignProfiles;
+    std::vector<void *> candidates;
+    std::vector<void *> characters(*(const std::vector<void *> *)&g_unk0x6c0e84->m_characters);
+    for (void **it = characters.begin(); it != characters.end(); ++it)
+        if (!((const char *)*it)[0x35])
+            candidates.push_back(*it);
+    unsigned count = candidates.size();
+    if (index == 0xffff || index >= count)
+        index = rand() % count;
+    if (count == 0)
+        return 0;
+    FUN_004522e0(new RHPCDescription(candidates[index], false));
+    return m_114.back();
+}
+
 // STUB: GAME 0x004526f0
 void RHCampaign::FUN_004526f0(std::vector<RHMission *> &missions)
 {
