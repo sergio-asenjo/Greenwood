@@ -677,15 +677,7 @@ public:
     SBGeoPoint2D *FUN_004e0490(int index, short base);
 };
 
-class RHUnk00613e90
-{
-public:
-    RHUnk00613e90();
-    ~RHUnk00613e90();
-    char data[0x18];
-};
-
-RHUnk00613e90::~RHUnk00613e90() {}
+#include "RHUnk00613e90.h"
 
 DECOMP_SIZE_ASSERT(RHUnk005fc3b0, 0x08)
 
