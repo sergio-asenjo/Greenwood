@@ -40,7 +40,8 @@ void VMCore::RegisterSerializerForType(const std::string &name, void (__cdecl *s
     g_unk0x006c1930.push_back(record);
 }
 
-// FUNCTION: GAME 0x00634bb0
+// TEMPLATE: GAME 0x00634bb0 FOLDED
+// ?FUN_00634bb0@VMUnk00634bb0@@QAEXXZ
 void VMUnk00634bb0::FUN_00634bb0()
 {
     if (m_04 != 0) {

@@ -4,6 +4,76 @@
   "original_sha256": "b0963242470d96cdd8021e2cb81ccbc5e26b4fb2cb122febdec50ad30774f08e",
   "groups": [
     {
+      "original": "0x00460900",
+      "canonical_symbol": "?compare@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QBEHIIPBDI@Z",
+      "members": [
+        {
+          "path": "src/profile/RHProfileManager.cpp",
+          "symbol": "?FUN_00460900@RHProfileText@@QBEHIIPBDI@Z"
+        },
+        {
+          "path": "src/ui/RHWidgetPortrait.cpp",
+          "symbol": "?compare@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QBEHIIPBDI@Z"
+        }
+      ]
+    },
+    {
+      "original": "0x004242b0",
+      "canonical_symbol": "?_Buynode@?$list@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@V?$allocator@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@@2@@std@@IAEPAU_Node@12@PAU312@0@Z",
+      "members": [
+        {
+          "path": "src/script/RHScript.cpp",
+          "symbol": "?Unk004242b0@RHScriptPositionList@@QAEPAURHScriptNode@@PAU2@0@Z"
+        },
+        {
+          "path": "src/ui/RHWidgetPortrait.cpp",
+          "symbol": "?_Buynode@?$list@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@V?$allocator@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@@2@@std@@IAEPAU_Node@12@PAU312@0@Z"
+        }
+      ]
+    },
+    {
+      "original": "0x0059f720",
+      "canonical_symbol": "?_Buynode@?$list@KV?$allocator@K@std@@@std@@IAEPAU_Node@12@PAU312@0@Z",
+      "members": [
+        {
+          "path": "src/ai/RHArtificialIntelligence.cpp",
+          "symbol": "?Unk0059f720@RHUnk0046eb30@@QAEPAURHScriptNode@@PAU2@0@Z"
+        },
+        {
+          "path": "src/ui/RHWidgetPortrait.cpp",
+          "symbol": "?_Buynode@?$list@KV?$allocator@K@std@@@std@@IAEPAU_Node@12@PAU312@0@Z"
+        }
+      ]
+    },
+    {
+      "original": "0x004e5270",
+      "canonical_symbol": "??0RHSpriteListRoot@@QAE@ABD@Z",
+      "members": [
+        {
+          "path": "src/ai/RHFastFindGrid.cpp",
+          "symbol": "??0RHSeqList@@QAE@ABD@Z"
+        },
+        {
+          "path": "src/engine/RHEngine_stubs.cpp",
+          "symbol": "??0RHSpriteListRoot@@QAE@ABD@Z"
+        }
+      ]
+    },
+    {
+      "original": "0x0059fba0",
+      "canonical_symbol": "??0RHProfileString@@QAE@ABV?$allocator@D@std@@@Z",
+      "members": [
+        {
+          "path": "src/profile/RHProfileManager_stubs.cpp",
+          "symbol": "??0RHProfileString@@QAE@ABV?$allocator@D@std@@@Z"
+        },
+        {
+          "path": "src/engine/RHEngine_stubs.cpp",
+          "symbol": "??0SBResourceScalarVector@@QAE@ABV?$allocator@K@std@@@Z"
+        }
+      ]
+    },
+    {
       "original": "0x0063b860",
       "canonical_symbol": "?Erase@?$SCSerializeRecordList@VSCSerializeRecordValue@@@@QAE?AU?$SCSerializeRecordIterator@VSCSerializeRecordValue@@@@U2@@Z",
       "members": [
@@ -370,6 +440,10 @@
         {
           "path": "src/ui/RHWidgetPortrait.cpp",
           "symbol": "?insert@?$vector@W4RHaction@@V?$allocator@W4RHaction@@@std@@@std@@QAEXPAW4RHaction@@IABW43@@Z"
+        },
+        {
+          "path": "src/mission/RHCampaign.cpp",
+          "symbol": "?insert@?$vector@PAVRHPCDescription@@V?$allocator@PAVRHPCDescription@@@std@@@std@@QAEXPAPAVRHPCDescription@@IABQAV3@@Z"
         }
       ]
     },
@@ -384,6 +458,10 @@
         {
           "path": "src/profile/RHProfileManager.cpp",
           "symbol": "?copy@std@@YAPAPAVRHMission@@PBQAV2@0PAPAV2@@Z"
+        },
+        {
+          "path": "src/ai/RHFastFindGrid.cpp",
+          "symbol": "?copy@std@@YAPAKPBK0PAK@Z"
         }
       ]
     },
@@ -509,8 +587,12 @@
     },
     {
       "original": "0x004fe420",
-      "canonical_symbol": "?Ucopy@RHMaskObstacleArray@@QAEPAPAXPBQAX0PAPAX@Z",
+      "canonical_symbol": "?_Ucopy@?$vector@PAVRHUnk005d92c0Sub@@V?$allocator@PAVRHUnk005d92c0Sub@@@std@@@std@@IAEPAPAVRHUnk005d92c0Sub@@PBQAV3@0PAPAV3@@Z",
       "members": [
+        {
+          "path": "src/ui/RHWidgetPortrait.cpp",
+          "symbol": "?_Ucopy@?$vector@PAVRHUnk005d92c0Sub@@V?$allocator@PAVRHUnk005d92c0Sub@@@std@@@std@@IAEPAPAVRHUnk005d92c0Sub@@PBQAV3@0PAPAV3@@Z"
+        },
         {
           "path": "src/ai/RHFastFindGrid.cpp",
           "symbol": "?_Ucopy@?$vector@HV?$allocator@H@std@@@std@@IAEPAHPBH0PAH@Z"
@@ -555,8 +637,12 @@
     },
     {
       "original": "0x004fe450",
-      "canonical_symbol": "?Unk004fe450@RHScriptFXArray@@QAEXPAPAXIABQAX@Z",
+      "canonical_symbol": "?_Ufill@?$vector@PAVRHUnk005d92c0Sub@@V?$allocator@PAVRHUnk005d92c0Sub@@@std@@@std@@IAEXPAPAVRHUnk005d92c0Sub@@IABQAV3@@Z",
       "members": [
+        {
+          "path": "src/ui/RHWidgetPortrait.cpp",
+          "symbol": "?_Ufill@?$vector@PAVRHUnk005d92c0Sub@@V?$allocator@PAVRHUnk005d92c0Sub@@@std@@@std@@IAEXPAPAVRHUnk005d92c0Sub@@IABQAV3@@Z"
+        },
         {
           "path": "src/ai/RHFastFindGrid.cpp",
           "symbol": "?Unk004fe450@RHScriptFXArray@@QAEXPAPAXIABQAX@Z"
@@ -585,8 +671,12 @@
     },
     {
       "original": "0x005008e0",
-      "canonical_symbol": "?Destroy@RHMaskObstacleStorage@@QAEXPAPAX0@Z",
+      "canonical_symbol": "?_Destroy@?$vector@PAVRHUnk005d92c0Sub@@V?$allocator@PAVRHUnk005d92c0Sub@@@std@@@std@@IAEXPAPAVRHUnk005d92c0Sub@@0@Z",
       "members": [
+        {
+          "path": "src/ui/RHWidgetPortrait.cpp",
+          "symbol": "?_Destroy@?$vector@PAVRHUnk005d92c0Sub@@V?$allocator@PAVRHUnk005d92c0Sub@@@std@@@std@@IAEXPAPAVRHUnk005d92c0Sub@@0@Z"
+        },
         {
           "path": "src/profile/RHProfileManager.cpp",
           "symbol": "?Unk005008e0@RHScriptFXArray@@QAEXPAPAX0@Z"
@@ -652,6 +742,24 @@
         {
           "path": "src/mission/RHShortBriefings.cpp",
           "symbol": "?_Construct@std@@YAXPAUShortBriefing@RHShortBriefings@@ABU23@@Z"
+        },
+        {
+          "path": "src/engine/SBUIRendererInputField.cpp",
+          "symbol": "?_Construct@std@@YAXPAUSBUIInputFieldCharacter@@ABU2@@Z"
+        }
+      ]
+    },
+    {
+      "original": "0x0059fcc0",
+      "canonical_symbol": "?_Buynode@?$list@USBUIInputFieldCharacter@@V?$allocator@USBUIInputFieldCharacter@@@std@@@std@@IAEPAU_Node@12@PAU312@0@Z",
+      "members": [
+        {
+          "path": "src/engine/RHShadowPolygon.cpp",
+          "symbol": "?FUN_0059fcc0@RHShadowMemoryList@@QAEPAURHShadowMemoryNode@@PAU2@0@Z"
+        },
+        {
+          "path": "src/engine/SBUIRendererInputField.cpp",
+          "symbol": "?_Buynode@?$list@USBUIInputFieldCharacter@@V?$allocator@USBUIInputFieldCharacter@@@std@@@std@@IAEPAU_Node@12@PAU312@0@Z"
         }
       ]
     },
@@ -781,8 +889,12 @@
     },
     {
       "original": "0x0059fb00",
-      "canonical_symbol": "?FUN_0059fb00@@YAXPAPAVRHUnk00597a70@@ABQAV1@@Z",
+      "canonical_symbol": "?_Construct@std@@YAXPAPAVRHUnk005d92c0Sub@@ABQAV2@@Z",
       "members": [
+        {
+          "path": "src/ui/RHWidgetPortrait.cpp",
+          "symbol": "?_Construct@std@@YAXPAPAVRHUnk005d92c0Sub@@ABQAV2@@Z"
+        },
         {
           "path": "src/ai/RHArtificialIntelligence.cpp",
           "symbol": "?CopyData@RHSeqList@@SAXPAPAVRHSequenceElement@@PBQAV2@@Z"
@@ -822,6 +934,10 @@
         {
           "path": "src/engine/RHShadowPolygon_stubs.cpp",
           "symbol": "?_Construct@std@@YAXPAUValue@RHUnk005074d0@@ABU23@@Z"
+        },
+        {
+          "path": "src/ui/RHWidgetPortrait.cpp",
+          "symbol": "?_Construct@std@@YAXPAKABK@Z"
         }
       ]
     },
@@ -892,12 +1008,8 @@
           "symbol": "??0RHUnk00521550Part@@QAE@XZ"
         },
         {
-          "path": "src/engine/SBPicture_stubs.cpp",
-          "symbol": "??0SBPictureUnkView@@QAE@XZ"
-        },
-        {
-          "path": "src/engine/RHShadowPolygon_stubs.cpp",
-          "symbol": "??0RHShadowViewport@@QAE@XZ"
+          "path": "src/engine/SBDrawManager_stubs.cpp",
+          "symbol": "??0SBDrawViewport@@QAE@XZ"
         },
         {
           "path": "src/ui/rhuirenderer_005cb420_stubs.cpp",
@@ -920,6 +1032,20 @@
         {
           "path": "src/engine/RHShadowPolygon.cpp",
           "symbol": "??1?$list@URHShadowIteratorMemoryRange@@V?$allocator@URHShadowIteratorMemoryRange@@@std@@@std@@QAE@XZ"
+        }
+      ]
+    },
+    {
+      "original": "0x00634bb0",
+      "canonical_symbol": "??1?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAE@XZ",
+      "members": [
+        {
+          "path": "src/common/VMCore.cpp",
+          "symbol": "?FUN_00634bb0@VMUnk00634bb0@@QAEXXZ"
+        },
+        {
+          "path": "src/engine/SBResourceManager_stubs.cpp",
+          "symbol": "??1?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAE@XZ"
         }
       ]
     }
