@@ -1,6 +1,7 @@
 #ifndef RHMASK_H
 #define RHMASK_H
 
+#include <memory>
 #include "SB.h"
 #include "SBGeoPoint2D.h"
 #include "SBGeoVector2D.h"
