@@ -31,7 +31,7 @@ public:
 class RHFocusFocusableView
 {
 public:
-    virtual void V00() = 0;
+    virtual void *V00() = 0;
     virtual RHFocusEvent *V04(bool focused) = 0;
 };
 

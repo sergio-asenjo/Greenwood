@@ -308,45 +308,41 @@ bool RHFocusManager::FUN_00500010(const void *widget) const
     return first != last;
 }
 
-// Parked: the loop test is duplicated and the return blocks are not tail-merged.
-// STUB: GAME 0x00500040
+// FUNCTION: GAME 0x00500040
 RHFocusEvent *RHFocusManager::FUN_00500040(RHFocusEvent *first, RHFocusEvent *second) const
 {
     if (first) {
         RHFocusEvent *event = first;
-        for (;;) {
+        RHFocusEvent *previous;
+        while (event) {
             if (event == second)
-                break;
-            RHFocusEvent *previous = event;
+                goto finished;
+            previous = event;
             event = event->next;
-            if (event == 0) {
-                previous->next = second;
-                break;
-            }
         }
+        previous->next = second;
+    finished:
         return first;
     }
     return second;
 }
 
-// Parked: the count and cursor registers differ and the false return is duplicated.
-// STUB: GAME 0x00500070
+// FUNCTION: GAME 0x00500070
 RHFocusEvent *RHFocusManager::FUN_00500070()
 {
-    if (m_focusCount != 0) {
-        RHFocusNode<RHFocusFocusableView> *head = m_focusHead;
-        RHFocusNode<RHFocusFocusableView> *cursor = m_focusCursor;
-        if (cursor == head)
-            return 0;
-        typedef RHFocusEvent *(RHFocusManager::*Link)(RHFocusEvent *, RHFocusEvent *) const;
-        Link link = &RHFocusManager::FUN_00500040;
-        RHFocusEvent *result = (this->*link)(0, m_focusCursor->value->V04(false));
-        m_focusCursor = m_focusCursor->next;
-        if (m_focusCursor != m_focusHead)
-            return (this->*link)(result, m_focusCursor->value->V04(true));
-        return result;
+    RHFocusEvent *result = 0;
+    if (m_focus.size() != 0) {
+        RHFocusNode<RHFocusFocusableView> *head = *(RHFocusNode<RHFocusFocusableView> *volatile *)&m_focusHead;
+        if (m_focusCursor != head) {
+            typedef RHFocusEvent *(RHFocusManager::*Link)(RHFocusEvent *, RHFocusEvent *) const;
+            Link link = &RHFocusManager::FUN_00500040;
+            result = (this->*link)(0, (*m_cursors.focus)->V04(false));
+            ++m_cursors.focus;
+            if (m_cursors.focus != m_focus.end())
+                result = (this->*link)(result, (*m_cursors.focus)->V04(true));
+        }
     }
-    return 0;
+    return result;
 }
 
 // Parked: virtual-call target and previous-cursor update registers differ.
@@ -466,8 +462,9 @@ RHFocusEvent *RHFocusManager::FUN_005001e0()
     return result;
 }
 
-// Parked: point-change and keyboard-enable helpers are currently inlined.
-// STUB: GAME 0x005002a0
+#include "SBUIBase.h"
+
+// FUNCTION: GAME 0x005002a0
 RHFocusEvent *RHFocusManager::FUN_005002a0(RHFocusEvent *events, const void *input, void *ui)
 {
     RHFocusEvent *result = events;
@@ -479,7 +476,7 @@ RHFocusEvent *RHFocusManager::FUN_005002a0(RHFocusEvent *events, const void *inp
         for (RHFocusEvent *event = events; event; event = event->next) {
             if (event->type == 11)
                 continue;
-            if (m_position[0] == position.m_x && m_position[1] == position.m_y)
+            if (!m_point.FUN_005fc0e0(position))
                 continue;
             {
                 typedef bool (RHFocusManager::*Ignore)(const void *) const;
@@ -494,15 +491,17 @@ RHFocusEvent *RHFocusManager::FUN_005002a0(RHFocusEvent *events, const void *inp
             }
         }
         void *keyboard = *(void **)((char *)input + 0x0c);
-        if (*((char *)keyboard + 9) == 1) {
+        if (((SBUIUnk0060e1b0 *)keyboard)->FUN_0060e260() == true) {
             typedef RHFocusEvent *(RHFocusManager::*Process)(const void *);
             typedef RHFocusEvent *(RHFocusManager::*Link)(RHFocusEvent *, RHFocusEvent *) const;
             Process navigation = &RHFocusManager::FUN_005003a0;
             Process shortcuts = &RHFocusManager::FUN_005004d0;
             Link link = &RHFocusManager::FUN_00500040;
             RHFocusEvent *generated = (this->*navigation)(input);
-            if (generated)
-                result = (this->*link)(FUN_005008a0(events, generated->widget), generated);
+            if (generated) {
+                RHFocusEvent *filtered = FUN_005008a0(events, generated->widget);
+                result = (this->*link)(filtered, generated);
+            }
             else
                 result = (this->*link)(events, (this->*shortcuts)(input));
         }
@@ -573,7 +572,6 @@ RHFocusEvent *RHFocusManager::FUN_005003a0(const void *input)
     return result;
 }
 
-// Parked: shortcut iterator temporaries enlarge the frame and alter input scheduling.
 // STUB: GAME 0x005004d0
 RHFocusEvent *RHFocusManager::FUN_005004d0(const void *input)
 {
@@ -591,33 +589,31 @@ RHFocusEvent *RHFocusManager::FUN_005004d0(const void *input)
             if (pressed == 1) {
                 shortcuts = *(RHGameWidgetInputCalls **)((char *)input + 0x0c);
                 int state = *(int *)((char *)shortcuts + 0xa0c + (key & 0xffff) * 4);
-                if (state == 0 && m_groupCursor == m_groupHead && m_focusCursor == m_focusHead) {
-                    RHFocusShortcutIterator found = (((RHFocusShortcutTree *)((char *)this + 0x44))->*find)(shortcut);
-                    if (found.node != ((RHFocusShortcutTree *)((char *)this + 0x44))->head && found.node->widget != m_groupCursor->value) {
-                        typedef void (std::vector<unsigned short>::*Insert)(unsigned short *, unsigned, const unsigned short &);
-                        Insert insert = &std::vector<unsigned short>::insert;
-                        std::vector<unsigned short> *active = (std::vector<unsigned short> *)((char *)this + 0x54);
-                        (active->*insert)(m_shortcutLast, 1, shortcut);
-                        typedef RHFocusEvent *(RHFocusManager::*Focus)(RHFocusGroupableView *);
-                        Focus focus = &RHFocusManager::FUN_005007a0;
-                        result = (this->*link)(result, (this->*focus)(found.node->widget));
-                        return (this->*link)(result, found.node->widget->V18(true));
+                if (state == 0) {
+                    RHFocusNode<RHFocusGroupableView> *groupHead = *(RHFocusNode<RHFocusGroupableView> *volatile *)&m_groupHead;
+                    if (m_groupCursor == groupHead) {
+                        RHFocusNode<RHFocusFocusableView> *focusHead = *(RHFocusNode<RHFocusFocusableView> *volatile *)&m_focusHead;
+                        if (m_focusCursor == focusHead) {
+                            RHFocusShortcutIterator found = (((RHFocusShortcutTree *)((char *)this + 0x44))->*find)(shortcut);
+                            if (found.node != ((RHFocusShortcutTree *)((char *)this + 0x44))->head && found.node->widget != m_groupCursor->value) {
+                                typedef void (std::vector<unsigned short>::*Insert)(unsigned short *, unsigned, const unsigned short &);
+                                Insert insert = &std::vector<unsigned short>::insert;
+                                (m_pressed.*insert)(m_pressed.end(), 1, shortcut);
+                                typedef RHFocusEvent *(RHFocusManager::*Focus)(RHFocusGroupableView *);
+                                Focus focus = &RHFocusManager::FUN_005007a0;
+                                result = (this->*link)(result, (this->*focus)(found.node->widget));
+                                return (this->*link)(result, found.node->widget->V18(true));
+                            }
+                        }
                     }
                 }
             }
             else if (pressed == 0) {
                 shortcuts = *(RHGameWidgetInputCalls **)((char *)input + 0x0c);
                 if (((RHPortraitKeyboardCalls *)shortcuts)->FUN_0060e270((unsigned short)key)) {
-                    unsigned short *last = m_shortcutLast;
-                    unsigned short *first = m_shortcutFirst;
-                    for (; first != last; ++first)
-                        if (*first == shortcut)
-                            break;
-                    if (first != last) {
-                        std::copy(first + 1, m_shortcutLast, first);
-                        unsigned short *next = m_shortcutLast - 1;
-                        unsigned short *volatile discarded = next;
-                        m_shortcutLast = next;
+                    unsigned short *first = std::find(m_pressed.begin(), m_pressed.end(), shortcut);
+                    if (first != m_pressed.end()) {
+                        m_pressed.erase(first);
                         RHFocusShortcutIterator found = (((RHFocusShortcutTree *)((char *)this + 0x44))->*find)(shortcut);
                         if (found.node != ((RHFocusShortcutTree *)((char *)this + 0x44))->head && found.node->widget == m_groupCursor->value) {
                             RHFocusEvent *events = (this->*link)(result, m_groupCursor->value->V14(false));
