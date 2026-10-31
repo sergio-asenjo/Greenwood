@@ -28,6 +28,7 @@ class RHUnk005db7e0 : public RHPortraitRootList
 {
 public:
     ~RHUnk005db7e0();
+    void FUN_005dc690(const SBGeoBoundingBox2D &bounds);
     void *FUN_0050ef90(unsigned flags);
     std::vector<RHUnk005db7e0Entry> m_entries; // 0xb0
 };

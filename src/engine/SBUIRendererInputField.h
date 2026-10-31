@@ -154,7 +154,6 @@ public:
     bool FUN_00621c30(const SBGeoBoundingBox2D &);
     void FUN_0061e4b0();
     std::wstring FUN_0061df60();
-    void FUN_0061e060(const std::wstring &);
     void FUN_0061e340();
 };
 

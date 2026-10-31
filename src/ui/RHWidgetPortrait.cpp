@@ -37,6 +37,15 @@
 #include "RHPortraitDrawCalls.h"
 #include "../engine/SBUIRendererListbox.h"
 
+// TEMPLATE: GAME 0x0059fb70
+// ?pop_front@?$list@KV?$allocator@K@std@@@std@@QAEXXZ
+// TEMPLATE: GAME 0x00564360
+// ?pop_back@?$list@KV?$allocator@K@std@@@std@@QAEXXZ
+template class std::list<unsigned long>;
+// TEMPLATE: GAME 0x00534200
+// ?clear@?$list@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@V?$allocator@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@@2@@std@@QAEXXZ
+template class std::list<std::wstring>;
+
 DECOMP_SIZE_ASSERT(RHWidgetPortrait, 0xe58)
 DECOMP_SIZE_ASSERT(RHUnk005d92c0Sub, 0x04)
 DECOMP_SIZE_ASSERT(RHUnk005d73d0Actor, 0x04)
@@ -49,19 +58,9 @@ DECOMP_SIZE_ASSERT(SBGeoVector2D, 0x08)
 #define P(O) (*(SBGeoPoint2D *)((char *)this + (O)))
 #define A (*(RHUnk005d73d0Actor **)((char *)this + 0xe1c))
 
-class RHMobileUnk006091b0
-{
-public:
-    RHMobileUnk006091b0 &FUN_006091b0(const SBGeoPoint2D &point);
-};
+#include "SBFrameWnd.h"
 
 #include "RHMapBox.h"
-
-class RHMobileUnk00607da0
-{
-public:
-    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
-};
 
 #include "RHPortraitAnimated.h"
 
@@ -1303,10 +1302,16 @@ unsigned short RHPortraitInputField::FUN_005d18f0(const SBGeoPoint2D &point)
     return 0xffff;
 }
 
+#include <stddef.h>
+
+DECOMP_SIZE_ASSERT(std::wstring, 0x10)
 DECOMP_SIZE_ASSERT(RHPortraitInputWidget, 0x104)
 DECOMP_SIZE_ASSERT(RHPortraitTextLines, 0x30)
 DECOMP_SIZE_ASSERT(RHPortraitItemIndices, 0x18)
 DECOMP_SIZE_ASSERT(RHPortraitUnk005cf570, 0x1d4)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitUnk005cf570, m_first) == 0x104)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitUnk005cf570, m_second) == 0x134)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitUnk005cf570, m_items) == 0x164)
 
 // Parked: cached-list helper identities and inline cleanup boundaries differ.
 // STUB: GAME 0x005cf570
@@ -1318,6 +1323,38 @@ RHPortraitUnk005cf570::~RHPortraitUnk005cf570()
 RHPortraitTextLines::RHPortraitTextLines() : m_dirty(true)
 {
 }
+
+// FUNCTION: GAME 0x005cf760
+unsigned short RHPortraitUnk005cf570::AddItem(const std::wstring &text, std::wstring value, unsigned long index)
+{
+    m_second.Append(text);
+    m_first.Append(value);
+    m_items.Append(index);
+    return m_first.m_list.size() - 1;
+}
+
+void EmitRHPortraitListItem(RHPortraitUnk005cf570 &widget, const std::wstring &text, std::wstring value, unsigned long index)
+{
+    widget.AddItem(text, value, index);
+}
+
+// TEMPLATE: GAME 0x005d0750
+// ??Hstd@@YA?AV?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@0@ABV10@PBG@Z
+
+std::wstring EmitRHPortraitWideConcatenation(const std::wstring &text, const wchar_t *suffix)
+{
+    std::wstring (*concatenate)(const std::wstring &, const wchar_t *) = &std::operator+;
+    return concatenate(text, suffix);
+}
+
+// TEMPLATE: GAME 0x004242b0 FOLDED
+// ?_Buynode@?$list@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@V?$allocator@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@@2@@std@@IAEPAU_Node@12@PAU312@0@Z
+
+// TEMPLATE: GAME 0x0059f720 FOLDED
+// ?_Buynode@?$list@KV?$allocator@K@std@@@std@@IAEPAU_Node@12@PAU312@0@Z
+
+// TEMPLATE: GAME 0x0059fb00 FOLDED
+// ?_Construct@std@@YAXPAKABK@Z
 
 // FUNCTION: GAME 0x005d1ae0
 RHPortraitInputWidget::RHPortraitInputWidget()
@@ -1335,8 +1372,8 @@ void *RHPortraitInputRendererMember::FUN_005d1b40(unsigned flags)
 
 #include "RHPortraitButton.h"
 
-// STUB: GAME 0x005d1b60 SYMBOL
-// ??1RHPortraitInputRendererMember@@UAE@XZ
+// SYNTHETIC: GAME 0x005d1b60
+// RHPortraitInputRendererMember::~RHPortraitInputRendererMember
 
 DECOMP_SIZE_ASSERT(RHPortraitButton, 0x100)
 DECOMP_SIZE_ASSERT(RHPortraitButtonStrategy, 0x04)
@@ -1663,7 +1700,7 @@ struct __declspec(novtable) RHPortraitEditableStrategy
         ((RHUnk005cca80 *)this)->RHUnk005cca80::RHUnk005cca80();
     }
     virtual RHPortraitTextWidget *FUN_005d2ca0();
-    virtual RHPortraitWidgetEvent *FUN_005d2cb0(const RHPortraitWidgetInput &input);
+    virtual RHPortraitWidgetEvent *FUN_005d2cb0(bool active);
     RHPortraitUIOwner *m_owner;
 };
 
@@ -1849,7 +1886,7 @@ void EmitPortraitEditableAccessors(RHPortraitEditableStrategy *strategy)
 }
 
 // FUNCTION: GAME 0x005d2cb0
-RHPortraitWidgetEvent *RHPortraitEditableStrategy::FUN_005d2cb0(const RHPortraitWidgetInput &)
+RHPortraitWidgetEvent *RHPortraitEditableStrategy::FUN_005d2cb0(bool)
 {
     RHPortraitWidgetUI *ui = (RHPortraitWidgetUI *)m_owner->FUN_004fffd0();
     RHPortraitTextWidget *widget = (RHPortraitTextWidget *)((char *)this - 0x180);
@@ -1869,7 +1906,7 @@ void RHPortraitTextWidget::FUN_005d2cf0(const std::wstring &text)
     *(int *)((char *)this + 0xc0) = -1;
     *(int *)((char *)this + 0xc4) = -1;
     *(std::wstring *)((char *)this + 0x10) = text;
-    ((SBUIInputFieldUnk00621440 *)&m_text)->FUN_0061e060(text);
+    m_text.FUN_0061e060(text);
 }
 
 // SYNTHETIC: GAME 0x005d2e60
@@ -3424,6 +3461,29 @@ public:
     }
 };
 
+// FUNCTION: GAME 0x005cf390
+bool RHPortraitBitmapWidget::Create(const std::wstring &text, const RHMapBox &box, unsigned long flags, long id)
+{
+    long resource = id;
+    if (resource == 0)
+        resource = -1;
+    ((RHGameWidgetLifetimeBase *)this)->Create(text, box, flags);
+    ((RHPortraitRenderer0060d470 *)((char *)this + 0x80))->FUN_0060d6a0(box);
+    RHPortraitRenderer0060d470 &renderer = *(RHPortraitRenderer0060d470 *)((char *)this + 0x80);
+    ((SBUIUnk0060d530 *)&renderer)->FUN_0060d550(resource);
+    *(unsigned long *)((char *)this + 0xa4) = flags;
+    ((RHPortraitRenderer0060d470 *)((char *)this + 0x80))->AssignName(text);
+    SBGeoBoundingBox2D &bounds = *(SBGeoBoundingBox2D *)((char *)this + 0x30);
+    if (bounds.Width() == 0.0f)
+        ((RHMobileUnk00607da0 *)&bounds)->FUN_00607da0(*(RHMobileUnk00607da0 *)((SBUIUnk0060d530 *)&renderer)->FUN_0060d690());
+    return true;
+}
+
+void EmitRHPortraitBitmapCreate(RHPortraitBitmapWidget &widget, const std::wstring &text, const RHMapBox &box)
+{
+    widget.RHPortraitBitmapWidget::Create(text, box, 0, 0);
+}
+
 inline void RHWidgetPortrait::SetScrollState(long value)
 {
     m_174 = m_178 = value;
@@ -4208,6 +4268,7 @@ public:
     PORTRAIT_WIDGET_VIRTUALS
     void FUN_005da4a0();
     void FUN_005da4c0(long id);
+    void FUN_005da4f0(const std::wstring &text);
     void FUN_005da700(int value);
     int FUN_005da720();
     int FUN_005da780(const SBGeoPoint2D &point);
@@ -4328,6 +4389,19 @@ void RHPortraitWidget005da4a0::FUN_005da4c0(long id)
     SBUIUnk0060d530 &renderer = *(SBUIUnk0060d530 *)m_renderer;
     renderer.FUN_0060d550(id);
     ((RHMobileUnk00607da0 *)&m_box)->FUN_00607da0(*(RHMobileUnk00607da0 *)renderer.FUN_0060d690());
+}
+
+// FUNCTION: GAME 0x005da4f0
+void RHPortraitWidget005da4a0::FUN_005da4f0(const std::wstring &text)
+{
+    *(std::wstring *)((char *)this + 0x10) = text;
+    *(std::wstring *)((char *)this + 0xa8) = text;
+}
+
+void EmitRHPortraitWidgetText(RHPortraitWidget005da4a0 &widget, const std::wstring &text)
+{
+    void (RHPortraitWidget005da4a0::*setText)(const std::wstring &) = &RHPortraitWidget005da4a0::FUN_005da4f0;
+    (widget.*setText)(text);
 }
 
 // FUNCTION: GAME 0x005da700
@@ -4873,6 +4947,88 @@ RHUnk005db7e0::~RHUnk005db7e0()
     }
 }
 
+DECOMP_SIZE_ASSERT(RHUnk005db7e0, 0xc0)
+DECOMP_SIZE_ASSERT(RHUnk005db7e0Entry, 0x278)
+DECOMP_SIZE_ASSERT(RHUnk005db7e0Slot, 0xd0)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005db7e0, m_entries) == 0xb0)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005db7e0Entry, m_08) == 0x08)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005db7e0Entry, m_d8) == 0xd8)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005db7e0Entry, m_1a8) == 0x1a8)
+
+// FUNCTION: GAME 0x005dc690
+void RHUnk005db7e0::FUN_005dc690(const SBGeoBoundingBox2D &bounds)
+{
+    SBGeoPoint2D position;
+    ((SBFrameWnd *)this)->FUN_0061ad20(bounds);
+    unsigned width = m_entries.size() * 50 - 10;
+    position = bounds.m_first;
+    position.FUN_005fc1e0(SBGeoVector2D(bounds.Width() * 0.5f - (width >> 1), 0.0f));
+    for (std::vector<RHUnk005db7e0Entry>::iterator entry = m_entries.begin(); entry != m_entries.end(); ++entry)
+    {
+        ((RHUnk005d92c0Sub *)&entry->m_08)->v08(position);
+        ((RHUnk005d92c0Sub *)&entry->m_d8)->v08(position.Unk005fc190(SBGeoVector2D(25.0f, 30.0f)));
+        if (entry->m_00 != 0 || entry->m_04 != 0)
+            ((RHUnk005d92c0Sub *)&entry->m_1a8)->v08(position.Unk005fc190(SBGeoVector2D(-1.0f, 2.0f)));
+        position.FUN_005fc1e0(SBGeoVector2D(50.0f, 0.0f));
+    }
+}
+
+// TEMPLATE: GAME 0x00460900 FOLDED
+// ?compare@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QBEHIIPBDI@Z
+
+// FUNCTION: GAME 0x005dc8a0
+int FUN_005dc8a0(const std::string &name)
+{
+    if (name == "Robin des bois")
+        return 6;
+    if (name == "Robin des villes")
+        return 6;
+    if (name == "Petit Jean")
+        return 1;
+    if (name == "Frere Tuck")
+        return 9;
+    if (name == "Stutely")
+        return 8;
+    if (name == "Will Ecarlate")
+        return 7;
+    if (name == "Lady Marianne")
+        return 2;
+    if (name == "Paysan A")
+        return 3;
+    if (name == "Paysan B")
+        return 4;
+    if (name == "Paysan C")
+        return 5;
+    return 0;
+}
+
+#include "RHCampaignCommandLine.h"
+
+inline bool RHPortraitNamesEqual(const std::string &left, const std::string &right)
+{
+    return ((RHCampaignCommandLine *)&left)->FUN_0045a010(*(const RHProfileText *)&right) == 0;
+}
+
+// FUNCTION: GAME 0x005dcbb0
+int FUN_005dcbb0(const std::string &name)
+{
+    if (RHPortraitNamesEqual(name, std::string("Robin des bois")))
+        return 1;
+    if (name == std::string("Robin des villes"))
+        return 1;
+    if (name == std::string("Petit Jean"))
+        return 4;
+    if (name == std::string("Frere Tuck"))
+        return 5;
+    if (name == std::string("Stutely"))
+        return 2;
+    if (name == std::string("Will Ecarlate"))
+        return 3;
+    if (name == std::string("Lady Marianne"))
+        return 6;
+    return 0;
+}
+
 // FUNCTION: GAME 0x005de100
 void FUN_005de100(unsigned short *destination, const unsigned short &value)
 {
@@ -4943,6 +5099,32 @@ RHPortraitRootList::~RHPortraitRootList()
 {
     *(unsigned *)this = 0x00678ea8;
 }
+
+DECOMP_SIZE_ASSERT(RHPortraitRootList, 0xb0)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitRootList, m_items) == 0xa0)
+
+// FUNCTION: GAME 0x005df120
+bool RHPortraitRootList::FUN_005df120(RHUnk005d92c0Sub *widget)
+{
+    if (FUN_0061a800(widget))
+    {
+        m_items.push_back(widget);
+        return true;
+    }
+    return false;
+}
+
+// TEMPLATE: GAME 0x0059fb00 FOLDED
+// ?_Construct@std@@YAXPAPAVRHUnk005d92c0Sub@@ABQAV2@@Z
+
+// TEMPLATE: GAME 0x004fe450 FOLDED
+// ?_Ufill@?$vector@PAVRHUnk005d92c0Sub@@V?$allocator@PAVRHUnk005d92c0Sub@@@std@@@std@@IAEXPAPAVRHUnk005d92c0Sub@@IABQAV3@@Z
+
+// TEMPLATE: GAME 0x004fe420 FOLDED
+// ?_Ucopy@?$vector@PAVRHUnk005d92c0Sub@@V?$allocator@PAVRHUnk005d92c0Sub@@@std@@@std@@IAEPAPAVRHUnk005d92c0Sub@@PBQAV3@0PAPAV3@@Z
+
+// TEMPLATE: GAME 0x005008e0 FOLDED
+// ?_Destroy@?$vector@PAVRHUnk005d92c0Sub@@V?$allocator@PAVRHUnk005d92c0Sub@@@std@@@std@@IAEXPAPAVRHUnk005d92c0Sub@@0@Z
 
 // FUNCTION: GAME 0x005df300
 bool RHPortraitRootList::FUN_005df300(RHUnk005d92c0Sub *widget)
@@ -5151,6 +5333,44 @@ std::wstring RHWidgetPortrait::GetPCName() const
     return name;
 }
 
+#include "RHSoundCore.h"
+
+// FUNCTION: GAME 0x005d9c30
+void RHWidgetPortrait::FUN_005d9c30()
+{
+    SBGeoBoundingBox2D frame;
+    SBGeoBoundingBox2D bounds(P(0xd0), P(0x1c4));
+    ((RHMobileUnk00607da0 *)&frame)->FUN_00607da0(*(RHMobileUnk00607da0 *)((char *)this + 0x62c));
+    {
+        SBGeoVector2D origin(*(SBGeoVector2D *)&bounds.m_first);
+        W(0x5fc).v08(SBGeoPoint2D((bounds.Width() - frame.Width()) * 0.5f,
+                                  (bounds.Height() - frame.Height()) * 0.5f)
+                          .Unk005fc190(origin));
+    }
+    ((RHMobileUnk00607da0 *)&frame)->FUN_00607da0(*(RHMobileUnk00607da0 *)((char *)this + 0x6f8));
+    {
+        SBGeoVector2D origin(*(SBGeoVector2D *)&bounds.m_first);
+        W(0x6c8).v08(SBGeoPoint2D((bounds.Width() - frame.Width()) * 0.5f,
+                                  (bounds.Height() - frame.Height()) * 0.5f)
+                          .Unk005fc190(origin));
+    }
+    if (A->FUN_0049f510())
+    {
+        W(0x5fc).v21(1);
+        W(0).v15(&W(0x5fc));
+        W(0x6c8).v21(0);
+        extern RHEngine *g_pEngine;
+        (*(RHSound **)((char *)g_pEngine + 0x45e0))->PlayJingle(7);
+    }
+    else
+    {
+        W(0x5fc).v21(0);
+        W(0).v14(&W(0x5fc));
+        W(0x6c8).v21(0);
+        W(0).v14(&W(0x6c8));
+    }
+}
+
 // FUNCTION: GAME 0x005da1f0
 void RHWidgetPortrait::FUN_005da1f0()
 {
@@ -5303,13 +5523,12 @@ SBGeoBoundingBox2D RHPortraitInputRenderer::FUN_0061d620()
     return box;
 }
 
-// Parked: the empty return needs the canonical four-float box constructor, not a copy.
-// STUB: GAME 0x0061d7c0
+// FUNCTION: GAME 0x0061d7c0
 SBGeoBoundingBox2D RHPortraitInputRenderer::FUN_0061d7c0()
 {
     SBGeoBoundingBox2D box;
     if (m_68 == -1)
-        return (const SBGeoBoundingBox2D &)RHMapBox(0.0f, 0.0f, 0.0f, 0.0f);
+        return SBGeoBoundingBox2D(0.0f, 0.0f, 0.0f, 0.0f);
     ((RHMobileUnk00607da0 *)&box)->FUN_00607da0((const RHMobileUnk00607da0 &)RHMapBox(
         0.0f, 0.0f, ((RHUnkFXDraw *)m_drawManager)->FUN_005e56c0(m_68),
         m_position.m_second.m_y - m_position.m_first.m_y));

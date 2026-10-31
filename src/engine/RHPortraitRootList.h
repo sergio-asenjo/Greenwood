@@ -14,6 +14,7 @@ public:
     ~RHPortraitRootList();
     void *FUN_0050e770(unsigned flags);
     bool FUN_005df300(RHUnk005d92c0Sub *widget);
+    bool FUN_005df120(RHUnk005d92c0Sub *widget);
     std::vector<RHUnk005d92c0Sub *> m_items; // 0xa0
 };
 

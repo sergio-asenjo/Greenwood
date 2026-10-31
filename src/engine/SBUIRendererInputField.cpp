@@ -34,12 +34,7 @@ public:
     unsigned short FUN_005e5750(unsigned long);
 };
 
-class SBDrawManager
-{
-public:
-    void BlitAlphaKeying(unsigned long, unsigned long, unsigned long,
-        SBGeoBoundingBox2D *, unsigned short, unsigned short, unsigned long);
-};
+#include "SBDrawManagerCore.h"
 
 class RHUnk00600820
 {
@@ -108,7 +103,7 @@ bool SBGeoBoundingBox2D::FUN_006084a0(const SBGeoBoundingBox2D &other)
         return false;
     ((SBUIInputFieldBoxCalls *)&span)->FUN_0060a860(
         SBGeoSegment2D(other.m_00, other.m_08).Line());
-    return ((SBUIInputFieldBoxCalls *)this)->FUN_00608450(*(SBGeoBoundingBox2D *)&span);
+    return ((SBUIInputFieldBoxCalls *)this)->FUN_00608450(span);
 }
 
 // FUNCTION: GAME 0x006138e0
@@ -305,6 +300,12 @@ void EmitSBUIInputFieldSplit(SBUIInputFieldSplitUnk *split, const std::wstring &
 
 #include "SBUIInputFieldCharacters.h"
 
+// TEMPLATE: GAME 0x00509ba0 FOLDED
+// ?_Construct@std@@YAXPAUSBUIInputFieldCharacter@@ABU2@@Z
+
+// TEMPLATE: GAME 0x0059fcc0 FOLDED
+// ?_Buynode@?$list@USBUIInputFieldCharacter@@V?$allocator@USBUIInputFieldCharacter@@@std@@@std@@IAEPAU_Node@12@PAU312@0@Z
+
 // FUNCTION: GAME 0x0061dd00
 unsigned int SBUIInputFieldTextUnk::FUN_0061dd00()
 {
@@ -402,8 +403,7 @@ bool RHPortraitText0061db10::Insert(unsigned short character)
     return true;
 }
 
-// Parked: the switch dispatch still differs in branch-table and register setup.
-// STUB: GAME 0x0061e240
+// FUNCTION: GAME 0x0061e240
 void RHPortraitText0061db10::FUN_0061e240(unsigned int direction)
 {
     SBUIInputFieldNode *&cursor = *(SBUIInputFieldNode **)&m_cursor;
@@ -411,10 +411,8 @@ void RHPortraitText0061db10::FUN_0061e240(unsigned int direction)
     {
     case 1:
     {
-        SBUIInputFieldNode *first = (*(SBUIInputFieldNode *volatile *)((char *)this + 8))->m_00;
-        SBUIInputFieldNode *node = cursor;
-        if (node != first)
-            cursor = node->m_04;
+        if (m_cursor != m_characters.rend().base())
+            --m_cursor;
         return;
     }
     case 0:
@@ -426,8 +424,7 @@ void RHPortraitText0061db10::FUN_0061e240(unsigned int direction)
             cursor = node->m_00;
             if (cursor == head)
             {
-                SBUIInputFieldNode *last = cursor;
-                cursor = last->m_04;
+                --m_cursor;
             }
         }
         return;
@@ -452,28 +449,30 @@ void SBUIInputFieldTextUnk::FUN_0061e320(unsigned char value)
     ((RHPortraitText0061db10 *)this)->FUN_0061e240(3);
 }
 
-// Parked: the list reset and text-node insertion semantics are identified, but the temporary list node/container helper setup does not match the target.
-// STUB: GAME 0x0061e060
-void SBUIInputFieldUnk00621440::FUN_0061e060(const std::wstring &text)
+// FUNCTION: GAME 0x0061e060
+void RHPortraitText0061db10::FUN_0061e060(const std::wstring &text)
 {
-    SBUIInputFieldCharacters &characters = *(SBUIInputFieldCharacters *)((char *)this + 4);
     typedef SBUIInputFieldCharacters::iterator (SBUIInputFieldCharacters::*Erase)(SBUIInputFieldCharacters::iterator);
     Erase erase = &SBUIInputFieldCharacters::erase;
-    for (SBUIInputFieldCharacters::iterator current = characters.begin(); current != characters.end();)
-        (characters.*erase)(current++);
+    {
+        SBUIInputFieldCharacters::iterator last = m_characters.end();
+        for (SBUIInputFieldCharacters::iterator current = m_characters.begin(); current != last;)
+            (m_characters.*erase)(current++);
+    }
+    SBUIInputFieldCharacters &characters = m_characters;
     SBUIInputFieldCharacter value;
-    value.character = 0;
     value.width = 0;
-    characters.insert(characters.end(), value);
-    for (std::wstring::const_iterator character = text.begin(); character != text.end(); ++character)
+    value.character = 0;
+    characters.push_back(value);
+    std::wstring::const_iterator first = *(std::wstring::const_iterator volatile *)((char *)&text + 4);
+    for (std::wstring::const_iterator character = first; character != text.end(); ++character)
     {
         value.character = *character;
-        SBFontUnk0061e840 *font = *(SBFontUnk0061e840 **)((char *)this + 0x14);
+        SBFontUnk0061e840 *font = (SBFontUnk0061e840 *)m_font;
         value.width = font->FUN_0061e850(*character) + font->v8();
         characters.insert(characters.end(), value);
     }
-    SBUIInputFieldCharacters::iterator first = characters.begin();
-    *(SBUIInputFieldNode **)((char *)this + 0x10) = *(SBUIInputFieldNode **)&first;
+    m_cursor = m_characters.begin();
 }
 
 // FUNCTION: GAME 0x0061e340
@@ -485,7 +484,7 @@ void SBUIInputFieldUnk00621440::FUN_0061e340()
 // FUNCTION: GAME 0x0061e4b0
 void SBUIInputFieldUnk00621440::FUN_0061e4b0()
 {
-    FUN_0061e060(*(const std::wstring *)((char *)this + 0x38));
+    ((RHPortraitText0061db10 *)this)->FUN_0061e060(*(const std::wstring *)((char *)this + 0x38));
 }
 
 // Parked: global-bit branch and fixed-address tail target differ.

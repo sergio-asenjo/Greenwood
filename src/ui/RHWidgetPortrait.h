@@ -175,6 +175,11 @@ class RHPortraitTextLines
 {
 public:
     RHPortraitTextLines();
+    void Append(const std::wstring &value)
+    {
+        m_list.push_back(value);
+        m_dirty = true;
+    }
     ~RHPortraitTextLines()
     {
         m_list.clear();
@@ -190,6 +195,11 @@ public:
 class RHPortraitItemIndices
 {
 public:
+    void Append(const unsigned long &value)
+    {
+        m_list.push_back(value);
+        m_dirty = true;
+    }
     ~RHPortraitItemIndices()
     {
         m_list.clear();
@@ -206,6 +216,7 @@ class RHPortraitUnk005cf570 : public RHPortraitInputWidget
 public:
     ~RHPortraitUnk005cf570();
     void *FUN_005d09d0(unsigned flags);
+    unsigned short AddItem(const std::wstring &text, std::wstring value, unsigned long index);
     RHPortraitTextLines m_first;
     RHPortraitTextLines m_second;
     RHPortraitItemIndices m_items;
@@ -248,7 +259,6 @@ class SBUIInputFieldUnk00621440
 public:
     bool FUN_00621470(unsigned int id);
     void FUN_0061e340();
-    void FUN_0061e060(const std::wstring &text);
     void FUN_0061e4b0();
     std::wstring FUN_0061df60();
     void FUN_00621440(SBUIInputFieldUnkResource *resource);

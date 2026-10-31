@@ -21,7 +21,6 @@ char RHUnk005d73d0Actor::FUN_0049f510()
 {
     return *(char *)((char *)*(void **)((char *)this + 0x600) + 0x16);
 }
-void RHWidgetPortrait::FUN_005d9c30() {}
 
 // FUNCTION: GAME 0x005ca2f0
 RHPortraitRenderer005ca330::RHPortraitRenderer005ca330()
@@ -90,13 +89,13 @@ unsigned RHPortraitInputRenderer::FUN_0061d950()
 }
 DECOMP_SIZE_ASSERT(RHPortraitRenderer006212d0, 0x90)
 
-// Parked: zero/one register allocation and vector-store ordering differ.
-// STUB: GAME 0x006212d0
+// FUNCTION: GAME 0x006212d0
 RHPortraitRenderer006212d0::RHPortraitRenderer006212d0()
     : m_font(0), m_alternateFont(0), m_textObject(0), m_enabled(true)
 {
-    m_offset.m_x = 0;
-    m_offset.m_y = 0;
+    SBGeoVector2D &offset = m_offset;
+    offset.m_x = 0;
+    offset.m_y = 0;
 }
 
 // SYNTHETIC: GAME 0x00621360
@@ -110,16 +109,16 @@ RHPortraitRenderer006212d0::~RHPortraitRenderer006212d0()
 DECOMP_SIZE_ASSERT(RHPortraitText0061db10, 0x48)
 DECOMP_SIZE_ASSERT(SBUIInputFieldCharacter, 0x08)
 
-// Parked: folded payload-construction callee and initializer-slot scheduling differ.
-// STUB: GAME 0x0061db10
+// FUNCTION: GAME 0x0061db10
 RHPortraitText0061db10::RHPortraitText0061db10()
     : m_font(0), m_alternate(0), m_caretShown(false), m_maximum((unsigned int)-1)
 {
     SBUIInputFieldCharacter value;
-    value.character = 0;
     value.width = 0;
-    m_characters.insert(m_characters.begin(), value);
-    m_cursor = m_characters.begin();
+    value.character = 0;
+    m_characters.push_front(value);
+    const SBUIInputFieldCharacters::iterator &first = m_characters.begin();
+    m_cursor = first;
 }
 
 // SYNTHETIC: GAME 0x0061dc00

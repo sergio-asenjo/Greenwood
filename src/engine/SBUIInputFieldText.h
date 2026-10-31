@@ -16,6 +16,7 @@ public:
     RHPortraitText0061db10();
     virtual ~RHPortraitText0061db10(); // vtable+0x00
     bool Insert(unsigned short character);
+    void FUN_0061e060(const std::wstring &text);
     void FUN_0061e240(unsigned int direction);
     SBUIInputFieldCharacters m_characters; // 0x04
     SBUIInputFieldCharacters::iterator m_cursor; // 0x10

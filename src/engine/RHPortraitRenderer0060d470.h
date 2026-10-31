@@ -21,6 +21,10 @@ public:
     virtual void FUN_0060d530(unsigned int surface);
     virtual void FUN_0060d780(const SBGeoPoint2D &point);
     virtual void FUN_0060d6a0(const SBGeoBoundingBox2D &box);
+    void AssignName(const std::wstring &name)
+    {
+        m_name.assign(name, 0, std::wstring::npos);
+    }
     RHMapResources *m_resources;   // 0x04
     SBGeoBoundingBox2D m_position; // 0x08
     void *m_drawManager;           // 0x1c
