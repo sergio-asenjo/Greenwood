@@ -25,12 +25,12 @@ void RHProfileText::FUN_00401ee0(bool release)
     m_capacity = 0;
 }
 
-// FUNCTION: GAME 0x0059fba0
+// TEMPLATE: GAME 0x0059fba0 FOLDED
+// ??0RHProfileString@@QAE@ABV?$allocator@D@std@@@Z
 RHProfileString::RHProfileString(const std::allocator<char> &allocator) : std::basic_string<char>(allocator) {}
 void RHProfileText::FUN_00401ce0(const std::string &, unsigned int, unsigned int) {}
 
 
-void FUN_0056cf40(const RHProfileManager *, const char *, ...) {}
 
 
 

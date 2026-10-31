@@ -1,5 +1,6 @@
 #include "SBNullstr.h"
 #include "RHSaveGame.h"
+#include <string.h>
 #include "RHGameSaveCalls.h"
 
 void RHSerializeName(SBFile &, const char *);
@@ -8,14 +9,19 @@ bool FUN_005e0ea0(SBFile &, std::wstring &);
 
 // FUNCTION: GAME 0x0056e250
 RHSaveGame::RHSaveGame(RHSaveGameManager *manager)
+    : m_manager(manager), m_04(0xffffffff)
 {
-    typedef std::string NarrowString;
-    typedef std::wstring WideString;
-    *(RHSaveGameManager **)m_data = manager;
-    RHSaveGame_m_04 = 0xffffffff;
-    ((NarrowString *)(m_data + 0x08))->NarrowString::basic_string();
-    ((NarrowString *)(m_data + 0x18))->NarrowString::basic_string();
-    ((WideString *)(m_data + 0x28))->WideString::basic_string();
+}
+
+// STRING: GAME 0x006b22ac
+#define RHSAVEGAME_SETTINGS_SUFFIX "_t"
+
+// FUNCTION: GAME 0x0056e2a0
+RHSaveGame::RHSaveGame(RHSaveGameManager *manager, const std::string &fileName, const std::wstring &name)
+    : m_manager(manager), m_04(0xffffffff), m_08(fileName), m_18(fileName + RHSAVEGAME_SETTINGS_SUFFIX),
+      m_28(name)
+{
+    memset(m_38, 0, sizeof(m_38));
 }
 
 extern "C" __declspec(dllimport) int __stdcall CopyFileA(const char *, const char *, int);
@@ -32,13 +38,13 @@ void RHSaveGame::CopyFiles(const RHSaveGame *source)
 // FUNCTION: GAME 0x0056e6a0
 const _SYSTEMTIME &RHSaveGame::GetTime() const
 {
-    return *(const _SYSTEMTIME *)(m_data + 0x38);
+    return *(const _SYSTEMTIME *)m_38;
 }
 
 // FUNCTION: GAME 0x0056e780
 const std::wstring &RHSaveGame::FUN_0056e780() const
 {
-    return *(const std::wstring *)(m_data + 0x28);
+    return m_28;
 }
 
 extern std::string g_unk0x006c0ea0;
@@ -54,7 +60,7 @@ std::string g_unk0x006c0ec8 = "ExQuickSave";
 // STUB: GAME 0x0056e8b0
 int RHSaveGame::FUN_0056e8b0() const
 {
-    const std::string &name = *(const std::string *)(m_data + 0x08);
+    const std::string &name = m_08;
     if (name.compare(g_unk0x006c0ea0) == 0 || name.compare(g_unk0x006c0ec8) == 0 ||
         name.compare(g_unk0x006c0eb8) == 0 || name.compare(g_unk0x006c0ed8) == 0 ||
         name.compare(g_unk0x006c0ee8) == 0)
@@ -68,9 +74,9 @@ bool RHSaveGame::Serialize(SBFile &file)
     RHSerializeName(file,
         // STRING: GAME 0x006b22b0
         "RHSaveGame");
-    FUN_005e0c90(file, *(std::string *)(m_data + 0x08));
-    FUN_005e0c90(file, *(std::string *)(m_data + 0x18));
-    FUN_005e0ea0(file, *(std::wstring *)(m_data + 0x28));
+    FUN_005e0c90(file, m_08);
+    FUN_005e0c90(file, m_18);
+    FUN_005e0ea0(file, m_28);
     SynchronizeWithFile();
     return true;
 }
@@ -125,7 +131,7 @@ bool RHSaveGame::SerializeHeader(SBFile &file, Header &header)
 // FUNCTION: GAME 0x0056eb80
 void RHSaveGame::SetText(const std::wstring &text)
 {
-    *(std::wstring *)(m_data + 0x28) = text;
+    m_28 = text;
 }
 
 // FUNCTION: GAME 0x0056ecc0
@@ -143,9 +149,9 @@ void RHSaveGame::SynchronizeWithFile()
                 "Unable to access a savegame file.");
             return;
         }
-        file.FUN_005f6200(RHSaveGame_m_38);
+        file.FUN_005f6200(m_38);
         SerializeHeader(file, header);
-        RHSaveGame_m_04 = header.m_08;
+        m_04 = header.m_08;
         file.FUN_005f5290();
     }
 }

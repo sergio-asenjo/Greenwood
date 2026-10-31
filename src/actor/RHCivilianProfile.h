@@ -51,10 +51,39 @@ public:
     explicit RHProfileString(const std::allocator<char> &allocator = std::allocator<char>());
 };
 
+class RHCivilianProfileText
+{
+public:
+    explicit RHCivilianProfileText(const std::allocator<char> &allocator = std::allocator<char>())
+    {
+        m_allocator = *(const char *)&allocator;
+        ((RHProfileText *)this)->FUN_00401ee0(false);
+    }
+    ~RHCivilianProfileText()
+    {
+        if (m_chars)
+        {
+            unsigned char *reference = (unsigned char *)m_chars - 1;
+            if (*reference != 0 && *reference != 255)
+                --*reference;
+            else
+                operator delete(reference);
+        }
+        m_chars = 0;
+        m_size = 0;
+        m_capacity = 0;
+    }
+    char m_allocator;
+    char *m_chars;
+    unsigned m_size;
+    unsigned m_capacity;
+};
+
 struct RHCivilianProfile
 {
-    RHProfileText m_00;
-    RHProfileText m_10;
+    ~RHCivilianProfile();
+    RHCivilianProfileText m_00;
+    RHCivilianProfileText m_10;
     RHProfileString m_20;
     int m_30;
     int m_34;

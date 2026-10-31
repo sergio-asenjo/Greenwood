@@ -2,6 +2,8 @@
 #define RHPROFILEMANAGER_H
 
 #include "RHSaveGameManager.h"
+#include <list>
+#include <string>
 #include "RHBow.h"
 #include "RHHtHWeaponProfile.h"
 #include "RHCivilianProfile.h"
@@ -13,7 +15,6 @@ class RHSoldierProfile;
 class RHProfileManager;
 
 #include "RHCopyPointers.h"
-void FUN_0056cf40(const RHProfileManager *, const char *, ...);
 
 template <class T>
 inline T *RHProfileConstructCopy(const T *first, const T *last, T *destination)
@@ -79,6 +80,7 @@ class RHProfileManager
 {
 public:
     bool SerializeShootWeapon(SBFile &file);
+    void AddWarning(char *format, ...);
     void FUN_0056a310(const char *name);
     void FUN_00565c10(const char *name);
     void FUN_005672d0(const char *name);
@@ -105,7 +107,8 @@ public:
 
     void Emit(SBFile &file);
 
-    char m_00[0x10];
+    char m_00[0x04];
+    std::list<std::string> m_warnings; // 0x04
     RHProfileArray<RHCharacterProfile *> m_characters; // [0x10]: first +0x14, last +0x18
     RHProfileArray<RHSoldierProfile *> m_soldiers; // [0x20]: first +0x24, last +0x28
     RHProfileArray<RHHtHWeaponProfile *> m_handToHand; // [0x30]: first +0x34, last +0x38

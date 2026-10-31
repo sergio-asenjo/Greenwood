@@ -14,19 +14,9 @@
 #include "SBNullstr.h"
 #include "RHSaveGame.h"
 
-RHSaveGame::RHSaveGame(RHSaveGameManager *, const std::string &, const std::wstring &) {}
-
 // FUNCTION: GAME 0x0056fd90
 RHSaveGame::~RHSaveGame()
 {
-    typedef std::string NarrowString;
-    typedef std::wstring WideString;
-    ((WideString *)(m_data + 0x28))->~WideString();
-    ((NarrowString *)(m_data + 0x18))->~NarrowString();
-    ((NarrowString *)(m_data + 0x08))->~NarrowString();
 }
 
 
-
-// Target 0x0064158f (operator delete).
-void operator delete(void *) {}

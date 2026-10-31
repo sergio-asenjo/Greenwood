@@ -35,11 +35,13 @@ public:
     void SetText(const std::wstring &text);
     void Emit(SBFile &file, Header &header);
 
-    char m_data[0x48]; // [0x00, 0x48): compatible with RHSaveGameManager.h
+    RHSaveGameManager *m_manager;
+    unsigned long m_04;
+    std::string m_08;
+    std::string m_18;
+    std::wstring m_28;
+    unsigned long m_38[4];
 };
-
-#define RHSaveGame_m_04 (*(unsigned long *)(m_data + 0x04)) // [0x04]: header.m_08
-#define RHSaveGame_m_38 ((void *)(m_data + 0x38)) // [0x38, 0x40): file-time output
 
 bool FUN_005f6400(const std::string &name);
 

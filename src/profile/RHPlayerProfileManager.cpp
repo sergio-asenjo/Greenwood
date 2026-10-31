@@ -46,11 +46,6 @@ std::wstring FUN_005e23d0(unsigned long id);
 // GLOBAL: GAME 0x006c05e0
 std::string g_unk0x006c05e0;
 
-std::string FUN_004e4c70(const std::string &first, const char *second)
-{
-    return std::string(first).append(second);
-}
-
 // FUNCTION: GAME 0x0052ef80
 RHGraphicConfig &RHPlayerProfile::FUN_0052ef80()
 {
@@ -190,6 +185,30 @@ bool RHPlayerProfile::Serialize(SBFile &file)
     }
     RHSaveGameManager::Serialize(file);
     return true;
+}
+
+#include "RHCampaignValueCalls.h"
+#include "RHCampaignCore.h"
+
+extern RHUnk00452030 *g_unk0x6c07fc;
+
+// GLOBAL: GAME 0x00677698
+double g_unk0x00677698 = 100.0;
+
+// FUNCTION: GAME 0x0055d370
+void RHPlayerProfile::SynchronizeWithCampaign()
+{
+    RHUnk00452030 *campaign = g_unk0x6c07fc;
+    m_20 = campaign->Get(2);
+    m_24 = campaign->Get(1);
+    m_2c = ((RHCampaign *)campaign)->FUN_00456db0();
+    m_30 += campaign->Get(6);
+    unsigned first = campaign->Get(5);
+    unsigned second = campaign->Get(4);
+    if (first == 0 && second == 0)
+        m_28 = 0;
+    else
+        m_28 = (unsigned)((double)second * g_unk0x00677698 / (first + second));
 }
 
 // FUNCTION: GAME 0x0055d630
@@ -392,6 +411,7 @@ void RHPlayerProfileManager::FUN_0055e550(RHPlayerProfile *profile)
 
 void RHPlayerProfile::Emit(SBFile &file)
 {
+    SynchronizeWithCampaign();
     FUN_0052ef80();
     Serialize(file);
 }

@@ -8,8 +8,21 @@
 #include <list>
 #include "RHUnk00401490.h"
 #include <stdlib.h>
+#include <stdio.h>
+#include <stdarg.h>
 #include "RHSoundCacheCore.h"
 #include "RHSoundCacheString.h"
+
+DECOMP_SIZE_ASSERT(RHCivilianProfileText, 0x10)
+DECOMP_SIZE_ASSERT(RHCivilianProfile, 0x3c)
+DECOMP_SIZE_ASSERT(RHMissionProfile, 0xf4)
+DECOMP_SIZE_ASSERT(RHMissionArray<unsigned long>, 0x10)
+
+// TEMPLATE: GAME 0x005f0340
+// ?erase@?$list@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@QAE?AViterator@12@V312@0@Z
+// TEMPLATE: GAME 0x005f03d0
+// ?erase@?$list@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@QAE?AViterator@12@V312@@Z
+template class std::list<std::string>;
 
 class RHProfilePointerList005640c0 : public std::list<void *>
 {
@@ -153,6 +166,26 @@ void EmitRHProfilePointerList(RHProfilePointerList *list, const RHProfilePointer
     new RHProfilePointerList005641a0(*(const RHProfilePointerList005641a0 *)&other);
     new RHProfilePointerList(other);
     list->FUN_00564390(other);
+}
+
+// FUNCTION: GAME 0x005649f0
+RHCivilianProfile::~RHCivilianProfile()
+{
+}
+
+void EmitRHCivilianProfile(RHCivilianProfile *profile)
+{
+    delete profile;
+}
+
+// FUNCTION: GAME 0x00564a90
+RHMissionProfile::~RHMissionProfile()
+{
+}
+
+void EmitRHMissionProfile(RHMissionProfile *profile)
+{
+    delete profile;
 }
 
 class RHProfileManagerParseCalls
@@ -395,7 +428,7 @@ void RHProfileManager::FUN_00565c10(const char *name)
             case 30: profile->m_92 = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 30))); break;
             case 31: profile->m_90 = atoi(RHProfileToken((void *)table.FUN_00401a80(row, 31))); break;
             default:
-                FUN_0056cf40(this,
+                AddWarning(
                     // STRING: GAME 0x006b19e8
                     "In Character Profile: column out of bound at line %d\n", row);
             }
@@ -578,7 +611,7 @@ void RHProfileManager::FUN_005672d0(const char *name)
             case 42: *(std::string *)&profile->m_d4 = *(const std::string *)table.FUN_00401a80(row, 42); break;
             case 43: *(std::string *)&profile->m_e4 = *(const std::string *)table.FUN_00401a80(row, 43); break;
             default:
-                FUN_0056cf40(this,
+                AddWarning(
                     // STRING: GAME 0x006b1a34
                     "In Mission Profile: column out of bound at line %d\n", row);
             }
@@ -653,7 +686,7 @@ void RHProfileManager::FUN_00569570(const char *name)
                     }
                 }
                 else
-                    FUN_0056cf40(this,
+                    AddWarning(
                         // STRING: GAME 0x006b1abc
                         "In Weapon Profile: column out of bound at line %d\n", row);
             }
@@ -798,7 +831,7 @@ void RHProfileManager::FUN_0056aee0(const char *name)
             case 35: profile->m_80 = ((RHProfileManagerParseCalls *)this)->FUN_0056c290((void *)table.FUN_00401a80(row, 35), row, 35); break;
             case 36: profile->m_84 = ((RHProfileManagerParseCalls *)this)->FUN_0056c360((void *)table.FUN_00401a80(row, 36), row, 36); break;
             default:
-                FUN_0056cf40(this,
+                AddWarning(
                     // STRING: GAME 0x006b1af0
                     "In Soldier Profile: column out of bound at line %d\n", row);
             }
@@ -825,7 +858,7 @@ int RHProfileManagerParseCalls::FUN_0056c100(void *profile, unsigned line, unsig
     // STRING: GAME 0x006b1bcc
     if (RHProfileTokenEquals(RHProfileToken(profile), "legs"))
         return 4;
-    FUN_0056cf40((const RHProfileManager *)this,
+    ((RHProfileManager *)this)->AddWarning(
         // STRING: GAME 0x006b1b70
         "In weapon profile at (%d,%d) : target of thrust not recognized (%s), defaulting to HEAD\n",
         line, column, RHProfileToken(profile));
@@ -870,7 +903,7 @@ unsigned RHProfileManagerParseCalls::FUN_0056c290(void *profile, unsigned line, 
     // STRING: GAME 0x006b1c60
     if (RHProfileTokenEquals(RHProfileToken(profile), "steel and wood"))
         return 3;
-    FUN_0056cf40((const RHProfileManager *)this,
+    ((RHProfileManager *)this)->AddWarning(
         // STRING: GAME 0x006b1c04
         "In profile at (%d,%d) : type of weapon material not recognized (%s), defaulting to WOOD\n",
         line, column, RHProfileToken(profile));
@@ -889,7 +922,7 @@ unsigned RHProfileManagerParseCalls::FUN_0056c360(void *profile, unsigned line, 
     // STRING: GAME 0x006b1ce0
     if (RHProfileTokenEquals(RHProfileToken(profile), "plate"))
         return 2;
-    FUN_0056cf40((const RHProfileManager *)this,
+    ((RHProfileManager *)this)->AddWarning(
         // STRING: GAME 0x006b1c84
         "In profile at (%d,%d) : type of armor material not recognized (%s), defaulting to LEATHER\n",
         line, column, RHProfileToken(profile));
@@ -905,7 +938,7 @@ unsigned RHProfileManagerParseCalls::FUN_0056c410(void *profile, unsigned line, 
     // STRING: GAME 0x006b1d58
     if (RHProfileTokenEquals(RHProfileToken(profile), "hostile"))
         return 0;
-    FUN_0056cf40((const RHProfileManager *)this,
+    ((RHProfileManager *)this)->AddWarning(
         // STRING: GAME 0x006b1cfc
         "In civilian profile at (%d,%d) : unknow attitude descriptor (%s), defaulting to friendly\n",
         line, column, RHProfileToken(profile));
@@ -933,7 +966,7 @@ unsigned RHProfileManagerParseCalls::FUN_0056c490(void *profile, unsigned line, 
     // STRING: GAME 0x006b1dd0
     if (RHProfileTokenEquals(RHProfileToken(profile), "vip"))
         return 5;
-    FUN_0056cf40((const RHProfileManager *)this,
+    ((RHProfileManager *)this)->AddWarning(
         // STRING: GAME 0x006b1d6c
         "In civilian profile at (%d,%d) : type of civilian not recognized (%s), defaulting to CIVILIAN_MAN\n",
         line, column, RHProfileToken(profile));
@@ -964,7 +997,7 @@ unsigned RHProfileManagerParseCalls::FUN_0056c5b0(void *profile, unsigned line, 
     // STRING: GAME 0x006b1e54
     if (RHProfileTokenEquals(RHProfileToken(profile), "false circle"))
         return 6;
-    FUN_0056cf40((const RHProfileManager *)this,
+    ((RHProfileManager *)this)->AddWarning(
         // STRING: GAME 0x006b1df8
         "In weapon profile at (%d,%d) : kind of thrust not recognized (%s) defaulting to straight\n",
         line, column, RHProfileToken(profile));
@@ -994,12 +1027,12 @@ const char *RHProfileManagerParseCalls::FUN_0056c700(void *profile, unsigned lin
         if (RHProfileTokenEquals(value, entries[i].name))
         {
             if (RHProfileTokenEquals(entries[i].name, "end"))
-                FUN_0056cf40((const RHProfileManager *)this,
+                ((RHProfileManager *)this)->AddWarning(
                     "In character profile at (%d,%d) : action %s", line, column, value);
             return (const char *)entries[i].value;
         }
     }
-    FUN_0056cf40((const RHProfileManager *)this,
+    ((RHProfileManager *)this)->AddWarning(
         "In character profile at (%d,%d) : action %s", line, column, value);
     return 0;
 }
@@ -1044,7 +1077,7 @@ unsigned RHProfileManagerParseCalls::FUN_0056cb00(void *profile, unsigned line, 
         ++index;
     unsigned value = entries[index].value;
     if (strcmp(entries[index].name, "end") == 0)
-        FUN_0056cf40((const RHProfileManager *)this,
+        ((RHProfileManager *)this)->AddWarning(
             // STRING: GAME 0x006b2064
             "In mission profile at (%d,%d) : mission type not recognized (%s) defaulting to none\n",
             line, column, RHProfileToken(profile));
@@ -1082,7 +1115,7 @@ unsigned RHProfileManagerParseCalls::FUN_0056cc40(void *profile, unsigned line, 
         ++index;
     unsigned value = entries[index].value;
     if (strcmp(entries[index].name, "end") == 0)
-        FUN_0056cf40((const RHProfileManager *)this,
+        ((RHProfileManager *)this)->AddWarning(
             // STRING: GAME 0x006b20f8
             "In mission profile at (%d,%d) : mission location not recognized (%s) defaulting to none\n",
             line, column, RHProfileToken(profile));
@@ -1098,7 +1131,7 @@ unsigned RHProfileManagerParseCalls::FUN_0056cdb0(void *profile, unsigned line, 
         !((value[0] >= 'A' && value[0] <= 'Z') || (value[0] >= 'a' && value[0] <= 'z')) ||
         !((value[1] >= '0' && value[1] <= '9') || (value[1] >= 'A' && value[1] <= 'Z') ||
             (value[1] >= 'a' && value[1] <= 'z')))
-        FUN_0056cf40((const RHProfileManager *)this,
+        ((RHProfileManager *)this)->AddWarning(
             "In mission profile at (%d,%d) : identifier %s", line, column, value);
     return (unsigned char)value[0] | ((unsigned char)value[1] << 8);
 }
@@ -1115,7 +1148,7 @@ int RHProfileManagerParseCalls::FUN_0056ce70(void *profile)
         if (RHProfileTokenEquals(name ? name : "", value))
             return (int)*it;
     }
-    FUN_0056cf40((const RHProfileManager *)this,
+    ((RHProfileManager *)this)->AddWarning(
         "In mission profile : character name %s", value);
     return 0;
 }
@@ -1159,7 +1192,8 @@ void SBArray<RHSaveGame *>::Insert(RHSaveGame **position, unsigned int count, RH
 // TEMPLATE: GAME 0x004598e0 FOLDED
 // ?copy@std@@YAPAPAVRHMission@@PBQAV2@0PAPAV2@@Z
 
-// FUNCTION: GAME 0x00460900
+// TEMPLATE: GAME 0x00460900 FOLDED
+// ?FUN_00460900@RHProfileText@@QBEHIIPBDI@Z
 int RHProfileText::FUN_00460900(unsigned int first, unsigned int count, const char *value, unsigned int size) const
 {
     if (m_size < first)
@@ -1489,7 +1523,7 @@ RHMissionProfile *RHProfileManager::AddForcedMission(const std::string &first, c
         "ACHTUNG : Adding a forced mission profile !");
     RHMissionProfile *profile = new RHMissionProfile;
     ((RHProfileText *)&profile->m_14)->FUN_00401ce0(second, 0, std::string::npos);
-    profile->m_04.FUN_00401ce0(first, 0, std::string::npos);
+    ((RHProfileText *)&profile->m_04)->FUN_00401ce0(first, 0, std::string::npos);
     ((RHProfileText *)&profile->m_24)->FUN_00401ce0(third, 0, std::string::npos);
     // STRING: GAME 0x006a7098
     const char *outro = "SherwoodOutro";
@@ -1762,11 +1796,23 @@ int RHProfileManager::FUN_0056cef0(const RHCharacterProfile *profile) const
         if (*it == profile)
             return index;
     }
-    FUN_0056cf40(this,
+    const_cast<RHProfileManager *>(this)->AddWarning(
         // STRING: GAME 0x006b21d0
         "In mission profile : character not recognized (%s) defaulting to none\n",
         profile->m_14.c_str());
     return -1;
+}
+
+// FUNCTION: GAME 0x0056cf40
+void RHProfileManager::AddWarning(char *format, ...)
+{
+    std::string warning;
+    char buffer[1024];
+    va_list arguments;
+    va_start(arguments, format);
+    vsprintf(buffer, format, arguments);
+    warning = std::string(buffer);
+    m_warnings.push_back(warning);
 }
 
 // FUNCTION: GAME 0x0056d0d0

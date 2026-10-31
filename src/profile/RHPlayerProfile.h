@@ -26,6 +26,7 @@ public:
     unsigned long GetM2c() const { return m_2c; }
     unsigned long GetM30() const { return m_30; }
     void SetName(const std::wstring &name);
+    void SynchronizeWithCampaign();
     virtual std::string GetSaveGameDirectory() const;
     void FUN_0055cc80();
     RHGraphicConfig &FUN_0052ef80();
