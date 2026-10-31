@@ -16,12 +16,110 @@
 struct RHUnkPathRegistry;
 extern RHUnkPathRegistry *g_unk0x6c0b9c;
 
+DECOMP_SIZE_ASSERT(RHUnk0044e2e0, 0x24)
+
 
 class RHUnk0051d0e0
 {
 public:
     unsigned short Find(int value);
 };
+
+// FUNCTION: GAME 0x0044e190
+void RHUnk0046eb30::Unk0044e190(int wanted)
+{
+    bool dirty = valid;
+    int size = count;
+    if (dirty)
+    {
+        if (wanted <= (size + 1) / 2)
+        {
+            SetCurrent(InlineBegin());
+            std::bidirectional_iterator_tag category;
+            RHAdvanceProfileCursor((RHProfilePointerList::iterator &)cursor, wanted, category);
+        }
+        else
+        {
+            SetCurrent(InlineEnd());
+            std::bidirectional_iterator_tag category;
+            RHAdvanceProfileCursor((RHProfilePointerList::iterator &)cursor, wanted - size, category);
+        }
+        valid = false;
+        index = wanted;
+    }
+    else
+    {
+        int previous = index;
+        if (wanted != previous)
+        {
+            if (wanted < previous)
+            {
+                if (wanted < (previous + 1) / 2)
+                {
+                    SetCurrent(InlineBegin());
+                    std::bidirectional_iterator_tag category;
+                    RHAdvanceProfileCursor((RHProfilePointerList::iterator &)cursor, wanted, category);
+                }
+                else
+                {
+                    std::bidirectional_iterator_tag category;
+                    RHAdvanceProfileCursor((RHProfilePointerList::iterator &)cursor, wanted - previous, category);
+                }
+            }
+            else
+            {
+                if (wanted < (previous + size) / 2)
+                    std::advance((std::list<void *>::iterator &)cursor, wanted - previous);
+                else
+                {
+                    SetCurrent(InlineEnd());
+                    std::advance((std::list<void *>::iterator &)cursor, wanted - size);
+                }
+            }
+            index = wanted;
+        }
+    }
+    ((std::list<void *> *)this)->erase((std::list<void *>::iterator &)cursor);
+    valid = true;
+}
+
+// FUNCTION: GAME 0x0044e2e0
+void RHUnk0044e2e0::Unk(const unsigned long &value)
+{
+    searchValue = value;
+    m_18 = true;
+    int count = size();
+    current = begin();
+    int position = 0;
+    for (; position < count; ++position, ++current)
+        if (*current == searchValue)
+            break;
+    if (position < count)
+    {
+        searchIndex = position;
+        dirty = false;
+        index = position;
+    }
+    else
+    {
+        dirty = true;
+        searchIndex = -1;
+    }
+    if (searchIndex == -1)
+    {
+        push_back(value);
+        dirty = true;
+    }
+}
+
+// FUNCTION: GAME 0x0044eab0
+void RHUnk0046eb30::Unk0044eab0(RHUnk0046eb30 &source)
+{
+    int size = source.count;
+    for (int index = 0; index < size; ++index)
+        ((std::list<void *> *)this)->push_back(source.Get(index));
+    valid = true;
+}
 
 // FUNCTION: GAME 0x0051d0e0
 unsigned short RHUnk0051d0e0::Find(int value)
@@ -200,7 +298,6 @@ RHUnk00613e90 RHScriptRecordWorld::Unk004fbdd0(const RHUnk00571160Position &) { 
 void RHScriptBatchCalls::Unk0041bd20(int) {}
 void RHScriptBatchCalls::Unk00514670() {}
 void RHScriptBatchCalls::Unk0050ed40() {}
-void RHCampaign::FUN_004522e0(RHPCDescription *) {}
 void RHScriptBatchCalls::Unk0054cfa0(void *) {}
 
 float RHScriptBatchCalls::FUN_00489680(void *) { return 0.0f; }

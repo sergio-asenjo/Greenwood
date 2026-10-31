@@ -41,7 +41,6 @@
 #include "RHHumanStatus.h"
 #include "RHGenericMap.h"
 #include "RHMalignityActorCalls.h"
-#include "RHConsoleCampaignCalls.h"
 #include "RHGameActionCalls.h"
 #include "RHCampaignCore.h"
 
@@ -376,7 +375,8 @@ void RHScriptBatchCalls::Unk00419fd0(int value, int duration)
     *(bool *)((char *)this + 0x268) = true;
 }
 
-// FUNCTION: GAME 0x004242b0
+// TEMPLATE: GAME 0x004242b0 FOLDED
+// ?Unk004242b0@RHScriptPositionList@@QAEPAURHScriptNode@@PAU2@0@Z
 RHScriptNode *RHScriptPositionList::Unk004242b0(RHScriptNode *next, RHScriptNode *previous)
 {
     RHScriptNode *node = (RHScriptNode *)operator new(0x18);
@@ -3384,7 +3384,7 @@ void FUN_0057ae60(int value)
 // FUNCTION: GAME 0x0057b2b0
 void FUN_0057b2b0(int index, int first, int second)
 {
-    RHHumanStatus *status = (RHHumanStatus *)((RHConsoleCampaignCalls *)g_unk0x6c07fc)->FUN_004524b0(index - 1);
+    RHHumanStatus *status = (RHHumanStatus *)((RHCampaign *)g_unk0x6c07fc)->FUN_004524b0(index - 1);
     status->FUN_0051d540(0, first);
     status->FUN_0051d540(1, second);
 }
@@ -4923,18 +4923,16 @@ void RHScript::PutActorInBulding(void *actor, void *building)
         ((RHScriptBatchCalls *)actor)->Unk0049d6c0();
 }
 
-// Parked: iterator/cursor register scheduling remains different after three source shapes.
-// STUB: GAME 0x005782a0
+// FUNCTION: GAME 0x005782a0
 void FUN_005782a0(void *object, bool value)
 {
     *(bool *)((char *)object + 0x34) = value;
     RHUnk0046eb30 *list = (RHUnk0046eb30 *)((char *)object + 0x5c);
-    int remaining = (unsigned short)*(int *)((char *)list + 8);
-    int index = 0;
-    while (remaining != 0)
+    int count = list->count;
+    for (unsigned short index = 0; index < (unsigned short)count; ++index)
     {
-        *(bool *)((char *)list->Get(index) + 8) = value;
-        ++index, --remaining;
+        void *element = list->Get(index);
+        *(bool *)((char *)element + 8) = value;
     }
 }
 
