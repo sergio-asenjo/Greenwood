@@ -115,7 +115,12 @@ public:
 };
 
 typedef std::string RHSoundCacheMusic;
-RHSoundCacheMusic *FUN_0056dbc0(RHSoundCacheMusic *, RHSoundCacheMusic *, RHSoundCacheMusic *);
+inline RHSoundCacheMusic *FUN_0056dbc0(const RHSoundCacheMusic *first, const RHSoundCacheMusic *last,
+    RHSoundCacheMusic *destination)
+{
+    RHSoundCacheMusic *(*copy)(const RHSoundCacheMusic *, const RHSoundCacheMusic *, RHSoundCacheMusic *) = &std::copy;
+    return copy(first, last, destination);
+}
 
 struct RHSoundCacheMusicArray
 {

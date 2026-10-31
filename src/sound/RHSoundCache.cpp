@@ -1,6 +1,7 @@
 #include "SBNullstr.h"
 #include "RHSoundCache.h"
 #include "RHSoundCacheSpeechList.h"
+#include <stdlib.h>
 
 DECOMP_SIZE_ASSERT(RHSoundCache, 0x138)
 DECOMP_SIZE_ASSERT(RHcacheData, 0x0c)
@@ -49,39 +50,8 @@ void RHSoundCacheMusicArray::FUN_0056dac0(RHSoundCacheMusic *first, RHSoundCache
         first->~basic_string();
 }
 
-// Parked at 0.9283: unannotated park from the asymmetric-comparator era; residual scheduling/registers.
-// STUB: GAME 0x0056dbc0
-RHSoundCacheMusic *FUN_0056dbc0(RHSoundCacheMusic *first, RHSoundCacheMusic *last, RHSoundCacheMusic *destination)
-{
-    for (; first != last; ++first, ++destination)
-    {
-        RHSoundCacheString &value = *(RHSoundCacheString *)destination;
-        const RHSoundCacheString &source = *(const RHSoundCacheString *)first;
-        unsigned int size = source.size();
-        if (std::string::npos < size)
-            size = std::string::npos;
-        if (&value == &source)
-        {
-            value.erase(size);
-            value.FUN_00402780();
-        }
-        else if (size > 0 && size == source.size() && (unsigned char)source.c_str()[-1] < 254)
-        {
-            value.Release();
-            value.m_04 = (char *)source.c_str();
-            value.m_08 = source.size();
-            value.m_0c = source.capacity();
-            ++value.m_04[-1];
-        }
-        else if (((RHProfileText *)&value)->FUN_00402280(size, true))
-        {
-            memcpy(value.m_04, source.c_str(), size);
-            value.m_08 = size;
-            value.m_04[size] = 0;
-        }
-    }
-    return destination;
-}
+// TEMPLATE: GAME 0x0056dbc0
+// ?copy@std@@YAPAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@1@PBV21@0PAV21@@Z
 
 // FUNCTION: GAME 0x005ab410
 void RHSoundCache::FUN_005ab410(RHcacheData &cache)
@@ -109,7 +79,7 @@ void RHSoundCache::FUN_005ab4e0(RHcacheData &cache)
 {
     for (unsigned int index = 0; index < cache.m_04; ++index)
         ((RHUnk005b1ca0 *)cache.m_00 + index)->~RHUnk005b1ca0();
-    operator delete(cache.m_00);
+    free(cache.m_00);
     memset(&cache, 0, sizeof(cache));
 }
 
