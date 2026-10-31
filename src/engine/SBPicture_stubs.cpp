@@ -30,19 +30,3 @@ bool SBPicture::SaveToStream(SBFile &)
 {
     return false;
 }
-
-#include "SBPictureUnkView.h"
-
-class SBPictureUnkDrawManager
-{
-public:
-    bool Unk005e5a00(unsigned long, SBPictureUnkView &, unsigned long);
-    void Unk005e5ea0(SBPictureUnkView &);
-};
-
-// TEMPLATE: GAME 0x00613e90 FOLDED
-// ??0SBPictureUnkView@@QAE@XZ
-SBPictureUnkView::SBPictureUnkView() {}
-SBPictureUnkView::~SBPictureUnkView() {}
-bool SBPictureUnkDrawManager::Unk005e5a00(unsigned long, SBPictureUnkView &, unsigned long) { return false; }
-void SBPictureUnkDrawManager::Unk005e5ea0(SBPictureUnkView &) {}

@@ -140,6 +140,9 @@ public:
     SBGeoVector2D &operator=(const SBGeoVector2D &other);
 };
 
+#include "SBDrawManagerCore.h"
+#include "SBDrawViewport.h"
+
 // SIZE 0x10e
 class RHUnkFXDraw
 {
@@ -150,30 +153,12 @@ public:
     unsigned short FUN_005e56c0(unsigned long);
     unsigned short FUN_005e5750(unsigned long);
     void FUN_005e6440(unsigned long, int, int, unsigned long, unsigned long);
-    bool Unk005e5a00(unsigned long, class RHUnk00613e90 &, unsigned long);
-    void Unk005e5ea0(class RHUnk00613e90 &);
     unsigned short UnkField10c() const { return m_depth; }
     undefined m_00[0x10c]; // 0x00
     unsigned short m_depth; // +0x10c
 };
 
 #include "RHUnk006114c0.h"
-
-// SIZE 0x18
-class RHUnk00613e90
-{
-public:
-    RHUnk00613e90();
-    ~RHUnk00613e90();
-    undefined m_00[4]; // 0x00
-    unsigned short m_width; // 0x04
-    undefined m_06[2]; // 0x06
-    unsigned long m_pitch; // 0x08
-    unsigned short m_depth; // 0x0c
-    undefined m_0e[2]; // 0x0e
-    unsigned short *m_data; // 0x10
-    undefined m_14[4]; // 0x14
-};
 
 #include "RHUnk005f4fc0.h"
 

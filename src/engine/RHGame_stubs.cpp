@@ -79,7 +79,6 @@ void RHGameBlazonValue::FUN_0044f8d0(int value)
 }
 
 void RHGameSaveCalls::FUN_0056ecc0() {}
-bool RHUnk006114c0::FUN_00611960(SBFile &) { return true; }
 
 void RHGameSyncCalls::FUN_00513520(RHUnk00549250 &) {}
 void RHGameSyncCalls::FUN_005134c0(RHUnk00549250 &) {}

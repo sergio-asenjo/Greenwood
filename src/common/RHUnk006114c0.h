@@ -8,6 +8,16 @@ class SBFile;
 class SBGeoPoint2D;
 class SBGeoVector2D;
 class RHUnkFXDraw;
+struct SBPictureInfo;
+
+// SIZE 0x0c
+struct RHUnk006114c0Header
+{
+    unsigned short m_width; // 0x00
+    unsigned short m_height; // 0x02
+    unsigned long m_compression; // 0x04
+    unsigned long m_size; // 0x08
+};
 
 // SIZE 0x38
 class __declspec(novtable) RHUnk006114c0
@@ -32,10 +42,11 @@ public:
     virtual int FUN_00611530(); // vtable+0x38
     bool Unk00611710(SBFile &);
     bool Unk00611e10(unsigned long, unsigned long);
-    RHUnk006114c0 *Unk00612ad0(const SBGeoPoint2D &, const SBGeoVector2D &);
     void FUN_00611aa0(SBFile &, void *);
     bool FUN_006134a0(void *configuration);
     bool FUN_00611960(SBFile &file);
+    const SBPictureInfo &GetInfoFromFile(const std::string &name);
+    SBPictureInfo &Info() { return *(SBPictureInfo *)(m_04 + 4); }
     unsigned short UnkField20() const { return m_width; }
     unsigned short UnkField22() const { return m_height; }
     undefined m_04[0x1c]; // 0x04

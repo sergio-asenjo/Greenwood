@@ -2,26 +2,8 @@
 #include "Decomp.h"
 #include "RHMission.h"
 #include "SBGeoVector2D.h"
-
-// SIZE 0x18
-class RHUnk00613e90
-{
-public:
-    RHUnk00613e90();
-    ~RHUnk00613e90();
-    unsigned short UnkWidth() const { return m_width; }
-    unsigned short UnkDepth() const { return m_depth; }
-    unsigned long UnkPitch() const { return m_pitch; }
-    unsigned short *UnkData() const { return m_data; }
-    undefined m_00[4]; // +0x00
-    unsigned short m_width; // +0x04
-    undefined m_06[2]; // +0x06
-    unsigned long m_pitch; // +0x08
-    unsigned short m_depth; // +0x0c
-    undefined m_0e[2]; // +0x0e
-    unsigned short *m_data; // +0x10
-    undefined m_14[4]; // +0x14
-};
+#include "SBDrawManagerCore.h"
+#include "SBDrawViewport.h"
 
 // SIZE 0x10e
 class RHUnkFXDraw
@@ -29,8 +11,6 @@ class RHUnkFXDraw
 public:
     unsigned long Unk005e4ed0(int, int, int, bool);
     void Unk005e5160(unsigned long);
-    bool Unk005e5a00(unsigned long, RHUnk00613e90 &, unsigned long);
-    void Unk005e5ea0(RHUnk00613e90 &);
     unsigned short UnkField10c() const { return m_depth; }
     undefined m_00[0x10c]; // 0x00
     unsigned short m_depth; // +0x10c
@@ -52,7 +32,6 @@ public:
     virtual bool Unk20(RHUnkFXDraw *, unsigned long); // vtable+0x20
     bool Unk00611710(SBFile &);
     bool Unk00611e10(unsigned long, unsigned long);
-    RHUnk006114c0 *Unk00612ad0(const SBGeoPoint2D &, const SBGeoVector2D &);
     unsigned short UnkField20() const { return m_width; }
     unsigned short UnkField22() const { return m_height; }
     undefined m_04[0x1c]; // 0x04

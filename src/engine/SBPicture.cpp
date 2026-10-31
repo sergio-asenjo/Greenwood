@@ -6,6 +6,10 @@
 #include <vector>
 #include <algorithm>
 #include <stddef.h>
+#include <string.h>
+
+extern "C" double __cdecl ceil(double);
+extern const float RHSpriteMaskByteScale;
 
 struct SBPictureAlignment
 {
@@ -32,13 +36,10 @@ DECOMP_STATIC_ASSERT(offsetof(SBPicture, m_28) == 0x28)
 // LIBRARY: GAME 0x006137d0
 // ?_Insertion_sort_1@std@@YAXPAG0P6A_NGG@Z0@Z
 
-#include "SBPictureUnkView.h"
 
 class SBPictureUnkDrawManager
 {
 public:
-    bool Unk005e5a00(unsigned long, SBPictureUnkView &, unsigned long);
-    void Unk005e5ea0(SBPictureUnkView &);
     char m_00[0x10c];
     unsigned short m_depth;
     unsigned short Depth() const { return m_depth; }
@@ -78,8 +79,8 @@ void SBPicture::FUN_00611c50()
 // FUNCTION: GAME 0x00611c80
 bool SBPicture::FUN_00611c80(SBPictureUnkDrawManager *draw, unsigned long surface)
 {
-    SBPictureUnkView view;
-    if (!((RHUnkFXDraw *)draw)->Unk005e5a00(surface, (RHUnk00613e90 &)view, 0))
+    SBDrawViewport view;
+    if (!((SBDrawManager *)draw)->FUN_005e5a00(surface, view, 0))
         return false;
     if (m_1c != 0) {
         unsigned char *old = m_14;
@@ -98,7 +99,7 @@ bool SBPicture::FUN_00611c80(SBPictureUnkDrawManager *draw, unsigned long surfac
     unsigned short *picture = new unsigned short[m_1c / 2];
     m_14 = (unsigned char *)picture;
     unsigned long pitch = view.m_pitch >> 1;
-    unsigned short *source = view.m_data;
+    unsigned short *source = view.m_pixels;
     unsigned long sourceOffset = 0;
     unsigned long destinationOffset = 0;
     for (unsigned short y = 0; y < view.m_height; ++y) {
@@ -107,7 +108,7 @@ bool SBPicture::FUN_00611c80(SBPictureUnkDrawManager *draw, unsigned long surfac
         sourceOffset += pitch;
         destinationOffset += view.m_width;
     }
-    ((RHUnkFXDraw *)draw)->Unk005e5ea0((RHUnk00613e90 &)view);
+    ((SBDrawManager *)draw)->FUN_005e5ea0(view);
     return true;
 }
 
@@ -433,6 +434,54 @@ bool SBPicture::FUN_006128b0(const SBGeoVector2D &size)
     m_22 = (int)size.GetY();
     m_1c = (int)(size.GetX() * size.GetY() * 2);
     return true;
+}
+
+// FUNCTION: GAME 0x00612ad0
+SBPicture *SBPicture::Unk00612ad0(const SBGeoPoint2D &origin, const SBGeoVector2D &size)
+{
+    SBPicture *picture = this;
+    unsigned short bits;
+    switch (picture->m_04) {
+    case 0: bits = 1; break;
+    case 1: bits = 8; break;
+    case 2:
+    case 3: bits = 16; break;
+    case 4: bits = 24; break;
+    case 5: bits = 32; break;
+    }
+    float width = size.GetX();
+    float height = size.GetY();
+    unsigned char *pixels = (unsigned char *)operator new((int)(((float)bits * height * width) * RHSpriteMaskByteScale));
+    unsigned char *destination = pixels;
+    if (!pixels) {
+        delete pixels;
+        typedef void (*Assert)(int, const char *, int, const char *, ...);
+        Assert report = &SBAssert;
+        report(0, "P:\\Robin Hood\\SBLibNG\\SBPicture.cpp", 0x3fe,
+            // STRING: GAME 0x006bb764
+            "Unable to allocate a chunk of ram to resize the picture");
+        return 0;
+    }
+    unsigned char *source = picture->m_14;
+    float originY = origin.GetY();
+    source += (int)(ceil((origin.GetX() * bits) * RHSpriteMaskByteScale) + picture->m_24 * originY);
+    unsigned short rowBytes = (int)((size.GetX() * bits) * RHSpriteMaskByteScale);
+    for (unsigned short row = 0; row < size.GetY(); ++row) {
+        memcpy(destination, source, rowBytes);
+        destination += rowBytes;
+        source += picture->m_24;
+    }
+    SBPicture *result = new SBPicture;
+    result->m_04 = picture->m_04;
+    *(SBPictureInfo *)result->m_pad08 = *(SBPictureInfo *)picture->m_pad08;
+    result->m_14 = pixels;
+    result->m_20 = (int)size.m_x;
+    unsigned short rows = (int)size.m_y;
+    result->m_22 = rows;
+    result->m_24 = rowBytes;
+    result->m_1c = rows * rowBytes;
+    result->m_28 = SBGeoVector2D(picture->m_20, picture->m_22);
+    return result;
 }
 
 // FUNCTION: GAME 0x00612d80

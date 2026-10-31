@@ -4,7 +4,7 @@
 
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 DECOMP_SIZE_ASSERT(SBGeoVector2D, 0x08)
-DECOMP_SIZE_ASSERT(RHUnk00613e90, 0x18)
+DECOMP_SIZE_ASSERT(SBDrawViewport, 0x18)
 DECOMP_SIZE_ASSERT(RHUnkFXDraw, 0x10e)
 DECOMP_SIZE_ASSERT(RHUnk006114c0, 0x38)
 DECOMP_SIZE_ASSERT(RHMissionProfile, 0x14)
@@ -182,9 +182,10 @@ unsigned long RHLoadingScreen::CreateSurfaceForPicture(SBFile &file)
     {
         unsigned long x = (width - m_width + 1) / 2;
         unsigned long y = (height - m_height + 1) / 2;
-        RHUnk006114c0 *cropped = picture.Unk00612ad0(SBGeoPoint2D((float)x, (float)y), SBGeoVector2D((float)m_width, (float)m_height));
-        cropped->Unk20(m_draw, surface);
-        delete cropped;
+        SBPicture *cropped = ((SBPicture *)&picture)->Unk00612ad0(SBGeoPoint2D((float)x, (float)y), SBGeoVector2D((float)m_width, (float)m_height));
+        cropped->Unk00613530(m_draw, surface);
+        if (cropped)
+            cropped->FUN_00611be0(1);
     }
     return surface;
 }
@@ -192,10 +193,10 @@ unsigned long RHLoadingScreen::CreateSurfaceForPicture(SBFile &file)
 // FUNCTION: GAME 0x00522e40
 void RHLoadingScreen::GenerateSand(SBFile &file)
 {
-    RHUnk00613e90 viewport;
+    SBDrawViewport viewport;
     unsigned long surface = CreateSurfaceForPicture(file);
     g_unk0x006c0bd4 = new unsigned char[m_width * m_height];
-    if (!m_draw->Unk005e5a00(surface, viewport, 0))
+    if (!((SBDrawManager *)m_draw)->FUN_005e5a00(surface, viewport, 0))
         return;
     unsigned long depth = viewport.UnkDepth();
     unsigned long skip = (viewport.UnkPitch() >> 1) - viewport.UnkWidth();
@@ -255,7 +256,7 @@ void RHLoadingScreen::GenerateSand(SBFile &file)
         SBAssert(1, g_loadingFile, 0x136, g_loadingSandDepth);
         break;
     }
-    m_draw->Unk005e5ea0(viewport);
+    ((SBDrawManager *)m_draw)->FUN_005e5ea0(viewport);
     m_draw->Unk005e5160(surface);
     float scale = 255.0f / (maximum - minimum);
     sand = g_unk0x006c0bd4;

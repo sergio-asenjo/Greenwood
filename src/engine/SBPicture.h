@@ -14,6 +14,7 @@ struct SBPictureInfo
 class RHUnkFXDraw;
 class SBPictureUnkDrawManager;
 class SBGeoVector2D;
+class SBGeoPoint2D;
 
 // VTABLE: GAME 0x0067a8bc
 class SBPicture
@@ -63,6 +64,7 @@ public:
     unsigned short FUN_006125c0(unsigned short *, unsigned short, unsigned short, unsigned short);
     bool FUN_00612690(const SBGeoVector2D &);
     bool FUN_006128b0(const SBGeoVector2D &);
+    SBPicture *Unk00612ad0(const SBGeoPoint2D &, const SBGeoVector2D &);
     bool FUN_00612d80(unsigned short, unsigned short);
     bool FUN_00612e30(unsigned short, unsigned short);
     bool FUN_006131a0(unsigned short, unsigned short);

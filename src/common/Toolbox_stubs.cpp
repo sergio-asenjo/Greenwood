@@ -10,8 +10,6 @@ void RHUnk006114c0::FUN_00611aa0(SBFile &file, void *header)
     file.Access((char *)header + 4, 4);
     file.Access((char *)header + 8, 4);
 }
-int FUN_006277e0(void *, unsigned int *, const void *, unsigned int) { return 0; }
-int __stdcall FUN_006273d0(void *, unsigned int *, const void *, unsigned int, int, int) { return 0; }
 
 // FUNCTION: GAME 0x006114c0
 RHUnk006114c0::RHUnk006114c0()

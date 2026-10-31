@@ -10,6 +10,10 @@
 #include "RHMapResources.h"
 #include "RHMapWideText.h"
 #include "SBDrawManager.h"
+#include "zlib.h"
+
+extern "C" int __stdcall BZ2_bzBuffToBuffCompress(char *dest, unsigned int *destLen, char *source, unsigned int sourceLen, int blockSize100k, int verbosity, int workFactor);
+extern "C" int __stdcall BZ2_bzBuffToBuffDecompress(char *dest, unsigned int *destLen, char *source, unsigned int sourceLen, int lowMemory, int verbosity);
 
 DECOMP_SIZE_ASSERT(ToolboxChunk, 0x08)
 DECOMP_SIZE_ASSERT(ToolboxChunkIterator, 0x10)
@@ -18,7 +22,7 @@ DECOMP_SIZE_ASSERT(RHUnk00423b10, 0x10)
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 DECOMP_SIZE_ASSERT(RHUnkFXDraw, 0x10e)
 DECOMP_SIZE_ASSERT(RHUnk006114c0, 0x38)
-DECOMP_SIZE_ASSERT(RHUnk00613e90, 0x18)
+DECOMP_SIZE_ASSERT(SBDrawViewport, 0x18)
 DECOMP_SIZE_ASSERT(RHUnk005f4fc0, 0x58)
 DECOMP_SIZE_ASSERT(MD5, 0x6c)
 DECOMP_SIZE_ASSERT(ToolboxMouseState, 0x0a)
@@ -524,9 +528,10 @@ void Toolbox::DisplayPicture(const char *name, bool wait)
     {
         unsigned int x = (pictureWidth - width + 1) / 2;
         unsigned int y = (pictureHeight - height + 1) / 2;
-        RHUnk006114c0 *cropped = picture.Unk00612ad0(SBGeoPoint2D((float)x, (float)y), SBGeoVector2D((float)width, (float)height));
-        cropped->Unk20(*(RHUnkFXDraw *volatile *)&draw, surface);
-        delete cropped;
+        SBPicture *cropped = ((SBPicture *)&picture)->Unk00612ad0(SBGeoPoint2D((float)x, (float)y), SBGeoVector2D((float)width, (float)height));
+        cropped->Unk00613530(*(RHUnkFXDraw *volatile *)&draw, surface);
+        if (cropped)
+            cropped->FUN_00611be0(1);
     }
     ((RHUnkFXDraw *)g_unk0x6c11d0)->FUN_005e6440(surface, 0, 0, 0, 8);
     file.FUN_005f5290();
@@ -669,56 +674,72 @@ void Toolbox::HSV_To_RGB(float h, float s, float v, float &r, float &g, float &b
     }
 }
 
-// Parked at 0.2510: unannotated park from the asymmetric-comparator era; residual scheduling/registers.
-// STUB: GAME 0x00611710
+// Parked: the height zero-extension is scheduled after the constant depth store, not before it.
+// STUB: GAME 0x00611570
+const SBPictureInfo &RHUnk006114c0::GetInfoFromFile(const std::string &name)
+{
+    RHUnk005f4fc0 file;
+    if (file.FUN_005f5090(name, 1)) {
+        memset(&Info(), 0, sizeof(SBPictureInfo));
+        return Info();
+    }
+    RHUnk006114c0Header header;
+    FUN_00611aa0(file, &header);
+    file.FUN_005f5290();
+    Info().m_height = header.m_height;
+    Info().m_depth = 16;
+    Info().m_width = header.m_width;
+    Info().m_size = (int)(header.m_width * header.m_height * 16) / 8;
+    return Info();
+}
+
+// FUNCTION: GAME 0x00611710
 bool RHUnk006114c0::Unk00611710(SBFile &file)
 {
-    unsigned long header[3] = {0xcccccccc, 0xcccccccc, 0xcccccccc};
-    FUN_00611aa0(file, header);
+    RHUnk006114c0Header header;
+    memset(&header, 0xcc, sizeof(header));
+    FUN_00611aa0(file, &header);
     SBPicture *picture = (SBPicture *)this;
-    picture->m_22 = ((unsigned short *)header)[1];
-    picture->m_20 = ((unsigned short *)header)[0];
+    picture->m_20 = header.m_width;
+    picture->m_22 = header.m_height;
     picture->m_04 = 3;
     if (picture->m_1c) {
         operator delete(picture->m_14);
         picture->m_14 = 0;
     }
-    if (header[1] > 2)
-        return false;
-    picture->m_14 = (unsigned char *)operator new(picture->m_22 * picture->m_20 * 2);
-    switch (header[1]) {
-    case 0:
-        file.Access(picture->m_14, header[2]);
-        picture->m_1c = header[2];
-        *(unsigned long *)(m_24 + 0x10) = header[2];
-        break;
-    case 1:
-        {
-            void *compressed = operator new(header[2]);
-            file.Access(compressed, header[2]);
-            picture->m_1c = picture->m_22 * picture->m_20 * 2;
-            *(unsigned long *)(m_24 + 0x10) = header[2];
-            extern int FUN_006277e0(void *, unsigned int *, const void *, unsigned int);
-            FUN_006277e0(picture->m_14, &picture->m_1c, compressed, header[2]);
-            operator delete(compressed);
-        }
-        picture->m_24 = picture->m_20 * 2;
-        return true;
-    case 2:
-        {
-            void *compressed = operator new(header[2]);
-            file.Access(compressed, header[2]);
-            picture->m_1c = picture->m_22 * picture->m_20 * 2;
-            *(unsigned long *)(m_24 + 0x10) = header[2];
-            extern int __stdcall FUN_006273d0(void *, unsigned int *, const void *, unsigned int, int, int);
-            FUN_006273d0(picture->m_14, &picture->m_1c, compressed, header[2], 0, 0);
-            operator delete(compressed);
+    if (header.m_compression <= 2) {
+        picture->m_14 = (unsigned char *)operator new(picture->m_22 * picture->m_20 * 2);
+        switch (header.m_compression) {
+        case 0:
+            file.Access(picture->m_14, header.m_size);
+            picture->m_1c = header.m_size;
+            *(unsigned long *)(m_24 + 0x10) = header.m_size;
+            break;
+        case 1:
+            {
+                void *compressed = operator new(header.m_size);
+                file.Access(compressed, header.m_size);
+                *(unsigned long *)(m_24 + 0x10) = header.m_size;
+                picture->m_1c = picture->m_22 * picture->m_20 * 2;
+                uncompress(picture->m_14, (uLongf *)&picture->m_1c, (const Bytef *)compressed, header.m_size);
+                operator delete(compressed);
+            }
+            break;
+        case 2:
+            {
+                void *compressed = operator new(header.m_size);
+                file.Access(compressed, header.m_size);
+                *(unsigned long *)(m_24 + 0x10) = header.m_size;
+                picture->m_1c = picture->m_22 * picture->m_20 * 2;
+                BZ2_bzBuffToBuffDecompress((char *)picture->m_14, &picture->m_1c, (char *)compressed, header.m_size, 0, 0);
+                operator delete(compressed);
+            }
+            break;
         }
         picture->m_24 = picture->m_20 * 2;
         return true;
     }
-    picture->m_24 = picture->m_20 * 2;
-    return true;
+    return false;
 }
 
 // FUNCTION: GAME 0x006118b0
@@ -732,10 +753,52 @@ bool RHUnk006114c0::FUN_006118b0(const std::string &name)
     return saved;
 }
 
+// FUNCTION: GAME 0x00611960
+bool RHUnk006114c0::FUN_00611960(SBFile &file)
+{
+    SBPicture *picture = (SBPicture *)this;
+    if (picture->m_04 != 3)
+        Unk00611e10(3, 0);
+    RHUnk006114c0Header header;
+    header.m_width = picture->m_20;
+    header.m_height = picture->m_22;
+    header.m_compression = *(unsigned long *)(m_24 + 0x0c);
+    switch (header.m_compression) {
+    case 0:
+        header.m_size = picture->m_1c;
+        FUN_00611aa0(file, &header);
+        file.Access(picture->m_14, picture->m_1c);
+        break;
+    case 1:
+        {
+            void *compressed = operator new(picture->m_1c * 2);
+            header.m_size = picture->m_1c;
+            compress((Bytef *)compressed, &header.m_size, picture->m_14, header.m_size);
+            *(unsigned long *)(m_24 + 0x10) = header.m_size;
+            FUN_00611aa0(file, &header);
+            file.Access(compressed, header.m_size);
+            operator delete(compressed);
+        }
+        return true;
+    case 2:
+        {
+            void *compressed = operator new(picture->m_1c * 2);
+            header.m_size = picture->m_1c;
+            BZ2_bzBuffToBuffCompress((char *)compressed, (unsigned int *)&header.m_size, (char *)picture->m_14, header.m_size, 9, 0, 0);
+            *(unsigned long *)(m_24 + 0x10) = header.m_size;
+            FUN_00611aa0(file, &header);
+            file.Access(compressed, header.m_size);
+            operator delete(compressed);
+        }
+        return true;
+    }
+    return true;
+}
+
 // FUNCTION: GAME 0x00613530
 bool SBPicture::Unk00613530(RHUnkFXDraw *draw, unsigned long surface)
 {
-    RHUnk00613e90 pixels;
+    SBDrawViewport pixels;
     SBPicture *picture = (SBPicture *)this;
     if (draw->FUN_005e56c0(surface) == picture->m_20 &&
         draw->FUN_005e5750(surface) == picture->m_22) {
@@ -747,16 +810,16 @@ bool SBPicture::Unk00613530(RHUnkFXDraw *draw, unsigned long surface)
         }
         if (draw->UnkField10c() == 15 && picture->m_04 != 2)
             ((RHUnk006114c0 *)this)->Unk00611e10(2, 0);
-        if (draw->Unk005e5a00(surface, pixels, 0)) {
+        if (((SBDrawManager *)draw)->FUN_005e5a00(surface, pixels, 0)) {
             unsigned int gap = (pixels.m_pitch >> 1) - picture->m_20;
-            unsigned short *destination = pixels.m_data;
+            unsigned short *destination = pixels.m_pixels;
             unsigned short *source = (unsigned short *)picture->m_14;
             for (unsigned int y = 0; (unsigned short)y < picture->m_22; ++y) {
                 for (unsigned int x = 0; (unsigned short)x < picture->m_20; ++x)
                     *destination++ = *source++;
                 destination += gap;
             }
-            draw->Unk005e5ea0(pixels);
+            ((SBDrawManager *)draw)->FUN_005e5ea0(pixels);
             return true;
         }
     }
