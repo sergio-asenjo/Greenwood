@@ -1383,7 +1383,6 @@ bool RHPathFinder::Serialize(SBFile &file)
 
 void RHPathFinder::Emit(SBFile &file, RHpathRequest *request)
 {
-    new RHPathFinder;
     FUN_00553760((RHElementActor *)request->m_1c);
     FUN_00553850((RHElementActor *)request->m_1c);
     FUN_005539a0((RHElementActor *)request->m_1c);
