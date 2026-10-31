@@ -20,7 +20,7 @@ public:
 class RHFastFindRepulsive : public RHFastFindRepulsiveBase
 {
 public:
-    RHFastFindRepulsive &FUN_004fdb90(const RHFastFindRepulsive &other);
+    RHFastFindRepulsive &operator=(const RHFastFindRepulsive &other);
     SBGeoPoint2D m_14; // +0x14
     SBGeoPoint2D m_1c; // +0x1c
     int m_24; // +0x24
@@ -34,23 +34,6 @@ public:
     char m_38; // +0x38
     unsigned long m_id; // +0x3c
 
-    RHFastFindRepulsive &operator=(const RHFastFindRepulsive &other)
-    {
-        Unk004fdc20(other);
-        ((SBGeoVector2D *)&m_14)->operator=((const SBGeoVector2D &)other.m_14);
-        ((SBGeoVector2D *)&m_1c)->operator=((const SBGeoVector2D &)other.m_1c);
-        m_24 = other.m_24;
-        m_28 = other.m_28;
-        m_2c = other.m_2c;
-        m_30 = other.m_30;
-        m_34 = other.m_34;
-        m_35 = other.m_35;
-        m_36 = other.m_36;
-        m_37 = other.m_37;
-        m_38 = other.m_38;
-        m_id = other.m_id;
-        return *this;
-    }
 };
 
 class RHSaveGame;
@@ -60,50 +43,13 @@ public:
     void Insert(T *position, unsigned int count, const T &value);
 };
 
-struct RHFastFindPointerArray
+#include "RHFastFindGridCore.h"
+
+inline void RHFastFindPointerArray::InsertLast(void *const &value)
 {
-    int m_grow; // +0x00
-    void **m_first; // +0x04
-    void **m_last; // +0x08
-    void **m_end; // +0x0c
-    void **m_search; // +0x10
-    bool m_changed; // +0x14
-    bool m_searching; // +0x15
-    int m_index; // +0x18
-    void *m_value; // +0x1c
-
-    void Initialize(const char &allocator)
-    {
-        *(char *)&m_grow = allocator;
-        m_first = 0;
-        m_last = 0;
-        m_end = 0;
-        m_changed = true;
-    }
-
-    int size() const { return m_first == 0 ? 0 : m_last - m_first; }
-    void **begin() const { return m_first; }
-    void **end() const { return m_last; }
-    void InsertLast(void *const &value)
-    {
-        ((SBArray<RHSaveGame *> *)this)->Insert((RHSaveGame **)m_last, 1, (RHSaveGame *const &)value);
-        m_changed = true;
-    }
-    long Find(void *const &value)
-    {
-        m_changed = false;
-        m_value = value;
-        int count = size();
-        m_search = m_first;
-        int index = 0;
-        m_searching = true;
-        for (; index < count; ++index, ++m_search)
-            if (*m_search == m_value)
-                break;
-        m_index = index < count ? index : -1;
-        return m_index;
-    }
-};
+    ((SBArray<RHSaveGame *> *)this)->Insert((RHSaveGame **)m_last, 1, (RHSaveGame *const &)value);
+    m_changed = true;
+}
 
 struct RHFastFindLayer
 {
@@ -122,84 +68,6 @@ struct RHFastFindLayer
 class SBGeoBoundingBox2D;
 class RHMalignitySegment;
 class SBGeoPoint3D;
-class RHFastFindGrid
-{
-public:
-    void FUN_004ec240(class RHFastFindUniqueList &, unsigned short, const SBGeoBoundingBox2D &, unsigned long);
-    void FUN_004ec450(class RHFastFindUniqueList &, unsigned long, unsigned long);
-    void FUN_004ec560(class RHFastFindUniqueList &, unsigned short, const SBGeoBoundingBox2D &, unsigned long);
-    void FUN_004ec700(class RHFastFindUniqueList &, unsigned short, const RHMalignitySegment &, unsigned long);
-    bool FUN_004ecb50(class RHFastFindUniqueList &, unsigned short, const SBGeoBoundingBox2D &, unsigned long);
-    bool FUN_004ecc60(class RHFastFindUniqueList &, class RHFastFindUniqueList &, class RHFastFindUniqueList &, unsigned short, const SBGeoBoundingBox2D &);
-    void FUN_004ecf60(class RHFastFindUniqueList &, unsigned long, unsigned long);
-    void FUN_004ed070(class RHFastFindUniqueList &, unsigned short, const SBGeoBoundingBox2D &, unsigned long);
-    void FUN_004ed370(class RHFastFindUniqueList &, unsigned short, const RHMalignitySegment &, unsigned long);
-    void FUN_004ed9b0(SBFile &);
-    void FUN_004eda80(void *value, unsigned short layer, bool mode);
-    void FUN_004edcf0(class RHFastFindUniqueList &output, unsigned long cell, unsigned long mask);
-    void FUN_004ede00(class RHFastFindUniqueList &output, unsigned short layer, const SBGeoBoundingBox2D &box, void *point);
-    void FUN_004ee120(class RHFastFindUniqueList &output, unsigned short layer, const SBGeoBoundingBox2D &box, void *point, undefined4 mode);
-    void FUN_004ee470(class RHFastFindUniqueList &output, unsigned short layer, const SBGeoBoundingBox2D &box);
-    void FUN_004ee770(class RHFastFindUniqueList &output, unsigned long cell, unsigned long mask);
-    void FUN_004ee880(class RHFastFindUniqueList &output, unsigned short layer, const SBGeoBoundingBox2D &box, unsigned long mask);
-    void FUN_004eea50(class RHFastFindUniqueList &output, unsigned short layer, const RHMalignitySegment &segment, unsigned long mask);
-    void FUN_004eec20(class RHFastFindUniqueList &output, unsigned short layer, const SBGeoBoundingBox2D &box, unsigned long mask);
-    void FUN_004eef30(class RHFastFindUniqueList &output, unsigned short layer, const RHMalignitySegment &segment, unsigned long mask);
-    void FUN_004efd10(void *patch, unsigned short layer, bool mode);
-    bool FUN_004efe40(const SBGeoPoint3D &first, const SBGeoPoint3D &second, float &slope, float &intercept);
-    class RHFastFindPathGate *FUN_004f9d60(class RHElementActor *, const SBGeoPoint2D &, void *, unsigned short, const SBGeoPoint2D &, void *, unsigned, int);
-    bool FUN_004fa080(class RHFastFindUniqueList &, class RHElementActor *, const SBGeoPoint2D &, void *, unsigned short, class RHFastFindPathGate *, int);
-    class RHFastFindPathGate *FUN_004fa340(class RHElementActor *, const SBGeoPoint2D &, void *, unsigned short, class RHFastFindPathGate *, int);
-    void FUN_004fa660();
-    void FUN_004fa6f0(void *);
-    void InitializeLiftsFromProtoStream(SBFile &file);
-    void InitializeBuildingsFromProtoStream(SBFile &file);
-    void DeleteStaticRepulsivePoint(unsigned long id);
-    void InitializeSightObstaclesFromProtoStream(SBFile &file);
-    bool Serialize(SBFile &file);
-    void InitializeTacticalInfosFromMissionStream(SBFile &file);
-    void InitializeReinforcementPointsFromMissionStream(SBFile &file);
-    void InitializeJumpStuffFromProtoStream(SBFile &file);
-    void InitializeScriptStuffFromMissionStream(SBFile &file);
-    void InitializeMaskFromProtoStream(SBFile &file);
-    void Convert2DTo3D(class RHUnk00613e90 &point, const SBGeoPoint2D &position, int type);
-    bool IsReachableImpact(const class RHUnk00613e90 &from, const class RHUnk00613e90 &to, class RHUnk00613e90 &impact,
-        void *&obstacle, int type);
-    class RHUnk00613e90 PositionToPoint3D(struct RHUnk00571160Position &position);
-    void FUN_004faf40(SBFile &file);
-    void EmptyAllScriptSectors();
-    void FUN_004fc660();
-    bool FUN_004fc8f0(void *first, void *second, void *third, void *fourth);
-    void *GetPatch(void *value);
-    void FUN_004fb1d0(SBFile &file);
-    void FUN_004fb230(SBFile &file);
-    void FUN_004e8bd0(void *sector, unsigned short layer, bool mode);
-    void FUN_004fad80(void *gate);
-    void FUN_004ebfe0(void *point, unsigned short layer, bool mode);
-    void FUN_004e99e0(void *sector, unsigned short layer, bool mode);
-    void FUN_004e9d00(unsigned char enabled, unsigned short layer, void *sector);
-    void FUN_004ed690(void *point, unsigned short layer, bool mode);
-    void FUN_004ef8e0(class RHUnk005a3450 *area, unsigned short layer, bool mode);
-    bool Unk004efbb0(SBFile &file, void **value);
-    bool SerializeLinePointer(SBFile &file, void *&value);
-    void Emit(SBFile &file, void *&value);
-
-    char m_00[0x3e98];
-    unsigned short m_width;
-    unsigned short m_height;
-    unsigned short m_layerCount; // +0x3e9c
-    char m_3e9e[0x19a];
-    RHFastFindLayer *m_layers; // +0x4038
-    struct RHFastFindCell *m_cells;
-    RHFastFindPointerArray m_projectionAreas; // +0x4040
-    RHFastFindPointerArray m_sectors; // +0x4060
-    RHFastFindPointerArray m_gates; // +0x4080
-    RHFastFindPointerArray m_patches; // +0x40a0
-    char m_40c0[0xf4];
-    std::vector<RHFastFindRepulsive> m_repulsivePoints; // +0x41b4; first +0x41b8, last +0x41bc
-    std::vector<unsigned short> m_repulsiveLayers; // +0x41c4; first +0x41c8, last +0x41cc
-};
-
 class RHFastFindSector
 {
 public:
@@ -316,6 +184,9 @@ public:
 
 #include "RHMobileUnk006100e0.h"
 
+#include "sb3dstuff.h"
+#include "RHUnk0060c2c0.h"
+#include "RHFastFindSightStorage.h"
 
 class RHUnk005a3450
 {
@@ -333,16 +204,24 @@ public:
     void SetLayer(unsigned short layer) { m_layer = layer; }
     void SetSector(unsigned short sector) { m_sector = sector; }
     unsigned long m_flags;
-    char m_04[0x20];
+    unsigned long m_id;
+    bool m_enabled;
+    char m_09[3];
+    RHUnk005dfd00 m_box;
     SBGeoBoundingBox2D m_bounds;
     SBGeoBoundingBox2D m_otherBounds;
-    char m_4c[0x5c];
+    RHFastFindSightList<RHFastFindSightVertex> m_vertices;
+    RHUnk0060c2c0 m_polygon;
     RHUnk005df860 m_firstPlane;
     RHUnk005df860 m_secondPlane;
     char m_158[2];
     unsigned short m_layer;
     unsigned short m_sector;
-    char m_15e[0x36];
+    char m_15e[2];
+    float m_160;
+    float m_164;
+    char m_168[8];
+    RHFastFindSightList<void *> m_materials;
     void *m_motionArea;
     char m_198[0xe];
     bool m_active;
@@ -406,87 +285,63 @@ public:
     }
 };
 
-class RHScriptFXArray
-{
-public:
-    int grow;
-    void **first;
-    void **last;
-    void **end;
-    void **cursor;
-    bool dirty;
-    void **Unk004fe420(void **first, void **last, void **destination);
-    void Unk004fe450(void **destination, unsigned int count, void *const &value);
-    void Unk005008e0(void **first, void **last);
-    void Unk004ff210(void *const *first, void *const *last);
-    unsigned int Size() { return first == 0 ? 0 : last - first; }
-};
+#include "RHFastFindArrayOps.h"
 
-class RHFastFindGateArray : public RHScriptFXArray
+inline void RHFastFindGateArray::InsertLast(void *const &value, bool inlineCopy, bool externalSize, bool sourceFirst)
 {
-public:
-    unsigned int FUN_0059fbc0()
+    void **position = last;
+    if ((unsigned int)(end - last) < 1)
     {
-        typedef unsigned (std::vector<unsigned long>::*Size)() const;
-        Size size = &std::vector<unsigned long>::size;
-        return (((const std::vector<unsigned long> *)this)->*size)();
-    }
-    void InsertLast(void *const &value, bool inlineCopy = true, bool externalSize = false, bool sourceFirst = false)
-    {
-        void **position = last;
-        if ((unsigned int)(end - last) < 1)
+        unsigned int growCount = Size() > 1 ? (externalSize ? FUN_0059fbc0() : Size()) : 1;
+        int capacity = (externalSize ? FUN_0059fbc0() : Size()) + growCount;
+        void **storage = std::_Allocate(capacity, (void **)0);
+        void **destination = storage;
+        if (inlineCopy)
         {
-            unsigned int growCount = Size() > 1 ? (externalSize ? FUN_0059fbc0() : Size()) : 1;
-            int capacity = (externalSize ? FUN_0059fbc0() : Size()) + growCount;
-            void **storage = std::_Allocate(capacity, (void **)0);
-            void **destination = storage;
-            if (inlineCopy)
+            if (sourceFirst)
             {
-                if (sourceFirst)
-                {
-                    for (void **source = first; source != position; ++source, ++destination)
-                        RHSeqList::CopyData((RHSequenceElement **)destination, (RHSequenceElement *const *)source);
-                }
-                else
-                {
-                    for (void **source = first; source != position; ++destination, ++source)
-                        RHSeqList::CopyData((RHSequenceElement **)destination, (RHSequenceElement *const *)source);
-                }
+                for (void **source = first; source != position; ++source, ++destination)
+                    RHSeqList::CopyData((RHSequenceElement **)destination, (RHSequenceElement *const *)source);
             }
             else
-                destination = Unk004fe420(first, position, storage);
-            Unk004fe450(destination, 1, value);
-            ++destination;
-            Unk004fe420(position, last, destination);
-            Unk005008e0(first, last);
-            delete[] first;
-            end = storage + capacity;
-            last = storage + (inlineCopy || externalSize ? FUN_0059fbc0() : Size()) + 1;
-            first = storage;
-        }
-        else if ((unsigned int)(last - position) < 1)
-        {
-            Unk004fe420(position, last, position + 1);
-            Unk004fe450(last, 1 - (last - position), value);
-            void **fillEnd = last;
-            for (void **destination = position; destination != fillEnd; ++destination)
-                *destination = value;
-            ++last;
+            {
+                for (void **source = first; source != position; ++destination, ++source)
+                    RHSeqList::CopyData((RHSequenceElement **)destination, (RHSequenceElement *const *)source);
+            }
         }
         else
-        {
-            Unk004fe420(last - 1, last, last);
-            void **source = last - 1;
-            void **destination = last;
-            while (position != source)
-                *--destination = *--source;
-            for (destination = position; destination != position + 1; ++destination)
-                *destination = value;
-            ++last;
-        }
-        dirty = true;
+            destination = Unk004fe420(first, position, storage);
+        Unk004fe450(destination, 1, value);
+        ++destination;
+        Unk004fe420(position, last, destination);
+        Unk005008e0(first, last);
+        delete[] first;
+        end = storage + capacity;
+        last = storage + (inlineCopy || externalSize ? FUN_0059fbc0() : Size()) + 1;
+        first = storage;
     }
-};
+    else if ((unsigned int)(last - position) < 1)
+    {
+        Unk004fe420(position, last, position + 1);
+        Unk004fe450(last, 1 - (last - position), value);
+        void **fillEnd = last;
+        for (void **destination = position; destination != fillEnd; ++destination)
+            *destination = value;
+        ++last;
+    }
+    else
+    {
+        Unk004fe420(last - 1, last, last);
+        void **source = last - 1;
+        void **destination = last;
+        while (position != source)
+            *--destination = *--source;
+        for (destination = position; destination != position + 1; ++destination)
+            *destination = value;
+        ++last;
+    }
+    dirty = true;
+}
 
 class RHUnk00522470
 {

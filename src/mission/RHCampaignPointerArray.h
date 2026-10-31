@@ -1,30 +1,7 @@
 #ifndef RHCAMPAIGNPOINTERARRAY_H
 #define RHCAMPAIGNPOINTERARRAY_H
 
-#include <vector>
-
-class RHScriptFXArray
-{
-public:
-    int grow;
-    void **first;
-    void **last;
-    void **end;
-    void **Unk004fe420(void **first, void **last, void **destination);
-    void Unk004fe450(void **destination, unsigned count, void *const &value);
-    void Unk005008e0(void **first, void **last);
-};
-
-class RHFastFindGateArray : public RHScriptFXArray
-{
-public:
-    unsigned FUN_0059fbc0()
-    {
-        typedef unsigned (std::vector<unsigned long>::*Size)() const;
-        Size size = &std::vector<unsigned long>::size;
-        return (((const std::vector<unsigned long> *)this)->*size)();
-    }
-};
+#include "RHFastFindArrayOps.h"
 
 template<class T>
 class RHCampaignPointerArray

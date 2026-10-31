@@ -23,19 +23,27 @@ struct RHSpriteListIterator
     int &operator*() { return node->value; }
 };
 
-class RHUnk00564020
+class RHSpriteListRoot
 {
 public:
-    RHUnk00564020(const std::allocator<int> &allocator = std::allocator<int>()) : m_allocator(allocator)
+    RHSpriteListRoot(const std::allocator<int> &allocator) : m_allocator(allocator)
     {
         head = (RHSpriteListNode *)((RHUnk0046eb30 *)this)->Unk0059f720(0, 0);
         count = 0;
-        dirty = true;
     }
-    ~RHUnk00564020();
+    RHSpriteListRoot(const char &allocator);
     std::allocator<int> m_allocator;
     RHSpriteListNode *head;
     int count;
+};
+
+class RHUnk00564020 : public RHSpriteListRoot
+{
+public:
+    RHUnk00564020(const std::allocator<int> &allocator = std::allocator<int>())
+        : RHSpriteListRoot(allocator), dirty(true) {}
+    RHUnk00564020(const char &allocator) : RHSpriteListRoot(allocator), dirty(true) {}
+    ~RHUnk00564020();
     RHSpriteListIterator current;
     bool dirty;
     int index;

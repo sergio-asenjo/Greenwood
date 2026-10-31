@@ -78,8 +78,46 @@ RHSectorScript::~RHSectorScript() {}
 void RHFastFindGrid::FUN_004e99e0(void *, unsigned short, bool) {}
 void RHUnk0051e1e0::Unk0051e230(SBFile &, RHSeqList &) {}
 RHUnk0051b6e0::~RHUnk0051b6e0() {}
-RHUnk005a3450::RHUnk005a3450() {}
-RHUnk005a3450::RHUnk005a3450(int) {}
+// GLOBAL: GAME 0x006c1064
+unsigned long g_unk0x006c1064;
+
+DECOMP_SIZE_ASSERT(RHFastFindSightList<RHFastFindSightVertex>, 0x30)
+DECOMP_SIZE_ASSERT(RHFastFindSightList<void *>, 0x24)
+DECOMP_SIZE_ASSERT(RHUnk005a3450, 0x1a8)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005a3450, m_box) == 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005a3450, m_bounds) == 0x24)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005a3450, m_otherBounds) == 0x38)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005a3450, m_vertices) == 0x4c)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005a3450, m_polygon) == 0x7c)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005a3450, m_firstPlane) == 0xa8)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005a3450, m_secondPlane) == 0x100)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005a3450, m_materials) == 0x170)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005a3450, m_motionArea) == 0x194)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005a3450, m_active) == 0x1a6)
+
+// FUNCTION: GAME 0x005a3450
+RHUnk005a3450::RHUnk005a3450()
+{
+    m_158[0] = true;
+    m_active = false;
+    m_enabled = true;
+    m_flags = 3;
+    m_id = g_unk0x006c1064++;
+    m_164 = 1.0f;
+    m_160 = 1.0f;
+}
+
+// FUNCTION: GAME 0x005a3560
+RHUnk005a3450::RHUnk005a3450(int type)
+{
+    m_158[0] = true;
+    m_active = false;
+    m_enabled = true;
+    m_flags = type;
+    m_id = g_unk0x006c1064++;
+    m_164 = 1.0f;
+    m_160 = 1.0f;
+}
 RHUnk005a3450::~RHUnk005a3450() {}
 void RHUnk005a3450::Unk005a3810(SBFile &, RHFastFindPointerArray &) {}
 void *RHUnk005a3450::Unk005a5780() { return 0; }

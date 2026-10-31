@@ -7,6 +7,16 @@
 #include "RHPathQueryCalls.h"
 #include "RHSectorActorIterator.h"
 
+// TEMPLATE: GAME 0x00522780
+// ?insert@?$vector@GV?$allocator@G@std@@@std@@QAEPAGPAGABG@Z
+template class std::vector<unsigned short>;
+
+// TEMPLATE: GAME 0x004ff210
+// ?assign@?$vector@KV?$allocator@K@std@@@std@@QAEXPBK0@Z
+template class std::vector<unsigned long>;
+
+// TEMPLATE: GAME 0x004598e0 FOLDED
+// ?copy@std@@YAPAKPBK0PAK@Z
 
 // GLOBAL: GAME 0x006c06f0
 RHFastFindTacticalArray g_unk0x006c06f0;
@@ -20,7 +30,8 @@ unsigned long g_unk0x006c0bcc;
 // GLOBAL: GAME 0x006c0aa8
 float g_unk0x006c0aa8[2] = {0.0f, 0.0f};
 
-// FUNCTION: GAME 0x004e5270
+// TEMPLATE: GAME 0x004e5270 FOLDED
+// ??0RHSeqList@@QAE@ABD@Z
 RHSeqList::RHSeqList(const char &allocator)
 {
     m_00[0] = allocator;
@@ -133,6 +144,39 @@ void RHFastFindGrid::FUN_004ebfe0(void *point, unsigned short layer, bool mode)
     (*(RHFastFindGateArray *)(*(char **)((char *)this + 0x3f80) + cell * 0xa0)).InsertLast((void *const &)point, false);
 }
 
+inline RHFastFindRepulsive *CopyFastFindRepulsive(RHFastFindRepulsive *first, RHFastFindRepulsive *last, RHFastFindRepulsive *destination)
+{
+    for (; first != last; ++destination, ++first)
+    {
+        destination->Unk004fdc20(*first);
+        ((SBGeoVector2D *)&destination->m_14)->operator=((const SBGeoVector2D &)first->m_14);
+        ((SBGeoVector2D *)&destination->m_1c)->operator=((const SBGeoVector2D &)first->m_1c);
+        destination->m_24 = first->m_24;
+        destination->m_28 = first->m_28;
+        destination->m_2c = first->m_2c;
+        destination->m_30 = first->m_30;
+        destination->m_34 = first->m_34;
+        destination->m_35 = first->m_35;
+        destination->m_36 = first->m_36;
+        destination->m_37 = first->m_37;
+        destination->m_38 = first->m_38;
+        destination->m_id = first->m_id;
+    }
+    return destination;
+}
+
+namespace std
+{
+template <>
+inline RHFastFindRepulsive *vector<RHFastFindRepulsive>::erase(RHFastFindRepulsive *position)
+{
+    CopyFastFindRepulsive(position + 1, end(), position);
+    _Destroy(_Last - 1, _Last);
+    --_Last;
+    return position;
+}
+}
+
 // FUNCTION: GAME 0x004eca10
 void RHFastFindGrid::DeleteStaticRepulsivePoint(unsigned long id)
 {
@@ -224,278 +268,16 @@ void *RHFastFindGrid::GetPatch(void *value)
 struct RHUnk005c9010Iterator;
 void FUN_005c9010(RHUnk005c9010Iterator &current, int distance, std::bidirectional_iterator_tag category);
 
-struct RHScriptNode;
-struct RHScriptIter
+#include "RHFastFindUniqueList.h"
+
+inline void RHFastFindUniqueList::InsertLastCall(void *const &value)
 {
-    RHScriptNode *node;
-    RHScriptIter(RHScriptNode *value) : node(value) {}
-};
-
-class RHUnk0046eb30
-{
-public:
-    RHScriptIter FUN_0046eb80();
-    RHScriptIter erase(RHScriptIter position);
-    RHScriptNode *Unk0059f720(RHScriptNode *next, RHScriptNode *previous);
-};
-
-struct RHFastFindUniqueNode
-{
-    RHFastFindUniqueNode *next;
-    RHFastFindUniqueNode *previous;
-    void *value;
-
-    RHFastFindUniqueNode(RHFastFindUniqueNode *after, RHFastFindUniqueNode *before)
-        : next(after ? after : this), previous(before ? before : this) {}
-};
-
-class RHFastFindUniqueList
-{
-public:
-    struct Iterator
-    {
-        RHFastFindUniqueNode *node;
-        Iterator(RHFastFindUniqueNode *value) : node(value) {}
-    };
-
-    undefined m_00[4];
-    RHFastFindUniqueNode *m_head;
-    int m_count;
-    RHFastFindUniqueNode *m_current;
-    bool m_changed;
-    undefined m_11[3];
-    int m_index;
-    bool m_searching;
-    undefined m_19[3];
-    int m_found;
-    void *m_value;
-
-    int GetSize() { return m_count; }
-
-    int Find(void *value)
-    {
-        RHFastFindUniqueNode *head = *(RHFastFindUniqueNode *volatile *)&m_head;
-        m_value = value;
-        m_searching = true;
-        int count = m_count;
-        *(RHFastFindUniqueNode *volatile *)&m_current = head->next;
-        int index;
-        for (index = 0; index < count; ++index, m_current = (*(RHFastFindUniqueNode *volatile *)&m_current)->next)
-        {
-            RHFastFindUniqueNode *node = m_current;
-            void *value = *(void *volatile *)&m_value;
-            void *current = *(void *volatile *)&node->value;
-            if (current == value)
-                break;
-        }
-        if (index < count)
-        {
-            m_found = index;
-            m_changed = false;
-            m_index = index;
-        }
-        else
-        {
-            m_changed = true;
-            m_found = -1;
-        }
-        return m_found;
-    }
-
-    void InsertLast(void *value)
-    {
-        RHFastFindUniqueNode *head = m_head;
-        RHFastFindUniqueNode *previous = head->previous;
-        RHFastFindUniqueNode *node = (RHFastFindUniqueNode *)operator new(0xc);
-        node->RHFastFindUniqueNode::RHFastFindUniqueNode(head, previous);
-        head->previous = node;
-        node->previous->next = node;
-        if (&node->value)
-            node->value = value;
-        ++m_count;
-        m_changed = true;
-    }
-
-    void InsertLastExternal(void *const &value)
-    {
-        RHFastFindUniqueNode *head = m_head;
-        RHFastFindUniqueNode *previous = head->previous;
-        RHFastFindUniqueNode *node = (RHFastFindUniqueNode *)operator new(0xc);
-        node->RHFastFindUniqueNode::RHFastFindUniqueNode(head, previous);
-        head->previous = node;
-        node->previous->next = node;
-        RHSeqList::CopyData((RHSequenceElement **)&node->value, (RHSequenceElement *const *)&value);
-        ++m_count;
-        m_changed = true;
-    }
-
-    void InsertLastCall(void *const &value)
-    {
-        ((RHUnkListSeq *)this)->insert(RHSeqIter(m_head), (RHSequence *const &)value);
-        m_changed = true;
-    }
-
-    void InsertFirst(void *value)
-    {
-        RHFastFindUniqueNode *position = m_head->next;
-        RHFastFindUniqueNode *previous = position->previous;
-        RHFastFindUniqueNode *node = (RHFastFindUniqueNode *)operator new(0xc);
-        node->RHFastFindUniqueNode::RHFastFindUniqueNode(position, previous);
-        position->previous = node;
-        node->previous->next = node;
-        if (&node->value) node->value = value;
-        ++m_count;
-        m_changed = true;
-    }
-
-    void InsertLastAllocator(void *const &value)
-    {
-        RHFastFindUniqueNode *head = m_head;
-        RHFastFindUniqueNode *node = (RHFastFindUniqueNode *)((RHUnk0046eb30 *)this)->Unk0059f720((RHScriptNode *)head, (RHScriptNode *)head->previous);
-        head->previous = node;
-        node->previous->next = node;
-        RHSeqList::CopyData((RHSequenceElement **)&node->value, (RHSequenceElement *const *)&value);
-        ++m_count;
-        m_changed = true;
-    }
-
-    void GoTo(int wanted)
-    {
-        int count = m_count;
-        if (m_changed)
-        {
-            if (wanted <= (count + 1) / 2)
-            {
-                std::bidirectional_iterator_tag category;
-                FUN_005c9010((RHUnk005c9010Iterator &)SetCurrent(Begin()), wanted, category);
-            }
-            else
-            {
-                std::bidirectional_iterator_tag category;
-                FUN_005c9010((RHUnk005c9010Iterator &)SetCurrent(End()), wanted - count, category);
-            }
-            m_changed = false;
-            m_index = wanted;
-        }
-        else
-        {
-            int previous = m_index;
-            if (wanted != previous)
-            {
-                if (wanted < previous)
-                {
-                    if (wanted < (previous + 1) / 2)
-                    {
-                        std::bidirectional_iterator_tag category;
-                        FUN_005c9010((RHUnk005c9010Iterator &)SetCurrent(Begin()), wanted, category);
-                    }
-                    else
-                    {
-                        std::bidirectional_iterator_tag category;
-                        FUN_005c9010((RHUnk005c9010Iterator &)m_current, wanted - previous, category);
-                    }
-                }
-                else if (wanted < (previous + count) / 2)
-                {
-                    std::bidirectional_iterator_tag category;
-                    FUN_005c9010((RHUnk005c9010Iterator &)m_current, wanted - previous, category);
-                }
-                else
-                {
-                    std::bidirectional_iterator_tag category;
-                    FUN_005c9010((RHUnk005c9010Iterator &)SetCurrent(End()), wanted - count, category);
-                }
-                m_index = wanted;
-            }
-        }
-    }
-
-    RHFastFindUniqueNode *&SetCurrent(Iterator iterator)
-    {
-        m_current = iterator.node;
-        return m_current;
-    }
-
-    void GoToSegment(int wanted)
-    {
-        int count = m_count;
-        if (m_changed)
-        {
-            if (wanted <= (count + 1) / 2)
-            {
-                std::bidirectional_iterator_tag category;
-                FUN_005c9010((RHUnk005c9010Iterator &)SetCurrent(Iterator((RHFastFindUniqueNode *)((RHUnk0046eb30 *)this)->FUN_0046eb80().node)), wanted, category);
-            }
-            else
-            {
-                std::bidirectional_iterator_tag category;
-                FUN_005c9010((RHUnk005c9010Iterator &)SetCurrent(End()), wanted - count, category);
-            }
-            m_changed = false;
-            m_index = wanted;
-        }
-        else
-        {
-            int previous = m_index;
-            if (wanted != previous)
-            {
-                if (wanted < previous)
-                {
-                    if (wanted < (previous + 1) / 2)
-                    {
-                        std::bidirectional_iterator_tag category;
-                        FUN_005c9010((RHUnk005c9010Iterator &)SetCurrent(Iterator((RHFastFindUniqueNode *)((RHUnk0046eb30 *)this)->FUN_0046eb80().node)), wanted, category);
-                    }
-                    else
-                    {
-                        std::bidirectional_iterator_tag category;
-                        FUN_005c9010((RHUnk005c9010Iterator &)m_current, wanted - previous, category);
-                    }
-                }
-                else if (wanted < (previous + count) / 2)
-                {
-                    std::bidirectional_iterator_tag category;
-                    FUN_005c9010((RHUnk005c9010Iterator &)m_current, wanted - previous, category);
-                }
-                else
-                {
-                    std::bidirectional_iterator_tag category;
-                    FUN_005c9010((RHUnk005c9010Iterator &)SetCurrent(End()), wanted - count, category);
-                }
-                m_index = wanted;
-            }
-        }
-    }
-
-    RHFastFindUniqueNode *&Head()
-    {
-        return m_head;
-    }
-
-    Iterator Begin()
-    {
-        return Iterator(Head()->next);
-    }
-
-    Iterator End()
-    {
-        return Iterator(Head());
-    }
-
-    void Remove(unsigned short index)
-    {
-        GoTo(index);
-        RHFastFindUniqueNode *node = m_current;
-        node->previous->next = node->next;
-        node->next->previous = node->previous;
-        operator delete(node);
-        --m_count;
-        m_changed = true;
-    }
-
-};
+    ((RHUnkListSeq *)this)->insert(RHSeqIter(Head()), (RHSequence *const &)value);
+    m_changed = true;
+}
 
 DECOMP_SIZE_ASSERT(RHFastFindUniqueList, 0x24)
+DECOMP_SIZE_ASSERT(RHFastFindUniqueList::Iterator, 0x04)
 
 #include "SBUIInputFieldBoxCalls.h"
 
@@ -532,6 +314,8 @@ public:
     int Unk004ec910(void *, float, float, int);
 };
 
+void FUN_004fd680(RHUnk00520ae0 *destination, const RHUnk00520ae0 &other);
+
 class RHUnk004fd0c0
 {
 public:
@@ -539,8 +323,24 @@ public:
     RHFastFindRepulsive *m_first;
     RHFastFindRepulsive *m_last;
     RHFastFindRepulsive *m_end;
-    void Insert(unsigned index, unsigned count, const RHFastFindRepulsive &value);
+    void Insert(RHFastFindRepulsive *position, unsigned count, const RHFastFindRepulsive &value);
+    unsigned Size() const { return m_first == 0 ? 0 : m_last - m_first; }
+    RHFastFindRepulsive *Copy(const RHFastFindRepulsive *first, const RHFastFindRepulsive *last, RHFastFindRepulsive *destination)
+    {
+        for (; first != last; ++destination, ++first)
+            FUN_004fd680((RHUnk00520ae0 *)destination, *(const RHUnk00520ae0 *)first);
+        return destination;
+    }
+    void Fill(RHFastFindRepulsive *destination, unsigned count, const RHFastFindRepulsive &value)
+    {
+        for (; count > 0; --count, ++destination)
+            FUN_004fd680((RHUnk00520ae0 *)destination, (const RHUnk00520ae0 &)value);
+    }
 };
+
+DECOMP_SIZE_ASSERT(RHFastFindRepulsiveBase, 0x14)
+DECOMP_SIZE_ASSERT(RHFastFindRepulsive, 0x40)
+DECOMP_SIZE_ASSERT(RHUnk004fd0c0, 0x10)
 
 struct RHFastFindCell
 {
@@ -557,6 +357,7 @@ struct RHFastFindCell
     unsigned short m_pointCount;
     undefined m_22[2];
     void **m_points;
+
 };
 
 class RHMobileUnk00607da0
@@ -565,46 +366,79 @@ public:
     RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
 };
 
+#include "SBGeoSegment2D.h"
+#include <stddef.h>
+
+struct RHFastFindRepulsiveOwner
+{
+    undefined m_00[0x50];
+    undefined *m_position;
+    undefined m_54[0xf0];
+    RHFastFindPointerArray m_points;
+    RHFastFindPointerArray m_lines;
+    undefined m_184[0x28];
+    SBGeoBoundingBox2D m_bounds;
+};
+
+struct RHFastFindRepulsiveOwnerArray
+{
+    RHFastFindRepulsiveOwner **m_first;
+    RHFastFindRepulsiveOwner **m_last;
+    RHFastFindRepulsiveOwner *&operator[](unsigned index)
+    {
+        RHFastFindRepulsiveOwner **first = *(RHFastFindRepulsiveOwner **volatile *)&m_first;
+        return first[index];
+    }
+};
+
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindRepulsiveOwner, m_position) == 0x50)
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindRepulsiveOwner, m_points) + offsetof(RHFastFindPointerArray, m_first) == 0x148)
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindRepulsiveOwner, m_lines) + offsetof(RHFastFindPointerArray, m_first) == 0x168)
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindRepulsiveOwner, m_bounds) == 0x1ac)
+DECOMP_SIZE_ASSERT(RHFastFindRepulsiveOwnerArray, 0x08)
+
 // Parked: frame is 0x28 rather than 0x24; owner/output registers and uniqueness-search scheduling differ.
 // STUB: GAME 0x004ec240
 void RHFastFindGrid::FUN_004ec240(RHFastFindUniqueList &output, unsigned short layer, const SBGeoBoundingBox2D &box, unsigned long mask)
 {
-    void ***owners = (void ***)((char *)g_pEngine + 0x497c);
-    void ***last = (void ***)((char *)g_pEngine + 0x4980);
-    unsigned short count = *owners == 0 ? 0 : *last - *owners;
-    if (count > 0) {
-        for (unsigned short i = 0; i < count; ++i) {
-            char *owner = (char *)(*owners)[i];
-            if (*(unsigned short *)(*(char **)(owner + 0x50) + 0xde) != layer) continue;
-            if (!(unsigned char)((RHUnk00608f10 *)(owner + 0x1ac))->FUN_00608f10((void *)&box)) continue;
-            unsigned short lineCount = *(void ***)(owner + 0x168) == 0 ? 0 : *(void ***)(owner + 0x16c) - *(void ***)(owner + 0x168);
-            if (lineCount > 0) {
-                for (unsigned short j = 0; j < lineCount; ++j) {
-                    void *value = (*(void ***)(owner + 0x168))[j];
-                    bool intersects = ((SBUIInputFieldBoxCalls *)&box)->FUN_00608450((const SBGeoBoundingBox2D &)RHMobileUnk006100e0(*(RHMobileUnk006100e0 *)(value ? (char *)value + 4 : 0)));
-                    if (intersects) {
-                        void *copy = value;
-                        if (output.Find(copy) == -1) output.InsertLastExternal(copy);
-                    }
+    RHFastFindRepulsiveOwnerArray &owners = *(RHFastFindRepulsiveOwnerArray *)((char *)g_pEngine + 0x497c);
+    unsigned short count = owners.m_first == 0 ? 0 : *(RHFastFindRepulsiveOwner ***)((char *)g_pEngine + 0x4980) - owners.m_first;
+    for (unsigned short i = 0; i < count; ++i) {
+        RHFastFindRepulsiveOwner *owner = owners[i];
+        if (*(unsigned short *)(owner->m_position + 0xde) != layer) continue;
+        if (!(unsigned char)((RHUnk00608f10 *)&owner->m_bounds)->FUN_00608f10((void *)&box)) continue;
+        unsigned short lineCount = owner->m_lines.m_first == 0 ? 0 : owner->m_lines.m_last - owner->m_lines.m_first;
+        if (lineCount > 0) {
+            for (unsigned short j = 0; j < lineCount; ++j) {
+                void **first = *(void **volatile *)&owner->m_lines.m_first;
+                RHUnk0051f0f0 *value = (RHUnk0051f0f0 *)first[j];
+                bool intersects = ((SBUIInputFieldBoxCalls *)&box)->FUN_00608450(SBGeoSegment2D(*value));
+                if (intersects) {
+                    void *copy = value;
+                    if (output.Find(copy) == -1) output.InsertLastExternal(copy);
                 }
             }
         }
     }
 }
 
-// Parked: cell-pointer spill precedes the zero-count test; unique-list search loads and back-edge differ.
-// STUB: GAME 0x004ec450
+// FUNCTION: GAME 0x004ec450
 void RHFastFindGrid::FUN_004ec450(RHFastFindUniqueList &output, unsigned long cell, unsigned long mask)
 {
     RHFastFindCell &entry = m_cells[cell];
-    void **values = entry.m_localPoints;
+    void **first = *(void **volatile *)&entry.m_localPoints;
     unsigned short count = entry.m_localPointCount;
-    while (count > 0) {
-        void *value = *values;
-        if (*(bool *)((char *)value + 0x10) && (*(unsigned long *)((char *)value + 0xc) & mask) == mask)
-            if (output.Find(value) == -1) output.InsertLast(value);
-        ++values;
-        --count;
+    if (count > 0)
+    {
+        void **values = first;
+        unsigned long remaining = count;
+        do
+        {
+            void *value = *values;
+            if (*(bool *)((char *)value + 0x10) && (*(unsigned long *)((char *)value + 0xc) & mask) == mask)
+                if (output.Find(value) == -1) output.InsertLast(value);
+            ++values;
+        } while (--remaining);
     }
 }
 
@@ -638,23 +472,21 @@ void RHFastFindGrid::FUN_004ec560(RHFastFindUniqueList &output, unsigned short l
 // STUB: GAME 0x004ec700
 void RHFastFindGrid::FUN_004ec700(RHFastFindUniqueList &output, unsigned short layer, const RHMalignitySegment &segment, unsigned long mask)
 {
-    void ***owners = (void ***)((char *)g_pEngine + 0x497c);
-    void ***last = (void ***)((char *)g_pEngine + 0x4980);
-    unsigned short count = *owners == 0 ? 0 : *last - *owners;
-    if (count > 0) {
-        for (unsigned short i = 0; i < count; ++i) {
-            char *owner = (char *)(*owners)[i];
-            if (*(unsigned short *)(*(char **)(owner + 0x50) + 0xde) != layer) continue;
-            if (!(unsigned char)((RHUnk00608f10 *)(owner + 0x128))->FUN_00608f10((void *)&segment)) continue;
-            unsigned short lineCount = *(void ***)(owner + 0x168) == 0 ? 0 : *(void ***)(owner + 0x16c) - *(void ***)(owner + 0x168);
-            if (lineCount > 0) {
-                for (unsigned short j = 0; j < lineCount; ++j) {
-                    void *value = (*(void ***)(owner + 0x168))[j];
-                    bool intersects = ((SBGeoBoundingBox2D *)&segment)->FUN_00608650(RHMobileUnk006100e0(*(RHMobileUnk006100e0 *)(value ? (char *)value + 4 : 0)));
-                    if (intersects) {
-                        void *copy = value;
-                        if (output.Find(copy) == -1) output.InsertLastExternal(copy);
-                    }
+    RHFastFindRepulsiveOwnerArray &owners = *(RHFastFindRepulsiveOwnerArray *)((char *)g_pEngine + 0x497c);
+    unsigned short count = owners.m_first == 0 ? 0 : *(RHFastFindRepulsiveOwner ***)((char *)g_pEngine + 0x4980) - owners.m_first;
+    for (unsigned short i = 0; i < count; ++i) {
+        RHFastFindRepulsiveOwner *owner = owners[i];
+        if (*(unsigned short *)(owner->m_position + 0xde) != layer) continue;
+        if (!(unsigned char)((RHUnk00608f10 *)((char *)owner + 0x128))->FUN_00608f10((void *)&segment)) continue;
+        unsigned short lineCount = owner->m_lines.m_first == 0 ? 0 : owner->m_lines.m_last - owner->m_lines.m_first;
+        if (lineCount > 0) {
+            for (unsigned short j = 0; j < lineCount; ++j) {
+                void **first = *(void **volatile *)&owner->m_lines.m_first;
+                RHUnk0051f0f0 *value = (RHUnk0051f0f0 *)first[j];
+                bool intersects = ((SBGeoBoundingBox2D *)&segment)->FUN_00608650(SBGeoSegment2D(*value).Line());
+                if (intersects) {
+                    void *copy = value;
+                    if (output.Find(copy) == -1) output.InsertLastExternal(copy);
                 }
             }
         }
@@ -675,7 +507,7 @@ int RHScriptBatchCalls::Unk004ec910(void *location, float radius, float strength
     ((char *)&value)[0x37] = (unsigned char)(bits >> 2) & 1;
     ((char *)&value)[0x36] = (unsigned char)(bits >> 1) & 1;
     ((char *)&value)[0x38] = (unsigned char)(bits >> 3) & 1;
-    ((RHUnk004fd0c0 *)&grid->m_repulsivePoints)->Insert((unsigned)grid->m_repulsivePoints.end(), 1, *(RHFastFindRepulsive *)&value);
+    ((RHUnk004fd0c0 *)&grid->m_repulsivePoints)->Insert(grid->m_repulsivePoints.end(), 1, *(RHFastFindRepulsive *)&value);
     unsigned layer = point->m_layer;
     ((RHMalignityArrayCalls *)&grid->m_repulsiveLayers)->FUN_004e60a0(grid->m_repulsiveLayers.end(), 1, layer);
     return *(unsigned long *)((char *)&value + 0x3c);
@@ -694,19 +526,6 @@ bool RHFastFindGrid::FUN_004ecb50(RHFastFindUniqueList &output, unsigned short l
     }
     return true;
 }
-
-struct RHFastFindRepulsiveOwner
-{
-    undefined m_00[0x50];
-    undefined *m_position;
-    undefined m_54[0xf0];
-    RHFastFindPointerArray m_points;
-    RHFastFindPointerArray m_lines;
-    undefined m_184[0x28];
-    SBGeoBoundingBox2D m_bounds;
-};
-
-#include "SBGeoSegment2D.h"
 
 // FUNCTION: GAME 0x004ecc60
 bool RHFastFindGrid::FUN_004ecc60(RHFastFindUniqueList &owners, RHFastFindUniqueList &points, RHFastFindUniqueList &lines, unsigned short layer, const SBGeoBoundingBox2D &box)
@@ -754,20 +573,23 @@ bool RHFastFindGrid::FUN_004ecc60(RHFastFindUniqueList &owners, RHFastFindUnique
     return found;
 }
 
-// Parked: values spills before the zero-count branch and volatile list-search loads change registers/back-edge scheduling.
-// STUB: GAME 0x004ecf60
+// FUNCTION: GAME 0x004ecf60
 void RHFastFindGrid::FUN_004ecf60(RHFastFindUniqueList &output, unsigned long cell, unsigned long mask)
 {
     RHFastFindCell &entry = m_cells[cell];
-    void **values = entry.m_lines;
+    void **first = *(void **volatile *)&entry.m_lines;
     unsigned short count = entry.m_lineCount;
-    while (count > 0) {
-        void *value = *values;
-        if (*(bool *)((char *)value + 0x18) && (*(unsigned long *)((char *)value + 0x14) & mask) == mask) {
-            if (output.Find(value) == -1) output.InsertLast(value);
-        }
-        --count;
-        ++values;
+    if (count > 0)
+    {
+        void **values = first;
+        unsigned long remaining = count;
+        do
+        {
+            void *value = *values;
+            if (*(bool *)((char *)value + 0x18) && (*(unsigned long *)((char *)value + 0x14) & mask) == mask)
+                if (output.Find(value) == -1) output.InsertLast(value);
+            ++values;
+        } while (--remaining);
     }
 }
 
@@ -798,7 +620,7 @@ void RHFastFindGrid::FUN_004ed070(RHFastFindUniqueList &output, unsigned short l
     unsigned short count = output.GetSize();
     for (unsigned short i = previousCount; i < count; ++i) {
         ((RHSeqList *)&output)->GoTo(i);
-        void *value = output.m_current->value;
+        void *value = output.m_current.node->value;
         if (!((RHMalignitySegment *)((char *)value + 4))->FUN_0060ad50(box)) {
             output.Remove(i);
             --i;
@@ -841,14 +663,14 @@ void RHFastFindGrid::FUN_004ed370(RHFastFindUniqueList &output, unsigned short l
     unsigned short count = output.GetSize();
     for (unsigned short i = previousCount; i < count; ++i) {
         ((RHSeqList *)&output)->GoTo(i);
-        void *value = output.m_current->value;
+        void *value = output.m_current.node->value;
         if (!((SBGeoSegment2D *)((char *)value + 4))->IsIntersecting((const SBGeoSegment2D &)segment)) {
             ((RHSeqList *)&output)->GoTo(i);
-            RHFastFindUniqueNode *node = output.m_current;
+            RHFastFindUniqueNode *node = output.m_current.node;
             node->previous->next = node->next;
             node->next->previous = node->previous;
             operator delete(node);
-            --output.m_count;
+            --output.count;
             output.m_changed = true;
             --i;
             --count;
@@ -943,23 +765,23 @@ void RHFastFindGrid::FUN_004eda80(void *value, unsigned short layer, bool mode)
     }
 }
 
-// Parked: cell-pointer spill and unique-list search loads differ.
-// STUB: GAME 0x004edcf0
+// FUNCTION: GAME 0x004edcf0
 void RHFastFindGrid::FUN_004edcf0(RHFastFindUniqueList &output, unsigned long cell, unsigned long mask)
 {
     RHFastFindCell &entry = m_cells[cell];
-    void **values = entry.m_points;
+    void **first = *(void **volatile *)&entry.m_points;
     unsigned short count = entry.m_pointCount;
-    while (count > 0)
+    if (count > 0)
     {
-        void *value = *values;
-        if (*(bool *)value && (*(unsigned long *)((char *)value + 4) & mask) == mask)
+        void **values = first;
+        unsigned long remaining = count;
+        do
         {
-            if (output.Find(value) == -1)
-                output.InsertLast(value);
-        }
-        ++values;
-        --count;
+            void *value = *values;
+            if (*(bool *)value && (*(unsigned long *)((char *)value + 4) & mask) == mask)
+                if (output.Find(value) == -1) output.InsertLast(value);
+            ++values;
+        } while (--remaining);
     }
 }
 
@@ -1007,7 +829,7 @@ void RHFastFindGrid::FUN_004ede00(RHFastFindUniqueList &output, unsigned short l
         for (unsigned short i = previousCount; i < count; ++i)
         {
             ((RHSeqList *)&output)->GoTo(i);
-            void *value = output.m_current->value;
+            void *value = output.m_current.node->value;
             if (!(unsigned char)((RHUnk00608f10 *)((char *)value + 8))->FUN_00608f10((void *)&box) ||
                 !((RHMask *)value)->IsAppliedToPointCharacter(*(const SBGeoPoint2D *)point))
             {
@@ -1052,7 +874,7 @@ void RHFastFindGrid::FUN_004ee120(RHFastFindUniqueList &output, unsigned short l
         for (unsigned short i = previousCount; i < count; ++i)
         {
             ((RHSeqList *)&output)->GoTo(i);
-            void *value = output.m_current->value;
+            void *value = output.m_current.node->value;
             if (!(unsigned char)((RHUnk00608f10 *)((char *)value + 8))->FUN_00608f10((void *)&box) ||
                 !((RHMask *)value)->IsAppliedToPoint(*(const SBGeoPoint3D *)point, *(const bool *)&mode))
             {
@@ -1093,7 +915,7 @@ void RHFastFindGrid::FUN_004ee470(RHFastFindUniqueList &output, unsigned short l
     for (unsigned short i = previousCount; i < count; ++i)
     {
         ((RHSeqList *)&output)->GoTo(i);
-        void *value = output.m_current->value;
+        void *value = output.m_current.node->value;
         if (!(unsigned char)((RHUnk00608f10 *)((char *)value + 8))->FUN_00608f10((void *)&box))
         {
             output.Remove(i);
@@ -1103,23 +925,24 @@ void RHFastFindGrid::FUN_004ee470(RHFastFindUniqueList &output, unsigned short l
     }
 }
 
-// Parked: cell-pointer spill and unique-list search loads differ.
+// Parked: mask-check snapshot registers and copy differ.
 // STUB: GAME 0x004ee770
 void RHFastFindGrid::FUN_004ee770(RHFastFindUniqueList &output, unsigned long cell, unsigned long mask)
 {
     RHFastFindCell &entry = m_cells[cell];
-    void **values = entry.m_obstacles;
+    void **first = *(void **volatile *)&entry.m_obstacles;
     unsigned short count = entry.m_obstacleCount;
-    while (count > 0)
+    if (count > 0)
     {
-        void *value = *values;
-        if (*(bool *)((char *)value + 8) && (*(unsigned long *)value & mask) == mask)
+        void **values = first;
+        unsigned long remaining = count;
+        do
         {
-            if (output.Find(value) == -1)
-                output.InsertLast(value);
-        }
-        ++values;
-        --count;
+            void *value = *values;
+            if (*(bool *)((char *)value + 8) && (*(unsigned long *)value & mask) == mask)
+                if (output.Find(value) == -1) output.InsertLast(value);
+            ++values;
+        } while (--remaining);
     }
 }
 
@@ -1139,20 +962,24 @@ struct RHFastFindMobileArray
     RHFastFindMobileOwner **m_first;
     RHFastFindMobileOwner **m_last;
     int Size() { return m_first == 0 ? 0 : m_last - m_first; }
+    RHFastFindMobileOwner *&operator[](unsigned index)
+    {
+        RHFastFindMobileOwner **first = *(RHFastFindMobileOwner **volatile *)&m_first;
+        return first[index];
+    }
 };
 
 class RHEngine;
 extern RHEngine *g_pEngine;
 
-// Parked: mobile-array count/value stack slots and unique-list search loads differ.
-// STUB: GAME 0x004ee880
+// FUNCTION: GAME 0x004ee880
 void RHFastFindGrid::FUN_004ee880(RHFastFindUniqueList &output, unsigned short layer, const SBGeoBoundingBox2D &box, unsigned long mask)
 {
     RHFastFindMobileArray &owners = *(RHFastFindMobileArray *)((char *)g_pEngine + 0x497c);
-    unsigned short count = owners.Size();
+    unsigned short count = owners.m_first == 0 ? 0 : *(RHFastFindMobileOwner ***)((char *)g_pEngine + 0x4980) - owners.m_first;
     for (unsigned short i = 0; i < count; ++i)
     {
-        RHFastFindMobileOwner *owner = owners.m_first[i];
+        RHFastFindMobileOwner *owner = owners[i];
         if (*(unsigned short *)(owner->m_position + 0xde) == layer &&
             (unsigned char)((RHUnk00608f10 *)&owner->m_bounds)->FUN_00608f10((void *)&box))
         {
@@ -1170,15 +997,14 @@ void RHFastFindGrid::FUN_004ee880(RHFastFindUniqueList &output, unsigned short l
     }
 }
 
-// Parked: mobile-array count/value stack slots and unique-list search loads differ.
-// STUB: GAME 0x004eea50
+// FUNCTION: GAME 0x004eea50
 void RHFastFindGrid::FUN_004eea50(RHFastFindUniqueList &output, unsigned short layer, const RHMalignitySegment &segment, unsigned long mask)
 {
     RHFastFindMobileArray &owners = *(RHFastFindMobileArray *)((char *)g_pEngine + 0x497c);
-    unsigned short count = owners.Size();
+    unsigned short count = owners.m_first == 0 ? 0 : *(RHFastFindMobileOwner ***)((char *)g_pEngine + 0x4980) - owners.m_first;
     for (unsigned short i = 0; i < count; ++i)
     {
-        RHFastFindMobileOwner *owner = owners.m_first[i];
+        RHFastFindMobileOwner *owner = owners[i];
         if (*(unsigned short *)(owner->m_position + 0xde) == layer &&
             owner->m_bounds.FUN_00608650(reinterpret_cast<const RHMobileUnk006100e0 &>(segment)))
         {
@@ -1227,7 +1053,7 @@ void RHFastFindGrid::FUN_004eec20(RHFastFindUniqueList &output, unsigned short l
     for (unsigned short i = previousCount; i < count; ++i)
     {
         ((RHSeqList *)&output)->GoTo(i);
-        void *value = output.m_current->value;
+        void *value = output.m_current.node->value;
         if (!(unsigned char)((RHUnk00608f10 *)((char *)value + 0x24))->FUN_00608f10((void *)&box))
         {
             output.Remove(i);
@@ -1278,11 +1104,11 @@ void RHFastFindGrid::FUN_004eef30(RHFastFindUniqueList &output, unsigned short l
     for (unsigned short i = previousCount; i < count; ++i)
     {
         ((RHSeqList *)&output)->GoTo(i);
-        void *value = output.m_current->value;
+        void *value = *output.Current();
         if (!((SBGeoBoundingBox2D *)((char *)value + 0x24))->FUN_00608650(reinterpret_cast<const RHMobileUnk006100e0 &>(segment)))
         {
             output.GoToSegment(i);
-            ((RHUnk0046eb30 *)&output)->erase(RHScriptIter((RHScriptNode *)output.m_current));
+            ((RHUnk0046eb30 *)&output)->erase(*(const RHScriptIter *)&output.m_current);
             output.m_changed = true;
             --i;
             --count;
@@ -1310,14 +1136,14 @@ void RHFastFindGrid::FUN_004efd10(void *patch, unsigned short layer, bool mode)
     for (unsigned short i = 0; i < count; ++i)
     {
         ((RHSeqList *)list)->GoTo(i);
-        FUN_004e8bd0(list->m_current->value, layer, true);
+        FUN_004e8bd0(list->m_current.node->value, layer, true);
     }
     list = &((RHFastFindPatchView *)patch)->m_points;
     count = list->GetSize();
     for (unsigned short j = 0; j < count; ++j)
     {
         ((RHSeqList *)list)->GoTo(j);
-        FUN_004e8bd0(list->m_current->value, layer, true);
+        FUN_004e8bd0(list->m_current.node->value, layer, true);
     }
     void *obstacle = ((RHFastFindPatchView *)patch)->m_148;
     if (obstacle)
@@ -1329,62 +1155,80 @@ void RHFastFindGrid::FUN_004efd10(void *patch, unsigned short layer, bool mode)
     }
 }
 
-// Parked: best probe 42.11%. Target fuses dx>0/dy>0 tests, then splits a dx>0&dy>0
-// dominant-axis block from a shared tail (two useDx sites + one merged useDy);
-// the source shape behind that FP compare/fuse/schedule is not reproduced.
-// STUB: GAME 0x004efe40
+// FUNCTION: GAME 0x004efe40
 bool RHFastFindGrid::FUN_004efe40(const SBGeoPoint3D &first, const SBGeoPoint3D &second, float &slope, float &intercept)
 {
     RHUnk005fc3b0 direction;
+    float dy = second.m_y - first.m_y;
+    float dx = second.m_x - first.m_x;
     direction.m_x = second.m_x - first.m_x;
     direction.m_y = second.m_y - first.m_y;
-    float dx = second.m_x - first.m_x;
-    float dy = second.m_y - first.m_y;
-    if (dx > 0)
+    if (second.m_x - first.m_x > 0)
     {
-        if (dy > 0)
+        if (second.m_y - first.m_y > 0)
         {
-            if (dx > dy)
+            if (second.m_x - first.m_x > second.m_y - first.m_y)
             {
                 slope = (second.m_z - first.m_z) / dx;
                 intercept = first.m_z - slope * first.m_x;
                 return true;
             }
+            else
+            {
+                slope = (second.m_z - first.m_z) / dy;
+                intercept = first.m_z - slope * first.m_y;
+                return false;
+            }
         }
         else
         {
-            if (dx > -dy)
+            if (second.m_x - first.m_x > -(second.m_y - first.m_y))
             {
                 slope = (second.m_z - first.m_z) / dx;
                 intercept = first.m_z - slope * first.m_x;
                 return true;
+            }
+            else
+            {
+                slope = (second.m_z - first.m_z) / dy;
+                intercept = first.m_z - slope * first.m_y;
+                return false;
             }
         }
     }
     else
     {
-        if (dy > 0)
+        if (second.m_y - first.m_y > 0)
         {
-            if (-dx > dy)
+            if (-(second.m_x - first.m_x) > second.m_y - first.m_y)
             {
                 slope = (second.m_z - first.m_z) / dx;
                 intercept = first.m_z - slope * first.m_x;
                 return true;
+            }
+            else
+            {
+                slope = (second.m_z - first.m_z) / dy;
+                intercept = first.m_z - slope * first.m_y;
+                return false;
             }
         }
         else
         {
-            if (dx < dy)
+            if (second.m_x - first.m_x < second.m_y - first.m_y)
             {
                 slope = (second.m_z - first.m_z) / dx;
                 intercept = first.m_z - slope * first.m_x;
                 return true;
             }
+            else
+            {
+                slope = (second.m_z - first.m_z) / dy;
+                intercept = first.m_z - slope * first.m_y;
+                return false;
+            }
         }
     }
-    slope = (second.m_z - first.m_z) / dy;
-    intercept = first.m_z - slope * first.m_y;
-    return false;
 }
 
 // parked: best probe 61.16%.
@@ -1710,10 +1554,10 @@ bool RHActorGridCalls::FUN_004f9a80(void *sectors, RHElementActor *actor, const 
     for (unsigned short i = 0; i < count; ++i) {
         RHFastFindUniqueList *directions = (RHFastFindUniqueList *)((char *)startArea + 0x80);
         ((RHSeqList *)directions)->GoTo(i);
-        bool direction = *(bool *)&directions->m_current->value;
+        bool direction = *(bool *)&directions->m_current.node->value;
         RHFastFindUniqueList *gates = (RHFastFindUniqueList *)((char *)startArea + 0x5c);
         ((RHSeqList *)gates)->GoTo(i);
-        RHFastFindPathGate *gate = (RHFastFindPathGate *)gates->m_current->value;
+        RHFastFindPathGate *gate = (RHFastFindPathGate *)gates->m_current.node->value;
         if (gate->CanPass(direction, actor, true, false, mode)) {
             gate->m_visited = true;
             gate->m_previous = 0;
@@ -1764,7 +1608,7 @@ RHFastFindPathGate *RHFastFindGrid::FUN_004f9d60(RHElementActor *actor, const SB
         unsigned short count = edges->GetSize();
         for (unsigned short i = 0; i < count; ++i) {
             ((RHSeqList *)edges)->GoTo(i);
-            RHFastFindPathEdge *edge = (RHFastFindPathEdge *)edges->m_current->value;
+            RHFastFindPathEdge *edge = (RHFastFindPathEdge *)edges->m_current.node->value;
             if (edge == gate->m_previous) continue;
             RHFastFindPathGate *next = edge->first;
             void *firstSector = gate->m_direction ? next->m_firstSector : next->m_secondSector;
@@ -1810,7 +1654,7 @@ bool RHFastFindGrid::FUN_004fa080(RHFastFindUniqueList &output, RHElementActor *
     unsigned short count = gates->GetSize();
     for (unsigned short i = 0; i < count; ++i) {
         ((RHSeqList *)directions)->GoTo(i);
-        bool direction = *(bool *)&directions->m_current->value;
+        bool direction = *(bool *)&directions->m_current.node->value;
         RHFastFindPathGate *gate = (RHFastFindPathGate *)((RHArtificialIntelligenceList *)gates)->FUN_00423c20(i);
         if (gate->CanPass(direction, actor, true, false, mode)) {
             gate->m_visited = true;
@@ -1853,7 +1697,7 @@ RHFastFindPathGate *RHFastFindGrid::FUN_004fa340(RHElementActor *actor, const SB
         unsigned short count = edges->GetSize();
         for (unsigned short i = 0; i < count; ++i) {
             ((RHSeqList *)edges)->GoTo(i);
-            RHFastFindPathEdge *edge = (RHFastFindPathEdge *)edges->m_current->value;
+            RHFastFindPathEdge *edge = (RHFastFindPathEdge *)edges->m_current.node->value;
             if (edge == gate->m_previous) continue;
             RHFastFindPathGate *next = edge->first;
             void *firstSector = gate->m_direction ? next->m_firstSector : next->m_secondSector;
@@ -1893,7 +1737,7 @@ RHFastFindPathGate *RHFastFindGrid::FUN_004fa340(RHElementActor *actor, const SB
 void RHFastFindGrid::FUN_004fa660()
 {
     RHFastFindUniqueList &open = *(RHFastFindUniqueList *)((char *)this + 0x418c);
-    RHFastFindUniqueNode *head = open.m_head;
+    RHFastFindUniqueNode *head = open.Head();
     RHFastFindUniqueNode *node = head->next;
     while (node != head) {
         RHFastFindUniqueNode *removed = node;
@@ -1913,7 +1757,7 @@ void RHFastFindGrid::FUN_004fa660()
 inline void RHFastFindInsertAt(RHFastFindUniqueList &list, int index, void *const &value)
 {
     list.GoToSegment(index);
-    ((RHUnk004b1520List *)&list)->FUN_00424410(RHScriptIter((RHScriptNode *)list.m_current), value);
+    ((RHUnk004b1520List *)&list)->FUN_00424410(RHScriptIter((RHScriptNode *)list.m_current.node), value);
     list.m_changed = true;
 }
 
@@ -1925,12 +1769,12 @@ void RHFastFindGrid::FUN_004fa6f0(void *value)
     float total = ((RHFastFindPathGate *)value)->m_total;
     if (count == 0) {
         RHFastFindUniqueList &open = *(RHFastFindUniqueList *)((char *)this + 0x418c);
-        RHFastFindUniqueNode *position = open.m_head->next;
+        RHFastFindUniqueNode *position = open.Head()->next;
         RHFastFindUniqueNode *node = (RHFastFindUniqueNode *)((RHUnk0046eb30 *)&open)->Unk0059f720((RHScriptNode *)position, (RHScriptNode *)position->previous);
         position->previous = node;
         node->previous->next = node;
         RHSeqList::CopyData((RHSequenceElement **)&node->value, (RHSequenceElement *const *)&value);
-        ++open.m_count;
+        ++open.count;
         open.m_changed = true;
     }
     else {
@@ -2464,7 +2308,7 @@ bool RHFastFindGrid::SerializeLinePointer(SBFile &file, void *&value)
 }
 
 // FUNCTION: GAME 0x004fdb90
-RHFastFindRepulsive &RHFastFindRepulsive::FUN_004fdb90(const RHFastFindRepulsive &other)
+inline RHFastFindRepulsive &RHFastFindRepulsive::operator=(const RHFastFindRepulsive &other)
 {
     *(SBGeoPoint2D *)((char *)this + 4) = *(const SBGeoPoint2D *)(&other ? (const char *)&other + 4 : 0);
     *(int *)((char *)this + 0xc) = *(const int *)((const char *)&other + 0xc);
@@ -2521,162 +2365,55 @@ RHUnk004fd070::~RHUnk004fd070()
     m_end = 0;
 }
 
-// Residual: the target performs capacity-aware 0x40-byte insertion with allocator/copy helper calls.
-// STUB: GAME 0x004fd0c0
-void RHUnk004fd0c0::Insert(unsigned index, unsigned count, const RHFastFindRepulsive &value)
+// FUNCTION: GAME 0x004fd0c0
+void RHUnk004fd0c0::Insert(RHFastFindRepulsive *position, unsigned count, const RHFastFindRepulsive &value)
 {
-    unsigned size = m_first ? (unsigned)(m_last - m_first) : 0;
-    unsigned capacity = m_first ? (unsigned)(m_end - m_first) : 0;
-    if (index > size)
-        index = size;
-    if (count == 0)
-        return;
-    unsigned newSize = size + count;
-    if (newSize > capacity)
+    if ((unsigned)(m_end - m_last) < count)
     {
-        unsigned newCapacity = capacity ? capacity : 1;
-        while (newCapacity < newSize)
-            newCapacity *= 2;
-        RHFastFindRepulsive *storage = (RHFastFindRepulsive *)::operator new(newCapacity * sizeof(RHFastFindRepulsive));
-        unsigned offset = 0;
-        for (; offset < index; ++offset)
-            for (unsigned byte = 0; byte < sizeof(RHFastFindRepulsive); ++byte)
-                ((char *)&storage[offset])[byte] = ((char *)&m_first[offset])[byte];
-        for (unsigned inserted = 0; inserted < count; ++inserted, ++offset)
-            for (unsigned byte = 0; byte < sizeof(RHFastFindRepulsive); ++byte)
-                ((char *)&storage[offset])[byte] = ((const char *)&value)[byte];
-        for (unsigned oldIndex = index; oldIndex < size; ++oldIndex, ++offset)
-            for (unsigned byte = 0; byte < sizeof(RHFastFindRepulsive); ++byte)
-                ((char *)&storage[offset])[byte] = ((char *)&m_first[oldIndex])[byte];
+        unsigned capacity = Size() + (count < Size() ? Size() : count);
+        RHFastFindRepulsive *storage = std::allocator<RHFastFindRepulsive>().allocate(capacity, 0);
+        RHFastFindRepulsive *destination = Copy(m_first, position, storage);
+        Fill(destination, count, value);
+        Copy(position, m_last, destination + count);
+        RHFastFindRepulsive *last = m_last;
+        for (RHFastFindRepulsive *destroyed = m_first; destroyed != last; ++destroyed)
+            ((RHUnk00520ae0 *)destroyed)->~RHUnk00520ae0();
         ::operator delete(m_first);
+        m_end = storage + capacity;
+        m_last = storage + Size() + count;
         m_first = storage;
-        m_last = storage + newSize;
-        m_end = storage + newCapacity;
-        return;
     }
-    for (unsigned old = size; old > index; --old)
-        m_first[old + count - 1] = m_first[old - 1];
-    for (unsigned inserted = 0; inserted < count; ++inserted)
-        m_first[index + inserted] = value;
-    m_last += count;
+    else if ((unsigned)(m_last - position) < count)
+    {
+        Copy(position, m_last, position + count);
+        Fill(m_last, count - (m_last - position), value);
+        std::fill(position, m_last, value);
+        m_last += count;
+    }
+    else if (count > 0)
+    {
+        Copy(m_last - count, m_last, m_last);
+        std::copy_backward(position, m_last - count, m_last);
+        std::fill(position, position + count, value);
+        m_last += count;
+    }
 }
 
 #include "RHCampaignArrayOps.h"
-
-// SIZE 0xc0
-class RHFastFindAssignmentC0
-{
-public:
-    RHFastFindAssignmentC0 &FUN_004fec70(const RHFastFindAssignmentC0 &source);
-    RHFastFindPointerArray m_arrays[6];
-};
-
-// SIZE 0xa0
-class RHFastFindAssignmentA0
-{
-public:
-    RHFastFindAssignmentA0 &FUN_004fedb0(const RHFastFindAssignmentA0 &source);
-    RHFastFindPointerArray m_arrays[5];
-};
-
-#include "SBResourceManager.h"
-
-class RHFastFindRangeArray : public std::vector<unsigned long>
-{
-public:
-    RHFastFindRangeArray() : m_changed(true) {}
-    RHFastFindRangeArray(const RHFastFindRangeArray &other)
-    {
-        ((RHScriptFXArray *)this)->Unk004ff210((void *const *)other.begin(), (void *const *)other.end());
-        m_changed = true;
-    }
-    ~RHFastFindRangeArray() { erase(begin(), end()); }
-    unsigned long *m_search;
-    bool m_changed;
-    bool m_searching;
-    int m_index;
-    unsigned long m_value;
-};
-
-class RHFastFindClearedWordRecord : public std::vector<unsigned short>
-{
-public:
-    ~RHFastFindClearedWordRecord()
-    {
-        typedef std::vector<int> Values;
-        int *(Values::*erase)(int *, int *) = &Values::erase;
-        (((Values *)this)->*erase)((int *)begin(), (int *)end());
-    }
-    char m_10[0x10];
-};
-
-class RHFastFindRecordStorage
-{
-public:
-    ~RHFastFindRecordStorage()
-    {
-        ((RHScriptFXArray *)this)->Unk005008e0(m_first, m_last);
-        delete[] m_first;
-        m_first = 0;
-        m_last = 0;
-        m_end = 0;
-    }
-    char m_00[4];
-    void **m_first;
-    void **m_last;
-    void **m_end;
-};
-
-class RHFastFindClearedPointerRecord : public RHFastFindRecordStorage
-{
-public:
-    ~RHFastFindClearedPointerRecord()
-    {
-        typedef std::vector<int> Values;
-        int *(Values::*erase)(int *, int *) = &Values::erase;
-        (((Values *)this)->*erase)((int *)m_first, (int *)m_last);
-    }
-    char m_10[0x10];
-};
-
-class RHUnk004fd7f0
-{
-public:
-    RHFastFindClearedPointerRecord m_00;
-    RHFastFindClearedWordRecord m_20;
-    RHFastFindClearedPointerRecord m_40;
-    RHFastFindClearedPointerRecord m_60;
-    RHFastFindClearedPointerRecord m_80;
-    RHFastFindClearedPointerRecord m_a0;
-    ~RHUnk004fd7f0();
-    RHUnk004fd7f0 &operator=(const RHUnk004fd7f0 &other)
-    {
-        ((RHFastFindAssignmentC0 *)this)->FUN_004fec70((const RHFastFindAssignmentC0 &)other);
-        return *this;
-    }
-};
-
-class RHUnk004fda20
-{
-public:
-    RHUnk004fda20();
-    RHFastFindRangeArray m_00;
-    RHFastFindRangeArray m_20;
-    RHFastFindRangeArray m_40;
-    RHFastFindRangeArray m_60;
-    SBResourceSurfaceArray m_80;
-    ~RHUnk004fda20();
-    RHUnk004fda20 &operator=(const RHUnk004fda20 &other)
-    {
-        ((RHFastFindAssignmentA0 *)this)->FUN_004fedb0((const RHFastFindAssignmentA0 &)other);
-        return *this;
-    }
-};
+#include "RHFastFindRecords.h"
 
 DECOMP_SIZE_ASSERT(RHFastFindClearedWordRecord, 0x20)
 DECOMP_SIZE_ASSERT(RHFastFindClearedPointerRecord, 0x20)
 DECOMP_SIZE_ASSERT(RHUnk004fd7f0, 0xc0)
 DECOMP_SIZE_ASSERT(RHUnk004fda20, 0xa0)
+DECOMP_SIZE_ASSERT(RHUnk004fe200, 0x10)
+DECOMP_SIZE_ASSERT(RHUnk004fe260, 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk004fe200, m_4) == 4)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk004fe200, m_8) == 8)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk004fe200, m_c) == 0xc)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk004fe260, m_4) == 4)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk004fe260, m_8) == 8)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk004fe260, m_c) == 0xc)
 
 class RHFastFindClearedArray
 {
@@ -2911,7 +2648,6 @@ struct RHFastFindRecordC0
 {
     char m_data[0xc0];
 };
-
 typedef RHUnk004fda20 RHFastFindRecordA0;
 
 DECOMP_SIZE_ASSERT(RHFastFindRangeArray, 0x20)
@@ -2953,6 +2689,53 @@ public:
     static RHFastFindRecordA0 *FUN_004fe880(const RHFastFindRecordA0 *first,
         const RHFastFindRecordA0 *last, RHFastFindRecordA0 *destination);
 };
+
+inline void RHUnk004fe260::Insert(RHUnk004fda20 *position, unsigned count, const RHUnk004fda20 &value)
+{
+    RHFastFindRecordArray *operations = (RHFastFindRecordArray *)this;
+    if ((unsigned)(m_c - m_8) < count)
+    {
+        unsigned capacity = FUN_004fe280() + (count < Size() ? Size() : count);
+        RHUnk004fda20 *storage = std::allocator<RHUnk004fda20>().allocate(capacity, 0);
+        RHUnk004fda20 *destination = operations->Unk004fe3b0(m_4, position, storage);
+        operations->Unk004fe3f0(destination, count, value);
+        operations->Unk004fe3b0(position, m_8, destination + count);
+        FUN_004fe2b0(m_4, m_8);
+        ::operator delete(m_4);
+        m_c = storage + capacity;
+        m_8 = storage + FUN_004fe280() + count;
+        m_4 = storage;
+    }
+    else if ((unsigned)(m_8 - position) < count)
+    {
+        operations->Unk004fe3b0(position, m_8, position + count);
+        operations->Unk004fe3f0(m_8, count - (m_8 - position), value);
+        RHFastFindRecordArray::FUN_004fe750(position, m_8, value);
+        m_8 += count;
+    }
+    else if (count > 0)
+    {
+        operations->Unk004fe3b0(m_8 - count, m_8, m_8);
+        RHFastFindRecordArray::FUN_004fe880(position, m_8 - count, m_8);
+        RHFastFindRecordArray::FUN_004fe750(position, position + count, value);
+        m_8 += count;
+    }
+}
+
+// FUNCTION: GAME 0x004fdf80
+void RHUnk004fe260::Resize(unsigned count, const RHUnk004fda20 &value)
+{
+    if (Size() < count)
+        Insert(m_8, count - Size(), value);
+    else if (count < Size())
+    {
+        RHUnk004fda20 *destination = std::copy(m_8, m_8, m_4 + count);
+        RHUnk004fda20 *last = m_8;
+        for (RHUnk004fda20 *destroyed = destination; destroyed != last; ++destroyed)
+            destroyed->~RHUnk004fda20();
+        m_8 = destination;
+    }
+}
 
 // FUNCTION: GAME 0x004fe340
 RHFastFindRecordC0 *RHFastFindRecordArray::Unk004fe340(const RHFastFindRecordC0 *first,
@@ -3132,50 +2915,98 @@ RHFastFindAssignmentA0 &RHFastFindAssignmentA0::FUN_004fedb0(const RHFastFindAss
     return *this;
 }
 
-class RHUnk00597a70;
-void FUN_0059fb00(RHUnk00597a70 **destination, RHUnk00597a70 *const &value);
+inline void AssignClearedFastFindArray(RHFastFindPointerArray &destination,
+    const RHFastFindPointerArray &source)
+{
+    if (&source != &destination)
+    {
+        ((RHCampaignArrayOps *)&destination)->FUN_0044ea70();
+        ((SBResourceSurfaceArray *)&destination)->Assign((const SBResourceSurfaceArray &)source, 0);
+    }
+}
 
-__forceinline void **CopyFastFindRange(void *const *first, void *const *last, void **destination)
+template <class T>
+inline T *CopyClearedFastFindRecords(T *first, T *last, T *destination)
 {
     for (; first != last; ++destination, ++first)
-        FUN_0059fb00((RHUnk00597a70 **)destination, *(RHUnk00597a70 *const *)first);
+    {
+        RHFastFindPointerArray *output = (RHFastFindPointerArray *)destination;
+        const RHFastFindPointerArray *input = (const RHFastFindPointerArray *)first;
+        AssignClearedFastFindArray(output[0], input[0]);
+        AssignClearedFastFindArray(output[1], input[1]);
+        AssignClearedFastFindArray(output[2], input[2]);
+        output[3].FUN_004ff0a0(input[3]);
+        output[4].FUN_004ff0a0(input[4]);
+        if (sizeof(T) == 0xc0)
+            output[5].FUN_004ff0a0(input[5]);
+    }
     return destination;
 }
 
-// Parked at 0.8668: old-end spill and allocator/argument temporary register choices differ.
-// STUB: GAME 0x004ff210
-void RHScriptFXArray::Unk004ff210(void *const *first, void *const *last)
+// FUNCTION: GAME 0x004feec0
+void RHUnk004fe200::FUN_004feec0()
 {
-    this->last = std::copy(this->last, this->last, this->first);
-    unsigned count = last - first;
-    void **position = this->first;
-    if ((unsigned)(end - this->last) < count)
+    RHUnk004fd7f0 *destination = CopyClearedFastFindRecords(m_8, m_8, m_4);
+    RHUnk004fd7f0 *last = m_8;
+    for (RHUnk004fd7f0 *destroyed = destination; destroyed != last; ++destroyed)
+        destroyed->~RHUnk004fd7f0();
+    m_8 = destination;
+}
+
+// FUNCTION: GAME 0x004fefb0
+void RHUnk004fe260::FUN_004fefb0()
+{
+    RHUnk004fda20 *destination = CopyClearedFastFindRecords(m_8, m_8, m_4);
+    RHUnk004fda20 *last = m_8;
+    for (RHUnk004fda20 *destroyed = destination; destroyed != last; ++destroyed)
+        destroyed->~RHUnk004fda20();
+    m_8 = destination;
+}
+
+#include "RHUnk0055b830Values.h"
+#include "RHCampaignPointerArray.h"
+
+// FUNCTION: GAME 0x004ff0a0
+RHFastFindPointerArray &RHFastFindPointerArray::FUN_004ff0a0(const RHFastFindPointerArray &source)
+{
+    if (&source != this)
     {
-        unsigned capacity = Size() + (count < Size() ? Size() : count);
-        void **storage = (void **)((std::allocator<unsigned long> *)this)->allocate(capacity, 0);
-        void **next = CopyFastFindRange(this->first, position, storage);
-        next = CopyFastFindRange(first, last, next);
-        CopyFastFindRange(position, this->last, next);
-        Unk005008e0(this->first, this->last);
-        operator delete(this->first);
-        end = storage + capacity;
-        this->last = storage + ((RHFastFindGateArray *)this)->FUN_0059fbc0() + count;
-        this->first = storage;
+        RHCampaignPointerArray<unsigned long> &values = *(RHCampaignPointerArray<unsigned long> *)this;
+        values.erase(values.begin(), values.end());
+        if (size() == 0)
+        {
+            unsigned position = ((RHFastFindGateArray *)this)->FUN_0059fbc0();
+            int index = 0;
+            int count = ((RHFastFindGateArray *)&source)->FUN_0059fbc0();
+            unsigned added = ((RHFastFindGateArray *)&source)->FUN_0059fbc0();
+            ((RHUnk0055b830Values *)this)->Resize(((RHFastFindGateArray *)this)->FUN_0059fbc0() + added);
+            for (; index < count; ++index)
+                m_first[position + index] = source.m_first[index];
+            m_changed = true;
+            return *this;
+        }
+        else
+        {
+            int last = ((RHFastFindGateArray *)this)->FUN_0059fbc0() - 1;
+            int shifted = source.size();
+            shifted += ((RHFastFindGateArray *)this)->FUN_0059fbc0();
+            unsigned total = size() + source.size();
+            float zero = 0;
+            ((RHUnk004ff7b0 *)this)->FUN_004ff7b0(total, zero);
+            m_changed = true;
+            for (int destination = shifted - 1; last >= 0; --last, --destination)
+                m_first[destination] = m_first[last];
+            int index = 0;
+            if (source.m_first != 0)
+            {
+                int count = source.m_last - source.m_first;
+                for (; index < count; ++index)
+                    m_first[index] = source.m_first[index];
+            }
+        }
+        m_changed = true;
     }
-    else if ((unsigned)(this->last - position) < count)
-    {
-        Unk004fe420(position, this->last, position + count);
-        Unk004fe420((void **)first + (this->last - position), (void **)last, this->last);
-        FUN_004598e0((void **)first, (void **)first + (this->last - position), position);
-        this->last += count;
-    }
-    else if (count > 0)
-    {
-        Unk004fe420(this->last - count, this->last, this->last);
-        std::copy_backward(position, this->last - count, this->last);
-        FUN_004598e0((void **)first, (void **)last, position);
-        this->last += count;
-    }
+    return *this;
 }
 
 // Parked: indexed insertion has different size caching and shift-loop register allocation.
@@ -3304,7 +3135,6 @@ void RHFastFindGrid::FUN_004fc660()
 void EmitFastFindRecordAssignments(RHFastFindRecordC0 *large, RHFastFindRecordA0 *small,
     RHFastFindAssignmentC0 *largeAssignment, RHFastFindAssignmentA0 *smallAssignment)
 {
-    ((RHScriptFXArray *)large)->Unk004ff210(0, 0);
     RHFastFindRecordArray::FUN_004fe480(large, large, *large);
     RHFastFindRecordArray::FUN_004fe5e0(large, large, large);
     RHFastFindRecordArray::FUN_004fe750(small, small, *small);
@@ -3650,6 +3480,6 @@ void RHFastFindGrid::Emit(SBFile &file, void *&value)
     plane.Unk005dfa00();
     ((RHUnk0051e5e0 *)value)->FUN_0051e890((RHUnk0051e1e0 *)value);
     ((RHUnk0051e5e0 *)value)->FUN_0051e7b0(0, (RHElementActor *)value, false);
-    m_repulsivePoints.begin()->FUN_004fdb90(*m_repulsivePoints.begin());
+    m_repulsivePoints.begin()->operator=(*m_repulsivePoints.begin());
     RHUnk00520ae0 repulsive;
 }

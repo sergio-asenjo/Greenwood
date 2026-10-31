@@ -2,44 +2,7 @@
 // No __FILE__ or oracle evidence: class and method identity are unproven.
 // Offsets are exact from Game.exe; the element strides are 192 and 160.
 
-struct RHUnk004fe210
-{
-    char m_0[192];
-};
-
-class RHUnk004fd7f0
-{
-public:
-    ~RHUnk004fd7f0();
-    char m_data[0xc0];
-};
-
-class RHUnk004fda20
-{
-public:
-    ~RHUnk004fda20();
-    char m_data[0xa0];
-};
-
-class RHUnk004fe200
-{
-public:
-    int FUN_004fe220();
-    void FUN_004fe250(RHUnk004fd7f0 *first, RHUnk004fd7f0 *last);
-    int m_0;
-    RHUnk004fe210 *m_4;
-    RHUnk004fe210 *m_8;
-};
-
-class RHUnk004fe260
-{
-public:
-    int FUN_004fe280();
-    void FUN_004fe2b0(RHUnk004fda20 *first, RHUnk004fda20 *last);
-    int m_0;
-    int m_4;
-    int m_8;
-};
+#include "RHFastFindRecords.h"
 
 class RHUnk004fe1f0List
 {
@@ -86,7 +49,7 @@ void RHUnk004fe200::FUN_004fe250(RHUnk004fd7f0 *first, RHUnk004fd7f0 *last)
 // FUNCTION: GAME 0x004fe280
 int RHUnk004fe260::FUN_004fe280()
 {
-    return m_4 == 0 ? 0 : (m_8 - m_4) / 160;
+    return m_4 == 0 ? 0 : m_8 - m_4;
 }
 
 // FUNCTION: GAME 0x004fe2b0
