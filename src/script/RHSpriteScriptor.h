@@ -163,7 +163,6 @@ extern RHUnkSpriteBank *g_unk0x006c0b1c;
 extern std::string g_unk0x006c0620;
 extern std::string g_unk0x006c0630;
 std::string FUN_004e4b40(const std::string &first, const std::string &second);
-std::string FUN_004e4c70(const std::string &first, const char *second);
 
 // SIZE 0x14
 class RHSpriteScriptor

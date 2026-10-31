@@ -233,7 +233,6 @@ public:
     virtual std::string v0() = 0; // vtable+0x00
 };
 
-std::string FUN_004e4c70(const std::string &first, const char *second);
 std::string FUN_004e4b40(const std::string &first, const std::string &second);
 
 class RHDialogueSet;

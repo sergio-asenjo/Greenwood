@@ -11,7 +11,6 @@
 #include "SBUIRenderer.h"
 #include "RHGame_calls.h"
 
-std::string FUN_004e4c70(const std::string &first, const char *second);
 
 // GLOBAL: GAME 0x006c0670
 std::string g_unk0x006c0670;
@@ -115,18 +114,18 @@ void RHMenuMovies::FUN_00537220(RHMenuWindowUI *ui)
 // FUNCTION: GAME 0x005372e0
 bool RHMenuMovies::FUN_005372e0(int, void *, void *)
 {
-    FUN_00537400(FUN_004e4c70(g_unk0x006c0670,
+    FUN_00537400(g_unk0x006c0670 +
         // STRING: GAME 0x006b0f40
-        "\\Intro.vid"));
+        "\\Intro.vid");
     return false;
 }
 
 // FUNCTION: GAME 0x00537370
 bool RHMenuMovies::FUN_00537370(int, void *, void *)
 {
-    FUN_00537400(FUN_004e4c70(g_unk0x006c0670,
+    FUN_00537400(g_unk0x006c0670 +
         // STRING: GAME 0x006b0f4c
-        "\\Outro.vid"));
+        "\\Outro.vid");
     return false;
 }
 

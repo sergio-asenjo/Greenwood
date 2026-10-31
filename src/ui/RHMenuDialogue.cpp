@@ -117,7 +117,6 @@ struct RHDialogueEntryView
 
 extern RHMapResources *g_unk0x006c1840;
 extern std::string g_unk0x006c0660;
-std::string FUN_004e4c70(const std::string &, const char *);
 std::string FUN_004e4b40(const std::string &, const std::string &);
 
 // GLOBAL: GAME 0x006b0b6c
@@ -380,7 +379,7 @@ void RHMenuDialogue::UpdateDialogue()
         if (!player->IsDialogFinished())
             RHDialogueField<RHSound *>(this, 0x558)->CloseDialog();
         ((RHMapWindowPart *)RHDialogueField<RHMenuWindowScreen *>(this, 0xb4)->FUN_0053bf30())->FUN_00618850(0);
-        RHDialogueField<RHSound *>(this, 0x558)->PlayDialog(FUN_004e4c70(g_unk0x006c0660, "\\") + sound);
+        RHDialogueField<RHSound *>(this, 0x558)->PlayDialog((g_unk0x006c0660 + "\\") + sound);
     }
     else
         ((RHGameMenuCalls *)this)->FUN_00544b30();

@@ -378,10 +378,10 @@ RHUnkSpriteScriptInfo RHSpriteScriptor::LoadSpriteScript(RHframeKind kind, const
             path = FUN_004e4b40(FUN_004e4b40(FUN_004e4b40(directory, ambiance), name), std::string(".rhs"));
             if (!FUN_005f6400(path))
             {
-                path = FUN_004e4b40(FUN_004e4b40(FUN_004e4c70(directory, "\\Day\\"), name), std::string(".rhs"));
+                path = FUN_004e4b40(FUN_004e4b40((directory + "\\Day\\"), name), std::string(".rhs"));
                 if (!FUN_005f6400(path))
                 {
-                    path = FUN_004e4b40(FUN_004e4b40(FUN_004e4c70(directory, "\\"), name), std::string(".rhs"));
+                    path = FUN_004e4b40(FUN_004e4b40((directory + "\\"), name), std::string(".rhs"));
                     if (!FUN_005f6400(path))
                         SBAssert(1, "P:\\Robin Hood\\RHSpriteScriptor.cpp", 171,
                                  // STRING: GAME 0x006b8b2c

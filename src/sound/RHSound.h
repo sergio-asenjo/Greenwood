@@ -266,7 +266,6 @@ extern "C" signed char __stdcall FSOUND_GetDriverCaps(int, unsigned int *);
 extern "C" signed char __stdcall FSOUND_Stream_SetTime(void *, unsigned int);
 extern "C" unsigned int __stdcall FSOUND_Stream_GetLengthMs(void *);
 extern "C" unsigned int __stdcall FSOUND_Stream_GetTime(void *);
-std::string FUN_004e4c70(const std::string &, const char *);
 std::string FUN_004e4b40(const std::string &, const std::string &);
 extern "C" signed char __stdcall FSOUND_SetPriority(int, int);
 extern "C" signed char __stdcall FSOUND_SetVolume(int, int);
