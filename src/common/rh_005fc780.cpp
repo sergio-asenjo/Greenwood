@@ -1,30 +1,22 @@
-
-class RHUnk005fc780
-{
-public:
-    float FUN_005fc780(float divisor);
-
-    float m_0; // 0x00
-    float m_4; // 0x04
-};
+#include "SBGeoVector2D.h"
 
 // FUNCTION: GAME 0x005fc780
-float RHUnk005fc780::FUN_005fc780(float divisor)
+float SBGeoVector2D::FUN_005fc780(float divisor) const
 {
-    float b = m_4 / divisor;
-    if (m_0 > 0.0f)
+    float b = m_y / divisor;
+    if (m_x > 0.0f)
     {
         if (b > 0.0f)
-            return m_0 + b;
-        return m_0 - b;
+            return m_x + b;
+        return m_x - b;
     }
     if (b > 0.0f)
-        return b - m_0;
-    return -m_0 - b;
+        return b - m_x;
+    return -m_x - b;
 }
 
-void EmitRHUnk005fc780(RHUnk005fc780 *self)
+void EmitRHUnk005fc780(SBGeoVector2D *self)
 {
-    float (RHUnk005fc780::*f)(float) = &RHUnk005fc780::FUN_005fc780;
+    float (SBGeoVector2D::*f)(float) const = &SBGeoVector2D::FUN_005fc780;
     (self->*f)(1.0f);
 }

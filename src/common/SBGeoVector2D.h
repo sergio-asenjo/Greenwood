@@ -17,6 +17,7 @@ public:
     ~SBGeoVector2D() {}
     SBGeoVector2D &operator=(const SBGeoVector2D &other);
     float FUN_005fc660(const SBGeoPoint2D &) const;
+    float FUN_005fc780(float divisor) const;
     SBGeoVector2D GetNormalized(float scale) const;
     void Normal(bool direction, float scale);
     bool IsBetween(unsigned char first, unsigned char last) const;

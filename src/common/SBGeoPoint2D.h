@@ -12,16 +12,21 @@ class SBGeoVector2D;
 class SBGeoPoint2D
 {
 public:
-    SBGeoPoint2D() throw();
+    SBGeoPoint2D();
     SBGeoPoint2D(float x, float y);
     SBGeoPoint2D(const SBGeoPoint2D &other);
     ~SBGeoPoint2D();
     void *FUN_0044e990(unsigned flags);
     SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
+    SBGeoPoint2D &FUN_005fc1e0(const SBGeoPoint2D &other);
+    bool operator==(const SBGeoPoint2D &other) const;
+    SBGeoPoint2D operator+(const SBGeoVector2D &value) const;
     SBGeoVector2D Unk005fc110(const SBGeoPoint2D &other) const;
     SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
     float Unk005fc6d0(float scale) const;
+    bool FUN_005fc0e0(const SBGeoPoint2D &other) const;
     float FUN_005fc700(float scale) const;
+    float FUN_005fca90(const SBGeoPoint2D &other, float scale) const;
     SBGeoPoint2D FUN_005fc200(const SBGeoPoint2D &other) const;
     SBGeoPoint2D &FUN_005fc250(const SBGeoPoint2D &other);
     void FUN_005fc270();

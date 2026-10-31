@@ -10,6 +10,7 @@
 void RHSerializeName(SBFile &file, const char *name);
 class RHMissionArrayStorage;
 class SBGeoBoundingBox2D;
+class SBGeoVector2D;
 
 #ifndef SBGEO_POINT2D_VIEW
 #define SBGEO_POINT2D_VIEW
@@ -23,6 +24,7 @@ public:
     ~SBGeoPoint2D();
     SBGeoPoint2D(const SBGeoPoint2D &other);
     SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
+    SBGeoVector2D Unk005fc110(const SBGeoPoint2D &other) const;
     bool Serialize(SBFile &file);
 };
 #endif

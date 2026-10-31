@@ -7,12 +7,12 @@ void FUN_0048be30()
 }
 
 // FUNCTION: GAME 0x00608450
-bool SBUIInputFieldBoxCalls::FUN_00608450(const SBGeoBoundingBox2D &other)
+bool SBUIInputFieldBoxCalls::FUN_00608450(const SBGeoSegment2D &other)
 {
     SBGeoBoundingBox2D &box = *(SBGeoBoundingBox2D *)this;
     if (!box.m_10)
         return false;
-    return box.FUN_00608400(other.m_00) && box.FUN_00608400(other.m_08);
+    return box.FUN_00608400(other.First()) && box.FUN_00608400(other.Second());
 }
 
 // FUNCTION: GAME 0x0060a860

@@ -9,6 +9,8 @@
 class SBGeoVector2D;
 class SBGeoSegment2D;
 class RHMalignitySegment;
+class SBFile;
+SBGeoPoint2D operator+(const SBGeoPoint2D &, const SBGeoVector2D &);
 
 // SIZE 0x14
 class SBGeoBoundingBox2D
@@ -30,6 +32,10 @@ public:
     void FUN_00607e30(const RHMalignitySegment &);
     SBGeoPoint2D FUN_00608f40() const;
     bool FUN_00608400(const SBGeoPoint2D &) const;
+    int FUN_00609050(const SBGeoPoint2D &, const SBGeoPoint2D &);
+    bool Unk00608f30() const;
+    bool FUN_006090a0() const;
+    bool Serialize(SBFile &);
     float Value0() const { return m_p0.m_x; }
     float Value4() const { return m_p0.m_y; }
     float Value8() const { return m_p1.m_x; }
@@ -38,6 +44,7 @@ public:
     const SBGeoPoint2D &Max() const { return m_p1; }
     void SetMin(const SBGeoPoint2D &value) { m_flag = true; m_p0 = value; }
     void SetMax(const SBGeoPoint2D &value) { m_flag = true; m_p1 = value; }
+    void SetSize(const SBGeoVector2D &value) { m_flag = true; m_p1 = ::operator+(m_p0, value); }
     void SetValue0(float value) { m_flag = true; m_p0.m_x = value; }
     void SetValue4(float value) { m_flag = true; m_p0.m_y = value; }
     void SetValue8(float value) { m_flag = true; m_p1.m_x = value; }

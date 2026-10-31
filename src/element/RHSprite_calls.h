@@ -10,77 +10,13 @@ template<class T> T &RHSpriteField(void *object, unsigned offset)
     return *(T *)((char *)object + offset);
 }
 
-#ifndef SBGEO_POINT2D_VIEW
-#define SBGEO_POINT2D_VIEW
-// SIZE 0x08
-class SBGeoVector2D;
-class SBGeoPoint2D
-{
-public:
-    SBGeoPoint2D();
-    SBGeoPoint2D(float, float);
-    SBGeoPoint2D(const SBGeoPoint2D &);
-    ~SBGeoPoint2D();
-    bool Serialize(SBFile &file);
-    SBGeoPoint2D &operator=(const SBGeoPoint2D &);
-    void FUN_005fc390(const SBGeoPoint2D &other) throw();
-    SBGeoPoint2D &FUN_005fc1e0(const SBGeoPoint2D &);
-    SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &) const;
-    SBGeoPoint2D FUN_005fc200(const SBGeoPoint2D &) const;
-    SBGeoVector2D Unk005fc110(const SBGeoPoint2D &) const;
-    float FUN_005fc700(float) const;
-    float FUN_005fca90(const SBGeoPoint2D &other, float scale) const;
-    bool operator==(const SBGeoPoint2D &) const;
-    float GetX() const { return m_x; }
-    float GetY() const { return m_y; }
-    float m_x; // 0x00
-    float m_y; // 0x04
-};
-#endif
+#include "SBGeoPoint2D.h"
 
 #include "SBGeoVector2D.h"
 
-#define RHUNK005FC3B0_VIEW
-class RHUnk005fc3b0 : public SBGeoVector2D
-{
-public:
-    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other)
-    {
-        return (RHUnk005fc3b0 &)SBGeoVector2D::operator=((const SBGeoVector2D &)other);
-    }
-    RHUnk005fc3b0 &FUN_005fc5b0(float factor);
-    bool IsZero() const { return m_x == 0.0f && m_y == 0.0f; }
-    void FUN_005fc7c0(float scale);
-    float Unk005fc6a0(float scale);
-    unsigned char FUN_005fcc50(float scale) const;
-    SBGeoVector2D FUN_005fc8f0(bool direction, float scale) const;
-    RHUnk005fc3b0 FUN_005fc9e0(float angle, float scale);
-    float FUN_005fc680(const RHUnk005fc3b0 &other, float scale) const;
-};
+#include "RHUnk005fc3b0.h"
 
-#define SBGEO_BOUNDINGBOX2D_VIEW
-// SIZE 0x14
-class SBGeoBoundingBox2D
-{
-public:
-    SBGeoBoundingBox2D();
-    SBGeoBoundingBox2D(const SBGeoPoint2D &, const SBGeoPoint2D &);
-    SBGeoBoundingBox2D(const SBGeoBoundingBox2D &);
-    ~SBGeoBoundingBox2D() {}
-    void Unk00607dc0(const SBGeoPoint2D &);
-    SBGeoBoundingBox2D &operator=(const SBGeoBoundingBox2D &);
-    bool FUN_00608400(const SBGeoPoint2D &) const;
-    int FUN_00609050(const SBGeoPoint2D &, const SBGeoPoint2D &);
-    bool Unk00608f30() const;
-    bool FUN_006090a0() const;
-    SBGeoBoundingBox2D FUN_006092c0(const SBGeoBoundingBox2D &) const;
-    SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &) const;
-    bool Serialize(SBFile &);
-    void FUN_00607d90();
-    SBGeoPoint2D m_00; // 0x00
-    SBGeoPoint2D m_08; // 0x08
-    bool m_10; // 0x10
-};
+#include "SBGeoBoundingBox2DCore.h"
 
 #include "RHBonusInfo.h"
 #include "RHPositionInterface.h"

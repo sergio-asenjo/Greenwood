@@ -1,54 +1,12 @@
+#ifndef RHMASK_H
+#define RHMASK_H
+
 #include "SB.h"
-
-class SBGeoVector2D;
-
-class SBGeoPoint2D
-{
-public:
-    SBGeoPoint2D(float, float);
-    ~SBGeoPoint2D();
-    void *FUN_0044e990(unsigned flags);
-    SBGeoPoint2D &operator=(const SBGeoPoint2D &);
-    float X() const { return m_x; }
-    float Y() const { return m_y; }
-
-    float m_x;
-    float m_y;
-};
-
-class SBGeoVector2D : public SBGeoPoint2D
-{
-public:
-    SBGeoVector2D(float, float);
-    ~SBGeoVector2D() {}
-    SBGeoVector2D(const SBGeoVector2D &other);
-    SBGeoVector2D &operator=(const SBGeoVector2D &other);
-};
+#include "SBGeoPoint2D.h"
+#include "SBGeoVector2D.h"
+#include "SBGeoBoundingBox2DCore.h"
 
 SBGeoPoint2D operator+(const SBGeoPoint2D &, const SBGeoVector2D &);
-
-class SBGeoBoundingBox2D
-{
-public:
-    SBGeoBoundingBox2D();
-    void UnkSetOrigin(const SBGeoPoint2D &point)
-    {
-        m_flag = true;
-        m_p0 = point;
-    }
-
-    void UnkSetSize(const SBGeoVector2D &vector)
-    {
-        m_flag = true;
-        m_p1 = m_p0 + vector;
-    }
-
-    bool FUN_00608400(const SBGeoPoint2D &point) const;
-
-    SBGeoPoint2D m_p0;
-    SBGeoPoint2D m_p1;
-    bool m_flag;
-};
 
 class SBGeoPoint3D
 {
@@ -166,12 +124,7 @@ inline RHMobileUnk00611360::~RHMobileUnk00611360()
     ((RHMaskPointArray *)this)->FUN_00524840(begin(), end());
 }
 
-class RHSequenceElement;
-class RHSeqList
-{
-public:
-    static void CopyData(RHSequenceElement **, RHSequenceElement *const *);
-};
+#include "RHSeqList.h"
 
 #include "RHCopyPointers.h"
 
@@ -296,12 +249,7 @@ public:
     void **m_entries;
 };
 
-class RHFastFindGrid
-{
-public:
-    char m_pad0[0x3ea4];
-    RHUnkMaskObstacleTable *m_3ea4;
-};
+#include "RHFastFindGridCore.h"
 
 class RHMask
 {
@@ -325,3 +273,5 @@ public:
     RHMaskPointArray m_points4c; // +0x4c
     RHMaskObstacleArray m_obstacles; // +0x70
 };
+
+#endif

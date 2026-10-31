@@ -77,10 +77,10 @@ void RHMask::InitializeFromProtoStream(SBFile &file, RHFastFindGrid *grid)
     }
     file.Access(&x, 2);
     file.Access(&y, 2);
-    m_box.UnkSetOrigin(SBGeoPoint2D((float)x, (float)y));
+    m_box.SetMin(SBGeoPoint2D((float)x, (float)y));
     file.Access(&x, 2);
     file.Access(&y, 2);
-    m_box.UnkSetSize(SBGeoVector2D((float)x, (float)y));
+    m_box.SetSize(SBGeoVector2D((float)x, (float)y));
     file.Access(&m_size, 2);
     m_data = new unsigned char[m_size];
     file.Access(m_data, m_size);
@@ -106,13 +106,13 @@ bool RHMask::IsAppliedToPointCharacter(const SBGeoPoint2D &point) const
     SBGeoSegment2D segment(SBGeoPoint2D(0, 0), SBGeoPoint2D(0, 0));
     RHUnkSectorPoints &line = *(RHUnkSectorPoints *)&m_points28;
     unsigned long last = ((RHMobileUnk00611360 &)line).FUN_00610f30();
-    if (point.X() >= line.FUN_006112c0(0).X() && point.X() <= line.FUN_006112c0(--last).X())
+    if (point.GetX() >= line.FUN_006112c0(0).GetX() && point.GetX() <= line.FUN_006112c0(--last).GetX())
     {
         unsigned long index = 1;
         while (point.m_x > line.FUN_006112c0(index).m_x)
             ++index;
         segment.Set(line.FUN_006112c0(index - 1), line.FUN_006112c0(index));
-        if (segment.FUN_00610520(point.X()) > point.Y())
+        if (segment.FUN_00610520(point.GetX()) > point.GetY())
             return true;
         return false;
     }
@@ -125,13 +125,13 @@ bool RHMask::IsAppliedToPointProjectile(const SBGeoPoint2D &point) const
     SBGeoSegment2D segment(SBGeoPoint2D(0, 0), SBGeoPoint2D(0, 0));
     RHUnkSectorPoints &line = *(RHUnkSectorPoints *)&m_points4c;
     unsigned long last = ((RHMobileUnk00611360 &)line).FUN_00610f30();
-    if (point.X() >= line.FUN_006112c0(0).X() && point.X() <= line.FUN_006112c0(--last).X())
+    if (point.GetX() >= line.FUN_006112c0(0).GetX() && point.GetX() <= line.FUN_006112c0(--last).GetX())
     {
         unsigned long index = 1;
         while (point.m_x > line.FUN_006112c0(index).m_x)
             ++index;
         segment.Set(line.FUN_006112c0(index - 1), line.FUN_006112c0(index));
-        if (segment.FUN_00610520(point.X()) > point.Y())
+        if (segment.FUN_00610520(point.GetX()) > point.GetY())
             return true;
         return false;
     }

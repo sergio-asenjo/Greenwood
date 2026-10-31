@@ -17,7 +17,8 @@ public:
 };
 #endif
 
-#ifndef SBGEOVECTOR2D_H
+#if !defined(SBGEO_VECTOR2D_VIEW) && !defined(SBGEOVECTOR2D_H)
+#define SBGEO_VECTOR2D_VIEW
 class SBGeoVector2D : public SBGeoPoint2D
 {
 public:
