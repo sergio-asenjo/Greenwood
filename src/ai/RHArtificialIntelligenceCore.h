@@ -9,6 +9,7 @@ class RHArtificialIntelligenceList;
 struct RHArtificialIntelligencePosition;
 struct RHUnk00571160Position;
 struct RHMalignityPosition;
+struct RHMalignityStimulus;
 
 class RHArtificialIntelligence
 {
@@ -22,7 +23,7 @@ public:
     virtual void V18() = 0;
     virtual void V1c() = 0;
     virtual void V20() = 0;
-    virtual void V24() = 0;
+    virtual void V24(RHMalignityStimulus *stimulus) = 0;
     virtual bool V28() = 0;
     virtual void V2c() = 0;
     virtual void V30() = 0;
@@ -58,6 +59,7 @@ public:
     bool Unk00412f70(unsigned short value, int mode);
     bool Unk00412240(const RHUnk00571160Position &position, unsigned short flags, float length);
     bool Unk00419cc0();
+    void FUN_00419e40(int &state, unsigned short &amount);
     void Unk0041a960(unsigned short direction);
     void Unk00422b70(int property, int value);
     void Unk004195f0(unsigned short flags);

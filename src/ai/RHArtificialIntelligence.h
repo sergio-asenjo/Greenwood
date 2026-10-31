@@ -392,7 +392,7 @@ public:
     virtual void V3c() = 0;
     virtual void V40() = 0;
     virtual void V44() = 0;
-    virtual void V48() = 0;
+    virtual bool V48() = 0;
     virtual void V4c() = 0;
     virtual void V50() = 0;
     virtual void V54() = 0;

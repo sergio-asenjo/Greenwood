@@ -113,6 +113,11 @@ RHArtificialIntelligenceElement *&RHArtificialIntelligenceList::FUN_00423c20(int
 
 #include "RHMalignityPosition.h"
 
+// GLOBAL: GAME 0x006774e4
+float g_unk0x006774e4 = 15.0f;
+// GLOBAL: GAME 0x006774e8
+float g_unk0x006774e8 = 0.016f;
+
 SBGeoVector2D FUN_0040ec20(const RHMalignityPosition &first, RHMalignityPosition second);
 
 class RHSeekPoint
@@ -1066,6 +1071,7 @@ template <class T> struct RHArtificialIntelligenceValueList
         Iterator(RHArtificialIntelligenceValueNode<T> *value) : node(value) {}
     };
     Iterator Insert(Iterator position, const T &value);
+    void Append(const T &value);
     int m_allocator;
     RHArtificialIntelligenceValueNode<T> *m_head;
     unsigned m_count;
@@ -1108,6 +1114,34 @@ RHArtificialIntelligenceValueList<RHStimulus>::Iterator EmitAIStimulusInsert(RHA
     List::Iterator (List::*insert)(List::Iterator, const RHStimulus &) = &List::Insert;
     return (list.*insert)(position, value);
 }
+
+// TEMPLATE: GAME 0x0048f110
+// ?Append@?$RHArtificialIntelligenceValueList@VRHStimulus@@@@QAEXABVRHStimulus@@@Z
+template <class T>
+void RHArtificialIntelligenceValueList<T>::Append(const T &value)
+{
+    RHArtificialIntelligenceValueNode<T> *position = m_head;
+    RHArtificialIntelligenceValueNode<T> *previous = position->m_previous;
+    RHArtificialIntelligenceValueNode<T> *node = (RHArtificialIntelligenceValueNode<T> *)operator new(sizeof(RHArtificialIntelligenceValueNode<T>));
+    node->m_next = position ? position : node;
+    node->m_previous = previous ? previous : node;
+    position->m_previous = node;
+    node->m_previous->m_next = node;
+    new (&node->m_value) T(value);
+    ++m_count;
+}
+
+void EmitAIStimulusAppend(RHArtificialIntelligenceValueList<RHStimulus> &list, const RHStimulus &value)
+{
+    void (RHArtificialIntelligenceValueList<RHStimulus>::*append)(const RHStimulus &) = &RHArtificialIntelligenceValueList<RHStimulus>::Append;
+    (list.*append)(value);
+}
+
+#include "Decomp.h"
+
+DECOMP_SIZE_ASSERT(RHStimulus, 0x2c)
+DECOMP_SIZE_ASSERT(RHArtificialIntelligenceValueList<RHStimulus>, 0x18)
+DECOMP_SIZE_ASSERT(RHArtificialIntelligenceValueNode<RHStimulus>, 0x34)
 
 #define RHAI_LOCAL_ACCESS(address, size, line) \
     if (file.Access(address, size) < 0) \
@@ -2482,6 +2516,63 @@ bool RHArtificialIntelligence::Unk00419cc0()
     return false;
 }
 
+// FUNCTION: GAME 0x00419e40
+void RHArtificialIntelligence::FUN_00419e40(int &state, unsigned short &amount)
+{
+    if (m_actor->V48() || RHAIField<unsigned char>(m_actor, 0x1ce) ||
+        RHAIField<int>(RHAIField<void *>(m_actor, 0x50), 0x8c) == 0x12)
+    {
+        amount = 0;
+        state = 0;
+        return;
+    }
+    if (RHAIField<unsigned char>(this, 0x24) > 0 && RHAIField<int>(this, 0x260) == 0)
+    {
+        amount = 0;
+        state = 8;
+        return;
+    }
+    unsigned short first = RHAIField<unsigned short>(m_actor, 0x648);
+    unsigned short second = RHAIField<unsigned short>(m_actor,
+        RHAIField<int>(RHAIField<void *>(m_actor, 0x49c), 4) + 0x546);
+    unsigned short value = 1000 < (first > second ? first : second) ? 1000 : (first > second ? first : second);
+    bool active;
+    if (value == 0)
+        active = false;
+    else if (RHAIField<int>(this, 0x260) == 0)
+        active = true;
+    else
+    {
+        switch (RHAIField<int>(this, 0x0c))
+        {
+        case 0:
+        case 1: active = true; break;
+        case 2: active = RHAIField<int>(m_actor, 0x64c) >= 2; break;
+        case 3:
+        case 5:
+        case 6: active = RHAIField<int>(m_actor, 0x64c) >= 1; break;
+        case 4: active = false; break;
+        }
+    }
+    amount = 0;
+    if (active)
+    {
+        float scaled = value * g_unk0x006774e8;
+        amount = scaled < g_unk0x006774e4 ? scaled : g_unk0x006774e4;
+        state = 1;
+    }
+    else
+    {
+        amount = 0;
+        state = RHAIField<int>(this, 0x260);
+    }
+}
+
+void EmitRHAIStateAmount(RHArtificialIntelligence &ai, int &state, unsigned short &amount)
+{
+    ai.FUN_00419e40(state, amount);
+}
+
 // FUNCTION: GAME 0x00419fb0
 void RHScriptBatchCalls::Unk00419fb0(int value)
 {
@@ -3069,7 +3160,8 @@ struct RHScriptNode
     void *value;
 };
 
-// FUNCTION: GAME 0x0059f720
+// TEMPLATE: GAME 0x0059f720 FOLDED
+// ?Unk0059f720@RHUnk0046eb30@@QAEPAURHScriptNode@@PAU2@0@Z
 RHScriptNode *RHUnk0046eb30::Unk0059f720(RHScriptNode *next, RHScriptNode *previous)
 {
     RHScriptNode *node = (RHScriptNode *)::operator new(12);
