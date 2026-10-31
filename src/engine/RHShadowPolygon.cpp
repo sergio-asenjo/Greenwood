@@ -645,8 +645,8 @@ void RHShadowPolygon::DisplayDebug(const SBGeoBoundingBox2D &box, float zoom, RH
 // FUNCTION: GAME 0x0058ea70
 void RHShadowPolygon::FUN_0058ea70()
 {
-    RHShadowViewport viewport;
-    if (((RHUnkFXDraw *)g_unk0x6c11d0)->Unk005e5a00(0, (RHUnk00613e90 &)viewport, 0))
+    SBDrawViewport viewport;
+    if (((SBDrawManager *)g_unk0x6c11d0)->FUN_005e5a00(0, viewport, 0))
     {
         SBGeoPoint2D center;
         for (short index = -50; index <= 50; ++index)
@@ -658,7 +658,7 @@ void RHShadowPolygon::FUN_0058ea70()
                 float radius = sqrt(m_a0 * m_a0 - offset * offset * 8.163265228271484f);
                 center.m_x = m_a4.m_0;
                 center.m_y = m_a4.m_4 - m_a4.m_8 - offset;
-                RHDrawManager::mpDrawManager->DrawEllipse((const SBDrawViewport &)viewport, center, (unsigned short)radius, index ? 0 : 0xfa00);
+                RHDrawManager::mpDrawManager->DrawEllipse(viewport, center, (unsigned short)radius, index ? 0 : 0xfa00);
             }
         }
         float limit = m_a0 * 0.35f;
@@ -668,9 +668,9 @@ void RHShadowPolygon::FUN_0058ea70()
             float y = m_a4.m_4;
             center.m_x = m_a4.m_0;
             center.m_y = y;
-            RHDrawManager::mpDrawManager->DrawEllipse((const SBDrawViewport &)viewport, center, (unsigned short)radius, 0xffff);
+            RHDrawManager::mpDrawManager->DrawEllipse(viewport, center, (unsigned short)radius, 0xffff);
         }
-        ((RHUnkFXDraw *)g_unk0x6c11d0)->Unk005e5ea0((RHUnk00613e90 &)viewport);
+        ((SBDrawManager *)g_unk0x6c11d0)->FUN_005e5ea0(viewport);
     }
 }
 
@@ -2240,7 +2240,8 @@ void **RHShadowPointerVector::FUN_0059fc80(void **position)
     return position;
 }
 
-// FUNCTION: GAME 0x0059fcc0
+// TEMPLATE: GAME 0x0059fcc0 FOLDED
+// ?FUN_0059fcc0@RHShadowMemoryList@@QAEPAURHShadowMemoryNode@@PAU2@0@Z
 RHShadowMemoryNode *RHShadowMemoryList::FUN_0059fcc0(RHShadowMemoryNode *next, RHShadowMemoryNode *previous)
 {
     RHShadowMemoryNode *node = (RHShadowMemoryNode *)operator new(sizeof(RHShadowMemoryNode));

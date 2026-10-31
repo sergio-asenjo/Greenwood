@@ -942,13 +942,8 @@ public:
 };
 
 // SIZE 0x18
-class RHShadowViewport
-{
-public:
-    RHShadowViewport();
-    ~RHShadowViewport();
-    char m_00[0x18]; // 0x00
-};
+#include "SBDrawManagerCore.h"
+#include "SBDrawViewport.h"
 
 class RHUnkFXDraw
 {
@@ -956,8 +951,6 @@ public:
     undefined m_pad0[0x10c]; // 0x00
     unsigned short m_10c; // 0x10c
     unsigned short FUN_005e56c0(unsigned long);
-    bool Unk005e5a00(unsigned long, RHUnk00613e90 &, unsigned long);
-    void Unk005e5ea0(RHUnk00613e90 &);
 };
 
 class RHUnk005ef320;

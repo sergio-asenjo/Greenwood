@@ -92,9 +92,6 @@ void RHShadowPolygon::FUN_0059b850(RHUnk005977e0 *, RHShadowUnk005df9e0 *) {}
 void RHShadowPolygon::FUN_0059bfb0(RHUnk005977e0 *, RHShadowUnk005df9e0 *) {}
 void RHShadowPolygon::FUN_0059c720(RHUnk005977e0 *, RHShadowUnk005df9e0 *) {}
 void RHShadowPolygon::FUN_0059d7f0(RHUnk005977e0 *) {}
-// TEMPLATE: GAME 0x00613e90 FOLDED
-// ??0RHShadowViewport@@QAE@XZ
-RHShadowViewport::RHShadowViewport() {}
 RHShadowPointNodeList::~RHShadowPointNodeList() {}
 // FUNCTION: GAME 0x004243e0
 RHShadowPointNode *RHShadowPointNodeList::FUN_004243e0(RHShadowPointNode *next, RHShadowPointNode *previous)
@@ -142,7 +139,6 @@ void FUN_0059fb20(RHUnk00613e90 *destination, const RHUnk00613e90 &value)
     if (destination)
         *destination = value;
 }
-RHShadowViewport::~RHShadowViewport() {}
 
 // TEMPLATE: GAME 0x005c9010 FOLDED
 // ?FUN_005c9010@@YAXAAURHUnk005c9010Iterator@@HUbidirectional_iterator_tag@std@@@Z
