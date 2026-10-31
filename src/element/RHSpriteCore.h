@@ -145,6 +145,22 @@ struct RHSpriteFrameTable
     }
 };
 
+struct RHspriteRenderingInfo
+{
+    unsigned long m_surface;
+    undefined m_04;
+    char m_05;
+    undefined m_06[2];
+    unsigned m_flags;
+    int m_kind;
+    char m_masks;
+    undefined m_11;
+    unsigned short m_color;
+    unsigned short m_14;
+    undefined m_16[2];
+    int m_18;
+};
+
 class RHUnk005bd5b0
 {
 public:
@@ -254,9 +270,10 @@ public:
     unsigned short m_19c;
     unsigned short m_19e;
     SBGeoBoundingBox2D m_1a0;
-    void *m_1b4;
+    unsigned short *m_1b4;
     int m_1b8;
-    int m_1bc;
+    unsigned short m_1bc;
+    unsigned short m_1be;
     bool m_1c0;
     char m_1c1[3];
     int m_1c4;
@@ -319,6 +336,11 @@ public:
     bool FUN_005ba6c0(const SBGeoBoundingBox2D &, float, SBGeoBoundingBox2D &, SBGeoBoundingBox2D &, SBGeoVector2D &);
     bool FUN_005bad10(unsigned long, unsigned short, unsigned short, unsigned short, const void *);
     void FUN_005bb180(unsigned short, unsigned long, unsigned short, unsigned short, unsigned short, void *);
+    void FUN_005bb640(const class SBDrawViewport &, const SBGeoVector2D &);
+    void FUN_005bb850(unsigned long, unsigned short, unsigned long, SBGeoVector2D &, unsigned long);
+    bool CreateTargetSprite(const struct RHspriteRenderingInfo &info);
+    void DrawMaskOverSpriteHidden(class RHMask &, class SBDrawViewport &, const SBGeoPoint2D &);
+    void DrawMaskOverSprite(class RHMask &, class SBDrawViewport &, const SBGeoPoint2D &, unsigned short);
     void Emit(SBFile &);
 };
 

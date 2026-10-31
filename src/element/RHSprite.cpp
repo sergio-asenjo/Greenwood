@@ -3,6 +3,13 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include "RHSpriteRow.h"
+#include "SBDrawViewport.h"
+#include "SBDrawManagerCore.h"
+#include "RHMask.h"
+#include "RHFastFindUniqueList.h"
+#include "RHFrameHolder.h"
+#include "RHMobileUnk00607da0.h"
+#include "RHFastFindGridCore.h"
 
 DECOMP_SIZE_ASSERT(RHSpriteListNode, 0x0c)
 DECOMP_SIZE_ASSERT(RHSpriteListIterator, 0x04)
@@ -16,6 +23,9 @@ DECOMP_STATIC_ASSERT(offsetof(RHSprite, m_144) == 0x144)
 DECOMP_STATIC_ASSERT(offsetof(RHSprite, m_164) == 0x164)
 DECOMP_STATIC_ASSERT(offsetof(RHSprite, m_174) == 0x174)
 DECOMP_STATIC_ASSERT(offsetof(RHSprite, m_1a0) == 0x1a0)
+DECOMP_STATIC_ASSERT(offsetof(RHSprite, m_1b4) == 0x1b4)
+DECOMP_STATIC_ASSERT(offsetof(RHSprite, m_1bc) == 0x1bc)
+DECOMP_STATIC_ASSERT(offsetof(RHSprite, m_1be) == 0x1be)
 DECOMP_STATIC_ASSERT(offsetof(RHSprite, m_1e0) == 0x1e0)
 DECOMP_STATIC_ASSERT(offsetof(RHSprite, m_204) == 0x204)
 DECOMP_STATIC_ASSERT(offsetof(RHSprite, m_228) == 0x228)
@@ -25,6 +35,29 @@ DECOMP_SIZE_ASSERT(SBGeoVector2D, 0x08)
 DECOMP_SIZE_ASSERT(SBGeoBoundingBox2D, 0x14)
 DECOMP_SIZE_ASSERT(RHUnk005df4f0, 0x0c)
 DECOMP_SIZE_ASSERT(RHUnk00613e90, 0x0c)
+DECOMP_SIZE_ASSERT(SBDrawViewport, 0x18)
+DECOMP_STATIC_ASSERT(offsetof(SBDrawViewport, m_width) == 4)
+DECOMP_STATIC_ASSERT(offsetof(SBDrawViewport, m_height) == 6)
+DECOMP_STATIC_ASSERT(offsetof(SBDrawViewport, m_pitch) == 8)
+DECOMP_STATIC_ASSERT(offsetof(SBDrawViewport, m_depth) == 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(SBDrawViewport, m_0e) == 0x0e)
+DECOMP_STATIC_ASSERT(offsetof(SBDrawViewport, m_pixels) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(SBDrawViewport, m_locked) == 0x14)
+DECOMP_SIZE_ASSERT(RHMask, 0x88)
+DECOMP_SIZE_ASSERT(RHFastFindUniqueRoot, 0x0c)
+DECOMP_SIZE_ASSERT(RHFastFindUniqueList, 0x24)
+DECOMP_SIZE_ASSERT(RHspriteRenderingInfo, 0x1c)
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindUniqueList, m_current) == 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindUniqueList, m_changed) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindUniqueList, m_index) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindGrid, m_layerCount) == 0x3e9c)
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindGrid, m_3ea4) == 0x3ea4)
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindGrid, m_layers) == 0x4038)
+DECOMP_STATIC_ASSERT(offsetof(RHMask, m_box) == 0x08)
+DECOMP_STATIC_ASSERT(offsetof(RHMask, m_data) == 0x24)
+DECOMP_STATIC_ASSERT(offsetof(RHMask, m_points28) == 0x28)
+DECOMP_STATIC_ASSERT(offsetof(RHMask, m_points4c) == 0x4c)
+DECOMP_STATIC_ASSERT(offsetof(RHMask, m_obstacles) == 0x70)
 
 struct RHSpriteGraphEntry
 {
@@ -36,16 +69,6 @@ struct RHSpriteFrameSpan
     int m_0;
     unsigned short *m_4;
     unsigned short *m_8;
-};
-
-class RHUnk005069a0;
-class RHFrameHolder
-{
-public:
-    unsigned short FUN_005046a0(unsigned long);
-    unsigned short FUN_005046c0(unsigned long);
-    RHUnk005069a0 *FUN_00505170(unsigned long);
-    bool FUN_005058a0(unsigned long);
 };
 
 // GLOBAL: GAME 0x006c0cd4
@@ -374,10 +397,10 @@ void RHSprite::LoadPositionInfoFromFile(SBFile &file, int kind)
                     index, x0, y0, x1, y1);
             float centerX = (x0 + x1) * 0.5f;
             float centerY = (y0 + y1) * 0.5f;
-            box.m_10 = true;
-            box.m_00 = SBGeoPoint2D(x0 - centerX, y0 - centerY);
-            box.m_10 = true;
-            box.m_08 = SBGeoPoint2D(x1 - centerX, y1 - centerY);
+            box.m_flag = true;
+            box.m_p0 = SBGeoPoint2D(x0 - centerX, y0 - centerY);
+            box.m_flag = true;
+            box.m_p1 = SBGeoPoint2D(x1 - centerX, y1 - centerY);
             ((RHMobileUnk00607da0 *)&RHSpriteField<SBGeoBoundingBox2D>(this, 0x98))->FUN_00607da0((const RHMobileUnk00607da0 &)box);
             file.Access(&index, 1);
             RHSpriteField<unsigned short>(this, 0x96) = index;
@@ -393,10 +416,10 @@ void RHSprite::LoadPositionInfoFromFile(SBFile &file, int kind)
             centerX = (x0 + x1) * 0.5f;
             centerY = (y0 + y1) * 0.5f;
             ((RHUnk005fc3b0 *)&RHSpriteField<SBGeoPoint2D>(this, 0x84))->FUN_005fc430(SBGeoVector2D(centerX, centerY));
-            box.m_10 = true;
-            box.m_00 = SBGeoPoint2D(x0 - centerX, y0 - centerY);
-            box.m_10 = true;
-            box.m_08 = SBGeoPoint2D(x1 - centerX, y1 - centerY);
+            box.m_flag = true;
+            box.m_p0 = SBGeoPoint2D(x0 - centerX, y0 - centerY);
+            box.m_flag = true;
+            box.m_p1 = SBGeoPoint2D(x1 - centerX, y1 - centerY);
             ((RHMobileUnk00607da0 *)&RHSpriteField<SBGeoBoundingBox2D>(this, 0xac))->FUN_00607da0((const RHMobileUnk00607da0 &)box);
             file.Access(&x, 2);
             file.Access(&y, 2);
@@ -1169,19 +1192,19 @@ bool RHSprite::FUN_005ba130(const SBGeoBoundingBox2D &view, float scale, SBGeoBo
     position = RHSpriteField<SBGeoPoint2D>(this, 0x1c).Unk005fc190(
         (*(std::vector<RHUnkSpriteRow> *)((RHUnk005b5e00 *)this)->FUN_005b5de0())[row].m_positions[m_186]);
     RHSpriteSetVector(size, (float)m_19a, (float)m_19c);
-    origin = view.m_00;
+    origin = view.m_p0;
     destination.FUN_00609050(position, position.Unk005fc190(size));
-    previous = destination.m_00;
+    previous = destination.m_p0;
     ((RHMobileUnk00607da0 *)&destination)->FUN_00607da0((const RHMobileUnk00607da0 &)view.FUN_006092c0(destination));
     if (!destination.Unk00608f30())
         return false;
-    offset = destination.m_00.Unk005fc110(previous);
+    offset = destination.m_p0.Unk005fc110(previous);
     if (scale == 0.5f)
     {
-        int left = (int)(destination.m_00.m_x - origin.m_x);
-        int top = (int)(destination.m_00.m_y - origin.m_y);
-        int right = (int)(destination.m_08.m_x - origin.m_x);
-        int bottom = (int)(destination.m_08.m_y - origin.m_y);
+        int left = (int)(destination.m_p0.m_x - origin.m_x);
+        int top = (int)(destination.m_p0.m_y - origin.m_y);
+        int right = (int)(destination.m_p1.m_x - origin.m_x);
+        int bottom = (int)(destination.m_p1.m_y - origin.m_y);
         int x = (int)floor(offset.m_x);
         int y = (int)floor(offset.m_y);
         if (left & 1)
@@ -1200,15 +1223,15 @@ bool RHSprite::FUN_005ba130(const SBGeoBoundingBox2D &view, float scale, SBGeoBo
             --bottom;
         destination.FUN_00609050(SBGeoPoint2D((float)(left >> 1), (float)(top >> 1)), SBGeoPoint2D((float)(right >> 1), (float)(bottom >> 1)));
         RHSpriteSetVector(offset, (float)x, (float)y);
-        source.FUN_00609050(offset, SBGeoPoint2D((destination.m_08.m_x - destination.m_00.m_x) * 2.0f, (destination.m_08.m_y - destination.m_00.m_y) * 2.0f).Unk005fc190(offset));
+        source.FUN_00609050(offset, SBGeoPoint2D((destination.m_p1.m_x - destination.m_p0.m_x) * 2.0f, (destination.m_p1.m_y - destination.m_p0.m_y) * 2.0f).Unk005fc190(offset));
     }
     else
     {
-        source.FUN_00609050(offset, SBGeoPoint2D(destination.m_08.m_x - destination.m_00.m_x, destination.m_08.m_y - destination.m_00.m_y).Unk005fc190(offset));
+        source.FUN_00609050(offset, SBGeoPoint2D(destination.m_p1.m_x - destination.m_p0.m_x, destination.m_p1.m_y - destination.m_p0.m_y).Unk005fc190(offset));
         if (scale == 2.0f)
-            destination.FUN_00609050(SBGeoPoint2D((destination.m_00.GetX() - origin.m_x) * 2.0f, (destination.m_00.GetY() - origin.m_y) * 2.0f), SBGeoPoint2D((destination.m_08.GetX() - origin.m_x) * 2.0f, (destination.m_08.GetY() - origin.m_y) * 2.0f));
+            destination.FUN_00609050(SBGeoPoint2D((destination.m_p0.GetX() - origin.m_x) * 2.0f, (destination.m_p0.GetY() - origin.m_y) * 2.0f), SBGeoPoint2D((destination.m_p1.GetX() - origin.m_x) * 2.0f, (destination.m_p1.GetY() - origin.m_y) * 2.0f));
         else
-            destination.FUN_00609050(destination.m_00.Unk005fc110(origin), destination.m_08.Unk005fc110(origin));
+            destination.FUN_00609050(destination.m_p0.Unk005fc110(origin), destination.m_p1.Unk005fc110(origin));
     }
     return destination.FUN_006090a0() && source.FUN_006090a0();
 }
@@ -1226,19 +1249,19 @@ bool RHSprite::FUN_005ba6c0(const SBGeoBoundingBox2D &view, float scale, SBGeoBo
     position = RHSpriteField<SBGeoPoint2D>(this, 0x1c).FUN_005fc200(shift).Unk005fc190(positions[m_186]);
     RHSpriteSetVector(size, (float)m_19a, (float)m_19c);
     size.FUN_005fc1e0(SBGeoVector2D((const SBGeoVector2D &)shift.Unk005fc190(SBGeoVector2D(3.0f, 0.0f))));
-    origin = view.m_00;
+    origin = view.m_p0;
     destination.FUN_00609050(position, position.Unk005fc190(size));
-    previous = destination.m_00;
+    previous = destination.m_p0;
     ((RHMobileUnk00607da0 *)&destination)->FUN_00607da0((const RHMobileUnk00607da0 &)view.FUN_006092c0(destination));
     if (!destination.Unk00608f30())
         return false;
-    offset = destination.m_00.Unk005fc110(previous);
+    offset = destination.m_p0.Unk005fc110(previous);
     if (scale == 0.5f)
     {
-        int left = (int)(destination.m_00.m_x - origin.m_x);
-        int top = (int)(destination.m_00.m_y - origin.m_y);
-        int right = (int)(destination.m_08.m_x - origin.m_x);
-        int bottom = (int)(destination.m_08.m_y - origin.m_y);
+        int left = (int)(destination.m_p0.m_x - origin.m_x);
+        int top = (int)(destination.m_p0.m_y - origin.m_y);
+        int right = (int)(destination.m_p1.m_x - origin.m_x);
+        int bottom = (int)(destination.m_p1.m_y - origin.m_y);
         int x = (int)floor(offset.m_x);
         int y = (int)floor(offset.m_y);
         if (left & 1)
@@ -1257,15 +1280,15 @@ bool RHSprite::FUN_005ba6c0(const SBGeoBoundingBox2D &view, float scale, SBGeoBo
             --bottom;
         destination.FUN_00609050(SBGeoPoint2D((float)(left >> 1), (float)(top >> 1)), SBGeoPoint2D((float)(right >> 1), (float)(bottom >> 1)));
         RHSpriteSetVector(offset, (float)x, (float)y);
-        source.FUN_00609050(offset, SBGeoPoint2D((destination.m_08.m_x - destination.m_00.m_x) * 2.0f, (destination.m_08.m_y - destination.m_00.m_y) * 2.0f).Unk005fc190(offset));
+        source.FUN_00609050(offset, SBGeoPoint2D((destination.m_p1.m_x - destination.m_p0.m_x) * 2.0f, (destination.m_p1.m_y - destination.m_p0.m_y) * 2.0f).Unk005fc190(offset));
     }
     else
     {
-        source.FUN_00609050(offset, SBGeoPoint2D(destination.m_08.m_x - destination.m_00.m_x, destination.m_08.m_y - destination.m_00.m_y).Unk005fc190(offset));
+        source.FUN_00609050(offset, SBGeoPoint2D(destination.m_p1.m_x - destination.m_p0.m_x, destination.m_p1.m_y - destination.m_p0.m_y).Unk005fc190(offset));
         if (scale == 2.0f)
-            destination.FUN_00609050(SBGeoPoint2D((destination.m_00.GetX() - origin.m_x) * 2.0f, (destination.m_00.GetY() - origin.m_y) * 2.0f), SBGeoPoint2D((destination.m_08.GetX() - origin.m_x) * 2.0f, (destination.m_08.GetY() - origin.m_y) * 2.0f));
+            destination.FUN_00609050(SBGeoPoint2D((destination.m_p0.GetX() - origin.m_x) * 2.0f, (destination.m_p0.GetY() - origin.m_y) * 2.0f), SBGeoPoint2D((destination.m_p1.GetX() - origin.m_x) * 2.0f, (destination.m_p1.GetY() - origin.m_y) * 2.0f));
         else
-            destination.FUN_00609050(destination.m_00.Unk005fc110(origin), destination.m_08.Unk005fc110(origin));
+            destination.FUN_00609050(destination.m_p0.Unk005fc110(origin), destination.m_p1.Unk005fc110(origin));
     }
     return source.FUN_006090a0() && destination.FUN_006090a0();
 }
@@ -1347,6 +1370,564 @@ struct RHSpriteFrameEntry
 };
 DECOMP_SIZE_ASSERT(RHSpriteFrameEntry, 0x64)
 
+// FUNCTION: GAME 0x005bb640
+void RHSprite::FUN_005bb640(const SBDrawViewport &viewport, const SBGeoVector2D &size)
+{
+    unsigned key = g_pEngine->FUN_004d2340(15);
+    unsigned short *row = viewport.m_pixels;
+    unsigned long pitch = viewport.m_pitch / 2;
+    unsigned short transparent = *(const unsigned short *)viewport.m_0e;
+    m_1bc = (unsigned short)size.m_x;
+    m_1be = 0;
+    m_1b4[0] = (unsigned short)size.m_y;
+    unsigned index = 2;
+    unsigned short y = 0;
+    if (size.m_y > 0.0f)
+    {
+        do
+        {
+            unsigned rowOffset = index++;
+            unsigned first = index;
+            bool state = false;
+            unsigned short x = 0;
+            if (size.m_x > 0.0f)
+            {
+                do
+                {
+                    unsigned short pixel = row[x];
+                    if (state == false)
+                    {
+                        if (pixel != transparent && pixel != (unsigned short)key)
+                        {
+                            state = true;
+                            if (index > first && m_1b4[index - 1] == (unsigned)x - 2)
+                                --index;
+                            else
+                            {
+                                m_1b4[index++] = x;
+                                if (x < m_1bc)
+                                    m_1bc = x;
+                            }
+                            goto active;
+                        }
+                    }
+                    else if (state == true)
+                    {
+                    active:
+                        if (pixel == transparent || pixel == (unsigned short)key)
+                        {
+                            state = false;
+                            if (index > first && m_1b4[index - 1] == (unsigned)x - 1)
+                                --index;
+                            else
+                            {
+                                m_1b4[index++] = x - 1;
+                                if ((int)((unsigned)x - 1) > (int)m_1be)
+                                    m_1be = x - 1;
+                            }
+                        }
+                    }
+                } while ((float)++x < size.GetX());
+            }
+            if (state == 1)
+                m_1b4[index++] = x;
+            m_1b4[rowOffset] = index - rowOffset - 1;
+            row += pitch;
+        } while ((float)++y < size.GetY());
+    }
+    m_1b4[1] = index;
+    m_1c0 = true;
+}
+
+void EmitRHSpriteEdgeMap(RHSprite &sprite, const SBDrawViewport &viewport, const SBGeoVector2D &size)
+{
+    sprite.FUN_005bb640(viewport, size);
+}
+
+// FUNCTION: GAME 0x005bb850
+void RHSprite::FUN_005bb850(unsigned long surface, unsigned short color, unsigned long width,
+    SBGeoVector2D &offset, unsigned long flags)
+{
+    SBDrawViewport viewport;
+    m_1c0 = false;
+    if (!((SBDrawManager *)m_1d8)->FUN_005e5a00(surface, viewport, 0))
+        return;
+    unsigned long pitch = viewport.m_pitch / 2;
+    unsigned short *row = viewport.m_pixels;
+    unsigned short height = m_1b4[0];
+    unsigned index = 2;
+    if (flags & 1)
+    {
+        unsigned long shift = 0;
+        if (width > m_1bc)
+        {
+            offset.m_y = 0.0f;
+            offset.m_x = (float)width;
+            shift = width;
+        }
+        if (height > 0)
+        {
+            unsigned short pixelColor = color;
+            unsigned rows = height;
+            do
+            {
+                unsigned short count = m_1b4[index++];
+                bool active = false;
+                if (count > 0)
+                {
+                    unsigned spans = count;
+                    do
+                    {
+                        unsigned short x = m_1b4[index++];
+                        if (!active)
+                        {
+                            switch (width)
+                            {
+                            case 2:
+                                row[(unsigned)x + (unsigned short)shift - 2] = pixelColor;
+                                row[(unsigned)x + (unsigned short)shift - 1] = pixelColor;
+                            }
+                            active = true;
+                        }
+                        else
+                        {
+                            switch (width)
+                            {
+                            case 2:
+                                row[(unsigned)x + (unsigned short)shift + 2] = pixelColor;
+                                row[(unsigned)x + (unsigned short)shift + 1] = pixelColor;
+                            }
+                            active = false;
+                        }
+                    } while (--spans != 0);
+                }
+                row += pitch;
+            } while (--rows != 0);
+        }
+    }
+    ((SBDrawManager *)m_1d8)->FUN_005e5ea0(viewport);
+}
+
+void EmitRHSpriteEdgeDraw(RHSprite &sprite, SBGeoVector2D &offset)
+{
+    sprite.FUN_005bb850(0, 0, 2, offset, 1);
+}
+
+#include "RHEngineSpriteCalls.h"
+
+// GLOBAL: GAME 0x00677f94
+extern const float RHSpriteMaskByteScale = 0.125f;
+
+// Parked: frame, temporary-result pointers and cached-list scheduling differ.
+// STUB: GAME 0x005bba00
+bool RHSprite::CreateTargetSprite(const RHspriteRenderingInfo &info)
+{
+    SBDrawViewport view;
+    SBGeoBoundingBox2D bounds;
+    if (!((SBDrawManager *)m_1d8)->FUN_005e5a00(info.m_surface, view, 0))
+        return false;
+    unsigned frame = FUN_005bdbc0(m_184, m_186 + (info.m_flags & 1));
+    m_19a = ((RHFrameHolder *)m_1d0)->FUN_005046a0(frame);
+    m_19c = ((RHFrameHolder *)m_1d0)->FUN_005046c0(frame);
+    if (info.m_flags & 2)
+        ((RHFrameHolder *)m_1d0)->FUN_00504eb0(view, frame, info.m_18);
+    else if (info.m_flags & 8)
+        ((RHFrameHolder *)m_1d0)->FUN_00504f70(view, frame, info.m_14, info.m_18);
+    else
+        ((RHFrameHolder *)m_1d0)->FUN_00504cd0(view, frame, info.m_18);
+    m_192 = 1;
+    m_193 = 0;
+    if ((info.m_flags & 4) && frame != m_1b8)
+    {
+        if (!m_1b4)
+            m_1b4 = (unsigned short *)operator new(view.m_height * 16);
+        FUN_005bb640(view, SBGeoVector2D((float)m_19a, (float)m_19c));
+        m_1b8 = frame;
+    }
+    if (info.m_masks == 1)
+    {
+        char allocator;
+        RHFastFindUniqueList *masks = new RHFastFindUniqueList(allocator);
+        switch (info.m_kind)
+        {
+        case 0:
+            ((RHMobileUnk00607da0 *)&bounds)->FUN_00607da0((const RHMobileUnk00607da0 &)m_1a0);
+            ((RHFastFindGrid *)m_1d4)->FUN_004ede00(*masks, RHSpriteField<unsigned short>(this, 0xde), bounds, &RHSpriteField<SBGeoPoint2D>(this, 0x24));
+            break;
+        case 1:
+        case 2:
+            ((RHMobileUnk00607da0 *)&bounds)->FUN_00607da0((const RHMobileUnk00607da0 &)m_1a0);
+            ((RHFastFindGrid *)m_1d4)->FUN_004ee120(*masks, ((RHFastFindGrid *)m_1d4)->m_layerCount, bounds, &RHSpriteField<RHUnk00613e90>(this, 0x10), info.m_kind == 2);
+            break;
+        }
+        unsigned short count = (unsigned short)masks->GetSize();
+        if (count)
+            m_193 = 1;
+        if (info.m_05 == 1)
+        {
+            for (unsigned short index = 0; index < count; ++index)
+            {
+                const SBGeoPoint2D &offset = RHSpriteField<SBGeoPoint2D>(this, 0x1c).Unk005fc190(*FUN_005bdd90());
+                ((RHSectorActorList *)masks)->Unk005c8e40(index);
+                DrawMaskOverSprite(*(RHMask *)masks->m_current.node->value, view, offset, info.m_color);
+            }
+        }
+        else
+        {
+            for (unsigned short index = 0; index < count; ++index)
+            {
+                const SBGeoPoint2D &offset = RHSpriteField<SBGeoPoint2D>(this, 0x1c).Unk005fc190(*FUN_005bdd90());
+                masks->GoToSegment(index);
+                DrawMaskOverSpriteHidden(*(RHMask *)masks->m_current.node->value, view, offset);
+            }
+        }
+        delete masks;
+    }
+    ((SBDrawManager *)m_1d8)->FUN_005e5ea0(view);
+    return true;
+}
+
+// FUNCTION: GAME 0x005bbf20
+void RHSprite::DrawMaskOverSpriteHidden(RHMask &mask, SBDrawViewport &viewport, const SBGeoPoint2D &origin)
+{
+    short x = (short)(mask.m_box.m_p0.m_x - origin.m_x);
+    short y = (short)(mask.m_box.m_p0.m_y - origin.m_y);
+    unsigned short width = (unsigned short)(mask.m_box.m_p1.m_x - mask.m_box.m_p0.m_x);
+    unsigned short height = (unsigned short)(mask.m_box.m_p1.m_y - mask.m_box.m_p0.m_y);
+    unsigned short depth = viewport.m_depth;
+    short skipX;
+    short skipY;
+    if (x <= 0)
+    {
+        skipX = -x;
+        x = 0;
+        if (skipX > width)
+            return;
+        if (width - skipX > m_19a)
+            width = m_19a;
+        else
+            width -= skipX;
+    }
+    else
+    {
+        skipX = 0;
+        if (x > m_19a)
+            return;
+        if (width > m_19a - x)
+            width = m_19a - x;
+    }
+    if (y <= 0)
+    {
+        skipY = -y;
+        y = 0;
+        if (skipY >= height)
+            return;
+        if (height - skipY > m_19c)
+            height = m_19c;
+        else
+            height -= skipY;
+    }
+    else
+    {
+        skipY = 0;
+        if (y >= m_19c)
+            return;
+        if (height > m_19c - y)
+            height = m_19c - y;
+    }
+    unsigned short pitch = viewport.m_pitch >> 1;
+    unsigned short *line = (unsigned short *)viewport.m_pixels + pitch * y;
+    unsigned short rowOffset = 0;
+    unsigned short index = 0;
+    for (; index < skipY; ++index)
+        rowOffset += (unsigned short)mask.FUN_00524800(rowOffset) + 1;
+    for (unsigned short row = y; row < y + height; ++row)
+    {
+        unsigned short position = 1;
+        unsigned short blocks = 0;
+        bool exhausted = false;
+        bool stopped = false;
+        unsigned char pixels;
+        unsigned char remaining;
+        char bit;
+        bool repeated;
+        do
+        {
+            pixels = mask.FUN_00524800(rowOffset + position);
+            if (blocks > (mask.m_box.m_p1.m_x - mask.m_box.m_p0.m_x) * RHSpriteMaskByteScale)
+            {
+                exhausted = true;
+                stopped = true;
+            }
+            if ((blocks + (pixels & 0x7f)) * 8 > skipX)
+            {
+                ++position;
+                remaining = (pixels & 0x7f) - skipX / 8 + blocks;
+                bit = 8 - skipX % 8;
+                switch (pixels & 0x80)
+                {
+                case 0:
+                    repeated = false;
+                    position += skipX / 8 - blocks;
+                    break;
+                case 0x80:
+                    repeated = true;
+                    break;
+                }
+                break;
+            }
+            blocks += (unsigned char)(pixels & 0x7f);
+            switch (pixels & 0x80)
+            {
+            case 0:
+                position += (pixels + 1) & 0x7f;
+                break;
+            case 0x80:
+                position += 2;
+                break;
+            }
+        } while (!exhausted);
+        pixels = mask.FUN_00524800(rowOffset + position);
+        for (unsigned short column = x; column < x + width; ++column)
+        {
+            if (column + skipX > (mask.m_box.m_p1.m_x - mask.m_box.m_p0.m_x) + x)
+                stopped = true;
+            else if (!stopped)
+            {
+                --bit;
+                if (pixels & (1 << (bit % 8)))
+                {
+                    switch (depth)
+                    {
+                    case 15:
+                        line[column] = 0x3e0;
+                        break;
+                    case 16:
+                        line[column] = 0x7c0;
+                        break;
+                    }
+                }
+                if (bit == 0)
+                {
+                    bit = 8;
+                    --remaining;
+                    if (remaining != 0)
+                    {
+                        if (!repeated)
+                        {
+                            ++position;
+                            pixels = mask.FUN_00524800(rowOffset + position);
+                        }
+                    }
+                    else
+                    {
+                        ++position;
+                        pixels = mask.FUN_00524800(rowOffset + position);
+                        remaining = pixels & 0x7f;
+                        ++position;
+                        switch (pixels & 0x80)
+                        {
+                        case 0:
+                            repeated = false;
+                            pixels = mask.FUN_00524800(rowOffset + position);
+                            break;
+                        case 0x80:
+                            repeated = true;
+                            pixels = mask.FUN_00524800(rowOffset + position);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        rowOffset += (unsigned short)mask.FUN_00524800(rowOffset) + 1;
+        line += pitch;
+    }
+}
+
+// FUNCTION: GAME 0x005bc3c0
+void RHSprite::DrawMaskOverSprite(RHMask &mask, SBDrawViewport &viewport, const SBGeoPoint2D &origin, unsigned short color)
+{
+    unsigned short transparent = g_pEngine->FUN_004d2340(15);
+    short x = (short)(mask.m_box.m_p0.m_x - origin.m_x);
+    short y = (short)(mask.m_box.m_p0.m_y - origin.m_y);
+    unsigned short width = (unsigned short)(mask.m_box.m_p1.m_x - mask.m_box.m_p0.m_x);
+    unsigned short height = (unsigned short)(mask.m_box.m_p1.m_y - mask.m_box.m_p0.m_y);
+    unsigned short depth = viewport.m_depth;
+    short skipX;
+    short skipY;
+    if (x <= 0)
+    {
+        skipX = -x;
+        x = 0;
+        if (skipX > width)
+            return;
+        if (width - skipX > m_19a)
+            width = m_19a;
+        else
+            width -= skipX;
+    }
+    else
+    {
+        skipX = 0;
+        if (x > m_19a)
+            return;
+        if (width > m_19a - x)
+            width = m_19a - x;
+    }
+    if (y <= 0)
+    {
+        skipY = -y;
+        y = 0;
+        if (skipY >= height)
+            return;
+        if (height - skipY > m_19c)
+            height = m_19c;
+        else
+            height -= skipY;
+    }
+    else
+    {
+        skipY = 0;
+        if (y >= m_19c)
+            return;
+        if (height > m_19c - y)
+            height = m_19c - y;
+    }
+    unsigned short pitch = viewport.m_pitch >> 1;
+    unsigned short *line = (unsigned short *)viewport.m_pixels + pitch * y;
+    const unsigned short *readLine = line;
+    unsigned short rowOffset = 0;
+    unsigned short index = 0;
+    for (; index < skipY; ++index)
+        rowOffset += (unsigned short)mask.FUN_00524800(rowOffset) + 1;
+    for (unsigned short row = y; row < y + height; ++row)
+    {
+        unsigned short position = 1;
+        unsigned short blocks = 0;
+        bool exhausted = false;
+        bool stopped = false;
+        unsigned char pixels;
+        unsigned char remaining;
+        char bit;
+        bool repeated;
+        do
+        {
+            pixels = mask.FUN_00524800(rowOffset + position);
+            if (blocks > (mask.m_box.m_p1.m_x - mask.m_box.m_p0.m_x) * RHSpriteMaskByteScale)
+            {
+                exhausted = true;
+                stopped = true;
+            }
+            if ((blocks + (pixels & 0x7f)) * 8 > skipX)
+            {
+                ++position;
+                remaining = (pixels & 0x7f) - skipX / 8 + blocks;
+                bit = 8 - skipX % 8;
+                switch (pixels & 0x80)
+                {
+                case 0:
+                    repeated = false;
+                    position += skipX / 8 - blocks;
+                    break;
+                case 0x80:
+                    repeated = true;
+                    break;
+                }
+                break;
+            }
+            blocks += (unsigned char)(pixels & 0x7f);
+            switch (pixels & 0x80)
+            {
+            case 0:
+                position += (pixels + 1) & 0x7f;
+                break;
+            case 0x80:
+                position += 2;
+                break;
+            }
+        } while (!exhausted);
+        pixels = mask.FUN_00524800(rowOffset + position);
+        for (unsigned short column = x; column < x + width; ++column)
+        {
+            if (column + skipX > (mask.m_box.m_p1.m_x - mask.m_box.m_p0.m_x) + x)
+                stopped = true;
+            else if (!stopped)
+            {
+                --bit;
+                if (pixels & (1 << (bit % 8)))
+                {
+                    switch (depth)
+                    {
+                    case 15:
+                        {
+                            unsigned short current = readLine[column];
+                            unsigned short next = readLine[column + 1];
+                            if (current == transparent)
+                                current = 0x3e0;
+                            if (next == transparent)
+                                next = 0x3e0;
+                            if (column < x + width - 1 && current != next && (next == 0x3e0 || current == 0x3e0))
+                                line[column] = color;
+                            else
+                                line[column] = 0x3e0;
+                        }
+                        break;
+                    case 16:
+                        {
+                            unsigned short current = readLine[column];
+                            unsigned short next = readLine[column + 1];
+                            if (current == transparent)
+                                current = 0x7c0;
+                            if (next == transparent)
+                                next = 0x7c0;
+                            if (column < x + width - 1 && current != next && (next == 0x7c0 || current == 0x7c0))
+                                line[column] = color;
+                            else
+                                line[column] = 0x7c0;
+                        }
+                        break;
+                    }
+                }
+                if (bit == 0)
+                {
+                    bit = 8;
+                    --remaining;
+                    if (remaining != 0)
+                    {
+                        if (!repeated)
+                        {
+                            ++position;
+                            pixels = mask.FUN_00524800(rowOffset + position);
+                        }
+                    }
+                    else
+                    {
+                        ++position;
+                        pixels = mask.FUN_00524800(rowOffset + position);
+                        remaining = pixels & 0x7f;
+                        ++position;
+                        switch (pixels & 0x80)
+                        {
+                        case 0:
+                            repeated = false;
+                            pixels = mask.FUN_00524800(rowOffset + position);
+                            break;
+                        case 0x80:
+                            repeated = true;
+                            pixels = mask.FUN_00524800(rowOffset + position);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        rowOffset += (unsigned short)mask.FUN_00524800(rowOffset) + 1;
+        line += pitch;
+        readLine += pitch;
+    }
+}
+
 // FUNCTION: GAME 0x005bd3a0
 bool RHSprite::FUN_005bd3a0(RHSprite &other)
 {
@@ -1386,8 +1967,6 @@ bool RHEngineWidenedCalls::FUN_005bd450()
     }
     return true;
 }
-
-#include "RHEngineSpriteCalls.h"
 
 // FUNCTION: GAME 0x005bd4e0
 void RHEngineSpriteCalls::FUN_005bd4e0()
@@ -1652,7 +2231,7 @@ void RHSprite::Emit(SBFile &file)
     FUN_005b9ce0();
     FUN_005b9e30(0, 0, false);
     FUN_005ba130(m_1a0, 0.0f, m_1a0, m_1a0);
-    FUN_005ba6c0(m_1a0, 0.0f, m_1a0, m_1a0, *(SBGeoVector2D *)&m_1a0.m_00);
+    FUN_005ba6c0(m_1a0, 0.0f, m_1a0, m_1a0, *(SBGeoVector2D *)&m_1a0.m_p0);
     FUN_005bad10(0, 0, 0, 0, 0);
     FUN_005bb180(0, 0, 0, 0, 0, 0);
 }
