@@ -30,18 +30,7 @@ public:
 float g_unk0x006785d8 = -1.0f;
 
 class RHSequenceElement;
-struct RHScriptNode
-{
-    RHScriptNode *next;
-    RHScriptNode *previous;
-    void *data;
-};
-
-struct RHScriptIter
-{
-    RHScriptNode *node;
-    RHScriptIter(RHScriptNode *value) : node(value) {}
-};
+#include "RHScriptListCore.h"
 
 struct RHUnk004b1520List
 {
@@ -88,12 +77,6 @@ public:
     void FUN_00464530(const SBGeoPoint2D &point);
 };
 
-class RHUnk0046eb30
-{
-public:
-    RHScriptIter FUN_0046eb80();
-    RHScriptIter erase(RHScriptIter position);
-};
 
 struct RHUnk005c9010Iterator;
 void FUN_005c9010(RHUnk005c9010Iterator &current, int distance, std::bidirectional_iterator_tag category);
@@ -125,7 +108,7 @@ public:
     __forceinline void Advance(int distance)
     {
         while (distance > 0) { cursor = cursor->next; --distance; }
-        while (distance < 0) { cursor = cursor->previous; ++distance; }
+        while (distance < 0) { cursor = cursor->prev; ++distance; }
     }
     __forceinline void *Get(int wanted, bool inlineForward, bool inlineBegin)
     {
@@ -354,7 +337,6 @@ DECOMP_SIZE_ASSERT(RHUnk00551da0, 0x04)
 DECOMP_SIZE_ASSERT(RHUnk0051d2c0, 0x20)
 DECOMP_SIZE_ASSERT(RHHikingGuide, 0x24)
 DECOMP_SIZE_ASSERT(RHUnk005f4fc0, 0x58)
-DECOMP_SIZE_ASSERT(RHUnk0054eab0, 0x1a0)
 DECOMP_SIZE_ASSERT(RHUnk004a1bc0, 0xdd0)
 DECOMP_SIZE_ASSERT(RHEngineExtendedMissionElementCalls, 0x04)
 DECOMP_SIZE_ASSERT(RHEngineContinuationSectorCalls, 0x04)
@@ -410,23 +392,10 @@ class SBGeoVector2D;
 
 // SIZE 0x08
 class SBGeoVector2D;
-#define SBGEO_POINT2D_VIEW
-class SBGeoPoint2D
-{
-public:
-    SBGeoPoint2D();
-    SBGeoPoint2D(float x, float y);
-    SBGeoPoint2D(const SBGeoPoint2D &value);
-    ~SBGeoPoint2D();
-    SBGeoPoint2D &operator=(const SBGeoPoint2D &value);
-    SBGeoPoint2D &FUN_005fc250(const SBGeoPoint2D &value);
-    SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &value) const;
-    SBGeoVector2D Unk005fc110(const SBGeoPoint2D &value) const;
-    SBGeoPoint2D operator+(const SBGeoVector2D &value) const;
-    bool Serialize(SBFile &file);
-    float m_x; // 0x00
-    float m_y; // 0x04
-};
+#include "SBGeoPoint2D.h"
+#include "RHUnk0054eab0.h"
+
+DECOMP_SIZE_ASSERT(RHUnk0054eab0, 0x1a0)
 
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 
@@ -716,6 +685,8 @@ public:
     char data[0x18];
 };
 
+RHUnk00613e90::~RHUnk00613e90() {}
+
 DECOMP_SIZE_ASSERT(RHUnk005fc3b0, 0x08)
 
 class RHSpritePositionCalls
@@ -773,7 +744,6 @@ DECOMP_SIZE_ASSERT(RHUnk00611660Calls, 0x04)
 extern std::string g_unk0x006c05f0;
 bool FUN_005f6400(const std::string &path);
 std::string FUN_004e4b40(const std::string &first, const std::string &second);
-std::string FUN_004e4c70(const std::string &first, const char *second);
 
 
 
@@ -1686,11 +1656,11 @@ bool RHEngine::InitializeFromMission(RHMission *mission)
     // STRING: GAME 0x006af388
     std::string protoExtension(".rhp");
     protoPath = FUN_004e4b40(FUN_004e4b40(
-        FUN_004e4c70(g_unk0x006c05f0, "\\"),
+        (g_unk0x006c05f0 + "\\"),
         *(std::string *)((char *)this + 0xa4)), protoExtension);
     std::string missionExtension(".rhm");
     missionPath = FUN_004e4b40(FUN_004e4b40(
-        FUN_004e4c70(g_unk0x006c05f0, "\\"),
+        (g_unk0x006c05f0 + "\\"),
         *(std::string *)((char *)this + 0x94)), missionExtension);
     if (protoFile.FUN_005f5090(protoPath, 1))
     {
@@ -2150,10 +2120,10 @@ void RHEngine::FUN_004c28c0(const std::string &name)
     mapPath = FUN_004e4b40(FUN_004e4b40(FUN_004e4b40(g_unk0x006c05f0, ambiance), name), mapExtension);
     if (!FUN_005f6400(mapPath))
     {
-        mapPath = FUN_004e4b40(FUN_004e4b40(FUN_004e4c70(g_unk0x006c05f0, "\\Day\\"), name), mapExtension);
+        mapPath = FUN_004e4b40(FUN_004e4b40((g_unk0x006c05f0 + "\\Day\\"), name), mapExtension);
         if (!FUN_005f6400(mapPath))
         {
-            mapPath = FUN_004e4b40(FUN_004e4b40(FUN_004e4c70(g_unk0x006c05f0, "\\"), name), mapExtension);
+            mapPath = FUN_004e4b40(FUN_004e4b40((g_unk0x006c05f0 + "\\"), name), mapExtension);
             if (!FUN_005f6400(mapPath))
                 SBAssert(1, "P:\\Robin Hood\\RHengine.cpp", 0x73d,
                     // STRING: GAME 0x006af4f4
@@ -2187,10 +2157,10 @@ void RHEngine::FUN_004c28c0(const std::string &name)
     minimapPath = FUN_004e4b40(FUN_004e4b40(FUN_004e4b40(g_unk0x006c05f0, ambiance), name), minimapExtension);
     if (!FUN_005f6400(minimapPath))
     {
-        minimapPath = FUN_004e4b40(FUN_004e4b40(FUN_004e4c70(g_unk0x006c05f0, "\\Day\\"), name), minimapExtension);
+        minimapPath = FUN_004e4b40(FUN_004e4b40((g_unk0x006c05f0 + "\\Day\\"), name), minimapExtension);
         if (!FUN_005f6400(minimapPath))
         {
-            minimapPath = FUN_004e4b40(FUN_004e4b40(FUN_004e4c70(g_unk0x006c05f0, "\\"), name), minimapExtension);
+            minimapPath = FUN_004e4b40(FUN_004e4b40((g_unk0x006c05f0 + "\\"), name), minimapExtension);
             if (!FUN_005f6400(minimapPath))
                 SBAssert(1, "P:\\Robin Hood\\RHengine.cpp", 0x76b,
                     // STRING: GAME 0x006af490
@@ -4104,8 +4074,8 @@ bool RHEngine::FUN_004dc190(void *actor)
     }
     ((RHTitbitList *)&actors)->At(*(int *)((char *)&actors + 0x1c));
     RHScriptNode *removed = actors.cursor;
-    removed->previous->next = removed->next;
-    removed->next->previous = removed->previous;
+    removed->prev->next = removed->next;
+    removed->next->prev = removed->prev;
     ::operator delete(removed);
     int remaining = actors.count - 1;
     actors.dirty = true;

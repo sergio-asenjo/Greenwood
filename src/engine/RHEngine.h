@@ -40,19 +40,9 @@ public:
 class RHPortraitBar;
 typedef RHPortraitBar RHEngineRosterCalls;
 
-class RHEngineMenuStateCalls
-{
-public:
-    bool FUN_00514970();
-};
+#include "RHEngineMenuStateCalls.h"
 
-class RHEngineSequenceStateCalls
-{
-public:
-    bool FUN_005823f0();
-    bool FUN_0058a670(void *sequence);
-    bool FUN_0058a7d0(void *element);
-};
+#include "RHEngineSequenceStateCalls.h"
 
 class RHEngineReset51bd90
 {
@@ -72,14 +62,7 @@ public:
     void FUN_005c2570();
 };
 
-// SIZE 0x1a0
-class RHUnk0054eab0
-{
-public:
-    RHUnk0054eab0();
-    void FUN_0054eea0(SBFile &file, void *grid);
-    undefined m_00[0x1a0]; // 0x00
-};
+class RHUnk0054eab0;
 
 class RHEngineGridCalls
 {

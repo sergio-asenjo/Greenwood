@@ -63,17 +63,35 @@
 #include "SBNullstr.h"
 #include "RHSequence.h"
 #include "RHSequenceGenericCalls.h"
+#include "RHEngineSequenceStateCalls.h"
+#include "RHScriptListCore.h"
+
+// FUNCTION: GAME 0x005823f0
+bool RHEngineSequenceStateCalls::FUN_005823f0()
+{
+    int count = *(int *)((char *)this + 0x10);
+    if (count)
+    {
+        if (*(unsigned short *)((char *)this + 0x32) > 0)
+            return false;
+        for (int index = count - 1; (short)index >= 0; --index)
+        {
+            switch (*(int *)((char *)((RHUnk0046eb30 *)((char *)this + 8))->Get((short)index) + 0x58))
+            {
+            case 2:
+                return false;
+            case 3:
+            case 4:
+                return false;
+            }
+        }
+    }
+    return true;
+}
 
 // The 4-byte global read/written by SerializeStaticStuff (original 0x006b7480).
 // GLOBAL: GAME 0x006b7480
 int g_unk0x6b7480;
-
-struct RHScriptIter;
-class RHUnk0046eb30
-{
-public:
-    RHScriptIter FUN_0046eb80();
-};
 
 inline void ClearRHSequenceElementRange(std::list<RHSequenceElement *> *list)
 {
@@ -327,6 +345,22 @@ bool RHSequence::SerializeStaticStuff(SBFile &file)
         return false;
     }
     return true;
+}
+
+// FUNCTION: GAME 0x005849e0
+void RHSequence::Unk005849e0(RHSequenceElement *first, RHSequenceElement *second)
+{
+    for (unsigned short index = m_2c - 1; ; --index)
+    {
+        ((RHUnk0046eb30 *)&m_list)->GoToInline(index);
+        if (m_list.m_cur->m_data == first)
+        {
+            ++m_30;
+            break;
+        }
+        if (index == 0)
+            break;
+    }
 }
 
 // Force emission: a non-inline member function defined here is emitted into the

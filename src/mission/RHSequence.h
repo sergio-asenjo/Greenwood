@@ -164,6 +164,8 @@ public:
 
     static bool SerializeStaticStuff(SBFile &file);
 
+    void Unk005849e0(RHSequenceElement *first, RHSequenceElement *second);
+
     void Emit(SBFile &file);
 
     char m_pad0[4];        // [0x00] (opaque)

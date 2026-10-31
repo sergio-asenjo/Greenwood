@@ -1845,6 +1845,29 @@ void RHGameSyncCalls::FUN_005146f0()
     }
 }
 
+#include "RHEngineMenuStateCalls.h"
+#include "RHScriptListCore.h"
+
+struct RHGameEngineActorsView
+{
+    undefined m_00[0x49f8];
+    RHUnk0046eb30 m_actors; // 0x49f8
+};
+
+// FUNCTION: GAME 0x00514970
+bool RHEngineMenuStateCalls::FUN_00514970()
+{
+    bool ok = true;
+    RHCampaign *campaign = (RHCampaign *)g_unk0x6c07fc;
+    unsigned count = (*(RHGameEngineActorsView **)((char *)this + 0x18))->m_actors.count;
+    for (unsigned i = 0; i != count && ok == true; ++i)
+    {
+        RHPCDescription *description = *(RHPCDescription **)((char *)(*(RHGameEngineActorsView **)((char *)this + 0x18))->m_actors.Get((unsigned short)i) + 0x5f8);
+        ok = campaign->FUN_00455a40(description);
+    }
+    return ok;
+}
+
 // FUNCTION: GAME 0x00514ac0
 void RHGameTextCalls::FUN_00514ac0(const std::wstring &text, unsigned duration)
 {
@@ -3875,14 +3898,14 @@ RHGameSaveHeader::RHGameSaveHeader(unsigned long mode)
 // FUNCTION: GAME 0x0056e5d0
 std::string RHSaveGame::FUN_0056e5d0() const
 {
-    return FUN_004e4c70((*(RHGameSaveOwner *const *)this)->v0(), "\\") +
+    return ((*(RHGameSaveOwner *const *)this)->v0() + "\\") +
            *(const std::string *)((const char *)this + 0x08);
 }
 
 // FUNCTION: GAME 0x0056e6b0
 std::string RHGameSaveCalls::FUN_0056e6b0()
 {
-    return FUN_004e4c70((*(RHGameSaveOwner **)this)->v0(), "\\") +
+    return ((*(RHGameSaveOwner **)this)->v0() + "\\") +
            *(std::string *)((char *)this + 0x18);
 }
 
@@ -4164,6 +4187,10 @@ void **EmitRHMapPointerCopy(std::vector<void *> *values, void *const *first,
     RHMapPointerVectorCalls::Copy copy = RHMapPointerVectorCalls::GetCopy();
     return (values->*copy)(first, last, destination);
 }
+
+// TEMPLATE: GAME 0x005dff30
+// ??0?$vector@HV?$allocator@H@std@@@std@@QAE@ABV01@@Z
+template class std::vector<int>;
 
 void RHGame::Emit(SBFile &file)
 {

@@ -2,6 +2,26 @@
 #include "RHEngine.h"
 #include "RHScript.h"
 #include "RHEngineSpriteCalls.h"
+#include "RHUnk0054eab0.h"
+#include <stddef.h>
+
+DECOMP_SIZE_ASSERT(RHSpriteListRoot, 0x0c)
+DECOMP_SIZE_ASSERT(RHUnk00564020, 0x18)
+DECOMP_SIZE_ASSERT(SBResourceScalarVector, 0x10)
+DECOMP_SIZE_ASSERT(SBResourceSurfaceArray, 0x20)
+DECOMP_SIZE_ASSERT(RHUnk0054eab0, 0x1a0)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0054eab0, m_1c) == 0x1c)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0054eab0, m_40) == 0x40)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0054eab0, m_64) == 0x64)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0054eab0, m_88) == 0x88)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0054eab0, m_ac) == 0xac)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0054eab0, m_d0) == 0xd0)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0054eab0, m_f4) == 0xf4)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0054eab0, m_118) == 0x118)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0054eab0, m_140) == 0x140)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0054eab0, m_158) == 0x158)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0054eab0, m_178) == 0x178)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0054eab0, m_19c) == 0x19c)
 
 
 void RHEngine::FUN_004d3d00(void *, void *, unsigned, unsigned, unsigned, unsigned) {}
@@ -43,8 +63,6 @@ RHUnk0057ee40::~RHUnk0057ee40()
     *(unsigned *)this = 0x679c7c;
     ((RHSector *)this)->RHSector::~RHSector();
 }
-bool RHEngineMenuStateCalls::FUN_00514970() { return false; }
-bool RHEngineSequenceStateCalls::FUN_005823f0() { return false; }
 
 // FUNCTION: GAME 0x0051d2c0
 RHUnk0051d2c0::~RHUnk0051d2c0()
@@ -98,7 +116,40 @@ public:
     void FUN_004c2830(SBFile &file);
 };
 
-RHUnk0054eab0::RHUnk0054eab0() {}
+// TEMPLATE: GAME 0x004e5270 FOLDED
+// ??0RHSpriteListRoot@@QAE@ABD@Z
+RHSpriteListRoot::RHSpriteListRoot(const char &allocator)
+{
+    *(char *)&m_allocator = allocator;
+    RHSpriteListNode *node = (RHSpriteListNode *)operator new(0xc);
+    node->next = node;
+    node->previous = node;
+    head = node;
+    count = 0;
+}
+
+// FUNCTION: GAME 0x0054eab0
+RHUnk0054eab0::RHUnk0054eab0()
+    : m_f4(*(const char *)&std::allocator<int>()),
+      m_118(*(const char *)&std::allocator<unsigned long>()),
+      m_158(std::allocator<unsigned long>())
+{
+    m_00[2] = 0;
+    m_00[0] = 0;
+    m_00[1] = 0;
+    m_00[0xb] = 0;
+    m_19c = false;
+    m_00[6] = 1;
+    m_00[0xc] = 0;
+    *(int *)(m_00 + 0x18) = 0;
+}
+
+// TEMPLATE: GAME 0x0059fba0 FOLDED
+// ??0SBResourceScalarVector@@QAE@ABV?$allocator@K@std@@@Z
+SBResourceScalarVector::SBResourceScalarVector(const std::allocator<unsigned long> &allocator)
+    : std::vector<unsigned long>(allocator)
+{
+}
 void RHUnk0054eab0::FUN_0054eea0(SBFile &, void *) {}
 void RHEngineGridCalls::FUN_004efd10(void *, unsigned short, bool) {}
 short RHEngineGridCalls::FUN_004e8fc0(const SBGeoPoint2D &, const SBGeoPoint2D &, short, void *&) { return -1; }
