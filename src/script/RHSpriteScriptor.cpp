@@ -114,10 +114,15 @@ static inline RHSpriteInsertNode *RHSpriteInsertMaximum(RHSpriteInsertNode *node
 
 static inline void RHSpriteDestroyValue(RHUnkSpriteCacheValue &value)
 {
-    value.m_info.m_size.~SBGeoVector2D();
-    value.m_info.m_position.~SBGeoVector2D();
-    value.m_key.~basic_string();
+    value.~RHUnkSpriteCacheValue();
 }
+
+#pragma inline_depth(0)
+static inline void RHSpriteDestroyCacheValue(RHUnkSpriteCacheValue &value)
+{
+    value.RHUnkSpriteCacheValue::~RHUnkSpriteCacheValue();
+}
+#pragma inline_depth(8)
 
 class RHProfileFile : public SBFile
 {
@@ -241,10 +246,8 @@ bool RHUnkSpriteBank::FUN_00506b10(SBFile *file)
     return (undefined4)file == m_b4;
 }
 
-// FUNCTION: GAME 0x005bd000
-RHUnkSpriteScriptInfo::~RHUnkSpriteScriptInfo()
-{
-}
+// SYNTHETIC: GAME 0x005bd000
+// RHUnkSpriteScriptInfo::~RHUnkSpriteScriptInfo
 
 // TEMPLATE: GAME 0x005bdf70
 // ?size@?$vector@URHUnkSpriteRow@@V?$allocator@URHUnkSpriteRow@@@std@@@std@@QBEIXZ
@@ -315,7 +318,7 @@ RHSpriteScriptor *RHSpriteScriptor::GetInstance()
     return g_unk0x006c10d8;
 }
 
-// Parked: 58.91%; frame 0x228 versus 0x230 and cache/EH temporary coloring.
+// Parked: 74.60%; local/register allocation and default-info cleanup/EH differ.
 // STUB: GAME 0x005bf160
 RHUnkSpriteScriptInfo RHSpriteScriptor::LoadSpriteScript(RHframeKind kind, const std::string &name, const std::string &profile)
 {
@@ -324,8 +327,7 @@ RHUnkSpriteScriptInfo RHSpriteScriptor::LoadSpriteScript(RHframeKind kind, const
     std::string ambiance;
     RHUnk005f4fc0 file;
     std::string key;
-    SBGeoVector2D position;
-    SBGeoVector2D size;
+    RHUnkSpriteScriptInfo info;
     key = FUN_004e4b40(name, profile);
     RHUnkSpriteCacheIterator ending = m_cache.end();
     if (m_cache.FUN_005c0800(key).m_node == ending.m_node)
@@ -406,20 +408,16 @@ RHUnkSpriteScriptInfo RHSpriteScriptor::LoadSpriteScript(RHframeKind kind, const
                      "Unable to read profile named %s from the rhs file", profile.c_str());
         RHUnkSpriteFileHeader header;
         file.Access(&header, 0x2e);
-        std::vector<unsigned short> *indices = new std::vector<unsigned short>;
-        std::vector<RHUnkSpriteRow> *rows = new std::vector<RHUnkSpriteRow>;
-        indices->resize(0x11b);
-        for (unsigned i = 0; i < 0x11b; ++i)
-            (*indices)[i] = 0xffff;
-        FUN_005bfef0(file, header.m_rows, *rows, *indices);
+        info.m_indices = new std::vector<unsigned short>;
+        info.m_rows = new std::vector<RHUnkSpriteRow>;
+        info.m_indices->resize(0x11b);
+        for (unsigned i = 0, remaining = 0x11b; remaining != 0; ++i, --remaining)
+            (*info.m_indices)[i] = 0xffff;
+        FUN_005bfef0(file, header.m_rows, *info.m_rows, *info.m_indices);
         file.FUN_005f5290();
-        position = SBGeoVector2D((float)header.m_x, (float)header.m_y);
-        size = SBGeoVector2D((float)header.m_26, (float)header.m_size);
-        RHUnkSpriteScriptInfo &entry = m_cache[key];
-        entry.m_rows = rows;
-        entry.m_indices = indices;
-        entry.m_position = position;
-        entry.m_size = size;
+        info.m_position = SBGeoVector2D((float)header.m_x, (float)header.m_y);
+        info.m_size = SBGeoVector2D((float)header.m_26, (float)header.m_size);
+        m_cache[key] = info;
     }
     return m_cache[key];
 }
@@ -498,11 +496,8 @@ bool RHSpriteScriptor::FUN_005c0490(SBFile &file, const char *profile)
     return false;
 }
 
-// Parked: the original inlines the info destructor here; its out-of-line definition stays a separate call.
-// STUB: GAME 0x005c0600
-RHUnkSpriteCacheValue::~RHUnkSpriteCacheValue()
-{
-}
+// SYNTHETIC: GAME 0x005c0600
+// RHUnkSpriteCacheValue::~RHUnkSpriteCacheValue
 
 // FUNCTION: GAME 0x005c0690
 RHUnkSpriteCacheInsertResult RHUnkSpriteCache::FUN_005c0690(const RHUnkSpriteCacheValue &value)
@@ -524,7 +519,7 @@ RHSpriteInsertIterator RHSpriteInsertTree::FUN_005c06c0(RHSpriteInsertIterator f
             for (RHSpriteInsertNode *next = node; next != (RHSpriteInsertNode *)g_unk0x006c10e0; node = next) {
                 FUN_005c10d0(next->m_08);
                 next = next->m_00;
-                node->m_0c.~RHUnkSpriteCacheValue();
+                RHSpriteDestroyCacheValue(node->m_0c);
                 operator delete(node);
             }
         }
@@ -553,8 +548,7 @@ RHUnkSpriteCacheValue::RHUnkSpriteCacheValue(const std::string &key, const RHUnk
 {
 }
 
-// Parked: the original inlines the value and info destructors with their unwind states.
-// STUB: GAME 0x005c0b50
+// FUNCTION: GAME 0x005c0b50
 RHSpriteInsertIterator RHSpriteInsertTree::FUN_005c0b50(RHSpriteInsertIterator position)
 {
     RHSpriteInsertNode *x;
@@ -698,8 +692,7 @@ RHSpriteInsertIterator RHSpriteInsertTree::FUN_005c0b50(RHSpriteInsertIterator p
     return position;
 }
 
-// Parked: the original inlines the value and info destructors with their unwind states.
-// STUB: GAME 0x005c10d0
+// FUNCTION: GAME 0x005c10d0
 void RHSpriteInsertTree::FUN_005c10d0(RHSpriteInsertNode *node)
 {
     RHUnk00641782Lock lock;

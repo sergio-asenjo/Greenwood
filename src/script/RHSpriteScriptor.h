@@ -49,7 +49,6 @@ struct RHUnkSpriteScriptInfo
     RHUnkSpriteScriptInfo() {}
     RHUnkSpriteScriptInfo(const RHUnkSpriteScriptInfo &other)
         : m_rows(other.m_rows), m_indices(other.m_indices), m_position(other.m_position), m_size(other.m_size) {}
-    ~RHUnkSpriteScriptInfo();
     std::vector<RHUnkSpriteRow> *m_rows; // +0x00
     std::vector<unsigned short> *m_indices; // +0x04
     SBGeoVector2D m_position; // +0x08
@@ -62,7 +61,7 @@ struct RHUnkSpriteCacheNode
     RHUnkSpriteCacheNode *m_left;
     RHUnkSpriteCacheNode *m_parent;
     RHUnkSpriteCacheNode *m_right;
-    std::string m_key; // 0x0c
+    const std::string m_key; // 0x0c
     RHUnkSpriteScriptInfo m_value; // +0x1c
 };
 
@@ -77,8 +76,7 @@ struct RHUnkSpriteCacheIterator
 struct RHUnkSpriteCacheValue
 {
     RHUnkSpriteCacheValue(const std::string &key, const RHUnkSpriteScriptInfo &info);
-    ~RHUnkSpriteCacheValue();
-    std::string m_key; // +0x00
+    const std::string m_key; // +0x00
     RHUnkSpriteScriptInfo m_info; // +0x10; sizeof = 0x28
 };
 
@@ -105,7 +103,9 @@ public:
     RHUnkSpriteCacheIterator end() const { RHUnkSpriteCacheIterator it; it.m_node = m_head; return it; }
     RHUnkSpriteScriptInfo &operator[](const std::string &key)
     {
-        return FUN_005c0690(RHUnkSpriteCacheValue(key, RHUnkSpriteScriptInfo())).m_first.m_node->m_value;
+        RHUnkSpriteScriptInfo info;
+        RHUnkSpriteCacheIterator position = FUN_005c0690(RHUnkSpriteCacheValue(key, info)).m_first;
+        return position.m_node->m_value;
     }
     undefined m_0[4]; // 0x00
     RHUnkSpriteCacheNode *m_head; // +0x04
