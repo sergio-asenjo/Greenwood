@@ -231,33 +231,27 @@ void RHFrameHolder::FUN_00504b10(unsigned long data, unsigned long size, unsigne
 
 extern RHUnk005ef320 *g_unk0x6c11d0;
 
-// STUB: GAME 0x005046e0
+// FUNCTION: GAME 0x005046e0
 void RHFrameHolder::ApplyFogEffect(unsigned short *pixels, unsigned long count, unsigned short percent, unsigned short color)
 {
     unsigned short key = g_pEngine->FUN_004d2340(15);
-    int remainder = 100 - percent;
-    int red = (color >> 11) * remainder / 100;
-    int green = ((color >> 5) & 62) * remainder / 100;
-    int blue = (color & 31) * remainder / 100;
-    if (count > 0)
+    int red = (color >> 11) * (100 - percent) / 100;
+    int green = ((color >> 5) & 62) * (100 - percent) / 100;
+    int blue = (color & 31) * (100 - percent) / 100;
+    for (unsigned long i = 0; i < count; i++)
     {
-        unsigned int remaining = count;
-        do
+        unsigned short value = *pixels;
+        if (value != 0x7c0 && value != key)
         {
-            unsigned short value = *pixels;
-            if (value != 0x7c0 && value != key)
-            {
-                *pixels = (((((value >> 5) & 62) * percent / 100 + green) << 5) & 0x7c0) |
-                    ((((value >> 11) * percent / 100 + red) & 31) << 11) |
-                    ((((value & 31) * percent / 100) + blue) & 31);
-            }
-            ++pixels;
-        } while (--remaining);
+            *pixels = (((((value >> 5) & 62) * percent / 100 + green) << 5) & 0x7c0) |
+                ((((value >> 11) * percent / 100 + red) & 31) << 11) |
+                ((((value & 31) * percent / 100) + blue) & 31);
+        }
+        ++pixels;
     }
 }
 
-// Parked: green and countdown locals swap argument-slot coloring despite matching channel operations.
-// STUB: GAME 0x00504830
+// FUNCTION: GAME 0x00504830
 bool RHUnk005069a0::FUN_00504830(unsigned short percent, unsigned short color)
 {
     unsigned short count = m_00 * 4;
@@ -265,10 +259,9 @@ bool RHUnk005069a0::FUN_00504830(unsigned short percent, unsigned short color)
     {
         if (*(unsigned short *)((char *)g_unk0x6c11d0 + 0x10c) != 16 && m_0e[2])
         {
-            int remainder = 100 - percent;
-            int red = ((color >> 10) & 31) * remainder / 100;
-            int green = ((color >> 5) & 31) * remainder / 100;
-            int blue = (color & 31) * remainder / 100;
+            int red = ((color >> 10) & 31) * (100 - percent) / 100;
+            int green = ((color >> 5) & 31) * (100 - percent) / 100;
+            int blue = (color & 31) * (100 - percent) / 100;
             if (count > 0)
             {
                 unsigned remaining = count;
@@ -288,10 +281,9 @@ bool RHUnk005069a0::FUN_00504830(unsigned short percent, unsigned short color)
         }
         else
         {
-            int remainder = 100 - percent;
-            int red = (color >> 11) * remainder / 100;
-            int green = ((color >> 5) & 62) * remainder / 100;
-            int blue = (color & 31) * remainder / 100;
+            int red = (color >> 11) * (100 - percent) / 100;
+            int green = ((color >> 5) & 62) * (100 - percent) / 100;
+            int blue = (color & 31) * (100 - percent) / 100;
             if (count > 0)
             {
                 unsigned remaining = count;
