@@ -44,24 +44,6 @@ typedef RHPortraitBar RHEngineRosterCalls;
 
 #include "RHEngineSequenceStateCalls.h"
 
-class RHEngineReset51bd90
-{
-public:
-    void FUN_0051bd90();
-};
-
-class RHEngineReset581c70
-{
-public:
-    void FUN_00581c70();
-};
-
-class RHEngineReset5c2570
-{
-public:
-    void FUN_005c2570();
-};
-
 class RHUnk0054eab0;
 
 class RHEngineGridCalls
@@ -99,11 +81,7 @@ void FUN_004be5c0(SBFile &file, void *&value);
 // SIZE 0x4944 (partial layout)
 class RHElementActorPC;
 
-class RHUnk0051e790
-{
-public:
-    void *FUN_0051e790(RHElementActorPC *pc, void *position, const SBGeoPoint2D &point, int flags);
-};
+class RHUnk0051e5e0;
 
 class RHEngine
 {
@@ -132,12 +110,12 @@ public:
     void FUN_004defa0(char flag);
     void FUN_004df070(void *value, char flag);
     void FUN_004df330(const SBGeoPoint2D &point, void *actor, int index);
-    void FUN_004df550(const SBGeoPoint2D &point, void *actor, int flag, void *provided);
+    void FUN_004df550(const SBGeoPoint2D &point, bool queued, bool immediate, void *provided);
     void FUN_004df7b0(const SBGeoPoint2D &point, bool flag);
     void FUN_004dfb50(const SBGeoPoint2D &point, bool flag);
-    void FUN_004dfcf0(char flag);
+    void FUN_004dfcf0(const SBGeoPoint2D &point, bool queued);
     void FUN_004df950(const SBGeoPoint2D &point, char flag);
-    void FUN_004dfe70(const SBGeoPoint2D &point, char flag);
+    void FUN_004dfe70(const SBGeoPoint2D &point, bool queued);
     void *FUN_004e04c0(int type, const SBGeoPoint2D &point, bool useCache, bool notify);
     void FUN_004e0550(const SBGeoPoint2D &point, void *actor, int index);
     void FUN_004e0770(const SBGeoPoint2D &point, void *actor, int index);
@@ -146,9 +124,9 @@ public:
     void FUN_004e1630(const SBGeoPoint2D &point, bool flag);
     void FUN_004e09d0(const SBGeoPoint2D &point, bool queued, bool immediate);
     void FUN_004e0d80(const SBGeoPoint2D &point, bool queued, bool immediate);
-    void FUN_004e17c0(unsigned value, void *actor);
+    void FUN_004e17c0(void *actor, int value);
     void FUN_004e0030(const SBGeoPoint2D &point, void *actor, char flag);
-    void FUN_004e0fb0(const SBGeoPoint2D &point, void *actor, char flag, int value);
+    void FUN_004e0fb0(const SBGeoPoint2D &point, bool queued, bool immediate, void *provided);
     void FUN_004debe0();
     void FUN_004debf0(const SBGeoPoint2D &point);
     unsigned FUN_004e19c0(unsigned value);
@@ -184,6 +162,7 @@ public:
     unsigned char FUN_004ded90(void *actor);
     void FUN_004e3d20(int index, int value);
     bool FUN_004c7eb0(void *first, int second, void **result);
+    char FUN_004c7f50(void *actor);
     void FUN_004c7f60(const void *point);
     void FUN_004db7f0(SBGeoPoint2D &point);
     int FUN_004db7b0(void *actor);
@@ -218,7 +197,7 @@ public:
     void FUN_004e2390(void *actor);
     void FUN_004e1fc0();
     bool FUN_004e21e0(void *actor);
-    void *FUN_004e2150(RHUnk0051e790 *target, const SBGeoPoint2D &point);
+    void *FUN_004e2150(RHUnk0051e5e0 *target, const SBGeoPoint2D &point);
     void FUN_004cd600(const SBGeoPoint2D &a, bool b);
     void FUN_004cdab0(void *a);
     void FUN_004cdcc0();
@@ -469,7 +448,7 @@ public:
 };
 
 void FUN_005709a0(void *value, unsigned index);
-void FUN_00570850(void *actor);
+bool FUN_00570850(void *actor);
 
 class RHMissionArrayStorage
 {

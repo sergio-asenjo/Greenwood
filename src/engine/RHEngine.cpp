@@ -16,6 +16,7 @@ class RHFastFindGrid
 public:
     void FUN_004e8bd0(void *sector, unsigned short layer, bool mode);
     void FUN_004efd10(void *value, unsigned short layer, bool mode);
+    void Convert2DTo3D(class RHUnk00613e90 &point, const SBGeoPoint2D &position, int type);
 };
 
 class RHEngineActorUpdateCalls
@@ -343,8 +344,7 @@ DECOMP_SIZE_ASSERT(RHEngineContinuationSectorCalls, 0x04)
 
 bool FUN_005e0c90(SBFile &file, std::string &value);
 void RHSerializeName(SBFile &file, const char *name);
-extern void **g_unk0x6c0f34;
-extern void **g_unk0x6c0f38;
+#include "RHScriptActorArray.h"
 
 #include "RHEngineWidenedCalls.h"
 #include "RHElementObject.h"
@@ -393,6 +393,8 @@ class SBGeoVector2D;
 // SIZE 0x08
 class SBGeoVector2D;
 #include "SBGeoPoint2D.h"
+#include "RHGroundMark.h"
+#include "RHSelectionMark.h"
 #include "RHUnk0054eab0.h"
 
 DECOMP_SIZE_ASSERT(RHUnk0054eab0, 0x1a0)
@@ -434,11 +436,6 @@ public:
 DECOMP_SIZE_ASSERT(RHElementBonus, 0x100)
 struct RHBonusProjection;
 
-class RHUnk0057d800
-{
-public:
-    RHBonusProjection *Unk(const SBGeoPoint2D &point);
-};
 
 class RHUnk00582220
 {
@@ -457,6 +454,7 @@ public:
 };
 
 #include "RHSequenceGenericCalls.h"
+#include "RHSequenceElementGeneric.h"
 
 class RHUnk005866a0
 {
@@ -703,6 +701,8 @@ public:
 #include "RHEngineBackgroundCalls.h"
 
 // SIZE 0x14
+#ifndef SBGEO_BOUNDINGBOX2D_VIEW
+#define SBGEO_BOUNDINGBOX2D_VIEW
 class SBGeoBoundingBox2D
 {
 public:
@@ -717,6 +717,9 @@ public:
     undefined m_10; // 0x10
     undefined m_11[3]; // 0x11
 };
+#endif
+
+#include "RHSectorBuilding.h"
 
 DECOMP_SIZE_ASSERT(SBGeoBoundingBox2D, 0x14)
 
@@ -1474,40 +1477,14 @@ RHUnk004bf6d0::~RHUnk004bf6d0()
 {
 }
 
-class RHUnk004bf740Item
-{
-public:
-    unsigned m_0;
-    char *m_4;
-    unsigned m_8;
-    unsigned m_c;
-};
+#include "RHMissionStatCore.h"
 
-class RHUnk004bf740
-{
-public:
-    void FUN_004bf740();
-    char m_0[0x2c];
-    RHUnk004bf740Item *m_2c;
-    RHUnk004bf740Item *m_30;
-    RHUnk004bf740Item *m_34;
-};
+// SYNTHETIC: GAME 0x004bf740
+// RHMissionStat::~RHMissionStat
 
-// Parked at 0.7294: the inlined std::string destroy differs from the original's string layout (extra SSO byte store and tail ret).
-// STUB: GAME 0x004bf740
-void RHUnk004bf740::FUN_004bf740()
+void EmitRHMissionStatDestructor(RHMissionStat *value)
 {
-    char *last = (char *)m_30;
-    char *first = (char *)m_2c;
-    while (first != last)
-    {
-        ((std::string *)first)->~basic_string();
-        first += 0x10;
-    }
-    operator delete(m_2c);
-    m_2c = 0;
-    m_30 = 0;
-    m_34 = 0;
+    value->~RHMissionStat();
 }
 
 class RHEngineMissionCalls
@@ -1624,9 +1601,9 @@ bool RHEngine::FUN_004c0340(SBGeoPoint2D &point)
 bool RHEngine::FUN_004c04a0()
 {
     SBGeoVector2D point;
-    ((RHEngineReset51bd90 *)((char *)this + 0x4624))->FUN_0051bd90();
-    ((RHEngineReset581c70 *)((char *)this + 0x4608))->FUN_00581c70();
-    ((RHEngineReset5c2570 *)((char *)this + 0x4668))->FUN_005c2570();
+    ((RHGroundMark *)((char *)this + 0x4624))->LoadFromResource();
+    ((RHUnk00581c40 *)((char *)this + 0x4608))->LoadFromResource();
+    ((RHTitbits *)((char *)this + 0x4668))->LoadFromResource();
     return true;
 }
 
@@ -2021,7 +1998,7 @@ public:
 // FUNCTION: GAME 0x004c2720
 void RHEngine::FUN_004c2720(SBFile &file)
 {
-    *(int *)((char *)this + 0x4a44) = g_unk0x6c0f34 == 0 ? 0 : g_unk0x6c0f38 - g_unk0x6c0f34;
+    *(int *)((char *)this + 0x4a44) = g_unk0x6c0f30.First() == 0 ? 0 : g_unk0x6c0f30.Last() - g_unk0x6c0f30.First();
     *(unsigned *)((char *)this + 0x4a48) = g_unk0x006c081c;
     std::vector<void *> &actors = *(std::vector<void *> *)((char *)this + 0x48d8);
     ((RHCampaign *)g_unk0x6c07fc)->FUN_00450c10(*(SBArray<RHElement *> *)&actors, *(std::vector<RHbeamMe> *)&file);
@@ -2754,9 +2731,9 @@ bool RHEngine::FUN_004c7eb0(void *first, int second, void **result)
 #include "RHPCSelectionQueryCalls.h"
 
 // FUNCTION: GAME 0x004c7f50
-void __stdcall FUN_004c7f50(void *value)
+char RHEngine::FUN_004c7f50(void *actor)
 {
-    ((RHUnk00493a80 *)value)->FUN_00493a80();
+    return (char)((RHUnk00493a80 *)actor)->FUN_00493a80();
 }
 
 // Parked: x87 clamp ordering and non-trivial point temporary cleanup differ from target.
@@ -3419,8 +3396,9 @@ void RHEngine::FUN_004d21b0(bool enabled, bool queued)
                 else
                 {
                     RHEngineSpritePoint position;
-                    int id = ((RHScriptBatchCalls *)((char *)this + 0x4668))->Unk005c2ec0(
-                        &position, 0, 3, actor, 5, (int)actor, 0, -1);
+                    int id = ((RHTitbits *)((char *)this + 0x4668))->AddTitbit(
+                        *(const RHUnk00613e90 *)&position, 0, (RHtitbitKind)3, (RHElement *)actor, 5,
+                        (RHElementActorPC *)actor, false, -1);
                     ((RHElementActorPC *)actor)->SetQuickActionSequence(1, action, id);
                 }
             }
@@ -3431,8 +3409,9 @@ void RHEngine::FUN_004d21b0(bool enabled, bool queued)
                 else
                 {
                     RHEngineSpritePoint position;
-                    int id = ((RHScriptBatchCalls *)((char *)this + 0x4668))->Unk005c2ec0(
-                        &position, 0, 3, actor, 4, (int)actor, 0, -1);
+                    int id = ((RHTitbits *)((char *)this + 0x4668))->AddTitbit(
+                        *(const RHUnk00613e90 *)&position, 0, (RHtitbitKind)3, (RHElement *)actor, 4,
+                        (RHElementActorPC *)actor, false, -1);
                     ((RHElementActorPC *)actor)->SetQuickActionSequence(2, action, id);
                 }
             }
@@ -4156,7 +4135,7 @@ void RHEngine::FUN_004ddfb0()
         case 11: FUN_004df7b0(point, flag); break;
         case 5: FUN_004dfb50(point, flag); break;
         case 2: case 3: FUN_004e0550(point, (void *)(unsigned char)flag, 0); break;
-        case 16: FUN_004df550(point, (void *)(unsigned char)flag, 0, 0); break;
+        case 16: FUN_004df550(point, flag, false, 0); break;
         case 9: FUN_004e0770(point, (void *)(unsigned char)flag, 0); break;
         case 8: FUN_004df330(point, (void *)(unsigned char)flag, 0); break;
         }
@@ -4419,8 +4398,9 @@ void RHEngine::FUN_004df070(void *value, char flag)
     RHUnk00582220 *node = new RHUnk00582220;
     RHUnk00585ea0 *action = new RHUnk00585ea0(1, 0x23, sequence, selected);
     ((RHUnk00585500 *)action)->Unk(node);
-    ((RHScriptBatchCalls *)((char *)this + 0x4668))->Unk005c2ec0(
-        0, 0, 3, selected, 0xe, (int)sequence, 0, -1);
+    ((RHTitbits *)((char *)this + 0x4668))->AddTitbit(
+        *(const RHUnk00613e90 *)0, 0, (RHtitbitKind)3, (RHElement *)selected, 0xe,
+        (RHElementActorPC *)sequence, false, -1);
     unsigned short layer = *(unsigned short *)((char *)*(void **)((char *)this + 0x68) + 0x26);
     ((RHEngineSequenceDispatchCalls *)sequence)->Apply(node, 0, layer, selected);
     RHUnk00549250 message(6, sequence);
@@ -4453,30 +4433,35 @@ void RHEngine::FUN_004df330(const SBGeoPoint2D &point, void *actor, int index)
     (void)distance;
 }
 
-// Residual: the target's supplied-object branch and direct 0x004a0020 callback remain unmatched.
+// Parked: iterator temporaries and geometry lifetime slots differ.
 // STUB: GAME 0x004df550
-void RHEngine::FUN_004df550(const SBGeoPoint2D &point, void *actor, int flag, void *provided)
+void RHEngine::FUN_004df550(const SBGeoPoint2D &point, bool queued, bool immediate, void *provided)
 {
     void *target = provided;
     if (!target)
-        target = FUN_004e04c0(0xa, point, flag, actor);
-    if (!target)
-        return;
+    {
+        target = FUN_004e04c0(0xa, point, immediate, queued);
+        if (!target)
+            return;
+    }
     RHEngineSequenceList &sequences = *(RHEngineSequenceList *)((char *)this + 0x49f8);
-    void *element = sequences.Get(flag, false, true);
-    if (!element)
-        return;
+    void *element = sequences.Get(0, false, true);
     RHUnk00585ea0 *action = new RHUnk00585ea0(1, 0x57, element, target);
-    char *sprite = *(char **)((char *)element + 0x50);
-    SBGeoVector2D vector(*(SBGeoPoint2D *)(sprite + 0x1c));
-    short frame = *(short *)(sprite + 0xd8);
-    RHUnk005b5e00 *spriteCalls = (RHUnk005b5e00 *)sprite;
-    void *holder = spriteCalls->Unk();
-    short offset = *(short *)(*(char **)((char *)holder + 4) + 0x1b2);
-    SBGeoPoint2D *framePoint = spriteCalls->Unk005bdd30(offset + frame);
-    float distance = ((RHUnk005fc3b0 *)&framePoint->Unk005fc190(vector).Unk005fc110(
-        *(SBGeoPoint2D *)(sprite + 0x24)))->Unk005fc6a0(1.0f);
-    (void)distance;
+    float distance;
+    {
+        char *sprite = *(char **)((char *)element + 0x50);
+        SBGeoVector2D vector(*(SBGeoVector2D *)(sprite + 0x1c));
+        short frame = *(short *)(sprite + 0xd8);
+        RHUnk005b5e00 *spriteCalls = (RHUnk005b5e00 *)sprite;
+        void *holder = spriteCalls->Unk();
+        short offset = *(short *)(*(char **)((char *)holder + 4) + 0x1b2);
+        offset += frame;
+        SBGeoPoint2D *framePoint = spriteCalls->Unk005bdd30(offset);
+        distance = ((RHUnk005fc3b0 *)&framePoint->Unk005fc190(vector).Unk005fc110(
+            *(SBGeoPoint2D *)(sprite + 0x24)))->Unk005fc6a0(1.0f);
+    }
+    ((RHElementActorPC *)element)->FUN_004a0020(action, queued, (int)distance, 0x2d, 0, 0, 0x80000);
+    RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0x16, 0, 0));
 }
 
 static inline void *RHEnginePositionAddress(const RHEngineSpritePoint &position);
@@ -4503,8 +4488,9 @@ void RHEngine::FUN_004df7b0(const SBGeoPoint2D &point, bool flag)
     RHUnk00585ea0 *action = new RHUnk00585ea0(1, 0x58, element, target);
     ((RHUnk00585500 *)action)->Unk(node);
     const RHEngineSpritePoint &position = RHEngineSpritePoint();
-    int effect = ((RHScriptBatchCalls *)((char *)this + 0x4668))->Unk005c2ec0(
-        RHEnginePositionAddress(position), 0, 3, target, 0x25, (int)element, 0, -1);
+    int effect = ((RHTitbits *)((char *)this + 0x4668))->AddTitbit(
+        *(const RHUnk00613e90 *)RHEnginePositionAddress(position), 0, (RHtitbitKind)3, (RHElement *)target, 0x25,
+        (RHElementActorPC *)element, false, -1);
     unsigned short layer = *(unsigned short *)((char *)*(void **)((char *)this + 0x68) + 0x26);
     ((RHEngineSequenceDispatchCalls *)element)->Apply(node, 0, layer, (void *)effect);
     RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(6, element));
@@ -4532,26 +4518,27 @@ void RHEngine::FUN_004dfb50(const SBGeoPoint2D &point, bool flag)
     RHUnk00585ea0 *action = new RHUnk00585ea0(1, 0x59, element, target);
     ((RHUnk00585500 *)action)->Unk(node);
     const RHEngineSpritePoint &position = RHEngineSpritePoint();
-    int effect = ((RHScriptBatchCalls *)((char *)this + 0x4668))->Unk005c2ec0(
-        RHEnginePositionAddress(position), 0, 3, target, 0xa, (int)element, 0, -1);
+    int effect = ((RHTitbits *)((char *)this + 0x4668))->AddTitbit(
+        *(const RHUnk00613e90 *)RHEnginePositionAddress(position), 0, (RHtitbitKind)3, (RHElement *)target, 0xa,
+        (RHElementActorPC *)element, false, -1);
     unsigned short layer = *(unsigned short *)((char *)*(void **)((char *)this + 0x68) + 0x26);
     ((RHEngineSequenceDispatchCalls *)element)->Apply(node, 0, layer, (void *)effect);
     RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(6, element));
 }
 
-// Residual: the target resolver at 0x004fbd30 is outside the assigned range.
+// Parked: parameter-home reuse and queued-flag lifetime differ.
 // STUB: GAME 0x004dfcf0
-void RHEngine::FUN_004dfcf0(char flag)
+void RHEngine::FUN_004dfcf0(const SBGeoPoint2D &point, bool queued)
 {
-    if (!*(char *)((char *)this + 0x471a) && !flag)
+    if (!*(bool *)((char *)this + 0x471a) && !queued)
         return;
     RHUnk00613e90 first;
     RHUnk00613e90 second;
-    RHSeqList *sequences = (RHSeqList *)((char *)this + 0x49f8);
-    sequences->GoTo(0);
-    void *element = sequences->cursor->data;
-    RHUnk00585ea0 *action = new RHUnk00585ea0(1, 0x5b, element, 0);
-    if (!flag)
+    void *element = (*(RHScriptNode **)((char *)this + 0x49fc))->next->data;
+    ((RHFastFindGrid *)((char *)this + 0x11c))->Convert2DTo3D(first, point, 4);
+    RHUnk005866a0 *action = new RHUnk005866a0(1, 0x5b, element);
+    ((RHSequenceElementGeneric *)action)->FUN_00587060(0x20, *(const RHGenericValue *)&first);
+    if (!queued)
     {
         ((RHScriptBatchCalls *)((char *)this + 0x43f8))->Unk0058a940(
             "", 0, action);
@@ -4559,13 +4546,12 @@ void RHEngine::FUN_004dfcf0(char flag)
     }
     RHUnk00582220 *node = new RHUnk00582220;
     ((RHUnk00585500 *)action)->Unk(node);
-    ((RHScriptBatchCalls *)((char *)this + 0x4668))->Unk005c2ec0(
-        &first, *(unsigned short *)((char *)this + 0xc4), 3, element,
-        0x1d, 0, 0, -1);
+    int effect = ((RHTitbits *)((char *)this + 0x4668))->AddTitbit(
+        first, *(unsigned short *)((char *)this + 0xc4), (RHtitbitKind)3,
+        0, 0x1d, (RHElementActorPC *)element, false, -1);
     unsigned short layer = *(unsigned short *)((char *)*(void **)((char *)this + 0x68) + 0x26);
-    ((RHEngineSequenceDispatchCalls *)element)->Apply(node, 0, layer, element);
-    RHUnk00549250 message(6, element);
-    RHUnk00546050()->RHUnk005460c0(message);
+    ((RHEngineSequenceDispatchCalls *)element)->Apply(node, 0, layer, (void *)effect);
+    RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(6, element));
 }
 
 // Residual: target's resolver call at 0x004fbd30 and animation-setting helper are unresolved.
@@ -4596,32 +4582,34 @@ void RHEngine::FUN_004df950(const SBGeoPoint2D &point, char flag)
     (void)second;
 }
 
-// Residual: target's resolver and animation-setting helpers are outside the assigned range.
+// Parked: native 0x006c0560 reference identity remains unproved.
 // STUB: GAME 0x004dfe70
-void RHEngine::FUN_004dfe70(const SBGeoPoint2D &point, char flag)
+void RHEngine::FUN_004dfe70(const SBGeoPoint2D &point, bool queued)
 {
-    if (!*(char *)((char *)this + 0x471a) && !flag)
+    if (!*(bool *)((char *)this + 0x471a) && !queued)
         return;
-    RHUnk00613e90 first;
-    RHUnk00613e90 second;
     RHSeqList *sequences = (RHSeqList *)((char *)this + 0x49f8);
     sequences->GoTo(0);
     void *element = sequences->cursor->data;
-    RHUnk005866a0 *action = new RHUnk005866a0(1, 0x5b, element);
-    action->Unk00586ed0(0x20, (int)&first);
-    if (!flag)
+    RHUnk00613e90 first;
+    ((RHFastFindGrid *)((char *)this + 0x11c))->Convert2DTo3D(first, point, 4);
+    if (!queued)
     {
+        RHUnk005866a0 *action = new RHUnk005866a0(1, 0x5c, element);
+        ((RHSequenceElementGeneric *)action)->FUN_00587060(0x1f, *(const RHGenericValue *)&first);
         ((RHScriptBatchCalls *)((char *)this + 0x43f8))->Unk0058a940(
             "", 0, action);
         return;
     }
     RHUnk00582220 *node = new RHUnk00582220;
+    RHUnk005866a0 *action = new RHUnk005866a0(1, 0x5c, element);
+    ((RHSequenceElementGeneric *)action)->FUN_00587060(0x1f, *(const RHGenericValue *)&first);
     ((RHUnk00585500 *)action)->Unk(node);
-    ((RHScriptBatchCalls *)((char *)this + 0x4668))->Unk005c2ec0(
-        (void *)&point, *(unsigned short *)((char *)this + 0xc4), 3,
-        element, 0x1d, 0, 0, -1);
+    int effect = ((RHTitbits *)((char *)this + 0x4668))->AddTitbit(
+        first, 0, (RHtitbitKind)3, 0, 0x1a, (RHElementActorPC *)element, false, -1);
     unsigned short layer = *(unsigned short *)((char *)*(void **)((char *)this + 0x68) + 0x26);
-    ((RHEngineSequenceDispatchCalls *)element)->Apply(node, 0, layer, action);
+    ((RHEngineSequenceDispatchCalls *)element)->Apply(node, 0, layer, (void *)effect);
+    RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(6, element));
 }
 
 // Residual: target's 0x004f5890 validity test and 0x004fbd30 resolver are unavailable in scope.
@@ -4654,28 +4642,33 @@ SBGeoPoint2D *RHUnk005b5e00::FUN_004e0490(int index, short base)
     return Unk005bdd30((short)(*(short *)(*(char **)(resource + 4) + index * 2) + base));
 }
 
-// Parked at 0.8989: cache address load and shared return scheduling differ.
-// STUB: GAME 0x004e04c0
+// FUNCTION: GAME 0x004e04c0
 void *RHEngine::FUN_004e04c0(int type, const SBGeoPoint2D &point, bool useCache, bool notify)
 {
-    if (useCache && *(void **)((char *)this + 0x8c))
-        return *(void **)((char *)this + 0x8c);
-    void *&result = *(void **)((char *)this + 0x8c);
-    FUN_004c7d80((void *)&point, type, &result);
-    if (result)
+    void **result;
+    if (useCache)
+    {
+        result = (void **)((char *)this + 0x8c);
+        if (*result)
+            goto complete;
+    }
+    result = (void **)((char *)this + 0x8c);
+    FUN_004c7d80((void *)&point, type, result);
+    if (*result)
     {
         if (*(bool *)((char *)*(void **)((char *)this + 0x68) + 0x1f))
         {
             void *&previous = *(void **)((char *)this + 0x90);
-            if (previous == result)
+            if (previous == *result)
                 return 0;
-            previous = result;
+            previous = *result;
             FUN_004de170(true, notify, false);
         }
-        return result;
     }
-    *(void **)((char *)this + 0x90) = 0;
-    return result;
+    else
+        *(void **)((char *)this + 0x90) = 0;
+complete:
+    return *result;
 }
 
 // Residual: target's direct 0x004a0020 callback and point-register schedule remain unmatched.
@@ -4738,8 +4731,9 @@ void RHEngine::FUN_004e0bf0(const SBGeoPoint2D &, bool flag, bool)
         RHUnk00582220 *node = new RHUnk00582220;
         ((RHUnk00585500 *)action)->Unk(node);
         const RHEngineSpritePoint &position = RHEngineSpritePoint();
-        int effect = ((RHScriptBatchCalls *)((char *)this + 0x4668))->Unk005c2ec0(
-            RHEnginePositionAddress(position), 0, 3, element, 0x18, (int)element, 0, -1);
+        int effect = ((RHTitbits *)((char *)this + 0x4668))->AddTitbit(
+            *(const RHUnk00613e90 *)RHEnginePositionAddress(position), 0, (RHtitbitKind)3, (RHElement *)element, 0x18,
+            (RHElementActorPC *)element, false, -1);
         unsigned short actionIndex = *(unsigned short *)((char *)*(void **)((char *)this + 0x68) + 0x26);
         ((RHEngineSequenceDispatchCalls *)element)->Apply(node, 0, actionIndex, (void *)effect);
     }
@@ -4770,8 +4764,9 @@ void RHEngine::FUN_004e14a0(const SBGeoPoint2D &, bool flag, bool)
         RHUnk00582220 *node = new RHUnk00582220;
         ((RHUnk00585500 *)action)->Unk(node);
         const RHEngineSpritePoint &position = RHEngineSpritePoint();
-        int effect = ((RHScriptBatchCalls *)((char *)this + 0x4668))->Unk005c2ec0(
-            RHEnginePositionAddress(position), 0, 3, element, 0x21, (int)element, 0, -1);
+        int effect = ((RHTitbits *)((char *)this + 0x4668))->AddTitbit(
+            *(const RHUnk00613e90 *)RHEnginePositionAddress(position), 0, (RHtitbitKind)3, (RHElement *)element, 0x21,
+            (RHElementActorPC *)element, false, -1);
         unsigned short actionIndex = *(unsigned short *)((char *)*(void **)((char *)this + 0x68) + 0x26);
         ((RHEngineSequenceDispatchCalls *)element)->Apply(node, 0, actionIndex, (void *)effect);
     }
@@ -4802,8 +4797,9 @@ void RHEngine::FUN_004e1630(const SBGeoPoint2D &, bool flag)
         RHUnk00582220 *node = new RHUnk00582220;
         ((RHUnk00585500 *)action)->Unk(node);
         const RHEngineSpritePoint &position = RHEngineSpritePoint();
-        int effect = ((RHScriptBatchCalls *)((char *)this + 0x4668))->Unk005c2ec0(
-            RHEnginePositionAddress(position), 0, 3, element, 0x2c, (int)element, 0, -1);
+        int effect = ((RHTitbits *)((char *)this + 0x4668))->AddTitbit(
+            *(const RHUnk00613e90 *)RHEnginePositionAddress(position), 0, (RHtitbitKind)3, (RHElement *)element, 0x2c,
+            (RHElementActorPC *)element, false, -1);
         unsigned short actionIndex = *(unsigned short *)((char *)*(void **)((char *)this + 0x68) + 0x26);
         ((RHEngineSequenceDispatchCalls *)element)->Apply(node, 0, actionIndex, (void *)effect);
     }
@@ -4843,8 +4839,9 @@ void RHEngine::FUN_004e09d0(const SBGeoPoint2D &point, bool queued, bool immedia
             RHUnk00582220 *node = new RHUnk00582220;
             ((RHUnk00585500 *)action)->Unk(node);
             const RHEngineSpritePoint &position = RHEngineSpritePoint();
-            int effect = ((RHScriptBatchCalls *)((char *)this + 0x4668))->Unk005c2ec0(
-                RHEnginePositionAddress(position), 0, 3, element, 0x22, (int)element, 0, -1);
+            int effect = ((RHTitbits *)((char *)this + 0x4668))->AddTitbit(
+                *(const RHUnk00613e90 *)RHEnginePositionAddress(position), 0, (RHtitbitKind)3, (RHElement *)element,
+                0x22, (RHElementActorPC *)element, false, -1);
             unsigned short actionIndex = *(unsigned short *)((char *)*(void **)((char *)this + 0x68) + 0x26);
             ((RHEngineSequenceDispatchCalls *)element)->Apply(node, 0, actionIndex, (void *)effect);
         }
@@ -4898,8 +4895,9 @@ void RHEngine::FUN_004e0d80(const SBGeoPoint2D &point, bool queued, bool immedia
             RHUnk00582220 *node = new RHUnk00582220;
             ((RHUnk00585500 *)action)->Unk(node);
             const RHEngineSpritePoint &position = RHEngineSpritePoint();
-            int effect = ((RHScriptBatchCalls *)((char *)this + 0x4668))->Unk005c2ec0(
-                RHEnginePositionAddress(position), 0, 3, element, 0x34, (int)element, 0, -1);
+            int effect = ((RHTitbits *)((char *)this + 0x4668))->AddTitbit(
+                *(const RHUnk00613e90 *)RHEnginePositionAddress(position), 0, (RHtitbitKind)3, (RHElement *)element,
+                0x34, (RHElementActorPC *)element, false, -1);
             unsigned short actionIndex = *(unsigned short *)((char *)*(void **)((char *)this + 0x68) + 0x26);
             ((RHEngineSequenceDispatchCalls *)element)->Apply(node, 0, actionIndex, (void *)effect);
             break;
@@ -4941,35 +4939,39 @@ active:
     }
 }
 
-// Residual: target's switch dispatch and parameter staging do not match these wrapper calls.
-// STUB: GAME 0x004e17c0
-void RHEngine::FUN_004e17c0(unsigned value, void *actor)
+// FUNCTION: GAME 0x004e17c0
+void RHEngine::FUN_004e17c0(void *actor, int value)
 {
-    if (value == 0x10)
+    switch (value)
     {
-        SBGeoPoint2D point;
-        FUN_004df550(point, actor, 0, 0);
-        return;
+    case 6:
+    case 7:
+    {
+        bool queued = *(bool *)((char *)RHUnk00546050() + 0x20);
+        FUN_004e0fb0(SBGeoPoint2D(), queued, false, actor);
+        break;
     }
-    if (value >= 6 && value <= 7)
+    case 16:
     {
-        SBGeoPoint2D point;
-        FUN_004e0fb0(point, actor, 0, (int)value);
+        bool queued = *(bool *)((char *)RHUnk00546050() + 0x20);
+        FUN_004df550(SBGeoPoint2D(), queued, false, actor);
+        break;
+    }
     }
 }
 
-// Residual: resolver helpers 0x004c7e10 and 0x004fbd30 lie outside the assigned range.
+// Parked: selection phases, action chains and notification paths remain incomplete.
 // STUB: GAME 0x004e0fb0
-void RHEngine::FUN_004e0fb0(const SBGeoPoint2D &point, void *actor, char flag, int value)
+void RHEngine::FUN_004e0fb0(const SBGeoPoint2D &point, bool queued, bool immediate, void *provided)
 {
     RHSeqList *sequences = (RHSeqList *)((char *)this + 0x49f8);
     sequences->GoTo(0);
     void *element = sequences->cursor->data;
     void *&selected = *(void **)((char *)this + 0x4d94);
     if (!selected)
-        selected = actor;
+        selected = provided;
     *(char *)((char *)this + 0x4d85) = 1;
-    if (!flag)
+    if (!queued)
     {
         RHUnk005866a0 *action = new RHUnk005866a0(1, 0x6a, element);
         action->Unk00586ed0(0x1c, (int)selected);
@@ -4982,8 +4984,9 @@ void RHEngine::FUN_004e0fb0(const SBGeoPoint2D &point, void *actor, char flag, i
     action->sequence = node;
     RHUnk005866a0 *target = new RHUnk005866a0(1, 0x6a, element);
     target->Unk00586ed0(0x1c, (int)selected);
-    ((RHScriptBatchCalls *)((char *)this + 0x4668))->Unk005c2ec0(
-        (void *)&point, 0, 3, actor, value, (int)selected, 0, -1);
+    ((RHTitbits *)((char *)this + 0x4668))->AddTitbit(
+        *(const RHUnk00613e90 *)&point, 0, (RHtitbitKind)3, (RHElement *)provided, 0x15,
+        (RHElementActorPC *)selected, false, -1);
     unsigned short layer = *(unsigned short *)((char *)*(void **)((char *)this + 0x68) + 0x26);
     ((RHEngineSequenceDispatchCalls *)element)->Apply(node, 0, layer, target);
 }
@@ -5063,8 +5066,10 @@ void EmitRHEngine004e1fc0(RHEngine *engine)
     engine->FUN_004e1fc0();
 }
 
+#include "RHJumpSector.h"
+
 // FUNCTION: GAME 0x004e2150
-void *RHEngine::FUN_004e2150(RHUnk0051e790 *target, const SBGeoPoint2D &point)
+void *RHEngine::FUN_004e2150(RHUnk0051e5e0 *target, const SBGeoPoint2D &point)
 {
     unsigned count = ((RHSectorActorList *)((char *)this + 0x49f8))->m_count;
     for (unsigned index = 0; index < count; ++index)
@@ -5081,7 +5086,8 @@ void *RHEngine::FUN_004e2150(RHUnk0051e790 *target, const SBGeoPoint2D &point)
             }
             else
                 pc->FUN_0049d520();
-            return target->FUN_0051e790(pc, *(char **)((char *)pc + 0x50) + 0x24, point, 0);
+            return target->FUN_0051e790((RHElementActor *)pc,
+                *(SBGeoPoint2D *)((char *)*(void **)((char *)pc + 0x50) + 0x24), point, false);
         }
     }
     return 0;
@@ -5135,7 +5141,7 @@ void RHEngine::FUN_004e2390(void *actor)
     void *sector = beamMe.m_a == 0xffff
         ? *(void **)((char *)this + 0x42a0)
         : (*(void ***)((char *)this + 0x4180))[beamMe.m_a];
-    RHBonusProjection *projection = ((RHUnk0057d800 *)sector)->Unk(origin);
+    RHBonusProjection *projection = ((RHUnk0057d490 *)sector)->FUN_0057d800(origin);
     if (!projection)
         beamMe.m_c = 0xffff;
     else
@@ -5862,6 +5868,86 @@ void EmitRHEngineConstSort(void **first, void **last, bool (*compare)(const void
     std::_Sort(first, last, compare, (void **)0);
 }
 
+// FUNCTION: GAME 0x004e6dc0
+void RHUnk0046eb30::Unk004e6dc0(RHUnk0046eb30 &source, int wanted)
+{
+    int size = count;
+    if (wanted == size)
+    {
+        int sourceSize = source.count;
+        for (int position = 0; position < sourceSize; ++position)
+        {
+            ((RHSectorActorList *)&source)->Unk005c8e40(position);
+            ((RHUnk004b1520List *)this)->FUN_00424410(RHScriptIter(head), source.cursor->data);
+        }
+    }
+    else
+    {
+        if (valid)
+        {
+            if (wanted <= (size + 1) / 2)
+            {
+                SetCurrent(InlineBegin());
+                std::bidirectional_iterator_tag category;
+                RHAdvanceProfileCursor((RHProfilePointerList::iterator &)cursor, wanted, category);
+            }
+            else
+            {
+                SetCurrent(InlineEnd());
+                std::bidirectional_iterator_tag category;
+                RHAdvanceProfileCursor((RHProfilePointerList::iterator &)cursor, wanted - size, category);
+            }
+            valid = false;
+            index = wanted;
+        }
+        else
+        {
+            int previous = index;
+            if (wanted != previous)
+            {
+                if (wanted < previous)
+                {
+                    if (wanted < (previous + 1) / 2)
+                    {
+                        SetCurrent(InlineBegin());
+                        std::bidirectional_iterator_tag category;
+                        RHAdvanceProfileCursor((RHProfilePointerList::iterator &)cursor, wanted, category);
+                    }
+                    else
+                    {
+                        std::bidirectional_iterator_tag category;
+                        RHAdvanceProfileCursor((RHProfilePointerList::iterator &)cursor, wanted - previous, category);
+                    }
+                }
+                else if (wanted < (previous + size) / 2)
+                {
+                    std::bidirectional_iterator_tag category;
+                    RHAdvanceProfileCursor((RHProfilePointerList::iterator &)cursor, wanted - previous, category);
+                }
+                else
+                {
+                    SetCurrent(InlineEnd());
+                    std::bidirectional_iterator_tag category;
+                    RHAdvanceProfileCursor((RHProfilePointerList::iterator &)cursor, wanted - size, category);
+                }
+                index = wanted;
+            }
+        }
+        int sourceSize = source.count;
+        for (int position = 0; position < sourceSize; ++position)
+        {
+            ((RHSectorActorList *)&source)->Unk005c8e40(position);
+            ((std::list<void *> *)this)->insert((std::list<void *>::iterator &)cursor, source.cursor->data);
+        }
+    }
+    valid = true;
+}
+
+void EmitRHEngineListInsert(RHUnk0046eb30 &destination, RHUnk0046eb30 &source, int wanted)
+{
+    destination.Unk004e6dc0(source, wanted);
+}
+
 // TEMPLATE: GAME 0x004e70e0
 // ?_Sort@std@@YAXPAPAX0P6A_NPBX1@Z0@Z
 
@@ -6120,7 +6206,7 @@ char *RHUnk0055dbb0::FUN_0055dbb0()
 // FUNCTION: GAME 0x005709a0
 void FUN_005709a0(void *value, unsigned index)
 {
-    g_unk0x6c0f34[index] = value;
+    g_unk0x6c0f30.First()[index] = value;
     if (value)
         *(unsigned short *)((char *)value + 0x8a) = (unsigned short)index;
 }

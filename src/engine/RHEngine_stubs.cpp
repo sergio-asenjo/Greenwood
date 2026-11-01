@@ -35,7 +35,6 @@ public:
 
 void RHEngineSoundCalls::FUN_005a5060(void *, void *, void *, unsigned, unsigned) {}
 
-void FUN_00570850(void *) {}
 RHUnk004a1bc0::RHUnk004a1bc0(bool) {}
 
 #include "RHSectorCore.h"
@@ -285,8 +284,3 @@ public:
 
 void RHEngineActorUpdateCalls::FUN_004af2a0() {}
 
-void RHEngineReset51bd90::FUN_0051bd90() {}
-void RHEngineReset581c70::FUN_00581c70() {}
-void RHEngineReset5c2570::FUN_005c2570() {}
-
-void *RHUnk0051e790::FUN_0051e790(RHElementActorPC *, void *, const SBGeoPoint2D &, int) { return 0; }

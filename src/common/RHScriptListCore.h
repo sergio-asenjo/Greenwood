@@ -46,6 +46,7 @@ public:
     RHScriptIter erase(RHScriptIter position);
     void Unk0044e190(int wanted);
     void Unk0044eab0(RHUnk0046eb30 &source);
+    void Unk004e6dc0(RHUnk0046eb30 &source, int wanted);
     RHScriptIter begin();
     RHScriptIter FUN_0046eb80();
     RHScriptIter Unk0057c950(RHScriptIter position, const RHUnk00571160Position &value);
