@@ -9,6 +9,7 @@ extern "C" __declspec(dllimport) __declspec(noreturn) void __stdcall ExitThread(
 #include "SBGeoSegmentVector.h"
 #include <iterator>
 #include "RHMotionAreaList.h"
+#include "RHFastFindGridCore.h"
 
 struct RHUnk005c9010Iterator;
 void FUN_005c9010(RHUnk005c9010Iterator &, int, std::bidirectional_iterator_tag);
@@ -155,16 +156,14 @@ RHScriptIter RHUnk004b1520List::FUN_00424410(RHScriptIter position, void *const 
     return RHScriptIter(node);
 }
 
-// Parked: 68.45%, list frame and cleanup scheduling.
-// STUB: GAME 0x004f5750
+// FUNCTION: GAME 0x004f5750
 bool RHPathObstacleGrid::FUN_004f5750(SBGeoBoundingBox2D &box, unsigned short sector)
 {
     if (!(unsigned char)((RHUnk00608f10 *)&m_3e84)->FUN_00608f10(&box))
         return false;
     RHPathWorkList list;
-    ((RHMalignityGridCalls *)this)->FUN_004ed070((RHMalignityQueryList &)list, sector, box, 2);
-    bool result = list.count == 0;
-    list.clear();
+    ((RHFastFindGrid *)this)->FUN_004ed070((RHFastFindUniqueList &)list, sector, box, 2);
+    bool result = list.size() == 0;
     return result;
 }
 
@@ -1101,7 +1100,7 @@ void RHPathFinder::FUN_00556230(unsigned short graph, unsigned short sector, uns
     FUN_005559b0(graph, ConvertSector(sector), state, list);
 }
 
-// Parked at 0.4409: unannotated park from the asymmetric-comparator era; residual scheduling/registers.
+// Parked: graph-count null tails, state-offset induction and cleanup scheduling.
 // STUB: GAME 0x00556260
 void RHPathFinder::FUN_00556260()
 {
@@ -1113,7 +1112,6 @@ void RHPathFinder::FUN_00556260()
         for (unsigned short node = 0; node < count; ++node)
             FUN_00555a10(graph, node, g_pathStates[graph].first[node], list);
     }
-    list.clear();
 }
 
 // Parked: graph-count null tail, register allocation and state-offset induction differ.

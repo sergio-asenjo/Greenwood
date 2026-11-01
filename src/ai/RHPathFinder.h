@@ -102,52 +102,17 @@ public:
 };
 
 #include "RHSectorActorIterator.h"
+#include "RHMotionAreaList.h"
 
 // SIZE 0x24
-class RHPathWorkList
+class RHPathWorkList : public RHMotionAreaListStorage<void *>
 {
 public:
-    undefined allocator; // 0x00
-    RHScriptNode *head; // 0x04
-    int count; // 0x08
     RHScriptNode *cursor; // 0x0c
     bool valid; // 0x10
     int index; // 0x14
     undefined m_18[0x0c]; // 0x18
-    RHPathWorkList()
-    {
-        head = ((RHUnk0046eb30 *)this)->Unk0059f720(0, 0);
-        count = 0;
-        valid = true;
-    }
-    ~RHPathWorkList()
-    {
-        RHScriptNode *last = head;
-        RHScriptNode *node = last->next;
-        while (node != last)
-        {
-            RHScriptNode *current = node;
-            node = node->next;
-            ((RHUnk0046eb30 *)this)->erase(RHScriptIter(current));
-        }
-        operator delete(head);
-    }
-    void clear()
-    {
-        RHScriptNode *last = head;
-        RHScriptNode *node = last->next;
-        while (node != last)
-        {
-            RHScriptNode *current = node;
-            node = node->next;
-            RHSectorActorIter it((RHSectorActorNode *)current);
-            RHScriptNode *erased = (RHScriptNode *)(it++).m_p;
-            erased->previous->next = erased->next;
-            erased->next->previous = erased->previous;
-            operator delete(erased);
-            --count;
-        }
-    }
+    RHPathWorkList() : RHMotionAreaListStorage<void *>(std::allocator<void *>()), valid(true) {}
 };
 
 #include "RHMalignityQueryList.h"
