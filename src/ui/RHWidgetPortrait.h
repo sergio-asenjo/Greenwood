@@ -87,14 +87,6 @@ public:
     void FUN_005d6940(unsigned short index);
 };
 
-class RHPortraitResourceCalls
-{
-public:
-    RHPortraitResourceCalls *FUN_00502270();
-};
-
-RHPortraitResourceCalls *FUN_005024f0(const std::string &name);
-
 // VTABLE: GAME 0x0067a4e4
 class RHPortraitLifetime005db4a0 : public RHGameWidgetLifetimeBase
 {

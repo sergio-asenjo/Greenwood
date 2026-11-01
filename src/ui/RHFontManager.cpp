@@ -27,72 +27,35 @@ static inline RHTreeDecNode20 *RHFontTreeMinimum(RHTreeDecNode20 *node)
     return node;
 }
 
-struct RHFontInsertNode
-{
-    RHFontInsertNode *m_00;
-    RHFontInsertNode *m_04;
-    RHFontInsertNode *m_08;
-    std::pair<const std::string, void *> m_0c;
-    int m_20;
-};
-
 void RHFontConstructValue(std::pair<const std::string, void *> *, const std::pair<const std::string, void *> &);
 
-typedef RHFontIterator RHFontInsertIterator;
-
-class RHFontInsertTree
+inline void RHFontInsertTree::RotateLeft(RHFontInsertNode *node)
 {
-public:
-    RHFontInsertIterator FUN_005034d0(RHFontInsertNode *, RHFontInsertNode *, const std::pair<const std::string, void *> &);
-    RHFontInsertIterator FUN_00502b90(const std::string &key);
-    RHFontInsertNode *FUN_005037e0(const std::string &);
-    static RHFontInsertNode *&Left(RHFontInsertNode *node) { return node->m_00; }
-    inline void RotateLeft(RHFontInsertNode *node)
-    {
-        RHUnk00641782Lock lock;
-        RHFontInsertNode *right = node->m_08;
-        node->m_08 = right->m_00;
-        if (right->m_00 != (RHFontInsertNode *)g_unk0x006c0ae8) right->m_00->m_04 = node;
-        right->m_04 = node->m_04;
-        if (node == m_head->m_04) m_head->m_04 = right;
-        else if (node == node->m_04->m_00) node->m_04->m_00 = right;
-        else node->m_04->m_08 = right;
-        right->m_00 = node;
-        node->m_04 = right;
-    }
-    inline void RotateRight(RHFontInsertNode *node)
-    {
-        RHUnk00641782Lock lock;
-        RHFontInsertNode *left = node->m_00;
-        node->m_00 = left->m_08;
-        if (left->m_08 != (RHFontInsertNode *)g_unk0x006c0ae8) left->m_08->m_04 = node;
-        left->m_04 = node->m_04;
-        if (node == m_head->m_04) m_head->m_04 = left;
-        else if (node == node->m_04->m_08) node->m_04->m_08 = left;
-        else node->m_04->m_00 = left;
-        left->m_08 = node;
-        node->m_04 = left;
-    }
-    RHFontInsertTree(const undefined &, bool, const undefined &);
-    void FUN_00501ca0();
-    RHFontInsertIterator FUN_00502a50(RHFontInsertIterator, RHFontInsertIterator);
-    RHFontInsertIterator FUN_00502d90(RHFontInsertIterator);
-    void FUN_005032c0(RHFontInsertNode *);
-    void FUN_00503370();
-    static RHFontInsertNode *&Parent(RHFontInsertNode *node) { return node->m_04; }
-    static RHFontInsertNode *&Right(RHFontInsertNode *node) { return node->m_08; }
-    static int &Color(RHFontInsertNode *node) { return node->m_20; }
-    RHFontInsertNode *&Root() { return m_head->m_04; }
-    RHFontInsertNode *&Leftmost() { return m_head->m_00; }
-    RHFontInsertNode *&Rightmost() { return m_head->m_08; }
-    undefined m_00;
-    undefined m_01;
-    undefined m_02[2];
-    RHFontInsertNode *m_head;
-    bool m_08;
-    undefined m_09[3];
-    unsigned m_count;
-};
+    RHUnk00641782Lock lock;
+    RHFontInsertNode *right = node->m_08;
+    node->m_08 = right->m_00;
+    if (right->m_00 != (RHFontInsertNode *)g_unk0x006c0ae8) right->m_00->m_04 = node;
+    right->m_04 = node->m_04;
+    if (node == m_head->m_04) m_head->m_04 = right;
+    else if (node == node->m_04->m_00) node->m_04->m_00 = right;
+    else node->m_04->m_08 = right;
+    right->m_00 = node;
+    node->m_04 = right;
+}
+
+inline void RHFontInsertTree::RotateRight(RHFontInsertNode *node)
+{
+    RHUnk00641782Lock lock;
+    RHFontInsertNode *left = node->m_00;
+    node->m_00 = left->m_08;
+    if (left->m_08 != (RHFontInsertNode *)g_unk0x006c0ae8) left->m_08->m_04 = node;
+    left->m_04 = node->m_04;
+    if (node == m_head->m_04) m_head->m_04 = left;
+    else if (node == node->m_04->m_08) node->m_04->m_08 = left;
+    else node->m_04->m_00 = left;
+    left->m_08 = node;
+    node->m_04 = left;
+}
 
 extern unsigned g_unk0x006c0ae4;
 
@@ -115,13 +78,13 @@ static inline RHFontInsertNode *RHFontInsertMaximum(RHFontInsertNode *node)
 static inline RHFontInsertIterator RHFontInsertMake(RHFontInsertNode *node)
 {
     RHFontInsertIterator result;
-    result.m_node = (RHFontIterator::Node *)node;
+    result.m_node = node;
     return result;
 }
 
 static inline RHFontInsertNode *RHFontInsertNodeOf(const RHFontInsertIterator &iterator)
 {
-    return (RHFontInsertNode *)iterator.m_node;
+    return iterator.m_node;
 }
 
 // SIZE 0x10
@@ -192,16 +155,51 @@ DECOMP_SIZE_ASSERT(RHCampaignText, 0x10)
 
 DECOMP_SIZE_ASSERT(std::string, 0x10)
 DECOMP_SIZE_ASSERT(RHFontIterator, 0x04)
+DECOMP_SIZE_ASSERT(RHFontInsertNode, 0x24)
 DECOMP_SIZE_ASSERT(RHFontInsertResult, 0x08)
-DECOMP_SIZE_ASSERT(RHFontMap, 0x0c)
-DECOMP_SIZE_ASSERT(RHFontManager, 0x0c)
+DECOMP_SIZE_ASSERT(RHFontInsertTree, 0x10)
+DECOMP_SIZE_ASSERT(RHFontManager, 0x14)
 DECOMP_SIZE_ASSERT(RHFontManager::Fonts, 0x20)
 
 // TEMPLATE: GAME 0x004577c0
 // ??0?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAE@ABV01@@Z
 
+extern "C" __declspec(dllimport) int __stdcall AddFontResourceA(const char *);
+extern "C" __declspec(dllimport) int __stdcall RemoveFontResourceA(const char *);
+
+// STUB: GAME 0x00501840
+RHFontManager::RHFontManager(const std::string &name)
+    : m_family(0)
+{
+    LoadConfiguration(name);
+    // STRING: GAME 0x006aff88
+    if (FUN_005f6400(std::string("Data\\Interface\\Fonts\\0051EU__.ttf")))
+        AddFontResourceA("Data\\Interface\\Fonts\\0051EU__.ttf");
+    // STRING: GAME 0x006aff64
+    if (FUN_005f6400(std::string("Data\\Interface\\Fonts\\1141EU__.ttf")))
+        AddFontResourceA("Data\\Interface\\Fonts\\1141EU__.ttf");
+    // STRING: GAME 0x006aff38
+    if (FUN_005f6400(std::string("Data\\Interface\\Fonts\\CloisterBlackEU.ttf")))
+        AddFontResourceA("Data\\Interface\\Fonts\\CloisterBlackEU.ttf");
+    // STRING: GAME 0x006aff14
+    if (FUN_005f6400(std::string("Data\\Interface\\Fonts\\MERLINN.TTF")))
+        AddFontResourceA("Data\\Interface\\Fonts\\MERLINN.TTF");
+    // STRING: GAME 0x006afef0
+    if (FUN_005f6400(std::string("Data\\Interface\\Fonts\\MSGOTHIC.TTF")))
+        AddFontResourceA("Data\\Interface\\Fonts\\MSGOTHIC.TTF");
+    // STRING: GAME 0x006afecc
+    if (FUN_005f6400(std::string("Data\\Interface\\Fonts\\MSMINCHO.TTF")))
+        AddFontResourceA("Data\\Interface\\Fonts\\MSMINCHO.TTF");
+    // STRING: GAME 0x006afeac
+    if (FUN_005f6400(std::string("Data\\Interface\\Fonts\\KAIU.TTF")))
+        AddFontResourceA("Data\\Interface\\Fonts\\KAIU.TTF");
+    // STRING: GAME 0x006afe88
+    if (FUN_005f6400(std::string("Data\\Interface\\Fonts\\MINGLIU.TTF")))
+        AddFontResourceA("Data\\Interface\\Fonts\\MINGLIU.TTF");
+}
+
 // FUNCTION: GAME 0x00501ca0
-void RHFontInsertTree::FUN_00501ca0()
+inline RHFontInsertTree::~RHFontInsertTree()
 {
     RHFontInsertIterator first = RHFontInsertMake(Leftmost());
     RHFontInsertIterator last = RHFontInsertMake(m_head);
@@ -216,6 +214,30 @@ void RHFontInsertTree::FUN_00501ca0()
             g_unk0x006c0ae8 = 0;
         }
     }
+}
+
+// STUB: GAME 0x00501d10
+RHFontManager::~RHFontManager()
+{
+    RHFontIterator position;
+    position.m_node = m_fonts.m_head->m_00;
+    while (position.m_node != m_fonts.m_head)
+    {
+        delete (Fonts *)position.m_node->m_0c.second;
+        position++;
+    }
+    if (FUN_005f6400(std::string("Data\\Interface\\Fonts\\0051EU__.ttf")))
+        RemoveFontResourceA("Data\\Interface\\Fonts\\0051EU__.ttf");
+    if (FUN_005f6400(std::string("Data\\Interface\\Fonts\\1141EU__.ttf")))
+        RemoveFontResourceA("Data\\Interface\\Fonts\\1141EU__.ttf");
+    if (FUN_005f6400(std::string("Data\\Interface\\Fonts\\CloisterBlackEU.ttf")))
+        RemoveFontResourceA("Data\\Interface\\Fonts\\CloisterBlackEU.ttf");
+    if (FUN_005f6400(std::string("Data\\Interface\\Fonts\\MERLINN.TTF")))
+        RemoveFontResourceA("Data\\Interface\\Fonts\\MERLINN.TTF");
+    if (FUN_005f6400(std::string("Data\\Interface\\Fonts\\KAIU.TTF")))
+        RemoveFontResourceA("Data\\Interface\\Fonts\\KAIU.TTF");
+    if (FUN_005f6400(std::string("Data\\Interface\\Fonts\\MINGLIU.TTF")))
+        RemoveFontResourceA("Data\\Interface\\Fonts\\MINGLIU.TTF");
 }
 
 // GLOBAL: GAME 0x006c0ae4
@@ -245,6 +267,44 @@ std::string RHFontManager::Get(FILE *file, char delimiter)
     if (character == delimiter)
         ungetc(character, file);
     return value;
+}
+
+#include "SBNativeFont.h"
+#include "SBTrueTypeFont.h"
+#include <stddef.h>
+
+DECOMP_STATIC_ASSERT(offsetof(RHFontInsertTree, m_head) == 4)
+DECOMP_STATIC_ASSERT(offsetof(RHFontInsertTree, m_count) == 0xc)
+DECOMP_STATIC_ASSERT(offsetof(RHFontInsertNode, m_0c) == 0xc)
+DECOMP_STATIC_ASSERT(offsetof(RHFontInsertNode, m_20) == 0x20)
+DECOMP_STATIC_ASSERT(offsetof(RHFontManager, m_family) == 0x10)
+DECOMP_SIZE_ASSERT(SBNativeFont, 0xd8)
+DECOMP_SIZE_ASSERT(SBTrueTypeFont, 0x70)
+
+// STUB: GAME 0x00502270
+void *RHFontManager::GetFont(const std::string &name) const
+{
+    RHFontIterator::Node *node = const_cast<RHFontInsertTree &>(m_fonts).FUN_00502b90(name).m_node;
+    if (node != m_fonts.m_head)
+    {
+        Fonts *fonts = (Fonts *)node->m_0c.second;
+        if (m_family > 1)
+        {
+            if (m_family != 2)
+                return 0;
+        }
+        else
+        {
+            if (!fonts->m_00.empty())
+            {
+                // STRING: GAME 0x006afe70
+                return new SBNativeFont(std::string("data\\interface\\fonts\\") + fonts->m_00);
+            }
+        }
+        if (!fonts->m_10.empty())
+            return new SBTrueTypeFont(std::string("data\\interface\\fonts\\") + fonts->m_10);
+    }
+    return 0;
 }
 
 // Parked: frame 0xcc versus 0xd8 and map-result temporary layout.
@@ -312,7 +372,7 @@ void RHFontManager::TrimString(std::string &value)
 }
 
 // FUNCTION: GAME 0x00502a20
-RHFontInsertTree::RHFontInsertTree(const undefined &compare, bool multi, const undefined &allocator)
+RHFontInsertTree::RHFontInsertTree(const Compare &compare, bool multi, const Allocator &allocator)
     : m_00(allocator), m_01(compare), m_08(multi)
 {
     FUN_00503370();
@@ -354,9 +414,9 @@ RHFontInsertIterator RHFontInsertTree::FUN_00502b90(const std::string &key)
 
 // Parked: pair-construction inlining and frame/register allocation differ.
 // STUB: GAME 0x00502c20
-RHFontInsertResult RHFontMap::FUN_00502c20(const std::pair<const std::string, void *> &value)
+RHFontInsertResult RHFontInsertTree::FUN_00502c20(const std::pair<const std::string, void *> &value)
 {
-    RHFontInsertTree &tree = *(RHFontInsertTree *)this;
+    RHFontInsertTree &tree = *this;
     RHFontInsertNode *node = tree.m_head->m_04;
     RHFontInsertNode *parent = tree.m_head;
     bool left = true;
@@ -375,9 +435,9 @@ RHFontInsertResult RHFontMap::FUN_00502c20(const std::pair<const std::string, vo
         return result;
     }
     RHFontIterator previous;
-    previous.m_node = (RHFontIterator::Node *)parent;
+    previous.m_node = parent;
     if (left) {
-        if (previous.m_node == (RHFontIterator::Node *)tree.m_head->m_00) {
+        if (previous.m_node == tree.m_head->m_00) {
             RHFontInsertResult result(tree.FUN_005034d0(node, parent, value), true);
             return result;
         }
@@ -570,11 +630,11 @@ void RHFontInsertTree::FUN_00503370()
     m_head->m_08 = m_head;
 }
 
-void EmitRHFontInsertTreeLifetime(RHFontInsertTree &tree)
+void EmitRHFontInsertTreeLifetime()
 {
-    tree.FUN_00501ca0();
-    undefined compare;
-    RHFontInsertTree local(compare, false, compare);
+    RHFontInsertTree::Compare compare;
+    RHFontInsertTree::Allocator allocator;
+    RHFontInsertTree local(compare, false, allocator);
 }
 
 // FUNCTION: GAME 0x00503420
@@ -656,7 +716,7 @@ RHFontInsertIterator RHFontInsertTree::FUN_005034d0(RHFontInsertNode *node, RHFo
     }
     m_head->m_04->m_20 = 1;
     RHFontInsertIterator result;
-    result.m_node = (RHFontIterator::Node *)inserted;
+    result.m_node = inserted;
     return result;
 }
 
@@ -702,6 +762,7 @@ void *RHFontManager::FUN_005024f0()
 
 void RHFontManager::Emit(const std::string &name)
 {
+    RHFontManager local(name);
     LoadConfiguration(name);
     FUN_005024f0();
     std::string text;

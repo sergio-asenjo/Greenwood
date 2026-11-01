@@ -3236,12 +3236,14 @@ void RHPortraitUnk005d5950::FUN_005d5950(int value)
     ((RHGameRenderer005cb220 *)((char *)this + 0x80))->FUN_005cb2b0(value);
 }
 
+#include "RHFontManager.h"
+
 // Parked: Subobject constructor inlining and temporary-string EH coloring differ.
 // STUB: GAME 0x005d5a20
 RHPortraitFullLifetime::RHPortraitFullLifetime(unsigned short index, RHPortraitActorCalls *actor)
     : m_actor(actor),
-      m_portraitResource((RHPortraitResourceInterface *)FUN_005024f0(std::string(RHPortraitResourceName()))->FUN_00502270()),
-      m_backgroundResource((RHPortraitResourceInterface *)FUN_005024f0(std::string(RHPortraitBackgroundName()))->FUN_00502270()),
+      m_portraitResource((RHPortraitResourceInterface *)((RHFontManager *)RHFontManager::FUN_005024f0())->GetFont(std::string(RHPortraitResourceName()))),
+      m_backgroundResource((RHPortraitResourceInterface *)((RHFontManager *)RHFontManager::FUN_005024f0())->GetFont(std::string(RHPortraitBackgroundName()))),
       m_resources(false)
 {
     *((char *)this + 0xca6) = 0;

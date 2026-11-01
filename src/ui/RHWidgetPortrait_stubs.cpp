@@ -59,8 +59,6 @@ RHPortraitRootLifetime::~RHPortraitRootLifetime() {}
 RHPortraitResourceCollection::RHPortraitResourceCollection(bool) {}
 RHPortraitResourceCollection::~RHPortraitResourceCollection() {}
 void RHPortraitCtorCalls::FUN_005d6940(unsigned short) {}
-RHPortraitResourceCalls *RHPortraitResourceCalls::FUN_00502270() { return this; }
-RHPortraitResourceCalls *FUN_005024f0(const std::string &) { return 0; }
 RHPortraitLifetime005d6320::RHPortraitLifetime005d6320() {}
 const std::wstring &RHPortraitActorCalls::FUN_00492730() { static std::wstring value; return value; }
 
