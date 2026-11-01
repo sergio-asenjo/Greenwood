@@ -6,10 +6,7 @@
 template class std::basic_string<unsigned short>;
 
 // LIBRARY: GAME 0x0064e850
-extern "C" int _stricmp(const char *left, const char *right)
-{
-    return 0;
-}
+// __strcmpi
 
 // LIBRARY: GAME 0x00642bac
 extern "C" unsigned int wcslen(const unsigned short *value)
