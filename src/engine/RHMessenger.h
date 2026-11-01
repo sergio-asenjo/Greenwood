@@ -19,8 +19,7 @@
 // from the target: ctor 0x005490f0 (vtable at +0, clears +0x4/+0x8 via base
 // ctor 0x00549070, stores its int argument at +0xc), dtor 0x00549110. Identity
 // deliberately unproven: no Windows-side __FILE__/tag/string names the type, so
-// it stays named by address (docs/05-naming.md). Defined once in
-// RHMessenger_stubs.cpp.
+// it stays named by address (docs/05-naming.md).
 // SIZE 0x10
 // VTABLE: GAME 0x00679b64
 class RHUnk5490f0 : public RHMessage
@@ -33,7 +32,12 @@ public:
     int m_unk0c; // 0x0c
 };
 
-class RHReceiverInterface;
+class RHReceiverInterface
+{
+public:
+    virtual void v00(RHUnk5490f0 &message) = 0;
+};
+
 class SBGeoPoint2D;
 class SBGeoVector2D;
 class SBDrawViewport;
@@ -55,11 +59,6 @@ public:
     // SerializeLockUser) plus the +0x23 lock-user flag its body serialises.
     bool SerializeLockUser(SBFile &file);
 
-    // Target 0x005460c0 (__thiscall(this, RHUnk5490f0&), ends `ret 4`). A real
-    // RHMessenger method: it reads this[+0x23]/+0x20/+0x26/+0xa2/+0xa8, the
-    // same flag block Serialize/SerializeLockUser touch, and dispatches on the
-    // argument's field at +0xc. No Windows-side __FILE__/tag/string names it, so
-    // it stays named by address. Defined once in RHMessenger_stubs.cpp.
     void RHUnk005460c0(RHUnk5490f0 &message);
 
     // Target 0x00547560 — __thiscall(this), no extra args (ends in a plain
@@ -70,7 +69,7 @@ public:
     // __FILE__/tag/string binds a name to it. The Mac oracle's RHMessenger
     // method set (symbols/mac-RH.txt:3066-3085) contains RHMessenger::Reset()
     // as a plausible match, but a cross-binary signature match is not accepted
-    // as evidence (docs/05-naming.md). Defined once in RHMessenger_stubs.cpp.
+    // as evidence (docs/05-naming.md).
     void Reset();
 
     void Emit(SBFile &file);

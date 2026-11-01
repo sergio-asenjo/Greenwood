@@ -85,7 +85,7 @@ RHUnk0046eb30 g_inputList;
 #define g_inputIndex g_inputList.index
 
 // GLOBAL: GAME 0x006c12c1
-static bool g_inputAlternate;
+bool g_inputAlternate;
 
 // GLOBAL: GAME 0x006c1229
 static bool g_inputRandomMotion;

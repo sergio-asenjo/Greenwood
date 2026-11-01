@@ -17,6 +17,7 @@ struct SBInputPosition
 
 extern SBInputPosition g_inputPosition;
 extern SBInputPosition g_hotSpot;
+extern bool g_inputAlternate;
 
 enum SBButton
 {

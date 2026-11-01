@@ -88,6 +88,451 @@ RHMessenger *RHUnk00546050()
     return g_unk0x006c0c4c;
 }
 
+#include "RHEngine.h"
+#include "RHElementActorPC.h"
+#include "RHSectorActorList.h"
+#include "RHWidgetPortraitClass.h"
+#include "SBGeoPolyLine2DList.h"
+#include "SBThreadedInput.h"
+#include "RHMouseMessage.h"
+#include "RHActorMessage.h"
+#include "RHUnk0053bf20.h"
+#include <list>
+
+typedef std::list<float> RHMessengerTrail;
+
+inline RHSectorActorList &RHMessengerSelection(RHEngine *engine)
+{
+    return RHMessengerField<RHSectorActorList>(engine, 0x49f8);
+}
+
+inline unsigned RHMessengerSelectionCount(RHEngine *engine)
+{
+    return RHMessengerField<unsigned>(engine, 0x4a00);
+}
+
+inline bool RHMessengerIsSelected(RHEngine *engine, RHElementActor *actor)
+{
+    if (actor)
+        return RHMessengerSelection(engine).Unk004b8f80(actor, true) != -1;
+    return RHMessengerSelectionCount(engine) != 0;
+}
+
+inline bool RHMessengerActionLocked(RHElementActorPC *actor, unsigned short slot)
+{
+    char *flags = (char *)actor + slot;
+    return flags[0x508] || flags[0x50b];
+}
+
+// STUB: GAME 0x005460c0
+void RHMessenger::RHUnk005460c0(RHUnk5490f0 &message)
+{
+    int type = message.m_type;
+    int value = message.m_value;
+    if (m_unk23)
+    {
+        switch (type)
+        {
+        case 1:
+            switch (message.m_unk0c)
+            {
+            case 1:
+            case 3:
+                return;
+            }
+        }
+    }
+
+    int command;
+    switch (type)
+    {
+    case 2:
+        command = message.m_unk0c;
+        switch (command)
+        {
+        case 5:
+            RHMessengerField<bool>(this, 0x20) = true;
+            RHMessengerField<unsigned short>(this, 0x26) = (unsigned short)value;
+            RHMessengerField<unsigned short>(this, 0xa8) = RHMessengerField<unsigned short>(this, 0xa2);
+            break;
+        case 6:
+            if (!RHMessengerField<bool>(this, 0x20))
+                return;
+            RHMessengerField<bool>(this, 0x20) = false;
+            break;
+        case 9:
+            RHMessengerField<bool>(this, 0x20) = true;
+            RHMessengerField<unsigned short>(this, 0x26) = (unsigned short)value;
+            break;
+        case 0x15:
+        {
+            RHEngine *engine = g_pEngine;
+            if (RHMessengerSelectionCount(engine) != 1)
+                return;
+            RHSectorActorList &selection = RHMessengerSelection(engine);
+            selection.Unk005c8e40(0);
+            RHElementActorPC *actor = (RHElementActorPC *)selection.CurrentValue();
+            int action = RHMessengerField<int>(actor->m_5fc, 0x48 + message.m_value * 4);
+            if (!action)
+                return;
+            if (RHMessengerField<RHWidgetPortrait *>(actor, 0x4ec)->FUN_005d9a20(message.m_value) != true)
+                return;
+            RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0x16, actor, action));
+            return;
+        }
+        case 0x16:
+        case 0x19:
+        {
+            RHEngine *engine = g_pEngine;
+            RHElementActorPC *actor = (RHElementActorPC *)((RHUnk00549250 &)message).m_10;
+            if (!actor)
+            {
+                unsigned count = RHMessengerSelectionCount(engine);
+                for (unsigned i = 0; i < count; ++i)
+                {
+                    RHSectorActorList &selection = RHMessengerSelection(engine);
+                    selection.Unk005c8e40((unsigned short)i);
+                    RHElementActorPC *selected = (RHElementActorPC *)selection.CurrentValue();
+                    if (value && RHMessengerActionLocked(selected, (unsigned short)selected->FUN_0049d590(value)))
+                        continue;
+                    if (!RHMessengerIsSelected(engine, (RHElementActor *)selected))
+                        selected->FUN_0049d680(value);
+                    else
+                        RHMessengerField<unsigned short>(this, 0xa2) = (unsigned short)value;
+                }
+            }
+            else
+            {
+                if (value && RHMessengerActionLocked(actor, (unsigned short)actor->FUN_0049d590(value)))
+                    break;
+                if (!RHMessengerIsSelected(engine, (RHElementActor *)actor))
+                {
+                    actor->FUN_0049d680(value);
+                    break;
+                }
+                if (value && RHMessengerSelectionCount(engine) > 1)
+                {
+                    RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0x12, 0));
+                    RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0xd, actor));
+                }
+                RHMessengerField<unsigned short>(this, 0xa2) = (unsigned short)value;
+                if (RHMessengerField<unsigned short>(this, 0xa2))
+                    RHMessengerField<bool>(this, 0x16) = false;
+            }
+            break;
+        }
+        case 0x17:
+            if (!RHMessengerField<unsigned short>(this, 0xa2) || RHMessengerField<unsigned short>(this, 0xa2) != value)
+                return;
+            if (!value)
+                message.m_value = RHMessengerField<unsigned short>(this, 0xa2);
+            RHMessengerField<unsigned short>(this, 0xa2) = 0;
+            break;
+        case 0x1e:
+            if (RHMessengerField<unsigned short>(this, 0xa2))
+                RHMessengerField<bool>(this, 0x16) = true;
+            break;
+        case 0x1f:
+            if (RHMessengerField<unsigned short>(this, 0xa2))
+                RHMessengerField<bool>(this, 0x16) = false;
+            break;
+        case 0x1a:
+        {
+            RHElementActorPC *actor = (RHElementActorPC *)((RHUnk00549250 &)message).m_10;
+            if (RHMessengerField<unsigned short>(this, 0xa2) == actor->FUN_0049d5c0(value) &&
+                RHMessengerIsSelected(g_pEngine, (RHElementActor *)actor) && RHMessengerActionLocked(actor, (unsigned short)value))
+                RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0x19, 0, 0));
+            break;
+        }
+        case 0xd:
+        case 0xe:
+        {
+            RHEngine *engine = g_pEngine;
+            RHElementActorPC *actor = (RHElementActorPC *)((RHUnk00549250 &)message).m_10;
+            if (actor)
+            {
+                if (!engine->FUN_004c7f50(actor))
+                    return;
+                RHMessengerField<bool>(this, 0x16) = false;
+                RHMessengerField<unsigned short>(this, 0xa4) = 0;
+                RHMessengerField<unsigned short>(this, 0xa6) = 0;
+                if (RHMessengerField<bool>(this, 0x14))
+                {
+                    if (command == 0xd)
+                    {
+                        RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0xf, actor));
+                        return;
+                    }
+                    RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0x10, actor));
+                    return;
+                }
+                if (RHMessengerIsSelected(engine, (RHElementActor *)actor))
+                {
+                    RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0x13, actor));
+                    RHMessengerField<bool>(actor, 0x604) = false;
+                    RHMessengerField<bool>(actor, 0x48a) = true;
+                }
+                break;
+            }
+            unsigned count = (unsigned char)engine->PCCount();
+            for (unsigned i = 0; i < count; ++i)
+                RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0xf, g_pEngine->m_493c[(unsigned char)i]));
+            return;
+        }
+        case 0xf:
+        case 0x10:
+            if (!g_pEngine->FUN_004c7f50(((RHUnk00549250 &)message).m_10))
+                return;
+            RHMessengerField<bool>(this, 0x16) = false;
+            break;
+        case 0x12:
+        {
+            RHElementActorPC *actor = (RHElementActorPC *)((RHUnk00549250 &)message).m_10;
+            if (!RHMessengerIsSelected(g_pEngine, (RHElementActor *)actor))
+                return;
+            RHMessengerField<bool>(this, 0x16) = false;
+            if (!actor || RHMessengerSelectionCount(g_pEngine) == 1)
+                RHMessengerField<unsigned short>(this, 0xa2) = 0;
+            break;
+        }
+        case 0xc:
+        {
+            RHElementActor *actor = (RHElementActor *)((RHUnk00549250 &)message).m_10;
+            RHEngine *engine = g_pEngine;
+            if (RHMessengerSelectionCount(engine) == 1 &&
+                (actor ? RHMessengerSelection(engine).Find(actor) != -1 : RHMessengerSelectionCount(engine) != 0))
+                RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0x16, 0, 0));
+            break;
+        }
+        }
+        break;
+    case 1:
+        switch (message.m_unk0c)
+        {
+        case 3:
+            switch (value & 0x49)
+            {
+            case 0x40:
+                if (!RHMessengerField<bool>(this, 0x1f))
+                {
+                    RHMessengerField<SBGeoPolyLine2DList>(this, 0x5c).FUN_00610ac0();
+                    RHMessengerTrail &intensities = RHMessengerField<RHMessengerTrail>(this, 0x2c);
+                    RHMessengerTrail::iterator (RHMessengerTrail::*erase)(RHMessengerTrail::iterator, RHMessengerTrail::iterator) =
+                        &RHMessengerTrail::erase;
+                    (intensities.*erase)(intensities.begin(), intensities.end());
+                    RHMessengerField<bool>(this, 0x3c) = true;
+                }
+                RHMessengerField<bool>(this, 0x1f) = true;
+                break;
+            case 8:
+            {
+                RHEngine *engine = g_pEngine;
+                unsigned count = RHMessengerSelectionCount(engine);
+                if (RHMessengerField<unsigned short>(this, 0xa4) && !count)
+                    return;
+                for (unsigned i = 0; i < count; ++i)
+                {
+                    RHSectorActorList &selection = RHMessengerSelection(engine);
+                    selection.Unk005c8e40((unsigned short)i);
+                    RHElementActorPC *selected = (RHElementActorPC *)selection.CurrentValue();
+                    if (RHMessengerField<unsigned short>(this, 0xa4))
+                    {
+                        unsigned short slot = (unsigned short)selected->FUN_0049d590(RHMessengerField<unsigned short>(this, 0xa4));
+                        if (slot == 0xffff || RHMessengerActionLocked(selected, slot))
+                            return;
+                    }
+                }
+                RHMessengerField<unsigned short>(this, 0xa2) = RHMessengerField<unsigned short>(this, 0xa4);
+                RHMessengerField<bool>(this, 0x20) = RHMessengerField<bool>(this, 0x21);
+                RHMessengerField<SBGeoPoint2D>(this, 0x84) = RHMessengerField<SBGeoPoint2D>(this, 0x94);
+                RHMessengerField<bool>(this, 0x1f) = false;
+                break;
+            }
+            case 1:
+                RHMessengerField<bool>(this, 0x1f) = false;
+                if (RHMessengerField<bool>(this, 0xaa))
+                    RHMessengerField<bool>(this, 0xaa) = false;
+                else
+                {
+                    RHMessengerField<unsigned short>(this, 0xa4) = RHMessengerField<unsigned short>(this, 0xa2);
+                    RHMessengerField<bool>(this, 0x21) = RHMessengerField<bool>(this, 0x20);
+                    RHMessengerField<SBGeoPoint2D>(this, 0x94) = RHMessengerField<SBGeoPoint2D>(this, 0x84);
+                }
+                break;
+            }
+            switch (value & 0x92)
+            {
+            case 2:
+            case 0x10:
+                RHMessengerField<unsigned short>(this, 0xa4) = 0;
+                break;
+            }
+            break;
+        case 2:
+            if (value != 2)
+            {
+                if (value == 1)
+                {
+                    if (RHMessengerField<unsigned short>(this, 0x2a) < 6)
+                        ++RHMessengerField<unsigned short>(this, 0x2a);
+                }
+                else if (RHMessengerField<unsigned short>(this, 0x2a) > 0)
+                    --RHMessengerField<unsigned short>(this, 0x2a);
+            }
+            return;
+        case 1:
+            if (RHMessengerField<bool>(this, 0x1f) && !RHMessengerField<bool>(this, 0x15) &&
+                !RHMessengerField<unsigned short>(this, 0xa2) && g_pEngine->FUN_004e1890())
+            {
+                SBGeoPolyLine2DList &trail = RHMessengerField<SBGeoPolyLine2DList>(this, 0x5c);
+                trail.FUN_00610a60(RHMessengerField<SBGeoPoint2D>(this, 0x84));
+                RHMessengerTrail &intensities = RHMessengerField<RHMessengerTrail>(this, 0x2c);
+                RHMessengerTrail::iterator (RHMessengerTrail::*insert)(RHMessengerTrail::iterator, const float &) =
+                    &RHMessengerTrail::insert;
+                (intensities.*insert)(intensities.end(), 112.5f);
+                RHMessengerField<bool>(this, 0x3c) = true;
+                if ((unsigned)((RHUnk0053bf20 *)&trail)->FUN_0053bf20() > 350)
+                {
+                    trail.FUN_00610b10();
+                    RHMessengerTrail::iterator (RHMessengerTrail::*erase)(RHMessengerTrail::iterator) = &RHMessengerTrail::erase;
+                    (intensities.*erase)(intensities.begin());
+                    RHMessengerField<bool>(this, 0x3c) = true;
+                }
+            }
+            RHMessengerField<SBGeoPoint2D>(this, 0x8c) = RHMessengerField<SBGeoPoint2D>(this, 0x84);
+            RHMessengerField<SBGeoPoint2D>(this, 0x84) = ((RHUnk00549120 &)message).m_10;
+            break;
+        }
+        break;
+    case 0:
+        command = message.m_unk0c;
+        switch (command)
+        {
+        case 0xf:
+            RHMessengerField<bool>(this, 0x16) = true;
+            RHMessengerField<unsigned short>(this, 0xa6) = RHMessengerField<unsigned short>(this, 0xa2);
+            break;
+        case 0x12:
+            if (!RHMessengerField<bool>(this, 0x16))
+                return;
+            RHMessengerField<bool>(this, 0x16) = false;
+            break;
+        case 0xd:
+            RHMessengerField<bool>(this, 0x14) = true;
+            break;
+        case 0x10:
+            RHMessengerField<bool>(this, 0x14) = false;
+            break;
+        case 0x1a:
+            RHMessengerField<bool>(this, 0x19) = true;
+            break;
+        case 0xe:
+            RHMessengerField<bool>(this, 0x15) = true;
+            break;
+        case 0x1b:
+            RHMessengerField<bool>(this, 0x19) = false;
+            break;
+        case 0x11:
+            RHMessengerField<bool>(this, 0x15) = false;
+            break;
+        case 0x15:
+            RHMessengerField<bool>(this, 0x18) = !RHMessengerField<bool>(this, 0x18);
+            break;
+        case 0x27:
+            RHMessengerField<bool>(this, 0x17) = !RHMessengerField<bool>(this, 0x17);
+            message.m_value = RHMessengerField<bool>(this, 0x17);
+            break;
+        case 0x2e:
+            Reset();
+            break;
+        case 0x1c:
+            m_unk23 = true;
+            break;
+        case 0x1d:
+            m_unk23 = false;
+            break;
+        case 0x1e:
+            RHMessengerField<bool>(this, 0x28) = true;
+            RHMessengerField<unsigned short>(this, 0x2a) = 0;
+            g_inputAlternate = true;
+            break;
+        case 0x1f:
+            RHMessengerField<bool>(this, 0x28) = false;
+            g_inputAlternate = false;
+            break;
+        case 0x18:
+            RHMessengerField<bool>(this, 0x24) = true;
+            break;
+        case 9:
+            RHMessengerField<unsigned short>(this, 0x26) = (unsigned short)value;
+            break;
+        case 0xc:
+            RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(6, 0, 1));
+            break;
+        case 0x13:
+            RHMessengerField<bool>(this, 0x1c) = !RHMessengerField<bool>(this, 0x1c);
+            break;
+        case 0x17:
+            RHMessengerField<bool>(this, 0x22) = !RHMessengerField<bool>(this, 0x22);
+            break;
+        }
+        break;
+    }
+
+    std::vector<RHReceiverInterface *> &receivers = RHMessengerField<std::vector<RHReceiverInterface *> >(this, 4);
+    for (std::vector<RHReceiverInterface *>::iterator it = receivers.begin(); it != receivers.end(); ++it)
+        (*it)->v00(message);
+
+    switch (type)
+    {
+    case 2:
+        command = message.m_unk0c;
+        switch (command)
+        {
+        case 0xd:
+        case 0xe:
+            RHUnk005460c0(RHUnk5490f0(0x21));
+            RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(7, 0));
+            RHMessengerField<unsigned short>(this, 0xa8) = 0;
+            break;
+        case 0xf:
+        case 0x10:
+            RHUnk005460c0(RHUnk5490f0(0x21));
+            RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(7, 0));
+            RHMessengerField<unsigned short>(this, 0xa8) = 0;
+            break;
+        case 0x12:
+            RHUnk005460c0(RHUnk5490f0(0x21));
+            RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(7, 0));
+            RHMessengerField<unsigned short>(this, 0xa8) = 0;
+            break;
+        case 6:
+            RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0x16, 0, RHMessengerField<unsigned short>(this, 0xa8)));
+            break;
+        }
+        break;
+    case 0:
+        command = message.m_unk0c;
+        switch (command)
+        {
+        case 0xf:
+            RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0x16, 0, 0));
+            break;
+        case 0x12:
+            RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0x16, 0, RHMessengerField<unsigned short>(this, 0xa6)));
+            break;
+        case 0x22:
+            RHUnk005460c0(RHUnk5490f0(0x21));
+            break;
+        case 0x25:
+        case 0x28:
+            RHUnk005460c0(RHUnk5490f0(0x2e));
+            break;
+        }
+        break;
+    }
+}
+
 // FUNCTION: GAME 0x00547080
 void RHMessenger::Subscribe(RHReceiverInterface *receiver)
 {
