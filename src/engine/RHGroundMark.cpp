@@ -43,6 +43,8 @@
 // Kept as STUB so reccmp does not count it; the reconstruction is for reference.
 
 #include "RHGroundMark.h"
+#include "SBGeoBoundingBox2DCore.h"
+#include "RHUnk005fc3b0.h"
 #include "RHSpriteCore.h"
 
 extern RHUnk005ef320 *g_unk0x6c11d0;
@@ -84,6 +86,36 @@ RHGroundMark::~RHGroundMark()
 }
 
 #include "SBGeoVector2D.h"
+#include "RHMobileVectorArray.h"
+#include "RHFrameHolder.h"
+
+DECOMP_SIZE_ASSERT(RHMobileVectorArray, 0x24)
+DECOMP_STATIC_ASSERT(offsetof(RHMobileVectorArray, m_14) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(RHMobileVectorArray, m_1c) == 0x1c)
+
+class RHMapResources;
+extern RHMapResources *g_unk0x006c1840;
+SBGeoVector2D FUN_005fc580(const SBGeoVector2D &, float);
+
+// FUNCTION: GAME 0x0051bd90
+unsigned long RHGroundMark::LoadFromResource()
+{
+    RHMobileVectorArray offsets;
+    RHUnk005fc3b0 size;
+    unsigned short count;
+    unsigned long first = ((RHFrameHolder *)m_spriteBank)->AddRowFromResource(
+        (SBResourceManager *)g_unk0x006c1840, 0x44, count,
+        (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bad10(first, 6, 2, 0, &offsets);
+    typedef unsigned long (RHUnkFXDraw::*CreateSurface)(unsigned short, unsigned short, int, bool);
+    m_surface = (((RHUnkFXDraw *)m_drawManager)->*
+        reinterpret_cast<CreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(
+        m_sprite->FUN_005bdd50(), m_sprite->FUN_005bdd70(), 0, false);
+    size.FUN_005fc430(FUN_005fc580(SBGeoVector2D((float)m_sprite->FUN_005bdd50(),
+        (float)m_sprite->FUN_005bdd70()), 0.5f));
+    m_sprite->AssignBox(SBGeoBoundingBox2D(-size, size));
+    return 0;
+}
 
 
 // Parked: source address uses edx rather than eax at element construction.
@@ -233,6 +265,7 @@ void *RHGroundInfoList::Clear(void *out, RHGroundInfoNode *first, RHGroundInfoNo
 void RHGroundMark::Emit(SBFile &file)
 {
     RHGroundMark instance;
+    LoadFromResource();
     AddGroundMark(m_list.m_point, 0);
     Serialize(file);
     m_list.Dispose();

@@ -88,6 +88,14 @@ struct RHPositionSlope
 class RHPositionInterface
 {
 public:
+    void AssignBox(const SBGeoBoundingBox2D &box)
+    {
+        ((RHMobileUnk00607da0 *)&m_94)->FUN_00607da0((const RHMobileUnk00607da0 &)box);
+    }
+    void AssignOffset(const SBGeoVector2D &offset)
+    {
+        m_80 = offset;
+    }
     bool Turn();
     bool TurnFast();
     bool TurnSlow(unsigned char delay);

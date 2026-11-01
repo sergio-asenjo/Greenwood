@@ -8,8 +8,6 @@ public:
     void Unk004d9330(void *actor, bool flag);
     unsigned int Unk004baea0();
     void *Unk0058a940(void *context, int value, void *element);
-    int Unk005c2ec0(void *position, int first, int second, void *actor,
-        int third, int fourth, int fifth, int sixth);
     void Unk0046b9e0();
 };
 

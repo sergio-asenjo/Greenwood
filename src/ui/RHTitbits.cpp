@@ -1,25 +1,27 @@
 #include "SBNullstr.h"
 #include "RHTitbits.h"
 #include "RHEngine.h"
+#include "SBGeoPoint2D.h"
+#include "SBGeoBoundingBox2DCore.h"
+#include "RHUnk005fc3b0.h"
+#include "RHSpriteCore.h"
+#include "RHMobileVectorArray.h"
+#include "RHFrameHolder.h"
+#include "RHCivilianSpriteView.h"
+#include "RHMalignityActorCalls.h"
+#include "RHPlayerProfileAccess.h"
+#include "RHSoundCore.h"
 #include <list>
 #include <iterator>
+#include <string.h>
+
+class RHArtificialIntelligenceSoundCalls;
+extern RHArtificialIntelligenceSoundCalls *g_unk0x006c1070;
+extern undefined g_unk0x006c0e48[];
+extern float g_unk0x006774cc;
 
 struct RHUnk005c9010Iterator;
 void FUN_005c9010(RHUnk005c9010Iterator &, int, std::bidirectional_iterator_tag);
-
-struct RHScriptNode;
-struct RHScriptIter
-{
-    RHScriptNode *node;
-    RHScriptIter(RHScriptNode *value) : node(value) {}
-};
-
-class RHUnk0046eb30
-{
-public:
-    RHScriptIter FUN_0046eb80();
-    RHScriptIter erase(RHScriptIter position);
-};
 
 struct RHTitbitCursor : std::iterator<std::bidirectional_iterator_tag, RHTitbit>
 {
@@ -138,6 +140,231 @@ public:
 };
 
 typedef RHTitbitAccessMode<false, false> RHTitbitAccess;
+
+class RHMapResources;
+extern RHMapResources *g_unk0x006c1840;
+SBGeoVector2D FUN_005fc580(const SBGeoVector2D &, float);
+
+DECOMP_SIZE_ASSERT(RHTitbits, 0xb0)
+DECOMP_STATIC_ASSERT(offsetof(RHTitbits, m_sprite) == 4)
+DECOMP_STATIC_ASSERT(offsetof(RHTitbits, m_counts) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHTitbits, m_draw) == 0x70)
+DECOMP_STATIC_ASSERT(offsetof(RHTitbits, m_bank) == 0x74)
+DECOMP_STATIC_ASSERT(offsetof(RHTitbits, m_a0) == 0xa0)
+
+// FUNCTION: GAME 0x005c2570
+unsigned long RHTitbits::LoadFromResource()
+{
+    RHMobileVectorArray offsets;
+    RHUnk005fc3b0 size;
+    unsigned short count;
+    SBResourceManager *resources = (SBResourceManager *)g_unk0x006c1840;
+    m_sprite->FUN_005b73f0(0x26);
+    unsigned long first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0xd, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(0, first, count, 2, 0, &offsets);
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0xd, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(1, first, count, 2, 0, &offsets);
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0xc, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(2, first, count, 2, 0, &offsets);
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0xb, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(3, first, count, 2, 0, &offsets);
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0xa, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(4, first, count, 2, 0, &offsets);
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 9, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(5, first, count, 2, 0, &offsets);
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0x10, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(6, first, count, 2, 0, &offsets);
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0xd, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(7, first, count, 2, 0, &offsets);
+    m_counts[0] = count;
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0x20, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(8, first, count, 2, 0, &offsets);
+    m_counts[1] = count;
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0x21, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(9, first, count, 2, 0, &offsets);
+    m_counts[2] = count;
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0x21, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(10, first, count, 2, 0, &offsets);
+    m_counts[3] = count;
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0x36, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(11, first, count, 2, 0, &offsets);
+    m_counts[4] = count;
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0x37, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(12, first, count, 2, 0, &offsets);
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0x38, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(13, first, count, 2, 0, &offsets);
+    m_counts[5] = count;
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0x39, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(14, first, count, 2, 0, &offsets);
+    m_counts[6] = count;
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0x77, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(15, first, count, 2, 0, &offsets);
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0x78, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(16, first, count, 2, 0, &offsets);
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0x79, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(17, first, count, 2, 0, &offsets);
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0x7a, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(18, first, count, 2, 0, &offsets);
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0x76, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(19, first, count, 2, 0, &offsets);
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0xc8, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(20, first, count, 2, 0, &offsets);
+    m_counts[7] = count;
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0xd0, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(21, first, count, 2, 0, &offsets);
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0xdc, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(22, first, count, 2, 0, &offsets);
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0xdd, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(23, first, count, 2, 0, &offsets);
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0xf9, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(24, first, count, 2, 0, &offsets);
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0xfa, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(25, first, count, 2, 0, &offsets);
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0x11c, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(26, first, count, 2, 0, &offsets);
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0x11d, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(27, first, count, 2, 0, &offsets);
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0x11e, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(28, first, count, 2, 0, &offsets);
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0x11f, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(29, first, count, 2, 0, &offsets);
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0x120, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(30, first, count, 2, 0, &offsets);
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0x121, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(31, first, count, 2, 0, &offsets);
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0x122, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(32, first, count, 2, 0, &offsets);
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0x123, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(33, first, count, 2, 0, &offsets);
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0x124, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(34, first, count, 2, 0, &offsets);
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0x125, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(35, first, count, 2, 0, &offsets);
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0x126, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(36, first, count, 2, 0, &offsets);
+    first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0x127, count, (SBArray<SBGeoVector2D> &)offsets);
+    m_sprite->FUN_005bb180(37, first, count, 2, 0, &offsets);
+    typedef unsigned long (RHUnkFXDraw::*CreateSurface)(unsigned short, unsigned short, int, bool);
+    m_surface = (((RHUnkFXDraw *)m_draw)->*reinterpret_cast<CreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(
+        ((RHCivilianSpriteView *)m_sprite)->FUN_005bdef0(), ((RHCivilianSpriteView *)m_sprite)->FUN_005bdf20(), 0, false);
+    m_mask = (((RHUnkFXDraw *)m_draw)->*reinterpret_cast<CreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(
+        ((RHCivilianSpriteView *)m_sprite)->FUN_005bdef0(), ((RHCivilianSpriteView *)m_sprite)->FUN_005bdf20(), 0, false);
+    size.FUN_005fc430(FUN_005fc580(SBGeoVector2D((float)((RHCivilianSpriteView *)m_sprite)->FUN_005bdef0(),
+        (float)((RHCivilianSpriteView *)m_sprite)->FUN_005bdf20()), 0.5f));
+    m_sprite->AssignBox(SBGeoBoundingBox2D(-size, size));
+    m_sprite->AssignOffset(size);
+    m_a0 = g_pEngine->FUN_004d2340(15);
+    return 0;
+}
+
+// FUNCTION: GAME 0x005c2ec0
+unsigned long RHTitbits::AddTitbit(const RHUnk00613e90 &position, unsigned short layer, RHtitbitKind kind,
+    RHElement *element, unsigned short subtype, RHElementActorPC *pc, bool shadow, unsigned long id)
+{
+    RHTitbit titbit;
+    if (!((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0()[0x53] && (kind == 5 || kind == 6 || kind == 7))
+        return -1;
+    titbit.m_10 = (int)pc;
+    titbit.m_0c = (int)element;
+    titbit.m_sub = position;
+    titbit.m_08 = 0;
+    titbit.m_06 = 0;
+    titbit.m_04 = subtype;
+    titbit.m_0a = 0;
+    titbit.m_00 = kind;
+    titbit.m_28 = 0;
+    titbit.m_2c = id != -1 ? id : m_ac++;
+    if (kind == 4 && subtype == 0)
+        return -1;
+    if (element)
+    {
+        char *sprite = *(char **)((char *)element + 0x50);
+        titbit.m_u14.m_14s = *(unsigned short *)(sprite + 0xde);
+    }
+    else
+    {
+        titbit.m_u14.m_14s = layer;
+        if (layer == 0xffff)
+            titbit.m_u14.m_14s = 0;
+    }
+    if (element && kind == 1)
+        RemoveUnconsciousStarsIf((RHElementActor *)element);
+    else if (kind == 15)
+    {
+        if (((RHMalignityActorCalls *)element)->V168())
+            titbit.m_04 = 0;
+        else
+        {
+            char *type = *(char **)((char *)element + 0x5fc);
+            if (strcmp(((std::string *)(type + 4))->c_str(), "LittleJohn") == 0)
+                titbit.m_04 = 1;
+            else if (strcmp(((std::string *)(type + 4))->c_str(), "WillScarlet") == 0)
+                titbit.m_04 = 2;
+            else if (strcmp(((std::string *)(type + 4))->c_str(), "Friar Tuck") == 0)
+                titbit.m_04 = 3;
+            else if (strcmp(((std::string *)(type + 4))->c_str(), "Stuteley") == 0)
+                titbit.m_04 = 4;
+            else if (strcmp(((std::string *)(type + 4))->c_str(), "LadyMarian") == 0)
+                titbit.m_04 = 5;
+            else if (strcmp(((std::string *)(type + 4))->c_str(), "MerryManA") == 0)
+                titbit.m_04 = 6;
+            else if (strcmp(((std::string *)(type + 4))->c_str(), "MerryManB") == 0)
+                titbit.m_04 = 7;
+            else if (strcmp(((std::string *)(type + 4))->c_str(), "MerryManC") == 0)
+                titbit.m_04 = 8;
+        }
+    }
+    float &depth = *(float *)&titbit.m_24;
+    switch (kind)
+    {
+    case 0:
+        titbit.m_sub.z += 0.1f;
+    case 5:
+    case 6:
+    case 7:
+    case 11:
+        depth = position.y + 0.01f;
+        break;
+    case 1:
+    case 2:
+    case 8:
+    case 9:
+    case 10:
+    case 13:
+    case 14:
+    case 15:
+    case 16:
+        depth = (titbit.m_0c ? *(float *)(*(char **)((char *)titbit.m_0c + 0x50) + 0x1c4) : position.y) + 0.01f;
+        break;
+    case 4:
+        if (titbit.m_0c)
+            depth = *(float *)(*(char **)((char *)titbit.m_0c + 0x50) + 0x1c4) + 1000.1f;
+        else
+            depth = position.y + 1000.1f;
+        break;
+    case 3:
+        if (titbit.m_0c)
+            depth = *(float *)(*(char **)((char *)titbit.m_0c + 0x50) + 0x1c4) + 0.01f;
+        else
+            depth = position.y + 0.01f;
+        break;
+    case 12:
+        break;
+    }
+    RHTitbitAccess &list = *(RHTitbitAccess *)&m_list;
+    list.m_list.push_back(titbit);
+    list.m_dirty = true;
+    if (shadow)
+    {
+        depth -= g_unk0x006774cc;
+        titbit.m_00 = 17;
+        list.m_list.push_back(titbit);
+        list.m_dirty = true;
+    }
+    if (kind == 0)
+        ((RHSound *)g_unk0x006c1070)->FUN_005a8070(0x5c4, SBGeoPoint2D(position.x, position.y - position.z), 9);
+    return titbit.m_2c;
+}
 
 // Parked: second cached traversal is outlined and leaves the frame four bytes short.
 // STUB: GAME 0x005c3440
@@ -463,36 +690,6 @@ bool RHTitbits::FUN_005c8340(int kind, RHElement *element)
     }
     return false;
 }
-
-#define SBGEO_POINT2D_VIEW
-class SBGeoPoint2D
-{
-public:
-    SBGeoPoint2D();
-    ~SBGeoPoint2D();
-    SBGeoPoint2D &operator=(const SBGeoPoint2D &);
-    SBGeoPoint2D &FUN_005fc1e0(const SBGeoPoint2D &);
-    float m_x;
-    float m_y;
-};
-
-#define SBGEO_VECTOR2D_VIEW
-class SBGeoVector2D : public SBGeoPoint2D
-{
-public:
-    SBGeoVector2D(float, float);
-    SBGeoVector2D(const SBGeoVector2D &other);
-    SBGeoVector2D &operator=(const SBGeoVector2D &other);
-};
-
-#define SBGEO_BOUNDINGBOX2D_VIEW
-class SBGeoBoundingBox2D
-{
-public:
-    SBGeoPoint2D m_min;
-    SBGeoPoint2D m_max;
-    char m_flag;
-};
 
 #include "RHMapBox.h"
 

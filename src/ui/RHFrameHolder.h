@@ -312,6 +312,7 @@ public:
 class RHUnkFXDraw
 {
 public:
+    unsigned long Unk005e4ed0(int, int, int, bool);
     undefined m_00[0x10c]; // 0x00
     unsigned short m_depth; // 0x10c
 };

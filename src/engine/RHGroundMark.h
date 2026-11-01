@@ -9,26 +9,14 @@
 //     +0x08, cursor at +0x0c, valid flag at +0x10, index at +0x14);
 //   - RHGroundInfo = SBGeoPoint2D (8 bytes) + two unsigned shorts.
 
+#ifndef RHGROUNDMARK_H
+#define RHGROUNDMARK_H
+
 #include "SB.h"
 #include "RHSectorActorList.h"
 #include <memory>
 
-#define SBGEO_POINT2D_VIEW
-class SBGeoPoint2D
-{
-public:
-    float m_x;
-    float m_y;
-
-    SBGeoPoint2D();
-    ~SBGeoPoint2D();
-    SBGeoPoint2D(const SBGeoPoint2D &other);
-    SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
-    SBGeoPoint2D FUN_005fc200(const SBGeoPoint2D &other) const;
-    SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
-    float FUN_005fc700(float scale) const;
-    bool Serialize(SBFile &file);
-};
+#include "SBGeoPoint2D.h"
 
 #include "RHGroundInfo.h"
 
@@ -157,6 +145,7 @@ public:
     ~RHGroundMark();
     virtual void *FUN_0051bc70(unsigned flags);
     bool AddGroundMark(const SBGeoPoint2D &point, unsigned short type);
+    unsigned long LoadFromResource();
     bool Serialize(SBFile &file);
     void Emit(SBFile &file);
 
@@ -168,3 +157,4 @@ public:
 };
 
 void RHSerializeName(SBFile &file, const char *name);
+#endif

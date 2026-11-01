@@ -9,8 +9,16 @@ class SBGeoPoint2D;
 class RHElement;
 class RHElementActor;
 class RHElementActorPC;
+class RHSprite;
+class RHUnk005ef320;
+class RHUnkSpriteBank;
+class RHUnk00613e90;
 struct RHTitbit;
 struct RHTitbitNode;
+
+enum RHtitbitKind
+{
+};
 
 class RHTitbitList
 {
@@ -42,6 +50,9 @@ public:
 class RHTitbits
 {
 public:
+    unsigned long LoadFromResource();
+    unsigned long AddTitbit(const RHUnk00613e90 &position, unsigned short layer, RHtitbitKind kind,
+        RHElement *element, unsigned short subtype, RHElementActorPC *pc, bool shadow, unsigned long id);
     bool Serialize(SBFile &file);
     bool RemoveQuickActionTitbitsFor(RHElementActorPC *actor, unsigned short action);
     bool FUN_005c3680();
@@ -60,9 +71,20 @@ public:
     void Emit(SBFile &file);
 
     short m_00;          // [0x00]
-    char m_pad0[0x1e];   // [0x02, 0x20): opaque; keeps the list at +0x20
+    char m_pad0[2];
+    RHSprite *m_sprite;
+    unsigned long m_surface;
+    unsigned long m_mask;
+    unsigned short m_counts[8];
     RHTitbitList m_list; // [0x20]
-    char m_pad1[0x6c];   // [0x38, 0xa4): opaque
+    char m_pad1[0x38];
+    RHUnk005ef320 *m_draw;
+    RHUnkSpriteBank *m_bank;
+    void *m_font;
+    void *m_outline;
+    char m_80[0x20];
+    unsigned short m_a0;
+    char m_a2[2];
     unsigned long m_a4;  // [0xa4]
     float m_a8;          // [0xa8]
     int m_ac;            // [0xac]
