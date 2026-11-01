@@ -31,73 +31,9 @@ public:
 
 #include "RHSectorCore.h"
 
-template <class T>
-class RHSectorArrayStorage : public std::vector<T>
-{
-public:
-    ~RHSectorArrayStorage() { clear(); }
-};
+#include "RHSectorArchery.h"
 
-template <class T>
-class RHSectorArray : public RHSectorArrayStorage<T>
-{
-public:
-    RHSectorArray() { m_dirty = 1; }
-    ~RHSectorArray()
-    {
-        int count = size();
-        for (int i = 0; i < count; ++i)
-        {
-            if ((*this)[i] != 0)
-                delete (*this)[i];
-        }
-        erase(begin(), end());
-    }
-    char m_pad10[4];
-    char m_dirty; // [0x14]
-    char m_pad15[3];
-    void Resize(unsigned int count, const T &value = T())
-    {
-        if (size() < count)
-            insert(end(), count - size(), value);
-        else if (count < size())
-            ((RHMissionArrayStorage *)this)->FUN_004609a0(begin() + count, end());
-        m_dirty = 1;
-    }
-};
-
-class RHUnk00522540;
-struct RHUnk00571160Position;
-
-// VTABLE: GAME 0x00679c9c
-// SIZE 0x84
-class RHSectorArchery : public RHSector
-{
-public:
-    RHSectorArchery();
-    virtual ~RHSectorArchery();
-    void InitializeFromMissionStream(SBFile &file);
-    bool Serialize(SBFile &file);
-    bool IsInside(const RHUnk00571160Position &position);
-    void Emit(SBFile &file);
-    RHSectorArray<RHUnk00522540 *> m_58; // [0x58]
-    char m_pad70[8];
-    void *m_78; // [0x78]
-    unsigned short m_7c; // [0x7c]
-    unsigned short m_7e; // [0x7e]
-    unsigned short m_80; // [0x80]
-    unsigned short m_82; // 0x82
-};
-
-struct RHUnkSectorGlobal
-{
-    char m_pad0[0x4064];
-    void **m_4064; // [0x4064]
-    char m_pad4068[0x11c];
-    void *m_4184; // [0x4184]
-};
-
-extern RHUnkSectorGlobal *g_unk0x6c0a9c;
+#include "RHUnkSectorGlobal.h"
 
 // VTABLE: GAME 0x00679140
 // SIZE 0x1c

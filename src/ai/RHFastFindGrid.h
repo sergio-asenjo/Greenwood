@@ -359,22 +359,7 @@ public:
 
 class RHUnk0051e1e0;
 
-class RHUnk0051e5e0
-{
-public:
-    RHUnk0051e5e0();
-    ~RHUnk0051e5e0();
-    void *FUN_0051e630(unsigned flags);
-    int Unk0051e700(SBFile &file);
-    bool FUN_0051e7b0(unsigned int index, RHElementActor *actor, bool mode);
-    void Unk0051e800();
-    float FUN_0051e890(RHUnk0051e1e0 *line);
-    char m_00[0x36];
-    unsigned short m_layer;
-    char m_38[0x20];
-    RHFastFindPointerArray m_lines;
-    char m_78[0x28];
-};
+#include "RHJumpSector.h"
 
 class RHFastFindJumpSector
 {
@@ -420,48 +405,10 @@ unsigned long FUN_005e1d00(SBFile &file);
 void FUN_005e2300(SBFile &file);
 void RHSerializeName(SBFile &file, const char *name);
 
-class RHFastFindTacticalItem
-{
-public:
-    virtual ~RHFastFindTacticalItem();
-};
+#include "RHFastFindAmbushArray.h"
+#include "RHFastFindSeekArray.h"
 
-class RHFastFindTacticalArray : public std::vector<RHFastFindTacticalItem *>
-{
-public:
-    RHFastFindTacticalItem **m_search; // +0x10
-    bool m_changed; // +0x14
-    bool m_searching; // +0x15
-    int m_index; // +0x18
-    RHFastFindTacticalItem *m_value; // +0x1c
-    int GetSize() { return size(); }
-    void RemoveAll()
-    {
-        erase(begin(), end());
-        m_changed = true;
-    }
-};
-
-inline void RHFastFindClearTactical(RHFastFindTacticalArray &array)
-{
-    int count = array.GetSize();
-    for (int i = 0; i < count; ++i)
-        delete array[i];
-    array.RemoveAll();
-}
-
-extern RHFastFindTacticalArray g_unk0x006c06f0;
-extern RHFastFindTacticalArray g_unk0x006c0718;
-
-struct RHUnkSectorGlobal
-{
-    char m_pad0[0x4064];
-    void **m_4064;
-    char m_pad4068[0x11c];
-    void *m_4184;
-};
-
-extern RHUnkSectorGlobal *g_unk0x6c0a9c;
+#include "RHUnkSectorGlobal.h"
 
 inline void *RHFastFindLookup(unsigned short sector)
 {

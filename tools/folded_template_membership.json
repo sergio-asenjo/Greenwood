@@ -590,6 +590,14 @@
       "canonical_symbol": "?_Ucopy@?$vector@PAVRHUnk005d92c0Sub@@V?$allocator@PAVRHUnk005d92c0Sub@@@std@@@std@@IAEPAPAVRHUnk005d92c0Sub@@PBQAV3@0PAPAV3@@Z",
       "members": [
         {
+          "path": "src/ai/RHFastFindGrid.cpp",
+          "symbol": "?_Ucopy@?$vector@PAVRHSectorArchery@@V?$allocator@PAVRHSectorArchery@@@std@@@std@@IAEPAPAVRHSectorArchery@@PBQAV3@0PAPAV3@@Z"
+        },
+        {
+          "path": "src/ai/RHFastFindGrid.cpp",
+          "symbol": "?_Ucopy@?$vector@PAVRHUnk00521550@@V?$allocator@PAVRHUnk00521550@@@std@@@std@@IAEPAPAVRHUnk00521550@@PBQAV3@0PAPAV3@@Z"
+        },
+        {
           "path": "src/ui/RHWidgetPortrait.cpp",
           "symbol": "?_Ucopy@?$vector@PAVRHUnk005d92c0Sub@@V?$allocator@PAVRHUnk005d92c0Sub@@@std@@@std@@IAEPAPAVRHUnk005d92c0Sub@@PBQAV3@0PAPAV3@@Z"
         },
@@ -640,6 +648,14 @@
       "canonical_symbol": "?_Ufill@?$vector@PAVRHUnk005d92c0Sub@@V?$allocator@PAVRHUnk005d92c0Sub@@@std@@@std@@IAEXPAPAVRHUnk005d92c0Sub@@IABQAV3@@Z",
       "members": [
         {
+          "path": "src/ai/RHFastFindGrid.cpp",
+          "symbol": "?_Ufill@?$vector@PAVRHSectorArchery@@V?$allocator@PAVRHSectorArchery@@@std@@@std@@IAEXPAPAVRHSectorArchery@@IABQAV3@@Z"
+        },
+        {
+          "path": "src/ai/RHFastFindGrid.cpp",
+          "symbol": "?_Ufill@?$vector@PAVRHUnk00521550@@V?$allocator@PAVRHUnk00521550@@@std@@@std@@IAEXPAPAVRHUnk00521550@@IABQAV3@@Z"
+        },
+        {
           "path": "src/ui/RHWidgetPortrait.cpp",
           "symbol": "?_Ufill@?$vector@PAVRHUnk005d92c0Sub@@V?$allocator@PAVRHUnk005d92c0Sub@@@std@@@std@@IAEXPAPAVRHUnk005d92c0Sub@@IABQAV3@@Z"
         },
@@ -673,6 +689,14 @@
       "original": "0x005008e0",
       "canonical_symbol": "?_Destroy@?$vector@PAVRHUnk005d92c0Sub@@V?$allocator@PAVRHUnk005d92c0Sub@@@std@@@std@@IAEXPAPAVRHUnk005d92c0Sub@@0@Z",
       "members": [
+        {
+          "path": "src/ai/RHFastFindGrid.cpp",
+          "symbol": "?_Destroy@?$vector@PAVRHSectorArchery@@V?$allocator@PAVRHSectorArchery@@@std@@@std@@IAEXPAPAVRHSectorArchery@@0@Z"
+        },
+        {
+          "path": "src/ai/RHFastFindGrid.cpp",
+          "symbol": "?_Destroy@?$vector@PAVRHUnk00521550@@V?$allocator@PAVRHUnk00521550@@@std@@@std@@IAEXPAPAVRHUnk00521550@@0@Z"
+        },
         {
           "path": "src/ui/RHWidgetPortrait.cpp",
           "symbol": "?_Destroy@?$vector@PAVRHUnk005d92c0Sub@@V?$allocator@PAVRHUnk005d92c0Sub@@@std@@@std@@IAEXPAPAVRHUnk005d92c0Sub@@0@Z"
@@ -891,6 +915,10 @@
       "original": "0x0059fb00",
       "canonical_symbol": "?_Construct@std@@YAXPAPAVRHUnk005d92c0Sub@@ABQAV2@@Z",
       "members": [
+        {
+          "path": "src/ai/RHFastFindGrid.cpp",
+          "symbol": "?_Construct@std@@YAXPAPAVRHUnk00521550@@ABQAV2@@Z"
+        },
         {
           "path": "src/ui/RHWidgetPortrait.cpp",
           "symbol": "?_Construct@std@@YAXPAPAVRHUnk005d92c0Sub@@ABQAV2@@Z"

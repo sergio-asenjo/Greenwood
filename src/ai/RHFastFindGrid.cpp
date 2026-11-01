@@ -6,6 +6,9 @@
 #include "RHElementGrid.h"
 #include "RHPathQueryCalls.h"
 #include "RHSectorActorIterator.h"
+#include "RHSectorArchery.h"
+#include "RHFastFindArcheryArray.h"
+#include <float.h>
 
 // TEMPLATE: GAME 0x00522780
 // ?insert@?$vector@GV?$allocator@G@std@@@std@@QAEPAGPAGABG@Z
@@ -18,10 +21,29 @@ template class std::vector<unsigned long>;
 // TEMPLATE: GAME 0x004598e0 FOLDED
 // ?copy@std@@YAPAKPBK0PAK@Z
 
+// TEMPLATE: GAME 0x0059fb00 FOLDED
+// ?_Construct@std@@YAXPAPAVRHUnk00521550@@ABQAV2@@Z
+
+// TEMPLATE: GAME 0x004fe450 FOLDED
+// ?_Ufill@?$vector@PAVRHUnk00521550@@V?$allocator@PAVRHUnk00521550@@@std@@@std@@IAEXPAPAVRHUnk00521550@@IABQAV3@@Z
+
+// TEMPLATE: GAME 0x004fe420 FOLDED
+// ?_Ucopy@?$vector@PAVRHUnk00521550@@V?$allocator@PAVRHUnk00521550@@@std@@@std@@IAEPAPAVRHUnk00521550@@PBQAV3@0PAPAV3@@Z
+
+// TEMPLATE: GAME 0x005008e0 FOLDED
+// ?_Destroy@?$vector@PAVRHUnk00521550@@V?$allocator@PAVRHUnk00521550@@@std@@@std@@IAEXPAPAVRHUnk00521550@@0@Z
+
 // GLOBAL: GAME 0x006c06f0
-RHFastFindTacticalArray g_unk0x006c06f0;
+RHFastFindSeekArray g_unk0x006c06f0;
 // GLOBAL: GAME 0x006c0718
-RHFastFindTacticalArray g_unk0x006c0718;
+RHFastFindAmbushArray g_unk0x006c0718;
+
+DECOMP_SIZE_ASSERT(RHFastFindAmbushArray, 0x20)
+DECOMP_SIZE_ASSERT(RHFastFindSeekArray, 0x20)
+DECOMP_SIZE_ASSERT(RHFastFindArcheryArray, 0x20)
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindAmbushArray, m_changed) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindSeekArray, m_changed) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindArcheryArray, m_changed) == 0x14)
 
 
 // GLOBAL: GAME 0x006c0bcc
@@ -396,6 +418,35 @@ DECOMP_STATIC_ASSERT(offsetof(RHFastFindRepulsiveOwner, m_points) + offsetof(RHF
 DECOMP_STATIC_ASSERT(offsetof(RHFastFindRepulsiveOwner, m_lines) + offsetof(RHFastFindPointerArray, m_first) == 0x168)
 DECOMP_STATIC_ASSERT(offsetof(RHFastFindRepulsiveOwner, m_bounds) == 0x1ac)
 DECOMP_SIZE_ASSERT(RHFastFindRepulsiveOwnerArray, 0x08)
+
+// FUNCTION: GAME 0x004e8ae0
+void RHFastFindGrid::FUN_004e8ae0(RHFastFindUniqueList &output, unsigned short layer, const SBGeoBoundingBox2D &box, unsigned long mask)
+{
+    const float *bounds = (const float *)&box;
+    short firstX = (short)bounds[0] >> 6;
+    short firstY = (short)bounds[1] >> 6;
+    short lastX = (short)bounds[2] >> 6;
+    short lastY = (short)bounds[3] >> 6;
+    unsigned long cell = (m_height * layer + firstY) * m_width + firstX;
+    int skip = m_width - (lastX - firstX) - 1;
+    if ((unsigned short)firstY <= (unsigned short)lastY)
+    {
+        unsigned long rows = (unsigned short)lastY - (unsigned short)firstY + 1;
+        do
+        {
+            if ((unsigned short)firstX <= (unsigned short)lastX)
+            {
+                unsigned long columns = (unsigned short)lastX - (unsigned short)firstX + 1;
+                do
+                {
+                    ((RHElementGrid *)this)->FUN_004e89d0(&output, cell, mask);
+                    ++cell;
+                } while (--columns);
+            }
+            cell += skip;
+        } while (--rows);
+    }
+}
 
 // Parked: frame is 0x28 rather than 0x24; owner/output registers and uniqueness-search scheduling differ.
 // STUB: GAME 0x004ec240
@@ -1799,8 +1850,8 @@ void RHFastFindGrid::FUN_004fa6f0(void *value)
 void RHFastFindGrid::InitializeTacticalInfosFromMissionStream(SBFile &file)
 {
     FUN_005e1d50(file, 0x4849524e, 2);
-    RHFastFindClearTactical(g_unk0x006c06f0);
-    RHFastFindClearTactical(g_unk0x006c0718);
+    g_unk0x006c06f0.RemoveAll();
+    g_unk0x006c0718.RemoveAll();
     unsigned short count;
     file.Access(&count, 2);
     for (unsigned short i = 0; i < count; ++i)
@@ -1895,6 +1946,21 @@ void RHFastFindGrid::FUN_004fad80(void *gate)
     fastfind_gateObjects.InsertLast(value, true, false, true);
 }
 
+// FUNCTION: GAME 0x004faf40
+void RHFastFindGrid::FUN_004faf40(SBFile &file)
+{
+    FUN_005e1d50(file, 0x42555348, 2);
+    unsigned short count;
+    file.Access(&count, 2);
+    for (unsigned short i = 0; i < count; ++i)
+    {
+        RHUnk00521550 *point = new RHUnk00521550;
+        point->FUN_005215f0(file);
+        g_unk0x006c0718.InsertLast(point);
+    }
+    FUN_005e20c0(file);
+}
+
 // FUNCTION: GAME 0x004fb1d0
 void RHFastFindGrid::FUN_004fb1d0(SBFile &file)
 {
@@ -1909,6 +1975,88 @@ void RHFastFindGrid::FUN_004fb1d0(SBFile &file)
     }
     FUN_005e20c0(file);
 }
+
+inline void RHFastFindArcheryArray::RemoveAll()
+{
+    int count = size();
+    for (int i = 0; i < count; ++i)
+        if ((*this)[i] != 0)
+            delete (*this)[i];
+    erase(begin(), end());
+    m_changed = true;
+}
+
+inline void RHFastFindArcheryArray::InsertLast(RHSectorArchery *value)
+{
+    typedef std::vector<RHSectorArchery *> Base;
+    typedef iterator (Base::*Ucopy)(const_iterator, const_iterator, iterator);
+    typedef void (Base::*Ufill)(iterator, unsigned, RHSectorArchery *const &);
+    typedef void (Base::*Destroy)(iterator, iterator);
+    typedef unsigned (Base::*Size)() const;
+    Ucopy copy = &RHFastFindArcheryArray::_Ucopy;
+    Ufill fill = &RHFastFindArcheryArray::_Ufill;
+    Destroy destroy = &RHFastFindArcheryArray::_Destroy;
+    Size getSize = &RHFastFindArcheryArray::size;
+    iterator position = end();
+    if ((unsigned)(_End - _Last) < 1)
+    {
+        unsigned grow = size() > 1 ? (this->*getSize)() : 1;
+        int count = (this->*getSize)() + grow;
+        iterator storage = allocator.allocate(count, (void *)0);
+        iterator destination = (this->*copy)(_First, position, storage);
+        (this->*fill)(destination, 1, value);
+        ++destination;
+        (this->*copy)(position, _Last, destination);
+        (this->*destroy)(_First, _Last);
+        allocator.deallocate(_First, _End - _First);
+        _End = storage + count;
+        _Last = storage + (this->*getSize)() + 1;
+        _First = storage;
+    }
+    else if ((unsigned)(_Last - position) < 1)
+    {
+        (this->*copy)(position, _Last, position + 1);
+        (this->*fill)(_Last, 1 - (_Last - position), value);
+        std::fill(position, _Last, value);
+        ++_Last;
+    }
+    else
+    {
+        (this->*copy)(_Last - 1, _Last, _Last);
+        std::copy_backward(position, _Last - 1, _Last);
+        std::fill(position, position + 1, value);
+        ++_Last;
+    }
+    m_changed = true;
+}
+
+// FUNCTION: GAME 0x004fb230
+void RHFastFindGrid::FUN_004fb230(SBFile &file)
+{
+    FUN_005e1d50(file, 0x4e4c4950, 2);
+    g_unk0x006c06d0.RemoveAll();
+    unsigned short count;
+    file.Access(&count, 2);
+    for (unsigned short i = 0; i < count; ++i)
+    {
+        RHSectorArchery *sector = new RHSectorArchery;
+        sector->InitializeFromMissionStream(file);
+        g_unk0x006c06d0.InsertLast(sector);
+    }
+    FUN_005e20c0(file);
+}
+
+// TEMPLATE: GAME 0x004fe420 FOLDED
+// ?_Ucopy@?$vector@PAVRHSectorArchery@@V?$allocator@PAVRHSectorArchery@@@std@@@std@@IAEPAPAVRHSectorArchery@@PBQAV3@0PAPAV3@@Z
+
+// TEMPLATE: GAME 0x004fe450 FOLDED
+// ?_Ufill@?$vector@PAVRHSectorArchery@@V?$allocator@PAVRHSectorArchery@@@std@@@std@@IAEXPAPAVRHSectorArchery@@IABQAV3@@Z
+
+// TEMPLATE: GAME 0x005008e0 FOLDED
+// ?_Destroy@?$vector@PAVRHSectorArchery@@V?$allocator@PAVRHSectorArchery@@@std@@@std@@IAEXPAPAVRHSectorArchery@@0@Z
+
+// LIBRARY: GAME 0x0059fbc0 FOLDED
+// ?size@?$vector@PAVRHSectorArchery@@V?$allocator@PAVRHSectorArchery@@@std@@@std@@QBEIXZ
 
 // STUB: GAME 0x004fb510
 void RHFastFindGrid::InitializeJumpStuffFromProtoStream(SBFile &file)
@@ -2060,7 +2208,7 @@ RHUnk00613e90 RHFastFindGrid::PositionToPoint3D(RHUnk00571160Position &position)
     point.m_y = position.y;
     RHFastFindAreaPlane *plane = 0;
     if (position.area && (unsigned char)(*(unsigned long *)((char *)position.area + 0x30) >> 1) & 1)
-        plane = (RHFastFindAreaPlane *)((RHActorAreaCalls *)position.area)->FUN_0057d800(point);
+        plane = (RHFastFindAreaPlane *)((RHUnk0057d490 *)position.area)->FUN_0057d800(point);
     float z;
     if (!plane)
         z = 0.0f;
@@ -3283,6 +3431,13 @@ int RHUnk0051e5e0::Unk0051e700(SBFile &file)
     return ((ToolboxPositionFile *)&file)->FUN_005f5440() - start;
 }
 
+// FUNCTION: GAME 0x0051e790
+RHUnk0051e1e0 *RHUnk0051e5e0::FUN_0051e790(RHElementActor *actor,
+    const SBGeoPoint2D &first, const SBGeoPoint2D &second, bool mode)
+{
+    return FUN_0051e8e0(actor, first, second, mode);
+}
+
 // Parked: actor and virtual-argument live ranges select different registers and cleanup tails.
 // STUB: GAME 0x0051e7b0
 bool RHUnk0051e5e0::FUN_0051e7b0(unsigned int index, RHElementActor *actor, bool mode)
@@ -3327,6 +3482,36 @@ float RHUnk0051e5e0::FUN_0051e890(RHUnk0051e1e0 *line)
         if (m_lines.m_first[index] == line)
             return (*(RHUnk004ff7b0 *)((char *)this + 0x78)).m_first[index];
     return 0.0f;
+}
+
+// STUB: GAME 0x0051e8e0
+RHUnk0051e1e0 *RHUnk0051e5e0::FUN_0051e8e0(RHElementActor *actor,
+    const SBGeoPoint2D &first, const SBGeoPoint2D &second, bool mode)
+{
+    RHUnk0051e1e0 *winner = 0;
+    SBGeoPoint2D midpoint;
+    float best = FLT_MAX;
+    unsigned count = m_lines.size();
+    for (unsigned index = 0; index < count; ++index)
+    {
+        if (FUN_0051e7b0(index, actor, mode))
+        {
+            RHUnk0051e1e0 *line = (RHUnk0051e1e0 *)m_lines.m_first[index];
+            RHUnk0051e1e0 *other = line->m_other;
+            midpoint.m_x = (*(float *)(other->m_00 + 0xc) + *(float *)(other->m_00 + 4)) * 0.5f;
+            midpoint.m_y = (*(float *)(other->m_00 + 0x10) + *(float *)(other->m_00 + 8)) * 0.5f;
+            float distance = midpoint.Unk005fc110(second).Unk005fc6d0(1.0f);
+            midpoint.m_x = (*(float *)(line->m_00 + 0xc) + *(float *)(line->m_00 + 4)) * 0.5f;
+            midpoint.m_y = (*(float *)(line->m_00 + 0x10) + *(float *)(line->m_00 + 8)) * 0.5f;
+            distance += midpoint.Unk005fc110(first).Unk005fc6d0(1.0f);
+            if (distance < best)
+            {
+                winner = line;
+                best = distance;
+            }
+        }
+    }
+    return winner;
 }
 
 // FUNCTION: GAME 0x0051faf0
@@ -3443,6 +3628,7 @@ void RHFastFindGrid::Emit(SBFile &file, void *&value)
     FUN_004fc660();
     ((RHActorGridCalls *)this)->FUN_004f9a80(value, (RHElementActor *)value, *(SBGeoPoint2D *)value, value, 0, *(SBGeoPoint2D *)value, value, 0, 0);
     FUN_004fa080(*(RHFastFindUniqueList *)value, (RHElementActor *)value, *(SBGeoPoint2D *)value, value, 0, (RHFastFindPathGate *)value, 0);
+    FUN_004e8ae0(*(RHFastFindUniqueList *)value, 0, *(SBGeoBoundingBox2D *)value, 0);
     FUN_004ec240(*(RHFastFindUniqueList *)value, 0, *(SBGeoBoundingBox2D *)value, 0);
     FUN_004ec450(*(RHFastFindUniqueList *)value, 0, 0);
     FUN_004ec560(*(RHFastFindUniqueList *)value, 0, *(SBGeoBoundingBox2D *)value, 0);
@@ -3480,6 +3666,8 @@ void RHFastFindGrid::Emit(SBFile &file, void *&value)
     plane.Unk005dfa00();
     ((RHUnk0051e5e0 *)value)->FUN_0051e890((RHUnk0051e1e0 *)value);
     ((RHUnk0051e5e0 *)value)->FUN_0051e7b0(0, (RHElementActor *)value, false);
+    ((RHUnk0051e5e0 *)value)->FUN_0051e790((RHElementActor *)value,
+        *(SBGeoPoint2D *)value, *(SBGeoPoint2D *)value, false);
     m_repulsivePoints.begin()->operator=(*m_repulsivePoints.begin());
     RHUnk00520ae0 repulsive;
 }

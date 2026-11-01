@@ -54,8 +54,6 @@ bool RHMalignitySegment::FUN_0060ad50(const SBGeoBoundingBox2D &box)
 }
 
 
-void RHFastFindGrid::FUN_004faf40(SBFile &) {}
-void RHFastFindGrid::FUN_004fb230(SBFile &) {}
 void RHFastFindGrid::FUN_004e8bd0(void *, unsigned short, bool) {}
 void RHFastFindSector::UnkSlot0() {}
 void RHFastFindSector::UnkSlot4() {}
