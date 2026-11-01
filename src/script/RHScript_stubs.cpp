@@ -146,32 +146,26 @@ SBGeoPoint2D::SBGeoPoint2D(float x, float y)
     m_y = y;
 }
 
-extern void **g_unk0x6c0f34;
-extern void **g_unk0x6c0f38;
-extern void **g_unk0x6c0f40;
-extern bool g_unk0x6c0f44;
-extern bool g_unk0x6c0f45;
-extern int g_unk0x6c0f48;
-extern void *g_unk0x6c0f4c;
+#include "RHScriptActorArray.h"
 
 // FUNCTION: GAME 0x005709c0
 bool RHUnk005709c0(void *actor)
 {
     if (actor == 0)
         return false;
-    g_unk0x6c0f44 = false;
-    g_unk0x6c0f4c = actor;
-    int count = g_unk0x6c0f34 == 0 ? 0 : g_unk0x6c0f38 - g_unk0x6c0f34;
-    g_unk0x6c0f45 = true;
-    g_unk0x6c0f40 = g_unk0x6c0f34;
+    g_unk0x6c0f30.dirty = false;
+    g_unk0x6c0f30.value = actor;
+    int count = g_unk0x6c0f30.First() == 0 ? 0 : g_unk0x6c0f30.Last() - g_unk0x6c0f30.First();
+    g_unk0x6c0f30.found = true;
+    g_unk0x6c0f30.current = g_unk0x6c0f30.First();
     int index = 0;
-    for (; index < count; ++index, ++g_unk0x6c0f40) {
-        if (*g_unk0x6c0f40 == actor)
+    for (; index < count; ++index, ++g_unk0x6c0f30.current) {
+        if (*g_unk0x6c0f30.current == actor)
             break;
     }
     if (index >= count)
         index = -1;
-    g_unk0x6c0f48 = index;
+    g_unk0x6c0f30.index = index;
     return index != -1;
 }
 
@@ -219,11 +213,6 @@ RHUnk00522470::~RHUnk00522470()
     *(unsigned *)this = 0x67913c;
     ((RHScriptBatchCalls *)this)->FUN_00520a70();
 }
-RHBonusProjection *RHUnk0057d800::Unk(const SBGeoPoint2D &point)
-{
-    (void)point;
-    return 0;
-}
 
 
 
@@ -234,12 +223,6 @@ RHMessenger *__stdcall RHUnk00546050(RHUnk5490f0 *message) { (void)message; retu
 // ??1RHUnk00585ea0@@QAE@XZ
 RHUnk00585ea0::~RHUnk00585ea0() {}
 RHScriptIter RHUnk0046eb30::begin() { return RHScriptIter(head->next); }
-void RHUnk00574690(void *actor, RHUnk00571160Position *position, void *location)
-{
-    (void)actor;
-    (void)position;
-    (void)location;
-}
 void RHUnk00582640::Unk(unsigned short &level, void *actor, int style, const SBGeoPoint2D &start, void *startArea, unsigned short startLayer, const SBGeoPoint2D &end, void *endArea, unsigned short endLayer, void *element, float distance, unsigned long flags, float scale)
 {
     (void)level;
@@ -287,7 +270,6 @@ void *RHUnk005b5e00::FUN_005b5de0()
         return *(void **)((char *)this + 0x158);
     return *(void **)((char *)this + 0x154);
 }
-int RHScriptBatchCalls::Unk005c2ec0(void *, int, int, void *, int, int, int, int) { return -1; }
 // TEMPLATE: GAME 0x00585e90 FOLDED
 // ??1RHUnk005861c0@@QAE@XZ
 RHUnk005861c0::~RHUnk005861c0() {}

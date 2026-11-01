@@ -683,12 +683,6 @@ public:
     void FUN_005bd560(void *value, bool flag);
 };
 
-class RHUnk0057d800
-{
-public:
-    RHBonusProjection *Unk(const SBGeoPoint2D &point);
-};
-
 struct RHScriptPositionFields
 {
     char padding[0xde];
@@ -900,7 +894,6 @@ public:
     void Unk0040d980(int state);
     void Unk0048cbc0();
     void Unk0046bcf0(int state, int value);
-    int Unk005c2ec0(void *position, int first, int second, void *actor, int third, int fourth, int fifth, int sixth);
     void *Unk0058a940(void *context, int value, void *element);
     void Unk0041bd20(int style);
     bool Unk00489e80(void *target);

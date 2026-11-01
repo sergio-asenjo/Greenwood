@@ -43,6 +43,7 @@
 #include "RHMalignityActorCalls.h"
 #include "RHGameActionCalls.h"
 #include "RHCampaignCore.h"
+#include "RHScriptActorArray.h"
 
 extern unsigned *g_unk0x006c08a4;
 class RHUnk6c1040;
@@ -652,10 +653,8 @@ struct RHUnkSectorGlobal;
 extern RHUnkSectorGlobal *g_unk0x6c0a9c;
 class RHEngine;
 extern RHEngine *g_pEngine;
-// GLOBAL: GAME 0x006c0f34
-void **g_unk0x6c0f34;
-// GLOBAL: GAME 0x006c0f38
-void **g_unk0x6c0f38;
+// GLOBAL: GAME 0x006c0f30
+RHScriptActorArray g_unk0x6c0f30;
 class RHUnk6c1040;
 extern RHUnk6c1040 *g_unk0x6c1040;
 // GLOBAL: GAME 0x006c0f50
@@ -670,16 +669,6 @@ RHTitbits *g_unk0x6c10e8;
 void *g_unk0x6c0f7c;
 // GLOBAL: GAME 0x006c0b3c
 RHUnk0048a970 *g_unk0x6c0b3c;
-// GLOBAL: GAME 0x006c0f40
-void **g_unk0x6c0f40;
-// GLOBAL: GAME 0x006c0f44
-bool g_unk0x6c0f44;
-// GLOBAL: GAME 0x006c0f45
-bool g_unk0x6c0f45;
-// GLOBAL: GAME 0x006c0f48
-int g_unk0x6c0f48;
-// GLOBAL: GAME 0x006c0f4c
-void *g_unk0x6c0f4c;
 
 // GLOBAL: GAME 0x006c11d0
 RHUnk005ef320 *g_unk0x6c11d0;
@@ -687,17 +676,79 @@ RHUnk005ef320 *g_unk0x6c11d0;
 // GLOBAL: GAME 0x006c05c4
 void *g_unk0x6c05c4;
 
+DECOMP_SIZE_ASSERT(RHScriptActorArray, 0x20)
+DECOMP_STATIC_ASSERT(offsetof(RHScriptActorArray, current) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHScriptActorArray, dirty) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(RHScriptActorArray, found) == 0x15)
+DECOMP_STATIC_ASSERT(offsetof(RHScriptActorArray, index) == 0x18)
+DECOMP_STATIC_ASSERT(offsetof(RHScriptActorArray, value) == 0x1c)
+DECOMP_SIZE_ASSERT(RHUnk00571160Position, 0x10)
+DECOMP_SIZE_ASSERT(std::list<RHUnk00571160Position>, 0x0c)
+DECOMP_SIZE_ASSERT(std::list<void *>, 0x0c)
+
+inline void RHScriptActorArray::Resize(unsigned count)
+{
+    void *value = 0;
+    if (size() < count)
+    {
+        typedef std::vector<RHPCDescription *> Storage;
+        void (Storage::*insert)(RHPCDescription **, unsigned, RHPCDescription *const &) = &Storage::insert;
+        (((Storage *)this)->*insert)((RHPCDescription **)end(), count - size(), (RHPCDescription *const &)value);
+    }
+    else if (count < size())
+        ((RHMissionArrayStorage *)this)->FUN_004609a0(begin() + count, end());
+    dirty = true;
+}
+
+inline void RHScriptActorArray::Remove(unsigned wanted)
+{
+    void **position = (void **)&((std::vector<RHElement *> *)this)->at(wanted);
+    erase(position);
+    dirty = true;
+}
+
+// FUNCTION: GAME 0x00570850
+bool FUN_00570850(void *actor)
+{
+    unsigned index = g_unk0x6c0f30.size();
+    g_unk0x6c0f30.Resize(index + 1);
+    g_unk0x6c0f30.First()[index] = actor;
+    if (actor)
+        *(unsigned short *)((char *)actor + 0x8a) = index;
+    return true;
+}
+
+// FUNCTION: GAME 0x00570900
+void FUN_00570900(void *actor)
+{
+    unsigned count = g_unk0x6c0f30.size();
+    for (unsigned index = 0; index < count; ++index)
+    {
+        if (g_unk0x6c0f30.First()[index] == actor)
+        {
+            g_unk0x6c0f30.Remove(index);
+            break;
+        }
+    }
+}
+
+void EmitRHScriptActorArray(void *actor)
+{
+    FUN_00570850(actor);
+    FUN_00570900(actor);
+}
+
 inline int RHScriptFindActor(void *actor)
 {
-    g_unk0x6c0f44 = false;
-    g_unk0x6c0f4c = actor;
-    int count = g_unk0x6c0f34 == 0 ? 0 : g_unk0x6c0f38 - g_unk0x6c0f34;
-    g_unk0x6c0f45 = true;
-    g_unk0x6c0f40 = g_unk0x6c0f34;
+    g_unk0x6c0f30.dirty = false;
+    g_unk0x6c0f30.value = actor;
+    int count = g_unk0x6c0f30.First() == 0 ? 0 : g_unk0x6c0f30.Last() - g_unk0x6c0f30.First();
+    g_unk0x6c0f30.found = true;
+    g_unk0x6c0f30.current = g_unk0x6c0f30.First();
     int index = 0;
-    for (; index < count; ++index, ++g_unk0x6c0f40)
+    for (; index < count; ++index, ++g_unk0x6c0f30.current)
     {
-        if (*g_unk0x6c0f40 == actor)
+        if (*g_unk0x6c0f30.current == actor)
             break;
     }
     if (index >= count)
@@ -1344,8 +1395,8 @@ namespace VMCoreCustomDependencies
 // FUNCTION: GAME 0x005714d0
 int FUN_005714d0()
 {
-    void **first = g_unk0x6c0f34;
-    return first == 0 ? 0 : g_unk0x6c0f38 - first;
+    void **first = g_unk0x6c0f30.First();
+    return first == 0 ? 0 : g_unk0x6c0f30.Last() - first;
 }
 }
 
@@ -1393,8 +1444,8 @@ int RHScript::GetMovementStyle(void *actor)
 // STUB: GAME 0x00571590
 void *RHScript::GetActorScript(int index)
 {
-    void **first = g_unk0x6c0f34;
-    int count = first == 0 ? 0 : g_unk0x6c0f38 - first;
+    void **first = g_unk0x6c0f30.First();
+    int count = first == 0 ? 0 : g_unk0x6c0f30.Last() - first;
     char *engine = (char *)g_pEngine;
     if (index == -1)
     {
@@ -1587,7 +1638,7 @@ bool RHScript::SetActorLocation(void *actor, void *location)
         char *area = (char *)target.area;
         if (RHScriptAreaBit1(area) && RHScriptAreaBit0(area))
         {
-            RHBonusProjection *projection = ((RHUnk0057d800 *)area)->Unk(point);
+            RHBonusProjection *projection = ((RHUnk0057d490 *)area)->FUN_0057d800(point);
             ((RHBonusInfoBase *)(*(char **)((char *)actor + 0x50) + 4))->FUN_0055fa20(projection);
             ((RHBonusInfoBase *)(*(char **)((char *)actor + 0x50) + 4))->FUN_0055f290();
             ((RHBonusInfo *)*(void **)((char *)actor + 0x50))->FUN_005bd560(0, true);
@@ -2507,20 +2558,20 @@ bool RHScript::RecordAction(void *actor, int action, int argument)
         AddToSequence((RHSequenceElement *)element, "RecordAction");
         return result;
     case 4:
-        if (argument < 0 || argument >= (g_unk0x6c0f34 == 0 ? 0 : g_unk0x6c0f38 - g_unk0x6c0f34))
+        if (argument < 0 || argument >= (g_unk0x6c0f30.First() == 0 ? 0 : g_unk0x6c0f30.Last() - g_unk0x6c0f30.First()))
         {
             SBAssert(0, "P:\\Robin Hood\\RHScript.cpp", 2765,
                      // STRING: GAME 0x006b3ca8
                      "Script Error: Trying to record shoot action with illegal argument (must be antagonists actor index).");
             return false;
         }
-        target = g_unk0x6c0f34[argument];
+        target = g_unk0x6c0f30.First()[argument];
         element = new RHUnk00585ea0(g_unk0x6c0fa4, 0xb2, actor, target);
         element->SetFlag(result);
         AddToSequence((RHSequenceElement *)element, "RecordAction");
         return result;
     case 5:
-        if (argument < 0 || argument >= (g_unk0x6c0f34 == 0 ? 0 : g_unk0x6c0f38 - g_unk0x6c0f34))
+        if (argument < 0 || argument >= (g_unk0x6c0f30.First() == 0 ? 0 : g_unk0x6c0f30.Last() - g_unk0x6c0f30.First()))
         {
             SBAssert(0, "P:\\Robin Hood\\RHScript.cpp", 2778,
                      // STRING: GAME 0x006b3c44
@@ -2528,7 +2579,7 @@ bool RHScript::RecordAction(void *actor, int action, int argument)
             return false;
         }
         {
-            void *target = g_unk0x6c0f34[argument];
+            void *target = g_unk0x6c0f30.First()[argument];
             RHUnk005866a0 *fight = new RHUnk005866a0(g_unk0x6c0fa4, 0x32, actor);
             fight->Unk00586ed0(33, (int)target);
             fight->Unk00586ed0(24, 0);
@@ -2547,102 +2598,102 @@ bool RHScript::RecordAction(void *actor, int action, int argument)
         AddToSequence((RHSequenceElement *)element, "RecordAction");
         return result;
     case 8:
-        if (argument < 0 || argument >= (g_unk0x6c0f34 == 0 ? 0 : g_unk0x6c0f38 - g_unk0x6c0f34))
+        if (argument < 0 || argument >= (g_unk0x6c0f30.First() == 0 ? 0 : g_unk0x6c0f30.Last() - g_unk0x6c0f30.First()))
         {
             SBAssert(0, "P:\\Robin Hood\\RHScript.cpp", 2805,
                      // STRING: GAME 0x006b3be0
                      "Script Error: Trying to make sword trust with illegal argument (must be antagonists actor index).");
             return false;
         }
-        target = g_unk0x6c0f34[argument];
+        target = g_unk0x6c0f30.First()[argument];
         element = new RHUnk00585ea0(g_unk0x6c0fa4, 0x3b, actor, target);
         AddToSequence((RHSequenceElement *)element, "RecordAction");
         return result;
     case 9:
-        if (argument < 0 || argument >= (g_unk0x6c0f34 == 0 ? 0 : g_unk0x6c0f38 - g_unk0x6c0f34))
+        if (argument < 0 || argument >= (g_unk0x6c0f30.First() == 0 ? 0 : g_unk0x6c0f30.Last() - g_unk0x6c0f30.First()))
         {
             SBAssert(0, "P:\\Robin Hood\\RHScript.cpp", 2817,
                      "Script Error: Trying to make sword trust with illegal argument (must be antagonists actor index).");
             return false;
         }
-        target = g_unk0x6c0f34[argument];
+        target = g_unk0x6c0f30.First()[argument];
         element = new RHUnk00585ea0(g_unk0x6c0fa4, 0x3c, actor, target);
         AddToSequence((RHSequenceElement *)element, "RecordAction");
         return result;
     case 10:
-        if (argument < 0 || argument >= (g_unk0x6c0f34 == 0 ? 0 : g_unk0x6c0f38 - g_unk0x6c0f34))
+        if (argument < 0 || argument >= (g_unk0x6c0f30.First() == 0 ? 0 : g_unk0x6c0f30.Last() - g_unk0x6c0f30.First()))
         {
             SBAssert(0, "P:\\Robin Hood\\RHScript.cpp", 2829,
                      "Script Error: Trying to make sword trust with illegal argument (must be antagonists actor index).");
             return false;
         }
-        target = g_unk0x6c0f34[argument];
+        target = g_unk0x6c0f30.First()[argument];
         element = new RHUnk00585ea0(g_unk0x6c0fa4, 0x3d, actor, target);
         AddToSequence((RHSequenceElement *)element, "RecordAction");
         return result;
     case 11:
-        if (argument < 0 || argument >= (g_unk0x6c0f34 == 0 ? 0 : g_unk0x6c0f38 - g_unk0x6c0f34))
+        if (argument < 0 || argument >= (g_unk0x6c0f30.First() == 0 ? 0 : g_unk0x6c0f30.Last() - g_unk0x6c0f30.First()))
         {
             SBAssert(0, "P:\\Robin Hood\\RHScript.cpp", 2841,
                      "Script Error: Trying to make sword trust with illegal argument (must be antagonists actor index).");
             return false;
         }
-        target = g_unk0x6c0f34[argument];
+        target = g_unk0x6c0f30.First()[argument];
         element = new RHUnk00585ea0(g_unk0x6c0fa4, 0x3e, actor, target);
         AddToSequence((RHSequenceElement *)element, "RecordAction");
         return result;
     case 12:
-        if (argument < 0 || argument >= (g_unk0x6c0f34 == 0 ? 0 : g_unk0x6c0f38 - g_unk0x6c0f34))
+        if (argument < 0 || argument >= (g_unk0x6c0f30.First() == 0 ? 0 : g_unk0x6c0f30.Last() - g_unk0x6c0f30.First()))
         {
             SBAssert(0, "P:\\Robin Hood\\RHScript.cpp", 2853,
                      "Script Error: Trying to make sword trust with illegal argument (must be antagonists actor index).");
             return false;
         }
-        target = g_unk0x6c0f34[argument];
+        target = g_unk0x6c0f30.First()[argument];
         element = new RHUnk00585ea0(g_unk0x6c0fa4, 0x3f, actor, target);
         AddToSequence((RHSequenceElement *)element, "RecordAction");
         return result;
     case 13:
-        if (argument < 0 || argument >= (g_unk0x6c0f34 == 0 ? 0 : g_unk0x6c0f38 - g_unk0x6c0f34))
+        if (argument < 0 || argument >= (g_unk0x6c0f30.First() == 0 ? 0 : g_unk0x6c0f30.Last() - g_unk0x6c0f30.First()))
         {
             SBAssert(0, "P:\\Robin Hood\\RHScript.cpp", 2865,
                      "Script Error: Trying to make sword trust with illegal argument (must be antagonists actor index).");
             return false;
         }
-        target = g_unk0x6c0f34[argument];
+        target = g_unk0x6c0f30.First()[argument];
         element = new RHUnk00585ea0(g_unk0x6c0fa4, 0x40, actor, target);
         AddToSequence((RHSequenceElement *)element, "RecordAction");
         return result;
     case 14:
-        if (argument < 0 || argument >= (g_unk0x6c0f34 == 0 ? 0 : g_unk0x6c0f38 - g_unk0x6c0f34))
+        if (argument < 0 || argument >= (g_unk0x6c0f30.First() == 0 ? 0 : g_unk0x6c0f30.Last() - g_unk0x6c0f30.First()))
         {
             SBAssert(0, "P:\\Robin Hood\\RHScript.cpp", 2877,
                      "Script Error: Trying to make sword trust with illegal argument (must be antagonists actor index).");
             return false;
         }
-        target = g_unk0x6c0f34[argument];
+        target = g_unk0x6c0f30.First()[argument];
         element = new RHUnk00585ea0(g_unk0x6c0fa4, 0x41, actor, target);
         AddToSequence((RHSequenceElement *)element, "RecordAction");
         return result;
     case 15:
-        if (argument < 0 || argument >= (g_unk0x6c0f34 == 0 ? 0 : g_unk0x6c0f38 - g_unk0x6c0f34))
+        if (argument < 0 || argument >= (g_unk0x6c0f30.First() == 0 ? 0 : g_unk0x6c0f30.Last() - g_unk0x6c0f30.First()))
         {
             SBAssert(0, "P:\\Robin Hood\\RHScript.cpp", 2889,
                      "Script Error: Trying to make sword trust with illegal argument (must be antagonists actor index).");
             return false;
         }
-        target = g_unk0x6c0f34[argument];
+        target = g_unk0x6c0f30.First()[argument];
         element = new RHUnk00585ea0(g_unk0x6c0fa4, 0x42, actor, target);
         AddToSequence((RHSequenceElement *)element, "RecordAction");
         return result;
     case 16:
-        if (argument < 0 || argument >= (g_unk0x6c0f34 == 0 ? 0 : g_unk0x6c0f38 - g_unk0x6c0f34))
+        if (argument < 0 || argument >= (g_unk0x6c0f30.First() == 0 ? 0 : g_unk0x6c0f30.Last() - g_unk0x6c0f30.First()))
         {
             SBAssert(0, "P:\\Robin Hood\\RHScript.cpp", 2901,
                      "Script Error: Trying to make sword trust with illegal argument (must be antagonists actor index).");
             return false;
         }
-        target = g_unk0x6c0f34[argument];
+        target = g_unk0x6c0f30.First()[argument];
         element = new RHUnk00585ea0(g_unk0x6c0fa4, 0x43, actor, target);
         AddToSequence((RHSequenceElement *)element, "RecordAction");
         return result;
@@ -2885,6 +2936,47 @@ bool RHScript::RecordMoveNear(void *actor, void *location, int style, int distan
     }
     --g_unk0x6c0fa4;
     return true;
+}
+
+// FUNCTION: GAME 0x00574690
+void RHUnk00574690(void *actor, RHUnk00571160Position *position, void *location)
+{
+    unsigned short count = g_unk0x6c0f50.count;
+    unsigned short index = 0;
+    for (; index < count; ++index)
+    {
+        ((RHSeqList *)&g_unk0x6c0f50)->GoTo(index);
+        if (actor == g_unk0x6c0f50.cursor->data)
+            break;
+    }
+    if (index < count)
+    {
+        ((RHSeqList *)&g_unk0x6c0fb0)->GoTo(index);
+        *position = *(RHUnk00571160Position *)&g_unk0x6c0fb0.cursor->data;
+        ((RHSeqList *)&g_unk0x6c0fb0)->GoTo(index);
+        ((RHUnk00571160Position *)&g_unk0x6c0fb0.cursor->data)->x = *(float *)((char *)location + 4);
+        ((RHSeqList *)&g_unk0x6c0fb0)->GoTo(index);
+        ((RHUnk00571160Position *)&g_unk0x6c0fb0.cursor->data)->y = *(float *)((char *)location + 8);
+        void *area = *(void **)((char *)location + 0x24);
+        ((RHSeqList *)&g_unk0x6c0fb0)->GoTo(index);
+        ((RHUnk00571160Position *)&g_unk0x6c0fb0.cursor->data)->area = area;
+        short layer = *(short *)((char *)location + 0x20);
+        ((RHSeqList *)&g_unk0x6c0fb0)->GoTo(index);
+        ((RHUnk00571160Position *)&g_unk0x6c0fb0.cursor->data)->layer = layer;
+    }
+    else
+    {
+        ((RHUnk00560420 *)(*(char **)((char *)actor + 0x50) + 4))->Unk(position);
+        RHUnk00571160Position destination;
+        destination.x = *(float *)((char *)location + 4);
+        destination.y = *(float *)((char *)location + 8);
+        destination.area = *(void **)((char *)location + 0x24);
+        destination.layer = *(short *)((char *)location + 0x20);
+        ((std::list<RHUnk00571160Position> *)&g_unk0x6c0fb0)->push_back(destination);
+        g_unk0x6c0fb0.valid = true;
+        ((std::list<void *> *)&g_unk0x6c0f50)->push_back(actor);
+        g_unk0x6c0f50.valid = true;
+    }
 }
 
 // parked: 65.02% assignment call, 69.01% field copies; doors base, x87 copy and success/cleanup placement differ.
@@ -3244,13 +3336,12 @@ void FUN_00578830(bool value)
         messenger->RHUnk005460c0(RHUnk5490f0(39));
 }
 
-// Parked: the fallback search uses different count/index registers and return-tail sharing.
-// STUB: GAME 0x00579bd0
+// FUNCTION: GAME 0x00579bd0
 int FUN_00579bd0(int value)
 {
     RHUnk579e80State *state = (RHUnk579e80State *)((char *)g_pEngine + 0x4978);
-    if ((g_unk0x6c0f48 = RHScriptFindActor((void *)value)) != -1)
-        return g_unk0x6c0f48;
+    if ((g_unk0x6c0f30.index = RHScriptFindActor((void *)value)) != -1)
+        return g_unk0x6c0f30.index;
     state->valid = 0;
     state->value = value;
     int *first = state->first;
@@ -3265,10 +3356,7 @@ int FUN_00579bd0(int value)
         ++index;
         ++state->cursor;
     }
-    if (index >= count)
-        index = -1;
-    state->index = index;
-    return index;
+    return state->index = index < count ? index : -1;
 }
 
 // FUNCTION: GAME 0x00579c90
@@ -3899,7 +3987,7 @@ void RHScript::StareActor(void *actor, void *target, bool flag)
                  "Script Error: Trying to get stare actor command for an invalid actor element.");
         return;
     }
-    if ((g_unk0x6c0f48 = RHScriptFindActor(target)) == -1)
+    if ((g_unk0x6c0f30.index = RHScriptFindActor(target)) == -1)
     {
         SBAssert(0, "P:\\Robin Hood\\RHScript.cpp", 4502,
                  // STRING: GAME 0x006b4b7c
@@ -4122,7 +4210,7 @@ void RHScript::SetActorPosture(void *actor, int posture)
         ((RHScriptBatchCalls *)actor)->Unk0046bcf0(23, 0);
         {
             RHUnk00613e90 effectPosition;
-            ((RHScriptBatchCalls *)g_unk0x6c10e8)->Unk005c2ec0(&effectPosition, 0, 15, actor, 0, 0, 0, -1);
+            ((RHTitbits *)g_unk0x6c10e8)->AddTitbit(effectPosition, 0, (RHtitbitKind)15, (RHElement *)actor, 0, 0, false, -1);
         }
         ((RHScriptBatchCalls *)actor)->Unk00464630();
         return;
@@ -4495,7 +4583,7 @@ int RHScript::GetGlobal(int index)
 // FUNCTION: GAME 0x00577150
 bool RHScript::CleanFromHisBuildingBeforeTeleport(void *actor)
 {
-    if ((g_unk0x6c0f48 = RHScriptFindActor(actor)) != -1 &&
+    if ((g_unk0x6c0f30.index = RHScriptFindActor(actor)) != -1 &&
         (*(unsigned int *)((char *)actor + 4) & 3) == 0)
     {
         char *area = *(char **)(*(char **)((char *)actor + 0x50) + 0xe0);
@@ -4528,7 +4616,7 @@ bool RHScript::CleanFromScriptZoneBeforeTeleport(void *actor, void *zone)
                      "Script Error: You tried to clean an actor from an illegal script zone");
             return false;
         }
-        if ((g_unk0x6c0f48 = RHScriptFindActor(actor)) != -1 &&
+        if ((g_unk0x6c0f30.index = RHScriptFindActor(actor)) != -1 &&
             (*(unsigned int *)((char *)actor + 4) & 3) == 0)
         {
             if (((RHScriptZoneList *)((char *)zone + 0xcc))->Find(actor) == -1)
@@ -4560,7 +4648,7 @@ bool RHScript::AddToScriptZoneAfterTeleport(void *actor, void *zone)
                      "Script Error: You tried to add an actor to an illegal script zone");
             return false;
         }
-        if ((g_unk0x6c0f48 = RHScriptFindActor(actor)) != -1 &&
+        if ((g_unk0x6c0f30.index = RHScriptFindActor(actor)) != -1 &&
             (*(unsigned int *)((char *)actor + 4) & 3) == 0)
         {
             if (((RHScriptZoneList *)((char *)zone + 0xcc))->Find(actor) == -1)
@@ -4583,7 +4671,7 @@ bool RHScript::AddToScriptZoneAfterTeleport(void *actor, void *zone)
 // FUNCTION: GAME 0x00577500
 bool RHScript::InflictPain(void *actor, int amount, bool flag)
 {
-    if ((g_unk0x6c0f48 = RHScriptFindActor(actor)) != -1 &&
+    if ((g_unk0x6c0f30.index = RHScriptFindActor(actor)) != -1 &&
         (*(unsigned int *)((char *)actor + 4) & 3) == 0)
     {
         RHUnk005861c0 *element;
