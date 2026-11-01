@@ -153,12 +153,15 @@ public:
 #include "RHMalignityOwnerCalls.h"
 
 // SIZE 0x14
+#ifndef SBGEO_BOUNDINGBOX2D_VIEW
+#define SBGEO_BOUNDINGBOX2D_VIEW
 class SBGeoBoundingBox2D
 {
 public:
     undefined m_00[0x14]; // 0x00
     SBGeoPoint2D FUN_00608f40() const;
 };
+#endif
 class RHPathActorInfo
 {
 public:
@@ -201,28 +204,7 @@ struct RHMalignityOwnedRecord : public SBGeoSegmentArray
     std::vector<unsigned short> m_values;
 };
 
-// SIZE 0x3c
-class RHUnk00521770
-{
-public:
-    RHUnk00521770 *FUN_00521770();
-    void *FUN_005217a0(unsigned flags);
-    void FUN_005217c0();
-    undefined4 m_vtable; // 0x00
-    undefined m_04[8]; // 0x04
-    undefined4 m_0c; // 0x0c
-    undefined m_10[4]; // 0x10
-    undefined4 m_14; // 0x14
-    undefined m_18; // 0x18
-    undefined m_19[3]; // 0x19
-    undefined4 m_1c; // 0x1c
-    undefined4 m_20; // 0x20
-    undefined4 m_24; // 0x24
-    undefined m_28[4]; // 0x28
-    bool m_2c; // 0x2c
-    undefined m_2d[12]; // 0x2d
-    bool m_39; // 0x39
-};
+#include "RHSeekPoint.h"
 
 extern undefined g_unk0x006c0e48[];
 
@@ -326,15 +308,7 @@ SBGeoVector2D FUN_005fc580(const SBGeoVector2D &point, float factor);
 RHMalignityPosition FUN_0040ed40(const RHMalignityPosition &position, SBGeoVector2D vector);
 RHMalignityPosition FUN_0040ece0(const RHMalignityPosition &position, SBGeoPoint2D point);
 
-class RHFastFindTacticalArray
-{
-public:
-    int allocator;
-    void **first;
-    void **last;
-};
-
-extern RHFastFindTacticalArray g_unk0x006c0718;
+#include "RHFastFindAmbushArray.h"
 
 class RHSaveGame;
 template <class T>

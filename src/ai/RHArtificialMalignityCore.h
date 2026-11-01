@@ -83,7 +83,9 @@ public:
     bool FUN_0044b870(void *area, unsigned short id);
     void FUN_0044ca90();
     bool FUN_0044cf00();
+    void FUN_0042ff90();
     void FUN_00430020();
+    bool FUN_00430170(RHMalignityList &list, int team);
     void FUN_004303e0();
     void FUN_0044d0b0();
     unsigned short FUN_0044d6c0();

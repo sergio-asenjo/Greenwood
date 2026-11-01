@@ -1,5 +1,6 @@
 #include "SBNullstr.h"
 #include "RHArtificialIntelligence.h"
+#include "RHFastFindArcheryArray.h"
 
 // GLOBAL: GAME 0x006c078a
 unsigned short g_unk0x006c078a;
@@ -120,13 +121,7 @@ float g_unk0x006774e8 = 0.016f;
 
 SBGeoVector2D FUN_0040ec20(const RHMalignityPosition &first, RHMalignityPosition second);
 
-class RHSeekPoint
-{
-public:
-    bool SerializeStatus(SBFile &file);
-};
-class RHFastFindTacticalArray;
-extern RHFastFindTacticalArray g_unk0x006c06f0;
+#include "RHFastFindSeekArray.h"
 
 struct RHArtificialIntelligenceStaticArray
 {
@@ -232,7 +227,7 @@ void RHUnk00424060List::Clear()
 // GLOBAL: GAME 0x006c06ca
 unsigned char g_unk0x006c06ca;
 // GLOBAL: GAME 0x006c06d0
-RHArtificialIntelligenceStaticArray g_unk0x006c06d0;
+RHFastFindArcheryArray g_unk0x006c06d0;
 // GLOBAL: GAME 0x006c07de
 char g_unk0x006c07de;
 // GLOBAL: GAME 0x006c07e2
@@ -255,114 +250,6 @@ RHArtificialIntelligenceList g_unk0x006c0758;
 extern "C" long __cdecl time(long *value);
 extern "C" void __cdecl srand(unsigned seed);
 void operator delete(void *pointer) throw();
-
-class RHAIObjectDeletingView
-{
-public:
-    virtual void Delete(unsigned flags) = 0;
-};
-
-class RHUnk00423d90
-{
-public:
-    int allocator;
-    void **first;
-    void **last;
-    void **end;
-    void FUN_00423d90();
-};
-
-class RHUnk00423e40
-{
-public:
-    int allocator;
-    void **first;
-    void **last;
-    void **end;
-    void FUN_00423e40();
-};
-
-class RHUnk00423ef0
-{
-public:
-    int allocator;
-    void **first;
-    void **last;
-    void **end;
-    void FUN_00423ef0();
-};
-
-// Parked: 59.46%; provisional vector-clear; exact owner and register schedule unresolved.
-// STUB: GAME 0x00423d90
-void RHUnk00423d90::FUN_00423d90()
-{
-    int count = first == 0 ? 0 : last - first;
-    int index = 0;
-    if (count > 0)
-    {
-        do
-        {
-            RHAIObjectDeletingView *object = (RHAIObjectDeletingView *)first[index];
-            if (object)
-                object->Delete(1);
-            ++index;
-        } while (index < count);
-    }
-    last = first;
-    last = first;
-    operator delete(first);
-    first = 0;
-    last = 0;
-    end = 0;
-}
-
-// Parked: 59.46%; provisional vector-clear sibling; no direct TU attribution.
-// STUB: GAME 0x00423e40
-void RHUnk00423e40::FUN_00423e40()
-{
-    int count = first == 0 ? 0 : last - first;
-    int index = 0;
-    if (count > 0)
-    {
-        do
-        {
-            RHAIObjectDeletingView *object = (RHAIObjectDeletingView *)first[index];
-            if (object)
-                object->Delete(1);
-            ++index;
-        } while (index < count);
-    }
-    last = first;
-    last = first;
-    operator delete(first);
-    first = 0;
-    last = 0;
-    end = 0;
-}
-
-// Parked: 59.46%; provisional vector-clear sibling; no direct TU attribution.
-// STUB: GAME 0x00423ef0
-void RHUnk00423ef0::FUN_00423ef0()
-{
-    int count = first == 0 ? 0 : last - first;
-    int index = 0;
-    if (count > 0)
-    {
-        do
-        {
-            RHAIObjectDeletingView *object = (RHAIObjectDeletingView *)first[index];
-            if (object)
-                object->Delete(1);
-            ++index;
-        } while (index < count);
-    }
-    last = first;
-    last = first;
-    operator delete(first);
-    first = 0;
-    last = 0;
-    end = 0;
-}
 
 class RHArtificialIntelligenceForbiddenRemark
 {
@@ -948,11 +835,10 @@ bool RHArtificialIntelligence::SerializeAllAI(SBFile &file)
                  3764, "Serialize failed reason is %s", reason);
         return false;
     }
-    RHArtificialIntelligenceStaticArray &points = (RHArtificialIntelligenceStaticArray &)g_unk0x006c06f0;
-    unsigned count = points.size();
+    unsigned count = g_unk0x006c06f0.size();
     for (unsigned i = 0; i < count; ++i)
     {
-        if (!((RHSeekPoint *)points[i])->SerializeStatus(file))
+        if (!g_unk0x006c06f0[i]->SerializeStatus(file))
         {
             SBAssert(1, "P:\\Robin Hood\\RHartificialintelligence.cpp", 3772, "Serialization failed");
             return false;

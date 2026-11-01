@@ -24,6 +24,7 @@
 #include "SBNullstr.h"
 #include "RHLine.h"
 #include <stddef.h>
+#include <stdlib.h>
 
 DECOMP_SIZE_ASSERT(RHSeekPointVector, 0x10)
 DECOMP_SIZE_ASSERT(RHSeekPointIndices, 0x20)
@@ -233,23 +234,70 @@ bool RHSeekPoint::SerializeAllData(SBFile &file)
 
 #undef RHSEEK_ACCESS
 
+// FUNCTION: GAME 0x00521770
+RHSeekPoint::RHSeekPoint()
+{
+    m_14 = 0;
+    m_c = 0;
+    m_39 = false;
+}
+
+// SYNTHETIC: GAME 0x005217a0
+// RHSeekPoint::`scalar deleting destructor'
+
+// FUNCTION: GAME 0x005217c0
+RHSeekPoint::~RHSeekPoint()
+{
+}
+
 // STUB: GAME 0x00521c10
 RHSeekPoint::RHSeekPoint(const RHSeekPointDirectionView *source)
 {
-    *(unsigned long *)m_pad0 = 0x00679134;
     *(RHMalignityPosition *)&m_4 = source->position;
-    m_18.Add(source->value);
+    RHSeekPointIndices &indices = m_18;
+    if (indices.Find(source->value, true) == -1) {
+        typedef std::vector<unsigned short> Values;
+        void (Values::*insert)(unsigned short *, unsigned, const unsigned short &) = &Values::insert;
+        (indices.m_values.*insert)(indices.m_values.end(), 1, source->value);
+        indices.m_dirty = true;
+    }
     m_14 = 0;
     m_39 = false;
 }
 
-// FUNCTION: GAME 0x00521d00
-RHSeekPointIndices::~RHSeekPointIndices()
-{
-    m_values.clear();
-}
-
 SBGeoVector2D FUN_0040ec20(const RHMalignityPosition &first, RHMalignityPosition second);
+
+// STUB: GAME 0x00521d50
+RHSeekPoint::RHSeekPoint(RHMalignityPosition *position)
+{
+    *(RHMalignityPosition *)&m_4 = *position;
+    m_14 = 0;
+    m_39 = false;
+    switch (rand() & 3) {
+    case 0:
+        m_18.AddDirection(0);
+        m_18.AddDirection(3);
+        m_18.AddDirection(7);
+        m_18.AddDirection(11);
+        break;
+    case 1:
+        m_18.AddDirection(2);
+        m_18.AddDirection(5);
+        m_18.AddDirection(10);
+        m_18.AddDirection(14);
+        break;
+    case 2:
+        m_18.AddDirection(2);
+        m_18.AddDirection(7);
+        m_18.AddDirections(13, 1);
+        break;
+    case 3:
+        m_18.AddDirection(4);
+        m_18.AddDirection(10);
+        m_18.AddDirection(15);
+        break;
+    }
+}
 
 // STUB: GAME 0x00522070
 bool RHSeekPoint::FUN_00522070(const RHSeekPointDirectionView *source)
@@ -269,7 +317,9 @@ long RHSeekPointIndices::FUN_005226a0(const unsigned short &value, bool forward)
 
 void RHSeekPoint::Emit(SBFile &file)
 {
+    RHSeekPoint empty;
     RHSeekPoint point((const RHSeekPointDirectionView *)this);
+    RHSeekPoint random((RHMalignityPosition *)this);
     FUN_00522070((const RHSeekPointDirectionView *)this);
     SerializeStatus(file);
     SerializeAllData(file);
