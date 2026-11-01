@@ -651,7 +651,7 @@ bool RHCampaign::Serialize(SBFile &file)
     if (!FUN_00459160(file, *(std::vector<unsigned long> *)((char *)this + 0x84),
             (bool (*)(SBFile &, unsigned long &))0x00456aa0))
         return false;
-    if (!RHUnk004593f0SerializeList(file, (RHUnk0054e250List &)m_134, (void *)0x005e0ea0))
+    if (!RHUnk004593f0SerializeList(file, m_134, (void *)0x005e0ea0))
         return false;
     FUN_00453940(file, m_174);
     FUN_00453940(file, m_178);
@@ -2012,7 +2012,7 @@ public:
 };
 
 // FUNCTION: GAME 0x004593f0
-bool RHUnk004593f0SerializeList(SBFile &file, RHUnk0054e250List &values, void *serialize)
+bool RHUnk004593f0SerializeList(SBFile &file, std::vector<std::wstring> &values, void *serialize)
 {
     RHCampaignWideStrings &strings = (RHCampaignWideStrings &)values;
     bool (*callback)(SBFile &, RHCampaignWideString &) = (bool (*)(SBFile &, RHCampaignWideString &))serialize;

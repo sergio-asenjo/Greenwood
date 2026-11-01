@@ -43,7 +43,7 @@ void RHMissionStat::AddNewPC(const RHPCDescription *source)
 // FUNCTION: GAME 0x0054d150
 void RHMissionStat::FUN_0054d150(const void *value)
 {
-    for (std::wstring *it = m_list.m_first; it != m_list.m_last; ++it)
+    for (std::wstring *it = m_list.begin(); it != m_list.end(); ++it)
     {
         if (*(const std::wstring *)((const char *)value + 0x2c) == *it)
         {
@@ -101,7 +101,7 @@ void RHMissionStat::FUN_0054d9c0(std::wstring &text) const
 {
     std::wstring separator = FUN_005e23d0(0x4c);
     wchar_t buffer[512];
-    for (const std::wstring *it = m_list.m_first; it != m_list.m_last; ++it)
+    for (const std::wstring *it = m_list.begin(); it != m_list.end(); ++it)
     {
         // STRING: GAME 0x6b1340
         wsprintfW(buffer, L"%s %s\n", it->c_str(), separator.c_str());

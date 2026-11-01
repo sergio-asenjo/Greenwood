@@ -2,25 +2,17 @@
 #define RHMISSIONSTATCORE_H
 
 #include <string>
+#include <vector>
 
 class SBFile;
 class RHPCDescription;
 
-class RHUnk0054e250List
-{
-public:
-    char m_pad0[4];
-    std::wstring *m_first;
-    std::wstring *m_last;
-    std::wstring *m_end;
-
-    unsigned size() const { return m_first == 0 ? 0 : (unsigned)(m_last - m_first); }
-};
-
+// VTABLE: GAME 0x00679bc4
 class RHMissionStat
 {
 public:
-    virtual bool Serialize(SBFile &file);
+    RHMissionStat();
+    bool Serialize(SBFile &file);
     void Emit(SBFile &file);
     void AddNewPC(const RHPCDescription *source);
     void FUN_0054d150(const void *value);
@@ -31,7 +23,7 @@ public:
     void FUN_0054db50(std::wstring &text) const;
     void FUN_0054dd10(std::wstring &text) const;
     void FUN_0054dee0(std::wstring &text) const;
-    std::wstring FUN_0054e090() const;
+    virtual std::wstring FUN_0054e090() const;
 
     int m_f04;
     int m_f08;
@@ -42,7 +34,7 @@ public:
     int m_f1c;
     int m_f20;
     int m_f24;
-    RHUnk0054e250List m_list;
+    std::vector<std::wstring> m_list;
 };
 
 #endif

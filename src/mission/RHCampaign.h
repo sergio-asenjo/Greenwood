@@ -44,8 +44,7 @@ bool FUN_00458be0(SBFile &file, std::vector<RHPCDescription *> &values,
 bool FUN_00459160(SBFile &file, std::vector<unsigned long> &values,
                   bool (*serialize)(SBFile &, unsigned long &));
 
-class RHUnk0054e250List;
-bool RHUnk004593f0SerializeList(SBFile &file, RHUnk0054e250List &values, void *serialize);
+bool RHUnk004593f0SerializeList(SBFile &file, std::vector<std::wstring> &values, void *serialize);
 
 #include "RHCampaignPointerArray.h"
 
