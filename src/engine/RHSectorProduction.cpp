@@ -806,29 +806,14 @@ extern RHUnk005ef320 *g_unk0x6c11d0;
 class RHUnkSpriteBank;
 extern RHUnkSpriteBank *g_unk0x006c0b1c;
 
-class RHUnk00581c40
-{
-public:
-    RHUnk00581c40();
-    ~RHUnk00581c40();
-    void *FUN_00581c20(unsigned flags);
-    unsigned m_vptr;
-    void *m_4;
-    void *m_8;
-    unsigned m_c;
-    unsigned m_10;
-    int m_14;
-    char m_18;
-    char m_19;
-    short m_1a;
-};
+#include "RHSelectionMark.h"
 
 // FUNCTION: GAME 0x00581b90
 RHUnk00581c40::RHUnk00581c40()
 {
     m_vptr = 0x679cd0;
     m_8 = g_unk0x6c11d0;
-    m_c = (unsigned)g_unk0x006c0b1c;
+    m_c = g_unk0x006c0b1c;
     m_4 = new RHSprite(0);
     m_10 = 0xffffffff;
     m_14 = 0;

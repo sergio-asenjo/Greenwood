@@ -10,6 +10,7 @@ class RHElementActor;
 class SBFile;
 class SBGeoBoundingBox2D;
 class RHUnkSectorLiftGrid;
+struct RHBonusProjection;
 
 // VTABLE: GAME 0x00679c34
 class RHUnk0057d490 : public RHSector
@@ -18,6 +19,7 @@ public:
     RHUnk0057d490();
     virtual ~RHUnk0057d490();
     void FUN_0057d760(void *gate, bool side);
+    RHBonusProjection *FUN_0057d800(const SBGeoPoint2D &point);
     virtual void FUN_0057d390(void *draw, unsigned long surface, const SBGeoBoundingBox2D &box, float scale, unsigned short layer);
     void Emit(void *gate, bool side);
     char m_58[4];

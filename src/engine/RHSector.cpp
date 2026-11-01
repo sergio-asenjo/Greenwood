@@ -1,4 +1,16 @@
 #include "RHSector.h"
+#include "RHFastFindArcheryArray.h"
+
+DECOMP_SIZE_ASSERT(RHFastFindArcheryArray, 0x20)
+
+// FUNCTION: GAME 0x00423ef0
+RHFastFindArcheryArray::~RHFastFindArcheryArray()
+{
+    int count = size();
+    for (int i = 0; i < count; ++i)
+        delete (*this)[i];
+    erase(begin(), end());
+}
 #include "RHEngine.h"
 #include "VMCore.h"
 #include "SBFilePosition.h"
@@ -296,6 +308,99 @@ void RHUnk0057d490::FUN_0057d760(void *gate, bool side)
 {
     ((RHMotionAreaList<void *> *)((char *)this + 0x5c))->InsertLast(gate);
     ((RHMotionAreaList<bool> *)((char *)this + 0x80))->InsertLast(side);
+}
+
+#include "RHBonusProjection.h"
+#include "RHElementAreaShape.h"
+
+DECOMP_STATIC_ASSERT(offsetof(RHBonusProjection, m_20) == 0x20)
+DECOMP_STATIC_ASSERT(offsetof(RHBonusProjection, m_38) == 0x38)
+DECOMP_STATIC_ASSERT(offsetof(RHBonusProjection, m_194) == 0x194)
+
+// STUB: GAME 0x0057d800
+RHBonusProjection *RHUnk0057d490::FUN_0057d800(const SBGeoPoint2D &point)
+{
+    unsigned count = m_areas.size();
+    RHMotionAreaList<RHBonusProjection *> candidates;
+    RHBonusProjection *projection;
+    if ((unsigned short)count == 1)
+    {
+        typedef std::list<void *> List;
+        List::iterator (List::*begin)() = &List::begin;
+        projection = (RHBonusProjection *)*(m_areas.*begin)();
+        if (projection->Inside(point) &&
+            (projection->m_194 ? (RHElementAreaShape *)((char *)projection->m_194 + 4) : 0)->FUN_0060c660(point))
+            return projection;
+        return 0;
+    }
+    if ((unsigned short)count > 0)
+    {
+        unsigned index = 0;
+        unsigned remaining = (unsigned short)count;
+        do
+        {
+            RHMotionAreaList<void *> &areas = m_areas;
+            areas.GoTo(index);
+            projection = (RHBonusProjection *)areas.Current();
+            if (projection->Inside(point))
+                candidates.InsertLast(projection);
+            ++index;
+        } while (--remaining);
+    }
+    if (candidates.size() == 0)
+        return 0;
+    if (candidates.size() == 1)
+    {
+        projection = *candidates.begin();
+        if (projection->Inside(point) &&
+            (projection->m_194 ? (RHElementAreaShape *)((char *)projection->m_194 + 4) : 0)->FUN_0060c660(point))
+            return projection;
+        return 0;
+    }
+    unsigned remaining = candidates.size();
+    for (unsigned short index = 0; index < (unsigned short)remaining; ++index)
+    {
+        candidates.GoTo(index);
+        projection = candidates.Current();
+        if (!(projection->m_194 ? (RHElementAreaShape *)((char *)projection->m_194 + 4) : 0)->FUN_0060c660(point))
+        {
+            candidates.GoTo(index);
+            candidates.erase(candidates.Cursor());
+            candidates.m_dirty = true;
+            --index;
+            remaining += 0xffff;
+        }
+    }
+    if ((unsigned short)candidates.size() > 0)
+    {
+        if ((unsigned short)candidates.size() == 1)
+        {
+            candidates.GoTo(0);
+            return candidates.Current();
+        }
+        RHBonusProjection *best = 0;
+        float maximum = 0;
+        count = candidates.size();
+        if ((unsigned short)count > 0)
+        {
+            unsigned index = 0;
+            unsigned left = (unsigned short)count;
+            do
+            {
+                candidates.GoTo(index);
+                projection = candidates.Current();
+                float height = projection->m_20;
+                if (height > maximum)
+                {
+                    best = projection;
+                    maximum = height;
+                }
+                ++index;
+            } while (--left);
+        }
+        return best;
+    }
+    return 0;
 }
 
 // FUNCTION: GAME 0x0057dc20
