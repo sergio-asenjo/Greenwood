@@ -33,16 +33,7 @@ class RHSequenceElement;
 #include "RHElementActorCivilianCore.h"
 
 
-// SIZE 0x19e
-class RHCivilianSpriteView
-{
-public:
-    unsigned short FUN_005bdef0();
-    unsigned short FUN_005bdf20();
-    undefined m_00[0x19a]; // 0x00
-    undefined2 m_19a; // 0x19a
-    undefined2 m_19c; // 0x19c
-};
+#include "RHCivilianSpriteView.h"
 
 // SIZE 0x10e
 class RHUnk005ef320

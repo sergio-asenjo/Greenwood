@@ -16,6 +16,7 @@ public:
     SBGeoVector2D(const SBGeoVector2D &other);
     ~SBGeoVector2D() {}
     SBGeoVector2D &operator=(const SBGeoVector2D &other);
+    SBGeoVector2D operator-() const;
     float FUN_005fc660(const SBGeoPoint2D &) const;
     float FUN_005fc780(float divisor) const;
     SBGeoVector2D GetNormalized(float scale) const;

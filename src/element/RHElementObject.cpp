@@ -559,12 +559,7 @@ public:
     bool FUN_005bd050(int kind, const std::string &name, const std::string &profile, int flag);
 };
 
-class RHCivilianSpriteView
-{
-public:
-    unsigned short FUN_005bdef0();
-    unsigned short FUN_005bdf20();
-};
+#include "RHCivilianSpriteView.h"
 
 // FUNCTION: GAME 0x004b3170
 void RHElementObjectMaster::FUN_004b3170(const std::string &first, const std::string &second, bool flag)

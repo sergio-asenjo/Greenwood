@@ -477,6 +477,7 @@ public:
     void Unk00607dc0(const SBGeoPoint2D &point);
     void FUN_00607e90(const SBGeoBoundingBox2D &other);
     void FUN_00607e30(const RHMalignitySegment &segment);
+    int FUN_00609050(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
     bool FUN_00608730(const RHMobileUnk006100e0 &line) const;
     SBGeoPoint2D m_0; // 0x00
     SBGeoPoint2D m_8; // 0x08

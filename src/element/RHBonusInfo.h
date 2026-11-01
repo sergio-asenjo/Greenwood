@@ -28,14 +28,7 @@ public:
     void *Unk0055fa10(int value);
 };
 
-struct RHBonusProjection
-{
-    unsigned m_0;
-    unsigned short Flags() const { return (unsigned short)(m_0 >> 2); }
-    bool Inside(const SBGeoPoint2D &point) const { return m_38.FUN_00608400(point); }
-    char m_pad4[0x34];
-    SBGeoBoundingBox2D m_38;
-};
+#include "RHBonusProjection.h"
 
 struct RHBonusTriple
 {

@@ -1,5 +1,6 @@
 #include "SBNullstr.h"
 #include "RHElementMobile.h"
+#include "RHAmbushPoint.h"
 
 class RHSprite
 {
@@ -271,13 +272,6 @@ bool RHMobilePartCalls::FUN_004aafc0(void *value)
 }
 
 
-class RHUnk00521550Part
-{
-public:
-    RHUnk00521550Part();
-    char m_0[0xc];
-};
-
 // TEMPLATE: GAME 0x00613e90 FOLDED
 // ??0RHUnk00521550Part@@QAE@XZ
 RHUnk00521550Part::RHUnk00521550Part() {}
@@ -501,12 +495,6 @@ RHUnk0060fbf0 RHMobileUnk0060a820::FUN_00615ca0(const SBGeoSegment2D &segment) c
 DECOMP_SIZE_ASSERT(RHMobileVectorArray, 0x24)
 DECOMP_SIZE_ASSERT(RHElementMobile, 0x260)
 DECOMP_STATIC_ASSERT(offsetof(RHElementMobile, m_1c8) == 0x1c8)
-
-// FUNCTION: GAME 0x004afac0
-RHMobileVectorArray::~RHMobileVectorArray()
-{
-    Destroy();
-}
 
 void EmitRHMobileVectorArrayDestructor(RHMobileVectorArray *array)
 {

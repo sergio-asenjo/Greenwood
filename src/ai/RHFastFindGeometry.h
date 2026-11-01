@@ -15,6 +15,7 @@ public:
     void *FUN_0044e990(unsigned flags);
     SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
     SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
+    SBGeoPoint2D FUN_005fc200(const SBGeoPoint2D &other) const;
     SBGeoVector2D Unk005fc110(const SBGeoPoint2D &other) const;
     bool Serialize(SBFile &file);
     bool operator==(const SBGeoPoint2D &other) const;
@@ -27,6 +28,11 @@ public:
     {
         m_x = (float)x;
         m_y = (float)y;
+    }
+    void Set(float x, float y)
+    {
+        m_x = x;
+        m_y = y;
     }
     float X() const { return m_x; }
     float Y() const { return m_y; }

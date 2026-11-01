@@ -1,6 +1,7 @@
 #include "SBNullstr.h"
 #include "RHElementMobile.h"
 #include "RHUnk0051f0f0.h"
+#include "RHAmbushPoint.h"
 #include <stdlib.h>
 
 extern "C" double __cdecl fabs(double);
@@ -1201,44 +1202,47 @@ RHUnk00521500::~RHUnk00521500()
     ((RHUnk0051f0f0 *)this)->RHUnk0051f0f0::~RHUnk0051f0f0();
 }
 
-class RHUnk00521550Part
-{
-public:
-    RHUnk00521550Part();
-    char m_0[0xc];
-};
-
-class RHUnk00521550
-{
-public:
-    RHUnk00521550();
-    void *FUN_00521570(unsigned flags);
-    ~RHUnk00521550();
-    unsigned m_0;
-    char m_4[0x10];
-    RHUnk00521550Part m_14;
-    SBGeoBoundingBox2D m_20;
-};
+DECOMP_SIZE_ASSERT(RHUnk00521550, 0x38)
 
 // FUNCTION: GAME 0x00521550
 RHUnk00521550::RHUnk00521550()
 {
-    *(unsigned *)this = 0x679130;
 }
 
-// FUNCTION: GAME 0x00521570
-void *RHUnk00521550::FUN_00521570(unsigned flags)
-{
-    this->~RHUnk00521550();
-    if (flags & 1)
-        operator delete(this);
-    return this;
-}
+// SYNTHETIC: GAME 0x00521570
+// RHUnk00521550::`scalar deleting destructor'
 
 // FUNCTION: GAME 0x00521590
 RHUnk00521550::~RHUnk00521550()
 {
-    *(unsigned *)this = 0x679130;
+}
+
+struct RHUnkSectorGlobal;
+extern RHUnkSectorGlobal *g_unk0x6c0a9c;
+
+// STUB: GAME 0x005215f0
+void RHUnk00521550::FUN_005215f0(SBFile &file)
+{
+    SBGeoPoint2D point;
+    SBGeoVector2D extent;
+    short x;
+    short y;
+    unsigned short sector;
+    unsigned short layer;
+    file.Access(&x, 2);
+    file.Access(&y, 2);
+    file.Access(&sector, 2);
+    file.Access(&layer, 2);
+    m_4 = (float)x;
+    m_8 = (float)y;
+    void *owner = sector == 0xffff ? RHMobileField<void *>(g_unk0x6c0a9c, 0x4184) :
+        RHMobileField<void **>(g_unk0x6c0a9c, 0x4064)[sector];
+    m_10 = layer;
+    m_c = owner;
+    point.Set(m_4, m_8);
+    extent.m_x = 100.0f;
+    extent.m_y = 57.35764312744140625f;
+    m_20.FUN_00609050(point.FUN_005fc200(extent), point.Unk005fc190(extent));
 }
 
 void EmitRHUnk0051fc10(void *storage)
@@ -1249,7 +1253,12 @@ void EmitRHUnk0051fc10(void *storage)
     ((RHUnk005214b0 *)storage)->RHUnk005214b0::~RHUnk005214b0();
     ((RHUnk00521500 *)storage)->RHUnk00521500::~RHUnk00521500();
     ((RHUnk0051fc10 *)storage)->FUN_0051fc40(0);
-    ((RHUnk00521550 *)storage)->FUN_00521570(0);
+    ((RHUnk00521550 *)storage)->RHUnk00521550::RHUnk00521550();
+}
+
+void EmitRHUnk005215f0(void *storage, SBFile &file)
+{
+    ((RHUnk00521550 *)storage)->FUN_005215f0(file);
 }
 
 // FUNCTION: GAME 0x005504d0
