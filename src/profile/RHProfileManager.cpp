@@ -17,6 +17,7 @@ DECOMP_SIZE_ASSERT(RHCivilianProfileText, 0x10)
 DECOMP_SIZE_ASSERT(RHCivilianProfile, 0x3c)
 DECOMP_SIZE_ASSERT(RHMissionProfile, 0xf4)
 DECOMP_SIZE_ASSERT(RHMissionArray<unsigned long>, 0x10)
+DECOMP_SIZE_ASSERT(std::string, 0x10)
 
 // TEMPLATE: GAME 0x005f0340
 // ?erase@?$list@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@QAE?AViterator@12@V312@0@Z
@@ -199,7 +200,7 @@ public:
     unsigned FUN_0056c410(void *, unsigned, unsigned);
     unsigned FUN_0056c490(void *, unsigned, unsigned);
     unsigned FUN_0056c5b0(void *, unsigned, unsigned);
-    const char *FUN_0056c700(void *, unsigned, unsigned);
+    unsigned FUN_0056c700(void *, unsigned, unsigned);
     unsigned FUN_0056cab0(void *, unsigned, unsigned);
     unsigned FUN_0056cb00(void *, unsigned, unsigned);
     unsigned FUN_0056cc40(void *, unsigned, unsigned);
@@ -1004,37 +1005,96 @@ unsigned RHProfileManagerParseCalls::FUN_0056c5b0(void *profile, unsigned line, 
     return 0;
 }
 
-// Parked: The full indexed action table and the target's sentinel handling remain unresolved.
-// STUB: GAME 0x0056c700
-const char *RHProfileManagerParseCalls::FUN_0056c700(void *profile, unsigned line, unsigned column)
+// FUNCTION: GAME 0x0056c700
+unsigned RHProfileManagerParseCalls::FUN_0056c700(void *profile, unsigned line, unsigned column)
 {
+    unsigned short index = 0;
     struct Entry { const char *name; unsigned value; };
-    static const Entry entries[] = {
-        {"hit", 0}, {"bow", 1}, {"net", 2}, {"hit hard", 3},
-        {"hit harder", 3}, {"purse", 4}, {"stone", 5},
-        {"slingshot", 5}, {"shield", 6}, {"big shield", 7},
-        {"bigger shield", 7}, {"strangle", 8}, {"lever", 9},
-        {"help to climb", 10}, {"apple", 11}, {"guzzle", 13},
-        {"listen", 14}, {"beggar", 17}, {"climb", 18},
-        {"megajump", 21}, {"search", 22}, {"resuscitate", 23},
-        {"little john carry", 24}, {"farmer carry", 25}, {"tie", 26},
-        {"lockpick", 27}, {"kill on ground", 28}, {"execute", 12},
-        {"whistle", 29}, {"test", 22}, {"end", 0}
+    Entry entries[] = {
+        // STRING: GAME 0x006b2048
+        {"none", 0},
+        // STRING: GAME 0x006b2044
+        {"bow", 1},
+        // STRING: GAME 0x006b2040
+        {"hit", 2},
+        // STRING: GAME 0x006b2034
+        {"hit hard", 3},
+        // STRING: GAME 0x006b2028
+        {"hit harder", 3},
+        // STRING: GAME 0x006b2020
+        {"purse", 4},
+        // STRING: GAME 0x006af5ec
+        {"stone", 5},
+        // STRING: GAME 0x006b2014
+        {"slingshot", 5},
+        // STRING: GAME 0x006b200c
+        {"shield", 6},
+        // STRING: GAME 0x006b2000
+        {"big shield", 7},
+        // STRING: GAME 0x006b1ff0
+        {"bigger shield", 7},
+        // STRING: GAME 0x006b1fe4
+        {"strangle", 8},
+        // STRING: GAME 0x006b1fdc
+        {"lever", 9},
+        // STRING: GAME 0x006b1fcc
+        {"help to climb", 10},
+        // STRING: GAME 0x006b1fc4
+        {"apple", 11},
+        // STRING: GAME 0x006b1fc0
+        {"eat", 13},
+        // STRING: GAME 0x006b1fb8
+        {"guzzle", 14},
+        // STRING: GAME 0x006b1fb0
+        {"listen", 15},
+        // STRING: GAME 0x006b1fa8
+        {"heal", 16},
+        // STRING: GAME 0x006b2050
+        {"net", 17},
+        {"beggar", 18},
+        // STRING: GAME 0x006b1fa0
+        {"wasp", 19},
+        // STRING: GAME 0x006b1f98
+        {"climb", 21},
+        // STRING: GAME 0x006b1f90
+        {"jump", 22},
+        // STRING: GAME 0x006b1f84
+        {"megajump", 22},
+        // STRING: GAME 0x006b1f7c
+        {"search", 23},
+        // STRING: GAME 0x006b1f70
+        {"resuscitate", 24},
+        // STRING: GAME 0x006b1f5c
+        {"little john carry", 25},
+        // STRING: GAME 0x006b1f4c
+        {"farmer carry", 26},
+        // STRING: GAME 0x006b1f48
+        {"tie", 27},
+        // STRING: GAME 0x006b1f3c
+        {"lockpick", 28},
+        // STRING: GAME 0x006b1f2c
+        {"kill on ground", 29},
+        {"net", 17},
+        // STRING: GAME 0x006b1f28
+        {"ale", 12},
+        // STRING: GAME 0x006b1f20
+        {"execute", 29},
+        // STRING: GAME 0x006b1f18
+        {"whistle", 20},
+        // STRING: GAME 0x006b1f10
+        {"test", 30},
+        {"end", 0}
     };
-    const char *value = RHProfileToken(profile);
-    for (unsigned i = 0; i < sizeof(entries) / sizeof(entries[0]); ++i)
-    {
-        if (RHProfileTokenEquals(value, entries[i].name))
-        {
-            if (RHProfileTokenEquals(entries[i].name, "end"))
-                ((RHProfileManager *)this)->AddWarning(
-                    "In character profile at (%d,%d) : action %s", line, column, value);
-            return (const char *)entries[i].value;
-        }
-    }
-    ((RHProfileManager *)this)->AddWarning(
-        "In character profile at (%d,%d) : action %s", line, column, value);
-    return 0;
+    while (!RHProfileTokenEquals(entries[index].name, RHProfileToken(profile)) &&
+        !RHProfileTokenEquals(entries[index].name, "end"))
+        ++index;
+    unsigned value = entries[index].value;
+    if (strcmp(entries[index].name, "end") == 0)
+        ((RHProfileManager *)this)->AddWarning(
+            // STRING: GAME 0x006b1eb8
+            "In character profile at (%d,%d) : action not recognized (%s) defaulting to none\n",
+            line, column, RHProfileToken(profile));
+    return value;
 }
 
 // FUNCTION: GAME 0x0056cab0
@@ -1122,34 +1182,32 @@ unsigned RHProfileManagerParseCalls::FUN_0056cc40(void *profile, unsigned line, 
     return value;
 }
 
-// Parked: byte-accessor fallback pointer polarity still differs after two source shapes.
-// STUB: GAME 0x0056cdb0
+// FUNCTION: GAME 0x0056cdb0
 unsigned RHProfileManagerParseCalls::FUN_0056cdb0(void *profile, unsigned line, unsigned column)
 {
-    const char *value = RHProfileToken(profile);
-    if (*(unsigned *)((char *)profile + 8) != 2 ||
-        !((value[0] >= 'A' && value[0] <= 'Z') || (value[0] >= 'a' && value[0] <= 'z')) ||
-        !((value[1] >= '0' && value[1] <= '9') || (value[1] >= 'A' && value[1] <= 'Z') ||
-            (value[1] >= 'a' && value[1] <= 'z')))
+    const std::string &value = *(const std::string *)profile;
+    if (value.size() != 2)
         ((RHProfileManager *)this)->AddWarning(
-            "In mission profile at (%d,%d) : identifier %s", line, column, value);
-    return (unsigned char)value[0] | ((unsigned char)value[1] << 8);
+            // STRING: GAME 0x006b219c
+            "In mission profile at (%d,%d) : illegal mission ID\n", line, column, value.c_str());
+    if ((value[0] < 'A' && value[0] > 'z') || (value[1] < '0' && value[1] > '9'))
+        ((RHProfileManager *)this)->AddWarning(
+            "In mission profile at (%d,%d) : illegal mission ID\n", line, column, value.c_str());
+    return (value[1] << 8) | value[0];
 }
 
-// Parked: canonical text access fixes the subobject load but not the fallback pointer arm schedule.
-// STUB: GAME 0x0056ce70
+// FUNCTION: GAME 0x0056ce70
 int RHProfileManagerParseCalls::FUN_0056ce70(void *profile)
 {
-    const char *value = RHProfileToken(profile);
+    const std::string &value = *(const std::string *)profile;
     for (RHCharacterProfile **it = ((RHProfileManager *)this)->m_characters.begin();
          it != ((RHProfileManager *)this)->m_characters.end(); ++it)
     {
-        const char *name = *(const char **)((char *)*it + 0x18);
-        if (RHProfileTokenEquals(name ? name : "", value))
+        if (RHProfileTokenEquals((*it)->m_14.c_str(), value.c_str()))
             return (int)*it;
     }
     ((RHProfileManager *)this)->AddWarning(
-        "In mission profile : character name %s", value);
+        "In mission profile : character not recognized (%s) defaulting to none\n", value.c_str());
     return 0;
 }
 
