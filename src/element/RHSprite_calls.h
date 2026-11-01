@@ -163,13 +163,12 @@ class RHScriptBatchCalls
 {
 public:
     bool Unk0049d560(int action);
-    int Unk005c2ec0(void *, int, int, void *, int, int, int, int);
     void Unk00419fb0(int value);
     void Unk0040d980(int stimulus);
     void Unk00418bc0();
 };
 
-class RHTitbits;
+#include "RHTitbitsCore.h"
 extern RHTitbits *g_unk0x6c10e8;
 double FUN_006433ab(double) throw();
 

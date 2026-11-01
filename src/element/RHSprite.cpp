@@ -19,7 +19,14 @@ DECOMP_SIZE_ASSERT(RHSprite, 0x22c)
 DECOMP_SIZE_ASSERT(RHSpriteText<true>, 0x10)
 DECOMP_SIZE_ASSERT(RHSpriteText<false>, 0x10)
 DECOMP_SIZE_ASSERT(RHUnkSpriteRow, 0x64)
+DECOMP_STATIC_ASSERT(offsetof(RHUnkSpriteRow, m_resources) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(RHUnkSpriteRow, m_frames) == 0x24)
+DECOMP_STATIC_ASSERT(offsetof(RHUnkSpriteRow, m_rates) == 0x34)
+DECOMP_STATIC_ASSERT(offsetof(RHUnkSpriteRow, m_positions) == 0x44)
+DECOMP_STATIC_ASSERT(offsetof(RHUnkSpriteRow, m_flags) == 0x54)
+DECOMP_SIZE_ASSERT(std::vector<int>, 0x10)
 DECOMP_STATIC_ASSERT(offsetof(RHSprite, m_144) == 0x144)
+DECOMP_STATIC_ASSERT(offsetof(RHSprite, m_154) == 0x154)
 DECOMP_STATIC_ASSERT(offsetof(RHSprite, m_164) == 0x164)
 DECOMP_STATIC_ASSERT(offsetof(RHSprite, m_174) == 0x174)
 DECOMP_STATIC_ASSERT(offsetof(RHSprite, m_1a0) == 0x1a0)
@@ -568,6 +575,16 @@ bool RHSprite::FUN_005b7300(int animation, int progression)
     return true;
 }
 
+// FUNCTION: GAME 0x005b73f0
+bool RHSprite::FUN_005b73f0(unsigned short count)
+{
+    m_154 = new std::vector<RHUnkSpriteRow>;
+    m_154->resize(count);
+    m_19a = 0;
+    m_19c = 0;
+    return true;
+}
+
 // FUNCTION: GAME 0x005b76e0
 bool RHUnkTargetSprite::FUN_005b76e0(unsigned animation, unsigned short direction)
 {
@@ -1020,7 +1037,8 @@ int RHSprite::PerformMotion(RHOrder *order, RHOrder *following, int animation, i
         {
             if (m_228 >= 2)
             {
-                ((RHScriptBatchCalls *)g_unk0x6c10e8)->Unk005c2ec0(&S(RHUnk005df4f0, 0x10), S(unsigned short, 0xde), 7, 0, 0, 0, 0, -1);
+                ((RHTitbits *)g_unk0x6c10e8)->AddTitbit(*(const RHUnk00613e90 *)&S(RHUnk005df4f0, 0x10), S(unsigned short, 0xde),
+                    (RHtitbitKind)7, 0, 0, 0, false, -1);
                 m_228 = 0;
             }
             else
@@ -1166,10 +1184,32 @@ void RHSprite::FUN_005b9ce0()
 #undef FRAMEPOINT
 }
 
-// Parked: 3-arg visibility/collision test (box contains + engine lookup); geometry/EH wall.
-// STUB: GAME 0x005b9e30
-bool RHSprite::FUN_005b9e30(void *, void *, bool)
+// FUNCTION: GAME 0x005b9e30
+bool RHSprite::FUN_005b9e30(void *point, void *surface, bool includeKey)
 {
+    SBGeoBoundingBox2D bounds;
+    SBGeoVector2D size;
+    SBGeoPoint2D pixel;
+    SBDrawViewport viewport;
+    float height = (float)(FUN_005bdd70() - 1);
+    size.m_x = (float)(FUN_005bdd50() - 1);
+    size.m_y = height;
+    SBGeoPoint2D &position = RHSpriteField<SBGeoPoint2D>(this, 0x1c);
+    bounds.FUN_00609050(position.Unk005fc190(*FUN_005bdd90()),
+        position.Unk005fc190(*FUN_005bdd90()).Unk005fc190(size));
+    if (bounds.FUN_00608400(*(SBGeoPoint2D *)point) == true)
+    {
+        if (!((SBDrawManager *)m_1d8)->FUN_005e5a00((unsigned long)surface, viewport, 0))
+            return false;
+        if (m_193 == 1)
+            ((RHFrameHolder *)m_1d0)->FUN_00504cd0(viewport, FUN_005bdbc0(m_184, m_186), 0);
+        pixel = ((SBGeoPoint2D *)point)->Unk005fc110(bounds.m_p0);
+        unsigned short color = *viewport[pixel];
+        ((SBDrawManager *)m_1d8)->FUN_005e5ea0(viewport);
+        if ((unsigned)color != (viewport.m_depth == 16 ? 0x7c0u : 0x3e0u))
+            if (color != g_pEngine->FUN_004d2340(15) || includeKey)
+                return true;
+    }
     return false;
 }
 
@@ -1305,24 +1345,50 @@ static __forceinline void RHSpriteResize(std::vector<T> &values, unsigned count,
         (values.*erase)(values.begin() + count, values.end());
 }
 
-// STUB: GAME 0x005bad10
+template<class T>
+static __forceinline void RHSpriteResizeDefault(std::vector<T> &values, unsigned short count)
+{
+    T value = T();
+    unsigned (std::vector<T>::*size)() const = &std::vector<T>::size;
+    void (std::vector<T>::*insert)(T *, unsigned, const T &) = &std::vector<T>::insert;
+    T *(std::vector<T>::*erase)(T *, T *) = &std::vector<T>::erase;
+    if ((values.*size)() < count)
+        (values.*insert)(values.end(), count - (values.*size)(), value);
+    else if (count < (values.*size)())
+        (values.*erase)(values.begin() + count, values.end());
+}
+
+class RHSaveGame;
+
+static __forceinline void RHSpriteResizeDefault(std::vector<int> &values, unsigned short count)
+{
+    int value = 0;
+    unsigned (std::vector<int>::*size)() const = &std::vector<int>::size;
+    int *(std::vector<int>::*erase)(int *, int *) = &std::vector<int>::erase;
+    if ((values.*size)() < count)
+        ((SBArray<RHSaveGame *> *)&values)->Insert((RHSaveGame **)values.end(), count - (values.*size)(), (RHSaveGame *const &)value);
+    else if (count < (values.*size)())
+        (values.*erase)(values.begin() + count, values.end());
+}
+
+// FUNCTION: GAME 0x005bad10
 bool RHSprite::FUN_005bad10(unsigned long first, unsigned short count, unsigned short rate, unsigned short sound, const void *offsets)
 {
-    RHSpriteField<std::vector<RHUnkSpriteRow> *>(this, 0x154) = new std::vector<RHUnkSpriteRow>;
+    m_154 = new std::vector<RHUnkSpriteRow>;
     m_19c = 0;
     m_19a = 0;
-#define ROWS() (*RHSpriteField<std::vector<RHUnkSpriteRow> *>(this, 0x154))
+#define ROWS() (*m_154)
     RHSpriteResize(ROWS(), 1, RHUnkSpriteRow());
-    RHSpriteResize(ROWS()[0].m_frames, count, (unsigned short)0);
-    RHSpriteResize(ROWS()[0].m_rates, count, (unsigned short)0);
-    RHSpriteResize(ROWS()[0].m_resources, count, 0);
+    RHSpriteResizeDefault(ROWS()[0].m_frames, count);
+    RHSpriteResizeDefault(ROWS()[0].m_rates, count);
+    RHSpriteResizeDefault(ROWS()[0].m_resources, count);
     RHSpriteResize(ROWS()[0].m_positions, count, SBGeoVector2D());
-    RHSpriteResize(ROWS()[0].m_flags, count, (unsigned short)0);
+    RHSpriteResizeDefault(ROWS()[0].m_flags, count);
     ROWS()[0].m_00 = 0;
     SBGeoPoint2D &position = ROWS()[0].m_position;
     position.m_x = 0.0f;
     position.m_y = 0.0f;
-    for (int i = 0; i < count; ++i)
+    for (unsigned short i = 0; i < count; ++i)
     {
         if (RHSpriteField<RHFrameHolder *>(this, 0x1d0)->FUN_005046a0(first + i) > m_19a)
             m_19a = RHSpriteField<RHFrameHolder *>(this, 0x1d0)->FUN_005046a0(first + i);
@@ -1338,10 +1404,33 @@ bool RHSprite::FUN_005bad10(unsigned long first, unsigned short count, unsigned 
     return true;
 }
 
-// Parked: 6-arg script-row initializer (InitializeScriptRowFromLoadedFrame candidate).
-// STUB: GAME 0x005bb180
-void RHSprite::FUN_005bb180(unsigned short, unsigned long, unsigned short, unsigned short, unsigned short, void *)
+// FUNCTION: GAME 0x005bb180
+bool RHSprite::FUN_005bb180(unsigned short row, unsigned long first, unsigned short count, unsigned short rate, unsigned short sound, void *offsets)
 {
+#define ROWS() (*m_154)
+    RHSpriteResize(ROWS()[row].m_frames, count, (unsigned short)0);
+    RHSpriteResizeDefault(ROWS()[row].m_rates, count);
+    RHSpriteResizeDefault(ROWS()[row].m_resources, count);
+    RHSpriteResize(ROWS()[row].m_positions, count, SBGeoVector2D());
+    RHSpriteResizeDefault(ROWS()[row].m_flags, count);
+    ROWS()[row].m_00 = 0;
+    SBGeoPoint2D &position = ROWS()[row].m_position;
+    position.m_x = 0.0f;
+    position.m_y = 0.0f;
+    for (unsigned short i = 0; i < count; ++i)
+    {
+        if (RHSpriteField<RHFrameHolder *>(this, 0x1d0)->FUN_005046a0(first + i) > m_19a)
+            m_19a = RHSpriteField<RHFrameHolder *>(this, 0x1d0)->FUN_005046a0(first + i);
+        if (RHSpriteField<RHFrameHolder *>(this, 0x1d0)->FUN_005046c0(first + i) > m_19c)
+            m_19c = RHSpriteField<RHFrameHolder *>(this, 0x1d0)->FUN_005046c0(first + i);
+        ROWS()[row].m_frames.begin()[i] = rate;
+        ROWS()[row].m_rates.begin()[i] = sound;
+        ROWS()[row].m_resources.begin()[i] = first + i;
+        ROWS()[row].m_positions.begin()[i] = ((const std::vector<SBGeoVector2D> *)offsets)->begin()[i];
+        ROWS()[row].m_flags.begin()[i] = 0;
+    }
+#undef ROWS
+    return true;
 }
 
 #include "RHUnk005bb520.h"
@@ -1363,12 +1452,13 @@ struct RHSpriteFrameEntry
     undefined m_00[0x18]; // 0x00
     unsigned *first; // 0x18
     unsigned *last; // 0x1c
-    undefined m_20[8]; // 0x20
-    unsigned short *durations; // 0x28
-    unsigned short *durationsEnd; // 0x2c
-    undefined m_30[0x34]; // 0x30
+    undefined m_20[4]; // 0x20
+    std::vector<unsigned short> durations; // 0x24
+    undefined m_34[0x30]; // 0x34
 };
 DECOMP_SIZE_ASSERT(RHSpriteFrameEntry, 0x64)
+DECOMP_STATIC_ASSERT(offsetof(RHSpriteFrameEntry, durations) == 0x24)
+DECOMP_SIZE_ASSERT(std::vector<unsigned short>, 0x10)
 
 // FUNCTION: GAME 0x005bb640
 void RHSprite::FUN_005bb640(const SBDrawViewport &viewport, const SBGeoVector2D &size)
@@ -1995,8 +2085,7 @@ bool RHUnk005bd5b0::Unk(bool last)
     return true;
 }
 
-// Parked: frame-table indexing and duration-count registers differ.
-// STUB: GAME 0x005bd8b0
+// FUNCTION: GAME 0x005bd8b0
 void RHUnk005b5ed0::FUN_005bd8b0()
 {
     m_194 = !m_194;
@@ -2004,9 +2093,9 @@ void RHUnk005b5ed0::FUN_005bd8b0()
     {
         void *holder = ((RHUnk005b5e00 *)this)->FUN_005b5de0();
         int animation = m_1dc;
-        m_184 = RHSpriteField<unsigned short *>(((RHUnk005b5e00 *)this)->Unk(), 4)[animation] + m_d8;
-        RHSpriteFrameEntry &entry = RHSpriteField<RHSpriteFrameEntry *>(holder, 4)[m_184];
-        unsigned count = entry.durations ? entry.durationsEnd - entry.durations : 0;
+        m_184 = ((RHSpriteFrameTable *)((RHUnk005b5e00 *)this)->Unk())->Frame(animation) + m_d8;
+        RHSpriteFrameEntry &entry = (*(std::vector<RHSpriteFrameEntry> *)holder)[m_184];
+        unsigned count = entry.durations.size();
         if (m_186 >= count)
             m_186 = 0;
     }
@@ -2230,6 +2319,7 @@ void RHSprite::Emit(SBFile &file)
     FUN_005b9b60(m_1a0, 0.0f);
     FUN_005b9ce0();
     FUN_005b9e30(0, 0, false);
+    FUN_005b73f0(0);
     FUN_005ba130(m_1a0, 0.0f, m_1a0, m_1a0);
     FUN_005ba6c0(m_1a0, 0.0f, m_1a0, m_1a0, *(SBGeoVector2D *)&m_1a0.m_p0);
     FUN_005bad10(0, 0, 0, 0, 0);

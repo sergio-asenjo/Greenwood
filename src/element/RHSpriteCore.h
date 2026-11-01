@@ -6,12 +6,14 @@
 #include "Decomp.h"
 #include <list>
 #include <string>
+#include <vector>
 #include "RHScriptListCore.h"
 #include "RHSpriteListStorage.h"
 #include "RHCivilianProfile.h"
 #include "VMStringStorage.h"
 
 struct RHUnk005c9010Iterator;
+struct RHUnkSpriteRow;
 void FUN_005c9010(RHUnk005c9010Iterator &, int, std::bidirectional_iterator_tag);
 
 // SIZE 0x18
@@ -248,7 +250,7 @@ public:
     unsigned short m_14a;
     int m_14c;
     int m_150;
-    void *m_154;
+    std::vector<RHUnkSpriteRow> *m_154;
     void *m_158;
     void *m_15c;
     void *m_160;
@@ -302,6 +304,7 @@ public:
     int PerformMotion(RHOrder *, RHOrder *, int, int, float, int, bool);
     void FUN_005b7720(int);
     bool FUN_005b7300(int, int);
+    bool FUN_005b73f0(unsigned short count);
     bool FUN_005b7820(int);
     bool FUN_005b7e40(float, int);
     int FUN_005b7fd0(float, int);
@@ -335,7 +338,7 @@ public:
     bool FUN_005ba130(const SBGeoBoundingBox2D &, float, SBGeoBoundingBox2D &, SBGeoBoundingBox2D &);
     bool FUN_005ba6c0(const SBGeoBoundingBox2D &, float, SBGeoBoundingBox2D &, SBGeoBoundingBox2D &, SBGeoVector2D &);
     bool FUN_005bad10(unsigned long, unsigned short, unsigned short, unsigned short, const void *);
-    void FUN_005bb180(unsigned short, unsigned long, unsigned short, unsigned short, unsigned short, void *);
+    bool FUN_005bb180(unsigned short, unsigned long, unsigned short, unsigned short, unsigned short, void *);
     void FUN_005bb640(const class SBDrawViewport &, const SBGeoVector2D &);
     void FUN_005bb850(unsigned long, unsigned short, unsigned long, SBGeoVector2D &, unsigned long);
     bool CreateTargetSprite(const struct RHspriteRenderingInfo &info);
