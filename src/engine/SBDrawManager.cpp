@@ -1879,6 +1879,20 @@ bool RHUnk005ef320::FUN_005ef380(int value)
 // GLOBAL: GAME 0x006c11dc
 SBDrawTreeNode *g_unk0x006c11dc;
 
+#include "RHUnk00608f10.h"
+
+// FUNCTION: GAME 0x005ef3a0
+unsigned char SBDrawManager::IsOnScreen(const SBGeoBoundingBox2D &box) const
+{
+    SBGeoBoundingBox2D screen(0.0f, 0.0f, (float)m_10e, (float)m_110);
+    return (unsigned char)((RHUnk00608f10 *)&screen)->FUN_00608f10((void *)&box);
+}
+
+unsigned char EmitSBDrawManagerIsOnScreen(const SBDrawManager *draw, const SBGeoBoundingBox2D &box)
+{
+    return draw->IsOnScreen(box);
+}
+
 struct SBDrawDecIterator
 {
     SBDrawDecNode *m_node;

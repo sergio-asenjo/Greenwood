@@ -8,6 +8,7 @@ class SBDrawViewport;
 class SBDrawManager
 {
 public:
+    unsigned char IsOnScreen(const SBGeoBoundingBox2D &box) const;
     void BlitAlphaKeying(unsigned long, unsigned long, unsigned long,
         SBGeoBoundingBox2D *, unsigned short, unsigned short, unsigned long);
     bool FUN_005e5a00(unsigned long, SBDrawViewport &, unsigned long);
