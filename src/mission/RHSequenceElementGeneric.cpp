@@ -1,4 +1,5 @@
 #include "SBNullstr.h"
+#include "RHSequenceElementSerialization.h"
 #include "RHSequenceElementGeneric.h"
 
 // STRING: GAME 0x006b7550

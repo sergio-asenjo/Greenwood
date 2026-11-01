@@ -1,7 +1,7 @@
 #ifndef RHSEQUENCEELEMENTGENERIC_H
 #define RHSEQUENCEELEMENTGENERIC_H
 
-#include "RHSequenceElementSerialization.h"
+#include "RHSequenceElementCore.h"
 #include "RHGenericMap.h"
 
 class RHUnk00613e90;
