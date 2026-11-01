@@ -60,6 +60,7 @@ do_help() {
   echo "  tools/check.sh entities <orig-address> [...] [--json <new-file>]"
   echo "  tools/check.sh data <orig-address> [...] [--json <new-file>]"
   echo "  tools/check.sh vtables <orig-address> [...] [--json <new-file>]"
+  echo "  tools/check.sh spans --report <report.json> [--json <new-file>]  (whole-span identity census)"
   echo "  entities/data/vtables: --all explicitly requests a whole-target survey"
   echo "  tools/check.sh listing <source.cpp> (isolated compiler diagnostic, no clean/link)"
   echo "  tools/check.sh headers [-j N] [--list]  (header self-containment sweep, allowlisted failures)"
@@ -88,6 +89,7 @@ case "$cmd" in
   audit)   shift; do_diagnostic report_diff.py "$@" ;;
   entities) shift; do_diagnostic audit_entities.py "$@" ;;
   data|vtables) shift; do_diagnostic validate_entities.py "$cmd" "$@" ;;
+  spans)  shift; do_diagnostic verify_spans.py "$@" ;;
   listing) shift; "$ROOT/tools/build.sh" --listing "$@" ;;
   headers) shift; "$ROOT/tools/check_header_selfcontainment.sh" "$@" ;;
   duplicates) shift; do_diagnostic check_duplicate_markers.py "$@" ;;
