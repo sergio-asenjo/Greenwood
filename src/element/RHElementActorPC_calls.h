@@ -20,7 +20,6 @@ public:
     void Unk00464630();
     void Unk0046bcf0(int state, int value);
     void Unk00485200(int index, int amount);
-    int Unk005c2ec0(void *position, int first, int second, void *actor, int third, int fourth, int fifth, int sixth);
     void Unk0048ec00(void *scroll);
 };
 
@@ -130,7 +129,7 @@ public:
 
 #include "RHMalignityGeometryCalls.h"
 
-class RHTitbits;
+#include "RHTitbitsCore.h"
 class RHUnk5490f0;
 class RHMessenger
 {

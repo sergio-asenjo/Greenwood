@@ -100,7 +100,6 @@ SBGeoBoundingBox2D SBGeoBoundingBox2D::FUN_006090d0(const SBGeoVector2D &offset)
 RHScriptIter RHScriptIter::operator++(int) { return RHScriptIter(node); }
 short RHActorGridCalls::FUN_004e8fc0(const SBGeoPoint2D &, const SBGeoPoint2D &, short, void *&) { return -1; }
 bool RHActorGridCalls::FUN_004f5e50(SBGeoPoint2D &, const SBGeoPoint2D &, int) { return false; }
-void *RHActorAreaCalls::FUN_0057d800(const SBGeoPoint2D &) { return 0; }
 void RHElementActor::FUN_0046bcb0(int) {}
 
 bool RHActorCrossingHumanCalls::FUN_004843d0(SBGeoPoint2D &, void *, bool) { return false; }

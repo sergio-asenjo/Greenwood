@@ -124,24 +124,19 @@ public:
     int value;
     int Find(int wanted, bool inlineIterator)
     {
+        std::list<int> &nodes = (std::list<int> &)*this;
         int size = count;
         value = wanted;
         searched = true;
         if (inlineIterator)
-            cursor.node = head->next;
+            (std::list<int>::iterator &)cursor = nodes.begin();
         else
             cursor = ((RHUnk0046eb30 *)this)->FUN_0046eb80();
         int i = 0;
-        for (; i < size; ++i)
+        for (; i < size; ++i, Advance(inlineIterator))
         {
-            RHScriptNode *node = *(RHScriptNode *volatile *)&cursor.node;
-            int searchedValue = *(volatile int *)&value;
-            if (*(int *)&node->data == searchedValue)
+            if (*(std::list<int>::iterator &)cursor == value)
                 break;
-            if (inlineIterator)
-                cursor.node = cursor.node->next;
-            else
-                (*(RHSectorActorIter *)&cursor)++;
         }
         if (i < size)
         {
@@ -154,7 +149,18 @@ public:
             dirty = true;
             found = -1;
         }
-        return *(volatile int *)&found;
+        return found;
+    }
+    void Advance(bool inlineIterator)
+    {
+        if (inlineIterator)
+            ++((std::list<int>::iterator &)cursor);
+        else
+        {
+            typedef std::list<void *>::iterator Iterator;
+            Iterator (Iterator::*advance)(int) = &Iterator::operator++;
+            (((Iterator &)cursor).*advance)(0);
+        }
     }
     void Erase(RHScriptIter position)
     {
@@ -168,6 +174,11 @@ public:
 };
 
 DECOMP_SIZE_ASSERT(RHHumanMapNode, 0x14)
+DECOMP_SIZE_ASSERT(RHActorValueList, 0x24)
+DECOMP_STATIC_ASSERT(offsetof(RHActorValueList, cursor) == 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(RHActorValueList, dirty) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHActorValueList, found) == 0x1c)
+DECOMP_STATIC_ASSERT(offsetof(RHActorValueList, value) == 0x20)
 DECOMP_SIZE_ASSERT(RHHumanMapIterator, 0x04)
 DECOMP_SIZE_ASSERT(RHHumanMap, 0x10)
 DECOMP_SIZE_ASSERT(RHActorSequencePointCalls, 0x74)
@@ -526,14 +537,44 @@ void RHScriptBatchCalls::Unk00464630()
 // GLOBAL: GAME 0x006775b4
 float g_actorStepScale = 0.25f;
 
+class RHActorSequenceList
+{
+public:
+    int allocator;
+    RHScriptNode *head;
+    int count;
+    RHScriptNode *cursor;
+    bool dirty;
+    int index;
+    RHScriptIter InlineBegin() { return RHScriptIter(head->next); }
+    RHScriptIter InlineEnd() { return RHScriptIter(head); }
+    RHScriptNode *&SetCurrent(RHScriptIter value)
+    {
+        cursor = value.node;
+        return cursor;
+    }
+    void *&Get(int wanted);
+};
+
 class RHActorSequenceAccessors
 {
 public:
+    void *FUN_00466ff0();
     void *FUN_00467180() const;
     void *FUN_00467190() const;
     int FUN_004671a0() const;
     unsigned FUN_004671c0() const;
+    char m_00[0x18];
+    RHActorSequenceList values;
 };
+
+DECOMP_SIZE_ASSERT(RHActorSequenceList, 0x18)
+DECOMP_STATIC_ASSERT(offsetof(RHActorSequenceAccessors, values) == 0x18)
+DECOMP_STATIC_ASSERT(offsetof(RHActorSequenceList, head) == 4)
+DECOMP_STATIC_ASSERT(offsetof(RHActorSequenceList, count) == 8)
+DECOMP_STATIC_ASSERT(offsetof(RHActorSequenceList, cursor) == 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(RHActorSequenceList, dirty) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHActorSequenceList, index) == 0x14)
 
 class RHUnk6c1040;
 extern RHUnk6c1040 *g_unk0x6c1040;
@@ -542,6 +583,77 @@ extern RHUnk6c1040 *g_unk0x6c1040;
 RHUnk6c1040 *FUN_00466fe0()
 {
     return g_unk0x6c1040;
+}
+
+#include "RHProfilePointerList.h"
+
+inline void *&RHActorSequenceList::Get(int wanted)
+{
+    bool invalid = dirty;
+    int size = count;
+    if (invalid)
+    {
+        if (wanted <= (size + 1) / 2)
+        {
+            SetCurrent(InlineBegin());
+            std::bidirectional_iterator_tag category;
+            RHAdvanceProfileCursor((RHProfilePointerList::iterator &)cursor, wanted, category);
+        }
+        else
+        {
+            SetCurrent(InlineEnd());
+            std::bidirectional_iterator_tag category;
+            RHAdvanceProfileCursor((RHProfilePointerList::iterator &)cursor, wanted - size, category);
+        }
+        dirty = false;
+        index = wanted;
+    }
+    else
+    {
+        int previous = index;
+        if (previous != wanted)
+        {
+            if (wanted < previous)
+            {
+                if (wanted < (previous + 1) / 2)
+                {
+                    SetCurrent(InlineBegin());
+                    std::bidirectional_iterator_tag category;
+                    RHAdvanceProfileCursor((RHProfilePointerList::iterator &)cursor, wanted, category);
+                }
+                else
+                {
+                    std::bidirectional_iterator_tag category;
+                    RHAdvanceProfileCursor((RHProfilePointerList::iterator &)cursor, wanted - previous, category);
+                }
+            }
+            else
+            {
+                if (wanted < (previous + size) / 2)
+                    std::advance((std::list<void *>::iterator &)cursor, wanted - previous);
+                else
+                {
+                    SetCurrent(InlineEnd());
+                    std::advance((std::list<void *>::iterator &)cursor, wanted - size);
+                }
+            }
+            index = wanted;
+        }
+    }
+    return cursor->data;
+}
+
+// FUNCTION: GAME 0x00466ff0
+void *RHActorSequenceAccessors::FUN_00466ff0()
+{
+    if (values.count > 1)
+        return values.Get(1);
+    return 0;
+}
+
+void EmitRHActorSequenceSecond(RHActorSequenceAccessors *sequence)
+{
+    sequence->FUN_00466ff0();
 }
 
 // FUNCTION: GAME 0x00467180
@@ -652,8 +764,7 @@ void RHElementActor::ExecuteImmediately(RHSequenceElement *element)
                     case 2: effect = 20; break;
                     }
                     unsigned short layer = *(unsigned short *)((char *)Info() + 0xde);
-                    typedef void (RHScriptBatchCalls::*Effect)(void *, unsigned short, int, void *, int, int, int, int);
-                    (((RHScriptBatchCalls *)g_unk0x6c10e8)->*(Effect)&RHScriptBatchCalls::Unk005c2ec0)(&origin, layer, 1, (void *)0, effect, 0, 0, -1);
+                    ((RHTitbits *)g_unk0x6c10e8)->AddTitbit(*(const RHUnk00613e90 *)&origin, layer, (RHtitbitKind)1, 0, effect, 0, false, -1);
                     origin.m_0 += step.m_0;
                     origin.m_4 += step.m_4;
                     origin.m_8 += step.m_8;
@@ -673,7 +784,7 @@ void RHElementActor::ExecuteImmediately(RHSequenceElement *element)
         }
         if (cell != 0xffff)
         {
-            void *projection = ((RHActorAreaCalls *)area)->FUN_0057d800(point);
+            void *projection = ((RHUnk0057d490 *)area)->FUN_0057d800(point);
             ((RHActorPositionCalls *)Position())->FUN_00464530(point);
             *(unsigned short *)((char *)Position() + 0xda) = (unsigned short)layer;
             FUN_00462700(cell);
@@ -722,8 +833,7 @@ void RHElementActor::ExecuteImmediately(RHSequenceElement *element)
                 case 2: effect = 20; break;
                 }
                 unsigned short layer = *(unsigned short *)((char *)Info() + 0xde);
-                typedef void (RHScriptBatchCalls::*Effect)(void *, unsigned short, int, void *, int, int, int, int);
-                (((RHScriptBatchCalls *)g_unk0x6c10e8)->*(Effect)&RHScriptBatchCalls::Unk005c2ec0)(&origin, layer, 1, (void *)0, effect, 0, 0, -1);
+                ((RHTitbits *)g_unk0x6c10e8)->AddTitbit(*(const RHUnk00613e90 *)&origin, layer, (RHtitbitKind)1, 0, effect, 0, false, -1);
                 origin.m_0 += step.m_0;
                 origin.m_4 += step.m_4;
                 origin.m_8 += step.m_8;
@@ -1712,7 +1822,7 @@ void RHElementActor::FUN_0046d5f0(void *door, bool reverse)
         ((RHActorAreaTransitionView *)this)->Va0(RHActorField<unsigned short>(door, 0x14), area);
         if (building)
         {
-            void *projection = ((RHActorAreaCalls *)area)->FUN_0057d800(RHActorField<SBGeoPoint2D>(door, 0x18));
+            void *projection = ((RHUnk0057d490 *)area)->FUN_0057d800(RHActorField<SBGeoPoint2D>(door, 0x18));
             Position()->FUN_0055fa70(projection);
         }
         Position()->FUN_0055f290();
@@ -1751,8 +1861,8 @@ struct RHActorSeekPosition
     unsigned layer;
 };
 
-class RHFastFindTacticalArray;
-extern RHFastFindTacticalArray g_unk0x006c06f0;
+class RHFastFindSeekArray;
+extern RHFastFindSeekArray g_unk0x006c06f0;
 
 class RHActorSeekList : public RHSeqList
 {
@@ -2068,8 +2178,7 @@ SBGeoPoint2D RHActorSequencePointCalls::FUN_005871b0(int key)
     return point;
 }
 
-// Parked: search-loop registers, iterator temporaries and insertion scheduling differ.
-// STUB: GAME 0x005bd650
+// FUNCTION: GAME 0x005bd650
 void RHBonusInfo::FUN_005bd650(int value1, int value2)
 {
     RHActorValueList &keys = *(RHActorValueList *)((char *)this + 0x1e0);
@@ -2094,21 +2203,41 @@ void RHBonusInfo::FUN_005bd650(int value1, int value2)
     *(int *)&values.cursor.node->data = value2;
 }
 
-// Parked: inline postfix fixes erase scheduling, but search loads and tail placement remain different.
-// STUB: GAME 0x005bd7b0
+// FUNCTION: GAME 0x005bd7b0
 void RHBonusInfo::FUN_005bd7b0(int value)
 {
     RHActorValueList &keys = *(RHActorValueList *)((char *)this + 0x1e0);
-    unsigned short index = keys.Find(value, true);
-    if (index != 0xffff)
+    int count = keys.count;
+    keys.value = value;
+    keys.searched = true;
+    (std::list<int>::iterator &)keys.cursor = ((std::list<int> *)&keys)->begin();
+    int position = 0;
+    for (; position < count; ++position, ++((std::list<int>::iterator &)keys.cursor))
+        if (*(std::list<int>::iterator &)keys.cursor == keys.value)
+            break;
+    if (position < count)
     {
-        ((RHSeqList *)&keys)->GoTo(index);
+        keys.found = position;
+        keys.dirty = false;
+        keys.index = position;
+    }
+    else
+    {
+        keys.dirty = true;
+        keys.found = -1;
+    }
+    int index = keys.found;
+    if ((unsigned short)index != 0xffff)
+    {
+        ((RHSeqList *)&keys)->GoTo((unsigned short)index);
         keys.Erase(keys.cursor);
         RHActorValueList &values = *(RHActorValueList *)((char *)this + 0x204);
-        ((RHSeqList *)&values)->GoTo(index);
-        RHSectorActorIter position((RHSectorActorNode *)values.cursor.node);
-        RHSectorActorIter previous = position++;
-        values.Erase(RHScriptIter((RHScriptNode *)previous.m_p));
+        ((RHSeqList *)&values)->GoTo((unsigned short)index);
+        typedef std::list<void *>::iterator Iterator;
+        Iterator current = (Iterator &)values.cursor;
+        Iterator (Iterator::*advance)(int) = &Iterator::operator++;
+        ((std::list<void *> *)&values)->erase((current.*advance)(0));
+        values.dirty = true;
     }
 }
 
@@ -2258,8 +2387,54 @@ void RHElementActor::FUN_0046bbf0()
     }
 }
 
+// STUB: GAME 0x0046ea20
+void RHElementActor::FUN_0046ea20()
+{
+    RHUnkSectorGlobal *grid = g_unk0x6c0a9c;
+    void **&first = RHActorField<void **>(grid, 0x4064);
+    unsigned short count;
+    if (!first)
+        count = 0;
+    else
+        count = RHActorField<void **>(grid, 0x4068) - first;
+    if (count > 0)
+    {
+        unsigned remaining = count;
+        unsigned offset = 0;
+        do
+        {
+            RHSectorScript *sector = *(RHSectorScript **)((char *)first + offset);
+            if (sector && (char)(RHActorField<unsigned>(sector, 0x30) & 8) > 0)
+            {
+                RHElementActor *actor = this;
+                bool present = ((RHSectorActorList *)&sector->m_cc)->Unk004b8f80(actor, true) != -1;
+                bool inside = sector->FUN_0057ff00(this);
+                if (!present)
+                {
+                    if (inside)
+                    {
+                        sector->Enter(this);
+                        unsigned type = RHActorField<unsigned>(this, 4) & 15;
+                        if ((char)type == 12 && sector->m_f4 != 14)
+                            RHActorField<int>(this, 0x5f0) = sector->m_f4;
+                    }
+                }
+                else if (!inside)
+                {
+                    sector->Leave(this);
+                    unsigned type = RHActorField<unsigned>(this, 4) & 15;
+                    if ((char)type == 12 && sector->m_f4 != 14)
+                        RHActorField<int>(this, 0x5f0) = 12;
+                }
+            }
+            offset += 4;
+        } while (--remaining);
+    }
+}
+
 void RHElementActor::Emit(SBFile &file, std::string &name)
 {
+    FUN_0046ea20();
     FUN_00464150();
     FUN_00462940(0);
     FUN_0046bbf0();

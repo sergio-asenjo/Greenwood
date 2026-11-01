@@ -409,7 +409,7 @@ void RHElementActorSoldier::FUN_004a5770(RHSoldierSequenceElement *element)
     ((RHSoldierNPCCalls *)this)->FUN_0048d790(element);
 }
 
-class RHTitbits;
+#include "RHTitbitsCore.h"
 extern RHTitbits *g_unk0x6c10e8;
 
 // FUNCTION: GAME 0x004a5810
@@ -419,10 +419,9 @@ void RHElementActorSoldier::SetAppleSmell(bool enabled)
         if (m_unkA3c == 0) {
             RHUnk00613e90 position;
             ((RHSoldierHumanCalls *)this)->FUN_00478e50(position);
-            typedef void (RHScriptBatchCalls::*Effect)(void *, unsigned short, int, void *, int, int, int, int);
-            (((RHScriptBatchCalls *)g_unk0x6c10e8)->*(Effect)&RHScriptBatchCalls::Unk005c2ec0)(&position,
+            ((RHTitbits *)g_unk0x6c10e8)->AddTitbit(position,
                 *(unsigned short *)(RHSOLDIER_FIELD(char *, 0x50) + 0xde),
-                13, this, 3, 0, 0, -1);
+                (RHtitbitKind)13, (RHElement *)this, 3, 0, false, -1);
         }
         m_unkA3c = 1500;
     }

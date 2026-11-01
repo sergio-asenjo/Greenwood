@@ -288,8 +288,8 @@ void RHElementActorAnimal::Flee(bool run)
 #include "RHScriptListCore.h"
 #include "RHActorGridCalls.h"
 
-class RHFastFindTacticalArray;
-extern RHFastFindTacticalArray g_unk0x006c06f0;
+class RHFastFindSeekArray;
+extern RHFastFindSeekArray g_unk0x006c06f0;
 
 struct RHAnimalSeekPosition
 {

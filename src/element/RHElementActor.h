@@ -106,6 +106,7 @@ public:
     void FUN_0046e7c0(unsigned short layer, void *sector);
     int FUN_0046e960();
     void FUN_0046e980(bool first, bool second);
+    void FUN_0046ea20();
     bool FUN_00470160();
     unsigned short FUN_004626e0() const;
     void FUN_0046c8e0(int value);

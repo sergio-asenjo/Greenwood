@@ -3,6 +3,7 @@ extern float g_unk0x006774e4;
 #include "RHElementActorHuman.h"
 #include "RHActorCrossingHumanCalls.h"
 #include "RHActorAreaCalls.h"
+#include "RHSectorBuilding.h"
 #include <stdlib.h>
 #include <math.h>
 #include <vector>
@@ -351,9 +352,9 @@ inline SBGeoPoint2D &RHHumanDoorPoint(void *area)
     return RHActorField<SBGeoPoint2D>(RHActorField<void *>(area, 0x100), 0x18);
 }
 
-inline RHActorAreaCalls *RHHumanDoorArea(void *area)
+inline RHUnk0057d490 *RHHumanDoorArea(void *area)
 {
-    return RHActorField<RHActorAreaCalls *>(RHActorField<void *>(area, 0x100), 0xc);
+    return RHActorField<RHUnk0057d490 *>(RHActorField<void *>(area, 0x100), 0xc);
 }
 
 // FUNCTION: GAME 0x004752d0
@@ -1513,10 +1514,9 @@ int RHElementActorHuman::FUN_00481d40(void *first, void *second)
         RHTitbits *context = g_unk0x6c10e8;
         RHUnk00613e90 point;
         ((RHSoldierHumanCalls *)this)->FUN_00478e50(point);
-        typedef void (RHScriptBatchCalls::*Effect)(void *, unsigned short, int, void *, int, int, int, int);
-        (((RHScriptBatchCalls *)context)->*(Effect)&RHScriptBatchCalls::Unk005c2ec0)(&point,
+        ((RHTitbits *)context)->AddTitbit(point,
             RHActorField<unsigned short>(RHActorField<void *>(this, 0x50), 0xde),
-            2, this, 0, 0, 0, -1);
+            (RHtitbitKind)2, (RHElement *)this, 0, 0, false, -1);
         m_288 = 0;
         if (*(volatile unsigned *)&m_260.count != 0)
         {
@@ -2604,9 +2604,8 @@ void RHElementActorHuman::FUN_00482150(int value, int second, bool flag)
             unsigned short frame = *(unsigned short *)((char *)RHActorField<void *>(this, 0x50) + 0xde);
             RHUnk00613e90 point(0.0f, 0.0f, 2.0f);
             RHTitbits *context = g_unk0x6c10e8;
-            typedef void (RHScriptBatchCalls::*Effect)(void *, unsigned short, int, void *, int, int, int, int);
-            (((RHScriptBatchCalls *)context)->*(Effect)&RHScriptBatchCalls::Unk005c2ec0)(
-                &point, frame, 4, this, ((RHHumanVirtualCalls *)this)->V0cc() - amount, 0, 0, -1);
+            context->AddTitbit(
+                point, frame, (RHtitbitKind)4, (RHElement *)this, ((RHHumanVirtualCalls *)this)->V0cc() - amount, 0, false, -1);
         }
     }
     ((RHHumanVirtualCalls *)this)->V0c4(RHActorField<char>(this, 0x496) ? 100 : (short)amount);

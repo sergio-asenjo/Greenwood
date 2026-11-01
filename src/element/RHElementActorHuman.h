@@ -361,6 +361,8 @@ public:
 
 // SIZE 0x0c
 // SIZE 0x14
+#ifndef SBGEO_BOUNDINGBOX2D_VIEW
+#define SBGEO_BOUNDINGBOX2D_VIEW
 class SBGeoBoundingBox2D
 {
 public:
@@ -373,6 +375,7 @@ public:
     SBGeoPoint2D m_08; // 0x08
     undefined m_10; // 0x10
 };
+#endif
 
 // SIZE 0x294
 class RHUnk0044d400
@@ -444,7 +447,7 @@ SBGeoVector2D operator*(float factor, const SBGeoVector2D &point);
 
 #include "RHHumanActorCalls.h"
 
-class RHTitbits;
+#include "RHTitbitsCore.h"
 extern RHTitbits *g_unk0x6c10e8;
 
 #include "RHHumanWeaponCalls.h"

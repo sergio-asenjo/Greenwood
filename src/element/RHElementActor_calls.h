@@ -346,7 +346,7 @@ class RHElementActor;
 
 #include "RHActorAreaCalls.h"
 class RHElementActor;
-class RHTitbits;
+#include "RHTitbitsCore.h"
 class RHScriptBatchCalls
 {
 public:
@@ -356,7 +356,6 @@ public:
     void Unk00464630();
     void Unk0046b9e0();
     void *Unk0058a940(void *context, int value, void *element);
-    int Unk005c2ec0(void *position, int layer, int kind, void *actor, int value1, int value2, int value3, int value4);
 };
 extern RHTitbits *g_unk0x6c10e8;
 extern RHElementActor *g_unk0x6c100c;

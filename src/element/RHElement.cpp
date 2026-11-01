@@ -264,12 +264,9 @@ void RHElement::CrossElevationLine(RHElevationLine *line)
 }
 
 // SIZE 0x24
-struct RHElementGridListView
+struct RHElementGridListView : public std::list<RHElementArea *>
 {
-    undefined m_00[4]; // 0x00
-    RHElementAreaNode *m_04; // 0x04
-    int m_08; // 0x08
-    RHElementAreaNode *m_0c; // 0x0c
+    iterator m_0c; // 0x0c
     bool m_10; // 0x10
     undefined m_11[3]; // 0x11
     int m_14; // 0x14
@@ -277,60 +274,76 @@ struct RHElementGridListView
     undefined m_19[3]; // 0x19
     int m_1c; // 0x1c
     RHElementArea *m_20; // 0x20
+    iterator &SetCurrent(iterator position)
+    {
+        m_0c = position;
+        return m_0c;
+    }
+    int Find(RHElementArea *value)
+    {
+        int length = _Size;
+        m_20 = value;
+        m_18 = true;
+        SetCurrent(begin());
+        int index;
+        for (index = 0; index < length; ++index, ++m_0c)
+        {
+            if (*m_0c == m_20)
+                break;
+        }
+        if (index < length)
+        {
+            m_1c = index;
+            m_10 = false;
+            m_14 = index;
+        }
+        else
+        {
+            m_10 = true;
+            m_1c = -1;
+        }
+        return m_1c;
+    }
+    void InsertLast(RHElementArea *value)
+    {
+        push_back(value);
+        m_10 = true;
+    }
 };
 
 DECOMP_SIZE_ASSERT(RHElementGridListView, 0x24)
+DECOMP_STATIC_ASSERT(offsetof(RHElementGridListView, m_0c) == 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(RHElementGridListView, m_10) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHElementGridListView, m_20) == 0x20)
 
-// Parked: container cursor scheduling differs.
-// STUB: GAME 0x004e89d0
+struct RHElementGridCellView
+{
+    undefined m_00[0x10];
+    unsigned short count;
+    undefined m_12[2];
+    RHElementArea **areas;
+    undefined m_18[0x10];
+};
+
+DECOMP_SIZE_ASSERT(RHElementGridCellView, 0x28)
+DECOMP_STATIC_ASSERT(offsetof(RHElementGridCellView, count) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHElementGridCellView, areas) == 0x14)
+
+// FUNCTION: GAME 0x004e89d0
 void RHElementGrid::FUN_004e89d0(void *list, int cell, unsigned mask)
 {
-    undefined *entry = m_403c + cell * 40;
-    RHElementArea **area = *(RHElementArea ***)(entry + 0x14);
-    unsigned short count = *(unsigned short *)(entry + 0x10);
+    RHElementGridCellView *entry = (RHElementGridCellView *)m_403c + cell;
+    RHElementArea **areas = entry->areas;
+    unsigned short size = entry->count;
     RHElementGridListView *output = (RHElementGridListView *)list;
-    while (count != 0)
+    for (unsigned short i = 0; i < size; i++)
     {
-        RHElementArea *value = *area;
+        RHElementArea *value = areas[i];
         if (*((undefined *)value + 0x34) && (*(unsigned *)((undefined *)value + 0x30) & mask) == mask)
         {
-            output->m_20 = value;
-            output->m_18 = true;
-            output->m_0c = output->m_04->next;
-            int index;
-            for (index = 0; index < output->m_08; ++index)
-            {
-                if (output->m_0c->data == output->m_20)
-                    break;
-                output->m_0c = output->m_0c->next;
-            }
-            if (index < output->m_08)
-            {
-                output->m_1c = index;
-                output->m_10 = false;
-                output->m_14 = index;
-            }
-            else
-            {
-                output->m_10 = true;
-                output->m_1c = -1;
-            }
-            if (output->m_1c == -1)
-            {
-                RHElementAreaNode *head = output->m_04;
-                RHElementAreaNode *previous = head->prev;
-                RHElementAreaNode *node = (RHElementAreaNode *)::operator new(sizeof(RHElementAreaNode));
-                node->RHElementAreaNode::RHElementAreaNode(head, previous);
-                head->prev = node;
-                node->prev->next = node;
-                if (&node->data)
-                    node->data = value;
-                ++output->m_08;
-                output->m_10 = true;
-            }
+            if (output->Find(value) == -1)
+                output->InsertLast(value);
         }
-        ++area;
-        --count;
     }
 }
 

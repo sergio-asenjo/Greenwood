@@ -99,7 +99,7 @@ void RHScriptBatchCalls::Unk0048ec00(void *scroll)
     {
         titbits->FUN_005c8120(0xe, (RHElement *)this);
         RHUnk00613e90 position;
-        ((RHScriptBatchCalls *)titbits)->Unk005c2ec0(&position, 0, 0xe, this, 0, 0, 0, -1);
+        titbits->AddTitbit(position, 0, (RHtitbitKind)0xe, (RHElement *)this, 0, 0, false, -1);
     }
 }
 
@@ -228,7 +228,7 @@ RHUnk0048f280::RHUnk0048f280(void *description)
     if (RHActorPCField<char>(g_unk0x6c0b3c, 0x5a))
     {
         RHUnk00613e90 position;
-        ((RHScriptBatchCalls *)g_unk0x6c10e8)->Unk005c2ec0(&position, 0, 16, this, 0, 0, 0, -1);
+        ((RHTitbits *)g_unk0x6c10e8)->AddTitbit(position, 0, (RHtitbitKind)16, (RHElement *)this, 0, 0, false, -1);
     }
     RHActorPCField<char>(this, 0x605) = 0;
 }
@@ -2001,7 +2001,7 @@ void RHElementActorPC::InitializeAction(int action)
             ((RHScriptBatchCalls *)this)->Unk0046bcf0(21, 0);
             RHUnk00613e90 *position = (RHUnk00613e90 *)storage.first;
             position->RHUnk00613e90::RHUnk00613e90();
-            ((RHScriptBatchCalls *)g_unk0x6c10e8)->Unk005c2ec0(position, 0, 15, this, 0, 0, 0, -1);
+            ((RHTitbits *)g_unk0x6c10e8)->AddTitbit(*position, 0, (RHtitbitKind)15, (RHElement *)this, 0, 0, false, -1);
         }
         break;
     case 136:
@@ -2009,7 +2009,7 @@ void RHElementActorPC::InitializeAction(int action)
             ((RHScriptBatchCalls *)this)->Unk0046bcf0(22, 0);
             RHUnk00613e90 *position = (RHUnk00613e90 *)storage.second;
             position->RHUnk00613e90::RHUnk00613e90();
-            ((RHScriptBatchCalls *)g_unk0x6c10e8)->Unk005c2ec0(position, 0, 15, this, 0, 0, 0, -1);
+            ((RHTitbits *)g_unk0x6c10e8)->AddTitbit(*position, 0, (RHtitbitKind)15, (RHElement *)this, 0, 0, false, -1);
         }
         break;
     case 159:
