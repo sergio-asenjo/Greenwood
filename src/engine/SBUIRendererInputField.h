@@ -3,6 +3,7 @@
 
 #include "Decomp.h"
 #include <string>
+#include <vector>
 
 #ifndef SBGEO_POINT2D_VIEW
 #define SBGEO_POINT2D_VIEW
@@ -54,6 +55,8 @@ class RHMobileUnk006100e0;
 
 #include "SBUIInputFieldBoxCalls.h"
 
+class SBFontUnk0061e840;
+
 // SIZE 0x30
 class SBUIInputFieldDrawUnk
 {
@@ -62,7 +65,14 @@ public:
     bool FUN_00614bf0(void *, std::wstring *, const SBGeoPoint2D &, unsigned int);
     void FUN_00614d70(char value);
     unsigned short FUN_00614230(void *, std::wstring *, const SBGeoBoundingBox2D &, unsigned int, unsigned int, unsigned int);
-    void FUN_00613c90(void *, void *, void *, void *);
+    unsigned long FUN_00613940(const SBFontUnk0061e840 *,
+        const std::vector<std::wstring>::const_iterator &,
+        const std::vector<std::wstring>::const_iterator &,
+        std::vector<std::wstring>::const_iterator &,
+        std::vector<std::wstring>::const_iterator &, bool &, unsigned long, unsigned long) const;
+    void FUN_00613c90(std::vector<std::wstring>::const_iterator,
+        std::vector<std::wstring>::const_iterator, std::vector<std::wstring>::const_iterator,
+        std::vector<std::wstring>::const_iterator);
     unsigned short FUN_00613ea0(void *, std::wstring *, const SBGeoBoundingBox2D &, unsigned int, unsigned int);
     RHMapBox *FUN_00613e70();
     unsigned int FUN_00613e80();
@@ -144,6 +154,5 @@ std::wstring FUN_005d0880(const std::wstring &, const std::wstring &);
 int FUN_00613c50(const unsigned short *, const unsigned short *, unsigned int);
 bool FUN_00613e40(unsigned char, unsigned int, const void *, const void *);
 bool FUN_006141e0(void *, const std::wstring &, float);
-unsigned int FUN_00613940(void *, int **, int **, int **, int **, unsigned char *, unsigned int, int);
 
 #endif

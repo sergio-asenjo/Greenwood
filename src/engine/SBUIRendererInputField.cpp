@@ -112,6 +112,90 @@ SBUIInputFieldDrawUnk::SBUIInputFieldDrawUnk()
 {
 }
 
+// STUB: GAME 0x00613940
+unsigned long SBUIInputFieldDrawUnk::FUN_00613940(const SBFontUnk0061e840 *font,
+    const std::vector<std::wstring>::const_iterator &endA,
+    const std::vector<std::wstring>::const_iterator &endB,
+    std::vector<std::wstring>::const_iterator &currentA,
+    std::vector<std::wstring>::const_iterator &currentB, bool &stopped,
+    unsigned long maxWidth, unsigned long spacingWidth) const
+{
+    std::vector<std::wstring>::const_iterator initialB = currentB;
+    unsigned long total = 0;
+    unsigned long count = 0;
+    stopped = false;
+    while (currentB != endB)
+    {
+        int width = const_cast<SBFontUnk0061e840 *>(font)->FUN_0061ea50((void *)currentA);
+        if ((unsigned long)width > maxWidth && count == 0)
+        {
+            total = width;
+            ++currentA;
+            ++currentB;
+            count = 1;
+            break;
+        }
+        if (total + width > maxWidth)
+        {
+            if (currentB != initialB && (unsigned long)width <= maxWidth)
+            {
+                --currentA;
+                --currentB;
+                total -= spacingWidth;
+            }
+            break;
+        }
+        total += width < 0 ? 0 : width;
+        if (*currentB == L"\n")
+        {
+            stopped = true;
+            break;
+        }
+        ++currentA;
+        ++currentB;
+        total += spacingWidth;
+        ++count;
+    }
+    if (currentB != endB)
+    {
+        std::vector<std::wstring>::const_iterator nextA = currentA + 1;
+        if (*currentB != L"\n" && nextA->size() <= 5
+            && (nextA + 1 == endA || *(currentB + 1) == L"\n")
+            && currentB != initialB)
+        {
+            total -= const_cast<SBFontUnk0061e840 *>(font)->FUN_0061ea50((void *)currentA);
+            --currentA;
+            --currentB;
+        }
+        return total;
+    }
+    else
+    {
+        int width = const_cast<SBFontUnk0061e840 *>(font)->FUN_0061ea50((void *)currentA);
+        if ((unsigned long)width > maxWidth && count == 0)
+            total = width;
+        else if (total + width > maxWidth)
+        {
+            if (currentB != initialB)
+            {
+                if (currentA->size() <= 5 && count > 1)
+                {
+                    --currentA;
+                    --currentB;
+                    int previousWidth = const_cast<SBFontUnk0061e840 *>(font)->FUN_0061ea50((void *)currentA);
+                    total -= previousWidth < 0 ? 0 : previousWidth;
+                }
+                --currentA;
+                --currentB;
+                total -= spacingWidth;
+            }
+        }
+        else
+            total += width < 0 ? 0 : width;
+    }
+    return total;
+}
+
 // FUNCTION: GAME 0x00613c50
 int FUN_00613c50(const unsigned short *left, const unsigned short *right, unsigned int count)
 {
@@ -124,6 +208,22 @@ int FUN_00613c50(const unsigned short *left, const unsigned short *right, unsign
         --count;
     }
     return 0;
+}
+
+// FUNCTION: GAME 0x00613c90
+void SBUIInputFieldDrawUnk::FUN_00613c90(std::vector<std::wstring>::const_iterator beginA,
+    std::vector<std::wstring>::const_iterator beginB, std::vector<std::wstring>::const_iterator endA,
+    std::vector<std::wstring>::const_iterator endB)
+{
+    std::vector<std::wstring>::const_iterator currentA = beginA;
+    m_00.erase();
+    for (std::vector<std::wstring>::const_iterator currentB = beginB;
+         currentA != endA; ++currentA, ++currentB)
+    {
+        m_00.append(*currentA);
+        if (currentB != endB)
+            m_00.append(*currentB);
+    }
 }
 
 // FUNCTION: GAME 0x00613e40
@@ -654,4 +754,14 @@ void SBUIInputFieldEmitAssigned(SBUIInputFieldDrawUnk *draw, const unsigned shor
     draw->FUN_00613e70();
     draw->FUN_00613e80();
     FUN_006141e0(0.0f, text, font);
+}
+
+void SBUIInputFieldEmitTextAlgorithms(SBUIInputFieldDrawUnk *draw,
+    const SBFontUnk0061e840 *font, std::vector<std::wstring>::const_iterator endA,
+    std::vector<std::wstring>::const_iterator endB, std::vector<std::wstring>::const_iterator currentA,
+    std::vector<std::wstring>::const_iterator currentB, bool &stopped,
+    unsigned long maxWidth, unsigned long spacingWidth)
+{
+    draw->FUN_00613940(font, endA, endB, currentA, currentB, stopped, maxWidth, spacingWidth);
+    draw->FUN_00613c90(currentA, currentB, endA, endB);
 }

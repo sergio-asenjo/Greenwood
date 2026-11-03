@@ -22,12 +22,7 @@ public:
     void FUN_005e6440(unsigned long surface, int first, int second, unsigned long third, unsigned long flags);
 };
 
-class SBThreadedInput
-{
-public:
-    void FUN_005f1700();
-    void PopMouseBackground(bool wait);
-};
+#include "SBThreadedInput.h"
 
 extern SBThreadedInput *g_unk0x6c1340;
 

@@ -1,6 +1,6 @@
 #include "SBThreadedInput.h"
 #include <stdlib.h>
-#include "RHDrawManager.h"
+#include "RHUnk005fc3b0.h"
 #include <new>
 #include <memory>
 #include <list>
@@ -9,6 +9,9 @@
 #include "RHScriptListCore.h"
 #include "SBDrawManagerCore.h"
 #include "SBDrawViewport.h"
+#include "SBInput.h"
+
+DECOMP_SIZE_ASSERT(SBThreadedInput, 0x64)
 
 class RHUnkFXDraw
 {
@@ -16,6 +19,7 @@ public:
     unsigned short FUN_005e56c0(unsigned long);
     unsigned short FUN_005e5750(unsigned long);
     unsigned long Unk005e4ed0(int, int, int, bool);
+    void Unk005e5160(unsigned long);
 };
 
 class RHMobileUnk00607da0
@@ -30,17 +34,8 @@ public:
     void Blit(unsigned long, SBGeoBoundingBox2D *, unsigned long, SBGeoBoundingBox2D *, unsigned long);
 };
 
-extern "C" __declspec(dllimport) void __stdcall EnterCriticalSection(void *);
-extern "C" __declspec(dllimport) void __stdcall LeaveCriticalSection(void *);
-extern "C" __declspec(dllimport) unsigned long __stdcall SuspendThread(void *);
-extern "C" __declspec(dllimport) int __stdcall TerminateThread(void *, unsigned long);
-extern "C" __declspec(dllimport) int __stdcall CloseHandle(void *);
-extern "C" __declspec(dllimport) void __stdcall DeleteCriticalSection(void *);
-extern "C" __declspec(dllimport) void __stdcall InitializeCriticalSection(void *);
-extern "C" __declspec(dllimport) void *__stdcall CreateThread(void *, unsigned long, unsigned long (__stdcall *)(void *), void *, unsigned long, unsigned long *);
-
 // GLOBAL: GAME 0x006c1230
-static unsigned long g_inputCriticalSection[6];
+static CRITICAL_SECTION g_inputCriticalSection[1];
 
 // GLOBAL: GAME 0x006c12e0
 static bool g_instantRefresh;
@@ -90,15 +85,7 @@ bool g_inputAlternate;
 // GLOBAL: GAME 0x006c1229
 static bool g_inputRandomMotion;
 
-struct SBInputMouseState
-{
-    short m_x;
-    short m_y;
-    short m_wheel;
-    unsigned char m_left;
-    unsigned char m_right;
-    unsigned char m_middle;
-};
+#include "SBInputMouseState.h"
 
 // GLOBAL: GAME 0x006c12ac
 bool g_mouseEnabled;
@@ -117,8 +104,6 @@ extern unsigned short g_currentFrame;
 
 // GLOBAL: GAME 0x006c1218
 static unsigned long g_frameTime;
-
-extern "C" __declspec(dllimport) unsigned long __stdcall GetTickCount();
 
 // GLOBAL: GAME 0x006c1294
 static bool g_selfIncrement;
@@ -161,6 +146,44 @@ struct SBThreadedInputEvent
 // GLOBAL: GAME 0x006c1204
 static bool g_unk0x006c1204;
 
+class RHMapResources;
+extern RHMapResources *g_unk0x006c1840;
+extern SBThreadedInput *g_unk0x6c1340;
+extern unsigned char g_unk0x006c12b6;
+
+// GLOBAL: GAME 0x006c12aa
+static unsigned short g_unk0x006c12aa;
+
+// GLOBAL: GAME 0x006c12a8
+static unsigned short g_unk0x006c12a8;
+
+// GLOBAL: GAME 0x006c1228
+static bool g_unk0x006c1228;
+
+// GLOBAL: GAME 0x006c121c
+static unsigned short g_unk0x006c121c;
+
+// GLOBAL: GAME 0x006c11e2
+static unsigned short g_unk0x006c11e2;
+
+// GLOBAL: GAME 0x006c1314
+static unsigned short g_unk0x006c1314;
+
+// GLOBAL: GAME 0x006c11ec
+static unsigned short g_unk0x006c11ec;
+
+// GLOBAL: GAME 0x006c12a0
+static unsigned long g_unk0x006c12a0;
+
+// GLOBAL: GAME 0x006c12ad
+static bool g_unk0x006c12ad;
+
+// GLOBAL: GAME 0x006c1320
+static SBInputUnk005fb730 *g_unk0x006c1320;
+
+// GLOBAL: GAME 0x006c12c8
+static CRITICAL_SECTION g_screenCriticalSection[1];
+
 class SBInputListStorage : public std::list<SBThreadedInputElement>
 {
 public:
@@ -193,6 +216,51 @@ static inline void InsertInput(const SBThreadedInputElement &element)
     SBInputListStorage::Insert(SBInputListStorage::Position(g_inputHead), element);
     ++g_inputCount;
     g_inputChanged = true;
+}
+
+// FUNCTION: GAME 0x005f0750
+SBThreadedInput::SBThreadedInput()
+{
+    SBInputUnk005fb730 *input = SBInputUnk005fb730::mpInput;
+    SBResourceManager *resources = (SBResourceManager *)g_unk0x006c1840;
+    g_unk0x6c1340 = this;
+    g_frameTime = 0;
+    g_unk0x006c12aa = 0;
+    g_unk0x006c12a8 = 0;
+    g_unk0x006c12a4 = 0;
+    g_unk0x006c1310 = 0;
+    g_mouseEnabled = true;
+    g_selfIncrement = true;
+    g_unk0x006c1228 = false;
+    g_unk0x006c12b6 = 0;
+    g_inputRandomMotion = false;
+    g_unk0x006c121c = 0;
+    g_instantRefresh = true;
+    g_unk0x006c1204 = false;
+    g_unk0x006c11e2 = 50;
+    g_unk0x006c1314 = 31;
+    g_unk0x006c11ec = 0;
+    g_unk0x006c12a0 = 0;
+    g_unk0x006c12ad = true;
+    g_unk0x006c1320 = input;
+    g_inputResources = resources;
+    m_10 = 0;
+    InitializeCriticalSection(g_screenCriticalSection);
+}
+
+// SYNTHETIC: GAME 0x005f0870
+// SBThreadedInput::`scalar deleting destructor'
+
+// STUB: GAME 0x005f0890
+SBThreadedInput::~SBThreadedInput()
+{
+    g_inputDrawManager->Unk005e5160(g_unk0x006c12a4);
+    g_inputDrawManager->Unk005e5160(g_unk0x006c130c);
+    g_inputDrawManager->Unk005e5160(g_unk0x006c1318);
+    g_inputDrawManager->Unk005e5160(g_backgroundEven);
+    g_inputDrawManager->Unk005e5160(g_backgroundOdd);
+    g_inputDrawManager->Unk005e5160(g_unk0x006c1310);
+    DeleteCriticalSection(g_screenCriticalSection);
 }
 
 // FUNCTION: GAME 0x005f0c20
@@ -342,8 +410,6 @@ static inline void RemoveFirstInput()
     g_inputChanged = true;
 }
 
-#include "SBInput.h"
-
 int FUN_005fb030(unsigned scanCode, unsigned short *output, int capacity, int mode);
 
 // STUB: GAME 0x005f1000
@@ -352,7 +418,7 @@ unsigned short SBThreadedInput::GetChar()
     for (;;)
     {
         while (FUN_005f0ce0() == 0)
-            SBInputUnk005fb730::mpInput->FUN_005fbfc0();
+            g_unk0x006c1320->FUN_005fbfc0();
         EnterCriticalSection(g_inputCriticalSection);
         SBInputNode *node = g_inputHead->m_next;
         SBInputNode *next = node->m_next;
@@ -522,14 +588,14 @@ void SBThreadedInput::PopMouseBackground(bool wait)
     unsigned long flags = wait == true ? 8 : 0;
     if ((*(unsigned long *)((char *)this + 0x10) - 1 & 1) == 0) {
         SBGeoBoundingBox2D &box = *(SBGeoBoundingBox2D *)((char *)this + 0x14);
-        if (box.Unk00608f30() && box.m_max.m_x - box.m_min.m_x > 0.0f &&
-            box.m_max.m_y - box.m_min.m_y > 0.0f)
+        if (box.Unk00608f30() && box.m_p1.m_x - box.m_p0.m_x > 0.0f &&
+            box.m_p1.m_y - box.m_p0.m_y > 0.0f)
             ((RHUnk005e6440 *)g_inputDrawManager)->Blit(g_backgroundEven,
                 (SBGeoBoundingBox2D *)((char *)this + 0x3c), 0, &box, flags);
     } else {
         SBGeoBoundingBox2D &box = *(SBGeoBoundingBox2D *)((char *)this + 0x28);
-        if (box.Unk00608f30() && box.m_max.m_x - box.m_min.m_x > 0.0f &&
-            box.m_max.m_y - box.m_min.m_y > 0.0f)
+        if (box.Unk00608f30() && box.m_p1.m_x - box.m_p0.m_x > 0.0f &&
+            box.m_p1.m_y - box.m_p0.m_y > 0.0f)
             ((RHUnk005e6440 *)g_inputDrawManager)->Blit(g_backgroundOdd,
                 (SBGeoBoundingBox2D *)((char *)this + 0x50), 0, &box, flags);
     }
@@ -587,6 +653,239 @@ void SBThreadedInput::AccumulateColor15(unsigned short &red, unsigned short &gre
     blue += (color & 0x1f) * weight;
 }
 
+// Parked: 15-bit pixel color allocation exchanges eax/ecx before channel multiplication.
+// STUB: GAME 0x005f3080
+bool SBThreadedInput::BlitBlind(unsigned long source, const SBGeoBoundingBox2D &sourceBox, unsigned long destination, const SBGeoBoundingBox2D &destinationBox, unsigned long flags)
+{
+    SBDrawViewport sourceView;
+    SBDrawViewport destinationView;
+    unsigned short width = (unsigned short)(destinationBox.m_p1.m_x - destinationBox.m_p0.m_x);
+    unsigned short height = (unsigned short)(destinationBox.m_p1.m_y - destinationBox.m_p0.m_y);
+    if (!((SBDrawManager *)g_inputDrawManager)->FUN_005e5a00(destination, destinationView, flags))
+        return false;
+    if (!((SBDrawManager *)g_inputDrawManager)->FUN_005e5a00(source, sourceView, flags)) {
+        ((SBDrawManager *)g_inputDrawManager)->FUN_005e5ea0(destinationView);
+        return false;
+    }
+    unsigned long sourcePitch = sourceView.m_pitch >> 1;
+    unsigned long destinationPitch = destinationView.m_pitch >> 1;
+    float destinationX = destinationBox.m_p0.m_x;
+    float destinationY = destinationBox.m_p0.m_y;
+    unsigned short *destinationRow = destinationView.m_pixels + (int)destinationX + (int)destinationY * destinationPitch;
+    float sourceX = sourceBox.m_p0.m_x;
+    float sourceY = sourceBox.m_p0.m_y;
+    unsigned short *sourceRow = sourceView.m_pixels + (int)sourceX + (int)sourceY * sourcePitch;
+    unsigned short sourceColor;
+    unsigned short destinationColor;
+    unsigned short red;
+    unsigned short green;
+    unsigned short blue;
+    if (((SBDrawManager *)g_inputDrawManager)->m_10c == 16) {
+        if (height > 0) {
+            unsigned long rows = height;
+            do {
+                {
+                    unsigned short *sourcePixel = sourceRow;
+                    unsigned short *destinationPixel = destinationRow;
+                    for (unsigned short column = 0; column < width; ++column) {
+                        sourceColor = *sourcePixel;
+                        destinationColor = *destinationPixel;
+                        red = sourceColor >> 11;
+                        green = (sourceColor >> 5) & 0x3e;
+                        blue = sourceColor & 0x1f;
+                        if (red > 5 && green > 5 && blue > 5) {
+                            red = ((destinationColor >> 11) * red) >> 2;
+                            green = (((destinationColor >> 5) & 0x3e) * green) >> 3;
+                            blue = ((destinationColor & 0x1f) * blue) >> 2;
+                            if (red > 31) red = 31;
+                            if (green > 62) green = 62;
+                            if (blue > 31) blue = 31;
+                            *destinationPixel = (((red << 6) | green) << 5) | blue;
+                        } else {
+                            *destinationPixel = 0x07c0;
+                        }
+                        ++sourcePixel;
+                        ++destinationPixel;
+                    }
+                }
+                destinationRow += destinationPitch;
+                sourceRow += sourcePitch;
+            } while (--rows != 0);
+        }
+    } else {
+        if (height > 0) {
+            unsigned long rows = height;
+            do {
+                {
+                    unsigned short *sourcePixel = sourceRow;
+                    unsigned short *destinationPixel = destinationRow;
+                    for (unsigned short column = 0; column < width; ++column) {
+                        sourceColor = *sourcePixel;
+                        destinationColor = *destinationPixel;
+                        red = (sourceColor >> 10) & 0x1f;
+                        green = (sourceColor >> 5) & 0x1f;
+                        blue = sourceColor & 0x1f;
+                        if (red > 5 && green > 5 && blue > 5) {
+                            red = (((destinationColor >> 10) & 0x1f) * red) >> 2;
+                            green = (((destinationColor >> 5) & 0x1f) * green) >> 2;
+                            blue = ((destinationColor & 0x1f) * blue) >> 2;
+                            if (red > 31) red = 31;
+                            if (green > 31) green = 31;
+                            if (blue > 31) blue = 31;
+                            *destinationPixel = (((red << 5) | green) << 5) | blue;
+                        } else {
+                            *destinationPixel = 0x03e0;
+                        }
+                        ++sourcePixel;
+                        ++destinationPixel;
+                    }
+                }
+                destinationRow += destinationPitch;
+                sourceRow += sourcePitch;
+            } while (--rows != 0);
+        }
+    }
+    ((SBDrawManager *)g_inputDrawManager)->FUN_005e5ea0(sourceView);
+    ((SBDrawManager *)g_inputDrawManager)->FUN_005e5ea0(destinationView);
+    return true;
+}
+
+// Parked: frame is 16 bytes short and the fourth geometry temporary pair shares earlier slots.
+// STUB: GAME 0x005f3450
+bool SBThreadedInput::BlitFilterX(unsigned long source, const SBGeoBoundingBox2D &sourceBox, unsigned long destination, const SBGeoBoundingBox2D &destinationBox, unsigned long flags, unsigned short *weights)
+{
+    SBDrawViewport destinationView;
+    SBDrawViewport sourceView;
+    SBGeoBoundingBox2D destinationInset;
+    SBGeoBoundingBox2D sourceInset;
+    if (!((SBDrawManager *)g_inputDrawManager)->FUN_005e5a00(source, sourceView, 0))
+        return false;
+    if (!((SBDrawManager *)g_inputDrawManager)->FUN_005e5a00(destination, destinationView, 0)) {
+        ((SBDrawManager *)g_inputDrawManager)->FUN_005e5ea0(sourceView);
+        return false;
+    }
+    destinationInset.SetMin(destinationBox.Min().Unk005fc190(SBGeoVector2D(2.0f, 0.0f)));
+    destinationInset.SetMax(destinationBox.Max().Unk005fc190(SBGeoVector2D(-2.0f, 0.0f)));
+    sourceInset.SetMin(sourceBox.Min().Unk005fc190(SBGeoVector2D(2.0f, 0.0f)));
+    sourceInset.SetMax(sourceBox.Max().Unk005fc190(SBGeoVector2D(-2.0f, 0.0f)));
+    unsigned long sourcePitch = sourceView.m_pitch >> 1;
+    unsigned short *sourceRow = sourceView.m_pixels + (int)sourceInset.m_p0.m_x + (int)sourceInset.m_p0.m_y * sourcePitch;
+    unsigned long destinationPitch = destinationView.m_pitch >> 1;
+    unsigned short *destinationRow = destinationView.m_pixels + (int)destinationInset.m_p0.m_x + (int)destinationInset.m_p0.m_y * destinationPitch;
+    unsigned short width = (unsigned short)(destinationInset.m_p1.m_x - destinationInset.m_p0.m_x);
+    unsigned short height = (unsigned short)(destinationInset.m_p1.m_y - destinationInset.m_p0.m_y);
+    unsigned short weightSum = weights[0] + weights[1] + weights[2] + weights[3] + weights[4];
+    if (height > 0) {
+        unsigned long rows = height;
+        do {
+            if (width > 0) {
+                unsigned short *destinationPixel = destinationRow;
+                unsigned short *sourcePixel = sourceRow - 1;
+                unsigned long columns = width;
+                do {
+                    unsigned short red = 0;
+                    unsigned short green = 0;
+                    unsigned short blue = 0;
+                    if (destinationView.m_depth == 16) {
+                        AccumulateColor16(red, green, blue, sourcePixel[-1], weights[0]);
+                        AccumulateColor16(red, green, blue, sourcePixel[0], weights[1]);
+                        AccumulateColor16(red, green, blue, sourcePixel[1], weights[2]);
+                        AccumulateColor16(red, green, blue, sourcePixel[2], weights[3]);
+                        AccumulateColor16(red, green, blue, sourcePixel[3], weights[4]);
+                    } else {
+                        AccumulateColor15(red, green, blue, sourcePixel[-1], weights[0]);
+                        AccumulateColor15(red, green, blue, sourcePixel[0], weights[1]);
+                        AccumulateColor15(red, green, blue, sourcePixel[1], weights[2]);
+                        AccumulateColor15(red, green, blue, sourcePixel[2], weights[3]);
+                        AccumulateColor15(red, green, blue, sourcePixel[3], weights[4]);
+                    }
+                    int filteredRed = red / weightSum;
+                    int filteredGreen = green / weightSum;
+                    int filteredBlue = blue / weightSum;
+                    if (sourceView.m_depth == 16)
+                        *destinationPixel = (((filteredRed << 6) | filteredGreen) << 5) | filteredBlue;
+                    else
+                        *destinationPixel = (((filteredRed << 5) | filteredGreen) << 5) | filteredBlue;
+                    ++sourcePixel;
+                    ++destinationPixel;
+                } while (--columns != 0);
+            }
+            sourceRow += sourcePitch;
+            destinationRow += destinationPitch;
+        } while (--rows != 0);
+    }
+    ((SBDrawManager *)g_inputDrawManager)->FUN_005e5ea0(sourceView);
+    ((SBDrawManager *)g_inputDrawManager)->FUN_005e5ea0(destinationView);
+    return true;
+}
+
+// Parked: frame and fourth geometry temporary placement differ despite the native column loop shape.
+// STUB: GAME 0x005f3ad0
+bool SBThreadedInput::BlitFilterY(unsigned long source, const SBGeoBoundingBox2D &sourceBox, unsigned long destination, const SBGeoBoundingBox2D &destinationBox, unsigned long flags, unsigned short *weights)
+{
+    SBDrawViewport destinationView;
+    SBDrawViewport sourceView;
+    SBGeoBoundingBox2D destinationInset;
+    SBGeoBoundingBox2D sourceInset;
+    if (!((SBDrawManager *)g_inputDrawManager)->FUN_005e5a00(source, sourceView, 0))
+        return false;
+    if (!((SBDrawManager *)g_inputDrawManager)->FUN_005e5a00(destination, destinationView, 0)) {
+        ((SBDrawManager *)g_inputDrawManager)->FUN_005e5ea0(sourceView);
+        return false;
+    }
+    destinationInset.SetMin(destinationBox.Min().Unk005fc190(SBGeoVector2D(0.0f, 2.0f)));
+    destinationInset.SetMax(destinationBox.Max().Unk005fc190(SBGeoVector2D(0.0f, -2.0f)));
+    sourceInset.SetMin(sourceBox.Min().Unk005fc190(SBGeoVector2D(0.0f, 2.0f)));
+    sourceInset.SetMax(sourceBox.Max().Unk005fc190(SBGeoVector2D(0.0f, -2.0f)));
+    unsigned long sourcePitch = sourceView.m_pitch >> 1;
+    unsigned short *sourceRow = sourceView.m_pixels + (int)sourceInset.m_p0.m_x + (int)sourceInset.m_p0.m_y * sourcePitch;
+    unsigned long destinationPitch = destinationView.m_pitch >> 1;
+    unsigned short *destinationRow = destinationView.m_pixels + (int)destinationInset.m_p0.m_x + (int)destinationInset.m_p0.m_y * destinationPitch;
+    unsigned short width = (unsigned short)(destinationInset.m_p1.m_x - destinationInset.m_p0.m_x);
+    unsigned short height = (unsigned short)(destinationInset.m_p1.m_y - destinationInset.m_p0.m_y);
+    unsigned short weightSum = weights[0] + weights[1] + weights[2] + weights[3] + weights[4];
+    unsigned short *sourceStart = sourceRow;
+    unsigned short *destinationStart = destinationRow;
+    long offsetMinusTwo = -2 * sourcePitch;
+    long offsetMinusOne = -sourcePitch;
+    long offsetPlusOne = sourcePitch;
+    long offsetPlusTwo = 2 * sourcePitch;
+    for (unsigned short column = 0; column < width; ++column) {
+        for (unsigned short row = 0; row < height; ++row) {
+            unsigned short red = 0;
+            unsigned short green = 0;
+            unsigned short blue = 0;
+            if (destinationView.m_depth == 16) {
+                AccumulateColor16(red, green, blue, sourceRow[column + offsetMinusTwo], weights[0]);
+                AccumulateColor16(red, green, blue, sourceRow[column + offsetMinusOne], weights[1]);
+                AccumulateColor16(red, green, blue, sourceRow[column], weights[2]);
+                AccumulateColor16(red, green, blue, sourceRow[column + offsetPlusOne], weights[3]);
+                AccumulateColor16(red, green, blue, sourceRow[column + offsetPlusTwo], weights[4]);
+            } else {
+                AccumulateColor15(red, green, blue, sourceRow[column + offsetMinusTwo], weights[0]);
+                AccumulateColor15(red, green, blue, sourceRow[column + offsetMinusOne], weights[1]);
+                AccumulateColor15(red, green, blue, sourceRow[column], weights[2]);
+                AccumulateColor15(red, green, blue, sourceRow[column + offsetPlusOne], weights[3]);
+                AccumulateColor15(red, green, blue, sourceRow[column + offsetPlusTwo], weights[4]);
+            }
+            int filteredRed = red / weightSum;
+            int filteredGreen = green / weightSum;
+            int filteredBlue = blue / weightSum;
+            if (sourceView.m_depth == 16)
+                destinationRow[column] = (((filteredRed << 6) | filteredGreen) << 5) | filteredBlue;
+            else
+                destinationRow[column] = (((filteredRed << 5) | filteredGreen) << 5) | filteredBlue;
+            sourceRow += sourcePitch;
+            destinationRow += destinationPitch;
+        }
+        sourceRow = sourceStart;
+        destinationRow = destinationStart;
+    }
+    ((SBDrawManager *)g_inputDrawManager)->FUN_005e5ea0(sourceView);
+    ((SBDrawManager *)g_inputDrawManager)->FUN_005e5ea0(destinationView);
+    return true;
+}
+
 // FUNCTION: GAME 0x005f4200
 bool SBThreadedInput::BlitDouble(unsigned long source, const SBGeoBoundingBox2D &sourceBox, unsigned long destination, const SBGeoBoundingBox2D &destinationBox, unsigned long flags)
 {
@@ -599,16 +898,16 @@ bool SBThreadedInput::BlitDouble(unsigned long source, const SBGeoBoundingBox2D 
         return false;
     }
     unsigned long sourcePitch = sourceView.m_pitch >> 1;
-    float sourceX = sourceBox.m_min.m_x;
-    float sourceY = sourceBox.m_min.m_y;
+    float sourceX = sourceBox.m_p0.m_x;
+    float sourceY = sourceBox.m_p0.m_y;
     unsigned short *sourceRow = sourceView.m_pixels + (int)sourceX + (int)sourceY * sourcePitch;
     unsigned long destinationPitch = destinationView.m_pitch >> 1;
-    float destinationX = destinationBox.m_min.m_x;
-    float destinationY = destinationBox.m_min.m_y;
+    float destinationX = destinationBox.m_p0.m_x;
+    float destinationY = destinationBox.m_p0.m_y;
     unsigned long *destinationRow = (unsigned long *)(destinationView.m_pixels + (int)destinationX + (int)destinationY * destinationPitch);
-    unsigned short width = (unsigned short)(destinationBox.m_max.m_x - destinationBox.m_min.m_x);
+    unsigned short width = (unsigned short)(destinationBox.m_p1.m_x - destinationBox.m_p0.m_x);
     width >>= 1;
-    unsigned short height = (unsigned short)(destinationBox.m_max.m_y - destinationBox.m_min.m_y);
+    unsigned short height = (unsigned short)(destinationBox.m_p1.m_y - destinationBox.m_p0.m_y);
     height >>= 1;
     if (height > 0) {
         unsigned long rows = height;
@@ -640,11 +939,11 @@ void SBThreadedInput::ChangeShadowIntoPulse(unsigned long surface, const SBGeoBo
     if (!((SBDrawManager *)g_inputDrawManager)->FUN_005e5a00(surface, view, 0))
         return;
     unsigned long pitch = view.m_pitch >> 1;
-    float x = box.m_min.m_x;
-    float y = box.m_min.m_y;
+    float x = box.m_p0.m_x;
+    float y = box.m_p0.m_y;
     unsigned short *row = view.m_pixels + (unsigned short)x + (unsigned short)y * pitch;
-    unsigned short width = (unsigned short)(box.m_max.m_x - box.m_min.m_x);
-    unsigned short height = (unsigned short)(box.m_max.m_y - box.m_min.m_y);
+    unsigned short width = (unsigned short)(box.m_p1.m_x - box.m_p0.m_x);
+    unsigned short height = (unsigned short)(box.m_p1.m_y - box.m_p0.m_y);
     int bounded;
     if (level > 0) {
         bounded = level;
@@ -750,16 +1049,16 @@ void SBThreadedInput::InputLoop(const SBInputMouseState &mouse)
 // FUNCTION: GAME 0x005f4700
 bool SBThreadedInput::CalculatePosition()
 {
-    if (g_inputPosition.m_x < g_inputClipping.m_min.m_x)
-        g_inputPosition.m_x = g_inputClipping.m_min.m_x;
-    if (g_inputClipping.m_max.m_x <= g_inputPosition.m_x)
-        g_inputPosition.m_x = g_inputClipping.m_max.m_x - 1.0f;
-    if ((double)g_inputPosition.m_y < g_inputClipping.m_min.m_y) {
-        float y = g_inputClipping.m_min.m_y;
+    if (g_inputPosition.m_x < g_inputClipping.m_p0.m_x)
+        g_inputPosition.m_x = g_inputClipping.m_p0.m_x;
+    if (g_inputClipping.m_p1.m_x <= g_inputPosition.m_x)
+        g_inputPosition.m_x = g_inputClipping.m_p1.m_x - 1.0f;
+    if ((double)g_inputPosition.m_y < g_inputClipping.m_p0.m_y) {
+        float y = g_inputClipping.m_p0.m_y;
         g_inputPosition.m_y = y;
     }
-    if ((double)g_inputPosition.m_y >= g_inputClipping.m_max.m_y)
-        g_inputPosition.m_y = g_inputClipping.m_max.m_y - 1.0f;
+    if ((double)g_inputPosition.m_y >= g_inputClipping.m_p1.m_y)
+        g_inputPosition.m_y = g_inputClipping.m_p1.m_y - 1.0f;
     return true;
 }
 
@@ -957,6 +1256,7 @@ void SBThreadedInput::Emit()
     unsigned short red = 0;
     unsigned short green = 0;
     unsigned short blue = 0;
+    unsigned short weights[5] = {1, 1, 1, 1, 1};
     FUN_005f0ce0();
     FUN_005f0d20(0, *(SBInputMouseState *)this, (unsigned char *)this);
     FUN_005f1a90();
@@ -977,6 +1277,9 @@ void SBThreadedInput::Emit()
     PopMouseBackground(false);
     AccumulateColor16(red, green, blue, red, green);
     AccumulateColor15(red, green, blue, red, green);
+    BlitBlind(red, *(SBGeoBoundingBox2D *)this, green, *(SBGeoBoundingBox2D *)this, 0);
+    BlitFilterX(red, *(SBGeoBoundingBox2D *)this, green, *(SBGeoBoundingBox2D *)this, 0, weights);
+    BlitFilterY(red, *(SBGeoBoundingBox2D *)this, green, *(SBGeoBoundingBox2D *)this, 0, weights);
     BlitDouble(red, *(SBGeoBoundingBox2D *)this, green, *(SBGeoBoundingBox2D *)this, 0);
     ChangeShadowIntoPulse(red, *(SBGeoBoundingBox2D *)this, green);
     GetDirection();

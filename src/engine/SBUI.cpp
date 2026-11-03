@@ -11,6 +11,8 @@ DECOMP_STATIC_ASSERT(offsetof(SBUI, m_input) == 0x44)
 
 extern "C" void *__cdecl memset(void *destination, int value, unsigned int size);
 
+#include "SBInputMouseState.h"
+
 class RHUnk006283e0
 {
 public:
@@ -52,17 +54,6 @@ void EmitSBUIFrameStorage(RHUnk00628480 *cursor)
     cursor->FUN_00628480();
 }
 
-class SBGeoBoundingBox2D
-{
-public:
-    SBGeoBoundingBox2D();
-    ~SBGeoBoundingBox2D() {}
-    int FUN_00609050(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
-    SBGeoPoint2D m_0;
-    SBGeoPoint2D m_8;
-    undefined m_10[4];
-};
-
 class SBUIMouseFrameArray : public std::vector<RHUnk00627cc0>
 {
 public:
@@ -95,6 +86,7 @@ public:
     ~RHUnk006279d0();
     virtual void *FUN_00627ae0(unsigned flags);
     bool FUN_00627ee0(unsigned long surface);
+    bool InputLoop(const SBInputMouseState &state);
     void FUN_00628500();
     SBGeoPoint2D m_position;
     SBGeoVector2D m_delta;
@@ -103,9 +95,7 @@ public:
     unsigned short m_a6;
     RHUnkFXDraw *m_draw;
     unsigned long m_display;
-    unsigned m_b0;
-    unsigned m_b4;
-    unsigned short m_b8;
+    SBInputMouseState m_state;
     unsigned short m_ba;
     unsigned short m_bc;
     unsigned short m_be;
@@ -115,6 +105,9 @@ public:
 };
 
 DECOMP_SIZE_ASSERT(RHUnk006279d0, 0xc8)
+DECOMP_SIZE_ASSERT(SBInputMouseState, 0x0a)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk006279d0, m_state) == 0xb0)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk006279d0, m_ba) == 0xba)
 
 template <class T>
 class SBUIArrayLifetime : public std::vector<T>
@@ -972,7 +965,7 @@ RHUnk006279d0::RHUnk006279d0()
     m_ba = 0;
     m_be = 0;
     m_c2 = 0;
-    memset(&m_b0, 0, 10);
+    memset(&m_state, 0, 10);
 }
 
 // FUNCTION: GAME 0x00627ae0
@@ -996,6 +989,63 @@ bool RHUnk006279d0::FUN_00627ee0(unsigned long surface)
     m_display = surface;
     m_bounds.FUN_00609050(SBGeoPoint2D(0, 0),
         SBGeoPoint2D((float)m_draw->FUN_005e56c0(0), (float)m_draw->FUN_005e5750(0)));
+    return true;
+}
+
+// FUNCTION: GAME 0x00628210
+bool RHUnk006279d0::InputLoop(const SBInputMouseState &state)
+{
+    SBGeoVector2D movement;
+    movement.Set((float)state.m_x, (float)state.m_y);
+    m_position.FUN_005fc1e0(movement);
+    ((RHUnk006283e0 *)this)->FUN_006283e0();
+    m_events = 0;
+    if (m_ba > 0)
+        --m_ba;
+    if (m_be > 0)
+        --m_be;
+    if (m_c2 > 0)
+        --m_c2;
+    if (!state.m_left && m_state.m_left == 1)
+    {
+        if (m_ba == 0)
+        {
+            m_events = 1;
+            m_ba = m_bc;
+        }
+        else
+        {
+            m_events = 8;
+            m_ba = 0;
+        }
+    }
+    if (state.m_left == 1)
+        m_events |= 0x40;
+    if (!state.m_right && m_state.m_right == 1)
+    {
+        if (m_be == 0)
+        {
+            m_events |= 2;
+            m_be = m_c0;
+        }
+        else
+            m_events |= 0x10;
+    }
+    if (state.m_right == 1)
+        m_events |= 0x80;
+    if (!state.m_middle && m_state.m_middle == 1)
+    {
+        if (m_c2 == 0)
+        {
+            m_events |= 4;
+            m_c2 = m_c4;
+        }
+        else
+            m_events |= 0x20;
+    }
+    if (state.m_middle == 1 && !m_state.m_middle)
+        m_events |= 0x100;
+    m_state = state;
     return true;
 }
 
@@ -1049,7 +1099,7 @@ void RHUnk006279d0::FUN_00628500()
     m_ba = 0;
     m_be = 0;
     m_c2 = 0;
-    memset(&m_b0, 0, 10);
+    memset(&m_state, 0, 10);
 }
 
 // FUNCTION: GAME 0x006286e0

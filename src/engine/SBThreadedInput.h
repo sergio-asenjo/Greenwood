@@ -2,6 +2,10 @@
 #define SBTHREADEDINPUT_H
 
 #include "Decomp.h"
+#include "SBThread.h"
+#ifndef SBGEO_BOUNDINGBOX2D_VIEW
+#include "SBGeoBoundingBox2DCore.h"
+#endif
 
 class SBGeoBoundingBox2D;
 class SBGeoVector2D;
@@ -26,12 +30,20 @@ enum SBButton
     SBButtonMiddle
 };
 
-class SBThreadedInput
+// VTABLE: GAME 0x0067a798
+// SIZE 0x64
+class SBThreadedInput : public SBThread
 {
 public:
+    SBThreadedInput();
+    virtual ~SBThreadedInput(); // vtable+0x00
+    void FUN_005f1700();
     unsigned FUN_005104b0();
     static void AccumulateColor16(unsigned short &red, unsigned short &green, unsigned short &blue, unsigned short color, unsigned short weight);
     static void AccumulateColor15(unsigned short &red, unsigned short &green, unsigned short &blue, unsigned short color, unsigned short weight);
+    static bool BlitBlind(unsigned long source, const SBGeoBoundingBox2D &sourceBox, unsigned long destination, const SBGeoBoundingBox2D &destinationBox, unsigned long flags);
+    static bool BlitFilterX(unsigned long source, const SBGeoBoundingBox2D &sourceBox, unsigned long destination, const SBGeoBoundingBox2D &destinationBox, unsigned long flags, unsigned short *weights);
+    static bool BlitFilterY(unsigned long source, const SBGeoBoundingBox2D &sourceBox, unsigned long destination, const SBGeoBoundingBox2D &destinationBox, unsigned long flags, unsigned short *weights);
     static bool BlitDouble(unsigned long source, const SBGeoBoundingBox2D &sourceBox, unsigned long destination, const SBGeoBoundingBox2D &destinationBox, unsigned long flags);
     static void ChangeShadowIntoPulse(unsigned long surface, const SBGeoBoundingBox2D &box, unsigned short level);
     static unsigned long GetNumberOfInputsUTS();
@@ -62,12 +74,11 @@ public:
     void Emit();
 
 private:
-    undefined m_opaque00[4];
-    unsigned long m_threadId; // 0x04
-    void *m_thread; // 0x08
-    bool m_running; // 0x0c
-    bool m_active; // 0x0d
-    undefined m_opaque0e[0x56];
+    unsigned long m_10; // 0x10
+    SBGeoBoundingBox2D m_14; // 0x14
+    SBGeoBoundingBox2D m_28; // 0x28
+    SBGeoBoundingBox2D m_3c; // 0x3c
+    SBGeoBoundingBox2D m_50; // 0x50
 };
 
 unsigned long FUN_005f0ce0();
