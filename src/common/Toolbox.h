@@ -8,6 +8,8 @@
 #include <deque>
 #include <list>
 #include <iterator>
+#include "SBGeoPoint2D.h"
+#include "SBGeoVector2D.h"
 
 // SIZE 0x08
 struct ToolboxChunk
@@ -119,27 +121,6 @@ public:
     unsigned short *m_chars; // 0x04
     unsigned int m_size; // 0x08
     unsigned int m_capacity; // 0x0c
-};
-
-#define SBGEO_POINT2D_VIEW
-
-// SIZE 0x08
-class SBGeoPoint2D
-{
-public:
-    SBGeoPoint2D(float, float);
-    ~SBGeoPoint2D();
-    float m_x; // 0x00
-    float m_y; // 0x04
-};
-
-class SBGeoVector2D : public SBGeoPoint2D
-{
-public:
-    SBGeoVector2D(float, float);
-    ~SBGeoVector2D() {}
-    SBGeoVector2D(const SBGeoVector2D &other);
-    SBGeoVector2D &operator=(const SBGeoVector2D &other);
 };
 
 #include "SBDrawManagerCore.h"
