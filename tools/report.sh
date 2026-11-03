@@ -20,7 +20,7 @@ fi
 RECCMP="$ROOT/.venv/bin/reccmp-reccmp"
 
 if [ ! -x "$RECCMP" ]; then
-  echo "reccmp not found at $RECCMP — restore the reviewed editable environment documented in docs/01-toolchain.md" >&2
+  echo "reccmp not found at $RECCMP — this repository requires its privately maintained reviewed environment; a stock reccmp install is not a supported replacement" >&2
   exit 1
 fi
 
