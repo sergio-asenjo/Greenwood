@@ -22,6 +22,13 @@ RHObjectConstructorCalls::~RHObjectConstructorCalls()
 {
 }
 
+// Parked: return-false placeholder; the 787 B native slot-8 body is not reconstructed.
+// STUB: GAME 0x004b26a0
+bool RHElementObject::FUN_004b26a0(int, int, int)
+{
+    return false;
+}
+
 
 #include "SBGeoPoint2D.h"
 #include "RHActorSequenceStorage.h"

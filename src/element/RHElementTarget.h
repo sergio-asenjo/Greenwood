@@ -67,6 +67,7 @@ public:
     int FUN_004baff0(void *actor);
     int FUN_004bb0a0(void *actor);
     void FUN_004bae60(RHTargetSequenceCalls *sequence, int (RHUnkTargetScriptRef::*callback)(int));
+    bool FUN_004bc1d0(RHTargetSequenceCalls *sequence);
     void FUN_004bc3d0(int activator);
     void Emit(SBFile &file);
     RHUnkTargetSprite *&Info() { return *(RHUnkTargetSprite **)(m_data + 0x50); }

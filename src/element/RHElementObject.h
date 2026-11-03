@@ -27,7 +27,7 @@ public:
     virtual void V14();
     virtual void V18();
     virtual void V1c();
-    virtual void V20();
+    virtual bool V20(int first, int second, int third);
     virtual void V24();
     virtual void V28();
     virtual void V2c();
@@ -77,6 +77,7 @@ public:
     bool FUN_004a78c0(void *actor);
     bool FUN_004b24d0(const SBGeoPoint2D &point) const;
     void FUN_004b2600(void *points, void *lines, void *actor);
+    bool FUN_004b26a0(int first, int second, int third);
     void *FUN_004b29c0(void *actor);
     void FUN_004b2d60(unsigned short value);
     int FUN_004b2d70();

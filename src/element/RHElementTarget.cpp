@@ -3,6 +3,11 @@
 #include "RHMalignityActorCalls.h"
 #include "RHElementPositionCalls.h"
 #include "RHUnk00613e90.h"
+#include "RHHumanSequenceElement.h"
+#include "RHSpriteLastFrameCalls.h"
+
+class RHElementActor;
+extern RHElementActor *g_unk0x6c100c;
 
 class RHScriptBatchCalls
 {
@@ -337,6 +342,66 @@ bool RHElementTarget::FUN_004bbf80()
 {
     if (m_data[0x12])
         ((RHEngineWidenedCalls *)Info())->FUN_005b7f60(*(unsigned long *)(m_data + 0x164));
+    return true;
+}
+
+// FUNCTION: GAME 0x004bc1d0
+bool RHElementTarget::FUN_004bc1d0(RHTargetSequenceCalls *sequence)
+{
+    RHElementActor *saved = g_unk0x6c100c;
+    g_unk0x6c100c = (RHElementActor *)this;
+    switch (((RHSequenceElement *)sequence)->m_10)
+    {
+    case 0x99:
+        FUN_004bae60(sequence, &RHUnkTargetScriptRef::FUN_004035d0);
+        break;
+    case 0x93:
+        FUN_004bae60(sequence, &RHUnkTargetScriptRef::FUN_004036d0);
+        break;
+    case 0x95:
+        FUN_004bae60(sequence, &RHUnkTargetScriptRef::FUN_004037d0);
+        break;
+    case 0x9a:
+        FUN_004bae60(sequence, &RHUnkTargetScriptRef::FUN_004038d0);
+        break;
+    case 0x96:
+        FUN_004bae60(sequence, &RHUnkTargetScriptRef::FUN_004039d0);
+        break;
+    case 0x9b:
+        FUN_004bae60(sequence, &RHUnkTargetScriptRef::FUN_00403ad0);
+        break;
+    case 0x97:
+        FUN_004bae60(sequence, &RHUnkTargetScriptRef::FUN_00403bd0);
+        break;
+    case 0x98:
+        FUN_004bae60(sequence, &RHUnkTargetScriptRef::FUN_00403cd0);
+        break;
+    case 0x94:
+        FUN_004bae60(sequence, &RHUnkTargetScriptRef::FUN_00403dd0);
+        break;
+    case 0xa6:
+        *(int *)(m_data + 0x160) = ((RHSequenceElement *)sequence)->Unk00587160(0x15);
+        *(unsigned *)(m_data + 0x164) = 8;
+        Info()->FUN_005b76e0(*(unsigned *)(m_data + 0x160), *(unsigned short *)((char *)Info() + 0xd8));
+        ((RHUnk005bd5b0 *)Info())->Unk(false);
+        sequence->V0c(0, true);
+        break;
+    case 0xa4:
+        *(int *)(m_data + 0x160) = ((RHSequenceElement *)sequence)->Unk00587160(0x15);
+        *(unsigned *)(m_data + 0x164) = 0;
+        Info()->FUN_005b76e0(*(unsigned *)(m_data + 0x160), *(unsigned short *)((char *)Info() + 0xd8));
+        ((RHUnk005bd5b0 *)Info())->Unk(false);
+        sequence->V0c(0, true);
+        break;
+    case 0xa5:
+        *(int *)(m_data + 0x160) = ((RHSequenceElement *)sequence)->Unk00587160(0x15);
+        *(unsigned *)(m_data + 0x164) = 1;
+        Info()->FUN_005b76e0(*(unsigned *)(m_data + 0x160), *(unsigned short *)((char *)Info() + 0xd8));
+        ((RHUnk005bd5b0 *)Info())->Unk(false);
+        sequence->V0c(0, true);
+        break;
+    }
+    g_unk0x6c100c = saved;
     return true;
 }
 
