@@ -816,6 +816,18 @@ struct RHFramePoolBlock
     unsigned long page;
 };
 
+#include <algorithm>
+
+typedef bool (*RHFramePoolCompare)(const RHFramePoolBlock &, const RHFramePoolBlock &);
+
+// TEMPLATE: GAME 0x00509c60
+// ?_Sort@std@@YAXPAURHFramePoolBlock@@0P6A_NABU2@1@Z0@Z
+template void std::_Sort(RHFramePoolBlock *, RHFramePoolBlock *, RHFramePoolCompare, RHFramePoolBlock *);
+
+// TEMPLATE: GAME 0x00509e80
+// ?_Insertion_sort_1@std@@YAXPAURHFramePoolBlock@@0P6A_NABU2@1@Z0@Z
+template void std::_Insertion_sort_1(RHFramePoolBlock *, RHFramePoolBlock *, RHFramePoolCompare, RHFramePoolBlock *);
+
 struct RHFramePoolNode
 {
     RHFramePoolNode *next;
@@ -887,7 +899,7 @@ public:
     bool FUN_00506560(RHFramePoolList *list, const RHFramePoolBlock &value);
     unsigned long FUN_005065b0() const;
     unsigned long FUN_005065d0() const;
-    static int FUN_00506600(const RHFramePoolBlock *first, const RHFramePoolBlock *second);
+    static bool FUN_00506600(const RHFramePoolBlock &first, const RHFramePoolBlock &second);
     unsigned long Size() const { if (!m_first) return 0; return m_last - m_first; }
 
     RHFramePoolList *m_free;
@@ -987,9 +999,63 @@ unsigned long RHFrameMemoryPool::FUN_005065d0() const
 }
 
 // FUNCTION: GAME 0x00506600
-int RHFrameMemoryPool::FUN_00506600(const RHFramePoolBlock *first, const RHFramePoolBlock *second)
+bool RHFrameMemoryPool::FUN_00506600(const RHFramePoolBlock &first, const RHFramePoolBlock &second)
 {
-    return first->address < second->address;
+    return first.address < second.address;
+}
+
+// FUNCTION: GAME 0x00506620
+int RHConsoleBlockAllocator::FUN_00506620()
+{
+    RHFrameMemoryPool &pool = *(RHFrameMemoryPool *)this;
+    typedef std::vector<RHFramePoolBlock> Blocks;
+    Blocks blocks;
+    unsigned long count = 0;
+    unsigned long index = 0;
+    int merges = 0;
+    for (int bucket = 0; bucket < 17; ++bucket)
+        count += pool.m_free[bucket].count;
+    unsigned (Blocks::*size)() const = &Blocks::size;
+    if (blocks.size() < count)
+    {
+        void (Blocks::*insert)(RHFramePoolBlock *, unsigned, const RHFramePoolBlock &) = &Blocks::insert;
+        (blocks.*insert)(blocks.end(), count - (blocks.*size)(), RHFramePoolBlock());
+    }
+    else if (count < (blocks.*size)())
+    {
+        RHFramePoolBlock *(Blocks::*erase)(RHFramePoolBlock *, RHFramePoolBlock *) = &Blocks::erase;
+        (blocks.*erase)(blocks.begin() + count, blocks.end());
+    }
+    for (bucket = 0; bucket < 17; ++bucket)
+        for (RHFramePoolNode *node = pool.m_free[bucket].head->next;
+             node != pool.m_free[bucket].head; node = node->next, ++index)
+            blocks[index] = node->value;
+    std::sort(blocks.begin(), blocks.end(), RHFrameMemoryPool::FUN_00506600);
+    RHFramePoolBlock current;
+    memset(&current, 0, sizeof(current));
+    bool combined = false;
+    for (RHFramePoolBlock *block = blocks.begin(); block != blocks.end(); ++block)
+    {
+        if ((unsigned short *)current.address + current.size / 2 != block->address)
+        {
+            if (combined)
+            {
+                pool.FUN_005064b0(&pool.m_free[pool.FUN_00506460(current.size)], current);
+                combined = false;
+            }
+            current.address = block->address;
+            current.size = block->size;
+            *(unsigned short *)&current.page = *(unsigned short *)&block->page;
+        }
+        else
+        {
+            current.size += block->size;
+            pool.FUN_00506560(&pool.m_free[pool.FUN_00506460(block->size)], *block);
+            combined = true;
+            ++merges;
+        }
+    }
+    return merges;
 }
 
 void RHFramePoolEmit(RHFrameMemoryPool *pool, RHFramePoolList *list, const RHFramePoolBlock &value)
@@ -1000,7 +1066,7 @@ void RHFramePoolEmit(RHFrameMemoryPool *pool, RHFramePoolList *list, const RHFra
     pool->FUN_00506560(list, value);
     pool->FUN_005065b0();
     pool->FUN_005065d0();
-    RHFrameMemoryPool::FUN_00506600(&value, &value);
+    RHFrameMemoryPool::FUN_00506600(value, value);
 }
 
 // FUNCTION: GAME 0x005068e0
@@ -1172,6 +1238,55 @@ void RHUnk005069a0::FUN_00506b90(SBFile &file)
 void RHFrameDictionaryDumpEmit(RHUnk005069a0 *dictionary, SBFile &file)
 {
     dictionary->FUN_00506b90(file);
+}
+
+void FUN_005ede40(RHUnk005ef320 *, const char *, ...);
+
+DECOMP_STATIC_ASSERT(offsetof(RHFrameHolder, m_nightDictionaries) == 0x28)
+DECOMP_STATIC_ASSERT(offsetof(RHFrameHolder, m_fogDictionaries) == 0x38)
+
+// FUNCTION: GAME 0x00506c30
+void RHFrameHolder::DumpOneDictionary()
+{
+    RHUnk005f4fc0 file;
+    FUN_005ede40((RHUnk005ef320 *)Draw(),
+        // STRING: GAME 0x006b0150
+        "Dumping first dictionary into dump.txt");
+    {
+        std::string name(
+            // STRING: GAME 0x006b0144
+            "dump.txt");
+        file.FUN_005f5090(name, 2);
+    }
+    FUN_005ede40((RHUnk005ef320 *)Draw(),
+        // STRING: GAME 0x006b0130
+        "Dumping default.");
+    file.Access(
+        // STRING: GAME 0x006b011c
+        (void *)"Default dictionary\n", 19);
+    m_dictionaries.m_first->FUN_00506b90(file);
+    if (m_nightDictionaries.Size())
+    {
+        FUN_005ede40((RHUnk005ef320 *)Draw(),
+            // STRING: GAME 0x006b010c
+            "Dumping night.");
+        file.Access(
+            // STRING: GAME 0x006b00f8
+            (void *)"\n\nNight dictionary\n", 19);
+        m_nightDictionaries.m_first->FUN_00506b90(file);
+    }
+    if (m_fogDictionaries.Size())
+    {
+        FUN_005ede40((RHUnk005ef320 *)Draw(),
+            // STRING: GAME 0x006b00e8
+            "Dumping fog.");
+        file.Access(
+            // STRING: GAME 0x006b00d4
+            (void *)"\n\nFog dictionary\n", 17);
+        RHUnk005068e0 &dictionary = *m_fogDictionaries.m_first;
+        dictionary.FUN_00506b90(file);
+    }
+    file.FUN_005f5290();
 }
 
 // FUNCTION: GAME 0x00506e00
@@ -2488,6 +2603,7 @@ void RHFrameHolder::Emit(SBResourceManager *resources, SBArray<SBGeoVector2D> &v
     unsigned short count;
     InitializeSpriteBank();
     AddRowFromResource(resources, 0, count, vectors);
+    DumpOneDictionary();
 }
 
 void EmitFrameHolderWidened(RHEngine *engine, RHUnk00506e00 *array, unsigned int count,

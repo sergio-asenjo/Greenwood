@@ -17,11 +17,6 @@ RHConsoleSequenceElement::~RHConsoleSequenceElement()
 {
 }
 
-int RHConsoleBlockAllocator::FUN_00506620()
-{
-    return 0;
-}
-
 int FUN_0064324d(const char *, const char *, ...)
 {
     return 0;
@@ -30,4 +25,3 @@ int FUN_0064324d(const char *, const char *, ...)
 void FUN_005ede40(RHUnk005ef320 *, const char *, ...)
 {
 }
-

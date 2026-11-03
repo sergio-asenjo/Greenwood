@@ -343,6 +343,7 @@ public:
     unsigned short FUN_005046c0(unsigned long);
     void FUN_00506120();
     bool FUN_00506160(SBFile &file);
+    void DumpOneDictionary();
     RHUnk005068e0 *FUN_00505170(unsigned long);
     void Emit(SBResourceManager *, SBArray<SBGeoVector2D> &);
     RHUnkFXDraw *&Draw() { return *(RHUnkFXDraw **)((char *)this + 4); }
@@ -350,7 +351,9 @@ public:
     undefined m_00[8]; // 0x00
     RHFrameHolderFrameArray m_frames; // 0x08
     RHUnk005051a0Array m_dictionaries; // 0x18
-    undefined m_28[0x24]; // 0x28
+    RHUnk005051a0Array m_nightDictionaries;
+    RHUnk005051a0Array m_fogDictionaries;
+    undefined m_48[4];
     RHFrameHolderRowMap m_rows; // [0x4c]: tree head +0x50
     RHUnk005f4fc0 m_bank; // [0x5c, 0xb4)
     unsigned long m_b4; // [0xb4]: index header
