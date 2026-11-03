@@ -12,6 +12,7 @@
 #include <string.h>
 #include <iterator>
 #include <stddef.h>
+#include <new>
 
 DECOMP_SIZE_ASSERT(RHGameInputTranslator, 0x19c)
 DECOMP_STATIC_ASSERT(offsetof(RHGameInputTranslator, m_bounds) == 0x10c)
@@ -808,9 +809,14 @@ char *RHUnk0051a4e0::FUN_0051a4e0()
     return (char *)(*(void **)value) + 8;
 }
 
+static RHGameInputTranslator *ConstructRHGameInputTranslator(void *storage)
+{
+    return new (storage) RHGameInputTranslator;
+}
+
 void EmitRHGameInputTranslator(RHGameInputTranslator *translator, SBGeoPoint2D &point, SBInputKeyboardState &keys)
 {
-    new RHGameInputTranslator;
+    RHGameInputTranslator *(*volatile construct)(void *) = &ConstructRHGameInputTranslator;
     translator->TranslateMouseInput(point, 0);
     translator->TranslateKeyboardInput(keys, 0);
     translator->ResetState();
