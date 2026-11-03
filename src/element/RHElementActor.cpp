@@ -43,7 +43,7 @@ public:
     virtual bool V84(unsigned, RHSequenceElement *) = 0;
     virtual bool V88(unsigned, RHSequenceElement *) = 0;
     virtual void V8c() = 0;
-    virtual void V90() = 0;
+    virtual void V90(RHActorTranslationSequenceCalls *) = 0;
     virtual void V94() = 0;
     virtual void V98(RHSequenceElement *) = 0;
     virtual void V9c() = 0;
@@ -720,6 +720,8 @@ void *RHElementActor::FUN_00467220() const
     return *(void *const *)((const char *)Info() + 0xf4);
 }
 
+extern float g_unk0x006777c4;
+
 // Local placement, register scheduling, and cleanup remain unmatched.
 // STUB: GAME 0x00467230
 void RHElementActor::ExecuteImmediately(RHSequenceElement *element)
@@ -750,8 +752,8 @@ void RHElementActor::ExecuteImmediately(RHSequenceElement *element)
                 RHUnk00613e90 delta = destination.FUN_005df550(origin);
                 RHUnk00613e90 scaled;
                 scaled.FUN_00467990(delta.m_0 * g_actorStepScale, delta.m_4 * g_actorStepScale, delta.m_8 * g_actorStepScale);
-                origin.m_0 -= 4.0f;
-                origin.m_4 -= 4.0f;
+                origin.m_0 -= g_unk0x006777c4;
+                origin.m_4 -= g_unk0x006777c4;
                 step = scaled;
                 for (unsigned i = 0; i < 5; ++i)
                 {
@@ -820,8 +822,8 @@ void RHElementActor::ExecuteImmediately(RHSequenceElement *element)
             scaled.m_4 = delta.m_4 * g_actorStepScale;
             scaled.m_0 = delta.m_0 * g_actorStepScale;
             step = scaled;
-            origin.m_0 -= 4.0f;
-            origin.m_4 -= 4.0f;
+            origin.m_0 -= g_unk0x006777c4;
+            origin.m_4 -= g_unk0x006777c4;
             for (unsigned i = 0; i < 5; ++i)
             {
                 switch (i)
@@ -1039,6 +1041,81 @@ static void RHActorApplyCrossingFlags(RHElementActor *actor, RHElevationLine *li
 #include "RHActorPriorityCalls.h"
 
 // Parked: narrow flag load omits the target's full DWORD load and byte-extension mask.
+// FUNCTION: GAME 0x0046a900
+void RHElementActor::FUN_0046a900(RHActorTranslationSequenceCalls *sequence, bool first, bool reverse)
+{
+    void *door = RHActorField<void *>(sequence, 0x7c);
+    m_1a4 = reverse;
+    ((RHActorActionCalls *)this)->V90(sequence);
+    int animation = RHActorField<int>(sequence, 0x94);
+    int firstCommand;
+    int secondCommand;
+    bool special = animation == 0xc9;
+    switch (animation)
+    {
+    case 6:
+        firstCommand = 6;
+        secondCommand = 7;
+        break;
+    case 10:
+        firstCommand = 10;
+        secondCommand = 0x126;
+        break;
+    case 0xbb:
+        firstCommand = secondCommand = 0xbb;
+        break;
+    case 0x12f:
+        firstCommand = secondCommand = 0x12f;
+        break;
+    case 0x131:
+        firstCommand = secondCommand = 0x131;
+        break;
+    default:
+        firstCommand = animation;
+        secondCommand = animation;
+        break;
+    }
+    RHOrder *order;
+    if (reverse)
+    {
+        order = new RHOrder;
+        RHActorField<SBGeoPoint2D>(order, 0x14) = RHActorField<SBGeoPoint2D>(door, 0x94);
+        order->m_24 = firstCommand;
+        order->m_29 = special;
+        sequence->FUN_00585970(order);
+        order = new RHOrder;
+        order->m_24 = 0x127;
+        sequence->FUN_00585970(order);
+        order = new RHOrder;
+        RHActorField<SBGeoPoint2D>(order, 0x14) = RHActorField<SBGeoPoint2D>(door, 0x20);
+        order->m_24 = secondCommand;
+        order->m_29 = special;
+        sequence->FUN_00585970(order);
+        order = new RHOrder;
+        order->m_24 = 0x127;
+        sequence->FUN_00585970(order);
+    }
+    else
+    {
+        order = new RHOrder;
+        RHActorField<SBGeoPoint2D>(order, 0x14) = RHActorField<SBGeoPoint2D>(door, 0x94);
+        order->m_24 = secondCommand;
+        order->m_29 = special;
+        sequence->FUN_00585970(order);
+        order = new RHOrder;
+        order->m_24 = 0x127;
+        sequence->FUN_00585970(order);
+        order = new RHOrder;
+        RHActorField<SBGeoPoint2D>(order, 0x14) = RHActorField<SBGeoPoint2D>(door, 0x18);
+        order->m_24 = firstCommand;
+        order->m_29 = special;
+        sequence->FUN_00585970(order);
+        order = new RHOrder;
+        order->m_24 = 0x127;
+        sequence->FUN_00585970(order);
+    }
+}
+
 // STUB: GAME 0x0046abd0
 int RHActorPriorityCalls::FUN_0046abd0(void *element)
 {
@@ -1161,8 +1238,7 @@ void EmitRHUnk0046ae90(RHUnk0046ae90 *a)
     a->FUN_0046ae90(0);
 }
 
-// Parked: branch-local flags and the action-zero shared tail retain switch/register differences.
-// STUB: GAME 0x0046aea0
+// FUNCTION: GAME 0x0046aea0
 void RHElementActor::GetTransitionFlags(RHSequenceElement *element, unsigned long &first, unsigned long &second, unsigned long &third)
 {
     switch (RHActorField<int>(element, 0x10))
@@ -1268,9 +1344,7 @@ void RHElementActor::GetTransitionFlags(RHSequenceElement *element, unsigned lon
             switch (type)
             {
             case 1:
-                second = 0x3041;
-                first = 0x2a7;
-                break;
+                goto actionZero;
             case 2:
             case 3:
                 second = 1;
@@ -1279,6 +1353,7 @@ void RHElementActor::GetTransitionFlags(RHSequenceElement *element, unsigned lon
             break;
         }
         case 0:
+        actionZero:
             second = 0x3041;
             first = 0x2a7;
             break;
@@ -1765,6 +1840,84 @@ bool RHElementActor::FUN_0046b4b0(unsigned flags, RHActorTranslationSequenceCall
         }
         ((RHActorTranslationSequenceCalls *)element)->FUN_00585970(order);
         RHActorField<int>(element, 0x40) = 0;
+    }
+    return true;
+}
+
+// FUNCTION: GAME 0x0046b760
+bool RHElementActor::FUN_0046b760(unsigned flags, void *element)
+{
+    RHActorTranslationSequenceCalls *sequence = (RHActorTranslationSequenceCalls *)element;
+    RHOrder *order;
+    if (flags & 4)
+    {
+        if (RHActorField<volatile int>(sequence, 0x3c) == 1)
+        {
+            switch (RHActorField<int>(sequence, 0x40))
+            {
+            case 0:
+                order = new RHOrder;
+                order->m_24 = 3;
+                sequence->FUN_00585970(order);
+                order = new RHOrder;
+                order->m_24 = 4;
+                sequence->FUN_00585970(order);
+                RHActorField<int>(sequence, 0x40) = 1;
+                break;
+            }
+        }
+    }
+    else if (flags & 1)
+    {
+        switch (RHActorField<int>(sequence, 0x3c))
+        {
+        case 1:
+            switch (RHActorField<int>(sequence, 0x40))
+            {
+            case 0:
+                order = new RHOrder;
+                order->m_24 = 5;
+                sequence->FUN_00585970(order);
+                break;
+            case 3:
+                order = new RHOrder;
+                order->m_24 = 11;
+                sequence->FUN_00585970(order);
+                break;
+            }
+            break;
+        }
+        RHActorField<int>(sequence, 0x40) = 2;
+    }
+    else if (flags & 2)
+    {
+        switch (RHActorField<int>(sequence, 0x3c))
+        {
+        case 1:
+            switch (RHActorField<int>(sequence, 0x40))
+            {
+            case 0:
+                order = new RHOrder;
+                order->m_24 = 5;
+                sequence->FUN_00585970(order);
+                order = new RHOrder;
+                order->m_24 = 9;
+                sequence->FUN_00585970(order);
+                break;
+            case 3:
+                order = new RHOrder;
+                order->m_24 = 9;
+                sequence->FUN_00585970(order);
+                break;
+            }
+            break;
+        }
+        RHActorField<int>(sequence, 0x40) = 3;
+    }
+    else if (flags & 8)
+    {
+        ((RHActorActionCalls *)this)->V78(sequence, 0x1d);
+        RHActorField<int>(sequence, 0x40) = 4;
     }
     return true;
 }
@@ -2434,6 +2587,7 @@ void RHElementActor::FUN_0046ea20()
 
 void RHElementActor::Emit(SBFile &file, std::string &name)
 {
+    FUN_0046a900(0, false, false);
     FUN_0046ea20();
     FUN_00464150();
     FUN_00462940(0);

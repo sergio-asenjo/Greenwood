@@ -8,10 +8,12 @@ class RHProfileManager;
 RHProfileManager *RHUnk00436500GetProfileManager();
 
 void RHElementActorHuman::FUN_0046e2e0(void *) {}
+// Parked: return-zero placeholder; the 11031 B native slot-35 body is not reconstructed.
+// STUB: GAME 0x00475bd0
+int RHElementActorHuman::FUN_00475bd0(RHOrder *) { return 0; }
 void RHElementActor::FUN_00468f40(void *) {}
 bool RHElementActor::FUN_00464230() { return false; }
 void RHElementActorHuman::FUN_0047ef70() {}
-bool RHElementActor::FUN_0046b760(unsigned, void *) { return false; }
 
 // FUNCTION: GAME 0x005c1b20
 RHUnkHumanPlacementA::RHUnkHumanPlacementA(int value)

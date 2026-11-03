@@ -31,6 +31,7 @@ public:
     bool FUN_00475750(unsigned flags, RHActorTranslationSequenceCalls *sequence);
     bool FUN_00475970(unsigned flags, void *element);
     bool FUN_00475b00(unsigned flags, void *value);
+    int FUN_00475bd0(RHOrder *order);
     void FUN_00479920(RHElementActorHuman *actor);
     void FUN_00479970(RHSequenceElement *element);
     void Translate(RHSequenceElement *element, RHcommand command);

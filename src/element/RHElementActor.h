@@ -122,11 +122,13 @@ public:
     bool FUN_004640c0();
     float FUN_00464150();
     void FUN_004645f0();
+    void FUN_0046a900(RHActorTranslationSequenceCalls *sequence, bool first, bool reverse);
     int FUN_0046ad00(void *first, void *second);
     void GetTransitionFlags(RHSequenceElement *element, unsigned long &first, unsigned long &second, unsigned long &third);
     bool FUN_0046b210(RHSequenceElement *element);
     bool FUN_0046b2b0(unsigned flags, RHActorTranslationSequenceCalls *sequence);
     bool FUN_0046b4b0(unsigned flags, RHActorTranslationSequenceCalls *sequence);
+    bool FUN_0046b760(unsigned flags, void *sequence);
     void FUN_0046bb80();
     void FUN_0046bab0();
     void FUN_0046bbf0();
