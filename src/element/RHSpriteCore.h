@@ -163,11 +163,7 @@ struct RHspriteRenderingInfo
     int m_18;
 };
 
-class RHUnk005bd5b0
-{
-public:
-    bool Unk(bool);
-};
+#include "RHSpriteLastFrameCalls.h"
 
 class RHOrder;
 

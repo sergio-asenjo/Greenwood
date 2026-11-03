@@ -45,11 +45,7 @@ public:
     void FUN_005bd560(void *value, bool flag);
 };
 
-class RHActorPositionCalls
-{
-public:
-    void FUN_00464530(const SBGeoPoint2D &point);
-};
+#include "RHActorPositionCalls.h"
 
 class RHElementActor
 {

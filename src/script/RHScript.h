@@ -563,11 +563,7 @@ bool RHUnk005709c0(void *actor);
 // RHScript.cpp.
 extern void *g_unk0x6c0f78;
 
-class RHUnk005bd5b0
-{
-public:
-    bool Unk(bool value);
-};
+#include "RHSpriteLastFrameCalls.h"
 
 class RHUnk004af060
 {
@@ -663,11 +659,7 @@ public:
     void Unk(bool value);
 };
 
-class RHActorPositionCalls
-{
-public:
-    void FUN_00464530(const SBGeoPoint2D &point);
-};
+#include "RHActorPositionCalls.h"
 
 struct RHBonusProjection;
 class RHBonusInfoBase
@@ -715,6 +707,7 @@ public:
     undefined data[0x74]; // 0x00
 };
 
+#if !defined(SBGEO_VECTOR2D_VIEW) && !defined(SBGEOVECTOR2D_H)
 class SBGeoVector2D : public SBGeoPoint2D
 {
 public:
@@ -726,7 +719,9 @@ public:
     SBGeoVector2D(const SBGeoVector2D &other);
     bool IsBetween(unsigned char first, unsigned char last) const;
 };
+#endif
 
+#if !defined(RHUNK005FC3B0_VIEW) && !defined(RHUNK005FC3B0_H) && !defined(RHFASTFINDGEOMETRY_H)
 class RHUnk005fc3b0 : public SBGeoVector2D
 {
 public:
@@ -745,6 +740,7 @@ public:
     unsigned char FUN_005fcc50(float value) const;
     void Set(float x, float y) { m_x = x; m_y = y; }
 };
+#endif
 
 class RHSeqList
 {
@@ -860,6 +856,7 @@ public:
 
 #include "RHPositionProvider.h"
 
+#if !defined(RHSPRITECORE_H) && !defined(RHELEMENTACTORANIMAL_H)
 class RHUnk005b5e00
 {
 public:
@@ -867,6 +864,7 @@ public:
     SBGeoPoint2D *Unk005bdd30(short index);
     void *FUN_005b5de0();
 };
+#endif
 
 enum RHanimalStimulusType
 {

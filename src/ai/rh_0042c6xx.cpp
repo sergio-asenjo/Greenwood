@@ -125,11 +125,7 @@ public:
     virtual void v09(RHUnk0042c890Stimulus &value) = 0;
 };
 
-class RHMalignityAlertCalls
-{
-public:
-    void FUN_0042c890(int type, void *actor);
-};
+#include "RHMalignityAlertCalls.h"
 
 // FUNCTION: GAME 0x0042c890
 void RHMalignityAlertCalls::FUN_0042c890(int state, void *value)

@@ -144,12 +144,7 @@ public:
     bool TestIfPathIsFine(RHElementActor *actor);
 };
 
-class RHMalignityAlertCalls
-{
-public:
-    void FUN_0042c890(int type, void *actor);
-};
-
+#include "RHMalignityAlertCalls.h"
 #include "RHMalignityOwnerCalls.h"
 
 // SIZE 0x14

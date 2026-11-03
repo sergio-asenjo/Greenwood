@@ -131,13 +131,7 @@ class RHSequence
 public:
     bool Serialize(SBFile &file, bool loading);
 };
-class RHUnk00582220
-{
-public:
-    RHUnk00582220();
-    ~RHUnk00582220();
-    char m_0[0x3c];
-};
+#include "RHSequenceConstructionCalls.h"
 class RHScrollScript
 {
 public:
@@ -367,11 +361,7 @@ public:
     char m_0[0x60];
 };
 
-class RHActorPositionCalls
-{
-public:
-    void FUN_00464530(const SBGeoPoint2D &point);
-};
+#include "RHActorPositionCalls.h"
 
 class RHMobileSegment
 {

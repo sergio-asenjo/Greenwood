@@ -1,0 +1,12 @@
+#ifndef RHSEQUENCECONSTRUCTIONCALLS_H
+#define RHSEQUENCECONSTRUCTIONCALLS_H
+
+class RHUnk00582220
+{
+public:
+    RHUnk00582220();
+    ~RHUnk00582220();
+    char m_0[0x3c];
+};
+
+#endif
