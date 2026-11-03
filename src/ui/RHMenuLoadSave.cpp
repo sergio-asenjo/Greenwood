@@ -726,6 +726,170 @@ template<class Renderer, class Item> RHMenuEvent *SBWidgetListBox<Renderer, Item
     return result;
 }
 
+// Parked: the scroll result slot is register-coloured and the top/bottom box comparison
+// temporaries evaluate the call before the saved float, so the frame does not align.
+// STUB: GAME 0x00533020
+template<class Renderer, class Item>
+RHMenuEvent *SBWidgetListBox<Renderer, Item>::FUN_00533020(const SBGeoPoint2D &input)
+{
+    RHMenuEvent *result = 0;
+    RHPortraitInputRenderer &renderer = ((RHMenuLoadSaveText *)this)->m_renderer;
+    renderer.FUN_0061d570(*(unsigned short *)((char *)this + 0x180), *(int *)((char *)this + 0x130));
+    SBGeoBoundingBox2D &box = *(SBGeoBoundingBox2D *)((char *)this + 0x30);
+    if (box.FUN_006083b0(input) && !renderer.FUN_0061d7c0().FUN_00608400(input))
+    {
+        if (!(*(const unsigned short *)((const char *)&input + 0xa) & 0x40))
+            *(int *)((char *)this + 0x7c) = 1;
+    }
+    else if (!box.FUN_006083b0(input))
+        *(int *)((char *)this + 0x7c) = 0;
+    else if (*(const short *)((const char *)&input + 8) != 0)
+    {
+        RHMenuEvent *scroll = 0;
+        short wheel = *(const short *)((const char *)&input + 8);
+        if (wheel > 0)
+        {
+            if (*(unsigned short *)((char *)this + 0x180) > 0)
+            {
+                --*(unsigned short *)((char *)this + 0x180);
+                renderer.FUN_0061d570(*(unsigned short *)((char *)this + 0x180), *(int *)((char *)this + 0x130));
+                *(void **)((char *)this + 0x58) = 0;
+                *(void **)((char *)this + 0x50) = this;
+                scroll = (RHMenuEvent *)((char *)this + 0x4c);
+                *(void **)((char *)this + 0x54) = 0;
+                scroll->m_type = 13;
+            }
+        }
+        else if (wheel < 0)
+        {
+            unsigned limit = *(unsigned *)((char *)this + 0x130);
+            unsigned short line = *(unsigned short *)((char *)this + 0x180);
+            if (renderer.FUN_0061d5e0() + line + 1 <= limit)
+            {
+                *(unsigned short *)((char *)this + 0x180) = line + 1;
+                renderer.FUN_0061d570(*(unsigned short *)((char *)this + 0x180), *(int *)((char *)this + 0x130));
+                *(void **)((char *)this + 0x58) = 0;
+                *(void **)((char *)this + 0x50) = this;
+                scroll = (RHMenuEvent *)((char *)this + 0x4c);
+                *(void **)((char *)this + 0x54) = 0;
+                scroll->m_type = 12;
+            }
+        }
+        return scroll;
+    }
+    else if (*(const unsigned short *)((const char *)&input + 0xa) & 1)
+    {
+        if (input.m_y < renderer.FUN_0061d620().m_first.m_y &&
+            *(unsigned short *)((char *)this + 0x180) > 0)
+        {
+            --*(unsigned short *)((char *)this + 0x180);
+            renderer.FUN_0061d570(*(unsigned short *)((char *)this + 0x180), *(int *)((char *)this + 0x130));
+            *(SBGeoPoint2D *)((char *)this + 0x198) = input;
+            *(void **)((char *)this + 0x58) = 0;
+            *(void **)((char *)this + 0x50) = this;
+            result = (RHMenuEvent *)((char *)this + 0x4c);
+            *(void **)((char *)this + 0x54) = 0;
+            result->m_type = 13;
+        }
+        else if (input.m_y > renderer.FUN_0061d620().m_second.m_y)
+        {
+            unsigned limit = *(unsigned *)((char *)this + 0x130);
+            unsigned short line = *(unsigned short *)((char *)this + 0x180);
+            if (renderer.FUN_0061d5e0() + line + 1 <= limit)
+            {
+                *(unsigned short *)((char *)this + 0x180) = line + 1;
+                renderer.FUN_0061d570(*(unsigned short *)((char *)this + 0x180), *(int *)((char *)this + 0x130));
+                *(SBGeoPoint2D *)((char *)this + 0x198) = input;
+                *(void **)((char *)this + 0x58) = 0;
+                *(void **)((char *)this + 0x50) = this;
+                result = (RHMenuEvent *)((char *)this + 0x4c);
+                *(void **)((char *)this + 0x54) = 0;
+                result->m_type = 12;
+            }
+        }
+    }
+    else if ((*(const unsigned short *)((const char *)&input + 0xa) & 0x40) &&
+        renderer.FUN_0061d620().FUN_006083b0(input))
+    {
+        *(SBGeoPoint2D *)((char *)this + 0x198) = input;
+        RHMenuWindowUI *ui = *(RHMenuWindowUI *const *)((const char *)&input + 0x10);
+        ui->m_17f0 = (RHMenuWindowUI *)this;
+        *(int *)((char *)this + 0x7c) = 5;
+    }
+    return result;
+}
+
+// Parked: the drag-distance temporary's EH state is stored through an immediate rather than
+// the entry-hoisted zero register, shifting the fcomp and capture-box register allocation.
+// STUB: GAME 0x00533590
+template<class Renderer, class Item>
+RHMenuEvent *SBWidgetListBox<Renderer, Item>::FUN_00533590(const SBGeoPoint2D &input)
+{
+    RHMenuEvent *result = 0;
+    if (*(const unsigned short *)((const char *)&input + 0xa) & 0x40)
+    {
+        bool moved;
+        {
+            SBGeoVector2D difference = m_198.Unk005fc110(input);
+            float distance = ((RHUnk005fc3b0 *)&difference)->Unk005fc6a0(1.0f);
+            moved = ((RHMenuLoadSaveText *)this)->m_renderer.FUN_0061d950() < distance;
+        }
+        if (moved)
+        {
+            if (input.m_y < m_198.m_y)
+            {
+                if (*(unsigned short *)((char *)this + 0x180) > 0)
+                {
+                    --*(unsigned short *)((char *)this + 0x180);
+                    ((RHMenuLoadSaveText *)this)->m_renderer.FUN_0061d570(
+                        *(unsigned short *)((char *)this + 0x180), *(int *)((char *)this + 0x130));
+                    m_198 = input;
+                    *(void **)((char *)this + 0x50) = this;
+                    RHMenuEvent *event = (RHMenuEvent *)((char *)this + 0x4c);
+                    *(void **)((char *)this + 0x54) =
+                        (void *)(unsigned)*(unsigned short *)((char *)this + 0x180);
+                    *(void **)((char *)this + 0x58) = 0;
+                    event->m_type = 13;
+                    return event;
+                }
+            }
+            else
+            {
+                unsigned short line = *(unsigned short *)((char *)this + 0x180);
+                unsigned limit = *(unsigned *)((char *)this + 0x130);
+                if (((RHMenuLoadSaveText *)this)->m_renderer.FUN_0061d5e0() + line + 1 <= limit)
+                {
+                    *(unsigned short *)((char *)this + 0x180) = line + 1;
+                    m_198 = input;
+                    ((RHMenuLoadSaveText *)this)->m_renderer.FUN_0061d570(
+                        *(unsigned short *)((char *)this + 0x180), *(int *)((char *)this + 0x130));
+                    *(void **)((char *)this + 0x50) = this;
+                    RHMenuEvent *event = (RHMenuEvent *)((char *)this + 0x4c);
+                    *(void **)((char *)this + 0x54) =
+                        (void *)(unsigned)*(unsigned short *)((char *)this + 0x180);
+                    *(void **)((char *)this + 0x58) = 0;
+                    event->m_type = 12;
+                    return event;
+                }
+            }
+        }
+    }
+    else
+    {
+        RHMenuWindowUI *ui = *(RHMenuWindowUI *const *)((const char *)&input + 0x10);
+        ui->m_17f0 = 0;
+        ui->m_17f4 = 0;
+        if (((SBGeoBoundingBox2D *)((char *)this + 0x30))->FUN_006083b0(input) &&
+            !((RHMenuLoadSaveText *)this)->m_renderer.FUN_0061d7c0().FUN_00608400(input))
+            *(int *)((char *)this + 0x7c) = 1;
+        else if (((RHMenuLoadSaveText *)this)->m_renderer.FUN_0061d7c0().FUN_00608400(input))
+            *(int *)((char *)this + 0x7c) = 4;
+        else
+            *(int *)((char *)this + 0x7c) = 0;
+    }
+    return result;
+}
+
 // Parked: the zero and scroll registers are exchanged against the inlined wheel handler.
 // STUB: GAME 0x00533800
 RHMenuEvent *RHMenuLoadSaveText::FUN_00533800(const SBGeoPoint2D &input)
@@ -835,6 +999,8 @@ void EmitRHMenuLoadSaveHelpers(RHMenuLoadSaveListBase *list, RHMenuLoadSaveMap *
     slots->RHMenuLoadSaveSlots::SBWidgetListBox();
     slots->FUN_00532cf0(0);
     slots->FUN_00532d30(*(const SBGeoPoint2D *)list);
+    slots->FUN_00533020(*(const SBGeoPoint2D *)list);
+    slots->FUN_00533590(*(const SBGeoPoint2D *)list);
     box->FUN_00532d10(0);
 }
 #pragma inline_depth()

@@ -112,10 +112,13 @@ template<class Renderer, class Item> class SBWidgetListBox : public RHMenuLoadSa
 {
 public:
     SBWidgetListBox();
-    // FUNCTION: GAME 0x00531e60
+    // Parked: teardown frame, list-helper bindings and vtable identity differ.
+    // STUB: GAME 0x00531e60
     ~SBWidgetListBox() {}
     void *FUN_00532cf0(unsigned flags);
     RHMenuEvent *FUN_00532d30(const SBGeoPoint2D &point);
+    RHMenuEvent *FUN_00533020(const SBGeoPoint2D &input);
+    RHMenuEvent *FUN_00533590(const SBGeoPoint2D &input);
     SBList<unsigned long> m_104;
     SBList<std::wstring> m_128;
     SBList<unsigned long> m_158;
