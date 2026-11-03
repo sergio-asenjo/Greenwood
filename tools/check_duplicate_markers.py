@@ -10,7 +10,7 @@ import sys
 from reccmp.compare.asm.replacement import reference_identity
 from reccmp.dir import source_code_search
 from reccmp.formats import TextFile
-from reccmp.parser.marker import MarkerType, match_marker
+from reccmp.parser.marker import MarkerType, markerRegex, match_marker
 from reccmp.parser.parser import DecompParser
 from reccmp.types import EntityType, ImageId
 
@@ -126,8 +126,11 @@ def scan_sources(files, groups, root):
             if function.module == "GAME":
                 functions[function.offset].append((path, function))
         for number, line in enumerate(file.text.splitlines(), 1):
-            marker = match_marker(line)
-            if marker is not None and marker.module == "GAME":
+            match = markerRegex.search(line)
+            if match is None:
+                continue
+            marker = match_marker(match.start(), match.end(), match.groups())
+            if marker.module == "GAME":
                 raw[marker.offset].append((path, number, marker))
     issues = []
     for address in sorted(set(raw) | set(groups)):

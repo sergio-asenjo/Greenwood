@@ -47,9 +47,7 @@ ALLOWLIST=(
   ai/RHPathRequest.h
   common/RHMobileUnk006100e0.h
   common/SBGeoPolyLine2DList.h
-  common/SBGeoSegment2D.h
   common/RHUnk005fc400.h
-  element/RHActorSequenceStorage.h
   mission/RHCampaignTypes.h
   sound/RHSoundSettingsLifetime.h
 )
