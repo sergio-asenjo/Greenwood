@@ -15,6 +15,7 @@
 #include "SB.h"
 class RHSequenceElement;
 class RHElementActorHuman;
+class SBGeoPoint2D;
 
 class RHElementActorNPC
 {
@@ -22,6 +23,7 @@ public:
     virtual bool Serialize(SBFile &file);
     void *FUN_0048c380(RHElementActorHuman *target);
     void GetTransitionFlags(RHSequenceElement *element, unsigned long &first, unsigned long &second, unsigned long &third);
+    bool FUN_0048af40(const SBGeoPoint2D &point, RHElementActorHuman *pc, int focus);
 
 private:
     char m_unkBase[0xa38]; // [0x04, 0xa3c): RHElementActorNPC-owned, untouched here
@@ -130,7 +132,7 @@ public:
     virtual void Ve8() = 0;
     virtual void Vec() = 0;
     virtual void Vf0() = 0;
-    virtual void Vf4() = 0;
+    virtual bool Vf4() = 0; // vtable+0xf4
     virtual bool Vf8() = 0;
     virtual void Vfc() = 0;
     virtual void V100() = 0;
@@ -181,6 +183,7 @@ public:
     int FUN_004a1db0();
     void FUN_004a2550(void *element);
     void *FUN_004a5190(RHSoldierActorCalls *target);
+    bool FUN_004a4aa0(const SBGeoPoint2D &point, RHElementActorHuman *pc, int focus);
     void GetTransitionFlags(RHSequenceElement *element, unsigned long &first, unsigned long &second, unsigned long &third);
     bool FUN_004a5670();
     bool FUN_004a5680();
@@ -196,6 +199,7 @@ public:
     void FUN_004a5770(RHSoldierSequenceElement *element);
     void SetAppleSmell(bool enabled);
     void FUN_004a5a00(void *first, void *second);
+    void FUN_004a5a50();
     void FUN_004a5b70(void *actor);
     unsigned short FUN_004a5b90();
     unsigned short FUN_004a5ba0();

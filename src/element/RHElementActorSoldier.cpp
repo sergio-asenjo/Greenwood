@@ -32,6 +32,8 @@
 
 #include "SBNullstr.h"
 #include "RHElementActorSoldier.h"
+#include "RHSightObstacle.h"
+#include "RHSpriteCore.h"
 #include "RHArtificialMalignity.h"
 #include "RHElementActorHumanCore.h"
 
@@ -138,6 +140,66 @@ void RHElementActorSoldier::GetTransitionFlags(RHSequenceElement *element, unsig
     default:
         RHElementActorNPC::GetTransitionFlags(element, first, second, third);
     }
+}
+
+class RHMessenger;
+RHMessenger *RHUnk00546050();
+
+#include "../ai/RHMalignityVisibilityCalls.h"
+
+// Parked: state/dead entry registers are swapped (AL/CL) and VC6 duplicates the sparse
+// case-5 false tail instead of the target's near jump to the shared block.
+// STUB: GAME 0x004a4aa0
+bool RHElementActorSoldier::FUN_004a4aa0(const SBGeoPoint2D &point, RHElementActorHuman *pc, int focus)
+{
+    if (!RHSOLDIER_FIELD(char, 0x12))
+        return false;
+    if (focus != 5 && focus != 0x10 && focus != 2 &&
+        *(unsigned *)((char *)g_pEngine + 0x4a00) > 1)
+        return false;
+
+    switch (focus)
+    {
+    case 3:
+        if (RHSOLDIER_FIELD(void *, 0x500))
+            return FUN_0048af40(point, pc, 3);
+        break;
+    case 5:
+        if (RHSOLDIER_FIELD(char, 8) ||
+            ((RHMalignityVisibilityCalls *)this)->FUN_004860b0() ||
+            ((RHSoldierActorCalls *)this)->V130() == 0)
+            return false;
+        if (((RHSoldierActorCalls *)this)->Vf4() && RHSOLDIER_FIELD(int, 0x144) == 3)
+            return false;
+        return RHSOLDIER_FIELD(RHSprite *, 0x50)->FUN_005b9e30(
+            (void *)&point, RHSOLDIER_FIELD(void *, 0x54), false);
+    case 0xf:
+    {
+        unsigned char state = *(unsigned char *)((char *)RHUnk00546050() + 0x20);
+        char dead = RHSOLDIER_FIELD(char, 8);
+        if (state)
+        {
+            if (!dead &&
+                (((RHSoldierActorCalls *)this)->V48() ||
+                 ((RHSoldierActorCalls *)this)->V130() == 0 ||
+                 ((RHSoldierActorCalls *)this)->Vf8() ||
+                 ((RHSoldierActorCalls *)this)->Vf4()))
+                return false;
+            bool includeKey = RHSOLDIER_FIELD(bool, 8);
+            return RHSOLDIER_FIELD(RHSprite *, 0x50)->FUN_005b9e30(
+                (void *)&point, RHSOLDIER_FIELD(void *, 0x54), includeKey);
+        }
+        if (dead ||
+            ((RHSoldierActorCalls *)this)->V130() == 0 ||
+            ((RHMalignityVisibilityCalls *)this)->FUN_004860b0() ||
+            ((RHSoldierActorCalls *)this)->Vf8() ||
+            ((RHSoldierActorCalls *)this)->Vf4())
+            return false;
+        return RHSOLDIER_FIELD(RHSprite *, 0x50)->FUN_005b9e30(
+            (void *)&point, RHSOLDIER_FIELD(void *, 0x54), false);
+    }
+    }
+    return FUN_0048af40(point, pc, focus);
 }
 
 
@@ -440,6 +502,23 @@ void RHElementActorSoldier::FUN_004a5a00(void *first, void *second)
     }
 }
 
+// FUNCTION: GAME 0x004a5a50
+void RHElementActorSoldier::FUN_004a5a50()
+{
+    SBGeoVector2D direction = ((RHMalignityActorCalls *)this)->FUN_004135b0();
+    char *profile = *(char **)(RHSOLDIER_FIELD(char *, 0x25c) + 4);
+    unsigned short height = *(unsigned short *)(profile + 0x18);
+    unsigned short width = *(unsigned short *)(profile + 0x1a);
+    RHUnk00613e90 position = *(RHUnk00613e90 *)(RHSOLDIER_FIELD(char *, 0x50) + 0x10);
+    position.x += direction.m_x * 20.0f;
+    position.y += direction.m_y * 20.0f;
+    if (height < 40)
+        position.z += 50 - height;
+    else
+        position.z += 10.0f;
+    ((RHSightObstacle *)((char *)this + 0x294))->UpdateBox(position, direction, RHUnk00613e90(width, 5.0f, height));
+}
+
 // FUNCTION: GAME 0x004a5b70
 void RHElementActorSoldier::FUN_004a5b70(void *actor)
 {
@@ -526,9 +605,12 @@ void RHElementActorSoldier::Emit(SBFile &file)
     FUN_004a5190(0);
     Serialize(file);
     SetAppleSmell(false);
+    FUN_004a5a50();
     FUN_004a5ba0();
     SetOutlineColors();
     RHMalignityPosition position;
     FUN_004a5d50(position, 0, 0, 0);
     ((RHSoldierStimulusCalls *)this)->FUN_004a64a0(0, position);
+    SBGeoPoint2D focusPoint;
+    FUN_004a4aa0(focusPoint, 0, 0);
 }
