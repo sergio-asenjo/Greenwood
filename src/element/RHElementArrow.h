@@ -29,6 +29,8 @@ class RHElementArrow : public RHElementProjectile
 public:
     virtual bool Serialize(SBFile &file);
     char FUN_004a6640();
+    void GetOrientations(unsigned char &heading, short &pitch);
+    bool HitHuman(class RHElementActorHuman *target);
     void FUN_004a6a70(void *target);
     bool FUN_004a6aa0(void *target);
     void *InteractionTarget() const { return *(void *const *)((const char *)this + 0x12c); }

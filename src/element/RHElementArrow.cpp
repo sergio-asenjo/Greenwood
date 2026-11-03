@@ -41,12 +41,58 @@ char RHElementArrow::FUN_004a6640()
     return m_161;
 }
 
-// FUNCTION: GAME 0x004a6a70
-void RHElementArrow::FUN_004a6a70(void *target)
+#include "RHUnk00613e90.h"
+#include "RHUnk005fc3b0.h"
+
+// GLOBAL: GAME 0x00678318
+double g_unk0x00678318 = 57.295777918682042;
+
+struct RHArrowTrajectoryNode
 {
-    if (!m_161)
-        FUN_004a6b80(target, true);
-    m_166 = 1;
+    RHArrowTrajectoryNode *next;
+    RHArrowTrajectoryNode *previous;
+    RHUnk00613e90 *position;
+};
+
+// STUB: GAME 0x004a66f0
+void RHElementArrow::GetOrientations(unsigned char &heading, short &pitch)
+{
+    RHUnk00613e90 current;
+    RHUnk00613e90 next;
+    RHUnk00613e90 delta;
+    SBGeoVector2D direction;
+    if (*(int *)((char *)this + 0x140) > 0)
+    {
+        current = *(RHUnk00613e90 *)(*(char **)((char *)this + 0x50) + 0x10);
+        next = *(*(RHArrowTrajectoryNode **)((char *)this + 0x13c))->next->position;
+        delta = next;
+        delta.x -= current.x;
+        delta.y -= current.y;
+        delta.z -= current.z;
+        float scale = 1.0f / delta.Norm();
+        delta.x = scale * delta.x;
+        delta.y = scale * delta.y;
+        delta.z = scale * delta.z;
+        float x = delta.x;
+        float y = delta.y;
+        direction.m_x = x;
+        direction.m_y = y;
+        heading = ((RHUnk005fc3b0 &)direction).FUN_005fcc50(0.57357645f);
+        ((RHUnk005fc3b0 &)direction).Unk005fc6a0(1.0f);
+        pitch = (short)(acos(((RHUnk005fc3b0 &)direction).Unk005fc6a0(1.0f)) * g_unk0x00678318);
+        if (pitch > 60)
+            pitch = 60;
+        if (delta.z < 0.0f)
+            pitch = -pitch;
+        m_163 = heading;
+        m_164 = pitch;
+        return;
+    }
+    else
+    {
+        heading = m_163;
+        pitch = m_164;
+    }
 }
 
 #include "RHSequenceInteractionAction.h"
@@ -60,6 +106,144 @@ public:
     unsigned int Unk004baea0();
     void *Unk0058a940(void *context, int value, void *element);
 };
+
+#include "RHBonusInfo.h"
+
+class RHArrowMotionCalls
+{
+public:
+    virtual void V00() = 0;
+    virtual void V04() = 0;
+    virtual void V08() = 0;
+    virtual void V0c() = 0;
+    virtual void V10() = 0;
+    virtual void V14() = 0;
+    virtual void V18() = 0;
+    virtual void V1c() = 0;
+    virtual void V20() = 0;
+    virtual void V24() = 0;
+    virtual void V28() = 0;
+    virtual void V2c() = 0;
+    virtual void V30() = 0;
+    virtual void V34() = 0;
+    virtual void V38() = 0;
+    virtual void V3c() = 0;
+    virtual void V40() = 0;
+    virtual void V44() = 0;
+    virtual void V48() = 0;
+    virtual void V4c() = 0;
+    virtual void V50() = 0;
+    virtual void V54() = 0;
+    virtual void V58() = 0;
+    virtual void V5c() = 0;
+    virtual void V60() = 0;
+    virtual void V64() = 0;
+    virtual void V68() = 0;
+    virtual void V6c() = 0;
+    virtual void V70() = 0;
+    virtual void V74() = 0;
+    virtual void V78() = 0;
+    virtual void V7c() = 0;
+    virtual void V80() = 0;
+    virtual void V84() = 0;
+    virtual void V88(const RHUnk00613e90 &position, const RHUnk00613e90 &velocity) = 0;
+};
+
+#include "RHSequenceTimedCalls.h"
+#include "RHMalignityStimulus.h"
+#include "RHMalignityPosition.h"
+#include "RHArtificialIntelligenceCore.h"
+
+class RHArrowHumanCalls : public RHArrowMotionCalls
+{
+public:
+    virtual void V8c() = 0;
+    virtual void V90() = 0;
+    virtual void V94() = 0;
+    virtual void V98() = 0;
+    virtual void V9c() = 0;
+    virtual void Va0() = 0;
+    virtual void Va4() = 0;
+    virtual void Va8() = 0;
+    virtual void Vac() = 0;
+    virtual void Vb0() = 0;
+    virtual void Vb4() = 0;
+    virtual void Vb8() = 0;
+    virtual void Vbc() = 0;
+    virtual void Vc0() = 0;
+    virtual void Vc4() = 0;
+    virtual void Vc8() = 0;
+    virtual void Vcc() = 0;
+    virtual void Vd0() = 0;
+    virtual void Vd4() = 0;
+    virtual void Vd8() = 0;
+    virtual void Vdc() = 0;
+    virtual void Ve0() = 0;
+    virtual void Ve4() = 0;
+    virtual void Ve8() = 0;
+    virtual void Vec() = 0;
+    virtual void Vf0() = 0;
+    virtual void Vf4() = 0;
+    virtual bool Vf8() = 0;
+    virtual void Vfc() = 0;
+    virtual void V100() = 0;
+    virtual void V104() = 0;
+    virtual void V108() = 0;
+    virtual bool V10c(RHElementArrow *arrow) = 0;
+};
+
+// STUB: GAME 0x004a68e0
+bool RHElementArrow::HitHuman(RHElementActorHuman *target)
+{
+    bool result;
+    if (!m_161)
+    {
+        if (!((RHArrowHumanCalls *)target)->Vf8() ||
+            (unsigned char)(*(unsigned *)((char *)target + 4) & 15) != 4)
+        {
+            if (((RHArrowHumanCalls *)target)->V10c(this))
+            {
+                RHUnk005861c0 *action = new RHUnk005861c0(1, 0x28, target, InteractionTarget(), (void *)this,
+                    (unsigned short)m_bow->FUN_004502e0(m_160 == 0));
+                ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940("", 0, action);
+                if ((unsigned char)(*(unsigned *)((char *)target + 4) & 15) == 4)
+                {
+                    RHArtificialIntelligence *ai = (RHArtificialIntelligence *)((char *)target + 0x49c +
+                        (*(int **)((char *)target + 0x49c))[1]);
+                    RHMalignityStimulus stimulus;
+                    stimulus.m_20 = 0x20;
+                    stimulus.m_type = 2;
+                    *(RHMalignityPosition *)stimulus.m_00 = *(RHMalignityPosition *)((char *)this + 0x118);
+                    ai->V24(&stimulus);
+                }
+                result = true;
+            }
+            else if ((unsigned char)(*(unsigned *)((char *)target + 4) & 15) == 12 ||
+                (unsigned char)(*(unsigned *)((char *)target + 4) & 31) == 20)
+            {
+                FUN_004a6b80(target, false);
+                m_166 = 1;
+                return false;
+            }
+            else
+                result = false;
+        }
+        else
+            result = false;
+    }
+    else
+        result = false;
+    m_166 = 0;
+    return result;
+}
+
+// FUNCTION: GAME 0x004a6a70
+void RHElementArrow::FUN_004a6a70(void *target)
+{
+    if (!m_161)
+        FUN_004a6b80(target, true);
+    m_166 = 1;
+}
 
 // Parked: VC6 merges the early false return and reorders flag stores across return setup.
 // STUB: GAME 0x004a6aa0
@@ -83,6 +267,33 @@ bool RHElementArrow::FUN_004a6aa0(void *target)
     }
     m_166 = 0;
     return false;
+}
+
+// FUNCTION: GAME 0x004a6b80
+void RHElementArrow::FUN_004a6b80(void *, bool flag)
+{
+    RHUnk00613e90 velocity;
+    RHUnk005fc3b0 direction;
+    unsigned char heading;
+    short pitch;
+    GetOrientations(heading, pitch);
+    m_160 = 0;
+    m_161 = 1;
+    if (flag)
+    {
+        m_162 = (heading + 4) & 15;
+        direction.Unk005fcd40(m_162, 0.57357645f);
+        velocity.Set(direction.m_x * 30.0f, direction.m_y * 30.0f, -20.0f);
+    }
+    else
+    {
+        m_162 = heading ^ 8;
+        direction.Unk005fcd40(m_162, 0.57357645f);
+        velocity.Set(direction.m_x * 30.0f, direction.m_y * 10.0f, 0.0f);
+    }
+    ((RHArrowMotionCalls *)this)->V88(*(RHUnk00613e90 *)(*(char **)((char *)this + 0x50) + 0x10), velocity);
+    ((RHBonusInfoBase *)(*(char **)((char *)this + 0x50) + 4))->FUN_0055f290();
+    ((RHArrowMotionCalls *)this)->V28();
 }
 
 // FUNCTION: GAME 0x004a6e10

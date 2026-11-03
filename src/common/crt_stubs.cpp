@@ -6,3 +6,6 @@
 
 // LIBRARY: GAME 0x0064383d
 // _free
+
+// LIBRARY: GAME 0x006432e0
+// __CIacos
