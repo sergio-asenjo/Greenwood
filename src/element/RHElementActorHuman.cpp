@@ -26,6 +26,8 @@ float g_unk0x006ae4d4[16] = { -9.18f, -8.49f, -6.48f, -3.5f, 0, 3.5f, 6.48f, 8.4
 class RHUnk0048a970;
 extern RHUnk0048a970 *g_unk0x6c0b3c;
 extern char g_unk0x6c0691;
+extern bool g_unk0x006c0754;
+extern bool g_unk0x006c0788;
 
 // FUNCTION: GAME 0x0047a450
 bool RHElementActorHuman::FUN_0047a450(RHElementActorHuman *other)
@@ -134,6 +136,75 @@ bool RHElementActorHuman::FUN_00471b00()
         RHActorField<unsigned short>(this, 0x1cc) = previous - (amount > previous ? previous : amount);
     }
     return true;
+}
+
+// FUNCTION: GAME 0x00471c00
+void RHElementActorHuman::FUN_00471c00(unsigned short amount, void *source, bool force)
+{
+    if (RHActorField<unsigned char>(this, 0x496) && amount > RHActorField<unsigned short>(this, 0x1c8))
+        return;
+    if (RHActorField<char>(g_unk0x6c0b3c, 0x5a) && amount > RHActorField<unsigned short>(this, 0x1c8))
+        return;
+    unsigned short previous = RHActorField<unsigned short>(this, 0x1c8);
+    RHActorField<unsigned short>(this, 0x1c8) = amount;
+    if ((short)amount < 0)
+        RHActorField<unsigned short>(this, 0x1c8) = 0;
+    else if (amount > 0x12c)
+        RHActorField<unsigned short>(this, 0x1c8) = 0x12c;
+    struct Kind4 { unsigned value : 4; };
+    struct Kind5 { unsigned value : 5; };
+    void *info = RHActorField<void *>(this, 0x50);
+    if (RHActorField<int>(info, 0x8c) == 0x12 || RHActorField<void *>(this, 0x254) ||
+        (((Kind4 *)((char *)this + 4))->value == 4 &&
+            RHActorField<unsigned char>((char *)this + 0x49c + RHActorField<int *>(this, 0x49c)[1], 0x1c4) &&
+            previous >= 0x1e && !force))
+    {
+        if (RHActorField<unsigned short>(this, 0x1c8) < 0x1e)
+            RHActorField<unsigned short>(this, 0x1c8) = 0x1e;
+    }
+    if (RHActorField<char>(this, 0x1ce))
+    {
+        if (RHActorField<unsigned short>(this, 0x1c8) < 0x1e)
+        {
+            if (RHActorField<void *>(this, 0x254) || RHActorField<int>(info, 0x8c) == 0x12)
+                RHActorField<unsigned short>(this, 0x1c8) = 0x1e;
+            else
+            {
+                RHActorField<char>(this, 0x1ce) = 0;
+                if (((Kind4 *)((char *)this + 4))->value == 4)
+                    ((RHScriptBatchCalls *)((char *)this + 0x49c +
+                        RHActorField<int *>(this, 0x49c)[1]))->Unk0040d980(0xd);
+                if (((Kind4 *)((char *)this + 4))->value == 0xc ||
+                    (((Kind5 *)((char *)this + 4))->value == 0x14 &&
+                        g_unk0x006c0754 && g_unk0x006c0788))
+                {
+                    RHMalignityActorCalls **first =
+                        *(RHMalignityActorCalls ***)((char *)g_pEngine + 0x495c);
+                    unsigned short count;
+                    if (!first)
+                        count = 0;
+                    else
+                        count =
+                            (unsigned short)(*(RHMalignityActorCalls ***)((char *)g_pEngine + 0x4960) - first);
+                    for (int index = 0; count > 0; ++index, --count)
+                    {
+                        if (((RHHumanVirtualCalls *)(*(RHMalignityActorCalls ***)((char *)g_pEngine + 0x495c))[index])->V130() !=
+                            ((RHHumanVirtualCalls *)this)->V130())
+                            (*(RHMalignityActorCalls ***)((char *)g_pEngine + 0x495c))[index]->FUN_0048e420(this);
+                    }
+                }
+            }
+        }
+    }
+    else if (RHActorField<unsigned short>(this, 0x1c8) >= 0x46)
+    {
+        RHActorField<char>(this, 0x1ce) = 1;
+        FUN_0047ca50();
+        RHUnk00613e90 point;
+        g_unk0x6c10e8->AddTitbit(point, 0, (RHtitbitKind)1, (RHElement *)this, 0, 0, false, -1);
+    }
+    if (RHActorField<char>(this, 0x1ce) == 1 && RHActorField<unsigned short>(this, 0x1ca) == 0)
+        RHActorField<unsigned short>(this, 0x1ca) = ((RHHumanVirtualCalls *)this)->V0c0();
 }
 
 // FUNCTION: GAME 0x00471e50
@@ -694,6 +765,74 @@ void RHHumanActorCalls::FUN_00479430(RHUnk00613e90 &point, float height)
 }
 
 SBGeoVector2D FUN_005fc580(const SBGeoVector2D &point, float factor);
+
+// STUB: GAME 0x00479770
+void RHHumanActorCalls::FUN_00479770(RHUnk00613e90 &point, short index, int animation, int posture)
+{
+    SBGeoPoint2D projected;
+    {
+        void *sprite = RHActorField<void *>(this, 0x50);
+        void *resource = ((RHUnk005b5e00 *)sprite)->Unk();
+        const SBGeoVector2D &offset = SBGeoVector2D(*(SBGeoVector2D *)((RHUnk005b5e00 *)sprite)->Unk005bdd30(
+            RHActorField<short *>(resource, 4)[animation] + index));
+        projected = RHActorField<SBGeoPoint2D>(RHActorField<void *>(this, 0x50), 0x1c).Unk005fc190(offset);
+    }
+    float base = RHActorField<float>(RHActorField<void *>(this, 0x50), 0x18);
+    point.x = projected.m_x;
+    float y = base;
+    y += projected.m_y;
+    point.y = y;
+    switch (posture)
+    {
+    case 1: case 4: case 5: case 6: case 9: case 11: case 14: case 15:
+    case 21: case 23: case 24:
+    {
+        bool alternate = ((RHHumanVirtualCalls *)this)->V0f4();
+        float z = base;
+        if (alternate)
+            z += 40.0f;
+        else
+            z += 25.0f;
+        point.z = z;
+        break;
+    }
+    case 19:
+    {
+        float z = base;
+        z += 25.0f;
+        point.z = z;
+        break;
+    }
+    case 16:
+    {
+        float z = base;
+        z += 65.0f;
+        point.z = z;
+        break;
+    }
+    case 7:
+    {
+        float z = point.z;
+        z += 55.0f;
+        point.z = z;
+        break;
+    }
+    case 8: case 10: case 20: case 22:
+    {
+        float z = base;
+        z += 10.0f;
+        point.z = z;
+        break;
+    }
+    case 3: case 12: case 13: case 17: case 18:
+    {
+        float z = base;
+        z += 5.0f;
+        point.z = z;
+        break;
+    }
+    }
+}
 
 // FUNCTION: GAME 0x00478960
 void RHElementActor::FUN_00478960(RHUnk00613e90 &point)

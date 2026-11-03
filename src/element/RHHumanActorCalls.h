@@ -12,6 +12,7 @@ public:
     void FUN_00479320(RHUnk00613e90 &point);
     void FUN_00479430(RHUnk00613e90 &point, float height);
     void FUN_004795f0(RHUnk00613e90 &point, int type, short direction);
+    void FUN_00479770(RHUnk00613e90 &point, short offset, int animation, int posture);
     int FUN_0047b8a0(const RHUnk00613e90 &point, int *value, bool mode);
     bool FUN_0047d270(void *actor);
     void FUN_0049d780();

@@ -257,6 +257,7 @@ class RHMalignityActorCalls
 {
 public:
     void FUN_0048c700(void *actor, unsigned mode);
+    void FUN_0048e420(void *actor);
     SBGeoVector2D FUN_004135b0();
 };
 
