@@ -6,6 +6,8 @@
 
 class SBFile;
 class RHSequenceElement;
+class RHUnk00582220;
+class RHActorTranslationSequenceCalls;
 class SBGeoPoint2D;
 class RHElementActorHuman;
 class RHUnk00613e90;
@@ -42,11 +44,17 @@ public:
     int FUN_00494850(void *element);
     float FUN_0049d520();
     void FUN_00495f90(void *element);
+    bool FUN_00496270(unsigned flags, RHActorTranslationSequenceCalls *sequence);
     void FUN_0049b930(int amount, int unused, bool mode);
     bool FUN_00490450(void *owner, void *target);
+    void FUN_004909a0(RHUnk00582220 *sequence);
     void *FUN_00490e10(RHElementActorHuman *target);
     unsigned short FUN_00493b40(void *target, const SBGeoPoint2D &point, int unused1, int unused2);
+    void FUN_00493c10(void *element);
+    bool FUN_0049bdf0(RHSequenceElement *element);
+    void FUN_0049bfd0(unsigned short action, unsigned short flags, unsigned short variant);
     void FUN_0049d400(RHSequenceElement *element);
+    void FUN_0049d450(RHSequenceElement *element);
     void FUN_0049c660(unsigned short value);
     unsigned short FUN_0049f500();
     unsigned short FUN_0049ff60();

@@ -21,6 +21,7 @@ public:
     void Unk0046bcf0(int state, int value);
     void Unk00485200(int index, int amount);
     void Unk0048ec00(void *scroll);
+    RHScriptBatchCalls *Unk004e3cc0();
 };
 
 class RHActorPCVTableCalls
@@ -56,7 +57,7 @@ public:
     virtual void FUN_27() = 0;
     virtual void FUN_28(unsigned amount) = 0;
     virtual void FUN_29() = 0;
-    virtual void FUN_30() = 0;
+    virtual void FUN_30(void *sequence, int command) = 0;
     virtual void FUN_31() = 0;
     virtual void FUN_32() = 0;
     virtual void FUN_33() = 0;
@@ -130,12 +131,7 @@ public:
 #include "RHMalignityGeometryCalls.h"
 
 #include "RHTitbitsCore.h"
-class RHUnk5490f0;
-class RHMessenger
-{
-public:
-    void RHUnk005460c0(RHUnk5490f0 &message);
-};
+#include "RHMessenger.h"
 class RHUnk00452030;
 // SIZE 0x18
 struct RHActorPCProfileNode
@@ -215,6 +211,18 @@ public:
     }
 };
 
+class RHSequenceElement;
+
+struct RHPCSequenceDelegateCalls
+{
+    struct VTable
+    {
+        void *m_00[20];
+        bool (RHPCSequenceDelegateCalls::*m_50)(RHSequenceElement *);
+    };
+    VTable *m_vtable;
+};
+
 struct RHbeamMe
 {
     SBGeoPoint2D m_point;
@@ -234,6 +242,7 @@ class RHEngineReinforcementCalls
 {
 public:
     void FUN_00491fd0(const RHbeamMe &beamMe);
+    void *FUN_00452130(void *profile);
 };
 
 class RHActorPCTemplateCalls
@@ -247,6 +256,7 @@ class RHElementActor
 public:
     void InitializeScript(std::string &name);
     void FUN_00478c20(RHUnk00613e90 &point, int posture);
+    SBGeoPoint2D FUN_00462920();
 };
 
 #include "RHElementPositionCalls.h"

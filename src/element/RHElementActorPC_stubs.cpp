@@ -3,7 +3,6 @@
 
 RHUnk00471630::RHUnk00471630(int, int, void *) {}
 
-void RHPCCombatCalls::FUN_0049bb20(int, int) {}
 int RHPCCombatCalls::FUN_00485240(int) { return 0; }
 
 // GLOBAL: GAME 0x006c0689

@@ -166,6 +166,7 @@ public:
     void Unk00419fb0(int value);
     void Unk0040d980(int stimulus);
     void Unk00418bc0();
+    void Unk0046bcf0(int state, int value);
 };
 
 #include "RHTitbitsCore.h"

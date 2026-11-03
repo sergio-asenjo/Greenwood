@@ -41,6 +41,8 @@ DECOMP_SIZE_ASSERT(RHActorPCProfileNode, 0x18)
 DECOMP_SIZE_ASSERT(RHUnk00613e90, 0x0c)
 DECOMP_SIZE_ASSERT(RHPCDescription, 0x48)
 DECOMP_SIZE_ASSERT(RHUnk0048f280, 0x60c)
+DECOMP_SIZE_ASSERT(RHPCSequenceDelegateCalls, 0x04)
+DECOMP_SIZE_ASSERT(RHPCSequenceDelegateCalls::VTable, 0x54)
 
 extern RHTitbits *g_unk0x6c10e8;
 extern double g_unk0x00677d90;
@@ -362,7 +364,10 @@ void EmitRHActorPCSmallMethods(RHElementActorPC *actor)
     actor->FUN_00490450(actor, actor);
     actor->FUN_00490e10((RHElementActorHuman *)actor);
     actor->FUN_00493b40(actor, *(SBGeoPoint2D *)actor, 0, 0);
+    actor->FUN_00493c10(actor);
+    actor->FUN_0049bdf0((RHSequenceElement *)actor);
     actor->FUN_0049d400((RHSequenceElement *)actor);
+    actor->FUN_0049d450((RHSequenceElement *)actor);
     actor->FUN_0048f910();
     actor->FUN_0048f920();
     actor->FUN_0048f930();
@@ -397,6 +402,89 @@ void RHEngineActorActionCalls::FUN_00490910(unsigned short value)
     RHActorPCField<unsigned>(this, 0x528) = 0;
     RHActorPCField<unsigned>(this, 0x54c) = 0;
     RHActorPCField<unsigned short>(this, 0x554) = 0;
+}
+
+#include "RHSequenceGenericCalls.h"
+#include "RHSequenceAppendCalls.h"
+#include "RHSequenceConstructionCalls.h"
+
+DECOMP_SIZE_ASSERT(RHUnk00582220, 0x3c)
+DECOMP_SIZE_ASSERT(RHUnk00584d60, 0x64)
+
+// STUB: GAME 0x004909a0
+void RHElementActorPC::FUN_004909a0(RHUnk00582220 *original)
+{
+    RHUnk00582220 *sequence;
+    if ((unsigned short)RHActorPCField<std::list<RHSequenceElement *> >(original, 8).size() != 0 &&
+        RHActorPCField<std::list<RHSequenceElement *> >(original, 8).back()->m_10 == 0x15)
+        sequence = RHActorPCField<RHUnk00582220 *>(RHActorPCField<std::list<RHSequenceElement *> >(original, 8).back(), 0x68);
+    else
+        sequence = original;
+    unsigned short level;
+    int command;
+    if ((unsigned short)RHActorPCField<std::list<RHSequenceElement *> >(sequence, 8).size() == 0)
+        level = 1;
+    else
+    {
+        level = RHActorPCField<unsigned short>(RHActorPCField<std::list<RHSequenceElement *> >(sequence, 8).back(), 0x14) + 1;
+        command = RHActorPCField<std::list<RHSequenceElement *> >(sequence, 8).back()->m_10;
+    }
+    if (command == 0x23 && RHActorPCField<int>(this, 0x144) != 4 &&
+        RHActorPCField<int>(this, 0x144) != 5 && RHActorPCField<int>(this, 0x144) != 6)
+    {
+        RHActorPCField<std::list<RHSequenceElement *> >(sequence, 8).back()->m_10 = 0xb2;
+        return;
+    }
+    switch (RHActorPCField<int>(m_50, 0x8c))
+    {
+    case 1:
+    {
+        if (RHActorPCField<int>(this, 0x144) != 4 && RHActorPCField<int>(this, 0x144) != 5 &&
+            RHActorPCField<int>(this, 0x144) != 6)
+            return;
+        RHUnk00584d60 *action = new RHUnk00584d60(level, 0x1d, this);
+        if (!sequence)
+        {
+            sequence = RHActorPCField<RHUnk00582220 *>(RHActorPCField<std::list<RHSequenceElement *> >(original, 8).back(), 0x68) = new RHUnk00582220;
+        }
+        ((RHUnk00585500 *)action)->Unk(sequence);
+        break;
+    }
+    case 10:
+    {
+        if (command == 0x4e)
+            return;
+        RHUnk00584d60 *action = new RHUnk00584d60(level, 0x4d, this);
+        if (!sequence)
+        {
+            sequence = RHActorPCField<RHUnk00582220 *>(RHActorPCField<std::list<RHSequenceElement *> >(original, 8).back(), 0x68) = new RHUnk00582220;
+        }
+        ((RHUnk00585500 *)action)->Unk(sequence);
+        break;
+    }
+    case 14:
+    {
+        RHUnk00584d60 *action = new RHUnk00584d60(level, 0x5d, this);
+        if (!sequence)
+        {
+            sequence = RHActorPCField<RHUnk00582220 *>(RHActorPCField<std::list<RHSequenceElement *> >(original, 8).back(), 0x68) = new RHUnk00582220;
+        }
+        ((RHUnk00585500 *)action)->Unk(sequence);
+        break;
+    }
+    case 20:
+    {
+        RHUnk00584d60 *action = new RHUnk00584d60(level, 0x61, this);
+        if (!sequence)
+        {
+            sequence = RHActorPCField<RHUnk00582220 *>(RHActorPCField<std::list<RHSequenceElement *> >(original, 8).back(), 0x68) = new RHUnk00582220;
+        }
+        ((RHUnk00585500 *)action)->Unk(sequence);
+        break;
+    }
+    default:
+        return;
+    }
 }
 
 // FUNCTION: GAME 0x00493660
@@ -451,6 +539,7 @@ bool RHElementActorPC::FUN_004936f0()
 
 void EmitRHActorPCRecovery(RHElementActorPC *actor)
 {
+    actor->FUN_004909a0(0);
     actor->FUN_004936f0();
 }
 
@@ -619,6 +708,36 @@ unsigned short RHElementActorPC::FUN_00493b40(void *target, const SBGeoPoint2D &
     return (unsigned short)factor;
 }
 
+#include "RHCampaignCore.h"
+#include "RHMissionStatCore.h"
+#include "RHCampaignValueCalls.h"
+
+// STUB: GAME 0x00493c10
+void RHElementActorPC::FUN_00493c10(void *element)
+{
+    RHUnk00452030 *campaign = g_unk0x6c07fc;
+    RHMessenger *messenger = RHUnk00546050();
+    if (!((RHActorPCVTableCalls *)this)->FUN_62() || !campaign->Get(0))
+    {
+        messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0x14, this));
+        ((RHCampaign *)campaign)->FUN_00455b20(m_5f8);
+    }
+    if (!((RHActorPCVTableCalls *)this)->FUN_62())
+    {
+        if (((RHEngineReinforcementCalls *)campaign)->FUN_00452130(m_5fc))
+            ((RHWidgetPortrait *)RHActorPCField<void *>(this, 0x4ec))->FUN_005d9070();
+        int &counter = RHActorPCField<int>(((RHScriptBatchCalls *)g_pEngine)->Unk004e3cc0(), 0x1c);
+        int previous = *(volatile int *)&counter;
+        counter = previous + 1;
+    }
+    ((RHMissionStat *)((RHScriptBatchCalls *)g_pEngine)->Unk004e3cc0())->FUN_0054d150(m_5f8);
+    messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(3, this, 0));
+    messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(3, this, 1));
+    messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(3, this, 2));
+    ((RHWidgetPortrait *)RHActorPCField<void *>(this, 0x4ec))->Method005d73d0();
+    ((RHElementActorHuman *)this)->FUN_0047f4f0(element);
+}
+
 // FUNCTION: GAME 0x00492d30
 std::wstring RHElementActorPC::GetTooltipTextForAction(int action)
 {
@@ -662,16 +781,15 @@ void RHElementActorPC::FUN_00495f90(void *element)
 // STUB: GAME 0x00495fd0
 void RHElementActorPC::GetTransitionFlags(RHSequenceElement *element, unsigned long &first, unsigned long &second, unsigned long &third)
 {
-    switch (RHActorPCField<int>(element, 0x10))
+    switch (element->m_10)
     {
     case 0xa0: case 0xa1:
-        if (RHActorPCField<unsigned char>(RHActorPCField<void *>(RHActorPCField<void *>(this, 0x50), 0xe0), 0xec))
+        if (RHActorPCField<unsigned char>(m_50->m_e0, 0xec))
         {
             first = 0x8001; second = 2;
             break;
         }
-        ((RHElementActorHuman *)this)->GetTransitionFlags(element, first, second, third);
-        break;
+        goto human;
     case 0x32:
         first = 0x21; second = 1; break;
     case 0x53:
@@ -681,10 +799,11 @@ void RHElementActorPC::GetTransitionFlags(RHSequenceElement *element, unsigned l
         void *target = RHActorPCField<void *>(element, 0x64);
         first = 1;
         if (target && RHActorPCField<int>(target, 0xb0) == 9)
+        {
             second = 1;
-        else
-            second = 0x41;
-        break;
+            break;
+        }
+        goto unmatchedTarget;
     }
     case 0x5e:
         first = 1; second = 8; break;
@@ -707,10 +826,91 @@ void RHElementActorPC::GetTransitionFlags(RHSequenceElement *element, unsigned l
     case 0x71: case 0x72: case 0x73: case 0x74: case 0x75:
         first = 1; second = 1; break;
     case 0x6d:
-        first = 1; second = 0x41; break;
+        first = 1;
+    unmatchedTarget:
+        second = 0x41;
+        break;
     default:
+    human:
         ((RHElementActorHuman *)this)->GetTransitionFlags(element, first, second, third);
     }
+}
+
+// STUB: GAME 0x00496270
+bool RHElementActorPC::FUN_00496270(unsigned flags, RHActorTranslationSequenceCalls *sequence)
+{
+    RHOrder *order;
+    if (flags & 0x20)
+        return RHActorField<int>(sequence, 0x3c) == 11;
+    if (flags & 1)
+    {
+        switch (RHActorField<int>(sequence, 0x3c))
+        {
+        case 14:
+            if (!(flags & 0x400))
+            {
+                ((RHActorPCVTableCalls *)this)->FUN_30(sequence, 0x5e);
+                RHActorField<int>(sequence, 0x3c) = 1;
+            }
+            return true;
+        case 15:
+            if (!(flags & 0x2000))
+            {
+                ((RHActorPCVTableCalls *)this)->FUN_30(sequence, 0x5e);
+                RHActorField<int>(sequence, 0x3c) = 1;
+            }
+            return true;
+        case 11:
+            if (!(flags & 0x1000))
+            {
+                ((RHActorPCVTableCalls *)this)->FUN_30(sequence, 0x66);
+                RHActorField<int>(sequence, 0x3c) = 1;
+            }
+            return true;
+        case 16:
+            if (!(flags & 0x200))
+            {
+                ((RHActorPCVTableCalls *)this)->FUN_30(sequence, 0x60);
+                RHActorField<int>(sequence, 0x3c) = 1;
+            }
+            return true;
+        case 20:
+            if (!(flags & 0x10000))
+            {
+                ((RHActorPCVTableCalls *)this)->FUN_30(sequence, 0x62);
+                RHActorField<int>(sequence, 0x3c) = 1;
+            }
+            return true;
+        case 21:
+        {
+            order = new RHOrder;
+            order->m_24 = 0x87;
+            order->m_2a = 0;
+            sequence->FUN_00585970(order);
+            return true;
+        }
+        case 23:
+            if (!(flags & 0x40000))
+            {
+                order = new RHOrder;
+                order->m_24 = 0x87;
+                order->m_2a = 0;
+                sequence->FUN_00585970(order);
+            }
+            return true;
+        case 22:
+        {
+            order = new RHOrder;
+            order->m_24 = 0x89;
+            order->m_2a = 0;
+            sequence->FUN_00585970(order);
+            return true;
+        }
+        }
+    }
+    if ((flags & 0x10) && RHActorField<int>(sequence, 0x3c) != 16)
+        return false;
+    return ((RHElementActorHuman *)this)->FUN_00475750(flags, sequence);
 }
 
 // FUNCTION: GAME 0x0049b930
@@ -725,6 +925,56 @@ void RHElementActorPC::FUN_0049b930(int amount, int unused, bool mode)
     else if (current < previous - 20)
         ((RHActorPCVTableCalls *)this)->FUN_slot65(8, 0, 255);
 }
+
+#include "RHElementActorCivilianCore.h"
+#include "RHActorCancelCalls.h"
+#include "RHSequenceInteractionCalls.h"
+
+// FUNCTION: GAME 0x0049bdf0
+bool RHElementActorPC::FUN_0049bdf0(RHSequenceElement *element)
+{
+    RHActorPCField<char>(this, 0x149) = 0;
+    switch (element->m_10)
+    {
+    case 0x4d:
+    case 0x4e:
+        if (RHActorPCField<void *>(this, 0x268))
+        {
+            RHUnk00546050()->RHUnk005460c0(RHUnk5490f0(0x22));
+            return false;
+        }
+        if (RHActorPCField<RHSequenceInteractionCalls *>(this, 0x130) &&
+            !(unsigned char)RHActorPCField<RHSequenceInteractionCalls *>(this, 0x130)->FUN_00585f70())
+            ((RHUnk0046bcb0 *)this)->Unk(7);
+        break;
+    case 0x51:
+        ((RHActorTranslationSequenceCalls *)element)->V0c(0, true);
+        ((RHActorPCVTableCalls *)this)->FUN_slot65(13, 0, 255);
+        return true;
+    case 0x52:
+        ((RHActorTranslationSequenceCalls *)element)->V0c(0, true);
+        ((RHActorPCVTableCalls *)this)->FUN_slot65(6, 0, 255);
+        return true;
+    case 0x14:
+        if ((RHActorPCField<unsigned>(element, 0x88) & 0x800) &&
+            RHActorPCField<int>(m_50, 0x8c) == 16)
+        {
+            RHActorPCField<unsigned>(element, 0x88) &= ~0x804;
+            RHActorPCField<void *>(element, 0x48) = RHActorPCField<void *>(this, 0x254);
+            RHPCSequenceDelegateCalls *delegate = RHActorPCField<RHPCSequenceDelegateCalls *>(this, 0x254);
+            (delegate->*delegate->m_vtable->m_50)(element);
+            return true;
+        }
+        break;
+    }
+    return ((RHElementActorCivilian *)this)->FUN_00475810((RHElementActorCivilian *)element);
+}
+
+struct RHPCSpeechValue
+{
+    unsigned short action;
+    unsigned short time;
+};
 
 struct RHPCSpeechNode
 {
@@ -806,8 +1056,105 @@ public:
     int position;
 };
 
+DECOMP_SIZE_ASSERT(RHPCSpeechValue, 4)
+DECOMP_SIZE_ASSERT(RHPCSpeechNode, 12)
+DECOMP_SIZE_ASSERT(RHPCSpeechList, 24)
+DECOMP_STATIC_ASSERT(offsetof(RHPCSpeechList, head) == 4)
+DECOMP_STATIC_ASSERT(offsetof(RHPCSpeechList, count) == 8)
+DECOMP_STATIC_ASSERT(offsetof(RHPCSpeechList, dirty) == 16)
+
 // GLOBAL: GAME 0x006c08f2
 unsigned short g_unk0x006c08f2;
+
+#include "RHSoundActorCalls.h"
+
+extern RHArtificialIntelligenceSoundCalls *g_unk0x006c1070;
+
+// FUNCTION: GAME 0x0049bfd0
+void RHElementActorPC::FUN_0049bfd0(unsigned short action, unsigned short flags, unsigned short variant)
+{
+    SBGeoPoint2D point;
+    if (!FUN_0049c4b0(action) && !(flags & 8))
+        return;
+    switch (RHActorPCField<unsigned short>(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0(), 0x4c))
+    {
+    case 0:
+        return;
+    case 1:
+        switch (action)
+        {
+        case 0:
+        case 8:
+        case 10:
+        case 14:
+            return;
+        }
+    case 2:
+        switch (action)
+        {
+        case 3:
+        case 16:
+        case 24:
+        case 25:
+            return;
+        }
+    case 3:
+        switch (action)
+        {
+        case 2:
+        case 5:
+        case 7:
+        case 9:
+        case 15:
+            return;
+        }
+    case 4:
+        switch (action)
+        {
+        case 22:
+        case 23:
+            return;
+        }
+    case 5:
+        switch (action)
+        {
+        case 1:
+        case 4:
+        case 6:
+        case 17:
+        case 18:
+        case 19:
+        case 20:
+        case 21:
+            return;
+        }
+    case 6:
+        if (action == 13)
+            return;
+    case 7:
+        if (action == 12)
+            return;
+    case 8:
+        if (action == 11)
+            return;
+    }
+    if (RHActorPCField<unsigned short>(this, 0x55a) != 0xffff)
+    {
+        if ((flags & 2u) <= 0)
+            return;
+        g_unk0x006c1070->Unk005a8d10((RHArtificialIntelligenceActor *)this);
+    }
+    g_unk0x006c1070->Unk005a8b70(0, RHActorPCField<void *>(m_5fc, 0x3c), action,
+        variant == 255 ? -1 : variant, (SBGeoPoint2D *)((char *)m_50 + 0x24), (RHArtificialIntelligenceActor *)this);
+    RHPCSpeechValue value;
+    value.action = action;
+    value.time = action == 11 ? 150 : 75;
+    RHPCSpeechList &speech = RHActorPCField<RHPCSpeechList>(this, 0x55c);
+    std::list<RHPCSpeechValue> &list = (std::list<RHPCSpeechValue> &)speech;
+    list.insert(list.end(), value);
+    speech.dirty = true;
+    g_unk0x006c08f2 = 25;
+}
 
 // Parked: cached-list helper inlining omits original iterator-result frame slots and erase calls.
 // STUB: GAME 0x0049c270
@@ -871,6 +1218,34 @@ void RHElementActorPC::FUN_0049d400(RHSequenceElement *element)
         ((RHActorPCVTableCalls *)this)->FUN_slot65(element->Unk00587160(15), 4, element->Unk00587160(17));
         ((RHPCSequenceCompletionCalls *)element)->V0c(0, true);
     }
+}
+
+#include "RHMalignityAlertCalls.h"
+
+// FUNCTION: GAME 0x0049d450
+void RHElementActorPC::FUN_0049d450(RHSequenceElement *element)
+{
+    switch (element->m_10)
+    {
+    case 0x65:
+    {
+        void *target = RHActorPCField<void *>(this, 0x5cc);
+        if (target && RHActorPCField<int>(RHActorPCField<void *>(target, 0x50), 0x8c) != 7)
+            ((RHPCCombatCalls *)this)->FUN_0049bb20(12, 1);
+        break;
+    }
+    case 0x73:
+    {
+        void *actor = RHActorPCField<void *>(element, 0x64);
+        ((RHScriptBatchCalls *)actor)->Unk00464630();
+        unsigned char *ai = (unsigned char *)actor + 0x49c + (*(int **)((char *)actor + 0x49c))[1];
+        ai[0x174] &= ~4;
+        ((RHMalignityAlertCalls *)((char *)actor + 0x49c + (*(int **)((char *)actor + 0x49c))[1]))->FUN_0042c890(14, this);
+        ((RHElementActorNPC *)actor)->FUN_00486f30(1);
+        break;
+    }
+    }
+    ((RHElementActorHuman *)this)->FUN_00479970(element);
 }
 
 // FUNCTION: GAME 0x0049d520
@@ -1184,8 +1559,6 @@ void RHElementActorPC::FUN_0049e8a0(int first, int second)
 class RHUnk6c1040;
 extern RHUnk6c1040 *g_unk0x6c1040;
 
-#include "RHSequenceGenericCalls.h"
-
 // FUNCTION: GAME 0x0049e8f0
 void RHElementActorPC::FUN_0049e8f0(int value)
 {
@@ -1237,6 +1610,58 @@ class RHMalignityGridCalls
 public:
     bool FUN_004f5e50(SBGeoBoundingBox2D &box, const SBGeoPoint2D &other, unsigned short layer);
 };
+
+#include "RHActorPositionCalls.h"
+
+// STUB: GAME 0x0049bb20
+void RHPCCombatCalls::FUN_0049bb20(int action, int flag)
+{
+    RHElementActorPC *actor = (RHElementActorPC *)this;
+    SBGeoPoint2D point;
+    RHBonusProjection *projection = RHActorPCField<RHBonusProjection *>(actor->m_50, 0xec);
+    ((RHActorPCInfo *)RHActorPCField<RHElementActorPC *>(this, 0x5cc)->m_50)->Position().FUN_0055fa20(
+        projection);
+    ((RHActorPCInfo *)RHActorPCField<RHElementActorPC *>(this, 0x5cc)->m_50)->Position().m_da =
+        RHActorPCField<unsigned short>(actor->m_50, 0xde);
+    RHActorPCField<void *>(&((RHActorPCInfo *)RHActorPCField<RHElementActorPC *>(this, 0x5cc)->m_50)->Position(), 0xdc) = actor->m_50->m_e0;
+    if ((unsigned char)flag)
+    {
+        ((RHActorPositionCalls *)&RHActorPCField<RHElementActorPC *>(this, 0x5cc)->m_50->m_4)->FUN_00464530(actor->m_50->m_4.m_20);
+        RHActorPCField<RHElementActorPC *>(this, 0x5cc)->m_50->m_4.FUN_0055f290();
+        RHActorPCField<RHElementActorPC *>(this, 0x5cc)->m_50->FUN_005bd560(0, false);
+    }
+    else
+    {
+        SBGeoBoundingBox2D bounds(*(SBGeoBoundingBox2D *)((RHUnkPathActorInfoBase *)&RHActorPCField<RHElementActorPC *>(this, 0x5cc)->m_50->m_4)->Unk0055fa10(3));
+        ((RHMobileUnk006091b0 *)&bounds)->FUN_006091b0(SBGeoVector2D((const SBGeoVector2D &)((RHElementActor *)this)->FUN_00462920()));
+        if (((RHMalignityGridCalls *)g_unk0x6c0a9c)->FUN_004f5e50(bounds,
+                actor->m_50->m_4.m_20, RHActorPCField<unsigned short>(actor->m_50, 0xde)))
+            point = bounds.FUN_00608f40();
+        else
+            point = actor->m_50->m_4.m_20;
+        RHElementActorPC *target = RHActorPCField<RHElementActorPC *>(this, 0x5cc);
+        RHActorPCField<SBGeoPoint2D>(target, 0x80) = point;
+        RHActorPCField<char>(target, 0x71) = 1;
+        ((RHActorPCInfo *)RHActorPCField<RHElementActorPC *>(this, 0x5cc)->m_50)->Position().m_4 = 7;
+    }
+    ((RHActorPCInfo *)RHActorPCField<RHElementActorPC *>(this, 0x5cc)->m_50)->Position().SetFlags(
+        (unsigned char)(RHActorPCField<unsigned short>(actor->m_50, 0xd8) + action) & 15);
+    ((RHScriptBatchCalls *)RHActorPCField<void *>(this, 0x5cc))->Unk0046bcf0(RHActorPCField<int>(this, 0x5d0), 0);
+    ((RHScriptBatchCalls *)this)->Unk0046bcf0(1, 0);
+    ((RHScriptBatchCalls *)RHActorPCField<void *>(this, 0x5cc))->Unk00464630();
+    unsigned char flags = RHActorPCField<unsigned>(actor->m_50->m_e0, 0x30) >> 13;
+    if (flags & 1)
+    {
+        if (((RHActorPCVTableCalls *)RHActorPCField<void *>(this, 0x5cc))->FUN_0049e720() ||
+            RHActorPCField<char>(RHActorPCField<void *>(this, 0x5cc), 0x1ce))
+        {
+            ((RHElementActorHuman *)RHActorPCField<void *>(this, 0x5cc))->FUN_00485940(0, 2, true, 1.0f);
+            RHActorPCField<char>(RHActorPCField<void *>(this, 0x5cc), 0x12) = 1;
+        }
+    }
+    ((RHElementActorHuman *)RHActorPCField<void *>(this, 0x5cc))->FUN_00479920(0);
+    RHActorPCField<void *>(this, 0x5cc) = 0;
+}
 
 // Parked: the vector temporary is passed by a recomputed address and later geometry loads use other scratch registers.
 // STUB: GAME 0x0049eab0
@@ -2224,6 +2649,7 @@ bool SBGeoBoundingBox2D::FUN_00608400(const SBGeoPoint2D &point) const
 
 void RHActorPCEmitHelpers(RHActorPCProfileCalls *profiles, RHActorPCTemplateCalls *actor, RHActorPCEngineCalls *engine, void *value)
 {
+    ((RHElementActorPC *)actor)->FUN_0049bfd0(0, 0, 255);
     profiles->FUN_00455ce0(value);
     profiles->FUN_00455d40((RHPCDescription *)value);
     actor->FUN_00493660(0);
