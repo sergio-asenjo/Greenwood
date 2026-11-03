@@ -317,9 +317,6 @@ long RHSeekPointIndices::FUN_005226a0(const unsigned short &value, bool forward)
 
 void RHSeekPoint::Emit(SBFile &file)
 {
-    RHSeekPoint empty;
-    RHSeekPoint point((const RHSeekPointDirectionView *)this);
-    RHSeekPoint random((RHMalignityPosition *)this);
     FUN_00522070((const RHSeekPointDirectionView *)this);
     SerializeStatus(file);
     SerializeAllData(file);
