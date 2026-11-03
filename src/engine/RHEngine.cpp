@@ -72,11 +72,7 @@ public:
     virtual void v40(unsigned short layer, void *building);
 };
 
-class RHActorPositionCalls
-{
-public:
-    void FUN_00464530(const SBGeoPoint2D &point);
-};
+#include "RHActorPositionCalls.h"
 
 
 struct RHUnk005c9010Iterator;
@@ -95,6 +91,11 @@ public:
     virtual void Unk14() = 0;
     virtual bool Matches(void *target, int mode, int flags) = 0;
 };
+
+template<class Iterator, class Distance> inline void RHAdvanceCursor(Iterator &current, Distance distance)
+{
+    FUN_005c9010((RHUnk005c9010Iterator &)current, distance, std::_Iter_cat(current));
+}
 
 class RHEngineSequenceList
 {
@@ -175,6 +176,64 @@ public:
                         std::bidirectional_iterator_tag category;
                         FUN_005c9010((RHUnk005c9010Iterator &)(cursor = head), wanted - size, category);
                     }
+                }
+                index = wanted;
+            }
+        }
+        return cursor->data;
+    }
+    __forceinline void AdvanceCursor(int distance)
+    {
+        RHUnk005c9010Iterator &current = (RHUnk005c9010Iterator &)cursor;
+        int n = distance;
+        FUN_005c9010(current, n, std::_Iter_cat(*(std::list<void *>::iterator *)&cursor));
+    }
+    __forceinline void *At(int wanted)
+    {
+        int size = count;
+        if (dirty)
+        {
+            if (wanted <= (size + 1) / 2)
+            {
+                cursor = ((RHUnk0046eb30 *)this)->FUN_0046eb80().node;
+                AdvanceCursor(wanted);
+            }
+            else
+            {
+                std::list<void *>::iterator &current = *(std::list<void *>::iterator *)&cursor;
+                current = ((std::list<void *> *)this)->end();
+                RHAdvanceCursor(current, wanted - size);
+            }
+            dirty = false;
+            index = wanted;
+        }
+        else
+        {
+            int previous = index;
+            if (wanted != previous)
+            {
+                if (wanted < previous)
+                {
+                    if (wanted < (previous + 1) / 2)
+                    {
+                        cursor = ((RHUnk0046eb30 *)this)->FUN_0046eb80().node;
+                        AdvanceCursor(wanted);
+                    }
+                    else
+                    {
+                        int distance = wanted - previous;
+                        FUN_005c9010((RHUnk005c9010Iterator &)cursor, distance, std::_Iter_cat(*(std::list<void *>::iterator *)&cursor));
+                    }
+                }
+                else if (wanted < (previous + size) / 2)
+                {
+                    int distance = wanted - previous;
+                    FUN_005c9010((RHUnk005c9010Iterator &)cursor, distance, std::_Iter_cat(*(std::list<void *>::iterator *)&cursor));
+                }
+                else
+                {
+                    CurrentIterator() = EndUnk004e1fc0();
+                    RHAdvanceCursor(*(std::list<void *>::iterator *)&cursor, wanted - size);
                 }
                 index = wanted;
             }
@@ -351,11 +410,7 @@ void RHSerializeName(SBFile &file, const char *name);
 #include "RHUnkTargetSpriteCalls.h"
 #include "RHPortraitBar.h"
 
-class RHUnk005bd5b0
-{
-public:
-    bool Unk(bool);
-};
+#include "RHSpriteLastFrameCalls.h"
 
 void *FUN_004b3120(int type);
 
@@ -549,7 +604,7 @@ public:
     virtual void Unk78() = 0; virtual void Unk79() = 0; virtual void Unk80() = 0; virtual void Unk81() = 0;
     virtual void Unk82() = 0; virtual void Unk83() = 0; virtual void Unk84() = 0; virtual void Unk85() = 0;
     virtual void Unk86() = 0; virtual void Unk87() = 0; virtual void Unk88() = 0; virtual void Unk89() = 0;
-    virtual void Unk90() = 0; virtual void Unk91() = 0;
+    virtual bool Unk90() = 0; virtual void Unk91() = 0;
     virtual void Apply(RHUnk00582220 *node, int value, unsigned short layer, void *effect) = 0;
 };
 
@@ -1206,6 +1261,7 @@ class __declspec(novtable) RHUnk004a7e90 : public RHProjectileLifetime
 {
 public:
     RHUnk004a7e90(void *victim);
+    bool FUN_004a7ff0(int first, int second, int third);
     bool Serialize(SBFile &file);
 };
 
@@ -1229,6 +1285,7 @@ bool RHUnk004a7e90::Serialize(SBFile &file)
 void EmitRHUnk004a7e90(void *storage, void *victim)
 {
     ((RHUnk004a7e90 *)storage)->Serialize(*(SBFile *)victim);
+    ((RHUnk004a7e90 *)storage)->FUN_004a7ff0(0, 0, 0);
     ((RHUnk004a7e90 *)storage)->RHUnk004a7e90::RHUnk004a7e90(victim);
     ((RHUnk004a6670 *)storage)->RHUnk004a6670::RHUnk004a6670(victim, 0);
     ((RHUnk004a65f0 *)storage)->RHUnk004a65f0::RHUnk004a65f0();
@@ -1285,6 +1342,15 @@ bool RHUnk004a7ed0::FUN_004a7f80()
     }
     (*(RHEngineWidenedCalls **)((char *)this + 0x50))->FUN_005b7f60(8);
     return true;
+}
+
+// FUNCTION: GAME 0x004a7ff0
+bool RHUnk004a7e90::FUN_004a7ff0(int first, int second, int third)
+{
+    RHElementObject *purse = *(RHElementObject **)&m_15c;
+    if (purse && !purse->m_fd)
+        return purse->V20(first, second, third);
+    return ((RHElementObject *)this)->FUN_004b26a0(first, second, third);
 }
 
 // FUNCTION: GAME 0x004ba970
@@ -3238,11 +3304,7 @@ public:
 };
 
 class RHSoundSource;
-class SBThreadedInput
-{
-public:
-    static bool SetCursor(unsigned short cursor, bool selfIncrement);
-};
+#include "SBThreadedInput.h"
 
 class RHKeyConfig
 {
@@ -3996,6 +4058,90 @@ void RHEngine::FUN_004dbed0(const void *event)
         actors[index]->FUN_00490910(value);
 }
 
+// FUNCTION: GAME 0x004dbf20
+bool RHEngine::FUN_004dbf20(void *actor, bool additive, bool notify)
+{
+    typedef RHScriptIter (RHTitbitList::*Erase)(RHScriptIter, RHScriptIter);
+    if (!actor)
+    {
+        RHSectorActorList &selected = *(RHSectorActorList *)((char *)this + 0x49f8);
+        (((RHTitbitList &)selected).*(Erase)&RHTitbitList::Clear)(
+            ((RHUnk0046eb30 &)selected).FUN_0046eb80(), RHScriptIter(*(RHScriptNode **)((char *)this + 0x49fc)));
+        selected.m_valid = 1;
+        std::vector<RHElementActor *> &actors = *(std::vector<RHElementActor *> *)((char *)this + 0x4938);
+        unsigned count = actors.size();
+        for (unsigned index = 0; index < count; ++index)
+        {
+            RHElementActor *candidate = actors[index];
+            if (!FUN_004c7f50(candidate))
+                continue;
+            if (((RHEngineSequenceDispatchCalls *)candidate)->Unk90())
+            {
+                if (selected.Unk004b8f80(candidate, true) == -1)
+                {
+                    selected.insert(selected.begin(), candidate);
+                    selected.m_valid = 1;
+                }
+            }
+            else if (selected.Unk004b8f80(candidate, true) == -1)
+            {
+                selected.insert(RHSectorActorIter(selected.m_head), candidate);
+                selected.m_valid = 1;
+            }
+        }
+        if (!*(unsigned *)((char *)this + 0x4a00))
+            return false;
+    }
+    else
+    {
+        if (!FUN_004c7f50(actor))
+            return false;
+        if (!additive)
+        {
+            RHSectorActorList &selected = *(RHSectorActorList *)((char *)this + 0x49f8);
+            RHScriptNode *head = *(RHScriptNode **)((char *)this + 0x49fc);
+            (((RHTitbitList &)selected).*(Erase)&RHTitbitList::Clear)(RHScriptIter(head->next), RHScriptIter(head));
+            selected.m_valid = 1;
+        }
+        bool front = ((RHEngineSequenceDispatchCalls *)actor)->Unk90();
+        RHSectorActorList &selected = *(RHSectorActorList *)((char *)this + 0x49f8);
+        if (front)
+        {
+            if (selected.Unk004b8f80((RHElementActor *const &)actor, true) == -1)
+            {
+                selected.insert(selected.begin(), (RHElementActor *const &)actor);
+                selected.m_valid = 1;
+            }
+        }
+        else if (selected.Unk004b8f80((RHElementActor *const &)actor, true) == -1)
+        {
+            selected.insert(RHSectorActorIter(selected.m_head), (RHElementActor *const &)actor);
+            selected.m_valid = 1;
+        }
+        if (notify)
+            ((RHEngineSequenceDispatchCalls *)actor)->Dispatch(0x0b, 0, 0xff);
+    }
+    unsigned count = *(unsigned *)((char *)this + 0x4a00);
+    if (count > 1)
+    {
+        RHSectorActorList &selected = *(RHSectorActorList *)((char *)this + 0x49f8);
+        for (unsigned index = 0; index < count; ++index)
+        {
+            selected.Unk005c8e40(index);
+            actor = selected.m_cur.m_p->m_data;
+            FUN_004dce20(actor);
+        }
+        (*(RHMessenger **)((char *)this + 0x68))->RHUnk005460c0(RHUnk00549250(0x16, 0, 0));
+    }
+    else if (count == 1)
+    {
+        actor = *((RHSectorActorList *)((char *)this + 0x49f8))->begin();
+        int action = *(int *)((char *)actor + 0x500);
+        (*(RHMessenger **)((char *)this + 0x68))->RHUnk005460c0(RHUnk00549250(0x16, actor, action));
+    }
+    return true;
+}
+
 inline void RHEngineSequenceList::Clear()
 {
     RHScriptNode *last = head;
@@ -4101,6 +4247,119 @@ void RHEngine::FUN_004dce20(void *actor)
     }
     *(bool *)((char *)this + 0x471a) = false;
     ((RHElementActorPC *)actor)->FUN_0049d680(0);
+}
+
+// FUNCTION: GAME 0x004dcfd0
+void RHEngine::FUN_004dcfd0(void *actor, unsigned short action)
+{
+    typedef RHScriptIter (RHTitbitList::*Erase)(RHScriptIter, RHScriptIter);
+    SBGeoPoint2D point;
+    bool locked = *(bool *)(*(char **)((char *)this + 0x68) + 0x20);
+    if (actor)
+    {
+        bool selected = ((RHSectorActorList *)((char *)this + 0x49f8))->FindValue((RHElementActor *)actor) != -1;
+        if (!selected)
+        {
+            ((RHElementActorPC *)actor)->FUN_0049d680(action);
+            return;
+        }
+    }
+    char *object = *(char **)((char *)this + 0x4724);
+    *(int *)((char *)this + 0x471c) = 0;
+    *(int *)((char *)this + 0x4720) = 0;
+    *(bool *)((char *)this + 0x471a) = false;
+    int payloadCount = *(int *)(object + 0x140);
+    if ((unsigned short)payloadCount > 0)
+    {
+        RHSectorActorList &items = *(RHSectorActorList *)(object + 0x138);
+        int index = 0;
+        unsigned remaining = (unsigned short)payloadCount;
+        do
+        {
+            items.Unk005c8e40(index);
+            ::operator delete(items.CurrentValue());
+            ++index;
+        } while (--remaining != 0);
+    }
+    RHSectorActorList &payloads = *(RHSectorActorList *)(object + 0x138);
+    (((RHTitbitList &)payloads).*(Erase)&RHTitbitList::Clear)(
+        ((RHUnk0046eb30 &)payloads).FUN_0046eb80(), RHScriptIter((RHScriptNode *)payloads.m_head));
+    payloads.m_valid = 1;
+    unsigned count = *(unsigned *)((char *)this + 0x4a00);
+    for (unsigned selectedIndex = 0; selectedIndex < count; ++selectedIndex)
+    {
+        RHSectorActorList &selected = *(RHSectorActorList *)((char *)this + 0x49f8);
+        selected.Unk005c8e40(selectedIndex);
+        void *member = selected.m_cur.m_p->m_data;
+        if (*(int *)((char *)member + 0x500) != action)
+        {
+            if (!locked)
+                FUN_004dce20(member);
+            ((RHElementActorPC *)member)->FUN_0049d680(action);
+        }
+    }
+    if (!locked && action != 2 && action != 3 && action != 8 && action != 0 && action != 16)
+    {
+        if (action == 1)
+        {
+            for (unsigned index = 0; index < count; ++index)
+            {
+                RHSectorActorList &selected = *(RHSectorActorList *)((char *)this + 0x49f8);
+                selected.Unk005c8e40(index);
+                void *member = selected.m_cur.m_p->m_data;
+                int posture = *(int *)((char *)member + 0x144);
+                if (posture != 4 && posture != 5 && posture != 6)
+                    ((RHUnk0046bcb0 *)member)->Unk(8);
+            }
+        }
+        else
+        {
+            for (unsigned index = 0; index < count; ++index)
+            {
+                RHEngineSequenceList &selected = *(RHEngineSequenceList *)((char *)this + 0x49f8);
+                ((RHUnk0046bcb0 *)selected.At(index))->Unk(8);
+            }
+        }
+    }
+    switch (action)
+    {
+    case 1:
+        if (!locked)
+            FUN_004defa0(0);
+        (*(RHElementObject **)((char *)this + 0x4724))->FUN_004b2390(5);
+        break;
+    case 17:
+        (*(RHElementObject **)((char *)this + 0x4724))->FUN_004b2390(9);
+        break;
+    case 19:
+        (*(RHElementObject **)((char *)this + 0x4724))->FUN_004b2390(11);
+        break;
+    case 11:
+        (*(RHElementObject **)((char *)this + 0x4724))->FUN_004b2390(4);
+        break;
+    case 4:
+        (*(RHElementObject **)((char *)this + 0x4724))->FUN_004b2390(7);
+        break;
+    case 5:
+        (*(RHElementObject **)((char *)this + 0x4724))->FUN_004b2390(6);
+        break;
+    case 15:
+        (*(RHElementObject **)((char *)this + 0x4724))->FUN_004b2390(2);
+        break;
+    case 6:
+    case 7:
+        *(bool *)((char *)this + 0x4d85) = true;
+        *(int *)((char *)this + 0x4d94) = 0;
+        *(int *)((char *)this + 0x4d88) = 0;
+        *(int *)((char *)this + 0x4d8c) = 0;
+        *(int *)((char *)this + 0x4d90) = 0;
+        break;
+    }
+    *(bool *)((char *)this + 0x72) = false;
+    *(bool *)((char *)this + 0x73) = false;
+    *(bool *)((char *)this + 0x74) = false;
+    if (action && !*(bool *)(*(char **)((char *)this + 0x68) + 0x21))
+        FUN_004de170(false, false, true);
 }
 
 // Parked: flag argument widths, cached selection loads and point-store scheduling differ.
@@ -5527,26 +5786,7 @@ struct RHUnk004e4500Segments
     }
 };
 
-// SIZE 0x2c
-class RHUnk004e4500
-{
-public:
-    RHUnk004e4500();
-    ~RHUnk004e4500();
-    std::vector<SBGeoSegment2D> m_segments; // 0x00
-    undefined4 m_10; // 0x10
-    bool m_dirty; // 0x14
-    undefined m_15[7]; // 0x15
-    SBGeoSegment2D m_1c; // 0x1c
-};
-
-DECOMP_SIZE_ASSERT(RHUnk004e4500, 0x2c)
-
-// FUNCTION: GAME 0x004e4500
-RHUnk004e4500::RHUnk004e4500()
-    : m_dirty(true), m_1c(SBGeoPoint2D(0.0f, 0.0f), SBGeoPoint2D(0.0f, 0.0f))
-{
-}
+#include "RHUnk004e4500.h"
 
 // FUNCTION: GAME 0x004e45a0
 RHUnk004e4500::~RHUnk004e4500()
@@ -5555,10 +5795,12 @@ RHUnk004e4500::~RHUnk004e4500()
     segments.Erase(segments.m_first, segments.m_last);
 }
 
+#pragma inline_depth(0)
 void EmitRHUnk004e4500()
 {
     RHUnk004e4500 value;
 }
+#pragma inline_depth()
 
 // FUNCTION: GAME 0x004e51e0
 void *RHbeamMe::FUN_004e51e0(unsigned flags)

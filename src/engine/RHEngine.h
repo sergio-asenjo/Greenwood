@@ -105,6 +105,7 @@ public:
     void FUN_004c38d0(SBFile &file, unsigned *value);
     void FUN_004dee70(float *point);
     void FUN_004dce20(void *actor);
+    void FUN_004dcfd0(void *actor, unsigned short action);
     void FUN_004ddfb0();
     int FUN_004deeb0(const SBGeoPoint2D &point, SBGeoPoint2D &result);
     void FUN_004defa0(char flag);
@@ -176,6 +177,7 @@ public:
     void FUN_004dbdb0(const void *event);
     void FUN_004dbe40(const void *event);
     void FUN_004dbed0(const void *event);
+    bool FUN_004dbf20(void *actor, bool additive, bool notify);
     bool FUN_004dc190(void *actor);
     void FUN_004dc260(const void *event);
     void FUN_004de170(bool first, bool second, bool third);
