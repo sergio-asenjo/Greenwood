@@ -2603,7 +2603,7 @@ void RHFrameHolder::Emit(SBResourceManager *resources, SBArray<SBGeoVector2D> &v
     unsigned short count;
     InitializeSpriteBank();
     AddRowFromResource(resources, 0, count, vectors);
-    DumpOneDictionary();
+    void (RHFrameHolder::*volatile dump)() = &RHFrameHolder::DumpOneDictionary;
 }
 
 void EmitFrameHolderWidened(RHEngine *engine, RHUnk00506e00 *array, unsigned int count,
