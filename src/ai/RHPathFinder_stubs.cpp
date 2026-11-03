@@ -2,7 +2,7 @@
 #include "RHPathFinder.h"
 #include "SBGeoSegment2D.h"
 #include "SBGeoSegmentVector.h"
-#include "RHGameInputTranslator.h"
+#include "RHGameInputSegment.h"
 
 RHPathRequestList::~RHPathRequestList()
 {

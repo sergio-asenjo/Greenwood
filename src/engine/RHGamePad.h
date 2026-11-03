@@ -90,6 +90,12 @@ struct RHGamePadSelection
         GoTo(0);
         return GetCurrent();
     }
+    RHElementActorPC *&CurrentPC() { return **(std::list<RHElementActorPC *>::iterator *)&m_current; }
+    RHProfilePointerList::iterator &SetCurrent(RHProfilePointerList::iterator position)
+    {
+        (RHProfilePointerList::iterator &)m_current = position;
+        return (RHProfilePointerList::iterator &)m_current;
+    }
     RHElementActorPC *At(int wanted)
     {
         int count = m_count;
@@ -114,6 +120,29 @@ struct RHGamePadSelection
             Move(wanted, count);
         return m_current.node->value;
     }
+    void Seek(int wanted)
+    {
+        int count = m_count;
+        if (m_dirty)
+        {
+            if (wanted <= (count + 1) / 2)
+            {
+                std::bidirectional_iterator_tag category;
+                RHProfilePointerList::iterator first = ((RHProfileListCursor *)this)->begin();
+                RHAdvanceProfileCursor(SetCurrent(first), wanted, category);
+            }
+            else
+            {
+                std::bidirectional_iterator_tag category;
+                RHProfilePointerList::iterator last = ((RHProfileListCursor *)this)->end();
+                RHAdvanceProfileCursor(SetCurrent(last), wanted - count, category);
+            }
+            m_dirty = false;
+            m_index = wanted;
+        }
+        else if (wanted != m_index)
+            Move(wanted, count);
+    }
 };
 
 struct RHGamePadEngine
@@ -123,7 +152,77 @@ struct RHGamePadEngine
     RHElementActorPC **m_4940;
     char m_4944[0xb4];
     RHGamePadSelection m_selection;
+    RHProfilePointerList::iterator &SetSelectionCurrent(RHProfilePointerList::iterator position)
+    {
+        (RHProfilePointerList::iterator &)m_selection.m_current = position;
+        return (RHProfilePointerList::iterator &)m_selection.m_current;
+    }
+    void SeekSelection(int wanted)
+    {
+        bool dirty = m_selection.m_dirty;
+        int count = m_selection.m_count;
+        if (dirty)
+        {
+            if (wanted <= (count + 1) / 2)
+            {
+                std::bidirectional_iterator_tag category;
+                RHProfilePointerList::iterator first = ((RHProfileListCursor *)&m_selection)->begin();
+                RHAdvanceProfileCursor(SetSelectionCurrent(first), wanted, category);
+            }
+            else
+            {
+                std::bidirectional_iterator_tag category;
+                RHProfilePointerList::iterator last = ((RHProfileListCursor *)&m_selection)->end();
+                RHAdvanceProfileCursor(SetSelectionCurrent(last), wanted - count, category);
+            }
+            m_selection.m_dirty = false;
+            m_selection.m_index = wanted;
+        }
+        else
+        {
+            int previous = m_selection.m_index;
+            if (wanted != previous)
+            {
+                if (wanted < previous)
+                {
+                    if (wanted < (previous + 1) / 2)
+                    {
+                        std::bidirectional_iterator_tag category;
+                        RHProfilePointerList::iterator first = ((RHProfileListCursor *)&m_selection)->begin();
+                        RHAdvanceProfileCursor(SetSelectionCurrent(first), wanted, category);
+                    }
+                    else
+                    {
+                        std::bidirectional_iterator_tag category;
+                        RHAdvanceProfileCursor((RHProfilePointerList::iterator &)m_selection.m_current, wanted - previous, category);
+                    }
+                }
+                else if (wanted < (previous + count) / 2)
+                {
+                    int distance = wanted;
+                    RHSectorActorIter &current = (RHSectorActorIter &)m_selection.m_current;
+                    distance -= previous;
+                    std::advance(current, distance);
+                }
+                else
+                {
+                    m_selection.m_current.node = m_selection.m_head;
+                    std::advance((RHSectorActorIter &)m_selection.m_current, wanted - count);
+                }
+                m_selection.m_index = wanted;
+            }
+        }
+    }
     RHGamePadSelection &GetSelection() { return m_selection; }
+    RHElementActorPC *&PC(int index)
+    {
+        RHElementActorPC **entries = m_493c;
+        return entries[index];
+    }
+    RHElementActorPC *Follow() const
+    {
+        return *(const bool *)((const char *)this + 0x4719) == true ? *(RHElementActorPC *const *)((const char *)this + 0xd8) : 0;
+    }
     unsigned PCCount() const
     {
         RHElementActorPC **first = *(RHElementActorPC **const volatile *)&m_493c;

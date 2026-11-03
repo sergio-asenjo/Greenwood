@@ -11,6 +11,21 @@
 #include "RHElementActorHumanCore.h"
 #include <string.h>
 #include <iterator>
+#include <stddef.h>
+
+DECOMP_SIZE_ASSERT(RHGameInputTranslator, 0x19c)
+DECOMP_STATIC_ASSERT(offsetof(RHGameInputTranslator, m_bounds) == 0x10c)
+DECOMP_STATIC_ASSERT(offsetof(RHGameInputTranslator, m_deadZone) == 0x120)
+DECOMP_STATIC_ASSERT(offsetof(RHGameInputTranslator, m_keys) == 0x14c)
+DECOMP_STATIC_ASSERT(offsetof(RHGameInputTranslator, m_196) == 0x196)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk004e4500, m_dirty) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk004e4500, m_1c) == 0x1c)
+DECOMP_SIZE_ASSERT(SBInputJoystickState, 0x50)
+DECOMP_SIZE_ASSERT(RHGamePadSelection, 0x18)
+DECOMP_STATIC_ASSERT(offsetof(RHGamePadSelection, m_current) == 0xc)
+DECOMP_STATIC_ASSERT(offsetof(RHGamePadSelection, m_dirty) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHGamePadSelection, m_index) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(RHGamePadEngine, m_selection) == 0x49f8)
 
 extern unsigned char g_unk0x006c0e48[];
 
@@ -67,6 +82,28 @@ static inline bool RHGameInputUserLocked(const RHMessenger *messenger)
     return *(const bool *)((const char *)messenger + 0x23);
 }
 
+static inline double RHGameInputProfileDimension(unsigned offset)
+{
+    return *(float *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + offset);
+}
+
+// STUB: GAME 0x00517770
+RHGameInputTranslator::RHGameInputTranslator()
+{
+    mpInstance = this;
+    float height = *(float *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x58);
+    m_bounds.FUN_00609050(SBGeoPoint2D(0.0f, 0.0f), SBGeoPoint2D(RHGameInputProfileDimension(0x54), *(volatile float *)&height));
+    m_196[1] = true;
+    m_196[2] = false;
+    m_196[0] = false;
+    memset(m_keys, 0, sizeof(m_keys));
+    ReflectActiveKeyConfig();
+    m_keys[0x20] = 0x57;
+    m_keys[0x1f] = 0xb7;
+    m_keys[0x1d] = 1;
+    memset(m_previousKeys, 0, sizeof(m_previousKeys));
+}
+
 // FUNCTION: GAME 0x00517900
 void RHGameInputTranslator::TranslateMouseInput(SBGeoPoint2D &point, short wheel)
 {
@@ -92,6 +129,8 @@ void RHGameInputTranslator::TranslateMouseInput(SBGeoPoint2D &point, short wheel
 
 #include "RHGameSyncCalls.h"
 #include "SBInputKeyboardState.h"
+#include "RHGame.h"
+#include <windows.h>
 
 class RHUnk0048a970;
 extern RHUnk0048a970 *g_unk0x6c0b3c;
@@ -293,6 +332,10 @@ void RHGameInputTranslator::ResetState()
     memset(m_previousKeys, 0, sizeof(m_previousKeys));
 }
 
+#define m_first (*(RHGameInputSegment **)((char *)&m_deadZone.m_segments + 4))
+#define m_last (*(RHGameInputSegment **)((char *)&m_deadZone.m_segments + 8))
+#define m_deadZoneChanged m_deadZone.m_dirty
+
 // FUNCTION: GAME 0x005185c0
 void RHGameInputTranslator::ClearDeadZone()
 {
@@ -328,6 +371,10 @@ bool RHGameInputTranslator::IsInDeadZone(const SBGeoPoint2D &point) const
     }
     return false;
 }
+
+#undef m_first
+#undef m_last
+#undef m_deadZoneChanged
 
 #include "RHKeyConfig.h"
 
@@ -459,6 +506,79 @@ void RHGamePad::ManageMoveAxis(SBInputJoystickState &state)
         }
         if (*(int *)((char *)pc + 0x268) && !state.m_buttons[10] && m_previous.m_buttons[10])
             m_messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549120(3, *(SBGeoPoint2D *)&g_inputPosition, 2));
+    }
+}
+
+// STUB: GAME 0x005191e0
+void RHGamePad::ManageCharacterSelect(SBInputJoystickState &state)
+{
+    RHElementActorPC **first = ((RHGamePadEngine *)g_pEngine)->m_493c;
+    unsigned char count = first == 0 ? 0 : ((RHGamePadEngine *)g_pEngine)->m_4940 - first;
+    unsigned char selected = GetSelectedIndexPC();
+    if (!state.m_buttons[4] && m_previous.m_buttons[4] && !state.m_buttons[5])
+    {
+        unsigned char index = selected;
+        if (index == 0 || index == 0xff)
+            index = count;
+        --index;
+        m_messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0xd, ((RHGamePadEngine *)g_pEngine)->PC(index)));
+        RHElementActorPC *follow = ((RHGamePadEngine *)m_engine)->Follow();
+        RHGamePadSelection &selection = ((RHGamePadEngine *)m_engine)->GetSelection();
+        selection.GoTo(0);
+        if (follow != selection.CurrentPC())
+        {
+            RHGamePadSelection &current = ((RHGamePadEngine *)m_engine)->GetSelection();
+            current.GoTo(0);
+            RHElementActorPC *pc = current.CurrentPC();
+            m_engine->SelectFollowElement((RHElementActor *)pc);
+        }
+    }
+    if (!state.m_buttons[4] && m_previous.m_buttons[4] && state.m_buttons[5])
+    {
+        unsigned char index;
+        if (selected == 0 || selected == 0xff)
+            index = count - 1;
+        else
+            index = selected - 1;
+        m_messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0xd, ((RHGamePadEngine *)g_pEngine)->PC(index)));
+        RHElementActorPC *follow = ((RHGamePadEngine *)m_engine)->Follow();
+        RHGamePadSelection &selection = ((RHGamePadEngine *)m_engine)->GetSelection();
+        selection.GoTo(0);
+        if (follow != selection.CurrentPC())
+        {
+            RHGamePadSelection &current = ((RHGamePadEngine *)m_engine)->GetSelection();
+            current.GoTo(0);
+            RHElementActorPC *pc = current.CurrentPC();
+            m_engine->SelectFollowElement((RHElementActor *)pc);
+        }
+    }
+    if (!state.m_buttons[6] && m_previous.m_buttons[6] && !state.m_buttons[5])
+    {
+        unsigned char index = selected;
+        if (index == count - 1 || index == 0xff)
+            index = 0;
+        else
+            ++index;
+        m_messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0xd, ((RHGamePadEngine *)g_pEngine)->PC(index)));
+        RHElementActorPC *follow = ((RHGamePadEngine *)m_engine)->Follow();
+        RHGamePadSelection &current = ((RHGamePadEngine *)m_engine)->GetSelection();
+        current.GoTo(0);
+        if (follow != current.CurrentPC())
+        {
+            RHGamePadSelection &selection = ((RHGamePadEngine *)m_engine)->m_selection;
+            selection.Seek(0);
+            RHElementActorPC *pc = selection.CurrentPC();
+            m_engine->SelectFollowElement((RHElementActor *)pc);
+        }
+    }
+    if (!state.m_buttons[6] && m_previous.m_buttons[6] && state.m_buttons[5])
+    {
+        unsigned char index = selected;
+        if (index == count - 1 || index == 0xff)
+            index = 0;
+        else
+            ++index;
+        m_messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0xd, ((RHGamePadEngine *)g_pEngine)->PC(index)));
     }
 }
 
@@ -627,6 +747,39 @@ static inline RHGamePadSelection &RHGamePadOpponents(RHElementActorPC *pc)
     return *(RHGamePadSelection *)((char *)pc + 0x260);
 }
 
+// STUB: GAME 0x00519c70
+void RHGamePad::ManageQA(SBInputJoystickState &state)
+{
+    if (((RHGamePadEngine *)m_engine)->m_selection.GetCount() > 0)
+    {
+        if (!state.m_buttons[7] && m_previous.m_buttons[7])
+        {
+            if (!state.m_buttons[5])
+            {
+                if (((RHGamePadEngine *)m_engine)->m_selection.GetCount() > 0)
+                    ((RHGame *)g_unk0x6c0b3c)->FUN_00513ff0();
+                return;
+            }
+            if (!m_64)
+            {
+                m_64 = true;
+                m_68 = GetTickCount();
+                return;
+            }
+            m_messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(1, 0, 0));
+            m_64 = false;
+            return;
+        }
+        if (m_64 && GetTickCount() > m_68 + 250)
+        {
+            RHGamePadEngine *engine = (RHGamePadEngine *)m_engine;
+            engine->SeekSelection(0);
+            m_messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(1, engine->m_selection.GetCurrent(), 0));
+            m_64 = false;
+        }
+    }
+}
+
 // FUNCTION: GAME 0x0051a3c0
 void RHGamePad::ChooseOpponent(RHElementActorPC *pc, unsigned short direction, short step)
 {
@@ -663,6 +816,7 @@ char *RHUnk0051a4e0::FUN_0051a4e0()
 
 void EmitRHGameInputTranslator(RHGameInputTranslator *translator, SBGeoPoint2D &point, SBInputKeyboardState &keys)
 {
+    new RHGameInputTranslator;
     translator->TranslateMouseInput(point, 0);
     translator->TranslateKeyboardInput(keys, 0);
     translator->ResetState();
