@@ -7,6 +7,7 @@
 #include "SBNullstr.h"
 #include "RHMenuShortMissionDescription.h"
 
+// STUB: GAME 0x0044ef60
 void RHMenuShortMissionBlazons::FUN_0044ef60(const RHMapBox &, bool) {}
 
 // Target 0x0060dbc0, __thiscall.

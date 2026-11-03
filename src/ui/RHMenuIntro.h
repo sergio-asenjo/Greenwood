@@ -17,12 +17,7 @@
 #include "RHMenuOptions.h"
 #include "RHMenuShortMissionDescription.h"
 
-class SBThreadedInput
-{
-public:
-    void SetMouseEnabled(bool enabled);
-    static void SetTheClippingBox(SBGeoBoundingBox2D box);
-};
+#include "SBThreadedInput.h"
 
 extern char g_unk0x006c0685;
 extern SBThreadedInput *g_unk0x6c1340;

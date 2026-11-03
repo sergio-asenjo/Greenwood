@@ -1,7 +1,8 @@
 #include "SBNullstr.h"
 #include "RHLoadingScreen.h"
 
-// LIBRARY: GAME 0x00642913
+// LIBRARY: GAME 0x00642913 SYMBOL
+// _sprintf
 extern "C" int sprintf(char *, const char *, ...) { return 0; }
 
 // LIBRARY: GAME 0x0063f890
