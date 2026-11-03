@@ -495,6 +495,7 @@ public:
     void FUN_005cf300();
     void FUN_005cf380();
     RHPortraitBoxEvent *FUN_005cf880(unsigned value);
+    RHPortraitWidgetEvent *FUN_005cf980(const RHPortraitWidgetInput &input);
     RHPortraitWidgetEvent *FUN_005d0a10(const RHPortraitWidgetInput &input);
     RHPortraitWidgetEvent *FUN_005d0a90(const RHPortraitWidgetInput &input);
     RHPortraitWidgetEvent *FUN_005d0d00(const RHPortraitWidgetInput &input);
@@ -603,6 +604,135 @@ void EmitPortraitInputReset(RHPortraitInputField *field)
     field->FUN_005cf880(0);
 }
 
+// Parked: per-case return tails and the zero-register placement differ from the target.
+// STUB: GAME 0x005cf980
+RHPortraitWidgetEvent *RHPortraitInputField::FUN_005cf980(const RHPortraitWidgetInput &input)
+{
+    switch (m_state)
+    {
+    case 0:
+    {
+        RHPortraitWidgetEvent *result = 0;
+        Renderer().FUN_0061d570(m_18c, m_13c);
+        if ((unsigned char)((RHPortraitInputCalls *)this)->FUN_005cfc30(&input))
+            m_state = 1;
+        else if (FUN_005d1790(input))
+            m_state = 4;
+        else
+            return result;
+        m_event.value = 0;
+        m_event.next = 0;
+        m_event.widget = this;
+        m_event.type = 0;
+        result = &m_event;
+        return result;
+    }
+    case 1:
+    {
+        RHPortraitWidgetEvent *result = 0;
+        Renderer().FUN_0061d570(m_18c, m_13c);
+        if (FUN_005d1790(input))
+        {
+            if (!(input.flags & 0x40))
+                m_state = 4;
+            if (m_18a != 0xffff)
+            {
+                m_event.next = 0;
+                m_18a = 0xffff;
+                m_event.widget = this;
+                m_event.value = 0xffff;
+                m_event.type = 14;
+                result = &m_event;
+            }
+            return result;
+        }
+        if (!((SBGeoBoundingBox2D *)((char *)this + 0x30))->FUN_006083b0(input.point))
+        {
+            m_state = 0;
+            if (m_18a != 0xffff)
+            {
+                m_event.next = 0;
+                m_18a = 0xffff;
+                m_event.widget = this;
+                m_event.value = 0xffff;
+                m_event.type = 14;
+                result = &m_event;
+            }
+            return result;
+        }
+        if (input.wheel != 0)
+            return FUN_005d1810(input);
+        if (input.flags & 8)
+        {
+            m_event.value = 0;
+            m_event.next = 0;
+            m_event.widget = this;
+            m_event.type = 2;
+            result = &m_event;
+            return result;
+        }
+        if (input.flags & 2)
+        {
+            if (m_188 != 0xffff)
+            {
+                m_event.next = 0;
+                m_188 = 0xffff;
+                m_event.widget = this;
+                m_event.value = 0xffff;
+                m_event.type = 15;
+                result = &m_event;
+            }
+            return result;
+        }
+        unsigned short position = FUN_005d18f0(input.point);
+        if (input.flags & 0x40)
+        {
+            m_state = 2;
+            input.ui->m_selected = (RHPortraitUnk005d3880 *)this;
+        }
+        if (m_18a != position && ((SBGeoPoint2D *)((char *)this + 0x1a4))->FUN_005fc0e0(input.point))
+        {
+            m_18a = position;
+            *(SBGeoPoint2D *)((char *)this + 0x1a4) = input.point;
+            m_event.next = 0;
+            m_event.widget = this;
+            m_event.type = 14;
+            m_event.value = m_18a;
+            result = &m_event;
+        }
+        return result;
+    }
+    case 2:
+        return FUN_005d1090(input);
+    case 3:
+    {
+        RHPortraitWidgetEvent *scroll = 0;
+        if (((SBGeoBoundingBox2D *)((char *)this + 0x30))->FUN_00608400(input.point))
+        {
+            scroll = FUN_005d1810(input);
+            if ((unsigned char)((RHPortraitInputCalls *)this)->FUN_005cfc30(&input))
+                m_state = 2;
+            else if (input.flags & 1)
+            {
+                m_state = 4;
+                input.ui->Clear();
+            }
+        }
+        else if (input.flags & 1)
+        {
+            m_state = 0;
+            input.ui->Clear();
+        }
+        return scroll;
+    }
+    case 4:
+        return FUN_005d0d00(input);
+    case 5:
+        return FUN_005d1270(input);
+    }
+    return 0;
+}
+
 // FUNCTION: GAME 0x005cfc30
 int RHPortraitInputCalls::FUN_005cfc30(const void *input)
 {
@@ -611,6 +741,155 @@ int RHPortraitInputCalls::FUN_005cfc30(const void *input)
         !((RHPortraitInputRenderer *)((char *)this + 0x80))->FUN_0061d7c0().FUN_00608400(point))
         return 1;
     return 0;
+}
+
+// Parked: the key-event register and the keyboard state-3 scroll tail differ.
+// STUB: GAME 0x005d0340
+RHPortraitWidgetEvent *RHPortraitUnk005d0180::FUN_005d0340(const RHPortraitWidgetInput &input)
+{
+    RHPortraitWidgetEvent *result = 0;
+    RHPortraitWidgetEvent *event = 0;
+    bool handled = false;
+    if ((unsigned short)((RHPortraitInputField *)this)->m_10c > 0 && *(unsigned char *)((char *)this + 0x1f8)
+        && *(unsigned char *)((char *)this + 0x1f9))
+    {
+        int pressed = input.shortcuts->FUN_0060e240(0xd0);
+        int repeat = ((int *)((char *)input.shortcuts + 0xa0c))[0xd0];
+        if (pressed == 1 && (repeat == 2 || repeat == 0))
+        {
+            RHPortraitInputField *field = (RHPortraitInputField *)this;
+            if (field->m_188 == 0xffff)
+                field->m_188 = field->m_18a != 0xffff ? field->m_18a : field->m_18c;
+            else if (field->m_188 < field->m_10c - 1)
+            {
+                unsigned short line = field->m_18c;
+                ++field->m_188;
+                if (field->m_188 >= field->Renderer().FUN_0061d5e0() + line)
+                    field->m_18c = line + 1;
+            }
+            event = &m_event;
+            field->m_18a = 0xffff;
+            m_event.widget = this;
+            event->type = 15;
+            m_event.value = field->m_188;
+        }
+        else
+        {
+            pressed = input.shortcuts->FUN_0060e240(0xc8);
+            repeat = ((int *)((char *)input.shortcuts + 0xa0c))[0xc8];
+            if (pressed == 1 && (repeat == 2 || repeat == 0))
+            {
+                RHPortraitInputField *field = (RHPortraitInputField *)this;
+                if (field->m_188 == 0xffff)
+                    field->m_188 = field->m_18a != 0xffff ? field->m_18a : field->m_18c;
+                else if (field->m_188 > 0)
+                {
+                    unsigned short line = field->m_18c;
+                    --field->m_188;
+                    if (field->m_188 < line)
+                        field->m_18c = line - 1;
+                }
+                event = &m_event;
+                field->m_18a = 0xffff;
+                m_event.widget = this;
+                event->type = 15;
+                m_event.value = field->m_188;
+            }
+            else
+            {
+                pressed = input.shortcuts->FUN_0060e240(0x1c);
+                repeat = ((int *)((char *)input.shortcuts + 0xa0c))[0x1c];
+                if (pressed == 1 && (repeat == 2 || repeat == 0))
+                {
+                    event = &m_event;
+                    m_event.widget = this;
+                    m_event.value = 0;
+                    event->type = 2;
+                }
+            }
+        }
+        if (event)
+        {
+            result = event;
+            m_event.next = 0;
+            handled = true;
+            switch (((RHPortraitInputField *)this)->m_state)
+            {
+            case 0:
+                result->next = ((RHPortraitInputField *)this)->FUN_005d0a10(input);
+                break;
+            case 1:
+                result->next = ((RHPortraitInputField *)this)->FUN_005d0a90(input);
+                break;
+            case 2:
+                result->next = ((RHPortraitInputField *)this)->FUN_005d1090(input);
+                break;
+            case 3:
+            {
+                RHPortraitWidgetEvent *scroll = 0;
+                if (((SBGeoBoundingBox2D *)((char *)this + 0x30))->FUN_00608400(input.point))
+                {
+                    scroll = ((RHPortraitInputField *)this)->FUN_005d1810(input);
+                    if ((unsigned char)((RHPortraitInputCalls *)this)->FUN_005cfc30(&input))
+                        ((RHPortraitInputField *)this)->m_state = 2;
+                    else if (input.flags & 1)
+                    {
+                        ((RHPortraitInputField *)this)->m_state = 4;
+                        input.ui->Clear();
+                    }
+                }
+                else if (input.flags & 1)
+                {
+                    ((RHPortraitInputField *)this)->m_state = 0;
+                    input.ui->Clear();
+                }
+                result->next = scroll;
+                break;
+            }
+            case 4:
+                result->next = ((RHPortraitInputField *)this)->FUN_005d0d00(input);
+                break;
+            case 5:
+                result->next = ((RHPortraitInputField *)this)->FUN_005d1270(input);
+                break;
+            default:
+                result->next = 0;
+                break;
+            }
+        }
+    }
+    if (result == 0)
+    {
+        switch (((RHPortraitInputField *)this)->m_state)
+        {
+        case 0:
+            result = ((RHPortraitInputField *)this)->FUN_005d0a10(input);
+            break;
+        case 1:
+            result = ((RHPortraitInputField *)this)->FUN_005d0a90(input);
+            break;
+        case 2:
+            result = ((RHPortraitInputField *)this)->FUN_005d1090(input);
+            break;
+        case 3:
+            result = ((RHPortraitInputField *)this)->FUN_005d14e0(input);
+            break;
+        case 4:
+            result = ((RHPortraitInputField *)this)->FUN_005d0d00(input);
+            break;
+        case 5:
+            result = ((RHPortraitInputField *)this)->FUN_005d1270(input);
+            break;
+        default:
+            result = 0;
+            break;
+        }
+        if (result)
+            handled = true;
+    }
+    ((RHGameWidgetAnimatedCalls *)((char *)this + 0x1dc))
+        ->FUN_005d5790(result, ((RHPortraitInputField *)this)->m_state, handled);
+    return result;
 }
 
 class RHPortraitUnk005d06d0

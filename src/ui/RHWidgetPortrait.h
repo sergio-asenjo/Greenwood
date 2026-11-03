@@ -19,6 +19,7 @@
 #include <list>
 #include "RHRendererGeometry.h"
 #include "../engine/RHGame_calls.h"
+#include "RHPortraitUnk005d3880.h"
 
 #include "RHWidgetPortraitClass.h"
 
@@ -134,11 +135,17 @@ public:
     const std::wstring &FUN_00492730();
 };
 
+struct RHPortraitWidgetEvent;
+struct RHPortraitWidgetInput;
+
 class RHPortraitUnk005d0180
 {
 public:
     ~RHPortraitUnk005d0180();
     void *FUN_005d09f0(unsigned flags);
+    RHPortraitWidgetEvent *FUN_005d0340(const RHPortraitWidgetInput &input);
+    undefined m_00[0x1fc];
+    RHPortraitWidgetEvent m_event;
 };
 
 #include "RHPortraitInputRenderer.h"
