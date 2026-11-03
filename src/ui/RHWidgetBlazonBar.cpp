@@ -1,7 +1,10 @@
+#include "SBNullstr.h"
 #include "RHGameBlazonWidget.h"
 #include "RHPortraitRootLifetime.h"
 #include "RHMission.h"
 #include "RHMenuShortMissionBlazons.h"
+#include "SBGeoBoundingBox2DCore.h"
+#include "SBGeoVector2D.h"
 #include <new>
 
 class RHUnk0048a970;
@@ -27,6 +30,35 @@ void *RHGameBlazonWidget::FUN_005cc610(unsigned flags)
 RHGameBlazonWidget::~RHGameBlazonWidget()
 {
     FUN_005cc840();
+}
+
+// FUNCTION: GAME 0x005cc680
+bool RHGameBlazonWidget::FUN_005cc680(const SBGeoBoundingBox2D &bounds)
+{
+    bool initialized;
+    {
+        std::wstring title(
+            // STRING: GAME 0x006b8dc0
+            L"BlazonBar");
+        initialized = RHPortraitRootLifetime::FUN_0061a1e0((const RHMapTitleText &)title, bounds, 0) == true;
+    }
+    if (initialized) {
+        SBGeoVector2D origin((const SBGeoVector2D &)bounds.Min());
+        FUN_005cc7b0(bounds - origin);
+        return true;
+    }
+    return false;
+}
+
+// FUNCTION: GAME 0x005cc7b0
+void RHGameBlazonWidget::FUN_005cc7b0(const SBGeoBoundingBox2D &bounds)
+{
+    RHMission *mission = FUN_005cc870();
+    FUN_005cc840();
+    if (mission) {
+        m_b0 = (RHGameBlazonValue *)new RHMenuShortMissionBlazons(mission, this);
+        ((RHMenuShortMissionBlazons *)m_b0)->FUN_0044ef60(bounds, false);
+    }
 }
 
 // FUNCTION: GAME 0x005cc840
@@ -80,4 +112,11 @@ void RHGameBlazonWidget::FUN_005cc920(int value)
 {
     if (m_b0)
         m_b0->FUN_0044f8d0(value);
+}
+
+// FUNCTION: GAME 0x005cc940
+void RHGameBlazonWidget::FUN_005cc940(const SBGeoBoundingBox2D &bounds)
+{
+    SBGeoVector2D origin((const SBGeoVector2D &)bounds.Min());
+    FUN_005cc7b0(bounds - origin);
 }
