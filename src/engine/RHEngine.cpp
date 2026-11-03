@@ -714,13 +714,8 @@ void EmitRHEngineReset(RHEngine *engine)
 }
 
 // SIZE 0x08
-class RHUnk005fc3b0 : public SBGeoVector2D
-{
-public:
-    RHUnk005fc3b0() {}
-    SBGeoVector2D FUN_005fc5d0(float value);
-    float Unk005fc6a0(float value);
-};
+#define SBGEO_VECTOR2D_VIEW
+#include "RHUnk005fc3b0.h"
 
 class RHUnk005b5e00
 {

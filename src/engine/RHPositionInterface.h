@@ -47,6 +47,10 @@ class SBGeoBoundingBox2D
 {
 public:
     SBGeoBoundingBox2D();
+    SBGeoBoundingBox2D(const SBGeoBoundingBox2D &other);
+    SBGeoBoundingBox2D(const SBGeoPoint2D &first, const SBGeoPoint2D &last);
+    SBGeoBoundingBox2D &operator=(const SBGeoBoundingBox2D &other);
+    SBGeoPoint2D FUN_00608f40() const;
     bool Serialize(SBFile &file);
     void FUN_00607d90();
     void Unk00607dc0(const SBGeoPoint2D &point);
@@ -58,16 +62,7 @@ public:
 };
 #endif
 
-#if !defined(RHUNK005FC3B0_VIEW) && !defined(RHFASTFINDGEOMETRY_H)
-#define RHUNK005FC3B0_VIEW
-class RHUnk005fc3b0 : public SBGeoVector2D
-{
-public:
-    bool IsZero() const { return m_x == 0.0f && m_y == 0.0f; }
-    void FUN_005fc7c0(float scale);
-    unsigned char FUN_005fcc50(float scale) const;
-};
-#endif
+#include "RHUnk005fc3b0.h"
 
 #ifndef RHBONUSINFO_H
 class RHUnkPathActorInfoBase

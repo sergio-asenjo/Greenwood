@@ -254,11 +254,7 @@ public:
 
 class SBGeoPoint2D;
 
-class RHUnk005fc3b0
-{
-public:
-    float Unk005fc6a0(float value);
-};
+#include "RHUnk005fc3b0.h"
 
 struct RHGameConfigTriple
 {

@@ -32,16 +32,8 @@ public:
 
 SBGeoVector2D operator*(float factor, const SBGeoVector2D &point);
 
-class RHUnk005fc3b0 : public SBGeoVector2D
-{
-public:
-    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other)
-    {
-        return (RHUnk005fc3b0 &)SBGeoVector2D::operator=((const SBGeoVector2D &)other);
-    }
-    RHUnk005fc3b0 &FUN_005fc4d0(float factor);
-    float Unk005fc6a0(float value);
-};
+#define SBGEO_VECTOR2D_VIEW
+#include "RHUnk005fc3b0.h"
 
 #include "SBGeoSegment2D.h"
 

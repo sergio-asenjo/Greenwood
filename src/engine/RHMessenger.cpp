@@ -781,16 +781,8 @@ public:
     SBGeoVector2D(const SBGeoVector2D &other);
 };
 
-class RHUnk005fc3b0 : public SBGeoVector2D
-{
-public:
-    RHUnk005fc3b0() {}
-    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other)
-    {
-        return (RHUnk005fc3b0 &)SBGeoVector2D::operator=((const SBGeoVector2D &)other);
-    }
-    float Unk005fc6a0(float value);
-};
+#define SBGEO_VECTOR2D_VIEW
+#include "RHUnk005fc3b0.h"
 
 inline float RHMessengerLength(const SBGeoPoint2D &vector)
 {

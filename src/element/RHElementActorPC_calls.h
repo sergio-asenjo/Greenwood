@@ -186,12 +186,8 @@ public:
 
 #include "RHUnkSectorScript.h"
 
-class RHUnk005fc3b0
-{
-public:
-    float Unk005fc6a0(float value);
-    unsigned char FUN_005fcc50(float scale) const;
-};
+#define SBGEO_VECTOR2D_VIEW
+#include "RHUnk005fc3b0.h"
 
 #include "RHActorScriptContext.h"
 

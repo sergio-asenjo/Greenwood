@@ -65,14 +65,8 @@ extern RHUnk005ef320 *g_unk0x6c11d0;
 extern RHEngine *g_pEngine;
 RHMessenger *RHUnk00546050();
 
-class RHUnk005fc3b0 : public SBGeoVector2D
-{
-public:
-    RHUnk005fc3b0 &FUN_005fc4d0(float factor);
-    float Unk005fc6a0(float value);
-    void FUN_005fc7c0(float value);
-    unsigned char FUN_005fcc50(float scale) const;
-};
+#define SBGEO_VECTOR2D_VIEW
+#include "RHUnk005fc3b0.h"
 
 // GLOBAL: GAME 0x006c0b54
 RHGameInputTranslator *RHGameInputTranslator::mpInstance = 0;

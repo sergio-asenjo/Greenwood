@@ -237,18 +237,8 @@ public:
     SBGeoVector2D(const SBGeoVector2D &other);
 };
 
-class RHUnk005fc3b0 : public SBGeoVector2D
-{
-public:
-    RHUnk005fc3b0() {}
-    ~RHUnk005fc3b0() {}
-    RHUnk005fc3b0 &Unk005fcd40(unsigned char direction, float length);
-    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other)
-    {
-        return (RHUnk005fc3b0 &)SBGeoVector2D::operator=((const SBGeoVector2D &)other);
-    }
-    unsigned char FUN_005fcc50(float value) const;
-};
+#define SBGEO_VECTOR2D_VIEW
+#include "RHUnk005fc3b0.h"
 
 
 

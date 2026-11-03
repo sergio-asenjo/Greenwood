@@ -31,12 +31,8 @@ public:
     SBGeoVector2D(const SBGeoVector2D &other);
 };
 
-class RHUnk005fc3b0 : public SBGeoVector2D
-{
-public:
-    RHUnk005fc3b0() {}
-    ~RHUnk005fc3b0() {}
-};
+#define SBGEO_VECTOR2D_VIEW
+#include "RHUnk005fc3b0.h"
 
 #ifndef SBGEO_BOUNDINGBOX2D_VIEW
 #define SBGEO_BOUNDINGBOX2D_VIEW

@@ -5,11 +5,8 @@
 #include "RHGameRenderer005cb220.h"
 #include "SBUIRenderer.h"
 
-class RHUnk005fc3b0 : public SBGeoVector2D
-{
-public:
-    RHUnk005fc3b0() {}
-};
+#define SBGEO_VECTOR2D_VIEW
+#include "RHUnk005fc3b0.h"
 
 class RHUnk005ef320
 {

@@ -40,19 +40,8 @@ public:
     SBGeoVector2D(const SBGeoVector2D &other);
 };
 
-class RHUnk005fc3b0 : public SBGeoVector2D
-{
-public:
-    RHUnk005fc3b0() {}
-    ~RHUnk005fc3b0() {}
-    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other)
-    {
-        return (RHUnk005fc3b0 &)SBGeoVector2D::operator=((const SBGeoVector2D &)other);
-    }
-    void FUN_005fc7c0(float);
-    RHUnk005fc3b0 FUN_005fc9e0(float, float);
-    float FUN_005fc680(const RHUnk005fc3b0 &, float) const;
-};
+#define SBGEO_VECTOR2D_VIEW
+#include "RHUnk005fc3b0.h"
 
 // SIZE 0x14
 #define SBGEO_POINT2D_VIEW

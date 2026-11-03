@@ -721,26 +721,8 @@ public:
 };
 #endif
 
-#if !defined(RHUNK005FC3B0_VIEW) && !defined(RHUNK005FC3B0_H) && !defined(RHFASTFINDGEOMETRY_H)
-class RHUnk005fc3b0 : public SBGeoVector2D
-{
-public:
-    RHUnk005fc3b0() {}
-    ~RHUnk005fc3b0() {}
-    float Unk005fc6a0(float value);
-    void FUN_005fc7c0(float value);
-    RHUnk005fc3b0 &Unk005fcd40(unsigned char direction, float length);
-    RHUnk005fc3b0 &FUN_005fc4d0(float factor);
-    RHUnk005fc3b0 &FUN_005fc430(const SBGeoPoint2D &other)
-    {
-        return (RHUnk005fc3b0 &)SBGeoVector2D::operator=((const SBGeoVector2D &)other);
-    }
-    float FUN_005fc680(const RHUnk005fc3b0 &vector, float scale) const;
-    SBGeoVector2D FUN_005fc8f0(bool mode, float value) const;
-    unsigned char FUN_005fcc50(float value) const;
-    void Set(float x, float y) { m_x = x; m_y = y; }
-};
-#endif
+#define SBGEO_VECTOR2D_VIEW
+#include "RHUnk005fc3b0.h"
 
 class RHSeqList
 {
