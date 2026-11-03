@@ -64,6 +64,26 @@ RHSeqList::RHSeqList(const char &allocator)
     m_count = 0;
 }
 
+#include "RHMotionAreaList.h"
+#include "RHElementAreaShape.h"
+
+// Parked: list allocation binding, cleanup temporaries and coordinate shift widths differ.
+// STUB: GAME 0x004e9570
+bool RHFastFindGrid::FUN_004e9570(const SBGeoPoint2D &point, unsigned short layer)
+{
+    RHMotionAreaList<void *> sectors;
+    ((RHElementGrid *)this)->FUN_004e89d0(&sectors,
+        (m_height * layer + ((short)point.m_y >> 6)) * m_width + ((short)point.m_x >> 6), 0x4000);
+    for (unsigned short index = 0; index != sectors.size(); ++index)
+    {
+        sectors.GoTo(index);
+        void *sector = sectors.Current();
+        if ((sector ? (RHElementAreaShape *)((char *)sector + 4) : 0)->FUN_0060c660(point))
+            return true;
+    }
+    return false;
+}
+
 // FUNCTION: GAME 0x004e9d00
 void RHFastFindGrid::FUN_004e9d00(unsigned char enabled, unsigned short layer, void *sector)
 {

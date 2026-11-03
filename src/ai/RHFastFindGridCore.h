@@ -19,6 +19,7 @@ class RHFastFindGrid
 {
 public:
     void FUN_004e8ae0(class RHFastFindUniqueList &output, unsigned short layer, const SBGeoBoundingBox2D &box, unsigned long mask);
+    bool FUN_004e9570(const SBGeoPoint2D &point, unsigned short layer);
     void FUN_004ec240(class RHFastFindUniqueList &, unsigned short, const SBGeoBoundingBox2D &, unsigned long);
     void FUN_004ec450(class RHFastFindUniqueList &, unsigned long, unsigned long);
     void FUN_004ec560(class RHFastFindUniqueList &, unsigned short, const SBGeoBoundingBox2D &, unsigned long);
