@@ -20,7 +20,7 @@ fi
 RECCMP="$ROOT/.venv/bin/reccmp-reccmp"
 
 if [ ! -x "$RECCMP" ]; then
-  echo "reccmp not found at $RECCMP (run: python3 -m venv .venv && .venv/bin/pip install -r tools/requirements.txt)" >&2
+  echo "reccmp not found at $RECCMP — restore the reviewed editable environment documented in docs/01-toolchain.md" >&2
   exit 1
 fi
 
