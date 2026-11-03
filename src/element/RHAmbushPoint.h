@@ -1,7 +1,7 @@
 #ifndef RHAMBUSHPOINT_H
 #define RHAMBUSHPOINT_H
 
-#if !defined(SBGEO_BOUNDINGBOX2D_VIEW) && !defined(RHELEMENTMOBILE_H)
+#ifndef SBGEO_BOUNDINGBOX2D_VIEW
 #include "SBGeoBoundingBox2DCore.h"
 #endif
 

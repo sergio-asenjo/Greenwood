@@ -36,6 +36,13 @@ public:
     void Emit(SBFile &file);
     float GetX() const { return m_x; }
     float GetY() const { return m_y; }
+    float X() const { return m_x; }
+    float Y() const { return m_y; }
+    void Set(short x, short y)
+    {
+        m_x = (float)x;
+        m_y = (float)y;
+    }
     void Set(float x, float y)
     {
         m_x = x;

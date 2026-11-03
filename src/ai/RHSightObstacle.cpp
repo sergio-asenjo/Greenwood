@@ -304,11 +304,11 @@ void SBGeoBoundingBox2D::Unk00607dc0(const SBGeoPoint2D &point)
 {
     float x = point.m_x;
     float y = point.m_y;
-    if (!m_10 || x < m_00) m_00 = x;
-    if (!m_10 || x > m_08) m_08 = x;
-    if (!m_10 || m_04 > y) m_04 = y;
-    if (!m_10 || m_0c < y) m_0c = y;
-    m_10 = 1;
+    if (!m_flag || x < m_p0.m_x) m_p0.m_x = x;
+    if (!m_flag || x > m_p1.m_x) m_p1.m_x = x;
+    if (!m_flag || m_p0.m_y > y) m_p0.m_y = y;
+    if (!m_flag || m_p1.m_y < y) m_p1.m_y = y;
+    m_flag = true;
 }
 
 // FUNCTION: GAME 0x00607e50
@@ -322,10 +322,10 @@ void SBGeoBoundingBox2D::FUN_00607e50(SBGeoPolyLine2DList *list)
 // FUNCTION: GAME 0x00609050
 int SBGeoBoundingBox2D::FUN_00609050(const SBGeoPoint2D &first, const SBGeoPoint2D &second)
 {
-    *(SBGeoPoint2D *)&m_00 = first;
-    *(SBGeoPoint2D *)&m_08 = second;
-    m_10 = 1;
-    return m_00 <= m_08 && m_04 <= m_0c;
+    m_p0 = first;
+    m_p1 = second;
+    m_flag = true;
+    return m_p0.m_x <= m_p1.m_x && m_p0.m_y <= m_p1.m_y;
 }
 
 // FUNCTION: GAME 0x0060ceb0

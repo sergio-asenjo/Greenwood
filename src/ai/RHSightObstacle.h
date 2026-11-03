@@ -10,22 +10,7 @@
 class SBGeoPolyLine2DList;
 class SBGeoVector2D;
 
-// SIZE 0x14
-class SBGeoBoundingBox2D
-{
-public:
-    bool Serialize(SBFile &file);
-    void FUN_00607d90();
-    void Unk00607dc0(const SBGeoPoint2D &point);
-    void FUN_00607e50(SBGeoPolyLine2DList *list);
-    int FUN_00609050(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
-    float m_00; // 0x00
-    float m_04; // 0x04
-    float m_08; // 0x08
-    float m_0c; // 0x0c
-    undefined m_10; // 0x10
-    undefined m_11[3]; // 0x11
-};
+#include "SBGeoBoundingBox2DCore.h"
 
 class RHUnkTargetPoints
 {

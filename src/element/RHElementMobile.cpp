@@ -293,6 +293,199 @@ bool RHElementMobile::ExecuteMacroCommand()
 
 #define SBGEO_BOUNDINGBOX2D_VIEW
 #include "RHActorSequenceStorage.h"
+#include "RHSightObstacle.h"
+#include "RHEngineWidenedCalls.h"
+extern float g_unk0x006785d8;
+
+#include "RHTitbitsCore.h"
+
+extern RHTitbits *g_unk0x6c10e8;
+
+// GLOBAL: GAME 0x006777c4
+float g_unk0x006777c4 = 4.0f;
+
+// FUNCTION: GAME 0x004ab600
+bool RHElementMobile::FUN_004ab600()
+{
+    if (RHMobileField<bool>(this, 0x12) && !RHMobileField<bool>(this, 0xa8))
+    {
+        if (RHMobileField<bool>(this, 0x200))
+        {
+            float speed = (float)fabs(m_19c);
+            if (!RHMobileField<unsigned>(this, 0x210))
+            {
+                if (speed > g_unk0x006777c4)
+                    RHMobileField<unsigned>(this, 0x210) = 1;
+                else
+                    RHMobileField<unsigned>(this, 0x210) = RHMobileField<unsigned>(this, 0x214) - (int)speed;
+                g_unk0x6c10e8->AddTitbit(*(RHUnk00613e90 *)&m_204, m_50->m_de,
+                    (RHtitbitKind)5, 0, 0, 0, false, -1);
+            }
+            --RHMobileField<unsigned>(this, 0x210);
+        }
+        if (!RHMobileField<void *>(this, 0x18c))
+        {
+            RHPositionInterface *position = (RHPositionInterface *)((char *)m_50 + 4);
+            position->m_28 = position->m_c;
+            position->m_3c = position->m_20;
+            FUN_004ab720();
+            CheckForLineCrossing();
+            if (!((RHSpritePositionCalls *)((char *)m_50 + 4))->FUN_00560460())
+                return true;
+            unsigned char index = RHMobileField<unsigned char>(m_188, 0);
+            RHMobileField<RHMobileElement *>(this, 0x18c) = m_188->m_4->m_4[index];
+        }
+        FUN_004abfe0();
+    }
+    return true;
+}
+
+// FUNCTION: GAME 0x004ab720
+void RHElementMobile::FUN_004ab720()
+{
+    if (RHMobileField<bool>(this, 0x12))
+    {
+        if (m_1a4 != 0.0f)
+        {
+            m_19c += m_1a4;
+            if ((m_1a4 > 0.0f && m_19c >= m_1a0) || (m_1a4 < 0.0f && m_19c <= m_1a0))
+            {
+                m_1a4 = 0.0f;
+                m_19c = m_1a0;
+            }
+        }
+        float speed = m_19c;
+        if (speed != 0.0f)
+            FUN_004ab7e0(speed);
+    }
+}
+
+// STUB: GAME 0x004ab7e0
+void RHElementMobile::FUN_004ab7e0(float distance)
+{
+    SBGeoVector2D movement(RHMobileField<SBGeoVector2D>(m_50, 0x70));
+    ((RHUnk005fc3b0 &)movement).FUN_005fc4d0(distance);
+    RHUnkTargetSprite *previous = m_50;
+    RHUnk00613e90 spatial = previous->m_64;
+    spatial.x *= distance;
+    spatial.y *= distance;
+    spatial.z *= distance;
+    previous->m_2c = previous->m_10;
+    previous->m_40 = previous->m_24;
+    RHMobilePosition *position = (RHMobilePosition *)((char *)m_50 + 4);
+    position->m_20.FUN_005fc1e0(movement);
+    {
+        SBGeoVector2D offset((const SBGeoVector2D &)position->m_20);
+        ((RHMobileUnk00607da0 *)&position->m_c0)->FUN_00607da0(
+            (const RHMobileUnk00607da0 &)position->Box().FUN_006090d0(offset));
+    }
+    position->m_4 = 2;
+    ((RHBonusInfoBase *)((char *)m_50 + 4))->FUN_0055f290();
+    RHMobileField<RHMobileUnk006091b0>(this, 0x1ac).FUN_006091b0(movement);
+    m_1f4.FUN_005fc1e0(movement);
+    if (m_1fc)
+    {
+        ((RHMobilePosition *)((char *)m_1fc->m_50 + 4))->FUN_004abf20(movement);
+        ((RHBonusInfoBase *)((char *)m_1fc->m_50 + 4))->FUN_0055f290();
+    }
+    m_218.FUN_005fc1e0(movement);
+    m_220.FUN_005fc1e0(movement);
+    RHMobileField<RHMobileUnk00611360>(this, 0xf0).FUN_00611360(movement);
+    SBGeoBoundingBox2D &bounds = RHMobileField<SBGeoBoundingBox2D>(this, 0x128);
+    ((RHMobileUnk00607da0 *)&bounds)->FUN_00607da0(
+        (const RHMobileUnk00607da0 &)bounds.FUN_006090d0(movement));
+    unsigned short count = RHMobileField<RHMobilePointerArray>(this, 0xcc).Size();
+    for (unsigned short i = 0; i < count; ++i)
+    {
+        RHMobileField<RHSightObstacle **>(this, 0xd0)[i]->Translate(spatial);
+    }
+    count = RHMobileField<RHMobilePointerArray>(this, 0x164).Size();
+    for (unsigned short j = 0; j < count; ++j)
+    {
+        void *line = j[RHMobileField<void **>(this, 0x168)];
+        SBGeoPoint2D *points = line ? (SBGeoPoint2D *)((char *)line + 4) : 0;
+        points[0].FUN_005fc1e0(movement);
+        points[1].FUN_005fc1e0(movement);
+    }
+    count = RHMobileField<RHMobilePointerArray>(this, 0x144).Size();
+    for (unsigned short k = 0; k < count; ++k)
+    {
+        void *corner = k[RHMobileField<void **>(this, 0x148)];
+        SBGeoPoint2D *point = corner ? (SBGeoPoint2D *)((char *)corner + 4) : 0;
+        point->FUN_005fc1e0(movement);
+    }
+    count = Size();
+    if (RHMobileField<bool>(this, 0x1c0))
+    {
+        SBGeoVector2D jitter;
+        float amplitude = m_19c * 0.1f;
+        for (unsigned short i = 0; i < count; ++i)
+        {
+            RHMobileElement *part = i[m_b0];
+            if (m_19c != 0.0f)
+                part->m_fc = 1.0f / m_19c;
+            else
+                part->m_fc = 1000000.0f;
+            ((RHUnk005fc3b0 &)jitter).FUN_005fc430(m_1c8[i]);
+            ((RHMobilePosition *)((char *)part->m_50 + 4))->FUN_004abf20(-jitter);
+            jitter.m_x += ((rand() * 3.051851e-05f) * amplitude) * 2 - amplitude;
+            if (jitter.m_x > 1.0f)
+                jitter.m_x = 1.0f;
+            else if (jitter.m_x < g_unk0x006785d8)
+                jitter.m_x = -1.0f;
+            jitter.m_y += ((rand() * 3.051851e-05f) * amplitude) * 2 - amplitude;
+            if (jitter.m_y > 1.0f)
+                jitter.m_y = 1.0f;
+            else if (jitter.m_y < g_unk0x006785d8)
+                jitter.m_y = -1.0f;
+            m_1c8[i] = jitter;
+            part->OffsetPoint(movement.Unk005fc190(jitter));
+            ((RHBonusInfoBase *)((char *)part->m_50 + 4))->FUN_0055f290();
+            ((RHBonusInfo *)part->m_50)->FUN_005bd560(0, true);
+        }
+    }
+    else if (RHMobileField<bool>(this, 0x1a8))
+    {
+        for (unsigned short i = 0; i < count; ++i)
+        {
+            RHMobileElement *part = i[m_b0];
+            if (m_19c != 0.0f)
+                part->m_fc = 1.0f / m_19c;
+            else
+                part->m_fc = 1000000.0f;
+            RHMobilePosition *partPosition = (RHMobilePosition *)((char *)part->m_50 + 4);
+            partPosition->m_20.FUN_005fc1e0(movement);
+            {
+                SBGeoVector2D offset((const SBGeoVector2D &)partPosition->m_20);
+                ((RHMobileUnk00607da0 *)&partPosition->m_c0)->FUN_00607da0(
+                    (const RHMobileUnk00607da0 &)partPosition->Box().FUN_006090d0(offset));
+            }
+            partPosition->m_4 = 2;
+            ((RHBonusInfoBase *)((char *)part->m_50 + 4))->FUN_0055f290();
+            ((RHBonusInfo *)part->m_50)->FUN_005bd560(0, true);
+        }
+    }
+    else
+    {
+        for (unsigned short i = 0; i < count; ++i)
+        {
+            RHMobileElement *part = i[m_b0];
+            ((RHEngineWidenedCalls *)part->m_50)->FUN_005b7f60(0);
+            RHMobilePosition *partPosition = (RHMobilePosition *)((char *)part->m_50 + 4);
+            partPosition->m_20.FUN_005fc1e0(movement);
+            {
+                SBGeoVector2D offset((const SBGeoVector2D &)partPosition->m_20);
+                ((RHMobileUnk00607da0 *)&partPosition->m_c0)->FUN_00607da0(
+                    (const RHMobileUnk00607da0 &)partPosition->Box().FUN_006090d0(offset));
+            }
+            partPosition->m_4 = 2;
+            ((RHBonusInfoBase *)((char *)part->m_50 + 4))->FUN_0055f290();
+            ((RHBonusInfo *)part->m_50)->FUN_005bd560(0, true);
+        }
+    }
+    m_204.m_x += movement.m_x;
+    m_204.m_y += movement.m_y;
+}
 
 // Parked: the compiler-generated static cleanup callback has no unique bindable symbol.
 // STUB: GAME 0x004ac750
@@ -559,7 +752,7 @@ bool RHElementMobile::Serialize(SBFile &file)
     if (file.m_bLoading)
     {
         saved.Serialize(file);
-        displacement.FUN_005fc430(origin.Unk005fc190(saved.FUN_005fc450()).Unk005fc110(m_50->m_24));
+        displacement.FUN_005fc430(origin.Unk005fc190(-saved).Unk005fc110(m_50->m_24));
         TranslateGeometry(SBGeoVector2D(displacement));
     }
     else
@@ -1380,10 +1573,10 @@ void SBGeoBoundingBox2D::FUN_00607e90(const SBGeoBoundingBox2D &other)
 {
     undefined storage[8];
     SBGeoPoint2D *point = (SBGeoPoint2D *)storage;
-    point->SBGeoPoint2D::SBGeoPoint2D(other.m_0.m_x, other.m_0.m_y);
+    point->SBGeoPoint2D::SBGeoPoint2D(other.m_p0.m_x, other.m_p0.m_y);
     Unk00607dc0(*point);
     point->~SBGeoPoint2D();
-    point->SBGeoPoint2D::SBGeoPoint2D(other.m_8.m_x, other.m_8.m_y);
+    point->SBGeoPoint2D::SBGeoPoint2D(other.m_p1.m_x, other.m_p1.m_y);
     Unk00607dc0(*point);
     point->~SBGeoPoint2D();
 }
@@ -1433,6 +1626,8 @@ void RHMobileUnk00611360::FUN_00611360(const SBGeoPoint2D &value)
 
 void RHElementMobile::Emit(SBFile &file)
 {
+    FUN_004ab600();
+    FUN_004ab720();
     ExecuteMacroCommand();
     InitializeFromMissionStream(file);
     Serialize(file);

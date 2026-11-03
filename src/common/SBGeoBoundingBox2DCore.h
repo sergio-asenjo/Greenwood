@@ -8,6 +8,7 @@
 
 class SBGeoVector2D;
 class SBGeoSegment2D;
+class SBGeoPolyLine2DList;
 class RHMalignitySegment;
 class RHMobileUnk006100e0;
 class SBFile;
@@ -25,16 +26,20 @@ public:
     SBGeoBoundingBox2D(const SBGeoPoint2D &, const SBGeoPoint2D &);
     ~SBGeoBoundingBox2D() {}
     SBGeoBoundingBox2D &operator=(const SBGeoBoundingBox2D &);
+    SBGeoBoundingBox2D operator-(const SBGeoVector2D &) const;
     void Copy(const SBGeoBoundingBox2D &);
     SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &) const;
     SBGeoBoundingBox2D FUN_006092c0(const SBGeoBoundingBox2D &) const;
     void FUN_00607d90();
     void Unk00607dc0(const SBGeoPoint2D &);
     void FUN_00607e30(const RHMalignitySegment &);
+    void FUN_00607e50(SBGeoPolyLine2DList *list);
+    void FUN_00607e90(const SBGeoBoundingBox2D &);
     SBGeoPoint2D FUN_00608f40() const;
     bool FUN_00608400(const SBGeoPoint2D &) const;
     bool FUN_006084a0(const SBGeoBoundingBox2D &);
     bool FUN_00608650(const RHMobileUnk006100e0 &) const;
+    bool FUN_00608730(const RHMobileUnk006100e0 &) const;
     SBGeoBoundingBox2D &operator-=(const SBGeoVector2D &);
     int FUN_00609050(const SBGeoPoint2D &, const SBGeoPoint2D &);
     bool Unk00608f30() const;

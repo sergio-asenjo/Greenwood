@@ -17,6 +17,7 @@ public:
     bool IsZero() const { return m_x == 0.0f && m_y == 0.0f; }
     void FUN_005fc7c0(float scale);
     float Unk005fc6a0(float scale);
+    RHUnk005fc3b0 &Unk005fcd40(unsigned char direction, float length);
     unsigned char FUN_005fcc50(float scale) const;
     SBGeoVector2D FUN_005fc8f0(bool direction, float scale) const;
     RHUnk005fc3b0 FUN_005fc9e0(float angle, float scale);

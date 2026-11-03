@@ -157,6 +157,8 @@ struct RHProjectilePathList
     int index;
 };
 
+extern float g_unk0x006777c4;
+
 // Parked: vector copies coalesce; frame is 0x28 versus 0x34 and float operand order differs.
 // STUB: GAME 0x004b4260
 RHProjectileVector RHProjectileThrowCalls::FUN_004b4260(const RHProjectileVector &direction, float distance, float gravity, unsigned short frames, const void *actor)
@@ -185,7 +187,7 @@ RHProjectileVector RHProjectileThrowCalls::FUN_004b4260(const RHProjectileVector
     if (actor) {
         struct RawVector { float x; float y; float z; };
         RawVector half = *(RawVector *)&((const RHProjectileVector *)((char *)*(void **)((char *)actor + 0x50) + 0x138))->Scaled(0.5f);
-        RHProjectileVector offset = ((RHProjectileVector *)&half)->Scaled(4.0f);
+        RHProjectileVector offset = ((RHProjectileVector *)&half)->Scaled(g_unk0x006777c4);
         result.x += offset.x;
         result.y += offset.y;
         result.z += offset.z;

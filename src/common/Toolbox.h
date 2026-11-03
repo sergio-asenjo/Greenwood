@@ -121,6 +121,8 @@ public:
     unsigned int m_capacity; // 0x0c
 };
 
+#define SBGEO_POINT2D_VIEW
+
 // SIZE 0x08
 class SBGeoPoint2D
 {

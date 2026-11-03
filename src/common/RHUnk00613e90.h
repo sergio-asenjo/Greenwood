@@ -32,6 +32,12 @@ public:
     {
         return y * scale;
     }
+    void Set(float first, float second, float third)
+    {
+        x = first;
+        y = second;
+        z = third;
+    }
     union { float x; float m_0; };
     union { float y; float m_4; };
     union { float z; float m_8; };

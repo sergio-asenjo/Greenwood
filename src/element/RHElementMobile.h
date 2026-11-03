@@ -21,12 +21,9 @@ extern char g_unk0x6c0691;
 
 class SBGeoSegment2D;
 #include "RHFastFindGeometry.h"
+#include "RHUnk00613e90.h"
 
-class RHUnk005bd5b0
-{
-public:
-    bool Unk(bool value);
-};
+#include "RHSpriteLastFrameCalls.h"
 
 class RHUnk004af1d0
 {
@@ -38,11 +35,16 @@ class RHUnkTargetSprite
 {
 public:
     bool FUN_005b76e0(unsigned index, unsigned short row);
-    char m_0[0x24];
+    char m_0[0x10];
+    RHUnk00613e90 m_10;
+    char m_1c[8];
     SBGeoPoint2D m_24;
-    char m_2c[0x14];
+    RHUnk00613e90 m_2c;
+    char m_38[8];
     SBGeoPoint2D m_40;
-    char m_48[0x96];
+    char m_48[0x1c];
+    RHUnk00613e90 m_64;
+    char m_70[0x6e];
     unsigned short m_de;
     char m_e0[0xc];
     void *m_ec;
@@ -51,6 +53,7 @@ public:
 
 struct RHMobileElement
 {
+    void OffsetPoint(const SBGeoPoint2D &point);
     char m_0[0x50];
     RHUnkTargetSprite *m_50;
     char m_54[0x10];
@@ -188,12 +191,7 @@ public:
     undefined m_18[0xc]; // 0x18
 };
 
-class RHMobilePosition
-{
-public:
-    void FUN_0055fc20(bool value);
-    void SetFieldD6(int value) { *(unsigned short *)((char *)this + 0xd6) = (unsigned short)value; }
-};
+class RHMobilePosition;
 
 #include "RHUnk0042fde0.h"
 
@@ -463,26 +461,8 @@ struct RHMobileSoundNode
 
 #include "RHSoundCore.h"
 
-class RHMalignitySegment;
-
-// SIZE 0x14
-class SBGeoBoundingBox2D
-{
-public:
-    SBGeoBoundingBox2D();
-    SBGeoBoundingBox2D(const SBGeoSegment2D &segment);
-    SBGeoBoundingBox2D(float left, float top, float right, float bottom);
-    SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &value) const;
-    bool FUN_00608400(const SBGeoPoint2D &value) const;
-    void Unk00607dc0(const SBGeoPoint2D &point);
-    void FUN_00607e90(const SBGeoBoundingBox2D &other);
-    void FUN_00607e30(const RHMalignitySegment &segment);
-    int FUN_00609050(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
-    bool FUN_00608730(const RHMobileUnk006100e0 &line) const;
-    SBGeoPoint2D m_0; // 0x00
-    SBGeoPoint2D m_8; // 0x08
-    undefined m_10; // 0x10
-};
+#include "SBGeoBoundingBox2DCore.h"
+#include "RHPositionInterface.h"
 
 class RHMobileElementBase
 {
@@ -601,6 +581,9 @@ public:
     void FUN_004af0f0(int value);
     void FUN_004af170(void *value);
     void FUN_004abfe0();
+    bool FUN_004ab600();
+    void FUN_004ab720();
+    void FUN_004ab7e0(float distance);
     void TranslateGeometry(const SBGeoVector2D &value);
     void FUN_004af210(class RHMobileEvent *event);
     class RHUnk0045aaf0 *FUN_004ac750(void *actor);
@@ -626,7 +609,15 @@ public:
     undefined m_1a8[0x20]; // 0x1a8
     RHMobileVectorArray m_1c8; // 0x1c8
     unsigned m_1ec; // 0x1ec
-    undefined m_1f0[0x68]; // 0x1f0
+    undefined m_1f0[4]; // 0x1f0
+    SBGeoPoint2D m_1f4; // 0x1f4
+    RHMobileElement *m_1fc; // 0x1fc
+    undefined m_200[4]; // 0x200
+    SBGeoPoint2D m_204; // 0x204
+    undefined m_20c[0xc]; // 0x20c
+    SBGeoPoint2D m_218; // 0x218
+    SBGeoPoint2D m_220; // 0x220
+    undefined m_228[0x30]; // 0x228
     undefined m_258[8]; // 0x258
 };
 
@@ -657,7 +648,7 @@ public:
     RHMobilePointerArray();
     ~RHMobilePointerArray();
     void Append(void *value);
-    unsigned short Size() const { return m_4 ? m_8 - m_4 : 0; }
+    unsigned short Size() const { void **first = *(void **volatile *)&m_4; if (!first) return 0; return (unsigned short)(m_8 - first); }
     undefined4 m_0;
     void **m_4;
     void **m_8;
@@ -681,16 +672,7 @@ public:
     void Unk00550f60(unsigned short index);
     void Unk005505b0(unsigned short index);
 };
-class RHActorPositionCalls
-{
-public:
-    void FUN_00464530(const SBGeoPoint2D &point);
-};
-class RHUnkPathActorInfoBase
-{
-public:
-    void *Unk0055fa10(int index);
-};
+#include "RHActorPositionCalls.h"
 class RHBonusInfo
 {
 public:
@@ -727,5 +709,11 @@ class RHPath
 public:
     bool SerializeStatus(SBFile &file);
 };
+
+inline void RHMobileElement::OffsetPoint(const SBGeoPoint2D &point)
+{
+    SBGeoVector2D offset((const SBGeoVector2D &)point);
+    ((RHMobilePosition *)((char *)m_50 + 4))->FUN_004abf20(offset);
+}
 
 #endif

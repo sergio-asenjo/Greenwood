@@ -2,18 +2,7 @@
 #define SB_UI_FRAME_STORAGE_H
 
 #include <vector>
-#ifndef SBGEO_POINT2D_VIEW
-#define SBGEO_POINT2D_VIEW
-class SBGeoPoint2D
-{
-public:
-    SBGeoPoint2D();
-    SBGeoPoint2D(float x, float y);
-    ~SBGeoPoint2D();
-    float m_x;
-    float m_y;
-};
-#endif
+#include "SBGeoPoint2D.h"
 
 #include "SBGeoVector2D.h"
 

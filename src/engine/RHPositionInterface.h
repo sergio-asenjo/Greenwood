@@ -58,7 +58,7 @@ public:
 };
 #endif
 
-#ifndef RHUNK005FC3B0_VIEW
+#if !defined(RHUNK005FC3B0_VIEW) && !defined(RHFASTFINDGEOMETRY_H)
 #define RHUNK005FC3B0_VIEW
 class RHUnk005fc3b0 : public SBGeoVector2D
 {
@@ -271,6 +271,7 @@ class RHMobilePosition : public RHPositionInterface
 public:
     void FUN_004abf20(const SBGeoPoint2D &offset);
     void FUN_0055fc20(bool updateDirection);
+    void SetFieldD6(int value) { m_d6 = (unsigned short)value; }
 };
 
 #endif
