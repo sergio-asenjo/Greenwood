@@ -1836,6 +1836,8 @@ void RHMenuScreenView::HSV_To_RGB(float h, float s, float v, float &r, float &g,
     }
 }
 
+extern float g_unk0x006777c4;
+
 // FUNCTION: GAME 0x0053cbc0
 void RHMenuScreenView::RGB_To_HSV(float r, float g, float b, float &h, float &s, float &v)
 {
@@ -1851,7 +1853,7 @@ void RHMenuScreenView::RGB_To_HSV(float r, float g, float b, float &h, float &s,
         else if (g == maximum)
             h = 2.0f + (b - r) / delta;
         else if (b == maximum)
-            h = 4.0f + (r - g) / delta;
+            h = g_unk0x006777c4 + (r - g) / delta;
         float hue = h;
         h = hue * g_unk0x677554;
         if (h < 0.0f)
