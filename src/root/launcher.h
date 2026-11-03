@@ -4,10 +4,36 @@
 #include <windows.h>
 #include <string>
 
+class RHUnk00408f50
+{
+public:
+    RHUnk00408f50();
+    ~RHUnk00408f50();
+    unsigned m_00;
+    unsigned m_04;
+    char m_08[2];
+    unsigned short m_versionMode;
+    std::string m_versionText;
+    std::string m_1c;
+    std::string m_2c;
+    std::string m_3c;
+    std::string m_4c;
+    char m_5c[4];
+    std::string m_60;
+    std::string m_70;
+    std::string m_80;
+    std::string m_90;
+    std::string m_a0;
+    std::string m_b0;
+    std::string m_c0;
+    std::string m_d0;
+    std::string m_e0;
+    std::string m_f0;
+};
+
 #define RH_LAUNCHER_CALL(address, result, arguments) \
     class RHUnk##address { public: result FUN_##address arguments; }
 
-RH_LAUNCHER_CALL(005f4fc0, void, ());
 RH_LAUNCHER_CALL(005f4ff0, void, ());
 RH_LAUNCHER_CALL(005f9760, void, ());
 RH_LAUNCHER_CALL(00578c50, void, ());
@@ -86,6 +112,7 @@ public:
 };
 
 void FUN_004090d0();
+void FUN_004096b0();
 char **FUN_00409d10(char *command, unsigned *count);
 bool FUN_00409d70(char **arguments, unsigned *index, unsigned count);
 void FUN_0040a0d0();
