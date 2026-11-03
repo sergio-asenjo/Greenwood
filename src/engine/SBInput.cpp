@@ -39,11 +39,39 @@ unsigned short SBDrawViewport::GetPixel(unsigned short x, unsigned short y) cons
     return m_pixels[(m_pitch >> 1) * y + x];
 }
 
-// Parked at 0.9440: string-copy inlining and device-call registers differ.
-// STUB: GAME 0x005f9ea0
+// FUNCTION: GAME 0x005f9d00
+SBInputUnk005fb730::~SBInputUnk005fb730()
+{
+    for (int index = 0; index < 16; ++index)
+    {
+        SBInputUnkDevice *&device = m_144[index];
+        if (device)
+        {
+            if (m_2a9 == 1)
+                device->m_table->m_20(device);
+            device->m_table->m_08(device);
+        }
+    }
+    if (m_2a5 == 1)
+    {
+        if (m_2a9 == 1)
+            m_08->m_table->m_20(m_08);
+        m_08->m_table->m_08(m_08);
+    }
+    if (m_2a7 == 1)
+    {
+        if (m_2a9 == 1)
+            m_0c->m_table->m_20(m_0c);
+        m_0c->m_table->m_08(m_0c);
+    }
+    if (m_2a4 == 1)
+        m_04->m_table->m_08(m_04);
+}
+
+// FUNCTION: GAME 0x005f9ea0
 bool SBInputUnk005fb730::FUN_005f9ea0(unsigned char active)
 {
-    if (active == 1 && m_2a8[1] == 0)
+    if (active == 1 && m_2a9 == 0)
     {
         if (m_2a5 == 1)
         {
@@ -57,7 +85,7 @@ bool SBInputUnk005fb730::FUN_005f9ea0(unsigned char active)
                 return false;
             }
             m_2aa = 0;
-            m_2a8[1] = 1;
+            m_2a9 = 1;
         }
         if (m_2a7 == 1)
         {
@@ -71,7 +99,7 @@ bool SBInputUnk005fb730::FUN_005f9ea0(unsigned char active)
                 return false;
             }
             m_2aa = 0;
-            m_2a8[1] = 1;
+            m_2a9 = 1;
         }
         for (unsigned char index = 0; index < 16; ++index)
         {
@@ -86,16 +114,16 @@ bool SBInputUnk005fb730::FUN_005f9ea0(unsigned char active)
                     return false;
                 }
                 m_2aa = 0;
-                m_2a8[1] = 1;
+                m_2a9 = 1;
             }
         }
         return true;
     }
     m_08->m_table->m_1c(m_08);
     m_0c->m_table->m_1c(m_0c);
-    if (active || m_2a8[1] != 1)
+    if (active || m_2a9 != 1)
         return true;
-    m_2a8[1] = 0;
+    m_2a9 = 0;
     if (m_2a5 == 1)
     {
         m_08->m_table->m_20(m_08);
@@ -118,18 +146,235 @@ bool SBInputUnk005fb730::FUN_005f9ea0(unsigned char active)
     return true;
 }
 
+#include "SBInputSystemData.h"
+
+// STUB: GAME 0x005fa240
+bool SBInputUnk005fb730::FUN_005fa240(unsigned short flags, void *window)
+{
+    m_00 = window;
+    if (flags & 1)
+    {
+        if (flags & 2)
+        {
+            m_2aa = 4;
+            return false;
+        }
+        long result = m_04->m_table->m_24(m_04, &g_inputKeyboardGuid, &g_inputDeviceInterfaceGuid, &m_08, 0);
+        if (result != 0)
+        {
+            m_2aa = 5;
+            typedef std::string &(std::string::*Assign)(const std::string &, unsigned, unsigned);
+            Assign assign = &std::string::assign;
+            (m_2ac.*assign)(FUN_005f81d0(result), 0, std::string::npos);
+            SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBInput.cpp", 0x108,
+                // STRING: GAME 0x006bb2e4
+                "Creation of a Direct Input object has failed");
+            return false;
+        }
+        m_2aa = 0;
+        m_2a5 = 1;
+        m_2a6 = 1;
+        result = m_08->m_table->m_2c(m_08, &g_inputKeyboardFormat);
+        if (result != 0)
+        {
+            m_2aa = 7;
+            typedef std::string &(std::string::*Assign)(const std::string &, unsigned, unsigned);
+            Assign assign = &std::string::assign;
+            (m_2ac.*assign)(FUN_005f81d0(result), 0, std::string::npos);
+            SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBInput.cpp", 0x119,
+                // STRING: GAME 0x006bb2b4
+                "Setting the data format of the keyboard failed");
+            return false;
+        }
+        result = m_08->m_table->m_34(m_08, window, 0x16);
+        if (result != 0)
+        {
+            m_2aa = 8;
+            typedef std::string &(std::string::*Assign)(const std::string &, unsigned, unsigned);
+            Assign assign = &std::string::assign;
+            (m_2ac.*assign)(FUN_005f81d0(result), 0, std::string::npos);
+            SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBInput.cpp", 0x128,
+                // STRING: GAME 0x006bb278
+                "Setting the cooperation level of the keyboard failed (%s)", m_2ac.c_str());
+            return false;
+        }
+        SBInputPropertyValue property;
+        property.header.size = sizeof(property);
+        property.header.headerSize = sizeof(property.header);
+        property.header.object = 0;
+        property.header.how = 0;
+        property.value = 16;
+        result = m_08->m_table->m_18(m_08, (const void *)1, &property.header);
+        if (result != 0)
+        {
+            m_2aa = 0x15;
+            typedef std::string &(std::string::*Assign)(const std::string &, unsigned, unsigned);
+            Assign assign = &std::string::assign;
+            (m_2ac.*assign)(FUN_005f81d0(result), 0, std::string::npos);
+            SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBInput.cpp", 0x138,
+                // STRING: GAME 0x006bb258
+                "Setting the buffer size failed");
+            return false;
+        }
+    }
+    if (flags & 2)
+    {
+        if (flags & 1)
+        {
+            m_2aa = 4;
+            return false;
+        }
+        long result = m_04->m_table->m_24(m_04, &g_inputKeyboardGuid, &g_inputDeviceInterfaceGuid, &m_08, 0);
+        if (result != 0)
+        {
+            m_2aa = 5;
+            typedef std::string &(std::string::*Assign)(const std::string &, unsigned, unsigned);
+            Assign assign = &std::string::assign;
+            (m_2ac.*assign)(FUN_005f81d0(result), 0, std::string::npos);
+            SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBInput.cpp", 0x14f,
+                "Creation of a Direct Input object has failed");
+            return false;
+        }
+        m_2aa = 0;
+        m_2a5 = 1;
+        m_2a6 = 0;
+        result = m_08->m_table->m_2c(m_08, &g_inputKeyboardFormat);
+        if (result != 0)
+        {
+            m_2aa = 7;
+            typedef std::string &(std::string::*Assign)(const std::string &, unsigned, unsigned);
+            Assign assign = &std::string::assign;
+            (m_2ac.*assign)(FUN_005f81d0(result), 0, std::string::npos);
+            SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBInput.cpp", 0x160,
+                "Setting the data format of the keyboard failed");
+            return false;
+        }
+        result = m_08->m_table->m_34(m_08, window, 0x15);
+        if (result != 0)
+        {
+            m_2aa = 8;
+            typedef std::string &(std::string::*Assign)(const std::string &, unsigned, unsigned);
+            Assign assign = &std::string::assign;
+            (m_2ac.*assign)(FUN_005f81d0(result), 0, std::string::npos);
+            SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBInput.cpp", 0x16f,
+                "Setting the cooperation level of the keyboard failed (%s)", m_2ac.c_str());
+            return false;
+        }
+    }
+    if (flags & 4)
+    {
+        if (flags & 8)
+        {
+            m_2aa = 4;
+            return false;
+        }
+        long result = m_04->m_table->m_24(m_04, &g_inputMouseGuid, &g_inputDeviceInterfaceGuid, &m_0c, 0);
+        if (result != 0)
+        {
+            m_2aa = 6;
+            typedef std::string &(std::string::*Assign)(const std::string &, unsigned, unsigned);
+            Assign assign = &std::string::assign;
+            (m_2ac.*assign)(FUN_005f81d0(result), 0, std::string::npos);
+            SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBInput.cpp", 0x188,
+                "Creation of a Direct Input object has failed");
+            return false;
+        }
+        m_2aa = 0;
+        m_2a7 = 1;
+        m_2a8 = 1;
+        result = m_0c->m_table->m_2c(m_0c, &g_inputBufferedMouseFormat);
+        if (result != 0)
+        {
+            m_2aa = 9;
+            typedef std::string &(std::string::*Assign)(const std::string &, unsigned, unsigned);
+            Assign assign = &std::string::assign;
+            (m_2ac.*assign)(FUN_005f81d0(result), 0, std::string::npos);
+            SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBInput.cpp", 0x199,
+                // STRING: GAME 0x006bb22c
+                "Setting the data format of the mouse failed");
+            return false;
+        }
+        if (flags & 0x40)
+            result = m_0c->m_table->m_34(m_0c, window, 5);
+        else
+            result = m_0c->m_table->m_34(m_0c, window, 6);
+        if (result != 0)
+        {
+            m_2aa = 0x0a;
+            typedef std::string &(std::string::*Assign)(const std::string &, unsigned, unsigned);
+            Assign assign = &std::string::assign;
+            (m_2ac.*assign)(FUN_005f81d0(result), 0, std::string::npos);
+            SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBInput.cpp", 0x1ac,
+                // STRING: GAME 0x006bb1f8
+                "Setting the cooperation level of the mouse failed");
+            return false;
+        }
+        SBInputPropertyValue property;
+        property.header.size = sizeof(property);
+        property.header.headerSize = sizeof(property.header);
+        property.header.object = 0;
+        property.header.how = 0;
+        property.value = 16;
+        result = m_0c->m_table->m_18(m_0c, (const void *)1, &property.header);
+        if (result != 0)
+        {
+            m_2aa = 0x14;
+            m_2ac = FUN_005f81d0(result);
+            SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBInput.cpp", 0x1bc,
+                "Setting the buffer size failed");
+            return false;
+        }
+    }
+    if (flags & 8)
+    {
+        if (flags & 4)
+        {
+            m_2aa = 4;
+            return false;
+        }
+        long result = m_04->m_table->m_24(m_04, &g_inputMouseGuid, &g_inputDeviceInterfaceGuid, &m_0c, 0);
+        if (result != 0)
+        {
+            m_2aa = 6;
+            m_2ac = FUN_005f81d0(result);
+            SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBInput.cpp", 0x1d3,
+                "Creation of a Direct Input object has failed");
+        }
+        else
+        {
+            m_2aa = 0;
+            m_2a7 = 1;
+            m_2a8 = 0;
+        }
+        result = m_0c->m_table->m_2c(m_0c, &g_inputMouseFormat);
+        if (result != 0)
+        {
+            m_2aa = 9;
+            m_2ac = FUN_005f81d0(result);
+            SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBInput.cpp", 0x1e3,
+                "Setting the data format of the mouse failed");
+        }
+        if (flags & 0x40)
+            result = m_0c->m_table->m_34(m_0c, window, 5);
+        else
+            result = m_0c->m_table->m_34(m_0c, window, 6);
+        if (result != 0)
+        {
+            m_2aa = 0x0a;
+            m_2ac = FUN_005f81d0(result);
+            SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBInput.cpp", 0x1f0,
+                "Setting the cooperation level of the mouse failed");
+        }
+    }
+    return true;
+}
+
 // FUNCTION: GAME 0x005fae50
 int __stdcall FUN_005fae50(void *value, SBInputUnk005fb730 *input)
 {
     input->FUN_005fae70(value);
     return 1;
 }
-
-// SIZE 0x10
-struct SBInputDeviceGuid
-{
-    unsigned long m_data[4];
-};
 
 // FUNCTION: GAME 0x005fae70
 void SBInputUnk005fb730::FUN_005fae70(void *value)
@@ -154,20 +399,11 @@ struct SBInputJoystickNameNode
     VMUnk00634bb0 name;
 };
 
-struct SBInputJoystickNames
-{
-    unsigned allocator;
-    SBInputJoystickNameNode *head;
-    unsigned count;
-    SBInputJoystickNameNode *cursor;
-    bool dirty;
-};
-
 // FUNCTION: GAME 0x005fafc0
 RHUnk0051a4e0 *SBInputUnk005fb730::FUN_005fafc0()
 {
     SBInputJoystickNames &names = *(SBInputJoystickNames *)((char *)this + 0x14);
-    SBInputJoystickNameNode *head = names.head;
+    SBInputJoystickNameNode *head = *(SBInputJoystickNameNode **)((char *)&names.values + 4);
     SBInputJoystickNameNode *current = head->next;
     while (current != head)
     {
@@ -177,7 +413,7 @@ RHUnk0051a4e0 *SBInputUnk005fb730::FUN_005fafc0()
         node->next->previous = node->previous;
         node->name.FUN_00634bb0();
         operator delete(node);
-        --names.count;
+        --*(unsigned *)((char *)&names.values + 8);
     }
     names.dirty = true;
     *(unsigned *)((char *)this + 0x10) = 0;
@@ -272,6 +508,152 @@ unsigned FUN_005fb1d0(unsigned key)
     return MapVirtualKeyExA(key, 1, g_inputKeyboardLayout);
 }
 
+#include "Decomp.h"
+
+DECOMP_SIZE_ASSERT(SBInputUnk005fb730, 0x2bc)
+DECOMP_SIZE_ASSERT(SBInputPropertyHeader, 0x10)
+DECOMP_SIZE_ASSERT(SBInputPropertyRange, 0x18)
+DECOMP_SIZE_ASSERT(SBInputPropertyValue, 0x14)
+DECOMP_SIZE_ASSERT(SBInputDeviceData, 0x10)
+DECOMP_SIZE_ASSERT(SBInputDeviceGuid, 0x10)
+DECOMP_SIZE_ASSERT(SBInputJoystickNames, 0x30)
+DECOMP_STATIC_ASSERT(offsetof(SBInputUnk005fb730, m_04) == 4)
+DECOMP_STATIC_ASSERT(offsetof(SBInputUnk005fb730, m_14) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(SBInputUnk005fb730, m_44) == 0x44)
+DECOMP_STATIC_ASSERT(offsetof(SBInputJoystickNames, needle) == 0x20)
+DECOMP_STATIC_ASSERT(offsetof(SBInputUnk005fb730, m_144) == 0x144)
+DECOMP_STATIC_ASSERT(offsetof(SBInputUnk005fb730, m_2a4) == 0x2a4)
+DECOMP_STATIC_ASSERT(offsetof(SBInputUnk005fb730, m_2a5) == 0x2a5)
+DECOMP_STATIC_ASSERT(offsetof(SBInputUnk005fb730, m_2a6) == 0x2a6)
+DECOMP_STATIC_ASSERT(offsetof(SBInputUnk005fb730, m_2a7) == 0x2a7)
+DECOMP_STATIC_ASSERT(offsetof(SBInputUnk005fb730, m_2a8) == 0x2a8)
+DECOMP_STATIC_ASSERT(offsetof(SBInputUnk005fb730, m_2a9) == 0x2a9)
+DECOMP_STATIC_ASSERT(offsetof(SBInputInterfaceTable, m_08) == 0x08)
+DECOMP_STATIC_ASSERT(offsetof(SBInputInterfaceTable, m_0c) == 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(SBInputInterfaceTable, m_24) == 0x24)
+DECOMP_STATIC_ASSERT(offsetof(SBInputUnk005fb730, m_2aa) == 0x2aa)
+DECOMP_STATIC_ASSERT(offsetof(SBInputUnk005fb730, m_2ac) == 0x2ac)
+
+// FUNCTION: GAME 0x005fb210
+bool SBInputUnk005fb730::FUN_005fb210(unsigned char index, unsigned long object,
+    long minimum, long maximum, unsigned long deadzone)
+{
+    SBInputPropertyRange range;
+    range.header.size = sizeof(range);
+    range.header.headerSize = sizeof(range.header);
+    range.header.object = object;
+    range.header.how = 1;
+    range.minimum = minimum;
+    range.maximum = maximum;
+    SBInputUnkDevice *&device = m_144[index];
+    long result = device->m_table->m_18(device, (const void *)4, &range.header);
+    if (result != 0)
+    {
+        m_2aa = 0x12;
+        typedef std::string &(std::string::*Assign)(const std::string &, unsigned, unsigned);
+        Assign assign = &std::string::assign;
+        (m_2ac.*assign)(FUN_005f81d0(result), 0, std::string::npos);
+        return false;
+    }
+    SBInputPropertyValue property;
+    property.header.size = sizeof(property);
+    property.header.headerSize = sizeof(property.header);
+    property.header.object = object;
+    property.header.how = 1;
+    property.value = deadzone;
+    result = device->m_table->m_18(device, (const void *)5, &property.header);
+    if (result != 0)
+    {
+        m_2aa = 0x13;
+        m_2ac = FUN_005f81d0(result);
+        return false;
+    }
+    return true;
+}
+
+#include "SBInputData.h"
+
+inline int SBInputJoystickNames::Find(const std::string &name)
+{
+    needle = name;
+    searching = true;
+    cursor = values.begin();
+    int limit = values.size();
+    int position;
+    for (position = 0; position < limit; ++position, cursor++)
+    {
+        if (*cursor == needle)
+            break;
+    }
+    if (position < limit)
+    {
+        foundIndex = position;
+        cursorIndex = position;
+        dirty = false;
+    }
+    else
+    {
+        dirty = true;
+        foundIndex = -1;
+    }
+    return foundIndex;
+}
+
+// STUB: GAME 0x005fb410
+unsigned char SBInputUnk005fb730::FUN_005fb410(std::string name, unsigned short flags, void *window)
+{
+    if (window == 0)
+    {
+        if (m_00 == 0)
+        {
+            m_2aa = 0x16;
+            return 0xff;
+        }
+        window = m_00;
+    }
+    int index = m_14.Find(name);
+    if (index == -1)
+    {
+        m_2aa = 0x0f;
+        return 0xff;
+    }
+    SBInputUnkDevice *&device = m_144[index];
+    long result = m_04->m_table->m_0c(m_04, &m_44[index], &device, 0);
+    if (result != 0)
+    {
+        m_2aa = 0x0c;
+        m_2ac = FUN_005f81d0(result);
+        return 0xff;
+    }
+    result = device->m_table->m_2c(device, &g_inputJoystickFormat);
+    if (result != 0)
+    {
+        m_2aa = 0x0d;
+        m_2ac = FUN_005f81d0(result);
+        return 0xff;
+    }
+    result = device->m_table->m_34(device, window, flags);
+    if (result != 0)
+    {
+        m_2aa = 0x0e;
+        m_2ac = FUN_005f81d0(result);
+        return 0xff;
+    }
+    if (!FUN_005fb210(index, 0, -32768, 32767, 500))
+        return 0xff;
+    if (!FUN_005fb210(index, 4, -32768, 32767, 500))
+        return 0xff;
+    result = device->m_table->m_1c(device);
+    if (result != 0)
+    {
+        m_2aa = 0x10;
+        m_2ac = FUN_005f81d0(result);
+        return 0xff;
+    }
+    m_2aa = 0;
+    return index;
+}
+
 // FUNCTION: GAME 0x005fb730
 bool SBInputUnk005fb730::FUN_005fb730(unsigned char index)
 {
@@ -348,6 +730,55 @@ bool SBInputUnk005fb730::FUN_005fba70(void *event)
     return true;
 }
 
+// FUNCTION: GAME 0x005fbb70
+bool SBInputUnk005fb730::FUN_005fbb70(SBInputDeviceData *data)
+{
+    unsigned long count = -1;
+    long result = m_08->m_table->m_28(m_08, sizeof(*data), 0, &count, 1);
+    if (count == 0)
+        return false;
+    bool more = result == 0 && count > 1;
+    count = 1;
+    result = m_08->m_table->m_28(m_08, sizeof(*data), data, &count, 0);
+    if (result != 0)
+    {
+        m_2aa = 0x0b;
+        if (result == (long)0x8007001e)
+        {
+            result = m_08->m_table->m_1c(m_08);
+            if (result == 0)
+                return FUN_005fbb70(data);
+        }
+        m_2ac = FUN_005f81d0(result);
+        return false;
+    }
+    return more;
+}
+
+// FUNCTION: GAME 0x005fbdb0
+bool SBInputUnk005fb730::FUN_005fbdb0(SBInputDeviceData *data)
+{
+    unsigned long count = 1;
+    long result = m_0c->m_table->m_28(m_0c, sizeof(*data), data, &count, 0);
+    if (result != 0)
+    {
+        m_2aa = 0x0b;
+        if (result == (long)0x8007001e)
+        {
+            result = m_0c->m_table->m_1c(m_0c);
+            if (result == 0)
+                return FUN_005fbdb0(data);
+        }
+        m_2ac = FUN_005f81d0(result);
+        return false;
+    }
+    count = -1;
+    result = m_0c->m_table->m_28(m_0c, sizeof(*data), 0, &count, 1);
+    if (result == 0 && count > 0)
+        return true;
+    return false;
+}
+
 // FUNCTION: GAME 0x005fbfc0
 bool SBInputUnk005fb730::FUN_005fbfc0()
 {
@@ -371,9 +802,14 @@ void SBInputEmit(SBInputUnk005fb730 *input, unsigned char index)
     SBDrawViewport *viewport = (SBDrawViewport *)input;
     viewport->operator[](*(SBGeoPoint2D *)input);
     viewport->GetPixel(index, index);
+    input->FUN_005fa240(index, 0);
+    input->FUN_005fb210(index, 0, -32768, 32767, 500);
     input->FUN_005fb730(index);
     input->FUN_005fb770(index, 0, 0);
     input->FUN_005fb980(0);
     input->FUN_005fba70(0);
+    input->FUN_005fbb70(0);
+    input->FUN_005fbdb0(0);
     input->FUN_005fbfc0();
+    input->~SBInputUnk005fb730();
 }
