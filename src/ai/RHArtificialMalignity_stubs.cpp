@@ -12,7 +12,6 @@ SBGeoVector2D RHMalignityActorCalls::FUN_004135b0()
     return direction;
 }
 
-bool RHArtificialMalignity::FUN_00438cb0(int, bool) { return false; }
 
 #include "RHMalignityVisibilityCalls.h"
 

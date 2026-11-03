@@ -83,7 +83,7 @@ public:
     virtual void V120() = 0;
     virtual unsigned short V124() = 0;
     virtual void V128() = 0;
-    virtual void V12c() = 0;
+    virtual unsigned short V12c() = 0;
     virtual int V130() = 0; // vtable+0x130
     virtual void V134() = 0;
     virtual void V138() = 0;

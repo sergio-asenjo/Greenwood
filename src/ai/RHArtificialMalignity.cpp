@@ -836,6 +836,98 @@ void RHMalignityReactionCalls::FUN_0041a3e0()
         ((RHArtificialIntelligence *)this)->Unk00410600();
 }
 
+// STUB: GAME 0x00438cb0
+bool RHArtificialMalignity::FUN_00438cb0(int command, bool mode)
+{
+    for (;;)
+    {
+        int *layout = RHMalignityField<int *volatile>(this, 0);
+        RHArtificialIntelligence &base = *(RHArtificialIntelligence *)((char *)this + layout[1]);
+        if (RHMalignityField<volatile unsigned char>(&base, 0x24) > 1)
+        {
+            switch (command)
+            {
+            case 0: case 2: case 3: case 4: case 5: case 10: case 11:
+            case 12: case 13: case 14: case 15:
+                return false;
+            case 1: case 6: case 7: case 8: case 9:
+                return true;
+            }
+        }
+        if (!mode && (!RHMalignityField<unsigned char>(base.m_actor, 0x12) ||
+            (RHMalignityField<void *>(RHMalignityField<void *>(base.m_actor, 0x50), 0xe0) &&
+                ((unsigned char)(RHMalignityField<unsigned>(RHMalignityField<void *>(RHMalignityField<void *>(base.m_actor, 0x50), 0xe0), 0x30) >> 13) & 1))))
+        {
+            switch (command)
+            {
+            case 0: case 1: case 6: case 7: case 8: case 9:
+                return false;
+            case 2: case 3: case 4:
+                return true;
+            case 5:
+                goto queryActor;
+            case 15:
+                if (M(unsigned short, 0x14) >= M(unsigned short, 0x10))
+                    return true;
+                if (RHMalignityField<int>(&VirtualBase(), 0x0c) >= 2 &&
+                    RHMalignityField<int>(&VirtualBase(), 0x0c) <= 3)
+                    return false;
+                return M(unsigned short, 0x12) == 0;
+            }
+        }
+        else
+        {
+            switch (command)
+            {
+            case 6:
+                return RHMalignityField<unsigned short>(M(void *, 0x334), 0x50) > 0;
+            case 7:
+                return RHMalignityField<unsigned short>(M(void *, 0x334), 0x54) > 0;
+            case 9:
+                return RHMalignityField<unsigned short>(M(void *, 0x334), 0x54) > 0;
+            case 8:
+                return RHMalignityField<unsigned short>(M(void *, 0x334), 0x52) > 0;
+            case 1:
+                return M(unsigned char, 0x350) ||
+                    (RHMalignityField<unsigned char>(M(void *, 0x334), 0x5c) & 0x10) ||
+                    M(unsigned short, 0x338) == 100;
+            case 2:
+                return !M(unsigned char, 0x351) && M(unsigned short, 0x338) != 100;
+            case 3:
+                return !(RHMalignityField<unsigned char>(M(void *, 0x334), 0x5c) & 0x10) &&
+                    M(unsigned short, 0x338) != 100;
+            case 0: case 4:
+                return !(RHMalignityField<unsigned char>(M(void *, 0x334), 0x5c) & 0x10) &&
+                    M(unsigned short, 0x338) != 100;
+            case 5:
+            queryActor:
+                return ((RHMalignityActorCalls *)VirtualBase().m_actor)->V12c() > (unsigned short)50;
+            case 13:
+                return RHMalignityField<unsigned short>(M(void *, 0x334), 0x56) > 0;
+            case 14:
+                return RHMalignityField<unsigned short>(M(void *, 0x334), 0x56) > 1 &&
+                    M(unsigned short, 0x338) != 100;
+            case 15:
+                if (M(unsigned short, 0x14) >= M(unsigned short, 0x10))
+                    return true;
+                if (RHMalignityField<int>(&VirtualBase(), 0x0c) >= 2 &&
+                    RHMalignityField<int>(&VirtualBase(), 0x0c) <= 3)
+                    return false;
+                return M(unsigned short, 0x12) == 0;
+            case 10:
+                return RHMalignityField<unsigned short>(M(void *, 0x334), 0x36) >= 50;
+            case 11:
+                return RHMalignityField<unsigned short>(M(void *, 0x334), 0x36) >= 50;
+            case 12:
+                return RHMalignityField<unsigned short>(M(void *, 0x334), 0x36) < 50 ||
+                    RHMalignityField<int>(&VirtualBase(), 0x2bc) > 0;
+            }
+        }
+        mode = false;
+        command = 1;
+    }
+}
+
 // FUNCTION: GAME 0x00438f80
 void RHArtificialMalignity::FUN_00438f80(const RHMalignityStimulus &stimulus)
 {
@@ -2851,6 +2943,86 @@ void RHArtificialMalignity::FUN_00433790(const RHMalignityPosition &position)
     ((RHUnk00413640 *)&VirtualBase())->Unk(1, 2);
     ((RHMalignityReactionCalls *)&VirtualBase())->FUN_00412d60(position, -1, 0);
     ((RHArtificialIntelligence *)&VirtualBase())->Unk00416710(10);
+}
+
+// STUB: GAME 0x00434320
+void RHArtificialMalignity::FUN_00434320(void *actor)
+{
+    RHArtificialIntelligence &base = VirtualBase();
+    bool wasAttacking = RHMalignityField<int>(&base, 0xc) == 3 &&
+        RHMalignityField<int>(&base, 0x27c) == 3 &&
+        RHMalignityField<void *>(&base, 0x2a4) == actor;
+    RHMalignityField<RHMalignityList>(&base, 0x280).InsertLast(actor);
+    RHMalignityPosition position = base.FUN_004165e0(actor, true);
+    if (RHMalignityField<int>(&base, 0x27c) <= 2)
+    {
+        RHMalignityField<RHMalignityPosition>(&base, 0x26c) = position;
+        RHMalignityField<int>(&base, 0x27c) = 2;
+    }
+    if (((RHMalignityActorCalls *)actor)->V48() &&
+        (RHMalignityField<unsigned>(actor, 4) & 0xf) == 4)
+    {
+        RHSectorActorList &list = M(RHSectorActorList, 0x2c);
+        if (list.Unk004b8f80((RHElementActor *const &)actor, true) == -1)
+        {
+            RHElementActor *value = (RHElementActor *)actor;
+            ((RHMalignityTargetList *)&list)->InsertLast(value);
+        }
+    }
+    if (!FUN_00438cb0(15, false))
+        return;
+    M(unsigned short, 0x10) = M(unsigned short, 0x14);
+    if (RHMalignityField<void *>(&base, 0x1f8))
+    {
+        RHSectorActorList &list = RHMalignityField<RHSectorActorList>(&base, 0x1d4);
+        void *pending = RHMalignityField<void *>(&base, 0x1f8);
+        if (list.Unk004b8f80((RHElementActor *const &)pending, true) == -1)
+        {
+            RHElementActor *value = (RHElementActor *)pending;
+            ((RHMalignityTargetList *)&list)->InsertLast(value);
+        }
+        RHMalignityField<void *>(&base, 0x1f8) = 0;
+    }
+    switch (RHMalignityField<int>(&base, 0x14))
+    {
+    case 0x49:
+    case 0x4c:
+    case 0x4d:
+    case 0x4e:
+    case 0x80:
+        if (wasAttacking)
+            FUN_004450a0(actor);
+        FUN_0044a760(actor);
+        return;
+    case 0x6d:
+    case 0x6e:
+    case 0x6f:
+    case 0x71:
+    case 0x72:
+        if (actor != RHMalignityField<void *>(&base, 0x88))
+        {
+            RHMalignityList &list = M(RHMalignityList, 0x54);
+            list.InsertLast(actor);
+        }
+        return;
+    default:
+        ((RHArtificialIntelligence *)&base)->Unk00418c40(
+            RHMalignityField<unsigned short>(actor, 0x23c) ? 0x1b : 0, 0);
+        FUN_00439cb0(base.FUN_004165e0(actor, true), 100);
+        M(unsigned char, 0xcc) = 0;
+        ((RHMalignityReactionCalls *)&base)->FUN_0041a3e0();
+        RHMalignityField<RHMalignityPosition>(&base, 0xd0) = base.FUN_004165e0(actor, true);
+        RHMalignityField<void *>(&base, 0x88) = actor;
+        ((RHElementActorNPC *)base.m_actor)->FUN_00487aa0(actor);
+        base.V10(3, 0x6d);
+        ((RHMalignityReactionCalls *)&base)->FUN_00412d60(
+            RHMalignityField<RHMalignityPosition>(&base, 0xd0), -1, 0);
+        ((RHScriptBatchCalls *)&base)->Unk00419fb0(2);
+        if (wasAttacking)
+            FUN_004450a0(actor);
+        FUN_00438620(50);
+        return;
+    }
 }
 
 // Residual: the state comparison and virtual-base receiver reload across rand differ.
