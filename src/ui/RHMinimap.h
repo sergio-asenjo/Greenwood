@@ -14,6 +14,7 @@
 
 class RHElement;
 class RHUnkFXDraw;
+class SBGeoVector2D;
 
 struct RHMinimapHighlightedElement
 {
@@ -72,6 +73,7 @@ public:
     SBGeoPoint2D(float x, float y);
     ~SBGeoPoint2D();
     SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
+    SBGeoVector2D Unk005fc110(const SBGeoPoint2D &other) const;
     SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
     SBGeoPoint2D FUN_005fc200(const SBGeoPoint2D &other) const;
     bool operator==(const SBGeoPoint2D &other) const;
@@ -118,6 +120,8 @@ public:
     static void FUN_0054b490(const RHMinimapHighlightedElement &element);
     void FUN_0054b4c0();
     void FUN_0054b5e0(const SBGeoPoint2D &point, unsigned short color);
+    void FUN_0054b8b0(RHElement *element);
+    void FUN_0054c1e0(const SBGeoPoint2D &point);
 
     unsigned long m_surface;
     unsigned long m_a4;

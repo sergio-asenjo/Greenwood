@@ -387,9 +387,226 @@ void RHMinimap::FUN_0054b5e0(const SBGeoPoint2D &point, unsigned short color)
     }
 }
 
+#include "../ai/RHMalignityActorCalls.h"
+#include "../element/RHElementActorCivilianCore.h"
+
+struct RHMinimapRefreshElement
+{
+    undefined m_00[4];      // 0x00
+    unsigned m_04;          // 0x04
+    char m_08;              // 0x08
+    undefined m_09[3];      // 0x09
+    undefined m_0c[4];      // 0x0c
+    unsigned short m_10;    // 0x10
+    undefined m_12[0x3e];   // 0x12
+    void *m_50;             // 0x50
+    undefined m_54[0x5c];   // 0x54
+    int m_b0;               // 0xb0
+    undefined m_b4[0x11a];  // 0xb4
+    char m_1ce;             // 0x1ce
+};
+
+// STUB: GAME 0x0054b8b0
+void RHMinimap::FUN_0054b8b0(RHElement *element)
+{
+    RHMinimapRefreshElement *entry = (RHMinimapRefreshElement *)element;
+    RHMalignityActorCalls *actor = (RHMalignityActorCalls *)element;
+    unsigned short color;
+
+    switch (*(unsigned short *)((char *)element + 0x8c))
+    {
+    case 1:
+        if ((entry->m_04 & 7) == 4)
+        {
+            switch (entry->m_10)
+            {
+            case 1:
+                if (actor->V48() || (*(int *)((char *)entry->m_50 + 0x8c) == 3 && !entry->m_1ce))
+                    color = 1;
+                else if (entry->m_1ce)
+                    color = 2;
+                else
+                    color = 0;
+                break;
+            case 0x102:
+                if (entry->m_08)
+                    color = 3;
+                else if (((RHElementActorCivilian *)element)->FUN_00470ce0())
+                {
+                    if (actor->V48())
+                        color = 8;
+                    else if (entry->m_1ce)
+                        color = 9;
+                    else
+                        color = 7;
+                }
+                else if (actor->V48())
+                    color = 14;
+                else if (entry->m_1ce)
+                    color = 15;
+                else
+                    color = 13;
+                break;
+            case 0x103:
+                if (entry->m_08)
+                    color = 3;
+                else if (actor->Vf8())
+                {
+                    if (actor->V48())
+                        color = 8;
+                    else if (entry->m_1ce)
+                        color = 9;
+                    else
+                        color = 7;
+                }
+                else if (actor->V48())
+                    color = actor->V130() == 1 ? 5 : 11;
+                else if (entry->m_1ce)
+                    color = actor->V130() == 1 ? 6 : 12;
+                else
+                    color = actor->V130() == 1 ? 4 : 10;
+                break;
+            default:
+                return;
+            }
+        }
+        else if ((entry->m_04 & 7) == 0)
+            color = 16;
+        else if ((entry->m_04 & 3) == 3)
+        {
+            if (entry->m_b0 == 12)
+                color = 20;
+            else if ((entry->m_04 & 0xf) == 7)
+                color = 19;
+            else
+                color = 17;
+        }
+        else
+            return;
+        break;
+    case 100:
+        color = 0;
+        break;
+    case 101:
+        color = 2;
+        break;
+    case 102:
+        color = 1;
+        break;
+    case 111:
+        if ((entry->m_04 & 7) != 4)
+            return;
+        if (actor->V48())
+            color = 1;
+        else if (entry->m_1ce)
+            color = 2;
+        else
+            color = 0;
+        break;
+    case 200:
+        color = 4;
+        break;
+    case 201:
+        color = 6;
+        break;
+    case 202:
+        color = 5;
+        break;
+    case 222:
+        if ((entry->m_04 & 7) != 4)
+            return;
+        if (actor->V48())
+            color = 5;
+        else if (entry->m_1ce)
+            color = 6;
+        else
+            color = 4;
+        break;
+    case 300:
+        color = 13;
+        break;
+    case 301:
+        color = 15;
+        break;
+    case 302:
+        color = 14;
+        break;
+    case 333:
+        if ((entry->m_04 & 7) != 4)
+            return;
+        if (actor->V48())
+            color = 14;
+        else if (entry->m_1ce)
+            color = 15;
+        else
+            color = 13;
+        break;
+    case 400:
+        color = 7;
+        break;
+    case 401:
+        color = 9;
+        break;
+    case 402:
+        color = 8;
+        break;
+    case 444:
+        if ((entry->m_04 & 7) != 4)
+            return;
+        if (actor->V48())
+            color = 8;
+        else if (entry->m_1ce)
+            color = 9;
+        else
+            color = 7;
+        break;
+    case 500:
+        color = 17;
+        break;
+    case 666:
+        color = 16;
+        break;
+    default:
+        return;
+    }
+    FUN_0054b5e0(*(const SBGeoPoint2D *)((char *)entry->m_50 + 0x24), color);
+}
+
 // Force emission: a non-inline static member defined here is emitted into the
 // object; this out-of-line call keeps RHMinimap::SerializeHighlightedElement in
 // the build.
+#include "RHMessenger.h"
+#include "RHUnk005fc3b0.h"
+
+extern float g_unk0x006774e4;
+RHMessenger *RHUnk00546050();
+
+// FUNCTION: GAME 0x0054c1e0
+void RHMinimap::FUN_0054c1e0(const SBGeoPoint2D &point)
+{
+    if (m_120)
+    {
+        if (!m_b0)
+        {
+            m_bc = m_e4.Min();
+            m_b4 = point;
+            m_b0 = true;
+            m_e1 = false;
+        }
+        else
+        {
+            RHUnk00546050()->RHUnk005460c0(RHUnk5490f0(0x18));
+            SBGeoVector2D delta = point.Unk005fc110(m_b4);
+            if (((RHUnk005fc3b0 &)delta).Unk005fc6a0(1.0f) > g_unk0x006774e4)
+            {
+                FUN_0054a0f0(&m_bc.Unk005fc190(delta));
+                m_b1 = true;
+            }
+        }
+        m_e0 = false;
+    }
+}
+
 void RHMinimapEmit(SBFile &file, RHMinimapHighlightedElement &element)
 {
     RHMinimap::SerializeHighlightedElement(file, element);
