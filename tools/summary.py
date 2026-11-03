@@ -23,13 +23,23 @@ def main(argv):
     with open(argv[1], "r", encoding="utf-8") as handle:
         report = json.load(handle)
 
-    data = report["data"]
+    data = [
+        entry
+        for entry in report["data"]
+        if entry.get("type") == 1 and not entry.get("library")
+    ]
     total = report.get("function_count", len(data))
 
-    exact = [e for e in data if not e.get("stub") and e.get("matching", 0.0) >= 1.0]
+    exact = [
+        e
+        for e in data
+        if not e.get("stub")
+        and not e.get("effective")
+        and e.get("matching", 0.0) == 1.0
+    ]
     partials = [e for e in data if not e.get("stub") and e.get("matching", 0.0) < 1.0]
     stubs = [e for e in data if e.get("stub")]
-    effective = [e for e in data if e.get("effective")]
+    effective = [e for e in data if not e.get("stub") and e.get("effective")]
 
     print(f"report:              {argv[1]}")
     print(f"game functions:      {total}")
@@ -41,7 +51,7 @@ def main(argv):
     print(
         f"partial (non-stub):  {len(partials):5d}  ({100.0 * len(partials) / total:.2f}%)"
     )
-    print(f"effective flagged:   {len(effective):5d}")
+    print(f"effective (counted): {len(effective):5d}")
     print()
 
     print("stub score distribution:")
@@ -51,7 +61,7 @@ def main(argv):
 
     closing = [e for e in stubs if e.get("matching", 0.0) >= 0.90]
     print()
-    print(f"stubs at >=90% (cheap closes): {len(closing)}")
+    print(f"stubs at >=90% (triage only):  {len(closing)}")
     print(
         f"stubs at >=95%:                {sum(1 for e in stubs if e.get('matching', 0.0) >= 0.95)}"
     )
