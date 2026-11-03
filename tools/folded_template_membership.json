@@ -4,6 +4,48 @@
   "original_sha256": "b0963242470d96cdd8021e2cb81ccbc5e26b4fb2cb122febdec50ad30774f08e",
   "groups": [
     {
+      "original": "0x00457a10",
+      "canonical_symbol": "?size@?$vector@VRHMission@@V?$allocator@VRHMission@@@std@@@std@@QBEIXZ",
+      "members": [
+        {
+          "path": "src/mission/RHCampaign.cpp",
+          "symbol": "?size@?$vector@VRHMission@@V?$allocator@VRHMission@@@std@@@std@@QBEIXZ"
+        },
+        {
+          "path": "src/mission/RHCampaign.cpp",
+          "symbol": "?size@?$vector@URHFramePoolBlock@@V?$allocator@URHFramePoolBlock@@@std@@@std@@QBEIXZ"
+        }
+      ]
+    },
+    {
+      "original": "0x00507630",
+      "canonical_symbol": "?insert@?$vector@UVMQuad@@V?$allocator@UVMQuad@@@std@@@std@@QAEXPAUVMQuad@@IABU3@@Z",
+      "members": [
+        {
+          "path": "src/common/SCSerialize.cpp",
+          "symbol": "?insert@?$vector@UVMQuad@@V?$allocator@UVMQuad@@@std@@@std@@QAEXPAUVMQuad@@IABU3@@Z"
+        },
+        {
+          "path": "src/common/SCSerialize.cpp",
+          "symbol": "?insert@?$vector@URHFramePoolBlock@@V?$allocator@URHFramePoolBlock@@@std@@@std@@QAEXPAURHFramePoolBlock@@IABU3@@Z"
+        }
+      ]
+    },
+    {
+      "original": "0x00507960",
+      "canonical_symbol": "?erase@?$vector@VRHMission@@V?$allocator@VRHMission@@@std@@@std@@QAEPAVRHMission@@PAV3@0@Z",
+      "members": [
+        {
+          "path": "src/mission/RHCampaign.cpp",
+          "symbol": "?erase@?$vector@VRHMission@@V?$allocator@VRHMission@@@std@@@std@@QAEPAVRHMission@@PAV3@0@Z"
+        },
+        {
+          "path": "src/mission/RHCampaign.cpp",
+          "symbol": "?erase@?$vector@URHFramePoolBlock@@V?$allocator@URHFramePoolBlock@@@std@@@std@@QAEPAURHFramePoolBlock@@PAU3@0@Z"
+        }
+      ]
+    },
+    {
       "original": "0x00460900",
       "canonical_symbol": "?compare@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QBEHIIPBDI@Z",
       "members": [

@@ -85,7 +85,10 @@ int SCSerializeRecordValue::FUN_0063a5c0(FILE *file, bool writing)
 // SYNTHETIC: GAME 0x0063a920
 // ??_GSCSerializeUnkObject@@UAEPAXI@Z
 
-// TEMPLATE: GAME 0x00507630
+// TEMPLATE: GAME 0x00507630 FOLDED
+// ?insert@?$vector@URHFramePoolBlock@@V?$allocator@URHFramePoolBlock@@@std@@@std@@QAEXPAURHFramePoolBlock@@IABU3@@Z
+
+// TEMPLATE: GAME 0x00507630 FOLDED
 // ?insert@?$vector@UVMQuad@@V?$allocator@UVMQuad@@@std@@@std@@QAEXPAUVMQuad@@IABU3@@Z
 
 // STUB: GAME 0x0063a940

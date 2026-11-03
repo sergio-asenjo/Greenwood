@@ -1809,7 +1809,10 @@ void RHCampaignUnk004579d0::FUN_004579d0()
     m_end = 0;
 }
 
-// TEMPLATE: GAME 0x00457a10
+// TEMPLATE: GAME 0x00457a10 FOLDED
+// ?size@?$vector@URHFramePoolBlock@@V?$allocator@URHFramePoolBlock@@@std@@@std@@QBEIXZ
+
+// TEMPLATE: GAME 0x00457a10 FOLDED
 // ?size@?$vector@VRHMission@@V?$allocator@VRHMission@@@std@@@std@@QBEIXZ
 
 // LIBRARY: GAME 0x00457a30
@@ -2290,7 +2293,10 @@ void FUN_004e7210(RHMission **first, RHMission **last,
     std::_Insertion_sort(first, last, compare);
 }
 
-// TEMPLATE: GAME 0x00507960
+// TEMPLATE: GAME 0x00507960 FOLDED
+// ?erase@?$vector@URHFramePoolBlock@@V?$allocator@URHFramePoolBlock@@@std@@@std@@QAEPAURHFramePoolBlock@@PAU3@0@Z
+
+// TEMPLATE: GAME 0x00507960 FOLDED
 // ?erase@?$vector@VRHMission@@V?$allocator@VRHMission@@@std@@@std@@QAEPAVRHMission@@PAV3@0@Z
 
 RHMission *RHCampaignMissionValues::FUN_00507960(RHMission *first, RHMission *last)
