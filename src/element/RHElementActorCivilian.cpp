@@ -139,6 +139,7 @@ class RHSprite
 {
 public:
     int PerformAction(RHOrder *order, int animation, int progression, bool reset);
+    bool FUN_005b9e30(void *first, void *second, bool third);
 };
 
 // FUNCTION: GAME 0x00470390
@@ -330,9 +331,16 @@ bool RHElementActorCivilian::FUN_00470ce0()
 
 bool RHCivilianVirtualBool(void *object, unsigned offset);
 
-// Parked: branch helpers and the sprite receiver's exact callee are unresolved.
+#include "../ai/RHMalignityVisibilityCalls.h"
+#include "../ai/RHMalignityActorCalls.h"
+#include "../engine/RHMessenger.h"
+
+RHMessenger *RHUnk00546050();
+
+// Parked: the target loads/stores the case-0xf bool at its use site; VC6 hoists that
+// load/store above the messenger-state gate and tests it in CL instead of AL.
 // STUB: GAME 0x00470d00
-bool RHElementActorCivilian::FUN_00470d00(void *first, void *second, int kind)
+bool RHElementActorCivilian::FUN_00470d00(const SBGeoPoint2D &point, RHElementActorHuman *pc, int kind)
 {
     if (!RHCivilianField<char>(this, 0x12))
         return false;
@@ -341,22 +349,36 @@ bool RHElementActorCivilian::FUN_00470d00(void *first, void *second, int kind)
         RHCivilianField<unsigned>(g_pEngine, 0x4a00) > 1)
         return false;
 
-    if (kind == 3)
+    unsigned char state = *(unsigned char *)((char *)RHUnk00546050() + 0x20);
+    if (!state && RHCivilianField<void *>(this, 0x500))
+        return FUN_0048af40(point, pc, kind);
+
+    RHElementActorHuman *pcArg = pc;
+    switch (kind)
     {
-        if (RHCivilianField<char>(this, 8) ||
-            RHCivilianField<void *>(this, 0x500) ||
-            !FUN_00470ca0() ||
-            !RHCivilianVirtualBool(second, 0xf8))
+    case 3:
+        if (!RHCivilianField<char>(this, 8) &&
+            !((RHMalignityVisibilityCalls *)this)->FUN_004860b0() &&
+            FUN_00470ca0() &&
+            ((RHMalignityActorCalls *)pcArg)->Vf8())
+        {
+            int action = RHCivilianField<int>(RHCivilianField<void *>(this, 0x50), 0x1dc);
+            if (action == 0x108 || action == 0x109 || action == 0x10a)
+                return false;
+            return RHCivilianField<RHSprite *>(this, 0x50)->FUN_005b9e30(
+                (void *)&point, RHCivilianField<void *>(this, 0x54), false);
+        }
+        break;
+    case 0xf:
+    {
+        bool dead = RHCivilianField<bool>(this, 8);
+        if (!state || !dead)
             return false;
-
-        unsigned action = RHCivilianField<unsigned>(RHCivilianField<void *>(this, 0x50), 0x1dc);
-        return action != 0x108 && action != 0x109 && action != 0x10a;
+        return RHCivilianField<RHSprite *>(this, 0x50)->FUN_005b9e30(
+            (void *)&point, RHCivilianField<void *>(this, 0x54), dead);
     }
-
-    if (kind == 0xf)
-        return RHCivilianField<char>(this, 8) != 0;
-
-    return true;
+    }
+    return FUN_0048af40(point, pcArg, kind);
 }
 
 #define SBGeoPoint2D RHElemScrollPoint2D
@@ -564,6 +586,32 @@ int RHElementActorCivilian::FUN_004712b0(RHSoldierSequenceElement *element)
     return type;
 }
 
+#include "RHActorTranslation.h"
+
+// FUNCTION: GAME 0x004712e0
+void RHElementActorCivilian::Translate(RHSequenceElement *element, RHcommand command)
+{
+    int selected = !command ? RHCivilianField<int>(element, 0x10) : command;
+    if (selected != 0x76)
+    {
+        RHElementActorNPC::Translate(element, command);
+        return;
+    }
+    RHActorTranslationSequenceCalls *sequence = (RHActorTranslationSequenceCalls *)element;
+    RHOrder *first = new RHOrder;
+    first->m_24 = 0x108;
+    first->m_2a = 0;
+    sequence->FUN_00585970(first);
+    RHOrder *second = new RHOrder;
+    second->m_24 = 0x109;
+    second->m_2a = 0;
+    sequence->FUN_00585970(second);
+    RHOrder *third = new RHOrder;
+    third->m_24 = 0x10a;
+    third->m_2a = 0;
+    sequence->FUN_00585970(third);
+}
+
 // FUNCTION: GAME 0x00471400
 void RHElementActorCivilian::FUN_00471400(int first, int second)
 {
@@ -641,6 +689,7 @@ SBGeoBoundingBox2D::SBGeoBoundingBox2D(const SBGeoPoint2D &first, const SBGeoPoi
 
 void RHElementActorCivilian::Emit(SBFile &file)
 {
+    Translate(0, (RHcommand)0);
     FUN_00470180();
     FUN_00470190(0, 0, 0, 0, 0, 0, 0);
     FUN_004701a0();

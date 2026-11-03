@@ -1,7 +1,10 @@
 #ifndef RHELEMENTACTORNPC_H
 #define RHELEMENTACTORNPC_H
 
+#include "RHActorCommand.h"
+
 class SBFile;
+class SBGeoPoint2D;
 class RHSequenceElement;
 class RHElementActorHuman;
 class RHActorTranslationSequenceCalls;
@@ -39,6 +42,7 @@ public:
     virtual bool Serialize(SBFile &file);
     void Emit(SBFile &file);
     int FUN_00486790();
+    void Translate(RHSequenceElement *element, RHcommand command);
     void GetTransitionFlags(RHSequenceElement *element, unsigned long &first, unsigned long &second, unsigned long &third);
     static void FUN_00486940(unsigned long first, unsigned long second, unsigned long third);
     void FUN_00486f30(unsigned char status);
@@ -49,6 +53,7 @@ public:
     void FUN_00487ce0();
     bool FUN_004887a0(int kind);
     void FUN_00488a40(unsigned char index, unsigned short timer);
+    bool FUN_0048af40(const SBGeoPoint2D &point, RHElementActorHuman *pc, int focus);
     void *FUN_0048c380(RHElementActorHuman *target);
     void FUN_0048c4d0();
     static void FUN_0048c620(void *actor);

@@ -353,6 +353,145 @@ void EmitRHNPCDetectableTimer(RHElementActorNPC &actor)
     actor.FUN_00488a40(0, 0);
 }
 
+#include "../ai/RHMalignityVisibilityCalls.h"
+#include "../engine/RHMessenger.h"
+
+RHMessenger *RHUnk00546050();
+extern bool g_unk0x006c068d;
+
+// STUB: GAME 0x0048af40
+bool RHElementActorNPC::FUN_0048af40(const SBGeoPoint2D &point, RHElementActorHuman *pc, int focus)
+{
+    if (!RHNPC_FIELD(char, 0x12))
+        return false;
+    if (focus != 5 && focus != 0x10 && focus != 2 &&
+        *(unsigned *)((char *)g_pEngine + 0x4a00) > 1)
+        return false;
+
+    unsigned char state = *(unsigned char *)((char *)RHUnk00546050() + 0x20);
+    bool includeKey;
+    RHMalignityActorCalls *self = (RHMalignityActorCalls *)this;
+
+    switch (focus)
+    {
+    case 4:
+        if (state)
+        {
+            if (!RHNPC_FIELD(char, 8) &&
+                (self->V48() || self->V130() == 0 ||
+                 (RHNPC_FIELD(unsigned, 4) & 0x1f) == 4 || self->Vf8()))
+                return false;
+            includeKey = RHNPC_FIELD(bool, 8);
+            return ((RHSprite *)RHNPC_FIELD(void *, 0x50))->FUN_005b9e30(
+                (void *)&point, RHNPC_FIELD(void *, 0x54), includeKey);
+        }
+        if (RHNPC_FIELD(char, 8) ||
+            ((RHMalignityVisibilityCalls *)this)->FUN_004860b0() ||
+            (self->V130() == 0 && (RHNPC_FIELD(unsigned, 4) & 0x1f) == 0x14))
+            return false;
+        return ((RHSprite *)RHNPC_FIELD(void *, 0x50))->FUN_005b9e30(
+            (void *)&point, RHNPC_FIELD(void *, 0x54), false);
+    case 7:
+        if (state)
+        {
+            if (!RHNPC_FIELD(char, 8) &&
+                ((RHNPC_FIELD(unsigned, 4) & 0x1f) != 0x14 || self->V130() == 0 || self->V48()))
+                return false;
+            return ((RHSprite *)RHNPC_FIELD(void *, 0x50))->FUN_005b9e30(
+                (void *)&point, RHNPC_FIELD(void *, 0x54), RHNPC_FIELD(bool, 8));
+        }
+        if (RHNPC_FIELD(char, 8) || (RHNPC_FIELD(unsigned, 4) & 0x1f) != 0x14 ||
+            self->V130() == 0 || ((RHMalignityVisibilityCalls *)this)->FUN_004860b0())
+            return false;
+        return ((RHSprite *)RHNPC_FIELD(void *, 0x50))->FUN_005b9e30(
+            (void *)&point, RHNPC_FIELD(void *, 0x54), false);
+    case 8:
+        if (state)
+        {
+            if (!RHNPC_FIELD(char, 8) &&
+                ((RHNPC_FIELD(unsigned, 4) & 0x1f) != 0x14 || self->V130() == 0 ||
+                 self->V48() || self->Vf8()))
+                return false;
+            return ((RHSprite *)RHNPC_FIELD(void *, 0x50))->FUN_005b9e30(
+                (void *)&point, RHNPC_FIELD(void *, 0x54), RHNPC_FIELD(bool, 8));
+        }
+        if (RHNPC_FIELD(char, 8) || (RHNPC_FIELD(unsigned, 4) & 0x1f) != 0x14 ||
+            self->V130() == 0 || ((RHMalignityVisibilityCalls *)this)->FUN_004860b0() || self->Vf8())
+            return false;
+        return ((RHSprite *)RHNPC_FIELD(void *, 0x50))->FUN_005b9e30(
+            (void *)&point, RHNPC_FIELD(void *, 0x54), false);
+    case 6:
+        if (state)
+        {
+            if (!RHNPC_FIELD(char, 8) &&
+                (self->V48() || self->V130() != 1 || self->Vf4() || self->Vf8()))
+                return false;
+            return ((RHSprite *)RHNPC_FIELD(void *, 0x50))->FUN_005b9e30(
+                (void *)&point, RHNPC_FIELD(void *, 0x54), RHNPC_FIELD(bool, 8));
+        }
+        if (RHNPC_FIELD(char, 8) || ((RHMalignityVisibilityCalls *)this)->FUN_004860b0() ||
+            self->V130() != 1 || self->Vf8() || self->Vf4())
+            return false;
+        return ((RHSprite *)RHNPC_FIELD(void *, 0x50))->FUN_005b9e30(
+            (void *)&point, RHNPC_FIELD(void *, 0x54), false);
+    case 2:
+        if (RHNPC_FIELD(char, 8))
+            return false;
+        return ((RHSprite *)RHNPC_FIELD(void *, 0x50))->FUN_005b9e30(
+            (void *)&point, RHNPC_FIELD(void *, 0x54), g_unk0x006c068d);
+    case 3:
+        if (RHNPC_FIELD(void *, 0x500))
+        {
+            if (RHNPC_FIELD(char, 8))
+                return ((RHElementActorHuman *)this)->FUN_00483160((void *)&point, pc, focus);
+            if (!((RHMalignityVisibilityCalls *)this)->FUN_004860b0())
+                return ((RHSprite *)RHNPC_FIELD(void *, 0x50))->FUN_005b9e30(
+                    (void *)&point, RHNPC_FIELD(void *, 0x54), false);
+        }
+        if (RHNPC_FIELD(char, 8))
+            return ((RHElementActorHuman *)this)->FUN_00483160((void *)&point, pc, focus);
+        if (RHNPC_FIELD(int, 0x4f0) &&
+            ((RHMalignityVisibilityCalls *)this)->FUN_004860b0() &&
+            RHNPC_FIELD(unsigned short, 0x23c) == 0 &&
+            *(int *)((char *)RHNPC_FIELD(void *, 0x50) + 0x8c) != 7 &&
+            ((RHScriptBatchCalls *)pc)->Unk0049d560(0x17))
+        {
+            if (!self->Vf8())
+                return ((RHSprite *)RHNPC_FIELD(void *, 0x50))->FUN_005b9e30(
+                    (void *)&point, RHNPC_FIELD(void *, 0x54), false);
+            if (pc && ((RHMalignityActorCalls *)pc)->V168())
+                return ((RHSprite *)RHNPC_FIELD(void *, 0x50))->FUN_005b9e30(
+                    (void *)&point, RHNPC_FIELD(void *, 0x54), false);
+        }
+        if (RHNPC_FIELD(char, 8))
+            return ((RHElementActorHuman *)this)->FUN_00483160((void *)&point, pc, focus);
+        if (!self->V48() &&
+            RHNPC_FIELD(char, 0x1ce) &&
+            *(int *)((char *)RHNPC_FIELD(void *, 0x50) + 0x8c) == 3 &&
+            (RHNPC_FIELD(unsigned, 4) & 0x1f) == 0x14 &&
+            self->V130() != 0 &&
+            !self->Vf8() &&
+            ((RHScriptBatchCalls *)pc)->Unk0049d560(0x1d))
+            return ((RHSprite *)RHNPC_FIELD(void *, 0x50))->FUN_005b9e30(
+                (void *)&point, RHNPC_FIELD(void *, 0x54), false);
+        if (RHNPC_FIELD(char, 8))
+            return ((RHElementActorHuman *)this)->FUN_00483160((void *)&point, pc, focus);
+        if (RHNPC_FIELD(char, 0x1ce) &&
+            !self->V48() &&
+            *(int *)((char *)RHNPC_FIELD(void *, 0x50) + 0x8c) != 0x12 &&
+            *(int *)((char *)RHNPC_FIELD(void *, 0x50) + 0x8c) != 7 &&
+            !self->Vf4() &&
+            !self->Vf8() &&
+            !FUN_0048efa0() &&
+            ((RHScriptBatchCalls *)pc)->Unk0049d560(0x1b))
+            return ((RHSprite *)RHNPC_FIELD(void *, 0x50))->FUN_005b9e30(
+                (void *)&point, RHNPC_FIELD(void *, 0x54), false);
+        return ((RHElementActorHuman *)this)->FUN_00483160((void *)&point, pc, focus);
+    default:
+        return ((RHElementActorHuman *)this)->FUN_00483160((void *)&point, pc, focus);
+    }
+}
+
 // FUNCTION: GAME 0x0048b440
 void RHElementActorNPC::SetUniversalFrameCounter(unsigned long &counter)
 {
@@ -591,6 +730,52 @@ int RHSoldierNPCCalls::FUN_0048d100(RHSoldierSequenceElement *element)
     return kind;
 }
 
+#include "RHActorTranslationSequenceCalls.h"
+
+// FUNCTION: GAME 0x0048d1b0
+void RHElementActorNPC::Translate(RHSequenceElement *element, RHcommand command)
+{
+    int selected = !command ? *(int *)((char *)element + 0x10) : command;
+    RHActorTranslationSequenceCalls *sequence = (RHActorTranslationSequenceCalls *)element;
+    switch (selected)
+    {
+    case 0x77:
+    {
+        RHOrder *order = new RHOrder;
+        order->m_24 = 0xce;
+        order->m_2a = 0;
+        sequence->FUN_00585970(order);
+        return;
+    }
+    case 0x7a:
+    {
+        RHOrder *order = new RHOrder;
+        order->m_24 = 0x9e;
+        order->m_2a = 0;
+        sequence->FUN_00585970(order);
+        return;
+    }
+    case 0x8f:
+    {
+        RHOrder *order = new RHOrder;
+        order->m_2a = 0;
+        order->m_24 = 0x10b;
+        sequence->FUN_00585970(order);
+        return;
+    }
+    case 0x90:
+    {
+        RHOrder *order = new RHOrder;
+        order->m_2a = 0;
+        order->m_24 = 0x10c;
+        sequence->FUN_00585970(order);
+        return;
+    }
+    default:
+        ((RHElementActorHuman *)this)->Translate(element, command);
+    }
+}
+
 // FUNCTION: GAME 0x0048d390
 void RHElementActorNPC::GetTransitionFlags(RHSequenceElement *element, unsigned long &first, unsigned long &second, unsigned long &third)
 {
@@ -706,6 +891,71 @@ void RHElementActorNPC::FUN_0048d990(unsigned short amount, void *source, bool f
 
 #include "RHHumanSequenceElement.h"
 #include "RHActorTranslationSequenceCalls.h"
+
+// FUNCTION: GAME 0x0048d510
+int RHElementActorNPC::FUN_0048d510(RHOrder *order)
+{
+    if (RHNPC_FIELD(char, 0x149))
+        return 2;
+    RHUnk00613e90 point;
+    if (order)
+    {
+        int command = *(int *)((char *)order + 0x24);
+        int result;
+        switch (command)
+        {
+        case 0x9f:
+            switch (((RHSprite *)RHNPC_FIELD(void *, 0x50))->PerformAction(order, command, 0, false))
+            {
+            case 1:
+                ((RHScriptBatchCalls *)this)->Unk0046bcf0(8, 0);
+            }
+            return 2;
+        case 0x9e:
+            result = ((RHSprite *)RHNPC_FIELD(void *, 0x50))->PerformAction(order, command, 0, false);
+            if (result == 3)
+                ((RHScriptBatchCalls *)this)->Unk0046bcf0(8, 0);
+            return result;
+        case 0x10b:
+        {
+            unsigned short *animations = *(unsigned short **)((char *)((RHUnk005b5e00 *)RHNPC_FIELD(void *, 0x50))->Unk() + 4);
+            if (animations[command] != 0xffff)
+                result = ((RHSprite *)RHNPC_FIELD(void *, 0x50))->PerformAction(order, command, 0, false);
+            else
+                result = ((RHSprite *)RHNPC_FIELD(void *, 0x50))->PerformAction(order, 0x7f, 0, false);
+            if (result == 3)
+                ((RHScriptBatchCalls *)this)->Unk0046bcf0(1, 0);
+            return result;
+        }
+        case 0xce:
+            if (RHNPC_FIELD(char, 0x148))
+                *(short *)((char *)RHNPC_FIELD(void *, 0x50) + 0xda) = (short)(((RHSequenceElement *)RHNPC_FIELD(void *, 0x130))->Unk00587160(0) & 15);
+            ((RHSprite *)RHNPC_FIELD(void *, 0x50))->Turn();
+        case 0xa0:
+            result = ((RHSprite *)RHNPC_FIELD(void *, 0x50))->PerformAction(order, command, 0, false);
+            if (result == 3)
+                ((RHScriptBatchCalls *)this)->Unk0046bcf0(1, 0);
+            return result;
+        case 0x7a:
+            ((RHSprite *)RHNPC_FIELD(void *, 0x50))->Turn();
+            result = ((RHSprite *)RHNPC_FIELD(void *, 0x50))->PerformAction(order, command, 0, false);
+            if (result == 0)
+            {
+                ((RHScriptBatchCalls *)this)->Unk0046bcf0(1, 0);
+                void *target = *(void **)((char *)order + 0x30);
+                if (target && (*(volatile unsigned *)((char *)target + 4) & 15) == 4 && *(int *)((char *)target + 0x4f0))
+                {
+                    RHNPC_FIELD(int, 0x4f0) += *(int *)((char *)target + 0x4f0);
+                    *(int *)((char *)target + 0x4f0) = 0;
+                }
+            }
+            return result;
+        }
+        return ((RHElementActorHuman *)this)->FUN_00475bd0(order);
+    }
+    return 3;
+}
+
 
 class RHUnk00418b80
 {
@@ -908,6 +1158,7 @@ RHNPCDetectableList::RHNPCDetectableList()
 
 void RHElementActorNPC::Emit(SBFile &file)
 {
+    Translate(0, (RHcommand)0);
     FUN_00487ad0(*(RHMalignityPosition *)this);
     FUN_0048d460(0, 0);
     FUN_0048c380(0);

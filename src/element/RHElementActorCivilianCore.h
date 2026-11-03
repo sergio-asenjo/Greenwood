@@ -15,6 +15,7 @@ class RHElementActorCivilian : public RHElementActorNPC
 {
 public:
     virtual bool Serialize(SBFile &file);
+    void Translate(RHSequenceElement *element, RHcommand command);
     void GetTransitionFlags(RHSequenceElement *element, unsigned long &first, unsigned long &second, unsigned long &third);
     int FUN_00470390(class RHOrder *order);
     bool FUN_00470ca0();
@@ -29,7 +30,7 @@ public:
     bool FUN_00470310();
     void FUN_00470a10(SBFile &file);
     void FUN_00470480(SBFile &file);
-    bool FUN_00470d00(void *first, void *second, int kind);
+    bool FUN_00470d00(const SBGeoPoint2D &point, RHElementActorHuman *pc, int kind);
     bool FUN_00470e50(void *first, void *second, int kind);
     void *FUN_00470f70(void *element);
     void FUN_00471090();
