@@ -54,13 +54,7 @@ public:
 };
 
 // SIZE 0x14
-class RHMobileUnk00607da0
-{
-public:
-    void FUN_00607990(const RHMobileUnk00607da0 &other);
-    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
-    undefined m_00[0x14]; // 0x00
-};
+#include "RHMobileUnk00607da0.h"
 
 // SIZE 0x0c
 #include "RHUnk0053bf20.h"

@@ -25,6 +25,7 @@ public:
 class SBGeoVector2D : public SBGeoPoint2D
 {
 public:
+    SBGeoVector2D();
     SBGeoVector2D(const SBGeoPoint2D &other);
     SBGeoVector2D(float x, float y);
     ~SBGeoVector2D() {}

@@ -8,54 +8,9 @@
 #include <new>
 #include "RHActorTranslation.h"
 
-// SIZE 0x08
-class SBGeoVector2D;
-#define SBGEO_POINT2D_VIEW
-class SBGeoPoint2D
-{
-public:
-    SBGeoPoint2D();
-    SBGeoPoint2D(float x, float y);
-    SBGeoPoint2D(const SBGeoPoint2D &other);
-    ~SBGeoPoint2D();
-    SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
-    void FUN_005fc390(const SBGeoPoint2D &other) throw();
-    float FUN_005fc700(float scale) const;
-    bool Serialize(SBFile &file);
-    bool operator==(const SBGeoPoint2D &other) const;
-    bool FUN_005fc0e0(const SBGeoPoint2D &other) const;
-    SBGeoVector2D Unk005fc110(const SBGeoPoint2D &other) const;
-    SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
-    float m_0; // 0x00
-    float m_4; // 0x04
-};
-
-// SIZE 0x08
-class SBGeoVector2D : public SBGeoPoint2D
-{
-public:
-    SBGeoVector2D(float x, float y);
-    SBGeoVector2D(const SBGeoPoint2D &other);
-    ~SBGeoVector2D() {}
-    SBGeoVector2D(const SBGeoVector2D &other);
-    SBGeoVector2D &operator=(const SBGeoVector2D &other);
-};
-
-// SIZE 0x14
-#define SBGEO_BOUNDINGBOX2D_VIEW
-class SBGeoBoundingBox2D
-{
-public:
-    SBGeoBoundingBox2D(const SBGeoPoint2D &first, const SBGeoPoint2D &last);
-    SBGeoBoundingBox2D(const SBGeoBoundingBox2D &other);
-    SBGeoPoint2D FUN_00608f40() const;
-    bool FUN_00608400(const SBGeoPoint2D &point) const;
-    SBGeoBoundingBox2D &operator=(const SBGeoBoundingBox2D &other);
-    SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &other) const;
-    SBGeoPoint2D m_0; // 0x00
-    SBGeoPoint2D m_8; // 0x08
-    char m_10; // 0x10
-};
+#include "SBGeoPoint2D.h"
+#include "SBGeoVector2D.h"
+#include "RHPositionInterface.h"
 
 #include "RHTripleVectorCalls.h"
 
@@ -99,11 +54,6 @@ class RHReconnaissanceEngine
 {
 public:
     bool Unk004c3cb0(SBFile &file, void *&value);
-};
-class RHUnkPathGeometry
-{
-public:
-    bool Unk004fbec0(SBFile &file, void *&value);
 };
 class RHOrder;
 class RHSequenceElement
@@ -321,11 +271,6 @@ public:
         *(int *)((char *)this + 8) = 0;
     }
 };
-class RHUnkPathActorInfoBase
-{
-public:
-    void *Unk0055fa10(int value);
-};
 class RHBonusInfo
 {
 public:
@@ -376,12 +321,6 @@ class RHMobileGrid
 {
 public:
     void FUN_004ed370(void *lines, unsigned short layer, const RHMobileSegment &segment, unsigned mask);
-};
-
-class RHMobilePosition
-{
-public:
-    void FUN_0055fc20(bool value);
 };
 
 class RHElevationLine

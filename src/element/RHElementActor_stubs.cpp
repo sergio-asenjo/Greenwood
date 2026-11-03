@@ -95,7 +95,7 @@ void RHActorString::FUN_00401ee0(bool release)
 // FUNCTION: GAME 0x006090d0
 SBGeoBoundingBox2D SBGeoBoundingBox2D::FUN_006090d0(const SBGeoVector2D &offset) const
 {
-    return SBGeoBoundingBox2D(m_0.Unk005fc190(offset), m_8.Unk005fc190(offset));
+    return SBGeoBoundingBox2D(m_p0.Unk005fc190(offset), m_p1.Unk005fc190(offset));
 }
 RHScriptIter RHScriptIter::operator++(int) { return RHScriptIter(node); }
 short RHActorGridCalls::FUN_004e8fc0(const SBGeoPoint2D &, const SBGeoPoint2D &, short, void *&) { return -1; }
@@ -112,8 +112,8 @@ void RHOrder::FUN_0054e730()
 // FUNCTION: GAME 0x005fc390
 void SBGeoPoint2D::FUN_005fc390(const SBGeoPoint2D &other) throw()
 {
-    m_0 = other.m_0;
-    m_4 = other.m_4;
+    m_x = other.m_x;
+    m_y = other.m_y;
 }
 
 // FUNCTION: GAME 0x005df4f0

@@ -75,12 +75,6 @@ public:
     virtual void V20() = 0;
 };
 
-class RHPositionInterface
-{
-public:
-    bool Turn();
-};
-
 // LIBRARY: GAME 0x00402a70
 // ?erase@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAEAAV12@II@Z
 
@@ -779,7 +773,7 @@ void RHElementActor::ExecuteImmediately(RHSequenceElement *element)
         if (cell != 0xffff)
         {
             SBGeoBoundingBox2D box = ((SBGeoBoundingBox2D *)((RHUnkPathActorInfoBase *)Position())->Unk0055fa10(*(int *)((char *)Position() + 0x88)))->FUN_006090d0(SBGeoVector2D(point));
-            if (Grid()->FUN_004f5e50(box.m_8, point, layer))
+            if (Grid()->FUN_004f5e50(box.m_p1, point, layer))
                 point = box.FUN_00608f40();
             else
                 cell = 0xffff;
@@ -916,8 +910,8 @@ void RHElementActor::Translate(RHSequenceElement *element, RHcommand command)
         else
         {
             SBGeoPoint2D difference = RHActorField<SBGeoPoint2D>(position, 0x24).Unk005fc110(element->m_6c);
-            float x = difference.m_0 < 0.0f ? -difference.m_0 : difference.m_0;
-            float y = difference.m_4 < 0.0f ? -difference.m_4 : difference.m_4;
+            float x = difference.m_x < 0.0f ? -difference.m_x : difference.m_x;
+            float y = difference.m_y < 0.0f ? -difference.m_y : difference.m_y;
             float distance = x > y ? x : y;
             sequence->V0c(distance >= RHActorField<float>(element, 0x8c) + 1.0f ? 6 : 0, true);
         }
@@ -1550,10 +1544,10 @@ void RHElementActor::CheckForLineCrossing()
     for (RHScriptNode *filter = head->next; filter != head; )
     {
         RHElevationLine *line = (RHElevationLine *)filter->data;
-        float dx = previous.m_0 - line->m_04.m_0;
-        float dy = previous.m_4 - line->m_04.m_4;
-        float nx = line->m_0c.m_0 - line->m_04.m_0;
-        float ny = line->m_0c.m_4 - line->m_04.m_4;
+        float dx = previous.m_x - line->m_04.m_x;
+        float dy = previous.m_y - line->m_04.m_y;
+        float nx = line->m_0c.m_x - line->m_04.m_x;
+        float ny = line->m_0c.m_y - line->m_04.m_y;
         RHScriptNode *next = filter->next;
         if (dx * nx + dy * ny == 0.0f)
         {
@@ -2059,8 +2053,8 @@ void *RHElementActor::FUN_0046d750(const SBGeoPoint2D &origin, unsigned short ra
         RHActorSeekPosition copy = RHActorField<RHActorSeekPosition>(seek, 4);
         float x = copy.x;
         float y = position.y;
-        point.m_0 = x;
-        point.m_4 = y;
+        point.m_x = x;
+        point.m_y = y;
         float distance = origin.Unk005fc110(point).FUN_005fc700(1.0f);
         if (distance > farthest && distance <= radius)
         {
@@ -2404,7 +2398,7 @@ RHUnk00613e90 RHUnk00613e90::FUN_005df550(const RHUnk00613e90 &other) const
 // FUNCTION: GAME 0x005fc0b0
 bool SBGeoPoint2D::operator==(const SBGeoPoint2D &other) const
 {
-    return m_0 == other.m_0 && m_4 == other.m_4;
+    return m_x == other.m_x && m_y == other.m_y;
 }
 
 // deferred: unannotated pending reccmp #534 (0x005fc3e0).
@@ -2418,18 +2412,18 @@ SBGeoVector2D::SBGeoVector2D(const SBGeoPoint2D &other) : SBGeoPoint2D()
 // STUB: GAME 0x005fc700
 float SBGeoPoint2D::FUN_005fc700(float scale) const
 {
-    scale = m_4 / scale;
-    if (m_0 > 0.0f)
+    scale = m_y / scale;
+    if (m_x > 0.0f)
     {
         if (scale > 0.0f)
-            return scale < m_0 ? m_0 : scale;
+            return scale < m_x ? m_x : scale;
         scale = -scale;
-        return scale < m_0 ? m_0 : scale;
+        return scale < m_x ? m_x : scale;
     }
     if (scale > 0.0f)
-        return -m_0 > scale ? -m_0 : scale;
+        return -m_x > scale ? -m_x : scale;
     scale = -scale;
-    return -m_0 > scale ? -m_0 : scale;
+    return -m_x > scale ? -m_x : scale;
 }
 
 // FUNCTION: GAME 0x00607a70
