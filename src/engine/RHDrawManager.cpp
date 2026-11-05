@@ -1,12 +1,5 @@
 #include "Decomp.h"
-// SIZE 0x14
-class RHMobileUnk00607da0
-{
-public:
-    void FUN_00607990(const RHMobileUnk00607da0 &other);
-    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
-    unsigned char m_00[0x14]; // 0x00
-};
+#include "RHMobileUnk00607da0.h"
 #include "RHDrawManager.h"
 #include <math.h>
 
@@ -56,8 +49,8 @@ void RHDrawManager::DrawSegment(const SBGeoSegment2D &segment, unsigned short co
     {
         SBGeoPoint2D first;
         SBGeoPoint2D second;
-        first = ((SBGeoSegment2D *)((RHUnk0053bf20 *)&clipped)->FUN_0053bf20())->First().Unk005fc110(m_min);
-        second = ((SBGeoSegment2D *)((RHUnk0053bf20 *)&clipped)->FUN_0053bf20())->Second().Unk005fc110(m_min);
+        first = ((SBGeoSegment2D *)((RHUnk0053bf20 *)&clipped)->FUN_0053bf20())->First().Unk005fc110(m_p0);
+        second = ((SBGeoSegment2D *)((RHUnk0053bf20 *)&clipped)->FUN_0053bf20())->Second().Unk005fc110(m_p0);
         if (m_14 != 1.0f)
         {
             first.m_x *= m_14;
@@ -78,16 +71,16 @@ void RHDrawManager::FillBox(const SBGeoBoundingBox2D &box, unsigned short color)
     {
         ((RHMobileUnk00607da0 *)&clipped)->FUN_00607da0((const RHMobileUnk00607da0 &)FUN_006092c0(box));
         {
-            SBGeoVector2D offset(static_cast<const SBGeoVector2D &>(m_min));
+            SBGeoVector2D offset(static_cast<const SBGeoVector2D &>(m_p0));
             clipped -= offset;
         }
         if (m_14 != 1.0f)
         {
-            clipped.m_10 = true;
-            clipped.m_min.m_x *= m_14;
-            clipped.m_min.m_y *= m_14;
-            clipped.m_max.m_x *= m_14;
-            clipped.m_max.m_y *= m_14;
+            clipped.m_flag = true;
+            clipped.m_p0.m_x *= m_14;
+            clipped.m_p0.m_y *= m_14;
+            clipped.m_p1.m_x *= m_14;
+            clipped.m_p1.m_y *= m_14;
         }
         m_drawManager->FUN_005e61e0(m_18, &clipped, color, 0);
     }
@@ -120,8 +113,8 @@ void RHDrawManager::DrawPolyLine(const SBGeoPolyLine2DList &list, unsigned short
             {
                 SBGeoPoint2D first;
                 SBGeoPoint2D last;
-                first = ((SBGeoSegment2D *)((RHUnk0053bf20 *)&clipped)->FUN_0053bf20())->First().Unk005fc110(m_min);
-                last = ((SBGeoSegment2D *)((RHUnk0053bf20 *)&clipped)->FUN_0053bf20())->Second().Unk005fc110(m_min);
+                first = ((SBGeoSegment2D *)((RHUnk0053bf20 *)&clipped)->FUN_0053bf20())->First().Unk005fc110(m_p0);
+                last = ((SBGeoSegment2D *)((RHUnk0053bf20 *)&clipped)->FUN_0053bf20())->Second().Unk005fc110(m_p0);
                 if (m_14 != 1.0f)
                 {
                     first.m_x *= m_14;
@@ -135,12 +128,24 @@ void RHDrawManager::DrawPolyLine(const SBGeoPolyLine2DList &list, unsigned short
     }
 }
 
+static __forceinline void RHDrawScaleMinimum(SBGeoBoundingBox2D &box, const float &scale)
+{
+    SBGeoVector2D corner(static_cast<const SBGeoVector2D &>(box.m_p0));
+    box.SetMin(scale * corner);
+}
+
+static __forceinline void RHDrawScaleMaximum(SBGeoBoundingBox2D &box, const float &scale)
+{
+    SBGeoVector2D corner(static_cast<const SBGeoVector2D &>(box.m_p1));
+    box.SetMax(scale * corner);
+}
+
 // Parked 84.12%: VC6 orders the offset/scale temporaries and loop guard differently.
 // STUB: GAME 0x004611d0
 void RHDrawManager::DrawDottedLine(const SBGeoPoint2D &from, const SBGeoPoint2D &to, float &phase, float dash, float thickness, unsigned short color)
 {
     RHUnk0060fbf0 unused;
-    SBGeoPoint2D direction = to.Unk005fc110(from);
+    SBGeoVector2D direction = to.Unk005fc110(from);
     float length = ((RHUnk005fc3b0 *)&direction)->Unk005fc6a0(1.0f);
     if (length < phase)
     {
@@ -153,7 +158,7 @@ void RHDrawManager::DrawDottedLine(const SBGeoPoint2D &from, const SBGeoPoint2D 
         SBGeoPoint2D start;
         start.m_x = direction.m_x * phase + from.m_x;
         start.m_y = direction.m_y * phase + from.m_y;
-        SBGeoVector2D offset(m_min);
+        SBGeoVector2D offset(static_cast<const SBGeoVector2D &>(m_p0));
         ((RHUnk005fc3b0 *)&direction)->FUN_005fc4d0(dash);
         float remaining = length - phase;
         unsigned long count = (unsigned long)(remaining / dash);
@@ -167,8 +172,8 @@ void RHDrawManager::DrawDottedLine(const SBGeoPoint2D &from, const SBGeoPoint2D 
             if (box.Unk00608f30())
             {
                 box -= offset;
-                box.SetMin(m_14 * SBGeoVector2D(box.m_min));
-                box.SetMax(m_14 * SBGeoVector2D(box.m_max));
+                RHDrawScaleMinimum(box, m_14);
+                RHDrawScaleMaximum(box, m_14);
                 m_drawManager->FUN_005e61e0(m_18, &box, color, 0);
             }
             start.FUN_005fc1e0(direction);
@@ -193,7 +198,7 @@ unsigned short RHDrawManager::GetPackedColor(unsigned long color)
 void RHDrawManager::DrawEllipse(const SBDrawViewport &viewport, const SBGeoPoint2D &center, unsigned short radius, unsigned short color)
 {
     SBGeoPoint2D position;
-    position = center.Unk005fc110(m_min);
+    position = center.Unk005fc110(m_p0);
     if (m_14 != 1.0f)
     {
         position.m_x *= m_14;
@@ -246,7 +251,7 @@ void RHDrawManager::DrawEllipse(const SBDrawViewport &viewport, const SBGeoPoint
 void RHDrawManager::DrawCircle(const SBDrawViewport &viewport, const SBGeoPoint2D &center, unsigned short radius, unsigned short color)
 {
     SBGeoPoint2D position;
-    position = center.Unk005fc110(m_min);
+    position = center.Unk005fc110(m_p0);
     if (m_14 != 1.0f)
     {
         position.m_x *= m_14;

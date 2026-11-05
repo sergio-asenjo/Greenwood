@@ -945,13 +945,7 @@ public:
 class RHUnk005ef320;
 extern RHUnk005ef320 *g_unk0x6c11d0;
 
-class SBDrawViewport;
-class RHDrawManager
-{
-public:
-    void DrawEllipse(const SBDrawViewport &, const SBGeoPoint2D &, unsigned short, unsigned short);
-    static RHDrawManager *mpDrawManager;
-};
+#include "RHDrawManagerCore.h"
 
 
 // SIZE 0x14

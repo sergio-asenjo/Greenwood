@@ -155,33 +155,37 @@ public:
 class SBDrawUnk005e8450
 {
 public:
-    bool FUN_005e7880(void *, void *, void *, int, int, int, int, int, int);
+    bool FUN_005e7710(unsigned short *, unsigned short *, unsigned short *, unsigned,
+        unsigned, unsigned, unsigned, unsigned);
+    bool FUN_005e8110(unsigned short *, unsigned short *, unsigned short *, unsigned,
+        unsigned, unsigned, unsigned, unsigned, unsigned short);
+    bool FUN_005e7880(void *, void *, void *, int, int, int, int, int, unsigned short);
     bool FUN_005e78c0(unsigned short *, unsigned short *, unsigned short *, unsigned, unsigned, unsigned, unsigned, unsigned);
     bool FUN_005e7a30(unsigned short *, unsigned short *, unsigned short *, unsigned, unsigned, unsigned, unsigned, unsigned, unsigned short);
     bool FUN_005e7bc0(unsigned short *, unsigned short *, unsigned short *, unsigned, unsigned, unsigned, unsigned, unsigned);
     bool FUN_005e7de0(unsigned short *, unsigned short *, unsigned short *, unsigned, unsigned, unsigned, unsigned, unsigned);
     bool FUN_005e7fa0(unsigned short *, unsigned short *, unsigned short *, unsigned, unsigned, unsigned, unsigned, unsigned);
     bool FUN_005e82a0(unsigned short *, unsigned short *, unsigned short *, unsigned, unsigned, unsigned, unsigned, unsigned);
-    bool FUN_005e7d30(void *, void *, void *, int, int, int, int, int, int);
-    bool FUN_005e7d70(void *, void *, void *, int, int, int, int, int, int);
-    bool FUN_005e7da0(void *, void *, void *, int, int, int, int, int, int);
-    bool FUN_005e7f60(void *, void *, void *, int, int, int, int, int, int);
-    bool FUN_005e8410(void *, void *, void *, int, int, int, int, int, int);
+    bool FUN_005e7d30(void *, void *, void *, int, int, int, int, int, unsigned short);
+    bool FUN_005e7d70(void *, void *, void *, int, int, int, int, int, unsigned short);
+    bool FUN_005e7da0(void *, void *, void *, int, int, int, int, int, unsigned short);
+    bool FUN_005e7f60(void *, void *, void *, int, int, int, int, int, unsigned short);
+    bool FUN_005e8410(void *, void *, void *, int, int, int, int, int, unsigned short);
     bool FUN_005e8450(void *source, void *destination, void *alpha, int width,
-        int height, int sourceStride, int destinationStride, int arg8, int arg9);
-    bool FUN_005e84a0(void *, void *, void *, int, int, int, int, int, int);
-    bool FUN_005e84e0(void *source, void *destination, void *alpha, int arg4,
+        int height, int sourceStride, int destinationStride, int arg8, unsigned short arg9);
+    bool FUN_005e84a0(void *, void *, void *, int, int, int, int, int, unsigned short);
+    bool FUN_005e84e0(void *source, void *destination, void *alpha, unsigned short arg4,
         int width, int height, int sourceStride, int destinationStride,
         float stretchX, float stretchY);
-    bool FUN_005e85b0(void *source, void *destination, void *alpha, int arg4,
+    bool FUN_005e85b0(void *source, void *destination, void *alpha, unsigned short arg4,
         int width, int height, int sourceStride, int destinationStride,
         float stretchX, float stretchY);
-    bool FUN_005e8670(void *source, void *destination, void *alpha, int arg4,
+    bool FUN_005e8670(void *source, void *destination, void *alpha, unsigned short arg4,
         int width, int height, int sourceStride, int destinationStride,
         float stretchX, float stretchY);
     bool FUN_005e8740(unsigned short *, unsigned short *, unsigned short *, unsigned,
         unsigned, unsigned, unsigned, float, float);
-    bool FUN_005e8b10(unsigned short *, unsigned short *, unsigned short *, unsigned,
+    bool FUN_005e8b10(unsigned short *, unsigned short *, unsigned short *, unsigned short,
         unsigned, unsigned, unsigned, unsigned, float, float);
     bool FUN_005e8f20(unsigned short *, unsigned short *, unsigned short *, unsigned,
         unsigned, unsigned, unsigned, float, float);
@@ -189,35 +193,35 @@ public:
         unsigned, unsigned, unsigned, float, float);
     bool FUN_005e99f0(unsigned short *, unsigned short *, unsigned short *, unsigned,
         unsigned, unsigned, unsigned, float, float);
-    bool FUN_005e9dc0(unsigned short *, unsigned short *, unsigned short *, unsigned,
+    bool FUN_005e9dc0(unsigned short *, unsigned short *, unsigned short *, unsigned short,
         unsigned, unsigned, unsigned, unsigned, float, float);
     bool FUN_005ea1d0(unsigned short *, unsigned short *, unsigned short *, unsigned,
         unsigned, unsigned, unsigned, float, float);
     bool FUN_005ea670(unsigned short *, unsigned short *, unsigned short *, unsigned,
         unsigned, unsigned, unsigned, float, float);
-    bool FUN_005eb450(unsigned short *, unsigned short *, unsigned, unsigned,
+    bool FUN_005eb450(unsigned short *, unsigned short *, unsigned short, unsigned,
         unsigned, unsigned, unsigned, float, float);
-    bool FUN_005eb800(unsigned short *, unsigned short *, unsigned, unsigned,
+    bool FUN_005eb800(unsigned short *, unsigned short *, unsigned short, unsigned,
         unsigned, unsigned, unsigned, float, float);
-    bool FUN_005e92f0(void *source, void *destination, void *alpha, int arg4,
+    bool FUN_005e92f0(void *source, void *destination, void *alpha, unsigned short arg4,
         int width, int height, int sourceStride, int destinationStride,
         float stretchX, float stretchY);
-    bool FUN_005e9790(void *source, void *destination, void *alpha, int arg4,
+    bool FUN_005e9790(void *source, void *destination, void *alpha, unsigned short arg4,
         int width, int height, int sourceStride, int destinationStride,
         float stretchX, float stretchY);
-    bool FUN_005e9860(void *source, void *destination, void *alpha, int arg4,
+    bool FUN_005e9860(void *source, void *destination, void *alpha, unsigned short arg4,
         int width, int height, int sourceStride, int destinationStride,
         float stretchX, float stretchY);
-    bool FUN_005e9920(void *source, void *destination, void *alpha, int arg4,
+    bool FUN_005e9920(void *source, void *destination, void *alpha, unsigned short arg4,
         int width, int height, int sourceStride, int destinationStride,
         float stretchX, float stretchY);
-    bool FUN_005ea5a0(void *source, void *destination, void *alpha, int arg4,
+    bool FUN_005ea5a0(void *source, void *destination, void *alpha, unsigned short arg4,
         int width, int height, int sourceStride, int destinationStride,
         float stretchX, float stretchY);
-    bool FUN_005ec230(void *, void *, int, int, int, int, float, float, unsigned, unsigned);
-    bool FUN_005ec320(void *, void *, int, int, int, int, float, float, unsigned, unsigned);
-    bool FUN_005ec410(void *, void *, int, int, int, int, float, float, unsigned, unsigned);
-    bool FUN_005ec500(void *, void *, int, int, int, int, float, float, unsigned, unsigned);
+    bool FUN_005ec230(void *, void *, int, int, int, int, float, float, unsigned short, unsigned short);
+    bool FUN_005ec320(void *, void *, int, int, int, int, float, float, unsigned short, unsigned short);
+    bool FUN_005ec410(void *, void *, int, int, int, int, float, float, unsigned short, unsigned short);
+    bool FUN_005ec500(void *, void *, int, int, int, int, float, float, unsigned short, unsigned short);
 };
 
 struct SBDrawUnk005e5ec0Surface
@@ -228,6 +232,10 @@ struct SBDrawUnk005e5ec0Surface
 #include "SBDrawUnk005e5ec0.h"
 
 void FUN_006220ec(void *, void *, int, int, int, int, unsigned, unsigned);
+void FUN_00622028(void *, void *, int, int, int, int, unsigned, unsigned);
+void FUN_006222bc(void *, void *, int, int, int, int, unsigned, unsigned);
+void FUN_00622550(void *, void *, int, int, int, int, unsigned, unsigned);
+void FUN_00623598(void *, void *, int, int, int, int, unsigned, unsigned);
 void FUN_006221e4(void *, void *, int, int, int, int, unsigned, unsigned);
 void FUN_00622380(void *, void *, int, int, int, int, unsigned, unsigned);
 void FUN_00622478(void *, void *, int, int, int, int, unsigned, unsigned);

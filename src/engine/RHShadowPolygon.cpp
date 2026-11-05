@@ -23,11 +23,11 @@ DECOMP_SIZE_ASSERT(RHShadowUnk0060c260, 0x30)
 DECOMP_SIZE_ASSERT(RHMapBox, 0x14)
 DECOMP_SIZE_ASSERT(RHShadowPolygon, 0x218)
 DECOMP_SIZE_ASSERT(std::vector<RHElement *>, 0x10)
-DECOMP_SIZE_ASSERT(RHEngine, 0x4944)
+DECOMP_SIZE_ASSERT(RHEngine, 0x4d68)
 DECOMP_STATIC_ASSERT(offsetof(RHEngine, m_elements) == 0x48d8)
 DECOMP_STATIC_ASSERT(offsetof(RHEngine, m_475c) == 0x475c)
 DECOMP_STATIC_ASSERT(offsetof(RHEngine, m_48c4) == 0x48c4)
-DECOMP_STATIC_ASSERT(offsetof(RHEngine, m_493c) == 0x493c)
+DECOMP_STATIC_ASSERT(offsetof(RHEngine, m_pcs) == 0x4938)
 
 
 
@@ -2988,7 +2988,7 @@ inline RHShadowPoolVectorStorage::~RHShadowPoolVectorStorage()
 {
     RHShadowMemoryBlock *last = m_last;
     for (RHShadowMemoryBlock *first = m_first; first != last; ++first)
-        m_allocator.destroy(first);
+        first->FUN_005a0ed0(0);
     m_allocator.deallocate(m_first, m_end - m_first);
     m_first = 0;
     m_last = 0;
@@ -3013,7 +3013,7 @@ inline RHShadowIteratorPoolVectorStorage::~RHShadowIteratorPoolVectorStorage()
 {
     RHShadowIteratorMemoryBlock *last = m_last;
     for (RHShadowIteratorMemoryBlock *first = m_first; first != last; ++first)
-        m_allocator.destroy(first);
+        ((RHShadowMemoryBlock *)first)->FUN_005a0ed0(0);
     m_allocator.deallocate(m_first, m_end - m_first);
     m_first = 0;
     m_last = 0;
@@ -3114,7 +3114,7 @@ DECOMP_STATIC_ASSERT(offsetof(RHUnk0059ec90, m_pointers) == 0x50)
 // SYNTHETIC: GAME 0x0059f370
 // RHUnk0059ec90::`scalar deleting destructor'
 
-// STUB: GAME 0x0059f390
+// FUNCTION: GAME 0x0059f390
 RHUnk0059ec90::~RHUnk0059ec90()
 {
     unsigned count = m_pointers.Size();
@@ -3125,7 +3125,7 @@ RHUnk0059ec90::~RHUnk0059ec90()
 // SYNTHETIC: GAME 0x0059f580
 // RHUnk0059f000::`scalar deleting destructor'
 
-// STUB: GAME 0x0059f5a0
+// FUNCTION: GAME 0x0059f5a0
 RHUnk0059f000::~RHUnk0059f000()
 {
     unsigned count = m_pointers.Size();

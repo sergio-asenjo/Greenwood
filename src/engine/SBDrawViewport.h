@@ -19,7 +19,7 @@ public:
     unsigned short m_height;
     unsigned long m_pitch;
     unsigned short m_depth;
-    unsigned char m_0e[2];
+    unsigned short m_colorKey;
     unsigned short *m_pixels;
     unsigned char m_locked;
     unsigned char m_15[3];
