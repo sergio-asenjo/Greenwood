@@ -4,6 +4,66 @@
   "original_sha256": "b0963242470d96cdd8021e2cb81ccbc5e26b4fb2cb122febdec50ad30774f08e",
   "groups": [
     {
+      "original": "0x005fc3e0",
+      "canonical_symbol": "??0SBGeoVector2D@@QAE@ABVSBGeoPoint2D@@@Z",
+      "members": [
+        {
+          "path": "src/common/SBGeoVector2D.cpp",
+          "symbol": "??0SBGeoVector2D@@QAE@ABV0@@Z"
+        },
+        {
+          "path": "src/element/RHElementActor.cpp",
+          "symbol": "??0SBGeoVector2D@@QAE@ABVSBGeoPoint2D@@@Z"
+        }
+      ]
+    },
+    {
+      "original": "0x0048be30",
+      "canonical_symbol": "?FUN_0048be30@@YAXXZ",
+      "members": [
+        {
+          "path": "src/engine/SBUIRendererInputField_stubs.cpp",
+          "symbol": "?FUN_0048be30@@YAXXZ"
+        },
+        {
+          "path": "src/common/crt_stubs.cpp",
+          "symbol": "??3@YAXPAX0@Z"
+        }
+      ]
+    },
+    {
+      "original": "0x00463250",
+      "canonical_symbol": "?destroy@?$allocator@H@std@@QAEXPAH@Z",
+      "members": [
+        {
+          "path": "src/element/RHElementActor.cpp",
+          "symbol": "?FUN_00463250@RHElementActor@@QAEXI@Z"
+        },
+        {
+          "path": "src/engine/RHGame.cpp",
+          "symbol": "?destroy@?$allocator@H@std@@QAEXPAH@Z"
+        }
+      ]
+    },
+    {
+      "original": "0x00486170",
+      "canonical_symbol": "?deallocate@?$allocator@VRHUnk0063c8b0@@@std@@QAEXPAXI@Z",
+      "members": [
+        {
+          "path": "src/engine/RHEngine.cpp",
+          "symbol": "?FUN_00486170@RHUnk00486170@@QAEXPAXI@Z"
+        },
+        {
+          "path": "src/engine/RHGame.cpp",
+          "symbol": "?deallocate@?$allocator@H@std@@QAEXPAXI@Z"
+        },
+        {
+          "path": "src/engine/RHGame.cpp",
+          "symbol": "?deallocate@?$allocator@VRHUnk0063c8b0@@@std@@QAEXPAXI@Z"
+        }
+      ]
+    },
+    {
       "original": "0x00457a10",
       "canonical_symbol": "?size@?$vector@VRHMission@@V?$allocator@VRHMission@@@std@@@std@@QBEIXZ",
       "members": [
@@ -105,6 +165,10 @@
       "original": "0x0059fba0",
       "canonical_symbol": "??0RHProfileString@@QAE@ABV?$allocator@D@std@@@Z",
       "members": [
+        {
+          "path": "src/common/SCSerialize_stubs.cpp",
+          "symbol": "??0SCSerializeStringVector@@QAE@ABV?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@std@@@Z"
+        },
         {
           "path": "src/profile/RHProfileManager_stubs.cpp",
           "symbol": "??0RHProfileString@@QAE@ABV?$allocator@D@std@@@Z"
@@ -295,8 +359,12 @@
     },
     {
       "original": "0x0040f060",
-      "canonical_symbol": "??0?$RHTransientPointerList@X@@QAE@XZ",
+      "canonical_symbol": "??0RHPortraitItemIndices@@QAE@XZ",
       "members": [
+        {
+          "path": "src/ui/RHWidgetPortrait.cpp",
+          "symbol": "??0RHPortraitItemIndices@@QAE@XZ"
+        },
         {
           "path": "src/element/RHElement_stubs.cpp",
           "symbol": "??0?$RHTransientPointerList@VRHElementArea@@@@QAE@XZ"
@@ -397,6 +465,10 @@
       "original": "0x0044e8b0",
       "canonical_symbol": "?Clear@RHTitbitList@@QAEPAXPAXPAURHTitbitNode@@1@Z",
       "members": [
+        {
+          "path": "src/engine/RHMessenger.cpp",
+          "symbol": "?erase@?$list@MV?$allocator@M@std@@@std@@QAE?AViterator@12@V312@0@Z"
+        },
         {
           "path": "src/engine/RHShadowPolygon.cpp",
           "symbol": "?erase@?$list@URHShadowMemoryRange@@V?$allocator@URHShadowMemoryRange@@@std@@@std@@QAE?AViterator@12@V312@0@Z"
@@ -526,6 +598,10 @@
       "canonical_symbol": "?erase@?$list@KV?$allocator@K@std@@@std@@QAE?AViterator@12@V312@@Z",
       "members": [
         {
+          "path": "src/engine/RHMessenger.cpp",
+          "symbol": "?erase@?$list@MV?$allocator@M@std@@@std@@QAE?AViterator@12@V312@@Z"
+        },
+        {
           "path": "src/ui/RHFocusManager.cpp",
           "symbol": "?erase@?$list@UGroupable@RHFocusManager@@V?$allocator@UGroupable@RHFocusManager@@@std@@@std@@QAE?AViterator@12@V312@@Z"
         },
@@ -585,8 +661,16 @@
     },
     {
       "original": "0x0046eb80",
-      "canonical_symbol": "?FUN_0046eb80@RHUnk0046eb30@@QAE?AURHScriptIter@@XZ",
+      "canonical_symbol": "?begin@?$list@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@V?$allocator@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@@2@@std@@QAE?AViterator@12@XZ",
       "members": [
+        {
+          "path": "src/ui/RHWidgetPortrait.cpp",
+          "symbol": "?begin@?$list@KV?$allocator@K@std@@@std@@QAE?AViterator@12@XZ"
+        },
+        {
+          "path": "src/ui/RHWidgetPortrait.cpp",
+          "symbol": "?begin@?$list@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@V?$allocator@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@@2@@std@@QAE?AViterator@12@XZ"
+        },
         {
           "path": "src/engine/RHShadowPolygon.cpp",
           "symbol": "?begin@?$list@URHShadowMemoryRange@@V?$allocator@URHShadowMemoryRange@@@std@@@std@@QAE?AViterator@12@XZ"
@@ -877,8 +961,20 @@
     },
     {
       "original": "0x0057c9c0",
-      "canonical_symbol": "??Eiterator@?$list@PAURHGateLink@@V?$allocator@PAURHGateLink@@@std@@@std@@QAE?AV012@H@Z",
+      "canonical_symbol": "??Eiterator@?$list@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@V?$allocator@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@@2@@std@@QAE?AV012@H@Z",
       "members": [
+        {
+          "path": "src/ui/RHWidgetPortrait.cpp",
+          "symbol": "??Eiterator@?$list@KV?$allocator@K@std@@@std@@QAE?AV012@H@Z"
+        },
+        {
+          "path": "src/ui/RHWidgetPortrait.cpp",
+          "symbol": "??Eiterator@?$list@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@V?$allocator@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@@2@@std@@QAE?AV012@H@Z"
+        },
+        {
+          "path": "src/engine/RHMessenger.cpp",
+          "symbol": "??Eiterator@?$list@MV?$allocator@M@std@@@std@@QAE?AV012@H@Z"
+        },
         {
           "path": "src/engine/RHShadowPolygon.cpp",
           "symbol": "??Eiterator@?$list@URHShadowMemoryRange@@V?$allocator@URHShadowMemoryRange@@@std@@@std@@QAE?AV012@H@Z"
@@ -958,6 +1054,10 @@
       "canonical_symbol": "?_Construct@std@@YAXPAPAVRHUnk005d92c0Sub@@ABQAV2@@Z",
       "members": [
         {
+          "path": "src/engine/RHEngine.cpp",
+          "symbol": "?_Construct@std@@YAXPAPAVRHUnk00522470@@ABQAV2@@Z"
+        },
+        {
           "path": "src/ai/RHFastFindGrid.cpp",
           "symbol": "?_Construct@std@@YAXPAPAVRHUnk00521550@@ABQAV2@@Z"
         },
@@ -1013,8 +1113,16 @@
     },
     {
       "original": "0x005c9010",
-      "canonical_symbol": "?RHAdvanceProfileCursor@@YAXAAViterator@?$list@PAVRHPlayerProfile@@V?$allocator@PAVRHPlayerProfile@@@std@@@std@@HUbidirectional_iterator_tag@3@@Z",
+      "canonical_symbol": "?_Advance@std@@YAXAAViterator@?$list@KV?$allocator@K@std@@@1@HUbidirectional_iterator_tag@1@@Z",
       "members": [
+        {
+          "path": "src/ui/RHWidgetPortrait.cpp",
+          "symbol": "?_Advance@std@@YAXAAViterator@?$list@KV?$allocator@K@std@@@1@HUbidirectional_iterator_tag@1@@Z"
+        },
+        {
+          "path": "src/engine/RHMessenger.cpp",
+          "symbol": "?_Advance@std@@YAXAAViterator@?$list@MV?$allocator@M@std@@@1@HUbidirectional_iterator_tag@1@@Z"
+        },
         {
           "path": "src/ai/RHSightObstacle_stubs.cpp",
           "symbol": "?FUN_005c9010@@YAXAAURHUnkSightVertexIter@@HUbidirectional_iterator_tag@std@@@Z"
@@ -1089,8 +1197,20 @@
     },
     {
       "original": "0x004e52a0",
-      "canonical_symbol": "??1?$list@URHShadowIteratorMemoryRange@@V?$allocator@URHShadowIteratorMemoryRange@@@std@@@std@@QAE@XZ",
+      "canonical_symbol": "??1?$SBListCursorStorage@V?$list@KV?$allocator@K@std@@@std@@@@QAE@XZ",
       "members": [
+        {
+          "path": "src/ui/RHWidgetPortrait.cpp",
+          "symbol": "??1?$SBListCursorStorage@V?$list@KV?$allocator@K@std@@@std@@@@QAE@XZ"
+        },
+        {
+          "path": "src/ui/RHWidgetPortrait.cpp",
+          "symbol": "??1?$list@KV?$allocator@K@std@@@std@@QAE@XZ"
+        },
+        {
+          "path": "src/engine/RHMessenger.cpp",
+          "symbol": "??1?$SBListCursorStorage@V?$list@MV?$allocator@M@std@@@std@@@@QAE@XZ"
+        },
         {
           "path": "src/element/RHElementActor.cpp",
           "symbol": "?FUN_004e52a0@RHUnk004e52a0@@QAEXXZ"
@@ -1102,6 +1222,20 @@
         {
           "path": "src/engine/RHShadowPolygon.cpp",
           "symbol": "??1?$list@URHShadowIteratorMemoryRange@@V?$allocator@URHShadowIteratorMemoryRange@@@std@@@std@@QAE@XZ"
+        }
+      ]
+    },
+    {
+      "original": "0x004e6c10",
+      "canonical_symbol": "?clear@?$list@KV?$allocator@K@std@@@std@@QAEXXZ",
+      "members": [
+        {
+          "path": "src/mission/RHCampaign.cpp",
+          "symbol": "?clear@?$list@PAVRHPlayerProfile@@V?$allocator@PAVRHPlayerProfile@@@std@@@std@@QAEXXZ"
+        },
+        {
+          "path": "src/ui/RHWidgetPortrait.cpp",
+          "symbol": "?clear@?$list@KV?$allocator@K@std@@@std@@QAEXXZ"
         }
       ]
     },
