@@ -8,6 +8,8 @@ extern template class basic_string<char>;
 #include <list>
 #include "SBUIRenderer.h"
 #include "RHScriptListCore.h"
+#include "SBGeoPoint2D.h"
+#include "RHCampaignArrayOps.h"
 
 inline SBResourceFileList::SBResourceFileList(const std::allocator<void *> &value) : m_allocator(value)
 {
@@ -31,25 +33,9 @@ struct SBResourceUnkIterator
     SBResourceUnkIterator(SBResourceUnk00605440Node *node) : m_node(node) {}
 };
 
-class SBGeoPoint2D
-{
-public:
-    SBGeoPoint2D();
-    SBGeoPoint2D(const SBGeoPoint2D &);
-    ~SBGeoPoint2D();
-    float m_x;
-    float m_y;
-};
-
-class FUN_005ff390
-{
-public:
-    SBGeoPoint2D m_point;
-    FUN_005ff390();
-};
-
 struct SBResourceMouseValue
 {
+    SBResourceMouseValue();
     SBGeoPoint2D m_point;
     unsigned short m_flags;
     unsigned short m_frameLength;
@@ -57,6 +43,11 @@ struct SBResourceMouseValue
 
 typedef std::pair<const unsigned long, SBResourceMouseValue> SBResourceMousePair;
 void SBResourceConstructMouse(SBResourceMousePair *, const SBResourceMousePair &);
+
+DECOMP_SIZE_ASSERT(SBResourceMouseValue, 0x0c)
+DECOMP_SIZE_ASSERT(SBResourceMousePair, 0x10)
+DECOMP_STATIC_ASSERT(offsetof(SBResourceMouseValue, m_flags) == 8)
+DECOMP_STATIC_ASSERT(offsetof(SBResourceMouseValue, m_frameLength) == 0x0a)
 
 struct RHUnk00571160Position;
 class RHScriptPositionList
@@ -82,12 +73,10 @@ public:
 class RHUnkFXDraw
 {
 public:
-    unsigned long Unk005e4ed0(int width, int height, int format, bool system);
+    unsigned long Unk005e4ed0(unsigned short width, unsigned short height, unsigned long format, bool system);
     unsigned short FUN_005e56c0(unsigned long);
     unsigned short FUN_005e5750(unsigned long);
 };
-
-typedef unsigned long (RHUnkFXDraw::*RHResourceCreateSurface)(unsigned short, unsigned short, unsigned long, bool);
 
 class RHFrameHolderRowMap
 {
@@ -165,6 +154,7 @@ extern RHMapResources *g_unk0x006c1840;
 
 DECOMP_SIZE_ASSERT(SBResourceFileList, 0x24)
 DECOMP_SIZE_ASSERT(SBResourceManager, 0x94)
+DECOMP_STATIC_ASSERT(offsetof(SBResourceManager, m_nextId) == 0x0c)
 
 // TEMPLATE: GAME 0x004e6c50
 // ?erase@?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@QAEPAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@2@PAV32@0@Z
@@ -175,7 +165,7 @@ SBResourceManager::SBResourceManager()
     *(unsigned int *)m_00 = 0x67a840;
     *(RHUnk005ef320 **)(m_00 + 4) = g_unk0x6c11d0;
     g_unk0x006c1840 = (RHMapResources *)this;
-    *(unsigned int *)(m_00 + 0x0c) = 1;
+    m_nextId = 1;
 }
 
 // FUNCTION: GAME 0x005fd4a0
@@ -260,21 +250,21 @@ bool SBResourceManager::FUN_005fd710(SBFile &file)
     unsigned long zero = 0;
     for (unsigned long index = 0; index < count; ++index) {
         file.Access(&type, 4);
-        unsigned long &id = *(unsigned long *)((char *)this + 0xc);
+        unsigned long &id = m_nextId;
         file.Access(&id, 4);
         RHFrameHolderRowMap::Value value(id, zero);
         ((RHFrameHolderRowMap *)&m_34)->InsertTree(value);
         switch (type) {
-        case 0x20434950: if (!FUN_005fdcc0((int)&file, zero)) return false; break;
+        case 0x20434950: if (!FUN_005fdcc0(&file, zero)) return false; break;
         case 0x204f4452: if (!FUN_005ffac0(&file, zero)) return false; break;
-        case 0x20525543: if (!FUN_005fef60((int)&file, zero)) return false; break;
-        case 0x43434950: if (!FUN_005fe000((int)&file, zero)) return false; break;
+        case 0x20525543: if (!FUN_005fef60(&file, zero)) return false; break;
+        case 0x43434950: if (!FUN_005fe000(&file, zero)) return false; break;
         case 0x44494c53: if (!FUN_005ff3a0(&file, zero)) return false; break;
-        case 0x45564157: if (!FUN_005fe970((int)&file, zero)) return false; break;
+        case 0x45564157: if (!FUN_005fe970(&file, zero)) return false; break;
         case 0x4654504e: if (!FUN_005fd8e0(&file, zero)) return false; break;
         case 0x4c474f54: if (!FUN_005ffe50(&file, zero)) return false; break;
         case 0x4e545442: if (!FUN_005ff730(&file, zero)) return false; break;
-        case 0x54584554: if (!FUN_005fe380((int)&file, zero)) return false; break;
+        case 0x54584554: if (!FUN_005fe380(&file, zero)) return false; break;
         default:
             char name[6];
             *(unsigned long *)name = type;
@@ -399,13 +389,13 @@ bool SBResourceManager::FUN_005fd8e0(SBFile *file, unsigned long id)
     SBResourcePictureEntry entry;
     SBResourceLoaderArray surfaces;
     RHUnk006114c0 picture;
-    Tree44::Iterator found;
-    found = m_44.FUN_006013a0(id);
+    Tree44::Iterator storage;
+    Tree44::Iterator found = m_44.FUN_006013a0(storage, id);
     if (found.m_node != m_44.m_head) {
         FUN_006001d0(found);
         m_44.FUN_00601350(id);
     }
-    unsigned long &nextId = *(unsigned long *)(m_00 + 0xc);
+    unsigned long &nextId = m_nextId;
     if (id == 0) {
         entry.first = nextId;
         unsigned long position = ((ToolboxPositionFile *)file)->FUN_005f5440();
@@ -432,10 +422,10 @@ bool SBResourceManager::FUN_005fd8e0(SBFile *file, unsigned long id)
             unsigned long format = (flags & 2) ? 2 : 1;
             picture.Unk00611710(*file);
             if (!(flags & 1) || id != 0) {
-                surfaces[i] = ((*(RHUnkFXDraw **)(m_00 + 4))->*reinterpret_cast<RHResourceCreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(picture.m_width, picture.m_height, format, false);
+                surfaces[i] = (*(RHUnkFXDraw **)(m_00 + 4))->Unk005e4ed0(picture.m_width, picture.m_height, format, false);
                 ((SBPicture *)&picture)->SBPicture::Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces[i]);
             }
-            ((SBPicture *)&picture)->FUN_00611c50();
+            ((SBPicture *)&picture)->SBPicture::FUN_00611c50();
         } else
             surfaces[i] = 0;
     }
@@ -461,8 +451,294 @@ void SBResourceUnk005fdc70::FUN_005fdc70()
     values.~vector();
 }
 
+// STUB: GAME 0x005fdcc0
+bool SBResourceManager::FUN_005fdcc0(SBFile *file, unsigned long id)
+{
+    SBResourcePictureEntry entry;
+    SBResourceSurfaceArray surfaces((std::allocator<unsigned long>()));
+    RHUnk006114c0 picture;
+    Tree44 &tree = m_44;
+    {
+        Tree44::Iterator storage;
+        Tree44::Iterator found = tree.FUN_006013a0(storage, id);
+        if (found.m_node != m_44.m_head) {
+            FUN_006001d0(found);
+            tree.FUN_00601350(id);
+        }
+    }
+    unsigned long &nextId = m_nextId;
+    if (id == 0) {
+        entry.first = nextId;
+        unsigned long position = ((ToolboxPositionFile *)file)->FUN_005f5440();
+        // STRING: GAME 0x006bb468
+        SBResourceFileRecord record(nextId++, file, position, *(const unsigned long *)"PIC ");
+        ((SBResourceTreeStorage<0x20, 0x1c, 0x54> *)&m_54)->Insert(record.m_id);
+    } else {
+        ResourceNode *node = m_54.FUN_00601650(id).m_node;
+        file = node->m_file;
+        ((RHProfileFile *)file)->FUN_005f5370(node->m_position, 0);
+        entry.first = id;
+    }
+    unsigned long zero = 0;
+    ((RHUnk004ff7b0 *)&surfaces)->FUN_004ff7b0(1, *(const float *)&zero);
+    surfaces.m_changed = true;
+    unsigned long flags;
+    file->Access(&flags, 4);
+    picture.Unk00611710(*file);
+    if (!(flags & 1) || id != 0) {
+        surfaces.m_values[0] = (*(RHUnkFXDraw **)(m_00 + 4))->Unk005e4ed0(picture.m_width, picture.m_height, 0, false);
+        ((SBPicture *)&picture)->SBPicture::Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces.m_values[0]);
+    }
+    ((SBPicture *)&picture)->SBPicture::FUN_00611c50();
+    if (!(flags & 1) || id != 0) {
+        SBResourceSurfaceArray &destination = *(SBResourceSurfaceArray *)&entry.second;
+        typedef std::vector<unsigned long> Values;
+        unsigned long *(Values::*erase)(unsigned long *, unsigned long *) = &Values::erase;
+        (destination.m_values.*erase)(destination.m_values.begin(), destination.m_values.end());
+        destination.Assign(surfaces, 0);
+        typedef std::pair<const unsigned long, SBResourceSurfaceArray> Value;
+        Value value(entry.first, destination);
+        ((SBResourceTreeStorage<0x34, 0x30, 0x44> *)&tree)->Insert(value.first);
+    }
+    return true;
+}
+
+// STUB: GAME 0x005fe000
+bool SBResourceManager::FUN_005fe000(SBFile *file, unsigned long id)
+{
+    SBResourcePictureEntry entry;
+    SBResourceSurfaceArray surfaces;
+    RHUnk006114c0 picture;
+    Tree44 &tree = m_44;
+    {
+        Tree44::Iterator storage;
+        Tree44::Iterator found = tree.FUN_006013a0(storage, id);
+        if (found.m_node != m_44.m_head) {
+            FUN_006001d0(found);
+            tree.FUN_00601350(id);
+        }
+    }
+    unsigned long &nextId = m_nextId;
+    if (id == 0) {
+        entry.first = nextId;
+        unsigned long position = ((ToolboxPositionFile *)file)->FUN_005f5440();
+        // STRING: GAME 0x006bb470
+        SBResourceFileRecord record(nextId++, file, position, *(const unsigned long *)"PICC");
+        ((SBResourceTreeStorage<0x20, 0x1c, 0x54> *)&m_54)->Insert(record.m_id);
+    } else {
+        ResourceNode *node = m_54.FUN_00601650(id).m_node;
+        file = node->m_file;
+        ((RHProfileFile *)file)->FUN_005f5370(node->m_position, 0);
+        entry.first = id;
+    }
+    unsigned long flags;
+    file->Access(&flags, 4);
+    unsigned long count;
+    file->Access(&count, 4);
+    {
+        unsigned long zero = 0;
+        ((RHUnk004ff7b0 *)&surfaces)->FUN_004ff7b0(count, *(const float *)&zero);
+    }
+    surfaces.m_changed = true;
+    for (unsigned long index = 0; index < count; ++index) {
+        picture.Unk00611710(*file);
+        if (!(flags & 1) || id != 0) {
+            surfaces.m_values[index] = (*(RHUnkFXDraw **)(m_00 + 4))->Unk005e4ed0(picture.m_width, picture.m_height, 0, false);
+            ((SBPicture *)&picture)->SBPicture::Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces.m_values[index]);
+        }
+        ((SBPicture *)&picture)->SBPicture::FUN_00611c50();
+    }
+    if (!(flags & 1) || id != 0) {
+        SBResourceSurfaceArray &destination = *(SBResourceSurfaceArray *)&entry.second;
+        typedef std::vector<unsigned long> Values;
+        unsigned long *(Values::*erase)(unsigned long *, unsigned long *) = &Values::erase;
+        (destination.m_values.*erase)(destination.m_values.begin(), destination.m_values.end());
+        destination.Assign(surfaces, 0);
+        typedef std::pair<const unsigned long, SBResourceSurfaceArray> Value;
+        Value value(entry.first, destination);
+        ((SBResourceTreeStorage<0x34, 0x30, 0x44> *)&tree)->Insert(value.first);
+    }
+    return true;
+}
+
+// STUB: GAME 0x005fe380
+bool SBResourceManager::FUN_005fe380(SBFile *file, unsigned long id)
+{
+    typedef SBResourceTextArray<wchar_t> Array;
+    std::pair<unsigned long, Array> entry;
+    Array strings;
+    Tree74 &tree = m_74;
+    if (tree.FUN_00601bd0(id).m_node != m_74.m_head)
+        tree.FUN_00601b80(id);
+    unsigned long &nextId = m_nextId;
+    if (id == 0) {
+        entry.first = nextId;
+        unsigned long position = ((ToolboxPositionFile *)file)->FUN_005f5440();
+        // STRING: GAME 0x006bb4a4
+        SBResourceFileRecord record(nextId++, file, position, *(const unsigned long *)"TEXT");
+        ((SBResourceTreeStorage<0x20, 0x1c, 0x54> *)&m_54)->Insert(record.m_id);
+    } else {
+        ResourceNode *node = m_54.FUN_00601650(id).m_node;
+        file = node->m_file;
+        entry.first = id;
+    }
+    unsigned long flags;
+    unsigned short count;
+    file->Access(&flags, 4);
+    file->Access(&count, 2);
+    typedef Array::Values Values;
+    void (Values::*resize)(unsigned int, const std::wstring &) = &Values::resize;
+    (strings.m_values.*resize)(count, std::wstring());
+    strings.m_changed = true;
+    wchar_t buffer[4097];
+    for (unsigned int index = 0; index < count; ++index) {
+        unsigned short length;
+        file->Access(&length, 2);
+        if (length > 4096) {
+            SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBResourceManager.cpp", 0x287,
+                // STRING: GAME 0x006bb478
+                "String size is greater than 8kb, truncating");
+            file->Access(buffer, 8192);
+            ((RHProfileFile *)file)->FUN_005f5370((length - 4096) * 2, 1);
+            length = 4096;
+        } else
+            file->Access(buffer, length * 2);
+        buffer[length] = 0;
+        strings[index] = std::wstring(buffer);
+    }
+    std::wstring *(Values::*erase)(std::wstring *, std::wstring *) = &Values::erase;
+    (entry.second.m_values.*erase)(entry.second.m_values.begin(), entry.second.m_values.end());
+    entry.second.Assign(strings, 0);
+    typedef std::pair<const unsigned long, Array> Value;
+    Value value(entry.first, entry.second);
+    ((SBResourceTreeStorage<0x40, 0x3c, 0x74> *)&tree)->Insert(value.first);
+    return true;
+}
+
+// STUB: GAME 0x005fe970
+bool SBResourceManager::FUN_005fe970(SBFile *file, unsigned long id)
+{
+    typedef SBResourceTextArray<char> Array;
+    std::pair<unsigned long, Array> entry;
+    Array strings;
+    Tree84 &tree = m_84;
+    if (tree.FUN_00601ee0(id).m_node != m_84.m_head)
+        tree.FUN_00601e90(id);
+    unsigned long &nextId = m_nextId;
+    if (id == 0) {
+        entry.first = nextId;
+        unsigned long position = ((ToolboxPositionFile *)file)->FUN_005f5440();
+        // STRING: GAME 0x006bb4d8
+        SBResourceFileRecord record(nextId++, file, position, *(const unsigned long *)"WAVE");
+        ((SBResourceTreeStorage<0x20, 0x1c, 0x54> *)&m_54)->Insert(record.m_id);
+    } else {
+        ResourceNode *node = m_54.FUN_00601650(id).m_node;
+        file = node->m_file;
+        entry.first = id;
+    }
+    unsigned long flags;
+    unsigned short count;
+    file->Access(&flags, 4);
+    file->Access(&count, 2);
+    typedef Array::Values Values;
+    void (Values::*resize)(unsigned int, const std::string &) = &Values::resize;
+    (strings.m_values.*resize)(count, std::string());
+    strings.m_changed = true;
+    char buffer[4097];
+    for (unsigned int index = 0; index < count; ++index) {
+        unsigned short length;
+        file->Access(&length, 2);
+        if (length > 4096) {
+            SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBResourceManager.cpp", 0x2ea,
+                // STRING: GAME 0x006bb4ac
+                "String size is greater than 4kb, truncating");
+            file->Access(buffer, 4096);
+            ((RHProfileFile *)file)->FUN_005f5370(length - 4096, 1);
+            length = 4096;
+        } else
+            file->Access(buffer, length);
+        buffer[length] = 0;
+        strings[index] = std::string(buffer);
+    }
+    std::string *(Values::*erase)(std::string *, std::string *) = &Values::erase;
+    (entry.second.m_values.*erase)(entry.second.m_values.begin(), entry.second.m_values.end());
+    entry.second.Assign(strings, 0);
+    typedef std::pair<const unsigned long, Array> Value;
+    Value value(entry.first, entry.second);
+    ((SBResourceTreeStorage<0x40, 0x3c, 0x84> *)&tree)->Insert(value.first);
+    return true;
+}
+
+// STUB: GAME 0x005fef60
+bool SBResourceManager::FUN_005fef60(SBFile *file, unsigned long id)
+{
+    SBResourcePictureEntry entry;
+    std::pair<unsigned long, SBResourceMouseValue> mouse;
+    SBResourceSurfaceArray surfaces((std::allocator<unsigned long>()));
+    RHUnk006114c0 picture;
+    SBGeoPoint2D point;
+    Tree44 &tree = m_44;
+    {
+        Tree44::Iterator storage;
+        Tree44::Iterator found = tree.FUN_006013a0(storage, id);
+        if (found.m_node != m_44.m_head) {
+            FUN_006001d0(found);
+            tree.FUN_00601350(id);
+        }
+    }
+    unsigned long &nextId = m_nextId;
+    if (id == 0) {
+        entry.first = mouse.first = nextId;
+        unsigned long position = ((ToolboxPositionFile *)file)->FUN_005f5440();
+        // STRING: GAME 0x006bb4e0
+        SBResourceFileRecord record(nextId++, file, position, *(const unsigned long *)"CUR ");
+        ((SBResourceTreeStorage<0x20, 0x1c, 0x54> *)&m_54)->Insert(record.m_id);
+    } else {
+        ResourceNode *node = m_54.FUN_00601650(id).m_node;
+        file = node->m_file;
+        entry.first = mouse.first = id;
+    }
+    unsigned long flags;
+    unsigned short mouseFlags;
+    unsigned short x;
+    unsigned short y;
+    unsigned short frameLength;
+    file->Access(&flags, 4);
+    file->Access(&mouseFlags, 2);
+    file->Access(&x, 2);
+    file->Access(&y, 2);
+    file->Access(&frameLength, 2);
+    point.Set((float)x, (float)y);
+    unsigned long count;
+    file->Access(&count, 4);
+    {
+        unsigned long zero = 0;
+        ((RHUnk004ff7b0 *)&surfaces)->FUN_004ff7b0(count, *(const float *)&zero);
+    }
+    surfaces.m_changed = true;
+    for (unsigned long index = 0; index < count; ++index) {
+        picture.Unk00611710(*file);
+        surfaces.m_values[index] = (*(RHUnkFXDraw **)(m_00 + 4))->Unk005e4ed0(picture.m_width, picture.m_height, 0, false);
+        ((SBPicture *)&picture)->SBPicture::Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces.m_values[index]);
+    }
+    SBResourceSurfaceArray &destination = *(SBResourceSurfaceArray *)&entry.second;
+    ((RHCampaignArrayOps *)&destination.m_values)->FUN_0044ea70();
+    destination.Assign(surfaces, 0);
+    mouse.second.m_point = point;
+    mouse.second.m_frameLength = frameLength;
+    mouse.second.m_flags = mouseFlags;
+    {
+        typedef std::pair<const unsigned long, SBResourceSurfaceArray> Value;
+        Value value(entry.first, destination);
+        ((SBResourceTreeStorage<0x34, 0x30, 0x44> *)&m_44)->Insert(value.first);
+    }
+    SBResourceMousePair value(mouse);
+    ((SBResourceTreeStorage<0x20, 0x1c, 0x64> *)&m_64)->Insert(value.first);
+    return true;
+}
+
 // FUNCTION: GAME 0x005ff390
-FUN_005ff390::FUN_005ff390()
+SBResourceMouseValue::SBResourceMouseValue()
 {
 }
 
@@ -473,13 +749,13 @@ bool SBResourceManager::FUN_005ff3a0(SBFile *file, unsigned long id)
     SBResourcePictureEntry entry;
     SBResourceLoaderArray surfaces;
     RHUnk006114c0 picture;
-    Tree44::Iterator found;
-    found = m_44.FUN_006013a0(id);
+    Tree44::Iterator storage;
+    Tree44::Iterator found = m_44.FUN_006013a0(storage, id);
     if (found.m_node != m_44.m_head) {
         FUN_006001d0(found);
         m_44.FUN_00601350(id);
     }
-    unsigned long &nextId = *(unsigned long *)(m_00 + 0xc);
+    unsigned long &nextId = m_nextId;
     if (id == 0) {
         entry.first = nextId;
         unsigned long position = ((ToolboxPositionFile *)file)->FUN_005f5440();
@@ -506,10 +782,10 @@ bool SBResourceManager::FUN_005ff3a0(SBFile *file, unsigned long id)
             unsigned long format = (flags & 2) ? 2 : 1;
             picture.Unk00611710(*file);
             if (!(flags & 1) || id != 0) {
-                surfaces[i] = ((*(RHUnkFXDraw **)(m_00 + 4))->*reinterpret_cast<RHResourceCreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(picture.m_width, picture.m_height, format, false);
+                surfaces[i] = (*(RHUnkFXDraw **)(m_00 + 4))->Unk005e4ed0(picture.m_width, picture.m_height, format, false);
                 ((SBPicture *)&picture)->SBPicture::Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces[i]);
             }
-            ((SBPicture *)&picture)->FUN_00611c50();
+            ((SBPicture *)&picture)->SBPicture::FUN_00611c50();
         } else
             surfaces[i] = 0;
     }
@@ -532,13 +808,13 @@ bool SBResourceManager::FUN_005ff730(SBFile *file, unsigned long id)
     SBResourcePictureEntry entry;
     SBResourceLoaderArray surfaces;
     RHUnk006114c0 picture;
-    Tree44::Iterator found;
-    found = m_44.FUN_006013a0(id);
+    Tree44::Iterator storage;
+    Tree44::Iterator found = m_44.FUN_006013a0(storage, id);
     if (found.m_node != m_44.m_head) {
         FUN_006001d0(found);
         m_44.FUN_00601350(id);
     }
-    unsigned long &nextId = *(unsigned long *)(m_00 + 0xc);
+    unsigned long &nextId = m_nextId;
     if (id == 0) {
         entry.first = nextId;
         unsigned long position = ((ToolboxPositionFile *)file)->FUN_005f5440();
@@ -565,10 +841,10 @@ bool SBResourceManager::FUN_005ff730(SBFile *file, unsigned long id)
             unsigned long format = (flags & 2) ? 2 : 1;
             picture.Unk00611710(*file);
             if (!(flags & 1) || id != 0) {
-                surfaces[i] = ((*(RHUnkFXDraw **)(m_00 + 4))->*reinterpret_cast<RHResourceCreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(picture.m_width, picture.m_height, format, false);
+                surfaces[i] = (*(RHUnkFXDraw **)(m_00 + 4))->Unk005e4ed0(picture.m_width, picture.m_height, format, false);
                 ((SBPicture *)&picture)->SBPicture::Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces[i]);
             }
-            ((SBPicture *)&picture)->FUN_00611c50();
+            ((SBPicture *)&picture)->SBPicture::FUN_00611c50();
         } else
             surfaces[i] = 0;
     }
@@ -591,13 +867,13 @@ bool SBResourceManager::FUN_005ffac0(SBFile *file, unsigned long id)
     SBResourcePictureEntry entry;
     SBResourceLoaderArray surfaces;
     RHUnk006114c0 picture;
-    Tree44::Iterator found;
-    found = m_44.FUN_006013a0(id);
+    Tree44::Iterator storage;
+    Tree44::Iterator found = m_44.FUN_006013a0(storage, id);
     if (found.m_node != m_44.m_head) {
         FUN_006001d0(found);
         m_44.FUN_00601350(id);
     }
-    unsigned long &nextId = *(unsigned long *)(m_00 + 0xc);
+    unsigned long &nextId = m_nextId;
     if (id == 0) {
         entry.first = nextId;
         unsigned long position = ((ToolboxPositionFile *)file)->FUN_005f5440();
@@ -624,10 +900,10 @@ bool SBResourceManager::FUN_005ffac0(SBFile *file, unsigned long id)
             unsigned long format = (flags & 2) ? 2 : 1;
             picture.Unk00611710(*file);
             if (!(flags & 1) || id != 0) {
-                surfaces[i] = ((*(RHUnkFXDraw **)(m_00 + 4))->*reinterpret_cast<RHResourceCreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(picture.m_width, picture.m_height, format, false);
+                surfaces[i] = (*(RHUnkFXDraw **)(m_00 + 4))->Unk005e4ed0(picture.m_width, picture.m_height, format, false);
                 ((SBPicture *)&picture)->SBPicture::Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces[i]);
             }
-            ((SBPicture *)&picture)->FUN_00611c50();
+            ((SBPicture *)&picture)->SBPicture::FUN_00611c50();
         } else
             surfaces[i] = 0;
     }
@@ -650,13 +926,13 @@ bool SBResourceManager::FUN_005ffe50(SBFile *file, unsigned long id)
     SBResourcePictureEntry entry;
     SBResourceLoaderArray surfaces;
     RHUnk006114c0 picture;
-    Tree44::Iterator found;
-    found = m_44.FUN_006013a0(id);
+    Tree44::Iterator storage;
+    Tree44::Iterator found = m_44.FUN_006013a0(storage, id);
     if (found.m_node != m_44.m_head) {
         FUN_006001d0(found);
         m_44.FUN_00601350(id);
     }
-    unsigned long &nextId = *(unsigned long *)(m_00 + 0xc);
+    unsigned long &nextId = m_nextId;
     if (id == 0) {
         entry.first = nextId;
         unsigned long position = ((ToolboxPositionFile *)file)->FUN_005f5440();
@@ -682,10 +958,10 @@ bool SBResourceManager::FUN_005ffe50(SBFile *file, unsigned long id)
         if ((1 << i) & mask) {
             picture.Unk00611710(*file);
             if (!(flags & 1) || id != 0) {
-                surfaces[i] = ((*(RHUnkFXDraw **)(m_00 + 4))->*reinterpret_cast<RHResourceCreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(picture.m_width, picture.m_height, 0, false);
+                surfaces[i] = (*(RHUnkFXDraw **)(m_00 + 4))->Unk005e4ed0(picture.m_width, picture.m_height, 0, false);
                 ((SBPicture *)&picture)->SBPicture::Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces[i]);
             }
-            ((SBPicture *)&picture)->FUN_00611c50();
+            ((SBPicture *)&picture)->SBPicture::FUN_00611c50();
         } else
             surfaces[i] = 0;
     }
@@ -712,6 +988,8 @@ inline SBResourceUnkIterator SBResourceFind(SBResourceUnk00605440 &tree, const u
 }
 
 
+#include "SBDrawManagerCore.h"
+
 // FUNCTION: GAME 0x006001d0
 void SBResourceManager::FUN_006001d0(Tree44::Iterator &position)
 {
@@ -726,7 +1004,7 @@ void SBResourceManager::FUN_006001d0(Tree44::Iterator &position)
     while (surfaces.Size() > 0) {
         unsigned long surface = *surfaces.m_values.begin();
         if (surface)
-            (*(RHEngineWidenedCalls **)(m_00 + 4))->FUN_005e5160(surface);
+            (*(SBDrawManager **)(m_00 + 4))->FUN_005e5160(surface);
         surfaces.m_values.erase(surfaces.m_values.begin());
         surfaces.m_changed = true;
     }
@@ -856,14 +1134,16 @@ bool SBUIUnk006006f0::FUN_006006f0(long resource, RHUnk005fc3b0 &output)
     unsigned long &id = *(unsigned long *)&resource;
     SBResourceManager &view = *(SBResourceManager *)this;
     SBResourceManager::Tree44 &tree = view.m_44;
-    SBResourceManager::Node<unsigned long> *found = tree.FUN_006013a0(id).m_node;
+    SBResourceManager::Tree44::Iterator storage;
+    SBResourceManager::Node<unsigned long> *found = tree.FUN_006013a0(storage, id).m_node;
     if (found == view.m_44.m_head) {
         if (!view.FUN_00600db0(id)) {
             SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBResourceManager.cpp", 0x5eb,
                 "Unable to recover a resource");
             return false;
         }
-        found = tree.FUN_006013a0(id).m_node;
+        SBResourceManager::Tree44::Iterator recoveryStorage;
+        found = tree.FUN_006013a0(recoveryStorage, id).m_node;
     }
     unsigned int count = found->m_first == 0 ? 0 : found->m_last - found->m_first;
     SBGeoPoint2D &size = *(SBGeoPoint2D *)&output;
@@ -1162,12 +1442,7 @@ struct SBResourceTreeLinks
     unsigned long m_key;
 };
 
-class RHUnk00641782
-{
-public:
-    RHUnk00641782();
-    ~RHUnk00641782();
-};
+#include "RHUnk00641782.h"
 
 class SBResourceTreePrevious44
 {
@@ -1437,12 +1712,13 @@ unsigned int SBResourceManager::Tree44::FUN_00601350(const unsigned long &key)
 }
 
 // FUNCTION: GAME 0x006013a0
-SBResourceManager::Tree44::Iterator SBResourceManager::Tree44::FUN_006013a0(const unsigned long &key)
+SBResourceManager::Tree44::Iterator &SBResourceManager::Tree44::FUN_006013a0(Iterator &storage, const unsigned long &key)
 {
     Iterator candidate(FUN_00605220(key));
     Node<unsigned long> *head = m_head;
-    return candidate.m_node != head && key >= candidate.m_node->m_key
+    storage = candidate.m_node != head && key >= candidate.m_node->m_key
         ? candidate : Iterator(head);
+    return storage;
 }
 
 // FUNCTION: GAME 0x006013f0
@@ -2696,23 +2972,13 @@ void SBResourceConstructMouse(SBResourceMousePair *output, const SBResourceMouse
 // FUNCTION: GAME 0x006065c0
 template<> SBResourceTextArray<wchar_t>::SBResourceTextArray(const SBResourceTextArray &other)
 {
-    const Text *last = other.m_values.end();
-    const Text *first = other.m_values.begin();
-    Clear();
-    void (Values::*insert)(Text *, const Text *, const Text *) = &Values::insert;
-    (m_values.*insert)(m_values.begin(), first, last);
-    m_changed = true;
+    Copy(other);
 }
 
 // FUNCTION: GAME 0x006066a0
 template<> SBResourceTextArray<char>::SBResourceTextArray(const SBResourceTextArray &other)
 {
-    const Text *last = other.m_values.end();
-    const Text *first = other.m_values.begin();
-    Clear();
-    void (Values::*insert)(Text *, const Text *, const Text *) = &Values::insert;
-    (m_values.*insert)(m_values.begin(), first, last);
-    m_changed = true;
+    Copy(other);
 }
 
 // FUNCTION: GAME 0x00605e60
@@ -2772,14 +3038,87 @@ void SBResourceSurfaceArray::FUN_006069e0(const SBResourceSurfaceArray &other)
     m_changed = true;
 }
 
+// STUB: GAME 0x00606bd0
+template<> void SBResourceTextArray<wchar_t>::Assign(const SBResourceTextArray &other, unsigned int position)
+{
+    unsigned int (Values::*size)() const = &Values::size;
+    Text &(Text::*assign)(const Text &, unsigned int, unsigned int) = &Text::assign;
+    if (position == m_values.size()) {
+        position = (m_values.*size)();
+        int count = (other.m_values.*size)();
+        unsigned int added = (other.m_values.*size)();
+        Resize((m_values.*size)() + added);
+        for (int index = 0; index < count; ++index)
+            (m_values[position + index].*assign)(other.m_values[index], 0, Text::npos);
+        m_changed = true;
+        return;
+    } else {
+        int oldCount = m_values.size();
+        int last = oldCount - 1;
+        int previous = m_values.size();
+        int count = other.m_values.size();
+        Resize(m_values.size() + other.m_values.size());
+        for (; last >= (int)position; --last)
+            (m_values[count - oldCount + previous + last].*assign)(m_values[last], 0, Text::npos);
+        if (other.m_values.begin() != 0) {
+            int sourceCount = other.m_values.end() - other.m_values.begin();
+            for (int index = 0; index < sourceCount; ++index)
+                m_values[position + index] = other.m_values[index];
+        }
+    }
+    m_changed = true;
+}
+
+// STUB: GAME 0x00606fc0
+template<> void SBResourceTextArray<char>::Assign(const SBResourceTextArray &other, unsigned int position)
+{
+    unsigned int (Values::*size)() const = &Values::size;
+    Text &(Text::*assign)(const Text &, unsigned int, unsigned int) = &Text::assign;
+    if (position == m_values.size()) {
+        position = (m_values.*size)();
+        int count = (other.m_values.*size)();
+        unsigned int added = (other.m_values.*size)();
+        Resize((m_values.*size)() + added);
+        for (int index = 0; index < count; ++index)
+            (m_values[position + index].*assign)(other.m_values[index], 0, Text::npos);
+        m_changed = true;
+        return;
+    } else {
+        int oldCount = m_values.size();
+        int last = oldCount - 1;
+        int previous = m_values.size();
+        int count = other.m_values.size();
+        Resize(m_values.size() + other.m_values.size());
+        for (; last >= (int)position; --last)
+            (m_values[count - oldCount + previous + last].*assign)(m_values[last], 0, Text::npos);
+        if (other.m_values.begin() != 0) {
+            int sourceCount = other.m_values.end() - other.m_values.begin();
+            for (int index = 0; index < sourceCount; ++index)
+                m_values[position + index] = other.m_values[index];
+        }
+    }
+    m_changed = true;
+}
+
+void EmitSBResourceTextAssign(SBResourceTextArray<char> &narrow, const SBResourceTextArray<char> &narrowSource,
+    SBResourceTextArray<wchar_t> &wide, const SBResourceTextArray<wchar_t> &wideSource, unsigned int position)
+{
+    narrow.Assign(narrowSource, position);
+    wide.Assign(wideSource, position);
+}
+
 void EmitSBResourceSurfaceCopy(SBResourceSurfaceArray *values, const SBResourceSurfaceArray &other)
 {
     values->FUN_006069e0(other);
 }
 
+// TEMPLATE: GAME 0x0057c7f0
+// ??0?$SBResourceTextArray@D@@QAE@XZ
+
 #pragma inline_depth(0)
 void EmitSBResourceTextCopies(void *output, const SBResourceTextArray<wchar_t> &wide, const SBResourceTextArray<char> &narrow)
 {
+    new (output) SBResourceTextArray<char>();
     new (output) SBResourceTextArray<wchar_t>(wide);
     new (output) SBResourceTextArray<char>(narrow);
 }

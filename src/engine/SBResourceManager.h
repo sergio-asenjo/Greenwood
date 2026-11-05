@@ -101,38 +101,41 @@ public:
 
 struct SBResourceTreeLinks;
 
-template<class C> struct SBResourceEmptyText
-{
-    std::allocator<C> m_allocator;
-    C *m_pointer;
-    unsigned int m_length;
-    unsigned int m_capacity;
-    SBResourceEmptyText() : m_allocator(std::allocator<C>()), m_pointer(0), m_length(0), m_capacity(0) {}
-    ~SBResourceEmptyText() { ((std::basic_string<C> *)this)->~basic_string(); }
-};
-
 template<class C> class SBResourceTextArray
 {
 public:
     typedef std::basic_string<C> Text;
     typedef std::vector<Text> Values;
+    Text &operator[](unsigned int index) { return m_values[index]; }
+    const Text &operator[](unsigned int index) const { return m_values[index]; }
     Values m_values;
     char m_10[4];
     bool m_changed;
     char m_15[7];
-    SBResourceEmptyText<C> m_text;
+    Text m_text;
+    SBResourceTextArray() : m_changed(true) {}
+    ~SBResourceTextArray();
     SBResourceTextArray(const SBResourceTextArray &other)
     {
-        const Text *first = other.m_values.begin();
+        Copy(other);
+    }
+    void Copy(const SBResourceTextArray &other)
+    {
         const Text *last = other.m_values.end();
+        const Text *first = other.m_values.begin();
         m_values.clear();
         void (Values::*insert)(Text *, const Text *, const Text *) = &Values::insert;
         (m_values.*insert)(m_values.begin(), first, last);
         m_changed = true;
     }
     void Resize(unsigned int count);
+    void Assign(const SBResourceTextArray &other, unsigned int position);
     void Clear() { m_values.clear(); }
+    void Destroy() { m_values.clear(); }
 };
+
+template<> SBResourceTextArray<char>::SBResourceTextArray(const SBResourceTextArray &);
+template<> SBResourceTextArray<wchar_t>::SBResourceTextArray(const SBResourceTextArray &);
 
 class SBResourceArrayLifecycle44
 {
@@ -140,14 +143,7 @@ public:
     void FUN_0051d120();
 };
 
-class SBResourceArrayLifecycle74 : public std::vector<std::wstring>
-{
-public:
-    void Destroy() { clear(); }
-    char m_10[12];
-    std::wstring m_text;
-    ~SBResourceArrayLifecycle74();
-};
+typedef SBResourceTextArray<wchar_t> SBResourceArrayLifecycle74;
 
 class SBResourceUnk005fe790
 {
@@ -165,14 +161,7 @@ public:
     ~SBResourceUnk005fe880();
 };
 
-class SBResourceArrayLifecycle84 : public std::vector<std::string>
-{
-public:
-    void Destroy() { clear(); }
-    char m_10[12];
-    std::string m_text;
-    ~SBResourceArrayLifecycle84();
-};
+typedef SBResourceTextArray<char> SBResourceArrayLifecycle84;
 
 class SBResourceUnk005fed80
 {
@@ -253,7 +242,7 @@ public:
         };
         Node<unsigned long> *FUN_00605220(const unsigned long &);
         Iterator &FUN_00602580(Iterator &, const unsigned long &);
-        Iterator FUN_006013a0(const unsigned long &);
+        Iterator &FUN_006013a0(Iterator &, const unsigned long &);
         Node<unsigned long> *FUN_00605770(const unsigned long &);
         Iterator FUN_00601210(Iterator, Iterator);
         unsigned int FUN_00601350(const unsigned long &);
@@ -295,7 +284,8 @@ public:
         SBResourceUnkKeyIterator FUN_00601bd0(const unsigned long &);
         SBResourceUnkKeyNode *&FUN_006042a0(SBResourceUnkKeyNode *&, const unsigned long &);
     };
-    char m_00[0x10];
+    char m_00[0x0c];
+    unsigned long m_nextId;
     SBResourceFileList m_files;
     Tree34 m_34;
     Tree44 m_44;
@@ -314,11 +304,11 @@ public:
     int FUN_00600f10(unsigned long);
     void FUN_006001d0(Tree44::Iterator &);
     bool FUN_005fd8e0(SBFile *, unsigned long);
-    bool FUN_005fdcc0(int, unsigned long);
-    bool FUN_005fe000(int, unsigned long);
-    bool FUN_005fe380(int, unsigned long);
-    bool FUN_005fe970(int, unsigned long);
-    bool FUN_005fef60(int, unsigned long);
+    bool FUN_005fdcc0(SBFile *, unsigned long);
+    bool FUN_005fe000(SBFile *, unsigned long);
+    bool FUN_005fe380(SBFile *, unsigned long);
+    bool FUN_005fe970(SBFile *, unsigned long);
+    bool FUN_005fef60(SBFile *, unsigned long);
     bool FUN_005ff3a0(SBFile *, unsigned long);
     bool FUN_005ff730(SBFile *, unsigned long);
     bool FUN_005ffac0(SBFile *, unsigned long);

@@ -4,13 +4,13 @@
 #include "SBResourceManager.h"
 
 // FUNCTION: GAME 0x0057c820
-inline SBResourceArrayLifecycle84::~SBResourceArrayLifecycle84()
+template<> inline SBResourceTextArray<char>::~SBResourceTextArray()
 {
     Destroy();
 }
 
 // FUNCTION: GAME 0x00605bd0
-inline SBResourceArrayLifecycle74::~SBResourceArrayLifecycle74()
+template<> inline SBResourceTextArray<wchar_t>::~SBResourceTextArray()
 {
     Destroy();
 }

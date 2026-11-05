@@ -9,6 +9,10 @@ extern template class std::basic_string<char>;
 
 DECOMP_SIZE_ASSERT(SBResourceArrayLifecycle84, 0x2c)
 DECOMP_SIZE_ASSERT(SBResourceArrayLifecycle74, 0x2c)
+DECOMP_STATIC_ASSERT(offsetof(SBResourceArrayLifecycle84, m_changed) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(SBResourceArrayLifecycle74, m_changed) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(SBResourceArrayLifecycle84, m_text) == 0x1c)
+DECOMP_STATIC_ASSERT(offsetof(SBResourceArrayLifecycle74, m_text) == 0x1c)
 DECOMP_SIZE_ASSERT(SBResourceUnk005fe790, 0x30)
 DECOMP_SIZE_ASSERT(SBResourceUnk005fe880, 0x30)
 DECOMP_SIZE_ASSERT(SBResourceUnk005fed80, 0x30)
@@ -64,11 +68,6 @@ void EmitResourceNarrowArrayDestruction(SBResourceArrayLifecycle84 *values)
     delete[] values;
 }
 
-bool SBResourceManager::FUN_005fdcc0(int, unsigned long) { return false; }
-bool SBResourceManager::FUN_005fe000(int, unsigned long) { return false; }
-bool SBResourceManager::FUN_005fe380(int, unsigned long) { return false; }
-bool SBResourceManager::FUN_005fe970(int, unsigned long) { return false; }
-bool SBResourceManager::FUN_005fef60(int, unsigned long) { return false; }
 
 
 
