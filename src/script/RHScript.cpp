@@ -42,6 +42,7 @@
 #include "RHGenericMap.h"
 #include "RHMalignityActorCalls.h"
 #include "RHGameActionCalls.h"
+#include "SBDrawManagerCore.h"
 #include "RHCampaignCore.h"
 #include "RHScriptActorArray.h"
 
@@ -386,24 +387,6 @@ RHScriptNode *RHScriptPositionList::Unk004242b0(RHScriptNode *next, RHScriptNode
     return node;
 }
 
-// Parked at 0.6415: unannotated park from the asymmetric-comparator era; residual scheduling/registers.
-// STUB: GAME 0x00444440
-void RHScriptBatchCalls::Unk00444440(bool attentive)
-{
-    *(bool *)((char *)this + 0x346) = attentive;
-    if (attentive)
-    {
-        int offset = (*(int **)this)[1];
-        ((RHUnk004a5230 *)*(void **)((char *)this + offset + 4))->FUN_004a5230(true, false);
-        offset = (*(int **)this)[1];
-        RHUnk00413640 *base = (RHUnk00413640 *)((char *)this + offset);
-        void *actor = *(void **)((char *)base + 4);
-        if (*(int *)((char *)actor + 0x658) == 0 &&
-            *(unsigned *)((char *)g_pEngine + 0x4a94) > 1)
-            base->Unk(1, false);
-    }
-}
-
 // LIBRARY: GAME 0x0044f580
 // wmemmove
 
@@ -644,6 +627,7 @@ void *g_unk0x6c0f78;
 RHUnk00452030 *g_unk0x6c07fc;
 
 #include "RHTitbitsCore.h"
+#include "RHSpriteListStorage.h"
 
 // GLOBAL: GAME 0x006c0fa4
 unsigned short g_unk0x6c0fa4;
@@ -662,7 +646,7 @@ RHUnk0046eb30 g_unk0x6c0f50;
 // GLOBAL: GAME 0x006c0fb0
 RHUnk0046eb30 g_unk0x6c0fb0;
 // GLOBAL: GAME 0x006c0fe8
-RHUnkList g_unk0x6c0fe8;
+RHUnk00564020 g_unk0x6c0fe8;
 // GLOBAL: GAME 0x006c10e8
 RHTitbits *g_unk0x6c10e8;
 // GLOBAL: GAME 0x006c0f7c
@@ -1558,8 +1542,8 @@ void *RHScript::GetActorLocation(void *actor)
         return 0;
     }
     RHUnk00522470 *location = new RHUnk00522470;
-    g_unk0x6c0fe8.insert(RHUnkIter(g_unk0x6c0fe8.m_4), (RHOrder *const &)location);
-    g_unk0x6c0fe8.m_flag10 = 1;
+    ((RHUnkList *)&g_unk0x6c0fe8)->insert(RHUnkIter(g_unk0x6c0fe8.head), (RHOrder *const &)location);
+    g_unk0x6c0fe8.dirty = true;
     SBGeoPoint2D point;
     point = *(SBGeoPoint2D *)(*(char **)((char *)actor + 0x50) + 0x24);
     float x = point.m_x;
@@ -1771,7 +1755,7 @@ void *RHScript::ComputeLocationBetween(void *first, void *second, float ratio)
             location->SetArea(a.area);
             std::list<RHUnk00522470 *> &locations = *(std::list<RHUnk00522470 *> *)&g_unk0x6c0fe8;
             locations.insert(locations.end(), location);
-            g_unk0x6c0fe8.m_flag10 = 1;
+            g_unk0x6c0fe8.dirty = true;
             return location;
         }
     }
@@ -2756,7 +2740,7 @@ bool RHScript::RecordSeekActorMessage(void *actor, void *target, int style, floa
         message->Unk00586ed0(4, 0);
         message->Unk00586ed0(5, 0);
         ((RHUnk00585500 *)message)->Unk(sequence);
-        element->sequence = sequence;
+        element->m_68 = (RHMovementOwned *)sequence;
         return true;
     }
     return false;
@@ -2790,7 +2774,7 @@ bool RHScript::RecordSeekActorMessageWithArguments(void *actor, void *target, in
         message->Unk00586ed0(4, first);
         message->Unk00586ed0(5, second);
         ((RHUnk00585500 *)message)->Unk(sequence);
-        element->sequence = sequence;
+        element->m_68 = (RHMovementOwned *)sequence;
         return true;
     }
     return false;
@@ -2857,7 +2841,7 @@ bool RHScript::RecordMove(void *actor, void *location, int style)
     unsigned short first = *(int *)((char *)g_unk0x6c0f78 + 0x10);
     unsigned short layer = *(unsigned short *)((char *)location + 0x20);
     void *area = *(void **)((char *)location + 0x24);
-    ((RHUnk00582640 *)g_unk0x6c0f78)->Unk(g_unk0x6c0fa4, actor, animation,
+    ((RHUnk00582220 *)g_unk0x6c0f78)->FUN_00582640(g_unk0x6c0fa4, actor, animation,
         SBGeoPoint2D(start.x, start.y), start.area, start.layer,
         *(SBGeoPoint2D *)((char *)location + 4), area,
         layer, 0, 0.0f, 0, 1.0f);
@@ -2924,7 +2908,7 @@ bool RHScript::RecordMoveNear(void *actor, void *location, int style, int distan
     unsigned int first = *(int *)((char *)g_unk0x6c0f78 + 0x10);
     unsigned short layer = *(unsigned short *)((char *)location + 0x20);
     void *area = *(void **)((char *)location + 0x24);
-    ((RHUnk00582640 *)g_unk0x6c0f78)->Unk(g_unk0x6c0fa4, actor, animation,
+    ((RHUnk00582220 *)g_unk0x6c0f78)->FUN_00582640(g_unk0x6c0fa4, actor, animation,
         SBGeoPoint2D(start.x, start.y), start.area, start.layer,
         *(SBGeoPoint2D *)((char *)location + 4), area,
         layer, 0, (float)distance, 0, 1.0f);
@@ -3102,7 +3086,7 @@ bool RHScript::RecordTakeCorpse(void *actor, void *corpse, int style)
     char *sprite = *(char **)((char *)corpse + 0x50);
     unsigned short layer = *(unsigned short *)(sprite + 0xde);
     void *area = *(void **)(sprite + 0xe0);
-    ((RHUnk00582640 *)g_unk0x6c0f78)->Unk(g_unk0x6c0fa4, actor, style != 0 ? 10 : 6,
+    ((RHUnk00582220 *)g_unk0x6c0f78)->FUN_00582640(g_unk0x6c0fa4, actor, style != 0 ? 10 : 6,
         SBGeoPoint2D(start.x, start.y), start.area, start.layer,
         *(SBGeoPoint2D *)(*(char **)((char *)corpse + 0x50) + 0x24), area, layer,
         0, distance, 0, 1.0f);
@@ -4043,7 +4027,7 @@ void FUN_00576170()
 {
     RHMessenger *messenger = RHUnk00546050();
     (*(RHUnk005ef320 **)(g_unk0x6c0fa8 + 0xdc))->FUN_005ef380(1);
-    (*(RHGameActionCalls **)(g_unk0x6c0fa8 + 0xdc))->FUN_005e5260();
+    (*(SBDrawManager **)(g_unk0x6c0fa8 + 0xdc))->FUN_005e5260();
     messenger->RHUnk005460c0(RHUnk5490f0(36));
 }
 
@@ -4829,7 +4813,7 @@ bool RHScript::RecordLeaveGame(void *actor, void *location, int direction, int s
     const SBGeoPoint2D *destination = location != 0 ? (SBGeoPoint2D *)((char *)location + 4) : 0;
     void *area = *(void **)((char *)location + 0x24);
     unsigned short layer = *(unsigned short *)((char *)location + 0x20);
-    ((RHUnk00582640 *)g_unk0x6c0f78)->Unk(g_unk0x6c0fa4, actor, style != 0 ? 10 : 6,
+    ((RHUnk00582220 *)g_unk0x6c0f78)->FUN_00582640(g_unk0x6c0fa4, actor, style != 0 ? 10 : 6,
         SBGeoPoint2D(start.x, start.y), start.area, start.layer,
         *destination, area, layer, 0, 0.0f, 0, 1.0f);
     SBGeoPoint2D first;
@@ -4962,7 +4946,7 @@ void RHScript::SetPathWalkingStyle(void *actor, int style)
     case 1: value = 1; break;
     }
     int offset = *(int *)(*(char **)((char *)actor + 0x49c) + 4);
-    ((RHScriptBatchCalls *)((char *)actor + offset + 0x49c))->Unk0041bd20(value);
+    ((RHArtificialIntelligence *)((char *)actor + offset + 0x49c))->SetPathWalkingFlags(value);
 }
 
 // FUNCTION: GAME 0x00578160
@@ -5360,6 +5344,8 @@ void RHScript::SetCompanyNumber(void *actor, short number)
     *(short *)((char *)actor + 0xa20) = number;
 }
 
+#include "RHArtificialMalignityCore.h"
+
 // FUNCTION: GAME 0x005790f0
 void RHScript::SetAlwaysAttentive(void *actor, bool attentive)
 {
@@ -5377,7 +5363,7 @@ void RHScript::SetAlwaysAttentive(void *actor, bool attentive)
                  "Script Error: Trying to set attentive mode of a non-soldier.");
         return;
     }
-    ((RHScriptBatchCalls *)((char *)actor + 0x6e8))->Unk00444440(attentive);
+    ((RHArtificialMalignity *)((char *)actor + 0x6e8))->ForceAttentiveMode(attentive);
 }
 
 // FUNCTION: GAME 0x00579160
@@ -5418,7 +5404,7 @@ void RHScript::AddPCToMissionTeam(void *actor)
 {
     if ((*(unsigned int *)((char *)actor + 4) & 15) == 12)
     {
-        ((RHScriptBatchCalls *)g_unk0x6c07fc)->Unk00455400(*(void **)((char *)actor + 0x5f8));
+        ((RHCampaign *)g_unk0x6c07fc)->FUN_00455400(*(RHPCDescription **)((char *)actor + 0x5f8));
         ((RHScriptBatchCalls *)g_unk0x6c0b3c)->Unk00514670();
         *(char *)((char *)actor + 0x92) = 1;
         *(int *)((char *)actor + 0xa0) = 0;
@@ -5435,7 +5421,7 @@ void RHScript::RemovePCFromMissionTeam(void *actor)
 {
     if ((*(unsigned int *)((char *)actor + 4) & 15) == 12)
     {
-        ((RHScriptBatchCalls *)g_unk0x6c07fc)->Unk004555f0(*(void **)((char *)actor + 0x5f8));
+        ((RHCampaign *)g_unk0x6c07fc)->FUN_004555f0(*(RHPCDescription **)((char *)actor + 0x5f8));
         ((RHScriptBatchCalls *)g_unk0x6c0b3c)->Unk00514670();
         return;
     }

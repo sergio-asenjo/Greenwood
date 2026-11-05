@@ -223,22 +223,6 @@ RHMessenger *__stdcall RHUnk00546050(RHUnk5490f0 *message) { (void)message; retu
 // ??1RHUnk00585ea0@@QAE@XZ
 RHUnk00585ea0::~RHUnk00585ea0() {}
 RHScriptIter RHUnk0046eb30::begin() { return RHScriptIter(head->next); }
-void RHUnk00582640::Unk(unsigned short &level, void *actor, int style, const SBGeoPoint2D &start, void *startArea, unsigned short startLayer, const SBGeoPoint2D &end, void *endArea, unsigned short endLayer, void *element, float distance, unsigned long flags, float scale)
-{
-    (void)level;
-    (void)actor;
-    (void)style;
-    (void)start;
-    (void)startArea;
-    (void)startLayer;
-    (void)end;
-    (void)endArea;
-    (void)endLayer;
-    (void)element;
-    (void)distance;
-    (void)flags;
-    (void)scale;
-}
 #include <new>
 
 struct RHScriptPositionNode
@@ -277,7 +261,6 @@ RHUnk005883a0::RHUnk005883a0(unsigned short, int, void *, int, const SBGeoPoint2
 RHUnk005883a0::~RHUnk005883a0() {}
 void RHScriptRecordWorld::Unk004fc8f0(SBGeoPoint2D &, SBGeoPoint2D &, const SBGeoPoint2D *, unsigned short) {}
 RHUnk00613e90 RHScriptRecordWorld::Unk004fbdd0(const RHUnk00571160Position &) { return RHUnk00613e90(); }
-void RHScriptBatchCalls::Unk0041bd20(int) {}
 void RHScriptBatchCalls::Unk00514670() {}
 void RHScriptBatchCalls::Unk0050ed40() {}
 void RHScriptBatchCalls::Unk0054cfa0(void *) {}

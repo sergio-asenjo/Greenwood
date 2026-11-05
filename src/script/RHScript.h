@@ -75,11 +75,6 @@ struct RHSoundChannelSettings;
 
 #include "RHSoundCore.h"
 
-class RHUnk004a5230
-{
-public:
-    void FUN_004a5230(bool value, bool flag);
-};
 
 // SIZE 0x0c
 union RHScriptPropertyValue
@@ -588,13 +583,7 @@ class SBGeoVector2D;
 
 SBGeoPoint2D RHUnk005758d0(const SBGeoPoint2D &point);
 
-class RHUnk00582220
-{
-public:
-    RHUnk00582220();
-    ~RHUnk00582220();
-    char m_data[0x3c];
-};
+#include "RHSequenceConstructionCalls.h"
 
 #include "RHScriptListCore.h"
 
@@ -610,21 +599,7 @@ public:
     virtual ~RHScriptSequenceVtable();
 };
 
-class RHUnk00522470
-{
-public:
-    RHUnk00522470();
-    ~RHUnk00522470();
-    char m_pad0[4];
-    float x;
-    float y;
-    char m_pad12[0x14];
-    short layer;
-    char m_pad34[2];
-    void *area;
-    void SetLayer(short value) { layer = value; }
-    void SetArea(void *value) { area = value; }
-};
+#include "RHScriptLocation.h"
 
 class RHOrder;
 class RHUnkIter
@@ -693,19 +668,7 @@ struct RHScriptActorPositionFields
 
 #include "RHUnk00419a40.h"
 
-// SIZE 0x74
-class RHUnk005866a0
-{
-public:
-    RHUnk005866a0(unsigned short level, int command, void *actor);
-    ~RHUnk005866a0();
-    void Unk00586ed0(int property, int value);
-    void Unk00586fd0(int property, float value);
-    void Unk00587010(int property, const SBGeoPoint2D &value);
-    void Unk00586e00(int property, bool value);
-    void Unk00586e90(int property, unsigned short value);
-    undefined data[0x74]; // 0x00
-};
+#include "RHSequenceGenericConstruction.h"
 
 #if !defined(SBGEO_VECTOR2D_VIEW) && !defined(SBGEOVECTOR2D_H)
 class SBGeoVector2D : public SBGeoPoint2D
@@ -795,44 +758,15 @@ public:
 
 #include "RHSoundSourceManagerCore.h"
 
-class RHUnk00588530
-{
-public:
-    RHUnk00588530(unsigned short level, int command, void *actor, int style, void *target, float distance, void *value);
-    ~RHUnk00588530();
-    char data[0x68];
-    RHUnk00582220 *sequence;
-    char tail[0x30];
-};
+#include "RHSequenceMovementConstruction.h"
 
-class RHUnk5490f0
-{
-public:
-    RHUnk5490f0(int value);
-    RHUnk5490f0(int command, int value);
-    ~RHUnk5490f0();
-private:
-    void *m_vt;
-    int m_unk04;
-    int m_unk08;
-    int m_unk0c;
-};
-class RHMessenger
-{
-public:
-    void RHUnk005460c0(RHUnk5490f0 &message);
-};
+#include "RHMessenger.h"
 RHMessenger *RHUnk00546050();
 RHMessenger *__stdcall RHUnk00546050(RHUnk5490f0 *message);
 
 #include "RHSequenceInteractionAction.h"
 
 void RHUnk00574690(void *actor, RHUnk00571160Position *position, void *location);
-class RHUnk00582640
-{
-public:
-    void Unk(unsigned short &level, void *actor, int style, const SBGeoPoint2D &start, void *startArea, unsigned short startLayer, const SBGeoPoint2D &end, void *endArea, unsigned short endLayer, void *element, float distance, unsigned long flags, float scale);
-};
 
 
 
@@ -875,16 +809,12 @@ public:
     void Unk0048cbc0();
     void Unk0046bcf0(int state, int value);
     void *Unk0058a940(void *context, int value, void *element);
-    void Unk0041bd20(int style);
     bool Unk00489e80(void *target);
     void Unk0049d6c0();
     void Unk0048ec00(void *scroll);
     void Unk004d9330(void *actor, bool flag);
     void Unk0057ff70(float height);
-    void Unk00444440(bool attentive);
-    void Unk00455400(void *description);
     void Unk00514670();
-    void Unk004555f0(void *description);
     void Unk004520e0(int index, int value);
     void Unk004e3220(int value);
     void Unk0050ed40();
