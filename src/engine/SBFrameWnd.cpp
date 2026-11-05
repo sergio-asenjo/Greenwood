@@ -274,70 +274,54 @@ bool RHPortraitRootLifetime::FUN_0061aa30(void *item)
     return false;
 }
 
-struct RHUnk005c9010Iterator;
-void FUN_005c9010(RHUnk005c9010Iterator &current, int distance, std::bidirectional_iterator_tag category);
+#include "RHScriptListCore.h"
 
-struct RHScriptNode;
-struct RHScriptIter
+inline void SBFrameWidgetFindList::Seek(int position)
 {
-    RHScriptNode *node;
-    RHScriptIter(RHScriptNode *value) : node(value) {}
-};
-
-class RHUnk0046eb30
-{
-public:
-    RHScriptIter FUN_0046eb80();
-    RHScriptIter erase(RHScriptIter position);
-};
-
-struct SBFrameWidgetSeekList : SBFrameWidgetFindList
-{
-    void Advance(SBFrameWidgetNode *start, int distance)
-    {
-        std::bidirectional_iterator_tag category;
-        SBFrameWidgetIterator &it = cursor;
-        it.node = start;
-        FUN_005c9010((RHUnk005c9010Iterator &)it, distance, category);
-    }
-    void Advance(int distance)
-    {
-        std::bidirectional_iterator_tag category;
-        FUN_005c9010((RHUnk005c9010Iterator &)cursor, distance, category);
-    }
-    SBFrameWidgetNode *First() { return (SBFrameWidgetNode *)((RHUnk0046eb30 *)this)->FUN_0046eb80().node; }
-    void Seek(int position)
-    {
-        int size = count;
-        if (dirty) {
-            if (position <= (size + 1) / 2)
-                Advance(First(), position);
-            else
-                Advance(head, position - size);
-            dirty = false;
+    int size = count;
+    if (dirty) {
+        if (position <= (size + 1) / 2) {
+            SBFrameWidgetIterator &current = cursor;
+            current = SBFrameWidgetIterator((SBFrameWidgetNode *)((RHUnk0046eb30 *)this)->FUN_0046eb80().node);
+            std::bidirectional_iterator_tag category;
+            FUN_005c9010((RHUnk005c9010Iterator &)current, position, category);
         } else {
-            int previous = index;
-            if (position == previous)
-                return;
-            if (position < previous) {
-                if (position < (previous + 1) / 2)
-                    Advance(First(), position);
-                else
-                    Advance(position - previous);
-            } else if (position < (previous + size) / 2)
-                Advance(position - previous);
-            else
-                Advance(head, position - size);
+            cursor = SBFrameWidgetIterator(head);
+            std::bidirectional_iterator_tag category;
+            FUN_005c9010((RHUnk005c9010Iterator &)cursor, position - size, category);
         }
-        index = position;
+        dirty = false;
+    } else {
+        int previous = index;
+        if (position == previous)
+            return;
+        if (position < previous) {
+            if (position < (previous + 1) / 2) {
+                SBFrameWidgetIterator &current = cursor;
+                current = SBFrameWidgetIterator((SBFrameWidgetNode *)((RHUnk0046eb30 *)this)->FUN_0046eb80().node);
+                std::bidirectional_iterator_tag category;
+                FUN_005c9010((RHUnk005c9010Iterator &)current, position, category);
+            } else {
+                std::bidirectional_iterator_tag category;
+                FUN_005c9010((RHUnk005c9010Iterator &)cursor, position - previous, category);
+            }
+        } else if (position < (previous + size) / 2) {
+            std::bidirectional_iterator_tag category;
+            FUN_005c9010((RHUnk005c9010Iterator &)cursor, position - previous, category);
+        } else {
+            cursor = SBFrameWidgetIterator(head);
+            std::bidirectional_iterator_tag category;
+            FUN_005c9010((RHUnk005c9010Iterator &)cursor, position - size, category);
+        }
     }
-};
+    index = position;
+}
 
 // Parked: the cursor address is hoisted into a register across the search and seek.
 // STUB: GAME 0x0061ab10
 bool SBFrameWnd::FUN_0061ab10(SBFrameWidgetView *widget)
 {
-    SBFrameWidgetSeekList &excluded = *(SBFrameWidgetSeekList *)&m_excluded;
+    SBFrameWidgetFindList &excluded = m_excluded;
     int position = excluded.Find(widget, excluded.count);
     if (position != -1) {
         excluded.Seek(position);

@@ -5,7 +5,7 @@
 #include "Decomp.h"
 
 class SBFile;
-void FUN_005f8030(int, const char *, int, const char *, ...);
+void SBAssert(int, const char *, int, const char *, ...);
 
 // SIZE 0x01
 typedef std::_Lockit SBFontLock;
@@ -31,12 +31,12 @@ public:
     virtual int v0(); // vtable+0x00
     virtual void v1(void *); // vtable+0x04
     virtual void v2(); // vtable+0x08
-    virtual int v3(unsigned short, int &, int &); // vtable+0x0c
+    virtual long v3(unsigned short, long &, long &) const; // vtable+0x0c
     virtual void v4(unsigned short, void *, const void *, bool); // vtable+0x10
     virtual void v5(); // vtable+0x14
     virtual void v6(); // vtable+0x18
     virtual void v7(); // vtable+0x1c
-    virtual int v8(); // vtable+0x20
+    virtual unsigned long v8() const; // vtable+0x20
     virtual bool v9(SBFile &); // vtable+0x24
     int m_04; // 0x04
     char m_08[0x0c]; // 0x08
@@ -51,8 +51,8 @@ public:
     int FUN_0061e880();
     std::string FUN_0061e8a0();
     int FUN_0061e970();
-    int FUN_0061e980(void *, int &, int &);
-    int FUN_0061ea50(void *);
+    long FUN_0061e980(const std::wstring &, long &, long &) const;
+    long FUN_0061ea50(const std::wstring &) const;
     bool FUN_0061ea80(const std::string &);
     int FUN_0061eb80(SBFontTextView *, void *, const void *, bool);
     bool FUN_0061eb00(SBFile &);

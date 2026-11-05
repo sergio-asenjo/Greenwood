@@ -73,8 +73,7 @@ static inline int SBTrueTypeFontText(HDC context, float x, float y, const unsign
     return TextOutW(context, (int)x, (int)y, character, 1);
 }
 
-// Parked at 0.9510: the 0x005fc190 sum temporary keeps a non-throw() destructor state store; x spill slot differs.
-// STUB: GAME 0x00616960
+// FUNCTION: GAME 0x00616960
 bool SBTrueTypeFont::Render(unsigned short character, SBGeoPoint2D &position, const SBGeoBoundingBox2D &bounds, bool measure) const
 {
     const float *box = (const float *)&bounds;
@@ -85,7 +84,7 @@ bool SBTrueTypeFont::Render(unsigned short character, SBGeoPoint2D &position, co
     SetMapMode(context, 1);
     SelectClipRgn(context, region);
     SetTextColor(context, *(const COLORREF *)((const char *)this + 0x64));
-    if (SBTrueTypeFontOverflows(FUN_00616870(context, character), position.m_x, box[2]))
+    if (SBTrueTypeFontOverflows(FUN_00616870(context, character), position.GetX(), box[2]))
     {
         position.m_y = SBTrueTypeFontOffset((unsigned)((SBUIListboxUnk0061e890 *)this)->FUN_0061e890(), position.m_y);
         position.m_x = box[0];

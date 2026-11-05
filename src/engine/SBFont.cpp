@@ -229,8 +229,8 @@ void SBFontUnk0061e840::FUN_0061e840()
 // FUNCTION: GAME 0x0061e850
 int SBFontUnk0061e840::FUN_0061e850(unsigned short value)
 {
-    int first;
-    int second;
+    long first;
+    long second;
     int result = v3(value, first, second);
     return first + second + result;
 }
@@ -253,27 +253,24 @@ int SBFontUnk0061e840::FUN_0061e970()
     return m_3c;
 }
 
-// Parked at 0.4645: unannotated park from the asymmetric-comparator era; residual scheduling/registers.
+// Parked: accumulator liveness and loop-tail scheduling differ.
 // STUB: GAME 0x0061e980
-int SBFontUnk0061e840::FUN_0061e980(void *value, int &first, int &second)
+long SBFontUnk0061e840::FUN_0061e980(const std::wstring &text, long &first, long &second) const
 {
-    SBFontTextView &text = *(SBFontTextView *)value;
     first = 0;
     second = 0;
-    int width = 0;
-    for (unsigned short *it = text.m_04, *next = it + 1;
-         it != text.end(); ++it, ++next) {
-        int left;
-        int right;
-        int result = v3(*it, left, right);
-        width += v8();
-        width += result;
-        if (it == text.m_04) {
+    long width = 0;
+    for (const unsigned short *it = text.begin(); it != text.end(); ++it) {
+        long left;
+        long right;
+        long result = v3(*it, left, right);
+        width = width + v8() + result;
+        if (it == text.begin()) {
             first = left;
         } else {
             width += left;
         }
-        if (next == text.end()) {
+        if (it + 1 == text.end()) {
             second = right;
         } else {
             width += right;
@@ -283,11 +280,11 @@ int SBFontUnk0061e840::FUN_0061e980(void *value, int &first, int &second)
 }
 
 // FUNCTION: GAME 0x0061ea50
-int SBFontUnk0061e840::FUN_0061ea50(void *value)
+long SBFontUnk0061e840::FUN_0061ea50(const std::wstring &value) const
 {
-    int first;
-    int second;
-    int result = FUN_0061e980(value, first, second);
+    long first;
+    long second;
+    long result = FUN_0061e980(value, first, second);
     return first + second + result;
 }
 
@@ -347,7 +344,7 @@ void SBFontUnk0061e840::FUN_0061ebd0(unsigned short value)
     }
     if (it.m_00 == characters.m_04) {
         characters.FUN_0061f2b0(value);
-        FUN_005f8030(0, g_sbFontFile, 0x17d, g_sbFontMissing, (unsigned)value, name.c_str());
+        SBAssert(0, g_sbFontFile, 0x17d, g_sbFontMissing, (unsigned)value, name.c_str());
     }
 }
 
@@ -444,7 +441,6 @@ SBFontValue0061f120::SBFontValue0061f120(const std::string &name, const SBFontTr
     : m_00(name), m_10(tree)
 {
 }
-
 // FUNCTION: GAME 0x0061f2b0
 SBFontPair0061f2b0 SBFontTree0061fcb0::FUN_0061f2b0(const unsigned short &value)
 {
@@ -1089,7 +1085,7 @@ void SBFontEmit(SBFontUnk0061e840 *font, unsigned short value)
     font->FUN_0061e880();
     font->FUN_0061e8a0();
     font->FUN_0061e970();
-    font->FUN_0061ea50(0);
+    font->FUN_0061ea50(*(const std::wstring *)0);
     font->FUN_0061ea80(std::string());
     font->FUN_0061eb80(0, 0, 0, 0);
     font->FUN_0061eb00(*(SBFile *)0);

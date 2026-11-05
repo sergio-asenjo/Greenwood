@@ -5,6 +5,11 @@
 
 DECOMP_SIZE_ASSERT(SBNativeFont, 0xd8)
 DECOMP_SIZE_ASSERT(SBNativeFontCharacterValue, 0x14)
+DECOMP_SIZE_ASSERT(SBNativeFontCharacterInfo, 0x10)
+DECOMP_SIZE_ASSERT(SBNativeFontCharacterPair, 8)
+DECOMP_STATIC_ASSERT(offsetof(SBNativeFontCharacterValue, m_info) == 4)
+DECOMP_STATIC_ASSERT(offsetof(SBNativeFontCharacterPair, m_iterator) == 0)
+DECOMP_STATIC_ASSERT(offsetof(SBNativeFontCharacterPair, m_inserted) == 4)
 DECOMP_SIZE_ASSERT(SBNativeFontDecNode, 0x24)
 DECOMP_SIZE_ASSERT(SBNativeFontCharacterTree, 0x10)
 DECOMP_SIZE_ASSERT(SBNativeFontBase, 0x44)
@@ -137,8 +142,7 @@ long SBNativeFont::GetCharacterWidth(unsigned short character, long &left, long 
     return width;
 }
 
-// Parked: the map insertion frame is twelve bytes short and pair copies differ.
-// STUB: GAME 0x006170d0
+// FUNCTION: GAME 0x006170d0
 bool SBNativeFont::LoadFromStream(SBFile &file)
 {
     unsigned i;
@@ -157,58 +161,19 @@ bool SBNativeFont::LoadFromStream(SBFile &file)
             return false;
         if (file.Access(&info, sizeof(info)))
             return false;
-        SBNativeFontCharacterPair inserted(m_characters.FUN_006177d0(
-            SBNativeFontCharacterValue(character, info)));
-        *(CharacterInfo *)((char *)inserted.m_iterator.m_node + 0x10) = info;
+        m_characters[character] = info;
     }
     if (!((SBNativeFontPictureCalls *)&m_pictures[0])->V10(file))
         return false;
-    return ((SBNativeFontPictureCalls *)&m_pictures[1])->V10(file) != false;
+    return ((SBNativeFontPictureCalls *)&m_pictures[1])->V10(file) ? true : false;
 failed:
     return false;
 }
 
-class SBGeoPoint2D
-{
-public:
-    SBGeoPoint2D();
-    ~SBGeoPoint2D();
-    SBGeoPoint2D &FUN_005fc1e0(const SBGeoPoint2D &other);
-    float x;
-    float y;
-};
-
-class SBGeoVector2D : public SBGeoPoint2D
-{
-public:
-    SBGeoVector2D(float x, float y);
-    SBGeoVector2D(const SBGeoPoint2D &other);
-    SBGeoVector2D(const SBGeoVector2D &other);
-    SBGeoVector2D &operator=(const SBGeoVector2D &other);
-};
-
-class SBGeoBoundingBox2D
-{
-public:
-    SBGeoBoundingBox2D();
-    SBGeoBoundingBox2D(float left, float top, float right, float bottom);
-    SBGeoBoundingBox2D operator-(const SBGeoVector2D &other) const;
-    SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &other) const;
-    SBGeoBoundingBox2D FUN_006092c0(const SBGeoBoundingBox2D &other) const;
-    bool FUN_006090a0() const;
-    bool Unk00608f30() const;
-    SBGeoPoint2D first;
-    SBGeoPoint2D second;
-    bool active;
-};
-
-#include "RHMapBox.h"
-
-class RHMobileUnk00607da0
-{
-public:
-    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
-};
+#include "SBGeoPoint2D.h"
+#include "SBGeoVector2D.h"
+#include "SBGeoBoundingBox2DCore.h"
+#include "RHMobileUnk00607da0.h"
 
 class SBUIListboxUnk0061e890
 {
@@ -245,22 +210,20 @@ bool SBNativeFont::Render(unsigned short character, SBGeoPoint2D &position, cons
     const CharacterInfo *info = GetCharacterInfo(character);
     if (info) {
         unsigned long atlasPosition = info->m_position;
-        RHMapBox image((float)atlasPosition, 0.0f,
-            (float)(atlasPosition + info->m_width), (float)(unsigned)((SBUIListboxUnk0061e890 *)this)->FUN_0061e890());
-        SBGeoBoundingBox2D &source = *(SBGeoBoundingBox2D *)&image;
+        SBGeoBoundingBox2D source((float)atlasPosition, 0.0f,
+            (float)(atlasPosition + info->m_width),
+            (float)(unsigned)((SBUIListboxUnk0061e890 *)this)->FUN_0061e890());
         SBGeoBoundingBox2D destination;
         position.FUN_005fc1e0(SBGeoVector2D((float)info->m_left, 0.0f));
-        destination.first.x = position.x;
-        destination.first.y = position.y;
-        destination.second.x = position.x + info->m_width;
-        destination.active = true;
-        destination.second.y = (float)(unsigned)((SBUIListboxUnk0061e890 *)this)->FUN_0061e890() + position.y;
-        destination.active = true;
+        destination.m_p0.m_x = position.m_x;
+        destination.m_p0.m_y = position.m_y;
+        destination.SetValue8(position.GetX() + (float)(unsigned long)info->m_width);
+        destination.SetValueC(position.GetY() + (float)(unsigned)((SBUIListboxUnk0061e890 *)this)->FUN_0061e890());
         ((RHMobileUnk00607da0 *)&destination)->FUN_00607da0((const RHMobileUnk00607da0 &)destination.FUN_006092c0(clip));
         {
-            SBGeoVector2D origin(destination.first);
-            SBGeoVector2D atlas((float)info->m_position, 0.0f);
-            ((RHMobileUnk00607da0 *)&source)->FUN_00607da0((const RHMobileUnk00607da0 &)(destination - origin).FUN_006090d0(atlas));
+            SBGeoVector2D origin(destination.Min());
+            ((RHMobileUnk00607da0 *)&source)->FUN_00607da0((const RHMobileUnk00607da0 &)
+                (destination - origin).FUN_006090d0(SBGeoVector2D((float)info->m_position, 0.0f)));
         }
         if (destination.FUN_006090a0() && destination.Unk00608f30()) {
             if (!measure)
@@ -273,17 +236,16 @@ bool SBNativeFont::Render(unsigned short character, SBGeoPoint2D &position, cons
     return rendered;
 }
 
-// Parked: file and receiver registers swap and failure tails merge differently.
 // STUB: GAME 0x00617590
 bool SBNativeFont::SaveToStream(SBFile &file)
 {
+    SBResourceUnkKeyIterator it;
     if (!((SBFontUnk0061e840 *)this)->FUN_0061ed70(file))
-        return false;
+        goto failed;
     if (file.Access(m_nativeHeader, sizeof(m_nativeHeader)))
         return false;
     if (file.Access(&m_spacing, sizeof(m_spacing)))
         return false;
-    SBResourceUnkKeyIterator it;
     it.m_node = *(SBResourceUnkKeyNode **)m_characters.m_head;
     for (; it.m_node != m_characters.m_head; it.FUN_00617ed0())
     {
@@ -296,7 +258,9 @@ bool SBNativeFont::SaveToStream(SBFile &file)
     }
     if (!((SBNativeFontPictureCalls *)&m_pictures[0])->V1c(file))
         return false;
-    return ((SBNativeFontPictureCalls *)&m_pictures[1])->V1c(file) != false;
+    return ((SBNativeFontPictureCalls *)&m_pictures[1])->V1c(file) ? true : false;
+failed:
+    return false;
 }
 
 static inline SBNativeFontDecNode *&SBNativeFontDecLeft(SBNativeFontDecNode *value) { return value->m_00; }
@@ -341,7 +305,7 @@ SBResourceUnkKeyIterator SBNativeFontCharacterTree::FUN_006176a0(SBResourceUnkKe
 }
 
 // FUNCTION: GAME 0x006177d0
-SBNativeFontCharacterPair SBNativeFontCharacterTree::FUN_006177d0(const SBNativeFontCharacterValue &value)
+SBNativeFontCharacterPair &SBNativeFontCharacterTree::FUN_006177d0(SBNativeFontCharacterPair &output, const SBNativeFontCharacterValue &value)
 {
     SBNativeFontDecNode *parent = (SBNativeFontDecNode *)m_head;
     SBNativeFontDecNode *node = InsertRoot();
@@ -356,23 +320,27 @@ SBNativeFontCharacterPair SBNativeFontCharacterTree::FUN_006177d0(const SBNative
     }
     if (*(bool *)&m_08) {
         SBNativeFontCharacterPair result(FUN_00617f80(node, parent, value), true);
-        return result;
+        output = result;
+        return output;
     }
     SBNativeFontDecIterator previous;
     previous.m_node = parent;
     if (less) {
         if (parent == (SBNativeFontDecNode *)Leftmost()) {
             SBNativeFontCharacterPair result(FUN_00617f80(node, parent, value), true);
-            return result;
+            output = result;
+            return output;
         }
         previous.FUN_006182d0();
     }
     if (previous.m_node->m_0c < value.m_character) {
         SBNativeFontCharacterPair result(FUN_00617f80(node, parent, value), true);
-        return result;
+        output = result;
+        return output;
     }
     SBNativeFontCharacterPair result(SBResourceUnkKeyIterator((SBResourceUnkKeyNode *)previous.m_node), false);
-    return result;
+    output = result;
+    return output;
 }
 
 static inline SBNativeFontDecNode *SBNativeFontEraseMinimum(SBNativeFontDecNode *node)

@@ -2,6 +2,7 @@
 #define SBFRAMEWND_H
 
 #include "Decomp.h"
+#include <string>
 #include "RHPortraitRootLifetime.h"
 
 class SBGeoVector2D;
@@ -98,7 +99,8 @@ public:
     SBFrameWidgetFindList m_excluded;
     bool m_enabled;
     bool m_visible;
-    undefined m_5e[0x12];
+    undefined m_5e[2];
+    std::wstring m_tooltip;
     SBGeoBoundingBox2D m_bounds;
     RHUnk005ef320 *m_draw;
     unsigned long m_display;

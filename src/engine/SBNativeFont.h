@@ -24,6 +24,7 @@ struct SBNativeFontCharacterValue
 
 struct SBNativeFontCharacterPair
 {
+    SBNativeFontCharacterPair() {}
     SBNativeFontCharacterPair(const SBResourceUnkKeyIterator &iterator, const bool &inserted)
         : m_iterator(iterator), m_inserted(inserted) {}
     SBResourceUnkKeyIterator m_iterator;
@@ -101,7 +102,14 @@ public:
         return node == FUN_00617690().m_node || character < *(unsigned short *)&node->m_key ? FUN_00617690() : value;
     }
     SBResourceUnkKeyNode *FUN_00618280(const unsigned short &);
-    SBNativeFontCharacterPair FUN_006177d0(const SBNativeFontCharacterValue &);
+    SBNativeFontCharacterPair &FUN_006177d0(SBNativeFontCharacterPair &, const SBNativeFontCharacterValue &);
+    SBNativeFontCharacterInfo &operator[](const unsigned short &character)
+    {
+        SBNativeFontCharacterPair storage;
+        SBNativeFontCharacterPair inserted(FUN_006177d0(storage,
+            SBNativeFontCharacterValue(character, SBNativeFontCharacterInfo())));
+        return *(SBNativeFontCharacterInfo *)((char *)inserted.m_iterator.m_node + 0x10);
+    }
     SBResourceUnkKeyIterator FUN_00617f80(SBNativeFontDecNode *, SBNativeFontDecNode *, const SBNativeFontCharacterValue &);
     void Lrotate(SBNativeFontDecNode *);
     void Rrotate(SBNativeFontDecNode *);
