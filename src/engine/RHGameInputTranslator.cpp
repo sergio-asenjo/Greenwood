@@ -30,31 +30,6 @@ DECOMP_STATIC_ASSERT(offsetof(RHGamePadEngine, m_selection) == 0x49f8)
 
 extern unsigned char g_unk0x006c0e48[];
 
-class RHMalignitySegment;
-
-class RHMalignityArrayCalls
-{
-public:
-    void FUN_0059fba0(const unsigned &value);
-    void FUN_004e60a0(void *position, unsigned count, const unsigned &value);
-    void FUN_004e62b0(void *position, unsigned count, const RHMalignitySegment &value);
-};
-
-class RHGameInputSegmentTemporary
-{
-public:
-    RHGameInputSegmentTemporary(const SBGeoPoint2D &first, const SBGeoPoint2D &second)
-    {
-        ((SBGeoSegment2D *)this)->SBGeoSegment2D::SBGeoSegment2D(first, second);
-    }
-    ~RHGameInputSegmentTemporary()
-    {
-        ((RHMobileUnk006100e0 *)this)->~RHMobileUnk006100e0();
-    }
-    const RHMalignitySegment &Value() const { return *(const RHMalignitySegment *)this; }
-    unsigned char m_00[0x10];
-};
-
 class RHUnk0051a4e0
 {
 public:
@@ -346,13 +321,10 @@ void RHGameInputTranslator::ClearDeadZone()
     m_deadZoneChanged = true;
 }
 
-// Parked: constructor-return receiver and segment-array scheduling differ.
-// STUB: GAME 0x00518620
+// FUNCTION: GAME 0x00518620
 void RHGameInputTranslator::AddToDeadZone(const SBGeoPoint2D &first, const SBGeoPoint2D &second)
 {
-    RHGameInputSegmentTemporary segment(first, second);
-    ((RHMalignityArrayCalls *)((char *)this + 0x120))->FUN_004e62b0(m_last, 1, segment.Value());
-    m_deadZoneChanged = true;
+    m_deadZone.Append(SBGeoSegment2D(first, second));
 }
 
 // FUNCTION: GAME 0x005186a0

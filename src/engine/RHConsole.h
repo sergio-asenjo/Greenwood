@@ -121,7 +121,7 @@ public:
     unsigned char m_5d8[0xb0];
 };
 
-void FUN_005ede40(RHUnk005ef320 *, const char *, ...);
+#include "SBDrawManagerCore.h"
 bool FUN_005edae0(RHUnk005ef320 *, const char *, ...);
 unsigned FUN_0057aa20();
 extern RHUnk005ef320 *g_unk0x6c11d0;

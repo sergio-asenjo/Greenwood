@@ -9,7 +9,6 @@ public:
     float FUN_005a5c60(unsigned index);
     void FUN_005a5ca0(unsigned first, float second);
     void FUN_0048fa30();
-    void FUN_004d88e0(void *element, int first, int second);
     void FUN_0050f000();
     void FUN_0050f010();
 };

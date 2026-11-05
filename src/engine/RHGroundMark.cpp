@@ -46,6 +46,7 @@
 #include "SBGeoBoundingBox2DCore.h"
 #include "RHUnk005fc3b0.h"
 #include "RHSpriteCore.h"
+#include "SBDrawManagerCore.h"
 
 extern RHUnk005ef320 *g_unk0x6c11d0;
 extern RHUnkSpriteBank *g_unk0x006c0b1c;
@@ -80,7 +81,7 @@ void *RHGroundMark::FUN_0051bc70(unsigned flags)
 RHGroundMark::~RHGroundMark()
 {
     if (m_surface != -1)
-        ((RHEngineWidenedCalls *)m_drawManager)->FUN_005e5160(m_surface);
+        ((SBDrawManager *)m_drawManager)->FUN_005e5160(m_surface);
     if (m_sprite)
         ((RHGroundMarkSpriteDelete *)m_sprite)->Destroy(1);
 }

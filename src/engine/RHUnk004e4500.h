@@ -14,6 +14,11 @@ class RHUnk004e4500
 public:
     RHUnk004e4500();
     ~RHUnk004e4500();
+    void Append(const SBGeoSegment2D &segment)
+    {
+        m_segments.push_back(segment);
+        m_dirty = true;
+    }
     std::vector<SBGeoSegment2D> m_segments; // 0x00
     undefined4 m_10; // 0x10
     bool m_dirty; // 0x14

@@ -13,7 +13,6 @@ public:
     void FUN_005140b0();
     void FUN_0050eff0();
     void FUN_005f4900(char);
-    void FUN_005e5260();
     void FUN_005104c0();
     bool FUN_005104d0(SBGeoPoint2D point);
     bool FUN_00510550(SBGeoVector2D point);

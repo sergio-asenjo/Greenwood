@@ -45,6 +45,8 @@ struct SBFrameWidgetFindList
     int result;
     SBFrameWidgetView *current;
 
+    inline void Seek(int position);
+
     int Find(SBFrameWidgetView *widget)
     {
         current = widget;

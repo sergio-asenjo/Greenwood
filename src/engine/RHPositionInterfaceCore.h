@@ -1,0 +1,180 @@
+#ifndef RHPOSITIONINTERFACECORE_H
+#define RHPOSITIONINTERFACECORE_H
+
+#include "SB.h"
+
+#ifndef SBGEO_POINT2D_VIEW
+#define SBGEO_POINT2D_VIEW
+class SBGeoVector2D;
+
+class SBGeoPoint2D
+{
+public:
+    SBGeoPoint2D();
+    ~SBGeoPoint2D();
+    SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
+    SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
+    SBGeoPoint2D FUN_005fc200(const SBGeoPoint2D &other) const;
+    SBGeoPoint2D &FUN_005fc1e0(const SBGeoPoint2D &other);
+    SBGeoVector2D Unk005fc110(const SBGeoPoint2D &other) const;
+    float FUN_005fc700(float scale) const;
+    bool Serialize(SBFile &file);
+    float m_x;
+    float m_y;
+};
+#endif
+#ifndef SBGEO_VECTOR2D_VIEW
+#include "SBGeoVector2D.h"
+#endif
+#include "RHMobileUnk00607da0.h"
+#include "RHUnk00613e90.h"
+class RHElement;
+#include <math.h>
+
+#ifndef SBGEO_BOUNDINGBOX2D_VIEW
+#define SBGEO_BOUNDINGBOX2D_VIEW
+class SBGeoBoundingBox2D
+{
+public:
+    SBGeoBoundingBox2D();
+    SBGeoBoundingBox2D(const SBGeoBoundingBox2D &other);
+    SBGeoBoundingBox2D(const SBGeoPoint2D &first, const SBGeoPoint2D &last);
+    SBGeoBoundingBox2D &operator=(const SBGeoBoundingBox2D &other);
+    SBGeoPoint2D FUN_00608f40() const;
+    bool Serialize(SBFile &file);
+    void FUN_00607d90();
+    void Unk00607dc0(const SBGeoPoint2D &point);
+    bool FUN_00608400(const SBGeoPoint2D &point) const;
+    SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &offset) const;
+    SBGeoPoint2D m_p0;
+    SBGeoPoint2D m_p1;
+    bool m_flag;
+};
+#endif
+
+struct RHPositionSlope
+{
+    char m_pad0[0x4c];
+    float m_4c;
+    float m_50;
+    float m_54;
+};
+
+class RHPositionInterface
+{
+public:
+    void AssignBox(const SBGeoBoundingBox2D &box);
+    void AssignOffset(const SBGeoVector2D &offset);
+    bool Turn();
+    bool TurnFast();
+    bool TurnSlow(unsigned char delay);
+    bool TurnAntiVibration();
+    bool Serialize(SBFile &file);
+    void Emit(SBFile &file);
+    RHPositionInterface(unsigned long owner);
+    ~RHPositionInterface();
+    void ComputePositionMap();
+    void ComputePositionSprite();
+    void ComputePosition3D();
+    void *Unk0055fa10(int value);
+    void *Current() { return Unk0055fa10(*(volatile int *)&m_88); }
+    SBGeoBoundingBox2D &Box() { return *(SBGeoBoundingBox2D *)Unk0055fa10(m_88); }
+    void UpdateBox();
+    static void Floor(float &value) { value = (float)floor(value); }
+    static RHUnk00613e90 Scaled(float scale, const RHUnk00613e90 &vector)
+    {
+        RHUnk00613e90 result;
+        result.x = scale * vector.x;
+        result.y = scale * vector.y;
+        result.z = scale * vector.z;
+        return result;
+    }
+    static RHUnk00613e90 Divided(const RHUnk00613e90 &vector, float divisor)
+    {
+        float inverse = 1.0f / divisor;
+        RHUnk00613e90 result;
+        result.x = vector.x * inverse;
+        result.y = vector.y * inverse;
+        result.z = vector.z * inverse;
+        return result;
+    }
+    static void SetVector(RHUnk00613e90 &vector, float x, float y, float z)
+    {
+        vector.x = x;
+        vector.y = y;
+        vector.z = z;
+    }
+    static void SetPoint(SBGeoPoint2D &point, float x, float y);
+    bool Is3DValid() const { return m_4 & 1; }
+    bool IsMapValid() const { return (m_4 >> 1) & 1; }
+    bool IsSpriteValid() const { return (m_4 >> 2) & 1; }
+    void MapFrom3D();
+    void SpriteFromMap();
+    bool IncrementMapValid() const { return m_8 & 1; }
+    bool Increment3DValid() const { return (m_8 >> 1) & 1; }
+    void SetHeading(unsigned short heading) { m_d6 = heading & 15; }
+    void Increment3DFromMap();
+    void Position3DFromMap();
+
+    unsigned long m_0; // +0x00
+    unsigned m_4; // +0x04
+    unsigned m_8; // +0x08
+    RHUnk00613e90 m_c; // +0x0c
+    SBGeoPoint2D m_18; // +0x18
+    SBGeoPoint2D m_20; // +0x20
+    RHUnk00613e90 m_28; // +0x28
+    SBGeoPoint2D m_34; // +0x34
+    SBGeoPoint2D m_3c; // +0x3c
+    SBGeoPoint2D m_44; // +0x44
+    SBGeoPoint2D m_4c; // +0x4c
+    RHUnk00613e90 m_54; // +0x54
+    RHUnk00613e90 m_60; // +0x60
+    SBGeoVector2D m_6c; // +0x6c
+    char m_74; // +0x74
+    char m_pad75[3];
+    int m_78; // +0x78
+    char m_7c; // +0x7c
+    char m_pad7d[3];
+    SBGeoVector2D m_80; // +0x80
+    int m_88; // +0x88
+    int m_8c; // +0x8c
+    unsigned short m_90; // +0x90
+    unsigned short m_92; // +0x92
+    SBGeoBoundingBox2D m_94; // +0x94
+    SBGeoBoundingBox2D m_a8; // +0xa8
+    char m_bc; // +0xbc
+    char m_padbd[3];
+    SBGeoBoundingBox2D m_c0; // +0xc0
+    unsigned short m_d4; // +0xd4
+    unsigned short m_d6; // +0xd6
+    char m_d8; // +0xd8
+    char m_d9; // +0xd9
+    unsigned short m_da; // +0xda
+    void *m_dc; // +0xdc
+    unsigned short m_e0; // +0xe0
+    char m_pade2[2];
+    void *m_e4; // +0xe4
+    void *m_e8; // +0xe8
+    RHPositionSlope *m_ec; // +0xec
+    void *m_f0; // +0xf0
+    char m_f4; // +0xf4
+    char m_padf5[3];
+    int m_f8; // +0xf8
+    char m_fc; // +0xfc
+    char m_fd; // +0xfd
+    char m_fe; // +0xfe
+    char m_padff;
+    unsigned short m_100; // +0x100
+    char m_pad102[2];
+    SBGeoBoundingBox2D m_104; // +0x104
+    float m_118; // +0x118
+    float m_11c; // +0x11c
+    RHElement *m_120; // +0x120
+    char m_124; // +0x124
+    char m_pad125[3];
+    SBGeoVector2D m_128; // +0x128
+    int m_130; // +0x130
+    RHUnk00613e90 m_134; // +0x134
+};
+
+#endif

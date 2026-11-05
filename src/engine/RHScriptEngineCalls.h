@@ -9,6 +9,7 @@ public:
     unsigned int Unk004baea0();
     void *Unk0058a940(void *context, int value, void *element);
     void Unk0046b9e0();
+    RHScriptBatchCalls *Unk004e3cc0();
 };
 
 #endif

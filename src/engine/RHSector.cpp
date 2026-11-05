@@ -38,11 +38,7 @@ DECOMP_STATIC_ASSERT(offsetof(RHUnk0057d490, m_ec) == 0xec)
 DECOMP_STATIC_ASSERT(offsetof(RHSectorLift, m_f0) == 0xf0)
 DECOMP_SIZE_ASSERT(RHBuildingActorList, 0x24)
 
-class RHScrollScript
-{
-public:
-    bool FUN_006348f0(SBFile &file);
-};
+#include "VMCore.h"
 
 struct RHScriptNode
 {
@@ -632,18 +628,25 @@ int RHSectorLift::FUN_0057dd90(int animation)
 
 #include "RHScriptEngineCalls.h"
 
-// Parked: full-width boolean tail sharing and actor-state comparison differ.
-// STUB: GAME 0x0057de30
+// FUNCTION: GAME 0x0057de30
 bool RHSectorLift::FUN_0057de30(RHElementActor *actor)
 {
     switch (m_f0)
     {
     case 1:
-        if ((actor->m_4 & 7) == 0 && *(int *)((char *)actor + 0x1d0) != 1)
-            return false;
+        if ((actor->m_4 & 7) == 0)
+        {
+            int remaining = *(int *)((char *)actor + 0x1d0);
+            if (--remaining != 0)
+                return false;
+        }
         break;
     case 2:
-        return (unsigned int)((actor->m_4 & 7) == 4 && (actor->m_4 & 0x1f) == 4);
+    {
+        unsigned int flags = actor->m_4;
+        unsigned int mask = 7;
+        return (flags & mask) == 4 && (flags & 0x1f) != (flags & mask);
+    }
     case 3:
         return (unsigned int)(actor->UnkType() == RHUnkSectorType12 &&
             ((RHScriptBatchCalls *)actor)->Unk0049d560(21));
@@ -1113,7 +1116,7 @@ bool RHSectorScript::Serialize(SBFile &file)
         }
     }
     if (g_unk0x6c0691 && m_b8)
-        ((RHScrollScript *)((char *)this + 0x58))->FUN_006348f0(file);
+        ((VMCore *)((char *)this + 0x58))->SerializeMemberVariable(file);
     return true;
 }
 

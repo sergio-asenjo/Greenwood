@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include "Decomp.h"
+#include "RHEngineElementArray.h"
 
 class SBFile;
 class RHElement;
@@ -11,6 +12,11 @@ class RHPCDescription;
 class RHCharacterProfile;
 class RHElementActor;
 class RHElementActorPC;
+class RHElementActorNPC;
+class RHElementActorHuman;
+class RHElementActorSoldier;
+class RHElementMobile;
+class RHElementFX;
 class RHMission;
 class SBGeoPoint2D;
 class SBGeoBoundingBox2D;
@@ -77,8 +83,9 @@ extern RHUnkSectorGlobal *g_unk0x6c0a9c;
 void FUN_005e1d50(SBFile &file, unsigned long tag, int level);
 void FUN_005e20c0(SBFile &file);
 void FUN_004be5c0(SBFile &file, void *&value);
+void SerializeLocation(SBFile &file, void *&value);
 
-// SIZE 0x4944 (partial layout)
+// SIZE 0x4d68 (partial layout)
 class RHElementActorPC;
 
 class RHUnk0051e5e0;
@@ -86,10 +93,15 @@ class RHUnk0051e5e0;
 class RHEngine
 {
 public:
+    void AddElement(RHElement *element, bool initialize, bool registerElement);
+    bool RemoveElement(RHElement *element, bool uninitialize, bool deferred);
+    void FUN_004dae10(unsigned long surface, const SBGeoBoundingBox2D &view, float scale);
+    void FUN_004e39b0(void *actor, bool value);
     bool TurnPathFinderOn();
     void FUN_004c9d20(void *box);
     int FUN_0049b590(void *actor);
     void TurnPathFinderOff();
+    void FUN_004d2b70(void *actor);
     bool FUN_004c0340(SBGeoPoint2D &point);
     bool FUN_004c04a0();
     unsigned short FUN_004d16b0(void *first, void *second, unsigned third);
@@ -110,7 +122,7 @@ public:
     int FUN_004deeb0(const SBGeoPoint2D &point, SBGeoPoint2D &result);
     void FUN_004defa0(char flag);
     void FUN_004df070(void *value, char flag);
-    void FUN_004df330(const SBGeoPoint2D &point, void *actor, int index);
+    void FUN_004df330(const SBGeoPoint2D &point, bool first, bool second);
     void FUN_004df550(const SBGeoPoint2D &point, bool queued, bool immediate, void *provided);
     void FUN_004df7b0(const SBGeoPoint2D &point, bool flag);
     void FUN_004dfb50(const SBGeoPoint2D &point, bool flag);
@@ -143,6 +155,7 @@ public:
     bool FUN_004c6040(SBFile &file);
     int FUN_004c6ef0();
     bool FUN_004c7c90();
+    bool FUN_004d2330(int type);
     int FUN_004c7cc0();
     bool FUN_004c7cd0();
     bool FUN_004c7cf0();
@@ -152,6 +165,7 @@ public:
     void FUN_004e3c20(void *point);
     void FUN_004d8fd0(RHPCDescription *description);
     void SelectFollowElement(RHElementActor *actor);
+    void FUN_004d9420();
     void FUN_004d52d0(void *first, void *second, unsigned third);
     void FUN_004d5320(const void *value);
     bool FUN_004c02d0();
@@ -228,10 +242,10 @@ public:
     RHDialogueSet *GetDynResources(unsigned long mission);
     unsigned PCCount() const
     {
-        void **first = *(void **const volatile *)&m_493c;
+        RHElementActorPC **first = *(RHElementActorPC **const volatile *)&m_pcs.First();
         if (!first)
             return 0;
-        return m_4940 - first;
+        return m_pcs.end() - first;
     }
     void Emit(SBFile &file, void *&value);
 
@@ -240,14 +254,22 @@ public:
     undefined m_4760[0x164];
     void *m_48c4;
     undefined m_48c8[0x10];
-    std::vector<RHElement *> m_elements;
-    undefined m_48e8[0x54];
-    void **m_493c; // 0x493c
-    void **m_4940; // 0x4940
+    RHEngineElementArray<RHElement> m_elements;
+    RHEngineElementArray<RHElement> m_48f8;
+    RHEngineElementArray<RHElementActor> m_actors;
+    RHEngineElementArray<RHElementActorPC> m_pcs;
+    RHEngineElementArray<RHElementActorNPC> m_npcs;
+    RHEngineElementArray<RHElementMobile> m_mobiles;
+    RHEngineElementArray<RHElementFX> m_fx;
+    RHEngineElementArray<RHElementFX> m_groundFX;
+    RHEngineElementArray<RHElement> m_activeElements;
+    undefined m_49f8[0x2d0];
+    RHEngineElementArray<RHElementActorHuman> m_teamHumans[2];
+    RHEngineElementArray<RHElementActorSoldier> m_teamSoldiers[2];
+    RHEngineElementArray<RHElementActorSoldier> m_soldiers;
 };
 
 void *FUN_004d1630();
-bool __stdcall FUN_004d2330(int type);
 
 class RHEngineMissionElementCalls
 {

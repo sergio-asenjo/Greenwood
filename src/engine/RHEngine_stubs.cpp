@@ -76,11 +76,7 @@ RHUnk0051d2c0::~RHUnk0051d2c0()
     clear();
 }
 int RHHikingGuide::FUN_0051cac0(SBFile &) { return 0; }
-class RHScrollScript
-{
-public:
-    bool FUN_006348f0(SBFile &file);
-};
+#include "VMCore.h"
 
 extern char g_unk0x6c0691;
 void RHSerializeName(SBFile &file, const char *name);
@@ -91,7 +87,7 @@ bool RHUnk00551da0::FUN_00551da0(SBFile &file)
     // STRING: GAME 0x006b15a4
     RHSerializeName(file, "RHWayPoint");
     if (g_unk0x6c0691 == 1 && *(unsigned char *)((char *)this + 0x6e) == 1)
-        return ((RHScrollScript *)this)->FUN_006348f0(file);
+        return ((VMCore *)this)->SerializeMemberVariable(file);
     return true;
 }
 void RHUnk004e51e0::FUN_00454bb0() {}
@@ -101,7 +97,6 @@ struct RHbeamMe;
 #include "RHEngineSerializationCalls.h"
 
 void RHEngineSerializationCalls::FUN_0048fa30() {}
-void RHEngineSerializationCalls::FUN_004d88e0(void *, int, int) {}
 
 class RHEngineMissionCalls
 {
@@ -221,13 +216,11 @@ public:
     void *FUN_00452130(void *profile);
     void FUN_004936a0(int value);
     void FUN_00491fd0(const RHbeamMe &beamMe);
-    void FUN_004d8460(void *actor, int first, int second);
-    unsigned FUN_004e4460(void **value, int insert);
+    unsigned FUN_004e4460(void **value, bool insert);
     bool FUN_004f6c20(const SBGeoPoint2D &origin, SBGeoPoint2D &destination,
         unsigned short layer, const SBGeoPoint2D &extent);
 };
 
-void RHEngineReinforcementCalls::FUN_004d8460(void *, int, int) {}
 bool RHEngineReinforcementCalls::FUN_004f6c20(const SBGeoPoint2D &, SBGeoPoint2D &, unsigned short, const SBGeoPoint2D &) { return false; }
 
 class RHUnk0048f280
@@ -275,7 +268,6 @@ void RHEngineMissionElementCalls::Unk3c(SBFile &) {}
 
 void RHEngineWidenedCalls::FUN_004eb120(SBFile &, void *) {}
 void RHEngineWidenedCalls::FUN_00558670(SBFile &) {}
-void RHEngineWidenedCalls::FUN_005e5160(unsigned) {}
 class RHEngineActorUpdateCalls
 {
 public:
@@ -283,4 +275,3 @@ public:
 };
 
 void RHEngineActorUpdateCalls::FUN_004af2a0() {}
-

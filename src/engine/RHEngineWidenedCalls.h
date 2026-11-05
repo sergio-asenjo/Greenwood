@@ -14,7 +14,6 @@ public:
     int FUN_005b7f60(unsigned long value);
     void FUN_0050efd0(void *actor);
     void FUN_004e3660(char flag);
-    void FUN_005e5160(unsigned surface);
 };
 
 #endif

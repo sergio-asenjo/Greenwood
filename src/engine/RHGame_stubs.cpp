@@ -42,22 +42,14 @@ namespace std
     }
 }
 
-void RHGameBlazonValue::FUN_0044f960(int) {}
-struct RHGameBlazonEntry
-{
-    char m_00[0xd0];
-};
-
-void FUN_0044f750(RHGameBlazonEntry *) {}
-
 // Parked: 80.39%; target keeps the clamped count in EDI and recomputes total-visible
 // for both range ends; VC6 here keeps it in EAX (param-reuse moves it to EDI but CSEs).
 // STUB: GAME 0x0044f8d0
-void RHGameBlazonValue::FUN_0044f8d0(int value)
+void RHMenuShortMissionBlazons::FUN_0044f8d0(unsigned long value)
 {
     unsigned level = g_unk0x6c07fc->Get(3);
-    unsigned visible = *(unsigned short *)(**(char ***)this + 0x6a);
-    unsigned total = *(unsigned *)((char *)this + 0xc);
+    unsigned visible = *(unsigned short *)((char *)*(void **)m_mission + 0x6a);
+    unsigned total = m_count;
     if (level > total)
         level = total;
     if (level + visible <= total)
@@ -65,15 +57,15 @@ void RHGameBlazonValue::FUN_0044f8d0(int value)
         unsigned count = value;
         if (count > visible)
             count = visible;
-        *(unsigned *)((char *)this + 0x18) = count;
+        m_18 = count;
         if (count != 0)
         {
-            RHGameBlazonEntry *entries = *(RHGameBlazonEntry **)((char *)this + 0x8);
-            *((char *)this + 0x14) = 1;
-            *(int *)((char *)this + 0x10) = 50;
-            RHGameBlazonEntry *last = entries + (total - visible + count);
-            for (RHGameBlazonEntry *entry = entries + (total - visible); entry != last; ++entry)
-                FUN_0044f750(entry);
+            RHGameLifetime0044fe90 *entries = m_widgets;
+            m_14 = true;
+            m_10 = 50;
+            RHGameLifetime0044fe90 *last = entries + (total - visible + count);
+            for (RHGameLifetime0044fe90 *entry = entries + (total - visible); entry != last; ++entry)
+                FUN_0044f750(*entry);
         }
     }
 }
@@ -95,7 +87,6 @@ bool RHGameActorView::FUN_004936e0()
 }
 void RHGameActionCalls::FUN_005140b0() {}
 void RHGameActionCalls::FUN_005f4900(char) {}
-void RHGameActionCalls::FUN_005e5260() {}
 void RHGameActionCalls::FUN_005104c0() {}
 bool RHGameActionCalls::FUN_004d2300(void *, unsigned) { return false; }
 void RHGameActionCalls::FUN_005a7b40(int) {}

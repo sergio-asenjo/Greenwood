@@ -678,7 +678,7 @@ void RHGame::FUN_005105d0(unsigned char first, char second)
     {
         ((RHGameActionCalls *)((char *)this + 0x0c))->FUN_005f4900(first & *(unsigned char *)0x006c12ac);
         if (second)
-            ((RHGameActionCalls *)((char *)this + 0x10))->FUN_005e5260();
+            (*(SBDrawManager **)((char *)this + 0x10))->FUN_005e5260();
         ((RHGameActionCalls *)((char *)this + 0x0c))->FUN_005f4900(*(unsigned char *)0x006c12ac);
     }
 }
@@ -1383,12 +1383,12 @@ void RHGame::FUN_005138b0(void *)
         FUN_005edae0((RHUnk005ef320 *)*(void **)((char *)this + 0x10), "Enter Code:");
     }
     ((RHUnk005ef320 *)*(void **)((char *)this + 0x10))->FUN_005ef380(1);
-    ((RHGameActionCalls *)*(void **)((char *)this + 0x10))->FUN_005e5260();
+    ((SBDrawManager *)*(void **)((char *)this + 0x10))->FUN_005e5260();
     bool done;
     do
     {
         done = !RHConsole::GetInstance()->HandleCharacter(SBThreadedInput::GetChar());
-        ((RHGameActionCalls *)*(void **)((char *)this + 0x10))->FUN_005e5260();
+    ((SBDrawManager *)*(void **)((char *)this + 0x10))->FUN_005e5260();
     } while (!done);
     RHUnk00546050()->RHUnk005460c0(RHUnk5490f0(0x25));
 }
@@ -1945,7 +1945,7 @@ void RHUnk00514e10::FUN_00514e50()
     m_head = 0;
     m_size = 0;
     {
-        RHUnk00641782 lock;
+        std::_Lockit lock;
         if (--g_unk0x006c0b4c == 0)
         {
             operator delete(g_unk0x006c0b48);
@@ -1959,10 +1959,10 @@ RHUnk00514e10::Iterator RHUnk00514e10::FUN_00514ec0(Iterator first, Iterator las
 {
     if (m_size != 0 && first.node == m_head->left && last.node == m_head)
     {
-        RHUnk00641782 lock;
+        std::_Lockit lock;
         Node *node = m_head->parent;
         {
-            RHUnk00641782 inner;
+            std::_Lockit inner;
             for (Node *next = node; next != g_unk0x006c0b48; node = next)
             {
                 FUN_00515640(next->right);
@@ -1988,7 +1988,7 @@ RHUnk00514e10::Pair RHUnk00514e10::FUN_00514ff0(const Value &value)
     Node *node = parent->parent;
     bool left = true;
     {
-        RHUnk00641782 lock;
+        std::_Lockit lock;
         while (node != g_unk0x006c0b48)
         {
             parent = node;
@@ -2022,7 +2022,7 @@ RHUnk00514e10::Pair RHUnk00514e10::FUN_00514ff0(const Value &value)
 
 inline void RHUnk00514e10::RotateLeft(Node *node)
 {
-    RHUnk00641782 lock;
+    std::_Lockit lock;
     Node *right = node->right;
     node->right = right->left;
     if (right->left != g_unk0x006c0b48)
@@ -2040,7 +2040,7 @@ inline void RHUnk00514e10::RotateLeft(Node *node)
 
 inline void RHUnk00514e10::RotateRight(Node *node)
 {
-    RHUnk00641782 lock;
+    std::_Lockit lock;
     Node *left = node->left;
     node->left = left->right;
     if (left->right != g_unk0x006c0b48)
@@ -2065,7 +2065,7 @@ RHUnk00514e10::Iterator RHUnk00514e10::FUN_00515120(Iterator entry)
     Node *removed = (entry++).node;
     Node *original = removed;
     Node *replacement;
-    RHUnk00641782 lock;
+    std::_Lockit lock;
     if (Left(removed) == g_unk0x006c0b48)
         replacement = Right(removed);
     else if (Right(removed) == g_unk0x006c0b48)
@@ -2199,7 +2199,7 @@ RHUnk00514e10::Iterator RHUnk00514e10::FUN_00515120(Iterator entry)
 // FUNCTION: GAME 0x00515640
 void RHUnk00514e10::FUN_00515640(Node *node)
 {
-    RHUnk00641782 lock;
+    std::_Lockit lock;
     for (Node *next = node; next != g_unk0x006c0b48; node = next)
     {
         FUN_00515640(next->right);
@@ -2219,7 +2219,7 @@ namespace std
 // FUNCTION: GAME 0x005156d0
 RHUnk00514e10::Iterator RHUnk00514e10::FUN_005156d0(Node *node, Node *parent, const Value &value)
 {
-    RHUnk00641782 lock;
+    std::_Lockit lock;
     Node *inserted = (Node *)operator new(sizeof(Node));
     inserted->parent = parent;
     inserted->color = 0;
@@ -2303,7 +2303,7 @@ struct RHGameTreeAccess
     static int &Color(RHUnk00514e10::Node *node) { return node->color; }
     static RHUnk00514e10::Node *Max(RHUnk00514e10::Node *node)
     {
-        RHUnk00641782 inner;
+        std::_Lockit inner;
         while (Right(node) != g_unk0x006c0b48)
             node = Right(node);
         return node;
@@ -2313,7 +2313,7 @@ struct RHGameTreeAccess
 // FUNCTION: GAME 0x005159d0
 void RHUnk00514e10::Iterator::FUN_005159d0()
 {
-    RHUnk00641782 lock;
+    std::_Lockit lock;
     if (RHGameTreeAccess::Color(node) == 0 && RHGameTreeAccess::Parent(RHGameTreeAccess::Parent(node)) == node)
         node = RHGameTreeAccess::Right(node);
     else if (RHGameTreeAccess::Left(node) != g_unk0x006c0b48)
@@ -2329,7 +2329,7 @@ void RHUnk00514e10::Iterator::FUN_005159d0()
 
 static inline RHUnk00514e10::Node *RHGameTreeMax(RHUnk00514e10::Node *node)
 {
-    RHUnk00641782 lock;
+    std::_Lockit lock;
     while (node->right != g_unk0x006c0b48)
         node = node->right;
     return node;
@@ -2337,7 +2337,7 @@ static inline RHUnk00514e10::Node *RHGameTreeMax(RHUnk00514e10::Node *node)
 
 static inline RHUnk00514e10::Node *RHGameTreeMin(RHUnk00514e10::Node *node)
 {
-    RHUnk00641782 lock;
+    std::_Lockit lock;
     while (node->left != g_unk0x006c0b48)
         node = node->left;
     return node;
@@ -2346,7 +2346,7 @@ static inline RHUnk00514e10::Node *RHGameTreeMin(RHUnk00514e10::Node *node)
 // FUNCTION: GAME 0x00515a90
 void RHUnk00514e10::Iterator::FUN_00515a90()
 {
-    RHUnk00641782 lock;
+    std::_Lockit lock;
     if (node->right != g_unk0x006c0b48)
         node = RHGameTreeMin(node->right);
     else
@@ -3957,6 +3957,7 @@ bool RHUnk006114c0::FUN_006134a0(void *configuration)
 DECOMP_SIZE_ASSERT(RHMapDescription, 0x1c)
 DECOMP_SIZE_ASSERT(RHMapDescription::Entry, 0x48)
 DECOMP_SIZE_ASSERT(RHUnk0063c8b0, 0x18)
+DECOMP_SIZE_ASSERT(RHMapDescription::Dialogues, 0x10)
 DECOMP_SIZE_ASSERT(RHUnk0063e360, 0x14)
 DECOMP_SIZE_ASSERT(RHUnk0063c840, 0x08)
 DECOMP_SIZE_ASSERT(RHUnk0063c880, 0x10)
@@ -4010,11 +4011,9 @@ RHUnk0063c8b0::RHUnk0063c8b0() : m_0(g_unk0x0067bbd8), m_4(g_unk0x0067bbd8)
 {
 }
 
-// Parked: vector clear still calls the out-of-line Entry destructor instead of expanding nested cleanup.
-// STUB: GAME 0x0063c8e0
+// FUNCTION: GAME 0x0063c8e0
 RHMapDescription::~RHMapDescription()
 {
-    m_04.clear();
 }
 
 // FUNCTION: GAME 0x0063c9e0
@@ -4048,6 +4047,22 @@ RHMapDescription::Entry *RHMapDescription::FUN_0063c9e0(unsigned id)
     return 0;
 }
 
+// FUNCTION: GAME 0x0063ca50
+RHMapDescription::Entry *RHMapDescription::FUN_0063ca50(unsigned id)
+{
+    Entry *entry = FUN_0063c9e0(id);
+    if (entry == 0)
+    {
+        {
+            Entry value(id);
+            m_04.push_back(value);
+        }
+        std::sort(m_04.begin(), m_04.end());
+        entry = FUN_0063c9e0(id);
+    }
+    return entry;
+}
+
 // FUNCTION: GAME 0x0063d1a0
 void RHMapDescription::FUN_0063d1a0(std::string &path, unsigned mission)
 {
@@ -4058,6 +4073,23 @@ void RHMapDescription::FUN_0063d1a0(std::string &path, unsigned mission)
         mission >>= 8;
     }
     path += m_18;
+}
+
+// FUNCTION: GAME 0x0063d340
+void RHMapDescription::FUN_0063d340(unsigned id)
+{
+    Entry *entry = m_04.begin();
+    Entry *last = m_04.end();
+    for (; entry != last; ++entry)
+    {
+        if (id < entry->m_44)
+            return;
+        if (id == entry->m_44)
+        {
+            m_04.erase(entry);
+            return;
+        }
+    }
 }
 
 class RHMapRecordVectorCalls : public std::vector<RHUnk0063c8b0>
@@ -4079,6 +4111,15 @@ public:
 // TEMPLATE: GAME 0x0063d410
 // ?size@?$vector@VRHUnk0063c8b0@@V?$allocator@VRHUnk0063c8b0@@@std@@@std@@QBEIXZ
 
+// TEMPLATE: GAME 0x00463250 FOLDED
+// ?destroy@?$allocator@H@std@@QAEXPAH@Z
+
+// TEMPLATE: GAME 0x00486170 FOLDED
+// ?deallocate@?$allocator@H@std@@QAEXPAXI@Z
+
+// TEMPLATE: GAME 0x00486170 FOLDED
+// ?deallocate@?$allocator@VRHUnk0063c8b0@@@std@@QAEXPAXI@Z
+
 // TEMPLATE: GAME 0x0063d4d0
 // ?insert@?$vector@VRHUnk0063c8b0@@V?$allocator@VRHUnk0063c8b0@@@std@@@std@@QAEXPAVRHUnk0063c8b0@@IABV3@@Z
 
@@ -4093,6 +4134,39 @@ public:
 
 // TEMPLATE: GAME 0x0063e140
 // ?_Ucopy@?$vector@VRHUnk0063c8b0@@V?$allocator@VRHUnk0063c8b0@@@std@@@std@@IAEPAVRHUnk0063c8b0@@PBV3@0PAV3@@Z
+
+// TEMPLATE: GAME 0x0063de60
+// ??4Entry@RHMapDescription@@QAEAAU01@ABU01@@Z
+
+// TEMPLATE: GAME 0x0063d8b0
+// ?insert@?$vector@UEntry@RHMapDescription@@V?$allocator@UEntry@RHMapDescription@@@std@@@std@@QAEXPAUEntry@RHMapDescription@@IABU34@@Z
+
+// TEMPLATE: GAME 0x0063dce0
+// ?_Construct@std@@YAXPAUEntry@RHMapDescription@@ABU23@@Z
+
+// TEMPLATE: GAME 0x0063e1a0
+// ??0Entry@RHMapDescription@@QAE@ABU01@@Z
+
+// LIBRARY: GAME 0x0063e340
+// ?_Allocate@std@@YAPAHHPAH@Z
+
+// TEMPLATE: GAME 0x0063eb60
+// ?_Sort@std@@YAXPAUEntry@RHMapDescription@@00@Z
+
+// TEMPLATE: GAME 0x0063ecb0
+// ?_Unguarded_insert@std@@YAXPAUEntry@RHMapDescription@@U23@@Z
+
+// TEMPLATE: GAME 0x0063ee10
+// ?_Insertion_sort_1@std@@YAXPAUEntry@RHMapDescription@@00@Z
+
+// TEMPLATE: GAME 0x0063f120
+// ?_Median@std@@YA?AUEntry@RHMapDescription@@U23@00@Z
+
+// TEMPLATE: GAME 0x0063f370
+// ?_Unguarded_partition@std@@YAPAUEntry@RHMapDescription@@PAU23@0U23@@Z
+
+// TEMPLATE: GAME 0x0063f500
+// ??0Dialogues@RHMapDescription@@QAE@ABU01@@Z
 
 // SYNTHETIC: GAME 0x0063e180
 // RHUnk0063c8b0::`scalar deleting destructor'
@@ -4119,11 +4193,8 @@ public:
 // ??1?$vector@VRHUnk0063c8b0@@V?$allocator@VRHUnk0063c8b0@@@std@@@std@@QAE@XZ
 
 #pragma inline_depth(0)
-void EmitRHMapRecordDestructors(RHMapDescription::Entry *entry, RHUnk0063c8b0 *record,
-    std::vector<RHUnk0063c8b0> *records)
+void EmitRHMapRecordDestructors(std::vector<RHUnk0063c8b0> *records)
 {
-    entry->~Entry();
-    record->~RHUnk0063c8b0();
     typedef std::vector<RHUnk0063c8b0> Records;
     records->~Records();
 }
@@ -4138,6 +4209,12 @@ void EmitRHMapRecordCopies(void *destination, void *valuesDestination,
 void EmitRHMapEntryValues(void *destination)
 {
     new (destination) RHUnk0063e360;
+}
+
+RHMapDescription::Entry *EmitRHMapDescriptionAdd(RHMapDescription *description, unsigned id)
+{
+    description->FUN_0063d340(id);
+    return description->FUN_0063ca50(id);
 }
 
 void EmitRHMapRecordDestroy(std::vector<RHUnk0063c8b0> *records)

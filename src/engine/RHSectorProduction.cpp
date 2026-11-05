@@ -11,11 +11,7 @@ DECOMP_SIZE_ASSERT(RHSectorProduction, 0x34)
 
 class RHPCDescription;
 
-class RHEngine
-{
-public:
-    RHElementActorPC *GetPC(RHPCDescription *description) const;
-};
+#include "RHEngine.h"
 
 extern RHEngine *g_pEngine;
 
@@ -57,8 +53,6 @@ public:
 
 class RHUnk00452030;
 extern RHUnk00452030 *g_unk0x6c07fc;
-
-#include "RHUnk004d8460Calls.h"
 
 struct RHSectorProductionInfoHead
 {
@@ -516,7 +510,7 @@ void RHSectorProduction::FUN_00580b70()
         }
         ((RHBonusInfoBase *)((char *)bonus->Info() + 4))->FUN_0055f290();
         bonus->Info()->FUN_005bd560(0, true);
-        ((RHUnk004d8460 *)engine)->FUN_004d8460(bonus, 0, 1);
+        ((RHEngine *)engine)->AddElement((RHElement *)bonus, false, true);
     }
     m_30 = m_2c >= m_points.size() * 5 ? 1 : 0;
 }
@@ -600,7 +594,7 @@ void RHSectorProduction::FUN_00580e80()
         }
         ((RHBonusInfoBase *)((char *)bonus->Info() + 4))->FUN_0055f290();
         bonus->Info()->FUN_005bd560(0, true);
-        ((RHUnk004d8460 *)engine)->FUN_004d8460(bonus, 1, 1);
+        ((RHEngine *)engine)->AddElement((RHElement *)bonus, true, true);
         ++index;
     }
 }
@@ -783,11 +777,7 @@ bool RHSectorProduction::FUN_005818c0(SBFile &file, Occupants &occupants,
     return true;
 }
 
-class RHEngineWidenedCalls
-{
-public:
-    void FUN_005e5160(unsigned count);
-};
+#include "SBDrawManagerCore.h"
 
 class RHUnk00581c40Linked
 {
@@ -832,7 +822,7 @@ RHUnk00581c40::~RHUnk00581c40()
     unsigned count = m_10;
     m_vptr = 0x679cd0;
     if (count)
-        ((RHEngineWidenedCalls *)m_8)->FUN_005e5160(count);
+        ((SBDrawManager *)m_8)->FUN_005e5160(count);
     if (m_4)
         delete (RHUnk00581c40Linked *)m_4;
 }

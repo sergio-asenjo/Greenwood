@@ -24,11 +24,7 @@ RHMessenger *RHUnk00546050();
 
 #include "RHCampaignCore.h"
 
-class RHUnk004a5230
-{
-public:
-    void FUN_004a5230(bool, bool);
-};
+#include "RHElementActorSoldierCore.h"
 
 class RHScriptBatchCalls
 {
@@ -573,7 +569,7 @@ void RHConsole::FUN_0045b900(const char *text, void (RHConsole::*callback)(unsig
 void RHConsole::FUN_0045bff0()
 {
     RHConsoleHelpArray *commands = (RHConsoleHelpArray *)FUN_00460600();
-    typedef void (__cdecl *Message)(RHUnk005ef320 *, const char *);
+    typedef bool (__cdecl *Message)(RHUnk005ef320 *, const char *);
     Message output = (Message)&FUN_005ede40;
     // STRING: GAME 0x006ac910
     output(m_engine->m_draw, "Robin Hood Console Help File.");
@@ -627,7 +623,7 @@ bool RHConsole::ExecuteCommand()
         {
             m_5b6 = 0;
             RHGameInputTranslator::mpInstance->DeityCall();
-            typedef void (__cdecl *Message)(RHUnk005ef320 *, const char *);
+            typedef bool (__cdecl *Message)(RHUnk005ef320 *, const char *);
             // STRING: GAME 0x006ac930
             ((Message)&FUN_005ede40)(m_engine->m_draw, "Praised be His Name.");
         }
@@ -918,15 +914,15 @@ void RHConsole::FUN_0045d8b0(unsigned, char **)
     FUN_005edae0(m_engine->m_draw, "Foes invulnerable");
 }
 
-// Parked: redundant null guard is eliminated and the activity load moves before cleanup.
-// STUB: GAME 0x0045d920
+// FUNCTION: GAME 0x0045d920
 void RHConsole::FUN_0045d920(unsigned, char **)
 {
     typedef void (__cdecl *Message)(RHUnk005ef320 *, const char *);
     Message output = reinterpret_cast<Message>(&FUN_005edae0);
-    RHConsoleActor *actor = RHConsoleField<RHConsoleActor *>(m_engine, 0xd4);
-    if (actor && (RHConsoleField<volatile unsigned>(actor, 4) & 0xf) == 4)
+    if (RHConsoleField<RHConsoleActor *>(m_engine, 0xd4) &&
+        (RHConsoleField<unsigned>(RHConsoleField<RHConsoleActor *>(m_engine, 0xd4), 4) & 0xf) == 4)
     {
+        RHConsoleActor *actor = RHConsoleField<RHConsoleActor *>(m_engine, 0xd4);
         // STRING: GAME 0x006ad298
         output(m_engine->m_draw, "Honolulu");
         if (actor && RHConsoleField<char>(actor, 0x12))
@@ -1093,7 +1089,7 @@ void RHConsole::FUN_0045dd40(unsigned, char **)
     {
         RHConsoleActor *actor = RHConsoleField<RHConsoleActorArray>(m_engine, 0x48d8).m_first[index];
         if ((RHConsoleField<volatile unsigned>(actor, 4) & 0x1f) == 0x14)
-            ((RHUnk004a5230 *)actor)->FUN_004a5230(true, false);
+            ((RHElementActorSoldier *)actor)->SetAttentiveMode(true, false);
     }
 }
 
@@ -1128,7 +1124,7 @@ void RHConsole::FUN_0045de60(unsigned, char **)
     // STRING: GAME 0x006ad510
     FUN_005ede40(m_engine->m_draw, "Free Blocks map after optimisation (%d merge)", merges);
     int size = (int)pow(g_unk0x00677670, 5.0);
-    typedef void (__cdecl *Message)(RHUnk005ef320 *, const char *);
+    typedef bool (__cdecl *Message)(RHUnk005ef320 *, const char *);
     Message output = (Message)&FUN_005ede40;
     for (int index = 0; index < 17; ++index)
     {
@@ -1633,7 +1629,7 @@ void RHConsole::FUN_004600e0(unsigned, char **)
 // FUNCTION: GAME 0x00460140
 void RHConsole::FUN_00460140(unsigned count, char **arguments)
 {
-    typedef void (__cdecl *Message)(RHUnk005ef320 *, const char *);
+    typedef bool (__cdecl *Message)(RHUnk005ef320 *, const char *);
     Message output = (Message)&FUN_005ede40;
     if (count == 2)
     {
@@ -1737,7 +1733,7 @@ void RHConsole::FUN_00460410(unsigned, char **)
 // FUNCTION: GAME 0x00460460
 void RHConsole::FUN_00460460(unsigned count, char **arguments)
 {
-    typedef void (__cdecl *Message)(RHUnk005ef320 *, const char *);
+    typedef bool (__cdecl *Message)(RHUnk005ef320 *, const char *);
     Message output = (Message)&FUN_005ede40;
     if (count == 2)
     {

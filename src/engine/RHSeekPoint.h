@@ -136,6 +136,7 @@ public:
     bool SerializeStatus(SBFile &file);
     bool SerializeAllData(SBFile &file);
     void Emit(SBFile &file);
+    RHMalignityPosition Position() const { return *(const RHMalignityPosition *)&m_4; }
     int m_4;
     int m_8;
     void *m_c;

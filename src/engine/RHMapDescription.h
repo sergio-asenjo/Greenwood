@@ -60,21 +60,31 @@ public:
     RHMapDescription();
     virtual ~RHMapDescription();
     bool FUN_0063cda0(unsigned);
+    struct Dialogues
+    {
+        // FUNCTION: GAME 0x0063d440
+        ~Dialogues() {}
+        std::vector<RHUnk0063c8b0> m_00;
+    };
     // SIZE 0x48
     struct Entry
     {
-        // Parked: native vector destruction depth differs from the original.
-        // STUB: GAME 0x0063cce0
+        Entry() {}
+        explicit Entry(unsigned id) : m_44(id) {}
+        // FUNCTION: GAME 0x0063cce0
         ~Entry() {}
+        bool operator<(const Entry &other) const { return m_44 < other.m_44; }
         RHUnk0063c840 m_00; // 0x00
-        std::vector<RHUnk0063c8b0> m_08; // 0x08
+        Dialogues m_08; // 0x08
         RHUnk0063e360 m_18; // 0x18
         RHUnk0063c880 m_2c; // 0x2c
         RHUnk0063c860 m_3c; // 0x3c
         unsigned m_44; // 0x44
     };
     Entry *FUN_0063c9e0(unsigned);
+    Entry *FUN_0063ca50(unsigned);
     void FUN_0063d1a0(std::string &, unsigned);
+    void FUN_0063d340(unsigned);
     std::vector<Entry> m_04; // 0x04
     const char *m_14; // 0x14
     const char *m_18; // 0x18

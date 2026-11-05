@@ -235,8 +235,7 @@ void RHPositionInterface::ComputePosition3D()
     }
 }
 
-// Parked: effective only; VC6 orders the second slope product operands the other way.
-// STUB: GAME 0x0055fc20
+// FUNCTION: GAME 0x0055fc20
 void RHMobilePosition::FUN_0055fc20(bool updateDirection)
 {
     if (m_8 == 7)

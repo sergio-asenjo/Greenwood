@@ -21,7 +21,3 @@ int FUN_0064324d(const char *, const char *, ...)
 {
     return 0;
 }
-
-void FUN_005ede40(RHUnk005ef320 *, const char *, ...)
-{
-}
