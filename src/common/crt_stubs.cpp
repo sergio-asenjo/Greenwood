@@ -1,6 +1,12 @@
 // LIBRARY: GAME 0x006428b5
 // ??2@YAPAXI@Z
 
+// LIBRARY: GAME 0x006421af
+// ___CxxFrameHandler
+
+// TEMPLATE: GAME 0x0048be30 FOLDED
+// ??3@YAXPAX0@Z
+
 // LIBRARY: GAME 0x0064158f
 // ??3@YAXPAX@Z
 
@@ -9,3 +15,9 @@
 
 // LIBRARY: GAME 0x006432e0
 // __CIacos
+
+// LIBRARY: GAME 0x00641782
+// ??0_Lockit@std@@QAE@XZ
+
+// LIBRARY: GAME 0x0064181e
+// ??1_Lockit@std@@QAE@XZ
