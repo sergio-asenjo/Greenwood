@@ -104,19 +104,7 @@ public:
 };
 #endif
 
-// Target 0x005e6440, __FILE__ 0x006b9264
-// ("P:\Robin Hood\SBLibNG\SBDrawManager.cpp"). Called as `mov ecx,[esi+0x1c]`
-// with five stack arguments (target `ret 0x14`): a surface handle, the widget
-// box, this+0x20, the displaced box and the constant 1. The Windows shape has
-// five integer/pointer arguments (the surface handle is pushed directly, no
-// float conversion). Defined in RHUIRendererCustom_stubs.cpp; the Zeta-OS
-// oracle names the same draw-manager entry SBDrawManager::Blit.
-class RHUnk005e6440
-{
-public:
-    void Blit(unsigned long surface, SBGeoBoundingBox2D *box, unsigned long unk20,
-              SBGeoBoundingBox2D *displaced, unsigned long flag);
-};
+#include "SBDrawManagerCore.h"
 
 class RHUIRendererCustom
 {
@@ -138,7 +126,7 @@ public:
 #define m_box (*(SBGeoBoundingBox2D *)((char *)this + 0x8))
 
 // Draw manager sub-object pointer (target `mov ecx,[esi+0x1c]`).
-#define m_draw (*(RHUnk005e6440 **)((char *)this + 0x1c))
+#define m_draw (*(SBDrawManager **)((char *)this + 0x1c))
 
 // Third blit argument (target `mov ecx,[esi+0x20]`).
 #define m_20 (*(unsigned long *)((char *)this + 0x20))

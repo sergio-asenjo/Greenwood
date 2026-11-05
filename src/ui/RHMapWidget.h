@@ -24,10 +24,10 @@ public:
     virtual void V2c(const RHMapTitleText &);
     virtual bool V30(const std::wstring &, const RHMapBox &, unsigned, unsigned);
     virtual void V34();
-    virtual void V38();
+    virtual void V38(unsigned);
     virtual void V3c();
     virtual void V40();
-    virtual void V44();
+    virtual bool V44();
     virtual void V48();
     virtual void V4c();
     virtual void V50();

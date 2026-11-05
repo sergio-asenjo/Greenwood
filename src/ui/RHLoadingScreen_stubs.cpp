@@ -22,7 +22,6 @@ extern "C" int sprintf(char *, const char *, ...) { return 0; }
 // __TI3?AVlength_error@std@@
 
 // Constructor 0x00613e90 is shared with RHTitbits_stubs.cpp.
-void RHUnkFXDraw::Unk005e5160(unsigned long) {}
 void RHUnk006114c0::Unk04() {}
 void RHUnk006114c0::Unk08() {}
 void RHUnk006114c0::Unk0c() {}

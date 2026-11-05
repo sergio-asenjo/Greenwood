@@ -8,6 +8,7 @@
 
 #include "SBNullstr.h"
 #include "RHUIRendererPortrait.h"
+#include "SBDrawManagerCore.h"
 
 
 // LIBRARY: GAME 0x005cac40
@@ -62,10 +63,11 @@ bool RHUIRendererPortrait::BlitPicture(unsigned int id, float f)
         {
             if (percent != 100)
             {
-                return m_draw->BlitScaled(f, 0, 0, &m_widget, frame, 1);
+                return ((SBDrawManager *)m_draw)->BlitAlphaConstant(*(unsigned long *)&f, 0, 0,
+                    (SBGeoBoundingBox2D *)&m_widget, frame, 1);
             }
 
-            return m_draw->BlitFull(f, 0, 0, &m_widget, 1);
+            return m_draw->FUN_005e6440(*(unsigned long *)&f, 0, 0, (SBGeoBoundingBox2D *)&m_widget, 1);
         }
 
         return true;

@@ -227,6 +227,30 @@ unsigned long RHMenuPopupScroll::FUN_0053a610(unsigned long index)
     return FUN_0053a5f0();
 }
 
+// FUNCTION: GAME 0x0053a660
+std::wstring RHMenuPopupScroll::FUN_0053a660(int id)
+{
+    RHPopupScrollSet *resources = (RHPopupScrollSet *)g_pEngine->GetDynResources(0);
+    RHMapResources *manager = g_unk0x006c1840;
+    std::wstring text;
+    if (resources)
+    {
+        if (!manager->FUN_00600fc0(*(unsigned *)((char *)resources + 0x18)))
+            text =
+                // STRING: GAME 0x006b1014
+                L"Unable to find the text...";
+        else if (!manager->FUN_006009e0(*(unsigned *)((char *)resources + 0x18), id, (RHMapWideText &)text))
+            text =
+                // STRING: GAME 0x006b0fe0
+                L"Invalid popup text ID...";
+    }
+    else
+        (std::basic_string<unsigned short> &)text =
+            // STRING: GAME 0x006b0f90
+            (const unsigned short *)L"No popup texts for the current level !";
+    return text;
+}
+
 void RHMenuPopupScrollEmitPictures(unsigned long index)
 {
     RHMenuPopupScroll::FUN_0053a610(index);

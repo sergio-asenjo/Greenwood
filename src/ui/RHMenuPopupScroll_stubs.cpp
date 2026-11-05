@@ -5,5 +5,3 @@
 
 #include "SBNullstr.h"
 #include "RHMenuPopupScroll.h"
-
-std::wstring RHMenuPopupScroll::FUN_0053a660(int) { return std::wstring(); }

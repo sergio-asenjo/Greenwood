@@ -56,4 +56,19 @@ public:
     unsigned m_size;
 };
 
+class RHMenuLoadSaveMap
+{
+public:
+    RHUnk00514e10::Pair FUN_00531d80(const RHUnk00514e10::Value &value);
+    RHUnk00514e10 m_tree;
+};
+
+class RHMenuLoadSaveEntry
+{
+public:
+    RHMenuLoadSaveEntry(const int &key, const int &value);
+    int m_key;
+    int m_value;
+};
+
 #endif

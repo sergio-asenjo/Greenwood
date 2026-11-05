@@ -3,15 +3,9 @@
 
 #include "Decomp.h"
 #include "RHPortraitRootList.h"
+#include "RHMenuShortMissionBlazons.h"
 
 class RHMission;
-
-class RHGameBlazonValue
-{
-public:
-    void FUN_0044f960(int value);
-    void FUN_0044f8d0(int value);
-};
 
 // VTABLE: GAME 0x00679ee0
 // SIZE 0xb4
@@ -29,7 +23,7 @@ public:
     void FUN_005cc900(int value);
     void FUN_005cc920(int value);
     void FUN_005cc940(const SBGeoBoundingBox2D &bounds);
-    RHGameBlazonValue *m_b0; // 0xb0
+    RHMenuShortMissionBlazons *m_b0; // 0xb0
 };
 
 #endif

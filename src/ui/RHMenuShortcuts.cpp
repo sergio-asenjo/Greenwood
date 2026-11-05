@@ -69,7 +69,7 @@ void RHMenuShortcuts::FUN_00540480(void *ui)
 // FUNCTION: GAME 0x00540540
 bool RHMenuShortcuts::FUN_00540540(int, void *, void *)
 {
-    if (m_userDefined)
+    if (m_list.m_modified)
         m_profile->m_keys3c.FUN_0051ebf0(m_keys);
     m_keys.SetToPreset(0, g_unk0x6c069c);
     m_list.FUN_005ced90();
@@ -79,7 +79,7 @@ bool RHMenuShortcuts::FUN_00540540(int, void *, void *)
 // FUNCTION: GAME 0x00540590
 bool RHMenuShortcuts::FUN_00540590(int, void *, void *)
 {
-    if (m_userDefined)
+    if (m_list.m_modified)
         m_profile->m_keys3c.FUN_0051ebf0(m_keys);
     m_keys.SetToPreset(1, g_unk0x6c069c);
     m_list.FUN_005ced90();
@@ -89,7 +89,7 @@ bool RHMenuShortcuts::FUN_00540590(int, void *, void *)
 // FUNCTION: GAME 0x005405e0
 bool RHMenuShortcuts::FUN_005405e0(int, void *, void *)
 {
-    if (m_userDefined)
+    if (m_list.m_modified)
         m_profile->m_keys3c.FUN_0051ebf0(m_keys);
     m_profile->m_keys34.FUN_0051ebf0(m_keys);
     ((RHPlayerProfileManager *)g_unk0x006c0e48)->Save();

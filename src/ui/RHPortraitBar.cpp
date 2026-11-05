@@ -313,12 +313,14 @@ void RHPortraitBar::ShiftPortraitsToRight()
     }
 }
 
-// Parked: the dirty-only block precedes queue processing instead of following it.
-// STUB: GAME 0x0055eda0
+// FUNCTION: GAME 0x0055eda0
 void RHPortraitBar::FUN_0055eda0()
 {
-    if (additions.GetSize() != 0 || removals.GetSize() != 0)
+    if (additions.GetSize() != 0)
+        goto processQueues;
+    if (removals.GetSize() != 0)
     {
+processQueues:
         MakeAllRemovals();
         MakeAllAdditions();
         MakePlacement();

@@ -25,5 +25,3 @@ void SBArray<SBGeoVector2D>::Insert(SBGeoVector2D *, unsigned int, const SBGeoVe
 void SBArray<SBGeoVector2D>::Remove(SBGeoVector2D *, SBGeoVector2D *) {}
 unsigned int SBArray<RHFrameHolderRecord>::GetSize() const { return Size(); }
 void RHUnk005051a0Array::FUN_00508090(RHUnk005068e0 *, unsigned int, const RHUnk005068e0 &) {}
-RHUnk00641782::RHUnk00641782() {}
-RHUnk00641782::~RHUnk00641782() {}

@@ -112,7 +112,7 @@ public:
     void FUN_00549f50();                                                       // ret
     bool FUN_0054a0f0(const void *arg);                                        // ret 4
     void FUN_0054a440(const void *element);                                    // ret 4
-    void FUN_0054a640(const void *arg);                                        // ret 4
+    SBFrameInputEvent *FUN_0054a640(const void *arg);                           // ret 4
     void FUN_0054a920();                                                       // ret
     bool FUN_0054ae90(RHElement *element);
     bool IsRealPoint(const SBGeoPoint2D &point);
@@ -122,6 +122,7 @@ public:
     void FUN_0054b5e0(const SBGeoPoint2D &point, unsigned short color);
     void FUN_0054b8b0(RHElement *element);
     void FUN_0054c1e0(const SBGeoPoint2D &point);
+    void ManageClick(const SBGeoPoint2D &point);
 
     unsigned long m_surface;
     unsigned long m_a4;

@@ -8,6 +8,7 @@
 #include "RHGameCampaignView.h"
 #include "RHGameBlazonWidget.h"
 #include "RHMapWindowClass.h"
+#include "RHMapResources.h"
 
 struct RHMenuEvent
 {
@@ -26,6 +27,7 @@ class RHUnk00452030;
 extern RHUnk0048a970 *g_unk0x6c0b3c;
 extern RHUnk00452030 *g_unk0x6c07fc;
 extern RHEngine *g_pEngine;
+extern RHMapResources *g_unk0x006c1840;
 
 DECOMP_SIZE_ASSERT(RHMenuMissionDescription, 0x938)
 
@@ -92,6 +94,21 @@ unsigned long RHMenuMissionDescription::FUN_00535620(const RHMission *mission)
     return 0xa4;
 }
 
+// FUNCTION: GAME 0x00535650
+std::wstring RHMenuMissionDescription::FUN_00535650(const RHMission *mission, unsigned long resource)
+{
+    RHMapResources *manager = g_unk0x006c1840;
+    RHDialogueSet *resources = g_pEngine->GetDynResources(*(unsigned long *)mission->m_profile);
+    std::wstring text;
+    if (!resources)
+        text =
+            // STRING: GAME 0x006b0e78
+            L"Unable to find the mission resource...";
+    else if (!manager->FUN_006009e0(*(unsigned *)resources, resource, (RHMapWideText &)text))
+        text = L"Invalid resource ID...";
+    return text;
+}
+
 // FUNCTION: GAME 0x005357d0
 int RHMenuMissionDescription::GetUserChoice() const
 {
@@ -113,7 +130,7 @@ bool RHMenuMissionDescription::FUN_00535800(int, void *, void *)
     menu.Create(m_mission, m_930);
     menu.FUN_00544b80(true, true);
     menu.FUN_00544300();
-    ((RHGameBlazonValue *)m_930)->FUN_0044f960(0);
+    m_930->FUN_0044f960(0);
     *(volatile char *)&m_buy.m_04 = (char)((RHGameCampaignView *)g_unk0x6c07fc)->FUN_00456230((RHGameMission *)m_mission);
     ((RHMapWindow *)m_screen)->FUN_0053c7e0();
     return true;
@@ -144,6 +161,7 @@ void EmitRHMenuMissionDescription(RHMenuMissionDescription *menu)
     menu->RouteEvent(0);
     menu->GetUserChoice();
     menu->FUN_00535620(0);
+    menu->FUN_00535650(0, 0);
     menu->FUN_005357e0(0, 0, 0);
     menu->FUN_005358d0(0, 0, 0);
     menu->FUN_00535910(0, 0, 0);

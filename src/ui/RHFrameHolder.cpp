@@ -1240,7 +1240,7 @@ void RHFrameDictionaryDumpEmit(RHUnk005069a0 *dictionary, SBFile &file)
     dictionary->FUN_00506b90(file);
 }
 
-void FUN_005ede40(RHUnk005ef320 *, const char *, ...);
+#include "SBDrawManagerCore.h"
 
 DECOMP_STATIC_ASSERT(offsetof(RHFrameHolder, m_nightDictionaries) == 0x28)
 DECOMP_STATIC_ASSERT(offsetof(RHFrameHolder, m_fogDictionaries) == 0x38)

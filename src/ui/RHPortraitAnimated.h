@@ -2,7 +2,7 @@
 #define RHPORTRAITANIMATED_H
 
 #include "RHWidgetStateMap.h"
-#include "RHUnk00641782.h"
+#include <yvals.h>
 
 extern RHUnk00514e10::Node *g_unk0x006c0b48;
 extern unsigned g_unk0x006c0b4c;
@@ -25,7 +25,7 @@ public:
         RHUnk00514e10 &map = m_map;
         RHPortraitClearMap(map);
         {
-            RHUnk00641782 guard;
+            std::_Lockit guard;
             if (--g_unk0x006c0b4c == 0)
             {
                 void *allocation = g_unk0x006c0b48;

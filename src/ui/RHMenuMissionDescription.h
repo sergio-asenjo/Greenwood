@@ -20,6 +20,7 @@ public:
     void RouteEvent(struct RHMenuEvent *event);
     bool HandleEvent(struct RHMenuEvent *event);
     static unsigned long FUN_00535620(const RHMission *mission);
+    static std::wstring FUN_00535650(const RHMission *mission, unsigned long resource);
     int GetUserChoice() const;
     bool FUN_005357e0(int message, void *widget, void *data);
     bool FUN_00535800(int message, void *widget, void *data);

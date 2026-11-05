@@ -39,13 +39,3 @@ RHMapResources *g_unk0x006c1840;
 SBUILifetime::~SBUILifetime() {}
 
 RHMapScreenTree::~RHMapScreenTree() {}
-
-void RHMenuScreenView::FUN_0053c140(unsigned long) {}
-
-class RHMapFocusWidget
-{
-public:
-    void FUN_00541060();
-};
-
-void RHMapFocusWidget::FUN_00541060() {}

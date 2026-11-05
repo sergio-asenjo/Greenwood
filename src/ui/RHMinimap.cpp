@@ -234,11 +234,90 @@ void RHMinimap::FUN_0054a440(const void *)
 {
 }
 
-// Parked: same widget base dependency (the +0x90 list, virtual +0x24/+0x44 and
-// the 0x60xxxx helper family).
+#include "SBUIKeyboardCalls.h"
+
+class RHUnk0048a970;
+extern RHUnk0048a970 *g_unk0x6c0b3c;
+
 // STUB: GAME 0x0054a640
-void RHMinimap::FUN_0054a640(const void *)
+SBFrameInputEvent *RHMinimap::FUN_0054a640(const void *arg)
 {
+    m_input.widget = this;
+    m_input.data = 0;
+    SBFrameInputEvent *event = &m_input;
+    m_input.type = 11;
+    m_input.next = 0;
+    const SBGeoPoint2D &point = *(const SBGeoPoint2D *)arg;
+    if (!((RHMapWidget *)this)->V44())
+    {
+        if (!((RHMapWidget *)this)->V24().FUN_006085a0(point) &&
+            ((RHMapWidget *)this)->V24().FUN_00608400(point) &&
+            IsRealPoint(point.Unk005fc110(((RHMapWidget *)this)->V24().Min())))
+            return event;
+        return 0;
+    }
+    if ((unsigned short)m_a4 != 0 &&
+        (*(RHGameWidgetInputCalls *const *)((const char *)arg + 0xc))->FUN_0060e240((unsigned short)m_a4) == 2)
+    {
+        if (m_120 == true)
+        {
+            m_128 = 2;
+            m_121 = false;
+            m_124 = 0.1f;
+        }
+        else
+        {
+            m_124 = 1.0f;
+            m_121 = true;
+        }
+        return event;
+    }
+    if (m_120 == true)
+        ((SBFrameWnd *)this)->FUN_0061ad20(m_e4);
+    else
+        ((SBFrameWnd *)this)->FUN_0061ad20(m_10c);
+    if (m_b0 && (*(const unsigned short *)((const char *)arg + 0xa) & 0x40) && m_120)
+    {
+        FUN_0054c1e0(point);
+        return event;
+    }
+    if (!((RHMapWidget *)this)->V24().FUN_006085a0(point) &&
+        ((RHMapWidget *)this)->V24().FUN_00608400(point) &&
+        IsRealPoint(point.Unk005fc110(((RHMapWidget *)this)->V24().Min())))
+    {
+        *(RHMinimap **)((char *)g_unk0x6c0b3c + 0x185c) = this;
+        m_122 = true;
+        unsigned short flags = *(const unsigned short *)((const char *)arg + 0xa);
+        if ((flags & 0x40) && m_b2)
+        {
+            FUN_0054c1e0(point);
+            return event;
+        }
+        if (flags & 9)
+            ManageClick(point);
+        if ((*(const unsigned short *)((const char *)arg + 0xa) & 2) && m_120 == true)
+        {
+            m_121 = false;
+            m_124 = 0.1f;
+            m_highlighted.erase(m_highlighted.begin(), m_highlighted.end());
+        }
+        if (*(const unsigned short *)((const char *)arg + 0xa) == 0)
+        {
+            m_128 = 1;
+            m_b2 = true;
+        }
+        return event;
+    }
+    m_b2 = false;
+    m_128 = 0;
+    if (m_122)
+    {
+        char *game = (char *)g_unk0x6c0b3c;
+        *(void **)(game + 0x1858) = 0;
+        *(void **)(game + 0x185c) = 0;
+        m_122 = false;
+    }
+    return 0;
 }
 
 // Parked: same widget base dependency (0x61ad20, 0x54b1f0 and the +0x120/+0xe4/
@@ -581,6 +660,45 @@ void RHMinimap::FUN_0054b8b0(RHElement *element)
 extern float g_unk0x006774e4;
 RHMessenger *RHUnk00546050();
 
+// FUNCTION: GAME 0x0054bfb0
+void RHMinimap::ManageClick(const SBGeoPoint2D &point)
+{
+    m_b0 = false;
+    if (!m_b1)
+    {
+        if (!m_120)
+        {
+            m_128 = 2;
+            m_124 = 1.0f;
+            m_121 = true;
+        }
+        else
+        {
+            SBGeoBoundingBox2D bounds;
+            ((RHMobileUnk00607da0 *)&bounds)->FUN_00607da0((const RHMobileUnk00607da0 &)((RHMapWidget *)this)->V24());
+            bounds.SetMin(bounds.Min().Unk005fc190(*(SBGeoPoint2D *)g_unk0x006c0c58));
+            bounds.SetMax(bounds.Max().FUN_005fc200(*(SBGeoPoint2D *)g_unk0x006c0c58));
+            if (bounds.FUN_00608400(point))
+            {
+                SBGeoPoint2D delta;
+                delta = point.Unk005fc110(bounds.Min());
+                float x = delta.m_x / (bounds.m_p1.m_x - bounds.m_p0.m_x);
+                float y = delta.m_y / (bounds.m_p1.m_y - bounds.m_p0.m_y);
+                if (((RHEngine *)m_engine)->FUN_004c7c90())
+                {
+                    ((RHEngine *)m_engine)->FUN_004d2330(6);
+                    unsigned width = *(unsigned *)(m_engine + 0x4730);
+                    float height = *(float *)(m_engine + 0x4734);
+                    ((RHEngine *)m_engine)->FUN_004c7f60(&SBGeoPoint2D(*(float *)&width * x, height * y));
+                }
+            }
+        }
+    }
+    else
+        m_b1 = false;
+    m_e0 = false;
+}
+
 // FUNCTION: GAME 0x0054c1e0
 void RHMinimap::FUN_0054c1e0(const SBGeoPoint2D &point)
 {
@@ -624,4 +742,5 @@ void RHMinimapHighlightEmit(RHMinimap *minimap, RHElement *element)
     minimap->FUN_0054ae90(element);
     minimap->RealToMap(minimap->m_b4, minimap->m_bc);
     minimap->IsRealPoint(minimap->m_b4);
+    minimap->ManageClick(minimap->m_b4);
 }

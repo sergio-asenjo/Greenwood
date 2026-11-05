@@ -56,8 +56,6 @@ RHPortraitStrategyCalls::RHPortraitStrategyCalls()
 }
 RHPortraitRootLifetime::RHPortraitRootLifetime() {}
 RHPortraitRootLifetime::~RHPortraitRootLifetime() {}
-RHPortraitResourceCollection::RHPortraitResourceCollection(bool) {}
-RHPortraitResourceCollection::~RHPortraitResourceCollection() {}
 void RHPortraitCtorCalls::FUN_005d6940(unsigned short) {}
 RHPortraitLifetime005d6320::RHPortraitLifetime005d6320() {}
 const std::wstring &RHPortraitActorCalls::FUN_00492730() { static std::wstring value; return value; }
@@ -66,8 +64,6 @@ typedef RHPortraitRenderer0060dab0 RHPortraitRenderer0060dad0;
 
 #include "RHPortraitRenderer0060d470.h"
 
-
-RHPortraitUnk005d0180::~RHPortraitUnk005d0180() {}
 
 // FUNCTION: GAME 0x0061d5e0
 unsigned RHPortraitInputRenderer::FUN_0061d5e0()

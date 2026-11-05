@@ -318,7 +318,6 @@ RHMenuSoundsSlider::RHMenuSoundsSlider() : m_highlighted(false)
 // SYNTHETIC: GAME 0x00543b50
 // ??1RHMenuSoundsSlider@@QAE@XZ
 
-// Parked: explicit event stores still hoist the event address before state arithmetic.
 // STUB: GAME 0x00543bb0
 RHMenuSoundsEvent *RHMenuSoundsSlider::FUN_00543bb0(const RHMenuSoundsInput &input)
 {
@@ -331,8 +330,13 @@ RHMenuSoundsEvent *RHMenuSoundsSlider::FUN_00543bb0(const RHMenuSoundsInput &inp
         result = 0;
         if (m_sliderBox.FUN_006083b0(input))
         {
-            m_state = (input.m_buttons & 0x40) ? 3 : 1;
-            result = MakeEvent(0);
+            unsigned buttons = input.m_buttons;
+            m_state = (buttons & 0x40) ? 3 : 1;
+            m_sliderEvent.m_widget = this;
+            m_sliderEvent.m_type = 0;
+            m_sliderEvent.m_data = 0;
+            m_sliderEvent.m_0c = 0;
+            result = &m_sliderEvent;
         }
         return result;
     case 1:
@@ -354,7 +358,7 @@ RHMenuSoundsEvent *RHMenuSoundsSlider::FUN_00543bb0(const RHMenuSoundsInput &inp
                 m_highlighted = true;
                 if (m_parent)
                     m_parent->Deselect(this);
-                return MakeEvent(2);
+                result = MakeEvent(2);
             }
         }
         else

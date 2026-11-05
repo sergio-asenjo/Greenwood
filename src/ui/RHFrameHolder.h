@@ -245,14 +245,7 @@ public:
     }
 };
 
-// SIZE 0x01
-class RHUnk00641782
-{
-public:
-    RHUnk00641782();
-    ~RHUnk00641782();
-    undefined m_00; // 0x00
-};
+#include "RHUnk00641782.h"
 
 // SIZE 0x10
 class RHUnk00507500
@@ -312,7 +305,7 @@ public:
 class RHUnkFXDraw
 {
 public:
-    unsigned long Unk005e4ed0(int, int, int, bool);
+    unsigned long Unk005e4ed0(unsigned short, unsigned short, unsigned long, bool);
     undefined m_00[0x10c]; // 0x00
     unsigned short m_depth; // 0x10c
 };

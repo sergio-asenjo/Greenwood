@@ -56,8 +56,8 @@ void RHGameBlazonWidget::FUN_005cc7b0(const SBGeoBoundingBox2D &bounds)
     RHMission *mission = FUN_005cc870();
     FUN_005cc840();
     if (mission) {
-        m_b0 = (RHGameBlazonValue *)new RHMenuShortMissionBlazons(mission, this);
-        ((RHMenuShortMissionBlazons *)m_b0)->FUN_0044ef60(bounds, false);
+        m_b0 = new RHMenuShortMissionBlazons(mission, this);
+        m_b0->FUN_0044ef60(bounds, 0);
     }
 }
 
@@ -65,7 +65,7 @@ void RHGameBlazonWidget::FUN_005cc7b0(const SBGeoBoundingBox2D &bounds)
 void RHGameBlazonWidget::FUN_005cc840()
 {
     if (m_b0) {
-        delete (RHMenuShortMissionBlazons *)m_b0;
+        delete m_b0;
         m_b0 = 0;
     }
 }

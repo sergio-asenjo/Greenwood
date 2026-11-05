@@ -3,6 +3,9 @@
 
 #include "Decomp.h"
 #include "RHMenuScreenTimer.h"
+#include "SBInputMouseState.h"
+#include "SBInputKeyboardState.h"
+#include "SBUIUnkSurface.h"
 #include <deque>
 #include <vector>
 #include <list>
@@ -14,14 +17,6 @@ public:
     SBUILifetime();
     ~SBUILifetime();
     undefined m_00[0x17f8];
-};
-
-class SBUIUnkSurface
-{
-public:
-    SBUIUnkSurface(unsigned long surface);
-    ~SBUIUnkSurface();
-    undefined m_00[0x20];
 };
 
 class SBThreadedInput;
@@ -94,13 +89,16 @@ public:
     unsigned long m_08;
     void *m_background;
     SBUILifetime m_sbui;
-    undefined m_1808[0x10c];
+    SBInputMouseState m_mouse;
+    SBInputKeyboardState m_keyboard;
     unsigned long m_1914;
     SBThreadedInput *m_input;
     std::deque<std::vector<RHMenuWindow *> > m_191c;
     SBUIUnkSurface m_surfaces;
     RHMapScreenTree m_196c;
     bool m_197c;
+    bool m_197d;
+    bool m_197e;
     std::list<RHMenuScreenTimer> m_1980;
     unsigned long m_198c;
 };

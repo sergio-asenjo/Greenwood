@@ -502,7 +502,7 @@ void RHMenuLoadSave::FUN_00531bd0()
         RHEngineWidenedCalls *draw = (RHEngineWidenedCalls *)g_unk0x6c11d0;
         if (*(int *)((char *)this + 0x8c4) != -1)
         {
-            draw->FUN_005e5160(*(int *)((char *)this + 0x8c4));
+            ((SBDrawManager *)draw)->FUN_005e5160(*(int *)((char *)this + 0x8c4));
             ((RHPortraitUnk005d5950 *)((char *)this + 0x7e4))->FUN_005d5940();
             *(int *)((char *)this + 0x8c4) = -1;
         }

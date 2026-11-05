@@ -257,7 +257,7 @@ void RHLoadingScreen::GenerateSand(SBFile &file)
         break;
     }
     ((SBDrawManager *)m_draw)->FUN_005e5ea0(viewport);
-    m_draw->Unk005e5160(surface);
+    ((SBDrawManager *)m_draw)->FUN_005e5160(surface);
     float scale = 255.0f / (maximum - minimum);
     sand = g_unk0x006c0bd4;
     m_height *= m_width;

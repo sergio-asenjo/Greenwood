@@ -43,19 +43,7 @@ public:
 };
 #endif
 
-// Target 0x005e6440 and 0x005eaa40, both __FILE__ 0x006b9264
-// ("P:\Robin Hood\SBLibNG\SBDrawManager.cpp"). Called as `mov ecx,[esi+0x1c]`;
-// BlitFull pushes five stack arguments (target `ret 0x14`) and BlitScaled six
-// (target `ret 0x18`), both returning bool in `al`. The float frame value is
-// passed by value (target `mov ecx,[esp+0x14]; push ecx`), unlike the resource
-// lookup which takes its address. They are two entries of the same draw-manager
-// sub-object.
-class RHUnk005e6440
-{
-public:
-    bool BlitFull(float f, int a, int b, void *widget, int c);
-    bool BlitScaled(float f, int a, int b, void *widget, int frame, int c);
-};
+#include "SBDrawManagerCore.h"
 
 class RHUIRendererPortrait
 {
@@ -76,7 +64,7 @@ public:
 #define m_widget (*(char *)((char *)this + 0x8))
 
 // Draw manager sub-object pointer (target `mov ecx,[esi+0x1c]`).
-#define m_draw (*(RHUnk005e6440 **)((char *)this + 0x1c))
+#define m_draw (*(SBDrawManager **)((char *)this + 0x1c))
 
 // Surface/handle resolved for the portrait (target `mov edx,[esi+0x38]`).
 #define m_surface (*(void **)((char *)this + 0x38))

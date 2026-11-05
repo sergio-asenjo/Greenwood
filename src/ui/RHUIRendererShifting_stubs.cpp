@@ -53,9 +53,3 @@ SBGeoBoundingBox2D &SBGeoBoundingBox2D::operator=(const SBGeoBoundingBox2D &)
 void SBGeoBoundingBox2D::Copy(const SBGeoBoundingBox2D &)
 {
 }
-
-void SBDrawManager::BlitAlphaKeying(unsigned long, unsigned long, unsigned long,
-                                    SBGeoBoundingBox2D *, unsigned short, unsigned short,
-                                    unsigned long)
-{
-}

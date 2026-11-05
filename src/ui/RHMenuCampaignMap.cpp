@@ -10,13 +10,16 @@
 #include "RHCampaignCommandLine.h"
 #include "RHFontManager.h"
 #include "RHGameMenuCalls.h"
-#define SBGEO_POINT2D_VIEW
 #include "SBGeoBoundingBox2DCore.h"
 #include "RHMenuCloseCalls.h"
 #include <windows.h>
 #include <stdio.h>
 #include <stddef.h>
 #include "RHShortMissionUpdateCalls.h"
+#include "SBThreadedInput.h"
+#include "RHGameActionCalls.h"
+
+void *FUN_005104c0();
 
 #include "RHMenuWindowClass.h"
 #include "RHUnk00528400.h"
@@ -454,16 +457,12 @@ void RHMenuCampaignMap::FUN_00528810()
     ((RHMapWidget *)((char *)this + 0x25ec))->V2c((const RHMapTitleText &)std::wstring(message));
 }
 
-class RHMapFocusWidget
-{
-public:
-    void FUN_00541060();
-};
+#include "RHMenuShortMissionDescriptionCore.h"
 
 // FUNCTION: GAME 0x00528a60
 void RHMenuCampaignMap::FUN_00528a60()
 {
-    RHMapFocusWidget *widget = (RHMapFocusWidget *)((char *)this + 0x226c);
+    RHMenuShortMissionDescription *widget = (RHMenuShortMissionDescription *)((char *)this + 0x226c);
     if ((*(RHMenuScreenView **)((char *)this + 0xb4))->FUN_0053c320(widget))
         widget->FUN_00541060();
 }
@@ -1288,10 +1287,9 @@ void RHMapTree::FUN_0053ad50()
 class RHUnkFXDraw
 {
 public:
-    unsigned long Unk005e4ed0(int, int, int, bool);
+    unsigned long Unk005e4ed0(unsigned short, unsigned short, unsigned long, bool);
     unsigned short FUN_005e56c0(unsigned long);
     unsigned short FUN_005e5750(unsigned long);
-    void FUN_005e6440(unsigned long, int, int, unsigned long, unsigned long);
 };
 
 class RHUnk005ef320;
@@ -1456,7 +1454,7 @@ unsigned long RHMapWindow::FUN_0053b6b0(unsigned long source, bool colorize, boo
     typedef unsigned long (RHUnkFXDraw::*CreateSurface)(unsigned short, unsigned short, unsigned long, bool);
     unsigned long surface = (draw->*reinterpret_cast<CreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(
         draw->FUN_005e56c0(0), draw->FUN_005e5750(0), 0, false);
-    draw->FUN_005e6440(source, 0, surface, 0, 0);
+    ((SBDrawManager *)draw)->FUN_005e6440(source, 0, surface, 0, 0);
     if (colorize)
         FUN_0053b330(surface, 0x96, 0.2f);
     return surface;
@@ -1651,6 +1649,33 @@ void RHMenuScreenView::FUN_0053c050()
             (widget->*notify)();
         }
     }
+}
+
+DECOMP_STATIC_ASSERT(offsetof(RHMenuScreenView, m_mouse) == 0x1808)
+DECOMP_STATIC_ASSERT(offsetof(RHMenuScreenView, m_keyboard) == 0x1812)
+DECOMP_STATIC_ASSERT(offsetof(RHMenuScreenView, m_197d) == 0x197d)
+DECOMP_STATIC_ASSERT(offsetof(RHMenuScreenView, m_197e) == 0x197e)
+
+// STUB: GAME 0x0053c140
+void RHMenuScreenView::FUN_0053c140(unsigned long flags)
+{
+    memset(&m_mouse, 0, sizeof(m_mouse));
+    memset(&m_keyboard, 0, sizeof(m_keyboard));
+    SBUI &ui = (SBUI &)m_sbui;
+    ui.FUN_00619c20(flags);
+    ui.m_surface = (unsigned long)m_background;
+    ui.InputLoop(m_mouse, m_keyboard, true);
+    m_input->CleanUpInputs();
+    m_input->ClearBackgroundStack();
+    ((RHGameActionCalls *)&ui)->FUN_005104d0(*(SBGeoPoint2D *)FUN_005104c0());
+    m_197d = g_instantRefresh;
+    m_197e = g_mouseEnabled;
+    SBThreadedInput::SetInstantRefreshMode(false);
+    m_input->SetMouseEnabled(true);
+    // STRING: GAME 0x006b0194
+    ui.FUN_00619c80((SBUIFontView *)((RHFontManager *)RHFontManager::FUN_005024f0())->GetFont("Tooltips"),
+        (SBUIFontView *)((RHFontManager *)RHFontManager::FUN_005024f0())->GetFont("Background"));
+    ui.m_1784 = 0x19;
 }
 
 // FUNCTION: GAME 0x0053c320

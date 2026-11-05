@@ -39,18 +39,7 @@ public:
     ~RHMapTitleText() { ((RHMapWideText *)this)->Tidy(true); }
 };
 
-// SIZE 0x08
-#define SBGEO_POINT2D_VIEW
-class SBGeoPoint2D
-{
-public:
-    SBGeoPoint2D();
-    ~SBGeoPoint2D();
-    SBGeoPoint2D(float, float);
-    SBGeoPoint2D &FUN_005fc250(const SBGeoPoint2D &other);
-    float m_x; // 0x00
-    float m_y; // 0x04
-};
+#include "SBGeoPoint2D.h"
 
 #include "RHMapBox.h"
 

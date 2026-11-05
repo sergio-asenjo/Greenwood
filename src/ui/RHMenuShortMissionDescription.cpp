@@ -3,6 +3,8 @@
 // binding evidence.
 
 #include "SBNullstr.h"
+#include "SBGeoBoundingBox2DCore.h"
+#include "SBGeoVector2D.h"
 #include "RHMenuShortMissionDescription.h"
 #include "RHMapBox.h"
 #include "RHMapResources.h"
@@ -12,9 +14,17 @@
 #include "RHMapWidget.h"
 #include "RHMenuCampaignMapClass.h"
 #include "SBUIRenderer.h"
+#include "SBThreadedInput.h"
+#include "SBFrameWnd.h"
+#include <stddef.h>
 
 extern RHEngine *g_pEngine;
 extern RHMapResources *g_unk0x006c1840;
+
+DECOMP_SIZE_ASSERT(RHMenuShortMissionDescription, 0x380)
+DECOMP_STATIC_ASSERT(offsetof(RHMenuShortMissionDescription, m_box) == 0x364)
+DECOMP_STATIC_ASSERT(offsetof(RHMenuShortMissionDescription, m_blazons) == 0x378)
+DECOMP_STATIC_ASSERT(offsetof(RHMenuShortMissionDescription, m_mission) == 0x37c)
 
 class RHShortMissionWidgetCalls
 {
@@ -123,7 +133,7 @@ void RHShortMissionUpdateCalls::FUN_00540ed0(RHMission *mission)
         if (mission && (char)mission->FUN_0054cbf0())
         {
             menu->m_blazons = new RHMenuShortMissionBlazons(mission, this);
-            menu->m_blazons->FUN_0044ef60(RHMapBox(5.0f, 80.0f, 215.0f, 95.0f), false);
+            menu->m_blazons->FUN_0044ef60(RHMapBox(5.0f, 80.0f, 215.0f, 95.0f), 0);
         }
         unsigned picture = *(unsigned short *)((char *)mission->m_profile + 0x4c) - (unsigned short)mission->m_4 - 1;
         if (picture <= 3)
@@ -132,10 +142,39 @@ void RHShortMissionUpdateCalls::FUN_00540ed0(RHMission *mission)
             ((RHShortMissionWidgetCalls *)&menu->m_picture)->V38(4);
     }
     if (mission && (char)mission->FUN_0054cbf0())
-        ((RHGameBlazonValue *)menu->m_blazons)->FUN_0044f960(0);
+        menu->m_blazons->FUN_0044f960(0);
+}
+
+// FUNCTION: GAME 0x00541060
+void RHMenuShortMissionDescription::FUN_00541060()
+{
+    SBGeoPoint2D position = ((SBGeoPoint2D &)g_inputPosition).Unk005fc190(SBGeoVector2D(25.0f, 25.0f));
+    RHUnkFXDraw *draw = (RHUnkFXDraw *)g_unk0x6c11d0;
+    SBGeoVector2D offset;
+    SBGeoBoundingBox2D bounds(((RHMapWidget *)this)->V24());
+    SBGeoBoundingBox2D previous(((RHMapWidget *)this)->V24());
+    offset = position.Unk005fc110(bounds.Min());
+    ((RHMobileUnk006091b0 *)&bounds)->FUN_006091b0(offset);
+    if ((char)bounds.FUN_00609170(m_box)) {
+        if ((float)draw->FUN_005e56c0(0) < bounds.Max().GetX())
+            offset.m_x = (float)draw->FUN_005e56c0(0) - bounds.Max().GetX();
+        else
+            offset.m_x = 0.0f;
+        if ((float)draw->FUN_005e5750(0) < bounds.Max().GetY())
+            offset.m_y = (float)draw->FUN_005e5750(0) - bounds.Max().GetY();
+        else
+            offset.m_y = 0.0f;
+        ((RHMobileUnk006091b0 *)&bounds)->FUN_006091b0(offset);
+        ((SBFrameWnd *)this)->FUN_0061ad20(bounds);
+        previous.FUN_00607e90(bounds);
+        m_screen->FUN_0053c7f0((unsigned long)&previous);
+        ((RHMobileUnk00607da0 *)&m_box)->FUN_00607da0((const RHMobileUnk00607da0 &)bounds);
+    }
+    ((RHMapWidget *)this)->V1c();
 }
 
 void EmitRHShortMissionUpdate(RHMenuShortMissionDescription *menu, RHMission *mission)
 {
     ((RHShortMissionUpdateCalls *)menu)->FUN_00540ed0(mission);
+    menu->FUN_00541060();
 }

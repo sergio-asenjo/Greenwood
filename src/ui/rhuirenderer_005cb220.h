@@ -12,7 +12,6 @@ class RHUnk005ef320
 {
 public:
     void FUN_005e57e0(unsigned surface, SBGeoVector2D &size);
-    bool FUN_005e6440(unsigned long surface, int source, unsigned long target, SBGeoBoundingBox2D *box, int flags);
 };
 
 #endif

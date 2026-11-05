@@ -11,7 +11,6 @@
 //
 // Layout (from 0x00540540..0x00540650):
 //   +0x640  key list widget (0x005ced90)
-//   +0x850  bool, user-defined set active
 //   +0x868  RHKeyConfig being edited
 //   +0x870  active profile (key configs at +0x34 / +0x3c)
 
@@ -23,6 +22,7 @@
 #include "RHMenuWindow.h"
 #include "../engine/RHGameInputTranslator.h"
 #include "../engine/RHKeyConfig.h"
+#include "RHMenuShortcutsList.h"
 
 class RHMenuShortcutsKeys : public RHKeyConfig
 {
@@ -38,19 +38,6 @@ public:
     undefined m_00[0x34]; // 0x00
     RHMenuShortcutsKeys m_keys34; // 0x34
     RHMenuShortcutsKeys m_keys3c; // 0x3c
-};
-
-// SIZE 0x210
-class RHMenuShortcutsList
-{
-public:
-    RHMenuShortcutsList();
-    ~RHMenuShortcutsList();
-    void FUN_005ced90();
-    void FUN_005cf1c0(RHMenuShortcutsKeys *keys);
-
-    undefined m_00[0x20c]; // 0x00
-    RHMenuShortcutsKeys *m_20c; // 0x20c
 };
 
 extern bool g_unk0x6c069c;
@@ -80,8 +67,6 @@ public:
     RHPortraitButton m_button440; // 0x440
     RHPortraitButton m_button540; // 0x540
     RHMenuShortcutsList m_list; // 0x640
-    bool m_userDefined; // 0x850
-    undefined m_851[0x17]; // 0x851
     RHMenuShortcutsKeys m_keys; // 0x868
     RHMenuShortcutsProfile *m_profile; // 0x870
 };

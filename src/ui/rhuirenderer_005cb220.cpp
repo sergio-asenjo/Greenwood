@@ -1,4 +1,5 @@
 #include "rhuirenderer_005cb220.h"
+#include "SBDrawManagerCore.h"
 
 DECOMP_SIZE_ASSERT(SBGeoBoundingBox2D, 0x14)
 DECOMP_SIZE_ASSERT(SBUIUnk0060da20, 0x4c)
@@ -29,7 +30,7 @@ bool RHGameRenderer005cb220::FUN_005cb270(unsigned id)
 {
     if (m_alternate == -1)
         return ((SBUIUnk0060da20 *)this)->FUN_0060da20(id);
-    return m_draw->FUN_005e6440(m_alternate, 0, m_target, (SBGeoBoundingBox2D *)m_box, 0);
+    return ((SBDrawManager *)m_draw)->FUN_005e6440(m_alternate, 0, m_target, (SBGeoBoundingBox2D *)m_box, 0);
 }
 
 // FUNCTION: GAME 0x005cb2a0

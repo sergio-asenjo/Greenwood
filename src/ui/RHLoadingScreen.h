@@ -9,8 +9,7 @@
 class RHUnkFXDraw
 {
 public:
-    unsigned long Unk005e4ed0(int, int, int, bool);
-    void Unk005e5160(unsigned long);
+    unsigned long Unk005e4ed0(unsigned short, unsigned short, unsigned long, bool);
     unsigned short UnkField10c() const { return m_depth; }
     undefined m_00[0x10c]; // 0x00
     unsigned short m_depth; // +0x10c

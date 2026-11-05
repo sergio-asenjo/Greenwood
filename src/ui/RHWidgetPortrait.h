@@ -1,3 +1,6 @@
+#ifndef RHWIDGETPORTRAIT_H
+#define RHWIDGETPORTRAIT_H
+
 // RHWidgetPortrait — declarations shared by RHWidgetPortrait.cpp (decompiled
 // TU) and RHWidgetPortrait_stubs.cpp (external-symbol stubs).
 //
@@ -17,6 +20,7 @@
 #include "SB.h"
 #include "Decomp.h"
 #include <list>
+#include "SBListCursor.h"
 #include "RHRendererGeometry.h"
 #include "../engine/RHGame_calls.h"
 #include "RHPortraitUnk005d3880.h"
@@ -60,13 +64,15 @@ public:
 
 #include "RHPortraitStrategyCalls.h"
 
+struct RHPortraitWidgetEvent;
+
 // VTABLE: GAME 0x00679f30
 class RHUnk005cca80
 {
 public:
     RHUnk005cca80();
     virtual void *V00() = 0;
-    virtual void *V04(bool enabled) = 0;
+    virtual RHPortraitWidgetEvent *V04(bool enabled) = 0;
     unsigned m_4;
 };
 
@@ -74,13 +80,7 @@ class SBGeoBoundingBox2D;
 
 #include "RHPortraitRootLifetime.h"
 
-class RHPortraitResourceCollection
-{
-public:
-    RHPortraitResourceCollection(bool value);
-    ~RHPortraitResourceCollection();
-    undefined m_data[0x20];
-};
+#include "SBUIUnkSurface.h"
 
 class RHPortraitCtorCalls
 {
@@ -138,16 +138,6 @@ public:
 struct RHPortraitWidgetEvent;
 struct RHPortraitWidgetInput;
 
-class RHPortraitUnk005d0180
-{
-public:
-    ~RHPortraitUnk005d0180();
-    void *FUN_005d09f0(unsigned flags);
-    RHPortraitWidgetEvent *FUN_005d0340(const RHPortraitWidgetInput &input);
-    undefined m_00[0x1fc];
-    RHPortraitWidgetEvent m_event;
-};
-
 #include "RHPortraitInputRenderer.h"
 
 // VTABLE: GAME 0x0067a044
@@ -165,64 +155,134 @@ class RHPortraitInputWidget : public RHGameWidgetLifetimeBase
 {
 public:
     RHPortraitInputWidget();
-    ~RHPortraitInputWidget();
+    ~RHPortraitInputWidget() {}
     void *FUN_005d09b0(unsigned flags);
     RHPortraitInputRendererMember m_renderer;
 };
 
-class RHPortraitTextLines
+#pragma inline_depth(4)
+class RHPortraitTextLines : public SBListCursorStorage<std::list<std::wstring> >
 {
 public:
     RHPortraitTextLines();
     void Append(const std::wstring &value)
     {
-        m_list.push_back(value);
+        push_back(value);
         m_dirty = true;
     }
     ~RHPortraitTextLines()
     {
-        m_list.clear();
+        Destroy();
     }
-    std::list<std::wstring> m_list;
-    std::list<std::wstring>::iterator m_current;
-    bool m_dirty;
-    int m_index;
+    void Destroy() { clear(); }
     undefined m_18[8];
     std::wstring m_text;
 };
 
-class RHPortraitItemIndices
+class RHPortraitItemIndices : public SBListCursorStorage<std::list<unsigned long> >
 {
 public:
+    RHPortraitItemIndices();
+    unsigned long &At(int index);
     void Append(const unsigned long &value)
     {
-        m_list.push_back(value);
+        push_back(value);
         m_dirty = true;
     }
     ~RHPortraitItemIndices()
     {
-        m_list.clear();
+        Destroy();
     }
-    std::list<unsigned long> m_list;
-    std::list<unsigned long>::iterator m_current;
-    bool m_dirty;
-    int m_index;
+    void Destroy() { clear(); }
 };
+#pragma inline_depth()
 
 // VTABLE: GAME 0x00679fd4
 class RHPortraitUnk005cf570 : public RHPortraitInputWidget
 {
 public:
-    ~RHPortraitUnk005cf570();
-    void *FUN_005d09d0(unsigned flags);
+    __forceinline RHPortraitUnk005cf570()
+    {
+        m_188 = 0xffff;
+        m_18a = 0xffff;
+        m_18c = 0;
+        SBGeoPoint2D &point = m_point;
+        point.m_x = -1.0f;
+        point.m_y = -1.0f;
+        m_18e = 0xffff;
+        m_190 = 0xffff;
+        m_192 = 0xffff;
+        m_194 = 0xffff;
+        m_196 = 0xffff;
+        m_198 = 0xffff;
+        m_19a = false;
+        m_19b = false;
+        m_state = 0;
+    }
+    ~RHPortraitUnk005cf570() {}
+    virtual void *FUN_005dee10(unsigned flags);
     unsigned short AddItem(const std::wstring &text, std::wstring value, unsigned long index);
+    void DeleteAllItems()
+    {
+        m_second.Clear();
+        m_first.Clear();
+        m_items.Clear();
+        m_188 = 0xffff;
+        m_18a = 0xffff;
+        m_18c = 0;
+        m_19a = true;
+        m_19b = true;
+    }
     RHPortraitTextLines m_first;
     RHPortraitTextLines m_second;
     RHPortraitItemIndices m_items;
-    undefined m_17c[0x28];
+    undefined m_17c[0x0c];
+    unsigned short m_188;
+    unsigned short m_18a;
+    unsigned short m_18c;
+    unsigned short m_18e;
+    unsigned short m_190;
+    unsigned short m_192;
+    unsigned short m_194;
+    unsigned short m_196;
+    unsigned short m_198;
+    bool m_19a;
+    bool m_19b;
+    undefined m_19c[8];
     SBGeoPoint2D m_point;
     SBGeoBoundingBox2D m_firstBox;
     SBGeoBoundingBox2D m_secondBox;
+};
+
+class __declspec(novtable) RHPortraitUnk005d06d0 : public RHUnk005cca80
+{
+public:
+    virtual void *V00();
+    virtual RHPortraitWidgetEvent *V04(bool enabled);
+};
+
+#include "RHPortraitAnimated.h"
+
+// VTABLE: GAME 0x00679f94 RHPortraitUnk005cf570
+// VTABLE: GAME 0x00679fcc RHPortraitUnk005d06d0
+class RHPortraitUnk005d0180 : public RHPortraitUnk005cf570, public RHPortraitAnimated, public RHPortraitUnk005d06d0
+{
+public:
+    RHPortraitUnk005d0180() : RHPortraitAnimated(20), m_1f8(false), m_1f9(true)
+    {
+        m_map.FUN_00514e10(14) = 1;
+        m_map.FUN_00514e10(15) = 1;
+        const int key = 2;
+        const int state = 0;
+        RHUnk00514e10::Iterator position = ((RHMenuLoadSaveMap &)m_map).FUN_00531d80((const RHUnk00514e10::Value &)RHMenuLoadSaveEntry(key, state)).first;
+        position.node->value.second = 0;
+    }
+    ~RHPortraitUnk005d0180() {}
+    virtual void *FUN_005dee10(unsigned flags);
+    RHPortraitWidgetEvent *FUN_005d0340(const RHPortraitWidgetInput &input);
+    bool m_1f8;
+    bool m_1f9;
+    RHPortraitWidgetEvent m_event;
 };
 
 class RHPortraitInputCalls
@@ -280,3 +340,5 @@ public:
 
 unsigned FUN_005fb1d0(unsigned key);
 int FUN_005fb0f0(unsigned key, unsigned short *characters, const void *state, unsigned flags);
+
+#endif
