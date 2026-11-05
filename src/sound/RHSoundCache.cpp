@@ -935,15 +935,15 @@ std::pair<RHSoundCacheEntryMap::iterator, bool> RHSoundCacheEntryMap::FUN_005af0
     RHSoundCacheGroupNode *parent = *(RHSoundCacheGroupNode **)((char *)this + 4);
     RHSoundCacheGroupNode *node = parent->m_04;
     bool left = true;
-    RHUnk00641782 lock;
-    lock.FUN_00641782();
-    while (node != g_unk0x006c10ac)
     {
-        parent = node;
-        left = value.first < node->m_0c;
-        node = left ? node->m_00 : node->m_08;
+        RHUnk00641782 lock;
+        while (node != g_unk0x006c10ac)
+        {
+            parent = node;
+            left = value.first < node->m_0c;
+            node = left ? node->m_00 : node->m_08;
+        }
     }
-    lock.FUN_0064181e();
     if (*(bool *)((char *)this + 8))
     {
         std::pair<iterator, bool> result((const iterator &)FUN_005b04c0(node, parent, value), true);
@@ -1008,15 +1008,15 @@ RHSoundCacheGroupInsert &RHSoundCacheGroups::FUN_005af600(RHSoundCacheGroupInser
     RHSoundCacheGroupNode *parent = *(RHSoundCacheGroupNode **)((char *)this + 4);
     RHSoundCacheGroupNode *node = parent->m_04;
     bool left = true;
-    RHUnk00641782 lock;
-    lock.FUN_00641782();
-    while (node != g_unk0x006c10a4)
     {
-        parent = node;
-        left = value.first < node->m_0c;
-        node = left ? node->m_00 : node->m_08;
+        RHUnk00641782 lock;
+        while (node != g_unk0x006c10a4)
+        {
+            parent = node;
+            left = value.first < node->m_0c;
+            node = left ? node->m_00 : node->m_08;
+        }
     }
-    lock.FUN_0064181e();
     if (*(bool *)((char *)this + 8))
     {
         output = RHSoundCacheGroupInsert(FUN_005b10e0(node, parent, value), true);

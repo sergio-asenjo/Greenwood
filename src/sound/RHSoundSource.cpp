@@ -12,7 +12,9 @@
 
 extern double g_unk0x00677688;
 
-#define m_08 (*(unsigned int *)((char *)this + 0x08))
+// GLOBAL: GAME 0x00679e38
+const float g_unk0x00679e38 = 2.55f;
+
 #define m_40 (*(unsigned int *)((char *)this + 0x40))
 #define m_1c (*(RHUnk005b4700 *)((char *)this + 0x1c))
 
@@ -181,18 +183,20 @@ bool RHSoundSource::Serialize(SBFile &file)
     return true;
 }
 
-// Parked: point-array allocation and exception cleanup still differ from the target.
-// STUB: GAME 0x005b3f30
+// FUNCTION: GAME 0x005b3f30
 void RHSoundSource::FUN_005b3f30(SBFile &file)
 {
 #define RH_SOUND_READ(value, size) file.Access(&(value), size)
     unsigned int code;
     unsigned short count;
+    char scratch;
+    short x;
+    short y;
     RH_SOUND_READ(m_0c, 4);
     RH_SOUND_READ(m_4c, 1);
     RH_SOUND_READ(code, 1);
     m_08 = code & 0xff;
-    if ((m_08 & 0xff) == 2)
+    if (m_08 == 2)
     {
         RH_SOUND_READ(m_10[0x34], 2);
         RH_SOUND_READ(m_10[0x36], 2);
@@ -204,29 +208,28 @@ void RHSoundSource::FUN_005b3f30(SBFile &file)
     {
         RH_SOUND_READ(m_10[2], 2);
         RH_SOUND_READ(m_10[4], 2);
-        RH_SOUND_READ(code, 1);
+        RH_SOUND_READ(scratch, 1);
         RH_SOUND_READ(count, 2);
-        ((RHUnk005b4700 *)&m_10.m_0c.m_storage)->FUN_005b4700(count);
-        m_10.m_0c.m_changed = true;
+        m_10.m_0c.SetSize(count);
         for (unsigned short index = 0; index < count; ++index)
         {
-            short x;
-            short y;
             RH_SOUND_READ(x, 2);
             RH_SOUND_READ(y, 2);
-            m_10.m_0c.m_storage.m_first[index].m_x = (float)x;
-            m_10.m_0c.m_storage.m_first[index].m_y = (float)y;
+            m_1c[index] = SBGeoPoint2D((float)x, (float)y);
         }
-        RH_SOUND_READ(code, 1);
-        RH_SOUND_READ(m_10.m_38, 2);
-        if (m_10.m_38 > 100)
-            m_10.m_38 = 100;
-        RH_SOUND_READ(m_10.m_3a, 2);
-        if (m_10.m_3a > 100)
-            m_10.m_3a = 100;
-        RH_SOUND_READ(m_10.m_36, 2);
+        RH_SOUND_READ(scratch, 1);
+        RH_SOUND_READ(m_10.m_08, 2);
+        if (m_10.m_08 > 100)
+            m_10.m_08 = 100;
+        m_10.m_08 = (unsigned short)(m_10.m_08 * g_unk0x00679e38);
+        RH_SOUND_READ(m_10.m_0a, 2);
+        if (m_10.m_0a > 100)
+            m_10.m_0a = 100;
+        m_10.m_0a = (unsigned short)(m_10.m_0a * g_unk0x00679e38);
+        RH_SOUND_READ(m_10.m_06, 2);
     }
-    RH_SOUND_READ(m_40, 1);
+    RH_SOUND_READ(code, 1);
+    m_40 = code & 0xff;
     RH_SOUND_READ(m_04, 4);
 #undef RH_SOUND_READ
 }

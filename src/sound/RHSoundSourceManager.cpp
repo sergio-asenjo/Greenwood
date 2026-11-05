@@ -5,6 +5,11 @@
 #include "RHTreeDec.h"
 #include "RHCampaignPointerArray.h"
 
+template<> inline unsigned RHCampaignPointerArray<RHSoundSource *>::SizeForGrowth()
+{
+    return size();
+}
+
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 DECOMP_SIZE_ASSERT(RHSoundSourcePointStorage, 0x10)
 DECOMP_SIZE_ASSERT(RHSoundSourcePoints, 0x24)
@@ -13,17 +18,6 @@ DECOMP_SIZE_ASSERT(RHSoundSource, 0x50)
 DECOMP_SIZE_ASSERT(RHSoundSourceArray, 0x20)
 DECOMP_SIZE_ASSERT(RHSoundSourceIterator, 0x04)
 DECOMP_SIZE_ASSERT(RHSoundSourceManager, 0x24)
-
-// SIZE 0x10
-struct RHSoundSourceSerializationState
-{
-    unsigned int index; // 0x00
-    RHSoundSource *source; // 0x04
-    int id; // 0x08
-    int resource; // 0x0c
-};
-
-DECOMP_SIZE_ASSERT(RHSoundSourceSerializationState, 0x10)
 
 // FUNCTION: GAME 0x005b3880
 RHSoundSource::RHSoundSource() : m_04(0), m_08(1), m_0c(-1), m_4c(false)
@@ -71,15 +65,15 @@ void RHSoundSourceManager::RHUnk005b4ae0()
 void FUN_005e1d50(SBFile &file, unsigned long tag, int level);
 void FUN_005e20c0(SBFile &file);
 
-// STUB: GAME 0x005b4b50
+// FUNCTION: GAME 0x005b4b50
 void RHSoundSourceManager::FUN_005b4b50(void *input, void *mask, void *output)
 {
     SBFile &file = *(SBFile *)input;
     FUN_005e1d50(file, 0x4c4f5544, 2);
     unsigned short count;
     file.Access(&count, 2);
-    RHSoundSourceArray &sources = m_sources;
     for (unsigned int index = 0; (unsigned short)index < count; ++index) {
+        RHSoundSourceArray &sources = m_sources;
         RHSoundSource *source = new RHSoundSource;
         source->FUN_005b3f30(file);
         if (source->m_04 & (unsigned long)mask) {
@@ -165,14 +159,16 @@ bool RHSoundSourceManager::FUN_005b4f00(RHSoundSource *source)
     return result;
 }
 
-// Parked: 91.21%; scratch state is +0x14..+0x20, target +0x10..+0x1c.
-// STUB: GAME 0x005b5000
+// FUNCTION: GAME 0x005b5000
 bool RHSoundSourceManager::Serialize(SBFile &file)
 {
     // STRING: GAME 0x006b8730
     RHSerializeName(file, "RHSoundSourceManager");
     int count;
-    RHSoundSourceSerializationState state;
+    unsigned int index;
+    RHSoundSource *source;
+    int id;
+    int resource;
     if (file.m_bLoading)
     {
         RHUnk005b4ae0();
@@ -183,20 +179,20 @@ bool RHSoundSourceManager::Serialize(SBFile &file)
                      "Serialize failed reason is %s", error->m_chars ? error->m_chars : "");
             return false;
         }
-        for (state.index = 0; (unsigned short)state.index < (unsigned short)count; ++state.index)
+        for (index = 0; (unsigned short)index < (unsigned short)count; ++index)
         {
-            if (file.Access(&state.id, 2) < 0)
+            if (file.Access(&id, 2) < 0)
             {
                 SBString *error = file.GetError();
                 SBAssert(0, "P:\\Robin Hood\\RHsoundsourcemanager.cpp", 0x119,
                          "Serialize failed reason is %s", error->m_chars ? error->m_chars : "");
                 return false;
             }
-            if ((short)state.id != -1)
+            if ((short)id != -1)
             {
-                state.source = new RHSoundSource;
-                state.source->Serialize(file);
-                if (file.Access(&state.resource, 4) < 0)
+                source = new RHSoundSource;
+                source->Serialize(file);
+                if (file.Access(&resource, 4) < 0)
                 {
                     SBString *error = file.GetError();
                     SBAssert(0, "P:\\Robin Hood\\RHsoundsourcemanager.cpp", 0x120,
@@ -205,13 +201,13 @@ bool RHSoundSourceManager::Serialize(SBFile &file)
                 }
             }
             else
-                state.source = 0;
-            m_sources.InsertLast(state.source);
+                source = 0;
+            m_sources.InsertLast(source);
         }
     }
     else
     {
-        state.id = -1;
+        id = -1;
         count = m_sources.GetSize();
         if (file.Access(&count, 2) < 0)
         {
@@ -220,21 +216,21 @@ bool RHSoundSourceManager::Serialize(SBFile &file)
                      "Serialize failed reason is %s", error->m_chars ? error->m_chars : "");
             return false;
         }
-        for (state.index = 0; (unsigned short)state.index < (unsigned short)count; ++state.index)
+        for (index = 0; (unsigned short)index < (unsigned short)count; ++index)
         {
-            state.id = (int)m_sources[(unsigned short)state.index];
-            if (state.id)
+            source = m_sources[(unsigned short)index];
+            if (source)
             {
-                if (file.Access(&state.source, 2) < 0)
+                if (file.Access(&index, 2) < 0)
                 {
                     SBString *error = file.GetError();
                     SBAssert(0, "P:\\Robin Hood\\RHsoundsourcemanager.cpp", 0x139,
                              "Serialize failed reason is %s", error->m_chars ? error->m_chars : "");
                     return false;
                 }
-                state.source->Serialize(file);
-                state.resource = state.source->m_0c;
-                if (file.Access(&state.resource, 4) < 0)
+                source->Serialize(file);
+                resource = source->m_0c;
+                if (file.Access(&resource, 4) < 0)
                 {
                     SBString *error = file.GetError();
                     SBAssert(0, "P:\\Robin Hood\\RHsoundsourcemanager.cpp", 0x13d,
@@ -242,7 +238,7 @@ bool RHSoundSourceManager::Serialize(SBFile &file)
                     return false;
                 }
             }
-            else if (file.Access(&state.id, 2) < 0)
+            else if (file.Access(&id, 2) < 0)
             {
                 SBString *error = file.GetError();
                 SBAssert(0, "P:\\Robin Hood\\RHsoundsourcemanager.cpp", 0x141,

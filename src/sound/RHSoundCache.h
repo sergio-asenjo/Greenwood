@@ -147,15 +147,6 @@ struct RHsoundGroup
 
 #include "RHSoundCacheCore.h"
 
-// SIZE 0x01
-struct RHUnk00641782
-{
-    void FUN_00641782();
-    void FUN_0064181e();
-    undefined m_00; // 0x00
-};
-
-
 #include "RHUnk005f4fc0.h"
 
 class RHProfileFile

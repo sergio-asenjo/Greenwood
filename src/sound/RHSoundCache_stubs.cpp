@@ -6,8 +6,6 @@ RHSoundCacheMusic g_unk0x006c1090;
 // GLOBAL: GAME 0x006c0686
 bool g_unk0x006c0686;
 
-void RHUnk00641782::FUN_00641782() {}
-void RHUnk00641782::FUN_0064181e() {}
 void *FUN_00643705(void *memory, unsigned int size) { return realloc(memory, size); }
 
 RHsoundGroup::~RHsoundGroup() {}
@@ -37,8 +35,6 @@ unsigned int RHMapResources::FUN_00600620(unsigned long) { return 0; }
 void FUN_006416e6() {}
 void RHSoundCacheString::FUN_00402780() {}
 
-RHUnk00641782Lock::RHUnk00641782Lock() {}
-RHUnk00641782Lock::~RHUnk00641782Lock() {}
 
 RHSoundCacheGroupIterator EmitRHSoundCacheEntryInsert(RHSoundCacheEntryMap &tree, const RHSoundCacheEntryMap::value_type &value)
 {

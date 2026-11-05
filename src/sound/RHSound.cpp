@@ -1622,8 +1622,8 @@ void RHSound::GetCacheStats(RHsampleCacheStats *stats, int &count)
 // STUB: GAME 0x005a9c50
 bool RHSound::Serialize(SBFile &file)
 {
-    char loading = file.m_bLoading;
     char available = g_unk0x006c0685;
+    char loading = file.m_bLoading;
     RHSOUND_ACCESS(available, 1, 2991);
     if (available)
     {
@@ -2224,14 +2224,12 @@ RHSoundFileTree::Pair RHSoundFileTree::FUN_005b0870(const Value &value)
     bool left = true;
     {
         RHUnk00641782 lock;
-        lock.FUN_00641782();
         while (node != g_unk0x006c10b4)
         {
             parent = node;
             left = value.m_key < node->m_key;
             node = left ? node->m_left : node->m_right;
         }
-        lock.FUN_0064181e();
     }
     if (m_multi)
     {

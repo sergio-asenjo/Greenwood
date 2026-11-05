@@ -20,11 +20,7 @@ struct RHSoundCacheGroupNode
     undefined4 m_14;
 };
 
-struct RHUnk00641782Lock
-{
-    RHUnk00641782Lock();
-    ~RHUnk00641782Lock();
-};
+#include "RHUnk00641782.h"
 
 struct RHSoundCacheGroupIterator
 {
