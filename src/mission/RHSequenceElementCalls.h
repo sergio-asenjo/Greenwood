@@ -18,6 +18,7 @@ public:
     void FUN_00585450(int priority);
     void FUN_00585570();
     void FUN_00585710();
+    void FUN_005857c0(RHSequenceElementCalls *other);
     void FUN_00585940(RHSequenceElementCalls *other);
     bool FUN_00585b70();
     RHSequenceElementCalls *FUN_00585d80();

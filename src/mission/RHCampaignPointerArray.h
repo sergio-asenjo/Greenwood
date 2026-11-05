@@ -14,6 +14,7 @@ public:
     T *begin() { return m_first; }
     T *end() { return m_last; }
     unsigned size() { return m_first == 0 ? 0 : m_last - m_first; }
+    unsigned SizeForGrowth() { return ((RHFastFindGateArray *)this)->FUN_0059fbc0(); }
     T *erase(T *first, T *last)
     {
         T *next = copy(last, end(), first);
@@ -43,7 +44,7 @@ public:
         if ((unsigned)(m_end - m_last) < count)
         {
             unsigned grow = count < size() ? size() : count;
-            int capacity = sizes->FUN_0059fbc0() + grow;
+            int capacity = SizeForGrowth() + grow;
             T *storage = std::_Allocate(capacity, (T *)0);
             T *destination = (T *)array->Unk004fe420((void **)m_first, (void **)position, (void **)storage);
             array->Unk004fe450((void **)destination, count, reinterpret_cast<void *const &>(value));

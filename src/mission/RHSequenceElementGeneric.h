@@ -14,7 +14,7 @@ public:
     void Emit(SBFile &file, bool pointers);
     void FUN_00586e50(int key, unsigned char value);
     void FUN_00586f10(int key, unsigned long value);
-    void FUN_00587060(int key, const RHGenericValue &value);
+    void FUN_00587060(int key, const RHUnk00613e90 &value);
     float FUN_00587110(int key);
     RHUnk00613e90 FUN_00587290(int key);
     void EmitProperties(int key, const RHGenericValue &value);

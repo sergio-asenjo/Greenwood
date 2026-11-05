@@ -19,7 +19,9 @@ template<class T> class SBArray;
 class RHCampaign
 {
 public:
-    undefined m_pad0[0x104]; // 0x00
+    undefined m_pad0[0x84]; // 0x00
+    std::vector<unsigned long> m_84; // 0x84
+    undefined m_pad94[0x70]; // 0x94
     std::vector<RHPCDescription *> m_104; // 0x104
     std::vector<RHPCDescription *> m_114; // 0x114
     std::vector<RHPCDescription *> m_124; // 0x124
@@ -51,6 +53,8 @@ public:
     void FUN_00452a50(std::vector<RHMission *> &missions);
     void FUN_00452c90(std::vector<RHMission *> &missions);
     std::vector<RHPCDescription *> *FUN_004553f0();
+    void FUN_00455400(RHPCDescription *description);
+    void FUN_004555f0(RHPCDescription *description);
     void FUN_00455650();
     RHMission *FUN_004539f0();
     void ForceNextMission(const std::string &first, const std::string &second, bool create);

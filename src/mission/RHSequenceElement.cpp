@@ -23,6 +23,7 @@
 // carry no relocation records and reccmp cannot discover them by scanning.
 
 #include "SBNullstr.h"
+#include "RHElementActor.h"
 #include "RHSequenceElement.h"
 
 // The 4-byte global read/written by SerializeStaticStuff (original 0x006b74d8).
@@ -224,14 +225,15 @@ public:
             do
             {
                 delete *m_cursor;
+                ++m_cursor;
             }
-            while (++m_cursor != end());
+            while (m_cursor != iterator(*(_Nodeptr volatile *)&_Head));
         }
         Clear();
     }
 };
 
-// STUB: GAME 0x00585320
+// FUNCTION: GAME 0x00585320
 void RHSequenceElementCalls::FUN_00585320(int state, int value)
 {
     int previous = m_58;
@@ -340,7 +342,7 @@ struct RHSequenceStateActor
     RHSequenceStateActorInfo *m_50;
 };
 
-// STUB: GAME 0x00585710
+// FUNCTION: GAME 0x00585710
 void RHSequenceElementCalls::FUN_00585710()
 {
     if (m_50)
@@ -353,6 +355,54 @@ void RHSequenceElementCalls::FUN_00585710()
         }
         ((RHSequenceManager *)g_unk0x6c1040)->FUN_0058bb80((RHSequenceElement *)m_50);
         m_50 = 0;
+    }
+}
+
+DECOMP_SIZE_ASSERT(RHSequenceElementCalls, 0x64)
+DECOMP_SIZE_ASSERT(RHSequenceStateOrders, 0x14)
+DECOMP_SIZE_ASSERT(RHOrder, 0x3c)
+DECOMP_STATIC_ASSERT(offsetof(RHOrder, m_2e) == 0x2e)
+
+// FUNCTION: GAME 0x005857c0
+void RHSequenceElementCalls::FUN_005857c0(RHSequenceElementCalls *other)
+{
+    while (other->m_50)
+    {
+        RHElementActor *actor = (RHElementActor *)m_48;
+        if (actor && !(actor->m_04[0] & 3))
+        {
+            switch (actor->FUN_0046ad00(other->m_50, this))
+            {
+            case 0:
+                other->m_50->FUN_00585940(this);
+                Slot0c(5, 1);
+                return;
+            case 1:
+                other = other->m_50;
+                continue;
+            case 2:
+                other->m_50->FUN_005857c0(this);
+                break;
+            case 3:
+                FUN_00585940(other->m_50);
+                other->m_50->Slot0c(6, 1);
+                break;
+            }
+            break;
+        }
+        other = other->m_50;
+    }
+    if (((RHSequenceStateOrders *)((char *)this + 0x18))->size() && m_10 != 22 &&
+        ((RHOrder *)((RHSequenceStateOrders *)((char *)this + 0x18))->back())->m_2e)
+    {
+        ((RHSequenceStateOrders *)((char *)this + 0x18))->DeleteOrders();
+        Slot0c(0, 1);
+    }
+    else
+    {
+        other->m_50 = this;
+        ((RHSequenceStateOrders *)((char *)this + 0x18))->DeleteOrders();
+        Slot0c(4, 1);
     }
 }
 
@@ -480,6 +530,7 @@ void RHSequenceElementCalls::Emit(int value, RHSequenceElementCalls *other)
 {
     ((RHUnk00585500 *)this)->Unk(other);
     FUN_00585570();
+    FUN_005857c0(other);
     FUN_00585940(other);
     FUN_00585b70();
     RHSequenceElementCalls::FUN_00585c80();

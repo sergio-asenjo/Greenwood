@@ -13,6 +13,7 @@ template<> inline basic_string<unsigned short, char_traits<unsigned short>, allo
 #include <algorithm>
 #include <windows.h>
 #include <cstdlib>
+#include <stddef.h>
 #include "RHPCStatusCore.h"
 
 namespace std {
@@ -22,13 +23,13 @@ template<> void _Sort(RHMission **first, RHMission **last, bool (*compare)(RHMis
 class RHScriptBatchCalls
 {
 public:
-    void Unk00455400(void *description);
-    void Unk004555f0(void *description);
     void FUN_00456d20();
 };
 
 DECOMP_SIZE_ASSERT(RHMission, 0x0c)
 DECOMP_SIZE_ASSERT(RHCampaign, 0x1c4)
+DECOMP_STATIC_ASSERT(offsetof(RHCampaign, m_84) == 0x84)
+DECOMP_SIZE_ASSERT(std::vector<unsigned long>, 0x10)
 DECOMP_SIZE_ASSERT(RHGameCampaignView, 0x184)
 DECOMP_SIZE_ASSERT(std::vector<RHMission *>, 0x10)
 DECOMP_SIZE_ASSERT(RHCampaignBeamText, 0x10)
@@ -1182,46 +1183,37 @@ std::vector<RHPCDescription *> *RHCampaign::FUN_004553f0()
     return &m_1b0;
 }
 
-// Parked: vector growth and exception cleanup remain approximate.
-// STUB: GAME 0x00455400
-void RHScriptBatchCalls::Unk00455400(void *description)
+// FUNCTION: GAME 0x00455400
+void RHCampaign::FUN_00455400(RHPCDescription *description)
 {
-    RHCampaign *campaign = (RHCampaign *)this;
-    RHCampaignPointerArray<void *> &available =
-        (RHCampaignPointerArray<void *> &)campaign->m_1b0;
+    RHPCDescription *selected;
     if (description == 0)
     {
-        available.erase(available.begin(), available.end());
-        description = campaign->m_114.front();
+        m_1b0.clear();
+        selected = m_114.front();
     }
-    for (void **it = available.begin(); it != available.end(); ++it)
-        if (*it == description)
-            return;
-    available.insert(available.end(), 1, description);
+    else
+        selected = description;
+    if (std::find(m_1b0.begin(), m_1b0.end(), selected) != m_1b0.end())
+        return;
+    m_1b0.push_back(selected);
 }
 
 // FUNCTION: GAME 0x004555f0
-void RHScriptBatchCalls::Unk004555f0(void *description)
+void RHCampaign::FUN_004555f0(RHPCDescription *description)
 {
-    RHCampaign *campaign = (RHCampaign *)this;
     std::vector<RHPCDescription *>::iterator match = std::find(
-        campaign->m_1b0.begin(), campaign->m_1b0.end(), (RHPCDescription *)description);
-    if (match != campaign->m_1b0.end())
-        campaign->m_1b0.erase(match);
+        m_1b0.begin(), m_1b0.end(), description);
+    if (match != m_1b0.end())
+        m_1b0.erase(match);
 }
 
-// Parked: real vector insertion and EH cleanup still differ from the target.
-// STUB: GAME 0x00455650
+// FUNCTION: GAME 0x00455650
 void RHCampaign::FUN_00455650()
 {
     FUN_004559f0();
-    RHCampaignPointerArray<RHPCDescription *> &available =
-        (RHCampaignPointerArray<RHPCDescription *> &)m_1b0;
-    for (RHPCDescription **it = m_114.begin(); it != m_114.end(); ++it)
-    {
-        if (*((char *)(*it)->m_profile + 0x35))
-            available.insert(available.m_last, 1, *it);
-    }
+    for (std::vector<RHPCDescription *>::iterator first = m_114.begin(); first != m_114.end(); ++first)
+        m_1b0.push_back(*first);
 }
 
 // FUNCTION: GAME 0x00455810
@@ -1451,13 +1443,12 @@ void RHCampaign::FUN_004564e0(std::vector<RHMission *> &missions)
     missions.erase(missions.begin(), missions.end());
 }
 
-// Parked: erase inlines the sector destructor with out-of-line 0x457990/0x457950 member vector dtors; ours inlines differently.
-// STUB: GAME 0x00456820
+// FUNCTION: GAME 0x00456820
 void RHCampaign::CreateProductionSectors()
 {
     std::vector<RHSectorProduction> &sectors = *(std::vector<RHSectorProduction> *)((char *)this + 0x74);
-    sectors.erase(sectors.begin(), sectors.end());
-    for (int type = 0; type < 13; ++type)
+    sectors.clear();
+    for (int type = 0; type != 13; ++type)
         ((RHCampaignProductionSectors &)sectors).Insert(sectors.end(), 1, RHSectorProduction(type));
 }
 
@@ -1506,13 +1497,11 @@ bool FUN_00456aa0(SBFile &file, unsigned long &value)
     return true;
 }
 
-// Parked: vector construction helpers inline differently and enlarge the frame.
-// STUB: GAME 0x00456af0
+// FUNCTION: GAME 0x00456af0
 void RHCampaign::FUN_00456af0(const void *object)
 {
-    std::vector<unsigned long> &relics = *(std::vector<unsigned long> *)((char *)this + 0x84);
     unsigned long type = *(const unsigned long *)((const char *)object + 0xb0);
-    relics.insert(relics.end(), 1, type);
+    m_84.push_back(type);
 }
 
 // FUNCTION: GAME 0x00456d20
@@ -1651,13 +1640,14 @@ void RHCampaign::FUN_00456e60()
     }
 }
 
-// STUB: GAME 0x00457330
+// FUNCTION: GAME 0x00457330
 bool RHCampaign::LoadFromSaveGame(const RHSaveGame *saveGame)
 {
     RHUnk005f4fc0 file;
     bool result = false;
     if (file.FUN_005f5090(saveGame->FUN_0056e5d0(), 1))
     {
+        result = false;
         SBAssert(0, "P:\\Robin Hood\\RHCampaign.cpp", 3144,
                  // STRING: GAME 0x006abd24
                  "Unable to open the savegame '%s'.", RHCampaignStringChars(saveGame->FUN_0056e5d0()));
@@ -2117,32 +2107,8 @@ int RHCampaignCommandLine::FUN_0045a010(const RHProfileText &value)
     return text.compare(0, text.size(), chars, length);
 }
 
-class RHUnk00457990
-{
-public:
-    void FUN_00457990();
-    char m_0[4];
-    RHSectorProduction::Occupant *m_4;
-    RHSectorProduction::Occupant *m_8;
-    RHSectorProduction::Occupant *m_c;
-};
-
-// FUNCTION: GAME 0x00457990
-void RHUnk00457990::FUN_00457990()
-{
-    typedef RHSectorProduction::Occupant Occupant;
-    Occupant *last = m_8;
-    Occupant *first = m_4;
-    while (first != last)
-    {
-        first->~Occupant();
-        ++first;
-    }
-    operator delete(m_4);
-    m_4 = 0;
-    m_8 = 0;
-    m_c = 0;
-}
+// TEMPLATE: GAME 0x00457990
+// ??1?$vector@UOccupant@RHSectorProduction@@V?$allocator@UOccupant@RHSectorProduction@@@std@@@std@@QAE@XZ
 
 // TEMPLATE: GAME 0x0045a060
 // ??4?$vector@UPoint@RHSectorProduction@@V?$allocator@UPoint@RHSectorProduction@@@std@@@std@@QAEAAV01@ABV01@@Z
@@ -2253,7 +2219,7 @@ void RHEngine::FUN_004e3770(RHElement *element)
     point.m_x += rand() * 0.00003051850944757461548f * 10.0f - 5.0f;
     point.m_y += rand() * 0.00003051850944757461548f * 10.0f - 5.0f;
     char *position = RHCampaignField<char *>(element, 0x50) + 4;
-    SBGeoBoundingBox2D box(*(SBGeoBoundingBox2D *)((RHUnkPathActorInfoBase *)position)->Unk0055fa10(
+    SBGeoBoundingBox2D box(*(SBGeoBoundingBox2D *)((RHPositionInterface *)position)->Unk0055fa10(
         RHCampaignField<int>(position, 0x88)));
     ((RHMobileUnk006091b0 *)((char *)&box + 4))->FUN_006091b0(SBGeoVector2D(point));
     RHPathObstacleGrid *grid = (RHPathObstacleGrid *)((char *)this + 0x11c);
@@ -2268,7 +2234,7 @@ void RHEngine::FUN_004e3770(RHElement *element)
         RHCampaignField<SBGeoPoint2D>(position, 0x3c) = RHCampaignField<SBGeoPoint2D>(position, 0x20);
         position = RHCampaignField<char *>(element, 0x50) + 4;
         RHCampaignField<SBGeoPoint2D>(position, 0x20) = point;
-        SBGeoBoundingBox2D shifted = ((SBGeoBoundingBox2D *)((RHUnkPathActorInfoBase *)position)->Unk0055fa10(
+        SBGeoBoundingBox2D shifted = ((SBGeoBoundingBox2D *)((RHPositionInterface *)position)->Unk0055fa10(
             RHCampaignField<int>(position, 0x88)))->FUN_006090d0(SBGeoVector2D(point));
         ((RHMobileUnk00607da0 *)(position + 0xc0))->FUN_00607da0(*(RHMobileUnk00607da0 *)&shifted);
         RHCampaignField<int>(position, 4) = 2;
@@ -2283,7 +2249,7 @@ void RHEngine::FUN_004e3770(RHElement *element)
 // LIBRARY: GAME 0x004e5820
 // ?insert@?$vector@KV?$allocator@K@std@@@std@@QAEPAKPAKABK@Z
 
-// TEMPLATE: GAME 0x004e6c10
+// TEMPLATE: GAME 0x004e6c10 FOLDED
 // ?clear@?$list@PAVRHPlayerProfile@@V?$allocator@PAVRHPlayerProfile@@@std@@@std@@QAEXXZ
 
 // FUNCTION: GAME 0x004e7210

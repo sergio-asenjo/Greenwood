@@ -240,16 +240,7 @@ public:
     }
 };
 
-class RHCampaignProfiles
-{
-public:
-    char m_0[0x10];
-    RHCampaignPointerArray<void *> m_characters;
-    char m_20[0x50];
-    RHCampaignProfiles();
-    ~RHCampaignProfiles();
-    void *FUN_0056d5d0(const RHProfileText &name);
-};
+#include "RHCampaignProfiles.h"
 
 // SIZE 0x04
 class RHCampaignPCBase
@@ -447,6 +438,7 @@ extern RHEngine *g_pEngine;
 extern RHCampaignLoadingProgress g_unk0x6c0a50;
 
 // SIZE 0x08
+#define SBGEO_VECTOR2D_VIEW
 class SBGeoVector2D : public SBGeoPoint2D
 {
 public:
@@ -457,6 +449,7 @@ public:
 };
 
 // SIZE 0x14
+#define SBGEO_BOUNDINGBOX2D_VIEW
 class SBGeoBoundingBox2D
 {
 public:
@@ -501,17 +494,9 @@ public:
     RHMobileUnk006091b0 &FUN_006091b0(const SBGeoPoint2D &value);
 };
 
-class RHMobileUnk00607da0
-{
-public:
-    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &value);
-};
+#include "RHMobileUnk00607da0.h"
 
-class RHUnkPathActorInfoBase
-{
-public:
-    void *Unk0055fa10(int index);
-};
+#include "RHPositionInterfaceCore.h"
 
 class RHBonusInfoBase
 {
@@ -519,12 +504,8 @@ public:
     void FUN_0055f290();
 };
 
-class RHPathObstacleGrid
-{
-public:
-    bool FUN_004f5750(SBGeoBoundingBox2D &box, unsigned short layer);
-    bool FUN_004f9260(const SBGeoPoint2D &first, const SBGeoPoint2D &last, unsigned short layer);
-};
+#define SBGEO_BOUNDINGBOX2D_VIEW
+#include "RHPathObstacleGrid.h"
 
 template<class T>
 T &RHCampaignField(void *object, unsigned offset)

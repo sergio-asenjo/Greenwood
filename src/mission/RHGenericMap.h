@@ -3,11 +3,15 @@
 
 #include <new>
 
-struct RHGenericValue
+union RHGenericValue
 {
-    unsigned int m_0;
-    unsigned int m_4;
-    unsigned int m_8;
+    struct
+    {
+        unsigned int m_0;
+        unsigned int m_4;
+        unsigned int m_8;
+    };
+    float point[3];
 };
 
 struct RHGenericNode
@@ -54,6 +58,8 @@ struct RHGenericPair
 {
     int key;
     RHGenericValue value;
+    RHGenericPair() {}
+    RHGenericPair(int name, const RHGenericValue &payload) : key(name), value(payload) {}
 };
 
 struct RHGenericInsertResult

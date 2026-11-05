@@ -9,13 +9,7 @@ public:
     bool Serialize(SBFile &file, bool pointers);
 };
 
-class RHUnk00582220
-{
-public:
-    RHUnk00582220();
-    ~RHUnk00582220();
-    char data[0x3c];
-};
+#include "RHSequenceConstructionCalls.h"
 
 class RHSequenceManager
 {

@@ -1,6 +1,12 @@
 #include "SBNullstr.h"
 #include "RHSequenceElementSerialization.h"
 #include "RHSequenceElementGeneric.h"
+#include "RHUnk00613e90.h"
+
+DECOMP_SIZE_ASSERT(RHGenericValue, 0x0c)
+DECOMP_SIZE_ASSERT(RHGenericPair, 0x10)
+DECOMP_SIZE_ASSERT(RHGenericNode, 0x20)
+DECOMP_SIZE_ASSERT(RHUnk00613e90, 0x0c)
 
 // STRING: GAME 0x006b7550
 #define RH_GENERIC_FILE "P:\\Robin Hood\\RHSequenceElementGeneric.cpp"
@@ -13,12 +19,7 @@
         return false; \
     }
 
-class RHUnk00641782
-{
-public:
-    RHUnk00641782();
-    ~RHUnk00641782();
-};
+#include "RHUnk00641782.h"
 
 // GLOBAL: GAME 0x006c1034
 RHGenericNode *g_unk0x006c1034;
@@ -133,16 +134,7 @@ inline RHGenericMap::~RHGenericMap()
     }
 }
 
-// VTABLE: GAME 0x00679d5c
-class RHUnk005866a0 : public RHUnk00584d60
-{
-public:
-    RHUnk005866a0();
-    RHUnk005866a0(unsigned short level, int command, void *actor);
-    ~RHUnk005866a0();
-    void *FUN_00586680(unsigned int flags);
-    RHGenericMap m_64;
-};
+#include "RHSequenceGenericConstruction.h"
 
 // FUNCTION: GAME 0x005865a0
 RHUnk005866a0::RHUnk005866a0()
@@ -151,7 +143,7 @@ RHUnk005866a0::RHUnk005866a0()
 }
 
 // FUNCTION: GAME 0x00586680
-void *RHUnk005866a0::FUN_00586680(unsigned int flags)
+void *RHUnk005866a0::FUN_00584d40(unsigned int flags)
 {
     this->~RHUnk005866a0();
     if (flags & 1)
@@ -392,16 +384,14 @@ void RHSequenceElementGeneric::FUN_00586f10(int key, unsigned long value)
     ((RHHumanMap *)&m_64)->find(key)->m_value = value;
 }
 
-// Parked: vector-copy scheduling and receiver adjustment differ.
-// STUB: GAME 0x00587060
-void RHSequenceElementGeneric::FUN_00587060(int key, const RHGenericValue &value)
+// FUNCTION: GAME 0x00587060
+void RHSequenceElementGeneric::FUN_00587060(int key, const RHUnk00613e90 &value)
 {
-    volatile RHGenericValue vector = value;
-    RHGenericPair property;
-    property.key = key;
-    property.value.m_0 = vector.m_0;
-    property.value.m_4 = vector.m_4;
-    property.value.m_8 = vector.m_8;
+    RHGenericValue vector;
+    vector.point[0] = value.x;
+    vector.point[1] = value.y;
+    vector.point[2] = value.z;
+    RHGenericPair property(key, vector);
     m_64.FUN_005873a0(property);
 }
 
@@ -416,16 +406,6 @@ void RHSequenceElementGeneric::Emit(SBFile &file, bool pointers)
     FUN_00586840();
     Serialize(file, pointers);
 }
-
-class RHUnk00613e90
-{
-public:
-    RHUnk00613e90();
-    RHUnk00613e90(float x, float y, float z);
-    float m_x;
-    float m_y;
-    float m_z;
-};
 
 // Parked: iterator temporary slots and returned-node copy differ.
 // STUB: GAME 0x00587290
@@ -448,7 +428,7 @@ void RHSequenceElementGeneric::EmitProperties(int key, const RHGenericValue &val
 {
     FUN_00586e50(key, (unsigned char)value.m_0);
     FUN_00586f10(key, value.m_0);
-    FUN_00587060(key, value);
+    FUN_00587060(key, *(const RHUnk00613e90 *)&value);
     FUN_00587110(key);
     FUN_00587290(key);
 }

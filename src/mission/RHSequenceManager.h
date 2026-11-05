@@ -28,14 +28,7 @@ public:
     bool FUN_0058b7c0(SBFile &file, void *&value);
 };
 
-// SIZE 0x3c
-class RHUnk00582220
-{
-public:
-    RHUnk00582220();
-    ~RHUnk00582220();
-    undefined data[0x3c]; // 0x00
-};
+#include "RHSequenceConstructionCalls.h"
 
 struct RHScriptNode;
 struct RHTitbitNode;
@@ -80,6 +73,12 @@ template<class T> class RHManagerList : public std::list<T>
 public:
     typedef typename std::list<T>::iterator Iterator;
     RHManagerList() : valid(1) {}
+    ~RHManagerList()
+    {
+        typedef std::list<T> Base;
+        void (Base::*clearList)() = &Base::clear;
+        (this->*clearList)();
+    }
     RHManagerNode<T> *Head() const { return (RHManagerNode<T> *)_Head; }
     int Count() const { return _Size; }
     Iterator cursor; // +0x0c
@@ -322,13 +321,20 @@ public:
     }
 };
 
+class RHManagerOwnedSequenceList : public RHManagerList<RHSequence *>
+{
+public:
+    ~RHManagerOwnedSequenceList() { ((RHManagerListCalls *)this)->FUN_0058bed0(); }
+};
+
 // VTABLE: GAME 0x00679db8
 // SIZE 0x1b4
 class RHSequenceManager
 {
 public:
     RHSequenceManager();
-    virtual void Slot00();
+    ~RHSequenceManager();
+    virtual void *FUN_0058a130(unsigned int flags);
     bool Serialize(SBFile &file);
     bool PreSerializePointer(SBFile &file, RHOrder **order);
     bool PreSerializePointer(SBFile &file, RHSequenceElement **element, bool launch);
@@ -343,7 +349,7 @@ public:
     }
     void Emit(SBFile &file);
 
-    RHManagerList<RHSequence *> m_4; // +0x04
+    RHManagerOwnedSequenceList m_4; // +0x04
     RHManagerList<RHSequenceElement *> m_28; // +0x28
     RHManagerList<RHOrder **> m_4c; // +0x4c
     RHManagerList<int> m_70; // +0x70

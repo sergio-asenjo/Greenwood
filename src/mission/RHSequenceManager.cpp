@@ -1,12 +1,29 @@
 #include "SBNullstr.h"
 #include "RHSequenceManager.h"
 #include "RHSequenceElement.h"
+#include <stddef.h>
 
 DECOMP_SIZE_ASSERT(RHUnk00582220, 0x3c)
 DECOMP_SIZE_ASSERT(RHManagerList<void *>, 0x24)
 DECOMP_SIZE_ASSERT(RHManagerSequenceView, 0x2c)
 DECOMP_SIZE_ASSERT(RHManagerElementView, 0x3c)
 DECOMP_SIZE_ASSERT(RHSequenceManager, 0x1b4)
+DECOMP_SIZE_ASSERT(RHManagerOwnedSequenceList, 0x24)
+DECOMP_STATIC_ASSERT(offsetof(RHManagerList<void *>, cursor) == 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(RHManagerList<void *>, valid) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHManagerList<void *>, index) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(RHSequenceManager, m_4) == 0x04)
+DECOMP_STATIC_ASSERT(offsetof(RHSequenceManager, m_28) == 0x28)
+DECOMP_STATIC_ASSERT(offsetof(RHSequenceManager, m_4c) == 0x4c)
+DECOMP_STATIC_ASSERT(offsetof(RHSequenceManager, m_70) == 0x70)
+DECOMP_STATIC_ASSERT(offsetof(RHSequenceManager, m_94) == 0x94)
+DECOMP_STATIC_ASSERT(offsetof(RHSequenceManager, m_b8) == 0xb8)
+DECOMP_STATIC_ASSERT(offsetof(RHSequenceManager, m_dc) == 0xdc)
+DECOMP_STATIC_ASSERT(offsetof(RHSequenceManager, m_100) == 0x100)
+DECOMP_STATIC_ASSERT(offsetof(RHSequenceManager, m_124) == 0x124)
+DECOMP_STATIC_ASSERT(offsetof(RHSequenceManager, m_148) == 0x148)
+DECOMP_STATIC_ASSERT(offsetof(RHSequenceManager, m_16c) == 0x16c)
+DECOMP_STATIC_ASSERT(offsetof(RHSequenceManager, m_190) == 0x190)
 
 // FUNCTION: GAME 0x0046eb20
 int RHUnk0046eb30::FUN_0046eb20()
@@ -47,6 +64,22 @@ public:
 RHSequenceManager::RHSequenceManager()
 {
     g_unk0x6c1040 = (RHUnk6c1040 *)this;
+}
+
+// FUNCTION: GAME 0x0058a130
+void *RHSequenceManager::FUN_0058a130(unsigned int flags)
+{
+    this->~RHSequenceManager();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// STUB: GAME 0x0058a150
+RHSequenceManager::~RHSequenceManager()
+{
+    ((RHManagerListCalls *)&m_4)->FUN_0058bed0();
+    m_4.valid = 1;
 }
 
 // FUNCTION: GAME 0x0058a3d0

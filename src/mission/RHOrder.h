@@ -118,7 +118,8 @@ public:
     char m_2b;               // [0x2b]
     char m_2c;               // [0x2c]
     char m_2d;               // [0x2d]
-    char m_pad2e[2];         // [0x2e]
+    char m_2e;
+    char m_2f;
     RHElement *m_30;         // [0x30]
     int m_34;                // [0x34]
     RHSequenceElement *m_38; // [0x38]

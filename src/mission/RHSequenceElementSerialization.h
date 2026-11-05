@@ -13,6 +13,7 @@ public:
 };
 
 class SBGeoVector2D;
+#define SBGEO_POINT2D_VIEW
 class SBGeoPoint2D
 {
 public:
