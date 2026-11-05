@@ -48,7 +48,7 @@ bool FUN_00401130(const char *name)
     unsigned short depth = draw->m_10c;
     unsigned long format = 9 + (depth == 16);
     ((SBDrawManager *)draw)->FUN_005e61e0(0, 0, 0, 0);
-    draw->FUN_005e5260();
+    ((SBDrawManager *)draw)->FUN_005e5260();
     ((SBDrawManager *)draw)->FUN_005e61e0(0, 0, 0, 0);
     if (movie)
     {
@@ -72,7 +72,7 @@ bool FUN_00401130(const char *name)
                 {
                     g_unk0x006772d4(movie, viewport.m_pixels, viewport.m_pitch, viewport.m_height, 0, y, format | 0x80000000);
                     ((SBDrawManager *)draw)->FUN_005e5ea0(viewport);
-                    draw->FUN_005e5260();
+                    ((SBDrawManager *)draw)->FUN_005e5260();
                     FUN_005e1380();
                     while (wait(movie)) {}
                     if (movie->m_0c == movie->m_08 - 1)

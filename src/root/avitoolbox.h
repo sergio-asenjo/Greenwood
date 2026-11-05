@@ -8,7 +8,6 @@
 class RHUnkFXDraw
 {
 public:
-    void FUN_005e5260();
     char m_00[0x10c];
     unsigned short m_10c; // +0x10c, WORD
 };
