@@ -533,7 +533,7 @@ void Toolbox::DisplayPicture(const char *name, bool wait)
         if (cropped)
             cropped->FUN_00611be0(1);
     }
-    ((RHUnkFXDraw *)g_unk0x6c11d0)->FUN_005e6440(surface, 0, 0, 0, 8);
+    ((SBDrawManager *)g_unk0x6c11d0)->FUN_005e6440(surface, 0, 0, 0, 8);
     file.FUN_005f5290();
     if (wait)
     {
@@ -564,7 +564,7 @@ void Toolbox::PlaySlide(const std::string &name, unsigned short duration)
     unsigned char keys[256];
     memset(keys, 0, sizeof(keys));
     ((SBDrawManager *)draw)->FUN_005e61e0(0, 0, 0, 0);
-    draw->FUN_005e5260();
+    ((SBDrawManager *)draw)->FUN_005e5260();
     ((SBDrawManager *)draw)->FUN_005e61e0(0, 0, 0, 0);
     while (file.Position() < file.Size() && !cancelled)
     {
@@ -573,9 +573,9 @@ void Toolbox::PlaySlide(const std::string &name, unsigned short duration)
         typedef unsigned long (RHUnkFXDraw::*CreateSurface)(unsigned short, unsigned short, unsigned long, bool);
         unsigned long surface = (draw->*reinterpret_cast<CreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(picture.UnkField20(), picture.UnkField22(), 0, false);
         ((SBPicture *)&picture)->SBPicture::Unk00613530(draw, surface);
-        draw->FUN_005e6440(surface, 0, 0, 0, 0);
-        draw->FUN_005e5260();
-        draw->FUN_005e6440(surface, 0, 0, 0, 0);
+        ((SBDrawManager *)draw)->FUN_005e6440(surface, 0, 0, 0, 0);
+        ((SBDrawManager *)draw)->FUN_005e5260();
+        ((SBDrawManager *)draw)->FUN_005e6440(surface, 0, 0, 0, 0);
         unsigned long start = GetTickCount();
         for (;;)
         {
@@ -603,9 +603,9 @@ void Toolbox::PlaySlide(const std::string &name, unsigned short duration)
                 if (redraw == true)
                 {
                     redraw = false;
-                    draw->FUN_005e6440(surface, 0, 0, 0, 0);
-                    draw->FUN_005e5260();
-                    draw->FUN_005e6440(surface, 0, 0, 0, 0);
+                    ((SBDrawManager *)draw)->FUN_005e6440(surface, 0, 0, 0, 0);
+                    ((SBDrawManager *)draw)->FUN_005e5260();
+                    ((SBDrawManager *)draw)->FUN_005e6440(surface, 0, 0, 0, 0);
                 }
                 FUN_005e1380();
                 if ((GetTickCount() - start) * g_unk0x0067a664 > duration)
@@ -616,7 +616,7 @@ void Toolbox::PlaySlide(const std::string &name, unsigned short duration)
             if (advance)
                 break;
         }
-        draw->Unk005e5160(surface);
+        ((SBDrawManager *)draw)->FUN_005e5160(surface);
     }
     file.FUN_005f5290();
     while (!g_unk0x006a6d27)
@@ -1099,27 +1099,26 @@ const char *RHUnk00624a60::FUN_00624ed0(unsigned short index)
     return m_list.At(index).m_font;
 }
 
-// Parked: target caches zero in ebx (this in ebp) and keeps the first construct out of line.
-// STUB: GAME 0x006250d0
+// FUNCTION: GAME 0x006250d0
 unsigned short RHUnk00624a60::FUN_006250d0(const char *text)
 {
     unsigned int length = strlen(text);
     RHTextChunk chunk;
     unsigned int position = 0;
-    int used = 0;
+    chunk.m_color = 0xffffff;
+    chunk.m_flags = 0;
     chunk.m_text[0] = '\0';
     // STRING: GAME 0x006bba10
     strcpy(chunk.m_font, "Lucida Sans Console");
-    chunk.m_flags = 0;
-    chunk.m_color = 0xffffff;
     chunk.m_ac = 0;
     chunk.m_size = 12;
+    int used = 0;
     while (position < length) {
         char c = text[position];
         if (c != '<') {
+            ++position;
             chunk.m_text[used] = c;
             chunk.m_text[used + 1] = '\0';
-            ++position;
             ++used;
         } else {
             ++position;
@@ -1131,8 +1130,7 @@ unsigned short RHUnk00624a60::FUN_006250d0(const char *text)
             FUN_00624c40(text, position, &chunk);
         }
     }
-    m_list.push_back(chunk);
-    m_list.m_dirty = true;
+    m_list.Append(chunk);
     return m_list.size();
 }
 

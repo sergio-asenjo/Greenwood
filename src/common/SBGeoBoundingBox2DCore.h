@@ -11,6 +11,7 @@ class SBGeoSegment2D;
 class SBGeoPolyLine2DList;
 class RHMalignitySegment;
 class RHMobileUnk006100e0;
+class RHUnk0060fbf0;
 class SBFile;
 SBGeoPoint2D operator+(const SBGeoPoint2D &, const SBGeoVector2D &);
 
@@ -30,6 +31,8 @@ public:
     void Copy(const SBGeoBoundingBox2D &);
     SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &) const;
     SBGeoBoundingBox2D FUN_006092c0(const SBGeoBoundingBox2D &) const;
+    RHUnk0060fbf0 FUN_006093f0(const RHMobileUnk006100e0 &) const;
+    RHUnk0060fbf0 FUN_00609440(const RHMobileUnk006100e0 &, double, double) const;
     void FUN_00607d90();
     void Unk00607dc0(const SBGeoPoint2D &);
     void FUN_00607e30(const RHMalignitySegment &);
@@ -38,17 +41,22 @@ public:
     SBGeoPoint2D FUN_00608f40() const;
     bool FUN_00608400(const SBGeoPoint2D &) const;
     bool FUN_006084a0(const SBGeoBoundingBox2D &);
+    bool FUN_006085a0(const SBGeoPoint2D &) const;
     bool FUN_00608650(const RHMobileUnk006100e0 &) const;
     bool FUN_00608730(const RHMobileUnk006100e0 &) const;
     SBGeoBoundingBox2D &operator-=(const SBGeoVector2D &);
+    SBGeoBoundingBox2D FUN_00417a20();
+    SBGeoBoundingBox2D &FUN_006091d0(float scale);
     int FUN_00609050(const SBGeoPoint2D &, const SBGeoPoint2D &);
     bool Unk00608f30() const;
     bool FUN_006090a0() const;
+    int FUN_00609170(const SBGeoBoundingBox2D &) const;
     bool Serialize(SBFile &);
     float Value0() const { return m_p0.m_x; }
     float Value4() const { return m_p0.m_y; }
     float Value8() const { return m_p1.m_x; }
     float ValueC() const { return m_p1.m_y; }
+    float Width() const { return m_p1.m_x - m_p0.m_x; }
     const SBGeoPoint2D &Min() const { return m_p0; }
     const SBGeoPoint2D &Max() const { return m_p1; }
     void SetMin(const SBGeoPoint2D &value) { m_flag = true; m_p0 = value; }
