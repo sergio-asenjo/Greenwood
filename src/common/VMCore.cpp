@@ -1,7 +1,9 @@
 #include "SBNullstr.h"
 #include "VMCore.h"
 #include "SCQuad.h"
+#include "SCSerialize.h"
 #include "SB.h"
+#include "SBFile.h"
 #include <new>
 #include <stddef.h>
 
@@ -16,6 +18,12 @@ typedef int VMStackRecordsOffsetAssert[(offsetof(VMUnk0063a250, m_records) == 4)
 typedef int VMCoreStackOffsetAssert[(offsetof(VMCore, m_0c) == 0x0c) ? 1 : -1];
 typedef int VMCoreAreaOffsetAssert[(offsetof(VMCore, m_1c) == 0x1c) ? 1 : -1];
 typedef int VMCoreNativeOffsetAssert[(offsetof(VMCore, m_native) == 0x30) ? 1 : -1];
+typedef int VMCoreClassOffsetAssert[(offsetof(VMCore, m_40) == 0x40) ? 1 : -1];
+typedef int VMSerializerRecordSizeAssert[(sizeof(VMUnk00634ab0Record) == 0x14) ? 1 : -1];
+typedef int VMSerializerCallbackOffsetAssert[(offsetof(VMUnk00634ab0Record, m_serializer) == 0x10) ? 1 : -1];
+typedef int VMClassSymbolsOffsetAssert[(offsetof(SCSerializeUnkObject, m_28) == 0x28) ? 1 : -1];
+typedef int VMClassQuadsOffsetAssert[(offsetof(SCSerializeUnkObject, m_4c) == 0x4c) ? 1 : -1];
+typedef int VMMemberOffsetAssert[(offsetof(SCSerializeRecordValue, m_34) == 0x34) ? 1 : -1];
 
 // GLOBAL: GAME 0x006c1940
 int g_unk0x006c1940 = 0;
@@ -29,6 +37,47 @@ VMUnk00635210Handler *g_unk0x006c1944 = 0;
 
 // GLOBAL: GAME 0x006c1930
 std::list<VMUnk00634ab0Record> g_unk0x006c1930;
+
+// STUB: GAME 0x006348f0
+bool VMCore::SerializeMemberVariable(SBFile &file)
+{
+    if (m_40 == 0)
+        return false;
+    typedef std::list<SCSerializeRecordValue *> Symbols;
+    for (Symbols::const_iterator node = ((const Symbols *)&m_40->m_28)->begin();
+         node != ((const Symbols *)&m_40->m_28)->end(); ++node) {
+        SCSerializeRecordValue *symbol = *node;
+        if (symbol->m_type != 7) {
+            file.Access(m_1c.FUN_0063a1e0(symbol->m_34), 4);
+        } else {
+            std::list<VMUnk00634ab0Record>::const_iterator serializer = g_unk0x006c1930.begin();
+            bool found = false;
+            for (; serializer != g_unk0x006c1930.end() && !found; ++serializer) {
+                std::string name;
+                symbol->GetTypeName(name);
+                int (std::string::*compare)(unsigned, unsigned, const char *, unsigned) const = &std::string::compare;
+                if (((*serializer).m_name.*compare)(0, (*serializer).m_name.size(), name.c_str(), name.size()) == 0) {
+                    if (!file.m_bLoading) {
+                        serializer._Mynode()->_Value.m_serializer(file, *(void **)m_1c.FUN_0063a1e0(symbol->m_34));
+                    } else {
+                        void *value;
+                        serializer._Mynode()->_Value.m_serializer(file, value);
+                        *(void **)m_1c.FUN_0063a1e0(symbol->m_34) = value;
+                    }
+                    found = true;
+                }
+            }
+            if (!found) {
+                SBAssert(0,
+                    "P:\\Robin Hood\\VirtualMachine\\VMCore.cpp", 67,
+                    // STRING: GAME 0x006be06c
+                    "No serializer found for native type");
+                return false;
+            }
+        }
+    }
+    return true;
+}
 
 // FUNCTION: GAME 0x00634ab0
 void VMCore::RegisterSerializerForType(const std::string &name, void (__cdecl *serializer)(SBFile &, void *&))
@@ -588,7 +637,7 @@ void VMCore::FUN_00639370()
 {
     for (;;) {
         int index = m_24;
-        VMQuad *quads = m_40->m_50;
+        VMQuad *quads = m_40->m_4c.begin();
         m_28 = (int *)(quads + index);
         switch (*(unsigned char *)m_28) {
         case 0: Empty(); break;

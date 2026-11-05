@@ -13,6 +13,9 @@ typedef int SCSerializeNamedNodeSizeAssert[(sizeof(SCSerializeRecordNode<SCSeria
 typedef int SCSerializeValueNodeSizeAssert[(sizeof(SCSerializeRecordNode<SCSerializeRecordValue>) == 0x40) ? 1 : -1];
 typedef int SCSerializeNamedListSizeAssert[(sizeof(SCSerializeRecordList<SCSerializeNamedType>) == 0x0c) ? 1 : -1];
 typedef int SCSerializeValueListSizeAssert[(sizeof(SCSerializeRecordList<SCSerializeRecordValue>) == 0x0c) ? 1 : -1];
+typedef int SCSerializePointerListSizeAssert[(sizeof(SCSerializeUnkList) == 0x0c) ? 1 : -1];
+typedef int SCSerializeQuadListSizeAssert[(sizeof(SCSerializeUnkList00424340) == 0x0c) ? 1 : -1];
+typedef int SCSerializeStringVectorSizeAssert[(sizeof(SCSerializeStringVector) == 0x10) ? 1 : -1];
 
 
 void EmitSCSerialize(SCSerialize *serializer)
@@ -125,7 +128,7 @@ int SCSerializeUnkObject::FUN_0063a940(FILE *file, bool writing)
         result = SBFileUnk00643e0c(&length, 1, 4, file);
         result += SBFileUnk00643e0c(text, length, 1, file);
         text[length] = 0;
-        ((std::string *)&m_04)->append(text);
+        m_04.append(text);
         result += SBFileUnk00643e0c(&length, 1, 4, file);
         result += SBFileUnk00643e0c(text, length, 1, file);
         text[length] = 0;
@@ -144,7 +147,7 @@ int SCSerializeUnkObject::FUN_0063a940(FILE *file, bool writing)
             m_34.PushBack(record);
         }
         result += SBFileUnk00643e0c(&count, 1, 4, file);
-        std::vector<VMQuad> &quads = *(std::vector<VMQuad> *)&m_4c;
+        std::vector<VMQuad> &quads = m_4c;
         VMQuad value;
         if (quads.size() < (unsigned)count) {
             void (std::vector<VMQuad>::*insert)(VMQuad *, unsigned, const VMQuad &) = &std::vector<VMQuad>::insert;

@@ -5,6 +5,7 @@
 #include "SB.h"
 #include "RHCivilianProfile.h"
 #include "RHArtificialIntelligence.h"
+#include "RHTitbitsCore.h"
 #include <list>
 #include "SCType.h"
 #include "SCQuad.h"
@@ -119,7 +120,7 @@ public:
         m_head = ((RHUnk0046eb30 *)this)->Unk0059f720(0, 0);
         m_count = 0;
     }
-    ~SCSerializeUnkList();
+    inline ~SCSerializeUnkList();
     void PushBack(void *value);
     char m_allocator; // 0x00
     RHScriptNode *m_head; // 0x04
@@ -136,28 +137,17 @@ public:
         m_head = ((RHArtificialIntelligenceStimulusList *)this)->Unk00424340(0, 0);
         m_count = 0;
     }
-    ~SCSerializeUnkList00424340();
+    inline ~SCSerializeUnkList00424340();
     char m_allocator; // 0x00
     RHArtificialIntelligenceStimulusNode *m_head; // 0x04
     int m_count; // 0x08
 };
 
-// SIZE 0x10
-class SCSerializeUnkArray
+class SCSerializeStringVector : public std::vector<std::string>
 {
 public:
-    explicit SCSerializeUnkArray(const std::allocator<char> &allocator = std::allocator<char>())
-    {
-        m_allocator = *(const char *)&allocator;
-        m_first = 0;
-        m_last = 0;
-        m_end = 0;
-    }
-    ~SCSerializeUnkArray();
-    char m_allocator; // 0x00
-    VMQuad *m_first; // 0x04
-    VMQuad *m_last; // 0x08
-    VMQuad *m_end; // 0x0c
+    explicit SCSerializeStringVector(const std::allocator<std::string> &allocator);
+    ~SCSerializeStringVector() {}
 };
 
 // SIZE 0x6c
@@ -165,17 +155,17 @@ public:
 class SCSerializeUnkObject
 {
 public:
-    SCSerializeUnkObject() : m_5c(std::allocator<char>()) {}
+    SCSerializeUnkObject() : m_5c(std::allocator<std::string>()) {}
     virtual ~SCSerializeUnkObject(); // vtable+0x00
     int FUN_0063a940(FILE *, bool);
-    RHProfileText m_04; // 0x04
+    std::string m_04; // 0x04
     RHProfileText m_14; // 0x14
     int m_24; // 0x24
     SCSerializeUnkList m_28; // 0x28
     SCSerializeUnkList m_34; // 0x34
     SCSerializeUnkList00424340 m_40; // 0x40
-    SCSerializeUnkArray m_4c; // 0x4c
-    RHProfileString m_5c; // 0x5c
+    std::vector<VMQuad> m_4c; // 0x4c
+    SCSerializeStringVector m_5c; // 0x5c
 };
 
 // SIZE 0x0c
@@ -185,6 +175,27 @@ struct SCSerializeUnkNode
     SCSerializeUnkNode *m_previous; // 0x04
     SCSerializeUnkObject *m_object; // 0x08
 };
+
+inline SCSerializeUnkList::~SCSerializeUnkList()
+{
+    RHTitbitNode *last;
+    ((RHTitbitList *)this)->Clear(&last,
+        (RHTitbitNode *)((SCSerializeUnkNode *)m_head)->m_next,
+        (RHTitbitNode *)m_head);
+    operator delete(m_head);
+    m_head = 0;
+    m_count = 0;
+}
+
+inline SCSerializeUnkList00424340::~SCSerializeUnkList00424340()
+{
+    RHTitbitNode *last;
+    ((RHTitbitList *)this)->Clear(&last,
+        (RHTitbitNode *)m_head->m_next, (RHTitbitNode *)m_head);
+    operator delete(m_head);
+    m_head = 0;
+    m_count = 0;
+}
 
 // SIZE 0x10
 class SCSerialize

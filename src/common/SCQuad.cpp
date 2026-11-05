@@ -36,8 +36,7 @@ signed char SCQuadArg::GetReference()
     return m_08;
 }
 
-// Parked: VC6 merges storage-write calls and duplicates the compact return tail.
-// STUB: GAME 0x0063b9d0
+// FUNCTION: GAME 0x0063b9d0
 int SCQuadArg::Serialize(FILE *file, bool writing, bool compact)
 {
     int result = 0;
@@ -56,19 +55,23 @@ int SCQuadArg::Serialize(FILE *file, bool writing, bool compact)
                         "H", 1, 1, file);
                 } else {
                     unsigned char storage = ((SCQuadUnkSymbol *)source.FUN_0063a1d0())->m_38;
-                    if (storage == 4 || storage == 5) {
+                    if (storage == 4)
+                        goto sharedStorage;
+                    if (storage == 5)
+                    {
+sharedStorage:
                         result = SBFileUnk00643cd3(
                             // STRING: GAME 0x006be574
                             "S", 1, 1, file);
-                    } else if (((SCQuadUnkSymbol *)source.FUN_0063a1d0())->m_38 == 6) {
+                    }
+                    else if (((SCQuadUnkSymbol *)source.FUN_0063a1d0())->m_38 == 6)
                         result = SBFileUnk00643cd3(
                             // STRING: GAME 0x006be570
                             "T", 1, 1, file);
-                    } else {
+                    else
                         SCSerializeUnk00642a2f(
                             // STRING: GAME 0x006be53c
                             "SCQuadArg::Serialize: Unknown storage for symbol.\n");
-                    }
                 }
                 switch (GetReference()) {
                 case -1:

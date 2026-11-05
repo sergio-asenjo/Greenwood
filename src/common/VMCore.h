@@ -9,19 +9,9 @@
 
 class SBFile;
 
-struct VMUnk00634ab0Text
-{
-    std::allocator<char> m_allocator;
-    char *m_pointer;
-    unsigned int m_length;
-    unsigned int m_capacity;
-    VMUnk00634ab0Text() : m_allocator(std::allocator<char>()), m_pointer(0), m_length(0), m_capacity(0) {}
-    ~VMUnk00634ab0Text() { ((std::string *)this)->~basic_string(); }
-};
-
 struct VMUnk00634ab0Record
 {
-    VMUnk00634ab0Text m_name;
+    std::string m_name;
     void (__cdecl *m_serializer)(SBFile &, void *&);
     VMUnk00634ab0Record() {}
     VMUnk00634ab0Record(const VMUnk00634ab0Record &);
@@ -79,20 +69,13 @@ public:
 
 struct VMQuad;
 
-class VMUnk0063a490Result
-{
-public:
-    char m_pad0[0x24];
-    int m_24;
-    char m_pad28[0x28];
-    VMQuad *m_50;
-};
+class SCSerializeUnkObject;
 
 class VMUnk0063a490
 {
 public:
-    VMUnk0063a490Result *FUN_0063a490(void *);
-    void *FUN_0063a510(VMUnk0063a490Result *, void *);
+    SCSerializeUnkObject *FUN_0063a490(void *);
+    void *FUN_0063a510(SCSerializeUnkObject *, void *);
 };
 
 // VTABLE: GAME 0x0067bbc4
@@ -109,9 +92,10 @@ public:
     VMNativeStack m_native;
     char m_3c;
     char m_pad3d[3];
-    VMUnk0063a490Result *m_40;
+    SCSerializeUnkObject *m_40;
     int *m_44;
 
+    bool SerializeMemberVariable(SBFile &file);
     void RegisterSerializerForType(const std::string &, void (__cdecl *)(SBFile &, void *&));
     void Empty();
     void FUN_00634c20();

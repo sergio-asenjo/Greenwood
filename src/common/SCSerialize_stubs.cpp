@@ -19,11 +19,21 @@ int SCSerializeUnk00642a2f(const char *, ...) throw()
     return 0;
 }
 
-SCSerializeUnkList::~SCSerializeUnkList() {}
-SCSerializeUnkList00424340::~SCSerializeUnkList00424340() {}
-SCSerializeUnkArray::~SCSerializeUnkArray() {}
+// TEMPLATE: GAME 0x0059fba0 FOLDED
+// ??0SCSerializeStringVector@@QAE@ABV?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@std@@@Z
+SCSerializeStringVector::SCSerializeStringVector(const std::allocator<std::string> &allocator)
+    : std::vector<std::string>(allocator)
+{
+}
 
-SCSerializeUnkObject::~SCSerializeUnkObject() {}
+// STUB: GAME 0x0063a790
+SCSerializeUnkObject::~SCSerializeUnkObject()
+{
+    while (m_34.m_count != 0) {
+        delete (SCSerializeUnk0063af90 *)((SCSerializeUnkNode *)m_34.m_head)->m_previous->m_object;
+        ((RHUnk0046eb30 *)&m_34)->erase(RHScriptIter((RHScriptNode *)((SCSerializeUnkNode *)m_34.m_head)->m_previous));
+    }
+}
 
 // FUNCTION: GAME 0x0063af90
 SCSerializeUnk0063af90::~SCSerializeUnk0063af90()
