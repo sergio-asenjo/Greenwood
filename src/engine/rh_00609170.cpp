@@ -1,18 +1,9 @@
-#include "RHElementMobile.h"
-
-class RHUnk00609170
-{
-public:
-    int FUN_00609170(const RHUnk00609170 &other) const;
-    SBGeoPoint2D m_00;
-    SBGeoPoint2D m_08;
-    unsigned char m_10;
-};
+#include "SBGeoBoundingBox2DCore.h"
 
 // FUNCTION: GAME 0x00609170
-int RHUnk00609170::FUN_00609170(const RHUnk00609170 &other) const
+int SBGeoBoundingBox2D::FUN_00609170(const SBGeoBoundingBox2D &other) const
 {
-    if (other.m_00 == m_00 && other.m_08 == m_08)
+    if (other.m_p0 == m_p0 && other.m_p1 == m_p1)
         return 0;
     return 1;
 }

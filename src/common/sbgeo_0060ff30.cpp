@@ -59,7 +59,7 @@ void RHMobileUnk006100e0::FUN_00610160(const SBGeoPoint2D &vector)
     Second() = Unk005fc190(vector);
 }
 
-// Target keeps the coincident-line block ahead of the shared return and duplicates the result push per branch; VC6 tail-merges it here.
+// Parked: result-copy tails, point stores and x87 operand lifetimes differ.
 // STUB: GAME 0x006101c0
 RHUnk0060fbf0 RHMobileUnk006100e0::FUN_006101c0(const RHMobileUnk006100e0 &other) const
 {
@@ -90,9 +90,12 @@ RHUnk0060fbf0 RHMobileUnk006100e0::FUN_006101c0(const RHMobileUnk006100e0 &other
                 return result;
             }
             else if (offset == otherOffset)
+            {
                 result.FUN_0060fe20(other);
+                goto done;
+            }
             else
-                result.FUN_0060fdb0();
+                goto noIntersection;
         }
         else
         {
@@ -103,29 +106,40 @@ RHUnk0060fbf0 RHMobileUnk006100e0::FUN_006101c0(const RHMobileUnk006100e0 &other
                 point.m_x = other.m_x;
                 point.m_y = y;
                 result.FUN_0060fdc0(point);
+                return result;
             }
             else
-                result.FUN_0060fdb0();
+                goto noIntersection;
         }
     }
     else if (otherDx != 0.0)
     {
-        double otherSlope = (other.Second().m_y - other.m_y) / otherDx;
-        double otherOffset = other.m_y - other.m_x * otherSlope;
-        if (m_x <= other.m_x + g_unk0x0067a878 && m_x >= other.Second().m_x - g_unk0x0067a878 ||
-            m_x >= other.m_x - g_unk0x0067a878 && m_x <= other.Second().m_x + g_unk0x0067a878)
         {
-            point.m_x = m_x;
-            point.m_y = m_x * otherSlope + otherOffset;
-            result.FUN_0060fdc0(point);
+            double otherSlope = (other.Second().m_y - other.m_y) / otherDx;
+            double otherOffset = other.m_y - other.m_x * otherSlope;
+            if (m_x <= other.m_x + g_unk0x0067a878 && m_x >= other.Second().m_x - g_unk0x0067a878 ||
+                m_x >= other.m_x - g_unk0x0067a878 && m_x <= other.Second().m_x + g_unk0x0067a878)
+            {
+                point.m_x = m_x;
+                point.m_y = m_x * otherSlope + otherOffset;
+                result.FUN_0060fdc0(point);
+                return result;
+            }
         }
-        else
-            result.FUN_0060fdb0();
+noIntersection:
+        result.FUN_0060fdb0();
+        return result;
     }
     else if (m_x == other.m_x)
+    {
         result.FUN_0060fe20(other);
+        return result;
+    }
     else
+    {
         result.FUN_0060fdb0();
+    }
+done:
     return result;
 }
 

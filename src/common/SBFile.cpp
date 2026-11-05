@@ -6,6 +6,7 @@
 #include "RHProfileFileCore.h"
 #include "SBFilePosition.h"
 #include "RHFontManager.h"
+#include <vector>
 
 // SIZE 0x10
 class RHCampaignCommandLine
@@ -39,7 +40,7 @@ public:
     unsigned int m_capacity;
 };
 
-extern void SBFileAssert(int, const char *, int, const char *, ...);
+extern void SBAssert(int, const char *, int, const char *, ...);
 
 DECOMP_SIZE_ASSERT(SBFileUnk005f5280, 0x01)
 DECOMP_SIZE_ASSERT(SBFileTreeIterator, 0x04)
@@ -427,7 +428,7 @@ int FUN_005f5500(const void *key)
             if (entry.m_node != g_unk0x006c1348.m_head)
                 g_unk0x006c1348.FUN_005f6640(entry);
             else
-                SBFileAssert(0, "P:\\Robin Hood\\SBLibNG\\SBFile.cpp", 0x2de,
+                SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBFile.cpp", 0x2de,
                     "Warning, unable to find a file entry while closing an archive");
             ++index;
             offset += 0x58;
@@ -439,16 +440,27 @@ int FUN_005f5500(const void *key)
     return 0;
 }
 
-// GLOBAL: GAME 0x006c136c
-std::string *g_unk0x006c136c = 0;
+// GLOBAL: GAME 0x006c1368
+std::vector<std::string> g_unk0x006c1368;
 
-// GLOBAL: GAME 0x006c1370
-std::string *g_unk0x006c1370 = 0;
+// SYNTHETIC: GAME 0x005f4f00
+// $E15
+
+// FUNCTION: GAME 0x005f56b0
+int FUN_005f56b0(const std::string &name)
+{
+    for (std::string *path = g_unk0x006c1368.begin(); path != g_unk0x006c1368.end(); ++path) {
+        if (path->compare(name) == 0)
+            return -10;
+    }
+    g_unk0x006c1368.push_back(name);
+    return 0;
+}
 
 // FUNCTION: GAME 0x005f58c0
 FILE *RHUnk005f4fc0::FUN_005f58c0(const std::string &name, const char *mode)
 {
-    for (std::string *path = g_unk0x006c136c; path != g_unk0x006c1370; ++path) {
+    for (std::string *path = g_unk0x006c1368.begin(); path != g_unk0x006c1368.end(); ++path) {
         FILE *stream;
         if ((stream = SCSerializeUnk00643c43((*path + std::string("\\") + name).c_str(), mode)) != 0)
             return stream;
@@ -461,7 +473,7 @@ FILE *RHUnk005f4fc0::FUN_005f58c0(const std::string &name, const char *mode)
 int FUN_005f5a80(std::string &name, bool retry)
 {
     while (FUN_005f6400(name) != true) {
-        for (std::string *path = g_unk0x006c136c; path != g_unk0x006c1370; ++path) {
+        for (std::string *path = g_unk0x006c1368.begin(); path != g_unk0x006c1368.end(); ++path) {
             std::string candidate;
             candidate = *path + std::string("\\") + name;
             if (FUN_005f6400(candidate) == true) {

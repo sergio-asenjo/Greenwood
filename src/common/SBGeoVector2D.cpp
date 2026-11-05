@@ -8,7 +8,8 @@ SBGeoVector2D::SBGeoVector2D()
 {
 }
 
-// FUNCTION: GAME 0x005fc3e0
+// TEMPLATE: GAME 0x005fc3e0 FOLDED
+// ??0SBGeoVector2D@@QAE@ABV0@@Z
 SBGeoVector2D::SBGeoVector2D(const SBGeoVector2D &other)
 {
     FUN_005fc390(other);
@@ -172,32 +173,34 @@ float SBGeoPoint2D::FUN_005fca90(const SBGeoPoint2D &other, float scale) const
 }
 
 
-// Parked: x87 product lifetimes and quadrant-branch layout differ.
-// STUB: GAME 0x005fcc50
+// GLOBAL: GAME 0x0067a824
+extern const float g_unk0x0067a824 = 0.19509032368659973f;
+
+// GLOBAL: GAME 0x0067a828
+extern const float g_unk0x0067a828 = 0.9807852506637573f;
+
+// FUNCTION: GAME 0x005fcc50
 unsigned char RHUnk005fc3b0::FUN_005fcc50(float scale) const
 {
     scale *= m_x;
     float x = scale;
-    x *= 0.9807852506637573f;
+    x *= g_unk0x0067a828;
     float firstY = m_y;
-    firstY *= 0.19509032368659973f;
+    firstY *= g_unk0x0067a824;
     x -= firstY;
-    float y = scale;
-    y *= 0.19509032368659973f;
+    double projectedY = scale;
+    projectedY *= g_unk0x0067a824;
     float secondY = m_y;
-    secondY *= 0.9807852506637573f;
-    y += secondY;
-    bool negativeX;
+    secondY *= g_unk0x0067a828;
+    float y = projectedY + secondY;
+    bool negativeX = x < 0.0f;
     bool positiveY;
     bool steep;
     bool narrow;
-    if (x < 0.0f)
+    if (negativeX)
     {
         x = -x;
-        negativeX = true;
     }
-    else
-        negativeX = false;
     if (y > 0.0f)
         positiveY = true;
     else
