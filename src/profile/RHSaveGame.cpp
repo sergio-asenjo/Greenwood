@@ -56,14 +56,12 @@ std::string g_unk0x006c0eb8 = "QuickSave";
 // GLOBAL: GAME 0x006c0ec8
 std::string g_unk0x006c0ec8 = "ExQuickSave";
 
-// Parked: compare expansion retains a length-alias guard and different receiver registers after two shapes.
-// STUB: GAME 0x0056e8b0
+// FUNCTION: GAME 0x0056e8b0
 int RHSaveGame::FUN_0056e8b0() const
 {
-    const std::string &name = m_08;
-    if (name.compare(g_unk0x006c0ea0) == 0 || name.compare(g_unk0x006c0ec8) == 0 ||
-        name.compare(g_unk0x006c0eb8) == 0 || name.compare(g_unk0x006c0ed8) == 0 ||
-        name.compare(g_unk0x006c0ee8) == 0)
+    if (m_08.compare(g_unk0x006c0ea0) == 0 || m_08.compare(g_unk0x006c0ec8) == 0 ||
+        m_08.compare(g_unk0x006c0eb8) == 0 || m_08.compare(g_unk0x006c0ed8) == 0 ||
+        m_08.compare(g_unk0x006c0ee8) == 0)
         return 1;
     return 0;
 }
