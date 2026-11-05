@@ -2,6 +2,7 @@
 #include "RHElementWasp.h"
 #include "RHElementWaspNest.h"
 #include "RHEngineSerializationCalls.h"
+#include "RHEngine.h"
 #include "RHProjectileLifetime.h"
 #include "RHTreeDec.h"
 #include "RHUnk00641782.h"
@@ -341,7 +342,7 @@ bool RHElementWasp::Hourglass()
 // FUNCTION: GAME 0x004bd0f0
 void RHElementWasp::FUN_004bd0f0(void *)
 {
-    ((RHEngineSerializationCalls *)g_pEngine)->FUN_004d88e0(this, 0, 1);
+    g_pEngine->RemoveElement((RHElement *)this, false, true);
     ((RHElementWaspNest *)m_15c)->WaspKilled();
 }
 

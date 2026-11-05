@@ -2,6 +2,7 @@
 #define RHELEMENTACTORHUMANBASE_H
 
 #include "RHActorCommand.h"
+#include <string>
 
 class SBFile;
 class RHSequenceElement;
@@ -12,6 +13,7 @@ class RHElementActor
 {
 public:
     virtual bool Serialize(SBFile &file);
+    void InitializeScript(std::string &name);
     void Translate(RHSequenceElement *element, RHcommand command);
     void ExecuteImmediately(RHSequenceElement *element);
     void GetTransitionFlags(RHSequenceElement *element, unsigned long &first, unsigned long &second, unsigned long &third);

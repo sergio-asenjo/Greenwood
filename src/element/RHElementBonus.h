@@ -22,6 +22,7 @@ public:
     float m_y;
 };
 
+#define SBGEO_VECTOR2D_VIEW
 class SBGeoVector2D : public SBGeoPoint2D
 {
 public:

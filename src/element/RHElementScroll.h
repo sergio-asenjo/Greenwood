@@ -23,7 +23,6 @@ public:
 class RHScrollScript
 {
 public:
-    bool FUN_006348f0(SBFile &file);
     undefined m_pad0[0x58]; // 0x00
     undefined m_58; // 0x58
     undefined m_pad59[7]; // 0x59
@@ -51,7 +50,7 @@ public:
     void FUN_00462730(void *, int);
 };
 
-#include "RHUnk004d8460Calls.h"
+#include "RHEngine.h"
 
 // SIZE 0x170
 class RHElementScroll : public RHElementObject

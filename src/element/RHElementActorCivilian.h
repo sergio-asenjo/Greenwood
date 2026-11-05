@@ -103,7 +103,7 @@ public:
 class RHUnkFXDraw
 {
 public:
-    unsigned long Unk005e4ed0(int width, int height, int flags, bool retain);
+    unsigned long Unk005e4ed0(unsigned short width, unsigned short height, unsigned long flags, bool retain);
 };
 
 struct RHBonusProjection;
@@ -120,11 +120,7 @@ public:
     void FUN_005bd560(void *action, bool initialize);
 };
 
-class RHUnkPathActorInfoBase
-{
-public:
-    void *Unk0055fa10(int index);
-};
+#include "RHPositionInterfaceCore.h"
 
 class RHEngine;
 class RHElementActor

@@ -36,11 +36,7 @@ void RHUnk00404860::FUN_00404960(int value)
 class RHEngine;
 extern RHEngine *g_pEngine;
 
-class RHUnk0055dbb0
-{
-public:
-    char *FUN_0055dbb0();
-};
+#include "RHPlayerProfileAccess.h"
 
 class RHUnkTargetSprite
 {
@@ -275,7 +271,7 @@ void *RHElementScroll::FUN_004ba5d0()
     if (element != 0)
         ((RHElementBonus *)element)->RHElementBonus::RHElementBonus((RHElementBonus::BonusType)0xa, false, 1);
     ((RHUnk00462730 *)element)->FUN_00462730(this, 0);
-    ((RHUnk004d8460 *)g_pEngine)->FUN_004d8460(element, 0, 1);
+    g_pEngine->AddElement((RHElement *)element, false, true);
     ((RHUnk004ba7a0 *)this)->Set(2);
     return element;
 }
@@ -301,7 +297,7 @@ bool RHElementScroll::Serialize(SBFile &file)
         return false;
     }
     if (file.m_version > 7 && g_unk0x6c0691 && m_100.m_58)
-        m_100.FUN_006348f0(file);
+        ((VMCore *)&m_100)->SerializeMemberVariable(file);
     return RHElementObject::Serialize(file);
 }
 

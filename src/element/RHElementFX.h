@@ -1,59 +1,20 @@
+#ifndef RHELEMENTFX_H
+#define RHELEMENTFX_H
+
 #include "RHElementObject.h"
-
-class SBGeoPoint2D
-{
-public:
-    SBGeoPoint2D();
-    ~SBGeoPoint2D();
-    SBGeoPoint2D &FUN_005fc250(const SBGeoPoint2D &other);
-    float m_x;
-    float m_y;
-};
-
-class SBGeoVector2D : public SBGeoPoint2D
-{
-public:
-    SBGeoVector2D(const SBGeoPoint2D &other);
-    ~SBGeoVector2D() {}
-    SBGeoVector2D(const SBGeoVector2D &other);
-    SBGeoVector2D &operator=(const SBGeoVector2D &other);
-};
-
-class SBGeoBoundingBox2D
-{
-public:
-    ~SBGeoBoundingBox2D() {}
-    SBGeoBoundingBox2D &operator=(const SBGeoBoundingBox2D &other);
-    SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &vector) const;
-    SBGeoBoundingBox2D FUN_006092c0(const SBGeoBoundingBox2D &other) const;
-    SBGeoBoundingBox2D &operator-=(const SBGeoVector2D &vector);
-    bool Unk00608f30() const;
-    SBGeoPoint2D m_p0;
-    SBGeoPoint2D m_p1;
-    bool m_flag;
-};
-
-class RHSprite
-{
-public:
-    SBGeoBoundingBox2D GetGlobalBoundingBox();
-    char m_00[0x1c];
-    SBGeoPoint2D m_1c;
-    float m_24;
-    float m_28;
-};
+#include "SBGeoPoint2D.h"
+#include "SBGeoVector2D.h"
+#include "SBGeoBoundingBox2DCore.h"
+#include "RHSpriteCore.h"
+#include "sbgeo_00610600.h"
 
 class RHUnkFXDraw
 {
 public:
-    unsigned long Unk005e4ed0(int, int, int, bool);
+    unsigned long Unk005e4ed0(unsigned short, unsigned short, unsigned long, bool);
 };
 
-class RHUnk005e6440
-{
-public:
-    void Blit(unsigned long, SBGeoBoundingBox2D *, unsigned long, SBGeoBoundingBox2D *, unsigned long);
-};
+#include "SBDrawManagerCore.h"
 
 class RHFastFindGrid
 {
@@ -78,12 +39,14 @@ class RHElementFX : public RHElement
 public:
     void RestoreBackground();
     void InitializeBackgroundRestoration();
+    void InitializeFromProtoStream(SBFile &file);
+    bool IsElementBehind(RHElement *element);
     virtual bool Serialize(SBFile &file);
     bool FUN_004aa2f0();
     int FUN_004aa930();
     void Emit(SBFile &file);
 
-    char m_a8[4];                 // +0xa8
+    int m_a8;
     void *m_ac;                   // +0xac
     char m_b0[4];                 // +0xb0
     SBGeoBoundingBox2D m_b4;      // +0xb4; points +0xb4/+0xbc, flag +0xc4
@@ -91,8 +54,13 @@ public:
     char m_c9[3];                 // +0xc9
     unsigned long m_cc;           // +0xcc
     char m_d0;                    // +0xd0
+    char m_d1[3];
+    RHUnkTargetPoints m_d4;
+    float m_f8;
 };
 
 #define fx_sprite (*(RHSprite **)((char *)this + 0x50))
 #define fx_draw (*(RHUnkFXDraw **)((char *)this + 0x60))
 #define fx_clip (*(SBGeoBoundingBox2D *)((char *)(*(void **)((char *)this + 0x64)) + 0x3e84))
+
+#endif

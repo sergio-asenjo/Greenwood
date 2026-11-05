@@ -1,3 +1,4 @@
+#include "RHElementActor_calls.h"
 #include "RHElementActor.h"
 #include "RHSectorActorList.h"
 #include "VMCore.h"
@@ -268,7 +269,7 @@ void RHElementActor::FUN_00462730(RHElementActor *actor, bool value)
         {
             SBGeoVector2D displacement(point);
             SBGeoBoundingBox2D *bounds = (SBGeoBoundingBox2D *)
-                ((RHUnkPathActorInfoBase *)position)->Unk0055fa10(RHActorField<int>(position, 0x88));
+                ((RHPositionInterface *)position)->Unk0055fa10(RHActorField<int>(position, 0x88));
             ((RHMobileUnk00607da0 *)((char *)position + 0xc0))->FUN_00607da0(
                 *(RHMobileUnk00607da0 *)&bounds->FUN_006090d0(displacement));
         }
@@ -282,7 +283,7 @@ void RHElementActor::FUN_00462730(RHElementActor *actor, bool value)
         {
             SBGeoVector2D displacement(point);
             SBGeoBoundingBox2D *bounds = (SBGeoBoundingBox2D *)
-                ((RHUnkPathActorInfoBase *)position)->Unk0055fa10(RHActorField<int>(position, 0x88));
+                ((RHPositionInterface *)position)->Unk0055fa10(RHActorField<int>(position, 0x88));
             ((RHMobileUnk00607da0 *)((char *)position + 0xc0))->FUN_00607da0(
                 *(RHMobileUnk00607da0 *)&bounds->FUN_006090d0(displacement));
         }
@@ -316,7 +317,7 @@ void RHBonusInfoBase::FUN_00462970(int action)
     RHActorField<int>(this, 0x8c) = previous;
     RHActorField<unsigned char>(this, 0xbc) = 0;
     SBGeoVector2D offset(RHActorField<SBGeoVector2D>(this, 0x20));
-    SBGeoBoundingBox2D *box = (SBGeoBoundingBox2D *)((RHUnkPathActorInfoBase *)this)->Unk0055fa10(RHActorField<int>(this, 0x88));
+    SBGeoBoundingBox2D *box = (SBGeoBoundingBox2D *)((RHPositionInterface *)this)->Unk0055fa10(RHActorField<int>(this, 0x88));
     ((RHMobileUnk00607da0 *)&RHActorField<SBGeoBoundingBox2D>(this, 0xc0))->FUN_00607da0((const RHMobileUnk00607da0 &)box->FUN_006090d0(offset));
 }
 
@@ -434,7 +435,7 @@ bool RHElementActor::Serialize(SBFile &file)
         m_108.m_0 = (RHActorScriptBase *)this;
     }
     if (m_0[0x58])
-        ((RHScrollScript *)m_0)->FUN_006348f0(file);
+        ((VMCore *)m_0)->SerializeMemberVariable(file);
     RHSerializeName(file, "RHElementActor");
     return RHElement::Serialize(file);
 }
@@ -451,7 +452,8 @@ SBGeoVector2D RHElementActor::FUN_00463210()
 // FUNCTION: GAME 0x00463240
 void RHElementActor::FUN_00463240(unsigned first, unsigned second, unsigned third) {}
 
-// FUNCTION: GAME 0x00463250
+// TEMPLATE: GAME 0x00463250 FOLDED
+// ?FUN_00463250@RHElementActor@@QAEXI@Z
 void RHElementActor::FUN_00463250(unsigned value) {}
 
 // FUNCTION: GAME 0x00463260
@@ -496,7 +498,7 @@ void RHActorPositionCalls::FUN_00464530(const SBGeoPoint2D &point)
     {
         SBGeoVector2D displacement(static_cast<const SBGeoVector2D &>(point));
         SBGeoBoundingBox2D *box = (SBGeoBoundingBox2D *)
-            ((RHUnkPathActorInfoBase *)this)->Unk0055fa10(RHActorField<int>(this, 0x88));
+            ((RHPositionInterface *)this)->Unk0055fa10(RHActorField<int>(this, 0x88));
         ((RHMobileUnk00607da0 *)&RHActorField<SBGeoBoundingBox2D>(this, 0xc0))->FUN_00607da0((const RHMobileUnk00607da0 &)box->FUN_006090d0(displacement));
     }
     RHActorField<int>(this, 4) = 2;
@@ -772,7 +774,7 @@ void RHElementActor::ExecuteImmediately(RHSequenceElement *element)
         unsigned short cell = Grid()->FUN_004e9800(point, area, layer);
         if (cell != 0xffff)
         {
-            SBGeoBoundingBox2D box = ((SBGeoBoundingBox2D *)((RHUnkPathActorInfoBase *)Position())->Unk0055fa10(*(int *)((char *)Position() + 0x88)))->FUN_006090d0(SBGeoVector2D(point));
+            SBGeoBoundingBox2D box = ((SBGeoBoundingBox2D *)((RHPositionInterface *)Position())->Unk0055fa10(*(int *)((char *)Position() + 0x88)))->FUN_006090d0(SBGeoVector2D(point));
             if (Grid()->FUN_004f5e50(box.m_p1, point, layer))
                 point = box.FUN_00608f40();
             else
@@ -1110,7 +1112,7 @@ void RHElementActor::FUN_0046a900(RHActorTranslationSequenceCalls *sequence, boo
     }
 }
 
-// STUB: GAME 0x0046abd0
+// FUNCTION: GAME 0x0046abd0
 int RHActorPriorityCalls::FUN_0046abd0(void *element)
 {
     switch (*(int *)((char *)element + 0x10))
@@ -1137,9 +1139,16 @@ int RHActorPriorityCalls::FUN_0046abd0(void *element)
     case 0xa9:
         return 8;
     case 0x14:
-        return ((unsigned char)~*(unsigned *)((char *)element + 0x88) & 2) << 2;
+    {
+        int value = (unsigned char)~*(volatile unsigned *)((char *)element + 0x88);
+        value &= 2;
+        return value << 2;
+    }
     case 0xac:
         return 5;
+    case 0x12:
+    case 0xa1:
+        return 10;
     default:
         return 10;
     }
@@ -1151,8 +1160,7 @@ public:
     bool FUN_0046ae90(int value);
 };
 
-// Parked: nested-switch table compression and shared return-block placement differ.
-// STUB: GAME 0x0046ad00
+// FUNCTION: GAME 0x0046ad00
 int RHElementActor::FUN_0046ad00(void *first, void *second)
 {
     if (RHActorField<int>(first, 0x10) == RHActorField<int>(second, 0x10) &&
@@ -1186,7 +1194,8 @@ int RHElementActor::FUN_0046ad00(void *first, void *second)
         switch (RHActorField<int>(second, 0x5c))
         {
         case 1: return 1;
-        case 2: case 3: return 3;
+        case 2: return 3;
+        case 3: return 3;
         default: return 0;
         }
     case 5:
@@ -1198,15 +1207,29 @@ int RHElementActor::FUN_0046ad00(void *first, void *second)
     case 6:
         switch (RHActorField<int>(second, 0x5c))
         {
-        case 1: case 5: return 2;
-        case 2: case 3: case 4: return 3;
+        case 1: goto postponeExisting;
+        case 2: return 3;
+        case 3: return 3;
+        case 4: return 3;
+        case 5: goto postponeExisting;
         default: return 1;
         }
     case 7:
         switch (RHActorField<int>(second, 0x5c))
         {
-        case 1: case 5: return 2;
-        case 9: case 10: return 0;
+        case 0: return 3;
+        case 1:
+        postponeExisting:
+            return 2;
+        case 2: return 3;
+        case 3: return 3;
+        case 4: return 3;
+        case 5: return 2;
+        case 6: return 3;
+        case 7: return 3;
+        case 8: return 3;
+        case 9: return 0;
+        case 10: return 0;
         default: return 3;
         }
     case 8:
@@ -1217,6 +1240,7 @@ int RHElementActor::FUN_0046ad00(void *first, void *second)
         default: return 3;
         }
     case 9: return RHActorField<int>(second, 0x5c) == 10 ? 0 : 3;
+    case 10: return 3;
     default: return 3;
     }
 }
@@ -2401,7 +2425,8 @@ bool SBGeoPoint2D::operator==(const SBGeoPoint2D &other) const
     return m_x == other.m_x && m_y == other.m_y;
 }
 
-// deferred: unannotated pending reccmp #534 (0x005fc3e0).
+// TEMPLATE: GAME 0x005fc3e0 FOLDED
+// ??0SBGeoVector2D@@QAE@ABVSBGeoPoint2D@@@Z
 SBGeoVector2D::SBGeoVector2D(const SBGeoPoint2D &other) : SBGeoPoint2D()
 {
     FUN_005fc390(other);

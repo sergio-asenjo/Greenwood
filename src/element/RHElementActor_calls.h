@@ -36,14 +36,7 @@ public:
 #include "RHTransientPointerList.h"
 typedef RHTransientPointerList<void> RHActorTransientList;
 
-class RHElement
-{
-public:
-    virtual bool Serialize(SBFile &file);
-    int FUN_004671b0() const;
-    void CrossElevationLine(class RHElevationLine *line);
-    char m_04[0xa4];
-};
+#include "RHActorElementBase.h"
 
 class RHEngine
 {
@@ -82,171 +75,15 @@ public:
     bool Serialize(SBFile &file, bool loading);
 };
 #include "RHSequenceConstructionCalls.h"
-class RHScrollScript
-{
-public:
-    bool FUN_006348f0(SBFile &file);
-};
-
 struct RHUnkSectorGlobal;
 extern RHEngine *g_pEngine;
 extern RHUnkSectorGlobal *g_unk0x6c0a9c;
 void RHSerializeName(SBFile &file, const char *name);
 bool FUN_005e0c90(SBFile &file, std::string &value);
 
-struct RHUnk005c9010Iterator;
-void FUN_005c9010(RHUnk005c9010Iterator &current, int distance, std::bidirectional_iterator_tag category);
+#include "RHActorPointList.h"
 
-struct RHActorPointNode
-{
-    RHActorPointNode *next;
-    RHActorPointNode *previous;
-    SBGeoPoint2D point;
-};
-struct RHActorPointIterator
-{
-    RHActorPointNode *node;
-    RHActorPointIterator(RHActorPointNode *value) : node(value) {}
-};
-class RHActorPointList
-{
-public:
-    int m_0;
-    RHActorPointNode *head;
-    int count;
-    RHActorPointNode *cursor;
-    char dirty;
-    char m_11[3];
-    int index;
-    RHActorPointIterator begin() { return RHActorPointIterator(head->next); }
-    RHActorPointIterator end() { return RHActorPointIterator(head); }
-    SBGeoPoint2D &Get(int wanted)
-    {
-        int size = count;
-        if (dirty)
-        {
-            if (wanted <= (size + 1) / 2)
-            {
-                std::bidirectional_iterator_tag category;
-                FUN_005c9010((RHUnk005c9010Iterator &)(cursor = begin().node), wanted, category);
-            }
-            else
-            {
-                std::bidirectional_iterator_tag category;
-                FUN_005c9010((RHUnk005c9010Iterator &)(cursor = end().node), wanted - size, category);
-            }
-            dirty = 0;
-            index = wanted;
-        }
-        else
-        {
-            int previous = index;
-            if (wanted != previous)
-            {
-                if (wanted < previous)
-                {
-                    if (wanted < (previous + 1) / 2)
-                    {
-                        std::bidirectional_iterator_tag category;
-                        FUN_005c9010((RHUnk005c9010Iterator &)(cursor = begin().node), wanted, category);
-                    }
-                    else
-                    {
-                        std::bidirectional_iterator_tag category;
-                        FUN_005c9010((RHUnk005c9010Iterator &)cursor, wanted - previous, category);
-                    }
-                }
-                else if (wanted < (previous + size) / 2)
-                {
-                    std::bidirectional_iterator_tag category;
-                    FUN_005c9010((RHUnk005c9010Iterator &)cursor, wanted - previous, category);
-                }
-                else
-                {
-                    std::bidirectional_iterator_tag category;
-                    FUN_005c9010((RHUnk005c9010Iterator &)(cursor = end().node), wanted - size, category);
-                }
-                index = wanted;
-            }
-        }
-        return cursor->point;
-    }
-    RHActorPointNode *BuyNode(RHActorPointNode *next, RHActorPointNode *previous)
-    {
-        RHActorPointNode *node = (RHActorPointNode *)::operator new(sizeof(RHActorPointNode));
-        node->next = next ? next : node;
-        node->previous = previous ? previous : node;
-        return node;
-    }
-    void Construct(SBGeoPoint2D *point, const SBGeoPoint2D &source)
-    {
-        new (point) SBGeoPoint2D(source);
-    }
-    RHActorPointIterator insert(RHActorPointIterator position, const SBGeoPoint2D &source)
-    {
-        RHActorPointNode *node = position.node;
-        node->previous = BuyNode(node, node->previous);
-        node = node->previous;
-        node->previous->next = node;
-        Construct(&node->point, source);
-        ++count;
-        dirty = 1;
-        return RHActorPointIterator(node);
-    }
-};
-
-class RHActorString
-{
-public:
-    char m_0;
-    char *m_4;
-    unsigned m_8;
-    unsigned m_c;
-
-    const char *c_str() const { return m_4 ? m_4 : ""; }
-    void FUN_00402780();
-    bool FUN_00402280(unsigned length, bool trim = false);
-    void FUN_00402260(unsigned length);
-    void FUN_00401ee0(bool release);
-    void Assign(const RHActorString &source)
-    {
-        unsigned count = std::string::npos;
-        unsigned length = source.m_8;
-        if (count < length)
-            length = count;
-        if (this == &source)
-        {
-            if (m_8 < length)
-                std::_Xran();
-            FUN_00402780();
-            if (m_8 - length < count)
-                count = m_8 - length;
-            if (count > 0)
-            {
-                memmove(m_4 + length, m_4 + length + count, m_8 - length - count);
-                unsigned remaining = m_8 - count;
-                if (FUN_00402280(remaining))
-                    FUN_00402260(remaining);
-            }
-            typedef std::string &(std::string::*Erase)(unsigned, unsigned);
-            Erase erase = &std::string::erase;
-            (((std::string *)this)->*erase)(0, 0);
-        }
-        else if (length > 0 && length == source.m_8 && (unsigned char)source.c_str()[-1] < 254)
-        {
-            FUN_00401ee0(true);
-            m_4 = (char *)source.c_str();
-            m_8 = source.m_8;
-            m_c = source.m_c;
-            ++m_4[-1];
-        }
-        else if (FUN_00402280(length, true))
-        {
-            memcpy(m_4, source.c_str(), length);
-            FUN_00402260(length);
-        }
-    }
-};
+#include "RHActorString.h"
 
 #include "RHUnkSectorScript.h"
 
@@ -300,11 +137,6 @@ extern RHTitbits *g_unk0x6c10e8;
 extern RHElementActor *g_unk0x6c100c;
 extern float g_actorStepScale;
 
-class RHActorScriptBase : public RHUnkSectorScript
-{
-public:
-    char m_0[0x60];
-};
 
 #include "RHActorPositionCalls.h"
 

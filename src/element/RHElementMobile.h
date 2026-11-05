@@ -217,13 +217,7 @@ public:
     float m_30;
 };
 
-class RHMobileUnk006091b0
-{
-public:
-    RHMobileUnk006091b0 &FUN_006091b0(const SBGeoPoint2D &value);
-    SBGeoPoint2D m_0;
-    SBGeoPoint2D m_8;
-};
+#include "RHMobileUnk006091b0.h"
 
 class RHMobileUnk006100e0;
 
@@ -570,56 +564,7 @@ void *FUN_0048f170(void *value);
 #include "RHMobileVectorArray.h"
 typedef RHTransientPointerList<RHElevationLine> RHMobileLineTransientList;
 
-// SIZE 0x260
-class RHElementMobile
-{
-public:
-    bool ExecuteMacroCommand();
-    void InitializeFromMissionStream(SBFile &file);
-    bool Serialize(SBFile &file);
-    void CheckForLineCrossing();
-    void FUN_004af0f0(int value);
-    void FUN_004af170(void *value);
-    void FUN_004abfe0();
-    bool FUN_004ab600();
-    void FUN_004ab720();
-    void FUN_004ab7e0(float distance);
-    void TranslateGeometry(const SBGeoVector2D &value);
-    void FUN_004af210(class RHMobileEvent *event);
-    class RHUnk0045aaf0 *FUN_004ac750(void *actor);
-    bool FUN_004ac7c0(void *value, void *unused, int type);
-    unsigned short Size() const { RHMobileElement **first = *(RHMobileElement **volatile *)&m_b0; if (!first) return 0; return (unsigned short)(m_b4 - first); }
-    void Emit(SBFile &file);
-
-    undefined m_0[0x50]; // 0x00
-    RHUnkTargetSprite *m_50; // 0x50
-    undefined m_54[0x5c]; // 0x54
-    RHMobileElement **m_b0; // 0xb0
-    RHMobileElement **m_b4; // 0xb4
-    undefined m_b8[0xd0]; // 0xb8
-    RHMobilePath *m_188; // 0x188
-    undefined m_18c[4]; // 0x18c
-    unsigned char *m_190; // 0x190
-    unsigned short m_194; // 0x194
-    undefined m_196[2]; // 0x196
-    int m_198; // 0x198
-    float m_19c; // 0x19c
-    float m_1a0; // 0x1a0
-    float m_1a4; // 0x1a4
-    undefined m_1a8[0x20]; // 0x1a8
-    RHMobileVectorArray m_1c8; // 0x1c8
-    unsigned m_1ec; // 0x1ec
-    undefined m_1f0[4]; // 0x1f0
-    SBGeoPoint2D m_1f4; // 0x1f4
-    RHMobileElement *m_1fc; // 0x1fc
-    undefined m_200[4]; // 0x200
-    SBGeoPoint2D m_204; // 0x204
-    undefined m_20c[0xc]; // 0x20c
-    SBGeoPoint2D m_218; // 0x218
-    SBGeoPoint2D m_220; // 0x220
-    undefined m_228[0x30]; // 0x228
-    undefined m_258[8]; // 0x258
-};
+#include "RHElementMobileCore.h"
 
 // SIZE 0x260
 class RHUnk004af060 : public RHElementMobile

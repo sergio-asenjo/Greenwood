@@ -33,13 +33,41 @@
 #include "SBNullstr.h"
 #include "RHElementActorSoldier.h"
 #include "RHSightObstacle.h"
+#include "RHTargetResourceCalls.h"
+#include "RHCampaignProfiles.h"
 #include "RHSpriteCore.h"
-#include "RHArtificialMalignity.h"
+#include "RHMalignityActorCalls.h"
+#include "RHMalignityOwnerCalls.h"
+#include "RHMalignityAlertCalls.h"
+#include "RHMalignityStimulus.h"
+#include "RHMalignityPosition.h"
+#include "RHScriptEngineCalls.h"
+#include "RHSequenceGenericCalls.h"
+#include "RHCampaignPropertyCalls.h"
+#include "SBDrawManager.h"
+#include "RHMalignityCampaignIndexList.h"
 #include "RHElementActorHumanCore.h"
+#include "RHElementActorHumanBase.h"
+#include "RHHumanStatus.h"
+#include "RHCivilianSpriteView.h"
+
+DECOMP_SIZE_ASSERT(RHElementActorNPC, 0x704)
+DECOMP_SIZE_ASSERT(RHElementActorSoldier, 0xa40)
+
+class RHEngine;
+class RHUnk00452030;
+extern RHEngine *g_pEngine;
+extern RHUnk00452030 *g_unk0x6c07fc;
+extern RHUnk005ef320 *g_unk0x6c11d0;
+extern RHCampaignProfiles *g_unk0x6c0e84;
+extern RHElementActor *g_unk0x6c100c;
+extern char g_unk0x6c0691;
+bool FUN_005e0c90(SBFile &file, std::string &value);
 
 #define RHSOLDIER_FIELD(type, offset) (*(type *)((char *)this + (offset)))
 #define RHSOLDIER_PROFILE(type, offset) (*(type *)(RHSOLDIER_FIELD(char *, 0xa1c) + (offset)))
 #define RHSOLDIER_VBASE ((char *)this + 0x49c + (*(int **)((char *)this + 0x49c))[1])
+#define RHSOLDIER_AT(type, object, offset) (*(type *)((char *)(object) + (offset)))
 
 // FUNCTION: GAME 0x004a1cc0
 unsigned short RHElementActorSoldier::FUN_004a1cc0()
@@ -107,6 +135,116 @@ int RHElementActorSoldier::FUN_004a1db0()
     return RHSOLDIER_PROFILE(int, 0x44);
 }
 
+// STUB: GAME 0x004a1e90
+void RHElementActorSoldier::InitializeFromMissionStream(SBFile &file)
+{
+    unsigned short mapX, mapY, projectionIndex, animationIndex, direction;
+    unsigned flags, state, identifier;
+    int profileIndex, statusIndex, statusFlag, actorValue;
+    file.Access(&mapX, 2);
+    file.Access(&mapY, 2);
+    file.Access(&flags, 4);
+    file.Access(&state, 4);
+    file.Access(&projectionIndex, 2);
+    file.Access(&animationIndex, 2);
+    file.Access(&direction, 2);
+    file.Access(&identifier, 4);
+    file.Access(&profileIndex, 4);
+    file.Access(&RHSOLDIER_FIELD(unsigned char, 0xa38), 1);
+    file.Access(&statusIndex, 4);
+    file.Access(&statusFlag, 4);
+    file.Access(&actorValue, 4);
+    RHSOLDIER_FIELD(int, 0x4f0) = actorValue;
+    RHSOLDIER_AT(unsigned char, RHSOLDIER_VBASE, 0x24) = statusFlag;
+    RHSOLDIER_FIELD(unsigned short, 0xa20) = statusIndex;
+    unsigned short count;
+    file.Access(&count, 2);
+    for (unsigned short i = 0; i < count; ++i)
+    {
+        unsigned short value;
+        file.Access(&value, 2);
+        RHCampaignIndexList<false> *list = (RHCampaignIndexList<false> *)(RHSOLDIER_VBASE + 0x320);
+        unsigned short copy = value;
+        list->FUN_004fe2e0(RHScriptIter(list->m_head), copy);
+        RHSOLDIER_AT(bool, list, 0x10) = true;
+    }
+    file.Access(RHSOLDIER_VBASE + 8, 2);
+    file.Access(RHSOLDIER_VBASE + 0xa, 2);
+    if (!g_unk0x6c0e84)
+        g_unk0x6c0e84 = new RHCampaignProfiles;
+    void **profiles = RHSOLDIER_AT(void **, g_unk0x6c0e84, 0x24);
+    RHSOLDIER_FIELD(void *, 0xa1c) = profiles[profileIndex];
+    SetOutlineColors();
+    ((RHElementActorHuman *)this)->FUN_0047ab00(RHSOLDIER_PROFILE(int, 0x48) - 1, RHSOLDIER_PROFILE(int, 0x4c) - 1);
+    ((RHSoldierActorCalls *)this)->Vc4(RHSOLDIER_PROFILE(unsigned short, 0x30));
+    RHSOLDIER_FIELD(RHHumanStatus *, 0x1c4) = new RHHumanStatus(*RHSOLDIER_FIELD(RHSoldierProfile *, 0xa1c));
+    char spriteMode = RHSOLDIER_AT(char, g_pEngine, 0x4aa8);
+    RHSOLDIER_FIELD(RHUnkTargetSprite *, 0x50)->FUN_005bd050(
+        !spriteMode,
+        RHSOLDIER_PROFILE(std::string, 0), RHSOLDIER_PROFILE(std::string, 0x10), 0);
+    SBGeoVector2D *extents = RHSOLDIER_AT(SBGeoVector2D *, RHSOLDIER_FIELD(void *, 0x64), 0x4164);
+    SBGeoVector2D extent(extents[RHSOLDIER_PROFILE(unsigned char, 0x5d)]);
+    RHSOLDIER_FIELD(RHSprite *, 0x50)->AssignBox(SBGeoBoundingBox2D(-extent, extent));
+    RHSOLDIER_FIELD(RHSprite *, 0x50)->m_90 = RHSOLDIER_PROFILE(unsigned char, 0x5d);
+    RHSOLDIER_FIELD(unsigned long, 0x54) = RHSOLDIER_FIELD(RHUnkFXDraw *, 0x60)->Unk005e4ed0(
+        RHSOLDIER_FIELD(RHCivilianSpriteView *, 0x50)->FUN_005bdef0(),
+        RHSOLDIER_FIELD(RHCivilianSpriteView *, 0x50)->FUN_005bdf20(), 0, false);
+    RHSOLDIER_FIELD(unsigned long, 0x58) = RHSOLDIER_FIELD(RHUnkFXDraw *, 0x60)->Unk005e4ed0(
+        (unsigned short)(RHSOLDIER_FIELD(RHCivilianSpriteView *, 0x50)->FUN_005bdef0() + 4),
+        RHSOLDIER_FIELD(RHCivilianSpriteView *, 0x50)->FUN_005bdf20(), 0, false);
+    ((RHBonusInfoBase *)(RHSOLDIER_FIELD(char *, 0x50) + 4))->SetPoint(SBGeoPoint2D((float)mapX, (float)mapY));
+    RHSOLDIER_FIELD(RHSprite *, 0x50)->m_da = direction;
+    {
+        void *global = RHSOLDIER_FIELD(void *, 0x64);
+        RHSOLDIER_FIELD(RHSprite *, 0x50)->m_dc = animationIndex == 0xffff
+            ? RHSOLDIER_AT(void *, global, 0x4184)
+            : RHSOLDIER_AT(void **, global, 0x4064)[animationIndex];
+    }
+    RHBonusProjection *projection;
+    if (projectionIndex != 0xffff)
+        projection = RHSOLDIER_AT(RHBonusProjection **, RHSOLDIER_FIELD(void *, 0x64), 0x4144)[projectionIndex];
+    else
+        projection = 0;
+    if (projection)
+    {
+        if (!(projection->Flags() & 1))
+            SBAssert(1, "P:\\Robin Hood\\RHelementactorsoldier.cpp", 0xd9,
+                // STRING: GAME 0x006ae910
+                "DA F\xc4LLT MIR NICHTS MEHR EIN ! Soldier (%d,%d) not lying on projection area !",
+                RHSOLDIER_FIELD(RHBonusInfo *, 0x50)->X(),
+                RHSOLDIER_FIELD(RHBonusInfo *, 0x50)->Y());
+        if (!projection->Inside(RHSOLDIER_FIELD(RHSprite *, 0x50)->m_20))
+            SBAssert(1, "P:\\Robin Hood\\RHelementactorsoldier.cpp", 0xdd,
+                // STRING: GAME 0x006ae8a8
+                "DA F\xc4LLT MIR NICHTS MEHR EIN ! Soldier (%d,%d) map position not lying in projection area screen box !",
+                RHSOLDIER_FIELD(RHBonusInfo *, 0x50)->X(),
+                RHSOLDIER_FIELD(RHBonusInfo *, 0x50)->Y());
+    }
+    ((RHBonusInfoBase *)(RHSOLDIER_FIELD(char *, 0x50) + 4))->FUN_0055fa20(projection);
+    RHSOLDIER_FIELD(RHSprite *, 0x50)->m_f8 = identifier;
+    ((RHBonusInfoBase *)(RHSOLDIER_FIELD(char *, 0x50) + 4))->FUN_0055f290();
+    RHSOLDIER_FIELD(RHBonusInfo *, 0x50)->FUN_005bd560(0, true);
+    RHSOLDIER_FIELD(RHBonusInfo *, 0x50)->m_4.m_28 = RHSOLDIER_FIELD(RHBonusInfo *, 0x50)->m_4.m_c;
+    RHSOLDIER_FIELD(RHBonusInfo *, 0x50)->RestorePoint();
+    RHBonusInfoBase *position = (RHBonusInfoBase *)(RHSOLDIER_FIELD(char *, 0x50) + 4);
+    position->SetFlags(flags & 0xf);
+    RHSOLDIER_AT(unsigned, RHSOLDIER_VBASE, 0x28) = state;
+    std::string script;
+    unsigned char hasScript;
+    file.Access(&hasScript, 1);
+    if (hasScript)
+    {
+        FUN_005e0c90(file, script);
+        if (g_unk0x6c0691)
+        {
+            RHElementActor *saved = g_unk0x6c100c;
+            g_unk0x6c100c = (RHElementActor *)this;
+            ((RHElementActor *)this)->InitializeScript(script);
+            g_unk0x6c100c = saved;
+        }
+    }
+}
+
 // FUNCTION: GAME 0x004a2550
 void RHElementActorSoldier::FUN_004a2550(void *element)
 {
@@ -146,6 +284,25 @@ class RHMessenger;
 RHMessenger *RHUnk00546050();
 
 #include "../ai/RHMalignityVisibilityCalls.h"
+
+// STUB: GAME 0x004a4a40
+void RHElementActorSoldier::FUN_004a4a40()
+{
+    RHSprite *sprite = RHSOLDIER_FIELD(RHSprite *, 0x50);
+    switch ((sprite->m_d4 - sprite->m_d6) & 15)
+    {
+    case 0:
+    case 1:
+    case 2:
+    case 14:
+    case 15:
+        sprite->TurnSlow(5);
+        break;
+    default:
+        sprite->TurnSlow(2);
+        break;
+    }
+}
 
 // Parked: state/dead entry registers are swapped (AL/CL) and VC6 duplicates the sparse
 // case-5 false tail instead of the target's near jump to the shared block.
@@ -232,7 +389,7 @@ void *RHElementActorSoldier::FUN_004a5190(RHSoldierActorCalls *target)
 
 // Parked: VC6 duplicates the EH/store return tail instead of sharing the incoming AL value.
 // STUB: GAME 0x004a5230
-void RHUnk004a5230::FUN_004a5230(bool value, bool flag)
+void RHElementActorSoldier::SetAttentiveMode(bool value, bool flag)
 {
     if (value != *(bool *)((char *)this + 0xa2d))
     {
@@ -613,4 +770,6 @@ void RHElementActorSoldier::Emit(SBFile &file)
     ((RHSoldierStimulusCalls *)this)->FUN_004a64a0(0, position);
     SBGeoPoint2D focusPoint;
     FUN_004a4aa0(focusPoint, 0, 0);
+    InitializeFromMissionStream(file);
+    FUN_004a4a40();
 }

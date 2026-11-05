@@ -37,7 +37,7 @@
 #include "RHElementWasp.h"
 #include "RHEngineWidenedCalls.h"
 #include "RHUnkTargetSpriteCalls.h"
-#include "RHUnk004d8460Calls.h"
+#include "RHEngine.h"
 
 DECOMP_SIZE_ASSERT(RHElementProjectile, 0x15c)
 DECOMP_SIZE_ASSERT(RHElementWaspNest, 0x160)
@@ -84,7 +84,7 @@ void RHElementWaspNest::FUN_004be0e0()
     {
         RHUnk004bc4d0 *wasp = new RHUnk004bc4d0(this);
         ((RHUnk004bc5b0 *)wasp)->FUN_004bc5b0(1);
-        ((RHUnk004d8460 *)engine)->FUN_004d8460(wasp, 0, 1);
+        ((RHEngine *)engine)->AddElement((RHElement *)wasp, false, true);
         --count;
     } while (count != 0);
     m_unk15c = 20;

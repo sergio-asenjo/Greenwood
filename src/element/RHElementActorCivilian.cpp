@@ -53,25 +53,6 @@ DECOMP_SIZE_ASSERT(SBGeoBoundingBox2D, 0x14)
 DECOMP_SIZE_ASSERT(std::vector<unsigned short>, 0x10)
 DECOMP_SIZE_ASSERT(RHCampaignProfiles, 0x70)
 
-class RHUnk006c0838
-{
-public:
-    void FUN_0045ab50();
-};
-
-// GLOBAL: GAME 0x006c0838
-RHUnk006c0838 g_unk0x6c0838;
-
-void RHUnk006c0838::FUN_0045ab50()
-{
-}
-
-// LIBRARY: GAME 0x00471050
-void FUN_00471050()
-{
-    g_unk0x6c0838.FUN_0045ab50();
-}
-
 // FUNCTION: GAME 0x00470180
 unsigned short RHElementActorCivilian::FUN_00470180()
 {
@@ -237,7 +218,7 @@ void RHElementActorCivilian::FUN_00470480(SBFile &file)
         void *base = (char *)info + 4;
         RHCivilianField<SBGeoPoint2D>(base, 0x20) = position;
         SBGeoVector2D displacement(position);
-        SBGeoBoundingBox2D *box = (SBGeoBoundingBox2D *)((RHUnkPathActorInfoBase *)base)->Unk0055fa10(
+        SBGeoBoundingBox2D *box = (SBGeoBoundingBox2D *)((RHPositionInterface *)base)->Unk0055fa10(
             RHCivilianField<int>(base, 0x88));
         ((RHMobileUnk00607da0 *)&RHCivilianField<SBGeoBoundingBox2D>(base, 0xc0))->FUN_00607da0((const RHMobileUnk00607da0 &)box->FUN_006090d0(displacement));
         RHCivilianField<int>(base, 4) = 2;
@@ -334,6 +315,10 @@ bool RHCivilianVirtualBool(void *object, unsigned offset);
 #include "../ai/RHMalignityVisibilityCalls.h"
 #include "../ai/RHMalignityActorCalls.h"
 #include "../engine/RHMessenger.h"
+#include "RHActorSequenceStorage.h"
+#include "../mission/RHCampaignValueCalls.h"
+
+extern RHUnk00452030 *g_unk0x6c07fc;
 
 RHMessenger *RHUnk00546050();
 
@@ -384,13 +369,11 @@ bool RHElementActorCivilian::FUN_00470d00(const SBGeoPoint2D &point, RHElementAc
 #define SBGeoPoint2D RHElemScrollPoint2D
 #define SBGeoVector2D RHElemScrollVector2D
 #define SBGeoBoundingBox2D RHElemScrollBoundingBox2D
-#define RHUnkPathActorInfoBase RHElemScrollPathActorInfoBase
 #define RHBonusInfoBase RHElemScrollBonusInfoBase
 #define RHBonusInfo RHElemScrollBonusInfo
 #include "RHElementScroll.h"
 #undef RHBonusInfo
 #undef RHBonusInfoBase
-#undef RHUnkPathActorInfoBase
 #undef SBGeoBoundingBox2D
 #undef SBGeoVector2D
 #undef SBGeoPoint2D
@@ -449,77 +432,66 @@ void FUN_00471060(unsigned int index)
     minimap->FUN_0054a440(scrolls[index]->FUN_004ba5d0());
 }
 
-// GLOBAL: GAME 0x006c0874
-unsigned char g_unk0x6c0874;
-
-bool RHCivilianVirtualBool(void *object, unsigned offset)
-{
-    void **vtable = *(void ***)object;
-    typedef bool (__fastcall *Method)(void *);
-    return ((Method)vtable[offset / 4])(object);
-}
-
-// Parked: virtual receivers and global helper calls remain source-shape approximations.
 // STUB: GAME 0x00470f70
 void *RHElementActorCivilian::FUN_00470f70(void *element)
 {
-    if ((g_unk0x6c0874 & 1) == 0)
-    {
-        g_unk0x6c0874 |= 1;
-        g_unk0x6c0838.FUN_0045ab50();
-    }
-
-    if (RHCivilianVirtualBool(this, 0x48) ||
+    // GLOBAL: GAME 0x006c0838
+    static RHUnk0045aaf0 result;
+    if (((RHMalignityActorCalls *)this)->V48() ||
         RHCivilianField<char>(this, 0x1ce) ||
-        !FUN_00470ca0() ||
-        !RHCivilianVirtualBool(element, 0xf8))
-        return 0;
-
-    if (RHCivilianField<int>(g_pEngine, 0x4a00) <= 50)
-        return 0;
-
-    RHCivilianField<char>(this, 0x92) = 1;
-    RHCivilianField<int>(this, 0xa0) = 0;
-    RHCivilianField<unsigned short>(this, 0xa4) = 2;
-    g_unk0x6c0838.FUN_0045ab50();
-    return &g_unk0x6c0838;
+        FUN_00470ca0() != true ||
+        ((RHMalignityActorCalls *)element)->Vf8() != true)
+        return FUN_0048c380((RHElementActorHuman *)element);
+    if (g_unk0x6c07fc->Get(1) >= 50)
+    {
+        RHCivilianField<char>(this, 0x92) = 1;
+        RHCivilianField<int>(this, 0xa0) = 0;
+        RHCivilianField<unsigned short>(this, 0xa4) = 2;
+        result.FUN_0045abc0(0x67, 0, 0);
+        return &result;
+    }
+    result.FUN_0045abc0(0x68, 0, 0);
+    return &result;
 }
 
-// Parked: the list dispatch, status callback and transition-call schedule differ.
-// STUB: GAME 0x00471090
+// LIBRARY: GAME 0x00471050
+// $E15
+
+// FUNCTION: GAME 0x00471090
 void RHElementActorCivilian::FUN_00471090()
 {
-    unsigned &current = RHCivilianField<unsigned>(this, 0x704);
-    if (current == 10)
+    if (RHCivilianField<unsigned>(this, 0x704) != 10)
     {
-        g_unk0x6c0c50->FUN_00549f50();
-        return;
-    }
-
-    std::vector<unsigned short> *arrays =
-        RHCivilianField<std::vector<unsigned short> *>(this, 0x700);
-    std::vector<unsigned short> &values = arrays[current];
-    unsigned revealable = 0;
-    for (std::vector<unsigned short>::iterator it = values.begin(); it != values.end(); ++it)
-        if (FUN_00470e30(*it))
-            ++revealable;
-
-    unsigned message;
-    unsigned duration = 10;
-    if (revealable != 0)
-    {
-        for (std::vector<unsigned short>::iterator it = values.begin(); it != values.end(); ++it)
-            FUN_00471060(*it);
-        g_unk0x6c0c50->FUN_00549f50();
-        message = FUN_00470310() ? 99 : 101;
+        std::vector<unsigned short> &values =
+            RHCivilianField<std::vector<unsigned short> *>(this, 0x700)[RHCivilianField<unsigned>(this, 0x704)];
+        int count = 0;
+        std::vector<unsigned short>::iterator last = values.end();
+        std::vector<unsigned short>::iterator it = values.begin();
+        for (; it != last; ++it)
+            if (FUN_00470e30(*it))
+                ++count;
+        if (count)
+        {
+            RHMinimap *minimap = g_unk0x6c0c50;
+            last = values.end();
+            it = values.begin();
+            for (; it != last; ++it)
+                FUN_00471060(*it);
+            minimap->FUN_00549f50();
+            if (FUN_00470310())
+                ((RHArtificialIntelligence *)((char *)this + RHCivilianField<int *>(this, 0x49c)[1] + 0x49c))->Unk00418c40(0x63, 10);
+            else
+                ((RHArtificialIntelligence *)((char *)this + RHCivilianField<int *>(this, 0x49c)[1] + 0x49c))->Unk00418c40(0x65, 10);
+        }
+        else if (FUN_00470310())
+            ((RHArtificialIntelligence *)((char *)this + RHCivilianField<int *>(this, 0x49c)[1] + 0x49c))->Unk00418c40(0x64, 10);
+        else
+            ((RHArtificialIntelligence *)((char *)this + RHCivilianField<int *>(this, 0x49c)[1] + 0x49c))->Unk00418c40(0x66, 10);
+        RHCivilianField<unsigned short>(this, 0x6fc) = 3;
+        ++RHCivilianField<unsigned>(this, 0x704);
     }
     else
-        message = FUN_00470310() ? 100 : 102;
-
-    (void)message;
-    (void)duration;
-    RHCivilianField<unsigned short>(this, 0x6fc) = 3;
-    ++current;
+        ((RHArtificialIntelligence *)((char *)this + RHCivilianField<int *>(this, 0x49c)[1] + 0x49c))->Unk00418c40(0x66, 0);
 }
 
 // FUNCTION: GAME 0x004711c0

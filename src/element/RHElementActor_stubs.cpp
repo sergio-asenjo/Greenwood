@@ -1,5 +1,6 @@
 #include "SBNullstr.h"
 #include "RHElementActor.h"
+#include "RHElementActor_calls.h"
 #include "RHUnk0060bd40.h"
 #include "SBGeoSegment2D.h"
 
@@ -128,7 +129,7 @@ RHUnk00613e90::RHUnk00613e90(float x, float y, float z)
 SBGeoVector2D RHBonusInfoBase::FUN_00468f10(int value) const
 {
     const SBGeoVector2D *point =
-        (const SBGeoVector2D *)((const char *)((RHUnkPathActorInfoBase *)this)->Unk0055fa10(value) + 8);
+        (const SBGeoVector2D *)((const char *)((RHPositionInterface *)this)->Unk0055fa10(value) + 8);
     return *point;
 }
 

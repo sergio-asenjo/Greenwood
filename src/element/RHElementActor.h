@@ -1,10 +1,29 @@
 #ifndef RHELEMENTACTOR_H
 #define RHELEMENTACTOR_H
 
-#include "RHElementActor_calls.h"
+#include "RHActorElementBase.h"
+#include "RHActorPointList.h"
+#include "RHActorString.h"
+#include "RHActorScriptContext.h"
+#include "RHUnkSectorScript.h"
 #include "Decomp.h"
 
 #include "RHActorCommand.h"
+
+class RHSequenceElement;
+class RHSequence;
+class RHOrder;
+class RHUnk00613e90;
+class RHActorTranslationSequenceCalls;
+class RHBonusInfo;
+class RHBonusInfoBase;
+class RHActorGridCalls;
+
+class RHActorScriptBase : public RHUnkSectorScript
+{
+public:
+    char m_0[0x60];
+};
 
 // SIZE 0x14
 struct RHHumanMapNode

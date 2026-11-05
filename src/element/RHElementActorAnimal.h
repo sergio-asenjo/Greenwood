@@ -5,6 +5,7 @@
 #include "Decomp.h"
 
 // SIZE 0x08
+#define SBGEO_POINT2D_VIEW
 class SBGeoVector2D;
 class SBGeoPoint2D
 {
@@ -39,6 +40,7 @@ public:
 
 
 // SIZE 0x14
+#define SBGEO_BOUNDINGBOX2D_VIEW
 class SBGeoBoundingBox2D
 {
 public:
@@ -52,14 +54,7 @@ public:
     undefined m_11[3]; // 0x11
 };
 
-// SIZE 0x8c
-class RHUnkPathActorInfoBase
-{
-public:
-    void *Unk0055fa10(int index);
-    undefined m_00[0x88]; // 0x00
-    int m_88; // 0x88
-};
+#include "RHPositionInterfaceCore.h"
 
 class RHUnk005b5e00
 {
@@ -87,7 +82,7 @@ public:
 class RHAnimalSprite
 {
 public:
-    RHUnkPathActorInfoBase *Position() { return (RHUnkPathActorInfoBase *)((char *)this + 4); }
+    RHPositionInterface *Position() { return (RHPositionInterface *)((char *)this + 4); }
     undefined m_00[0x18]; // 0x00
     float m_18; // 0x18
     undefined m_1c[0x8]; // 0x1c
@@ -99,20 +94,7 @@ public:
     int m_e0; // 0xe0
 };
 
-// SIZE 0x10
-struct RHAnimalNoisePosition
-{
-    float m_x; // 0x00
-    float m_y; // 0x04
-    int m_8; // 0x08
-    unsigned short m_c; // 0x0c
-};
-
-class RHElementActorNPC
-{
-public:
-    static void Noise(int type, RHAnimalNoisePosition &position, float radius, void *source);
-};
+#include "RHElementActorNPC.h"
 
 class RHScriptBatchCalls
 {
@@ -120,14 +102,8 @@ public:
     void *Unk0058a940(void *context, int value, void *element);
 };
 
-// SIZE 0x9c
-class RHUnk00588530
-{
-public:
-    RHUnk00588530(unsigned short priority, int command, void *element, int animation,
-                  const SBGeoPoint2D &destination, void *target, float speed, unsigned long flags);
-    undefined m_00[0x9c]; // 0x00
-};
+#define SBGEO_POINT2D_VIEW
+#include "RHSequenceMovementConstruction.h"
 
 class RHUnkPathGeometry
 {

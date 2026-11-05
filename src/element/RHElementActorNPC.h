@@ -9,7 +9,15 @@ class RHSequenceElement;
 class RHElementActorHuman;
 class RHActorTranslationSequenceCalls;
 struct RHMalignityPosition;
-struct RHAnimalNoisePosition;
+
+// SIZE 0x10
+struct RHAnimalNoisePosition
+{
+    float m_x; // 0x00
+    float m_y; // 0x04
+    int m_8; // 0x08
+    unsigned short m_c; // 0x0c
+};
 
 class RHDetectable
 {
@@ -36,6 +44,21 @@ public:
     int m_10;
 };
 
+// SIZE 0x1c
+struct RHnoise
+{
+    float m_x;
+    float m_y;
+    int m_08;
+    unsigned short m_0c;
+    unsigned short m_0e;
+    int m_10;
+    unsigned short m_14;
+    unsigned short m_16;
+    unsigned short m_18;
+    unsigned short m_1a;
+};
+
 class RHElementActorNPC
 {
 public:
@@ -53,12 +76,14 @@ public:
     void FUN_00487ce0();
     bool FUN_004887a0(int kind);
     void FUN_00488a40(unsigned char index, unsigned short timer);
+    unsigned short FUN_0048a830();
     bool FUN_0048af40(const SBGeoPoint2D &point, RHElementActorHuman *pc, int focus);
     void *FUN_0048c380(RHElementActorHuman *target);
     void FUN_0048c4d0();
     static void FUN_0048c620(void *actor);
     static void FUN_0048c6a0(void *actor, unsigned mode);
     static void Noise(int type, RHAnimalNoisePosition &position, float radius, void *source);
+    unsigned short FUN_0048cec0(const RHnoise *noise);
     bool FUN_0048d460(unsigned flags, RHActorTranslationSequenceCalls *sequence);
     void FUN_0048d990(unsigned short amount, void *source, bool force);
     void FUN_0048da80(RHSequenceElement *element);

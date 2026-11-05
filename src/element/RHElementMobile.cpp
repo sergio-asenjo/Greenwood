@@ -188,7 +188,7 @@ void RHElementMobile::FUN_004abfe0()
     unsigned short count = Size();
     for (unsigned short i = 0; i < count; ++i)
     {
-        RHMobilePosition *part = (RHMobilePosition *)((char *)m_b0[i]->m_50 + 4);
+        RHMobilePosition *part = (RHMobilePosition *)((char *)m_children[i]->m_50 + 4);
         RHMobileField<unsigned>(part, 8) = 1;
         RHMobileField<RHUnk005fc3b0>(part, 0x6c).FUN_005fc430(direction);
         part->FUN_0055fc20(false);
@@ -211,7 +211,7 @@ bool RHElementMobile::ExecuteMacroCommand()
         unsigned short count = Size();
         for (unsigned short i = 0; i < count; ++i)
         {
-            RHMobileElement *element = i[m_b0];
+            RHMobileElement *element = m_children[i];
             element->m_50->FUN_005b76e0(m_1ec, 0);
             ((RHUnk005bd5b0 *)element->m_50)->Unk(false);
         }
@@ -258,7 +258,7 @@ bool RHElementMobile::ExecuteMacroCommand()
         m_190 += 2;
         unsigned short count = Size();
         for (unsigned short i = 0; i < count; ++i)
-            i[m_b0]->m_fc = 1000000.0f;
+            m_children[i]->m_fc = 1000000.0f;
         m_194 -= 3;
         return false;
     }
@@ -421,7 +421,7 @@ void RHElementMobile::FUN_004ab7e0(float distance)
         float amplitude = m_19c * 0.1f;
         for (unsigned short i = 0; i < count; ++i)
         {
-            RHMobileElement *part = i[m_b0];
+            RHMobileElement *part = m_children[i];
             if (m_19c != 0.0f)
                 part->m_fc = 1.0f / m_19c;
             else
@@ -448,7 +448,7 @@ void RHElementMobile::FUN_004ab7e0(float distance)
     {
         for (unsigned short i = 0; i < count; ++i)
         {
-            RHMobileElement *part = i[m_b0];
+            RHMobileElement *part = m_children[i];
             if (m_19c != 0.0f)
                 part->m_fc = 1.0f / m_19c;
             else
@@ -469,7 +469,7 @@ void RHElementMobile::FUN_004ab7e0(float distance)
     {
         for (unsigned short i = 0; i < count; ++i)
         {
-            RHMobileElement *part = i[m_b0];
+            RHMobileElement *part = m_children[i];
             ((RHEngineWidenedCalls *)part->m_50)->FUN_005b7f60(0);
             RHMobilePosition *partPosition = (RHMobilePosition *)((char *)part->m_50 + 4);
             partPosition->m_20.FUN_005fc1e0(movement);
@@ -505,15 +505,14 @@ void EmitRHMobileMouseFocus(RHElementMobile *element)
     element->FUN_004ac750(0);
 }
 
-// Parked: holder/count register roles and argument/index scheduling differ.
-// STUB: GAME 0x004ac7c0
+// FUNCTION: GAME 0x004ac7c0
 bool RHElementMobile::FUN_004ac7c0(void *value, void *unused, int type)
 {
     if (type == 9 && RHMobileField<bool>(this, 0x12) && RHMobileField<bool>(this, 0x1f1) && RHMobileField<bool>(this, 0xa8))
     {
         unsigned short count = Size();
         for (unsigned short i = 0; i < count; ++i)
-            if (((RHMobilePartCalls *)m_b0[i])->FUN_004aafc0(value))
+            if (((RHMobilePartCalls *)m_children[i])->FUN_004aafc0(value))
                 return true;
     }
     return false;
@@ -641,15 +640,15 @@ void RHElementMobile::InitializeFromMissionStream(SBFile &file)
     RHMobileUnk004b06f0 &vectors = RHMobileField<RHMobileUnk004b06f0>(this, 0x1c8);
     for (i = 0; i < count; ++i)
     {
-        RHMobileBase004a8130 *part = (RHMobileBase004a8130 *)m_b0[i];
+        RHMobileBase004a8130 *part = (RHMobileBase004a8130 *)m_children[i];
         part->v17(true);
         SBGeoBoundingBox2D local(-50.0f, -50.0f, 50.0f, 50.0f);
         RHMobileField<RHMobileUnk00607da0>(part, 0x54).FUN_00607da0(*(RHMobileUnk00607da0 *)&local);
-        RHUnkTargetSprite *sprite = m_b0[i]->m_50;
+        RHUnkTargetSprite *sprite = m_children[i]->m_50;
         original = sprite->m_24;
         SBGeoPoint2D destination = original.Unk005fc190(SBGeoVector2D(translation));
         sprite->m_24 = destination;
-        void *base = ((RHUnkPathActorInfoBase *)((char *)sprite + 4))->Unk0055fa10(RHMobileField<int>(sprite, 0x8c));
+        void *base = ((RHPositionInterface *)((char *)sprite + 4))->Unk0055fa10(RHMobileField<int>(sprite, 0x8c));
         SBGeoBoundingBox2D shifted = ((SBGeoBoundingBox2D *)base)->FUN_006090d0(SBGeoVector2D(destination));
         RHMobileField<RHMobileUnk00607da0>(sprite, 0xc0).FUN_00607da0(*(RHMobileUnk00607da0 *)&shifted);
         RHMobileField<unsigned>(sprite, 8) = 2;
@@ -667,7 +666,7 @@ void RHElementMobile::InitializeFromMissionStream(SBFile &file)
         RHMobileField<bool>(this, 0xa8) = true;
     count = Size();
     for (i = 0; i < count; ++i)
-        RHMobileField<float>(m_b0[i], 0xfc) = m_19c == 0.0f ? 1000000.0f : 1.0f / m_19c;
+        RHMobileField<float>(m_children[i], 0xfc) = m_19c == 0.0f ? 1000000.0f : 1.0f / m_19c;
     if (RHMobileField<bool>(this, 0x1f0))
         ((RHUnk004af060 *)this)->Unk(((RHUnk005fc3b0 *)&m_188->FUN_004ae380())->FUN_005fcc50(1.0f));
 }
@@ -714,7 +713,7 @@ bool RHElementMobile::Serialize(SBFile &file)
     RHSerializeName(file, "RHElementMobile");
     unsigned short parts = Size();
     for (unsigned short i = 0; i < parts; ++i)
-        ((RHMobileBase004a8130 *)m_b0[i])->v16(file);
+        ((RHMobileBase004a8130 *)m_children[i])->v16(file);
     RH_MOBILE_ACCESS(RHMobileField<unsigned char>(this, 0xa8), 1, 0x550);
     RHMobileUnk004b06f0 &vectors = RHMobileField<RHMobileUnk004b06f0>(this, 0x1c8);
     unsigned count;
@@ -874,7 +873,7 @@ void RHUnk004af060::Unk(int direction)
     unsigned short count = Size();
     for (unsigned short i = 0; i < count; ++i)
     {
-        RHMobileElement *element = i[m_b0];
+        RHMobileElement *element = m_children[i];
         int value = direction & 15;
         RHUnkTargetSprite *sprite = element->m_50;
         *(unsigned short *)((char *)sprite + 0xd8) = (unsigned short)value;
@@ -891,20 +890,19 @@ void RHElementMobile::FUN_004af0f0(int value)
     unsigned short count = Size();
     for (unsigned short i = 0; i < count; ++i)
     {
-        RHMobileElement *element = m_b0[i];
+        RHMobileElement *element = m_children.First()[i];
         element->m_50->FUN_005b76e0(m_1ec, 0);
         element->m_50->FUN_005b76e0(m_1ec, 0);
         ((RHUnk005bd5b0 *)element->m_50)->Unk(false);
     }
 }
 
-// New probe: marker flip is effective-only (100.00%*) with the SIB operand order unresolved.
-// STUB: GAME 0x004af170
+// FUNCTION: GAME 0x004af170
 void RHElementMobile::FUN_004af170(void *value)
 {
     unsigned short count = Size();
     for (unsigned short i = 0; i < count; ++i)
-        ((RHBonusInfoBase *)((char *)m_b0[i]->m_50 + 4))->FUN_0055fa20((RHBonusProjection *)value);
+        ((RHBonusInfoBase *)((char *)m_children[i]->m_50 + 4))->FUN_0055fa20((RHBonusProjection *)value);
 }
 
 // FUNCTION: GAME 0x004af210

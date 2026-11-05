@@ -1,12 +1,4 @@
 #include "RHElementActorAnimal.h"
-// SIZE 0x14
-class RHMobileUnk00607da0
-{
-public:
-    void FUN_00607990(const RHMobileUnk00607da0 &other);
-    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
-    unsigned char m_00[0x14]; // 0x00
-};
 #include <stdlib.h>
 
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
@@ -144,7 +136,7 @@ bool RHElementActorAnimal::GoTo(const SBGeoPoint2D &destination, unsigned short 
     {
         if (flags & 0x10)
         {
-            RHUnkPathActorInfoBase *position = m_50->Position();
+            RHPositionInterface *position = m_50->Position();
             void *box = position->Unk0055fa10(position->m_88);
             if (!((RHUnkPathGeometry *)g_unk0x6c0a9c)->Unk004f9170(m_50->m_24, destination, m_50->m_de, box))
                 return false;

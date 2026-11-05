@@ -1061,7 +1061,7 @@ void RHElementActorHuman::FUN_00479970(RHSequenceElement *element)
         void *value = RHActorField<void *>(element, 0x64);
         if (RHActorField<int>(value, 0xb0) == 9 && RHActorField<char>(value, 0x12))
         {
-            ((RHEngineSerializationCalls *)g_pEngine)->FUN_004d88e0(value, 0, 1);
+            g_pEngine->RemoveElement((RHElement *)value, false, true);
             ((RHElementNet *)value)->FUN_004b1270();
             if (((RHHumanTypeView *)this)->Type() == 12)
                 ((RHHumanVirtualCalls *)this)->V0e8(17, true);
@@ -1718,11 +1718,7 @@ public:
     SBGeoPoint2D FUN_004237d0();
 };
 
-class RHPositionInterface
-{
-public:
-    bool Turn();
-};
+#include "RHPositionInterfaceCore.h"
 
 class RHUnk6c1040;
 extern RHUnk6c1040 *g_unk0x6c1040;
@@ -4081,13 +4077,7 @@ public:
     RHMobileUnk006091b0 &FUN_006091b0(const SBGeoPoint2D &point);
 };
 
-class RHMobileUnk00607da0
-{
-public:
-    void FUN_00607990(const RHMobileUnk00607da0 &other);
-    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
-    undefined m_00[0x14];
-};
+#include "RHMobileUnk00607da0.h"
 
 class RHMalignityGridCalls
 {
@@ -4095,15 +4085,11 @@ public:
     bool FUN_004f5e50(SBGeoBoundingBox2D &box, const SBGeoPoint2D &point, unsigned short layer);
 };
 
-class RHUnkPathActorInfoBase
-{
-public:
-    void *Unk0055fa10(int value);
-};
+#include "RHPositionInterfaceCore.h"
 
 inline SBGeoBoundingBox2D *RHHumanPositionBounds(void *base)
 {
-    return (SBGeoBoundingBox2D *)((RHUnkPathActorInfoBase *)base)->Unk0055fa10(RHActorField<int>(base, 0x88));
+    return (SBGeoBoundingBox2D *)((RHPositionInterface *)base)->Unk0055fa10(RHActorField<int>(base, 0x88));
 }
 
 inline unsigned short RHHumanLayer(const RHElementActorHuman *actor)

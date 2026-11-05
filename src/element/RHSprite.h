@@ -10,6 +10,7 @@ public:
     bool SerializeElementPointer(SBFile &, class RHElement *&);
     bool FUN_004c4490(SBFile &file, void *&value);
     unsigned int FUN_004d2340(int type);
+    void FUN_004d5320(const void *value);
 };
 extern RHEngine *g_pEngine;
 

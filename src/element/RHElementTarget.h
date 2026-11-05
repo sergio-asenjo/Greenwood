@@ -9,20 +9,9 @@ public:
     void FUN_00611100(const SBGeoPoint2D &point);
 };
 
-class RHUnkTargetSprite : public RHBonusInfo
-{
-public:
-    bool FUN_005bd050(int kind, const std::string &name, const std::string &profile, int flag);
-    bool FUN_005b76e0(unsigned index, unsigned short row);
-};
+#include "RHTargetResourceCalls.h"
 
 #include "RHCivilianSpriteView.h"
-
-class RHUnkFXDraw
-{
-public:
-    unsigned long Unk005e4ed0(int width, int height, int flags, bool retain);
-};
 
 class RHUnk005df4f0 : public RHBonusTriple
 {

@@ -19,6 +19,7 @@ class SBGeoPoint2D;
 class RHElement
 {
 public:
+    void *FUN_004622d0() const;
     virtual bool Serialize(SBFile &file);
     virtual void V04();
     virtual void V08();
@@ -100,12 +101,7 @@ public:
 // ecx and takes (SBFile&, const char*); see the binding notes.
 void RHSerializeName(SBFile &file, const char *name);
 
-class RHUnk00641782
-{
-public:
-    RHUnk00641782();
-    ~RHUnk00641782();
-};
+#include "RHUnk00641782.h"
 
 struct RHObjectMasterNode
 {

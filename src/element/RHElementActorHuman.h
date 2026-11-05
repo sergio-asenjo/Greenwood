@@ -15,13 +15,7 @@
 class RHOrder;
 class RHUnk00613e90;
 #include "RHElementActorHumanBase.h"
-class RHEngine
-{
-public:
-    bool FUN_004c3bd0(SBFile &file, void *&value);
-    bool SerializeNestedB(SBFile &file, void *value);
-    void FUN_004e39b0(void *actor, bool value);
-};
+#include "RHEngine.h"
 extern RHEngine *g_pEngine;
 struct RHUnkSectorGlobal;
 extern RHUnkSectorGlobal *g_unk0x6c0a9c;

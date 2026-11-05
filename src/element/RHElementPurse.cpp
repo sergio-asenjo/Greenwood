@@ -33,6 +33,7 @@
 #include "RHEngineWidenedCalls.h"
 #include "RHUnkTargetSpriteCalls.h"
 #include "RHEngineSerializationCalls.h"
+#include "RHEngine.h"
 #include "RHProjectileSoundCalls.h"
 #include <list>
 #include <algorithm>
@@ -125,7 +126,7 @@ unsigned short RHElementPurse::FUN_004b98a0()
     for (std::list<RHElementCoin *>::iterator coin = coins.begin(); coin != coins.end(); ++coin) {
         if (*((char *)*coin + 0x12)) {
             amount += 10;
-            ((RHEngineSerializationCalls *)g_pEngine)->FUN_004d88e0(*coin, 0, 1);
+            g_pEngine->RemoveElement((RHElement *)*coin, false, true);
         }
     }
     coins.clear();

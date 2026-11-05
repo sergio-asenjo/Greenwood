@@ -4,7 +4,7 @@
 #ifndef SBGEO_POINT2D_VIEW
 #include "SBGeoPoint2D.h"
 #endif
-#if !defined(SBGEOVECTOR2D_H) && !defined(RHBONUSINFO_VECTOR_DEFINED)
+#if !defined(SBGEOVECTOR2D_H) && !defined(SBGEO_VECTOR2D_VIEW) && !defined(RHBONUSINFO_VECTOR_DEFINED)
 #include "SBGeoVector2D.h"
 #endif
 #ifndef SBGEO_BOUNDINGBOX2D_VIEW
@@ -22,11 +22,7 @@ public:
 };
 #endif
 
-class RHUnkPathActorInfoBase
-{
-public:
-    void *Unk0055fa10(int value);
-};
+#include "RHPositionInterfaceCore.h"
 
 #include "RHBonusProjection.h"
 
@@ -44,7 +40,7 @@ public:
     void FUN_0055fa20(RHBonusProjection *projection);
     SBGeoBoundingBox2D &Box()
     {
-        return *(SBGeoBoundingBox2D *)((RHUnkPathActorInfoBase *)this)->Unk0055fa10(m_88);
+        return *(SBGeoBoundingBox2D *)((RHPositionInterface *)this)->Unk0055fa10(m_88);
     }
     void SetPoint(const SBGeoPoint2D &point)
     {

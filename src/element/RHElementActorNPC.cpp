@@ -701,11 +701,86 @@ void RHElementActorNPC::FUN_0048c6a0(void *actor, unsigned mode)
 
 struct RHUnk00571160Position;
 
+void FUN_0048cc20(void *noise, void *source);
+
+// FUNCTION: GAME 0x0048cca0
+void RHElementActorNPC::Noise(int type, RHAnimalNoisePosition &position, float radius, void *source)
+{
+    RHMalignityStimulus stimulus;
+    RHnoise noise;
+    noise.m_10 = type;
+    *(RHAnimalNoisePosition *)&noise = position;
+    noise.m_16 = (unsigned short)radius;
+    FUN_0048cc20(&noise, source);
+    RHnoise heard = noise;
+    unsigned short count = RHNPCActorCount();
+    for (unsigned short i = 0; i < count; ++i)
+    {
+        RHMalignityActorCalls *npc = (*(RHMalignityActorCalls ***)((char *)g_pEngine + 0x495c))[i];
+        if ((*(unsigned *)((char *)npc + 4) & 0x1f) == 4 || npc->V130() == 1)
+        {
+            unsigned short volume = ((RHElementActorNPC *)npc)->FUN_0048cec0(&noise);
+            if (volume > 0)
+            {
+                heard.m_14 = volume;
+                switch (type)
+                {
+                case 3:
+                case 13:
+                    heard.m_18 = *(unsigned short *)((char *)source + 0xc);
+                    break;
+                case 7:
+                case 8:
+                    heard.m_18 = *(unsigned short *)((char *)source + 0xc);
+                    break;
+                }
+                stimulus.m_20 = 2;
+                *(RHnoise *)stimulus.m_00 = heard;
+                stimulus.m_type = 1;
+                ((RHArtificialIntelligence *)((char *)npc + (*(int **)((char *)npc + 0x49c))[1] + 0x49c))->V24(&stimulus);
+            }
+        }
+    }
+    g_pEngine->FUN_004d5320(&noise);
+}
+
 // FUNCTION: GAME 0x0048ce80
 void RHUnk0048ce80(int noise, RHUnk00571160Position *position)
 {
     RHElementActorNPC::Noise(noise, *(RHAnimalNoisePosition *)position,
         FUN_00414360(*(RHMalignityPosition *)position, true).m_8, 0);
+}
+
+// GLOBAL: GAME 0x006ae594
+float g_unk0x006ae594 = 1.0f;
+
+// FUNCTION: GAME 0x0048cec0
+unsigned short RHElementActorNPC::FUN_0048cec0(const RHnoise *noise)
+{
+    RHUnk00613e90 position;
+    RHUnk00613e90 source;
+    RHUnk00613e90 delta;
+    position = *(RHUnk00613e90 *)((char *)RHNPC_FIELD(void *, 0x50) + 0x10);
+    float x = noise->m_x;
+    source.x = x;
+    float height = noise->m_16;
+    source.y = noise->m_y + height;
+    source.z = height;
+    delta = position.FUN_005df550(source);
+    delta.y *= 1.7434468f;
+    float radius = noise->m_14 * g_unk0x006ae594;
+    if (noise->m_10 != 14 && (position.x != source.x || position.y != source.y || position.z != source.z) &&
+        delta.FUN_005df680() <= radius)
+    {
+        short volume = (short)(radius - delta.Norm());
+        if (volume > 0)
+        {
+            volume -= FUN_0048a830();
+            if (volume > 0)
+                return volume;
+        }
+    }
+    return 0;
 }
 
 // FUNCTION: GAME 0x0048d100
@@ -1199,4 +1274,48 @@ void RHElementActorNPC::FUN_0048c4d0()
                 ((RHArtificialMalignity *)((char *)actor + 0x6e8))->FUN_00446eb0(this);
         }
     }
+}
+
+#include "RHSoundSourceManagerCore.h"
+#include "RHSoundSourceCore.h"
+
+// FUNCTION: GAME 0x0048a830
+unsigned short RHElementActorNPC::FUN_0048a830()
+{
+    RHUnk00613e90 position;
+    if (*g_unk0x006c08a4 == RHNPC_FIELD(unsigned, 0x4fc))
+        return RHNPC_FIELD(unsigned short, 0x4fa);
+    for (; RHNPC_FIELD(unsigned, 0x4fc) < *g_unk0x006c08a4; )
+    {
+        if (RHNPC_FIELD(unsigned short, 0x4fa) <= 0)
+            break;
+        RHNPC_FIELD(unsigned short, 0x4fa) -= RHNPC_FIELD(unsigned short, 0x4fa) > 300
+            ? RHNPC_FIELD(unsigned short, 0x4fa) / 300 * 50 : 10;
+        if ((short)RHNPC_FIELD(unsigned short, 0x4fa) < 0)
+            RHNPC_FIELD(unsigned short, 0x4fa) = 0;
+        unsigned next = RHNPC_FIELD(unsigned, 0x4fc) + 1;
+        RHNPC_FIELD(unsigned, 0x4fc) = next;
+    }
+    position = *(RHUnk00613e90 *)((char *)RHNPC_FIELD(void *, 0x50) + 0x10);
+    unsigned short maximum = RHNPC_FIELD(unsigned short, 0x4fa);
+    RHArtificialIntelligenceSoundCalls *sound = g_unk0x006c1070;
+    unsigned short count = (unsigned short)(*(RHSoundSourceManager **)((char *)sound + 0x200))->m_sources.GetSize();
+    for (unsigned short index = 0; index < count; ++index)
+    {
+        RHSoundSource *source = (*(RHSoundSourceManager **)((char *)sound + 0x200))->GetSoundSource(index);
+        if (source)
+        {
+            unsigned short value = source->FUN_005b3c40(position);
+            if (value > maximum)
+                maximum = value;
+        }
+    }
+    RHNPC_FIELD(unsigned short, 0x4fa) = maximum;
+    RHNPC_FIELD(unsigned, 0x4fc) = *g_unk0x006c08a4;
+    return maximum;
+}
+
+void EmitRHElementActorNPCVoice(RHElementActorNPC *npc)
+{
+    npc->FUN_0048a830();
 }

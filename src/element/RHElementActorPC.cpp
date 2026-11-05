@@ -21,7 +21,7 @@
 #include "RHMalignityPosition.h"
 #include "RHUnk004a6310.h"
 #include "RHProjectileInitCalls.h"
-#include "RHUnk004d8460Calls.h"
+#include "RHEngine.h"
 #include "RHProjectileVector.h"
 
 extern undefined g_unk0x006c0e48[];
@@ -1349,11 +1349,10 @@ void RHScriptBatchCalls::Unk0049d6c0()
     }
 }
 
-// Parked: pending-pointer load folds into a memory comparison.
-// STUB: GAME 0x0049d780
+// FUNCTION: GAME 0x0049d780
 void RHHumanActorCalls::FUN_0049d780()
 {
-    if (!RHActorPCField<void *>(this, 0x268) && RHActorPCField<char>(this, 0x4e8))
+    if (!RHActorPCField<void *volatile>(this, 0x268) && RHActorPCField<char>(this, 0x4e8))
     {
         RHMessenger *messenger = RHUnk00546050();
         bool restore = false;
@@ -1632,7 +1631,7 @@ void RHPCCombatCalls::FUN_0049bb20(int action, int flag)
     }
     else
     {
-        SBGeoBoundingBox2D bounds(*(SBGeoBoundingBox2D *)((RHUnkPathActorInfoBase *)&RHActorPCField<RHElementActorPC *>(this, 0x5cc)->m_50->m_4)->Unk0055fa10(3));
+        SBGeoBoundingBox2D bounds(*(SBGeoBoundingBox2D *)((RHPositionInterface *)&RHActorPCField<RHElementActorPC *>(this, 0x5cc)->m_50->m_4)->Unk0055fa10(3));
         ((RHMobileUnk006091b0 *)&bounds)->FUN_006091b0(SBGeoVector2D((const SBGeoVector2D &)((RHElementActor *)this)->FUN_00462920()));
         if (((RHMalignityGridCalls *)g_unk0x6c0a9c)->FUN_004f5e50(bounds,
                 actor->m_50->m_4.m_20, RHActorPCField<unsigned short>(actor->m_50, 0xde)))
@@ -1672,7 +1671,7 @@ bool RHElementActorPC::FUN_0049eab0(SBGeoPoint2D &result)
     ((RHHumanActorCalls *)this)->FUN_00479430(origin, -666.0f);
     void *profile = (char *)m_50 + 4;
     ((RHMobileUnk00607da0 *)&bounds)->FUN_00607da0(
-        *(const RHMobileUnk00607da0 *)((RHUnkPathActorInfoBase *)profile)->Unk0055fa10(
+        *(const RHMobileUnk00607da0 *)((RHPositionInterface *)profile)->Unk0055fa10(
             RHActorPCField<int>(profile, 0x88)));
     ((RHMobileUnk006091b0 *)&bounds)->FUN_006091b0(SBGeoVector2D((const SBGeoVector2D &)SBGeoPoint2D(origin.x, origin.y)));
     unsigned short layer = RHActorPCField<unsigned short>(m_50, 0xde);
@@ -1754,7 +1753,7 @@ void RHElementActorPC::FUN_0049ece0(const void *target)
     position.layer = RHActorPCField<unsigned short>(sprite, 0xde);
     position.area = RHActorPCField<void *>(sprite, 0xe0);
     RHActorPCField<RHMalignityPosition>(apple, 0x118) = position;
-    ((RHUnk004d8460 *)g_pEngine)->FUN_004d8460(apple, 0, 1);
+    g_pEngine->AddElement((RHElement *)apple, false, true);
     ((RHActorPCVTableCalls *)this)->FUN_56(0xb, 1, 1);
 }
 
@@ -1790,7 +1789,7 @@ void RHElementActorPC::FUN_0049eeb0(const void *target)
     position.layer = RHActorPCField<unsigned short>(sprite, 0xde);
     position.area = RHActorPCField<void *>(sprite, 0xe0);
     RHActorPCField<RHMalignityPosition>(projectile, 0x118) = position;
-    ((RHUnk004d8460 *)g_pEngine)->FUN_004d8460(projectile, 0, 1);
+    g_pEngine->AddElement((RHElement *)projectile, false, true);
     ((RHActorPCVTableCalls *)this)->FUN_56(5, 1, 1);
 }
 
@@ -1822,7 +1821,7 @@ void RHElementActorPC::FUN_0049f080(const RHUnk00613e90 &point)
     position.layer = RHActorPCField<unsigned short>(sprite, 0xde);
     position.area = RHActorPCField<void *>(sprite, 0xe0);
     RHActorPCField<RHMalignityPosition>(projectile, 0x118) = position;
-    ((RHUnk004d8460 *)g_pEngine)->FUN_004d8460(projectile, 0, 1);
+    g_pEngine->AddElement((RHElement *)projectile, false, true);
     ((RHActorPCVTableCalls *)this)->FUN_56(4, 1, 1);
     ((RHUnk00450b60 *)g_unk0x6c07fc)->Unk(1, -50);
 }
@@ -1854,7 +1853,7 @@ void RHElementActorPC::FUN_0049f210(const RHUnk00613e90 &point)
     position.layer = RHActorPCField<unsigned short>(sprite, 0xde);
     position.area = RHActorPCField<void *>(sprite, 0xe0);
     RHActorPCField<RHMalignityPosition>(projectile, 0x118) = position;
-    ((RHUnk004d8460 *)g_pEngine)->FUN_004d8460(projectile, 0, 1);
+    g_pEngine->AddElement((RHElement *)projectile, false, true);
     ((RHActorPCVTableCalls *)this)->FUN_56(0x13, 1, 1);
 }
 
@@ -1887,7 +1886,7 @@ void RHElementActorPC::FUN_0049f380(const RHUnk00613e90 &point)
     position.layer = RHActorPCField<unsigned short>(sprite, 0xde);
     position.area = RHActorPCField<void *>(sprite, 0xe0);
     RHActorPCField<RHMalignityPosition>(projectile, 0x118) = position;
-    ((RHUnk004d8460 *)g_pEngine)->FUN_004d8460(projectile, 0, 1);
+    g_pEngine->AddElement((RHElement *)projectile, false, true);
     ((RHActorPCVTableCalls *)this)->FUN_56(0x11, 1, 1);
 }
 
@@ -2016,7 +2015,7 @@ void RHElementActorPC::FUN_0049fbf0(void *actor, bool consume)
         count = (unsigned short)room;
     }
     else
-        ((RHEngineSerializationCalls *)g_pEngine)->FUN_004d88e0(actor, 0, 1);
+        g_pEngine->RemoveElement((RHElement *)actor, false, true);
     if (consume)
         ((RHActorPCVTableCalls *)this)->FUN_58(kind, count);
 }
@@ -2485,7 +2484,7 @@ RHUnk00549250::~RHUnk00549250()
 }
 
 // FUNCTION: GAME 0x0055fa10
-void *RHUnkPathActorInfoBase::Unk0055fa10(int value)
+void *RHPositionInterface::Unk0055fa10(int value)
 {
     return (char *)this + 0x94;
 }

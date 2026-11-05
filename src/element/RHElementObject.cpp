@@ -33,6 +33,7 @@
 #include "RHElementObject.h"
 #include "RHElementActorPC.h"
 
+#define SBGEO_POINT2D_VIEW
 class SBGeoPoint2D
 {
 public:
@@ -46,6 +47,7 @@ public:
     float y;
 };
 
+#define SBGEO_VECTOR2D_VIEW
 class SBGeoVector2D : public SBGeoPoint2D
 {
 public:
@@ -55,6 +57,7 @@ public:
     SBGeoVector2D &operator=(const SBGeoVector2D &other);
 };
 
+#define SBGEO_BOUNDINGBOX2D_VIEW
 class SBGeoBoundingBox2D
 {
 public:
@@ -81,21 +84,17 @@ public:
 class RHUnkFXDraw
 {
 public:
-    unsigned long Unk005e4ed0(int width, int height, int flags, bool retain);
+    unsigned long Unk005e4ed0(unsigned short width, unsigned short height, unsigned long flags, bool retain);
     unsigned short FUN_005e56c0(unsigned long surface);
     unsigned short FUN_005e5750(unsigned long surface);
 };
 
-class RHUnkPathActorInfoBase
-{
-public:
-    void *Unk0055fa10(int value);
-};
+#include "RHPositionInterfaceCore.h"
 
 class RHObjectSpriteInfo
 {
 public:
-    SBGeoBoundingBox2D &Box() { return *(SBGeoBoundingBox2D *)((RHUnkPathActorInfoBase *)this)->Unk0055fa10(m_88); }
+    SBGeoBoundingBox2D &Box() { return *(SBGeoBoundingBox2D *)((RHPositionInterface *)this)->Unk0055fa10(m_88); }
     void SetPoint(const SBGeoPoint2D &point)
     {
         m_20 = point;
