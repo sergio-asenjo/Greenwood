@@ -116,13 +116,6 @@ extern RHMapResources *g_unk0x006c1840;
 class RHUnk005ef320;
 extern RHUnk005ef320 *g_unk0x6c11d0;
 
-class RHUnk005e6440
-{
-public:
-    void Blit(unsigned long, SBGeoBoundingBox2D *, unsigned long,
-        SBGeoBoundingBox2D *, unsigned long);
-};
-
 // FUNCTION: GAME 0x0060d420
 RHPortraitRenderer0060d470::RHPortraitRenderer0060d470()
 {
@@ -288,7 +281,7 @@ bool SBUIUnk0060da20::FUN_0060da20(unsigned int id)
     }
     ((unsigned int *)(m_bytes + 0x40))[*(unsigned int *)(m_bytes + 0x48) & 1] = surface;
     if (surface)
-        ((RHUnk005e6440 *)m_draw)->Blit(surface, 0, m_unk20, &m_box, 1);
+        m_draw->FUN_005e6440(surface, 0, m_unk20, &m_box, 1);
     return true;
 }
 

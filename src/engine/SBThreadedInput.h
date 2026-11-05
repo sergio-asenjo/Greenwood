@@ -22,6 +22,8 @@ struct SBInputPosition
 extern SBInputPosition g_inputPosition;
 extern SBInputPosition g_hotSpot;
 extern bool g_inputAlternate;
+extern bool g_instantRefresh;
+extern bool g_mouseEnabled;
 
 enum SBButton
 {
@@ -41,6 +43,7 @@ public:
     unsigned FUN_005104b0();
     static void AccumulateColor16(unsigned short &red, unsigned short &green, unsigned short &blue, unsigned short color, unsigned short weight);
     static void AccumulateColor15(unsigned short &red, unsigned short &green, unsigned short &blue, unsigned short color, unsigned short weight);
+    static bool BlitBlur(unsigned long source, const SBGeoBoundingBox2D &sourceBox, unsigned long destination, const SBGeoBoundingBox2D &destinationBox, unsigned long flags, unsigned short *weights);
     static bool BlitBlind(unsigned long source, const SBGeoBoundingBox2D &sourceBox, unsigned long destination, const SBGeoBoundingBox2D &destinationBox, unsigned long flags);
     static bool BlitFilterX(unsigned long source, const SBGeoBoundingBox2D &sourceBox, unsigned long destination, const SBGeoBoundingBox2D &destinationBox, unsigned long flags, unsigned short *weights);
     static bool BlitFilterY(unsigned long source, const SBGeoBoundingBox2D &sourceBox, unsigned long destination, const SBGeoBoundingBox2D &destinationBox, unsigned long flags, unsigned short *weights);

@@ -1,7 +1,8 @@
 #include "SBNullstr.h"
 #include "SBUIRendererInputField.h"
 
-// FUNCTION: GAME 0x0048be30
+// TEMPLATE: GAME 0x0048be30 FOLDED
+// ?FUN_0048be30@@YAXXZ
 void FUN_0048be30()
 {
 }

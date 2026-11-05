@@ -3,8 +3,13 @@
 
 #include "Decomp.h"
 #include <vector>
+#include <string>
 
 class RHUnk005ef320;
+struct RHPortraitWidgetInput;
+struct RHPortraitWidgetEvent;
+class SBFrameWidgetView;
+struct SBInputMouseState;
 
 class SBUIWindowView
 {
@@ -12,11 +17,23 @@ public:
     virtual void V00() = 0;
     virtual void V04() = 0;
     virtual void AttachToDisplay(unsigned long display) = 0;
-    virtual void V0c() = 0;
+    virtual RHPortraitWidgetEvent *V0c(const RHPortraitWidgetInput &input) = 0;
     virtual void V10() = 0;
     virtual void V14() = 0;
     virtual void V18(unsigned long surface) = 0;
     virtual void V1c() = 0;
+    virtual void V20() = 0;
+    virtual void V24() = 0;
+    virtual void V28() = 0;
+    virtual void V2c() = 0;
+    virtual void V30() = 0;
+    virtual void V34() = 0;
+    virtual void V38() = 0;
+    virtual void V3c() = 0;
+    virtual void V40() = 0;
+    virtual void V44() = 0;
+    virtual void V48() = 0;
+    virtual bool V4c() const = 0;
 };
 
 class SBUIFontView
@@ -59,6 +76,20 @@ public:
     bool FUN_0060e260() const;
     bool FUN_0060e2a0(const SBInputKeyboardState &input);
     bool EmitRefresh(const SBInputKeyboardState &input);
+    unsigned int vptr;
+    unsigned short first;
+    unsigned short second;
+    bool initialized;
+    bool changed;
+    unsigned short keys[256];
+    unsigned short padding;
+    int state[256];
+    int previous[256];
+    int repeat[256];
+    unsigned long released[256];
+    unsigned long pressed[256];
+    unsigned long delay;
+    unsigned char keyboard[256];
 };
 
 struct SBUIWindowArray : public std::vector<SBUIWindowView *>
@@ -121,6 +152,7 @@ public:
     void *FUN_006186d0(unsigned flags);
     void FUN_00618910(unsigned long surface);
     void FUN_006189e0(unsigned long frame);
+    RHPortraitWidgetEvent *InputLoop(SBInputMouseState &mouse, SBInputKeyboardState &keyboard, bool skip);
     bool FUN_00619800(SBUIWindowView *window);
     void FUN_00619a00(SBUIWindowView *window);
     bool FUN_00619c20(unsigned long display);
@@ -130,7 +162,9 @@ public:
     SBUIWindowArray m_windows;
     SBUIFlagArray m_flags;
     SBUIUnk0060e1b0 m_input;
-    undefined m_45[0x1713];
+    bool m_1754;
+    bool m_1755;
+    undefined m_1756[2];
     RHUnk006279d0 *m_tooltip;
     unsigned short m_175c;
     unsigned short m_175e;
@@ -141,10 +175,16 @@ public:
     undefined m_176c[8];
     SBUIFontView *m_font;
     SBUIFontView *m_alternate;
-    undefined m_177c[0x50];
+    void *m_177c;
+    unsigned long m_1780;
+    unsigned long m_1784;
+    bool m_1788;
+    std::wstring m_178c;
+    undefined m_179c[0x30];
     undefined m_renderer[0x20];
     unsigned long m_surface;
-    undefined m_17f0[8];
+    SBFrameWidgetView *m_17f0;
+    SBUIWindowView *m_17f4;
 
     int Size() const
     {

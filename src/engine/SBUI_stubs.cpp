@@ -2,7 +2,6 @@
 #include <new>
 
 
-void SBThreadedInput::FUN_005f1700() {}
 
 void SBUI::FUN_006189e0(unsigned long) {}
 
@@ -15,4 +14,3 @@ SBUIUnkSurfaceBase::~SBUIUnkSurfaceBase()
 {
     m_vptr = 0x0067ae04;
 }
-SBUIUnkSurface::~SBUIUnkSurface() {}

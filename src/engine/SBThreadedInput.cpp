@@ -18,8 +18,7 @@ class RHUnkFXDraw
 public:
     unsigned short FUN_005e56c0(unsigned long);
     unsigned short FUN_005e5750(unsigned long);
-    unsigned long Unk005e4ed0(int, int, int, bool);
-    void Unk005e5160(unsigned long);
+    unsigned long Unk005e4ed0(unsigned short, unsigned short, unsigned long, bool);
 };
 
 class RHMobileUnk00607da0
@@ -28,17 +27,11 @@ public:
     RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
 };
 
-class RHUnk005e6440
-{
-public:
-    void Blit(unsigned long, SBGeoBoundingBox2D *, unsigned long, SBGeoBoundingBox2D *, unsigned long);
-};
-
 // GLOBAL: GAME 0x006c1230
 static CRITICAL_SECTION g_inputCriticalSection[1];
 
 // GLOBAL: GAME 0x006c12e0
-static bool g_instantRefresh;
+bool g_instantRefresh;
 
 extern short g_lastXMove;
 
@@ -251,15 +244,15 @@ SBThreadedInput::SBThreadedInput()
 // SYNTHETIC: GAME 0x005f0870
 // SBThreadedInput::`scalar deleting destructor'
 
-// STUB: GAME 0x005f0890
+// FUNCTION: GAME 0x005f0890
 SBThreadedInput::~SBThreadedInput()
 {
-    g_inputDrawManager->Unk005e5160(g_unk0x006c12a4);
-    g_inputDrawManager->Unk005e5160(g_unk0x006c130c);
-    g_inputDrawManager->Unk005e5160(g_unk0x006c1318);
-    g_inputDrawManager->Unk005e5160(g_backgroundEven);
-    g_inputDrawManager->Unk005e5160(g_backgroundOdd);
-    g_inputDrawManager->Unk005e5160(g_unk0x006c1310);
+    ((SBDrawManager *)g_inputDrawManager)->FUN_005e5160(g_unk0x006c12a4);
+    ((SBDrawManager *)g_inputDrawManager)->FUN_005e5160(g_unk0x006c130c);
+    ((SBDrawManager *)g_inputDrawManager)->FUN_005e5160(g_unk0x006c1318);
+    ((SBDrawManager *)g_inputDrawManager)->FUN_005e5160(g_backgroundEven);
+    ((SBDrawManager *)g_inputDrawManager)->FUN_005e5160(g_backgroundOdd);
+    ((SBDrawManager *)g_inputDrawManager)->FUN_005e5160(g_unk0x006c1310);
     DeleteCriticalSection(g_screenCriticalSection);
 }
 
@@ -582,6 +575,34 @@ void SBThreadedInput::ClearBackgroundStack()
     ((RHMobileUnk00607da0 *)((char *)this + 0x28))->FUN_00607da0((const RHMobileUnk00607da0 &)SBGeoBoundingBox2D());
 }
 
+// Parked: point-to-vector constructor identity, temporary slots and call scheduling differ.
+// STUB: GAME 0x005f1700
+void SBThreadedInput::FUN_005f1700()
+{
+    SBGeoBoundingBox2D sourceBox;
+    SBGeoBoundingBox2D destinationBox;
+    unsigned long surface;
+    g_inputResources->FUN_00600920(g_currentCursor, g_currentFrame, surface);
+    sourceBox.FUN_00609050(SBGeoPoint2D(0.0f, 0.0f),
+        SBGeoPoint2D((float)g_inputDrawManager->FUN_005e56c0(surface), (float)g_inputDrawManager->FUN_005e5750(surface)));
+    ((RHMobileUnk00607da0 *)&destinationBox)->FUN_00607da0((const RHMobileUnk00607da0 &)sourceBox.FUN_006090d0(
+        SBGeoVector2D(((SBGeoPoint2D *)&g_inputPosition)->FUN_005fc200(*(SBGeoPoint2D *)&g_hotSpot))));
+    ((SBDrawManager *)g_inputDrawManager)->FUN_005e6000(destinationBox, sourceBox);
+    ++m_10;
+    if ((m_10 & 1) == 0) {
+        ((RHMobileUnk00607da0 *)&m_14)->FUN_00607da0((const RHMobileUnk00607da0 &)destinationBox);
+        ((RHMobileUnk00607da0 *)&m_3c)->FUN_00607da0((const RHMobileUnk00607da0 &)sourceBox);
+        if (m_14.m_p1.m_x - m_14.m_p0.m_x > 0.0f && m_14.m_p1.m_y - m_14.m_p0.m_y > 0.0f)
+            ((SBDrawManager *)g_inputDrawManager)->FUN_005e6440(0, &destinationBox, g_backgroundEven, &sourceBox, 0);
+    } else {
+        ((RHMobileUnk00607da0 *)&m_28)->FUN_00607da0((const RHMobileUnk00607da0 &)destinationBox);
+        ((RHMobileUnk00607da0 *)&m_50)->FUN_00607da0((const RHMobileUnk00607da0 &)sourceBox);
+        if (m_28.m_p1.m_x - m_28.m_p0.m_x > 0.0f && m_28.m_p1.m_y - m_28.m_p0.m_y > 0.0f)
+            ((SBDrawManager *)g_inputDrawManager)->FUN_005e6440(0, &destinationBox, g_backgroundOdd, &sourceBox, 0);
+    }
+    ((SBDrawManager *)g_inputDrawManager)->BlitAlphaKeying(surface, &sourceBox, 0, &destinationBox, 31, 50, 1);
+}
+
 // FUNCTION: GAME 0x005f19c0
 void SBThreadedInput::PopMouseBackground(bool wait)
 {
@@ -590,13 +611,13 @@ void SBThreadedInput::PopMouseBackground(bool wait)
         SBGeoBoundingBox2D &box = *(SBGeoBoundingBox2D *)((char *)this + 0x14);
         if (box.Unk00608f30() && box.m_p1.m_x - box.m_p0.m_x > 0.0f &&
             box.m_p1.m_y - box.m_p0.m_y > 0.0f)
-            ((RHUnk005e6440 *)g_inputDrawManager)->Blit(g_backgroundEven,
+            ((SBDrawManager *)g_inputDrawManager)->FUN_005e6440(g_backgroundEven,
                 (SBGeoBoundingBox2D *)((char *)this + 0x3c), 0, &box, flags);
     } else {
         SBGeoBoundingBox2D &box = *(SBGeoBoundingBox2D *)((char *)this + 0x28);
         if (box.Unk00608f30() && box.m_p1.m_x - box.m_p0.m_x > 0.0f &&
             box.m_p1.m_y - box.m_p0.m_y > 0.0f)
-            ((RHUnk005e6440 *)g_inputDrawManager)->Blit(g_backgroundOdd,
+            ((SBDrawManager *)g_inputDrawManager)->FUN_005e6440(g_backgroundOdd,
                 (SBGeoBoundingBox2D *)((char *)this + 0x50), 0, &box, flags);
     }
 }
@@ -651,6 +672,119 @@ void SBThreadedInput::AccumulateColor15(unsigned short &red, unsigned short &gre
     red += ((color >> 10) & 0x1f) * weight;
     green += ((color >> 5) & 0x1f) * weight;
     blue += (color & 0x1f) * weight;
+}
+
+// Parked: frame, geometry temporary slots and channel-loop register allocation differ.
+// STUB: GAME 0x005f26c0
+bool SBThreadedInput::BlitBlur(unsigned long source, const SBGeoBoundingBox2D &sourceBox, unsigned long destination, const SBGeoBoundingBox2D &destinationBox, unsigned long flags, unsigned short *weights)
+{
+    SBDrawViewport destinationView;
+    SBDrawViewport sourceView;
+    SBGeoBoundingBox2D destinationInset;
+    SBGeoBoundingBox2D sourceInset;
+    if (!((SBDrawManager *)g_inputDrawManager)->FUN_005e5a00(source, sourceView, 0))
+        return false;
+    if (!((SBDrawManager *)g_inputDrawManager)->FUN_005e5a00(destination, destinationView, 0)) {
+        ((SBDrawManager *)g_inputDrawManager)->FUN_005e5ea0(sourceView);
+        return false;
+    }
+    destinationInset.SetMin(destinationBox.Min().Unk005fc190(SBGeoVector2D(2.0f, 2.0f)));
+    destinationInset.SetMax(destinationBox.Max().Unk005fc190(SBGeoVector2D(-2.0f, -2.0f)));
+    sourceInset.SetMin(sourceBox.Min().Unk005fc190(SBGeoVector2D(2.0f, 2.0f)));
+    sourceInset.SetMax(sourceBox.Max().Unk005fc190(SBGeoVector2D(-2.0f, -2.0f)));
+    unsigned long sourcePitch = sourceView.m_pitch >> 1;
+    unsigned short *sourceRow = sourceView.m_pixels + (int)sourceInset.m_p0.m_x + (int)sourceInset.m_p0.m_y * sourcePitch;
+    unsigned long destinationPitch = destinationView.m_pitch >> 1;
+    unsigned short *destinationRow = destinationView.m_pixels + (int)destinationInset.m_p0.m_x + (int)destinationInset.m_p0.m_y * destinationPitch;
+    unsigned short width = (unsigned short)(destinationInset.m_p1.m_x - destinationInset.m_p0.m_x);
+    unsigned short height = (unsigned short)(destinationInset.m_p1.m_y - destinationInset.m_p0.m_y);
+    unsigned short weightSum = weights[0] + weights[1] + weights[2] + weights[3] + weights[4];
+    unsigned short red;
+    unsigned short green;
+    unsigned short blue;
+    unsigned short filteredRed;
+    unsigned short filteredGreen;
+    unsigned short filteredBlue;
+    if (height > 0) {
+        unsigned long rows = height;
+        do {
+            for (unsigned short column = 0; column < width; ++column) {
+                red = 0;
+                green = 0;
+                blue = 0;
+                if (destinationView.m_depth == 16) {
+                    AccumulateColor16(red, green, blue, sourceRow[column - 2], weights[0]);
+                    AccumulateColor16(red, green, blue, sourceRow[column - 1], weights[1]);
+                    AccumulateColor16(red, green, blue, sourceRow[column], weights[2]);
+                    AccumulateColor16(red, green, blue, sourceRow[column + 1], weights[3]);
+                    AccumulateColor16(red, green, blue, sourceRow[column + 2], weights[4]);
+                } else {
+                    AccumulateColor15(red, green, blue, sourceRow[column - 2], weights[0]);
+                    AccumulateColor15(red, green, blue, sourceRow[column - 1], weights[1]);
+                    AccumulateColor15(red, green, blue, sourceRow[column], weights[2]);
+                    AccumulateColor15(red, green, blue, sourceRow[column + 1], weights[3]);
+                    AccumulateColor15(red, green, blue, sourceRow[column + 2], weights[4]);
+                }
+                filteredRed = red / weightSum;
+                filteredGreen = green / weightSum;
+                filteredBlue = blue / weightSum;
+                if (filteredRed > 31) filteredRed = 31;
+                if (filteredBlue > 31) filteredBlue = 31;
+                if (sourceView.m_depth == 16) {
+                    if (filteredGreen > 62) filteredGreen = 62;
+                    destinationRow[column] = (((filteredRed << 6) | filteredGreen) << 5) | filteredBlue;
+                } else {
+                    if (filteredGreen > 31) filteredGreen = 31;
+                    destinationRow[column] = (((filteredRed << 5) | filteredGreen) << 5) | filteredBlue;
+                }
+            }
+            sourceRow += sourcePitch;
+            destinationRow += destinationPitch;
+        } while (--rows != 0);
+    }
+    destinationRow = destinationView.m_pixels + (int)destinationInset.m_p0.m_x + (int)destinationInset.m_p0.m_y * destinationPitch;
+    long offsetMinusTwo = -2 * destinationPitch;
+    long offsetMinusOne = -destinationPitch;
+    long offsetPlusOne = destinationPitch;
+    long offsetPlusTwo = 2 * destinationPitch;
+    for (unsigned short column = 0; column < width; ++column) {
+        unsigned short *destinationStart = destinationRow;
+        for (unsigned short row = 1; row < height; ++row) {
+            red = 0;
+            green = 0;
+            blue = 0;
+            if (destinationView.m_depth == 16) {
+                AccumulateColor16(red, green, blue, destinationRow[column + offsetMinusTwo], weights[0]);
+                AccumulateColor16(red, green, blue, destinationRow[column + offsetMinusOne], weights[1]);
+                AccumulateColor16(red, green, blue, destinationRow[column], weights[2]);
+                AccumulateColor16(red, green, blue, destinationRow[column + offsetPlusOne], weights[3]);
+                AccumulateColor16(red, green, blue, destinationRow[column + offsetPlusTwo], weights[4]);
+            } else {
+                AccumulateColor15(red, green, blue, destinationRow[column + offsetMinusTwo], weights[0]);
+                AccumulateColor15(red, green, blue, destinationRow[column + offsetMinusOne], weights[1]);
+                AccumulateColor15(red, green, blue, destinationRow[column], weights[2]);
+                AccumulateColor15(red, green, blue, destinationRow[column + offsetPlusOne], weights[3]);
+                AccumulateColor15(red, green, blue, destinationRow[column + offsetPlusTwo], weights[4]);
+            }
+            filteredRed = red / weightSum;
+            filteredGreen = green / weightSum;
+            filteredBlue = blue / weightSum;
+            if (filteredRed > 31) filteredRed = 31;
+            if (filteredBlue > 31) filteredBlue = 31;
+            if (sourceView.m_depth == 16) {
+                if (filteredGreen > 62) filteredGreen = 62;
+                destinationRow[column] = (((filteredRed << 6) | filteredGreen) << 5) | filteredBlue;
+            } else {
+                if (filteredGreen > 31) filteredGreen = 31;
+                destinationRow[column] = (((filteredRed << 5) | filteredGreen) << 5) | filteredBlue;
+            }
+            destinationRow += destinationPitch;
+        }
+        destinationRow = destinationStart;
+    }
+    ((SBDrawManager *)g_inputDrawManager)->FUN_005e5ea0(sourceView);
+    ((SBDrawManager *)g_inputDrawManager)->FUN_005e5ea0(destinationView);
+    return true;
 }
 
 // Parked: 15-bit pixel color allocation exchanges eax/ecx before channel multiplication.
@@ -1279,6 +1413,7 @@ void SBThreadedInput::Emit()
     AccumulateColor15(red, green, blue, red, green);
     BlitBlind(red, *(SBGeoBoundingBox2D *)this, green, *(SBGeoBoundingBox2D *)this, 0);
     BlitFilterX(red, *(SBGeoBoundingBox2D *)this, green, *(SBGeoBoundingBox2D *)this, 0, weights);
+    BlitBlur(red, *(SBGeoBoundingBox2D *)this, green, *(SBGeoBoundingBox2D *)this, 0, weights);
     BlitFilterY(red, *(SBGeoBoundingBox2D *)this, green, *(SBGeoBoundingBox2D *)this, 0, weights);
     BlitDouble(red, *(SBGeoBoundingBox2D *)this, green, *(SBGeoBoundingBox2D *)this, 0);
     ChangeShadowIntoPulse(red, *(SBGeoBoundingBox2D *)this, green);

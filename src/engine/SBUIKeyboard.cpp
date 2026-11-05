@@ -3,23 +3,7 @@
 #include "SBUI.h"
 #include "SBUIKeyboardCalls.h"
 
-struct SBUIKeyboardFields
-{
-    unsigned int vptr;
-    unsigned short first;
-    unsigned short second;
-    bool initialized;
-    bool changed;
-    unsigned short keys[256];
-    unsigned short padding;
-    int state[256];
-    int previous[256];
-    int repeat[256];
-    unsigned long released[256];
-    unsigned long pressed[256];
-    unsigned long delay;
-    unsigned char keyboard[256];
-};
+typedef SBUIUnk0060e1b0 SBUIKeyboardFields;
 
 typedef char SBUIKeyboardSizeCheck[sizeof(SBUIKeyboardFields) == 0x1710 ? 1 : -1];
 

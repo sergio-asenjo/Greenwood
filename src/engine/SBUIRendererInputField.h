@@ -76,6 +76,7 @@ public:
     unsigned short FUN_00613ea0(void *, std::wstring *, const SBGeoBoundingBox2D &, unsigned int, unsigned int);
     RHMapBox *FUN_00613e70();
     unsigned int FUN_00613e80();
+    bool OneWordBiggerThanALine(const SBFontUnk0061e840 *, float, const std::vector<std::wstring> *);
     std::wstring m_00; // 0x00
     undefined4 m_10; // 0x10
     char m_14; // 0x14
@@ -153,6 +154,5 @@ public:
 std::wstring FUN_005d0880(const std::wstring &, const std::wstring &);
 int FUN_00613c50(const unsigned short *, const unsigned short *, unsigned int);
 bool FUN_00613e40(unsigned char, unsigned int, const void *, const void *);
-bool FUN_006141e0(void *, const std::wstring &, float);
 
 #endif

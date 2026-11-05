@@ -126,7 +126,7 @@ unsigned long SBUIInputFieldDrawUnk::FUN_00613940(const SBFontUnk0061e840 *font,
     stopped = false;
     while (currentB != endB)
     {
-        int width = const_cast<SBFontUnk0061e840 *>(font)->FUN_0061ea50((void *)currentA);
+        long width = font->FUN_0061ea50(*currentA);
         if ((unsigned long)width > maxWidth && count == 0)
         {
             total = width;
@@ -163,7 +163,7 @@ unsigned long SBUIInputFieldDrawUnk::FUN_00613940(const SBFontUnk0061e840 *font,
             && (nextA + 1 == endA || *(currentB + 1) == L"\n")
             && currentB != initialB)
         {
-            total -= const_cast<SBFontUnk0061e840 *>(font)->FUN_0061ea50((void *)currentA);
+            total -= font->FUN_0061ea50(*currentA);
             --currentA;
             --currentB;
         }
@@ -171,7 +171,7 @@ unsigned long SBUIInputFieldDrawUnk::FUN_00613940(const SBFontUnk0061e840 *font,
     }
     else
     {
-        int width = const_cast<SBFontUnk0061e840 *>(font)->FUN_0061ea50((void *)currentA);
+        long width = font->FUN_0061ea50(*currentA);
         if ((unsigned long)width > maxWidth && count == 0)
             total = width;
         else if (total + width > maxWidth)
@@ -182,7 +182,7 @@ unsigned long SBUIInputFieldDrawUnk::FUN_00613940(const SBFontUnk0061e840 *font,
                 {
                     --currentA;
                     --currentB;
-                    int previousWidth = const_cast<SBFontUnk0061e840 *>(font)->FUN_0061ea50((void *)currentA);
+                    long previousWidth = font->FUN_0061ea50(*currentA);
                     total -= previousWidth < 0 ? 0 : previousWidth;
                 }
                 --currentA;
@@ -244,13 +244,12 @@ unsigned int SBUIInputFieldDrawUnk::FUN_00613e80()
     return m_10;
 }
 
-// Parked: font parameter order and floating-point compare lowering differ.
-// STUB: GAME 0x006141e0
-bool FUN_006141e0(float threshold, const std::wstring &text, void *font)
+// FUNCTION: GAME 0x006141e0
+bool SBUIInputFieldDrawUnk::OneWordBiggerThanALine(const SBFontUnk0061e840 *font,
+    float threshold, const std::vector<std::wstring> *words)
 {
-    const unsigned short *character = (const unsigned short *)text.c_str();
-    for (unsigned int i = 0; i < text.size(); ++i, ++character)
-        if (((SBFontUnk0061e840 *)font)->FUN_0061ea50((void *)character) <= threshold)
+    for (std::vector<std::wstring>::const_iterator word = words->begin(); word != words->end(); ++word)
+        if (font->FUN_0061ea50(*word) > threshold)
             return true;
     return false;
 }
@@ -274,7 +273,7 @@ inline void SetSBUIInputFieldBoxY(SBGeoBoundingBox2D &box, float first, float la
 bool SBUIInputFieldDrawUnk::FUN_00614bf0(void *font, std::wstring *text, const SBGeoPoint2D &point, unsigned int flags)
 {
     SBGeoBoundingBox2D box;
-    int width = ((SBFontUnk0061e840 *)font)->FUN_0061ea50(text);
+    long width = ((SBFontUnk0061e840 *)font)->FUN_0061ea50(*text);
     int height = ((SBUIListboxUnk0061e890 *)font)->FUN_0061e890();
     SetSBUIInputFieldBoxY(box, point.m_y, point.m_y + height);
     if (flags & 1)
@@ -649,7 +648,7 @@ bool SBUIInputFieldUnk00621440::FUN_00621470(unsigned int id)
             SBUIInputFieldTextAddress(FUN_005d0880(*(std::wstring *)&before, *(std::wstring *)&after)),
             m_70.m_p0.Unk005fc190(offset), 1);
         std::wstring *value = (std::wstring *)(m_00 + 0x50);
-        int textWidth = ((SBFontUnk0061e840 *)font)->FUN_0061ea50(value);
+        long textWidth = ((SBFontUnk0061e840 *)font)->FUN_0061ea50(*value);
         draw.FUN_00614bf0(font, value,
             SBGeoPoint2D(m_70.m_p1.m_x - textWidth, m_70.m_p0.m_y).Unk005fc190(offset), 1);
     }
@@ -747,13 +746,13 @@ void SBUIInputFieldEmit(SBUIInputFieldUnk00621440 *renderer)
 
 void SBUIInputFieldEmitAssigned(SBUIInputFieldDrawUnk *draw, const unsigned short *left,
     const unsigned short *right, unsigned char flag, const void *first, unsigned int count,
-    const void *last, void *font, const std::wstring &text)
+    const void *last, void *font, const std::vector<std::wstring> *words)
 {
     FUN_00613c50(left, right, count);
     FUN_00613e40(flag, count, first, last);
     draw->FUN_00613e70();
     draw->FUN_00613e80();
-    FUN_006141e0(0.0f, text, font);
+    draw->OneWordBiggerThanALine((const SBFontUnk0061e840 *)font, 0.0f, words);
 }
 
 void SBUIInputFieldEmitTextAlgorithms(SBUIInputFieldDrawUnk *draw,

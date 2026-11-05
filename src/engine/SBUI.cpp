@@ -86,6 +86,7 @@ public:
     ~RHUnk006279d0();
     virtual void *FUN_00627ae0(unsigned flags);
     bool FUN_00627ee0(unsigned long surface);
+    bool FUN_00627c90(const SBGeoPoint2D &first, const SBGeoVector2D &second);
     bool InputLoop(const SBInputMouseState &state);
     void FUN_00628500();
     SBGeoPoint2D m_position;
@@ -106,6 +107,9 @@ public:
 
 DECOMP_SIZE_ASSERT(RHUnk006279d0, 0xc8)
 DECOMP_SIZE_ASSERT(SBInputMouseState, 0x0a)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk006279d0, m_position) == 0x80)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk006279d0, m_delta) == 0x88)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk006279d0, m_events) == 0xa4)
 DECOMP_STATIC_ASSERT(offsetof(RHUnk006279d0, m_state) == 0xb0)
 DECOMP_STATIC_ASSERT(offsetof(RHUnk006279d0, m_ba) == 0xba)
 
@@ -129,8 +133,8 @@ public:
     SBUIArrayLifetime<SBUIWindowView *> m_windows;
     SBUIArrayLifetime<char> m_flags;
     SBUIUnk0060e1b0 m_input;
-    undefined m_45[0x170f];
     bool m_1754;
+    bool m_1755;
     RHUnk006279d0 *m_tooltip;
     unsigned short m_175c;
     unsigned short m_175e;
@@ -145,7 +149,7 @@ public:
     unsigned long m_1780;
     unsigned long m_1784;
     bool m_1788;
-    std::vector<unsigned long> m_178c;
+    std::wstring m_178c;
     SBGeoBoundingBox2D m_179c[2];
     bool m_17c4;
     bool m_17c5;
@@ -157,6 +161,7 @@ public:
 };
 
 DECOMP_SIZE_ASSERT(SBUILifetime, 0x17f8)
+DECOMP_STATIC_ASSERT(offsetof(SBUILifetime, m_1755) == 0x1755)
 
 // FUNCTION: GAME 0x00618580
 SBUILifetime::SBUILifetime()
@@ -186,12 +191,12 @@ void RHMapWindowPart::FUN_00618850(void *frame)
     unsigned long value = counter != 0 ? *counter : 0;
     for (unsigned index = 0; index < count; ++index)
         m_windows._First[index]->V1c();
-    ((RHUnkFXDraw *)m_draw)->FUN_005e6440(m_surface, 0, 0, 0, 0);
+    ((SBDrawManager *)m_draw)->FUN_005e6440(m_surface, 0, 0, 0, 0);
     FUN_006189e0(value++);
     g_unk0x6c1340->FUN_005f1700();
-    ((RHUnkFXDraw *)g_unk0x6c11d0)->FUN_005e5260();
+    ((SBDrawManager *)g_unk0x6c11d0)->FUN_005e5260();
     g_unk0x6c1340->PopMouseBackground(false);
-    ((RHUnkFXDraw *)m_draw)->FUN_005e6440(m_surface, 0, 0, 0, 0);
+    ((SBDrawManager *)m_draw)->FUN_005e6440(m_surface, 0, 0, 0, 0);
     FUN_006189e0(value);
     if (counter != 0)
         *counter = value + 1;
@@ -201,23 +206,136 @@ void RHMapWindowPart::FUN_00618850(void *frame)
 void SBUI::FUN_00618910(unsigned long surface)
 {
     unsigned count = m_windows._First == 0 ? 0 : m_windows._Last - m_windows._First;
-    ((RHUnkFXDraw *)m_draw)->FUN_005e6440(m_surface, surface, 0, surface, 0);
+    ((SBDrawManager *)m_draw)->FUN_005e6440(m_surface, (const SBGeoBoundingBox2D *)surface,
+        0, (const SBGeoBoundingBox2D *)surface, 0);
     for (unsigned index = 0; index < count; ++index)
         m_windows._First[index]->V18(surface);
     g_unk0x6c1340->FUN_005f1700();
-    ((RHUnkFXDraw *)g_unk0x6c11d0)->FUN_005e5260();
+    ((SBDrawManager *)g_unk0x6c11d0)->FUN_005e5260();
     g_unk0x6c1340->PopMouseBackground(false);
-    ((RHUnkFXDraw *)m_draw)->FUN_005e6440(m_surface, surface, 0, surface, 0);
+    ((SBDrawManager *)m_draw)->FUN_005e6440(m_surface, (const SBGeoBoundingBox2D *)surface,
+        0, (const SBGeoBoundingBox2D *)surface, 0);
     for (index = 0; index < count; ++index)
         m_windows._First[index]->V18(surface);
     g_unk0x6c1340->FUN_005f1700();
-    ((RHUnkFXDraw *)g_unk0x6c11d0)->FUN_005e5260();
+    ((SBDrawManager *)g_unk0x6c11d0)->FUN_005e5260();
     g_unk0x6c1340->PopMouseBackground(false);
 }
 
 #include <vector>
 
 class RHSaveGame;
+
+#include "RHPortraitWidgetInput.h"
+#include "RHPortraitUnk005d3880.h"
+#include "SBFrameWnd.h"
+#include "RHGameWidgetLifetime.h"
+
+DECOMP_SIZE_ASSERT(RHPortraitWidgetInput, 0x14)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitWidgetInput, wheel) == 8)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitWidgetInput, flags) == 0xa)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitWidgetInput, shortcuts) == 0xc)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitWidgetInput, ui) == 0x10)
+DECOMP_SIZE_ASSERT(SBUIUnk0060e1b0, 0x1710)
+DECOMP_STATIC_ASSERT(offsetof(SBUI, m_1754) == 0x1754)
+DECOMP_STATIC_ASSERT(offsetof(SBUI, m_1755) == 0x1755)
+DECOMP_STATIC_ASSERT(offsetof(SBUI, m_178c) == 0x178c)
+DECOMP_STATIC_ASSERT(offsetof(SBUI, m_17f0) == 0x17f0)
+DECOMP_STATIC_ASSERT(offsetof(SBFrameWnd, m_tooltip) == 0x60)
+
+// STUB: GAME 0x006192a0
+RHPortraitWidgetEvent *SBUI::InputLoop(SBInputMouseState &mouse, SBInputKeyboardState &keyboard, bool skip)
+{
+    RHPortraitWidgetInput input;
+    m_input.FUN_0060e2a0(keyboard);
+    input.shortcuts = (RHGameWidgetInputCalls *)&m_input;
+    if (m_tooltip == 0)
+    {
+        m_tooltip = new RHUnk006279d0;
+        m_tooltip->FUN_00627c90(SBGeoPoint2D(0, 0), SBGeoVector2D(0, 0));
+        m_tooltip->FUN_00627ee0(0);
+        m_1755 = true;
+    }
+    if (!m_1754)
+        return 0;
+    m_tooltip->InputLoop(mouse);
+    input.point = m_tooltip->m_position;
+    input.flags = m_tooltip->m_events;
+    input.ui = (RHPortraitWidgetUI *)this;
+    input.wheel = mouse.m_wheel;
+    unsigned count = m_windows.size();
+    RHPortraitWidgetEvent *events = 0;
+    if (!skip)
+    {
+        if (m_17f4 != 0)
+            events = m_17f4->V0c(input);
+        else if (m_17f0 != 0)
+            events = (RHPortraitWidgetEvent *)m_17f0->V18(&input);
+        else
+        {
+            RHPortraitWidgetEvent *tail;
+            for (unsigned index = 0; index < count; ++index)
+            {
+                if (m_flags[index] == 1)
+                {
+                    RHPortraitWidgetEvent *event = m_windows[index]->V0c(input);
+                    if (event != 0)
+                    {
+                        if (events == 0)
+                        {
+                            events = event;
+                            RHPortraitWidgetEvent *last = event;
+                            while (last->next != 0)
+                                last = last->next;
+                            tail = last;
+                        }
+                        else
+                        {
+                            tail->next = event;
+                            tail = event;
+                            while (tail->next != 0)
+                                tail = tail->next;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    bool active = false;
+    for (RHPortraitWidgetEvent *event = events; event != 0; event = event->next)
+    {
+        bool widgetTooltip = (event->type == 0 || event->type == 0x12) &&
+            ((RHGameWidgetLifetimeBase *)event->widget)->m_08;
+        bool windowTooltip = event->type == 0xb && ((SBUIWindowView *)event->widget)->V4c();
+        if (widgetTooltip || windowTooltip)
+        {
+            active = true;
+            if (m_177c != event->widget)
+            {
+                m_177c = event->widget;
+                m_1780 = 0;
+                m_1788 = false;
+            }
+            else if (++m_1780 > m_1784)
+            {
+                m_1788 = true;
+                if (widgetTooltip)
+                    m_178c = ((RHGameWidgetLifetimeBase *)m_177c)->m_20;
+                else
+                    m_178c = ((SBFrameWnd *)m_177c)->m_tooltip;
+            }
+        }
+        else if (m_1788 == true && event->widget == m_177c)
+            active = true;
+    }
+    if (!active)
+    {
+        m_1788 = false;
+        m_177c = 0;
+        m_1780 = 0;
+    }
+    return events;
+}
 
 template <class T>
 class SBArray
@@ -411,6 +529,10 @@ SBUIUnkTreeNode *g_unk0x006c18dc = 0;
 #include "SBDrawManager.h"
 
 DECOMP_SIZE_ASSERT(SBUIUnkSurface, 0x20)
+DECOMP_SIZE_ASSERT(SBUIUnkTree, 0x10)
+DECOMP_STATIC_ASSERT(offsetof(SBUIUnkSurface, m_draw) == 4)
+DECOMP_STATIC_ASSERT(offsetof(SBUIUnkSurface, m_tree) == 0xc)
+DECOMP_STATIC_ASSERT(offsetof(SBUIUnkTreeNode, m_10) == 0x10)
 
 // FUNCTION: GAME 0x0061af30
 SBUIUnkSurface::SBUIUnkSurface(unsigned long surface)
@@ -438,23 +560,17 @@ void *SBUIUnkSurfaceBase::FUN_0061b040(unsigned flags)
     return this;
 }
 
-// FUNCTION: GAME 0x0061b190
-void SBUIUnkTree::FUN_0061b190()
+// FUNCTION: GAME 0x0061b060
+SBUIUnkSurface::~SBUIUnkSurface()
 {
-    SBUIUnkTreeIterator first;
-    first.node = m_head->left;
-    SBUIUnkTreeIterator last;
-    last.node = m_head;
-    FUN_0061b720(first, last);
-    delete m_head;
-    m_head = 0;
-    m_size = 0;
-    {
-        RHUnk00641782 lock;
-        if (--g_unk0x006c18d8 == 0) {
-            delete g_unk0x006c18dc;
-            g_unk0x006c18dc = 0;
-        }
+    m_vptr = 0x0067adec;
+    SBUIUnkTreeIterator position = m_tree.begin();
+    for (; position.node != m_tree.m_head; ++position) {
+        SBUIUnkSurfacePair &surfaces = *(SBUIUnkSurfacePair *)position.node->m_10;
+        if (surfaces.first != 0)
+            ((SBDrawManager *)m_draw)->FUN_005e5160(surfaces.first);
+        if (surfaces.second != 0)
+            ((SBDrawManager *)m_draw)->FUN_005e5160(surfaces.second);
     }
 }
 
@@ -476,7 +592,7 @@ unsigned long SBUIUnkSurface::FUN_0061b380(SBUIUnkImage *image, SBUIUnkImage *ma
     mask->V20(m_draw, surfaces.second);
     if (keyed == true) {
         FUN_0061b4c0(surfaces);
-        ((RHUnkFXDraw *)m_draw)->Unk005e5160(surfaces.second);
+        ((SBDrawManager *)m_draw)->FUN_005e5160(surfaces.second);
         surfaces.second = 0;
     }
     ((SBUIUnkMap &)m_tree)[++m_serial] = surfaces;
@@ -533,9 +649,9 @@ void SBUIUnkSurface::FUN_0061b660(unsigned long key)
 {
     SBUIUnkMap &surfaceMap = (SBUIUnkMap &)m_tree;
     SBUIUnkSurfacePair surfaces = surfaceMap[key];
-    ((RHUnkFXDraw *)m_draw)->Unk005e5160(surfaces.first);
+        ((SBDrawManager *)m_draw)->FUN_005e5160(surfaces.first);
     if (surfaces.second != 0)
-        ((RHUnkFXDraw *)m_draw)->Unk005e5160(surfaces.second);
+        ((SBDrawManager *)m_draw)->FUN_005e5160(surfaces.second);
     surfaceMap.erase(key);
 }
 
@@ -549,7 +665,7 @@ void SBUIUnkSurface::FUN_0061b710(unsigned long surface)
 SBUIUnkTreeIterator SBUIUnkTree::FUN_0061b720(SBUIUnkTreeIterator first, SBUIUnkTreeIterator last)
 {
     if (m_size != 0 && first.node == m_head->left && last.node == m_head) {
-        RHUnk00641782 lock;
+        std::_Lockit lock;
         Erase(m_head->parent);
         Root() = g_unk0x006c18dc;
         m_size = 0;
@@ -569,7 +685,7 @@ SBUIUnkTreeInsertResult SBUIUnkTree::FUN_0061b850(const SBUIUnkTreeValue &value)
     bool before = true;
     SBUIUnkTreeNode *child = parent->parent;
     {
-        RHUnk00641782 lock;
+        std::_Lockit lock;
         while (child != g_unk0x006c18dc) {
             parent = child;
             before = value.key < child->key;
@@ -610,7 +726,7 @@ SBUIUnkTreeIterator SBUIUnkTree::FUN_0061b980(SBUIUnkTreeIterator entry)
     SBUIUnkTreeNode *removed = (entry++).node;
     SBUIUnkTreeNode *original = removed;
     SBUIUnkTreeNode *replacement;
-    RHUnk00641782 lock;
+    std::_Lockit lock;
     if (Left(removed) == g_unk0x006c18dc)
         replacement = Right(removed);
     else if (Right(removed) == g_unk0x006c18dc)
@@ -744,7 +860,7 @@ SBUIUnkTreeIterator SBUIUnkTree::FUN_0061b980(SBUIUnkTreeIterator entry)
 // FUNCTION: GAME 0x0061bea0
 void SBUIUnkTree::FUN_0061bea0(SBUIUnkTreeNode *node)
 {
-    RHUnk00641782 lock;
+    std::_Lockit lock;
     SBUIUnkTreeNode *next = node;
     while (next != g_unk0x006c18dc) {
         FUN_0061bea0(next->right);
@@ -757,11 +873,11 @@ void SBUIUnkTree::FUN_0061bea0(SBUIUnkTreeNode *node)
 // FUNCTION: GAME 0x0061bf30
 void SBUIUnkTreeIterator::FUN_0061bf30()
 {
-    RHUnk00641782 lock;
+    std::_Lockit lock;
     if (node->right != g_unk0x006c18dc) {
         SBUIUnkTreeNode *minimum = node->right;
         {
-            RHUnk00641782 inner;
+            std::_Lockit inner;
             while (minimum->left != g_unk0x006c18dc)
                 minimum = minimum->left;
         }
@@ -779,7 +895,7 @@ void SBUIUnkTreeIterator::FUN_0061bf30()
 // FUNCTION: GAME 0x0061bfe0
 SBUIUnkTreeIterator SBUIUnkTree::FUN_0061bfe0(SBUIUnkTreeNode *child, SBUIUnkTreeNode *parent, const SBUIUnkTreeValue &value)
 {
-    RHUnk00641782 lock;
+    std::_Lockit lock;
     SBUIUnkTreeNode *inserted = (SBUIUnkTreeNode *)operator new(sizeof(SBUIUnkTreeNode));
     inserted->parent = parent;
     inserted->color = 0;
@@ -846,7 +962,7 @@ SBUIUnkTreeIterator SBUIUnkTree::FUN_0061bfe0(SBUIUnkTreeNode *child, SBUIUnkTre
 // FUNCTION: GAME 0x0061c2e0
 SBUIUnkTreeNode *SBUIUnkTree::FUN_0061c2e0(SBUIUnkTreeNode *node)
 {
-    RHUnk00641782 lock;
+    std::_Lockit lock;
     while (node->left != g_unk0x006c18dc)
         node = node->left;
     return node;
@@ -855,7 +971,7 @@ SBUIUnkTreeNode *SBUIUnkTree::FUN_0061c2e0(SBUIUnkTreeNode *node)
 // FUNCTION: GAME 0x0061c320
 SBUIUnkTreeNode *SBUIUnkTree::FUN_0061c320(const unsigned long &key)
 {
-    RHUnk00641782 lock;
+    std::_Lockit lock;
     SBUIUnkTreeNode *node = m_head->parent;
     SBUIUnkTreeNode *result = m_head;
     while (node != g_unk0x006c18dc) {
@@ -872,7 +988,7 @@ SBUIUnkTreeNode *SBUIUnkTree::FUN_0061c320(const unsigned long &key)
 // FUNCTION: GAME 0x0061c370
 SBUIUnkTreeNode *SBUIUnkTree::FUN_0061c370(const unsigned long &key)
 {
-    RHUnk00641782 lock;
+    std::_Lockit lock;
     SBUIUnkTreeNode *node = m_head->parent;
     SBUIUnkTreeNode *result = m_head;
     while (node != g_unk0x006c18dc) {
@@ -888,7 +1004,7 @@ SBUIUnkTreeNode *SBUIUnkTree::FUN_0061c370(const unsigned long &key)
 // FUNCTION: GAME 0x0061c3c0
 void SBUIUnkTreeIterator::FUN_0061c3c0()
 {
-    RHUnk00641782 lock;
+    std::_Lockit lock;
     if (node->color == 0 && node->parent->parent == node)
         node = node->right;
     else if (Left(node) != g_unk0x006c18dc)
@@ -903,7 +1019,7 @@ void SBUIUnkTreeIterator::FUN_0061c3c0()
 
 static inline SBUIUnkTreeNode *SBUITreeMax(SBUIUnkTreeNode *node)
 {
-    RHUnk00641782 lock;
+    std::_Lockit lock;
     while (node->right != g_unk0x006c18dc)
         node = node->right;
     return node;
@@ -911,7 +1027,7 @@ static inline SBUIUnkTreeNode *SBUITreeMax(SBUIUnkTreeNode *node)
 
 static inline SBUIUnkTreeNode *SBUITreeMin(SBUIUnkTreeNode *node)
 {
-    RHUnk00641782 lock;
+    std::_Lockit lock;
     while (node->left != g_unk0x006c18dc)
         node = node->left;
     return node;
@@ -923,6 +1039,7 @@ void EmitSBUI(SBUI *ui, SBUIWindowView *window, SBUIFontView *font)
     ((SBUIUnkSurface *)ui)->FUN_0061b020(0);
     ((SBUIUnkSurfaceBase *)ui)->FUN_0061b040(0);
     ui->FUN_00618910(0);
+    ui->InputLoop(*(SBInputMouseState *)window, *(SBInputKeyboardState *)window, false);
     ui->FUN_00619800(window);
     ui->FUN_00619a00(window);
     ui->FUN_00619c20(0);
@@ -931,7 +1048,7 @@ void EmitSBUI(SBUI *ui, SBUIWindowView *window, SBUIFontView *font)
     ((RHMapWindowPart *)ui)->FUN_00619ad0(window);
     ui->FUN_00619c80(font, font);
     ((SBUIFlagArray *)((char *)ui + 0x24))->FUN_00619d00();
-    ((SBUIUnkTree *)ui)->FUN_0061b190();
+    ((SBUIUnkTree *)ui)->~SBUIUnkTree();
     ((SBUIUnkSurface *)ui)->FUN_0061b350();
     FUN_0061b490(0, 0, 0);
     ((SBUIUnkSurface *)ui)->FUN_0061b640(0);
@@ -980,6 +1097,14 @@ void *RHUnk006279d0::FUN_00627ae0(unsigned flags)
 // FUNCTION: GAME 0x00627b00
 RHUnk006279d0::~RHUnk006279d0()
 {
+}
+
+// FUNCTION: GAME 0x00627c90
+bool RHUnk006279d0::FUN_00627c90(const SBGeoPoint2D &first, const SBGeoVector2D &second)
+{
+    m_position = first;
+    m_delta = second;
+    return true;
 }
 
 // FUNCTION: GAME 0x00627ee0
