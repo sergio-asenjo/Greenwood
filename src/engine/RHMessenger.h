@@ -11,8 +11,17 @@
 // callee's fields at +0x14..+0xaa. Only the bytes the matched functions touch
 // are laid out; everything else is opaque padding.
 
+#ifndef RH_MESSENGER_H
+#define RH_MESSENGER_H
+
 #include "SB.h"
 #include "RHMessage.h"
+#ifndef SBGEO_POINT2D_VIEW
+#include "SBGeoPoint2D.h"
+#endif
+#include "SBGeoPolyLine2DList.h"
+#include "SBListCursor.h"
+#include <vector>
 
 // A 0x10-byte value object constructed on a stack temporary and passed by
 // reference to RHMessenger::SerializeLockUser's action callee. Layout derived
@@ -42,13 +51,95 @@ class SBGeoPoint2D;
 class SBGeoVector2D;
 class SBDrawViewport;
 
+class RHMessengerTrailStorage : public SBListCursorStorage<std::list<float> >
+{
+public:
+    ~RHMessengerTrailStorage()
+    {
+        Destroy();
+    }
+private:
+    void Destroy()
+    {
+        clear();
+    }
+public:
+    const float &Value(int wanted)
+    {
+        ((RHProfileListCursor *)this)->GoTo(wanted);
+        return *m_current;
+    }
+    float &MutableValue(int wanted)
+    {
+        Locate(wanted);
+        return *m_current;
+    }
+private:
+    void Locate(int wanted)
+    {
+        bool dirty = m_dirty;
+        int count = size();
+        if (dirty)
+        {
+            if (wanted <= (count + 1) / 2)
+            {
+                m_current = begin();
+                std::advance(m_current, wanted);
+            }
+            else
+            {
+                m_current = end();
+                std::advance(m_current, wanted - count);
+            }
+            m_dirty = false;
+            m_index = wanted;
+        }
+        else
+        {
+            int previous = m_index;
+            if (wanted != previous)
+            {
+                if (wanted < previous)
+                {
+                    if (wanted < (previous + 1) / 2)
+                    {
+                        m_current = begin();
+                        std::advance(m_current, wanted);
+                    }
+                    else
+                    {
+                        int distance = wanted - previous;
+                        std::advance(m_current, distance);
+                    }
+                }
+                else if (wanted < (previous + count) / 2)
+                {
+                    int distance = wanted - previous;
+                    std::advance(m_current, distance);
+                }
+                else
+                {
+                    m_current = end();
+                    std::advance(m_current, wanted - count);
+                }
+                m_index = wanted;
+            }
+        }
+    }
+public:
+    bool m_searching;
+    int m_searchIndex;
+    float m_searchValue;
+};
+
+// VTABLE: GAME 0x00679b30
 class RHMessenger
 {
 public:
     RHMessenger();
     ~RHMessenger();
-    void *FUN_00545ed0(unsigned flags);
-    virtual bool Serialize(SBFile &file);
+    virtual void *FUN_00545ed0(unsigned flags);
+    bool Serialize(SBFile &file);
 
     // Target 0x00547460 (__FILE__ rhmessenger.cpp). On the loading path it
     // reads the "lock user" byte into a local, and when the read value differs
@@ -83,17 +174,46 @@ public:
     int CheckThrustAB(const SBGeoPoint2D &a, const SBGeoVector2D &b, const SBGeoPoint2D &c, const SBGeoPoint2D &d);
     int CheckThrustC(unsigned long a, unsigned long b, unsigned long c, unsigned long d);
     void DrawMouseTrailPattern(const SBGeoPoint2D &point, unsigned short strength, SBDrawViewport &viewport);
+    int EvaluateMouseWay(const SBGeoPoint2D &point, const SBGeoVector2D &direction);
+    void DisplayMouseWay(unsigned short value);
 
 private:
-    char m_unk00[0x2e];   // [0x00, 0x2e): vptr + opaque; the 4-byte tail at
-                          // [0x2a, 0x2e) is the short field below, reached
-                          // through byte-address arithmetic. A short member at
-                          // +0x2a would make VC6 insert 4 bytes of padding at
-                          // +0x17..+0x1a (aligning the short), shifting every
-                          // later offset; the original packs +0x1a/1, +0x28/1
-                          // and +0x2a/2 with no gap, so the short is carved out
-                          // of an opaque byte run instead.
-    char m_unk2e[0x7a];
+    std::vector<RHReceiverInterface *> m_receivers;
+    bool m_flag14;
+    bool m_flag15;
+    bool m_flag16;
+    bool m_flag17;
+    bool m_flag18;
+    bool m_flag19;
+    bool m_flag1a;
+    bool m_flag1b;
+    bool m_flag1c;
+    bool m_flag1d;
+    bool m_flag1e;
+    bool m_flag1f;
+    bool m_flag20;
+    bool m_flag21;
+    bool m_flag22;
+    bool m_flag23;
+    bool m_flag24;
+    unsigned short m_value26;
+    bool m_flag28;
+    unsigned short m_value2a;
+    RHMessengerTrailStorage m_trail;
+    unsigned short *m_pattern;
+    unsigned short *m_mask;
+    unsigned short m_patternHeight;
+    SBGeoPolyLine2DList m_way;
+    SBGeoPoint2D m_position;
+    SBGeoPoint2D m_previous;
+    SBGeoPoint2D m_savedPosition;
+    int m_stationaryCount;
+    bool m_flagA0;
+    unsigned short m_action;
+    unsigned short m_savedAction;
+    unsigned short m_valueA6;
+    unsigned short m_valueA8;
+    bool m_flagAA;
 };
 
 // The fields RHMessenger::Serialize (and SerializeLockUser) touch. Offset
@@ -110,3 +230,5 @@ private:
 // Serialises a type-name tag into the stream; target 0x005e1b70. Defined once
 // in RHElementObject_stubs.cpp; declared here so the call resolves.
 void RHSerializeName(SBFile &file, const char *name);
+
+#endif

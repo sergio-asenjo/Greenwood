@@ -46,21 +46,23 @@
 #include <vector>
 #include <math.h>
 
-#define SBGEO_POINT2D_VIEW
-class SBGeoVector2D;
-class SBGeoPoint2D
-{
-public:
-    SBGeoPoint2D();
-    SBGeoPoint2D(const SBGeoPoint2D &other);
-    ~SBGeoPoint2D();
-    SBGeoVector2D Unk005fc110(const SBGeoPoint2D &other) const;
-    float FUN_005fca90(const SBGeoPoint2D &other, float scale) const;
-    SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
-    bool operator==(const SBGeoPoint2D &other) const;
-    float m_x;
-    float m_y;
-};
+DECOMP_SIZE_ASSERT(RHMessenger, 0xac)
+DECOMP_SIZE_ASSERT(RHMessengerTrailStorage, 0x24)
+
+// TEMPLATE: GAME 0x0044e8b0 FOLDED
+// ?erase@?$list@MV?$allocator@M@std@@@std@@QAE?AViterator@12@V312@0@Z
+
+// TEMPLATE: GAME 0x0046eb30 FOLDED
+// ?erase@?$list@MV?$allocator@M@std@@@std@@QAE?AViterator@12@V312@@Z
+
+// TEMPLATE: GAME 0x004e52a0 FOLDED
+// ??1?$SBListCursorStorage@V?$list@MV?$allocator@M@std@@@std@@@@QAE@XZ
+
+// TEMPLATE: GAME 0x0057c9c0 FOLDED
+// ??Eiterator@?$list@MV?$allocator@M@std@@@std@@QAE?AV012@H@Z
+
+// TEMPLATE: GAME 0x005c9010 FOLDED
+// ?_Advance@std@@YAXAAViterator@?$list@MV?$allocator@M@std@@@1@HUbidirectional_iterator_tag@1@@Z
 
 template<class T> T &RHMessengerField(void *object, unsigned offset)
 {
@@ -70,6 +72,93 @@ template<class T> T &RHMessengerField(void *object, unsigned offset)
 
 // GLOBAL: GAME 0x006c0c4c
 RHMessenger *g_unk0x006c0c4c = 0;
+
+#include "SBDrawViewport.h"
+#include "SBDrawManagerCore.h"
+#include "SBResourceManager.h"
+
+DECOMP_SIZE_ASSERT(std::vector<RHReceiverInterface *>, 0x10)
+DECOMP_SIZE_ASSERT(SBGeoPolyLine2DList, 0x28)
+DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
+DECOMP_SIZE_ASSERT(SBDrawViewport, 0x18)
+
+extern RHUnk005ef320 *g_unk0x6c11d0;
+class RHMapResources;
+extern RHMapResources *g_unk0x006c1840;
+
+inline unsigned short RHMessengerPalette(unsigned short intensity, int level, int redShift, int greenShift, int redMask, int greenMask)
+{
+    unsigned short strength = (unsigned short)((intensity * level) >> 5);
+    unsigned short red = (unsigned short)((strength * 31 << redShift) & redMask);
+    unsigned short green = (unsigned short)((strength * 9 << greenShift) & greenMask);
+    return red | green;
+}
+
+// STUB: GAME 0x00545bd0
+RHMessenger::RHMessenger()
+    : m_flag14(false), m_flag15(false), m_flag16(false), m_flag17(false),
+      m_flag18(false), m_flag19(false), m_flag1a(false), m_flag1b(false),
+      m_flag22(false), m_flag23(false), m_flag24(false)
+{
+    SBDrawViewport viewport;
+    m_flagAA = false;
+    m_action = 0;
+    m_savedAction = 0;
+    m_valueA8 = 0;
+    m_position.Set(0.0f, 0.0f);
+    m_previous.Set(0.0f, 0.0f);
+    m_savedPosition.Set(0.0f, 0.0f);
+    m_flag20 = false;
+    m_flag21 = false;
+    m_flag28 = false;
+    m_flag1c = false;
+    m_flag1d = false;
+    m_flag1f = false;
+    m_stationaryCount = 0;
+    unsigned long surface;
+    ((SBResourceManager *)g_unk0x006c1840)->FUN_00600920(0x46, 0, surface);
+    ((SBDrawManager *)g_unk0x6c11d0)->FUN_005e5a00(surface, viewport, 0);
+    m_patternHeight = viewport.m_height;
+    m_pattern = new unsigned short[m_patternHeight * 32];
+    m_mask = new unsigned short[m_patternHeight];
+    for (unsigned short i = 0; i < m_patternHeight; ++i)
+        m_mask[i] = 31 - (viewport.GetPixel(0, i) & 31);
+    if (((SBDrawManager *)g_unk0x6c11d0)->m_10c == 16)
+    {
+        int level = 1;
+        int remaining = 32;
+        do
+        {
+            for (unsigned short row = 0; row < m_patternHeight; ++row)
+            {
+                m_pattern[(level - 1) * m_patternHeight + row] = RHMessengerPalette(m_mask[row], level, 6, 2, 0xf800, 0x7e0);
+            }
+            ++level;
+        } while (--remaining);
+    }
+    else
+    {
+        int level = 1;
+        int remaining = 32;
+        do
+        {
+            for (unsigned short row = 0; row < m_patternHeight; ++row)
+            {
+                m_pattern[(level - 1) * m_patternHeight + row] = RHMessengerPalette(m_mask[row], level, 5, 1, 0x7c00, 0x3e0);
+            }
+            ++level;
+        } while (--remaining);
+    }
+    ((SBDrawManager *)g_unk0x6c11d0)->FUN_005e5ea0(viewport);
+}
+
+// FUNCTION: GAME 0x00545ef0
+RHMessenger::~RHMessenger()
+{
+    g_unk0x006c0c4c = 0;
+    delete[] m_pattern;
+    delete[] m_mask;
+}
 
 // FUNCTION: GAME 0x00545ed0
 void *RHMessenger::FUN_00545ed0(unsigned flags)
@@ -276,7 +365,7 @@ void RHMessenger::RHUnk005460c0(RHUnk5490f0 &message)
             }
             unsigned count = (unsigned char)engine->PCCount();
             for (unsigned i = 0; i < count; ++i)
-                RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0xf, g_pEngine->m_493c[(unsigned char)i]));
+                RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0xf, g_pEngine->m_pcs.First()[(unsigned char)i]));
             return;
         }
         case 0xf:
@@ -772,17 +861,106 @@ void RHMessenger::Reset()
     RHMessengerField<bool>(this, 0xaa) = false;
 }
 
-class SBGeoVector2D : public SBGeoPoint2D
-{
-public:
-    SBGeoVector2D operator-() const;
-    SBGeoVector2D();
-    SBGeoVector2D &operator=(const SBGeoVector2D &other);
-    SBGeoVector2D(const SBGeoVector2D &other);
-};
-
-#define SBGEO_VECTOR2D_VIEW
+#include "SBGeoVector2D.h"
 #include "RHUnk005fc3b0.h"
+
+#include "SBGeoBoundingBox2DCore.h"
+
+SBGeoVector2D FUN_005fc580(const SBGeoVector2D &point, float factor);
+
+// STUB: GAME 0x00547600
+int RHMessenger::EvaluateMouseWay(const SBGeoPoint2D &point, const SBGeoVector2D &direction)
+{
+    unsigned long count = (unsigned long)((RHUnk0053bf20 *)&m_way)->FUN_0053bf20();
+    if (count <= 1)
+        return 0;
+    SBGeoPoint2D first(m_way.FUN_00610cb0(0));
+    SBGeoPoint2D last(m_way.FUN_00610cb0(count - 1));
+    SBGeoVector2D middle = FUN_005fc580(SBGeoVector2D(first.Unk005fc190(SBGeoVector2D(last))), 0.5f);
+    SBGeoBoundingBox2D bounds;
+    SBGeoPoint2D center;
+    SBGeoPoint2D current;
+    SBGeoVector2D normal = ((RHUnk005fc3b0 &)last.Unk005fc110(first)).FUN_005fc8f0(true, 1.0f).GetNormalized(1.0f);
+    if (count > 2)
+    {
+        float minSum = 1000000000.0f;
+        float maxSum = -1000000000.0f;
+        float maxDifference = -1000000000.0f;
+        float minDifference = 1000000000.0f;
+        float negativeDistance = 0.0f;
+        float positiveDistance = 0.0f;
+        unsigned long minSumIndex;
+        unsigned long maxSumIndex;
+        unsigned long maxDifferenceIndex;
+        unsigned long minDifferenceIndex;
+        for (unsigned long i = 0; i < count; ++i)
+        {
+            current = m_way.FUN_00610cb0(i);
+            float sum = current.m_x + current.m_y;
+            float difference = current.m_x - current.m_y;
+            float distance = current.Unk005fc110(first).FUN_005fc660(normal);
+            if (distance > positiveDistance)
+                positiveDistance = distance;
+            else if (distance < -negativeDistance)
+                negativeDistance = -distance;
+            if (sum < minSum)
+            {
+                minSumIndex = i;
+                minSum = sum;
+            }
+            if (sum > maxSum)
+            {
+                maxSumIndex = i;
+                maxSum = sum;
+            }
+            if (difference > maxDifference)
+            {
+                maxDifferenceIndex = i;
+                maxDifference = difference;
+            }
+            if (difference < minDifference)
+            {
+                minDifferenceIndex = i;
+                minDifference = difference;
+            }
+        }
+        bool closed = m_way.FUN_006107e0();
+        bounds.FUN_00607e50(&m_way);
+        center = bounds.FUN_00608f40();
+        int result;
+        if (!closed)
+        {
+            result = CheckThrustHI(point, first, last, center, minSumIndex, maxSumIndex, maxDifferenceIndex, minDifferenceIndex);
+            if (result)
+                return result;
+            result = CheckThrustFG(point, first, last, negativeDistance, positiveDistance);
+            if (result)
+                return result;
+            result = CheckThrustAB(point, direction, first, last);
+            if (result)
+                return result;
+            result = CheckThrustDE(point, direction, first, last);
+            if (result)
+                return result;
+        }
+        else
+        {
+            result = CheckThrustC(minSumIndex, maxSumIndex, maxDifferenceIndex, minDifferenceIndex);
+            if (result)
+                return result;
+            result = CheckThrustHI(point, first, last, center, minSumIndex, maxSumIndex, maxDifferenceIndex, minDifferenceIndex);
+            if (result)
+                return result;
+        }
+    }
+    {
+        SBGeoBoundingBox2D size;
+        size.FUN_00607e50(&m_way);
+        if (size.m_p1.m_x - size.m_p0.m_x < 10.0f && size.m_p1.m_y - size.m_p0.m_y < 10.0f)
+            return 0;
+    }
+    return 1;
+}
 
 inline float RHMessengerLength(const SBGeoPoint2D &vector)
 {
@@ -986,6 +1164,107 @@ void RHMessenger::DrawMouseTrailPattern(const SBGeoPoint2D &point, unsigned shor
 // Force emission: a non-inline member function defined here is emitted into the
 // object; this out-of-line call keeps RHMessenger::Serialize and
 // RHMessenger::SerializeLockUser in the build.
+extern double g_unk0x00677d90;
+
+// FUNCTION: GAME 0x00548800
+void RHMessenger::DisplayMouseWay(unsigned short value)
+{
+    SBDrawViewport viewport;
+    SBDrawManager *draw = (SBDrawManager *)g_unk0x6c11d0;
+    unsigned short count = (unsigned short)(unsigned long)((RHUnk0053bf20 *)&m_way)->FUN_0053bf20();
+    draw->FUN_005e5a00(0, viewport, 0);
+    for (unsigned short i = 0; i < count; ++i)
+    {
+        SBGeoPoint2D current(m_way.FUN_00610cb0(i));
+        float strength = m_trail.Value(i);
+        if (i != count - 1 && (fabs(m_way.FUN_00610cb0(i + 1).m_x - current.m_x) > g_unk0x00677d90 ||
+            fabs(m_way.FUN_00610cb0(i + 1).m_y - current.m_y) > 16.0))
+        {
+            float nextX = m_way.FUN_00610cb0(i + 1).m_x;
+            float nextY = m_way.FUN_00610cb0(i + 1).m_y;
+            if (fabs(nextX - current.m_x) * 16.0 > fabs(nextY - current.m_y))
+            {
+                float x1 = current.m_x;
+                const float nextX = m_way.FUN_00610cb0(i + 1).GetX();
+                float x2 = nextX;
+                float y1 = current.m_y;
+                const float nextY = m_way.FUN_00610cb0(i + 1).GetY();
+                float y2 = nextY;
+                float strength1 = strength;
+                float strength2 = m_trail.Value(i + 1);
+                SBGeoPoint2D sample;
+                if (x1 > nextX)
+                {
+                    std::swap(x1, x2);
+                    std::swap(y1, y2);
+                    std::swap(strength1, strength2);
+                    x1 += 1.0f;
+                    x2 += 1.0f;
+                }
+                float yStep = (y2 - y1) / (x2 - x1);
+                float strengthStep = (strength2 - strength1) / (x2 - x1);
+                float sampleStrength = strength1;
+                sample.Set(x1, y1);
+                for (unsigned short x = (unsigned short)x1; x != (unsigned short)x2; ++x)
+                {
+                    sample.m_x = x;
+                    DrawMouseTrailPattern(sample, (unsigned short)sampleStrength, viewport);
+                    sample.m_y += yStep;
+                    sampleStrength += strengthStep;
+                }
+            }
+            else
+            {
+                float x1 = current.m_x;
+                const float nextX = m_way.FUN_00610cb0(i + 1).GetX();
+                float x2 = nextX;
+                float y1 = current.m_y;
+                const float nextY = m_way.FUN_00610cb0(i + 1).GetY();
+                float y2 = nextY;
+                float strength1 = strength;
+                float strength2 = m_trail.Value(i + 1);
+                SBGeoPoint2D sample;
+                if (y1 > nextY)
+                {
+                    std::swap(x1, x2);
+                    std::swap(y1, y2);
+                    std::swap(strength1, strength2);
+                    y1 += 1.0f;
+                    y2 += 1.0f;
+                }
+                float xStep = (x2 - x1) * 16.0f / (y2 - y1);
+                float strengthStep = (strength2 - strength1) * 16.0f / (y2 - y1);
+                float sampleStrength = strength1;
+                sample.Set(x1, y1);
+                unsigned short y = (unsigned short)y1;
+                for (; y < (unsigned short)y2; y += 16)
+                {
+                    sample.m_y = y;
+                    DrawMouseTrailPattern(sample, (unsigned short)sampleStrength, viewport);
+                    sample.m_x += xStep;
+                    sampleStrength += strengthStep;
+                }
+                if (y > (unsigned short)y2)
+                {
+                    sample.m_y = y;
+                    DrawMouseTrailPattern(sample, (unsigned short)sampleStrength, viewport);
+                }
+            }
+        }
+        else
+            DrawMouseTrailPattern(m_way.FUN_00610cb0(i), (unsigned short)strength, viewport);
+        if (strength > 100.0f)
+            m_trail.MutableValue(i) = strength - 1.0f;
+        else
+        {
+            float faded = strength - 1.0f / (1.0f > strength ? 1.0f : strength) * 300.0f;
+            float remaining = faded > 0.0f ? faded : 0.0f;
+            m_trail.MutableValue(i) = remaining;
+        }
+    }
+    draw->FUN_005e5ea0(viewport);
+}
+
 void RHMessenger::Emit(SBFile &file)
 {
     Subscribe(0);
