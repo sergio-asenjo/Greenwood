@@ -128,7 +128,7 @@ void *FUN_005fc580(void *result, const void *value, float factor);
 void FUN_004013a0(const std::string &name);
 void FUN_005e24f0(const char *name, void *value);
 void FUN_005e27e0(const std::string &name, int value);
-void FUN_005f8030(int severity, const char *file, int line, const char *message, ...);
+void SBAssert(int severity, const char *file, int line, const char *message, ...);
 
 int __stdcall FUN_0040a230(HINSTANCE instance, HINSTANCE previous, char *command, int show);
 void EmitLauncher(HINSTANCE instance, HINSTANCE previous, char *command, int show);

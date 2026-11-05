@@ -6,8 +6,8 @@
 //   SBFile::GetError()          -> ?GetError@SBFile@@QAEPAVSBString@@XZ
 //   SBAssert(...)               -> ?SBAssert@@YAXHPBDH0ZZ
 //
-// The definitions live in RHSword_stubs.cpp (single definition; both TUs just
-// declare, so the linker sees one entity per call target).
+// SBFile definitions live in RHSword_stubs.cpp; SBAssert is the native external
+// assert at 0x005f8030, declared here and defined once in SBFont_stubs.cpp.
 
 #ifndef SB_H
 #define SB_H
@@ -30,6 +30,6 @@ public:
     SBString *GetError();
 };
 
-inline void SBAssert(int, const char *, int, const char *, ...) {}
+void SBAssert(int, const char *, int, const char *, ...);
 
 #endif

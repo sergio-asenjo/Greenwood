@@ -21,7 +21,3 @@ unsigned int SBFileUnk00643e0c(void *, unsigned int, unsigned int, FILE *)
 {
     return 0;
 }
-
-void SBFileAssert(int, const char *, int, const char *, ...)
-{
-}

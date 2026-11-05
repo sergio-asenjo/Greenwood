@@ -1,7 +1,9 @@
 #include "SBNullstr.h"
 #include "SBFont.h"
 
-void FUN_005f8030(int, const char *, int, const char *, ...) {}
+// LIBRARY: GAME 0x005f8030
+// ?SBAssert@@YAXHPBDH0ZZ
+void SBAssert(int, const char *, int, const char *, ...) {}
 
 // FUNCTION: GAME 0x00620c70
 SBFontNode0061fcb0 *SBFontTree0061fcb0::FUN_00620c70(SBFontNode0061fcb0 *parent, int color)

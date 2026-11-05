@@ -1,7 +1,7 @@
 #include "SBNullstr.h"
 #include "SBEvent.h"
 
-void FUN_005f8030(int, const char *, int, const char *, ...);
+void SBAssert(int, const char *, int, const char *, ...);
 
 typedef int SBEventSizeAssert[sizeof(SBEvent) == 8 ? 1 : -1];
 
@@ -10,7 +10,7 @@ SBEvent::SBEvent(const std::string &name)
 {
     m_event = CreateEventA(0, FALSE, FALSE, name.c_str());
     if (!m_event) {
-        FUN_005f8030(0,
+        SBAssert(0,
             // STRING: GAME 0x006bb814
             "P:\\Robin Hood\\SBLibNG\\SBEvent.cpp", 0x18,
             // STRING: GAME 0x006bb838
