@@ -102,15 +102,7 @@ unsigned FUN_00445210(float first, unsigned second, unsigned third, unsigned fou
 RHUnk00613e90 FUN_00414360(const RHMalignityPosition &position, bool mode);
 SBGeoVector2D FUN_0040ec20(const RHMalignityPosition &first, RHMalignityPosition second);
 #include "RHActorAreaCalls.h"
-template <bool InlineHead>
-class RHCampaignIndexList
-{
-public:
-    undefined4 m_allocator; // 0x00
-    RHScriptNode *m_head; // 0x04
-    int m_count; // 0x08
-    RHScriptIter FUN_004fe2e0(RHScriptIter position, const unsigned short &value);
-};
+#include "RHMalignityCampaignIndexList.h"
 
 struct RHMalignityIterator
 {

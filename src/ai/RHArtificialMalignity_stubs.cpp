@@ -101,22 +101,6 @@ float RHArtificialIntelligence::FUN_0041a0b0(void *actor)
     return RHMalignityScaleHeight(RHMalignityField<RHUnk00613e90>(RHMalignityField<void *>(actor, 0x50), 0x10).FUN_005df550(RHMalignityField<RHUnk00613e90>(RHMalignityField<void *>(m_actor, 0x50), 0x10))).FUN_005df680();
 }
 
-class RHUnk0041a0f0
-{
-public:
-    int FUN_0041a0f0(int first, int second, int third);
-};
-
-// Parked: x87 multiply form; VC6 emits fimul/right-first where the target does
-// fild span, fild c, fmul K, fmulp (span*(c*K)). Casts and a named span do not
-// change the tree. 0.444444.
-// STUB: GAME 0x0041a0f0
-int RHUnk0041a0f0::FUN_0041a0f0(int first, int second, int third)
-{
-    int base = first & 0xffff;
-    int span = (second & 0xffff) - base;
-    return (int)((float)span * ((third & 0xff) * 0.01f) + base);
-}
 // STUB: GAME 0x00440cf0
 short RHArtificialMalignity::FUN_00440cf0(RHUnk00441dd0Record *) { return 0; }
 

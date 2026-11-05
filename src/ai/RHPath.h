@@ -4,145 +4,9 @@
 
 #include "RHSector.h"
 
-class RHWaypoint;
+#include "RHPathCore.h"
 
-// SIZE 0x10
-struct RHPathArray
-{
-    int m_grow; // +0x00
-    RHWaypoint **m_first; // +0x04
-    RHWaypoint **m_last; // +0x08
-    RHWaypoint **m_end; // +0x0c
-
-    unsigned size() { return m_first == 0 ? 0 : m_last - m_first; }
-    RHWaypoint **begin() { return m_first; }
-    RHWaypoint *&operator[](unsigned index) { return *(begin() + index); }
-};
-
-// SIZE 0x14
-struct RHPathHistory
-{
-    float m_0; // +0x00
-    float m_4; // +0x04
-    void *m_8; // +0x08
-    unsigned short m_c; // +0x0c
-    char m_pade[2];
-    char m_10; // +0x10
-    char m_pad11;
-    unsigned short m_12; // +0x12
-};
-
-// SIZE 0x1c
-struct RHPathHistoryNode
-{
-    RHPathHistoryNode *m_next; // +0x00
-    RHPathHistoryNode *m_prev; // +0x04
-    RHPathHistory m_data; // +0x08
-};
-
-#include "RHTitbitsCore.h"
-
-class RHPathHistoryIter
-{
-public:
-    RHPathHistoryNode *m_p;
-    RHPathHistoryIter() {}
-    RHPathHistoryIter(RHPathHistoryNode *p) : m_p(p) {}
-};
-
-void RHPathUnk0048f180(RHPathHistory *dst, const RHPathHistory *src);
-
-// SIZE 0x18
-class RHPathHistoryList : public RHMotionAreaListStorage<RHPathHistory>
-{
-public:
-    RHPathHistoryNode *m_cur; // +0x0c
-    char m_valid; // +0x10
-    char m_pad11[3];
-    int m_index; // +0x14
-
-    RHPathHistoryNode *Unk00551de0(RHPathHistoryNode *next, RHPathHistoryNode *prev);
-    RHPathHistoryNode *Head() { return (RHPathHistoryNode *)_Head; }
-    RHPathHistoryIter begin() { return RHPathHistoryIter(Head()->m_next); }
-    RHPathHistoryIter end() { return RHPathHistoryIter(Head()); }
-    RHPathHistoryIter insert(RHPathHistoryIter pos, const RHPathHistory &value)
-    {
-        RHPathHistoryNode *node = pos.m_p;
-        node->m_prev = Unk00551de0(node, node->m_prev);
-        node = node->m_prev;
-        node->m_prev->m_next = node;
-        RHPathUnk0048f180(&node->m_data, &value);
-        ++_Size;
-        return RHPathHistoryIter(node);
-    }
-    RHPathHistoryIter erase(RHPathHistoryIter first, RHPathHistoryIter last)
-    {
-        RHPathHistoryIter result;
-        ((RHTitbitList *)this)->Clear(&result, (RHTitbitNode *)first.m_p, (RHTitbitNode *)last.m_p);
-        return result;
-    }
-    void clear()
-    {
-        erase(begin(), end());
-        m_valid = 1;
-    }
-    RHPathHistory &operator[](int index)
-    {
-        ((RHTitbitList *)this)->At(index);
-        return m_cur->m_data;
-    }
-};
-
-// SIZE 0x24
-class RHPath
-{
-public:
-    ~RHPath();
-    bool TestIfPathIsFine(RHElementActor *actor);
-    bool SerializeStatus(SBFile &file);
-    RHWaypoint *LookupNextWaypoint() const;
-    void ResetHistory();
-    void InitializeHistoryEntriesOnPath();
-    unsigned short GetWaypointCount() const
-    {
-        if (m_4 == 0)
-            return 0;
-        return m_4->size();
-    }
-    void Emit(SBFile &file, RHElementActor *actor);
-
-    char m_0; // +0x00
-    char m_1; // +0x01
-    char m_2; // +0x02
-    char m_pad3;
-    RHPathArray *m_4; // +0x04
-    unsigned short m_8; // +0x08
-    char m_pada[2];
-    RHPathHistoryList m_c; // +0x0c
-};
-
-#include "RHUnkWaypointRef.h"
-
-// SIZE 0x7c
-class RHWaypoint
-{
-public:
-    unsigned int LoadDataFromFile(SBFile &file);
-    void Emit(SBFile &file);
-
-    undefined m_pad0[0x60]; // 0x00
-    RHUnkWaypointRef m_60; // +0x60
-    short m_64; // +0x64
-    short m_66; // +0x66
-    void *m_68; // +0x68
-    unsigned short m_6c; // +0x6c
-    char m_6e; // +0x6e
-    char m_pad6f;
-    unsigned short m_70; // +0x70
-    char m_pad72[2];
-    void *m_74; // +0x74
-    char *m_78; // +0x78
-};
+#include "RHWaypoint.h"
 
 struct RHUnkPathRegistry
 {
@@ -167,24 +31,17 @@ public:
 class RHEngine;
 extern RHEngine *g_pEngine;
 
-class RHUnkPathActorInfoBase
-{
-public:
-    char m_pad0[0x88];
-    int m_88; // +0x88
-    void *Unk0055fa10(int value);
-    void *Current() { return Unk0055fa10(*(volatile int *)&m_88); }
-};
+#include "RHPositionInterfaceCore.h"
 struct RHUnkPathActorInfo
 {
     char m_pad0[4];
-    RHUnkPathActorInfoBase m_4; // +0x04
+    RHPositionInterface m_4; // +0x04
 };
 struct RHUnkPathActorView
 {
     char m_pad0[0x50];
     RHUnkPathActorInfo *m_50; // +0x50
-    RHUnkPathActorInfoBase &Base() { return m_50->m_4; }
+    RHPositionInterface &Base() { return m_50->m_4; }
     void *UnkRadius() { return Base().Current(); }
 };
 struct RHUnkPathPointSet
@@ -215,11 +72,7 @@ struct RHUnkPathEngineView
 
 #include "SBGeoBoundingBox2DCore.h"
 
-class RHPathObstacleGrid
-{
-public:
-    bool FUN_004f5750(SBGeoBoundingBox2D &box, unsigned short layer);
-};
+#include "RHPathObstacleGrid.h"
 
 class RHEngineReinforcementCalls
 {

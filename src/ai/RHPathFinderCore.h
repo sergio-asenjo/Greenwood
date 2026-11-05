@@ -7,7 +7,12 @@
 
 class SBFile;
 struct RHpathRequest;
-struct RHPathRequestNode;
+struct RHPathRequestNode
+{
+    RHPathRequestNode *next;
+    RHPathRequestNode *previous;
+    RHpathRequest *request;
+};
 class RHUnkIter;
 class RHPathWorkList;
 class SBGeoPolyLine2DList;
@@ -36,7 +41,8 @@ public:
     void clear();
     RHpathRequest *&operator[](int wanted);
     void InsertInline(RHPathRequestNode *node, RHpathRequest *const &request);
-    void GoTo(int wanted);
+    RHPathRequestNode *&GoTo(int wanted, bool inlineBegin = true);
+    static bool PriorityOutOfOrder(RHPathRequestNode *const &left, RHPathRequestNode *const &right);
 };
 
 // SIZE 0x28
@@ -45,6 +51,7 @@ class RHPathFinder
 public:
     RHPathFinder();
     void AddPathRequest(RHpathRequest *request);
+    bool ProcessPathRequests(RHpathRequest **request, SBGeoPolyLine2DList &path, const SBGeoBoundingBox2D &bounds);
     void FUN_00553760(RHElementActor *actor);
     void FUN_00553850(RHElementActor *actor);
     void FUN_005539a0(RHElementActor *actor);

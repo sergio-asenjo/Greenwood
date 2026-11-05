@@ -10,24 +10,30 @@ extern "C" __declspec(dllimport) __declspec(noreturn) void __stdcall ExitThread(
 #include <iterator>
 #include "RHMotionAreaList.h"
 #include "RHFastFindGridCore.h"
+#include "RHScriptIndexedList.h"
 
 struct RHUnk005c9010Iterator;
 void FUN_005c9010(RHUnk005c9010Iterator &, int, std::bidirectional_iterator_tag);
 
-inline void RHPathRequestList::GoTo(int wanted)
+inline RHPathRequestNode *&RHPathRequestList::GoTo(int wanted, bool inlineBegin)
 {
     int size = count;
     if (valid)
     {
         if (wanted <= (size + 1) / 2)
         {
-            cursor = head->next;
+            if (inlineBegin)
+                ((RHScriptListIterator &)cursor) = RHScriptListIterator(
+                    (RHScriptListNode *)*(RHPathRequestNode *volatile *)&head->next);
+            else
+                ((RHScriptListIterator &)cursor) = RHScriptListIterator((RHScriptListNode *)begin().m_p);
             std::bidirectional_iterator_tag category;
             FUN_005c9010((RHUnk005c9010Iterator &)cursor, wanted, category);
         }
         else
         {
-            cursor = head;
+            ((RHScriptListIterator &)cursor) = RHScriptListIterator(
+                (RHScriptListNode *)*(RHPathRequestNode *volatile *)&head);
             std::bidirectional_iterator_tag category;
             FUN_005c9010((RHUnk005c9010Iterator &)cursor, wanted - size, category);
         }
@@ -43,7 +49,7 @@ inline void RHPathRequestList::GoTo(int wanted)
             {
                 if (wanted < (previous + 1) / 2)
                 {
-                    cursor = (RHPathRequestNode *)begin().m_p;
+                    ((RHScriptListIterator &)cursor) = RHScriptListIterator((RHScriptListNode *)begin().m_p);
                     std::bidirectional_iterator_tag category;
                     FUN_005c9010((RHUnk005c9010Iterator &)cursor, wanted, category);
                 }
@@ -60,13 +66,22 @@ inline void RHPathRequestList::GoTo(int wanted)
             }
             else
             {
-                cursor = head;
+                ((RHScriptListIterator &)cursor) = RHScriptListIterator(
+                    (RHScriptListNode *)*(RHPathRequestNode *volatile *)&head);
                 std::bidirectional_iterator_tag category;
                 FUN_005c9010((RHUnk005c9010Iterator &)cursor, wanted - size, category);
             }
             index = wanted;
         }
     }
+    return cursor;
+}
+
+inline bool RHPathRequestList::PriorityOutOfOrder(RHPathRequestNode *const &left, RHPathRequestNode *const &right)
+{
+    RHpathRequest *leftRequest = *(RHpathRequest *volatile *)&left->request;
+    RHpathRequest *rightRequest = *(RHpathRequest *volatile *)&right->request;
+    return rightRequest->m_2d < leftRequest->m_2d;
 }
 
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
@@ -500,6 +515,150 @@ void RHMovementPathFinderCalls::FUN_00553100(void *actor)
     }
 }
 
+// STUB: GAME 0x005532a0
+bool RHPathFinder::ProcessPathRequests(RHpathRequest **request, SBGeoPolyLine2DList &path, const SBGeoBoundingBox2D &bounds)
+{
+    bool changed = false;
+    unsigned short first = 0;
+    switch (*(unsigned *)&g_pathStatus & 0xff)
+    {
+    case 3:
+    {
+        GetPath(path);
+        bool result = !g_pathThreadDone;
+        g_pathThreadDone = false;
+        RHPathRequestList &requests = m_10;
+        *request = requests.head->next->request;
+        RHScriptIter removed = ((RHUnk0046eb30 *)&requests)->erase(RHScriptIter((RHScriptNode *)requests.head->next));
+        requests.valid = true;
+        int count = requests.count;
+        if ((unsigned short)count > 0)
+        {
+            unsigned short index = count - 1;
+            unsigned short last = index;
+            for (; (short)index >= 0; --index)
+            {
+                RHpathRequest *pending = requests[index];
+                if (pending->m_2d <= 1)
+                {
+                    first = index + 1;
+                    break;
+                }
+                if (pending->m_2d == 3)
+                {
+                    if (bounds.FUN_00608400(pending->m_8))
+                    {
+                        changed = true;
+                        pending->m_2d = 2;
+                    }
+                }
+                else if (!bounds.FUN_00608400(pending->m_8))
+                {
+                    changed = true;
+                    pending->m_2d = 3;
+                }
+            }
+            if (changed)
+            {
+                for (; last >= first; --last)
+                {
+                    bool sorted = true;
+                    for (unsigned short index = first; index < last; ++index)
+                    {
+                        unsigned next = index + 1;
+                        ((RHTitbitList *)&requests)->At(next);
+                        RHPathRequestNode *&right = requests.cursor;
+                        ((RHTitbitList *)&requests)->At(index);
+                        RHPathRequestNode *&left = requests.cursor;
+                        if (RHPathRequestList::PriorityOutOfOrder(left, right))
+                        {
+                            RHpathRequest *&leftRequest = requests[index];
+                            RHpathRequest *temporary = requests[next];
+                            requests.cursor->request = leftRequest;
+                            requests[index] = temporary;
+                            sorted = false;
+                        }
+                    }
+                    if (sorted)
+                        break;
+                }
+            }
+            g_currentPathRequest = m_10.head->next->request;
+            FUN_00552d50(g_currentPathRequest->m_2d);
+            g_pathStatus = 2;
+            g_pathWakeEvent.TriggerEvent();
+        }
+        else
+            g_pathStatus = 1;
+        return result;
+    }
+    case 1:
+    {
+        int count = m_10.count;
+        if ((unsigned short)count > 0)
+        {
+            unsigned short index = count - 1;
+            unsigned short last = index;
+            RHPathRequestList &requests = m_10;
+            for (; (short)index >= 0; --index)
+            {
+                RHpathRequest *pending = requests[index];
+                if (pending->m_2d <= 1)
+                {
+                    first = index + 1;
+                    break;
+                }
+                if (pending->m_2d == 3)
+                {
+                    if (bounds.FUN_00608400(pending->m_8))
+                    {
+                        changed = true;
+                        pending->m_2d = 2;
+                    }
+                }
+                else if (!bounds.FUN_00608400(pending->m_8))
+                {
+                    changed = true;
+                    pending->m_2d = 3;
+                }
+            }
+            if (changed)
+            {
+                for (; last >= first; --last)
+                {
+                    bool sorted = true;
+                    for (unsigned short index = first; index < last; ++index)
+                    {
+                        unsigned next = index + 1;
+                        ((RHTitbitList *)&requests)->At(next);
+                        RHPathRequestNode *&right = requests.cursor;
+                        RHPathRequestNode *&left = requests.GoTo(index, false);
+                        if (RHPathRequestList::PriorityOutOfOrder(left, right))
+                        {
+                            RHpathRequest *&leftRequest = requests[index];
+                            RHpathRequest *temporary = requests[next];
+                            requests.cursor->request = leftRequest;
+                            requests[index] = temporary;
+                            sorted = false;
+                        }
+                    }
+                    if (sorted)
+                        break;
+                }
+            }
+            g_currentPathRequest = m_10.head->next->request;
+            FUN_00552d50(g_currentPathRequest->m_2d);
+            g_pathStatus = 2;
+            g_pathWakeEvent.TriggerEvent();
+        }
+        break;
+    }
+    case 4:
+        return false;
+    }
+    return false;
+}
+
 // FUNCTION: GAME 0x00553760
 void RHPathFinder::FUN_00553760(RHElementActor *actor)
 {
@@ -545,15 +704,13 @@ void RHPathFinder::FUN_00553760(RHElementActor *actor)
     }
 }
 
-// Parked: cached-list cursor reset scheduling and receiver live ranges differ.
-// STUB: GAME 0x00553850
+// FUNCTION: GAME 0x00553850
 void RHPathFinder::FUN_00553850(RHElementActor *actor)
 {
     int count = m_10.count;
     for (unsigned short index = 0; index < (unsigned short)count; ++index)
     {
-        m_10.GoTo(index);
-        RHpathRequest *request = m_10.cursor->request;
+        RHpathRequest *request = m_10.GoTo(index)->request;
         if (request->m_1c == actor)
         {
             if (request->m_28 == 16)
@@ -595,8 +752,7 @@ done:
     return;
 }
 
-// Parked: zero-load sharing and forward-success branch polarity differ.
-// STUB: GAME 0x00553a10
+// FUNCTION: GAME 0x00553a10
 bool RHPathFinder::FUN_00553a10(const SBGeoPoint2D &point, SBGeoPoint2D &node, unsigned char place, SBGeoVector2D &half, bool forward)
 {
     RHUnk005fc3b0 first;
@@ -633,9 +789,12 @@ bool RHPathFinder::FUN_00553a10(const SBGeoPoint2D &point, SBGeoPoint2D &node, u
             second.y = -1.0f;
             break;
         }
-        if (first.FUN_005fc680(vector, 1.0f) < 0.0f &&
-            second.FUN_005fc680(vector, 1.0f) >= 0.0f)
-            return true;
+        if (first.FUN_005fc680(vector, 1.0f) < 0.0f)
+        {
+            if (second.FUN_005fc680(vector, 1.0f) < 0.0f)
+                goto failed;
+            goto success;
+        }
     }
     else
     {
@@ -669,8 +828,12 @@ bool RHPathFinder::FUN_00553a10(const SBGeoPoint2D &point, SBGeoPoint2D &node, u
         }
         if (first.FUN_005fc680(vector, 1.0f) <= 0.0f &&
             second.FUN_005fc680(vector, 1.0f) > 0.0f)
-            return true;
+            goto success;
     }
+    goto failed;
+success:
+    return true;
+failed:
     return false;
 }
 
@@ -739,7 +902,7 @@ void FUN_00554360(RHPathSearchNode *node)
         }
         else
         {
-            ((RHPathRequestList *)&g_pathOpenNodes)->GoTo(index);
+            ((RHPathRequestList *)&g_pathOpenNodes)->GoTo(index, false);
             g_pathOpenNodes.FUN_00424410(g_pathOpenNodes.m_0c, (void *const &)node);
             g_pathOpenNodes.m_10 = true;
         }
@@ -1393,6 +1556,7 @@ void RHPathFinder::Emit(SBFile &file, RHpathRequest *request)
     EstimateDistance(request->m_8, request->m_10);
     FUN_00557f90(request->m_8, request);
     AddPathRequest(request);
+    ProcessPathRequests(&request, g_unk0x006c0c78, g_pathObstacleGrid->m_3e84);
     TurnOn();
     ConvertSector(0);
     Serialize(file);

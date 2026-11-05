@@ -327,17 +327,7 @@ inline void RHFastFindGateArray::InsertLast(void *const &value, bool inlineCopy,
     dirty = true;
 }
 
-class RHUnk00522470
-{
-public:
-    RHUnk00522470();
-    ~RHUnk00522470();
-    void Unk005224d0(SBFile &file);
-    void FUN_00520a90(SBFile &file);
-    char m_00[0x20];
-    unsigned short m_layer;
-    char m_22[6];
-};
+#include "RHScriptLocation.h"
 
 #include "RHUnkSectorPoints.h"
 

@@ -1,6 +1,8 @@
 #include "SBNullstr.h"
 #include "RHArtificialIntelligence.h"
+#include "Decomp.h"
 #include "RHFastFindArcheryArray.h"
+#include <stddef.h>
 
 // GLOBAL: GAME 0x006c078a
 unsigned short g_unk0x006c078a;
@@ -249,6 +251,7 @@ RHArtificialIntelligenceList g_unk0x006c0758;
 
 extern "C" long __cdecl time(long *value);
 extern "C" void __cdecl srand(unsigned seed);
+extern "C" int __cdecl rand();
 void operator delete(void *pointer) throw();
 
 class RHArtificialIntelligenceForbiddenRemark
@@ -633,7 +636,14 @@ struct RHAIPathArray
     int m_grow;
     void **m_first;
     void **m_last;
-    unsigned size() { return m_first ? m_last - m_first : 0; }
+    unsigned short size(bool snapshot = false)
+    {
+        void **first = m_first;
+        if (first == 0)
+            return 0;
+        void **last = snapshot ? *(void **volatile *)&m_last : m_last;
+        return last - first;
+    }
 };
 
 // FUNCTION: GAME 0x004121a0
@@ -684,22 +694,233 @@ bool RHArtificialIntelligence::Unk00412f40(RHUnk005fc3b0 *direction, int mode)
     return Unk00412f70((unsigned short)direction->FUN_005fcc50(0.57357645f), mode);
 }
 
-class RHUnk00582220
+#include "RHSequenceConstructionCalls.h"
+
+#include "RHPositionInterfaceCore.h"
+#include "RHPathObstacleGrid.h"
+#include "RHMobileUnk006091b0.h"
+#include "RHMobileUnk00607da0.h"
+
+DECOMP_SIZE_ASSERT(RHPath, 0x24)
+DECOMP_SIZE_ASSERT(RHPathHistoryList, 0x18)
+DECOMP_SIZE_ASSERT(RHUnk00582220, 0x3c)
+DECOMP_SIZE_ASSERT(RHSequenceElementList, 0x14)
+DECOMP_SIZE_ASSERT(RHSprite, 0x22c)
+
+// STUB: GAME 0x00413cb0
+bool RHArtificialIntelligence::FUN_00413cb0(RHUnk00571160Position &position)
+{
+    SBGeoBoundingBox2D box;
+    SBGeoPoint2D point;
+    ((RHMobileUnk00607da0 *)&box)->FUN_00607da0(*(const RHMobileUnk00607da0 *)m_actor->m_data->Unk0055fa10(m_actor->m_data->m_88));
+    ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(SBGeoVector2D((const SBGeoVector2D &)FUN_0040cbf0((const RHMalignityPosition &)position)));
+    if (((RHPathObstacleGrid *)g_unk0x6c0a9c)->FUN_004f5890(box, position.layer))
+    {
+        point = box.FUN_00608f40();
+        position.y = point.m_y;
+        position.x = point.m_x;
+        return true;
+    }
+    return false;
+}
+
+#include "RHSequenceGenericConstruction.h"
+
+class RHSeekPointSelectionList : public std::list<RHSeekPoint *>
 {
 public:
-    RHUnk00582220();
-    ~RHUnk00582220();
-    char m_data[0x3c];
+    RHSeekPointSelectionList() : dirty(true) {}
+    ~RHSeekPointSelectionList() { clear(); }
+    iterator cursor;
+    bool dirty;
+    int index;
 };
 
-class RHUnk005866a0
+DECOMP_SIZE_ASSERT(RHSeekPointSelectionList, 0x18)
+
+// STUB: GAME 0x004139d0
+bool RHArtificialIntelligence::FUN_004139d0(RHMalignityPosition &position, float scale, unsigned short extra)
 {
-public:
-    RHUnk005866a0(unsigned short level, int command, void *actor);
-    ~RHUnk005866a0();
-    void Unk00586e90(int property, unsigned short value);
-    char m_data[0x74];
-};
+    RHSeekPointSelectionList candidates;
+    unsigned short limit = FUN_0040ec20(FUN_004165e0(m_actor, true), position).FUN_005fc700(1.0f) * scale + extra;
+    unsigned short count = g_unk0x006c06f0.size();
+    for (unsigned short index = 0; index < count; ++index)
+    {
+        RHSeekPoint *seek = g_unk0x006c06f0[index];
+        int distance = FUN_0040ec20(seek->Position(), position).FUN_005fc700(1.0f);
+        if (seek->Position().layer != position.layer)
+            distance += 100;
+        if ((unsigned short)distance < limit)
+        {
+            typedef RHSeekPointSelectionList::iterator Iterator;
+            Iterator (std::list<RHSeekPoint *>::*insertOne)(Iterator, RHSeekPoint *const &) = &std::list<RHSeekPoint *>::insert;
+            (candidates.*insertOne)(candidates.end(), seek);
+            candidates.dirty = true;
+        }
+    }
+    unsigned short choices = candidates.size();
+    if (choices != 0)
+    {
+        ((RHSeqList *)&candidates)->GoTo(rand() % choices);
+        position = (*candidates.cursor)->Position();
+        return true;
+    }
+    return false;
+}
+
+// FUNCTION: GAME 0x004137a0
+RHSeekPoint *RHArtificialIntelligence::FUN_004137a0()
+{
+    SBGeoPoint2D origin;
+    SBGeoVector2D direction;
+    unsigned bestDistance = 0xffff;
+    RHSeekPoint *nearest = 0;
+    origin = FUN_0040cc20(m_actor);
+    unsigned short count = g_unk0x006c06f0.size();
+    for (unsigned short index = 0; index < count; ++index)
+    {
+        RHSeekPoint *seek = g_unk0x006c06f0[index];
+        direction = FUN_0040cbf0(seek->Position()).Unk005fc110(origin);
+        int distance = direction.FUN_005fc700(1.0f);
+        if (seek->Position().area != m_actor->m_data->m_dc)
+            distance += 1000;
+        if (RHAIField<char>(this, 0xfd))
+        {
+            bool approaching = direction.FUN_005fc660(RHAIField<SBGeoPoint2D>(this, 0xf4).Unk005fc110(origin)) > 0.0f;
+            if (approaching)
+                distance += 5000;
+        }
+        if ((unsigned short)distance < (unsigned short)bestDistance)
+        {
+            nearest = seek;
+            bestDistance = distance;
+        }
+    }
+    return nearest;
+}
+
+#include "RHSequenceElementGeneric.h"
+#include "RHSequenceMovementConstruction.h"
+#include "RHMalignityStimulus.h"
+#include "RHUnk0046bd20.h"
+#include "RHWaypoint.h"
+#include "RHMalignityActorCalls.h"
+#include "RHAIStateCalls.h"
+
+DECOMP_SIZE_ASSERT(RHUnk005866a0, 0x74)
+DECOMP_SIZE_ASSERT(RHUnk00588530, 0x9c)
+DECOMP_SIZE_ASSERT(RHPositionInterface, 0x140)
+DECOMP_SIZE_ASSERT(RHWaypoint, 0x7c)
+DECOMP_SIZE_ASSERT(RHPathObstacleGrid, 0x3e98)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk00582220, m_elements) == 0x08)
+DECOMP_STATIC_ASSERT(offsetof(RHSequenceElementList, m_cursor) == 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(RHSequenceElementList, m_dirty) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk00584d60, m_orders) == 0x18)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005866a0, m_64) == 0x64)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk00588530, m_68) == 0x68)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk00588530, m_98) == 0x98)
+DECOMP_STATIC_ASSERT(offsetof(RHPath, m_c) == 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(RHPositionInterface, m_88) == 0x88)
+DECOMP_STATIC_ASSERT(offsetof(RHWaypoint, m_64) == 0x64)
+DECOMP_STATIC_ASSERT(offsetof(RHWaypoint, m_6c) == 0x6c)
+
+// STUB: GAME 0x00411a00
+void RHArtificialIntelligence::FUN_00411a00(unsigned flags)
+{
+    SBGeoVector2D direction;
+    ((RHUnk00413640 *)this)->Unk(0, 0);
+    if (!(flags & 1))
+        ((RHScriptBatchCalls *)this)->Unk00419fb0(0);
+    ((RHPath *)((char *)this + 0x30))->ResetHistory();
+    ((RHArtificialIntelligenceList *)((char *)this + 0x280))->clear();
+    RHAIField<int>(this, 0x27c) = 0;
+    RHAIField<int>(this, 0x2a4) = 0;
+    if (RHAIField<unsigned short>(m_actor, 0x5a8) == 0)
+        RHAIField<int>(this, 0x88) = 0;
+    if (RHAIField<RHMalignityActorCalls *>(this, 0x2b0) &&
+        RHAIField<RHMalignityActorCalls *>(this, 0x2b0)->V11c() &&
+        ((RHMalignityActorCalls *)m_actor)->FUN_0048a130(RHAIField<RHMalignityActorCalls *>(this, 0x2b0)))
+    {
+        V10(1, 239);
+        FUN_00412cf0(FUN_004165e0(RHAIField<void *>(this, 0x2b0), true), 70, 0);
+        if (!RHAIField<char>(this, 0x16c))
+            return;
+        RHAIField<char>(this, 0x16c) = 0;
+    }
+    if (RHAIField<char>(this, 0x70))
+    {
+        RHArtificialIntelligencePathCursor *cursor = (RHArtificialIntelligencePathCursor *)((char *)m_actor + RHAIField<int>(RHAIField<void *>(m_actor, 0x49c), 4) + 0x4cc);
+        RHPath *path = (RHPath *)cursor;
+        unsigned short count = path->GetWaypointCount();
+        RHMalignityPosition current;
+        current = FUN_004165e0(m_actor, true);
+        float closest = FUN_0040ec20((const RHMalignityPosition &)FUN_00412160(path->m_4->m_first[0]), current).FUN_005fc700(1.0f);
+        unsigned short selected = 0;
+        for (unsigned short index = 0; index < count; ++index)
+        {
+            float distance = FUN_0040ec20((const RHMalignityPosition &)FUN_00412160(path->m_4->m_first[index]), current).FUN_005fc700(1.0f);
+            if (distance < closest)
+            {
+                selected = index;
+                closest = distance;
+            }
+        }
+        cursor->Unk005505b0(selected);
+        RHWaypoint *waypoint = path->m_4->m_first[cursor->m_current];
+        RHUnk00571160Position position = waypoint->Position();
+        direction = FUN_0040ec20((const RHMalignityPosition &)position, current);
+        if (selected < (int)path->GetWaypointCount() - 1)
+        {
+            if (direction.FUN_005fc700(1.0f) < 10.0f ||
+                direction.FUN_005fc660(FUN_0040ec20((const RHMalignityPosition &)FUN_00412160(path->LookupNextWaypoint()), (const RHMalignityPosition &)position)) < 0.0f)
+                cursor->Unk005505c0();
+        }
+        V10(1, 9);
+        if (RHAIField<int>(this, 0x304) > 0 && RHAIField<int>(g_pEngine, 0x4a94) == 0 && direction.FUN_005fc700(1.0f) < 50.0f)
+            path->InitializeHistoryEntriesOnPath();
+        if (Unk00419cc0())
+        {
+            waypoint = path->m_4->m_first[cursor->m_current];
+            position = waypoint->Position();
+            Unk00412240(position, RHAIField<unsigned short>(this, 0x22c), 1.0f);
+        }
+        else
+        {
+            waypoint = path->m_4->m_first[cursor->m_current];
+            position = waypoint->Position();
+            Unk00412240(position, RHAIField<unsigned short>(this, 0x22c) | 0x400, 1.0f);
+        }
+        return;
+    }
+    if (m_16f)
+    {
+        if (m_actor->m_data->m_88 == 8 &&
+            FUN_0040ec20(FUN_004165e0(m_actor, true), RHAIField<RHMalignityPosition>(m_actor, 0x4dc)).FUN_005fc700(1.0f) < 3.0f)
+        {
+            V10(1, 11);
+            Unk00416710(Unk0041a420());
+            return;
+        }
+        V10(1, 7);
+        Unk00412240(RHAIField<RHUnk00571160Position>(m_actor, 0x4dc), 0x20, 1.0f);
+        return;
+    }
+    if (m_170)
+    {
+        if (m_actor->m_data->m_88 == 24 &&
+            FUN_0040ec20(FUN_004165e0(m_actor, true), RHAIField<RHMalignityPosition>(m_actor, 0x4dc)).FUN_005fc700(1.0f) < 3.0f)
+        {
+            V10(1, 11);
+            Unk00416710(Unk0041a420());
+            return;
+        }
+        V10(1, 7);
+        Unk00412240(RHAIField<RHUnk00571160Position>(m_actor, 0x4dc), 0x20, 1.0f);
+        return;
+    }
+    V10(1, 7);
+    Unk00412240(RHAIField<RHUnk00571160Position>(m_actor, 0x4dc), 0, 1.0f);
+}
 
 #include "RHSequenceAppendCalls.h"
 
@@ -711,6 +932,156 @@ public:
 
 class RHUnk6c1040;
 extern RHUnk6c1040 *g_unk0x6c1040;
+
+// STUB: GAME 0x00412240
+bool RHArtificialIntelligence::Unk00412240(const RHUnk00571160Position &position, unsigned short flags, float length)
+{
+    RHAIField<RHUnk00571160Position>(this, 0x378) = position;
+    RHAIField<unsigned short>(this, 0x388) = flags;
+    if ((flags & 0x200) && !FUN_00413cb0((RHUnk00571160Position &)position))
+        goto failed;
+    if ((RHAIField<unsigned>(m_actor, 4) & 0x1f) == 4 && (flags & 0xd802) > 0)
+        flags &= 0x27fd;
+    if (FUN_0040ec20(FUN_004165e0(m_actor, true), (const RHMalignityPosition &)position).FUN_005fc700(1.0f) < 5.0f && !m_16f && !m_170)
+    {
+        void *current = RHAIField<void *>(m_actor, 0x134);
+        if (!current || RHAIField<int>(current, 0x24) == 3 || RHAIField<int>(current, 0x24) == 140 || RHAIField<int>(current, 0x24) == 283)
+        {
+            if (g_unk0x006c06ca > 0)
+                RHAIField<char>(this, 0x16d) = 1;
+            else
+            {
+                RHMalignityStimulus stimulus;
+                stimulus.m_20 = 3;
+                RHAIField<unsigned short>(&stimulus, 0) = 0;
+                stimulus.m_type = 0;
+                V24(&stimulus);
+            }
+            return true;
+        }
+    }
+    {
+        unsigned short distance;
+        if (flags & 0x80)
+        {
+            distance = RHAIField<unsigned short>(this, 0x74);
+            if (FUN_0040ec20(FUN_004165e0(m_actor, true), (const RHMalignityPosition &)position).Unk005fc6d0(1.0f) <= distance * distance &&
+                position.layer == RHAIField<short>(m_actor->m_data, 0xde))
+            {
+                if (g_unk0x006c06ca > 0)
+                    RHAIField<char>(this, 0x16d) = 1;
+                else
+                {
+                    RHMalignityStimulus stimulus;
+                    RHAIField<unsigned short>(&stimulus, 0) = 0;
+                    stimulus.m_type = 0;
+                    stimulus.m_20 = 3;
+                    V24(&stimulus);
+                }
+                return true;
+            }
+        }
+        else
+            distance = 0;
+        if (!(position.x > 0.0f && RHAIField<float>(g_pEngine, 0x4730) > position.x &&
+            position.y > 0.0f && RHAIField<float>(g_pEngine, 0x4734) > position.y && position.area && position.layer >= 0))
+            goto failed;
+        if (flags & 0x10)
+        {
+            SBGeoBoundingBox2D box;
+            RHPositionInterface &profile = *m_actor->m_data;
+            void *radius = profile.Unk0055fa10(profile.m_88);
+            unsigned short layer = RHAIField<unsigned short>(m_actor->m_data, 0xde);
+            if (!((RHUnkPathGeometry *)g_unk0x6c0a9c)->Unk004f9170(FUN_0040cc20(m_actor), FUN_0040cbf0((const RHMalignityPosition &)position), layer, radius))
+            {
+                RHAIField<char>(this, 0x16c) = 1;
+                return false;
+            }
+        }
+        if ((flags & 4) && !(flags & 0x10) &&
+            (RHAIField<void *>(m_actor->m_data, 0xe0) != position.area || RHAIField<short>(m_actor->m_data, 0xde) != position.layer))
+            flags ^= 4;
+        int animation = flags & 8 ? 6 : flags & 0x8000 ? 290 : flags & 1 ? 10 : 6;
+        RHUnk00582220 *sequence = new RHUnk00582220;
+        unsigned short level = 1;
+        unsigned long movementFlags = 0;
+        if ((flags & 4) > 0)
+            movementFlags = 1;
+        if ((flags & 2) > 0)
+            movementFlags |= 0x10;
+        if ((flags & 0x400) > 0)
+            movementFlags |= 0x40;
+        if ((flags & 0x4000) > 0)
+            movementFlags |= 0x4000;
+        if ((flags & 0x800) > 0)
+        {
+            int posture = RHAIField<int>(m_actor, 0x144);
+            if (posture < 7 || posture > 11)
+            {
+                RHUnk005866a0 *command = new RHUnk005866a0(level++, 50, m_actor);
+                command->Unk00586ed0(33, 0);
+                command->Unk00586ed0(24, 0);
+                command->Unk00586e00(34, false);
+                ((RHUnk00585500 *)command)->Unk(sequence);
+            }
+            movementFlags |= 0x200;
+        }
+        else
+        {
+            int posture = RHAIField<int>(m_actor, 0x144);
+            if (posture >= 7)
+            {
+                if (posture > 11)
+                {
+                    if (posture == 15)
+                        ((RHUnk00585500 *)new RHUnk00584d60(level++, 139, m_actor))->Unk(sequence);
+                }
+                else
+                    ((RHUnk00585500 *)new RHUnk00584d60(level++, 51, m_actor))->Unk(sequence);
+            }
+        }
+        if ((flags & 0x1000) > 0)
+            movementFlags |= 0x1000;
+        int posture = RHAIField<int>(m_actor, 0x144);
+        if (posture >= 12 && posture <= 14)
+            ((RHUnk00585500 *)new RHUnk00584d60(level++, 107, m_actor))->Unk(sequence);
+        if (RHAIField<void *>(m_actor->m_data, 0xe0) == position.area && RHAIField<short>(m_actor->m_data, 0xde) == position.layer)
+        {
+            RHUnk00588530 *movement = new RHUnk00588530(level++, 20, m_actor, animation,
+                FUN_0040cbf0((const RHMalignityPosition &)position), 0, (float)distance, movementFlags & 0xffff);
+            movement->m_98 = length;
+            ((RHUnk00585500 *)movement)->Unk(sequence);
+        }
+        else if (!sequence->FUN_00582640(level, m_actor, animation, RHAIField<SBGeoPoint2D>(m_actor->m_data, 0x24),
+            RHAIField<void *>(m_actor->m_data, 0xe0), RHAIField<unsigned short>(m_actor->m_data, 0xde),
+            FUN_0040cbf0((const RHMalignityPosition &)position), position.area, position.layer, 0, (float)distance, movementFlags & 0xffff, length))
+        {
+            if (sequence)
+                sequence->FUN_00582280(1);
+            goto failed;
+        }
+        if (flags & 0x20)
+        {
+            RHUnk005866a0 *command = new RHUnk005866a0(level++, 26, m_actor);
+            ((RHSequenceElementGeneric *)command)->FUN_00586e50(0, ((RHUnk005fc3b0 *)((char *)m_actor + 0x4d4))->FUN_005fcc50(0.57357645f));
+            ((RHUnk00585500 *)command)->Unk(sequence);
+            if (m_170)
+                ((RHUnk00585500 *)new RHUnk00584d60(level++, 144, m_actor))->Unk(sequence);
+            else
+                ((RHUnk00585500 *)new RHUnk00584d60(level++, 122, m_actor))->Unk(sequence);
+        }
+        if ((unsigned short)sequence->m_elements.size() > 0)
+            ((RHUnk0058a3d0 *)g_unk0x6c1040)->Unk("", 0, sequence);
+        else if (sequence)
+            sequence->FUN_00582280(1);
+        if (((RHUnk0046bd20 *)m_actor)->FUN_0046bd20() == 23)
+            ((RHArtificialIntelligenceActorCalls *)m_actor)->Unk0048d020();
+        return true;
+    }
+failed:
+    RHAIField<char>(this, 0x16c) = 1;
+    return false;
+}
 
 // FUNCTION: GAME 0x00412f70
 bool RHArtificialIntelligence::Unk00412f70(unsigned short direction, int mode)
@@ -740,6 +1111,25 @@ void RHArtificialIntelligence::FUN_00413240(SBGeoPoint2D point, int first, int s
     FUN_004132d0(first, 1, second);
 }
 
+RHUnk00613e90 FUN_00414360(const RHMalignityPosition &position, bool mode);
+
+// FUNCTION: GAME 0x004130b0
+void RHArtificialIntelligence::FUN_004130b0(RHMalignityPosition position)
+{
+    RHUnk00613e90 direction;
+    direction = FUN_00414360(position, true).FUN_005df550(m_actor->m_data->m_c);
+    unsigned short heading = ((const RHUnk005fc3b0 &)SBGeoVector2D(direction.x, direction.y)).FUN_005fcc50(0.57357645f);
+    ((RHScriptBatchCalls *)m_actor)->Unk00486f50(&position, false);
+    RHUnk00582220 *sequence = new RHUnk00582220;
+    RHUnk005866a0 *turn = new RHUnk005866a0(1, 26, m_actor);
+    turn->Unk00586e90(0, heading);
+    ((RHUnk00585500 *)turn)->Unk(sequence);
+    RHUnk005866a0 *action = new RHUnk005866a0(2, 119, m_actor);
+    action->Unk00586e90(0, heading);
+    ((RHUnk00585500 *)action)->Unk(sequence);
+    ((RHUnk0058a3d0 *)g_unk0x6c1040)->Unk("", 0, sequence);
+}
+
 // Parked: switch tail merging and register scheduling.
 // STUB: GAME 0x00414550
 bool RHArtificialIntelligence::InitState()
@@ -748,7 +1138,7 @@ bool RHArtificialIntelligence::InitState()
     m_16f = false;
     m_170 = false;
     m_173 = false;
-    RHArtificialIntelligenceInitialEntry *entry = m_actor->m_data->m_entry;
+    RHArtificialIntelligenceInitialEntry *entry = (RHArtificialIntelligenceInitialEntry *)m_actor->m_data->m_dc;
     bool done = true;
     if (entry->Flag13() & 1)
     {
@@ -814,7 +1204,7 @@ bool RHArtificialIntelligence::InitState()
             SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp", 3734,
                      // STRING: GAME 0x006a7700
                      "Actor at (%f, %f): Initial action %u not supported by AI.",
-                     m_actor->m_data->m_x, m_actor->m_data->m_y, (unsigned short)m_initialAction);
+                     m_actor->m_data->m_20.m_x, m_actor->m_data->m_20.m_y, (unsigned short)m_initialAction);
             return done;
         }
     }
@@ -1028,6 +1418,11 @@ void EmitAIStimulusAppend(RHArtificialIntelligenceValueList<RHStimulus> &list, c
 DECOMP_SIZE_ASSERT(RHStimulus, 0x2c)
 DECOMP_SIZE_ASSERT(RHArtificialIntelligenceValueList<RHStimulus>, 0x18)
 DECOMP_SIZE_ASSERT(RHArtificialIntelligenceValueNode<RHStimulus>, 0x34)
+DECOMP_STATIC_ASSERT(offsetof(RHArtificialIntelligencePathCursor, m_current) == 0)
+DECOMP_STATIC_ASSERT(offsetof(RHArtificialIntelligencePathCursor, m_previous) == 1)
+DECOMP_STATIC_ASSERT(offsetof(RHArtificialIntelligencePathCursor, m_forward) == 2)
+DECOMP_STATIC_ASSERT(offsetof(RHArtificialIntelligencePathCursor, m_path) == 4)
+DECOMP_STATIC_ASSERT(offsetof(RHArtificialIntelligencePathCursor, m_id) == 8)
 
 #define RHAI_LOCAL_ACCESS(address, size, line) \
     if (file.Access(address, size) < 0) \
@@ -1600,20 +1995,7 @@ bool RHArtificialIntelligence::SerializePosition(RHArtificialIntelligencePositio
     return true;
 }
 
-class RHDrawManager : public SBGeoBoundingBox2D
-{
-public:
-    static RHDrawManager *mpDrawManager;
-    float m_scale;
-    unsigned m_18;
-    SBDrawManager *m_drawManager;
-};
-
-class RHMobileUnk00607da0
-{
-public:
-    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
-};
+#include "RHDrawManagerCore.h"
 
 extern float g_unk0x006774cc;
 
@@ -1631,7 +2013,7 @@ void RHArtificialIntelligence::FUN_00417580()
     SBGeoBoundingBox2D fill;
     RHDrawManager *draw = RHDrawManager::mpDrawManager;
     SBGeoBoundingBox2D clip = draw->FUN_00417a20();
-    float scale = draw->m_scale;
+    float scale = draw->m_14;
     center = RHAIField<SBGeoPoint2D>(RHAIField<void *>(m_actor, 0x50), 0x24).Unk005fc190(SBGeoVector2D(0.0f, -55.0f));
     void *interfaceObject = RHAIField<void *>(m_actor, 0x49c);
     unsigned short first = RHAIField<unsigned short>(m_actor, 0x648);
@@ -1647,7 +2029,7 @@ void RHArtificialIntelligence::FUN_00417580()
     ((RHMobileUnk00607da0 *)&fill)->FUN_00607da0((const RHMobileUnk00607da0 &)clip.FUN_006092c0(fill));
     if (fill.Unk00608f30())
     {
-        fill -= (SBGeoVector2D)clip.first;
+        fill -= (SBGeoVector2D)clip.m_p0;
         fill.FUN_006091d0(scale);
         FUN_00417ab0(fill, 255, 0, 0, draw->m_drawManager, false);
     }
@@ -1656,7 +2038,7 @@ void RHArtificialIntelligence::FUN_00417580()
     ((RHMobileUnk00607da0 *)&outline)->FUN_00607da0((const RHMobileUnk00607da0 &)clip.FUN_006092c0(outline));
     if (outline.Unk00608f30())
     {
-        outline -= (SBGeoVector2D)clip.first;
+        outline -= (SBGeoVector2D)clip.m_p0;
         outline.FUN_006091d0(scale);
         FUN_00417ca0(outline, 255, 255, 255, draw->m_drawManager, 0, false);
     }
@@ -1710,16 +2092,16 @@ void FUN_00417ab0(const SBGeoBoundingBox2D &box, unsigned char red, unsigned cha
     draw->FUN_005e61e0(0, &box, color, 0);
     if (shade)
     {
-        upperRight.m_x = box.last.m_x;
-        float top = box.first.m_y;
+        upperRight.m_x = box.m_p1.m_x;
+        float top = box.m_p0.m_y;
         upperRight.m_y = top;
-        lowerLeft.m_x = box.first.m_x;
-        float bottom = box.last.m_y;
+        lowerLeft.m_x = box.m_p0.m_x;
+        float bottom = box.m_p1.m_y;
         lowerLeft.m_y = bottom;
-        draw->FUN_005ecbd0(0, lowerLeft, box.last, dark);
-        draw->FUN_005ecbd0(0, box.last, upperRight, dark);
-        draw->FUN_005ecbd0(0, lowerLeft, box.first, bright);
-        draw->FUN_005ecbd0(0, box.first, upperRight, bright);
+        draw->FUN_005ecbd0(0, lowerLeft, box.m_p1, dark);
+        draw->FUN_005ecbd0(0, box.m_p1, upperRight, dark);
+        draw->FUN_005ecbd0(0, lowerLeft, box.m_p0, bright);
+        draw->FUN_005ecbd0(0, box.m_p0, upperRight, bright);
     }
 }
 
@@ -1735,10 +2117,10 @@ void FUN_00417ca0(const SBGeoBoundingBox2D &box, unsigned char red, unsigned cha
     unsigned short dark = FUN_00417a40((unsigned char)(red * 0.7), (unsigned char)(green * 0.7),
         (unsigned char)(blue * 0.7), *(unsigned short *)((char *)draw + 0x10c));
     float size = thickness;
-    first.m_y = box.first.m_y - size - 1.0f;
-    first.m_x = box.first.m_x - size - 1.0f;
-    last.m_x = box.last.m_x + size;
-    last.m_y = box.last.m_y + size;
+    first.m_y = box.m_p0.m_y - size - 1.0f;
+    first.m_x = box.m_p0.m_x - size - 1.0f;
+    last.m_x = box.m_p1.m_x + size;
+    last.m_y = box.m_p1.m_y + size;
     expanded.FUN_00609050(first, last);
     if (shade)
         draw->FUN_005ecdc0(0, expanded.FUN_006090d0(SBGeoVector2D(1.0f, 1.0f)), dark, 0);
@@ -1918,7 +2300,7 @@ bool RHArtificialIntelligence::Unk00418600(unsigned short path)
         {
             SBAssert(1, "P:\\Robin Hood\\RHartificialintelligence.cpp", 5598,
                      // STRING: GAME 0x006a783c
-                     "Assigned illegal path on point (%f,%f) !", m_actor->m_data->m_x, m_actor->m_data->m_y);
+                     "Assigned illegal path on point (%f,%f) !", m_actor->m_data->m_20.m_x, m_actor->m_data->m_20.m_y);
             return false;
         }
         ((RHArtificialIntelligencePathCursor *)((char *)this + 0x30))->Unk00550f60(path);
@@ -1984,9 +2366,9 @@ RHArtificialIntelligenceSoundCalls *g_unk0x006c1070;
     { \
         std::string name = FUN_00420d40(remark); \
         const char *text = name.c_str(); \
-        RHArtificialIntelligenceInitialData *data = m_actor->m_data; \
+        RHSprite *data = m_actor->m_data; \
         SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp", line, message, text, \
-                 (unsigned short)data->m_x, (unsigned short)data->m_y); \
+                 (unsigned short)data->m_20.m_x, (unsigned short)data->m_20.m_y); \
     }
 
 // Parked: 61.78%; string cleanup, search/register scheduling and switch layout.
@@ -2468,14 +2850,26 @@ void RHScriptBatchCalls::Unk00419fb0(int value)
 
 extern "C" int __cdecl rand();
 
-// Parked: inlined profile-test shape and register scheduling.
-// STUB: GAME 0x0041a420
+// FUNCTION: GAME 0x0041a0f0
+int RHArtificialIntelligence::ValueBetween(unsigned short first, unsigned short second, unsigned char percent)
+{
+    return (int)((float)(second - first) * (percent * 0.01f) + first);
+}
+
+template<class T> inline T RHAISoldierProperty(void *actor, unsigned offset)
+{
+    if ((RHAIField<unsigned>(actor, 4) & 31) != 20)
+        return T();
+    return RHAIField<T>(RHAIField<void *>(actor, 0xa1c), offset);
+}
+
+// FUNCTION: GAME 0x0041a420
 unsigned short RHArtificialIntelligence::Unk0041a420()
 {
-    unsigned type = RHAIField<unsigned>(m_actor, 4) & 31;
-    if (type == 20 && RHAIField<int>(RHAIField<void *>(m_actor, 0xa1c), 0x58) == 1)
+    RHArtificialIntelligenceActor *actor = m_actor;
+    if (RHAISoldierProperty<int>(actor, 0x58) == 1)
         return rand() % 600 + 200;
-    if (type == 20 && RHAIField<unsigned short>(RHAIField<void *>(m_actor, 0xa1c), 0x38) > 0)
+    if (RHAISoldierProperty<unsigned short>(actor, 0x38) > 0)
         return rand() % 800 + 400;
     return rand() % 70 + 70;
 }
@@ -2615,41 +3009,18 @@ void EmitRHAIFresh603(RHArtificialIntelligence *value)
     value->FUN_0041a490();
 }
 
-struct RHUnk0041a930Value
+// FUNCTION: GAME 0x0041a930
+void RHStimulus::FUN_0041a930(int event, const RHMalignityPosition &position)
 {
-    int m_00;
-    int m_04;
-    int m_08;
-    int m_0c;
-};
-
-class RHUnk0041a930
-{
-public:
-    int m_00;
-    int m_04;
-    int m_08;
-    int m_0c;
-    char m_10[0xc];
-    int m_1c;
-    int m_20;
-    RHUnk0041a930 *FUN_0041a930(int first, const RHUnk0041a930Value *second);
-};
-
-// Parked: register colouring seam; VC6 keeps `this` in eax (return) where the target keeps arg1 in eax.
-// STUB: GAME 0x0041a930
-RHUnk0041a930 *RHUnk0041a930::FUN_0041a930(int first, const RHUnk0041a930Value *second)
-{
-    m_20 = first;
-    *(RHUnk0041a930Value *)((char *)this) = *second;
-    m_1c = 2;
-    return this;
+    m_20 = event;
+    *(RHMalignityPosition *)m_00 = position;
+    m_type = 2;
 }
 
-void EmitRHUnk0041a930(RHUnk0041a930 *a)
+void EmitRHUnk0041a930(RHStimulus *a)
 {
-    RHUnk0041a930Value value = {0, 0, 0, 0};
-    a->FUN_0041a930(0, &value);
+    RHMalignityPosition value = {0, 0, 0, 0};
+    a->FUN_0041a930(0, value);
 }
 
 // Parked: cached-list cursor and loop-counter scheduling.
@@ -2670,6 +3041,42 @@ void RHArtificialIntelligence::Unk0041a960(unsigned short direction)
             ai->Unk0041ab10(direction);
             ++index;
         } while (--count);
+    }
+}
+
+static inline RHUnk00571160Position RHAIWaypointPosition(void *waypoint)
+{
+    RHUnk00571160Position position;
+    position.x = RHAIField<short>(waypoint, 0x64);
+    position.y = RHAIField<short>(waypoint, 0x66);
+    position.area = RHAIField<void *>(waypoint, 0x68);
+    position.layer = RHAIField<short>(waypoint, 0x6c);
+    return position;
+}
+
+// STUB: GAME 0x0041bd20
+void RHArtificialIntelligence::SetPathWalkingFlags(unsigned short flags)
+{
+    RHUnk00571160Position first;
+    RHUnk00571160Position second;
+    RHAIField<unsigned short>(this, 0x22c) = flags;
+    if (RHAIField<bool>(this, 0x70) &&
+        (RHAIField<int>(this, 0x14) == 9 || RHAIField<int>(this, 0x14) == 13))
+    {
+        if (Unk00419cc0())
+        {
+            RHArtificialIntelligencePathCursor *cursor = (RHArtificialIntelligencePathCursor *)((char *)m_actor + RHAIField<int>(RHAIField<void *>(m_actor, 0x49c), 4) + 0x4cc);
+            void *waypoint = RHAIField<void **>(cursor->m_path, 4)[cursor->m_current];
+            first = RHAIWaypointPosition(waypoint);
+            Unk00412240(first, RHAIField<unsigned short>(this, 0x22c), 1.0f);
+        }
+        else
+        {
+            RHArtificialIntelligencePathCursor *cursor = (RHArtificialIntelligencePathCursor *)((char *)m_actor + RHAIField<int>(RHAIField<void *>(m_actor, 0x49c), 4) + 0x4cc);
+            void *waypoint = RHAIField<void **>(cursor->m_path, 4)[cursor->m_current];
+            second = RHAIWaypointPosition(waypoint);
+            Unk00412240(second, RHAIField<unsigned short>(this, 0x22c) | 0x400, 1.0f);
+        }
     }
 }
 
@@ -2987,30 +3394,36 @@ void RHArtificialIntelligencePathCursor::Unk005505b0(unsigned short waypoint)
     RHAIField<unsigned char>(this, 0) = (unsigned char)waypoint;
 }
 
-// Parked: repeated array-size tests and register scheduling.
-// STUB: GAME 0x005505c0
+// FUNCTION: GAME 0x005505c0
 RHArtificialIntelligencePathCursor &RHArtificialIntelligencePathCursor::Unk005505c0()
 {
     RHAIPathArray *path = m_path;
     m_previous = m_current;
-    if (path && path->m_first && (unsigned short)(path->m_last - path->m_first) > 1)
+    if (path && (unsigned short)path->size(true) > 1)
     {
         if (m_forward)
         {
             if (m_current < (unsigned short)path->size() - 1)
+            {
                 ++m_current;
+                return *this;
+            }
             else
             {
                 --m_current;
                 m_forward = 0;
+                return *this;
             }
         }
         else if (m_current > 0)
+        {
             --m_current;
+            return *this;
+        }
         else
         {
-            m_forward = 1;
             ++m_current;
+            m_forward = 1;
         }
     }
     return *this;
@@ -3039,20 +3452,13 @@ void RHArtificialIntelligencePathCursor::Unk00550f60(unsigned short path)
     }
 }
 
-struct RHScriptNode
-{
-    RHScriptNode *next;
-    RHScriptNode *previous;
-    void *value;
-};
-
 // TEMPLATE: GAME 0x0059f720 FOLDED
 // ?Unk0059f720@RHUnk0046eb30@@QAEPAURHScriptNode@@PAU2@0@Z
 RHScriptNode *RHUnk0046eb30::Unk0059f720(RHScriptNode *next, RHScriptNode *previous)
 {
     RHScriptNode *node = (RHScriptNode *)::operator new(12);
     node->next = next ? next : node;
-    node->previous = previous ? previous : node;
+    node->prev = previous ? previous : node;
     return node;
 }
 

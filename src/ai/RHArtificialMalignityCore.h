@@ -5,6 +5,7 @@
 #include "RHMalignityTargetList.h"
 
 class SBFile;
+class RHAmbushPoint;
 class RHUnk005fc3b0;
 struct RHMalignityPosition;
 struct RHMalignityStimulus;
@@ -26,7 +27,10 @@ public:
     void FUN_0043a080(const RHMalignityPosition &position);
     void FUN_0043a170(const RHMalignityPosition &position);
     void FUN_00438620(unsigned short value);
+    void CheckAmbushPoint(RHAmbushPoint *point, bool mode);
     unsigned short FUN_00433010();
+    bool FUN_00433680();
+    void FUN_0044d9c0();
     void FUN_00433790(const RHMalignityPosition &position);
     void FUN_00434320(void *actor);
     bool FUN_00435bd0();
@@ -44,6 +48,7 @@ public:
     void *FUN_00443d10(const RHMalignityPosition *position);
     void *FUN_00443e20(int team, unsigned short radius, unsigned char flags, int type);
     unsigned FUN_00443fa0(unsigned first, unsigned second, unsigned third, unsigned fourth);
+    void ForceAttentiveMode(bool attentive);
     void FUN_004444a0();
     void FUN_00444bb0(void *record);
     void FUN_004450a0(void *target);

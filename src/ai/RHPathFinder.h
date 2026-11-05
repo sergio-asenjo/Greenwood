@@ -36,6 +36,7 @@ public:
     ~SBGeoBoundingBox2D() {}
     SBGeoBoundingBox2D &operator=(const SBGeoBoundingBox2D &box);
     SBGeoPoint2D FUN_00608f40() const;
+    bool FUN_00608400(const SBGeoPoint2D &point) const;
     SBGeoPoint2D first; // +0x00
     SBGeoPoint2D last; // +0x08
     char flag; // +0x10
@@ -173,12 +174,6 @@ public:
 
 #include "RHPathRequest.h"
 
-struct RHPathRequestNode
-{
-    RHPathRequestNode *next; // +0x00
-    RHPathRequestNode *previous; // +0x04
-    RHpathRequest *request; // +0x08
-};
 
 inline RHPathRequestList::RHPathRequestList(const std::allocator<void *> &value)
     : allocator(value)
@@ -212,11 +207,7 @@ inline void RHPathRequestList::clear()
     valid = 1;
 }
 
-inline RHpathRequest *&RHPathRequestList::operator[](int wanted)
-{
-    ((RHTitbitList *)this)->At(wanted);
-    return cursor->request;
-}
+#include "RHPathRequestLookup.h"
 
 inline void RHPathRequestList::InsertInline(RHPathRequestNode *node, RHpathRequest *const &request)
 {
@@ -228,14 +219,8 @@ inline void RHPathRequestList::InsertInline(RHPathRequestNode *node, RHpathReque
     valid = 1;
 }
 
-class RHPathObstacleGrid
-{
-public:
-    bool FUN_004f5750(SBGeoBoundingBox2D &box, unsigned short sector);
-    bool FUN_004f5890(SBGeoBoundingBox2D &box, unsigned short sector);
-    undefined m_00[0x3e84]; // 0x00
-    SBGeoBoundingBox2D m_3e84; // 0x3e84
-};
+#define SBGEO_BOUNDINGBOX2D_VIEW
+#include "RHPathObstacleGrid.h"
 
 class RHPathSequenceSerializer
 {

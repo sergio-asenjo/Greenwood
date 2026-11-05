@@ -620,6 +620,49 @@ unsigned short RHMalignityOwnerCalls::FUN_00438710(unsigned short value, float l
     return value;
 }
 
+// Parked: pooled zero storage identity remains unbound.
+// STUB: GAME 0x00438aa0
+void RHArtificialMalignity::CheckAmbushPoint(RHAmbushPoint *point, bool mode)
+{
+    RHMalignityPosition position = RHMalignityField<RHMalignityPosition>(point, 4);
+    bool side = ((RHUnk005fc3b0 &)((RHMalignityActorCalls *)VirtualBase().m_actor)->FUN_004135b0()).FUN_005fc680(
+        (RHUnk005fc3b0 &)FUN_0040ec20(position, VirtualBase().FUN_004165e0(VirtualBase().m_actor, true)), 1.0f) > 0.0f;
+    if (side)
+    {
+        if (RHMalignityField<int>(&VirtualBase(), 0x14) == 0x4c)
+        {
+            VirtualBase().V10(3, 0x4e);
+            VirtualBase().V04(2);
+            return;
+        }
+        if (!mode)
+        {
+            VirtualBase().V10(3, 0x4e);
+            VirtualBase().V04(1);
+            return;
+        }
+        VirtualBase().V10(3, 0x4d);
+        VirtualBase().Unk00416710(3);
+    }
+    else
+    {
+        if (RHMalignityField<int>(&VirtualBase(), 0x14) == 0x4d)
+        {
+            VirtualBase().V10(3, 0x4e);
+            VirtualBase().V04(2);
+            return;
+        }
+        if (!mode)
+        {
+            VirtualBase().V10(3, 0x4e);
+            VirtualBase().V04(0);
+            return;
+        }
+        VirtualBase().V10(3, 0x4c);
+        VirtualBase().Unk00416710(3);
+    }
+}
+
 // Parked: register allocation and branch scheduling remain non-exact.
 // STUB: GAME 0x00439080
 void RHArtificialMalignity::InitializeFriendCheck(unsigned short actor, unsigned short delay, unsigned short waypoint)
@@ -1811,6 +1854,24 @@ unsigned RHArtificialMalignity::FUN_00443fa0(unsigned, unsigned, unsigned, unsig
     return 0;
 }
 
+#include "RHElementActorSoldierCore.h"
+
+// FUNCTION: GAME 0x00444440
+void RHArtificialMalignity::ForceAttentiveMode(bool attentive)
+{
+    M(bool, 0x346) = attentive;
+    if (attentive)
+    {
+        ((RHElementActorSoldier *)VirtualBase().m_actor)->SetAttentiveMode(true, false);
+        void *actor = m_actor;
+        int offset = (*(int **)this)[1];
+        RHUnk00413640 *base = (RHUnk00413640 *)((char *)this + offset);
+        if (RHMalignityField<int>(actor, 0x658) == 0 &&
+            RHMalignityField<unsigned>(g_pEngine, 0x4a94) > 1)
+            base->Unk(1, 0);
+    }
+}
+
 // Parked: AI state transition allocates exception-cleaned path and sector-list objects.
 // STUB: GAME 0x004444a0
 void RHArtificialMalignity::FUN_004444a0()
@@ -2749,14 +2810,7 @@ public:
     bool Unk004f9170(const SBGeoPoint2D &a, const SBGeoPoint2D &b, unsigned short layer, void *radius);
 };
 
-class RHUnkPathActorInfoBase
-{
-public:
-    char m_pad0[0x88];
-    int m_88;
-    void *Unk0055fa10(int value);
-    void *Current() { return Unk0055fa10(m_88); }
-};
+#include "RHPositionInterfaceCore.h"
 
 class RHMalignityDirection : public RHUnk005fc3b0
 {
@@ -2775,7 +2829,8 @@ bool RHArtificialMalignity::FUN_00447640(RHMalignityPosition &target)
     direction.FUN_005fc4d0(30.0f);
     target = FUN_0040ed40(position, direction);
     void *actor = VirtualBase().m_actor;
-    void *radius = ((RHUnkPathActorInfoBase *)((char *)RHMalignityField<void *>(actor, 0x50) + 4))->Current();
+    RHPositionInterface *bounds = (RHPositionInterface *)((char *)RHMalignityField<void *>(actor, 0x50) + 4);
+    void *radius = bounds->Unk0055fa10(bounds->m_88);
     return ((RHUnkPathGeometry *)g_unk0x6c0a9c)->Unk004f9170(VirtualBase().FUN_0040cbf0(position),
         VirtualBase().FUN_0040cbf0(target), target.layer, radius);
 }
@@ -2925,6 +2980,30 @@ unsigned short RHArtificialMalignity::FUN_00433010()
     if (limit < value)
         return value;
     return limit;
+}
+
+// STUB: GAME 0x00433680
+bool RHArtificialMalignity::FUN_00433680()
+{
+    void *destination = ((RHArtificialIntelligence *)&VirtualBase())->FUN_00417ed0(0, true);
+    ((RHArtificialIntelligence *)&VirtualBase())->Unk00418c40(0x49, 0);
+    if (!destination)
+        return false;
+    RHMalignityField<RHMalignityPosition>(&VirtualBase(), 0xd0) = RHMalignityField<void *volatile>(&VirtualBase(), 0x80) ?
+        VirtualBase().FUN_004165e0(RHMalignityField<void *>(&VirtualBase(), 0x80), true) :
+        FUN_004165e0(m_actor, true);
+    VirtualBase().V10(6, 0xdf);
+    ((RHScriptBatchCalls *)&VirtualBase())->Unk00419fd0(3, 100);
+    {
+        RHUnk00571160Position position;
+        position.x = RHMalignityField<float>(destination, 0x20);
+        position.y = RHMalignityField<float>(destination, 0x24);
+        position.area = RHMalignityField<void *>(destination, 0x10);
+        position.layer = RHMalignityField<unsigned short>(destination, 0x16);
+        RHUnk00571160Position next = position;
+        ((RHArtificialIntelligence *)&VirtualBase())->Unk00412240(next, 1, 1.0f);
+    }
+    return true;
 }
 
 // Residual: the first sprite load uses EAX rather than EDX.
@@ -3413,6 +3492,26 @@ namespace VMCoreCustomDependencies
     int FUN_0057b150();
 }
 
+// FUNCTION: GAME 0x0044d9c0
+void RHArtificialMalignity::FUN_0044d9c0()
+{
+    if (RHMalignityField<char>(RHMalignityField<void *>(RHMalignityField<void *>(VirtualBase().m_actor, 0x25c), 4), 0x17))
+    {
+        RHUnk005b5e00 *profile = RHMalignityField<RHUnk005b5e00 *>(VirtualBase().m_actor, 0x50);
+        if (RHMalignityField<unsigned short>(RHMalignityField<void *>(profile->Unk(), 4), 0x156) != 0xffff)
+        {
+            ((RHArtificialIntelligence *)&VirtualBase())->Unk00418c40(0x4a, 8);
+            return;
+        }
+    }
+    if (RHMalignityField<int>(&VirtualBase(), 0x258) == 0x79)
+    {
+        int roll = rand() % 3;
+        if (!roll)
+            ((RHArtificialIntelligence *)&VirtualBase())->Unk00418c40(0x4a, roll);
+    }
+}
+
 // FUNCTION: GAME 0x0044d6c0
 unsigned short RHArtificialMalignity::FUN_0044d6c0()
 {
@@ -3662,7 +3761,7 @@ void RHMalignityActorCalls::FUN_0048cb90(void *actor)
 }
 
 // FUNCTION: GAME 0x0048cc20
-void FUN_0048cc20(void *value)
+void FUN_0048cc20(void *value, void *)
 {
     unsigned type = RHMalignityField<unsigned>(value, 0x10);
     switch (type)
@@ -4130,6 +4229,7 @@ int RHUnk00608f10::FUN_00608f10(void *value)
 
 void RHArtificialMalignity::Emit(SBFile &file)
 {
+    CheckAmbushPoint(0, false);
     FUN_0042ff90();
     FUN_0044d6c0();
     FUN_00438f80(*(RHMalignityStimulus *)this);

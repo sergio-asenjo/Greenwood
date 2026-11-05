@@ -68,8 +68,8 @@ void RHUnk00522470::FUN_00520a90(SBFile &file)
     short y;
     file.Access(&x, 2);
     file.Access(&y, 2);
-    *(float *)(m_00 + 4) = x;
-    *(float *)(m_00 + 8) = y;
+    this->x = x;
+    this->y = y;
 }
 RHSectorScript::RHSectorScript() {}
 RHSectorScript::~RHSectorScript() {}

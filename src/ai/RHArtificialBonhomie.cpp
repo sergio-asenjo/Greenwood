@@ -1,6 +1,7 @@
 #include "SBNullstr.h"
 #include "RHArtificialBonhomie.h"
 #include "RHElementActor.h"
+#include "RHElementActor_calls.h"
 #include "RHElementActorCivilianCore.h"
 #include "RHArtificialIntelligenceCore.h"
 #include "RHAIStateCalls.h"

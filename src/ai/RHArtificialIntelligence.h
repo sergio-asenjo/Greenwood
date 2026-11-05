@@ -12,33 +12,14 @@ extern RHEngine *g_pEngine;
 struct RHUnkSectorGlobal;
 extern RHUnkSectorGlobal *g_unk0x6c0a9c;
 class SBGeoPoint2D;
-class RHUnkPathGeometry
-{
-public:
-    bool Unk004f9170(const SBGeoPoint2D &a, const SBGeoPoint2D &b, unsigned short layer, void *radius);
-    bool Unk004fbec0(SBFile &file, void *&value);
-    bool Unk004fc030(SBFile &file, void *&value);
-};
+#include "RHPathGeometryCalls.h"
 void RHSerializeName(SBFile &file, const char *name);
 bool FUN_00416b30(void *&value, SBFile &file);
 
-struct RHScriptNode;
-struct RHScriptIter
-{
-    RHScriptNode *node;
-    RHScriptIter(RHScriptNode *value) : node(value) {}
-};
+#include "RHScriptListCore.h"
 
 #include "RHSectorActorIterator.h"
 
-class RHUnk0046eb30
-{
-public:
-    RHScriptNode *Unk0059f720(RHScriptNode *next, RHScriptNode *previous);
-    RHScriptIter begin();
-    RHScriptIter FUN_0046eb80();
-    RHScriptIter erase(RHScriptIter position);
-};
 class RHSequenceElement;
 class RHSeqList
 {
@@ -209,55 +190,13 @@ struct RHArtificialIntelligencePosition
     unsigned short m_0c; // +0x0c
 };
 
-class SBGeoVector2D;
-class SBGeoPoint2D
-{
-public:
-    SBGeoPoint2D();
-    SBGeoPoint2D(const SBGeoPoint2D &other);
-    ~SBGeoPoint2D();
-    SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
-    SBGeoVector2D Unk005fc110(const SBGeoPoint2D &other) const;
-    SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
-    SBGeoPoint2D FUN_005fc200(const SBGeoPoint2D &other) const;
-    float FUN_005fc700(float scale) const;
-    float m_x;
-    float m_y;
-};
-
-class SBGeoVector2D : public SBGeoPoint2D
-{
-public:
-    SBGeoVector2D();
-    SBGeoVector2D(float x, float y);
-    SBGeoVector2D(const SBGeoPoint2D &point);
-    float FUN_005fc660(const SBGeoPoint2D &point) const;
-    ~SBGeoVector2D() {}
-    SBGeoVector2D &operator=(const SBGeoVector2D &other);
-    SBGeoVector2D(const SBGeoVector2D &other);
-};
-
-#define SBGEO_VECTOR2D_VIEW
+#include "SBGeoPoint2D.h"
+#include "SBGeoVector2D.h"
 #include "RHUnk005fc3b0.h"
 
 
 
-class SBGeoBoundingBox2D
-{
-public:
-    SBGeoBoundingBox2D();
-    SBGeoBoundingBox2D(const SBGeoBoundingBox2D &other);
-    SBGeoBoundingBox2D FUN_00417a20();
-    int FUN_00609050(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
-    SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &other) const;
-    SBGeoBoundingBox2D FUN_006092c0(const SBGeoBoundingBox2D &other) const;
-    bool Unk00608f30() const;
-    SBGeoBoundingBox2D &operator-=(const SBGeoVector2D &offset);
-    SBGeoBoundingBox2D &FUN_006091d0(float scale);
-    SBGeoPoint2D first;
-    SBGeoPoint2D last;
-    bool valid;
-};
+#include "SBGeoBoundingBox2DCore.h"
 
 #include "SBDrawManagerCore.h"
 
@@ -282,11 +221,7 @@ public:
     unsigned short m_id;
 };
 
-class RHPath
-{
-public:
-    bool SerializeStatus(SBFile &file);
-};
+#include "RHPathCore.h"
 
 #include "RHArtificialIntelligenceActorCalls.h"
 
@@ -352,14 +287,7 @@ struct RHArtificialIntelligenceInitialEntry
     unsigned short Flag13() { return m_flags >> 13; }
 };
 
-struct RHArtificialIntelligenceInitialData
-{
-    char m_00[0x24];
-    float m_x; // +0x24
-    float m_y; // +0x28
-    char m_2c[0xb4];
-    RHArtificialIntelligenceInitialEntry *m_entry; // +0xe0
-};
+#include "RHSpriteCore.h"
 
 class RHArtificialIntelligenceActor
 {
@@ -461,12 +389,13 @@ public:
     virtual void *V178() = 0;
 
     char m_04[0x4c];
-    RHArtificialIntelligenceInitialData *m_data; // +0x50
+    RHSprite *m_data; // +0x50
 };
 
 class RHScriptBatchCalls
 {
 public:
+    void Unk00486f50(void *target, bool flag);
     void Unk00464630();
     void Unk0046bcf0(int first, int second);
     void Unk00419fb0(int value);
@@ -486,6 +415,7 @@ public:
     RHStimulus() : m_type(0), m_24(0), m_28(0) {}
     ~RHStimulus() {}
     void Unk004188d0(int value);
+    void FUN_0041a930(int event, const RHMalignityPosition &position);
     char m_00[0x1c];
     unsigned m_type; // +0x1c
     unsigned m_20; // +0x20

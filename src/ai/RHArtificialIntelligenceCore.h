@@ -6,10 +6,12 @@ class SBGeoPoint2D;
 class RHUnk005fc3b0;
 class RHArtificialIntelligenceActor;
 class RHArtificialIntelligenceList;
+class RHSeekPoint;
 struct RHArtificialIntelligencePosition;
 struct RHUnk00571160Position;
 struct RHMalignityPosition;
 struct RHMalignityStimulus;
+class RHWaypoint;
 
 class RHArtificialIntelligence
 {
@@ -51,13 +53,18 @@ public:
     void Unk00410600();
     void FUN_004121a0();
     void FUN_00411a00(unsigned flags);
+    SBGeoPoint2D FUN_00412160(const RHWaypoint *source);
     bool Unk00412c80(void *waypoint, unsigned short flags);
     void FUN_00412e90(SBGeoPoint2D point, int mode);
     bool Unk00412f40(RHUnk005fc3b0 *direction, int mode);
     void FUN_00413240(SBGeoPoint2D point, int first, int second);
+    void FUN_004130b0(RHMalignityPosition position);
     void FUN_004132d0(int first, int mode, int second);
     bool Unk00412f70(unsigned short value, int mode);
     bool Unk00412240(const RHUnk00571160Position &position, unsigned short flags, float length);
+    bool FUN_00413cb0(RHUnk00571160Position &position);
+    RHSeekPoint *FUN_004137a0();
+    bool FUN_004139d0(RHMalignityPosition &position, float scale, unsigned short extra);
     bool Unk00419cc0();
     void FUN_00419e40(int &state, unsigned short &amount);
     void Unk0041a960(unsigned short direction);
@@ -68,6 +75,7 @@ public:
     unsigned char Unk00419c50();
     unsigned char Unk00419c80();
     void Unk0041ab10(unsigned short direction);
+    void SetPathWalkingFlags(unsigned short flags);
     SBGeoPoint2D FUN_0040cc20(void *actor);
     RHMalignityPosition FUN_004165e0(void *actor, bool mode);
     SBGeoPoint2D FUN_0040cbf0(const RHMalignityPosition &position);
@@ -77,6 +85,7 @@ public:
     float FUN_0041a010(void *actor);
     float FUN_0041a060(void *actor);
     float FUN_0041a0b0(void *actor);
+    int ValueBetween(unsigned short first, unsigned short second, unsigned char percent);
     void FUN_00412cf0(const RHMalignityPosition &position, unsigned short heading, int mode);
 
     RHArtificialIntelligenceActor *m_actor;
