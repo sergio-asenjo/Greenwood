@@ -44,17 +44,7 @@ public:
     undefined2 m_10c; // 0x10c
 };
 
-// SIZE 0x08
-class SBGeoPoint2D
-{
-public:
-    SBGeoPoint2D();
-    SBGeoPoint2D(float x, float y);
-    ~SBGeoPoint2D();
-    SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
-    float m_x; // 0x00
-    float m_y; // 0x04
-};
+#include "SBGeoPoint2D.h"
 
 // SIZE 0x08
 class SBGeoVector2D : public SBGeoPoint2D
@@ -106,19 +96,7 @@ public:
     unsigned long Unk005e4ed0(unsigned short width, unsigned short height, unsigned long flags, bool retain);
 };
 
-struct RHBonusProjection;
-class RHBonusInfoBase
-{
-public:
-    void FUN_0055f290();
-    void FUN_0055fa20(RHBonusProjection *projection);
-};
-
-class RHBonusInfo
-{
-public:
-    void FUN_005bd560(void *action, bool initialize);
-};
+#include "RHBonusInfo.h"
 
 #include "RHPositionInterfaceCore.h"
 

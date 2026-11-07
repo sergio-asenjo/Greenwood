@@ -5,23 +5,11 @@
 #include "RHElementBonusCore.h"
 
 #ifndef RHSPRITE_H
-#define SBGEO_POINT2D_VIEW
-class SBGeoVector2D;
-class SBGeoPoint2D
-{
-public:
-    SBGeoPoint2D();
-    SBGeoPoint2D(float x, float y);
-    SBGeoPoint2D(const SBGeoPoint2D &other);
-    ~SBGeoPoint2D();
-    SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
-    SBGeoVector2D Unk005fc110(const SBGeoPoint2D &other) const;
-    float FUN_005fc700(float scale) const;
-    float Unk005fc6d0(float scale) const;
-    float m_x;
-    float m_y;
-};
+#ifndef SBGEO_POINT2D_VIEW
+#include "SBGeoPoint2D.h"
+#endif
 
+#if !defined(SBGEO_VECTOR2D_VIEW) && !defined(SBGEOVECTOR2D_H)
 #define SBGEO_VECTOR2D_VIEW
 class SBGeoVector2D : public SBGeoPoint2D
 {
@@ -33,8 +21,10 @@ public:
     SBGeoVector2D(const SBGeoVector2D &other);
     SBGeoVector2D &operator=(const SBGeoVector2D &other);
 };
-#define SBGEO_POINT2D_VIEW
+#endif
+#ifndef SBGEO_BOUNDINGBOX2D_VIEW
 #include "SBGeoBoundingBox2DCore.h"
+#endif
 #endif
 
 #define RHBONUSINFO_VECTOR_DEFINED
