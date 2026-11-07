@@ -34,6 +34,10 @@ DECOMP_SIZE_ASSERT(ToolboxMouseState, 0x0a)
 
 // GLOBAL: GAME 0x006c1178
 ToolboxChunks g_unk0x006c1178;
+
+// SYNTHETIC: GAME 0x005e1c10
+// $E22
+
 // GLOBAL: GAME 0x006a6d27
 unsigned char g_unk0x006a6d27 = 1;
 // GLOBAL: GAME 0x006b8fb2

@@ -33,6 +33,7 @@ typedef ToolboxDequeIterator<ToolboxChunk> ToolboxChunkIterator;
 class ToolboxChunks : public std::deque<ToolboxChunk>
 {
 public:
+    explicit ToolboxChunks(const std::allocator<ToolboxChunk> &allocation = std::allocator<ToolboxChunk>());
     void FUN_005e3070();
     void Buyback()
     {
