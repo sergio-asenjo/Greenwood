@@ -2,6 +2,7 @@
 #include "RHSaveGame.h"
 #include <string.h>
 #include "RHGameSaveCalls.h"
+#include "RHSaveGameManager.h"
 
 void RHSerializeName(SBFile &, const char *);
 bool FUN_005e0c90(SBFile &, std::string &);
@@ -47,21 +48,62 @@ const std::wstring &RHSaveGame::FUN_0056e780() const
     return m_28;
 }
 
-extern std::string g_unk0x006c0ea0;
-extern std::string g_unk0x006c0ed8;
-extern std::string g_unk0x006c0ee8;
+// STRING: GAME 0x006b2338
+#define RHSAVEGAME_CONTINUE_NAME "Continue"
+// STRING: GAME 0x006b2344
+#define RHSAVEGAME_EXQUICKSAVE_NAME "ExQuickSave"
+// STRING: GAME 0x006b2350
+#define RHSAVEGAME_QUICKSAVE_NAME "QuickSave"
+// STRING: GAME 0x006b235c
+#define RHSAVEGAME_RESTARTSAVE_NAME "Restart"
 
-// GLOBAL: GAME 0x006c0eb8
-std::string g_unk0x006c0eb8 = "QuickSave";
+// GLOBAL: GAME 0x006c0ea0
+std::string RHSaveGameManager::sSaveGameFileContinue = RHSAVEGAME_CONTINUE_NAME;
 // GLOBAL: GAME 0x006c0ec8
-std::string g_unk0x006c0ec8 = "ExQuickSave";
+std::string RHSaveGameManager::sSaveGameFileExQuick = RHSAVEGAME_EXQUICKSAVE_NAME;
+// GLOBAL: GAME 0x006c0eb8
+std::string RHSaveGameManager::sSaveGameFileQuick = RHSAVEGAME_QUICKSAVE_NAME;
+// GLOBAL: GAME 0x006c0ed8
+std::string RHSaveGameManager::sSaveGameFileRestart = RHSAVEGAME_RESTARTSAVE_NAME;
+// GLOBAL: GAME 0x006c0ee8
+std::string RHSaveGameManager::sSaveGameFileSherwood = "Sherwood";
+
+// SYNTHETIC: GAME 0x0056ef30
+// $E20
+
+// SYNTHETIC: GAME 0x0056f020
+// $E21
+
+// SYNTHETIC: GAME 0x0056f090
+// $E26
+
+// SYNTHETIC: GAME 0x0056f180
+// $E27
+
+// SYNTHETIC: GAME 0x0056f1f0
+// $E31
+
+// SYNTHETIC: GAME 0x0056f2e0
+// $E32
+
+// SYNTHETIC: GAME 0x0056f350
+// $E36
+
+// SYNTHETIC: GAME 0x0056f440
+// $E37
+
+// SYNTHETIC: GAME 0x0056f4b0
+// $E41
+
+// SYNTHETIC: GAME 0x0056f5a0
+// $E42
 
 // FUNCTION: GAME 0x0056e8b0
 int RHSaveGame::FUN_0056e8b0() const
 {
-    if (m_08.compare(g_unk0x006c0ea0) == 0 || m_08.compare(g_unk0x006c0ec8) == 0 ||
-        m_08.compare(g_unk0x006c0eb8) == 0 || m_08.compare(g_unk0x006c0ed8) == 0 ||
-        m_08.compare(g_unk0x006c0ee8) == 0)
+    if (m_08.compare(RHSaveGameManager::sSaveGameFileContinue) == 0 || m_08.compare(RHSaveGameManager::sSaveGameFileExQuick) == 0 ||
+        m_08.compare(RHSaveGameManager::sSaveGameFileQuick) == 0 || m_08.compare(RHSaveGameManager::sSaveGameFileRestart) == 0 ||
+        m_08.compare(RHSaveGameManager::sSaveGameFileSherwood) == 0)
         return 1;
     return 0;
 }

@@ -548,7 +548,7 @@ void RHGame::FUN_0050f1a0(RHSaveGame *saveGame)
     {
         RHGameContinueCalls *manager = (RHGameContinueCalls *)
             ((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0();
-        RHSaveGame *continued = manager->FUN_0056f730(FUN_005e23d0(246), g_unk0x006c0ea0);
+        RHSaveGame *continued = manager->FUN_0056f730(FUN_005e23d0(246), RHSaveGameManager::sSaveGameFileContinue);
         if (continued != saveGame)
         {
             manager->FUN_0056f700(saveGame, continued, FUN_005e23d0(246));
@@ -557,8 +557,6 @@ void RHGame::FUN_0050f1a0(RHSaveGame *saveGame)
     }
 }
 
-extern std::string g_unk0x006c0ed8;
-extern std::string g_unk0x006c0ee8;
 #include "RHUnk0056fb70.h"
 
 // FUNCTION: GAME 0x0050f2d0
@@ -572,11 +570,11 @@ bool RHGame::FUN_0050f2d0(bool loading)
         RHSaveGame *saveGame;
         if (loading)
         {
-            saveGame = profile->FUN_0056f730(FUN_005e23d0(247), g_unk0x006c0ed8);
+            saveGame = profile->FUN_0056f730(FUN_005e23d0(247), RHSaveGameManager::sSaveGameFileRestart);
             ((RHGameActionCalls *)m_18)->FUN_004da2f0();
         }
         else
-            saveGame = (RHSaveGame *)((RHUnk0056fb70 *)profile)->FUN_0056fb70(&g_unk0x006c0ed8);
+            saveGame = (RHSaveGame *)((RHUnk0056fb70 *)profile)->FUN_0056fb70(&RHSaveGameManager::sSaveGameFileRestart);
         return Serialize(**(unsigned long **)mission, saveGame, loading);
     }
     return true;
@@ -592,7 +590,7 @@ bool RHGame::SerializeForSherwood()
         RHGameMission *mission = ((RHGameCampaignView *)g_unk0x6c07fc)->m_178;
         RHSaveGame *saveGame = profile->FUN_0056f730(
             // STRING: GAME 0x006b0430
-            L"Sherwood", g_unk0x006c0ee8);
+            L"Sherwood", RHSaveGameManager::sSaveGameFileSherwood);
         ((RHGameActionCalls *)m_18)->FUN_004da2f0();
         return Serialize(**(unsigned long **)mission, saveGame, true);
     }
@@ -1112,8 +1110,6 @@ void RHGame::FUN_00512be0(void *event)
     }
 }
 
-extern std::string g_unk0x006c0eb8;
-extern std::string g_unk0x006c0ec8;
 
 // FUNCTION: GAME 0x00512cb0
 void RHGame::FUN_00512cb0(void *)
@@ -1125,14 +1121,14 @@ void RHGame::FUN_00512cb0(void *)
         *(char *)((char *)this + 0x64) = 1;
         return;
     }
-    RHSaveGame *saveGame = (RHSaveGame *)((RHUnk0056fb70 *)profile)->FUN_0056fb70(&g_unk0x006c0eb8);
+    RHSaveGame *saveGame = (RHSaveGame *)((RHUnk0056fb70 *)profile)->FUN_0056fb70(&RHSaveGameManager::sSaveGameFileQuick);
     if (!saveGame)
-        saveGame = profile->FUN_0056f730(FUN_005e23d0(248), g_unk0x006c0eb8);
+        saveGame = profile->FUN_0056f730(FUN_005e23d0(248), RHSaveGameManager::sSaveGameFileQuick);
     else
     {
-        RHSaveGame *backup = (RHSaveGame *)((RHUnk0056fb70 *)profile)->FUN_0056fb70(&g_unk0x006c0ec8);
+        RHSaveGame *backup = (RHSaveGame *)((RHUnk0056fb70 *)profile)->FUN_0056fb70(&RHSaveGameManager::sSaveGameFileExQuick);
         if (!backup)
-            backup = profile->FUN_0056f730(FUN_005e23d0(249), g_unk0x006c0ec8);
+            backup = profile->FUN_0056f730(FUN_005e23d0(249), RHSaveGameManager::sSaveGameFileExQuick);
         profile->FUN_0056f700(saveGame, backup, FUN_005e23d0(249));
     }
     ((RHGameActionCalls *)m_18)->FUN_004da2f0();
@@ -1169,9 +1165,9 @@ void RHGame::FUN_00512eb0(void *)
         return;
     }
     if (*((char *)RHUnk00546050() + 0x14))
-        name = g_unk0x006c0ec8;
+        name = RHSaveGameManager::sSaveGameFileExQuick;
     else
-        name = g_unk0x006c0eb8;
+        name = RHSaveGameManager::sSaveGameFileQuick;
     RHSaveGame *saveGame = (RHSaveGame *)((RHUnk0056fb70 *)profile)->FUN_0056fb70(&name);
     if (saveGame)
     {
@@ -3653,7 +3649,7 @@ public:
 };
 
 extern RHUnk005ef320 *g_unk0x6c11d0;
-extern float g_unk0x006c0bb0[2];
+#include "RHGeoStaticStorage.h"
 extern wchar_t g_unk0x006c0b50[1];
 
 class RHMobileUnk006091b0
@@ -3909,29 +3905,22 @@ std::string RHGameSaveCalls::FUN_0056e6b0()
            *(std::string *)((char *)this + 0x18);
 }
 
-// GLOBAL: GAME 0x006c0ea0
-std::string g_unk0x006c0ea0;
-// GLOBAL: GAME 0x006c0ed8
-std::string g_unk0x006c0ed8;
-// GLOBAL: GAME 0x006c0ee8
-std::string g_unk0x006c0ee8;
-
 // FUNCTION: GAME 0x0056e790
 char RHGameSaveCalls::FUN_0056e790()
 {
-    return ((std::string *)((char *)this + 0x08))->compare(g_unk0x006c0ea0) == 0;
+    return ((std::string *)((char *)this + 0x08))->compare(RHSaveGameManager::sSaveGameFileContinue) == 0;
 }
 
 // FUNCTION: GAME 0x0056e7f0
 bool RHGameSaveCalls::FUN_0056e7f0()
 {
-    return ((std::string *)((char *)this + 0x08))->compare(g_unk0x006c0ed8) == 0;
+    return ((std::string *)((char *)this + 0x08))->compare(RHSaveGameManager::sSaveGameFileRestart) == 0;
 }
 
 // FUNCTION: GAME 0x0056e850
 bool RHGameSaveCalls::FUN_0056e850()
 {
-    return ((std::string *)((char *)this + 0x08))->compare(g_unk0x006c0ee8) == 0;
+    return ((std::string *)((char *)this + 0x08))->compare(RHSaveGameManager::sSaveGameFileSherwood) == 0;
 }
 
 // FUNCTION: GAME 0x006134a0

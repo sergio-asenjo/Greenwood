@@ -9,8 +9,6 @@
 #include "RHSaveGameManager.h"
 #include "SBUIRenderer.h"
 
-extern std::string g_unk0x006c0ed8;
-
 // GLOBAL: GAME 0x006c0be8
 RHMenuLoadSaveResult RHMenuDebriefing::gameOperation;
 
@@ -318,7 +316,7 @@ bool RHMenuDebriefing::OnOK(int, void *, void *)
 bool RHMenuDebriefing::OnRestart(int, void *, void *)
 {
     RHUnk0056fb70 *profile = (RHUnk0056fb70 *)((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0();
-    gameOperation.m_slot = (int)profile->FUN_0056fb70(&g_unk0x006c0ed8);
+    gameOperation.m_slot = (int)profile->FUN_0056fb70(&RHSaveGameManager::sSaveGameFileRestart);
     if (gameOperation.m_slot)
     {
         gameOperation.m_choice = 7;

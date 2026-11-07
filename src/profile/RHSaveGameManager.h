@@ -60,6 +60,12 @@ public:
     void RemoveSaveGame(unsigned long index);
     void RemoveSaveGameFile(const RHSaveGame *saveGame);
     void SortSaveGames();
+
+    static std::string sSaveGameFileContinue;
+    static std::string sSaveGameFileExQuick;
+    static std::string sSaveGameFileQuick;
+    static std::string sSaveGameFileRestart;
+    static std::string sSaveGameFileSherwood;
 };
 
 void RHSerializeName(SBFile &file, const char *name);
