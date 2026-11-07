@@ -218,17 +218,22 @@ struct SBFontPair0061f3e0
 };
 
 // SIZE 0x10
+struct SBFontTreeArgument
+{
+    undefined m_value;
+    SBFontTreeArgument() {}
+};
+
 class SBFontTree0061f3e0
 {
 public:
-    SBFontTree0061f3e0() {}
-    SBFontTree0061f3e0(const undefined &, const undefined &);
+    SBFontTree0061f3e0(const SBFontTreeArgument & = SBFontTreeArgument(), const SBFontTreeArgument & = SBFontTreeArgument());
+    ~SBFontTree0061f3e0();
     undefined m_00[4]; // 0x00
     SBFontNode0061f3e0 *m_04; // 0x04
     bool m_08; // 0x08
     undefined m_09[3]; // 0x09
     unsigned m_0c; // 0x0c
-    void FUN_0061e740();
     SBFontIterator0061f3e0 FUN_0061efe0(SBFontIterator0061f3e0, SBFontIterator0061f3e0);
     SBFontIterator0061f3e0 FUN_0061f550(SBFontIterator0061f3e0);
     void FUN_0061fb40(SBFontNode0061f3e0 *);

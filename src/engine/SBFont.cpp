@@ -120,8 +120,16 @@ unsigned g_unk0x006c1920 = 0;
 SBFontNode0061f3e0 *g_unk0x006c1914 = 0;
 // GLOBAL: GAME 0x006c1918
 unsigned g_unk0x006c1918 = 0;
+class SBFontStaticStorage
+{
+public:
+    static SBFontTree0061f3e0 mMissingCharsMap;
+};
+
 // GLOBAL: GAME 0x006c1900
-SBFontTree0061f3e0 g_unk0x006c1900;
+SBFontTree0061f3e0 SBFontStaticStorage::mMissingCharsMap;
+
+#define g_unk0x006c1900 SBFontStaticStorage::mMissingCharsMap
 
 // STRING: GAME 0x006bb87c
 static const char g_sbFontFile[] = "P:\\Robin Hood\\SBLibNG\\SBFont.cpp";
@@ -158,15 +166,14 @@ static inline void SBFontDestroyValue(SBFontValue0061f120 &value)
     value.m_00.~basic_string();
 }
 
-// FUNCTION: GAME 0x0061e6f0
-void FUN_0061e6f0()
-{
-    undefined comparison, allocation;
-    g_unk0x006c1900.SBFontTree0061f3e0::SBFontTree0061f3e0(comparison, allocation);
-}
+// SYNTHETIC: GAME 0x0061e6f0
+// $E16
+
+// SYNTHETIC: GAME 0x0061e720
+// $E17
 
 // FUNCTION: GAME 0x0061e740
-void SBFontTree0061f3e0::FUN_0061e740()
+SBFontTree0061f3e0::~SBFontTree0061f3e0()
 {
     FUN_0061efe0(begin(), SBFontIterator0061f3e0Make(m_04));
     operator delete(m_04);
@@ -364,10 +371,10 @@ bool SBFontUnk0061e840::FUN_0061ed70(SBFile &file)
 }
 
 // FUNCTION: GAME 0x0061edd0
-SBFontTree0061f3e0::SBFontTree0061f3e0(const undefined &comparison, const undefined &allocation)
+SBFontTree0061f3e0::SBFontTree0061f3e0(const SBFontTreeArgument &comparison, const SBFontTreeArgument &allocation)
 {
-    m_00[0] = allocation;
-    m_00[1] = comparison;
+    m_00[0] = allocation.m_value;
+    m_00[1] = comparison.m_value;
     m_08 = false;
     SBFontLock lock;
     if (g_unk0x006c1914 == 0) {
@@ -1048,7 +1055,7 @@ void SBFontIterator0061f3e0::FUN_00620ef0()
 void EmitSBFontIncrement(SBFontIterator0061f3e0 &iterator)
 {
     iterator.FUN_00620ef0();
-    g_unk0x006c1900.FUN_0061e740();
+    g_unk0x006c1900.~SBFontTree0061f3e0();
 }
 
 static inline SBFontNode0061fcb0 *SBFontMin0061fcb0(SBFontNode0061fcb0 *node)
@@ -1077,8 +1084,7 @@ void SBFontIterator0061fe10::FUN_00620fa0()
 
 void SBFontEmit(SBFontUnk0061e840 *font, unsigned short value)
 {
-    undefined comparison = 0;
-    SBFontTree0061f3e0 fonts(comparison, comparison);
+    SBFontTree0061f3e0 fonts;
     font->FUN_0061e810(value, 0);
     font->FUN_0061e840();
     font->FUN_0061e850(value);

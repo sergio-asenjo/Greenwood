@@ -450,8 +450,16 @@ RHObjectMasterNode *g_unk0x006c09c0 = 0;
 // GLOBAL: GAME 0x006c09c4
 unsigned g_unk0x006c09c4 = 0;
 
+class RHObjectMasterStorage
+{
+public:
+    static RHObjectMasterTree mmasterMap;
+};
+
 // GLOBAL: GAME 0x006c09b0
-unsigned char g_unk0x006c09b0[16] = {0};
+RHObjectMasterTree RHObjectMasterStorage::mmasterMap;
+
+#define g_unk0x006c09b0 ((unsigned char *)&RHObjectMasterStorage::mmasterMap)
 
 struct RHObjectMasterMap
 {
@@ -472,15 +480,14 @@ struct RHObjectMasterMap
     }
 };
 
-// FUNCTION: GAME 0x004b2e50
-void FUN_004b2e50()
-{
-    char comparison, allocation;
-    ((RHObjectMasterTree *)g_unk0x006c09b0)->RHObjectMasterTree::RHObjectMasterTree(comparison, allocation);
-}
+// SYNTHETIC: GAME 0x004b2e50
+// $E15
+
+// SYNTHETIC: GAME 0x004b2e80
+// $E16
 
 // FUNCTION: GAME 0x004b2ea0
-void RHObjectMasterTree::FUN_004b2ea0()
+RHObjectMasterTree::~RHObjectMasterTree()
 {
     RHObjectMasterIterator first;
     first.node = head->left;
@@ -584,10 +591,10 @@ void EmitRHObjectMasterLoad(RHElementObjectMaster *master, const std::string &fi
 }
 
 // FUNCTION: GAME 0x004b31d0
-RHObjectMasterTree::RHObjectMasterTree(const char &comparison, const char &allocation)
+RHObjectMasterTree::RHObjectMasterTree(const RHObjectMasterArgument &comparison, const RHObjectMasterArgument &allocation)
 {
-    allocator = allocation;
-    compare = comparison;
+    allocator = allocation.m_value;
+    compare = comparison.m_value;
     multi = false;
     RHUnk00641782 lock;
     if (g_unk0x006c09c0 == 0) {
@@ -943,10 +950,8 @@ static inline RHObjectMasterNode *RHObjectMasterMax(RHObjectMasterNode *node)
 
 void EmitRHObjectMasterTree(RHObjectMasterTree *tree, RHObjectMasterIterator *iterator, const int &key)
 {
-    char compare = 0;
-    char allocator = 0;
-    RHObjectMasterTree created(compare, allocator);
-    tree->FUN_004b2ea0();
+    RHObjectMasterTree created;
+    tree->~RHObjectMasterTree();
     tree->FUN_004b32a0(*iterator, RHObjectMasterIterator(tree->head));
     RHObjectMasterValue value;
     value.key = key;

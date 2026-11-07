@@ -102,13 +102,19 @@ struct SBFileTreeInc005f7840
     }
 };
 
+struct SBFileTreeArgument
+{
+    char m_value;
+    SBFileTreeArgument() {}
+};
+
 class SBFileTree005f64a0
 {
 public:
     typedef SBFileTreeCtorNode54 Node;
     typedef SBFileTreeInc005f74f0 Iterator;
-    SBFileTree005f64a0(const char &, const char &);
-    void FUN_005f4db0();
+    SBFileTree005f64a0(const SBFileTreeArgument & = SBFileTreeArgument(), const SBFileTreeArgument & = SBFileTreeArgument());
+    ~SBFileTree005f64a0();
     Iterator FUN_005f6bb0(Iterator, Iterator);
     void FUN_005f7410(Node *);
     static Node *&Left(Node *node) { return node->left; }
@@ -140,8 +146,8 @@ class SBFileTree005f6570
 public:
     typedef SBFileTreeCtorNode2c Node;
     typedef SBFileTreeInc005f7840 Iterator;
-    SBFileTree005f6570(const char &, const char &);
-    void FUN_005f4e80();
+    SBFileTree005f6570(const SBFileTreeArgument & = SBFileTreeArgument(), const SBFileTreeArgument & = SBFileTreeArgument());
+    ~SBFileTree005f6570();
     Iterator FUN_005f7220(Iterator, Iterator);
     void FUN_005f75a0(Node *);
     static Node *&Left(Node *node) { return node->left; }
@@ -173,18 +179,29 @@ extern unsigned g_unk0x006c1384;
 extern SBFileTreeCtorNode2c *g_unk0x006c1388;
 extern unsigned g_unk0x006c138c;
 
-extern SBFileTree g_unk0x006c1348;
-extern SBFileTree g_unk0x006c1358;
-
-// FUNCTION: GAME 0x005f4d60
-void FUN_005f4d60()
+class SBFileStaticStorage
 {
-    char comparison, allocation;
-    ((SBFileTree005f64a0 *)&g_unk0x006c1348)->SBFileTree005f64a0::SBFileTree005f64a0(comparison, allocation);
-}
+public:
+    static SBFileTree005f64a0 mapVirtualFile;
+    static SBFileTree005f6570 mapArchive;
+    static std::vector<std::string> mvectorAlternatePath;
+};
+
+#define g_unk0x006c1348 (*(SBFileTree *)&SBFileStaticStorage::mapVirtualFile)
+#define g_unk0x006c1358 (*(SBFileTree *)&SBFileStaticStorage::mapArchive)
+#define g_unk0x006c1368 SBFileStaticStorage::mvectorAlternatePath
+
+// GLOBAL: GAME 0x006c1348
+SBFileTree005f64a0 SBFileStaticStorage::mapVirtualFile;
+
+// SYNTHETIC: GAME 0x005f4d60
+// $E26
+
+// SYNTHETIC: GAME 0x005f4d90
+// $E27
 
 // FUNCTION: GAME 0x005f4db0
-void SBFileTree005f64a0::FUN_005f4db0()
+SBFileTree005f64a0::~SBFileTree005f64a0()
 {
     Iterator first;
     first.m_node = Leftmost();
@@ -203,15 +220,17 @@ void SBFileTree005f64a0::FUN_005f4db0()
     }
 }
 
-// FUNCTION: GAME 0x005f4e30
-void FUN_005f4e30()
-{
-    char comparison, allocation;
-    ((SBFileTree005f6570 *)&g_unk0x006c1358)->SBFileTree005f6570::SBFileTree005f6570(comparison, allocation);
-}
+// GLOBAL: GAME 0x006c1358
+SBFileTree005f6570 SBFileStaticStorage::mapArchive;
+
+// SYNTHETIC: GAME 0x005f4e30
+// $E32
+
+// SYNTHETIC: GAME 0x005f4e60
+// $E33
 
 // FUNCTION: GAME 0x005f4e80
-void SBFileTree005f6570::FUN_005f4e80()
+SBFileTree005f6570::~SBFileTree005f6570()
 {
     Iterator first;
     first.m_node = Leftmost();
@@ -376,12 +395,6 @@ void **g_unk0x006c135c = 0;
 // GLOBAL: GAME 0x006c1364
 unsigned int g_unk0x006c1364 = 0;
 
-// GLOBAL: GAME 0x006c1348
-SBFileTree g_unk0x006c1348 = {0};
-
-// GLOBAL: GAME 0x006c1358
-SBFileTree g_unk0x006c1358 = {0};
-
 // STRING: GAME 0x006b9d70
 static const char *const g_sbFileName = "P:\\Robin Hood\\SBLibNG\\SBFile.cpp";
 
@@ -441,10 +454,13 @@ int FUN_005f5500(const void *key)
 }
 
 // GLOBAL: GAME 0x006c1368
-std::vector<std::string> g_unk0x006c1368;
+std::vector<std::string> SBFileStaticStorage::mvectorAlternatePath;
 
 // SYNTHETIC: GAME 0x005f4f00
-// $E15
+// $E38
+
+// SYNTHETIC: GAME 0x005f4f30
+// $E39
 
 // FUNCTION: GAME 0x005f56b0
 int FUN_005f56b0(const std::string &name)
@@ -678,10 +694,10 @@ SBFileTreeCtorNode2c *g_unk0x006c1388 = 0;
 unsigned g_unk0x006c138c = 0;
 
 // FUNCTION: GAME 0x005f64a0
-SBFileTree005f64a0::SBFileTree005f64a0(const char &comparison, const char &allocation)
+SBFileTree005f64a0::SBFileTree005f64a0(const SBFileTreeArgument &comparison, const SBFileTreeArgument &allocation)
 {
-    allocator = allocation;
-    compare = comparison;
+    allocator = allocation.m_value;
+    compare = comparison.m_value;
     multi = false;
     std::_Lockit lock;
     if (g_unk0x006c1380 == 0) {
@@ -704,10 +720,10 @@ SBFileTree005f64a0::SBFileTree005f64a0(const char &comparison, const char &alloc
 }
 
 // FUNCTION: GAME 0x005f6570
-SBFileTree005f6570::SBFileTree005f6570(const char &comparison, const char &allocation)
+SBFileTree005f6570::SBFileTree005f6570(const SBFileTreeArgument &comparison, const SBFileTreeArgument &allocation)
 {
-    allocator = allocation;
-    compare = comparison;
+    allocator = allocation.m_value;
+    compare = comparison.m_value;
     multi = false;
     std::_Lockit lock;
     if (g_unk0x006c1388 == 0) {
@@ -731,11 +747,8 @@ SBFileTree005f6570::SBFileTree005f6570(const char &comparison, const char &alloc
 
 void EmitSBFileTreeCtors()
 {
-    char value = 0;
-    SBFileTree005f64a0 archives(value, value);
-    archives.FUN_005f4db0();
-    SBFileTree005f6570 entries(value, value);
-    entries.FUN_005f4e80();
+    SBFileTree005f64a0 archives;
+    SBFileTree005f6570 entries;
 }
 
 static inline SBFileTreeCtorNode54 *SBFileTreeMin54(SBFileTreeCtorNode54 *node)

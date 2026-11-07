@@ -211,11 +211,17 @@ struct RHObjectMasterInsertResult
     bool inserted;
 };
 
+struct RHObjectMasterArgument
+{
+    char m_value;
+    RHObjectMasterArgument() {}
+};
+
 class RHObjectMasterTree
 {
 public:
-    RHObjectMasterTree(const char &compare, const char &allocator);
-    void FUN_004b2ea0();
+    RHObjectMasterTree(const RHObjectMasterArgument &compare = RHObjectMasterArgument(), const RHObjectMasterArgument &allocator = RHObjectMasterArgument());
+    ~RHObjectMasterTree();
     RHObjectMasterIterator FUN_004b32a0(RHObjectMasterIterator first, RHObjectMasterIterator last);
     RHObjectMasterInsertResult FUN_004b33d0(const RHObjectMasterValue &value);
     RHObjectMasterIterator FUN_004b3500(RHObjectMasterIterator entry);
