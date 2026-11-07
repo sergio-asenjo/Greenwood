@@ -1,6 +1,10 @@
 #include "SBNullstr.h"
 extern "C" __declspec(dllimport) __declspec(noreturn) void __stdcall ExitThread(unsigned long);
 #include "RHPathFinder.h"
+#include "RHFastFindRangeArray.h"
+#include "RHMobileVectorArray.h"
+#include "RHUnk0055b380.h"
+#include "RHSpriteListStorage.h"
 #include "SBEvent.h"
 #include "RHEngineWidenedCalls.h"
 #include "RHActorDirectionCalls.h"
@@ -102,26 +106,33 @@ DECOMP_SIZE_ASSERT(RHPathPointList, 0x28)
 
 // GLOBAL: GAME 0x006c0d40
 char g_pathStatus;
-// GLOBAL: GAME 0x006c0d7c
-RHPathSectorConversion *g_pathSectorFirst;
-// GLOBAL: GAME 0x006c0d80
-RHPathSectorConversion *g_pathSectorLast;
 // GLOBAL: GAME 0x006c0d98
 RHPathObstacleGrid *g_pathObstacleGrid;
 // GLOBAL: GAME 0x006c0da4
 char g_pathThreadDone;
 // GLOBAL: GAME 0x006c0da8
 RHpathRequest *g_currentPathRequest;
-// GLOBAL: GAME 0x006c0cb4
-RHPathGraphArray **g_pathGraphFirst;
-// GLOBAL: GAME 0x006c0cb8
-RHPathGraphArray **g_pathGraphLast;
-// GLOBAL: GAME 0x006c0dcc
-RHPathStateArray *g_pathStates;
 // GLOBAL: GAME 0x006c0c78
-RHPathPointList g_unk0x006c0c78;
+SBGeoPolyLine2DList RHPathFinder::mPath;
+// GLOBAL: GAME 0x006c0cb0
+RHFastFindRangeArray RHPathFinder::mListPathGraphLayers;
+// GLOBAL: GAME 0x006c0d20
+RHFastFindRangeArray RHPathFinder::mListAlternativePathGraphLayers;
+// GLOBAL: GAME 0x006c0cf8
+RHUnk00564020 RHPathFinder::mListOpenNodes;
+// GLOBAL: GAME 0x006c0cd0
+RHMobileVectorArray RHPathFinder::mListHalfDiagonals;
+// GLOBAL: GAME 0x006c0db8
+SBGeoVector2D RHPathFinder::mCurrentHalfDiagonal;
+// GLOBAL: GAME 0x006c0dc8
+RHUnk0055b380 RHPathFinder::marrayStates;
+// GLOBAL: GAME 0x006c0d78
+RHFastFindRangeArray RHPathFinder::mListSectorConversion;
+#define g_unk0x006c0c78 RHPathFinder::mPath
+#define g_pathOpenNodes (*(RHUnk004b1520List *)&RHPathFinder::mListOpenNodes)
+#define g_unk0x006c0db8 (*(RHUnk005fc3b0 *)&RHPathFinder::mCurrentHalfDiagonal)
 struct RHSpriteGraphEntry;
-extern RHSpriteGraphEntry *g_unk0x006c0cd4;
+#define g_unk0x006c0cd4 (*(RHSpriteGraphEntry **)((char *)&RHPathFinder::mListHalfDiagonals + 4))
 // GLOBAL: GAME 0x006c0d56
 undefined2 g_unk0x006c0d56;
 // GLOBAL: GAME 0x006c0d70
@@ -138,20 +149,44 @@ class RHUnkSectorGlobal;
 extern RHUnkSectorGlobal *g_unk0x6c0a9c;
 // GLOBAL: GAME 0x006c0db0
 RHPathSearchNode *g_unk0x006c0db0;
-// GLOBAL: GAME 0x006c0db8
-RHUnk005fc3b0 g_unk0x006c0db8;
 // GLOBAL: GAME 0x006c0dc0
 undefined2 g_unk0x006c0dc0;
-// GLOBAL: GAME 0x006c0cf8
-RHUnk004b1520List g_pathOpenNodes;
 
 // GLOBAL: GAME 0x006c0ca0
 float g_pathShortestDistance;
 
 // STRING: GAME 0x006b15d0
-const char g_pathWakeName[] = "Wake up";
+#define RH_PATH_WAKE_NAME "Wake up"
 // GLOBAL: GAME 0x006c0d48
-SBEvent g_pathWakeEvent(g_pathWakeName);
+SBEvent g_pathWakeEvent(RH_PATH_WAKE_NAME);
+
+// SYNTHETIC: GAME 0x00551ef0
+// $E23
+
+// SYNTHETIC: GAME 0x00551f40
+// $E29
+
+// SYNTHETIC: GAME 0x00551f90
+// $E35
+
+// SYNTHETIC: GAME 0x00551fe0
+// $E40
+
+// SYNTHETIC: GAME 0x00552030
+// $E45
+
+// SYNTHETIC: GAME 0x00552080
+// $E50
+
+// SYNTHETIC: GAME 0x005520d0
+// $E55
+
+// SYNTHETIC: GAME 0x00552120
+// $E60
+
+// SYNTHETIC: GAME 0x00552150
+// $E64
+
 // GLOBAL: GAME 0x006c0d58
 CRITICAL_SECTION g_pathCriticalSection;
 

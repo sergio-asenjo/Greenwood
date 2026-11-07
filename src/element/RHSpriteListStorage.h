@@ -2,7 +2,9 @@
 #define RHSPRITELISTSTORAGE_H
 
 #include <memory>
+#ifndef RHPATHFINDER_H
 #include "RHScriptListCore.h"
+#endif
 
 struct RHSpriteListNode
 {

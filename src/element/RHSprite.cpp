@@ -78,10 +78,9 @@ struct RHSpriteFrameSpan
     unsigned short *m_8;
 };
 
-// GLOBAL: GAME 0x006c0cd4
-RHSpriteGraphEntry *g_unk0x006c0cd4 = 0;
-// GLOBAL: GAME 0x006c0cd8
-RHSpriteGraphEntry *g_unk0x006c0cd8 = 0;
+#include "RHPathFinderCore.h"
+#define g_unk0x006c0cd4 (*(RHSpriteGraphEntry **)((char *)&RHPathFinder::mListHalfDiagonals + 4))
+#define g_unk0x006c0cd8 (*(RHSpriteGraphEntry **)((char *)&RHPathFinder::mListHalfDiagonals + 8))
 
 // STRING: GAME 0x006b8748
 #define g_spriteFile "P:\\Robin Hood\\RHsprite.cpp"

@@ -135,6 +135,7 @@ public:
     float FUN_005fc660(const SBGeoPoint2D &point) const;
     SBGeoVector2D &operator=(const SBGeoVector2D &other);
     SBGeoVector2D(const SBGeoVector2D &other);
+    SBGeoVector2D(const SBGeoPoint2D &other);
 };
 
 #define SBGEO_VECTOR2D_VIEW
@@ -288,11 +289,11 @@ extern char g_pathStatus;
 extern char g_pathThreadDone;
 extern RHpathRequest *g_currentPathRequest;
 extern RHPathObstacleGrid *g_pathObstacleGrid;
-extern RHPathSectorConversion *g_pathSectorFirst;
-extern RHPathSectorConversion *g_pathSectorLast;
-extern RHPathGraphArray **g_pathGraphFirst;
-extern RHPathGraphArray **g_pathGraphLast;
-extern RHPathStateArray *g_pathStates;
+#define g_pathSectorFirst ((RHPathSectorConversion *)*((void ***)&RHPathFinder::mListSectorConversion + 1))
+#define g_pathSectorLast ((RHPathSectorConversion *)*((void ***)&RHPathFinder::mListSectorConversion + 2))
+#define g_pathGraphFirst ((RHPathGraphArray **)*((void ***)&RHPathFinder::mListPathGraphLayers + 1))
+#define g_pathGraphLast ((RHPathGraphArray **)*((void ***)&RHPathFinder::mListPathGraphLayers + 2))
+#define g_pathStates ((RHPathStateArray *)RHPathFinder::marrayStates.m_4)
 extern RHEngine *g_pEngine;
 extern RHUnk6c1040 *g_unk0x6c1040;
 void RHSerializeName(SBFile &file, const char *name);

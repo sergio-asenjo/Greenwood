@@ -45,10 +45,23 @@ public:
     static bool PriorityOutOfOrder(RHPathRequestNode *const &left, RHPathRequestNode *const &right);
 };
 
+class RHFastFindRangeArray;
+class RHUnk00564020;
+class RHMobileVectorArray;
+class RHUnk0055b380;
+
 // SIZE 0x28
 class RHPathFinder
 {
 public:
+    static SBGeoPolyLine2DList mPath;
+    static RHFastFindRangeArray mListPathGraphLayers;
+    static RHFastFindRangeArray mListAlternativePathGraphLayers;
+    static RHUnk00564020 mListOpenNodes;
+    static RHMobileVectorArray mListHalfDiagonals;
+    static SBGeoVector2D mCurrentHalfDiagonal;
+    static RHUnk0055b380 marrayStates;
+    static RHFastFindRangeArray mListSectorConversion;
     RHPathFinder();
     void AddPathRequest(RHpathRequest *request);
     bool ProcessPathRequests(RHpathRequest **request, SBGeoPolyLine2DList &path, const SBGeoBoundingBox2D &bounds);
