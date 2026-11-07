@@ -88,8 +88,7 @@ void RHElementScroll::FUN_004b9fa0()
         rand() % sprite->FUN_005bdcf0(*(unsigned short *)((char *)sprite + 0x184));
 }
 
-extern RHElementScroll **g_unk0x6c09dc;
-extern RHElementScroll **g_unk0x006c09e0;
+#include "RHElementScrollStaticStorage.h"
 
 // FUNCTION: GAME 0x004ba000
 void FUN_004ba000()
