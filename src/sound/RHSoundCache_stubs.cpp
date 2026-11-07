@@ -1,7 +1,10 @@
 #include "RHSoundCache.h"
 
 // GLOBAL: GAME 0x006c1090
-RHSoundCacheMusic g_unk0x006c1090;
+RHSoundCacheMusic g_unk0x006c1090 = "";
+
+// SYNTHETIC: GAME 0x005aafb0
+// $E19
 
 // GLOBAL: GAME 0x006c0686
 bool g_unk0x006c0686;

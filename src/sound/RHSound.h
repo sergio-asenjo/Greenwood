@@ -91,7 +91,8 @@ struct RHSoundQueueIterator
 // SIZE 0x0c
 struct RHSoundQueue
 {
-    ~RHSoundQueue();
+    inline RHSoundQueue();
+    inline ~RHSoundQueue();
     undefined m_00[4]; // 0x00
     RHSoundQueueNode *m_04; // 0x04
     unsigned int m_08; // 0x08
@@ -195,7 +196,7 @@ public:
     char *FUN_0055dbb0();
 };
 
-extern undefined g_unk0x006c0e48[];
+#include "RHPlayerProfileManagerStorage.h"
 
 // SIZE 0x24
 struct RHSoundPendingData
@@ -234,11 +235,42 @@ inline RHSoundQueueIterator RHSoundQueueIterator::operator++(int)
     return previous;
 }
 
+inline RHSoundQueue::RHSoundQueue()
+{
+    char allocator;
+    m_00[0] = allocator;
+    RHSoundQueueNode *node = (RHSoundQueueNode *)operator new(sizeof(RHSoundQueueNode));
+    node->m_00 = node;
+    node->m_04 = node;
+    m_04 = node;
+    m_08 = 0;
+}
+
+// FUNCTION: GAME 0x005aa030
+inline RHSoundQueue::~RHSoundQueue()
+{
+    RHSoundQueueNode *head = m_04;
+    RHSoundQueueNode *next = head->m_00;
+    while (next != head)
+    {
+        RHSoundQueueNode *node = next;
+        next = next->m_00;
+        node->m_04->m_00 = node->m_00;
+        node->m_00->m_04 = node->m_04;
+        ((RHSoundPendingData *)&node->m_08)->FUN_0052c5a0();
+        operator delete(node);
+        --m_08;
+    }
+    operator delete(m_04);
+    m_04 = 0;
+    m_08 = 0;
+}
+
 extern RHSoundQueue g_unk0x006c1078;
+#define g_unk0x006c1080 g_unk0x006c1078.m_08
 unsigned long FUN_005a93c0(unsigned long, unsigned long);
 
 extern char g_unk0x006c0685;
-extern unsigned long g_unk0x006c1080;
 extern std::string g_unk0x006c0610;
 extern "C" signed char __stdcall FSOUND_SetPaused(int, signed char);
 extern "C" void *__stdcall FSOUND_GetOutputHandle();

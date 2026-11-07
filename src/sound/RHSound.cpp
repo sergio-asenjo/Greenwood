@@ -1174,14 +1174,15 @@ bool RHArtificialIntelligenceSoundCalls::Unk005a8d10(RHArtificialIntelligenceAct
     return true;
 }
 
-// STUB: GAME 0x005a8dd0
+// FUNCTION: GAME 0x005a8dd0
 unsigned long RHSound::OpenStream(const std::string &name, void *&stream, bool loop, unsigned long position)
 {
     std::string path;
     path = g_unk0x006c0610 + std::string("\\") + name + std::string(
         // STRING: GAME 0x006b7fa4
         ".wav");
-    stream = FSOUND_Stream_OpenFile(path.c_str(), (loop ? 2 : 1) | 0x1002050, 0);
+    unsigned long mode = (loop ? 2 : 1) | 0x1002050;
+    stream = FSOUND_Stream_OpenFile(path.c_str(), mode, 0);
     if (!stream)
         SBAssert(1, "P:\\Robin Hood\\RHsound.cpp", 2069,
             // STRING: GAME 0x006b7f6c
@@ -1690,25 +1691,12 @@ bool RHSound::Serialize(SBFile &file)
 
 #undef RHSOUND_ACCESS
 
-// FUNCTION: GAME 0x005aa030
-RHSoundQueue::~RHSoundQueue()
+#pragma inline_depth(0)
+void EmitRHSoundQueueDestructor(RHSoundQueue &queue)
 {
-    RHSoundQueueNode *head = m_04;
-    RHSoundQueueNode *next = head->m_00;
-    while (next != head)
-    {
-        RHSoundQueueNode *node = next;
-        next = next->m_00;
-        node->m_04->m_00 = node->m_00;
-        node->m_00->m_04 = node->m_04;
-        ((RHSoundPendingData *)&node->m_08)->FUN_0052c5a0();
-        operator delete(node);
-        --m_08;
-    }
-    operator delete(m_04);
-    m_04 = 0;
-    m_08 = 0;
+    queue.~RHSoundQueue();
 }
+#pragma inline_depth(8)
 
 static inline RHSoundSourceIDTree::Node *RHSoundSourceIDMin(RHSoundSourceIDTree::Node *node)
 {

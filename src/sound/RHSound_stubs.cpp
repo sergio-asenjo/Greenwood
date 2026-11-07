@@ -23,10 +23,15 @@ LONG (__stdcall *g_rhsoundRegQueryValueExA)(HKEY, LPCSTR, LPDWORD, LPDWORD, LPBY
 
 // GLOBAL: GAME 0x006c0685
 char g_unk0x006c0685 = 0;
-// GLOBAL: GAME 0x006c1080
-unsigned long g_unk0x006c1080 = 0;
 // GLOBAL: GAME 0x006c1078
 RHSoundQueue g_unk0x006c1078;
+
+// SYNTHETIC: GAME 0x005a5eb0
+// $E19
+
+// SYNTHETIC: GAME 0x005a5ef0
+// $E20
+
 // GLOBAL: GAME 0x006c0610
 std::string g_unk0x006c0610;
 
