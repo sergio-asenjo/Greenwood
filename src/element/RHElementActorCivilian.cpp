@@ -366,22 +366,11 @@ bool RHElementActorCivilian::FUN_00470d00(const SBGeoPoint2D &point, RHElementAc
     return FUN_0048af40(point, pcArg, kind);
 }
 
-#define SBGeoPoint2D RHElemScrollPoint2D
-#define SBGeoVector2D RHElemScrollVector2D
-#define SBGeoBoundingBox2D RHElemScrollBoundingBox2D
-#define RHBonusInfoBase RHElemScrollBonusInfoBase
-#define RHBonusInfo RHElemScrollBonusInfo
 #include "RHElementScroll.h"
-#undef RHBonusInfo
-#undef RHBonusInfoBase
-#undef SBGeoBoundingBox2D
-#undef SBGeoVector2D
-#undef SBGeoPoint2D
 
 #include "../ui/RHMinimap.h"
 
-// GLOBAL: GAME 0x006c09dc
-RHElementScroll **g_unk0x6c09dc;
+#include "RHElementScrollStaticStorage.h"
 
 // FUNCTION: GAME 0x00470e30
 bool FUN_00470e30(unsigned int index)
@@ -390,36 +379,27 @@ bool FUN_00470e30(unsigned int index)
     return scrolls[index]->IsRevealable();
 }
 
-#define RHCIVILIAN_VIRTUAL_BOOL(object, offset) \
-    ((bool (__fastcall *)(void *))(*(void ***)object)[(offset) / 4])(object)
+#include "RHElementActorPC.h"
+#include "RHSequenceInteractionAction.h"
 
-// Parked: allocation cleanup and helper-call entities remain unresolved.
-// STUB: GAME 0x00470e50
-bool RHElementActorCivilian::FUN_00470e50(void *first, void *second, int kind)
+// FUNCTION: GAME 0x00470e50
+bool RHElementActorCivilian::FUN_00470e50(void *context, unsigned flags, RHElementActorHuman *target)
 {
-    if (RHCIVILIAN_VIRTUAL_BOOL(this, 0x48) ||
+    if (((RHMalignityActorCalls *)this)->V48() ||
         RHCivilianField<char>(this, 0x1ce) ||
         RHCivilianField<void *>(this, 0x500) ||
         !FUN_00470ca0() ||
-        !RHCIVILIAN_VIRTUAL_BOOL(second, 0xf8))
-        return false;
-
-    if (RHCivilianField<int>(g_pEngine, 0x4a00) <= 50)
-        return false;
-
-    void *event = ::operator new(0x68);
-    if (!event)
-        return false;
-
-    RHCivilianField<void *>(event, 0) = first;
-    RHCivilianField<void *>(event, 4) = this;
-    RHCivilianField<void *>(event, 8) = second;
-    RHCivilianField<unsigned>(event, 0x10) = kind;
-    RHCivilianField<unsigned short>(this, 0x6fc) = 3;
-    return true;
+        !((RHMalignityActorCalls *)target)->Vf8())
+        return FUN_0048be40(context, flags, target);
+    if (g_unk0x6c07fc->Get(1) >= 50)
+    {
+        RHUnk00585ea0 *event = new RHUnk00585ea0(1, 0x71, target, this);
+        ((RHElementActorPC *)target)->FUN_0049ffe0(event, flags, 0, 0x24, 1, 1, 0);
+        RHCivilianField<unsigned short>(this, 0x6fc) = 3;
+        return true;
+    }
+    return false;
 }
-
-#undef RHCIVILIAN_VIRTUAL_BOOL
 
 // GLOBAL: GAME 0x006c0c50
 RHMinimap *g_unk0x6c0c50;
@@ -455,7 +435,7 @@ void *RHElementActorCivilian::FUN_00470f70(void *element)
 }
 
 // LIBRARY: GAME 0x00471050
-// $E15
+// $E24
 
 // FUNCTION: GAME 0x00471090
 void RHElementActorCivilian::FUN_00471090()

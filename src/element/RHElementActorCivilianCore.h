@@ -31,7 +31,7 @@ public:
     void FUN_00470a10(SBFile &file);
     void FUN_00470480(SBFile &file);
     bool FUN_00470d00(const SBGeoPoint2D &point, RHElementActorHuman *pc, int kind);
-    bool FUN_00470e50(void *first, void *second, int kind);
+    bool FUN_00470e50(void *context, unsigned flags, RHElementActorHuman *target);
     void *FUN_00470f70(void *element);
     void FUN_00471090();
     void FUN_00471400(int first, int second);
