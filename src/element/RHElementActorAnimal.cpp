@@ -280,8 +280,8 @@ void RHElementActorAnimal::Flee(bool run)
 #include "RHScriptListCore.h"
 #include "RHActorGridCalls.h"
 
-class RHFastFindSeekArray;
-extern RHFastFindSeekArray g_unk0x006c06f0;
+#include "RHArtificialIntelligenceCore.h"
+#define g_unk0x006c06f0 RHArtificialIntelligence::marraySeekPoints
 
 struct RHAnimalSeekPosition
 {

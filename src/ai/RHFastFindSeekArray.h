@@ -36,6 +36,6 @@ public:
     RHSeekPoint *m_value;
 };
 
-extern RHFastFindSeekArray g_unk0x006c06f0;
+#define g_unk0x006c06f0 RHArtificialIntelligence::marraySeekPoints
 
 #endif

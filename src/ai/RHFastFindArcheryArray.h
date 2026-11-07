@@ -25,6 +25,6 @@ public:
     RHSectorArchery *m_value;
 };
 
-extern RHFastFindArcheryArray g_unk0x006c06d0;
+#define g_unk0x006c06d0 RHArtificialIntelligence::marrayArcherySectors
 
 #endif

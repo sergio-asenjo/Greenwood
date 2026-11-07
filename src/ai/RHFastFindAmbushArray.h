@@ -82,6 +82,6 @@ public:
     RHUnk00521550 *m_value;
 };
 
-extern RHFastFindAmbushArray g_unk0x006c0718;
+#define g_unk0x006c0718 RHArtificialIntelligence::marrayAmbushPoints
 
 #endif

@@ -2032,8 +2032,8 @@ struct RHActorSeekPosition
     unsigned layer;
 };
 
-class RHFastFindSeekArray;
-extern RHFastFindSeekArray g_unk0x006c06f0;
+#include "RHArtificialIntelligenceCore.h"
+#define g_unk0x006c06f0 RHArtificialIntelligence::marraySeekPoints
 
 class RHActorSeekList : public RHSeqList
 {

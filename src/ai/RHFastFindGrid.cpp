@@ -33,11 +33,6 @@ template class std::vector<unsigned long>;
 // TEMPLATE: GAME 0x005008e0 FOLDED
 // ?_Destroy@?$vector@PAVRHUnk00521550@@V?$allocator@PAVRHUnk00521550@@@std@@@std@@IAEXPAPAVRHUnk00521550@@0@Z
 
-// GLOBAL: GAME 0x006c06f0
-RHFastFindSeekArray g_unk0x006c06f0;
-// GLOBAL: GAME 0x006c0718
-RHFastFindAmbushArray g_unk0x006c0718;
-
 DECOMP_SIZE_ASSERT(RHFastFindAmbushArray, 0x20)
 DECOMP_SIZE_ASSERT(RHFastFindSeekArray, 0x20)
 DECOMP_SIZE_ASSERT(RHFastFindArcheryArray, 0x20)
@@ -49,8 +44,9 @@ DECOMP_STATIC_ASSERT(offsetof(RHFastFindArcheryArray, m_changed) == 0x14)
 // GLOBAL: GAME 0x006c0bcc
 unsigned long g_unk0x006c0bcc;
 
-// GLOBAL: GAME 0x006c0aa8
-float g_unk0x006c0aa8[2] = {0.0f, 0.0f};
+#include "RHArtificialIntelligenceCore.h"
+
+#include "RHGeoStaticStorage.h"
 
 // TEMPLATE: GAME 0x004e5270 FOLDED
 // ??0RHSeqList@@QAE@ABD@Z

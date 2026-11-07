@@ -388,7 +388,16 @@ public:
     virtual void V174() = 0;
     virtual void *V178() = 0;
 
-    char m_04[0x4c];
+    union
+    {
+        unsigned m_flags;
+        struct
+        {
+            unsigned m_kind : 5;
+            unsigned m_otherFlags : 27;
+        };
+    };
+    char m_08[0x48];
     RHSprite *m_data; // +0x50
 };
 
@@ -408,19 +417,6 @@ class RHElementActor;
 
 #include "RHArtificialIntelligenceCore.h"
 
-class RHStimulus
-{
-public:
-    bool Serialize(SBFile &file);
-    RHStimulus() : m_type(0), m_24(0), m_28(0) {}
-    ~RHStimulus() {}
-    void Unk004188d0(int value);
-    void FUN_0041a930(int event, const RHMalignityPosition &position);
-    char m_00[0x1c];
-    unsigned m_type; // +0x1c
-    unsigned m_20; // +0x20
-    void *m_24; // +0x24
-    char m_28; // +0x28
-};
+#include "RHStimulus.h"
 
 #endif

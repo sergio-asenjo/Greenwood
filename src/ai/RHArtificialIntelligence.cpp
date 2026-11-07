@@ -2,7 +2,41 @@
 #include "RHArtificialIntelligence.h"
 #include "Decomp.h"
 #include "RHFastFindArcheryArray.h"
+#include "RHFastFindAmbushArray.h"
+#include "RHSpriteListStorage.h"
+#include "SBList.h"
 #include <stddef.h>
+
+DECOMP_SIZE_ASSERT(RHArtificialIntelligenceActor, 0x54)
+DECOMP_STATIC_ASSERT(offsetof(RHArtificialIntelligenceActor, m_flags) == 4)
+DECOMP_STATIC_ASSERT(offsetof(RHArtificialIntelligenceActor, m_data) == 0x50)
+
+// TEMPLATE: GAME 0x004e6c10 FOLDED
+// ?clear@?$list@PAXV?$allocator@PAX@std@@@std@@QAEXXZ
+
+// TEMPLATE: GAME 0x004e6c10 FOLDED
+// ?clear@?$list@HV?$allocator@H@std@@@std@@QAEXXZ
+
+// TEMPLATE: GAME 0x004e6c10 FOLDED
+// ?clear@?$list@URHArtificialIntelligenceTriple@@V?$allocator@URHArtificialIntelligenceTriple@@@std@@@std@@QAEXXZ
+
+// TEMPLATE: GAME 0x004e52a0 FOLDED
+// ??1?$list@PAXV?$allocator@PAX@std@@@std@@QAE@XZ
+
+// TEMPLATE: GAME 0x004e52a0 FOLDED
+// ??1?$list@HV?$allocator@H@std@@@std@@QAE@XZ
+
+// TEMPLATE: GAME 0x004e52a0 FOLDED
+// ??1?$list@URHArtificialIntelligenceTriple@@V?$allocator@URHArtificialIntelligenceTriple@@@std@@@std@@QAE@XZ
+
+// TEMPLATE: GAME 0x004e52a0 FOLDED
+// ??1?$list@VRHStimulus@@V?$allocator@VRHStimulus@@@std@@@std@@QAE@XZ
+
+// TEMPLATE: GAME 0x0048be30 FOLDED
+// ??1RHStimulus@@QAE@XZ
+
+// TEMPLATE: GAME 0x0040eab0 FOLDED
+// ??_GRHStimulus@@QAEPAXI@Z
 
 // GLOBAL: GAME 0x006c078a
 unsigned short g_unk0x006c078a;
@@ -106,6 +140,11 @@ public:
     int m_index;
 };
 
+// GLOBAL: GAME 0x006c0740
+SBGeoBoundingBox2D RHArtificialIntelligence::mboxViewRect;
+// GLOBAL: GAME 0x006c0718
+RHFastFindAmbushArray RHArtificialIntelligence::marrayAmbushPoints;
+
 // FUNCTION: GAME 0x00423c20
 RHArtificialIntelligenceElement *&RHArtificialIntelligenceList::FUN_00423c20(int wanted)
 {
@@ -143,93 +182,150 @@ public:
     virtual bool V0c(SBFile &file) = 0;
 };
 
-struct RHUnk00423fa0Node
-{
-    RHUnk00423fa0Node *next;
-    RHUnk00423fa0Node *previous;
-    void *payload;
-};
+#include "RHFastFindSeekArray.h"
 
-class RHUnk00423fa0List
-{
-public:
-    int allocator;
-    RHUnk00423fa0Node *head;
-    int count;
-    void Clear();
-};
+// GLOBAL: GAME 0x006c06f0
+RHFastFindSeekArray RHArtificialIntelligence::marraySeekPoints;
 
-// Parked: the target's iterator-helper and per-node cleanup calls are not yet attributed.
-// STUB: GAME 0x00423fa0
-void RHUnk00423fa0List::Clear()
+static inline unsigned char RHAIActorKind(void *actor)
 {
-    RHUnk00423fa0Node *sentinel = head;
-    RHUnk00423fa0Node *node = sentinel->next;
-    while (node != sentinel)
-    {
-        RHUnk00423fa0Node *next = node->next;
-        node->previous->next = node->next;
-        node->next->previous = node->previous;
-        typedef void (__cdecl *NodeCleanup)(int);
-        ((NodeCleanup)0x0040eab0)(0);
-        operator delete(node);
-        --count;
-        node = next;
-    }
-    operator delete(sentinel);
-    head = 0;
-    count = 0;
+    return RHAIField<unsigned>(actor, 4) & 0x1f;
 }
 
-struct RHUnk00424060Node
-{
-    RHUnk00424060Node *next;
-    RHUnk00424060Node *previous;
-    void *payload;
-};
+// GLOBAL: GAME 0x006c06d0
+RHFastFindArcheryArray RHArtificialIntelligence::marrayArcherySectors;
 
-class RHUnk00424060List
+class RHArtificialIntelligenceForbiddenRemark
 {
 public:
-    int allocator;
-    RHUnk00424060Node *head;
-    int count;
-    RHUnk00424060Node *cursor;
-    void Clear();
+    ~RHArtificialIntelligenceForbiddenRemark() {}
+    int remark;
+    unsigned short flags;
+    void *voice;
+    unsigned short actorID;
+    bool soldier;
+    unsigned deadline;
 };
 
-// Parked: target iterator-helper passes after payload release remain unresolved.
-// STUB: GAME 0x00424060
-void RHUnk00424060List::Clear()
+struct RHArtificialIntelligenceRemarkEntry
 {
-    RHUnk00424060Node *sentinel = head;
-    cursor = sentinel->next;
-    while (cursor != sentinel)
+    unsigned short m_command;
+    unsigned short m_02;
+    std::string m_name;
+    int m_remark;
+    RHArtificialIntelligenceRemarkEntry(unsigned flags)
     {
-        void *storage = cursor->payload;
-        if (storage)
-            operator delete(storage);
-        cursor = cursor->next;
+        *(unsigned char *)&m_name = (unsigned char)flags;
     }
-    RHUnk00424060Node *node = sentinel->next;
-    while (node != sentinel)
+};
+
+struct RHArtificialIntelligenceRemarkNode
+{
+    RHArtificialIntelligenceRemarkNode *m_next;
+    RHArtificialIntelligenceRemarkNode *m_previous;
+    RHArtificialIntelligenceRemarkEntry *m_entry;
+};
+
+class RHUnk00424060List : public SBListAutoDeleteStorage<RHArtificialIntelligenceForbiddenRemark *>
+{
+public:
+    RHUnk00424060List() {}
+    ~RHUnk00424060List();
+    void Destroy()
     {
-        RHUnk00424060Node *next = node->next;
-        node->previous->next = next;
-        next->previous = node->previous;
-        operator delete(node);
-        --count;
-        node = next;
+        for (m_current = begin(); m_current != end(); m_current++)
+            if (*m_current)
+                operator delete(*m_current);
+        Clear();
     }
-    operator delete(sentinel);
-    head = 0;
-    count = 0;
+};
+
+class RHUnk004241a0List : public SBListAutoDeleteStorage<RHArtificialIntelligenceRemarkEntry *>
+{
+public:
+    RHUnk004241a0List() {}
+    ~RHUnk004241a0List();
+};
+
+// GLOBAL: GAME 0x006c0758
+RHUnk00564020 RHArtificialIntelligence::mlistHouses;
+
+// FUNCTION: GAME 0x00424060
+RHUnk00424060List::~RHUnk00424060List()
+{
+    Destroy();
 }
+
+// TEMPLATE: GAME 0x0046eb30 FOLDED
+// ?erase@?$list@PAVRHArtificialIntelligenceForbiddenRemark@@V?$allocator@PAVRHArtificialIntelligenceForbiddenRemark@@@std@@@std@@QAE?AViterator@12@V312@@Z
+
+// TEMPLATE: GAME 0x0057c9c0 FOLDED
+// ??Eiterator@?$list@PAVRHArtificialIntelligenceForbiddenRemark@@V?$allocator@PAVRHArtificialIntelligenceForbiddenRemark@@@std@@@std@@QAE?AV012@H@Z
+
+// TEMPLATE: GAME 0x004e52a0 FOLDED
+// ??1?$list@PAVRHArtificialIntelligenceForbiddenRemark@@V?$allocator@PAVRHArtificialIntelligenceForbiddenRemark@@@std@@@std@@QAE@XZ
+
+DECOMP_SIZE_ASSERT(RHArtificialIntelligenceForbiddenRemark, 0x14)
+DECOMP_SIZE_ASSERT(RHUnk00424060List, 0x18)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk00424060List, m_current) == 0xc)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk00424060List, m_dirty) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk00424060List, m_index) == 0x14)
+
+// GLOBAL: GAME 0x006c0790
+RHUnk004241a0List RHArtificialIntelligence::mlistScreenRemarks;
+
+// FUNCTION: GAME 0x004241a0
+RHUnk004241a0List::~RHUnk004241a0List()
+{
+    Destroy();
+}
+
+// TEMPLATE: GAME 0x0046eb30 FOLDED
+// ?erase@?$list@PAURHArtificialIntelligenceRemarkEntry@@V?$allocator@PAURHArtificialIntelligenceRemarkEntry@@@std@@@std@@QAE?AViterator@12@V312@@Z
+
+// TEMPLATE: GAME 0x0057c9c0 FOLDED
+// ??Eiterator@?$list@PAURHArtificialIntelligenceRemarkEntry@@V?$allocator@PAURHArtificialIntelligenceRemarkEntry@@@std@@@std@@QAE?AV012@H@Z
+
+// TEMPLATE: GAME 0x004e52a0 FOLDED
+// ??1?$list@PAURHArtificialIntelligenceRemarkEntry@@V?$allocator@PAURHArtificialIntelligenceRemarkEntry@@@std@@@std@@QAE@XZ
+
+DECOMP_SIZE_ASSERT(RHArtificialIntelligenceRemarkEntry, 0x18)
+DECOMP_SIZE_ASSERT(RHArtificialIntelligenceRemarkNode, 0x0c)
+DECOMP_SIZE_ASSERT(RHUnk004241a0List, 0x18)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk004241a0List, m_current) == 0xc)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk004241a0List, m_dirty) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk004241a0List, m_index) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(RHArtificialIntelligenceRemarkEntry, m_name) == 4)
+
+// GLOBAL: GAME 0x006c07b8
+RHUnk00424060List RHArtificialIntelligence::mlistForbiddenRemarks;
+
+// SYNTHETIC: GAME 0x0040ee10
+// $E22
+
+// SYNTHETIC: GAME 0x0040eeb0
+// $E28
+
+// SYNTHETIC: GAME 0x0040ef00
+// $E33
+
+// SYNTHETIC: GAME 0x0040ef50
+// $E39
+
+// SYNTHETIC: GAME 0x0040efa0
+// $E45
+
+// SYNTHETIC: GAME 0x0040eff0
+// $E51
+
+// SYNTHETIC: GAME 0x0040f040
+// $E57
+
+#define g_unk0x006c07b8 (*(RHArtificialIntelligenceList *)&RHArtificialIntelligence::mlistForbiddenRemarks)
+#define g_unk0x006c0758 (*(RHArtificialIntelligenceList *)&RHArtificialIntelligence::mlistHouses)
 
 // GLOBAL: GAME 0x006c06ca
 unsigned char g_unk0x006c06ca;
-// GLOBAL: GAME 0x006c06d0
-RHFastFindArcheryArray g_unk0x006c06d0;
 // GLOBAL: GAME 0x006c07de
 char g_unk0x006c07de;
 // GLOBAL: GAME 0x006c07e2
@@ -244,27 +340,11 @@ unsigned g_unk0x006c078c;
 unsigned g_unk0x006c0780;
 // GLOBAL: GAME 0x006c0784
 long g_unk0x006c0784;
-// GLOBAL: GAME 0x006c07b8
-RHArtificialIntelligenceList g_unk0x006c07b8;
-// GLOBAL: GAME 0x006c0758
-RHArtificialIntelligenceList g_unk0x006c0758;
 
 extern "C" long __cdecl time(long *value);
 extern "C" void __cdecl srand(unsigned seed);
 extern "C" int __cdecl rand();
 void operator delete(void *pointer) throw();
-
-class RHArtificialIntelligenceForbiddenRemark
-{
-public:
-    ~RHArtificialIntelligenceForbiddenRemark() {}
-    int remark;
-    unsigned short flags;
-    void *voice;
-    unsigned short actorID;
-    bool soldier;
-    unsigned deadline;
-};
 
 // GLOBAL: GAME 0x006a73c8
 extern const char g_unk0x006a73c8[] = "P:\\Robin Hood\\RHartificialintelligence.cpp";
@@ -410,6 +490,20 @@ void EmitRHUnk0040fd10(RHUnk0040fd10 *a, RHUnk00410000 *b)
 char g_unk0x006c07e8;
 
 // Parked: 59.63%; switch/register scheduling and recursive ILT operands.
+// FUNCTION: GAME 0x0040fd20
+void *RHArtificialIntelligence::FUN_0040fd20(unsigned flags)
+{
+    this->~RHArtificialIntelligence();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// STUB: GAME 0x0040fd40
+RHArtificialIntelligence::~RHArtificialIntelligence()
+{
+}
+
 // STUB: GAME 0x00410010
 void RHArtificialIntelligence::Unk00410010(bool mode)
 {
@@ -1416,6 +1510,27 @@ void EmitAIStimulusAppend(RHArtificialIntelligenceValueList<RHStimulus> &list, c
 #include "Decomp.h"
 
 DECOMP_SIZE_ASSERT(RHStimulus, 0x2c)
+DECOMP_SIZE_ASSERT(RHArtificialIntelligenceCachedList<void *>, 0x24)
+DECOMP_SIZE_ASSERT(RHArtificialIntelligenceCachedList<RHStimulus>, 0x4c)
+DECOMP_SIZE_ASSERT(RHArtificialIntelligenceCachedList<RHStimulus>::Node, 0x34)
+DECOMP_SIZE_ASSERT(RHArtificialIntelligenceCachedList<RHArtificialIntelligenceTriple>, 0x2c)
+DECOMP_STATIC_ASSERT(offsetof(RHArtificialIntelligenceCachedList<RHStimulus>, value) == 0x20)
+DECOMP_SIZE_ASSERT(RHArtificialIntelligence, 0x38c)
+DECOMP_STATIC_ASSERT(offsetof(RHArtificialIntelligence, m_30) == 0x30)
+DECOMP_STATIC_ASSERT(offsetof(RHArtificialIntelligence, m_f4) == 0xf4)
+DECOMP_STATIC_ASSERT(offsetof(RHArtificialIntelligence, m_100) == 0x100)
+DECOMP_STATIC_ASSERT(offsetof(RHArtificialIntelligence, m_124) == 0x124)
+DECOMP_STATIC_ASSERT(offsetof(RHArtificialIntelligence, m_148) == 0x148)
+DECOMP_STATIC_ASSERT(offsetof(RHArtificialIntelligence, m_178) == 0x178)
+DECOMP_STATIC_ASSERT(offsetof(RHArtificialIntelligence, m_1d4) == 0x1d4)
+DECOMP_STATIC_ASSERT(offsetof(RHArtificialIntelligence, m_208) == 0x208)
+DECOMP_STATIC_ASSERT(offsetof(RHArtificialIntelligence, m_230) == 0x230)
+DECOMP_STATIC_ASSERT(offsetof(RHArtificialIntelligence, m_26c) == 0x26c)
+DECOMP_STATIC_ASSERT(offsetof(RHArtificialIntelligence, m_2b4) == 0x2b4)
+DECOMP_STATIC_ASSERT(offsetof(RHArtificialIntelligence, m_2d8) == 0x2d8)
+DECOMP_STATIC_ASSERT(offsetof(RHArtificialIntelligence, m_2fc) == 0x2fc)
+DECOMP_STATIC_ASSERT(offsetof(RHArtificialIntelligence, m_320) == 0x320)
+DECOMP_STATIC_ASSERT(offsetof(RHArtificialIntelligence, m_34c) == 0x34c)
 DECOMP_SIZE_ASSERT(RHArtificialIntelligenceValueList<RHStimulus>, 0x18)
 DECOMP_SIZE_ASSERT(RHArtificialIntelligenceValueNode<RHStimulus>, 0x34)
 DECOMP_STATIC_ASSERT(offsetof(RHArtificialIntelligencePathCursor, m_current) == 0)
@@ -2332,31 +2447,6 @@ void RHStimulus::Unk004188d0(int value)
     m_type = 0;
 }
 
-struct RHArtificialIntelligenceRemarkEntry
-{
-    unsigned short m_command;
-    unsigned short m_02;
-    std::string m_name;
-    int m_remark;
-    RHArtificialIntelligenceRemarkEntry(unsigned flags)
-    {
-        *(unsigned char *)&m_name = (unsigned char)flags;
-    }
-};
-
-struct RHArtificialIntelligenceRemarkNode
-{
-    RHArtificialIntelligenceRemarkNode *m_next;
-    RHArtificialIntelligenceRemarkNode *m_previous;
-    RHArtificialIntelligenceRemarkEntry *m_entry;
-};
-
-// GLOBAL: GAME 0x006c0794
-RHArtificialIntelligenceRemarkNode *g_unk0x006c0794;
-// GLOBAL: GAME 0x006c0798
-unsigned g_unk0x006c0798;
-// GLOBAL: GAME 0x006c07a0
-char g_unk0x006c07a0;
 // GLOBAL: GAME 0x006c07e0
 unsigned short g_unk0x006c07e0;
 // GLOBAL: GAME 0x006c1070
@@ -2537,7 +2627,7 @@ void RHArtificialIntelligence::Unk00418c40(int remark, unsigned flags)
     entry->m_remark = remark;
     const char *name = RHAIField<char *>(m_actor->m_data, 0x168);
     entry->m_name = name ? name : "";
-    RHArtificialIntelligenceRemarkNode *head = g_unk0x006c0794;
+    RHArtificialIntelligenceRemarkNode *head = (RHArtificialIntelligenceRemarkNode *)mlistScreenRemarks.Head();
     RHArtificialIntelligenceRemarkNode *previous = head->m_previous;
     RHArtificialIntelligenceRemarkNode *node = (RHArtificialIntelligenceRemarkNode *)::operator new(12);
     node->m_next = head ? head : node;
@@ -2545,8 +2635,8 @@ void RHArtificialIntelligence::Unk00418c40(int remark, unsigned flags)
     head->m_previous = node;
     node->m_previous->m_next = node;
     node->m_entry = entry;
-    ++g_unk0x006c0798;
-    g_unk0x006c07a0 = 1;
+    ++mlistScreenRemarks.Count();
+    mlistScreenRemarks.m_dirty = true;
     switch (remark)
     {
     case 29:
@@ -2587,11 +2677,6 @@ void RHArtificialIntelligence::Unk004195f0(unsigned short flags)
 }
 
 extern unsigned *g_unk0x006c08a4;
-
-static inline unsigned char RHAIActorKind(void *actor)
-{
-    return RHAIField<unsigned>(actor, 4) & 0x1f;
-}
 
 // Parked: narrowed actor loads and speech-field store scheduling differ.
 // STUB: GAME 0x00419970
@@ -2645,12 +2730,12 @@ bool RHArtificialIntelligence::Unk00419b20(int remark)
         {
             RHArtificialIntelligence *self = this;
             if ((unsigned)(speech->flags & 1) > 0 &&
-                (unsigned char)speech->soldier == (unsigned char)((unsigned char)RHAIActorKind(self->m_actor) == 0x14) &&
+                (unsigned char)speech->soldier == (unsigned char)(self->m_actor->m_kind == 0x14) &&
                 speech->voice == self->m_actor->V178())
                 return true;
             if ((unsigned)(speech->flags & 8) > 0 && speech->actorID == RHAIField<unsigned>(self->m_actor, 0xc))
                 return true;
-            if ((unsigned char)RHAIActorKind(self->m_actor) == 0x14)
+            if (self->m_actor->m_kind == 0x14)
             {
                 if ((unsigned)(speech->flags & 4) > 0)
                     return true;
@@ -2861,6 +2946,83 @@ template<class T> inline T RHAISoldierProperty(void *actor, unsigned offset)
     if ((RHAIField<unsigned>(actor, 4) & 31) != 20)
         return T();
     return RHAIField<T>(RHAIField<void *>(actor, 0xa1c), offset);
+}
+
+DECOMP_SIZE_ASSERT(RHMalignityPosition, 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHArtificialIntelligence, m_e0) == 0xe0)
+DECOMP_STATIC_ASSERT(offsetof(RHArtificialIntelligence, m_f4) == 0xf4)
+
+// STUB: GAME 0x0041a140
+void RHArtificialIntelligence::FUN_0041a140(RHMalignityPosition position, unsigned value)
+{
+    int team = ((RHMalignityActorCalls *)m_actor)->V130();
+    RHArtificialIntelligenceList &list = RHAIField<RHArtificialIntelligenceList>(m_actor, 0x5a0);
+    list.erase(
+        RHArtificialIntelligenceIterator((RHArtificialIntelligenceNode *)((RHUnk0046eb30 *)&list)->FUN_0046eb80().node), list.end());
+    list.m_dirty = true;
+    m_e0 = position;
+    if (value != 2)
+        RHAIField<int>(this, 0x88) = 0;
+    bool categories[3];
+    struct Kind5 { unsigned value : 5; };
+    if (((Kind5 *)((char *)m_actor + 4))->value == 4)
+    {
+        categories[0] = true;
+        categories[1] = true;
+        categories[2] = true;
+    }
+    else
+    {
+        switch (RHAIField<int>(RHAIField<void *>(m_actor, 0xa1c), 0x58))
+        {
+        case 0:
+            categories[0] = false;
+            categories[1] = true;
+            categories[2] = false;
+            break;
+        case 1:
+            categories[0] = true;
+            categories[1] = false;
+            categories[2] = false;
+            break;
+        case 2:
+            categories[0] = false;
+            categories[1] = false;
+            categories[2] = false;
+            break;
+        }
+    }
+    void *previous;
+    if (RHAIField<int>(this, 0x2bc) > 0)
+    {
+        RHArtificialIntelligenceList &opponents = *(RHArtificialIntelligenceList *)&m_2b4;
+        ((RHSectorActorList *)&opponents)->Unk005c8e40(0);
+        if (((Kind5 *)((char *)opponents.m_current.m_node->m_data + 4))->value == 20)
+        {
+            ((RHSectorActorList *)&opponents)->Unk005c8e40(0);
+            previous = opponents.m_current.m_node->m_data;
+            if (categories[RHAIField<int>(RHAIField<void *>(previous, 0xa1c), 0x58)] == true)
+            {
+                ((RHMalignityActorCalls *)m_actor)->FUN_0048c700(previous, 3);
+                goto selected;
+            }
+        }
+    }
+    previous = 0;
+selected:
+    unsigned short count = RHAIField<RHArtificialIntelligencePointerArray>(g_pEngine, 0x4d08 + team * 0x20).size();
+    if (count > 0)
+    {
+        unsigned remaining = count;
+        unsigned index = 0;
+        do
+        {
+            void *actor = RHAIField<RHArtificialIntelligencePointerArray>(g_pEngine, 0x4d08 + team * 0x20)[index];
+            if (categories[RHAIField<int>(RHAIField<void *>(actor, 0xa1c), 0x58)] == true && actor != previous)
+                ((RHMalignityActorCalls *)m_actor)->FUN_0048c700(actor, 3);
+            ++index;
+        } while (--remaining);
+    }
 }
 
 // FUNCTION: GAME 0x0041a420

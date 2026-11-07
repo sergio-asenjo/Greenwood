@@ -1,6 +1,16 @@
 #ifndef RH_ARTIFICIAL_INTELLIGENCE_CORE_H
 #define RH_ARTIFICIAL_INTELLIGENCE_CORE_H
 
+#include "RHPathCore.h"
+#ifndef SBGEO_POINT2D_VIEW
+#include "SBGeoPoint2D.h"
+#endif
+#include "RHUnk0056de50.h"
+#include "RHStimulus.h"
+#include "RHArtificialIntelligenceTripleList.h"
+#include "RHArtificialIntelligenceCachedList.h"
+#include "RHMalignityPosition.h"
+
 class SBFile;
 class SBGeoPoint2D;
 class RHUnk005fc3b0;
@@ -12,10 +22,25 @@ struct RHUnk00571160Position;
 struct RHMalignityPosition;
 struct RHMalignityStimulus;
 class RHWaypoint;
+class SBGeoBoundingBox2D;
+class RHFastFindAmbushArray;
+class RHFastFindSeekArray;
+class RHFastFindArcheryArray;
+class RHUnk00564020;
+class RHUnk004241a0List;
+class RHUnk00424060List;
 
 class RHArtificialIntelligence
 {
 public:
+    static SBGeoBoundingBox2D mboxViewRect;
+    static RHFastFindAmbushArray marrayAmbushPoints;
+    static RHFastFindSeekArray marraySeekPoints;
+    static RHFastFindArcheryArray marrayArcherySectors;
+    static RHUnk00564020 mlistHouses;
+    static RHUnk004241a0List mlistScreenRemarks;
+    static RHUnk00424060List mlistForbiddenRemarks;
+    ~RHArtificialIntelligence();
     virtual void V00(int value) = 0;
     virtual void V04(int value) = 0;
     virtual bool V08(SBFile &file) = 0;
@@ -24,7 +49,7 @@ public:
     virtual void V14() = 0;
     virtual void V18() = 0;
     virtual void V1c() = 0;
-    virtual void V20() = 0;
+    virtual void *FUN_0040fd20(unsigned flags);
     virtual void V24(RHMalignityStimulus *stimulus) = 0;
     virtual bool V28() = 0;
     virtual void V2c() = 0;
@@ -85,18 +110,46 @@ public:
     float FUN_0041a010(void *actor);
     float FUN_0041a060(void *actor);
     float FUN_0041a0b0(void *actor);
+    void FUN_0041a140(RHMalignityPosition position, unsigned value);
     int ValueBetween(unsigned short first, unsigned short second, unsigned char percent);
     void FUN_00412cf0(const RHMalignityPosition &position, unsigned short heading, int mode);
 
     RHArtificialIntelligenceActor *m_actor;
     char m_08[0x20];
     int m_initialAction;
-    char m_2c[0x143];
+    char m_2c[4];
+    RHPath m_30;
+    char m_54[0x8c];
+    RHMalignityPosition m_e0;
+    char m_f0[4];
+    SBGeoPoint2D m_f4;
+    char m_fc[4];
+    RHArtificialIntelligenceCachedList<void *> m_100;
+    RHArtificialIntelligenceCachedList<void *> m_124;
+    RHArtificialIntelligenceCachedList<void *> m_148;
+    char m_16c[3];
     char m_16f;
     char m_170;
     char m_171[2];
     char m_173;
-    char m_174[0x218];
+    char m_174[4];
+    RHArtificialIntelligenceCachedList<RHStimulus> m_178;
+    char m_1c4[0x10];
+    RHArtificialIntelligenceCachedList<void *> m_1d4;
+    char m_1f8[0x10];
+    RHArtificialIntelligenceCachedList<void *> m_208;
+    char m_22c[4];
+    RHArtificialIntelligenceCachedList<int> m_230;
+    char m_254[0x18];
+    RHUnk0056de50 m_26c;
+    char m_2ac[8];
+    RHArtificialIntelligenceCachedList<void *> m_2b4;
+    RHArtificialIntelligenceCachedList<void *> m_2d8;
+    RHArtificialIntelligenceCachedList<void *> m_2fc;
+    RHArtificialIntelligenceCachedList<void *> m_320;
+    char m_344[8];
+    RHArtificialIntelligenceCachedList<RHArtificialIntelligenceTriple> m_34c;
+    char m_378[0x14];
 };
 
 #endif
