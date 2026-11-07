@@ -24,6 +24,3 @@ RHMenuResolution::RHMenuResolution(const SBGeoPoint2D &) {}
 
 // Target 0x0053c390, __thiscall.
 void RHMenuScreenView::FUN_0053c390() {}
-
-// Target 0x0053c650, __thiscall, ret 8.
-void RHMenuScreenView::FUN_0053c650(RHMenuWindow *, bool) {}

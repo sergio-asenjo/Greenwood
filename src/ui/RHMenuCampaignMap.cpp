@@ -1783,6 +1783,33 @@ void RHMenuScreenView::FUN_0053c800()
 
 #include <algorithm>
 
+// STUB: GAME 0x0053c650
+void RHMenuScreenView::FUN_0053c650(RHMenuWindow *window, bool display)
+{
+    typedef std::vector<RHMenuWindow *> Windows;
+    void (Windows::*insert)(RHMenuWindow **, unsigned, RHMenuWindow *const &) = &Windows::insert;
+    typedef std::deque<Windows> Frames;
+    typedef Frames::iterator Iterator;
+    Iterator (Iterator::*subtract)(int) const = &Iterator::operator-;
+    if (display == true)
+    {
+        Windows windows;
+        if (!m_191c.empty())
+            std::for_each((m_191c.end().*subtract)(1)->begin(),
+                (m_191c.end().*subtract)(1)->end(), FUN_0053bbc0);
+        (windows.*insert)(windows.end(), 1, window);
+        void (Frames::*push)(const std::vector<RHMenuWindow *> &) = &Frames::push_back;
+        (m_191c.*push)(windows);
+    }
+    else
+    {
+        Windows &windows = m_191c.back();
+        if (std::find(windows.begin(), windows.end(), window) == windows.end())
+            (windows.*insert)(windows.end(), 1, window);
+    }
+    ((RHMapWindowPart *)&m_sbui)->FUN_00619800((SBUIWindowView *)window);
+}
+
 // FUNCTION: GAME 0x0053c870
 void RHMenuScreenView::FUN_0053c870(RHMenuWindow *window)
 {
