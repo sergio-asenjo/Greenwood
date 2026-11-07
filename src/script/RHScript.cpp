@@ -35,6 +35,7 @@
 #include "RHScriptLists.h"
 #include "RHSequenceCancellationCalls.h"
 #include <list>
+#include <algorithm>
 #include <string>
 #include <new>
 #include <math.h>
@@ -45,6 +46,7 @@
 #include "SBDrawManagerCore.h"
 #include "RHCampaignCore.h"
 #include "RHScriptActorArray.h"
+#include "RHMissionProfile.h"
 
 extern unsigned *g_unk0x006c08a4;
 class RHUnk6c1040;
@@ -637,16 +639,45 @@ struct RHUnkSectorGlobal;
 extern RHUnkSectorGlobal *g_unk0x6c0a9c;
 class RHEngine;
 extern RHEngine *g_pEngine;
-// GLOBAL: GAME 0x006c0f30
-RHScriptActorArray g_unk0x6c0f30;
 class RHUnk6c1040;
 extern RHUnk6c1040 *g_unk0x6c1040;
-// GLOBAL: GAME 0x006c0f50
-RHUnk0046eb30 g_unk0x6c0f50;
-// GLOBAL: GAME 0x006c0fb0
-RHUnk0046eb30 g_unk0x6c0fb0;
+#include "SBResourceManager.h"
+#include "SBResourceTextArrayLifetime.h"
+#include "RHFastFindRangeArray.h"
+// GLOBAL: GAME 0x006c0f00
+SBResourceTextArray<char> RHScriptStaticStorage::marrayString;
+// GLOBAL: GAME 0x006c0f30
+RHFastFindRangeArray RHScriptStaticStorage::marrayElementsScript;
 // GLOBAL: GAME 0x006c0fe8
-RHUnk00564020 g_unk0x6c0fe8;
+RHUnk00564020 RHScriptStaticStorage::mlistUnk6c0fe8;
+// GLOBAL: GAME 0x006c0f50
+RHUnk00564020 RHScriptStaticStorage::mlistUnk6c0f50;
+// GLOBAL: GAME 0x006c0fb0
+RHUnk00564020 RHScriptStaticStorage::mlistLocationStorage;
+// GLOBAL: GAME 0x006c0f80
+RHUnk00564020 RHScriptStaticStorage::mlistUnk6c0f80;
+
+// SYNTHETIC: GAME 0x00570650
+// $E34
+
+// SYNTHETIC: GAME 0x005706a0
+// $E40
+
+// SYNTHETIC: GAME 0x005706f0
+// $E45
+
+// SYNTHETIC: GAME 0x00570740
+// $E50
+
+// SYNTHETIC: GAME 0x00570790
+// $E55
+
+// SYNTHETIC: GAME 0x005707e0
+// $E60
+
+#define g_unk0x6c0fe8 RHScriptStaticStorage::mlistUnk6c0fe8
+#define g_unk0x6c0f50 (*(RHUnk0046eb30 *)&RHScriptStaticStorage::mlistUnk6c0f50)
+#define g_unk0x6c0fb0 (*(RHUnk0046eb30 *)&RHScriptStaticStorage::mlistLocationStorage)
 // GLOBAL: GAME 0x006c10e8
 RHTitbits *g_unk0x6c10e8;
 // GLOBAL: GAME 0x006c0f7c
@@ -5477,17 +5508,23 @@ void *RHScript::GetPCFromMissionTeam(unsigned long index)
     return g_pEngine->GetPC(team.at(index));
 }
 
-// Parked: splitting the mission lookup and changing the result lifetime still changes prologue and return registers.
-// STUB: GAME 0x005793a0
+DECOMP_STATIC_ASSERT(offsetof(RHCampaign, m_17c) == 0x17c)
+DECOMP_STATIC_ASSERT(offsetof(RHMission, m_profile) == 0)
+DECOMP_STATIC_ASSERT(offsetof(RHElementActorPC, m_5fc) == 0x5fc)
+DECOMP_STATIC_ASSERT(offsetof(RHMissionProfile, m_74) == 0x74)
+DECOMP_SIZE_ASSERT(RHMissionArray<RHCharacterProfile *>, 0x10)
+
+// FUNCTION: GAME 0x005793a0
 char RHScript::RHUnk5793a0(void *actor)
 {
-    char *mission = **(char ***)((char *)g_unk0x6c07fc + 0x17c);
-    unsigned int *end = *(unsigned int **)(mission + 0x7c);
-    unsigned int *cursor = *(unsigned int **)(mission + 0x78);
-    unsigned int key = *(unsigned int *)((char *)actor + 0x5fc);
-    while (cursor != end && *cursor != key)
-        ++cursor;
-    return cursor != end;
+    RHCampaign *campaign = (RHCampaign *)*(RHUnk00452030 *volatile *)&g_unk0x6c07fc;
+    void *currentActor = *(void *volatile *)&actor;
+    RHMission *mission = *(RHMission *volatile *)&campaign->m_17c;
+    RHCharacterProfile *key = (RHCharacterProfile *)*(void *volatile *)&((RHElementActorPC *)currentActor)->m_5fc;
+    RHMissionProfile *profile = mission->m_profile;
+    RHCharacterProfile **end = profile->m_74.end();
+    RHCharacterProfile **first = profile->m_74.begin();
+    return std::find(first, end, key) != end;
 }
 
 // FUNCTION: GAME 0x005793e0
@@ -5785,10 +5822,7 @@ void RHScript::RHUnk5798a0(void *object, bool value)
 
 class RHElementScroll;
 extern RHElementScroll *g_scrollExecutingScript;
-extern RHElementScroll **g_unk0x6c09dc;
-
-// GLOBAL: GAME 0x006c09e0
-RHElementScroll **g_unk0x006c09e0;
+#include "RHElementScrollStaticStorage.h"
 
 namespace VMCoreCustomDependencies
 {
@@ -6461,7 +6495,7 @@ void RHScript::SetRansomMoney(int value)
     ((RHScriptBatchCalls *)g_unk0x6c07fc)->Unk004520e0(1, value);
 }
 
-extern unsigned char g_unk0x006c0e48[];
+#include "RHPlayerProfileManagerStorage.h"
 
 namespace VMCoreCustomDependencies
 {
@@ -6772,36 +6806,26 @@ bool RHScript::HasAnyActionSelected(void *actor)
     return false;
 }
 
-// 71.67%; array-insertion frame and argument scheduling remain unresolved.
-// STUB: GAME 0x0057c500
-void RHScript::LinkTargetToFX(void *target, void *fx)
+DECOMP_STATIC_ASSERT(offsetof(RHScriptFXArray, first) == 4)
+DECOMP_STATIC_ASSERT(offsetof(RHScriptFXArray, last) == 8)
+DECOMP_STATIC_ASSERT(offsetof(RHScriptFXArray, end) == 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(RHScriptFXArray, dirty) == 0x14)
+
+static inline void RHScriptAppendFX(RHScriptFXArray *array, void *const &target)
 {
-    if ((*(unsigned int *)((char *)target + 4) & 15) != 9)
-    {
-        SBAssert(0, "P:\\Robin Hood\\RHScript.cpp", 9490,
-                 // STRING: GAME 0x006b71c0
-                 "HALT STEHENBLEIBEN ! Script error (LinkTargetToPatch) : Invalid target");
-        return;
-    }
-    if ((*(unsigned int *)((char *)fx + 4) & 3) != 1)
-    {
-        SBAssert(0, "P:\\Robin Hood\\RHScript.cpp", 9496,
-                 // STRING: GAME 0x006b717c
-                 "HALT STEHENBLEIBEN ! Script error (LinkTargetToPatch) : Invalid FX");
-        return;
-    }
-    RHScriptFXArray *array = (RHScriptFXArray *)((char *)target + 0x16c);
-    void *value = fx;
     void **position = array->last;
     if ((unsigned int)(array->end - array->last) < 1)
     {
         unsigned int grow = array->Size() > 1 ? array->Size() : 1;
         int size = array->Size() + grow;
-        void **storage = (void **)operator new((size < 0 ? 0 : size) * 4);
+        int allocationSize = size;
+        if (allocationSize < 0)
+            allocationSize = 0;
+        void **storage = (void **)operator new(allocationSize * 4);
         void **destination = storage;
         for (void **source = array->first; source != position; ++source, ++destination)
             RHSeqList::CopyData((RHSequenceElement **)destination, (RHSequenceElement *const *)source);
-        array->Unk004fe450(destination, 1, value);
+        array->Unk004fe450(destination, 1, target);
         ++destination;
         array->Unk004fe420(position, array->last, destination);
         array->Unk005008e0(array->first, array->last);
@@ -6815,9 +6839,9 @@ void RHScript::LinkTargetToFX(void *target, void *fx)
     else if ((unsigned int)(array->last - position) < 1)
     {
         array->Unk004fe420(position, array->last, position + 1);
-        array->Unk004fe450(array->last, 1 - (array->last - position), value);
+        array->Unk004fe450(array->last, 1 - (array->last - position), target);
         for (void **destination = position; destination != array->last; ++destination)
-            *destination = value;
+            *destination = target;
         ++array->last;
         array->dirty = true;
     }
@@ -6829,10 +6853,34 @@ void RHScript::LinkTargetToFX(void *target, void *fx)
         while (source != position) *--destination = *--source;
         void **last = position + 1;
         for (destination = position; destination != last; ++destination)
-            *destination = value;
+            *destination = target;
         ++array->last;
         array->dirty = true;
     }
+}
+
+// STUB: GAME 0x0057c500
+void RHScript::LinkTargetToFX(void *target, void *fx)
+{
+    struct Kind4 { unsigned value : 4; };
+    struct Kind2 { unsigned value : 2; };
+    if (((Kind4 *)((char *)target + 4))->value != 9)
+    {
+        SBAssert(0, "P:\\Robin Hood\\RHScript.cpp", 9490,
+                 // STRING: GAME 0x006b71c0
+                 "HALT STEHENBLEIBEN ! Script error (LinkTargetToPatch) : Invalid target");
+        return;
+    }
+    if (((Kind2 *)((char *)fx + 4))->value != 1)
+    {
+        SBAssert(0, "P:\\Robin Hood\\RHScript.cpp", 9496,
+                 // STRING: GAME 0x006b717c
+                 "HALT STEHENBLEIBEN ! Script error (LinkTargetToPatch) : Invalid FX");
+        return;
+    }
+    RHScriptFXArray *array = (RHScriptFXArray *)((char *)target + 0x16c);
+    target = fx;
+    RHScriptAppendFX(array, target);
 }
 
 // Force emission: non-inline member functions defined here are emitted into the
@@ -7119,12 +7167,7 @@ public:
 #include "RHActorScriptContext.h"
 
 
-class RHUnk00580220
-{
-public:
-    void FUN_00580220(int value);
-};
-
+#include "RHSectorProduction.h"
 
 class RHUnk00580330
 {
@@ -7192,7 +7235,7 @@ void FUN_005799d0(int first, int second, int third)
 void FUN_00579a00(int first, int second)
 {
     RHSectorProduction *production = ((RHCampaign *)g_unk0x6c07fc)->FUN_00456a10(first);
-    ((RHUnk00580220 *)production)->FUN_00580220(second);
+    production->FUN_00580220(*(const RHPointScript *)second);
 }
 }
 

@@ -21,7 +21,8 @@ public:
     void *value; // 0x1c
 };
 
-extern RHScriptActorArray g_unk0x6c0f30;
+#include "RHScriptStaticStorage.h"
+#define g_unk0x6c0f30 (*(RHScriptActorArray *)&RHScriptStaticStorage::marrayElementsScript)
 bool FUN_00570850(void *actor);
 void FUN_00570900(void *actor);
 
