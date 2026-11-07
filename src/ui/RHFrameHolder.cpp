@@ -838,31 +838,7 @@ struct RHFramePoolNode
 #include <list>
 #include "RHShortBriefings.h"
 
-class RHFramePoolListLifetime
-{
-public:
-    void FUN_005062b0();
-    std::allocator<RHFramePoolBlock> m_allocator;
-    RHFramePoolNode *m_head;
-    unsigned long m_count;
-};
-
-// FUNCTION: GAME 0x005062b0
-void RHFramePoolListLifetime::FUN_005062b0()
-{
-    std::allocator<RHFramePoolBlock> allocator;
-    memcpy(&m_allocator, &allocator, sizeof(allocator));
-    RHFramePoolNode *node = (RHFramePoolNode *)operator new(sizeof(RHFramePoolNode));
-    node->next = node;
-    node->previous = node;
-    m_head = node;
-    m_count = 0;
-}
-
-void RHFramePoolListEmit(RHFramePoolListLifetime *list)
-{
-    list->FUN_005062b0();
-}
+typedef std::list<RHFramePoolBlock> RHFramePoolBlockList;
 
 struct RHFramePoolList
 {
@@ -893,6 +869,8 @@ struct RHFramePoolPage
 class RHFrameMemoryPool
 {
 public:
+    RHFrameMemoryPool();
+    ~RHFrameMemoryPool();
     void FUN_005062e0();
     unsigned long FUN_00506460(unsigned long size);
     void FUN_005064b0(RHFramePoolList *list, const RHFramePoolBlock &value);
@@ -900,14 +878,11 @@ public:
     unsigned long FUN_005065b0() const;
     unsigned long FUN_005065d0() const;
     static bool FUN_00506600(const RHFramePoolBlock &first, const RHFramePoolBlock &second);
-    unsigned long Size() const { if (!m_first) return 0; return m_last - m_first; }
+    unsigned long Size() const { return m_pages.size(); }
 
     RHFramePoolList *m_free;
     RHFramePoolList *m_used;
-    unsigned long m_allocator;
-    RHFramePoolPage *m_first;
-    RHFramePoolPage *m_last;
-    RHFramePoolPage *m_end;
+    std::vector<RHFramePoolPage> m_pages;
 };
 
 extern double g_unk0x00677670;
@@ -916,9 +891,26 @@ double FUN_006433ab(double) throw();
 DECOMP_SIZE_ASSERT(RHFramePoolBlock, 0x0c)
 DECOMP_SIZE_ASSERT(RHFramePoolNode, 0x14)
 DECOMP_SIZE_ASSERT(RHFramePoolList, 0x0c)
-DECOMP_SIZE_ASSERT(RHFramePoolListLifetime, 0x0c)
+DECOMP_SIZE_ASSERT(RHFramePoolBlockList, 0x0c)
 DECOMP_SIZE_ASSERT(RHFramePoolPage, 0x08)
 DECOMP_SIZE_ASSERT(RHFrameMemoryPool, 0x18)
+
+// FUNCTION: GAME 0x005061d0
+RHFrameMemoryPool::RHFrameMemoryPool()
+{
+    m_free = (RHFramePoolList *)new RHFramePoolBlockList[17];
+    m_used = (RHFramePoolList *)new RHFramePoolBlockList[17];
+    FUN_005062e0();
+}
+
+// TEMPLATE: GAME 0x005062b0
+// ??_F?$list@URHFramePoolBlock@@V?$allocator@URHFramePoolBlock@@@std@@@std@@QAEXXZ
+
+// TEMPLATE: GAME 0x004e52a0 FOLDED
+// ??1?$list@URHFramePoolBlock@@V?$allocator@URHFramePoolBlock@@@std@@@std@@QAE@XZ
+
+// LIBRARY: GAME 0x00570330 FOLDED
+// ??1?$vector@URHFramePoolPage@@V?$allocator@URHFramePoolPage@@@std@@@std@@QAE@XZ
 
 // FUNCTION: GAME 0x005062e0
 void RHFrameMemoryPool::FUN_005062e0()
@@ -937,6 +929,15 @@ void RHFrameMemoryPool::FUN_005062e0()
     *(unsigned short *)&block.page = (unsigned short)(pages.size() - 1);
     RHFramePoolList &list = m_free[16];
     list.Insert(list.head, block);
+}
+
+// FUNCTION: GAME 0x005063a0
+RHFrameMemoryPool::~RHFrameMemoryPool()
+{
+    for (RHFramePoolPage *page = m_pages.begin(); page != m_pages.end(); ++page)
+        operator delete(page->address);
+    delete[] (RHFramePoolBlockList *)m_free;
+    delete[] (RHFramePoolBlockList *)m_used;
 }
 
 // FUNCTION: GAME 0x00506460
