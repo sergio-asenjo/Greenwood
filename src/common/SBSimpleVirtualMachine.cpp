@@ -7,11 +7,29 @@
 
 typedef int SBSimpleVirtualMachineSizeAssert[(sizeof(SBSimpleVirtualMachine) == 0x5c) ? 1 : -1];
 
-// GLOBAL: GAME 0x006c1950
-SBSimpleUnkCodeManager g_unk0x006c1950;
+class SBSimpleVirtualMachineStaticStorage
+{
+public:
+    static SCSerialize mCodeManager;
+    static VMUnk0063a140 mStaticArea;
+};
 
+// GLOBAL: GAME 0x006c1950
+SCSerialize SBSimpleVirtualMachineStaticStorage::mCodeManager;
+
+#pragma inline_depth(0)
 // GLOBAL: GAME 0x006c1960
-VMUnk0063a140 g_unk0x006c1960;
+VMUnk0063a140 SBSimpleVirtualMachineStaticStorage::mStaticArea;
+#pragma inline_depth(8)
+
+// SYNTHETIC: GAME 0x006398f0
+// $E24
+
+// SYNTHETIC: GAME 0x00639940
+// $E30
+
+#define g_unk0x006c1950 (*(SBSimpleUnkCodeManager *)&SBSimpleVirtualMachineStaticStorage::mCodeManager)
+#define g_unk0x006c1960 SBSimpleVirtualMachineStaticStorage::mStaticArea
 
 // GLOBAL: GAME 0x006c1969
 bool g_unk0x006c1969 = false;
@@ -25,19 +43,8 @@ inline const char *SBSimpleText(const std::string &text)
     return value != 0 ? value : "";
 }
 
-#pragma inline_depth(0)
-// FUNCTION: GAME 0x00639920
-void FUN_00639920()
-{
-    g_unk0x006c1960.VMUnk0063a140::VMUnk0063a140(0);
-}
-#pragma inline_depth(8)
-
-void EmitSBSimpleVirtualMachineGlue()
-{
-    FUN_00639920();
-    g_unk0x006c1960.~VMUnk0063a140();
-}
+// SYNTHETIC: GAME 0x00639920
+// $E29
 
 // FUNCTION: GAME 0x00639960
 SBSimpleVirtualMachine::SBSimpleVirtualMachine()

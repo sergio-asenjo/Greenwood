@@ -23,7 +23,7 @@ std::string FUN_005f7c30()
     return directory;
 }
 
-// LIBRARY: GAME 0x005f7d80
+// SYNTHETIC: GAME 0x005f7d80
 // $E15
 
 // TEMPLATE: GAME 0x004e4c70

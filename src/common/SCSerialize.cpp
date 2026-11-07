@@ -4,6 +4,21 @@
 #include <new>
 #include <string.h>
 
+class SCGlobalStaticStorage
+{
+public:
+    static std::string mstringPathAndFileName;
+};
+
+// GLOBAL: GAME 0x006c1978
+std::string SCGlobalStaticStorage::mstringPathAndFileName;
+
+// SYNTHETIC: GAME 0x0063c6a0
+// $E22
+
+// SYNTHETIC: GAME 0x0063c6d0
+// $E23
+
 typedef int SCSerializeSizeAssert[(sizeof(SCSerialize) == 0x10) ? 1 : -1];
 typedef int SCSerializeObjectSizeAssert[(sizeof(SCSerializeUnkObject) == 0x6c) ? 1 : -1];
 typedef int SCSerializeRecordSizeAssert[(sizeof(SCSerializeRecordValue) == 0x38) ? 1 : -1];

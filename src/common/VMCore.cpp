@@ -35,8 +35,25 @@ VMUnk00635210Handler *g_unk0x006c1944 = 0;
 
 #include <list>
 
+class VMCoreStaticStorage
+{
+public:
+    static std::list<VMUnk00634ab0Record> mlTypeSerializer;
+};
+
 // GLOBAL: GAME 0x006c1930
-std::list<VMUnk00634ab0Record> g_unk0x006c1930;
+std::list<VMUnk00634ab0Record> VMCoreStaticStorage::mlTypeSerializer;
+
+#define g_unk0x006c1930 VMCoreStaticStorage::mlTypeSerializer
+
+// SYNTHETIC: GAME 0x00634830
+// $E22
+
+// SYNTHETIC: GAME 0x00634870
+// $E23
+
+// TEMPLATE: GAME 0x00634bb0 FOLDED
+// ??1VMUnk00634ab0Record@@QAE@XZ
 
 // STUB: GAME 0x006348f0
 bool VMCore::SerializeMemberVariable(SBFile &file)
