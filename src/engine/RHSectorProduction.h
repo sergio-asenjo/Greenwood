@@ -116,6 +116,7 @@ public:
     static bool FUN_005818c0(SBFile &file, Occupants &occupants,
                             bool (*serialize)(SBFile &, Occupant &));
     static int FUN_00580350(int type);
+    void FUN_00580220(const class RHPointScript &script);
     int FUN_005803c0();
     unsigned int FUN_00580500();
     unsigned int FUN_005806b0() const;

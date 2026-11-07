@@ -122,10 +122,3 @@ void RHUnk0054b150::FUN_0054b150(bool flag, bool immediate)
     }
 }
 
-class RHUnk00580220
-{
-public:
-    void FUN_00580220(int value);
-};
-
-void RHUnk00580220::FUN_00580220(int) {}

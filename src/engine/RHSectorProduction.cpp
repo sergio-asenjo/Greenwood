@@ -27,6 +27,17 @@ public:
 
 struct RHBonusProjection;
 
+#include "RHSectorBuilding.h"
+
+class RHPointScript : public SBGeoPoint2D
+{
+public:
+    virtual ~RHPointScript();
+    char m_0c[0x14];
+    unsigned short m_20;
+    RHUnk0057d490 *m_24;
+};
+
 class RHBonusInfoBase
 {
 public:
@@ -124,6 +135,26 @@ public:
     bool m_15;
     int m_18;
     void *m_1c;
+    int Size() const { return m_first == 0 ? 0 : m_last - m_first; }
+    int Search(void *value)
+    {
+        m_dirty = false;
+        m_1c = value;
+        void **first = m_first;
+        int count = first == 0 ? 0 : m_last - first;
+        m_cursor = first;
+        m_15 = true;
+        int index;
+        for (index = 0; index < count; ++index, ++m_cursor)
+        {
+            if (*m_cursor == value)
+                break;
+        }
+        if (index >= count)
+            index = -1;
+        m_18 = index;
+        return index;
+    }
     int Find(void *value)
     {
         m_dirty = false;
@@ -150,6 +181,21 @@ struct RHSectorProductionGlobal
     char m_pad0[0x4140];
     RHFastFindGateArray m_4140;
 };
+
+DECOMP_SIZE_ASSERT(RHFastFindGateArray, 0x20)
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindGateArray, m_first) == 4)
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindGateArray, m_last) == 8)
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindGateArray, m_cursor) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindGateArray, m_dirty) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindGateArray, m_15) == 0x15)
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindGateArray, m_18) == 0x18)
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindGateArray, m_1c) == 0x1c)
+DECOMP_STATIC_ASSERT(offsetof(RHSectorProductionGlobal, m_4140) == 0x4140)
+DECOMP_STATIC_ASSERT(offsetof(RHSectorProduction, m_points) == 0x0c)
+DECOMP_SIZE_ASSERT(RHSectorProduction::Point, 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHSectorProduction::Point, m_8) == 8)
+DECOMP_STATIC_ASSERT(offsetof(RHSectorProduction::Point, m_a) == 0x0a)
+DECOMP_STATIC_ASSERT(offsetof(RHSectorProduction::Point, m_c) == 0x0c)
 
 struct RHSectorProductionPositionView
 {
@@ -214,6 +260,26 @@ inline RHSectorProduction::Occupant &RHSectorProduction::Occupant::operator=(con
     m_point = other.m_point;
     m_c = other.m_c;
     return *this;
+}
+
+// STUB: GAME 0x00580220
+void RHSectorProduction::FUN_00580220(const RHPointScript &script)
+{
+    Point point;
+    point.m_point = script;
+    unsigned short layer = script.m_20;
+    point.m_8 = layer;
+    RHUnk0057d490 *area = script.m_24;
+    layer = area->m_38;
+    point.m_a = layer;
+    RHBonusProjection *projection = area->FUN_0057d800(script);
+    if (projection == 0)
+        point.m_c = 0xffff;
+    else
+        point.m_c = ((RHSectorProductionGlobal *)g_unk0x6c0a9c)->m_4140.Search(projection);
+    void (Points::*insert)(Points::iterator, unsigned, const Point &) = &Points::insert;
+    Points &points = m_points;
+    (points.*insert)(points.end(), 1, point);
 }
 
 // FUNCTION: GAME 0x00580350
