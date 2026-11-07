@@ -10,6 +10,7 @@
 #include "SBDrawManagerCore.h"
 #include "SBDrawViewport.h"
 #include "SBInput.h"
+#include "RHSpriteListStorage.h"
 
 DECOMP_SIZE_ASSERT(SBThreadedInput, 0x64)
 
@@ -63,14 +64,70 @@ struct SBInputNode
     SBThreadedInputElement m_value;
 };
 
-// GLOBAL: GAME 0x006c1260
-RHUnk0046eb30 g_inputList;
-
+#define g_inputList (*(RHUnk0046eb30 *)&SBThreadedInput::mlistInput)
+#define g_mouseDisplace SBThreadedInput::mvectorDisplace
+#define g_inputClipping SBThreadedInput::mboxClipping
 #define g_inputHead (*(SBInputNode **)&g_inputList.head)
 #define g_inputCount (*(unsigned long *)&g_inputList.count)
 #define g_inputCurrent (*(SBInputNode **)&g_inputList.cursor)
 #define g_inputChanged g_inputList.valid
 #define g_inputIndex g_inputList.index
+
+// GLOBAL: GAME 0x006c1260
+RHUnk00564020 SBThreadedInput::mlistInput;
+// GLOBAL: GAME 0x006c1300
+SBGeoPoint2D SBThreadedInput::mpointPosition;
+// GLOBAL: GAME 0x006c1298
+SBGeoVector2D SBThreadedInput::mvectorHotSpot;
+
+static inline void AdvanceInput(int distance)
+{
+    for (; distance > 0; --distance)
+        g_inputCurrent = g_inputCurrent->m_next;
+    for (; distance < 0; ++distance)
+        g_inputCurrent = g_inputCurrent->m_previous;
+}
+
+// GLOBAL: GAME 0x006c1220
+SBGeoVector2D SBThreadedInput::mvectorDisplace;
+// GLOBAL: GAME 0x006c12e8
+SBGeoBoundingBox2D SBThreadedInput::mboxClipping;
+
+static inline void RemoveFirstInput()
+{
+    SBInputNode *node = g_inputHead->m_next;
+    node->m_previous->m_next = node->m_next;
+    node->m_next->m_previous = node->m_previous;
+    operator delete(node);
+    --g_inputCount;
+    g_inputChanged = true;
+}
+
+// GLOBAL: GAME 0x006c11f0
+SBGeoBoundingBox2D SBThreadedInput::mboxSaved;
+// GLOBAL: GAME 0x006c1328
+SBGeoPoint2D SBThreadedInput::mpointScreenPositionSaved;
+
+// SYNTHETIC: GAME 0x005f0550
+// $E24
+
+// SYNTHETIC: GAME 0x005f05a0
+// $E30
+
+// SYNTHETIC: GAME 0x005f05f0
+// $E35
+
+// SYNTHETIC: GAME 0x005f0640
+// $E40
+
+// SYNTHETIC: GAME 0x005f0690
+// $E46
+
+// SYNTHETIC: GAME 0x005f06e0
+// $E51
+
+// SYNTHETIC: GAME 0x005f0730
+// $E57
 
 // GLOBAL: GAME 0x006c12c1
 bool g_inputAlternate;
@@ -83,12 +140,6 @@ static bool g_inputRandomMotion;
 // GLOBAL: GAME 0x006c12ac
 bool g_mouseEnabled;
 
-// GLOBAL: GAME 0x006c1300
-SBInputPosition g_inputPosition;
-
-// GLOBAL: GAME 0x006c12e8
-static SBGeoBoundingBox2D g_inputClipping;
-
 // GLOBAL: GAME 0x006c1338
 static SBResourceManager *g_inputResources;
 
@@ -100,9 +151,6 @@ static unsigned long g_frameTime;
 
 // GLOBAL: GAME 0x006c1294
 static bool g_selfIncrement;
-
-// GLOBAL: GAME 0x006c1298
-SBInputPosition g_hotSpot;
 
 // GLOBAL: GAME 0x006c12b0
 static unsigned long g_renderingSurface;
@@ -293,14 +341,6 @@ unsigned long SBThreadedInput::GetNumberOfInputsUTS()
 struct RHUnk005c9010Iterator;
 void FUN_005c9010(RHUnk005c9010Iterator &, int, std::bidirectional_iterator_tag);
 
-static inline void AdvanceInput(int distance)
-{
-    for (; distance > 0; --distance)
-        g_inputCurrent = g_inputCurrent->m_next;
-    for (; distance < 0; ++distance)
-        g_inputCurrent = g_inputCurrent->m_previous;
-}
-
 // Parked: cached-index lowering saves an extra register and schedules global loads differently.
 // STUB: GAME 0x005f0d20
 bool SBThreadedInput::FUN_005f0d20(int index, SBInputMouseState &mouse, unsigned char *keyboard)
@@ -393,16 +433,6 @@ bool SBThreadedInput::CleanUpInputs()
 
 #include "ToolboxMouseState.h"
 
-static inline void RemoveFirstInput()
-{
-    SBInputNode *node = g_inputHead->m_next;
-    node->m_previous->m_next = node->m_next;
-    node->m_next->m_previous = node->m_previous;
-    operator delete(node);
-    --g_inputCount;
-    g_inputChanged = true;
-}
-
 int FUN_005fb030(unsigned scanCode, unsigned short *output, int capacity, int mode);
 
 // STUB: GAME 0x005f1000
@@ -446,7 +476,6 @@ unsigned short SBThreadedInput::GetChar()
     }
 }
 
-// Parked: queue-consumer helper layering and conditional register saves differ from the original.
 // STUB: GAME 0x005f1150
 bool FUN_005f1150(ToolboxMouseState &mouse, unsigned char *keyboard)
 {
@@ -457,7 +486,8 @@ bool FUN_005f1150(ToolboxMouseState &mouse, unsigned char *keyboard)
         return false;
     }
     SBThreadedInputElement element = g_inputHead->m_next->m_value;
-    RemoveFirstInput();
+    g_inputList.erase(RHScriptIter((RHScriptNode *)g_inputHead->m_next));
+    g_inputChanged = true;
     LeaveCriticalSection(g_inputCriticalSection);
     if (element.m_keyboard == true)
     {
@@ -478,7 +508,8 @@ bool FUN_005f1150(ToolboxMouseState &mouse, unsigned char *keyboard)
             if (element.m_keyboard == false && element.m_offset == 4)
             {
                 mouse.m_y = (short)element.m_data;
-                RemoveFirstInput();
+                g_inputList.erase(RHScriptIter((RHScriptNode *)g_inputHead->m_next));
+                g_inputChanged = true;
             }
         }
         LeaveCriticalSection(g_inputCriticalSection);
@@ -1112,9 +1143,6 @@ void SBThreadedInput::ChangeShadowIntoPulse(unsigned long surface, const SBGeoBo
 
 // GLOBAL: GAME 0x006c1208
 static SBInputMouseState g_oldMouse;
-
-// GLOBAL: GAME 0x006c1220
-static SBInputPosition g_mouseDisplace;
 
 // GLOBAL: GAME 0x006c1324
 static unsigned short g_buttonState;

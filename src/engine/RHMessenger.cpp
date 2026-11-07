@@ -808,9 +808,6 @@ public:
 
 #include "SBGeoPolyLine2DList.h"
 
-struct SBInputPosition;
-extern SBInputPosition g_inputPosition;
-
 struct RHMessengerFlags
 {
     char m_00[0x14]; // 0x00
@@ -852,8 +849,8 @@ void RHMessenger::Reset()
         ((RHUnk0046eb30 *)((char *)this + 0x2c))->erase(RHScriptIter(current));
     }
     RHMessengerField<bool>(this, 0x3c) = true;
-    RHMessengerField<SBGeoPoint2D>(this, 0x84) = *(const SBGeoPoint2D *)&g_inputPosition;
-    RHMessengerField<SBGeoPoint2D>(this, 0x8c) = *(const SBGeoPoint2D *)&g_inputPosition;
+    RHMessengerField<SBGeoPoint2D>(this, 0x84) = *(const SBGeoPoint2D *)&SBThreadedInput::mpointPosition;
+    RHMessengerField<SBGeoPoint2D>(this, 0x8c) = *(const SBGeoPoint2D *)&SBThreadedInput::mpointPosition;
     RHMessengerField<int>(this, 0x94) = 0;
     RHMessengerField<int>(this, 0x98) = 0;
     RHMessengerField<int>(this, 0x9c) = 0;
@@ -1078,7 +1075,7 @@ int RHMessenger::CheckThrustC(unsigned long a, unsigned long b, unsigned long c,
 #include "RHPlayerProfileAccess.h"
 #include "SBDrawViewport.h"
 
-extern unsigned char g_unk0x006c0e48[];
+#include "RHPlayerProfileManagerStorage.h"
 class RHUnk005ef320;
 extern RHUnk005ef320 *g_unk0x6c11d0;
 

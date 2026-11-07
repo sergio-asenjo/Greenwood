@@ -13,14 +13,8 @@ class SBGeoPoint2D;
 struct SBThreadedInputEvent;
 struct SBInputMouseState;
 
-struct SBInputPosition
-{
-    float m_x;
-    float m_y;
-};
+class RHUnk00564020;
 
-extern SBInputPosition g_inputPosition;
-extern SBInputPosition g_hotSpot;
 extern bool g_inputAlternate;
 extern bool g_instantRefresh;
 extern bool g_mouseEnabled;
@@ -76,6 +70,14 @@ public:
     static unsigned short GetHeight();
     void Emit();
 
+    static RHUnk00564020 mlistInput;
+    static SBGeoPoint2D mpointPosition;
+    static SBGeoVector2D mvectorHotSpot;
+    static SBGeoVector2D mvectorDisplace;
+    static SBGeoBoundingBox2D mboxClipping;
+    static SBGeoBoundingBox2D mboxSaved;
+    static SBGeoPoint2D mpointScreenPositionSaved;
+
 private:
     unsigned long m_10; // 0x10
     SBGeoBoundingBox2D m_14; // 0x14
@@ -83,6 +85,9 @@ private:
     SBGeoBoundingBox2D m_3c; // 0x3c
     SBGeoBoundingBox2D m_50; // 0x50
 };
+
+#define g_inputPosition SBThreadedInput::mpointPosition
+#define g_hotSpot SBThreadedInput::mvectorHotSpot
 
 unsigned long FUN_005f0ce0();
 

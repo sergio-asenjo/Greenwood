@@ -28,7 +28,7 @@ DECOMP_STATIC_ASSERT(offsetof(RHGamePadSelection, m_dirty) == 0x10)
 DECOMP_STATIC_ASSERT(offsetof(RHGamePadSelection, m_index) == 0x14)
 DECOMP_STATIC_ASSERT(offsetof(RHGamePadEngine, m_selection) == 0x49f8)
 
-extern unsigned char g_unk0x006c0e48[];
+#include "RHPlayerProfileManagerStorage.h"
 
 class RHUnk0051a4e0
 {
@@ -472,7 +472,7 @@ void RHGamePad::ManageMoveAxis(SBInputJoystickState &state)
             m_messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0x25, 0, mode != 10));
         }
         if (*(int *)((char *)pc + 0x268) && !state.m_buttons[10] && m_previous.m_buttons[10])
-            m_messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549120(3, *(SBGeoPoint2D *)&g_inputPosition, 2));
+            m_messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549120(3, *(SBGeoPoint2D *)&SBThreadedInput::mpointPosition, 2));
     }
 }
 
@@ -559,7 +559,7 @@ void RHGamePad::ManageMouseAxis(SBInputJoystickState &state)
             move.m_y = (state.m_axes[6] - 0x7fff) * 0.00061050063f;
         if (state.m_axes[5] - 0x8000)
             move.m_x = (state.m_axes[5] - 0x7fff) * 0.00061050063f;
-        SBThreadedInput::ReachPosition((*(SBGeoPoint2D *)&g_inputPosition).Unk005fc190(move));
+        SBThreadedInput::ReachPosition((*(SBGeoPoint2D *)&SBThreadedInput::mpointPosition).Unk005fc190(move));
         if (state.m_buttons[11] && !m_previous.m_buttons[11])
             SBThreadedInput::PushButton(SBButtonLeft);
         if (!state.m_buttons[11] && m_previous.m_buttons[11])
@@ -624,9 +624,9 @@ void RHGamePad::ManageActionSelect(SBInputJoystickState &state)
         }
     }
     if (state.m_buttons[3] && !m_previous.m_buttons[3])
-        m_messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549120(3, *(SBGeoPoint2D *)&g_inputPosition, 0x80));
+        m_messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549120(3, *(SBGeoPoint2D *)&SBThreadedInput::mpointPosition, 0x80));
     if (!state.m_buttons[3] && m_previous.m_buttons[3])
-        m_messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549120(3, *(SBGeoPoint2D *)&g_inputPosition, 2));
+        m_messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549120(3, *(SBGeoPoint2D *)&SBThreadedInput::mpointPosition, 2));
 }
 
 // Parked: target keeps a second frame slot for the clean-cursor seek and holds the count in ECX.
