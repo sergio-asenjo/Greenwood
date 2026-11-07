@@ -33,4 +33,31 @@ public:
     T m_20;
 };
 
+template<class T> class SBListAutoDeleteStorage : public std::list<T>
+{
+public:
+    SBListAutoDeleteStorage() : m_dirty(true) {}
+    ~SBListAutoDeleteStorage() { Clear(); }
+    void Clear() { clear(); }
+    void *Head() { return _Head; }
+    unsigned &Count() { return _Size; }
+    void Destroy()
+    {
+        for (m_current = begin(); m_current != end(); m_current++)
+            if (*m_current)
+                delete *m_current;
+        Clear();
+    }
+    typename std::list<T>::iterator m_current;
+    bool m_dirty;
+    int m_index;
+};
+
+template<class T> class SBListAutoDelete : public SBListAutoDeleteStorage<T>
+{
+public:
+    SBListAutoDelete() {}
+    ~SBListAutoDelete() { Destroy(); }
+};
+
 #endif
