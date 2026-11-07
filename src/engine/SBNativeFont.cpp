@@ -83,24 +83,25 @@ unsigned SBNativeFont::FUN_00616f40() const
     return m_nativeHeader[1];
 }
 
-// Parked: first-search iterator value occupies +0x10 instead of +0x0c; two slot operands differ.
-// STUB: GAME 0x00616f50
+// FUNCTION: GAME 0x00616f50
 const SBNativeFont::CharacterInfo *SBNativeFont::GetCharacterInfo(unsigned short character) const
 {
     SBNativeFontCharacterTree &characters = (SBNativeFontCharacterTree &)m_characters;
     SBResourceUnkKeyIterator found = characters.Find(character);
     if (found.m_node != m_characters.m_head)
         return (const CharacterInfo *)((char *)found.m_node + 0x10);
-    unsigned short space = 0x20;
-    SBResourceUnkKeyIterator fallback(characters.FUN_00618280(space));
-    SBResourceUnkKeyNode *fallbackNode = fallback.m_node;
-    SBResourceUnkKeyIterator fallbackValue(fallbackNode);
-    SBResourceUnkKeyIterator replacement = fallbackNode != characters.FUN_00617690().m_node &&
-        space >= *(unsigned short *)&fallbackNode->m_key ? fallbackValue : characters.FUN_00617690();
-    const CharacterInfo *result = replacement.m_node == m_characters.m_head ?
-        (const CharacterInfo *)((char *)replacement.m_node + 0x10) : 0;
-    ((SBFontUnk0061e840 *)this)->FUN_0061ebd0(character);
-    return result;
+    {
+        unsigned short space = 0x20;
+        SBResourceUnkKeyIterator fallback(characters.FUN_00618280(space));
+        SBResourceUnkKeyNode *fallbackNode = fallback.m_node;
+        SBResourceUnkKeyIterator fallbackValue(fallbackNode);
+        SBResourceUnkKeyIterator replacement = fallbackNode != characters.FUN_00617690().m_node &&
+            space >= *(unsigned short *)&fallbackNode->m_key ? fallbackValue : characters.FUN_00617690();
+        const CharacterInfo *result = replacement.m_node == m_characters.m_head ?
+            (const CharacterInfo *)((char *)replacement.m_node + 0x10) : 0;
+        ((SBFontUnk0061e840 *)this)->FUN_0061ebd0(character);
+        return result;
+    }
 }
 
 // FUNCTION: GAME 0x00617030

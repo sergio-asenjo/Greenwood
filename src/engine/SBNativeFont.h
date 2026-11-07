@@ -97,7 +97,11 @@ public:
     SBResourceUnkKeyIterator FUN_00617e20(const unsigned short &);
     SBResourceUnkKeyIterator Find(const unsigned short &character)
     {
-        SBResourceUnkKeyIterator value(FUN_00617e20(character).m_node);
+        return FindValue(FUN_00617e20(character), character);
+    }
+    SBResourceUnkKeyIterator FindValue(const SBResourceUnkKeyIterator &candidate, const unsigned short &character)
+    {
+        SBResourceUnkKeyIterator value(candidate.m_node);
         SBResourceUnkKeyNode *node = value.m_node;
         return node == FUN_00617690().m_node || character < *(unsigned short *)&node->m_key ? FUN_00617690() : value;
     }
