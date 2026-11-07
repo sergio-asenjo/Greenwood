@@ -17,7 +17,7 @@ public:
     char *FUN_0055dbb0();
 };
 
-extern undefined g_unk0x006c0e48[];
+#include "RHPlayerProfileManagerStorage.h"
 
 void (RHPCWideText::*g_rhpcWideEos)(unsigned) = &RHPCWideText::FUN_004239c0;
 RHPCWideText &(RHPCWideText::*g_rhpcWideAppend)(const std::wstring &, unsigned, unsigned) = &RHPCWideText::FUN_0055c680;

@@ -29,7 +29,7 @@
 
 #include "RHMenuCancelCalls.h"
 
-extern unsigned char g_unk0x006c0e48[];
+#include "RHPlayerProfileManagerStorage.h"
 
 template<class T>
 static T &RHGraphicsField(void *object, unsigned offset)

@@ -9,6 +9,7 @@
 class RHPlayerProfileList : public RHProfileListCursor
 {
 public:
+    ~RHPlayerProfileList();
     undefined m_18[0xc]; // [0x18, 0x24)
 
     __forceinline std::list<RHPlayerProfile *>::iterator &SetCurrent(std::list<RHPlayerProfile *>::iterator position)
@@ -157,6 +158,7 @@ class RHPlayerProfileManager
 {
 public:
     RHPlayerProfileManager();
+    ~RHPlayerProfileManager();
     RHPlayerProfile *AddProfile(const std::wstring &name, unsigned long difficulty);
     bool Load();
     bool Save() const;

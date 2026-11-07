@@ -32,6 +32,7 @@ public:
 class RHProfileListCursor : public SBListCursorStorage<RHPlayerProfileListStorage>
 {
 public:
+    ~RHProfileListCursor() { RHProfilePointerList::clear(); }
     void GoTo(int wanted);
 };
 

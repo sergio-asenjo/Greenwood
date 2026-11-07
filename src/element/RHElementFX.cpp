@@ -7,7 +7,7 @@
 DECOMP_STATIC_ASSERT(offsetof(RHElementFX, m_d4) == 0xd4)
 DECOMP_STATIC_ASSERT(offsetof(RHElementFX, m_f8) == 0xf8)
 
-extern unsigned char g_unk0x006c0e48[];
+#include "RHPlayerProfileManagerStorage.h"
 
 inline void FXBlit(RHUnkFXDraw *const &draw, RHUnkFXEngine *engine, SBGeoBoundingBox2D *box,
                    const unsigned long &handle, SBGeoBoundingBox2D *source)

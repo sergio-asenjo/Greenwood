@@ -52,7 +52,16 @@ RHGraphicConfig &RHPlayerProfile::FUN_0052ef80()
     return m_graphics;
 }
 
-extern undefined g_unk0x006c0e48[];
+#include "RHPlayerProfileManagerStorage.h"
+
+// GLOBAL: GAME 0x006c0e48
+RHPlayerProfileManager RHPlayerProfileManagerStorage::mInstance;
+
+// LIBRARY: GAME 0x0055d4d0
+// $E26
+
+// SYNTHETIC: GAME 0x0055d4f0
+// $E27
 
 // FUNCTION: GAME 0x0052ef90
 RHPlayerProfileManager *RHPlayerProfileManager::FUN_0052ef90()
@@ -301,6 +310,22 @@ inline void RHPlayerProfileList::RemoveAll()
         AdvanceCurrent();
     }
     Clear();
+}
+
+inline RHPlayerProfileList::~RHPlayerProfileList()
+{
+    m_current = begin();
+    while (m_current != end())
+    {
+        delete *m_current;
+        ++m_current;
+    }
+    erase(begin(), end());
+}
+
+// STUB: GAME 0x0055d510
+RHPlayerProfileManager::~RHPlayerProfileManager()
+{
 }
 
 // FUNCTION: GAME 0x0055dea0

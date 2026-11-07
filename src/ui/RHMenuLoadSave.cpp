@@ -17,7 +17,7 @@
 #include "RHCopyPointers.h"
 #include "SBPicture.h"
 
-extern undefined g_unk0x006c0e48[];
+#include "RHPlayerProfileManagerStorage.h"
 extern wchar_t g_unk0x006c0b50[1];
 extern RHUnk005ef320 *g_unk0x6c11d0;
 

@@ -47,8 +47,6 @@ bool g_unk0x006c0788 = false;
 unsigned *g_unk0x006c08a4 = 0;
 
 
-// GLOBAL: GAME 0x006c0e48
-undefined g_unk0x006c0e48[0x2c] = {0};
 
 
 #define M(type, offset) RHMalignityField<type>(this, offset)

@@ -154,7 +154,7 @@ bool FUN_00549ae0(const RHMinimapSortElement *a, const RHMinimapSortElement *b){
 #include "SBFrameWnd.h"
 #include "RHPlayerProfileAccess.h"
 
-extern undefined g_unk0x006c0e48[];
+#include "RHPlayerProfileManagerStorage.h"
 extern float g_unk0x006c0c58[2];
 
 // STUB: GAME 0x00549c10
