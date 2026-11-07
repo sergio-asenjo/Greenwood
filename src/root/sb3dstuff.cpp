@@ -57,6 +57,17 @@ float RHUnk00613e90::FUN_005df680() const
     return y > z ? y : z;
 }
 
+static inline const RHUnk00613e90 &RHDistanceVectorResult(const RHUnk00613e90 &value)
+{
+    return value;
+}
+
+static inline RHUnk00613e90 RHDistanceProjectionSubtract(const RHUnk00613e90 &offset, const RHUnk00613e90 &scaled)
+{
+    RHUnk00613e90 projection = scaled;
+    return RHDistanceVectorResult(offset.FUN_005df550(projection));
+}
+
 // STUB: GAME 0x005df6e0
 RHUnk00613e90 RHUnk00613e90::DistanceVectorToLine(const RHUnk00613e90 &first, const RHUnk00613e90 &second)
 {
@@ -68,8 +79,7 @@ RHUnk00613e90 RHUnk00613e90::DistanceVectorToLine(const RHUnk00613e90 &first, co
     direction.y *= scale;
     direction.z *= scale;
     offset = FUN_005df550(first);
-    RHUnk00613e90 projection = direction.Scaled(offset.FUN_005df5f0(direction));
-    return offset.FUN_005df550(projection);
+    return RHDistanceProjectionSubtract(offset, direction.Scaled(offset.FUN_005df5f0(direction)));
 }
 
 void EmitRHDistanceVectorToLine(RHUnk00613e90 *value)

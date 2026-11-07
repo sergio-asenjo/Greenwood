@@ -1565,18 +1565,27 @@ RHMobileUnk00607da0 &RHMobileUnk00607da0::FUN_00607da0(const RHMobileUnk00607da0
     return *this;
 }
 
-// Parked: explicit construction removes EH but not argument-slot copies.
-// STUB: GAME 0x00607e90
+static inline void RHBoundingBoxExpandCoordinates(SBGeoBoundingBox2D &box, const float &x, const float &y)
+{
+    unsigned storage[2];
+    SBGeoPoint2D *point = (SBGeoPoint2D *)storage;
+    box.Unk00607dc0(point->SBGeoPoint2D::SBGeoPoint2D(x, y));
+    point->~SBGeoPoint2D();
+}
+
+// FUNCTION: GAME 0x00607e90
 void SBGeoBoundingBox2D::FUN_00607e90(const SBGeoBoundingBox2D &other)
 {
-    undefined storage[8];
-    SBGeoPoint2D *point = (SBGeoPoint2D *)storage;
-    point->SBGeoPoint2D::SBGeoPoint2D(other.m_p0.m_x, other.m_p0.m_y);
-    Unk00607dc0(*point);
-    point->~SBGeoPoint2D();
-    point->SBGeoPoint2D::SBGeoPoint2D(other.m_p1.m_x, other.m_p1.m_y);
-    Unk00607dc0(*point);
-    point->~SBGeoPoint2D();
+    {
+        float y = other.m_p0.m_y;
+        float x = other.m_p0.m_x;
+        RHBoundingBoxExpandCoordinates(*this, x, y);
+    }
+    {
+        float y = other.m_p1.m_y;
+        float x = other.m_p1.m_x;
+        RHBoundingBoxExpandCoordinates(*this, x, y);
+    }
 }
 
 // FUNCTION: GAME 0x006091b0

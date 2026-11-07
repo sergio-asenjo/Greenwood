@@ -299,7 +299,7 @@ RHSeekPoint::RHSeekPoint(RHMalignityPosition *position)
     }
 }
 
-// STUB: GAME 0x00522070
+// FUNCTION: GAME 0x00522070
 bool RHSeekPoint::FUN_00522070(const RHSeekPointDirectionView *source)
 {
     if (FUN_0040ec20(source->position, *(RHMalignityPosition *)&m_4).FUN_005fc700(1.0f) <= 10.0f) {

@@ -71,7 +71,7 @@ void RHDrawManager::FillBox(const SBGeoBoundingBox2D &box, unsigned short color)
     {
         ((RHMobileUnk00607da0 *)&clipped)->FUN_00607da0((const RHMobileUnk00607da0 &)FUN_006092c0(box));
         {
-            SBGeoVector2D offset(static_cast<const SBGeoVector2D &>(m_p0));
+            SBGeoVector2D offset(m_p0);
             clipped -= offset;
         }
         if (m_14 != 1.0f)
@@ -130,13 +130,13 @@ void RHDrawManager::DrawPolyLine(const SBGeoPolyLine2DList &list, unsigned short
 
 static __forceinline void RHDrawScaleMinimum(SBGeoBoundingBox2D &box, const float &scale)
 {
-    SBGeoVector2D corner(static_cast<const SBGeoVector2D &>(box.m_p0));
+    SBGeoVector2D corner(box.m_p0);
     box.SetMin(scale * corner);
 }
 
 static __forceinline void RHDrawScaleMaximum(SBGeoBoundingBox2D &box, const float &scale)
 {
-    SBGeoVector2D corner(static_cast<const SBGeoVector2D &>(box.m_p1));
+    SBGeoVector2D corner(box.m_p1);
     box.SetMax(scale * corner);
 }
 
@@ -158,13 +158,13 @@ void RHDrawManager::DrawDottedLine(const SBGeoPoint2D &from, const SBGeoPoint2D 
         SBGeoPoint2D start;
         start.m_x = direction.m_x * phase + from.m_x;
         start.m_y = direction.m_y * phase + from.m_y;
-        SBGeoVector2D offset(static_cast<const SBGeoVector2D &>(m_p0));
+        SBGeoVector2D offset(m_p0);
         ((RHUnk005fc3b0 *)&direction)->FUN_005fc4d0(dash);
         float remaining = length - phase;
         unsigned long count = (unsigned long)(remaining / dash);
         float covered = count * dash;
         phase = covered + (dash - remaining);
-        for (unsigned long i = 0; i != count + 1; i++)
+        for (++count; count != 0; --count)
         {
             SBGeoBoundingBox2D box;
             box.FUN_00609050(SBGeoPoint2D(start.m_x - thickness, start.m_y - thickness), SBGeoPoint2D(start.m_x + thickness, start.m_y + thickness));
