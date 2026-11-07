@@ -618,8 +618,7 @@ unsigned short RHMalignityOwnerCalls::FUN_00438710(unsigned short value, float l
     return value;
 }
 
-// Parked: pooled zero storage identity remains unbound.
-// STUB: GAME 0x00438aa0
+// FUNCTION: GAME 0x00438aa0
 void RHArtificialMalignity::CheckAmbushPoint(RHAmbushPoint *point, bool mode)
 {
     RHMalignityPosition position = RHMalignityField<RHMalignityPosition>(point, 4);
@@ -862,7 +861,6 @@ public:
     virtual void V20() = 0;
     virtual void V24(RHMalignityStimulus *stimulus) = 0;
     void FUN_00412d60(RHMalignityPosition position, short heading, int mode);
-    void FUN_0041a140(RHMalignityPosition position, unsigned value);
     void FUN_0041a3e0();
 };
 
@@ -1751,7 +1749,7 @@ void RHArtificialMalignity::FUN_00443af0(unsigned value)
     }
     target = FUN_00443e20(((RHMalignityActorCalls *)VirtualBase().m_actor)->V130(), 200, 2, 0);
 selected:
-    ((RHMalignityReactionCalls *)&VirtualBase())->FUN_0041a140(RHMalignityField<RHMalignityPosition>(&VirtualBase(), 0xd0), value);
+    VirtualBase().FUN_0041a140(RHMalignityField<RHMalignityPosition>(&VirtualBase(), 0xd0), value);
     VirtualBase().V10(3, 0x73);
     if (!target)
         ((RHArtificialIntelligence *)&VirtualBase())->Unk00412f70((RHMalignityField<short>(RHMalignityField<void *>(VirtualBase().m_actor, 0x50), 0xd8) + 5) % 16, 0);
@@ -2419,7 +2417,7 @@ void RHArtificialMalignity::FUN_00446700()
     }
 }
 
-// STUB: GAME 0x0042ff90
+// FUNCTION: GAME 0x0042ff90
 void RHArtificialMalignity::FUN_0042ff90()
 {
     if (RHMalignityField<void *>(VirtualBase().m_actor, 0x268))
@@ -3525,6 +3523,22 @@ unsigned short RHArtificialMalignity::FUN_0044d6c0()
     return 1;
 }
 
+// STUB: GAME 0x0044dc80
+bool RHArtificialMalignity::FUN_0044dc80(void *actor)
+{
+    void *guard = RHMalignityField<void *>((char *)actor + RHMalignityField<int *>(actor, 0x49c)[1], 0x52c);
+    void *target = RHMalignityField<void *>((char *)actor + RHMalignityField<int *>(actor, 0x49c)[1], 0x74c);
+    if (target && target != VirtualBase().m_actor)
+    {
+        if (((RHUnk005fc3b0 &)RHMalignityField<SBGeoPoint2D>(RHMalignityField<void *>(actor, 0x50), 0x24)
+            .Unk005fc110(RHMalignityField<SBGeoPoint2D>(RHMalignityField<void *>(target, 0x50), 0x24))).FUN_005fc700(1.0f) < 700.0f)
+            return false;
+    }
+    if (guard && guard != VirtualBase().m_actor)
+        return false;
+    return true;
+}
+
 // STUB: GAME 0x0048a130
 bool RHMalignityActorCalls::FUN_0048a130(void *actor)
 {
@@ -4230,6 +4244,7 @@ void RHArtificialMalignity::Emit(SBFile &file)
     CheckAmbushPoint(0, false);
     FUN_0042ff90();
     FUN_0044d6c0();
+    FUN_0044dc80(0);
     FUN_00438f80(*(RHMalignityStimulus *)this);
     FUN_00445b40();
     FUN_004461a0(0, 0);

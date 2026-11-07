@@ -38,7 +38,6 @@ public:
     virtual void V20() = 0;
     virtual void V24(RHMalignityStimulus *stimulus) = 0;
     void FUN_00412d60(RHMalignityPosition position, short heading, int mode);
-    void FUN_0041a140(RHMalignityPosition position, unsigned value);
     void FUN_0041a3e0();
 };
 
@@ -65,7 +64,6 @@ void RHMalignityReactionCalls::FUN_00412d60(RHMalignityPosition position, short 
     }
     ((RHArtificialIntelligence *)this)->Unk00412f40((RHUnk005fc3b0 *)&direction, mode);
 }
-void RHMalignityReactionCalls::FUN_0041a140(RHMalignityPosition, unsigned) {}
 void RHArtificialMalignity::FUN_0043b1b0(RHMalignityPosition, int) {}
 void RHArtificialMalignity::FUN_0043c960(RHMalignityPosition, int) {}
 
@@ -149,7 +147,8 @@ SBGeoPoint2D RHArtificialIntelligence::FUN_0040cbf0(const RHMalignityPosition &p
     return SBGeoPoint2D(position.x, position.y);
 }
 
-// FUNCTION: GAME 0x0040eab0
+// TEMPLATE: GAME 0x0040eab0 FOLDED
+// ?FUN_0040eab0@RHMalignityNodeValue@@QAEPAXH@Z
 void *RHMalignityNodeValue::FUN_0040eab0(int mode)
 {
     if (mode & 1)

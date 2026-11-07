@@ -31,6 +31,7 @@ public:
     unsigned short FUN_00433010();
     bool FUN_00433680();
     void FUN_0044d9c0();
+    bool FUN_0044dc80(void *actor);
     void FUN_00433790(const RHMalignityPosition &position);
     void FUN_00434320(void *actor);
     bool FUN_00435bd0();

@@ -157,3 +157,17 @@ void RHUnk0042c8f0::FUN_0042c8f0(int state, const RHUnk0042c8f0Payload *source)
     stimulus.m_type = 4;
     ((RHUnk0042c890Dispatch *)this)->v09(stimulus);
 }
+
+#include "RHArtificialIntelligence.h"
+
+class RHUnk0042c980
+{
+public:
+    void FUN_0042c980(int value);
+};
+
+// FUNCTION: GAME 0x0042c980
+void RHUnk0042c980::FUN_0042c980(int value)
+{
+    ((RHScriptBatchCalls *)((char *)this + (*(int **)this)[1]))->Unk0040d980(value);
+}

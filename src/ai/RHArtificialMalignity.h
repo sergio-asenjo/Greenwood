@@ -130,11 +130,7 @@ public:
     void *FUN_0040eab0(int mode);
 };
 
-class RHPath
-{
-public:
-    bool TestIfPathIsFine(RHElementActor *actor);
-};
+#include "RHPathCore.h"
 
 #include "RHMalignityAlertCalls.h"
 #include "RHMalignityOwnerCalls.h"
@@ -193,7 +189,7 @@ struct RHMalignityOwnedRecord : public SBGeoSegmentArray
 
 #include "RHSeekPoint.h"
 
-extern undefined g_unk0x006c0e48[];
+#include "RHPlayerProfileManagerStorage.h"
 
 // SIZE 0x14
 struct RHMalignityMessage
