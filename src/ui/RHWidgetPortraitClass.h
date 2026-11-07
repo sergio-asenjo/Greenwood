@@ -4,9 +4,12 @@
 #include "SB.h"
 #include "Decomp.h"
 #include <string>
+#include "RHPortraitUnk005d3880.h"
 
 class SBGeoPoint2D;
 class SBGeoBoundingBox2D;
+struct RHPortraitWidgetEvent;
+struct RHPortraitWidgetInput;
 
 // SIZE 0x04
 class RHUnk005d92c0Sub
@@ -29,7 +32,7 @@ public:
     virtual void v14(RHUnk005d92c0Sub *widget); // vtable+0x38
     virtual void v15(RHUnk005d92c0Sub *widget); // vtable+0x3c
     virtual void v16(); // vtable+0x40
-    virtual void v17(); // vtable+0x44
+    virtual bool v17(); // vtable+0x44
     virtual void v18(); // vtable+0x48
     virtual void v19(); // vtable+0x4c
     virtual void *v20(); // vtable+0x50
@@ -62,6 +65,7 @@ class RHWidgetPortrait
 public:
     bool Serialize(SBFile &file);
     void Emit(SBFile &file);
+    bool FUN_005d6940(unsigned short index);
 
     bool FUN_005d75c0(long first, long second, long third);
     void SetScrollState(long value);
@@ -71,7 +75,7 @@ public:
     bool FUN_005d7a30(long id);
     bool FUN_005d7b30(long id);
     bool FUN_005d7c40(unsigned int index, long id, int first, int second, int third, int fourth, int fifth, const std::wstring &text);
-    bool FUN_005d7ea0();
+    RHPortraitWidgetEvent *FUN_005d7ea0(const RHPortraitWidgetInput &input);
     bool FUN_005d8430();
     void FUN_005d8ed0(int value, int height);
     void FUN_005d9070();
@@ -91,10 +95,13 @@ public:
     bool FUN_005d9a20(int action);
     void FUN_005d9bc0();
     bool FUN_005d9eb0(int action);
+    bool FUN_005d9f00(int action, int focus, unsigned short state, bool modifier);
     std::wstring GetPCName() const;
 
 private:
-    undefined m_pad0[0x16c]; // 0x00
+    undefined m_pad0[0x90]; // 0x00
+    RHPortraitWidgetEvent m_90;
+    undefined m_pad_a0[0x16c - 0xa0];
     float m_16c;           // [0x16c]
     float m_170;           // [0x170]
     long m_174;

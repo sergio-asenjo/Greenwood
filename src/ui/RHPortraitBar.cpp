@@ -5,12 +5,6 @@
 
 #include "RHWidgetPortraitClass.h"
 
-class RHPortraitCtorCalls
-{
-public:
-    void FUN_005d6940(unsigned short index);
-};
-
 struct RHPortraitWindow
 {
     virtual void V00() = 0;
@@ -196,7 +190,7 @@ void RHPortraitBar::MakePlacement()
     {
         for (unsigned int index = 0; index < portraits.GetSize(); ++index)
         {
-            ((RHPortraitCtorCalls *)portraits.m_first[index])->FUN_005d6940((unsigned short)index);
+            portraits.m_first[index]->FUN_005d6940((unsigned short)index);
             ((RHPortraitWindow *)portraits.m_first[index])->V48(true);
         }
         shift = 0;
@@ -209,7 +203,7 @@ void RHPortraitBar::MakePlacement()
             unsigned int slot = (index + portraits.GetSize() - shift) % portraits.GetSize();
             if (slot < 5)
             {
-                ((RHPortraitCtorCalls *)portraits.m_first[index])->FUN_005d6940((unsigned short)slot);
+                portraits.m_first[index]->FUN_005d6940((unsigned short)slot);
                 ((RHPortraitWindow *)portraits.m_first[index])->V48(true);
             }
             else
@@ -257,7 +251,7 @@ void RHPortraitBar::Resize()
 {
     unsigned int count = portraits.GetSize() < 5 ? portraits.GetSize() : 5;
     for (unsigned int index = 0; index != count; ++index)
-        ((RHPortraitCtorCalls *)portraits.m_first[(shift + index) % portraits.GetSize()])->FUN_005d6940((unsigned short)index);
+        portraits.m_first[(shift + index) % portraits.GetSize()]->FUN_005d6940((unsigned short)index);
 }
 
 #include "RHPCSelectionQueryCalls.h"

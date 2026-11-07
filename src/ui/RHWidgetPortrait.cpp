@@ -184,6 +184,7 @@ public:
 
 DECOMP_SIZE_ASSERT(RHPortraitWidgetStrategy, 0xd8)
 DECOMP_SIZE_ASSERT(RHPortraitWidgetEvent, 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005d92c0Elem, m_4f) == 0x4f)
 
 class RHPortraitButtonDispatch
 {
@@ -3601,7 +3602,7 @@ RHPortraitFullLifetime::RHPortraitFullLifetime(unsigned short index, RHPortraitA
         ((RHPortraitSetupDispatch *)&m_customSecond)->v12(text, *(SBGeoBoundingBox2D *)&box, false, actor->FUN_00492730());
     }
     ((RHPortraitSetupDispatch *)&m_customSecond)->v1(0);
-    ((RHPortraitCtorCalls *)this)->FUN_005d6940(index);
+    ((RHWidgetPortrait *)this)->FUN_005d6940(index);
     *(void **)((char *)this + 0x94) = this;
     *(int *)((char *)this + 0x98) = 0;
     *(int *)((char *)this + 0x90) = 11;
@@ -3880,16 +3881,140 @@ bool RHWidgetPortrait::FUN_005d7c40(unsigned int index, long id, int first, int 
     return true;
 }
 
-// Parked: several resource/message construction paths and their shared cleanup remain unaligned.
-// STUB: GAME 0x005d7ea0
-bool RHWidgetPortrait::FUN_005d7ea0()
+#include "RHElementActor.h"
+#include "RHPCSelectionQueryCalls.h"
+
+DECOMP_SIZE_ASSERT(RHPortraitWidgetInput, 0x14)
+DECOMP_SIZE_ASSERT(RHPortraitWidgetEvent, 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitWidgetInput, point) == 0)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitWidgetInput, flags) == 0x0a)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitWidgetEvent, widget) == 4)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitWidgetEvent, next) == 0x0c)
+
+// FUNCTION: GAME 0x005d7ea0
+RHPortraitWidgetEvent *RHWidgetPortrait::FUN_005d7ea0(const RHPortraitWidgetInput &input)
 {
-    for (unsigned int i = 0; i < 3; ++i)
+    typedef char PortraitEventOffset[(offsetof(RHWidgetPortrait, m_90) == 0x90) ? 1 : -1];
+    extern RHEngine *g_pEngine;
+    RHMessenger *messenger = RHUnk00546050();
+    if (W(0).v17())
     {
-        RHUnk005d92c0Sub *widget = (RHUnk005d92c0Sub *)((char *)this + 0x97c + i * 0x104);
-        widget->v08(P(0xcb4 + i * 20));
+        char closed = m_arr[2].m_4f;
+        RHPortraitWidgetEvent *result = &m_90;
+        m_90.type = 11;
+        m_90.next = 0;
+        if (!closed)
+        {
+            if (*(unsigned short *)((char *)this + 0xcaa) > 0)
+            {
+                --*(unsigned short *)((char *)this + 0xcaa);
+                if (FUN_005d9210().FUN_00608400(input.point) && input.flags == 8 &&
+                    (!((SBGeoBoundingBox2D *)((char *)this + 0xd0))->FUN_006083b0(input.point) ||
+                     ((RHGameWidgetRendererCalls *)((char *)this + 0x120))->FUN_0060d890(input.point.Unk005fc110(P(0xd0)))))
+                {
+                    if (*((char *)this + 0xcb0))
+                        (*(RHElementActorPC **)((char *)this + 0xcac))->FUN_004a1900(*(unsigned short *)((char *)this + 0xcb2));
+                    else
+                        (*(RHElementActor **)((char *)this + 0xcac))->FUN_0046bb80();
+                    m_90.type = 11;
+                    *(unsigned short *)((char *)this + 0xcaa) = 0;
+                    *(void **)((char *)this + 0xcac) = 0;
+                    return result;
+                }
+            }
+            if (FUN_005d9210().FUN_00608400(input.point) &&
+                (!((SBGeoBoundingBox2D *)((char *)this + 0xd0))->FUN_006083b0(input.point) ||
+                 ((RHGameWidgetRendererCalls *)((char *)this + 0x120))->FUN_0060d890(input.point.Unk005fc110(P(0xd0)))))
+            {
+                bool handled = FUN_005d9f00(6, 13, input.flags, !*((char *)g_pEngine + 0x4d85));
+                handled |= FUN_005d9f00(7, 13, input.flags, !*((char *)g_pEngine + 0x4d85));
+                handled |= FUN_005d9f00(16, 11, input.flags, false);
+                if (handled)
+                    return result;
+            }
+            if (input.flags != 8)
+            {
+                RHPortraitWidgetEvent *events = (RHPortraitWidgetEvent *)((RHPortraitRootLifetime *)this)->FUN_0061a6e0(&input);
+                if (events && events->type == 11)
+                    events = events->next;
+                for (RHPortraitWidgetEvent *event = events; event; event = event->next)
+                {
+                    switch (event->type)
+                    {
+                    case 2:
+                        if (event->widget == &W(0x18c) || event->widget == &W(0xa0) || event->widget == &W(0x268))
+                        {
+                            const RHUnk00549250 &message = RHUnk00549250(14, A);
+                            messenger->RHUnk005460c0((RHUnk5490f0 &)message);
+                        }
+                        break;
+                    case 4:
+                        if ((event->widget == &W(0x18c) || event->widget == &W(0xa0) || event->widget == &W(0x268)) &&
+                            *((char *)this + 0xca6))
+                        {
+                            const RHUnk00549250 &message = RHUnk00549250(18, A);
+                            messenger->RHUnk005460c0((RHUnk5490f0 &)message);
+                        }
+                        break;
+                    }
+                }
+                return events;
+            }
+            if (FUN_005d9210().FUN_00608400(input.point) &&
+                (!((SBGeoBoundingBox2D *)((char *)this + 0xd0))->FUN_006083b0(input.point) ||
+                 ((RHGameWidgetRendererCalls *)((char *)this + 0x120))->FUN_0060d890(input.point.Unk005fc110(P(0xd0)))))
+            {
+                if ((char)((RHUnk00493a80 *)A)->FUN_00493a80())
+                {
+                    RHUnk00549250 message(14, A);
+                    messenger->RHUnk005460c0((RHUnk5490f0 &)message);
+                }
+                else
+                    g_pEngine->FUN_004c8120(A);
+                m_90.next = 0;
+                return result;
+            }
+            goto noEvent;
+        }
+        if (input.flags != 8)
+        {
+            RHPortraitWidgetEvent *events = (RHPortraitWidgetEvent *)((RHPortraitRootLifetime *)this)->FUN_0061a6e0(&input);
+            for (RHPortraitWidgetEvent *event = events; event; event = event->next)
+            {
+                switch (event->type)
+                {
+                case 0:
+                    {
+                        char *target = *(char **)((char *)A + 0x5e8);
+                        if (target && event->widget == &W(0x6c8))
+                        {
+                            target[0x92] = 1;
+                            *(int *)(target + 0xa0) = 0;
+                            *(unsigned short *)(target + 0xa4) = 2;
+                        }
+                    }
+                    break;
+                case 2:
+                    if (event->widget == &W(0x5fc))
+                    {
+                        ((RHElementActorPC *)A)->FUN_004a05a0();
+                        Method005d7530();
+                    }
+                    else if (event->widget == &W(0x6c8))
+                        g_pEngine->FUN_004c8120(*(void **)((char *)A + 0x5e8));
+                    else if (event->widget == &W(0x7bc))
+                    {
+                        messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(39, A));
+                        W(0x7bc).v21(0);
+                    }
+                    break;
+                }
+            }
+            return events;
+        }
     }
-    return true;
+noEvent:
+    return 0;
 }
 
 // Parked: the large action/resource dispatch still lacks its complete state and message model.
@@ -3979,21 +4104,24 @@ bool RHWidgetPortrait::FUN_005d9090(unsigned int index)
     return true;
 }
 
-// Parked at 0.6579: receiver/index scheduling and the final byte/integer copy differ.
-// STUB: GAME 0x005d90c0
+// FUNCTION: GAME 0x005d90c0
 bool RHWidgetPortrait::FUN_005d90c0(unsigned int index)
 {
     extern RHEngine *g_pEngine;
-    RHEngineActionCalls *engine = *(RHEngineActionCalls *volatile *)&g_pEngine;
+    RHEngineActionCalls *engine = (RHEngineActionCalls *)g_pEngine;
+    void *actor = *(void **)((char *)this + 0xe1c);
     char *element = (char *)this + index * 0x104;
-    char *slot = element + 0x97c;
-    ((RHUnk005d92c0Sub *)slot)->v21(engine->FUN_004d2300(*(void **)((char *)this + 0xe1c), index));
+    RHUnk005d92c0Sub &widget = W(0x97c + index * 0x104);
+    widget.v21(engine->FUN_004d2300(actor, index));
+    char *slot = (char *)&widget;
+    RHMobileUnk00607da0 &destination = *(RHMobileUnk00607da0 *)(slot + 0xf0);
+    const RHMobileUnk00607da0 &source = *(RHMobileUnk00607da0 *)(slot + 0x30);
     *(unsigned short *)(slot + 0xec) = 24;
     *(unsigned short *)(slot + 0xee) = 10;
-    ((RHMobileUnk00607da0 *)(slot + 0xf0))->FUN_00607da0(*(RHMobileUnk00607da0 *)(slot + 0x30));
+    destination.FUN_00607da0(source);
     if (index != 2)
     {
-        char state = *(char *)(element + 0xb59);
+        char state = *(volatile char *)(element + 0xb59);
         int action = *(int *)(element + 0xb54);
         *(int *)(element + 0xa50) = action;
         *(char *)(element + 0xa55) = state;
@@ -4008,13 +4136,12 @@ void RHGamePortraitCalls::FUN_005d9140(unsigned int index)
     *(unsigned short *)((char *)this + 0xc9e + index * 2) = 5;
 }
 
-// Parked: By-value resource IDs materialize register constants instead of immediate pushes.
-// STUB: GAME 0x005d9160
+// FUNCTION: GAME 0x005d9160
 void RHWidgetPortrait::FUN_005d9160()
 {
-    SBResourceWidgetID id = {1};
-    SBResourceWidgetID first = {1};
-    SBResourceWidgetID second = {2};
+    SBResourceWidgetID id = (SBResourceWidgetID)1;
+    SBResourceWidgetID first = (SBResourceWidgetID)1;
+    SBResourceWidgetID second = (SBResourceWidgetID)2;
     ((RHUIRendererBlinking *)((char *)this + 0x748))->SetBlinking(id, first, second, 25);
 }
 
@@ -4105,6 +4232,255 @@ bool RHWidgetPortrait::Method005d67e0()
         W(0x888).v08(P(0xd90));
     }
     return true;
+}
+
+#include "RHPlayerProfileManagerStorage.h"
+
+#define PORTRAIT_BOX(O) (*(SBGeoBoundingBox2D *)((char *)this + (O)))
+
+// FUNCTION: GAME 0x005d6940
+bool RHWidgetPortrait::FUN_005d6940(unsigned short index)
+{
+    unsigned short width = (unsigned short)*(float *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x54);
+    unsigned short height = (unsigned short)*(float *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x58);
+    int spacing = ((int)width - 64) / 5;
+    unsigned short left = 32 + spacing * index + (spacing - 112) / 2;
+    unsigned short right = left + 112;
+    float y1 = (float)(height - 111);
+    float x1 = (float)right;
+    float x0 = (float)left;
+    ((RHMobileUnk00607da0 *)&PORTRAIT_BOX(0xcb4))->FUN_00607da0((const RHMobileUnk00607da0 &)SBGeoBoundingBox2D(x0, (float)(height - 134), x1, y1));
+    float y2 = (float)(height - 61);
+    ((RHMobileUnk00607da0 *)&PORTRAIT_BOX(0xcdc))->FUN_00607da0((const RHMobileUnk00607da0 &)SBGeoBoundingBox2D(x0, y1, x1, y2));
+    float y3;
+    if (!m_arr[2].m_50)
+    {
+        y3 = (float)(height - 26);
+        float middle = (float)(left + 40);
+        ((RHMobileUnk00607da0 *)&PORTRAIT_BOX(0xcf0))->FUN_00607da0((const RHMobileUnk00607da0 &)SBGeoBoundingBox2D(x0, y2, middle, y3));
+        float next = (float)(left + 72);
+        ((RHMobileUnk00607da0 *)&PORTRAIT_BOX(0xd04))->FUN_00607da0((const RHMobileUnk00607da0 &)SBGeoBoundingBox2D(middle, y2, next, y3));
+        ((RHMobileUnk00607da0 *)&PORTRAIT_BOX(0xd18))->FUN_00607da0((const RHMobileUnk00607da0 &)SBGeoBoundingBox2D(next, y2, (float)(left + 112), y3));
+    }
+    else
+    {
+        y3 = (float)(height - 26);
+        float middle = (float)(left + 56);
+        ((RHMobileUnk00607da0 *)&PORTRAIT_BOX(0xcf0))->FUN_00607da0((const RHMobileUnk00607da0 &)SBGeoBoundingBox2D(x0, y2, middle, y3));
+        ((RHMobileUnk00607da0 *)&PORTRAIT_BOX(0xd04))->FUN_00607da0((const RHMobileUnk00607da0 &)SBGeoBoundingBox2D(middle, y2, (float)(left + 112), y3));
+    }
+    float y4 = (float)(height - 3);
+    ((RHMobileUnk00607da0 *)&PORTRAIT_BOX(0xcc8))->FUN_00607da0((const RHMobileUnk00607da0 &)SBGeoBoundingBox2D(x0, y3, x1, y4));
+    float closedMiddle = (float)(height - 76);
+    ((RHMobileUnk00607da0 *)&PORTRAIT_BOX(0xd68))->FUN_00607da0((const RHMobileUnk00607da0 &)SBGeoBoundingBox2D(x0, (float)(height - 99), x1, closedMiddle));
+    ((RHMobileUnk00607da0 *)&PORTRAIT_BOX(0xd90))->FUN_00607da0((const RHMobileUnk00607da0 &)SBGeoBoundingBox2D(x0, closedMiddle, x1, y3));
+    ((RHMobileUnk00607da0 *)&PORTRAIT_BOX(0xd7c))->FUN_00607da0((const RHMobileUnk00607da0 &)SBGeoBoundingBox2D(x0, y3, x1, y4));
+    SBGeoPoint2D position;
+    const float horizontal = P(0xcb4).m_x;
+    position.m_x = horizontal;
+    position.m_y = P(0xcb4).m_y - 20.0f;
+    ((RHMobileUnk00607da0 *)&PORTRAIT_BOX(0xd2c))->FUN_00607da0((const RHMobileUnk00607da0 &)SBGeoBoundingBox2D(horizontal, position.m_y, horizontal + 33.0f, position.m_y + 33.0f));
+    ((RHMobileUnk00607da0 *)&PORTRAIT_BOX(0xd40))->FUN_00607da0((const RHMobileUnk00607da0 &)SBGeoBoundingBox2D(position.m_x + 33.0f, position.m_y, position.m_x + 66.0f, position.m_y + 33.0f));
+    ((RHMobileUnk00607da0 *)&PORTRAIT_BOX(0xd54))->FUN_00607da0((const RHMobileUnk00607da0 &)SBGeoBoundingBox2D(position.m_x + 66.0f, position.m_y, position.m_x + 99.0f, position.m_y + 33.0f));
+    const float closedHorizontal = P(0xd68).m_x;
+    position.m_x = closedHorizontal;
+    position.m_y = P(0xd68).m_y - 20.0f;
+    ((RHMobileUnk00607da0 *)&PORTRAIT_BOX(0xde0))->FUN_00607da0((const RHMobileUnk00607da0 &)SBGeoBoundingBox2D(closedHorizontal, position.m_y, closedHorizontal + 33.0f, position.m_y + 33.0f));
+    ((RHMobileUnk00607da0 *)&PORTRAIT_BOX(0xdf4))->FUN_00607da0((const RHMobileUnk00607da0 &)SBGeoBoundingBox2D(position.m_x + 33.0f, position.m_y, position.m_x + 66.0f, position.m_y + 33.0f));
+    ((RHMobileUnk00607da0 *)&PORTRAIT_BOX(0xe08))->FUN_00607da0((const RHMobileUnk00607da0 &)SBGeoBoundingBox2D(position.m_x + 66.0f, position.m_y, position.m_x + 99.0f, position.m_y + 33.0f));
+    if (m_arr[2].m_4e)
+    {
+        SBGeoBoundingBox2D bounds;
+        SBGeoBoundingBox2D *box = &PORTRAIT_BOX(0xcb4);
+        for (int remaining = 3; remaining; --remaining, ++box)
+            bounds.FUN_00607e90(*box);
+        ((SBFrameWidgetView *)this)->V2c(bounds);
+        W(0x18c).v08(P(0xcc8));
+        W(0xa0).v08(P(0xcb4));
+        W(0x268).v08(P(0xcdc));
+        P(0xe20) = P(0xcdc);
+        float x = P(0xe20).m_x;
+        P(0xe20).m_x = x + 52.0f;
+        float y = P(0xe20).m_y;
+        P(0xe20).m_y = y + 10.0f;
+        ((SBFrameWidgetView *)((char *)this + 0x344))->V1c(PORTRAIT_BOX(0xcf0));
+        ((SBFrameWidgetView *)((char *)this + 0x42c))->V1c(PORTRAIT_BOX(0xd04));
+        if (!m_arr[2].m_50)
+            ((SBFrameWidgetView *)((char *)this + 0x514))->V1c(PORTRAIT_BOX(0xd18));
+        W(0x97c).v08(P(0xd2c));
+        W(0xa80).v08(P(0xd40));
+        W(0xb84).v08(P(0xd54));
+        W(0x888).v08(P(0xcdc));
+    }
+    else if (m_arr[2].m_4f)
+    {
+        W(0x18c).v08(P(0xd7c));
+        W(0xa0).v08(P(0x1bc).FUN_005fc200(SBGeoVector2D(0.0f, 23.0f)));
+    }
+    else
+    {
+        SBGeoBoundingBox2D bounds;
+        SBGeoBoundingBox2D *box = &PORTRAIT_BOX(0xd68);
+        for (int remaining = 3; remaining; --remaining, ++box)
+            bounds.FUN_00607e90(*box);
+        ((SBFrameWidgetView *)this)->V2c(bounds);
+        W(0x18c).v08(P(0xd7c));
+        W(0xa0).v08(P(0xd68));
+        W(0x268).v08(P(0xd90));
+        P(0xe20) = P(0xd90);
+        float x = P(0xe20).m_x;
+        P(0xe20).m_x = x + 52.0f;
+        float y = P(0xe20).m_y;
+        P(0xe20).m_y = y + 10.0f;
+        W(0x97c).v08(P(0xde0));
+        W(0xa80).v08(P(0xdf4));
+        W(0xb84).v08(P(0xe08));
+        W(0x888).v08(P(0xd90));
+    }
+    *(unsigned short *)((char *)this + 0xca4) = index;
+    FUN_005da1f0();
+    FUN_005d9c30();
+    return true;
+}
+
+#undef PORTRAIT_BOX
+
+#include "RHScriptListCore.h"
+
+class RHPortraitActionQuery
+{
+public:
+    virtual void V00() = 0;
+    virtual void V04() = 0;
+    virtual void V08() = 0;
+    virtual void V0c() = 0;
+    virtual void V10() = 0;
+    virtual void V14() = 0;
+    virtual bool V18(const SBGeoPoint2D &point, void *actor, int focus) = 0;
+};
+
+DECOMP_SIZE_ASSERT(RHPortraitActionQuery, 4)
+DECOMP_SIZE_ASSERT(RHUnk00549250, 0x14)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0046eb30, head) == 4)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0046eb30, count) == 8)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0046eb30, cursor) == 0xc)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0046eb30, valid) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0046eb30, index) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(RHScriptNode, data) == 8)
+
+__forceinline void *RHPortraitFirstSelected(RHUnk0046eb30 &selection)
+{
+    bool dirty = selection.valid;
+    int count = selection.count;
+    if (dirty)
+    {
+        if (0 <= (count + 1) / 2)
+        {
+            FUN_005c9010((RHUnk005c9010Iterator &)(selection.cursor = selection.FUN_0046eb80().node), 0, std::bidirectional_iterator_tag());
+        }
+        else
+        {
+            FUN_005c9010((RHUnk005c9010Iterator &)(selection.cursor = selection.head), -count, std::bidirectional_iterator_tag());
+        }
+        selection.valid = false;
+        selection.index = 0;
+    }
+    else
+    {
+        int previous = selection.index;
+        if (previous != 0)
+        {
+            if (0 < previous)
+            {
+                if (0 < (previous + 1) / 2)
+                {
+                    FUN_005c9010((RHUnk005c9010Iterator &)(selection.cursor = selection.FUN_0046eb80().node), 0, std::bidirectional_iterator_tag());
+                }
+                else
+                {
+                    FUN_005c9010((RHUnk005c9010Iterator &)selection.cursor, -previous, std::bidirectional_iterator_tag());
+                }
+            }
+            else if (0 < (previous + count) / 2)
+            {
+                FUN_005c9010((RHUnk005c9010Iterator &)selection.cursor, -previous, std::bidirectional_iterator_tag());
+            }
+            else
+            {
+                FUN_005c9010((RHUnk005c9010Iterator &)(selection.cursor = selection.head), -count, std::bidirectional_iterator_tag());
+            }
+            selection.index = 0;
+        }
+    }
+    return selection.cursor->data;
+}
+
+// STUB: GAME 0x005d9f00
+bool RHWidgetPortrait::FUN_005d9f00(int action, int focus, unsigned short state, bool modifier)
+{
+    extern RHEngine *g_pEngine;
+    RHEngine *engine = g_pEngine;
+    RHPortraitActionQuery *actor = *(RHPortraitActionQuery **)((char *)this + 0xe1c);
+    char mode = *((char *)RHUnk00546050() + 0x20);
+    unsigned label;
+    unsigned failure = *(const unsigned *)&modifier;
+    switch (action)
+    {
+    case 6:
+        label = 0xf5;
+        failure = 0x10d;
+        break;
+    case 7:
+        label = 0x62;
+        failure = 0x10c;
+        break;
+    case 16:
+        label = 0x69;
+        failure = 0x6a;
+        break;
+    }
+    unsigned short currentAction = *(unsigned short *)((char *)RHUnk00546050() + 0xa2);
+    if (currentAction == action)
+    {
+        RHProfileListCursor &selection = *(RHProfileListCursor *)((char *)engine + 0x49f8);
+        selection.GoTo(0);
+        void *selected = *selection.m_current;
+        if (actor->V18(SBGeoPoint2D(), selected, focus))
+        {
+            if (state == 2)
+            {
+                RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(22, 0, 0));
+                return true;
+            }
+            else if (state == 1)
+            {
+                if (!modifier)
+                {
+                    *(unsigned short *)((char *)this + 0xcaa) = 5;
+                    *(void **)((char *)this + 0xcac) = RHPortraitFirstSelected(*(RHUnk0046eb30 *)((char *)g_pEngine + 0x49f8));
+                    *(char *)((char *)this + 0xcb0) = mode;
+                    *(unsigned short *)((char *)this + 0xcb2) = *(unsigned short *)((char *)RHUnk00546050() + 0x26);
+                    engine->FUN_004e17c0(actor, action);
+                    return true;
+                }
+            }
+            else if ((state == 0 || state == 0x40) && !modifier)
+            {
+                *(unsigned *)((char *)this + 0x9c) = 0;
+                *(unsigned *)((char *)this + 0x90) = 17;
+                *(unsigned *)((char *)this + 0x98) = (unsigned short)label;
+                return true;
+            }
+        }
+        else
+        {
+            *(unsigned *)((char *)this + 0x9c) = 0;
+            *(unsigned *)((char *)this + 0x90) = 17;
+            *(unsigned *)((char *)this + 0x98) = (unsigned short)failure;
+            return true;
+        }
+    }
+    return false;
 }
 
 // FUNCTION: GAME 0x005d73d0
@@ -4409,7 +4785,7 @@ void RHWidgetPortrait::FUN_005d9920()
 {
     m_arr[2].m_50 = 1;
     W(0).v14(&W(0x514));
-    ((RHPortraitCtorCalls *)this)->FUN_005d6940(*(unsigned short *)((char *)this + 0xca4));
+    ((RHWidgetPortrait *)this)->FUN_005d6940(*(unsigned short *)((char *)this + 0xca4));
 }
 
 // FUNCTION: GAME 0x005d9950

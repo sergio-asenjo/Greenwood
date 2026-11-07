@@ -82,12 +82,6 @@ class SBGeoBoundingBox2D;
 
 #include "SBUIUnkSurface.h"
 
-class RHPortraitCtorCalls
-{
-public:
-    void FUN_005d6940(unsigned short index);
-};
-
 // VTABLE: GAME 0x0067a4e4
 class RHPortraitLifetime005db4a0 : public RHGameWidgetLifetimeBase
 {
