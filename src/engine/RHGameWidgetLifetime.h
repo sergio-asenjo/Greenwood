@@ -79,14 +79,8 @@ public:
 
 typedef RHPopupRenderer0060dbc0 RHGameRenderer0060dbc0;
 
-class SBResourceWidgetID
+enum SBResourceWidgetID
 {
-public:
-    int m_value;
-    bool operator<(const SBResourceWidgetID &other) const
-    {
-        return m_value < other.m_value;
-    }
 };
 
 // SIZE 0x74

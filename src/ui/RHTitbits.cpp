@@ -17,7 +17,7 @@
 
 class RHArtificialIntelligenceSoundCalls;
 extern RHArtificialIntelligenceSoundCalls *g_unk0x006c1070;
-extern undefined g_unk0x006c0e48[];
+#include "RHPlayerProfileManagerStorage.h"
 extern float g_unk0x006774cc;
 
 struct RHUnk005c9010Iterator;
@@ -868,6 +868,7 @@ template<> inline RHBlinkingTree::~_Tree()
     }
 }
 
+typedef int RHBlinkingWidgetIDSize[(sizeof(SBResourceWidgetID) == 0x04) ? 1 : -1];
 typedef int RHBlinkingItemSize[(sizeof(RHUIRendererBlinking::BlinkingItem) == 0x0c) ? 1 : -1];
 typedef int RHBlinkingMapSize[(sizeof(RHBlinkingMap) == 0x10) ? 1 : -1];
 typedef int RHBlinkingRendererViewSize[(sizeof(RHUIRendererBlinking) == 0x74) ? 1 : -1];
@@ -980,9 +981,9 @@ bool RHGameWidgetRendererCalls::FUN_005c9320(unsigned id)
     RHUIRendererBlinking *blinking = (RHUIRendererBlinking *)this;
     if (blinking->m_active && id == blinking->m_currentId) {
         if ((++blinking->m_frame / blinking->m_current.m_period) & 1)
-            ((SBUIUnk0060da20 *)this)->FUN_0060da20(blinking->m_current.m_second.m_value);
+            ((SBUIUnk0060da20 *)this)->FUN_0060da20(blinking->m_current.m_second);
         else
-            ((SBUIUnk0060da20 *)this)->FUN_0060da20(blinking->m_current.m_first.m_value);
+            ((SBUIUnk0060da20 *)this)->FUN_0060da20(blinking->m_current.m_first);
         return true;
     }
     const SBResourceWidgetID &key = *(SBResourceWidgetID *)&id;
@@ -991,7 +992,7 @@ bool RHGameWidgetRendererCalls::FUN_005c9320(unsigned id)
         blinking->m_active = true;
         blinking->m_current = blinking->m_items[key];
         blinking->m_frame = 0;
-        ((SBUIUnk0060da20 *)this)->FUN_0060da20(blinking->m_current.m_first.m_value);
+        ((SBUIUnk0060da20 *)this)->FUN_0060da20(blinking->m_current.m_first);
         return true;
     }
     ((SBUIUnk0060da20 *)this)->FUN_0060da20(id);
@@ -1007,7 +1008,7 @@ void RHUIRendererBlinking::SetBlinking(SBResourceWidgetID id, SBResourceWidgetID
     value.m_second = second;
     value.m_period = period;
     m_items[id] = value;
-    if (*(bool *)((char *)this + 0x60) && id.m_value == *(int *)((char *)this + 0x58))
+    if (*(bool *)((char *)this + 0x60) && id == *(int *)((char *)this + 0x58))
     {
         *(BlinkingItem *)((char *)this + 0x4c) = value;
     }
@@ -1027,7 +1028,7 @@ void RHUIRendererBlinking::RemoveBlinking(SBResourceWidgetID id)
 }
 
 // TEMPLATE: GAME 0x005c9520
-// ?erase@?$_Tree@VSBResourceWidgetID@@U?$pair@$$CBVSBResourceWidgetID@@UBlinkingItem@RHUIRendererBlinking@@@std@@U_Kfn@?$map@VSBResourceWidgetID@@UBlinkingItem@RHUIRendererBlinking@@U?$less@VSBResourceWidgetID@@@std@@V?$allocator@UBlinkingItem@RHUIR11e2b553
+// ?erase@?$_Tree@W4SBResourceWidgetID@@U?$pair@$$CBW4SBResourceWidgetID@@UBlinkingItem@RHUIRendererBlinking@@@std@@U_Kfn@?$map@W4SBResourceWidgetID@@UBlinkingItem@RHUIRendererBlinking@@U?$less@W4SBResourceWidgetID@@@std@@V?$allocator@UBlinkingItem@R682db932
 template<> RHBlinkingTree::iterator RHBlinkingTree::erase(iterator first, iterator last)
 {
     if (size() == 0 || first != begin() || last != end())
@@ -1049,7 +1050,7 @@ template<> RHBlinkingTree::iterator RHBlinkingTree::erase(iterator first, iterat
 }
 
 // TEMPLATE: GAME 0x005c9650
-// ?insert@?$_Tree@VSBResourceWidgetID@@U?$pair@$$CBVSBResourceWidgetID@@UBlinkingItem@RHUIRendererBlinking@@@std@@U_Kfn@?$map@VSBResourceWidgetID@@UBlinkingItem@RHUIRendererBlinking@@U?$less@VSBResourceWidgetID@@@std@@V?$allocator@UBlinkingItem@RHUIab12b7a4
+// ?insert@?$_Tree@W4SBResourceWidgetID@@U?$pair@$$CBW4SBResourceWidgetID@@UBlinkingItem@RHUIRendererBlinking@@@std@@U_Kfn@?$map@W4SBResourceWidgetID@@UBlinkingItem@RHUIRendererBlinking@@U?$less@W4SBResourceWidgetID@@@std@@V?$allocator@UBlinkingItem@67f73113
 template<> RHBlinkingTree::_Pairib RHBlinkingTree::insert(const value_type &value)
 {
     typedef iterator (RHBlinkingTree::*Insert)(_Nodeptr, _Nodeptr, const value_type &);
@@ -1093,7 +1094,7 @@ template<> RHBlinkingTree::_Pairib RHBlinkingTree::insert(const value_type &valu
 }
 
 // TEMPLATE: GAME 0x005c9780
-// ?erase@?$_Tree@VSBResourceWidgetID@@U?$pair@$$CBVSBResourceWidgetID@@UBlinkingItem@RHUIRendererBlinking@@@std@@U_Kfn@?$map@VSBResourceWidgetID@@UBlinkingItem@RHUIRendererBlinking@@U?$less@VSBResourceWidgetID@@@std@@V?$allocator@UBlinkingItem@RHUIR31e38f0d
+// ?erase@?$_Tree@W4SBResourceWidgetID@@U?$pair@$$CBW4SBResourceWidgetID@@UBlinkingItem@RHUIRendererBlinking@@@std@@U_Kfn@?$map@W4SBResourceWidgetID@@UBlinkingItem@RHUIRendererBlinking@@U?$less@W4SBResourceWidgetID@@@std@@V?$allocator@UBlinkingItem@R22574a04
 template<> RHBlinkingTree::iterator RHBlinkingTree::erase(iterator position)
 {
     _Nodeptr node;
