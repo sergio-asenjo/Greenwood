@@ -272,12 +272,7 @@ public:
 // SIZE 0x14
 #include "RHActorSequenceStorage.h"
 
-struct RHScriptNode;
-class RHUnk0046eb30
-{
-public:
-    RHScriptNode *Unk0059f720(RHScriptNode *next, RHScriptNode *previous);
-};
+#include "RHScriptListCore.h"
 
 class RHUnk005ef320
 {

@@ -24,7 +24,7 @@
 #include "RHEngine.h"
 #include "RHProjectileVector.h"
 
-extern undefined g_unk0x006c0e48[];
+#include "RHPlayerProfileManagerStorage.h"
 class RHEngine;
 extern RHEngine *g_pEngine;
 
@@ -33,6 +33,9 @@ extern "C" int rand();
 class RHActorTranslationSequenceCalls;
 
 DECOMP_SIZE_ASSERT(RHElementActorPC, 0x60c)
+DECOMP_STATIC_ASSERT(offsetof(RHElementActorPC, m_92) == 0x92)
+DECOMP_STATIC_ASSERT(offsetof(RHElementActorPC, m_a0) == 0xa0)
+DECOMP_STATIC_ASSERT(offsetof(RHElementActorPC, m_a4) == 0xa4)
 DECOMP_SIZE_ASSERT(RHUnk00549250, 0x14)
 DECOMP_SIZE_ASSERT(SBGeoBoundingBox2D, 0x14)
 DECOMP_SIZE_ASSERT(RHActorPCWidgetState, 0xe8)
@@ -361,6 +364,7 @@ void EmitRHActorPCSmallMethods(RHElementActorPC *actor)
     actor->GetTooltipTextForAction(0);
     actor->FUN_00495f90(actor);
     actor->FUN_0049b930(0, 0, false);
+    actor->FUN_0049b9c0(0, 0, false);
     actor->FUN_00490450(actor, actor);
     actor->FUN_00490e10((RHElementActorHuman *)actor);
     actor->FUN_00493b40(actor, *(SBGeoPoint2D *)actor, 0, 0);
@@ -543,6 +547,58 @@ void EmitRHActorPCRecovery(RHElementActorPC *actor)
     actor->FUN_004936f0();
 }
 
+#include "RHSpriteCore.h"
+
+// STUB: GAME 0x004937e0
+bool RHElementActorPC::FUN_004937e0(const SBGeoPoint2D &point, RHElementActorHuman *target, int focus)
+{
+    if (focus != 1 && focus != 16 && RHActorPCField<unsigned>(g_pEngine, 0x4a00) > 1)
+        return false;
+    RHActorPCVTableCalls *self = (RHActorPCVTableCalls *)this;
+    switch (focus)
+    {
+    case 12:
+    case 13:
+        return RHActorPCField<char>(this, 0x12) && !self->FUN_0049e720() &&
+            (focus == 13 || RHActorPCField<RHSprite *>(this, 0x50)->FUN_005b9e30((void *)&point, RHActorPCField<void *>(this, 0x54), false));
+    case 1:
+        if (!RHActorPCField<char>(this, 0x12) || !(char)((RHUnk00493a80 *)this)->FUN_00493a80())
+            return false;
+        if (RHActorPCField<int>(m_50, 0x8c) == 14 && target && ((RHScriptBatchCalls *)target)->Unk0049d560(22))
+            return false;
+        return RHActorPCField<RHSprite *>(this, 0x50)->FUN_005b9e30((void *)&point, RHActorPCField<void *>(this, 0x54), false);
+    case 3:
+        if (!RHActorPCField<char>(this, 0x12))
+            return false;
+        if (RHActorPCField<int>(m_50, 0x8c) == 14 && ((RHScriptBatchCalls *)target)->Unk0049d560(22) &&
+            RHActorPCField<int>(target, 0x268) == 0)
+            return RHActorPCField<RHSprite *>(this, 0x50)->FUN_005b9e30((void *)&point, RHActorPCField<void *>(this, 0x54), false);
+        if (((RHMalignityVisibilityCalls *)this)->FUN_004860b0() &&
+            !RHActorPCField<unsigned short>(this, 0x23c) && !RHActorPCField<int>(this, 0x254) &&
+            !RHActorPCField<char>(this, 0xa6) &&
+            (((RHScriptBatchCalls *)target)->Unk0049d560(25) || ((RHScriptBatchCalls *)target)->Unk0049d560(26)))
+            return RHActorPCField<RHSprite *>(this, 0x50)->FUN_005b9e30((void *)&point, RHActorPCField<void *>(this, 0x54), false);
+        return ((RHElementActorHuman *)this)->FUN_00483160((void *)&point, target, focus);
+    case 10:
+    case 11:
+        if (!RHActorPCField<char>(this, 0x12) &&
+            !((unsigned char)(RHActorPCField<unsigned>(RHActorPCField<void *>(m_50, 0xe0), 0x30) >> 13) & 1))
+            return false;
+        if (*((char *)RHUnk00546050() + 0x20))
+        {
+            if (self->FUN_0049e720())
+                return false;
+            return focus == 11 || RHActorPCField<RHSprite *>(this, 0x50)->FUN_005b9e30((void *)&point, RHActorPCField<void *>(this, 0x54), false);
+        }
+        if (self->FUN_0049e720() || self->FUN_51() >= 100 || ((RHUnk005d73d0Actor *)this)->FUN_0049f510() ||
+            RHActorPCField<unsigned short>(this, 0x23c) || RHActorPCField<int>(m_50, 0x8c) == 7)
+            return false;
+        return focus == 11 || RHActorPCField<RHSprite *>(this, 0x50)->FUN_005b9e30((void *)&point, RHActorPCField<void *>(this, 0x54), false);
+    default:
+        return ((RHElementActorHuman *)this)->FUN_00483160((void *)&point, target, focus);
+    }
+}
+
 // FUNCTION: GAME 0x00493ae0
 int RHElementActorPC::FUN_00493ae0(bool allow, void *unused)
 {
@@ -660,8 +716,7 @@ bool RHElementActorPC::SetQuickActionSequence(int value, unsigned short action, 
     return true;
 }
 
-// Parked: pointer-return and flag-store scheduling differ after two shapes.
-// STUB: GAME 0x00490e10
+// FUNCTION: GAME 0x00490e10
 void *RHElementActorPC::FUN_00490e10(RHElementActorHuman *target)
 {
     if ((((RHActorPCVTableCalls *)this)->FUN_0049e720() || RHActorPCField<unsigned char>(this, 0x1ce)) &&
@@ -674,9 +729,9 @@ void *RHElementActorPC::FUN_00490e10(RHElementActorHuman *target)
         {
             RHUnk0045aaf0 *result = (RHUnk0045aaf0 *)((char *)this + 0x14);
             result->FUN_0045abc0(0x5b, 0, 0);
-            RHActorPCField<unsigned char>(this, 0x92) = 1;
-            RHActorPCField<int>(this, 0xa0) = 0;
-            RHActorPCField<unsigned short>(this, 0xa4) = 2;
+            m_92 = 1;
+            m_a0 = 0;
+            m_a4 = 2;
             return result;
         }
         return 0;
@@ -686,9 +741,9 @@ void *RHElementActorPC::FUN_00490e10(RHElementActorHuman *target)
     if (target && RHActorPCField<int>(RHActorPCField<void *>(this, 0x50), 0x8c) == 14 &&
         ((RHScriptBatchCalls *)target)->Unk0049d560(22))
     {
-        RHActorPCField<unsigned char>(this, 0x92) = 1;
-        RHActorPCField<int>(this, 0xa0) = 0;
-        RHActorPCField<unsigned short>(this, 0xa4) = 2;
+        m_92 = 1;
+        m_a0 = 0;
+        m_a4 = 2;
         result->FUN_0045abc0(0x63, 0, 0);
     }
     return result;
@@ -924,6 +979,63 @@ void RHElementActorPC::FUN_0049b930(int amount, int unused, bool mode)
         ((RHActorPCVTableCalls *)this)->FUN_slot65(10, 0, 255);
     else if (current < previous - 20)
         ((RHActorPCVTableCalls *)this)->FUN_slot65(8, 0, 255);
+}
+
+DECOMP_SIZE_ASSERT(RHSectorActorList, 0x24)
+DECOMP_STATIC_ASSERT(offsetof(RHSectorActorList, m_head) == 4)
+DECOMP_STATIC_ASSERT(offsetof(RHSectorActorList, m_count) == 8)
+DECOMP_STATIC_ASSERT(offsetof(RHSectorActorList, m_cur) == 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(RHSectorActorList, m_valid) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHSectorActorList, m_index) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(RHSectorActorList, m_searchValid) == 0x18)
+DECOMP_STATIC_ASSERT(offsetof(RHSectorActorList, m_searchIndex) == 0x1c)
+DECOMP_STATIC_ASSERT(offsetof(RHSectorActorList, m_searchValue) == 0x20)
+DECOMP_STATIC_ASSERT(offsetof(RHEngine, m_49f8) == 0x49f8)
+DECOMP_STATIC_ASSERT(offsetof(RHEngine, m_teamHumans) == 0x4cc8)
+
+static inline int RHEngineSelectedIndex(RHEngine *engine, void *actor)
+{
+    RHSectorActorNode *head = *(RHSectorActorNode *volatile *)&engine->m_49f8.m_head;
+    int size = engine->m_49f8.m_count;
+    engine->m_49f8.m_searchValue = (RHElementActor *)actor;
+    engine->m_49f8.m_searchValid = 1;
+    engine->m_49f8.m_cur = RHSectorActorIter(head->m_next);
+    int position = 0;
+    while (position < size)
+    {
+        RHElementActor *value = *(RHElementActor *volatile *)&(*(RHSectorActorNode *volatile *)&engine->m_49f8.m_cur.m_p)->m_data;
+        if (value == *(RHElementActor *volatile *)&engine->m_49f8.m_searchValue)
+            break;
+        RHSectorActorNode *node = *(RHSectorActorNode *volatile *)&engine->m_49f8.m_cur.m_p;
+        ++position;
+        engine->m_49f8.m_cur.m_p = *(RHSectorActorNode *volatile *)&node->m_next;
+    }
+    if (position < size)
+    {
+        engine->m_49f8.m_searchIndex = position;
+        engine->m_49f8.m_valid = 0;
+        engine->m_49f8.m_index = position;
+        return position;
+    }
+    engine->m_49f8.m_searchIndex = -1;
+    int found = *(volatile int *)&engine->m_49f8.m_searchIndex;
+    engine->m_49f8.m_valid = 1;
+    return found;
+}
+
+static inline bool RHEngineIsSelected(RHEngine *engine, void *actor)
+{
+    if (actor)
+        return RHEngineSelectedIndex(engine, actor) != -1;
+    return engine->m_49f8.m_count != 0;
+}
+
+// STUB: GAME 0x0049b9c0
+void RHElementActorPC::FUN_0049b9c0(int amount, void *source, bool force)
+{
+    ((RHElementActorHuman *)this)->FUN_00471c00(((RHUnk005d73d0Actor *)this)->FUN_0049f510() ? 300 : amount, source, force);
+    if (RHActorPCField<char>(this, 0x1ce) && RHEngineIsSelected(g_pEngine, this))
+        RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(0x12, this));
 }
 
 #include "RHElementActorCivilianCore.h"
@@ -2113,7 +2225,7 @@ void RHElementActorPC::FUN_004a0020(void *, unsigned char, unsigned, unsigned, u
 
 // Parked: event dispatch depends on out-of-run allocation and message-manager calls.
 // STUB: GAME 0x004a0340
-void RHElementActorPC::FUN_004a0340(void *, void *, unsigned, unsigned, int, char)
+void RHElementActorPC::FUN_004a0340(void *, bool, unsigned, unsigned, int, char)
 {
 }
 
@@ -2464,6 +2576,76 @@ bool RHElementActorPC::FUN_004a18c0(void *target)
         return result;
     }
     return false;
+}
+
+#include "RHSequenceElementCalls.h"
+
+DECOMP_SIZE_ASSERT(RHUnk0046eb30, 0x18)
+DECOMP_SIZE_ASSERT(RHScriptNode, 0x0c)
+DECOMP_SIZE_ASSERT(RHScriptIter, 4)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0046eb30, head) == 4)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0046eb30, count) == 8)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0046eb30, cursor) == 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0046eb30, valid) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0046eb30, index) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(RHScriptNode, data) == 8)
+
+__forceinline void *RHPCFirstQuickAction(RHUnk0046eb30 &selection)
+{
+    bool dirty = selection.valid;
+    int count = selection.count;
+    if (dirty)
+    {
+        if (0 <= (count + 1) / 2)
+        {
+            FUN_005c9010((RHUnk005c9010Iterator &)selection.SetCurrent(selection.InlineBegin()), 0, std::bidirectional_iterator_tag());
+        }
+        else
+        {
+            FUN_005c9010((RHUnk005c9010Iterator &)selection.SetCurrent(selection.InlineEnd()), -count, std::bidirectional_iterator_tag());
+        }
+        selection.valid = false;
+        selection.index = 0;
+    }
+    else
+    {
+        int previous = selection.index;
+        if (previous != 0)
+        {
+            if (0 < previous)
+            {
+                if (0 < (previous + 1) / 2)
+                {
+                    FUN_005c9010((RHUnk005c9010Iterator &)((RHScriptIter &)selection.cursor).operator=(selection.FUN_0046eb80()), 0, std::bidirectional_iterator_tag());
+                }
+                else
+                {
+                    FUN_005c9010((RHUnk005c9010Iterator &)selection.cursor, -previous, std::bidirectional_iterator_tag());
+                }
+            }
+            else if (0 < (previous + count) / 2)
+            {
+                FUN_005c9010((RHUnk005c9010Iterator &)selection.cursor, -previous, std::bidirectional_iterator_tag());
+            }
+            else
+            {
+                FUN_005c9010((RHUnk005c9010Iterator &)selection.SetCurrent(selection.InlineEnd()), -count, std::bidirectional_iterator_tag());
+            }
+            selection.index = 0;
+        }
+    }
+    return selection.cursor->data;
+}
+
+// FUNCTION: GAME 0x004a1900
+void RHElementActorPC::FUN_004a1900(unsigned short action)
+{
+    void *sequence = RHActorPCField<void *>(this, 0x520 + action * 4);
+    if (sequence)
+        ((RHSequenceElementCalls *)RHPCFirstQuickAction(*(RHUnk0046eb30 *)((char *)sequence + 8)))->FUN_00585c80();
+    sequence = RHActorPCField<void *>(this, 0x514 + action * 4);
+    if (sequence)
+        ((RHSequenceElementCalls *)RHPCFirstQuickAction(*(RHUnk0046eb30 *)((char *)sequence + 8)))->FUN_00585c80();
 }
 
 // FUNCTION: GAME 0x0050efb0

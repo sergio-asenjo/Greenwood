@@ -41,11 +41,13 @@ public:
     std::wstring GetTooltipTextForAction(int action);
     int FUN_00493ae0(bool allow, void *unused);
     bool FUN_004936f0();
+    bool FUN_004937e0(const SBGeoPoint2D &point, RHElementActorHuman *target, int focus);
     int FUN_00494850(void *element);
     float FUN_0049d520();
     void FUN_00495f90(void *element);
     bool FUN_00496270(unsigned flags, RHActorTranslationSequenceCalls *sequence);
     void FUN_0049b930(int amount, int unused, bool mode);
+    void FUN_0049b9c0(int amount, void *source, bool force);
     bool FUN_00490450(void *owner, void *target);
     void FUN_004909a0(RHUnk00582220 *sequence);
     void *FUN_00490e10(RHElementActorHuman *target);
@@ -62,6 +64,7 @@ public:
     void ApplyProjection(RHBonusProjection *projection);
     void InitializeAction(int action);
     bool FUN_004a18c0(void *target);
+    void FUN_004a1900(unsigned short action);
     int FUN_0049d590(int action);
     int FUN_0049d5c0(unsigned short action);
     unsigned short FUN_0049d5e0(int action);
@@ -99,7 +102,7 @@ public:
     void FUN_0049ff70();
     void FUN_0049ffe0(void *first, unsigned char flag, unsigned third, unsigned fourth, unsigned fifth, unsigned sixth, unsigned seventh);
     void FUN_004a0020(void *first, unsigned char second, unsigned third, unsigned fourth, unsigned fifth, unsigned sixth, unsigned seventh);
-    void FUN_004a0340(void *first, void *second, unsigned third, unsigned fourth, int fifth, char sixth);
+    void FUN_004a0340(void *first, bool second, unsigned third, unsigned fourth, int fifth, char sixth);
     void FUN_004a05a0();
     char FUN_004a05f0(const RHElementActorPC *other);
     void FUN_004a0670();
@@ -113,7 +116,12 @@ public:
     RHBonusInfo *m_50; // +0x50
     undefined m_54[0x10]; // 0x54
     RHBonusGlobalView *m_64; // +0x64
-    undefined m_68[0x98]; // 0x68
+    undefined m_68[0x2a];
+    unsigned char m_92;
+    undefined m_93[0x0d];
+    int m_a0;
+    unsigned short m_a4;
+    undefined m_a6[0x5a];
     char m_100; // +0x100
     undefined m_101[3]; // 0x101
     unsigned m_104; // +0x104
