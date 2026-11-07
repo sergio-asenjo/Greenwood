@@ -2,6 +2,9 @@
 #define RHELEMENTTARGET_H
 
 #include "RHElementScroll.h"
+#include <vector>
+
+class RHMobileUnk006100e0;
 
 class RHUnkTargetPoints
 {
@@ -55,6 +58,7 @@ public:
     int FUN_004baf50(void *actor);
     int FUN_004baff0(void *actor);
     int FUN_004bb0a0(void *actor);
+    bool FUN_004bb240(void *point, void *pc, int focus) const;
     void FUN_004bae60(RHTargetSequenceCalls *sequence, int (RHUnkTargetScriptRef::*callback)(int));
     bool FUN_004bc1d0(RHTargetSequenceCalls *sequence);
     void FUN_004bc3d0(int activator);
@@ -63,6 +67,8 @@ public:
     RHUnkFXDraw *&Draw() { return *(RHUnkFXDraw **)(m_data + 0x60); }
     RHBonusGlobalView *&Global() { return *(RHBonusGlobalView **)(m_data + 0x64); }
     char m_data[0x16c]; // +0x50 sprite, +0x54/+0x58 surfaces, +0x60 draw, +0x64 registry
+    std::vector<RHMobileUnk006100e0 *> m_16c;
+    char m_17c[0x10];
 };
 
 #define RHElementTarget_m_a8 (*(int *)(m_data + 0xa8))

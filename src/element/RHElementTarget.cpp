@@ -5,6 +5,14 @@
 #include "RHUnk00613e90.h"
 #include "RHHumanSequenceElement.h"
 #include "RHSpriteLastFrameCalls.h"
+#include "RHSpriteCore.h"
+#include "RHMobileUnk006100e0.h"
+#include <vector>
+#include <stddef.h>
+
+DECOMP_SIZE_ASSERT(RHElementTarget, 0x18c)
+DECOMP_SIZE_ASSERT(std::vector<RHMobileUnk006100e0 *>, 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHElementTarget, m_16c) == 0x16c)
 
 class RHElementActor;
 extern RHElementActor *g_unk0x6c100c;
@@ -14,6 +22,9 @@ class RHScriptBatchCalls
 public:
     bool Unk0049d560(int action);
 };
+
+unsigned FUN_004baeb0(void *actor);
+int FUN_004baf00(volatile int type);
 
 // FUNCTION: GAME 0x004034e0
 int RHUnkTargetScriptRef::FUN_004034e0()
@@ -337,6 +348,41 @@ RHUnk00613e90 RHElementPositionCalls::FUN_004bb180()
     return result;
 }
 
+// FUNCTION: GAME 0x004bb240
+bool RHElementTarget::FUN_004bb240(void *point, void *pc, int focus) const
+{
+    if (m_data[0x12])
+    {
+        const std::vector<RHMobileUnk006100e0 *> &points = m_16c;
+        unsigned count = points.size();
+        for (unsigned i = 0; i < count; ++i)
+            points[i]->FUN_00578c50();
+        if (m_data[0x12] && pc && *(unsigned *)((char *)g_pEngine + 0x4a00) <= 1)
+        {
+            unsigned filter;
+            switch (focus)
+            {
+            case 4:
+            case 7:
+            case 8:
+            case 9:
+            case 10:
+                filter = FUN_004baf00(focus);
+                break;
+            case 3:
+                filter = FUN_004baeb0(pc);
+                break;
+            default:
+                filter = 0;
+                break;
+            }
+            return filter && (*(const unsigned *)(m_data + 0x168) & filter) &&
+                   (*(RHSprite *const *)(m_data + 0x50))->FUN_005b9e30(point, *(void *const *)(m_data + 0x54), false);
+        }
+    }
+    return false;
+}
+
 // FUNCTION: GAME 0x004bbf80
 bool RHElementTarget::FUN_004bbf80()
 {
@@ -420,6 +466,7 @@ void RHElementTarget::Emit(SBFile &file)
     FUN_004baf50(0);
     FUN_004baff0(0);
     FUN_004bb0a0(0);
+    FUN_004bb240(0, 0, 0);
     FUN_004bae60(0, &RHUnkTargetScriptRef::FUN_004035d0);
     ((RHElementPositionCalls *)this)->FUN_004bb180();
     FUN_004bbf80();
