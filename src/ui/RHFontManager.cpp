@@ -4,6 +4,20 @@
 #include "RHSoundCacheCore.h"
 #include "RHTreeDec.h"
 
+// STRING: GAME 0x006afe64
+#define RH_FONT_MANAGER_CONFIG_NAME "manager.cfg"
+
+RHFontManager RHFontManager::mInstance(std::string("data\\interface\\fonts\\") + RH_FONT_MANAGER_CONFIG_NAME);
+
+// GLOBAL: GAME 0x006c0ad0
+// RHFontManager::mInstance
+
+// SYNTHETIC: GAME 0x005016f0
+// $E20
+
+// SYNTHETIC: GAME 0x00501820
+// $E21
+
 extern RHTreeDecNode20 *g_unk0x006c0ae8;
 
 struct RHTreeInc00503420
@@ -757,7 +771,7 @@ RHFontInsertResult::RHFontInsertResult(const RHFontIterator &iterator, const boo
 // FUNCTION: GAME 0x005024f0
 void *RHFontManager::FUN_005024f0()
 {
-    return (void *)0x6c0ad0;
+    return &mInstance;
 }
 
 void RHFontManager::Emit(const std::string &name)

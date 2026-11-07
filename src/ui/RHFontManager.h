@@ -100,6 +100,7 @@ public:
     void Emit(const std::string &name);
     RHFontInsertTree m_fonts; // +0x00; tree node value +0x0c, Fonts* +0x1c
     unsigned m_family;
+    static RHFontManager mInstance;
 };
 
 #endif
