@@ -788,13 +788,6 @@ bool FUN_00453940(SBFile &file, RHMission *&mission)
 class RHUnk0054cda0;
 void FUN_0054cda0(RHUnk0054cda0 *value);
 
-class RHSequenceElement;
-class RHSeqList
-{
-public:
-    static void CopyData(RHSequenceElement **destination, RHSequenceElement *const *source);
-};
-
 inline void RHCampaignPushMission(RHCampaignMissionList &missions, RHMission *const &value)
 {
     RHCampaignMissionList::Node *head = missions.m_head;
@@ -804,7 +797,8 @@ inline void RHCampaignPushMission(RHCampaignMissionList &missions, RHMission *co
     node->previous = last != 0 ? last : node;
     head->previous = node;
     node->previous->next = node;
-    RHSeqList::CopyData((RHSequenceElement **)&node->value, (RHSequenceElement *const *)&value);
+    void (*construct)(RHMission **, RHMission *const &) = &std::_Construct;
+    construct(&node->value, value);
     ++missions.m_count;
     missions.m_dirty = true;
 }
