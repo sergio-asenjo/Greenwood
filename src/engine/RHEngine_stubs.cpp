@@ -210,13 +210,15 @@ short RHEngineGridCalls::FUN_004e9920(const SBGeoPoint2D &point, const SBGeoPoin
     return -2;
 }
 
+struct RHBonusProjection;
+
 class RHEngineReinforcementCalls
 {
 public:
     void *FUN_00452130(void *profile);
     void FUN_004936a0(int value);
     void FUN_00491fd0(const RHbeamMe &beamMe);
-    unsigned FUN_004e4460(void **value, bool insert);
+    unsigned FUN_004e4460(RHBonusProjection *const &value, bool insert);
     bool FUN_004f6c20(const SBGeoPoint2D &origin, SBGeoPoint2D &destination,
         unsigned short layer, const SBGeoPoint2D &extent);
 };

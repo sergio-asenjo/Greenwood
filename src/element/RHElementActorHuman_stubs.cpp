@@ -1,7 +1,6 @@
 #include "SBNullstr.h"
 #include "RHElementActorHuman.h"
 
-void RHEngine::FUN_004e39b0(void *, bool) {}
 #include "RHWeapon.h"
 
 class RHProfileManager;

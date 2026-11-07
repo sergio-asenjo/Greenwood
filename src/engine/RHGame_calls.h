@@ -245,6 +245,8 @@ public:
     int FUN_004deeb0(const SBGeoPoint2D &point, SBGeoPoint2D &result);
     bool FUN_004c4570(SBFile &file);
     unsigned char FUN_004ded90(void *actor);
+    void FUN_004e17c0(void *actor, int value);
+    void FUN_004c8120(void *actor);
     RHDialogueSet *GetDynResources(unsigned long resources);
 };
 
@@ -284,8 +286,7 @@ public:
     void FUN_0056f700(RHSaveGame *, RHSaveGame *, const std::wstring &);
 };
 
-extern undefined g_unk0x006c0e48[];
-extern std::string g_unk0x006c0ea0;
+#include "RHPlayerProfileManagerStorage.h"
 
 class RHUnk00549250 : public RHUnk5490f0
 {

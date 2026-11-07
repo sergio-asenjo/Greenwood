@@ -5,6 +5,8 @@
 #include <string>
 #include "Decomp.h"
 #include "RHEngineElementArray.h"
+#include "RHSectorActorList.h"
+#include "SBList.h"
 
 class SBFile;
 class RHElement;
@@ -23,6 +25,9 @@ class SBGeoBoundingBox2D;
 class RHDialogueSet;
 struct RHUnkSectorGlobal;
 struct RHbeamMe;
+struct RHUnk004e4660Entry;
+struct RHEngineDrawEntry;
+class RHUnk004e49f0Entry;
 
 class RHCampaignLoadingProgress
 {
@@ -96,7 +101,7 @@ public:
     void AddElement(RHElement *element, bool initialize, bool registerElement);
     bool RemoveElement(RHElement *element, bool uninitialize, bool deferred);
     void FUN_004dae10(unsigned long surface, const SBGeoBoundingBox2D &view, float scale);
-    void FUN_004e39b0(void *actor, bool value);
+    void FUN_004e39b0(RHElementActorHuman *actor, bool value);
     bool TurnPathFinderOn();
     void FUN_004c9d20(void *box);
     int FUN_0049b590(void *actor);
@@ -159,6 +164,7 @@ public:
     int FUN_004c7cc0();
     bool FUN_004c7cd0();
     bool FUN_004c7cf0();
+    void FUN_004c8140();
     unsigned FUN_004c7d50();
     bool FUN_004c7d80(void *first, int second, void **result);
     bool FUN_004c7e10(void *first, int second, void **result);
@@ -176,6 +182,7 @@ public:
     void FUN_004e3100(int action);
     unsigned char FUN_004ded90(void *actor);
     void FUN_004e3d20(int index, int value);
+    void FUN_004e3e70();
     bool FUN_004c7eb0(void *first, int second, void **result);
     char FUN_004c7f50(void *actor);
     void FUN_004c7f60(const void *point);
@@ -263,7 +270,14 @@ public:
     RHEngineElementArray<RHElementFX> m_fx;
     RHEngineElementArray<RHElementFX> m_groundFX;
     RHEngineElementArray<RHElement> m_activeElements;
-    undefined m_49f8[0x2d0];
+    RHSectorActorList m_49f8;
+    undefined m_4a1c[0x90];
+    SBListAutoDelete<RHUnk004e4660Entry *> m_4aac;
+    undefined m_4ac4[0x128];
+    SBListAutoDelete<RHEngineDrawEntry *> m_4bec;
+    undefined m_4c04[0x98];
+    SBListAutoDelete<RHUnk004e49f0Entry *> m_4c9c;
+    undefined m_4cb4[0x14];
     RHEngineElementArray<RHElementActorHuman> m_teamHumans[2];
     RHEngineElementArray<RHElementActorSoldier> m_teamSoldiers[2];
     RHEngineElementArray<RHElementActorSoldier> m_soldiers;
@@ -474,22 +488,7 @@ public:
 void FUN_005709a0(void *value, unsigned index);
 bool FUN_00570850(void *actor);
 
-class RHMissionArrayStorage
-{
-public:
-    void *FUN_004609a0(void *first, void *last)
-    {
-        typedef std::vector<int> Values;
-        int *(Values::*erase)(int *, int *) = &Values::erase;
-        return (((Values *)this)->*erase)((int *)first, (int *)last);
-    }
-    void FUN_004e5820(void *position, const unsigned long &value)
-    {
-        typedef std::vector<unsigned long> Values;
-        unsigned long *(Values::*insert)(unsigned long *, const unsigned long &) = &Values::insert;
-        (((Values *)this)->*insert)((unsigned long *)position, value);
-    }
-};
+#include "RHMissionArrayStorage.h"
 void FUN_004e70a0(void **position, void *value, bool (*compare)(void *, void *));
 void FUN_004e6f70(void **first, void **last, bool (*compare)(void *, void *), void **value);
 

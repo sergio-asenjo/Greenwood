@@ -430,8 +430,7 @@ bool RHElementActorSoldier::Serialize(SBFile &file)
     return true;
 }
 
-// Parked: VC6 duplicates the m_40 reset tail instead of jumping over the sparse-switch cases.
-// STUB: GAME 0x004a5340
+// FUNCTION: GAME 0x004a5340
 bool RHElementActorSoldier::FUN_004a5340(unsigned flags, RHSoldierTransition *element)
 {
     if ((flags & 0x80) && !RHSOLDIER_FIELD(unsigned char, 0xa2c))
@@ -443,12 +442,14 @@ bool RHElementActorSoldier::FUN_004a5340(unsigned flags, RHSoldierTransition *el
         return true;
     if (flags & 0x200)
     {
-        switch (element->m_40)
+        if (element->m_40 != 0)
         {
-        case 0:
+            if (element->m_40 > 3 && element->m_40 <= 5)
+                ((RHSoldierActorCalls *)this)->V78(element, 0x24);
+        }
+        else
+        {
             ((RHSoldierActorCalls *)this)->V78(element, 0x1d);
-        case 4:
-        case 5:
             ((RHSoldierActorCalls *)this)->V78(element, 0x24);
         }
         element->m_40 = 5;

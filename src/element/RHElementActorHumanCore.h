@@ -15,6 +15,7 @@ class RHUnk005864a0;
 class RHElementActorHuman
 {
 public:
+    unsigned ElementTypeBits() const { return m_typeBits; }
     bool FUN_00471a50();
     bool FUN_00471b00();
     void FUN_00471c00(unsigned short amount, void *source, bool force);
@@ -62,7 +63,7 @@ public:
     void FUN_00482fd0(RHHumanList *result, int weaponData, bool alternate);
     bool FUN_00483070(RHElementActorHuman *other);
     bool FUN_00483160(void *context, RHElementActorHuman *target, unsigned type);
-    unsigned FUN_00483500(void *context, unsigned command, RHElementActorHuman *target);
+    bool FUN_00483500(void *context, unsigned command, RHElementActorHuman *target);
     void *FUN_004837f0(RHElementActorHuman *target);
     int FUN_0047b760(void *actor, int *value);
     void FUN_0047b660(const RHUnk00613e90 &point);
@@ -108,7 +109,17 @@ public:
     void FUN_00485f20();
     void Emit(SBFile &file, RHSequenceElement *element, RHcommand command);
 
-    char m_000[0x1b8];
+    char m_000[4];
+    union
+    {
+        unsigned m_flags;
+        struct
+        {
+            unsigned m_typeBits : 3;
+            unsigned m_otherBits : 29;
+        };
+    };
+    char m_008[0x1b0];
     RHHumanList m_1b8;
     char m_1d0[0x1c];
     undefined m_1ec[0x20];

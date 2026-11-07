@@ -16,7 +16,7 @@ extern float g_unk0x006774e4;
 // ?insert@?$list@PAVRHElementActorHuman@@V?$allocator@PAVRHElementActorHuman@@@std@@@std@@QAEXViterator@12@Vconst_iterator@12@1@Z
 template class std::list<RHElementActorHuman *>;
 
-extern undefined g_unk0x006c0e48[0x2c];
+#include "RHPlayerProfileManagerStorage.h"
 
 
 // GLOBAL: GAME 0x006ae494
@@ -766,7 +766,7 @@ void RHHumanActorCalls::FUN_00479430(RHUnk00613e90 &point, float height)
 
 SBGeoVector2D FUN_005fc580(const SBGeoVector2D &point, float factor);
 
-// STUB: GAME 0x00479770
+// FUNCTION: GAME 0x00479770
 void RHHumanActorCalls::FUN_00479770(RHUnk00613e90 &point, short index, int animation, int posture)
 {
     SBGeoPoint2D projected;
@@ -3130,7 +3130,7 @@ bool RHElementActorHuman::FUN_00483160(void *context, RHElementActorHuman *targe
 
 // Parked: action allocation, coordinate/heading setup, and enqueue ABI remain mismatched.
 // STUB: GAME 0x00483500
-unsigned RHElementActorHuman::FUN_00483500(void *context, unsigned command, RHElementActorHuman *target)
+bool RHElementActorHuman::FUN_00483500(void *context, unsigned command, RHElementActorHuman *target)
 {
     unsigned type = RHActorField<unsigned>(this, 4);
     bool sameGroup = (type & 15) == 12;
@@ -3161,7 +3161,7 @@ unsigned RHElementActorHuman::FUN_00483500(void *context, unsigned command, RHEl
         (((RHHumanAddressCalls *)action)->*enqueueCall.call)(command, 0x27, 0, 0, 0, 0, 0x80000);
         return 1;
     }
-    union { unsigned long address; unsigned (RHHumanAddressCalls::*call)(void *, unsigned, void *); } fallbackCall;
+    union { unsigned long address; bool (RHHumanAddressCalls::*call)(void *, unsigned, void *); } fallbackCall;
     fallbackCall.address = 0x00463d80;
     return (((RHHumanAddressCalls *)context)->*fallbackCall.call)(this, command, target);
 }
