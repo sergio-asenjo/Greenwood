@@ -78,6 +78,7 @@ public:
     void FUN_00488a40(unsigned char index, unsigned short timer);
     unsigned short FUN_0048a830();
     bool FUN_0048af40(const SBGeoPoint2D &point, RHElementActorHuman *pc, int focus);
+    bool FUN_0048be40(void *context, unsigned flags, RHElementActorHuman *target);
     void *FUN_0048c380(RHElementActorHuman *target);
     void FUN_0048c4d0();
     static void FUN_0048c620(void *actor);

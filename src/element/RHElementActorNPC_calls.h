@@ -35,7 +35,7 @@ public:
     bool FUN_004799e0(SBFile &file);
 };
 
-struct RHPathHistory
+struct RHNPCDetectableRecord
 {
     int m_0;
     int m_4;
@@ -45,55 +45,66 @@ struct RHPathHistory
     char m_pad11;
     unsigned short m_12;
 };
-struct RHPathHistoryNode
+struct RHNPCDetectableNode
 {
-    RHPathHistoryNode *m_next;
-    RHPathHistoryNode *m_prev;
-    RHPathHistory m_data;
+    RHNPCDetectableNode *m_next;
+    RHNPCDetectableNode *m_prev;
+    RHNPCDetectableRecord m_data;
 };
-void RHPathUnk0048f180(RHPathHistory *destination, const RHPathHistory *source);
 
-class RHPathHistoryIter
+class RHNPCDetectableIter
 {
 public:
-    RHPathHistoryNode *m_p;
-    RHPathHistoryIter(RHPathHistoryNode *node) : m_p(node) {}
+    RHNPCDetectableNode *m_p;
+    RHNPCDetectableIter(RHNPCDetectableNode *node) : m_p(node) {}
 };
 
 #include "RHTitbitsCore.h"
 
-class RHPathHistoryList
+class RHNPCDetectableStorage
 {
 public:
     int m_0;
-    RHPathHistoryNode *m_head;
+    RHNPCDetectableNode *m_head;
     int m_count;
-    RHPathHistoryNode *m_cur;
+    RHNPCDetectableNode *m_cur;
     char m_valid;
     char m_pad11[3];
     int m_index;
-    RHPathHistoryNode *Unk00551de0(RHPathHistoryNode *next, RHPathHistoryNode *previous);
-    RHPathHistoryIter end() { return RHPathHistoryIter(m_head); }
-    RHPathHistoryIter insert(RHPathHistoryIter position, const RHDetectable &value)
+    RHNPCDetectableIter end() { return RHNPCDetectableIter(m_head); }
+    RHNPCDetectableIter insert(RHNPCDetectableIter position, const RHDetectable &value)
     {
-        RHPathHistoryNode *node = position.m_p;
-        node->m_prev = Unk00551de0(node, node->m_prev);
+        RHNPCDetectableNode *node = position.m_p;
+        node->m_prev = (RHNPCDetectableNode *)((RHPathHistoryList *)this)->Unk00551de0((RHPathHistoryNode *)node, (RHPathHistoryNode *)node->m_prev);
         node = node->m_prev;
         node->m_prev->m_next = node;
-        RHPathUnk0048f180(&node->m_data, (const RHPathHistory *)&value);
+        RHPathUnk0048f180((RHPathHistory *)&node->m_data, (const RHPathHistory *)&value);
         ++m_count;
         m_valid = 1;
-        return RHPathHistoryIter(node);
+        return RHNPCDetectableIter(node);
     }
 };
 
 #include "RHScriptListCore.h"
 #include "RHSectorActorIterator.h"
 
-struct RHNPCDetectableList : public RHPathHistoryList
+struct RHNPCDetectableList : public std::list<RHDetectable>
 {
     RHNPCDetectableList();
-    char m_18[0x1c];
+    ~RHNPCDetectableList();
+    void ClearNodes()
+    {
+        typedef std::list<unsigned long> Native;
+        ((Native *)this)->clear();
+    }
+    void *m_cursor;
+    bool m_dirty;
+    char m_11[3];
+    int m_index;
+    bool m_searching;
+    char m_19[3];
+    int m_found;
+    RHDetectable m_value;
 };
 
 class RHNPCActorCalls

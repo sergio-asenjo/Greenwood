@@ -4,6 +4,11 @@
 #include "RHMalignityOwnerCalls.h"
 #include "RHElementActorHumanCore.h"
 
+DECOMP_SIZE_ASSERT(RHNPCDetectableRecord, 0x14)
+DECOMP_SIZE_ASSERT(RHNPCDetectableNode, 0x1c)
+DECOMP_SIZE_ASSERT(RHNPCDetectableStorage, 0x18)
+DECOMP_SIZE_ASSERT(RHNPCDetectableList, 0x34)
+
 #define RHNPC_ACCESS(buffer, size, line) \
     if (file.Access(buffer, size) < 0) \
     { \
@@ -574,7 +579,7 @@ bool RHElementActorNPC::Serialize(SBFile &file)
         if (file.m_bLoading)
         {
             RHNPC_ACCESS(&count, 4, 4022);
-            RHNPCDetectableList &list = ((RHNPCDetectableList *)((char *)this + 0x504))[type];
+            RHNPCDetectableStorage &list = (RHNPCDetectableStorage &)((RHNPCDetectableList *)((char *)this + 0x504))[type];
             RHSectorActorIter current((RHSectorActorNode *)list.m_head->m_next);
             RHSectorActorNode *end = (RHSectorActorNode *)list.m_head;
             while (current.m_p != end)
@@ -588,7 +593,7 @@ bool RHElementActorNPC::Serialize(SBFile &file)
         }
         else
         {
-            RHNPCDetectableList &list = ((RHNPCDetectableList *)((char *)this + 0x504))[type];
+            RHNPCDetectableStorage &list = (RHNPCDetectableStorage &)((RHNPCDetectableList *)((char *)this + 0x504))[type];
             count = list.m_count;
             RHNPC_ACCESS(&count, 4, 4036);
             for (unsigned index = 0; index < count; ++index)
@@ -613,6 +618,92 @@ bool RHElementActorNPC::Serialize(SBFile &file)
 
 #define SBGEO_BOUNDINGBOX2D_VIEW
 #include "RHActorSequenceStorage.h"
+
+#include "RHElementActorPC.h"
+#include "RHSequenceConstructionCalls.h"
+#include "RHSequenceInteractionAction.h"
+#include "RHSequenceGenericConstruction.h"
+#include "RHSequenceAppendCalls.h"
+
+// STUB: GAME 0x0048be40
+bool RHElementActorNPC::FUN_0048be40(void *context, unsigned flags, RHElementActorHuman *target)
+{
+    if (RHNPC_FIELD(void *, 0x500))
+    {
+        RHUnk00582220 *sequence = new RHUnk00582220;
+        if (!*(char *)((char *)this + (*(int **)((char *)this + 0x49c))[1] + 0x660))
+        {
+            RHUnk00584d60 *action = new RHUnk00584d60(1, 0x7f, this);
+            ((RHUnk00585500 *)action)->Unk(sequence);
+        }
+        RHUnk00585ea0 *first = new RHUnk00585ea0(1, 0x1b, target, this);
+        ((RHUnk00585500 *)first)->Unk(sequence);
+        RHUnk00585ea0 *second = new RHUnk00585ea0(1, 0x1b, this, target);
+        ((RHUnk00585500 *)second)->Unk(sequence);
+        if (!*(char *)((char *)this + (*(int **)((char *)this + 0x49c))[1] + 0x660))
+        {
+            RHUnk00584d60 *action = new RHUnk00584d60(2, 0x80, this);
+            ((RHUnk00585500 *)action)->Unk(sequence);
+        }
+        RHUnk005866a0 *action = new RHUnk005866a0(2, 0xaf, 0);
+        action->Unk00586ed0(0x28, (int)RHNPC_FIELD(void *, 0x500));
+        action->Unk00586ed0(0x29, (int)target);
+        action->Unk00586ed0(0x2a, (int)this);
+        ((RHUnk00585500 *)action)->Unk(sequence);
+        ((RHElementActorPC *)target)->FUN_004a0340(sequence, (flags & 8) != 0, 0x1e, 0x32, (int)this, 1);
+        return true;
+    }
+    if ((RHNPC_FIELD(char, 0x1ce) || ((RHNPCActorCalls *)this)->V48()) &&
+        *(int *)(RHNPC_FIELD(char *, 0x50) + 0x8c) != 7 &&
+        RHNPC_FIELD(int, 0x4f0) && ((RHScriptBatchCalls *)target)->Unk0049d560(0x17))
+    {
+        RHUnk00585ea0 *action = new RHUnk00585ea0(1, 0x55, target, this);
+        char *sprite = *(char **)((char *)target + 0x50);
+        float duration;
+        {
+            SBGeoVector2D offset(*(SBGeoPoint2D *)(sprite + 0x1c));
+            unsigned short heading = *(unsigned short *)(sprite + 0xd8);
+            void *profile = ((RHUnk005b5e00 *)sprite)->Unk();
+            SBGeoPoint2D *point = ((RHUnk005b5e00 *)sprite)->Unk005bdd30(
+                *(short *)(*(char **)((char *)profile + 4) + 0xf4) + heading);
+            duration = ((RHUnk005fc3b0 *)&point->Unk005fc190(offset)
+                .Unk005fc110(*(SBGeoPoint2D *)(sprite + 0x24)))->Unk005fc6a0(1.0f);
+        }
+        ((RHElementActorPC *)target)->FUN_0049ffe0(action, flags, (int)duration, 0x33, 0, 0, 0x80000);
+        return true;
+    }
+    if (RHNPC_FIELD(char, 0x1ce) && !RHNPC_FIELD(char, 8) &&
+        !((RHNPCActorCalls *)this)->V48() &&
+        (RHNPC_FIELD(unsigned, 4) & 0x1f) == 0x14 &&
+        !((RHNPCActorCalls *)this)->Vf8() &&
+        *(int *)(RHNPC_FIELD(char *, 0x50) + 0x8c) == 3 &&
+        ((RHScriptBatchCalls *)target)->Unk0049d560(0x1d))
+    {
+        RHUnk00585ea0 *action = new RHUnk00585ea0(1, 0x45, target, this);
+        ((RHElementActorPC *)target)->FUN_0049ffe0(action, flags, 0x28, 0xb, 0, 0, 0x80000);
+        return true;
+    }
+    if (RHNPC_FIELD(char, 0x1ce) &&
+        *(int *)(RHNPC_FIELD(char *, 0x50) + 0x8c) == 3 &&
+        ((RHScriptBatchCalls *)target)->Unk0049d560(0x1b))
+    {
+        RHUnk00585ea0 *action = new RHUnk00585ea0(1, 0x72, target, this);
+        char *sprite = *(char **)((char *)target + 0x50);
+        float duration;
+        {
+            SBGeoVector2D offset(*(SBGeoPoint2D *)(sprite + 0x1c));
+            unsigned short heading = *(unsigned short *)(sprite + 0xd8);
+            void *profile = ((RHUnk005b5e00 *)sprite)->Unk();
+            SBGeoPoint2D *point = ((RHUnk005b5e00 *)sprite)->Unk005bdd30(
+                *(short *)(*(char **)((char *)profile + 4) + 0x1e0) + heading);
+            duration = ((RHUnk005fc3b0 *)&point->Unk005fc190(offset)
+                .Unk005fc110(*(SBGeoPoint2D *)(sprite + 0x24)))->Unk005fc6a0(1.0f);
+        }
+        ((RHElementActorPC *)target)->FUN_0049ffe0(action, flags, (int)duration, 0x20, 0, 0, 0x80000);
+        return true;
+    }
+    return ((RHElementActorHuman *)this)->FUN_00483500(context, flags, target);
+}
 
 // FUNCTION: GAME 0x0048c380
 void *RHElementActorNPC::FUN_0048c380(RHElementActorHuman *target)
@@ -1213,23 +1304,24 @@ int RHElementActorNPC::FUN_0048efa0()
 }
 
 // FUNCTION: GAME 0x0048efe0
-RHNPCDetectableList::RHNPCDetectableList()
+RHNPCDetectableList::RHNPCDetectableList() : m_dirty(true)
 {
-    char value;
-    *(char *)&m_0 = value;
-    RHPathHistoryNode *list = new RHPathHistoryNode;
-    list->m_next = list;
-    list->m_prev = list;
-    m_head = list;
-    m_valid = 1;
-    m_count = 0;
-    *(char *)((char *)this + 0x2a) = 0;
-    *(char *)((char *)this + 0x28) = 0;
-    *(char *)((char *)this + 0x29) = 0;
-    *(char *)((char *)this + 0x2c) = 0;
-    *(int *)((char *)this + 0x30) = 0;
-    *(int *)((char *)this + 0x24) = 7;
 }
+
+// FUNCTION: GAME 0x0048f020
+RHNPCDetectableList::~RHNPCDetectableList()
+{
+    ClearNodes();
+}
+
+// TEMPLATE: GAME 0x004e52a0 FOLDED
+// ??1?$list@VRHDetectable@@V?$allocator@VRHDetectable@@@std@@@std@@QAE@XZ
+
+// TEMPLATE: GAME 0x0048be30 FOLDED
+// ??1RHDetectable@@QAE@XZ
+
+// TEMPLATE: GAME 0x0040eab0 FOLDED
+// ??_GRHDetectable@@QAEPAXI@Z
 
 void RHElementActorNPC::Emit(SBFile &file)
 {
