@@ -115,7 +115,7 @@ int SCSerializeUnkObject::FUN_0063a940(FILE *file, bool writing)
     int result;
     int length;
     int count;
-    char text[256];
+    char text[260];
     if (writing) {
         length = strlen(m_04.c_str());
         result = SBFileUnk00643cd3(&length, 1, 4, file);

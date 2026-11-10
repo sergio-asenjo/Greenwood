@@ -5,23 +5,25 @@
 #include "RHProfilePointerList.h"
 
 struct RHUnk00571160Position;
+class RHMission;
+class RHElementActorPC;
 
 struct RHScriptNode
 {
     RHScriptNode *next;
     RHScriptNode *prev;
-    void *data;
+    union
+    {
+        void *data;
+        RHMission *mission;
+        RHElementActorPC *pc;
+    };
 };
 
 struct RHScriptIter
 {
     RHScriptNode *node;
     RHScriptIter(RHScriptNode *value) : node(value) {}
-    RHScriptIter &operator=(const RHScriptIter &other)
-    {
-        node = other.node;
-        return *this;
-    }
     RHScriptIter operator++(int)
     {
         RHScriptIter previous = *this;

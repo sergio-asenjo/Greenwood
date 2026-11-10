@@ -26,17 +26,7 @@ namespace VMCoreCustomDependencies
     void FUN_0057bff0(int) {}
 }
 
-class RHPatch
-{
-public:
-    void FUN_00550150();
-};
-
-class RHUnk0054f870
-{
-public:
-    void Unk00550220();
-};
+#include "RHPatchClass.h"
 
 class RHFastFindGrid
 {
@@ -61,7 +51,7 @@ namespace VMCoreCustomDependencies
     // FUNCTION: GAME 0x00570e50
     bool FUN_00570e50(int value)
     {
-        ((RHUnk0054f870 *)value)->Unk00550220();
+        ((RHPatch *)value)->FUN_00550220();
         g_unk0x6c0fa8[0x48d0] = 0;
         return true;
     }
@@ -121,4 +111,3 @@ void RHUnk0054b150::FUN_0054b150(bool flag, bool immediate)
         }
     }
 }
-

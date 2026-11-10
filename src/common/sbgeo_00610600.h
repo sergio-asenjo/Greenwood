@@ -57,11 +57,14 @@ public:
     SBGeoSegment2D FUN_006112d0(unsigned long index) const;
 };
 
+#ifndef RHUNK_TARGET_POINTS_DEFINED
+#define RHUNK_TARGET_POINTS_DEFINED
 class RHUnkTargetPoints : public RHUnkPolyArrayBase
 {
 public:
     void FUN_00611100(const SBGeoPoint2D &point);
 };
+#endif
 
 #include "RHUnkSectorPoints.h"
 

@@ -14,7 +14,11 @@ public:
     RHMobileUnk006100e0(const RHLineSource00610000 &other);
     RHMobileUnk006100e0(const SBGeoSegment2D &other);
     ~RHMobileUnk006100e0();
+#ifdef RHMOBILEUNK006100E0_PLAIN
+    void FUN_00578c50();
+#else
     void FUN_00578c50() throw();
+#endif
     void FUN_0060ff30(const RHMobileUnk006100e0 &other);
     RHMobileUnk006100e0 &FUN_00610140(const RHMobileUnk006100e0 &other);
     void FUN_00610160(const SBGeoPoint2D &vector);

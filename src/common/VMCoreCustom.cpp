@@ -1,5 +1,4 @@
 #include "VMCoreCustom.h"
-#include "RHScript.h"
 
 int FUN_00579a20();
 void FUN_005785d0(void *value);
@@ -2177,6 +2176,13 @@ int VMCoreCustom::FUN_004071a0(VMNativeStack *)
     return VMCoreCustomDependencies::FUN_0057b150();
 }
 
+// FUNCTION: GAME 0x004071b0
+int VMCoreCustom::FUN_004071b0(VMNativeStack *)
+{
+    RHScript::DisplaySherwoodReport();
+    return 0;
+}
+
 // FUNCTION: GAME 0x004071f0
 int VMCoreCustom::FUN_004071f0(VMNativeStack *stack)
 {
@@ -2387,4 +2393,12 @@ int VMCoreCustom::IForbidNPCRemark(VMNativeStack *stack)
     stack->m_size -= 12;
     RHScript::ForbidNPCRemark(*(void **)(data + top - 12), *(int *)(data + top - 8), *(int *)(data + size - 4) != 0);
     return 0;
+}
+
+// SYNTHETIC: GAME 0x004631a0
+// VMCoreCustom::~VMCoreCustom
+
+void EmitVMCoreCustomDestruction(VMCoreCustom *machine)
+{
+    machine->VMCoreCustom::~VMCoreCustom();
 }
