@@ -873,7 +873,7 @@ int RHMessenger::EvaluateMouseWay(const SBGeoPoint2D &point, const SBGeoVector2D
         return 0;
     SBGeoPoint2D first(m_way.FUN_00610cb0(0));
     SBGeoPoint2D last(m_way.FUN_00610cb0(count - 1));
-    SBGeoVector2D middle = FUN_005fc580(SBGeoVector2D(first.Unk005fc190(SBGeoVector2D(last))), 0.5f);
+    SBGeoVector2D middle = FUN_005fc580(first.Unk005fc190(SBGeoVector2D(last)), 0.5f);
     SBGeoBoundingBox2D bounds;
     SBGeoPoint2D center;
     SBGeoPoint2D current;

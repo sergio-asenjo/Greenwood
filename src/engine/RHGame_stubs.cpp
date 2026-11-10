@@ -76,7 +76,6 @@ void RHGameSyncCalls::FUN_00513520(RHUnk00549250 &) {}
 void RHGameSyncCalls::FUN_005134c0(RHUnk00549250 &) {}
 void RHGameSyncCalls::FUN_00513b00(void *) {}
 void RHGameSyncCalls::FUN_0050ed40() {}
-void RHGameSyncCalls::FUN_00514670() {}
 void RHGameSyncCalls::FUN_0048a970(RHUnk00549250 &) {}
 bool RHGameEngineCalls::FUN_004c7cd0() { return false; }
 bool RHGameEngineCalls::FUN_004c7cf0() { return false; }
@@ -89,7 +88,6 @@ void RHGameActionCalls::FUN_005140b0() {}
 void RHGameActionCalls::FUN_005f4900(char) {}
 void RHGameActionCalls::FUN_005104c0() {}
 bool RHGameActionCalls::FUN_004d2300(void *, unsigned) { return false; }
-void RHGameActionCalls::FUN_005a7b40(int) {}
 void RHGamePortraitCalls::FUN_005d6690() {}
 
 // LIBRARY: GAME 0x00642a00

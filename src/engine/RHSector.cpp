@@ -276,6 +276,61 @@ int RHSector::Unk0057cd60(SBFile &file, bool mode)
     return ((ToolboxPositionFile *)&file)->FUN_005f5440() - start;
 }
 
+#include "SBGeoVector2D.h"
+#include "SBGeoIntersection2D.h"
+#include "SBDrawManagerCore.h"
+
+DECOMP_SIZE_ASSERT(SBGeoVector2D, 0x08)
+DECOMP_SIZE_ASSERT(SBGeoSegment2D, 0x10)
+DECOMP_SIZE_ASSERT(RHUnk0060fbf0, 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(RHSector, m_24) == 0x28)
+DECOMP_STATIC_ASSERT(offsetof(RHSector, m_30) == 0x30)
+DECOMP_STATIC_ASSERT(offsetof(RHSector, m_3c) == 0x3c)
+
+// FUNCTION: GAME 0x0057cee0
+void RHSector::FUN_0057cee0(SBDrawManager *draw, unsigned long surface, const SBGeoBoundingBox2D &box, float scale, unsigned short color)
+{
+    SBGeoVector2D offset;
+    SBGeoPoint2D previous;
+    SBGeoPoint2D current;
+    SBGeoPoint2D first;
+    SBGeoPoint2D second;
+    SBGeoSegment2D segment(SBGeoPoint2D(0, 0), SBGeoPoint2D(0, 0));
+    RHUnk0060fbf0 clipped;
+    offset = box.Min();
+    RHUnkSectorPoints &points = *(RHUnkSectorPoints *)((char *)this + 4);
+    unsigned short count = (unsigned short)points.Unk0060ce80();
+    previous = points.Unk0060cef0(count - 1);
+    if (count > 0)
+    {
+        unsigned index = 0;
+        unsigned remaining = count;
+        do
+        {
+            current = points.Unk0060cef0(index);
+            segment.First() = previous;
+            segment.Second() = current;
+            clipped.FUN_0060fca0(box.FUN_006093f0(segment.Line()));
+            if (clipped.FUN_0063b9a0() == 4)
+            {
+                segment = *(SBGeoSegment2D *)clipped.FUN_0053bf20();
+                first = segment.First().FUN_005fc200(offset);
+                second = segment.Second().FUN_005fc200(offset);
+                if (scale != 1.0f)
+                {
+                    first.m_x *= scale;
+                    first.m_y *= scale;
+                    second.m_x *= scale;
+                    second.m_y *= scale;
+                }
+                draw->FUN_005ecbd0(surface, first, second, color);
+            }
+            previous = current;
+            ++index;
+        } while (--remaining);
+    }
+}
+
 // FUNCTION: GAME 0x0057d390
 void RHSector::FUN_0057d390(void *, unsigned long, const SBGeoBoundingBox2D &, float, unsigned short)
 {

@@ -1,5 +1,30 @@
+#include "SBGeoPoint2D.h"
 #include "SBNullstr.h"
 #include "RHPatch.h"
+
+DECOMP_SIZE_ASSERT(RHPatch, 0x1a0)
+DECOMP_STATIC_ASSERT(offsetof(RHPatch, m_3) == 0x03)
+DECOMP_STATIC_ASSERT(offsetof(RHPatch, m_6) == 0x06)
+DECOMP_STATIC_ASSERT(offsetof(RHPatch, m_8) == 0x08)
+DECOMP_STATIC_ASSERT(offsetof(RHPatch, m_9) == 0x09)
+DECOMP_STATIC_ASSERT(offsetof(RHPatch, m_a) == 0x0a)
+DECOMP_STATIC_ASSERT(offsetof(RHPatch, m_b) == 0x0b)
+DECOMP_STATIC_ASSERT(offsetof(RHPatch, m_d) == 0x0d)
+DECOMP_STATIC_ASSERT(offsetof(RHPatch, m_10) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHPatch, m_14) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(RHPatch, m_16) == 0x16)
+DECOMP_STATIC_ASSERT(offsetof(RHPatch, m_18) == 0x18)
+DECOMP_STATIC_ASSERT(offsetof(RHPatch, m_1c) == 0x1c)
+DECOMP_STATIC_ASSERT(offsetof(RHPatch, m_40) == 0x40)
+DECOMP_STATIC_ASSERT(offsetof(RHPatch, m_64) == 0x64)
+DECOMP_STATIC_ASSERT(offsetof(RHPatch, m_88) == 0x88)
+DECOMP_STATIC_ASSERT(offsetof(RHPatch, m_ac) == 0xac)
+DECOMP_STATIC_ASSERT(offsetof(RHPatch, m_d0) == 0xd0)
+DECOMP_STATIC_ASSERT(offsetof(RHPatch, m_f4) == 0xf4)
+DECOMP_STATIC_ASSERT(offsetof(RHPatch, m_118) == 0x118)
+DECOMP_STATIC_ASSERT(offsetof(RHPatch, m_178) == 0x178)
+DECOMP_SIZE_ASSERT(RHMotionAreaList<void *>, 0x24)
+DECOMP_STATIC_ASSERT(offsetof(RHMotionAreaList<void *>, m_cursor) == 0x0c)
 
 // FUNCTION: GAME 0x0054f870
 bool RHUnk0054f870::Unk0054f870(SBFile &file)
@@ -136,6 +161,44 @@ bool RHUnk0054f870::Unk0054f870(SBFile &file)
     return true;
 }
 
+#include "RHUnkTargetSpriteCalls.h"
+#include "RHSpriteLastFrameCalls.h"
+#include "RHElementFX.h"
+#include "RHCivilianSpriteView.h"
+#include "RHEngineWidenedCalls.h"
+
+// STUB: GAME 0x0054fc40
+void RHPatch::FUN_0054fc40(bool open)
+{
+    if (m_7)
+    {
+        SBGeoBoundingBox2D bounds;
+        SBGeoBoundingBox2D first;
+        SBGeoBoundingBox2D second;
+        if (!open)
+        {
+            ((RHElementFX *)m_18)->RestoreBackground();
+            *((char *)g_pEngine + 0x48d1) = 0;
+        }
+        else
+        {
+            unsigned short x = (*(RHSprite **)((char *)m_18 + 0x50))->m_184;
+            unsigned short y = (*(RHSprite **)((char *)m_18 + 0x50))->m_186;
+            (*(RHUnkTargetSprite **)((char *)m_18 + 0x50))->FUN_005b76e0(0x95, 0);
+            (*(RHUnk005bd5b0 **)((char *)m_18 + 0x50))->Unk(true);
+            ((RHElementFX *)m_18)->FUN_004a9990();
+            unsigned short height = (*(RHCivilianSpriteView **)((char *)m_18 + 0x50))->FUN_005bdf20();
+            unsigned short width = (*(RHCivilianSpriteView **)((char *)m_18 + 0x50))->FUN_005bdef0();
+            bounds.FUN_00609050(*(SBGeoPoint2D *)(*(char **)((char *)m_18 + 0x50) + 0x1c),
+                                (*(SBGeoPoint2D *)(*(char **)((char *)m_18 + 0x50) + 0x1c)).Unk005fc190(SBGeoVector2D((float)width, (float)height)));
+            RHSprite *sprite = *(RHSprite **)((char *)m_18 + 0x50);
+            ((RHEngineWidenedCalls *)sprite)->FUN_005bd450();
+            sprite->m_184 = x;
+            sprite->m_186 = y;
+        }
+    }
+}
+
 // FUNCTION: GAME 0x0054fe10
 void RHPatch::FUN_0054fe10()
 {
@@ -143,6 +206,152 @@ void RHPatch::FUN_0054fe10()
     unsigned count = first == 0 ? 0 : *(RHPatchDoorCalls ***)((char *)this + 0x160) - first;
     for (unsigned i = 0; i < count; ++i)
         (*(RHPatchDoorCalls ***)((char *)this + 0x15c))[i]->FUN_0051b660();
+}
+
+// FUNCTION: GAME 0x0054fe50
+void RHPatch::FUN_0054fe50(bool open, bool mode)
+{
+    unsigned short count;
+    unsigned short i;
+    count = m_1c.size();
+    for (i = 0; i < count; ++i)
+        *(char *)m_1c.At(i) = !open;
+    count = m_40.size();
+    for (i = 0; i < count; ++i)
+        *(char *)m_40.At(i) = open;
+    count = m_64.size();
+    for (i = 0; i < count; ++i)
+        *((char *)m_64.At(i) + 8) = !open;
+    count = m_88.size();
+    for (i = 0; i < count; ++i)
+        *((char *)m_88.At(i) + 8) = open;
+    count = m_ac.size();
+    for (i = 0; i < count; ++i)
+        *((char *)m_ac.At(i) + 0x34) = !open;
+    count = m_d0.size();
+    for (i = 0; i < count; ++i)
+        *((char *)m_d0.At(i) + 0x34) = open;
+    count = m_f4.size();
+    for (i = 0; i < count; ++i)
+        *((char *)m_f4.At(i) + 0x18) = !open;
+    count = m_118.size();
+    for (i = 0; i < count; ++i)
+        *((char *)m_118.At(i) + 0x18) = open;
+    if (m_d)
+        g_pEngine->PerformPathFinderStateChange(m_14, m_16, m_10, !mode);
+}
+
+// FUNCTION: GAME 0x00550070
+void RHPatch::FUN_00550070(bool mode)
+{
+    if (m_1)
+        m_2 = 0;
+    FUN_0054fe10();
+    if (m_0)
+    {
+        if (!m_1)
+        {
+            m_0 = 0;
+            if (m_8)
+            {
+                *((char *)m_18 + 0x12) = 1;
+                (*(RHUnkTargetSprite **)((char *)m_18 + 0x50))->FUN_005b76e0(0x94, 0);
+                (*(RHUnk005bd5b0 **)((char *)m_18 + 0x50))->Unk(false);
+            }
+            else if (m_18)
+                *((char *)m_18 + 0x12) = 0;
+            FUN_0054fe50(false, mode);
+        }
+    }
+    else
+    {
+        m_0 = 1;
+        FUN_0054fc40(true);
+        FUN_0054fe50(true, mode);
+        if (m_a)
+        {
+            *((char *)m_18 + 0x12) = 1;
+            (*(RHUnkTargetSprite **)((char *)m_18 + 0x50))->FUN_005b76e0(0x96, 0);
+            (*(RHUnk005bd5b0 **)((char *)m_18 + 0x50))->Unk(false);
+        }
+        else if (m_18)
+            *((char *)m_18 + 0x12) = 0;
+    }
+}
+
+// FUNCTION: GAME 0x00550150
+void RHPatch::FUN_00550150()
+{
+    if (m_6 && m_b)
+    {
+        *((char *)m_18 + 0x12) = 0;
+        FUN_00550070(false);
+    }
+    if (m_0)
+    {
+        if (m_1)
+            return;
+        FUN_0054fc40(false);
+        if (m_9)
+        {
+            *((char *)m_18 + 0x12) = 1;
+            (*(RHUnkTargetSprite **)((char *)m_18 + 0x50))->FUN_005b76e0(0x95, 0);
+            (*(RHUnk005bd5b0 **)((char *)m_18 + 0x50))->Unk(true);
+            m_b = 1;
+        }
+        else
+        {
+            if (m_18)
+                *((char *)m_18 + 0x12) = 0;
+            FUN_00550070(false);
+        }
+    }
+    else if (m_9)
+    {
+        *((char *)m_18 + 0x12) = 1;
+        (*(RHUnkTargetSprite **)((char *)m_18 + 0x50))->FUN_005b76e0(0x95, 0);
+        (*(RHUnk005bd5b0 **)((char *)m_18 + 0x50))->Unk(false);
+        m_b = 1;
+    }
+    else
+    {
+        if (m_18)
+            *((char *)m_18 + 0x12) = 0;
+        FUN_00550070(false);
+    }
+}
+
+// FUNCTION: GAME 0x00550220
+void RHPatch::FUN_00550220()
+{
+    if (m_0)
+    {
+        FUN_0054fc40(false);
+        if (!m_b)
+            FUN_0054fe10();
+    }
+    m_0 = 0;
+    m_2 = m_3;
+    if (m_6)
+    {
+        if (m_8)
+        {
+            ((RHElementFX *)m_18)->RestoreBackground();
+            *((char *)m_18 + 0x12) = 1;
+            (*(RHUnkTargetSprite **)((char *)m_18 + 0x50))->FUN_005b76e0(0x94, 0);
+            (*(RHUnk005bd5b0 **)((char *)m_18 + 0x50))->Unk(false);
+            m_b = 0;
+            FUN_0054fe50(false, true);
+            return;
+        }
+        if (m_18)
+        {
+            ((RHElementFX *)m_18)->RestoreBackground();
+            *((char *)m_18 + 0x12) = 0;
+        }
+        m_b = 0;
+    }
+    FUN_0054fe50(false, true);
 }
 
 // FUNCTION: GAME 0x005502c0

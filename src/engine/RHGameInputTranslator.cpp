@@ -100,6 +100,7 @@ void RHGameInputTranslator::TranslateMouseInput(SBGeoPoint2D &point, short wheel
 #include "RHGameSyncCalls.h"
 #include "SBInputKeyboardState.h"
 #include "RHGame.h"
+#include "RHSequenceInteractionAction.h"
 #include <windows.h>
 
 class RHUnk0048a970;
@@ -712,6 +713,116 @@ bool RHGamePad::CheckValidityOfPosition(SBGeoVector2D &move, bool fast)
 static inline RHGamePadSelection &RHGamePadOpponents(RHElementActorPC *pc)
 {
     return *(RHGamePadSelection *)((char *)pc + 0x260);
+}
+
+class RHUnk6c1040;
+extern RHUnk6c1040 *g_unk0x6c1040;
+
+class RHScriptBatchCalls
+{
+public:
+    void *Unk0058a940(void *context, int value, void *element);
+};
+
+// STUB: GAME 0x00519f10
+void RHGamePad::RecognizeSwing()
+{
+    int index = 0;
+    RHElementActorPC *pc;
+    pc = ((RHGamePadEngine *)m_engine)->GetSelection().Selected();
+    bool flags[4] = {false, false, false, false};
+    bool state1 = false;
+    bool state2 = false;
+    int count = 0;
+    int index1;
+    int index2;
+    SBGeoVector2D extreme(0.1f, 0.1f);
+    for (RHGamePadSwing::iterator node = m_points.begin(); node != m_points.end(); ++node)
+    {
+        SBGeoVector2D &point = *node;
+        ++index;
+        if (point.m_x < 0.0f && point.m_y < 0.0f)
+        {
+            flags[0] = true;
+            index2 = index;
+        }
+        if (point.m_x > 0.0f && point.m_y < 0.0f)
+        {
+            flags[1] = true;
+            index1 = index;
+        }
+        if (point.m_x > 0.0f && point.m_y > 0.0f)
+            flags[2] = true;
+        if (point.m_x < 0.0f && point.m_y > 0.0f)
+            flags[3] = true;
+        if (point.Unk005fc6d0(1.0f) > extreme.Unk005fc6d0(1.0f))
+            extreme = point;
+        if (flags[0] && flags[1] && flags[2] && flags[3])
+        {
+            if (state1)
+                state2 = true;
+            else
+                state1 = true;
+            flags[0] = false;
+            flags[1] = false;
+            flags[2] = false;
+            flags[3] = false;
+        }
+    }
+    bool *flag = flags;
+    for (int i = 4; i != 0; --i)
+    {
+        if (*flag)
+            ++count;
+        ++flag;
+    }
+    unsigned short facing = RHGamePadFacing(pc);
+    unsigned short direction = ((RHUnk005fc3b0 &)extreme).FUN_005fcc50(1.0f);
+    RHUnk6c1040 *manager = g_unk0x6c1040;
+    RHGamePadSelection &opponents = RHGamePadOpponents(pc);
+    RHElementActorPC *target = 0;
+    if (opponents.m_count)
+        target = opponents.m_head->next->value;
+    if ((short)count == 1)
+    {
+        if (facing == direction || (facing + 1) % 16 == direction || (facing - 1) % 16 == direction)
+        {
+            RHUnk00585ea0 *element;
+            if (((RHUnk005fc3b0 &)extreme).Unk005fc6a0(1.0f) < 28000.0f)
+                element = new RHUnk00585ea0(1, 0x3b, pc, target);
+            else
+                element = new RHUnk00585ea0(1, 0x3c, pc, target);
+            ((RHScriptBatchCalls *)manager)->Unk0058a940("", 0, element);
+        }
+        if ((facing + 4) % 16 == direction || (facing + 5) % 16 == direction || (facing + 3) % 16 == direction)
+        {
+            RHUnk00585ea0 *element = new RHUnk00585ea0(1, 0x3e, pc, target);
+            ((RHScriptBatchCalls *)manager)->Unk0058a940("", 0, element);
+        }
+        if ((facing + 0xc) % 16 == direction || (facing + 0xd) % 16 == direction || (facing + 0xb) % 16 == direction)
+        {
+            RHUnk00585ea0 *element = new RHUnk00585ea0(1, 0x3f, pc, target);
+            ((RHScriptBatchCalls *)manager)->Unk0058a940("", 0, element);
+        }
+    }
+    else
+    {
+        if (state2)
+        {
+            RHUnk00585ea0 *element = new RHUnk00585ea0(1, 0x3d, pc, target);
+            ((RHScriptBatchCalls *)manager)->Unk0058a940("", 0, element);
+        }
+        else if (state1)
+        {
+            RHUnk00585ea0 *element;
+            if (index2 < index1)
+                element = new RHUnk00585ea0(1, 0x42, pc, target);
+            else
+                element = new RHUnk00585ea0(1, 0x42, pc, target);
+            ((RHScriptBatchCalls *)manager)->Unk0058a940("", 0, element);
+        }
+    }
+    m_points.clear();
 }
 
 // STUB: GAME 0x00519c70

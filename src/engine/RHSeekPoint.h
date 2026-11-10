@@ -145,6 +145,8 @@ public:
     RHSeekPointIndices m_18;
     char m_38;
     char m_39;
+    unsigned short m_3a;
+    char m_3c[4];
 };
 
 #endif

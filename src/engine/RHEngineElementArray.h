@@ -12,6 +12,13 @@ public:
     ~RHEngineElementArray() { clear(); }
     void Add(T *const &value)
     {
+        typedef std::vector<T *> Values;
+        T **(Values::*insert)(T **, T *const &) = &Values::insert;
+        (this->*insert)(end(), value);
+        m_changed = true;
+    }
+    void AddChild(T *const &value)
+    {
         insert(end(), 1, value);
         m_changed = true;
     }

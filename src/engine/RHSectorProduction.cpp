@@ -140,12 +140,12 @@ public:
     {
         m_dirty = false;
         m_1c = value;
-        void **first = m_first;
-        int count = first == 0 ? 0 : m_last - first;
-        m_cursor = first;
+        m_cursor = m_first;
+        int count = m_cursor == 0 ? 0 : m_last - m_cursor;
         m_15 = true;
         int index;
-        for (index = 0; index < count; ++index, ++m_cursor)
+        for (index = 0; index < count;
+             ++index, ++m_cursor)
         {
             if (*m_cursor == value)
                 break;
@@ -360,9 +360,14 @@ void RHSectorProduction::FUN_005804e0()
 }
 
 // FUNCTION: GAME 0x00580500
-unsigned int RHSectorProduction::FUN_00580500()
+unsigned int RHSectorProduction::FUN_00580500() const
 {
     return m_occupants.size();
+}
+
+int RHSectorProduction::GetType() const
+{
+    return m_0;
 }
 
 // FUNCTION: GAME 0x00580520
@@ -404,10 +409,10 @@ unsigned int RHSectorProduction::FUN_005806b0() const
 }
 
 // FUNCTION: GAME 0x005806c0
-RHElementActorPC *RHSectorProduction::FUN_005806c0() const
+RHPCDescription *RHSectorProduction::FUN_005806c0() const
 {
     std::string name;
-    RHElementActorPC *result = 0;
+    RHPCDescription *result = 0;
     switch (m_0)
     {
     case 0:
@@ -443,7 +448,7 @@ RHElementActorPC *RHSectorProduction::FUN_005806c0() const
             const std::string &other = *(std::string *)(*(char **)((char *)it->m_0 + 0x40) + 0x14);
             if (_stricmp(name.c_str(), other.c_str()) == 0)
             {
-                result = (RHElementActorPC *)it->m_0;
+                result = (RHPCDescription *)it->m_0;
                 break;
             }
         }

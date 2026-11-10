@@ -10,7 +10,7 @@ void RHShadowPolygon::FUN_005934b0(RHUnk00597a70 *) {}
 void RHShadowPolygon::FUN_00595020() {}
 void RHShadowPolygon::FUN_005959e0() {}
 
-void RHUnk004a96a0::FUN_004a96a0(void *, void *, void *, bool) {}
+void RHUnk004a96a0::FUN_004a96a0(void *, float, void *, bool) {}
 RHUnk005c9010Iterator RHUnk0058e7f0List::FUN_0044e8b0(RHUnk005c9010Iterator, RHUnk005c9010Iterator last) { return last; }
 
 // TEMPLATE: GAME 0x0044e8b0 FOLDED

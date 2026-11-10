@@ -8,6 +8,7 @@
 #endif
 
 class SBFile;
+class SBDrawManager;
 
 // VTABLE: GAME 0x00679bf4
 // SIZE 0x58
@@ -21,6 +22,7 @@ public:
     virtual void FUN_0057d390(void *draw, unsigned long surface, const SBGeoBoundingBox2D &box, float scale, unsigned short layer);
     virtual bool Serialize(SBFile &file);
     void DisplayAlpha(unsigned long color, unsigned long alpha, bool mode);
+    void FUN_0057cee0(SBDrawManager *draw, unsigned long surface, const SBGeoBoundingBox2D &box, float scale, unsigned short color);
     int m_30;
     bool m_34;
     unsigned short m_36;

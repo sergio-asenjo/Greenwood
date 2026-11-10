@@ -19,7 +19,6 @@ public:
     void FUN_00619cc0();
     bool FUN_004d2300(void *, unsigned);
     bool FUN_004da2f0();
-    void FUN_005a7b40(int);
 };
 
 #endif

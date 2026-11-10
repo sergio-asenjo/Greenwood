@@ -33,6 +33,11 @@ public:
         return Iterator((Node)m_cursor);
     }
     T &Current() { return *Cursor(); }
+    T &At(int index)
+    {
+        GoTo(index);
+        return Current();
+    }
     void InsertLast(const T &value)
     {
         insert(end(), value);

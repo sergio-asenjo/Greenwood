@@ -24,6 +24,7 @@ public:
     ~SBGeoPoint2D();
     SBGeoPoint2D(const SBGeoPoint2D &other);
     SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
+    SBGeoPoint2D FUN_005fc200(const SBGeoPoint2D &other) const;
     SBGeoVector2D Unk005fc110(const SBGeoPoint2D &other) const;
     bool Serialize(SBFile &file);
 };
@@ -35,23 +36,7 @@ public:
 
 #include "RHUnkSectorGlobal.h"
 
-// VTABLE: GAME 0x00679140
-// SIZE 0x1c
-class RHUnk00522540 : public SBGeoPoint2D
-{
-public:
-    RHUnk00522540();
-    virtual ~RHUnk00522540(); // vtable+0x00
-    void Unk005225a0(SBFile &file);
-    bool FUN_00522680(SBFile &file);
-    undefined2 m_c; // 0x0c
-    undefined2 m_e; // 0x0e
-    void *m_10; // 0x10
-    undefined m_14; // 0x14
-    undefined m_15; // 0x15
-    undefined2 m_16; // 0x16
-    void *m_18; // 0x18
-};
+#include "RHArcheryPoint.h"
 
 // SIZE 0x2c
 #include "RHUnkSectorPoints.h"
@@ -97,14 +82,7 @@ public:
 
 extern RHElementActor *g_unk0x6c100c;
 
-class RHSectorGateCalls
-{
-public:
-    void FUN_0057dea0(RHElementActor *actor, bool mode);
-    bool FUN_0057deb0(RHElementActor *actor, bool mode);
-    undefined m_00[0xb4];
-    bool m_b4;
-};
+#include "RHSectorGateCalls.h"
 
 #include "RHSectorLift.h"
 

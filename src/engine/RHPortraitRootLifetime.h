@@ -2,11 +2,33 @@
 #define RHPORTRAITROOTLIFETIME_H
 
 #include "Decomp.h"
+#include <memory>
+#include <string>
 
 class SBFrameWidgetView;
 class RHUnk005ef320;
 class RHMapTitleText;
 #include "RHMapBox.h"
+#ifndef SBGEO_BOUNDINGBOX2D_VIEW
+#include "SBGeoBoundingBox2DCore.h"
+#endif
+
+struct SBFrameWidgetArray
+{
+    SBFrameWidgetArray(const std::allocator<SBFrameWidgetView *> &value = std::allocator<SBFrameWidgetView *>())
+        : allocator(value), first(0), last(0), end(0), dirty(true) {}
+    ~SBFrameWidgetArray();
+    unsigned Size() const { return first == 0 ? 0 : last - first; }
+    unsigned CountOf() const;
+    void Grow(unsigned size);
+    std::allocator<SBFrameWidgetView *> allocator;
+    SBFrameWidgetView **first;
+    SBFrameWidgetView **last;
+    SBFrameWidgetView **end;
+    undefined m_10[4];
+    bool dirty;
+    undefined m_15[0x0b];
+};
 
 struct SBFrameInputEvent
 {
@@ -26,14 +48,17 @@ struct SBFrameWidgetNode
 struct SBFrameWidgetIterator
 {
     SBFrameWidgetNode *node;
-    SBFrameWidgetIterator(SBFrameWidgetNode *value = 0) : node(value) {}
+    SBFrameWidgetIterator() {}
+    SBFrameWidgetIterator(SBFrameWidgetNode *value) : node(value) {}
     SBFrameWidgetIterator &operator++() { node = node->next; return *this; }
     SBFrameWidgetView *&operator*() { return node->widget; }
 };
 
 struct SBFrameWidgetFindList
 {
-    unsigned allocator;
+    SBFrameWidgetFindList(const std::allocator<SBFrameWidgetView *> &value = std::allocator<SBFrameWidgetView *>());
+    ~SBFrameWidgetFindList();
+    std::allocator<SBFrameWidgetView *> allocator;
     SBFrameWidgetNode *head;
     int count;
     SBFrameWidgetIterator cursor;
@@ -96,22 +121,22 @@ public:
     bool FUN_0061aa30(void *widget);
     void *FUN_0061a6e0(const void *input);
 
-    undefined m_04[4];
-    SBFrameWidgetView **m_first;
-    SBFrameWidgetView **m_last;
-    undefined m_10[0x24];
+    SBFrameWidgetArray m_widgets;
+    std::wstring m_title;
     unsigned long m_flags;
     SBFrameWidgetFindList m_excluded;
     bool m_enabled;
     bool m_visible;
-    undefined m_5e[0x12];
-    undefined m_bounds[0x14];
+    bool m_tooltipEnabled;
+    undefined m_5f;
+    std::wstring m_tooltip;
+    RHMapBox m_bounds;
     RHUnk005ef320 *m_draw;
     unsigned long m_display;
     void *m_resource;
     SBFrameInputEvent m_input;
 
-    int Size() const { return m_first == 0 ? 0 : m_last - m_first; }
+    int Size() const { return m_widgets.Size(); }
 };
 
 #endif

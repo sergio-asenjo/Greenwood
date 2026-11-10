@@ -1,12 +1,5 @@
 #include "SBNullstr.h"
-// SIZE 0x14
-class RHMobileUnk00607da0
-{
-public:
-    void FUN_00607990(const RHMobileUnk00607da0 &other);
-    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
-    unsigned char m_00[0x14]; // 0x00
-};
+#include "RHMobileUnk00607da0.h"
 #include "RHGame_calls.h"
 #include "SBThreadedInput.h"
 #include "SBDrawManager.h"
@@ -72,6 +65,7 @@ class RHSound
 {
 public:
     void PlayJingle(int jingle);
+    void FUN_005a7b40(int);
 };
 #include <vector>
 #include <algorithm>
@@ -473,7 +467,7 @@ void RHGame::FUN_0050ec40(char value)
 }
 
 // FUNCTION: GAME 0x0050eca0
-void RHGame::FUN_0050eca0(bool value)
+void RHGame::FUN_0050eca0(char value)
 {
     m_3558 = value;
     if (!value || !m_355a)
@@ -1532,7 +1526,7 @@ void RHGame::FUN_00513090(void *)
 {
     RHGameActionCalls *calls = (RHGameActionCalls *)*(void **)((char *)this + 0x18);
     calls->FUN_004da2f0();
-    ((RHGameActionCalls *)*(void **)((char *)this + 0x1c))->FUN_005a7b40(2);
+    ((RHSound *)*(void **)((char *)this + 0x1c))->FUN_005a7b40(2);
     m_5e = 1;
     FUN_00512310();
 }
@@ -1829,6 +1823,21 @@ void RHGame::FUN_005145b0()
 }
 
 #include "RHPortraitQuickList.h"
+
+// FUNCTION: GAME 0x00514670
+void RHGameSyncCalls::FUN_00514670()
+{
+    RHCampaign *campaign = (RHCampaign *)g_unk0x6c07fc;
+    if (*(char *)((char *)this + 0x57))
+    {
+        ((RHGame *)this)->FUN_0050eca0(((RHGameCampaignView *)campaign)->FUN_00456190(((RHGameCampaignView *)campaign)->m_17c));
+        RHGameMission *mission = ((RHGameCampaignView *)campaign)->m_180;
+        unsigned short count = campaign->GetNumberOfPeasantsToConvertToBlazons();
+        (*(RHGameBlazonWidget **)((char *)this + 0x29b0))->FUN_005cc900(count / *(unsigned short *)(*(char **)mission + 0x70));
+    }
+    else if (((RHGameCampaignView *)campaign)->m_17c)
+        ((RHGame *)this)->FUN_0050eca0((*(RHPortraitQuickList **)((char *)this + 0x29ac))->FUN_005dcfd0(*campaign->FUN_004553f0()));
+}
 
 // FUNCTION: GAME 0x005146f0
 void RHGameSyncCalls::FUN_005146f0()

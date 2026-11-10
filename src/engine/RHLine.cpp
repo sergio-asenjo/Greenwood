@@ -28,7 +28,7 @@
 
 DECOMP_SIZE_ASSERT(RHSeekPointVector, 0x10)
 DECOMP_SIZE_ASSERT(RHSeekPointIndices, 0x20)
-DECOMP_SIZE_ASSERT(RHSeekPoint, 0x3c)
+DECOMP_SIZE_ASSERT(RHSeekPoint, 0x40)
 DECOMP_STATIC_ASSERT(offsetof(RHSeekPointIndices, m_current) == 0x10)
 DECOMP_STATIC_ASSERT(offsetof(RHSeekPointIndices, m_dirty) == 0x14)
 DECOMP_STATIC_ASSERT(offsetof(RHSeekPointIndices, m_forward) == 0x15)
@@ -174,11 +174,7 @@ bool RHSeekPoint::SerializeStatus(SBFile &file)
     return true;
 }
 
-class RHUnkPathGeometry
-{
-public:
-    bool Unk004fbec0(SBFile &file, void *&value);
-};
+#include "RHPathGeometryCalls.h"
 
 struct RHUnkSectorGlobal;
 extern RHUnkSectorGlobal *g_unk0x6c0a9c;

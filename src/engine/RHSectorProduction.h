@@ -27,6 +27,7 @@ public:
 void RHSerializeName(SBFile &file, const char *name);
 
 class RHElementActorPC;
+class RHPCDescription;
 class RHMission;
 
 // SIZE 0x34
@@ -48,7 +49,7 @@ public:
     public:
         Occupant *begin() { return _First; }
         Occupant *end() { return _Last; }
-        unsigned size() { return _First == 0 ? 0 : _Last - _First; }
+        unsigned size() const { return _First == 0 ? 0 : _Last - _First; }
         void Destroy(Occupant *first, Occupant *last);
         void Insert(Occupant *where, unsigned count, const Occupant &value);
         void clear()
@@ -118,12 +119,13 @@ public:
     static int FUN_00580350(int type);
     void FUN_00580220(const class RHPointScript &script);
     int FUN_005803c0();
-    unsigned int FUN_00580500();
+    unsigned int FUN_00580500() const;
+    int GetType() const;
     unsigned int FUN_005806b0() const;
     void FUN_00580430();
     void FUN_00580520();
     void FUN_005804e0();
-    RHElementActorPC *FUN_005806c0() const;
+    RHPCDescription *FUN_005806c0() const;
     bool FUN_00580940(const RHElementActorPC *pc) const;
     char FUN_00580960() const;
     void FUN_00580b70();

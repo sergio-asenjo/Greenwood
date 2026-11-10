@@ -40,11 +40,7 @@ public:
 
 #include "RHSequenceTimedCalls.h"
 
-class RHScript
-{
-public:
-    static void AddPCToGang(void *);
-};
+#include "RHScriptCore.h"
 
 struct RHConsoleProfile
 {
@@ -56,12 +52,7 @@ struct RHConsoleProfile
 
 #include "RHSectorActorList.h"
 
-struct RHConsoleListNode
-{
-    RHConsoleListNode *next;
-    RHConsoleListNode *previous;
-    RHElementActorPC *value;
-};
+typedef RHScriptNode RHConsoleListNode;
 
 struct RHUnk005c9010Iterator;
 void FUN_005c9010(RHUnk005c9010Iterator &, int, std::bidirectional_iterator_tag);
@@ -75,25 +66,19 @@ struct RHConsoleListIterator : std::iterator<std::bidirectional_iterator_tag, RH
         node = other.node;
         return *this;
     }
+    RHConsoleListIterator &operator=(const RHScriptIter &other)
+    {
+        node = other.node;
+        return *this;
+    }
     RHConsoleListIterator &assign(RHConsoleListNode *value)
     {
         *(RHConsoleListNode *volatile *)&node = value;
         return *this;
     }
     RHConsoleListIterator &operator++() { node = node->next; return *this; }
-    RHConsoleListIterator &operator--() { node = node->previous; return *this; }
-    RHElementActorPC *&operator*() { return node->value; }
-};
-
-struct RHScriptIter
-{
-    RHConsoleListNode *node;
-};
-
-class RHUnk0046eb30
-{
-public:
-    RHScriptIter FUN_0046eb80();
+    RHConsoleListIterator &operator--() { node = node->prev; return *this; }
+    RHElementActorPC *&operator*() { return node->pc; }
 };
 
 struct RHConsolePCList
@@ -202,9 +187,8 @@ struct RHConsolePCList
                 {
                     if (0 < (previous + 1) / 2)
                     {
-                        typedef RHConsoleListIterator (RHUnk0046eb30::*Begin)();
                         RHConsoleListIterator &cursor = m_cursor;
-                        cursor = (((RHUnk0046eb30 *)this)->*(Begin)&RHUnk0046eb30::FUN_0046eb80)();
+                        cursor = ((RHUnk0046eb30 *)this)->FUN_0046eb80();
                         std::bidirectional_iterator_tag category;
                         FUN_005c9010((RHUnk005c9010Iterator &)m_cursor, 0, category);
                     }

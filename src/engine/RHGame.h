@@ -26,7 +26,7 @@ public:
     void FUN_0050e860();
     void FUN_0050eb80(bool value);
     void FUN_0050ebe0(char value);
-    void FUN_0050eca0(bool value);
+    void FUN_0050eca0(char value);
     void FUN_0050ed10(bool value);
     void FUN_0050ec40(char value);
     void FUN_0050e800();

@@ -237,18 +237,7 @@ std::string FUN_004e4b40(const std::string &first, const std::string &second);
 
 class RHDialogueSet;
 
-class RHEngine
-{
-public:
-    void FUN_004d8fd0(class RHPCDescription *description);
-    bool FUN_004c7c90();
-    int FUN_004deeb0(const SBGeoPoint2D &point, SBGeoPoint2D &result);
-    bool FUN_004c4570(SBFile &file);
-    unsigned char FUN_004ded90(void *actor);
-    void FUN_004e17c0(void *actor, int value);
-    void FUN_004c8120(void *actor);
-    RHDialogueSet *GetDynResources(unsigned long resources);
-};
+#include "RHEngine.h"
 
 #include "RHCampaignCore.h"
 
@@ -271,11 +260,7 @@ public:
     void FUN_00514ac0(const std::wstring &text, unsigned duration);
 };
 
-class RHUnk0055dbb0
-{
-public:
-    char *FUN_0055dbb0();
-};
+#include "RHPlayerProfileAccess.h"
 
 #include "RHPlayerProfileManager.h"
 

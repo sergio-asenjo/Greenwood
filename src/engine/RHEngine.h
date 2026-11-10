@@ -23,6 +23,7 @@ class RHMission;
 class SBGeoPoint2D;
 class SBGeoBoundingBox2D;
 class RHDialogueSet;
+class RHSectorGateCalls;
 struct RHUnkSectorGlobal;
 struct RHbeamMe;
 struct RHUnk004e4660Entry;
@@ -100,12 +101,14 @@ class RHEngine
 public:
     void AddElement(RHElement *element, bool initialize, bool registerElement);
     bool RemoveElement(RHElement *element, bool uninitialize, bool deferred);
+    void FUN_004da7a0(unsigned long surface, const SBGeoBoundingBox2D &view, float scale);
     void FUN_004dae10(unsigned long surface, const SBGeoBoundingBox2D &view, float scale);
     void FUN_004e39b0(RHElementActorHuman *actor, bool value);
     bool TurnPathFinderOn();
     void FUN_004c9d20(void *box);
     int FUN_0049b590(void *actor);
     void TurnPathFinderOff();
+    void PerformPathFinderStateChange(unsigned short layer, unsigned short sector, unsigned long state, bool mode);
     void FUN_004d2b70(void *actor);
     bool FUN_004c0340(SBGeoPoint2D &point);
     bool FUN_004c04a0();
@@ -165,6 +168,7 @@ public:
     bool FUN_004c7cd0();
     bool FUN_004c7cf0();
     void FUN_004c8140();
+    bool FUN_004c9b30(unsigned long destination);
     unsigned FUN_004c7d50();
     bool FUN_004c7d80(void *first, int second, void **result);
     bool FUN_004c7e10(void *first, int second, void **result);
@@ -172,11 +176,14 @@ public:
     void FUN_004d8fd0(RHPCDescription *description);
     void SelectFollowElement(RHElementActor *actor);
     void FUN_004d9420();
-    void FUN_004d52d0(void *first, void *second, unsigned third);
+    void FUN_004d52d0(void *first, void *second, float third);
     void FUN_004d5320(const void *value);
+    bool FUN_004c0040();
     bool FUN_004c02d0();
-    void FUN_004d3d00(void *first, void *second, unsigned third, unsigned fourth, unsigned fifth, unsigned sixth);
+    void FUN_004d3d00(void *first, const SBGeoBoundingBox2D &second, float third, unsigned fourth, unsigned fifth, unsigned sixth);
     void FUN_004d3e90(void *first, void *second, unsigned third, unsigned fourth, unsigned fifth, unsigned sixth);
+    void FUN_004d40a0(void *first, const SBGeoBoundingBox2D &second, unsigned third, unsigned fourth, unsigned fifth, unsigned short sixth);
+    void FUN_004d4230(const SBGeoBoundingBox2D &bounds, unsigned second);
     void FUN_004d7800(void *first, void *second, unsigned third);
     void FUN_004d7820(void *first, void *second, unsigned third);
     void FUN_004e3100(int action);
@@ -213,9 +220,9 @@ public:
     void FUN_004c28c0(const std::string &name);
     int FUN_004cac00(void *first, void *second, int third, char fourth);
     unsigned short FUN_004cc100(void *first, void *second);
-    int FUN_004cc970(void *first, void *second, void *third);
+    unsigned short FUN_004cc970(bool &first, const SBGeoPoint2D &second, RHSectorGateCalls *third);
     void FUN_004ccad0(const SBGeoPoint2D &first, bool second);
-    void FUN_004cd400();
+    void FUN_004cd400(void *first, void *second);
     void FUN_004e35f0(SBFile &file);
     void FUN_004e2390(void *actor);
     void FUN_004e1fc0();
@@ -257,7 +264,7 @@ public:
     void Emit(SBFile &file, void *&value);
 
     undefined m_0000[0x475c];
-    void *m_475c;
+    float m_475c;
     undefined m_4760[0x164];
     void *m_48c4;
     undefined m_48c8[0x10];
@@ -412,6 +419,8 @@ public:
     undefined m_04[0x188]; // 0x04
 };
 
+#ifndef RHELEMENTMOBILEBASE_VIEW
+#define RHELEMENTMOBILEBASE_VIEW
 // SIZE 0xfc
 class RHMobileBase004a8130 : public RHEngineMissionElementCalls
 {
@@ -419,13 +428,17 @@ public:
     RHMobileBase004a8130(int type);
     undefined m_04[0xf8]; // 0x04
 };
+#endif
 
+#ifndef RHRECONNAISSANCEENGINE_VIEW
+#define RHRECONNAISSANCEENGINE_VIEW
 class RHReconnaissanceEngine
 {
 public:
     bool Unk004c3cb0(SBFile &file, void *&value);
     bool Unk004c4110(SBFile &file, void *&value);
 };
+#endif
 
 extern RHEngine *g_pEngine;
 void *FUN_004622e0(int index, void *container);

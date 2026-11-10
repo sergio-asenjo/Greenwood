@@ -33,9 +33,23 @@ public:
 class RHUnk0051d2c0 : public RHUnk0051d2c0Storage
 {
 public:
-    ~RHUnk0051d2c0();
+    // FUNCTION: GAME 0x0051d2c0
+    ~RHUnk0051d2c0() { FUN_0051d370(); }
     void FUN_0051d370();
 };
+
+// FUNCTION: GAME 0x0051d370
+inline void RHUnk0051d2c0::FUN_0051d370()
+{
+    int count = size();
+    for (int index = 0; index < count; ++index)
+    {
+        RHUnk00551da0 *entry = (*this)[index];
+        if (entry)
+            ((RHUnk0051d370Entry *)((char *)entry + 0x5c))->V00(1);
+    }
+    clear();
+}
 
 class RHHikingGroupArrayStorage : public std::vector<RHUnk0051d2c0 *>
 {

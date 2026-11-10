@@ -24,9 +24,6 @@ DECOMP_STATIC_ASSERT(offsetof(RHUnk0054eab0, m_178) == 0x178)
 DECOMP_STATIC_ASSERT(offsetof(RHUnk0054eab0, m_19c) == 0x19c)
 
 
-void RHEngine::FUN_004d3d00(void *, void *, unsigned, unsigned, unsigned, unsigned) {}
-void RHEngine::FUN_004d3e90(void *, void *, unsigned, unsigned, unsigned, unsigned) {}
-
 class RHEngineSoundCalls
 {
 public:
@@ -63,18 +60,6 @@ RHUnk0057ee40::~RHUnk0057ee40()
     ((RHSector *)this)->RHSector::~RHSector();
 }
 
-// FUNCTION: GAME 0x0051d2c0
-RHUnk0051d2c0::~RHUnk0051d2c0()
-{
-    int count = size();
-    for (int index = 0; index < count; ++index)
-    {
-        RHUnk00551da0 *entry = (*this)[index];
-        if (entry)
-            ((RHUnk0051d370Entry *)((char *)entry + 0x5c))->V00(1);
-    }
-    clear();
-}
 int RHHikingGuide::FUN_0051cac0(SBFile &) { return 0; }
 #include "VMCore.h"
 
@@ -270,10 +255,3 @@ void RHEngineMissionElementCalls::Unk3c(SBFile &) {}
 
 void RHEngineWidenedCalls::FUN_004eb120(SBFile &, void *) {}
 void RHEngineWidenedCalls::FUN_00558670(SBFile &) {}
-class RHEngineActorUpdateCalls
-{
-public:
-    void FUN_004af2a0();
-};
-
-void RHEngineActorUpdateCalls::FUN_004af2a0() {}

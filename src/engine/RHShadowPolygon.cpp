@@ -5,10 +5,20 @@
 #include <stddef.h>
 
 DECOMP_SIZE_ASSERT(RHUnk005c9010Node, 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005c9010Node, m_iterator) == 0x08)
+DECOMP_SIZE_ASSERT(RHShadowEvent, 0x14)
+DECOMP_STATIC_ASSERT(offsetof(RHShadowEvent, m_limit) == 0x00)
 DECOMP_SIZE_ASSERT(RHUnk005c9010Iterator, 0x04)
 DECOMP_SIZE_ASSERT(RHUnk0058e7f0List, 0x0c)
+DECOMP_SIZE_ASSERT(RHShadowAreaNodeList, 0x0c)
+DECOMP_SIZE_ASSERT(RHShadowEraseNodeList, 0x0c)
 DECOMP_SIZE_ASSERT(RHShadowPolygonList, 0x18)
+DECOMP_SIZE_ASSERT(RHShadowPolygonEraseList, 0x18)
 DECOMP_SIZE_ASSERT(RHShadowPolygonFindList, 0x24)
+DECOMP_SIZE_ASSERT(RHShadowRawEmpty18, 0x18)
+DECOMP_SIZE_ASSERT(RHShadowRawPair14, 0x14)
+DECOMP_SIZE_ASSERT(RHShadowRawPair18, 0x18)
+DECOMP_SIZE_ASSERT(RHShadowRawD8, 0x30)
 DECOMP_SIZE_ASSERT(RHShadowPointListBase, 0x0c)
 DECOMP_SIZE_ASSERT(RHUnk0060bd40, 0x30)
 DECOMP_SIZE_ASSERT(RHUnk00597a70, 0xa0)
@@ -28,9 +38,44 @@ DECOMP_STATIC_ASSERT(offsetof(RHEngine, m_elements) == 0x48d8)
 DECOMP_STATIC_ASSERT(offsetof(RHEngine, m_475c) == 0x475c)
 DECOMP_STATIC_ASSERT(offsetof(RHEngine, m_48c4) == 0x48c4)
 DECOMP_STATIC_ASSERT(offsetof(RHEngine, m_pcs) == 0x4938)
+DECOMP_STATIC_ASSERT(offsetof(RHShadowPolygon, m_8) == 0x08)
+DECOMP_STATIC_ASSERT(offsetof(RHShadowPolygon, m_2c) == 0x2c)
+DECOMP_STATIC_ASSERT(offsetof(RHShadowPolygon, m_50) == 0x50)
+DECOMP_STATIC_ASSERT(offsetof(RHShadowPolygon, m_64) == 0x64)
+DECOMP_STATIC_ASSERT(offsetof(RHShadowPolygon, m_78) == 0x78)
+DECOMP_STATIC_ASSERT(offsetof(RHShadowPolygon, m_98) == 0x98)
+DECOMP_STATIC_ASSERT(offsetof(RHShadowPolygon, m_b0) == 0xb0)
+DECOMP_STATIC_ASSERT(offsetof(RHShadowPolygon, m_c8) == 0xc8)
+DECOMP_STATIC_ASSERT(offsetof(RHShadowPolygon, m_d0) == 0xd0)
+DECOMP_STATIC_ASSERT(offsetof(RHShadowPolygon, m_d8) == 0xd8)
+DECOMP_STATIC_ASSERT(offsetof(RHShadowPolygon, m_108) == 0x108)
+DECOMP_STATIC_ASSERT(offsetof(RHShadowPolygon, m_11c) == 0x11c)
+DECOMP_STATIC_ASSERT(offsetof(RHShadowPolygon, m_134) == 0x134)
+DECOMP_STATIC_ASSERT(offsetof(RHShadowPolygon, m_158) == 0x158)
+DECOMP_STATIC_ASSERT(offsetof(RHShadowPolygon, m_190) == 0x190)
+DECOMP_STATIC_ASSERT(offsetof(RHShadowPolygon, m_194) == 0x194)
+DECOMP_STATIC_ASSERT(offsetof(RHShadowPolygon, m_198) == 0x198)
+DECOMP_STATIC_ASSERT(offsetof(RHShadowPolygon, m_1bc) == 0x1bc)
+DECOMP_STATIC_ASSERT(offsetof(RHShadowPolygon, m_1e0) == 0x1e0)
+DECOMP_STATIC_ASSERT(offsetof(RHShadowRawPair18, m_14) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(RHShadowPolygon, m_184) == 0x184)
+DECOMP_STATIC_ASSERT(offsetof(RHShadowPolygon, m_188) == 0x188)
+DECOMP_STATIC_ASSERT(offsetof(RHShadowPolygon, m_18c) == 0x18c)
+DECOMP_STATIC_ASSERT(offsetof(RHShadowPolygon, m_18e) == 0x18e)
 
+// FUNCTION: GAME 0x0058c360
+RHShadowPolygon::~RHShadowPolygon()
+{
+    FUN_005973f0();
+    delete (char *)m_50;
+    delete m_194;
+    delete m_190;
+}
 
-
+void EmitRHShadowPolygonLifetime(RHShadowPolygon *polygon)
+{
+    polygon->~RHShadowPolygon();
+}
 
 // TEMPLATE: GAME 0x0044e7d0 FOLDED
 // ??1RHShadowVectorStdList@@QAE@XZ
@@ -166,7 +211,7 @@ RHUnk00564020::~RHUnk00564020()
 // FUNCTION: GAME 0x0058c590
 void RHShadowPolygon::FUN_0058c590(bool flag, unsigned short width, unsigned short height)
 {
-    m_64.FUN_00607da0(*(RHMobileUnk00607da0 *)((char *)g_unk0x6c0a9c + 0x3e84));
+    ((RHMobileUnk00607da0 *)&m_64)->FUN_00607da0(*(RHMobileUnk00607da0 *)((char *)g_unk0x6c0a9c + 0x3e84));
     m_4c = *(undefined4 *)((char *)g_pEngine + 0x48c4);
     FUN_0058c6f0(flag);
     FUN_0058c630(width, height);
@@ -623,7 +668,7 @@ void RHShadowPolygon::DisplayDebug(const SBGeoBoundingBox2D &box, float zoom, RH
     FUN_005959e0();
     FUN_005971f0();
     FUN_0058ec60();
-    g_pEngine->FUN_004c9d20(m_11c);
+    g_pEngine->FUN_004c9d20(&m_11c);
 
     for (unsigned short index = 0; index < (int)m_134.m_list.size(); ++index)
     {
@@ -1272,7 +1317,7 @@ void RHShadowPolygon::FUN_005973f0()
             unsigned short items = (unsigned short)area->m_10.m_list.size();
             if (items > 0)
             {
-                RHShadowPolygonList &boundaries = area->m_10;
+                RHShadowPolygonEraseList &boundaries = area->m_10;
                 int item = 0;
                 unsigned left = items;
                 do
@@ -1286,7 +1331,7 @@ void RHShadowPolygon::FUN_005973f0()
             items = (unsigned short)area->m_34.m_list.size();
             if (items > 0)
             {
-                RHShadowPolygonList &projected = area->m_34;
+                RHShadowPolygonEraseList &projected = area->m_34;
                 int item = 0;
                 unsigned left = items;
                 do
@@ -1341,7 +1386,7 @@ void RHShadowPolygon::FUN_00597910()
             if (itemCount > 0)
             {
                 int item = 0;
-                RHShadowPolygonList &boundaries = area->m_34;
+                RHShadowPolygonEraseList &boundaries = area->m_34;
                 unsigned items = itemCount;
                 do
                 {
@@ -1371,11 +1416,11 @@ void RHShadowPolygon::FUN_00597910()
 // STUB: GAME 0x00597a70
 bool RHShadowPolygon::FUN_00597a70(RHUnk00597a70 *area)
 {
-    RHShadowField<RHUnk00597a70 *>(this, 0x130) = area;
+    m_11c.m_14 = area;
     int &left = RHShadowField<int>(this, 0x17c);
     int &right = RHShadowField<int>(this, 0x180);
-    int &top = RHShadowField<int>(this, 0x184);
-    int &bottom = RHShadowField<int>(this, 0x188);
+    int &top = m_184;
+    int &bottom = m_188;
     left = (int)area->m_2c.m_p0.m_x;
     right = (int)area->m_2c.m_p1.m_x;
     top = (int)area->m_2c.m_p0.m_y;
@@ -1397,15 +1442,15 @@ bool RHShadowPolygon::FUN_00597a70(RHUnk00597a70 *area)
     RHShadowUnk005df9e0 *plane;
     if (area->m_0 == 0)
     {
-        RHShadowField<unsigned short>(this, 0x18c) = 1;
-        RHShadowField<unsigned short>(this, 0x18e) = 1;
+        m_18c = 1;
+        m_18e = 1;
         height = RHShadowField<float>(this, 0xac);
         plane = 0;
     }
     else
     {
-        RHShadowField<unsigned short>(this, 0x18c) = 2;
-        RHShadowField<unsigned short>(this, 0x18e) = 2;
+        m_18c = 2;
+        m_18e = 2;
         plane = (RHShadowUnk005df9e0 *)(area->m_0 + 0xa8);
         height = RHShadowField<float>(this, 0xac) - plane->FUN_005df9e0(
             RHShadowField<float>(this, 0xa4), RHShadowField<float>(this, 0xa8));
@@ -1571,6 +1616,153 @@ unsigned char RHShadowPolygon::FUN_005994f0(const SBGeoPoint3D &point, SBGeoPoin
     return 0;
 }
 
+// STUB: GAME 0x00599920
+void RHShadowPolygon::FUN_00599920(const SBGeoPoint2D &a, const SBGeoPoint2D &b, bool limit)
+{
+    bool reversed;
+    int x0;
+    int y0;
+    int x1;
+    int y1;
+    if (a.m_x > b.m_x)
+    {
+        reversed = true;
+        x0 = (int)b.m_x;
+        y0 = (int)b.m_y;
+        x1 = (int)a.m_x;
+        y1 = (int)a.m_y;
+    }
+    else
+    {
+        reversed = false;
+        x0 = (int)a.m_x;
+        y0 = (int)a.m_y;
+        x1 = (int)b.m_x;
+        y1 = (int)b.m_y;
+    }
+    if (x0 > m_180 || x1 < m_17c || x0 == x1)
+        return;
+    if (y0 > m_188 && y1 > m_188)
+        return;
+    if (y0 <= m_184 && y1 <= m_184)
+    {
+        if (x0 <= m_17c)
+        {
+            if (reversed)
+            {
+                if (limit)
+                    --m_18e;
+                else
+                    --m_18c;
+            }
+            else
+            {
+                if (limit)
+                    ++m_18e;
+                else
+                    ++m_18c;
+            }
+        }
+        else
+        {
+            RHShadowEvent *event = m_194->FUN_0059ee30();
+            event->m_limit = limit;
+            event->m_4 = 1;
+            event->m_10 = x0;
+            event->m_8 = reversed ? 4 : 3;
+            FUN_0059eab0(event);
+        }
+        if (x1 <= m_180)
+        {
+            RHShadowEvent *event = m_194->FUN_0059ee30();
+            event->m_limit = limit;
+            event->m_10 = x1;
+            event->m_4 = 1;
+            event->m_8 = reversed ? 3 : 4;
+            FUN_0059eab0(event);
+        }
+        return;
+    }
+    int rise = y1 - y0;
+    int run = x1 - x0;
+    RHShadowIterator *iterator;
+    if (rise <= 0x7fff && rise >= -0x7fff)
+    {
+        iterator = m_190->FUN_0059f1a0();
+        m_198.InsertIteratorLastCopy(iterator);
+        iterator->m_2 = limit;
+        iterator->m_0 = reversed;
+        iterator->m_1 = false;
+        iterator->m_4 = x0;
+        iterator->m_8 = y0;
+        iterator->m_c = x1;
+        iterator->m_10 = y1;
+        iterator->m_18 = (rise << 16) / run;
+    }
+    else if (a.m_y < 0.0f)
+    {
+        RHMobileUnk006100e0 line(SBGeoPoint2D(0.0f, 0.0f), SBGeoPoint2D(0.0f, 0.0f));
+        line.SBGeoPoint2D::operator=(a);
+        line.Second() = b;
+        float x = line.FUN_006104f0(0.0f);
+        FUN_00599920(SBGeoPoint2D(a.m_x, 0.0f), SBGeoPoint2D(x, 0.0f), limit);
+        FUN_00599920(SBGeoPoint2D(x, 0.0f), b, limit);
+        return;
+    }
+    else if (a.m_y > 1000.0f)
+    {
+        RHMobileUnk006100e0 line(SBGeoPoint2D(0.0f, 0.0f), SBGeoPoint2D(0.0f, 0.0f));
+        line.SBGeoPoint2D::operator=(a);
+        line.Second() = b;
+        FUN_00599920(SBGeoPoint2D(line.FUN_006104f0(1000.0f), 1000.0f), b, limit);
+        return;
+    }
+    else if (b.m_y < 0.0f)
+    {
+        RHMobileUnk006100e0 line(SBGeoPoint2D(0.0f, 0.0f), SBGeoPoint2D(0.0f, 0.0f));
+        line.SBGeoPoint2D::operator=(a);
+        line.Second() = b;
+        float x = line.FUN_006104f0(0.0f);
+        FUN_00599920(a, SBGeoPoint2D(x, 0.0f), limit);
+        FUN_00599920(SBGeoPoint2D(x, 0.0f), SBGeoPoint2D(b.m_x, 0.0f), limit);
+        return;
+    }
+    else if (b.m_y > 1000.0f)
+    {
+        RHMobileUnk006100e0 line(SBGeoPoint2D(0.0f, 0.0f), SBGeoPoint2D(0.0f, 0.0f));
+        line.SBGeoPoint2D::operator=(a);
+        line.Second() = b;
+        FUN_00599920(a, SBGeoPoint2D(line.FUN_006104f0(1000.0f), 1000.0f), limit);
+        return;
+    }
+    if (x0 <= m_17c)
+    {
+        iterator->m_14 = (m_17c - x0) * iterator->m_18 + (y0 << 16);
+        m_1bc.InsertIteratorLastCopy(iterator);
+    }
+    else
+    {
+        iterator->m_14 = y0 << 16;
+        RHShadowEvent *event = m_194->FUN_0059ee30();
+        event->m_limit = limit;
+        event->m_10 = x0;
+        event->m_c = iterator;
+        event->m_4 = 0;
+        event->m_8 = 3;
+        FUN_0059eab0(event);
+    }
+    if (x1 < m_180)
+    {
+        RHShadowEvent *event = m_194->FUN_0059ee30();
+        event->m_limit = limit;
+        event->m_c = iterator;
+        event->m_10 = x1;
+        event->m_4 = 0;
+        event->m_8 = 4;
+        FUN_0059eab0(event);
+    }
+}
+
 // FUNCTION: GAME 0x0059a770
 void RHShadowPolygon::FUN_0059a770(const SBGeoPoint2D &a, const SBGeoPoint2D &b)
 {
@@ -1631,6 +1823,101 @@ void RHShadowPolygon::FUN_0059a770(const SBGeoPoint2D &a, const SBGeoPoint2D &b)
         event->m_8 = 4;
         FUN_0059eab0(event);
     }
+}
+
+extern float g_unk0x006774cc;
+
+// FUNCTION: GAME 0x0059a950
+void RHShadowPolygon::FUN_0059a950(SBGeoPoint2D &a, unsigned char &sideA, SBGeoPoint2D &b, unsigned char &sideB, bool limit)
+{
+    switch (sideA)
+    {
+    case 1:
+        switch (sideB)
+        {
+        case 1:
+        {
+            double x = b.m_x;
+            x += g_unk0x006774cc;
+            if ((float)x >= a.m_x)
+                FUN_00599920(a, b, limit);
+            else
+            {
+                FUN_00599920(a, SBGeoPoint2D(m_11c.m_14->m_2c.Value8(), m_11c.m_14->m_2c.Value4()), limit);
+                FUN_00599920(m_11c.m_14->m_2c.m_p0, b, limit);
+            }
+            break;
+        }
+        case 2:
+        case 4:
+        case 8:
+            FUN_00599920(a, SBGeoPoint2D(m_11c.m_14->m_2c.Value8(), m_11c.m_14->m_2c.Value4()), limit);
+            break;
+        }
+        break;
+    case 2:
+        switch (sideB)
+        {
+        case 1:
+            FUN_00599920(m_11c.m_14->m_2c.m_p0, b, limit);
+            break;
+        case 2:
+            if (a.m_y - g_unk0x006774cc > b.m_y)
+                FUN_00599920(m_11c.m_14->m_2c.m_p0,
+                    SBGeoPoint2D(m_11c.m_14->m_2c.Value8(), m_11c.m_14->m_2c.Value4()), limit);
+            break;
+        }
+        break;
+    case 4:
+        switch (sideB)
+        {
+        case 1:
+            FUN_00599920(m_11c.m_14->m_2c.m_p0, b, limit);
+            break;
+        case 2:
+            FUN_00599920(m_11c.m_14->m_2c.m_p0,
+                SBGeoPoint2D(m_11c.m_14->m_2c.Value8(), m_11c.m_14->m_2c.Value4()), limit);
+            break;
+        case 4:
+        {
+            double x = a.m_x;
+            x += g_unk0x006774cc;
+            if ((float)x < b.m_x)
+                FUN_00599920(m_11c.m_14->m_2c.m_p0,
+                    SBGeoPoint2D(m_11c.m_14->m_2c.Value8(), m_11c.m_14->m_2c.Value4()), limit);
+            break;
+        }
+        }
+        break;
+    case 8:
+        switch (sideB)
+        {
+        case 1:
+            FUN_00599920(m_11c.m_14->m_2c.m_p0, b, limit);
+            break;
+        case 2:
+        case 4:
+            FUN_00599920(m_11c.m_14->m_2c.m_p0,
+                SBGeoPoint2D(m_11c.m_14->m_2c.Value8(), m_11c.m_14->m_2c.Value4()), limit);
+            break;
+        case 8:
+        {
+            double y = a.m_y;
+            y += g_unk0x006774cc;
+            if ((float)y < b.m_y)
+                FUN_00599920(m_11c.m_14->m_2c.m_p0,
+                    SBGeoPoint2D(m_11c.m_14->m_2c.Value8(), m_11c.m_14->m_2c.Value4()), limit);
+            break;
+        }
+        }
+        break;
+    }
+}
+
+void EmitRHShadowBoundary(RHShadowPolygon *polygon, SBGeoPoint2D &a, unsigned char &sideA,
+    SBGeoPoint2D &b, unsigned char &sideB)
+{
+    polygon->FUN_0059a950(a, sideA, b, sideB, false);
 }
 
 // Parked 93.57%: VC6 stores the list count before the dirty flag and loads x1 straight into ecx (target: dirty first, x1 via eax copy).
@@ -1843,7 +2130,7 @@ void RHShadowPolygon::FUN_0059ce90(RHUnk005977e0 *area)
         unsigned remaining = count;
         do
         {
-            RHShadowPolygonList &boundaries = area->m_10;
+            RHShadowPolygonEraseList &boundaries = area->m_10;
             boundaries.FUN_005c8e40(index);
             RHShadowEdgeList *edges = (RHShadowEdgeList *)*boundaries.m_current;
             RHUnk00597a70 *projection = (RHUnk00597a70 *)new RHShadowProjection;
@@ -1967,7 +2254,7 @@ void RHShadowPolygon::FUN_0059d5b0(RHUnk005977e0 *area)
         unsigned remaining = count;
         do
         {
-            RHShadowPolygonList &boundaries = area->m_10;
+            RHShadowPolygonEraseList &boundaries = area->m_10;
             boundaries.FUN_005c8e40(index);
             RHShadowEdgeList *edges = (RHShadowEdgeList *)*boundaries.m_current;
             RHUnk00597a70 *projection = (RHUnk00597a70 *)new RHShadowProjection;

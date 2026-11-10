@@ -1,5 +1,6 @@
 #ifndef RHSHADOWPOLYGON_H
 #define RHSHADOWPOLYGON_H
+#define RHMOBILEUNK006100E0_PLAIN
 #include "RHSectorActorList.h"
 #include "RHEngine.h"
 
@@ -7,6 +8,8 @@
 #include "Decomp.h"
 #include <iterator>
 #include <memory>
+#include <list>
+#include "RHUnk004e52a0.h"
 
 // SIZE 0x08
 class SBGeoVector2D;
@@ -192,7 +195,7 @@ struct RHShadowAlphaIterator : RHShadowIterator
 // SIZE 0x14
 struct RHShadowEvent
 {
-    undefined4 m_0; // 0x00
+    bool m_limit;
     int m_4; // 0x04
     int m_8; // 0x08
     RHShadowIterator *m_c; // 0x0c
@@ -215,7 +218,11 @@ struct RHUnk005c9010Node
 {
     RHUnk005c9010Node *m_next; // 0x00
     RHUnk005c9010Node *m_prev; // 0x04
-    RHUnk00597a70 *m_data; // 0x08
+    union
+    {
+        RHUnk00597a70 *m_data;
+        RHShadowIterator *m_iterator;
+    };
 };
 
 // SIZE 0x04
@@ -256,22 +263,6 @@ struct RHUnk0058e7f0List
     RHUnk005c9010Iterator FUN_0046eb80();
     RHUnk005c9010Iterator FUN_00424410(RHUnk005c9010Iterator, RHUnk00597a70 *const &);
 
-    ~RHUnk0058e7f0List()
-    {
-        typedef RHProfilePointerList::iterator Native;
-        typedef Native (Native::*Increment)(int);
-        typedef RHSectorActorIter (RHSectorActorIter::*Forward)(int);
-        Increment increment = &Native::operator++;
-        RHUnk005c9010Node *last = m_head;
-        RHSectorActorIter current((RHSectorActorNode *)last->m_next);
-        while (current.m_p != (RHSectorActorNode *)last)
-        {
-            FUN_0046eb30((current.*(Forward)increment)(0));
-        }
-        delete m_head;
-        m_head = 0;
-        m_count = 0;
-    }
     int size() { return m_count; }
     RHUnk005c9010Iterator begin()
     {
@@ -288,27 +279,70 @@ struct RHUnk0058e7f0List
 
 void FUN_0059fb00(RHUnk00597a70 **, RHUnk00597a70 *const &);
 
+struct RHShadowAreaNodeList : public RHUnk0058e7f0List
+{
+    ~RHShadowAreaNodeList()
+    {
+#pragma inline_depth(0)
+        ((RHUnk004e52a0 *)this)->FUN_004e52a0();
+#pragma inline_depth(8)
+    }
+};
+
+struct RHShadowEraseNodeList : public RHUnk0058e7f0List
+{
+    ~RHShadowEraseNodeList()
+    {
+        typedef RHProfilePointerList::iterator Native;
+        typedef Native (Native::*Increment)(int);
+        typedef RHSectorActorIter (RHSectorActorIter::*Forward)(int);
+        Increment increment = &Native::operator++;
+        RHUnk005c9010Node *last = m_head;
+        RHSectorActorIter current((RHSectorActorNode *)last->m_next);
+        while (current.m_p != (RHSectorActorNode *)last)
+        {
+            FUN_0046eb30((current.*(Forward)increment)(0));
+        }
+        delete m_head;
+        m_head = 0;
+        m_count = 0;
+    }
+};
+
+inline void RHShadowDestroyPolygonList(RHShadowAreaNodeList &list)
+{
+#pragma inline_depth(0)
+    ((std::list<void *> *)&list)->clear();
+#pragma inline_depth(8)
+}
+
+inline void RHShadowDestroyPolygonList(RHShadowEraseNodeList &list)
+{
+    RHUnk005c9010Node *head = list.m_head;
+    RHUnk005c9010Node *node = head->m_next;
+    while (node != head)
+    {
+        RHUnk005c9010Node *current = node;
+        node = node->m_next;
+        list.FUN_0046eb30(RHSectorActorIter((RHSectorActorNode *)current));
+    }
+}
+
 // SIZE 0x18
-class RHShadowPolygonList
+template<class NodeList>
+class RHShadowPolygonListT
 {
 public:
-    RHUnk0058e7f0List m_list; // +0: allocator, +4: head, +8: signed count
+    NodeList m_list; // +0: allocator, +4: head, +8: signed count
     RHUnk005c9010Iterator m_current; // +0xc
     bool m_dirty; // +0x10
     int m_index; // +0x14
 
     __forceinline void FUN_005c8e40(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
 
-    ~RHShadowPolygonList()
+    ~RHShadowPolygonListT()
     {
-        RHUnk005c9010Node *head = m_list.m_head;
-        RHUnk005c9010Node *node = head->m_next;
-        while (node != head)
-        {
-            RHUnk005c9010Node *current = node;
-            node = node->m_next;
-            m_list.FUN_0046eb30(RHSectorActorIter((RHSectorActorNode *)current));
-        }
+        RHShadowDestroyPolygonList(m_list);
     }
 
     void ClearAll()
@@ -365,6 +399,20 @@ public:
         head->m_prev = node;
         node->m_prev->m_next = node;
         FUN_0059fb00(&node->m_data, value);
+        ++m_list.m_count;
+        m_dirty = true;
+    }
+
+    void InsertIteratorLastCopy(RHShadowIterator *const &value)
+    {
+        RHUnk005c9010Node *head = m_list.m_head;
+        RHUnk005c9010Node *previous = head->m_prev;
+        RHUnk005c9010Node *node = (RHUnk005c9010Node *)operator new(sizeof(RHUnk005c9010Node));
+        node->m_next = head ? head : node;
+        node->m_prev = previous ? previous : node;
+        head->m_prev = node;
+        node->m_prev->m_next = node;
+        std::_Construct(&node->m_iterator, value);
         ++m_list.m_count;
         m_dirty = true;
     }
@@ -537,6 +585,9 @@ public:
         }
     }
 };
+
+typedef RHShadowPolygonListT<RHShadowAreaNodeList> RHShadowPolygonList;
+typedef RHShadowPolygonListT<RHShadowEraseNodeList> RHShadowPolygonEraseList;
 
 // SIZE 0x18
 class RHShadowVertexList
@@ -890,9 +941,9 @@ class RHUnk005977e0
 public:
     undefined *m_0; // 0x00
     undefined m_pad4[0x0c]; // 0x04
-    RHShadowPolygonList m_10; // 0x10
+    RHShadowPolygonEraseList m_10; // 0x10
     undefined m_pad28[0x0c]; // 0x28
-    RHShadowPolygonList m_34; // 0x34
+    RHShadowPolygonEraseList m_34; // 0x34
     ~RHUnk005977e0();
 };
 
@@ -910,7 +961,7 @@ public:
     unsigned short m_10; // 0x10
     undefined m_pad12[0x3e]; // 0x12
     RHShadowPolygonActorPosition *m_50; // 0x50
-    void FUN_004a96a0(void *, void *, void *, bool);
+    void FUN_004a96a0(void *, float, void *, bool);
 };
 
 extern RHEngine *g_pEngine;
@@ -954,16 +1005,52 @@ extern RHUnk005ef320 *g_unk0x6c11d0;
 class __single_inheritance RHShadowPolygon;
 typedef void (RHShadowPolygon::*RHShadowDrawLine)(unsigned short, int, int, int, int, int);
 
+struct RHShadowRawEmpty18
+{
+    char m_data[0x18];
+    ~RHShadowRawEmpty18()
+    {
+        ((RHMobileUnk006100e0 *)this)->FUN_00578c50();
+    }
+};
+
+struct RHShadowRawPair14
+{
+    SBGeoPoint2D m_0;
+    SBGeoPoint2D m_8;
+    char m_10[4];
+};
+
+struct RHShadowRawPair18
+{
+    SBGeoPoint2D m_0;
+    SBGeoPoint2D m_8;
+    char m_10[4];
+    RHUnk00597a70 *m_14;
+};
+
+struct RHShadowRawD8
+{
+    RHShadowVectorStdList m_list;
+    char m_pad0c[0x14];
+    SBGeoPoint2D m_point;
+    char m_pad28[0x8];
+    ~RHShadowRawD8()
+    {
+        m_list.FUN_0044e9b0();
+    }
+};
+
 class RHShadowPolygon
 {
 public:
     undefined m_pad0[0x04]; // 0x00
     RHUnkFXDraw *m_4; // 0x04
-    undefined m_pad8[0x18]; // 0x08
+    RHShadowRawEmpty18 m_8; // 0x08
     int m_20; // 0x20
     int m_24; // 0x24
     unsigned long m_28; // +0x28
-    undefined m_pad2c[0x18]; // 0x2c
+    RHShadowRawEmpty18 m_2c; // 0x2c
     int m_44; // 0x44
     int m_48; // 0x48
     undefined4 m_4c; // 0x4c
@@ -973,30 +1060,36 @@ public:
     char m_60; // 0x60
     bool m_61; // 0x61
     undefined m_pad62[0x02]; // 0x62
-    RHMobileUnk00607da0 m_64; // 0x64
-    undefined m_pad78[0x14]; // 0x78
+    RHShadowRawPair14 m_64; // 0x64
+    RHShadowRawPair14 m_78; // 0x78
     float m_8c; // +0x8c; also compared as raw 0x3f800000
     int m_90; // 0x90
     int m_94; // 0x94
-    undefined m_pad98[0x08]; // 0x98
+    SBGeoPoint2D m_98; // 0x98
     float m_a0; // 0xa0
     SBGeoPoint3D m_a4; // 0xa4
-    undefined m_padb0[0x08]; // 0xb0
+    SBGeoPoint2D m_b0; // 0xb0
     float m_b8; // 0xb8
     undefined m_padbc[0x04]; // 0xbc
     unsigned short m_c0; // 0xc0
     unsigned short m_c2; // 0xc2
     unsigned short m_c4; // 0xc4
     unsigned short m_c6; // 0xc6
-    undefined m_padc8[0x54]; // 0xc8
-    undefined m_11c[0x18]; // 0x11c
+    SBGeoPoint2D m_c8; // 0xc8
+    SBGeoPoint2D m_d0; // 0xd0
+    RHShadowRawD8 m_d8; // 0xd8
+    RHShadowRawPair14 m_108; // 0x108
+    RHShadowRawPair18 m_11c; // 0x11c
     RHShadowPolygonList m_134; // +0x134; head +0x138, count +0x13c, cache +0x140/+0x144/+0x148
     undefined m_pad14c[0x0c]; // 0x14c
     RHShadowPolygonList m_158; // 0x158
     undefined m_pad170[0x0c]; // 0x170
     int m_17c; // 0x17c
     int m_180; // 0x180
-    undefined m_pad184[0x0c]; // 0x184
+    int m_184;
+    int m_188;
+    unsigned short m_18c;
+    unsigned short m_18e;
     RHUnk0059f000 *m_190; // 0x190
     RHUnk0059ec90 *m_194; // 0x194
     RHShadowPolygonList m_198; // 0x198
@@ -1010,6 +1103,7 @@ public:
     RHShadowDrawLine m_210; // 0x210
     RHShadowDrawLine m_214; // 0x214
 
+    ~RHShadowPolygon();
     void FUN_0058c590(bool, unsigned short, unsigned short);
     void FUN_0058c630(unsigned short, unsigned short);
     void FUN_0058c6f0(bool);
@@ -1067,6 +1161,8 @@ public:
     unsigned char FUN_0059afc0(SBGeoPoint2D &, SBGeoPoint2D &, SBGeoPoint2D &);
     SBGeoBoundingBox2D &Bounds() { return *(SBGeoBoundingBox2D *)(RHShadowField<undefined *>(this, 0x130) + 4); }
     unsigned char FUN_005994f0(const SBGeoPoint3D &, SBGeoPoint2D &, bool, bool);
+    void FUN_00599920(const SBGeoPoint2D &, const SBGeoPoint2D &, bool);
+    void FUN_0059a950(SBGeoPoint2D &, unsigned char &, SBGeoPoint2D &, unsigned char &, bool);
     void FUN_0059d7f0(RHUnk005977e0 *);
 };
 
