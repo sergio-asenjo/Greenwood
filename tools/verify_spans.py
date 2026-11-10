@@ -39,6 +39,8 @@ def main(argv):
     parser.add_argument("--all-rows", action="store_true")
     parser.add_argument("--limit", type=int)
     parser.add_argument("--show", type=int, default=20)
+    parser.add_argument("--permuter-target", type=Path)
+    parser.add_argument("--reference-symbol", action="append", default=[])
     args = parser.parse_args(argv[1:])
     if args.json and args.json.exists():
         parser.error(f"output already exists: {args.json}")
@@ -51,6 +53,11 @@ def main(argv):
     before = provenance(target)
     report, report_rows = load_report(args.report)
     original_sizes = load_original_sizes(args.functions)
+    export_inputs = (
+        {str(path): digest(path) for path in (args.report, args.functions)}
+        if args.permuter_target
+        else {}
+    )
     if args.addresses:
         selected = sorted(set(args.addresses))
         selection = "addresses"
@@ -72,6 +79,36 @@ def main(argv):
         if entity.orig_addr is not None
     }
     disassembler = new_disassembler()
+
+    if args.permuter_target:
+        from permuter_target import export_target
+
+        if (
+            not args.addresses
+            or len(selected) != 1
+            or args.limit
+            or args.all_rows
+            or args.json
+            or args.tsv
+        ):
+            parser.error(
+                "--permuter-target requires exactly one address and its own output/evidence paths"
+            )
+        address = selected[0]
+        return export_target(
+            compare,
+            target,
+            before,
+            args.report,
+            report_rows[address],
+            entities.get(address),
+            original_sizes[address],
+            args.permuter_target,
+            args.reference_symbol,
+            export_inputs,
+        )
+    if args.reference_symbol:
+        parser.error("--reference-symbol requires --permuter-target")
 
     results = []
     for address in selected:

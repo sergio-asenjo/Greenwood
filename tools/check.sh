@@ -61,8 +61,18 @@ do_help() {
   echo "  tools/check.sh data <orig-address> [...] [--json <new-file>]"
   echo "  tools/check.sh vtables <orig-address> [...] [--json <new-file>]"
   echo "  tools/check.sh spans --report <report.json> [--json <new-file>]  (whole-span identity census)"
+  echo "    --addresses <address> --permuter-target build/listings/<new>.obj [--reference-symbol <address=symbol>]"
   echo "  entities/data/vtables: --all explicitly requests a whole-target survey"
   echo "  tools/check.sh listing <source.cpp> (isolated compiler diagnostic, no clean/link)"
+  echo "    [--object build/listings/<run>/<new>.obj] [--host-root <worktree>] [--source-root <src-mirror>]"
+  echo "    Candidate mirrors retain original src-relative paths; outputs never overwrite existing objects."
+  echo "  tools/check.sh permuter --config build/listings/<config> --output-dir build/listings/<new-run>"
+  echo "    --sandbox-root <runtime-project> --host-root <linked-worktree> --main-root <primary-checkout>"
+  echo "    --protected-report <MAIN-relative-report.json> [...] [--workers 1..8] [--validate-only]"
+  echo "    Repeat --protected-report for every accepted report to protect; MAIN EXE/PDB, originals,"
+  echo "    both source trees and fold registries are always protected. Requires read-only sandbox mounts."
+  echo "    [--executable <path-or-name>] (otherwise GREENWOOD_CPP_PERMUTER, then cpp_permuter on PATH)"
+  echo "    Run inside the authorized runner with its existing private headless Wine state; --help lists details."
   echo "  tools/check.sh headers [-j N] [--list]  (header self-containment sweep, allowlisted failures)"
   echo "  tools/check.sh duplicates              (check_duplicate_markers.py; live folded-template proof)"
   echo "  verbose <address>: concise by default; full evidence saved under build/diagnostics/"
@@ -91,6 +101,8 @@ case "$cmd" in
   data|vtables) shift; do_diagnostic validate_entities.py "$cmd" "$@" ;;
   spans)  shift; do_diagnostic verify_spans.py "$@" ;;
   listing) shift; "$ROOT/tools/build.sh" --listing "$@" ;;
+  permuter) shift; do_diagnostic compiler_listing.py --permuter "$@" ;;
+  permuter-tests) shift; "$ROOT/.venv/bin/python" -m pytest "$ROOT/tools/tests/test_permuter_target.py" -q "$@" ;;
   headers) shift; "$ROOT/tools/check_header_selfcontainment.sh" "$@" ;;
   duplicates) shift; do_diagnostic check_duplicate_markers.py "$@" ;;
   clean)   clean_build; echo "cleaned $BUILD (build outputs only)" ;;

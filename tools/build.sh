@@ -15,13 +15,31 @@ OUT="$ROOT/build"
 NAME="Game.exe"
 FLAGS=(/nologo /LD /O2 /GX /Zi)
 LISTING=0
+LISTING_ARGS=()
 
 if [ "${1:-}" = "--listing" ]; then
   shift
-  if [ "$#" -ne 1 ] || [ ! -f "$1" ]; then
-    echo "usage: tools/build.sh --listing <existing source.cpp>" >&2
+  if [ "$#" -lt 1 ] || [ ! -f "$1" ]; then
+    echo "usage: tools/build.sh --listing <source.cpp> [--object path] [--host-root path] [--source-root path]" >&2
     exit 2
   fi
+  SOURCE="$1"
+  shift
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+      --compact) LISTING_ARGS+=("$1"); shift ;;
+      --object|--host-root|--source-root)
+        if [ "$#" -lt 2 ] || [ -z "$2" ]; then
+          echo "missing path for $1" >&2
+          exit 2
+        fi
+        LISTING_ARGS+=("$1" "$2")
+        shift 2
+        ;;
+      *) echo "unknown listing option: $1" >&2; exit 2 ;;
+    esac
+  done
+  set -- "$SOURCE"
   LISTING=1
   mkdir -p "$OUT/listings"
   OUT="$(mktemp -d "$OUT/listings/listing-$(date -u +%Y%m%dT%H%M%SZ)-XXXXXX")"
@@ -54,7 +72,11 @@ fi
 
 SRCZ=()
 for s in "${SRCS[@]}"; do
-  SRCZ+=("$(z "$(realpath "$s")")")
+  if [ "$LISTING" -eq 1 ]; then
+    SRCZ+=("$(z "$(realpath -ms "$s")")")
+  else
+    SRCZ+=("$(z "$(realpath "$s")")")
+  fi
 done
 
 # Headers are co-located with sources under src/<family>/, and includes use
@@ -68,7 +90,7 @@ done < <(find "$ROOT/src" -name '*.h' -printf '%h\n' | sort -u)
 if [ "$LISTING" -eq 1 ]; then
   WINEDEBUG=-all WINEPATH="$WP" INCLUDE="$MSVCZ\\VC98\\INCLUDE" LIB="$MSVCZ\\VC98\\LIB" \
     "$ROOT/.venv/bin/python" "$ROOT/tools/compiler_listing.py" \
-    --output "$OUT" --source "${SRCS[0]}" -- \
+    --output "$OUT" --source "${SRCS[0]}" "${LISTING_ARGS[@]}" -- \
     wine "$MSVC/VC98/Bin/CL.EXE" "${FLAGS[@]}" /c /FAs \
     /Fa"$OUTZ\\listing.asm" /Fd"$OUTZ\\vc60.pdb" /Fo"$OUTZ\\listing.obj" \
     "${INCDIRS[@]}" "${SRCZ[@]}"
