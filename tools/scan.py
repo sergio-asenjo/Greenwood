@@ -15,12 +15,12 @@ Usage:
   .venv/bin/python tools/scan.py 0x004b2190 [end_addr]
   .venv/bin/python tools/scan.py 0x004b2190 --len 0x1f2
 """
+
 from __future__ import annotations
 
 import argparse
 import struct
 import sys
-import tempfile
 from pathlib import Path
 
 try:
@@ -33,7 +33,7 @@ except ImportError:
 ROOT = Path(__file__).resolve().parent.parent
 GAME = ROOT / "original" / "Game.exe"
 IMAGE_BASE = 0x400000
-DATA_LO, DATA_HI = 0x677000, 0x6c1000  # .rdata + .data (string storage)
+DATA_LO, DATA_HI = 0x677000, 0x6C1000  # .rdata + .data (string storage)
 
 
 def load_funcs() -> dict[int, tuple[int, str]]:
@@ -92,14 +92,16 @@ def main() -> int:
     ap.add_argument("--len", dest="length", help="function length, e.g. 0x1f2")
     ap.add_argument(
         "--graph",
-        default=str(Path(tempfile.gettempdir()) / "opencode" / "callgraph.tsv"),
-        help="call graph dump from tools/ghidra/CallGraph.py (for callers)",
+        type=Path,
+        help="optional explicit call graph dump from tools/ghidra/CallGraph.py (for callers); no implicit graph",
     )
     args = ap.parse_args()
 
     start = int(args.addr, 16)
     funcs = load_funcs()
-    graph_callers = load_callers(Path(args.graph))
+    if args.graph and not args.graph.is_file():
+        ap.error("--graph must identify an existing call graph file")
+    graph_callers = load_callers(args.graph) if args.graph else {}
     if args.length:
         end = start + int(args.length, 16)
     elif args.end:
@@ -145,7 +147,7 @@ def main() -> int:
                 if ins.mnemonic == "call":
                     calls.add(v)
 
-    name, size = (funcs.get(start, (end - start, "FUN_%08x" % start)))
+    name, size = funcs.get(start, (end - start, "FUN_%08x" % start))
     print(f"# {name} @ 0x{start:08x}  size 0x{end - start:x}")
 
     print("\n## string literals (candidates for // STRING:)")
