@@ -5,6 +5,8 @@
 #include "RHMission.h"
 #include <vector>
 #include <string>
+#include "RHCampaignMissionList.h"
+#include "RHCampaignResetArray.h"
 
 class SBFile;
 class RHPCDescription;
@@ -21,7 +23,9 @@ class RHCampaign
 public:
     undefined m_pad0[0x84]; // 0x00
     std::vector<unsigned long> m_84; // 0x84
-    undefined m_pad94[0x70]; // 0x94
+    long m_94[27];
+    signed char m_100;
+    undefined m_101[3];
     std::vector<RHPCDescription *> m_104; // 0x104
     std::vector<RHPCDescription *> m_114; // 0x114
     std::vector<RHPCDescription *> m_124; // 0x124
@@ -32,11 +36,16 @@ public:
     RHMission *m_174; // 0x174
     RHMission *m_178; // 0x178
     RHMission *m_17c; // 0x17c
-    undefined m_pad180[0x30]; // 0x180
+    RHMission *m_180;
+    RHCampaignMissionList m_184;
+    undefined m_19c[0x0c];
+    long m_1a8;
+    long m_1ac;
     std::vector<RHPCDescription *> m_1b0; // 0x1b0
     bool m_1c0; // 0x1c0
 
     void CreateGang();
+    void FUN_004509c0();
     void DetermineAccessibleMissions();
     void FUN_004522e0(RHPCDescription *description);
     RHPCDescription *FUN_004524b0(unsigned short index);
@@ -48,6 +57,7 @@ public:
     bool SerializeAllCharacters(SBFile &file);
     void CreatePlayableCharacterSet(SBArray<RHElement *> &elements, std::vector<RHbeamMe> &beamMes);
     void FUN_00450c10(SBArray<RHElement *> &elements, std::vector<RHbeamMe> &beamMes);
+    void FUN_00450c50();
     void FUN_004526f0(std::vector<RHMission *> &missions);
     void FUN_00452810(std::vector<RHMission *> &missions);
     void FUN_00452a50(std::vector<RHMission *> &missions);

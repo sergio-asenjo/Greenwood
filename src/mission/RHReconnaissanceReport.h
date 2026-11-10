@@ -49,11 +49,7 @@ public:
     }
 };
 
-class RHUnkPathGeometry
-{
-public:
-    bool Unk004fbec0(SBFile &file, void *&value);
-};
+#include "RHPathGeometryCalls.h"
 struct RHUnkSectorGlobal;
 extern RHUnkSectorGlobal *g_unk0x6c0a9c;
 

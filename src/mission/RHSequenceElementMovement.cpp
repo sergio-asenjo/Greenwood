@@ -316,16 +316,6 @@ template<class T> T &RHMovementField(void *object, unsigned offset)
 
 #include "RHMovementPathFinderCalls.h"
 
-class SBGeoVector2D : public SBGeoPoint2D
-{
-public:
-    SBGeoVector2D();
-    ~SBGeoVector2D() {}
-    SBGeoVector2D &operator=(const SBGeoVector2D &other);
-    SBGeoVector2D(const SBGeoVector2D &other);
-};
-
-#define SBGEO_VECTOR2D_VIEW
 #include "RHUnk005fc3b0.h"
 
 class RHSpriteList

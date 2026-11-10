@@ -28,6 +28,11 @@ public:
 
 DECOMP_SIZE_ASSERT(RHMission, 0x0c)
 DECOMP_SIZE_ASSERT(RHCampaign, 0x1c4)
+DECOMP_SIZE_ASSERT(RHCampaignMissionList, 0x18)
+DECOMP_STATIC_ASSERT(offsetof(RHCampaign, m_94) == 0x94)
+DECOMP_STATIC_ASSERT(offsetof(RHCampaign, m_100) == 0x100)
+DECOMP_STATIC_ASSERT(offsetof(RHCampaign, m_184) == 0x184)
+DECOMP_STATIC_ASSERT(offsetof(RHCampaign, m_1a8) == 0x1a8)
 DECOMP_STATIC_ASSERT(offsetof(RHCampaign, m_84) == 0x84)
 DECOMP_SIZE_ASSERT(std::vector<unsigned long>, 0x10)
 DECOMP_SIZE_ASSERT(RHGameCampaignView, 0x184)
@@ -211,12 +216,44 @@ void EmitRHUnk0044fd00(RHUnk0044fd00 *a, RHUnk0044fe70 *b)
     b->FUN_0044fe70();
 }
 
+// FUNCTION: GAME 0x004509c0
+void RHCampaign::FUN_004509c0()
+{
+    m_174 = 0;
+    m_178 = 0;
+    m_17c = 0;
+    m_180 = 0;
+    m_100 = -1;
+    m_1a8 = 0;
+    memset(m_94, 0, sizeof(m_94));
+    m_94[1] = 100;
+    FUN_00450c50();
+    CreateGang();
+    FUN_00455400(0);
+    CreateProductionSectors();
+    RHCampaignResetArray<RHMission *>::Reset(m_154);
+    RHCampaignResetArray<RHMission *>::Reset(m_164);
+    RHCampaignResetArray<RHPCDescription *>::Reset(m_124);
+    RHCampaignResetArray<unsigned long>::Reset(m_84);
+    RHCampaignResetArray<std::wstring>::Reset(m_134);
+    m_184.Clear();
+}
+
 // FUNCTION: GAME 0x00450c10
 void RHCampaign::FUN_00450c10(SBArray<RHElement *> &elements, std::vector<RHbeamMe> &beamMes)
 {
     for (RHPCDescription **it = m_114.begin(); it != m_114.end(); ++it)
         (*it)->m_44 = false;
     CreatePlayableCharacterSet(elements, beamMes);
+}
+
+// FUNCTION: GAME 0x00450c50
+void RHCampaign::FUN_00450c50()
+{
+    RHCampaignPointerArray<RHMissionProfile *> &missions = RHUnk00436500GetProfileManager()->m_missions;
+    m_144.clear();
+    for (RHMissionProfile **it = missions.begin(); it != missions.end(); ++it)
+        m_144.push_back(RHMission(*it));
 }
 
 // Parked: 49.95%.
@@ -522,11 +559,11 @@ void RHCampaign::FUN_00452a50(std::vector<RHMission *> &missions)
 // FUNCTION: GAME 0x00452c90
 void RHCampaign::FUN_00452c90(std::vector<RHMission *> &missions)
 {
-    for (int i = *(unsigned *)((char *)this + 0x18c) - 1; i >= 0; --i)
+    for (int i = (unsigned)m_184.count - 1; i >= 0; --i)
     {
-        RHCampaignMissionList &previous = *(RHCampaignMissionList *)((char *)this + 0x184);
+        RHCampaignMissionList &previous = m_184;
         previous.FUN_005c8e40(i);
-        RHMission *value = previous.m_cursor->value;
+        RHMission *value = previous.cursor->mission;
         for (RHMission **position = missions.begin(); position != missions.end(); ++position)
         {
             if (*position == value)
@@ -664,11 +701,11 @@ bool RHCampaign::Serialize(SBFile &file)
         unsigned count;
         if (file.m_bLoading)
         {
-            RHCampaignMissionList &missions = *(RHCampaignMissionList *)((char *)this + 0x184);
+            RHCampaignMissionList &missions = m_184;
             typedef void (RHProfilePointerList::*Clear)();
             Clear clear = &RHProfilePointerList::clear;
             (((RHProfilePointerList *)&missions)->*clear)();
-            missions.m_dirty = true;
+            missions.valid = true;
             if (!RHCampaignAccess(file, &count, 4, 1121))
                 return false;
             for (unsigned i = 0; i < count; ++i)
@@ -677,19 +714,19 @@ bool RHCampaign::Serialize(SBFile &file)
                 typedef void (std::list<RHMission *>::*Push)(RHMission *const &);
                 Push push = &std::list<RHMission *>::push_back;
                 (((std::list<RHMission *> *)&missions)->*push)(value);
-                missions.m_dirty = true;
+                missions.valid = true;
             }
         }
         else
         {
-            count = *(unsigned *)((char *)this + 0x18c);
+            count = m_184.count;
             if (!RHCampaignAccess(file, &count, 4, 1132))
                 return false;
             for (unsigned i = 0; i < count; ++i)
             {
-                RHCampaignMissionList &missions = *(RHCampaignMissionList *)((char *)this + 0x184);
+                RHCampaignMissionList &missions = m_184;
                 missions.FUN_005c8e40(i);
-                value = missions.m_cursor->value;
+                value = missions.cursor->mission;
                 FUN_00453940(file, value);
             }
         }
@@ -790,17 +827,17 @@ void FUN_0054cda0(RHUnk0054cda0 *value);
 
 inline void RHCampaignPushMission(RHCampaignMissionList &missions, RHMission *const &value)
 {
-    RHCampaignMissionList::Node *head = missions.m_head;
-    RHCampaignMissionList::Node *last = head->previous;
+    RHCampaignMissionList::Node *head = missions.head;
+    RHCampaignMissionList::Node *last = head->prev;
     RHCampaignMissionList::Node *node = (RHCampaignMissionList::Node *)operator new(0xc);
     node->next = head != 0 ? head : node;
-    node->previous = last != 0 ? last : node;
-    head->previous = node;
-    node->previous->next = node;
+    node->prev = last != 0 ? last : node;
+    head->prev = node;
+    node->prev->next = node;
     void (*construct)(RHMission **, RHMission *const &) = &std::_Construct;
-    construct(&node->value, value);
-    ++missions.m_count;
-    missions.m_dirty = true;
+    construct(&node->mission, value);
+    ++missions.count;
+    missions.valid = true;
 }
 
 // Parked: effective only; the incremented list count lands in edx where the target uses ecx.
@@ -834,12 +871,12 @@ RHMission *RHCampaign::FUN_004539f0()
         ((RHGameCampaignView *)this)->FUN_00453b70((RHGameMission *)m_178);
     if (m_178 != m_144.begin())
     {
-        RHCampaignMissionList &previous = *(RHCampaignMissionList *)((char *)this + 0x184);
+        RHCampaignMissionList &previous = m_184;
         RHCampaignPushMission(previous, m_178);
-        if ((int)previous.m_count > 3)
+        if ((int)previous.count > 3)
         {
             ((std::list<RHMission *> *)&previous)->pop_front();
-            previous.m_dirty = true;
+            previous.valid = true;
         }
     }
     return m_178;
@@ -873,12 +910,7 @@ void RHCampaign::ForceNextMission(const std::string &first, const std::string &s
     FUN_00455650();
 }
 
-class RHCampaignUnk00457480
-{
-public:
-    bool FUN_00457480(int value, void *container);
-    bool FUN_004574b0(int action, void *container);
-};
+#include "RHCampaignUnk00457480.h"
 
 // FUNCTION: GAME 0x00453cd0
 bool RHCampaign::FUN_00453cd0()
@@ -2117,17 +2149,17 @@ int RHCampaignCommandLine::FUN_0045a010(const RHProfileText &value)
 
 void RHCampaignMissionList::FUN_0045a440(const RHMission *const &value)
 {
-    Node *next = m_head;
-    Node *previous = next->previous;
+    Node *next = head;
+    Node *previous = next->prev;
     Node *node = (Node *)operator new(sizeof(Node));
     node->next = next ? next : node;
-    node->previous = previous ? previous : node;
-    next->previous = node;
-    node->previous->next = node;
-    RHMission **destination = &node->value;
+    node->prev = previous ? previous : node;
+    next->prev = node;
+    node->prev->next = node;
+    RHMission **destination = &node->mission;
     if (destination)
         *destination = (RHMission *)value;
-    ++m_count;
+    ++count;
 }
 
 // TEMPLATE: GAME 0x0045a490 FOLDED
@@ -2382,6 +2414,7 @@ RHSectorProduction::RHSectorProduction(int type)
 
 void RHCampaign::Emit(std::vector<RHMission *> &missions)
 {
+    FUN_004509c0();
     FUN_00456db0();
     SelectMissions(false);
     CreateGang();

@@ -146,23 +146,7 @@ __forceinline bool RHCampaignSerializePointers(SBFile &file, std::vector<T *> &v
     return true;
 }
 
-class RHCampaignMissionList
-{
-public:
-    struct Node
-    {
-        Node *next;
-        Node *previous;
-        RHMission *value;
-    };
-    char m_allocator[4];
-    Node *m_head;
-    unsigned m_count;
-    Node *m_cursor;
-    bool m_dirty;
-    void FUN_0045a440(const RHMission *const &value);
-    __forceinline void FUN_005c8e40(unsigned index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
-};
+#include "RHCampaignMissionList.h"
 
 #include "RHCopyPointers.h"
 
@@ -254,6 +238,8 @@ class RHProfileManager
 public:
     bool SerializeProfilePointer(SBFile &file, const RHCharacterProfile *&profile) const;
     RHMissionProfile *AddForcedMission(const std::string &first, const std::string &second, const std::string &third);
+    char m_00[0x50];
+    RHCampaignPointerArray<RHMissionProfile *> m_missions; // 0x50
 };
 
 RHProfileManager *RHUnk00436500GetProfileManager();
@@ -318,25 +304,7 @@ public:
     RHbeamMe &FUN_00457bc0(unsigned beamMe);
 };
 
-struct RHScriptNode
-{
-    RHScriptNode *next;
-    RHScriptNode *prev;
-    void *data;
-};
-
-struct RHScriptIter
-{
-    RHScriptNode *node;
-    RHScriptIter(RHScriptNode *value) : node(value) {}
-};
-
-class RHUnk0046eb30
-{
-public:
-    RHScriptIter erase(RHScriptIter position);
-    RHScriptNode *Unk0059f720(RHScriptNode *next, RHScriptNode *previous);
-};
+#include "RHScriptListCore.h"
 
 
 template<bool InlineHead>

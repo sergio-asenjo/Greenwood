@@ -29,12 +29,7 @@ public:
     float m_y;
 };
 
-class RHUnkPathGeometry
-{
-public:
-    bool Unk004fbec0(SBFile &file, void *&value);
-    bool Unk004fc030(SBFile &file, void *&value);
-};
+#include "RHPathGeometryCalls.h"
 
 class RHFastFindGrid
 {

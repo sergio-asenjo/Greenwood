@@ -53,11 +53,7 @@ public:
     bool FUN_00582530();
 };
 
-class RHUnk0058a3d0
-{
-public:
-    void *Unk(void *context, int value, void *sequence);
-};
+#include "RHSequenceLaunchCalls.h"
 
 // Parked: list-constructor inlining and folded helper identities remain to be matched.
 // STUB: GAME 0x00589fb0
