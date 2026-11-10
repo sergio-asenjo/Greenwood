@@ -65,6 +65,8 @@ private:
     char m_unk[0x40]; // [0x00, 0x40): opaque; keeps the following member at +0xfc
 };
 
+#ifndef RHELEMENTOBJECT_VIEW
+#define RHELEMENTOBJECT_VIEW
 class RHElementObject : public RHElement
 {
 public:
@@ -95,6 +97,7 @@ public:
     char m_fd;                    // [0xfd]
     short m_fe;                   // [0xfe]
 };
+#endif
 
 // Serialises a type-name tag into the stream; target 0x005e1b70. Free-function
 // form is a placeholder calling convention — the target ignores its incoming

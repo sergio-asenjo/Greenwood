@@ -23,6 +23,57 @@ inline void FXRestore(RHUnkFXDraw *const &draw, RHUnkFXEngine *engine, const uns
     ((SBDrawManager *)draw)->FUN_005e6440(handle, box, surface, target, 0);
 }
 
+#include "RHMobileUnk00607da0.h"
+#include "RHMobileUnk006091b0.h"
+
+// STUB: GAME 0x004a9990
+void RHElementFX::FUN_004a9990()
+{
+    RHspriteRenderingInfo info;
+    SBGeoBoundingBox2D first;
+    SBGeoBoundingBox2D second;
+    if (!*((char *)this + 0x12)
+        || !m_ac && *(float *)((char *)fx_sprite + 0x18) == 0.0f
+            && !((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0()[0x50])
+        return;
+    if (m_c8 && m_cc != -1 && (unsigned char)fx_sprite->FUN_005bd940())
+    {
+        {
+            SBGeoVector2D vector((const SBGeoVector2D &)fx_sprite->m_18);
+            FXRestore(fx_draw, (RHUnkFXEngine *)g_pEngine, m_cc, &m_b4, &m_b4.FUN_006090d0(vector));
+        }
+        m_c8 = 0;
+    }
+    else
+    {
+        unsigned long surface = ((RHUnkFXEngine *)g_pEngine)->m_48c4;
+        SBGeoBoundingBox2D source;
+        SBGeoBoundingBox2D destination;
+        SBGeoVector2D hotspot(*fx_sprite->FUN_005bdd90());
+        source.FUN_00609050(SBGeoPoint2D(0.0f, 0.0f),
+                            SBGeoVector2D((float)fx_sprite->FUN_005bdd50(), (float)fx_sprite->FUN_005bdd70()));
+        ((RHMobileUnk00607da0 *)&destination)->FUN_00607da0((const RHMobileUnk00607da0 &)source);
+        ((RHMobileUnk006091b0 *)&destination)->FUN_006091b0(SBGeoVector2D(fx_sprite->m_18.Unk005fc190(hotspot)));
+        info.m_surface = *(unsigned long *)((char *)this + 0x54);
+        info.m_05 = 1;
+        fx_sprite->CreateTargetSprite(info);
+        m_c8 = 1;
+        switch (m_a8)
+        {
+        case 1:
+            if (*((char *)this + 0x8e) == 1)
+            {
+                ((SBDrawManager *)fx_draw)->BlitAlphaKeying(*(unsigned long *)((char *)this + 0x54), &source, surface, &destination,
+                    *(unsigned short *)((char *)this + 0x90), *(unsigned short *)(*(char **)((char *)this + 0x68) + 0x48), 1);
+                break;
+            }
+        default:
+            ((SBDrawManager *)fx_draw)->FUN_005e6440(*(unsigned long *)((char *)this + 0x54), &source, surface, &destination, 1);
+        }
+    }
+    *((char *)g_pEngine + 0x48d1) = 0;
+}
+
 // FUNCTION: GAME 0x004a9df0
 void RHElementFX::RestoreBackground()
 {
@@ -108,11 +159,7 @@ void RHElementFX::InitializeBackgroundRestoration()
 
 #include "RHEngineWidenedCalls.h"
 
-class RHPatch
-{
-public:
-    void FUN_00550070(bool mode);
-};
+#include "RHPatchClass.h"
 
 // FUNCTION: GAME 0x004aa2f0
 bool RHElementFX::FUN_004aa2f0()

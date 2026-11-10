@@ -9,6 +9,7 @@ class SBFile;
 class RHUnkTargetSprite;
 class RHMobileElement;
 class RHMobilePath;
+class RHSoundSource;
 
 // SIZE 0x260
 class RHElementMobile
@@ -26,6 +27,7 @@ public:
     void FUN_004ab7e0(float distance);
     void TranslateGeometry(const SBGeoVector2D &value);
     void FUN_004af210(class RHMobileEvent *event);
+    void InitializeSound();
     class RHUnk0045aaf0 *FUN_004ac750(void *actor);
     bool FUN_004ac7c0(void *value, void *unused, int type);
     unsigned short Size() const { return (unsigned short)m_children.VolatileSize(); }
@@ -51,12 +53,17 @@ public:
     undefined m_1f0[4];
     SBGeoPoint2D m_1f4;
     RHMobileElement *m_1fc;
-    undefined m_200[4];
+    bool m_200;
+    undefined m_201[3];
     SBGeoPoint2D m_204;
     undefined m_20c[0xc];
     SBGeoPoint2D m_218;
     SBGeoPoint2D m_220;
-    undefined m_228[0x30];
+    undefined m_228[0x14];
+    RHSoundSource *m_23c;
+    RHSoundSource *m_240;
+    RHSoundSource *m_244;
+    undefined m_248[0x10];
     undefined m_258[8];
 };
 

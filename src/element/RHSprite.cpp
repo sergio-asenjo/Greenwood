@@ -28,6 +28,10 @@ DECOMP_SIZE_ASSERT(std::vector<int>, 0x10)
 DECOMP_STATIC_ASSERT(offsetof(RHSprite, m_144) == 0x144)
 DECOMP_STATIC_ASSERT(offsetof(RHSprite, m_154) == 0x154)
 DECOMP_STATIC_ASSERT(offsetof(RHSprite, m_164) == 0x164)
+DECOMP_STATIC_ASSERT(offsetof(RHPositionInterface, m_c) == 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(RHPositionInterface, m_28) == 0x28)
+DECOMP_STATIC_ASSERT(offsetof(RHSprite, m_184) == 0x184)
+DECOMP_STATIC_ASSERT(offsetof(RHSprite, m_186) == 0x186)
 DECOMP_STATIC_ASSERT(offsetof(RHSprite, m_174) == 0x174)
 DECOMP_STATIC_ASSERT(offsetof(RHSprite, m_1a0) == 0x1a0)
 DECOMP_STATIC_ASSERT(offsetof(RHSprite, m_1b4) == 0x1b4)
@@ -867,6 +871,29 @@ int RHSprite::PerformAction(RHOrder *order, int animation, int progression, bool
     return result;
 }
 
+// Parked: inlined seek swaps the count/index registers and lacks the target's extra iterator slot.
+// STUB: GAME 0x005b8240
+bool RHSprite::IsActionDone(RHOrder *order, int animation)
+{
+    if (*(volatile int *)&m_1e0.count > 0)
+    {
+        m_200 = animation;
+        RHSpriteListNode *sentinel = m_1e0.head;
+        int searchSize = m_1e0.count;
+        m_1f8 = true;
+        m_1e0.Find(m_200, m_1fc, sentinel, searchSize);
+        int selected = *(volatile int *)&m_1fc;
+        if ((unsigned short)selected != 0xffff)
+            m_204.Seek((unsigned short)selected);
+    }
+    if (!order || m_150 == *(int *)((char *)order + 0x34))
+    {
+        if (m_186 == m_18c && m_188 == m_18e)
+            return true;
+    }
+    return false;
+}
+
 // FUNCTION: GAME 0x005b8420
 unsigned short RHSprite::FUN_005b8420()
 {
@@ -897,6 +924,70 @@ unsigned short RHSprite::FUN_005b84b0(int animation)
         total += FUN_005bdbf0(row, frame);
     }
     return total;
+}
+
+inline void RHSpriteSetIncrement3D(RHPositionInterface &position, const RHUnk00613e90 &increment)
+{
+    position.m_8 = 2;
+    RHUnk00613e90 &target = position.m_60;
+    target = increment;
+}
+
+inline void RHSpriteApplyIncrement3D(RHPositionInterface &position)
+{
+    position.m_8 |= 2;
+    const RHUnk00613e90 &increment = position.m_60;
+    RHUnk00613e90 &value = position.m_c;
+    value.x = increment.x + value.x;
+    value.y = increment.y + value.y;
+    value.z = increment.z + value.z;
+    position.m_4 = 1;
+}
+
+inline void RHSpriteSetPosition3D(RHPositionInterface &position, const RHUnk00613e90 &value)
+{
+    position.m_c = value;
+    position.m_4 = 1;
+}
+
+// FUNCTION: GAME 0x005b8510
+int RHSprite::PerformFlight(RHOrder *order, int animation, int progression, int style, bool reset)
+{
+    int result = PerformAction(order, animation, progression, reset);
+    if (m_188 == 0 && m_186 + 1 == FUN_005bdcf0(m_184))
+    {
+        RHSpriteSetIncrement3D(*(RHPositionInterface *)((char *)this + 4), RHUnk00613e90(0.0f, 0.0f, 0.0f));
+    }
+    RHSpriteApplyIncrement3D(*(RHPositionInterface *)((char *)this + 4));
+    RHPositionInterface *position = (RHPositionInterface *)((char *)this + 4);
+    ((RHBonusInfoBase *)position)->FUN_0055f290();
+    ((RHBonusInfo *)this)->FUN_005bd560(0, true);
+    switch (style)
+    {
+    case 1:
+        if (--RHSpriteField<short>(this, 0x190) <= 0)
+            result = 3;
+        break;
+    }
+    switch (result)
+    {
+    case 1:
+        position->m_fd = 0;
+        position->m_fe = 0;
+        position->m_fc = 0;
+        break;
+    case 3:
+        ((RHEngineWidenedCalls *)this)->FUN_005bd450();
+        RHSpriteField<char>(this, 0x101) = 1;
+        RHSpriteField<unsigned short>(this, 0xde) = RHSpriteField<unsigned short>(this, 0xe4);
+        RHSpriteField<void *>(this, 0xe0) = RHSpriteField<void *>(this, 0xe8);
+        RHSpriteSetPosition3D(*(RHPositionInterface *)((char *)this + 4), RHSpriteField<RHUnk00613e90>(this, 0x58));
+        RHSpriteSetIncrement3D(*(RHPositionInterface *)((char *)this + 4), RHUnk00613e90(0.0f, 0.0f, 0.0f));
+        ((RHBonusInfoBase *)position)->FUN_0055f290();
+        ((RHBonusInfo *)this)->FUN_005bd560(0, true);
+        break;
+    }
+    return result;
 }
 
 // Parked: local coloring, register allocation and control flow do not match.
@@ -2316,6 +2407,8 @@ void RHSprite::Emit(SBFile &file)
     ((RHUnk005b5ed0 *)this)->FUN_005b5ed0(file);
     LoadPositionInfoFromFile(file, 0);
     PerformAction(0, 0, 0, false);
+    IsActionDone(0, 0);
+    PerformFlight(0, 0, 0, 0, false);
     PerformMotion(0, 0, 0, 0, 0.0f, 0, false);
     ((RHSpriteEngineCalls *)g_pEngine)->FUN_004d9090();
     ((RHSpritePositionCalls *)this)->FUN_00563e90();

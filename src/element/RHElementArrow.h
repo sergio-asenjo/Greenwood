@@ -15,10 +15,13 @@
 #include "SB.h"
 #include "RHBow.h"
 
+class SBGeoBoundingBox2D;
+
 class RHElementProjectile
 {
 public:
     virtual bool Serialize(SBFile &file);
+    void *Refresh(unsigned long surface, float value, const SBGeoBoundingBox2D &box, unsigned long flags);
 
 private:
     char m_unkBase[0x158]; // [0x04, 0x15c): RHElementProjectile-owned, untouched here
@@ -35,6 +38,7 @@ public:
     bool FUN_004a6aa0(void *target);
     void *InteractionTarget() const { return *(void *const *)((const char *)this + 0x12c); }
     void FUN_004a6b80(void *target, bool flag);
+    void *Refresh(unsigned long surface, float value, const SBGeoBoundingBox2D &box, unsigned long flags);
     int FUN_004a6ff0();
 
     void Emit(SBFile &file);
@@ -43,7 +47,7 @@ private:
     RHBow *m_bow; // [0x15c]
     char m_160;   // [0x160]
     char m_161;   // [0x161]
-    char m_162;   // [0x162]
+    unsigned char m_162; // [0x162]
     char m_163;   // [0x163]
     short m_164;  // [0x164]
     bool m_166;   // [0x166]

@@ -126,6 +126,53 @@ public:
             }
         }
     }
+    void Seek(int wanted)
+    {
+        int size = count;
+        std::bidirectional_iterator_tag category;
+        if (dirty)
+        {
+            if (wanted <= (size + 1) / 2)
+            {
+                RHSpriteListIterator &position = current;
+                position = begin();
+                FUN_005c9010((RHUnk005c9010Iterator &)position, wanted, category);
+            }
+            else
+            {
+                current = RHSpriteListIterator(head);
+                FUN_005c9010((RHUnk005c9010Iterator &)current, wanted - size, category);
+            }
+            dirty = false;
+            index = wanted;
+        }
+        else
+        {
+            int previous = index;
+            if (wanted != previous)
+            {
+                if (wanted < previous)
+                {
+                    if (wanted < (previous + 1) / 2)
+                    {
+                        RHSpriteListIterator &position = current;
+                        position = begin();
+                        FUN_005c9010((RHUnk005c9010Iterator &)position, wanted, category);
+                    }
+                    else
+                        FUN_005c9010((RHUnk005c9010Iterator &)current, wanted - previous, category);
+                }
+                else if (wanted < (previous + size) / 2)
+                    FUN_005c9010((RHUnk005c9010Iterator &)current, wanted - previous, category);
+                else
+                {
+                    current = RHSpriteListIterator(head);
+                    FUN_005c9010((RHUnk005c9010Iterator &)current, wanted - size, category);
+                }
+                index = wanted;
+            }
+        }
+    }
 };
 
 class RHUnk005b5e00
@@ -147,23 +194,8 @@ struct RHSpriteFrameTable
     }
 };
 
-struct RHspriteRenderingInfo
-{
-    unsigned long m_surface;
-    undefined m_04;
-    char m_05;
-    undefined m_06[2];
-    unsigned m_flags;
-    int m_kind;
-    char m_masks;
-    undefined m_11;
-    unsigned short m_color;
-    unsigned short m_14;
-    undefined m_16[2];
-    int m_18;
-};
-
 #include "RHSpriteLastFrameCalls.h"
+#include "RHspriteRenderingInfoCore.h"
 
 class RHOrder;
 
@@ -296,6 +328,8 @@ public:
     void FUN_005b5ea0(SBFile &, int);
     void Unk005bc920(SBFile &, int);
     int PerformAction(RHOrder *, int, int, bool);
+    bool IsActionDone(RHOrder *, int);
+    int PerformFlight(RHOrder *, int, int, int, bool);
     void LoadPositionInfoFromFile(SBFile &, int);
     int PerformMotion(RHOrder *, RHOrder *, int, int, float, int, bool);
     void FUN_005b7720(int);

@@ -19,11 +19,7 @@ class RHUnk00613e90;
 extern RHEngine *g_pEngine;
 struct RHUnkSectorGlobal;
 extern RHUnkSectorGlobal *g_unk0x6c0a9c;
-class RHUnkPathGeometry
-{
-public:
-    bool Unk004fbec0(SBFile &file, void *&value);
-};
+#include "RHPathGeometryCalls.h"
 class RHFastFindGrid
 {
 public:
@@ -117,6 +113,7 @@ class RHSprite
 {
 public:
     int PerformAction(RHOrder *order, int animation, int progression, bool reset);
+    bool IsActionDone(RHOrder *order, int animation);
     float FUN_005bdcb0();
     bool FUN_005b9e30(void *first, void *second, bool third);
 };
@@ -137,7 +134,6 @@ public:
 class RHUnkHumanPositionProvider
 {
 public:
-    bool FUN_005b8240(void *first, void *second);
     int FUN_005b8050(void *first, void *second, int, int);
     void FUN_005bd450();
     void *FUN_005b5e00();

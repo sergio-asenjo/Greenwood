@@ -10,6 +10,12 @@ public:
     virtual void V04() = 0;
     virtual void V08() = 0;
     virtual void V0c(int value, bool mode) = 0;
+    virtual void V10() = 0;
+    virtual void V14() = 0;
+    virtual void V18() = 0;
+    virtual void V1c() = 0;
+    virtual void V20() = 0;
+    virtual void V24(int value) = 0;
     void FUN_00585970(RHOrder *order);
 };
 

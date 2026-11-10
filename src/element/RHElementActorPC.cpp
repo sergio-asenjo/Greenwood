@@ -1682,7 +1682,7 @@ void RHElementActorPC::FUN_0049e8f0(int value)
         order = new RHOrder;
         order->m_24 = 0x12d;
         order->m_2a = 0;
-        *(RHUnk00613e90 *)(order->m_04 + 4) = RHActorPCField<RHUnk00613e90>(RHActorPCField<void *>(RHActorPCField<void *>(this, 0x254), 0x50), 0x10);
+        order->m_08 = RHActorPCField<RHUnk00613e90>(RHActorPCField<void *>(RHActorPCField<void *>(this, 0x254), 0x50), 0x10);
         RHActorPCField<int>(sequence, 0x5c) = 0;
         RHUnk00584d60 *event = new RHUnk00584d60(1, 0x2d, RHActorPCField<void *>(this, 0x254));
         RHActorPCField<void *>(RHActorPCField<void *>(this, 0x254), 0x5cc) = 0;

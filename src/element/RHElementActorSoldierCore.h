@@ -24,6 +24,7 @@ public:
     int FUN_004a1db0();
     void InitializeFromMissionStream(SBFile &file);
     void FUN_004a2550(void *element);
+    void Translate(RHSequenceElement *element, RHcommand command);
     void *FUN_004a5190(RHSoldierActorCalls *target);
     void FUN_004a4a40();
     bool FUN_004a4aa0(const SBGeoPoint2D &point, RHElementActorHuman *pc, int focus);

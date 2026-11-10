@@ -11,10 +11,13 @@ public:
     bool FUN_005b76e0(unsigned index, unsigned short row);
 };
 
+#ifndef RHUNK_FXDRAW_VIEW
+#define RHUNK_FXDRAW_VIEW
 class RHUnkFXDraw
 {
 public:
     unsigned long Unk005e4ed0(unsigned short width, unsigned short height, unsigned long flags, bool retain);
 };
+#endif
 
 #endif

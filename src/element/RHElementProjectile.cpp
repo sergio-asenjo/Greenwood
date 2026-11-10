@@ -1,9 +1,51 @@
 #include "SBNullstr.h"
+#include "SBGeoPoint2D.h"
+#include "SBGeoBoundingBox2DCore.h"
 extern float g_unk0x006774e4;
 #include "RHElementProjectile.h"
 
 #include "RHProjectileLifetime.h"
 #include "RHProjectileVector.h"
+#include "RHspriteRenderingInfoCore.h"
+
+class RHMessenger;
+RHMessenger *RHUnk00546050();
+
+class RHUnk0045aaf0
+{
+public:
+    bool FUN_0045abf0(unsigned short value, const SBGeoPoint2D &point, int third, int fourth);
+};
+
+class RHSprite
+{
+public:
+    unsigned short FUN_005bb5f0();
+    unsigned char FUN_005b9b60(const SBGeoBoundingBox2D &box, float scale);
+    bool FUN_005ba130(const SBGeoBoundingBox2D &box, float scale, SBGeoBoundingBox2D &source,
+        SBGeoBoundingBox2D &destination);
+    bool CreateTargetSprite(const RHspriteRenderingInfo &info);
+};
+
+class RHFastFindGrid
+{
+public:
+    bool FUN_004e9570(const SBGeoPoint2D &point, unsigned short layer);
+    bool FUN_004f2d10(const RHUnk00613e90 &from, float plane, RHUnk00613e90 &impact,
+        const SBGeoBoundingBox2D &box, int type);
+};
+
+class SBDrawManager
+{
+public:
+    bool BlitAlphaKeying(unsigned long source, SBGeoBoundingBox2D *sourceBox, unsigned long destination,
+        SBGeoBoundingBox2D *destinationBox, unsigned short key, unsigned short opacity, unsigned long flags);
+    bool FUN_005e6440(unsigned long source, const SBGeoBoundingBox2D *sourceBox, unsigned long destination,
+        const SBGeoBoundingBox2D *destinationBox, unsigned long flags);
+};
+
+float g_unk0x006775d8 = 0.5f;
+float g_unk0x00677580 = 0.1f;
 
 // FUNCTION: GAME 0x004b4020
 RHProjectileLifetime::RHProjectileLifetime(int action, void *victim)
@@ -418,6 +460,139 @@ void RHElementProjectile::Emit(SBFile &file)
     Serialize(file);
 }
 
+class RHBonusInfoBase
+{
+public:
+    void FUN_0055f290();
+    void SetHeight(float value)
+    {
+        *(int *)((char *)this + 4) = 1;
+        *(float *)((char *)this + 0x14) = value;
+    }
+    float Height() const { return *(float *)((char *)this + 0x14); }
+};
+
+// STUB: GAME 0x004b7040
+void *RHElementProjectile::Refresh(unsigned long surface, float value, const SBGeoBoundingBox2D &box, unsigned long flags)
+{
+    SBGeoBoundingBox2D sourceBox;
+    SBGeoBoundingBox2D destinationBox;
+    RHspriteRenderingInfo info;
+
+    info.m_surface = 0;
+    info.m_04 = 0;
+    info.m_05 = 0;
+    info.m_flags = 0;
+    info.m_kind = 0;
+    info.m_masks = 0;
+    info.m_color = 0;
+    info.m_14 = 0;
+    info.m_18 = 0;
+
+    if (*(unsigned char *)((char *)this + 0x12) == 0)
+        return 0;
+
+    RHSprite *sprite = *(RHSprite **)((char *)this + 0x50);
+    void *result = 0;
+    unsigned short frame = sprite->FUN_005bb5f0();
+    if (frame != 0)
+    {
+        ((RHUnk0045aaf0 *)((char *)this + 0x14))->FUN_0045abf0(frame, *(SBGeoPoint2D *)((char *)sprite + 0x24),
+            *(int *)((char *)sprite + 0xfc), 0);
+        result = (char *)this + 0x14;
+    }
+
+    int type = *(int *)((char *)this + 0xb0);
+    int state = *(int *)((char *)this + 0xb4);
+    bool basic = type == 5 ||
+        ((type == 9 || type == 8 || type == 7) && state != 0xc4);
+
+    if (!basic)
+    {
+        RHUnk00613e90 impact;
+        RHUnk00613e90 saved = *(RHUnk00613e90 *)((char *)sprite + 0x10);
+        if (*(unsigned char *)((char *)this + 0x132))
+        {
+            RHUnk00613e90 current = saved;
+            current.z += 0.5f;
+            ((RHFastFindGrid *)*(void **)((char *)this + 0x64))->FUN_004f2d10(current, 0.0f, impact, box, 1);
+            impact.z += 0.1f;
+            *(RHUnk00613e90 *)((char *)sprite + 0x10) = impact;
+            *(int *)((char *)sprite + 8) = 1;
+            ((RHBonusInfoBase *)((char *)sprite + 4))->FUN_0055f290();
+
+            sprite = *(RHSprite **)((char *)this + 0x50);
+            ++*(unsigned short *)((char *)sprite + 0x186);
+            if (sprite->FUN_005b9b60(box, value))
+            {
+                if (state != 0x120 && state != 0x121)
+                {
+                    info.m_surface = *(unsigned long *)((char *)this + 0x54);
+                    info.m_05 = *(unsigned char *)((char *)RHUnk00546050() + 0x17);
+                    info.m_color = *(unsigned short *)((char *)this + 0x98);
+                    info.m_masks = 1;
+                    info.m_kind = 1;
+                    info.m_flags = 0;
+                    if (*(unsigned char *)((char *)this + 0xad))
+                    {
+                        info.m_18 = g_pEngine->FUN_004c7d50();
+                        if ((info.m_18 == 2 || info.m_18 == 1) && *(unsigned short *)((char *)sprite + 0xde) != 0xffff &&
+                            ((RHFastFindGrid *)g_unk0x6c0a9c)->FUN_004e9570(
+                                *(SBGeoPoint2D *)((char *)sprite + 0x24), *(unsigned short *)((char *)sprite + 0xde)))
+                            info.m_18 = 0;
+                    }
+                    sprite->CreateTargetSprite(info);
+                    if (sprite->FUN_005ba130(box, value, sourceBox, destinationBox))
+                    {
+                        unsigned short key = *(unsigned short *)(*(char **)((char *)this + 0x68) + 0x48);
+                        unsigned short opacity = *(unsigned short *)((char *)this + 0x90);
+                        if (*(unsigned char *)((char *)this + 0x8e) == 1)
+                            ((SBDrawManager *)*(void **)((char *)this + 0x60))->BlitAlphaKeying(
+                                *(unsigned long *)((char *)this + 0x54), &sourceBox, surface, &destinationBox, key, opacity, 1);
+                        else
+                            ((SBDrawManager *)*(void **)((char *)this + 0x60))->FUN_005e6440(
+                                *(unsigned long *)((char *)this + 0x54), &sourceBox, surface, &destinationBox, 1);
+                    }
+                }
+            }
+
+            sprite = *(RHSprite **)((char *)this + 0x50);
+            *(RHUnk00613e90 *)((char *)sprite + 0x10) = saved;
+            *(int *)((char *)sprite + 8) = 0;
+            ((RHBonusInfoBase *)((char *)sprite + 4))->FUN_0055f290();
+            --*(unsigned short *)((char *)sprite + 0x186);
+        }
+    }
+
+    sprite = *(RHSprite **)((char *)this + 0x50);
+    if (sprite->FUN_005b9b60(box, value))
+    {
+        info.m_surface = *(unsigned long *)((char *)this + 0x54);
+        info.m_05 = *(unsigned char *)((char *)RHUnk00546050() + 0x17);
+        info.m_color = *(unsigned short *)((char *)this + 0x98);
+        info.m_masks = 1;
+        info.m_kind = 1;
+        info.m_flags = 0;
+        if (*(unsigned char *)((char *)this + 0xad))
+        {
+            info.m_18 = g_pEngine->FUN_004c7d50();
+            if ((info.m_18 == 2 || info.m_18 == 1) && *(unsigned short *)((char *)sprite + 0xde) != 0xffff &&
+                ((RHFastFindGrid *)g_unk0x6c0a9c)->FUN_004e9570(
+                    *(SBGeoPoint2D *)((char *)sprite + 0x24), *(unsigned short *)((char *)sprite + 0xde)))
+                info.m_18 = 0;
+        }
+        sprite->CreateTargetSprite(info);
+        if (sprite->FUN_005ba130(box, value, sourceBox, destinationBox))
+        {
+            unsigned short key = *(unsigned short *)(*(char **)((char *)this + 0x68) + 0x48);
+            unsigned short opacity = *(unsigned short *)((char *)this + 0x90);
+            ((SBDrawManager *)*(void **)((char *)this + 0x60))->BlitAlphaKeying(
+                *(unsigned long *)((char *)this + 0x54), &sourceBox, surface, &destinationBox, key, opacity, 1);
+        }
+    }
+    return result;
+}
+
 // FUNCTION: GAME 0x004b7fc0
 int RHProjectileVector::FUN_004b7fc0(const RHProjectileVector &other) const
 {
@@ -497,18 +672,6 @@ void *EmitRHProjectileTarget(RHElementProjectile *projectile)
 
 struct RHUnk00571160Position;
 #include "RHPositionProvider.h"
-
-class RHBonusInfoBase
-{
-public:
-    void FUN_0055f290();
-    void SetHeight(float value)
-    {
-        *(int *)((char *)this + 4) = 1;
-        *(float *)((char *)this + 0x14) = value;
-    }
-    float Height() const { return *(float *)((char *)this + 0x14); }
-};
 
 class RHShadowUnk005df9e0
 {

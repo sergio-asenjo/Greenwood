@@ -1,32 +1,17 @@
+#ifndef RHELEMENT_H
+#define RHELEMENT_H
+
 #include "SB.h"
 #include "RHSectorActorList.h"
 #include "Decomp.h"
+#include "RHElementCore.h"
 
-// SIZE 0x0c
-class RHUnk005df510
-{
-public:
-    int m_0; // 0x00
-    int m_4; // 0x04
-    int m_8; // 0x08
-    bool Serialize(SBFile &file);
-};
-
-// SIZE 0x08
-class SBGeoPoint2D
-{
-public:
-    SBGeoPoint2D();
-    SBGeoPoint2D(const SBGeoPoint2D &other);
-    SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
-    ~SBGeoPoint2D();
-    SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
-    short CellX() const { return (short)((short)m_0 >> 6); }
-    short CellY() const { return (short)((short)m_4 >> 6); }
-    float m_0; // 0x00
-    float m_4; // 0x04
-    bool Serialize(SBFile &file);
-};
+#ifndef SBGEO_VECTOR2D_VIEW
+#include "SBGeoVector2D.h"
+#endif
+#ifndef SBGEO_BOUNDINGBOX2D_VIEW
+#include "SBGeoBoundingBox2D.h"
+#endif
 
 class RHUnk005b5ed0
 {
@@ -34,52 +19,7 @@ public:
     bool FUN_005b5ed0(SBFile &file);
 };
 
-class RHElevationLine;
-class SBGeoVector2D;
-
-// SIZE 0xa8
-class RHElement
-{
-public:
-    virtual bool Serialize(SBFile &file); // vtable+0x00
-    int FUN_00462190() const;
-    SBGeoVector2D FUN_004621a0() const;
-    void FUN_004621d0(RHUnk005df510 &point) const;
-    void FUN_004621f0();
-    char FUN_00462200() const;
-    char FUN_00462210(void *value);
-    void *FUN_004622d0() const;
-    void CrossElevationLine(RHElevationLine *line);
-    void Emit(SBFile &file);
-
-    undefined m_04[4]; // 0x04
-    char m_08; // 0x08
-    undefined m_09[3]; // 0x09
-    int m_0c; // 0x0c
-    short m_10; // 0x10
-    char m_12; // 0x12
-    undefined m_13[0x3d]; // 0x13
-    RHUnk005b5ed0 *m_50; // 0x50
-    undefined m_54[0x1c]; // 0x54
-    char m_70; // 0x70
-    char m_71; // 0x71
-    undefined m_72[2]; // 0x72
-    RHUnk005df510 m_74; // 0x74
-    SBGeoPoint2D m_80; // 0x80
-    char m_88; // 0x88
-    undefined m_89; // 0x89
-    short m_8a; // 0x8a
-    short m_8c; // 0x8c
-    undefined m_8e[6]; // 0x8e
-    undefined m_94[10]; // 0x94
-    undefined m_9e[2]; // 0x9e
-    int m_a0; // 0xa0
-    short m_a4; // 0xa4
-    char m_a6; // 0xa6
-    undefined m_a7; // 0xa7
-};
-
-void RHSerializeName(SBFile &file, const char *name);
+class RHUnkSectorPoints;
 
 // SIZE 0xfc
 class RHBonusInfoBase
@@ -101,15 +41,6 @@ public:
     void *m_f8; // 0xf8
 };
 
-class RHUnkSectorPoints;
-
-class SBGeoBoundingBox2D
-{
-public:
-    bool FUN_00608400(const SBGeoPoint2D &point) const;
-    bool FUN_00608d60(const RHUnkSectorPoints &polygon) const;
-};
-
 #include "RHUnkSectorPoints.h"
 
 #include "RHElementAreaShape.h"
@@ -121,7 +52,7 @@ public:
     RHElementAreaShape m_04; // 0x04
     undefined m_2a[0x12]; // 0x2a
     SBGeoBoundingBox2D m_3c; // 0x3c
-    undefined m_3d[0x1b]; // 0x3d
+    undefined m_50[8]; // 0x50
     char *m_58; // 0x58
     undefined m_5c[4]; // 0x5c
     void *m_60; // 0x60
@@ -195,14 +126,4 @@ typedef RHTransientPointerList<RHElementArea> RHElementAreaTransientList;
 
 #include "RHElementGrid.h"
 
-class SBGeoVector2D : public SBGeoPoint2D
-{
-public:
-    SBGeoVector2D();
-    SBGeoVector2D(float, float);
-    ~SBGeoVector2D() {}
-    SBGeoVector2D(const SBGeoVector2D &other);
-    SBGeoVector2D &operator=(const SBGeoVector2D &other);
-};
-
-SBGeoVector2D operator*(float factor, const SBGeoVector2D &point);
+#endif

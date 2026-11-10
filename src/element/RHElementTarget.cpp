@@ -1,4 +1,7 @@
+#include "RHElementFX.h"
 #include "RHElementTarget.h"
+#include "RHCopyPointers.h"
+#include "../ai/RHFastFindArrayOps.h"
 #include "VMCore.h"
 #include "RHMalignityActorCalls.h"
 #include "RHElementPositionCalls.h"
@@ -8,20 +11,20 @@
 #include "RHSpriteCore.h"
 #include "RHMobileUnk006100e0.h"
 #include <vector>
+#include <new>
 #include <stddef.h>
 
 DECOMP_SIZE_ASSERT(RHElementTarget, 0x18c)
+DECOMP_SIZE_ASSERT(RHScript, 4)
+DECOMP_SIZE_ASSERT(SBSimpleVirtualMachine, 0x5c)
+DECOMP_SIZE_ASSERT(VMCoreCustom, 0x60)
+DECOMP_STATIC_ASSERT(offsetof(RHElementTarget, m_15c) == 0x15c)
 DECOMP_SIZE_ASSERT(std::vector<RHMobileUnk006100e0 *>, 0x10)
 DECOMP_STATIC_ASSERT(offsetof(RHElementTarget, m_16c) == 0x16c)
 
 class RHElementActor;
 extern RHElementActor *g_unk0x6c100c;
-
-class RHScriptBatchCalls
-{
-public:
-    bool Unk0049d560(int action);
-};
+extern char g_unk0x6c0691;
 
 unsigned FUN_004baeb0(void *actor);
 int FUN_004baf00(volatile int type);
@@ -220,8 +223,8 @@ void RHElementTarget::InitializeFromMissionStream(SBFile &file)
             RHElementTarget_m_15c = this ? script : 0;
         }
     }
-    *(unsigned long *)(m_data + 0x54) = Draw()->Unk005e4ed0(((RHCivilianSpriteView *)Info())->FUN_005bdef0(), ((RHCivilianSpriteView *)Info())->FUN_005bdf20(), 0, 0);
-    *(unsigned long *)(m_data + 0x58) = Draw()->Unk005e4ed0(((RHCivilianSpriteView *)Info())->FUN_005bdef0() + 6, ((RHCivilianSpriteView *)Info())->FUN_005bdf20(), 0, 0);
+    *(unsigned long *)(((char *)this) + 0x54) = Draw()->Unk005e4ed0(((RHCivilianSpriteView *)Info())->FUN_005bdef0(), ((RHCivilianSpriteView *)Info())->FUN_005bdf20(), 0, 0);
+    *(unsigned long *)(((char *)this) + 0x58) = Draw()->Unk005e4ed0(((RHCivilianSpriteView *)Info())->FUN_005bdef0() + 6, ((RHCivilianSpriteView *)Info())->FUN_005bdf20(), 0, 0);
     Info()->m_4.SetPoint(SBGeoPoint2D((float)x, (float)y));
     Info()->m_4.m_da = layer;
     Info()->m_e0 = index == 0xffff ? Global()->m_4184 : Global()->m_4064[index];
@@ -263,7 +266,22 @@ void RHElementTarget::InitializeFromMissionStream(SBFile &file)
     Info()->FUN_005b76e0(row, flags);
     Info()->m_4.SetFlags(flags & 0xf);
     if (g_unk0x6c0691 && RHElementTarget_m_154)
-        ((RHUnkTargetScriptRef *)(m_data + 0x15c))->FUN_004034e0();
+        ((RHUnkTargetScriptRef *)(((char *)this) + 0x15c))->FUN_004034e0();
+}
+
+// FUNCTION: GAME 0x004bad80
+RHElementTarget::~RHElementTarget()
+{
+    m_16c.clear();
+}
+
+// FUNCTION: GAME 0x004bad60
+RHElementTarget *RHElementTarget::FUN_004bad60(char flags)
+{
+    this->RHElementTarget::~RHElementTarget();
+    if (flags & 1)
+        operator delete(this);
+    return this;
 }
 
 // FUNCTION: GAME 0x004bae60
@@ -271,7 +289,7 @@ void RHElementTarget::FUN_004bae60(RHTargetSequenceCalls *sequence, int (RHUnkTa
 {
     if (g_unk0x6c0691 && RHElementTarget_m_154)
     {
-        RHUnkTargetScriptRef *script = this ? (RHUnkTargetScriptRef *)(m_data + 0x15c) : 0;
+        RHUnkTargetScriptRef *script = this ? (RHUnkTargetScriptRef *)(((char *)this) + 0x15c) : 0;
         (script->*callback)(sequence->m_64);
     }
     sequence->V0c(0, true);
@@ -351,13 +369,13 @@ RHUnk00613e90 RHElementPositionCalls::FUN_004bb180()
 // FUNCTION: GAME 0x004bb240
 bool RHElementTarget::FUN_004bb240(void *point, void *pc, int focus) const
 {
-    if (m_data[0x12])
+    if (((char *)this)[0x12])
     {
         const std::vector<RHMobileUnk006100e0 *> &points = m_16c;
         unsigned count = points.size();
         for (unsigned i = 0; i < count; ++i)
             points[i]->FUN_00578c50();
-        if (m_data[0x12] && pc && *(unsigned *)((char *)g_pEngine + 0x4a00) <= 1)
+        if (((char *)this)[0x12] && pc && *(unsigned *)((char *)g_pEngine + 0x4a00) <= 1)
         {
             unsigned filter;
             switch (focus)
@@ -376,9 +394,94 @@ bool RHElementTarget::FUN_004bb240(void *point, void *pc, int focus) const
                 filter = 0;
                 break;
             }
-            return filter && (*(const unsigned *)(m_data + 0x168) & filter) &&
-                   (*(RHSprite *const *)(m_data + 0x50))->FUN_005b9e30(point, *(void *const *)(m_data + 0x54), false);
+            return filter && (*(const unsigned *)(((char *)this) + 0x168) & filter) &&
+                   (*(RHSprite *const *)(((char *)this) + 0x50))->FUN_005b9e30(point, *(void *const *)(((char *)this) + 0x54), false);
         }
+    }
+    return false;
+}
+
+#include "RHSequenceConstructionCalls.h"
+#include "RHSequenceGenericConstruction.h"
+#include "RHSequenceInteractionAction.h"
+#include "RHSequenceMovementConstruction.h"
+#include "RHSequenceAppendCalls.h"
+#include "RHSequenceLaunchCalls.h"
+#include "RHElementActorHumanBase.h"
+#include "RHActorMessage.h"
+#include "RHMessenger.h"
+#include "RHTitbitsCore.h"
+
+extern RHMessenger *RHUnk00546050();
+extern RHTitbits *g_unk0x6c10e8;
+
+template<class T> inline T &RHTargetField(void *object, unsigned offset)
+{
+    return *(T *)((char *)object + offset);
+}
+
+// STUB: GAME 0x004bb3a0
+bool RHElementTarget::FUN_004bb3a0(void *point, unsigned flags, RHElementActorPC *actor)
+{
+    unsigned short focus = RHTargetField<unsigned short>(RHUnk00546050(), 0x26);
+    int animation;
+    if (flags & 8)
+    {
+        if (!RHTargetField<bool>(RHUnk00546050(), 0x20))
+        {
+            ((RHElementActor *)actor)->FUN_0046bb80();
+            return true;
+        }
+        animation = 10;
+    }
+    else
+        animation = RHTargetField<int>(RHTargetField<void *>(actor, 0x50), 0x8c) == 10 ? 16 : 6;
+    int command = FUN_004baf50(actor);
+    if (command)
+    {
+        if (!RHTargetField<bool>(RHUnk00546050(), 0x20))
+        {
+            unsigned short level = 1;
+            RHUnk00582220 *sequence = new RHUnk00582220;
+            if (sequence->FUN_00582640(level, actor, animation,
+                RHTargetField<SBGeoPoint2D>(RHTargetField<void *>(actor, 0x50), 0x24),
+                RHTargetField<void *>(RHTargetField<void *>(actor, 0x50), 0xe0),
+                RHTargetField<unsigned short>(RHTargetField<void *>(actor, 0x50), 0xde),
+                RHTargetField<SBGeoPoint2D>(Info(), 0x24), RHTargetField<void *>(Info(), 0xe0),
+                RHTargetField<unsigned short>(Info(), 0xde), this, 0.0f, 0, 1.0f))
+            {
+                RHUnk005866a0 *turn = new RHUnk005866a0(level++, 26, actor);
+                turn->Unk00587010(8, ((RHElementActor *)this)->FUN_00462920());
+                ((RHUnk00585500 *)turn)->Unk(sequence);
+                RHUnk00585ea0 *action = new RHUnk00585ea0(level, command, actor, this);
+                ((RHUnk00585500 *)action)->Unk(sequence);
+                ((RHUnk0058a3d0 *)*(void **)((char *)this + 0x5c))->Unk((void *)"", 0, sequence);
+                ((RHMalignityActorCalls *)actor)->V104(12, 0, 255);
+                return true;
+            }
+            ((RHMalignityActorCalls *)actor)->V104(14, 0, 255);
+            if (sequence)
+                sequence->FUN_00582280(1);
+            return true;
+        }
+        RHUnk00582220 *sequence = new RHUnk00582220;
+        RHUnk00588530 *movement = new RHUnk00588530(1, 21, actor, animation,
+            RHTargetField<SBGeoPoint2D>(Info(), 0x24), RHTargetField<void *>(Info(), 0xe0),
+            RHTargetField<unsigned short>(Info(), 0xde), 0.0f, 0);
+        ((RHUnk00585500 *)movement)->Unk(sequence);
+        RHUnk00582220 *postSequence = new RHUnk00582220;
+        RHUnk005866a0 *turn = new RHUnk005866a0(1, 26, actor);
+        turn->Unk00587010(8, ((RHElementActor *)this)->FUN_00462920());
+        ((RHUnk00585500 *)turn)->Unk(postSequence);
+        RHUnk00585ea0 *action = new RHUnk00585ea0(2, command, actor, this);
+        ((RHUnk00585500 *)action)->Unk(postSequence);
+        movement->m_68 = (RHMovementOwned *)postSequence;
+        RHUnk00613e90 position;
+        ((RHMalignityActorCalls *)actor)->V170(command, false, focus,
+            g_unk0x6c10e8->AddTitbit(position, 0, (RHtitbitKind)3, (RHElement *)this,
+                FUN_004bb0a0(actor), actor, animation == 10, 0xffffffff));
+        RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(6, 0));
+        return true;
     }
     return false;
 }
@@ -386,9 +489,96 @@ bool RHElementTarget::FUN_004bb240(void *point, void *pc, int focus) const
 // FUNCTION: GAME 0x004bbf80
 bool RHElementTarget::FUN_004bbf80()
 {
-    if (m_data[0x12])
-        ((RHEngineWidenedCalls *)Info())->FUN_005b7f60(*(unsigned long *)(m_data + 0x164));
+    if (((char *)this)[0x12])
+        ((RHEngineWidenedCalls *)Info())->FUN_005b7f60(*(unsigned long *)(((char *)this) + 0x164));
     return true;
+}
+
+// STUB: GAME 0x004bbfa0
+bool RHElementTarget::Serialize(SBFile &file)
+{
+    RHElementTarget *const self = this;
+#define target_data ((char *)self)
+#define m_16c self->m_16c
+    // STRING: GAME 0x006aef1c
+    RHSerializeName(file, "RHElementTarget");
+    if (file.Access(&RHElementTarget_m_160, 4) < 0)
+    {
+        SBString *error = file.GetError();
+        const char *reason = error->m_chars ? error->m_chars : "";
+        SBAssert(0,
+                 "P:\\Robin Hood\\RHelementtarget.cpp", 0x372,
+                 "Serialize failed reason is %s", reason);
+        return false;
+    }
+    if (file.Access(&RHElementTarget_m_164, 4) < 0)
+    {
+        SBString *error = file.GetError();
+        const char *reason = error->m_chars ? error->m_chars : "";
+        SBAssert(0,
+                 "P:\\Robin Hood\\RHelementtarget.cpp", 0x373,
+                 "Serialize failed reason is %s", reason);
+        return false;
+    }
+    if (g_unk0x6c0691 && RHElementTarget_m_154)
+        ((VMCore *)(target_data + 0xfc))->SerializeMemberVariable(file);
+    if (file.m_version >= 0x1f)
+    {
+        unsigned count;
+        RHMobileUnk006100e0 *element;
+        if (file.m_bLoading)
+        {
+            RHScriptFXArray *vector = (RHScriptFXArray *)&m_16c;
+            void **last = FUN_004598e0(((RHScriptFXArray *)&m_16c)->last,
+                                       ((RHScriptFXArray *)&m_16c)->last,
+                                       ((RHScriptFXArray *)&m_16c)->first);
+            vector->Unk005008e0(last, vector->last);
+            vector->last = last;
+            vector->dirty = 1;
+            if (file.Access(&count, 4) < 0)
+            {
+                SBString *error = file.GetError();
+                const char *reason = error->m_chars ? error->m_chars : "";
+                SBAssert(0,
+                         "P:\\Robin Hood\\RHelementtarget.cpp", 0x386,
+                         "Serialize failed reason is %s", reason);
+                return false;
+            }
+            for (unsigned index = 0; index < count; ++index)
+            {
+                g_pEngine->SerializeElementPointer(file, *(RHElement **)&element);
+#pragma inline_depth(0)
+                m_16c.insert(m_16c.end(), 1, element);
+#pragma inline_depth()
+                vector->dirty = 1;
+            }
+        }
+        else
+        {
+            if (!((RHScriptFXArray *)&m_16c)->first)
+                count = 0;
+            else
+                count = (unsigned)((RHMobileUnk006100e0 **)((RHScriptFXArray *)&m_16c)->last -
+                                   (RHMobileUnk006100e0 **)((RHScriptFXArray *)&m_16c)->first);
+            if (file.Access(&count, 4) < 0)
+            {
+                SBString *error = file.GetError();
+                const char *reason = error->m_chars ? error->m_chars : "";
+                SBAssert(0,
+                         "P:\\Robin Hood\\RHelementtarget.cpp", 0x390,
+                         "Serialize failed reason is %s", reason);
+                return false;
+            }
+            for (unsigned index = 0; index < count; ++index)
+            {
+                element = ((RHMobileUnk006100e0 **)((RHScriptFXArray *)&m_16c)->first)[index];
+                g_pEngine->SerializeElementPointer(file, *(RHElement **)&element);
+            }
+        }
+    }
+    return ((RHElementFX *)self)->RHElementFX::Serialize(file);
+#undef target_data
+#undef m_16c
 }
 
 // FUNCTION: GAME 0x004bc1d0
@@ -426,23 +616,23 @@ bool RHElementTarget::FUN_004bc1d0(RHTargetSequenceCalls *sequence)
         FUN_004bae60(sequence, &RHUnkTargetScriptRef::FUN_00403dd0);
         break;
     case 0xa6:
-        *(int *)(m_data + 0x160) = ((RHSequenceElement *)sequence)->Unk00587160(0x15);
-        *(unsigned *)(m_data + 0x164) = 8;
-        Info()->FUN_005b76e0(*(unsigned *)(m_data + 0x160), *(unsigned short *)((char *)Info() + 0xd8));
+        *(int *)(((char *)this) + 0x160) = ((RHSequenceElement *)sequence)->Unk00587160(0x15);
+        *(unsigned *)(((char *)this) + 0x164) = 8;
+        Info()->FUN_005b76e0(*(unsigned *)(((char *)this) + 0x160), *(unsigned short *)((char *)Info() + 0xd8));
         ((RHUnk005bd5b0 *)Info())->Unk(false);
         sequence->V0c(0, true);
         break;
     case 0xa4:
-        *(int *)(m_data + 0x160) = ((RHSequenceElement *)sequence)->Unk00587160(0x15);
-        *(unsigned *)(m_data + 0x164) = 0;
-        Info()->FUN_005b76e0(*(unsigned *)(m_data + 0x160), *(unsigned short *)((char *)Info() + 0xd8));
+        *(int *)(((char *)this) + 0x160) = ((RHSequenceElement *)sequence)->Unk00587160(0x15);
+        *(unsigned *)(((char *)this) + 0x164) = 0;
+        Info()->FUN_005b76e0(*(unsigned *)(((char *)this) + 0x160), *(unsigned short *)((char *)Info() + 0xd8));
         ((RHUnk005bd5b0 *)Info())->Unk(false);
         sequence->V0c(0, true);
         break;
     case 0xa5:
-        *(int *)(m_data + 0x160) = ((RHSequenceElement *)sequence)->Unk00587160(0x15);
-        *(unsigned *)(m_data + 0x164) = 1;
-        Info()->FUN_005b76e0(*(unsigned *)(m_data + 0x160), *(unsigned short *)((char *)Info() + 0xd8));
+        *(int *)(((char *)this) + 0x160) = ((RHSequenceElement *)sequence)->Unk00587160(0x15);
+        *(unsigned *)(((char *)this) + 0x164) = 1;
+        Info()->FUN_005b76e0(*(unsigned *)(((char *)this) + 0x160), *(unsigned short *)((char *)Info() + 0xd8));
         ((RHUnk005bd5b0 *)Info())->Unk(false);
         sequence->V0c(0, true);
         break;
@@ -457,7 +647,7 @@ void RHElementTarget::FUN_004bc3d0(int activator)
     if ((RHElementTarget_m_168 & 0x200) && g_unk0x6c0691)
     {
         RHElementTarget_m_168 &= ~0x200;
-        ((RHUnkTargetScriptRef *)(m_data + 0x15c))->FUN_00403ed0(activator);
+        ((RHUnkTargetScriptRef *)(((char *)this) + 0x15c))->FUN_00403ed0(activator);
     }
 }
 

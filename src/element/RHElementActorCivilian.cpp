@@ -435,7 +435,7 @@ void *RHElementActorCivilian::FUN_00470f70(void *element)
 }
 
 // LIBRARY: GAME 0x00471050
-// $E24
+// $E25
 
 // FUNCTION: GAME 0x00471090
 void RHElementActorCivilian::FUN_00471090()

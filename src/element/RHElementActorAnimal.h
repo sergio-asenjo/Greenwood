@@ -105,11 +105,7 @@ public:
 #define SBGEO_POINT2D_VIEW
 #include "RHSequenceMovementConstruction.h"
 
-class RHUnkPathGeometry
-{
-public:
-    bool Unk004f9170(const SBGeoPoint2D &a, const SBGeoPoint2D &b, unsigned short layer, void *radius);
-};
+#include "RHPathGeometryCalls.h"
 
 struct RHUnkSectorGlobal;
 

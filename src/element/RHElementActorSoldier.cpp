@@ -50,9 +50,14 @@
 #include "RHElementActorHumanBase.h"
 #include "RHHumanStatus.h"
 #include "RHCivilianSpriteView.h"
+#include "RHActorTranslation.h"
+#include "RHHumanSequenceElement.h"
+#include "RHArtificialIntelligenceCore.h"
 
 DECOMP_SIZE_ASSERT(RHElementActorNPC, 0x704)
 DECOMP_SIZE_ASSERT(RHElementActorSoldier, 0xa40)
+DECOMP_SIZE_ASSERT(RHOrder, 0x3c)
+DECOMP_SIZE_ASSERT(RHMalignityStimulus, 0x2c)
 
 class RHEngine;
 class RHUnk00452030;
@@ -251,6 +256,244 @@ void RHElementActorSoldier::FUN_004a2550(void *element)
     ((RHSoldierNPCCalls *)this)->FUN_0048b510(element);
     if (((RHSoldierActorCalls *)this)->V130() == 0)
         ++*(int *)((char *)((RHScriptBatchCalls *)g_pEngine)->Unk004e3cc0() + 0x20);
+}
+
+// STUB: GAME 0x004a2590
+void RHElementActorSoldier::Translate(RHSequenceElement *element, RHcommand command)
+{
+    RHcommand originalCommand = command;
+    if (!command)
+        command = (RHcommand)element->m_10;
+    RHActorTranslationSequenceCalls *sequence = (RHActorTranslationSequenceCalls *)element;
+    switch (command)
+    {
+    case 0x83:
+        if (RHSOLDIER_AT(int, element, 0x3c) == 1 && !RHSOLDIER_FIELD(char, 0xa2c))
+        {
+            RHOrder *order = new RHOrder;
+            order->m_24 = 0x8d;
+            order->m_2a = 0;
+            sequence->FUN_00585970(order);
+        }
+        else
+        {
+            sequence->V0c(0, true);
+            RHSOLDIER_FIELD(char, 0xa2c) = 1;
+        }
+        goto finished;
+    case 0x84:
+        if (RHSOLDIER_AT(int, element, 0x3c) == 1)
+        {
+            RHOrder *order = new RHOrder;
+            order->m_24 = 0x8e;
+            order->m_2a = 0;
+            sequence->FUN_00585970(order);
+        }
+        else
+        {
+            sequence->V0c(0, true);
+            RHSOLDIER_FIELD(char, 0xa2c) = 0;
+        }
+        goto finished;
+    case 0x85:
+    {
+        RHOrder *order = new RHOrder;
+        order->m_24 = 0xe9;
+        order->m_2a = 0;
+        sequence->FUN_00585970(order);
+        goto finished;
+    }
+    case 0x87:
+    {
+        RHOrder *order = new RHOrder;
+        order->m_24 = RHSOLDIER_FIELD(char, 0xa2c) ? 0xcd : 0xcb;
+        order->m_2a = 0;
+        sequence->FUN_00585970(order);
+        goto finished;
+    }
+    case 0x88:
+    {
+        RHOrder *order = new RHOrder;
+        order->m_24 = RHSOLDIER_FIELD(char, 0xa2c) ? 0xcc : 0xca;
+        order->m_2a = 0;
+        sequence->FUN_00585970(order);
+        goto finished;
+    }
+    case 0x46:
+    {
+        ((RHArtificialIntelligence *)RHSOLDIER_VBASE)->Unk00418c40(6, 0);
+        RHOrder *order = new RHOrder;
+        order->m_24 = 0x60;
+        order->m_2a = 0;
+        sequence->FUN_00585970(order);
+        goto finished;
+    }
+    case 0xa0:
+    case 0xa1:
+    case 0xa9:
+        if (RHSOLDIER_FIELD(char, 0xa2c) == 1 &&
+            RHSOLDIER_AT(int, RHSOLDIER_FIELD(void *, 0x50), 0x8c) == 1 &&
+            !RHSOLDIER_FIELD(int, 0x144) && !RHSOLDIER_FIELD(char, 0x1ce) &&
+            !((RHSoldierActorCalls *)this)->V48())
+        {
+            RHOrder *order = new RHOrder;
+            order->m_24 = 0x8c;
+            sequence->FUN_00585970(order);
+            if (command == 0xa0)
+                RHSOLDIER_FIELD(int, 0x14c) = element->Unk00587160(2);
+            goto finished;
+        }
+        if (RHSOLDIER_AT(int, RHSOLDIER_FIELD(void *, 0x50), 0x8c) == 0x13)
+        {
+            if (command == 0xa0)
+                RHSOLDIER_FIELD(int, 0x14c) = element->Unk00587160(2);
+            switch (RHSOLDIER_AT(int, element, 0x40))
+            {
+            case 4:
+            case 6:
+            {
+                RHOrder *order = new RHOrder;
+                order->m_24 = 0xec;
+                sequence->FUN_00585970(order);
+                goto finished;
+            }
+            default:
+            {
+                RHOrder *order = new RHOrder;
+                order->m_24 = 0xd1;
+                sequence->FUN_00585970(order);
+                goto finished;
+            }
+            }
+        }
+        goto inherited;
+    case 0x24:
+    {
+        RHOrder *order = new RHOrder;
+        order->m_24 = 0xea;
+        order->m_2a = 0;
+        sequence->FUN_00585970(order);
+        goto finished;
+    }
+    case 0x25:
+    {
+        RHOrder *order = new RHOrder;
+        order->m_24 = 0xeb;
+        order->m_2a = 0;
+        sequence->FUN_00585970(order);
+        goto finished;
+    }
+    case 0x89:
+    {
+        unsigned count;
+        if (m_unkA3c)
+            count = RHSOLDIER_PROFILE(unsigned short, 0x42) * 2;
+        else
+            count = RHSOLDIER_PROFILE(unsigned short, 0x42);
+        if (RHSOLDIER_AT(int, RHSOLDIER_FIELD(void *, 0x50), 0x8c) == 4)
+            ((RHElementActorHuman *)this)->FUN_004752d0(sequence);
+        {
+            RHMalignityStimulus stimulus;
+            RHArtificialIntelligence &intelligence = *(RHArtificialIntelligence *)((char *)this + 0x6e8 +
+                (*(int **)((char *)this + 0x6e8))[1]);
+            stimulus.m_20 = 0x1a;
+            *(unsigned short *)stimulus.m_00 = 0;
+            stimulus.m_type = 0;
+            intelligence.V24(&stimulus);
+        }
+        for (; count > 0; --count)
+        {
+            RHOrder *order = new RHOrder;
+            order->m_24 = 0xa6;
+            order->m_2a = 0;
+            sequence->FUN_00585970(order);
+        }
+        goto finished;
+    }
+    case 0x54:
+    {
+        void *target = RHSOLDIER_AT(void *, element, 0x64);
+        int state = RHSOLDIER_AT(int, target, 0xb0);
+        switch (state)
+        {
+        case 7:
+        case 8:
+        {
+            RHOrder *order = new RHOrder;
+            order->m_2a = 0;
+            order->m_24 = 0x7e;
+            order->m_30 = target;
+            sequence->FUN_00585970(order);
+            break;
+        }
+        case 9:
+            goto inherited;
+        }
+        goto finished;
+    }
+    case 0x8c:
+    {
+        RHOrder *order = new RHOrder;
+        order->m_2a = 0;
+        order->m_24 = 0xd8;
+        sequence->FUN_00585970(order);
+        goto finished;
+    }
+    case 0x8a:
+    {
+        RHOrder *order = new RHOrder;
+        order->m_2a = 0;
+        order->m_24 = 0x34;
+        sequence->FUN_00585970(order);
+        order = new RHOrder;
+        order->m_2a = 0;
+        order->m_24 = 0x99;
+        sequence->FUN_00585970(order);
+        goto finished;
+    }
+    case 0x8b:
+    {
+        RHOrder *order = new RHOrder;
+        order->m_2a = 0;
+        order->m_24 = 0x9a;
+        sequence->FUN_00585970(order);
+        order = new RHOrder;
+        order->m_2a = 0;
+        order->m_24 = 0x35;
+        sequence->FUN_00585970(order);
+        goto finished;
+    }
+    case 0x8e:
+    {
+        RHOrder *order = new RHOrder;
+        order->m_2a = 0;
+        order->m_24 = 0xa3;
+        sequence->FUN_00585970(order);
+        goto finished;
+    }
+    case 0x86:
+    {
+        RHOrder *order = new RHOrder;
+        order->m_2a = 0;
+        order->m_24 = 0xcf;
+        sequence->FUN_00585970(order);
+        goto finished;
+    }
+    case 0x8d:
+    {
+        void *target = RHSOLDIER_AT(void *, element, 0x64);
+        RHOrder *order = new RHOrder;
+        order->m_2a = 0;
+        order->m_24 = 0xa5;
+        order->m_30 = target;
+        sequence->FUN_00585970(order);
+        goto finished;
+    }
+    }
+inherited:
+    RHElementActorNPC::Translate(element, originalCommand);
+finished:
+    return;
 }
 
 // Parked: identical switch operations retain rotating output registers and default argument scheduling.
@@ -773,4 +1016,5 @@ void RHElementActorSoldier::Emit(SBFile &file)
     FUN_004a4aa0(focusPoint, 0, 0);
     InitializeFromMissionStream(file);
     FUN_004a4a40();
+    Translate(0, (RHcommand)0);
 }

@@ -4,6 +4,7 @@
 #include "VMCore.h"
 #include "RHPathFinderCore.h"
 #include "RHSectorBuilding.h"
+#include "RHUnk005fc3b0.h"
 
 class RHActorActionCalls
 {
@@ -160,8 +161,8 @@ public:
     void Erase(RHScriptIter position)
     {
         RHScriptNode *node = position.node;
-        node->previous->next = node->next;
-        node->next->previous = node->previous;
+        node->prev->next = node->next;
+        node->next->prev = node->prev;
         operator delete(node);
         --count;
         dirty = true;
@@ -975,6 +976,262 @@ SBGeoVector2D RHElementActor::FUN_00468ee0(int value) const
     return Position()->FUN_00468f10(value);
 }
 
+// GLOBAL: GAME 0x006777c8
+float g_unk0x006777c8 = 0.03f;
+
+#include "RHGate.h"
+#include "RHSequenceMovementConstruction.h"
+#include "RHSpriteCore.h"
+
+// STUB: GAME 0x00469300
+void RHElementActor::FUN_00469300(RHUnk00588530 *sequence, bool reverse)
+{
+    RHUnk0051aa00 *door = (RHUnk0051aa00 *)sequence->m_7c;
+    m_1a4 = reverse;
+    if (reverse)
+    {
+        unsigned type = RHActorField<unsigned>(this, 4) & 15;
+        if ((char)type == 12)
+            ((RHUnk005fc3b0 &)door->m_20.Unk005fc110(door->m_94)).Unk005fc6a0(1.0f);
+        RHOrder *approach = new RHOrder;
+        approach->m_14 = door->m_94;
+        approach->m_24 = sequence->m_94;
+        ((RHActorTranslationSequenceCalls *)sequence)->FUN_00585970(approach);
+        type = RHActorField<unsigned>(this, 4) & 15;
+        if ((char)type == 12)
+        {
+            RHOrder *duration = new RHOrder;
+            duration->m_24 = 0x132;
+            duration->m_2a = 1;
+            duration->m_float04 = ((RHUnk005fc3b0 &)door->m_94.Unk005fc110(door->m_18)).Unk005fc6a0(1.0f) * g_unk0x006777c8;
+            ((RHActorTranslationSequenceCalls *)sequence)->FUN_00585970(duration);
+        }
+        RHOrder *enter = new RHOrder;
+        enter->m_24 = 0x127;
+        ((RHActorTranslationSequenceCalls *)sequence)->FUN_00585970(enter);
+        RHOrder *cross = new RHOrder;
+        cross->m_14 = door->m_20;
+        cross->m_24 = sequence->m_94;
+        cross->m_2a = 0;
+        ((RHActorTranslationSequenceCalls *)sequence)->FUN_00585970(cross);
+        if (door->m_88 == 2)
+        {
+            RHOrder *finish = new RHOrder;
+            finish->m_14 = door->m_20;
+            finish->m_24 = 0x26;
+            finish->m_29 = 1;
+            ((RHActorTranslationSequenceCalls *)sequence)->FUN_00585970(finish);
+        }
+        RHOrder *leave = new RHOrder;
+        leave->m_24 = 0x127;
+        ((RHActorTranslationSequenceCalls *)sequence)->FUN_00585970(leave);
+    }
+    else
+    {
+        unsigned type = RHActorField<unsigned>(this, 4) & 15;
+        if ((char)type == 12)
+            ((RHUnk005fc3b0 &)door->m_20.Unk005fc110(door->m_94)).Unk005fc6a0(1.0f);
+        RHOrder *approach = new RHOrder;
+        approach->m_14 = door->m_94;
+        approach->m_24 = sequence->m_94;
+        approach->m_2a = 0;
+        ((RHActorTranslationSequenceCalls *)sequence)->FUN_00585970(approach);
+        type = RHActorField<unsigned>(this, 4) & 15;
+        if ((char)type == 12)
+        {
+            RHOrder *duration = new RHOrder;
+            duration->m_24 = 0x132;
+            duration->m_2a = 1;
+            duration->m_float04 = ((RHUnk005fc3b0 &)door->m_94.Unk005fc110(door->m_20)).Unk005fc6a0(1.0f) * g_unk0x006777c8;
+            ((RHActorTranslationSequenceCalls *)sequence)->FUN_00585970(duration);
+        }
+        RHOrder *enter = new RHOrder;
+        enter->m_24 = 0x127;
+        ((RHActorTranslationSequenceCalls *)sequence)->FUN_00585970(enter);
+        RHOrder *cross = new RHOrder;
+        cross->m_14 = door->m_18;
+        cross->m_24 = sequence->m_94;
+        ((RHActorTranslationSequenceCalls *)sequence)->FUN_00585970(cross);
+        RHOrder *leave = new RHOrder;
+        leave->m_24 = 0x127;
+        ((RHActorTranslationSequenceCalls *)sequence)->FUN_00585970(leave);
+    }
+}
+
+// STUB: GAME 0x00469770
+void RHElementActor::FUN_00469770(RHUnk00588530 *sequence, bool first, bool reverse)
+{
+    RHUnk0051aa00 *door = (RHUnk0051aa00 *)sequence->m_7c;
+    m_1a4 = reverse;
+    RHOrder *order;
+    if (first)
+    {
+        if (reverse)
+        {
+            order = new RHOrder;
+            order->m_14 = door->m_94;
+            order->m_24 = 6;
+            unsigned type = RHActorField<unsigned>(this, 4) & 31;
+            if ((char)type == 20)
+            {
+                if (RHActorField<bool>(this, 0xa2c))
+                    order->m_float04 = (float)abs((int)(short)((RHSprite *)Info())->FUN_005bddb0(230));
+                else
+                    order->m_float04 = (float)abs((int)(short)((RHSprite *)Info())->FUN_005bddb0(37));
+            }
+            else
+            {
+                int duration = (short)((RHSprite *)Info())->FUN_005bddb0(37);
+                duration += (short)((RHSprite *)Info())->FUN_005bddb0(13);
+                order->m_float04 = (float)abs(duration);
+            }
+            order->m_29 = 1;
+            ((RHActorTranslationSequenceCalls *)sequence)->FUN_00585970(order);
+            order = new RHOrder;
+            order->m_24 = 50;
+            order->m_29 = 1;
+            ((RHActorTranslationSequenceCalls *)sequence)->FUN_00585970(order);
+            type = RHActorField<unsigned>(this, 4) & 15;
+            if ((char)type == 12)
+            {
+                order = new RHOrder;
+                order->m_24 = 13;
+                order->m_29 = 1;
+                ((RHActorTranslationSequenceCalls *)sequence)->FUN_00585970(order);
+            }
+            order = new RHOrder;
+            order->m_14 = door->m_94;
+            type = RHActorField<unsigned>(this, 4) & 31;
+            order->m_24 = (char)type == 20 && RHActorField<bool>(this, 0xa2c) ? 230 : 37;
+            order->m_29 = 1;
+            order->m_2a = 0;
+            ((RHActorTranslationSequenceCalls *)sequence)->FUN_00585970(order);
+            order = new RHOrder;
+            order->m_24 = 0x127;
+            ((RHActorTranslationSequenceCalls *)sequence)->FUN_00585970(order);
+            order = new RHOrder;
+            order->m_14 = door->m_20;
+            order->m_24 = 38;
+            order->m_29 = 1;
+            order->m_2a = 0;
+            ((RHActorTranslationSequenceCalls *)sequence)->FUN_00585970(order);
+        }
+        else
+        {
+            order = new RHOrder;
+            order->m_14 = door->m_94;
+            order->m_24 = 35;
+            order->m_2a = 0;
+            order->m_float04 = 45.0f;
+            ((RHActorTranslationSequenceCalls *)sequence)->FUN_00585970(order);
+            order = new RHOrder;
+            order->m_14 = door->m_94;
+            unsigned type = RHActorField<unsigned>(this, 4) & 31;
+            order->m_24 = (char)type == 20 && RHActorField<bool>(this, 0xa2c) ? 229 : 36;
+            order->m_2a = 0;
+            ((RHActorTranslationSequenceCalls *)sequence)->FUN_00585970(order);
+            type = RHActorField<unsigned>(this, 4) & 15;
+            if ((char)type == 12)
+            {
+                if (!RHActorField<bool>(door->m_0c, 0xec))
+                {
+                    order = new RHOrder;
+                    order->m_24 = 18;
+                    ((RHActorTranslationSequenceCalls *)sequence)->FUN_00585970(order);
+                }
+                else
+                    ((RHActorTranslationSequenceCalls *)sequence)->V24(16);
+            }
+            order = new RHOrder;
+            order->m_24 = 0x127;
+            ((RHActorTranslationSequenceCalls *)sequence)->FUN_00585970(order);
+            type = RHActorField<unsigned>(this, 4) & 15;
+            if ((char)type == 12 && RHActorField<bool>(door->m_0c, 0xec))
+            {
+                order = new RHOrder;
+                order->m_14 = door->m_18;
+                order->m_24 = 16;
+            }
+            else
+            {
+                order = new RHOrder;
+                order->m_14 = door->m_18;
+                order->m_24 = 6;
+            }
+            ((RHActorTranslationSequenceCalls *)sequence)->FUN_00585970(order);
+            order = new RHOrder;
+            order->m_24 = 0x127;
+            ((RHActorTranslationSequenceCalls *)sequence)->FUN_00585970(order);
+        }
+    }
+    else
+    {
+        if (reverse)
+        {
+            order = new RHOrder;
+            order->m_14 = door->m_94;
+            order->m_24 = 6;
+            order->m_float04 = (float)(short)((RHSprite *)Info())->FUN_005bddb0(34);
+            ((RHActorTranslationSequenceCalls *)sequence)->FUN_00585970(order);
+            order = new RHOrder;
+            order->m_14 = door->m_94;
+            unsigned type = RHActorField<unsigned>(this, 4) & 31;
+            order->m_24 = (char)type == 20 && RHActorField<bool>(this, 0xa2c) ? 227 : 34;
+            order->m_2a = 0;
+            ((RHActorTranslationSequenceCalls *)sequence)->FUN_00585970(order);
+            order = new RHOrder;
+            order->m_24 = 0x127;
+            ((RHActorTranslationSequenceCalls *)sequence)->FUN_00585970(order);
+            order = new RHOrder;
+            order->m_14 = door->m_20;
+            order->m_24 = 35;
+            order->m_2a = 0;
+            ((RHActorTranslationSequenceCalls *)sequence)->FUN_00585970(order);
+            order = new RHOrder;
+            order->m_24 = 0x127;
+            ((RHActorTranslationSequenceCalls *)sequence)->FUN_00585970(order);
+        }
+        else
+        {
+            order = new RHOrder;
+            order->m_14 = door->m_94;
+            order->m_24 = 38;
+            order->m_2a = 0;
+            ((RHActorTranslationSequenceCalls *)sequence)->FUN_00585970(order);
+            order = new RHOrder;
+            order->m_14 = door->m_94;
+            unsigned type = RHActorField<unsigned>(this, 4) & 31;
+            order->m_24 = (char)type == 20 && RHActorField<bool>(this, 0xa2c) ? 232 : 39;
+            order->m_2a = 0;
+            ((RHActorTranslationSequenceCalls *)sequence)->FUN_00585970(order);
+            order = new RHOrder;
+            order->m_24 = 0x127;
+            ((RHActorTranslationSequenceCalls *)sequence)->FUN_00585970(order);
+            type = RHActorField<unsigned>(this, 4) & 15;
+            if ((char)type == 12 && RHActorField<bool>(door->m_0c, 0xec))
+            {
+                ((RHActorTranslationSequenceCalls *)sequence)->V24(16);
+                order = new RHOrder;
+                order->m_24 = 13;
+                ((RHActorTranslationSequenceCalls *)sequence)->FUN_00585970(order);
+                order = new RHOrder;
+                order->m_14 = door->m_18;
+                order->m_24 = 16;
+            }
+            else
+            {
+                order = new RHOrder;
+                order->m_14 = door->m_18;
+                order->m_24 = 6;
+            }
+            ((RHActorTranslationSequenceCalls *)sequence)->FUN_00585970(order);
+            order = new RHOrder;
+            order->m_24 = 0x127;
+            ((RHActorTranslationSequenceCalls *)sequence)->FUN_00585970(order);
+        }
+    }
+}
+
 static void RHActorApplyCrossingFlags(RHElementActor *actor, RHElevationLine *line)
 {
     SBGeoPoint2D &point = RHActorField<SBGeoPoint2D>(actor->Info(), 0x24);
@@ -1554,8 +1811,8 @@ void RHElementActor::CheckForLineCrossing()
                     ((first == candidate->m_04 && second == candidate->m_0c) ||
                      (second == candidate->m_04 && first == candidate->m_0c)))
                 {
-                    other->previous->next = next;
-                    next->previous = other->previous;
+                    other->prev->next = next;
+                    next->prev = other->prev;
                     ::operator delete(other);
                     --lines.Count();
                     RHActorField<unsigned char>(&lines, 0x10) = 1;
@@ -1575,8 +1832,8 @@ void RHElementActor::CheckForLineCrossing()
         RHScriptNode *next = filter->next;
         if (dx * nx + dy * ny == 0.0f)
         {
-            filter->previous->next = next;
-            next->previous = filter->previous;
+            filter->prev->next = next;
+            next->prev = filter->prev;
             ::operator delete(filter);
             --lines.Count();
             RHActorField<unsigned char>(&lines, 0x10) = 1;
@@ -2235,8 +2492,8 @@ void RHUnk004e52a0::FUN_004e52a0()
     {
         RHScriptNode *node = current;
         current = current->next;
-        node->previous->next = node->next;
-        node->next->previous = node->previous;
+        node->prev->next = node->next;
+        node->next->prev = node->prev;
         ::operator delete(node);
         --m_count;
     }
@@ -2318,12 +2575,12 @@ void RHActorTranslationSequenceCalls::FUN_00585970(RHOrder *order)
     else
     {
         RHScriptNode *head = RHActorField<RHScriptNode *>(this, 0x1c);
-        RHScriptNode *previous = head->previous;
+        RHScriptNode *previous = head->prev;
         RHScriptNode *node = (RHScriptNode *)::operator new(sizeof(RHScriptNode));
         node->next = head ? head : node;
-        node->previous = previous ? previous : node;
-        head->previous = node;
-        node->previous->next = node;
+        node->prev = previous ? previous : node;
+        head->prev = node;
+        node->prev->next = node;
         new (&node->data) RHOrder *(order);
         unsigned count = RHActorField<unsigned>(this, 0x20);
         RHActorField<undefined>(this, 0x28) = 1;
@@ -2549,8 +2806,8 @@ void RHElementActor::FUN_0046bbf0()
             RHScriptNode *node = current;
             current = current->next;
             FUN_0048f170(node);
-            node->previous->next = node->next;
-            node->next->previous = node->previous;
+            node->prev->next = node->next;
+            node->next->prev = node->prev;
             ::operator delete(node);
             --list.m_count;
         }
@@ -2606,6 +2863,8 @@ void RHElementActor::FUN_0046ea20()
 
 void RHElementActor::Emit(SBFile &file, std::string &name)
 {
+    FUN_00469300(0, false);
+    FUN_00469770(0, false, false);
     FUN_0046a900(0, false, false);
     FUN_0046ea20();
     FUN_00464150();

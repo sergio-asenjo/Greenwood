@@ -122,35 +122,7 @@ public:
     }
 };
 
-class __declspec(novtable) RHUnk005214b0
-{
-public:
-    void *FUN_005214d0(unsigned flags);
-    RHUnk005214b0();
-    virtual ~RHUnk005214b0(); // vtable+0x00
-    char m_04[0x10];
-    int m_14;
-    char m_18[8];
-    unsigned short m_20;
-};
-
-// VTABLE: GAME 0x006790f8
-// SIZE 0x44
-class RHMobileUnk0051fd10 : public RHUnk005214b0
-{
-public:
-    RHMobileUnk0051fd10(float first, float second);
-    virtual ~RHMobileUnk0051fd10(); // vtable+0x00
-    virtual void FUN_00520480(); // vtable+0x04
-    void FUN_0051fdc0();
-    bool FUN_0051fea0(const SBGeoPoint2D &point, float &distance);
-    float m_24; // 0x24
-    float m_28; // 0x28
-    float m_2c; // 0x2c
-    float m_30; // 0x30
-    RHUnk005fc3b0 m_34; // 0x34
-    RHUnk005fc3b0 m_3c; // 0x3c
-};
+#include "RHSpatialLines.h"
 
 #include "RHRepulsivePoint.h"
 
@@ -458,6 +430,8 @@ struct RHMobileSoundNode
 #include "SBGeoBoundingBox2DCore.h"
 #include "RHPositionInterface.h"
 
+#ifndef RHELEMENTMOBILEBASE_VIEW
+#define RHELEMENTMOBILEBASE_VIEW
 class RHMobileElementBase
 {
 public:
@@ -505,6 +479,7 @@ public:
     RHMobileUnk00611360 m_d4; // 0xd4
     undefined m_f8[4]; // 0xf8
 };
+#endif
 
 // VTABLE: GAME 0x00678508
 // SIZE 0x104

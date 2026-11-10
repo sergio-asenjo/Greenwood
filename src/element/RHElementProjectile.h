@@ -162,21 +162,20 @@ struct RHProjectileList
     }
 };
 
-class RHUnkPathGeometry
-{
-public:
-    bool Unk004fbec0(SBFile &file, void *&value);
-};
+#include "RHPathGeometryCalls.h"
 
 extern RHEngine *g_pEngine;
 void RHSerializeName(SBFile &file, const char *name);
 
 struct RHProjectileVector;
 
+class SBGeoBoundingBox2D;
+
 class RHElementProjectile : public RHElementObject
 {
 public:
     virtual bool Serialize(SBFile &file);
+    void *Refresh(unsigned long surface, float value, const SBGeoBoundingBox2D &box, unsigned long flags);
     void Emit(SBFile &file);
     void FUN_004b8230();
     void *FUN_004b8000() const;

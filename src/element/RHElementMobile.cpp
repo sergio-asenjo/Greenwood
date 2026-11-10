@@ -2,6 +2,7 @@
 #include "RHElementMobile.h"
 #include "RHUnk0051f0f0.h"
 #include "RHAmbushPoint.h"
+#include "RHSoundSourceCore.h"
 #include <stdlib.h>
 
 extern "C" double __cdecl fabs(double);
@@ -17,6 +18,14 @@ DECOMP_SIZE_ASSERT(SBGeoBoundingBox2D, 0x14)
 DECOMP_SIZE_ASSERT(RHMobileBase004a8130, 0xfc)
 DECOMP_SIZE_ASSERT(RHUnk004aac40, 0x104)
 DECOMP_SIZE_ASSERT(RHElementMobile, 0x260)
+DECOMP_STATIC_ASSERT(offsetof(RHElementMobile, m_200) == 0x200)
+DECOMP_STATIC_ASSERT(offsetof(RHElementMobile, m_23c) == 0x23c)
+DECOMP_STATIC_ASSERT(offsetof(RHElementMobile, m_240) == 0x240)
+DECOMP_STATIC_ASSERT(offsetof(RHElementMobile, m_244) == 0x244)
+DECOMP_SIZE_ASSERT(RHSoundSource, 0x50)
+DECOMP_STATIC_ASSERT(offsetof(RHSoundSource, m_10) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHSoundSourceFields, m_0c) == 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(RHSoundSourcePoints, m_changed) == 0x14)
 DECOMP_SIZE_ASSERT(RHUnk004af060, 0x260)
 DECOMP_SIZE_ASSERT(RHMobileLineTransientList, 0x24)
 DECOMP_SIZE_ASSERT(RHMobileLineTransientList::Node, 0x0c)
@@ -928,6 +937,45 @@ void RHElementMobile::FUN_004af210(RHMobileEvent *event)
     event->v3(0, true);
 }
 
+// Parked: field-store reload registers rotate where native reuses EAX.
+// STUB: GAME 0x004af2a0
+void RHElementMobile::InitializeSound()
+{
+    if (m_200)
+    {
+        m_23c = new RHSoundSource;
+        m_23c->m_10.m_0c.Add(SBGeoPoint2D(0.0f, 0.0f));
+        m_23c->m_0c = 0x75;
+        m_23c->m_08 = 0;
+        m_23c->m_10.m_02 = 0x78;
+        m_23c->m_10.m_08 = 0xff;
+        m_23c->m_10.m_04 = 0x320;
+        m_23c->m_10.m_0a = 0;
+        m_23c->m_10.m_06 = 0;
+        ((RHSound *)g_unk0x006c1070)->FUN_005a8880(m_23c);
+        m_240 = new RHSoundSource;
+        m_240->m_10.m_0c.InsertLast(SBGeoPoint2D(0.0f, 0.0f));
+        m_240->m_0c = 0x75;
+        m_240->m_08 = 0;
+        m_240->m_10.m_02 = 0x78;
+        m_240->m_10.m_08 = 0xff;
+        m_240->m_10.m_04 = 0x320;
+        m_240->m_10.m_0a = 0;
+        m_240->m_10.m_06 = 0;
+        ((RHSound *)g_unk0x006c1070)->FUN_005a8880(m_240);
+        m_244 = new RHSoundSource;
+        m_244->m_10.m_0c.InsertAt(m_244->m_10.m_0c.End(), SBGeoPoint2D(0.0f, 0.0f));
+        m_244->m_0c = 0x74;
+        m_244->m_08 = 1;
+        m_244->m_10.m_02 = 0x78;
+        m_244->m_10.m_08 = 0xff;
+        m_244->m_10.m_04 = 0x280;
+        m_244->m_10.m_0a = 0;
+        m_244->m_10.m_06 = 0;
+        ((RHSound *)g_unk0x006c1070)->FUN_005a8880(m_244);
+    }
+}
+
 // Parked: list cleanup, registers, and local scheduling remain non-exact.
 // STUB: GAME 0x004af540
 void RHElementMobile::CheckForLineCrossing()
@@ -1226,27 +1274,9 @@ void RHMobileGrid::FUN_004ea7b0(RHMobilePointerList &output, RHMobilePolygon &po
     }
 }
 
-class RHUnk0051fc10
-{
-public:
-    RHUnk0051fc10();
-    ~RHUnk0051fc10();
-    void *FUN_0051fc40(unsigned flags);
-    char m_00[0x14];
-    int m_14;
-    char m_18[8];
-    char m_20;
-    char m_21[3];
-    int m_24;
-    int m_28;
-    int m_2c;
-    int m_30;
-};
-
 // FUNCTION: GAME 0x0051fc10
 RHUnk0051fc10::RHUnk0051fc10()
 {
-    ((RHUnk0051f0f0 *)this)->RHUnk0051f0f0::RHUnk0051f0f0();
     *(unsigned *)this = 0x6790f0;
     m_20 = 0;
     m_28 = 0;
@@ -1258,7 +1288,7 @@ RHUnk0051fc10::RHUnk0051fc10()
 // FUNCTION: GAME 0x0051fc40
 void *RHUnk0051fc10::FUN_0051fc40(unsigned flags)
 {
-    this->~RHUnk0051fc10();
+    this->RHUnk0051fc10::~RHUnk0051fc10();
     if (flags & 1)
         operator delete(this);
     return this;
@@ -1270,7 +1300,6 @@ RHUnk0051fc10::~RHUnk0051fc10()
     *(unsigned *)this = 0x6790f0;
     if (m_20)
         operator delete((void *)m_28);
-    ((RHUnk0051f0f0 *)this)->RHUnk0051f0f0::~RHUnk0051f0f0();
 }
 
 // SYNTHETIC: GAME 0x0051fc90
@@ -1333,7 +1362,6 @@ void RHMobileUnk00520c50::FUN_00520c50(float first, float second)
 // FUNCTION: GAME 0x005214b0
 RHUnk005214b0::RHUnk005214b0()
 {
-    ((RHUnk0051f0f0 *)this)->RHUnk0051f0f0::RHUnk0051f0f0();
     int value = m_14;
     *(unsigned *)this = 0x679120;
     value |= 2;
@@ -1354,24 +1382,11 @@ void *RHUnk005214b0::FUN_005214d0(unsigned flags)
 RHUnk005214b0::~RHUnk005214b0()
 {
     *(unsigned *)this = 0x679120;
-    ((RHUnk0051f0f0 *)this)->RHUnk0051f0f0::~RHUnk0051f0f0();
 }
-
-class RHUnk00521500
-{
-public:
-    void *FUN_00521520(unsigned flags);
-    RHUnk00521500();
-    ~RHUnk00521500();
-    char m_00[0x14];
-    int m_14;
-    char m_18;
-};
 
 // FUNCTION: GAME 0x00521500
 RHUnk00521500::RHUnk00521500()
 {
-    ((RHUnk0051f0f0 *)this)->RHUnk0051f0f0::RHUnk0051f0f0();
     *(unsigned *)this = 0x679128;
     m_14 = 0x40;
     m_18 = 1;
@@ -1380,7 +1395,7 @@ RHUnk00521500::RHUnk00521500()
 // FUNCTION: GAME 0x00521520
 void *RHUnk00521500::FUN_00521520(unsigned flags)
 {
-    this->~RHUnk00521500();
+    this->RHUnk00521500::~RHUnk00521500();
     if (flags & 1)
         operator delete(this);
     return this;
@@ -1390,7 +1405,6 @@ void *RHUnk00521500::FUN_00521520(unsigned flags)
 RHUnk00521500::~RHUnk00521500()
 {
     *(unsigned *)this = 0x679128;
-    ((RHUnk0051f0f0 *)this)->RHUnk0051f0f0::~RHUnk0051f0f0();
 }
 
 DECOMP_SIZE_ASSERT(RHUnk00521550, 0x38)

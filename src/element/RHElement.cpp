@@ -7,6 +7,7 @@ DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 DECOMP_SIZE_ASSERT(RHBonusInfoBase, 0xfc)
 DECOMP_SIZE_ASSERT(RHUnk005df510, 0x0c)
 DECOMP_SIZE_ASSERT(RHElevationLine, 0x2c)
+DECOMP_SIZE_ASSERT(RHElementArea, 0x64)
 DECOMP_SIZE_ASSERT(RHElementAreaNode, 0x0c)
 DECOMP_SIZE_ASSERT(RHElementAreaIter, 0x04)
 DECOMP_SIZE_ASSERT(RHElementAreaListBase, 0x0c)
@@ -208,7 +209,7 @@ void RHElement::CrossElevationLine(RHElevationLine *line)
                  line->m_04, line->m_08, line->m_0c, line->m_10);
         const SBGeoPoint2D &point = *(SBGeoPoint2D *)((char *)m_50 + 0x24);
         RHElementGrid *grid = *(RHElementGrid **)((char *)this + 0x64);
-        grid->FUN_004e89d0(&areas, point.CellY() * grid->m_3e98 + point.CellX(), 0x20);
+        grid->FUN_004e89d0(&areas, (short)((short)point.m_y >> 6) * grid->m_3e98 + (short)((short)point.m_x >> 6), 0x20);
         for (unsigned count = (unsigned short)areas.Count(), index = 0; count != 0; ++index, --count)
         {
             areas.GoTo(index);
@@ -239,7 +240,7 @@ void RHElement::CrossElevationLine(RHElevationLine *line)
         {
             SBGeoPoint2D point = ((SBGeoPoint2D *)((char *)m_50 + 0x24))->Unk005fc190(operator*(2.0f, *(SBGeoVector2D *)((char *)m_50 + 0x70)));
             RHElementGrid *grid = *(RHElementGrid **)((char *)this + 0x64);
-            grid->FUN_004e89d0(&areas, point.CellY() * grid->m_3e98 + point.CellX(), 0x20);
+            grid->FUN_004e89d0(&areas, (short)((short)point.m_y >> 6) * grid->m_3e98 + (short)((short)point.m_x >> 6), 0x20);
             for (unsigned count = (unsigned short)areas.m_08, index = 0; count != 0; ++index, --count)
             {
                 areas.GoTo(index);
@@ -366,7 +367,7 @@ void RHBonusInfoBase::FUN_0055fa70(void *area)
         m_ec = 0;
         m_f8 = ((RHElementGrid *)g_unk0x6c0a9c)->m_4188;
         RHElementGrid *grid = (RHElementGrid *)g_unk0x6c0a9c;
-        grid->FUN_004e89d0(&areas, (grid->m_3e9a * m_da + m_20.CellY()) * grid->m_3e98 + m_20.CellX(), 0x10);
+        grid->FUN_004e89d0(&areas, (grid->m_3e9a * m_da + (short)((short)m_20.m_y >> 6)) * grid->m_3e98 + (short)((short)m_20.m_x >> 6), 0x10);
         unsigned short count = (unsigned short)areas.Count();
         for (unsigned short index = 0; index < count; ++index)
         {
@@ -388,8 +389,8 @@ void RHBonusInfoBase::FUN_0055fa70(void *area)
 SBGeoVector2D operator*(float factor, const SBGeoVector2D &point)
 {
     SBGeoVector2D result;
-    result.m_0 = factor * point.m_0;
-    result.m_4 = factor * point.m_4;
+    result.m_x = factor * point.m_x;
+    result.m_y = factor * point.m_y;
     return result;
 }
 
@@ -404,48 +405,48 @@ bool RHElementAreaShape::FUN_0060c660(const SBGeoPoint2D &point) const
 {
     SBGeoPoint2D previous;
     SBGeoPoint2D current;
-    float x = point.m_0;
-    float y = point.m_4;
+    float x = point.m_x;
+    float y = point.m_y;
     bool single = m_24 == 3;
     unsigned count = FUN_0060ce80();
     if (count == 0)
         return false;
     --count;
     previous = FUN_0060cef0(count);
-    bool below = previous.m_4 < y;
-    bool above = previous.m_4 > y;
-    float lastX = previous.m_0;
-    float lastY = previous.m_4;
+    bool below = previous.m_y < y;
+    bool above = previous.m_y > y;
+    float lastX = previous.m_x;
+    float lastY = previous.m_y;
     bool inside = false;
     for (unsigned index = 0; index <= count; ++index)
     {
         current = FUN_0060cef0(index);
         float oldX = lastX;
         float oldY = lastY;
-        lastX = current.m_0;
-        lastY = current.m_4;
+        lastX = current.m_x;
+        lastY = current.m_y;
         bool oldRight;
         bool newRight;
         float first;
         float second;
         if (below)
         {
-            if (current.m_4 == y)
+            if (current.m_y == y)
             {
                 below = false;
-                if (current.m_0 == x)
+                if (current.m_x == x)
                     return true;
             }
-            else if (current.m_4 > y)
+            else if (current.m_y > y)
             {
                 oldRight = oldX >= x;
-                newRight = current.m_0 >= x;
+                newRight = current.m_x >= x;
                 if (oldRight && newRight)
                     goto upwardCrossing;
                 if (oldRight || newRight)
                 {
-                    first = (current.m_0 - oldX) * (y - oldY);
-                    second = (current.m_4 - oldY) * (x - oldX);
+                    first = (current.m_x - oldX) * (y - oldY);
+                    second = (current.m_y - oldY) * (x - oldX);
                     if (!((double)first < (double)second))
                     {
 upwardCrossing:
@@ -456,34 +457,34 @@ upwardCrossing:
                 }
                 below = false;
                 above = true;
-                if ((oldX == x && current.m_0 == x) || (oldRight != newRight && first == second))
+                if ((oldX == x && current.m_x == x) || (oldRight != newRight && first == second))
                     return true;
             }
         }
         else if (above)
         {
-            if (current.m_4 == y)
+            if (current.m_y == y)
             {
-                if (current.m_0 >= x)
+                if (current.m_x >= x)
                 {
                     if (single && inside)
                         return false;
                     inside = !inside;
                 }
                 above = false;
-                if (current.m_0 == x)
+                if (current.m_x == x)
                     return true;
             }
-            else if (current.m_4 < y)
+            else if (current.m_y < y)
             {
                 oldRight = oldX >= x;
-                newRight = current.m_0 >= x;
+                newRight = current.m_x >= x;
                 if (oldRight && newRight)
                     goto downwardCrossing;
                 if (oldRight || newRight)
                 {
-                    first = (current.m_0 - oldX) * (y - oldY);
-                    second = (current.m_4 - oldY) * (x - oldX);
+                    first = (current.m_x - oldX) * (y - oldY);
+                    second = (current.m_y - oldY) * (x - oldX);
                     if (!((double)first > (double)second))
                     {
 downwardCrossing:
@@ -494,11 +495,11 @@ downwardCrossing:
                 }
                 above = false;
                 below = true;
-                if ((oldX == x && current.m_0 == x) || (oldRight != newRight && first == second))
+                if ((oldX == x && current.m_x == x) || (oldRight != newRight && first == second))
                     return true;
             }
         }
-        else if (current.m_4 > y)
+        else if (current.m_y > y)
         {
             above = true;
             below = false;
@@ -509,12 +510,12 @@ downwardCrossing:
                 inside = !inside;
             }
         }
-        else if (current.m_4 < y)
+        else if (current.m_y < y)
         {
             above = false;
             below = true;
         }
-        else if ((oldX <= x && current.m_0 >= x) || (oldX >= x && current.m_0 <= x))
+        else if ((oldX <= x && current.m_x >= x) || (oldX >= x && current.m_x <= x))
             return true;
         previous = current;
     }

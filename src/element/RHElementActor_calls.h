@@ -14,24 +14,7 @@
 
 #include "RHTripleVectorCalls.h"
 
-struct RHScriptNode
-{
-    RHScriptNode *next;
-    RHScriptNode *previous;
-    void *data;
-};
-struct RHScriptIter
-{
-    RHScriptNode *node;
-    RHScriptIter(RHScriptNode *value) : node(value) {}
-    RHScriptIter operator++(int);
-};
-class RHUnk0046eb30
-{
-public:
-    RHScriptIter FUN_0046eb80();
-    RHScriptIter erase(RHScriptIter position);
-};
+#include "RHScriptListCore.h"
 
 #include "RHTransientPointerList.h"
 typedef RHTransientPointerList<void> RHActorTransientList;
@@ -171,13 +154,7 @@ public:
 
 #include "RHElementAreaShape.h"
 
-class RHPatch
-{
-public:
-    void Enter(RHElementActor *actor);
-    void Leave(RHElementActor *actor);
-    void FUN_00550150();
-};
+#include "RHPatchClass.h"
 
 #include "RHSectorScript.h"
 
@@ -193,11 +170,7 @@ enum RHActorUnkType { RHActorUnkType12 = 12 };
 
 #include "RHActorCancelCalls.h"
 
-class RHUnk0058a3d0
-{
-public:
-    void *Unk(void *context, int value, void *sequence);
-};
+#include "RHSequenceLaunchCalls.h"
 
 
 extern char g_unk0x6c0691;

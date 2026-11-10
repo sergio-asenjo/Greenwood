@@ -43,9 +43,15 @@ char RHElementArrow::FUN_004a6640()
 
 #include "RHUnk00613e90.h"
 #include "RHUnk005fc3b0.h"
+#include "RHEngineWidenedCalls.h"
 
 // GLOBAL: GAME 0x00678318
 double g_unk0x00678318 = 57.295777918682042;
+
+// GLOBAL: GAME 0x00678320
+double g_unk0x00678320 = 0.0666666666667;
+
+extern double g_unk0x006774b8;
 
 struct RHArrowTrajectoryNode
 {
@@ -296,6 +302,61 @@ void RHElementArrow::FUN_004a6b80(void *, bool flag)
     ((RHArrowMotionCalls *)this)->V28();
 }
 
+// FUNCTION: GAME 0x004a6cb0
+void *RHElementArrow::Refresh(unsigned long surface, float value, const SBGeoBoundingBox2D &box, unsigned long flags)
+{
+    if (*(unsigned char *)((char *)this + 0x12) == 1)
+    {
+        if (*(int *)((char *)this + 0x140) <= 0)
+        {
+            void *sprite = *(void **)((char *)this + 0x50);
+            if (*(float *)((char *)sprite + 0x2c) == *(float *)((char *)sprite + 0x10) &&
+                *(float *)((char *)sprite + 0x30) == *(float *)((char *)sprite + 0x14) &&
+                *(float *)((char *)sprite + 0x34) == *(float *)((char *)sprite + 0x18))
+            {
+                *(unsigned char *)((char *)this + 0x12) = 0;
+                goto refresh;
+            }
+        }
+
+        if (m_161)
+        {
+            void *sprite = *(void **)((char *)this + 0x50);
+            unsigned short heading = m_162;
+            ((RHEngineWidenedCalls *)sprite)->FUN_005bd450();
+            *(unsigned short *)((char *)sprite + 0x184) = heading;
+            int frame = rand() % 3 + 3;
+            sprite = *(void **)((char *)this + 0x50);
+            heading = m_162;
+            ((RHEngineWidenedCalls *)sprite)->FUN_005bd450();
+            *(unsigned short *)((char *)sprite + 0x184) = heading;
+            *(unsigned short *)((char *)sprite + 0x186) = (unsigned short)frame;
+            m_162 = (m_162 + 14) % 16;
+        }
+        else
+        {
+            unsigned char heading;
+            short pitch;
+            GetOrientations(heading, pitch);
+            void *sprite = *(void **)((char *)this + 0x50);
+            unsigned short result = heading;
+            ((RHEngineWidenedCalls *)sprite)->FUN_005bd450();
+            *(unsigned short *)((char *)sprite + 0x184) = result;
+            short frame = (short)((double)pitch * g_unk0x00678320 + g_unk0x006774b8) + 4;
+            sprite = *(void **)((char *)this + 0x50);
+            result = heading;
+            ((RHEngineWidenedCalls *)sprite)->FUN_005bd450();
+            *(unsigned short *)((char *)sprite + 0x184) = result;
+            *(unsigned short *)((char *)sprite + 0x186) = (unsigned short)frame;
+        }
+
+    refresh:
+        return RHElementProjectile::Refresh(surface, value, box, flags);
+    }
+
+    return 0;
+}
+
 // FUNCTION: GAME 0x004a6e10
 bool RHElementArrow::Serialize(SBFile &file)
 {
@@ -420,4 +481,5 @@ int RHElementArrow::FUN_004a6ff0()
 void RHElementArrow::Emit(SBFile &file)
 {
     Serialize(file);
+    Refresh(0, 0.0f, *(const SBGeoBoundingBox2D *)0, 0);
 }

@@ -8,11 +8,14 @@
 #include "RHSpriteCore.h"
 #include "sbgeo_00610600.h"
 
+#ifndef RHUNK_FXDRAW_VIEW
+#define RHUNK_FXDRAW_VIEW
 class RHUnkFXDraw
 {
 public:
     unsigned long Unk005e4ed0(unsigned short, unsigned short, unsigned long, bool);
 };
+#endif
 
 #include "SBDrawManagerCore.h"
 
@@ -37,6 +40,7 @@ extern RHUnkSectorGlobal *g_unk0x6c0a9c;
 class RHElementFX : public RHElement
 {
 public:
+    void FUN_004a9990();
     void RestoreBackground();
     void InitializeBackgroundRestoration();
     void InitializeFromProtoStream(SBFile &file);

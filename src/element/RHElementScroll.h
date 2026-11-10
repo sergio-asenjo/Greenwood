@@ -5,6 +5,8 @@
 #include "Decomp.h"
 #include <string>
 
+#ifndef RHELEMENTOBJECT_VIEW
+#define RHELEMENTOBJECT_VIEW
 // SIZE 0x100
 class RHElementObject
 {
@@ -16,6 +18,7 @@ public:
     RHBonusInfo *m_50; // 0x50
     undefined m_pad54[0xac]; // 0x54
 };
+#endif
 
 #include "RHUnkSectorScript.h"
 

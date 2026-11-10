@@ -52,30 +52,7 @@ public:
 };
 
 
-// VTABLE: GAME 0x00679bc8
-// SIZE 0x3c
-class RHOrder
-{
-public:
-    RHOrder();
-    RHOrder(RHOrder &);
-    virtual ~RHOrder(); // vtable+0x00
-    undefined4 m_04; // 0x04
-    RHUnk00613e90 m_08; // 0x08
-    SBGeoPoint2D m_14; // 0x14
-    SBGeoVector2D m_1c; // 0x1c
-    int m_24; // 0x24
-    undefined m_28; // 0x28
-    undefined m_29; // 0x29
-    undefined m_2a; // 0x2a
-    undefined m_2b; // 0x2b
-    undefined m_2c; // 0x2c
-    undefined m_2d; // 0x2d
-    undefined m_2e[2]; // 0x2e
-    void *m_30; // 0x30
-    int m_34; // 0x34
-    void *m_38; // 0x38
-};
+#include "RHOrderCore.h"
 struct RHSpriteOrderNode
 {
     RHSpriteOrderNode *next;

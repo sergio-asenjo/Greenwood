@@ -18,6 +18,7 @@ class RHActorTranslationSequenceCalls;
 class RHBonusInfo;
 class RHBonusInfoBase;
 class RHActorGridCalls;
+class RHUnk00588530;
 
 class RHActorScriptBase : public RHUnkSectorScript
 {
@@ -126,6 +127,8 @@ public:
     void FUN_0046bcb0(int value);
     const SBGeoPoint2D &FUN_004679b0() const;
     SBGeoVector2D FUN_00468ee0(int value) const;
+    void FUN_00469300(RHUnk00588530 *sequence, bool reverse);
+    void FUN_00469770(RHUnk00588530 *sequence, bool first, bool reverse);
     void FUN_00478c20(RHUnk00613e90 &point, int posture);
     void FUN_00478960(RHUnk00613e90 &point);
     void FUN_00478ae0(RHUnk00613e90 &point);

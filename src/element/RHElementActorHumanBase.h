@@ -8,6 +8,7 @@ class SBFile;
 class RHSequenceElement;
 class RHActorTranslationSequenceCalls;
 class RHUnk00613e90;
+class SBGeoPoint2D;
 
 class RHElementActor
 {
@@ -18,6 +19,8 @@ public:
     void ExecuteImmediately(RHSequenceElement *element);
     void GetTransitionFlags(RHSequenceElement *element, unsigned long &first, unsigned long &second, unsigned long &third);
     void FUN_0046bcb0(int value);
+    void FUN_0046bb80();
+    SBGeoPoint2D FUN_00462920();
     void FUN_00462940(int value);
     void FUN_00468f40(void *value);
     int FUN_0046e960();

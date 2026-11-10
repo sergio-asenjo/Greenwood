@@ -1,16 +1,23 @@
 #ifndef RHELEMENTTARGET_H
 #define RHELEMENTTARGET_H
 
+#include "RHElementMobileBaseView.h"
+#include "RHScriptCore.h"
+#include "SBSimpleVirtualMachine.h"
+#include "VMCoreCustom.h"
 #include "RHElementScroll.h"
 #include <vector>
 
 class RHMobileUnk006100e0;
 
+#ifndef RHUNK_TARGET_POINTS_DEFINED
+#define RHUNK_TARGET_POINTS_DEFINED
 class RHUnkTargetPoints
 {
 public:
     void FUN_00611100(const SBGeoPoint2D &point);
 };
+#endif
 
 #include "RHTargetResourceCalls.h"
 
@@ -50,33 +57,43 @@ public:
     int m_64;
 };
 
-class RHElementTarget
+class __declspec(novtable) RHElementTarget : public RHMobileBase004a8130, public VMCoreCustom
 {
 public:
+    RHElementTarget();
+    virtual ~RHElementTarget();
+    RHElementTarget *FUN_004bad60(char flags);
     void InitializeFromMissionStream(SBFile &file);
+    bool Serialize(SBFile &file);
     bool FUN_004bbf80();
     int FUN_004baf50(void *actor);
     int FUN_004baff0(void *actor);
     int FUN_004bb0a0(void *actor);
     bool FUN_004bb240(void *point, void *pc, int focus) const;
+    bool FUN_004bb3a0(void *point, unsigned flags, RHElementActorPC *actor);
     void FUN_004bae60(RHTargetSequenceCalls *sequence, int (RHUnkTargetScriptRef::*callback)(int));
     bool FUN_004bc1d0(RHTargetSequenceCalls *sequence);
     void FUN_004bc3d0(int activator);
     void Emit(SBFile &file);
-    RHUnkTargetSprite *&Info() { return *(RHUnkTargetSprite **)(m_data + 0x50); }
-    RHUnkFXDraw *&Draw() { return *(RHUnkFXDraw **)(m_data + 0x60); }
-    RHBonusGlobalView *&Global() { return *(RHBonusGlobalView **)(m_data + 0x64); }
-    char m_data[0x16c]; // +0x50 sprite, +0x54/+0x58 surfaces, +0x60 draw, +0x64 registry
+    RHUnkTargetSprite *&Info() { return *(RHUnkTargetSprite **)((char *)this + 0x50); }
+    RHUnkFXDraw *&Draw() { return *(RHUnkFXDraw **)((char *)this + 0x60); }
+    RHBonusGlobalView *&Global() { return *(RHBonusGlobalView **)((char *)this + 0x64); }
+    VMCore *m_15c;
+    int m_160;
+    int m_164;
+    unsigned m_168;
     std::vector<RHMobileUnk006100e0 *> m_16c;
     char m_17c[0x10];
 };
 
-#define RHElementTarget_m_a8 (*(int *)(m_data + 0xa8))
-#define RHElementTarget_m_d4 (*(RHUnkTargetPoints *)(m_data + 0xd4))
-#define RHElementTarget_m_f8 (*(float *)(m_data + 0xf8))
-#define RHElementTarget_m_fc (*(RHUnkSectorScript *)(m_data + 0xfc))
-#define RHElementTarget_m_154 (*(char *)(m_data + 0x154))
-#define RHElementTarget_m_15c (*(RHUnkSectorScript **)(m_data + 0x15c))
-#define RHElementTarget_m_168 (*(unsigned *)(m_data + 0x168))
+#define RHElementTarget_m_a8 (*(int *)((char *)this + 0xa8))
+#define RHElementTarget_m_d4 (*(RHUnkTargetPoints *)((char *)this + 0xd4))
+#define RHElementTarget_m_f8 (*(float *)((char *)this + 0xf8))
+#define RHElementTarget_m_fc (*(RHUnkSectorScript *)((char *)this + 0xfc))
+#define RHElementTarget_m_154 (*(char *)((char *)this + 0x154))
+#define RHElementTarget_m_160 (*(int *)((char *)this + 0x160))
+#define RHElementTarget_m_164 (*(int *)((char *)this + 0x164))
+#define RHElementTarget_m_15c (*(RHUnkSectorScript **)((char *)this + 0x15c))
+#define RHElementTarget_m_168 (*(unsigned *)((char *)this + 0x168))
 
 #endif

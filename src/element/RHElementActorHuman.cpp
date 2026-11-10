@@ -1501,11 +1501,6 @@ unsigned short RHHumanWeaponCalls::FUN_005c1d50(int)
     return 0;
 }
 
-bool RHUnkHumanPositionProvider::FUN_005b8240(void *, void *)
-{
-    return false;
-}
-
 int RHUnkHumanPositionProvider::FUN_005b8050(void *, void *, int, int)
 {
     return 0;
@@ -1598,7 +1593,7 @@ int RHElementActorHuman::FUN_00480e90(void *first, void *second, int weaponData)
         FUN_0047f520(result, weaponData);
         break;
     }
-    if (((RHUnkHumanPositionProvider *)RHActorField<void *>(this, 0x50))->FUN_005b8240(first, second) == true &&
+    if (RHActorField<RHSprite *>(this, 0x50)->IsActionDone((RHOrder *)first, (int)second) == true &&
         ((direction == 0 && m_234 < m_238) || (direction == 1 && m_234 > m_238)))
     {
         float candidate = m_234;
@@ -1624,7 +1619,7 @@ int RHElementActorHuman::FUN_00480e90(void *first, void *second, int weaponData)
 // FUNCTION: GAME 0x00481050
 int RHElementActorHuman::FUN_00481050(void *first, void *second, int weaponData)
 {
-    if (!((RHUnkHumanPositionProvider *)RHActorField<void *>(this, 0x50))->FUN_005b8240(first, second))
+    if (!RHActorField<RHSprite *>(this, 0x50)->IsActionDone((RHOrder *)first, (int)second))
         return RHActorField<RHSprite *>(this, 0x50)->PerformAction((RHOrder *)first, (int)second, 0, false);
     int direction = RHActorField<RHHumanWeaponCalls *>(this, 0x25c)->FUN_005c1d70(weaponData);
     unsigned short heading = FUN_005fcdb0(m_234);
@@ -1687,7 +1682,7 @@ int RHElementActorHuman::FUN_00481d40(void *first, void *second)
     }
     int result;
     short &delay = *(short *)((char *)this + 0x1cc);
-    if (!((RHUnkHumanPositionProvider *)RHActorField<void *>(this, 0x50))->FUN_005b8240(first, second))
+    if (!RHActorField<RHSprite *>(this, 0x50)->IsActionDone((RHOrder *)first, (int)second))
     {
         result = ((RHSprite *)RHActorField<void *>(this, 0x50))->PerformAction((RHOrder *)first, (int)second, 0, false);
         delay = delay - 5 > 0 ? delay - 5 : 0;
