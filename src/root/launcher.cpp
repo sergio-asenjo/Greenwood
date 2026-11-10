@@ -4,6 +4,7 @@
 #include "SBDrawManager.h"
 #include "RHGameInputTranslator.h"
 #include "RHGameActionCalls.h"
+#include "RHSoundCore.h"
 #include "RHUnk005ef320WindowView.h"
 #include "Decomp.h"
 
@@ -63,7 +64,7 @@ LRESULT CALLBACK FUN_004094f0(HWND window, UINT message, WPARAM first, LPARAM se
                 input->FUN_005f9ea0(0);
                 ShowCursor(1);
                 if (g_unk0x006c1070)
-                    ((RHGameActionCalls *)g_unk0x006c1070)->FUN_005a7b40(0);
+                    ((RHSound *)g_unk0x006c1070)->FUN_005a7b40(0);
             }
             else if (g_unk0x006a6d27 == 0 || IsIconic(((RHUnk005ef320WindowView *)draw)->GetWindow()))
             {
@@ -77,7 +78,7 @@ LRESULT CALLBACK FUN_004094f0(HWND window, UINT message, WPARAM first, LPARAM se
                 if (RHGameInputTranslator::mpInstance)
                     RHGameInputTranslator::mpInstance->ResetState();
                 if (g_unk0x006c1070)
-                    ((RHGameActionCalls *)g_unk0x006c1070)->FUN_005a7b40(1);
+                    ((RHSound *)g_unk0x006c1070)->FUN_005a7b40(1);
                 while (ShowCursor(0) >= 0) {}
             }
         }
