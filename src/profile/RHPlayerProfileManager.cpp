@@ -312,15 +312,17 @@ inline void RHPlayerProfileList::RemoveAll()
     Clear();
 }
 
+inline void RHPlayerProfileList::Destroy()
+{
+    for (m_current = begin(); m_current != end(); m_current++)
+        if (*m_current)
+            delete *m_current;
+    ClearNodes();
+}
+
 inline RHPlayerProfileList::~RHPlayerProfileList()
 {
-    m_current = begin();
-    while (m_current != end())
-    {
-        delete *m_current;
-        ++m_current;
-    }
-    erase(begin(), end());
+    Destroy();
 }
 
 // STUB: GAME 0x0055d510
