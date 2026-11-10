@@ -66,6 +66,18 @@ public:
         else if (count < points.size())
             points.erase(points.begin() + count, points.end());
     }
+    void Insert(SBGeoPoint2D *position, const SBGeoPoint2D &value)
+    {
+        typedef std::vector<SBGeoPoint2D> Points;
+        SBGeoPoint2D *(Points::*insert)(SBGeoPoint2D *, const SBGeoPoint2D &) = &Points::insert;
+        (((Points *)this)->*insert)(position, value);
+    }
+    void Insert(SBGeoPoint2D *position, unsigned int count, const SBGeoPoint2D &value)
+    {
+        typedef std::vector<SBGeoPoint2D> Points;
+        void (Points::*insert)(SBGeoPoint2D *, unsigned int, const SBGeoPoint2D &) = &Points::insert;
+        (((Points *)this)->*insert)(position, count, value);
+    }
 
     undefined m_allocator; // 0x00
     SBGeoPoint2D *m_first; // 0x04
@@ -89,6 +101,22 @@ public:
     void SetSize(unsigned int count)
     {
         m_storage.Resize(count);
+        m_changed = true;
+    }
+    void Add(const SBGeoPoint2D &value)
+    {
+        m_storage.Insert(m_storage.end(), value);
+        m_changed = true;
+    }
+    void InsertLast(const SBGeoPoint2D &value)
+    {
+        m_storage.Insert(m_storage.end(), 1, value);
+        m_changed = true;
+    }
+    SBGeoPoint2D *End() { return m_storage.end(); }
+    void InsertAt(SBGeoPoint2D *position, const SBGeoPoint2D &value)
+    {
+        m_storage.Insert(position, 1, value);
         m_changed = true;
     }
     RHSoundSourcePointStorage m_storage; // 0x00

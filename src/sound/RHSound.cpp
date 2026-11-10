@@ -5,6 +5,7 @@
 #include <windows.h>
 #include <math.h>
 #include <stdio.h>
+#include <stddef.h>
 
 
 DECOMP_SIZE_ASSERT(RHSound, 0x294)
@@ -24,6 +25,20 @@ DECOMP_SIZE_ASSERT(RHSoundPendingNode, 0x2c)
 DECOMP_SIZE_ASSERT(RHSoundQueueNode, 0x40)
 DECOMP_SIZE_ASSERT(RHSoundVirtualSlot39, 0x04)
 DECOMP_SIZE_ASSERT(RHUnk005aada0, 0x10)
+DECOMP_SIZE_ASSERT(RHUnk005b35e0Array<SBGeoPoint2D>, 0x24)
+DECOMP_SIZE_ASSERT(RHUnk005b35e0Array<float>, 0x20)
+DECOMP_STATIC_ASSERT(offsetof(RHSound, m_138) == 0x138)
+DECOMP_STATIC_ASSERT(offsetof(RHSound, m_200) == 0x200)
+DECOMP_STATIC_ASSERT(offsetof(RHSound, m_208) == 0x208)
+DECOMP_STATIC_ASSERT(offsetof(RHSound, m_21c) == 0x21c)
+DECOMP_STATIC_ASSERT(offsetof(RHSound, m_248) == 0x248)
+DECOMP_STATIC_ASSERT(offsetof(RHSound, m_24c) == 0x24c)
+DECOMP_STATIC_ASSERT(offsetof(RHSound, m_284) == 0x284)
+DECOMP_STATIC_ASSERT(offsetof(RHSoundGeometry, m_24) == 0x24)
+DECOMP_STATIC_ASSERT(offsetof(RHSoundGeometry, m_48) == 0x48)
+DECOMP_STATIC_ASSERT(offsetof(RHSoundGeometry, m_68) == 0x68)
+DECOMP_STATIC_ASSERT(offsetof(RHSoundGeometry, m_88) == 0x88)
+DECOMP_STATIC_ASSERT(offsetof(RHSoundGeometry, m_ac) == 0xac)
 
 extern double g_unk0x00677d90;
 
@@ -104,6 +119,8 @@ DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 
 
 void RHSerializeName(SBFile &, const char *);
+int FUN_005f54d0();
+RHSoundChannel *FUN_005aad30(const RHSoundChannel *, const RHSoundChannel *, RHSoundChannel *);
 
 // GLOBAL: GAME 0x006b79ac
 static const char *g_unk0x006b79ac[8] = {
@@ -115,6 +132,79 @@ static inline const char *SoundStringData(const std::string &name)
 {
     const char *chars = reinterpret_cast<const SBString *>(&name)->m_chars;
     return chars ? chars : "";
+}
+
+extern RHArtificialIntelligenceSoundCalls *g_unk0x006c1070;
+
+static inline RHSoundPendingNode *RHSoundAllocatePendingHead()
+{
+    RHSoundPendingNode *head = (RHSoundPendingNode *)operator new(sizeof(RHSoundPendingNode));
+    head->m_00 = head;
+    head->m_04 = head;
+    return head;
+}
+
+// FUNCTION: GAME 0x005a5f90
+RHSound::RHSound(void *owner)
+    : m_200(new RHSoundSourceManager(&m_000)), m_204(owner), m_208(-1),
+      m_20a(0), m_20b(0), m_20c(0), m_210(false), m_211(0), m_212(0),
+      m_213(false), m_214(0), m_218(0), m_248(std::allocator<RHSoundPendingData>()),
+      m_24c(RHSoundAllocatePendingHead()), m_250(0), m_254(0), m_258(0), m_25c(0),
+      m_260(0), m_264(-1), m_268(0), m_26c(-1), m_270(0), m_274(-1),
+      m_278(1), m_279(false), m_280(0), m_284(0)
+{
+    g_unk0x006c1070 = (RHArtificialIntelligenceSoundCalls *)this;
+}
+
+// STUB: GAME 0x005a6100
+RHSoundGeometry::~RHSoundGeometry()
+{
+}
+
+// STUB: GAME 0x005a62b0
+RHSound::~RHSound()
+{
+    if (m_20a)
+    {
+        short count = (short)m_200->m_sources.GetSize();
+        for (short index = count - 1; index >= 0; --index)
+        {
+            RHSoundSource *source = m_200->GetSoundSource(index);
+            m_200->FUN_005b4f00(source);
+        }
+        FUN_005a90d0(m_260, m_264);
+        bool playing;
+        do
+        {
+            playing = false;
+            for (unsigned int channel = 0; channel < m_218; ++channel)
+            {
+                if (FSOUND_IsPlaying(channel))
+                {
+                    playing = true;
+                    break;
+                }
+            }
+            Sleep(1);
+        }
+        while (playing);
+        m_000.FUN_005ae1c0(true);
+        FSOUND_Close();
+        m_20a = 0;
+    }
+    FUN_005f54d0();
+    delete m_200;
+    RHSoundPendingNode *head = m_24c;
+    RHSoundPendingNode *node = head->m_00;
+    while (node != head)
+    {
+        RHSoundPendingNode *next = node->m_00;
+        ((RHSoundQueue *)&m_248)->FUN_005aa1c0(RHSoundQueueIterator((RHSoundQueueNode *)node));
+        node = next;
+    }
+    operator delete(head);
+    m_24c = 0;
+    m_250 = 0;
 }
 
 // TEMPLATE: GAME 0x00402260 FOLDED
@@ -775,6 +865,43 @@ void RHSound::FUN_005a79f0(bool clear)
     for (unsigned int index = 0; index < m_218; ++index)
         m_21c.m_04[index].m_00 = 0;
     m_20b = 0;
+}
+
+// STUB: GAME 0x005a7b40
+void RHSound::FUN_005a7b40(int mode)
+{
+    if (!m_20a)
+        return;
+    if (mode == m_20c)
+        return;
+    switch (mode)
+    {
+    case 0:
+        FSOUND_SetPaused(-1000, true);
+        break;
+    case 1:
+        FSOUND_SetPaused(-1000, false);
+        break;
+    case 2:
+        {
+            FUN_005a90d0(m_260, m_264);
+            OpenStream(std::string("menu"), m_260, true, 0);
+            for (unsigned int index = 0; index < m_218; ++index)
+            {
+                if (index != (unsigned int)m_264 && m_21c.m_04[index].m_00 != 4)
+                    FSOUND_SetPaused(index, true);
+            }
+            m_264 = FUN_005a9040(m_260, 0, -1);
+            FSOUND_SetVolume(m_264, m_138.FUN_005b3490(false));
+        }
+        break;
+    case 3:
+        FUN_005a90d0(m_260, m_264);
+        FSOUND_SetPaused(-3, false);
+        FUN_005a9420();
+        break;
+    }
+    m_20c = mode;
 }
 
 // FUNCTION: GAME 0x005a7d40
@@ -1912,7 +2039,7 @@ RHUnk005aa860::~RHUnk005aa860()
 }
 
 // FUNCTION: GAME 0x005aa920
-void RHSoundChannels::FUN_005aa920()
+RHSoundChannels::~RHSoundChannels()
 {
     Remove(Begin(), End());
     Destroy(Begin(), End());
@@ -1940,7 +2067,7 @@ template <> void std::_Construct(RHUnk005aa9f0 *destination, const RHUnk005aa9f0
 
 void EmitSoundChannelCleanup(RHSoundChannels *channels)
 {
-    channels->FUN_005aa920();
+    channels->~RHSoundChannels();
 }
 
 // STUB: GAME 0x005aaa50

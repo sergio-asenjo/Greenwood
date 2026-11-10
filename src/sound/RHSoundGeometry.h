@@ -1,3 +1,6 @@
+#ifndef RHSOUNDGEOMETRY_H
+#define RHSOUNDGEOMETRY_H
+
 // RHSoundGeometry — declarations for RHSoundGeometry.cpp (decompiled TU).
 //
 // BINDING (0x005b32e0 -> RHSoundGeometry::GetVolumeForAltitude(float,
@@ -60,11 +63,31 @@ enum RHsoundSourceAltitude
     RH_ALTITUDE_3 = 3
 };
 
+SBGeoPoint2D *FUN_005aadf0(const SBGeoPoint2D *, const SBGeoPoint2D *, SBGeoPoint2D *);
+
+inline SBGeoPoint2D *RHUnk005b35e0Copy(const SBGeoPoint2D *first, const SBGeoPoint2D *last, SBGeoPoint2D *destination)
+{
+    return FUN_005aadf0(first, last, destination);
+}
+
+inline float *RHUnk005b35e0Copy(const float *first, const float *last, float *destination)
+{
+    return std::copy(first, last, destination);
+}
+
 template <class T>
 class RHUnk005b35e0Array : public std::vector<T>
 {
 public:
     RHUnk005b35e0Array() : m_changed(true) {}
+    ~RHUnk005b35e0Array() { Remove(begin(), end()); }
+    T *Remove(T *first, T *last)
+    {
+        T *next = RHUnk005b35e0Copy(last, end(), first);
+        _Destroy(next, end());
+        _Last = next;
+        return first;
+    }
     int GetSize() const { return begin() == 0 ? 0 : end() - begin(); }
     void SetSize(unsigned int count)
     {
@@ -93,6 +116,7 @@ class RHSoundGeometry
 {
 public:
     RHSoundGeometry();
+    ~RHSoundGeometry();
 
     float FUN_005b2510(float, const RHUnk005b2410 &);
     float FUN_005b2560(const SBGeoPoint2D &, const RHUnk005b2410 &);
@@ -144,3 +168,5 @@ public:
 // Serialises a type-name tag into the stream; target 0x005e1b70. Defined once
 // in RHElementObject_stubs.cpp; declared here so the call resolves.
 void RHSerializeName(SBFile &file, const char *name);
+
+#endif

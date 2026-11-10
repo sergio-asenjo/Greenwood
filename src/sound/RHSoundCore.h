@@ -2,6 +2,7 @@
 #define RHSOUNDCORE_H
 
 #include "RHSoundCacheCore.h"
+#include "RHSoundGeometry.h"
 
 class SBGeoPoint2D;
 class RHSoundSource;
@@ -22,7 +23,7 @@ struct RHSoundChannelSettings
     float m_14[3];
 };
 
-struct RHSoundGeometryView
+struct RHSoundGeometryView : public RHSoundGeometry
 {
     void FUN_005b33b0(RHSoundChannelSettings &settings);
     void FUN_005b3420(RHSoundChannelSettings &settings);
@@ -30,9 +31,6 @@ struct RHSoundGeometryView
     unsigned short FUN_005b3490(bool);
     unsigned short FUN_005b34e0();
     bool FUN_005b2ff0(const RHSoundSettings &, bool, RHSoundChannelSettings &);
-    undefined m_00[0x10];
-    float m_10;
-    undefined m_14[0xb4];
 };
 
 struct RHSoundChannel
@@ -45,7 +43,10 @@ struct RHSoundChannel
 
 struct RHSoundChannels
 {
-    undefined4 m_00;
+    RHSoundChannels(const std::allocator<RHSoundChannel> &allocator = std::allocator<RHSoundChannel>())
+        : m_00(allocator), m_04(0), m_08(0), m_0c(0), m_14(true) {}
+    ~RHSoundChannels();
+    std::allocator<RHSoundChannel> m_00;
     RHSoundChannel *m_04;
     RHSoundChannel *m_08;
     RHSoundChannel *m_0c;
@@ -59,7 +60,7 @@ struct RHSoundChannels
     void Destroy(RHSoundChannel *first, RHSoundChannel *last)
     {
         for (; first != last; ++first)
-            ((std::allocator<RHSoundChannel> *)&m_00)->destroy(first);
+            m_00.destroy(first);
     }
     RHSoundChannel *Remove(RHSoundChannel *first, RHSoundChannel *last)
     {
@@ -68,7 +69,6 @@ struct RHSoundChannels
         m_08 = next;
         return first;
     }
-    void FUN_005aa920();
     void FUN_005aaa50(unsigned int, const RHSoundChannel &);
     int FUN_0045a490();
     RHSoundChannel *FUN_005aaca0(RHSoundChannel *, RHSoundChannel *, RHSoundChannel *);
@@ -85,6 +85,8 @@ public:
 class RHSound
 {
 public:
+    RHSound(void *owner);
+    ~RHSound();
     bool FUN_005a6520(unsigned long &driver);
     void FUN_005a67b0(unsigned long &driver);
     bool InitializeSound(unsigned short driver, bool spatial, std::string &error);
@@ -115,6 +117,7 @@ public:
     bool FUN_005a9260(unsigned short, bool, unsigned long &, std::string &);
     void FUN_005ad570(void *);
     void FUN_005a79f0(bool);
+    void FUN_005a7b40(int);
     void FUN_005a74e0(unsigned long);
     bool FUN_005a71f0(RHSoundSource *);
     void FUN_005a7220(void *);
@@ -143,10 +146,10 @@ public:
     RHSoundGeometryView m_138;
     RHSoundSourceManager *m_200;
     void *m_204;
-    unsigned short m_208;
+    short m_208;
     char m_20a;
     char m_20b;
-    undefined m_20c[4];
+    int m_20c;
     bool m_210;
     char m_211;
     char m_212;
@@ -155,7 +158,7 @@ public:
     undefined m_215[3];
     unsigned int m_218;
     RHSoundChannels m_21c;
-    undefined m_248[4];
+    std::allocator<RHSoundPendingData> m_248;
     RHSoundPendingNode *m_24c;
     unsigned int m_250;
     void *m_254;

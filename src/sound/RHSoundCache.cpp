@@ -21,6 +21,21 @@ DECOMP_SIZE_ASSERT(RHSoundCacheMusicArray, 0x2c)
 DECOMP_SIZE_ASSERT(RHSoundCacheString, 0x10)
 DECOMP_SIZE_ASSERT(RHUnk00641782, 0x01)
 
+// STUB: GAME 0x005ab000
+RHSoundCache::RHSoundCache()
+{
+    m_134 = false;
+    m_135 = true;
+    FUN_005aec70();
+    FUN_005ab410(*(RHcacheData *)this);
+    FUN_005ab410(*(RHcacheData *)((char *)this + 0x60));
+}
+
+// STUB: GAME 0x005ab190
+RHSoundCache::~RHSoundCache()
+{
+}
+
 // LIBRARY: GAME 0x004023a0
 // ?insert@?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@QAEXPAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@2@IABV32@@Z
 
@@ -267,7 +282,7 @@ void RHSoundCache::InitializeFXCache()
             unsigned long variants;
             file.Access(&stamp, 2);
             file.Access(&variants, 4);
-            RHsoundGroup *group = AddSoundGroup(m_00c, type, id, stamp);
+            RHsoundGroup *group = AddSoundGroup(*(RHSoundCacheGroups *)&m_00c, type, id, stamp);
             FUN_005aca40(file, group, variants);
             item = (unsigned short)(item + variants);
         }
@@ -280,7 +295,7 @@ void RHSoundCache::InitializeFXCache()
             file.Access(text, length);
             if (length > 4 && text[length - 4] != '.')
                 strcat(text, ".wav");
-            RHsoundGroup *group = AddSoundGroup(m_00c, type, id, 0);
+            RHsoundGroup *group = AddSoundGroup(*(RHSoundCacheGroups *)&m_00c, type, id, 0);
             unsigned long index = AddSoundEntry(std::string(text), *(RHcacheData *)this);
             group->m_04.FUN_00424410(RHSoundCacheListIterator(group->m_04.m_04), index);
             group->m_04.m_10 = true;
@@ -386,7 +401,7 @@ void RHSoundCache::InitializeExclamationsForProfile(const std::string &profile, 
     {
         unsigned long variants;
         file.Access(&variants, 4);
-        RHsoundGroup *group = AddSoundGroup(m_06c, 1, id | (short)groupIndex, 0);
+        RHsoundGroup *group = AddSoundGroup(*(RHSoundCacheGroups *)&m_06c, 1, id | (short)groupIndex, 0);
         for (unsigned int variant = 0; variant < variants; ++variant)
         {
             std::string name;
@@ -563,7 +578,7 @@ static void ClearSoundMusic(RHSoundCacheMusicArray &music)
         (destination->*assign)(*source, 0, *(const volatile unsigned int *)&std::string::npos);
     for (std::string *entry = destination; entry != music.end(); ++entry)
         entry->~basic_string();
-    music.m_08 = destination;
+    music.SetEnd(destination);
     music.m_14 = true;
 }
 
@@ -573,9 +588,9 @@ void RHSoundCache::FUN_005ae1c0(bool clear)
 {
     if (clear)
     {
-        FUN_005ab660(m_00c, *(RHcacheData *)this);
+        FUN_005ab660(*(RHSoundCacheGroups *)&m_00c, *(RHcacheData *)this);
         FUN_005ab6d0(*(RHSoundCacheEntryMap *)((char *)this + 0x28));
-        FUN_005ab660(m_06c, *(RHcacheData *)((char *)this + 0x60));
+        FUN_005ab660(*(RHSoundCacheGroups *)&m_06c, *(RHcacheData *)((char *)this + 0x60));
         FUN_005ab6d0(*(RHSoundCacheEntryMap *)((char *)this + 0x94));
     }
     FUN_005ab6d0(*(RHSoundCacheEntryMap *)&m_044);
@@ -588,7 +603,7 @@ void RHSoundCache::FUN_005ae1c0(bool clear)
 // FUNCTION: GAME 0x005ae320
 bool RHSoundCache::FUN_005ae320(unsigned long id)
 {
-    RHSoundCacheGroups &groups = m_00c;
+    RHSoundCacheGroups &groups = *(RHSoundCacheGroups *)&m_00c;
     RHSoundCacheGroupNode *found = groups.FUN_005b13e0(id);
     RHSoundCacheGroupNode *head = *(RHSoundCacheGroupNode *volatile *)((char *)&groups + 4);
     RHSoundCacheGroupIterator entry;
@@ -603,8 +618,8 @@ bool RHSoundCache::FUN_005ae320(unsigned long id)
 RHSoundCacheEntry *RHSoundCache::GetFXSample(bool load, unsigned long id, int material)
 {
     RHSoundCacheEntry *entry = 0;
-    RHSoundCacheGroupIterator found = m_00c.Find(id);
-    if (found == m_00c.End())
+    RHSoundCacheGroupIterator found = ((RHSoundCacheGroups *)&m_00c)->Find(id);
+    if (found == ((RHSoundCacheGroups *)&m_00c)->End())
         return 0;
     RHsoundGroup *group = found.m_node->m_10;
     unsigned long index;
@@ -682,10 +697,10 @@ RHSoundCacheEntry *RHSoundCache::FUN_005ae670(bool load, unsigned long id, bool 
 // STUB: GAME 0x005ae6a0
 RHSoundCacheEntry *RHSoundCache::GetExclamationSample(bool load, unsigned long id, unsigned long variant)
 {
-    RHSoundCacheGroupIterator found = m_06c.Find(id);
+    RHSoundCacheGroupIterator found = ((RHSoundCacheGroups *)&m_06c)->Find(id);
     RHsoundGroup *group;
     int count;
-    if (found == m_06c.End())
+    if (found == ((RHSoundCacheGroups *)&m_06c)->End())
         goto missing;
     group = found.m_node->m_10;
     if (group->m_00 != 1)
@@ -741,7 +756,7 @@ RHSoundCacheMusic *RHSoundCache::GetQuietMusic(unsigned short index)
                 "P:\\Robin Hood\\RHsoundcache.cpp", 1572,
                 // STRING: GAME 0x006b84bc
                 "Trying to get an non existing music loop for quiet mode");
-        return m_0b0.m_04 + index;
+        return m_0b0.begin() + index;
     }
     return &g_unk0x006c1090;
 }
@@ -755,7 +770,7 @@ RHSoundCacheMusic *RHSoundCache::GetAlertMusic(unsigned short index)
             SBAssert(1, "P:\\Robin Hood\\RHsoundcache.cpp", 1600,
                 // STRING: GAME 0x006b84f4
                 "Trying to get an non existing music loop for alert mode");
-        return m_0dc.m_04 + index;
+        return m_0dc.begin() + index;
     }
     return &g_unk0x006c1090;
 }
@@ -769,7 +784,7 @@ RHSoundCacheMusic *RHSoundCache::GetFightMusic(unsigned short index)
             SBAssert(1, "P:\\Robin Hood\\RHsoundcache.cpp", 1628,
                 // STRING: GAME 0x006b852c
                 "Trying to get an non existing music loop for fight mode");
-        return m_108.m_04 + index;
+        return m_108.begin() + index;
     }
     return &g_unk0x006c1090;
 }

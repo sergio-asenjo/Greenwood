@@ -118,26 +118,29 @@ inline RHSoundCacheMusic *FUN_0056dbc0(const RHSoundCacheMusic *first, const RHS
     return copy(first, last, destination);
 }
 
-struct RHSoundCacheMusicArray
+struct RHSoundCacheMusicArray : public std::vector<RHSoundCacheMusic>
 {
-    undefined4 m_00;
-    RHSoundCacheMusic *m_04;
-    RHSoundCacheMusic *m_08;
-    RHSoundCacheMusic *m_0c;
+    RHSoundCacheMusicArray() : m_14(true) {}
+    ~RHSoundCacheMusicArray()
+    {
+        typedef void (std::vector<RHSoundCacheMusic>::*Clear)();
+        Clear clear = &std::vector<RHSoundCacheMusic>::clear;
+        (((std::vector<RHSoundCacheMusic> *)this)->*clear)();
+    }
+
     undefined m_10[4];
     bool m_14;
-    undefined m_15[0x17];
+    undefined m_15[7];
+    std::string m_1c;
 
-    unsigned int Size() const { return m_04 == 0 ? 0 : m_08 - m_04; }
-    RHSoundCacheMusic *begin() { return m_04; }
-    RHSoundCacheMusic *end() { return m_08; }
+    unsigned int Size() const { return size(); }
     void FUN_0056dac0(RHSoundCacheMusic *, RHSoundCacheMusic *);
     void FUN_004023a0(RHSoundCacheMusic *, unsigned int, const RHSoundCacheMusic &);
     void erase(RHSoundCacheMusic *first, RHSoundCacheMusic *last)
     {
         RHSoundCacheMusic *next = FUN_0056dbc0(last, end(), first);
         FUN_0056dac0(next, end());
-        m_08 = next;
+        _Last = next;
         m_14 = true;
     }
     void push_back(const RHSoundCacheMusic &value)
@@ -147,6 +150,7 @@ struct RHSoundCacheMusicArray
         (((std::vector<RHSoundCacheMusic> *)this)->*insert)(end(), 1, value);
         m_14 = true;
     }
+    void SetEnd(RHSoundCacheMusic *value) { _Last = value; }
 };
 
 struct RHsampleCacheStats
@@ -157,6 +161,8 @@ struct RHsampleCacheStats
 class RHSoundCache
 {
 public:
+    RHSoundCache();
+    ~RHSoundCache();
     RHsoundGroup *AddSoundGroup(RHSoundCacheGroups &, int, unsigned long, unsigned short);
     void FUN_005ab410(struct RHcacheData &);
     void UnloadSample(RHSoundCacheEntry *, RHsampleCacheStats &);
@@ -194,17 +200,21 @@ public:
     RHSoundCacheEntry *m_000;
     unsigned int m_004;
     unsigned int m_008;
-    RHSoundCacheGroups m_00c;
+    std::map<unsigned long, RHsoundGroup *> m_00c;
     unsigned int m_01c;
-    undefined m_020[0x24];
+    undefined m_020[8];
+    std::map<unsigned long, RHSoundCacheEntry *> m_028;
+    undefined m_038[0xc];
     std::map<unsigned long, RHSoundCacheEntry *> m_044;
     undefined m_054[0xc];
     RHSoundCacheEntry *m_060;
     unsigned int m_064;
     unsigned int m_068;
-    RHSoundCacheGroups m_06c;
+    std::map<unsigned long, RHsoundGroup *> m_06c;
     unsigned int m_07c;
-    undefined m_080[0x30];
+    undefined m_080[0x14];
+    std::map<unsigned long, RHSoundCacheEntry *> m_094;
+    undefined m_0a4[0xc];
     RHSoundCacheMusicArray m_0b0;
     RHSoundCacheMusicArray m_0dc;
     RHSoundCacheMusicArray m_108;
