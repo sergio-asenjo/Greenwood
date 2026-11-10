@@ -9,6 +9,8 @@
 #include "RHMenuShortMissionBlazons.h"
 #include "RHMenuShortMissionTitle.h"
 
+struct SBFrameEvent;
+
 typedef RHGameRenderer0060dbc0 RHMenuShortMissionRenderer;
 typedef RHGameLifetime00515f00 RHMenuShortMissionText;
 typedef RHGameLifetime0044fe90 RHMenuShortMissionPicture;
@@ -24,6 +26,7 @@ public:
     bool Create();
     void FUN_00540d20();
     std::wstring FUN_00540d50();
+    SBFrameEvent *FUN_00540ec0(const void *input);
     void FUN_00541060();
 
     RHMenuShortMissionTitle m_title; // 0xc8

@@ -5955,12 +5955,6 @@ int FUN_005dcb10(int value)
     return 0;
 }
 
-struct RHPortraitKeyed
-{
-    undefined m_00[0x40]; // 0x00
-    int m_40; // 0x40
-};
-
 // SIZE 0x278
 struct RHPortraitQuickEntry
 {
@@ -5997,7 +5991,65 @@ public:
 };
 
 #include "RHPortraitQuickList.h"
+#include "RHCampaignUnk00457480.h"
 
+DECOMP_SIZE_ASSERT(RHPortraitQuickList, 0xc0)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitQuickList, m_first) == 0xb4)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitQuickList, m_last) == 0xb8)
+DECOMP_SIZE_ASSERT(RHPortraitQuickEntry, 0x278)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitQuickEntry, m_08) == 0x08)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitQuickEntry, m_d8) == 0xd8)
+
+void FUN_005dd320(int key, std::vector<RHPCDescription *> &list);
+
+static void RHPortraitQuickState(RHGameLifetime00517590 &widget, int state)
+{
+    typedef void (__fastcall *Method)(RHGameLifetime00517590 *, void *, int);
+    ((Method)(*(void ***)&widget)[0x38 / 4])(&widget, 0, state);
+}
+
+// STUB: GAME 0x005dcfd0
+bool RHPortraitQuickList::FUN_005dcfd0(std::vector<RHPCDescription *> &descriptions)
+{
+    RHCampaignUnk00457480 *campaign = (RHCampaignUnk00457480 *)g_unk0x6c07fc;
+    bool enabled = !descriptions.empty();
+    std::vector<RHPCDescription *> remaining(descriptions);
+    for (RHPortraitQuickEntry *entry = m_first; entry != m_last; ++entry)
+    {
+        if (entry->m_04)
+        {
+            if (campaign->FUN_00457480(entry->m_04, &remaining))
+            {
+                FUN_005dd320(entry->m_04, remaining);
+                RHPortraitQuickState(entry->m_d8, 0);
+            }
+            else
+            {
+                RHPortraitQuickState(entry->m_d8, 1);
+                enabled = false;
+            }
+        }
+        else if (entry->m_00)
+        {
+            if (campaign->FUN_004574b0(entry->m_00, &descriptions))
+                RHPortraitQuickState(entry->m_d8, 0);
+            else
+            {
+                RHPortraitQuickState(entry->m_d8, 1);
+                enabled = false;
+            }
+        }
+        else if (!remaining.empty())
+        {
+            const char *profile = *(const char **)((char *)remaining.front() + 0x40);
+            RHPortraitQuickState(entry->m_08, FUN_005dc8a0(*(const std::string *)(profile + 0x14)));
+            remaining.erase(remaining.begin());
+        }
+        else
+            RHPortraitQuickState(entry->m_08, 0);
+    }
+    return enabled;
+}
 
 // Parked: VC6 swaps the stack slots of the hoisted PC count and the entry cursor.
 // STUB: GAME 0x005dd1d0
@@ -6076,11 +6128,11 @@ bool RHPortraitQuickList::FUN_005dd1d0(RHPortraitPCList &list)
 }
 
 // FUNCTION: GAME 0x005dd320
-void FUN_005dd320(int key, std::vector<RHPortraitKeyed *> &list)
+void FUN_005dd320(int key, std::vector<RHPCDescription *> &list)
 {
-    for (std::vector<RHPortraitKeyed *>::iterator it = list.begin(); it != list.end(); ++it)
+    for (std::vector<RHPCDescription *>::iterator it = list.begin(); it != list.end(); ++it)
     {
-        if ((*it)->m_40 == key)
+        if (*(int *)((char *)*it + 0x40) == key)
         {
             list.erase(it);
             return;
@@ -6238,8 +6290,7 @@ void EmitRHPortraitLifetimeConstructors()
 }
 #pragma inline_depth()
 
-// Parked: the vector argument uses the constructor result instead of its stack address.
-// STUB: GAME 0x0061d3f0
+// FUNCTION: GAME 0x0061d3f0
 SBGeoBoundingBox2D RHPortraitInputRenderer::FUN_0061d3f0(unsigned short line, int value)
 {
     SBGeoBoundingBox2D box;
@@ -6255,7 +6306,7 @@ SBGeoBoundingBox2D RHPortraitInputRenderer::FUN_0061d3f0(unsigned short line, in
         box.m_10 = true;
         box.m_first.m_x += m_82;
     }
-    return box.FUN_006090d0(SBGeoVector2D((const SBGeoVector2D &)bounds.m_first));
+    return box.FUN_006090d0(bounds.m_first);
 }
 
 // FUNCTION: GAME 0x0061d570

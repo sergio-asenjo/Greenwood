@@ -10,6 +10,7 @@
 #include "RHSaveGameManager.h"
 #include "SBUIRenderer.h"
 #include "RHGame_calls.h"
+#include "RHSoundCore.h"
 
 
 // GLOBAL: GAME 0x006c0670
@@ -140,22 +141,21 @@ extern RHUnk005ef320 *g_unk0x6c11d0;
 extern char g_unk0x006c0685;
 void FUN_004013a0(const std::string &name);
 
-// Parked at 0.6400: left by the killed batch-105 run before its residual was diagnosed. The
-// movie-launch sequence is close but the remaining divergence was never established.
-// STUB: GAME 0x00537400
+// FUNCTION: GAME 0x00537400
 void RHMenuMovies::FUN_00537400(const std::string &path)
 {
     if (g_unk0x006c0685)
     {
-        RHGameActionCalls *sound = (RHGameActionCalls *)g_unk0x006c1070;
         SBThreadedInput *input = g_unk0x6c1340;
         RHUnk005ef320 *draw = g_unk0x6c11d0;
+        RHSound *sound = (RHSound *)g_unk0x006c1070;
         sound->FUN_005a7b40(0);
         input->SetMouseEnabled(false);
         draw->FUN_005e4810(0x280, 0x1e0, 0x10);
         FUN_004013a0(path);
-        draw->FUN_005e4810((int)*(float *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x54),
-            (int)*(float *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x58), 0x10);
+        float height = *(float *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x58);
+        float width = *(float *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x54);
+        draw->FUN_005e4810((int)width, (int)height, 0x10);
         input->SetMouseEnabled(true);
         sound->FUN_005a7b40(1);
         ((RHMapWindow *)m_screen)->FUN_0053c7e0();

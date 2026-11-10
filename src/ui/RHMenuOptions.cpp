@@ -72,6 +72,38 @@ bool RHMenuOptions::FUN_00538e80(RHMenuWindowUI *ui)
     return changed;
 }
 
+#include "RHMenuGraphics.h"
+#include "RHEngine.h"
+#include "RHPlayerProfile.h"
+#include "SBDrawManager.h"
+#include "SBThreadedInput.h"
+#include "RHUnk0049b100.h"
+
+extern RHUnk005ef320 *g_unk0x6c11d0;
+
+// FUNCTION: GAME 0x00539250
+bool RHMenuOptions::FUN_00539250(int, void *, void *)
+{
+    SBGeoVector2D resolution(*(SBGeoVector2D *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x54));
+    if (RHMenuGraphics::Display(m_screen->FUN_0053bf30()) == true) {
+        if (resolution.FUN_005fc0e0(*(SBGeoPoint2D *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x54))) {
+            float height = *(float *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x58);
+            float width = *(float *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x54);
+            g_unk0x6c11d0->FUN_005e4810((int)width, (int)height, 16);
+            SBThreadedInput::SetTheClippingBox(RHMapBox(0.0f, 0.0f,
+                ((RHUnk0049b100 *)&((RHPlayerProfile *)((RHUnk0055dbb0 *)RHPlayerProfileManager::FUN_0052ef90())->FUN_0055dbb0())->FUN_0052ef80().m_point)->FUN_0049b100(),
+                ((RHUnk0049b100 *)&((RHPlayerProfile *)((RHUnk0055dbb0 *)RHPlayerProfileManager::FUN_0052ef90())->FUN_0055dbb0())->FUN_0052ef80().m_point)->FUN_0049b110()));
+            if (g_pEngine)
+                g_pEngine->FUN_004c0040();
+            bReDisplay = true;
+            ((RHGameMenuCalls *)this)->FUN_00544b30();
+        }
+        m_changed = true;
+    }
+    ((RHMapWindow *)m_screen)->FUN_0053c7e0();
+    return false;
+}
+
 // FUNCTION: GAME 0x005393c0
 bool RHMenuOptions::FUN_005393c0(int, void *, void *)
 {

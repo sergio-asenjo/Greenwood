@@ -535,12 +535,11 @@ RHUnk005068e0 *RHFrameHolder::FUN_00505170(unsigned long id)
     RHUnk005068e0 *result = 0;
     unsigned short index = FUN_00504680(id);
     if (index != 0xffff)
-        result = m_dictionaries.m_first + index;
+        result = m_dictionaries.begin() + index;
     return result;
 }
 
-// Parked: effective-only; signed size division sign fix uses ecx instead of eax.
-// STUB: GAME 0x005051a0
+// FUNCTION: GAME 0x005051a0
 unsigned short RHFrameHolder::FUN_005051a0(unsigned short id, SBFile &file)
 {
     RHUnk005068e0 value;
@@ -554,7 +553,7 @@ unsigned short RHFrameHolder::FUN_005051a0(unsigned short id, SBFile &file)
         if (cursor->m_08 == value.m_08)
             return index;
     RHUnk005051a0Array &array = *(RHUnk005051a0Array *)((char *)this + 0x18);
-    array.FUN_00508090(array.m_last, 1, value);
+    array.push_back(value);
     return array.Size() - 1;
 }
 
@@ -1265,7 +1264,7 @@ void RHFrameHolder::DumpOneDictionary()
     file.Access(
         // STRING: GAME 0x006b011c
         (void *)"Default dictionary\n", 19);
-    m_dictionaries.m_first->FUN_00506b90(file);
+    m_dictionaries._First->FUN_00506b90(file);
     if (m_nightDictionaries.Size())
     {
         FUN_005ede40((RHUnk005ef320 *)Draw(),
@@ -1274,7 +1273,7 @@ void RHFrameHolder::DumpOneDictionary()
         file.Access(
             // STRING: GAME 0x006b00f8
             (void *)"\n\nNight dictionary\n", 19);
-        m_nightDictionaries.m_first->FUN_00506b90(file);
+        m_nightDictionaries._First->FUN_00506b90(file);
     }
     if (m_fogDictionaries.Size())
     {
@@ -1284,7 +1283,7 @@ void RHFrameHolder::DumpOneDictionary()
         file.Access(
             // STRING: GAME 0x006b00d4
             (void *)"\n\nFog dictionary\n", 17);
-        RHUnk005068e0 &dictionary = *m_fogDictionaries.m_first;
+        RHUnk005068e0 &dictionary = *m_fogDictionaries._First;
         dictionary.FUN_00506b90(file);
     }
     file.FUN_005f5290();
@@ -1299,13 +1298,13 @@ unsigned int RHUnk00506e00::FUN_00506e00() const
 // FUNCTION: GAME 0x00506e30
 void RHUnk005051a0Array::FUN_00506e30()
 {
-    RHUnk005068e0 *last = m_last;
-    for (RHUnk005068e0 *first = m_first; first != last; ++first)
+    RHUnk005068e0 *last = _Last;
+    for (RHUnk005068e0 *first = _First; first != last; ++first)
         first->~RHUnk005069a0();
-    operator delete(m_first);
-    m_first = 0;
-    m_last = 0;
-    m_end = 0;
+    operator delete(_First);
+    _First = 0;
+    _Last = 0;
+    _End = 0;
 }
 
 // FUNCTION: GAME 0x00506e70
@@ -1790,6 +1789,9 @@ void RHFrameHolderRowMap::FUN_00508000(Node *node)
         operator delete(node);
     }
 }
+
+// TEMPLATE: GAME 0x00508090
+// ?insert@?$vector@VRHUnk005069a0@@V?$allocator@VRHUnk005069a0@@@std@@@std@@QAEXPAVRHUnk005069a0@@IABV3@@Z
 
 // FUNCTION: GAME 0x00508370
 RHFrameHolderStringIterator RHFrameHolderStringMap::FUN_00508370(RHFrameHolderStringIterator position)

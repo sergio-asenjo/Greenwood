@@ -214,18 +214,15 @@ public:
 };
 
 #include "RHFrameDictionary.h"
+#include <vector>
 
 // SIZE 0x10
-class RHUnk005051a0Array
+class RHUnk005051a0Array : public std::vector<RHUnk005068e0>
 {
+    friend class RHFrameHolder;
 public:
     void FUN_00506e30();
-    void FUN_00508090(RHUnk005068e0 *, unsigned int, const RHUnk005068e0 &);
-    unsigned int Size() const { return m_first == 0 ? 0 : m_last - m_first; }
-    undefined4 m_00; // 0x00
-    RHUnk005068e0 *m_first; // 0x04
-    RHUnk005068e0 *m_last; // 0x08
-    RHUnk005068e0 *m_end; // 0x0c
+    unsigned int Size() const { return _First == 0 ? 0 : _Last - _First; }
 };
 
 // SIZE 0x10

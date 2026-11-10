@@ -117,6 +117,7 @@ public:
     bool FUN_0054ae90(RHElement *element);
     bool IsRealPoint(const SBGeoPoint2D &point);
     bool RealToMap(const SBGeoPoint2D &point, SBGeoPoint2D &result);
+    void FUN_0054b1f0();
     static void FUN_0054b490(const RHMinimapHighlightedElement &element);
     void FUN_0054b4c0();
     void FUN_0054b5e0(const SBGeoPoint2D &point, unsigned short color);

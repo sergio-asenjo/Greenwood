@@ -153,6 +153,8 @@ bool FUN_00549ae0(const RHMinimapSortElement *a, const RHMinimapSortElement *b){
 #include "RHMapWidget.h"
 #include "SBFrameWnd.h"
 #include "RHPlayerProfileAccess.h"
+#include "RHUnk005fc3b0.h"
+#include <math.h>
 
 #include "RHPlayerProfileManagerStorage.h"
 extern float g_unk0x006c0c58[2];
@@ -227,11 +229,17 @@ bool RHMinimap::FUN_0054a0f0(const void *arg)
     return false;
 }
 
-// Parked: VC6 vector-insert specialisation over the 8-byte HighlightedElement
-// vector at +0xcc; the _Insert_n branch layout and 0x54ae90 helper differ.
 // STUB: GAME 0x0054a440
-void RHMinimap::FUN_0054a440(const void *)
+void RHMinimap::FUN_0054a440(const void *element)
 {
+    RHElement *value = (RHElement *)element;
+    if (FUN_0054ae90(value))
+        return;
+    RHMinimapHighlightedElement entry;
+    entry.m_element = value;
+    entry.m_0c = 0;
+    m_highlighted.push_back(entry);
+    m_dc = 0x19;
 }
 
 #include "SBUIKeyboardCalls.h"
@@ -387,6 +395,38 @@ bool RHMinimap::RealToMap(const SBGeoPoint2D &point, SBGeoPoint2D &result)
     result.Set((float)(int)((bounds.m_p1.m_x - bounds.m_p0.m_x) * x + bounds.m_p0.m_x),
         (float)(int)((bounds.m_p1.m_y - bounds.m_p0.m_y) * y + bounds.m_p0.m_y));
     return true;
+}
+
+// STUB: GAME 0x0054b1f0
+void RHMinimap::FUN_0054b1f0()
+{
+    SBGeoPoint2D camera;
+    SBGeoPoint2D first;
+    SBGeoPoint2D last;
+    SBGeoVector2D size;
+    SBGeoBoundingBox2D bounds;
+    camera = *(SBGeoPoint2D *)(m_engine + 0x4738);
+    size = *(SBGeoVector2D *)(m_engine + 0x4728);
+    RealToMap(camera, first);
+    float scale;
+    RealToMap(camera.Unk005fc190(((RHUnk005fc3b0 *)&size)->FUN_005fc5d0(
+        scale = ((RHEngine *)m_engine)->m_475c)).FUN_005fc200(SBGeoVector2D(0.0f, 80.0f)), last);
+    first.m_x = floor(first.m_x);
+    first.m_y = floor(first.m_y);
+    last.m_x = floor(last.m_x);
+    last.m_y = floor(last.m_y);
+    bounds.FUN_00609050(first, last);
+    ((SBDrawManager *)m_minimapDraw)->FUN_005ecdc0(m_display, bounds, 0, 0);
+    ((RHEngine *)m_engine)->FUN_004d1aa0();
+    unsigned count = ((RHEngine *)m_engine)->m_elements.size();
+    for (unsigned i = 0; i < count; ++i) {
+        RHEngine &engine = *(RHEngine *)m_engine;
+        RHElement *element = engine.m_elements[i];
+        if (*(bool *)((char *)element + 0x12) == true && !FUN_0054ae90(element))
+            FUN_0054b8b0(element);
+    }
+    FUN_0054b4c0();
+    ((RHEngine *)m_engine)->FUN_004d1840();
 }
 
 // FUNCTION: GAME 0x0054b490
@@ -743,4 +783,5 @@ void RHMinimapHighlightEmit(RHMinimap *minimap, RHElement *element)
     minimap->RealToMap(minimap->m_b4, minimap->m_bc);
     minimap->IsRealPoint(minimap->m_b4);
     minimap->ManageClick(minimap->m_b4);
+    minimap->FUN_0054b1f0();
 }

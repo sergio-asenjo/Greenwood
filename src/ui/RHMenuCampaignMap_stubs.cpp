@@ -36,6 +36,5 @@ std::string g_unk0x006c0660;
 // GLOBAL: GAME 0x006c1840
 RHMapResources *g_unk0x006c1840;
 
-SBUILifetime::~SBUILifetime() {}
 
 RHMapScreenTree::~RHMapScreenTree() {}

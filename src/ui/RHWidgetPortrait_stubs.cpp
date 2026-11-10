@@ -54,8 +54,6 @@ RHPortraitStrategyCalls::RHPortraitStrategyCalls()
 {
     *(unsigned *)this = 0x679f38;
 }
-RHPortraitRootLifetime::RHPortraitRootLifetime() {}
-RHPortraitRootLifetime::~RHPortraitRootLifetime() {}
 RHPortraitLifetime005d6320::RHPortraitLifetime005d6320() {}
 const std::wstring &RHPortraitActorCalls::FUN_00492730() { static std::wstring value; return value; }
 

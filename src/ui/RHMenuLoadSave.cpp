@@ -560,11 +560,7 @@ int RHMenuLoadSaveListBase::FUN_00531e50()
     return 1;
 }
 
-class RHMobileUnk00607da0
-{
-public:
-    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
-};
+#include "RHMobileUnk00607da0.h"
 
 class RHMenuLoadSaveTextDispatch
 {
@@ -726,6 +722,118 @@ template<class Renderer, class Item> RHMenuEvent *SBWidgetListBox<Renderer, Item
     return result;
 }
 
+// Parked: input/renderer register homes and null-return scheduling differ.
+// STUB: GAME 0x00532db0
+template<class Renderer, class Item>
+RHMenuEvent *SBWidgetListBox<Renderer, Item>::FUN_00532db0(const SBGeoPoint2D &input)
+{
+    RHMenuEvent *event = 0;
+    RHPortraitInputRenderer &renderer = ((RHMenuLoadSaveText *)this)->m_renderer;
+    const SBGeoPoint2D &in = input;
+    renderer.FUN_0061d570(*(unsigned short *)((char *)this + 0x180), *(int *)((char *)this + 0x130));
+    if (((RHMenuLoadSaveText *)this)->FUN_00533d80(in))
+    {
+        if (!(*(const unsigned short *)((const char *)&in + 0xa) & 0x40))
+            *(int *)((char *)this + 0x7c) = 4;
+        if (*(unsigned short *)((char *)this + 0x17e) == 0xffff)
+            return event;
+        *(unsigned short *)((char *)this + 0x17e) = 0xffff;
+        event = (RHMenuEvent *)((char *)this + 0x4c);
+        *(void **)((char *)this + 0x50) = this;
+        *(void **)((char *)this + 0x54) = (void *)0xffff;
+        *(void **)((char *)this + 0x58) = 0;
+        event->m_type = 14;
+        return event;
+    }
+    if (!((SBGeoBoundingBox2D *)((char *)this + 0x30))->FUN_006083b0(in))
+    {
+        *(int *)((char *)this + 0x7c) = 0;
+        if (*(unsigned short *)((char *)this + 0x17e) == 0xffff)
+            return event;
+        *(unsigned short *)((char *)this + 0x17e) = 0xffff;
+        event = (RHMenuEvent *)((char *)this + 0x4c);
+        *(void **)((char *)this + 0x50) = this;
+        *(void **)((char *)this + 0x54) = (void *)0xffff;
+        *(void **)((char *)this + 0x58) = 0;
+        event->m_type = 14;
+        return event;
+    }
+    short wheel = *(const short *)((const char *)&in + 8);
+    if (wheel > 0)
+    {
+        if (*(unsigned short *)((char *)this + 0x180) > 0)
+        {
+            --*(unsigned short *)((char *)this + 0x180);
+            renderer.FUN_0061d570(*(unsigned short *)((char *)this + 0x180), *(int *)((char *)this + 0x130));
+            event = (RHMenuEvent *)((char *)this + 0x4c);
+            *(void **)((char *)this + 0x58) = 0;
+            *(void **)((char *)this + 0x50) = this;
+            *(void **)((char *)this + 0x54) = 0;
+            event->m_type = 13;
+            return event;
+        }
+        return event;
+    }
+    if (wheel < 0)
+    {
+        unsigned limit = *(unsigned *)((char *)this + 0x130);
+        unsigned short line = *(unsigned short *)((char *)this + 0x180);
+        if (renderer.FUN_0061d5e0() + line + 1 <= limit)
+        {
+            *(unsigned short *)((char *)this + 0x180) = line + 1;
+            renderer.FUN_0061d570(*(unsigned short *)((char *)this + 0x180), *(int *)((char *)this + 0x130));
+            event = (RHMenuEvent *)((char *)this + 0x4c);
+            *(void **)((char *)this + 0x58) = 0;
+            *(void **)((char *)this + 0x50) = this;
+            *(void **)((char *)this + 0x54) = 0;
+            event->m_type = 12;
+            return event;
+        }
+        return event;
+    }
+    unsigned short flags = *(const unsigned short *)((const char *)&in + 0xa);
+    if (flags & 0x8)
+    {
+        event = (RHMenuEvent *)((char *)this + 0x4c);
+        *(void **)((char *)this + 0x50) = this;
+        *(void **)((char *)this + 0x54) = 0;
+        *(void **)((char *)this + 0x58) = 0;
+        event->m_type = 2;
+        return event;
+    }
+    if (flags & 0x2)
+    {
+        if (*(unsigned short *)((char *)this + 0x17c) == 0xffff)
+            return event;
+        *(unsigned short *)((char *)this + 0x17c) = 0xffff;
+        event = (RHMenuEvent *)((char *)this + 0x4c);
+        *(void **)((char *)this + 0x50) = this;
+        *(void **)((char *)this + 0x54) = (void *)0xffff;
+        *(void **)((char *)this + 0x58) = 0;
+        event->m_type = 15;
+        return event;
+    }
+    unsigned short hit = FUN_00534050(in);
+    if (*(const unsigned short *)((const char *)&in + 0xa) & 0x40)
+    {
+        *(int *)((char *)this + 0x7c) = 2;
+        RHMenuWindowUI *ui = *(RHMenuWindowUI *const *)((const char *)&in + 0x10);
+        ui->m_17f0 = (RHMenuWindowUI *)this;
+    }
+    if (*(unsigned short *)((char *)this + 0x17e) == hit)
+        return event;
+    if (!((SBGeoPoint2D *)((char *)this + 0x198))->FUN_005fc0e0(in))
+        return event;
+    *(unsigned short *)((char *)this + 0x17e) = hit;
+    *(SBGeoPoint2D *)((char *)this + 0x198) = in;
+    event = (RHMenuEvent *)((char *)this + 0x4c);
+    *(void **)((char *)this + 0x50) = this;
+    *(void **)((char *)this + 0x54) = (void *)(unsigned)hit;
+    *(void **)((char *)this + 0x58) = 0;
+    event->m_type = 14;
+    return event;
+}
+
 // Parked: the scroll result slot is register-coloured and the top/bottom box comparison
 // temporaries evaluate the call before the saved float, so the frame does not align.
 // STUB: GAME 0x00533020
@@ -815,6 +923,102 @@ RHMenuEvent *SBWidgetListBox<Renderer, Item>::FUN_00533020(const SBGeoPoint2D &i
         RHMenuWindowUI *ui = *(RHMenuWindowUI *const *)((const char *)&input + 0x10);
         ui->m_17f0 = (RHMenuWindowUI *)this;
         *(int *)((char *)this + 0x7c) = 5;
+    }
+    return result;
+}
+
+// Parked: wheel/renderer store scheduling and null-return register tie.
+// STUB: GAME 0x005333b0
+RHMenuEvent *RHMenuLoadSaveSlots::FUN_00533b0(const SBGeoPoint2D &input)
+{
+    RHMenuEvent *result = 0;
+    *(RHMenuEvent *volatile *)&result = 0;
+    RHPortraitInputRenderer &renderer = ((RHMenuLoadSaveText *)this)->m_renderer;
+    renderer.FUN_0061d570(*(unsigned short *)((char *)this + 0x180), *(int *)((char *)this + 0x130));
+    short wheel = *(const short *)((const char *)&input + 8);
+    *(RHMenuEvent *volatile *)&result = 0;
+    if (wheel != 0)
+    {
+        if (wheel > 0)
+        {
+            if (*(unsigned short *)((char *)this + 0x180) > 0)
+            {
+                --*(unsigned short *)((char *)this + 0x180);
+                renderer.FUN_0061d570(*(unsigned short *)((char *)this + 0x180), *(int *)((char *)this + 0x130));
+                RHMenuEvent *scroll = (RHMenuEvent *)((char *)this + 0x4c);
+                *(void **)((char *)this + 0x58) = 0;
+                *(void **)((char *)this + 0x54) = 0;
+                *(void **)((char *)this + 0x50) = this;
+                scroll->m_type = 13;
+                return scroll;
+            }
+        }
+        else
+        {
+            unsigned limit = *(unsigned *)((char *)this + 0x130);
+            unsigned short line = *(unsigned short *)((char *)this + 0x180);
+            if (renderer.FUN_0061d5e0() + line + 1 <= limit)
+            {
+                *(unsigned short *)((char *)this + 0x180) = line + 1;
+                renderer.FUN_0061d570(*(unsigned short *)((char *)this + 0x180), *(int *)((char *)this + 0x130));
+                RHMenuEvent *scroll = (RHMenuEvent *)((char *)this + 0x4c);
+                *(void **)((char *)this + 0x58) = 0;
+                *(void **)((char *)this + 0x54) = 0;
+                *(void **)((char *)this + 0x50) = this;
+                scroll->m_type = 12;
+                return scroll;
+            }
+        }
+        return *(RHMenuEvent *volatile *)&result;
+    }
+    else
+    {
+        unsigned short hit = FUN_00534050(input);
+        if (*(unsigned short *)((char *)this + 0x17e) != hit)
+        {
+            *(unsigned short *)((char *)this + 0x17e) = hit;
+            RHMenuEvent *event = (RHMenuEvent *)((char *)this + 0x4c);
+            *(void **)((char *)this + 0x50) = this;
+            event->m_type = 14;
+            *(void **)((char *)this + 0x54) = (void *)(unsigned)hit;
+            *(void **)((char *)this + 0x58) = 0;
+            result = event;
+        }
+        if ((unsigned char)((RHMenuLoadSaveText *)this)->FUN_00533cd0(input))
+        {
+            unsigned short flags = *(const unsigned short *)((const char *)&input + 0xa);
+            if (flags & 0x1)
+            {
+                *(unsigned short *)((char *)this + 0x17c) = *(unsigned short *)((char *)this + 0x17e);
+                RHMenuWindowUI *ui = *(RHMenuWindowUI *const *)((const char *)&input + 0x10);
+                ui->m_17f0 = 0;
+                ui->m_17f4 = 0;
+                RHMenuEvent *click = (RHMenuEvent *)((char *)this + 0x4c);
+                *(void **)((char *)this + 0x58) = 0;
+                *(void **)((char *)this + 0x50) = this;
+                *(void **)((char *)this + 0x54) = (void *)(unsigned)*(unsigned short *)((char *)this + 0x17c);
+                *(int *)((char *)this + 0x7c) = 1;
+                click->m_type = 15;
+                return click;
+            }
+            if (flags & 0x8)
+            {
+                RHMenuWindowUI *ui = *(RHMenuWindowUI *const *)((const char *)&input + 0x10);
+                ui->m_17f0 = 0;
+                ui->m_17f4 = 0;
+                RHMenuEvent *click = (RHMenuEvent *)((char *)this + 0x4c);
+                *(void **)((char *)this + 0x54) = 0;
+                *(void **)((char *)this + 0x58) = 0;
+                *(void **)((char *)this + 0x50) = this;
+                *(int *)((char *)this + 0x7c) = 1;
+                click->m_type = 2;
+                return click;
+            }
+        }
+        else
+        {
+            *(int *)((char *)this + 0x7c) = 3;
+        }
     }
     return result;
 }
@@ -999,7 +1203,9 @@ void EmitRHMenuLoadSaveHelpers(RHMenuLoadSaveListBase *list, RHMenuLoadSaveMap *
     slots->RHMenuLoadSaveSlots::SBWidgetListBox();
     slots->FUN_00532cf0(0);
     slots->FUN_00532d30(*(const SBGeoPoint2D *)list);
+    slots->FUN_00532db0(*(const SBGeoPoint2D *)list);
     slots->FUN_00533020(*(const SBGeoPoint2D *)list);
+    slots->FUN_00533b0(*(const SBGeoPoint2D *)list);
     slots->FUN_00533590(*(const SBGeoPoint2D *)list);
     box->FUN_00532d10(0);
 }
@@ -1041,4 +1247,24 @@ RHMenuEvent *RHMenuLoadSaveText::FUN_00533f70(const SBGeoPoint2D &input)
         }
     }
     return scroll;
+}
+
+// Parked: this/list-count coloring and EH frame size residual.
+// STUB: GAME 0x00534050
+unsigned short RHMenuLoadSaveSlots::FUN_00534050(const SBGeoPoint2D &input)
+{
+    for (unsigned short index = 0; index < (int)*(unsigned *)((char *)this + 0x10c); ++index)
+    {
+        SBGeoBoundingBox2D box = ((RHMenuLoadSaveText *)this)->m_renderer.FUN_0061d3f0(
+            (unsigned short)(index - *(unsigned short *)((char *)this + 0x180)),
+            (int)(unsigned long)((RHUnk0046eb30 *)((char *)this + 0x158))->Get(index));
+        if (box.FUN_00608400(input))
+            return index;
+    }
+    return 0xffff;
+}
+
+void EmitRHMenuLoadSaveSlotsExtra(RHMenuLoadSaveSlots *slots, const int &key)
+{
+    slots->FUN_00534050(*(const SBGeoPoint2D *)&key);
 }

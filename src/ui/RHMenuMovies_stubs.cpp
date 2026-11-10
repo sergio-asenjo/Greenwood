@@ -18,5 +18,3 @@ bool RHMenuCloseCalls::FUN_0052b520(int, void *, void *)
 
 
 #include "SBDrawManager.h"
-
-void RHUnk005ef320::FUN_005e4810(int, int, int) {}

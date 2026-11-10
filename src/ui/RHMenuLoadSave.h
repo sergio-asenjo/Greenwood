@@ -102,8 +102,11 @@ public:
     ~SBWidgetListBox() {}
     void *FUN_00532cf0(unsigned flags);
     RHMenuEvent *FUN_00532d30(const SBGeoPoint2D &point);
+    RHMenuEvent *FUN_00532db0(const SBGeoPoint2D &input);
     RHMenuEvent *FUN_00533020(const SBGeoPoint2D &input);
+    RHMenuEvent *FUN_00533b0(const SBGeoPoint2D &input);
     RHMenuEvent *FUN_00533590(const SBGeoPoint2D &input);
+    unsigned short FUN_00534050(const SBGeoPoint2D &input);
     SBList<unsigned long> m_104;
     SBList<std::wstring> m_128;
     SBList<unsigned long> m_158;

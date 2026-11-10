@@ -42,6 +42,40 @@ void *RHMenuWindow::FUN_00543f80(unsigned flags)
     return this;
 }
 
+#include "RHMobileUnk00607da0.h"
+#include "RHUnk005fc3b0.h"
+#include "SBResourceManager.h"
+
+SBGeoVector2D operator*(float, const SBGeoVector2D &);
+
+// FUNCTION: GAME 0x00543fa0
+RHMenuWindow::RHMenuWindow(RHMenuWindow *parent, RHMenuWindowScreen *screen, long resource, bool saveBackground)
+    : m_draw((RHUnkFXDraw *)g_unk0x6c11d0), m_screen(screen), m_parent(parent),
+      m_resource(resource), m_resourceHeld(true)
+{
+    SBGeoVector2D size;
+    SBGeoBoundingBox2D bounds;
+    SBGeoVector2D position;
+    unsigned long surface;
+    ((SBUIUnk006006f0 *)m_resourceOwner)->FUN_006006f0(resource, (RHUnk005fc3b0 &)size);
+    ((SBResourceManager *)m_resourceOwner)->FUN_00600920(resource, 0, surface);
+    position = 0.5f * SBGeoPoint2D(m_draw->FUN_005e56c0(0),
+        m_draw->FUN_005e5750(0)).FUN_005fc200(size);
+    ((RHMobileUnk00607da0 *)&bounds)->FUN_00607da0((const RHMobileUnk00607da0 &)
+        SBGeoBoundingBox2D(position, position.Unk005fc190(size)));
+    typedef unsigned long (RHUnkFXDraw::*CreateSurface)(unsigned short, unsigned short, unsigned long, bool);
+    m_saveSurface = (m_draw->*reinterpret_cast<CreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(
+        m_draw->FUN_005e56c0(0), m_draw->FUN_005e5750(0), 0, false);
+    unsigned long screenSurface = m_screen->FUN_0053bf30()->m_17ec;
+    ((SBDrawManager *)m_draw)->FUN_005e6440(screenSurface, 0, m_saveSurface, 0, 0);
+    if (saveBackground) {
+        unsigned long background = m_screen->FUN_0053bf30()->m_17ec;
+        ((SBDrawManager *)m_draw)->FUN_005e6440(0, 0, background, 0, 0);
+    }
+    unsigned long background = m_screen->FUN_0053bf30()->m_17ec;
+    ((SBDrawManager *)m_draw)->FUN_005e6440(surface, 0, background, &bounds, 1);
+}
+
 // FUNCTION: GAME 0x005442b0
 RHMenuWindow::~RHMenuWindow()
 {
@@ -184,3 +218,10 @@ void RHMenuWindow::FUN_00544b80(bool display, bool modal)
 {
     m_screen->FUN_0053bb80(this, display, modal);
 }
+
+DECOMP_SIZE_ASSERT(RHMenuWindow, 0xc8)
+DECOMP_STATIC_ASSERT(offsetof(RHMenuWindow, m_draw) == 0xb0)
+DECOMP_STATIC_ASSERT(offsetof(RHMenuWindow, m_screen) == 0xb4)
+DECOMP_STATIC_ASSERT(offsetof(RHMenuWindow, m_resource) == 0xbc)
+DECOMP_STATIC_ASSERT(offsetof(RHMenuWindow, m_saveSurface) == 0xc0)
+DECOMP_STATIC_ASSERT(offsetof(RHMenuWindow, m_resourceHeld) == 0xc4)

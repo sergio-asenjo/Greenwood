@@ -4,6 +4,7 @@
 struct RHPortraitQuickEntry;
 struct RHPortraitWidgetEvent;
 class RHPortraitPCList;
+class RHPCDescription;
 
 #include "RHWidgetPortraitClass.h"
 #include "RHPortraitRootList.h"
@@ -11,6 +12,7 @@ class RHPortraitPCList;
 class __declspec(novtable) RHPortraitQuickList : public RHPortraitRootList
 {
 public:
+    bool FUN_005dcfd0(std::vector<RHPCDescription *> &descriptions);
     bool FUN_005dd1d0(RHPortraitPCList &list);
     RHPortraitWidgetEvent *FUN_005dd370(const void *input);
     int m_b0;

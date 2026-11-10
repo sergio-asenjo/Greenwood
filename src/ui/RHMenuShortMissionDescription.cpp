@@ -72,6 +72,12 @@ RHMenuShortMissionDescription::~RHMenuShortMissionDescription()
 
 extern wchar_t g_unk0x006c0b50[1];
 
+// FUNCTION: GAME 0x00540ec0
+SBFrameEvent *RHMenuShortMissionDescription::FUN_00540ec0(const void *input)
+{
+    return ((SBFrameWnd *)this)->FUN_0061a610(input);
+}
+
 // FUNCTION: GAME 0x00540970
 bool RHMenuShortMissionDescription::Create()
 {
@@ -177,4 +183,5 @@ void EmitRHShortMissionUpdate(RHMenuShortMissionDescription *menu, RHMission *mi
 {
     ((RHShortMissionUpdateCalls *)menu)->FUN_00540ed0(mission);
     menu->FUN_00541060();
+    menu->FUN_00540ec0(0);
 }

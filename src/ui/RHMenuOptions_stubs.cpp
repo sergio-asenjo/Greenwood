@@ -8,9 +8,6 @@
 
 
 
-// Target 0x00539250, __thiscall, ret 0xc.
-bool RHMenuOptions::FUN_00539250(int, void *, void *) { return false; }
-
 
 
 // Target 0x00538860, __thiscall.

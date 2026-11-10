@@ -222,7 +222,8 @@ unsigned long RHMenuPopupScroll::FUN_0053a610(unsigned long index)
         std::vector<int> &ids = *(std::vector<int> *)((char *)set + 0x1c);
         if (index < ids.size())
             return *(set->m_first + index);
-        manager->FUN_00600f10(*(ids.begin() + index));
+        int value = set->m_first[index];
+        manager->FUN_00600f10(value);
     }
     return FUN_0053a5f0();
 }

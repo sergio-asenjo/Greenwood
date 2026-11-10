@@ -8,11 +8,7 @@ public:
     bool Unk0049d560(int action);
 };
 
-class RHSectorGateCalls
-{
-public:
-    bool FUN_0057deb0(RHElementActor *actor, bool mode);
-};
+#include "RHSectorGateCalls.h"
 
 #include "RHSectorLift.h"
 

@@ -3,8 +3,6 @@
 // SYNTHETIC: GAME 0x00544cf0
 // RHFocusManager::~RHFocusManager
 
-RHMenuWindow::RHMenuWindow(RHMenuWindow *, RHMenuWindowScreen *, long, bool) {}
-
 // TEMPLATE: GAME 0x005014a0 FOLDED
 // ?BuyNode@RHFocusShortcutTree@@QAEPAURHFocusShortcutNode@@PAU2@H@Z
 RHFocusShortcutNode *RHFocusShortcutTree::BuyNode(RHFocusShortcutNode *parent, int color)

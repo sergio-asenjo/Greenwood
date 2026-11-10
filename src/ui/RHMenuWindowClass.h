@@ -13,6 +13,7 @@ class RHMenuWindow : public RHPortraitRootList
 {
 public:
     RHMenuWindow(RHMenuWindow *parent, RHMenuWindowScreen *screen, bool saveBackground);
+    RHMenuWindow(RHMenuWindow *parent, RHMenuWindowScreen *screen, long resource, bool saveBackground);
     ~RHMenuWindow();
     void *FUN_00543f80(unsigned flags);
     void FUN_00544300();
