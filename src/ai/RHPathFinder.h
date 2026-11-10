@@ -104,17 +104,7 @@ public:
 
 #include "RHSectorActorIterator.h"
 #include "RHMotionAreaList.h"
-
-// SIZE 0x24
-class RHPathWorkList : public RHMotionAreaListStorage<void *>
-{
-public:
-    RHScriptNode *cursor; // 0x0c
-    bool valid; // 0x10
-    int index; // 0x14
-    undefined m_18[0x0c]; // 0x18
-    RHPathWorkList() : RHMotionAreaListStorage<void *>(std::allocator<void *>()), valid(true) {}
-};
+#include "RHPathWorkList.h"
 
 #include "RHMalignityQueryList.h"
 
@@ -167,11 +157,7 @@ public:
     void Unk00464630();
 };
 
-class RHPathActorInfo
-{
-public:
-    const SBGeoBoundingBox2D &FUN_00560450();
-};
+#include "RHPathActorInfo.h"
 
 #include "RHPathRequest.h"
 

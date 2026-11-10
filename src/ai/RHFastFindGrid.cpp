@@ -62,6 +62,79 @@ RHSeqList::RHSeqList(const char &allocator)
 
 #include "RHMotionAreaList.h"
 #include "RHElementAreaShape.h"
+#include "RHSectorCore.h"
+
+// STUB: GAME 0x004e8bd0
+void RHFastFindGrid::FUN_004e8bd0(void *value, unsigned short layer, bool mode)
+{
+    SBGeoBoundingBox2D bounds;
+    SBGeoBoundingBox2D cellBounds;
+    SBGeoPoint2D point;
+    unsigned count = m_sectors.size();
+    if (*(short *)((char *)value + 0x38) + 1 > (int)(unsigned short)count)
+    {
+        while ((int)(unsigned short)count < *(short *)((char *)value + 0x38))
+        {
+            void *empty = 0;
+            m_sectors.InsertLast(empty);
+            ++count;
+        }
+        m_sectors.InsertLast(value);
+    }
+    else
+        m_sectors.m_first[*(short *)((char *)value + 0x38)] = value;
+    if ((unsigned short)((RHUnkSectorPoints *)((char *)value + 4))->Unk0060ce80() > 0)
+    {
+        if (mode)
+        {
+            RHFastFindPointerArray &array = *(RHFastFindPointerArray *)((char *)m_3ea4 + layer * 0xc0 + 0x40);
+            array.InsertLast(value);
+        }
+        bounds = *(SBGeoBoundingBox2D *)((char *)value + 0x3c);
+        short firstX = (short)bounds.m_p0.m_x >> 6;
+        short firstY = (short)bounds.m_p0.m_y >> 6;
+        short lastX = (short)bounds.m_p1.m_x >> 6;
+        short lastY = (short)bounds.m_p1.m_y >> 6;
+        if (firstX < 0) firstX = 0;
+        else if (firstX >= m_width) firstX = m_width - 1;
+        if (firstY < 0) firstY = 0;
+        else if (firstY >= m_height) firstY = m_height - 1;
+        if (lastX < 0) lastX = 0;
+        else if (lastX >= m_width) lastX = m_width - 1;
+        if (lastY < 0) lastY = 0;
+        else if (lastY >= m_height) lastY = m_height - 1;
+        unsigned cell = (m_height * layer + firstY) * m_width + firstX;
+        int skip = m_width - (lastX - firstX) - 1;
+        if ((unsigned short)firstY <= (unsigned short)lastY)
+        {
+            unsigned y = (unsigned short)firstY;
+            unsigned rows = (unsigned short)lastY - y + 1;
+            do
+            {
+                if ((unsigned short)firstX <= (unsigned short)lastX)
+                {
+                    unsigned x = (unsigned short)firstX;
+                    unsigned columns = (unsigned short)lastX - x + 1;
+                    do
+                    {
+                        point.m_x = (float)(int)(x << 6);
+                        point.m_y = (float)(int)(y << 6);
+                        cellBounds.FUN_00609050(point, point.Unk005fc190(*(SBGeoPoint2D *)g_unk0x006c0aa8));
+                        if (((RHElementAreaShape *)((char *)value + 4))->FUN_0060c650(cellBounds))
+                        {
+                            RHFastFindPointerArray &array = *(RHFastFindPointerArray *)(*(char **)((char *)this + 0x3f80) + cell * 0xa0 + 0x40);
+                            array.InsertLast(value);
+                        }
+                        ++x;
+                        ++cell;
+                    } while (--columns != 0);
+                }
+                cell += skip;
+                ++y;
+            } while (--rows != 0);
+        }
+    }
+}
 
 // Parked: list allocation binding, cleanup temporaries and coordinate shift widths differ.
 // STUB: GAME 0x004e9570
@@ -78,6 +151,108 @@ bool RHFastFindGrid::FUN_004e9570(const SBGeoPoint2D &point, unsigned short laye
             return true;
     }
     return false;
+}
+
+#include "RHSpatialLines.h"
+#include "RHUnkSectorPoints.h"
+#include <stddef.h>
+
+DECOMP_SIZE_ASSERT(RHUnk0051f0f0, 0x20)
+DECOMP_SIZE_ASSERT(RHUnk005214b0, 0x24)
+DECOMP_SIZE_ASSERT(RHMobileUnk0051fd10, 0x44)
+DECOMP_SIZE_ASSERT(RHUnk00521500, 0x24)
+DECOMP_SIZE_ASSERT(RHUnk0051fc10, 0x34)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0051f0f0, m_00) == 4)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0051f0f0, m_14) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0051f0f0, m_18) == 0x18)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0051f0f0, m_1c) == 0x1c)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005214b0, m_20) == 0x20)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk00521500, m_20) == 0x20)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0051fc10, m_30) == 0x30)
+DECOMP_STATIC_ASSERT(offsetof(RHSector, m_30) == 0x30)
+DECOMP_STATIC_ASSERT(offsetof(RHSector, m_34) == 0x34)
+DECOMP_STATIC_ASSERT(offsetof(RHSector, m_38) == 0x38)
+
+// FUNCTION: GAME 0x004e99e0
+void RHFastFindGrid::FUN_004e99e0(void *value, unsigned short layer, bool mode)
+{
+    SBGeoPoint2D previous;
+    SBGeoPoint2D current;
+    RHSector *sector = (RHSector *)value;
+    RHUnkSectorPoints &points = *(RHUnkSectorPoints *)((char *)sector + 4);
+    unsigned count = points.Unk0060ce80();
+    previous = points.Unk0060cef0((unsigned short)count - 1);
+    if ((unsigned short)count > 0)
+    {
+        unsigned index = 0;
+        unsigned remaining = (unsigned short)count;
+        RHUnk0051f0f0 *line;
+        do
+        {
+            current = points.Unk0060cef0(index);
+            if ((unsigned char)((unsigned)sector->m_30 >> 1) & 1)
+            {
+                RHMobileUnk0051fd10 *repulsive = new RHMobileUnk0051fd10(0.0f, 5.0f);
+                repulsive->SetReverse((unsigned char)sector->m_30 & 1);
+                repulsive->SetEnabled(sector->m_34);
+                repulsive->First() = previous;
+                repulsive->Second() = current;
+                repulsive->SetSector(sector->m_38);
+                repulsive->FUN_0051fdc0();
+                line = repulsive;
+            }
+            else
+            {
+                if (((unsigned char)((unsigned)sector->m_30 >> 2) & 1) &&
+                    !((unsigned char)((unsigned)sector->m_30 >> 6) & 1))
+                {
+                    RHUnk00521500 *jump = new RHUnk00521500;
+                    jump->SetEnabled(sector->m_34);
+                    bool reverse = (unsigned char)sector->m_30 & 1;
+                    if (reverse)
+                        jump->m_14 |= 1;
+                    else
+                        jump->m_14 &= ~1;
+                    jump->SetFlags(0x48);
+                    jump->First() = previous;
+                    jump->Second() = current;
+                    jump->SetTarget(*(void **)((char *)sector + 0x58));
+                    line = jump;
+                }
+                if ((unsigned char)((unsigned)sector->m_30 >> 4) & 1)
+                {
+                    line = new RHUnk0051f0f0;
+                    line->SetFlags(0x28);
+                    line->m_1c = (unsigned)sector;
+                    line->SetEnabled(sector->m_34);
+                    line->First() = previous;
+                    line->Second() = current;
+                }
+                if ((unsigned char)((unsigned)sector->m_30 >> 3) & 1)
+                {
+                    RHUnk0051fc10 *door = new RHUnk0051fc10;
+                    door->SetFlags(0x18);
+                    door->m_30 = (int)sector;
+                    door->SetEnabled(sector->m_34);
+                    door->First() = previous;
+                    door->Second() = current;
+                    line = door;
+                }
+                if ((unsigned char)((unsigned)sector->m_30 >> 16) & 1)
+                {
+                    line = new RHUnk0051f0f0;
+                    line->SetFlags(0x808);
+                    line->m_1c = (unsigned)sector;
+                    line->SetEnabled(sector->m_34);
+                    line->First() = previous;
+                    line->Second() = current;
+                }
+            }
+            FUN_004ed690(line, layer, mode);
+            previous = current;
+            ++index;
+        } while (--remaining != 0);
+    }
 }
 
 // FUNCTION: GAME 0x004e9d00
@@ -1430,17 +1605,17 @@ bool RHFastFindGrid::Serialize(SBFile &file)
         for (unsigned short i = 0; i <= m_layerCount - 1; ++i)
         {
             RHFastFindLayer &layer = m_layers[i];
-            RHUnk0054f870 **paths = layer.m_paths;
+            RHPatch **paths = layer.m_paths;
             for (short j = layer.m_pathCount - 1; j >= 0; --j)
-                paths[j]->Unk00550220();
+                paths[j]->FUN_00550220();
         }
     }
     for (unsigned short i = 0; i <= m_layerCount - 1; ++i)
     {
         unsigned short count = m_layers[i].m_pathCount;
-        RHUnk0054f870 **paths = m_layers[i].m_paths;
+        RHPatch **paths = m_layers[i].m_paths;
         for (unsigned short j = 0; j < count; ++j)
-            if (!paths[j]->Unk0054f870(file))
+            if (!paths[j]->Serialize(file))
                 return false;
     }
     unsigned short gateCount = m_gates.size();

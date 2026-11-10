@@ -273,12 +273,15 @@ public:
     bool Serialize(SBFile &file);
 };
 
+#ifndef RHRECONNAISSANCEENGINE_VIEW
+#define RHRECONNAISSANCEENGINE_VIEW
 class RHReconnaissanceEngine
 {
 public:
     bool Unk004c3cb0(SBFile &file, void *&value);
     bool Unk004c4110(SBFile &file, void *&value);
 };
+#endif
 
 struct RHArtificialIntelligenceInitialEntry
 {
@@ -404,6 +407,7 @@ public:
 class RHScriptBatchCalls
 {
 public:
+    bool Unk0049d560(int action);
     void Unk00486f50(void *target, bool flag);
     void Unk00464630();
     void Unk0046bcf0(int first, int second);

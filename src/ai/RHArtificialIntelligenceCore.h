@@ -10,6 +10,7 @@
 #include "RHArtificialIntelligenceTripleList.h"
 #include "RHArtificialIntelligenceCachedList.h"
 #include "RHMalignityPosition.h"
+#include "RHMalignityStimulus.h"
 
 class SBFile;
 class SBGeoPoint2D;
@@ -58,6 +59,14 @@ public:
     virtual void V38() = 0;
     virtual void V3c(int value) = 0;
     virtual void V40(unsigned short first, unsigned short second, unsigned short third) = 0;
+    void DispatchActorEvent(RHElementActor *actor, unsigned event)
+    {
+        RHMalignityStimulus stimulus;
+        stimulus.m_actor = actor;
+        stimulus.m_20 = event;
+        stimulus.m_type = 3;
+        V24(&stimulus);
+    }
     bool InitState();
     void Unk00416710(unsigned value);
     unsigned short Unk0041a420();

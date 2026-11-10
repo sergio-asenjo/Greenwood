@@ -145,11 +145,7 @@ public:
     SBGeoPoint2D FUN_00608f40() const;
 };
 #endif
-class RHPathActorInfo
-{
-public:
-    const SBGeoBoundingBox2D &FUN_00560450();
-};
+#include "RHPathActorInfo.h"
 
 #include "RHUnk00608f10.h"
 

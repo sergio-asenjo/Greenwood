@@ -15,13 +15,7 @@ struct RHUnkPathRegistry
 };
 extern RHUnkPathRegistry *g_unk0x6c0b9c;
 
-class RHUnkPathGeometry
-{
-public:
-    bool Unk004f9260(const SBGeoPoint2D &a, const SBGeoPoint2D &b, unsigned short layer);
-    bool Unk004f9170(const SBGeoPoint2D &a, const SBGeoPoint2D &b, unsigned short layer, void *radius);
-    bool Unk004fbec0(SBFile &file, void *&value);
-};
+#include "RHPathGeometryCalls.h"
 
 class RHUnkPathEngine
 {

@@ -62,7 +62,7 @@ struct RHFastFindLayer
     char m_20[8];
     unsigned short m_pathCount;
     char m_2a[2];
-    class RHUnk0054f870 **m_paths;
+    class RHPatch **m_paths;
 };
 
 class SBGeoBoundingBox2D;
@@ -95,12 +95,7 @@ public:
     bool m_changed;
 };
 
-class RHUnk0054f870
-{
-public:
-    bool Unk0054f870(SBFile &file);
-    void Unk00550220();
-};
+#include "RHPatchClass.h"
 
 class RHFastFindSerializableGate
 {
@@ -428,13 +423,6 @@ public:
 
 void FUN_00418390(RHUnk005223f0 *hole);
 
-class RHUnkPathGeometry
-{
-public:
-    bool Unk004fbec0(SBFile &file, void *&value);
-    bool Unk004fc030(SBFile &file, void *&value);
-    bool Unk004fc180(SBFile &file, void *&value);
-    bool Unk004fc2d0(SBFile &file, void *&value);
-};
+#include "RHPathGeometryCalls.h"
 
 #endif

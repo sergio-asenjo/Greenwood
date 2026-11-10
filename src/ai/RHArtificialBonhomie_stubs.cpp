@@ -50,11 +50,10 @@ void RHArtificialBonhomie::FUN_0040de30()
     RHMalignityField<RHMalignityActorCalls *>(RHBonhomieBase(this), 4)->FUN_0048d050();
     if (RHMalignityField<RHElementActorCivilian *>(RHBonhomieBase(this), 4)->FUN_00470ca0())
         ((RHArtificialIntelligence *)RHBonhomieBase(this))->V3c(1);
-    char *base = RHBonhomieBase(this);
-    if (!(RHMalignityField<unsigned char>(base, 0x174) > 0) &&
-        RHBonhomieHasWaypoints(RHBonhomieActorPath(RHMalignityField<void *>(base, 4))))
+    if (!(RHMalignityField<unsigned char>(RHBonhomieBase(this), 0x174) > 0) &&
+        RHBonhomieHasWaypoints(RHBonhomieActorPath(RHMalignityField<void *>(RHBonhomieBase(this), 4))))
     {
-        RHBonhomieActorPath(RHMalignityField<void *>(base, 4))->TestIfPathIsFine(RHMalignityField<RHElementActor *>(base, 4));
+        RHBonhomieActorPath(RHMalignityField<void *>(RHBonhomieBase(this), 4))->TestIfPathIsFine(RHMalignityField<RHElementActor *>(RHBonhomieBase(this), 4));
         RHMalignityField<unsigned char>(RHBonhomieBase(this), 0x70) = 1;
         RHMalignityField<int>(RHBonhomieBase(this), 0x1c) = RHMalignityField<int>(RHBonhomieBase(this), 0x14);
         if (activate)
@@ -62,10 +61,11 @@ void RHArtificialBonhomie::FUN_0040de30()
     }
     else
     {
-        RHMalignityField<unsigned char>(base, 0x70) = 0;
+        RHMalignityField<unsigned char>(RHBonhomieBase(this), 0x70) = 0;
         if (activate)
         {
-            ((RHArtificialIntelligence *)RHBonhomieBase(this))->Unk00416710(rand() % 40 + 20);
+            int delay = rand() % 40 + 20;
+            ((RHArtificialIntelligence *)RHBonhomieBase(this))->Unk00416710(delay);
             ((RHArtificialIntelligence *)RHBonhomieBase(this))->V10(1, 0xb);
             RHMalignityField<int>(RHBonhomieBase(this), 0x1c) = RHMalignityField<int>(RHBonhomieBase(this), 0x14);
         }

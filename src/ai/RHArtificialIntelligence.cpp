@@ -20,6 +20,12 @@ DECOMP_STATIC_ASSERT(offsetof(RHArtificialIntelligenceActor, m_data) == 0x50)
 // TEMPLATE: GAME 0x004e6c10 FOLDED
 // ?clear@?$list@URHArtificialIntelligenceTriple@@V?$allocator@URHArtificialIntelligenceTriple@@@std@@@std@@QAEXXZ
 
+// TEMPLATE: GAME 0x004e6c10 FOLDED
+// ?clear@?$list@VRHStimulus@@V?$allocator@VRHStimulus@@@std@@@std@@QAEXXZ
+
+// TEMPLATE: GAME 0x0046eb30 FOLDED
+// ?erase@?$list@VRHStimulus@@V?$allocator@VRHStimulus@@@std@@@std@@QAE?AViterator@12@V312@@Z
+
 // TEMPLATE: GAME 0x004e52a0 FOLDED
 // ??1?$list@PAXV?$allocator@PAX@std@@@std@@QAE@XZ
 
@@ -455,6 +461,73 @@ bool RHStimulus::Serialize(SBFile &file)
 
 #undef RHAI_STIMULUS_ACCESS
 #undef RHAI_STIMULUS_POINTER
+
+#define RHAI_STIMULUS_FIELD(type, offset, stimulus) (*(const type *)((stimulus).m_00 + (offset)))
+#define RHAI_STIMULUS_DIFF(type, offset) (RHAI_STIMULUS_FIELD(type, offset, *this) != RHAI_STIMULUS_FIELD(type, offset, other))
+#define RHAI_STIMULUS_POINT_DIFF(offset) \
+    (RHAI_STIMULUS_FIELD(SBGeoPoint2D, offset, *this).m_x != RHAI_STIMULUS_FIELD(SBGeoPoint2D, offset, other).m_x || \
+     RHAI_STIMULUS_FIELD(SBGeoPoint2D, offset, *this).m_y != RHAI_STIMULUS_FIELD(SBGeoPoint2D, offset, other).m_y)
+
+// Parked: VC6 cross-jumps different identical case tails than the target.
+// STUB: GAME 0x0040f840
+bool RHStimulus::operator==(RHStimulus &other)
+{
+    if (m_20 != other.m_20 || m_type != other.m_type)
+        return false;
+    switch (m_type)
+    {
+    case 0:
+        break;
+    case 1:
+        if (RHAI_STIMULUS_POINT_DIFF(0) || RHAI_STIMULUS_DIFF(int, 16))
+            return false;
+        break;
+    case 2:
+        if (RHAI_STIMULUS_POINT_DIFF(0))
+            return false;
+        break;
+    case 3:
+        if (RHAI_STIMULUS_DIFF(void *, 0))
+            return false;
+        break;
+    case 4:
+        if (RHAI_STIMULUS_POINT_DIFF(0) || RHAI_STIMULUS_DIFF(short, 16))
+            return false;
+        break;
+    case 5:
+        if (RHAI_STIMULUS_DIFF(void *, 0))
+            return false;
+        break;
+    case 6:
+        if (RHAI_STIMULUS_DIFF(void *, 0) || RHAI_STIMULUS_DIFF(void *, 4))
+            return false;
+        break;
+    case 7:
+        if (RHAI_STIMULUS_POINT_DIFF(4) || RHAI_STIMULUS_DIFF(void *, 0))
+            return false;
+        break;
+    case 8:
+        if (RHAI_STIMULUS_POINT_DIFF(4))
+            return false;
+        break;
+    case 9:
+        if (RHAI_STIMULUS_DIFF(short, 0))
+            return false;
+        break;
+    default:
+        return false;
+    }
+    return true;
+}
+
+#undef RHAI_STIMULUS_POINT_DIFF
+#undef RHAI_STIMULUS_DIFF
+#undef RHAI_STIMULUS_FIELD
+
+bool EmitRHStimulusCompare(RHStimulus &first, RHStimulus &second)
+{
+    return first == second;
+}
 
 class RHUnk0040fd10
 {
@@ -1018,11 +1091,7 @@ void RHArtificialIntelligence::FUN_00411a00(unsigned flags)
 
 #include "RHSequenceAppendCalls.h"
 
-class RHUnk0058a3d0
-{
-public:
-    void *Unk(void *context, int value, void *sequence);
-};
+#include "RHSequenceLaunchCalls.h"
 
 class RHUnk6c1040;
 extern RHUnk6c1040 *g_unk0x6c1040;
@@ -1238,9 +1307,9 @@ bool RHArtificialIntelligence::InitState()
     {
         m_173 = done;
         V10(1, 17);
-        RHElementActor *value = (RHElementActor *)entry;
-        if (((RHSectorActorList *)&g_unk0x006c0758)->Unk004b8f80(value, true) == -1)
-            g_unk0x006c0758.InsertLast((void *const &)value);
+        void *value = (void *)entry;
+        if (((RHSectorActorList *)&g_unk0x006c0758)->Unk004b8f80((RHElementActor *const &)value, true) == -1)
+            g_unk0x006c0758.InsertLast(value);
     }
     else
     {
@@ -1295,7 +1364,7 @@ bool RHArtificialIntelligence::InitState()
         default:
             V10(1, 11);
             Unk00416710(Unk0041a420());
-            SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp", 3734,
+            SBAssert(0, g_unk0x006a73c8, 3734,
                      // STRING: GAME 0x006a7700
                      "Actor at (%f, %f): Initial action %u not supported by AI.",
                      m_actor->m_data->m_20.m_x, m_actor->m_data->m_20.m_y, (unsigned short)m_initialAction);
@@ -1544,7 +1613,7 @@ DECOMP_STATIC_ASSERT(offsetof(RHArtificialIntelligencePathCursor, m_id) == 8)
     { \
         SBString *error = file.GetError(); \
         const char *reason = error->m_chars ? error->m_chars : ""; \
-        SBAssert(0, "P:\\Robin Hood\\RHartificialintelligence.cpp", line, "Serialize failed reason is %s", reason); \
+        SBAssert(0, g_unk0x006a73c8, line, "Serialize failed reason is %s", reason); \
         return false; \
     }
 
@@ -1854,6 +1923,66 @@ short FUN_00416740()
 short EmitRHAIConsiderations()
 {
     return FUN_00416740();
+}
+
+extern double g_unk0x006774b8;
+
+// Parked: target keeps maximum in EBP and the consideration level in its own slot.
+// STUB: GAME 0x00416800
+short FUN_00416800(int distribution, short minimum, short maximum)
+{
+    short range = maximum - minimum;
+    unsigned char level = (unsigned char)FUN_00416740();
+    short value;
+    switch (distribution)
+    {
+    case 3:
+        return level * range / 100 + minimum;
+    case 0:
+        if (range == 0)
+            return minimum;
+        return rand() % range + minimum;
+    case 2:
+    {
+        int scale = range;
+        short spread = (short)(scale * 0.333);
+        int offset = (int)(scale * g_unk0x006774b8);
+        short center = level * scale / 100 + minimum;
+        short sum;
+        if (spread > 0)
+            sum = rand() % spread + rand() % spread + rand() % spread;
+        else
+            sum = 0;
+        value = sum + (center - offset);
+        break;
+    }
+    case 1:
+    {
+        int scale = range;
+        short spread = (short)(scale * 0.166);
+        int offset = (int)(scale * 0.25);
+        short center = level * scale / 100 + minimum;
+        short sum;
+        if (spread > 0)
+            sum = rand() % spread + rand() % spread + rand() % spread;
+        else
+            sum = 0;
+        value = sum + (center - offset);
+        break;
+    }
+    default:
+        return 0;
+    }
+    if (value < minimum)
+        value = minimum;
+    if (value > maximum)
+        value = maximum;
+    return value;
+}
+
+short EmitRHAIRandomValue()
+{
+    return FUN_00416800(0, 0, 0);
 }
 
 // FUNCTION: GAME 0x00416b30
@@ -2678,19 +2807,19 @@ void RHArtificialIntelligence::Unk004195f0(unsigned short flags)
 
 extern unsigned *g_unk0x006c08a4;
 
-// Parked: narrowed actor loads and speech-field store scheduling differ.
-// STUB: GAME 0x00419970
+// FUNCTION: GAME 0x00419970
 void RHArtificialIntelligence::Unk00419970(int remark, int time, int flags)
 {
     if (flags & 0x1000)
-        flags |= (unsigned char)(RHAIField<unsigned>(m_actor, 4) & 0x1f) == 0x14 ? 4 : 2;
+        flags |= (RHAIField<unsigned>(m_actor, 4) & 0x1f) == 0x14 ? 4 : 2;
     RHArtificialIntelligenceForbiddenRemark *speech = (RHArtificialIntelligenceForbiddenRemark *)operator new(sizeof(RHArtificialIntelligenceForbiddenRemark));
     speech->remark = remark;
-    speech->soldier = (unsigned char)(RHAIField<unsigned>(m_actor, 4) & 0x1f) == 0x14;
-    speech->flags = flags;
+    speech->soldier = (RHAIField<unsigned>(m_actor, 4) & 0x1f) == 0x14;
     speech->deadline = *g_unk0x006c08a4 + (unsigned short)time;
+    speech->flags = flags;
     speech->voice = m_actor->V178();
-    speech->actorID = RHAIField<unsigned>(m_actor, 0x0c);
+    unsigned actorID = RHAIField<unsigned>(m_actor, 0x0c);
+    speech->actorID = actorID;
     RHArtificialIntelligenceNode *head = g_unk0x006c07b8.m_head;
     RHArtificialIntelligenceNode *previous = head->m_prev;
     RHArtificialIntelligenceNode *node = (RHArtificialIntelligenceNode *)operator new(sizeof(RHArtificialIntelligenceNode));

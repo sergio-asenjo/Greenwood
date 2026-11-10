@@ -38,8 +38,7 @@ public:
     }
     void ClearNodes()
     {
-        typedef std::list<unsigned long> Native;
-        ((Native *)this)->clear();
+        this->clear();
     }
     void *cursor;
     bool dirty;

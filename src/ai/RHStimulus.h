@@ -8,6 +8,7 @@ class RHStimulus
 {
 public:
     bool Serialize(SBFile &file);
+    bool operator==(RHStimulus &other);
     RHStimulus() : m_type(0), m_24(0), m_28(0) {}
     ~RHStimulus() {}
     void Unk004188d0(int value);

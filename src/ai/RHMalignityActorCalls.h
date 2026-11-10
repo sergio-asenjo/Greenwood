@@ -73,7 +73,7 @@ public:
     virtual bool Vf8() = 0; // vtable+0xf8
     virtual void Vfc() = 0;
     virtual void V100() = 0;
-    virtual void V104() = 0;
+    virtual void V104(int value, int mode, unsigned value2) = 0;
     virtual void V108() = 0;
     virtual void V10c() = 0;
     virtual void V110() = 0;
@@ -99,6 +99,8 @@ public:
     virtual void V160() = 0;
     virtual void V164() = 0;
     virtual bool V168() = 0; // vtable+0x168
+    virtual void V16c() = 0;
+    virtual void V170(int action, bool mode, unsigned short focus, unsigned long id) = 0;
     bool FUN_0048a260(const RHUnk00613e90 &point);
     float FUN_0048db80(void *position, void *actor);
     void FUN_0048e420(void *actor);

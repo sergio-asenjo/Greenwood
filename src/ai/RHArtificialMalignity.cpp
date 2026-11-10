@@ -1,4 +1,5 @@
 #include "SBNullstr.h"
+#include "SBGeoBoundingBox2DCore.h"
 extern float g_unk0x006774e4;
 extern float g_unk0x00677564;
 #include "RHArtificialMalignity.h"
@@ -24,7 +25,7 @@ DECOMP_SIZE_ASSERT(RHMalignityNode, 0x0c)
 DECOMP_SIZE_ASSERT(RHMalignityList, 0x18)
 DECOMP_SIZE_ASSERT(RHSectorActorList, 0x24)
 DECOMP_SIZE_ASSERT(SBGeoBoundingBox2D, 0x14)
-DECOMP_SIZE_ASSERT(RHSeekPoint, 0x3c)
+DECOMP_SIZE_ASSERT(RHSeekPoint, 0x40)
 DECOMP_SIZE_ASSERT(RHMalignityMessage, 0x14)
 DECOMP_SIZE_ASSERT(RHMalignityMessageNode, 0x1c)
 DECOMP_SIZE_ASSERT(RHMobileUnk006100e0, 0x10)
@@ -1148,8 +1149,9 @@ bool RHBonhomieSpeechReceiver::FUN_0040d150(const RHMalignityStimulus &stimulus)
         }
         case 6:
         {
-            if (((RHMalignityActorCalls *)*(void **)&data)->V130() == ((RHMalignityActorCalls *)*(void **)(((char *)this + (*(int **)this)[1]) + 4))->V130() &&
-                !*(void **)((char *)*(void **)&data + 0x268))
+            RHMalignityActorCalls *actor = ((RHMalignityActorCalls *)*(void **)(((char *)this + (*(int **)this)[1]) + 4));
+            int team = ((RHMalignityActorCalls *)*(void **)&data)->V130();
+            if (actor->V130() == team && !*(void **)((char *)*(void **)&data + 0x268))
                 break;
             if (*(int *)(((char *)this + (*(int **)this)[1]) + 0x14) != 0xde && *(unsigned short *)((char *)this + 0x16) >= 7)
                 break;
@@ -1631,6 +1633,50 @@ static inline void RaiseThreat(RHUnk004439a0Record &current, int score, const RH
         current.m_score = score;
         current.m_position = position;
     }
+}
+
+// FUNCTION: GAME 0x00443500
+bool RHArtificialMalignity::FUN_00443500()
+{
+    SBGeoVector2D direction = ((RHUnk005fc3b0 &)((RHMalignityActorCalls *)VirtualBase().m_actor)->FUN_004135b0()).FUN_005fc8f0(false, 0.57357644f);
+    short score = 0;
+    unsigned short count = (unsigned short)RHMalignityField<RHMalignityList>(&VirtualBase(), 0x100).size();
+    for (unsigned short index = 0; index < count; ++index)
+    {
+        RHMalignityList &list = RHMalignityField<RHMalignityList>(&VirtualBase(), 0x100);
+        list.FUN_005c8e40(index);
+        void *actor = list.m_current->value;
+        if (actor == VirtualBase().m_actor)
+            continue;
+        if ((RHMalignityField<unsigned>(actor, 4) & 0x1f) != 0x14)
+            continue;
+        switch (RHMalignityField<int>((char *)actor + RHMalignityField<int *>(actor, 0x49c)[1], 0x4b0))
+        {
+        case 0xa7:
+        case 0xa8:
+        case 0xb0:
+        case 0xb1:
+        case 0xb2:
+        case 0xb3:
+        case 0xb4:
+        case 0xb7:
+        case 0xb8:
+        case 0xb9:
+        case 0xba:
+        case 0xbb:
+        case 0xbc:
+            short facing = (short)direction.FUN_005fc660(FUN_0040ec20(((RHArtificialIntelligence *)((char *)this + ((int *)*(void **)this)[1]))->FUN_004165e0(actor, true), VirtualBase().FUN_004165e0(VirtualBase().m_actor, true)));
+            if (facing > 0)
+            {
+                if (facing <= 200)
+                    score += 200 - facing;
+            }
+            else if (facing >= -200)
+                score += -200 - facing;
+            break;
+        }
+    }
+    return score > 0;
 }
 
 // SIZE 0x1c
@@ -2800,11 +2846,7 @@ void *RHArtificialMalignity::FUN_004474e0()
 struct RHUnkSectorGlobal;
 extern RHUnkSectorGlobal *g_unk0x6c0a9c;
 
-class RHUnkPathGeometry
-{
-public:
-    bool Unk004f9170(const SBGeoPoint2D &a, const SBGeoPoint2D &b, unsigned short layer, void *radius);
-};
+#include "RHPathGeometryCalls.h"
 
 #include "RHPositionInterfaceCore.h"
 
@@ -3002,13 +3044,12 @@ bool RHArtificialMalignity::FUN_00433680()
     return true;
 }
 
-// Residual: the first sprite load uses EAX rather than EDX.
-// STUB: GAME 0x00433790
+// FUNCTION: GAME 0x00433790
 void RHArtificialMalignity::FUN_00433790(const RHMalignityPosition &position)
 {
     RHMalignityReactionCalls *base = (RHMalignityReactionCalls *)((char *)this + (*(int **)this)[1]);
     void *actor = *(void **)((char *)base + 4);
-    void *area = RHMalignityField<void *>(RHMalignityField<void *volatile>(actor, 0x50), 0xe0);
+    void *area = *(void **)((char *)*(void *volatile *)((char *)actor + 0x50) + 0xe0);
     if (RHMalignityBit(*(unsigned *)((char *)area + 0x30), 13) && area)
         return;
     if (*(int *)((char *)*(void **)((char *)actor + 0x50) + 0x8c) == 0x13)
@@ -3299,6 +3340,116 @@ bool RHArtificialMalignity::FUN_0044b120(const RHMalignityPosition &position)
     return false;
 }
 
+#include "RHSectorArchery.h"
+#include "RHArcheryPoint.h"
+
+DECOMP_SIZE_ASSERT(RHSectorArchery, 0x84)
+DECOMP_SIZE_ASSERT(RHUnk00522540, 0x1c)
+DECOMP_STATIC_ASSERT(offsetof(RHSectorArchery, m_58) == 0x58)
+DECOMP_STATIC_ASSERT(offsetof(RHSectorArchery, m_7c) == 0x7c)
+DECOMP_STATIC_ASSERT(offsetof(RHSectorArchery, m_7e) == 0x7e)
+DECOMP_STATIC_ASSERT(offsetof(RHSectorArchery, m_80) == 0x80)
+DECOMP_STATIC_ASSERT(offsetof(RHSectorArchery, m_82) == 0x82)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk00522540, m_c) == 0xc)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk00522540, m_10) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk00522540, m_14) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk00522540, m_18) == 0x18)
+
+// STUB: GAME 0x0044b4e0
+bool RHArtificialMalignity::FUN_0044b4e0(const RHUnk00571160Position &position)
+{
+    bool found = false;
+    FUN_0044b810(0);
+    unsigned short count = (unsigned short)marrayArcherySectors.size();
+    unsigned short sectorIndex = 0;
+    RHSectorArchery *sector;
+    while (sectorIndex < count && !found)
+    {
+        sector = marrayArcherySectors[sectorIndex];
+        if (sector->m_82 < sector->m_80 && sector->IsInside(position))
+            found = true;
+        ++sectorIndex;
+    }
+    --sectorIndex;
+    if (!found)
+        return false;
+    unsigned nearest = 0xffffffff;
+    unsigned nearestAvailable = 0xffffffff;
+    RHUnk00522540 *selected = 0;
+    unsigned short nearestIndex;
+    unsigned short availableIndex;
+    RHMalignityPosition origin;
+    origin = VirtualBase().FUN_004165e0(VirtualBase().m_actor, true);
+    unsigned short pointCount = (unsigned short)sector->m_58.size();
+    unsigned short index = 0;
+    if (pointCount > 0)
+    {
+        do
+        {
+            RHUnk00522540 *point = sector->m_58[index];
+            RHMalignityPosition target;
+            target.x = point->m_x;
+            target.y = point->m_y;
+            target.layer = point->m_c;
+            target.area = point->m_10;
+            if (FUN_00445510(target, RHMalignityField<void *>(&VirtualBase(), 0x80)))
+                return false;
+            RHMalignityPosition destination;
+            destination.x = point->m_x;
+            destination.y = point->m_y;
+            destination.layer = point->m_c;
+            destination.area = point->m_10;
+            unsigned distance = (unsigned)FUN_0040ec20(origin, destination).Unk005fc6d0(1.0f);
+            if (origin.area != point->m_10)
+                distance += 10000;
+            if (!point->m_14)
+            {
+                if (nearest > distance)
+                {
+                    nearest = distance;
+                    nearestIndex = index;
+                }
+            }
+            if (point->m_14 && !point->m_18 && nearestAvailable > distance)
+            {
+                nearestAvailable = distance;
+                selected = point;
+                availableIndex = index;
+            }
+            ++index;
+        } while (index < pointCount);
+    }
+    if (!selected)
+        return false;
+    M(unsigned short, 0x280) = sectorIndex;
+    if (nearestIndex < sector->m_7c)
+    {
+        M(unsigned short, 0x282) = nearestIndex;
+        M(char, 0x284) = 1;
+    }
+    else if (nearestIndex > sector->m_7e)
+    {
+        M(unsigned short, 0x282) = nearestIndex;
+        M(char, 0x284) = -1;
+    }
+    else
+    {
+        if (nearestIndex < availableIndex)
+        {
+            M(char, 0x284) = 1;
+            M(unsigned short, 0x282) = availableIndex - 1;
+        }
+        else
+        {
+            M(char, 0x284) = -1;
+            M(unsigned short, 0x282) = availableIndex + 1;
+        }
+        FUN_0044b810(selected);
+    }
+    FUN_0044b840(sector);
+    return true;
+}
+
 // FUNCTION: GAME 0x0044b7b0
 void *RHArtificialMalignity::FUN_0044b7b0()
 {
@@ -3349,6 +3500,45 @@ bool RHArtificialMalignity::FUN_0044b870(void *area, unsigned short id)
             return true;
     }
     return false;
+}
+
+#include "RHPathGeometryCalls.h"
+
+// STUB: GAME 0x0044c850
+bool RHArtificialMalignity::FUN_0044c850(RHMalignityPosition &position)
+{
+    RHUnk005fc3b0 direction;
+    RHMalignityPosition origin;
+    origin = VirtualBase().FUN_004165e0(VirtualBase().m_actor, true);
+    direction.FUN_005fc430(((RHMalignityActorCalls *)VirtualBase().m_actor)->FUN_004135b0());
+    float length = 500.0f;
+    unsigned short heading = RHMalignityField<unsigned short>(RHMalignityField<void *>(VirtualBase().m_actor, 0x50), 0xd8);
+    for (;;)
+    {
+        short offset = 0;
+        do
+        {
+            int step = offset;
+            direction.Unk005fcd40((heading + step) % 15, 0.57357645f);
+            direction.FUN_005fc4d0(length);
+            position = FUN_0040ece0(origin, direction);
+            RHPositionInterface *bounds = (RHPositionInterface *)((char *)RHMalignityField<void *>(VirtualBase().m_actor, 0x50) + 4);
+            void *radius = bounds->Unk0055fa10(bounds->m_88);
+            if (((RHUnkPathGeometry *)g_unk0x6c0a9c)->Unk004f9170(
+                    FUN_0040cbf0(origin), FUN_0040cbf0(position), origin.layer,
+                    radius))
+                goto found;
+            if (offset > 0)
+                offset = -step;
+            else
+                offset = 1 - step;
+        } while (offset < 2);
+        length -= 10.0f;
+        if (!(length > 10.0f))
+            return false;
+    }
+found:
+    return true;
 }
 
 // FUNCTION: GAME 0x0044ca90
@@ -3483,6 +3673,61 @@ void RHArtificialMalignity::FUN_0044d0b0()
     }
 }
 
+// STUB: GAME 0x0044d1d0
+bool RHArtificialMalignity::FUN_0044d1d0()
+{
+    void **first = RHMalignityField<void **>(g_unk0x6c0a9c, 0x4104);
+    unsigned count;
+    if (!first)
+        count = 0;
+    else
+        count = RHMalignityField<void **>(g_unk0x6c0a9c, 0x4108) - first;
+    float nearest = 4294967296.0f;
+    RHMalignityPosition origin;
+    origin = VirtualBase().FUN_004165e0(VirtualBase().m_actor, true);
+    RHMalignityField<void *>(&VirtualBase(), 0x1d0) = 0;
+    if ((unsigned short)count > 0)
+    {
+        unsigned index = 0;
+        unsigned remaining = (unsigned short)count;
+        do
+        {
+            void *point = RHMalignityField<void **>(g_unk0x6c0a9c, 0x4104)[index];
+            RHMalignityPosition position;
+            position.y = RHMalignityField<float>(point, 0x24);
+            position.x = RHMalignityField<float>(point, 0x20);
+            position.layer = RHMalignityField<unsigned short>(point, 0x16);
+            position.area = RHMalignityField<void *>(point, 0x10);
+            float distance = FUN_0040ec20(origin, position).FUN_005fc700(1.0f);
+            if (distance < nearest)
+            {
+                nearest = distance;
+                RHMalignityField<void *>(&VirtualBase(), 0x1d0) = point;
+            }
+            ++index;
+            --remaining;
+        } while (remaining);
+    }
+    if (!RHMalignityField<void *>(&VirtualBase(), 0x1d0))
+        return false;
+    VirtualBase().V10(6, 0xe8);
+    void *point = RHMalignityField<void *>(&VirtualBase(), 0x1d0);
+    RHUnk00571160Position position;
+    position.x = RHMalignityField<float>(point, 0x20);
+    position.y = RHMalignityField<float>(point, 0x24);
+    position.layer = RHMalignityField<unsigned short>(point, 0x16);
+    position.area = RHMalignityField<void *>(point, 0x10);
+    RHUnk00571160Position destination = position;
+    VirtualBase().Unk00412240(destination, 1, 1.0f);
+    VirtualBase().Unk00416710(30);
+    if (RHMalignityField<char>(&VirtualBase(), 0x16c))
+    {
+        RHMalignityField<char>(&VirtualBase(), 0x16c) = 0;
+        return false;
+    }
+    return true;
+}
+
 namespace VMCoreCustomDependencies
 {
     int FUN_0057b150();
@@ -3505,6 +3750,59 @@ void RHArtificialMalignity::FUN_0044d9c0()
         int roll = rand() % 3;
         if (!roll)
             ((RHArtificialIntelligence *)&VirtualBase())->Unk00418c40(0x4a, roll);
+    }
+}
+
+// FUNCTION: GAME 0x0044da40
+void RHArtificialMalignity::FUN_0044da40()
+{
+    if (!M(volatile unsigned char, 0x351))
+    {
+        switch (RHMalignityField<int>(&VirtualBase(), 0x14))
+        {
+        case 0xa6:
+        case 0xa7:
+            if (*g_unk0x006c08a4 - M(unsigned, 0x2a8) >= 100)
+                break;
+        case 0x98:
+        case 0x99:
+        {
+            SBGeoVector2D radius(50.0f, 30.0f);
+            SBGeoPoint2D center(RHMalignityField<SBGeoPoint2D>(RHMalignityField<void *>(VirtualBase().m_actor, 0x50), 0x24));
+            SBGeoBoundingBox2D box(center.FUN_005fc200(radius), center.Unk005fc190(radius));
+            unsigned count = m_targets.size();
+            if ((unsigned short)count > 0)
+            {
+                unsigned index = 0;
+                RHMalignityTargetList &list = m_targets;
+                unsigned remaining = (unsigned short)count;
+                do
+                {
+                    list.GoTo(index);
+                    if (box.FUN_00608400(RHMalignityField<SBGeoPoint2D>(RHMalignityField<void *>(*list.m_current, 0x50), 0x24)))
+                    {
+                        list.GoTo(index);
+                        RHElementActor *actor = *list.m_current;
+                        switch (RHMalignityField<int>(RHMalignityField<void *>(actor, 0x50), 0x8c))
+                        {
+                        case 1:
+                        case 10:
+                        case 11:
+                        case 14:
+                        case 15:
+                        {
+                            VirtualBase().DispatchActorEvent(actor, 0x43);
+                            break;
+                        }
+                        }
+                    }
+                    ++index;
+                    --remaining;
+                } while (remaining);
+            }
+            break;
+        }
+        }
     }
 }
 
@@ -3538,6 +3836,46 @@ bool RHArtificialMalignity::FUN_0044dc80(void *actor)
         return false;
     return true;
 }
+
+DECOMP_SIZE_ASSERT(RHMalignityPosition, 0x10)
+DECOMP_SIZE_ASSERT(RHUnk00441dd0Record, 0x40)
+DECOMP_SIZE_ASSERT(RHMalignityStimulus, 0x2c)
+DECOMP_STATIC_ASSERT(offsetof(RHMalignityStimulus, m_actor) == 0)
+DECOMP_STATIC_ASSERT(offsetof(RHMalignityStimulus, m_type) == 0x1c)
+DECOMP_STATIC_ASSERT(offsetof(RHMalignityStimulus, m_20) == 0x20)
+DECOMP_STATIC_ASSERT(offsetof(RHMalignityStimulus, m_24) == 0x24)
+DECOMP_STATIC_ASSERT(offsetof(RHMalignityStimulus, m_28) == 0x28)
+DECOMP_STATIC_ASSERT(offsetof(RHArtificialIntelligence, m_actor) == 4)
+DECOMP_SIZE_ASSERT(SBListAutoDelete<RHMalignityPosition *>, 0x18)
+DECOMP_STATIC_ASSERT(offsetof(RHArtificialMalignity, m_150) == 0x150)
+DECOMP_STATIC_ASSERT(offsetof(RHArtificialMalignity, m_targets) == 0x2e4)
+
+template class SBListAutoDelete<RHMalignityPosition *>;
+template class SBListAutoDelete<RHUnk00441dd0Record *>;
+
+// TEMPLATE: GAME 0x0044e500
+// ??1?$SBListAutoDelete@PAURHMalignityPosition@@@@QAE@XZ
+
+// TEMPLATE: GAME 0x0044e690
+// ??1?$SBListAutoDelete@PAURHUnk00441dd0Record@@@@QAE@XZ
+
+// TEMPLATE: GAME 0x0046eb30 FOLDED
+// ?erase@?$list@PAURHMalignityPosition@@V?$allocator@PAURHMalignityPosition@@@std@@@std@@QAE?AViterator@12@V312@@Z
+
+// TEMPLATE: GAME 0x0046eb30 FOLDED
+// ?erase@?$list@PAURHUnk00441dd0Record@@V?$allocator@PAURHUnk00441dd0Record@@@std@@@std@@QAE?AViterator@12@V312@@Z
+
+// TEMPLATE: GAME 0x0057c9c0 FOLDED
+// ??Eiterator@?$list@PAURHMalignityPosition@@V?$allocator@PAURHMalignityPosition@@@std@@@std@@QAE?AV012@H@Z
+
+// TEMPLATE: GAME 0x0057c9c0 FOLDED
+// ??Eiterator@?$list@PAURHUnk00441dd0Record@@V?$allocator@PAURHUnk00441dd0Record@@@std@@@std@@QAE?AV012@H@Z
+
+// TEMPLATE: GAME 0x004e52a0 FOLDED
+// ??1?$list@PAURHMalignityPosition@@V?$allocator@PAURHMalignityPosition@@@std@@@std@@QAE@XZ
+
+// TEMPLATE: GAME 0x004e52a0 FOLDED
+// ??1?$list@PAURHUnk00441dd0Record@@V?$allocator@PAURHUnk00441dd0Record@@@std@@@std@@QAE@XZ
 
 // STUB: GAME 0x0048a130
 bool RHMalignityActorCalls::FUN_0048a130(void *actor)
@@ -4245,6 +4583,10 @@ void RHArtificialMalignity::Emit(SBFile &file)
     FUN_0042ff90();
     FUN_0044d6c0();
     FUN_0044dc80(0);
+    FUN_0044d1d0();
+    FUN_0044da40();
+    FUN_0044b4e0(*(RHUnk00571160Position *)this);
+    FUN_0044c850(*(RHMalignityPosition *)this);
     FUN_00438f80(*(RHMalignityStimulus *)this);
     FUN_00445b40();
     FUN_004461a0(0, 0);

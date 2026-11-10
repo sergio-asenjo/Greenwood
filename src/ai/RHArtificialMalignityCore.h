@@ -3,6 +3,7 @@
 
 #include "RHArtificialIntelligenceCore.h"
 #include "RHMalignityTargetList.h"
+#include "SBList.h"
 
 class SBFile;
 class RHAmbushPoint;
@@ -31,6 +32,7 @@ public:
     unsigned short FUN_00433010();
     bool FUN_00433680();
     void FUN_0044d9c0();
+    void FUN_0044da40();
     bool FUN_0044dc80(void *actor);
     void FUN_00433790(const RHMalignityPosition &position);
     void FUN_00434320(void *actor);
@@ -41,6 +43,7 @@ public:
     short FUN_00440cf0(RHUnk00441dd0Record *record);
     int FUN_00441020(RHUnk00441dd0Record *record, RHMalignityList *list);
     void FUN_00441f20();
+    bool FUN_00443500();
     bool FUN_004436e0(const struct RHUnk00443850Record *source, bool mode);
     bool FUN_00443850(const struct RHUnk00443850Record *source);
     void FUN_004439a0(struct RHUnk004439a0Record *record, unsigned char flags);
@@ -83,18 +86,21 @@ public:
     void FUN_0044a830(void *actor);
     void FUN_0044b000();
     bool FUN_0044b120(const RHMalignityPosition &position);
+    bool FUN_0044b4e0(const struct RHUnk00571160Position &position);
     void *FUN_0044b7b0();
     void FUN_0044b800();
     void FUN_0044b810(void *point);
     void FUN_0044b840(void *point);
     bool FUN_0044b870(void *area, unsigned short id);
     void FUN_0044ca90();
+    bool FUN_0044c850(RHMalignityPosition &position);
     bool FUN_0044cf00();
     void FUN_0042ff90();
     void FUN_00430020();
     bool FUN_00430170(RHMalignityList &list, int team);
     void FUN_004303e0();
     void FUN_0044d0b0();
+    bool FUN_0044d1d0();
     unsigned short FUN_0044d6c0();
     void FUN_00430300(int mode);
     void *FUN_0043d780(unsigned short flags);
@@ -106,7 +112,9 @@ public:
     RHUnk00441dd0Record *FUN_00441dd0();
     bool FUN_0044afa0(void *actor);
     void Emit(SBFile &file);
-    char m_04[0x2e0];
+    char m_04[0x14c];
+    SBListAutoDelete<RHMalignityPosition *> m_150;
+    char m_168[0x17c];
     RHMalignityTargetList m_targets;
     char m_308[0x4c];
     RHArtificialIntelligence &VirtualBase()

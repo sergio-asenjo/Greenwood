@@ -1,5 +1,6 @@
 #include "SBNullstr.h"
 #include "RHFastFindGrid.h"
+#include "RHArtificialIntelligenceCore.h"
 
 typedef std::vector<void *> RHFastFindPointerVector;
 
@@ -54,7 +55,6 @@ bool RHMalignitySegment::FUN_0060ad50(const SBGeoBoundingBox2D &box)
 }
 
 
-void RHFastFindGrid::FUN_004e8bd0(void *, unsigned short, bool) {}
 void RHFastFindSector::UnkSlot0() {}
 void RHFastFindSector::UnkSlot4() {}
 void RHFastFindSector::UnkSlot8() {}
@@ -73,7 +73,6 @@ void RHUnk00522470::FUN_00520a90(SBFile &file)
 }
 RHSectorScript::RHSectorScript() {}
 RHSectorScript::~RHSectorScript() {}
-void RHFastFindGrid::FUN_004e99e0(void *, unsigned short, bool) {}
 void RHUnk0051e1e0::Unk0051e230(SBFile &, RHSeqList &) {}
 RHUnk0051b6e0::~RHUnk0051b6e0() {}
 // GLOBAL: GAME 0x006c1064
@@ -121,7 +120,6 @@ void RHUnk005a3450::Unk005a3810(SBFile &, RHFastFindPointerArray &) {}
 void *RHUnk005a3450::Unk005a5780() { return 0; }
 SBGeoPoint3D::SBGeoPoint3D(float, float, float) {}
 void RHFastFindGrid::FUN_004ef8e0(RHUnk005a3450 *, unsigned short, bool) {}
-void RHUnk0054f870::Unk00550220() {}
 RHUnk004b2190Member::RHUnk004b2190Member() {}
 RHUnk004b2190Member::~RHUnk004b2190Member() {}
 void SBArray<RHUnk004b2190Member>::Insert(RHUnk004b2190Member *, unsigned int, const RHUnk004b2190Member &) {}
@@ -139,7 +137,18 @@ void RHUnk005223f0::FUN_005223f0(SBFile &file)
     file.Access((char *)this + 0xc, 2);
     file.Access((char *)this + 0x10, 2);
 }
-void FUN_00418390(RHUnk005223f0 *) {}
+// FUNCTION: GAME 0x00418390
+void FUN_00418390(RHUnk005223f0 *hole)
+{
+    for (short index = g_unk0x006c06f0.size() - 1; index >= 0; --index)
+    {
+        if (g_unk0x006c06f0[index]->FUN_00522070((const RHSeekPointDirectionView *)hole))
+            return;
+    }
+    RHSeekPoint *point = new RHSeekPoint((const RHSeekPointDirectionView *)hole);
+    point->m_3a = (unsigned short)g_unk0x006c06f0.size();
+    g_unk0x006c06f0.InsertLast(point);
+}
 // FUNCTION: GAME 0x005209d0
 RHUnk005209d0::RHUnk005209d0(int type)
 {
