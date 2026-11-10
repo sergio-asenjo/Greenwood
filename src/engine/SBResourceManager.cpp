@@ -10,6 +10,7 @@ extern template class basic_string<char>;
 #include "RHScriptListCore.h"
 #include "SBGeoPoint2D.h"
 #include "RHCampaignArrayOps.h"
+#include "RHUnk00641782.h"
 
 inline SBResourceFileList::SBResourceFileList(const std::allocator<void *> &value) : m_allocator(value)
 {
@@ -98,6 +99,7 @@ public:
     TreePair InsertTree(const Value &);
     Node *FUN_005093e0(const unsigned long &);
     void FUN_00503db0();
+    Iterator FUN_00506ea0(Iterator, Iterator);
 };
 
 class RHUnk005fd5c0
@@ -144,9 +146,24 @@ public:
 };
 
 class RHUnk005ef320;
+extern unsigned int g_unk0x006c0b28;
+extern RHFrameHolderRowMap::Node *g_unk0x006c0b2c;
 template<> void SBResourceTreeStorage<0x18, 0x14, 0x34>::Dispose()
 {
-    ((RHFrameHolderRowMap *)this)->FUN_00503db0();
+    RHFrameHolderRowMap *map = (RHFrameHolderRowMap *)this;
+    RHFrameHolderRowMap::Node *head = *(RHFrameHolderRowMap::Node **)((char *)map + 4);
+    RHFrameHolderRowMap::Iterator first(*(RHFrameHolderRowMap::Node **)head);
+    map->FUN_00506ea0(first, RHFrameHolderRowMap::Iterator(head));
+    operator delete(head);
+    *(RHFrameHolderRowMap::Node **)((char *)map + 4) = 0;
+    *(unsigned int *)((char *)map + 0xc) = 0;
+    {
+        RHUnk00641782 lock;
+        if (--g_unk0x006c0b28 == 0) {
+            operator delete(g_unk0x006c0b2c);
+            g_unk0x006c0b2c = 0;
+        }
+    }
 }
 
 extern RHUnk005ef320 *g_unk0x6c11d0;
@@ -166,6 +183,22 @@ SBResourceManager::SBResourceManager()
     *(RHUnk005ef320 **)(m_00 + 4) = g_unk0x6c11d0;
     g_unk0x006c1840 = (RHMapResources *)this;
     m_nextId = 1;
+}
+
+// STUB: GAME 0x005fd1d0
+SBResourceManager::~SBResourceManager()
+{
+    *(unsigned int *)m_00 = 0x67a840;
+    int zero = 0;
+    while (m_files.m_count > zero)
+    {
+        RHUnk005f4fc0 *file = (RHUnk005f4fc0 *)m_files.m_head->next->data;
+        ((RHUnk0046eb30 *)&m_files)->erase(RHScriptIter(m_files.m_head->next));
+        m_files.m_dirty = true;
+        file->FUN_005f5290();
+        if (file != (RHUnk005f4fc0 *)zero)
+            delete file;
+    }
 }
 
 // FUNCTION: GAME 0x005fd4a0

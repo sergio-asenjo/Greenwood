@@ -63,7 +63,7 @@ class SBUIInputFieldDrawUnk
 public:
     SBUIInputFieldDrawUnk();
     bool FUN_00614bf0(void *, std::wstring *, const SBGeoPoint2D &, unsigned int);
-    void FUN_00614d70(char value);
+    void FUN_00614d70(bool value);
     unsigned short FUN_00614230(void *, std::wstring *, const SBGeoBoundingBox2D &, unsigned int, unsigned int, unsigned int);
     unsigned long FUN_00613940(const SBFontUnk0061e840 *,
         const std::vector<std::wstring>::const_iterator &,
@@ -73,13 +73,13 @@ public:
     void FUN_00613c90(std::vector<std::wstring>::const_iterator,
         std::vector<std::wstring>::const_iterator, std::vector<std::wstring>::const_iterator,
         std::vector<std::wstring>::const_iterator);
-    unsigned short FUN_00613ea0(void *, std::wstring *, const SBGeoBoundingBox2D &, unsigned int, unsigned int);
+    unsigned short FUN_00613ea0(void *, const std::wstring *, const SBGeoBoundingBox2D &, unsigned int, unsigned int);
     RHMapBox *FUN_00613e70();
     unsigned int FUN_00613e80();
     bool OneWordBiggerThanALine(const SBFontUnk0061e840 *, float, const std::vector<std::wstring> *);
     std::wstring m_00; // 0x00
     undefined4 m_10; // 0x10
-    char m_14; // 0x14
+    bool m_14; // 0x14
     unsigned int m_18; // 0x18
     RHMapBox m_1c; // 0x1c
 };

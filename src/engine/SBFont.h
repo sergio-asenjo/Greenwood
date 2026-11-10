@@ -32,7 +32,7 @@ public:
     virtual void v1(void *); // vtable+0x04
     virtual void v2(); // vtable+0x08
     virtual long v3(unsigned short, long &, long &) const; // vtable+0x0c
-    virtual void v4(unsigned short, void *, const void *, bool); // vtable+0x10
+    virtual bool v4(unsigned short, void *, const void *, bool); // vtable+0x10
     virtual void v5(); // vtable+0x14
     virtual void v6(); // vtable+0x18
     virtual void v7(); // vtable+0x1c

@@ -5,6 +5,7 @@
 #include <xstddef>
 
 class RHUnk005ef320;
+class SBGeoBoundingBox2D;
 
 struct SBUIUnkTreeNode
 {
@@ -303,6 +304,8 @@ public:
     SBUIUnkSurface(unsigned long surface);
     ~SBUIUnkSurface();
     void *FUN_0061b020(unsigned flags);
+    bool FUN_0061b200(unsigned long key, const SBGeoBoundingBox2D &sourceBox,
+        const SBGeoBoundingBox2D &destinationBox);
     void *FUN_0061b350();
     bool FUN_0061b640(void *dc);
     unsigned long FUN_0061b380(SBUIUnkImage *image, SBUIUnkImage *mask, bool keyed);

@@ -1,6 +1,8 @@
 #ifndef SB_UI_RENDERER_LISTBOX_H
 #define SB_UI_RENDERER_LISTBOX_H
 
+#include <string>
+
 class SBUIListboxUnk0061e890
 {
 public:
@@ -26,6 +28,8 @@ public:
 
     bool FUN_0061d980(SBUIListboxUnk0061e890 *, SBUIListboxUnk0061e890 *,
         SBUIListboxUnk0061e890 *, bool);
+
+    bool FUN_0061d1d0(std::wstring *text, unsigned flags);
 };
 
 #endif

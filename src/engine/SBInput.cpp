@@ -808,8 +808,7 @@ void *g_inputKeyboardLayout = 0;
 // GLOBAL: GAME 0x006c1630
 unsigned char g_inputKeyboardState[256];
 
-// Parked at 0.5986: zero hoisting saves EBX and shifts the buffer and arguments.
-// STUB: GAME 0x005fb030
+// FUNCTION: GAME 0x005fb030
 int FUN_005fb030(unsigned scanCode, unsigned short *output, int capacity, int mode)
 {
     g_inputTextKeyboardLayout = GetKeyboardLayout(0);
@@ -829,23 +828,22 @@ int FUN_005fb030(unsigned scanCode, unsigned short *output, int capacity, int mo
         g_inputTextKeyboardState[0x10] = 0;
         break;
     }
-    unsigned short characters[2];
-    characters[0] = 0;
-    ((char *)characters)[2] = 0;
-    ToAscii(key, scanCode, g_inputTextKeyboardState, characters, 0);
-    ToAscii(key, scanCode, g_inputTextKeyboardState, characters, 0);
-    ((char *)characters)[1] = 0;
+    char characters[3];
+    memset(characters, 0, sizeof(characters));
+    ToAscii(key, scanCode, g_inputTextKeyboardState, (unsigned short *)characters, 0);
+    ToAscii(key, scanCode, g_inputTextKeyboardState, (unsigned short *)characters, 0);
+    characters[1] = 0;
     return MultiByteToWideChar(0, 1, (const char *)characters, -1, output, capacity);
 }
 
-// Parked at 0.7826: buffer initialization and modifier-register scheduling differ.
 // STUB: GAME 0x005fb0f0
 int FUN_005fb0f0(unsigned scanCode, unsigned short *output, const void *input, unsigned capacity)
 {
     g_inputModifierKeyboardLayout = GetKeyboardLayout(0);
     unsigned key = MapVirtualKeyExA(scanCode, 1, g_inputModifierKeyboardLayout);
-    if (!GetKeyboardState(g_inputModifierKeyboardState))
-        return 0;
+    int stateResult = GetKeyboardState(g_inputModifierKeyboardState);
+    if (!stateResult)
+        return stateResult;
     const unsigned char *state = (const unsigned char *)input;
     g_inputModifierKeyboardState[0xa0] = state[0x2a];
     g_inputModifierKeyboardState[0xa1] = state[0x36];
@@ -856,10 +854,9 @@ int FUN_005fb0f0(unsigned scanCode, unsigned short *output, const void *input, u
     g_inputModifierKeyboardState[0xa4] = state[0x38];
     g_inputModifierKeyboardState[0xa5] = state[0xb8];
     g_inputModifierKeyboardState[0x12] = state[0x38] | state[0xb8];
-    unsigned short characters[2];
-    characters[0] = 0;
-    ((char *)characters)[2] = 0;
-    ToAscii(key, scanCode, g_inputModifierKeyboardState, characters, 0);
+    char characters[3];
+    memset(characters, 0, sizeof(characters));
+    ToAscii(key, scanCode, g_inputModifierKeyboardState, (unsigned short *)characters, 0);
     return MultiByteToWideChar(0, 1, (const char *)characters, -1, output, capacity);
 }
 

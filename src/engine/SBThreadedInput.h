@@ -10,7 +10,7 @@
 class SBGeoBoundingBox2D;
 class SBGeoVector2D;
 class SBGeoPoint2D;
-struct SBThreadedInputEvent;
+struct SBInputDeviceData;
 struct SBInputMouseState;
 
 class RHUnk00564020;
@@ -46,9 +46,10 @@ public:
     static unsigned long GetNumberOfInputsUTS();
     static bool FUN_005f0d20(int index, SBInputMouseState &mouse, unsigned char *keyboard);
     static void FUN_005f1a90();
+    static bool Refresh(bool instant);
     bool CleanUpInputs();
     static unsigned short GetChar();
-    static bool FUN_005f0c20(bool keyboard, SBThreadedInputEvent &event);
+    static bool FUN_005f0c20(bool keyboard, SBInputDeviceData &event);
     static void PushButton(SBButton button);
     static void ReleaseButton(SBButton button);
     static bool CalculatePosition();

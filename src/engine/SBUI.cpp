@@ -118,6 +118,7 @@ class SBUIArrayLifetime : public std::vector<T>
 {
 public:
     SBUIArrayLifetime() : m_dirty(true) {}
+    ~SBUIArrayLifetime() { this->erase(this->begin(), this->end()); }
     T *m_cursor;
     bool m_dirty;
     bool m_cursorValid;
@@ -129,6 +130,7 @@ class SBUILifetime
 {
 public:
     SBUILifetime();
+    ~SBUILifetime();
     unsigned m_vptr;
     SBUIArrayLifetime<SBUIWindowView *> m_windows;
     SBUIArrayLifetime<char> m_flags;
@@ -177,10 +179,18 @@ SBUILifetime::SBUILifetime()
 // FUNCTION: GAME 0x006186d0
 void *SBUI::FUN_006186d0(unsigned flags)
 {
-    this->~SBUI();
+    ((SBUILifetime *)this)->~SBUILifetime();
     if (flags & 1)
         operator delete(this);
     return this;
+}
+
+// STUB: GAME 0x006186f0
+SBUILifetime::~SBUILifetime()
+{
+    *(volatile unsigned *)&m_vptr = 0x0067ad98;
+    if (m_tooltip != 0)
+        m_tooltip->FUN_00627ae0(1);
 }
 
 // FUNCTION: GAME 0x00618850
@@ -572,6 +582,28 @@ SBUIUnkSurface::~SBUIUnkSurface()
         if (surfaces.second != 0)
             ((SBDrawManager *)m_draw)->FUN_005e5160(surfaces.second);
     }
+}
+
+// FUNCTION: GAME 0x0061b200
+bool SBUIUnkSurface::FUN_0061b200(unsigned long key, const SBGeoBoundingBox2D &sourceBox,
+    const SBGeoBoundingBox2D &destinationBox)
+{
+    if (((SBDrawManager *)m_draw)->IsOnScreen(destinationBox))
+    {
+        SBGeoBoundingBox2D source(sourceBox);
+        SBGeoBoundingBox2D destination(destinationBox);
+        SBUIUnkSurfacePair surfaces = ((SBUIUnkMap &)m_tree)[key];
+        unsigned long first = surfaces.first;
+        unsigned long second = surfaces.second;
+        ((SBDrawManager *)m_draw)->FUN_005e6000(destination, source);
+        bool result;
+        if (second != 0)
+            result = ((SBDrawManager *)m_draw)->BlitAlpha(first, &source, m_surface, &destination, second, 1);
+        else
+            result = ((SBDrawManager *)m_draw)->FUN_005e6440(first, &source, m_surface, &destination, 1);
+        return result;
+    }
+    return true;
 }
 
 // FUNCTION: GAME 0x0061b350
@@ -1038,6 +1070,7 @@ void EmitSBUI(SBUI *ui, SBUIWindowView *window, SBUIFontView *font)
     ui->FUN_006186d0(0);
     ((SBUIUnkSurface *)ui)->FUN_0061b020(0);
     ((SBUIUnkSurfaceBase *)ui)->FUN_0061b040(0);
+    ((SBUIUnkSurface *)ui)->FUN_0061b200(0, *(SBGeoBoundingBox2D *)window, *(SBGeoBoundingBox2D *)window);
     ui->FUN_00618910(0);
     ui->InputLoop(*(SBInputMouseState *)window, *(SBInputKeyboardState *)window, false);
     ui->FUN_00619800(window);
@@ -1204,9 +1237,7 @@ bool RHUnk00628480::FUN_00628480()
 {
     ++m_tick;
     unsigned offset = m_frame * 0x58;
-    RHUnk00627cc0 *frames = *(RHUnk00627cc0 *volatile *)&m_frames;
-    unsigned long *durations = *(unsigned long **)((char *)frames + offset + 0x34);
-    if (m_tick >= durations[m_value])
+    if (m_tick >= (*(unsigned long **)((char *)(*(RHUnk00627cc0 *volatile *)&m_frames) + offset + 0x34))[m_value])
     {
         ++m_tick;
         ++m_value;

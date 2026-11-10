@@ -40,10 +40,10 @@ extern short g_lastXMove;
 static bool g_validSaveBuffer;
 
 // GLOBAL: GAME 0x006c1330
-static void *g_mouseEvent;
+static void *g_inputEvents[2];
 
-// GLOBAL: GAME 0x006c1334
-static void *g_keyboardEvent;
+#define g_mouseEvent g_inputEvents[0]
+#define g_keyboardEvent g_inputEvents[1]
 
 // GLOBAL: GAME 0x006c12b8
 static RHUnkFXDraw *g_inputDrawManager;
@@ -137,6 +137,9 @@ static bool g_inputRandomMotion;
 
 #include "SBInputMouseState.h"
 
+DECOMP_SIZE_ASSERT(SBInputMouseState, 0x0a)
+DECOMP_SIZE_ASSERT(SBInputDeviceData, 0x10)
+
 // GLOBAL: GAME 0x006c12ac
 bool g_mouseEnabled;
 
@@ -175,14 +178,6 @@ static unsigned long g_unk0x006c1310;
 
 class RHUnk005ef320;
 extern RHUnk005ef320 *g_unk0x6c11d0;
-
-struct SBThreadedInputEvent
-{
-    unsigned long m_offset;
-    unsigned long m_data;
-    unsigned long m_08;
-    unsigned long m_0c;
-};
 
 // GLOBAL: GAME 0x006c1204
 static bool g_unk0x006c1204;
@@ -305,18 +300,18 @@ SBThreadedInput::~SBThreadedInput()
 }
 
 // FUNCTION: GAME 0x005f0c20
-bool SBThreadedInput::FUN_005f0c20(bool keyboard, SBThreadedInputEvent &event)
+bool SBThreadedInput::FUN_005f0c20(bool keyboard, SBInputDeviceData &event)
 {
     if (g_unk0x006c1204 == true)
         return true;
-    if (keyboard == true && event.m_offset > 255)
+    if (keyboard == true && event.offset > 255)
         return false;
     SBThreadedInputElement element;
     element.m_keyboard = keyboard;
-    element.m_offset = event.m_offset;
-    element.m_data = event.m_data;
-    element.m_0c = event.m_08;
-    element.m_10 = event.m_0c;
+    element.m_offset = event.offset;
+    element.m_data = event.data;
+    element.m_0c = event.timestamp;
+    element.m_10 = event.sequence;
     EnterCriticalSection(g_inputCriticalSection);
     InsertInput(element);
     LeaveCriticalSection(g_inputCriticalSection);
@@ -546,6 +541,8 @@ bool FUN_005f1150(ToolboxMouseState &mouse, unsigned char *keyboard)
     return true;
 }
 
+unsigned long __stdcall FUN_005f09e0(void *parameter);
+
 // FUNCTION: GAME 0x005f13c0
 void SBThreadedInput::Run()
 {
@@ -556,7 +553,7 @@ void SBThreadedInput::Run()
     g_backgroundEven = g_inputDrawManager->Unk005e4ed0(55, 55, 0, 0);
     g_backgroundOdd = g_inputDrawManager->Unk005e4ed0(55, 55, 0, 0);
     InitializeCriticalSection(g_inputCriticalSection);
-    m_thread = CreateThread(0, 0, (unsigned long (__stdcall *)(void *))0x005f09e0, 0, 0, &m_threadId);
+    m_thread = CreateThread(0, 0, FUN_005f09e0, 0, 0, &m_threadId);
     if (m_thread == 0) {
         m_running = false;
         return;
@@ -606,8 +603,12 @@ void SBThreadedInput::ClearBackgroundStack()
     ((RHMobileUnk00607da0 *)((char *)this + 0x28))->FUN_00607da0((const RHMobileUnk00607da0 &)SBGeoBoundingBox2D());
 }
 
-// Parked: point-to-vector constructor identity, temporary slots and call scheduling differ.
-// STUB: GAME 0x005f1700
+static inline float SBThreadedInputBoxHeight(const SBGeoBoundingBox2D &box)
+{
+    return box.m_p1.m_y - box.m_p0.m_y;
+}
+
+// FUNCTION: GAME 0x005f1700
 void SBThreadedInput::FUN_005f1700()
 {
     SBGeoBoundingBox2D sourceBox;
@@ -617,18 +618,18 @@ void SBThreadedInput::FUN_005f1700()
     sourceBox.FUN_00609050(SBGeoPoint2D(0.0f, 0.0f),
         SBGeoPoint2D((float)g_inputDrawManager->FUN_005e56c0(surface), (float)g_inputDrawManager->FUN_005e5750(surface)));
     ((RHMobileUnk00607da0 *)&destinationBox)->FUN_00607da0((const RHMobileUnk00607da0 &)sourceBox.FUN_006090d0(
-        SBGeoVector2D(((SBGeoPoint2D *)&g_inputPosition)->FUN_005fc200(*(SBGeoPoint2D *)&g_hotSpot))));
+        g_inputPosition.FUN_005fc200(g_hotSpot)));
     ((SBDrawManager *)g_inputDrawManager)->FUN_005e6000(destinationBox, sourceBox);
     ++m_10;
     if ((m_10 & 1) == 0) {
         ((RHMobileUnk00607da0 *)&m_14)->FUN_00607da0((const RHMobileUnk00607da0 &)destinationBox);
         ((RHMobileUnk00607da0 *)&m_3c)->FUN_00607da0((const RHMobileUnk00607da0 &)sourceBox);
-        if (m_14.m_p1.m_x - m_14.m_p0.m_x > 0.0f && m_14.m_p1.m_y - m_14.m_p0.m_y > 0.0f)
+        if (m_14.Width() > 0.0f && SBThreadedInputBoxHeight(m_14) > 0.0f)
             ((SBDrawManager *)g_inputDrawManager)->FUN_005e6440(0, &destinationBox, g_backgroundEven, &sourceBox, 0);
     } else {
         ((RHMobileUnk00607da0 *)&m_28)->FUN_00607da0((const RHMobileUnk00607da0 &)destinationBox);
         ((RHMobileUnk00607da0 *)&m_50)->FUN_00607da0((const RHMobileUnk00607da0 &)sourceBox);
-        if (m_28.m_p1.m_x - m_28.m_p0.m_x > 0.0f && m_28.m_p1.m_y - m_28.m_p0.m_y > 0.0f)
+        if (m_28.Width() > 0.0f && SBThreadedInputBoxHeight(m_28) > 0.0f)
             ((SBDrawManager *)g_inputDrawManager)->FUN_005e6440(0, &destinationBox, g_backgroundOdd, &sourceBox, 0);
     }
     ((SBDrawManager *)g_inputDrawManager)->BlitAlphaKeying(surface, &sourceBox, 0, &destinationBox, 31, 50, 1);
@@ -1423,7 +1424,7 @@ void SBThreadedInput::Emit()
     FUN_005f0d20(0, *(SBInputMouseState *)this, (unsigned char *)this);
     FUN_005f1a90();
     GetNumberOfInputsUTS();
-    FUN_005f0c20(false, *(SBThreadedInputEvent *)this);
+    FUN_005f0c20(false, *(SBInputDeviceData *)this);
     PushButton(SBButtonLeft);
     ReleaseButton(SBButtonLeft);
     CleanUpInputs();
@@ -1451,4 +1452,249 @@ void SBThreadedInput::Emit()
     SetInstantRefreshMode(true);
     GetSize();
     GetHeight();
+}
+
+// GLOBAL: GAME 0x006c11ee
+static bool g_unk0x006c11ee;
+
+// GLOBAL: GAME 0x006c1212
+static bool g_unk0x006c1212;
+
+// GLOBAL: GAME 0x006c11e8
+static unsigned long g_unk0x006c11e8;
+
+// GLOBAL: GAME 0x006c133c
+static unsigned long g_unk0x006c133c;
+
+// GLOBAL: GAME 0x006c12bc
+static unsigned short *g_unk0x006c12bc;
+
+// GLOBAL: GAME 0x006c1308
+static float g_unk0x006c1308;
+
+extern float g_actorStepScale;
+
+// LIBRARY: GAME 0x005f2630
+// $E62
+
+// GLOBAL: GAME 0x006b9cd4
+static const unsigned short g_cursorWeights[60] = {
+    1, 1, 15, 1, 1,
+    2, 10, 2, 1, 2,
+    3, 8, 3, 2, 2,
+    4, 6, 4, 2, 3,
+    4, 5, 4, 3, 4,
+    5, 5, 4, 1, 1,
+    1, 1, 2, 3, 2,
+    3, 2, 3, 4, 1,
+    4, 3, 1, 1, 1,
+    2, 3, 2, 3, 2,
+    6, 2, 1, 2, 6,
+    6, 2, 1, 2, 6
+};
+
+// STUB: GAME 0x005f1ca0
+bool SBThreadedInput::Refresh(bool instant)
+{
+    unsigned long surface;
+    if (!g_inputResources->FUN_00600920(g_currentCursor, g_currentFrame, surface))
+        return false;
+    if (instant == true)
+        return true;
+    if (g_mouseEnabled != true)
+        return true;
+
+    SBGeoBoundingBox2D cursorBox;
+    SBGeoBoundingBox2D savedBox;
+    SBGeoBoundingBox2D scratchBox;
+    SBGeoBoundingBox2D restoreBox;
+    SBGeoBoundingBox2D destinationBox;
+    SBGeoBoundingBox2D sourceBox;
+    SBGeoVector2D point;
+
+    point.Set((float)g_inputDrawManager->FUN_005e56c0(surface),
+        (float)g_inputDrawManager->FUN_005e5750(surface));
+    cursorBox.FUN_00609050(SBGeoPoint2D(), point);
+    ((RHMobileUnk00607da0 *)&savedBox)->FUN_00607da0((const RHMobileUnk00607da0 &)mboxSaved);
+    ((RHMobileUnk00607da0 *)&destinationBox)->FUN_00607da0((const RHMobileUnk00607da0 &)
+        cursorBox.FUN_006090d0(g_inputPosition.FUN_005fc200(g_hotSpot)));
+    ((RHMobileUnk00607da0 *)&restoreBox)->FUN_00607da0((const RHMobileUnk00607da0 &)
+        (mboxSaved - mboxSaved.Min()).FUN_006090d0(mpointScreenPositionSaved));
+    ((SBDrawManager *)g_inputDrawManager)->FUN_005e6000(destinationBox, cursorBox);
+    g_validSaveBuffer = true;
+    mpointScreenPositionSaved = destinationBox.m_p0;
+    ((RHMobileUnk00607da0 *)&mboxSaved)->FUN_00607da0((const RHMobileUnk00607da0 &)cursorBox);
+    ((SBDrawManager *)g_inputDrawManager)->FUN_005e6440(g_renderingSurface, &destinationBox, g_unk0x006c12a4, &cursorBox, 0);
+
+    unsigned long cursorType = g_inputResources->FUN_006002d0(g_currentCursor) & 0xf;
+    switch (cursorType - 1)
+    {
+    case 0:
+        ((SBDrawManager *)g_inputDrawManager)->FUN_005e6440(surface, &cursorBox, g_renderingSurface, &destinationBox, 0);
+        break;
+    case 1:
+        ((SBDrawManager *)g_inputDrawManager)->FUN_005e6440(g_renderingSurface, &destinationBox, g_unk0x006c130c, &cursorBox, 0);
+        if (g_unk0x006c12b6 == 0)
+        {
+            ((SBDrawManager *)g_inputDrawManager)->BlitColoredAlphaKeying(surface, &cursorBox, g_unk0x006c130c, &cursorBox,
+                g_unk0x006c1314, g_unk0x006c11e2, g_unk0x006c11ec, 1);
+        }
+        else
+        {
+            ((SBDrawManager *)g_inputDrawManager)->FUN_005e6440(surface, &cursorBox, g_unk0x006c130c, &cursorBox, 1);
+            ChangeShadowIntoPulse(g_unk0x006c130c, cursorBox, g_unk0x006c121c);
+        }
+        ((SBDrawManager *)g_inputDrawManager)->FUN_005e6440(g_unk0x006c130c, &cursorBox, g_renderingSurface, &destinationBox, 1);
+        if (!instant)
+        {
+            if (!g_unk0x006c12ad)
+            {
+                g_unk0x006c121c -= 10;
+                if (g_unk0x006c121c == 0)
+                    g_unk0x006c12ad = true;
+            }
+            else
+            {
+                g_unk0x006c121c += 10;
+                if (g_unk0x006c121c >= 100)
+                    g_unk0x006c12ad = false;
+            }
+        }
+        break;
+    case 2:
+        if (g_unk0x006c12bc != 0)
+        {
+            BlitBlur(g_unk0x006c12a4, cursorBox, g_unk0x006c130c, cursorBox, 0, g_unk0x006c12bc);
+            BlitBlur(g_unk0x006c130c, cursorBox, g_unk0x006c1318, cursorBox, 0, g_unk0x006c12bc);
+            BlitBlind(surface, cursorBox, g_unk0x006c1318, cursorBox, 0);
+            ((SBDrawManager *)g_inputDrawManager)->FUN_005e6440(g_unk0x006c1318, &cursorBox, g_renderingSurface, &destinationBox, 1);
+            ((SBDrawManager *)g_inputDrawManager)->FUN_005e61e0(g_unk0x006c130c, 0, 0, 0);
+            ((SBDrawManager *)g_inputDrawManager)->FUN_005e61e0(g_unk0x006c1318, 0, 0, 0);
+        }
+        break;
+    case 3:
+    {
+        static SBGeoPoint2D ptMouseOld(0.0f, 0.0f);
+        SBGeoVector2D movement;
+        bool displaced = g_inputPosition.Unk005fc110(ptMouseOld).FUN_005fc700(1.0f) > 3.0f;
+        if (displaced)
+        {
+            g_unk0x006c12a0 = 6;
+            g_unk0x006c11ee = false;
+            g_unk0x006c1212 = true;
+        }
+        else if (g_unk0x006c11ee == false)
+        {
+            g_unk0x006c11ee = true;
+            g_unk0x006c133c = 2;
+            if (g_unk0x006c1308 < 500000.0f)
+                g_unk0x006c11e8 = 0;
+            else if (g_unk0x006c1308 < 700.0f)
+                g_unk0x006c11e8 = 1;
+            else
+                g_unk0x006c11e8 = 2;
+        }
+        else if (g_unk0x006c12a0 != g_unk0x006c11e8)
+        {
+            if (g_unk0x006c133c == 0)
+            {
+                if (g_unk0x006c1212)
+                {
+                    ++g_unk0x006c12a0;
+                    if (g_unk0x006c12a0 == 12)
+                    {
+                        g_unk0x006c1212 = false;
+                        g_unk0x006c12a0 = 10;
+                        g_unk0x006c133c = 2;
+                    }
+                    else
+                        g_unk0x006c133c = 2;
+                }
+                else
+                {
+                    --g_unk0x006c12a0;
+                    g_unk0x006c133c = 2;
+                }
+            }
+            else
+                --g_unk0x006c133c;
+        }
+        ptMouseOld = g_inputPosition;
+        movement.Set((cursorBox.m_p1.m_x - cursorBox.m_p0.m_x) * g_actorStepScale,
+            (cursorBox.m_p1.m_y - cursorBox.m_p0.m_y) * g_actorStepScale);
+        BlitDouble(g_unk0x006c12a4, cursorBox.FUN_006090d0(movement), g_unk0x006c130c, cursorBox, 0);
+        BlitFilterY(g_unk0x006c130c, cursorBox, g_unk0x006c1318, cursorBox, 0,
+            (unsigned short *)&g_cursorWeights[g_unk0x006c12a0 * 5]);
+        BlitFilterX(g_unk0x006c1318, cursorBox, g_unk0x006c130c, cursorBox, 0,
+            (unsigned short *)&g_cursorWeights[g_unk0x006c12a0 * 5]);
+        ((SBDrawManager *)g_inputDrawManager)->BlitAlphaKeying(surface, &cursorBox,
+            g_unk0x006c130c, &cursorBox, g_unk0x006c1314, 0, 0);
+        ((SBDrawManager *)g_inputDrawManager)->FUN_005e6440(g_unk0x006c130c, &cursorBox, g_renderingSurface, &destinationBox, 1);
+        break;
+    }
+    default:
+        break;
+    }
+    if (g_selfIncrement == true && instant == false)
+        CalculateFrame();
+    return true;
+}
+
+// FUNCTION: GAME 0x005f09e0
+unsigned long __stdcall FUN_005f09e0(void *parameter)
+{
+    SBGeoVector2D position;
+    char mouseName[] = "Mouse Event";
+    char keyboardName[] = "Keyboard Event";
+    SBInputDeviceData event;
+    SBInputMouseState mouse;
+    unsigned char keyboard[256];
+    memset(&mouse, 0, sizeof(mouse));
+    memset(keyboard, 0, sizeof(mouse));
+    g_mouseEvent = CreateEventA(0, false, false, mouseName);
+    g_keyboardEvent = CreateEventA(0, false, false, keyboardName);
+    do
+        g_unk0x006c1320->FUN_005f9ea0(0);
+    while (!g_unk0x006c1320->FUN_005fb980(g_mouseEvent));
+    do
+        g_unk0x006c1320->FUN_005f9ea0(0);
+    while (!g_unk0x006c1320->FUN_005fba70(g_keyboardEvent));
+    g_unk0x006c1320->FUN_005f9ea0(1);
+    while (g_unk0x006c1228 == false)
+    {
+        unsigned long result = WaitForMultipleObjects(2, &g_mouseEvent, false, 0xffffffff);
+        EnterCriticalSection(g_inputCriticalSection);
+        if (result == 0)
+        {
+            bool more;
+            do
+            {
+                more = g_unk0x006c1320->FUN_005fbdb0(&event);
+                SBThreadedInput::FUN_005f0c20(false, event);
+                if (g_mouseEnabled == true)
+                {
+                    SBThreadedInput::FUN_005f0d20((int)SBThreadedInput::GetNumberOfInputsUTS() - 1, mouse, keyboard);
+                    SBThreadedInput::InputLoop(mouse);
+                }
+                mouse.m_x = 0;
+                mouse.m_y = 0;
+                mouse.m_wheel = 0;
+            } while (more == true);
+            EnterCriticalSection(g_screenCriticalSection);
+            SBThreadedInput::Refresh(true);
+            LeaveCriticalSection(g_screenCriticalSection);
+        }
+        else
+        {
+            bool more;
+            do
+            {
+                event.offset = 0xffff;
+                more = g_unk0x006c1320->FUN_005fbb70(&event);
+                SBThreadedInput::FUN_005f0c20(true, event);
+            } while (more == true);
+        }
+        LeaveCriticalSection(g_inputCriticalSection);
+    }
+    return 1;
 }

@@ -9,6 +9,67 @@ DECOMP_STATIC_ASSERT(offsetof(RHPortraitRootLifetime, m_flags) == 0x34)
 DECOMP_STATIC_ASSERT(offsetof(RHPortraitRootLifetime, m_excluded) == 0x38)
 DECOMP_STATIC_ASSERT(offsetof(RHPortraitRootLifetime, m_bounds) == 0x70)
 DECOMP_STATIC_ASSERT(offsetof(RHPortraitRootLifetime, m_input) == 0x90)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitRootLifetime, m_title) == 0x24)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitRootLifetime, m_tooltip) == 0x60)
+DECOMP_SIZE_ASSERT(SBFrameWidgetArray, 0x20)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitRootLifetime, m_widgets) == 0x4)
+DECOMP_STATIC_ASSERT(offsetof(SBFrameWidgetArray, first) == 0x4)
+DECOMP_STATIC_ASSERT(offsetof(SBFrameWidgetArray, dirty) == 0x14)
+DECOMP_SIZE_ASSERT(SBFrameWidgetFindList, 0x24)
+DECOMP_SIZE_ASSERT(SBFrameWidgetNode, 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(SBFrameWidgetFindList, head) == 0x4)
+DECOMP_STATIC_ASSERT(offsetof(SBFrameWidgetFindList, count) == 0x8)
+DECOMP_STATIC_ASSERT(offsetof(SBFrameWidgetFindList, dirty) == 0x10)
+
+inline SBFrameWidgetArray::~SBFrameWidgetArray()
+{
+    operator delete(first);
+    first = 0;
+    last = 0;
+    end = 0;
+}
+
+inline SBFrameWidgetFindList::SBFrameWidgetFindList(const std::allocator<SBFrameWidgetView *> &value)
+    : allocator(value)
+{
+    SBFrameWidgetNode *sentinel = (SBFrameWidgetNode *)operator new(sizeof(SBFrameWidgetNode));
+    sentinel->next = sentinel;
+    sentinel->previous = sentinel;
+    head = sentinel;
+    count = 0;
+    dirty = true;
+}
+
+inline SBFrameWidgetFindList::~SBFrameWidgetFindList()
+{
+    SBFrameWidgetNode *node = head->next;
+    while (node != head) {
+        SBFrameWidgetNode *next = node->next;
+        operator delete(node);
+        node = next;
+    }
+    operator delete(head);
+    head = 0;
+    count = 0;
+}
+
+class RHMapResources;
+extern RHMapResources *g_unk0x006c1840;
+
+// STUB: GAME 0x00619fa0
+RHPortraitRootLifetime::RHPortraitRootLifetime()
+    : m_draw(0)
+{
+    m_enabled = true;
+    m_tooltipEnabled = false;
+    m_visible = true;
+    m_resource = g_unk0x006c1840;
+}
+
+// STUB: GAME 0x0061a090
+RHPortraitRootLifetime::~RHPortraitRootLifetime()
+{
+}
 
 // FUNCTION: GAME 0x0061a070
 void *RHPortraitRootLifetime::FUN_0061a070(unsigned flags)
@@ -136,46 +197,35 @@ public:
     void Insert(T *position, unsigned count, const T &value);
 };
 
-struct SBFrameWidgetArray
+inline unsigned SBFrameWidgetArray::CountOf() const
 {
-    unsigned allocator;
-    SBFrameWidgetView **first;
-    SBFrameWidgetView **last;
-    SBFrameWidgetView **end;
-    undefined m_10[4];
-    bool dirty;
+    typedef unsigned (std::vector<unsigned long>::*Count)() const;
+    Count count = &std::vector<unsigned long>::size;
+    return (((const std::vector<unsigned long> *)this)->*count)();
+}
 
-    unsigned Size() const { return first == 0 ? 0 : last - first; }
-    unsigned CountOf() const
-    {
-        typedef unsigned (std::vector<unsigned long>::*Count)() const;
-        Count count = &std::vector<unsigned long>::size;
-        return (((const std::vector<unsigned long> *)this)->*count)();
+inline void SBFrameWidgetArray::Grow(unsigned size)
+{
+    SBFrameWidgetView *value = 0;
+    if (CountOf() < size) {
+        SBFrameWidgetView **position = last;
+        ((SBArray<RHSaveGame *> *)this)->Insert(
+            (RHSaveGame **)position, size - CountOf(), (RHSaveGame *const &)value);
+    } else if (size < CountOf()) {
+        typedef std::vector<int> Values;
+        int *(Values::*erase)(int *, int *) = &Values::erase;
+        Values &values = *(Values *)this;
+        (values.*erase)(values.begin() + size, values.end());
     }
-    void Grow(unsigned size)
-    {
-        SBFrameWidgetView *value = 0;
-        if (CountOf() < size) {
-            SBFrameWidgetView **position = last;
-            ((SBArray<RHSaveGame *> *)this)->Insert(
-                (RHSaveGame **)position, size - CountOf(), (RHSaveGame *const &)value);
-        } else if (size < CountOf()) {
-            typedef std::vector<int> Values;
-            int *(Values::*erase)(int *, int *) = &Values::erase;
-            Values &values = *(Values *)this;
-            (values.*erase)(values.begin() + size, values.end());
-        }
-        dirty = true;
-    }
-};
-
+    dirty = true;
+}
 // FUNCTION: GAME 0x0061a6e0
 void *RHPortraitRootLifetime::FUN_0061a6e0(const void *input)
 {
     if (m_enabled && m_visible) {
         SBFrameInputEvent *first;
         SBFrameInputEvent *last;
-        if (((SBGeoBoundingBox2D *)m_bounds)->FUN_00608400(*(const SBGeoPoint2D *)input) == true) {
+        if (m_bounds.FUN_00608400(*(const SBGeoPoint2D *)input) == true) {
             m_input.next = 0;
             first = &m_input;
             last = first;
@@ -185,7 +235,7 @@ void *RHPortraitRootLifetime::FUN_0061a6e0(const void *input)
         }
         unsigned count = Size();
         for (unsigned index = 0; index < count; ++index) {
-            SBFrameWidgetView *widget = m_first[index];
+            SBFrameWidgetView *widget = m_widgets.first[index];
             if (m_excluded.Find(widget, m_excluded.count) == -1) {
                 SBFrameInputEvent *event = widget->V18(input);
                 if (event != 0) {
@@ -208,15 +258,15 @@ void *RHPortraitRootLifetime::FUN_0061a6e0(const void *input)
 bool RHPortraitRootLifetime::FUN_0061a800(void *item)
 {
     SBFrameWidgetView *widget = (SBFrameWidgetView *)item;
-    SBFrameWidgetArray &widgets = *(SBFrameWidgetArray *)m_04;
+    SBFrameWidgetArray &widgets = m_widgets;
     unsigned count = widgets.Size();
     widgets.Grow(count + 1);
-    SBFrameWidgetView **first = *(SBFrameWidgetView **volatile *)&m_first;
+    SBFrameWidgetView **first = *(SBFrameWidgetView **volatile *)&m_widgets.first;
     first[count] = widget;
     if (m_draw != 0)
         widget->V04(m_display);
     SBGeoVector2D offset(*(SBGeoVector2D *)((char *)widget + 0x30));
-    widget->V20(((SBGeoBoundingBox2D *)m_bounds)->m_0.Unk005fc190(offset));
+    widget->V20(m_bounds.m_p0.Unk005fc190(offset));
     return true;
 }
 
@@ -225,13 +275,13 @@ bool RHPortraitRootLifetime::FUN_0061a920(void *item)
 {
     SBFrameWidgetView *widget = (SBFrameWidgetView *)item;
     if (widget != 0) {
-        SBFrameWidgetArray &widgets = *(SBFrameWidgetArray *)m_04;
+        SBFrameWidgetArray &widgets = m_widgets;
         unsigned count = widgets.Size();
         for (unsigned index = 0; index < count; ++index) {
-            if (m_first[index] == widget) {
-                SBFrameWidgetView *final = m_first[count - 1];
+            if (m_widgets.first[index] == widget) {
+                SBFrameWidgetView *final = m_widgets.first[count - 1];
                 SBFrameWidgetView *value = 0;
-                m_first[index] = final;
+                m_widgets.first[index] = final;
                 unsigned size = count - 1;
                 if (widgets.Size() < size)
                     ((SBArray<RHSaveGame *> *)&widgets)->Insert(
@@ -246,9 +296,9 @@ bool RHPortraitRootLifetime::FUN_0061a920(void *item)
         }
         return false;
     }
-    std::vector<SBFrameWidgetView *> &all = *(std::vector<SBFrameWidgetView *> *)m_04;
+    std::vector<SBFrameWidgetView *> &all = *(std::vector<SBFrameWidgetView *> *)&m_widgets;
     all.erase(all.begin(), all.end());
-    ((SBFrameWidgetArray *)m_04)->dirty = true;
+    m_widgets.dirty = true;
     return true;
 }
 
@@ -257,7 +307,7 @@ bool RHPortraitRootLifetime::FUN_0061aa30(void *item)
 {
     SBFrameWidgetView *widget = (SBFrameWidgetView *)item;
     for (unsigned index = 0; index < (unsigned)Size(); ++index) {
-        if (m_first[index] == widget && m_excluded.Find(widget, m_excluded.count) == -1) {
+        if (m_widgets.first[index] == widget && m_excluded.Find(widget, m_excluded.count) == -1) {
             SBFrameWidgetNode *next = m_excluded.head->next;
             SBFrameWidgetNode *previous = next->previous;
             SBFrameWidgetNode *node = (SBFrameWidgetNode *)operator new(sizeof(SBFrameWidgetNode));
@@ -335,7 +385,7 @@ bool SBFrameWnd::FUN_0061ab10(SBFrameWidgetView *widget)
 // FUNCTION: GAME 0x0061ac80
 void SBFrameWnd::FUN_0061ac80(const SBGeoPoint2D &position)
 {
-    SBGeoVector2D offset = position.Unk005fc110(m_bounds.m_0);
+    SBGeoVector2D offset = position.Unk005fc110(m_bounds.m_p0);
     SBGeoBoundingBox2D box = m_bounds.FUN_006090d0((const SBGeoVector2D &)offset);
     V2c(box);
 }
@@ -343,7 +393,7 @@ void SBFrameWnd::FUN_0061ac80(const SBGeoPoint2D &position)
 // FUNCTION: GAME 0x0061ad20
 void SBFrameWnd::FUN_0061ad20(const SBGeoBoundingBox2D &bounds)
 {
-    SBGeoVector2D offset = bounds.m_0.Unk005fc110(m_bounds.m_0);
+    SBGeoVector2D offset = bounds.m_p0.Unk005fc110(m_bounds.m_p0);
     for (unsigned index = 0; index < Size(); ++index) {
         SBFrameWidgetView *widget = m_first[index];
         SBGeoBoundingBox2D box(*(SBGeoBoundingBox2D *)((char *)widget + 0x30));
@@ -367,6 +417,6 @@ void EmitSBFrameWnd(SBFrameWnd *window)
     ((RHPortraitRootLifetime *)window)->FUN_0061aa30(0);
     ((RHPortraitRootLifetime *)window)->FUN_0061a6e0(0);
     window->FUN_0061ab10(0);
-    window->FUN_0061ac80(window->m_bounds.m_0);
+    window->FUN_0061ac80(window->m_bounds.m_p0);
     window->FUN_0061ad20(window->m_bounds);
 }

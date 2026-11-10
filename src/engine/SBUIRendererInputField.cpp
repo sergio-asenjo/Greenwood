@@ -244,6 +244,40 @@ unsigned int SBUIInputFieldDrawUnk::FUN_00613e80()
     return m_10;
 }
 
+// STUB: GAME 0x00613ea0
+unsigned short SBUIInputFieldDrawUnk::FUN_00613ea0(void *font, const std::wstring *text,
+    const SBGeoBoundingBox2D &bounds, unsigned int flags, unsigned int spacing)
+{
+    SBGeoPoint2D position(bounds.Min());
+    std::wstring remaining;
+    const unsigned short *character = text->begin();
+    for (; character != text->end(); ++character) {
+        SBGeoVector2D extent((float)(unsigned int)((SBFontUnk0061e840 *)font)->FUN_0061e850(*character),
+            (float)((unsigned int)((SBUIListboxUnk0061e890 *)font)->FUN_0061e890() - (unsigned short)spacing));
+        bool inside = bounds.FUN_00608400(position) && bounds.FUN_00608400(position.Unk005fc190(extent));
+        float bottom = bounds.ValueC();
+        float currentY = position.m_y;
+        bool nextLine = currentY + (unsigned int)((SBUIListboxUnk0061e890 *)font)->FUN_0061e890() < bottom;
+        if (inside || nextLine) {
+            if (!((SBFontUnk0061e840 *)font)->v4(*character, &position, &bounds, m_14))
+                break;
+        } else {
+            break;
+        }
+    }
+    m_00.erase();
+    for (; character != text->end(); ++character)
+        m_00.append(1, *character);
+    return (unsigned short)((position.m_y - bounds.Value4()) /
+        (float)((unsigned int)((SBUIListboxUnk0061e890 *)font)->FUN_0061e890() - (unsigned short)spacing) + 1.0f);
+}
+
+void EmitSBUIInputFieldSingleWord(SBUIInputFieldDrawUnk *renderer, void *font,
+    std::wstring *text, const SBGeoBoundingBox2D &bounds)
+{
+    renderer->FUN_00613ea0(font, text, bounds, 0, 0);
+}
+
 // FUNCTION: GAME 0x006141e0
 bool SBUIInputFieldDrawUnk::OneWordBiggerThanALine(const SBFontUnk0061e840 *font,
     float threshold, const std::vector<std::wstring> *words)
@@ -299,7 +333,7 @@ bool SBUIInputFieldDrawUnk::FUN_00614bf0(void *font, std::wstring *text, const S
 }
 
 // FUNCTION: GAME 0x00614d70
-void SBUIInputFieldDrawUnk::FUN_00614d70(char value)
+void SBUIInputFieldDrawUnk::FUN_00614d70(bool value)
 {
     m_14 = value;
 }

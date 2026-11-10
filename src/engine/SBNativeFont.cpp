@@ -221,11 +221,8 @@ bool SBNativeFont::Render(unsigned short character, SBGeoPoint2D &position, cons
         destination.SetValue8(position.GetX() + (float)(unsigned long)info->m_width);
         destination.SetValueC(position.GetY() + (float)(unsigned)((SBUIListboxUnk0061e890 *)this)->FUN_0061e890());
         ((RHMobileUnk00607da0 *)&destination)->FUN_00607da0((const RHMobileUnk00607da0 &)destination.FUN_006092c0(clip));
-        {
-            SBGeoVector2D origin(destination.Min());
-            ((RHMobileUnk00607da0 *)&source)->FUN_00607da0((const RHMobileUnk00607da0 &)
-                (destination - origin).FUN_006090d0(SBGeoVector2D((float)info->m_position, 0.0f)));
-        }
+        ((RHMobileUnk00607da0 *)&source)->FUN_00607da0((const RHMobileUnk00607da0 &)
+            (destination - destination.Min()).FUN_006090d0(SBGeoVector2D((float)info->m_position, 0.0f)));
         if (destination.FUN_006090a0() && destination.Unk00608f30()) {
             if (!measure)
                 rendered = ((SBNativeFontBlitCalls *)m_context)->V04(m_surface, source, destination);

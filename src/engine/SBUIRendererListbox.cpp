@@ -1,9 +1,9 @@
 #include "SBNullstr.h"
 #include "SBUIRendererListbox.h"
 #include "SB.h"
-#include "SBGeoBoundingBox2D.h"
-
+#include "SBUIRendererInputField.h"
 #include "RHPortraitInputRenderer.h"
+#include "RHMobileUnk00607da0.h"
 
 DECOMP_SIZE_ASSERT(RHPortraitInputRenderer, 0x84)
 
@@ -68,10 +68,59 @@ bool SBUIListboxUnk0061d980::FUN_0061d980(SBUIListboxUnk0061e890 *first,
     return true;
 }
 
+// STUB: GAME 0x0061d1d0
+bool SBUIListboxUnk0061d980::FUN_0061d1d0(std::wstring *text, unsigned flags)
+{
+    SBGeoBoundingBox2D lineBox;
+    SBUIInputFieldDrawUnk drawer;
+    ((RHMobileUnk00607da0 *)&lineBox)->FUN_00607da0(
+        *(const RHMobileUnk00607da0 *)&((RHPortraitInputRenderer *)this)
+            ->FUN_0061d3f0(m_7e, flags));
+    unsigned mode;
+    switch (flags & 0xf00)
+    {
+    case 0x200:
+        mode = 2;
+        break;
+    case 0:
+        mode = 1;
+        break;
+    case 0x100:
+        mode = 8;
+        break;
+    case 0x300:
+        mode = 4;
+        break;
+    default:
+        mode = (unsigned)(unsigned long)text;
+        break;
+    }
+    if (!(flags & 0x2000))
+    {
+        unsigned style = flags & 0xf0;
+        if (style == 0)
+            drawer.FUN_00614230(m_4c, *(std::wstring *volatile *)&text, lineBox, mode, 0, 1);
+        else if (style == 0x10 || style == 0x20)
+            drawer.FUN_00614230(m_54, *(std::wstring *volatile *)&text, lineBox, mode, 0, 1);
+    }
+    else
+    {
+        unsigned style = flags & 0xf0;
+        if (style == 0)
+            drawer.FUN_00614230(m_58, *(std::wstring *volatile *)&text, lineBox, mode, 0, 1);
+        else if (style == 0x10 || style == 0x20)
+            drawer.FUN_00614230(m_60, *(std::wstring *volatile *)&text, lineBox, mode, 0, 1);
+    }
+    ++m_7e;
+    return ((SBGeoBoundingBox2D *)((char *)this + 8))->FUN_006084a0(
+        ((RHPortraitInputRenderer *)this)->FUN_0061d3f0(m_7e, flags));
+}
+
 void EmitSBUIRendererListbox(SBUIListboxUnk0061d980 *listbox,
     SBUIListboxUnk0061e890 *font)
 {
     ((RHPortraitInputRenderer *)listbox)->FUN_0061c590(0);
     listbox->FUN_0061d1c0();
     listbox->FUN_0061d980(font, font, font, false);
+    listbox->FUN_0061d1d0(0, 0);
 }

@@ -1,4 +1,5 @@
-#include "SBDrawManager.h"
+#define SBDRAW_MANAGER_OWNER_LAYOUT
+#include "SBDrawManagerOwner.h"
 #include "SBResourceManager.h"
 #include <string>
 #include <list>
@@ -23,6 +24,8 @@ extern "C" __declspec(dllimport) int __stdcall TextOutA(void *, int, int, const 
 extern "C" __declspec(dllimport) int __stdcall GetTextExtentPoint32A(void *, const char *, int, long *);
 extern "C" __declspec(dllimport) int __stdcall GetClientRect(void *, long *);
 extern "C" __declspec(dllimport) int __stdcall ClientToScreen(void *, long *);
+extern "C" __declspec(dllimport) int __stdcall UnregisterClassA(const char *, void *);
+extern "C" __declspec(dllimport) int __stdcall SetWindowPos(void *, void *, int, int, int, int, unsigned);
 
 void SBAssert(int, const char *, int, const char *, ...);
 std::string FUN_005f81d0(long);
@@ -78,19 +81,6 @@ inline SBDrawUnk005efc10Iterator SBDrawFindSurface(SBDrawUnk005efc10 &tree, cons
     return (found.m_node != head && key >= found.m_node->m_key
         ? found : SBDrawUnk005efc10Iterator(head));
 }
-
-// SIZE 0x14
-struct SBDrawDriverList
-{
-    std::list<std::string> m_list; // 0x00
-    std::list<std::string>::iterator m_current; // 0x0c
-    bool m_dirty; // 0x10
-    void Add(const std::string &name)
-    {
-        m_list.push_back(name);
-        m_dirty = true;
-    }
-};
 
 // FUNCTION: GAME 0x005e3b10
 int __stdcall FUN_005e3b10(void *, char *description, char *, void *context, void *)
@@ -169,6 +159,107 @@ bool RHUnk005ef320::FUN_005e3f70()
             return false;
         }
     }
+}
+
+void FUN_005f02f0(SBDrawUnk005efc10Iterator, SBDrawUnk005efc10Iterator, int &);
+void FUN_005f0440(SBDrawUnk005efc10Iterator, SBDrawUnk005efc10Iterator, int &, std::bidirectional_iterator_tag);
+
+// STUB: GAME 0x005e4810
+bool RHUnk005ef320::FUN_005e4810(unsigned short width, unsigned short height, unsigned short depth)
+{
+    typedef unsigned long (__stdcall *Release)(SBDrawUnk005e5ec0Surface *);
+    typedef long (__stdcall *SetMode)(SBDrawUnk005e5ec0Surface *, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long);
+    typedef long (__stdcall *Create)(SBDrawUnk005e5ec0Surface *, unsigned long *, void **, void *);
+    typedef long (__stdcall *Blit)(SBDrawUnk005e5ec0Surface *, void *, void *, void *, unsigned long, unsigned long *);
+    typedef long (__stdcall *GetAttached)(SBDrawUnk005e5ec0Surface *, unsigned long *, void **);
+    typedef long (__stdcall *Restore)(SBDrawUnk005e5ec0Surface *);
+    if (m_width == (unsigned short)width && m_height == (unsigned short)height)
+        return false;
+    m_width = (unsigned short)width;
+    m_height = (unsigned short)height;
+    if (m_fullscreen == 1) {
+        SBDrawUnk005e5ec0Surface *primary = (SBDrawUnk005e5ec0Surface *)SBDrawFindSurface(m_surfaces, 0).m_node->m_object;
+        ((Release)primary->m_vtable[2])(primary);
+        SBDrawUnk005e4f70Surface first;
+        SBDrawUnk005e4f70Surface second;
+        first.m_width = (unsigned short)width;
+        first.m_height = (unsigned short)height;
+        first.m_locked = false;
+        first.m_section = operator new(0x18);
+        InitializeCriticalSection(first.m_section);
+        second.m_width = (unsigned short)width;
+        second.m_height = (unsigned short)height;
+        second.m_locked = false;
+        second.m_section = operator new(0x18);
+        InitializeCriticalSection(second.m_section);
+        ((SetMode)m_88->m_vtable[21])(m_88, (unsigned short)width, (unsigned short)height, (unsigned short)depth, 0, 0);
+        {
+            unsigned long surface = 0;
+            std::pair<SBDrawUnk005efc10Iterator, SBDrawUnk005efc10Iterator> range(
+                m_surfaces.FUN_005efc10(surface), m_surfaces.FUN_005f0070(surface));
+            int count = 0;
+            FUN_005f02f0(range.first, range.second, count);
+            m_surfaces.FUN_005efa90(range.first, range.second);
+        }
+        unsigned long description[31];
+        unsigned long effect[25];
+        if (!(m_74 & 1)) {
+            memset(description, 0, sizeof(description));
+            description[0] = 0x7c;
+            description[1] = 1;
+            description[26] = 0x200;
+            ((Create)m_88->m_vtable[6])(m_88, description, &first.m_object, 0);
+            m_surfaces.FUN_005ef440(SBDrawUnk005e4f70Pair(0, first));
+            ((SBDrawManager *)this)->FUN_005e5160(1);
+            EnterCriticalSection(this);
+            ((RHUnkFXDraw *)this)->FUN_005e4f70(1, (unsigned short)width, (unsigned short)height, 1);
+            LeaveCriticalSection(this);
+        } else {
+            {
+                unsigned long surface = 1;
+                std::pair<SBDrawUnk005efc10Iterator, SBDrawUnk005efc10Iterator> range(
+                    m_surfaces.FUN_005efc10(surface), m_surfaces.FUN_005f0070(surface));
+                int count = 0;
+                FUN_005f0440(range.first, range.second, count, std::bidirectional_iterator_tag());
+                m_surfaces.FUN_005efa90(range.first, range.second);
+            }
+            memset(description, 0, sizeof(description));
+            description[0] = 0x7c;
+            description[1] = 0x21;
+            description[26] = 0x218;
+            description[5] = 1;
+            effect[0] = 0x64;
+            effect[22] = 0;
+            ((Create)m_88->m_vtable[6])(m_88, description, &first.m_object, 0);
+            primary = (SBDrawUnk005e5ec0Surface *)first.m_object;
+            ((Blit)primary->m_vtable[5])(primary, 0, 0, 0, 0x1000400, effect);
+            m_surfaces.FUN_005ef440(SBDrawUnk005e4f70Pair(0, first));
+            primary = (SBDrawUnk005e5ec0Surface *)first.m_object;
+            description[26] = 4;
+            long result = ((GetAttached)primary->m_vtable[12])(primary, description + 26, &second.m_object);
+            if (result != 0)
+                SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0x255,
+                    // STRING: GAME 0x006b9378
+                    "Unable to get the back surface: %s\n", SBDrawStringData(FUN_005f81d0(result)));
+            primary = (SBDrawUnk005e5ec0Surface *)second.m_object;
+            ((Blit)primary->m_vtable[5])(primary, 0, 0, 0, 0x1000400, effect);
+            m_surfaces.FUN_005ef440(SBDrawUnk005e4f70Pair(1, second));
+        }
+    } else {
+        SetWindowPos(m_window, 0, (int)0x80000000, (int)0x80000000,
+            (unsigned short)width + 8, (unsigned short)height + 27, 2);
+        ((SBDrawManager *)this)->FUN_005e5160(1);
+        if (!(m_74 & 1)) {
+            EnterCriticalSection(this);
+            ((RHUnkFXDraw *)this)->FUN_005e4f70(1, (unsigned short)width, (unsigned short)height, 1);
+        } else {
+            EnterCriticalSection(this);
+            ((RHUnkFXDraw *)this)->FUN_005e4f70(1, (unsigned short)width, (unsigned short)height, 2);
+        }
+        LeaveCriticalSection(this);
+    }
+    ((Restore)m_88->m_vtable[25])(m_88);
+    return true;
 }
 
 // FUNCTION: GAME 0x005e4ed0
@@ -568,37 +659,6 @@ unsigned short SBDrawUnk005e5ec0::FUN_005e5f60(unsigned long surface)
 #define SBGEO_POINT2D_VIEW
 #include "SBGeoBoundingBox2DCore.h"
 
-// STUB: GAME 0x005e6000
-bool SBDrawManager::FUN_005e6000(SBGeoBoundingBox2D &destination, SBGeoBoundingBox2D &source)
-{
-    SBGeoVector2D offset;
-    offset.m_x = destination.m_p0.m_x < 0.0f ? -destination.m_p0.m_x : 0.0f;
-    offset.m_y = destination.m_p0.m_y < 0.0f ? -destination.m_p0.m_y : 0.0f;
-    destination.SetMin(destination.m_p0.Unk005fc190(offset));
-    source.SetMin(source.m_p0.Unk005fc190(offset));
-    {
-        float maximum = destination.m_p1.m_x;
-        float width;
-        *(volatile float *)&width = (float)m_10e;
-        if (maximum > *(const float *)&width)
-            offset.m_x = *(const float *)&width - destination.m_p1.m_x;
-        else
-            offset.m_x = 0.0f;
-    }
-    {
-        float maximum = destination.m_p1.m_y;
-        float height;
-        *(volatile float *)&height = (float)m_110;
-        if (maximum > *(const float *)&height)
-            offset.m_y = *(const float *)&height - destination.m_p1.m_y;
-        else
-            offset.m_y = 0.0f;
-    }
-    destination.SetMax(destination.m_p1.Unk005fc190(offset));
-    source.SetMax(source.m_p1.Unk005fc190(offset));
-    return true;
-}
-
 // FUNCTION: GAME 0x005e61e0
 bool SBDrawManager::FUN_005e61e0(unsigned long surface, const SBGeoBoundingBox2D *box, unsigned short color, unsigned long flags)
 {
@@ -864,8 +924,9 @@ bool SBDrawManager::BlitAlpha(unsigned long source, SBGeoBoundingBox2D *sourceBo
     if (alpha == source) {
         alphaView = sourceView;
     }
-    if (destination != source) {
-        if (!FUN_005e5a00(destination, destinationView, 0)) {
+    unsigned long destinationValue = destination;
+    if (destinationValue != source) {
+        if (!FUN_005e5a00(destinationValue, destinationView, 0)) {
             ((RHUnk005ef320 *)this)->FUN_005e5d30(source);
             ((RHUnk005ef320 *)this)->FUN_005e5d30(alpha);
             SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0xdf6,
@@ -3604,7 +3665,7 @@ void FUN_005f0320(SBDrawSurfaceEntry *entry, const SBDrawSurfaceEntry &value)
 }
 
 // FUNCTION: GAME 0x005f0440
-void FUN_005f0440(SBDrawTreeIteratorB first, SBDrawTreeIteratorB last, int &count)
+void FUN_005f0440(SBDrawTreeIteratorB first, SBDrawTreeIteratorB last, int &count, std::bidirectional_iterator_tag)
 {
     for (; first != last; ++first)
         ++count;
@@ -3648,7 +3709,7 @@ void EmitSBDrawManager(SBDrawUnk005e8450 *draw, void *buffer)
     int count = 0;
     FUN_005f02f0(*(SBDrawTreeIterator *)buffer, *(SBDrawTreeIterator *)buffer, count);
     FUN_005f0320((SBDrawSurfaceEntry *)buffer, *(SBDrawSurfaceEntry *)buffer);
-    FUN_005f0440(*(SBDrawTreeIteratorB *)buffer, *(SBDrawTreeIteratorB *)buffer, count);
+    FUN_005f0440(*(SBDrawTreeIteratorB *)buffer, *(SBDrawTreeIteratorB *)buffer, count, std::bidirectional_iterator_tag());
 }
 
 // GLOBAL: GAME 0x006c11b8
@@ -4297,3 +4358,74 @@ void FUN_00624934(void *source, void *destination, int destinationRow, int width
 #undef SBDRAW_KEYING_BODY
 #undef SBDRAW_STORE_PIXEL
 #undef SBDRAW_RECTANGLE_SETUP
+
+// FUNCTION: GAME 0x005e6000
+bool SBDrawManager::FUN_005e6000(SBGeoBoundingBox2D &destination, SBGeoBoundingBox2D &source)
+{
+    SBGeoVector2D offset;
+    offset.m_x = destination.m_p0.m_x < 0.0f ? -destination.m_p0.m_x : 0.0f;
+    offset.m_y = destination.m_p0.m_y < 0.0f ? -destination.m_p0.m_y : 0.0f;
+    destination.SetMin(destination.m_p0.Unk005fc190(offset));
+    source.SetMin(source.m_p0.Unk005fc190(offset));
+    {
+        float maximum = destination.m_p1.m_x;
+        float width;
+        *(volatile float *)&width = (float)m_10e;
+        if (maximum > *(const float *)&width)
+            offset.m_x = *(const float *)&width - *(volatile float *)&destination.m_p1.m_x;
+        else
+            offset.m_x = 0.0f;
+    }
+    {
+        float maximum = destination.m_p1.m_y;
+        float height;
+        *(volatile float *)&height = (float)m_110;
+        if (maximum > *(const float *)&height)
+            offset.m_y = *(const float *)&height - *(volatile float *)&destination.m_p1.m_y;
+        else
+            offset.m_y = 0.0f;
+    }
+    destination.SetMax(destination.m_p1.Unk005fc190(offset));
+    source.SetMax(source.m_p1.Unk005fc190(offset));
+    return true;
+}
+
+// STUB: GAME 0x005e4ca0
+RHUnk005ef320::~RHUnk005ef320()
+{
+    for (SBDrawUnk005efc10Iterator it = m_surfaces.Begin(); it != m_surfaces.End(); ++it)
+    {
+        if (m_fullscreen == 1 && it.m_node->m_key == 1)
+            DeleteCriticalSection(*(void **)((char *)it.m_node + 0x24));
+        else
+        {
+            SBDrawUnk005e5ec0Surface *surface = *(SBDrawUnk005e5ec0Surface **)((char *)it.m_node + 0x10);
+            ((unsigned long (__stdcall *)(SBDrawUnk005e5ec0Surface *))surface->m_vtable[2])(surface);
+            DeleteCriticalSection(*(void **)((char *)it.m_node + 0x24));
+        }
+        operator delete(*(void **)((char *)it.m_node + 0x24));
+    }
+    // STRING: GAME 0x006a7300
+    UnregisterClassA("SBDRAW", m_instance);
+    SBDrawUnk005efc10Iterator first(m_surfaces.Leftmost());
+    SBDrawUnk005efc10Iterator last(m_surfaces.m_head);
+    m_surfaces.FUN_005efa90(first, last);
+    if (m_8c)
+        ((unsigned long (__stdcall *)(SBDrawUnk005e5ec0Surface *))m_8c->m_vtable[2])(m_8c);
+    if (m_88)
+        ((unsigned long (__stdcall *)(SBDrawUnk005e5ec0Surface *))m_88->m_vtable[2])(m_88);
+    if (m_84)
+        ((unsigned long (__stdcall *)(SBDrawUnk005e5ec0Surface *))m_84->m_vtable[2])(m_84);
+    DeleteCriticalSection(this);
+}
+
+#include <stddef.h>
+
+DECOMP_STATIC_ASSERT(offsetof(SBDrawUnk005f0090Node, m_object) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(SBDrawUnk005f0090Node, m_width) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(SBDrawUnk005f0090Node, m_height) == 0x16)
+DECOMP_SIZE_ASSERT(SBDrawUnk005e4f70Surface, 0x18)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005ef320, m_surfaces) == 0x54)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005ef320, m_fullscreen) == 0x80)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005ef320, m_width) == 0x10e)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005ef320, m_height) == 0x110)
