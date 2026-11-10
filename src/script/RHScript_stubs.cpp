@@ -261,7 +261,6 @@ RHUnk005883a0::RHUnk005883a0(unsigned short, int, void *, int, const SBGeoPoint2
 RHUnk005883a0::~RHUnk005883a0() {}
 void RHScriptRecordWorld::Unk004fc8f0(SBGeoPoint2D &, SBGeoPoint2D &, const SBGeoPoint2D *, unsigned short) {}
 RHUnk00613e90 RHScriptRecordWorld::Unk004fbdd0(const RHUnk00571160Position &) { return RHUnk00613e90(); }
-void RHScriptBatchCalls::Unk00514670() {}
 void RHScriptBatchCalls::Unk0050ed40() {}
 void RHScriptBatchCalls::Unk0054cfa0(void *) {}
 

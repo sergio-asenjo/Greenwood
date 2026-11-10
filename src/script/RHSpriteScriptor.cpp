@@ -5,6 +5,7 @@
 #include "RHTreeDec.h"
 #include <string.h>
 #include <stdlib.h>
+#include <stddef.h>
 
 extern RHTreeDecNode34 *g_unk0x006c10e0;
 
@@ -22,79 +23,39 @@ static inline RHTreeDecNode34 *RHSpriteTreeMinimum(RHTreeDecNode34 *node)
     return node;
 }
 
-struct RHSpriteInsertNode
+inline RHSpriteInsertIterator RHSpriteInsertIterator::operator++(int)
 {
-    RHSpriteInsertNode *m_00;
-    RHSpriteInsertNode *m_04;
-    RHSpriteInsertNode *m_08;
-    RHUnkSpriteCacheValue m_0c;
-    int m_34;
-};
+    RHSpriteInsertIterator previous = *this;
+    ((RHTreeInc005c11c0 *)this)->FUN_005c11c0();
+    return previous;
+}
 
-struct RHSpriteInsertIterator
+inline void RHSpriteInsertTree::RotateLeft(RHSpriteInsertNode *node)
 {
-    RHSpriteInsertNode *m_node;
-    RHSpriteInsertIterator operator++(int)
-    {
-        RHSpriteInsertIterator previous = *this;
-        ((RHTreeInc005c11c0 *)this)->FUN_005c11c0();
-        return previous;
-    }
-};
-
-
-class RHSpriteInsertTree
+    RHUnk00641782Lock lock;
+    RHSpriteInsertNode *right = node->m_08;
+    node->m_08 = right->m_00;
+    if (right->m_00 != (RHSpriteInsertNode *)g_unk0x006c10e0) right->m_00->m_04 = node;
+    right->m_04 = node->m_04;
+    if (node == m_head->m_04) m_head->m_04 = right;
+    else if (node == node->m_04->m_00) node->m_04->m_00 = right;
+    else node->m_04->m_08 = right;
+    right->m_00 = node;
+    node->m_04 = right;
+}
+inline void RHSpriteInsertTree::RotateRight(RHSpriteInsertNode *node)
 {
-public:
-    RHSpriteInsertIterator FUN_005c1290(RHSpriteInsertNode *, RHSpriteInsertNode *, const RHUnkSpriteCacheValue &);
-    static RHSpriteInsertNode *&Left(RHSpriteInsertNode *node) { return node->m_00; }
-    inline void RotateLeft(RHSpriteInsertNode *node)
-    {
-        RHUnk00641782Lock lock;
-        RHSpriteInsertNode *right = node->m_08;
-        node->m_08 = right->m_00;
-        if (right->m_00 != (RHSpriteInsertNode *)g_unk0x006c10e0) right->m_00->m_04 = node;
-        right->m_04 = node->m_04;
-        if (node == m_head->m_04) m_head->m_04 = right;
-        else if (node == node->m_04->m_00) node->m_04->m_00 = right;
-        else node->m_04->m_08 = right;
-        right->m_00 = node;
-        node->m_04 = right;
-    }
-    inline void RotateRight(RHSpriteInsertNode *node)
-    {
-        RHUnk00641782Lock lock;
-        RHSpriteInsertNode *left = node->m_00;
-        node->m_00 = left->m_08;
-        if (left->m_08 != (RHSpriteInsertNode *)g_unk0x006c10e0) left->m_08->m_04 = node;
-        left->m_04 = node->m_04;
-        if (node == m_head->m_04) m_head->m_04 = left;
-        else if (node == node->m_04->m_08) node->m_04->m_08 = left;
-        else node->m_04->m_00 = left;
-        left->m_08 = node;
-        node->m_04 = left;
-    }
-    void FUN_005bf080();
-    RHSpriteInsertIterator FUN_005c06c0(RHSpriteInsertIterator, RHSpriteInsertIterator);
-    RHSpriteInsertIterator FUN_005c0b50(RHSpriteInsertIterator);
-    void FUN_005c10d0(RHSpriteInsertNode *);
-    static RHSpriteInsertNode *&Parent(RHSpriteInsertNode *node) { return node->m_04; }
-    static RHSpriteInsertNode *&Right(RHSpriteInsertNode *node) { return node->m_08; }
-    static int &Color(RHSpriteInsertNode *node) { return node->m_34; }
-    RHSpriteInsertNode *&Root() { return m_head->m_04; }
-    RHSpriteInsertNode *&Leftmost() { return m_head->m_00; }
-    RHSpriteInsertNode *&Rightmost() { return m_head->m_08; }
-    RHSpriteInsertIterator Begin()
-    {
-        RHSpriteInsertIterator result;
-        result.m_node = Leftmost();
-        return result;
-    }
-    unsigned m_00;
-    RHSpriteInsertNode *m_head;
-    unsigned m_08;
-    unsigned m_count;
-};
+    RHUnk00641782Lock lock;
+    RHSpriteInsertNode *left = node->m_00;
+    node->m_00 = left->m_08;
+    if (left->m_08 != (RHSpriteInsertNode *)g_unk0x006c10e0) left->m_08->m_04 = node;
+    left->m_04 = node->m_04;
+    if (node == m_head->m_04) m_head->m_04 = left;
+    else if (node == node->m_04->m_08) node->m_04->m_08 = left;
+    else node->m_04->m_00 = left;
+    left->m_08 = node;
+    node->m_04 = left;
+}
 
 static inline RHSpriteInsertNode *RHSpriteInsertMinimum(RHSpriteInsertNode *node)
 {
@@ -175,13 +136,21 @@ DECOMP_SIZE_ASSERT(SBGeoVector2D, 0x08)
 DECOMP_SIZE_ASSERT(RHUnkSpriteUshortVector, 0x10)
 DECOMP_SIZE_ASSERT(RHUnkSpriteRow, 0x64)
 DECOMP_SIZE_ASSERT(RHUnkSpriteScriptInfo, 0x18)
-DECOMP_SIZE_ASSERT(RHUnkSpriteCacheNode, 0x34)
+DECOMP_SIZE_ASSERT(RHUnkSpriteCacheNode, 0x38)
 DECOMP_SIZE_ASSERT(RHUnkSpriteCacheIterator, 0x04)
 DECOMP_SIZE_ASSERT(RHUnkSpriteCacheValue, 0x28)
 DECOMP_SIZE_ASSERT(RHUnkSpriteCacheInsertResult, 0x08)
 DECOMP_SIZE_ASSERT(RHUnkSpriteCache, 0x10)
+DECOMP_SIZE_ASSERT(RHSpriteInsertTree, 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHSpriteInsertTree, m_head) == 4)
+DECOMP_STATIC_ASSERT(offsetof(RHSpriteInsertTree, m_multi) == 8)
+DECOMP_STATIC_ASSERT(offsetof(RHSpriteInsertTree, m_count) == 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(RHSpriteInsertNode, m_0c) == 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(RHSpriteInsertNode, m_34) == 0x34)
+DECOMP_STATIC_ASSERT(offsetof(RHUnkSpriteScriptInfo, m_indices) == 4)
 DECOMP_SIZE_ASSERT(RHUnkSpriteFileHeader, 0x2e)
 DECOMP_SIZE_ASSERT(RHSpriteScriptor, 0x14)
+DECOMP_STATIC_ASSERT(offsetof(RHSpriteScriptor, m_cache) == 4)
 DECOMP_SIZE_ASSERT(RHUnkSpriteRowHeader, 0x0e)
 DECOMP_SIZE_ASSERT(RHUnkSpriteFrameHeader, 0x0e)
 
@@ -288,8 +257,7 @@ bool RHUnkSpriteBank::FUN_00506b10(SBFile *file)
 // GLOBAL: GAME 0x006c10dc
 unsigned g_unk0x006c10dc;
 
-// FUNCTION: GAME 0x005bf080
-void RHSpriteInsertTree::FUN_005bf080()
+inline RHSpriteInsertTree::~RHSpriteInsertTree()
 {
     RHSpriteInsertIterator first = Begin();
     RHSpriteInsertIterator last;
@@ -309,6 +277,60 @@ void RHSpriteInsertTree::FUN_005bf080()
 
 // GLOBAL: GAME 0x006c10d8
 RHSpriteScriptor *g_unk0x006c10d8;
+
+inline RHSpriteInsertTree::RHSpriteInsertTree(const std::less<std::string> &compare, bool multi,
+                                           const std::allocator<RHUnkSpriteCacheValue> &allocator)
+    : m_allocator(allocator), m_compare(compare), m_multi(multi)
+{
+    RHUnk00641782Lock lock;
+    if (!g_unk0x006c10e0)
+    {
+        RHTreeDecNode34 *node = (RHTreeDecNode34 *)operator new(sizeof(RHTreeDecNode34));
+        node->m_04 = 0;
+        node->m_34 = 1;
+        g_unk0x006c10e0 = node;
+        node->m_00 = 0;
+        g_unk0x006c10e0->m_08 = 0;
+    }
+    ++g_unk0x006c10dc;
+    RHSpriteInsertNode *parent = (RHSpriteInsertNode *)g_unk0x006c10e0;
+    RHSpriteInsertNode *node = (RHSpriteInsertNode *)operator new(sizeof(RHSpriteInsertNode));
+    node->m_04 = parent;
+    node->m_34 = 0;
+    m_head = node;
+    m_count = 0;
+    m_head->m_00 = m_head;
+    m_head->m_08 = m_head;
+}
+
+inline RHUnkSpriteCache::RHUnkSpriteCache(const std::less<std::string> &compare,
+                                       const std::allocator<RHUnkSpriteCacheValue> &allocator)
+    : RHSpriteInsertTree(compare, false, allocator)
+{
+}
+
+// SYNTHETIC: GAME 0x005bf080
+// RHUnkSpriteCache::~RHUnkSpriteCache
+
+// FUNCTION: GAME 0x005bee50
+RHSpriteScriptor::RHSpriteScriptor()
+{
+}
+
+// SYNTHETIC: GAME 0x005bef20
+// RHSpriteScriptor::`scalar deleting destructor'
+
+// FUNCTION: GAME 0x005bef40
+RHSpriteScriptor::~RHSpriteScriptor()
+{
+    for (RHSpriteInsertIterator it = m_cache.Begin(); it != m_cache.End(); it++)
+    {
+        RHUnkSpriteScriptInfo &info = (*it).m_info;
+        delete info.m_indices;
+        delete info.m_rows;
+    }
+    g_unk0x006c10d8 = 0;
+}
 
 // FUNCTION: GAME 0x005bf0f0
 RHSpriteScriptor *RHSpriteScriptor::GetInstance()
@@ -539,7 +561,7 @@ RHUnkSpriteCacheIterator RHUnkSpriteCache::FUN_005c0800(const std::string &key)
 {
     RHUnkSpriteCacheIterator result;
     result.m_node = FUN_005c15a0(key);
-    return result == end() || key < result.m_node->m_key ? end() : result;
+    return result == end() || key < result.m_node->m_0c.m_key ? end() : result;
 }
 
 // FUNCTION: GAME 0x005c0890
@@ -726,7 +748,7 @@ void EmitRHSpriteTreeInc(RHTreeInc005c11c0 &iterator)
 
 void EmitRHSpriteInsertTreeCleanup(RHSpriteInsertTree &tree)
 {
-    tree.FUN_005bf080();
+    tree.~RHSpriteInsertTree();
 }
 
 // FUNCTION: GAME 0x005c1290
@@ -802,14 +824,14 @@ void EmitRHSpriteInsertTree(RHSpriteInsertTree &tree, const RHUnkSpriteCacheValu
 RHUnkSpriteCacheNode *RHUnkSpriteCache::FUN_005c15a0(const std::string &key)
 {
     RHUnk00641782Lock lock;
-    RHUnkSpriteCacheNode *node = m_head->m_parent;
+    RHUnkSpriteCacheNode *node = m_head->m_04;
     RHUnkSpriteCacheNode *candidate = m_head;
     while (node != (RHUnkSpriteCacheNode *)g_unk0x006c10e0) {
-        if (node->m_key.compare(key) < 0)
-            node = node->m_right;
+        if (node->m_0c.m_key.compare(key) < 0)
+            node = node->m_08;
         else {
             candidate = node;
-            node = node->m_left;
+            node = node->m_00;
         }
     }
     return candidate;
@@ -829,4 +851,52 @@ void RHSpriteScriptor::Emit(const std::string &name, const std::string &profile)
     (vector->*size)();
     unsigned short *(Vector::*erase)(unsigned short *, unsigned short *) = &Vector::erase;
     (vector->*erase)(vector->begin(), vector->end());
+}
+
+// Parked: native STL instantiation frame and folded pair-constructor shape differ.
+// STUB: GAME 0x005c09c0
+std::pair<RHUnkSpriteCacheIterator, bool> RHUnkSpriteCache::FUN_005c09c0(const RHUnkSpriteCacheValue &value)
+{
+    RHUnkSpriteCacheNode *node = m_head->m_04;
+    RHUnkSpriteCacheNode *parent = m_head;
+    bool less = true;
+    {
+        RHUnk00641782Lock lock;
+        while (node != (RHUnkSpriteCacheNode *)g_unk0x006c10e0)
+        {
+            parent = node;
+            int (std::string::*compare)(unsigned int, unsigned int, const char *, unsigned int) const = &std::string::compare;
+            less = (value.m_key.*compare)(0, value.m_key.size(), node->m_0c.m_key.c_str(), node->m_0c.m_key.size()) < 0;
+            node = less ? node->m_00 : node->m_08;
+        }
+    }
+    if (m_multi)
+    {
+        RHSpriteInsertIterator inserted = FUN_005c1290(node, parent, value);
+        RHUnkSpriteCacheIterator result;
+        result.m_node = (RHUnkSpriteCacheNode *)inserted.m_node;
+        return std::pair<RHUnkSpriteCacheIterator, bool>(result, true);
+    }
+    RHSpriteInsertTree *tree = this;
+    RHUnkSpriteCacheIterator position;
+    position.m_node = parent;
+    if (less)
+    {
+        if (position.m_node == m_head->m_00)
+        {
+            RHSpriteInsertIterator inserted = tree->FUN_005c1290((RHSpriteInsertNode *)node, (RHSpriteInsertNode *)parent, value);
+            RHUnkSpriteCacheIterator result;
+            result.m_node = (RHUnkSpriteCacheNode *)inserted.m_node;
+            return std::pair<RHUnkSpriteCacheIterator, bool>(result, true);
+        }
+        ((RHTreeDec005c1660 *)&position)->FUN_005c1660();
+    }
+    if (((RHCampaignCommandLine *)&position.m_node->m_0c.m_key)->FUN_0045a010(*(const RHProfileText *)&value.m_key) < 0)
+    {
+        RHSpriteInsertIterator inserted = tree->FUN_005c1290((RHSpriteInsertNode *)node, (RHSpriteInsertNode *)parent, value);
+        RHUnkSpriteCacheIterator result;
+        result.m_node = (RHUnkSpriteCacheNode *)inserted.m_node;
+        return std::pair<RHUnkSpriteCacheIterator, bool>(result, true);
+    }
+    return std::pair<RHUnkSpriteCacheIterator, bool>(position, false);
 }

@@ -43,11 +43,12 @@
 #include "RHGenericMap.h"
 #include "RHMalignityActorCalls.h"
 #include "RHGameActionCalls.h"
+#include "RHGameSyncCalls.h"
 #include "SBDrawManagerCore.h"
 #include "RHCampaignCore.h"
 #include "RHScriptActorArray.h"
 #include "RHMissionProfile.h"
-
+class RHFastFindGrid { public: bool FUN_004fc8f0(void *, void *, void *, void *); RHUnk00613e90 PositionToPoint3D(RHUnk00571160Position &); };
 extern unsigned *g_unk0x006c08a4;
 class RHUnk6c1040;
 extern RHUnk6c1040 *g_unk0x6c1040;
@@ -76,7 +77,7 @@ bool FUN_005edae0(RHUnk005ef320 *, const char *, ...);
 class RHMenuPopupScroll
 {
 public:
-    static void FUN_0053a0b0(int id);
+    static void FUN_0053a0b0(int id); static void FUN_0053a000(void *text, void *title, int flag);
 };
 
 extern unsigned char g_unk0x006c06ca;
@@ -884,32 +885,24 @@ void *g_unk0x006c0fe0;
 // FUNCTION: GAME 0x00570800
 RHScript::RHScript()
 {
-    m_vptr = 0x00679bec;
     g_unk0x006c0fe0 = 0;
     g_unk0x6c0fa4 = 0;
     g_unk0x6c0f78 = 0;
 }
 
-// FUNCTION: GAME 0x00570820
-void *RHScript::FUN_00570820(unsigned flags)
-{
-    this->~RHScript();
-    if (flags & 1)
-        operator delete(this);
-    return this;
-}
+// SYNTHETIC: GAME 0x00570820
+// ??_GRHScript@@UAEPAXI@Z
 
 // FUNCTION: GAME 0x00570840
 RHScript::~RHScript()
 {
-    m_vptr = 0x00679bec;
 }
 
 void EmitRHScriptLifetime(void *storage)
 {
     RHScript *script = (RHScript *)storage;
     script->RHScript::RHScript();
-    script->FUN_00570820(0);
+    script->RHScript::~RHScript();
 }
 
 namespace VMCoreCustomDependencies
@@ -4750,8 +4743,8 @@ bool RHScript::RecordEnterGame(void *actor, void *location, int direction, int s
             ((RHUnkList *)&g_unk0x6c0f50)->insert(RHUnkIter(g_unk0x6c0f50.head), value);
             g_unk0x6c0f50.valid = true;
             unsigned short enterDirection = direction == -1 ? *(unsigned short *)(*(char **)((char *)actor + 0x50) + 0xd8) : direction;
-            ((RHScriptRecordWorld *)g_unk0x6c0a9c)->Unk004fc8f0(first, second, location == 0 ? 0 : destination, enterDirection);
-            float height = ((RHScriptRecordWorld *)g_unk0x6c0a9c)->Unk004fbdd0(position).z;
+            ((RHFastFindGrid *)g_unk0x6c0a9c)->FUN_004fc8f0(&first, &second, location == 0 ? (void *)0 : (void *)destination, (void *)(unsigned)enterDirection);
+            float height = ((RHFastFindGrid *)g_unk0x6c0a9c)->PositionToPoint3D(position).z;
             projection.x = second.m_x;
             projection.y = second.m_y + height;
             projection.z = height;
@@ -4769,7 +4762,7 @@ bool RHScript::RecordEnterGame(void *actor, void *location, int direction, int s
             *(void **)(sprite + 0xdc) = position.area;
             ((RHBonusInfoBase *)(*(char **)((char *)actor + 0x50) + 4))->FUN_0055f290();
         }
-        RHUnk005883a0 *element = new RHUnk005883a0(g_unk0x6c0fa4++, 20, actor, style != 0 ? 10 : 6,
+        RHUnk00588530 *element = new RHUnk00588530(g_unk0x6c0fa4++, 20, actor, style != 0 ? 10 : 6,
             SBGeoPoint2D(*(float *)destination, *(float *)((char *)location + 8)), 0, 0, 2);
         --g_unk0x6c0fa4;
         AddToSequence((RHSequenceElement *)element,
@@ -4850,9 +4843,9 @@ bool RHScript::RecordLeaveGame(void *actor, void *location, int direction, int s
     SBGeoPoint2D first;
     SBGeoPoint2D second;
     unsigned short exitDirection = direction == -1 ? *(unsigned short *)(*(char **)((char *)actor + 0x50) + 0xd8) : direction;
-    ((RHScriptRecordWorld *)g_unk0x6c0a9c)->Unk004fc8f0(first, second,
-        location != 0 ? (SBGeoPoint2D *)((char *)location + 4) : 0, (unsigned char)(exitDirection - 8) & 15);
-    RHUnk005883a0 *element = new RHUnk005883a0(g_unk0x6c0fa4++, 20, actor, style != 0 ? 10 : 6, second, 0, 0, 2);
+    ((RHFastFindGrid *)g_unk0x6c0a9c)->FUN_004fc8f0(&first, &second,
+        location != 0 ? (void *)((char *)location + 4) : (void *)0, (void *)(unsigned)((unsigned char)(exitDirection - 8) & 15));
+    RHUnk00588530 *element = new RHUnk00588530(g_unk0x6c0fa4++, 20, actor, style != 0 ? 10 : 6, second, 0, 0, 2);
     ((RHUnk00585500 *)element)->Unk(g_unk0x6c0f78);
     --g_unk0x6c0fa4;
     return true;
@@ -5436,7 +5429,7 @@ void RHScript::AddPCToMissionTeam(void *actor)
     if ((*(unsigned int *)((char *)actor + 4) & 15) == 12)
     {
         ((RHCampaign *)g_unk0x6c07fc)->FUN_00455400(*(RHPCDescription **)((char *)actor + 0x5f8));
-        ((RHScriptBatchCalls *)g_unk0x6c0b3c)->Unk00514670();
+        ((RHGameSyncCalls *)g_unk0x6c0b3c)->FUN_00514670();
         *(char *)((char *)actor + 0x92) = 1;
         *(int *)((char *)actor + 0xa0) = 0;
         *(short *)((char *)actor + 0xa4) = 2;
@@ -5453,7 +5446,7 @@ void RHScript::RemovePCFromMissionTeam(void *actor)
     if ((*(unsigned int *)((char *)actor + 4) & 15) == 12)
     {
         ((RHCampaign *)g_unk0x6c07fc)->FUN_004555f0(*(RHPCDescription **)((char *)actor + 0x5f8));
-        ((RHScriptBatchCalls *)g_unk0x6c0b3c)->Unk00514670();
+        ((RHGameSyncCalls *)g_unk0x6c0b3c)->FUN_00514670();
         return;
     }
     SBAssert(0, "P:\\Robin Hood\\RHScript.cpp", 7115,
@@ -6506,6 +6499,16 @@ int FUN_0057b150()
 }
 }
 
+#include "RHSherwoodStat.h"
+
+// FUNCTION: GAME 0x0057b160
+void RHScript::DisplaySherwoodReport()
+{
+    RHSherwoodStat report;
+    RHMenuPopupScroll::FUN_0053a000(&report.GetText(), &std::string("Debrief"), 1);
+    RHUnk00546050()->RHUnk005460c0(RHUnk5490f0(0x2e, 0));
+}
+
 // FUNCTION: GAME 0x0057b2f0
 void RHScript::SetExperiences(void *actor, int first, int second)
 {
@@ -6811,7 +6814,7 @@ DECOMP_STATIC_ASSERT(offsetof(RHScriptFXArray, last) == 8)
 DECOMP_STATIC_ASSERT(offsetof(RHScriptFXArray, end) == 0x0c)
 DECOMP_STATIC_ASSERT(offsetof(RHScriptFXArray, dirty) == 0x14)
 
-static inline void RHScriptAppendFX(RHScriptFXArray *array, void *const &target)
+static inline void RHScriptAppendFX(RHScriptFXArray *array, void *target)
 {
     void **position = array->last;
     if ((unsigned int)(array->end - array->last) < 1)
@@ -7152,11 +7155,7 @@ void RHScript::Emit()
     IsActorRider(0);
 }
 
-class RHSectorGateCalls
-{
-public:
-    void FUN_0057dea0(RHElementActor *actor, bool mode);
-};
+#include "RHSectorGateCalls.h"
 
 class RHUnk0054b150
 {

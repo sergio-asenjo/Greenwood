@@ -19,5 +19,3 @@ RHUnkSpriteRow::RHUnkSpriteRow() : m_resources(0), m_frames(0), m_rates(0, (unsi
     m_00 = 0;
     m_10 = 0;
 }
-std::pair<RHUnkSpriteCacheIterator, bool> RHUnkSpriteCache::FUN_005c09c0(const RHUnkSpriteCacheValue &) { return std::pair<RHUnkSpriteCacheIterator, bool>(end(), false); }
-RHSpriteScriptor::RHSpriteScriptor() {}
