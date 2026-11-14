@@ -54,7 +54,6 @@ RHPortraitStrategyCalls::RHPortraitStrategyCalls()
 {
     *(unsigned *)this = 0x679f38;
 }
-RHPortraitLifetime005d6320::RHPortraitLifetime005d6320() {}
 const std::wstring &RHPortraitActorCalls::FUN_00492730() { static std::wstring value; return value; }
 
 typedef RHPortraitRenderer0060dab0 RHPortraitRenderer0060dad0;

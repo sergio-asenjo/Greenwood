@@ -288,7 +288,7 @@ void RHUnk0051aa00::AdaptPoints()
 
 #include "RHSectorBuilding.h"
 
-// STUB: GAME 0x0051b6e0
+// FUNCTION: GAME 0x0051b6e0
 RHUnk0051b6e0::RHUnk0051b6e0(RHUnk0051e1e0 *first, RHUnk0051e1e0 *second)
 {
     *(int *)m_04 = 2;
@@ -309,8 +309,8 @@ RHUnk0051b6e0::RHUnk0051b6e0(RHUnk0051e1e0 *first, RHUnk0051e1e0 *second)
     }
     m_18.m_x *= 0.5f;
     m_18.m_y *= 0.5f;
-    m_10 = (RHFastFindSector *)first->m_owner;
-    m_0c = (RHFastFindSector *)second->m_owner;
+    m_10 = (RHFastFindSector *)first->Owner();
+    m_0c = (RHFastFindSector *)second->Owner();
     ((RHUnk0057d490 *)m_10)->FUN_0057d760(this, false);
     ((RHUnk0057d490 *)m_0c)->FUN_0057d760(this, true);
     m_16 = first->GetLayer();

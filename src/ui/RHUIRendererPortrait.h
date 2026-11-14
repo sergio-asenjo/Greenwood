@@ -34,14 +34,7 @@
 //   [esi+0x38] (a surface/handle), the widget ID, and &float (out/in).
 // Signature from the target `ret 0xc` (three stack args, __thiscall) and the
 // `cmp al,1 / jne` on its return value (bool).
-#ifndef RHUNK00600820_VIEW
-#define RHUNK00600820_VIEW
-class RHUnk00600820
-{
-public:
-    bool ResolveSurface(void *surface, unsigned int id, float *value);
-};
-#endif
+#include "RHUnk00600820.h"
 
 #include "SBDrawManagerCore.h"
 

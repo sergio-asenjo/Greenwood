@@ -62,18 +62,11 @@ public:
     bool GetSurfaceForResource(long, unsigned, unsigned &);
     bool FUN_006006f0(long id, SBGeoVector2D &value)
     {
-        return ((SBUIUnk006006f0 *)this)->FUN_006006f0(id, (RHUnk005fc3b0 &)value);
+        return ((RHMapResources *)this)->FUN_006006f0(id, (RHUnk005fc3b0 &)value);
     }
 };
 
-#ifndef RHUNK00600820_VIEW
-#define RHUNK00600820_VIEW
-class RHUnk00600820
-{
-public:
-    bool ResolveSurface(void *surface, unsigned int id, float *value);
-};
-#endif
+#include "RHUnk00600820.h"
 
 #include "SBDrawManagerCore.h"
 

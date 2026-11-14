@@ -23,5 +23,3 @@ RHEngine *g_pEngine = 0;
 #include "RHUnk005cbb80.h"
 
 
-bool RHMenuDialogue::Create() { return false; }
-

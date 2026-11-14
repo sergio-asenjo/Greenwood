@@ -822,11 +822,25 @@ struct RHMapStringIterator
     RHMapStringIterator operator++(int);
 };
 
+typedef std::pair<RHMapStringIterator, bool> RHMapStringInsertResult;
+
+DECOMP_SIZE_ASSERT(RHMapStringIterator, 4)
+DECOMP_SIZE_ASSERT(RHMapStringInsertResult, 8)
+DECOMP_STATIC_ASSERT(offsetof(RHMapStringInsertResult, second) == 4)
+
 void RHMapConstructValue(std::pair<const std::string, void *> *, const std::pair<const std::string, void *> &);
 
 class RHMapStringTree
 {
 public:
+    RHMapStringInsertResult FUN_0053d4a0(const std::pair<const std::string, void *> &);
+    RHMapStringInsertResult Insert(const std::pair<const std::string, void *> &value)
+    {
+        typedef RHMapStringInsertResult (RHMapStringTree::*InsertValue)(const std::pair<const std::string, void *> &);
+        InsertValue insert = &RHMapStringTree::FUN_0053d4a0;
+        RHMapStringInsertResult result = (this->*insert)(value);
+        return RHMapStringInsertResult(result.first, result.second);
+    }
     RHMapStringIterator FUN_0053dcb0(RHMapStringNode *, RHMapStringNode *, const std::pair<const std::string, void *> &);
     RHMapStringNode *FUN_0053dfc0(const std::string &);
     void *&FUN_0053cd30(const std::string &);
@@ -870,6 +884,14 @@ public:
     unsigned m_08;
     unsigned m_count;
 };
+
+DECOMP_SIZE_ASSERT(RHMapStringTree, 0x10)
+DECOMP_SIZE_ASSERT(RHMapStringNode, 0x24)
+DECOMP_STATIC_ASSERT(offsetof(RHMapStringTree, m_head) == 4)
+DECOMP_STATIC_ASSERT(offsetof(RHMapStringTree, m_08) == 8)
+DECOMP_STATIC_ASSERT(offsetof(RHMapStringTree, m_count) == 0xc)
+DECOMP_STATIC_ASSERT(offsetof(RHMapStringNode, m_0c) == 0xc)
+DECOMP_STATIC_ASSERT(offsetof(RHMapStringNode, m_20) == 0x20)
 
 struct RHMapTreeDecNode
 {
@@ -970,6 +992,45 @@ RHMapTreeIterator RHMapTree::FUN_0053d2f0(RHMapTreeIterator first, RHMapTreeIter
     while (first.node != last.node)
         tree.FUN_0053d610(position++);
     return first;
+}
+
+// STUB: GAME 0x0053d4a0
+RHMapStringInsertResult RHMapStringTree::FUN_0053d4a0(const std::pair<const std::string, void *> &value)
+{
+    RHMapStringTree &tree = *this;
+    RHMapStringNode *parent = tree.m_head;
+    RHMapStringNode *node = parent->m_04;
+    bool left = true;
+    {
+        RHUnk00641782 lock;
+        while (node != (RHMapStringNode *)g_unk0x006c0c28)
+        {
+            parent = node;
+            const RHProfileText &key = *(const RHProfileText *)&value.first;
+            const RHProfileText &other = *(const RHProfileText *)&node->m_0c.first;
+            left = key.FUN_00460900(0, key.m_size, other.c_str(), other.m_size) < 0;
+            node = left ? node->m_00 : node->m_08;
+        }
+    }
+    if (*(bool *)&tree.m_08)
+    {
+        return RHMapStringInsertResult(tree.FUN_0053dcb0(node, parent, value), true);
+    }
+    RHMapTreeDecIterator previous;
+    previous.m_node = (RHMapTreeDecNode *)parent;
+    if (left)
+    {
+        if (parent == tree.m_head->m_00)
+        {
+            return RHMapStringInsertResult(tree.FUN_0053dcb0(node, parent, value), true);
+        }
+        previous.FUN_0053e0b0();
+    }
+    if (((RHCampaignCommandLine *)&((RHMapStringNode *)previous.m_node)->m_0c.first)->FUN_0045a010(*(const RHProfileText *)&value.first) < 0)
+    {
+        return RHMapStringInsertResult(tree.FUN_0053dcb0(node, parent, value), true);
+    }
+    return RHMapStringInsertResult(*(RHMapStringIterator *)&previous, false);
 }
 
 // FUNCTION: GAME 0x0053d610
@@ -1281,6 +1342,26 @@ void RHMapTree::FUN_0053ad50()
     }
 }
 
+inline RHMapScreenTree::~RHMapScreenTree()
+{
+    RHMapTree &tree = *(RHMapTree *)this;
+    RHMapTreeIterator first;
+    first.node = tree.m_head->left;
+    RHMapTreeIterator last;
+    last.node = tree.m_head;
+    tree.FUN_0053d2f0(first, last);
+    delete tree.m_head;
+    tree.m_head = 0;
+    tree.m_size = 0;
+    {
+        RHUnk00641782 lock;
+        if (--g_unk0x006c0c24 == 0) {
+            delete g_unk0x006c0c28;
+            g_unk0x006c0c28 = 0;
+        }
+    }
+}
+
 #include "SBDrawManagerCore.h"
 #include "SBDrawViewport.h"
 
@@ -1306,6 +1387,21 @@ extern RHUnk0048a970 *g_unk0x6c0b3c;
 
 class SBThreadedInput;
 extern SBThreadedInput *g_unk0x6c1340;
+
+// STUB: GAME 0x0053af80
+RHMenuScreenView::~RHMenuScreenView()
+{
+    ((SBDrawManager *)g_unk0x6c11d0)->FUN_005e5160((unsigned long)m_background);
+    FUN_0053c800();
+    SBThreadedInput::SetInstantRefreshMode(m_197d);
+    m_input->SetMouseEnabled(m_197e);
+    if (m_ui)
+    {
+        m_input->CleanUpInputs();
+        ((RHGameActionCalls *)m_ui)->FUN_005104d0(*(SBGeoPoint2D *)FUN_005104c0());
+        ((RHGameActionCalls *)m_ui)->FUN_00510550(*(SBGeoVector2D *)m_input->FUN_005104b0());
+    }
+}
 
 inline RHMapScreenTree::RHMapScreenTree(const RHMapScreenLess &comp, bool multi, const RHMapScreenAlloc &alloc)
     : m_alloc(alloc), m_comp(comp), m_multi(multi)
@@ -1605,11 +1701,11 @@ void *RHMenuScreenView::FUN_0053be80(const std::string &name)
     return font;
 }
 
-// map operator[] glue: the original inlines insert under an EH frame.
-// STUB: GAME 0x0053cd30
+// FUNCTION: GAME 0x0053cd30
 void *&RHMapStringTree::FUN_0053cd30(const std::string &key)
 {
-    return FUN_0053dfc0(key)->m_0c.second;
+    RHMapStringIterator position = Insert(std::pair<const std::string, void *>(key, (void *)0)).first;
+    return position.m_node->m_0c.second;
 }
 
 // FUNCTION: GAME 0x0053bf40
@@ -1703,6 +1799,77 @@ struct RHMenuScreenTimerEvent
     void *data;
     RHMenuScreenTimerEvent *next;
 };
+
+#include "ToolboxMouseState.h"
+
+extern unsigned char g_unk0x006a6d27;
+unsigned long FUN_005f0ce0();
+bool FUN_005f1150(ToolboxMouseState &mouse, unsigned char *keyboard);
+bool FUN_005e17a0(unsigned char *keyboard);
+void FUN_005e1380();
+void FUN_005e1400();
+
+// FUNCTION: GAME 0x0053c390
+void RHMenuScreenView::FUN_0053c390()
+{
+    unsigned level = m_191c.size();
+    bool redraw = false;
+    SBDrawManager *draw = (SBDrawManager *)g_unk0x6c11d0;
+    SBThreadedInput::SetCursor(0x11, true);
+    ((RHMapWindow *)this)->FUN_0053c7e0();
+    m_input->FUN_005f1700();
+    draw->FUN_005e5260();
+    m_input->PopMouseBackground(false);
+    while (m_191c.size() == level)
+    {
+        bool processed = false;
+        if (g_unk0x006a6d27)
+        {
+            while (m_191c.size() == level && (FUN_005f0ce0() > 0 || !processed))
+            {
+                if (FUN_005f0ce0() > 0)
+                    FUN_005f1150((ToolboxMouseState &)m_mouse, m_keyboard.m_keys);
+                if (m_04 && ((RHGameInputTranslator *)m_04)->TranslateKeyboardInput(m_keyboard, m_08))
+                {
+                    redraw = true;
+                    unsigned state = *(unsigned *)((char *)g_unk0x6c0b3c + 0x3550);
+                    m_input->CleanUpInputs();
+                    ((RHGameActionCalls *)&m_sbui)->FUN_005104d0(*(SBGeoPoint2D *)FUN_005104c0());
+                    ((RHGameActionCalls *)&m_sbui)->FUN_00510550(*(SBGeoVector2D *)m_input->FUN_005104b0());
+                    if (state == 7 || state == 6 || state == 5)
+                        ((RHMapWindow *)this)->FUN_0053bbe0();
+                }
+                FUN_0053bf40(((SBUI *)&m_sbui)->InputLoop(m_mouse, m_keyboard, false));
+                m_mouse.m_x = 0;
+                m_mouse.m_y = 0;
+                m_mouse.m_wheel = 0;
+                processed = true;
+            }
+            FUN_0053c5b0();
+            if (FUN_005e17a0(m_keyboard.m_keys) == true)
+                redraw = true;
+            else
+            {
+                if (redraw == true)
+                {
+                    ((RHMapWindowPart *)&m_sbui)->FUN_00618850(0);
+                    redraw = false;
+                }
+                FUN_0053c050();
+                ((SBUI *)&m_sbui)->FUN_006189e0(m_1914++);
+                m_input->FUN_005f1700();
+                draw->FUN_005e5260();
+                m_input->PopMouseBackground(false);
+                FUN_005e1380();
+            }
+        }
+        else
+        {
+            redraw = true;
+            FUN_005e1400();
+        }
+    }
+}
 
 // FUNCTION: GAME 0x0053c5b0
 void RHMenuScreenView::FUN_0053c5b0()

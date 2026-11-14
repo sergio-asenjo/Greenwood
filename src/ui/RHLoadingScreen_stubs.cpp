@@ -18,7 +18,7 @@ extern "C" int sprintf(char *, const char *, ...) { return 0; }
 // "string too long"
 
 // Throw-info data; bound by name only.
-// STUB: GAME 0x006a4638 SYMBOL
+// GLOBAL: GAME 0x006a4638
 // __TI3?AVlength_error@std@@
 
 // Constructor 0x00613e90 is shared with RHTitbits_stubs.cpp.

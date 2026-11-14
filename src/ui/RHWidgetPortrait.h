@@ -52,16 +52,6 @@ public:
 
 #include "RHUIRendererShiftingTitbitClass.h"
 
-class RHPortraitRenderer005cc110
-{
-public:
-    ~RHPortraitRenderer005cc110()
-    {
-        ((RHUIRendererShiftingTitbit *)this)->~RHUIRendererShiftingTitbit();
-    }
-    undefined m_data[0x70];
-};
-
 #include "RHPortraitStrategyCalls.h"
 
 struct RHPortraitWidgetEvent;
@@ -102,19 +92,30 @@ public:
 class RHPortraitLifetime005db5a0 : public RHGameWidgetLifetimeBase
 {
 public:
-    RHPortraitLifetime005db5a0() {}
+    RHPortraitLifetime005db5a0() { m_state = 0; }
     ~RHPortraitLifetime005db5a0() {}
     void *FUN_005db580(unsigned flags);
-    RHPortraitRenderer005cc110 m_renderer;
+    RHUIRendererShiftingTitbit m_renderer;
 };
 
-class RHPortraitLifetime005d63b0 : public RHPortraitLifetime005db5a0
+class __declspec(novtable) RHPortraitLifetime005d63b0 : public RHPortraitLifetime005db5a0
 {
 public:
+    RHPortraitLifetime005d63b0()
+    {
+        *(unsigned *)this = 0x0067a5b8;
+        m_messages[0] = 0;
+        m_messages[1] = 0;
+        m_messages[2] = 0;
+        m_messages[3] = 0;
+    }
     ~RHPortraitLifetime005d63b0() {}
+    unsigned m_messages[4];
+    unsigned short m_ec;
+    unsigned short m_ee;
 };
 
-class RHPortraitLifetime005d6320 : public RHPortraitLifetime005d63b0
+class __declspec(novtable) RHPortraitLifetime005d6320 : public RHPortraitLifetime005d63b0
 {
 public:
     RHPortraitLifetime005d6320();

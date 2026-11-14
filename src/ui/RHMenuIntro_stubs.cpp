@@ -15,8 +15,6 @@
 
 
 
-// Target 0x0052f540, __thiscall.
-void RHMenuIntro::FUN_0052f540() {}
 
 // GLOBAL: GAME 0x006c1340
 SBThreadedInput *g_unk0x6c1340;

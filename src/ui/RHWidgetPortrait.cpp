@@ -3627,6 +3627,13 @@ void *RHPortraitFullLifetime::FUN_005d61e0(unsigned flags)
 // SYNTHETIC: GAME 0x005d62c0
 // ??1RHPortraitLifetime005d62c0@@QAE@XZ
 
+DECOMP_SIZE_ASSERT(RHUIRendererShiftingTitbit, 0x5c)
+DECOMP_SIZE_ASSERT(RHPortraitLifetime005db5a0, 0xdc)
+DECOMP_SIZE_ASSERT(RHPortraitLifetime005d63b0, 0xf0)
+DECOMP_SIZE_ASSERT(RHPortraitLifetime005d6320, 0x104)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitLifetime005d63b0, m_messages) == 0xdc)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitLifetime005d6320, m_box) == 0xf0)
+
 // SYNTHETIC: GAME 0x005d6320
 // ??1RHPortraitLifetime005d6320@@QAE@XZ
 
@@ -5398,6 +5405,14 @@ void RHPortraitWidget005dafd0::FUN_005dafd0()
     ((RHUIRendererShiftingTitbit *)m_renderer)->Render(v09());
 }
 
+// FUNCTION: GAME 0x005daff0
+RHPortraitLifetime005d6320::RHPortraitLifetime005d6320()
+{
+    m_ec = 0;
+    m_ee = 0;
+    *(unsigned *)this = 0x0067a560;
+}
+
 // FUNCTION: GAME 0x005db080
 RHPortraitWidgetEvent *RHPortraitWidget005dafd0::FUN_005db080(const RHPortraitWidgetInput &input)
 {
@@ -5851,7 +5866,7 @@ void *RHPortraitDeleting::FUN_005dee30(unsigned flags)
 void *RHPortraitDeleting::FUN_005deff0(unsigned flags)
 {
     RHPortraitRenderer0060da10 *self = (RHPortraitRenderer0060da10 *)this;
-    self->~RHPortraitRenderer0060da10();
+    self->RHPortraitRenderer0060da10::~RHPortraitRenderer0060da10();
     if (flags & 1)
         operator delete(self);
     return self;
@@ -6281,6 +6296,219 @@ void EmitPortraitQuickEntries(std::vector<RHPortraitQuickEntry> *entries)
     (entries->*size)();
     std::vector<RHPortraitQuickEntry> local;
     FUN_005df400(0);
+}
+
+DECOMP_SIZE_ASSERT(RHGameWidgetLifetimeBase, 0x80)
+DECOMP_SIZE_ASSERT(RHGameLifetime00515b40, 0xd0)
+DECOMP_SIZE_ASSERT(RHGameLifetime00515f00, 0xcc)
+DECOMP_SIZE_ASSERT(RHGameLifetime00517590, 0xcc)
+DECOMP_SIZE_ASSERT(RHGameRenderer0060da10, 0x4c)
+DECOMP_SIZE_ASSERT(RHPortraitRendererSurfaces, 8)
+DECOMP_SIZE_ASSERT(RHPortraitRenderer0060d470, 0x4c)
+DECOMP_SIZE_ASSERT(RHPortraitRenderer0060dab0, 0x50)
+DECOMP_STATIC_ASSERT(offsetof(RHGameWidgetLifetimeBase, m_0a) == 0x0a)
+DECOMP_STATIC_ASSERT(offsetof(RHGameWidgetLifetimeBase, m_0c) == 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(RHGameWidgetLifetimeBase, m_event) == 0x4c)
+DECOMP_STATIC_ASSERT(offsetof(RHGameWidgetLifetimeBase, m_5c) == 0x5c)
+DECOMP_STATIC_ASSERT(offsetof(RHGameWidgetLifetimeBase, m_state) == 0x7c)
+DECOMP_STATIC_ASSERT(offsetof(RHGameLifetime00515b40, m_renderer) == 0x80)
+DECOMP_STATIC_ASSERT(offsetof(RHGameLifetime00517590, m_renderer) == 0x80)
+DECOMP_STATIC_ASSERT(offsetof(RHGameRenderer0060da10, m_name) == 0x28)
+DECOMP_STATIC_ASSERT(offsetof(RHGameRenderer0060da10, m_widgetResource) == 0x38)
+DECOMP_STATIC_ASSERT(offsetof(RHGameRenderer0060da10, m_surfaces) == 0x40)
+DECOMP_STATIC_ASSERT(offsetof(RHGameRenderer0060da10, m_48) == 0x48)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitRenderer0060d470, m_position) == 8)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitRenderer0060d470, m_name) == 0x28)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitRenderer0060d470, m_surfaces) == 0x40)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitRenderer0060d470, m_48) == 0x48)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitRenderer0060dab0, m_4c) == 0x4c)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitRenderer0060dab0, m_4e) == 0x4e)
+
+inline RHGameWidgetLifetimeBase &RHGameWidgetLifetimeBase::operator=(const RHGameWidgetLifetimeBase &other)
+{
+    m_04 = other.m_04;
+    m_05 = other.m_05;
+    m_06 = other.m_06;
+    m_07 = other.m_07;
+    m_08 = other.m_08;
+    m_0a = other.m_0a;
+    m_0c = other.m_0c;
+    typedef std::wstring &(std::wstring::*Assign)(const std::wstring &, unsigned, unsigned);
+    Assign assign = &std::wstring::assign;
+    (m_10.*assign)(other.m_10, 0, std::wstring::npos);
+    (m_20.*assign)(other.m_20, 0, std::wstring::npos);
+    ((RHMobileUnk00607da0 *)&m_30)->FUN_00607da0((const RHMobileUnk00607da0 &)other.m_30);
+    m_44 = other.m_44;
+    m_48 = other.m_48;
+    m_event = other.m_event;
+    m_5c = other.m_5c;
+    ((RHMobileUnk00607da0 *)&m_60)->FUN_00607da0((const RHMobileUnk00607da0 &)other.m_60);
+    m_74 = other.m_74;
+    m_78 = other.m_78;
+    m_state = other.m_state;
+    return *this;
+}
+
+// FUNCTION: GAME 0x005de120
+inline RHGameLifetime00515b40 &RHGameLifetime00515b40::operator=(const RHGameLifetime00515b40 &other)
+{
+    RHGameWidgetLifetimeBase::operator=(other);
+    m_renderer = other.m_renderer;
+    return *this;
+}
+
+// STUB: GAME 0x005deb20
+RHGameWidgetLifetimeBase::RHGameWidgetLifetimeBase(const RHGameWidgetLifetimeBase &other)
+    : m_04(other.m_04), m_05(other.m_05), m_06(other.m_06), m_07(other.m_07),
+      m_08(other.m_08), m_0a(other.m_0a), m_0c(other.m_0c),
+      m_10(other.m_10, 0, unsigned(-1), (const std::allocator<wchar_t> &)other.m_10),
+      m_20(other.m_20, 0, unsigned(-1), (const std::allocator<wchar_t> &)other.m_20),
+      m_30(other.m_30), m_44(other.m_44), m_48(other.m_48), m_event(other.m_event),
+      m_5c(other.m_5c), m_60(other.m_60), m_74(other.m_74), m_78(other.m_78),
+      m_state(other.m_state)
+{
+}
+
+inline void RHPortraitRenderer0060d470::AssignPosition(const SBGeoBoundingBox2D &position)
+{
+    ((RHMobileUnk00607da0 *)&m_position)->FUN_00607da0((const RHMobileUnk00607da0 &)position);
+}
+
+inline RHPortraitRenderer0060dab0 &RHPortraitRenderer0060dab0::operator=(const RHPortraitRenderer0060dab0 &other)
+{
+    m_resources = other.m_resources;
+    AssignPosition(other.m_position);
+    m_drawManager = other.m_drawManager;
+    m_hardware = other.m_hardware;
+    m_24 = other.m_24;
+    m_name.assign(other.m_name, 0, std::wstring::npos);
+    m_widgetResource = other.m_widgetResource;
+    m_3c = other.m_3c;
+    for (unsigned int index = 0; index < 2; ++index)
+        m_surfaces[index] = other.m_surfaces[index];
+    m_48 = other.m_48;
+    m_4c = other.m_4c;
+    m_4e = other.m_4e;
+    return *this;
+}
+
+// FUNCTION: GAME 0x005dec70
+inline RHPortraitRenderer0060d470 &RHPortraitRenderer0060d470::operator=(const RHPortraitRenderer0060d470 &other)
+{
+    m_resources = other.m_resources;
+    AssignPosition(other.m_position);
+    m_drawManager = other.m_drawManager;
+    m_hardware = other.m_hardware;
+    m_24 = other.m_24;
+    m_name.assign(other.m_name, 0, std::wstring::npos);
+    m_widgetResource = other.m_widgetResource;
+    m_3c = other.m_3c;
+    for (unsigned int index = 0; index < 2; ++index)
+        m_surfaces.values[index] = other.m_surfaces.values[index];
+    m_48 = other.m_48;
+    return *this;
+}
+
+inline RHGameRenderer0060da10 &RHGameRenderer0060da10::operator=(const RHGameRenderer0060da10 &other)
+{
+    m_resources = other.m_resources;
+    AssignPosition(other.m_position);
+    m_drawManager = other.m_drawManager;
+    m_hardware = other.m_hardware;
+    m_24 = other.m_24;
+    m_name.assign(other.m_name, 0, std::wstring::npos);
+    m_widgetResource = other.m_widgetResource;
+    m_3c = other.m_3c;
+    for (unsigned int index = 0; index < 2; ++index)
+        m_surfaces[index] = other.m_surfaces.values[index];
+    m_48 = other.m_48;
+    return *this;
+}
+
+inline RHGameRenderer0060da10 &RHGameRenderer0060da10::Assign(const RHGameRenderer0060da10 &other)
+{
+    m_resources = other.m_resources;
+    AssignPosition(other.m_position);
+    m_drawManager = other.m_drawManager;
+    m_hardware = other.m_hardware;
+    m_24 = other.m_24;
+    m_name.assign(other.m_name, 0, std::wstring::npos);
+    m_widgetResource = other.m_widgetResource;
+    m_3c = other.m_3c;
+    for (unsigned int index = 0; index < 2; ++index)
+        m_surfaces.values[index] = other.m_surfaces.values[index];
+    m_48 = other.m_48;
+    return *this;
+}
+
+// FUNCTION: GAME 0x005de300
+inline RHGameLifetime00517590 &RHGameLifetime00517590::operator=(const RHGameLifetime00517590 &other)
+{
+    RHGameWidgetLifetimeBase::operator=(other);
+    m_renderer = other.m_renderer;
+    return *this;
+}
+
+inline RHGameLifetime00517590 &RHGameLifetime00517590::Assign(const RHGameLifetime00517590 &other)
+{
+    RHGameWidgetLifetimeBase::operator=(other);
+    m_renderer.Assign(other.m_renderer);
+    return *this;
+}
+
+// FUNCTION: GAME 0x005de6d0
+RHGameLifetime00515f00 &RHGameLifetime00515f00::operator=(const RHGameLifetime00515f00 &other)
+{
+    Assign(other);
+    return *this;
+}
+
+RHGameLifetime00517590 &EmitRHPortraitBitmapBaseAssignment(RHGameLifetime00517590 &destination,
+    const RHGameLifetime00517590 &source)
+{
+    RHGameLifetime00517590 &(RHGameLifetime00517590::*assign)(const RHGameLifetime00517590 &) =
+        &RHGameLifetime00517590::operator=;
+    return (destination.*assign)(source);
+}
+
+RHGameLifetime00515f00 &EmitRHPortraitBitmapWidgetAssignment(RHGameLifetime00515f00 &destination,
+    const RHGameLifetime00515f00 &source)
+{
+    RHGameLifetime00515f00 &(RHGameLifetime00515f00::*assign)(const RHGameLifetime00515f00 &) =
+        &RHGameLifetime00515f00::operator=;
+    return (destination.*assign)(source);
+}
+
+// FUNCTION: GAME 0x005dee50
+RHPortraitRenderer0060d470::RHPortraitRenderer0060d470(const RHPortraitRenderer0060d470 &other)
+    : m_resources(other.m_resources), m_position(other.m_position),
+      m_drawManager(other.m_drawManager), m_hardware(other.m_hardware), m_24(other.m_24),
+      m_name(other.m_name, 0, unsigned(-1), (const std::allocator<wchar_t> &)other.m_name),
+      m_widgetResource(other.m_widgetResource), m_3c(other.m_3c),
+      m_surfaces(other.m_surfaces), m_48(other.m_48)
+{
+}
+
+void EmitRHPortraitRendererCopy(RHPortraitRenderer0060d470 &destination,
+    const RHPortraitRenderer0060d470 &source)
+{
+    RHPortraitRenderer0060d470 copy(source);
+    RHPortraitRenderer0060d470 &(RHPortraitRenderer0060d470::*assign)(const RHPortraitRenderer0060d470 &) =
+        &RHPortraitRenderer0060d470::operator=;
+    (destination.*assign)(source);
+}
+
+void EmitRHPortraitWidgetCopy(const RHGameWidgetLifetimeBase &source)
+{
+    RHGameWidgetLifetimeBase copy(source);
+}
+
+RHGameLifetime00515b40 &EmitRHPortraitWidgetAssignment(RHGameLifetime00515b40 &destination,
+    const RHGameLifetime00515b40 &source)
+{
+    RHGameLifetime00515b40 &(RHGameLifetime00515b40::*assign)(const RHGameLifetime00515b40 &) =
+        &RHGameLifetime00515b40::operator=;
+    return (destination.*assign)(source);
 }
 
 #pragma inline_depth(0)

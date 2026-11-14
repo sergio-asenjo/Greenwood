@@ -293,3 +293,126 @@ void RHMenuIntro::UpdatePlayerProfile()
         FUN_005e23d0(0x102).c_str(), FUN_005e2bf0(profile->GetM30()).c_str());
     ((RHGameMenuText *)&m_940)->v11(std::wstring(buffer));
 }
+
+#include "SBResourceManager.h"
+#include "SBUIUnk005fd4a0.h"
+#include "RHMobileUnk00607da0.h"
+
+extern RHMapResources *g_unk0x006c1840;
+extern float g_unk0x006775d8;
+
+#include "ToolboxMouseState.h"
+
+bool FUN_005f1150(ToolboxMouseState &mouse, unsigned char *keyboard);
+bool FUN_005e17a0(unsigned char *keyboard);
+void FUN_005e1400();
+
+// STUB: GAME 0x0052f540
+void RHMenuIntro::FUN_0052f540()
+{
+    RHUnkFXDraw *draw = (RHUnkFXDraw *)g_unk0x6c11d0;
+    unsigned long background = CreateBkgndTextured(0x135, 0);
+    unsigned short width = draw->FUN_005e56c0(0);
+    unsigned short height = draw->FUN_005e5750(0);
+    int scroll = -(int)height;
+    unsigned long texture;
+    ((SBResourceManager *)g_unk0x006c1840)->FUN_00600920(0x134, 0, texture);
+    int textureHeight = draw->FUN_005e5750(texture);
+    unsigned short textureWidth = draw->FUN_005e56c0(texture);
+    int left = ((int)width - textureWidth) / 2;
+    unsigned long buffer = draw->Unk005e4ed0(width, height, 0, false);
+    ToolboxMouseState mouse;
+    unsigned char keyboard[256];
+    memset(&mouse, 0, sizeof(mouse));
+    memset(keyboard, 0, sizeof(keyboard));
+    bool finished = false;
+    do
+    {
+        while (FUN_005f0ce0() > 0)
+        {
+            FUN_005f1150(mouse, keyboard);
+            if ((unsigned char)mouse.m_buttons == 1 || keyboard[1])
+                finished = true;
+        }
+        FUN_005e17a0(keyboard);
+        if (g_unk0x006a6d27 == 1)
+        {
+            unsigned long started = GetTickCount();
+            ((SBDrawManager *)draw)->FUN_005e6440(background, 0, buffer, 0, 0);
+            if (scroll < 0)
+            {
+                SBGeoBoundingBox2D source;
+                SBGeoBoundingBox2D destination;
+                destination.SetMin(SBGeoPoint2D((float)left, (float)-scroll));
+                destination.SetMax(SBGeoPoint2D((float)((int)width - left), (float)height));
+                source.SetMin(SBGeoPoint2D(0.0f, 0.0f));
+                source.SetMax(SBGeoPoint2D((float)textureWidth, (float)((int)height + scroll)));
+                if (source.Height() > 0.0f)
+                    ((SBDrawManager *)draw)->BlitAlphaKeying(texture, &source, buffer, &destination, 31, 50, 1);
+            }
+            else if ((int)height + scroll < textureHeight)
+            {
+                SBGeoBoundingBox2D source;
+                SBGeoBoundingBox2D destination;
+                destination.SetMin(SBGeoPoint2D((float)left, 0.0f));
+                destination.SetMax(SBGeoPoint2D((float)((int)width - left), (float)height));
+                source.SetMin(SBGeoPoint2D(0.0f, (float)scroll));
+                source.SetMax(SBGeoPoint2D((float)textureWidth, (float)((int)height + scroll)));
+                ((SBDrawManager *)draw)->BlitAlphaKeying(texture, &source, buffer, &destination, 31, 50, 1);
+            }
+            else
+            {
+                SBGeoBoundingBox2D source;
+                SBGeoBoundingBox2D destination;
+                destination.SetMin(SBGeoPoint2D((float)left, 0.0f));
+                destination.SetMax(SBGeoPoint2D((float)((int)width - left), (float)((int)height - textureHeight + scroll)));
+                source.SetMin(SBGeoPoint2D(0.0f, (float)scroll));
+                source.SetMax(SBGeoPoint2D((float)textureWidth, (float)(scroll * 2 - textureHeight + (int)height)));
+                if (source.Height() > 0.0f)
+                    ((SBDrawManager *)draw)->BlitAlphaKeying(texture, &source, buffer, &destination, 31, 50, 1);
+            }
+            if ((768 - (int)height) / 2 + (int)height + scroll < textureHeight - 1)
+                ++scroll;
+            ((SBDrawManager *)draw)->FUN_005e6440(buffer, 0, 0, 0, 0);
+            ((SBDrawManager *)draw)->FUN_005e5260();
+            while (GetTickCount() - started < 20) {}
+        }
+        else
+            FUN_005e1400();
+    } while (!finished);
+    ((SBDrawManager *)draw)->FUN_005e5160(background);
+    ((SBUIUnk005fd4a0 *)g_unk0x006c1840)->FUN_005fd4a0(0x134);
+}
+
+// FUNCTION: GAME 0x0052fd60
+unsigned long RHMenuIntro::CreateBkgndTextured(long resource, unsigned short color)
+{
+    RHUnkFXDraw *draw = (RHUnkFXDraw *)g_unk0x6c11d0;
+    SBGeoBoundingBox2D source;
+    SBGeoBoundingBox2D destination;
+    unsigned long surface = draw->Unk005e4ed0(draw->FUN_005e56c0(0), draw->FUN_005e5750(0), 0, false);
+    unsigned long texture;
+    ((SBResourceManager *)g_unk0x006c1840)->FUN_00600920(resource, 0, texture);
+    ((RHMobileUnk00607da0 *)&source)->FUN_00607da0((const RHMobileUnk00607da0 &)RHMapBox(
+        0.0f, 0.0f, (float)draw->FUN_005e56c0(texture), (float)draw->FUN_005e5750(texture)));
+    ((RHMobileUnk00607da0 *)&destination)->FUN_00607da0((const RHMobileUnk00607da0 &)RHMapBox(
+        0.0f, 0.0f, (float)draw->FUN_005e56c0(0), (float)draw->FUN_005e5750(0)));
+    ((SBDrawManager *)draw)->FUN_005e61e0(surface, &destination, color, 0);
+    ((RHMobileUnk00607da0 *)&source)->FUN_00607da0((const RHMobileUnk00607da0 &)source.FUN_006092c0(destination));
+    ((RHMobileUnk00607da0 *)&destination)->FUN_00607da0((const RHMobileUnk00607da0 &)source.FUN_006090d0(SBGeoVector2D(
+        (destination.Width() - source.Width()) * g_unk0x006775d8,
+        (destination.Height() - source.Height()) * g_unk0x006775d8)));
+    float height = source.Height();
+    float width = source.Width();
+    ((RHMobileUnk00607da0 *)&source)->FUN_00607da0((const RHMobileUnk00607da0 &)source.FUN_006090d0(SBGeoVector2D(
+        ((float)draw->FUN_005e56c0(texture) - width) * g_unk0x006775d8,
+        ((float)draw->FUN_005e5750(texture) - height) * g_unk0x006775d8)));
+    ((SBDrawManager *)draw)->FUN_005e6440(texture, &source, surface, &destination, 0);
+    ((SBUIUnk005fd4a0 *)g_unk0x006c1840)->FUN_005fd4a0(resource);
+    return surface;
+}
+
+DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
+DECOMP_SIZE_ASSERT(SBGeoVector2D, 0x08)
+DECOMP_SIZE_ASSERT(SBGeoBoundingBox2D, 0x14)
+DECOMP_SIZE_ASSERT(ToolboxMouseState, 0x0a)

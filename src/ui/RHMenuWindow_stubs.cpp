@@ -15,7 +15,6 @@ void RHMenuWindowFocus::V00() {}
 
 
 // Target 0x0053af80, __thiscall.
-RHMenuScreenView::~RHMenuScreenView() {}
 
 // Target 0x005fc3e0, __thiscall, ret 4.
 RHMenuResolution::RHMenuResolution(const SBGeoPoint2D &) {}
@@ -23,4 +22,3 @@ RHMenuResolution::RHMenuResolution(const SBGeoPoint2D &) {}
 
 
 // Target 0x0053c390, __thiscall.
-void RHMenuScreenView::FUN_0053c390() {}

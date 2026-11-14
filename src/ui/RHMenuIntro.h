@@ -34,6 +34,7 @@ public:
     bool FUN_0052e0b0(RHMenuEvent *event);
     void *FUN_0052e300(unsigned flags);
     void FUN_0052f540();
+    unsigned long CreateBkgndTextured(long resource, unsigned short color);
     int FUN_0052ec40();
     void *FUN_0052ec50();
 

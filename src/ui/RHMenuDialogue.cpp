@@ -44,6 +44,7 @@
 //   volatile read also commits `set` to esi and orders the tail as the
 //   original does (load, scale, pop edi, pop esi, combine).
 
+#include "RHRendererGeometry.h"
 #include "SBNullstr.h"
 #include "rhuirenderer_005cb420.h"
 #include "RHMenuDialogue.h"
@@ -51,6 +52,11 @@
 #include "RHMenuScreenView.h"
 #include "RHMenuCloseCalls.h"
 #include "RHMapWindowClass.h"
+#include "RHMapWidget.h"
+#include "RHMenuCampaignMapClass.h"
+#include "RHFocusManager.h"
+#include "SBUIRenderer.h"
+#include "RHWidgetPortraitClass.h"
 #include <stdlib.h>
 
 typedef char RHMenuDialogueSize[(sizeof(RHMenuDialogue) == 0x55c) ? 1 : -1];
@@ -79,13 +85,6 @@ public:
 extern RHUnk0048a970 *g_unk0x6c0b3c;
 
 #include "RHMapResources.h"
-
-class SBUIUnk0060d530
-{
-public:
-    bool FUN_0060d550(long);
-    void *FUN_0060d690();
-};
 
 class RHMenuWindowUI;
 class RHDialogueTextView
@@ -117,6 +116,9 @@ struct RHDialogueEntryView
 
 extern RHMapResources *g_unk0x006c1840;
 extern std::string g_unk0x006c0660;
+extern wchar_t g_unk0x006c0b50[1];
+extern char g_unk0x006c0685;
+std::wstring FUN_005e23d0(unsigned long);
 std::string FUN_004e4b40(const std::string &, const std::string &);
 
 // GLOBAL: GAME 0x006b0b6c
@@ -212,6 +214,72 @@ RHMenuDialogue::~RHMenuDialogue()
     ((RHMapWindow *)m_screen)->FUN_0053bb30(m_timer);
 }
 
+class RHSaveGame;
+
+template<class T>
+class SBArray
+{
+public:
+    int m_grow;
+    T *m_first;
+    T *m_last;
+    T *m_end;
+    void Insert(T *position, unsigned count, const T &value);
+};
+
+inline void RHDialogueInsert(std::vector<void *> &widgets, void *const &widget)
+{
+    ((SBArray<RHSaveGame *> *)&widgets)->Insert((RHSaveGame **)widgets.end(), 1, (RHSaveGame *const &)widget);
+}
+
+inline void RHDialogueSetText(RHPortraitButton &button, const std::wstring &text)
+{
+    typedef std::wstring &(std::wstring::*Assign)(const std::wstring &, unsigned, unsigned);
+    Assign assign = &std::wstring::assign;
+    button.m_08 = true;
+    (button.m_20.*assign)(text, 0, std::wstring::npos);
+}
+
+// STUB: GAME 0x0052a9a0
+bool RHMenuDialogue::Create()
+{
+    if (((RHMenuWindow *)this)->FUN_00544b40(g_unk0x006c0b50, RHMapBox(0.0f, 0.0f, 496.0f, 463.0f), 0))
+    {
+        void *font = m_screen->FUN_0053be80(std::string("PopupScroll"));
+        std::vector<void *> widgets;
+        m_skip.FUN_005d1e30((int)m_screen, g_unk0x006c0b50, 0x91);
+        m_close.FUN_005d1e30((int)m_screen, g_unk0x006c0b50, 0x92);
+        RHDialogueSetText(m_skip, FUN_005e23d0(0x152));
+        RHDialogueSetText(m_close, FUN_005e23d0(0x153));
+        ((RHMapWidget *)&m_text)->V30(g_unk0x006c0b50, RHMapBox(50.0f, 50.0f, 450.0f, 350.0f), 0, unsigned(-1));
+        ((SBUIUnk0060dd00 *)&m_text.m_renderer)->FUN_0060e0d0(font, font, font, font);
+        m_text.m_renderer.SetM60(4);
+        m_text.m_renderer.FUN_005cb9d0(130, 170);
+        ((RHMapWidget *)&m_portrait)->V30(g_unk0x006c0b50, RHMapBox(330.0f, 50.0f, 450.0f, 210.0f), 0, 0x102);
+        ((RHMapWidget *)&m_portrait)->V38(0);
+        ((RHMenuCampaignMap *)this)->V30(&m_skip);
+        ((RHMenuCampaignMap *)this)->V30(&m_close);
+        ((RHMenuCampaignMap *)this)->V30(&m_text);
+        ((RHMenuCampaignMap *)this)->V30(&m_portrait);
+        ((RHUnk005d92c0Sub *)&m_skip)->v08(SBGeoPoint2D(0.0f, 384.0f));
+        RHDialogueInsert(widgets, &m_skip);
+        RHDialogueInsert(widgets, &m_close);
+        ((RHMenuWindow *)this)->FUN_005449e0(widgets, 8);
+        ((RHFocusManager *)((char *)this + 0xc8))->FUN_004ffc70((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_skip, false);
+        RHFocusManager &focus = *(RHFocusManager *)((char *)this + 0xc8);
+        focus.FUN_004ffc70((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_close, false);
+        focus.FUN_004ffce0((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_skip, 0x1c);
+        focus.FUN_004ffce0((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_skip, 0x9c);
+        focus.FUN_004ffce0((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_close, 1);
+        focus.FUN_004ffd20(&m_portrait);
+        if (g_unk0x006c0685 == 1)
+            m_timer = ((RHMapWindow *)m_screen)->FUN_0053baa0(100);
+        UpdateDialogue();
+        return true;
+    }
+    return false;
+}
+
 // FUNCTION: GAME 0x0052afd0
 void RHMenuDialogue::Display(const std::vector<unsigned long> &dialogues)
 {
@@ -245,19 +313,6 @@ void RHMenuDialogue::Display(RHSequenceElement *sequence)
     delete screen;
     sequence->FUN_00585970(0, true);
 }
-
-class RHSaveGame;
-
-template<class T>
-class SBArray
-{
-public:
-    int m_grow;
-    T *m_first;
-    T *m_last;
-    T *m_end;
-    void Insert(T *position, unsigned count, const T &value);
-};
 
 // FUNCTION: GAME 0x0052b1b0
 void RHMenuDialogue::DisplayAll()

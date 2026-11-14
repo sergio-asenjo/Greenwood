@@ -95,7 +95,7 @@ bool RHUnk005cbb80::FUN_005cbc80(unsigned id)
         *(unsigned *)&m_fade[index] = 0;
     }
     if (id == 0xff) {
-        (&m_40)[index] = 0;
+        m_surfaces[index] = 0;
         return false;
     }
     bool result = true;

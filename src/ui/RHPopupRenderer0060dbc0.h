@@ -14,6 +14,7 @@ public:
     ~RHPopupRenderer0060dbc0();
     void *FUN_0060dc00(unsigned flags);
     bool FUN_0060dd10(unsigned id);
+    int FUN_0060dda0(SBUIListboxUnk0061e890 *font, bool silent);
     SBUIListboxUnk0061e890 *m_50;
     SBUIListboxUnk0061e890 *m_54;
     SBUIListboxUnk0061e890 *m_58;

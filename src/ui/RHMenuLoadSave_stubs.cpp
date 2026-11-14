@@ -22,7 +22,6 @@ bool RHMenuLoadSave::FUN_00463d80(int, void *, void *) { return false; }
 // Target 0x00530320, __thiscall, ret 8.
 RHMenuLoadSave::RHMenuLoadSave(RHMenuScreenView *, bool) : RHMenuWindowFocus(0, 0, 0, false) {}
 
-void RHPortraitInputRenderer::FUN_0061c610(unsigned long) {}
 
 // FUNCTION: GAME 0x00459bc0
 void RHConstructWideString(std::wstring *destination, const std::wstring &source)

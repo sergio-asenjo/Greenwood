@@ -57,7 +57,7 @@ RHMenuWindow::RHMenuWindow(RHMenuWindow *parent, RHMenuWindowScreen *screen, lon
     SBGeoBoundingBox2D bounds;
     SBGeoVector2D position;
     unsigned long surface;
-    ((SBUIUnk006006f0 *)m_resourceOwner)->FUN_006006f0(resource, (RHUnk005fc3b0 &)size);
+    ((RHMapResources *)m_resourceOwner)->FUN_006006f0(resource, (RHUnk005fc3b0 &)size);
     ((SBResourceManager *)m_resourceOwner)->FUN_00600920(resource, 0, surface);
     position = 0.5f * SBGeoPoint2D(m_draw->FUN_005e56c0(0),
         m_draw->FUN_005e5750(0)).FUN_005fc200(size);

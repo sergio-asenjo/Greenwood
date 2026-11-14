@@ -698,7 +698,7 @@ class SBUIInputFieldDrawUnk
 public:
     SBUIInputFieldDrawUnk();
     bool FUN_00614bf0(void *, std::wstring *, const SBGeoPoint2D &, unsigned);
-    unsigned short FUN_00614230(void *, std::wstring *, const SBGeoBoundingBox2D &, unsigned, unsigned, unsigned);
+    unsigned short FUN_00614230(void *, const std::wstring *, const SBGeoBoundingBox2D &, unsigned, unsigned short, bool);
     std::wstring m_00;
     unsigned m_10;
     char m_14;
@@ -953,13 +953,13 @@ template<> RHBlinkingMap::_Pairib RHBlinkingMap::insert(const value_type &value)
 // FUNCTION: GAME 0x005c9170
 RHUIRendererBlinking::RHUIRendererBlinking() : m_currentId(0), m_frame(0), m_active(false)
 {
-    m_vptr = 0x679e5c;
+    *(unsigned *)this = 0x679e5c;
 }
 
 // FUNCTION: GAME 0x005c9250
 void *RHUIRendererBlinking::FUN_005c9250(unsigned flags)
 {
-    this->~RHUIRendererBlinking();
+    this->RHUIRendererBlinking::~RHUIRendererBlinking();
     if (flags & 1)
         operator delete(this);
     return this;
@@ -969,7 +969,7 @@ void *RHUIRendererBlinking::FUN_005c9250(unsigned flags)
 // STUB: GAME 0x005c9270
 RHUIRendererBlinking::~RHUIRendererBlinking()
 {
-    m_vptr = 0x679e5c;
+    *(unsigned *)this = 0x679e5c;
 }
 
 #include "SBUIRenderer.h"

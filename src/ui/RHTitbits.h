@@ -35,15 +35,7 @@ class SBGeoBoundingBox2D;
 class SBGeoPoint2D;
 
 // Target 0x005df510: __thiscall(SBFile&) serialising a 12-byte triple of ints.
-class RHUnk005df510
-{
-public:
-    int m_0;
-    int m_4;
-    int m_8;
-
-    bool Serialize(SBFile &file);
-};
+#include "RHUnk005df510.h"
 
 // Target 0x00613e90: trivial ctor (`mov eax,ecx; ret`); stored as a 12-byte
 // sub-object at RHTitbit+0x18.
