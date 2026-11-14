@@ -114,7 +114,9 @@ public:
     RHMalignityPosition FUN_004165e0(void *actor, bool mode);
     SBGeoPoint2D FUN_0040cbf0(const RHMalignityPosition &position);
     void FUN_0041a300(void *actor);
+    void FUN_0041be60(const RHMalignityPosition &position);
     void FUN_0041ab30();
+    void FUN_004235a0();
     bool FUN_00419e10(void *actor);
     float FUN_0041a010(void *actor);
     float FUN_0041a060(void *actor);

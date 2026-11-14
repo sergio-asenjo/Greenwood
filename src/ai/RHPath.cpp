@@ -1,6 +1,7 @@
 #include "RHPath.h"
 #include "SBGeoSegment2D.h"
 #include "VMCore.h"
+#include <stddef.h>
 
 DECOMP_SIZE_ASSERT(RHPathArray, 0x10)
 DECOMP_SIZE_ASSERT(RHPathHistory, 0x14)
@@ -9,6 +10,18 @@ DECOMP_SIZE_ASSERT(RHPathHistoryList, 0x18)
 DECOMP_SIZE_ASSERT(RHPath, 0x24)
 DECOMP_SIZE_ASSERT(RHUnkWaypointRef, 0x04)
 DECOMP_SIZE_ASSERT(RHWaypoint, 0x7c)
+DECOMP_SIZE_ASSERT(SBSimpleVirtualMachine, 0x5c)
+DECOMP_SIZE_ASSERT(VMCoreCustom, 0x60)
+DECOMP_SIZE_ASSERT(RHScript, 4)
+DECOMP_STATIC_ASSERT(offsetof(RHWaypoint, m_name) == 0x48)
+DECOMP_STATIC_ASSERT(offsetof(RHWaypoint, m_bound) == 0x58)
+DECOMP_STATIC_ASSERT(offsetof(RHWaypoint, m_0) == 0x60)
+DECOMP_STATIC_ASSERT(offsetof(RHWaypoint, m_64) == 0x64)
+DECOMP_STATIC_ASSERT(offsetof(RHWaypoint, m_68) == 0x68)
+DECOMP_STATIC_ASSERT(offsetof(RHWaypoint, m_6c) == 0x6c)
+DECOMP_STATIC_ASSERT(offsetof(RHWaypoint, m_70) == 0x70)
+DECOMP_STATIC_ASSERT(offsetof(RHWaypoint, m_74) == 0x74)
+DECOMP_STATIC_ASSERT(offsetof(RHWaypoint, m_78) == 0x78)
 DECOMP_SIZE_ASSERT(SBGeoVector2D, 0x08)
 DECOMP_SIZE_ASSERT(SBGeoBoundingBox2D, 0x14)
 DECOMP_SIZE_ASSERT(RHMalignitySegment, 0x10)
@@ -314,6 +327,35 @@ void EmitRHPathHistory(RHPath &path)
     path.InitializeHistoryEntriesOnPath();
 }
 
+// FUNCTION: GAME 0x00551a70
+RHWaypoint::RHWaypoint()
+{
+    m_74 = 0;
+    m_78 = 0;
+}
+
+void EmitRHWaypointConstruction()
+{
+    new RHWaypoint;
+}
+
+// SYNTHETIC: GAME 0x00551af0
+// RHWaypoint::`scalar deleting destructor'
+
+// FUNCTION: GAME 0x00551b20
+RHWaypoint::~RHWaypoint()
+{
+    if (m_74)
+        operator delete(m_74);
+    if (m_78)
+        operator delete(m_78);
+}
+
+void EmitRHWaypointLifetime(RHWaypoint *waypoint)
+{
+    waypoint->RHWaypoint::~RHWaypoint();
+}
+
 // FUNCTION: GAME 0x00551bb0
 unsigned int RHWaypoint::LoadDataFromFile(SBFile &file)
 {
@@ -338,8 +380,8 @@ unsigned int RHWaypoint::LoadDataFromFile(SBFile &file)
                     SBAssert(1, "P:\\Robin Hood\\RHpath.cpp", 819,
                              // STRING: GAME 0x006b154c
                              "Structural error in RHD, a Waypoint has got a script reference that does not exist !");
-                m_60.m_0 = this;
-                m_60.Unk00408660();
+                m_0 = this;
+                Unk00408660();
             }
         }
         else

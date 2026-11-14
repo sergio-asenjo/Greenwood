@@ -47,7 +47,7 @@ void RHArtificialBonhomie::FUN_0040de30()
     actor = RHMalignityField<void *>(RHBonhomieBase(this), 4);
     ((RHArtificialIntelligencePathCursor *)RHBonhomieActorPath(actor))->Unk00550f60(RHMalignityField<unsigned short>(RHBonhomieBase(this), 8));
     *((unsigned char *)this - 0x18) = 0;
-    RHMalignityField<RHMalignityActorCalls *>(RHBonhomieBase(this), 4)->FUN_0048d050();
+    RHMalignityField<RHMalignityActorCalls *>((char *)this + (*(int *volatile *)((char *)this - 0x1c))[1] - 0x1c, 4)->FUN_0048d050();
     if (RHMalignityField<RHElementActorCivilian *>(RHBonhomieBase(this), 4)->FUN_00470ca0())
         ((RHArtificialIntelligence *)RHBonhomieBase(this))->V3c(1);
     if (!(RHMalignityField<unsigned char>(RHBonhomieBase(this), 0x174) > 0) &&

@@ -3443,6 +3443,48 @@ void RHArtificialIntelligence::Unk00422b70(int property, int value)
         history.RemoveFirst();
 }
 
+#include "RHActorWorldPoint.h"
+#include "RHEngineElementArray.h"
+
+class RHElementActorNPC;
+
+// STUB: GAME 0x004235a0
+void RHArtificialIntelligence::FUN_004235a0()
+{
+    RHMalignityStimulus stimulus;
+    SBGeoBoundingBox2D bounds;
+    SBGeoVector2D radius;
+    SBGeoPoint2D center;
+    unsigned short distance = RHAIField<unsigned short>(g_pEngine, 0x4cc0);
+    stimulus.m_20 = 0x16;
+    stimulus.m_actor = (RHElementActor *)m_actor;
+    stimulus.m_type = 3;
+    center = ((RHUnk004237d0 *)m_actor)->FUN_004237d0();
+    radius.m_x = distance;
+    radius.m_y = distance * 0.57357645f;
+    bounds.FUN_00609050(center.FUN_005fc200(radius), center.Unk005fc190(radius));
+    unsigned short count = RHAIField<RHEngineElementArray<RHElementActorNPC> >(g_pEngine, 0x4958).size();
+    if (count > 0)
+    {
+        unsigned remaining = count;
+        unsigned offset = 0;
+        do
+        {
+            RHElementActorNPC *actor = *(RHElementActorNPC **)((char *)RHAIField<RHEngineElementArray<RHElementActorNPC> >(g_pEngine, 0x4958).First() + offset);
+            struct Kind5 { unsigned value : 5; };
+            if (((Kind5 *)((char *)actor + 4))->value == 4 &&
+                bounds.FUN_00608400(((RHUnk004237d0 *)actor)->FUN_004237d0()) &&
+                ((RHMalignityActorCalls *)actor)->FUN_0048a130(m_actor))
+            {
+                RHArtificialIntelligence *ai = (RHArtificialIntelligence *)((char *)actor +
+                    RHAIField<int>(RHAIField<void *>(actor, 0x49c), 4) + 0x49c);
+                ai->V24(&stimulus);
+            }
+            offset += sizeof(void *);
+        } while (--remaining);
+    }
+}
+
 // FUNCTION: GAME 0x00424340
 RHArtificialIntelligenceStimulusNode *RHArtificialIntelligenceStimulusList::Unk00424340(RHArtificialIntelligenceStimulusNode *next, RHArtificialIntelligenceStimulusNode *previous)
 {
@@ -3788,6 +3830,7 @@ RHUnk005fc3b0 &RHUnk005fc3b0::Unk005fcd40(unsigned char direction, float length)
 
 void RHArtificialIntelligence::Emit(SBFile &file, RHArtificialIntelligencePosition &position)
 {
+    FUN_004235a0();
     ((RHUnk00419a40 *)this)->Unk(0, false);
     FUN_00417ed0(0, false);
     FUN_00417580();

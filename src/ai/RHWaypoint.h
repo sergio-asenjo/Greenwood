@@ -5,11 +5,17 @@
 #include "Decomp.h"
 #include "RHUnkWaypointRef.h"
 #include "RHUnk00571160Position.h"
+#include "VMCoreCustom.h"
 
-class RHWaypoint
+// VTABLE: GAME 0x00679bcc SBSimpleVirtualMachine
+// VTABLE: GAME 0x00679bd0 RHScript
+class RHWaypoint : public RHUnkWaypointRef, public VMCoreCustom
 {
 public:
+    RHWaypoint();
+    virtual ~RHWaypoint();
     unsigned int LoadDataFromFile(SBFile &file);
+    bool FUN_00551da0(SBFile &file);
     void Emit(SBFile &file);
     RHUnk00571160Position Position() const
     {
@@ -17,8 +23,6 @@ public:
         return position;
     }
 
-    undefined m_pad0[0x60];
-    RHUnkWaypointRef m_60;
     short m_64;
     short m_66;
     void *m_68;

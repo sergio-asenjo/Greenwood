@@ -116,19 +116,7 @@ public:
 
 #include "RHUnk00608f10.h"
 
-// SIZE 0x08
-class SBGeoVector2D : public SBGeoPoint2D
-{
-public:
-    SBGeoVector2D();
-    ~SBGeoVector2D() {}
-    float FUN_005fc660(const SBGeoPoint2D &point) const;
-    SBGeoVector2D &operator=(const SBGeoVector2D &other);
-    SBGeoVector2D(const SBGeoVector2D &other);
-    SBGeoVector2D(const SBGeoPoint2D &other);
-};
-
-#define SBGEO_VECTOR2D_VIEW
+#include "SBGeoVector2D.h"
 #include "RHUnk005fc3b0.h"
 
 class RHMobileUnk006091b0

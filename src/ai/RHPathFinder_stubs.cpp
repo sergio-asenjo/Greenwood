@@ -46,9 +46,9 @@ static inline void RHBoundingBoxAssignCenter(SBGeoVector2D &center, const SBGeoP
 // FUNCTION: GAME 0x00608f40
 SBGeoPoint2D SBGeoBoundingBox2D::FUN_00608f40() const
 {
-    SBGeoVector2D center;
+    RHUnk005fc3b0 center;
     RHBoundingBoxAssignCenter(center, SBGeoVector2D(first).Unk005fc190(SBGeoVector2D(last)));
-    ((RHUnk005fc3b0 *)&center)->FUN_005fc5b0(2.0f);
+    center.FUN_005fc5b0(2.0f);
     return SBGeoPoint2D(center);
 }
 void RHPathFinder::FUN_00555a10(unsigned short, unsigned short, unsigned, RHPathWorkList &) {}

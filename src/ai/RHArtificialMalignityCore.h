@@ -27,15 +27,18 @@ public:
     void FUN_00439f60(const RHMalignityStimulus &stimulus);
     void FUN_0043a080(const RHMalignityPosition &position);
     void FUN_0043a170(const RHMalignityPosition &position);
+    void FUN_0043afc0(RHMalignityPosition &position, unsigned short heading);
     void FUN_00438620(unsigned short value);
     void CheckAmbushPoint(RHAmbushPoint *point, bool mode);
     unsigned short FUN_00433010();
+    bool FUN_004334b0(void *actor);
     bool FUN_00433680();
     void FUN_0044d9c0();
     void FUN_0044da40();
     bool FUN_0044dc80(void *actor);
     void FUN_00433790(const RHMalignityPosition &position);
     void FUN_00434320(void *actor);
+    void FUN_00434710(void *actor);
     bool FUN_00435bd0();
     int FUN_00436400(SBFile &file);
     void FUN_0043b1b0(RHMalignityPosition position, int mode);
@@ -80,6 +83,7 @@ public:
     unsigned short FUN_00449170();
     bool FUN_00449810(const RHMalignityPosition &position, unsigned short heading);
     bool FUN_00449ac0();
+    bool FUN_00449af0(RHMalignityPosition position, int mode);
     unsigned short FUN_00449d40(void *group);
     bool FUN_0044a090();
     void FUN_0044a760(void *actor);
