@@ -12,18 +12,48 @@
 #include <stdarg.h>
 #include "RHSoundCacheCore.h"
 #include "RHSoundCacheString.h"
+#include <stddef.h>
+
+class RHCampaignProfiles;
+extern RHCampaignProfiles *g_unk0x6c0e84;
 
 DECOMP_SIZE_ASSERT(RHCivilianProfileText, 0x10)
 DECOMP_SIZE_ASSERT(RHCivilianProfile, 0x3c)
 DECOMP_SIZE_ASSERT(RHMissionProfile, 0xf4)
 DECOMP_SIZE_ASSERT(RHMissionArray<unsigned long>, 0x10)
 DECOMP_SIZE_ASSERT(std::string, 0x10)
+DECOMP_SIZE_ASSERT(RHProfileManager, 0x70)
+DECOMP_SIZE_ASSERT(RHUnk00401490, 0x14)
+DECOMP_SIZE_ASSERT(RHProfileArray<RHCivilianProfile *>, 0x10)
+DECOMP_SIZE_ASSERT(RHProfileArray<RHCharacterProfile *>, 0x10)
+DECOMP_SIZE_ASSERT(RHUnk005f4fc0, 0x58)
+DECOMP_STATIC_ASSERT(offsetof(RHProfileManager, m_vptr) == 0x00)
+DECOMP_STATIC_ASSERT(offsetof(RHProfileManager, m_warnings) == 0x04)
+DECOMP_STATIC_ASSERT(offsetof(RHProfileManager, m_characters) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHProfileManager, m_soldiers) == 0x20)
+DECOMP_STATIC_ASSERT(offsetof(RHProfileManager, m_handToHand) == 0x30)
+DECOMP_STATIC_ASSERT(offsetof(RHProfileManager, m_shoot) == 0x40)
+DECOMP_STATIC_ASSERT(offsetof(RHProfileManager, m_missions) == 0x50)
+DECOMP_STATIC_ASSERT(offsetof(RHProfileArray<RHCivilianProfile *>, m_first) == 0x04)
+DECOMP_STATIC_ASSERT(offsetof(RHProfileArray<RHCivilianProfile *>, m_last) == 0x08)
+DECOMP_STATIC_ASSERT(offsetof(RHProfileArray<RHCivilianProfile *>, m_end) == 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(RHProfileManager, m_civilians) == 0x60)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk00401490, m_4) == 0x04)
+DECOMP_STATIC_ASSERT(offsetof(RHCivilianProfile, m_00) == 0x00)
+DECOMP_STATIC_ASSERT(offsetof(RHCivilianProfile, m_10) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHCivilianProfile, m_20) == 0x20)
+DECOMP_STATIC_ASSERT(offsetof(RHCivilianProfile, m_30) == 0x30)
+DECOMP_STATIC_ASSERT(offsetof(RHCivilianProfile, m_34) == 0x34)
+DECOMP_STATIC_ASSERT(offsetof(RHCivilianProfile, m_38) == 0x38)
 
 // TEMPLATE: GAME 0x005f0340
 // ?erase@?$list@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@QAE?AViterator@12@V312@0@Z
 // TEMPLATE: GAME 0x005f03d0
 // ?erase@?$list@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@QAE?AViterator@12@V312@@Z
 template class std::list<std::string>;
+
+// TEMPLATE: GAME 0x0056d660
+// ??Hstd@@YA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@0@PBDABV10@@Z
 
 class RHProfilePointerList005640c0 : public std::list<void *>
 {
@@ -167,6 +197,60 @@ void EmitRHProfilePointerList(RHProfilePointerList *list, const RHProfilePointer
     new RHProfilePointerList005641a0(*(const RHProfilePointerList005641a0 *)&other);
     new RHProfilePointerList(other);
     list->FUN_00564390(other);
+}
+
+// FUNCTION: GAME 0x00564560
+void *RHProfileManager::FUN_00564560(unsigned flags)
+{
+    this->RHProfileManager::~RHProfileManager();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// FUNCTION: GAME 0x00564580
+RHProfileManager::RHProfileManager(const char *directory)
+{
+    m_vptr = 0x00679be0;
+    RHUnk005f4fc0 file;
+    // STRING: GAME 0x006b1968
+    std::string path = directory + std::string("\\profile.cpf");
+    if (FUN_005f6400(path))
+    {
+        file.FUN_005f5090(path, 1);
+        FUN_00564e60(file);
+    }
+    else
+    {
+        FUN_00564bf0(directory);
+        file.FUN_005f5090(path, 2);
+        FUN_00564e60(file);
+    }
+    file.FUN_005f5290();
+    g_unk0x6c0e84 = (RHCampaignProfiles *)this;
+}
+
+void EmitRHProfileManager(const char *directory)
+{
+    new RHProfileManager(directory);
+}
+
+// STUB: GAME 0x005647c0
+RHProfileManager::~RHProfileManager()
+{
+    m_vptr = 0x00679be0;
+    for (RHCharacterProfile **character = m_characters.begin(); character != m_characters.end(); ++character)
+        delete *character;
+    for (RHCivilianProfile **civilian = m_civilians.begin(); civilian != m_civilians.end(); ++civilian)
+        delete *civilian;
+    for (RHHtHWeaponProfile **weapon = m_handToHand.begin(); weapon != m_handToHand.end(); ++weapon)
+        delete *weapon;
+    for (RHMissionProfile **mission = m_missions.begin(); mission != m_missions.end(); ++mission)
+        delete *mission;
+    for (RHBow::Profile **shoot = m_shoot.begin(); shoot != m_shoot.end(); ++shoot)
+        delete *shoot;
+    for (RHSoldierProfile **soldier = m_soldiers.begin(); soldier != m_soldiers.end(); ++soldier)
+        delete *soldier;
 }
 
 // FUNCTION: GAME 0x005649f0
@@ -374,7 +458,7 @@ void RHProfileManager::FUN_00565c10(const char *name)
     RHUnk00401490 parser;
     parser.FUN_00401550(name);
     parser.FUN_00401b10();
-    RHUnk00401a00 &table = *(RHUnk00401a00 *)&parser;
+    RHUnk00401490 &table = parser;
     for (unsigned row = 1; row < (unsigned)table.FUN_00401a30(); ++row)
     {
         RHCharacterProfile *profile;
@@ -445,7 +529,7 @@ void RHProfileManager::FUN_005672d0(const char *name)
     RHUnk00401490 parser;
     parser.FUN_00401550(name);
     parser.FUN_00401b10();
-    RHUnk00401a00 &table = *(RHUnk00401a00 *)&parser;
+    RHUnk00401490 &table = parser;
     for (unsigned row = 2; row < (unsigned)table.FUN_00401a30(); ++row)
     {
         RHMissionProfile *profile = new RHMissionProfile;
@@ -630,7 +714,7 @@ void RHProfileManager::FUN_00569570(const char *name)
     RHUnk00401490 parser;
     parser.FUN_00401550(name);
     parser.FUN_00401b10();
-    RHUnk00401a00 &table = *(RHUnk00401a00 *)&parser;
+    RHUnk00401490 &table = parser;
     for (unsigned row = 3; row < (unsigned)table.FUN_00401a30(); ++row)
     {
         RHHtHWeaponProfile *volatile &profile = (RHHtHWeaponProfile *volatile &)name;
@@ -703,7 +787,7 @@ void RHProfileManager::FUN_0056a310(const char *name)
     RHUnk00401490 parser;
     parser.FUN_00401550(name);
     parser.FUN_00401b10();
-    RHUnk00401a00 &table = *(RHUnk00401a00 *)&parser;
+    RHUnk00401490 &table = parser;
     for (unsigned row = 2; row < (unsigned)table.FUN_00401a30(); ++row)
     {
         RHBow::Profile *profile = new RHBow::Profile;
@@ -775,7 +859,7 @@ void RHProfileManager::FUN_0056aee0(const char *name)
     RHUnk00401490 parser;
     parser.FUN_00401550(name);
     parser.FUN_00401b10();
-    RHUnk00401a00 &table = *(RHUnk00401a00 *)&parser;
+    RHUnk00401490 &table = parser;
     for (unsigned row = 1; row < (unsigned)table.FUN_00401a30(); ++row)
     {
         RHSoldierProfile *profile = new RHSoldierProfile;
@@ -1305,6 +1389,8 @@ void RHScriptFXArray::Unk005008e0(void **, void **) {}
 
 void RHProfileManager::Emit(SBFile &file)
 {
+    FUN_00564560(0);
+    FUN_00564bf0("");
     SerializeCivilians(file);
     SerializeCharacters(file);
     SerializeMissions(file);
@@ -1338,6 +1424,41 @@ void RHProfileManager::Emit(SBFile &file)
         SBAssert(0, "P:\\Robin Hood\\RHProfileManager.cpp", line, "Serialize failed reason is %s", reason); \
         goto failed; \
     }
+
+// FUNCTION: GAME 0x00564bf0
+void RHProfileManager::FUN_00564bf0(const char *name)
+{
+    char characters[260];
+    char soldiers[260];
+    char civilians[260];
+    char handToHand[260];
+    char shoot[260];
+    char missions[260];
+    strcpy(characters, name);
+    strcpy(soldiers, name);
+    strcpy(civilians, name);
+    strcpy(handToHand, name);
+    strcpy(shoot, name);
+    strcpy(missions, name);
+    // STRING: GAME 0x006b19d8
+    strcat(characters, "\\characters.csv");
+    // STRING: GAME 0x006b19c8
+    strcat(soldiers, "\\soldiers.csv");
+    // STRING: GAME 0x006b19b8
+    strcat(civilians, "\\civilians.csv");
+    // STRING: GAME 0x006b199c
+    strcat(handToHand, "\\Hand To Hand Weapon.csv");
+    // STRING: GAME 0x006b1988
+    strcat(shoot, "\\Shoot Weapon.csv");
+    // STRING: GAME 0x006b1978
+    strcat(missions, "\\Missions.csv");
+    FUN_00569570(handToHand);
+    FUN_0056a310(shoot);
+    FUN_00565c10(characters);
+    FUN_0056aee0(soldiers);
+    FUN_005672d0(missions);
+    FUN_00565100(civilians);
+}
 
 // FUNCTION: GAME 0x00564e60
 void RHProfileManager::FUN_00564e60(SBFile &file)
@@ -1389,6 +1510,32 @@ failed:
     result = false;
 finished:
     return result;
+}
+
+// STUB: GAME 0x00565100
+void RHProfileManager::FUN_00565100(const char *name)
+{
+    RHUnk00401490 parser;
+    parser.FUN_00401550(name);
+    parser.FUN_00401b10();
+    for (unsigned row = 1; row < (unsigned)parser.FUN_00401a30(); ++row)
+    {
+        RHCivilianProfile *profile = new RHCivilianProfile;
+        for (unsigned column = 0; column < (unsigned)parser.FUN_00401a50(row); ++column)
+        {
+            switch (column)
+            {
+            case 0: RHProfileImportAssign(profile->m_00, *parser.FUN_00401a80(row, 0)); break;
+            case 1: RHProfileImportAssign(profile->m_10, *parser.FUN_00401a80(row, 1)); break;
+            case 2: RHProfileImportAssign(profile->m_20, *parser.FUN_00401a80(row, 2)); break;
+            case 3: profile->m_30 = ((RHProfileManagerParseCalls *)this)->FUN_0056c490(parser.FUN_00401a80(row, 3), row, 3); break;
+            case 4: profile->m_34 = ((RHProfileManagerParseCalls *)this)->FUN_0056c410(parser.FUN_00401a80(row, 4), row, 4); break;
+            case 5: profile->m_38 = ((RHProfileManagerParseCalls *)this)->FUN_0056c250(parser.FUN_00401a80(row, 5)->c_str()); break;
+            default: AddWarning("In Character Profile: column out of bound at line %d\n", row);
+            }
+        }
+        m_civilians.InsertLast(profile);
+    }
 }
 
 // FUNCTION: GAME 0x00565490

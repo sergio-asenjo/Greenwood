@@ -316,8 +316,13 @@ inline void RHPlayerProfileList::Destroy()
 {
     for (m_current = begin(); m_current != end(); m_current++)
         if (*m_current)
-            delete *m_current;
+            DestroyCurrent();
     ClearNodes();
+}
+
+inline void RHPlayerProfileList::DestroyCurrent()
+{
+    delete *m_current;
 }
 
 inline RHPlayerProfileList::~RHPlayerProfileList()

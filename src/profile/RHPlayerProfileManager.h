@@ -19,6 +19,7 @@ public:
     }
     void RemoveAll();
     void Destroy();
+    void DestroyCurrent();
     void DeleteAt(int index);
     __forceinline RHPlayerProfile *Current() const { return *m_current; }
     RHPlayerProfile *At(int index)
