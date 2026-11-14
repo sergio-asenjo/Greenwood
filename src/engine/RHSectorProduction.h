@@ -1,3 +1,6 @@
+#ifndef RHSECTORPRODUCTION_H
+#define RHSECTORPRODUCTION_H
+
 #include "SB.h"
 #include "Decomp.h"
 #include <vector>
@@ -6,22 +9,7 @@
 class SBGeoVector2D;
 
 #ifndef SBGEO_POINT2D_VIEW
-#define SBGEO_POINT2D_VIEW
-class SBGeoPoint2D
-{
-public:
-    float m_x; // 0x00
-    float m_y; // 0x04
-    SBGeoPoint2D();
-    ~SBGeoPoint2D();
-    SBGeoPoint2D(const SBGeoPoint2D &other);
-    SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
-    bool Serialize(SBFile &file);
-    SBGeoVector2D Unk005fc110(const SBGeoPoint2D &other) const;
-    SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
-    SBGeoPoint2D FUN_005fc200(const SBGeoPoint2D &other) const;
-    float FUN_005fc700(float scale) const;
-};
+#include "SBGeoPoint2D.h"
 #endif
 
 void RHSerializeName(SBFile &file, const char *name);
@@ -139,3 +127,5 @@ public:
 };
 
 bool FUN_00453da0(SBFile &file, void *&value);
+
+#endif

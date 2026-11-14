@@ -49,7 +49,7 @@
 #include "SBDrawManagerCore.h"
 
 extern RHUnk005ef320 *g_unk0x6c11d0;
-extern RHUnkSpriteBank *g_unk0x006c0b1c;
+extern RHFrameHolder *g_unk0x006c0b1c;
 
 #include "RHEngineWidenedCalls.h"
 

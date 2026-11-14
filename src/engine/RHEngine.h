@@ -29,6 +29,7 @@ struct RHbeamMe;
 struct RHUnk004e4660Entry;
 struct RHEngineDrawEntry;
 class RHUnk004e49f0Entry;
+class RHSequenceElementCalls;
 
 class RHCampaignLoadingProgress
 {
@@ -106,7 +107,14 @@ public:
     void FUN_004e39b0(RHElementActorHuman *actor, bool value);
     bool TurnPathFinderOn();
     void FUN_004c9d20(void *box);
-    int FUN_0049b590(void *actor);
+    void FUN_004ca410(RHSequenceElementCalls *element);
+    // FUNCTION: GAME 0x0049b590
+    bool FUN_0049b590(void *actor)
+    {
+        if (actor)
+            return m_49f8.Find((RHElementActor *)actor, true) != -1;
+        return m_49f8.m_count != 0;
+    }
     void TurnPathFinderOff();
     void PerformPathFinderStateChange(unsigned short layer, unsigned short sector, unsigned long state, bool mode);
     void FUN_004d2b70(void *actor);
@@ -138,8 +146,8 @@ public:
     void FUN_004df950(const SBGeoPoint2D &point, char flag);
     void FUN_004dfe70(const SBGeoPoint2D &point, bool queued);
     void *FUN_004e04c0(int type, const SBGeoPoint2D &point, bool useCache, bool notify);
-    void FUN_004e0550(const SBGeoPoint2D &point, void *actor, int index);
-    void FUN_004e0770(const SBGeoPoint2D &point, void *actor, int index);
+    void FUN_004e0550(const SBGeoPoint2D &point, bool first, bool second);
+    void FUN_004e0770(const SBGeoPoint2D &point, bool first, bool second);
     void FUN_004e0bf0(const SBGeoPoint2D &point, bool flag, bool);
     void FUN_004e14a0(const SBGeoPoint2D &point, bool flag, bool);
     void FUN_004e1630(const SBGeoPoint2D &point, bool flag);
@@ -187,6 +195,7 @@ public:
     void FUN_004d7800(void *first, void *second, unsigned third);
     void FUN_004d7820(void *first, void *second, unsigned third);
     void FUN_004e3100(int action);
+    void FUN_004e3260();
     unsigned char FUN_004ded90(void *actor);
     void FUN_004e3d20(int index, int value);
     void FUN_004e3e70();
@@ -229,14 +238,14 @@ public:
     bool FUN_004e21e0(void *actor);
     void *FUN_004e2150(RHUnk0051e5e0 *target, const SBGeoPoint2D &point);
     void FUN_004cd600(const SBGeoPoint2D &a, bool b);
-    void FUN_004cdab0(void *a);
+    bool FUN_004cdab0(const SBGeoPoint2D &destination);
     void FUN_004cdcc0();
     void FUN_004cde00();
     void FUN_004cdfc0();
     bool FUN_004cec60();
     void FUN_004cede0();
-    void FUN_004cf610();
-    void FUN_004cfce0();
+    bool FUN_004cf610();
+    bool FUN_004cfce0();
     void FUN_004d0400();
     void FUN_004d0a10(void *a);
     bool SerializeElementPointer(SBFile &file, RHElement *&element);
@@ -263,7 +272,11 @@ public:
     }
     void Emit(SBFile &file, void *&value);
 
-    undefined m_0000[0x475c];
+    undefined m_0000[0xdc];
+    void *m_00dc;
+    undefined m_00e0[0x3c];
+    undefined m_011c[0x42dc];
+    undefined m_43f8[0x364];
     float m_475c;
     undefined m_4760[0x164];
     void *m_48c4;
@@ -278,7 +291,9 @@ public:
     RHEngineElementArray<RHElementFX> m_groundFX;
     RHEngineElementArray<RHElement> m_activeElements;
     RHSectorActorList m_49f8;
-    undefined m_4a1c[0x90];
+    undefined m_4a1c[0x8c];
+    char m_4aa8;
+    undefined m_4aa9[3];
     SBListAutoDelete<RHUnk004e4660Entry *> m_4aac;
     undefined m_4ac4[0x128];
     SBListAutoDelete<RHEngineDrawEntry *> m_4bec;
@@ -367,7 +382,7 @@ public:
     virtual void Unkc0();
     virtual void Unkc4();
     virtual void Unkc8();
-    virtual void Unkcc();
+    virtual unsigned short Unkcc();
     virtual void Unkd0();
     virtual void Unkd4();
     virtual void Unkd8();
@@ -461,13 +476,6 @@ class RHUnk004a66d0
 {
 public:
     bool FUN_004a66d0(bool flag);
-};
-
-class RHUnk004a6000
-{
-public:
-    bool FUN_004a6000();
-    char FUN_004a6060() const;
 };
 
 #include "RHUnk004a6310.h"

@@ -3,36 +3,25 @@
 
 #include <vector>
 #include "Decomp.h"
+#include "RHWaypoint.h"
 
 class SBFile;
 
-class RHUnk00551da0
-{
-public:
-    bool FUN_00551da0(SBFile &file);
-    undefined4 m_00;
-};
-
-class RHUnk0051d370Entry
-{
-public:
-    virtual void V00(int flag) = 0;
-};
-
-class RHUnk0051d2c0Storage : public std::vector<RHUnk00551da0 *>
+class RHUnk0051d2c0Storage : public std::vector<RHWaypoint *>
 {
 public:
     ~RHUnk0051d2c0Storage() { clear(); }
-    RHUnk00551da0 **m_cursor;
+    RHWaypoint **m_cursor;
     bool m_dirty;
     bool m_searching;
     int m_index;
-    RHUnk00551da0 *m_value;
+    RHWaypoint *m_value;
 };
 
 class RHUnk0051d2c0 : public RHUnk0051d2c0Storage
 {
 public:
+    RHUnk0051d2c0() { m_dirty = true; }
     // FUNCTION: GAME 0x0051d2c0
     ~RHUnk0051d2c0() { FUN_0051d370(); }
     void FUN_0051d370();
@@ -44,9 +33,9 @@ inline void RHUnk0051d2c0::FUN_0051d370()
     int count = size();
     for (int index = 0; index < count; ++index)
     {
-        RHUnk00551da0 *entry = (*this)[index];
+        RHWaypoint *entry = (*this)[index];
         if (entry)
-            ((RHUnk0051d370Entry *)((char *)entry + 0x5c))->V00(1);
+            delete entry;
     }
     clear();
 }

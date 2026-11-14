@@ -17,9 +17,8 @@
 //   - 0x00521210 writes no tag; its leading field sequence (+0x04 dword, +0x08
 //     dword, +0x34 byte, two embedded SBGeoPoint2D at +0x14/+0x1c, four dwords
 //     +0x24..+0x30, then byte flags) matches the Mac RHRepulsivePoint::Serialize.
-//     It is the member RHElementObject serialises at +0xbc; identity is kept
-//     provisional (no tag, cross-binary shape only), so the class keeps a neutral
-//     name and the declaration RHElementObject.h already uses.
+//     It belongs to RHUnk00520ae0 (ctor 0x00520ae0/dtor 0x00520bf0), the
+//     member RHElementObject constructs and serialises at +0xbc.
 //
 #ifndef RHLINE_H
 #define RHLINE_H
@@ -30,36 +29,7 @@
 #include "RHMalignityPosition.h"
 #include <vector>
 
-// The serialiser RHElementObject embeds at +0xbc (target 0x00521210). It has no
-// type tag, so the class stays provisionally named; the shape matches the Mac
-// RHRepulsivePoint::Serialize (see the file header). Layout is 0x40 bytes so the
-// following RHElementObject member stays at +0xfc — the size the caller's
-// declaration in include/RHElementObject.h reserves.
-class RHUnk004b2190Member
-{
-public:
-    bool Serialize(SBFile &file);
-
-    void Emit(SBFile &file);
-
-    char m_pad0[4];    // [0x00] opaque (vptr/base)
-    int m_4;           // [0x04] serialised dword (Mac: float)
-    int m_8;           // [0x08] serialised dword (Mac: float)
-    char m_padc[8];    // [0x0c, 0x14) opaque
-    SBGeoPoint2D m_14; // [0x14]
-    SBGeoPoint2D m_1c; // [0x1c]
-    int m_24;          // [0x24] serialised dword (Mac: float)
-    int m_28;          // [0x28] serialised dword (Mac: float)
-    int m_2c;          // [0x2c] serialised dword (Mac: float)
-    int m_30;          // [0x30] serialised dword (Mac: float)
-    char m_34;         // [0x34]
-    char m_35;         // [0x35]
-    char m_36;         // [0x36]
-    char m_37;         // [0x37]
-    char m_38;         // [0x38]
-    char m_pad39[3];   // [0x39, 0x3c) opaque
-    int m_3c;          // [0x3c] serialised dword
-};
+#include "RHRepulsivePoint.h"
 
 #include "RHSeekPoint.h"
 

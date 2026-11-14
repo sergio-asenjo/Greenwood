@@ -8,8 +8,18 @@
 #include <iterator>
 #include "RHElementActorPC.h"
 #include "SBGeoPoint2D.h"
+#include "RHUnk0060f8a0.h"
+#include <stddef.h>
 
 typedef int RHConsole_size_assert[(sizeof(RHConsole) == 0x688) ? 1 : -1];
+DECOMP_SIZE_ASSERT(std::string, 0x10)
+DECOMP_SIZE_ASSERT(RHUnk0060f8a0, 0x28)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0060f8a0, m_04) == 0x04)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0060f8a0, m_14) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0060f8a0, m_18) == 0x18)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0060f8a0, m_1a) == 0x1a)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0060f8a0, m_20) == 0x20)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0060f8a0, m_24) == 0x24)
 
 class RHEngine
 {
@@ -673,6 +683,17 @@ void RHConsole::CheckForCompletion(char *destination, char *source, unsigned sho
             return;
         }
     }
+}
+
+// FUNCTION: GAME 0x0045caf0
+std::string RHUnk0060f8a0::FUN_0045caf0() const
+{
+    return m_04;
+}
+
+void EmitRHConsoleHardwareName(const RHUnk0060f8a0 *hardware)
+{
+    hardware->FUN_0045caf0();
 }
 
 // FUNCTION: GAME 0x0045ccb0

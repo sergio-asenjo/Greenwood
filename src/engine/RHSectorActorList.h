@@ -39,6 +39,57 @@ public:
     RHElementActor *m_searchValue;
 
     int Unk004b8f80(RHElementActor *const &actor, bool mode);
+    int Find(RHElementActor *const &value, bool mode)
+    {
+        m_searchValue = value;
+        int count = m_count;
+        if (mode == true)
+        {
+            m_searchValid = true;
+            m_cur = begin();
+            int index;
+            for (index = 0; index < count; ++index, ++m_cur)
+            {
+                if (*m_cur == m_searchValue)
+                    break;
+            }
+            if (index < count)
+            {
+                m_searchIndex = index;
+                m_valid = false;
+                m_index = index;
+            }
+            else
+            {
+                m_searchIndex = -1;
+                m_valid = true;
+            }
+            return m_searchIndex;
+        }
+        m_searchValid = false;
+        m_cur = RHSectorActorIter(m_head);
+        --m_cur;
+        while (count > 0)
+        {
+            if (*m_cur == m_searchValue)
+                break;
+            --m_cur;
+            --count;
+        }
+        if (count > 0)
+        {
+            --count;
+            m_valid = false;
+            m_searchIndex = count;
+            m_index = count;
+        }
+        else
+        {
+            m_searchIndex = -1;
+            m_valid = true;
+        }
+        return m_searchIndex;
+    }
     RHSectorActorIter insert(RHSectorActorIter pos, RHElementActor *const &actor);
     RHSectorActorIter erase(RHSectorActorIter pos);
     __forceinline void Unk005c8e40(int index)

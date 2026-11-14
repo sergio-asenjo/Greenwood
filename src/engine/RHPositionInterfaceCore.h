@@ -45,6 +45,7 @@ public:
     void FUN_00607d90();
     void Unk00607dc0(const SBGeoPoint2D &point);
     bool FUN_00608400(const SBGeoPoint2D &point) const;
+    bool FUN_00608d60(const class RHUnkSectorPoints &polygon) const;
     SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &offset) const;
     SBGeoPoint2D m_p0;
     SBGeoPoint2D m_p1;
@@ -71,6 +72,7 @@ public:
     bool TurnAntiVibration();
     bool Serialize(SBFile &file);
     void Emit(SBFile &file);
+    void FUN_00462970(int action);
     RHPositionInterface(unsigned long owner);
     ~RHPositionInterface();
     void ComputePositionMap();
@@ -80,6 +82,7 @@ public:
     void *Current() { return Unk0055fa10(*(volatile int *)&m_88); }
     SBGeoBoundingBox2D &Box() { return *(SBGeoBoundingBox2D *)Unk0055fa10(m_88); }
     void UpdateBox();
+    void SetPoint(const SBGeoPoint2D &point);
     static void Floor(float &value) { value = (float)floor(value); }
     static RHUnk00613e90 Scaled(float scale, const RHUnk00613e90 &vector)
     {

@@ -22,7 +22,17 @@ DECOMP_SIZE_ASSERT(RHShadowRawD8, 0x30)
 DECOMP_SIZE_ASSERT(RHShadowPointListBase, 0x0c)
 DECOMP_SIZE_ASSERT(RHUnk0060bd40, 0x30)
 DECOMP_SIZE_ASSERT(RHUnk00597a70, 0xa0)
-DECOMP_SIZE_ASSERT(RHUnk005977e0, 0x4c)
+DECOMP_SIZE_ASSERT(RHShadowPolygonEraseFindList, 0x24)
+DECOMP_SIZE_ASSERT(RHUnk005977e0, 0x58)
+DECOMP_SIZE_ASSERT(RHShadowPointNode, 0x14)
+DECOMP_SIZE_ASSERT(RHShadowPointNodeList, 0x0c)
+DECOMP_SIZE_ASSERT(RHShadowProjection, 0x2c)
+DECOMP_STATIC_ASSERT(offsetof(RHShadowPointNode, m_data) == 0x08)
+DECOMP_STATIC_ASSERT(offsetof(RHShadowProjection, m_current) == 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(RHShadowProjection, m_dirty) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHShadowProjection, m_20) == 0x20)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005977e0, m_10) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005977e0, m_34) == 0x34)
 DECOMP_SIZE_ASSERT(RHShadowPolygonActorPosition, 0x1c)
 DECOMP_SIZE_ASSERT(RHUnk004a96a0, 0x54)
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
@@ -1191,6 +1201,82 @@ void RHShadowPolygon::FUN_00594bf0(const SBGeoBoundingBox2D &box, float zoom, RH
     }
 }
 
+#include "RHFastFindGridCore.h"
+#include "RHFastFindUniqueList.h"
+
+class RHSightObstacle;
+
+// STUB: GAME 0x00595020
+void RHShadowPolygon::FUN_00595020()
+{
+    SBGeoPoint2D previousPoint;
+    SBGeoPoint2D point;
+    SBGeoPoint2D unused;
+    RHUnk00613e90 direction;
+    RHUnk00613e90 other;
+    RHUnk00613e90 normal;
+    RHUnk00613e90 offset;
+    RHShadowAllocator allocator;
+    RHFastFindUniqueList obstacles((const char &)allocator);
+    RHShadowField<RHFastFindGrid *>(this, 0)->FUN_004eec20(
+        obstacles, 0, (const SBGeoBoundingBox2D &)m_108, 2);
+    unsigned short count = (unsigned short)obstacles.GetSize();
+    if (count > 0)
+    {
+        int index = 0;
+        unsigned remaining = count;
+        do
+        {
+            ((RHSectorActorList *)&obstacles)->Unk005c8e40(index);
+            RHSightObstacle *obstacle = (RHSightObstacle *)*obstacles.m_current;
+            if (FUN_00595630(RHShadowField<SBGeoBoundingBox2D>(obstacle, 0x24)))
+            {
+                bool upperNeeded = RHShadowField<char>(obstacle, 0x158) ||
+                    RHShadowField<float>(obstacle, 0x1c) < m_a4.m_8 ||
+                    RHShadowField<RHShadowUnk005df9e0>(obstacle, 0x100).FUN_005df9e0(m_a4.m_0, m_a4.m_4) < m_a4.m_8;
+                bool lowerNeeded = RHShadowField<float>(obstacle, 0x20) + 40.0f > m_a4.m_8 ||
+                    RHShadowField<RHShadowUnk005df9e0>(obstacle, 0xa8).FUN_005df9e0(m_a4.m_0, m_a4.m_4) + 40.0f > m_a4.m_8;
+                RHShadowPolygonList &vertices = RHShadowField<RHShadowPolygonList>(obstacle, 0x4c);
+                unsigned short verticesCount = (unsigned short)vertices.m_list.size();
+                RHShadowVertex previous = vertices.VertexAt(verticesCount - 2);
+                RHShadowVertex current = vertices.VertexAt(verticesCount - 1);
+                RHShadowVertex first = vertices.VertexAt(0);
+                direction.Set(previous.m_00 - current.m_00, previous.m_04 - current.m_04, previous.m_08 - current.m_08);
+                previousPoint.Set(previous.m_00, previous.m_04);
+                point.Set(current.m_00, current.m_04);
+                other.Set(first.m_00 - current.m_00, first.m_04 - current.m_04, first.m_08 - current.m_08);
+                normal = other.FUN_005df610(direction);
+                offset.Set(current.m_00 - m_a4.m_0, current.m_04 - m_a4.m_4, current.m_08 - m_a4.m_8);
+                bool upperFacing = offset.m_8 * normal.m_8 + offset.m_4 * normal.m_4 + offset.m_0 * normal.m_0 < 0.0f;
+                if (normal.m_8 < 0.0f)
+                    upperFacing = !upperFacing;
+                bool lowerFacing;
+                if (RHShadowField<char>(obstacle, 0x158))
+                    lowerFacing = false;
+                else
+                {
+                    direction.m_8 = previous.m_0c - current.m_0c;
+                    other.m_8 = first.m_0c - current.m_0c;
+                    normal = direction.FUN_005df610(other);
+                    offset.m_8 = current.m_0c - m_a4.m_8;
+                    lowerFacing = offset.m_8 * normal.m_8 + offset.m_4 * normal.m_4 + offset.m_0 * normal.m_0 < 0.0f;
+                    if (normal.m_8 > 0.0f)
+                        lowerFacing = !lowerFacing;
+                }
+                RHUnk005977e0 *area = new RHUnk005977e0(allocator);
+                m_158.InsertLast((RHUnk00597a70 *)area);
+                area->m_0 = (undefined *)obstacle;
+                RHShadowField<bool>(area, 8) = upperFacing;
+                RHShadowField<unsigned long>(area, 4) = 0;
+                RHShadowField<bool>(area, 9) = lowerFacing;
+                RHShadowField<bool>(area, 0xa) = upperNeeded;
+                RHShadowField<bool>(area, 0xb) = lowerNeeded;
+            }
+            ++index;
+        } while (--remaining != 0);
+    }
+}
+
 // FUNCTION: GAME 0x00595630
 bool RHShadowPolygon::FUN_00595630(const SBGeoBoundingBox2D &box)
 {
@@ -2112,6 +2198,125 @@ bool RHShadowPolygon::FUN_0059b6b0(undefined *object, RHShadowUnk005df9e0 *plane
             return true;
     }
     return false;
+}
+
+// STUB: GAME 0x0059b850
+void RHShadowPolygon::FUN_0059b850(RHUnk005977e0 *area, RHShadowUnk005df9e0 *plane)
+{
+    SBGeoVector2D direction;
+    RHUnk00613e90 first;
+    RHUnk00613e90 current;
+    RHUnk00613e90 previous;
+    RHShadowPolygonList &vertices = *(RHShadowPolygonList *)&((RHShadowSight *)area->m_0)->m_4c;
+    unsigned short count = (unsigned short)area->m_10.m_list.size();
+    if (count > 0)
+    {
+        int index = 0;
+        unsigned remaining = count;
+        do
+        {
+            RHShadowPolygonEraseList &boundaries = area->m_10;
+            boundaries.FUN_005c8e40(index);
+            RHShadowEdgeList *edges = (RHShadowEdgeList *)*boundaries.m_current;
+            RHShadowProjection *projection = new RHShadowProjection;
+            unsigned short items = (unsigned short)edges->size();
+            bool previousUpper = edges->back().m_2;
+            unsigned short previousVertex = edges->back().m_0;
+            previous.m_0 = vertices.VertexAt(previousVertex).m_00;
+            previous.m_4 = vertices.VertexAt(previousVertex).m_04;
+            if (previousUpper)
+                previous.m_8 = vertices.VertexAt(previousVertex).m_08;
+            else
+                previous.m_8 = vertices.VertexAt(previousVertex).m_0c;
+            first = previous;
+            float previousHeight = plane->FUN_005df9e0(previous.m_0, previous.m_4);
+            bool previousAbove = previous.m_8 >= previousHeight;
+            if (items > 0)
+            {
+                int item = 0;
+                unsigned left = items;
+                do
+                {
+                    ((RHShadowPolygonList *)edges)->FUN_005c8e40(item);
+                    bool currentUpper = edges->m_current->m_data.m_2;
+                    ((RHShadowPolygonList *)edges)->FUN_005c8e40(item);
+                    unsigned short currentVertex = edges->m_current->m_data.m_0;
+                    current.m_0 = vertices.VertexAt(currentVertex).m_00;
+                    current.m_4 = vertices.VertexAt(currentVertex).m_04;
+                    if (currentUpper)
+                        current.m_8 = vertices.VertexAt(currentVertex).m_08;
+                    else
+                        current.m_8 = vertices.VertexAt(currentVertex).m_0c;
+                    float currentHeight = plane->FUN_005df9e0(current.m_0, current.m_4);
+                    bool currentAbove = current.m_8 >= currentHeight;
+                    if (currentAbove)
+                    {
+                        if (previousAbove)
+                            projection->InsertPoint(current.m_0, current.m_4, current.m_8 - currentHeight);
+                        else
+                        {
+                            if (currentUpper == previousUpper)
+                            {
+                                direction.Set(current.m_0 - previous.m_0, current.m_4 - previous.m_4);
+                                float height = previous.m_8 - previousHeight;
+                                float t = height / (height - current.m_8 + currentHeight);
+                                projection->InsertPoint(previous.m_0 + direction.m_x * t, previous.m_4 + direction.m_y * t, 0.0f);
+                            }
+                            projection->InsertPoint(current.m_0, current.m_4, current.m_8 - currentHeight);
+                        }
+                    }
+                    else
+                    {
+                        if (previousAbove && currentUpper == previousUpper)
+                        {
+                            direction.Set(current.m_0 - previous.m_0, current.m_4 - previous.m_4);
+                            float height = previous.m_8 - previousHeight;
+                            float t = height / (height - current.m_8 + currentHeight);
+                            projection->InsertPoint(previous.m_0 + direction.m_x * t, previous.m_4 + direction.m_y * t, 0.0f);
+                        }
+                        if (currentUpper == false)
+                        {
+                            float top = vertices.VertexAt(currentVertex).m_08;
+                            if (top >= currentHeight)
+                            {
+                                if (previousUpper == false)
+                                {
+                                    float previousTop = vertices.VertexAt(previousVertex).m_08;
+                                    if (previousTop < previousHeight)
+                                    {
+                                        direction.Set(current.m_0 - previous.m_0, current.m_4 - previous.m_4);
+                                        float height = previousTop - previousHeight;
+                                        float t = height / (height - top + currentHeight);
+                                        projection->InsertPoint(previous.m_0 + direction.m_x * t, previous.m_4 + direction.m_y * t, 0.0f);
+                                    }
+                                }
+                                projection->InsertAllocatedPoint(current.m_0, current.m_4, 0.0f);
+                            }
+                            else if (previousUpper == false)
+                            {
+                                float previousTop = vertices.VertexAt(previousVertex).m_08;
+                                if (previousTop > previousHeight)
+                                {
+                                    direction.Set(current.m_0 - previous.m_0, current.m_4 - previous.m_4);
+                                    float height = previousTop - previousHeight;
+                                    float t = height / (height - top + currentHeight);
+                                    projection->InsertPointCopy(previous.m_0 + direction.m_x * t, previous.m_4 + direction.m_y * t, 0.0f);
+                                }
+                            }
+                        }
+                    }
+                    previousUpper = currentUpper;
+                    previous = current;
+                    previousHeight = currentHeight;
+                    previousAbove = currentAbove;
+                    previousVertex = currentVertex;
+                    ++item;
+                } while (--left != 0);
+            }
+            area->m_34.InsertLast((RHUnk00597a70 *)projection);
+            ++index;
+        } while (--remaining != 0);
+    }
 }
 
 // Parked: same instruction stream modulo register coloring; target keeps vertices in ebp, the zero constant with the previous index in ebx and packs flags around temporaries (frame 0xcc vs 0xc8).

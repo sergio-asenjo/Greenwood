@@ -60,14 +60,13 @@ RHUnk0057ee40::~RHUnk0057ee40()
     ((RHSector *)this)->RHSector::~RHSector();
 }
 
-int RHHikingGuide::FUN_0051cac0(SBFile &) { return 0; }
 #include "VMCore.h"
 
 extern char g_unk0x6c0691;
 void RHSerializeName(SBFile &file, const char *name);
 
 // FUNCTION: GAME 0x00551da0
-bool RHUnk00551da0::FUN_00551da0(SBFile &file)
+bool RHWaypoint::FUN_00551da0(SBFile &file)
 {
     // STRING: GAME 0x006b15a4
     RHSerializeName(file, "RHWayPoint");
@@ -221,12 +220,6 @@ public:
 
 
 #include "RHEngineBackgroundCalls.h"
-
-class RHEngineBeamCalls
-{
-public:
-    void FUN_004e4120(RHbeamMe *position, unsigned count, const RHbeamMe &value);
-};
 
 
 RHUnk0046ffe0::RHUnk0046ffe0(bool) {}

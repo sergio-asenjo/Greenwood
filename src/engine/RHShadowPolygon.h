@@ -8,6 +8,7 @@
 #include "Decomp.h"
 #include <iterator>
 #include <memory>
+#include <memory>
 #include <list>
 #include "RHUnk004e52a0.h"
 
@@ -289,8 +290,20 @@ struct RHShadowAreaNodeList : public RHUnk0058e7f0List
     }
 };
 
+struct RHShadowAllocator
+{
+    char m_value;
+};
+
 struct RHShadowEraseNodeList : public RHUnk0058e7f0List
 {
+    __forceinline RHShadowEraseNodeList(const RHShadowAllocator &allocator)
+    {
+        *(RHShadowAllocator *)&m_0 = allocator;
+        m_head = (RHUnk005c9010Node *)((RHUnk0046eb30 *)this)->Unk0059f720(0, 0);
+        m_count = 0;
+    }
+
     ~RHShadowEraseNodeList()
     {
         typedef RHProfilePointerList::iterator Native;
@@ -333,6 +346,9 @@ template<class NodeList>
 class RHShadowPolygonListT
 {
 public:
+    __forceinline RHShadowPolygonListT(const RHShadowAllocator &allocator)
+        : m_list(allocator), m_dirty(true) {}
+
     NodeList m_list; // +0: allocator, +4: head, +8: signed count
     RHUnk005c9010Iterator m_current; // +0xc
     bool m_dirty; // +0x10
@@ -814,10 +830,6 @@ struct RHShadowPointNode
 
 void FUN_0059fb20(RHUnk00613e90 *, const RHUnk00613e90 &);
 
-struct RHShadowAllocator
-{
-};
-
 // SIZE 0x0c
 class RHShadowPointNodeList
 {
@@ -827,7 +839,12 @@ public:
     int m_count; // 0x08
 
     RHShadowPointNodeList(const RHShadowAllocator &alloc = RHShadowAllocator()) : m_alloc(alloc), m_head(FUN_004243e0(0, 0)), m_count(0) {}
-    ~RHShadowPointNodeList();
+    ~RHShadowPointNodeList()
+    {
+#pragma inline_depth(0)
+        ((RHUnk004e52a0 *)this)->FUN_004e52a0();
+#pragma inline_depth(8)
+    }
     RHShadowPointNode *FUN_004243e0(RHShadowPointNode *, RHShadowPointNode *);
 };
 
@@ -892,6 +909,23 @@ public:
         ++m_list.m_count;
         m_dirty = true;
     }
+
+    void InsertAllocated(const RHUnk00613e90 &value)
+    {
+        RHShadowPointNode *head = m_list.m_head;
+        RHShadowPointNode *node = m_list.FUN_004243e0(head, head->m_prev);
+        head->m_prev = node;
+        node->m_prev->m_next = node;
+        FUN_0059fb20(&node->m_data, value);
+        ++m_list.m_count;
+        m_dirty = true;
+    }
+
+    void InsertAllocatedPoint(float x, float y, float z)
+    {
+        RHUnk00613e90 point(x, y, z);
+        InsertAllocated(point);
+    }
 };
 
 // SIZE 0x04
@@ -935,15 +969,27 @@ public:
     RHShadowEdge &back() { return *--RHShadowEdgeIterator(m_head); }
 };
 
-// SIZE 0x4c
+class RHShadowPolygonEraseFindList : public RHShadowPolygonEraseList
+{
+public:
+    RHShadowPolygonEraseFindList(const RHShadowAllocator &allocator)
+        : RHShadowPolygonEraseList(allocator) {}
+
+    bool m_searching;
+    int m_found;
+    void *m_value;
+};
+
 class RHUnk005977e0
 {
 public:
+    RHUnk005977e0(const RHShadowAllocator &allocator)
+        : m_10(allocator), m_34(allocator) {}
+
     undefined *m_0; // 0x00
     undefined m_pad4[0x0c]; // 0x04
-    RHShadowPolygonEraseList m_10; // 0x10
-    undefined m_pad28[0x0c]; // 0x28
-    RHShadowPolygonEraseList m_34; // 0x34
+    RHShadowPolygonEraseFindList m_10; // 0x10
+    RHShadowPolygonEraseFindList m_34; // 0x34
     ~RHUnk005977e0();
 };
 

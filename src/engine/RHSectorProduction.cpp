@@ -38,6 +38,10 @@ public:
     RHUnk0057d490 *m_24;
 };
 
+DECOMP_SIZE_ASSERT(RHPointScript, 0x28)
+DECOMP_STATIC_ASSERT(offsetof(RHPointScript, m_20) == 0x20)
+DECOMP_STATIC_ASSERT(offsetof(RHPointScript, m_24) == 0x24)
+
 class RHBonusInfoBase
 {
 public:
@@ -140,20 +144,17 @@ public:
     {
         m_dirty = false;
         m_1c = value;
+        int count = Size();
         m_cursor = m_first;
-        int count = m_cursor == 0 ? 0 : m_last - m_cursor;
         m_15 = true;
-        int index;
-        for (index = 0; index < count;
+        int index = 0;
+        for (; index < count;
              ++index, ++m_cursor)
         {
             if (*m_cursor == value)
                 break;
         }
-        if (index >= count)
-            index = -1;
-        m_18 = index;
-        return index;
+        return m_18 = index < count ? index : -1;
     }
     int Find(void *value)
     {
@@ -262,7 +263,7 @@ inline RHSectorProduction::Occupant &RHSectorProduction::Occupant::operator=(con
     return *this;
 }
 
-// STUB: GAME 0x00580220
+// FUNCTION: GAME 0x00580220
 void RHSectorProduction::FUN_00580220(const RHPointScript &script)
 {
     Point point;
@@ -860,8 +861,8 @@ public:
 
 class RHUnk005ef320;
 extern RHUnk005ef320 *g_unk0x6c11d0;
-class RHUnkSpriteBank;
-extern RHUnkSpriteBank *g_unk0x006c0b1c;
+class RHFrameHolder;
+extern RHFrameHolder *g_unk0x006c0b1c;
 
 #include "RHSelectionMark.h"
 

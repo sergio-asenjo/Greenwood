@@ -17,6 +17,8 @@ class RHSector : public RHUnk0060c2c0
 public:
     RHSector();
     RHSector(int type);
+    short Index() const { return m_38; }
+    const SBGeoBoundingBox2D &Bounds() const { return m_3c; }
     virtual ~RHSector();
     virtual int Unk0057cd60(SBFile &file, bool mode);
     virtual void FUN_0057d390(void *draw, unsigned long surface, const SBGeoBoundingBox2D &box, float scale, unsigned short layer);

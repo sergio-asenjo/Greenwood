@@ -39,3 +39,64 @@ unsigned long RHUnk00581c40::LoadFromResource()
     m_4->AssignOffset(size);
     return 0;
 }
+
+#include "RHPositionInterface.h"
+#include "RHEngineWidenedCalls.h"
+#include "RHspriteRenderingInfoCore.h"
+#include "SBDrawManagerCore.h"
+
+class RHEngine;
+extern RHEngine *g_pEngine;
+
+// STUB: GAME 0x00581ee0
+bool RHUnk00581c40::FUN_00581ee0(unsigned long surface, float scale, const SBGeoBoundingBox2D &view,
+    const SBGeoPoint2D &point, unsigned short layer, bool, bool selected)
+{
+    RHspriteRenderingInfo info;
+    SBGeoBoundingBox2D source;
+    SBGeoBoundingBox2D destination;
+    unsigned long flags = (selected ? 0x100 : 0x200) | 1;
+    if (m_14 != *(unsigned *)((char *)g_pEngine + 0x4a94) / 3)
+    {
+        m_14 = *(unsigned *)((char *)g_pEngine + 0x4a94) / 3;
+        if (m_18)
+        {
+            if (++m_1a == 9)
+            {
+                m_1a = 8;
+                m_18 = 0;
+            }
+        }
+        else if (m_1a == 0)
+            m_18 = 1;
+        else
+            --m_1a;
+    }
+    RHPositionInterface *position = (RHPositionInterface *)((char *)m_4 + 4);
+    position->m_20 = point;
+    ((RHMobileUnk00607da0 *)&position->m_c0)->FUN_00607da0(
+        (const RHMobileUnk00607da0 &)position->Box().FUN_006090d0(SBGeoVector2D(point)));
+    position->m_4 = 2;
+    m_4->ComputePositionSprite();
+    m_4->m_da = layer;
+    if (m_4->FUN_005b9b60(view, scale))
+    {
+        info.m_masks = 1;
+        ((RHSpritePositionCalls *)((char *)m_4 + 4))->FUN_0055f550();
+        unsigned short frame = m_1a;
+        RHSprite *sprite = m_4;
+        info.m_surface = m_10;
+        ((RHEngineWidenedCalls *)sprite)->FUN_005bd450();
+        sprite->m_184 = selected != 0;
+        sprite->m_186 = frame;
+        m_4->CreateTargetSprite(info);
+        if (m_4->FUN_005ba130(view, scale, source, destination))
+            ((SBDrawManager *)m_8)->BlitAlpha(m_10, &source, surface, &destination, m_10, flags);
+    }
+    return false;
+}
+
+void EmitRHSelectionMarkDrawAt(RHUnk00581c40 *mark, const SBGeoBoundingBox2D &view, const SBGeoPoint2D &point)
+{
+    mark->FUN_00581ee0(0, 0.0f, view, point, 0, false, false);
+}

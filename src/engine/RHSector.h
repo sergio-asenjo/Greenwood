@@ -102,14 +102,7 @@ public:
     RHSectorLift *m_58; // [0x58]
 };
 
-// VTABLE: GAME 0x00679c04
-// SIZE 0x5c
-class RHUnk0057d3a0 : public RHSector
-{
-public:
-    RHUnk0057d3a0();
-    virtual ~RHUnk0057d3a0();
-};
+#include "RHSectorObstacle.h"
 
 // VTABLE: GAME 0x00679c14
 // SIZE 0x5c

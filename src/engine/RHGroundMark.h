@@ -135,7 +135,7 @@ public:
 
 class RHSprite;
 class RHUnk005ef320;
-class RHUnkSpriteBank;
+class RHFrameHolder;
 
 // VTABLE: GAME 0x006790b4
 class RHGroundMark
@@ -152,7 +152,7 @@ public:
     RHSprite *m_sprite;
     int m_surface;
     RHUnk005ef320 *m_drawManager;
-    RHUnkSpriteBank *m_spriteBank;
+    RHFrameHolder *m_spriteBank;
     RHGroundInfoList m_list;
 };
 

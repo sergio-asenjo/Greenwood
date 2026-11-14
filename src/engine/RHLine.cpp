@@ -13,13 +13,12 @@
 //     RHSeekPoint::SerializeStatus (symbols/mac-functions-by-file.tsv);
 //   - it is the tail callee of 0x005218e0, fixing it as the status serialiser.
 //
-// BINDING (0x00521210 -> RHUnk004b2190Member::Serialize(SBFile&)) — provisional:
+// BINDING (0x00521210 -> RHUnk00520ae0::Serialize(SBFile&)):
 //   - it writes NO tag and its leading field sequence (+0x04, +0x08, +0x34, two
-//     embedded SBGeoPoint2D, four dwords, byte flags) matches the Mac
-//     RHRepulsivePoint::Serialize; no Windows-side tag exists, so the class keeps
-//     the neutral name RHElementObject.h already declares for its +0xbc member.
-//   - it is called from RHElementObject::Serialize at +0xbc (0x004b22f4), plus
-//     three not-yet-decompiled call sites.
+//     embedded vectors, four dwords, byte flags) matches the Mac
+//     RHRepulsivePoint::Serialize;
+//   - it is called from RHElementObject::Serialize at +0xbc (0x004b22f4), whose
+//     constructor builds that member with 0x00520ae0.
 //
 #include "SBNullstr.h"
 #include "RHLine.h"
@@ -39,9 +38,9 @@ DECOMP_STATIC_ASSERT(offsetof(RHSeekPoint, m_38) == 0x38)
 DECOMP_STATIC_ASSERT(offsetof(RHSeekPointDirectionView, value) == 0x10)
 
 // FUNCTION: GAME 0x00521210
-bool RHUnk004b2190Member::Serialize(SBFile &file)
+bool RHUnk00520ae0::Serialize(SBFile &file)
 {
-    if (file.Access(&m_4, 4) < 0)
+    if (file.Access(&m_x, 4) < 0)
     {
         SBString *err = file.GetError();
         const char *reason = err->m_chars ? err->m_chars : "";
@@ -53,7 +52,7 @@ bool RHUnk004b2190Member::Serialize(SBFile &file)
                  reason);
         return false;
     }
-    if (file.Access(&m_8, 4) < 0)
+    if (file.Access(&m_y, 4) < 0)
     {
         SBString *err = file.GetError();
         const char *reason = err->m_chars ? err->m_chars : "";
@@ -99,7 +98,7 @@ bool RHUnk004b2190Member::Serialize(SBFile &file)
         SBAssert(0, "P:\\Robin Hood\\RHline.cpp", 0x5d0, "Serialize failed reason is %s", reason);
         return false;
     }
-    if (file.Access(&m_3c, 4) < 0)
+    if (file.Access(&m_id, 4) < 0)
     {
         SBString *err = file.GetError();
         const char *reason = err->m_chars ? err->m_chars : "";
@@ -136,11 +135,6 @@ bool RHUnk004b2190Member::Serialize(SBFile &file)
     }
 
     return true;
-}
-
-void RHUnk004b2190Member::Emit(SBFile &file)
-{
-    Serialize(file);
 }
 
 // FUNCTION: GAME 0x00521810

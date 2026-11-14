@@ -447,19 +447,19 @@ bool RHPositionInterface::Serialize(SBFile &file)
             m_ec = (RHPositionSlope *)((char *)m_e8 + 0xa8);
     }
     g_pEngine->SerializeElementPointer(file, m_120);
-    ((RHUnk005df510 *)&m_c)->Serialize(file);
+    m_c.Serialize(file);
     m_20.Serialize(file);
     m_18.Serialize(file);
-    ((RHUnk005df510 *)&m_28)->Serialize(file);
+    m_28.Serialize(file);
     m_3c.Serialize(file);
     m_34.Serialize(file);
     m_44.Serialize(file);
     m_4c.Serialize(file);
-    ((RHUnk005df510 *)&m_54)->Serialize(file);
-    ((RHUnk005df510 *)&m_60)->Serialize(file);
+    m_54.Serialize(file);
+    m_60.Serialize(file);
     m_6c.Serialize(file);
     m_128.Serialize(file);
-    ((RHUnk005df510 *)&m_134)->Serialize(file);
+    m_134.Serialize(file);
     m_c0.Serialize(file);
     m_104.Serialize(file);
     return true;
