@@ -1,14 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="960" height="150" viewBox="0 0 960 150" role="img" aria-label="Matching progress: 4865 of 6113 game functions decompiled">
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="150" viewBox="0 0 960 150" role="img" aria-label="Matching progress: 4946 of 6113 game functions decompiled">
   <defs>
     <clipPath id="bar-clip"><rect x="32" y="82" width="896" height="36"/></clipPath>
   </defs>
   <rect width="960" height="150" fill="#111514"/>
   <text x="32" y="44" font-family="Helvetica, Arial, sans-serif" font-size="17" fill="#EBDFA9" font-weight="600">Game.exe decompilation progress</text>
-  <text x="928" y="44" font-family="Helvetica, Arial, sans-serif" font-size="17" fill="#D1A732" font-weight="600" text-anchor="end">4,865 / 6,113  (79.58%)</text>
-  <text x="32" y="66" font-family="Helvetica, Arial, sans-serif" font-size="12.5" fill="#A09464">Robin Hood: The Legend of Sherwood (Windows v1.1) &#183; matching decompilation measured with reccmp &#183; 14,453 library functions excluded &#183; 2026-11-10</text>
+  <text x="928" y="44" font-family="Helvetica, Arial, sans-serif" font-size="17" fill="#D1A732" font-weight="600" text-anchor="end">4,946 / 6,113  (80.91%)</text>
+  <text x="32" y="66" font-family="Helvetica, Arial, sans-serif" font-size="12.5" fill="#A09464">Robin Hood: The Legend of Sherwood (Windows v1.1) &#183; matching decompilation measured with reccmp &#183; 14,453 library functions excluded &#183; 2026-11-13</text>
   <rect x="32" y="82" width="896" height="36" fill="#0A0E0E"/>
   <g clip-path="url(#bar-clip)">
-    <rect x="32.00" y="82" width="713.04" height="36" fill="#D1A732"/><rect x="745.04" y="82" width="111.10" height="36" fill="#8A7637"/><rect x="856.14" y="82" width="71.86" height="36" fill="#2D2519"/>
+    <rect x="32.00" y="82" width="724.95" height="36" fill="#D1A732"/><rect x="756.95" y="82" width="110.39" height="36" fill="#8A7637"/><rect x="867.34" y="82" width="60.66" height="36" fill="#2D2519"/>
   </g>
-  <text x="388.52" y="104.5" font-family="Helvetica, Arial, sans-serif" font-size="12.5" fill="#0A0E0E" font-weight="600" text-anchor="middle">4,865 decompiled  79.58%</text><text x="800.59" y="104.5" font-family="Helvetica, Arial, sans-serif" font-size="12.5" fill="#EBDFA9" font-weight="600" text-anchor="middle">758 stubs</text><text x="892.07" y="104.5" font-family="Helvetica, Arial, sans-serif" font-size="12.5" fill="#A09464" font-weight="600" text-anchor="middle">490 left</text>
+  <text x="394.48" y="104.5" font-family="Helvetica, Arial, sans-serif" font-size="12.5" fill="#0A0E0E" font-weight="600" text-anchor="middle">4,946 decompiled  80.91%</text><text x="812.15" y="104.5" font-family="Helvetica, Arial, sans-serif" font-size="12.5" fill="#EBDFA9" font-weight="600" text-anchor="middle">753 stubs</text><text x="897.67" y="104.5" font-family="Helvetica, Arial, sans-serif" font-size="12.5" fill="#A09464" font-weight="600" text-anchor="middle">414 left</text>
 </svg>
