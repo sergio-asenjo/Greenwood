@@ -708,6 +708,10 @@
           "symbol": "?erase@?$list@PAVRHUnkSequenceOrder@@V?$allocator@PAVRHUnkSequenceOrder@@@std@@@std@@QAE?AViterator@12@V312@@Z"
         },
         {
+          "path": "src/mission/RHCampaign.cpp",
+          "symbol": "?erase@?$list@PAVRHMission@@V?$allocator@PAVRHMission@@@std@@@std@@QAE?AViterator@12@V312@@Z"
+        },
+        {
           "path": "src/ui/RHGate.cpp",
           "symbol": "?erase@?$list@PAURHGateLink@@V?$allocator@PAURHGateLink@@@std@@@std@@QAE?AViterator@12@V312@@Z"
         },
