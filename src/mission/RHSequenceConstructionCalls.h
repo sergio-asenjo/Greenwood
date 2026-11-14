@@ -5,6 +5,7 @@
 
 class RHSequenceElement;
 class SBGeoPoint2D;
+struct RHMovementBox;
 
 class RHSequenceElementListStorage : public std::list<RHSequenceElement *>
 {
@@ -32,6 +33,7 @@ public:
     virtual void *FUN_00582280(unsigned int flags);
     void Slot00();
     bool FUN_00582640(unsigned short &level, void *actor, int style, const SBGeoPoint2D &start, void *startArea, unsigned short startLayer, const SBGeoPoint2D &end, void *endArea, unsigned short endLayer, void *element, float distance, unsigned long flags, float scale);
+    bool FUN_00583630(unsigned short &level, void *actor, int style, const SBGeoPoint2D &start, void *startArea, unsigned short startLayer, void *&endArea, unsigned short &endLayer, void *element, RHMovementBox *line, float distance, unsigned long flags);
     int m_04;
     RHSequenceElementList m_elements;
     char m_1c[0x10];

@@ -22,7 +22,7 @@ public:
     RHUnk00588530();
     RHUnk00588530(unsigned short level, int command, void *actor);
     RHUnk00588530(unsigned short level, int command, void *actor, int value94, RHMovementBox *box, float value8c, int value88);
-    RHUnk00588530(unsigned short level, int command, void *actor, int style, void *target, float distance, void *value);
+    RHUnk00588530(unsigned short level, int command, void *actor, int style, void *target, float distance, unsigned long flags);
     RHUnk00588530(unsigned short level, int command, void *actor, int value94, const SBGeoPoint2D &point, void *value78, unsigned short value74, float value8c, int value88);
     RHUnk00588530(unsigned short level, int command, void *actor, void *value78, const SBGeoPoint2D &point, void *value84, float value8c, int value88);
     RHUnk00588530(unsigned short level, int command, void *actor, const SBGeoPoint2D &point, void *value78, unsigned short value90, int value88);

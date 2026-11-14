@@ -369,7 +369,7 @@ void RHSequenceElementCalls::FUN_005857c0(RHSequenceElementCalls *other)
     while (other->m_50)
     {
         RHElementActor *actor = (RHElementActor *)m_48;
-        if (actor && !(actor->m_04[0] & 3))
+        if (actor && !(*(const unsigned char *)&actor->m_04 & 3))
         {
             switch (actor->FUN_0046ad00(other->m_50, this))
             {

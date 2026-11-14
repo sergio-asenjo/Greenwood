@@ -109,9 +109,9 @@ public:
     }
     RHGenericConstIterator Find(const int &key)
     {
-        const RHGenericIterator &lower = FUN_00587b20(key);
-        RHGenericConstIterator position(lower);
-        return position.node == head || key < position.node->key ? RHGenericConstIterator(head) : position;
+        RHGenericConstIterator position;
+        return position = RHGenericConstIterator(FUN_00587b20(key)),
+            position.node == head || key < position.node->key ? RHGenericConstIterator(head) : position;
     }
 
     char m_00[4];

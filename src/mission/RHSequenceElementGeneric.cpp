@@ -2,11 +2,19 @@
 #include "RHSequenceElementSerialization.h"
 #include "RHSequenceElementGeneric.h"
 #include "RHUnk00613e90.h"
+#include <stddef.h>
 
 DECOMP_SIZE_ASSERT(RHGenericValue, 0x0c)
 DECOMP_SIZE_ASSERT(RHGenericPair, 0x10)
 DECOMP_SIZE_ASSERT(RHGenericNode, 0x20)
 DECOMP_SIZE_ASSERT(RHUnk00613e90, 0x0c)
+DECOMP_SIZE_ASSERT(RHGenericIterator, 0x04)
+DECOMP_SIZE_ASSERT(RHGenericConstIterator, 0x04)
+DECOMP_SIZE_ASSERT(RHGenericMap, 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHGenericNode, key) == 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(RHGenericNode, value) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHGenericMap, head) == 0x04)
+DECOMP_STATIC_ASSERT(offsetof(RHSequenceElementGeneric, m_64) == 0x64)
 
 // STRING: GAME 0x006b7550
 #define RH_GENERIC_FILE "P:\\Robin Hood\\RHSequenceElementGeneric.cpp"
@@ -343,40 +351,7 @@ void RHSequenceElementGeneric::FUN_00586e50(int key, unsigned char value)
     m_64.FUN_005873a0(property);
 }
 
-struct RHHumanMapNode
-{
-    RHHumanMapNode *m_left;
-    RHHumanMapNode *m_parent;
-    RHHumanMapNode *m_right;
-    int m_key;
-    unsigned int m_value;
-};
-
-struct RHHumanMapIterator
-{
-    RHHumanMapNode *m_node;
-    RHHumanMapIterator(RHHumanMapNode *node) : m_node(node) {}
-    RHHumanMapNode &operator*() const { return *m_node; }
-    RHHumanMapNode *operator->() const { return &**this; }
-    bool operator==(const RHHumanMapIterator &other) const { return m_node == other.m_node; }
-    bool operator!=(const RHHumanMapIterator &other) const { return !(*this == other); }
-};
-
-class RHHumanMap
-{
-public:
-    RHHumanMapNode *FUN_00588060(const int &key);
-    RHHumanMapIterator end() const { return RHHumanMapIterator(m_head); }
-    RHHumanMapIterator find(const int &key)
-    {
-        RHHumanMapIterator position = FUN_00588060(key);
-        return position == end() || key < position->m_key ? end() : position;
-    }
-    char m_00[4];
-    RHHumanMapNode *m_head;
-    unsigned int m_08;
-    unsigned int m_0c;
-};
+#include "RHHumanMap.h"
 
 // FUNCTION: GAME 0x00586f10
 void RHSequenceElementGeneric::FUN_00586f10(int key, unsigned long value)
@@ -407,17 +382,16 @@ void RHSequenceElementGeneric::Emit(SBFile &file, bool pointers)
     Serialize(file, pointers);
 }
 
-// Parked: iterator temporary slots and returned-node copy differ.
-// STUB: GAME 0x00587290
+// FUNCTION: GAME 0x00587290
 RHUnk00613e90 RHSequenceElementGeneric::FUN_00587290(int key)
 {
     RHUnk00613e90 point;
     RHGenericConstIterator position = m_64.Find(key);
     if (position.node != m_64.head)
     {
-        float x = *(float *)&position.node->value.m_0;
-        float y = *(float *)&position.node->value.m_4;
-        float z = *(float *)&position.node->value.m_8;
+        float x = position.node->value.point[0];
+        float y = position.node->value.point[1];
+        float z = position.node->value.point[2];
         RHUnk00613e90 value(x, y, z);
         point = value;
     }

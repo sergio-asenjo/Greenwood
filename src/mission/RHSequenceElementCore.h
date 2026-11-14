@@ -12,6 +12,7 @@ public:
     virtual void Dummy2();
     virtual bool Serialize(SBFile &file, bool pointers);
     bool FUN_00584ef0(SBFile &file, bool pointers);
+    int Unk00587160(int argument);
     char m_04[0x60];
 };
 

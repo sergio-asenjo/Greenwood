@@ -38,22 +38,7 @@ struct RHMovementSequenceView
 #include "RHSequenceGenericCalls.h"
 
 #include "RHSequenceMovementConstruction.h"
-
-
-struct RHMovementBox
-{
-    void Center(SBGeoPoint2D &point) const
-    {
-        point.m_x = (m_0c + m_04) * 0.5f;
-        point.m_y = (m_10 + m_08) * 0.5f;
-    }
-    char m_00[4];
-    float m_04;
-    float m_08;
-    float m_0c;
-    float m_10;
-};
-
+#include "RHMovementBox.h"
 
 // FUNCTION: GAME 0x00588270
 RHUnk00588530::RHUnk00588530()
@@ -130,12 +115,12 @@ RHUnk00588530::RHUnk00588530(unsigned short level, int command, void *actor, int
 }
 
 // FUNCTION: GAME 0x00588530
-RHUnk00588530::RHUnk00588530(unsigned short level, int command, void *actor, int style, void *target, float distance, void *value)
+RHUnk00588530::RHUnk00588530(unsigned short level, int command, void *actor, int style, void *target, float distance, unsigned long flags)
     : RHUnk00584d60(level, command, actor)
 {
     m_94 = style;
     m_8c = distance;
-    m_88 = (int)value;
+    m_88 = flags;
     m_84 = target;
     m_78 = 0;
     m_80 = 0;

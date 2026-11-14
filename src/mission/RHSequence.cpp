@@ -69,8 +69,13 @@
 #include "RHActorGridCalls.h"
 #include "RHScriptEngineCalls.h"
 #include "RHMalignityQueryList.h"
+#include "RHTransientPointerListConstruction.h"
 #include "RHSequenceAppendCalls.h"
 #include "RHUnk005fc3b0.h"
+#include "RHMovementBox.h"
+#include "RHMalignityActorCalls.h"
+
+DECOMP_SIZE_ASSERT(RHMovementBox, 0x14)
 
 extern "C" int __cdecl rand();
 struct RHUnkSectorGlobal;
@@ -250,6 +255,180 @@ bool RHUnk00582220::FUN_00582640(unsigned short &level, void *actor, int style, 
     {
         RHUnk00588530 *movement = new RHUnk00588530(level++, 20, actor, style, RHSequenceField<SBGeoPoint2D>(gate, 0x20), element, distance, currentFlags);
         movement->m_98 = scale;
+        ((RHUnk00585500 *)movement)->Unk(this);
+    }
+    return true;
+}
+
+// STUB: GAME 0x00583630
+bool RHUnk00582220::FUN_00583630(unsigned short &level, void *actor, int style, const SBGeoPoint2D &start, void *startAreaInput, unsigned short startLayer, void *&endArea, unsigned short &endLayer, void *element, RHMovementBox *line, float distance, unsigned long flags)
+{
+    RHMalignityQueryList route;
+    SBGeoPoint2D origin(start);
+    SBGeoPoint2D destination;
+    line->Center(destination);
+    unsigned long movementFlags = flags;
+    *(unsigned char *)&movementFlags &= 0x7f;
+    flags = movementFlags;
+    void *startArea;
+    void *sprite = RHSequenceField<void *>(actor, 0x50);
+    void *gate = RHSequenceField<void *>(sprite, 0xf4);
+    if (gate)
+    {
+        if (RHSequenceField<bool>(sprite, 0xf8))
+        {
+            origin = RHSequenceField<SBGeoPoint2D>(gate, 0x20);
+            startArea = RHSequenceField<void *>(gate, 0x10);
+            startLayer = RHSequenceField<unsigned short>(gate, 0x16);
+        }
+        else
+        {
+            origin = RHSequenceField<SBGeoPoint2D>(gate, 0x18);
+            startArea = RHSequenceField<void *>(gate, 0xc);
+            startLayer = RHSequenceField<unsigned short>(gate, 0x14);
+        }
+    }
+    else
+        startArea = startAreaInput;
+    if (endArea != startArea)
+    {
+        RHUnk00588530 *movement = new RHUnk00588530(level++, 2, actor, startArea, SBGeoPoint2D(), actor, 0.0f, 0);
+        ((RHUnk00585500 *)movement)->Unk(this);
+    }
+    unsigned short firstLevel = level;
+    if (endArea != startArea)
+    {
+        if (!((RHActorGridCalls *)g_unk0x6c0a9c)->FUN_004f9a80(&route, (RHElementActor *)actor,
+            origin, startArea, startLayer, destination, endArea, endLayer, (flags >> 1) & 1))
+        {
+            if ((RHSequenceField<unsigned>(actor, 4) & 0xf) == 12)
+                ((RHMalignityActorCalls *)actor)->V104(14, 0, 255);
+            return false;
+        }
+        unsigned short count = route.Count();
+        void *nextArea;
+        for (unsigned short index = 0; index < count; ++index)
+        {
+            route.GoTo(index);
+            gate = *(void **)((char *)route.cursor + 8);
+            if (RHSequenceField<bool>(gate, 0x81))
+            {
+                nextArea = RHSequenceField<void *>(gate, 0x10);
+                if ((unsigned char)(RHSequenceField<unsigned long>(startArea, 0x30) >> 13) & 1)
+                {
+                    if (level != firstLevel)
+                    {
+                        RHUnk005866a0 *wait = new RHUnk005866a0(level++, 161, actor);
+                        wait->Unk00586ed0(2, 50);
+                        ((RHUnk00585500 *)wait)->Unk(this);
+                    }
+                    RHUnk005866a0 *wait = new RHUnk005866a0(level++, 161, actor);
+                    int first = rand() & 15;
+                    first += rand() & 15;
+                    wait->Unk00586ed0(2, first);
+                    ((RHUnk00585500 *)wait)->Unk(this);
+                    RHUnk00588530 *movement = new RHUnk00588530(level++, 25, actor,
+                        RHSequenceField<SBGeoPoint2D>(gate, 0x18), startArea,
+                        (unsigned char)((const RHUnk005fc3b0 &)RHSequenceField<SBGeoPoint2D>(gate, 0x20).Unk005fc110(RHSequenceField<SBGeoPoint2D>(gate, 0x18))).FUN_005fcc50(1.0f), flags);
+                    ((RHUnk00585500 *)movement)->Unk(this);
+                }
+                else
+                {
+                    RHUnk00588530 *movement = new RHUnk00588530(level++, 20, actor, style,
+                        RHSequenceField<SBGeoPoint2D>(gate, 0x18), element, 0.0f, flags);
+                    ((RHUnk00585500 *)movement)->Unk(this);
+                    movement = new RHUnk00588530(level++, 2, actor, (void *)0,
+                        RHSequenceField<SBGeoPoint2D>(gate, 0x18), actor, 10.0f, 0);
+                    ((RHUnk00585500 *)movement)->Unk(this);
+                }
+            }
+            else
+            {
+                nextArea = RHSequenceField<void *>(gate, 0xc);
+                if ((unsigned char)(RHSequenceField<unsigned long>(startArea, 0x30) >> 13) & 1)
+                {
+                    if (level != firstLevel)
+                    {
+                        RHUnk005866a0 *wait = new RHUnk005866a0(level++, 161, actor);
+                        wait->Unk00586ed0(2, 50);
+                        ((RHUnk00585500 *)wait)->Unk(this);
+                    }
+                    RHUnk005866a0 *wait = new RHUnk005866a0(level++, 161, actor);
+                    int first = rand() & 15;
+                    first += rand() & 15;
+                    wait->Unk00586ed0(2, first);
+                    ((RHUnk00585500 *)wait)->Unk(this);
+                    RHUnk00588530 *movement = new RHUnk00588530(level++, 25, actor,
+                        RHSequenceField<SBGeoPoint2D>(gate, 0x20), startArea,
+                        (unsigned char)((const RHUnk005fc3b0 &)RHSequenceField<SBGeoPoint2D>(gate, 0x18).Unk005fc110(RHSequenceField<SBGeoPoint2D>(gate, 0x20))).FUN_005fcc50(1.0f), flags);
+                    ((RHUnk00585500 *)movement)->Unk(this);
+                }
+                else
+                {
+                    RHUnk00588530 *movement = new RHUnk00588530(level++, 20, actor, style,
+                        RHSequenceField<SBGeoPoint2D>(gate, 0x20), element, 0.0f, flags);
+                    ((RHUnk00585500 *)movement)->Unk(this);
+                    movement = new RHUnk00588530(level++, 2, actor, (void *)0,
+                        RHSequenceField<SBGeoPoint2D>(gate, 0x20), actor, 10.0f, 0);
+                    ((RHUnk00585500 *)movement)->Unk(this);
+                }
+            }
+            if (RHSequenceField<int>(gate, 4) == 1)
+            {
+                if ((RHSequenceField<unsigned>(actor, 4) & 0xf) == 12 && RHSequenceField<bool>(gate, 0x8c) &&
+                    ((RHScriptBatchCalls *)actor)->Unk0049d560(28))
+                {
+                    RHUnk005866a0 *turn = new RHUnk005866a0(level++, 26, actor);
+                    turn->Unk00587010(8, RHSequenceField<bool>(gate, 0x81) ? RHSequenceField<SBGeoPoint2D>(gate, 0x20) : RHSequenceField<SBGeoPoint2D>(gate, 0x18));
+                    ((RHUnk00585500 *)turn)->Unk(this);
+                    RHUnk005866a0 *command = new RHUnk005866a0(level++, 10, actor);
+                    command->Unk00586ed0(36, (int)gate);
+                    ((RHUnk00585500 *)command)->Unk(this);
+                    return true;
+                }
+                if (((unsigned char)(RHSequenceField<unsigned long>(nextArea, 0x30) >> 9) & 1) && RHSequenceField<int>(nextArea, 0xf0) == 2)
+                {
+                    RHUnk00588530 *movement = new RHUnk00588530(level++, 169, actor, nextArea, SBGeoPoint2D(), (void *)0, 0.0f, 0);
+                    movement->m_7c = gate;
+                    ((RHUnk00585500 *)movement)->Unk(this);
+                }
+                RHUnk00588530 *movement = new RHUnk00588530(level++, 19, actor, style, 0);
+                movement->m_7c = gate;
+                ((RHUnk00585500 *)movement)->Unk(this);
+                if (RHSequenceField<bool>(gate, 0x81))
+                    movement = new RHUnk00588530(level++, 2, actor, (void *)0,
+                        RHSequenceField<SBGeoPoint2D>(gate, 0x20), actor, 10.0f, 0);
+                else
+                    movement = new RHUnk00588530(level++, 2, actor, (void *)0,
+                        RHSequenceField<SBGeoPoint2D>(gate, 0x18), actor, 10.0f, 0);
+                ((RHUnk00585500 *)movement)->Unk(this);
+            }
+            else
+            {
+                RHUnk005866a0 *command = new RHUnk005866a0(level++, 83, actor);
+                if (RHSequenceField<bool>(gate, 0x81))
+                {
+                    command->Unk00586ed0(23, RHSequenceField<int>(gate, 0x8c));
+                    command->Unk00586ed0(24, RHSequenceField<int>(gate, 0x88));
+                }
+                else
+                {
+                    command->Unk00586ed0(23, RHSequenceField<int>(gate, 0x88));
+                    command->Unk00586ed0(24, RHSequenceField<int>(gate, 0x8c));
+                }
+                ((RHUnk00585500 *)command)->Unk(this);
+            }
+            startArea = nextArea;
+        }
+        if (!((unsigned char)(RHSequenceField<unsigned long>(nextArea, 0x30) >> 13) & 1))
+        {
+            RHUnk00588530 *movement = new RHUnk00588530(level++, 20, actor, style, line, distance, (int)(flags | 0x80));
+            ((RHUnk00585500 *)movement)->Unk(this);
+        }
+    }
+    else
+    {
+        RHUnk00588530 *movement = new RHUnk00588530(level++, 20, actor, style, line, distance, (int)(flags | 0x80));
         ((RHUnk00585500 *)movement)->Unk(this);
     }
     return true;

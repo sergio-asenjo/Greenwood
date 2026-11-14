@@ -27,15 +27,7 @@ private:
 // Vector sub-object (three 4-byte fields). Its Serialize is the target
 // 0x005df510 (three 4-byte Access calls; oracle: SBGeoVector3D::Serialize).
 // Defined once in RHTitbits_stubs.cpp as RHUnk005df510::Serialize.
-class RHUnk005df510
-{
-public:
-    int m_0;
-    int m_4;
-    int m_8;
-
-    bool Serialize(SBFile &file);
-};
+#include "RHUnk005df510.h"
 
 class RHElement;
 class RHSequenceElementCalls;
