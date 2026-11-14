@@ -21,7 +21,8 @@ extern "C" int __cdecl wsprintfW(unsigned short *buffer, const unsigned short *f
 // STUB: GAME 0x005a1370
 std::wstring RHSherwoodStat::GetAmmoText(const RHSectorProduction *sector)
 {
-    unsigned long id = 0;
+    unsigned long id;
+    *(volatile unsigned long *)&id = 0;
     wchar_t buffer[512];
     switch (sector->GetType())
     {

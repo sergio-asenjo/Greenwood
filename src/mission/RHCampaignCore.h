@@ -7,6 +7,8 @@
 #include <string>
 #include "RHCampaignMissionList.h"
 #include "RHCampaignResetArray.h"
+#include "RHProfileManagerCore.h"
+#include "RHSectorProduction.h"
 
 class SBFile;
 class RHPCDescription;
@@ -21,7 +23,9 @@ template<class T> class SBArray;
 class RHCampaign
 {
 public:
-    undefined m_pad0[0x84]; // 0x00
+    unsigned m_vptr;
+    RHProfileManager m_profiles;
+    std::vector<RHSectorProduction> m_sectors;
     std::vector<unsigned long> m_84; // 0x84
     long m_94[27];
     signed char m_100;
@@ -43,6 +47,10 @@ public:
     long m_1ac;
     std::vector<RHPCDescription *> m_1b0; // 0x1b0
     bool m_1c0; // 0x1c0
+
+    RHCampaign();
+    ~RHCampaign();
+    void *FUN_00450770(unsigned flags);
 
     void CreateGang();
     void FUN_004509c0();

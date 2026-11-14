@@ -233,15 +233,6 @@ public:
     virtual bool FUN_0055bce0(SBFile &file); // vtable+0x00
 };
 
-class RHProfileManager
-{
-public:
-    bool SerializeProfilePointer(SBFile &file, const RHCharacterProfile *&profile) const;
-    RHMissionProfile *AddForcedMission(const std::string &first, const std::string &second, const std::string &third);
-    char m_00[0x50];
-    RHCampaignPointerArray<RHMissionProfile *> m_missions; // 0x50
-};
-
 RHProfileManager *RHUnk00436500GetProfileManager();
 
 extern RHCampaignCommandLine g_unk0x6c05cc;

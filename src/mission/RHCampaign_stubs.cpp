@@ -3,6 +3,11 @@
 #include <algorithm>
 #include <new>
 
+void EmitRHCampaignConstruction()
+{
+    new RHCampaign;
+}
+
 namespace std {
 template<> void _Sort(RHMission **first, RHMission **last, bool (*compare)(RHMission *, RHMission *), RHMission **)
 {
@@ -74,7 +79,10 @@ void RHCampaignUnk00457950::Value::FUN_0051c0c0()
     ((SBGeoPoint2D *)this)->~SBGeoPoint2D();
 }
 
-RHPCDescription::~RHPCDescription() {}
+RHPCDescription::~RHPCDescription()
+{
+    FUN_00459fd0();
+}
 
 // FUNCTION: GAME 0x00459fd0
 void RHPCDescription::FUN_00459fd0()

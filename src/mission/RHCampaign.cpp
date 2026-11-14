@@ -28,11 +28,29 @@ public:
 
 DECOMP_SIZE_ASSERT(RHMission, 0x0c)
 DECOMP_SIZE_ASSERT(RHCampaign, 0x1c4)
+DECOMP_SIZE_ASSERT(RHProfileManager, 0x70)
+DECOMP_STATIC_ASSERT(offsetof(RHCampaign, m_profiles) == 0x04)
+DECOMP_STATIC_ASSERT(offsetof(RHCampaign, m_sectors) == 0x74)
+DECOMP_SIZE_ASSERT(RHSectorProduction, 0x34)
 DECOMP_SIZE_ASSERT(RHCampaignMissionList, 0x18)
+DECOMP_STATIC_ASSERT(offsetof(RHCampaignMissionList, cursor) == 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(RHCampaignMissionList, valid) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHCampaignMissionList, index) == 0x14)
 DECOMP_STATIC_ASSERT(offsetof(RHCampaign, m_94) == 0x94)
 DECOMP_STATIC_ASSERT(offsetof(RHCampaign, m_100) == 0x100)
+DECOMP_STATIC_ASSERT(offsetof(RHCampaign, m_104) == 0x104)
+DECOMP_STATIC_ASSERT(offsetof(RHCampaign, m_114) == 0x114)
+DECOMP_STATIC_ASSERT(offsetof(RHCampaign, m_124) == 0x124)
+DECOMP_STATIC_ASSERT(offsetof(RHCampaign, m_134) == 0x134)
+DECOMP_STATIC_ASSERT(offsetof(RHCampaign, m_144) == 0x144)
+DECOMP_STATIC_ASSERT(offsetof(RHCampaign, m_154) == 0x154)
+DECOMP_STATIC_ASSERT(offsetof(RHCampaign, m_164) == 0x164)
+DECOMP_STATIC_ASSERT(offsetof(RHCampaign, m_174) == 0x174)
+DECOMP_STATIC_ASSERT(offsetof(RHCampaign, m_180) == 0x180)
 DECOMP_STATIC_ASSERT(offsetof(RHCampaign, m_184) == 0x184)
 DECOMP_STATIC_ASSERT(offsetof(RHCampaign, m_1a8) == 0x1a8)
+DECOMP_STATIC_ASSERT(offsetof(RHCampaign, m_1b0) == 0x1b0)
+DECOMP_STATIC_ASSERT(offsetof(RHCampaign, m_1c0) == 0x1c0)
 DECOMP_STATIC_ASSERT(offsetof(RHCampaign, m_84) == 0x84)
 DECOMP_SIZE_ASSERT(std::vector<unsigned long>, 0x10)
 DECOMP_SIZE_ASSERT(RHGameCampaignView, 0x184)
@@ -54,6 +72,9 @@ RHMessenger *RHUnk00546050();
 
 // LIBRARY: GAME 0x0044e940
 // ?_Construct@std@@YAXPAGABG@Z
+
+// TEMPLATE: GAME 0x0046eb30 FOLDED
+// ?erase@?$list@PAVRHMission@@V?$allocator@PAVRHMission@@@std@@@std@@QAE?AViterator@12@V312@@Z
 
 // FUNCTION: GAME 0x00436500
 RHProfileManager *RHUnk00436500GetProfileManager()
@@ -216,6 +237,43 @@ void EmitRHUnk0044fd00(RHUnk0044fd00 *a, RHUnk0044fe70 *b)
     b->FUN_0044fe70();
 }
 
+// STRING: GAME 0x006a72a8
+static const char *const campaignProfileDirectory = "Data\\Configuration";
+
+// FUNCTION: GAME 0x004505a0
+RHCampaign::RHCampaign()
+    : m_profiles("Data\\Configuration"),
+      m_100(-1), m_174(0), m_178(0), m_17c(0), m_180(0), m_1a8(0), m_1c0(false)
+{
+    m_vptr = 0x00677660;
+    g_unk0x6c07fc = (RHUnk00452030 *)this;
+    FUN_004509c0();
+}
+
+// FUNCTION: GAME 0x00450770
+void *RHCampaign::FUN_00450770(unsigned flags)
+{
+    this->RHCampaign::~RHCampaign();
+    if (flags & 1)
+        operator delete(this);
+    return this;
+}
+
+// STUB: GAME 0x00450790
+RHCampaign::~RHCampaign()
+{
+    m_vptr = 0x00677660;
+    g_unk0x6c07fc = 0;
+    for (RHPCDescription **description = m_104.begin(); description != m_104.end(); ++description)
+        delete *description;
+    m_104.erase(m_104.begin(), m_104.end());
+}
+
+void EmitRHCampaignLifetime()
+{
+    ((RHCampaign *)g_unk0x6c07fc)->FUN_00450770(1);
+}
+
 // FUNCTION: GAME 0x004509c0
 void RHCampaign::FUN_004509c0()
 {
@@ -250,7 +308,7 @@ void RHCampaign::FUN_00450c10(SBArray<RHElement *> &elements, std::vector<RHbeam
 // FUNCTION: GAME 0x00450c50
 void RHCampaign::FUN_00450c50()
 {
-    RHCampaignPointerArray<RHMissionProfile *> &missions = RHUnk00436500GetProfileManager()->m_missions;
+    RHProfileArray<RHMissionProfile *> &missions = RHUnk00436500GetProfileManager()->m_missions;
     m_144.clear();
     for (RHMissionProfile **it = missions.begin(); it != missions.end(); ++it)
         m_144.push_back(RHMission(*it));
@@ -559,11 +617,11 @@ void RHCampaign::FUN_00452a50(std::vector<RHMission *> &missions)
 // FUNCTION: GAME 0x00452c90
 void RHCampaign::FUN_00452c90(std::vector<RHMission *> &missions)
 {
-    for (int i = (unsigned)m_184.count - 1; i >= 0; --i)
+    for (int i = (unsigned)m_184.size() - 1; i >= 0; --i)
     {
         RHCampaignMissionList &previous = m_184;
         previous.FUN_005c8e40(i);
-        RHMission *value = previous.cursor->mission;
+        RHMission *value = previous.cursor->_Value;
         for (RHMission **position = missions.begin(); position != missions.end(); ++position)
         {
             if (*position == value)
@@ -719,14 +777,14 @@ bool RHCampaign::Serialize(SBFile &file)
         }
         else
         {
-            count = m_184.count;
+            count = m_184.size();
             if (!RHCampaignAccess(file, &count, 4, 1132))
                 return false;
             for (unsigned i = 0; i < count; ++i)
             {
                 RHCampaignMissionList &missions = m_184;
                 missions.FUN_005c8e40(i);
-                value = missions.cursor->mission;
+                value = missions.cursor->_Value;
                 FUN_00453940(file, value);
             }
         }
@@ -827,16 +885,7 @@ void FUN_0054cda0(RHUnk0054cda0 *value);
 
 inline void RHCampaignPushMission(RHCampaignMissionList &missions, RHMission *const &value)
 {
-    RHCampaignMissionList::Node *head = missions.head;
-    RHCampaignMissionList::Node *last = head->prev;
-    RHCampaignMissionList::Node *node = (RHCampaignMissionList::Node *)operator new(0xc);
-    node->next = head != 0 ? head : node;
-    node->prev = last != 0 ? last : node;
-    head->prev = node;
-    node->prev->next = node;
-    void (*construct)(RHMission **, RHMission *const &) = &std::_Construct;
-    construct(&node->mission, value);
-    ++missions.count;
+    missions.insert(missions.end(), value);
     missions.valid = true;
 }
 
@@ -873,9 +922,9 @@ RHMission *RHCampaign::FUN_004539f0()
     {
         RHCampaignMissionList &previous = m_184;
         RHCampaignPushMission(previous, m_178);
-        if ((int)previous.count > 3)
+        if ((int)previous.size() > 3)
         {
-            ((std::list<RHMission *> *)&previous)->pop_front();
+            previous.pop_front();
             previous.valid = true;
         }
     }
@@ -1124,8 +1173,9 @@ RHbeamMe::RHbeamMe(const RHbeamMe &value)
 {
 }
 
-// FUNCTION: GAME 0x00454bb0
-RHbeamMe::~RHbeamMe() {}
+// TEMPLATE: GAME 0x00454bb0
+// ??1RHbeamMe@@QAE@XZ
+inline RHbeamMe::~RHbeamMe() {}
 
 // Parked: four-byte EH frame excess and annotated helper operands.
 // STUB: GAME 0x00454c00
@@ -2149,17 +2199,7 @@ int RHCampaignCommandLine::FUN_0045a010(const RHProfileText &value)
 
 void RHCampaignMissionList::FUN_0045a440(const RHMission *const &value)
 {
-    Node *next = head;
-    Node *previous = next->prev;
-    Node *node = (Node *)operator new(sizeof(Node));
-    node->next = next ? next : node;
-    node->prev = previous ? previous : node;
-    next->prev = node;
-    node->prev->next = node;
-    RHMission **destination = &node->mission;
-    if (destination)
-        *destination = (RHMission *)value;
-    ++count;
+    push_back(const_cast<RHMission *>(value));
 }
 
 // TEMPLATE: GAME 0x0045a490 FOLDED
