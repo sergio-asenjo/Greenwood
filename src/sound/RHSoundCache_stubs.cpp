@@ -39,7 +39,7 @@ void FUN_006416e6() {}
 void RHSoundCacheString::FUN_00402780() {}
 
 
-RHSoundCacheGroupIterator EmitRHSoundCacheEntryInsert(RHSoundCacheEntryMap &tree, const RHSoundCacheEntryMap::value_type &value)
+RHSoundCacheGroupIterator EmitRHSoundCacheEntryInsert(std::map<unsigned long, RHSoundCacheEntry *> &tree, const RHSoundCacheEntryMap::value_type &value)
 {
     return RHSoundCacheGroupIterator((RHSoundCacheGroupNode *)tree.insert(value).first._Mynode());
 }

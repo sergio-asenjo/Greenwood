@@ -60,6 +60,11 @@ struct RHSoundCacheList
     __forceinline void FUN_005c8e40(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
     RHSoundCacheListIterator FUN_0046eb80();
     RHSoundCacheListIterator FUN_00424410(RHSoundCacheListIterator, const unsigned long &);
+    void Append(const unsigned long &value)
+    {
+        FUN_00424410(RHSoundCacheListIterator(m_04), value);
+        m_10 = true;
+    }
     __forceinline RHSoundCacheListIterator begin()
     {
         RHSoundCacheListNode *first = *(RHSoundCacheListNode *volatile *)&m_04->m_next;
@@ -187,39 +192,6 @@ void *FUN_00643705(void *, unsigned int);
 #include "RHSoundCacheString.h"
 
 // SIZE 0x10
-class RHSoundCacheEntryMap : public std::map<unsigned long, RHSoundCacheEntry *>
-{
-public:
-    typedef RHSoundCacheEraseIterator<1> EraseIterator;
-    void FUN_005aeee0();
-    EraseIterator FUN_005af1f0(EraseIterator, EraseIterator);
-    EraseIterator FUN_005afe60(EraseIterator);
-    typedef RHSoundCacheGroupNode Node;
-    static Node *&Left(Node *node) { return node->m_00; }
-    static Node *&Parent(Node *node) { return node->m_04; }
-    static Node *&Right(Node *node) { return node->m_08; }
-    static undefined4 &Color(Node *node) { return node->m_14; }
-    void FUN_005b0380(RHSoundCacheGroupNode *);
-    void FUN_005b0410();
-    RHSoundCacheGroupNode *&Head() { return *(RHSoundCacheGroupNode **)((char *)this + 4); }
-    RHSoundCacheGroupNode *&Root() { return Head()->m_04; }
-    RHSoundCacheGroupNode *&Leftmost() { return Head()->m_00; }
-    RHSoundCacheGroupNode *&Rightmost() { return Head()->m_08; }
-    EraseIterator Begin() { return EraseIterator(Leftmost()); }
-    unsigned &Count() { return *(unsigned *)((char *)this + 0x0c); }
-    RHSoundCacheGroupNode *FUN_005b1430(const unsigned long &);
-    iterator find(const unsigned long &key)
-    {
-        RHSoundCacheGroupNode *node = FUN_005b1430(key);
-        iterator entry = *(iterator *)&node;
-        return entry == end() || key < (*entry).first ? end() : entry;
-    }
-    RHSoundCacheGroupIterator FUN_005b04c0(RHSoundCacheGroupNode *, RHSoundCacheGroupNode *, const value_type &);
-    void Lrotate(RHSoundCacheGroupNode *);
-    void Rrotate(RHSoundCacheGroupNode *);
-    std::pair<iterator, bool> FUN_005af0c0(const value_type &);
-};
-
 extern RHSoundCacheGroupNode *g_unk0x006c10a4;
 extern RHSoundCacheGroupNode *g_unk0x006c10ac;
 

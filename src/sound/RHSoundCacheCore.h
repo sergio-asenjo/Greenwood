@@ -62,9 +62,18 @@ struct RHSoundCacheGroupInsert
     }
 };
 
-class RHSoundCacheGroups : public std::map<unsigned long, RHsoundGroup *>
+class RHSoundCacheGroupTree
 {
 public:
+    typedef std::map<unsigned long, RHsoundGroup *> Map;
+    typedef Map::iterator iterator;
+    typedef Map::value_type value_type;
+    RHSoundCacheGroupTree(const Map::key_compare &compare, bool multi, const Map::allocator_type &allocator)
+        : m_allocator(allocator), m_compare(compare), m_multi(multi) { FUN_005afd00(); }
+    ~RHSoundCacheGroupTree() { FUN_005aee70(); }
+    iterator begin() { RHSoundCacheGroupNode *node = Leftmost(); return *(iterator *)&node; }
+    iterator end() { RHSoundCacheGroupNode *node = Head(); return *(iterator *)&node; }
+    unsigned int size() const { return m_count; }
     typedef RHSoundCacheEraseIterator<0> EraseIterator;
     void FUN_005aee70();
     EraseIterator FUN_005aef90(EraseIterator, EraseIterator);
@@ -108,6 +117,73 @@ public:
         iterator entry = result.first;
         return entry->second;
     }
+    Map::allocator_type m_allocator;
+    Map::key_compare m_compare;
+    RHSoundCacheGroupNode *m_head;
+    bool m_multi;
+    unsigned int m_count;
+};
+
+class RHSoundCacheGroups : public RHSoundCacheGroupTree
+{
+public:
+    RHSoundCacheGroups(const Map::key_compare &compare = Map::key_compare(), const Map::allocator_type &allocator = Map::allocator_type())
+        : RHSoundCacheGroupTree(compare, false, allocator) {}
+};
+
+class RHSoundCacheEntryTree
+{
+public:
+    typedef std::map<unsigned long, RHSoundCacheEntry *> Map;
+    typedef Map::iterator iterator;
+    typedef Map::value_type value_type;
+    RHSoundCacheEntryTree(const Map::key_compare &compare, bool multi, const Map::allocator_type &allocator)
+        : m_allocator(allocator), m_compare(compare), m_multi(multi) { FUN_005b0410(); }
+    ~RHSoundCacheEntryTree() { FUN_005aeee0(); }
+    iterator begin() { RHSoundCacheGroupNode *node = Leftmost(); return *(iterator *)&node; }
+    iterator end() { RHSoundCacheGroupNode *node = Head(); return *(iterator *)&node; }
+    unsigned int size() const { return m_count; }
+    std::pair<iterator, bool> insert(const value_type &value) { return FUN_005af0c0(value); }
+    typedef RHSoundCacheEraseIterator<1> EraseIterator;
+    void FUN_005aeee0();
+    EraseIterator FUN_005af1f0(EraseIterator, EraseIterator);
+    EraseIterator FUN_005afe60(EraseIterator);
+    typedef RHSoundCacheGroupNode Node;
+    static Node *&Left(Node *node) { return node->m_00; }
+    static Node *&Parent(Node *node) { return node->m_04; }
+    static Node *&Right(Node *node) { return node->m_08; }
+    static undefined4 &Color(Node *node) { return node->m_14; }
+    void FUN_005b0380(RHSoundCacheGroupNode *);
+    void FUN_005b0410();
+    RHSoundCacheGroupNode *&Head() { return m_head; }
+    RHSoundCacheGroupNode *&Root() { return Head()->m_04; }
+    RHSoundCacheGroupNode *&Leftmost() { return Head()->m_00; }
+    RHSoundCacheGroupNode *&Rightmost() { return Head()->m_08; }
+    EraseIterator Begin() { return EraseIterator(Leftmost()); }
+    unsigned &Count() { return m_count; }
+    RHSoundCacheGroupNode *FUN_005b1430(const unsigned long &);
+    iterator find(const unsigned long &key)
+    {
+        RHSoundCacheGroupNode *node = FUN_005b1430(key);
+        iterator entry = *(iterator *)&node;
+        return entry == end() || key < (*entry).first ? end() : entry;
+    }
+    RHSoundCacheGroupIterator FUN_005b04c0(RHSoundCacheGroupNode *, RHSoundCacheGroupNode *, const value_type &);
+    void Lrotate(RHSoundCacheGroupNode *);
+    void Rrotate(RHSoundCacheGroupNode *);
+    std::pair<iterator, bool> FUN_005af0c0(const value_type &);
+    Map::allocator_type m_allocator;
+    Map::key_compare m_compare;
+    RHSoundCacheGroupNode *m_head;
+    bool m_multi;
+    unsigned int m_count;
+};
+
+class RHSoundCacheEntryMap : public RHSoundCacheEntryTree
+{
+public:
+    RHSoundCacheEntryMap(const Map::key_compare &compare = Map::key_compare(), const Map::allocator_type &allocator = Map::allocator_type())
+        : RHSoundCacheEntryTree(compare, false, allocator) {}
 };
 
 typedef std::string RHSoundCacheMusic;
@@ -169,16 +245,16 @@ public:
     void InitializeFXCache();
     void FUN_005aca40(SBFile &, RHsoundGroup *, unsigned long);
     void InitializeExclamationsForProfile(const std::string &, unsigned long);
-    RHSoundCacheEntry *AddSoundEntry(unsigned long, const std::string &, std::map<unsigned long, RHSoundCacheEntry *> &);
+    RHSoundCacheEntry *AddSoundEntry(unsigned long, const std::string &, RHSoundCacheEntryMap &);
     unsigned long AddSoundEntry(const std::string &, struct RHcacheData &);
     unsigned long FUN_005ab430(struct RHcacheData &);
     void FUN_005ab4e0(struct RHcacheData &);
     void FUN_005ab530(struct RHcacheData &, RHsampleCacheStats &);
     void UpdateCacheState(struct RHcacheData &, RHsampleCacheStats &, unsigned long);
-    void UpdateCacheState(std::map<unsigned long, RHSoundCacheEntry *> &, RHsampleCacheStats &, unsigned long);
+    void UpdateCacheState(RHSoundCacheEntryMap &, RHsampleCacheStats &, unsigned long);
     void FUN_005ab660(RHSoundCacheGroups &, struct RHcacheData &);
     void FUN_005ab6d0(class RHSoundCacheEntryMap &);
-    RHSoundCacheEntry *GetSample(bool, std::map<unsigned long, RHSoundCacheEntry *> &, void *, unsigned long, unsigned long, unsigned long, bool);
+    RHSoundCacheEntry *GetSample(bool, RHSoundCacheEntryMap &, void *, unsigned long, unsigned long, unsigned long, bool);
     RHSoundCacheEntry *GetFXSample(bool, unsigned long, int);
     bool FUN_005ae320(unsigned long);
     RHSoundCacheEntry *FUN_005ae640(bool, unsigned long);
@@ -200,20 +276,20 @@ public:
     RHSoundCacheEntry *m_000;
     unsigned int m_004;
     unsigned int m_008;
-    std::map<unsigned long, RHsoundGroup *> m_00c;
+    RHSoundCacheGroups m_00c;
     unsigned int m_01c;
     undefined m_020[8];
-    std::map<unsigned long, RHSoundCacheEntry *> m_028;
+    RHSoundCacheEntryMap m_028;
     undefined m_038[0xc];
-    std::map<unsigned long, RHSoundCacheEntry *> m_044;
+    RHSoundCacheEntryMap m_044;
     undefined m_054[0xc];
     RHSoundCacheEntry *m_060;
     unsigned int m_064;
     unsigned int m_068;
-    std::map<unsigned long, RHsoundGroup *> m_06c;
+    RHSoundCacheGroups m_06c;
     unsigned int m_07c;
     undefined m_080[0x14];
-    std::map<unsigned long, RHSoundCacheEntry *> m_094;
+    RHSoundCacheEntryMap m_094;
     undefined m_0a4[0xc];
     RHSoundCacheMusicArray m_0b0;
     RHSoundCacheMusicArray m_0dc;

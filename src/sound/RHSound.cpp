@@ -258,7 +258,7 @@ namespace std
 template <> void _Construct(RHUnk005aa9f0 *, const RHUnk005aa9f0 &);
 }
 
-// STUB: GAME 0x005a6520
+// FUNCTION: GAME 0x005a6520
 bool RHSound::FUN_005a6520(unsigned long &driver)
 {
     std::string devices;
@@ -266,41 +266,44 @@ bool RHSound::FUN_005a6520(unsigned long &driver)
     HKEY key;
     if (g_rhsoundRegOpenKeyExA(HKEY_LOCAL_MACHINE,
         // STRING: GAME 0x006a6db4
-        "Software\\Spellbound Software\\Robin Hood 1.0", 0, KEY_READ, &key) == ERROR_SUCCESS)
+        "Software\\Spellbound Software\\Robin Hood 1.0", 0, KEY_READ, &key) != ERROR_SUCCESS)
     {
-        unsigned long type;
-        unsigned long hash;
-        unsigned long size = 4;
-        if (g_rhsoundRegQueryValueExA(key,
-            // STRING: GAME 0x006b7b28
-            "SoundConfig", 0, &type, (unsigned char *)&hash, &size) == ERROR_SUCCESS && type == REG_DWORD && size == 4)
-        {
-            if (g_rhsoundRegQueryValueExA(key,
-                // STRING: GAME 0x006b7b1c
-                "SoundDevice", 0, &type, (unsigned char *)&driver, &size) == ERROR_SUCCESS && type == REG_DWORD && size == 4)
-            {
-                g_rhsoundRegCloseKey(key);
-                unsigned int count = FSOUND_GetNumDrivers();
-                for (unsigned int index = 0; index < count; ++index)
-                {
-                    name.assign(FSOUND_GetDriverName(index));
-                    if (name.size() == 0)
-                        SBAssert(1, "P:\\Robin Hood\\RHsound.cpp", 251,
-                            // STRING: GAME 0x006b7afc
-                            "Unable to get sound device name");
-                    devices.append(name);
-                }
-                return crc32(0, (const Bytef *)SoundStringData(devices), devices.size()) == hash;
-            }
-            g_rhsoundRegCloseKey(key);
-        }
-        else
-            g_rhsoundRegCloseKey(key);
+        return false;
     }
-    return false;
+    LONG (__stdcall *queryValue)(HKEY, LPCSTR, LPDWORD, LPDWORD, LPBYTE, LPDWORD) = g_rhsoundRegQueryValueExA;
+    unsigned long type;
+    unsigned long hash;
+    unsigned long size = 4;
+    if (queryValue(key,
+        // STRING: GAME 0x006b7b28
+        "SoundConfig", 0, &type, (unsigned char *)&hash, &size) != ERROR_SUCCESS || type != REG_DWORD || size != 4)
+    {
+        g_rhsoundRegCloseKey(key);
+        return false;
+    }
+    if (queryValue(key,
+        // STRING: GAME 0x006b7b1c
+        "SoundDevice", 0, &type, (unsigned char *)&driver, &size) != ERROR_SUCCESS || type != REG_DWORD || size != 4)
+    {
+        g_rhsoundRegCloseKey(key);
+        return false;
+    }
+    g_rhsoundRegCloseKey(key);
+    unsigned int count = FSOUND_GetNumDrivers();
+    for (unsigned int index = 0; index < count; ++index)
+    {
+        const char *device = FSOUND_GetDriverName(index);
+        name.assign(device, strlen(device));
+        if (name.size() == 0)
+            SBAssert(1, "P:\\Robin Hood\\RHsound.cpp", 251,
+                // STRING: GAME 0x006b7afc
+                "Unable to get sound device name");
+        devices.append(name);
+    }
+    return crc32(0, (const Bytef *)SoundStringData(devices), devices.size()) == hash;
 }
 
-// STUB: GAME 0x005a67b0
+// FUNCTION: GAME 0x005a67b0
 void RHSound::FUN_005a67b0(unsigned long &driver)
 {
     std::string devices;
@@ -330,21 +333,26 @@ void RHSound::FUN_005a67b0(unsigned long &driver)
         SBAssert(0, "P:\\Robin Hood\\RHsound.cpp", 306,
             // STRING: GAME 0x006b7ba4
             "Failed to create key in the registry");
-    if (g_rhsoundRegSetValueExA(key, "SoundConfig", 0, REG_DWORD, (const unsigned char *)&hash, 4) != ERROR_SUCCESS)
+    LONG (__stdcall *setValue)(HKEY, LPCSTR, DWORD, DWORD, const BYTE *, DWORD) = g_rhsoundRegSetValueExA;
+    LONG (__stdcall *closeKey)(HKEY);
+    if (setValue(key, "SoundConfig", 0, REG_DWORD, (const unsigned char *)&hash, 4) != ERROR_SUCCESS)
     {
-        g_rhsoundRegCloseKey(key);
+        closeKey = g_rhsoundRegCloseKey;
+        closeKey(key);
         SBAssert(0, "P:\\Robin Hood\\RHsound.cpp", 313,
             // STRING: GAME 0x006b7b6c
             "Failed to set value for sound config in the registry");
     }
-    if (g_rhsoundRegSetValueExA(key, "SoundDevice", 0, REG_DWORD, (const unsigned char *)&driver, 4) != ERROR_SUCCESS)
+    else
+        closeKey = g_rhsoundRegCloseKey;
+    if (setValue(key, "SoundDevice", 0, REG_DWORD, (const unsigned char *)&driver, 4) != ERROR_SUCCESS)
     {
-        g_rhsoundRegCloseKey(key);
+        closeKey(key);
         SBAssert(0, "P:\\Robin Hood\\RHsound.cpp", 321,
             // STRING: GAME 0x006b7b34
             "Failed to set value for sound device ID in the registry");
     }
-    g_rhsoundRegCloseKey(key);
+    closeKey(key);
 }
 
 // STUB: GAME 0x005a6a50
@@ -402,7 +410,7 @@ bool RHSound::InitializeSound(unsigned short driver, bool spatial, std::string &
             "Unable to set DirectSound output !";
         return false;
     }
-    m_000.m_134 = m_210 != 0;
+    m_000.m_134 = m_210;
     m_208 = driver;
     if (!FSOUND_SetBufferSize(100))
     {
@@ -428,11 +436,12 @@ bool RHSound::InitializeSound(unsigned short driver, bool spatial, std::string &
     unsigned int hardware = FSOUND_GetNumHardwareChannels();
     if (!m_210 || hardware < 8)
         m_218 -= hardware;
-    if (m_21c.Size() < m_218)
+    RHSoundChannels &channels = m_21c;
+    if (channels.Size() < m_218)
     {
         RHSoundChannel value;
-        m_21c.FUN_005aaa50(m_218, value);
-        m_21c.m_14 = true;
+        channels.FUN_005aaa50(m_218, value);
+        channels.m_14 = true;
     }
     for (unsigned int index = 0; index < m_218; ++index)
     {
@@ -447,8 +456,10 @@ bool RHSound::InitializeSound(unsigned short driver, bool spatial, std::string &
         SBAssert(0, "P:\\Robin Hood\\RHsound.cpp", 457,
             // STRING: GAME 0x006b7c08
             "Want to use 3D sound on a device that doesn't support it !");
-        error.assign("Want to use 3D sound on a device that doesn't support it !", 0, std::string::npos);
+        error = "Want to use 3D sound on a device that doesn't support it !";
     }
+    else
+        m_20b = 0;
     return true;
 }
 
@@ -1746,8 +1757,7 @@ void RHSound::GetCacheStats(RHsampleCacheStats *stats, int &count)
     count = m_250;
 }
 
-// Parked: serialized scalar stack-slot colouring differs; direct bool forwarding matches.
-// STUB: GAME 0x005a9c50
+// FUNCTION: GAME 0x005a9c50
 bool RHSound::Serialize(SBFile &file)
 {
     char available = g_unk0x006c0685;
@@ -1784,7 +1794,7 @@ bool RHSound::Serialize(SBFile &file)
             mode = (unsigned char)m_280;
             RHSOUND_ACCESS(mode, 1, 3039);
         }
-        unsigned short index;
+        unsigned long index;
         RHSOUND_ACCESS(index, 2, 3044);
         RHSOUND_ACCESS(m_288, 4, 3046);
         RHSOUND_ACCESS(m_28c, 4, 3047);
@@ -2283,10 +2293,10 @@ RHSoundCacheEntry *RHSound::FUN_005ae9f0(unsigned long id)
 void RHSound::FUN_005aec10()
 {
     m_000.UpdateCacheState(*(RHcacheData *)this, *(RHsampleCacheStats *)&m_000.m_01c, 5);
-    m_000.UpdateCacheState(*(std::map<unsigned long, RHSoundCacheEntry *> *)((char *)this + 0x28), *(RHsampleCacheStats *)((char *)this + 0x38), 5);
-    m_000.UpdateCacheState(*(std::map<unsigned long, RHSoundCacheEntry *> *)((char *)this + 0x44), *(RHsampleCacheStats *)((char *)this + 0x54), 2);
+    m_000.UpdateCacheState(m_000.m_028, *(RHsampleCacheStats *)((char *)this + 0x38), 5);
+    m_000.UpdateCacheState(m_000.m_044, *(RHsampleCacheStats *)((char *)this + 0x54), 2);
     m_000.UpdateCacheState(*(RHcacheData *)((char *)this + 0x60), *(RHsampleCacheStats *)&m_000.m_07c, 5);
-    m_000.UpdateCacheState(*(std::map<unsigned long, RHSoundCacheEntry *> *)((char *)this + 0x94), *(RHsampleCacheStats *)((char *)this + 0xa4), 10);
+    m_000.UpdateCacheState(m_000.m_094, *(RHsampleCacheStats *)((char *)this + 0xa4), 10);
 }
 
 // FUNCTION: GAME 0x005af320
