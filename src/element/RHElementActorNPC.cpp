@@ -257,7 +257,7 @@ void RHElementActorNPC::FUN_00487b70()
 // FUNCTION: GAME 0x00487ce0
 void RHElementActorNPC::FUN_00487ce0()
 {
-    RHNPC_FIELD(RHUnk005b5ed0 *, 0x50)->FUN_005bd8b0();
+    RHNPC_FIELD(RHSprite *, 0x50)->FUN_005bd8b0();
     RHNPC_FIELD(unsigned char, 0x08) = 0;
 }
 
@@ -650,7 +650,7 @@ bool RHElementActorNPC::FUN_0048be40(void *context, unsigned flags, RHElementAct
         action->Unk00586ed0(0x29, (int)target);
         action->Unk00586ed0(0x2a, (int)this);
         ((RHUnk00585500 *)action)->Unk(sequence);
-        ((RHElementActorPC *)target)->FUN_004a0340(sequence, (flags & 8) != 0, 0x1e, 0x32, (int)this, 1);
+        ((RHElementActorPC *)target)->FUN_004a0340(sequence, (flags & 8) != 0, 0x1e, 0x32, (RHElementActorHuman *)this, true);
         return true;
     }
     if ((RHNPC_FIELD(char, 0x1ce) || ((RHNPCActorCalls *)this)->V48()) &&
@@ -1368,6 +1368,78 @@ void RHElementActorNPC::FUN_0048c4d0()
     }
 }
 
+extern float g_unk0x006774cc;
+extern float g_actorStepScale;
+
+// FUNCTION: GAME 0x00489d00
+float RHElementActorNPC::FUN_00489d00(const RHUnk00613e90 &offset)
+{
+    RHUnk005fc3b0 direction;
+    RHUnk005fc3b0 planar;
+    direction.FUN_005fc430(RHNPC_FIELD(SBGeoPoint2D, 0x69c));
+    float y = offset.y;
+    planar.m_x = offset.x;
+    planar.m_y = y;
+    if (planar.Unk005fc6d0(1.0f) <= 3600.0f)
+        return 1.0f;
+    float distance = (float)sqrt(offset.z * offset.z + offset.x * offset.x + offset.y * offset.y) /
+        RHNPC_FIELD(unsigned short, 0x6cc);
+    float visibility;
+    if (distance < 0.3f)
+        visibility = 1.0f - distance * 0.166666701436043f;
+    else if (distance < 0.7f)
+        visibility = 0.95f - (distance - 0.3f) * 1.7500001192092896f;
+    else
+        visibility = g_actorStepScale - (distance - 0.7f) * 0.3333333134651184f;
+    if (visibility < 0.0f)
+        visibility = 0.0f;
+    return visibility;
+}
+
+// STUB: GAME 0x0048a650
+void RHElementActorNPC::FUN_0048a650(unsigned char &red, unsigned char &green, unsigned char &blue)
+{
+    RHUnk00613e90 position;
+    if (RHNPC_FIELD(unsigned char, 0x65c) == 5)
+    {
+        float ratio = (float)RHNPC_FIELD(unsigned short, 0x6c2) / *(unsigned short *)((char *)g_pEngine + 0x4cc0);
+        ratio = ratio * ratio;
+        red = g_unk0x006c0880 * ratio;
+        green = g_unk0x006c087c * ratio;
+        blue = g_unk0x006c08a9 * ratio;
+        return;
+    }
+    switch (RHNPC_FIELD(int, 0x658))
+    {
+    case 2:
+        red = g_unk0x006c0880;
+        green = g_unk0x006c087c;
+        blue = g_unk0x006c08a9;
+        return;
+    case 1:
+        red = g_unk0x006c0881;
+        green = g_unk0x006c087d;
+        blue = g_unk0x006c08a8;
+        return;
+    case 0:
+    {
+        unsigned short noise = RHNPC_FIELD(unsigned short, 0x648);
+        unsigned short alert = *(unsigned short *)((char *)this + 0x546 + (*(int **)((char *)this + 0x49c))[1]);
+        unsigned short level = 1000 < (noise > alert ? noise : alert) ? 1000 : (noise > alert ? noise : alert);
+        unsigned short index = level * g_unk0x006774cc * 32.0f;
+        if (index >= 32)
+            index = 31;
+        unsigned short minimum = alert * g_unk0x006774cc * 32.0f;
+        if (minimum > index)
+            index = minimum;
+        red = g_unk0x006c08ac[index];
+        green = g_unk0x006c08cc[index];
+        blue = g_unk0x006c0884[index];
+        break;
+    }
+    }
+}
+
 #include "RHSoundSourceManagerCore.h"
 #include "RHSoundSourceCore.h"
 
@@ -1409,5 +1481,8 @@ unsigned short RHElementActorNPC::FUN_0048a830()
 
 void EmitRHElementActorNPCVoice(RHElementActorNPC *npc)
 {
+    npc->FUN_00489d00(*(RHUnk00613e90 *)npc);
     npc->FUN_0048a830();
+    unsigned char channel;
+    npc->FUN_0048a650(channel, channel, channel);
 }

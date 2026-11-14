@@ -22,18 +22,7 @@ public:
     float m_y; // 0x04
 };
 
-// SIZE 0x08
-class SBGeoVector2D : public SBGeoPoint2D
-{
-public:
-    SBGeoVector2D();
-    SBGeoVector2D(float x, float y);
-    ~SBGeoVector2D() {}
-    SBGeoVector2D &operator=(const SBGeoVector2D &other);
-    SBGeoVector2D(const SBGeoVector2D &other);
-};
-
-#define SBGEO_VECTOR2D_VIEW
+#include "SBGeoVector2D.h"
 #include "RHUnk005fc3b0.h"
 
 // SIZE 0x08

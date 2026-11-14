@@ -9,6 +9,7 @@ class RHSequenceElement;
 class RHElementActorHuman;
 class RHActorTranslationSequenceCalls;
 struct RHMalignityPosition;
+class RHUnk00613e90;
 
 // SIZE 0x10
 struct RHAnimalNoisePosition
@@ -76,6 +77,8 @@ public:
     void FUN_00487ce0();
     bool FUN_004887a0(int kind);
     void FUN_00488a40(unsigned char index, unsigned short timer);
+    float FUN_00489d00(const RHUnk00613e90 &offset);
+    void FUN_0048a650(unsigned char &red, unsigned char &green, unsigned char &blue);
     unsigned short FUN_0048a830();
     bool FUN_0048af40(const SBGeoPoint2D &point, RHElementActorHuman *pc, int focus);
     bool FUN_0048be40(void *context, unsigned flags, RHElementActorHuman *target);
@@ -124,7 +127,12 @@ public:
         OffsetByte6e5 = 0x6e5,
         ObjectSize = 0x704
     };
-    char m_04[0x145];
+    char m_04[0x8e];
+    char m_92;
+    char m_93[0x0d];
+    int m_a0;
+    unsigned short m_a4;
+    char m_a6[0xa3];
     unsigned char m_149;
     char m_14a[0x5ba];
 };

@@ -44,6 +44,10 @@ public:
 
 DECOMP_SIZE_ASSERT(RHElementActorNPC, 0x704)
 DECOMP_SIZE_ASSERT(RHElementActorCivilian, 0x70c)
+DECOMP_STATIC_ASSERT(offsetof(RHElementActorNPC, m_92) == 0x92)
+DECOMP_STATIC_ASSERT(offsetof(RHElementActorNPC, m_a0) == 0xa0)
+DECOMP_STATIC_ASSERT(offsetof(RHElementActorNPC, m_a4) == 0xa4)
+DECOMP_STATIC_ASSERT(offsetof(RHElementActorNPC, m_149) == 0x149)
 DECOMP_SIZE_ASSERT(RHCivilianProfileView, 0x34)
 DECOMP_SIZE_ASSERT(RHCivilianSpriteView, 0x19e)
 DECOMP_SIZE_ASSERT(RHUnk005ef320, 0x10e)
@@ -412,7 +416,7 @@ void FUN_00471060(unsigned int index)
     minimap->FUN_0054a440(scrolls[index]->FUN_004ba5d0());
 }
 
-// STUB: GAME 0x00470f70
+// FUNCTION: GAME 0x00470f70
 void *RHElementActorCivilian::FUN_00470f70(void *element)
 {
     // GLOBAL: GAME 0x006c0838
@@ -424,9 +428,9 @@ void *RHElementActorCivilian::FUN_00470f70(void *element)
         return FUN_0048c380((RHElementActorHuman *)element);
     if (g_unk0x6c07fc->Get(1) >= 50)
     {
-        RHCivilianField<char>(this, 0x92) = 1;
-        RHCivilianField<int>(this, 0xa0) = 0;
-        RHCivilianField<unsigned short>(this, 0xa4) = 2;
+        m_92 = 1;
+        m_a0 = 0;
+        m_a4 = 2;
         result.FUN_0045abc0(0x67, 0, 0);
         return &result;
     }

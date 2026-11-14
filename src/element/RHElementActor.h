@@ -26,52 +26,7 @@ public:
     char m_0[0x60];
 };
 
-// SIZE 0x14
-struct RHHumanMapNode
-{
-    RHHumanMapNode *m_left; // 0x00
-    RHHumanMapNode *m_parent; // 0x04
-    RHHumanMapNode *m_right; // 0x08
-    int m_key; // 0x0c
-    undefined4 m_value; // 0x10
-};
-
-// SIZE 0x04
-struct RHHumanMapIterator
-{
-    RHHumanMapNode *m_node; // 0x00
-    RHHumanMapIterator(RHHumanMapNode *node) : m_node(node) {}
-    RHHumanMapNode &operator*() const { return *m_node; }
-    RHHumanMapNode *operator->() const { return &**this; }
-    bool operator==(const RHHumanMapIterator &other) const { return m_node == other.m_node; }
-    bool operator!=(const RHHumanMapIterator &other) const { return !(*this == other); }
-};
-
-// SIZE 0x10
-class RHHumanMap
-{
-public:
-    RHHumanMapNode *FUN_00588060(const int &key);
-    RHHumanMapIterator end() const { return RHHumanMapIterator(m_head); }
-    RHHumanMapIterator find(const int &key)
-    {
-        RHHumanMapIterator position = FUN_00588060(key);
-        return position == end() || key < position->m_key ? end() : position;
-    }
-    undefined m_00[4]; // 0x00
-    RHHumanMapNode *m_head; // 0x04
-    undefined4 m_08; // 0x08
-    undefined4 m_0c; // 0x0c
-};
-
-// SIZE 0x74
-class RHActorSequencePointCalls
-{
-public:
-    SBGeoPoint2D FUN_005871b0(int key);
-    undefined m_00[0x64]; // 0x00
-    RHHumanMap m_64; // 0x64
-};
+#include "RHSequencePropertyPointCalls.h"
 
 // SIZE 0x14
 #include "RHMobileUnk00607da0.h"
@@ -109,7 +64,7 @@ public:
     void FUN_00463250(unsigned value);
     void FUN_00463260(unsigned first, unsigned second, unsigned third, unsigned fourth);
     int FUN_00463d90(unsigned value) const;
-    virtual bool Serialize(SBFile &file); // vtable+0x00 (interim model)
+    virtual bool Serialize(SBFile &file);
     void ExecuteImmediately(RHSequenceElement *element);
     void Translate(RHSequenceElement *element, RHcommand command);
     void CheckForLineCrossing();
@@ -149,8 +104,8 @@ public:
     void FUN_0046bab0();
     void FUN_0046bbf0();
     void FUN_0046bd40(RHSequenceElement *element);
+    void FUN_0046c6b0(int style, const SBGeoPoint2D &destination);
     SBGeoPoint2D FUN_00462920();
-    void FUN_00462940(int action);
     int FUN_00467200() const;
     bool FUN_00467210();
     void *FUN_00467220() const;
@@ -187,7 +142,7 @@ public:
     void *m_150; // 0x150
     SBGeoPoint2D m_154; // 0x154
     RHSequence *m_15c; // 0x15c
-    int m_160; // 0x160
+    float m_160; // 0x160
     char m_164; // 0x164
     char m_165; // 0x165
     undefined m_166[2]; // 0x166

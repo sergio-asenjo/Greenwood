@@ -83,12 +83,12 @@ void RHActorString::FUN_00401ee0(bool release)
 // "invalid string position"
 
 // Throw-info data; bound by name only.
-// STUB: GAME 0x0068ade8 SYMBOL
-// __TI3?AVout_of_range@std@@
+// GLOBAL: GAME 0x0068ade8
+// _TI3?AVout_of_range@std@@
 
 // Throw-info data; bound by name only.
-// STUB: GAME 0x0068ae60 SYMBOL
-// __TI2?AVlogic_error@std@@
+// GLOBAL: GAME 0x0068ae60
+// _TI2?AVlogic_error@std@@
 
 // LIBRARY: GAME 0x00642580
 // _memmove

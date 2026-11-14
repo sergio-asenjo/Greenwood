@@ -187,6 +187,9 @@ DECOMP_SIZE_ASSERT(RHActorTransientList, 0x24)
 DECOMP_SIZE_ASSERT(RHActorTransientList::Node, 0x0c)
 DECOMP_SIZE_ASSERT(RHUnk004679c0, 0x58c)
 DECOMP_SIZE_ASSERT(RHElementActor, 0x1b8)
+DECOMP_STATIC_ASSERT(offsetof(RHElementActor, m_160) == 0x160)
+DECOMP_STATIC_ASSERT(offsetof(RHElementActor, m_168) == 0x168)
+DECOMP_STATIC_ASSERT(offsetof(RHElementActor, m_16c) == 0x16c)
 DECOMP_SIZE_ASSERT(RHOrder, 0x3c)
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 DECOMP_SIZE_ASSERT(SBGeoVector2D, 0x08)
@@ -303,22 +306,15 @@ SBGeoPoint2D RHElementActor::FUN_00462920()
     return ((RHUnk005bb520 *)*(void **)((char *)this + 0x50))->FUN_005bb520();
 }
 
-// FUNCTION: GAME 0x00462940
-void RHElementActor::FUN_00462940(int action)
-{
-    if (action == 7 || (RHActorField<int>(Info(), 0x8c) != 12 && RHActorField<int>(Info(), 0x8c) != 13))
-        Position()->FUN_00462970(action);
-}
-
 // FUNCTION: GAME 0x00462970
-void RHBonusInfoBase::FUN_00462970(int action)
+void RHPositionInterface::FUN_00462970(int action)
 {
     int previous = RHActorField<int>(this, 0x88);
     RHActorField<int>(this, 0x88) = action;
     RHActorField<int>(this, 0x8c) = previous;
     RHActorField<unsigned char>(this, 0xbc) = 0;
     SBGeoVector2D offset(RHActorField<SBGeoVector2D>(this, 0x20));
-    SBGeoBoundingBox2D *box = (SBGeoBoundingBox2D *)((RHPositionInterface *)this)->Unk0055fa10(RHActorField<int>(this, 0x88));
+    SBGeoBoundingBox2D *box = (SBGeoBoundingBox2D *)Unk0055fa10(RHActorField<int>(this, 0x88));
     ((RHMobileUnk00607da0 *)&RHActorField<SBGeoBoundingBox2D>(this, 0xc0))->FUN_00607da0((const RHMobileUnk00607da0 &)box->FUN_006090d0(offset));
 }
 
@@ -1770,6 +1766,67 @@ void RHElementActor::FUN_0046bd40(RHSequenceElement *element)
         m_138 = 0;
 }
 
+inline bool RHActorSectorFlag(void *sector, unsigned bit)
+{
+    return (RHActorField<unsigned>(sector, 0x30) >> bit) & 1;
+}
+
+// STUB: GAME 0x0046c6b0
+void RHElementActor::FUN_0046c6b0(int style, const SBGeoPoint2D &destination)
+{
+    unsigned short level = 1;
+    RHActorTranslationSequenceCalls *current = (RHActorTranslationSequenceCalls *)m_130;
+    unsigned long flags = RHActorField<unsigned long>(current, 0x88);
+    RHUnk00582220 *sequence = new RHUnk00582220;
+    if (RHActorSectorFlag(RHActorField<void *>(current, 0x78), 12))
+    {
+        SBGeoPoint2D point;
+        flags |= 4;
+        if (!sequence->FUN_00582640(level, this, style,
+                ((RHSprite *)Info())->m_20, ((RHSprite *)Info())->m_dc,
+                ((RHSprite *)Info())->m_da, point, m_168,
+                RHActorField<unsigned short>(this, 0x16c), 0, m_160, flags, 1.0f))
+        {
+            if (sequence)
+                sequence->FUN_00582280(1);
+            current->V0c(5, true);
+            return;
+        }
+    }
+    else if (flags & 0x80)
+    {
+        flags |= 4;
+        if (!sequence->FUN_00583630(level, this, style,
+                ((RHSprite *)Info())->m_20, ((RHSprite *)Info())->m_dc,
+                ((RHSprite *)Info())->m_da, m_168,
+                RHActorField<unsigned short>(this, 0x16c), 0,
+                RHActorField<RHMovementBox *>(current, 0x80), m_160, flags))
+        {
+            if (sequence)
+                sequence->FUN_00582280(1);
+            current->V0c(5, true);
+            return;
+        }
+    }
+    else
+    {
+        flags |= 4;
+        if (!sequence->FUN_00582640(level, this, style,
+                ((RHSprite *)Info())->m_20, ((RHSprite *)Info())->m_dc,
+                ((RHSprite *)Info())->m_da, destination, m_168,
+                RHActorField<unsigned short>(this, 0x16c), 0, m_160, flags, 1.0f))
+        {
+            if (sequence)
+                sequence->FUN_00582280(1);
+            current->V0c(5, true);
+            return;
+        }
+    }
+    if (current)
+        current->V0c(6, true);
+    ((RHScriptBatchCalls *)RHActorField<void *>(this, 0x5c))->Unk0058a940("", 0, sequence);
+}
+
 // FUNCTION: GAME 0x0046c8e0
 void RHElementActor::FUN_0046c8e0(int value)
 {
@@ -2863,12 +2920,13 @@ void RHElementActor::FUN_0046ea20()
 
 void RHElementActor::Emit(SBFile &file, std::string &name)
 {
+    FUN_0046c6b0(0, m_128);
     FUN_00469300(0, false);
     FUN_00469770(0, false, false);
     FUN_0046a900(0, false, false);
     FUN_0046ea20();
     FUN_00464150();
-    FUN_00462940(0);
+    RHElement::FUN_00462940(0);
     FUN_0046bbf0();
     FUN_0046ad00(this, this);
     FUN_00463200();

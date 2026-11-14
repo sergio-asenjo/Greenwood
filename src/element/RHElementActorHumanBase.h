@@ -2,6 +2,7 @@
 #define RHELEMENTACTORHUMANBASE_H
 
 #include "RHActorCommand.h"
+#include "RHActorElementBase.h"
 #include <string>
 
 class SBFile;
@@ -10,7 +11,7 @@ class RHActorTranslationSequenceCalls;
 class RHUnk00613e90;
 class SBGeoPoint2D;
 
-class RHElementActor
+class RHElementActor : public RHElement
 {
 public:
     virtual bool Serialize(SBFile &file);
@@ -21,7 +22,6 @@ public:
     void FUN_0046bcb0(int value);
     void FUN_0046bb80();
     SBGeoPoint2D FUN_00462920();
-    void FUN_00462940(int value);
     void FUN_00468f40(void *value);
     int FUN_0046e960();
     int FUN_00463d90(unsigned value) const;

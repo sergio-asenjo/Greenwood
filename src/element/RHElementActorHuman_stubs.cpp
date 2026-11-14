@@ -12,7 +12,6 @@ void RHElementActorHuman::FUN_0046e2e0(void *) {}
 int RHElementActorHuman::FUN_00475bd0(RHOrder *) { return 0; }
 void RHElementActor::FUN_00468f40(void *) {}
 bool RHElementActor::FUN_00464230() { return false; }
-void RHElementActorHuman::FUN_0047ef70() {}
 
 // FUNCTION: GAME 0x005c1b20
 RHUnkHumanPlacementA::RHUnkHumanPlacementA(int value)

@@ -26,6 +26,7 @@ public:
     void FUN_004a2550(void *element);
     void Translate(RHSequenceElement *element, RHcommand command);
     void *FUN_004a5190(RHSoldierActorCalls *target);
+    void *InteractionSequence(RHSoldierActorCalls *target);
     void FUN_004a4a40();
     bool FUN_004a4aa0(const SBGeoPoint2D &point, RHElementActorHuman *pc, int focus);
     void GetTransitionFlags(RHSequenceElement *element, unsigned long &first, unsigned long &second, unsigned long &third);

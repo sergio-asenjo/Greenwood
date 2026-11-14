@@ -1,4 +1,5 @@
 #include "SBNullstr.h"
+#include "SBGeoBoundingBox2DCore.h"
 extern float g_unk0x006774e4;
 #include "RHElementActorHuman.h"
 #include "RHActorCrossingHumanCalls.h"
@@ -6,6 +7,7 @@ extern float g_unk0x006774e4;
 #include "RHSectorBuilding.h"
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 #include <vector>
 #include "RHActorPCHumanCalls.h"
 #include "RHPlayerProfileAccess.h"
@@ -56,6 +58,9 @@ int g_unk0x006b793c[16] = { 0, 1, 2, 3, 1, 4, 5, 6, 2, 5, 7, 8, 3, 6, 8, 9 };
 int g_unk0x006b797c[9] = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
 
 DECOMP_SIZE_ASSERT(RHElementActorHuman, 0x49c)
+DECOMP_STATIC_ASSERT(offsetof(RHElementActorHuman, m_1d0) == 0x1d0)
+DECOMP_STATIC_ASSERT(offsetof(RHElementActorHuman, m_1ec) == 0x1ec)
+DECOMP_STATIC_ASSERT(offsetof(RHElementActorHuman, m_43c) == 0x43c)
 DECOMP_SIZE_ASSERT(RHUnk005864a0, 0x7c)
 DECOMP_SIZE_ASSERT(RHUnk005c1d50, 0x08)
 DECOMP_SIZE_ASSERT(RHHumanMapNode, 0x14)
@@ -292,8 +297,7 @@ void RHElementActorHuman::FUN_00474890(void *value)
         ((RHElementActor *)this)->FUN_00468f40(value);
 }
 
-// Parked: the nested switch compresses away the original explicit default-state span.
-// STUB: GAME 0x004748f0
+// FUNCTION: GAME 0x004748f0
 void RHElementActorHuman::FUN_004748f0(RHActorTranslationSequenceCalls *sequence)
 {
     ((RHHumanVirtualCalls *)this)->V164();
@@ -306,7 +310,7 @@ void RHElementActorHuman::FUN_004748f0(RHActorTranslationSequenceCalls *sequence
     case 19: case 21: case 23: case 24:
         switch (RHActorField<unsigned>(this, 0x144))
         {
-        default:
+        case 0: case 1: case 2: case 3: case 12: case 13: case 14: case 16: case 17:
             standing = 0x28;
             knocked = 0x29;
             break;
@@ -317,6 +321,10 @@ void RHElementActorHuman::FUN_004748f0(RHActorTranslationSequenceCalls *sequence
         case 4: case 5: case 6:
             standing = 0x6f;
             knocked = 0x70;
+            break;
+        default:
+            standing = 0x28;
+            knocked = 0x29;
             break;
         }
         break;
@@ -526,7 +534,6 @@ bool RHElementActorHuman::FUN_00475750(unsigned flags, RHActorTranslationSequenc
     return true;
 }
 
-// Parked: the second switch duplicates the default state-store tail before its virtual-call cases.
 #include "RHSoldierHumanCalls.h"
 
 // STUB: GAME 0x00475970
@@ -541,14 +548,13 @@ bool RHElementActorHuman::FUN_00475970(unsigned flags, void *value)
             ((RHHumanVirtualCalls *)this)->V078(element, 0x20);
             element->m_40 = 0;
         }
-        return true;
+        break;
     case 5:
     {
-        unsigned char storedFlags = (unsigned char)flags;
-        if ((storedFlags & 1) && !(storedFlags & 0x10))
+        if ((flags & 1) && !(flags & 0x10))
         {
             ((RHHumanVirtualCalls *)this)->V078(element, 0x21);
-            if (!(storedFlags & 8))
+            if (!(flags & 8))
             {
                 ((RHHumanVirtualCalls *)this)->V078(element, 0x20);
                 element->m_40 = 0;
@@ -560,44 +566,45 @@ bool RHElementActorHuman::FUN_00475970(unsigned flags, void *value)
     }
     case 7: case 8: case 9:
         if (!(flags & 1) || (flags & 0x20))
-            return true;
+            break;
         ((RHHumanVirtualCalls *)this)->V078(element, 0x33);
         element->m_40 = 0;
-        return true;
+        break;
     case 10:
         if (!(flags & 0x40))
         {
             ((RHHumanVirtualCalls *)this)->V078(element, 0x36);
             element->m_40 = 7;
         }
-        return true;
+        break;
     case 11:
-        return true;
+        break;
     case 12: case 13: case 14:
         if (!(flags & 1) || (flags & 0x200))
-            return true;
+            break;
         ((RHHumanVirtualCalls *)this)->V078(element, 0x6b);
         element->m_40 = 0;
-        return true;
+        break;
     case 15:
         if ((flags & 1) && !(flags & 0x800))
         {
             ((RHHumanVirtualCalls *)this)->V078(element, 0x8b);
             element->m_40 = 0;
         }
-        return true;
+        break;
     case 16:
         if (!(flags & 1) || (flags & 0x1000))
-            return true;
+            break;
         ((RHHumanVirtualCalls *)this)->V078(element, 0x8e);
         element->m_40 = 0;
-        return true;
+        break;
     default:
         return ((RHElementActor *)this)->FUN_0046b4b0(flags, (RHActorTranslationSequenceCalls *)element);
     }
+    return true;
 }
 
-// STUB: GAME 0x00475b00
+// FUNCTION: GAME 0x00475b00
 bool RHElementActorHuman::FUN_00475b00(unsigned flags, void *value)
 {
     if (flags & 8)
@@ -624,7 +631,10 @@ bool RHElementActorHuman::FUN_00475b00(unsigned flags, void *value)
         {
         case 0:
             ((RHHumanVirtualCalls *)this)->V078(value, 29);
-        case 4: case 6:
+        case 4:
+            ((RHHumanVirtualCalls *)this)->V078(value, 34);
+            break;
+        case 6:
             ((RHHumanVirtualCalls *)this)->V078(value, 34);
             break;
         }
@@ -1707,11 +1717,7 @@ waiting:
 
 #include "RHSequenceTimedCalls.h"
 
-class RHUnk004237d0
-{
-public:
-    SBGeoPoint2D FUN_004237d0();
-};
+#include "RHActorWorldPoint.h"
 
 #include "RHPositionInterfaceCore.h"
 
@@ -2114,7 +2120,7 @@ bool RHElementActorHuman::Serialize(SBFile &file)
     RH_HUMAN_ACCESS(m_48c, 4, 5804);
     RHEngine *engine = g_pEngine;
     engine->SerializeNestedB(file, &m_254);
-    ((RHUnk004b2190Member *)m_43c)->Serialize(file);
+    m_43c.Serialize(file);
     RH_HUMAN_ACCESS(m_47c, 1, 5812);
     ((RHUnkPathGeometry *)g_unk0x6c0a9c)->Unk004fbec0(file, m_498);
     RH_HUMAN_ACCESS(m_1d0, 28, 5816);
@@ -3393,6 +3399,121 @@ void RHElementActorHuman::FUN_0047ebc0()
         m_28a = own * 100 / (own + other);
 }
 
+// STUB: GAME 0x0047ef70
+void RHElementActorHuman::FUN_0047ef70()
+{
+    SBGeoPoint2D position;
+    SBGeoVector2D extent;
+    if ((RHActorField<unsigned>(this, 4) & 15) == 4)
+        return;
+    position = RHActorField<SBGeoPoint2D>(RHActorField<void *>(this, 0x50), 0x24);
+    memcpy(m_1d0, &position, sizeof(position));
+    void *info = RHActorField<void *>(this, 0x50);
+    RHActorField<unsigned short>(this, 0x1dc) = RHActorField<unsigned short>(info, 0xde);
+    RHActorField<void *>(this, 0x1d8) = RHActorField<void *>(info, 0xe0);
+    RHActorField<short>(this, 0x1e6) = (short)RHActorField<float>(info, 0x18);
+    void *area = RHActorField<void *>(info, 0xe0);
+    if (!(((unsigned char)(RHActorField<unsigned>(area, 0x30) >> 13) & 1) && area) &&
+        RHActorField<char>(this, 0x12))
+    {
+        RHOrder *order = RHActorField<RHOrder *>(this, 0x134);
+        int command = order == 0 ? 0x11b : order->m_24;
+        switch (command)
+        {
+        case 0: case 1: case 3: case 0x0e:
+        case 0x55: case 0x56: case 0x57: case 0x58: case 0x59:
+        case 0x5a: case 0x5b: case 0x5c: case 0x5d: case 0x5e:
+        case 0x9e: case 0x9f: case 0xa0: case 0x124: case 0x125:
+            RHActorField<unsigned short>(this, 0x1e4) = 15;
+            return;
+        case 0x1e:
+            RHActorField<unsigned short>(this, 0x1e4) = 80;
+            break;
+        case 2: case 4: case 5: case 6: case 7: case 8: case 0x0d:
+        case 0x0f: case 0x10: case 0x11: case 0x12: case 0x13:
+        case 0x14: case 0x15: case 0x16: case 0x17: case 0x18:
+        case 0x22: case 0x23: case 0x24: case 0x25: case 0x26: case 0x27:
+        case 0x31: case 0x32: case 0x51: case 0x52:
+        case 0xff: case 0x100: case 0x127: case 0x12f:
+            switch (RHActorField<unsigned>(info, 0xfc))
+            {
+            case 0: case 2: case 7:
+                RHActorField<unsigned short>(this, 0x1e4) = 20;
+                break;
+            case 1: case 3: case 6:
+                RHActorField<unsigned short>(this, 0x1e4) = 40;
+                break;
+            case 4:
+                RHActorField<unsigned short>(this, 0x1e4) = 10;
+                break;
+            case 5:
+                RHActorField<unsigned short>(this, 0x1e4) = 200;
+                break;
+            }
+            break;
+        case 0x3b: case 0x3c: case 0x3d: case 0x3e: case 0x3f:
+        case 0x40: case 0x41: case 0x42: case 0x43: case 0x44:
+        case 0x45: case 0x46: case 0x47: case 0x48: case 0x49:
+        case 0x4a: case 0x4b: case 0x4c: case 0x4d: case 0x4e:
+        case 0x4f: case 0x60: case 0x64:
+            RHActorField<unsigned short>(this, 0x1e4) = 200;
+            break;
+        case 9: case 0x0a: case 0x0b: case 0x0c:
+        case 0x33: case 0x53: case 0x54:
+        case 0x126: case 0x128: case 0x129: case 0x130:
+            switch (RHActorField<unsigned>(info, 0xfc))
+            {
+            case 0:
+                RHActorField<unsigned short>(this, 0x1e4) = 70;
+                break;
+            case 1: case 3: case 6:
+                RHActorField<unsigned short>(this, 0x1e4) = 150;
+                break;
+            case 2: case 7:
+                RHActorField<unsigned short>(this, 0x1e4) = 75;
+                break;
+            case 4:
+                RHActorField<unsigned short>(this, 0x1e4) = 50;
+                break;
+            case 5:
+                RHActorField<unsigned short>(this, 0x1e4) = 400;
+                break;
+            }
+            break;
+        case 0x7f: case 0xbc:
+            switch (RHActorField<unsigned>(info, 0xfc))
+            {
+            case 0: case 2: case 7: case 10:
+                RHActorField<unsigned short>(this, 0x1e4) = 50;
+                break;
+            case 1: case 3: case 6:
+                RHActorField<unsigned short>(this, 0x1e4) = 100;
+                break;
+            case 4:
+                RHActorField<unsigned short>(this, 0x1e4) = 30;
+                break;
+            case 5:
+                RHActorField<unsigned short>(this, 0x1e4) = 300;
+                break;
+            }
+            break;
+        case 0x1b: case 0x21: case 0x62:
+            RHActorField<unsigned short>(this, 0x1e4) = 50;
+            break;
+        default:
+            RHActorField<unsigned short>(this, 0x1e4) = 0;
+            break;
+        }
+        int amount = RHActorField<unsigned short>(this, 0x1e4);
+        float height = (float)amount * 0.57357645f + 33.0f;
+        extent.Set((float)(amount + 100), height);
+        RHActorField<SBGeoBoundingBox2D>(this, 0x1ec).FUN_00609050(
+            position.FUN_005fc200(extent), position.Unk005fc190(extent));
+    }
+    else
+        RHActorField<unsigned short>(this, 0x1e4) = 0;
+}
+
 // FUNCTION: GAME 0x004838f0
 int RHElementActorHuman::FUN_004838f0(bool alternate)
 {
@@ -4029,7 +4150,7 @@ void RHElementActorHuman::FUN_00485e90(int value)
 {
     int previous = RHActorField<int>(RHActorField<void *>(this, 0x50), 0x8c);
     bool wasBlocking = previous == 3 || previous == 13 || previous == 12 || previous == 18 || previous == 17;
-    ((RHElementActor *)this)->FUN_00462940(value);
+    ((RHElementActor *)this)->RHElement::FUN_00462940(value);
     bool isBlocking = value == 3 || value == 13 || value == 12 || value == 18 || value == 17;
     if (wasBlocking)
     {
@@ -4188,9 +4309,9 @@ void RHUnk00586f70::FUN_00586f70(int key, undefined value)
 }
 
 // FUNCTION: GAME 0x005870c0
-undefined RHUnk00586f70::FUN_005870c0(int key)
+bool RHUnk00586f70::FUN_005870c0(int key)
 {
-    return *(undefined *)&m_64.find(key)->m_value;
+    return *(bool *)&m_64.find(key)->m_value;
 }
 
 // FUNCTION: GAME 0x00587340

@@ -9,7 +9,7 @@ public:
 };
 
 // FUNCTION: GAME 0x004a8130
-RHMobileBase004a8130::RHMobileBase004a8130(int type) : RHMobileElementBase(type, 0)
+RHMobileBase004a8130::RHMobileBase004a8130(int type) : RHElement(type, 0)
 {
     RHMobileField<unsigned short>(this, 0x10) = 0x1001;
     RHMobileField<unsigned>(this, 0xa8) = 1;
@@ -28,38 +28,21 @@ RHMobileBase004a8130::RHMobileBase004a8130(int type) : RHMobileElementBase(type,
 RHMobileBase004a8130::~RHMobileBase004a8130()
 {
 }
-void RHMobileBase004a8130::v1() {}
-void RHMobileBase004a8130::v2() {}
-void RHMobileBase004a8130::v3() {}
-void RHMobileBase004a8130::v4() {}
-void RHMobileBase004a8130::v5() {}
-void RHMobileBase004a8130::v6() {}
-void RHMobileBase004a8130::v7() {}
-void RHMobileBase004a8130::v8() {}
-void RHMobileBase004a8130::v9() {}
-void RHMobileBase004a8130::v10() {}
-void RHMobileBase004a8130::v11() {}
-void RHMobileBase004a8130::v12() {}
-void RHMobileBase004a8130::v13() {}
+bool RHMobileBase004a8130::FUN_004b23c0(void *, void *, void *) { return false; }
+void *RHMobileBase004a8130::FUN_004b29c0(void *) { return 0; }
+bool RHMobileBase004a8130::FUN_004b26a0(int, int, int) { return false; }
+void *RHMobileBase004a8130::Refresh(unsigned long, float, const SBGeoBoundingBox2D &, unsigned long) { return 0; }
+char RHMobileBase004a8130::v10() { return 1; }
 void RHMobileBase004a8130::v14(SBFile &) {}
-void RHMobileBase004a8130::v15() {}
-bool RHMobileBase004a8130::v16(SBFile &) { return false; }
-void RHMobileBase004a8130::v17(bool) {}
-void RHMobileBase004a8130::v18() {}
-void RHMobileBase004a8130::v19() {}
-void RHMobileBase004a8130::v20() {}
-void RHMobileBase004a8130::v21() {}
-void RHMobileBase004a8130::v22() {}
-void RHMobileBase004a8130::v23() {}
-void RHMobileBase004a8130::v24() {}
-void RHMobileBase004a8130::v25() {}
+void RHMobileBase004a8130::v15(unsigned) {}
+bool RHMobileBase004a8130::Serialize(SBFile &) { return false; }
 // SYNTHETIC: GAME 0x004aac80
 // RHUnk004aac40::`scalar deleting destructor'
 // FUNCTION: GAME 0x004aaca0
 RHUnk004aac40::~RHUnk004aac40() {}
-void RHUnk004aac40::v9() {}
-void RHUnk004aac40::v10() {}
-bool RHUnk004aac40::v16(SBFile &) { return false; }
+void *RHUnk004aac40::Refresh(unsigned long, float, const SBGeoBoundingBox2D &, unsigned long) { return 0; }
+char RHUnk004aac40::v10() { return 1; }
+bool RHUnk004aac40::Serialize(SBFile &) { return false; }
 
 RHMobileSegment::RHMobileSegment(const SBGeoPoint2D &, const SBGeoPoint2D &) {}
 RHMobileSegment::~RHMobileSegment() {}
@@ -145,7 +128,6 @@ void RHMobilePointList::FUN_005c9010(RHMobilePointNode *&node, int distance, uns
     while (distance < 0) { node = node->previous; ++distance; }
 }
 
-void RHMobileUnk0051fd10::FUN_00520480() {}
 // FUNCTION: GAME 0x0060b640
 bool RHUnk0042fde0::FUN_0060b640(const SBGeoPoint2D &point) const
 {

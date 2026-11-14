@@ -3,6 +3,7 @@
 
 #include "RHHumanListCore.h"
 #include "RHActorCommand.h"
+#include "RHRepulsivePoint.h"
 
 class SBFile;
 class SBGeoPoint2D;
@@ -143,7 +144,7 @@ public:
     int m_28c;
     void *m_290;
     char m_294[0x1a8];
-    char m_43c[0x40];
+    RHUnk00520ae0 m_43c;
     undefined m_47c;
     undefined m_47d[3];
     int m_480;

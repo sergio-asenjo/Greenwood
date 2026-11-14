@@ -30,9 +30,6 @@ DECOMP_SIZE_ASSERT(RHUnk004af060, 0x260)
 DECOMP_SIZE_ASSERT(RHMobileLineTransientList, 0x24)
 DECOMP_SIZE_ASSERT(RHMobileLineTransientList::Node, 0x0c)
 
-RHMobileElementBase::RHMobileElementBase(int, int) {}
-RHMobileElementBase::~RHMobileElementBase() {}
-
 // GLOBAL: GAME 0x006c0960
 bool g_mobileAssertDoubleBond = false;
 
@@ -650,7 +647,7 @@ void RHElementMobile::InitializeFromMissionStream(SBFile &file)
     for (i = 0; i < count; ++i)
     {
         RHMobileBase004a8130 *part = (RHMobileBase004a8130 *)m_children[i];
-        part->v17(true);
+        part->FUN_00462940(1);
         SBGeoBoundingBox2D local(-50.0f, -50.0f, 50.0f, 50.0f);
         RHMobileField<RHMobileUnk00607da0>(part, 0x54).FUN_00607da0(*(RHMobileUnk00607da0 *)&local);
         RHUnkTargetSprite *sprite = m_children[i]->m_50;
@@ -722,7 +719,7 @@ bool RHElementMobile::Serialize(SBFile &file)
     RHSerializeName(file, "RHElementMobile");
     unsigned short parts = Size();
     for (unsigned short i = 0; i < parts; ++i)
-        ((RHMobileBase004a8130 *)m_children[i])->v16(file);
+        ((RHMobileBase004a8130 *)m_children[i])->Serialize(file);
     RH_MOBILE_ACCESS(RHMobileField<unsigned char>(this, 0xa8), 1, 0x550);
     RHMobileUnk004b06f0 &vectors = RHMobileField<RHMobileUnk004b06f0>(this, 0x1c8);
     unsigned count;
@@ -1348,6 +1345,63 @@ bool RHMobileUnk0051fd10::FUN_0051fea0(const SBGeoPoint2D &point, float &distanc
     }
     double absolute = fabs(distance);
     return absolute < m_24 && ((RHUnk0042fde0 *)((char *)this + 4))->FUN_0060b640(point);
+}
+
+#include "SBGeoIntersection2D.h"
+#include "SBDrawManagerCore.h"
+
+static inline const SBGeoVector2D &RHSpatialVectorArgument(const SBGeoVector2D &value)
+{
+    return value;
+}
+
+DECOMP_SIZE_ASSERT(RHMobileUnk0051fd10, 0x44)
+DECOMP_STATIC_ASSERT(offsetof(RHMobileUnk0051fd10, m_34) == 0x34)
+DECOMP_STATIC_ASSERT(offsetof(RHMobileUnk0051fd10, m_3c) == 0x3c)
+
+// FUNCTION: GAME 0x00520480
+void RHMobileUnk0051fd10::FUN_00520480(SBDrawManager *draw, SBGeoBoundingBox2D box, float scale, unsigned short color)
+{
+    SBGeoVector2D offset;
+    SBGeoPoint2D first;
+    SBGeoPoint2D second;
+    SBGeoSegment2D segment(SBGeoPoint2D(0, 0), SBGeoPoint2D(0, 0));
+    RHUnk0060fbf0 clipped;
+    offset = box.Min();
+    clipped.FUN_0060fca0(box.FUN_006093f0(((SBGeoSegment2D *)this)->Line()));
+    if (clipped.FUN_0063b9a0() == 4)
+    {
+        segment = *(SBGeoSegment2D *)clipped.FUN_0053bf20();
+        first = segment.First().FUN_005fc200(offset);
+        second = segment.Second().FUN_005fc200(offset);
+        if (scale != 1.0f)
+        {
+            first.m_x *= scale;
+            first.m_y *= scale;
+            second.m_x *= scale;
+            second.m_y *= scale;
+        }
+        draw->FUN_005ecbd0(0, first, second, color);
+    }
+    first = operator*(0.5f, First().Unk005fc190(RHSpatialVectorArgument(Second())));
+    second = first.Unk005fc190(operator*(4.0f, m_34));
+    segment.First() = first;
+    segment.Second() = second;
+    clipped.FUN_0060fca0(box.FUN_006093f0(segment.Line()));
+    if (clipped.FUN_0063b9a0() == 4)
+    {
+        segment = *(SBGeoSegment2D *)clipped.FUN_0053bf20();
+        first = segment.First().FUN_005fc200(offset);
+        second = segment.Second().FUN_005fc200(offset);
+        if (scale != 1.0f)
+        {
+            first.m_x *= scale;
+            first.m_y *= scale;
+            second.m_x *= scale;
+            second.m_y *= scale;
+        }
+        draw->FUN_005ecbd0(0, first, second, color);
+    }
 }
 
 // FUNCTION: GAME 0x00520c50

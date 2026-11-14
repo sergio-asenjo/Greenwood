@@ -25,11 +25,7 @@ class RHFastFindGrid
 public:
     bool SerializeLinePointer(SBFile &file, void *&value);
 };
-class RHUnk004b2190Member
-{
-public:
-    bool Serialize(SBFile &file);
-};
+#include "RHRepulsivePoint.h"
 class RHSightObstacle
 {
 public:
@@ -181,54 +177,7 @@ public:
     undefined *m_04; // 0x04
 };
 
-// SIZE 0x14
-struct RHHumanMapNode
-{
-    RHHumanMapNode *m_left; // 0x00
-    RHHumanMapNode *m_parent; // 0x04
-    RHHumanMapNode *m_right; // 0x08
-    int m_key; // 0x0c
-    undefined4 m_value; // 0x10
-};
-
-// SIZE 0x04
-struct RHHumanMapIterator
-{
-    RHHumanMapNode *m_node; // 0x00
-    RHHumanMapIterator(RHHumanMapNode *node) : m_node(node) {}
-    RHHumanMapNode &operator*() const { return *m_node; }
-    RHHumanMapNode *operator->() const { return &**this; }
-    bool operator==(const RHHumanMapIterator &other) const { return m_node == other.m_node; }
-    bool operator!=(const RHHumanMapIterator &other) const { return !(*this == other); }
-};
-
-// SIZE 0x10
-class RHHumanMap
-{
-public:
-    RHHumanMapNode *FUN_00588060(const int &key);
-    RHHumanMapIterator end() const { return RHHumanMapIterator(m_head); }
-    RHHumanMapIterator find(const int &key)
-    {
-        RHHumanMapIterator position = FUN_00588060(key);
-        return position == end() || key < position->m_key ? end() : position;
-    }
-    undefined m_00[4]; // 0x00
-    RHHumanMapNode *m_head; // 0x04
-    undefined4 m_08; // 0x08
-    undefined4 m_0c; // 0x0c
-};
-
-// SIZE 0x74
-class RHUnk00586f70
-{
-public:
-    void FUN_00586f70(int key, undefined value);
-    undefined FUN_005870c0(int key);
-    undefined4 FUN_00587340(int key);
-    undefined m_00[0x64]; // 0x00
-    RHHumanMap m_64; // 0x64
-};
+#include "RHSequencePropertyScalarCalls.h"
 
 class RHManagerListCalls
 {

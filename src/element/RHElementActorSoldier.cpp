@@ -606,27 +606,29 @@ bool RHElementActorSoldier::FUN_004a4aa0(const SBGeoPoint2D &point, RHElementAct
 #define SBGEO_BOUNDINGBOX2D_VIEW
 #include "RHActorSequenceStorage.h"
 
-// Parked: EDI is saved before the guards rather than only on their non-fallback path.
-// STUB: GAME 0x004a5190
+inline void *RHElementActorSoldier::InteractionSequence(RHSoldierActorCalls *target)
+{
+    if (((RHSoldierActorCalls *)this)->Vf8() && !target->V168())
+    {
+        RHUnk0045aaf0 *sequence = (RHUnk0045aaf0 *)((char *)this + 0x14);
+        sequence->FUN_0045abc0(0x23, 0, 0);
+        RHSOLDIER_FIELD(char, 0x6e5) = 1;
+        return sequence;
+    }
+    RHUnk0045aaf0 *sequence = (RHUnk0045aaf0 *)((char *)this + 0x14);
+    sequence->FUN_0045abc0(0x40, 0, 0);
+    m_a0 = 0;
+    m_92 = 1;
+    RHSOLDIER_FIELD(char, 0x6e5) = 1;
+    m_a4 = 2;
+    return sequence;
+}
+
+// FUNCTION: GAME 0x004a5190
 void *RHElementActorSoldier::FUN_004a5190(RHSoldierActorCalls *target)
 {
     if (!((RHSoldierActorCalls *)this)->V48() && !RHSOLDIER_FIELD(char, 0x1ce))
-    {
-        if (((RHSoldierActorCalls *)this)->Vf8() && !target->V168())
-        {
-            RHUnk0045aaf0 *sequence = (RHUnk0045aaf0 *)((char *)this + 0x14);
-            sequence->FUN_0045abc0(0x23, 0, 0);
-            RHSOLDIER_FIELD(char, 0x6e5) = 1;
-            return sequence;
-        }
-        RHUnk0045aaf0 *sequence = (RHUnk0045aaf0 *)((char *)this + 0x14);
-        sequence->FUN_0045abc0(0x40, 0, 0);
-        RHSOLDIER_FIELD(int, 0xa0) = 0;
-        RHSOLDIER_FIELD(char, 0x92) = 1;
-        RHSOLDIER_FIELD(char, 0x6e5) = 1;
-        RHSOLDIER_FIELD(unsigned short, 0xa4) = 2;
-        return sequence;
-    }
+        return InteractionSequence(target);
     return RHElementActorNPC::FUN_0048c380((RHElementActorHuman *)target);
 }
 

@@ -430,48 +430,26 @@ struct RHMobileSoundNode
 #include "SBGeoBoundingBox2DCore.h"
 #include "RHPositionInterface.h"
 
+#include "RHElementCore.h"
+
 #ifndef RHELEMENTMOBILEBASE_VIEW
 #define RHELEMENTMOBILEBASE_VIEW
-class RHMobileElementBase
-{
-public:
-    RHMobileElementBase(int type, int value);
-    virtual ~RHMobileElementBase();
-    undefined m_04[0xb0]; // 0x04
-};
-
 // VTABLE: GAME 0x006784a0
 // SIZE 0xfc
-class RHMobileBase004a8130 : public RHMobileElementBase
+class RHMobileBase004a8130 : public RHElement
 {
 public:
     RHMobileBase004a8130(int type);
     virtual ~RHMobileBase004a8130(); // vtable+0x00
-    virtual void v1(); // vtable+0x04
-    virtual void v2(); // vtable+0x08
-    virtual void v3(); // vtable+0x0c
-    virtual void v4(); // vtable+0x10
-    virtual void v5(); // vtable+0x14
-    virtual void v6(); // vtable+0x18
-    virtual void v7(); // vtable+0x1c
-    virtual void v8(); // vtable+0x20
-    virtual void v9(); // vtable+0x24
-    virtual void v10(); // vtable+0x28
-    virtual void v11(); // vtable+0x2c
-    virtual void v12(); // vtable+0x30
-    virtual void v13(); // vtable+0x34
+    virtual bool FUN_004b23c0(void *first, void *second, void *third);
+    virtual void *FUN_004b29c0(void *value);
+    virtual bool FUN_004b26a0(int first, int second, int third);
+    virtual void *Refresh(unsigned long surface, float value, const SBGeoBoundingBox2D &box, unsigned long flags);
+    virtual char v10();
     virtual void v14(SBFile &file); // vtable+0x38
-    virtual void v15(); // vtable+0x3c
-    virtual bool v16(SBFile &file); // vtable+0x40
-    virtual void v17(bool value); // vtable+0x44
-    virtual void v18(); // vtable+0x48
-    virtual void v19(); // vtable+0x4c
-    virtual void v20(); // vtable+0x50
-    virtual void v21(); // vtable+0x54
-    virtual void v22(); // vtable+0x58
-    virtual void v23(); // vtable+0x5c
-    virtual void v24(); // vtable+0x60
-    virtual void v25(); // vtable+0x64
+    virtual void v15(unsigned value);
+    virtual bool Serialize(SBFile &file); // vtable+0x40
+    undefined m_a8[0xc]; // 0xa8
     SBGeoBoundingBox2D m_b4; // 0xb4
     char m_c8; // 0xc8
     int m_cc; // 0xcc
@@ -488,9 +466,9 @@ class RHUnk004aac40 : public RHMobileBase004a8130
 public:
     RHUnk004aac40();
     virtual ~RHUnk004aac40(); // vtable+0x00
-    virtual void v9(); // vtable+0x24
-    virtual void v10(); // vtable+0x28
-    virtual bool v16(SBFile &file); // vtable+0x40
+    virtual void *Refresh(unsigned long surface, float value, const SBGeoBoundingBox2D &box, unsigned long flags);
+    virtual char v10();
+    virtual bool Serialize(SBFile &file); // vtable+0x40
     float m_fc; // 0xfc
     RHElementMobile *m_100; // 0x100
 };
@@ -505,13 +483,6 @@ public:
     char m_18[0xc];
     void *m_24;
     void *m_28;
-};
-
-class RHElement
-{
-public:
-    virtual bool Serialize(SBFile &file);
-    void CrossElevationLine(RHElevationLine *line);
 };
 
 struct RHScriptNode

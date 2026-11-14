@@ -7,8 +7,10 @@
 class SBFile;
 class RHSequenceElement;
 class RHUnk00582220;
+class RHUnk00585ea0;
 class RHActorTranslationSequenceCalls;
 class SBGeoPoint2D;
+class SBGeoBoundingBox2D;
 class RHElementActorHuman;
 class RHUnk00613e90;
 class RHBonusInfo;
@@ -51,6 +53,7 @@ public:
     bool FUN_00490450(void *owner, void *target);
     void FUN_004909a0(RHUnk00582220 *sequence);
     void *FUN_00490e10(RHElementActorHuman *target);
+    void FUN_004913f0(const SBGeoBoundingBox2D &view, float scale);
     unsigned short FUN_00493b40(void *target, const SBGeoPoint2D &point, int unused1, int unused2);
     void FUN_00493c10(void *element);
     bool FUN_0049bdf0(RHSequenceElement *element);
@@ -63,6 +66,7 @@ public:
     static RHElementActorPC *CreatePCFromMissionStream(SBFile &file);
     void ApplyProjection(RHBonusProjection *projection);
     void InitializeAction(int action);
+    bool FUN_004a16c0(int action, RHUnk00613e90 &position, const void *target);
     bool FUN_004a18c0(void *target);
     void FUN_004a1900(unsigned short action);
     int FUN_0049d590(int action);
@@ -92,7 +96,7 @@ public:
     void FUN_0049f520(unsigned action, unsigned short amount, char notify);
     void FUN_0049f5c0(unsigned action, unsigned short value);
     void FUN_0049f640(unsigned action, short value);
-    unsigned FUN_0049f6c0();
+    unsigned FUN_0049f6c0(const SBGeoPoint2D &point);
     void FUN_0049fa20(unsigned index, void *value);
     bool FUN_0049fbc0();
     void FUN_0049fbf0(void *actor, bool consume);
@@ -101,8 +105,8 @@ public:
     void FUN_0049fe20();
     void FUN_0049ff70();
     void FUN_0049ffe0(void *first, unsigned char flag, unsigned third, unsigned fourth, unsigned fifth, unsigned sixth, unsigned seventh);
-    void FUN_004a0020(void *first, unsigned char second, unsigned third, unsigned fourth, unsigned fifth, unsigned sixth, unsigned seventh);
-    void FUN_004a0340(void *first, bool second, unsigned third, unsigned fourth, int fifth, char sixth);
+    void FUN_004a0020(RHUnk00585ea0 *action, bool interactive, unsigned distance, unsigned titbit, unsigned flag, unsigned offset, unsigned long flags);
+    void FUN_004a0340(RHUnk00582220 *sequence, bool interactive, unsigned distance, unsigned titbit, RHElementActorHuman *target, bool flag);
     void FUN_004a05a0();
     char FUN_004a05f0(const RHElementActorPC *other);
     void FUN_004a0670();
@@ -111,7 +115,7 @@ public:
     bool FUN_004a0a30(RHUnk00613e90 &position);
     void FUN_004a0c90(int first, int second, bool third);
     void FUN_004a0cc0(RHElementActorPC *other);
-    void FUN_004a0d10(void *first, void *second, unsigned third, unsigned fourth, unsigned fifth, unsigned sixth, void *seventh);
+    void FUN_004a0d10(float x, float y, void *area, unsigned short layer, unsigned short before, unsigned short after, void *target);
     undefined m_0[0x50]; // 0x00
     RHBonusInfo *m_50; // +0x50
     undefined m_54[0x10]; // 0x54

@@ -85,7 +85,7 @@ public:
     virtual void FUN_slot55(int, int, int) = 0;
     virtual void FUN_56(int, int, int) = 0;
     virtual unsigned short FUN_57(unsigned action) = 0;
-    virtual void FUN_58(unsigned action, unsigned amount) = 0;
+    virtual void FUN_58(unsigned action, unsigned short amount) = 0;
     virtual void FUN_59() = 0;
     virtual void FUN_60() = 0;
     virtual void FUN_61() = 0;
@@ -117,7 +117,7 @@ public:
     virtual void FUN_87() = 0;
     virtual void FUN_88() = 0;
     virtual void FUN_89() = 0;
-    virtual void FUN_90() = 0;
+    virtual bool FUN_90() = 0;
     virtual void FUN_91() = 0;
     virtual void FUN_92(int, int, unsigned short, int) = 0;
 };
@@ -250,6 +250,7 @@ public:
 class RHElementActor
 {
 public:
+    void FUN_0046bb80();
     void InitializeScript(std::string &name);
     void FUN_00478c20(RHUnk00613e90 &point, int posture);
     SBGeoPoint2D FUN_00462920();
