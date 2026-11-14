@@ -352,13 +352,7 @@ public:
 
 #include "RHActorCancelCalls.h"
 
-struct RHUnk00571160Position
-{
-    float x;
-    float y;
-    void *area;
-    short layer;
-};
+#include "RHUnk00571160Position.h"
 
 void RHUnk0048ce80(int noise, RHUnk00571160Position *position);
 
@@ -455,17 +449,7 @@ struct RHScriptActorPositionFields
 #include "RHSequenceGenericConstruction.h"
 
 #if !defined(SBGEO_VECTOR2D_VIEW) && !defined(SBGEOVECTOR2D_H)
-class SBGeoVector2D : public SBGeoPoint2D
-{
-public:
-    SBGeoVector2D(float x, float y);
-    SBGeoVector2D(const SBGeoPoint2D &point);
-    float FUN_005fc660(const SBGeoPoint2D &point) const;
-    SBGeoVector2D();
-    SBGeoVector2D &operator=(const SBGeoVector2D &other);
-    SBGeoVector2D(const SBGeoVector2D &other);
-    bool IsBetween(unsigned char first, unsigned char last) const;
-};
+#include "SBGeoVector2D.h"
 #endif
 
 #define SBGEO_VECTOR2D_VIEW

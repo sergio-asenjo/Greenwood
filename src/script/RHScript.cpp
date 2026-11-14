@@ -659,22 +659,22 @@ RHUnk00564020 RHScriptStaticStorage::mlistLocationStorage;
 RHUnk00564020 RHScriptStaticStorage::mlistUnk6c0f80;
 
 // SYNTHETIC: GAME 0x00570650
-// $E34
+// $E33
 
 // SYNTHETIC: GAME 0x005706a0
-// $E40
+// $E39
 
 // SYNTHETIC: GAME 0x005706f0
-// $E45
+// $E44
 
 // SYNTHETIC: GAME 0x00570740
-// $E50
+// $E49
 
 // SYNTHETIC: GAME 0x00570790
-// $E55
+// $E54
 
 // SYNTHETIC: GAME 0x005707e0
-// $E60
+// $E59
 
 #define g_unk0x6c0fe8 RHScriptStaticStorage::mlistUnk6c0fe8
 #define g_unk0x6c0f50 (*(RHUnk0046eb30 *)&RHScriptStaticStorage::mlistUnk6c0f50)
@@ -6862,6 +6862,79 @@ static inline void RHScriptAppendFX(RHScriptFXArray *array, void *target)
     }
 }
 
+#include "RHPortraitDrawCalls.h"
+
+namespace VMCoreCustomDependencies
+{
+// STUB: GAME 0x0057bff0
+void FUN_0057bff0(int steps)
+{
+    float height = *(float *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x58);
+    float width = *(float *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x54);
+    SBGeoVector2D resolution(width, height);
+    SBDrawViewport source;
+    SBDrawViewport destination;
+    height = *(float *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x58);
+    width = *(float *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x54);
+    unsigned long surface = (*(RHUnkFXDraw **)(g_unk0x6c0fa8 + 0xdc))->Unk005e4ed0(
+        (unsigned short)width, (unsigned short)height, 0, false);
+    (*(SBDrawManager **)(g_unk0x6c0fa8 + 0xdc))->FUN_005e6440(0, 0, surface, 0, 0);
+    for (unsigned int remaining = steps; remaining > 0; --remaining)
+    {
+        float factor = (float)remaining / (float)steps;
+        (*(SBDrawManager **)(g_unk0x6c0fa8 + 0xdc))->FUN_005e5a00(surface, source, 0);
+        (*(SBDrawManager **)(g_unk0x6c0fa8 + 0xdc))->FUN_005e5a00(0, destination, 0);
+        unsigned short *input = source.m_pixels;
+        unsigned short *output = destination.m_pixels;
+        for (int row = 0; row < resolution.m_y; ++row)
+        {
+            for (int column = 0; column < resolution.m_x; ++column)
+            {
+                unsigned short pixel = input[column];
+                int red = (int)((unsigned short)(pixel >> 11) * factor);
+                int green = (int)(((pixel >> 5) & 0x3e) * factor);
+                int blue = (int)((pixel & 0x1f) * factor);
+                output[column] = ((red << 6) | green) << 5 | blue;
+            }
+            input += source.m_pitch / 2;
+            output += destination.m_pitch / 2;
+        }
+        (*(SBDrawManager **)(g_unk0x6c0fa8 + 0xdc))->FUN_005e5ea0(source);
+        (*(SBDrawManager **)(g_unk0x6c0fa8 + 0xdc))->FUN_005e5ea0(destination);
+        (*(SBDrawManager **)(g_unk0x6c0fa8 + 0xdc))->FUN_005e5260();
+    }
+    for (unsigned int rising = steps; rising > 0; )
+    {
+        --rising;
+        float factor = ((float)steps - (float)rising) / (float)steps;
+        (*(SBDrawManager **)(g_unk0x6c0fa8 + 0xdc))->FUN_005e5a00(surface, source, 0);
+        (*(SBDrawManager **)(g_unk0x6c0fa8 + 0xdc))->FUN_005e5a00(0, destination, 0);
+        unsigned short *input = source.m_pixels;
+        unsigned short *output = destination.m_pixels;
+        for (int row = 0; row < resolution.m_y; ++row)
+        {
+            for (int column = 0; column < resolution.m_x; ++column)
+            {
+                unsigned short pixel = input[column];
+                int red = (int)((unsigned short)(pixel >> 11) * factor);
+                int green = (int)(((pixel >> 5) & 0x3e) * factor);
+                int blue = (int)((pixel & 0x1f) * factor);
+                output[column] = ((red << 6) | green) << 5 | blue;
+            }
+            input += source.m_pitch / 2;
+            output += destination.m_pitch / 2;
+        }
+        (*(SBDrawManager **)(g_unk0x6c0fa8 + 0xdc))->FUN_005e5ea0(source);
+        (*(SBDrawManager **)(g_unk0x6c0fa8 + 0xdc))->FUN_005e5ea0(destination);
+        (*(SBDrawManager **)(g_unk0x6c0fa8 + 0xdc))->FUN_005e5260();
+    }
+    (*(SBDrawManager **)(g_unk0x6c0fa8 + 0xdc))->FUN_005e6440(surface, 0, 0, 0, 0);
+    (*(SBDrawManager **)(g_unk0x6c0fa8 + 0xdc))->FUN_005e5260();
+    (*(SBDrawManager **)(g_unk0x6c0fa8 + 0xdc))->FUN_005e6440(surface, 0, 0, 0, 0);
+    (*(SBDrawManager **)(g_unk0x6c0fa8 + 0xdc))->FUN_005e5160(surface);
+}
+}
+
 // STUB: GAME 0x0057c500
 void RHScript::LinkTargetToFX(void *target, void *fx)
 {
@@ -7157,11 +7230,7 @@ void RHScript::Emit()
 
 #include "RHSectorGateCalls.h"
 
-class RHUnk0054b150
-{
-public:
-    void FUN_0054b150(bool flag, bool immediate);
-};
+#include "RHMinimapVisibilityCalls.h"
 
 #include "RHActorScriptContext.h"
 
