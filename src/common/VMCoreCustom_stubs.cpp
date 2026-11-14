@@ -23,7 +23,6 @@ namespace VMCoreCustomDependencies
     void Call00578c50(int) {}
     // FUNCTION: GAME 0x00578680
     int FUN_00578680(int count) { return rand() % count; }
-    void FUN_0057bff0(int) {}
 }
 
 #include "RHPatchClass.h"
@@ -64,16 +63,7 @@ namespace VMCoreCustomDependencies
 }
 
 
-class RHUnk0054b150
-{
-public:
-    void FUN_0054b150(bool flag, bool immediate);
-    unsigned char m_000[0x120];
-    bool m_120;
-    bool m_121;
-    unsigned char m_122[2];
-    float m_124;
-};
+#include "RHMinimapVisibilityCalls.h"
 
 // FUNCTION: GAME 0x0054b150
 void RHUnk0054b150::FUN_0054b150(bool flag, bool immediate)

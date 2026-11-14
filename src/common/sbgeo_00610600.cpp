@@ -506,8 +506,7 @@ unsigned long RHMobileUnk00611360::FUN_00610f30() const
     return size();
 }
 
-// Target keeps the leading size() of the inlined insert growth out-of-line (vector<SBGeoVector2D>::size clone); VC6 inlines it here.
-// STUB: GAME 0x00610f50
+// FUNCTION: GAME 0x00610f50
 void RHMobileUnk00611360::FUN_00610f50(const SBGeoPoint2D &point, unsigned long index)
 {
     if (index == size())
@@ -517,8 +516,7 @@ void RHMobileUnk00611360::FUN_00610f50(const SBGeoPoint2D &point, unsigned long 
     }
     else
     {
-        insert(&at(index), point);
-        m_dirty = true;
+        InsertAt(point, index);
     }
 }
 

@@ -39,6 +39,11 @@ public:
     RHUnkPolyArrayBase() : m_dirty(true) {}
     ~RHUnkPolyArrayBase() { Destroy(); }
     void Destroy() { clear(); }
+    void InsertAt(const SBGeoPoint2D &point, unsigned long index)
+    {
+        insert(&at(index), point);
+        m_dirty = true;
+    }
     undefined4 m_10;    // 0x10
     bool m_dirty;       // 0x14
     undefined4 m_18;    // 0x18

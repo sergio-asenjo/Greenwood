@@ -28,10 +28,11 @@ typedef int VMMemberOffsetAssert[(offsetof(SCSerializeRecordValue, m_34) == 0x34
 // GLOBAL: GAME 0x006c1940
 int g_unk0x006c1940 = 0;
 
-typedef int (__cdecl *VMUnk00635210Handler)(void *);
-
 // GLOBAL: GAME 0x006c1944
 VMUnk00635210Handler *g_unk0x006c1944 = 0;
+
+// GLOBAL: GAME 0x006c1948
+int g_unk0x006c1948 = 0;
 
 #include <list>
 
@@ -200,16 +201,15 @@ void VMCore::FUN_00634dd0()
     m_24 = m_0c.FUN_0063a320();
 }
 
-// Parked: return-value store chain and final reload use different registers.
-// STUB: GAME 0x00634de0
+// FUNCTION: GAME 0x00634de0
 void VMCore::FUN_00634de0()
 {
     int *value = GetSymbolValuePtr(((unsigned short *)m_28)[2]);
     if (m_0c.m_records.size() != 1) {
         std::list<VMUnk0063a400 *>::iterator previous = m_0c.m_records.end();
         --previous;
-        --previous;
-        (*previous)->m_04 = *value;
+        VMUnk0063a400 *record = *(VMUnk0063a400 *volatile *)&previous._Mynode()->_Prev->_Value;
+        record->m_04 = *value;
     }
     m_2c = *value;
     m_24 = m_0c.FUN_0063a320();
@@ -239,13 +239,11 @@ void VMCore::FUN_00635090()
     ++m_24;
 }
 
-// Parked: native-stack store folds the address into SIB and interleaves increments.
-// STUB: GAME 0x00635150
+// FUNCTION: GAME 0x00635150
 void VMCore::FUN_00635150()
 {
     int *value = GetSymbolValuePtr(((unsigned short *)m_28)[2]);
-    *(int *)(m_native.m_data + m_native.m_size) = *value;
-    m_native.m_size += 4;
+    m_native.Push(value, 4);
     ++m_24;
 }
 

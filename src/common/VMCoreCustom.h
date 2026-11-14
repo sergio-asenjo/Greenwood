@@ -2,14 +2,20 @@
 #define VMCORECUSTOM_H
 
 #include "VMNativeStack.h"
-#include "SBSimpleVirtualMachine.h"
+#include "SBSimpleVirtualMachineCore.h"
 #include "RHScriptCore.h"
 
 class __declspec(novtable) VMCoreCustom : public SBSimpleVirtualMachine, public RHScript
 {
 public:
-    VMCoreCustom();
+    VMCoreCustom()
+    {
+        *(unsigned *)this = 0x6777bc;
+        *(unsigned *)((char *)this + 0x5c) = 0x6777b8;
+        FUN_00639230();
+    }
     ~VMCoreCustom() {}
+    virtual bool FUN_006390a0();
     static int FUN_00404de0(VMNativeStack *stack);
     static int FUN_00407120(VMNativeStack *stack);
     static int FUN_004071a0(VMNativeStack *stack);
