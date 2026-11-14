@@ -6,8 +6,7 @@ RHElementAreaListBase::~RHElementAreaListBase() {}
 void RHElementAreaListBase::Clear() {}
 RHElementAreaIter RHElementAreaListBase::begin() { return RHElementAreaIter(m_04->next); }
 RHElementAreaIter RHElementAreaListBase::erase(RHElementAreaIter first, RHElementAreaIter) { return first; }
-template<class T>
-RHTransientPointerList<T>::RHTransientPointerList() : dirty(true) {}
+#include "RHTransientPointerListConstruction.h"
 
 template class RHTransientPointerList<RHElementArea>;
 template class RHTransientPointerList<RHElevationLine>;

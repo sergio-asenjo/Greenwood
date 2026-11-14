@@ -32,52 +32,12 @@
 #include "SBNullstr.h"
 #include "RHElementObject.h"
 #include "RHElementActorPC.h"
+#include "SBDrawManager.h"
+#include <stddef.h>
 
-#define SBGEO_POINT2D_VIEW
-class SBGeoPoint2D
-{
-public:
-    SBGeoPoint2D();
-    SBGeoPoint2D(float x, float y);
-    ~SBGeoPoint2D();
-    SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
-    SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
-    SBGeoPoint2D FUN_005fc200(const SBGeoPoint2D &other) const;
-    float x;
-    float y;
-};
+extern RHUnk005ef320 *g_unk0x6c11d0;
 
-#define SBGEO_VECTOR2D_VIEW
-class SBGeoVector2D : public SBGeoPoint2D
-{
-public:
-    SBGeoVector2D(float x, float y);
-    ~SBGeoVector2D() {}
-    SBGeoVector2D(const SBGeoVector2D &other);
-    SBGeoVector2D &operator=(const SBGeoVector2D &other);
-};
-
-#define SBGEO_BOUNDINGBOX2D_VIEW
-class SBGeoBoundingBox2D
-{
-public:
-    SBGeoBoundingBox2D();
-    bool FUN_00608400(const SBGeoPoint2D &point) const;
-    SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &offset) const;
-    void SetFirst(const SBGeoPoint2D &point)
-    {
-        active = true;
-        first = point;
-    }
-    void SetSecond(const SBGeoPoint2D &point)
-    {
-        active = true;
-        second = point;
-    }
-    SBGeoPoint2D first;
-    SBGeoPoint2D second;
-    bool active;
-};
+#include "SBGeoVector2D.h"
 
 #include "RHMobileUnk00607da0.h"
 
@@ -89,38 +49,45 @@ public:
     unsigned short FUN_005e5750(unsigned long surface);
 };
 
-#include "RHPositionInterfaceCore.h"
+#include "RHSpriteCore.h"
 
-class RHObjectSpriteInfo
+inline void RHPositionInterface::SetPoint(const SBGeoPoint2D &point)
 {
-public:
-    SBGeoBoundingBox2D &Box() { return *(SBGeoBoundingBox2D *)((RHPositionInterface *)this)->Unk0055fa10(m_88); }
-    void SetPoint(const SBGeoPoint2D &point)
+    m_20 = point;
     {
-        m_20 = point;
-        {
-            SBGeoVector2D vector(*(SBGeoVector2D *)&point);
-            ((RHMobileUnk00607da0 *)&m_c0)->FUN_00607da0((const RHMobileUnk00607da0 &)Box().FUN_006090d0(vector));
-        }
-        m_4 = 2;
+        SBGeoVector2D vector(point);
+        ((RHMobileUnk00607da0 *)&m_c0)->FUN_00607da0((const RHMobileUnk00607da0 &)Box().FUN_006090d0(vector));
     }
-    unsigned m_0;
-    unsigned m_4;
-    char m_pad8[0x18];
-    SBGeoPoint2D m_20;
-    char m_pad28[0x60];
-    int m_88;
-    char m_pad8c[0x34];
-    SBGeoBoundingBox2D m_c0;
-};
+    m_4 = 2;
+}
 
-class RHSprite
+DECOMP_SIZE_ASSERT(RHElementObject, 0x100)
+DECOMP_SIZE_ASSERT(RHUnk00520ae0, 0x40)
+DECOMP_STATIC_ASSERT(offsetof(RHElementObject, m_member) == 0xbc)
+DECOMP_STATIC_ASSERT(offsetof(RHElementObject, m_96) == 0x96)
+DECOMP_STATIC_ASSERT(offsetof(RHElementObject, m_98) == 0x98)
+DECOMP_STATIC_ASSERT(offsetof(RHSprite, m_20) == 0x24)
+DECOMP_STATIC_ASSERT(offsetof(RHSprite, m_da) == 0xde)
+
+// FUNCTION: GAME 0x004b1eb0
+RHElementObject::RHElementObject(unsigned long type, bool flag, int action)
+    : RHElement(type, flag), m_a8(action), m_ac(0), m_ae(1), m_b0(0), m_b4(3), m_b8(0)
 {
-public:
-    bool FUN_005bd3a0(RHSprite &other);
-    unsigned m_0;
-    RHObjectSpriteInfo m_4;
-};
+    m_12 = 0;
+    m_98 = g_unk0x6c11d0->Unk(0xff, 0xf7, 0x5a);
+    m_96 = g_unk0x6c11d0->Unk(0xff, 0xf7, 0x5a);
+    m_fc = 0;
+    m_fd = 0;
+    m_ad = 0;
+}
+
+// SYNTHETIC: GAME 0x004b1f90
+// RHElementObject::`scalar deleting destructor'
+
+// FUNCTION: GAME 0x004b1fb0
+RHElementObject::~RHElementObject()
+{
+}
 
 // FUNCTION: GAME 0x004b2010
 bool RHElementObject::Create(bool flag, const RHElementObject &source)
@@ -139,7 +106,7 @@ bool RHElementObject::Create(bool flag, const RHElementObject &source)
         *(unsigned long *)((char *)this + 0x58) = (draw->*reinterpret_cast<CreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(
             draw->FUN_005e56c0(surfaces[1]), draw->FUN_005e5750(surfaces[1]), 0, 0);
     (*(RHSprite **)((char *)this + 0x50))->FUN_005bd3a0(**(RHSprite **)((const char *)&source + 0x50));
-    (*(RHSprite **)((char *)this + 0x50))->m_4.SetPoint(SBGeoPoint2D(0.0f, 0.0f));
+    m_50->SetPoint(SBGeoPoint2D(0.0f, 0.0f));
     m_ad = source.m_ad;
     return true;
 }
@@ -236,20 +203,18 @@ void RHElementObject::FUN_004b2390(int value)
     m_b0 = value;
 }
 
-#include "RHScrollObjectCalls.h"
-
 class RHEngine;
 extern RHEngine *g_pEngine;
 
 // FUNCTION: GAME 0x004b23c0
-bool RHScrollObjectCalls::FUN_004b23c0(void *first, void *second, void *third)
+bool RHElementObject::FUN_004b23c0(void *first, void *second, void *third)
 {
     if (*((char *)this + 0x12) &&
         (second == 0 || *(void **)((char *)second + 0x268) == 0) &&
         *(unsigned int *)((char *)g_pEngine + 0x4a00) <= 1 &&
         (int)third == 3 &&
         *(unsigned short *)(*(char **)((char *)this + 0x50) + 0xde) != -1)
-        return ((RHElementObject *)this)->FUN_004b24d0(*(const SBGeoPoint2D *)first);
+        return FUN_004b24d0(*(const SBGeoPoint2D *)first);
     return false;
 }
 
@@ -280,8 +245,8 @@ void EmitRHObjectQuantity(const RHElementObject *object, void *actor)
 bool RHElementObject::FUN_004b24d0(const SBGeoPoint2D &point) const
 {
     SBGeoBoundingBox2D box;
-    box.SetFirst(((SBGeoPoint2D *)((char *)*(void **)((char *)this + 0x50) + 0x24))->FUN_005fc200(SBGeoVector2D(10.0f, 20.0f)));
-    box.SetSecond(((SBGeoPoint2D *)((char *)*(void **)((char *)this + 0x50) + 0x24))->Unk005fc190(SBGeoVector2D(10.0f, 0.0f)));
+    box.SetMin(((SBGeoPoint2D *)((char *)*(void **)((char *)this + 0x50) + 0x24))->FUN_005fc200(SBGeoVector2D(10.0f, 20.0f)));
+    box.SetMax(((SBGeoPoint2D *)((char *)*(void **)((char *)this + 0x50) + 0x24))->Unk005fc190(SBGeoVector2D(10.0f, 0.0f)));
     return box.FUN_00608400(point);
 }
 
@@ -385,7 +350,7 @@ void *RHElementObject::FUN_004b29c0(void *actor)
         ((RHUnk0045aaf0 *)g_unk0x006c0968)->FUN_0045abc0(0x5b, 0, 0);
         return g_unk0x006c0968;
     }
-    if (!V6c(actor)) {
+    if (!FUN_004b2420(actor)) {
         ((RHUnk0045aaf0 *)g_unk0x006c0968)->FUN_0045abc0(0x5c, 0, 0);
         return g_unk0x006c0968;
     }
@@ -419,6 +384,42 @@ void *RHElementObject::FUN_004b29c0(void *actor)
 void EmitRHObjectFocus(RHElementObject *object, void *actor)
 {
     object->FUN_004b29c0(actor);
+}
+
+#include "RHFastFindGridCore.h"
+#include "RHUnkSectorGlobal.h"
+#include "RHEngine.h"
+
+// STUB: GAME 0x004b2b60
+void *RHElementObject::Refresh(unsigned long surface, float value, const SBGeoBoundingBox2D &box, unsigned long flags)
+{
+    RHspriteRenderingInfo info;
+    SBGeoBoundingBox2D sourceBox;
+    SBGeoBoundingBox2D destinationBox;
+    if (!m_12)
+        return 0;
+    unsigned short frame = m_50->FUN_005bb5f0();
+    if (frame != 0)
+        m_14.FUN_0045abf0(frame, m_50->m_20, 9, 0);
+    if (m_50->FUN_005b9b60(box, value))
+    {
+        info.m_surface = m_54;
+        info.m_color = m_98;
+        info.m_masks = 1;
+        info.m_05 = *(char *)((char *)RHUnk00546050() + 0x17);
+        if (m_ad)
+        {
+            info.m_18 = g_pEngine->FUN_004c7d50();
+            if ((info.m_18 == 2 || info.m_18 == 1) &&
+                ((RHFastFindGrid *)g_unk0x6c0a9c)->FUN_004e9570(m_50->m_20, m_50->m_da))
+                info.m_18 = 0;
+        }
+        m_50->CreateTargetSprite(info);
+        if (m_50->FUN_005ba130(box, value, sourceBox, destinationBox))
+            ((SBDrawManager *)m_60)->BlitAlphaKeying(m_54, &sourceBox, surface, &destinationBox, m_90,
+                *(unsigned short *)((char *)m_68 + 0x48), 1);
+    }
+    return 0;
 }
 
 // FUNCTION: GAME 0x004b2d60
@@ -506,9 +507,7 @@ RHObjectMasterTree::~RHObjectMasterTree()
     }
 }
 
-#include "RHObjectConstructorCalls.h"
-
-class __declspec(novtable) RHObjectMasterLifetime : public RHObjectConstructorCalls
+class __declspec(novtable) RHObjectMasterLifetime : public RHElementObject
 {
 public:
     RHObjectMasterLifetime(const char *first, const char *second, unsigned short value, int type, bool flag);
@@ -516,7 +515,7 @@ public:
 
 // FUNCTION: GAME 0x004b2f20
 RHObjectMasterLifetime::RHObjectMasterLifetime(const char *first, const char *second, unsigned short value, int type, bool flag)
-    : RHObjectConstructorCalls(11, false, 0)
+    : RHElementObject(11, false, 0)
 {
     *(unsigned short *)((char *)this + 0x10) = value;
     *(int *)((char *)this + 0xb0) = type;

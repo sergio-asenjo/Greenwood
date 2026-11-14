@@ -14,6 +14,7 @@
 
 struct RHUnk005c9010Iterator;
 struct RHUnkSpriteRow;
+class RHUnk005069a0;
 void FUN_005c9010(RHUnk005c9010Iterator &, int, std::bidirectional_iterator_tag);
 
 // SIZE 0x18
@@ -217,54 +218,6 @@ public:
     ~RHSpriteText() { FUN_00634bb0(); }
 };
 
-// SIZE 0x22c
-class RHUnk005b5ed0
-{
-public:
-    bool FUN_005b5ed0(SBFile &);
-    void FUN_005bd8b0();
-    undefined m_00[0xd8]; // 0x00
-    unsigned short m_d8; // +0xd8
-    undefined m_da[0x6a]; // 0xda
-    unsigned short m_144; // 0x144
-    unsigned short m_146; // 0x146
-    unsigned short m_148; // 0x148
-    undefined m_14a[2]; // 0x14a
-    int m_14c; // 0x14c
-    int m_150; // +0x150
-    undefined m_154[0x14]; // 0x154
-    char *m_168; // +0x168
-    undefined m_16c[0x18]; // 0x16c
-    unsigned short m_184; // +0x184, WORD
-    unsigned short m_186; // +0x186, WORD
-    unsigned short m_188; // +0x188, WORD
-    unsigned short m_18a; // +0x18a, WORD
-    unsigned short m_18c; // +0x18c, WORD
-    unsigned short m_18e; // +0x18e, WORD
-    unsigned short m_190; // +0x190, WORD
-    char m_192; // +0x192, BYTE
-    char m_193; // +0x193, BYTE
-    char m_194; // +0x194, BYTE
-    undefined m_195[5]; // 0x195
-    unsigned short m_19a; // +0x19a, WORD
-    unsigned short m_19c; // +0x19c, WORD
-    undefined m_19e[2]; // 0x19e
-    SBGeoBoundingBox2D m_1a0; // +0x1a0
-    undefined m_1b4[0x10]; // 0x1b4
-    int m_1c4; // +0x1c4, DWORD
-    class RHElement *m_1c8; // +0x1c8, pointer
-    char m_1cc; // +0x1cc, BYTE
-    undefined m_1cd[0xf]; // 0x1cd
-    int m_1dc; // +0x1dc, DWORD
-    RHSpriteList m_1e0; // +0x1e0
-    bool m_1f8; // +0x1f8, BYTE
-    int m_1fc; // +0x1fc, DWORD
-    int m_200; // +0x200, DWORD
-    RHSpriteList m_204; // +0x204
-    undefined m_21c[0xc]; // 0x21c
-    unsigned char m_228; // +0x228, BYTE
-};
-
 // VTABLE: GAME 0x00679e3c
 // SIZE 0x22c
 class RHSprite : public RHPositionInterface
@@ -272,6 +225,8 @@ class RHSprite : public RHPositionInterface
 public:
     RHSprite(unsigned long owner);
     virtual ~RHSprite();
+    bool FUN_005b5ed0(SBFile &file);
+    void FUN_005bd8b0();
     unsigned short m_144;
     unsigned short m_146;
     unsigned short m_148;
@@ -354,7 +309,7 @@ public:
     unsigned short FUN_005bdcf0(unsigned short);
     unsigned short FUN_005bdb40(unsigned short, unsigned short);
     unsigned short FUN_005bdb80(unsigned short, unsigned short);
-    void FUN_005bdf30();
+    RHUnk005069a0 *FUN_005bdf30();
     unsigned short FUN_005bdd50();
     unsigned short FUN_005bdd70();
     const SBGeoPoint2D *FUN_005bdd90();

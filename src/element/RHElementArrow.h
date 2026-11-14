@@ -14,18 +14,7 @@
 
 #include "SB.h"
 #include "RHBow.h"
-
-class SBGeoBoundingBox2D;
-
-class RHElementProjectile
-{
-public:
-    virtual bool Serialize(SBFile &file);
-    void *Refresh(unsigned long surface, float value, const SBGeoBoundingBox2D &box, unsigned long flags);
-
-private:
-    char m_unkBase[0x158]; // [0x04, 0x15c): RHElementProjectile-owned, untouched here
-};
+#include "RHElementProjectile.h"
 
 class RHElementArrow : public RHElementProjectile
 {

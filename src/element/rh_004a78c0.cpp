@@ -13,8 +13,6 @@ public:
     bool FUN_004a7b00();
 };
 
-#include "RHScrollObjectCalls.h"
-
 // FUNCTION: GAME 0x004a7840
 bool RHElementObject::FUN_004a7840(void *point, void *actor, int focus)
 {
@@ -29,7 +27,7 @@ bool RHElementObject::FUN_004a7840(void *point, void *actor, int focus)
             m_b0 == 0x12)
             return false;
     }
-    return ((RHScrollObjectCalls *)this)->FUN_004b23c0(point, actor, (void *)focus);
+    return RHElementObject::FUN_004b23c0(point, actor, (void *)focus);
 }
 
 // FUNCTION: GAME 0x004a78c0
@@ -40,5 +38,5 @@ bool RHElementObject::FUN_004a78c0(void *actor)
         if (g_unk0x6c07fc->Get(0) >= 0xa)
             return false;
     }
-    return FUN_004b2420(actor);
+    return RHElementObject::FUN_004b2420(actor);
 }

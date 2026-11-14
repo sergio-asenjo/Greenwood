@@ -13,12 +13,6 @@
 #include "SBGeoBoundingBox2D.h"
 #endif
 
-class RHUnk005b5ed0
-{
-public:
-    bool FUN_005b5ed0(SBFile &file);
-};
-
 class RHUnkSectorPoints;
 
 // SIZE 0xfc

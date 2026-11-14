@@ -193,7 +193,7 @@ bool RHElementScroll::FUN_004ba470(void *first, void *second, void *third)
     if (m_164 != 1 && m_164 != 3)
         return false;
     void *last = third;
-    return ((RHScrollObjectCalls *)this)->FUN_004b23c0(first, second, last);
+    return RHElementObject::FUN_004b23c0(first, second, last);
 }
 
 // FUNCTION: GAME 0x004ba4c0
@@ -236,13 +236,13 @@ int RHElementScroll::FUN_004ba550()
 }
 
 // FUNCTION: GAME 0x004ba580
-int RHElementScroll::FUN_004ba580(unsigned long first, unsigned long second,
-                                   unsigned long third, unsigned long fourth) const
+void *RHElementScroll::FUN_004ba580(unsigned long surface, float value,
+                                     const SBGeoBoundingBox2D &box, unsigned long flags)
 {
     int status = m_164;
     if (status != 1 && status != 3)
-        return false;
-    int result = ((const RHScrollObjectCalls *)this)->FUN_004b2b60(first, second, third, fourth);
+        return 0;
+    void *result = RHElementObject::Refresh(surface, value, box, flags);
     return result;
 }
 

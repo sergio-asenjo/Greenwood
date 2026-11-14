@@ -11,77 +11,40 @@
 // out; every other byte is opaque padding. The base RHElement is 0xa8 bytes
 // (its own vptr + untouched fields), so RHElementObject's members start there.
 
+#ifndef RHELEMENTOBJECT_H
+#define RHELEMENTOBJECT_H
+
 #include "SB.h"
 #include <string>
-
-class SBGeoPoint2D;
-
-class RHElement
-{
-public:
-    void *FUN_004622d0() const;
-    virtual bool Serialize(SBFile &file);
-    virtual void V04();
-    virtual void V08();
-    virtual void V0c();
-    virtual void V10();
-    virtual void V14();
-    virtual void V18();
-    virtual void V1c();
-    virtual bool V20(int first, int second, int third);
-    virtual void V24();
-    virtual void V28();
-    virtual void V2c();
-    virtual void V30();
-    virtual void V34();
-    virtual void V38();
-    virtual void V3c();
-    virtual void V40();
-    virtual void V44();
-    virtual void V48();
-    virtual void V4c();
-    virtual void V50();
-    virtual void V54();
-    virtual void V58();
-    virtual void V5c();
-    virtual void V60();
-    virtual void V64();
-    virtual unsigned V68();
-    virtual bool V6c(void *actor);
-
-private:
-    char m_unkBase[0xa4]; // [0x04, 0xa8): RHElement-owned, not touched here
-};
-
-// Nested serialisable sub-object stored at RHElementObject+0xbc. Its
-// Serialize is the target 0x00521210; identity unproven, so the type keeps a
-// neutral name (see 05-naming.md).
-class RHUnk004b2190Member
-{
-public:
-    bool Serialize(SBFile &file);
-
-private:
-    char m_unk[0x40]; // [0x00, 0x40): opaque; keeps the following member at +0xfc
-};
+#include "RHElementCore.h"
+#include "RHRepulsivePoint.h"
 
 #ifndef RHELEMENTOBJECT_VIEW
 #define RHELEMENTOBJECT_VIEW
+// VTABLE: GAME 0x00678670
+// SIZE 0x100
 class RHElementObject : public RHElement
 {
 public:
+    RHElementObject(unsigned long type, bool flag, int action);
+    virtual ~RHElementObject();
+    virtual bool FUN_004b23c0(void *first, void *second, void *third);
+    virtual void *FUN_004b29c0(void *actor);
+    virtual bool FUN_004b26a0(int first, int second, int third);
+    virtual void *Refresh(unsigned long surface, float value, const SBGeoBoundingBox2D &box, unsigned long flags);
+    virtual void v14(SBFile &file) {}
+    virtual void v15(unsigned value) {}
     virtual bool Serialize(SBFile &file);
+    virtual unsigned V68() = 0;
+    virtual bool FUN_004b2420(void *actor) const;
 
     bool Create(bool flag, const RHElementObject &source);
     void Emit(SBFile &file);
     void FUN_004b2390(int value);
-    bool FUN_004b2420(void *actor) const;
     bool FUN_004a7840(void *point, void *actor, int focus);
     bool FUN_004a78c0(void *actor);
     bool FUN_004b24d0(const SBGeoPoint2D &point) const;
     void FUN_004b2600(void *points, void *lines, void *actor);
-    bool FUN_004b26a0(int first, int second, int third);
-    void *FUN_004b29c0(void *actor);
     void FUN_004b2d60(unsigned short value);
     int FUN_004b2d70();
 
@@ -92,7 +55,7 @@ public:
     int m_b0;                     // [0xb0]
     int m_b4;                     // [0xb4]
     int m_b8;                     // [0xb8]
-    RHUnk004b2190Member m_member; // [0xbc]
+    RHUnk00520ae0 m_member;       // [0xbc]
     char m_fc;                    // [0xfc]
     char m_fd;                    // [0xfd]
     short m_fe;                   // [0xfe]
@@ -298,3 +261,5 @@ public:
     void FUN_004b3170(const std::string &first, const std::string &second, bool flag);
     int FUN_004b31c0(int first, int second, int third, int fourth);
 };
+
+#endif

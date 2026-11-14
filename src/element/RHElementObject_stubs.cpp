@@ -12,16 +12,6 @@
 #include "SBNullstr.h"
 #include "RHElementObject.h"
 
-#include "RHObjectConstructorCalls.h"
-
-RHObjectConstructorCalls::RHObjectConstructorCalls(unsigned long, bool, int)
-{
-}
-
-RHObjectConstructorCalls::~RHObjectConstructorCalls()
-{
-}
-
 // Parked: return-false placeholder; the 787 B native slot-8 body is not reconstructed.
 // STUB: GAME 0x004b26a0
 bool RHElementObject::FUN_004b26a0(int, int, int)
@@ -58,7 +48,3 @@ bool RHUnk0045aaf0::FUN_0045abf0(unsigned short value, const SBGeoPoint2D &point
 }
 
 
-
-// The nested sub-object serialiser at RHElementObject+0xbc (target 0x00521210)
-// is now the real RHUnk004b2190Member::Serialize defined in src/RHLine.cpp; the
-// declaration stays in include/RHElementObject.h.

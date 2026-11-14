@@ -2,7 +2,6 @@
 #define RHPROJECTILELIFETIME_H
 
 #include "RHElementProjectile.h"
-#include "RHObjectConstructorCalls.h"
 
 struct RHProjectilePointLifetime
 {
@@ -33,11 +32,13 @@ struct RHProjectileCtorList
     int index;
 };
 
-class __declspec(novtable) RHProjectileLifetime : public RHObjectConstructorCalls
+class __declspec(novtable) RHProjectileLifetime : public RHElementObject
 {
 public:
     RHProjectileLifetime(int action, void *victim);
     ~RHProjectileLifetime();
+    virtual char v10();
+    virtual unsigned V68();
     void *FUN_004b40f0(unsigned flags);
     RHProjectilePointLifetime point100;
     RHProjectilePointLifetime point10c;

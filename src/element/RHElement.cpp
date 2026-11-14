@@ -1,11 +1,27 @@
 #include "SBNullstr.h"
+#include "RHSpriteCore.h"
 #include "RHElement.h"
+#include "RHEngine.h"
+#include "SBDrawManagerCore.h"
 #include <new>
+#include <string.h>
+#include <stddef.h>
+
+class RHFrameHolder;
+
+extern unsigned g_unk0x006c081c;
+extern RHEngine *g_pEngine;
+extern RHFrameHolder *g_unk0x006c0b1c;
+extern RHUnk005ef320 *g_unk0x6c11d0;
 
 DECOMP_SIZE_ASSERT(RHElement, 0xa8)
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 DECOMP_SIZE_ASSERT(RHBonusInfoBase, 0xfc)
 DECOMP_SIZE_ASSERT(RHUnk005df510, 0x0c)
+DECOMP_SIZE_ASSERT(RHUnk00613e90, 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk00613e90, x) == 0)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk00613e90, y) == 4)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk00613e90, z) == 8)
 DECOMP_SIZE_ASSERT(RHElevationLine, 0x2c)
 DECOMP_SIZE_ASSERT(RHElementArea, 0x64)
 DECOMP_SIZE_ASSERT(RHElementAreaNode, 0x0c)
@@ -14,6 +30,46 @@ DECOMP_SIZE_ASSERT(RHElementAreaListBase, 0x0c)
 DECOMP_SIZE_ASSERT(RHElementAreaList, 0x18)
 DECOMP_SIZE_ASSERT(RHElementAreaTransientList, 0x24)
 DECOMP_SIZE_ASSERT(RHElementAreaTransientList::Node, 0x0c)
+DECOMP_SIZE_ASSERT(RHUnk0045aaf0, 0x3c)
+DECOMP_STATIC_ASSERT(offsetof(RHElement, m_14) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(RHElement, m_50) == 0x50)
+DECOMP_STATIC_ASSERT(offsetof(RHElement, m_68) == 0x68)
+DECOMP_STATIC_ASSERT(offsetof(RHElement, m_74) == 0x74)
+DECOMP_STATIC_ASSERT(offsetof(RHElement, m_80) == 0x80)
+DECOMP_STATIC_ASSERT(offsetof(RHElement, m_90) == 0x90)
+DECOMP_STATIC_ASSERT(offsetof(RHElement, m_a6) == 0xa6)
+DECOMP_STATIC_ASSERT(offsetof(RHEngine, m_00dc) == 0xdc)
+DECOMP_STATIC_ASSERT(offsetof(RHEngine, m_011c) == 0x11c)
+DECOMP_STATIC_ASSERT(offsetof(RHEngine, m_43f8) == 0x43f8)
+DECOMP_STATIC_ASSERT(offsetof(RHEngine, m_4aa8) == 0x4aa8)
+
+// FUNCTION: GAME 0x00462010
+RHElement::RHElement(int type, char flag) : m_04(type), m_08(flag)
+{
+    m_0c = g_unk0x006c081c;
+    g_unk0x006c081c++;
+    m_12 = 1;
+    m_8e = 1;
+    m_50 = new RHSprite(m_04);
+    m_60 = g_pEngine->m_00dc;
+    m_64 = g_pEngine->m_011c;
+    m_68 = g_unk0x006c0b1c;
+    m_5c = g_pEngine->m_43f8;
+    m_71 = 0;
+    m_70 = 0;
+    m_88 = 0;
+    m_8a = 0xffff;
+    m_58 = -1;
+    m_54 = -1;
+    m_8c = 1;
+    m_90 = g_pEngine->FUN_004d2340(15);
+    memset(m_94, 0, sizeof(m_94));
+    m_a0 = 0;
+    m_a4 = 2;
+    m_92 = 0;
+    m_08 = m_08 && !g_pEngine->m_4aa8;
+    m_a6 = 0;
+}
 
 // FUNCTION: GAME 0x00462190
 int RHElement::FUN_00462190() const { return 3; }
@@ -24,10 +80,16 @@ SBGeoVector2D RHElement::FUN_004621a0() const
     return SBGeoVector2D(0, 0);
 }
 
+// FUNCTION: GAME 0x004621c0
+float RHElement::FUN_004621c0() const
+{
+    return m_50->FUN_005bdcb0();
+}
+
 // FUNCTION: GAME 0x004621d0
 void RHElement::FUN_004621d0(RHUnk005df510 &point) const
 {
-    point = *(RHUnk005df510 *)((char *)m_50 + 0x10);
+    point = m_50->m_c;
 }
 
 // FUNCTION: GAME 0x004621f0
@@ -38,6 +100,19 @@ char RHElement::FUN_00462200() const { return 1; }
 
 // FUNCTION: GAME 0x00462210
 char RHElement::FUN_00462210(void *value) { return 0; }
+
+// SYNTHETIC: GAME 0x00462220
+// RHElement::`scalar deleting destructor'
+
+// FUNCTION: GAME 0x00462240
+RHElement::~RHElement()
+{
+    delete m_50;
+    if (m_58 != -1)
+        ((SBDrawManager *)g_unk0x6c11d0)->FUN_005e5160(m_58);
+    if (m_54 != -1)
+        ((SBDrawManager *)g_unk0x6c11d0)->FUN_005e5160(m_54);
+}
 
 // FUNCTION: GAME 0x004622d0
 void *RHElement::FUN_004622d0() const { return (char *)m_50 + 0x1a0; }
@@ -176,6 +251,13 @@ bool RHElement::Serialize(SBFile &file)
         }
     }
     return m_50->FUN_005b5ed0(file);
+}
+
+// FUNCTION: GAME 0x00462940
+void RHElement::FUN_00462940(int action)
+{
+    if (action == 7 || (m_50->m_88 != 12 && m_50->m_88 != 13))
+        m_50->FUN_00462970(action);
 }
 
 // STUB: GAME 0x00462aa0
@@ -526,7 +608,8 @@ void RHElement::Emit(SBFile &file)
 {
     FUN_00462190();
     FUN_004621a0();
-    FUN_004621d0(m_74);
+    RHUnk005df510 point;
+    FUN_004621d0(point);
     FUN_004621f0();
     FUN_00462200();
     FUN_00462210(0);

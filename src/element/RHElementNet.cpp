@@ -156,7 +156,7 @@ RHElementNet::RHElementNet(void *victim) : RHProjectileLifetime(0x11, victim)
 // FUNCTION: GAME 0x004b0860
 void *RHElementNet::FUN_004b0860(unsigned flags)
 {
-    this->~RHElementNet();
+    this->RHElementNet::~RHElementNet();
     if (flags & 1)
         operator delete(this);
     return this;

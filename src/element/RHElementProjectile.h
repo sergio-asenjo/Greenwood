@@ -7,28 +7,15 @@
 #include "RHUnk00613e90.h"
 #include <iterator>
 
-class RHElementObject
-{
-public:
-    virtual bool Serialize(SBFile &file);
-    char m_04[0xfc];
-};
+#include "RHElementObject.h"
 
-class RHUnk005df510
-{
-public:
-    int m_0;
-    int m_4;
-    int m_8;
-    bool Serialize(SBFile &file);
-};
+#include "RHUnk005df510.h"
 
 class RHProjectileSerializedStep
 {
 public:
     RHProjectileSerializedStep()
     {
-        ((RHUnk00613e90 *)this)->RHUnk00613e90::RHUnk00613e90();
     }
     RHUnk005df510 m_00;
     short m_0c;

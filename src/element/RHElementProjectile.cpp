@@ -11,12 +11,6 @@ extern float g_unk0x006774e4;
 class RHMessenger;
 RHMessenger *RHUnk00546050();
 
-class RHUnk0045aaf0
-{
-public:
-    bool FUN_0045abf0(unsigned short value, const SBGeoPoint2D &point, int third, int fourth);
-};
-
 class RHSprite
 {
 public:
@@ -49,7 +43,7 @@ float g_unk0x00677580 = 0.1f;
 
 // FUNCTION: GAME 0x004b4020
 RHProjectileLifetime::RHProjectileLifetime(int action, void *victim)
-    : RHObjectConstructorCalls(7, false, action), target(victim), count130(0),
+    : RHElementObject(7, false, action), target(victim), count130(0),
       flag132(0), flag133(0), flag134(0), list(*(unsigned char *)&action)
 {
     *(bool *)((char *)this + 0x12) = true;
@@ -66,7 +60,7 @@ void EmitRHProjectileLifetime(void *storage, int action, void *victim)
 // FUNCTION: GAME 0x004b40f0
 void *RHProjectileLifetime::FUN_004b40f0(unsigned flags)
 {
-    this->~RHProjectileLifetime();
+    this->RHProjectileLifetime::~RHProjectileLifetime();
     if (flags & 1)
         operator delete(this);
     return this;
@@ -610,7 +604,14 @@ static inline RHobjectType RHProjectileObjectType(const void *element)
     return (RHobjectType)((const RHElementObjectTypeBits *)((const char *)element + 4))->type;
 }
 
-// STUB: GAME 0x004b8000
+static inline float RHProjectileTargetNorm(const RHUnk00613e90 &delta)
+{
+    float y = *(const volatile float *)&delta.y;
+    float z = *(const volatile float *)&delta.z;
+    return (float)sqrt(delta.x * delta.x + y * y + z * z);
+}
+
+// FUNCTION: GAME 0x004b8000
 void *RHElementProjectile::FUN_004b8000() const
 {
     unsigned mask;
@@ -655,7 +656,7 @@ void *RHElementProjectile::FUN_004b8000() const
             delta.x -= center.x;
             delta.y -= center.y;
             delta.z -= center.z;
-            if (*(bool *)(target + 0x12) && distance.Norm() <= g_unk0x006774e4 && delta.Norm() <= length &&
+            if (*(bool *)(target + 0x12) && distance.Norm() <= g_unk0x006774e4 && RHProjectileTargetNorm(delta) <= length &&
                 (mask & ((RHScriptBatchCalls *)target)->Unk004baea0()) > 0) {
                 result = target;
                 break;
@@ -731,7 +732,6 @@ public:
 };
 
 #include "RHProjectileSoundCalls.h"
-#include "RHScrollObjectCalls.h"
 class RHArtificialIntelligenceSoundCalls;
 extern RHArtificialIntelligenceSoundCalls *g_unk0x006c1070;
 
@@ -764,7 +764,7 @@ unsigned RHElementProjectile::ComputeNumberOfFramesLeft() const
 // FUNCTION: GAME 0x004b8d70
 int RHElementProjectile::FUN_004b8d70(void *first, void *second, void *third)
 {
-    if (!m_132 && ((RHScrollObjectCalls *)this)->FUN_004b23c0(first, second, third))
+    if (!m_132 && RHElementObject::FUN_004b23c0(first, second, third))
         return 1;
     return 0;
 }

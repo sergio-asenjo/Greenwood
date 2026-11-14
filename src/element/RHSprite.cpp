@@ -14,7 +14,6 @@
 DECOMP_SIZE_ASSERT(RHSpriteListNode, 0x0c)
 DECOMP_SIZE_ASSERT(RHSpriteListIterator, 0x04)
 DECOMP_SIZE_ASSERT(RHSpriteList, 0x18)
-DECOMP_SIZE_ASSERT(RHUnk005b5ed0, 0x22c)
 DECOMP_SIZE_ASSERT(RHSprite, 0x22c)
 DECOMP_SIZE_ASSERT(RHSpriteText<true>, 0x10)
 DECOMP_SIZE_ASSERT(RHSpriteText<false>, 0x10)
@@ -198,9 +197,9 @@ void RHSpriteSequenceCalls::FUN_005859e0(RHOrder *order, unsigned short wanted)
     order->m_38 = this;
 }
 
-class RHUnkSpriteBank;
+class RHFrameHolder;
 class RHUnk005ef320;
-extern RHUnkSpriteBank *g_unk0x006c0b1c;
+extern RHFrameHolder *g_unk0x006c0b1c;
 extern RHUnk005ef320 *g_unk0x6c11d0;
 
 // FUNCTION: GAME 0x005b5890
@@ -286,7 +285,7 @@ void RHSprite::FUN_005b5ea0(SBFile &file, int kind)
 
 // Parked: frame is 8 bytes larger (extra spilled locals); jump offsets shift throughout.
 // STUB: GAME 0x005b5ed0
-bool RHUnk005b5ed0::FUN_005b5ed0(SBFile &file)
+bool RHSprite::FUN_005b5ed0(SBFile &file)
 {
 #define sprite (*this)
     char previous = sprite.m_194;
@@ -339,7 +338,7 @@ bool RHUnk005b5ed0::FUN_005b5ed0(SBFile &file)
         {
             sprite.m_194 = previous;
             sprite.FUN_005bd8b0();
-            return ((RHPositionInterface *)((char *)this + 4))->Serialize(file);
+            return RHPositionInterface::Serialize(file);
         }
     }
     else
@@ -357,7 +356,7 @@ bool RHUnk005b5ed0::FUN_005b5ed0(SBFile &file)
         }
     }
 #undef ACCESS
-    return ((RHPositionInterface *)((char *)this + 4))->Serialize(file);
+    return RHPositionInterface::Serialize(file);
 #undef sprite
 }
 
@@ -2182,14 +2181,14 @@ bool RHUnk005bd5b0::Unk(bool last)
 }
 
 // FUNCTION: GAME 0x005bd8b0
-void RHUnk005b5ed0::FUN_005bd8b0()
+void RHSprite::FUN_005bd8b0()
 {
     m_194 = !m_194;
     if (m_1dc != 0x11b)
     {
         void *holder = ((RHUnk005b5e00 *)this)->FUN_005b5de0();
         int animation = m_1dc;
-        m_184 = ((RHSpriteFrameTable *)((RHUnk005b5e00 *)this)->Unk())->Frame(animation) + m_d8;
+        m_184 = ((RHSpriteFrameTable *)((RHUnk005b5e00 *)this)->Unk())->Frame(animation) + m_d4;
         RHSpriteFrameEntry &entry = (*(std::vector<RHSpriteFrameEntry> *)holder)[m_184];
         unsigned count = entry.durations.size();
         if (m_186 >= count)
@@ -2369,12 +2368,12 @@ unsigned short RHSprite::FUN_005bde70()
 
 // Parked: volatile table/frame probes change registers or still hoist the frame index before the table load.
 // STUB: GAME 0x005bdf30
-void RHSprite::FUN_005bdf30()
+RHUnk005069a0 *RHSprite::FUN_005bdf30()
 {
     void *holder = ((RHUnk005b5e00 *)this)->FUN_005b5de0();
     undefined *entries = RHSpriteField<undefined *>(holder, 4);
     unsigned *table = RHSpriteField<unsigned *>(entries + m_184 * 0x64, 0x18);
-    ((RHFrameHolder *)RHSpriteField<RHFrameHolder *>(this, 0x1d0))->FUN_00505170(
+    return ((RHFrameHolder *)RHSpriteField<RHFrameHolder *>(this, 0x1d0))->FUN_00505170(
         table[*(volatile unsigned short *)((char *)this + 0x186)]);
 }
 
@@ -2404,7 +2403,7 @@ void RHSprite::Emit(SBFile &file)
     FUN_005b5e20();
     FUN_005b5e60();
     FUN_005b5ea0(file, 0);
-    ((RHUnk005b5ed0 *)this)->FUN_005b5ed0(file);
+    FUN_005b5ed0(file);
     LoadPositionInfoFromFile(file, 0);
     PerformAction(0, 0, 0, false);
     IsActionDone(0, 0);

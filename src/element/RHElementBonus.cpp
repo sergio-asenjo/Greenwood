@@ -12,13 +12,13 @@ int FUN_004a7460(volatile int value);
 void *FUN_004b3120(int type);
 
 DECOMP_SIZE_ASSERT(RHElementBonus, 0x100)
-DECOMP_SIZE_ASSERT(RHObjectConstructorCalls, 0x100)
+DECOMP_SIZE_ASSERT(RHElementObject, 0x100)
 DECOMP_SIZE_ASSERT(RHBonusInfoBase, 0xdc)
 DECOMP_SIZE_ASSERT(RHBonusInfo, 0xe4)
 
 // FUNCTION: GAME 0x004a70c0
 RHElementBonus::RHElementBonus(int action, bool flag, unsigned short quantity)
-    : RHObjectConstructorCalls(3, flag, action)
+    : RHElementObject(3, flag, action)
 {
     *(unsigned *)this = 0x00678328;
     Initialize(FUN_004a7460(action), quantity);
@@ -27,7 +27,7 @@ RHElementBonus::RHElementBonus(int action, bool flag, unsigned short quantity)
 // FUNCTION: GAME 0x004a7130
 void *RHElementBonus::FUN_004a7130(unsigned flags)
 {
-    this->~RHElementBonus();
+    this->RHElementBonus::~RHElementBonus();
     if (flags & 1)
         operator delete(this);
     return this;
@@ -35,7 +35,7 @@ void *RHElementBonus::FUN_004a7130(unsigned flags)
 
 // FUNCTION: GAME 0x004a7150
 RHElementBonus::RHElementBonus(BonusType type, bool flag, unsigned short quantity)
-    : RHObjectConstructorCalls(3, flag, FUN_004a7240(type))
+    : RHElementObject(3, flag, FUN_004a7240(type))
 {
     *(unsigned *)this = 0x00678328;
     Initialize(FUN_004a7380(type), quantity);
@@ -43,7 +43,7 @@ RHElementBonus::RHElementBonus(BonusType type, bool flag, unsigned short quantit
 
 // FUNCTION: GAME 0x004a71d0
 RHElementBonus::RHElementBonus(unsigned long type, bool flag, unsigned short quantity)
-    : RHObjectConstructorCalls(3, flag, FUN_004a72e0(type))
+    : RHElementObject(3, flag, FUN_004a72e0(type))
 {
     *(unsigned *)this = 0x00678328;
     Initialize(type, quantity);

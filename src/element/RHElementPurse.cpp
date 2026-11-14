@@ -60,7 +60,7 @@ RHElementPurse::RHElementPurse(void *victim) : RHProjectileLifetime(4, victim), 
 // FUNCTION: GAME 0x004b9180
 void *RHElementPurse::FUN_004b9180(unsigned flags)
 {
-    this->~RHElementPurse();
+    this->RHElementPurse::~RHElementPurse();
     if (flags & 1)
         operator delete(this);
     return this;

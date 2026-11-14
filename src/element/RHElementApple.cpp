@@ -88,7 +88,7 @@ bool RHElementApple::FUN_004a6510()
 // FUNCTION: GAME 0x004a6650
 void *RHElementApple::FUN_004a6650(unsigned flags)
 {
-    this->~RHElementApple();
+    this->RHElementApple::~RHElementApple();
     if (flags & 1)
         operator delete(this);
     return this;
