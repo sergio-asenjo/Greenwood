@@ -6,31 +6,8 @@
 #include <vector>
 #include <functional>
 
-#define SBGEO_POINT2D_VIEW
-// SIZE 0x08
-class SBGeoPoint2D
-{
-public:
-    SBGeoPoint2D();
-    SBGeoPoint2D(float x, float y);
-    SBGeoPoint2D(const SBGeoPoint2D &point);
-    ~SBGeoPoint2D();
-    SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
-    float m_x; // +0x00
-    float m_y; // +0x04
-};
-
-// SIZE 0x08
-#define SBGEO_VECTOR2D_VIEW
-class SBGeoVector2D : public SBGeoPoint2D
-{
-public:
-    SBGeoVector2D();
-    SBGeoVector2D(float x, float y);
-    SBGeoVector2D(const SBGeoVector2D &other);
-    ~SBGeoVector2D() {}
-    SBGeoVector2D &operator=(const SBGeoVector2D &other);
-};
+#include "SBGeoPoint2D.h"
+#include "SBGeoVector2D.h"
 
 // SIZE 0x10
 class RHUnkSpriteUshortVector
@@ -173,13 +150,7 @@ struct RHUnkSpriteFileHeader
 };
 #pragma pack(pop)
 
-class RHUnkSpriteBank
-{
-public:
-    bool FUN_00506b10(SBFile *file);
-    undefined m_0[0xb4]; // 0x00
-    undefined4 m_b4; // 0xb4
-};
+class RHFrameHolder;
 
 #pragma pack(push, 1)
 // SIZE 0x0e
@@ -206,7 +177,7 @@ struct RHUnkSpriteFrameHeader
 
 class RHEngine;
 extern RHEngine *g_pEngine;
-extern RHUnkSpriteBank *g_unk0x006c0b1c;
+extern RHFrameHolder *g_unk0x006c0b1c;
 extern std::string g_unk0x006c0620;
 extern std::string g_unk0x006c0630;
 std::string FUN_004e4b40(const std::string &first, const std::string &second);

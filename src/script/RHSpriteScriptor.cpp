@@ -208,12 +208,7 @@ DECOMP_SIZE_ASSERT(RHUnkSpriteFrameHeader, 0x0e)
 // TEMPLATE: GAME 0x004b06a0
 // ?clear@?$vector@VSBGeoVector2D@@V?$allocator@VSBGeoVector2D@@@std@@@std@@QAEXXZ
 
-// FUNCTION: GAME 0x00506b10
-bool RHUnkSpriteBank::FUN_00506b10(SBFile *file)
-{
-    file->Access(&file, 4);
-    return (undefined4)file == m_b4;
-}
+#include "RHFrameHolder.h"
 
 // SYNTHETIC: GAME 0x005bd000
 // RHUnkSpriteScriptInfo::~RHUnkSpriteScriptInfo

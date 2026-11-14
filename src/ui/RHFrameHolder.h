@@ -5,6 +5,7 @@
 #include "Decomp.h"
 #include <map>
 #include <string>
+#include <vector>
 
 template <>
 std::map<unsigned short, unsigned short>::_Pairib
@@ -43,74 +44,7 @@ public:
     void InsertLast(const T &value) { Insert(m_last, 1, value); m_dirty = true; }
 };
 
-// SIZE 0x10
-class RHFrameHolderRowMap
-{
-public:
-    struct Node
-    {
-        Node *m_left; // 0x00
-        Node *m_parent; // 0x04
-        Node *m_right; // 0x08
-        unsigned long m_key; // 0x0c
-        unsigned long m_value; // 0x10
-        undefined4 m_color; // 0x14
-    };
-    struct Iterator
-    {
-        Iterator() {}
-        Iterator(Node *node) : m_node(node) {}
-        Node *m_node; // 0x00
-        bool operator==(const Iterator &other) const { return m_node == other.m_node; }
-        bool operator!=(const Iterator &other) const { return !(*this == other); }
-        void FUN_005097a0();
-        static Node *&Left(Node *node) { return node->m_left; }
-        void FUN_00509860();
-        Iterator operator++(int)
-        {
-            Iterator previous = *this;
-            FUN_00509860();
-            return previous;
-        }
-    };
-    typedef std::pair<Iterator, bool> Pair;
-    typedef Pair TreePair;
-    struct Value
-    {
-        unsigned long first; // 0x00
-        unsigned long second; // 0x04
-        Value(unsigned long key, unsigned long value) : first(key), second(value) {}
-    };
-    Iterator Find(const unsigned long &);
-    Node *FUN_005093e0(const unsigned long &);
-    Iterator End() { Iterator result; result.m_node = m_head; return result; }
-    Pair Insert(const Value &);
-    TreePair InsertTree(const Value &);
-    void FUN_00508000(Node *);
-    void FUN_00503db0();
-    Iterator FUN_00506ea0(Iterator, Iterator);
-    Iterator FUN_00507ae0(Iterator);
-    Node *&Root() { return m_head->m_parent; }
-    Node *&Leftmost() { return m_head->m_left; }
-    Node *&Rightmost() { return m_head->m_right; }
-    Iterator begin() { return Iterator(Leftmost()); }
-    Iterator FUN_005090e0(Node *, Node *, const Value &);
-    void Lrotate(Node *);
-    void Rrotate(Node *);
-    static Node *&Parent(Node *node) { return node->m_parent; }
-    static Node *&Right(Node *node) { return node->m_right; }
-    static Node *&Left(Node *node) { return node->m_left; }
-    static undefined4 &Color(Node *node) { return node->m_color; }
-    unsigned long &operator[](const unsigned long &key)
-    {
-        TreePair result = InsertTree(Value(key, 0));
-        return result.first.m_node->m_value;
-    }
-    undefined m_allocator[4]; // 0x00
-    Node *m_head; // 0x04
-    undefined m_comparator[4]; // 0x08
-    unsigned long m_size; // 0x0c
-};
+#include "RHFrameHolderRowMap.h"
 
 // SIZE 0x10
 class RHUnk005074d0
@@ -184,8 +118,10 @@ struct RHFrameHolderRecord
 };
 
 // SIZE 0x10
-class RHUnk00506e00
+class RHUnk00506e00 : public std::vector<RHFrameHolderRecord>
 {
+    friend class RHFrameHolder;
+    friend class RHSpriteFrameCalls;
 public:
     unsigned int FUN_00506e00() const;
     RHFrameHolderRecord *FUN_00507320(RHFrameHolderRecord *, RHFrameHolderRecord *);
@@ -193,24 +129,20 @@ public:
     RHFrameHolderRecord *Copy(const RHFrameHolderRecord *first, const RHFrameHolderRecord *last, RHFrameHolderRecord *output)
     {
         for (; first != last; ++output, ++first)
-            m_allocator.construct(output, *first);
+            allocator.construct(output, *first);
         return output;
     }
     void Fill(RHFrameHolderRecord *first, unsigned int count, const RHFrameHolderRecord &value)
     {
         for (; count > 0; --count, ++first)
-            m_allocator.construct(first, value);
+            allocator.construct(first, value);
     }
     void Destroy(RHFrameHolderRecord *first, RHFrameHolderRecord *last)
     {
         for (; first != last; ++first)
-            m_allocator.destroy(first);
+            allocator.destroy(first);
     }
-    unsigned int Size() const { return m_first == 0 ? 0 : m_last - m_first; }
-    std::allocator<RHFrameHolderRecord> m_allocator; // 0x00
-    RHFrameHolderRecord *m_first; // 0x04
-    RHFrameHolderRecord *m_last; // 0x08
-    RHFrameHolderRecord *m_end; // 0x0c
+    unsigned int Size() const { return _First == 0 ? 0 : _Last - _First; }
 };
 
 #include "RHFrameDictionary.h"
@@ -229,18 +161,21 @@ public:
 class RHFrameHolderFrameArray : public RHUnk00506e00
 {
 public:
-    RHFrameHolderRecord &operator[](unsigned long index) { return m_first[index]; }
+    RHFrameHolderRecord &operator[](unsigned long index) { return _First[index]; }
     void Resize(unsigned int count)
     {
         if (Size() < count)
         {
-            RHFrameHolderRecord *position = m_last;
+            RHFrameHolderRecord *position = _Last;
             FUN_00507020(position, count - FUN_00506e00(), RHFrameHolderRecord());
         }
         else if (count < FUN_00506e00())
-            FUN_00507320(m_first + count, m_last);
+            FUN_00507320(_First + count, _Last);
     }
 };
+
+#include "RHFrameMemoryPool.h"
+#include "RHFrameHolderStringMap.h"
 
 #include "RHUnk00641782.h"
 
@@ -309,11 +244,15 @@ public:
 
 class SBDrawViewport;
 
+// VTABLE: GAME 0x00678b5c
 // SIZE 0xec
 class RHFrameHolder
 {
 public:
+    RHFrameHolder();
+    virtual ~RHFrameHolder(); // vtable+0x00
     bool InitializeSpriteBank();
+    bool FUN_00506b10(SBFile *file);
     unsigned long AddRowFromResource(SBResourceManager *, unsigned long, unsigned short &, SBArray<SBGeoVector2D> &);
     unsigned long FUN_00505980(unsigned long, unsigned long &, unsigned short &, unsigned short &, long &, long &);
     unsigned short FUN_005051a0(unsigned short, SBFile &);
@@ -336,20 +275,22 @@ public:
     void DumpOneDictionary();
     RHUnk005068e0 *FUN_00505170(unsigned long);
     void Emit(SBResourceManager *, SBArray<SBGeoVector2D> &);
-    RHUnkFXDraw *&Draw() { return *(RHUnkFXDraw **)((char *)this + 4); }
+    RHUnkFXDraw *&Draw() { return m_drawManager; }
 
-    undefined m_00[8]; // 0x00
+    RHUnkFXDraw *m_drawManager;
     RHFrameHolderFrameArray m_frames; // 0x08
     RHUnk005051a0Array m_dictionaries; // 0x18
     RHUnk005051a0Array m_nightDictionaries;
     RHUnk005051a0Array m_fogDictionaries;
-    undefined m_48[4];
+    unsigned short m_48;
+    unsigned short m_4a;
     RHFrameHolderRowMap m_rows; // [0x4c]: tree head +0x50
     RHUnk005f4fc0 m_bank; // [0x5c, 0xb4)
     unsigned long m_b4; // [0xb4]: index header
     unsigned long m_b8;
     unsigned long m_bc;
-    undefined m_c0[0x28];
+    RHFrameMemoryPool m_pool;
+    RHFrameHolderStringMap m_names;
     bool m_e8; // [0xe8]: bank-open fallback
 };
 

@@ -27,6 +27,20 @@ DECOMP_SIZE_ASSERT(RHUnk005068e0, 0x14)
 DECOMP_SIZE_ASSERT(RHUnk005051a0Array, 0x10)
 DECOMP_SIZE_ASSERT(RHFrameHolderFrameArray, 0x10)
 DECOMP_SIZE_ASSERT(RHFrameHolder, 0xec)
+DECOMP_STATIC_ASSERT(offsetof(RHFrameHolder, m_drawManager) == 0x04)
+DECOMP_STATIC_ASSERT(offsetof(RHFrameHolder, m_frames) == 0x08)
+DECOMP_STATIC_ASSERT(offsetof(RHFrameHolder, m_dictionaries) == 0x18)
+DECOMP_STATIC_ASSERT(offsetof(RHFrameHolder, m_rows) == 0x4c)
+DECOMP_STATIC_ASSERT(offsetof(RHFrameHolder, m_bank) == 0x5c)
+DECOMP_STATIC_ASSERT(offsetof(RHFrameHolder, m_b4) == 0xb4)
+DECOMP_STATIC_ASSERT(offsetof(RHFrameHolder, m_pool) == 0xc0)
+DECOMP_STATIC_ASSERT(offsetof(RHFrameHolder, m_names) == 0xd8)
+DECOMP_SIZE_ASSERT(RHFrameHolderStringMap, 0x10)
+DECOMP_SIZE_ASSERT(RHFrameHolderStringNode, 0x24)
+DECOMP_STATIC_ASSERT(offsetof(RHFrameHolderRowMap, m_comparator) == 0x01)
+DECOMP_STATIC_ASSERT(offsetof(RHFrameHolderRowMap, m_head) == 0x04)
+DECOMP_STATIC_ASSERT(offsetof(RHFrameHolderRowMap, m_multi) == 0x08)
+DECOMP_STATIC_ASSERT(offsetof(RHFrameHolderRowMap, m_size) == 0x0c)
 DECOMP_SIZE_ASSERT(RHUnk00641782, 0x01)
 DECOMP_SIZE_ASSERT(RHUnk00507500, 0x10)
 DECOMP_SIZE_ASSERT(RHUnk00507500::Node, 0x14)
@@ -70,6 +84,92 @@ unsigned int RHEngine::FUN_004d2340(int type)
 
 extern unsigned int g_unk0x006c0b28;
 
+// GLOBAL: GAME 0x006c0b20
+unsigned int g_unk0x006c0b20 = 0;
+
+extern RHFrameHolder *g_unk0x006c0b1c;
+
+inline RHFrameHolderRowMap::RHFrameHolderRowMap(const std::less<unsigned long> &compare, const std::allocator<unsigned long> &allocator)
+    : m_allocator(allocator), m_comparator(compare), m_multi(false)
+{
+    RHUnk00641782 lock;
+    if (g_unk0x006c0b2c == 0)
+    {
+        Node *node = (Node *)operator new(sizeof(Node));
+        node->m_parent = 0;
+        node->m_color = 1;
+        g_unk0x006c0b2c = node;
+        g_unk0x006c0b2c->m_left = 0;
+        g_unk0x006c0b2c->m_right = 0;
+    }
+    ++g_unk0x006c0b28;
+    Node *sentinel = g_unk0x006c0b2c;
+    Node *node = (Node *)operator new(sizeof(Node));
+    node->m_parent = sentinel;
+    node->m_color = 0;
+    m_head = node;
+    m_size = 0;
+    m_head->m_left = m_head;
+    m_head->m_right = m_head;
+}
+
+inline RHFrameHolderStringMap::RHFrameHolderStringMap(const std::less<std::string> &compare, const std::allocator<void *> &allocator)
+    : m_allocator(allocator), m_comparator(compare), m_08(false)
+{
+    RHUnk00641782 lock;
+    if (g_unk0x006c0b24 == 0)
+    {
+        RHFrameHolderStringNode *node = (RHFrameHolderStringNode *)operator new(sizeof(RHFrameHolderStringNode));
+        node->m_04 = 0;
+        node->m_20 = 1;
+        g_unk0x006c0b24 = (RHFrameTreeLinksB24 *)node;
+        g_unk0x006c0b24->m_left = 0;
+        g_unk0x006c0b24->m_right = 0;
+    }
+    ++g_unk0x006c0b20;
+    RHFrameHolderStringNode *sentinel = FrameHolderStringNil();
+    RHFrameHolderStringNode *node = (RHFrameHolderStringNode *)operator new(sizeof(RHFrameHolderStringNode));
+    node->m_04 = sentinel;
+    node->m_20 = 0;
+    m_head = node;
+    m_count = 0;
+    m_head->m_00 = m_head;
+    m_head->m_08 = m_head;
+}
+
+inline RHFrameHolderStringMap::~RHFrameHolderStringMap()
+{
+    RHFrameHolderStringIterator first;
+    first.m_node = m_head->m_00;
+    RHFrameHolderStringIterator last;
+    last.m_node = m_head;
+    FUN_00507390(first, last);
+    operator delete(m_head);
+    m_head = 0;
+    m_count = 0;
+    {
+        RHUnk00641782 lock;
+        if (--g_unk0x006c0b20 == 0)
+        {
+            operator delete(g_unk0x006c0b24);
+            g_unk0x006c0b24 = 0;
+        }
+    }
+}
+
+// FUNCTION: GAME 0x00503ba0
+RHFrameHolder::RHFrameHolder()
+{
+    m_48 = 40;
+    m_4a = 60;
+    m_b8 = 0;
+    m_bc = 0;
+    g_unk0x006c0b1c = this;
+}
+
+// SYNTHETIC: GAME 0x00503d90
+// RHFrameHolder::`scalar deleting destructor'
+
 // FUNCTION: GAME 0x00503db0
 void RHFrameHolderRowMap::FUN_00503db0()
 {
@@ -84,6 +184,19 @@ void RHFrameHolderRowMap::FUN_00503db0()
         if (--g_unk0x006c0b28 == 0) {
             operator delete(g_unk0x006c0b2c);
             g_unk0x006c0b2c = 0;
+        }
+    }
+}
+
+// STUB: GAME 0x00503e20
+RHFrameHolder::~RHFrameHolder()
+{
+    for (RHFrameHolderRecord *frame = m_frames._First; frame != m_frames._Last; ++frame)
+    {
+        if (!frame->m_10 && frame->m_data)
+        {
+            operator delete((void *)frame->m_data);
+            frame->m_data = 0;
         }
     }
 }
@@ -135,7 +248,7 @@ bool RHFrameHolder::InitializeSpriteBank()
         record.m_12 = dictionaries[*(unsigned short *)(bytes + 12)];
         record.m_width = *(unsigned short *)bytes;
         record.m_height = *(unsigned short *)(bytes + 2);
-        m_frames.m_first[frame] = record;
+        m_frames._First[frame] = record;
     }
     return true;
 }
@@ -165,38 +278,38 @@ void RHUnk00507500::FUN_00504590()
 // STUB: GAME 0x00504600
 unsigned long RHFrameHolder::FUN_00504600(unsigned long index)
 {
-    if (m_frames.m_first[index].m_10 && !m_frames.m_first[index].m_data)
+    if (m_frames._First[index].m_10 && !m_frames._First[index].m_data)
     {
         FUN_005058a0(index);
         ++m_b8;
-        return m_frames.m_first[index].m_data;
+        return m_frames._First[index].m_data;
     }
     ++m_bc;
-    return m_frames.m_first[index].m_data;
+    return m_frames._First[index].m_data;
 }
 
 // FUNCTION: GAME 0x00504660
 bool RHFrameHolder::FUN_00504660(unsigned long index)
 {
-    return m_frames.m_first[index].m_10;
+    return m_frames._First[index].m_10;
 }
 
 // FUNCTION: GAME 0x00504680
 unsigned short RHFrameHolder::FUN_00504680(unsigned long index)
 {
-    return m_frames.m_first[index].m_12;
+    return m_frames._First[index].m_12;
 }
 
 // FUNCTION: GAME 0x005046a0
 unsigned short RHFrameHolder::FUN_005046a0(unsigned long index)
 {
-    return m_frames.m_first[index].m_width;
+    return m_frames._First[index].m_width;
 }
 
 // FUNCTION: GAME 0x005046c0
 unsigned short RHFrameHolder::FUN_005046c0(unsigned long index)
 {
-    return m_frames.m_first[index].m_height;
+    return m_frames._First[index].m_height;
 }
 
 // Parked: carried index/pixel registers and conditional esi save differ.
@@ -561,21 +674,21 @@ unsigned short RHFrameHolder::FUN_005051a0(unsigned short id, SBFile &file)
 // STUB: GAME 0x005058a0
 bool RHFrameHolder::FUN_005058a0(unsigned long index)
 {
-    if (!m_frames.m_first[index].m_data)
+    if (!m_frames._First[index].m_data)
     {
-        m_frames.m_first[index].m_data = (unsigned long)operator new(
-            (m_frames.m_first[index].m_size >> 1) * 2);
+        m_frames._First[index].m_data = (unsigned long)operator new(
+            (m_frames._First[index].m_size >> 1) * 2);
         if (!m_e8)
         {
-            memcpy((void *)m_frames.m_first[index].m_data,
-                (const void *)m_frames.m_first[index].m_0c,
-                m_frames.m_first[index].m_size);
+            memcpy((void *)m_frames._First[index].m_data,
+                (const void *)m_frames._First[index].m_0c,
+                m_frames._First[index].m_size);
             return true;
         }
         RHProfileFile &bank = (RHProfileFile &)m_bank;
-        bank.FUN_005f5370(m_frames.m_first[index].m_0c, 0);
-        bank.Access((void *)m_frames.m_first[index].m_data,
-            m_frames.m_first[index].m_size);
+        bank.FUN_005f5370(m_frames._First[index].m_0c, 0);
+        bank.Access((void *)m_frames._First[index].m_data,
+            m_frames._First[index].m_size);
     }
     return true;
 }
@@ -585,10 +698,10 @@ bool RHFrameHolder::FUN_005058a0(unsigned long index)
 bool RHSpriteFrameCalls::FUN_00505940(unsigned index)
 {
     RHFrameHolder *holder = (RHFrameHolder *)this;
-    if (holder->m_frames.m_first[index].m_10 && holder->m_frames.m_first[index].m_data)
+    if (holder->m_frames._First[index].m_10 && holder->m_frames._First[index].m_data)
     {
-        operator delete((void *)holder->m_frames.m_first[index].m_data);
-        holder->m_frames.m_first[index].m_data = 0;
+        operator delete((void *)holder->m_frames._First[index].m_data);
+        holder->m_frames._First[index].m_data = 0;
     }
     return true;
 }
@@ -808,13 +921,6 @@ bool RHFrameHolder::FUN_00506160(SBFile &file)
     return true;
 }
 
-struct RHFramePoolBlock
-{
-    void *address;
-    unsigned long size;
-    unsigned long page;
-};
-
 #include <algorithm>
 
 typedef bool (*RHFramePoolCompare)(const RHFramePoolBlock &, const RHFramePoolBlock &);
@@ -857,31 +963,6 @@ struct RHFramePoolList
             new (&node->value) RHFramePoolBlock(value);
         ++count;
     }
-};
-
-struct RHFramePoolPage
-{
-    void *address;
-    unsigned long index;
-};
-
-class RHFrameMemoryPool
-{
-public:
-    RHFrameMemoryPool();
-    ~RHFrameMemoryPool();
-    void FUN_005062e0();
-    unsigned long FUN_00506460(unsigned long size);
-    void FUN_005064b0(RHFramePoolList *list, const RHFramePoolBlock &value);
-    bool FUN_00506560(RHFramePoolList *list, const RHFramePoolBlock &value);
-    unsigned long FUN_005065b0() const;
-    unsigned long FUN_005065d0() const;
-    static bool FUN_00506600(const RHFramePoolBlock &first, const RHFramePoolBlock &second);
-    unsigned long Size() const { return m_pages.size(); }
-
-    RHFramePoolList *m_free;
-    RHFramePoolList *m_used;
-    std::vector<RHFramePoolPage> m_pages;
 };
 
 extern double g_unk0x00677670;
@@ -1194,6 +1275,13 @@ void RHFrameCacheEmit(RHFrameHolder *holder, SBFile &file)
     holder->FUN_00506160(file);
 }
 
+// FUNCTION: GAME 0x00506b10
+bool RHFrameHolder::FUN_00506b10(SBFile *file)
+{
+    file->Access(&file, 4);
+    return (undefined4)file == m_b4;
+}
+
 // FUNCTION: GAME 0x00506b40
 bool RHUnk005069a0::FUN_00506b40()
 {
@@ -1292,7 +1380,7 @@ void RHFrameHolder::DumpOneDictionary()
 // FUNCTION: GAME 0x00506e00
 unsigned int RHUnk00506e00::FUN_00506e00() const
 {
-    return m_first == 0 ? 0 : m_last - m_first;
+    return _First == 0 ? 0 : _Last - _First;
 }
 
 // FUNCTION: GAME 0x00506e30
@@ -1358,41 +1446,41 @@ RHFrameHolderRowMap::Iterator RHFrameHolderRowMap::Find(const unsigned long &key
 // FUNCTION: GAME 0x00507020
 void RHUnk00506e00::FUN_00507020(RHFrameHolderRecord *position, unsigned int count, const RHFrameHolderRecord &value)
 {
-    if (m_end - m_last < count)
+    if (_End - _Last < count)
     {
         unsigned int capacity = Size() + (count < Size() ? Size() : count);
-        RHFrameHolderRecord *storage = m_allocator.allocate(capacity, 0);
-        RHFrameHolderRecord *middle = Copy(m_first, position, storage);
+        RHFrameHolderRecord *storage = allocator.allocate(capacity, 0);
+        RHFrameHolderRecord *middle = Copy(_First, position, storage);
         Fill(middle, count, value);
-        Copy(position, m_last, middle + count);
-        Destroy(m_first, m_last);
-        m_allocator.deallocate(m_first, m_end - m_first);
-        m_end = storage + capacity;
-        m_last = storage + Size() + count;
-        m_first = storage;
+        Copy(position, _Last, middle + count);
+        Destroy(_First, _Last);
+        allocator.deallocate(_First, _End - _First);
+        _End = storage + capacity;
+        _Last = storage + Size() + count;
+        _First = storage;
     }
-    else if (m_last - position < count)
+    else if (_Last - position < count)
     {
-        Copy(position, m_last, position + count);
-        Fill(m_last, count - (m_last - position), value);
-        std::fill(position, m_last, value);
-        m_last += count;
+        Copy(position, _Last, position + count);
+        Fill(_Last, count - (_Last - position), value);
+        std::fill(position, _Last, value);
+        _Last += count;
     }
     else if (count > 0)
     {
-        Copy(m_last - count, m_last, m_last);
-        std::copy_backward(position, m_last - count, m_last);
+        Copy(_Last - count, _Last, _Last);
+        std::copy_backward(position, _Last - count, _Last);
         std::fill(position, position + count, value);
-        m_last += count;
+        _Last += count;
     }
 }
 
 // FUNCTION: GAME 0x00507320
 RHFrameHolderRecord *RHUnk00506e00::FUN_00507320(RHFrameHolderRecord *first, RHFrameHolderRecord *last)
 {
-    RHFrameHolderRecord *next = std::copy(last, m_last, first);
-    last = m_last;
-    m_last = next;
+    RHFrameHolderRecord *next = std::copy(last, _Last, first);
+    last = _Last;
+    _Last = next;
     while (next != last)
         ++next;
     return first;
@@ -1400,92 +1488,6 @@ RHFrameHolderRecord *RHUnk00506e00::FUN_00507320(RHFrameHolderRecord *first, RHF
 
 // TEMPLATE: GAME 0x00507360
 // ?_Destroy@?$vector@VRHUnk005069a0@@V?$allocator@VRHUnk005069a0@@@std@@@std@@IAEXPAVRHUnk005069a0@@0@Z
-
-struct RHFrameTreeLinksB24
-{
-    RHFrameTreeLinksB24 *m_left;
-    RHFrameTreeLinksB24 *m_parent;
-    RHFrameTreeLinksB24 *m_right;
-};
-
-extern RHFrameTreeLinksB24 *g_unk0x006c0b24;
-
-struct RHTreeInc00509910
-{
-    RHFrameTreeLinksB24 *m_node;
-    void FUN_00509910();
-};
-
-struct RHFrameHolderStringNode
-{
-    RHFrameHolderStringNode *m_00;
-    RHFrameHolderStringNode *m_04;
-    RHFrameHolderStringNode *m_08;
-    std::pair<const std::string, void *> m_0c;
-    int m_20;
-};
-
-static inline RHFrameHolderStringNode *FrameHolderStringNil()
-{
-    return (RHFrameHolderStringNode *)g_unk0x006c0b24;
-}
-
-struct RHFrameHolderStringIterator
-{
-    RHFrameHolderStringNode *m_node;
-    RHFrameHolderStringIterator operator++(int)
-    {
-        RHFrameHolderStringIterator previous = *this;
-        ((RHTreeInc00509910 *)this)->FUN_00509910();
-        return previous;
-    }
-};
-
-class RHFrameHolderStringMap
-{
-public:
-    RHFrameHolderStringIterator FUN_00507390(RHFrameHolderStringIterator, RHFrameHolderStringIterator);
-    RHFrameHolderStringIterator FUN_00508370(RHFrameHolderStringIterator);
-    void FUN_005088a0(RHFrameHolderStringNode *);
-    inline void RotateLeft(RHFrameHolderStringNode *node)
-    {
-        RHUnk00641782 lock;
-        RHFrameHolderStringNode *right = node->m_08;
-        node->m_08 = right->m_00;
-        if (right->m_00 != FrameHolderStringNil()) right->m_00->m_04 = node;
-        right->m_04 = node->m_04;
-        if (node == m_head->m_04) m_head->m_04 = right;
-        else if (node == node->m_04->m_00) node->m_04->m_00 = right;
-        else node->m_04->m_08 = right;
-        right->m_00 = node;
-        node->m_04 = right;
-    }
-    inline void RotateRight(RHFrameHolderStringNode *node)
-    {
-        RHUnk00641782 lock;
-        RHFrameHolderStringNode *left = node->m_00;
-        node->m_00 = left->m_08;
-        if (left->m_08 != FrameHolderStringNil()) left->m_08->m_04 = node;
-        left->m_04 = node->m_04;
-        if (node == m_head->m_04) m_head->m_04 = left;
-        else if (node == node->m_04->m_08) node->m_04->m_08 = left;
-        else node->m_04->m_00 = left;
-        left->m_08 = node;
-        node->m_04 = left;
-    }
-    static RHFrameHolderStringNode *&Left(RHFrameHolderStringNode *node) { return node->m_00; }
-    static RHFrameHolderStringNode *&Parent(RHFrameHolderStringNode *node) { return node->m_04; }
-    static RHFrameHolderStringNode *&Right(RHFrameHolderStringNode *node) { return node->m_08; }
-    static int &Color(RHFrameHolderStringNode *node) { return node->m_20; }
-    RHFrameHolderStringNode *&Root() { return m_head->m_04; }
-    RHFrameHolderStringNode *&Leftmost() { return m_head->m_00; }
-    RHFrameHolderStringNode *&Rightmost() { return m_head->m_08; }
-    undefined m_00[4];
-    RHFrameHolderStringNode *m_head;
-    bool m_08;
-    undefined m_09[3];
-    unsigned m_count;
-};
 
 static inline RHFrameHolderStringNode *FrameHolderStringMinimum(RHFrameHolderStringNode *node)
 {
@@ -1594,7 +1596,7 @@ RHFrameHolderRowMap::TreePair RHFrameHolderRowMap::InsertTree(const Value &value
             node = left ? node->m_left : node->m_right;
         }
     }
-    if (m_comparator[0])
+    if (m_multi)
     {
         TreePair result(FUN_005090e0(node, parent, value), true);
         return result;

@@ -79,28 +79,7 @@ public:
     unsigned short FUN_005e5750(unsigned long);
 };
 
-class RHFrameHolderRowMap
-{
-public:
-    struct Node;
-    struct Iterator
-    {
-        Iterator() {}
-        Iterator(Node *node) : m_node(node) {}
-        Node *m_node;
-    };
-    typedef std::pair<Iterator, bool> TreePair;
-    struct Value
-    {
-        unsigned long first;
-        unsigned long second;
-        Value(const unsigned long &key, const unsigned long &value) : first(key), second(value) {}
-    };
-    TreePair InsertTree(const Value &);
-    Node *FUN_005093e0(const unsigned long &);
-    void FUN_00503db0();
-    Iterator FUN_00506ea0(Iterator, Iterator);
-};
+#include "RHFrameHolderRowMap.h"
 
 class RHUnk005fd5c0
 {
@@ -1161,7 +1140,7 @@ unsigned int SBResourceManager::FUN_00600620(unsigned long id)
 
 // Parked: receiver/index register allocation differs despite matching frame and x87 comparisons.
 // STUB: GAME 0x006006f0
-bool SBUIUnk006006f0::FUN_006006f0(long resource, RHUnk005fc3b0 &output)
+bool RHMapResources::FUN_006006f0(long resource, RHUnk005fc3b0 &output)
 {
     bool valid = false;
     unsigned long &id = *(unsigned long *)&resource;

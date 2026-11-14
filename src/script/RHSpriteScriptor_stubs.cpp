@@ -6,7 +6,7 @@ std::string g_unk0x006c0620;
 // GLOBAL: GAME 0x006c0630
 std::string g_unk0x006c0630;
 // GLOBAL: GAME 0x006c0b1c
-RHUnkSpriteBank *g_unk0x006c0b1c;
+RHFrameHolder *g_unk0x006c0b1c;
 
 // Parked: frame lacks four bytes and two temporary stores in count-zero vector construction.
 // STUB: GAME 0x005bed50
