@@ -95,14 +95,7 @@ public:
     bool GetSurfaceForResource(long resourceId, unsigned int widgetId, unsigned int &surface);
 };
 
-#ifndef RHUNK00600820_VIEW
-#define RHUNK00600820_VIEW
-class RHUnk00600820
-{
-public:
-    bool ResolveSurface(void *surface, unsigned int id, float *value);
-};
-#endif
+#include "RHUnk00600820.h"
 
 #include "SBDrawManagerCore.h"
 

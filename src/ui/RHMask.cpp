@@ -95,7 +95,7 @@ void RHMask::InitializeFromProtoStream(SBFile &file, RHFastFindGrid *grid)
         for (unsigned short i = 0; i < obstacleCount; ++i)
         {
             file.Access(&obstacleIndex, 2);
-            m_obstacles.InsertLast(grid->m_3ea4->m_entries[obstacleIndex & 0xffff]);
+            m_obstacles.InsertLast(grid->m_3ea4->m_obstacles.m_first[obstacleIndex & 0xffff]);
         }
     }
 }

@@ -81,14 +81,7 @@ public:
     bool GetSurfaceForResource(long resourceId, unsigned int widgetId, unsigned int &surface);
 };
 
-#ifndef RHUNK00600820_VIEW
-#define RHUNK00600820_VIEW
-class RHUnk00600820
-{
-public:
-    bool ResolveSurface(void *surface, unsigned int id, float *value);
-};
-#endif
+#include "RHUnk00600820.h"
 
 // Target 0x5ec5f0, __FILE__ 0x006b9264
 // ("P:\Robin Hood\SBLibNG\SBDrawManager.cpp"). Called as `mov ecx,[esi+0x1c]`

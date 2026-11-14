@@ -46,18 +46,14 @@ public:
 
 #include "RHPortraitRenderer005cadc0.h"
 
-class SBUIListboxUnk0061e890
-{
-public:
-    int FUN_0061e890();
-};
+#include "SBUIListboxFont.h"
 
 // SIZE 0x30
 class SBUIInputFieldDrawUnk
 {
 public:
     SBUIInputFieldDrawUnk();
-    unsigned short FUN_00614230(void *, std::wstring *, const SBGeoBoundingBox2D &, unsigned int, unsigned int, unsigned int);
+    unsigned short FUN_00614230(void *, const std::wstring *, const SBGeoBoundingBox2D &, unsigned int, unsigned short, bool);
     std::wstring m_00; // 0x00
     undefined4 m_10;   // 0x10
     char m_14;         // 0x14

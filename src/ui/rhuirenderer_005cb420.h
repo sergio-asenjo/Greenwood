@@ -66,18 +66,14 @@ public:
 // SIZE 0x14
 #include "RHMapBox.h"
 
-class SBUIListboxUnk0061e890
-{
-public:
-    int FUN_0061e890();
-};
+#include "SBUIListboxFont.h"
 
 // SIZE 0x30
 class SBUIInputFieldDrawUnk
 {
 public:
     SBUIInputFieldDrawUnk();
-    unsigned short FUN_00614230(void *, std::wstring *, const SBGeoBoundingBox2D &, unsigned int, unsigned short, unsigned int);
+    unsigned short FUN_00614230(void *, const std::wstring *, const SBGeoBoundingBox2D &, unsigned int, unsigned short, bool);
     unsigned int FUN_00613e80();
     std::wstring &FUN_00613e90();
     std::wstring m_00; // 0x00

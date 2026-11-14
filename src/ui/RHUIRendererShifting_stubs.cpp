@@ -45,8 +45,15 @@ void EmitSBGeoBoundingBoxSegment(const SBGeoSegment2D &segment)
 }
 
 
-SBGeoBoundingBox2D &SBGeoBoundingBox2D::operator=(const SBGeoBoundingBox2D &)
+SBGeoBoundingBox2D &SBGeoBoundingBox2D::operator=(const SBGeoBoundingBox2D &other)
 {
+    if (this != &other) {
+        m_flag = other.m_flag;
+        if (m_flag) {
+            m_p0 = other.m_p0;
+            m_p1 = other.m_p1;
+        }
+    }
     return *this;
 }
 

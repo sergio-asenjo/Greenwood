@@ -243,12 +243,7 @@ public:
     bool m_dirty;
 };
 
-class RHUnkMaskObstacleTable
-{
-public:
-    char m_pad0[0x64];
-    void **m_entries;
-};
+#include "RHUnkMaskObstacleTable.h"
 
 #include "RHFastFindGridCore.h"
 

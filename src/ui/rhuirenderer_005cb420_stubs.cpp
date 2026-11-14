@@ -7,13 +7,6 @@ public:
     bool FUN_0060dae0(unsigned int id);
 };
 
-class SBUIUnk0060dd00
-{
-public:
-    int FUN_0060dda0(SBUIListboxUnk0061e890 *font, bool flag);
-};
-
-unsigned short SBUIInputFieldDrawUnk::FUN_00614230(void *, std::wstring *, const SBGeoBoundingBox2D &, unsigned int, unsigned short, unsigned int) { return 0; }
 // TEMPLATE: GAME 0x00613e90 FOLDED
 // ?FUN_00613e90@SBUIInputFieldDrawUnk@@QAEAAV?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@XZ
 std::wstring &SBUIInputFieldDrawUnk::FUN_00613e90() { return m_00; }
@@ -69,7 +62,7 @@ bool RHPopupRenderer0060dbc0::FUN_0060dd10(unsigned id)
     }
     if (font)
     {
-        ((SBUIUnk0060dd00 *)this)->FUN_0060dda0(font, false);
+        FUN_0060dda0(font, false);
         return true;
     }
     ((unsigned int *)((char *)this + 0x40))[*(unsigned int *)((char *)this + 0x48) & 1] = 0;
