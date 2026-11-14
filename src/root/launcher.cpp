@@ -94,6 +94,79 @@ LRESULT CALLBACK FUN_004094f0(HWND window, UINT message, WPARAM first, LPARAM se
 #include <stdio.h>
 #include <string.h>
 
+extern LONG (__stdcall *g_rhsoundRegOpenKeyExA)(HKEY, LPCSTR, DWORD, REGSAM, PHKEY);
+extern LONG (__stdcall *g_rhsoundRegQueryValueExA)(HKEY, LPCSTR, LPDWORD, LPDWORD, LPBYTE, LPDWORD);
+int FUN_005f56b0(const std::string &name);
+
+// FUNCTION: GAME 0x004090d0
+void FUN_004090d0()
+{
+    unsigned index = 0;
+    const char *languages[] = {
+        // STRING: GAME 0x006a6dac
+        "1031",
+        // STRING: GAME 0x006a6da4
+        "2047",
+        // STRING: GAME 0x006a6d9c
+        "1036",
+        // STRING: GAME 0x006a6d94
+        "1040",
+        // STRING: GAME 0x006a6d8c
+        "2070",
+        // STRING: GAME 0x006a6d84
+        "3082",
+        // STRING: GAME 0x006a6d7c
+        "1049",
+        // STRING: GAME 0x006a6d74
+        "1041",
+        // STRING: GAME 0x006a6d6c
+        "1029",
+        // STRING: GAME 0x006a6d64
+        "1045",
+        // STRING: GAME 0x006a6d5c
+        "1046",
+        // STRING: GAME 0x006a6d54
+        "1028",
+        // STRING: GAME 0x006a6d4c
+        "1042",
+        // STRING: GAME 0x006a6d44
+        "2052",
+        // STRING: GAME 0x006a6d3c
+        "1054",
+        // STRING: GAME 0x006a6d34
+        "0000"
+    };
+    {
+        HKEY key;
+        char language[12];
+        DWORD type;
+        DWORD size;
+        if (g_rhsoundRegOpenKeyExA(HKEY_LOCAL_MACHINE, "Software\\Spellbound Software\\Robin Hood 1.0", 0,
+                KEY_READ, &key) == ERROR_SUCCESS)
+        {
+            size = sizeof(language);
+            if (g_rhsoundRegQueryValueExA(key,
+                    // STRING: GAME 0x006a6d28
+                    "Language", 0, &type, (unsigned char *)language, &size) == ERROR_SUCCESS)
+            {
+                if (FUN_005f6400(std::string(language)))
+                {
+                    FUN_005f56b0(std::string(language));
+                    return;
+                }
+            }
+        }
+    }
+    for (; strcmp(languages[index], "0000") != 0; ++index)
+    {
+        if (FUN_005f6400(std::string(languages[index])))
+        {
+            FUN_005f56b0(std::string(languages[index]));
+            break;
+        }
+    }
+}
+
 // FUNCTION: GAME 0x004096b0
 void FUN_004096b0()
 {
@@ -336,6 +409,55 @@ setReg:
         return true;
     }
     return false;
+}
+
+extern LONG (__stdcall *g_rhsoundRegSetValueExA)(HKEY, LPCSTR, DWORD, DWORD, const BYTE *, DWORD);
+extern LONG (__stdcall *g_rhsoundRegCloseKey)(HKEY);
+extern LONG (__stdcall *g_rhsoundRegCreateKeyExA)(HKEY, LPCSTR, DWORD, LPSTR, DWORD, REGSAM, LPSECURITY_ATTRIBUTES, PHKEY, LPDWORD);
+
+// FUNCTION: GAME 0x0040a0d0
+bool FUN_0040a0d0()
+{
+    HKEY key;
+    unsigned long minor;
+    unsigned long build;
+    unsigned long major;
+    unsigned long disposition;
+    char buffer[0x1000];
+    major = g_unk0x006c0580.m_00;
+    minor = g_unk0x006c0580.m_02;
+    build = g_unk0x006c0580.m_04;
+    g_rhsoundRegCreateKeyExA(HKEY_LOCAL_MACHINE, "Software\\Spellbound Software\\Robin Hood 1.0", 0,
+        "Software\\Spellbound Software\\Robin Hood 1.0", 0, KEY_WRITE, 0, &key, &disposition);
+    LONG (__stdcall *setValue)(HKEY, LPCSTR, DWORD, DWORD, const BYTE *, DWORD) = g_rhsoundRegSetValueExA;
+    setValue(key,
+        // STRING: GAME 0x006a7074
+        "Major Version", 0, REG_DWORD, (const unsigned char *)&major, 4);
+    setValue(key,
+        // STRING: GAME 0x006a7064
+        "Minor Version", 0, REG_DWORD, (const unsigned char *)&minor, 4);
+    setValue(key,
+        // STRING: GAME 0x006a705c
+        "Build", 0, REG_DWORD, (const unsigned char *)&build, 4);
+    GetCurrentDirectoryA(0x1000, buffer);
+    setValue(key,
+        // STRING: GAME 0x006a7054
+        "Path", 0, REG_SZ, (const unsigned char *)buffer, strlen(buffer) + 1);
+    sprintf(buffer,
+        // STRING: GAME 0x006a7040
+        "v%d.%d.%03d (%s)", g_unk0x006c0580.m_00, g_unk0x006c0580.m_02, g_unk0x006c0580.m_04,
+        g_unk0x006c0580.m_versionText.c_str());
+    setValue(key,
+        // STRING: GAME 0x006a703c
+        "ID", 0, REG_SZ, (const unsigned char *)buffer, strlen(buffer) + 1);
+    g_rhsoundRegCloseKey(key);
+    return true;
+}
+
+void EmitLauncherRegistry()
+{
+    FUN_004090d0();
+    FUN_0040a0d0();
 }
 
 // Parked: launcher reconstruction still lacks verified engine helpers, switches and slideshow flow.

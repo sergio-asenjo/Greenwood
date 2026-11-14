@@ -9,9 +9,10 @@ class RHUnk00408f50
 public:
     RHUnk00408f50();
     ~RHUnk00408f50();
-    unsigned m_00;
-    unsigned m_04;
-    char m_08[2];
+    unsigned short m_00;
+    unsigned short m_02;
+    unsigned short m_04;
+    char m_06[4];
     unsigned short m_versionMode;
     std::string m_versionText;
     std::string m_1c;
@@ -115,7 +116,7 @@ void FUN_004090d0();
 void FUN_004096b0();
 char **FUN_00409d10(char *command, unsigned *count);
 bool FUN_00409d70(char **arguments, unsigned *index, unsigned count);
-void FUN_0040a0d0();
+bool FUN_0040a0d0();
 unsigned FUN_005e1440();
 bool FUN_005f6400(const std::string &name);
 bool FUN_005f5d30(const std::string &name);

@@ -1,15 +1,7 @@
 #include "SB.h"
 #include "RHUnk00613e90.h"
 
-class RHUnk005df510
-{
-public:
-    int m_0;
-    int m_4;
-    int m_8;
-
-    bool Serialize(SBFile &file);
-};
+#include "RHUnk005df510.h"
 
 class RHUnk005dfb00
 {

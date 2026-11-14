@@ -15,7 +15,7 @@ RHUnk00613e90::RHUnk00613e90(const RHUnk00613e90 &from, const RHUnk00613e90 &to)
 }
 
 // FUNCTION: GAME 0x005df510
-bool RHUnk005df510::Serialize(SBFile &file)
+bool RHUnk00613e90::Serialize(SBFile &file)
 {
     file.Access(&m_0, 4);
     file.Access(&m_4, 4);
