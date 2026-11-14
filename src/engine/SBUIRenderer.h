@@ -7,11 +7,7 @@ class SBGeoPoint2D;
 class SBGeoBoundingBox2D;
 class RHUnk005fc3b0;
 
-class SBUIUnk006006f0
-{
-public:
-    bool FUN_006006f0(long, RHUnk005fc3b0 &);
-};
+#include "RHMapResources.h"
 
 class SBUIListboxUnk0061e890;
 
@@ -53,7 +49,6 @@ public:
     int FUN_0060dc20(unsigned int);
     int FUN_0060dcd0();
     void *FUN_0060dd00();
-    int FUN_0060dda0(SBUIListboxUnk0061e890 *, bool);
     bool FUN_0060e0d0(void *, void *, void *, void *);
 };
 

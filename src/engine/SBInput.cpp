@@ -836,7 +836,12 @@ int FUN_005fb030(unsigned scanCode, unsigned short *output, int capacity, int mo
     return MultiByteToWideChar(0, 1, (const char *)characters, -1, output, capacity);
 }
 
-// STUB: GAME 0x005fb0f0
+static inline unsigned char SBInputMergeModifiers(const volatile unsigned char &first, const unsigned char &second)
+{
+    return first | second;
+}
+
+// FUNCTION: GAME 0x005fb0f0
 int FUN_005fb0f0(unsigned scanCode, unsigned short *output, const void *input, unsigned capacity)
 {
     g_inputModifierKeyboardLayout = GetKeyboardLayout(0);
@@ -847,13 +852,13 @@ int FUN_005fb0f0(unsigned scanCode, unsigned short *output, const void *input, u
     const unsigned char *state = (const unsigned char *)input;
     g_inputModifierKeyboardState[0xa0] = state[0x2a];
     g_inputModifierKeyboardState[0xa1] = state[0x36];
-    g_inputModifierKeyboardState[0x10] = state[0x2a] | state[0x36];
+    g_inputModifierKeyboardState[0x10] = SBInputMergeModifiers(state[0x2a], state[0x36]);
     g_inputModifierKeyboardState[0xa2] = state[0x1d];
     g_inputModifierKeyboardState[0xa3] = state[0x9d];
-    g_inputModifierKeyboardState[0x11] = state[0x9d] | state[0x1d];
+    g_inputModifierKeyboardState[0x11] = SBInputMergeModifiers(state[0x9d], state[0x1d]);
     g_inputModifierKeyboardState[0xa4] = state[0x38];
     g_inputModifierKeyboardState[0xa5] = state[0xb8];
-    g_inputModifierKeyboardState[0x12] = state[0x38] | state[0xb8];
+    g_inputModifierKeyboardState[0x12] = SBInputMergeModifiers(state[0x38], state[0xb8]);
     char characters[3];
     memset(characters, 0, sizeof(characters));
     ToAscii(key, scanCode, g_inputModifierKeyboardState, (unsigned short *)characters, 0);

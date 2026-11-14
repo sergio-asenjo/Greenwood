@@ -20,24 +20,16 @@ public:
     SBGeoPoint2D &operator=(const SBGeoPoint2D &);
     SBGeoVector2D Unk005fc110(const SBGeoPoint2D &) const;
     SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &) const;
+    SBGeoPoint2D FUN_005fc200(const SBGeoPoint2D &) const;
+    float GetX() const { return m_x; }
+    float GetY() const { return m_y; }
     float m_x; // 0x00
     float m_y; // 0x04
 };
 #endif
 
 #ifndef SBGEO_VECTOR2D_VIEW
-#define SBGEO_VECTOR2D_VIEW
-// SIZE 0x08
-class SBGeoVector2D : public SBGeoPoint2D
-{
-public:
-    SBGeoVector2D();
-    SBGeoVector2D(float, float);
-    SBGeoVector2D(const SBGeoPoint2D &);
-    ~SBGeoVector2D() {}
-    SBGeoVector2D(const SBGeoVector2D &other);
-    SBGeoVector2D &operator=(const SBGeoVector2D &other);
-};
+#include "SBGeoVector2D.h"
 #endif
 
 #include "SBGeoBoundingBox2DCore.h"
@@ -64,7 +56,7 @@ public:
     SBUIInputFieldDrawUnk();
     bool FUN_00614bf0(void *, std::wstring *, const SBGeoPoint2D &, unsigned int);
     void FUN_00614d70(bool value);
-    unsigned short FUN_00614230(void *, std::wstring *, const SBGeoBoundingBox2D &, unsigned int, unsigned int, unsigned int);
+    unsigned short FUN_00614230(void *, const std::wstring *, const SBGeoBoundingBox2D &, unsigned int, unsigned short, bool);
     unsigned long FUN_00613940(const SBFontUnk0061e840 *,
         const std::vector<std::wstring>::const_iterator &,
         const std::vector<std::wstring>::const_iterator &,
@@ -76,6 +68,7 @@ public:
     unsigned short FUN_00613ea0(void *, const std::wstring *, const SBGeoBoundingBox2D &, unsigned int, unsigned int);
     RHMapBox *FUN_00613e70();
     unsigned int FUN_00613e80();
+    std::wstring &FUN_00613e90();
     bool OneWordBiggerThanALine(const SBFontUnk0061e840 *, float, const std::vector<std::wstring> *);
     std::wstring m_00; // 0x00
     undefined4 m_10; // 0x10

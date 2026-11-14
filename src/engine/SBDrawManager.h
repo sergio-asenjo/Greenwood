@@ -21,13 +21,16 @@ public:
 struct SBDrawUnk005eec00Edge
 {
     unsigned char m_00;
-    char m_01[7];
+    char m_01[3];
+    int m_04;
     unsigned long m_08;
-    char m_0c[4];
+    int m_0c;
     unsigned long m_10;
     int m_14;
     int m_18;
 };
+
+template<class T> class SBList;
 
 #ifndef SBDRAW_MANAGER_OWNER_LAYOUT
 class RHUnk005ef320
@@ -41,7 +44,7 @@ public:
     void FUN_005e57e0(unsigned, SBGeoVector2D &);
     bool FUN_005e5bd0(unsigned long, void *);
     bool FUN_005e5d30(unsigned long);
-    bool FUN_005ee640(void *, SBDrawUnk005fc3b0Point &);
+    bool FUN_005ee640(SBList<SBGeoPoint2D> &, const SBGeoVector2D &);
     bool FUN_005eec00(unsigned long, unsigned long, void *, unsigned long,
         unsigned long, unsigned long, unsigned long, unsigned long);
     bool FUN_005e4810(unsigned short width, unsigned short height, unsigned short depth);
@@ -333,7 +336,7 @@ public:
     void FUN_005e57e0(unsigned, SBGeoVector2D &);
     bool FUN_005e5bd0(unsigned long, void *);
     bool FUN_005e5d30(unsigned long);
-    bool FUN_005ee640(void *, SBDrawUnk005fc3b0Point &);
+    bool FUN_005ee640(SBList<SBGeoPoint2D> &, const SBGeoVector2D &);
     bool FUN_005eec00(unsigned long, unsigned long, void *, unsigned long,
         unsigned long, unsigned long, unsigned long, unsigned long);
     bool FUN_005e4810(unsigned short width, unsigned short height, unsigned short depth);
@@ -372,10 +375,14 @@ public:
     char m_pad116[0x02];
     SBGeoBoundingBox2D m_bounds;
     char m_12c[0x04];
-    void *m_130;
-    void *m_134;
-    void *m_138;
-    void *m_13c;
+    unsigned long m_130;
+    SBDrawUnk005eec00Edge *m_134;
+    unsigned long m_138;
+    unsigned long *m_13c;
+    unsigned long m_140;
+    unsigned long m_144;
+    unsigned long m_148;
+    unsigned long m_14c;
 };
 #endif
 

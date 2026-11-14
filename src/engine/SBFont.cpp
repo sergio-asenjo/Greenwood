@@ -326,10 +326,10 @@ bool SBFontUnk0061e840::FUN_0061eb00(SBFile &file)
 }
 
 // FUNCTION: GAME 0x0061eb80
-int SBFontUnk0061e840::FUN_0061eb80(SBFontTextView *text, void *a, const void *b, bool c)
+int SBFontUnk0061e840::FUN_0061eb80(const std::wstring *text, void *a, const void *b, bool c)
 {
     int count = 0;
-    for (unsigned short *it = text->m_04; it != text->end(); ++count, ++it) {
+    for (std::wstring::const_iterator it = text->begin(); it != text->end(); ++count, ++it) {
         v4(*it, a, b, c);
     }
     return count;

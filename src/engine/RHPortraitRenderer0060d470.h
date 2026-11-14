@@ -10,6 +10,14 @@
 
 class RHMapResources;
 class SBGeoPoint2D;
+class RHUnk005ef320;
+
+struct RHPortraitRendererSurfaces
+{
+    unsigned int values[2];
+    unsigned int &operator[](unsigned int index) { return values[index]; }
+    const unsigned int &operator[](unsigned int index) const { return values[index]; }
+};
 
 // VTABLE: GAME 0x0067a654
 // SIZE 0x4c
@@ -17,6 +25,8 @@ class RHPortraitRenderer0060d470
 {
 public:
     RHPortraitRenderer0060d470();
+    RHPortraitRenderer0060d470(const RHPortraitRenderer0060d470 &other);
+    RHPortraitRenderer0060d470 &operator=(const RHPortraitRenderer0060d470 &other);
     virtual ~RHPortraitRenderer0060d470();
     virtual void FUN_0060d530(unsigned int surface);
     virtual void FUN_0060d780(const SBGeoPoint2D &point);
@@ -25,16 +35,16 @@ public:
     {
         m_name.assign(name, 0, std::wstring::npos);
     }
+    void AssignPosition(const SBGeoBoundingBox2D &position);
     RHMapResources *m_resources;   // 0x04
     SBGeoBoundingBox2D m_position; // 0x08
-    void *m_drawManager;           // 0x1c
+    RHUnk005ef320 *m_drawManager;   // 0x1c
     unsigned int m_hardware;       // 0x20
     unsigned int m_24;             // 0x24
     std::wstring m_name;           // 0x28
     long m_widgetResource;         // 0x38
     unsigned int m_3c;             // 0x3c
-    unsigned int m_40;             // 0x40
-    unsigned int m_44;             // 0x44
+    RHPortraitRendererSurfaces m_surfaces;
     unsigned int m_48;             // 0x48
 };
 

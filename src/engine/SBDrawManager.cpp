@@ -924,9 +924,8 @@ bool SBDrawManager::BlitAlpha(unsigned long source, SBGeoBoundingBox2D *sourceBo
     if (alpha == source) {
         alphaView = sourceView;
     }
-    unsigned long destinationValue = destination;
-    if (destinationValue != source) {
-        if (!FUN_005e5a00(destinationValue, destinationView, 0)) {
+    if (destination != source) {
+        if (!FUN_005e5a00(destination, destinationView, 0)) {
             ((RHUnk005ef320 *)this)->FUN_005e5d30(source);
             ((RHUnk005ef320 *)this)->FUN_005e5d30(alpha);
             SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0xdf6,
@@ -3018,12 +3017,262 @@ bool FUN_005ede40(RHUnk005ef320 *draw, const char *format, ...)
     return true;
 }
 
+#include "SBList.h"
+#include <stdlib.h>
+
+struct RHUnk005c9010Iterator;
+void FUN_005c9010(RHUnk005c9010Iterator &, int, std::bidirectional_iterator_tag);
+
+#define SBDrawAdvancePolygonCursor(Current, Distance) \
+    std::_Advance((std::list<unsigned long>::iterator &)(Current), (long)(Distance), std::bidirectional_iterator_tag())
+
+template<> inline void SBList<SBGeoPoint2D>::GoTo(int wanted)
+{
+    int count = _Size;
+    if (m_dirty)
+    {
+        if (wanted <= (count + 1) / 2)
+        {
+            m_current = begin();
+            std::bidirectional_iterator_tag category;
+            FUN_005c9010((RHUnk005c9010Iterator &)m_current, wanted, category);
+        }
+        else
+        {
+            m_current = end();
+            std::bidirectional_iterator_tag category;
+            FUN_005c9010((RHUnk005c9010Iterator &)m_current, wanted - count, category);
+        }
+        m_dirty = false;
+    }
+    else
+    {
+        int previous = m_index;
+        if (wanted == previous)
+            return;
+        if (wanted < previous)
+        {
+            if (wanted < (previous + 1) / 2)
+            {
+                m_current = begin();
+                std::bidirectional_iterator_tag category;
+                FUN_005c9010((RHUnk005c9010Iterator &)m_current, wanted, category);
+            }
+            else
+            {
+                std::bidirectional_iterator_tag category;
+                FUN_005c9010((RHUnk005c9010Iterator &)m_current, wanted - previous, category);
+            }
+        }
+        else if (wanted < (count + previous) / 2)
+        {
+            int distance = wanted - previous;
+            SBDrawAdvancePolygonCursor(m_current, distance);
+        }
+        else
+        {
+            m_current = end();
+            SBDrawAdvancePolygonCursor(m_current, wanted - count);
+        }
+    }
+    m_index = wanted;
+}
+
+template<> inline void SBList<SBGeoPoint2D>::GoToForTraversal(int wanted)
+{
+    int count = _Size;
+    if (m_dirty)
+    {
+        if (wanted <= (count + 1) / 2)
+        {
+            m_current = begin();
+            std::bidirectional_iterator_tag category;
+            FUN_005c9010((RHUnk005c9010Iterator &)m_current, wanted, category);
+        }
+        else
+        {
+            m_current = end();
+            SBDrawAdvancePolygonCursor(m_current, wanted - count);
+        }
+        m_dirty = false;
+    }
+    else
+    {
+        int previous = m_index;
+        if (wanted == previous)
+            return;
+        if (wanted < previous)
+        {
+            if (wanted < (previous + 1) / 2)
+            {
+                m_current = begin();
+                SBDrawAdvancePolygonCursor(m_current, wanted);
+            }
+            else
+            {
+                int distance = wanted - previous;
+                SBDrawAdvancePolygonCursor(m_current, distance);
+            }
+        }
+        else if (wanted < (count + previous) / 2)
+        {
+            int distance = wanted - previous;
+            SBDrawAdvancePolygonCursor(m_current, distance);
+        }
+        else
+        {
+            m_current = end();
+            SBDrawAdvancePolygonCursor(m_current, wanted - count);
+        }
+    }
+    m_index = wanted;
+}
+
+template<> inline SBGeoPoint2D &SBList<SBGeoPoint2D>::Get(int wanted)
+{
+    GoTo(wanted);
+    return *m_current;
+}
+
+template<> inline SBGeoPoint2D &SBList<SBGeoPoint2D>::GetForTraversal(int wanted)
+{
+    GoToForTraversal(wanted);
+    return *m_current;
+}
+
+#undef SBDrawAdvancePolygonCursor
+
+DECOMP_SIZE_ASSERT(SBDrawUnk005eec00Edge, 0x1c)
+DECOMP_SIZE_ASSERT(SBList<SBGeoPoint2D>, 0x28)
+DECOMP_STATIC_ASSERT(offsetof(SBList<SBGeoPoint2D>, m_current) == 0xc)
+DECOMP_STATIC_ASSERT(offsetof(SBList<SBGeoPoint2D>, m_dirty) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(SBList<SBGeoPoint2D>, m_index) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(SBList<SBGeoPoint2D>, m_20) == 0x20)
+DECOMP_STATIC_ASSERT(offsetof(SBDrawUnk005eec00Edge, m_04) == 4)
+DECOMP_STATIC_ASSERT(offsetof(SBDrawUnk005eec00Edge, m_08) == 8)
+DECOMP_STATIC_ASSERT(offsetof(SBDrawUnk005eec00Edge, m_0c) == 0xc)
+DECOMP_STATIC_ASSERT(offsetof(SBDrawUnk005eec00Edge, m_10) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(SBDrawUnk005eec00Edge, m_14) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(SBDrawUnk005eec00Edge, m_18) == 0x18)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005ef320, m_130) == 0x130)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005ef320, m_134) == 0x134)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005ef320, m_138) == 0x138)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005ef320, m_13c) == 0x13c)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005ef320, m_144) == 0x144)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005ef320, m_14c) == 0x14c)
+
+// STUB: GAME 0x005ee640
+bool RHUnk005ef320::FUN_005ee640(SBList<SBGeoPoint2D> &polygon, const SBGeoVector2D &offset)
+{
+    SBGeoPoint2D point;
+    unsigned long previousX;
+    unsigned long previousY;
+    unsigned long x;
+    unsigned long y;
+    SBDrawUnk005eec00Edge *&edges = m_134;
+    unsigned long *&active = m_13c;
+    unsigned long &edgeCount = m_130;
+    unsigned long &activeCount = m_138;
+    unsigned long &firstY = m_144;
+    unsigned long &lastY = m_14c;
+    if (edges)
+    {
+        operator delete(edges);
+        edges = 0;
+    }
+    if (active)
+    {
+        operator delete(active);
+        active = 0;
+    }
+    unsigned long count = polygon.size();
+    if (count < 2)
+        return false;
+    edges = (SBDrawUnk005eec00Edge *)operator new(count * sizeof(SBDrawUnk005eec00Edge));
+    active = (unsigned long *)operator new(count * sizeof(unsigned long));
+    edgeCount = 0;
+    activeCount = 0;
+    firstY = ~0UL;
+    lastY = 0;
+    point = polygon.Get(count - 1).Unk005fc190(offset);
+    previousX = (int)point.m_x;
+    previousY = (int)point.m_y;
+    for (unsigned long index = 0; index < count; ++index)
+    {
+        point = polygon.GetForTraversal(index).Unk005fc190(offset);
+        x = (int)point.m_x;
+        y = (int)point.m_y;
+        if (abs((int)(y - previousY)) > 0)
+        {
+            if (y < firstY)
+                firstY = y;
+            if (y > lastY)
+                lastY = y;
+            int rise = y - previousY;
+            int run = x - previousX;
+            SBDrawUnk005eec00Edge *edge = &edges[edgeCount];
+            edge->m_00 = false;
+            if (previousY > y)
+            {
+                edge->m_04 = x;
+                edge->m_0c = previousX;
+                edge->m_10 = previousY;
+                edge->m_08 = y;
+                run = -run;
+                rise = -rise;
+            }
+            else
+            {
+                edge->m_0c = x;
+                edge->m_04 = previousX;
+                edge->m_08 = previousY;
+                edge->m_10 = y;
+            }
+            edge->m_14 = edge->m_04 << 16;
+            edge->m_18 = (run << 16) / rise;
+            ++edgeCount;
+        }
+        previousX = x;
+        previousY = y;
+    }
+    if (edgeCount < 2)
+        return false;
+    for (index = 0; index < edgeCount; ++index)
+        if (edges[index].m_08 == firstY)
+            active[activeCount++] = index;
+    count = activeCount;
+    if ((count % 2) == true)
+        return false;
+    if (count)
+    {
+        unsigned long passes = count - 1;
+        while (passes)
+        {
+            for (count = 0; count < passes; ++count)
+            {
+                unsigned long right = active[count + 1];
+                SBDrawUnk005eec00Edge *rightEdge = &edges[right];
+                unsigned long left = active[count];
+                SBDrawUnk005eec00Edge *leftEdge = &edges[left];
+                int difference = leftEdge->m_14 - rightEdge->m_14;
+                if (difference > 0 || (difference == 0 && leftEdge->m_18 > rightEdge->m_18))
+                {
+                    active[count + 1] = left;
+                    active[count] = right;
+                }
+            }
+            --passes;
+        }
+    }
+    return true;
+}
+
 // Parked: scanline frame, callback selection, and active-edge scheduling differ.
 // STUB: GAME 0x005eec00
 bool RHUnk005ef320::FUN_005eec00(unsigned long destination, unsigned long source, void *polygon,
     unsigned long scale, unsigned long offsetX, unsigned long offsetY, unsigned long color, unsigned long alpha)
 {
-    SBDrawUnk005fc3b0Point point;
+    SBGeoVector2D point;
     SBDrawViewport destinationView;
     SBDrawViewport sourceView;
     if (source == 0 && !*(unsigned char *)((char *)this + 0x112)) {
@@ -3032,7 +3281,7 @@ bool RHUnk005ef320::FUN_005eec00(unsigned long destination, unsigned long source
     }
     point.m_x = 0;
     point.m_y = 0;
-    if (!FUN_005ee640(polygon, point)) return false;
+    if (!FUN_005ee640(*(SBList<SBGeoPoint2D> *)polygon, point)) return false;
     unsigned long tint = ((((color >> 16) & 0xff) * alpha) & 0xff00) << 8;
     tint |= ((color & 0xff) * alpha) >> 8;
     tint |= (((color >> 8) & 0xff) * alpha) & 0xff00;

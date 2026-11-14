@@ -1,14 +1,6 @@
 #include <windows.h>
 #include "SBHardware.h"
-#include <string>
-
-class __declspec(novtable) RHUnk0060f8a0
-{
-public:
-    void *FUN_0060f880(unsigned flags);
-    virtual ~RHUnk0060f8a0();
-    std::string m_04;
-};
+#include "RHUnk0060f8a0.h"
 
 // FUNCTION: GAME 0x0060f880
 void *RHUnk0060f8a0::FUN_0060f880(unsigned flags)

@@ -3,7 +3,6 @@
 
 
 
-void SBUI::FUN_006189e0(unsigned long) {}
 
 
 

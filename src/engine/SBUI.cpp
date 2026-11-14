@@ -35,6 +35,8 @@ void EmitRHUnk006283e0(RHUnk006283e0 *input)
 #include "SBUIFrameStorage.h"
 
 DECOMP_SIZE_ASSERT(RHUnk00627cc0, 0x58)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk00627cc0, m_key) == 4)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk00627cc0, m_values) == 0x10)
 
 namespace std
 {
@@ -72,7 +74,8 @@ public:
     SBUIMouseStorage() {}
     ~SBUIMouseStorage() {}
     virtual void *FUN_00627ae0(unsigned flags) = 0;
-    unsigned m_04;
+    unsigned short m_04;
+    unsigned short m_06;
     unsigned short m_08;
     unsigned short m_0a;
     SBUIMouseFrameArray m_frames;
@@ -87,6 +90,7 @@ public:
     virtual void *FUN_00627ae0(unsigned flags);
     bool FUN_00627ee0(unsigned long surface);
     bool FUN_00627c90(const SBGeoPoint2D &first, const SBGeoVector2D &second);
+    bool FUN_00627fb0();
     bool InputLoop(const SBInputMouseState &state);
     void FUN_00628500();
     SBGeoPoint2D m_position;
@@ -240,6 +244,108 @@ class RHSaveGame;
 #include "RHPortraitUnk005d3880.h"
 #include "SBFrameWnd.h"
 #include "RHGameWidgetLifetime.h"
+#include "SBUIRendererInputField.h"
+#include "SBUIListboxFont.h"
+
+DECOMP_SIZE_ASSERT(SBFrameEvent, 0x20)
+DECOMP_SIZE_ASSERT(SBUIListboxUnk0061e890, 0x44)
+DECOMP_STATIC_ASSERT(offsetof(SBUIListboxUnk0061e890, m_40) == 0x40)
+DECOMP_STATIC_ASSERT(offsetof(SBUI, m_179c) == 0x179c)
+DECOMP_STATIC_ASSERT(offsetof(SBUI, m_17c4) == 0x17c4)
+DECOMP_STATIC_ASSERT(offsetof(SBUI, m_17c8) == 0x17c8)
+
+// STUB: GAME 0x006189e0
+void SBUI::FUN_006189e0(unsigned long frame)
+{
+    unsigned count = m_windows.size();
+    if (m_surface == 0)
+    {
+        for (unsigned index = 0; index < count; ++index)
+            m_windows[index]->V14();
+    }
+    else
+    {
+        ++m_17c8;
+        if (m_17c4[m_17c8 & 1])
+        {
+            unsigned restoreCount = m_windows.size();
+            m_17c4[m_17c8 & 1] = false;
+            ((SBDrawManager *)m_draw)->FUN_005e6440(m_surface, &m_179c[m_17c8 & 1],
+                0, &m_179c[m_17c8 & 1], 0);
+            for (unsigned index = 0; index < restoreCount; ++index)
+                m_windows[index]->V18((unsigned long)&m_179c[m_17c8 & 1]);
+        }
+        for (unsigned index = 0; index < count; ++index)
+        {
+            for (SBFrameEvent *event = m_windows[index]->V10(frame); event != 0; event = event->next)
+            {
+                switch (event->type)
+                {
+                case 3:
+                    ((SBDrawManager *)m_draw)->FUN_005e6440(m_surface, &event->bounds, 0, &event->bounds, 0);
+                case 1:
+                    event->widget->V0c();
+                    break;
+                case 2:
+                    ((SBDrawManager *)m_draw)->FUN_005e6440(m_surface, &event->bounds, 0, &event->bounds, 0);
+                    break;
+                }
+            }
+        }
+    }
+    if (m_1788 && m_font != 0)
+    {
+        SBUIInputFieldDrawUnk renderer;
+        SBGeoPoint2D position = m_tooltip->m_position.Unk005fc190(SBThreadedInput::GetSize()).FUN_005fc200(
+            SBGeoVector2D(0.0f, (float)(unsigned)((SBUIListboxUnk0061e890 *)m_font)->FUN_0061e890()));
+        SBGeoBoundingBox2D source;
+        SBGeoBoundingBox2D destination;
+        renderer.FUN_00614d70(true);
+        renderer.FUN_00614bf0(m_font, &m_178c, SBGeoPoint2D(0, 0), 1);
+        ((RHMobileUnk00607da0 *)&source)->FUN_00607da0(*(const RHMobileUnk00607da0 *)renderer.FUN_00613e70());
+        ((RHMobileUnk00607da0 *)&source)->FUN_00607da0((const RHMobileUnk00607da0 &)
+            source.operator-(source.Min()));
+        source.SetMax(source.Max().Unk005fc190(SBGeoVector2D(1, 1)));
+        if (position.GetX() + source.Width() > ((RHUnkFXDraw *)m_draw)->FUN_005e56c0(0))
+        {
+            if (m_tooltip->m_position.GetX() - source.Width() > 0.0f)
+                position = m_tooltip->m_position.Unk005fc190(SBGeoVector2D(0,
+                    (float)((unsigned)SBThreadedInput::GetHeight() -
+                        (unsigned)((SBUIListboxUnk0061e890 *)m_font)->FUN_0061e890()))).FUN_005fc200(
+                            SBGeoVector2D(source.Width(), 0));
+            else
+            {
+                source.SetMin(position);
+                source.SetMax(SBGeoVector2D(((RHUnkFXDraw *)m_draw)->FUN_005e56c0(0),
+                    position.GetY() + (unsigned)((SBUIListboxUnk0061e890 *)m_font)->FUN_0061e890() * 3));
+                position.Set(0.0f, 0.0f);
+            }
+        }
+        ((RHMobileUnk00607da0 *)&destination)->FUN_00607da0((const RHMobileUnk00607da0 &)
+            source.FUN_006090d0(SBGeoVector2D(position)));
+        if (destination.ValueC() > ((RHUnkFXDraw *)m_draw)->FUN_005e5750(0))
+        {
+            ((RHMobileUnk00607da0 *)&destination)->FUN_00607da0((const RHMobileUnk00607da0 &)
+                destination.operator-(SBGeoVector2D(0,
+                    destination.ValueC() - ((RHUnkFXDraw *)m_draw)->FUN_005e5750(0))));
+        }
+        renderer.FUN_00614d70(false);
+        if (m_alternate != 0)
+        {
+            ((RHMobileUnk006091b0 *)&destination)->FUN_006091b0(SBGeoVector2D(1, 1));
+            renderer.FUN_00614230(m_alternate, &m_178c, destination, 1, 0, true);
+            destination -= SBGeoVector2D(1, 1);
+        }
+        renderer.FUN_00614230(m_font, &m_178c, destination, 1, 0, true);
+        if (m_surface != 0)
+        {
+            m_17c4[m_17c8 & 1] = true;
+            ((RHMobileUnk00607da0 *)&m_179c[m_17c8 & 1])->FUN_00607da0((const RHMobileUnk00607da0 &)destination);
+        }
+    }
+    if (!m_1755 && m_tooltip != 0)
+        m_tooltip->FUN_00627fb0();
+}
 
 DECOMP_SIZE_ASSERT(RHPortraitWidgetInput, 0x14)
 DECOMP_STATIC_ASSERT(offsetof(RHPortraitWidgetInput, wheel) == 8)
@@ -537,6 +643,7 @@ unsigned g_unk0x006c18d8 = 0;
 SBUIUnkTreeNode *g_unk0x006c18dc = 0;
 
 #include "SBDrawManager.h"
+#include "RHMobileUnk00607da0.h"
 
 DECOMP_SIZE_ASSERT(SBUIUnkSurface, 0x20)
 DECOMP_SIZE_ASSERT(SBUIUnkTree, 0x10)
@@ -1103,6 +1210,7 @@ void EmitSBUIMouseLifetime(RHUnk006279d0 *mouse, unsigned flags)
     mouse->RHUnk006279d0::RHUnk006279d0();
     mouse->FUN_00627ae0(flags);
     mouse->FUN_00627ee0(0);
+    mouse->FUN_00627fb0();
     mouse->FUN_00628500();
 }
 
@@ -1147,6 +1255,32 @@ bool RHUnk006279d0::FUN_00627ee0(unsigned long surface)
     m_display = surface;
     m_bounds.FUN_00609050(SBGeoPoint2D(0, 0),
         SBGeoPoint2D((float)m_draw->FUN_005e56c0(0), (float)m_draw->FUN_005e5750(0)));
+    return true;
+}
+
+// FUNCTION: GAME 0x00627fb0
+bool RHUnk006279d0::FUN_00627fb0()
+{
+    SBGeoBoundingBox2D source;
+    SBGeoBoundingBox2D destination;
+    source.FUN_00609050(SBGeoPoint2D(0, 0),
+        SBGeoPoint2D((float)m_draw->FUN_005e56c0(m_frames[m_04].m_values[m_06]),
+            (float)m_draw->FUN_005e5750(m_frames[m_04].m_values[m_06])));
+    ((RHMobileUnk00607da0 *)&destination)->FUN_00607da0((const RHMobileUnk00607da0 &)
+        source.FUN_006090d0(m_position.FUN_005fc200(m_delta)));
+    ((SBDrawManager *)m_draw)->FUN_005e6000(destination, source);
+    switch (m_frames[m_04].m_type & 0xf)
+    {
+    case 1:
+        ((SBDrawManager *)m_draw)->FUN_005e6440(m_frames[m_04].m_values[m_06], &source, m_display,
+            &destination, 1);
+        break;
+    case 2:
+        ((SBDrawManager *)m_draw)->BlitAlphaKeying(m_frames[m_04].m_values[m_06], &source, m_display,
+            &destination, m_frames[m_04].m_key, m_frames[m_04].m_opacity, 1);
+        break;
+    }
+    ((RHUnk00628480 *)this)->FUN_00628480();
     return true;
 }
 

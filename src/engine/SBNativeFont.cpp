@@ -176,11 +176,7 @@ failed:
 #include "SBGeoBoundingBox2DCore.h"
 #include "RHMobileUnk00607da0.h"
 
-class SBUIListboxUnk0061e890
-{
-public:
-    int FUN_0061e890();
-};
+#include "SBUIListboxFont.h"
 
 class SBNativeFontBlitCalls
 {

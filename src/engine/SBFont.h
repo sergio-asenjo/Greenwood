@@ -35,7 +35,7 @@ public:
     virtual bool v4(unsigned short, void *, const void *, bool); // vtable+0x10
     virtual void v5(); // vtable+0x14
     virtual void v6(); // vtable+0x18
-    virtual void v7(); // vtable+0x1c
+    virtual unsigned long v7(); // vtable+0x1c
     virtual unsigned long v8() const; // vtable+0x20
     virtual bool v9(SBFile &); // vtable+0x24
     int m_04; // 0x04
@@ -54,7 +54,7 @@ public:
     long FUN_0061e980(const std::wstring &, long &, long &) const;
     long FUN_0061ea50(const std::wstring &) const;
     bool FUN_0061ea80(const std::string &);
-    int FUN_0061eb80(SBFontTextView *, void *, const void *, bool);
+    int FUN_0061eb80(const std::wstring *, void *, const void *, bool);
     bool FUN_0061eb00(SBFile &);
     void FUN_0061ebd0(unsigned short);
     bool FUN_0061ed70(SBFile &);

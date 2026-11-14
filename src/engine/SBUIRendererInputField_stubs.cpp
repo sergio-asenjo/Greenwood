@@ -23,7 +23,6 @@ SBUIInputFieldBoxCalls &SBUIInputFieldBoxCalls::FUN_0060a860(const RHMobileUnk00
     return *this;
 }
 
-unsigned short SBUIInputFieldDrawUnk::FUN_00614230(void *, std::wstring *, const SBGeoBoundingBox2D &, unsigned int, unsigned int, unsigned int) { return 0; }
 #include "RHGameInputTranslator.h"
 #include "RHKeyConfig.h"
 #include <string.h>

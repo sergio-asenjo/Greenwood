@@ -22,7 +22,11 @@ class RHUnk00627cc0
 {
 public:
     ~RHUnk00627cc0();
-    char m_00[0x10];
+    unsigned long m_type;
+    unsigned short m_key;
+    unsigned short m_opacity;
+    unsigned long m_08;
+    unsigned long m_0c;
     SBUIFrameArray<int> m_values;
     char m_2c[4];
     SBUIFrameArray<int> m_durations;

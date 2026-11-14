@@ -4,12 +4,16 @@
 #include "Decomp.h"
 #include <vector>
 #include <string>
+#ifndef SBGEO_BOUNDINGBOX2D_VIEW
+#include "SBGeoBoundingBox2DCore.h"
+#endif
 
 class RHUnk005ef320;
 struct RHPortraitWidgetInput;
 struct RHPortraitWidgetEvent;
 class SBFrameWidgetView;
 struct SBInputMouseState;
+struct SBFrameEvent;
 
 class SBUIWindowView
 {
@@ -18,7 +22,7 @@ public:
     virtual void V04() = 0;
     virtual void AttachToDisplay(unsigned long display) = 0;
     virtual RHPortraitWidgetEvent *V0c(const RHPortraitWidgetInput &input) = 0;
-    virtual void V10() = 0;
+    virtual SBFrameEvent *V10(unsigned long frame) = 0;
     virtual void V14() = 0;
     virtual void V18(unsigned long surface) = 0;
     virtual void V1c() = 0;
@@ -180,7 +184,9 @@ public:
     unsigned long m_1784;
     bool m_1788;
     std::wstring m_178c;
-    undefined m_179c[0x30];
+    SBGeoBoundingBox2D m_179c[2];
+    bool m_17c4[2];
+    unsigned long m_17c8;
     undefined m_renderer[0x20];
     unsigned long m_surface;
     SBFrameWidgetView *m_17f0;

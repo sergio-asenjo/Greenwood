@@ -71,18 +71,12 @@ public:
     bool FUN_00600920(unsigned long, unsigned long, unsigned long &);
 };
 
-#ifndef RHUNK00600820_VIEW
-#define RHUNK00600820_VIEW
-class RHUnk00600820
-{
-public:
-    bool ResolveSurface(void *surface, unsigned int id, float *value);
-};
-#endif
+#include "RHUnk00600820.h"
 
 #include "SBDrawManagerCore.h"
 
 #include "RHUnk005cbb80.h"
+#include "RHPopupRenderer0060dbc0.h"
 
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 DECOMP_SIZE_ASSERT(RHPortraitRenderer0060d470, 0x4c)
@@ -123,8 +117,8 @@ RHPortraitRenderer0060d470::RHPortraitRenderer0060d470()
     m_3c = 0;
     RHMapResources *resources = g_unk0x006c1840;
     m_drawManager = 0;
-    m_40 = 0;
-    m_44 = 0;
+    m_surfaces[0] = 0;
+    m_surfaces[1] = 0;
     m_48 = 0;
     m_resources = resources;
 }
@@ -164,7 +158,7 @@ bool SBUIUnk0060d530::FUN_0060d550(long resourceId)
         return false;
     if (m_resourceId != -1)
     {
-        if (!((SBUIUnk006006f0 *)m_resource)->FUN_006006f0(m_resourceId, size))
+        if (!((RHMapResources *)m_resource)->FUN_006006f0(m_resourceId, size))
         {
             SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBUIRenderer.cpp", 0x78,
                 "Unable to retrieve the size of a resource");
@@ -192,7 +186,7 @@ void RHPortraitRenderer0060d470::FUN_0060d6a0(const SBGeoBoundingBox2D &box)
     ((RHMobileUnk00607da0 *)&position)->FUN_00607da0((const RHMobileUnk00607da0 &)box);
     if (position.m_p1.m_x - position.m_p0.m_x == 0.0f && m_resourceId != -1)
     {
-        if (!((SBUIUnk006006f0 *)m_resource)->FUN_006006f0(m_resourceId, size))
+        if (!((RHMapResources *)m_resource)->FUN_006006f0(m_resourceId, size))
         {
             SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBUIRenderer.cpp", 0xac,
                 // STRING: GAME 0x006bb580
@@ -217,7 +211,7 @@ void RHPortraitRenderer0060d470::FUN_0060d780(const SBGeoPoint2D &point)
     if ((!position.Unk00608f30() || position.m_p1.m_x - position.m_p0.m_x == 0.0f)
         && m_resourceId != -1)
     {
-        if (!((SBUIUnk006006f0 *)m_resource)->FUN_006006f0(m_resourceId, size))
+        if (!((RHMapResources *)m_resource)->FUN_006006f0(m_resourceId, size))
         {
             SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBUIRenderer.cpp", 0xbf,
                 "Unable to retrieve the size of a resource");
@@ -340,7 +334,7 @@ int SBUIUnk0060dd00::FUN_0060dc20(unsigned int id)
 int SBUIUnk0060dd00::FUN_0060dcd0()
 {
     if (*(SBUIListboxUnk0061e890 **)(m_bytes + 0x50)) {
-        int value = FUN_0060dda0(*(SBUIListboxUnk0061e890 **)(m_bytes + 0x50), true);
+        int value = ((RHPopupRenderer0060dbc0 *)this)->FUN_0060dda0(*(SBUIListboxUnk0061e890 **)(m_bytes + 0x50), true);
         return (*(SBUIListboxUnk0061e890 **)(m_bytes + 0x50))->FUN_0061e890() * value;
     }
     return 0;

@@ -58,7 +58,9 @@ extern RHUnk005ef320 *g_unk0x6c11d0;
 
 struct SBFrameEvent
 {
-    undefined m_00[0x1c];
+    unsigned long type;
+    SBGeoBoundingBox2D bounds;
+    SBFrameWidgetView *widget;
     SBFrameEvent *next;
 };
 

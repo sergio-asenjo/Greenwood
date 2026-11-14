@@ -4,6 +4,7 @@
 #include "SBFont.h"
 #include "SBUIRendererListbox.h"
 #include "RHPortraitRenderer006212d0.h"
+#include "RHPopupRenderer0060dbc0.h"
 #include <stddef.h>
 
 DECOMP_SIZE_ASSERT(SBUIInputFieldNode, 0x10)
@@ -36,11 +37,7 @@ public:
 
 #include "SBDrawManagerCore.h"
 
-class RHUnk00600820
-{
-public:
-    bool ResolveSurface(void *, unsigned int, float *);
-};
+#include "RHUnk00600820.h"
 
 // SIZE 0x04
 class SBUIInputFieldFontHeight
@@ -104,6 +101,41 @@ bool SBGeoBoundingBox2D::FUN_006084a0(const SBGeoBoundingBox2D &other)
     ((SBUIInputFieldBoxCalls *)&span)->FUN_0060a860(
         SBGeoSegment2D(other.m_p0, other.m_p1).Line());
     return ((SBUIInputFieldBoxCalls *)this)->FUN_00608450(span);
+}
+
+// FUNCTION: GAME 0x0060dda0
+int RHPopupRenderer0060dbc0::FUN_0060dda0(SBUIListboxUnk0061e890 *font, bool silent)
+{
+    int result;
+    SBUIInputFieldDrawUnk renderer;
+    renderer.FUN_00614d70(silent);
+    if (m_position.m_p1.m_x - m_position.m_p0.m_x > 0.0f)
+    {
+        result = renderer.FUN_00614230(font, &m_name, m_position, m_60, m_64, true);
+        m_68 = renderer.FUN_00613e90();
+    }
+    else
+    {
+        SBGeoPoint2D position;
+        switch (m_60)
+        {
+        case 8:
+            position = m_position.m_p0.FUN_005fc200(
+                SBGeoVector2D((float)((SBFontUnk0061e840 *)font)->FUN_0061ea50(m_name), 0.0f));
+            break;
+        case 2:
+            position = m_position.m_p0.FUN_005fc200(
+                SBGeoVector2D((float)(((SBFontUnk0061e840 *)font)->FUN_0061ea50(m_name) / 2), 0.0f));
+            break;
+        case 1:
+            position = m_position.m_p0;
+            break;
+        }
+        renderer.FUN_00614bf0(font, &m_name, position, 1);
+        result = 1;
+        m_68.assign(renderer.FUN_00613e90());
+    }
+    return result;
 }
 
 // FUNCTION: GAME 0x006138e0
@@ -303,30 +335,49 @@ inline void SetSBUIInputFieldBoxY(SBGeoBoundingBox2D &box, float first, float la
 }
 
 // Parked: x87 operand order, alignment flags and result-slot scheduling differ.
+static inline float SBUIInputFieldPadding(const float &padding)
+{
+    return padding;
+}
+
+static inline void SBUIInputFieldCenter(SBGeoBoundingBox2D &box, float x, long width, unsigned int paddingValue, unsigned int &flags)
+{
+    float padding = (float)paddingValue;
+    float first = x - width / 2 - SBUIInputFieldPadding(padding);
+    box.SetValue0(first);
+    box.SetValue8(box.Value0() + (width + SBUIInputFieldPadding(padding)));
+    flags = (flags & ~6) | 1;
+}
+
 // STUB: GAME 0x00614bf0
 bool SBUIInputFieldDrawUnk::FUN_00614bf0(void *font, std::wstring *text, const SBGeoPoint2D &point, unsigned int flags)
 {
     SBGeoBoundingBox2D box;
     long width = ((SBFontUnk0061e840 *)font)->FUN_0061ea50(*text);
     int height = ((SBUIListboxUnk0061e890 *)font)->FUN_0061e890();
-    SetSBUIInputFieldBoxY(box, point.m_y, point.m_y + height);
+    float y = point.m_y;
+    box.SetValue4(y);
+    box.SetValueC(y + height);
     if (flags & 1)
     {
-        SetSBUIInputFieldBoxX(box, point.m_x, point.m_x + ((float)(m_18 * 2) + width));
+        box.m_p0.m_x = point.m_x;
+        float x = point.GetX();
+        box.SetValue8(x + ((float)(m_18 * 2) + width));
     }
     else if (!(flags & 6))
     {
         if (flags & 8)
         {
-            SetSBUIInputFieldBoxX(box, point.m_x - width - (int)(m_18 * 2), point.m_x);
+            float first = point.GetX();
+            first -= width;
+            first -= (int)(m_18 * 2);
+            box.SetValue0(first);
+            box.SetValue8(point.GetX());
         }
     }
     else
     {
-        float padding = (float)m_18;
-        float first = point.m_x - width / 2 - padding;
-        SetSBUIInputFieldBoxX(box, first, first + (width + padding));
-        flags = (flags & ~6) | 1;
+        SBUIInputFieldCenter(box, point.GetX(), width, m_18, flags);
     }
     bool rendered = FUN_00614230(font, text, box, flags, 0, 0) != 0;
     return rendered;
@@ -370,6 +421,11 @@ public:
 class SBUIInputFieldSplitUnk
 {
 public:
+    SBUIInputFieldSplitUnk(const std::wstring &text, const std::wstring &separators)
+    {
+        m_vptr = 0x0067a8f8;
+        FUN_00614e60(text, separators);
+    }
     ~SBUIInputFieldSplitUnk();
     void *FUN_00614e40(unsigned flags);
     void FUN_00614e60(const std::wstring &text, const std::wstring &separators);
@@ -378,8 +434,13 @@ public:
     std::vector<std::wstring> m_separators;
 };
 
-// FUNCTION: GAME 0x00614d80
-SBUIInputFieldSplitUnk::~SBUIInputFieldSplitUnk()
+DECOMP_SIZE_ASSERT(SBUIInputFieldSplitUnk, 0x24)
+DECOMP_STATIC_ASSERT(offsetof(SBUIInputFieldSplitUnk, m_tokens) == 4)
+DECOMP_STATIC_ASSERT(offsetof(SBUIInputFieldSplitUnk, m_separators) == 0x14)
+
+// TEMPLATE: GAME 0x00614d80
+// ??1SBUIInputFieldSplitUnk@@QAE@XZ
+inline SBUIInputFieldSplitUnk::~SBUIInputFieldSplitUnk()
 {
     m_vptr = 0x0067a8f8;
 }
@@ -423,6 +484,95 @@ void SBUIInputFieldSplitUnk::FUN_00614e60(const std::wstring &text, const std::w
         }
     }
     tokens.Append(token);
+}
+
+// STUB: GAME 0x00614230
+unsigned short SBUIInputFieldDrawUnk::FUN_00614230(void *fontObject, const std::wstring *text,
+    const SBGeoBoundingBox2D &bounds, unsigned int flags, unsigned short spacing, bool breakWords)
+{
+    SBUIInputFieldSplitUnk split(*text, std::wstring(
+        // STRING: GAME 0x006bb79c
+        L" \n\r\t"));
+    SBGeoPoint2D position;
+    SBGeoBoundingBox2D lineBounds;
+    m_00.erase();
+    m_10 = 0;
+    m_1c = SBGeoBoundingBox2D(bounds.Min(), bounds.Min());
+    lineBounds = bounds;
+    if (lineBounds.Width() > (float)(m_18 * 2)) {
+        SetSBUIInputFieldBoxX(lineBounds,
+            lineBounds.Value0() + m_18, lineBounds.Value8() - m_18);
+    }
+    if (split.m_tokens.empty())
+        return 0;
+    SBFontUnk0061e840 *font = (SBFontUnk0061e840 *)fontObject;
+    if (breakWords && OneWordBiggerThanALine(font, lineBounds.Width(), &split.m_tokens))
+        return FUN_00613ea0(fontObject, text, bounds, flags, spacing);
+    if (split.m_separators.size() > split.m_tokens.size() - 1)
+        split.m_separators.erase(split.m_separators.begin() + split.m_tokens.size() - 1,
+            split.m_separators.end());
+    unsigned long maxWidth = (unsigned long)lineBounds.Width();
+    position = lineBounds.Min();
+    std::vector<std::wstring>::const_iterator word = split.m_tokens.begin();
+    std::vector<std::wstring>::const_iterator separator = split.m_separators.begin();
+    unsigned long lines = 0;
+    unsigned long spaceWidth = font->FUN_0061ea50(std::wstring(L" "));
+    while (word != split.m_tokens.end()) {
+        bool stopped = false;
+        bool justified = false;
+        unsigned long lineSpaceWidth = spaceWidth;
+        unsigned long extraSpaces = 0;
+        if ((flags & 0x10) == 0x10) {
+            float height = lineBounds.ValueC() - lineBounds.Value4();
+            if ((unsigned int)((SBUIListboxUnk0061e890 *)fontObject)->FUN_0061e890() < height)
+                position.m_y += (height - font->v7()) * 0.5f;
+            maxWidth = font->FUN_0061ea50(*text);
+        }
+        std::vector<std::wstring>::const_iterator endWord = split.m_tokens.end();
+        std::vector<std::wstring>::const_iterator endSeparator = split.m_separators.end();
+        std::vector<std::wstring>::const_iterator first = word;
+        unsigned long width = FUN_00613940(font, endWord, endSeparator, word, separator,
+            stopped, maxWidth, spaceWidth);
+        unsigned long count = word - first + 1;
+        if (flags & 0x10)
+            maxWidth = (unsigned long)lineBounds.Width();
+        if (flags & 2)
+            position.m_x = lineBounds.Value0() + (int)(maxWidth - width) / 2;
+        else if (flags & 8)
+            position.m_x = lineBounds.Value0() + (maxWidth - width);
+        else if ((flags & 4) && FUN_00613e40(stopped, count, word, endWord)) {
+            justified = true;
+            lineSpaceWidth = spaceWidth + (maxWidth - width) / count;
+            extraSpaces = (maxWidth - width) % count;
+        }
+        for (; first != word; ++first) {
+            m_10 += font->FUN_0061eb80(first, &position, &bounds, m_14);
+            if (extraSpaces) {
+                position.m_x += lineSpaceWidth + 1;
+                --extraSpaces;
+            } else {
+                position.m_x += lineSpaceWidth;
+            }
+        }
+        if (justified)
+            position.m_x = lineBounds.Value8() - font->FUN_0061ea50(*first);
+        m_10 += font->FUN_0061eb80(first, &position, &bounds, m_14);
+        if (position.m_x + m_18 > m_1c.Value8())
+            m_1c.SetValue8(m_1c.Value0() + m_18 + position.m_x);
+        m_1c.SetValueC(m_1c.ValueC() +
+            (unsigned int)((SBUIListboxUnk0061e890 *)fontObject)->FUN_0061e890() - (float)spacing);
+        position.m_x = lineBounds.Value0();
+        position.m_y += (unsigned int)((SBUIListboxUnk0061e890 *)fontObject)->FUN_0061e890() - (float)spacing;
+        ++lines;
+        ++word;
+        ++separator;
+        if ((unsigned int)((SBUIListboxUnk0061e890 *)fontObject)->FUN_0061e890() >
+            lineBounds.ValueC() - position.m_y) {
+            FUN_00613c90(word, separator, split.m_tokens.end(), split.m_separators.end());
+            break;
+        }
+    }
+    return (unsigned short)lines;
 }
 
 void EmitSBUIInputFieldSplit(SBUIInputFieldSplitUnk *split, const std::wstring &text)

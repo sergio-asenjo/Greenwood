@@ -24,7 +24,7 @@ DECOMP_STATIC_ASSERT(offsetof(RHGameLifetime00517590, m_renderer) == 0x80)
 RHGameWidgetLifetimeBase::RHGameWidgetLifetimeBase()
     : m_04(true), m_05(true), m_06(true), m_07(false), m_08(false), m_0a(0), m_state(0)
 {
-    memset(m_4c, 0, sizeof(m_4c));
+    memset(&m_event, 0, sizeof(m_event));
 }
 
 // FUNCTION: GAME 0x0060d050
