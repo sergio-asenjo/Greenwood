@@ -5,6 +5,7 @@
 #include "RHPortraitRenderer0060dab0.h"
 #include <string>
 #include <map>
+#include "RHPortraitUnk005d3880.h"
 
 class SBGeoBoundingBox2D;
 
@@ -14,7 +15,9 @@ class RHGameWidgetLifetimeBase
 {
 public:
     RHGameWidgetLifetimeBase();
+    RHGameWidgetLifetimeBase(const RHGameWidgetLifetimeBase &other);
     ~RHGameWidgetLifetimeBase();
+    RHGameWidgetLifetimeBase &operator=(const RHGameWidgetLifetimeBase &other);
     virtual void *FUN_005dee10(unsigned flags);
     bool Create(const std::wstring &name, const SBGeoBoundingBox2D &box, unsigned long flags);
     bool m_04;
@@ -32,39 +35,31 @@ public:
 #else
     undefined m_30[0x14];
 #endif
-    undefined m_44[8];
-    unsigned long m_4c[4];
-    undefined m_5c[4];
+    unsigned long m_44;
+    unsigned long m_48;
+    RHPortraitWidgetEvent m_event;
+    unsigned long m_5c;
 #ifdef SBGEO_BOUNDINGBOX2D_VIEW
     SBGeoBoundingBox2D m_60;
 #else
     undefined m_60[0x14];
 #endif
-    undefined m_74[8];
+    unsigned long m_74;
+    unsigned long m_78;
     int m_state;
 };
 
 typedef RHPortraitRenderer0060dab0 RHGameRenderer0060dad0;
 
-class SBUIUnk006006f0;
 class RHUnk005ef320;
 
-class RHGameRenderer0060da10
+class RHGameRenderer0060da10 : public RHPortraitRenderer0060d470
 {
 public:
     RHGameRenderer0060da10();
     ~RHGameRenderer0060da10();
-    undefined4 m_vptr;
-    SBUIUnk006006f0 *m_resource;
-    undefined m_box[0x14];
-    RHUnk005ef320 *m_draw;
-    unsigned long m_target;
-    undefined m_24[0x14];
-    long m_resourceId;
-    undefined m_3c[4];
-    long m_40;
-    long m_44;
-    undefined m_48[4];
+    RHGameRenderer0060da10 &operator=(const RHGameRenderer0060da10 &other);
+    RHGameRenderer0060da10 &Assign(const RHGameRenderer0060da10 &other);
 };
 
 class RHGameRenderer0060dab0
@@ -115,6 +110,7 @@ class RHGameLifetime00515b40 : public RHGameWidgetLifetimeBase
 public:
     RHGameLifetime00515b40() {}
     ~RHGameLifetime00515b40() {}
+    RHGameLifetime00515b40 &operator=(const RHGameLifetime00515b40 &other);
     void *FUN_00517280(unsigned flags);
     RHGameRenderer0060dad0 m_renderer;
 };
@@ -142,6 +138,8 @@ class RHGameLifetime00517590 : public RHGameWidgetLifetimeBase
 public:
     RHGameLifetime00517590() {}
     ~RHGameLifetime00517590() {}
+    RHGameLifetime00517590 &operator=(const RHGameLifetime00517590 &other);
+    RHGameLifetime00517590 &Assign(const RHGameLifetime00517590 &other);
     virtual void *FUN_005dee10(unsigned flags);
     RHGameRenderer0060da10 m_renderer;
 };
@@ -165,6 +163,7 @@ class RHGameLifetime00515f00 : public RHGameLifetime00517590
 public:
     RHGameLifetime00515f00() {}
     ~RHGameLifetime00515f00() {}
+    RHGameLifetime00515f00 &operator=(const RHGameLifetime00515f00 &other);
     void *FUN_005172c0(unsigned flags);
 };
 

@@ -703,97 +703,57 @@ bool RHGame::FUN_005107a0(int *event)
     return true;
 }
 
-// Parked: the cached-selection and count-accessor probes still add a frame slot and alter cursor lifetimes.
-// STUB: GAME 0x00510fc0
+// FUNCTION: GAME 0x00510fc0
 void RHGameActionCalls::FUN_00510fc0(unsigned short value)
 {
     RHGame *game = (RHGame *)this;
-    void **actors = *(void ***)((char *)*(void **)0x006c0a88 + 0x493c);
-    unsigned count = actors
-        ? (unsigned)(*(void ***)((char *)*(void **)0x006c0a88 + 0x4940) - actors)
-        : 0;
-    count &= 0xff;
+    unsigned count = (unsigned char)g_pEngine->m_pcs.size();
     for (unsigned index = 0; index < count; ++index)
     {
-        void *actor = actors[index];
+        RHElementActorPC *actor = g_pEngine->m_pcs[(unsigned char)index];
         RHEngine *engine = *(RHEngine **)((char *)game + 0x18);
-        if (!actor)
+        bool selected = engine->FUN_0049b590(actor);
+        if (selected)
         {
-            if (*(int *)((char *)engine + 0x4a00) == 0)
-                continue;
+            RHGamePortraitCalls *portrait = ((RHGameSyncCalls *)game)->FUN_0050f140(actor);
+            portrait->FUN_005d8f20(value);
         }
-        else
-        {
-            *(void **)((char *)engine + 0x4a18) = actor;
-            *(char *)((char *)engine + 0x4a10) = 1;
-            *(void **)((char *)engine + 0x4a04) = **(void ***)((char *)engine + 0x49fc);
-            int size = *(int *)((char *)engine + 0x4a00);
-            int position = 0;
-            while (position < size && *(void **)(*(char **)((char *)engine + 0x4a04) + 8) != actor)
-            {
-                ++position;
-                *(void **)((char *)engine + 0x4a04) = **(void ***)((char *)engine + 0x4a04);
-            }
-            if (position == size)
-            {
-                *(int *)((char *)engine + 0x4a14) = -1;
-                *(char *)((char *)engine + 0x4a08) = 1;
-            }
-            else
-            {
-                *(int *)((char *)engine + 0x4a14) = position;
-                *(char *)((char *)engine + 0x4a08) = 0;
-                *(int *)((char *)engine + 0x4a0c) = position;
-            }
-        }
-        RHGamePortraitCalls *portrait = ((RHGameSyncCalls *)game)->FUN_0050f140(actor);
-        if (portrait)
-            portrait->FUN_005d8f20((unsigned short)value);
     }
 }
 
-// Parked: full selection recovery still adds a frame slot and changes the count/result register lifetime.
-// STUB: GAME 0x005110e0
+// FUNCTION: GAME 0x005110e0
 void RHGameActionCalls::FUN_005110e0(unsigned value)
 {
     RHGame *game = (RHGame *)this;
-    void **actors = *(void ***)((char *)*(void **)0x006c0a88 + 0x493c);
-    unsigned count = actors
-        ? (unsigned)(*(void ***)((char *)*(void **)0x006c0a88 + 0x4940) - actors)
-        : 0;
-    for (unsigned index = 0; index < (count & 0xff); ++index)
+    unsigned count = (unsigned char)g_pEngine->m_pcs.size();
+    for (unsigned index = 0; index < count; ++index)
     {
-        void *actor = actors[index];
-        if (!actor && *(int *)((char *)*(void **)((char *)game + 0x18) + 0x4a00) == 0)
-            continue;
-        RHGamePortraitCalls *portrait = ((RHGameSyncCalls *)game)->FUN_0050f140(actor);
-        if (portrait)
+        RHElementActorPC *actor = g_pEngine->m_pcs[(unsigned char)index];
+        RHEngine *engine = *(RHEngine **)((char *)game + 0x18);
+        bool selected = engine->FUN_0049b590(actor);
+        if (selected)
         {
-            bool enabled = ((RHEngineActionCalls *)*(void **)((char *)game + 0x18))->FUN_004d2300(actor, value) != 0;
-            portrait->FUN_005d8fa0(value, enabled);
+            RHGamePortraitCalls *portrait = ((RHGameSyncCalls *)game)->FUN_0050f140(actor);
+            portrait->FUN_005d8fa0(value, (*(RHEngineActionCalls **)((char *)game + 0x18))->FUN_004d2300(actor, value));
         }
     }
 }
 
-// Parked: full selection recovery still changes the count frame slot and inlined cursor comparison registers.
-// STUB: GAME 0x00511210
+// FUNCTION: GAME 0x00511210
 void RHGameActionCalls::FUN_00511210(unsigned value)
 {
     RHGame *game = (RHGame *)this;
-    void **actors = *(void ***)((char *)*(void **)0x006c0a88 + 0x493c);
-    unsigned count = actors
-        ? (unsigned)(*(void ***)((char *)*(void **)0x006c0a88 + 0x4940) - actors)
-        : 0;
-    for (unsigned index = 0; index < (count & 0xff); ++index)
+    unsigned count = (unsigned char)g_pEngine->m_pcs.size();
+    for (unsigned index = 0; index < count; ++index)
     {
-        void *actor = actors[index];
-        if (actor && *(int *)((char *)*(void **)((char *)game + 0x18) + 0x4a00) != 0)
-            continue;
-        RHGamePortraitCalls *portrait = ((RHGameSyncCalls *)game)->FUN_0050f140(actor);
-        if (portrait)
+        RHElementActorPC *actor = g_pEngine->m_pcs[(unsigned char)index];
+        RHEngine *engine = *(RHEngine **)((char *)game + 0x18);
+        bool selected = engine->FUN_0049b590(actor);
+        if (!selected)
         {
-            bool enabled = ((RHEngineActionCalls *)*(void **)((char *)game + 0x18))->FUN_004d2300(actor, value) != 0;
-            portrait->FUN_005d8fa0(value, enabled);
+            RHGamePortraitCalls *portrait = ((RHGameSyncCalls *)game)->FUN_0050f140(actor);
+            if (portrait)
+                portrait->FUN_005d8fa0(value, (*(RHEngineActionCalls **)((char *)game + 0x18))->FUN_004d2300(actor, value));
         }
     }
 }
@@ -1418,10 +1378,67 @@ void RHGame::FUN_00513210(void *event)
     FUN_005140b0();
 }
 
-// Parked: two complete reconstructions hoist the first two vptr reads before the widget state stores.
-// STUB: GAME 0x00513e60
+// FUNCTION: GAME 0x005169f0
+inline void RHUnk005165f0::FUN_005169f0(char selected)
+{
+    if (selected == 1)
+    {
+        if (!m_cc)
+        {
+            m_cc = 1;
+            if (m_7c == 5)
+                m_7c = 8;
+            if (m_7c == 6)
+                m_7c = 9;
+        }
+    }
+    else if (!selected && m_cc == 1)
+    {
+        m_cc = 0;
+        m_event.type = 0;
+        if (m_7c == 8)
+            m_7c = 5;
+        if (m_7c == 9)
+            m_7c = 6;
+    }
+}
+
+// FUNCTION: GAME 0x00513e60
 void RHGame::FUN_00513e60()
 {
+    RHUnk00546050();
+    if (m_5f == 1)
+    {
+        RHGameWidgetView *text = (RHGameWidgetView *)((char *)this + 0x1ab0);
+        text->m_event.type = 4;
+        text->m_7c = 3;
+        ((RHGameMenuText *)((char *)this + 0x1ab0))->v21(true);
+    }
+    if (m_60 == 1)
+    {
+        RHGameWidgetView *text = (RHGameWidgetView *)((char *)this + 0x1b7c);
+        text->m_event.type = 4;
+        text->m_7c = 3;
+        ((RHGameMenuText *)((char *)this + 0x1b7c))->v21(true);
+    }
+    if (m_62 == 1)
+    {
+        ((RHGameWidgetSelectCalls *)((char *)this + 0x1eac))->v21(0);
+        ((RHUnk005165f0 *)((char *)this + 0x1eac))->m_05 = 1;
+        ((RHUnk005165f0 *)((char *)this + 0x1eac))->FUN_005169f0(0);
+        ((RHGameWidgetSelectCalls *)((char *)this + 0x1f7c))->v21(1);
+        ((RHUnk005165f0 *)((char *)this + 0x1f7c))->m_05 = 0;
+        ((RHUnk005165f0 *)((char *)this + 0x1f7c))->FUN_005169f0(1);
+    }
+    if (m_61 == 1)
+    {
+        ((RHGameWidgetSelectCalls *)((char *)this + 0x1eac))->v21(1);
+        ((RHUnk005165f0 *)((char *)this + 0x1eac))->m_05 = 0;
+        ((RHUnk005165f0 *)((char *)this + 0x1eac))->FUN_005169f0(1);
+        ((RHGameWidgetSelectCalls *)((char *)this + 0x1f7c))->v21(0);
+        ((RHUnk005165f0 *)((char *)this + 0x1f7c))->m_05 = 1;
+        ((RHUnk005165f0 *)((char *)this + 0x1f7c))->FUN_005169f0(0);
+    }
 }
 
 // FUNCTION: GAME 0x00513ff0
@@ -2952,31 +2969,6 @@ RHGameWidgetEvent *RHUnk005165f0::FUN_005167b0(const RHGameWidgetInput &input)
     if (m_7c == 8 || m_7c == 10)
         m_7c = 9;
     return 0;
-}
-
-// FUNCTION: GAME 0x005169f0
-inline void RHUnk005165f0::FUN_005169f0(char selected)
-{
-    if (selected == 1)
-    {
-        if (!m_cc)
-        {
-            m_cc = 1;
-            if (m_7c == 5)
-                m_7c = 8;
-            if (m_7c == 6)
-                m_7c = 9;
-        }
-    }
-    else if (!selected && m_cc == 1)
-    {
-        m_cc = 0;
-        m_event.type = 0;
-        if (m_7c == 8)
-            m_7c = 5;
-        if (m_7c == 9)
-            m_7c = 6;
-    }
 }
 
 class RHUnk00516b50 : public RHGameWidgetView

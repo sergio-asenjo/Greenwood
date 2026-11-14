@@ -11,14 +11,12 @@ void RHGame::FUN_00512310() {}
 // FUNCTION: GAME 0x0060d9f0
 RHGameRenderer0060da10::RHGameRenderer0060da10()
 {
-    ((RHPortraitRenderer0060d470 *)this)->RHPortraitRenderer0060d470::RHPortraitRenderer0060d470();
-    m_vptr = 0x67a620;
+    *(unsigned *)this = 0x67a620;
 }
 // FUNCTION: GAME 0x0060da10
 RHGameRenderer0060da10::~RHGameRenderer0060da10()
 {
-    m_vptr = 0x67a620;
-    ((RHPortraitRenderer0060d470 *)this)->RHPortraitRenderer0060d470::~RHPortraitRenderer0060d470();
+    *(unsigned *)this = 0x67a620;
 }
 RHGameRenderer0060dab0::RHGameRenderer0060dab0() {}
 RHGameRenderer0060dab0::~RHGameRenderer0060dab0() {}
