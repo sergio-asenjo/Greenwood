@@ -9,32 +9,13 @@
 class RHSectorBuilding;
 #include "RHFastFindGeometry.h"
 
-class RHFastFindRepulsiveBase
-{
-public:
-    virtual ~RHFastFindRepulsiveBase();
-    RHFastFindRepulsiveBase &Unk004fdc20(const RHFastFindRepulsiveBase &other);
-    char m_04[0x10];
-};
+#include "RHRepulsivePoint.h"
 
-class RHFastFindRepulsive : public RHFastFindRepulsiveBase
+namespace std
 {
-public:
-    RHFastFindRepulsive &operator=(const RHFastFindRepulsive &other);
-    SBGeoPoint2D m_14; // +0x14
-    SBGeoPoint2D m_1c; // +0x1c
-    int m_24; // +0x24
-    int m_28; // +0x28
-    int m_2c; // +0x2c
-    int m_30; // +0x30
-    char m_34; // +0x34
-    char m_35; // +0x35
-    char m_36; // +0x36
-    char m_37; // +0x37
-    char m_38; // +0x38
-    unsigned long m_id; // +0x3c
-
-};
+template <>
+void vector<RHUnk00520ae0>::insert(RHUnk00520ae0 *position, unsigned count, const RHUnk00520ae0 &value);
+}
 
 class RHSaveGame;
 template <class T> class SBArray
@@ -48,6 +29,14 @@ public:
 inline void RHFastFindPointerArray::InsertLast(void *const &value)
 {
     ((SBArray<RHSaveGame *> *)this)->Insert((RHSaveGame **)m_last, 1, (RHSaveGame *const &)value);
+    m_changed = true;
+}
+
+inline void RHFastFindPointerArray::InsertSingleLast(void *const &value)
+{
+    typedef std::vector<unsigned long> Values;
+    unsigned long *(Values::*insert)(unsigned long *, const unsigned long &) = &Values::insert;
+    (((Values *)this)->*insert)((unsigned long *)end(), *(const unsigned long *)&value);
     m_changed = true;
 }
 
@@ -118,15 +107,6 @@ public:
     unsigned short Flag9() { return m_flags >> 9; }
 };
 
-class RHUnk004b2190Member
-{
-public:
-    RHUnk004b2190Member();
-    ~RHUnk004b2190Member();
-    bool Serialize(SBFile &file);
-    char m_00[0x40];
-};
-
 class SBGeoPoint3D
 {
 public:
@@ -137,6 +117,7 @@ public:
 };
 
 #include "RHPlaneCalls.h"
+#include "RHUnk0051f0f0.h"
 
 #include "SBGeoBoundingBox2DCore.h"
 
@@ -147,7 +128,7 @@ public:
     undefined m_00[0x10];
 };
 
-class RHFastFindLine
+class RHFastFindLine : public RHUnk0051f0f0
 {
 public:
     void *FUN_0051f500(unsigned flags);
@@ -158,7 +139,11 @@ public:
     float FUN_0051f470();
     float FUN_0051f490();
     float FUN_0051f4b0();
-    undefined m_00[0x2c];
+    void FUN_0051f530(SBDrawManager *draw, SBGeoBoundingBox2D box, float scale, unsigned short color);
+    unsigned short m_20;
+    unsigned short m_22;
+    void *m_24;
+    void *m_28;
 };
 
 #include "RHMobileUnk006100e0.h"
@@ -346,32 +331,26 @@ class RHUnk0051e1e0;
 
 #include "RHJumpSector.h"
 
-class RHFastFindJumpSector
-{
-public:
-    char m_00[0x36];
-    unsigned short m_layer;
-    char m_38[0x60];
-    void *m_98;
-};
-
-class RHUnk0051e1e0
+class RHUnk0051e1e0 : public RHUnk0051f0f0
 {
 public:
     void *FUN_0051e200(unsigned flags);
     RHUnk0051e1e0();
     ~RHUnk0051e1e0();
-    void Unk0051e230(SBFile &file, RHSeqList &sectors);
+    int Unk0051e230(SBFile &file, RHSeqList &sectors);
     unsigned short GetLayer() const { return m_layer; }
-    char m_00[0x1c];
-    void *m_owner;
+    void *Owner() const { return (void *)m_1c; }
+    void SetOwner(void *owner) { m_1c = (unsigned)owner; }
     RHUnk0051e1e0 *m_other;
     void *m_gate;
-    RHFastFindJumpSector *m_sector;
+    RHUnk0051e5e0 *m_sector;
     unsigned short m_layer;
-    char m_2e[0xa];
+    char m_2e[2];
+    float m_30;
+    float m_34;
+    char m_38;
     bool m_mode;
-    char m_39[3];
+    char m_3a[2];
 };
 
 #define fastfind_lifts (*(RHFastFindPointerArray *)((char *)this + 0x40c0))

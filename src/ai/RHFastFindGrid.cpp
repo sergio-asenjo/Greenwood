@@ -8,6 +8,8 @@
 #include "RHSectorActorIterator.h"
 #include "RHSectorArchery.h"
 #include "RHFastFindArcheryArray.h"
+#include "RHUnkMaskObstacleTable.h"
+#include "RHMobileUnk00607da0.h"
 #include <float.h>
 
 // TEMPLATE: GAME 0x00522780
@@ -71,26 +73,25 @@ void RHFastFindGrid::FUN_004e8bd0(void *value, unsigned short layer, bool mode)
     SBGeoBoundingBox2D cellBounds;
     SBGeoPoint2D point;
     unsigned count = m_sectors.size();
-    if (*(short *)((char *)value + 0x38) + 1 > (int)(unsigned short)count)
+    if (((RHSector *)value)->Index() + 1 > (int)(unsigned short)count)
     {
-        while ((int)(unsigned short)count < *(short *)((char *)value + 0x38))
+        while ((int)(unsigned short)count < ((RHSector *)value)->Index())
         {
             void *empty = 0;
-            m_sectors.InsertLast(empty);
+            m_sectors.InsertSingleLast(empty);
             ++count;
         }
         m_sectors.InsertLast(value);
     }
     else
-        m_sectors.m_first[*(short *)((char *)value + 0x38)] = value;
+        m_sectors.m_first[((RHSector *)value)->Index()] = value;
     if ((unsigned short)((RHUnkSectorPoints *)((char *)value + 4))->Unk0060ce80() > 0)
     {
         if (mode)
         {
-            RHFastFindPointerArray &array = *(RHFastFindPointerArray *)((char *)m_3ea4 + layer * 0xc0 + 0x40);
-            array.InsertLast(value);
+            m_3ea4[layer].m_sectors.InsertLast(value);
         }
-        bounds = *(SBGeoBoundingBox2D *)((char *)value + 0x3c);
+        ((RHMobileUnk00607da0 *)&bounds)->FUN_00607da0((const RHMobileUnk00607da0 &)((RHSector *)value)->Bounds());
         short firstX = (short)bounds.m_p0.m_x >> 6;
         short firstY = (short)bounds.m_p0.m_y >> 6;
         short lastX = (short)bounds.m_p1.m_x >> 6;
@@ -105,33 +106,21 @@ void RHFastFindGrid::FUN_004e8bd0(void *value, unsigned short layer, bool mode)
         else if (lastY >= m_height) lastY = m_height - 1;
         unsigned cell = (m_height * layer + firstY) * m_width + firstX;
         int skip = m_width - (lastX - firstX) - 1;
-        if ((unsigned short)firstY <= (unsigned short)lastY)
+        for (unsigned short y = firstY; y <= (unsigned short)lastY; ++y)
         {
-            unsigned y = (unsigned short)firstY;
-            unsigned rows = (unsigned short)lastY - y + 1;
-            do
+            for (unsigned short x = firstX; x <= (unsigned short)lastX; ++cell, ++x)
             {
-                if ((unsigned short)firstX <= (unsigned short)lastX)
+                point.m_x = (float)(int)(x << 6);
+                point.m_y = (float)(int)(y << 6);
+                cellBounds.FUN_00609050(point, point.Unk005fc190(*(SBGeoPoint2D *)g_unk0x006c0aa8));
+                if (((RHElementAreaShape *)((char *)value + 4))->FUN_0060c650(cellBounds))
                 {
-                    unsigned x = (unsigned short)firstX;
-                    unsigned columns = (unsigned short)lastX - x + 1;
-                    do
-                    {
-                        point.m_x = (float)(int)(x << 6);
-                        point.m_y = (float)(int)(y << 6);
-                        cellBounds.FUN_00609050(point, point.Unk005fc190(*(SBGeoPoint2D *)g_unk0x006c0aa8));
-                        if (((RHElementAreaShape *)((char *)value + 4))->FUN_0060c650(cellBounds))
-                        {
-                            RHFastFindPointerArray &array = *(RHFastFindPointerArray *)(*(char **)((char *)this + 0x3f80) + cell * 0xa0 + 0x40);
-                            array.InsertLast(value);
-                        }
-                        ++x;
-                        ++cell;
-                    } while (--columns != 0);
+                    RHFastFindPointerArray &array = *(RHFastFindPointerArray *)(*(char **)((char *)this + 0x3f80) + cell * 0xa0 + 0x40);
+                    ((SBArray<RHSaveGame *> *)&array)->Insert((RHSaveGame **)array.end(), 1, *(RHSaveGame *const *)&value);
+                    array.m_changed = true;
                 }
-                cell += skip;
-                ++y;
-            } while (--rows != 0);
+            }
+            cell += skip;
         }
     }
 }
@@ -156,6 +145,14 @@ bool RHFastFindGrid::FUN_004e9570(const SBGeoPoint2D &point, unsigned short laye
 #include "RHSpatialLines.h"
 #include "RHUnkSectorPoints.h"
 #include <stddef.h>
+
+DECOMP_SIZE_ASSERT(RHFastFindPointerArray, 0x20)
+DECOMP_SIZE_ASSERT(RHUnkMaskObstacleTable, 0xc0)
+DECOMP_STATIC_ASSERT(offsetof(RHUnkMaskObstacleTable, m_sectors) == 0x40)
+DECOMP_STATIC_ASSERT(offsetof(RHUnkMaskObstacleTable, m_obstacles) == 0x60)
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindPointerArray, m_first) == 0x04)
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindPointerArray, m_last) == 0x08)
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindPointerArray, m_changed) == 0x14)
 
 DECOMP_SIZE_ASSERT(RHUnk0051f0f0, 0x20)
 DECOMP_SIZE_ASSERT(RHUnk005214b0, 0x24)
@@ -357,13 +354,13 @@ void RHFastFindGrid::FUN_004ebfe0(void *point, unsigned short layer, bool mode)
     (*(RHFastFindGateArray *)(*(char **)((char *)this + 0x3f80) + cell * 0xa0)).InsertLast((void *const &)point, false);
 }
 
-inline RHFastFindRepulsive *CopyFastFindRepulsive(RHFastFindRepulsive *first, RHFastFindRepulsive *last, RHFastFindRepulsive *destination)
+inline RHUnk00520ae0 *CopyFastFindRepulsive(RHUnk00520ae0 *first, RHUnk00520ae0 *last, RHUnk00520ae0 *destination)
 {
     for (; first != last; ++destination, ++first)
     {
         destination->Unk004fdc20(*first);
-        ((SBGeoVector2D *)&destination->m_14)->operator=((const SBGeoVector2D &)first->m_14);
-        ((SBGeoVector2D *)&destination->m_1c)->operator=((const SBGeoVector2D &)first->m_1c);
+        destination->m_14.SBGeoVector2D::operator=(first->m_14);
+        destination->m_1c.SBGeoVector2D::operator=(first->m_1c);
         destination->m_24 = first->m_24;
         destination->m_28 = first->m_28;
         destination->m_2c = first->m_2c;
@@ -381,7 +378,7 @@ inline RHFastFindRepulsive *CopyFastFindRepulsive(RHFastFindRepulsive *first, RH
 namespace std
 {
 template <>
-inline RHFastFindRepulsive *vector<RHFastFindRepulsive>::erase(RHFastFindRepulsive *position)
+inline RHUnk00520ae0 *vector<RHUnk00520ae0>::erase(RHUnk00520ae0 *position)
 {
     CopyFastFindRepulsive(position + 1, end(), position);
     _Destroy(_Last - 1, _Last);
@@ -393,7 +390,7 @@ inline RHFastFindRepulsive *vector<RHFastFindRepulsive>::erase(RHFastFindRepulsi
 // FUNCTION: GAME 0x004eca10
 void RHFastFindGrid::DeleteStaticRepulsivePoint(unsigned long id)
 {
-    RHFastFindRepulsive *point = m_repulsivePoints.begin();
+    RHUnk00520ae0 *point = m_repulsivePoints.begin();
     unsigned short *layer = m_repulsiveLayers.begin();
     for (; point != m_repulsivePoints.end(); ++point, ++layer)
     {
@@ -505,16 +502,6 @@ public:
     void FUN_00520c50(float first, float second);
 };
 
-struct RHFastFindRepulsiveStorage
-{
-    undefined m_00[0x40];
-    RHFastFindRepulsiveStorage(const SBGeoPoint2D &point, float radius, float strength)
-    {
-        ((RHUnk00520ae0 *)this)->RHUnk00520ae0::RHUnk00520ae0(point, radius, strength);
-    }
-    ~RHFastFindRepulsiveStorage() { ((RHUnk00520ae0 *)this)->~RHUnk00520ae0(); }
-};
-
 class RHMalignityArrayCalls
 {
 public:
@@ -529,31 +516,22 @@ public:
 
 void FUN_004fd680(RHUnk00520ae0 *destination, const RHUnk00520ae0 &other);
 
-class RHUnk004fd0c0
+inline RHUnk00520ae0 *CopyConstructFastFindRepulsive(const RHUnk00520ae0 *first, const RHUnk00520ae0 *last, RHUnk00520ae0 *destination)
 {
-public:
-    char m_00[4];
-    RHFastFindRepulsive *m_first;
-    RHFastFindRepulsive *m_last;
-    RHFastFindRepulsive *m_end;
-    void Insert(RHFastFindRepulsive *position, unsigned count, const RHFastFindRepulsive &value);
-    unsigned Size() const { return m_first == 0 ? 0 : m_last - m_first; }
-    RHFastFindRepulsive *Copy(const RHFastFindRepulsive *first, const RHFastFindRepulsive *last, RHFastFindRepulsive *destination)
-    {
-        for (; first != last; ++destination, ++first)
-            FUN_004fd680((RHUnk00520ae0 *)destination, *(const RHUnk00520ae0 *)first);
-        return destination;
-    }
-    void Fill(RHFastFindRepulsive *destination, unsigned count, const RHFastFindRepulsive &value)
-    {
-        for (; count > 0; --count, ++destination)
-            FUN_004fd680((RHUnk00520ae0 *)destination, (const RHUnk00520ae0 &)value);
-    }
-};
+    for (; first != last; ++destination, ++first)
+        FUN_004fd680(destination, *first);
+    return destination;
+}
 
-DECOMP_SIZE_ASSERT(RHFastFindRepulsiveBase, 0x14)
-DECOMP_SIZE_ASSERT(RHFastFindRepulsive, 0x40)
-DECOMP_SIZE_ASSERT(RHUnk004fd0c0, 0x10)
+inline void FillConstructFastFindRepulsive(RHUnk00520ae0 *destination, unsigned count, const RHUnk00520ae0 &value)
+{
+    for (; count > 0; --count, ++destination)
+        FUN_004fd680(destination, value);
+}
+
+DECOMP_SIZE_ASSERT(RHUnk005209d0, 0x14)
+DECOMP_SIZE_ASSERT(RHUnk00520ae0, 0x40)
+DECOMP_SIZE_ASSERT(std::vector<RHUnk00520ae0>, 0x10)
 
 struct RHFastFindCell
 {
@@ -571,12 +549,6 @@ struct RHFastFindCell
     undefined m_22[2];
     void **m_points;
 
-};
-
-class RHMobileUnk00607da0
-{
-public:
-    RHMobileUnk00607da0 &FUN_00607da0(const RHMobileUnk00607da0 &other);
 };
 
 #include "SBGeoSegment2D.h"
@@ -743,13 +715,14 @@ int RHScriptBatchCalls::Unk004ec910(void *location, float radius, float strength
     RHFastFindGrid *grid = (RHFastFindGrid *)this;
     float x = ((float *)point)[1];
     float y = ((float *)point)[2];
-    RHFastFindRepulsiveStorage value(SBGeoPoint2D(x, y), radius, strength);
+    RHUnk00520ae0 value(SBGeoPoint2D(x, y), radius, strength);
     unsigned bits = flags;
     ((char *)&value)[0x35] = (unsigned char)bits & 1;
     ((char *)&value)[0x37] = (unsigned char)(bits >> 2) & 1;
     ((char *)&value)[0x36] = (unsigned char)(bits >> 1) & 1;
     ((char *)&value)[0x38] = (unsigned char)(bits >> 3) & 1;
-    ((RHUnk004fd0c0 *)&grid->m_repulsivePoints)->Insert(grid->m_repulsivePoints.end(), 1, *(RHFastFindRepulsive *)&value);
+    void (std::vector<RHUnk00520ae0>::*insert)(RHUnk00520ae0 *, unsigned, const RHUnk00520ae0 &) = &std::vector<RHUnk00520ae0>::insert;
+    (grid->m_repulsivePoints.*insert)(grid->m_repulsivePoints.end(), 1, value);
     unsigned layer = point->m_layer;
     ((RHMalignityArrayCalls *)&grid->m_repulsiveLayers)->FUN_004e60a0(grid->m_repulsiveLayers.end(), 1, layer);
     return *(unsigned long *)((char *)&value + 0x3c);
@@ -759,7 +732,7 @@ int RHScriptBatchCalls::Unk004ec910(void *location, float radius, float strength
 bool RHFastFindGrid::FUN_004ecb50(RHFastFindUniqueList &output, unsigned short layer, const SBGeoBoundingBox2D &box, unsigned long kind)
 {
     unsigned index = 0;
-    for (RHFastFindRepulsive *point = m_repulsivePoints.begin(); point != m_repulsivePoints.end(); ++index, ++point) {
+    for (RHUnk00520ae0 *point = m_repulsivePoints.begin(); point != m_repulsivePoints.end(); ++index, ++point) {
         if (m_repulsiveLayers[index] != layer) continue;
         if (((kind == 12 && point->m_35) || (kind == 20 && point->m_36) ||
              (kind == 4 && point->m_37) || (kind == 0 && point->m_38)) &&
@@ -1552,6 +1525,45 @@ void RHFastFindGrid::InitializeSightObstaclesFromProtoStream(SBFile &file)
     FUN_005e20c0(file);
 }
 
+// FUNCTION: GAME 0x004ef8e0
+void RHFastFindGrid::FUN_004ef8e0(void *area, unsigned short, bool mode)
+{
+    SBGeoPoint2D point;
+    SBGeoBoundingBox2D cellBounds;
+    if (mode)
+        m_3ea4->InsertObstacle(area);
+    short firstX = (short)((RHUnk005a3450 *)area)->m_bounds.m_p0.m_x >> 6;
+    short firstY = (short)((RHUnk005a3450 *)area)->m_bounds.m_p0.m_y >> 6;
+    short lastX = (short)((RHUnk005a3450 *)area)->m_bounds.m_p1.m_x >> 6;
+    short lastY = (short)((RHUnk005a3450 *)area)->m_bounds.m_p1.m_y >> 6;
+    if (firstX < 0) firstX = 0;
+    else if (firstX >= m_width) firstX = m_width - 1;
+    if (firstY < 0) firstY = 0;
+    else if (firstY >= m_height) firstY = m_height - 1;
+    if (lastX < 0) lastX = 0;
+    else if (lastX >= m_width) lastX = m_width - 1;
+    if (lastY < 0) lastY = 0;
+    else if (lastY >= m_height) lastY = m_height - 1;
+    unsigned cell = firstY * m_width + firstX;
+    int skip = m_width - (lastX - firstX) - 1;
+    for (unsigned short y = firstY; y <= (unsigned short)lastY; ++y)
+    {
+        for (unsigned short x = firstX; x <= (unsigned short)lastX; ++cell, ++x)
+        {
+            point.m_x = (float)(int)(x << 6);
+            point.m_y = (float)(int)(y << 6);
+            cellBounds.FUN_00609050(point, point.Unk005fc190(*(SBGeoPoint2D *)g_unk0x006c0aa8));
+            if (((RHElementAreaShape *)((char *)area + 0x7c))->FUN_0060c650(cellBounds))
+            {
+                RHFastFindPointerArray &array = *(RHFastFindPointerArray *)(*(char **)((char *)this + 0x3f80) + cell * 0xa0 + 0x60);
+                ((SBArray<RHSaveGame *> *)&array)->Insert((RHSaveGame **)array.end(), 1, *(RHSaveGame *const *)&area);
+                array.m_changed = true;
+            }
+        }
+        cell += skip;
+    }
+}
+
 // FUNCTION: GAME 0x004efbb0
 bool RHFastFindGrid::Unk004efbb0(SBFile &file, void **value)
 {
@@ -1690,7 +1702,7 @@ bool RHFastFindGrid::Serialize(SBFile &file)
             }
         }
     }
-    RHUnk004b2190Member point;
+    RHUnk00520ae0 point;
     unsigned int pointCount;
     unsigned short layerIndex;
     if (file.m_bLoading)
@@ -1712,8 +1724,10 @@ bool RHFastFindGrid::Serialize(SBFile &file)
                 SBAssert(0, "P:\\Robin Hood\\RHfastfindgrid.cpp", 0x234e, "Serialize failed reason is %s", error->m_chars ? error->m_chars : "");
                 return false;
             }
-            ((SBArray<RHUnk004b2190Member> *)&m_repulsivePoints)->Insert((RHUnk004b2190Member *)m_repulsivePoints.end(), 1, point);
-            ((SBArray<unsigned short> *)&m_repulsiveLayers)->Insert(m_repulsiveLayers.end(), 1, layerIndex);
+            void (std::vector<RHUnk00520ae0>::*insertPoint)(RHUnk00520ae0 *, unsigned, const RHUnk00520ae0 &) = &std::vector<RHUnk00520ae0>::insert;
+            (m_repulsivePoints.*insertPoint)(m_repulsivePoints.end(), 1, point);
+            void (std::vector<unsigned short>::*insertLayer)(unsigned short *, unsigned, const unsigned short &) = &std::vector<unsigned short>::insert;
+            (m_repulsiveLayers.*insertLayer)(m_repulsiveLayers.end(), 1, layerIndex);
         }
     }
     else
@@ -1727,7 +1741,7 @@ bool RHFastFindGrid::Serialize(SBFile &file)
         }
         for (unsigned int i = 0; i < pointCount; ++i)
         {
-            ((RHUnk004b2190Member *)&m_repulsivePoints[i])->Serialize(file);
+            m_repulsivePoints[i].Serialize(file);
             layerIndex = m_repulsiveLayers[i];
             if (file.Access(&layerIndex, 2) < 0)
             {
@@ -2278,13 +2292,13 @@ void RHFastFindGrid::InitializeJumpStuffFromProtoStream(SBFile &file)
         first->m_mode = mode;
         second->m_mode = mode;
         first->m_layer = second->m_sector->m_layer;
-        first->m_owner = second->m_sector->m_98;
+        first->SetOwner(second->m_sector->m_98);
         void *value = first;
-        ((RHUnk004e5270 *)((char *)first->m_owner + 0xc8))->InsertLast(value);
+        ((RHUnk004e5270 *)((char *)first->Owner() + 0xc8))->InsertLast(value);
         second->m_layer = first->m_sector->m_layer;
-        second->m_owner = first->m_sector->m_98;
+        second->SetOwner(first->m_sector->m_98);
         value = second;
-        ((RHUnk004e5270 *)((char *)second->m_owner + 0xc8))->InsertLast(value);
+        ((RHUnk004e5270 *)((char *)second->Owner() + 0xc8))->InsertLast(value);
         FUN_004ed690(first, first->m_layer, true);
         FUN_004ed690(second, second->m_layer, true);
         RHUnk0051b6e0 *gate = new RHUnk0051b6e0(first, second);
@@ -2647,13 +2661,13 @@ bool RHFastFindGrid::SerializeLinePointer(SBFile &file, void *&value)
 }
 
 // FUNCTION: GAME 0x004fdb90
-inline RHFastFindRepulsive &RHFastFindRepulsive::operator=(const RHFastFindRepulsive &other)
+inline RHUnk00520ae0 &RHUnk00520ae0::operator=(const RHUnk00520ae0 &other)
 {
     *(SBGeoPoint2D *)((char *)this + 4) = *(const SBGeoPoint2D *)(&other ? (const char *)&other + 4 : 0);
     *(int *)((char *)this + 0xc) = *(const int *)((const char *)&other + 0xc);
     *((char *)this + 0x10) = *((const char *)&other + 0x10);
-    ((RHUnk005fc3b0 *)&m_14)->FUN_005fc430(other.m_14);
-    ((RHUnk005fc3b0 *)&m_1c)->FUN_005fc430(other.m_1c);
+    m_14.FUN_005fc430(other.m_14);
+    m_1c.FUN_005fc430(other.m_1c);
     m_24 = other.m_24;
     m_28 = other.m_28;
     m_2c = other.m_2c;
@@ -2704,37 +2718,38 @@ RHUnk004fd070::~RHUnk004fd070()
     m_end = 0;
 }
 
-// FUNCTION: GAME 0x004fd0c0
-void RHUnk004fd0c0::Insert(RHFastFindRepulsive *position, unsigned count, const RHFastFindRepulsive &value)
+// TEMPLATE: GAME 0x004fd0c0
+// ?insert@?$vector@VRHUnk00520ae0@@V?$allocator@VRHUnk00520ae0@@@std@@@std@@QAEXPAVRHUnk00520ae0@@IABV3@@Z
+template <> void std::vector<RHUnk00520ae0>::insert(RHUnk00520ae0 *position, unsigned count, const RHUnk00520ae0 &value)
 {
-    if ((unsigned)(m_end - m_last) < count)
+    if ((unsigned)(_End - _Last) < count)
     {
-        unsigned capacity = Size() + (count < Size() ? Size() : count);
-        RHFastFindRepulsive *storage = std::allocator<RHFastFindRepulsive>().allocate(capacity, 0);
-        RHFastFindRepulsive *destination = Copy(m_first, position, storage);
-        Fill(destination, count, value);
-        Copy(position, m_last, destination + count);
-        RHFastFindRepulsive *last = m_last;
-        for (RHFastFindRepulsive *destroyed = m_first; destroyed != last; ++destroyed)
-            ((RHUnk00520ae0 *)destroyed)->~RHUnk00520ae0();
-        ::operator delete(m_first);
-        m_end = storage + capacity;
-        m_last = storage + Size() + count;
-        m_first = storage;
+        unsigned capacity = size() + (count < size() ? size() : count);
+        RHUnk00520ae0 *storage = std::allocator<RHUnk00520ae0>().allocate(capacity, 0);
+        RHUnk00520ae0 *destination = CopyConstructFastFindRepulsive(_First, position, storage);
+        FillConstructFastFindRepulsive(destination, count, value);
+        CopyConstructFastFindRepulsive(position, _Last, destination + count);
+        RHUnk00520ae0 *last = _Last;
+        for (RHUnk00520ae0 *destroyed = _First; destroyed != last; ++destroyed)
+            destroyed->~RHUnk00520ae0();
+        ::operator delete(_First);
+        _End = storage + capacity;
+        _Last = storage + size() + count;
+        _First = storage;
     }
-    else if ((unsigned)(m_last - position) < count)
+    else if ((unsigned)(_Last - position) < count)
     {
-        Copy(position, m_last, position + count);
-        Fill(m_last, count - (m_last - position), value);
-        std::fill(position, m_last, value);
-        m_last += count;
+        CopyConstructFastFindRepulsive(position, _Last, position + count);
+        FillConstructFastFindRepulsive(_Last, count - (_Last - position), value);
+        std::fill(position, _Last, value);
+        _Last += count;
     }
     else if (count > 0)
     {
-        Copy(m_last - count, m_last, m_last);
-        std::copy_backward(position, m_last - count, m_last);
+        CopyConstructFastFindRepulsive(_Last - count, _Last, _Last);
+        std::copy_backward(position, _Last - count, _Last);
         std::fill(position, position + count, value);
-        m_last += count;
+        _Last += count;
     }
 }
 
@@ -2890,7 +2905,7 @@ RHUnk004fda20::~RHUnk004fda20()
 }
 
 // FUNCTION: GAME 0x004fdc20
-RHFastFindRepulsiveBase &RHFastFindRepulsiveBase::Unk004fdc20(const RHFastFindRepulsiveBase &other)
+RHUnk005209d0 &RHUnk005209d0::Unk004fdc20(const RHUnk005209d0 &other)
 {
     *(SBGeoPoint2D *)((char *)this + 4) = *(const SBGeoPoint2D *)(&other ? (const char *)&other + 4 : 0);
     *(int *)((char *)this + 0xc) = *(const int *)((const char *)&other + 0xc);
@@ -3511,7 +3526,6 @@ RHUnk0051aa00::RHUnk0051aa00()
 // FUNCTION: GAME 0x0051e1e0
 RHUnk0051e1e0::RHUnk0051e1e0()
 {
-    ((RHUnk0051f0f0 *)this)->RHUnk0051f0f0::RHUnk0051f0f0();
     *(unsigned long *)this = 0x006790c0;
     *(int *)((char *)this + 0x14) = 0x400;
     *((char *)this + 0x39) = 0;
@@ -3520,7 +3534,7 @@ RHUnk0051e1e0::RHUnk0051e1e0()
 // FUNCTION: GAME 0x0051e200
 void *RHUnk0051e1e0::FUN_0051e200(unsigned flags)
 {
-    this->~RHUnk0051e1e0();
+    this->RHUnk0051e1e0::~RHUnk0051e1e0();
     if (flags & 1)
         operator delete(this);
     return this;
@@ -3530,7 +3544,42 @@ void *RHUnk0051e1e0::FUN_0051e200(unsigned flags)
 RHUnk0051e1e0::~RHUnk0051e1e0()
 {
     *(unsigned long *)this = 0x006790c0;
-    ((RHUnk0051f0f0 *)this)->RHUnk0051f0f0::~RHUnk0051f0f0();
+}
+
+DECOMP_SIZE_ASSERT(RHUnk0051e1e0, 0x3c)
+DECOMP_SIZE_ASSERT(RHUnk0051e5e0, 0xa0)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0051e1e0, m_other) == 0x20)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0051e1e0, m_sector) == 0x28)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0051e1e0, m_30) == 0x30)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0051e1e0, m_34) == 0x34)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0051e1e0, m_mode) == 0x39)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0051e5e0, m_lines) == 0x58)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0051e5e0, m_98) == 0x98)
+
+// STUB: GAME 0x0051e230
+int RHUnk0051e1e0::Unk0051e230(SBFile &file, RHSeqList &sectors)
+{
+    int start = ((ToolboxPositionFile *)&file)->FUN_005f5440();
+    short x;
+    short y;
+    short height;
+    file.Access(&x, 2);
+    file.Access(&y, 2);
+    First() = SBGeoPoint2D((float)x, (float)y);
+    file.Access(&height, 2);
+    m_30 = (float)height;
+    file.Access(&x, 2);
+    file.Access(&y, 2);
+    Second() = SBGeoPoint2D((float)x, (float)y);
+    file.Access(&height, 2);
+    m_34 = (float)height;
+    unsigned short index;
+    file.Access(&index, 2);
+    sectors.GoTo(index);
+    m_sector = (RHUnk0051e5e0 *)sectors.m_current->m_data;
+    void *line = this;
+    m_sector->m_lines.InsertLast(line);
+    return ((ToolboxPositionFile *)&file)->FUN_005f5440() - start;
 }
 
 void EmitRHUnk0051e1e0(void *storage)
@@ -3565,21 +3614,55 @@ RHUnk0051f0f0::~RHUnk0051f0f0()
     *(unsigned *)this = 0x6790e0;
 }
 
+#include "SBGeoVector2D.h"
+#include "SBGeoIntersection2D.h"
+#include "SBDrawManagerCore.h"
+
+// FUNCTION: GAME 0x0051f1d0
+void RHUnk0051f0f0::FUN_0051f1d0(SBDrawManager *draw, SBGeoBoundingBox2D box, float scale, unsigned short color)
+{
+    SBGeoVector2D offset;
+    SBGeoPoint2D first;
+    SBGeoPoint2D second;
+    SBGeoSegment2D segment(SBGeoPoint2D(0, 0), SBGeoPoint2D(0, 0));
+    RHUnk0060fbf0 clipped;
+    offset = box.Min();
+    clipped.FUN_0060fca0(box.FUN_006093f0(((SBGeoSegment2D *)this)->Line()));
+    if (clipped.FUN_0063b9a0() == 4)
+    {
+        segment = *(SBGeoSegment2D *)clipped.FUN_0053bf20();
+        first = segment.First().FUN_005fc200(offset);
+        second = segment.Second().FUN_005fc200(offset);
+        if (scale != 1.0f)
+        {
+            first.m_x *= scale;
+            first.m_y *= scale;
+            second.m_x *= scale;
+            second.m_y *= scale;
+        }
+        draw->FUN_005ecbd0(0, first, second, color);
+    }
+}
+
+void EmitRHLineDisplay(RHUnk0051f0f0 *line, SBDrawManager *draw, const SBGeoBoundingBox2D &box)
+{
+    line->FUN_0051f1d0(draw, box, 1.0f, 0);
+}
+
 // FUNCTION: GAME 0x0051f4d0
 RHFastFindLine::RHFastFindLine()
 {
-    ((RHUnk0051f0f0 *)this)->RHUnk0051f0f0::RHUnk0051f0f0();
     *(unsigned *)this = 0x6790e8;
-    *(unsigned *)((char *)this + 0x24) = 0;
-    *(unsigned *)((char *)this + 0x28) = 0;
-    *(unsigned short *)((char *)this + 0x20) = 0;
+    m_24 = 0;
+    m_28 = 0;
+    m_20 = 0;
     *(unsigned *)((char *)this + 0x14) = 0xc;
 }
 
 // FUNCTION: GAME 0x0051f500
 void *RHFastFindLine::FUN_0051f500(unsigned flags)
 {
-    this->~RHFastFindLine();
+    this->RHFastFindLine::~RHFastFindLine();
     if (flags & 1)
         operator delete(this);
     return this;
@@ -3589,7 +3672,94 @@ void *RHFastFindLine::FUN_0051f500(unsigned flags)
 RHFastFindLine::~RHFastFindLine()
 {
     *(unsigned *)this = 0x6790e8;
-    ((RHUnk0051f0f0 *)this)->RHUnk0051f0f0::~RHUnk0051f0f0();
+}
+
+DECOMP_SIZE_ASSERT(RHFastFindLine, 0x2c)
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindLine, m_20) == 0x20)
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindLine, m_22) == 0x22)
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindLine, m_24) == 0x24)
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindLine, m_28) == 0x28)
+
+// FUNCTION: GAME 0x0051f530
+void RHFastFindLine::FUN_0051f530(SBDrawManager *draw, SBGeoBoundingBox2D box, float scale, unsigned short color)
+{
+    SBGeoVector2D offset;
+    SBGeoPoint2D first;
+    SBGeoPoint2D second;
+    SBGeoSegment2D segment(SBGeoPoint2D(0, 0), SBGeoPoint2D(0, 0));
+    RHUnk0060fbf0 clipped;
+    if (m_20 == 0)
+    {
+        offset = box.Min();
+        clipped.FUN_0060fca0(box.FUN_006093f0(((SBGeoSegment2D *)this)->Line()));
+        if (clipped.FUN_0063b9a0() == 4)
+        {
+            segment = *(SBGeoSegment2D *)clipped.FUN_0053bf20();
+            first = segment.First().FUN_005fc200(offset);
+            second = segment.Second().FUN_005fc200(offset);
+            if (scale != 1.0f)
+            {
+                first.m_x *= scale;
+                first.m_y *= scale;
+                second.m_x *= scale;
+                second.m_y *= scale;
+            }
+            draw->FUN_005ecbd0(0, first, second, color);
+        }
+    }
+    else
+    {
+        --m_20;
+        first = First();
+        second = Second();
+        first.m_y += 1.0f;
+        second.m_y += 1.0f;
+        segment.First() = first;
+        segment.Second() = second;
+        offset = box.Min();
+        clipped.FUN_0060fca0(box.FUN_006093f0(segment.Line()));
+        if (clipped.FUN_0063b9a0() == 4)
+        {
+            segment = *(SBGeoSegment2D *)clipped.FUN_0053bf20();
+            first = segment.First().FUN_005fc200(offset);
+            second = segment.Second().FUN_005fc200(offset);
+            if (scale != 1.0f)
+            {
+                first.m_x *= scale;
+                first.m_y *= scale;
+                second.m_x *= scale;
+                second.m_y *= scale;
+            }
+            draw->FUN_005ecbd0(0, first, second, m_22);
+        }
+        first = First();
+        second = Second();
+        first.m_y -= 1.0f;
+        second.m_y -= 1.0f;
+        segment.First() = first;
+        segment.Second() = second;
+        offset = box.Min();
+        clipped.FUN_0060fca0(box.FUN_006093f0(segment.Line()));
+        if (clipped.FUN_0063b9a0() == 4)
+        {
+            segment = *(SBGeoSegment2D *)clipped.FUN_0053bf20();
+            first = segment.First().FUN_005fc200(offset);
+            second = segment.Second().FUN_005fc200(offset);
+            if (scale != 1.0f)
+            {
+                first.m_x *= scale;
+                first.m_y *= scale;
+                second.m_x *= scale;
+                second.m_y *= scale;
+            }
+            draw->FUN_005ecbd0(0, first, second, m_22);
+        }
+    }
+}
+
+void EmitRHFastFindLineDisplay(RHFastFindLine *line, SBDrawManager *draw, const SBGeoBoundingBox2D &box)
+{
+    line->FUN_0051f530(draw, box, 1.0f, 0);
 }
 
 void EmitRHFastFindLine(void *storage)
@@ -3634,7 +3804,7 @@ RHUnk0051e1e0 *RHUnk0051e5e0::FUN_0051e790(RHElementActor *actor,
 bool RHUnk0051e5e0::FUN_0051e7b0(unsigned int index, RHElementActor *actor, bool mode)
 {
     RHUnk0051e1e0 *line = (RHUnk0051e1e0 *)m_lines.m_first[index];
-    if (line->m_owner == *(void **)((char *)*(void **)((char *)actor + 0x50) + 0xe0))
+    if (line->Owner() == *(void **)((char *)*(void **)((char *)actor + 0x50) + 0xe0))
     {
         RHUnk0051b6e0 *gate = (RHUnk0051b6e0 *)line->m_gate;
         if (gate->FUN_0051abe0(line == gate->m_8c, actor, mode, true, false))
@@ -3689,11 +3859,11 @@ RHUnk0051e1e0 *RHUnk0051e5e0::FUN_0051e8e0(RHElementActor *actor,
         {
             RHUnk0051e1e0 *line = (RHUnk0051e1e0 *)m_lines.m_first[index];
             RHUnk0051e1e0 *other = line->m_other;
-            midpoint.m_x = (*(float *)(other->m_00 + 0xc) + *(float *)(other->m_00 + 4)) * 0.5f;
-            midpoint.m_y = (*(float *)(other->m_00 + 0x10) + *(float *)(other->m_00 + 8)) * 0.5f;
+            midpoint.m_x = (other->Second().m_x + other->First().m_x) * 0.5f;
+            midpoint.m_y = (other->Second().m_y + other->First().m_y) * 0.5f;
             float distance = midpoint.Unk005fc110(second).Unk005fc6d0(1.0f);
-            midpoint.m_x = (*(float *)(line->m_00 + 0xc) + *(float *)(line->m_00 + 4)) * 0.5f;
-            midpoint.m_y = (*(float *)(line->m_00 + 0x10) + *(float *)(line->m_00 + 8)) * 0.5f;
+            midpoint.m_x = (line->Second().m_x + line->First().m_x) * 0.5f;
+            midpoint.m_y = (line->Second().m_y + line->First().m_y) * 0.5f;
             distance += midpoint.Unk005fc110(first).Unk005fc6d0(1.0f);
             if (distance < best)
             {
@@ -3713,23 +3883,23 @@ int RHFastFindLine::FUN_0051faf0(SBFile &file, RHFastFindPointerArray &sectors)
     short y;
     file.Access(&x, 2);
     file.Access(&y, 2);
-    ((float *)m_00)[1] = x;
-    ((float *)m_00)[2] = y;
+    First().m_x = x;
+    First().m_y = y;
     file.Access(&x, 2);
     file.Access(&y, 2);
-    ((float *)m_00)[3] = x;
-    ((float *)m_00)[4] = y;
+    Second().m_x = x;
+    Second().m_y = y;
     unsigned short index;
     file.Access(&index, 2);
     if (index == 0xffff)
-        *(void **)(m_00 + 0x24) = 0;
+        m_24 = 0;
     else
-        *(void **)(m_00 + 0x24) = sectors.m_first[index];
+        m_24 = sectors.m_first[index];
     file.Access(&index, 2);
     if (index == 0xffff)
-        *(void **)(m_00 + 0x28) = 0;
+        m_28 = 0;
     else
-        *(void **)(m_00 + 0x28) = sectors.m_first[index];
+        m_28 = sectors.m_first[index];
     return ((ToolboxPositionFile *)&file)->FUN_005f5440() - start;
 }
 
@@ -3773,6 +3943,28 @@ void RHUnk00520ae0::FUN_00520c80(const SBGeoPoint2D &first, const SBGeoPoint2D &
     m_14.FUN_005fc430(first);
     m_1c.FUN_005fc430(second);
     m_34 = ((const RHUnk005fc3b0 &)first).FUN_005fc680((const RHUnk005fc3b0 &)second, 1.0f) < 0.0f;
+}
+
+// FUNCTION: GAME 0x00520ce0
+bool RHUnk00520ae0::FUN_00520ce0(const SBGeoPoint2D &point, float &distance)
+{
+    SBGeoVector2D offset = point.Unk005fc110(*this);
+    distance = ((RHUnk005fc3b0 &)offset).Unk005fc6a0(1.0f);
+    if (!(distance <= m_24))
+        return false;
+    if (!HasFlag(2))
+    {
+        if (!m_34)
+        {
+            if (!(m_14.FUN_005fc680((const RHUnk005fc3b0 &)offset, 1.0f) >= 0.0f
+                && m_1c.FUN_005fc680((const RHUnk005fc3b0 &)offset, 1.0f) < 0.0f))
+                return false;
+        }
+        else if (!(m_14.FUN_005fc680((const RHUnk005fc3b0 &)offset, 1.0f) >= 0.0f
+            || m_1c.FUN_005fc680((const RHUnk005fc3b0 &)offset, 1.0f) < 0.0f))
+            return false;
+    }
+    return true;
 }
 
 // FUNCTION: GAME 0x005224d0

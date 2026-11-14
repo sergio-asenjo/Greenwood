@@ -17,7 +17,9 @@ public:
         *(unsigned *)this = 0x678b58;
     }
     virtual ~RHUnk005209d0(); // vtable+0x00
+    RHUnk005209d0 &Unk004fdc20(const RHUnk005209d0 &other);
     void *FUN_004fdc70(unsigned flags);
+    bool HasFlag(int bit) const { return ((unsigned)m_0c >> bit) & 1; }
     int m_0c; // +0x0c
     undefined m_10; // +0x10
 };
@@ -30,13 +32,16 @@ public:
     RHUnk00520ae0();
     RHUnk00520ae0(const SBGeoPoint2D &point, float first, float second);
     virtual ~RHUnk00520ae0(); // vtable+0x00
+    RHUnk00520ae0 &operator=(const RHUnk00520ae0 &other);
     void FUN_00520c80(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
+    bool FUN_00520ce0(const SBGeoPoint2D &point, float &distance);
+    bool Serialize(SBFile &file);
     RHUnk005fc3b0 m_14; // +0x14
     RHUnk005fc3b0 m_1c; // +0x1c
-    int m_24;
-    int m_28;
-    int m_2c;
-    int m_30;
+    float m_24;
+    float m_28;
+    float m_2c;
+    float m_30;
     undefined m_34; // +0x34
     undefined m_35; // +0x35
     undefined m_36; // +0x36

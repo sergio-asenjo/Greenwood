@@ -1,6 +1,9 @@
 #include "SBNullstr.h"
 #include "RHFastFindGrid.h"
 #include "RHArtificialIntelligenceCore.h"
+#include "RHSectorObstacle.h"
+#include "RHMobileUnk00607da0.h"
+#include <stddef.h>
 
 typedef std::vector<void *> RHFastFindPointerVector;
 
@@ -34,19 +37,23 @@ RHUnk0051e5e0::~RHUnk0051e5e0()
 
 
 // FUNCTION: GAME 0x0051f450
-float RHFastFindLine::FUN_0051f450() { return ((float *)m_00)[1] > ((float *)m_00)[3] ? ((float *)m_00)[1] : ((float *)m_00)[3]; }
+float RHFastFindLine::FUN_0051f450() { return First().m_x > Second().m_x ? First().m_x : Second().m_x; }
 // FUNCTION: GAME 0x0051f470
-float RHFastFindLine::FUN_0051f470() { return ((float *)m_00)[1] > ((float *)m_00)[3] ? ((float *)m_00)[3] : ((float *)m_00)[1]; }
+float RHFastFindLine::FUN_0051f470() { return First().m_x > Second().m_x ? Second().m_x : First().m_x; }
 // FUNCTION: GAME 0x0051f490
-float RHFastFindLine::FUN_0051f490() { return ((float *)m_00)[2] > ((float *)m_00)[4] ? ((float *)m_00)[4] : ((float *)m_00)[2]; }
+float RHFastFindLine::FUN_0051f490() { return First().m_y > Second().m_y ? Second().m_y : First().m_y; }
 // FUNCTION: GAME 0x0051f4b0
-float RHFastFindLine::FUN_0051f4b0() { return ((float *)m_00)[2] > ((float *)m_00)[4] ? ((float *)m_00)[2] : ((float *)m_00)[4]; }
+float RHFastFindLine::FUN_0051f4b0() { return First().m_y > Second().m_y ? First().m_y : Second().m_y; }
 
 DECOMP_SIZE_ASSERT(RHUnk0051a5e0, 0x88)
 DECOMP_SIZE_ASSERT(RHUnk0051aa00, 0xbc)
 DECOMP_SIZE_ASSERT(RHUnk0051b6e0, 0x90)
 DECOMP_SIZE_ASSERT(RHUnk005209d0, 0x14)
 DECOMP_SIZE_ASSERT(RHUnk00520ae0, 0x40)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk00520ae0, m_14) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk00520ae0, m_id) == 0x3c)
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindGrid, m_repulsivePoints) == 0x41b4)
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindGrid, m_repulsiveLayers) == 0x41c4)
 
 // FUNCTION: GAME 0x0060ad50
 bool RHMalignitySegment::FUN_0060ad50(const SBGeoBoundingBox2D &box)
@@ -73,13 +80,19 @@ void RHUnk00522470::FUN_00520a90(SBFile &file)
 }
 RHSectorScript::RHSectorScript() {}
 RHSectorScript::~RHSectorScript() {}
-void RHUnk0051e1e0::Unk0051e230(SBFile &, RHSeqList &) {}
 RHUnk0051b6e0::~RHUnk0051b6e0() {}
 // GLOBAL: GAME 0x006c1064
 unsigned long g_unk0x006c1064;
 
 DECOMP_SIZE_ASSERT(RHFastFindSightList<RHFastFindSightVertex>, 0x30)
 DECOMP_SIZE_ASSERT(RHFastFindSightList<void *>, 0x24)
+DECOMP_SIZE_ASSERT(RHFastFindSightList<RHFastFindSightVertex>::Node, 0x18)
+DECOMP_SIZE_ASSERT(RHUnk0057d3a0, 0x5c)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0057d3a0, m_58) == 0x58)
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindSightList<RHFastFindSightVertex>, m_current) == 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindSightList<RHFastFindSightVertex>, m_dirty) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindSightList<RHFastFindSightVertex>, m_index) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindSightVertex, upper) == 0x08)
 DECOMP_SIZE_ASSERT(RHUnk005a3450, 0x1a8)
 DECOMP_STATIC_ASSERT(offsetof(RHUnk005a3450, m_box) == 0x0c)
 DECOMP_STATIC_ASSERT(offsetof(RHUnk005a3450, m_bounds) == 0x24)
@@ -117,13 +130,25 @@ RHUnk005a3450::RHUnk005a3450(int type)
 }
 RHUnk005a3450::~RHUnk005a3450() {}
 void RHUnk005a3450::Unk005a3810(SBFile &, RHFastFindPointerArray &) {}
-void *RHUnk005a3450::Unk005a5780() { return 0; }
+// STUB: GAME 0x005a5780
+void *RHUnk005a3450::Unk005a5780()
+{
+    SBGeoPoint2D point;
+    RHUnk0057d3a0 *sector = new RHUnk0057d3a0;
+    sector->m_58 = this;
+    ((RHMobileUnk00607da0 *)&sector->m_3c)->FUN_00607da0((const RHMobileUnk00607da0 &)m_otherBounds);
+    unsigned count = m_vertices.m_count;
+    for (unsigned short index = 0; index < (unsigned short)count; ++index)
+    {
+        RHFastFindSightVertex vertex = m_vertices.At(index);
+        point.m_x = vertex.x;
+        point.m_y = vertex.y - vertex.upper;
+        ((RHUnkSectorPoints *)((char *)sector + 4))->FUN_0060ceb0(point);
+    }
+    ((RHUnkSectorPoints *)((char *)sector + 4))->FUN_0060c2e0();
+    return sector;
+}
 SBGeoPoint3D::SBGeoPoint3D(float, float, float) {}
-void RHFastFindGrid::FUN_004ef8e0(RHUnk005a3450 *, unsigned short, bool) {}
-RHUnk004b2190Member::RHUnk004b2190Member() {}
-RHUnk004b2190Member::~RHUnk004b2190Member() {}
-void SBArray<RHUnk004b2190Member>::Insert(RHUnk004b2190Member *, unsigned int, const RHUnk004b2190Member &) {}
-void SBArray<unsigned short>::Insert(unsigned short *, unsigned int, const unsigned short &) {}
 // FUNCTION: GAME 0x005223f0
 void RHUnk005223f0::FUN_005223f0(SBFile &file)
 {

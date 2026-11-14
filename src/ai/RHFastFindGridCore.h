@@ -9,7 +9,7 @@ class SBGeoPoint2D;
 class SBGeoBoundingBox2D;
 class RHMalignitySegment;
 class SBGeoPoint3D;
-class RHFastFindRepulsive;
+class RHUnk00520ae0;
 class RHUnkMaskObstacleTable;
 struct RHFastFindLayer;
 
@@ -73,7 +73,7 @@ public:
     void FUN_004e99e0(void *sector, unsigned short layer, bool mode);
     void FUN_004e9d00(unsigned char enabled, unsigned short layer, void *sector);
     void FUN_004ed690(void *point, unsigned short layer, bool mode);
-    void FUN_004ef8e0(class RHUnk005a3450 *area, unsigned short layer, bool mode);
+    void FUN_004ef8e0(void *area, unsigned short layer, bool mode);
     bool Unk004efbb0(SBFile &file, void **value);
     bool SerializeLinePointer(SBFile &file, void *&value);
     void Emit(SBFile &file, void *&value);
@@ -92,7 +92,7 @@ public:
     RHFastFindPointerArray m_gates;
     RHFastFindPointerArray m_patches;
     char m_40c0[0xf4];
-    std::vector<RHFastFindRepulsive> m_repulsivePoints;
+    std::vector<RHUnk00520ae0> m_repulsivePoints;
     std::vector<unsigned short> m_repulsiveLayers;
 };
 

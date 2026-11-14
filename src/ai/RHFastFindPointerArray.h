@@ -25,6 +25,7 @@ struct RHFastFindPointerArray
     void **begin() const { return m_first; }
     void **end() const { return m_last; }
     void InsertLast(void *const &value);
+    void InsertSingleLast(void *const &value);
     RHFastFindPointerArray &FUN_004ff0a0(const RHFastFindPointerArray &source);
     long Find(void *const &value)
     {

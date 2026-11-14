@@ -26,7 +26,9 @@ public:
     unsigned short m_layer;
     char m_38[0x20];
     RHFastFindPointerArray m_lines;
-    char m_78[0x28];
+    char m_78[0x20];
+    void *m_98;
+    char m_9c[4];
 };
 
 #endif
