@@ -18,7 +18,6 @@ public:
     }
     RHUnk005fc3b0 &FUN_005fc5b0(float factor);
     RHUnk005fc3b0 &FUN_005fc4d0(float factor);
-    SBGeoVector2D FUN_005fc5d0(float value);
     bool IsZero() const { return ((const float *)this)[0] == 0.0f && ((const float *)this)[1] == 0.0f; }
     void FUN_005fc7c0(float scale);
     float Unk005fc6a0(float scale);

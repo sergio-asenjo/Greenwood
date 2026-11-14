@@ -57,6 +57,8 @@ public:
     float Value8() const { return m_p1.m_x; }
     float ValueC() const { return m_p1.m_y; }
     float Width() const { return m_p1.m_x - m_p0.m_x; }
+    float &FirstX() { m_flag = true; return m_p0.m_x; }
+    float &FirstY() { m_flag = true; return m_p0.m_y; }
     const SBGeoPoint2D &Min() const { return m_p0; }
     const SBGeoPoint2D &Max() const { return m_p1; }
     void SetMin(const SBGeoPoint2D &value) { m_flag = true; m_p0 = value; }

@@ -10,6 +10,9 @@ public:
     SBList() : m_dirty(true) {}
     ~SBList() { clear(); }
     T &Get(int wanted);
+    T &GetForTraversal(int wanted);
+    void GoTo(int wanted);
+    void GoToForTraversal(int wanted);
     void RemoveAll()
     {
         typedef std::list<T> List;

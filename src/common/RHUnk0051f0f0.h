@@ -3,12 +3,16 @@
 
 #include "SBGeoSegment2D.h"
 
+class SBDrawManager;
+class SBGeoBoundingBox2D;
+
 class __declspec(novtable) RHUnk0051f0f0 : public SBGeoSegment2D
 {
 public:
     RHUnk0051f0f0();
     virtual ~RHUnk0051f0f0(); // vtable+0x00
     void *FUN_0051f190(unsigned flags);
+    void FUN_0051f1d0(SBDrawManager *draw, SBGeoBoundingBox2D box, float scale, unsigned short color);
     void SetFlags(unsigned flags) { m_14 |= flags; }
     void SetEnabled(bool enabled) { m_18 = enabled; }
     void SetReverse(bool reverse)

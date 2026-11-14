@@ -3,12 +3,15 @@
 
 #include <math.h>
 
+class SBFile;
+
 class RHUnk00613e90
 {
 public:
     RHUnk00613e90();
     RHUnk00613e90(float x, float y, float z);
     RHUnk00613e90(const RHUnk00613e90 &from, const RHUnk00613e90 &to);
+    bool Serialize(SBFile &file);
     void FUN_00467990(float x, float y, float z);
     RHUnk00613e90 FUN_005df550(const RHUnk00613e90 &other) const;
     RHUnk00613e90 FUN_005df5a0(const RHUnk00613e90 &other) const;

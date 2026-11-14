@@ -81,8 +81,7 @@ RHUnk0060fbf0 RHMobileUnk006100e0::FUN_006101c0(const RHMobileUnk006100e0 &other
                 if (x <= other.m_x + g_unk0x0067a878 && x >= other.Second().m_x - g_unk0x0067a878 ||
                     x >= other.m_x - g_unk0x0067a878 && x <= other.Second().m_x + g_unk0x0067a878)
                 {
-                    point.m_x = x;
-                    point.m_y = x * slope + offset;
+                    point.Set((float)x, (float)(x * slope + offset));
                     result.FUN_0060fdc0(point);
                 }
                 else
@@ -103,8 +102,7 @@ RHUnk0060fbf0 RHMobileUnk006100e0::FUN_006101c0(const RHMobileUnk006100e0 &other
             if (y <= other.m_y + g_unk0x0067a878 && y >= other.Second().m_y - g_unk0x0067a878 ||
                 y >= other.m_y - g_unk0x0067a878 && y <= other.Second().m_y + g_unk0x0067a878)
             {
-                point.m_x = other.m_x;
-                point.m_y = y;
+                point.Set(other.m_x, (float)y);
                 result.FUN_0060fdc0(point);
                 return result;
             }
@@ -120,8 +118,7 @@ RHUnk0060fbf0 RHMobileUnk006100e0::FUN_006101c0(const RHMobileUnk006100e0 &other
             if (m_x <= other.m_x + g_unk0x0067a878 && m_x >= other.Second().m_x - g_unk0x0067a878 ||
                 m_x >= other.m_x - g_unk0x0067a878 && m_x <= other.Second().m_x + g_unk0x0067a878)
             {
-                point.m_x = m_x;
-                point.m_y = m_x * otherSlope + otherOffset;
+                point.Set(m_x, (float)(m_x * otherSlope + otherOffset));
                 result.FUN_0060fdc0(point);
                 return result;
             }

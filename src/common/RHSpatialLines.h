@@ -20,7 +20,7 @@ class RHMobileUnk0051fd10 : public RHUnk005214b0
 public:
     RHMobileUnk0051fd10(float first, float second);
     virtual ~RHMobileUnk0051fd10();
-    virtual void FUN_00520480();
+    virtual void FUN_00520480(SBDrawManager *draw, SBGeoBoundingBox2D box, float scale, unsigned short color);
     void FUN_0051fdc0();
     bool FUN_0051fea0(const SBGeoPoint2D &point, float &distance);
     float m_24;
