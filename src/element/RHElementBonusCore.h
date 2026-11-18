@@ -15,7 +15,7 @@ public:
     RHElementBonus(BonusType type, bool flag, unsigned short quantity);
     RHElementBonus(unsigned long type, bool flag, unsigned short quantity);
     ~RHElementBonus();
-    virtual char v10();
+    virtual bool FUN_004b9f40();
     virtual unsigned V68();
     virtual void SetQuantity(unsigned short quantity);
     void *FUN_004a7130(unsigned flags);

@@ -19,8 +19,6 @@
 #include "RHElementCore.h"
 #include "RHRepulsivePoint.h"
 
-#ifndef RHELEMENTOBJECT_VIEW
-#define RHELEMENTOBJECT_VIEW
 // VTABLE: GAME 0x00678670
 // SIZE 0x100
 class RHElementObject : public RHElement
@@ -28,12 +26,12 @@ class RHElementObject : public RHElement
 public:
     RHElementObject(unsigned long type, bool flag, int action);
     virtual ~RHElementObject();
-    virtual bool FUN_004b23c0(void *first, void *second, void *third);
+    virtual bool FUN_004b23c0(const void *first, void *second, int third);
     virtual void *FUN_004b29c0(void *actor);
-    virtual bool FUN_004b26a0(int first, int second, int third);
+    virtual bool FUN_004b26a0(const SBGeoPoint2D *first, int second, RHElementActor *third);
     virtual void *Refresh(unsigned long surface, float value, const SBGeoBoundingBox2D &box, unsigned long flags);
     virtual void v14(SBFile &file) {}
-    virtual void v15(unsigned value) {}
+    virtual void InitializeFromMissionStream(SBFile &file) {}
     virtual bool Serialize(SBFile &file);
     virtual unsigned V68() = 0;
     virtual bool FUN_004b2420(void *actor) const;
@@ -44,7 +42,7 @@ public:
     bool FUN_004a7840(void *point, void *actor, int focus);
     bool FUN_004a78c0(void *actor);
     bool FUN_004b24d0(const SBGeoPoint2D &point) const;
-    void FUN_004b2600(void *points, void *lines, void *actor);
+    virtual void FUN_004b2600(void *points, void *lines, void *actor);
     void FUN_004b2d60(unsigned short value);
     int FUN_004b2d70();
 
@@ -60,8 +58,6 @@ public:
     char m_fd;                    // [0xfd]
     short m_fe;                   // [0xfe]
 };
-#endif
-
 // Serialises a type-name tag into the stream; target 0x005e1b70. Free-function
 // form is a placeholder calling convention — the target ignores its incoming
 // ecx and takes (SBFile&, const char*); see the binding notes.

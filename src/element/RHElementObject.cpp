@@ -35,19 +35,11 @@
 #include "SBDrawManager.h"
 #include <stddef.h>
 
-extern RHUnk005ef320 *g_unk0x6c11d0;
+extern SBDrawManager *g_unk0x6c11d0;
 
 #include "SBGeoVector2D.h"
 
 #include "RHMobileUnk00607da0.h"
-
-class RHUnkFXDraw
-{
-public:
-    unsigned long Unk005e4ed0(unsigned short width, unsigned short height, unsigned long flags, bool retain);
-    unsigned short FUN_005e56c0(unsigned long surface);
-    unsigned short FUN_005e5750(unsigned long surface);
-};
 
 #include "RHSpriteCore.h"
 
@@ -96,14 +88,13 @@ bool RHElementObject::Create(bool flag, const RHElementObject &source)
     *(short *)((char *)this + 0x10) = *(const short *)((const char *)&source + 0x10);
     *(bool *)((char *)this + 0x12) = flag;
     m_b0 = source.m_b0;
-    typedef unsigned long (RHUnkFXDraw::*CreateSurface)(unsigned short, unsigned short, int, int);
-    RHUnkFXDraw *&draw = *(RHUnkFXDraw **)((char *)this + 0x60);
+    SBDrawManager *&draw = *(SBDrawManager **)((char *)this + 0x60);
     const unsigned long *surfaces = (const unsigned long *)((const char *)&source + 0x54);
     if (surfaces[0] != (unsigned long)-1)
-        *(unsigned long *)((char *)this + 0x54) = (draw->*reinterpret_cast<CreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(
+        *(unsigned long *)((char *)this + 0x54) = draw->Unk005e4ed0(
             draw->FUN_005e56c0(surfaces[0]), draw->FUN_005e5750(surfaces[0]), 0, 0);
     if (surfaces[1] != (unsigned long)-1)
-        *(unsigned long *)((char *)this + 0x58) = (draw->*reinterpret_cast<CreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(
+        *(unsigned long *)((char *)this + 0x58) = draw->Unk005e4ed0(
             draw->FUN_005e56c0(surfaces[1]), draw->FUN_005e5750(surfaces[1]), 0, 0);
     (*(RHSprite **)((char *)this + 0x50))->FUN_005bd3a0(**(RHSprite **)((const char *)&source + 0x50));
     m_50->SetPoint(SBGeoPoint2D(0.0f, 0.0f));
@@ -207,12 +198,12 @@ class RHEngine;
 extern RHEngine *g_pEngine;
 
 // FUNCTION: GAME 0x004b23c0
-bool RHElementObject::FUN_004b23c0(void *first, void *second, void *third)
+bool RHElementObject::FUN_004b23c0(const void *first, void *second, int third)
 {
     if (*((char *)this + 0x12) &&
         (second == 0 || *(void **)((char *)second + 0x268) == 0) &&
         *(unsigned int *)((char *)g_pEngine + 0x4a00) <= 1 &&
-        (int)third == 3 &&
+        third == 3 &&
         *(unsigned short *)(*(char **)((char *)this + 0x50) + 0xde) != -1)
         return FUN_004b24d0(*(const SBGeoPoint2D *)first);
     return false;
@@ -558,11 +549,7 @@ void *FUN_004b3120(int type)
     return 0;
 }
 
-class RHUnkTargetSprite
-{
-public:
-    bool FUN_005bd050(int kind, const std::string &name, const std::string &profile, int flag);
-};
+#include "RHSpriteCore.h"
 
 #include "RHCivilianSpriteView.h"
 
@@ -570,9 +557,8 @@ public:
 void RHElementObjectMaster::FUN_004b3170(const std::string &first, const std::string &second, bool flag)
 {
     *(bool *)((char *)this + 0xad) = flag;
-    (*(RHUnkTargetSprite **)((char *)this + 0x50))->FUN_005bd050(3, first, second, 0);
-    typedef unsigned long (RHUnkFXDraw::*CreateSurface)(unsigned short, unsigned short, int, int);
-    *(unsigned long *)((char *)this + 0x54) = ((*(RHUnkFXDraw **)((char *)this + 0x60))->*reinterpret_cast<CreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(
+    (*(RHSprite **)((char *)this + 0x50))->FUN_005bd050(3, first, second, false);
+    *(unsigned long *)((char *)this + 0x54) = (*(SBDrawManager **)((char *)this + 0x60))->Unk005e4ed0(
         (*(RHCivilianSpriteView **)((char *)this + 0x50))->FUN_005bdef0(),
         (*(RHCivilianSpriteView **)((char *)this + 0x50))->FUN_005bdf20(), 0, 0);
 }

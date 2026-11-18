@@ -10,8 +10,8 @@ RHScriptIter RHNetListStorage::FUN_0044e8b0(RHScriptIter first, RHScriptIter las
     {
         RHScriptNode *erased = node;
         node = node->next;
-        erased->previous->next = erased->next;
-        erased->next->previous = erased->previous;
+        erased->prev->next = erased->next;
+        erased->next->prev = erased->prev;
         operator delete(erased);
         --m_08;
     }
@@ -23,12 +23,12 @@ RHScriptIter RHNetListStorage::FUN_0044e8b0(RHScriptIter first, RHScriptIter las
 RHScriptIter RHNetListStorage::FUN_00424410(RHScriptIter position, void *const &value)
 {
     RHScriptNode *next = position.node;
-    RHScriptNode *previous = next->previous;
+    RHScriptNode *previous = next->prev;
     RHScriptNode *node = (RHScriptNode *)operator new(sizeof(RHScriptNode));
     node->next = next ? next : node;
-    node->previous = previous ? previous : node;
-    next->previous = node;
-    node->previous->next = node;
+    node->prev = previous ? previous : node;
+    next->prev = node;
+    node->prev->next = node;
     new (&node->data) void *(value);
     ++m_08;
     return RHScriptIter(node);

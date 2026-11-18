@@ -27,7 +27,7 @@ bool RHElementObject::FUN_004a7840(void *point, void *actor, int focus)
             m_b0 == 0x12)
             return false;
     }
-    return RHElementObject::FUN_004b23c0(point, actor, (void *)focus);
+    return RHElementObject::FUN_004b23c0(point, actor, focus);
 }
 
 // FUNCTION: GAME 0x004a78c0

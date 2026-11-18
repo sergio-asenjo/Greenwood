@@ -11,6 +11,7 @@
 class RHElevationLine;
 class SBGeoVector2D;
 class SBGeoBoundingBox2D;
+class RHElementActor;
 
 #include "RHUnk005df510.h"
 #include "RHUnk00613e90.h"
@@ -31,16 +32,16 @@ public:
     virtual char v3() const { return 0; }
     virtual int FUN_00462190() const;
     virtual SBGeoVector2D FUN_004621a0() const;
-    virtual bool FUN_004b23c0(void *first, void *second, void *third) = 0;
+    virtual bool FUN_004b23c0(const void *first, void *second, int third) = 0;
     virtual void *FUN_004b29c0(void *value) = 0;
-    virtual bool FUN_004b26a0(int first, int second, int third) = 0;
+    virtual bool FUN_004b26a0(const SBGeoPoint2D *first, int second, RHElementActor *third) = 0;
     virtual void *Refresh(unsigned long surface, float value, const SBGeoBoundingBox2D &box, unsigned long flags) = 0;
-    virtual char v10() = 0;
+    virtual bool FUN_004b9f40() = 0;
     virtual float FUN_004621c0() const;
     virtual void FUN_004621d0(RHUnk005df510 &point) const;
     virtual void FUN_004621f0();
     virtual void v14(SBFile &file) = 0;
-    virtual void v15(unsigned value) = 0;
+    virtual void InitializeFromMissionStream(SBFile &file) = 0;
     virtual bool Serialize(SBFile &file);
     virtual void FUN_00462940(int action);
     virtual char FUN_00462200() const;
@@ -50,7 +51,7 @@ public:
     virtual char v22(void *value) { return 0; }
     virtual void v23(unsigned value) {}
     virtual char v24() const { return 0; }
-    virtual void v25(unsigned first, unsigned second, unsigned third) {}
+    virtual void FUN_004b2600(void *points, void *lines, void *actor) {}
     void *FUN_004622d0() const;
     int FUN_004671b0() const;
     RHUnk005069a0 *FUN_004a1af0();

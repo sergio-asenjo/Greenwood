@@ -14,7 +14,7 @@
 
 // Parked: return-false placeholder; the 787 B native slot-8 body is not reconstructed.
 // STUB: GAME 0x004b26a0
-bool RHElementObject::FUN_004b26a0(int, int, int)
+bool RHElementObject::FUN_004b26a0(const SBGeoPoint2D *, int, RHElementActor *)
 {
     return false;
 }
@@ -46,5 +46,4 @@ bool RHUnk0045aaf0::FUN_0045abf0(unsigned short value, const SBGeoPoint2D &point
     *(int *)((char *)this) = fourth;
     return result;
 }
-
 

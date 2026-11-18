@@ -3,10 +3,13 @@
 
 #include "Decomp.h"
 
+class SBGeoPoint2D;
+
 class RHElementGrid
 {
 public:
     void FUN_004e89d0(void *list, int cell, unsigned mask);
+    short FUN_004e8fc0(const SBGeoPoint2D &point, const SBGeoPoint2D &origin, short layer, void *&sector);
     undefined m_00[0x3e98];
     unsigned short m_3e98;
     unsigned short m_3e9a;

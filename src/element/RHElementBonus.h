@@ -41,9 +41,9 @@ struct RHBonusGlobalView
     void *m_4184; // +0x4184
 };
 
-struct RHUnkSectorGlobal;
+class RHFastFindGrid;
 class RHEngine;
-extern RHUnkSectorGlobal *g_unk0x6c0a9c;
+extern RHFastFindGrid *g_unk0x6c0a9c;
 extern RHEngine *g_pEngine;
 
 struct RHBonusEngineView

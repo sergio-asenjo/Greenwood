@@ -16,7 +16,11 @@ struct RHBonusProjection
     float m_20;
     char m_pad24[0x14];
     SBGeoBoundingBox2D m_38;
-    char m_pad4c[0x148];
+    char m_pad4c[0xa8];
+    float m_f4;
+    float m_f8;
+    float m_fc;
+    char m_pad100[0x94];
     RHSector *m_194;
 };
 

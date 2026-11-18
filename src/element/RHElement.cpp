@@ -1,3 +1,4 @@
+#include "SBGeoPoint2D.h"
 #include "SBNullstr.h"
 #include "RHSpriteCore.h"
 #include "RHElement.h"
@@ -12,7 +13,7 @@ class RHFrameHolder;
 extern unsigned g_unk0x006c081c;
 extern RHEngine *g_pEngine;
 extern RHFrameHolder *g_unk0x006c0b1c;
-extern RHUnk005ef320 *g_unk0x6c11d0;
+extern SBDrawManager *g_unk0x6c11d0;
 
 DECOMP_SIZE_ASSERT(RHElement, 0xa8)
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
@@ -430,8 +431,119 @@ void RHElementGrid::FUN_004e89d0(void *list, int cell, unsigned mask)
     }
 }
 
-struct RHUnkSectorGlobal;
-extern RHUnkSectorGlobal *g_unk0x6c0a9c;
+// STUB: GAME 0x004e8fc0
+short RHElementGrid::FUN_004e8fc0(const SBGeoPoint2D &point, const SBGeoPoint2D &origin, short layer,
+                                  void *&sector)
+{
+    RHElementAreaTransientList list;
+    int cell = (m_3e9a * (layer & 0xffff) + ((int)point.m_y >> 6)) * m_3e98 + ((int)point.m_x >> 6);
+    FUN_004e89d0(&list, cell, 0x40);
+    int count = list.Count();
+    if ((short)count == 0)
+        return -2;
+    int i;
+    for (i = 0; i < count; ++i)
+    {
+        list.GoTo(i);
+        RHElementArea *area = list.cursor->_Value;
+        unsigned flags = *(unsigned *)((char *)area + 0x30);
+        if (flags & 4)
+        {
+            if (area->m_3c.FUN_00608400(point)
+                && ((RHElementAreaShape *)((char *)area + 4))->FUN_0060c660(point))
+            {
+                sector = area;
+                return *(short *)((char *)area + 0x38);
+            }
+            list.GoTo(i);
+            list.erase(list.cursor);
+            --i;
+            --count;
+            list.dirty = true;
+        }
+        if (*(unsigned *)((char *)area + 0x30) & 0x200)
+        {
+            if (area->m_3c.FUN_00608400(point)
+                && ((RHElementAreaShape *)((char *)area + 4))->FUN_0060c660(point))
+            {
+                sector = area;
+                return *(short *)((char *)area + 0x38);
+            }
+            list.GoTo(i);
+            list.erase(list.cursor);
+            --i;
+            --count;
+            list.dirty = true;
+        }
+        if (*(unsigned *)((char *)area + 0x30) & 0x1000)
+        {
+            if (area->m_3c.FUN_00608400(point)
+                && ((RHElementAreaShape *)((char *)area + 4))->FUN_0060c660(point))
+            {
+                sector = area;
+                return *(short *)((char *)area + 0x38);
+            }
+            list.GoTo(i);
+            list.erase(list.cursor);
+            --i;
+            --count;
+            list.dirty = true;
+        }
+    }
+    short found = -2;
+    for (i = 0; i < count; ++i)
+    {
+        list.GoTo(i);
+        RHElementArea *area = list.cursor->_Value;
+        unsigned flags = *(unsigned *)((char *)area + 0x30);
+        if (flags & 2)
+        {
+            if ((flags & 1) && area->m_3c.FUN_00608400(point)
+                && ((RHElementAreaShape *)((char *)area + 4))->FUN_0060c660(point))
+            {
+                sector = area;
+                found = *(short *)((char *)area + 0x38);
+            }
+            if (!(flags & 1) && area->m_3c.FUN_00608400(point)
+                && ((RHElementAreaShape *)((char *)area + 4))->FUN_0060c660(point))
+                return -1;
+        }
+    }
+    if (found < 0)
+        return found;
+    SBGeoPoint2D center;
+    float best = 3.4028235e38f;
+    for (i = 0; i < count; ++i)
+    {
+        list.GoTo(i);
+        RHElementArea *area = list.cursor->_Value;
+        if (*(unsigned *)((char *)area + 0x30) & 0x8000)
+        {
+            if (area->m_3c.FUN_00608400(point)
+                && ((RHElementAreaShape *)((char *)area + 4))->FUN_0060c660(point))
+            {
+                float *bounds = *(float **)((char *)area + 0x5c);
+                center.m_x = (bounds[3] + bounds[1]) * 0.5f;
+                center.m_y = (bounds[4] + bounds[2]) * 0.5f;
+                float distance = center.Unk005fc110(origin).Unk005fc6d0(1.0f);
+                if (distance < best)
+                {
+                    sector = area;
+                    best = distance;
+                }
+            }
+            list.GoTo(i);
+            list.erase(list.cursor);
+            --i;
+            --count;
+            list.dirty = true;
+        }
+    }
+    return *(short *)((char *)*(RHElementArea **)&sector + 0x38);
+}
+
+class RHFastFindGrid;
+extern RHFastFindGrid *g_unk0x6c0a9c;
 
 // Parked: list cleanup frame and receiver scheduling differ.
 // STUB: GAME 0x0055fa70

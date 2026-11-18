@@ -71,12 +71,12 @@ inline void RHNetCopyPosition(float *destination, const char *sprite)
 inline void RHNetPushRepulsivePoint(RHNetListStorage &list, void *point)
 {
     RHScriptNode *next = list.m_04;
-    RHScriptNode *previous = next->previous;
+    RHScriptNode *previous = next->prev;
     RHScriptNode *node = (RHScriptNode *)operator new(sizeof(RHScriptNode));
     node->next = next ? next : node;
-    node->previous = previous ? previous : node;
-    next->previous = node;
-    node->previous->next = node;
+    node->prev = previous ? previous : node;
+    next->prev = node;
+    node->prev->next = node;
     new (&node->data) void *(point);
     ++list.m_08;
     list.m_10 = true;
@@ -171,8 +171,8 @@ RHElementNet::~RHElementNet()
     {
         RHScriptNode *erased = node;
         node = node->next;
-        erased->previous->next = erased->next;
-        erased->next->previous = erased->previous;
+        erased->prev->next = erased->next;
+        erased->next->prev = erased->prev;
         operator delete(erased);
         --m_19c.m_08;
     }
@@ -208,8 +208,8 @@ void RHElementNet::FUN_004b1270()
     {
         RHScriptNode *erased = node;
         node = node->next;
-        erased->previous->next = erased->next;
-        erased->next->previous = erased->previous;
+        erased->prev->next = erased->next;
+        erased->next->prev = erased->prev;
         operator delete(erased);
         --m_19c.m_08;
     }

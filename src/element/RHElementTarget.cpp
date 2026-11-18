@@ -198,7 +198,7 @@ void RHElementTarget::InitializeFromMissionStream(SBFile &file)
             RHElementTarget_m_f8 = height;
     }
     file.Access(&flag, 1);
-    Info()->FUN_005bd050(2, name, profile, 0);
+    (*(RHSprite **)((char *)this + 0x50))->FUN_005bd050(2, name, profile, false);
     char enabled;
     file.Access(&enabled, 1);
     if (enabled)
@@ -494,7 +494,7 @@ bool RHElementTarget::FUN_004bbf80()
     return true;
 }
 
-// STUB: GAME 0x004bbfa0
+// FUNCTION: GAME 0x004bbfa0
 bool RHElementTarget::Serialize(SBFile &file)
 {
     RHElementTarget *const self = this;
@@ -529,9 +529,7 @@ bool RHElementTarget::Serialize(SBFile &file)
         if (file.m_bLoading)
         {
             RHScriptFXArray *vector = (RHScriptFXArray *)&m_16c;
-            void **last = FUN_004598e0(((RHScriptFXArray *)&m_16c)->last,
-                                       ((RHScriptFXArray *)&m_16c)->last,
-                                       ((RHScriptFXArray *)&m_16c)->first);
+            void **last = FUN_004598e0(vector->last, vector->last, vector->first);
             vector->Unk005008e0(last, vector->last);
             vector->last = last;
             vector->dirty = 1;
@@ -547,8 +545,10 @@ bool RHElementTarget::Serialize(SBFile &file)
             for (unsigned index = 0; index < count; ++index)
             {
                 g_pEngine->SerializeElementPointer(file, *(RHElement **)&element);
+                std::vector<RHMobileUnk006100e0 *> &items = m_16c;
+                RHMobileUnk006100e0 **position = items.end();
 #pragma inline_depth(0)
-                m_16c.insert(m_16c.end(), 1, element);
+                items.insert(position, 1, element);
 #pragma inline_depth()
                 vector->dirty = 1;
             }
@@ -580,6 +580,9 @@ bool RHElementTarget::Serialize(SBFile &file)
 #undef target_data
 #undef m_16c
 }
+
+// TEMPLATE: GAME 0x004582d0 FOLDED
+// ?insert@?$vector@PAVRHMobileUnk006100e0@@V?$allocator@PAVRHMobileUnk006100e0@@@std@@@std@@QAEXPAPAVRHMobileUnk006100e0@@IABQAV3@@Z
 
 // FUNCTION: GAME 0x004bc1d0
 bool RHElementTarget::FUN_004bc1d0(RHTargetSequenceCalls *sequence)

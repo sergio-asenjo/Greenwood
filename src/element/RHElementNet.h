@@ -25,7 +25,7 @@ struct RHNetListStorage
     {
         RHScriptNode *head = (RHScriptNode *)operator new(sizeof(RHScriptNode));
         head->next = head;
-        head->previous = head;
+        head->prev = head;
         return head;
     }
 

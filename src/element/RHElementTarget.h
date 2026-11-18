@@ -76,7 +76,7 @@ public:
     void FUN_004bc3d0(int activator);
     void Emit(SBFile &file);
     RHUnkTargetSprite *&Info() { return *(RHUnkTargetSprite **)((char *)this + 0x50); }
-    RHUnkFXDraw *&Draw() { return *(RHUnkFXDraw **)((char *)this + 0x60); }
+    SBDrawManager *&Draw() { return *(SBDrawManager **)((char *)this + 0x60); }
     RHBonusGlobalView *&Global() { return *(RHBonusGlobalView **)((char *)this + 0x64); }
     VMCore *m_15c;
     int m_160;
