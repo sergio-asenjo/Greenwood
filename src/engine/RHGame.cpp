@@ -1,4 +1,4 @@
-#include "SBNullstr.h"
+#include "SBWideStringConstructor.h"
 #include "RHMobileUnk00607da0.h"
 #include "RHGame_calls.h"
 #include "SBThreadedInput.h"
@@ -218,7 +218,7 @@ void RHGameCampaignView::FUN_00456540(bool flag, RHGameMission *mission)
 // FUNCTION: GAME 0x00509c10
 void *RHUnk005069a0::FUN_00509c10(unsigned flags)
 {
-    this->~RHUnk005069a0();
+    this->RHUnk005069a0::~RHUnk005069a0();
     if (flags & 1)
         operator delete(this);
     return this;
@@ -227,7 +227,7 @@ void *RHUnk005069a0::FUN_00509c10(unsigned flags)
 // FUNCTION: GAME 0x0050e770
 void *RHPortraitRootList::FUN_0050e770(unsigned flags)
 {
-    this->~RHPortraitRootList();
+    this->RHPortraitRootList::~RHPortraitRootList();
     if (flags & 1)
         operator delete(this);
     return this;
@@ -240,52 +240,58 @@ void RHGameTailEmit(void *object, unsigned flags)
 }
 
 // FUNCTION: GAME 0x0050e530
-void *RHGame::FUN_0050e530()
+void *RHPortraitRootLifetime::FUN_0050e530()
 {
-    return (char *)this + 0x70;
+    return &m_bounds;
+}
+
+void *RHPortraitRootLifetime::FUN_0050e530B()
+{
+    return &m_bounds;
 }
 
 // Parked: 81.40%; cursor load folding, loop scheduling, and register-save placement differ.
 // STUB: GAME 0x0050e540
-int RHUnk0050e540::FUN_0050e540(void *value)
+int RHPortraitRootLifetime::FUN_0050e540(void *value)
 {
-    int count = m_count;
-    m_value = value;
-    m_searching = true;
-    m_current = m_head->next;
+    RHUnk0050e540 &excluded = *(RHUnk0050e540 *)this;
+    int count = excluded.m_count;
+    excluded.m_value = value;
+    excluded.m_searching = true;
+    excluded.m_current = excluded.m_head->next;
     int index;
-    for (index = 0; index < count; ++index, m_current = m_current->next) {
-        if (m_current->value == m_value)
+    for (index = 0; index < count; ++index, excluded.m_current = excluded.m_current->next) {
+        if (excluded.m_current->value == excluded.m_value)
             break;
     }
     if (index < count) {
-        m_result = index;
-        m_index = index;
-        m_dirty = false;
+        excluded.m_result = index;
+        excluded.m_index = index;
+        excluded.m_dirty = false;
     }
     else {
-        m_result = -1;
-        m_dirty = true;
+        excluded.m_result = -1;
+        excluded.m_dirty = true;
     }
-    return m_result != -1;
+    return excluded.m_result != -1;
 }
 
 // FUNCTION: GAME 0x0050e5c0
-char RHGame::FUN_0050e5c0()
+char RHPortraitRootLifetime::FUN_0050e5c0()
 {
-    return m_5c;
+    return *(char *)&m_enabled;
 }
 
 // FUNCTION: GAME 0x0050e5d0
-void RHGame::FUN_0050e5d0(char value)
+void RHPortraitRootLifetime::FUN_0050e5d0(char value)
 {
-    m_5c = value;
+    *(char *)&m_enabled = value;
 }
 
 // FUNCTION: GAME 0x0050e5e0
-char RHGame::FUN_0050e5e0()
+char RHPortraitRootLifetime::FUN_0050e5e0()
 {
-    return m_5e;
+    return *(char *)&m_tooltipEnabled;
 }
 
 // VTABLE: GAME 0x00678d18
@@ -308,7 +314,7 @@ public:
 // FUNCTION: GAME 0x0050e660
 void *RHUnk0051d790::FUN_0050e660(unsigned flags)
 {
-    this->~RHUnk0051d790();
+    this->RHUnk0051d790::~RHUnk0051d790();
     if (flags & 1)
         operator delete(this);
     return this;
@@ -419,7 +425,7 @@ public:
     virtual void V20() = 0;
     virtual void V24() = 0;
     virtual void V28() = 0;
-    virtual void V2c() = 0;
+    virtual void V2c(const RHMapBox &box) = 0;
     virtual void V30() = 0;
     virtual void V34() = 0;
     virtual void V38(RHGameToggleWidget *widget) = 0; // vtable+0x38
@@ -488,15 +494,77 @@ void RHGame::FUN_0050ed10(bool value)
     FUN_0050eca0(value);
     FUN_0050eb80(value);
     FUN_00514c50();
-    ((RHGameSyncCalls *)this)->FUN_0050ed40();
+    FUN_0050ed40();
 }
 
 #include "RHUnk005db7e0.h"
+#include "RHMapWindowPart.h"
+#include "RHMission.h"
+
+// STUB: GAME 0x0050ed40
+void RHGame::FUN_0050ed40()
+{
+    RHMission *mission = (RHMission *)((RHGameCampaignView *)g_unk0x6c07fc)->m_178;
+
+    if (m_29ac)
+    {
+        ((RHMapWindowPart *)((char *)this + 0x68))->FUN_00619ad0(m_29ac);
+        delete m_29ac;
+        m_29ac = 0;
+    }
+    if (m_29b0)
+    {
+        ((RHMapWindowPart *)((char *)this + 0x68))->FUN_00619ad0(m_29b0);
+        delete m_29b0;
+        m_29b0 = 0;
+    }
+    if (m_57 == 1 && m_5a == 1 || (char)mission->FUN_0054cc20())
+    {
+        m_29b0 = new RHGameBlazonWidget;
+        SBGeoBoundingBox2D bounds(0.0f, 0.0f,
+            (float)(*(SBDrawManager **)((char *)this + 0x10))->FUN_005e56c0(0), 150.0f);
+        m_29b0->FUN_005cc680(bounds);
+        m_29b0->FUN_005cc900(0);
+        ((RHMapWindowPart *)((char *)this + 0x68))->FUN_00619800((SBUIWindowView *)m_29b0);
+    }
+    else if (m_5a && ((RHGameCampaignView *)g_unk0x6c07fc)->m_17c &&
+             ((RHGameCampaignView *)g_unk0x6c07fc)->m_17c->m_profile->m_34 != 5)
+    {
+        m_29ac = new RHUnk005db7e0;
+        m_29ac->FUN_005db920((RHMission *)((RHGameCampaignView *)g_unk0x6c07fc)->m_17c);
+        ((RHMapWindowPart *)((char *)this + 0x68))->FUN_00619800((SBUIWindowView *)m_29ac);
+    }
+
+    float height = *(float *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x58);
+    float width = *(float *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x54);
+    FUN_0050a670((int)width, (int)height);
+}
+
+// STUB: GAME 0x0050a670
+void RHGame::FUN_0050a670(int width, int height)
+{
+    RHMapBox bounds;
+    SBGeoVector2D size;
+    *(short *)((char *)this + 4) = (short)width;
+    *(short *)((char *)this + 6) = (short)height;
+    ((RHMapWindowPart *)((char *)this + 0x68))->FUN_00619c20(0);
+
+    size = SBGeoVector2D((float)width, 80.0f);
+    SBGeoPoint2D origin = SBGeoPoint2D(0.0f, (float)height - 80.0f);
+    bounds = RHMapBox(origin, origin.Unk005fc190(size));
+    ((RHGameToggleFrame *)((char *)this + 0x1970))->V2c(bounds);
+
+    RHMapBox frame;
+    SBGeoPoint2D bottom = SBGeoPoint2D((float)width, (float)height);
+    SBGeoPoint2D top = SBGeoPoint2D(0.0f, (float)height - 80.0f);
+    frame = RHMapBox(top, bottom);
+    ((RHGameToggleFrame *)((char *)this + 0x1a10))->V2c(frame);
+}
 
 // FUNCTION: GAME 0x0050ef90
 void *RHUnk005db7e0::FUN_0050ef90(unsigned flags)
 {
-    this->~RHUnk005db7e0();
+    this->RHUnk005db7e0::~RHUnk005db7e0();
     if (flags & 1)
         operator delete(this);
     return this;
@@ -596,7 +664,7 @@ void RHGame::DisplayLostLeicester()
 {
     RHGameCampaignView *campaign = (RHGameCampaignView *)g_unk0x6c07fc;
     unsigned mission;
-    RHMapWideText message;
+    std::wstring message;
     RHMapDescription description;
     char directory[260];
     GetCurrentDirectoryA(260, directory);
@@ -612,7 +680,7 @@ void RHGame::DisplayLostLeicester()
     {
         typedef std::wstring &(std::wstring::*Assign)(const std::wstring &, unsigned, unsigned);
         Assign assign = &std::wstring::assign;
-        (((std::wstring *)&message)->*assign)(FUN_005e23d0(259), 0, std::wstring::npos);
+        (message.*assign)(FUN_005e23d0(259), 0, std::wstring::npos);
     }
     RHMenuScreenView dialog(0, 0, true, true, (char *)this + 0x68);
     FUN_00529e60((RHMapWindow *)&dialog, message, false, 0);
@@ -660,7 +728,7 @@ void RHGame::FUN_005105d0(unsigned char first, char second)
 {
     if (*((char *)this + 0x5a) != 0)
         return;
-    ((RHGameSyncCalls *)this)->FUN_0050ed40();
+    FUN_0050ed40();
     if (*(unsigned *)((char *)this + 0x3574) != 0)
         --*(unsigned *)((char *)this + 0x3574);
     if (*(char *)((char *)this + 0x18 + 0xd1) == 0 &&
@@ -1027,7 +1095,7 @@ void RHGame::FUN_005139b0(void *)
 {
     ((SBThreadedInput *)*(void **)((char *)this + 0x0c))->SetMouseEnabled(m_5d);
     ((SBThreadedInput *)*(void **)((char *)this + 0x0c))->CleanUpInputs();
-    ((RHUnk005ef320 *)*(void **)((char *)this + 0x10))->FUN_005ef380(0);
+    (*(SBDrawManager **)((char *)this + 0x10))->FUN_005ef380(0);
 }
 
 // FUNCTION: GAME 0x005139e0
@@ -1298,18 +1366,10 @@ void RHGame::FUN_00513520(void *event)
     ((RHGameSyncCalls *)this)->FUN_005146f0();
 }
 
-class RHConsole
-{
-public:
-    static RHConsole *GetInstance();
-    bool HandleCharacter(unsigned short character);
-    bool Flag5b6() const { return m_5b6; }
-    unsigned char m_00[0x5b6];
-    bool m_5b6;
-};
+#include "RHConsole.h"
 
 extern bool g_mouseEnabled;
-bool FUN_005edae0(RHUnk005ef320 *, const char *, ...);
+bool FUN_005edae0(SBDrawManager *, const char *, ...);
 
 class RHUnk005ef390
 {
@@ -1330,9 +1390,9 @@ void RHGame::FUN_005138b0(void *)
     {
         ((RHUnk005ef390 *)*(void **)((char *)this + 0x10))->FUN_005ef390();
         // STRING: GAME 0x006b0550
-        FUN_005edae0((RHUnk005ef320 *)*(void **)((char *)this + 0x10), "Enter Code:");
+        FUN_005edae0(*(SBDrawManager **)((char *)this + 0x10), "Enter Code:");
     }
-    ((RHUnk005ef320 *)*(void **)((char *)this + 0x10))->FUN_005ef380(1);
+    (*(SBDrawManager **)((char *)this + 0x10))->FUN_005ef380(1);
     ((SBDrawManager *)*(void **)((char *)this + 0x10))->FUN_005e5260();
     bool done;
     do
@@ -1653,7 +1713,7 @@ void RHGame::FUN_00514140()
     FUN_0050eb80(m_3559 && !m_355b);
     ((RHGameMenuText *)((char *)this + 0x1ab0))->v21(((RHGameEngineCalls *)m_18)->FUN_004c7cd0());
     ((RHGameMenuText *)((char *)this + 0x1b7c))->v21(((RHGameEngineCalls *)m_18)->FUN_004c7cf0());
-    game->FUN_0050ed40();
+    ((RHGame *)game)->FUN_0050ed40();
     if (m_5a)
     {
         bool hasMission = ((RHGameCampaignView *)g_unk0x6c07fc)->m_17c != 0;
@@ -1669,53 +1729,28 @@ void RHGame::FUN_00514140()
     m_54 = m_55;
 }
 
-// Parked: raw selection-search locals spill this and change the scan schedule; two shapes exhausted.
-// STUB: GAME 0x00514470
-unsigned short RHGame::FUN_00514470()
+// FUNCTION: GAME 0x00514470
+unsigned RHGame::FUN_00514470()
 {
     void **first = *(void ***)((char *)g_pEngine + 0x493c);
     unsigned count = (first == 0 ? 0 : *(void ***)((char *)g_pEngine + 0x4940) - first) & 0xff;
     for (unsigned action = 0; action < 3; ++action)
     {
-        unsigned index;
-        for (index = 0; index < count; ++index)
+        bool available = false;
+        for (unsigned index = 0; index < count; ++index)
         {
             void *actor = (*(void ***)((char *)g_pEngine + 0x493c))[index & 0xff];
-            char *engine = (char *)m_18;
-            bool selected;
-            if (actor)
+            RHEngine *engine = (RHEngine *)m_18;
+            bool selected = actor ? engine->m_49f8.FindForward((RHElementActor *)actor) != -1
+                                  : engine->m_49f8.m_count != 0;
+            if (selected &&
+                (char)((RHEngineActionCalls *)m_18)->FUN_004d2300(actor, action))
             {
-                *(void **)(engine + 0x4a18) = actor;
-                *(bool *)(engine + 0x4a10) = true;
-                *(void **)(engine + 0x4a04) = **(void ***)(engine + 0x49fc);
-                int size = *(int *)(engine + 0x4a00);
-                int position = 0;
-                while (position < size)
-                {
-                    if (*(void **)(*(char **)(engine + 0x4a04) + 8) == *(void **)(engine + 0x4a18))
-                        break;
-                    *(void **)(engine + 0x4a04) = **(void ***)(engine + 0x4a04);
-                    ++position;
-                }
-                if (position < size)
-                {
-                    *(int *)(engine + 0x4a14) = position;
-                    *(bool *)(engine + 0x4a08) = false;
-                    *(int *)(engine + 0x4a0c) = position;
-                }
-                else
-                {
-                    *(bool *)(engine + 0x4a08) = true;
-                    *(int *)(engine + 0x4a14) = -1;
-                }
-                selected = *(int *)(engine + 0x4a14) != -1;
-            }
-            else
-                selected = *(int *)(engine + 0x4a00) != 0;
-            if (selected && (char)((RHEngineActionCalls *)engine)->FUN_004d2300(actor, action))
+                available = true;
                 break;
+            }
         }
-        if (index == count)
+        if (!available)
             return action;
     }
     return 0;
@@ -3635,21 +3670,7 @@ void RHUnk0051d790::FUN_0051dd10(RHGameLifetime005161a0 *widgets)
         ((RHUnk0051dd10View *)this)->V34(&widgets[i]);
 }
 
-class SBFrameWnd
-{
-public:
-    void FUN_0061ac80(const SBGeoPoint2D &position);
-    void FUN_0061ad20(const SBGeoBoundingBox2D &bounds);
-};
-
-class RHUnkFXDraw
-{
-public:
-    unsigned short FUN_005e56c0(unsigned long surface);
-    unsigned short FUN_005e5750(unsigned long surface);
-};
-
-extern RHUnk005ef320 *g_unk0x6c11d0;
+extern SBDrawManager *g_unk0x6c11d0;
 #include "RHGeoStaticStorage.h"
 extern wchar_t g_unk0x006c0b50[1];
 
@@ -3730,7 +3751,7 @@ void RHUnk0051d790::FUN_0051dba0(RHGameLifetime005161a0 *widgets, const SBGeoPoi
 // FUNCTION: GAME 0x0051dd40
 void RHUnk0051d790::FUN_0051dd40(const SBGeoPoint2D &position)
 {
-    ((SBFrameWnd *)this)->FUN_0061ac80(position.Unk005fc190(*(SBGeoPoint2D *)g_unk0x006c0bb0));
+    RHPortraitRootLifetime::FUN_0061ac80(position.Unk005fc190(*(SBGeoPoint2D *)g_unk0x006c0bb0));
 }
 
 inline float RHGameBoundsRight(const SBGeoBoundingBox2D &bounds)
@@ -3746,7 +3767,7 @@ inline float RHGameBoundsBottom(const SBGeoBoundingBox2D &bounds)
 // FUNCTION: GAME 0x0051ddb0
 void RHUnk0051d790::FUN_0051ddb0(const SBGeoBoundingBox2D &bounds)
 {
-    RHUnkFXDraw *draw = (RHUnkFXDraw *)g_unk0x6c11d0;
+    SBDrawManager *draw = g_unk0x6c11d0;
     SBGeoVector2D offset;
     if (RHGameBoundsRight(bounds) > draw->FUN_005e56c0(0))
         offset.m_x = draw->FUN_005e56c0(0) - RHGameBoundsRight(bounds);
@@ -3756,7 +3777,7 @@ void RHUnk0051d790::FUN_0051ddb0(const SBGeoBoundingBox2D &bounds)
         offset.m_y = draw->FUN_005e5750(0) - RHGameBoundsBottom(bounds);
     else
         offset.m_y = 0.0f;
-    ((SBFrameWnd *)this)->FUN_0061ad20(bounds.FUN_006090d0(offset));
+    RHPortraitRootLifetime::FUN_0061ad20(bounds.FUN_006090d0(offset));
 }
 
 void EmitRHHumanStatusBounds(RHUnk0051d790 *status, const SBGeoBoundingBox2D &bounds)
@@ -4082,6 +4103,101 @@ void RHMapDescription::FUN_0063d340(unsigned id)
     }
 }
 
+struct CResDataBase
+{
+    struct SSerializeError
+    {
+    };
+};
+
+// GLOBAL: GAME 0x006a4338
+// _TI1?AUSSerializeError@CResDataBase@@
+
+// FUNCTION: GAME 0x0063f790
+void FUN_0063f790(RHUnk005f4fc0 &file, void *buffer, int size)
+{
+    if (file.Access(buffer, size) != 0)
+        throw CResDataBase::SSerializeError();
+}
+
+void RHMapResizeRecords(std::vector<RHUnk0063c8b0> &records, unsigned count)
+{
+    RHUnk0063c8b0 value;
+    if (records.size() < count)
+    {
+        typedef void (std::vector<RHUnk0063c8b0>::*Insert)(RHUnk0063c8b0 *, unsigned, const RHUnk0063c8b0 &);
+        Insert insert = &std::vector<RHUnk0063c8b0>::insert;
+        (records.*insert)(records.end(), count - records.size(), value);
+    }
+    else if (count < records.size())
+    {
+        typedef RHUnk0063c8b0 *(std::vector<RHUnk0063c8b0>::*Erase)(RHUnk0063c8b0 *, RHUnk0063c8b0 *);
+        Erase erase = &std::vector<RHUnk0063c8b0>::erase;
+        (records.*erase)(records.begin() + count, records.end());
+    }
+}
+
+void RHMapResizeInts(std::vector<int> &values, unsigned count)
+{
+    if (values.size() < count)
+    {
+        typedef void (std::vector<int>::*Insert)(int *, unsigned, const int &);
+        Insert insert = &std::vector<int>::insert;
+        int value = 0;
+        (values.*insert)(values.end(), count - values.size(), value);
+    }
+    else if (count < values.size())
+    {
+        typedef int *(std::vector<int>::*Erase)(int *, int *);
+        Erase erase = &std::vector<int>::erase;
+        (values.*erase)(values.begin() + count, values.end());
+    }
+}
+
+// STUB: GAME 0x0063cda0
+bool RHMapDescription::FUN_0063cda0(unsigned mission)
+{
+    std::string path;
+    FUN_0063d1a0(path, mission);
+    if (!FUN_005f6400(path))
+        return false;
+    RHUnk005f4fc0 file;
+    if (file.FUN_005f5090(path, 1) != 0)
+        return false;
+    Entry *entry = FUN_0063ca50(mission);
+    try
+    {
+        FUN_0063f790(file, entry, 8);
+        unsigned count;
+        FUN_0063f790(file, &count, 4);
+        entry->m_08.m_00.resize(count);
+        for (RHUnk0063c8b0 *record = entry->m_08.m_00.begin(); record != entry->m_08.m_00.end(); ++record)
+        {
+            FUN_0063f790(file, &record->m_0, 4);
+            FUN_0063f790(file, &record->m_4, 4);
+            FUN_0063f790(file, &count, 4);
+            record->m_8.resize(count);
+            for (int *value = record->m_8.begin(); value != record->m_8.end(); ++value)
+                FUN_0063f790(file, value, 4);
+        }
+        FUN_0063f790(file, &count, 4);
+        entry->m_18.m_4.resize(count);
+        FUN_0063f790(file, &entry->m_18.m_0, 4);
+        for (int *value = entry->m_18.m_4.begin(); value != entry->m_18.m_4.end(); ++value)
+            FUN_0063f790(file, value, 4);
+        FUN_0063f790(file, &entry->m_2c, 0x10);
+        FUN_0063f790(file, &entry->m_3c, 8);
+    }
+    catch (CResDataBase::SSerializeError &)
+    {
+        file.FUN_005f5290();
+        FUN_0063d340(mission);
+        return false;
+    }
+    file.FUN_005f5290();
+    return true;
+}
+
 class RHMapRecordVectorCalls : public std::vector<RHUnk0063c8b0>
 {
 public:
@@ -4181,79 +4297,6 @@ public:
 
 // TEMPLATE: GAME 0x0063f2c0
 // ??1?$vector@VRHUnk0063c8b0@@V?$allocator@VRHUnk0063c8b0@@@std@@@std@@QAE@XZ
-
-#pragma inline_depth(0)
-void EmitRHMapRecordDestructors(std::vector<RHUnk0063c8b0> *records)
-{
-    typedef std::vector<RHUnk0063c8b0> Records;
-    records->~Records();
-}
-void EmitRHMapRecordCopies(void *destination, void *valuesDestination,
-    const std::vector<RHUnk0063c8b0> &source, const RHUnk0063e360 &values)
-{
-    new (destination) std::vector<RHUnk0063c8b0>(source);
-    new (valuesDestination) RHUnk0063e360(values);
-}
-#pragma inline_depth(8)
-
-void EmitRHMapEntryValues(void *destination)
-{
-    new (destination) RHUnk0063e360;
-}
-
-RHMapDescription::Entry *EmitRHMapDescriptionAdd(RHMapDescription *description, unsigned id)
-{
-    description->FUN_0063d340(id);
-    return description->FUN_0063ca50(id);
-}
-
-void EmitRHMapRecordDestroy(std::vector<RHUnk0063c8b0> *records)
-{
-    RHMapRecordVectorCalls::Destroy destroy = RHMapRecordVectorCalls::GetDestroy();
-    (records->*destroy)(records->begin(), records->end());
-}
-
-RHUnk0063c8b0 *EmitRHMapRecordCopy(std::vector<RHUnk0063c8b0> *records,
-    const RHUnk0063c8b0 *first, const RHUnk0063c8b0 *last, RHUnk0063c8b0 *destination)
-{
-    RHMapRecordVectorCalls::Copy construct = RHMapRecordVectorCalls::GetCopy();
-    RHUnk0063c8b0 *(*copy)(const RHUnk0063c8b0 *, const RHUnk0063c8b0 *, RHUnk0063c8b0 *) = &std::copy;
-    (records->*construct)(first, last, destination);
-    return copy(first, last, destination);
-}
-
-void EmitRHMapRecordOperations(std::vector<RHUnk0063c8b0> *records, RHUnk0063c8b0 *first,
-    RHUnk0063c8b0 *last, unsigned count, const RHUnk0063c8b0 &value)
-{
-    typedef std::vector<RHUnk0063c8b0> Records;
-    unsigned (Records::*size)() const = &Records::size;
-    unsigned (Records::*capacity)() const = &Records::capacity;
-    void (Records::*insert)(RHUnk0063c8b0 *, unsigned, const RHUnk0063c8b0 &) = &Records::insert;
-    RHUnk0063c8b0 *(Records::*erase)(RHUnk0063c8b0 *, RHUnk0063c8b0 *) = &Records::erase;
-    (records->*insert)(first, count + (records->*size)() + (records->*capacity)(), value);
-    (records->*erase)(first, last);
-}
-
-RHUnk0063e360 &EmitRHMapEntryValuesAssign(RHUnk0063e360 *values, const RHUnk0063e360 &source)
-{
-    RHUnk0063e360 &(RHUnk0063e360::*assign)(const RHUnk0063e360 &) = &RHUnk0063e360::operator=;
-    return (values->*assign)(source);
-}
-
-std::vector<RHUnk0063c8b0> &EmitRHMapRecordAssign(std::vector<RHUnk0063c8b0> *records,
-    const std::vector<RHUnk0063c8b0> &source)
-{
-    typedef std::vector<RHUnk0063c8b0> Records;
-    Records &(Records::*assign)(const Records &) = &Records::operator=;
-    return (records->*assign)(source);
-}
-
-void **EmitRHMapPointerCopy(std::vector<void *> *values, void *const *first,
-    void *const *last, void **destination)
-{
-    RHMapPointerVectorCalls::Copy copy = RHMapPointerVectorCalls::GetCopy();
-    return (values->*copy)(first, last, destination);
-}
 
 // TEMPLATE: GAME 0x005dff30
 // ??0?$vector@HV?$allocator@H@std@@@std@@QAE@ABV01@@Z

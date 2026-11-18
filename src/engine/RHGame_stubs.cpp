@@ -73,7 +73,6 @@ void RHGameSaveCalls::FUN_0056ecc0() {}
 void RHGameSyncCalls::FUN_00513520(RHUnk00549250 &) {}
 void RHGameSyncCalls::FUN_005134c0(RHUnk00549250 &) {}
 void RHGameSyncCalls::FUN_00513b00(void *) {}
-void RHGameSyncCalls::FUN_0050ed40() {}
 void RHGameSyncCalls::FUN_0048a970(RHUnk00549250 &) {}
 bool RHGameEngineCalls::FUN_004c7cd0() { return false; }
 bool RHGameEngineCalls::FUN_004c7cf0() { return false; }

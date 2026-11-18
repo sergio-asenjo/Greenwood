@@ -12,6 +12,7 @@ public:
     RHPortraitRenderer0060dab0();
     ~RHPortraitRenderer0060dab0();
     RHPortraitRenderer0060dab0 &operator=(const RHPortraitRenderer0060dab0 &other);
+    RHPortraitRenderer0060dab0 &Assign(const RHPortraitRenderer0060dab0 &other);
     unsigned short m_4c;    // 0x4c
     unsigned short m_4e;    // 0x4e
 };

@@ -65,7 +65,7 @@ typedef RHPortraitRenderer0060dab0 RHPortraitRenderer0060dad0;
 unsigned RHPortraitInputRenderer::FUN_0061d5e0()
 {
     float span = *(float *)((char *)this + 0x14) - *(float *)((char *)this + 0xc);
-    unsigned count = ((SBUIListboxUnk0061d980 *)this)->m_4c->FUN_0061e890();
+    unsigned count = ((SBUIListboxUnk0061d980 *)this)->m_4c->GetHeight();
     return (unsigned)(span / count);
 }
 

@@ -4,14 +4,13 @@
 #include "RHUnk00527870.h"
 
 // FUNCTION: GAME 0x0053e280
-void RHMapConstructValue(std::pair<const std::string, void *> *storage, const std::pair<const std::string, void *> &value)
+void RHMapConstructValue(std::pair<const std::string, SBFontUnk0061e840 *> *storage, const std::pair<const std::string, SBFontUnk0061e840 *> &value)
 {
-    new ((void *)storage) std::pair<const std::string, void *>(value);
+    new ((void *)storage) std::pair<const std::string, SBFontUnk0061e840 *>(value);
 }
 
 bool RHMapWideText::Grow(unsigned, bool) { return false; }
 void RHMapWideText::End(unsigned) {}
-bool RHMapDescription::FUN_0063cda0(unsigned) { return false; }
 // FUNCTION: GAME 0x00527cc0
 unsigned FUN_00527cc0(unsigned value)
 {
@@ -35,4 +34,3 @@ unsigned FUN_00527cc0(unsigned value)
 std::string g_unk0x006c0660;
 // GLOBAL: GAME 0x006c1840
 RHMapResources *g_unk0x006c1840;
-

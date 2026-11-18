@@ -26,7 +26,6 @@ public:
         Node *previous;
         void *value;
     };
-    int FUN_0050e540(void *value);
     undefined m_00[0x3c];
     Node *m_head;
     int m_count;
@@ -388,6 +387,6 @@ public:
 
 extern char *g_unk0x006c0664;
 extern RHMapResources *g_unk0x006c1840;
-void FUN_00529e60(RHMapWindow *, const RHMapWideText &, bool, bool);
+void FUN_00529e60(RHMapWindow *, const std::wstring &, bool, bool);
 
 #endif

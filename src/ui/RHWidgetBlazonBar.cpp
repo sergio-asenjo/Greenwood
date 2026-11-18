@@ -20,7 +20,7 @@ RHGameBlazonWidget::RHGameBlazonWidget() : m_b0(0)
 // FUNCTION: GAME 0x005cc610
 void *RHGameBlazonWidget::FUN_005cc610(unsigned flags)
 {
-    this->~RHGameBlazonWidget();
+    this->RHGameBlazonWidget::~RHGameBlazonWidget();
     if (flags & 1)
         operator delete(this);
     return this;
@@ -89,7 +89,7 @@ RHMission *RHGameBlazonWidget::FUN_005cc870()
 // FUNCTION: GAME 0x005cc8c0
 SBFrameInputEvent *RHGameBlazonWidget::FUN_005cc8c0(const void *input)
 {
-    SBFrameInputEvent *events = (SBFrameInputEvent *)((RHPortraitRootLifetime *)this)->FUN_0061a6e0(input);
+    SBFrameInputEvent *events = (SBFrameInputEvent *)RHPortraitRootLifetime::FUN_0061a6e0(input);
     SBFrameInputEvent **link = &events;
     while (*link) {
         SBFrameInputEvent *event = *link;

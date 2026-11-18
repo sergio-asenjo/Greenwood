@@ -4,27 +4,28 @@
 #include "Decomp.h"
 #include <memory>
 #include <string>
+#include <vector>
 
 class SBFrameWidgetView;
-class RHUnk005ef320;
+class SBDrawManager;
 class RHMapTitleText;
+class SBGeoPoint2D;
+class SBGeoBoundingBox2D;
+struct SBFrameEvent;
 #include "RHMapBox.h"
 #ifndef SBGEO_BOUNDINGBOX2D_VIEW
 #include "SBGeoBoundingBox2DCore.h"
 #endif
 
-struct SBFrameWidgetArray
+struct SBFrameWidgetArray : public std::vector<SBFrameWidgetView *>
 {
     SBFrameWidgetArray(const std::allocator<SBFrameWidgetView *> &value = std::allocator<SBFrameWidgetView *>())
-        : allocator(value), first(0), last(0), end(0), dirty(true) {}
+        : std::vector<SBFrameWidgetView *>(value), dirty(true) {}
     ~SBFrameWidgetArray();
-    unsigned Size() const { return first == 0 ? 0 : last - first; }
+    unsigned Size() const { return size(); }
+    SBFrameWidgetView **&First() { return _First; }
     unsigned CountOf() const;
     void Grow(unsigned size);
-    std::allocator<SBFrameWidgetView *> allocator;
-    SBFrameWidgetView **first;
-    SBFrameWidgetView **last;
-    SBFrameWidgetView **end;
     undefined m_10[4];
     bool dirty;
     undefined m_15[0x0b];
@@ -51,6 +52,12 @@ struct SBFrameWidgetIterator
     SBFrameWidgetIterator() {}
     SBFrameWidgetIterator(SBFrameWidgetNode *value) : node(value) {}
     SBFrameWidgetIterator &operator++() { node = node->next; return *this; }
+    SBFrameWidgetIterator operator++(int)
+    {
+        SBFrameWidgetIterator previous = *this;
+        ++*this;
+        return previous;
+    }
     SBFrameWidgetView *&operator*() { return node->widget; }
 };
 
@@ -113,13 +120,26 @@ class RHPortraitRootLifetime
 {
 public:
     RHPortraitRootLifetime();
-    ~RHPortraitRootLifetime();
-    void *FUN_0061a070(unsigned flags);
+    virtual ~RHPortraitRootLifetime();
     virtual bool FUN_0061a1e0(const RHMapTitleText &title, const RHMapBox &box, unsigned flags);
-    bool FUN_0061a800(void *widget);
-    bool FUN_0061a920(void *widget);
-    bool FUN_0061aa30(void *widget);
-    void *FUN_0061a6e0(const void *input);
+    virtual void FUN_0061a350(unsigned long display);
+    virtual void *FUN_0061a6e0(const void *input);
+    virtual SBFrameEvent *FUN_0061a610(const void *input);
+    virtual void FUN_0061a570();
+    virtual void FUN_0061a430(SBGeoBoundingBox2D &bounds);
+    virtual void FUN_0061a3a0();
+    virtual void *FUN_0050e530();
+    virtual void *FUN_0050e530B();
+    virtual void FUN_0061ac80(const SBGeoPoint2D &position);
+    virtual void FUN_0061ad20(const SBGeoBoundingBox2D &bounds);
+    virtual bool FUN_0061a800(void *widget);
+    virtual bool FUN_0061a920(void *widget);
+    virtual bool FUN_0061aa30(void *widget);
+    virtual bool FUN_0061ab10(SBFrameWidgetView *widget);
+    virtual int FUN_0050e540(void *value);
+    virtual char FUN_0050e5c0();
+    virtual void FUN_0050e5d0(char value);
+    virtual char FUN_0050e5e0();
 
     SBFrameWidgetArray m_widgets;
     std::wstring m_title;
@@ -131,7 +151,7 @@ public:
     undefined m_5f;
     std::wstring m_tooltip;
     RHMapBox m_bounds;
-    RHUnk005ef320 *m_draw;
+    SBDrawManager *m_draw;
     unsigned long m_display;
     void *m_resource;
     SBFrameInputEvent m_input;

@@ -8,6 +8,7 @@ class RHMenuCampaignMap;
 class RHMenuMissionDescription;
 class RHMenuBuyBlazons;
 class RHGameBlazonWidget;
+class RHUnk005db7e0;
 class RHSaveGame;
 
 // SIZE 0x357c
@@ -18,16 +19,14 @@ public:
     bool Serialize(unsigned long mode, RHSaveGame *saveGame, bool loading);
     void DisplayLostLeicester();
     void UpdateBlazons(RHMenuCampaignMap *map, RHMenuMissionDescription *description, RHMenuBuyBlazons *buy, bool flag);
-    void *FUN_0050e530();
-    char FUN_0050e5c0();
-    void FUN_0050e5d0(char value);
-    char FUN_0050e5e0();
     void FUN_0050e850();
     void FUN_0050e860();
     void FUN_0050eb80(bool value);
     void FUN_0050ebe0(char value);
     void FUN_0050eca0(char value);
     void FUN_0050ed10(bool value);
+    void FUN_0050ed40();
+    void FUN_0050a670(int width, int height);
     void FUN_0050ec40(char value);
     void FUN_0050e800();
     int FUN_0050e7d0();
@@ -73,7 +72,7 @@ public:
     void FUN_005138b0(void *event);
     void FUN_00513210(void *);
     void FUN_00513e60();
-    unsigned short FUN_00514470();
+    unsigned FUN_00514470();
     void FUN_00512eb0(void *);
     void FUN_00513b00(int value);
     void FUN_00512cb0(void *event);
@@ -100,7 +99,8 @@ private:
     char m_60; // 0x60
     char m_61; // 0x61
     char m_62; // 0x62
-    undefined m_opaque63[0x29b0 - 0x63]; // 0x63
+    undefined m_opaque63[0x29ac - 0x63]; // 0x63
+    RHUnk005db7e0 *m_29ac;
     RHGameBlazonWidget *m_29b0; // 0x29b0
     undefined m_opaque29b4[0x3558 - 0x29b4]; // 0x29b4
     char m_3558; // 0x3558

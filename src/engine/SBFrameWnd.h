@@ -53,8 +53,8 @@ public:
 
 #include "RHUnk00608f10.h"
 
-class RHUnk005ef320;
-extern RHUnk005ef320 *g_unk0x6c11d0;
+class SBDrawManager;
+extern SBDrawManager *g_unk0x6c11d0;
 
 struct SBFrameEvent
 {
@@ -81,35 +81,6 @@ public:
     virtual void V2c(const SBGeoBoundingBox2D &bounds) = 0;
 };
 
-class SBFrameWnd : public SBFrameWidgetView
-{
-public:
-    void FUN_0061a350(unsigned long display);
-    void FUN_0061a3a0();
-    void FUN_0061a430(SBGeoBoundingBox2D &bounds);
-    void FUN_0061a570();
-    SBFrameEvent *FUN_0061a610(const void *input);
-    bool FUN_0061ab10(SBFrameWidgetView *widget);
-    void FUN_0061ac80(const SBGeoPoint2D &position);
-    void FUN_0061ad20(const SBGeoBoundingBox2D &bounds);
-
-    undefined m_04[4];
-    SBFrameWidgetView **m_first;
-    SBFrameWidgetView **m_last;
-    undefined m_10[0x24];
-    unsigned long m_flags;
-    SBFrameWidgetFindList m_excluded;
-    bool m_enabled;
-    bool m_visible;
-    undefined m_5e[2];
-    std::wstring m_tooltip;
-    SBGeoBoundingBox2D m_bounds;
-    RHUnk005ef320 *m_draw;
-    unsigned long m_display;
-    void *m_resource;
-    SBFrameInputEvent m_input;
-
-    int Size() const { return m_first == 0 ? 0 : m_last - m_first; }
-};
+typedef RHPortraitRootLifetime SBFrameWnd;
 
 #endif

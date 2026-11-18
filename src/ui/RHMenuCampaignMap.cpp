@@ -1,4 +1,4 @@
-#include "SBNullstr.h"
+#include "SBWideStringConstructor.h"
 #include "RHMenuCampaignMap.h"
 #include "RHPortraitRootLifetime.h"
 #include "RHMenuScreenView.h"
@@ -302,7 +302,7 @@ void RHMenuCampaignMap::DisplayPseudoMissionDebriefing()
     {
         if (m_2700 != unsigned(-1))
         {
-            RHMapWideText message;
+            std::wstring message;
             *((char *)this + 0x5d) = 1;
             (*(RHMapWindow **)((char *)this + 0xb4))->FUN_0053bb30(m_2700);
             m_2700 = unsigned(-1);
@@ -326,9 +326,9 @@ void RHMenuCampaignMap::DisplayPseudoMissionDebriefing()
             if (!resources->FUN_00600fc0(resource) || !resources->FUN_006009e0(resource, 0, message))
             {
                 if (won)
-                    (std::wstring &)message = FUN_005e23d0(0x104);
+                    message = FUN_005e23d0(0x104);
                 else
-                    (std::wstring &)message = FUN_005e23d0(0x103);
+                    message = FUN_005e23d0(0x103);
             }
             FUN_00529e60(*(RHMapWindow **)((char *)this + 0xb4), message, won, 0);
             (*(RHMapWindow **)((char *)this + 0xb4))->FUN_0053c7e0();
@@ -812,7 +812,7 @@ struct RHMapStringNode
     RHMapStringNode *m_00;
     RHMapStringNode *m_04;
     RHMapStringNode *m_08;
-    std::pair<const std::string, void *> m_0c;
+    std::pair<const std::string, SBFontUnk0061e840 *> m_0c;
     int m_20;
 };
 
@@ -828,22 +828,22 @@ DECOMP_SIZE_ASSERT(RHMapStringIterator, 4)
 DECOMP_SIZE_ASSERT(RHMapStringInsertResult, 8)
 DECOMP_STATIC_ASSERT(offsetof(RHMapStringInsertResult, second) == 4)
 
-void RHMapConstructValue(std::pair<const std::string, void *> *, const std::pair<const std::string, void *> &);
+void RHMapConstructValue(std::pair<const std::string, SBFontUnk0061e840 *> *, const std::pair<const std::string, SBFontUnk0061e840 *> &);
 
 class RHMapStringTree
 {
 public:
-    RHMapStringInsertResult FUN_0053d4a0(const std::pair<const std::string, void *> &);
-    RHMapStringInsertResult Insert(const std::pair<const std::string, void *> &value)
+    RHMapStringInsertResult FUN_0053d4a0(const std::pair<const std::string, SBFontUnk0061e840 *> &);
+    RHMapStringInsertResult Insert(const std::pair<const std::string, SBFontUnk0061e840 *> &value)
     {
-        typedef RHMapStringInsertResult (RHMapStringTree::*InsertValue)(const std::pair<const std::string, void *> &);
+        typedef RHMapStringInsertResult (RHMapStringTree::*InsertValue)(const std::pair<const std::string, SBFontUnk0061e840 *> &);
         InsertValue insert = &RHMapStringTree::FUN_0053d4a0;
         RHMapStringInsertResult result = (this->*insert)(value);
         return RHMapStringInsertResult(result.first, result.second);
     }
-    RHMapStringIterator FUN_0053dcb0(RHMapStringNode *, RHMapStringNode *, const std::pair<const std::string, void *> &);
+    RHMapStringIterator FUN_0053dcb0(RHMapStringNode *, RHMapStringNode *, const std::pair<const std::string, SBFontUnk0061e840 *> &);
     RHMapStringNode *FUN_0053dfc0(const std::string &);
-    void *&FUN_0053cd30(const std::string &);
+    SBFontUnk0061e840 *&FUN_0053cd30(const std::string &);
     RHMapStringIterator FUN_0053d610(RHMapStringIterator);
     void FUN_0053db40(RHMapStringNode *);
     static RHMapStringNode *&Left(RHMapStringNode *node) { return node->m_00; }
@@ -995,7 +995,7 @@ RHMapTreeIterator RHMapTree::FUN_0053d2f0(RHMapTreeIterator first, RHMapTreeIter
 }
 
 // STUB: GAME 0x0053d4a0
-RHMapStringInsertResult RHMapStringTree::FUN_0053d4a0(const std::pair<const std::string, void *> &value)
+RHMapStringInsertResult RHMapStringTree::FUN_0053d4a0(const std::pair<const std::string, SBFontUnk0061e840 *> &value)
 {
     RHMapStringTree &tree = *this;
     RHMapStringNode *parent = tree.m_head;
@@ -1210,7 +1210,7 @@ void EmitRHMapTreeInc(RHMapTreeIncIterator &iterator)
 }
 
 // FUNCTION: GAME 0x0053dcb0
-RHMapStringIterator RHMapStringTree::FUN_0053dcb0(RHMapStringNode *node, RHMapStringNode *parent, const std::pair<const std::string, void *> &value)
+RHMapStringIterator RHMapStringTree::FUN_0053dcb0(RHMapStringNode *node, RHMapStringNode *parent, const std::pair<const std::string, SBFontUnk0061e840 *> &value)
 {
     RHUnk00641782 lock;
     RHMapStringNode *inserted = (RHMapStringNode *)operator new(sizeof(RHMapStringNode));
@@ -1272,7 +1272,7 @@ RHMapStringIterator RHMapStringTree::FUN_0053dcb0(RHMapStringNode *node, RHMapSt
     return result;
 }
 
-void EmitRHMapStringTree(RHMapStringTree &tree, const std::pair<const std::string, void *> &value)
+void EmitRHMapStringTree(RHMapStringTree &tree, const std::pair<const std::string, SBFontUnk0061e840 *> &value)
 {
     tree.FUN_0053dcb0(0, 0, value);
 }
@@ -1365,16 +1365,7 @@ inline RHMapScreenTree::~RHMapScreenTree()
 #include "SBDrawManagerCore.h"
 #include "SBDrawViewport.h"
 
-class RHUnkFXDraw
-{
-public:
-    unsigned long Unk005e4ed0(unsigned short, unsigned short, unsigned long, bool);
-    unsigned short FUN_005e56c0(unsigned long);
-    unsigned short FUN_005e5750(unsigned long);
-};
-
-class RHUnk005ef320;
-extern RHUnk005ef320 *g_unk0x6c11d0;
+extern SBDrawManager *g_unk0x6c11d0;
 
 class RHGame
 {
@@ -1468,7 +1459,7 @@ public:
 // FUNCTION: GAME 0x0053b1f0
 void RHMenuScreenView::FUN_0053b1f0(RHMenuWindow *window)
 {
-    RHUnkFXDraw *draw = (RHUnkFXDraw *)g_unk0x6c11d0;
+    SBDrawManager *draw = g_unk0x6c11d0;
     SBGeoVector2D offset;
     SBGeoBoundingBox2D box(((RHMapWidget *)window)->V24());
     float width = box.m_p1.m_x - box.m_p0.m_x;
@@ -1494,7 +1485,7 @@ float g_unk0x00677684 = 1.0f / 32.0f;
 // FUNCTION: GAME 0x0053b330
 bool RHMapWindow::FUN_0053b330(unsigned long surface, unsigned short amount, float factor)
 {
-    RHUnkFXDraw *draw = (RHUnkFXDraw *)g_unk0x6c11d0;
+    SBDrawManager *draw = g_unk0x6c11d0;
     SBDrawViewport view;
     if (!((SBDrawManager *)draw)->FUN_005e5a00(surface, view, 0))
         return false;
@@ -1544,11 +1535,10 @@ bool RHMapWindow::FUN_0053b330(unsigned long surface, unsigned short amount, flo
 // FUNCTION: GAME 0x0053b6b0
 unsigned long RHMapWindow::FUN_0053b6b0(unsigned long source, bool colorize, bool pause)
 {
-    RHUnkFXDraw *draw = (RHUnkFXDraw *)g_unk0x6c11d0;
+    SBDrawManager *draw = g_unk0x6c11d0;
     if (g_unk0x6c0b3c && pause == true)
         ((RHGame *)g_unk0x6c0b3c)->FUN_005105d0(0, 0);
-    typedef unsigned long (RHUnkFXDraw::*CreateSurface)(unsigned short, unsigned short, unsigned long, bool);
-    unsigned long surface = (draw->*reinterpret_cast<CreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(
+    unsigned long surface = draw->Unk005e4ed0(
         draw->FUN_005e56c0(0), draw->FUN_005e5750(0), 0, false);
     ((SBDrawManager *)draw)->FUN_005e6440(source, 0, surface, 0, 0);
     if (colorize)
@@ -1563,11 +1553,10 @@ unsigned long RHMapWindow::FUN_0053b6b0(unsigned long source, bool colorize, boo
 // FUNCTION: GAME 0x0053b730
 void *RHMenuScreenView::FUN_0053b730(long background, unsigned short color)
 {
-    RHUnkFXDraw *draw = (RHUnkFXDraw *)g_unk0x6c11d0;
+    SBDrawManager *draw = g_unk0x6c11d0;
     SBGeoBoundingBox2D source;
     SBGeoBoundingBox2D destination;
-    typedef unsigned long (RHUnkFXDraw::*CreateSurface)(unsigned short, unsigned short, unsigned long, bool);
-    unsigned long surface = (draw->*reinterpret_cast<CreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(
+    unsigned long surface = draw->Unk005e4ed0(
         draw->FUN_005e56c0(0), draw->FUN_005e5750(0), 0, false);
     unsigned long texture;
     ((SBResourceManager *)g_unk0x006c1840)->FUN_00600920(background, 0, texture);
@@ -1669,19 +1658,8 @@ RHMenuWindowUI *RHMenuScreenView::FUN_0053bf30()
     return (RHMenuWindowUI *)&m_sbui;
 }
 
-class RHMenuScreenFont
-{
-public:
-    virtual void Unk00();
-    virtual void Unk04();
-    virtual void Unk08();
-    virtual void Unk0c();
-    virtual void Unk10();
-    virtual void AttachToRenderContext(void *context, unsigned long flags);
-};
-
 // FUNCTION: GAME 0x0053be80
-void *RHMenuScreenView::FUN_0053be80(const std::string &name)
+SBFontUnk0061e840 *RHMenuScreenView::FUN_0053be80(const std::string &name)
 {
     RHMapStringTree &fonts = *(RHMapStringTree *)&m_196c;
     RHMapStringIterator found;
@@ -1692,7 +1670,7 @@ void *RHMenuScreenView::FUN_0053be80(const std::string &name)
         ? (end.m_node = fonts.m_head, end) : found;
     if (it.m_node != (RHMapStringNode *)m_196c.m_head)
         return it.m_node->m_0c.second;
-    RHMenuScreenFont *font = (RHMenuScreenFont *)((RHFontManager *)RHFontManager::FUN_005024f0())->GetFont(name);
+    SBFontUnk0061e840 *font = RHFontManager::FUN_005024f0()->GetFont(name);
     if (font)
     {
         font->AttachToRenderContext(&m_surfaces, 0);
@@ -1702,9 +1680,9 @@ void *RHMenuScreenView::FUN_0053be80(const std::string &name)
 }
 
 // FUNCTION: GAME 0x0053cd30
-void *&RHMapStringTree::FUN_0053cd30(const std::string &key)
+SBFontUnk0061e840 *&RHMapStringTree::FUN_0053cd30(const std::string &key)
 {
-    RHMapStringIterator position = Insert(std::pair<const std::string, void *>(key, (void *)0)).first;
+    RHMapStringIterator position = Insert(std::pair<const std::string, SBFontUnk0061e840 *>(key, 0)).first;
     return position.m_node->m_0c.second;
 }
 
@@ -1769,8 +1747,8 @@ void RHMenuScreenView::FUN_0053c140(unsigned long flags)
     SBThreadedInput::SetInstantRefreshMode(false);
     m_input->SetMouseEnabled(true);
     // STRING: GAME 0x006b0194
-    ui.FUN_00619c80((SBUIFontView *)((RHFontManager *)RHFontManager::FUN_005024f0())->GetFont("Tooltips"),
-        (SBUIFontView *)((RHFontManager *)RHFontManager::FUN_005024f0())->GetFont("Background"));
+    ui.FUN_00619c80(RHFontManager::FUN_005024f0()->GetFont("Tooltips"),
+        RHFontManager::FUN_005024f0()->GetFont("Background"));
     ui.m_1784 = 0x19;
 }
 

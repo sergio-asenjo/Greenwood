@@ -93,6 +93,6 @@ extern char *g_unk0x006c0664;
 extern RHMapResources *g_unk0x006c1840;
 std::wstring FUN_005e23d0(unsigned long);
 unsigned FUN_00527cc0(unsigned);
-void FUN_00529e60(RHMapWindow *, const RHMapWideText &, bool, bool);
+void FUN_00529e60(RHMapWindow *, const std::wstring &, bool, bool);
 
 #endif

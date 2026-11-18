@@ -12,7 +12,6 @@ public:
     void FUN_00513520(RHUnk00549250 &);
     void FUN_005134c0(RHUnk00549250 &);
     void FUN_00513b00(void *);
-    void FUN_0050ed40();
     void FUN_00514670();
     void FUN_005146f0();
     void FUN_0048a970(RHUnk00549250 &);

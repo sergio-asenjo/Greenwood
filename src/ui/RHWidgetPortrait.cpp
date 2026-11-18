@@ -3549,29 +3549,29 @@ RHPortraitFullLifetime::RHPortraitFullLifetime(unsigned short index, RHPortraitA
         counter[-3] = 0;
         counter[0] = 0;
     }
-    FUN_0061a800(&m_second);
-    FUN_0061a800(&m_first);
-    FUN_0061a800(&m_action);
-    FUN_0061a800(&m_buttonFirst);
-    FUN_0061a800(&m_buttonSecond);
-    FUN_0061a800(&m_buttonThird);
-    FUN_0061aa30(&m_buttonFirst);
-    FUN_0061aa30(&m_buttonSecond);
-    FUN_0061aa30(&m_buttonThird);
+    RHPortraitRootLifetime::FUN_0061a800(&m_second);
+    RHPortraitRootLifetime::FUN_0061a800(&m_first);
+    RHPortraitRootLifetime::FUN_0061a800(&m_action);
+    RHPortraitRootLifetime::FUN_0061a800(&m_buttonFirst);
+    RHPortraitRootLifetime::FUN_0061a800(&m_buttonSecond);
+    RHPortraitRootLifetime::FUN_0061a800(&m_buttonThird);
+    RHPortraitRootLifetime::FUN_0061aa30(&m_buttonFirst);
+    RHPortraitRootLifetime::FUN_0061aa30(&m_buttonSecond);
+    RHPortraitRootLifetime::FUN_0061aa30(&m_buttonThird);
     m_buttonFirst.m_value = (int)&m_buttonSecond;
     m_buttonSecond.m_value = (int)&m_buttonThird;
     m_buttonThird.m_value = (int)&m_buttonFirst;
-    FUN_0061a800(&m_quick[0]);
-    FUN_0061a800(&m_quick[1]);
-    FUN_0061a800(&m_quick[2]);
-    FUN_0061a800(&m_bitmapFirst);
-    FUN_0061a800(&m_customFirst);
-    FUN_0061a800(&m_bitmapSecond);
+    RHPortraitRootLifetime::FUN_0061a800(&m_quick[0]);
+    RHPortraitRootLifetime::FUN_0061a800(&m_quick[1]);
+    RHPortraitRootLifetime::FUN_0061a800(&m_quick[2]);
+    RHPortraitRootLifetime::FUN_0061a800(&m_bitmapFirst);
+    RHPortraitRootLifetime::FUN_0061a800(&m_customFirst);
+    RHPortraitRootLifetime::FUN_0061a800(&m_bitmapSecond);
     ((RHUnk005d92c0Sub *)&m_bitmapFirst)->v21(0);
     ((RHUnk005d92c0Sub *)&m_customFirst)->v21(0);
     ((RHUnk005d92c0Sub *)&m_bitmapSecond)->v21(0);
-    FUN_0061aa30(&m_bitmapFirst);
-    FUN_0061aa30(&m_customFirst);
+    RHPortraitRootLifetime::FUN_0061aa30(&m_bitmapFirst);
+    RHPortraitRootLifetime::FUN_0061aa30(&m_customFirst);
     ((RHUnk005d92c0Sub *)&m_quick[0])->v21(0);
     ((RHUnk005d92c0Sub *)&m_quick[1])->v21(0);
     ((RHUnk005d92c0Sub *)&m_quick[2])->v21(0);
@@ -3612,7 +3612,7 @@ RHPortraitFullLifetime::RHPortraitFullLifetime(unsigned short index, RHPortraitA
 // FUNCTION: GAME 0x005d61e0
 void *RHPortraitFullLifetime::FUN_005d61e0(unsigned flags)
 {
-    this->~RHPortraitFullLifetime();
+    this->RHPortraitFullLifetime::~RHPortraitFullLifetime();
     if (flags & 1)
         operator delete(this);
     return this;
@@ -3941,7 +3941,7 @@ RHPortraitWidgetEvent *RHWidgetPortrait::FUN_005d7ea0(const RHPortraitWidgetInpu
             }
             if (input.flags != 8)
             {
-                RHPortraitWidgetEvent *events = (RHPortraitWidgetEvent *)((RHPortraitRootLifetime *)this)->FUN_0061a6e0(&input);
+                RHPortraitWidgetEvent *events = (RHPortraitWidgetEvent *)((RHPortraitRootLifetime *)this)->RHPortraitRootLifetime::FUN_0061a6e0(&input);
                 if (events && events->type == 11)
                     events = events->next;
                 for (RHPortraitWidgetEvent *event = events; event; event = event->next)
@@ -3985,7 +3985,7 @@ RHPortraitWidgetEvent *RHWidgetPortrait::FUN_005d7ea0(const RHPortraitWidgetInpu
         }
         if (input.flags != 8)
         {
-            RHPortraitWidgetEvent *events = (RHPortraitWidgetEvent *)((RHPortraitRootLifetime *)this)->FUN_0061a6e0(&input);
+            RHPortraitWidgetEvent *events = (RHPortraitWidgetEvent *)((RHPortraitRootLifetime *)this)->RHPortraitRootLifetime::FUN_0061a6e0(&input);
             for (RHPortraitWidgetEvent *event = events; event; event = event->next)
             {
                 switch (event->type)
@@ -5719,6 +5719,22 @@ void FUN_005df400(RHUnk005d92c0Sub *widget);
 
 #include "RHPortraitRootList.h"
 #include "RHUnk005db7e0.h"
+#include "RHMapWidget.h"
+#include "RHMapWideText.h"
+#include "RHAction.h"
+#include "RHMission.h"
+#include "RHMissionProfile.h"
+#include <wchar.h>
+
+class RHWidgetRequirements
+{
+public:
+    static std::vector<RHaction> PurifyActions(const std::vector<RHaction> &actions);
+};
+
+int FUN_005dcbb0(const std::string &name);
+int FUN_005dcb10(int value);
+std::wstring FUN_005e23d0(unsigned long id);
 
 // FUNCTION: GAME 0x005db7e0
 RHUnk005db7e0::~RHUnk005db7e0()
@@ -5743,11 +5759,122 @@ DECOMP_STATIC_ASSERT(offsetof(RHUnk005db7e0Entry, m_08) == 0x08)
 DECOMP_STATIC_ASSERT(offsetof(RHUnk005db7e0Entry, m_d8) == 0xd8)
 DECOMP_STATIC_ASSERT(offsetof(RHUnk005db7e0Entry, m_1a8) == 0x1a8)
 
+// STUB: GAME 0x005db920
+bool RHUnk005db7e0::FUN_005db920(RHMission *mission)
+{
+    if (mission == 0)
+        return true;
+
+    RHMissionProfile *profile = mission->m_profile;
+
+    RHMapWideText title;
+    unsigned length = wcslen(L"Requirements");
+    if (title.Grow(length, true))
+    {
+        wmemcpy(title.m_chars, L"Requirements", length);
+        title.End(length);
+    }
+    SBGeoBoundingBox2D bounds(0.0f, 0.0f, 0.0f, 0.0f);
+    FUN_0061a1e0((const RHMapTitleText &)title, bounds, 0);
+
+    std::vector<RHaction> actions = RHWidgetRequirements::PurifyActions(
+        *(const std::vector<RHaction> *)&profile->m_84);
+    unsigned characters = profile->m_74.GetSize();
+    unsigned count = *(unsigned short *)(profile->m_38 + 0x3a);
+    m_entries.resize(count + actions.size());
+
+    unsigned index = 0;
+    unsigned i;
+    for (i = 0; i < characters; ++i, ++index)
+    {
+        RHUnk005db7e0Entry &entry = m_entries[index];
+        float left = (float)(index * 50 + 5);
+        entry.m_00 = 0;
+        entry.m_04 = (int)profile->m_74.m_first[i];
+
+        std::wstring label(L"Required character");
+        SBGeoBoundingBox2D labelBox(SBGeoPoint2D(left, 5.0f));
+        ((RHMapWidget *)&entry.m_08)->V30(label, labelBox, 0, 0xf2);
+        std::wstring state(L"Yes or No");
+        SBGeoBoundingBox2D stateBox(SBGeoPoint2D(left, 5.0f));
+        ((RHMapWidget *)&entry.m_d8)->V30(state, stateBox, 0, 0x8e);
+        std::wstring selected(L"Selected");
+        SBGeoBoundingBox2D selectedBox(SBGeoPoint2D(left, 5.0f));
+        ((RHMapWidget *)&entry.m_1a8)->V30(selected, selectedBox, 0, 0x114);
+
+        const std::string &character = *(const std::string *)((char *)entry.m_04 + 0x14);
+        ((RHMapWidget *)&entry.m_08)->V38(FUN_005dcbb0(character));
+        ((RHMapWidget *)&entry.m_d8)->V38(1);
+        entry.m_1a8.m_04 = false;
+        std::wstring name = FUN_005e23d0(0x12d);
+        entry.m_08.m_widget.m_08 = true;
+        entry.m_08.m_widget.m_20.assign(name, 0, std::wstring::npos);
+        FUN_005df300((RHUnk005d92c0Sub *)&entry.m_08);
+        FUN_005df300((RHUnk005d92c0Sub *)&entry.m_d8);
+        FUN_005df300((RHUnk005d92c0Sub *)&entry.m_1a8);
+    }
+
+    for (i = 0; i < actions.size(); ++i, ++index)
+    {
+        RHUnk005db7e0Entry &entry = m_entries[index];
+        float left = (float)(index * 50 + 5);
+        entry.m_00 = (int)actions[i];
+        entry.m_04 = 0;
+
+        std::wstring label(L"Required action");
+        SBGeoBoundingBox2D labelBox(SBGeoPoint2D(left, 5.0f));
+        ((RHMapWidget *)&entry.m_08)->V30(label, labelBox, 0, 0xf3);
+        std::wstring state(L"Yes or No");
+        SBGeoBoundingBox2D stateBox(SBGeoPoint2D(left, 5.0f));
+        ((RHMapWidget *)&entry.m_d8)->V30(state, stateBox, 0, 0x8e);
+        std::wstring selected(L"Selected");
+        SBGeoBoundingBox2D selectedBox(SBGeoPoint2D(left, 5.0f));
+        ((RHMapWidget *)&entry.m_1a8)->V30(selected, selectedBox, 0, 0x114);
+
+        ((RHMapWidget *)&entry.m_08)->V38(FUN_005dcb10(entry.m_00));
+        ((RHMapWidget *)&entry.m_d8)->V38(1);
+        entry.m_1a8.m_04 = false;
+        std::wstring name = FUN_005e23d0(0x12e);
+        entry.m_08.m_widget.m_08 = true;
+        entry.m_08.m_widget.m_20.assign(name, 0, std::wstring::npos);
+        FUN_005df300((RHUnk005d92c0Sub *)&entry.m_08);
+        FUN_005df300((RHUnk005d92c0Sub *)&entry.m_d8);
+        FUN_005df300((RHUnk005d92c0Sub *)&entry.m_1a8);
+    }
+
+    for (i = 0; i < count - characters; ++i, ++index)
+    {
+        RHUnk005db7e0Entry &entry = m_entries[index];
+        float left = (float)(index * 50 + 5);
+        entry.m_00 = 0;
+        entry.m_04 = 0;
+
+        std::wstring label(L"Optional PC");
+        SBGeoBoundingBox2D labelBox(SBGeoPoint2D(left, 5.0f));
+        ((RHMapWidget *)&entry.m_08)->V30(label, labelBox, 0, 0xf4);
+        std::wstring state(L"Yes or No");
+        SBGeoBoundingBox2D stateBox(SBGeoPoint2D(left, 5.0f));
+        ((RHMapWidget *)&entry.m_d8)->V30(state, stateBox, 0, 0x8e);
+        std::wstring selected(L"Selected");
+        SBGeoBoundingBox2D selectedBox(SBGeoPoint2D(left, 5.0f));
+        ((RHMapWidget *)&entry.m_1a8)->V30(selected, selectedBox, 0, 0x114);
+
+        ((RHMapWidget *)&entry.m_08)->V38(0);
+        ((RHMapWidget *)&entry.m_d8)->V38(1);
+        std::wstring name = FUN_005e23d0(0x12f);
+        entry.m_08.m_widget.m_08 = true;
+        entry.m_08.m_widget.m_20.assign(name, 0, std::wstring::npos);
+        FUN_005df300((RHUnk005d92c0Sub *)&entry.m_08);
+    }
+
+    return true;
+}
+
 // FUNCTION: GAME 0x005dc690
 void RHUnk005db7e0::FUN_005dc690(const SBGeoBoundingBox2D &bounds)
 {
     SBGeoPoint2D position;
-    ((SBFrameWnd *)this)->FUN_0061ad20(bounds);
+    RHPortraitRootLifetime::FUN_0061ad20(bounds);
     unsigned width = m_entries.size() * 50 - 10;
     position = bounds.m_first;
     position.FUN_005fc1e0(SBGeoVector2D(bounds.Width() * 0.5f - (width >> 1), 0.0f));
@@ -5894,7 +6021,7 @@ DECOMP_STATIC_ASSERT(offsetof(RHPortraitRootList, m_items) == 0xa0)
 // FUNCTION: GAME 0x005df120
 bool RHPortraitRootList::FUN_005df120(RHUnk005d92c0Sub *widget)
 {
-    if (FUN_0061a800(widget))
+    if (RHPortraitRootLifetime::FUN_0061a800(widget))
     {
         m_items.push_back(widget);
         return true;
@@ -5919,7 +6046,7 @@ bool RHPortraitRootList::FUN_005df300(RHUnk005d92c0Sub *widget)
 {
     if (widget)
     {
-        if (FUN_0061a920(widget))
+        if (RHPortraitRootLifetime::FUN_0061a920(widget))
         {
             FUN_005df400(widget);
             m_items.erase(std::remove(m_items.begin(), m_items.end(), widget), m_items.end());
@@ -5929,7 +6056,7 @@ bool RHPortraitRootList::FUN_005df300(RHUnk005d92c0Sub *widget)
     }
     std::for_each(m_items.begin(), m_items.end(), FUN_005df400);
     m_items.erase(m_items.begin(), m_items.end());
-    return FUN_0061a920(0);
+    return RHPortraitRootLifetime::FUN_0061a920(0);
 }
 
 // FUNCTION: GAME 0x005df400
@@ -6226,7 +6353,7 @@ void RHWidgetPortrait::FUN_005da1f0()
 // FUNCTION: GAME 0x005dd370
 RHPortraitWidgetEvent *RHPortraitQuickList::FUN_005dd370(const void *input)
 {
-    RHPortraitWidgetEvent *events = (RHPortraitWidgetEvent *)FUN_0061a6e0(input);
+    RHPortraitWidgetEvent *events = (RHPortraitWidgetEvent *)RHPortraitRootLifetime::FUN_0061a6e0(input);
     for (RHPortraitWidgetEvent *event = events; event; event = event->next)
     {
         if (event->type == 0)
@@ -6263,12 +6390,6 @@ void EmitRHRequirementActionArrayInsert(std::vector<RHaction> &actions,
 // TEMPLATE: GAME 0x004582d0 FOLDED
 // ?insert@?$vector@W4RHaction@@V?$allocator@W4RHaction@@@std@@@std@@QAEXPAW4RHaction@@IABW43@@Z
 
-class RHWidgetRequirements
-{
-public:
-    static std::vector<RHaction> PurifyActions(const std::vector<RHaction> &actions);
-};
-
 // FUNCTION: GAME 0x005dd430
 std::vector<RHaction> RHWidgetRequirements::PurifyActions(const std::vector<RHaction> &actions)
 {
@@ -6300,6 +6421,7 @@ void EmitPortraitQuickEntries(std::vector<RHPortraitQuickEntry> *entries)
 
 DECOMP_SIZE_ASSERT(RHGameWidgetLifetimeBase, 0x80)
 DECOMP_SIZE_ASSERT(RHGameLifetime00515b40, 0xd0)
+DECOMP_SIZE_ASSERT(RHGameLifetime005161a0, 0xd0)
 DECOMP_SIZE_ASSERT(RHGameLifetime00515f00, 0xcc)
 DECOMP_SIZE_ASSERT(RHGameLifetime00517590, 0xcc)
 DECOMP_SIZE_ASSERT(RHGameRenderer0060da10, 0x4c)
@@ -6312,6 +6434,7 @@ DECOMP_STATIC_ASSERT(offsetof(RHGameWidgetLifetimeBase, m_event) == 0x4c)
 DECOMP_STATIC_ASSERT(offsetof(RHGameWidgetLifetimeBase, m_5c) == 0x5c)
 DECOMP_STATIC_ASSERT(offsetof(RHGameWidgetLifetimeBase, m_state) == 0x7c)
 DECOMP_STATIC_ASSERT(offsetof(RHGameLifetime00515b40, m_renderer) == 0x80)
+DECOMP_STATIC_ASSERT(offsetof(RHGameLifetime005161a0, m_renderer) == 0x80)
 DECOMP_STATIC_ASSERT(offsetof(RHGameLifetime00517590, m_renderer) == 0x80)
 DECOMP_STATIC_ASSERT(offsetof(RHGameRenderer0060da10, m_name) == 0x28)
 DECOMP_STATIC_ASSERT(offsetof(RHGameRenderer0060da10, m_widgetResource) == 0x38)
@@ -6392,6 +6515,24 @@ inline RHPortraitRenderer0060dab0 &RHPortraitRenderer0060dab0::operator=(const R
     return *this;
 }
 
+inline RHPortraitRenderer0060dab0 &RHPortraitRenderer0060dab0::Assign(const RHPortraitRenderer0060dab0 &other)
+{
+    m_resources = other.m_resources;
+    AssignPosition(other.m_position);
+    m_drawManager = other.m_drawManager;
+    m_hardware = other.m_hardware;
+    m_24 = other.m_24;
+    m_name.assign(other.m_name, 0, std::wstring::npos);
+    m_widgetResource = other.m_widgetResource;
+    m_3c = other.m_3c;
+    for (unsigned int index = 0; index < 2; ++index)
+        m_surfaces.values[index] = other.m_surfaces.values[index];
+    m_48 = other.m_48;
+    m_4c = other.m_4c;
+    m_4e = other.m_4e;
+    return *this;
+}
+
 // FUNCTION: GAME 0x005dec70
 inline RHPortraitRenderer0060d470 &RHPortraitRenderer0060d470::operator=(const RHPortraitRenderer0060d470 &other)
 {
@@ -6456,11 +6597,33 @@ inline RHGameLifetime00517590 &RHGameLifetime00517590::Assign(const RHGameLifeti
     return *this;
 }
 
+inline RHGameLifetime00515b40 &RHGameLifetime00515b40::Assign(const RHGameLifetime00515b40 &other)
+{
+    RHGameWidgetLifetimeBase::operator=(other);
+    m_renderer.Assign(other.m_renderer);
+    return *this;
+}
+
+// FUNCTION: GAME 0x005de4e0
+RHGameLifetime005161a0 &RHGameLifetime005161a0::operator=(const RHGameLifetime005161a0 &other)
+{
+    Assign(other);
+    return *this;
+}
+
 // FUNCTION: GAME 0x005de6d0
 RHGameLifetime00515f00 &RHGameLifetime00515f00::operator=(const RHGameLifetime00515f00 &other)
 {
     Assign(other);
     return *this;
+}
+
+RHGameLifetime005161a0 &EmitRHPortraitAlphaWidgetAssignment(RHGameLifetime005161a0 &destination,
+    const RHGameLifetime005161a0 &source)
+{
+    RHGameLifetime005161a0 &(RHGameLifetime005161a0::*assign)(const RHGameLifetime005161a0 &) =
+        &RHGameLifetime005161a0::operator=;
+    return (destination.*assign)(source);
 }
 
 RHGameLifetime00517590 &EmitRHPortraitBitmapBaseAssignment(RHGameLifetime00517590 &destination,
@@ -6526,9 +6689,9 @@ SBGeoBoundingBox2D RHPortraitInputRenderer::FUN_0061d3f0(unsigned short line, in
     float width = bounds.m_second.m_x - bounds.m_first.m_x;
     unsigned index = line;
     ((RHMobileUnk00607da0 *)&box)->FUN_00607da0((const RHMobileUnk00607da0 &)RHMapBox(
-        0.0f, (float)((unsigned)((SBUIListboxUnk0061d980 *)this)->m_4c->FUN_0061e890() * index),
-        width - ((RHUnkFXDraw *)m_drawManager)->FUN_005e56c0(m_68),
-        (float)((unsigned)((SBUIListboxUnk0061d980 *)this)->m_4c->FUN_0061e890() * (index + 1))));
+        0.0f, (float)((unsigned)((SBUIListboxUnk0061d980 *)this)->m_4c->GetHeight() * index),
+        width - ((SBDrawManager *)m_drawManager)->FUN_005e56c0(m_68),
+        (float)((unsigned)((SBUIListboxUnk0061d980 *)this)->m_4c->GetHeight() * (index + 1))));
     if (value & 0x1000)
     {
         box.m_10 = true;
@@ -6564,14 +6727,14 @@ SBGeoBoundingBox2D RHPortraitInputRenderer::FUN_0061d620()
     float height = m_position.m_second.m_y - m_position.m_first.m_y;
     ((RHMobileUnk00607da0 *)&box)->FUN_00607da0((const RHMobileUnk00607da0 &)RHMapBox(
         0.0f, (height - 2.0f) * *(float *)((char *)this + 0x78),
-        ((RHUnkFXDraw *)m_drawManager)->FUN_005e56c0(m_64),
+        ((SBDrawManager *)m_drawManager)->FUN_005e56c0(m_64),
         (m_position.m_second.m_y - m_position.m_first.m_y - 2.0f) *
         (*(float *)((char *)this + 0x74) + *(float *)((char *)this + 0x78))));
     float right = m_position.m_second.m_x;
     float top = m_position.m_first.m_y + 1.0f;
     right -= 1.0f;
     ((RHMobileUnk00607da0 *)&box)->FUN_00607da0((const RHMobileUnk00607da0 &)box.FUN_006090d0(
-        SBGeoVector2D(right - ((RHUnkFXDraw *)m_drawManager)->FUN_005e56c0(m_64), top)));
+        SBGeoVector2D(right - ((SBDrawManager *)m_drawManager)->FUN_005e56c0(m_64), top)));
     return box;
 }
 
@@ -6582,11 +6745,11 @@ SBGeoBoundingBox2D RHPortraitInputRenderer::FUN_0061d7c0()
     if (m_68 == -1)
         return SBGeoBoundingBox2D(0.0f, 0.0f, 0.0f, 0.0f);
     ((RHMobileUnk00607da0 *)&box)->FUN_00607da0((const RHMobileUnk00607da0 &)RHMapBox(
-        0.0f, 0.0f, ((RHUnkFXDraw *)m_drawManager)->FUN_005e56c0(m_68),
+        0.0f, 0.0f, ((SBDrawManager *)m_drawManager)->FUN_005e56c0(m_68),
         m_position.m_second.m_y - m_position.m_first.m_y));
     float top = m_position.m_first.m_y;
     float right = m_position.m_second.m_x;
     ((RHMobileUnk00607da0 *)&box)->FUN_00607da0((const RHMobileUnk00607da0 &)box.FUN_006090d0(
-        SBGeoVector2D(right - ((RHUnkFXDraw *)m_drawManager)->FUN_005e56c0(m_68), top)));
+        SBGeoVector2D(right - ((SBDrawManager *)m_drawManager)->FUN_005e56c0(m_68), top)));
     return box;
 }

@@ -13,7 +13,7 @@
 #include "SB.h"
 
 class RHElement;
-class RHUnkFXDraw;
+class SBDrawManager;
 class SBGeoVector2D;
 
 struct RHMinimapHighlightedElement
@@ -127,7 +127,7 @@ public:
 
     unsigned long m_surface;
     unsigned long m_a4;
-    RHUnkFXDraw *m_minimapDraw;
+    SBDrawManager *m_minimapDraw;
     char *m_engine;
     bool m_b0;
     bool m_b1;
