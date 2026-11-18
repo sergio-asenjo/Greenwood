@@ -97,6 +97,29 @@ public:
         ((RHProfileListCursor *)this)->GoTo(index);
     }
     int FindValue(RHElementActor *actor) { return Unk004b8f80(actor, true); }
+    int FindForward(RHElementActor *actor)
+    {
+        int count = m_count;
+        m_searchValue = actor;
+        m_searchValid = true;
+        m_cur = begin();
+        int index = 0;
+        for (; index < count; ++index, ++m_cur)
+            if (*m_cur == m_searchValue)
+                break;
+        if (index < count)
+        {
+            m_searchIndex = index;
+            m_valid = false;
+            m_index = index;
+        }
+        else
+        {
+            m_valid = true;
+            m_searchIndex = -1;
+        }
+        return m_searchIndex;
+    }
     RHSectorActorIter begin() { return RHSectorActorIter(RHSectorActorAccess::Next(m_head)); }
     RHSectorActorIter Current() const { return m_cur; }
     RHElementActor *CurrentValue() const { return *m_cur; }

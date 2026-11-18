@@ -148,4 +148,3 @@ RHUnk0057d440::~RHUnk0057d440() {}
 
 // FUNCTION: GAME 0x0057dce0
 RHSectorLift::~RHSectorLift() {}
-void RHUnk0051aa00::Unk0051b2a0(SBFile &, RHSectorBuilding *) {}

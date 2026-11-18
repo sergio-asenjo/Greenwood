@@ -2668,6 +2668,9 @@ bool VMCoreCustom::FUN_006390a0()
     return true;
 }
 
+// SYNTHETIC: GAME 0x00463170
+// VMCoreCustom::`scalar deleting destructor'
+
 // SYNTHETIC: GAME 0x004631a0
 // VMCoreCustom::~VMCoreCustom
 

@@ -26,6 +26,7 @@ public:
     SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
     SBGeoPoint2D FUN_005fc200(const SBGeoPoint2D &other) const;
     SBGeoVector2D Unk005fc110(const SBGeoPoint2D &other) const;
+    SBGeoPoint2D &FUN_005fc1e0(const SBGeoPoint2D &other);
     bool Serialize(SBFile &file);
 };
 #endif
@@ -111,16 +112,10 @@ class RHUnk0057d3f0 : public RHSector
 public:
     RHUnk0057d3f0();
     virtual ~RHUnk0057d3f0();
+    void *m_58;
 };
 
-// VTABLE: GAME 0x00679c6c
-// SIZE 0x5c
-class RHUnk0057ed80 : public RHSector
-{
-public:
-    RHUnk0057ed80();
-    virtual ~RHUnk0057ed80();
-};
+#include "RHSectorDoorCore.h"
 
 // VTABLE: GAME 0x00679c8c
 // SIZE 0x70
@@ -129,7 +124,8 @@ class RHUnk0057ee90 : public RHSector
 public:
     RHUnk0057ee90();
     virtual ~RHUnk0057ee90();
-    int m_58;           // 0x58
+    void FUN_0057ef70();
+    float m_58;         // 0x58
     SBGeoPoint2D m_5c;  // 0x5c
     RHUnk00613e90 m_64; // 0x64
 };

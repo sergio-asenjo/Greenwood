@@ -1,8 +1,8 @@
 #include "SBNullstr.h"
 #include "VMCore.h"
 
+// STUB: GAME 0x00639750
 VMUnk00634ab0Record::VMUnk00634ab0Record(const VMUnk00634ab0Record &other)
+    : m_name(other.m_name), m_serializer(other.m_serializer)
 {
-    ((std::string *)&m_name)->assign(*(const std::string *)&other.m_name, 0, std::string::npos);
-    m_serializer = other.m_serializer;
 }

@@ -33,9 +33,9 @@ public:
     void DeleteStaticRepulsivePoint(unsigned long id);
 };
 
-struct RHUnkSectorGlobal;
+class RHFastFindGrid;
 extern char *g_unk0x6c0fa8;
-extern RHUnkSectorGlobal *g_unk0x6c0a9c;
+extern RHFastFindGrid *g_unk0x6c0a9c;
 
 namespace VMCoreCustomDependencies
 {

@@ -1,5 +1,6 @@
 #include "RHSector.h"
 #include "RHFastFindArcheryArray.h"
+#include "RHFastFindGridCore.h"
 
 DECOMP_SIZE_ASSERT(RHFastFindArcheryArray, 0x20)
 
@@ -39,28 +40,7 @@ DECOMP_STATIC_ASSERT(offsetof(RHSectorLift, m_f0) == 0xf0)
 DECOMP_SIZE_ASSERT(RHBuildingActorList, 0x24)
 
 #include "VMCore.h"
-
-struct RHScriptNode
-{
-    RHScriptNode *next; // 0x00
-    RHScriptNode *prev; // 0x04
-    void *data; // 0x08
-};
-
-struct RHScriptIter
-{
-    RHScriptNode *node; // 0x00
-    RHScriptIter(RHScriptNode *value) : node(value) {}
-};
-
-class RHUnk0046eb30
-{
-public:
-    undefined4 allocator; // 0x00
-    RHScriptNode *head; // 0x04
-    int count; // 0x08
-    RHScriptIter erase(RHScriptIter position);
-};
+#include "RHFastFindUniqueList.h"
 
 // TEMPLATE: GAME 0x00486190
 // ?_Destroy@std@@YAXPAVSBGeoPoint2D@@@Z
@@ -69,7 +49,7 @@ public:
 RHElementActor *g_unk0x6c100c;
 
 // GLOBAL: GAME 0x6c0a9c
-RHUnkSectorGlobal *g_unk0x6c0a9c;
+RHFastFindGrid *g_unk0x6c0a9c;
 
 
 // GLOBAL: GAME 0x6c0691
@@ -82,7 +62,7 @@ inline void *RHUnkSectorLookup(unsigned short sector)
 {
     if (sector == 0xffff)
         return g_unk0x6c0a9c->m_4184;
-    return g_unk0x6c0a9c->m_4064[sector];
+    return g_unk0x6c0a9c->m_sectors.m_first[sector];
 }
 
 // TEMPLATE: GAME 0x0044e8b0 FOLDED
@@ -182,7 +162,7 @@ RHSector::RHSector()
 // RHSector::`scalar deleting destructor'
 
 // SYNTHETIC: GAME 0x0057cb10
-// RHUnk0060c2c0::~RHUnk0060c2c0
+// RHUnkSectorPoints::~RHUnkSectorPoints
 
 // FUNCTION: GAME 0x0057cbd0
 RHSector::~RHSector()
@@ -1029,6 +1009,63 @@ RHUnk0057ee90::~RHUnk0057ee90()
 {
 }
 
+#include "RHElementGrid.h"
+#include "RHUnk005fc3b0.h"
+
+// STUB: GAME 0x0057ef70
+void RHUnk0057ee90::FUN_0057ef70()
+{
+    char allocator;
+    RHUnkSectorPoints &points = *(RHUnkSectorPoints *)((char *)this + 4);
+    unsigned short count = (unsigned short)points.Unk0060ce80();
+    RHFastFindUniqueList areas(allocator);
+    RHElementGrid *grid = (RHElementGrid *)g_unk0x6c0a9c;
+    m_5c.m_x = 0.0f;
+    m_5c.m_y = 0.0f;
+    for (unsigned short pointIndex = 0; pointIndex < count; ++pointIndex)
+    {
+        SBGeoVector2D point(points.Unk0060cef0(pointIndex));
+        m_5c.FUN_005fc1e0(point);
+    }
+    float inverse = 1.0f / (float)count;
+    m_5c.m_x *= inverse;
+    m_5c.m_y *= inverse;
+    int cell = (grid->m_3e9a * m_36 + ((short)m_5c.m_y >> 6)) * grid->m_3e98 + ((short)m_5c.m_x >> 6);
+    grid->FUN_004e89d0(&areas, cell, 0x20);
+    bool found = false;
+    unsigned short areaCount = (unsigned short)areas.count;
+    for (unsigned short areaIndex = 0; areaIndex < areaCount; ++areaIndex)
+    {
+        ((RHSectorActorList *)&areas)->Unk005c8e40(areaIndex);
+        void *value = areas.m_current.node->value;
+        if ((value ? (RHElementAreaShape *)((char *)value + 4) : 0)->FUN_0060c660(m_5c))
+        {
+            if (value)
+            {
+                RHBonusProjection *projection = *(RHBonusProjection **)((char *)value + 0x58);
+                m_64.x = m_5c.m_x;
+                m_64.z = (m_5c.m_x * projection->m_f4 + m_5c.m_y * projection->m_f8 + projection->m_fc) /
+                    (1.0f - projection->m_f8) + 0.1f;
+                m_64.y = m_64.z + m_5c.m_y;
+                found = true;
+            }
+            break;
+        }
+    }
+    if (!found)
+    {
+        m_64.z = 0.0f;
+        m_64.y = m_5c.m_y;
+        m_64.x = m_5c.m_x;
+    }
+    m_58 = 0.0f;
+    for (unsigned short lengthIndex = 0; lengthIndex < count; ++lengthIndex)
+    {
+        m_58 += ((RHUnk005fc3b0 &)points.Unk0060cef0(lengthIndex).Unk005fc110(m_5c)).Unk005fc6a0(1.0f);
+    }
+    m_58 *= inverse;
+}
+
 // FUNCTION: GAME 0x0057f230
 RHSectorArchery::RHSectorArchery()
 {
@@ -1076,7 +1113,35 @@ bool RHSectorArchery::IsInside(const RHUnk00571160Position &position)
     unsigned short layer = *(volatile unsigned short *)&((RHSector *)m_78)->m_36;
     if (layer != (unsigned short)position.layer)
         return false;
-    return ((RHElementAreaShape *)(RHUnk0060c2c0 *)this)->FUN_0060c660(point);
+    return ((RHElementAreaShape *)(RHUnkSectorPoints *)this)->FUN_0060c660(point);
+}
+
+DECOMP_SIZE_ASSERT(RHSectorScript, 0xf8)
+DECOMP_STATIC_ASSERT(offsetof(RHSectorScript, m_active) == 0xb8)
+DECOMP_STATIC_ASSERT(offsetof(RHSectorScript, m_unk08) == 0xc0)
+DECOMP_STATIC_ASSERT(offsetof(RHSectorScript, m_c8) == 0xc8)
+DECOMP_STATIC_ASSERT(offsetof(RHSectorScript, m_cc) == 0xcc)
+DECOMP_STATIC_ASSERT(offsetof(RHSectorScript, m_f4) == 0xf4)
+
+// FUNCTION: GAME 0x0057f680
+RHSectorScript::RHSectorScript()
+{
+    m_active = 0;
+    m_30 = 0x88;
+    m_unk04 = 2;
+    m_unk08 = 0;
+    m_f4 = 0xe;
+}
+
+// SYNTHETIC: GAME 0x0057f770
+// RHSectorScript::`scalar deleting destructor'
+
+// Parked: the actor-list teardown emits list<RHElementActor *> erase/increment helpers outside the folded pointer-list groups.
+// STUB: GAME 0x0057f790
+RHSectorScript::~RHSectorScript()
+{
+    if (m_active)
+        delete[] m_unk08;
 }
 
 // FUNCTION: GAME 0x0057f8c0
@@ -1095,25 +1160,25 @@ void RHSectorScript::InitializeFromMissionStream(SBFile &file)
     }
     file.Access(&m_c8, 2);
     file.Access(&m_36, 2);
-    file.Access(&m_b8, 1);
-    if (m_b8)
+    file.Access(&m_active, 1);
+    if (m_active)
     {
         unsigned short length;
         file.Access(&length, 2);
-        m_c0 = new char[length + 1];
-        file.Access(m_c0, length);
-        m_c0[length] = 0;
+        m_unk08 = new char[length + 1];
+        file.Access(m_unk08, length);
+        m_unk08[length] = 0;
         if (g_unk0x6c0691)
         {
-            if (!((RHUnkSectorScript *)((char *)this + 0x58))->Unk00639a30(m_c0))
+            if (!((RHUnkSectorScript *)((char *)this + 0x58))->Unk00639a30(m_unk08))
                 SBAssert(1, "P:\\Robin Hood\\RHsector.cpp", 0x971,
                          // STRING: GAME 0x6b7334
                          "Structural error in RHD, a Sector has got a script reference that does not exist !");
-            *(RHUnkSectorScript **)&m_c4 = this ? (RHUnkSectorScript *)((char *)this + 0x58) : 0;
-            m_c4.Unk00408900();
+            RHUnkSectorScriptRef::m_0 = this ? (RHUnkSectorScript *)((char *)this + 0x58) : 0;
+            Unk00408900();
         }
         else
-            m_b8 = 0;
+            m_active = 0;
     }
 }
 
@@ -1126,7 +1191,7 @@ bool RHSectorScript::Serialize(SBFile &file)
     RHElementActor *actor;
     if (!file.m_bLoading)
     {
-        count = ((RHSectorActorList *)m_cc)->m_count;
+        count = ((RHSectorActorList *)&m_cc)->m_count;
         if (file.Access(&count, 2) < 0)
         {
             SBString *err = file.GetError();
@@ -1136,7 +1201,7 @@ bool RHSectorScript::Serialize(SBFile &file)
         }
         for (unsigned short i = 0; i < (unsigned short)count; ++i)
         {
-            RHSectorActorList &list = *(RHSectorActorList *)m_cc;
+            RHSectorActorList &list = *(RHSectorActorList *)&m_cc;
             list.Unk005c8e40(i);
             actor = list.CurrentValue();
             if (!g_pEngine->FUN_004c3af0(file, (void *&)actor))
@@ -1145,7 +1210,7 @@ bool RHSectorScript::Serialize(SBFile &file)
     }
     else
     {
-        RHSectorActorList &list = *(RHSectorActorList *)m_cc;
+        RHSectorActorList &list = *(RHSectorActorList *)&m_cc;
         RHSectorActorNode *last = list.m_head;
         RHSectorActorNode *it = last->m_next;
         while (it != last)
@@ -1170,15 +1235,15 @@ bool RHSectorScript::Serialize(SBFile &file)
             list.m_valid = 1;
         }
     }
-    if (g_unk0x6c0691 && m_b8)
-        ((VMCore *)((char *)this + 0x58))->SerializeMemberVariable(file);
+    if (g_unk0x6c0691 && m_active)
+        VMCore::SerializeMemberVariable(file);
     return true;
 }
 
 // FUNCTION: GAME 0x0057fcc0
 void RHSectorScript::Enter(RHElementActor *actor)
 {
-    RHSectorActorList &list = *(RHSectorActorList *)m_cc;
+    RHSectorActorList &list = *(RHSectorActorList *)&m_cc;
     if (list.FindValue(actor) != -1)
     {
         SBAssert(0, "P:\\Robin Hood\\RHsector.cpp", 0x9c5,
@@ -1191,11 +1256,11 @@ void RHSectorScript::Enter(RHElementActor *actor)
         list.insert(RHSectorActorIter(list.m_head->m_next), actor);
         list.m_valid = 1;
     }
-    if (m_b8)
+    if (m_active)
     {
         RHElementActor *saved = g_unk0x6c100c;
         g_unk0x6c100c = actor;
-        m_c4.Unk004089f0(actor);
+        Unk004089f0(actor);
         g_unk0x6c100c = saved;
     }
     if (actor->UnkType() == RHUnkSectorType12 && actor->m_5cc)
@@ -1208,7 +1273,7 @@ void RHSectorScript::Enter(RHElementActor *actor)
 // STUB: GAME 0x0057fdb0
 void RHSectorScript::Leave(RHElementActor *actor)
 {
-    RHSectorActorList &list = *(RHSectorActorList *)m_cc;
+    RHSectorActorList &list = *(RHSectorActorList *)&m_cc;
     unsigned short index = (unsigned short)list.Find(actor);
     if (index == 0xffff)
     {
@@ -1223,11 +1288,11 @@ void RHSectorScript::Leave(RHElementActor *actor)
         list.erase(list.Current());
         list.m_valid = 1;
     }
-    if (m_b8)
+    if (m_active)
     {
         RHElementActor *saved = g_unk0x6c100c;
         g_unk0x6c100c = actor;
-        m_c4.Unk00408af0(actor);
+        Unk00408af0(actor);
         g_unk0x6c100c = saved;
     }
     if (actor->UnkType() == RHUnkSectorType12 && actor->m_5cc)
@@ -1272,6 +1337,9 @@ bool RHSectorScript::FUN_0057ff00(RHElementActor *actor)
         return false;
     return (this ? (RHElementAreaShape *)((char *)this + 4) : 0)->FUN_0060c660(*(SBGeoPoint2D *)((char *)actor->m_50 + 0x24));
 }
+
+// SYNTHETIC: GAME 0x0057ffc0
+// ??_ERHSectorScript@@WLE@AEPAXI@Z
 
 void RHSectorLift::Emit(SBFile &file)
 {

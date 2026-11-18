@@ -10,6 +10,8 @@
 
 class RHElementActor;
 class RHFastFindSector;
+class RHSector;
+class RHUnk0057ed80;
 class RHSectorBuilding;
 class RHUnk0051e1e0;
 class RHMission;
@@ -19,7 +21,7 @@ struct RHGateLink
 {
     RHUnk0051a5e0 *first;
     RHUnk0051a5e0 *second;
-    RHFastFindSector *sector;
+    RHSector *sector;
     float distance;
 };
 
@@ -54,11 +56,11 @@ public:
     virtual bool FUN_0051abe0(bool, RHElementActor *, bool, bool, bool);
     virtual bool Serialize(SBFile &file);
     void Link(RHUnk0051a5e0 *other);
-    RHFastFindSector *FirstSector() const { return m_10; }
-    RHFastFindSector *SecondSector() const { return m_0c; }
+    RHSector *FirstSector() const { return m_10; }
+    RHSector *SecondSector() const { return m_0c; }
     unsigned char m_04[8];
-    RHFastFindSector *m_0c;
-    RHFastFindSector *m_10;
+    RHSector *m_0c;
+    RHSector *m_10;
     unsigned short m_14;
     short m_16;
     SBGeoPoint2D m_18;
@@ -88,7 +90,7 @@ public:
     int m_a0;
     int m_a4;
     int m_a8;
-    unsigned char m_ac[4];
+    RHUnk0057ed80 *m_ac;
     int m_b0;
     unsigned char m_b4[8];
 };

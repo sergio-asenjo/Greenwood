@@ -15,8 +15,8 @@ class RHPCDescription;
 
 extern RHEngine *g_pEngine;
 
-struct RHUnkSectorGlobal;
-extern RHUnkSectorGlobal *g_unk0x6c0a9c;
+class RHFastFindGrid;
+extern RHFastFindGrid *g_unk0x6c0a9c;
 
 class RHFastFindGrid
 {
@@ -859,8 +859,8 @@ public:
 
 #include "RHSpriteCore.h"
 
-class RHUnk005ef320;
-extern RHUnk005ef320 *g_unk0x6c11d0;
+class SBDrawManager;
+extern SBDrawManager *g_unk0x6c11d0;
 class RHFrameHolder;
 extern RHFrameHolder *g_unk0x006c0b1c;
 

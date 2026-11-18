@@ -78,8 +78,6 @@ void RHUnk00522470::FUN_00520a90(SBFile &file)
     this->x = x;
     this->y = y;
 }
-RHSectorScript::RHSectorScript() {}
-RHSectorScript::~RHSectorScript() {}
 RHUnk0051b6e0::~RHUnk0051b6e0() {}
 // GLOBAL: GAME 0x006c1064
 unsigned long g_unk0x006c1064;
@@ -128,8 +126,9 @@ RHUnk005a3450::RHUnk005a3450(int type)
     m_164 = 1.0f;
     m_160 = 1.0f;
 }
+
+// STUB: GAME 0x005a3670
 RHUnk005a3450::~RHUnk005a3450() {}
-void RHUnk005a3450::Unk005a3810(SBFile &, RHFastFindPointerArray &) {}
 // STUB: GAME 0x005a5780
 void *RHUnk005a3450::Unk005a5780()
 {
@@ -148,7 +147,6 @@ void *RHUnk005a3450::Unk005a5780()
     ((RHUnkSectorPoints *)((char *)sector + 4))->FUN_0060c2e0();
     return sector;
 }
-SBGeoPoint3D::SBGeoPoint3D(float, float, float) {}
 // FUNCTION: GAME 0x005223f0
 void RHUnk005223f0::FUN_005223f0(SBFile &file)
 {
@@ -233,6 +231,3 @@ check:
         return *(int *)(*(char **)((char *)actor + 0x50) + 0x8c) == 0x10;
     return third;
 }
-
-struct RHFastFindRecordC0;
-void FUN_004fe9d0(RHFastFindRecordC0 *, const RHFastFindRecordC0 &) {}

@@ -11,6 +11,16 @@ public:
 #include "RHSectorGateCalls.h"
 
 #include "RHSectorLift.h"
+#include "RHSectorDoorCore.h"
+#include "RHSectorBuilding.h"
+#include <stddef.h>
+
+DECOMP_SIZE_ASSERT(RHUnk0057ed80, 0x5c)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0057ed80, m_gate) == 0x58)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk0051aa00, m_ac) == 0xac)
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindGrid, m_sectors) == 0x4060)
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindGrid, m_layerCount) == 0x3e9c)
+DECOMP_STATIC_ASSERT(offsetof(RHFastFindGrid, m_4184) == 0x4184)
 
 // GLOBAL: GAME 0x006c0b68
 RHFastFindCursorList g_gateLinks;
@@ -286,7 +296,95 @@ void RHUnk0051aa00::AdaptPoints()
     }
 }
 
-#include "RHSectorBuilding.h"
+// STUB: GAME 0x0051b2a0
+void RHUnk0051aa00::Unk0051b2a0(SBFile &file, RHSectorBuilding *building)
+{
+    RHFastFindGrid &grid = *g_unk0x6c0a9c;
+    unsigned type;
+    short x;
+    short y;
+    unsigned sector;
+    unsigned layer;
+    int highestLayer;
+    file.Access(&type, 1);
+    m_88 = (unsigned char)type;
+    file.Access(&m_04[4], 1);
+    file.Access(&m_8c[0], 1);
+    file.Access(&m_8c[3], 1);
+    file.Access(&m_8c[1], 1);
+    file.Access(&m_8c[2], 1);
+    file.Access(&m_8c[4], 1);
+    file.Access(&m_8c[7], 1);
+    file.Access(&m_8c[5], 1);
+    file.Access(&m_8c[6], 1);
+    m_ac = new RHUnk0057ed80;
+    m_ac->Unk0057cd60(file, false);
+    file.Access(&x, 2);
+    file.Access(&y, 2);
+    file.Access(&sector, 2);
+    file.Access(&layer, 2);
+    highestLayer = layer;
+    m_18.Set(x, y);
+    m_14 = (unsigned short)layer;
+    m_0c = (RHSector *)grid.m_sectors.m_first[(unsigned short)sector];
+    ((RHUnk0057d490 *)m_0c)->FUN_0057d760(this, true);
+    file.Access(&x, 2);
+    file.Access(&y, 2);
+    m_94.Set(x, y);
+    file.Access(&x, 2);
+    file.Access(&y, 2);
+    file.Access(&sector, 2);
+    file.Access(&layer, 2);
+    if ((unsigned short)layer > *(volatile unsigned short *)&highestLayer &&
+        (unsigned short)layer != g_unk0x6c0a9c->m_layerCount)
+        highestLayer = layer;
+    m_20.Set(x, y);
+    if (!building)
+    {
+        m_16 = (unsigned short)layer;
+        m_10 = (RHSector *)grid.m_sectors.m_first[(unsigned short)sector];
+    }
+    else
+    {
+        m_16 = grid.m_layerCount - 1;
+        m_10 = building;
+    }
+    ((RHUnk0057d490 *)m_10)->FUN_0057d760(this, false);
+    if (m_ac->Unk0060ce80())
+    {
+        m_ac->m_gate = this;
+        grid.FUN_004e8bd0(m_ac, (unsigned short)highestLayer, true);
+    }
+    else
+    {
+        delete m_ac;
+        m_ac = 0;
+    }
+    switch ((unsigned char)type)
+    {
+    case 2:
+    case 7:
+        m_a0 = 0x25;
+        m_9c = 6;
+        m_a4 = 0x24;
+        m_a8 = 6;
+        break;
+    case 0:
+    case 1:
+    case 3:
+        m_9c = 6;
+        m_a0 = 6;
+        m_a4 = 6;
+        m_a8 = 6;
+        break;
+    }
+    AdaptPoints();
+    *(float *)m_28 = ((RHUnk005fc3b0 &)m_20.Unk005fc110(m_18)).Unk005fc6a0(1.0f);
+    if ((unsigned char)type > 0 && (unsigned char)type <= 2)
+        *(float *)m_28 += 100.0f;
+    else
+        *(float *)m_28 += 50.0f;
+}
 
 // FUNCTION: GAME 0x0051b6e0
 RHUnk0051b6e0::RHUnk0051b6e0(RHUnk0051e1e0 *first, RHUnk0051e1e0 *second)
@@ -309,8 +407,8 @@ RHUnk0051b6e0::RHUnk0051b6e0(RHUnk0051e1e0 *first, RHUnk0051e1e0 *second)
     }
     m_18.m_x *= 0.5f;
     m_18.m_y *= 0.5f;
-    m_10 = (RHFastFindSector *)first->Owner();
-    m_0c = (RHFastFindSector *)second->Owner();
+    m_10 = (RHSector *)first->Owner();
+    m_0c = (RHSector *)second->Owner();
     ((RHUnk0057d490 *)m_10)->FUN_0057d760(this, false);
     ((RHUnk0057d490 *)m_0c)->FUN_0057d760(this, true);
     m_16 = first->GetLayer();
