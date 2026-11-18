@@ -1,5 +1,9 @@
 #include "RHElementScroll.h"
 #include "VMCore.h"
+#include "RHElementScrollStaticStorage.h"
+#include "RHUnk004ba8d0.h"
+#include <algorithm>
+#include <string.h>
 
 extern "C" int __cdecl rand();
 
@@ -45,8 +49,14 @@ public:
 };
 
 DECOMP_SIZE_ASSERT(RHElementObject, 0x100)
-DECOMP_SIZE_ASSERT(RHScrollScript, 0x60)
+DECOMP_SIZE_ASSERT(VMCoreCustom, 0x60)
 DECOMP_SIZE_ASSERT(RHElementScroll, 0x170)
+DECOMP_STATIC_ASSERT(offsetof(RHElementScroll, m_12) == 0x12)
+DECOMP_STATIC_ASSERT(offsetof(RHElementScroll, m_50) == 0x50)
+DECOMP_STATIC_ASSERT(offsetof(RHElementScroll, m_member) == 0xbc)
+DECOMP_STATIC_ASSERT(offsetof(RHElementScroll, m_bound) == 0x158)
+DECOMP_STATIC_ASSERT(offsetof(RHElementScroll, RHUnk00404860::m_0) == 0x160)
+DECOMP_STATIC_ASSERT(offsetof(RHElementScroll, m_164) == 0x164)
 
 // GLOBAL: GAME 0x006c09ec
 RHElementScroll *g_scrollExecutingScript;
@@ -54,17 +64,42 @@ RHElementScroll *g_scrollExecutingScript;
 // SYNTHETIC: GAME 0x0040ee30
 // ??1SBGeoBoundingBox2D@@QAE@XZ
 
+void *FUN_004b3120(int type);
+
+// Parked: native folds the pointer-vector helpers into another instantiation; receiver register differs.
+// STUB: GAME 0x004b9b70
+RHElementScroll::RHElementScroll()
+    : RHElementObject(0xb, false, 0), m_164(0), m_168(0), m_16f(0)
+{
+    m_b0 = 0xc;
+    Create(true, *(const RHElementObject *)FUN_004b3120(0xc));
+    RHElementScrollStaticStorage::aAllScrolls.push_back(this);
+    memset(m_16c, 0, sizeof(m_16c));
+    ((RHUnk004ba7a0 *)this)->FUN_004ba7e0();
+}
+
+// SYNTHETIC: GAME 0x004b9e00
+// RHElementScroll::`scalar deleting destructor'
+
+// FUNCTION: GAME 0x004b9e20
+RHElementScroll::~RHElementScroll()
+{
+    RHElementScrollStaticStorage::aAllScrolls.erase(
+        std::remove(RHElementScrollStaticStorage::aAllScrolls.begin(), RHElementScrollStaticStorage::aAllScrolls.end(), this),
+        RHElementScrollStaticStorage::aAllScrolls.end());
+}
+
 // FUNCTION: GAME 0x004b9f40
 bool RHElementScroll::FUN_004b9f40()
 {
     if (m_12)
     {
-        if (m_100.m_58)
+        if (m_bound)
         {
             if (++m_168 == 25)
             {
                 SetScrollExecutingScript(this);
-                ((RHUnk00404860 *)&m_160)->FUN_00404960(0);
+                FUN_00404960(0);
                 ResetScrollExecutingScript();
                 m_168 = 0;
             }
@@ -77,10 +112,10 @@ bool RHElementScroll::FUN_004b9f40()
 // FUNCTION: GAME 0x004b9fa0
 void RHElementScroll::FUN_004b9fa0()
 {
-    if (m_100.m_58)
+    if (m_bound)
     {
         SetScrollExecutingScript(this);
-        ((RHUnk00404860 *)&m_160)->FUN_00404780();
+        FUN_00404780();
         ResetScrollExecutingScript();
     }
     RHSprite *sprite = (RHSprite *)m_50;
@@ -136,9 +171,9 @@ void RHElementScroll::InitializeFromMissionStream(SBFile &file)
                      "Script error: a scripted object had no valid script class name.");
         if (g_unk0x6c0691 == 1)
         {
-            RHUnkSectorScript *script = (RHUnkSectorScript *)&m_100;
+            RHUnkSectorScript *script = (RHUnkSectorScript *)((char *)this + 0x100);
             script->Unk00639a30(name);
-            m_160 = this ? script : 0;
+            RHUnk00404860::m_0 = this ? script : 0;
         }
     }
     Info()->m_4.SetPoint(SBGeoPoint2D((float)x, (float)y));
@@ -186,13 +221,13 @@ void RHElementScroll::FUN_004ba400()
 }
 
 // FUNCTION: GAME 0x004ba470
-bool RHElementScroll::FUN_004ba470(void *first, void *second, void *third)
+bool RHElementScroll::FUN_004b23c0(const void *first, void *second, int third)
 {
     if (!m_12 || second == 0 || *(unsigned int *)((char *)g_pEngine + 0x4a00) > 1)
         return false;
     if (m_164 != 1 && m_164 != 3)
         return false;
-    void *last = third;
+    int last = third;
     return RHElementObject::FUN_004b23c0(first, second, last);
 }
 
@@ -211,7 +246,7 @@ bool RHElementScroll::FUN_004ba4e0(unsigned long value)
     if (!*(char *)((char *)this + 0x158))
         return false;
     SetScrollExecutingScript(this);
-    int result = ((RHUnk00404860 *)((char *)this + 0x160))->FUN_00404860(value);
+    int result = FUN_00404860(value);
     ResetScrollExecutingScript();
     if (result)
     {
@@ -236,8 +271,8 @@ int RHElementScroll::FUN_004ba550()
 }
 
 // FUNCTION: GAME 0x004ba580
-void *RHElementScroll::FUN_004ba580(unsigned long surface, float value,
-                                     const SBGeoBoundingBox2D &box, unsigned long flags)
+void *RHElementScroll::Refresh(unsigned long surface, float value,
+                               const SBGeoBoundingBox2D &box, unsigned long flags)
 {
     int status = m_164;
     if (status != 1 && status != 3)
@@ -295,8 +330,8 @@ bool RHElementScroll::Serialize(SBFile &file)
                  "Serialize failed reason is %s", err->m_chars ? err->m_chars : "");
         return false;
     }
-    if (file.m_version > 7 && g_unk0x6c0691 && m_100.m_58)
-        ((VMCore *)&m_100)->SerializeMemberVariable(file);
+    if (file.m_version > 7 && g_unk0x6c0691 && m_bound)
+        VMCore::SerializeMemberVariable(file);
     return RHElementObject::Serialize(file);
 }
 
@@ -332,19 +367,8 @@ void RHUnk004ba7a0::FUN_004ba7e0()
         *(unsigned short *)((char *)this + 0x8c) = 0;
 }
 
-class RHProjectileLifetime
-{
-public:
-    RHProjectileLifetime(int action, void *victim);
-    char m_00[0xb0];
-    int m_b0;
-};
-
-class __declspec(novtable) RHUnk004ba8d0 : public RHProjectileLifetime
-{
-public:
-    RHUnk004ba8d0(void *victim);
-};
+// SYNTHETIC: GAME 0x004ba840
+// ??_ERHElementScroll@@WBFM@AEPAXI@Z
 
 // FUNCTION: GAME 0x004ba8d0
 RHUnk004ba8d0::RHUnk004ba8d0(void *victim) : RHProjectileLifetime(5, victim)
@@ -356,6 +380,11 @@ RHUnk004ba8d0::RHUnk004ba8d0(void *victim) : RHProjectileLifetime(5, victim)
 void EmitRHUnk004ba8d0(void *storage, void *victim)
 {
     ((RHUnk004ba8d0 *)storage)->RHUnk004ba8d0::RHUnk004ba8d0(victim);
+}
+
+unsigned RHElementScroll::V68()
+{
+    return 0;
 }
 
 void RHElementScroll::Emit(SBFile &file)

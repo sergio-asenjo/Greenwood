@@ -22,8 +22,8 @@ template<class T> T &RHSpriteField(void *object, unsigned offset)
 #include "RHPositionInterface.h"
 
 class RHEngine;
-struct RHUnkSectorGlobal;
-extern RHUnkSectorGlobal *g_unk0x6c0a9c;
+class RHFastFindGrid;
+extern RHFastFindGrid *g_unk0x6c0a9c;
 class RHSpriteEngineCalls
 {
 public:

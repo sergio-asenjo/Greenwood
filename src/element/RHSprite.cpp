@@ -10,13 +10,18 @@
 #include "RHFrameHolder.h"
 #include "RHMobileUnk00607da0.h"
 #include "RHFastFindGridCore.h"
+#include "RHUnk004a96a0.h"
+#include "RHspriteRenderingInfoCore.h"
+#include "RHMobileUnk006091b0.h"
+#include "RHPlayerProfileAccess.h"
+#include "RHPlayerProfileManagerStorage.h"
 
 DECOMP_SIZE_ASSERT(RHSpriteListNode, 0x0c)
 DECOMP_SIZE_ASSERT(RHSpriteListIterator, 0x04)
 DECOMP_SIZE_ASSERT(RHSpriteList, 0x18)
 DECOMP_SIZE_ASSERT(RHSprite, 0x22c)
-DECOMP_SIZE_ASSERT(RHSpriteText<true>, 0x10)
-DECOMP_SIZE_ASSERT(RHSpriteText<false>, 0x10)
+DECOMP_SIZE_ASSERT(RHSpriteText, 0x10)
+DECOMP_SIZE_ASSERT(std::string, 0x10)
 DECOMP_SIZE_ASSERT(RHUnkSpriteRow, 0x64)
 DECOMP_STATIC_ASSERT(offsetof(RHUnkSpriteRow, m_resources) == 0x14)
 DECOMP_STATIC_ASSERT(offsetof(RHUnkSpriteRow, m_frames) == 0x24)
@@ -116,7 +121,7 @@ RHOrder::RHOrder() : m_34(g_unk0x6c0c6c)
     m_2b = 0;
     m_2c = 0;
     m_29 = 0;
-    m_2e[0] = 0;
+    m_2e = 0;
     m_38 = 0;
     m_30 = 0;
     SBGeoPoint2D &point = m_14;
@@ -127,13 +132,13 @@ RHOrder::RHOrder() : m_34(g_unk0x6c0c6c)
     vector.m_4 = 0.0f;
     vector.m_8 = 0.0f;
     m_2d = 0;
-    m_04 = 0;
+    m_4 = 0;
 }
 
 // FUNCTION: GAME 0x0054e5e0
 RHOrder::RHOrder(RHOrder &other)
 {
-    m_04 = other.m_04;
+    m_4 = other.m_4;
     m_08 = other.m_08;
     m_14 = other.m_14;
     ((RHUnk005fc3b0 *)&m_1c)->FUN_005fc430(other.m_1c);
@@ -194,16 +199,18 @@ void RHSpriteSequenceCalls::FUN_005859e0(RHOrder *order, unsigned short wanted)
     RHSpriteOrderNode::CopyData(&node->value, &order);
     ++orders.count;
     orders.dirty = true;
-    order->m_38 = this;
+    order->m_38 = (RHSequenceElement *)this;
 }
 
 class RHFrameHolder;
-class RHUnk005ef320;
+class SBDrawManager;
 extern RHFrameHolder *g_unk0x006c0b1c;
-extern RHUnk005ef320 *g_unk0x6c11d0;
+extern SBDrawManager *g_unk0x6c11d0;
+
+#include "SBNarrowStringConstructor.h"
 
 // FUNCTION: GAME 0x005b5890
-RHSprite::RHSprite(unsigned long owner) : RHPositionInterface(owner)
+RHSprite::RHSprite(unsigned long owner) : RHPositionInterface(owner), m_174(0, '\0')
 {
     m_192 = 0;
     m_193 = 0;
@@ -245,8 +252,8 @@ RHSprite::~RHSprite()
         operator delete(m_1b4);
     if (m_195)
     {
-        delete (std::vector<RHUnkSpriteRow> *)m_154;
-        delete (std::vector<RHUnkSpriteRow> *)m_158;
+        delete m_154;
+        delete m_158;
     }
 }
 
@@ -2113,6 +2120,125 @@ void RHSprite::DrawMaskOverSprite(RHMask &mask, SBDrawViewport &viewport, const 
     }
 }
 
+#include "RHSpriteScriptor.h"
+#include <string.h>
+
+static inline void RHSpriteAssignText(std::string &text, const std::string &value)
+{
+    typedef std::string &(std::string::*AssignText)(const std::string &, unsigned, unsigned);
+    AssignText assign = &std::string::assign;
+    (text.*assign)(value, 0, std::string::npos);
+}
+
+// FUNCTION: GAME 0x005bc920
+void RHSprite::Unk005bc920(SBFile &file, int kind)
+{
+    SBGeoVector2D unused;
+    RHUnkSpriteScriptInfo info;
+    unsigned short length;
+    char name[64];
+    char profile[64];
+    char alternateName[64];
+    char alternateProfile[64];
+    bool alternate;
+    file.Access(&length, 2);
+    file.Access(name, length);
+    name[length] = 0;
+    m_164.Assign(std::string(name));
+    file.Access(&length, 2);
+    file.Access(profile, length);
+    profile[length] = 0;
+    switch (kind)
+    {
+    case 0:
+    case 3:
+        file.Access(&alternate, 1);
+        if (alternate == true)
+        {
+            file.Access(&length, 2);
+            file.Access(alternateName, length);
+            alternateName[length] = 0;
+            RHSpriteAssignText(m_174, std::string(alternateName));
+            file.Access(&length, 2);
+            file.Access(alternateProfile, length);
+            alternateProfile[length] = 0;
+        }
+        break;
+    case 1:
+        file.Access(&alternate, 1);
+        alternate = true;
+        strcpy(alternateName,
+            // STRING: GAME 0x006b8a3c
+            "blip00");
+        strcat(alternateName, ".rhs");
+        strcpy(alternateProfile,
+            // STRING: GAME 0x006b8a2c
+            "Blip 01");
+        RHSpriteAssignText(m_174, std::string(alternateName));
+        break;
+    case 2:
+        alternate = false;
+        break;
+    }
+    info = RHSpriteScriptor::GetInstance()->LoadSpriteScript(
+        (RHSpriteScriptor::RHframeKind)kind, std::string(name), std::string(profile));
+    m_195 = false;
+    m_19a = (int)info.m_position.GetX();
+    m_19c = (int)info.m_position.GetY();
+    m_154 = info.m_rows;
+    m_15c = info.m_indices;
+    m_80 = info.m_size;
+    if (alternate == true)
+    {
+        info = RHSpriteScriptor::GetInstance()->LoadSpriteScript(
+            (RHSpriteScriptor::RHframeKind)kind, std::string(alternateName), std::string(alternateProfile));
+        if (m_19a < info.m_position.GetX())
+            m_19a = (int)info.m_position.GetX();
+        if (m_19a < info.m_position.GetY())
+            m_19c = (int)info.m_position.GetY();
+        m_154 = info.m_rows;
+        m_15c = info.m_indices;
+    }
+    if (kind == 1)
+        FUN_005bd8b0();
+}
+
+// STUB: GAME 0x005bd050
+void RHSprite::FUN_005bd050(int kind, const std::string &name, const std::string &profile, bool alternate)
+{
+    SBGeoVector2D unused;
+    RHUnk005f4fc0 file;
+    RHUnkSpriteScriptInfo info;
+    info = RHSpriteScriptor::GetInstance()->LoadSpriteScript(
+        (RHSpriteScriptor::RHframeKind)kind, name, profile);
+    m_195 = false;
+    if (!alternate)
+    {
+        m_164.Assign(profile);
+        m_154 = info.m_rows;
+        m_15c = info.m_indices;
+        m_80 = info.m_size;
+    }
+    else
+    {
+        RHSpriteAssignText(m_174, profile);
+        m_158 = info.m_rows;
+        m_160 = info.m_indices;
+    }
+    if (m_19a < info.m_position.GetX())
+        m_19a = (int)info.m_position.GetX();
+    if (m_19c < info.m_position.GetY())
+        m_19c = (int)info.m_position.GetY();
+    if (kind == 1)
+    {
+        FUN_005bd050(0, std::string("blip00"),
+            std::string(
+                // STRING: GAME 0x006b8a44
+                "Blip 00"), true);
+        FUN_005bd8b0();
+    }
+}
+
 // FUNCTION: GAME 0x005bd3a0
 bool RHSprite::FUN_005bd3a0(RHSprite &other)
 {
@@ -2403,6 +2529,7 @@ void RHSprite::Emit(SBFile &file)
     FUN_005b5e20();
     FUN_005b5e60();
     FUN_005b5ea0(file, 0);
+    FUN_005bd050(0, std::string(), std::string(), false);
     FUN_005b5ed0(file);
     LoadPositionInfoFromFile(file, 0);
     PerformAction(0, 0, 0, false);
@@ -2421,4 +2548,57 @@ void RHSprite::Emit(SBFile &file)
     FUN_005ba6c0(m_1a0, 0.0f, m_1a0, m_1a0, *(SBGeoVector2D *)&m_1a0.m_p0);
     FUN_005bad10(0, 0, 0, 0, 0);
     FUN_005bb180(0, 0, 0, 0, 0, 0);
+}
+
+// STUB: GAME 0x004a96a0
+void RHUnk004a96a0::FUN_004a96a0(void *surface, float scale, void *box, bool flag)
+{
+    RHspriteRenderingInfo info;
+    SBGeoBoundingBox2D sourceBox;
+    SBGeoBoundingBox2D targetBox;
+
+    if (!RHSpriteField<char>(this, 0x12))
+        return;
+
+    if (RHSpriteField<int>(this, 0xac) == 0 &&
+        RHSpriteField<float>(RHSpriteField<RHSprite *>(this, 0x50), 0x18) == 0.0f &&
+        !((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0()[0x50])
+        return;
+
+    if (RHSpriteField<char>(this, 0xc8) && RHSpriteField<int>(this, 0xcc) != -1 &&
+        (char)RHSpriteField<RHSprite *>(this, 0x50)->FUN_005bd940())
+    {
+        SBGeoVector2D origin(*(SBGeoVector2D *)((char *)RHSpriteField<RHSprite *>(this, 0x50) + 0x1c));
+        SBGeoBoundingBox2D destBox = ((SBGeoBoundingBox2D *)((char *)this + 0xb4))->FUN_006090d0(origin);
+        RHSpriteField<SBDrawManager *>(this, 0x60)->FUN_005e6440(
+            RHSpriteField<unsigned long>(this, 0xcc),
+            (const SBGeoBoundingBox2D *)((char *)this + 0xb4),
+            (unsigned long)RHSpriteField<unsigned long>(g_pEngine, 0x48c4),
+            &destBox, 0);
+        RHSpriteField<char>(this, 0xc8) = 0;
+        return;
+    }
+    else if (RHSpriteField<RHSprite *>(this, 0x50)->FUN_005b9b60(*(const SBGeoBoundingBox2D *)box, scale))
+    {
+        info.m_surface = RHSpriteField<unsigned long>(this, 0x54);
+        RHSpriteField<char>(&info, 0x09) = 1;
+        RHSpriteField<RHSprite *>(this, 0x50)->CreateTargetSprite(info);
+        if (RHSpriteField<RHSprite *>(this, 0x50)->FUN_005ba130(*(const SBGeoBoundingBox2D *)box, 1.0f, sourceBox, targetBox))
+        {
+            ((RHMobileUnk006091b0 *)&targetBox)->FUN_006091b0(*(const SBGeoVector2D *)box);
+            RHSpriteField<char>(this, 0xc8) = 1;
+            if (RHSpriteField<int>(this, 0xa8) == 1 && RHSpriteField<char>(this, 0x8e) == 1)
+            {
+                RHSpriteField<SBDrawManager *>(this, 0x60)->BlitAlphaKeying(
+                    RHSpriteField<unsigned long>(this, 0x54), &sourceBox, (unsigned long)surface, &targetBox,
+                    RHSpriteField<unsigned short>(this, 0x90),
+                    *(unsigned short *)((char *)RHSpriteField<void *>(this, 0x68) + 0x48), 1);
+            }
+            else
+            {
+                RHSpriteField<SBDrawManager *>(this, 0x60)->FUN_005e6440(
+                    RHSpriteField<unsigned long>(this, 0x54), &sourceBox, (unsigned long)surface, &targetBox, 1);
+            }
+        }
+    }
 }

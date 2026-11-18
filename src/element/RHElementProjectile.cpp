@@ -29,14 +29,7 @@ public:
         const SBGeoBoundingBox2D &box, int type);
 };
 
-class SBDrawManager
-{
-public:
-    bool BlitAlphaKeying(unsigned long source, SBGeoBoundingBox2D *sourceBox, unsigned long destination,
-        SBGeoBoundingBox2D *destinationBox, unsigned short key, unsigned short opacity, unsigned long flags);
-    bool FUN_005e6440(unsigned long source, const SBGeoBoundingBox2D *sourceBox, unsigned long destination,
-        const SBGeoBoundingBox2D *destinationBox, unsigned long flags);
-};
+#include "SBDrawManagerCore.h"
 
 float g_unk0x006775d8 = 0.5f;
 float g_unk0x00677580 = 0.1f;
@@ -96,12 +89,12 @@ struct RHProjectilePathList
     void PushBack(RHProjectilePathStep *value)
     {
         RHScriptNode *next = head;
-        RHScriptNode *previous = next->previous;
+        RHScriptNode *previous = next->prev;
         RHScriptNode *created = (RHScriptNode *)operator new(12);
         created->next = next ? next : created;
-        created->previous = previous ? previous : created;
-        next->previous = created;
-        created->previous->next = created;
+        created->prev = previous ? previous : created;
+        next->prev = created;
+        created->prev->next = created;
         void **payload = &created->data;
         if (payload)
             *payload = value;
@@ -130,7 +123,7 @@ struct RHProjectilePathList
             --distance;
         }
         while (distance < 0) {
-            cursor = cursor->previous;
+            cursor = cursor->prev;
             ++distance;
         }
     }
@@ -443,7 +436,7 @@ bool RHElementProjectile::Serialize(SBFile &file)
         if (m_138.m_count == 0)
             value = (RHUnk005df510 *)((char *)*(void **)((char *)this + 0x50) + 0x10);
         else
-            value = (RHUnk005df510 *)m_138.m_head->previous->data;
+            value = (RHUnk005df510 *)m_138.m_head->prev->data;
         m_10c = *value;
     }
     return true;
@@ -673,12 +666,7 @@ void *EmitRHProjectileTarget(RHElementProjectile *projectile)
 
 struct RHUnk00571160Position;
 #include "RHPositionProvider.h"
-
-class RHShadowUnk005df9e0
-{
-public:
-    float FUN_005df9e0(float x, float y);
-};
+#include "RHUnk005df9e0.h"
 
 struct RHAnimalNoisePosition;
 class RHElementActorNPC
@@ -762,7 +750,7 @@ unsigned RHElementProjectile::ComputeNumberOfFramesLeft() const
 }
 
 // FUNCTION: GAME 0x004b8d70
-int RHElementProjectile::FUN_004b8d70(void *first, void *second, void *third)
+int RHElementProjectile::FUN_004b8d70(const void *first, void *second, int third)
 {
     if (!m_132 && RHElementObject::FUN_004b23c0(first, second, third))
         return 1;

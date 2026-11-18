@@ -176,6 +176,7 @@ public:
     }
 };
 
+#if !defined(RHSCRIPT_H) && !defined(RHELEMENTACTORANIMAL_H)
 class RHUnk005b5e00
 {
 public:
@@ -183,6 +184,7 @@ public:
     void *FUN_005b5de0();
     SBGeoPoint2D *Unk005bdd30(short index);
 };
+#endif
 
 struct RHSpriteFrameTable
 {
@@ -200,22 +202,18 @@ struct RHSpriteFrameTable
 
 class RHOrder;
 
-template<bool Tidy> class RHSpriteText : public VMUnk00634bb0
+class RHSpriteText : public std::string
 {
 public:
+    typedef std::basic_string<char, std::char_traits<char>, std::allocator<char> > Base;
     RHSpriteText(const std::allocator<char> &allocator = std::allocator<char>())
+        : Base(allocator) {}
+    void Assign(const std::string &value)
     {
-        m_pad0[0] = *(const char *)&allocator;
-        if (Tidy)
-            ((RHProfileText *)this)->FUN_00401ee0(false);
-        else
-        {
-            m_04 = 0;
-            m_08 = 0;
-            m_0c = 0;
-        }
+        typedef std::string &(std::string::*AssignText)(const std::string &, unsigned, unsigned);
+        AssignText assign = &std::string::assign;
+        (this->*assign)(value, 0, std::string::npos);
     }
-    ~RHSpriteText() { FUN_00634bb0(); }
 };
 
 // VTABLE: GAME 0x00679e3c
@@ -234,11 +232,11 @@ public:
     int m_14c;
     int m_150;
     std::vector<RHUnkSpriteRow> *m_154;
-    void *m_158;
-    void *m_15c;
-    void *m_160;
-    RHSpriteText<true> m_164;
-    RHSpriteText<false> m_174;
+    std::vector<RHUnkSpriteRow> *m_158;
+    std::vector<unsigned short> *m_15c;
+    std::vector<unsigned short> *m_160;
+    RHSpriteText m_164;
+    std::string m_174;
     unsigned short m_184;
     unsigned short m_186;
     unsigned short m_188;
@@ -282,6 +280,7 @@ public:
     void FUN_005b5e60();
     void FUN_005b5ea0(SBFile &, int);
     void Unk005bc920(SBFile &, int);
+    void FUN_005bd050(int kind, const std::string &name, const std::string &profile, bool alternate);
     int PerformAction(RHOrder *, int, int, bool);
     bool IsActionDone(RHOrder *, int);
     int PerformFlight(RHOrder *, int, int, int, bool);

@@ -2,34 +2,14 @@
 #define RHELEMENTSCROLLCORE_H
 
 #include "Decomp.h"
+#include "RHElementObject.h"
+#include "VMCoreCustom.h"
 
 class SBFile;
 class SBGeoBoundingBox2D;
 class RHBonusInfo;
 class RHUnkSectorScript;
 struct RHBonusGlobalView;
-
-#ifndef RHELEMENTOBJECT_VIEW
-#define RHELEMENTOBJECT_VIEW
-class RHElementObject
-{
-public:
-    virtual bool Serialize(SBFile &file);
-    undefined m_pad4[0x0e];
-    undefined m_12;
-    undefined m_pad13[0x3d];
-    RHBonusInfo *m_50;
-    undefined m_pad54[0xac];
-};
-#endif
-
-class RHScrollScript
-{
-public:
-    undefined m_pad0[0x58];
-    undefined m_58;
-    undefined m_pad59[7];
-};
 
 class RHUnk004ba7a0
 {
@@ -41,6 +21,7 @@ public:
 class RHUnk00404860
 {
 public:
+    RHUnk00404860() : m_0(0) {}
     void FUN_00404780();
     int FUN_00404860(unsigned long value);
     void FUN_00404960(int value);
@@ -53,28 +34,32 @@ public:
     void FUN_00462730(void *, int);
 };
 
-class RHElementScroll : public RHElementObject
+// VTABLE: GAME 0x00678898
+// VTABLE: GAME 0x00678894 SBSimpleVirtualMachine
+// VTABLE: GAME 0x00678890 RHScript
+class RHElementScroll : public RHElementObject, public RHUnk00404860, public VMCoreCustom
 {
 public:
+    RHElementScroll();
+    virtual ~RHElementScroll();
     void InitializeFromMissionStream(SBFile &file);
     bool FUN_004b9f40();
     void FUN_004b9fa0();
-    bool FUN_004ba470(void *first, void *second, void *third);
+    virtual bool FUN_004b23c0(const void *first, void *second, int third);
     bool IsRevealable() const;
     bool FUN_004ba4e0(unsigned long value);
     int FUN_004ba550();
-    void *FUN_004ba580(unsigned long surface, float value, const SBGeoBoundingBox2D &box, unsigned long flags);
+    virtual void *Refresh(unsigned long surface, float value, const SBGeoBoundingBox2D &box, unsigned long flags);
     static void ResetScrollExecutingScript();
     void *FUN_004ba5d0();
     virtual bool Serialize(SBFile &file);
+    virtual unsigned V68();
     static void SetScrollExecutingScript(RHElementScroll *scroll);
     void FUN_004ba400();
     void Emit(SBFile &file);
     RHBonusInfo *Info() { return *(RHBonusInfo **)((char *)this + 0x50); }
     RHBonusGlobalView *Global() { return *(RHBonusGlobalView **)((char *)this + 0x64); }
 
-    RHScrollScript m_100;
-    RHUnkSectorScript *m_160;
     int m_164;
     undefined4 m_168;
     undefined m_16c[3];

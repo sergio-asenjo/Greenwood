@@ -14,6 +14,7 @@
 
 // SIZE 0x08
 class SBGeoVector2D;
+#ifndef SBGEO_POINT2D_VIEW
 class SBGeoPoint2D
 {
 public:
@@ -32,8 +33,10 @@ public:
     float m_x; // 0x00
     float m_y; // 0x04
 };
+#endif
 
 // SIZE 0x08
+#ifndef SBGEO_VECTOR2D_VIEW
 class SBGeoVector2D : public SBGeoPoint2D
 {
 public:
@@ -43,31 +46,22 @@ public:
     SBGeoVector2D &operator=(const SBGeoVector2D &other);
     SBGeoVector2D(const SBGeoVector2D &other);
 };
+#endif
 
+#ifndef SBGEO_VECTOR2D_VIEW
 #define SBGEO_VECTOR2D_VIEW
+#endif
 #include "RHUnk005fc3b0.h"
 
 // SIZE 0x14
+#ifndef SBGEO_POINT2D_VIEW
 #define SBGEO_POINT2D_VIEW
+#endif
 #include "SBGeoBoundingBox2DCore.h"
 
 // SIZE 0x0c
-class SBGeoPoint3D
-{
-public:
-    float m_0; // 0x00
-    float m_4; // 0x04
-    float m_8; // 0x08
-};
-
-// SIZE 0x0c
 #include "RHUnk00613e90.h"
-
-class RHUnkSightPlane
-{
-public:
-    void *FUN_005df990();
-};
+#include "RHPlaneCalls.h"
 
 class RHUnk0059df10Object
 {
@@ -160,15 +154,7 @@ public:
     ~RHUnk00597a70();
 };
 
-class RHShadowUnk005df9e0
-{
-public:
-    float FUN_005df9e0(float, float);
-    char m_00[0x4c];
-    float m_4c;
-    float m_50;
-    float m_54;
-};
+#include "RHUnk005df9e0.h"
 
 #include "RHSpriteListStorage.h"
 
@@ -993,26 +979,11 @@ public:
     ~RHUnk005977e0();
 };
 
-// SIZE 0x1c
-struct RHShadowPolygonActorPosition
-{
-    undefined m_pad0[0x18]; // 0x00
-    float m_18; // 0x18
-};
-
-class RHUnk004a96a0
-{
-public:
-    undefined m_pad0[0x10]; // 0x00
-    unsigned short m_10; // 0x10
-    undefined m_pad12[0x3e]; // 0x12
-    RHShadowPolygonActorPosition *m_50; // 0x50
-    void FUN_004a96a0(void *, float, void *, bool);
-};
+#include "RHUnk004a96a0.h"
 
 extern RHEngine *g_pEngine;
-struct RHUnkSectorGlobal;
-extern RHUnkSectorGlobal *g_unk0x6c0a9c;
+class RHFastFindGrid;
+extern RHFastFindGrid *g_unk0x6c0a9c;
 
 template<class T>
 inline T &RHShadowField(void *object, unsigned offset)
@@ -1020,27 +991,20 @@ inline T &RHShadowField(void *object, unsigned offset)
     return *(T *)((undefined *)object + offset);
 }
 
+#ifndef RHMASK_H
 class RHMask
 {
 public:
     undefined m_pad0[0x24]; // 0x00
     unsigned char *m_data; // 0x24
 };
+#endif
 
 // SIZE 0x18
 #include "SBDrawManagerCore.h"
 #include "SBDrawViewport.h"
 
-class RHUnkFXDraw
-{
-public:
-    undefined m_pad0[0x10c]; // 0x00
-    unsigned short m_10c; // 0x10c
-    unsigned short FUN_005e56c0(unsigned long);
-};
-
-class RHUnk005ef320;
-extern RHUnk005ef320 *g_unk0x6c11d0;
+extern SBDrawManager *g_unk0x6c11d0;
 
 #include "RHDrawManagerCore.h"
 
@@ -1091,7 +1055,7 @@ class RHShadowPolygon
 {
 public:
     undefined m_pad0[0x04]; // 0x00
-    RHUnkFXDraw *m_4; // 0x04
+    SBDrawManager *m_4; // 0x04
     RHShadowRawEmpty18 m_8; // 0x08
     int m_20; // 0x20
     int m_24; // 0x24
@@ -1113,7 +1077,7 @@ public:
     int m_94; // 0x94
     SBGeoPoint2D m_98; // 0x98
     float m_a0; // 0xa0
-    SBGeoPoint3D m_a4; // 0xa4
+    RHUnk00613e90 m_a4; // 0xa4
     SBGeoPoint2D m_b0; // 0xb0
     float m_b8; // 0xb8
     undefined m_padbc[0x04]; // 0xbc
@@ -1163,7 +1127,7 @@ public:
     void FUN_0058d450(unsigned short, int, int, int, int, int);
     void FUN_0058d630(unsigned short, int, int, int, int, int);
     void FUN_0058d7e0(unsigned short, int, int, int, int, int);
-    void DisplayDebug(const SBGeoBoundingBox2D &, float, RHElementActor *, SBGeoPoint3D &, RHviewParameters &, unsigned long);
+    void DisplayDebug(const SBGeoBoundingBox2D &, float, RHElementActor *, RHUnk00613e90 &, RHviewParameters &, unsigned long);
     void FUN_0058d990();
     void FUN_0058ea70();
     void FUN_0058ec60();
@@ -1178,7 +1142,7 @@ public:
     void FUN_00590c90(RHUnk00597a70 *);
     void FUN_00592080(RHUnk00597a70 *);
     void FUN_005934b0(RHUnk00597a70 *);
-    void FUN_00594bf0(const SBGeoBoundingBox2D &, float, RHElementActor *, SBGeoPoint3D &, RHviewParameters &);
+    void FUN_00594bf0(const SBGeoBoundingBox2D &, float, RHElementActor *, RHUnk00613e90 &, RHviewParameters &);
     void FUN_00595020();
     void FUN_005959e0();
     void FUN_005971f0();
@@ -1198,6 +1162,7 @@ public:
     void FUN_0059ce90(RHUnk005977e0 *);
     void FUN_0059d5b0(RHUnk005977e0 *);
     float FUN_0059df10(RHUnk0059df10Object *);
+    float FUN_0059e080(float scale, RHUnk0059df10Object *area);
     void FUN_0059e780(SBGeoPoint2D &, SBGeoPoint2D &, RHShadowUnk005df9e0 *);
     unsigned char FUN_0059e9b0(RHShadowPolygonList *);
     void FUN_0059a770(const SBGeoPoint2D &, const SBGeoPoint2D &);
@@ -1206,7 +1171,7 @@ public:
     unsigned char FUN_0059ec40(SBGeoPoint2D *, SBGeoPoint2D *);
     unsigned char FUN_0059afc0(SBGeoPoint2D &, SBGeoPoint2D &, SBGeoPoint2D &);
     SBGeoBoundingBox2D &Bounds() { return *(SBGeoBoundingBox2D *)(RHShadowField<undefined *>(this, 0x130) + 4); }
-    unsigned char FUN_005994f0(const SBGeoPoint3D &, SBGeoPoint2D &, bool, bool);
+    unsigned char FUN_005994f0(const RHUnk00613e90 &, SBGeoPoint2D &, bool, bool);
     void FUN_00599920(const SBGeoPoint2D &, const SBGeoPoint2D &, bool);
     void FUN_0059a950(SBGeoPoint2D &, unsigned char &, SBGeoPoint2D &, unsigned char &, bool);
     void FUN_0059d7f0(RHUnk005977e0 *);

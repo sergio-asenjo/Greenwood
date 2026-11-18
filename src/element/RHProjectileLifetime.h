@@ -19,7 +19,7 @@ struct RHProjectileCtorList
         allocator = allocation;
         RHScriptNode *created = (RHScriptNode *)operator new(12);
         created->next = created;
-        created->previous = created;
+        created->prev = created;
         head = created;
         count = 0;
         dirty = true;
@@ -37,7 +37,7 @@ class __declspec(novtable) RHProjectileLifetime : public RHElementObject
 public:
     RHProjectileLifetime(int action, void *victim);
     ~RHProjectileLifetime();
-    virtual char v10();
+    virtual bool FUN_004b9f40();
     virtual unsigned V68();
     void *FUN_004b40f0(unsigned flags);
     RHProjectilePointLifetime point100;

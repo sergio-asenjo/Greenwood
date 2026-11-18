@@ -8,22 +8,9 @@
 #include "RHSpriteCore.h"
 #include "sbgeo_00610600.h"
 
-#ifndef RHUNK_FXDRAW_VIEW
-#define RHUNK_FXDRAW_VIEW
-class RHUnkFXDraw
-{
-public:
-    unsigned long Unk005e4ed0(unsigned short, unsigned short, unsigned long, bool);
-};
-#endif
-
 #include "SBDrawManagerCore.h"
 
-class RHFastFindGrid
-{
-public:
-    bool Unk004efbb0(SBFile &, void **);
-};
+#include "RHFastFindGridCore.h"
 
 class RHUnkFXEngine
 {
@@ -33,13 +20,14 @@ public:
 };
 
 class RHEngine;
-struct RHUnkSectorGlobal;
+class RHFastFindGrid;
 extern RHEngine *g_pEngine;
-extern RHUnkSectorGlobal *g_unk0x6c0a9c;
+extern RHFastFindGrid *g_unk0x6c0a9c;
 
 class RHElementFX : public RHElement
 {
 public:
+    virtual void *Refresh(unsigned long surface, float value, const SBGeoBoundingBox2D &box, unsigned long flags);
     void FUN_004a9990();
     void RestoreBackground();
     void InitializeBackgroundRestoration();
@@ -47,6 +35,8 @@ public:
     bool IsElementBehind(RHElement *element);
     virtual bool Serialize(SBFile &file);
     bool FUN_004aa2f0();
+    bool FUN_004aa420(SBGeoBoundingBox2D *clip, float scale, SBGeoBoundingBox2D *first,
+                      SBGeoBoundingBox2D *second);
     int FUN_004aa930();
     void Emit(SBFile &file);
 
@@ -64,7 +54,7 @@ public:
 };
 
 #define fx_sprite (*(RHSprite **)((char *)this + 0x50))
-#define fx_draw (*(RHUnkFXDraw **)((char *)this + 0x60))
+#define fx_draw (*(SBDrawManager **)((char *)this + 0x60))
 #define fx_clip (*(SBGeoBoundingBox2D *)((char *)(*(void **)((char *)this + 0x64)) + 0x3e84))
 
 #endif

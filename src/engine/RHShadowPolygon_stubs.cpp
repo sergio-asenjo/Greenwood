@@ -2,14 +2,12 @@
 #include "RHShadowPolygon.h"
 
 void RHShadowPolygon::FUN_0058d990() {}
-void RHShadowPolygon::FUN_0058ec60() {}
 void RHShadowPolygon::FUN_0058ffa0(RHUnk00597a70 *) {}
 void RHShadowPolygon::FUN_00590c90(RHUnk00597a70 *) {}
 void RHShadowPolygon::FUN_00592080(RHUnk00597a70 *) {}
 void RHShadowPolygon::FUN_005934b0(RHUnk00597a70 *) {}
 void RHShadowPolygon::FUN_005959e0() {}
 
-void RHUnk004a96a0::FUN_004a96a0(void *, float, void *, bool) {}
 RHUnk005c9010Iterator RHUnk0058e7f0List::FUN_0044e8b0(RHUnk005c9010Iterator, RHUnk005c9010Iterator last) { return last; }
 
 // TEMPLATE: GAME 0x0044e8b0 FOLDED
@@ -87,9 +85,7 @@ void RHShadowUnk0060c260::FUN_0060c280() {}
 const SBGeoPoint2D &RHShadowUnk0060c260::FUN_0060c2b0(unsigned short) { return *(const SBGeoPoint2D *)m_0; }
 bool RHShadowPolygon::FUN_00598230(RHUnk005977e0 *, RHShadowUnk005df9e0 *, bool) { return false; }
 bool RHShadowPolygon::FUN_00598b90(RHUnk005977e0 *, RHShadowUnk005df9e0 *) { return false; }
-void RHShadowPolygon::FUN_0059bfb0(RHUnk005977e0 *, RHShadowUnk005df9e0 *) {}
 void RHShadowPolygon::FUN_0059c720(RHUnk005977e0 *, RHShadowUnk005df9e0 *) {}
-void RHShadowPolygon::FUN_0059d7f0(RHUnk005977e0 *) {}
 // FUNCTION: GAME 0x004243e0
 RHShadowPointNode *RHShadowPointNodeList::FUN_004243e0(RHShadowPointNode *next, RHShadowPointNode *previous)
 {

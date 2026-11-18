@@ -2,7 +2,6 @@
 #include "RHSprite.h"
 #include <math.h>
 
-void RHSprite::Unk005bc920(SBFile &, int) {}
 RHSpriteListIterator RHSpriteList::erase(RHSpriteListIterator value)
 {
     RHSpriteListNode *node = value.node;

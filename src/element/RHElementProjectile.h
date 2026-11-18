@@ -10,6 +10,8 @@
 #include "RHElementObject.h"
 
 #include "RHUnk005df510.h"
+#include "RHScriptListCore.h"
+#include "RHSeqList.h"
 
 class RHProjectileSerializedStep
 {
@@ -22,37 +24,6 @@ public:
     char m_0e;
     char m_0f;
     int m_10;
-};
-
-struct RHScriptNode
-{
-    RHScriptNode *next;
-    RHScriptNode *previous;
-    void *data;
-};
-
-struct RHScriptIter
-{
-    RHScriptNode *node;
-    RHScriptIter(RHScriptNode *value) : node(value) {}
-};
-
-class RHUnk0046eb30
-{
-public:
-    RHScriptIter begin();
-    RHScriptIter FUN_0046eb80();
-    RHScriptIter erase(RHScriptIter position);
-    RHScriptNode *Unk0059f720(RHScriptNode *next, RHScriptNode *previous);
-};
-
-struct RHUnk005c9010Iterator;
-void FUN_005c9010(RHUnk005c9010Iterator &current, int distance, std::bidirectional_iterator_tag category);
-class RHSequenceElement;
-class RHSeqList
-{
-public:
-    static void CopyData(RHSequenceElement **destination, RHSequenceElement *const *source);
 };
 
 #include "RHTitbitsCore.h"
@@ -126,7 +97,7 @@ struct RHProjectileList
             int amount = m_count - wanted;
             while (amount > 0)
             {
-                ((RHUnk0046eb30 *)this)->erase(RHScriptIter(m_head->previous));
+                ((RHUnk0046eb30 *)this)->erase(RHScriptIter(m_head->prev));
                 --amount;
             }
         }
@@ -136,9 +107,9 @@ struct RHProjectileList
             while (amount > 0)
             {
                 RHScriptNode *position = m_head;
-                RHScriptNode *node = ((RHUnk0046eb30 *)this)->Unk0059f720(position, position->previous);
-                position->previous = node;
-                node->previous->next = node;
+                RHScriptNode *node = ((RHUnk0046eb30 *)this)->Unk0059f720(position, position->prev);
+                position->prev = node;
+                node->prev->next = node;
                 RHSeqList::CopyData((RHSequenceElement **)&node->data, (RHSequenceElement *const *)value);
                 ++m_count;
                 --amount;
@@ -171,7 +142,7 @@ public:
     void ComputeTrajectoryJump(const RHProjectileVector &from, const RHProjectileVector &to);
     unsigned ComputeNumberOfFramesLeft() const;
     bool WillHit(void *target);
-    int FUN_004b8d70(void *first, void *second, void *third);
+    int FUN_004b8d70(const void *first, void *second, int third);
     int FUN_004b8da0() const;
     void PlayImpactSound(const void *position, bool special) const;
 
