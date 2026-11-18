@@ -156,6 +156,10 @@
         {
           "path": "src/ui/RHWidgetPortrait.cpp",
           "symbol": "?_Buynode@?$list@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@V?$allocator@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@@2@@std@@IAEPAU_Node@12@PAU312@0@Z"
+        },
+        {
+          "path": "src/engine/SBInput.cpp",
+          "symbol": "?_Buynode@?$list@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@IAEPAU_Node@12@PAU312@0@Z"
         }
       ]
     },
@@ -202,6 +206,22 @@
         {
           "path": "src/engine/RHEngine_stubs.cpp",
           "symbol": "??0SBResourceScalarVector@@QAE@ABV?$allocator@K@std@@@Z"
+        },
+        {
+          "path": "src/common/SCSerialize_stubs.cpp",
+          "symbol": "??0?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAE@ABV?$allocator@D@1@@Z"
+        },
+        {
+          "path": "src/common/SCSerialize_stubs.cpp",
+          "symbol": "??0?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@QAE@ABV?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@1@@Z"
+        },
+        {
+          "path": "src/profile/RHProfileManager_stubs.cpp",
+          "symbol": "??0?$RHMissionArray@PAVRHCharacterProfile@@@@QAE@ABV?$allocator@PAVRHCharacterProfile@@@std@@@Z"
+        },
+        {
+          "path": "src/profile/RHProfileManager_stubs.cpp",
+          "symbol": "??0?$RHMissionArray@K@@QAE@ABV?$allocator@K@std@@@Z"
         }
       ]
     },
@@ -322,6 +342,24 @@
         {
           "path": "src/engine/RHSectorProduction.cpp",
           "symbol": "??1Point@RHSectorProduction@@QAE@XZ"
+        }
+      ]
+    },
+    {
+      "original": "0x0051c850",
+      "canonical_symbol": "?Destroy@RHUnk00606040@@QAEPAXI@Z",
+      "members": [
+        {
+          "path": "src/engine/RHGroundMark_stubs.cpp",
+          "symbol": "??_GSBGeoVector2D@@QAEPAXI@Z"
+        },
+        {
+          "path": "src/engine/RHGroundMark_stubs.cpp",
+          "symbol": "??_GPoint@RHSectorProduction@@QAEPAXI@Z"
+        },
+        {
+          "path": "src/engine/RHGroundMark_stubs.cpp",
+          "symbol": "?Destroy@RHUnk00606040@@QAEPAXI@Z"
         }
       ]
     },
@@ -460,6 +498,10 @@
           "symbol": "?insert@RHUnkListSeq@@QAE?AVRHSeqIter@@V2@ABQAVRHSequence@@@Z"
         },
         {
+          "path": "src/mission/RHOrder_stubs.cpp",
+          "symbol": "?insert@RHSequenceElementCursor@@QAE?AVRHUnkIter@@V2@ABQAVRHSequenceElement@@@Z"
+        },
+        {
           "path": "src/sound/RHSoundCache_stubs.cpp",
           "symbol": "?FUN_00424410@RHSoundCacheList@@QAE?AURHSoundCacheListIterator@@U2@ABK@Z"
         },
@@ -588,6 +630,10 @@
         {
           "path": "src/mission/RHCampaign.cpp",
           "symbol": "?insert@?$vector@PAVRHPCDescription@@V?$allocator@PAVRHPCDescription@@@std@@@std@@QAEXPAPAVRHPCDescription@@IABQAV3@@Z"
+        },
+        {
+          "path": "src/element/RHElementTarget.cpp",
+          "symbol": "?insert@?$vector@PAVRHMobileUnk006100e0@@V?$allocator@PAVRHMobileUnk006100e0@@@std@@@std@@QAEXPAPAVRHMobileUnk006100e0@@IABQAV3@@Z"
         }
       ]
     },
@@ -627,6 +673,10 @@
       "original": "0x0046eb30",
       "canonical_symbol": "?erase@?$list@KV?$allocator@K@std@@@std@@QAE?AViterator@12@V312@@Z",
       "members": [
+        {
+          "path": "src/profile/RHPlayerProfileManager.cpp",
+          "symbol": "?erase@?$list@PAVRHPlayerProfile@@V?$allocator@PAVRHPlayerProfile@@@std@@@std@@QAE?AViterator@12@V312@@Z"
+        },
         {
           "path": "src/ai/RHArtificialIntelligence.cpp",
           "symbol": "?erase@?$list@VRHStimulus@@V?$allocator@VRHStimulus@@@std@@@std@@QAE?AViterator@12@V312@@Z"
@@ -722,6 +772,10 @@
         {
           "path": "src/ui/RHMenuLoadSave.cpp",
           "symbol": "?erase@?$list@KV?$allocator@K@std@@@std@@QAE?AViterator@12@V312@@Z"
+        },
+        {
+          "path": "src/engine/RHEngine.cpp",
+          "symbol": "?erase@?$list@PAURHUnk004e48b0Entry@@V?$allocator@PAURHUnk004e48b0Entry@@@std@@@std@@QAE?AViterator@12@V312@@Z"
         }
       ]
     },
@@ -1112,6 +1166,10 @@
         {
           "path": "src/common/sbgeo_00610600.cpp",
           "symbol": "??Eiterator@?$list@VSBGeoPoint2D@@V?$allocator@VSBGeoPoint2D@@@std@@@std@@QAE?AV012@H@Z"
+        },
+        {
+          "path": "src/engine/RHEngine.cpp",
+          "symbol": "??Eiterator@?$list@PAURHUnk004e48b0Entry@@V?$allocator@PAURHUnk004e48b0Entry@@@std@@@std@@QAE?AV012@H@Z"
         }
       ]
     },
@@ -1416,6 +1474,20 @@
         {
           "path": "src/engine/SBResourceManager_stubs.cpp",
           "symbol": "??1?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAE@XZ"
+        }
+      ]
+    },
+    {
+      "original": "0x0045ac40",
+      "canonical_symbol": "?GetType@RHSectorProduction@@QBEHXZ",
+      "members": [
+        {
+          "path": "src/engine/SBUIRendererInputField_stubs.cpp",
+          "symbol": "?GetKeys@RHKeyConfig@@QBEPBFXZ"
+        },
+        {
+          "path": "src/engine/SBUIRendererInputField_stubs.cpp",
+          "symbol": "?GetType@RHSectorProduction@@QBEHXZ"
         }
       ]
     }
