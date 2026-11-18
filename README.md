@@ -2,7 +2,7 @@
 
 ## Status
 
-<img src=".github/assets/progress.svg" alt="Matching progress: 4,946 of 6,113 game functions decompiled" width="100%">
+<img src=".github/assets/progress.svg" alt="Matching progress: 5,004 of 6,113 game functions decompiled" width="100%">
 
 ## About
 
