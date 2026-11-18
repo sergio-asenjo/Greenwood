@@ -528,13 +528,13 @@ void RHUnkTargetPoints::FUN_00611100(const SBGeoPoint2D &point)
 }
 
 // FUNCTION: GAME 0x006112a0
-void RHUnkSectorPoints::FUN_006112a0(const SBGeoPoint2D &point, unsigned int index)
+void RHMobileUnk00611360::FUN_006112a0(const SBGeoPoint2D &point, unsigned int index)
 {
     (*(std::vector<SBGeoPoint2D> *)this)[index] = point;
 }
 
 // FUNCTION: GAME 0x006112c0
-SBGeoPoint2D &RHUnkSectorPoints::FUN_006112c0(unsigned int index)
+SBGeoPoint2D &RHMobileUnk00611360::FUN_006112c0(unsigned int index)
 {
     return (*(std::vector<SBGeoPoint2D> *)this)[index];
 }

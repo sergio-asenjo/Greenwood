@@ -1,9 +1,9 @@
 #include "RHUnk0060c2xx.h"
-#include "RHUnk0060c2c0.h"
+#include "RHUnkSectorPoints.h"
 #include "RHUnk005fc3b0.h"
 #include "SBGeoBoundingBox2DCore.h"
 
-DECOMP_SIZE_ASSERT(RHUnk0060c2c0, 0x2c)
+DECOMP_SIZE_ASSERT(RHUnkSectorPoints, 0x2c)
 
 void EmitRHUnk0060c2xx(RHUnk0060c2xx *self, const SBGeoPoint2D &point)
 {
@@ -15,7 +15,7 @@ void EmitRHUnk0060c2xx(RHUnk0060c2xx *self, const SBGeoPoint2D &point)
     (self->*erase)(0);
     const SBGeoPoint2D &(RHUnk0060c2xx::*at)(unsigned long) const = &RHUnk0060c2xx::FUN_0060c2b0;
     (self->*at)(0);
-    RHUnk0060c2c0 other;
+    RHUnkSectorPoints other;
 }
 
 // FUNCTION: GAME 0x0060be00
@@ -170,7 +170,7 @@ const SBGeoPoint2D &RHUnk0060c2xx::FUN_0060c2b0(unsigned long index) const
 }
 
 // FUNCTION: GAME 0x0060c2c0
-RHUnk0060c2c0::RHUnk0060c2c0()
+RHUnkSectorPoints::RHUnkSectorPoints()
 {
     m_24 = 3;
     m_28 = 1;
@@ -236,7 +236,7 @@ unsigned short RHUnkSectorPoints::FUN_0060c2e0()
 }
 
 // FUNCTION: GAME 0x0060cab0
-float RHUnk0060c2c0::FUN_0060cab0(const SBGeoPoint2D &point, float scale)
+float RHUnkSectorPoints::FUN_0060cab0(const SBGeoPoint2D &point, float scale)
 {
     SBGeoPoint2D previous;
     SBGeoPoint2D current;
@@ -305,5 +305,5 @@ float RHUnk0060c2c0::FUN_0060cab0(const SBGeoPoint2D &point, float scale)
 // FUNCTION: GAME 0x0060ce80
 unsigned int RHUnkSectorPoints::Unk0060ce80()
 {
-    return ((const RHMobileUnk00611360 *)this)->FUN_00610f30();
+    return FUN_00610f30();
 }

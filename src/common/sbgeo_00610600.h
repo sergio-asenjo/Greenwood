@@ -59,6 +59,10 @@ public:
     void FUN_00610e20(const RHMobileUnk00611360 &other);
     unsigned long FUN_00610f30() const;
     void FUN_00610f50(const SBGeoPoint2D &point, unsigned long index);
+    SBGeoPoint2D &FUN_006112c0(unsigned int index);
+    void FUN_006112a0(const SBGeoPoint2D &point, unsigned int index);
+    void FUN_00611360(const SBGeoPoint2D &value);
+    unsigned short Size() const { SBGeoPoint2D *first = *(SBGeoPoint2D *volatile *)((char *)this + 4); if (!first) return 0; return (unsigned short)(end() - first); }
     SBGeoSegment2D FUN_006112d0(unsigned long index) const;
 };
 

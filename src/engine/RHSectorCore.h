@@ -2,7 +2,7 @@
 #define RHSECTORCORE_H
 
 #include "Decomp.h"
-#include "RHUnk0060c2c0.h"
+#include "RHUnkSectorPoints.h"
 #ifndef SBGEO_BOUNDINGBOX2D_VIEW
 #include "SBGeoBoundingBox2DCore.h"
 #endif
@@ -12,12 +12,15 @@ class SBDrawManager;
 
 // VTABLE: GAME 0x00679bf4
 // SIZE 0x58
-class RHSector : public RHUnk0060c2c0
+class RHSector : public RHUnkSectorPoints
 {
 public:
     RHSector();
     RHSector(int type);
     short Index() const { return m_38; }
+    unsigned short LiftFlag() const { return (unsigned)m_30 >> 9; }
+    unsigned short SectorFlag() const { return (unsigned)m_30 >> 1; }
+    unsigned short BaseFlag() const { return (unsigned)m_30; }
     const SBGeoBoundingBox2D &Bounds() const { return m_3c; }
     virtual ~RHSector();
     virtual int Unk0057cd60(SBFile &file, bool mode);
