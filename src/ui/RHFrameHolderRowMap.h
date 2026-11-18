@@ -2,6 +2,7 @@
 #define RHFRAMEHOLDERROWMAP_H
 
 #include "Decomp.h"
+#include "RHUnk00641782.h"
 #include <map>
 
 class RHFrameHolderRowMap
@@ -74,5 +75,32 @@ public:
     bool m_multi;
     unsigned long m_size;
 };
+
+extern RHFrameHolderRowMap::Node *g_unk0x006c0b2c;
+extern unsigned int g_unk0x006c0b28;
+
+inline RHFrameHolderRowMap::RHFrameHolderRowMap(const std::less<unsigned long> &compare, const std::allocator<unsigned long> &allocator)
+    : m_allocator(allocator), m_comparator(compare), m_multi(false)
+{
+    RHUnk00641782 lock;
+    if (g_unk0x006c0b2c == 0)
+    {
+        Node *node = (Node *)operator new(sizeof(Node));
+        node->m_parent = 0;
+        node->m_color = 1;
+        g_unk0x006c0b2c = node;
+        g_unk0x006c0b2c->m_left = 0;
+        g_unk0x006c0b2c->m_right = 0;
+    }
+    ++g_unk0x006c0b28;
+    Node *sentinel = g_unk0x006c0b2c;
+    Node *node = (Node *)operator new(sizeof(Node));
+    node->m_parent = sentinel;
+    node->m_color = 0;
+    m_head = node;
+    m_size = 0;
+    m_head->m_left = m_head;
+    m_head->m_right = m_head;
+}
 
 #endif

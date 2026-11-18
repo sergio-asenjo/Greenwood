@@ -104,7 +104,7 @@ void RHMask::InitializeFromProtoStream(SBFile &file, RHFastFindGrid *grid)
 bool RHMask::IsAppliedToPointCharacter(const SBGeoPoint2D &point) const
 {
     SBGeoSegment2D segment(SBGeoPoint2D(0, 0), SBGeoPoint2D(0, 0));
-    RHUnkSectorPoints &line = *(RHUnkSectorPoints *)&m_points28;
+    RHMobileUnk00611360 &line = *(RHMobileUnk00611360 *)&m_points28;
     unsigned long last = ((RHMobileUnk00611360 &)line).FUN_00610f30();
     if (point.GetX() >= line.FUN_006112c0(0).GetX() && point.GetX() <= line.FUN_006112c0(--last).GetX())
     {
@@ -123,7 +123,7 @@ bool RHMask::IsAppliedToPointCharacter(const SBGeoPoint2D &point) const
 bool RHMask::IsAppliedToPointProjectile(const SBGeoPoint2D &point) const
 {
     SBGeoSegment2D segment(SBGeoPoint2D(0, 0), SBGeoPoint2D(0, 0));
-    RHUnkSectorPoints &line = *(RHUnkSectorPoints *)&m_points4c;
+    RHMobileUnk00611360 &line = *(RHMobileUnk00611360 *)&m_points4c;
     unsigned long last = ((RHMobileUnk00611360 &)line).FUN_00610f30();
     if (point.GetX() >= line.FUN_006112c0(0).GetX() && point.GetX() <= line.FUN_006112c0(--last).GetX())
     {
@@ -140,9 +140,9 @@ bool RHMask::IsAppliedToPointProjectile(const SBGeoPoint2D &point) const
 
 // Parked at 0.7500: loop index and obstacle count take swapped callee-saved registers (target index edi, count ebp).
 // STUB: GAME 0x005246c0
-bool RHMask::IsAppliedToPoint(const SBGeoPoint3D &point, bool flag) const
+bool RHMask::IsAppliedToPoint(const RHUnk00613e90 &point, bool flag) const
 {
-    SBGeoPoint2D position(point.m_x, point.m_y);
+    SBGeoPoint2D position(point.x, point.y);
     if (IsAppliedToPointProjectile(position))
         return true;
     if (m_flags & 0x10)
@@ -155,10 +155,10 @@ bool RHMask::IsAppliedToPoint(const SBGeoPoint3D &point, bool flag) const
             {
                 if (flag)
                 {
-                    if (obstacle->m_100.FUN_005df9e0(position.m_x, position.m_y) > point.m_z)
+                    if (obstacle->m_100.FUN_005df9e0(position.m_x, position.m_y) > point.z)
                         return true;
                 }
-                else if (obstacle->m_a8.FUN_005df9e0(position.m_x, position.m_y) > point.m_z + 0.1f)
+                else if (obstacle->m_a8.FUN_005df9e0(position.m_x, position.m_y) > point.z + 0.1f)
                     return true;
             }
         }

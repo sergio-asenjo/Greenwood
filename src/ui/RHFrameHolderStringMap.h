@@ -95,4 +95,50 @@ public:
     unsigned m_count;
 };
 
+extern unsigned int g_unk0x006c0b20;
+
+inline RHFrameHolderStringMap::RHFrameHolderStringMap(const std::less<std::string> &compare, const std::allocator<void *> &allocator)
+    : m_allocator(allocator), m_comparator(compare), m_08(false)
+{
+    RHUnk00641782 lock;
+    if (g_unk0x006c0b24 == 0)
+    {
+        RHFrameHolderStringNode *node = (RHFrameHolderStringNode *)operator new(sizeof(RHFrameHolderStringNode));
+        node->m_04 = 0;
+        node->m_20 = 1;
+        g_unk0x006c0b24 = (RHFrameTreeLinksB24 *)node;
+        g_unk0x006c0b24->m_left = 0;
+        g_unk0x006c0b24->m_right = 0;
+    }
+    ++g_unk0x006c0b20;
+    RHFrameHolderStringNode *sentinel = FrameHolderStringNil();
+    RHFrameHolderStringNode *node = (RHFrameHolderStringNode *)operator new(sizeof(RHFrameHolderStringNode));
+    node->m_04 = sentinel;
+    node->m_20 = 0;
+    m_head = node;
+    m_count = 0;
+    m_head->m_00 = m_head;
+    m_head->m_08 = m_head;
+}
+
+inline RHFrameHolderStringMap::~RHFrameHolderStringMap()
+{
+    RHFrameHolderStringIterator first;
+    first.m_node = m_head->m_00;
+    RHFrameHolderStringIterator last;
+    last.m_node = m_head;
+    FUN_00507390(first, last);
+    operator delete(m_head);
+    m_head = 0;
+    m_count = 0;
+    {
+        RHUnk00641782 lock;
+        if (--g_unk0x006c0b20 == 0)
+        {
+            operator delete(g_unk0x006c0b24);
+            g_unk0x006c0b24 = 0;
+        }
+    }
+}
+
 #endif

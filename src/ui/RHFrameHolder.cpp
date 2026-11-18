@@ -46,7 +46,7 @@ DECOMP_SIZE_ASSERT(RHUnk00507500, 0x10)
 DECOMP_SIZE_ASSERT(RHUnk00507500::Node, 0x14)
 DECOMP_SIZE_ASSERT(RHFrameHolderRowMap::Node, 0x18)
 DECOMP_SIZE_ASSERT(SBDrawViewport, 0x18)
-DECOMP_SIZE_ASSERT(RHUnkFXDraw, 0x10e)
+DECOMP_SIZE_ASSERT(SBDrawManager, 0x150)
 
 // GLOBAL: GAME 0x006c0b2c
 RHFrameHolderRowMap::Node *g_unk0x006c0b2c = 0;
@@ -88,74 +88,6 @@ extern unsigned int g_unk0x006c0b28;
 unsigned int g_unk0x006c0b20 = 0;
 
 extern RHFrameHolder *g_unk0x006c0b1c;
-
-inline RHFrameHolderRowMap::RHFrameHolderRowMap(const std::less<unsigned long> &compare, const std::allocator<unsigned long> &allocator)
-    : m_allocator(allocator), m_comparator(compare), m_multi(false)
-{
-    RHUnk00641782 lock;
-    if (g_unk0x006c0b2c == 0)
-    {
-        Node *node = (Node *)operator new(sizeof(Node));
-        node->m_parent = 0;
-        node->m_color = 1;
-        g_unk0x006c0b2c = node;
-        g_unk0x006c0b2c->m_left = 0;
-        g_unk0x006c0b2c->m_right = 0;
-    }
-    ++g_unk0x006c0b28;
-    Node *sentinel = g_unk0x006c0b2c;
-    Node *node = (Node *)operator new(sizeof(Node));
-    node->m_parent = sentinel;
-    node->m_color = 0;
-    m_head = node;
-    m_size = 0;
-    m_head->m_left = m_head;
-    m_head->m_right = m_head;
-}
-
-inline RHFrameHolderStringMap::RHFrameHolderStringMap(const std::less<std::string> &compare, const std::allocator<void *> &allocator)
-    : m_allocator(allocator), m_comparator(compare), m_08(false)
-{
-    RHUnk00641782 lock;
-    if (g_unk0x006c0b24 == 0)
-    {
-        RHFrameHolderStringNode *node = (RHFrameHolderStringNode *)operator new(sizeof(RHFrameHolderStringNode));
-        node->m_04 = 0;
-        node->m_20 = 1;
-        g_unk0x006c0b24 = (RHFrameTreeLinksB24 *)node;
-        g_unk0x006c0b24->m_left = 0;
-        g_unk0x006c0b24->m_right = 0;
-    }
-    ++g_unk0x006c0b20;
-    RHFrameHolderStringNode *sentinel = FrameHolderStringNil();
-    RHFrameHolderStringNode *node = (RHFrameHolderStringNode *)operator new(sizeof(RHFrameHolderStringNode));
-    node->m_04 = sentinel;
-    node->m_20 = 0;
-    m_head = node;
-    m_count = 0;
-    m_head->m_00 = m_head;
-    m_head->m_08 = m_head;
-}
-
-inline RHFrameHolderStringMap::~RHFrameHolderStringMap()
-{
-    RHFrameHolderStringIterator first;
-    first.m_node = m_head->m_00;
-    RHFrameHolderStringIterator last;
-    last.m_node = m_head;
-    FUN_00507390(first, last);
-    operator delete(m_head);
-    m_head = 0;
-    m_count = 0;
-    {
-        RHUnk00641782 lock;
-        if (--g_unk0x006c0b20 == 0)
-        {
-            operator delete(g_unk0x006c0b24);
-            g_unk0x006c0b24 = 0;
-        }
-    }
-}
 
 // FUNCTION: GAME 0x00503ba0
 RHFrameHolder::RHFrameHolder()
@@ -342,7 +274,7 @@ void RHFrameHolder::FUN_00504b10(unsigned long data, unsigned long size, unsigne
 
 #include "SBDrawManager.h"
 
-extern RHUnk005ef320 *g_unk0x6c11d0;
+extern SBDrawManager *g_unk0x6c11d0;
 
 // FUNCTION: GAME 0x005046e0
 void RHFrameHolder::ApplyFogEffect(unsigned short *pixels, unsigned long count, unsigned short percent, unsigned short color)
@@ -1216,8 +1148,8 @@ struct RHFrameDictionaryEntry
     unsigned long second;
 };
 
-class RHUnk005ef320;
-extern RHUnk005ef320 *g_unk0x6c11d0;
+class SBDrawManager;
+extern SBDrawManager *g_unk0x6c11d0;
 #include "zlib.h"
 
 // FUNCTION: GAME 0x005069d0
@@ -1234,7 +1166,7 @@ void RHUnk005068e0::FUN_005069d0(unsigned short count, SBFile &file)
     for (unsigned short i = 0; i < m_00 * 4; ++i)
         if (pixels[i] == 0x7e0)
             pixels[i] = 0x7c0;
-    if (((RHUnkFXDraw *)g_unk0x6c11d0)->m_depth == 15)
+    if (g_unk0x6c11d0->m_depth == 15)
         FUN_00506b40();
 }
 
@@ -1337,7 +1269,7 @@ DECOMP_STATIC_ASSERT(offsetof(RHFrameHolder, m_fogDictionaries) == 0x38)
 void RHFrameHolder::DumpOneDictionary()
 {
     RHUnk005f4fc0 file;
-    FUN_005ede40((RHUnk005ef320 *)Draw(),
+    FUN_005ede40(Draw(),
         // STRING: GAME 0x006b0150
         "Dumping first dictionary into dump.txt");
     {
@@ -1346,7 +1278,7 @@ void RHFrameHolder::DumpOneDictionary()
             "dump.txt");
         file.FUN_005f5090(name, 2);
     }
-    FUN_005ede40((RHUnk005ef320 *)Draw(),
+    FUN_005ede40(Draw(),
         // STRING: GAME 0x006b0130
         "Dumping default.");
     file.Access(
@@ -1355,7 +1287,7 @@ void RHFrameHolder::DumpOneDictionary()
     m_dictionaries._First->FUN_00506b90(file);
     if (m_nightDictionaries.Size())
     {
-        FUN_005ede40((RHUnk005ef320 *)Draw(),
+        FUN_005ede40(Draw(),
             // STRING: GAME 0x006b010c
             "Dumping night.");
         file.Access(
@@ -1365,7 +1297,7 @@ void RHFrameHolder::DumpOneDictionary()
     }
     if (m_fogDictionaries.Size())
     {
-        FUN_005ede40((RHUnk005ef320 *)Draw(),
+        FUN_005ede40(Draw(),
             // STRING: GAME 0x006b00e8
             "Dumping fog.");
         file.Access(

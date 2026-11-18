@@ -233,15 +233,6 @@ public:
 #include "SBDrawManagerCore.h"
 #include "SBDrawViewport.h"
 
-// SIZE 0x10e
-class RHUnkFXDraw
-{
-public:
-    unsigned long Unk005e4ed0(unsigned short, unsigned short, unsigned long, bool);
-    undefined m_00[0x10c]; // 0x00
-    unsigned short m_depth; // 0x10c
-};
-
 class SBDrawViewport;
 
 // VTABLE: GAME 0x00678b5c
@@ -275,9 +266,9 @@ public:
     void DumpOneDictionary();
     RHUnk005068e0 *FUN_00505170(unsigned long);
     void Emit(SBResourceManager *, SBArray<SBGeoVector2D> &);
-    RHUnkFXDraw *&Draw() { return m_drawManager; }
+    SBDrawManager *&Draw() { return m_drawManager; }
 
-    RHUnkFXDraw *m_drawManager;
+    SBDrawManager *m_drawManager;
     RHFrameHolderFrameArray m_frames; // 0x08
     RHUnk005051a0Array m_dictionaries; // 0x18
     RHUnk005051a0Array m_nightDictionaries;

@@ -6,16 +6,9 @@
 #include "SBGeoPoint2D.h"
 #include "SBGeoVector2D.h"
 #include "SBGeoBoundingBox2DCore.h"
+#include "RHUnk00613e90.h"
 
 SBGeoPoint2D operator+(const SBGeoPoint2D &, const SBGeoVector2D &);
-
-class SBGeoPoint3D
-{
-public:
-    float m_x;
-    float m_y;
-    float m_z;
-};
 
 class RHElementAreaShape
 {
@@ -23,11 +16,7 @@ public:
     bool FUN_0060c660(const SBGeoPoint2D &point) const;
 };
 
-class RHShadowUnk005df9e0
-{
-public:
-    float FUN_005df9e0(float, float);
-};
+#include "RHUnk005df9e0.h"
 
 class RHMaskPointStorage
 {
@@ -62,16 +51,11 @@ public:
     RHMobileUnk00611360();
     ~RHMobileUnk00611360();
     unsigned long FUN_00610f30() const;
+    SBGeoPoint2D &FUN_006112c0(unsigned int index);
     int m_10;
     bool m_14;
     char m_18[4];
     SBGeoPoint2D m_1c;
-};
-
-class RHUnkSectorPoints
-{
-public:
-    SBGeoPoint2D &FUN_006112c0(unsigned int index);
 };
 
 class RHMobileUnk006100e0
@@ -109,7 +93,6 @@ public:
     RHElementAreaShape m_7c; // +0x7c
     char m_7d[0x2b];
     RHShadowUnk005df9e0 m_a8; // +0xa8
-    char m_a9[0x57];
     RHShadowUnk005df9e0 m_100; // +0x100
 };
 
@@ -256,7 +239,7 @@ public:
     void Emit(SBFile &, RHFastFindGrid *);
     bool IsAppliedToPointCharacter(const SBGeoPoint2D &point) const;
     bool IsAppliedToPointProjectile(const SBGeoPoint2D &point) const;
-    bool IsAppliedToPoint(const SBGeoPoint3D &point, bool flag) const;
+    bool IsAppliedToPoint(const RHUnk00613e90 &point, bool flag) const;
     unsigned char FUN_00524800(unsigned long index);
 
     bool m_00; // +0x00
