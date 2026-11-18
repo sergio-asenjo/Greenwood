@@ -14,14 +14,6 @@
 
 DECOMP_SIZE_ASSERT(SBThreadedInput, 0x64)
 
-class RHUnkFXDraw
-{
-public:
-    unsigned short FUN_005e56c0(unsigned long);
-    unsigned short FUN_005e5750(unsigned long);
-    unsigned long Unk005e4ed0(unsigned short, unsigned short, unsigned long, bool);
-};
-
 class RHMobileUnk00607da0
 {
 public:
@@ -46,7 +38,7 @@ static void *g_inputEvents[2];
 #define g_keyboardEvent g_inputEvents[1]
 
 // GLOBAL: GAME 0x006c12b8
-static RHUnkFXDraw *g_inputDrawManager;
+static SBDrawManager *g_inputDrawManager;
 
 struct SBThreadedInputElement
 {
@@ -176,8 +168,7 @@ static unsigned long g_unk0x006c1318;
 // GLOBAL: GAME 0x006c1310
 static unsigned long g_unk0x006c1310;
 
-class RHUnk005ef320;
-extern RHUnk005ef320 *g_unk0x6c11d0;
+extern SBDrawManager *g_unk0x6c11d0;
 
 // GLOBAL: GAME 0x006c1204
 static bool g_unk0x006c1204;
@@ -430,7 +421,7 @@ bool SBThreadedInput::CleanUpInputs()
 
 int FUN_005fb030(unsigned scanCode, unsigned short *output, int capacity, int mode);
 
-// STUB: GAME 0x005f1000
+// FUNCTION: GAME 0x005f1000
 unsigned short SBThreadedInput::GetChar()
 {
     for (;;)
@@ -450,24 +441,27 @@ unsigned short SBThreadedInput::GetChar()
         if (element.m_keyboard != true || element.m_data != 0)
             continue;
         unsigned short characters[2];
+        unsigned short character = 0;
         if (FUN_005fb030(element.m_offset, characters, 2, 1) > 0)
-        {
-            unsigned short character = *(unsigned char *)characters;
-            if (character != 0)
-                return character;
-        }
+            character = *(unsigned char *)characters;
         else
         {
+            unsigned int navigationCharacter;
             switch (element.m_offset)
             {
-            case 200: return 0x101;
-            case 208: return 0x102;
-            case 205: return 0x104;
-            case 203: return 0x103;
-            case 211: return 0x105;
-            case 210: return 0x108;
+            case 200: navigationCharacter = 0x101; break;
+            case 208: navigationCharacter = 0x102; break;
+            case 205: navigationCharacter = 0x104; break;
+            case 203: navigationCharacter = 0x103; break;
+            case 211: navigationCharacter = 0x105; break;
+            case 210: navigationCharacter = 0x108; break;
+            default: goto noNavigationCharacter;
             }
+            return navigationCharacter;
         }
+noNavigationCharacter:
+        if (character != 0)
+            return character;
     }
 }
 
@@ -589,7 +583,7 @@ bool SBThreadedInput::SetCursor(unsigned short cursor, bool selfIncrement)
 // FUNCTION: GAME 0x005f1580
 bool SBThreadedInput::AttachToDisplay(unsigned long surface)
 {
-    g_inputDrawManager = (RHUnkFXDraw *)g_unk0x6c11d0;
+    g_inputDrawManager = g_unk0x6c11d0;
     g_renderingSurface = surface;
     g_inputClipping.FUN_00609050(SBGeoPoint2D(0.0f, 0.0f),
         SBGeoPoint2D((float)g_inputDrawManager->FUN_005e56c0(0), (float)g_inputDrawManager->FUN_005e5750(0)));
@@ -846,7 +840,7 @@ bool SBThreadedInput::BlitBlind(unsigned long source, const SBGeoBoundingBox2D &
     unsigned short red;
     unsigned short green;
     unsigned short blue;
-    if (((SBDrawManager *)g_inputDrawManager)->m_10c == 16) {
+    if (g_inputDrawManager->m_depth == 16) {
         if (height > 0) {
             unsigned long rows = height;
             do {
@@ -1166,9 +1160,8 @@ static unsigned short g_middleCount;
 // GLOBAL: GAME 0x006c131c
 static unsigned short g_middleDefault;
 
-// Parked: VC6 carries the pressed constant in ecx instead of eax.
-// STUB: GAME 0x005f45d0
-void SBThreadedInput::InputLoop(const SBInputMouseState &mouse)
+// FUNCTION: GAME 0x005f45d0
+bool SBThreadedInput::InputLoop(const SBInputMouseState &mouse)
 {
     float x = mouse.m_x;
     float y = mouse.m_y;
@@ -1207,6 +1200,7 @@ void SBThreadedInput::InputLoop(const SBInputMouseState &mouse)
     }
     if (mouse.m_middle == true && !g_oldMouse.m_middle)
         g_buttonState |= 256;
+    return true;
 }
 
 // FUNCTION: GAME 0x005f4700

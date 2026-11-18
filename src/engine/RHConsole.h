@@ -3,15 +3,16 @@
 
 #include <string>
 
-class RHUnk005ef320;
+class SBDrawManager;
 class RHElementActorPC;
 
 struct RHConsoleEngine
 {
     bool FUN_004db7a0();
     unsigned char m_00[0xdc];
-    RHUnk005ef320 *m_draw;
-    unsigned char m_e0[0x4973];
+    SBDrawManager *m_draw;
+    unsigned char m_e0[0x4972];
+    char m_4a52;
     char m_4a53;
     char m_4a54;
     char m_4a55;
@@ -46,6 +47,7 @@ public:
     RHConsole();
     static RHConsole *GetInstance();
     bool HandleCharacter(unsigned short character);
+    char Flag5b6() const { return m_5b6; }
     void FUN_0045b620(const char *, void (RHConsole::*)(unsigned, char **), const char *);
     void FUN_0045b900(const char *, void (RHConsole::*)(unsigned, char **), const char *);
     static void FUN_0045bc50(char *, const char *);
@@ -113,28 +115,32 @@ public:
     void FUN_00460410(unsigned, char **);
     void FUN_00460460(unsigned, char **);
     void *FUN_00460600();
+    void FUN_00460620(unsigned count, char **arguments);
     RHConsoleEngine *m_engine;
-    unsigned char m_04[0x5b2];
+    char m_04[132];
+    unsigned short m_position;
+    char m_8a;
+    char m_history[10][132];
+    char m_5b3;
+    unsigned short m_historyIndex;
     char m_5b6;
     unsigned char m_5b7;
     unsigned char m_5b8[0x20];
-    unsigned char m_5d8[0xb0];
+    unsigned char m_5d8[0x20];
+    char m_completion[132];
+    bool m_completionDirty;
+    unsigned char m_67d[3];
+    unsigned m_completionIndex;
+    char m_close;
+    unsigned char m_685[3];
 };
 
 #include "SBDrawManagerCore.h"
-bool FUN_005edae0(RHUnk005ef320 *, const char *, ...);
+bool FUN_005edae0(SBDrawManager *, const char *, ...);
 unsigned FUN_0057aa20();
-extern RHUnk005ef320 *g_unk0x6c11d0;
+extern SBDrawManager *g_unk0x6c11d0;
 extern char g_unk0x006c07de;
 
-
-class RHConsoleSequenceElement
-{
-public:
-    RHConsoleSequenceElement(unsigned short, int, void *, void *, unsigned short, unsigned short);
-    ~RHConsoleSequenceElement();
-    char m_data[0x7c];
-};
 
 #include "RHConsoleBlockAllocator.h"
 

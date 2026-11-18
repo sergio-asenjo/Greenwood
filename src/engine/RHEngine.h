@@ -7,6 +7,7 @@
 #include "RHEngineElementArray.h"
 #include "RHSectorActorList.h"
 #include "SBList.h"
+#include "RHLoadingScreenCore.h"
 
 class SBFile;
 class RHElement;
@@ -24,23 +25,14 @@ class SBGeoPoint2D;
 class SBGeoBoundingBox2D;
 class RHDialogueSet;
 class RHSectorGateCalls;
-struct RHUnkSectorGlobal;
+class RHFastFindGrid;
 struct RHbeamMe;
 struct RHUnk004e4660Entry;
 struct RHEngineDrawEntry;
+struct RHUnk004e48b0Entry;
 class RHUnk004e49f0Entry;
 class RHSequenceElementCalls;
 
-class RHCampaignLoadingProgress
-{
-public:
-    char m_0[8];
-    float m_progress;
-    void FUN_00523300();
-};
-
-extern RHCampaignLoadingProgress g_unk0x6c0a50;
-extern int g_unk0x006c0a7c;
 unsigned long FUN_005e1d00(SBFile &file);
 void FUN_005e2300(SBFile &file);
 
@@ -65,7 +57,6 @@ public:
     void FUN_004eb830(SBFile &file);
     void FUN_004ebab0(SBFile &file);
     void FUN_004efd10(void *value, unsigned short layer, bool mode);
-    short FUN_004e8fc0(const SBGeoPoint2D &point, const SBGeoPoint2D &origin, short layer, void *&sector);
     short FUN_004e9760(const SBGeoPoint2D &point, const SBGeoPoint2D &origin, void *&sector, unsigned short &layer);
     short FUN_004e9920(const SBGeoPoint2D &point, const SBGeoPoint2D &origin, void *&sector, unsigned short &layer);
 };
@@ -86,7 +77,7 @@ public:
     undefined m_00[0x68];
 };
 
-extern RHUnkSectorGlobal *g_unk0x6c0a9c;
+extern RHFastFindGrid *g_unk0x6c0a9c;
 void FUN_005e1d50(SBFile &file, unsigned long tag, int level);
 void FUN_005e20c0(SBFile &file);
 void FUN_004be5c0(SBFile &file, void *&value);
@@ -168,6 +159,7 @@ public:
     unsigned FUN_004e4110(unsigned value);
     bool InitializeFromMission(RHMission *mission);
     bool FUN_004c4570(SBFile &file);
+    void FUN_004c3740();
     bool FUN_004c6040(SBFile &file);
     int FUN_004c6ef0();
     bool FUN_004c7c90();
@@ -194,6 +186,10 @@ public:
     void FUN_004d4230(const SBGeoBoundingBox2D &bounds, unsigned second);
     void FUN_004d7800(void *first, void *second, unsigned third);
     void FUN_004d7820(void *first, void *second, unsigned third);
+    void FUN_004d7460(void *first, void *second, float third);
+    void FUN_004d5a90(void *actor);
+    void FUN_004d5ba0(void *actor, float alpha, int first, int second, int third, int fourth);
+    void FUN_004d7dd0(void *first, void *second, void *third);
     void FUN_004e3100(int action);
     void FUN_004e3260();
     unsigned char FUN_004ded90(void *actor);
@@ -219,6 +215,7 @@ public:
     void FUN_004dc260(const void *event);
     void FUN_004de170(bool first, bool second, bool third);
     void FUN_004de1e0();
+    void FUN_004de840();
     void InitializeActorsFromMissionStream(SBFile &file, std::vector<RHbeamMe> &beamMes);
     void InitializeBuildingTenantsFromMissionStream(SBFile &file);
     void FUN_004c1d20(SBFile &file);
@@ -227,7 +224,7 @@ public:
     void FUN_004c2200(SBFile &file, std::vector<RHbeamMe> &beamMes);
     void FUN_004c2720(SBFile &file);
     void FUN_004c28c0(const std::string &name);
-    int FUN_004cac00(void *first, void *second, int third, char fourth);
+    int FUN_004cac00(const void *first, bool second, int third, char fourth);
     unsigned short FUN_004cc100(void *first, void *second);
     unsigned short FUN_004cc970(bool &first, const SBGeoPoint2D &second, RHSectorGateCalls *third);
     void FUN_004ccad0(const SBGeoPoint2D &first, bool second);
@@ -297,7 +294,8 @@ public:
     SBListAutoDelete<RHUnk004e4660Entry *> m_4aac;
     undefined m_4ac4[0x128];
     SBListAutoDelete<RHEngineDrawEntry *> m_4bec;
-    undefined m_4c04[0x98];
+    SBListAutoDelete<RHUnk004e48b0Entry *> m_4c04;
+    undefined m_4c1c[0x80];
     SBListAutoDelete<RHUnk004e49f0Entry *> m_4c9c;
     undefined m_4cb4[0x14];
     RHEngineElementArray<RHElementActorHuman> m_teamHumans[2];
@@ -408,22 +406,6 @@ public:
     virtual void Unk128();
     virtual void Unk12c();
     virtual int Unk130();
-};
-
-// SIZE 0x270
-class RHUnk004ab090 : public RHEngineMissionElementCalls
-{
-public:
-    RHUnk004ab090();
-    undefined m_04[0x26c]; // 0x04
-};
-
-// SIZE 0x170
-class RHUnk004b9b70 : public RHEngineMissionElementCalls
-{
-public:
-    RHUnk004b9b70();
-    undefined m_04[0x16c]; // 0x04
 };
 
 // SIZE 0x18c

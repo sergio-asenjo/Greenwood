@@ -71,13 +71,7 @@ public:
     void FUN_005fdc70();
 };
 
-class RHUnkFXDraw
-{
-public:
-    unsigned long Unk005e4ed0(unsigned short width, unsigned short height, unsigned long format, bool system);
-    unsigned short FUN_005e56c0(unsigned long);
-    unsigned short FUN_005e5750(unsigned long);
-};
+#include "SBDrawManagerCore.h"
 
 #include "RHFrameHolderRowMap.h"
 
@@ -124,7 +118,7 @@ public:
     void FUN_00605b20();
 };
 
-class RHUnk005ef320;
+class SBDrawManager;
 extern unsigned int g_unk0x006c0b28;
 extern RHFrameHolderRowMap::Node *g_unk0x006c0b2c;
 template<> void SBResourceTreeStorage<0x18, 0x14, 0x34>::Dispose()
@@ -145,7 +139,7 @@ template<> void SBResourceTreeStorage<0x18, 0x14, 0x34>::Dispose()
     }
 }
 
-extern RHUnk005ef320 *g_unk0x6c11d0;
+extern SBDrawManager *g_unk0x6c11d0;
 extern RHMapResources *g_unk0x006c1840;
 
 DECOMP_SIZE_ASSERT(SBResourceFileList, 0x24)
@@ -158,16 +152,17 @@ DECOMP_STATIC_ASSERT(offsetof(SBResourceManager, m_nextId) == 0x0c)
 // FUNCTION: GAME 0x005fced0
 SBResourceManager::SBResourceManager()
 {
-    *(unsigned int *)m_00 = 0x67a840;
-    *(RHUnk005ef320 **)(m_00 + 4) = g_unk0x6c11d0;
+    *(SBDrawManager **)m_04 = g_unk0x6c11d0;
     g_unk0x006c1840 = (RHMapResources *)this;
     m_nextId = 1;
 }
 
+// SYNTHETIC: GAME 0x005fcff0
+// SBResourceManager::`scalar deleting destructor'
+
 // STUB: GAME 0x005fd1d0
 SBResourceManager::~SBResourceManager()
 {
-    *(unsigned int *)m_00 = 0x67a840;
     int zero = 0;
     while (m_files.m_count > zero)
     {
@@ -434,8 +429,8 @@ bool SBResourceManager::FUN_005fd8e0(SBFile *file, unsigned long id)
             unsigned long format = (flags & 2) ? 2 : 1;
             picture.Unk00611710(*file);
             if (!(flags & 1) || id != 0) {
-                surfaces[i] = (*(RHUnkFXDraw **)(m_00 + 4))->Unk005e4ed0(picture.m_width, picture.m_height, format, false);
-                ((SBPicture *)&picture)->SBPicture::Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces[i]);
+                surfaces[i] = (*(SBDrawManager **)m_04)->Unk005e4ed0(picture.m_width, picture.m_height, format, false);
+                ((SBPicture *)&picture)->SBPicture::Unk00613530(*(SBDrawManager **)m_04, surfaces[i]);
             }
             ((SBPicture *)&picture)->SBPicture::FUN_00611c50();
         } else
@@ -498,8 +493,8 @@ bool SBResourceManager::FUN_005fdcc0(SBFile *file, unsigned long id)
     file->Access(&flags, 4);
     picture.Unk00611710(*file);
     if (!(flags & 1) || id != 0) {
-        surfaces.m_values[0] = (*(RHUnkFXDraw **)(m_00 + 4))->Unk005e4ed0(picture.m_width, picture.m_height, 0, false);
-        ((SBPicture *)&picture)->SBPicture::Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces.m_values[0]);
+        surfaces.m_values[0] = (*(SBDrawManager **)m_04)->Unk005e4ed0(picture.m_width, picture.m_height, 0, false);
+        ((SBPicture *)&picture)->SBPicture::Unk00613530(*(SBDrawManager **)m_04, surfaces.m_values[0]);
     }
     ((SBPicture *)&picture)->SBPicture::FUN_00611c50();
     if (!(flags & 1) || id != 0) {
@@ -555,8 +550,8 @@ bool SBResourceManager::FUN_005fe000(SBFile *file, unsigned long id)
     for (unsigned long index = 0; index < count; ++index) {
         picture.Unk00611710(*file);
         if (!(flags & 1) || id != 0) {
-            surfaces.m_values[index] = (*(RHUnkFXDraw **)(m_00 + 4))->Unk005e4ed0(picture.m_width, picture.m_height, 0, false);
-            ((SBPicture *)&picture)->SBPicture::Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces.m_values[index]);
+            surfaces.m_values[index] = (*(SBDrawManager **)m_04)->Unk005e4ed0(picture.m_width, picture.m_height, 0, false);
+            ((SBPicture *)&picture)->SBPicture::Unk00613530(*(SBDrawManager **)m_04, surfaces.m_values[index]);
         }
         ((SBPicture *)&picture)->SBPicture::FUN_00611c50();
     }
@@ -730,8 +725,8 @@ bool SBResourceManager::FUN_005fef60(SBFile *file, unsigned long id)
     surfaces.m_changed = true;
     for (unsigned long index = 0; index < count; ++index) {
         picture.Unk00611710(*file);
-        surfaces.m_values[index] = (*(RHUnkFXDraw **)(m_00 + 4))->Unk005e4ed0(picture.m_width, picture.m_height, 0, false);
-        ((SBPicture *)&picture)->SBPicture::Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces.m_values[index]);
+        surfaces.m_values[index] = (*(SBDrawManager **)m_04)->Unk005e4ed0(picture.m_width, picture.m_height, 0, false);
+        ((SBPicture *)&picture)->SBPicture::Unk00613530(*(SBDrawManager **)m_04, surfaces.m_values[index]);
     }
     SBResourceSurfaceArray &destination = *(SBResourceSurfaceArray *)&entry.second;
     ((RHCampaignArrayOps *)&destination.m_values)->FUN_0044ea70();
@@ -794,8 +789,8 @@ bool SBResourceManager::FUN_005ff3a0(SBFile *file, unsigned long id)
             unsigned long format = (flags & 2) ? 2 : 1;
             picture.Unk00611710(*file);
             if (!(flags & 1) || id != 0) {
-                surfaces[i] = (*(RHUnkFXDraw **)(m_00 + 4))->Unk005e4ed0(picture.m_width, picture.m_height, format, false);
-                ((SBPicture *)&picture)->SBPicture::Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces[i]);
+                surfaces[i] = (*(SBDrawManager **)m_04)->Unk005e4ed0(picture.m_width, picture.m_height, format, false);
+                ((SBPicture *)&picture)->SBPicture::Unk00613530(*(SBDrawManager **)m_04, surfaces[i]);
             }
             ((SBPicture *)&picture)->SBPicture::FUN_00611c50();
         } else
@@ -853,8 +848,8 @@ bool SBResourceManager::FUN_005ff730(SBFile *file, unsigned long id)
             unsigned long format = (flags & 2) ? 2 : 1;
             picture.Unk00611710(*file);
             if (!(flags & 1) || id != 0) {
-                surfaces[i] = (*(RHUnkFXDraw **)(m_00 + 4))->Unk005e4ed0(picture.m_width, picture.m_height, format, false);
-                ((SBPicture *)&picture)->SBPicture::Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces[i]);
+                surfaces[i] = (*(SBDrawManager **)m_04)->Unk005e4ed0(picture.m_width, picture.m_height, format, false);
+                ((SBPicture *)&picture)->SBPicture::Unk00613530(*(SBDrawManager **)m_04, surfaces[i]);
             }
             ((SBPicture *)&picture)->SBPicture::FUN_00611c50();
         } else
@@ -912,8 +907,8 @@ bool SBResourceManager::FUN_005ffac0(SBFile *file, unsigned long id)
             unsigned long format = (flags & 2) ? 2 : 1;
             picture.Unk00611710(*file);
             if (!(flags & 1) || id != 0) {
-                surfaces[i] = (*(RHUnkFXDraw **)(m_00 + 4))->Unk005e4ed0(picture.m_width, picture.m_height, format, false);
-                ((SBPicture *)&picture)->SBPicture::Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces[i]);
+                surfaces[i] = (*(SBDrawManager **)m_04)->Unk005e4ed0(picture.m_width, picture.m_height, format, false);
+                ((SBPicture *)&picture)->SBPicture::Unk00613530(*(SBDrawManager **)m_04, surfaces[i]);
             }
             ((SBPicture *)&picture)->SBPicture::FUN_00611c50();
         } else
@@ -970,8 +965,8 @@ bool SBResourceManager::FUN_005ffe50(SBFile *file, unsigned long id)
         if ((1 << i) & mask) {
             picture.Unk00611710(*file);
             if (!(flags & 1) || id != 0) {
-                surfaces[i] = (*(RHUnkFXDraw **)(m_00 + 4))->Unk005e4ed0(picture.m_width, picture.m_height, 0, false);
-                ((SBPicture *)&picture)->SBPicture::Unk00613530(*(RHUnkFXDraw **)(m_00 + 4), surfaces[i]);
+                surfaces[i] = (*(SBDrawManager **)m_04)->Unk005e4ed0(picture.m_width, picture.m_height, 0, false);
+                ((SBPicture *)&picture)->SBPicture::Unk00613530(*(SBDrawManager **)m_04, surfaces[i]);
             }
             ((SBPicture *)&picture)->SBPicture::FUN_00611c50();
         } else
@@ -1016,7 +1011,7 @@ void SBResourceManager::FUN_006001d0(Tree44::Iterator &position)
     while (surfaces.Size() > 0) {
         unsigned long surface = *surfaces.m_values.begin();
         if (surface)
-            (*(SBDrawManager **)(m_00 + 4))->FUN_005e5160(surface);
+            (*(SBDrawManager **)m_04)->FUN_005e5160(surface);
         surfaces.m_values.erase(surfaces.m_values.begin());
         surfaces.m_changed = true;
     }
@@ -1164,8 +1159,8 @@ bool RHMapResources::FUN_006006f0(long resource, RHUnk005fc3b0 &output)
     for (unsigned int index = 0; index < count; ++index) {
         unsigned long surface = found->m_first[index];
         if (surface) {
-            unsigned short width = (*(RHUnkFXDraw **)((char *)this + 4))->FUN_005e56c0(surface);
-            unsigned short height = (*(RHUnkFXDraw **)((char *)this + 4))->FUN_005e5750(found->m_first[index]);
+            unsigned short width = (*(SBDrawManager **)((char *)this + 4))->FUN_005e56c0(surface);
+            unsigned short height = (*(SBDrawManager **)((char *)this + 4))->FUN_005e5750(found->m_first[index]);
             if (width > *(volatile float *)&size.m_x)
                 size.m_x = width;
             if (height > *(volatile float *)&size.m_y)
@@ -1232,7 +1227,7 @@ bool SBResourceManager::FUN_00600920(unsigned long id, unsigned long index, unsi
 
 // Parked: wide-string assignment inlines _Tidy and character copying unlike the target.
 // STUB: GAME 0x006009e0
-bool RHMapResources::FUN_006009e0(unsigned resource, unsigned index, RHMapWideText &output)
+bool RHMapResources::FUN_006009e0(unsigned resource, unsigned index, std::wstring &output)
 {
     const unsigned long &id = *(const unsigned long *)&resource;
     SBResourceManager &view = *(SBResourceManager *)this;
@@ -1253,7 +1248,7 @@ bool RHMapResources::FUN_006009e0(unsigned resource, unsigned index, RHMapWideTe
     std::wstring *first = *(std::wstring *volatile *)&node->m_first;
     if (first == 0 || index >= (unsigned int)(node->m_last - first))
         return false;
-    ((std::wstring &)output).assign(node->m_first[index]);
+    output.assign(node->m_first[index]);
     return true;
 }
 

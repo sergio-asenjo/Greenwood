@@ -184,7 +184,7 @@ void RHDrawManager::DrawDottedLine(const SBGeoPoint2D &from, const SBGeoPoint2D 
 // FUNCTION: GAME 0x004615a0
 unsigned short RHDrawManager::GetPackedColor(unsigned long color)
 {
-    switch (m_drawManager->m_10c)
+    switch (m_drawManager->m_depth)
     {
     case 15:
         return (unsigned short)((((((color >> 3) & 0x1f0000) | (color & 0xf800)) >> 3) | (color & 0xf8)) >> 3);

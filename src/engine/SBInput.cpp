@@ -39,6 +39,55 @@ unsigned short SBDrawViewport::GetPixel(unsigned short x, unsigned short y) cons
     return m_pixels[(m_pitch >> 1) * y + x];
 }
 
+// LIBRARY: GAME 0x0064fc52
+// DirectInputCreateEx
+int __stdcall DirectInputCreateEx(void *, unsigned long, const void *, void **, void *);
+
+int __stdcall DirectInputCreateEx(void *, unsigned long, const void *, void **, void *)
+{
+    return 0;
+}
+
+// GLOBAL: GAME 0x0067a778
+const SBInputDeviceGuid g_directInput7Guid = {{0x9a4cb684, 0x11d3236d, 0xc0009d8e, 0xae44684f}};
+
+// TEMPLATE: GAME 0x004242b0 FOLDED
+// ?_Buynode@?$list@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@IAEPAU_Node@12@PAU312@0@Z
+
+// FUNCTION: GAME 0x005f9b80
+SBInputUnk005fb730::SBInputUnk005fb730(void *instance)
+{
+    m_00 = 0;
+    m_2a9 = 0;
+    m_2a5 = 0;
+    m_2a6 = 0;
+    m_2a7 = 0;
+    m_2a8 = 0;
+    m_04 = 0;
+    m_08 = 0;
+    m_0c = 0;
+    SBInputUnkDevice **devices = m_144;
+    memset(devices, 0, sizeof(m_144));
+    long result = DirectInputCreateEx(instance, 0x700, &g_directInput7Guid, (void **)&m_04, 0);
+    if (result != 0)
+    {
+        m_2aa = 1;
+        typedef std::string &(std::string::*Assign)(const std::string &, unsigned, unsigned);
+        Assign assign = &std::string::assign;
+        (m_2ac.*assign)(FUN_005f81d0(result), 0, std::string::npos);
+        SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBInput.cpp", 0x3f,
+            // STRING: GAME 0x006bb1c0
+            "Creation of a Direct Input object has failed DxERR=%s", m_2ac.c_str());
+        m_2a4 = 0;
+    }
+    else
+    {
+        m_2aa = 0;
+        m_2a4 = 1;
+    }
+    mpInput = this;
+}
+
 // FUNCTION: GAME 0x005f9d00
 SBInputUnk005fb730::~SBInputUnk005fb730()
 {

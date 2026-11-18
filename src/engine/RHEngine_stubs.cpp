@@ -3,7 +3,22 @@
 #include "RHScript.h"
 #include "RHEngineSpriteCalls.h"
 #include "RHUnk0054eab0.h"
+#include "SBFilePosition.h"
+#include "RHFastFindGridCore.h"
+#include "RHUnkMaskObstacleTable.h"
+#include "RHUnkTargetSpriteCalls.h"
+#include "RHSpriteLastFrameCalls.h"
+#include "RHElementFX.h"
+#include "RHElementGrid.h"
+#include "RHUnk004b1520List.h"
 #include <stddef.h>
+
+struct RHUnk004b1520VoidList : public std::list<void *>
+{
+    void *m_cursor;
+    bool m_dirty;
+    int m_index;
+};
 
 DECOMP_SIZE_ASSERT(RHSpriteListRoot, 0x0c)
 DECOMP_SIZE_ASSERT(RHUnk00564020, 0x18)
@@ -35,6 +50,7 @@ void RHEngineSoundCalls::FUN_005a5060(void *, void *, void *, unsigned, unsigned
 RHUnk004a1bc0::RHUnk004a1bc0(bool) {}
 
 #include "RHSectorCore.h"
+#include "RHSector.h"
 
 // FUNCTION: GAME 0x0057ee40
 RHUnk0057ee40::RHUnk0057ee40()
@@ -128,16 +144,240 @@ SBResourceScalarVector::SBResourceScalarVector(const std::allocator<unsigned lon
     : std::vector<unsigned long>(allocator)
 {
 }
-void RHUnk0054eab0::FUN_0054eea0(SBFile &, void *) {}
+// STUB: GAME 0x0054eea0
+int RHUnk0054eab0::FUN_0054eea0(SBFile &file, void *grid)
+{
+    int start = ((ToolboxPositionFile *)&file)->FUN_005f5440();
+    RHMobileBase004a8130 *element = new RHMobileBase004a8130(1);
+    *(void **)((char *)this + 0x18) = element;
+    *(void **)((char *)element + 0xac) = this;
+    element->Unk38(file);
+    file.Access((char *)this + 2, 1);
+    *(char *)((char *)this + 3) = 1;
+    file.Access((char *)this + 0x10, 4);
+    if (*(int *)((char *)this + 0x10) != 0)
+    {
+        file.Access((char *)this + 0x16, 2);
+        *(char *)((char *)this + 0xd) = 1;
+        file.Access((char *)this + 0x14, 2);
+        *(unsigned *)((char *)this + 0x10) = (*(unsigned *)((char *)this + 0x10) - 1) >> 1;
+    }
+    else
+    {
+        *(char *)((char *)this + 0xd) = 0;
+    }
+    file.Access((char *)this + 8, 1);
+    file.Access((char *)this + 9, 1);
+    file.Access((char *)this + 0xa, 1);
+    if (*(char *)((char *)this + 8) != 0)
+    {
+        (*(RHUnkTargetSprite **)((char *)element + 0x50))->FUN_005b76e0(0x94, 0);
+        ((RHUnk005bd5b0 *)*(void **)((char *)element + 0x50))->Unk(false);
+    }
+    else
+    {
+        *(char *)((char *)element + 0x12) = 0;
+    }
+    short first;
+    short second;
+    file.Access(&first, 2);
+    file.Access(&second, 2);
+    m_140.m_x = (float)first;
+    m_140.m_y = (float)second;
+    file.Access((char *)this + 0x13e, 2);
+    file.Access((char *)this + 0x13c, 2);
+    file.Access((char *)this + 1, 1);
+    *(char *)((char *)this + 1) = *(char *)((char *)this + 1) == 0;
+    file.Access((char *)this + 7, 1);
+    if (*(char *)((char *)this + 7) != 0)
+        ((RHElementFX *)element)->InitializeBackgroundRestoration();
+
+    unsigned short count;
+    unsigned short layer;
+    unsigned short index;
+    unsigned short i;
+    void *value;
+    RHUnk004b1520List *list;
+    RHUnk004b1520VoidList *appendList;
+    RHUnk0057d3f0 *sector;
+
+    file.Access(&count, 2);
+    list = (RHUnk004b1520List *)&m_1c;
+    for (i = 0; i < count; ++i)
+    {
+        file.Access(&layer, 2);
+        file.Access(&index, 2);
+        value = (*(void ***)((char *)&((RHFastFindGrid *)grid)->m_3ea4[layer] + 0x84))[index];
+        *(char *)value = 1;
+        list->FUN_00424410(list->end(), value);
+        list->m_10 = 1;
+    }
+
+    file.Access(&count, 2);
+    list = (RHUnk004b1520List *)&m_64;
+    for (i = 0; i < count; ++i)
+    {
+        file.Access(&index, 2);
+        value = ((RHFastFindGrid *)grid)->m_3ea4[0].m_obstacles.m_first[index];
+        *(char *)((char *)value + 8) = 1;
+        list->FUN_00424410(list->end(), value);
+        list->m_10 = 1;
+    }
+
+    sector = new RHUnk0057d3f0;
+    sector->m_30 = 0x44;
+    sector->Unk0057cd60(file, false);
+    if (((RHUnkSectorPoints *)((char *)sector + 4))->Unk0060ce80() > 0)
+    {
+        m_150 = sector;
+        sector->m_34 = 1;
+        sector->m_58 = this;
+        value = sector;
+        list = (RHUnk004b1520List *)&m_ac;
+        list->FUN_00424410(list->end(), value);
+        list->m_10 = 1;
+    }
+    else
+    {
+        m_150 = 0;
+        delete sector;
+    }
+
+    sector = new RHUnk0057d3f0;
+    sector->m_30 = 0x42;
+    sector->Unk0057cd60(file, false);
+    if (((RHUnkSectorPoints *)((char *)sector + 4))->Unk0060ce80() > 0)
+    {
+        sector->m_34 = 1;
+        sector->m_58 = this;
+        value = sector;
+        list = (RHUnk004b1520List *)&m_ac;
+        list->FUN_00424410(list->end(), value);
+        list->m_10 = 1;
+    }
+    else
+    {
+        delete sector;
+    }
+
+    file.Access(&count, 2);
+    list = (RHUnk004b1520List *)&m_40;
+    for (i = 0; i < count; ++i)
+    {
+        file.Access(&layer, 2);
+        file.Access(&index, 2);
+        value = (*(void ***)((char *)&((RHFastFindGrid *)grid)->m_3ea4[layer] + 0x84))[index];
+        *(char *)value = 0;
+        list->FUN_00424410(list->end(), value);
+        list->m_10 = 1;
+    }
+
+    file.Access(&count, 2);
+    appendList = (RHUnk004b1520VoidList *)&m_88;
+    for (i = 0; i < count; ++i)
+    {
+        file.Access(&index, 2);
+        value = ((RHFastFindGrid *)grid)->m_3ea4[0].m_obstacles.m_first[index];
+        *(char *)((char *)value + 8) = 0;
+        appendList->insert(appendList->end(), value);
+        appendList->m_dirty = 1;
+    }
+
+    sector = new RHUnk0057d3f0;
+    sector->m_30 = 0x44;
+    sector->Unk0057cd60(file, false);
+    if (((RHUnkSectorPoints *)((char *)sector + 4))->Unk0060ce80() > 0)
+    {
+        m_154 = sector;
+        sector->m_34 = 0;
+        sector->m_58 = this;
+        value = sector;
+        appendList = (RHUnk004b1520VoidList *)&m_d0;
+        appendList->insert(appendList->end(), value);
+        appendList->m_dirty = 1;
+    }
+    else
+    {
+        m_154 = 0;
+        delete sector;
+    }
+
+    sector = new RHUnk0057d3f0;
+    sector->m_30 = 0x42;
+    sector->Unk0057cd60(file, false);
+    if (((RHUnkSectorPoints *)((char *)sector + 4))->Unk0060ce80() > 0)
+    {
+        sector->m_34 = 0;
+        sector->m_58 = this;
+        value = sector;
+        appendList = (RHUnk004b1520VoidList *)&m_d0;
+        appendList->insert(appendList->end(), value);
+        appendList->m_dirty = 1;
+    }
+    else
+    {
+        delete sector;
+    }
+
+    sector = new RHUnk0057d3f0;
+    m_148 = sector;
+    sector->m_30 = 0x184;
+    sector->Unk0057cd60(file, false);
+    if (((RHUnkSectorPoints *)((char *)sector + 4))->Unk0060ce80() > 0)
+    {
+        sector->m_34 = 1;
+        sector->m_58 = this;
+    }
+    else
+    {
+        delete sector;
+        m_148 = 0;
+    }
+
+    sector = new RHUnk0057d3f0;
+    m_14c = sector;
+    sector->m_30 = 0x84;
+    sector->Unk0057cd60(file, false);
+    if (((RHUnkSectorPoints *)((char *)sector + 4))->Unk0060ce80() > 0)
+    {
+        sector->m_34 = 1;
+        sector->m_58 = this;
+    }
+    else
+    {
+        delete sector;
+        m_14c = 0;
+    }
+
+    file.Access((char *)this + 4, 1);
+    file.Access((char *)this + 5, 1);
+    RHFastFindPointerArray *gates = &g_unk0x6c0a9c->m_gates;
+    file.Access(&count, 2);
+    for (i = 0; i < count; ++i)
+    {
+        file.Access(&index, 2);
+        value = gates->m_first[index];
+        if (*(char *)((char *)this + 4) != 0)
+        {
+            *(void **)((char *)value + 0xb0) = this;
+        }
+        else
+        {
+            m_158.m_values.push_back((unsigned long)value);
+            m_158.m_changed = 1;
+        }
+    }
+    file.Access(&count, 2);
+    return ((ToolboxPositionFile *)&file)->FUN_005f5440() - start;
+}
 void RHEngineGridCalls::FUN_004efd10(void *, unsigned short, bool) {}
-short RHEngineGridCalls::FUN_004e8fc0(const SBGeoPoint2D &, const SBGeoPoint2D &, short, void *&) { return -1; }
 
 // FUNCTION: GAME 0x004e9760
 short RHEngineGridCalls::FUN_004e9760(const SBGeoPoint2D &point, const SBGeoPoint2D &origin, void *&sector, unsigned short &layer)
 {
     for (short i = *(short *)((char *)this + 0x3e9c) - 1; i >= 0; --i)
     {
-        short result = FUN_004e8fc0(point, origin, i, sector);
+        short result = ((RHElementGrid *)this)->FUN_004e8fc0(point, origin, i, sector);
         if (result != -2)
         {
             if (result > 0 && (unsigned char)(*(unsigned *)((char *)sector + 0x30) >> 10) & 1)
@@ -164,7 +404,7 @@ short RHEngineGridCalls::FUN_004e9920(const SBGeoPoint2D &point, const SBGeoPoin
     short found;
     for (short i = *(short *)((char *)this + 0x3e9c) - 1; i >= 0; --i)
     {
-        short result = FUN_004e8fc0(point, origin, i, sector);
+        short result = ((RHElementGrid *)this)->FUN_004e8fc0(point, origin, i, sector);
         if (first)
         {
             if (result != -2)
@@ -223,8 +463,6 @@ public:
 
 
 RHUnk0046ffe0::RHUnk0046ffe0(bool) {}
-RHUnk004ab090::RHUnk004ab090() {}
-RHUnk004b9b70::RHUnk004b9b70() {}
 RHUnk004bac30::RHUnk004bac30() {}
 
 void RHEngineMissionElementCalls::Unk00() {}

@@ -25,6 +25,7 @@ struct SBInputJoystickNames
     bool searching;
     int foundIndex;
     std::string needle;
+    SBInputJoystickNames() : dirty(true) {}
     ~SBInputJoystickNames() { values.clear(); }
     int Find(const std::string &);
 };
@@ -116,6 +117,7 @@ public:
     char m_2ab;
     std::string m_2ac;
 
+    explicit SBInputUnk005fb730(void *instance);
     ~SBInputUnk005fb730();
     bool FUN_005f9ea0(unsigned char);
     bool FUN_005fa240(unsigned short, void *);

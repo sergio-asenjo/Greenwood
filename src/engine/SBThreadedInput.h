@@ -60,7 +60,7 @@ public:
     void ClearBackgroundStack();
     static bool SetCursor(unsigned short cursor, bool selfIncrement);
     static bool AttachToDisplay(unsigned long surface);
-    static void InputLoop(const SBInputMouseState &mouse);
+    static bool InputLoop(const SBInputMouseState &mouse);
     void PopMouseBackground(bool wait);
     static int GetDirection();
     bool Suspend();

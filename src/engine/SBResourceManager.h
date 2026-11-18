@@ -216,12 +216,13 @@ public:
     static SBResourceTreeLinks *Maximum(SBResourceTreeLinks *);
 };
 
+// VTABLE: GAME 0x0067a840
 // SIZE 0x94
 class SBResourceManager
 {
 public:
     SBResourceManager();
-    ~SBResourceManager();
+    virtual ~SBResourceManager();
     struct Element { char m_00[16]; };
     template<class T> struct Node
     {
@@ -284,7 +285,7 @@ public:
         SBResourceUnkKeyIterator FUN_00601bd0(const unsigned long &);
         SBResourceUnkKeyNode *&FUN_006042a0(SBResourceUnkKeyNode *&, const unsigned long &);
     };
-    char m_00[0x0c];
+    char m_04[8];
     unsigned long m_nextId;
     SBResourceFileList m_files;
     Tree34 m_34;

@@ -10,6 +10,12 @@
 #include "SBGeoPoint2D.h"
 #include "RHUnk0060f8a0.h"
 #include <stddef.h>
+#include <stdlib.h>
+#include "RHFrameDictionary.h"
+#include "RHMenuScreenView.h"
+#include "ToolboxColor.h"
+#include "RHElementCore.h"
+#include "RHElementActor.h"
 
 typedef int RHConsole_size_assert[(sizeof(RHConsole) == 0x688) ? 1 : -1];
 DECOMP_SIZE_ASSERT(std::string, 0x10)
@@ -20,6 +26,20 @@ DECOMP_STATIC_ASSERT(offsetof(RHUnk0060f8a0, m_18) == 0x18)
 DECOMP_STATIC_ASSERT(offsetof(RHUnk0060f8a0, m_1a) == 0x1a)
 DECOMP_STATIC_ASSERT(offsetof(RHUnk0060f8a0, m_20) == 0x20)
 DECOMP_STATIC_ASSERT(offsetof(RHUnk0060f8a0, m_24) == 0x24)
+DECOMP_STATIC_ASSERT(offsetof(RHConsole, m_position) == 0x88)
+DECOMP_STATIC_ASSERT(offsetof(RHConsole, m_history) == 0x8b)
+DECOMP_STATIC_ASSERT(offsetof(RHConsole, m_historyIndex) == 0x5b4)
+DECOMP_STATIC_ASSERT(offsetof(RHConsole, m_completion) == 0x5f8)
+DECOMP_STATIC_ASSERT(offsetof(RHConsole, m_completionDirty) == 0x67c)
+DECOMP_STATIC_ASSERT(offsetof(RHConsole, m_completionIndex) == 0x680)
+DECOMP_STATIC_ASSERT(offsetof(RHConsole, m_close) == 0x684)
+DECOMP_STATIC_ASSERT(offsetof(RHConsoleEngine, m_4a52) == 0x4a52)
+DECOMP_SIZE_ASSERT(RHUnk005069a0, 0x14)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005069a0, m_00) == 0)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005069a0, m_04) == 4)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005069a0, m_0c) == 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(RHElement, m_04) == 4)
+DECOMP_STATIC_ASSERT(offsetof(RHElement, m_50) == 0x50)
 
 class RHEngine
 {
@@ -40,7 +60,6 @@ class RHScriptBatchCalls
 {
 public:
     void Unk004e3220(int);
-    void Unk0050ed40();
     void Unk004520e0(int, int);
     void Unk004d9330(void *, bool);
     void *Unk0058a940(void *, int, void *);
@@ -50,7 +69,10 @@ public:
 
 #include "RHSequenceTimedCalls.h"
 
+DECOMP_SIZE_ASSERT(RHUnk005861c0, 0x7c)
+
 #include "RHScriptCore.h"
+#include "RHGame.h"
 
 struct RHConsoleProfile
 {
@@ -345,6 +367,8 @@ struct RHConsoleHumanFlags
 };
 
 extern double g_unk0x00677670;
+extern float g_unk0x00677684;
+extern float g_unk0x00677680;
 
 
 // GLOBAL: GAME 0x006c080c
@@ -374,6 +398,106 @@ void RHConsole::FUN_0045bc50(char *destination, const char *source)
 {
     for (int index = strlen(source); index >= 0; --index)
         destination[index] = source[index];
+}
+
+// FUNCTION: GAME 0x0045bc80
+bool RHConsole::HandleCharacter(unsigned short character)
+{
+    if (character >= 0x20 && (character <= 0x80 || character >= 0x100))
+    {
+        if (character > 0x100)
+        {
+            switch (character)
+            {
+            case 0x101:
+                if (m_historyIndex > 0)
+                    --m_historyIndex;
+                else
+                    m_historyIndex = 9;
+                strcpy(m_04, m_history[m_historyIndex]);
+                m_position = strlen(m_04);
+                m_completionDirty = true;
+                break;
+            case 0x102:
+                if (m_historyIndex < 9)
+                    ++m_historyIndex;
+                else
+                    m_historyIndex = 0;
+                strcpy(m_04, m_history[m_historyIndex]);
+                m_position = strlen(m_04);
+                m_completionDirty = true;
+                break;
+            case 0x103:
+                if (m_position > 0)
+                    --m_position;
+                break;
+            case 0x104:
+                if (m_04[m_position])
+                    ++m_position;
+                break;
+            case 0x105:
+                if (m_04[m_position])
+                {
+                    strcpy(m_04 + m_position, m_04 + m_position + 1);
+                    m_completionDirty = true;
+                }
+                break;
+            }
+        }
+        else
+        {
+            FUN_0045bc50(m_04 + m_position + 1, m_04 + m_position);
+            m_04[m_position] = toupper(character);
+            ++m_position;
+            m_completionDirty = true;
+        }
+    }
+    else
+    {
+        switch (character)
+        {
+        case 8:
+            if (m_position > 0)
+            {
+                --m_position;
+                strcpy(m_04 + m_position, m_04 + m_position + 1);
+            }
+            m_completionDirty = true;
+            break;
+        case 9:
+            if (m_completionDirty)
+            {
+                m_completionIndex = 0;
+                m_completionDirty = false;
+                strcpy(m_completion, m_04);
+            }
+            CheckForCompletion(m_04, m_completion, m_position);
+            break;
+        case 13:
+            m_completionDirty = true;
+            if (strcmp(m_04, "") == 0)
+            {
+                m_engine->m_draw->FUN_005ef380(0);
+                return false;
+            }
+            strcpy(m_history[m_historyIndex], m_04);
+            if (++m_historyIndex == 10)
+                m_historyIndex = 0;
+            ExecuteCommand();
+            if (m_engine->m_4a52 == 1 || m_engine->m_4a53 == 1 ||
+                m_engine->m_4a54 == 1 || m_close == 1)
+            {
+                m_close = 0;
+                m_engine->m_draw->FUN_005ef380(0);
+                return false;
+            }
+            break;
+        default:
+            return true;
+        }
+    }
+    FUN_005ed740(m_engine->m_draw, m_position, m_04);
+    return true;
 }
 
 // FUNCTION: GAME 0x0045c360
@@ -563,7 +687,7 @@ void RHConsole::FUN_0045b900(const char *text, void (RHConsole::*callback)(unsig
 void RHConsole::FUN_0045bff0()
 {
     RHConsoleHelpArray *commands = (RHConsoleHelpArray *)FUN_00460600();
-    typedef bool (__cdecl *Message)(RHUnk005ef320 *, const char *);
+    typedef bool (__cdecl *Message)(SBDrawManager *, const char *);
     Message output = (Message)&FUN_005ede40;
     // STRING: GAME 0x006ac910
     output(m_engine->m_draw, "Robin Hood Console Help File.");
@@ -617,7 +741,7 @@ bool RHConsole::ExecuteCommand()
         {
             m_5b6 = 0;
             RHGameInputTranslator::mpInstance->DeityCall();
-            typedef bool (__cdecl *Message)(RHUnk005ef320 *, const char *);
+            typedef bool (__cdecl *Message)(SBDrawManager *, const char *);
             // STRING: GAME 0x006ac930
             ((Message)&FUN_005ede40)(m_engine->m_draw, "Praised be His Name.");
         }
@@ -791,7 +915,7 @@ void RHConsole::FUN_0045cda0(unsigned, char **)
         } while (--count);
     }
     ((RHUnk00450b60 *)campaign)->Unk(3, amount);
-    ((RHScriptBatchCalls *)g_unk0x6c0b3c)->Unk0050ed40();
+    ((RHGame *)g_unk0x6c0b3c)->FUN_0050ed40();
     ((RHScriptBatchCalls *)m_engine)->Unk004e3220(1);
 }
 
@@ -838,9 +962,9 @@ void RHConsole::FUN_0045d650(unsigned, char **)
     unsigned soldierCount = 0;
     unsigned index = 0;
     SBGeoPoint2D point;
-    RHUnk005ef320 *draw = g_unk0x6c11d0;
-    typedef void (__cdecl *Message)(RHUnk005ef320 *, const char *);
-    Message output = (Message)(void (__cdecl *)(RHUnk005ef320 *, const char *, int))&FUN_005edae0;
+    SBDrawManager *draw = g_unk0x6c11d0;
+    typedef void (__cdecl *Message)(SBDrawManager *, const char *);
+    Message output = (Message)(void (__cdecl *)(SBDrawManager *, const char *, int))&FUN_005edae0;
     // STRING: GAME 0x006ad0fc
     output(draw, "Nuking ...");
     for (; index < RHConsoleField<RHConsoleActorArray>(m_engine, 0x48d8).size(); ++index)
@@ -866,7 +990,7 @@ void RHConsole::FUN_0045d650(unsigned, char **)
 // FUNCTION: GAME 0x0045d780
 void RHConsole::FUN_0045d780(unsigned, char **)
 {
-    RHUnk005ef320 *draw = g_unk0x6c11d0;
+    SBDrawManager *draw = g_unk0x6c11d0;
     m_engine->m_4b3b = !m_engine->m_4b3b;
     if (m_engine->m_4b3b)
     {
@@ -922,7 +1046,7 @@ void RHConsole::FUN_0045d8b0(unsigned, char **)
 // FUNCTION: GAME 0x0045d920
 void RHConsole::FUN_0045d920(unsigned, char **)
 {
-    typedef void (__cdecl *Message)(RHUnk005ef320 *, const char *);
+    typedef void (__cdecl *Message)(SBDrawManager *, const char *);
     Message output = reinterpret_cast<Message>(&FUN_005edae0);
     if (RHConsoleField<RHConsoleActor *>(m_engine, 0xd4) &&
         (RHConsoleField<unsigned>(RHConsoleField<RHConsoleActor *>(m_engine, 0xd4), 4) & 0xf) == 4)
@@ -1006,7 +1130,7 @@ void RHConsole::FUN_0045db20(unsigned, char **)
 // FUNCTION: GAME 0x0045db80
 void RHConsole::FUN_0045db80(unsigned, char **)
 {
-    typedef void (__cdecl *Message)(RHUnk005ef320 *, const char *);
+    typedef void (__cdecl *Message)(SBDrawManager *, const char *);
     Message output = reinterpret_cast<Message>(&FUN_005edae0);
     // STRING: GAME 0x006ad438
     output(m_engine->m_draw, "noise");
@@ -1109,7 +1233,7 @@ void RHConsole::FUN_0045dd90(unsigned, char **)
         RHConsoleActor *actor = RHConsoleField<RHConsoleActorArray>(m_engine, 0x48d8).m_first[index];
         if ((RHConsoleField<volatile unsigned>(actor, 4) & 0xf) == 0xc)
         {
-            RHConsoleSequenceElement *element = new RHConsoleSequenceElement(1, 0x26, actor, 0, 100, 0);
+            RHUnk005861c0 *element = new RHUnk005861c0(1, 0x26, actor, (void *)0, (unsigned short)100, (unsigned short)0);
             ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940("", 0, element);
         }
     }
@@ -1129,7 +1253,7 @@ void RHConsole::FUN_0045de60(unsigned, char **)
     // STRING: GAME 0x006ad510
     FUN_005ede40(m_engine->m_draw, "Free Blocks map after optimisation (%d merge)", merges);
     int size = (int)pow(g_unk0x00677670, 5.0);
-    typedef bool (__cdecl *Message)(RHUnk005ef320 *, const char *);
+    typedef bool (__cdecl *Message)(SBDrawManager *, const char *);
     Message output = (Message)&FUN_005ede40;
     for (int index = 0; index < 17; ++index)
     {
@@ -1379,7 +1503,7 @@ void RHConsole::FUN_0045e8d0(unsigned, char **)
 // FUNCTION: GAME 0x0045eaa0
 void RHConsole::FUN_0045eaa0(unsigned count, char **arguments)
 {
-    typedef void (__cdecl *Message)(RHUnk005ef320 *, const char *);
+    typedef void (__cdecl *Message)(SBDrawManager *, const char *);
     Message output = reinterpret_cast<Message>(&FUN_005edae0);
     unsigned amount = 100;
     char buffer[1024];
@@ -1402,7 +1526,7 @@ void RHConsole::FUN_0045eb40(unsigned, char **)
 // FUNCTION: GAME 0x0045eb50
 void RHConsole::FUN_0045eb50(unsigned, char **)
 {
-    typedef void (__cdecl *Message)(RHUnk005ef320 *, const char *);
+    typedef void (__cdecl *Message)(SBDrawManager *, const char *);
     Message output = reinterpret_cast<Message>(&FUN_005edae0);
     char buffer[1024];
     // STRING: GAME 0x006ada94
@@ -1483,7 +1607,7 @@ void RHConsole::FUN_0045f050(unsigned, char **)
 // FUNCTION: GAME 0x0045f0c0
 void RHConsole::FUN_0045f0c0(unsigned count, char **arguments)
 {
-    typedef void (__cdecl *Message)(RHUnk005ef320 *, const char *);
+    typedef void (__cdecl *Message)(SBDrawManager *, const char *);
     Message output = reinterpret_cast<Message>(&FUN_005edae0);
     unsigned amount = 0;
     // STRING: GAME 0x006adbb8
@@ -1537,7 +1661,7 @@ void RHConsole::FUN_0045f2a0(unsigned count, char **arguments)
     else
         amount = 1;
     ((RHUnk00450b60 *)g_unk0x6c07fc)->Unk(3, amount);
-    ((RHScriptBatchCalls *)g_unk0x6c0b3c)->Unk0050ed40();
+    ((RHGame *)g_unk0x6c0b3c)->FUN_0050ed40();
 }
 
 // FUNCTION: GAME 0x0045f310
@@ -1634,7 +1758,7 @@ void RHConsole::FUN_004600e0(unsigned, char **)
 // FUNCTION: GAME 0x00460140
 void RHConsole::FUN_00460140(unsigned count, char **arguments)
 {
-    typedef bool (__cdecl *Message)(RHUnk005ef320 *, const char *);
+    typedef bool (__cdecl *Message)(SBDrawManager *, const char *);
     Message output = (Message)&FUN_005ede40;
     if (count == 2)
     {
@@ -1738,7 +1862,7 @@ void RHConsole::FUN_00460410(unsigned, char **)
 // FUNCTION: GAME 0x00460460
 void RHConsole::FUN_00460460(unsigned count, char **arguments)
 {
-    typedef bool (__cdecl *Message)(RHUnk005ef320 *, const char *);
+    typedef bool (__cdecl *Message)(SBDrawManager *, const char *);
     Message output = (Message)&FUN_005ede40;
     if (count == 2)
     {
@@ -1769,6 +1893,74 @@ void RHConsole::FUN_00460460(unsigned count, char **arguments)
 void *RHConsole::FUN_00460600()
 {
     return m_5b6 ? m_5d8 : m_5b8;
+}
+
+// FUNCTION: GAME 0x00460620
+void RHConsole::FUN_00460620(unsigned count, char **arguments)
+{
+    if (count != 6)
+    {
+        // STRING: GAME 0x006adfd8
+        FUN_005ede40(m_engine->m_draw, "USAGE: CHROMA <start hue> <end hue> <rotation> <saturation> <value>");
+        return;
+    }
+    unsigned patched = 0;
+    float start = atof(arguments[1]);
+    float end = atof(arguments[2]);
+    float rotation = atof(arguments[3]);
+    float saturation = atof(arguments[4]) * 0.01;
+    float value = atof(arguments[5]) * 0.01;
+    RHSectorActorList &selected = RHConsoleField<RHSectorActorList>(m_engine, 0x49f8);
+    selected.Unk005c8e40(0);
+    RHUnk005069a0 *frame = (*selected.m_cur)->FUN_004a1af0();
+    if (frame)
+    {
+        unsigned short *pixels = (unsigned short *)frame->m_04;
+        struct ColorKey { unsigned short value; };
+        typedef char ColorKeySizeAssert[sizeof(ColorKey) == 2 ? 1 : -1];
+        ColorKey transparent;
+        transparent.value = frame->m_0c;
+        unsigned colors = frame->m_00;
+        for (unsigned index = 0; index < colors * 4; ++index, ++pixels)
+        {
+            unsigned short color = *pixels;
+            if (color != *(volatile unsigned short *)&transparent.value && color != 0x7c0)
+            {
+                float h, s, v;
+                float r = (color >> 11) * g_unk0x00677684;
+                float g = ((color >> 5) & 63) * g_unk0x00677680;
+                float b = (color & 31) * g_unk0x00677684;
+                RHMenuScreenView::RGB_To_HSV(r, g, b, h, s, v);
+                if (h >= start && h <= end)
+                {
+                    float adjustedHue = h + rotation;
+                    float adjustedSaturation = s * saturation;
+                    float adjustedValue = v * value;
+                    if (adjustedHue >= 360.0f)
+                        adjustedHue -= 360.0f;
+                    if (adjustedSaturation > 1.0f)
+                        adjustedSaturation = 1.0f;
+                    if (adjustedValue > 1.0f)
+                        adjustedValue = 1.0f;
+                    Toolbox::HSV_To_RGB(h, s, v, r, g, b);
+                    Toolbox::HSV_To_RGB(adjustedHue, adjustedSaturation, adjustedValue, r, g, b);
+                    unsigned short result = (unsigned short)(int)(g * 64.0f) & 63;
+                    result |= (int)(r * 32.0f) << 6;
+                    result <<= 5;
+                    result |= (int)(b * 32.0f) & 31;
+                    *pixels = result;
+                    ++patched;
+                }
+            }
+        }
+        // STRING: GAME 0x006adfb0
+        FUN_005ede40(m_engine->m_draw, "Patching finished : %d pixels patched", patched);
+    }
+    else
+    {
+        // STRING: GAME 0x006adf8c
+        FUN_005ede40(m_engine->m_draw, "Current sprite is not dico based");
+    }
 }
 
 void EmitRHConsole(RHConsole *console, signed char *line, unsigned &count, char **arguments)
@@ -1838,4 +2030,5 @@ void EmitRHConsole(RHConsole *console, signed char *line, unsigned &count, char 
     console->FUN_004603e0(count, arguments);
     console->FUN_00460410(count, arguments);
     console->FUN_00460600();
+    console->FUN_00460620(count, arguments);
 }
