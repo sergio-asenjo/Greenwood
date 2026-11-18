@@ -21,6 +21,15 @@ DECOMP_SIZE_ASSERT(RHCivilianProfileText, 0x10)
 DECOMP_SIZE_ASSERT(RHCivilianProfile, 0x3c)
 DECOMP_SIZE_ASSERT(RHMissionProfile, 0xf4)
 DECOMP_SIZE_ASSERT(RHMissionArray<unsigned long>, 0x10)
+DECOMP_SIZE_ASSERT(RHMissionArray<RHCharacterProfile *>, 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHMissionArray<unsigned long>, m_allocator) == 0x00)
+DECOMP_STATIC_ASSERT(offsetof(RHMissionArray<unsigned long>, m_first) == 0x04)
+DECOMP_STATIC_ASSERT(offsetof(RHMissionArray<unsigned long>, m_last) == 0x08)
+DECOMP_STATIC_ASSERT(offsetof(RHMissionArray<unsigned long>, m_end) == 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(RHMissionArray<RHCharacterProfile *>, m_allocator) == 0x00)
+DECOMP_STATIC_ASSERT(offsetof(RHMissionArray<RHCharacterProfile *>, m_first) == 0x04)
+DECOMP_STATIC_ASSERT(offsetof(RHMissionArray<RHCharacterProfile *>, m_last) == 0x08)
+DECOMP_STATIC_ASSERT(offsetof(RHMissionArray<RHCharacterProfile *>, m_end) == 0x0c)
 DECOMP_SIZE_ASSERT(std::string, 0x10)
 DECOMP_SIZE_ASSERT(RHProfileManager, 0x70)
 DECOMP_SIZE_ASSERT(RHUnk00401490, 0x14)
@@ -1596,7 +1605,7 @@ bool RHProfileManager::SerializeCharacters(SBFile &file)
     return true;
 }
 
-static bool SerializeMissionArray(SBFile &file, RHMissionArray<unsigned long> &values)
+static inline bool SerializeMissionArray(SBFile &file, RHMissionArray<unsigned long> &values)
 {
     unsigned int count;
     if (!file.m_bLoading)

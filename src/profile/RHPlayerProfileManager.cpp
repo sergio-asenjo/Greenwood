@@ -18,6 +18,8 @@ DECOMP_SIZE_ASSERT(RHGraphicConfig, 0x0c)
 DECOMP_SIZE_ASSERT(RHPlayerProfile, 0x74)
 DECOMP_SIZE_ASSERT(RHPlayerProfileList, 0x24)
 DECOMP_SIZE_ASSERT(RHPlayerProfileManager, 0x30)
+DECOMP_SIZE_ASSERT(std::wstring, 0x10)
+DECOMP_SIZE_ASSERT(unsigned long, 0x04)
 DECOMP_SIZE_ASSERT(RHSectorActorConstIter, 0x04)
 DECOMP_SIZE_ASSERT(RHSectorActorIter, 0x04)
 DECOMP_SIZE_ASSERT(RHSectorActorList, 0x24)
@@ -84,11 +86,10 @@ RHPlayerProfile::RHPlayerProfile(unsigned long id, const std::wstring &name, uns
     CreateSaveGameDirectory();
 }
 
-// Parked: helper return-object forwarding and switch-arm scheduling differ.
-// STUB: GAME 0x0055cc00
+// FUNCTION: GAME 0x0055cc00
 std::wstring RHPlayerProfile::ConvertDifficultyLevelToWideString(unsigned long difficulty)
 {
-    unsigned long id = difficulty;
+    unsigned long id = 0;
     switch (difficulty)
     {
     case 0:
@@ -101,7 +102,7 @@ std::wstring RHPlayerProfile::ConvertDifficultyLevelToWideString(unsigned long d
         id = 0x24;
         break;
     }
-    return FUN_005e23d0(id);
+    return FUN_005e23d0(id ? id : *(volatile unsigned long *)&difficulty);
 }
 
 // FUNCTION: GAME 0x0055cc80
@@ -229,8 +230,8 @@ RHPlayerProfileManager::RHPlayerProfileManager() : m_00(0)
 
 #include "RHPortraitDrawCalls.h"
 
-class RHUnk005ef320;
-extern RHUnk005ef320 *g_unk0x6c11d0;
+class SBDrawManager;
+extern SBDrawManager *g_unk0x6c11d0;
 
 // FUNCTION: GAME 0x0055d670
 RHPlayerProfile *RHPlayerProfileManager::AddProfile(const std::wstring &name, unsigned long difficulty)
@@ -241,7 +242,7 @@ RHPlayerProfile *RHPlayerProfileManager::AddProfile(const std::wstring &name, un
         graphics.m_point = m_active->m_graphics.m_point;
     else
     {
-        RHUnkFXDraw *draw = (RHUnkFXDraw *)g_unk0x6c11d0;
+        SBDrawManager *draw = g_unk0x6c11d0;
         if (*(bool *)((char *)draw + 0x115))
             graphics.m_point = SBGeoVector2D(draw->FUN_005e56c0(0), draw->FUN_005e5750(0));
         else
@@ -330,7 +331,10 @@ inline RHPlayerProfileList::~RHPlayerProfileList()
     Destroy();
 }
 
-// STUB: GAME 0x0055d510
+// TEMPLATE: GAME 0x0046eb30 FOLDED
+// ?erase@?$list@PAVRHPlayerProfile@@V?$allocator@PAVRHPlayerProfile@@@std@@@std@@QAE?AViterator@12@V312@@Z
+
+// FUNCTION: GAME 0x0055d510
 RHPlayerProfileManager::~RHPlayerProfileManager()
 {
 }

@@ -5,6 +5,20 @@
 #include "RHProfileFile.h"
 #include <algorithm>
 
+// TEMPLATE: GAME 0x0059fba0 FOLDED
+// ??0?$RHMissionArray@PAVRHCharacterProfile@@@@QAE@ABV?$allocator@PAVRHCharacterProfile@@@std@@@Z
+template<> RHMissionArray<RHCharacterProfile *>::RHMissionArray(const std::allocator<RHCharacterProfile *> &allocator)
+    : m_allocator(allocator), m_first(0), m_last(0), m_end(0)
+{
+}
+
+// TEMPLATE: GAME 0x0059fba0 FOLDED
+// ??0?$RHMissionArray@K@@QAE@ABV?$allocator@K@std@@@Z
+template<> RHMissionArray<unsigned long>::RHMissionArray(const std::allocator<unsigned long> &allocator)
+    : m_allocator(allocator), m_first(0), m_last(0), m_end(0)
+{
+}
+
 // TEMPLATE: GAME 0x00401ee0 FOLDED
 // ?_Tidy@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AAEX_N@Z
 
