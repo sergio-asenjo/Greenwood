@@ -28,20 +28,20 @@ RHMobileBase004a8130::RHMobileBase004a8130(int type) : RHElement(type, 0)
 RHMobileBase004a8130::~RHMobileBase004a8130()
 {
 }
-bool RHMobileBase004a8130::FUN_004b23c0(void *, void *, void *) { return false; }
+bool RHMobileBase004a8130::FUN_004b23c0(const void *, void *, int) { return false; }
 void *RHMobileBase004a8130::FUN_004b29c0(void *) { return 0; }
-bool RHMobileBase004a8130::FUN_004b26a0(int, int, int) { return false; }
+bool RHMobileBase004a8130::FUN_004b26a0(const SBGeoPoint2D *, int, RHElementActor *) { return false; }
 void *RHMobileBase004a8130::Refresh(unsigned long, float, const SBGeoBoundingBox2D &, unsigned long) { return 0; }
-char RHMobileBase004a8130::v10() { return 1; }
+bool RHMobileBase004a8130::FUN_004b9f40() { return true; }
 void RHMobileBase004a8130::v14(SBFile &) {}
-void RHMobileBase004a8130::v15(unsigned) {}
+void RHMobileBase004a8130::InitializeFromMissionStream(SBFile &) {}
 bool RHMobileBase004a8130::Serialize(SBFile &) { return false; }
 // SYNTHETIC: GAME 0x004aac80
 // RHUnk004aac40::`scalar deleting destructor'
 // FUNCTION: GAME 0x004aaca0
 RHUnk004aac40::~RHUnk004aac40() {}
 void *RHUnk004aac40::Refresh(unsigned long, float, const SBGeoBoundingBox2D &, unsigned long) { return 0; }
-char RHUnk004aac40::v10() { return 1; }
+bool RHUnk004aac40::FUN_004b9f40() { return true; }
 bool RHUnk004aac40::Serialize(SBFile &) { return false; }
 
 RHMobileSegment::RHMobileSegment(const SBGeoPoint2D &, const SBGeoPoint2D &) {}
@@ -474,7 +474,7 @@ RHUnk0060fbf0 RHMobileUnk0060a820::FUN_00615ca0(const SBGeoSegment2D &segment) c
 #include "RHMobileVectorArray.h"
 
 DECOMP_SIZE_ASSERT(RHMobileVectorArray, 0x24)
-DECOMP_SIZE_ASSERT(RHElementMobile, 0x260)
+DECOMP_SIZE_ASSERT(RHElementMobile, 0x270)
 DECOMP_STATIC_ASSERT(offsetof(RHElementMobile, m_1c8) == 0x1c8)
 
 void EmitRHMobileVectorArrayDestructor(RHMobileVectorArray *array)

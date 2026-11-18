@@ -2,44 +2,61 @@
 #define RHELEMENTMOBILECORE_H
 
 #include "Decomp.h"
+#include "RHElementCore.h"
+#include "RHSectorCore.h"
 #include "RHMobileVectorArray.h"
 #include "RHEngineElementArray.h"
+#include "RHTransientPointerList.h"
 
 class SBFile;
-class RHUnkTargetSprite;
-class RHMobileElement;
-class RHMobilePath;
 class RHSoundSource;
+class RHMobileEvent;
+class RHUnkTargetSprite;
+struct RHMobileElement;
+struct RHMobilePath;
+class RHUnk005a3450;
+class RHUnk00520ae0;
+class RHMobileUnk0051fd10;
 
-// SIZE 0x260
-class RHElementMobile
+// VTABLE: GAME 0x00678570
+// SIZE 0x270
+class RHElementMobile : public RHElement
 {
 public:
+    RHElementMobile();
+    virtual ~RHElementMobile();
+    virtual bool FUN_004b23c0(const void *first, void *second, int third);
+    virtual void *FUN_004b29c0(void *value);
+    virtual bool FUN_004b26a0(const SBGeoPoint2D *first, int second, RHElementActor *third) { return false; }
+    virtual void *Refresh(unsigned long surface, float value, const SBGeoBoundingBox2D &box, unsigned long flags);
+    virtual bool FUN_004b9f40();
+    virtual void v14(SBFile &file) {}
+    virtual void InitializeFromMissionStream(SBFile &file);
+    virtual bool Serialize(SBFile &file);
+    virtual void v21(unsigned value);
     bool ExecuteMacroCommand();
-    void InitializeFromMissionStream(SBFile &file);
-    bool Serialize(SBFile &file);
     void CheckForLineCrossing();
     void FUN_004af0f0(int value);
     void FUN_004af170(void *value);
     void FUN_004abfe0();
-    bool FUN_004ab600();
     void FUN_004ab720();
     void FUN_004ab7e0(float distance);
     void TranslateGeometry(const SBGeoVector2D &value);
-    void FUN_004af210(class RHMobileEvent *event);
     void InitializeSound();
-    class RHUnk0045aaf0 *FUN_004ac750(void *actor);
-    bool FUN_004ac7c0(void *value, void *unused, int type);
-    unsigned short Size() const { return (unsigned short)m_children.VolatileSize(); }
     void Emit(SBFile &file);
+    unsigned short Size() const { return (unsigned short)m_children.VolatileSize(); }
 
-    undefined m_0[0x50];
-    RHUnkTargetSprite *m_50;
-    undefined m_54[0x58];
+    bool m_a8;
+    undefined m_a9[3];
     RHEngineElementArray<RHMobileElement> m_children;
-    undefined m_cc[0xbc];
+    RHEngineElementArray<RHUnk005a3450> m_cc;
+    RHSector m_ec;
+    RHEngineElementArray<RHUnk00520ae0> m_144;
+    RHEngineElementArray<RHMobileUnk0051fd10> m_164;
+    unsigned short m_184;
+    undefined m_186[2];
     RHMobilePath *m_188;
-    undefined m_18c[4];
+    RHMobileElement *m_18c;
     unsigned char *m_190;
     unsigned short m_194;
     undefined m_196[2];
@@ -47,24 +64,35 @@ public:
     float m_19c;
     float m_1a0;
     float m_1a4;
-    undefined m_1a8[0x20];
+    bool m_1a8;
+    undefined m_1a9[3];
+    SBGeoBoundingBox2D m_1ac;
+    bool m_1c0;
+    undefined m_1c1[7];
     RHMobileVectorArray m_1c8;
     unsigned m_1ec;
-    undefined m_1f0[4];
+    bool m_1f0;
+    bool m_1f1;
+    undefined m_1f2[2];
     SBGeoPoint2D m_1f4;
     RHMobileElement *m_1fc;
     bool m_200;
     undefined m_201[3];
-    SBGeoPoint2D m_204;
-    undefined m_20c[0xc];
+    RHUnk00613e90 m_204;
+    int m_210;
+    int m_214;
     SBGeoPoint2D m_218;
     SBGeoPoint2D m_220;
-    undefined m_228[0x14];
+    SBGeoPoint2D m_228;
+    SBGeoPoint2D m_230;
+    bool m_238;
+    undefined m_239[3];
     RHSoundSource *m_23c;
     RHSoundSource *m_240;
     RHSoundSource *m_244;
-    undefined m_248[0x10];
-    undefined m_258[8];
+    bool m_248;
+    undefined m_249[3];
+    RHTransientPointerList<void> m_24c;
 };
 
 #endif

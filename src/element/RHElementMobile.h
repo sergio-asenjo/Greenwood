@@ -104,7 +104,10 @@ class RHMobilePolygon
 public:
     virtual void v0(); // vtable+0x00
     virtual void FUN_00464530(SBFile &file, bool value); // vtable+0x04
-    undefined m_4[0x38]; // 0x04
+    undefined m_4[0x2c]; // 0x04
+    unsigned m_30;
+    bool m_34;
+    undefined m_35[7];
 };
 
 #include "RHUnkSectorPoints.h"
@@ -147,7 +150,8 @@ public:
         node->next = head ? head : node;
         node->previous = previous ? previous : node;
         head->previous = node;
-        node->previous->next = node;
+        RHMobilePointerNode *link = *(RHMobilePointerNode *volatile *)&node->previous;
+        link->next = node;
         if (&node->value)
             node->value = value;
         ++m_8;
@@ -244,19 +248,6 @@ public:
     SBGeoPoint2D *m_4;
     SBGeoPoint2D *m_8;
     SBGeoPoint2D *m_c;
-};
-
-class RHMobileUnk00611360 : public RHMobilePointStorage
-{
-public:
-    RHMobileUnk00611360();
-    ~RHMobileUnk00611360() { Erase(begin(), end()); }
-    void FUN_00611360(const SBGeoPoint2D &value);
-    unsigned short Size() const { SBGeoPoint2D *first = *(SBGeoPoint2D *volatile *)&m_4; if (!first) return 0; return (unsigned short)(m_8 - first); }
-    int m_10;
-    bool m_14;
-    undefined m_18[4];
-    SBGeoPoint2D m_1c;
 };
 
 class RHMobileUnk004b06f0
@@ -441,13 +432,13 @@ class RHMobileBase004a8130 : public RHElement
 public:
     RHMobileBase004a8130(int type);
     virtual ~RHMobileBase004a8130(); // vtable+0x00
-    virtual bool FUN_004b23c0(void *first, void *second, void *third);
+    virtual bool FUN_004b23c0(const void *first, void *second, int third);
     virtual void *FUN_004b29c0(void *value);
-    virtual bool FUN_004b26a0(int first, int second, int third);
+    virtual bool FUN_004b26a0(const SBGeoPoint2D *first, int second, RHElementActor *third);
     virtual void *Refresh(unsigned long surface, float value, const SBGeoBoundingBox2D &box, unsigned long flags);
-    virtual char v10();
+    virtual bool FUN_004b9f40();
     virtual void v14(SBFile &file); // vtable+0x38
-    virtual void v15(unsigned value);
+    virtual void InitializeFromMissionStream(SBFile &file);
     virtual bool Serialize(SBFile &file); // vtable+0x40
     undefined m_a8[0xc]; // 0xa8
     SBGeoBoundingBox2D m_b4; // 0xb4
@@ -467,7 +458,7 @@ public:
     RHUnk004aac40();
     virtual ~RHUnk004aac40(); // vtable+0x00
     virtual void *Refresh(unsigned long surface, float value, const SBGeoBoundingBox2D &box, unsigned long flags);
-    virtual char v10();
+    virtual bool FUN_004b9f40();
     virtual bool Serialize(SBFile &file); // vtable+0x40
     float m_fc; // 0xfc
     RHElementMobile *m_100; // 0x100
@@ -485,24 +476,7 @@ public:
     void *m_28;
 };
 
-struct RHScriptNode
-{
-    RHScriptNode *next;
-    RHScriptNode *previous;
-    RHElevationLine *data;
-};
-
-struct RHScriptIter
-{
-    RHScriptNode *node;
-    RHScriptIter(RHScriptNode *value) : node(value) {}
-};
-
-class RHUnk0046eb30
-{
-public:
-    RHScriptIter erase(RHScriptIter position);
-};
+#include "RHScriptListCore.h"
 
 void *FUN_0048f170(void *value);
 
@@ -512,7 +486,7 @@ typedef RHTransientPointerList<RHElevationLine> RHMobileLineTransientList;
 
 #include "RHElementMobileCore.h"
 
-// SIZE 0x260
+// SIZE 0x270
 class RHUnk004af060 : public RHElementMobile
 {
 public:
@@ -598,6 +572,7 @@ public:
 class RHPath
 {
 public:
+    ~RHPath();
     bool SerializeStatus(SBFile &file);
 };
 
