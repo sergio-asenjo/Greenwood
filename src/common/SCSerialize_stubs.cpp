@@ -20,6 +20,12 @@ int SCSerializeUnk00642a2f(const char *, ...) throw()
 }
 
 // TEMPLATE: GAME 0x0059fba0 FOLDED
+// ??0?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAE@ABV?$allocator@D@1@@Z
+
+// TEMPLATE: GAME 0x0059fba0 FOLDED
+// ??0?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@QAE@ABV?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@1@@Z
+
+// TEMPLATE: GAME 0x0059fba0 FOLDED
 // ??0SCSerializeStringVector@@QAE@ABV?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@std@@@Z
 SCSerializeStringVector::SCSerializeStringVector(const std::allocator<std::string> &allocator)
     : std::vector<std::string>(allocator)
