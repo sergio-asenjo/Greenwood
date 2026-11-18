@@ -278,11 +278,7 @@ extern RHUnk00452030 *g_unk0x6c07fc;
 // PROVISIONAL: named by address only. Its only caller is
 // RHScript::RemoveAllSubordinates, and it has no Windows-side __FILE__/tag/string
 // of its own (checked: no `push <file string>` in its body, and it is not listed
-// in symbols/functions-by-file.tsv). Its body walks list/count fields at
-// [this+0x2fc..+0x304] and [this+0x2b8..+0x2e8] and rewrites [this+0x49c]+[0x4]
-// style offsets; tools/attribute.py gives it a *probable* rhscript.cpp TU from
-// that single caller, which is a hint, not a name. The direct call site emits as
-// a non-inline member; defined once in RHScript_stubs.cpp.
+// in symbols/functions-by-file.tsv). Defined in RHScript.cpp.
 class RHUnk0041b0e0
 {
 public:
@@ -584,7 +580,6 @@ public:
     void Unk0057ff70(float height);
     void Unk004520e0(int index, int value);
     void Unk004e3220(int value);
-    void Unk0050ed40();
     void Unk00450be0(int property, int value);
     int Unk004ec910(void *location, float radius, float strength, int value);
     RHScriptBatchCalls *Unk004e3cc0();
@@ -644,6 +639,7 @@ struct RHScriptZoneList
     char searchPadding[3];
     int searchIndex;
     void *searchValue;
+    __forceinline void GoTo(int index) { ((RHProfileListCursor *)this)->GoTo(index); }
     int Find(void *actor)
     {
         int size = count;
@@ -702,14 +698,9 @@ public:
     char data[4];
 };
 
-class RHUnk005ef320
-{
-public:
-    bool FUN_005ef380(int value);
-    unsigned short Unk(int red, int green, int blue);
-};
+#include "SBDrawManagerCore.h"
 
-extern RHUnk005ef320 *g_unk0x6c11d0;
+extern SBDrawManager *g_unk0x6c11d0;
 
 class RHUnk0046bcb0Dispatch
 {

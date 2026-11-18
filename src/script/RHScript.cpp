@@ -73,7 +73,7 @@ struct RHUnk579e80State
     int index;
     int value;
 };
-bool FUN_005edae0(RHUnk005ef320 *, const char *, ...);
+bool FUN_005edae0(SBDrawManager *, const char *, ...);
 class RHMenuPopupScroll
 {
 public:
@@ -636,8 +636,8 @@ RHUnk00452030 *g_unk0x6c07fc;
 unsigned short g_unk0x6c0fa4;
 // GLOBAL: GAME 0x006c0fa8
 char *g_unk0x6c0fa8;
-struct RHUnkSectorGlobal;
-extern RHUnkSectorGlobal *g_unk0x6c0a9c;
+class RHFastFindGrid;
+extern RHFastFindGrid *g_unk0x6c0a9c;
 class RHEngine;
 extern RHEngine *g_pEngine;
 class RHUnk6c1040;
@@ -687,7 +687,7 @@ void *g_unk0x6c0f7c;
 RHUnk0048a970 *g_unk0x6c0b3c;
 
 // GLOBAL: GAME 0x006c11d0
-RHUnk005ef320 *g_unk0x6c11d0;
+SBDrawManager *g_unk0x6c11d0;
 
 // GLOBAL: GAME 0x006c05c4
 void *g_unk0x6c05c4;
@@ -4050,7 +4050,7 @@ namespace VMCoreCustomDependencies
 void FUN_00576170()
 {
     RHMessenger *messenger = RHUnk00546050();
-    (*(RHUnk005ef320 **)(g_unk0x6c0fa8 + 0xdc))->FUN_005ef380(1);
+    (*(SBDrawManager **)(g_unk0x6c0fa8 + 0xdc))->FUN_005ef380(1);
     (*(SBDrawManager **)(g_unk0x6c0fa8 + 0xdc))->FUN_005e5260();
     messenger->RHUnk005460c0(RHUnk5490f0(36));
 }
@@ -5651,7 +5651,7 @@ void RHScript::WinBlazon(void *blazon)
         ((RHScriptBatchCalls *)g_pEngine)->Unk004e3220(1);
     if (g_unk0x6c05c4 == 0)
     {
-        ((RHScriptBatchCalls *)g_unk0x6c0b3c)->Unk0050ed40();
+        ((RHGame *)g_unk0x6c0b3c)->FUN_0050ed40();
         ((RHGame *)g_unk0x6c0b3c)->UpdateBlazons(0, 0, 0, false);
     }
 }
@@ -5669,7 +5669,7 @@ void RHScript::LoseBlazon(void *blazon)
         if (g_unk0x6c05c4 == 0)
         {
             ((RHScriptBatchCalls *)g_unk0x6c07fc)->Unk00450be0(3, *(unsigned short *)((char *)blazon + 0xae));
-            ((RHScriptBatchCalls *)g_unk0x6c0b3c)->Unk0050ed40();
+            ((RHGame *)g_unk0x6c0b3c)->FUN_0050ed40();
         }
     }
 }
@@ -6269,6 +6269,71 @@ void RHScript::AddAsSubordinate(void *chief, void *subordinate)
         list->valid = true;
         ((RHScriptBatchCalls *)base)->Unk0041ac50();
     }
+}
+
+// FUNCTION: GAME 0x0041b0e0
+void RHUnk0041b0e0::Clear()
+{
+    int count = *(int *)((char *)this + 0x304);
+    if ((unsigned short)count > 0)
+    {
+        RHScriptZoneList *list = (RHScriptZoneList *)((char *)this + 0x2fc);
+        int index = 0;
+        int remaining = (unsigned short)count;
+        do
+        {
+            list->GoTo(index);
+            void *chief = *list->cursor;
+            *(void **)((char *)chief + *((int *)*(void **)((char *)chief + 0x49c) + 1) + 0x74c) = 0;
+            if (*(int *)((char *)chief + *((int *)*(void **)((char *)chief + 0x49c) + 1) + 0x4a8) == 1)
+                ((RHArtificialIntelligence *)((char *)chief + *((int *)*(void **)((char *)chief + 0x49c) + 1) + 0x49c))->V00(0);
+            ++index;
+        } while (--remaining);
+    }
+
+    RHScriptNode *head;
+    RHScriptNode *node;
+
+    {
+        RHScriptZoneList *list = (RHScriptZoneList *)((char *)this + 0x2fc);
+        head = list->head;
+        node = head->next;
+        while (node != head)
+        {
+            RHScriptNode *current = node;
+            node = node->next;
+            ((RHUnk0046eb30 *)list)->erase(RHScriptIter(current));
+        }
+        list->valid = true;
+    }
+
+    head = *(RHScriptNode **)((char *)this + 0x2dc);
+    node = head->next;
+    while (node != head)
+    {
+        RHScriptNode *current = node;
+        node = node->next;
+        RHSectorActorIter position((RHSectorActorNode *)current);
+        RHScriptNode *removed = (RHScriptNode *)(position++).m_p;
+        removed->prev->next = removed->next;
+        removed->next->prev = removed->prev;
+        operator delete(removed);
+        --*(int *)((char *)this + 0x2e0);
+    }
+    unsigned char *dirty = (unsigned char *)this + 0x2e8;
+    *dirty = 1;
+    head = *(RHScriptNode **)((char *)this + 0x2b8);
+    node = head->next;
+    while (node != head)
+    {
+        RHScriptNode *current = node;
+        node = node->next;
+        current->prev->next = current->next;
+        current->next->prev = current->prev;
+        operator delete(current);
+        --*(int *)((char *)this + 0x2bc);
+    }
+    *(bool *)((char *)this + 0x2c4) = true;
 }
 
 // FUNCTION: GAME 0x0057acc0
@@ -6876,7 +6941,7 @@ void FUN_0057bff0(int steps)
     SBDrawViewport destination;
     height = *(float *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x58);
     width = *(float *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x54);
-    unsigned long surface = (*(RHUnkFXDraw **)(g_unk0x6c0fa8 + 0xdc))->Unk005e4ed0(
+    unsigned long surface = (*(SBDrawManager **)(g_unk0x6c0fa8 + 0xdc))->Unk005e4ed0(
         (unsigned short)width, (unsigned short)height, 0, false);
     (*(SBDrawManager **)(g_unk0x6c0fa8 + 0xdc))->FUN_005e6440(0, 0, surface, 0, 0);
     for (unsigned int remaining = steps; remaining > 0; --remaining)

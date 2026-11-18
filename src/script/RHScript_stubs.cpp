@@ -169,13 +169,6 @@ bool RHUnk005709c0(void *actor)
     return index != -1;
 }
 
-// Target 0x0041b0e0 — __thiscall, no stack args, plain `ret` (see
-// include/RHScript.h). PROVISIONAL identity: named by address only. Defined once
-// here so the call in RHScript::RemoveAllSubordinates resolves to a local entity.
-void RHUnk0041b0e0::Clear()
-{
-}
-
 // Target 0x004b9f30 — __thiscall getter, no stack args, plain `ret`: returns
 // the dword at [this+0x164] (see include/RHScript.h). PROVISIONAL identity:
 // named by address only. Defined once here so the tail jump in
@@ -217,7 +210,11 @@ RHUnk00522470::~RHUnk00522470()
 
 
 
-void RHUnk00584d60::FUN_00584d30() {}
+// FUNCTION: GAME 0x00584d30
+float RHUnk00584d60::FUN_00584d30()
+{
+    return 1.0f;
+}
 RHMessenger *__stdcall RHUnk00546050(RHUnk5490f0 *message) { (void)message; return 0; }
 // TEMPLATE: GAME 0x00585e90 FOLDED
 // ??1RHUnk00585ea0@@QAE@XZ
@@ -261,7 +258,6 @@ RHUnk005883a0::RHUnk005883a0(unsigned short, int, void *, int, const SBGeoPoint2
 RHUnk005883a0::~RHUnk005883a0() {}
 void RHScriptRecordWorld::Unk004fc8f0(SBGeoPoint2D &, SBGeoPoint2D &, const SBGeoPoint2D *, unsigned short) {}
 RHUnk00613e90 RHScriptRecordWorld::Unk004fbdd0(const RHUnk00571160Position &) { return RHUnk00613e90(); }
-void RHScriptBatchCalls::Unk0050ed40() {}
 void RHScriptBatchCalls::Unk0054cfa0(void *) {}
 
 float RHScriptBatchCalls::FUN_00489680(void *) { return 0.0f; }
