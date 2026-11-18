@@ -9,8 +9,8 @@
 
 class RHEngine;
 extern RHEngine *g_pEngine;
-struct RHUnkSectorGlobal;
-extern RHUnkSectorGlobal *g_unk0x6c0a9c;
+class RHFastFindGrid;
+extern RHFastFindGrid *g_unk0x6c0a9c;
 class SBGeoPoint2D;
 #include "RHPathGeometryCalls.h"
 void RHSerializeName(SBFile &file, const char *name);

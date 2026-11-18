@@ -60,6 +60,8 @@ public:
     void FUN_00444bb0(void *record);
     void FUN_004450a0(void *target);
     void FUN_00445180(void *value);
+    bool FUN_00445210(RHMalignityPosition position, unsigned short maxDistance, unsigned short minDistance,
+        RHMalignityPosition *out, float scale);
     bool FUN_00445510(RHMalignityPosition position, void *actor);
     void FUN_004457c0(const RHMalignityPosition &position);
     bool FUN_00438cb0(int command, bool mode);

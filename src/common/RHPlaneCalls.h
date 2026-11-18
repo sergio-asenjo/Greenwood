@@ -1,15 +1,15 @@
 #ifndef RHPLANECALLS_H
 #define RHPLANECALLS_H
 
-class SBGeoPoint3D;
+#include "RHUnk00613e90.h"
+
 class SBGeoPoint2D;
-class RHUnk00613e90;
 
 class RHUnk005df860
 {
 public:
     RHUnk005df860();
-    void Unk005df860(const SBGeoPoint3D &first, const SBGeoPoint3D &second, const SBGeoPoint3D &third);
+    void Unk005df860(const RHUnk00613e90 &first, const RHUnk00613e90 &second, const RHUnk00613e90 &third);
     void FUN_005df8b0();
     void FUN_005df900();
     void FUN_005df9a0();
@@ -17,7 +17,19 @@ public:
     void Unk005dfa00();
     void FUN_005dfa20(const RHUnk00613e90 &offset);
     void FUN_005dfaa0(const SBGeoPoint2D &offset);
-    char m_00[0x58];
+    void *FUN_005df990();
+    bool FUN_005dfb00(SBFile &file);
+    void Emit(SBFile &file);
+    RHUnk00613e90 m_00;
+    RHUnk00613e90 m_0c;
+    RHUnk00613e90 m_18;
+    RHUnk00613e90 m_24;
+    RHUnk00613e90 m_30;
+    RHUnk00613e90 m_3c;
+    int m_48;
+    int m_4c;
+    int m_50;
+    int m_54;
 };
 
 #endif

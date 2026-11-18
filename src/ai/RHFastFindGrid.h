@@ -42,21 +42,28 @@ inline void RHFastFindPointerArray::InsertSingleLast(void *const &value)
 
 struct RHFastFindLayer
 {
-    char m_00[8]; // +0x00
+    unsigned short m_00;
+    char m_02[2];
+    void **m_04;
     unsigned short m_lineCount; // +0x08
     char m_0a[2];
     void **m_lines; // +0x0c
-    char m_10[0xc];
+    char m_10[4];
+    void *m_14;
+    unsigned short m_obstacleCount;
+    char m_1a[2];
     void **m_obstacles; // +0x1c
-    char m_20[8];
+    unsigned short m_20Count;
+    char m_22[2];
+    void **m_24;
     unsigned short m_pathCount;
     char m_2a[2];
     class RHPatch **m_paths;
+    void Destroy();
 };
 
 class SBGeoBoundingBox2D;
 class RHMalignitySegment;
-class SBGeoPoint3D;
 class RHFastFindSector
 {
 public:
@@ -107,15 +114,6 @@ public:
     unsigned short Flag9() { return m_flags >> 9; }
 };
 
-class SBGeoPoint3D
-{
-public:
-    SBGeoPoint3D(float x, float y, float z);
-    float m_x;
-    float m_y;
-    float m_z;
-};
-
 #include "RHPlaneCalls.h"
 #include "RHUnk0051f0f0.h"
 
@@ -148,49 +146,7 @@ public:
 
 #include "RHMobileUnk006100e0.h"
 
-#include "sb3dstuff.h"
-#include "RHUnk0060c2c0.h"
-#include "RHFastFindSightStorage.h"
-
-class RHUnk005a3450
-{
-public:
-    RHUnk005a3450();
-    RHUnk005a3450(int type);
-    ~RHUnk005a3450();
-    void Unk005a3810(SBFile &file, RHFastFindPointerArray &materials);
-    void *Unk005a5780();
-    unsigned short ProjectionFlag() { return m_flags >> 2; }
-    RHUnk005df860 &FirstPlane() { return m_firstPlane; }
-    RHUnk005df860 &SecondPlane() { return m_secondPlane; }
-    SBGeoBoundingBox2D &Bounds() { return m_bounds; }
-    SBGeoBoundingBox2D &OtherBounds() { return m_otherBounds; }
-    void SetLayer(unsigned short layer) { m_layer = layer; }
-    void SetSector(unsigned short sector) { m_sector = sector; }
-    unsigned long m_flags;
-    unsigned long m_id;
-    bool m_enabled;
-    char m_09[3];
-    RHUnk005dfd00 m_box;
-    SBGeoBoundingBox2D m_bounds;
-    SBGeoBoundingBox2D m_otherBounds;
-    RHFastFindSightList<RHFastFindSightVertex> m_vertices;
-    RHUnk0060c2c0 m_polygon;
-    RHUnk005df860 m_firstPlane;
-    RHUnk005df860 m_secondPlane;
-    char m_158[2];
-    unsigned short m_layer;
-    unsigned short m_sector;
-    char m_15e[2];
-    float m_160;
-    float m_164;
-    char m_168[8];
-    RHFastFindSightList<void *> m_materials;
-    void *m_motionArea;
-    char m_198[0xe];
-    bool m_active;
-    char m_1a7;
-};
+#include "RHUnk005a3450.h"
 
 #include "../engine/RHGate.h"
 
@@ -311,21 +267,7 @@ inline void RHFastFindGateArray::InsertLast(void *const &value, bool inlineCopy,
 
 #include "RHUnkSectorPoints.h"
 
-class RHSectorScript
-{
-public:
-    RHSectorScript();
-    ~RHSectorScript();
-    bool FUN_0057ff00(RHElementActor *actor);
-    void InitializeFromMissionStream(SBFile &file);
-    char m_00[0x30];
-    unsigned long m_flags;
-    char m_34[2];
-    unsigned short m_layer;
-    char m_38[0x80];
-    bool m_active;
-    char m_b9[0x3f];
-};
+#include "RHSectorScript.h"
 
 class RHUnk0051e1e0;
 
@@ -355,7 +297,7 @@ public:
 
 #define fastfind_lifts (*(RHFastFindPointerArray *)((char *)this + 0x40c0))
 #define fastfind_gateObjects (*(RHFastFindGateArray *)((char *)this + 0x4080))
-#define fastfind_defaultSector (*(RHFastFindSector **)((char *)this + 0x4184))
+#define fastfind_defaultSector ((RHSector *)m_4184)
 
 class RHProfileFile : public SBFile
 {
@@ -378,7 +320,7 @@ inline void *RHFastFindLookup(unsigned short sector)
 {
     if (sector == 0xffff)
         return g_unk0x6c0a9c->m_4184;
-    return g_unk0x6c0a9c->m_4064[sector];
+    return g_unk0x6c0a9c->m_sectors.m_first[sector];
 }
 
 class RHUnk005f5440

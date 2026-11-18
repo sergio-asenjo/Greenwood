@@ -6,6 +6,8 @@
 #include "RHPlaneCalls.h"
 #include "RHScriptListCore.h"
 #include "RHUnk005fc3b0.h"
+#include "RHFastFindGrid.h"
+#include "SBFilePosition.h"
 
 class RHMobileUnk006091b0
 {
@@ -17,8 +19,8 @@ public:
 
 DECOMP_SIZE_ASSERT(SBGeoBoundingBox2D, 0x14)
 DECOMP_SIZE_ASSERT(RHUnkSectorPoints, 0x2c)
-DECOMP_SIZE_ASSERT(RHUnkSightPlane, 0x58)
-DECOMP_SIZE_ASSERT(RHUnkSightTriple, 0x18)
+DECOMP_SIZE_ASSERT(RHUnk005df860, 0x58)
+DECOMP_SIZE_ASSERT(RHUnk005dfd00, 0x18)
 DECOMP_SIZE_ASSERT(RHSightObstacle, 0x15c)
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 DECOMP_SIZE_ASSERT(RHUnkSightVertex, 0x10)
@@ -62,16 +64,10 @@ void RHSightObstacle::FUN_005a3ec0()
     m_7c.FUN_0060ceb0(SBGeoPoint2D(fourth.m_00, fourth.m_04));
     m_158 = 0;
     m_7c.FUN_0060c2e0();
-    ((RHUnk005df860 *)&m_a8)->Unk005df860(
-        (const SBGeoPoint3D &)first.Upper(),
-        (const SBGeoPoint3D &)second.Upper(),
-        (const SBGeoPoint3D &)third.Upper());
-    ((RHUnk005df860 *)&m_a8)->Unk005dfa00();
-    ((RHUnk005df860 *)&m_100)->Unk005df860(
-        (const SBGeoPoint3D &)first.Lower(),
-        (const SBGeoPoint3D &)second.Lower(),
-        (const SBGeoPoint3D &)third.Lower());
-    ((RHUnk005df860 *)&m_100)->Unk005dfa00();
+    m_a8.Unk005df860(first.Upper(), second.Upper(), third.Upper());
+    m_a8.Unk005dfa00();
+    m_100.Unk005df860(first.Lower(), second.Lower(), third.Lower());
+    m_100.Unk005dfa00();
     m_00 = 0x11;
 }
 
@@ -186,10 +182,10 @@ inline void RHSightObstacle::UpdateVertex(int index, const RHUnkSightVertex &ver
 inline void RHSightObstacle::UpdatePlanes(const RHUnkSightVertex &first, const RHUnkSightVertex &second, const RHUnkSightVertex &third)
 {
     m_158 = 0;
-    ((RHUnk005df860 *)&m_a8)->Unk005df860((const SBGeoPoint3D &)first.Upper(), (const SBGeoPoint3D &)second.Upper(), (const SBGeoPoint3D &)third.Upper());
-    ((RHUnk005df860 *)&m_a8)->Unk005dfa00();
-    ((RHUnk005df860 *)&m_100)->Unk005df860((const SBGeoPoint3D &)first.Lower(), (const SBGeoPoint3D &)second.Lower(), (const SBGeoPoint3D &)third.Lower());
-    ((RHUnk005df860 *)&m_100)->Unk005dfa00();
+    m_a8.Unk005df860(first.Upper(), second.Upper(), third.Upper());
+    m_a8.Unk005dfa00();
+    m_100.Unk005df860(first.Lower(), second.Lower(), third.Lower());
+    m_100.Unk005dfa00();
 }
 
 // STUB: GAME 0x005a4680
@@ -261,8 +257,8 @@ void RHSightObstacle::Translate(const RHUnk00613e90 &offset)
             ++i;
         } while (--remaining);
     }
-    ((RHUnk005df860 *)&m_a8)->FUN_005dfa20(offset);
-    ((RHUnk005df860 *)&m_100)->FUN_005dfa20(offset);
+    m_a8.FUN_005dfa20(offset);
+    m_100.FUN_005dfa20(offset);
     float *bounds = (float *)&m_0c;
     bounds[0] += offset.x;
     float x1 = bounds[1];
@@ -278,25 +274,25 @@ void RHSightObstacle::Translate(const RHUnk00613e90 &offset)
 }
 
 // FUNCTION: GAME 0x005df990
-void *RHUnkSightPlane::FUN_005df990()
+void *RHUnk005df860::FUN_005df990()
 {
-    return m_00 + 0x3c;
+    return (char *)this + 0x3c;
 }
 
 // FUNCTION: GAME 0x005dfc40
-void RHUnkSightTriple::FUN_005dfc40(int first, int second, int third)
+void RHUnk005dfd00::FUN_005dfc40(RHUnk00613e90 point)
 {
-    m_00 = first;
-    m_08 = second;
-    m_10 = third;
+    m_00 = point.x;
+    m_08 = point.y;
+    m_10 = point.z;
 }
 
 // FUNCTION: GAME 0x005dfc60
-void RHUnkSightTriple::FUN_005dfc60(int first, int second, int third)
+void RHUnk005dfd00::FUN_005dfc60(RHUnk00613e90 point)
 {
-    m_04 = first;
-    m_0c = second;
-    m_14 = third;
+    m_04 = point.x;
+    m_0c = point.y;
+    m_14 = point.z;
 }
 
 // FUNCTION: GAME 0x00607dc0
@@ -342,11 +338,151 @@ void RHSightObstacle::Emit(SBFile &file)
     UpdateBox(RHUnk00613e90(0, 0, 0), SBGeoVector2D(0, 0), RHUnk00613e90(1, 1, 1));
     Translate(RHUnk00613e90(0, 0, 0));
     Serialize(file);
-    ((RHUnkSightPlane *)&m_a8)->FUN_005df990();
-    ((RHUnkSightTriple *)&m_0c)->FUN_005dfc40(1, 2, 3);
-    ((RHUnkSightTriple *)&m_0c)->FUN_005dfc60(1, 2, 3);
+    m_a8.FUN_005df990();
+    m_0c.FUN_005dfc40(RHUnk00613e90(1, 2, 3));
+    m_0c.FUN_005dfc60(RHUnk00613e90(1, 2, 3));
     SBGeoPoint2D point;
     m_24.Unk00607dc0(point);
     m_24.FUN_00609050(point, point);
     m_7c.FUN_0060ceb0(point);
+}
+
+inline void RHFastInsertSightVertex(RHFastFindSightList<RHFastFindSightVertex> &list, const RHFastFindSightVertex &value)
+{
+    RHUnk0046eb30 &storage = (RHUnk0046eb30 &)list;
+    storage.Unk0057c950(RHScriptIter(storage.head), (const RHUnk00571160Position &)value);
+    list.m_dirty = true;
+}
+
+// STUB: GAME 0x005a3810
+int RHUnk005a3450::Unk005a3810(SBFile &file, RHFastFindPointerArray &materials)
+{
+    unsigned char projectionFlag;
+    unsigned char heightFlag;
+    unsigned char activeFlag;
+    unsigned char enabledFlag;
+    unsigned char sectorFlag;
+    RHFastFindSightVertex vertex;
+    float minimum = 1.0e30f;
+    unsigned short count;
+    float maximum = -1.0e30f;
+    RHUnk00613e90 bottom2;
+    RHUnk00613e90 bottom1;
+    RHUnk00613e90 bottom0;
+    RHUnk00613e90 top1;
+    RHUnk00613e90 top2;
+    RHUnk00613e90 top0;
+    int start = ((ToolboxPositionFile *)&file)->FUN_005f5440();
+    file.Access(&count, 2);
+    for (unsigned short i = 0; i < count; ++i)
+    {
+        file.Access(&vertex.x, 4);
+        file.Access(&vertex.y, 4);
+        file.Access(&vertex.lower, 4);
+        if (vertex.lower < 0.1f)
+            vertex.lower = 0.0f;
+        file.Access(&vertex.upper, 4);
+        float height = vertex.y - vertex.upper;
+        if (height < minimum)
+            minimum = height;
+        if (height > maximum)
+            maximum = height;
+        RHFastInsertSightVertex(m_vertices, vertex);
+        m_polygon.FUN_0060ceb0(SBGeoPoint2D(vertex.x, vertex.y));
+        if (vertex.lower != 0.0f)
+            m_158[0] = 0;
+        switch (i)
+        {
+        case 1:
+            bottom2.Set(vertex.x, vertex.y, vertex.upper);
+            top1.Set(vertex.x, vertex.y, vertex.lower);
+            break;
+        case 2:
+            bottom1.Set(vertex.x, vertex.y, vertex.upper);
+            top2.Set(vertex.x, vertex.y, vertex.lower);
+            break;
+        case 0:
+            bottom0.Set(vertex.x, vertex.y, vertex.upper);
+            top0.Set(vertex.x, vertex.y, vertex.lower);
+            break;
+        }
+    }
+    m_polygon.FUN_0060c2e0();
+    m_firstPlane.Unk005df860(bottom2, bottom1, bottom0);
+    m_firstPlane.Unk005dfa00();
+    m_secondPlane.Unk005df860(top1, top2, top0);
+    m_secondPlane.Unk005dfa00();
+    if (*(float *)((char *)m_firstPlane.FUN_005df990() + 8) < 0.0f)
+    {
+        m_firstPlane.Unk005df860(bottom2, bottom0, bottom1);
+        m_firstPlane.Unk005dfa00();
+        m_secondPlane.Unk005df860(top1, top0, top2);
+        m_secondPlane.Unk005dfa00();
+    }
+    file.Access(&bottom2.x, 4);
+    file.Access(&bottom2.y, 4);
+    file.Access(&bottom2.z, 4);
+    file.Access(&bottom1.x, 4);
+    file.Access(&bottom1.y, 4);
+    file.Access(&bottom1.z, 4);
+    m_box.FUN_005dfc40(bottom2);
+    m_box.FUN_005dfc60(bottom1);
+    m_bounds.Unk00607dc0(SBGeoPoint2D(bottom2.x, bottom2.y));
+    m_bounds.Unk00607dc0(SBGeoPoint2D(bottom1.x, bottom1.y));
+    SBGeoPoint2D upperCorner(bottom1.x, maximum);
+    SBGeoPoint2D lowerCorner(bottom2.x, minimum);
+    m_otherBounds.FUN_00609050(lowerCorner, upperCorner);
+    file.Access(&sectorFlag, 1);
+    if (sectorFlag)
+    {
+        m_flags |= 4;
+        file.Access(&m_sector, 2);
+        file.Access(&m_layer, 2);
+    }
+    else
+    {
+        m_layer = 0xffff;
+        m_sector = 0xffff;
+    }
+    file.Access(&enabledFlag, 1);
+    if (enabledFlag)
+        m_flags |= 2;
+    else
+        m_flags &= ~2;
+    file.Access(&projectionFlag, 1);
+    if (projectionFlag)
+        m_flags |= 1;
+    else
+        m_flags &= ~1;
+    file.Access(&activeFlag, 1);
+    file.Access(&heightFlag, 1);
+    if (heightFlag)
+        m_flags |= 0x20;
+    if (projectionFlag)
+    {
+        if (activeFlag)
+            m_flags |= 8;
+        else
+            m_flags &= ~8;
+    }
+    int materialByte;
+    file.Access(&materialByte, 1);
+    *(int *)m_168 = materialByte & 0xff;
+    RHFastFindGrid *grid = g_unk0x6c0a9c;
+    unsigned short materialCount;
+    file.Access(&materialCount, 2);
+    for (unsigned short j = 0; j < materialCount; ++j)
+    {
+        unsigned short materialIndex;
+        file.Access(&materialIndex, 2);
+        if (materialIndex >= materials.size())
+            SBAssert(1, "P:\\Robin Hood\\RHsightobstacle.cpp", 0x1c3,
+                // STRING: GAME 0x006b786c
+                "HALT ! STEHENBLEIBEN ! : Trying to associate non-existing material with sight obstacle !");
+        void *material = materials.m_first[materialIndex];
+        m_materials.InsertLast(material);
+        grid->FUN_004e8bd0(material, m_layer, true);
+        grid->FUN_004e99e0(material, m_layer, true);
+    }
+    return ((ToolboxPositionFile *)&file)->FUN_005f5440() - start;
 }

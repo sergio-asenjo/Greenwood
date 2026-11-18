@@ -99,9 +99,6 @@ float RHArtificialIntelligence::FUN_0041a0b0(void *actor)
     return RHMalignityScaleHeight(RHMalignityField<RHUnk00613e90>(RHMalignityField<void *>(actor, 0x50), 0x10).FUN_005df550(RHMalignityField<RHUnk00613e90>(RHMalignityField<void *>(m_actor, 0x50), 0x10))).FUN_005df680();
 }
 
-// STUB: GAME 0x00440cf0
-short RHArtificialMalignity::FUN_00440cf0(RHUnk00441dd0Record *) { return 0; }
-
 extern unsigned char g_unk0x006c06ca;
 
 // FUNCTION: GAME 0x00412cf0
@@ -194,7 +191,6 @@ RHMalignityIterator RHAIUnk0044e8b0::FUN_00424410(RHMalignityIterator position, 
 
 void RHAIUnk0044e8b0::FUN_0045a440(void *const &) {}
 
-bool RHMalignityGeometryCalls::FUN_004eff80(const RHUnk00613e90 &, const RHUnk00613e90 &, int) { return false; }
 RHUnk00613e90 RHMalignityVectorCalls::FUN_005df550(const RHUnk00613e90 &) { return RHUnk00613e90(); }
 
 // FUNCTION: GAME 0x0040ec20

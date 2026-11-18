@@ -6,6 +6,7 @@ extern float g_unk0x00677564;
 #include "RHElementActorNPC.h"
 #include "RHElementActorHumanCore.h"
 #include "RHArtificialIntelligenceActorCalls.h"
+#include "RHHumanWeaponCalls.h"
 #include "RHUnk0060c2xx.h"
 #include <stddef.h>
 #include <stdlib.h>
@@ -1403,8 +1404,8 @@ void RHArtificialMalignity::FUN_0043a170(const RHMalignityPosition &position)
 #include "RHGate.h"
 #include "RHFastFindGridCore.h"
 
-struct RHUnkSectorGlobal;
-extern RHUnkSectorGlobal *g_unk0x6c0a9c;
+class RHFastFindGrid;
+extern RHFastFindGrid *g_unk0x6c0a9c;
 
 DECOMP_SIZE_ASSERT(RHUnk0051aa00, 0xbc)
 DECOMP_STATIC_ASSERT(offsetof(RHUnk0051aa00, m_88) == 0x88)
@@ -1412,11 +1413,6 @@ DECOMP_STATIC_ASSERT(offsetof(RHUnk0051aa00, m_14) == 0x14)
 DECOMP_STATIC_ASSERT(offsetof(RHUnk0051aa00, m_16) == 0x16)
 DECOMP_STATIC_ASSERT(offsetof(RHUnk0051aa00, m_18) == 0x18)
 DECOMP_STATIC_ASSERT(offsetof(RHUnk0051aa00, m_20) == 0x20)
-DECOMP_STATIC_ASSERT(offsetof(RHFastFindGrid, m_gates) == 0x4080)
-DECOMP_STATIC_ASSERT(offsetof(RHFastFindPointerArray, m_first) == 4)
-
-DECOMP_SIZE_ASSERT(RHUnk0051aa00, 0xbc)
-DECOMP_STATIC_ASSERT(offsetof(RHUnk0051aa00, m_88) == 0x88)
 DECOMP_STATIC_ASSERT(offsetof(RHFastFindGrid, m_gates) == 0x4080)
 DECOMP_STATIC_ASSERT(offsetof(RHFastFindPointerArray, m_first) == 4)
 
@@ -2075,13 +2071,6 @@ void RHArtificialMalignity::FUN_00445180(void *value)
     ((RHMalignityReactionCalls *)&VirtualBase())->FUN_0041a3e0();
     RHUnk00585ea0 *action = new RHUnk00585ea0(1, 0x23, *(void **)((char *)&VirtualBase() + 4), value);
     ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940("", 0, action);
-}
-
-// Parked: path-state processing uses out-of-run actor callbacks and global engine data.
-// STUB: GAME 0x00445210
-unsigned FUN_00445210(float, unsigned, unsigned, unsigned, float, unsigned, void *, unsigned)
-{
-    return 0;
 }
 
 class RHMalignityHeadingPoint : public SBGeoPoint2D
@@ -2965,8 +2954,8 @@ void *RHArtificialMalignity::FUN_004474e0()
     return best;
 }
 
-struct RHUnkSectorGlobal;
-extern RHUnkSectorGlobal *g_unk0x6c0a9c;
+class RHFastFindGrid;
+extern RHFastFindGrid *g_unk0x6c0a9c;
 
 #include "RHPathGeometryCalls.h"
 
@@ -3177,6 +3166,12 @@ public:
 };
 
 
+class RHUnk005c1d50
+{
+public:
+    unsigned short FUN_005c1dd0(int index, void *actor);
+};
+
 // FUNCTION: GAME 0x00433010
 unsigned short RHArtificialMalignity::FUN_00433010()
 {
@@ -3186,6 +3181,71 @@ unsigned short RHArtificialMalignity::FUN_00433010()
     if (limit < value)
         return value;
     return limit;
+}
+
+// STUB: GAME 0x00440cf0
+short RHArtificialMalignity::FUN_00440cf0(RHUnk00441dd0Record *record)
+{
+    RHUnk005fc3b0 direction;
+    RHUnk005fc3b0 delta;
+    if (record->m_2e == 0x1a0a)
+    {
+        short result = 0;
+        if (record->m_14)
+        {
+            direction.Unk005fcd40((unsigned char)record->m_28, 1.0f);
+            delta.FUN_005fc430(FUN_0040ec20(record->m_18, record->m_4));
+            delta.m_y *= 1.7434468269348145f;
+            float range = delta.Unk005fc6d0(1.0f);
+            bool facing = direction.FUN_005fc660(delta) > 0.0f;
+            RHHumanWeaponCalls *weapon = (RHHumanWeaponCalls *)RHMalignityField<void *>(record->m_0, 0x25c);
+            unsigned ability = ((RHMalignityAbilityCalls *)weapon)->FUN_005c1b50(2);
+            if ((float)(ability * ability) < range)
+            {
+                record->m_2e = 0;
+                return 0;
+            }
+            int total = 0;
+            for (int index = 0; index < 9; ++index)
+            {
+                unsigned short minimum = weapon->FUN_005c1e80(index);
+                unsigned short maximum = weapon->FUN_005c1ea0(index);
+                unsigned short low = minimum * minimum;
+                unsigned short high = maximum * maximum;
+                if ((float)low < range && range < (float)high)
+                {
+                    unsigned short damage = ((RHUnk005c1d50 *)weapon)->FUN_005c1dd0(index, record->m_0);
+                    RHHumanWeaponCalls *actorWeapon =
+                        (RHHumanWeaponCalls *)RHMalignityField<void *>(VirtualBase().m_actor, 0x25c);
+                    unsigned value = actorWeapon->FUN_005c1d70(index);
+                    RHHumanWeaponCalls *targetWeapon =
+                        (RHHumanWeaponCalls *)RHMalignityField<void *>(record->m_14, 0x25c);
+                    unsigned short chance = targetWeapon->FUN_005c1b70(record->m_14, record->m_0, value);
+                    int first = (int)((float)(100 - chance) * damage * 0.01f);
+                    total += first +
+                             (int)((float)(100 - RHMalignityField<unsigned short>(
+                                                    RHMalignityField<void *>(weapon, 4), 0x12)) *
+                                       weapon->FUN_005c1db0(index) * 0.01f);
+                }
+            }
+            total = (unsigned short)total / 9;
+            if (facing)
+            {
+                int ownTeam = ((RHMalignityActorCalls *)VirtualBase().m_actor)->V130();
+                int targetTeam = ((RHMalignityActorCalls *)record->m_0)->V130();
+                if (targetTeam == ownTeam)
+                {
+                    if (((RHMalignityOwnerCalls *)this)->FUN_00438600() > 0x46)
+                        total += 5000;
+                }
+                else if (((RHMalignityOwnerCalls *)this)->FUN_00438600() > 0x1e)
+                    total += 3000;
+            }
+            result = (short)total;
+        }
+        record->m_2e = result;
+    }
+    return record->m_2e;
 }
 
 inline float RHMalignityActorHeight(void *actor)
@@ -3775,7 +3835,7 @@ bool RHArtificialMalignity::FUN_0044b870(void *area, unsigned short id)
 
 #include "RHPathGeometryCalls.h"
 
-// STUB: GAME 0x0044c850
+// FUNCTION: GAME 0x0044c850
 bool RHArtificialMalignity::FUN_0044c850(RHMalignityPosition &position)
 {
     RHUnk005fc3b0 direction;
@@ -3784,7 +3844,7 @@ bool RHArtificialMalignity::FUN_0044c850(RHMalignityPosition &position)
     direction.FUN_005fc430(((RHMalignityActorCalls *)VirtualBase().m_actor)->FUN_004135b0());
     float length = 500.0f;
     unsigned short heading = RHMalignityField<unsigned short>(RHMalignityField<void *>(VirtualBase().m_actor, 0x50), 0xd8);
-    for (;;)
+    while (length > 10.0f)
     {
         short offset = 0;
         do
@@ -3793,7 +3853,8 @@ bool RHArtificialMalignity::FUN_0044c850(RHMalignityPosition &position)
             direction.Unk005fcd40((heading + step) % 15, 0.57357645f);
             direction.FUN_005fc4d0(length);
             position = FUN_0040ece0(origin, direction);
-            RHPositionInterface *bounds = (RHPositionInterface *)((char *)RHMalignityField<void *>(VirtualBase().m_actor, 0x50) + 4);
+            void *actor = VirtualBase().m_actor;
+            RHPositionInterface *bounds = (RHPositionInterface *)((char *)RHMalignityField<void *>(actor, 0x50) + 4);
             void *radius = bounds->Unk0055fa10(bounds->m_88);
             if (((RHUnkPathGeometry *)g_unk0x6c0a9c)->Unk004f9170(
                     FUN_0040cbf0(origin), FUN_0040cbf0(position), origin.layer,
@@ -3805,9 +3866,56 @@ bool RHArtificialMalignity::FUN_0044c850(RHMalignityPosition &position)
                 offset = 1 - step;
         } while (offset < 2);
         length -= 10.0f;
-        if (!(length > 10.0f))
-            return false;
     }
+    return false;
+found:
+    return true;
+}
+
+// FUNCTION: GAME 0x00445210
+bool RHArtificialMalignity::FUN_00445210(RHMalignityPosition position, unsigned short maxDistance,
+    unsigned short minDistance, RHMalignityPosition *out, float scale)
+{
+    RHUnk005fc3b0 direction;
+    RHMalignityPosition origin;
+    origin = VirtualBase().FUN_004165e0(VirtualBase().m_actor, true);
+    direction.FUN_005fc430(FUN_0040ec20(origin, position));
+    float distance = direction.Unk005fc6a0(scale);
+    unsigned short heading = direction.FUN_005fcc50(scale);
+    if (distance >= maxDistance)
+    {
+        *out = origin;
+        return true;
+    }
+    float limit = __max(10.0f, minDistance - distance);
+    float step = maxDistance - distance;
+    if (step > limit)
+    {
+        do
+        {
+            short offset = 0;
+            do
+            {
+                int value = offset;
+                direction.Unk005fcd40((heading + value) % 15, scale);
+                direction.FUN_005fc4d0(step);
+                *out = FUN_0040ece0(origin, direction);
+                void *actor = VirtualBase().m_actor;
+                RHPositionInterface *bounds =
+                    (RHPositionInterface *)((char *)RHMalignityField<void *>(actor, 0x50) + 4);
+                void *radius = bounds->Unk0055fa10(bounds->m_88);
+                if (((RHUnkPathGeometry *)g_unk0x6c0a9c)->Unk004f9170(
+                        FUN_0040cbf0(origin), FUN_0040cbf0(*out), origin.layer, radius))
+                    goto found;
+                if (offset > 0)
+                    offset = -value;
+                else
+                    offset = 1 - value;
+            } while (offset < 4);
+            step -= 10.0f;
+        } while (step > limit);
+    }
+    return false;
 found:
     return true;
 }

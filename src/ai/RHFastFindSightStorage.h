@@ -2,6 +2,7 @@
 #define RHFASTFINDSIGHTSTORAGE_H
 
 #include <memory>
+#include <list>
 #include "RHSpriteListStorage.h"
 #include "RHScriptListCore.h"
 
@@ -13,7 +14,7 @@ struct RHFastFindSightVertex
     float lower;
 };
 
-template <class T> class RHFastFindSightList
+template <class T> class RHFastFindSightListBase
 {
 public:
     struct Node
@@ -22,7 +23,7 @@ public:
         Node *previous;
         T value;
     };
-    RHFastFindSightList(const std::allocator<T> &allocator = std::allocator<T>())
+    RHFastFindSightListBase(const std::allocator<T> &allocator = std::allocator<T>())
         : m_allocator(allocator)
     {
         Node *node = (Node *)operator new(sizeof(Node));
@@ -32,9 +33,21 @@ public:
         m_count = 0;
         m_dirty = true;
     }
-    ~RHFastFindSightList()
+    __forceinline void Clear()
     {
-        ((RHUnk00564020 *)this)->RHUnk00564020::~RHUnk00564020();
+        typedef std::list<T> List;
+        typedef typename List::iterator Iterator;
+        typedef Iterator (RHUnk0046eb30::*Begin)();
+        Iterator (List::*eraseRange)(Iterator, Iterator) = &List::erase;
+        List *list = (List *)this;
+        (list->*eraseRange)((((RHUnk0046eb30 *)this)->*(Begin)&RHUnk0046eb30::FUN_0046eb80)(), list->end());
+    }
+    ~RHFastFindSightListBase()
+    {
+        Clear();
+        operator delete(m_head);
+        m_head = 0;
+        m_count = 0;
     }
     T &At(int wanted)
     {
@@ -95,6 +108,19 @@ public:
         }
         return m_current->value;
     }
+    __forceinline void InsertLast(T const &value)
+    {
+        Node *head = m_head;
+        Node *previous = head->previous;
+        Node *node = (Node *)operator new(sizeof(Node));
+        node->next = head ? head : node;
+        node->previous = previous ? previous : node;
+        head->previous = node;
+        node->previous->next = node;
+        node->value = value;
+        ++m_count;
+        m_dirty = true;
+    }
     std::allocator<T> m_allocator;
     Node *m_head;
     int m_count;
@@ -104,6 +130,12 @@ public:
     bool m_searchDirty;
     int m_searchIndex;
     T m_searchValue;
+};
+
+template <class T> class RHFastFindSightList : public RHFastFindSightListBase<T>
+{
+public:
+    ~RHFastFindSightList() { this->Clear(); }
 };
 
 #endif

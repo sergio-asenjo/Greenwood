@@ -145,8 +145,8 @@ RHPathGraphArray *g_unk0x006c0da0;
 RHPathGraphArray *g_unk0x006c0dac;
 // GLOBAL: GAME 0x006c0ca4
 unsigned short g_unk0x006c0ca4;
-class RHUnkSectorGlobal;
-extern RHUnkSectorGlobal *g_unk0x6c0a9c;
+class RHFastFindGrid;
+extern RHFastFindGrid *g_unk0x6c0a9c;
 // GLOBAL: GAME 0x006c0db0
 RHPathSearchNode *g_unk0x006c0db0;
 // GLOBAL: GAME 0x006c0dc0
@@ -1029,8 +1029,7 @@ bool RHPathFinder::TurnOn()
     return true;
 }
 
-// Parked: the wake-event branch reloads the thread handle in ECX rather than EAX.
-// STUB: GAME 0x00554750
+// FUNCTION: GAME 0x00554750
 void RHPathFinder::FUN_00554750()
 {
     EnterCriticalSection(&g_pathCriticalSection);
@@ -1039,15 +1038,14 @@ void RHPathFinder::FUN_00554750()
         g_pathStatus = 0;
         LeaveCriticalSection(&g_pathCriticalSection);
         g_pathThreadDone = 1;
-        WaitForSingleObject(m_8, INFINITE);
     }
     else
     {
         g_pathStatus = 0;
         LeaveCriticalSection(&g_pathCriticalSection);
         g_pathWakeEvent.TriggerEvent();
-        WaitForSingleObject(m_8, INFINITE);
     }
+    WaitForSingleObject(m_8, INFINITE);
 }
 
 // Parked: 66.54%, receiver scheduling, return cleanup and annotated callees.

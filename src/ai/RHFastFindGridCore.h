@@ -8,16 +8,18 @@ class SBFile;
 class SBGeoPoint2D;
 class SBGeoBoundingBox2D;
 class RHMalignitySegment;
-class SBGeoPoint3D;
+class RHUnk00613e90;
 class RHUnk00520ae0;
 class RHUnkMaskObstacleTable;
 struct RHFastFindLayer;
 
 #include "RHFastFindPointerArray.h"
+#include "RHTransientPointerList.h"
 
 class RHFastFindGrid
 {
 public:
+    virtual ~RHFastFindGrid();
     void FUN_004e8ae0(class RHFastFindUniqueList &output, unsigned short layer, const SBGeoBoundingBox2D &box, unsigned long mask);
     bool FUN_004e9570(const SBGeoPoint2D &point, unsigned short layer);
     void FUN_004ec240(class RHFastFindUniqueList &, unsigned short, const SBGeoBoundingBox2D &, unsigned long);
@@ -35,13 +37,16 @@ public:
     void FUN_004ede00(class RHFastFindUniqueList &output, unsigned short layer, const SBGeoBoundingBox2D &box, void *point);
     void FUN_004ee120(class RHFastFindUniqueList &output, unsigned short layer, const SBGeoBoundingBox2D &box, void *point, undefined4 mode);
     void FUN_004ee470(class RHFastFindUniqueList &output, unsigned short layer, const SBGeoBoundingBox2D &box);
-    void FUN_004ee770(class RHFastFindUniqueList &output, unsigned long cell, unsigned long mask);
+    void FUN_004ee770(RHTransientPointerList<void> &output, unsigned long cell, unsigned long mask);
     void FUN_004ee880(class RHFastFindUniqueList &output, unsigned short layer, const SBGeoBoundingBox2D &box, unsigned long mask);
     void FUN_004eea50(class RHFastFindUniqueList &output, unsigned short layer, const RHMalignitySegment &segment, unsigned long mask);
     void FUN_004eec20(class RHFastFindUniqueList &output, unsigned short layer, const SBGeoBoundingBox2D &box, unsigned long mask);
     void FUN_004eef30(class RHFastFindUniqueList &output, unsigned short layer, const RHMalignitySegment &segment, unsigned long mask);
     void FUN_004efd10(void *patch, unsigned short layer, bool mode);
-    bool FUN_004efe40(const SBGeoPoint3D &first, const SBGeoPoint3D &second, float &slope, float &intercept);
+    bool FUN_004efe40(const RHUnk00613e90 &first, const RHUnk00613e90 &second, float &slope, float &intercept);
+    bool FUN_004f0230(const RHUnk00613e90 &first, const RHUnk00613e90 &second, class RHFastFindUniqueList &found, char mode, char bypassCache);
+    bool FUN_004f3130(const RHUnk00613e90 &point, float height, RHUnk00613e90 &result, void *&blocker, unsigned long mask);
+    bool FUN_004f2d10(const RHUnk00613e90 &point, float height, RHUnk00613e90 &result, void *&blocker, unsigned long mask);
     class RHFastFindPathGate *FUN_004f9d60(class RHElementActor *, const SBGeoPoint2D &, void *, unsigned short, const SBGeoPoint2D &, void *, unsigned, int);
     bool FUN_004fa080(class RHFastFindUniqueList &, class RHElementActor *, const SBGeoPoint2D &, void *, unsigned short, class RHFastFindPathGate *, int);
     class RHFastFindPathGate *FUN_004fa340(class RHElementActor *, const SBGeoPoint2D &, void *, unsigned short, class RHFastFindPathGate *, int);
@@ -78,7 +83,8 @@ public:
     bool SerializeLinePointer(SBFile &file, void *&value);
     void Emit(SBFile &file, void *&value);
 
-    char m_00[0x3e98];
+    // VTABLE: GAME 0x00678b4c
+    undefined m_04[0x3e94];
     unsigned short m_width;
     unsigned short m_height;
     unsigned short m_layerCount;
@@ -91,7 +97,9 @@ public:
     RHFastFindPointerArray m_sectors;
     RHFastFindPointerArray m_gates;
     RHFastFindPointerArray m_patches;
-    char m_40c0[0xf4];
+    char m_40c0[0xc4];
+    void *m_4184;
+    char m_4188[0x2c];
     std::vector<RHUnk00520ae0> m_repulsivePoints;
     std::vector<unsigned short> m_repulsiveLayers;
 };

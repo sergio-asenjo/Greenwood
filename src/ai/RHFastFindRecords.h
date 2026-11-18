@@ -22,6 +22,18 @@ public:
 
 #include "RHFastFindRangeArray.h"
 
+// SIZE 0xc0
+class RHFastFindRecordC0
+{
+public:
+    RHFastFindRangeArray m_00;
+    RHFastFindRangeArray m_20;
+    SBResourceSurfaceArray m_40;
+    SBResourceSurfaceArray m_60;
+    SBResourceSurfaceArray m_80;
+    SBResourceSurfaceArray m_a0;
+};
+
 class RHFastFindClearedWordRecord : public std::vector<unsigned short>
 {
 public:

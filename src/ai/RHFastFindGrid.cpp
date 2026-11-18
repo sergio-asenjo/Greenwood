@@ -10,6 +10,9 @@
 #include "RHFastFindArcheryArray.h"
 #include "RHUnkMaskObstacleTable.h"
 #include "RHMobileUnk00607da0.h"
+#include "RHSightObstacle.h"
+#include "SBGeoIntersection2D.h"
+#include "RHUnk005df9e0.h"
 #include <float.h>
 
 // TEMPLATE: GAME 0x00522780
@@ -45,6 +48,12 @@ DECOMP_STATIC_ASSERT(offsetof(RHFastFindArcheryArray, m_changed) == 0x14)
 
 // GLOBAL: GAME 0x006c0bcc
 unsigned long g_unk0x006c0bcc;
+
+// GLOBAL: GAME 0x006c0ab0
+unsigned long g_unk0x006c0ab0;
+
+// GLOBAL: GAME 0x006c0ab4
+unsigned long g_unk0x006c0ab4;
 
 #include "RHArtificialIntelligenceCore.h"
 
@@ -541,17 +550,63 @@ struct RHFastFindCell
     unsigned short m_lineCount;
     undefined m_0a[2];
     void **m_lines;
-    undefined m_10[8];
+    unsigned short m_extraCount;
+    undefined m_12[2];
+    void **m_extraValues;
     unsigned short m_obstacleCount;
     undefined m_1a[2];
     void **m_obstacles;
     unsigned short m_pointCount;
     undefined m_22[2];
     void **m_points;
-
+    void Destroy();
 };
 
+void RHFastFindLayer::Destroy()
+{
+    if (m_lineCount != 0)
+    {
+        for (unsigned index = 0; index < m_lineCount; ++index)
+            delete (RHFastFindLine *)m_lines[index];
+        operator delete(m_lines);
+    }
+    if (m_obstacleCount != 0)
+    {
+        for (unsigned index = 0; index < m_obstacleCount; ++index)
+            delete (RHUnk005a3450 *)m_obstacles[index];
+        operator delete(m_obstacles);
+    }
+    operator delete(m_14);
+}
+
+void RHFastFindCell::Destroy()
+{
+    if (m_lineCount != 0) operator delete(m_lines);
+    if (m_pointCount != 0) operator delete(m_points);
+    if (m_obstacleCount != 0) operator delete(m_obstacles);
+    if (m_localPointCount != 0) operator delete(m_localPoints);
+    if (m_extraCount != 0) operator delete(m_extraValues);
+}
+
+// SYNTHETIC: GAME 0x004e76d0
+// RHFastFindGrid::`scalar deleting destructor'
+
+// STUB: GAME 0x004e76f0
+RHFastFindGrid::~RHFastFindGrid()
+{
+    unsigned layerCount = (unsigned)m_layerCount + 1;
+    for (unsigned layer = 0; layer < layerCount; ++layer)
+        m_layers[layer].Destroy();
+    operator delete(m_layers);
+    unsigned cellCount = (unsigned short)(m_height * m_width) * layerCount;
+    for (unsigned cell = 0; cell < cellCount; ++cell)
+        m_cells[cell].Destroy();
+    operator delete(m_cells);
+}
+
 #include "SBGeoSegment2D.h"
+#include "RHTransientPointerList.h"
+#include "RHMalignityGeometryCalls.h"
 #include <stddef.h>
 
 struct RHFastFindRepulsiveOwner
@@ -1006,7 +1061,7 @@ public:
     RHMask();
     void InitializeFromProtoStream(SBFile &file, RHFastFindGrid *grid);
     bool IsAppliedToPointCharacter(const SBGeoPoint2D &point) const;
-    bool IsAppliedToPoint(const SBGeoPoint3D &point, bool flag) const;
+    bool IsAppliedToPoint(const RHUnk00613e90 &point, bool flag) const;
 
     undefined m_00[4]; // +0x00
     unsigned long m_flags; // +0x04
@@ -1091,7 +1146,7 @@ void RHFastFindGrid::FUN_004ee120(RHFastFindUniqueList &output, unsigned short l
             ((RHSeqList *)&output)->GoTo(i);
             void *value = output.m_current.node->value;
             if (!(unsigned char)((RHUnk00608f10 *)((char *)value + 8))->FUN_00608f10((void *)&box) ||
-                !((RHMask *)value)->IsAppliedToPoint(*(const SBGeoPoint3D *)point, *(const bool *)&mode))
+                !((RHMask *)value)->IsAppliedToPoint(*(const RHUnk00613e90 *)point, *(const bool *)&mode))
             {
                 output.Remove(i);
                 --i;
@@ -1142,7 +1197,7 @@ void RHFastFindGrid::FUN_004ee470(RHFastFindUniqueList &output, unsigned short l
 
 // Parked: mask-check snapshot registers and copy differ.
 // STUB: GAME 0x004ee770
-void RHFastFindGrid::FUN_004ee770(RHFastFindUniqueList &output, unsigned long cell, unsigned long mask)
+void RHFastFindGrid::FUN_004ee770(RHTransientPointerList<void> &output, unsigned long cell, unsigned long mask)
 {
     RHFastFindCell &entry = m_cells[cell];
     void **first = *(void **volatile *)&entry.m_obstacles;
@@ -1259,7 +1314,7 @@ void RHFastFindGrid::FUN_004eec20(RHFastFindUniqueList &output, unsigned short l
     for (unsigned short y = firstY; y <= (unsigned short)lastY; ++y)
     {
         for (unsigned short x = firstX; x <= (unsigned short)lastX; ++x, ++cell)
-            FUN_004ee770(output, cell, mask);
+            FUN_004ee770(*(RHTransientPointerList<void> *)&output, cell, mask);
         cell += skip;
     }
     if (mask & 3)
@@ -1309,7 +1364,7 @@ void RHFastFindGrid::FUN_004eef30(RHFastFindUniqueList &output, unsigned short l
             point.m_y = (float)(y << 6);
             box.FUN_00609050(point, point.Unk005fc190(*(SBGeoPoint2D *)g_unk0x006c0aa8));
             if (((RHMalignitySegment *)&segment)->FUN_0060ad50(box))
-                FUN_004ee770(output, cell, mask);
+                FUN_004ee770(*(RHTransientPointerList<void> *)&output, cell, mask);
         }
         cell += skip;
     }
@@ -1371,79 +1426,452 @@ void RHFastFindGrid::FUN_004efd10(void *patch, unsigned short layer, bool mode)
 }
 
 // FUNCTION: GAME 0x004efe40
-bool RHFastFindGrid::FUN_004efe40(const SBGeoPoint3D &first, const SBGeoPoint3D &second, float &slope, float &intercept)
+bool RHFastFindGrid::FUN_004efe40(const RHUnk00613e90 &first, const RHUnk00613e90 &second, float &slope, float &intercept)
 {
     RHUnk005fc3b0 direction;
-    float dy = second.m_y - first.m_y;
-    float dx = second.m_x - first.m_x;
-    direction.m_x = second.m_x - first.m_x;
-    direction.m_y = second.m_y - first.m_y;
-    if (second.m_x - first.m_x > 0)
+    float dy = second.y - first.y;
+    float dx = second.x - first.x;
+    direction.m_x = second.x - first.x;
+    direction.m_y = second.y - first.y;
+    if (second.x - first.x > 0)
     {
-        if (second.m_y - first.m_y > 0)
+        if (second.y - first.y > 0)
         {
-            if (second.m_x - first.m_x > second.m_y - first.m_y)
+            if (second.x - first.x > second.y - first.y)
             {
-                slope = (second.m_z - first.m_z) / dx;
-                intercept = first.m_z - slope * first.m_x;
+                slope = (second.z - first.z) / dx;
+                intercept = first.z - slope * first.x;
                 return true;
             }
             else
             {
-                slope = (second.m_z - first.m_z) / dy;
-                intercept = first.m_z - slope * first.m_y;
+                slope = (second.z - first.z) / dy;
+                intercept = first.z - slope * first.y;
                 return false;
             }
         }
         else
         {
-            if (second.m_x - first.m_x > -(second.m_y - first.m_y))
+            if (second.x - first.x > -(second.y - first.y))
             {
-                slope = (second.m_z - first.m_z) / dx;
-                intercept = first.m_z - slope * first.m_x;
+                slope = (second.z - first.z) / dx;
+                intercept = first.z - slope * first.x;
                 return true;
             }
             else
             {
-                slope = (second.m_z - first.m_z) / dy;
-                intercept = first.m_z - slope * first.m_y;
+                slope = (second.z - first.z) / dy;
+                intercept = first.z - slope * first.y;
                 return false;
             }
         }
     }
     else
     {
-        if (second.m_y - first.m_y > 0)
+        if (second.y - first.y > 0)
         {
-            if (-(second.m_x - first.m_x) > second.m_y - first.m_y)
+            if (-(second.x - first.x) > second.y - first.y)
             {
-                slope = (second.m_z - first.m_z) / dx;
-                intercept = first.m_z - slope * first.m_x;
+                slope = (second.z - first.z) / dx;
+                intercept = first.z - slope * first.x;
                 return true;
             }
             else
             {
-                slope = (second.m_z - first.m_z) / dy;
-                intercept = first.m_z - slope * first.m_y;
+                slope = (second.z - first.z) / dy;
+                intercept = first.z - slope * first.y;
                 return false;
             }
         }
         else
         {
-            if (second.m_x - first.m_x < second.m_y - first.m_y)
+            if (second.x - first.x < second.y - first.y)
             {
-                slope = (second.m_z - first.m_z) / dx;
-                intercept = first.m_z - slope * first.m_x;
+                slope = (second.z - first.z) / dx;
+                intercept = first.z - slope * first.x;
                 return true;
             }
             else
             {
-                slope = (second.m_z - first.m_z) / dy;
-                intercept = first.m_z - slope * first.m_y;
+                slope = (second.z - first.z) / dy;
+                intercept = first.z - slope * first.y;
                 return false;
             }
         }
     }
+}
+
+struct RHFastFindVisibilityCacheEntry
+{
+    unsigned long key;
+    unsigned char result;
+    unsigned char valid;
+};
+
+// STUB: GAME 0x004f2d10
+bool RHFastFindGrid::FUN_004f2d10(const RHUnk00613e90 &point, float height, RHUnk00613e90 &result, void *&blocker, unsigned long mask)
+{
+    float best = 0.0f;
+    SBGeoPoint2D position;
+    std::allocator<void *> allocator;
+    RHTransientPointerList<void> found(allocator);
+
+    if (point.z == height)
+        return true;
+    if (point.z < height)
+    {
+        result.x = point.x;
+        result.y = point.y;
+        result.z = height;
+        blocker = 0;
+        return false;
+    }
+
+    position.m_x = point.x;
+    position.m_y = point.y;
+    short x = (short)position.m_x;
+    short y = (short)position.m_y;
+    if (x < 0 || x >= m_width * 0x40 || y < 0 || y >= m_height * 0x40)
+    {
+        result.x = point.x;
+        result.y = point.y;
+        result.z = 0.0f;
+        blocker = 0;
+        return false;
+    }
+    FUN_004ee770(found, (y >> 6) * m_width + (x >> 6), mask);
+    unsigned short count = (unsigned short)found.GetSize();
+    if (count == 0)
+    {
+        if (height <= 0.0f)
+        {
+            result.x = point.x;
+            result.y = point.y;
+            result.z = 0.0f;
+            blocker = 0;
+            return false;
+        }
+        return true;
+    }
+    unsigned index = 0;
+    unsigned remaining = count;
+    do
+    {
+        found.GoTo(index);
+        RHSightObstacle *obstacle = (RHSightObstacle *)found.cursor->_Value;
+        if (obstacle->m_24.FUN_00608400(position)
+            && ((RHElementAreaShape *)((char *)obstacle + 0x7c))->FUN_0060c660(position))
+        {
+            float z = ((RHShadowUnk005df9e0 *)&obstacle->m_a8)->FUN_005df9e0(position.m_x, position.m_y);
+            if (best < z && height <= z && z <= point.z)
+            {
+                best = z;
+                blocker = obstacle;
+            }
+        }
+        ++index;
+    } while (--remaining != 0);
+    if (best == 0.0f)
+    {
+        if (height <= 0.0f)
+        {
+            result.x = point.x;
+            result.y = point.y;
+            result.z = 0.0f;
+            blocker = 0;
+            return false;
+        }
+        return true;
+    }
+    result.x = point.x;
+    result.y = point.y;
+    result.z = best;
+    return false;
+}
+
+// STUB: GAME 0x004f3130
+bool RHFastFindGrid::FUN_004f3130(const RHUnk00613e90 &point, float height, RHUnk00613e90 &result, void *&blocker, unsigned long mask)
+{
+    float best = 1.0e15f;
+    SBGeoPoint2D position;
+    RHTransientPointerList<void> found;
+
+    if (point.z == height)
+        return true;
+    if (point.z > height)
+    {
+        result.x = point.x;
+        result.y = point.y;
+        result.z = height;
+        blocker = 0;
+        return false;
+    }
+
+    position.m_x = point.x;
+    position.m_y = point.y;
+    short x = (short)position.m_x;
+    short y = (short)position.m_y;
+    if (x < 0 || x >= m_width * 0x40 || y < 0 || y >= m_height * 0x40)
+    {
+        result.x = point.x;
+        result.y = point.y;
+        result.z = 0.0f;
+        blocker = 0;
+        return false;
+    }
+    FUN_004ee770(found, (y >> 6) * m_width + (x >> 6), mask);
+    unsigned short count = (unsigned short)found.GetSize();
+    if (count == 0)
+        return true;
+    unsigned index = 0;
+    unsigned remaining = count;
+    do
+    {
+        found.GoTo(index);
+        RHSightObstacle *obstacle = (RHSightObstacle *)found.cursor->_Value;
+        if (obstacle->m_24.FUN_00608400(position)
+            && ((RHElementAreaShape *)((char *)obstacle + 0x7c))->FUN_0060c660(position))
+        {
+            float z = ((RHShadowUnk005df9e0 *)&obstacle->m_100)->FUN_005df9e0(position.m_x, position.m_y);
+            if (z < best && z <= height && z >= point.z)
+            {
+                best = z;
+                blocker = obstacle;
+            }
+        }
+        ++index;
+    } while (--remaining != 0);
+    if (best == 1.0e15f)
+    {
+        if (height <= 0.0f)
+        {
+            result.x = point.x;
+            result.y = point.y;
+            result.z = 0.0f;
+            blocker = 0;
+            return false;
+        }
+        return true;
+    }
+    result.x = point.x;
+    result.y = point.y;
+    result.z = best;
+    return false;
+}
+
+// STUB: GAME 0x004f0230
+bool RHFastFindGrid::FUN_004f0230(const RHUnk00613e90 &first, const RHUnk00613e90 &second, RHFastFindUniqueList &found, char mode, char bypassCache)
+{
+    SBGeoPoint2D point;
+    SBGeoPoint2D firstPoint;
+    SBGeoPoint2D secondPoint;
+    SBGeoSegment2D line(SBGeoPoint2D(0.0f, 0.0f), SBGeoPoint2D(0.0f, 0.0f));
+    SBGeoSegment2D edge(SBGeoPoint2D(0.0f, 0.0f), SBGeoPoint2D(0.0f, 0.0f));
+    RHUnk0060fbf0 intersection;
+    float slope;
+    float intercept;
+    bool slopePending;
+    bool slopeValid;
+
+    if (mode != 0
+        && ((first.z > 0.0f && second.z < 0.0f) || (first.z < 0.0f && second.z > 0.0f)))
+        return false;
+
+    unsigned long key = (unsigned long)(first.x + second.x
+        + (second.y + first.y) * (second.y + first.y) * 7.0f
+        + (second.z + first.z) * (second.z + first.z) * (second.z + first.z) * 3.0f);
+    unsigned long slot = key % 2000;
+    RHFastFindVisibilityCacheEntry *cache = (RHFastFindVisibilityCacheEntry *)((char *)this + 4);
+    if (bypassCache == 0 && cache[slot].valid && cache[slot].key == key)
+    {
+        ++g_unk0x006c0ab0;
+        return cache[slot].result != 0;
+    }
+    ++g_unk0x006c0ab4;
+    if (bypassCache == 0)
+    {
+        cache[slot].result = 0;
+        cache[slot].valid = true;
+        cache[slot].key = key;
+    }
+
+    firstPoint.m_x = first.x;
+    firstPoint.m_y = first.y;
+    line.First() = firstPoint;
+    secondPoint.m_x = second.x;
+    secondPoint.m_y = second.y;
+    line.Second() = secondPoint;
+    slopePending = true;
+
+    unsigned long count = (unsigned long)found.GetSize();
+    for (unsigned index = 0; index < (unsigned short)count; ++index)
+    {
+        ((RHSeqList *)&found)->GoTo((unsigned short)index);
+        RHSightObstacle *obstacle = (RHSightObstacle *)*found.Current();
+        if (!obstacle->m_24.FUN_00608650(line.Line()))
+            continue;
+
+        RHShadowUnk005df9e0 *upperPlane = (RHShadowUnk005df9e0 *)&obstacle->m_a8;
+        if (obstacle->m_158)
+        {
+            float firstHeight = first.z - upperPlane->FUN_005df9e0(first.x, first.y);
+            float secondHeight = second.z - upperPlane->FUN_005df9e0(second.x, second.y);
+            bool firstAbove = firstHeight > 0.0f;
+            bool secondAbove = secondHeight > 0.0f;
+            if (firstAbove && secondAbove)
+                continue;
+
+            unsigned long vertexCount = (unsigned long)obstacle->m_4c.m_count;
+            RHUnkSightVertex lastVertex = obstacle->m_4c[(unsigned short)vertexCount - 1];
+            firstPoint.m_x = lastVertex.m_00;
+            firstPoint.m_y = lastVertex.m_04;
+            if (slopePending && (firstAbove || secondAbove))
+            {
+                slopePending = false;
+                slopeValid = FUN_004efe40(first, second, slope, intercept);
+            }
+            for (unsigned short vertex = 0; vertex < (unsigned short)vertexCount; ++vertex)
+            {
+                RHUnkSightVertex currentVertex = obstacle->m_4c[vertex];
+                secondPoint.m_x = currentVertex.m_00;
+                secondPoint.m_y = currentVertex.m_04;
+                edge.First() = firstPoint;
+                edge.Second() = secondPoint;
+                if (line.IsIntersecting(edge))
+                {
+                    if (!firstAbove && !secondAbove)
+                        return false;
+                    intersection.FUN_0060fca0(line ^ edge);
+                    if (intersection.FUN_0063b9a0() == 1)
+                    {
+                        point = *(SBGeoPoint2D *)intersection.FUN_0053bf20();
+                        float height = (slopeValid ? point.m_x : point.m_y) * slope + intercept;
+                        if (upperPlane->FUN_005df9e0(point.m_x, point.m_y) >= height)
+                            return false;
+                    }
+                }
+                firstPoint = secondPoint;
+            }
+            if (firstAbove != secondAbove)
+            {
+                firstPoint.m_x = first.x;
+                firstPoint.m_y = first.y;
+                secondPoint.m_x = second.x;
+                secondPoint.m_y = second.y;
+                point = firstPoint.Unk005fc190(firstHeight / (firstHeight - secondHeight)
+                    * secondPoint.Unk005fc110(firstPoint));
+                if (obstacle->m_24.FUN_00608400(point)
+                    && ((RHElementAreaShape *)((char *)obstacle + 0x7c))->FUN_0060c660(point))
+                    return false;
+            }
+        }
+        else
+        {
+            RHShadowUnk005df9e0 *lowerPlane = (RHShadowUnk005df9e0 *)&obstacle->m_100;
+            float firstHeight = first.z - upperPlane->FUN_005df9e0(first.x, first.y);
+            float secondHeight = second.z - upperPlane->FUN_005df9e0(second.x, second.y);
+            float firstLower = first.z - lowerPlane->FUN_005df9e0(first.x, first.y);
+            float secondLower = second.z - lowerPlane->FUN_005df9e0(second.x, second.y);
+            bool firstAbove = firstHeight > 0.0f;
+            bool secondAbove = secondHeight > 0.0f;
+            bool firstBelow = firstLower < 0.0f;
+            bool secondBelow = secondLower < 0.0f;
+            if (firstAbove && secondAbove)
+                continue;
+            if (firstBelow && secondBelow)
+                continue;
+
+            unsigned long vertexCount = (unsigned long)obstacle->m_4c.m_count;
+            RHUnkSightVertex lastVertex = obstacle->m_4c[(unsigned short)vertexCount - 1];
+            firstPoint.m_x = lastVertex.m_00;
+            firstPoint.m_y = lastVertex.m_04;
+            if (slopePending && (firstAbove || secondAbove || firstBelow || secondBelow))
+            {
+                slopePending = false;
+                slopeValid = FUN_004efe40(first, second, slope, intercept);
+            }
+            for (unsigned short vertex = 0; vertex < (unsigned short)vertexCount; ++vertex)
+            {
+                RHUnkSightVertex currentVertex = obstacle->m_4c[vertex];
+                secondPoint.m_x = currentVertex.m_00;
+                secondPoint.m_y = currentVertex.m_04;
+                edge.First() = firstPoint;
+                edge.Second() = secondPoint;
+                if (line.IsIntersecting(edge))
+                {
+                    if (!firstAbove && !secondAbove && !firstBelow && !secondBelow)
+                        return false;
+                    intersection.FUN_0060fca0(line ^ edge);
+                    if (intersection.FUN_0063b9a0() == 1)
+                    {
+                        point = *(SBGeoPoint2D *)intersection.FUN_0053bf20();
+                        float height = (slopeValid ? point.m_x : point.m_y) * slope + intercept;
+                        if (upperPlane->FUN_005df9e0(point.m_x, point.m_y) >= height)
+                        {
+                            if (lowerPlane->FUN_005df9e0(point.m_x, point.m_y) >= height)
+                                return false;
+                        }
+                    }
+                }
+                firstPoint = secondPoint;
+            }
+            if (firstAbove != secondAbove)
+            {
+                firstPoint.m_x = first.x;
+                firstPoint.m_y = first.y;
+                secondPoint.m_x = second.x;
+                secondPoint.m_y = second.y;
+                point = firstPoint.Unk005fc190(firstHeight / (firstHeight - secondHeight)
+                    * secondPoint.Unk005fc110(firstPoint));
+                if (obstacle->m_24.FUN_00608400(point)
+                    && ((RHElementAreaShape *)((char *)obstacle + 0x7c))->FUN_0060c660(point))
+                    return false;
+            }
+            if (firstBelow != secondBelow)
+            {
+                firstPoint.m_x = first.x;
+                firstPoint.m_y = first.y;
+                secondPoint.m_x = second.x;
+                secondPoint.m_y = second.y;
+                point = firstPoint.Unk005fc190(firstLower / (firstLower - secondLower)
+                    * secondPoint.Unk005fc110(firstPoint));
+                if (obstacle->m_24.FUN_00608400(point)
+                    && ((RHElementAreaShape *)((char *)obstacle + 0x7c))->FUN_0060c660(point))
+                    return false;
+            }
+        }
+    }
+    if (bypassCache == 0)
+        cache[slot].result = 1;
+    return true;
+}
+
+// STUB: GAME 0x004eff80
+bool RHMalignityGeometryCalls::FUN_004eff80(const RHUnk00613e90 &first, const RHUnk00613e90 &second, unsigned long mask)
+{
+    if ((first.z > 0.0f && second.z < 0.0f) || (first.z < 0.0f && second.z > 0.0f))
+        return false;
+
+    unsigned long key = (unsigned long)(second.x + first.x + (second.y + first.y) * (first.y + second.y) * 7.0f + (second.z + first.z) * (first.z + second.z) * (second.z + first.z) * 3.0f);
+    unsigned long slot = key % 2000;
+    RHFastFindVisibilityCacheEntry *cache = (RHFastFindVisibilityCacheEntry *)((char *)this + 4);
+    if (cache[slot].valid && cache[slot].key == key)
+    {
+        ++g_unk0x006c0ab0;
+        return cache[slot].result != 0;
+    }
+    ++g_unk0x006c0ab4;
+    char allocator;
+    RHFastFindUniqueList found(allocator);
+    SBGeoPoint2D target(second.x, second.y);
+    SBGeoPoint2D origin(first.x, first.y);
+    SBGeoSegment2D segment(origin, target);
+    ((RHFastFindGrid *)this)->FUN_004eef30(found, 0, *(const RHMalignitySegment *)&segment, mask);
+    bool visible = ((RHFastFindGrid *)this)->FUN_004f0230(first, second, found, 0, 0);
+    cache[slot].result = visible;
+    cache[slot].valid = true;
+    cache[slot].key = key;
+    return visible;
 }
 
 // parked: best probe 61.16%.
@@ -1453,16 +1881,16 @@ void RHFastFindGrid::InitializeSightObstaclesFromProtoStream(SBFile &file)
     FUN_005e1d50(file, 0x574f4157, 3);
     RHUnk005a3450 *area = new RHUnk005a3450(4);
     {
-        SBGeoPoint3D first(0.0f, 10.0f, 0.0f);
-        SBGeoPoint3D second(10.0f, 0.0f, 0.0f);
-        SBGeoPoint3D third(0.0f, 0.0f, 0.0f);
+        RHUnk00613e90 first(0.0f, 10.0f, 0.0f);
+        RHUnk00613e90 second(10.0f, 0.0f, 0.0f);
+        RHUnk00613e90 third(0.0f, 0.0f, 0.0f);
         area->FirstPlane().Unk005df860(third, second, first);
         area->FirstPlane().Unk005dfa00();
     }
     {
-        SBGeoPoint3D first(0.0f, 10.0f, 0.0f);
-        SBGeoPoint3D second(10.0f, 0.0f, 0.0f);
-        SBGeoPoint3D third(0.0f, 0.0f, 0.0f);
+        RHUnk00613e90 first(0.0f, 10.0f, 0.0f);
+        RHUnk00613e90 second(10.0f, 0.0f, 0.0f);
+        RHUnk00613e90 third(0.0f, 0.0f, 0.0f);
         area->SecondPlane().Unk005df860(third, second, first);
         area->SecondPlane().Unk005dfa00();
     }
@@ -1788,10 +2216,7 @@ DECOMP_SIZE_ASSERT(RHFastFindPathGate, 0x88)
 
 #include "RHActorGridCalls.h"
 
-struct RHUnk004b1520List
-{
-    RHScriptIter FUN_00424410(RHScriptIter, void *const &);
-};
+#include "RHUnk004b1520List.h"
 
 struct RHArtificialIntelligenceElement;
 struct RHArtificialIntelligenceList
@@ -2111,11 +2536,11 @@ void RHFastFindGrid::InitializeTacticalInfosFromMissionStream(SBFile &file)
         file.Access(&layer, 2);
         file.Access(&sectorIndex, 2);
         file.Access(&direction, 2);
-        RHFastFindSector *sector;
+        RHSector *sector;
         if (sectorIndex == 0xffff)
             sector = fastfind_defaultSector;
         else
-            sector = (RHFastFindSector *)m_sectors.m_first[sectorIndex];
+            sector = (RHSector *)m_sectors.m_first[sectorIndex];
         if (!(sector->SectorFlag() & 1) || !(sector->BaseFlag() & 1))
             SBAssert(1, "P:\\Robin Hood\\RHfastfindgrid.cpp", 0x268e,
                 // STRING: GAME 0x006afd88
@@ -2344,11 +2769,11 @@ void RHFastFindGrid::InitializeScriptStuffFromMissionStream(SBFile &file)
         RHSectorScript *sector = new RHSectorScript;
         sector->InitializeFromMissionStream(file);
         if (!sector->m_active)
-            sector->m_flags &= ~0x80;
+            sector->m_30 &= ~0x80;
         if (((RHUnkSectorPoints *)((char *)sector + 4))->Unk0060ce80() >= 3)
         {
-            FUN_004e8bd0(sector, sector->m_layer, true);
-            FUN_004e99e0(sector, sector->m_layer, true);
+            FUN_004e8bd0(sector, sector->m_36, true);
+            FUN_004e99e0(sector, sector->m_36, true);
         }
         else
             SBAssert(0, "P:\\Robin Hood\\RHfastfindgrid.cpp", 0x284d,
@@ -2998,10 +3423,6 @@ __forceinline void AssignFastFindPlain(RHFastFindPointerArray &destination,
 }
 
 // SIZE 0xc0
-struct RHFastFindRecordC0
-{
-    char m_data[0xc0];
-};
 typedef RHUnk004fda20 RHFastFindRecordA0;
 
 DECOMP_SIZE_ASSERT(RHFastFindRangeArray, 0x20)
@@ -3018,6 +3439,12 @@ DECOMP_SIZE_ASSERT(RHFastFindRecordA0, 0xa0)
 // ??1?$vector@KV?$allocator@K@std@@@std@@QAE@XZ
 
 void FUN_004fe9d0(RHFastFindRecordC0 *destination, const RHFastFindRecordC0 &value);
+
+// STUB: GAME 0x004fe9d0
+void FUN_004fe9d0(RHFastFindRecordC0 *destination, const RHFastFindRecordC0 &value)
+{
+    new (destination) RHFastFindRecordC0(value);
+}
 
 // FUNCTION: GAME 0x004feb10
 void FUN_004feb10(RHFastFindRecordA0 *destination, const RHFastFindRecordA0 &value)
@@ -3978,7 +4405,7 @@ void RHUnk00522470::Unk005224d0(SBFile &file)
     if (sector == 0xffff)
         value = g_unk0x6c0a9c->m_4184;
     else
-        value = g_unk0x6c0a9c->m_4064[sector];
+        value = g_unk0x6c0a9c->m_sectors.m_first[sector];
     *((char *)this + 0x14) = 0;
     *(void **)((char *)this + 0x24) = value;
 }
@@ -3990,11 +4417,11 @@ void RHUnk00522470::Unk005224d0(SBFile &file)
 // ?size@?$vector@KV?$allocator@K@std@@@std@@QBEIXZ
 
 // FUNCTION: GAME 0x005df860
-void RHUnk005df860::Unk005df860(const SBGeoPoint3D &first, const SBGeoPoint3D &second, const SBGeoPoint3D &third)
+void RHUnk005df860::Unk005df860(const RHUnk00613e90 &first, const RHUnk00613e90 &second, const RHUnk00613e90 &third)
 {
-    *(SBGeoPoint3D *)this = first;
-    *(SBGeoPoint3D *)((char *)this + 0xc) = second;
-    *(SBGeoPoint3D *)((char *)this + 0x18) = third;
+    m_00 = first;
+    m_0c = second;
+    m_18 = third;
 }
 
 // FUNCTION: GAME 0x005dfa00
@@ -4027,13 +4454,13 @@ void RHFastFindGrid::Emit(SBFile &file, void *&value)
     FUN_004ede00(*(RHFastFindUniqueList *)value, 0, *(SBGeoBoundingBox2D *)value, value);
     FUN_004ee120(*(RHFastFindUniqueList *)value, 0, *(SBGeoBoundingBox2D *)value, value, 0);
     FUN_004ee470(*(RHFastFindUniqueList *)value, 0, *(SBGeoBoundingBox2D *)value);
-    FUN_004ee770(*(RHFastFindUniqueList *)value, 0, 0);
+    FUN_004ee770(*(RHTransientPointerList<void> *)value, 0, 0);
     FUN_004ee880(*(RHFastFindUniqueList *)value, 0, *(SBGeoBoundingBox2D *)value, 0);
     FUN_004eea50(*(RHFastFindUniqueList *)value, 0, *(RHMalignitySegment *)value, 0);
     FUN_004eec20(*(RHFastFindUniqueList *)value, 0, *(SBGeoBoundingBox2D *)value, 0);
     FUN_004eef30(*(RHFastFindUniqueList *)value, 0, *(RHMalignitySegment *)value, 0);
     FUN_004efd10(value, 0, false);
-    FUN_004efe40(*(SBGeoPoint3D *)value, *(SBGeoPoint3D *)value, *(float *)value, *(float *)value);
+    FUN_004efe40(*(RHUnk00613e90 *)value, *(RHUnk00613e90 *)value, *(float *)value, *(float *)value);
     InitializeLiftsFromProtoStream(file);
     InitializeBuildingsFromProtoStream(file);
     InitializeSightObstaclesFromProtoStream(file);
@@ -4044,7 +4471,7 @@ void RHFastFindGrid::Emit(SBFile &file, void *&value)
     InitializeScriptStuffFromMissionStream(file);
     SerializeLinePointer(file, value);
     RHUnk005df860 plane;
-    SBGeoPoint3D point(0, 0, 0);
+    RHUnk00613e90 point(0, 0, 0);
     plane.Unk005df860(point, point, point);
     plane.Unk005dfa00();
     ((RHUnk0051e5e0 *)value)->FUN_0051e890((RHUnk0051e1e0 *)value);

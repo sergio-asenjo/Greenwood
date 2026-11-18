@@ -6,7 +6,7 @@ class RHUnk00613e90;
 class RHMalignityGeometryCalls
 {
 public:
-    bool FUN_004eff80(const RHUnk00613e90 &first, const RHUnk00613e90 &second, int mode);
+    bool FUN_004eff80(const RHUnk00613e90 &first, const RHUnk00613e90 &second, unsigned long mask);
 };
 
 #endif

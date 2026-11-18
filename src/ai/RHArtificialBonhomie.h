@@ -6,15 +6,24 @@
 void RHSerializeName(SBFile &file, const char *name);
 bool FUN_00416b30(void *&value, SBFile &file);
 
+struct RHMalignityPosition;
+class RHArtificialIntelligence;
+
 inline char *RHBonhomieBase(void *self)
 {
     return (char *)self + (*(int **)((char *)self - 0x1c))[1] - 0x1c;
+}
+
+inline RHArtificialIntelligence *RHBonhomieInterface(void *self)
+{
+    return (RHArtificialIntelligence *)((char *)self + (*(int **)self)[1]);
 }
 
 class RHArtificialBonhomie
 {
 public:
     bool SerializeExactlyThisAI(SBFile &file);
+    bool ProposeGoodAppleChaseFleeDestination(RHMalignityPosition &destination);
     void FUN_0040d910(unsigned flags);
     void FUN_0040d9e0(unsigned char frame);
     void FUN_0040dcb0(int state, int substate);

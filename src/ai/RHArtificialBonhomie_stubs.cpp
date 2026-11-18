@@ -8,8 +8,8 @@
 #include <stdlib.h>
 #include <list>
 
-struct RHUnkSectorGlobal;
-extern RHUnkSectorGlobal *g_unk0x6c0a9c;
+class RHFastFindGrid;
+extern RHFastFindGrid *g_unk0x6c0a9c;
 
 inline RHPath *RHBonhomieActorPath(void *actor)
 {

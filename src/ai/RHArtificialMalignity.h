@@ -97,8 +97,6 @@ struct RHUnk00441dd0Record
 
 #include "RHArtificialMalignityCore.h"
 
-unsigned FUN_00445210(float first, unsigned second, unsigned third, unsigned fourth, float fifth, unsigned sixth, void *seventh, unsigned eighth);
-
 RHUnk00613e90 FUN_00414360(const RHMalignityPosition &position, bool mode);
 SBGeoVector2D FUN_0040ec20(const RHMalignityPosition &first, RHMalignityPosition second);
 #include "RHActorAreaCalls.h"

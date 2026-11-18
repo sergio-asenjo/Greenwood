@@ -1,4 +1,8 @@
+#ifndef RHSIGHTOBSTACLE_H
+#define RHSIGHTOBSTACLE_H
+
 #include "sb3dstuff.h"
+#include "RHPlaneCalls.h"
 #include "RHSectorActorList.h"
 #include "Decomp.h"
 #include <iterator>
@@ -11,12 +15,6 @@ class SBGeoPolyLine2DList;
 class SBGeoVector2D;
 
 #include "SBGeoBoundingBox2DCore.h"
-
-class RHUnkTargetPoints
-{
-public:
-    void FUN_00611100(const SBGeoPoint2D &point);
-};
 
 // SIZE 0x2c
 #include "RHUnkSectorPoints.h"
@@ -129,28 +127,6 @@ public:
     undefined m_18[0x18]; // 0x18
 };
 
-// SIZE 0x58
-class RHUnkSightPlane
-{
-public:
-    void *FUN_005df990();
-    undefined m_00[0x58]; // 0x00
-};
-
-// SIZE 0x18
-class RHUnkSightTriple
-{
-public:
-    void FUN_005dfc40(int first, int second, int third);
-    void FUN_005dfc60(int first, int second, int third);
-    int m_00; // 0x00
-    int m_04; // 0x04
-    int m_08; // 0x08
-    int m_0c; // 0x0c
-    int m_10; // 0x10
-    int m_14; // 0x14
-};
-
 // SIZE 0x15c
 class RHSightObstacle
 {
@@ -169,7 +145,9 @@ public:
     SBGeoBoundingBox2D m_38; // 0x38
     RHUnkSightVertexList m_4c; // 0x4c
     RHUnkSectorPoints m_7c; // 0x7c
-    RHUnk005dfb00 m_a8; // 0xa8
-    RHUnk005dfb00 m_100; // 0x100
+    RHUnk005df860 m_a8; // 0xa8
+    RHUnk005df860 m_100; // 0x100
     char m_158; // 0x158
 };
+
+#endif

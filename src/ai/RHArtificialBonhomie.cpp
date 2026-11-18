@@ -7,12 +7,22 @@
 #include "RHAIStateCalls.h"
 #include "RHActorScriptContext.h"
 #include "RHUnk0046bd20.h"
+#include "RHUnk005fc3b0.h"
+#include "RHMalignityPosition.h"
+#include "RHPositionInterfaceCore.h"
+#include "RHPathGeometryCalls.h"
 #include <stdlib.h>
 
 extern char g_unk0x6c0691;
 extern RHElementActor *g_unk0x6c100c;
 class RHUnk6c1040;
 extern RHUnk6c1040 *g_unk0x6c1040;
+
+class RHFastFindGrid;
+extern RHFastFindGrid *g_unk0x6c0a9c;
+
+SBGeoVector2D FUN_0040ec20(const RHMalignityPosition &first, RHMalignityPosition second);
+RHMalignityPosition FUN_0040ece0(const RHMalignityPosition &position, SBGeoPoint2D point);
 
 template <class T>
 T &RHBonhomieField(void *object, int offset)
@@ -273,6 +283,44 @@ bool RHArtificialBonhomie::SerializeExactlyThisAI(SBFile &file)
         return false;
     }
 
+    return true;
+}
+
+// FUNCTION: GAME 0x0040e7e0
+bool RHArtificialBonhomie::ProposeGoodAppleChaseFleeDestination(RHMalignityPosition &destination)
+{
+    RHUnk005fc3b0 direction;
+    RHMalignityPosition origin;
+    origin = RHBonhomieInterface(this)->FUN_004165e0(RHBonhomieInterface(this)->m_actor, true);
+    direction.FUN_005fc430(FUN_0040ec20(origin, RHBonhomieInterface(this)->FUN_004165e0(
+        RHBonhomieField<void *>(RHBonhomieInterface(this), 0x90), true)));
+    direction.Unk005fc6a0(0.57357645f);
+    unsigned short heading = direction.FUN_005fcc50(0.57357645f);
+    heading = (heading + rand() % 5 + 0xe) % 16;
+    for (float step = 300.0f; step > 10.0f; step -= 10.0f)
+    {
+        short offset = 0;
+        do
+        {
+            int value = offset;
+            direction.Unk005fcd40((offset + heading) % 15, 0.57357645f);
+            direction.FUN_005fc4d0(step);
+            destination = FUN_0040ece0(origin, direction);
+            void *actor = RHBonhomieInterface(this)->m_actor;
+            RHPositionInterface *bounds = (RHPositionInterface *)((char *)RHBonhomieField<void *>(actor, 0x50) + 4);
+            void *radius = bounds->Unk0055fa10(bounds->m_88);
+            if (((RHUnkPathGeometry *)g_unk0x6c0a9c)->Unk004f9170(
+                    RHBonhomieInterface(this)->FUN_0040cbf0(origin),
+                    RHBonhomieInterface(this)->FUN_0040cbf0(destination), origin.layer, radius))
+                goto found;
+            if (offset > 0)
+                offset = -value;
+            else
+                offset = 1 - value;
+        } while (offset < 8);
+    }
+    return false;
+found:
     return true;
 }
 
