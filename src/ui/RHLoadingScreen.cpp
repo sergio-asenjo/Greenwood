@@ -1,14 +1,42 @@
+#include "SBNullstr.h"
 #include <stdio.h>
 #include "RHLoadingScreen.h"
 #include "SBPicture.h"
+#include "SBUIBase.h"
+#include "SBUIUnkSurface.h"
+#include "RHFontManager.h"
+#include "SBFont.h"
+#include "RHUnk005f4fc0.h"
+#include "SBUIRendererInputField.h"
+#include "RHMapResources.h"
+#include "ToolboxWideString.h"
+#include "launcher.h"
+
+extern unsigned char g_unk0x006a6d27;
+extern RHMapResources *g_unk0x006c1840;
+extern RHUnk00408f50 g_unk0x006c0580;
+void FUN_005e1380();
+void FUN_005e1400();
 
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 DECOMP_SIZE_ASSERT(SBGeoVector2D, 0x08)
 DECOMP_SIZE_ASSERT(SBDrawViewport, 0x18)
-DECOMP_SIZE_ASSERT(RHUnkFXDraw, 0x10e)
+DECOMP_SIZE_ASSERT(SBDrawManager, 0x150)
 DECOMP_SIZE_ASSERT(RHUnk006114c0, 0x38)
 DECOMP_SIZE_ASSERT(RHMissionProfile, 0x14)
-DECOMP_SIZE_ASSERT(RHLoadingScreen, 0x24)
+DECOMP_SIZE_ASSERT(RHLoadingScreen, 0x30)
+DECOMP_SIZE_ASSERT(SBUIUnkSurface, 0x20)
+DECOMP_STATIC_ASSERT(offsetof(RHLoadingScreen, m_duration) == 0x04)
+DECOMP_STATIC_ASSERT(offsetof(RHLoadingScreen, m_elapsed) == 0x08)
+DECOMP_STATIC_ASSERT(offsetof(RHLoadingScreen, m_font) == 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(RHLoadingScreen, m_versionFont) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHLoadingScreen, m_context) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(RHLoadingScreen, m_draw) == 0x18)
+DECOMP_STATIC_ASSERT(offsetof(RHLoadingScreen, m_width) == 0x1c)
+DECOMP_STATIC_ASSERT(offsetof(RHLoadingScreen, m_height) == 0x20)
+DECOMP_STATIC_ASSERT(offsetof(RHLoadingScreen, m_picture) == 0x24)
+DECOMP_STATIC_ASSERT(offsetof(RHLoadingScreen, m_sandPicture) == 0x28)
+DECOMP_STATIC_ASSERT(offsetof(RHLoadingScreen, m_status) == 0x2c)
 
 // STRING: GAME 0x006b0764
 #define g_loadingFile "P:\\Robin Hood\\RHloadingscreen.cpp"
@@ -29,6 +57,12 @@ DECOMP_SIZE_ASSERT(RHLoadingScreen, 0x24)
 // STRING: GAME 0x006b0888
 #define g_loadingFormat "%02i"
 #define g_loadingSeparator "\\"
+// STRING: GAME 0x006b07e4
+#define g_loadingFont "Loading"
+// STRING: GAME 0x006b07dc
+#define g_loadingVersionFont "Version"
+// STRING: GAME 0x006b0804
+#define g_loadingVersionFormat "v%d.%d %s"
 
 // GLOBAL: GAME 0x006c0bd4
 unsigned char *g_unk0x006c0bd4;
@@ -159,9 +193,7 @@ unsigned long RHLoadingScreen::CreateSurfaceForPicture(SBFile &file)
         SBAssert(0, g_loadingFile, 0x48, g_loadingPicture);
         return -1;
     }
-    typedef unsigned long (RHUnkFXDraw::*CreateSurface)(unsigned short, unsigned short, unsigned long, bool);
-    // Reuse the shared int-parameter stub with the target's narrow-argument ABI.
-    unsigned long surface = (m_draw->*reinterpret_cast<CreateSurface>(&RHUnkFXDraw::Unk005e4ed0))((unsigned short)m_width, (unsigned short)m_height, 0, false);
+    unsigned long surface = m_draw->Unk005e4ed0((unsigned short)m_width, (unsigned short)m_height, 0, false);
     switch (m_draw->UnkField10c())
     {
     case 15:
@@ -190,13 +222,37 @@ unsigned long RHLoadingScreen::CreateSurfaceForPicture(SBFile &file)
     return surface;
 }
 
+// FUNCTION: GAME 0x00522bd0
+bool RHLoadingScreen::Initialize(const RHMission *mission, unsigned long number, float duration)
+{
+    RHUnk005f4fc0 file;
+    m_duration = duration;
+    m_elapsed = 0;
+    m_draw = g_unk0x6c11d0;
+    m_width = m_draw->FUN_005e56c0(0);
+    m_height = m_draw->FUN_005e5750(0);
+    m_draw->FUN_005e61e0(0, 0, 0, 0);
+    m_draw->FUN_005e5260();
+    m_context = new SBUIUnkSurface(0);
+    m_font = RHFontManager::FUN_005024f0()->GetFont(std::string(g_loadingFont));
+    m_versionFont = RHFontManager::FUN_005024f0()->GetFont(std::string(g_loadingVersionFont));
+    m_font->AttachToRenderContext(m_context, false);
+    m_versionFont->AttachToRenderContext(m_context, false);
+    file.FUN_005f5090(GetDataFile(mission, number), 1);
+    m_picture = CreateSurfaceForPicture(file);
+    m_sandPicture = CreateSurfaceForPicture(file);
+    GenerateSand(file);
+    file.FUN_005f5290();
+    return true;
+}
+
 // FUNCTION: GAME 0x00522e40
 void RHLoadingScreen::GenerateSand(SBFile &file)
 {
     SBDrawViewport viewport;
     unsigned long surface = CreateSurfaceForPicture(file);
     g_unk0x006c0bd4 = new unsigned char[m_width * m_height];
-    if (!((SBDrawManager *)m_draw)->FUN_005e5a00(surface, viewport, 0))
+    if (!m_draw->FUN_005e5a00(surface, viewport, 0))
         return;
     unsigned long depth = viewport.UnkDepth();
     unsigned long skip = (viewport.UnkPitch() >> 1) - viewport.UnkWidth();
@@ -256,8 +312,8 @@ void RHLoadingScreen::GenerateSand(SBFile &file)
         SBAssert(1, g_loadingFile, 0x136, g_loadingSandDepth);
         break;
     }
-    ((SBDrawManager *)m_draw)->FUN_005e5ea0(viewport);
-    ((SBDrawManager *)m_draw)->FUN_005e5160(surface);
+    m_draw->FUN_005e5ea0(viewport);
+    m_draw->FUN_005e5160(surface);
     float scale = 255.0f / (maximum - minimum);
     sand = g_unk0x006c0bd4;
     m_height *= m_width;
@@ -266,6 +322,87 @@ void RHLoadingScreen::GenerateSand(SBFile &file)
         *sand = (unsigned char)((*sand - minimum) * scale);
         ++sand;
     }
+}
+
+// FUNCTION: GAME 0x00523130
+void RHLoadingScreen::RenderSand(volatile unsigned long threshold)
+{
+    SBDrawViewport screen;
+    SBDrawViewport picture;
+    SBDrawViewport sandPicture;
+    unsigned long width = m_draw->FUN_005e56c0(0);
+    unsigned long height = m_draw->FUN_005e5750(0);
+    if (!m_draw->FUN_005e5a00(0, screen, 0))
+        return;
+    unsigned short *destination = screen.UnkData();
+    unsigned long screenSkip = (screen.UnkPitch() >> 1) - screen.UnkWidth();
+    if (!m_draw->FUN_005e5a00(m_picture, picture, 0))
+    {
+        m_draw->FUN_005e5ea0(screen);
+        return;
+    }
+    unsigned short *first = picture.UnkData();
+    unsigned long skip = (picture.UnkPitch() >> 1) - picture.UnkWidth();
+    if (!m_draw->FUN_005e5a00(m_sandPicture, sandPicture, 0))
+    {
+        m_draw->FUN_005e5ea0(screen);
+        m_draw->FUN_005e5ea0(sandPicture);
+        return;
+    }
+    unsigned short *second = sandPicture.UnkData();
+    const unsigned char *sand = g_unk0x006c0bd4;
+    for (unsigned long y = height; y > 0; --y)
+    {
+        for (unsigned long x = width; x > 0; --x)
+        {
+            unsigned long pixel = *sand;
+            if (pixel > threshold)
+                pixel = *second;
+            else
+                pixel = *first;
+            *destination = (unsigned short)pixel;
+            ++first;
+            ++second;
+            ++destination;
+            ++sand;
+        }
+        first += skip;
+        second += skip;
+        destination += screenSkip;
+    }
+    m_draw->FUN_005e5ea0(picture);
+    m_draw->FUN_005e5ea0(sandPicture);
+    m_draw->FUN_005e5ea0(screen);
+}
+
+// FUNCTION: GAME 0x00523300
+bool RHLoadingScreen::Refresh()
+{
+    SBGeoBoundingBox2D bounds;
+    SBUIInputFieldDrawUnk renderer;
+    std::wstring text;
+    if (g_unk0x006a6d27 == 1)
+    {
+        m_draw->FUN_005e56c0(0);
+        m_draw->FUN_005e5750(0);
+        m_draw->FUN_005e61e0(0, 0, 0, 0);
+        float remaining = 1.0f - m_elapsed / m_duration;
+        RenderSand((unsigned long)(remaining * remaining * 256.0f));
+        SBGeoBoundingBox2D area(0.0f, 0.0f, (float)m_draw->FUN_005e56c0(0), 100.0f);
+        g_unk0x006c1840->FUN_006009e0(0x25, m_status, text);
+        char buffer[120];
+        sprintf(buffer, g_loadingVersionFormat, g_unk0x006c0580.m_00, g_unk0x006c0580.m_02,
+            g_unk0x006c0580.m_versionText.c_str());
+        renderer.FUN_00614230(m_versionFont, Toolbox::Convert(std::string(buffer)), area, 8, 0, true);
+        m_draw->FUN_005e5260();
+        FUN_005e1380();
+    }
+    else
+    {
+        while (g_unk0x006a6d27 == 0)
+            FUN_005e1400();
+    }
+    return true;
 }
 
 // FUNCTION: GAME 0x005236a0

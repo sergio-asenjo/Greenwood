@@ -5,16 +5,6 @@
 #include "SBDrawManagerCore.h"
 #include "SBDrawViewport.h"
 
-// SIZE 0x10e
-class RHUnkFXDraw
-{
-public:
-    unsigned long Unk005e4ed0(unsigned short, unsigned short, unsigned long, bool);
-    unsigned short UnkField10c() const { return m_depth; }
-    undefined m_00[0x10c]; // 0x00
-    unsigned short m_depth; // +0x10c
-};
-
 // SIZE 0x38
 class RHUnk006114c0
 {
@@ -28,7 +18,7 @@ public:
     virtual void Unk14(); // vtable+0x14
     virtual void Unk18(); // vtable+0x18
     virtual void Unk1c(); // vtable+0x1c
-    virtual bool Unk20(RHUnkFXDraw *, unsigned long); // vtable+0x20
+    virtual bool Unk20(SBDrawManager *, unsigned long); // vtable+0x20
     bool Unk00611710(SBFile &);
     bool Unk00611e10(unsigned long, unsigned long);
     unsigned short UnkField20() const { return m_width; }
@@ -47,19 +37,9 @@ public:
     std::string m_name; // +0x04
 };
 
-// SIZE 0x24
-class RHLoadingScreen
-{
-public:
-    unsigned long CreateSurfaceForPicture(SBFile &);
-    void GenerateSand(SBFile &);
-    static std::string GetDataFile(const RHMission *, unsigned long);
-    void Emit(SBFile &, const RHMission *);
-    undefined m_00[0x18]; // 0x00
-    RHUnkFXDraw *m_draw; // +0x18
-    unsigned long m_width; // +0x1c
-    unsigned long m_height; // +0x20
-};
+#include "RHLoadingScreenCore.h"
+
+extern SBDrawManager *g_unk0x6c11d0;
 
 bool FUN_005f6400(const std::string &);
 extern std::string g_unk0x006c05f0;
