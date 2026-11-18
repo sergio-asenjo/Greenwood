@@ -37,7 +37,7 @@ bool FUN_00401130(const char *name)
     unsigned char keys[256];
     memset(keys, 0, sizeof(keys));
     char summary[124];
-    RHUnkFXDraw *draw = (RHUnkFXDraw *)g_unk0x6c11d0;
+    SBDrawManager *draw = g_unk0x6c11d0;
     g_unk0x006772ec(g_unk0x006772f0, ((RHSound *)g_unk0x006c1070)->FUN_005a6f90());
     const char *(__stdcall *getError)() = g_unk0x006772e8;
     getError();
@@ -45,7 +45,7 @@ bool FUN_00401130(const char *name)
     getError();
     g_unk0x006772e0(movie, summary);
     unsigned long y = (480 - *(unsigned long *)(summary + 4)) / 2;
-    unsigned short depth = draw->m_10c;
+    unsigned short depth = draw->m_depth;
     unsigned long format = 9 + (depth == 16);
     ((SBDrawManager *)draw)->FUN_005e61e0(0, 0, 0, 0);
     ((SBDrawManager *)draw)->FUN_005e5260();

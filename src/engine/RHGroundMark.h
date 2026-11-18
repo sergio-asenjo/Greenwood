@@ -134,7 +134,7 @@ public:
 };
 
 class RHSprite;
-class RHUnk005ef320;
+class SBDrawManager;
 class RHFrameHolder;
 
 // VTABLE: GAME 0x006790b4
@@ -151,7 +151,7 @@ public:
 
     RHSprite *m_sprite;
     int m_surface;
-    RHUnk005ef320 *m_drawManager;
+    SBDrawManager *m_drawManager;
     RHFrameHolder *m_spriteBank;
     RHGroundInfoList m_list;
 };

@@ -5,13 +5,6 @@
 #include "SBDrawManagerCore.h"
 #include "SBDrawViewport.h"
 
-class RHUnkFXDraw
-{
-public:
-    char m_00[0x10c];
-    unsigned short m_10c; // +0x10c, WORD
-};
-
 class RHArtificialIntelligenceSoundCalls;
 
 #include "ToolboxMouseState.h"
@@ -25,8 +18,7 @@ struct RHUnkBink
 };
 
 extern RHArtificialIntelligenceSoundCalls *g_unk0x006c1070;
-class RHUnk005ef320;
-extern RHUnk005ef320 *g_unk0x6c11d0;
+extern SBDrawManager *g_unk0x6c11d0;
 extern unsigned char g_unk0x006a6d27;
 unsigned long FUN_005f0ce0();
 bool FUN_005f1150(ToolboxMouseState &, unsigned char *);

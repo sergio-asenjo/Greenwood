@@ -2,7 +2,7 @@
 #define RHSELECTIONMARK_H
 
 class RHSprite;
-class RHUnk005ef320;
+class SBDrawManager;
 class RHFrameHolder;
 class SBGeoBoundingBox2D;
 class SBGeoPoint2D;
@@ -18,7 +18,7 @@ public:
         const SBGeoPoint2D &point, unsigned short layer, bool, bool selected);
     unsigned m_vptr;
     RHSprite *m_4;
-    RHUnk005ef320 *m_8;
+    SBDrawManager *m_8;
     RHFrameHolder *m_c;
     unsigned m_10;
     int m_14;

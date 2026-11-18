@@ -36,8 +36,8 @@ public:
     char *FUN_0051a4e0();
 };
 
-class RHUnk005ef320;
-extern RHUnk005ef320 *g_unk0x6c11d0;
+class SBDrawManager;
+extern SBDrawManager *g_unk0x6c11d0;
 extern RHEngine *g_pEngine;
 RHMessenger *RHUnk00546050();
 

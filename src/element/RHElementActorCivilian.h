@@ -35,14 +35,7 @@ class RHSequenceElement;
 
 #include "RHCivilianSpriteView.h"
 
-// SIZE 0x10e
-class RHUnk005ef320
-{
-public:
-    unsigned short Unk(int red, int green, int blue);
-    undefined m_00[0x10c]; // 0x00
-    undefined2 m_10c; // 0x10c
-};
+class SBDrawManager;
 
 #include "SBGeoPoint2D.h"
 
@@ -84,17 +77,7 @@ public:
     undefined m_00[0x70]; // 0x00
 };
 
-class RHUnkTargetSprite
-{
-public:
-    bool FUN_005bd050(int kind, const std::string &name, const std::string &profile, int flag);
-};
-
-class RHUnkFXDraw
-{
-public:
-    unsigned long Unk005e4ed0(unsigned short width, unsigned short height, unsigned long flags, bool retain);
-};
+#include "SBDrawManagerCore.h"
 
 #include "RHBonusInfo.h"
 
@@ -109,7 +92,7 @@ public:
 
 extern RHEngine *g_pEngine;
 extern RHCampaignProfiles *g_unk0x6c0e84;
-extern RHUnk005ef320 *g_unk0x6c11d0;
+extern SBDrawManager *g_unk0x6c11d0;
 extern char g_unk0x6c0691;
 bool FUN_005e0c90(SBFile &file, std::string &value);
 

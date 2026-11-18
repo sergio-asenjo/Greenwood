@@ -51,7 +51,7 @@ public:
 
 typedef RHPortraitRenderer0060dab0 RHGameRenderer0060dad0;
 
-class RHUnk005ef320;
+class SBDrawManager;
 
 class RHGameRenderer0060da10 : public RHPortraitRenderer0060d470
 {
@@ -111,6 +111,7 @@ public:
     RHGameLifetime00515b40() {}
     ~RHGameLifetime00515b40() {}
     RHGameLifetime00515b40 &operator=(const RHGameLifetime00515b40 &other);
+    RHGameLifetime00515b40 &Assign(const RHGameLifetime00515b40 &other);
     void *FUN_00517280(unsigned flags);
     RHGameRenderer0060dad0 m_renderer;
 };
@@ -129,6 +130,7 @@ class RHGameLifetime005161a0 : public RHGameLifetime00515b40
 public:
     RHGameLifetime005161a0() {}
     ~RHGameLifetime005161a0() {}
+    RHGameLifetime005161a0 &operator=(const RHGameLifetime005161a0 &other);
     void *FUN_005173e0(unsigned flags);
 };
 

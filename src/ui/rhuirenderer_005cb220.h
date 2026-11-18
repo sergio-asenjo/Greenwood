@@ -8,10 +8,6 @@
 #define SBGEO_VECTOR2D_VIEW
 #include "RHUnk005fc3b0.h"
 
-class RHUnk005ef320
-{
-public:
-    void FUN_005e57e0(unsigned surface, SBGeoVector2D &size);
-};
+#include "SBDrawManagerCore.h"
 
 #endif

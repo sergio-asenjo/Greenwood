@@ -48,7 +48,7 @@
 #include "RHSpriteCore.h"
 #include "SBDrawManagerCore.h"
 
-extern RHUnk005ef320 *g_unk0x6c11d0;
+extern SBDrawManager *g_unk0x6c11d0;
 extern RHFrameHolder *g_unk0x006c0b1c;
 
 #include "RHEngineWidenedCalls.h"
@@ -108,9 +108,7 @@ unsigned long RHGroundMark::LoadFromResource()
         (SBResourceManager *)g_unk0x006c1840, 0x44, count,
         (SBArray<SBGeoVector2D> &)offsets);
     m_sprite->FUN_005bad10(first, 6, 2, 0, &offsets);
-    typedef unsigned long (RHUnkFXDraw::*CreateSurface)(unsigned short, unsigned short, int, bool);
-    m_surface = (((RHUnkFXDraw *)m_drawManager)->*
-        reinterpret_cast<CreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(
+    m_surface = m_drawManager->Unk005e4ed0(
         m_sprite->FUN_005bdd50(), m_sprite->FUN_005bdd70(), 0, false);
     size.FUN_005fc430(FUN_005fc580(SBGeoVector2D((float)m_sprite->FUN_005bdd50(),
         (float)m_sprite->FUN_005bdd70()), 0.5f));

@@ -12,7 +12,14 @@
 
 #include "RHGroundMark.h"
 
-// Target 0x00606040.
+// TEMPLATE: GAME 0x0051c850 FOLDED
+// ??_GSBGeoVector2D@@QAEPAXI@Z
+
+// TEMPLATE: GAME 0x0051c850 FOLDED
+// ??_GPoint@RHSectorProduction@@QAEPAXI@Z
+
+// TEMPLATE: GAME 0x0051c850 FOLDED
+// ?Destroy@RHUnk00606040@@QAEPAXI@Z
 void *RHUnk00606040::Destroy(unsigned flags)
 {
     this->~RHUnk00606040();

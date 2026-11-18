@@ -6,12 +6,14 @@
 #include "SBGeoPoint2D.h"
 #include "RHTransientPointerList.h"
 
+class SBFile;
+
 class RHUnk0054eab0
 {
 public:
     RHUnk0054eab0();
     ~RHUnk0054eab0();
-    void FUN_0054eea0(SBFile &file, void *grid);
+    int FUN_0054eea0(SBFile &file, void *grid);
     undefined m_00[0x1c];
     RHUnk00564020 m_1c;
     undefined m_34[0xc];
@@ -30,7 +32,10 @@ public:
     RHUnk00564020 m_118;
     undefined m_130[0x10];
     SBGeoPoint2D m_140;
-    undefined m_148[0x10];
+    void *m_148;
+    void *m_14c;
+    void *m_150;
+    void *m_154;
     SBResourceSurfaceArray m_158;
     RHTransientPointerList<void> m_178;
     bool m_19c;

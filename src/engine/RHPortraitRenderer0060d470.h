@@ -10,7 +10,7 @@
 
 class RHMapResources;
 class SBGeoPoint2D;
-class RHUnk005ef320;
+class SBDrawManager;
 
 struct RHPortraitRendererSurfaces
 {
@@ -38,7 +38,7 @@ public:
     void AssignPosition(const SBGeoBoundingBox2D &position);
     RHMapResources *m_resources;   // 0x04
     SBGeoBoundingBox2D m_position; // 0x08
-    RHUnk005ef320 *m_drawManager;   // 0x1c
+    SBDrawManager *m_drawManager;   // 0x1c
     unsigned int m_hardware;       // 0x20
     unsigned int m_24;             // 0x24
     std::wstring m_name;           // 0x28

@@ -170,8 +170,8 @@ bool RHSeekPoint::SerializeStatus(SBFile &file)
 
 #include "RHPathGeometryCalls.h"
 
-struct RHUnkSectorGlobal;
-extern RHUnkSectorGlobal *g_unk0x6c0a9c;
+class RHFastFindGrid;
+extern RHFastFindGrid *g_unk0x6c0a9c;
 
 #define RHSEEK_ACCESS(value, bytes, line) \
     if (file.Access(&(value), bytes) < 0) { \

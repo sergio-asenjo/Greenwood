@@ -29,9 +29,7 @@ unsigned long RHUnk00581c40::LoadFromResource()
     first = ((RHFrameHolder *)m_c)->AddRowFromResource(
         resources, 0x45, count, (SBArray<SBGeoVector2D> &)offsets);
     m_4->FUN_005bb180(1, first, 9, 2, 0, &offsets);
-    typedef unsigned long (RHUnkFXDraw::*CreateSurface)(unsigned short, unsigned short, int, bool);
-    m_10 = (((RHUnkFXDraw *)m_8)->*
-        reinterpret_cast<CreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(
+    m_10 = m_8->Unk005e4ed0(
         m_4->FUN_005bdd50(), m_4->FUN_005bdd70(), 0, false);
     size.FUN_005fc430(FUN_005fc580(SBGeoVector2D((float)m_4->FUN_005bdd50(),
         (float)m_4->FUN_005bdd70()), 0.5f));

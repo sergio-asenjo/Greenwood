@@ -31,8 +31,8 @@
 
 #include "RHPortraitRootList.h"
 
-class RHUnk005ef320;
-extern RHUnk005ef320 *g_unk0x6c11d0;
+class SBDrawManager;
+extern SBDrawManager *g_unk0x6c11d0;
 
 #include "RHPortraitDrawCalls.h"
 
@@ -114,6 +114,7 @@ public:
     bool OnNo(int message, void *widget, void *data);
     bool OnYes(int message, void *widget, void *data);
     static bool AskForConfirmation(RHMenuWindowScreen *screen, const std::wstring &text);
+    static bool FileNotFound(const std::string &file);
 
     void *m_font;
     RHGameLifetime00525560 m_144;

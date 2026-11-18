@@ -82,7 +82,7 @@ DECOMP_SIZE_ASSERT(SBGeoPolyLine2DList, 0x28)
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 DECOMP_SIZE_ASSERT(SBDrawViewport, 0x18)
 
-extern RHUnk005ef320 *g_unk0x6c11d0;
+extern SBDrawManager *g_unk0x6c11d0;
 class RHMapResources;
 extern RHMapResources *g_unk0x006c1840;
 
@@ -123,7 +123,7 @@ RHMessenger::RHMessenger()
     m_mask = new unsigned short[m_patternHeight];
     for (unsigned short i = 0; i < m_patternHeight; ++i)
         m_mask[i] = 31 - (viewport.GetPixel(0, i) & 31);
-    if (((SBDrawManager *)g_unk0x6c11d0)->m_10c == 16)
+    if (g_unk0x6c11d0->m_depth == 16)
     {
         int level = 1;
         int remaining = 32;
@@ -1076,8 +1076,8 @@ int RHMessenger::CheckThrustC(unsigned long a, unsigned long b, unsigned long c,
 #include "SBDrawViewport.h"
 
 #include "RHPlayerProfileManagerStorage.h"
-class RHUnk005ef320;
-extern RHUnk005ef320 *g_unk0x6c11d0;
+class SBDrawManager;
+extern SBDrawManager *g_unk0x6c11d0;
 
 inline float RHMessengerHeight(char *config)
 {

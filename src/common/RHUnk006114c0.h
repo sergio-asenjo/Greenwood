@@ -7,7 +7,7 @@
 class SBFile;
 class SBGeoPoint2D;
 class SBGeoVector2D;
-class RHUnkFXDraw;
+class SBDrawManager;
 struct SBPictureInfo;
 
 // SIZE 0x0c
@@ -33,7 +33,7 @@ public:
     virtual void Unk14(); // vtable+0x14
     virtual bool FUN_006118b0(const std::string &name); // vtable+0x18
     virtual bool Unk1c(SBFile &file); // vtable+0x1c
-    virtual bool Unk20(RHUnkFXDraw *, unsigned long); // vtable+0x20
+    virtual bool Unk20(SBDrawManager *, unsigned long); // vtable+0x20
     virtual void *FUN_006114e0(); // vtable+0x24
     virtual unsigned int FUN_006114f0(); // vtable+0x28
     virtual unsigned short FUN_00611500(); // vtable+0x2c

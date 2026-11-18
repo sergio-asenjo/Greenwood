@@ -1,4 +1,3 @@
-#define SBDRAW_MANAGER_OWNER_LAYOUT
 #include "SBDrawManagerOwner.h"
 #include "SBResourceManager.h"
 #include <string>
@@ -31,18 +30,6 @@ void SBAssert(int, const char *, int, const char *, ...);
 std::string FUN_005f81d0(long);
 void SBSimpleUnk005f9510(void *, const char *, ...);
 extern char g_unk0x006c13c0[16];
-
-class RHUnkFXDraw
-{
-public:
-    unsigned long Unk005e4ed0(unsigned short width, unsigned short height, unsigned long format, bool system);
-    bool FUN_005e4f70(unsigned long, unsigned short, unsigned short, unsigned long);
-    unsigned short FUN_005e56c0(unsigned long);
-    unsigned short FUN_005e5750(unsigned long);
-    unsigned short UnkField10c() const { return m_depth; }
-    char m_00[0x10c];
-    unsigned short m_depth;
-};
 
 class RHMobileUnk00607da0
 {
@@ -91,6 +78,24 @@ int __stdcall FUN_005e3b10(void *, char *description, char *, void *context, voi
 
 struct SBDrawTreeNode;
 extern SBDrawTreeNode *g_unk0x006c11dc;
+extern unsigned g_unk0x006c11d8;
+
+inline SBDrawUnk005efc10::~SBDrawUnk005efc10()
+{
+    SBDrawUnk005efc10Iterator first(Leftmost());
+    SBDrawUnk005efc10Iterator last(m_head);
+    FUN_005efa90(first, last);
+    operator delete(m_head);
+    m_head = 0;
+    m_size = 0;
+    {
+        std::_Lockit lock;
+        if (--g_unk0x006c11d8 == 0) {
+            operator delete(g_unk0x006c11dc);
+            g_unk0x006c11dc = 0;
+        }
+    }
+}
 
 // GLOBAL: GAME 0x006c11d8
 unsigned g_unk0x006c11d8;
@@ -114,14 +119,14 @@ void SBDrawUnk005efc10::FUN_005e3ed0()
 }
 
 // FUNCTION: GAME 0x005e3f40
-bool RHUnk005ef320::FUN_005e3f40(const std::string &title)
+bool SBDrawManager::FUN_005e3f40(const std::string &title)
 {
     return SetWindowTextA(*(void **)((char *)this + 0x100), SBDrawStringData(title)) != 0;
 }
 
 // Parked: iterator materialization and COM-call register scheduling differ.
 // STUB: GAME 0x005e3f70
-bool RHUnk005ef320::FUN_005e3f70()
+bool SBDrawManager::FUN_005e3f70()
 {
     SBDrawUnk005efc10 &tree = *(SBDrawUnk005efc10 *)((char *)this + 0x54);
     for (;;) {
@@ -165,7 +170,7 @@ void FUN_005f02f0(SBDrawUnk005efc10Iterator, SBDrawUnk005efc10Iterator, int &);
 void FUN_005f0440(SBDrawUnk005efc10Iterator, SBDrawUnk005efc10Iterator, int &, std::bidirectional_iterator_tag);
 
 // STUB: GAME 0x005e4810
-bool RHUnk005ef320::FUN_005e4810(unsigned short width, unsigned short height, unsigned short depth)
+bool SBDrawManager::FUN_005e4810(unsigned short width, unsigned short height, unsigned short depth)
 {
     typedef unsigned long (__stdcall *Release)(SBDrawUnk005e5ec0Surface *);
     typedef long (__stdcall *SetMode)(SBDrawUnk005e5ec0Surface *, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long);
@@ -212,7 +217,7 @@ bool RHUnk005ef320::FUN_005e4810(unsigned short width, unsigned short height, un
             m_surfaces.FUN_005ef440(SBDrawUnk005e4f70Pair(0, first));
             ((SBDrawManager *)this)->FUN_005e5160(1);
             EnterCriticalSection(this);
-            ((RHUnkFXDraw *)this)->FUN_005e4f70(1, (unsigned short)width, (unsigned short)height, 1);
+            FUN_005e4f70(1, (unsigned short)width, (unsigned short)height, 1);
             LeaveCriticalSection(this);
         } else {
             {
@@ -251,10 +256,10 @@ bool RHUnk005ef320::FUN_005e4810(unsigned short width, unsigned short height, un
         ((SBDrawManager *)this)->FUN_005e5160(1);
         if (!(m_74 & 1)) {
             EnterCriticalSection(this);
-            ((RHUnkFXDraw *)this)->FUN_005e4f70(1, (unsigned short)width, (unsigned short)height, 1);
+            FUN_005e4f70(1, (unsigned short)width, (unsigned short)height, 1);
         } else {
             EnterCriticalSection(this);
-            ((RHUnkFXDraw *)this)->FUN_005e4f70(1, (unsigned short)width, (unsigned short)height, 2);
+            FUN_005e4f70(1, (unsigned short)width, (unsigned short)height, 2);
         }
         LeaveCriticalSection(this);
     }
@@ -263,15 +268,15 @@ bool RHUnk005ef320::FUN_005e4810(unsigned short width, unsigned short height, un
 }
 
 // FUNCTION: GAME 0x005e4ed0
-unsigned long RHUnkFXDraw::Unk005e4ed0(unsigned short width, unsigned short height, unsigned long format, bool system)
+unsigned long SBDrawManager::Unk005e4ed0(unsigned short width, unsigned short height, unsigned long format, bool system)
 {
     EnterCriticalSection(this);
-    unsigned long surface = *(unsigned long *)(m_00 + 0x50);
+    unsigned long surface = m_50;
     if (FUN_005e4f70(surface, width, height, format) == true)
     {
-        ++*(unsigned long *)(m_00 + 0x50);
+        ++m_50;
         if (system)
-            ((std::list<unsigned long> *)(m_00 + 0x64))->push_back(surface);
+            m_released.push_back(surface);
         LeaveCriticalSection(this);
         return surface;
     }
@@ -281,7 +286,7 @@ unsigned long RHUnkFXDraw::Unk005e4ed0(unsigned short width, unsigned short heig
 
 // Parked: insert-result temporary adds eight bytes to the target frame.
 // STUB: GAME 0x005e4f70
-bool RHUnkFXDraw::FUN_005e4f70(unsigned long surface, unsigned short width, unsigned short height, unsigned long flags)
+bool SBDrawManager::FUN_005e4f70(unsigned long surface, unsigned short width, unsigned short height, unsigned long flags)
 {
     unsigned long description[31];
     memset(description, 0, sizeof(description));
@@ -300,7 +305,7 @@ bool RHUnkFXDraw::FUN_005e4f70(unsigned long surface, unsigned short width, unsi
     info.m_section = operator new(0x18);
     InitializeCriticalSection(info.m_section);
     info.m_color = m_depth == 16 ? 0x7c0 : 0x3e0;
-    SBDrawUnk005e5ec0Surface *object = *(SBDrawUnk005e5ec0Surface **)(m_00 + 0x88);
+    SBDrawUnk005e5ec0Surface *object = m_88;
     long result = ((long (__stdcall *)(SBDrawUnk005e5ec0Surface *, void *, void **, void *))object->m_vtable[6])(
         object, description, &info.m_object, 0);
     if (result != 0) {
@@ -313,7 +318,7 @@ bool RHUnkFXDraw::FUN_005e4f70(unsigned long surface, unsigned short width, unsi
     object = (SBDrawUnk005e5ec0Surface *)info.m_object;
     ((long (__stdcall *)(SBDrawUnk005e5ec0Surface *, unsigned long, unsigned long *))object->m_vtable[29])(
         object, 8, &info.m_color);
-    (*(SBDrawUnk005efc10 *)(m_00 + 0x54)).FUN_005ef440(SBDrawUnk005e4f70Pair(surface, info));
+    m_surfaces.FUN_005ef440(SBDrawUnk005e4f70Pair(surface, info));
     return true;
 }
 
@@ -321,15 +326,15 @@ bool RHUnkFXDraw::FUN_005e4f70(unsigned long surface, unsigned short width, unsi
 bool SBDrawManager::FUN_005e5160(unsigned long surface)
 {
     EnterCriticalSection(this);
-    if (surface == 0 || (surface == 1 && m_00[0x80] != 0))
+    if (surface == 0 || (surface == 1 && m_fullscreen != 0))
         SBAssert(1, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0x38d,
             // STRING: GAME 0x006b9474
             "You tried to delete the main surface and this is WRONG !");
-    SBDrawUnk005efc10 &tree = *(SBDrawUnk005efc10 *)(m_00 + 0x54);
+    SBDrawUnk005efc10 &tree = m_surfaces;
     bool result = false;
     SBDrawUnk005efc10Iterator found;
     found = SBDrawFindSurface(tree, surface);
-    if (found.m_node != *(SBDrawUnk005f0090Node **)(m_00 + 0x58)) {
+    if (found.m_node != m_surfaces.m_head) {
         SBDrawUnk005e4f70Surface &info = *(SBDrawUnk005e4f70Surface *)((char *)found.m_node + 0x10);
         SBDrawUnk005e5ec0Surface *object = (SBDrawUnk005e5ec0Surface *)info.m_object;
         ((unsigned long (__stdcall *)(SBDrawUnk005e5ec0Surface *))object->m_vtable[2])(object);
@@ -352,17 +357,17 @@ bool SBDrawManager::FUN_005e5260()
     typedef long (__stdcall *Flip)(SBDrawUnk005e5ec0Surface *, void *, unsigned long);
     typedef long (__stdcall *Restore)(SBDrawUnk005e5ec0Surface *);
     typedef SBDrawUnk005efc10Iterator (SBDrawUnk005efc10::*Find)(const unsigned long &);
-    if (*(bool *)(m_00 + 0x80) == true) {
-        SBDrawUnk005efc10 &surfaces = *(SBDrawUnk005efc10 *)(m_00 + 0x54);
+    if (m_fullscreen == true) {
+        SBDrawUnk005efc10 &surfaces = m_surfaces;
         SBDrawUnk005efc10Iterator primary = (surfaces.*static_cast<Find>(&SBDrawUnk005efc10::FUN_005efbc0))(0);
         SBDrawUnk005efc10Iterator back = (surfaces.*static_cast<Find>(&SBDrawUnk005efc10::FUN_005efbc0))(1);
-        if (primary.m_node == *(SBDrawUnk005f0090Node **)(m_00 + 0x58))
+        if (primary.m_node == m_surfaces.m_head)
             SBAssert(1, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0x425,
                 // STRING: GAME 0x006b94fc
                 "Unable to use the frame buffer");
         if (*((unsigned char *)this + 0x113) == 1) {
-            SBDrawUnk005efc10Iterator console = (surfaces.*static_cast<Find>(&SBDrawUnk005efc10::FUN_005efbc0))(*(unsigned long *)(m_00 + 0x78));
-            if (m_00[0x7c] & 1) {
+            SBDrawUnk005efc10Iterator console = (surfaces.*static_cast<Find>(&SBDrawUnk005efc10::FUN_005efbc0))(m_consoleSurface);
+            if (m_7c & 1) {
                 SBDrawUnk005e5ec0Surface *destination = *(SBDrawUnk005e5ec0Surface **)((char *)back.m_node + 0x10);
                 SBDrawUnk005e5ec0Surface *source = *(SBDrawUnk005e5ec0Surface **)((char *)console.m_node + 0x10);
                 long result = ((Blit)destination->m_vtable[5])(destination, 0, source, 0, 0x1000000, 0);
@@ -393,7 +398,7 @@ bool SBDrawManager::FUN_005e5260()
                     ((Restore)destination->m_vtable[27])(destination);
                 }
             }
-        } else if (m_00[0x7c] & 1) {
+        } else if (m_7c & 1) {
             SBDrawUnk005e5ec0Surface *destination = *(SBDrawUnk005e5ec0Surface **)((char *)primary.m_node + 0x10);
             long result = ((Flip)destination->m_vtable[11])(destination, 0, 1);
             if (result != 0) {
@@ -408,15 +413,15 @@ bool SBDrawManager::FUN_005e5260()
             ((Blit)destination->m_vtable[5])(destination, 0, source, 0, 0x1000000, 0);
         }
     } else {
-        SBDrawUnk005f0090 &surfaces = *(SBDrawUnk005f0090 *)(m_00 + 0x54);
+        SBDrawUnk005f0090 &surfaces = *(SBDrawUnk005f0090 *)((char *)this + 0x54);
         SBDrawUnk005e56c0Iterator primary = SBDrawFind(surfaces, 0);
         long rectangle[4];
-        GetClientRect(*(void **)(m_00 + 0x100), rectangle);
-        ClientToScreen(*(void **)(m_00 + 0x100), rectangle);
-        ClientToScreen(*(void **)(m_00 + 0x100), rectangle + 2);
+        GetClientRect(m_window, rectangle);
+        ClientToScreen(m_window, rectangle);
+        ClientToScreen(m_window, rectangle + 2);
         long result;
         if (*((unsigned char *)this + 0x113) == 1) {
-            SBDrawUnk005e56c0Iterator console = SBDrawFind(surfaces, *(unsigned long *)(m_00 + 0x78));
+            SBDrawUnk005e56c0Iterator console = SBDrawFind(surfaces, m_consoleSurface);
             SBDrawUnk005e5ec0Surface *destination = *(SBDrawUnk005e5ec0Surface **)((char *)primary.m_node + 0x10);
             SBDrawUnk005e5ec0Surface *source = *(SBDrawUnk005e5ec0Surface **)((char *)console.m_node + 0x10);
             result = ((Blit)destination->m_vtable[5])(destination, rectangle, source, 0, 0x1000000, 0);
@@ -438,12 +443,12 @@ bool SBDrawManager::FUN_005e5260()
 }
 
 // FUNCTION: GAME 0x005e56c0
-unsigned short RHUnkFXDraw::FUN_005e56c0(unsigned long surface)
+unsigned short SBDrawManager::FUN_005e56c0(unsigned long surface)
 {
     if (surface == 0) surface = 1;
-    SBDrawUnk005f0090 &tree = *(SBDrawUnk005f0090 *)(m_00 + 0x54);
+    SBDrawUnk005f0090 &tree = *(SBDrawUnk005f0090 *)((char *)this + 0x54);
     SBDrawUnk005f0090Node *found = SBDrawFind(tree, surface).m_node;
-    if (found == *(SBDrawUnk005f0090Node **)(m_00 + 0x58)) {
+    if (found == m_surfaces.m_head) {
         SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0x490,
             // STRING: GAME 0x006b951c
             "Trying to access an inexisting surface");
@@ -453,12 +458,12 @@ unsigned short RHUnkFXDraw::FUN_005e56c0(unsigned long surface)
 }
 
 // FUNCTION: GAME 0x005e5750
-unsigned short RHUnkFXDraw::FUN_005e5750(unsigned long surface)
+unsigned short SBDrawManager::FUN_005e5750(unsigned long surface)
 {
     if (surface == 0) surface = 1;
-    SBDrawUnk005f0090 &tree = *(SBDrawUnk005f0090 *)(m_00 + 0x54);
+    SBDrawUnk005f0090 &tree = *(SBDrawUnk005f0090 *)((char *)this + 0x54);
     SBDrawUnk005f0090Node *found = SBDrawFind(tree, surface).m_node;
-    if (found == *(SBDrawUnk005f0090Node **)(m_00 + 0x58)) {
+    if (found == m_surfaces.m_head) {
         SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0x4b3,
             "Trying to access an inexisting surface");
         return 0;
@@ -475,7 +480,7 @@ inline SBResourceUnkKeyIterator SBDrawFindExternalEnd(SBDrawUnk005f0090 &tree, c
 }
 
 // FUNCTION: GAME 0x005e57e0
-void RHUnk005ef320::FUN_005e57e0(unsigned surface, SBGeoVector2D &size)
+void SBDrawManager::FUN_005e57e0(unsigned surface, SBGeoVector2D &size)
 {
     if (surface == 0) surface = 1;
     SBDrawUnk005f0090 &tree = *(SBDrawUnk005f0090 *)((char *)this + 0x54);
@@ -492,7 +497,7 @@ void RHUnk005ef320::FUN_005e57e0(unsigned surface, SBGeoVector2D &size)
 }
 
 // FUNCTION: GAME 0x005e5890
-bool RHUnk005ef320::FUN_005e5890(unsigned long surface, void **dc, unsigned long flags)
+bool SBDrawManager::FUN_005e5890(unsigned long surface, void **dc, unsigned long flags)
 {
     if (surface == 0 && !(flags & 8)) surface = 1;
     SBDrawUnk005efc10 &tree = *(SBDrawUnk005efc10 *)((char *)this + 0x54);
@@ -524,7 +529,7 @@ bool SBDrawManager::FUN_005e5a00(unsigned long surface, SBDrawViewport &view, un
     unsigned long description[31];
     memset(description, 0, sizeof(description));
     description[0] = 0x7c;
-    SBDrawUnk005f0090Node *found = ((SBDrawUnk005efc10 *)(m_00 + 0x54))->FUN_005efbc0(surface).m_node;
+    SBDrawUnk005f0090Node *found = m_surfaces.FUN_005efbc0(surface).m_node;
     if (found == *(SBDrawUnk005f0090Node **)((char *)this + 0x58)) {
         SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0x53b,
             // STRING: GAME 0x006b95b8
@@ -559,7 +564,7 @@ bool SBDrawManager::FUN_005e5a00(unsigned long surface, SBDrawViewport &view, un
         *((bool *)&view + 0x14) = locked;
         view.m_pitch = description[4];
         *(unsigned long *)&view = surface;
-        view.m_depth = m_10c;
+        view.m_depth = m_depth;
         *(unsigned short *)((char *)&view + 0xe) = *(unsigned short *)((char *)found + 0x18);
     }
 finishedLock:
@@ -567,7 +572,7 @@ finishedLock:
 }
 
 // FUNCTION: GAME 0x005e5bd0
-bool RHUnk005ef320::FUN_005e5bd0(unsigned long surface, void *dc)
+bool SBDrawManager::FUN_005e5bd0(unsigned long surface, void *dc)
 {
     if (surface == 0) surface = 1;
     SBDrawUnk005f0090 &tree = *(SBDrawUnk005f0090 *)((char *)this + 0x54);
@@ -590,7 +595,7 @@ bool RHUnk005ef320::FUN_005e5bd0(unsigned long surface, void *dc)
 }
 
 // FUNCTION: GAME 0x005e5d30
-bool RHUnk005ef320::FUN_005e5d30(unsigned long surface)
+bool SBDrawManager::FUN_005e5d30(unsigned long surface)
 {
     if (surface == 0) surface = 1;
     SBDrawUnk005efc10 &tree = *(SBDrawUnk005efc10 *)((char *)this + 0x54);
@@ -618,16 +623,16 @@ bool RHUnk005ef320::FUN_005e5d30(unsigned long surface)
 bool SBDrawManager::FUN_005e5ea0(SBDrawViewport &view)
 {
     *(char *)((char *)&view + 0x14) = 0;
-    return ((RHUnk005ef320 *)this)->FUN_005e5d30(*(unsigned long *)&view);
+    return FUN_005e5d30(*(unsigned long *)&view);
 }
 
 // FUNCTION: GAME 0x005e5ec0
-bool SBDrawUnk005e5ec0::FUN_005e5ec0(unsigned long surface, unsigned long key)
+bool SBDrawManager::FUN_005e5ec0(unsigned long surface, unsigned long key)
 {
     if (surface == 0) surface = 1;
-    SBDrawUnk005f0090 &tree = *(SBDrawUnk005f0090 *)(m_00 + 0x54);
+    SBDrawUnk005f0090 &tree = *(SBDrawUnk005f0090 *)((char *)this + 0x54);
     SBDrawUnk005f0090Node *found = SBDrawFind(tree, surface).m_node;
-    if (found == *(SBDrawUnk005f0090Node **)(m_00 + 0x58)) {
+    if (found == m_surfaces.m_head) {
         SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0x609,
             // STRING: GAME 0x006b96b0
             "Setting the color key of an unexisting surface");
@@ -642,12 +647,12 @@ bool SBDrawUnk005e5ec0::FUN_005e5ec0(unsigned long surface, unsigned long key)
 }
 
 // FUNCTION: GAME 0x005e5f60
-unsigned short SBDrawUnk005e5ec0::FUN_005e5f60(unsigned long surface)
+unsigned short SBDrawManager::FUN_005e5f60(unsigned long surface)
 {
-    if (surface == 0) return m_10c == 16 ? 0x7c0 : 0x3e0;
-    SBDrawUnk005f0090 &tree = *(SBDrawUnk005f0090 *)(m_00 + 0x54);
+    if (surface == 0) return m_depth == 16 ? 0x7c0 : 0x3e0;
+    SBDrawUnk005f0090 &tree = *(SBDrawUnk005f0090 *)((char *)this + 0x54);
     SBDrawUnk005f0090Node *found = SBDrawFind(tree, surface).m_node;
-    if (found == *(SBDrawUnk005f0090Node **)(m_00 + 0x58)) {
+    if (found == m_surfaces.m_head) {
         SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0x634,
             // STRING: GAME 0x006b96e0
             "Getting the color key of an unexisting surface");
@@ -902,7 +907,7 @@ bool SBDrawManager::BlitAlpha(unsigned long source, SBGeoBoundingBox2D *sourceBo
     unsigned long options;
     float stretchX = 1.0f;
     float stretchY = 1.0f;
-    options = *(unsigned long *)(m_00 + 0x70) | flags;
+    options = m_70 | flags;
     if (!(options & 0x4700))
         options |= 0x400;
     if (source == 0 && !(options & 0x10))
@@ -915,7 +920,7 @@ bool SBDrawManager::BlitAlpha(unsigned long source, SBGeoBoundingBox2D *sourceBo
         return false;
     }
     if (alpha != source && !FUN_005e5a00(alpha, alphaView, 0)) {
-        ((RHUnk005ef320 *)this)->FUN_005e5d30(source);
+        FUN_005e5d30(source);
         SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0xde2,
             // STRING: GAME 0x006b9890
             "Cannot get alpha surface viewport");
@@ -924,10 +929,11 @@ bool SBDrawManager::BlitAlpha(unsigned long source, SBGeoBoundingBox2D *sourceBo
     if (alpha == source) {
         alphaView = sourceView;
     }
+    unsigned long alphaSurface = alpha;
     if (destination != source) {
         if (!FUN_005e5a00(destination, destinationView, 0)) {
-            ((RHUnk005ef320 *)this)->FUN_005e5d30(source);
-            ((RHUnk005ef320 *)this)->FUN_005e5d30(alpha);
+            FUN_005e5d30(source);
+            FUN_005e5d30(alphaSurface);
             SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0xdf6,
                 "Cannot get destination surface viewport");
             return false;
@@ -1086,14 +1092,14 @@ bool SBDrawManager::BlitAlpha(unsigned long source, SBGeoBoundingBox2D *sourceBo
         FUN_005e5ea0(sourceView);
         if (destination != source)
             FUN_005e5ea0(destinationView);
-        if (alpha != source)
+        if (alphaSurface != source)
             FUN_005e5ea0(alphaView);
         return true;
     }
     if (destination != source && !FUN_005e5ea0(destinationView))
         SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0xe20,
             "Cannot release destination surface viewport");
-    if (alpha != source && !FUN_005e5ea0(alphaView))
+    if (alphaSurface != source && !FUN_005e5ea0(alphaView))
         SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0xe28,
             // STRING: GAME 0x006b97f4
             "Cannot release alpha surface viewport");
@@ -1896,7 +1902,7 @@ bool SBDrawManager::BlitAlphaConstant(unsigned long source, SBGeoBoundingBox2D *
     } else {
         destinationView = sourceView;
     }
-    SBDrawUnk005f0090 &tree = *(SBDrawUnk005f0090 *)(m_00 + 0x54);
+    SBDrawUnk005f0090 &tree = *(SBDrawUnk005f0090 *)((char *)this + 0x54);
     unsigned short key = ((SBDrawUnk005e4f70Surface *)((char *)SBDrawFind(tree, source).m_node + 0x10))->m_color;
     bool transparent = (options & 1) != 0;
     unsigned long width;
@@ -2347,7 +2353,7 @@ bool SBDrawManager::BlitAlphaKeying(unsigned long source, SBGeoBoundingBox2D *so
     }
     if (destination != source) {
         if (!FUN_005e5a00(destination, destinationView, 0)) {
-            ((RHUnk005ef320 *)this)->FUN_005e5d30(source);
+            FUN_005e5d30(source);
             SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0x2798,
                 // STRING: GAME 0x006b9868
                 "Cannot get destination surface viewport");
@@ -2523,13 +2529,12 @@ bool SBDrawManager::FUN_005ecbd0(unsigned long surface, const SBGeoPoint2D &firs
 }
 
 // FUNCTION: GAME 0x005ed270
-bool RHUnk005ef320::FUN_005ed270(const RHMobileUnk00607da0 &bounds)
+bool SBDrawManager::FUN_005ed270(const RHMobileUnk00607da0 &bounds)
 {
     if (!*(bool *)((char *)this + 0x114))
     {
         Sleep(1000);
-        typedef unsigned long (RHUnkFXDraw::*CreateSurface)(unsigned short, unsigned short, unsigned long, bool);
-        *(unsigned long *)((char *)this + 0x78) = (((RHUnkFXDraw *)this)->*reinterpret_cast<CreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(
+        *(unsigned long *)((char *)this + 0x78) = Unk005e4ed0(
             *(unsigned short *)((char *)this + 0x10e), *(unsigned short *)((char *)this + 0x110), 0, false);
         ((RHMobileUnk00607da0 *)((char *)this + 0x118))->FUN_00607da0(bounds);
         *(void **)((char *)this + 0x104) = GetStockObject(10);
@@ -2556,7 +2561,7 @@ bool SBDrawManager::FUN_005ecdc0(unsigned long surface, const SBGeoBoundingBox2D
     if (surface == 0 && !*((unsigned char *)this + 0x112) && !(flags & 8))
         surface = 1;
     ((RHMobileUnk00607da0 *)&screen)->FUN_00607da0(
-        (const RHMobileUnk00607da0 &)SBGeoBoundingBox2D(0.0f, 0.0f, (float)m_10e, (float)m_110));
+        (const RHMobileUnk00607da0 &)SBGeoBoundingBox2D(0.0f, 0.0f, (float)m_width, (float)m_height));
     if (surface == 0 && !*((unsigned char *)this + 0x80) && !*((unsigned char *)this + 0x112) && !(flags & 8))
     {
         GetClientRect(*(void **)((char *)this + 0x100), client);
@@ -2613,7 +2618,7 @@ bool SBDrawManager::FUN_005ecdc0(unsigned long surface, const SBGeoBoundingBox2D
 }
 
 // FUNCTION: GAME 0x005ed2f0
-bool FUN_005ed2f0(RHUnk005ef320 *draw, unsigned short x, unsigned short y, const char *format, ...)
+bool FUN_005ed2f0(SBDrawManager *draw, unsigned short x, unsigned short y, const char *format, ...)
 {
     if (*(int *)((char *)draw + 0x48) == 0)
     {
@@ -2657,7 +2662,7 @@ bool FUN_005ed2f0(RHUnk005ef320 *draw, unsigned short x, unsigned short y, const
 }
 
 // FUNCTION: GAME 0x005ed500
-bool FUN_005ed500(RHUnk005ef320 *draw, unsigned short x, unsigned short y, const char *format, ...)
+bool FUN_005ed500(SBDrawManager *draw, unsigned short x, unsigned short y, const char *format, ...)
 {
     char buffer[132];
     va_list arguments;
@@ -2758,7 +2763,7 @@ bool FUN_005ed740(SBDrawManager *draw, unsigned short cursor, const char *format
 
 // Parked at 0.8431: rectangle locals and callee-save scheduling differ.
 // STUB: GAME 0x005edae0
-bool FUN_005edae0(RHUnk005ef320 *draw, const char *format, ...)
+bool FUN_005edae0(SBDrawManager *draw, const char *format, ...)
 {
     if (!*(bool *)((char *)draw + 0x114))
         return false;
@@ -2902,7 +2907,7 @@ inline const char *RHTextChunkList::TextAt(int wanted)
 }
 
 // STUB: GAME 0x005ede40
-bool FUN_005ede40(RHUnk005ef320 *draw, const char *format, ...)
+bool FUN_005ede40(SBDrawManager *draw, const char *format, ...)
 {
     if (!*(bool *)((char *)draw + 0x114))
         return false;
@@ -3154,15 +3159,15 @@ DECOMP_STATIC_ASSERT(offsetof(SBDrawUnk005eec00Edge, m_0c) == 0xc)
 DECOMP_STATIC_ASSERT(offsetof(SBDrawUnk005eec00Edge, m_10) == 0x10)
 DECOMP_STATIC_ASSERT(offsetof(SBDrawUnk005eec00Edge, m_14) == 0x14)
 DECOMP_STATIC_ASSERT(offsetof(SBDrawUnk005eec00Edge, m_18) == 0x18)
-DECOMP_STATIC_ASSERT(offsetof(RHUnk005ef320, m_130) == 0x130)
-DECOMP_STATIC_ASSERT(offsetof(RHUnk005ef320, m_134) == 0x134)
-DECOMP_STATIC_ASSERT(offsetof(RHUnk005ef320, m_138) == 0x138)
-DECOMP_STATIC_ASSERT(offsetof(RHUnk005ef320, m_13c) == 0x13c)
-DECOMP_STATIC_ASSERT(offsetof(RHUnk005ef320, m_144) == 0x144)
-DECOMP_STATIC_ASSERT(offsetof(RHUnk005ef320, m_14c) == 0x14c)
+DECOMP_STATIC_ASSERT(offsetof(SBDrawManager, m_130) == 0x130)
+DECOMP_STATIC_ASSERT(offsetof(SBDrawManager, m_134) == 0x134)
+DECOMP_STATIC_ASSERT(offsetof(SBDrawManager, m_138) == 0x138)
+DECOMP_STATIC_ASSERT(offsetof(SBDrawManager, m_13c) == 0x13c)
+DECOMP_STATIC_ASSERT(offsetof(SBDrawManager, m_144) == 0x144)
+DECOMP_STATIC_ASSERT(offsetof(SBDrawManager, m_14c) == 0x14c)
 
 // STUB: GAME 0x005ee640
-bool RHUnk005ef320::FUN_005ee640(SBList<SBGeoPoint2D> &polygon, const SBGeoVector2D &offset)
+bool SBDrawManager::FUN_005ee640(SBList<SBGeoPoint2D> &polygon, const SBGeoVector2D &offset)
 {
     SBGeoPoint2D point;
     unsigned long previousX;
@@ -3269,7 +3274,7 @@ bool RHUnk005ef320::FUN_005ee640(SBList<SBGeoPoint2D> &polygon, const SBGeoVecto
 
 // Parked: scanline frame, callback selection, and active-edge scheduling differ.
 // STUB: GAME 0x005eec00
-bool RHUnk005ef320::FUN_005eec00(unsigned long destination, unsigned long source, void *polygon,
+bool SBDrawManager::FUN_005eec00(unsigned long destination, unsigned long source, void *polygon,
     unsigned long scale, unsigned long offsetX, unsigned long offsetY, unsigned long color, unsigned long alpha)
 {
     SBGeoVector2D point;
@@ -3286,7 +3291,7 @@ bool RHUnk005ef320::FUN_005eec00(unsigned long destination, unsigned long source
     tint |= ((color & 0xff) * alpha) >> 8;
     tint |= (((color >> 8) & 0xff) * alpha) & 0xff00;
     unsigned long inverseAlpha = 0x100 - alpha;
-    RHUnkFXDraw *draw = (RHUnkFXDraw *)this;
+    SBDrawManager *draw = this;
     if (!((SBDrawManager *)draw)->FUN_005e5a00(source, sourceView, 0)) {
         SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0x33f6,
             // STRING: GAME 0x006b98b4
@@ -3404,7 +3409,7 @@ struct SBDrawTreeNode
 };
 
 // FUNCTION: GAME 0x005ef380
-bool RHUnk005ef320::FUN_005ef380(int value)
+bool SBDrawManager::FUN_005ef380(int value)
 {
     *((unsigned char *)this + 0x113) = (unsigned char)value;
     return true;
@@ -3418,7 +3423,7 @@ SBDrawTreeNode *g_unk0x006c11dc;
 // FUNCTION: GAME 0x005ef3a0
 unsigned char SBDrawManager::IsOnScreen(const SBGeoBoundingBox2D &box) const
 {
-    SBGeoBoundingBox2D screen(0.0f, 0.0f, (float)m_10e, (float)m_110);
+    SBGeoBoundingBox2D screen(0.0f, 0.0f, (float)m_width, (float)m_height);
     return (unsigned char)((RHUnk00608f10 *)&screen)->FUN_00608f10((void *)&box);
 }
 
@@ -3920,15 +3925,15 @@ void FUN_005f0440(SBDrawTreeIteratorB first, SBDrawTreeIteratorB last, int &coun
         ++count;
 }
 
-void EmitSBDrawManager(SBDrawUnk005e8450 *draw, void *buffer)
+void EmitSBDrawManager(SBDrawManager *manager, SBDrawUnk005e8450 *draw, void *buffer)
 {
-    ((RHUnkFXDraw *)draw)->FUN_005e4f70(0, 0, 0, 0);
-    ((RHUnk005ef320 *)draw)->FUN_005e5890(0, (void **)buffer, 0);
-    ((RHUnk005ef320 *)draw)->FUN_005e5d30(0);
-    ((RHUnk005ef320 *)draw)->FUN_005e5bd0(0, buffer);
-    ((RHUnk005ef320 *)draw)->FUN_005e3f70();
-    ((RHUnk005ef320 *)draw)->FUN_005e3f40(*(const std::string *)buffer);
-    ((RHUnk005ef320 *)draw)->FUN_005eec00(0, 0, buffer, 0, 0, 0, 0, 0);
+    manager->FUN_005e4f70(0, 0, 0, 0);
+    manager->FUN_005e5890(0, (void **)buffer, 0);
+    manager->FUN_005e5d30(0);
+    manager->FUN_005e5bd0(0, buffer);
+    manager->FUN_005e3f70();
+    manager->FUN_005e3f40(*(const std::string *)buffer);
+    manager->FUN_005eec00(0, 0, buffer, 0, 0, 0, 0, 0);
     draw->FUN_005e7880(buffer, buffer, buffer, 0, 0, 0, 0, 0, 0);
     draw->FUN_005e7d30(buffer, buffer, buffer, 0, 0, 0, 0, 0, 0);
     draw->FUN_005e7d70(buffer, buffer, buffer, 0, 0, 0, 0, 0, 0);
@@ -4619,7 +4624,7 @@ bool SBDrawManager::FUN_005e6000(SBGeoBoundingBox2D &destination, SBGeoBoundingB
     {
         float maximum = destination.m_p1.m_x;
         float width;
-        *(volatile float *)&width = (float)m_10e;
+        *(volatile float *)&width = (float)m_width;
         if (maximum > *(const float *)&width)
             offset.m_x = *(const float *)&width - *(volatile float *)&destination.m_p1.m_x;
         else
@@ -4628,7 +4633,7 @@ bool SBDrawManager::FUN_005e6000(SBGeoBoundingBox2D &destination, SBGeoBoundingB
     {
         float maximum = destination.m_p1.m_y;
         float height;
-        *(volatile float *)&height = (float)m_110;
+        *(volatile float *)&height = (float)m_height;
         if (maximum > *(const float *)&height)
             offset.m_y = *(const float *)&height - *(volatile float *)&destination.m_p1.m_y;
         else
@@ -4640,7 +4645,7 @@ bool SBDrawManager::FUN_005e6000(SBGeoBoundingBox2D &destination, SBGeoBoundingB
 }
 
 // STUB: GAME 0x005e4ca0
-RHUnk005ef320::~RHUnk005ef320()
+SBDrawManager::~SBDrawManager()
 {
     for (SBDrawUnk005efc10Iterator it = m_surfaces.Begin(); it != m_surfaces.End(); ++it)
     {
@@ -4674,7 +4679,7 @@ DECOMP_STATIC_ASSERT(offsetof(SBDrawUnk005f0090Node, m_object) == 0x10)
 DECOMP_STATIC_ASSERT(offsetof(SBDrawUnk005f0090Node, m_width) == 0x14)
 DECOMP_STATIC_ASSERT(offsetof(SBDrawUnk005f0090Node, m_height) == 0x16)
 DECOMP_SIZE_ASSERT(SBDrawUnk005e4f70Surface, 0x18)
-DECOMP_STATIC_ASSERT(offsetof(RHUnk005ef320, m_surfaces) == 0x54)
-DECOMP_STATIC_ASSERT(offsetof(RHUnk005ef320, m_fullscreen) == 0x80)
-DECOMP_STATIC_ASSERT(offsetof(RHUnk005ef320, m_width) == 0x10e)
-DECOMP_STATIC_ASSERT(offsetof(RHUnk005ef320, m_height) == 0x110)
+DECOMP_STATIC_ASSERT(offsetof(SBDrawManager, m_surfaces) == 0x54)
+DECOMP_STATIC_ASSERT(offsetof(SBDrawManager, m_fullscreen) == 0x80)
+DECOMP_STATIC_ASSERT(offsetof(SBDrawManager, m_width) == 0x10e)
+DECOMP_STATIC_ASSERT(offsetof(SBDrawManager, m_height) == 0x110)

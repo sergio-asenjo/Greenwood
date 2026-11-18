@@ -1,4 +1,15 @@
-#include "SBNullstr.h"
+#include "SBWideStringConstructor.h"
+
+namespace std {
+template<> inline basic_string<unsigned short, char_traits<unsigned short>, allocator<unsigned short> >::basic_string(size_type _N, unsigned short _C, const allocator_type &_Al)
+    : allocator(_Al)
+{
+    _Tidy();
+    if (_N != 0)
+        assign(_N, _C);
+}
+}
+
 #include "Toolbox.h"
 #include <vector>
 #include <math.h>
@@ -20,7 +31,7 @@ DECOMP_SIZE_ASSERT(ToolboxChunkIterator, 0x10)
 DECOMP_SIZE_ASSERT(RHProfileText, 0x10)
 DECOMP_SIZE_ASSERT(RHUnk00423b10, 0x10)
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
-DECOMP_SIZE_ASSERT(RHUnkFXDraw, 0x10e)
+DECOMP_SIZE_ASSERT(SBDrawManager, 0x150)
 DECOMP_SIZE_ASSERT(RHUnk006114c0, 0x38)
 DECOMP_SIZE_ASSERT(SBDrawViewport, 0x18)
 DECOMP_SIZE_ASSERT(RHUnk005f4fc0, 0x58)
@@ -36,7 +47,7 @@ DECOMP_SIZE_ASSERT(ToolboxMouseState, 0x0a)
 ToolboxChunks g_unk0x006c1178;
 
 // SYNTHETIC: GAME 0x005e1c10
-// $E22
+// $E23
 
 // GLOBAL: GAME 0x006a6d27
 unsigned char g_unk0x006a6d27 = 1;
@@ -250,7 +261,7 @@ std::string FUN_005e11d0(const std::wstring &wide)
 void FUN_005e1380()
 {
     MSG message;
-    RHUnk005ef320WindowView *draw = (RHUnk005ef320WindowView *)g_unk0x6c11d0;
+    SBDrawManager *draw = g_unk0x6c11d0;
     if (IsIconic(draw->GetWindow()) > 0 && g_unk0x006a6d27 == 1)
     {
         g_unk0x006a6d27 = 0;
@@ -307,15 +318,15 @@ bool FUN_005e18a0()
 {
     SBInputUnk005fb730 *input = SBInputUnk005fb730::mpInput;
     RHMapResources *resources = g_unk0x006c1840;
-    RHUnk005ef320WindowView *draw = (RHUnk005ef320WindowView *)g_unk0x6c11d0;
-    RHMapWideText message;
+    SBDrawManager *draw = g_unk0x6c11d0;
+    std::wstring message;
     input->FUN_005f9ea0(0);
     CloseWindow(draw->GetWindow());
     resources->FUN_006009e0(0x25, 0x1f, message);
     ShowCursor(1);
-    int answer = MessageBoxA(0, FUN_005e11d0((std::wstring &)message).c_str(), 0, 0x15);
+    int answer = MessageBoxA(0, FUN_005e11d0(message).c_str(), 0, 0x15);
     ShowWindow(draw->GetWindow(), 9);
-    ((RHUnk005ef320 *)draw)->FUN_005e3f70();
+    draw->FUN_005e3f70();
     if (g_pEngine)
         *(unsigned char *)((char *)g_pEngine + 0x48d1) = 0;
     input->FUN_005f9ea0(1);
@@ -488,8 +499,8 @@ std::wstring Toolbox::TrimWideString(const std::wstring &text)
 std::wstring FUN_005e23d0(unsigned long id)
 {
     RHMapResources *resources = g_unk0x006c1840;
-    std::wstring text;
-    if (!resources->FUN_006009e0(0xf443b, id, (RHMapWideText &)text))
+    std::wstring text(0U, wchar_t(0));
+    if (!resources->FUN_006009e0(0xf443b, id, text))
         text =
             // STRING: GAME 0x006b91d0
             L"Bad menu text ID...";
@@ -501,7 +512,7 @@ std::wstring FUN_005e23d0(unsigned long id)
 void Toolbox::DisplayPicture(const char *name, bool wait)
 {
     RHUnk006114c0 picture;
-    RHUnkFXDraw *draw = (RHUnkFXDraw *)g_unk0x6c11d0;
+    SBDrawManager *draw = g_unk0x6c11d0;
     RHUnk005f4fc0 file;
     unsigned long width = draw->FUN_005e56c0(0);
     unsigned long height = draw->FUN_005e5750(0);
@@ -533,7 +544,7 @@ void Toolbox::DisplayPicture(const char *name, bool wait)
         unsigned int x = (pictureWidth - width + 1) / 2;
         unsigned int y = (pictureHeight - height + 1) / 2;
         SBPicture *cropped = ((SBPicture *)&picture)->Unk00612ad0(SBGeoPoint2D((float)x, (float)y), SBGeoVector2D((float)width, (float)height));
-        cropped->Unk00613530(*(RHUnkFXDraw *volatile *)&draw, surface);
+        cropped->Unk00613530(*(SBDrawManager *volatile *)&draw, surface);
         if (cropped)
             cropped->FUN_00611be0(1);
     }
@@ -563,7 +574,7 @@ void Toolbox::PlaySlide(const std::string &name, unsigned short duration)
         SBAssert(1, g_toolboxFile, 0x55f,
             // STRING: GAME 0x006b91f8
             "Unable to open the specified slide show file");
-    RHUnkFXDraw *draw = (RHUnkFXDraw *)g_unk0x6c11d0;
+    SBDrawManager *draw = g_unk0x6c11d0;
     memset(&mouse, 0, sizeof(mouse));
     unsigned char keys[256];
     memset(keys, 0, sizeof(keys));
@@ -574,8 +585,7 @@ void Toolbox::PlaySlide(const std::string &name, unsigned short duration)
     {
         bool advance = false;
         picture.Unk00611710(file);
-        typedef unsigned long (RHUnkFXDraw::*CreateSurface)(unsigned short, unsigned short, unsigned long, bool);
-        unsigned long surface = (draw->*reinterpret_cast<CreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(picture.UnkField20(), picture.UnkField22(), 0, false);
+        unsigned long surface = draw->Unk005e4ed0(picture.UnkField20(), picture.UnkField22(), 0, false);
         ((SBPicture *)&picture)->SBPicture::Unk00613530(draw, surface);
         ((SBDrawManager *)draw)->FUN_005e6440(surface, 0, 0, 0, 0);
         ((SBDrawManager *)draw)->FUN_005e5260();
@@ -800,7 +810,7 @@ bool RHUnk006114c0::FUN_00611960(SBFile &file)
 }
 
 // FUNCTION: GAME 0x00613530
-bool SBPicture::Unk00613530(RHUnkFXDraw *draw, unsigned long surface)
+bool SBPicture::Unk00613530(SBDrawManager *draw, unsigned long surface)
 {
     SBDrawViewport pixels;
     SBPicture *picture = (SBPicture *)this;

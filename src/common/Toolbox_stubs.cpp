@@ -85,7 +85,7 @@ RHUnk006114c0::~RHUnk006114c0()
 
 void RHUnk006114c0::Unk10() {}
 bool RHUnk006114c0::Unk1c(SBFile &) { return false; }
-bool RHUnk006114c0::Unk20(RHUnkFXDraw *draw, unsigned long surface)
+bool RHUnk006114c0::Unk20(SBDrawManager *draw, unsigned long surface)
 {
     return ((SBPicture *)this)->SBPicture::Unk00613530(draw, surface);
 }

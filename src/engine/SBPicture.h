@@ -11,7 +11,7 @@ struct SBPictureInfo
     unsigned short m_depth;
     unsigned int m_size;
 };
-class RHUnkFXDraw;
+class SBDrawManager;
 class SBPictureUnkDrawManager;
 class SBGeoVector2D;
 class SBGeoPoint2D;
@@ -30,7 +30,7 @@ public:
     virtual bool FUN_00611c80(SBPictureUnkDrawManager *, unsigned long);
     virtual bool SaveToFile(const std::string &name);
     virtual bool SaveToStream(SBFile &file);
-    virtual bool Unk00613530(RHUnkFXDraw *, unsigned long);
+    virtual bool Unk00613530(SBDrawManager *, unsigned long);
     virtual void *FUN_006114e0();
     virtual unsigned int FUN_006114f0();
     virtual unsigned short FUN_00611500();

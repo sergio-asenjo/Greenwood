@@ -127,25 +127,12 @@ public:
 #include "SBDrawManagerCore.h"
 #include "SBDrawViewport.h"
 
-// SIZE 0x10e
-class RHUnkFXDraw
-{
-public:
-    unsigned long Unk005e4ed0(unsigned short, unsigned short, unsigned long, bool);
-    unsigned short FUN_005e56c0(unsigned long);
-    unsigned short FUN_005e5750(unsigned long);
-    unsigned short UnkField10c() const { return m_depth; }
-    undefined m_00[0x10c]; // 0x00
-    unsigned short m_depth; // +0x10c
-};
-
 #include "RHUnk006114c0.h"
 
 #include "RHUnk005f4fc0.h"
 
 #include "SBFilePosition.h"
-class RHUnk005ef320;
-extern RHUnk005ef320 *g_unk0x6c11d0;
+extern SBDrawManager *g_unk0x6c11d0;
 
 #include "ToolboxMouseState.h"
 
@@ -156,6 +143,7 @@ void FUN_005e1380();
 void FUN_005e1400();
 
 #include "ToolboxWideString.h"
+#include "ToolboxColor.h"
 
 namespace Toolbox
 {
@@ -163,7 +151,6 @@ namespace Toolbox
     unsigned long HexaAsciiToInteger(const char *);
     void DisplayPicture(const char *, bool);
     void PlaySlide(const std::string &, unsigned short);
-    void HSV_To_RGB(float h, float s, float v, float &r, float &g, float &b);
     void Emit();
 }
 

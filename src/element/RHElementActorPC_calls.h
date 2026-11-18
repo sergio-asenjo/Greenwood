@@ -275,13 +275,9 @@ public:
 
 #include "RHScriptListCore.h"
 
-class RHUnk005ef320
-{
-public:
-    unsigned short Unk(int red, int green, int blue);
-};
+#include "SBDrawManagerCore.h"
 
-extern RHUnk005ef320 *g_unk0x6c11d0;
+extern SBDrawManager *g_unk0x6c11d0;
 extern char g_unk0x6c0689;
 class RHUnk0048a970;
 extern RHUnk0048a970 *g_unk0x6c0b3c;
