@@ -2,9 +2,12 @@
 #include "sb3dstuff.h"
 #include "RHTripleVectorCalls.h"
 #include "RHPlaneCalls.h"
+#include "Decomp.h"
 #include <math.h>
 
 extern float g_unk0x006785d8;
+
+DECOMP_SIZE_ASSERT(RHUnk00613e90, 0x0c)
 
 // FUNCTION: GAME 0x005df4c0
 RHUnk00613e90::RHUnk00613e90(const RHUnk00613e90 &from, const RHUnk00613e90 &to)
@@ -68,18 +71,36 @@ static inline RHUnk00613e90 RHDistanceProjectionSubtract(const RHUnk00613e90 &of
     return RHDistanceVectorResult(offset.FUN_005df550(projection));
 }
 
+static inline float RHDistanceNorm(const RHUnk00613e90 &vector)
+{
+    double y = vector.y;
+    double z = vector.z;
+    return (float)sqrt(vector.x * vector.x + (y * y + z * z));
+}
+
+static inline RHUnk00613e90 RHDistanceScale(const RHUnk00613e90 &vector, const float &scale)
+{
+    RHUnk00613e90 result;
+    result.x = vector.x * scale;
+    double y = vector.y;
+    result.y = y * scale;
+    double z = vector.z;
+    result.z = z * scale;
+    return result;
+}
+
 // STUB: GAME 0x005df6e0
 RHUnk00613e90 RHUnk00613e90::DistanceVectorToLine(const RHUnk00613e90 &first, const RHUnk00613e90 &second)
 {
     RHUnk00613e90 direction;
     RHUnk00613e90 offset;
     direction = second.FUN_005df550(first);
-    float scale = 1.0f / direction.Norm();
+    float scale = 1.0f / RHDistanceNorm(direction);
     direction.x *= scale;
     direction.y *= scale;
     direction.z *= scale;
     offset = FUN_005df550(first);
-    return RHDistanceProjectionSubtract(offset, direction.Scaled(offset.FUN_005df5f0(direction)));
+    return RHDistanceProjectionSubtract(offset, RHDistanceScale(direction, offset.FUN_005df5f0(direction)));
 }
 
 void EmitRHDistanceVectorToLine(RHUnk00613e90 *value)
@@ -88,15 +109,7 @@ void EmitRHDistanceVectorToLine(RHUnk00613e90 *value)
 }
 
 // FUNCTION: GAME 0x005df820
-RHUnk005df860::RHUnk005df860()
-{
-    ((RHUnk00613e90 *)(m_00 + 0x00))->RHUnk00613e90::RHUnk00613e90();
-    ((RHUnk00613e90 *)(m_00 + 0x0c))->RHUnk00613e90::RHUnk00613e90();
-    ((RHUnk00613e90 *)(m_00 + 0x18))->RHUnk00613e90::RHUnk00613e90();
-    ((RHUnk00613e90 *)(m_00 + 0x24))->RHUnk00613e90::RHUnk00613e90();
-    ((RHUnk00613e90 *)(m_00 + 0x30))->RHUnk00613e90::RHUnk00613e90();
-    ((RHUnk00613e90 *)(m_00 + 0x3c))->RHUnk00613e90::RHUnk00613e90();
-}
+RHUnk005df860::RHUnk005df860() {}
 
 // FUNCTION: GAME 0x005df8b0
 void RHUnk005df860::FUN_005df8b0()
@@ -190,7 +203,7 @@ void RHUnk005df860::FUN_005dfaa0(const SBGeoPoint2D &offset)
 }
 
 // FUNCTION: GAME 0x005dfb00
-bool RHUnk005dfb00::FUN_005dfb00(SBFile &file)
+bool RHUnk005df860::FUN_005dfb00(SBFile &file)
 {
     m_0c.Serialize(file);
     m_18.Serialize(file);
@@ -234,12 +247,12 @@ bool RHUnk005dfb00::FUN_005dfb00(SBFile &file)
 // FUNCTION: GAME 0x005dfc20
 RHUnk005dfd00::RHUnk005dfd00()
 {
-    m_00 = 0x7149f2ca;
-    m_04 = 0xf149f2ca;
-    m_08 = 0x7149f2ca;
-    m_0c = 0xf149f2ca;
-    m_10 = 0x7149f2ca;
-    m_14 = 0xf149f2ca;
+    m_00 = 1.0e30f;
+    m_04 = -1.0e30f;
+    m_08 = 1.0e30f;
+    m_0c = -1.0e30f;
+    m_10 = 1.0e30f;
+    m_14 = -1.0e30f;
 }
 
 // FUNCTION: GAME 0x005dfc80
@@ -311,7 +324,7 @@ bool RHUnk005dfd00::FUN_005dfd00(SBFile &file)
     return true;
 }
 
-void RHUnk005dfb00::Emit(SBFile &file) { FUN_005dfb00(file); }
+void RHUnk005df860::Emit(SBFile &file) { FUN_005dfb00(file); }
 void RHUnk005dfd00::Emit(SBFile &file) { FUN_005dfd00(file); }
 
 float EmitSB3DGeometry(RHUnk00613e90 &vector, RHUnk005df860 &plane)

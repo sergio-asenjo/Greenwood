@@ -31,7 +31,7 @@ class RHEngine;
 class RHArtificialIntelligenceSoundCalls;
 extern RHEngine *g_pEngine;
 extern RHArtificialIntelligenceSoundCalls *g_unk0x006c1070;
-extern RHUnk005ef320 *g_unk0x6c11d0;
+extern SBDrawManager *g_unk0x6c11d0;
 extern unsigned char g_unk0x006a6d27;
 
 // GLOBAL: GAME 0x006c06ac
@@ -41,7 +41,7 @@ unsigned char g_launcherQuitRequested = 0;
 LRESULT CALLBACK FUN_004094f0(HWND window, UINT message, WPARAM first, LPARAM second)
 {
     SBInputUnk005fb730 *input = SBInputUnk005fb730::mpInput;
-    RHUnk005ef320 *draw = g_unk0x6c11d0;
+    SBDrawManager *draw = g_unk0x6c11d0;
     PAINTSTRUCT paint;
     switch (message)
     {
@@ -66,11 +66,11 @@ LRESULT CALLBACK FUN_004094f0(HWND window, UINT message, WPARAM first, LPARAM se
                 if (g_unk0x006c1070)
                     ((RHSound *)g_unk0x006c1070)->FUN_005a7b40(0);
             }
-            else if (g_unk0x006a6d27 == 0 || IsIconic(((RHUnk005ef320WindowView *)draw)->GetWindow()))
+            else if (g_unk0x006a6d27 == 0 || IsIconic(draw->GetWindow()))
             {
                 g_unk0x006a6d27 = 1;
-                ShowWindow(((RHUnk005ef320WindowView *)draw)->GetWindow(), 9);
-                while (IsIconic(((RHUnk005ef320WindowView *)draw)->GetWindow())) {}
+                ShowWindow(draw->GetWindow(), 9);
+                while (IsIconic(draw->GetWindow())) {}
                 draw->FUN_005e3f70();
                 if (g_pEngine)
                     *(unsigned char *)((char *)g_pEngine + 0x48d1) = 0;

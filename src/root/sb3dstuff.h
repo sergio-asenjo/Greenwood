@@ -1,47 +1,36 @@
+#ifndef SB3DSTUFF_H
+#define SB3DSTUFF_H
+
 #include "SB.h"
 #include "RHUnk00613e90.h"
 
 #include "RHUnk005df510.h"
 
-class RHUnk005dfb00
-{
-public:
-    RHUnk005df510 m_00;
-    RHUnk005df510 m_0c;
-    RHUnk005df510 m_18;
-    RHUnk005df510 m_24;
-    RHUnk005df510 m_30;
-    RHUnk005df510 m_3c;
-    int m_48;
-    int m_4c;
-    int m_50;
-    int m_54;
-
-    bool FUN_005dfb00(SBFile &file);
-    void Emit(SBFile &file);
-};
-
 class RHUnk005dfd00
 {
 public:
     RHUnk005dfd00();
+    void FUN_005dfc40(RHUnk00613e90 point);
+    void FUN_005dfc60(RHUnk00613e90 point);
     void FUN_005dfc80(RHUnk00613e90 point);
     void Reset()
     {
-        m_00 = 0x7149f2ca;
-        m_04 = 0xf149f2ca;
-        m_08 = 0x7149f2ca;
-        m_0c = 0xf149f2ca;
-        m_10 = 0x7149f2ca;
-        m_14 = 0xf149f2ca;
+        m_00 = 1.0e30f;
+        m_04 = -1.0e30f;
+        m_08 = 1.0e30f;
+        m_0c = -1.0e30f;
+        m_10 = 1.0e30f;
+        m_14 = -1.0e30f;
     }
-    int m_00;
-    int m_04;
-    int m_08;
-    int m_0c;
-    int m_10;
-    int m_14;
+    float m_00;
+    float m_04;
+    float m_08;
+    float m_0c;
+    float m_10;
+    float m_14;
 
     bool FUN_005dfd00(SBFile &file);
     void Emit(SBFile &file);
 };
+
+#endif

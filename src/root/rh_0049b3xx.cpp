@@ -132,18 +132,11 @@ public:
 class RHUnk00452030;
 class RHTitbits;
 class RHEngine;
-struct RHUnkSectorGlobal;
+class RHFastFindGrid;
 extern RHUnk00452030 *g_unk0x6c07fc;
-extern RHUnkSectorGlobal *g_unk0x6c0a9c;
+extern RHFastFindGrid *g_unk0x6c0a9c;
 extern RHTitbits *g_unk0x6c10e8;
 extern RHEngine *g_pEngine;
-
-// SIZE 0x14
-class SBGeoBoundingBox2D
-{
-public:
-    char m_bytes[0x14];
-};
 
 class RHPositionInterface
 {
@@ -372,7 +365,7 @@ unsigned char RHUnk0049b510::FUN_0049b510() { return ((Flags *)(AT(char *, 0x334
 RHUnk00452030 *FUN_0049b520() { return g_unk0x6c07fc; }
 
 // FUNCTION: GAME 0x0049b530
-RHUnkSectorGlobal *FUN_0049b530() { return g_unk0x6c0a9c; }
+RHFastFindGrid *FUN_0049b530() { return g_unk0x6c0a9c; }
 
 // FUNCTION: GAME 0x0049b540
 RHTitbits *FUN_0049b540() { return g_unk0x6c10e8; }
