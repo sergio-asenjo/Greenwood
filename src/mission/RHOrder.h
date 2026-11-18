@@ -1,3 +1,6 @@
+#ifndef RHORDER_H
+#define RHORDER_H
+
 // RHOrder — declarations for RHOrder.cpp (decompiled TU).
 //
 // BINDING (0x0054e750): RHOrder::Serialize(SBFile&, RHSequenceElement*).
@@ -9,25 +12,7 @@
 // a real __thiscall: `mov edi,ecx` at entry and `ret 8` at exit.
 
 #include "SB.h"
-
-// Embedded point sub-object (two 4-byte fields). Its Serialize is the target
-// 0x005fc2a0 (__FILE__ P:\Robin Hood\SBLibNG\SBGeoPoint2D.cpp); defined once in
-// RHGraphicConfig_stubs.cpp.
-#ifndef SBGEO_POINT2D_VIEW
-class SBGeoPoint2D
-{
-public:
-    bool Serialize(SBFile &file);
-
-private:
-    char m_unk[0x8];
-};
-#endif
-
-// Vector sub-object (three 4-byte fields). Its Serialize is the target
-// 0x005df510 (three 4-byte Access calls; oracle: SBGeoVector3D::Serialize).
-// Defined once in RHTitbits_stubs.cpp as RHUnk005df510::Serialize.
-#include "RHUnk005df510.h"
+#include "RHOrderCore.h"
 
 class RHElement;
 class RHSequenceElementCalls;
@@ -43,8 +28,6 @@ public:
 };
 
 extern RHEngine *g_pEngine;
-
-class RHOrder;
 
 // List iterator shaped like MSVC6's _List_iterator: constructs from a node
 // pointer, trivial copy, returned by value through a hidden pointer.
@@ -87,36 +70,6 @@ public:
 // definition in RHOrder.cpp.
 extern RHUnk6c1040 *g_unk0x6c1040;
 
-class RHSequenceElement;
-
-class RHOrder
-{
-public:
-    bool Serialize(SBFile &file, RHSequenceElement *element); // 0x0054e750
-
-    static bool SerializeStaticStuff(SBFile &file);
-
-    void Emit(SBFile &file);
-
-    char m_pad0[4];          // [0x00] vptr/base sub-object (opaque)
-    int m_4;                 // [0x04]
-    RHUnk005df510 m_8;       // [0x08]
-    SBGeoPoint2D m_14;       // [0x14]
-    SBGeoPoint2D m_1c;       // [0x1c]
-    int m_24;                // [0x24]
-    char m_28;               // [0x28]
-    char m_29;               // [0x29]
-    char m_2a;               // [0x2a]
-    char m_2b;               // [0x2b]
-    char m_2c;               // [0x2c]
-    char m_2d;               // [0x2d]
-    char m_2e;
-    char m_2f;
-    RHElement *m_30;         // [0x30]
-    int m_34;                // [0x34]
-    RHSequenceElement *m_38; // [0x38]
-};
-
 // Serialises a type-name tag into the stream; target 0x005e1b70. Defined once
 // in RHElementObject_stubs.cpp; declared here so the call resolves.
 void RHSerializeName(SBFile &file, const char *name);
@@ -124,3 +77,5 @@ void RHSerializeName(SBFile &file, const char *name);
 // The 4-byte global accessed by SerializeStaticStuff (original 0x006c0c6c).
 // The // GLOBAL: marker sits on its definition in RHOrder.cpp.
 extern int g_unk0x6c0c6c;
+
+#endif

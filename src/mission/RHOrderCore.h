@@ -2,6 +2,7 @@
 #define RHORDERCORE_H
 
 #include "SB.h"
+#include "Decomp.h"
 #ifndef SBGEO_POINT2D_VIEW
 #include "SBGeoPoint2D.h"
 #endif
@@ -9,6 +10,10 @@
 #include "SBGeoVector2D.h"
 #endif
 #include "RHUnk00613e90.h"
+
+class SBFile;
+class RHElement;
+class RHSequenceElement;
 
 // VTABLE: GAME 0x00679bc8
 // SIZE 0x3c
@@ -18,10 +23,13 @@ public:
     RHOrder();
     RHOrder(RHOrder &);
     virtual ~RHOrder();
+    bool Serialize(SBFile &file, RHSequenceElement *element);
+    static bool SerializeStaticStuff(SBFile &file);
+    void Emit(SBFile &file);
     void FUN_0054e730();
     union
     {
-        undefined4 m_04;
+        undefined4 m_4;
         float m_float04;
     };
     RHUnk00613e90 m_08;
@@ -34,10 +42,11 @@ public:
     undefined m_2b;
     undefined m_2c;
     undefined m_2d;
-    undefined m_2e[2];
-    void *m_30;
+    char m_2e;
+    char m_2f;
+    RHElement *m_30;
     int m_34;
-    void *m_38;
+    RHSequenceElement *m_38;
 };
 
 #endif

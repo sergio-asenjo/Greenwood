@@ -12,8 +12,7 @@ template <class T>
 class RHMissionArray
 {
 public:
-    explicit RHMissionArray(const std::allocator<T> &allocator = std::allocator<T>())
-        : m_allocator(allocator), m_first(0), m_last(0), m_end(0) {}
+    explicit RHMissionArray(const std::allocator<T> &allocator = std::allocator<T>());
     ~RHMissionArray()
     {
         Destroy(m_first, m_last);
@@ -47,6 +46,9 @@ public:
     T *m_last;
     T *m_end;
 };
+
+template<> RHMissionArray<RHCharacterProfile *>::RHMissionArray(const std::allocator<RHCharacterProfile *> &);
+template<> RHMissionArray<unsigned long>::RHMissionArray(const std::allocator<unsigned long> &);
 
 class RHMissionProfile
 {

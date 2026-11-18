@@ -381,7 +381,7 @@ std::basic_string<unsigned short> RHShortBriefings::GetShortBriefingText(const S
 {
     RHDialogueSet *resources = g_pEngine->GetDynResources(0);
     std::basic_string<unsigned short> text;
-    if (!resources || !g_unk0x006c1840->FUN_006009e0(*(unsigned *)((char *)resources + 0x40), value.m_0, (RHMapWideText &)text)) {
+    if (!resources || !g_unk0x006c1840->FUN_006009e0(*(unsigned *)((char *)resources + 0x40), value.m_0, text)) {
         // STRING: GAME 0x006b77f8
         text = (const unsigned short *)L"Invalid short briefing ID...";
     }

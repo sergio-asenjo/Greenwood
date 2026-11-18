@@ -25,6 +25,7 @@
 #include "SBNullstr.h"
 #include "RHElementActor.h"
 #include "RHSequenceElement.h"
+#include "RHSequenceManager.h"
 
 // The 4-byte global read/written by SerializeStaticStuff (original 0x006b74d8).
 // GLOBAL: GAME 0x006b74d8
@@ -56,6 +57,136 @@ bool RHSequenceElement::SerializeStaticStuff(SBFile &file)
 void RHSequenceElement::Emit(SBFile &file)
 {
     SerializeStaticStuff(file);
+}
+
+// FUNCTION: GAME 0x00584ef0
+bool RHSequenceElement::FUN_00584ef0(SBFile &file, bool pointers)
+{
+    // STRING: GAME 0x6b74dc
+    RHSerializeName(file, "RHSequenceElement::Serialize");
+
+    if (file.m_bLoading)
+    {
+        RHSequenceElementCursor &elements =
+            *(RHSequenceElementCursor *)&((RHSequenceManager *)g_unk0x6c1040)->m_16c;
+        RHUnkIter position = elements.insert(elements.end(), this);
+        elements.valid = 1;
+    }
+    unsigned count;
+
+    if (file.Access(&m_10, 4) < 0)
+    {
+        SBString *err = file.GetError();
+        const char *reason = err->m_chars ? err->m_chars : "";
+        SBAssert(0,
+                 "P:\\Robin Hood\\RHsequenceelement.cpp",
+                 103,
+                 "Serialize failed reason is %s",
+                 reason);
+        return false;
+    }
+    if (file.Access(&m_58, 4) < 0)
+    {
+        SBString *err = file.GetError();
+        const char *reason = err->m_chars ? err->m_chars : "";
+        SBAssert(0, "P:\\Robin Hood\\RHsequenceelement.cpp", 104, "Serialize failed reason is %s", reason);
+        return false;
+    }
+    if (file.Access(&m_14, 2) < 0)
+    {
+        SBString *err = file.GetError();
+        const char *reason = err->m_chars ? err->m_chars : "";
+        SBAssert(0, "P:\\Robin Hood\\RHsequenceelement.cpp", 105, "Serialize failed reason is %s", reason);
+        return false;
+    }
+    if (file.Access(&m_5c, 4) < 0)
+    {
+        SBString *err = file.GetError();
+        const char *reason = err->m_chars ? err->m_chars : "";
+        SBAssert(0, "P:\\Robin Hood\\RHsequenceelement.cpp", 106, "Serialize failed reason is %s", reason);
+        return false;
+    }
+    if (file.Access(&m_08, 4) < 0)
+    {
+        SBString *err = file.GetError();
+        const char *reason = err->m_chars ? err->m_chars : "";
+        SBAssert(0, "P:\\Robin Hood\\RHsequenceelement.cpp", 107, "Serialize failed reason is %s", reason);
+        return false;
+    }
+    if (file.Access(&m_3c, 4) < 0)
+    {
+        SBString *err = file.GetError();
+        const char *reason = err->m_chars ? err->m_chars : "";
+        SBAssert(0, "P:\\Robin Hood\\RHsequenceelement.cpp", 109, "Serialize failed reason is %s", reason);
+        return false;
+    }
+    if (file.Access(&m_40, 4) < 0)
+    {
+        SBString *err = file.GetError();
+        const char *reason = err->m_chars ? err->m_chars : "";
+        SBAssert(0, "P:\\Robin Hood\\RHsequenceelement.cpp", 110, "Serialize failed reason is %s", reason);
+        return false;
+    }
+    if (file.Access(&m_0c, 1) < 0)
+    {
+        SBString *err = file.GetError();
+        const char *reason = err->m_chars ? err->m_chars : "";
+        SBAssert(0, "P:\\Robin Hood\\RHsequenceelement.cpp", 112, "Serialize failed reason is %s", reason);
+        return false;
+    }
+    if (file.m_version >= 0x28)
+    {
+        if (file.Access(&m_60, 1) < 0)
+        {
+            SBString *err = file.GetError();
+            const char *reason = err->m_chars ? err->m_chars : "";
+            SBAssert(0, "P:\\Robin Hood\\RHsequenceelement.cpp", 116, "Serialize failed reason is %s", reason);
+            return false;
+        }
+    }
+    else
+        m_60 = 0;
+
+    g_pEngine->SerializeElementPointer(file, m_48);
+
+    if (!file.m_bLoading)
+        count = (*(RHManagerList<RHOrder *> *)((char *)this + 0x18)).Count();
+    if (file.Access(&count, 4) < 0)
+    {
+        SBString *err = file.GetError();
+        const char *reason = err->m_chars ? err->m_chars : "";
+        SBAssert(0, "P:\\Robin Hood\\RHsequenceelement.cpp", 134, "Serialize failed reason is %s", reason);
+        return false;
+    }
+
+    for (unsigned index = 0; index < count; ++index)
+    {
+        RHOrder *order;
+        if (!file.m_bLoading)
+        {
+            order = (*(RHManagerList<RHOrder *> *)((char *)this + 0x18))[index];
+            order->Serialize(file, this);
+        }
+        else
+        {
+            order = new RHOrder;
+            order->Serialize(file, this);
+            (*(RHManagerList<RHOrder *> *)((char *)this + 0x18)).push_back(order);
+        }
+    }
+
+    if (pointers)
+    {
+        ((RHSequenceManager *)g_unk0x6c1040)->PreSerializePointer(file, &m_4c, false);
+        ((RHSequenceManager *)g_unk0x6c1040)->PreSerializePointer(file, &m_50, false);
+        ((RHSequenceManager *)g_unk0x6c1040)->PreSerializePointer(file, &m_54);
+    }
+    else if (file.m_bLoading)
+    {
+        m_4c = 0;
+        m_50 = 0;
+    }
+    return true;
 }
 
 #include "RHSequenceGenericCalls.h"
@@ -369,7 +500,7 @@ void RHSequenceElementCalls::FUN_005857c0(RHSequenceElementCalls *other)
     while (other->m_50)
     {
         RHElementActor *actor = (RHElementActor *)m_48;
-        if (actor && !(*(const unsigned char *)&actor->m_04 & 3))
+        if (actor && !(*(const unsigned char *)&((RHElement *)actor)->m_04 & 3))
         {
             switch (actor->FUN_0046ad00(other->m_50, this))
             {

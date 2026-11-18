@@ -327,6 +327,13 @@ public:
     ~RHManagerOwnedSequenceList() { ((RHManagerListCalls *)this)->FUN_0058bed0(); }
 };
 
+class RHSequenceElementCursor : public RHManagerList<RHSequenceElement *>
+{
+public:
+    RHUnkIter end() { return RHUnkIter(*(void **)((char *)this + 4)); }
+    RHUnkIter insert(RHUnkIter pos, RHSequenceElement *const &value);
+};
+
 // VTABLE: GAME 0x00679db8
 // SIZE 0x1b4
 class RHSequenceManager

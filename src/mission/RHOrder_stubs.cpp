@@ -14,6 +14,7 @@
 
 #include "SBNullstr.h"
 #include "RHOrder.h"
+#include "RHSequenceManager.h"
 
 struct RHOrderListNode
 {
@@ -35,5 +36,28 @@ RHUnkIter RHUnkList::insert(RHUnkIter pos, RHOrder *const &value)
     node->previous->next = node;
     new (&node->value) RHOrder *(value);
     ++m_8;
+    return RHUnkIter(node);
+}
+
+struct RHSequenceElementListNode
+{
+    RHSequenceElementListNode *next;
+    RHSequenceElementListNode *previous;
+    RHSequenceElement *value;
+};
+
+// TEMPLATE: GAME 0x00424410 FOLDED
+// ?insert@RHSequenceElementCursor@@QAE?AVRHUnkIter@@V2@ABQAVRHSequenceElement@@@Z
+RHUnkIter RHSequenceElementCursor::insert(RHUnkIter pos, RHSequenceElement *const &value)
+{
+    RHSequenceElementListNode *next = (RHSequenceElementListNode *)pos.m_p;
+    RHSequenceElementListNode *previous = next->previous;
+    RHSequenceElementListNode *node = (RHSequenceElementListNode *)operator new(sizeof(RHSequenceElementListNode));
+    node->next = next ? next : node;
+    node->previous = previous ? previous : node;
+    next->previous = node;
+    node->previous->next = node;
+    new (&node->value) RHSequenceElement *(value);
+    ++_Size;
     return RHUnkIter(node);
 }

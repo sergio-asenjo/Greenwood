@@ -124,7 +124,7 @@ bool RHOrder::Serialize(SBFile &file, RHSequenceElement *element)
     }
 
     m_14.Serialize(file);
-    m_8.Serialize(file);
+    m_08.Serialize(file);
     m_1c.Serialize(file);
     g_pEngine->SerializeElementPointer(file, m_30);
 

@@ -3,19 +3,46 @@
 // BINDING (0x005852c0): RHSequenceElement::SerializeStaticStuff(SBFile&). See
 // src/RHSequenceElement.cpp for the evidence chain.
 //
-// The Windows codegen calls this WITHOUT a `this` (the body never uses ecx as
-// this), so on this build it is a static member.
+// SerializeStaticStuff does not receive a this pointer.
 
 #include "SB.h"
+
+class RHElement;
+class RHOrder;
+class RHSequence;
 
 class RHSequenceElement
 {
 public:
     RHSequenceElement();
-    static bool SerializeStaticStuff(SBFile &file);
+    ~RHSequenceElement();
+    virtual void Dummy1();
+    virtual void Dummy2();
+    virtual bool Serialize(SBFile &file, bool pointers);
     bool FUN_00584ef0(SBFile &file, bool pointers);
-
+    int Unk00587160(int argument);
+    static bool SerializeStaticStuff(SBFile &file);
     static void Emit(SBFile &file);
+
+    char m_04[4];
+    int m_08;
+    char m_0c;
+    char m_0d[3];
+    int m_10;
+    unsigned short m_14;
+    char m_16[2];
+    char m_18[0x24];
+    int m_3c;
+    int m_40;
+    int m_44;
+    RHElement *m_48;
+    RHSequenceElement *m_4c;
+    RHSequenceElement *m_50;
+    RHSequence *m_54;
+    int m_58;
+    int m_5c;
+    char m_60;
+    char m_61[3];
 };
 
 // Serialises a type-name tag into the stream; target 0x005e1b70. Defined once

@@ -78,8 +78,8 @@
 DECOMP_SIZE_ASSERT(RHMovementBox, 0x14)
 
 extern "C" int __cdecl rand();
-struct RHUnkSectorGlobal;
-extern RHUnkSectorGlobal *g_unk0x6c0a9c;
+class RHFastFindGrid;
+extern RHFastFindGrid *g_unk0x6c0a9c;
 
 template<class T> inline T &RHSequenceField(void *object, unsigned offset)
 {

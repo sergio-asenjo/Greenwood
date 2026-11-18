@@ -630,7 +630,7 @@ void RHUnk00588530::FUN_00589490(int replacement, int action, float distance, co
             }
             RHMovementField<int>(order, 4) = 0;
             if (!(m_88 & 4) || !(m_88 & 0x400))
-                order->m_30 = m_84;
+                order->m_30 = (RHElement *)m_84;
             ((RHSpriteSequenceCalls *)this)->FUN_005859e0(order, (unsigned short)i);
             break;
         }
@@ -654,7 +654,7 @@ void RHUnk00588530::FUN_00589490(int replacement, int action, float distance, co
             }
             RHMovementField<int>(order, 4) = 0;
             if (!(m_88 & 4) || !(m_88 & 0x400))
-                order->m_30 = m_84;
+                order->m_30 = (RHElement *)m_84;
             ((RHSpriteSequenceCalls *)this)->FUN_005859e0(order, (unsigned short)i);
             break;
         }

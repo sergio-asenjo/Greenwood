@@ -1130,8 +1130,8 @@ void RHCampaign::CreatePlayableCharacterSet(SBArray<RHElement *> &elements, std:
                     if (*(unsigned short *)&position->data == character)
                         ((RHUnk0046eb30 *)&available)->erase(RHScriptIter(position));
                 }
-                g_unk0x6c0a50.m_progress += 10.0f / (int)characters;
-                g_unk0x6c0a50.FUN_00523300();
+                g_unk0x6c0a50.m_elapsed += 10.0f / (int)characters;
+                g_unk0x6c0a50.Refresh();
                 allowAmbiguous = false;
                 --remaining;
                 progress = true;
@@ -1153,8 +1153,8 @@ void RHCampaign::CreatePlayableCharacterSet(SBArray<RHElement *> &elements, std:
                     FUN_004552f0(elements, *it, available.Front());
                     available.Remove(available.m_head->next);
                     --remaining;
-                    g_unk0x6c0a50.m_progress += 10.0f / (int)characters;
-                    g_unk0x6c0a50.FUN_00523300();
+                    g_unk0x6c0a50.m_elapsed += 10.0f / (int)characters;
+                    g_unk0x6c0a50.Refresh();
                     if (available.m_count == 0)
                         break;
                 }

@@ -2,16 +2,6 @@
 #define RHSEQUENCEELEMENTSERIALIZATION_H
 
 #include "SB.h"
-#include "RHEngine.h"
-
-#include "RHSequenceElementCore.h"
-
-class RHSword
-{
-public:
-    static bool SerializePointer(SBFile &file, RHSword *&value);
-};
-
 class SBGeoVector2D;
 #define SBGEO_POINT2D_VIEW
 class SBGeoPoint2D
@@ -27,6 +17,16 @@ public:
     bool Serialize(SBFile &file);
     float m_x;
     float m_y;
+};
+
+#include "RHEngine.h"
+
+#include "RHSequenceElementCore.h"
+
+class RHSword
+{
+public:
+    static bool SerializePointer(SBFile &file, RHSword *&value);
 };
 
 #include "RHPathGeometryCalls.h"

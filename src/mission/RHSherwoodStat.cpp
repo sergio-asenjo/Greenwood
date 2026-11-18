@@ -93,7 +93,7 @@ void RHSherwoodStat::GetScoreText(std::wstring &text)
     text += L"\n";
 }
 
-// STUB: GAME 0x005a1c30
+// FUNCTION: GAME 0x005a1c30
 std::wstring RHSherwoodStat::GetText() const
 {
     std::wstring text;
@@ -138,7 +138,7 @@ std::wstring RHSherwoodStat::GetText() const
     return text;
 }
 
-// STUB: GAME 0x005a1f80
+// FUNCTION: GAME 0x005a1f80
 void RHSherwoodStat::GetTrainHealText(const RHSectorProduction *sector, std::wstring &text)
 {
     wchar_t buffer[512];

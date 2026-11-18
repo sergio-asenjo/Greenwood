@@ -5,6 +5,7 @@
 #include "RHMissionProfile.h"
 #include "RHCampaignCommandLine.h"
 #include "RHMission.h"
+#include "RHLoadingScreenCore.h"
 #include <list>
 
 class RHSectorProduction;
@@ -379,14 +380,6 @@ public:
     char &operator[](unsigned index) { return m_first[index]; }
 };
 
-class RHCampaignLoadingProgress
-{
-public:
-    char m_0[8];
-    float m_progress;
-    void FUN_00523300();
-};
-
 class RHEngine
 {
 public:
@@ -394,7 +387,6 @@ public:
 };
 
 extern RHEngine *g_pEngine;
-extern RHCampaignLoadingProgress g_unk0x6c0a50;
 
 // SIZE 0x08
 #define SBGEO_VECTOR2D_VIEW

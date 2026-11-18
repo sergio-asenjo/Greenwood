@@ -141,8 +141,7 @@ RHCampaignCommandLine g_unk0x6c05cc;
 // GLOBAL: GAME 0x006c0e84
 RHCampaignProfiles *g_unk0x6c0e84;
 
-void RHCampaignLoadingProgress::FUN_00523300() {}
 bool RHPathObstacleGrid::FUN_004f9260(const SBGeoPoint2D &, const SBGeoPoint2D &, unsigned short) { return false; }
 
 // GLOBAL: GAME 0x006c0a50
-RHCampaignLoadingProgress g_unk0x6c0a50;
+RHLoadingScreen g_unk0x6c0a50;

@@ -42,7 +42,7 @@ public:
     RHUnk00584d60(unsigned short level, int command, void *actor);
     ~RHUnk00584d60();
     virtual void *FUN_00584d40(unsigned int flags);
-    void FUN_00584d30();
+    float FUN_00584d30();
     void SetFlag(bool value) { m_60 = value; }
     unsigned char m_04;          // 0x04
     char m_05[3];                // 0x05
