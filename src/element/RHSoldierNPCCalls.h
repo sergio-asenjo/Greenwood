@@ -16,6 +16,7 @@ class RHSoldierNPCCalls
 {
 public:
     void FUN_0048b510(void *element);
+    void FUN_0048a980();
     int FUN_0048d100(RHSoldierSequenceElement *element);
     void FUN_0048d790(RHSoldierSequenceElement *element);
     bool FUN_0048da40(RHUnk0048da10 *value);

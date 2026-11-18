@@ -63,7 +63,7 @@ class RHEngine;
 class RHUnk00452030;
 extern RHEngine *g_pEngine;
 extern RHUnk00452030 *g_unk0x6c07fc;
-extern RHUnk005ef320 *g_unk0x6c11d0;
+extern SBDrawManager *g_unk0x6c11d0;
 extern RHCampaignProfiles *g_unk0x6c0e84;
 extern RHElementActor *g_unk0x6c100c;
 extern char g_unk0x6c0691;
@@ -184,17 +184,17 @@ void RHElementActorSoldier::InitializeFromMissionStream(SBFile &file)
     ((RHSoldierActorCalls *)this)->Vc4(RHSOLDIER_PROFILE(unsigned short, 0x30));
     RHSOLDIER_FIELD(RHHumanStatus *, 0x1c4) = new RHHumanStatus(*RHSOLDIER_FIELD(RHSoldierProfile *, 0xa1c));
     char spriteMode = RHSOLDIER_AT(char, g_pEngine, 0x4aa8);
-    RHSOLDIER_FIELD(RHUnkTargetSprite *, 0x50)->FUN_005bd050(
+    RHSOLDIER_FIELD(RHSprite *, 0x50)->FUN_005bd050(
         !spriteMode,
         RHSOLDIER_PROFILE(std::string, 0), RHSOLDIER_PROFILE(std::string, 0x10), 0);
     SBGeoVector2D *extents = RHSOLDIER_AT(SBGeoVector2D *, RHSOLDIER_FIELD(void *, 0x64), 0x4164);
     SBGeoVector2D extent(extents[RHSOLDIER_PROFILE(unsigned char, 0x5d)]);
     RHSOLDIER_FIELD(RHSprite *, 0x50)->AssignBox(SBGeoBoundingBox2D(-extent, extent));
     RHSOLDIER_FIELD(RHSprite *, 0x50)->m_90 = RHSOLDIER_PROFILE(unsigned char, 0x5d);
-    RHSOLDIER_FIELD(unsigned long, 0x54) = RHSOLDIER_FIELD(RHUnkFXDraw *, 0x60)->Unk005e4ed0(
+    RHSOLDIER_FIELD(unsigned long, 0x54) = RHSOLDIER_FIELD(SBDrawManager *, 0x60)->Unk005e4ed0(
         RHSOLDIER_FIELD(RHCivilianSpriteView *, 0x50)->FUN_005bdef0(),
         RHSOLDIER_FIELD(RHCivilianSpriteView *, 0x50)->FUN_005bdf20(), 0, false);
-    RHSOLDIER_FIELD(unsigned long, 0x58) = RHSOLDIER_FIELD(RHUnkFXDraw *, 0x60)->Unk005e4ed0(
+    RHSOLDIER_FIELD(unsigned long, 0x58) = RHSOLDIER_FIELD(SBDrawManager *, 0x60)->Unk005e4ed0(
         (unsigned short)(RHSOLDIER_FIELD(RHCivilianSpriteView *, 0x50)->FUN_005bdef0() + 4),
         RHSOLDIER_FIELD(RHCivilianSpriteView *, 0x50)->FUN_005bdf20(), 0, false);
     ((RHBonusInfoBase *)(RHSOLDIER_FIELD(char *, 0x50) + 4))->SetPoint(SBGeoPoint2D((float)mapX, (float)mapY));
@@ -412,7 +412,7 @@ void RHElementActorSoldier::Translate(RHSequenceElement *element, RHcommand comm
     }
     case 0x54:
     {
-        void *target = RHSOLDIER_AT(void *, element, 0x64);
+        RHElement *target = RHSOLDIER_AT(RHElement *, element, 0x64);
         int state = RHSOLDIER_AT(int, target, 0xb0);
         switch (state)
         {
@@ -481,7 +481,7 @@ void RHElementActorSoldier::Translate(RHSequenceElement *element, RHcommand comm
     }
     case 0x8d:
     {
-        void *target = RHSOLDIER_AT(void *, element, 0x64);
+        RHElement *target = RHSOLDIER_AT(RHElement *, element, 0x64);
         RHOrder *order = new RHOrder;
         order->m_2a = 0;
         order->m_24 = 0xa5;
@@ -547,9 +547,7 @@ void RHElementActorSoldier::FUN_004a4a40()
     }
 }
 
-// Parked: state/dead entry registers are swapped (AL/CL) and VC6 duplicates the sparse
-// case-5 false tail instead of the target's near jump to the shared block.
-// STUB: GAME 0x004a4aa0
+// FUNCTION: GAME 0x004a4aa0
 bool RHElementActorSoldier::FUN_004a4aa0(const SBGeoPoint2D &point, RHElementActorHuman *pc, int focus)
 {
     if (!RHSOLDIER_FIELD(char, 0x12))
@@ -567,29 +565,27 @@ bool RHElementActorSoldier::FUN_004a4aa0(const SBGeoPoint2D &point, RHElementAct
     case 5:
         if (RHSOLDIER_FIELD(char, 8) ||
             ((RHMalignityVisibilityCalls *)this)->FUN_004860b0() ||
-            ((RHSoldierActorCalls *)this)->V130() == 0)
-            return false;
-        if (((RHSoldierActorCalls *)this)->Vf4() && RHSOLDIER_FIELD(int, 0x144) == 3)
+            ((RHSoldierActorCalls *)this)->V130() == 0 ||
+            (((RHSoldierActorCalls *)this)->Vf4() && RHSOLDIER_FIELD(int, 0x144) == 3))
             return false;
         return RHSOLDIER_FIELD(RHSprite *, 0x50)->FUN_005b9e30(
             (void *)&point, RHSOLDIER_FIELD(void *, 0x54), false);
     case 0xf:
     {
         unsigned char state = *(unsigned char *)((char *)RHUnk00546050() + 0x20);
-        char dead = RHSOLDIER_FIELD(char, 8);
         if (state)
         {
-            if (!dead &&
+            if (!RHSOLDIER_FIELD(char, 8) &&
                 (((RHSoldierActorCalls *)this)->V48() ||
                  ((RHSoldierActorCalls *)this)->V130() == 0 ||
-                 ((RHSoldierActorCalls *)this)->Vf8() ||
-                 ((RHSoldierActorCalls *)this)->Vf4()))
+                  ((RHSoldierActorCalls *)this)->Vf8() ||
+                  ((RHSoldierActorCalls *)this)->Vf4()))
                 return false;
             bool includeKey = RHSOLDIER_FIELD(bool, 8);
             return RHSOLDIER_FIELD(RHSprite *, 0x50)->FUN_005b9e30(
                 (void *)&point, RHSOLDIER_FIELD(void *, 0x54), includeKey);
         }
-        if (dead ||
+        if (RHSOLDIER_FIELD(char, 8) ||
             ((RHSoldierActorCalls *)this)->V130() == 0 ||
             ((RHMalignityVisibilityCalls *)this)->FUN_004860b0() ||
             ((RHSoldierActorCalls *)this)->Vf8() ||
@@ -724,15 +720,10 @@ bool RHElementActorSoldier::FUN_004a53d0(unsigned flags, RHSoldierTransition *el
     return true;
 }
 
-// Parked: the two true-return blocks are cross-jumped; the target keeps the case 1-3 block separate.
-// STUB: GAME 0x004a5460
-bool RHElementActorSoldier::FUN_004a5460()
+static inline bool RHSoldierReactionState(RHElementActorSoldier *actor)
 {
-    if (((RHSoldierActorCalls *)this)->V48() || RHSOLDIER_FIELD(unsigned char, 0x1ce) ||
-        *(int *)(RHSOLDIER_FIELD(char *, 0x50) + 0x8c) == 0x12 || RHSOLDIER_FIELD(void *, 0x254) ||
-        !RHSOLDIER_FIELD(unsigned char, 0x12))
-        return false;
-    switch (*(int *)(RHSOLDIER_VBASE + 0xc))
+    char *base = (char *)actor + (*(int **)((char *)actor + 0x49c))[1];
+    switch (*(int *)(base + 0x4a8))
     {
     case 0:
         return false;
@@ -742,7 +733,7 @@ bool RHElementActorSoldier::FUN_004a5460()
         return true;
     case 4:
     {
-        int type = *(int *)(RHSOLDIER_VBASE + 0x14);
+        int type = *(int *)(base + 0x4b0);
         if (type >= 0xa9 && type <= 0xab)
             return false;
         return true;
@@ -752,6 +743,16 @@ bool RHElementActorSoldier::FUN_004a5460()
         return false;
     }
     return false;
+}
+
+// FUNCTION: GAME 0x004a5460
+bool RHElementActorSoldier::FUN_004a5460()
+{
+    if (((RHSoldierActorCalls *)this)->V48() || RHSOLDIER_FIELD(unsigned char, 0x1ce) ||
+        *(int *)(RHSOLDIER_FIELD(char *, 0x50) + 0x8c) == 0x12 || RHSOLDIER_FIELD(void *, 0x254) ||
+        !RHSOLDIER_FIELD(unsigned char, 0x12))
+        return false;
+    return RHSoldierReactionState(this);
 }
 
 // FUNCTION: GAME 0x004a54f0
@@ -892,6 +893,41 @@ void RHElementActorSoldier::SetAppleSmell(bool enabled)
     }
     else
         m_unkA3c = 0;
+}
+
+#include "RHActorWorldPoint.h"
+#include "RHUnk005fc3b0.h"
+#include "RHArtificialMalignityCore.h"
+
+static inline void RHSoldierSetHeading(void *position, unsigned short heading)
+{
+    RHSOLDIER_AT(unsigned short, position, 0xd4) = heading & 0xf;
+    RHSOLDIER_AT(unsigned short, position, 0xd6) = heading & 0xf;
+}
+
+// FUNCTION: GAME 0x004a5890
+void RHElementActorSoldier::FUN_004a5890()
+{
+    if ((unsigned int)m_unkA3c > 0)
+    {
+        if (--m_unkA3c == 0)
+            g_unk0x6c10e8->FUN_005c8120(0xd, (RHElement *)this);
+    }
+    switch (*(int *)(RHSOLDIER_VBASE + 0x14))
+    {
+    case 0x98:
+    case 0x99:
+    case 0xb0:
+    case 0xb1:
+    case 0xb2:
+        if (*(void **)(RHSOLDIER_VBASE + 0x80))
+            RHSoldierSetHeading((char *)RHSOLDIER_FIELD(void *, 0x50) + 4,
+                ((RHUnk005fc3b0 *)&((RHUnk004237d0 *)*(void **)(RHSOLDIER_VBASE + 0x80))->FUN_004237d0()
+                    .Unk005fc110(((RHUnk004237d0 *)this)->FUN_004237d0()))->FUN_005fcc50(0.57357645f));
+        break;
+    }
+    ((RHArtificialMalignity *)((char *)this + 0x6e8))->FUN_0044da40();
+    ((RHSoldierNPCCalls *)this)->FUN_0048a980();
 }
 
 // FUNCTION: GAME 0x004a5a00

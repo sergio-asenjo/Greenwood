@@ -9,6 +9,8 @@
 #include "Decomp.h"
 
 #include "RHActorCommand.h"
+#include "RHScriptCore.h"
+#include "SBSimpleVirtualMachineCore.h"
 
 class RHSequenceElement;
 class RHSequence;
@@ -20,10 +22,8 @@ class RHBonusInfoBase;
 class RHActorGridCalls;
 class RHUnk00588530;
 
-class RHActorScriptBase : public RHUnkSectorScript
+class RHActorScriptBase : public SBSimpleVirtualMachine, public RHScript
 {
-public:
-    char m_0[0x60];
 };
 
 #include "RHSequencePropertyPointCalls.h"
@@ -63,6 +63,7 @@ public:
     void FUN_00463240(unsigned first, unsigned second, unsigned third);
     void FUN_00463250(unsigned value);
     void FUN_00463260(unsigned first, unsigned second, unsigned third, unsigned fourth);
+    virtual ~RHElementActor();
     int FUN_00463d90(unsigned value) const;
     virtual bool Serialize(SBFile &file);
     void ExecuteImmediately(RHSequenceElement *element);
@@ -153,7 +154,8 @@ public:
     void *m_170; // 0x170
     SBGeoPoint2D m_174; // 0x174
     RHActorPointList m_17c; // 0x17c
-    undefined m_194[0x10]; // 0x194
+    undefined m_194[8]; // 0x194
+    SBGeoPoint2D m_19c; // 0x19c
     char m_1a4; // 0x1a4
     char m_1a5; // 0x1a5
     undefined m_1a6[2]; // 0x1a6

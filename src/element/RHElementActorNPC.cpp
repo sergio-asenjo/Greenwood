@@ -969,13 +969,13 @@ public:
 class RHNPCAIReactionCalls
 {
 public:
-    virtual void V00() = 0;
+    virtual void V00(int value) = 0;
     virtual void V04() = 0;
     virtual void V08() = 0;
     virtual void V0c() = 0;
     virtual void V10() = 0;
     virtual void V14() = 0;
-    virtual void V18() = 0;
+    virtual void V18(int value) = 0;
     virtual void V1c() = 0;
     virtual void V20() = 0;
     virtual void V24() = 0;
@@ -1052,6 +1052,92 @@ void RHElementActorNPC::FUN_0048d990(unsigned short amount, void *source, bool f
         ((RHMalignityActorCalls *)this)->FUN_0048e580();
         RHNPC_AI(RHScriptBatchCalls)->Unk0040d980(15);
         RHNPC_FIELD(bool, 0x4ee) = source && (*(unsigned *)((char *)source + 4) & 15) == 12;
+    }
+}
+
+#include "RHUnk0046bd20.h"
+#include "RHArtificialBonhomie.h"
+#include "RHArtificialIntelligenceCore.h"
+
+// STUB: GAME 0x0048a980
+void RHSoldierNPCCalls::FUN_0048a980()
+{
+    if (!((RHElementActorHuman *)this)->FUN_00471b00())
+        return;
+    if (RHNPC_FIELD(bool, 0x4ee) && !*((char *)g_pEngine + 0x4d84))
+    {
+        RHNPC_FIELD(bool, 0x4ee) = false;
+        ((RHElementActorNPC *)this)->FUN_0048c4d0();
+    }
+    if (!*((char *)g_pEngine + 0x4d84))
+    {
+        RHNPC_AI(RHNPCAIReactionCalls)->V1c();
+        ((RHElementActorNPC *)this)->FUN_0048a830();
+    }
+    if (!*((char *)RHNPC_AI(char) + 0x175))
+    {
+        if (((RHElementActor *)this)->FUN_0046d710())
+        {
+            RHNPC_AI(RHNPCAIReactionCalls)->V3c(2);
+            goto awake;
+        }
+    }
+    if (*((char *)RHNPC_AI(char) + 0x175) && !((RHElementActor *)this)->FUN_0046d710())
+        *((char *)RHNPC_AI(char) + 0x174) &= ~2;
+awake:
+    *((char *)RHNPC_AI(char) + 0x175) = ((RHElementActor *)this)->FUN_0046d710();
+    if (*(int *)(RHNPC_FIELD(char *, 0x50) + 0x8c) == 4)
+    {
+        if (((RHUnk0046bd20 *)this)->FUN_0046bd20() == 0xa1 ||
+            ((RHUnk0046bd20 *)this)->FUN_0046bd20() == 0x17)
+        {
+            if (!*((char *)RHNPC_AI(char) + 0x1c4) &&
+                (*(unsigned int *)(*(char **)(RHNPC_FIELD(char *, 0x50) + 0xe0) + 0x30) & 0x2000) == 0)
+            {
+                if (++RHNPC_FIELD(unsigned short, 0x4f8) > 0x19)
+                    RHNPC_AI(RHNPCAIReactionCalls)->V00(0);
+            }
+        }
+    }
+    RHNPC_FIELD(unsigned short, 0x4f8) = 0;
+    unsigned char delta = (unsigned char)*g_unk0x006c08a4 - RHNPC_FIELD(unsigned char, 0x4ec) - 100;
+    if ((RHNPC_FIELD(unsigned int, 0x4) & 0x1f) == 4)
+        ((RHBonhomieSpeechReceiver *)((char *)this + 0x6e8))->FUN_0040dbe0((bool)delta);
+    RHArtificialIntelligence *intelligence = RHNPC_AI(RHArtificialIntelligence);
+    if (!((unsigned char)intelligence->m_174[0] > 0) && !intelligence->m_1c4[0] &&
+        !*((char *)g_pEngine + 0x4d84))
+    {
+        if (!((RHNPCActorCalls *)this)->V48() && (delta & 0xf) == 0)
+            RHNPC_AI(RHNPCAIReactionCalls)->V18(delta);
+        if (intelligence->m_54[0x44])
+        {
+            if (*(unsigned int *)&intelligence->m_54[0x50] <= *g_unk0x006c08a4)
+            {
+                intelligence->m_54[0x44] = 0;
+                if (*(int *)&intelligence->m_08[0xc] == 0xf)
+                    intelligence->Unk00410010(false);
+            }
+        }
+        if (intelligence->m_254[0x14])
+        {
+            if (*(unsigned int *)&intelligence->m_254[0x10] <= *g_unk0x006c08a4)
+                RHNPC_AI(RHScriptBatchCalls)->Unk00419fb0(0);
+        }
+        while (!intelligence->m_178.empty())
+        {
+            if ((unsigned char)intelligence->m_174[0] > 0 || intelligence->m_1c4[0])
+                break;
+            RHStimulus stimulus = intelligence->m_178.front();
+            intelligence->m_178.pop_front();
+            intelligence->m_178.dirty = true;
+            intelligence->V24((RHMalignityStimulus *)&stimulus);
+        }
+    }
+    else
+    {
+        ++*(unsigned int *)&intelligence->m_54[0x48];
+        ++*(unsigned int *)&intelligence->m_54[0x50];
+        ++*(unsigned int *)&intelligence->m_254[0x10];
     }
 }
 

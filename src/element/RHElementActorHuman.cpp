@@ -31,6 +31,61 @@ extern char g_unk0x6c0691;
 extern bool g_unk0x006c0754;
 extern bool g_unk0x006c0788;
 
+// FUNCTION: GAME 0x0049b6a0
+bool RHElementActorHuman::FUN_0049b6a0()
+{
+    RHElementActorHuman *self = this;
+    unsigned count = self->m_260.count;
+    SBGeoPoint2D point;
+    SBGeoVector2D forward;
+    SBGeoVector2D normal;
+    SBGeoVector2D offset;
+
+    if ((unsigned short)count < 2)
+        return false;
+
+    float positive = 70.0f;
+    float negative = 70.0f;
+
+    point = RHActorField<SBGeoPoint2D>(RHActorField<void *>(self, 0x50), 0x24);
+    forward = RHActorField<SBGeoPoint2D>(RHActorField<void *>(self, 0x50), 0x24).Unk005fc110(
+        RHActorField<SBGeoPoint2D>(RHActorField<void *>(self, 0x50), 0x40));
+    forward.m_y *= 1.7434468f;
+    ((RHUnk005fc3b0 *)&forward)->FUN_005fc7c0(1.0f);
+    normal = ((RHUnk005fc3b0 *)&forward)->FUN_005fc8f0(true, 1.0f);
+
+    if ((unsigned short)count > 0)
+    {
+        RHHumanList &opponents = self->m_260;
+        unsigned remaining = count & 0xffff;
+        int index = 0;
+        do
+        {
+            ((RHTitbitList *)&opponents)->At(index);
+            offset = RHActorField<SBGeoPoint2D>(
+                RHActorField<void *>(opponents.cursor->data, 0x50), 0x24).Unk005fc110(point);
+            offset.m_y *= 1.7434468f;
+            float ahead = offset.FUN_005fc660(forward);
+            if (ahead >= 5.0f && ahead <= 30.0f)
+            {
+                float side = offset.FUN_005fc660(normal);
+                if (side >= 0.0f)
+                {
+                    if (side < positive)
+                        positive = side;
+                }
+                else if (-side < negative)
+                {
+                    negative = -side;
+                }
+            }
+            ++index;
+        } while (--remaining != 0);
+    }
+    return negative + positive < 70.0f;
+}
+
+
 // FUNCTION: GAME 0x0047a450
 bool RHElementActorHuman::FUN_0047a450(RHElementActorHuman *other)
 {
@@ -536,7 +591,23 @@ bool RHElementActorHuman::FUN_00475750(unsigned flags, RHActorTranslationSequenc
 
 #include "RHSoldierHumanCalls.h"
 
-// STUB: GAME 0x00475970
+static inline bool RHHumanStandingTransition(RHElementActorHuman *actor, unsigned char flags, RHSoldierTransition *element)
+{
+    if ((flags & 1) && !(flags & 0x10))
+    {
+        ((RHHumanVirtualCalls *)actor)->V078(element, 0x21);
+        if (!(flags & 8))
+        {
+            ((RHHumanVirtualCalls *)actor)->V078(element, 0x20);
+            element->m_40 = 0;
+            return true;
+        }
+        element->m_40 = 4;
+    }
+    return true;
+}
+
+// FUNCTION: GAME 0x00475970
 bool RHElementActorHuman::FUN_00475970(unsigned flags, void *value)
 {
     RHSoldierTransition *element = (RHSoldierTransition *)value;
@@ -550,20 +621,7 @@ bool RHElementActorHuman::FUN_00475970(unsigned flags, void *value)
         }
         break;
     case 5:
-    {
-        if ((flags & 1) && !(flags & 0x10))
-        {
-            ((RHHumanVirtualCalls *)this)->V078(element, 0x21);
-            if (!(flags & 8))
-            {
-                ((RHHumanVirtualCalls *)this)->V078(element, 0x20);
-                element->m_40 = 0;
-                return true;
-            }
-            element->m_40 = 4;
-        }
-        return true;
-    }
+        return RHHumanStandingTransition(this, (unsigned char)flags, element);
     case 7: case 8: case 9:
         if (!(flags & 1) || (flags & 0x20))
             break;
@@ -879,8 +937,22 @@ void RHElementActor::FUN_00478960(RHUnk00613e90 &point)
     }
 }
 
-// Residual: VC6 places the unscaled direction arm after the shared return tail.
-// STUB: GAME 0x00478c20
+static inline void RHHumanPostureOffset(RHUnk00613e90 &point, void *info)
+{
+    short direction = RHActorField<short>(info, 0xd8);
+    if (RHActorField<unsigned char>(info, 0xc0))
+    {
+        point.x += g_unk0x006ae494[direction] * 0.5f;
+        point.y += g_unk0x006ae4d4[direction] * 0.5f;
+        point.z += 5.0f;
+        return;
+    }
+    point.x += g_unk0x006ae494[direction];
+    point.y += g_unk0x006ae4d4[direction];
+    point.z += 5.0f;
+}
+
+// FUNCTION: GAME 0x00478c20
 void RHElementActor::FUN_00478c20(RHUnk00613e90 &point, int posture)
 {
     point = RHActorField<RHUnk00613e90>(RHActorField<void *>(this, 0x50), 0x10);
@@ -905,19 +977,7 @@ void RHElementActor::FUN_00478c20(RHUnk00613e90 &point, int posture)
         return;
     case 3: case 12: case 13: case 17: case 18:
     {
-        void *info = RHActorField<void *>(this, 0x50);
-        short direction = RHActorField<short>(info, 0xd8);
-        if (!RHActorField<unsigned char>(info, 0xc0))
-        {
-            point.x += g_unk0x006ae494[direction];
-            point.y += g_unk0x006ae4d4[direction];
-        }
-        else
-        {
-            point.x += g_unk0x006ae494[direction] * 0.5f;
-            point.y += g_unk0x006ae4d4[direction] * 0.5f;
-        }
-        point.z += 5.0f;
+        RHHumanPostureOffset(point, RHActorField<void *>(this, 0x50));
         return;
     }
     case 19:
@@ -2056,7 +2116,7 @@ void RHElementActorHuman::Translate(RHSequenceElement *element, RHcommand comman
     order->m_24 = orderCode;
     order->m_2a = 0;
     if (target)
-        order->m_30 = RHActorField<void *>(element, 0x64);
+        order->m_30 = RHActorField<RHElement *>(element, 0x64);
     sequence->FUN_00585970(order);
 }
 
@@ -3583,7 +3643,7 @@ void RHElementActorHuman::FUN_00483c90(RHActorTranslationSequenceCalls *sequence
     RHOrder *order = new RHOrder;
     order->m_24 = FUN_004838f0(((RHSequenceElementDamage *)sequence)->FUN_005864e0());
     order->m_2a = 0;
-    order->m_30 = (void *)((RHUnk005864a0 *)sequence)->FUN_005864a0();
+    order->m_30 = (RHElement *)((RHUnk005864a0 *)sequence)->FUN_005864a0();
     sequence->FUN_00585970(order);
     ((RHHumanVirtualCalls *)this)->V154(sequence);
 }
@@ -3645,21 +3705,21 @@ void RHElementActorHuman::FUN_00483d90(RHActorTranslationSequenceCalls *sequence
     RHOrder *order = new RHOrder;
     order->m_24 = first;
     order->m_2a = 0;
-    order->m_30 = (void *)((RHUnk005864a0 *)sequence)->FUN_005864a0();
+    order->m_30 = (RHElement *)((RHUnk005864a0 *)sequence)->FUN_005864a0();
     sequence->FUN_00585970(order);
     if (!((RHHumanVirtualCalls *)this)->V048() && !RHActorField<char>(this, 0x1ce) && (flags & 2))
     {
         order = new RHOrder;
         order->m_24 = second;
         order->m_2a = 0;
-        order->m_30 = (void *)((RHUnk005864a0 *)sequence)->FUN_005864a0();
+        order->m_30 = (RHElement *)((RHUnk005864a0 *)sequence)->FUN_005864a0();
         sequence->FUN_00585970(order);
         if (third != 0x11b && RHActorField<unsigned short>(this, 0x1c8) > 40)
         {
             order = new RHOrder;
             order->m_24 = third;
             order->m_2a = 0;
-            order->m_30 = (void *)((RHUnk005864a0 *)sequence)->FUN_005864a0();
+            order->m_30 = (RHElement *)((RHUnk005864a0 *)sequence)->FUN_005864a0();
             sequence->FUN_00585970(order);
         }
     }

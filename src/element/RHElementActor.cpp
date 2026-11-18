@@ -1,10 +1,13 @@
 #include "RHElementActor_calls.h"
 #include "RHElementActor.h"
+#include "RHElementGrid.h"
 #include "RHSectorActorList.h"
 #include "VMCore.h"
 #include "RHPathFinderCore.h"
 #include "RHSectorBuilding.h"
 #include "RHUnk005fc3b0.h"
+#include "RHScriptCore.h"
+#include "SBSimpleVirtualMachineCore.h"
 
 class RHActorActionCalls
 {
@@ -94,17 +97,7 @@ public:
     int m_index;
 };
 
-struct RHUnk004b1520List
-{
-    char m_00[4];
-    RHScriptNode *m_04;
-    int m_08;
-    RHScriptIter m_0c;
-    bool m_10;
-    int m_14;
-    RHScriptIter end() { return RHScriptIter(m_04); }
-    RHScriptIter FUN_00424410(RHScriptIter position, void *const &value);
-};
+#include "RHUnk004b1520List.h"
 
 class RHActorValueList
 {
@@ -425,14 +418,14 @@ bool RHElementActor::Serialize(SBFile &file)
     if (file.m_bLoading && !m_1a5 && m_1a8.m_8 != 0 && g_unk0x6c0691 == 1)
     {
         m_1a5 = 1;
-        RHUnkSectorScript *script = (RHUnkSectorScript *)m_0;
+        RHUnkSectorScript *script = (RHUnkSectorScript *)((char *)this + 0xa8);
         if (!script->Unk00639a30((std::string &)m_1a8))
             SBAssert(1, "P:\\Robin Hood\\RHelementactor.cpp", 239,
                      "ICH GLAUB' DEIN SCHWEIN PFEIFT : Structural error in RHM, an Actor has got a script reference that does not exist !");
-        m_108.m_0 = (RHActorScriptBase *)this;
+        m_108.m_0 = (SBSimpleVirtualMachine *)this;
     }
-    if (m_0[0x58])
-        ((VMCore *)m_0)->SerializeMemberVariable(file);
+    if (((char *)this)[0xa8 + 0x58])
+        ((VMCore *)((char *)this + 0xa8))->SerializeMemberVariable(file);
     RHSerializeName(file, "RHElementActor");
     return RHElement::Serialize(file);
 }
@@ -453,8 +446,41 @@ void RHElementActor::FUN_00463240(unsigned first, unsigned second, unsigned thir
 // ?FUN_00463250@RHElementActor@@QAEXI@Z
 void RHElementActor::FUN_00463250(unsigned value) {}
 
+class RHShadowPointListBase
+{
+public:
+    RHScriptIter FUN_0044e850(RHScriptIter, RHScriptIter);
+};
+
+inline void RHClearActorPoints(RHActorPointList &points)
+{
+    ((RHShadowPointListBase *)&points)->FUN_0044e850(((RHUnk0046eb30 *)&points)->FUN_0046eb80(),
+                                                     RHScriptIter((RHScriptNode *)points.head));
+    points.dirty = 1;
+}
+
 // FUNCTION: GAME 0x00463260
 void RHElementActor::FUN_00463260(unsigned first, unsigned second, unsigned third, unsigned fourth) {}
+
+// SYNTHETIC: GAME 0x00463270
+// ??_GRHElementActor@@UAEPAXI@Z
+
+// STUB: GAME 0x00463290
+RHElementActor::~RHElementActor()
+{
+    if (m_1a8.m_4)
+    {
+        unsigned char *reference = (unsigned char *)m_1a8.m_4 - 1;
+        if (*reference != 0 && *reference != 0xff)
+            --*reference;
+        else
+            operator delete(reference);
+    }
+    m_1a8.m_4 = 0;
+    m_1a8.m_8 = 0;
+    m_1a8.m_c = 0;
+    m_17c.Clear();
+}
 
 // FUNCTION: GAME 0x00463d90
 int RHElementActor::FUN_00463d90(unsigned value) const { return 0; }
@@ -481,7 +507,7 @@ float RHElementActor::FUN_00464150()
     if (point.FUN_005fc0e0(m_128))
     {
         m_128 = point;
-        RHUnk0060c2c0 *distance = (RHUnk0060c2c0 *)((char *)m_120 + 4);
+        RHUnkSectorPoints *distance = (RHUnkSectorPoints *)((char *)m_120 + 4);
         RHActorField<float>(this, 0x124) = distance->FUN_0060cab0(point, 1.7434468f);
     }
     float result = RHActorField<float>(this, 0x124);
@@ -846,7 +872,7 @@ void RHElementActor::ExecuteImmediately(RHSequenceElement *element)
         element->FUN_00585970(0, true);
         break;
     case 15:
-        if (m_0[0x58])
+        if (((char *)this)[0xa8 + 0x58])
         {
             RHElementActor *saved = g_unk0x6c100c;
             g_unk0x6c100c = this;
@@ -1709,12 +1735,6 @@ void RHElementActor::FUN_0046bb80()
     }
 }
 
-class RHShadowPointListBase
-{
-public:
-    RHScriptIter FUN_0044e850(RHScriptIter, RHScriptIter);
-};
-
 inline void *RHFirstSequenceOrder(RHSequenceElement *element)
 {
     if (RHActorField<int>(element, 0x20) > 0)
@@ -1724,13 +1744,6 @@ inline void *RHFirstSequenceOrder(RHSequenceElement *element)
         return orders.CurrentValue();
     }
     return 0;
-}
-
-inline void RHClearActorPoints(RHActorPointList &points)
-{
-    ((RHShadowPointListBase *)&points)->FUN_0044e850(((RHUnk0046eb30 *)&points)->FUN_0046eb80(),
-                                                     RHScriptIter((RHScriptNode *)points.head));
-    points.dirty = 1;
 }
 
 // Parked: info+4 position accesses fold into single displacements; the original keeps the add.
@@ -2443,14 +2456,14 @@ void RHElementActor::InitializeScript(std::string &name)
     {
         m_1a5 = 1;
         m_1a8.Assign((const RHActorString &)name);
-        RHUnkSectorScript *script = (RHUnkSectorScript *)m_0;
+        RHUnkSectorScript *script = (RHUnkSectorScript *)((char *)this + 0xa8);
         if (!script->Unk00639a30(name))
             SBAssert(1,
                      // STRING: GAME 0x006ae188
                      "P:\\Robin Hood\\RHelementactor.cpp", 7964,
                      // STRING: GAME 0x006ae1ac
                      "ICH GLAUB' DEIN SCHWEIN PFEIFT : Structural error in RHM, an Actor has got a script reference that does not exist !");
-        m_108.m_0 = (RHActorScriptBase *)this;
+        m_108.m_0 = (SBSimpleVirtualMachine *)this;
     }
     m_108.FUN_004030a0();
 }
@@ -2565,7 +2578,7 @@ unsigned short RHActorGridCalls::FUN_004e9800(const SBGeoPoint2D &point, void *&
 {
     for (short index = RHActorField<unsigned short>(this, 0x3e9c) - 1; index >= 0; --index)
     {
-        short result = FUN_004e8fc0(point, SBGeoPoint2D(), index, area);
+        short result = ((RHElementGrid *)this)->FUN_004e8fc0(point, SBGeoPoint2D(), index, area);
         if (result >= 0)
         {
             if (((RHActorField<unsigned>(area, 0x30) >> 1) & 1) &&
@@ -2642,7 +2655,7 @@ void RHActorTranslationSequenceCalls::FUN_00585970(RHOrder *order)
         unsigned count = RHActorField<unsigned>(this, 0x20);
         RHActorField<undefined>(this, 0x28) = 1;
         RHActorField<unsigned>(this, 0x20) = count + 1;
-        order->m_38 = this;
+        order->m_38 = (RHSequenceElement *)this;
     }
 }
 
@@ -2876,7 +2889,7 @@ void RHElementActor::FUN_0046bbf0()
 // STUB: GAME 0x0046ea20
 void RHElementActor::FUN_0046ea20()
 {
-    RHUnkSectorGlobal *grid = g_unk0x6c0a9c;
+    RHFastFindGrid *grid = g_unk0x6c0a9c;
     void **&first = RHActorField<void **>(grid, 0x4064);
     unsigned short count;
     if (!first)

@@ -44,6 +44,7 @@ public:
     int FUN_004a56d0(RHSoldierSequenceElement *element);
     void FUN_004a5770(RHSoldierSequenceElement *element);
     void SetAppleSmell(bool enabled);
+    void FUN_004a5890();
     void FUN_004a5a00(void *first, void *second);
     void FUN_004a5a50();
     void FUN_004a5b70(void *actor);

@@ -98,7 +98,6 @@ SBGeoBoundingBox2D SBGeoBoundingBox2D::FUN_006090d0(const SBGeoVector2D &offset)
 {
     return SBGeoBoundingBox2D(m_p0.Unk005fc190(offset), m_p1.Unk005fc190(offset));
 }
-short RHActorGridCalls::FUN_004e8fc0(const SBGeoPoint2D &, const SBGeoPoint2D &, short, void *&) { return -1; }
 bool RHActorGridCalls::FUN_004f5e50(SBGeoPoint2D &, const SBGeoPoint2D &, int) { return false; }
 void RHElementActor::FUN_0046bcb0(int) {}
 
@@ -132,7 +131,71 @@ SBGeoVector2D RHBonusInfoBase::FUN_00468f10(int value) const
     return *point;
 }
 
+// STUB: GAME 0x005855a0
 RHOrder *RHActorSequenceCursor::FUN_005855a0()
 {
-    return 0;
+    if (m_list.empty())
+        return 0;
+
+    RHOrder *order = *m_list.begin();
+    if (order)
+        delete order;
+
+    m_list.erase(m_list.begin());
+    m_dirty = true;
+    int size = m_list.size();
+    if (size <= 0)
+        return 0;
+
+    if (m_dirty)
+    {
+        if (0 <= (size + 1) / 2)
+        {
+            m_cursor = m_list.begin();
+            std::bidirectional_iterator_tag category;
+            FUN_005c9010((RHUnk005c9010Iterator &)m_cursor, 0, category);
+        }
+        else
+        {
+            m_cursor = m_list.end();
+            std::bidirectional_iterator_tag category;
+            FUN_005c9010((RHUnk005c9010Iterator &)m_cursor, -size, category);
+        }
+        m_dirty = false;
+        m_index = 0;
+    }
+    else
+    {
+        int previous = m_index;
+        if (previous != 0)
+        {
+            if (previous > 0)
+            {
+                if (0 < (previous + 1) / 2)
+                {
+                    m_cursor = m_list.begin();
+                    std::bidirectional_iterator_tag category;
+                    FUN_005c9010((RHUnk005c9010Iterator &)m_cursor, 0, category);
+                }
+                else
+                {
+                    std::bidirectional_iterator_tag category;
+                    FUN_005c9010((RHUnk005c9010Iterator &)m_cursor, -previous, category);
+                }
+            }
+            else if (0 < (size + previous) / 2)
+            {
+                std::bidirectional_iterator_tag category;
+                FUN_005c9010((RHUnk005c9010Iterator &)m_cursor, -previous, category);
+            }
+            else
+            {
+                m_cursor = m_list.end();
+                std::bidirectional_iterator_tag category;
+                FUN_005c9010((RHUnk005c9010Iterator &)m_cursor, -size, category);
+            }
+            m_index = 0;
+        }
+    }
+    return *m_cursor;
 }

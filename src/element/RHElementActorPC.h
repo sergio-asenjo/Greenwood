@@ -111,7 +111,7 @@ public:
     char FUN_004a05f0(const RHElementActorPC *other);
     void FUN_004a0670();
     void FUN_004a06e0(unsigned char value);
-    void FUN_004a07f0(unsigned first, unsigned second, unsigned third);
+    void FUN_004a07f0(const SBGeoBoundingBox2D &box, float zoom, unsigned long flags, int unused);
     bool FUN_004a0a30(RHUnk00613e90 &position);
     void FUN_004a0c90(int first, int second, bool third);
     void FUN_004a0cc0(RHElementActorPC *other);

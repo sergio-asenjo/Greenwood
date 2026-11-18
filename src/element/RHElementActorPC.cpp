@@ -777,7 +777,7 @@ void RHElementActorPC::FUN_004913f0(const SBGeoBoundingBox2D &view, float scale)
         SBGeoBoundingBox2D source;
         SBGeoBoundingBox2D destination;
         RHActorPCField<SBDrawManager *>(this, 0x60)->FUN_005e61e0(RHActorPCField<unsigned long>(this, 0x58), 0,
-            RHActorPCField<SBDrawUnk005e5ec0 *>(this, 0x60)->FUN_005e5f60(RHActorPCField<unsigned long>(this, 0x58)), 0);
+            RHActorPCField<SBDrawManager *>(this, 0x60)->FUN_005e5f60(RHActorPCField<unsigned long>(this, 0x58)), 0);
         RHActorPCField<RHSprite *>(this, 0x50)->FUN_005bb850(RHActorPCField<unsigned long>(this, 0x58),
             RHActorPCField<unsigned short>(this, 0x94 + m_a0 * 2), m_a4, shift, 1);
         if (RHActorPCField<RHSprite *>(this, 0x50)->FUN_005ba6c0(view, scale, source, destination, shift))
@@ -808,7 +808,7 @@ unsigned short RHElementActorPC::FUN_00493b40(void *target, const SBGeoPoint2D &
 #include "RHMissionStatCore.h"
 #include "RHCampaignValueCalls.h"
 
-// STUB: GAME 0x00493c10
+// FUNCTION: GAME 0x00493c10
 void RHElementActorPC::FUN_00493c10(void *element)
 {
     RHUnk00452030 *campaign = g_unk0x6c07fc;
@@ -822,9 +822,7 @@ void RHElementActorPC::FUN_00493c10(void *element)
     {
         if (((RHEngineReinforcementCalls *)campaign)->FUN_00452130(m_5fc))
             ((RHWidgetPortrait *)RHActorPCField<void *>(this, 0x4ec))->FUN_005d9070();
-        int &counter = RHActorPCField<int>(((RHScriptBatchCalls *)g_pEngine)->Unk004e3cc0(), 0x1c);
-        int previous = *(volatile int *)&counter;
-        counter = previous + 1;
+        ((int *)((char *)((RHScriptBatchCalls *)g_pEngine)->Unk004e3cc0() + 0x1c))[0]++;
     }
     ((RHMissionStat *)((RHScriptBatchCalls *)g_pEngine)->Unk004e3cc0())->FUN_0054d150(m_5f8);
     messenger->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(3, this, 0));
@@ -1910,12 +1908,7 @@ void RHElementActorPC::FUN_0049ece0(const void *target)
     ((RHActorPCVTableCalls *)this)->FUN_56(0xb, 1, 1);
 }
 
-class RHUnk004ba8d0
-{
-public:
-    RHUnk004ba8d0(void *victim);
-    char m_data[0x15c];
-};
+#include "RHUnk004ba8d0.h"
 
 // FUNCTION: GAME 0x0049eeb0
 void RHElementActorPC::FUN_0049eeb0(const void *target)
@@ -1942,7 +1935,7 @@ void RHElementActorPC::FUN_0049eeb0(const void *target)
     position.layer = RHActorPCField<unsigned short>(sprite, 0xde);
     position.area = RHActorPCField<void *>(sprite, 0xe0);
     RHActorPCField<RHMalignityPosition>(projectile, 0x118) = position;
-    g_pEngine->AddElement((RHElement *)projectile, false, true);
+    g_pEngine->AddElement(projectile, false, true);
     ((RHActorPCVTableCalls *)this)->FUN_56(5, 1, 1);
 }
 
@@ -2504,10 +2497,42 @@ void RHElementActorPC::FUN_004a06e0(unsigned char value)
     }
 }
 
-// Parked: complex EH-managed geometry setup and virtual dispatch depend on unassigned helper entities.
+#include "RHviewParameters.h"
+#include "RHUnk005fc3b0.h"
+#include "RHShadowPolygon.h"
+
 // STUB: GAME 0x004a07f0
-void RHElementActorPC::FUN_004a07f0(unsigned, unsigned, unsigned)
+void RHElementActorPC::FUN_004a07f0(
+    const SBGeoBoundingBox2D &box, float zoom, unsigned long flags, int unused)
 {
+    RHviewParameters view;
+    unsigned short direction = RHActorPCField<unsigned short>(m_50, 0xd8);
+    view.m_0a = 0xc0;
+    view.m_78 = RHActorPCField<unsigned short>(g_pEngine, 0x4cc0);
+    ((RHUnk005fc3b0 *)&view.m_48)->Unk005fcd40(direction, 1.0f);
+    view.m_20 = 0.5f;
+    view.m_24 = 0.5f;
+    view.m_00 = 0;
+    SBGeoVector2D unusedVector;
+    RHUnk00613e90 point;
+    if (((RHActorPCVTableCalls *)this)->FUN_0049e720())
+        return;
+    if (RHActorPCField<char>(this, 0x12))
+    {
+        void *area = RHActorPCField<void *>(m_50, 0xe0);
+        unsigned areaFlags = area != 0 ? RHActorPCField<unsigned>(area, 0x30) : 0;
+        if (area == 0 || !((areaFlags >> 13) & 1))
+        {
+            RHShadowPolygon *polygon = RHActorPCField<RHShadowPolygon *>(g_pEngine, 0x43f4);
+            ((RHElementActor *)this)->FUN_00478c20(point, 0);
+            if (point.z >= 0.0f)
+            {
+                polygon->DisplayDebug(box, zoom, (RHElementActor *)this, point, view, flags);
+                if (RHActorPCField<char>(g_pEngine, 0x4b3c))
+                    polygon->FUN_0058ea70();
+            }
+        }
+    }
 }
 
 

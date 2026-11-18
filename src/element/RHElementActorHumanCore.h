@@ -108,6 +108,7 @@ public:
     int FUN_00485e00();
     void FUN_00485e90(int value);
     void FUN_00485f20();
+    bool FUN_0049b6a0();
     void Emit(SBFile &file, RHSequenceElement *element, RHcommand command);
 
     char m_000[4];

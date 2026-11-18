@@ -17,8 +17,8 @@ class RHUnk00613e90;
 #include "RHElementActorHumanBase.h"
 #include "RHEngine.h"
 extern RHEngine *g_pEngine;
-struct RHUnkSectorGlobal;
-extern RHUnkSectorGlobal *g_unk0x6c0a9c;
+class RHFastFindGrid;
+extern RHFastFindGrid *g_unk0x6c0a9c;
 #include "RHPathGeometryCalls.h"
 class RHFastFindGrid
 {

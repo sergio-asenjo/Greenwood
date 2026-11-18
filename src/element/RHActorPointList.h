@@ -22,6 +22,24 @@ struct RHActorPointIterator
 class RHActorPointList
 {
 public:
+    void Clear()
+    {
+        while (count != 0)
+        {
+            RHActorPointNode *node = head->next;
+            node->previous->next = node->next;
+            node->next->previous = node->previous;
+            node->point.~SBGeoPoint2D();
+            operator delete(node);
+            --count;
+        }
+    }
+    ~RHActorPointList()
+    {
+        Clear();
+        operator delete(head);
+        head = 0;
+    }
     int m_0;
     RHActorPointNode *head;
     int count;

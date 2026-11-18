@@ -58,9 +58,9 @@ public:
     bool Serialize(SBFile &file, bool loading);
 };
 #include "RHSequenceConstructionCalls.h"
-struct RHUnkSectorGlobal;
+class RHFastFindGrid;
 extern RHEngine *g_pEngine;
-extern RHUnkSectorGlobal *g_unk0x6c0a9c;
+extern RHFastFindGrid *g_unk0x6c0a9c;
 void RHSerializeName(SBFile &file, const char *name);
 bool FUN_005e0c90(SBFile &file, std::string &value);
 
@@ -174,6 +174,11 @@ enum RHActorUnkType { RHActorUnkType12 = 12 };
 
 extern char g_unk0x6c0691;
 
+#include <list>
+
+struct RHUnk005c9010Iterator;
+void FUN_005c9010(RHUnk005c9010Iterator &, int, std::bidirectional_iterator_tag);
+
 class RHActorSequenceCursor
 {
 public:
@@ -182,6 +187,12 @@ public:
     virtual void V04();
     virtual void V08();
     virtual void V0c(int first, int second);
+    char m_04[0x14];
+    std::list<RHOrder *> m_list;
+    std::list<RHOrder *>::iterator m_cursor;
+    bool m_dirty;
+    char m_pad29[0x03];
+    int m_index;
 };
 
 #endif

@@ -96,7 +96,7 @@ public:
 
 #include "RHPathGeometryCalls.h"
 
-struct RHUnkSectorGlobal;
+class RHFastFindGrid;
 
 // SIZE 0x4738
 class RHEngine
@@ -157,6 +157,6 @@ public:
 };
 
 extern RHEngine *g_pEngine;
-extern RHUnkSectorGlobal *g_unk0x6c0a9c;
+extern RHFastFindGrid *g_unk0x6c0a9c;
 
 #endif

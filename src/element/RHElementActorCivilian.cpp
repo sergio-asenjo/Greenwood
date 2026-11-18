@@ -50,7 +50,7 @@ DECOMP_STATIC_ASSERT(offsetof(RHElementActorNPC, m_a4) == 0xa4)
 DECOMP_STATIC_ASSERT(offsetof(RHElementActorNPC, m_149) == 0x149)
 DECOMP_SIZE_ASSERT(RHCivilianProfileView, 0x34)
 DECOMP_SIZE_ASSERT(RHCivilianSpriteView, 0x19e)
-DECOMP_SIZE_ASSERT(RHUnk005ef320, 0x10e)
+DECOMP_SIZE_ASSERT(SBDrawManager, 0x150)
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 DECOMP_SIZE_ASSERT(SBGeoVector2D, 0x08)
 DECOMP_SIZE_ASSERT(SBGeoBoundingBox2D, 0x14)
@@ -120,12 +120,7 @@ bool FUN_00470350(const std::vector<unsigned short> &values)
     return count != 0;
 }
 
-class RHSprite
-{
-public:
-    int PerformAction(RHOrder *order, int animation, int progression, bool reset);
-    bool FUN_005b9e30(void *first, void *second, bool third);
-};
+#include "RHSpriteCore.h"
 
 // FUNCTION: GAME 0x00470390
 int RHElementActorCivilian::FUN_00470390(RHOrder *order)
@@ -202,7 +197,7 @@ void RHElementActorCivilian::FUN_00470480(SBFile &file)
         FUN_00470a10(file);
 
     void *&info = RHCivilianField<void *>(this, 0x50);
-    ((RHUnkTargetSprite *)info)->FUN_005bd050(
+    ((RHSprite *)info)->FUN_005bd050(
         !RHCivilianField<char>(g_pEngine, 0x4aa8),
         *(std::string *)m_708, *(std::string *)((char *)m_708 + 0x10), 0);
     void *global = RHCivilianField<void *>(this, 0x64);
@@ -210,11 +205,11 @@ void RHElementActorCivilian::FUN_00470480(SBFile &file)
     ((RHMobileUnk00607da0 *)&RHCivilianField<SBGeoBoundingBox2D>(info, 0x98))->FUN_00607da0((const RHMobileUnk00607da0 &)SBGeoBoundingBox2D(-extent, extent));
     RHCivilianField<unsigned short>(info, 0x94) = 0;
     RHCivilianField<unsigned long>(this, 0x54) =
-        RHCivilianField<RHUnkFXDraw *>(this, 0x60)->Unk005e4ed0(
+        RHCivilianField<SBDrawManager *>(this, 0x60)->Unk005e4ed0(
             ((RHCivilianSpriteView *)info)->FUN_005bdef0(),
             ((RHCivilianSpriteView *)info)->FUN_005bdf20(), 0, 0);
     RHCivilianField<unsigned long>(this, 0x58) =
-        RHCivilianField<RHUnkFXDraw *>(this, 0x60)->Unk005e4ed0(
+        RHCivilianField<SBDrawManager *>(this, 0x60)->Unk005e4ed0(
             ((RHCivilianSpriteView *)info)->FUN_005bdef0() + 6,
             ((RHCivilianSpriteView *)info)->FUN_005bdf20(), 0, 0);
     {
@@ -326,9 +321,21 @@ extern RHUnk00452030 *g_unk0x6c07fc;
 
 RHMessenger *RHUnk00546050();
 
-// Parked: the target loads/stores the case-0xf bool at its use site; VC6 hoists that
-// load/store above the messenger-state gate and tests it in CL instead of AL.
-// STUB: GAME 0x00470d00
+static inline bool RHCivilianFocusedSprite(RHElementActorCivilian *actor, const SBGeoPoint2D &point, unsigned char state)
+{
+    if (state)
+    {
+        if (RHCivilianField<char>(actor, 8))
+        {
+            bool dead = RHCivilianField<bool>(actor, 8);
+            return RHCivilianField<RHSprite *>(actor, 0x50)->FUN_005b9e30(
+                (void *)&point, RHCivilianField<void *>(actor, 0x54), dead);
+        }
+    }
+    return false;
+}
+
+// FUNCTION: GAME 0x00470d00
 bool RHElementActorCivilian::FUN_00470d00(const SBGeoPoint2D &point, RHElementActorHuman *pc, int kind)
 {
     if (!RHCivilianField<char>(this, 0x12))
@@ -359,13 +366,7 @@ bool RHElementActorCivilian::FUN_00470d00(const SBGeoPoint2D &point, RHElementAc
         }
         break;
     case 0xf:
-    {
-        bool dead = RHCivilianField<bool>(this, 8);
-        if (!state || !dead)
-            return false;
-        return RHCivilianField<RHSprite *>(this, 0x50)->FUN_005b9e30(
-            (void *)&point, RHCivilianField<void *>(this, 0x54), dead);
-    }
+        return RHCivilianFocusedSprite(this, point, state);
     }
     return FUN_0048af40(point, pcArg, kind);
 }
@@ -619,9 +620,9 @@ unsigned short RHCivilianSpriteView::FUN_005bdf20()
 }
 
 // FUNCTION: GAME 0x005ef320
-unsigned short RHUnk005ef320::Unk(int red, int green, int blue)
+unsigned short SBDrawManager::Unk(int red, int green, int blue)
 {
-    if (m_10c == 16)
+    if (m_depth == 16)
         return (((((unsigned char)red & 0xf8) << 5) | ((unsigned char)green & 0xfc)) << 3) | ((unsigned)(unsigned char)blue >> 3);
     return (((((unsigned char)red & 0xf8) << 5) | ((unsigned char)green & 0xf8)) << 2) | ((unsigned)(unsigned char)blue >> 3);
 }

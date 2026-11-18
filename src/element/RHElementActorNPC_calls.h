@@ -24,8 +24,8 @@ bool FUN_00416b30(void *&value, SBFile &file);
 
 extern RHEngine *g_pEngine;
 
-struct RHUnkSectorGlobal;
-extern RHUnkSectorGlobal *g_unk0x6c0a9c;
+class RHFastFindGrid;
+extern RHFastFindGrid *g_unk0x6c0a9c;
 
 #include "RHArtificialIntelligenceCore.h"
 
