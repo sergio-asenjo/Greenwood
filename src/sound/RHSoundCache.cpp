@@ -40,7 +40,7 @@ DECOMP_STATIC_ASSERT(offsetof(RHSoundCache, m_108) == 0x108)
 DECOMP_STATIC_ASSERT(offsetof(RHSoundCache, m_134) == 0x134)
 DECOMP_STATIC_ASSERT(offsetof(RHSoundCache, m_135) == 0x135)
 
-// STUB: GAME 0x005ab000
+// FUNCTION: GAME 0x005ab000
 RHSoundCache::RHSoundCache()
 {
     m_134 = false;
