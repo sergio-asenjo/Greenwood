@@ -5,6 +5,7 @@
 #include "RHMenuCancelCalls.h"
 #include "RHMenuSounds.h"
 #include "RHButtonSelection.h"
+#include "RHCopyPointers.h"
 
 DECOMP_SIZE_ASSERT(RHMenuSounds, 0x119c)
 DECOMP_SIZE_ASSERT(RHMenuSoundsSlider, 0xd8)
@@ -65,7 +66,7 @@ RHMenuSounds::RHMenuSounds(void *screen)
 // FUNCTION: GAME 0x00541780
 void *RHMenuSounds::FUN_00541780(unsigned flags)
 {
-    this->~RHMenuSounds();
+    this->RHMenuSounds::~RHMenuSounds();
     if (flags & 1)
         operator delete(this);
     return this;
@@ -114,6 +115,19 @@ static inline void RHSoundsInsert(std::vector<void *> &widgets, void *const &wid
     ((SBArray<RHSaveGame *> *)&widgets)->Insert((RHSaveGame **)widgets.end(), 1, (RHSaveGame *const &)widget);
 }
 
+class RHSoundsWidgetVector : public std::vector<void *>
+{
+public:
+    void Clear()
+    {
+        iterator last = FUN_004598e0(end(), end(), begin());
+        typedef void (RHSoundsWidgetVector::*Destroy)(iterator, iterator);
+        Destroy destroy = &RHSoundsWidgetVector::_Destroy;
+        (this->*destroy)(last, end());
+        _Last = last;
+    }
+};
+
 template<unsigned Offset>
 static __forceinline bool RHSoundsCreateGroup(RHMenuSounds &menu, const std::wstring &name, const RHMapBox &box)
 {
@@ -139,9 +153,9 @@ static __forceinline bool RHSoundsCreateGroup(RHMenuSounds &menu, const std::wst
 // STUB: GAME 0x00541a90
 bool RHMenuSounds::Create()
 {
-    if (((RHMenuWindow *)this)->FUN_00544b40(g_unk0x006c0b50, RHMapBox(0.0f, 0.0f, 640.0f, 480.0f), 0))
+    if (FUN_00544b40(g_unk0x006c0b50, RHMapBox(0.0f, 0.0f, 640.0f, 480.0f), 0))
     {
-        std::vector<void *> widgets;
+        RHSoundsWidgetVector widgets;
         void *normal = m_screen->FUN_0053be80(std::string("Default"));
         void *edit = m_screen->FUN_0053be80(std::string("EditField"));
         void *title = m_screen->FUN_0053be80(std::string("MissionTitle"));
@@ -154,14 +168,14 @@ bool RHMenuSounds::Create()
         RHSoundsInsert(widgets, &m_240);
         ((RHMenuCampaignMap *)this)->V30(&m_140);
         ((RHMenuCampaignMap *)this)->V30(&m_240);
-        RHFocusManager &focus = *(RHFocusManager *)((char *)this + 0xc8);
-        focus.FUN_004ffc70((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_140, true);
+        m_focus.FUN_004ffc70((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_140, true);
+        RHFocusManager &focus = m_focus;
         focus.FUN_004ffc70((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_240, true);
         focus.FUN_004ffce0((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_140, 0x1c);
         focus.FUN_004ffce0((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_140, 0x9c);
         focus.FUN_004ffce0((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_240, 1);
         ((RHMenuWindow *)this)->FUN_00544380(widgets, 2);
-        widgets.erase(widgets.begin(), widgets.end());
+        widgets.Clear();
         RHArtificialIntelligenceSoundCalls *sound = g_unk0x006c1070;
         unsigned label = RHSoundsField<bool>(sound, 0x212) ? 0x34 : 0x35;
         ((RHPortraitUnk005d3880 *)&m_340)->FUN_005d4bb0((int)m_screen, FUN_005e23d0(0x33), SBGeoPoint2D(30.0f, 70.0f), 0xbf);
@@ -173,7 +187,7 @@ bool RHMenuSounds::Create()
         ((RHMenuCampaignMap *)this)->V30(&m_340);
         ((RHMenuCampaignMap *)this)->V30(&m_454);
         ((RHMenuWindow *)this)->FUN_00544800(widgets, 2);
-        widgets.erase(widgets.begin(), widgets.end());
+        widgets.Clear();
         ((RHMapWidget *)&m_454)->V54(RHSoundsField<bool>(sound, 0x211));
         ((RHPortraitUnk005d3880 *)&m_568)->FUN_005d4bb0((int)m_screen, FUN_005e23d0(0x36), SBGeoPoint2D(30.0f, 170.0f), 0xbf);
         ((RHPortraitUnk005d3880 *)&m_67c)->FUN_005d4bb0((int)m_screen, FUN_005e23d0(0x37), SBGeoPoint2D(30.0f, 170.0f), 0xbf);
@@ -184,7 +198,7 @@ bool RHMenuSounds::Create()
         ((RHMenuCampaignMap *)this)->V30(&m_568);
         ((RHMenuCampaignMap *)this)->V30(&m_67c);
         ((RHMenuWindow *)this)->FUN_00544800(widgets, 2);
-        widgets.erase(widgets.begin(), widgets.end());
+        widgets.Clear();
         RHSoundsField<void *>(&m_340, 0xd0) = edit;
         RHSoundsField<void *>(&m_454, 0xd0) = edit;
         RHSoundsField<void *>(&m_568, 0xd0) = edit;

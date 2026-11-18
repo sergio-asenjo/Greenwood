@@ -88,7 +88,7 @@ RHMenuGraphics::RHMenuGraphics(RHMenuScreenView *screen)
 // FUNCTION: GAME 0x0052c3a0
 void *RHMenuGraphics::FUN_0052c3a0(unsigned flags)
 {
-    this->~RHMenuGraphics();
+    this->RHMenuGraphics::~RHMenuGraphics();
     if (flags & 1)
         operator delete(this);
     return this;

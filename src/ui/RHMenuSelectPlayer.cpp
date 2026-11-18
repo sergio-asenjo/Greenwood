@@ -92,7 +92,7 @@ RHMenuSelectPlayer::RHMenuSelectPlayer(void *screen)
 // FUNCTION: GAME 0x0053e8b0
 void *RHMenuSelectPlayer::FUN_0053e8b0(unsigned flags)
 {
-    this->~RHMenuSelectPlayer();
+    this->RHMenuSelectPlayer::~RHMenuSelectPlayer();
     if (flags & 1)
         operator delete(this);
     return this;

@@ -56,7 +56,7 @@ RHMenuDebriefing::RHMenuDebriefing(RHMenuScreenView *screen, const RHDebriefingS
 // FUNCTION: GAME 0x00529050
 void *RHMenuDebriefing::FUN_00529050(unsigned flags)
 {
-    this->~RHMenuDebriefing();
+    this->RHMenuDebriefing::~RHMenuDebriefing();
     if (flags & 1)
         operator delete(this);
     return this;
@@ -157,7 +157,7 @@ void RHMenuDebriefing::Display(unsigned long id, bool won, bool last)
     bLoadingRequested = false;
     if (last == true)
         screen.FUN_0053be40(1);
-    FUN_00529e60((RHMapWindow *)&screen, (const RHMapWideText &)GetText(id, won), won, last);
+    FUN_00529e60((RHMapWindow *)&screen, GetText(id, won), won, last);
     bLoadingRequested |= ((RHDebriefingScreenCalls *)&screen)->FUN_0053cd20();
     if (!bLoadingRequested)
     {
@@ -177,7 +177,7 @@ void RHMenuDebriefing::Display(const std::vector<unsigned long> &ids, bool won, 
         screen.FUN_0053be40(1);
     for (std::vector<unsigned long>::const_iterator it = ids.begin(); it != ids.end(); ++it)
     {
-        FUN_00529e60((RHMapWindow *)&screen, (const RHMapWideText &)GetText(*it, won), won, last);
+        FUN_00529e60((RHMapWindow *)&screen, GetText(*it, won), won, last);
         if (!bLoadingRequested)
             bLoadingRequested = ((RHDebriefingScreenCalls *)&screen)->FUN_0053cd20();
         if (bLoadingRequested == true)
@@ -210,9 +210,9 @@ void RHMenuDebriefing::DisplayAll()
 
 // Parked: target rotates the loop and duplicates the construct/display block, caching last in EBP.
 // STUB: GAME 0x00529e60
-void FUN_00529e60(RHMapWindow *screen, const RHMapWideText &text, bool won, bool last)
+void FUN_00529e60(RHMapWindow *screen, const std::wstring &text, bool won, bool last)
 {
-    std::wstring textLeft((const std::wstring &)text);
+    std::wstring textLeft(text);
     while (true)
     {
         RHMenuDebriefing menu((RHMenuScreenView *)screen, textLeft, won, last);
@@ -249,7 +249,7 @@ std::wstring RHMenuDebriefing::GetText(unsigned long id, bool won)
         unsigned resource = won ? resources->m_30 : resources->m_38;
         if (manager->FUN_00600fc0(resource))
         {
-            if (!manager->FUN_006009e0(resource, id, (RHMapWideText &)text))
+            if (!manager->FUN_006009e0(resource, id, text))
                 text =
                     // STRING: GAME 0x006b0b14
                     L"Invalid debriefing ID...";

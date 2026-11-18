@@ -37,7 +37,7 @@ RHMenuOptions::RHMenuOptions(RHMenuScreenView *screen) : RHMenuWindowFocus(0, sc
 // FUNCTION: GAME 0x00538710
 void *RHMenuOptions::FUN_00538710(unsigned flags)
 {
-    this->~RHMenuOptions();
+    this->RHMenuOptions::~RHMenuOptions();
     if (flags & 1)
         operator delete(this);
     return this;
@@ -79,7 +79,7 @@ bool RHMenuOptions::FUN_00538e80(RHMenuWindowUI *ui)
 #include "SBThreadedInput.h"
 #include "RHUnk0049b100.h"
 
-extern RHUnk005ef320 *g_unk0x6c11d0;
+extern SBDrawManager *g_unk0x6c11d0;
 
 // FUNCTION: GAME 0x00539250
 bool RHMenuOptions::FUN_00539250(int, void *, void *)

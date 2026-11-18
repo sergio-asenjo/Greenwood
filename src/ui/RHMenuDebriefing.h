@@ -38,7 +38,7 @@ public:
     unsigned m_38; // 0x38
 };
 
-void FUN_00529e60(RHMapWindow *screen, const RHMapWideText &text, bool won, bool last);
+void FUN_00529e60(RHMapWindow *screen, const std::wstring &text, bool won, bool last);
 
 #include "RHUnk0056fb70.h"
 

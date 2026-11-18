@@ -5,7 +5,7 @@
 
 class RHMenuScreenView;
 typedef RHMenuScreenView RHMenuWindowScreen;
-class RHUnkFXDraw;
+class SBDrawManager;
 
 // VTABLE: GAME 0x00679a28
 // SIZE 0xc8
@@ -24,7 +24,7 @@ public:
     bool FUN_00544b40(const std::wstring &title, const RHMapBox &box, unsigned flags);
     void FUN_00544b80(bool display, bool modal);
 
-    RHUnkFXDraw *m_draw;
+    SBDrawManager *m_draw;
     RHMenuWindowScreen *m_screen;
     RHMenuWindow *m_parent;
     long m_resource;

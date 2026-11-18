@@ -86,7 +86,7 @@ RHMenuMissionDescription::RHMenuMissionDescription(RHMenuWindow *parent, RHMenuW
 // FUNCTION: GAME 0x00534580
 void *RHMenuMissionDescription::FUN_00534580(unsigned flags)
 {
-    this->~RHMenuMissionDescription();
+    this->RHMenuMissionDescription::~RHMenuMissionDescription();
     if (flags & 1)
         operator delete(this);
     return this;
@@ -233,7 +233,7 @@ std::wstring RHMenuMissionDescription::FUN_00535650(const RHMission *mission, un
         text =
             // STRING: GAME 0x006b0e78
             L"Unable to find the mission resource...";
-    else if (!manager->FUN_006009e0(*(unsigned *)resources, resource, (RHMapWideText &)text))
+    else if (!manager->FUN_006009e0(*(unsigned *)resources, resource, text))
         text = L"Invalid resource ID...";
     return text;
 }

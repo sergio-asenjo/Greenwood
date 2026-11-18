@@ -196,7 +196,7 @@ RHMenuDialogue::RHMenuDialogue(RHMenuScreenView *screen, unsigned long id)
 // FUNCTION: GAME 0x0052a810
 void *RHMenuDialogue::FUN_0052a810(unsigned flags)
 {
-    this->~RHMenuDialogue();
+    this->RHMenuDialogue::~RHMenuDialogue();
     if (flags & 1)
         operator delete(this);
     return this;
@@ -382,7 +382,7 @@ bool RHMenuDialogue::GetNextSentence(std::wstring &text, std::string &sound, uns
     if (entry->m_first != 0 && index < (unsigned)(entry->m_last - entry->m_first))
     {
         RHMapResources *resources = g_unk0x006c1840;
-        if (!resources->FUN_006009e0(entry->m_text, index, (RHMapWideText &)text))
+        if (!resources->FUN_006009e0(entry->m_text, index, text))
         {
             const wchar_t *fallback =
                 // STRING: GAME 0x006b0ca8

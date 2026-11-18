@@ -40,7 +40,7 @@ RHMenuShortcuts::RHMenuShortcuts(void *screen)
 // FUNCTION: GAME 0x0053fca0
 void *RHMenuShortcuts::FUN_0053fca0(unsigned flags)
 {
-    this->~RHMenuShortcuts();
+    this->RHMenuShortcuts::~RHMenuShortcuts();
     if (flags & 1)
         operator delete(this);
     return this;

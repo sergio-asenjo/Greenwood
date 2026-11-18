@@ -15,12 +15,11 @@ void RHMenuWindow_Emit(RHMenuWindow *window)
 
 // FUNCTION: GAME 0x00543e70
 RHMenuWindow::RHMenuWindow(RHMenuWindow *parent, RHMenuWindowScreen *screen, bool saveBackground)
-    : m_draw((RHUnkFXDraw *)g_unk0x6c11d0), m_screen(screen), m_parent(parent), m_resourceHeld(false)
+    : m_draw(g_unk0x6c11d0), m_screen(screen), m_parent(parent), m_resourceHeld(false)
 {
     if (saveBackground)
     {
-        typedef unsigned long (RHUnkFXDraw::*CreateSurface)(unsigned short, unsigned short, unsigned long, bool);
-        m_saveSurface = (m_draw->*reinterpret_cast<CreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(
+        m_saveSurface = m_draw->Unk005e4ed0(
             m_draw->FUN_005e56c0(0), m_draw->FUN_005e5750(0), 0, false);
         RHMenuWindowUI *ui = m_screen->FUN_0053bf30();
         ((SBDrawManager *)m_draw)->FUN_005e6440(ui->m_17ec, 0, m_saveSurface, 0, 0);
@@ -36,7 +35,7 @@ RHMenuWindow::RHMenuWindow(RHMenuWindow *parent, RHMenuWindowScreen *screen, boo
 // FUNCTION: GAME 0x00543f80
 void *RHMenuWindow::FUN_00543f80(unsigned flags)
 {
-    this->~RHMenuWindow();
+    this->RHMenuWindow::~RHMenuWindow();
     if (flags & 1)
         operator delete(this);
     return this;
@@ -50,7 +49,7 @@ SBGeoVector2D operator*(float, const SBGeoVector2D &);
 
 // FUNCTION: GAME 0x00543fa0
 RHMenuWindow::RHMenuWindow(RHMenuWindow *parent, RHMenuWindowScreen *screen, long resource, bool saveBackground)
-    : m_draw((RHUnkFXDraw *)g_unk0x6c11d0), m_screen(screen), m_parent(parent),
+    : m_draw(g_unk0x6c11d0), m_screen(screen), m_parent(parent),
       m_resource(resource), m_resourceHeld(true)
 {
     SBGeoVector2D size;
@@ -63,8 +62,7 @@ RHMenuWindow::RHMenuWindow(RHMenuWindow *parent, RHMenuWindowScreen *screen, lon
         m_draw->FUN_005e5750(0)).FUN_005fc200(size);
     ((RHMobileUnk00607da0 *)&bounds)->FUN_00607da0((const RHMobileUnk00607da0 &)
         SBGeoBoundingBox2D(position, position.Unk005fc190(size)));
-    typedef unsigned long (RHUnkFXDraw::*CreateSurface)(unsigned short, unsigned short, unsigned long, bool);
-    m_saveSurface = (m_draw->*reinterpret_cast<CreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(
+    m_saveSurface = m_draw->Unk005e4ed0(
         m_draw->FUN_005e56c0(0), m_draw->FUN_005e5750(0), 0, false);
     unsigned long screenSurface = m_screen->FUN_0053bf30()->m_17ec;
     ((SBDrawManager *)m_draw)->FUN_005e6440(screenSurface, 0, m_saveSurface, 0, 0);

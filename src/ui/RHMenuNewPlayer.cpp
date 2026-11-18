@@ -30,7 +30,7 @@ RHMenuNewPlayer::RHMenuNewPlayer(RHMenuScreenView *screen)
 // FUNCTION: GAME 0x00537770
 void *RHMenuNewPlayer::FUN_00537770(unsigned flags)
 {
-    this->~RHMenuNewPlayer();
+    this->RHMenuNewPlayer::~RHMenuNewPlayer();
     if (flags & 1)
         operator delete(this);
     return this;

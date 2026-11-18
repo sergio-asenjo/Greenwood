@@ -4,20 +4,20 @@
 #include "Decomp.h"
 #include <string>
 #include "RHMenuWindowClass.h"
+#include "RHFocusManager.h"
 
-class RHMenuWindowFocus
+class __declspec(novtable) RHMenuWindowFocus : public RHMenuWindow
 {
 public:
     RHMenuWindowFocus(RHMenuWindow *parent, void *screen, int orientation, bool wrap);
     RHMenuWindowFocus(RHMenuWindow *parent, void *screen, long resource, int orientation, bool wrap);
     ~RHMenuWindowFocus();
-    virtual void V00();
-    void FUN_00544b80(bool display, bool modal) { ((RHMenuWindow *)this)->FUN_00544b80(display, modal); }
-    void FUN_00544300() { ((RHMenuWindow *)this)->FUN_00544300(); }
+    void *FUN_00544cd0(unsigned flags);
+    void *FUN_00545090(const void *input);
+    void FUN_005450d0();
 
-    undefined m_04[0xb0];
-    RHMenuWindowScreen *m_screen;
-    undefined m_b8[0x88];
+    RHFocusManager m_focus;
+    SBGeoPoint2D m_138;
 };
 
 #include "RHPortraitButton.h"

@@ -52,7 +52,7 @@ RHMenuIngame::RHMenuIngame(RHMenuScreenView *screen, bool pause)
 // FUNCTION: GAME 0x0052d600
 void *RHMenuIngame::FUN_0052d600(unsigned flags)
 {
-    this->~RHMenuIngame();
+    this->RHMenuIngame::~RHMenuIngame();
     if (flags & 1)
         operator delete(this);
     return this;

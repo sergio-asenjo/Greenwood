@@ -41,7 +41,7 @@ RHMenuPopupScroll::RHMenuPopupScroll(RHMenuScreenView *screen, const std::wstrin
 // FUNCTION: GAME 0x00539710
 void *RHMenuPopupScroll::FUN_00539710(unsigned flags)
 {
-    this->~RHMenuPopupScroll();
+    this->RHMenuPopupScroll::~RHMenuPopupScroll();
     if (flags & 1)
         operator delete(this);
     return this;
@@ -240,7 +240,7 @@ std::wstring RHMenuPopupScroll::FUN_0053a660(int id)
             text =
                 // STRING: GAME 0x006b1014
                 L"Unable to find the text...";
-        else if (!manager->FUN_006009e0(*(unsigned *)((char *)resources + 0x18), id, (RHMapWideText &)text))
+        else if (!manager->FUN_006009e0(*(unsigned *)((char *)resources + 0x18), id, text))
             text =
                 // STRING: GAME 0x006b0fe0
                 L"Invalid popup text ID...";

@@ -4,6 +4,7 @@
 #include "RHMapBox.h"
 #include "RHMapWidget.h"
 #include "RHGameTitleLifetimeInline.h"
+#include <stddef.h>
 
 extern wchar_t g_unk0x006c0b50[1];
 std::wstring FUN_005e23d0(unsigned long);
@@ -18,6 +19,12 @@ inline void RHYesNoSetText(RHPortraitButton &button, const std::wstring &text)
 
 DECOMP_SIZE_ASSERT(RHMenuYesNo, 0x448)
 DECOMP_SIZE_ASSERT(RHPortraitButton, 0x100)
+DECOMP_STATIC_ASSERT(offsetof(RHMenuYesNo, m_font) == 0x140)
+DECOMP_STATIC_ASSERT(offsetof(RHMenuYesNo, m_144) == 0x144)
+DECOMP_STATIC_ASSERT(offsetof(RHMenuYesNo, m_244) == 0x244)
+DECOMP_STATIC_ASSERT(offsetof(RHMenuYesNo, m_344) == 0x344)
+DECOMP_STATIC_ASSERT(offsetof(RHMenuYesNo, m_choice) == 0x444)
+DECOMP_SIZE_ASSERT(RHMenuWindowScreen, 0x1990)
 
 // FUNCTION: GAME 0x005451a0
 void RHMenuYesNo::HandleEvent(RHMenuEvent *event)
@@ -37,7 +44,7 @@ bool RHMenuYesNo::RouteEvent(RHMenuEvent *event)
     return handled;
 }
 
-// STUB: GAME 0x00545220
+// FUNCTION: GAME 0x00545220
 RHMenuYesNo::RHMenuYesNo(RHMenuWindowScreen *screen, const std::wstring &text)
     : RHMenuWindowFocus(0, screen, 0xed, 1, true),
       m_font(screen->FUN_0053be80(std::string("PopupScroll"))), m_choice(0)
@@ -55,7 +62,7 @@ RHMenuYesNo::RHMenuYesNo(RHMenuWindowScreen *screen, const std::wstring &text)
 // FUNCTION: GAME 0x00545590
 void *RHMenuYesNo::FUN_00545590(unsigned flags)
 {
-    this->~RHMenuYesNo();
+    this->RHMenuYesNo::~RHMenuYesNo();
     if (flags & 1)
         operator delete(this);
     return this;
@@ -112,6 +119,21 @@ bool RHMenuYesNo::FUN_00545710()
         return true;
     }
     return false;
+}
+
+// FUNCTION: GAME 0x00545940
+bool RHMenuYesNo::FileNotFound(const std::string &file)
+{
+    RHMenuWindowScreen screen(0, 0xa1, 0xff, 0);
+    wchar_t text[2048];
+    swprintf(text,
+              // STRING: GAME 0x006b10f0
+              L"Unable to find the file '%S' ! Would you like to try to load the file again ?",
+              file.c_str());
+    RHMenuYesNo dialog(&screen, std::wstring(text));
+    dialog.FUN_00545710();
+    dialog.FUN_00544b80(true, true);
+    return dialog.FUN_00545ad0() == 1;
 }
 
 // FUNCTION: GAME 0x00545ad0

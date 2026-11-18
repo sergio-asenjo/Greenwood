@@ -7,10 +7,6 @@
 #include "RHMenuWindow.h"
 
 
-// Target 0x00544ee0, __thiscall.
-RHMenuWindowFocus::~RHMenuWindowFocus() {}
-void RHMenuWindowFocus::V00() {}
-
 
 
 

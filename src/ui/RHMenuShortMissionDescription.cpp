@@ -55,7 +55,7 @@ RHMenuShortMissionDescription::RHMenuShortMissionDescription(RHMenuWindowScreen 
 // FUNCTION: GAME 0x00540830
 void *RHMenuShortMissionDescription::FUN_00540830(unsigned flags)
 {
-    this->~RHMenuShortMissionDescription();
+    this->RHMenuShortMissionDescription::~RHMenuShortMissionDescription();
     if (flags & 1)
         operator delete(this);
     return this;
@@ -75,7 +75,7 @@ extern wchar_t g_unk0x006c0b50[1];
 // FUNCTION: GAME 0x00540ec0
 SBFrameEvent *RHMenuShortMissionDescription::FUN_00540ec0(const void *input)
 {
-    return ((SBFrameWnd *)this)->FUN_0061a610(input);
+    return RHPortraitRootLifetime::FUN_0061a610(input);
 }
 
 // FUNCTION: GAME 0x00540970
@@ -120,7 +120,7 @@ std::wstring RHMenuShortMissionDescription::FUN_00540d50()
         text =
             // STRING: GAME 0x006b10a4
             L"Unable to get the dynamic resouces...";
-    else if (!manager->FUN_006009e0(*(unsigned *)resources, 1, (RHMapWideText &)text))
+    else if (!manager->FUN_006009e0(*(unsigned *)resources, 1, text))
         text =
             // STRING: GAME 0x006b0e48
             L"Invalid resource ID...";
@@ -155,7 +155,7 @@ void RHShortMissionUpdateCalls::FUN_00540ed0(RHMission *mission)
 void RHMenuShortMissionDescription::FUN_00541060()
 {
     SBGeoPoint2D position = ((SBGeoPoint2D &)g_inputPosition).Unk005fc190(SBGeoVector2D(25.0f, 25.0f));
-    RHUnkFXDraw *draw = (RHUnkFXDraw *)g_unk0x6c11d0;
+    SBDrawManager *draw = g_unk0x6c11d0;
     SBGeoVector2D offset;
     SBGeoBoundingBox2D bounds(((RHMapWidget *)this)->V24());
     SBGeoBoundingBox2D previous(((RHMapWidget *)this)->V24());
@@ -171,7 +171,7 @@ void RHMenuShortMissionDescription::FUN_00541060()
         else
             offset.m_y = 0.0f;
         ((RHMobileUnk006091b0 *)&bounds)->FUN_006091b0(offset);
-        ((SBFrameWnd *)this)->FUN_0061ad20(bounds);
+        RHPortraitRootLifetime::FUN_0061ad20(bounds);
         previous.FUN_00607e90(bounds);
         m_screen->FUN_0053c7f0((unsigned long)&previous);
         ((RHMobileUnk00607da0 *)&m_box)->FUN_00607da0((const RHMobileUnk00607da0 &)bounds);

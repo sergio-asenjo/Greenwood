@@ -19,7 +19,7 @@
 
 #include "RHPlayerProfileManagerStorage.h"
 extern wchar_t g_unk0x006c0b50[1];
-extern RHUnk005ef320 *g_unk0x6c11d0;
+extern SBDrawManager *g_unk0x6c11d0;
 
 // TEMPLATE: GAME 0x00533c70
 // ??1?$list@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@V?$allocator@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@@2@@std@@QAE@XZ
@@ -66,7 +66,7 @@ bool RHMenuLoadSave::FUN_005301a0(RHMenuEvent *event)
 // FUNCTION: GAME 0x005304f0
 void *RHMenuLoadSave::FUN_005304f0(unsigned flags)
 {
-    this->~RHMenuLoadSave();
+    this->RHMenuLoadSave::~RHMenuLoadSave();
     if (flags & 1)
         operator delete(this);
     return this;
@@ -100,16 +100,16 @@ public:
 // STUB: GAME 0x005307d0
 bool RHMenuLoadSave::FUN_005307d0()
 {
-    if (((RHMenuWindow *)this)->FUN_00544b40(g_unk0x006c0b50, RHMapBox(0.0f, 0.0f, 640.0f, 480.0f), 0))
+    if (FUN_00544b40(g_unk0x006c0b50, RHMapBox(0.0f, 0.0f, 640.0f, 480.0f), 0))
     {
         m_screen->FUN_0053be80(std::string("Default"));
-        SBUIListboxUnk0061e890 *normal = (SBUIListboxUnk0061e890 *)m_screen->FUN_0053be80(std::string(
+        SBFontUnk0061e840 *normal = m_screen->FUN_0053be80(std::string(
             // STRING: GAME 0x006b0e3c
             "ListDefault"));
-        SBUIListboxUnk0061e890 *focused = (SBUIListboxUnk0061e890 *)m_screen->FUN_0053be80(std::string(
+        SBFontUnk0061e840 *focused = m_screen->FUN_0053be80(std::string(
             // STRING: GAME 0x006b0e30
             "ListFocused"));
-        SBUIListboxUnk0061e890 *selected = (SBUIListboxUnk0061e890 *)m_screen->FUN_0053be80(std::string(
+        SBFontUnk0061e840 *selected = m_screen->FUN_0053be80(std::string(
             // STRING: GAME 0x006b0e20
             "ListSelected"));
         RHLoadSaveWidgetVector widgets;
@@ -119,8 +119,8 @@ bool RHMenuLoadSave::FUN_005307d0()
         ((RHMenuCampaignMap *)this)->V30(&m_accept);
         ((RHMenuCampaignMap *)this)->V30(&m_remove);
         ((RHMenuCampaignMap *)this)->V30(&m_cancel);
-        ((RHFocusManager *)((char *)this + 0xc8))->FUN_004ffc70((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_accept, true);
-        RHFocusManager &focus = *(RHFocusManager *)((char *)this + 0xc8);
+        m_focus.FUN_004ffc70((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_accept, true);
+        RHFocusManager &focus = m_focus;
         focus.FUN_004ffc70((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_remove, true);
         focus.FUN_004ffc70((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_cancel, true);
         focus.FUN_004ffce0((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_accept, 0x1c);
@@ -492,7 +492,6 @@ void RHMenuLoadSave::FUN_00531a80()
 
 #include "RHPortraitDrawCalls.h"
 
-typedef unsigned long (RHUnkFXDraw::*RHMenuCreateSurface)(unsigned short, unsigned short, unsigned long, bool);
 
 // FUNCTION: GAME 0x00531bd0
 void RHMenuLoadSave::FUN_00531bd0()
@@ -515,9 +514,9 @@ void RHMenuLoadSave::FUN_00531bd0()
             bool loaded = ((RHEngineBackgroundCalls *)&picture)->FUN_00611660(((RHGameSaveCalls *)save)->FUN_0056e6b0());
             if (loaded)
             {
-                *(int *)((char *)this + 0x8c4) = (((RHUnkFXDraw *)draw)->*reinterpret_cast<RHMenuCreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(
+                *(int *)((char *)this + 0x8c4) = ((SBDrawManager *)draw)->Unk005e4ed0(
                     picture.m_width, picture.m_height, 0, false);
-                ((SBPicture *)&picture)->SBPicture::Unk00613530((RHUnkFXDraw *)draw, *(int *)((char *)this + 0x8c4));
+                ((SBPicture *)&picture)->SBPicture::Unk00613530((SBDrawManager *)draw, *(int *)((char *)this + 0x8c4));
                 ((RHPortraitUnk005d5950 *)((char *)this + 0x7e4))->FUN_005d5950(*(int *)((char *)this + 0x8c4));
                 *(bool *)((char *)this + 0x7e8) = true;
             }

@@ -40,7 +40,7 @@ RHMenuIntro::RHMenuIntro(RHMenuScreenView *screen)
 // FUNCTION: GAME 0x0052e300
 void *RHMenuIntro::FUN_0052e300(unsigned flags)
 {
-    this->~RHMenuIntro();
+    this->RHMenuIntro::~RHMenuIntro();
     if (flags & 1)
         operator delete(this);
     return this;
@@ -210,7 +210,7 @@ bool RHMenuIntro::FUN_0052edf0(int, void *, void *)
 
 class RHArtificialIntelligenceSoundCalls;
 extern RHArtificialIntelligenceSoundCalls *g_unk0x006c1070;
-extern RHUnk005ef320 *g_unk0x6c11d0;
+extern SBDrawManager *g_unk0x6c11d0;
 
 // FUNCTION: GAME 0x0052ee20
 bool RHMenuIntro::FUN_0052ee20(int, void *, void *)
@@ -310,7 +310,7 @@ void FUN_005e1400();
 // STUB: GAME 0x0052f540
 void RHMenuIntro::FUN_0052f540()
 {
-    RHUnkFXDraw *draw = (RHUnkFXDraw *)g_unk0x6c11d0;
+    SBDrawManager *draw = g_unk0x6c11d0;
     unsigned long background = CreateBkgndTextured(0x135, 0);
     unsigned short width = draw->FUN_005e56c0(0);
     unsigned short height = draw->FUN_005e5750(0);
@@ -387,7 +387,7 @@ void RHMenuIntro::FUN_0052f540()
 // FUNCTION: GAME 0x0052fd60
 unsigned long RHMenuIntro::CreateBkgndTextured(long resource, unsigned short color)
 {
-    RHUnkFXDraw *draw = (RHUnkFXDraw *)g_unk0x6c11d0;
+    SBDrawManager *draw = g_unk0x6c11d0;
     SBGeoBoundingBox2D source;
     SBGeoBoundingBox2D destination;
     unsigned long surface = draw->Unk005e4ed0(draw->FUN_005e56c0(0), draw->FUN_005e5750(0), 0, false);

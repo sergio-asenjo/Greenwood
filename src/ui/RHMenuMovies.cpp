@@ -53,7 +53,7 @@ RHMenuMovies::~RHMenuMovies()
 // FUNCTION: GAME 0x00536c30
 void *RHMenuMovies::FUN_00536c30(unsigned flags)
 {
-    this->~RHMenuMovies();
+    this->RHMenuMovies::~RHMenuMovies();
     if (flags & 1)
         operator delete(this);
     return this;
@@ -137,7 +137,7 @@ bool RHMenuMovies::FUN_00537370(int, void *, void *)
 class RHArtificialIntelligenceSoundCalls;
 extern RHArtificialIntelligenceSoundCalls *g_unk0x006c1070;
 extern SBThreadedInput *g_unk0x6c1340;
-extern RHUnk005ef320 *g_unk0x6c11d0;
+extern SBDrawManager *g_unk0x6c11d0;
 extern char g_unk0x006c0685;
 void FUN_004013a0(const std::string &name);
 
@@ -147,7 +147,7 @@ void RHMenuMovies::FUN_00537400(const std::string &path)
     if (g_unk0x006c0685)
     {
         SBThreadedInput *input = g_unk0x6c1340;
-        RHUnk005ef320 *draw = g_unk0x6c11d0;
+        SBDrawManager *draw = g_unk0x6c11d0;
         RHSound *sound = (RHSound *)g_unk0x006c1070;
         sound->FUN_005a7b40(0);
         input->SetMouseEnabled(false);

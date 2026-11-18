@@ -68,7 +68,7 @@ RHMenuBuyBlazons::RHMenuBuyBlazons(RHMenuWindow *parent, RHMenuWindowScreen *scr
 // FUNCTION: GAME 0x00524cf0
 void *RHMenuBuyBlazons::FUN_00524cf0(unsigned flags)
 {
-    this->~RHMenuBuyBlazons();
+    this->RHMenuBuyBlazons::~RHMenuBuyBlazons();
     if (flags & 1)
         operator delete(this);
     return this;
