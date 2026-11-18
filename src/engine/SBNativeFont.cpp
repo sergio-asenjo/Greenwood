@@ -1,4 +1,5 @@
 #include "SBNativeFont.h"
+#include "SBUIUnkSurface.h"
 
 #include "SB.h"
 #include <string.h>
@@ -12,7 +13,7 @@ DECOMP_STATIC_ASSERT(offsetof(SBNativeFontCharacterPair, m_iterator) == 0)
 DECOMP_STATIC_ASSERT(offsetof(SBNativeFontCharacterPair, m_inserted) == 4)
 DECOMP_SIZE_ASSERT(SBNativeFontDecNode, 0x24)
 DECOMP_SIZE_ASSERT(SBNativeFontCharacterTree, 0x10)
-DECOMP_SIZE_ASSERT(SBNativeFontBase, 0x44)
+DECOMP_SIZE_ASSERT(SBFontUnk0061e840, 0x44)
 DECOMP_SIZE_ASSERT(RHUnk006114c0, 0x38)
 
 // GLOBAL: GAME 0x006c18c4
@@ -24,7 +25,7 @@ SBResourceUnkKeyNode *g_unk0x006c18c8 = 0;
 // FUNCTION: GAME 0x00616c70
 void *SBNativeFont::FUN_00616c70(unsigned flags)
 {
-    this->~SBNativeFont();
+    this->SBNativeFont::~SBNativeFont();
     if (flags & 1)
         operator delete(this);
     return this;
@@ -60,25 +61,25 @@ SBNativeFont::SBNativeFont(const std::string &name)
     *(unsigned *)this = 0x0067a96c;
     memset(m_nativeHeader, 0, sizeof(m_nativeHeader));
     memset(&m_spacing, 0, sizeof(m_spacing));
-    ((SBFontUnk0061e840 *)this)->FUN_0061ea80(name);
+    FUN_0061ea80(name);
 }
 
 // FUNCTION: GAME 0x00616ee0
-void SBNativeFont::AttachToRenderContext(SBNativeFontRenderContext *context, unsigned long flags)
+void SBNativeFont::AttachToRenderContext(SBUIUnkSurfaceBase *context, unsigned long flags)
 {
-    ((SBFontUnk0061e840 *)this)->FUN_0061e810((int)context, flags);
-    m_surface = context->V0c(&m_pictures[0], &m_pictures[1], (flags & 1) != 0);
+    SBFontUnk0061e840::AttachToRenderContext(context, flags);
+    m_surface = context->FUN_0061b380(&m_pictures[0], &m_pictures[1], (flags & 1) != 0);
 }
 
 // FUNCTION: GAME 0x00616f20
 void SBNativeFont::DetachFromRenderContext()
 {
-    m_context->V14(m_surface);
-    ((SBFontUnk0061e840 *)this)->FUN_0061e840();
+    m_context->FUN_0061b660(m_surface);
+    SBFontUnk0061e840::DetachFromRenderContext();
 }
 
 // FUNCTION: GAME 0x00616f40
-unsigned SBNativeFont::FUN_00616f40() const
+long SBNativeFont::GetBaseLine() const
 {
     return m_nativeHeader[1];
 }
@@ -99,7 +100,7 @@ const SBNativeFont::CharacterInfo *SBNativeFont::GetCharacterInfo(unsigned short
             space >= *(unsigned short *)&fallbackNode->m_key ? fallbackValue : characters.FUN_00617690();
         const CharacterInfo *result = replacement.m_node == m_characters.m_head ?
             (const CharacterInfo *)((char *)replacement.m_node + 0x10) : 0;
-        ((SBFontUnk0061e840 *)this)->FUN_0061ebd0(character);
+        FUN_0061ebd0(character);
         return result;
     }
 }
@@ -118,7 +119,7 @@ void SBNativeFont::GetImplementationTag(char (&tag)[6]) const
 }
 
 // FUNCTION: GAME 0x00617080
-unsigned SBNativeFont::FUN_00617080() const
+unsigned long SBNativeFont::GetExtraSpacing() const
 {
     return m_spacing;
 }
@@ -147,11 +148,11 @@ long SBNativeFont::GetCharacterWidth(unsigned short character, long &left, long 
 bool SBNativeFont::LoadFromStream(SBFile &file)
 {
     unsigned i;
-    if (!((SBFontUnk0061e840 *)this)->FUN_0061eb00(file))
+    if (!SBFontUnk0061e840::LoadFromStream(file))
         goto failed;
     if (file.Access(m_nativeHeader, sizeof(m_nativeHeader)))
         return false;
-    if (((SBFontUnk0061e840 *)this)->FUN_0061e880() == 0x200 &&
+    if (FUN_0061e880() == 0x200 &&
         file.Access(&m_spacing, sizeof(m_spacing)))
         return false;
     for (i = 0; i < m_nativeHeader[2]; ++i)
@@ -178,53 +179,32 @@ failed:
 
 #include "SBUIListboxFont.h"
 
-class SBNativeFontBlitCalls
-{
-public:
-    virtual void V00();
-    virtual bool V04(unsigned long surface, const SBGeoBoundingBox2D &source, const SBGeoBoundingBox2D &destination);
-};
-
-class SBNativeFontSpacingCalls
-{
-public:
-    virtual void V00();
-    virtual void V04();
-    virtual void V08();
-    virtual void V0c();
-    virtual void V10();
-    virtual void V14();
-    virtual void V18();
-    virtual void V1c();
-    virtual unsigned long V20();
-};
-
-// Parked: vector temporary slots and signed-width x87 conversion scheduling differ.
-// STUB: GAME 0x00617220
+// FUNCTION: GAME 0x00617220
 bool SBNativeFont::Render(unsigned short character, SBGeoPoint2D &position, const SBGeoBoundingBox2D &clip, bool measure) const
 {
     bool rendered = false;
     const CharacterInfo *info = GetCharacterInfo(character);
     if (info) {
         unsigned long atlasPosition = info->m_position;
+        double height = (unsigned)GetHeight();
         SBGeoBoundingBox2D source((float)atlasPosition, 0.0f,
             (float)(atlasPosition + info->m_width),
-            (float)(unsigned)((SBUIListboxUnk0061e890 *)this)->FUN_0061e890());
+            (float)height);
         SBGeoBoundingBox2D destination;
         position.FUN_005fc1e0(SBGeoVector2D((float)info->m_left, 0.0f));
         destination.m_p0.m_x = position.m_x;
         destination.m_p0.m_y = position.m_y;
         destination.SetValue8(position.GetX() + (float)(unsigned long)info->m_width);
-        destination.SetValueC(position.GetY() + (float)(unsigned)((SBUIListboxUnk0061e890 *)this)->FUN_0061e890());
+        destination.SetValueC(position.GetY() + (float)(unsigned)GetHeight());
         ((RHMobileUnk00607da0 *)&destination)->FUN_00607da0((const RHMobileUnk00607da0 &)destination.FUN_006092c0(clip));
         ((RHMobileUnk00607da0 *)&source)->FUN_00607da0((const RHMobileUnk00607da0 &)
             (destination - destination.Min()).FUN_006090d0(SBGeoVector2D((float)info->m_position, 0.0f)));
         if (destination.FUN_006090a0() && destination.Unk00608f30()) {
             if (!measure)
-                rendered = ((SBNativeFontBlitCalls *)m_context)->V04(m_surface, source, destination);
+                rendered = m_context->FUN_0061b200(m_surface, source, destination);
             else
                 rendered = true;
-            position.FUN_005fc1e0(SBGeoVector2D((float)(((SBNativeFontSpacingCalls *)this)->V20() + info->m_right + info->m_width), 0.0f));
+            position.FUN_005fc1e0(SBGeoVector2D((float)(GetExtraSpacing() + info->m_right + info->m_width), 0.0f));
         }
     }
     return rendered;
@@ -234,7 +214,7 @@ bool SBNativeFont::Render(unsigned short character, SBGeoPoint2D &position, cons
 bool SBNativeFont::SaveToStream(SBFile &file)
 {
     SBResourceUnkKeyIterator it;
-    if (!((SBFontUnk0061e840 *)this)->FUN_0061ed70(file))
+    if (!SBFontUnk0061e840::SaveToStream(file))
         goto failed;
     if (file.Access(m_nativeHeader, sizeof(m_nativeHeader)))
         return false;
@@ -675,16 +655,16 @@ void EmitSBNativeFontDec()
     iterator.FUN_006182d0();
 }
 
-void EmitSBNativeFont(SBNativeFont *font, SBNativeFontRenderContext *context,
+void EmitSBNativeFont(SBNativeFont *font, SBUIUnkSurfaceBase *context,
                       char (&tag)[6], long &spacing, SBFile &file)
 {
     SBNativeFont local(std::string(""));
     font->FUN_00616c70(0);
     font->AttachToRenderContext(context, 0);
     font->DetachFromRenderContext();
-    font->FUN_00616f40();
+    font->GetBaseLine();
     font->SBNativeFont::GetImplementationVersion();
-    font->FUN_00617080();
+    font->GetExtraSpacing();
     font->GetImplementationTag(tag);
     font->GetCharacterWidth(0, spacing, spacing);
     font->LoadFromStream(file);

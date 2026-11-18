@@ -14,7 +14,7 @@
 // LIBRARY: GAME 0x005cac40
 // ?find@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@QBEIPBGII@Z
 
-#include "SBGeoBoundingBox2D.h"
+#include "SBGeoBoundingBox2DCore.h"
 #include "RHUnk005cbb80.h"
 #include <stddef.h>
 

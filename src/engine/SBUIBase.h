@@ -4,11 +4,12 @@
 #include "Decomp.h"
 #include <vector>
 #include <string>
+#include "SBUIUnkSurface.h"
 #ifndef SBGEO_BOUNDINGBOX2D_VIEW
 #include "SBGeoBoundingBox2DCore.h"
 #endif
 
-class RHUnk005ef320;
+class SBDrawManager;
 struct RHPortraitWidgetInput;
 struct RHPortraitWidgetEvent;
 class SBFrameWidgetView;
@@ -40,16 +41,7 @@ public:
     virtual bool V4c() const = 0;
 };
 
-class SBUIFontView
-{
-public:
-    virtual void V00() = 0;
-    virtual void V04() = 0;
-    virtual void V08() = 0;
-    virtual void V0c() = 0;
-    virtual void V10() = 0;
-    virtual void V14(void *renderer, bool alternate) = 0;
-};
+class SBFontUnk0061e840;
 
 class SBUIWindowTooltipPart
 {
@@ -160,7 +152,7 @@ public:
     bool FUN_00619800(SBUIWindowView *window);
     void FUN_00619a00(SBUIWindowView *window);
     bool FUN_00619c20(unsigned long display);
-    void FUN_00619c80(SBUIFontView *font, SBUIFontView *alternate);
+    void FUN_00619c80(SBFontUnk0061e840 *font, SBFontUnk0061e840 *alternate);
 
     unsigned m_vptr;
     SBUIWindowArray m_windows;
@@ -174,11 +166,11 @@ public:
     unsigned short m_175e;
     unsigned short m_1760;
     unsigned short m_1762;
-    RHUnk005ef320 *m_draw;
+    SBDrawManager *m_draw;
     unsigned long m_display;
     undefined m_176c[8];
-    SBUIFontView *m_font;
-    SBUIFontView *m_alternate;
+    SBFontUnk0061e840 *m_font;
+    SBFontUnk0061e840 *m_alternate;
     void *m_177c;
     unsigned long m_1780;
     unsigned long m_1784;
@@ -187,7 +179,7 @@ public:
     SBGeoBoundingBox2D m_179c[2];
     bool m_17c4[2];
     unsigned long m_17c8;
-    undefined m_renderer[0x20];
+    SBUIUnkSurface m_renderer;
     unsigned long m_surface;
     SBFrameWidgetView *m_17f0;
     SBUIWindowView *m_17f4;

@@ -8,7 +8,7 @@ class SBGeoPoint2D;
 class SBGeoBoundingBox2D;
 
 // VTABLE: GAME 0x0067a940
-class SBTrueTypeFont : public SBNativeFontBase
+class SBTrueTypeFont : public SBFontUnk0061e840
 {
 public:
     SBTrueTypeFont(const std::string &name);
@@ -17,6 +17,7 @@ public:
     void CreateSystemObjects();
     void DestroySystemObjects();
     long GetBaseLine() const;
+    unsigned long GetExtraSpacing() const { return 0; }
     int FUN_00616870(void *context, unsigned long character) const;
     bool Render(unsigned short character, SBGeoPoint2D &position, const SBGeoBoundingBox2D &bounds, bool measure) const;
     virtual unsigned GetImplementationVersion() const;

@@ -10,9 +10,10 @@ class RHElement;
 class RHElementActor;
 class RHElementActorPC;
 class RHSprite;
-class RHUnk005ef320;
+class SBDrawManager;
 class RHFrameHolder;
 class RHUnk00613e90;
+class SBFontUnk0061e840;
 struct RHTitbit;
 struct RHTitbitNode;
 
@@ -78,10 +79,10 @@ public:
     unsigned short m_counts[8];
     RHTitbitList m_list; // [0x20]
     char m_pad1[0x38];
-    RHUnk005ef320 *m_draw;
+    SBDrawManager *m_draw;
     RHFrameHolder *m_bank;
-    void *m_font;
-    void *m_outline;
+    SBFontUnk0061e840 *m_font;
+    SBFontUnk0061e840 *m_outline;
     char m_80[0x20];
     unsigned short m_a0;
     char m_a2[2];

@@ -97,6 +97,8 @@ public:
 
 #include "RHUnk00600820.h"
 
+#define SBGEO_POINT2D_VIEW
+#define SBGEO_BOUNDINGBOX2D_VIEW
 #include "SBDrawManagerCore.h"
 
 class RHUIRendererCustom

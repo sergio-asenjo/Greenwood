@@ -5,6 +5,8 @@
 #include "RHPortraitRootList.h"
 #include <vector>
 
+class RHMission;
+
 // SIZE 0xd0
 struct RHUnk005db7e0Slot
 {
@@ -30,6 +32,7 @@ public:
     ~RHUnk005db7e0();
     void FUN_005dc690(const SBGeoBoundingBox2D &bounds);
     void *FUN_0050ef90(unsigned flags);
+    bool FUN_005db920(RHMission *mission);
     std::vector<RHUnk005db7e0Entry> m_entries; // 0xb0
 };
 

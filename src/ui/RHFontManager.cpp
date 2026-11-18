@@ -296,7 +296,7 @@ DECOMP_SIZE_ASSERT(SBNativeFont, 0xd8)
 DECOMP_SIZE_ASSERT(SBTrueTypeFont, 0x70)
 
 // STUB: GAME 0x00502270
-void *RHFontManager::GetFont(const std::string &name) const
+SBFontUnk0061e840 *RHFontManager::GetFont(const std::string &name) const
 {
     RHFontIterator::Node *node = const_cast<RHFontInsertTree &>(m_fonts).FUN_00502b90(name).m_node;
     if (node != m_fonts.m_head)
@@ -769,7 +769,7 @@ RHFontInsertResult::RHFontInsertResult(const RHFontIterator &iterator, const boo
 }
 
 // FUNCTION: GAME 0x005024f0
-void *RHFontManager::FUN_005024f0()
+RHFontManager *RHFontManager::FUN_005024f0()
 {
     return &mInstance;
 }

@@ -5,7 +5,7 @@
 #include <string>
 #include "RHPortraitRenderer0060dab0.h"
 
-class SBUIListboxUnk0061e890;
+class SBFontUnk0061e840;
 
 // VTABLE: GAME 0x00679e7c
 class RHPortraitRenderer005cadc0 : public RHPortraitRenderer0060dab0
@@ -16,8 +16,8 @@ public:
     void *FUN_005cade0(unsigned flags);
     void FUN_005cae10(int screen);
     bool FUN_005cafa0(unsigned id);
-    SBUIListboxUnk0061e890 *m_enabled;
-    SBUIListboxUnk0061e890 *m_disabled;
+    SBFontUnk0061e840 *m_enabled;
+    SBFontUnk0061e840 *m_disabled;
 };
 
 #endif

@@ -34,9 +34,9 @@ void RHPortraitRenderer005cadc0::FUN_005cae10(int screen)
     if (screen)
     {
         // STRING: GAME 0x006b8cb8
-        m_enabled = (SBUIListboxUnk0061e890 *)((RHPortraitTextResourceCalls *)screen)->FUN_0053be80(std::string("MenuButtonEnabled"));
+        m_enabled = ((RHPortraitTextResourceCalls *)screen)->FUN_0053be80(std::string("MenuButtonEnabled"));
         // STRING: GAME 0x006b8ca4
-        m_disabled = (SBUIListboxUnk0061e890 *)((RHPortraitTextResourceCalls *)screen)->FUN_0053be80(std::string("MenuButtonDisabled"));
+        m_disabled = ((RHPortraitTextResourceCalls *)screen)->FUN_0053be80(std::string("MenuButtonDisabled"));
     }
 }
 
@@ -48,16 +48,16 @@ bool RHPortraitRenderer005cadc0::FUN_005cafa0(unsigned id)
         SBGeoBoundingBox2D area(*(SBGeoBoundingBox2D *)((SBUIUnk0060d530 *)this)->FUN_0060d690());
         SBGeoBoundingBox2D box(*(SBGeoBoundingBox2D *)((SBUIUnk0060d530 *)this)->FUN_0060d690());
         SBUIInputFieldDrawUnk drawer;
-        SBUIListboxUnk0061e890 *font = id ? m_enabled : m_disabled;
+        SBFontUnk0061e840 *font = id ? m_enabled : m_disabled;
         if (font)
         {
             float height = box.m_08.m_y - box.m_00.m_y;
             float top = box.m_00.m_y;
-            float y = (height - (unsigned int)font->FUN_0061e890()) * 0.5f + top;
+            float y = (height - (unsigned int)font->GetHeight()) * 0.5f + top;
             box.SetMinY(y);
-            box.SetMaxY((unsigned int)font->FUN_0061e890() + y);
+            box.SetMaxY((unsigned int)font->GetHeight() + y);
         }
-        drawer.FUN_00614230(font, (std::wstring *)((char *)this + 0x28), box, 2, 0, 1);
+        drawer.FUN_00614230(font, *(std::wstring *)((char *)this + 0x28), box, 2, 0, 1);
         return true;
     }
     return false;

@@ -2,7 +2,7 @@
 #include "SBUIRendererListbox.h"
 
 // FUNCTION: GAME 0x0061e890
-int SBUIListboxUnk0061e890::FUN_0061e890()
+int SBFontUnk0061e840::GetHeight() const
 {
     return m_40;
 }

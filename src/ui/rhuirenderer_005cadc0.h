@@ -49,17 +49,7 @@ public:
 #include "SBUIListboxFont.h"
 
 // SIZE 0x30
-class SBUIInputFieldDrawUnk
-{
-public:
-    SBUIInputFieldDrawUnk();
-    unsigned short FUN_00614230(void *, const std::wstring *, const SBGeoBoundingBox2D &, unsigned int, unsigned short, bool);
-    std::wstring m_00; // 0x00
-    undefined4 m_10;   // 0x10
-    char m_14;         // 0x14
-    unsigned int m_18; // 0x18
-    RHMapBox m_1c;     // 0x1c
-};
+#include "SBUIInputFieldDraw.h"
 
 typedef RHMenuScreenView RHPortraitTextResourceCalls;
 

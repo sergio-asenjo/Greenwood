@@ -6,18 +6,9 @@
 #include "SBDrawManagerCore.h"
 #include "SBDrawViewport.h"
 
-class RHUnk005ef320;
-extern RHUnk005ef320 *g_unk0x6c11d0;
+extern SBDrawManager *g_unk0x6c11d0;
 
 class RHUnk00613e90;
-
-class RHUnkFXDraw
-{
-public:
-    unsigned short FUN_005e56c0(unsigned long surface);
-    unsigned short FUN_005e5750(unsigned long surface);
-    unsigned long Unk005e4ed0(unsigned short width, unsigned short height, unsigned long, bool);
-};
 
 #include "SBThreadedInput.h"
 

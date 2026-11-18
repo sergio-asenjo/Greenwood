@@ -7,6 +7,13 @@
 
 DECOMP_SIZE_ASSERT(SBFontTextView, 0x0c)
 DECOMP_SIZE_ASSERT(SBFontUnk0061e840, 0x44)
+DECOMP_STATIC_ASSERT(offsetof(SBFontUnk0061e840, m_context) == 0x04)
+DECOMP_STATIC_ASSERT(offsetof(SBFontUnk0061e840, m_loaded) == 0x08)
+DECOMP_STATIC_ASSERT(offsetof(SBFontUnk0061e840, m_tag) == 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(SBFontUnk0061e840, m_14) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(SBFontUnk0061e840, m_18) == 0x18)
+DECOMP_STATIC_ASSERT(offsetof(SBFontUnk0061e840, m_3c) == 0x3c)
+DECOMP_STATIC_ASSERT(offsetof(SBFontUnk0061e840, m_40) == 0x40)
 DECOMP_SIZE_ASSERT(SBFontNode0061fcb0, 0x14)
 DECOMP_SIZE_ASSERT(SBFontIterator0061fe10, 0x04)
 DECOMP_SIZE_ASSERT(SBFontPair0061f2b0, 0x08)
@@ -189,48 +196,48 @@ SBFontTree0061f3e0::~SBFontTree0061f3e0()
 }
 
 // FUNCTION: GAME 0x0061e7b0
-SBNativeFontBase::SBNativeFontBase()
+SBFontUnk0061e840::SBFontUnk0061e840()
 {
     m_context = 0;
-    m_08[0] = 0;
+    m_loaded = 0;
     *(unsigned *)this = 0x67ae34;
-    memset(m_08 + 4, 0, 0xc);
-    memset(m_08 + 0x10, 0, 0x2c);
+    memset((char *)this + 0x0c, 0, 0x0c);
+    memset((char *)this + 0x18, 0, 0x2c);
 }
 
 // FUNCTION: GAME 0x0061e7e0
-void *SBNativeFontBase::FUN_0061e7e0(unsigned flags)
+void *SBFontUnk0061e840::FUN_0061e7e0(unsigned flags)
 {
-    this->~SBNativeFontBase();
+    this->SBFontUnk0061e840::~SBFontUnk0061e840();
     if (flags & 1)
         operator delete(this);
     return this;
 }
 
 // FUNCTION: GAME 0x0061e800
-SBNativeFontBase::~SBNativeFontBase()
+SBFontUnk0061e840::~SBFontUnk0061e840()
 {
     *(unsigned *)this = 0x67ae34;
 }
 
-void EmitSBFontUnk0061e800(SBNativeFontBase *a)
+void EmitSBFontUnk0061e800(SBFontUnk0061e840 *a)
 {
-    a->~SBNativeFontBase();
+    a->SBFontUnk0061e840::~SBFontUnk0061e840();
 }
 
 // FUNCTION: GAME 0x0061e810
-void SBFontUnk0061e840::FUN_0061e810(int value, int)
+void SBFontUnk0061e840::AttachToRenderContext(SBUIUnkSurfaceBase *value, unsigned long)
 {
-    if (m_04) {
-        v6();
+    if (m_context) {
+        DetachFromRenderContext();
     }
-    m_04 = value;
+    m_context = value;
 }
 
 // FUNCTION: GAME 0x0061e840
-void SBFontUnk0061e840::FUN_0061e840()
+void SBFontUnk0061e840::DetachFromRenderContext()
 {
-    m_04 = 0;
+    m_context = 0;
 }
 
 // FUNCTION: GAME 0x0061e850
@@ -238,7 +245,7 @@ int SBFontUnk0061e840::FUN_0061e850(unsigned short value)
 {
     long first;
     long second;
-    int result = v3(value, first, second);
+    int result = GetCharacterWidth(value, first, second);
     return first + second + result;
 }
 
@@ -249,7 +256,7 @@ int SBFontUnk0061e840::FUN_0061e880()
 }
 
 // FUNCTION: GAME 0x0061e8a0
-std::string SBFontUnk0061e840::FUN_0061e8a0()
+std::string SBFontUnk0061e840::FUN_0061e8a0() const
 {
     return std::string(m_18);
 }
@@ -270,8 +277,8 @@ long SBFontUnk0061e840::FUN_0061e980(const std::wstring &text, long &first, long
     for (const unsigned short *it = text.begin(); it != text.end(); ++it) {
         long left;
         long right;
-        long result = v3(*it, left, right);
-        width = width + v8() + result;
+        long result = GetCharacterWidth(*it, left, right);
+        width = width + GetExtraSpacing() + result;
         if (it == text.begin()) {
             first = left;
         } else {
@@ -301,22 +308,22 @@ bool SBFontUnk0061e840::FUN_0061ea80(const std::string &name)
     RHUnk005f4fc0 file;
     bool result = false;
     if (file.FUN_005f5090(name, 1) == 0) {
-        result = v9(file);
+        result = LoadFromStream(file);
     }
-    m_08[0] = result;
+    m_loaded = result;
     return result;
 }
 
 // FUNCTION: GAME 0x0061eb00
-bool SBFontUnk0061e840::FUN_0061eb00(SBFile &file)
+bool SBFontUnk0061e840::LoadFromStream(SBFile &file)
 {
     char tag[6];
-    file.Access(m_08 + 4, 6);
+    file.Access(m_tag, 6);
     if (file.Access(&m_14, 4)) {
         return false;
     }
-    v1(tag);
-    if (memcmp(m_08 + 4, tag, 6)) {
+    GetImplementationTag(tag);
+    if (memcmp(m_tag, tag, 6)) {
         return false;
     }
     if (file.Access(m_18, 0x2c)) {
@@ -326,18 +333,19 @@ bool SBFontUnk0061e840::FUN_0061eb00(SBFile &file)
 }
 
 // FUNCTION: GAME 0x0061eb80
-int SBFontUnk0061e840::FUN_0061eb80(const std::wstring *text, void *a, const void *b, bool c)
+int SBFontUnk0061e840::FUN_0061eb80(const std::wstring *text, SBGeoPoint2D *position,
+    const SBGeoBoundingBox2D *bounds, bool measure)
 {
     int count = 0;
     for (std::wstring::const_iterator it = text->begin(); it != text->end(); ++count, ++it) {
-        v4(*it, a, b, c);
+        Render(*it, *position, *bounds, measure);
     }
     return count;
 }
 
 // Parked: font-name return ABI and pair-copy materialization remain unmatched.
 // STUB: GAME 0x0061ebd0
-void SBFontUnk0061e840::FUN_0061ebd0(unsigned short value)
+void SBFontUnk0061e840::FUN_0061ebd0(unsigned short value) const
 {
     std::string name = FUN_0061e8a0();
     undefined compare;
@@ -356,11 +364,11 @@ void SBFontUnk0061e840::FUN_0061ebd0(unsigned short value)
 }
 
 // FUNCTION: GAME 0x0061ed70
-bool SBFontUnk0061e840::FUN_0061ed70(SBFile &file)
+bool SBFontUnk0061e840::SaveToStream(SBFile &file)
 {
-    v1(m_08 + 4);
-    m_14 = v0();
-    file.Access(m_08 + 4, 6);
+    GetImplementationTag(m_tag);
+    m_14 = GetImplementationVersion();
+    file.Access(m_tag, 6);
     if (file.Access(&m_14, 4)) {
         return false;
     }
@@ -1085,8 +1093,8 @@ void SBFontIterator0061fe10::FUN_00620fa0()
 void SBFontEmit(SBFontUnk0061e840 *font, unsigned short value)
 {
     SBFontTree0061f3e0 fonts;
-    font->FUN_0061e810(value, 0);
-    font->FUN_0061e840();
+    font->AttachToRenderContext(0, 0);
+    font->DetachFromRenderContext();
     font->FUN_0061e850(value);
     font->FUN_0061e880();
     font->FUN_0061e8a0();
@@ -1094,8 +1102,8 @@ void SBFontEmit(SBFontUnk0061e840 *font, unsigned short value)
     font->FUN_0061ea50(*(const std::wstring *)0);
     font->FUN_0061ea80(std::string());
     font->FUN_0061eb80(0, 0, 0, 0);
-    font->FUN_0061eb00(*(SBFile *)0);
-    font->FUN_0061ed70(*(SBFile *)0);
+    font->SBFontUnk0061e840::LoadFromStream(*(SBFile *)0);
+    font->SBFontUnk0061e840::SaveToStream(*(SBFile *)0);
     font->FUN_0061ebd0(value);
     undefined byte;
     SBFontTree0061fcb0 tree(byte, false, byte);

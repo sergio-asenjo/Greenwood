@@ -69,19 +69,7 @@ public:
 #include "SBUIListboxFont.h"
 
 // SIZE 0x30
-class SBUIInputFieldDrawUnk
-{
-public:
-    SBUIInputFieldDrawUnk();
-    unsigned short FUN_00614230(void *, const std::wstring *, const SBGeoBoundingBox2D &, unsigned int, unsigned short, bool);
-    unsigned int FUN_00613e80();
-    std::wstring &FUN_00613e90();
-    std::wstring m_00; // 0x00
-    undefined4 m_10;   // 0x10
-    char m_14;         // 0x14
-    unsigned int m_18; // 0x18
-    RHMapBox m_1c;     // 0x1c
-};
+#include "SBUIInputFieldDraw.h"
 
 #include "RHPopupRenderer0060dbc0.h"
 
@@ -92,8 +80,8 @@ class RHUnk005cba10 : public RHPopupRenderer0060dbc0
 public:
     RHUnk005cba10();
     void *FUN_005cb4a0(unsigned flags);
-    SBGeoBoundingBox2D FUN_005cb550(SBUIListboxUnk0061e890 *font, bool clip) const;
-    void FUN_005cb700(SBUIListboxUnk0061e890 *font);
+    SBGeoBoundingBox2D FUN_005cb550(SBFontUnk0061e840 *font, bool clip) const;
+    void FUN_005cb700(SBFontUnk0061e840 *font);
     void FUN_005cb9d0(unsigned long width, unsigned long height);
     bool FUN_005cba10(unsigned id);
     SBGeoVector2D m_dropped;    // 0x7c

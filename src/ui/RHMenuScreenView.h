@@ -22,6 +22,7 @@ public:
 class SBThreadedInput;
 class RHMenuWindow;
 class RHMenuWindowUI;
+class SBFontUnk0061e840;
 
 struct RHMapScreenNode
 {
@@ -65,7 +66,7 @@ public:
     static void *FUN_0053b730(long background, unsigned short color);
     void FUN_0053c140(unsigned long flags);
     void FUN_0053be40(unsigned long value);
-    void *FUN_0053be80(const std::string &name);
+    SBFontUnk0061e840 *FUN_0053be80(const std::string &name);
     void FUN_0053bb80(RHMenuWindow *window, bool display, bool modal);
     void FUN_0053b1f0(RHMenuWindow *window);
     void FUN_0053c390();

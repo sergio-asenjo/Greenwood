@@ -27,7 +27,8 @@ SBUIInputFieldBoxCalls &SBUIInputFieldBoxCalls::FUN_0060a860(const RHMobileUnk00
 #include "RHKeyConfig.h"
 #include <string.h>
 
-// FUNCTION: GAME 0x0045ac40
+// TEMPLATE: GAME 0x0045ac40 FOLDED
+// ?GetKeys@RHKeyConfig@@QBEPBFXZ
 const short *RHKeyConfig::GetKeys() const { return m_keys; }
 
 // TEMPLATE: GAME 0x004611c0 FOLDED
@@ -36,3 +37,6 @@ void RHGameInputSegment::FUN_004611c0()
 {
     ((RHMobileUnk006100e0 *)this)->~RHMobileUnk006100e0();
 }
+
+// TEMPLATE: GAME 0x0045ac40 FOLDED
+// ?GetType@RHSectorProduction@@QBEHXZ

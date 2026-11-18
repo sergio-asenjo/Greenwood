@@ -1,4 +1,5 @@
 #include "SBTrueTypeFont.h"
+#include "SBUIUnkSurface.h"
 #include <windows.h>
 #include "SBUIRendererListbox.h"
 #include "SBNativeFont.h"
@@ -8,9 +9,9 @@
 // FUNCTION: GAME 0x00616790
 void SBTrueTypeFont::CreateSystemObjects()
 {
-    m_font = CreateFontA(((SBUIListboxUnk0061e890 *)this)->FUN_0061e890(), 0, 0, 0,
-        ((unsigned char)((SBFontUnk0061e840 *)this)->FUN_0061e970() & 1) ? 700 : 400,
-        ((unsigned)((SBFontUnk0061e840 *)this)->FUN_0061e970() >> 1) & 1,
+    m_font = CreateFontA(GetHeight(), 0, 0, 0,
+        ((unsigned char)FUN_0061e970() & 1) ? 700 : 400,
+        ((unsigned)FUN_0061e970() >> 1) & 1,
         0, 0, 0, 0, 0, 0, 0, (const char *)m_trueTypeHeader);
     m_deviceContext = CreateCompatibleDC(0);
     SelectObject((HDC)m_deviceContext, (HGDIOBJ)m_font);
@@ -78,7 +79,7 @@ bool SBTrueTypeFont::Render(unsigned short character, SBGeoPoint2D &position, co
 {
     const float *box = (const float *)&bounds;
     HRGN region = SBTrueTypeFontRegion(box[0], box[1], box[2], box[3]);
-    HDC context = (HDC)m_context->V08();
+    HDC context = (HDC)m_context->FUN_0061b350();
     SelectObject(context, (HGDIOBJ)m_font);
     SetBkMode(context, 1);
     SetMapMode(context, 1);
@@ -86,16 +87,16 @@ bool SBTrueTypeFont::Render(unsigned short character, SBGeoPoint2D &position, co
     SetTextColor(context, *(const COLORREF *)((const char *)this + 0x64));
     if (SBTrueTypeFontOverflows(FUN_00616870(context, character), position.GetX(), box[2]))
     {
-        position.m_y = SBTrueTypeFontOffset((unsigned)((SBUIListboxUnk0061e890 *)this)->FUN_0061e890(), position.m_y);
+        position.m_y = SBTrueTypeFontOffset((unsigned)GetHeight(), position.m_y);
         position.m_x = box[0];
         if (bounds.FUN_00608400(position))
         {
             bool outside = !bounds.FUN_00608400(position.Unk005fc190(
-                SBGeoVector2D(0, (float)(unsigned)((SBUIListboxUnk0061e890 *)this)->FUN_0061e890())));
+                SBGeoVector2D(0, (float)(unsigned)GetHeight())));
             if (!outside)
                 goto draw;
         }
-        m_context->V10(context);
+        m_context->FUN_0061b640(context);
         return false;
     }
 draw:
@@ -105,7 +106,7 @@ draw:
     else
         result = 1;
     position.m_x = SBTrueTypeFontOffset(FUN_00616870(context, character), position.m_x);
-    m_context->V10(context);
+    m_context->FUN_0061b640(context);
     DeleteObject(region);
     return result == 1;
 }

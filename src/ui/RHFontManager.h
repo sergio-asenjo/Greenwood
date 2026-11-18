@@ -6,6 +6,7 @@
 #include "Decomp.h"
 #include <map>
 #include <stdio.h>
+class SBFontUnk0061e840;
 
 struct RHFontInsertNode
 {
@@ -93,8 +94,8 @@ public:
     RHFontManager(const std::string &name);
     ~RHFontManager();
     void LoadConfiguration(const std::string &name);
-    static void *FUN_005024f0();
-    void *GetFont(const std::string &name) const;
+    static RHFontManager *FUN_005024f0();
+    SBFontUnk0061e840 *GetFont(const std::string &name) const;
     static std::string Get(FILE *file, char delimiter);
     void TrimString(std::string &value);
     void Emit(const std::string &name);

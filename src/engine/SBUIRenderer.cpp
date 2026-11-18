@@ -107,8 +107,8 @@ extern RHMapResources *g_unk0x006c1840;
 #define m_unk20 (*(unsigned long *)(m_bytes + 0x20))
 #define m_resourceId (*(long *)(m_bytes + 0x38))
 
-class RHUnk005ef320;
-extern RHUnk005ef320 *g_unk0x6c11d0;
+class SBDrawManager;
+extern SBDrawManager *g_unk0x6c11d0;
 
 // FUNCTION: GAME 0x0060d420
 RHPortraitRenderer0060d470::RHPortraitRenderer0060d470()
@@ -249,7 +249,7 @@ bool RHGameWidgetRendererCalls::FUN_0060d890(const SBGeoPoint2D &point)
     {
         unsigned short pixel = view.GetPixel((unsigned short)point.m_x, (unsigned short)point.m_y);
         (*(SBDrawManager **)(self + 0x1c))->FUN_005e5ea0(view);
-        if (pixel != (*(SBDrawUnk005e5ec0 **)(self + 0x1c))->FUN_005e5f60(surface))
+        if (pixel != (*(SBDrawManager **)(self + 0x1c))->FUN_005e5f60(surface))
             return true;
     }
     return false;
@@ -333,9 +333,9 @@ int SBUIUnk0060dd00::FUN_0060dc20(unsigned int id)
 // FUNCTION: GAME 0x0060dcd0
 int SBUIUnk0060dd00::FUN_0060dcd0()
 {
-    if (*(SBUIListboxUnk0061e890 **)(m_bytes + 0x50)) {
-        int value = ((RHPopupRenderer0060dbc0 *)this)->FUN_0060dda0(*(SBUIListboxUnk0061e890 **)(m_bytes + 0x50), true);
-        return (*(SBUIListboxUnk0061e890 **)(m_bytes + 0x50))->FUN_0061e890() * value;
+    if (*(SBFontUnk0061e840 **)(m_bytes + 0x50)) {
+        int value = ((RHPopupRenderer0060dbc0 *)this)->FUN_0060dda0(*(SBFontUnk0061e840 **)(m_bytes + 0x50), true);
+        return (*(SBFontUnk0061e840 **)(m_bytes + 0x50))->GetHeight() * value;
     }
     return 0;
 }

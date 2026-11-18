@@ -18,7 +18,7 @@ SBTrueTypeFont::SBTrueTypeFont(const std::string &name)
 {
     m_font = 0;
     m_deviceContext = 0;
-    ((SBFontUnk0061e840 *)this)->FUN_0061ea80(name);
+    FUN_0061ea80(name);
     CreateSystemObjects();
 }
 
@@ -53,7 +53,7 @@ void SBTrueTypeFont::GetImplementationTag(char (&tag)[6]) const
 // FUNCTION: GAME 0x00616930
 bool SBTrueTypeFont::LoadFromStream(SBFile &file)
 {
-    bool loaded = ((SBFontUnk0061e840 *)this)->FUN_0061eb00(file);
+    bool loaded = SBFontUnk0061e840::LoadFromStream(file);
     if (!loaded)
         return loaded;
     file.Access((char *)this + 0x44, 0x24);
@@ -63,7 +63,7 @@ bool SBTrueTypeFont::LoadFromStream(SBFile &file)
 // FUNCTION: GAME 0x00616b90
 bool SBTrueTypeFont::SaveToStream(SBFile &file)
 {
-    bool saved = ((SBFontUnk0061e840 *)this)->FUN_0061ed70(file);
+    bool saved = SBFontUnk0061e840::SaveToStream(file);
     if (!saved)
         return saved;
     file.Access((char *)this + 0x44, 0x24);

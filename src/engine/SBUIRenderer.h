@@ -9,7 +9,7 @@ class RHUnk005fc3b0;
 
 #include "RHMapResources.h"
 
-class SBUIListboxUnk0061e890;
+class SBFontUnk0061e840;
 
 #include "SBUIUnk005fd4a0.h"
 

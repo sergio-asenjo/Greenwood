@@ -150,17 +150,6 @@ public:
     virtual bool V1c(SBFile &);
 };
 
-class SBNativeFontRenderContext
-{
-public:
-    virtual void V00();
-    virtual void V04();
-    virtual void *V08();
-    virtual unsigned long V0c(void *, void *, bool);
-    virtual void V10(void *context);
-    virtual void V14(unsigned long);
-};
-
 class SBGeoPoint2D;
 class SBGeoBoundingBox2D;
 
@@ -168,7 +157,7 @@ class SBGeoBoundingBox2D;
 
 #include "SBNativeFontBase.h"
 
-class __declspec(novtable) SBNativeFont : public SBNativeFontBase
+class __declspec(novtable) SBNativeFont : public SBFontUnk0061e840
 {
 public:
     typedef SBNativeFontCharacterInfo CharacterInfo;
@@ -176,11 +165,11 @@ public:
     SBNativeFont(const std::string &name);
     ~SBNativeFont();
     void *FUN_00616c70(unsigned flags);
-    void AttachToRenderContext(SBNativeFontRenderContext *, unsigned long);
+    void AttachToRenderContext(SBUIUnkSurfaceBase *, unsigned long);
     void DetachFromRenderContext();
-    unsigned FUN_00616f40() const;
+    long GetBaseLine() const;
     virtual unsigned GetImplementationVersion() const;
-    unsigned FUN_00617080() const;
+    unsigned long GetExtraSpacing() const;
     const CharacterInfo *GetCharacterInfo(unsigned short) const;
     void GetImplementationTag(char (&tag)[6]) const;
     long GetCharacterWidth(unsigned short character, long &left, long &right) const;

@@ -28,32 +28,9 @@ void SBAssert(int, const char *, int, const char *, ...);
 namespace std { void _Xlen(); }
 void FUN_0048be30();
 
-class RHUnkFXDraw
-{
-public:
-    unsigned short FUN_005e56c0(unsigned long);
-    unsigned short FUN_005e5750(unsigned long);
-};
-
 #include "SBDrawManagerCore.h"
 
 #include "RHUnk00600820.h"
-
-// SIZE 0x04
-class SBUIInputFieldFontHeight
-{
-public:
-    virtual void v0() = 0; // vtable+0x00
-    virtual void v1() = 0; // vtable+0x04
-    virtual void v2(unsigned int) = 0; // vtable+0x08
-    virtual void v3() = 0; // vtable+0x0c
-    virtual void v4() = 0; // vtable+0x10
-    virtual void v5() = 0; // vtable+0x14
-    virtual void v6() = 0; // vtable+0x18
-    virtual unsigned int v7() = 0; // vtable+0x1c
-};
-
-DECOMP_SIZE_ASSERT(SBUIInputFieldFontHeight, 0x04)
 
 // GLOBAL: GAME 0x006775dc
 // ?_C@?1??_Nullstr@?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@CAPBGXZ@4GB
@@ -104,14 +81,14 @@ bool SBGeoBoundingBox2D::FUN_006084a0(const SBGeoBoundingBox2D &other)
 }
 
 // FUNCTION: GAME 0x0060dda0
-int RHPopupRenderer0060dbc0::FUN_0060dda0(SBUIListboxUnk0061e890 *font, bool silent)
+int RHPopupRenderer0060dbc0::FUN_0060dda0(SBFontUnk0061e840 *font, bool silent)
 {
     int result;
     SBUIInputFieldDrawUnk renderer;
     renderer.FUN_00614d70(silent);
     if (m_position.m_p1.m_x - m_position.m_p0.m_x > 0.0f)
     {
-        result = renderer.FUN_00614230(font, &m_name, m_position, m_60, m_64, true);
+        result = renderer.FUN_00614230(font, m_name, m_position, m_60, m_64, true);
         m_68 = renderer.FUN_00613e90();
     }
     else
@@ -121,11 +98,11 @@ int RHPopupRenderer0060dbc0::FUN_0060dda0(SBUIListboxUnk0061e890 *font, bool sil
         {
         case 8:
             position = m_position.m_p0.FUN_005fc200(
-                SBGeoVector2D((float)((SBFontUnk0061e840 *)font)->FUN_0061ea50(m_name), 0.0f));
+                SBGeoVector2D((float)font->FUN_0061ea50(m_name), 0.0f));
             break;
         case 2:
             position = m_position.m_p0.FUN_005fc200(
-                SBGeoVector2D((float)(((SBFontUnk0061e840 *)font)->FUN_0061ea50(m_name) / 2), 0.0f));
+                SBGeoVector2D((float)(font->FUN_0061ea50(m_name) / 2), 0.0f));
             break;
         case 1:
             position = m_position.m_p0;
@@ -277,21 +254,21 @@ unsigned int SBUIInputFieldDrawUnk::FUN_00613e80()
 }
 
 // STUB: GAME 0x00613ea0
-unsigned short SBUIInputFieldDrawUnk::FUN_00613ea0(void *font, const std::wstring *text,
+unsigned short SBUIInputFieldDrawUnk::FUN_00613ea0(SBFontUnk0061e840 *font, const std::wstring *text,
     const SBGeoBoundingBox2D &bounds, unsigned int flags, unsigned int spacing)
 {
     SBGeoPoint2D position(bounds.Min());
     std::wstring remaining;
     const unsigned short *character = text->begin();
     for (; character != text->end(); ++character) {
-        SBGeoVector2D extent((float)(unsigned int)((SBFontUnk0061e840 *)font)->FUN_0061e850(*character),
-            (float)((unsigned int)((SBUIListboxUnk0061e890 *)font)->FUN_0061e890() - (unsigned short)spacing));
+        SBGeoVector2D extent((float)(unsigned int)font->FUN_0061e850(*character),
+            (float)((unsigned int)font->GetHeight() - (unsigned short)spacing));
         bool inside = bounds.FUN_00608400(position) && bounds.FUN_00608400(position.Unk005fc190(extent));
         float bottom = bounds.ValueC();
         float currentY = position.m_y;
-        bool nextLine = currentY + (unsigned int)((SBUIListboxUnk0061e890 *)font)->FUN_0061e890() < bottom;
+        bool nextLine = currentY + (unsigned int)font->GetHeight() < bottom;
         if (inside || nextLine) {
-            if (!((SBFontUnk0061e840 *)font)->v4(*character, &position, &bounds, m_14))
+            if (!font->Render(*character, position, bounds, m_14))
                 break;
         } else {
             break;
@@ -301,10 +278,10 @@ unsigned short SBUIInputFieldDrawUnk::FUN_00613ea0(void *font, const std::wstrin
     for (; character != text->end(); ++character)
         m_00.append(1, *character);
     return (unsigned short)((position.m_y - bounds.Value4()) /
-        (float)((unsigned int)((SBUIListboxUnk0061e890 *)font)->FUN_0061e890() - (unsigned short)spacing) + 1.0f);
+        (float)((unsigned int)font->GetHeight() - (unsigned short)spacing) + 1.0f);
 }
 
-void EmitSBUIInputFieldSingleWord(SBUIInputFieldDrawUnk *renderer, void *font,
+void EmitSBUIInputFieldSingleWord(SBUIInputFieldDrawUnk *renderer, SBFontUnk0061e840 *font,
     std::wstring *text, const SBGeoBoundingBox2D &bounds)
 {
     renderer->FUN_00613ea0(font, text, bounds, 0, 0);
@@ -350,11 +327,11 @@ static inline void SBUIInputFieldCenter(SBGeoBoundingBox2D &box, float x, long w
 }
 
 // STUB: GAME 0x00614bf0
-bool SBUIInputFieldDrawUnk::FUN_00614bf0(void *font, std::wstring *text, const SBGeoPoint2D &point, unsigned int flags)
+bool SBUIInputFieldDrawUnk::FUN_00614bf0(SBFontUnk0061e840 *font, std::wstring *text, const SBGeoPoint2D &point, unsigned int flags)
 {
     SBGeoBoundingBox2D box;
-    long width = ((SBFontUnk0061e840 *)font)->FUN_0061ea50(*text);
-    int height = ((SBUIListboxUnk0061e890 *)font)->FUN_0061e890();
+    long width = font->FUN_0061ea50(*text);
+    int height = font->GetHeight();
     float y = point.m_y;
     box.SetValue4(y);
     box.SetValueC(y + height);
@@ -379,7 +356,7 @@ bool SBUIInputFieldDrawUnk::FUN_00614bf0(void *font, std::wstring *text, const S
     {
         SBUIInputFieldCenter(box, point.GetX(), width, m_18, flags);
     }
-    bool rendered = FUN_00614230(font, text, box, flags, 0, 0) != 0;
+    bool rendered = FUN_00614230(font, *text, box, flags, 0, 0) != 0;
     return rendered;
 }
 
@@ -487,10 +464,10 @@ void SBUIInputFieldSplitUnk::FUN_00614e60(const std::wstring &text, const std::w
 }
 
 // STUB: GAME 0x00614230
-unsigned short SBUIInputFieldDrawUnk::FUN_00614230(void *fontObject, const std::wstring *text,
+unsigned short SBUIInputFieldDrawUnk::FUN_00614230(SBFontUnk0061e840 *font, const std::wstring &text,
     const SBGeoBoundingBox2D &bounds, unsigned int flags, unsigned short spacing, bool breakWords)
 {
-    SBUIInputFieldSplitUnk split(*text, std::wstring(
+    SBUIInputFieldSplitUnk split(text, std::wstring(
         // STRING: GAME 0x006bb79c
         L" \n\r\t"));
     SBGeoPoint2D position;
@@ -505,9 +482,8 @@ unsigned short SBUIInputFieldDrawUnk::FUN_00614230(void *fontObject, const std::
     }
     if (split.m_tokens.empty())
         return 0;
-    SBFontUnk0061e840 *font = (SBFontUnk0061e840 *)fontObject;
     if (breakWords && OneWordBiggerThanALine(font, lineBounds.Width(), &split.m_tokens))
-        return FUN_00613ea0(fontObject, text, bounds, flags, spacing);
+        return FUN_00613ea0(font, &text, bounds, flags, spacing);
     if (split.m_separators.size() > split.m_tokens.size() - 1)
         split.m_separators.erase(split.m_separators.begin() + split.m_tokens.size() - 1,
             split.m_separators.end());
@@ -524,9 +500,9 @@ unsigned short SBUIInputFieldDrawUnk::FUN_00614230(void *fontObject, const std::
         unsigned long extraSpaces = 0;
         if ((flags & 0x10) == 0x10) {
             float height = lineBounds.ValueC() - lineBounds.Value4();
-            if ((unsigned int)((SBUIListboxUnk0061e890 *)fontObject)->FUN_0061e890() < height)
-                position.m_y += (height - font->v7()) * 0.5f;
-            maxWidth = font->FUN_0061ea50(*text);
+            if ((unsigned int)font->GetHeight() < height)
+                position.m_y += (height - font->GetBaseLine()) * 0.5f;
+            maxWidth = font->FUN_0061ea50(text);
         }
         std::vector<std::wstring>::const_iterator endWord = split.m_tokens.end();
         std::vector<std::wstring>::const_iterator endSeparator = split.m_separators.end();
@@ -560,13 +536,13 @@ unsigned short SBUIInputFieldDrawUnk::FUN_00614230(void *fontObject, const std::
         if (position.m_x + m_18 > m_1c.Value8())
             m_1c.SetValue8(m_1c.Value0() + m_18 + position.m_x);
         m_1c.SetValueC(m_1c.ValueC() +
-            (unsigned int)((SBUIListboxUnk0061e890 *)fontObject)->FUN_0061e890() - (float)spacing);
+            (unsigned int)font->GetHeight() - (float)spacing);
         position.m_x = lineBounds.Value0();
-        position.m_y += (unsigned int)((SBUIListboxUnk0061e890 *)fontObject)->FUN_0061e890() - (float)spacing;
+        position.m_y += (unsigned int)font->GetHeight() - (float)spacing;
         ++lines;
         ++word;
         ++separator;
-        if ((unsigned int)((SBUIListboxUnk0061e890 *)fontObject)->FUN_0061e890() >
+        if ((unsigned int)font->GetHeight() >
             lineBounds.ValueC() - position.m_y) {
             FUN_00613c90(word, separator, split.m_tokens.end(), split.m_separators.end());
             break;
@@ -618,7 +594,7 @@ std::wstring SBUIInputFieldTextUnk::FUN_0061dd50(unsigned int direction, unsigne
         unsigned short character = node->m_08;
         SBFontUnk0061e840 *font = (SBFontUnk0061e840 *)m_14;
         unsigned int advance = font->FUN_0061e850(character);
-        total += advance + font->v8();
+        total += advance + font->GetExtraSpacing();
         if (total > width)
             break;
         if (direction == 0)
@@ -681,7 +657,7 @@ bool RHPortraitText0061db10::Insert(unsigned short character)
     SBUIInputFieldCharacter value;
     value.character = character;
     value.width = ((SBFontUnk0061e840 *)text.m_font)->FUN_0061e850(character)
-        + ((SBFontUnk0061e840 *)text.m_font)->v8();
+        + ((SBFontUnk0061e840 *)text.m_font)->GetExtraSpacing();
     text.m_cursor = text.m_characters.insert(position, value);
     return true;
 }
@@ -752,7 +728,7 @@ void RHPortraitText0061db10::FUN_0061e060(const std::wstring &text)
     {
         value.character = *character;
         SBFontUnk0061e840 *font = (SBFontUnk0061e840 *)m_font;
-        value.width = font->FUN_0061e850(*character) + font->v8();
+        value.width = font->FUN_0061e850(*character) + font->GetExtraSpacing();
         characters.insert(characters.end(), value);
     }
     m_cursor = m_characters.begin();
@@ -789,7 +765,7 @@ void SBUIInputFieldUnk00621440::FUN_00621440(SBUIInputFieldUnkResource *resource
 {
     m_6c = resource;
     if (m_64)
-        m_64->v2(1);
+        delete m_64;
     m_64 = m_6c->m_14;
     m_68 = m_6c->m_18;
 }
@@ -807,11 +783,11 @@ bool SBUIInputFieldUnk00621440::FUN_00621470(unsigned int id)
     std::wstring after;
     SBGeoVector2D offset;
     SBUIInputFieldDrawUnk draw;
-    void *font = m_84 == 1 ? (void *)m_64 : m_68;
+    SBFontUnk0061e840 *font = m_84 == 1 ? m_64 : m_68;
     SBGeoBoundingBox2D &box = m_70;
     float height = box.m_p1.m_y - box.m_p0.m_y;
     offset.m_x = 0;
-    offset.m_y = (height - ((SBUIInputFieldFontHeight *)font)->v7()) * 0.5f;
+    offset.m_y = (height - (unsigned long)font->GetBaseLine()) * 0.5f;
     if (!((SBUIUnk0060dae0 *)this)->FUN_0060dae0(id))
         return false;
     if (!m_84)
@@ -832,7 +808,7 @@ bool SBUIInputFieldUnk00621440::FUN_00621470(unsigned int id)
             SBUIInputFieldTextAddress(FUN_005d0880(*(std::wstring *)&before, *(std::wstring *)&after)),
             m_70.m_p0.Unk005fc190(offset), 1);
         std::wstring *value = (std::wstring *)(m_00 + 0x50);
-        long textWidth = ((SBFontUnk0061e840 *)font)->FUN_0061ea50(*value);
+        long textWidth = font->FUN_0061ea50(*value);
         draw.FUN_00614bf0(font, value,
             SBGeoPoint2D(m_70.m_p1.m_x - textWidth, m_70.m_p0.m_y).Unk005fc190(offset), 1);
     }
@@ -856,7 +832,7 @@ bool SBUIInputFieldUnk00621440::FUN_00621470(unsigned int id)
             return false;
         }
         position = box.m_p0.Unk005fc190(SBGeoVector2D((const SBGeoVector2D &)SBGeoPoint2D((float)cursor, 0)));
-        RHUnkFXDraw *manager = *(RHUnkFXDraw **)(m_00 + 0x1c);
+        SBDrawManager *manager = *(SBDrawManager **)(m_00 + 0x1c);
         RHMapBox bounds(position.m_x, position.m_y,
             position.m_x + manager->FUN_005e56c0(surface),
             position.m_y + manager->FUN_005e5750(surface));

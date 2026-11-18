@@ -244,10 +244,9 @@ unsigned long RHTitbits::LoadFromResource()
     m_sprite->FUN_005bb180(36, first, count, 2, 0, &offsets);
     first = ((RHFrameHolder *)m_bank)->AddRowFromResource(resources, 0x127, count, (SBArray<SBGeoVector2D> &)offsets);
     m_sprite->FUN_005bb180(37, first, count, 2, 0, &offsets);
-    typedef unsigned long (RHUnkFXDraw::*CreateSurface)(unsigned short, unsigned short, int, bool);
-    m_surface = (((RHUnkFXDraw *)m_draw)->*reinterpret_cast<CreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(
+    m_surface = m_draw->Unk005e4ed0(
         ((RHCivilianSpriteView *)m_sprite)->FUN_005bdef0(), ((RHCivilianSpriteView *)m_sprite)->FUN_005bdf20(), 0, false);
-    m_mask = (((RHUnkFXDraw *)m_draw)->*reinterpret_cast<CreateSurface>(&RHUnkFXDraw::Unk005e4ed0))(
+    m_mask = m_draw->Unk005e4ed0(
         ((RHCivilianSpriteView *)m_sprite)->FUN_005bdef0(), ((RHCivilianSpriteView *)m_sprite)->FUN_005bdf20(), 0, false);
     size.FUN_005fc430(FUN_005fc580(SBGeoVector2D((float)((RHCivilianSpriteView *)m_sprite)->FUN_005bdef0(),
         (float)((RHCivilianSpriteView *)m_sprite)->FUN_005bdf20()), 0.5f));
@@ -693,24 +692,13 @@ bool RHTitbits::FUN_005c8340(int kind, RHElement *element)
 
 #include "RHMapBox.h"
 
-class SBUIInputFieldDrawUnk
-{
-public:
-    SBUIInputFieldDrawUnk();
-    bool FUN_00614bf0(void *, std::wstring *, const SBGeoPoint2D &, unsigned);
-    unsigned short FUN_00614230(void *, const std::wstring *, const SBGeoBoundingBox2D &, unsigned, unsigned short, bool);
-    std::wstring m_00;
-    unsigned m_10;
-    char m_14;
-    unsigned m_18;
-    RHMapBox m_1c;
-};
+#include "SBUIInputFieldDraw.h"
 
 // FUNCTION: GAME 0x005c84a0
 bool RHTitbits::RenderText(const std::wstring &text, const SBGeoBoundingBox2D &box, unsigned long flags) const
 {
     SBUIInputFieldDrawUnk draw;
-    draw.FUN_00614230(*(void *const *)((const char *)this + 0x78), (std::wstring *)&text, box, flags, 0, 1);
+    draw.FUN_00614230(m_font, text, box, flags, 0, 1);
     return true;
 }
 
@@ -719,23 +707,23 @@ bool RHTitbits::RenderText(const std::wstring &text, const SBGeoPoint2D &point) 
 {
     SBUIInputFieldDrawUnk draw;
     SBGeoPoint2D offset;
-    void *outline = *(void *const *)((const char *)this + 0x7c);
+    SBFontUnk0061e840 *outline = m_outline;
     if (outline)
     {
         offset = point;
         offset.FUN_005fc1e0(SBGeoVector2D(-1.0f, -1.0f));
-        draw.FUN_00614bf0(*(void *const *)((const char *)this + 0x7c), (std::wstring *)&text, offset, 1);
+        draw.FUN_00614bf0(m_outline, (std::wstring *)&text, offset, 1);
         offset = point;
         offset.FUN_005fc1e0(SBGeoVector2D(-1.0f, 1.0f));
-        draw.FUN_00614bf0(*(void *const *)((const char *)this + 0x7c), (std::wstring *)&text, offset, 1);
+        draw.FUN_00614bf0(m_outline, (std::wstring *)&text, offset, 1);
         offset = point;
         offset.FUN_005fc1e0(SBGeoVector2D(1.0f, -1.0f));
-        draw.FUN_00614bf0(*(void *const *)((const char *)this + 0x7c), (std::wstring *)&text, offset, 1);
+        draw.FUN_00614bf0(m_outline, (std::wstring *)&text, offset, 1);
         offset = point;
         offset.FUN_005fc1e0(SBGeoVector2D(1.0f, 1.0f));
-        draw.FUN_00614bf0(*(void *const *)((const char *)this + 0x7c), (std::wstring *)&text, offset, 1);
+        draw.FUN_00614bf0(m_outline, (std::wstring *)&text, offset, 1);
     }
-    draw.FUN_00614bf0(*(void *const *)((const char *)this + 0x78), (std::wstring *)&text, point, 1);
+    draw.FUN_00614bf0(m_font, (std::wstring *)&text, point, 1);
     return true;
 }
 

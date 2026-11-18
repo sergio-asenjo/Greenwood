@@ -68,15 +68,11 @@ public:
 
 #include "RHUnk00600820.h"
 
+#define SBGEO_POINT2D_VIEW
+#define SBGEO_BOUNDINGBOX2D_VIEW
 #include "SBDrawManagerCore.h"
 
-class RHUnk005ef320
-{
-public:
-    void FUN_005e57e0(unsigned, SBGeoVector2D &);
-};
-
-extern RHUnk005ef320 *g_unk0x6c11d0;
+extern SBDrawManager *g_unk0x6c11d0;
 
 #include "RHUIRendererShiftingTitbitClass.h"
 

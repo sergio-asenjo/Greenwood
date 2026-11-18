@@ -4,8 +4,9 @@
 #include "Decomp.h"
 #include <xstddef>
 
-class RHUnk005ef320;
+class SBDrawManager;
 class SBGeoBoundingBox2D;
+class RHUnk006114c0;
 
 struct SBUIUnkTreeNode
 {
@@ -271,34 +272,20 @@ struct SBUIUnkMap
     SBUIUnkTree m_tree;
 };
 
-class SBUIUnkImage
+class __declspec(novtable) SBUIUnkSurfaceBase
 {
 public:
-    virtual void V00() = 0;
-    virtual void V04() = 0;
-    virtual void V08() = 0;
-    virtual void V0c() = 0;
-    virtual void V10() = 0;
-    virtual void V14() = 0;
-    virtual void V18() = 0;
-    virtual void V1c() = 0;
-    virtual void V20(RHUnk005ef320 *draw, unsigned long surface) = 0;
-    virtual void V24() = 0;
-    virtual void V28() = 0;
-    virtual int V2c() = 0;
-    virtual int V30() = 0;
-};
-
-class SBUIUnkSurfaceBase
-{
-public:
-    SBUIUnkSurfaceBase() { m_vptr = 0x0067ae04; }
-    ~SBUIUnkSurfaceBase();
+    SBUIUnkSurfaceBase() { *(unsigned *)this = 0x0067ae04; }
+    virtual ~SBUIUnkSurfaceBase();
+    virtual bool FUN_0061b200(unsigned long, const SBGeoBoundingBox2D &, const SBGeoBoundingBox2D &) = 0;
+    virtual void *FUN_0061b350() = 0;
+    virtual unsigned long FUN_0061b380(RHUnk006114c0 *, RHUnk006114c0 *, bool) = 0;
+    virtual bool FUN_0061b640(void *) = 0;
+    virtual void FUN_0061b660(unsigned long) = 0;
     void *FUN_0061b040(unsigned flags);
-    unsigned m_vptr;
 };
 
-class SBUIUnkSurface : public SBUIUnkSurfaceBase
+class __declspec(novtable) SBUIUnkSurface : public SBUIUnkSurfaceBase
 {
 public:
     SBUIUnkSurface(unsigned long surface);
@@ -308,11 +295,11 @@ public:
         const SBGeoBoundingBox2D &destinationBox);
     void *FUN_0061b350();
     bool FUN_0061b640(void *dc);
-    unsigned long FUN_0061b380(SBUIUnkImage *image, SBUIUnkImage *mask, bool keyed);
+    unsigned long FUN_0061b380(RHUnk006114c0 *image, RHUnk006114c0 *mask, bool keyed);
     void FUN_0061b4c0(SBUIUnkSurfacePair &surfaces);
     void FUN_0061b660(unsigned long key);
     void FUN_0061b710(unsigned long surface);
-    RHUnk005ef320 *m_draw;
+    SBDrawManager *m_draw;
     unsigned long m_surface;
     SBUIUnkTree m_tree;
     unsigned long m_serial;

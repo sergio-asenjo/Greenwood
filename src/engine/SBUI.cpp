@@ -98,7 +98,7 @@ public:
     SBGeoBoundingBox2D m_bounds;
     unsigned short m_events;
     unsigned short m_a6;
-    RHUnkFXDraw *m_draw;
+    SBDrawManager *m_draw;
     unsigned long m_display;
     SBInputMouseState m_state;
     unsigned short m_ba;
@@ -146,11 +146,11 @@ public:
     unsigned short m_175e;
     unsigned short m_1760;
     unsigned short m_1762;
-    RHUnk005ef320 *m_draw;
+    SBDrawManager *m_draw;
     unsigned long m_display;
     SBGeoPoint2D m_176c;
-    SBUIFontView *m_font;
-    SBUIFontView *m_alternate;
+    SBFontUnk0061e840 *m_font;
+    SBFontUnk0061e840 *m_alternate;
     unsigned long m_177c;
     unsigned long m_1780;
     unsigned long m_1784;
@@ -248,8 +248,8 @@ class RHSaveGame;
 #include "SBUIListboxFont.h"
 
 DECOMP_SIZE_ASSERT(SBFrameEvent, 0x20)
-DECOMP_SIZE_ASSERT(SBUIListboxUnk0061e890, 0x44)
-DECOMP_STATIC_ASSERT(offsetof(SBUIListboxUnk0061e890, m_40) == 0x40)
+DECOMP_SIZE_ASSERT(SBFontUnk0061e840, 0x44)
+DECOMP_STATIC_ASSERT(offsetof(SBFontUnk0061e840, m_40) == 0x40)
 DECOMP_STATIC_ASSERT(offsetof(SBUI, m_179c) == 0x179c)
 DECOMP_STATIC_ASSERT(offsetof(SBUI, m_17c4) == 0x17c4)
 DECOMP_STATIC_ASSERT(offsetof(SBUI, m_17c8) == 0x17c8)
@@ -297,7 +297,7 @@ void SBUI::FUN_006189e0(unsigned long frame)
     {
         SBUIInputFieldDrawUnk renderer;
         SBGeoPoint2D position = m_tooltip->m_position.Unk005fc190(SBThreadedInput::GetSize()).FUN_005fc200(
-            SBGeoVector2D(0.0f, (float)(unsigned)((SBUIListboxUnk0061e890 *)m_font)->FUN_0061e890()));
+            SBGeoVector2D(0.0f, (float)(unsigned)m_font->GetHeight()));
         SBGeoBoundingBox2D source;
         SBGeoBoundingBox2D destination;
         renderer.FUN_00614d70(true);
@@ -306,37 +306,37 @@ void SBUI::FUN_006189e0(unsigned long frame)
         ((RHMobileUnk00607da0 *)&source)->FUN_00607da0((const RHMobileUnk00607da0 &)
             source.operator-(source.Min()));
         source.SetMax(source.Max().Unk005fc190(SBGeoVector2D(1, 1)));
-        if (position.GetX() + source.Width() > ((RHUnkFXDraw *)m_draw)->FUN_005e56c0(0))
+        if (position.GetX() + source.Width() > m_draw->FUN_005e56c0(0))
         {
             if (m_tooltip->m_position.GetX() - source.Width() > 0.0f)
                 position = m_tooltip->m_position.Unk005fc190(SBGeoVector2D(0,
                     (float)((unsigned)SBThreadedInput::GetHeight() -
-                        (unsigned)((SBUIListboxUnk0061e890 *)m_font)->FUN_0061e890()))).FUN_005fc200(
+                        (unsigned)m_font->GetHeight()))).FUN_005fc200(
                             SBGeoVector2D(source.Width(), 0));
             else
             {
                 source.SetMin(position);
-                source.SetMax(SBGeoVector2D(((RHUnkFXDraw *)m_draw)->FUN_005e56c0(0),
-                    position.GetY() + (unsigned)((SBUIListboxUnk0061e890 *)m_font)->FUN_0061e890() * 3));
+                source.SetMax(SBGeoVector2D(m_draw->FUN_005e56c0(0),
+                    position.GetY() + (unsigned)m_font->GetHeight() * 3));
                 position.Set(0.0f, 0.0f);
             }
         }
         ((RHMobileUnk00607da0 *)&destination)->FUN_00607da0((const RHMobileUnk00607da0 &)
             source.FUN_006090d0(SBGeoVector2D(position)));
-        if (destination.ValueC() > ((RHUnkFXDraw *)m_draw)->FUN_005e5750(0))
+        if (destination.ValueC() > m_draw->FUN_005e5750(0))
         {
             ((RHMobileUnk00607da0 *)&destination)->FUN_00607da0((const RHMobileUnk00607da0 &)
                 destination.operator-(SBGeoVector2D(0,
-                    destination.ValueC() - ((RHUnkFXDraw *)m_draw)->FUN_005e5750(0))));
+                    destination.ValueC() - m_draw->FUN_005e5750(0))));
         }
         renderer.FUN_00614d70(false);
         if (m_alternate != 0)
         {
             ((RHMobileUnk006091b0 *)&destination)->FUN_006091b0(SBGeoVector2D(1, 1));
-            renderer.FUN_00614230(m_alternate, &m_178c, destination, 1, 0, true);
+            renderer.FUN_00614230(m_alternate, m_178c, destination, 1, 0, true);
             destination -= SBGeoVector2D(1, 1);
         }
-        renderer.FUN_00614230(m_font, &m_178c, destination, 1, 0, true);
+        renderer.FUN_00614230(m_font, m_178c, destination, 1, 0, true);
         if (m_surface != 0)
         {
             m_17c4[m_17c8 & 1] = true;
@@ -602,13 +602,13 @@ bool SBUI::FUN_00619c20(unsigned long display)
 }
 
 // FUNCTION: GAME 0x00619c80
-void SBUI::FUN_00619c80(SBUIFontView *font, SBUIFontView *alternate)
+void SBUI::FUN_00619c80(SBFontUnk0061e840 *font, SBFontUnk0061e840 *alternate)
 {
     m_font = font;
-    font->V14(m_renderer, false);
+    font->AttachToRenderContext(&m_renderer, false);
     m_alternate = alternate;
     if (alternate != 0)
-        alternate->V14(m_renderer, false);
+        alternate->AttachToRenderContext(&m_renderer, false);
 }
 
 // FUNCTION: GAME 0x00619cc0
@@ -644,6 +644,7 @@ SBUIUnkTreeNode *g_unk0x006c18dc = 0;
 
 #include "SBDrawManager.h"
 #include "RHMobileUnk00607da0.h"
+#include "RHUnk006114c0.h"
 
 DECOMP_SIZE_ASSERT(SBUIUnkSurface, 0x20)
 DECOMP_SIZE_ASSERT(SBUIUnkTree, 0x10)
@@ -656,13 +657,13 @@ SBUIUnkSurface::SBUIUnkSurface(unsigned long surface)
     : m_draw(g_unk0x6c11d0), m_surface(surface), m_tree(SBUIUnkLess(), false, SBUIUnkAlloc())
 {
     m_serial = 0;
-    m_vptr = 0x0067adec;
+    *(unsigned *)this = 0x0067adec;
 }
 
 // FUNCTION: GAME 0x0061b020
 void *SBUIUnkSurface::FUN_0061b020(unsigned flags)
 {
-    this->~SBUIUnkSurface();
+    this->SBUIUnkSurface::~SBUIUnkSurface();
     if (flags & 1)
         operator delete(this);
     return this;
@@ -671,7 +672,7 @@ void *SBUIUnkSurface::FUN_0061b020(unsigned flags)
 // FUNCTION: GAME 0x0061b040
 void *SBUIUnkSurfaceBase::FUN_0061b040(unsigned flags)
 {
-    this->~SBUIUnkSurfaceBase();
+    this->SBUIUnkSurfaceBase::~SBUIUnkSurfaceBase();
     if (flags & 1)
         operator delete(this);
     return this;
@@ -680,7 +681,7 @@ void *SBUIUnkSurfaceBase::FUN_0061b040(unsigned flags)
 // FUNCTION: GAME 0x0061b060
 SBUIUnkSurface::~SBUIUnkSurface()
 {
-    m_vptr = 0x0067adec;
+    *(unsigned *)this = 0x0067adec;
     SBUIUnkTreeIterator position = m_tree.begin();
     for (; position.node != m_tree.m_head; ++position) {
         SBUIUnkSurfacePair &surfaces = *(SBUIUnkSurfacePair *)position.node->m_10;
@@ -722,13 +723,13 @@ void *SBUIUnkSurface::FUN_0061b350()
 }
 
 // FUNCTION: GAME 0x0061b380
-unsigned long SBUIUnkSurface::FUN_0061b380(SBUIUnkImage *image, SBUIUnkImage *mask, bool keyed)
+unsigned long SBUIUnkSurface::FUN_0061b380(RHUnk006114c0 *image, RHUnk006114c0 *mask, bool keyed)
 {
     SBUIUnkSurfacePair surfaces;
-    surfaces.first = ((RHUnkFXDraw *)m_draw)->Unk005e4ed0(image->V2c(), image->V30(), 0, 0);
-    image->V20(m_draw, surfaces.first);
-    surfaces.second = ((RHUnkFXDraw *)m_draw)->Unk005e4ed0(mask->V2c(), mask->V30(), 0, 0);
-    mask->V20(m_draw, surfaces.second);
+    surfaces.first = m_draw->Unk005e4ed0(image->FUN_00611500(), image->FUN_00611510(), 0, 0);
+    image->Unk20(m_draw, surfaces.first);
+    surfaces.second = m_draw->Unk005e4ed0(mask->FUN_00611500(), mask->FUN_00611510(), 0, 0);
+    mask->Unk20(m_draw, surfaces.second);
     if (keyed == true) {
         FUN_0061b4c0(surfaces);
         ((SBDrawManager *)m_draw)->FUN_005e5160(surfaces.second);
@@ -774,7 +775,7 @@ void SBUIUnkSurface::FUN_0061b4c0(SBUIUnkSurfacePair &surfaces)
     }
     ((SBDrawManager *)m_draw)->FUN_005e5ea0(image);
     ((SBDrawManager *)m_draw)->FUN_005e5ea0(mask);
-    ((SBDrawUnk005e5ec0 *)m_draw)->FUN_005e5ec0(surfaces.first, pack(0, 0xff, 0));
+    m_draw->FUN_005e5ec0(surfaces.first, pack(0, 0xff, 0));
 }
 
 // FUNCTION: GAME 0x0061b640
@@ -1172,7 +1173,8 @@ static inline SBUIUnkTreeNode *SBUITreeMin(SBUIUnkTreeNode *node)
     return node;
 }
 
-void EmitSBUI(SBUI *ui, SBUIWindowView *window, SBUIFontView *font)
+void EmitSBUI(SBUI *ui, SBUIWindowView *window, SBFontUnk0061e840 *font,
+    SBUIUnkSurface *context, RHUnk006114c0 *image)
 {
     ui->FUN_006186d0(0);
     ((SBUIUnkSurface *)ui)->FUN_0061b020(0);
@@ -1192,7 +1194,7 @@ void EmitSBUI(SBUI *ui, SBUIWindowView *window, SBUIFontView *font)
     ((SBUIUnkSurface *)ui)->FUN_0061b350();
     FUN_0061b490(0, 0, 0);
     ((SBUIUnkSurface *)ui)->FUN_0061b640(0);
-    ((SBUIUnkSurface *)ui)->FUN_0061b380((SBUIUnkImage *)window, (SBUIUnkImage *)window, false);
+    context->FUN_0061b380(image, image, false);
     ((SBUIUnkSurface *)ui)->FUN_0061b660(0);
     ((SBUIUnkSurface *)ui)->FUN_0061b710(0);
     ((SBUIUnkTree *)ui)->FUN_0061b850(*(SBUIUnkTreeValue *)window);
@@ -1251,7 +1253,7 @@ bool RHUnk006279d0::FUN_00627c90(const SBGeoPoint2D &first, const SBGeoVector2D 
 // FUNCTION: GAME 0x00627ee0
 bool RHUnk006279d0::FUN_00627ee0(unsigned long surface)
 {
-    m_draw = (RHUnkFXDraw *)g_unk0x6c11d0;
+    m_draw = g_unk0x6c11d0;
     m_display = surface;
     m_bounds.FUN_00609050(SBGeoPoint2D(0, 0),
         SBGeoPoint2D((float)m_draw->FUN_005e56c0(0), (float)m_draw->FUN_005e5750(0)));

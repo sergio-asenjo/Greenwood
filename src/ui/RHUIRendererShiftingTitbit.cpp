@@ -65,7 +65,7 @@ bool RHUIRendererShiftingTitbit::Render(unsigned id)
             return false;
         }
         SBGeoVector2D surfaceSize;
-        RHUnk005ef320 *draw = g_unk0x6c11d0;
+        SBDrawManager *draw = g_unk0x6c11d0;
         draw->FUN_005e57e0(surface, surfaceSize);
         ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(0.5f * TitbitVectorCopy(bankSize.Unk005fc190(-surfaceSize)));
         box.UnkSecondPoint(box.m_p0.Unk005fc190(surfaceSize));

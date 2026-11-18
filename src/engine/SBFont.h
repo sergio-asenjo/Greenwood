@@ -5,6 +5,9 @@
 #include "Decomp.h"
 
 class SBFile;
+class SBUIUnkSurfaceBase;
+class SBGeoPoint2D;
+class SBGeoBoundingBox2D;
 void SBAssert(int, const char *, int, const char *, ...);
 
 // SIZE 0x01
@@ -25,39 +28,42 @@ struct SBFontTextView
 };
 
 // SIZE 0x44
-class SBFontUnk0061e840
+class __declspec(novtable) SBFontUnk0061e840
 {
 public:
-    virtual int v0(); // vtable+0x00
-    virtual void v1(void *); // vtable+0x04
-    virtual void v2(); // vtable+0x08
-    virtual long v3(unsigned short, long &, long &) const; // vtable+0x0c
-    virtual bool v4(unsigned short, void *, const void *, bool); // vtable+0x10
-    virtual void v5(); // vtable+0x14
-    virtual void v6(); // vtable+0x18
-    virtual unsigned long v7(); // vtable+0x1c
-    virtual unsigned long v8() const; // vtable+0x20
-    virtual bool v9(SBFile &); // vtable+0x24
-    int m_04; // 0x04
-    char m_08[0x0c]; // 0x08
+    SBFontUnk0061e840();
+    void *FUN_0061e7e0(unsigned flags);
+    virtual unsigned GetImplementationVersion() const = 0;
+    virtual void GetImplementationTag(char (&)[6]) const = 0;
+    virtual ~SBFontUnk0061e840();
+    virtual long GetCharacterWidth(unsigned short, long &, long &) const = 0;
+    virtual bool Render(unsigned short, SBGeoPoint2D &, const SBGeoBoundingBox2D &, bool) const = 0;
+    virtual void AttachToRenderContext(SBUIUnkSurfaceBase *, unsigned long);
+    virtual void DetachFromRenderContext();
+    virtual long GetBaseLine() const = 0;
+    virtual unsigned long GetExtraSpacing() const = 0;
+    virtual bool LoadFromStream(SBFile &);
+    virtual bool SaveToStream(SBFile &);
+    SBUIUnkSurfaceBase *m_context;
+    unsigned char m_loaded;
+    char m_09[3];
+    char m_tag[6];
+    char m_12[2];
     int m_14; // 0x14
     char m_18[0x24]; // 0x18
     int m_3c; // 0x3c
     undefined4 m_40; // 0x40
 
-    void FUN_0061e810(int, int);
-    void FUN_0061e840();
     int FUN_0061e850(unsigned short);
     int FUN_0061e880();
-    std::string FUN_0061e8a0();
+    int GetHeight() const;
+    std::string FUN_0061e8a0() const;
     int FUN_0061e970();
     long FUN_0061e980(const std::wstring &, long &, long &) const;
     long FUN_0061ea50(const std::wstring &) const;
     bool FUN_0061ea80(const std::string &);
-    int FUN_0061eb80(const std::wstring *, void *, const void *, bool);
-    bool FUN_0061eb00(SBFile &);
-    void FUN_0061ebd0(unsigned short);
-    bool FUN_0061ed70(SBFile &);
+    int FUN_0061eb80(const std::wstring *, SBGeoPoint2D *, const SBGeoBoundingBox2D *, bool);
+    void FUN_0061ebd0(unsigned short) const;
 };
 
 // SIZE 0x14

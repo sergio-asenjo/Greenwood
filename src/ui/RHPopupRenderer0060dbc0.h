@@ -3,7 +3,7 @@
 
 #include "RHPortraitRenderer0060dab0.h"
 
-class SBUIListboxUnk0061e890;
+class SBFontUnk0061e840;
 
 // SIZE 0x7c
 // VTABLE: GAME 0x0067a860
@@ -14,11 +14,11 @@ public:
     ~RHPopupRenderer0060dbc0();
     void *FUN_0060dc00(unsigned flags);
     bool FUN_0060dd10(unsigned id);
-    int FUN_0060dda0(SBUIListboxUnk0061e890 *font, bool silent);
-    SBUIListboxUnk0061e890 *m_50;
-    SBUIListboxUnk0061e890 *m_54;
-    SBUIListboxUnk0061e890 *m_58;
-    SBUIListboxUnk0061e890 *m_5c;
+    int FUN_0060dda0(SBFontUnk0061e840 *font, bool silent);
+    SBFontUnk0061e840 *m_50;
+    SBFontUnk0061e840 *m_54;
+    SBFontUnk0061e840 *m_58;
+    SBFontUnk0061e840 *m_5c;
     void SetM60(unsigned int value) { m_60 = value; }
     unsigned int m_60;
     void SetM64(unsigned short value) { m_64 = value; }

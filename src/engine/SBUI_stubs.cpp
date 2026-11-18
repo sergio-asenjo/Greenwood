@@ -11,5 +11,5 @@ SBUI::~SBUI() {}
 // FUNCTION: GAME 0x006287e0
 SBUIUnkSurfaceBase::~SBUIUnkSurfaceBase()
 {
-    m_vptr = 0x0067ae04;
+    *(unsigned *)this = 0x0067ae04;
 }

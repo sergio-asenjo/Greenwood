@@ -47,35 +47,7 @@ class RHMobileUnk006100e0;
 
 #include "SBUIInputFieldBoxCalls.h"
 
-class SBFontUnk0061e840;
-
-// SIZE 0x30
-class SBUIInputFieldDrawUnk
-{
-public:
-    SBUIInputFieldDrawUnk();
-    bool FUN_00614bf0(void *, std::wstring *, const SBGeoPoint2D &, unsigned int);
-    void FUN_00614d70(bool value);
-    unsigned short FUN_00614230(void *, const std::wstring *, const SBGeoBoundingBox2D &, unsigned int, unsigned short, bool);
-    unsigned long FUN_00613940(const SBFontUnk0061e840 *,
-        const std::vector<std::wstring>::const_iterator &,
-        const std::vector<std::wstring>::const_iterator &,
-        std::vector<std::wstring>::const_iterator &,
-        std::vector<std::wstring>::const_iterator &, bool &, unsigned long, unsigned long) const;
-    void FUN_00613c90(std::vector<std::wstring>::const_iterator,
-        std::vector<std::wstring>::const_iterator, std::vector<std::wstring>::const_iterator,
-        std::vector<std::wstring>::const_iterator);
-    unsigned short FUN_00613ea0(void *, const std::wstring *, const SBGeoBoundingBox2D &, unsigned int, unsigned int);
-    RHMapBox *FUN_00613e70();
-    unsigned int FUN_00613e80();
-    std::wstring &FUN_00613e90();
-    bool OneWordBiggerThanALine(const SBFontUnk0061e840 *, float, const std::vector<std::wstring> *);
-    std::wstring m_00; // 0x00
-    undefined4 m_10; // 0x10
-    bool m_14; // 0x14
-    unsigned int m_18; // 0x18
-    RHMapBox m_1c; // 0x1c
-};
+#include "SBUIInputFieldDraw.h"
 
 // SIZE 0x10
 struct SBUIInputFieldNode
@@ -120,8 +92,8 @@ public:
 struct SBUIInputFieldUnkResource
 {
     undefined m_00[0x14]; // 0x00
-    SBUIInputFieldUnkObject *m_14; // 0x14
-    void *m_18; // 0x18
+    SBFontUnk0061e840 *m_14; // 0x14
+    SBFontUnk0061e840 *m_18; // 0x18
 };
 
 // SIZE 0x90
@@ -129,8 +101,8 @@ class SBUIInputFieldUnk00621440
 {
 public:
     undefined m_00[0x64]; // 0x00
-    SBUIInputFieldUnkObject *m_64; // 0x64
-    void *m_68; // 0x68
+    SBFontUnk0061e840 *m_64; // 0x64
+    SBFontUnk0061e840 *m_68; // 0x68
     SBUIInputFieldUnkResource *m_6c; // 0x6c
     SBGeoBoundingBox2D m_70; // 0x70
     char m_84; // 0x84

@@ -41,7 +41,7 @@ bool RHPopupRenderer0060dbc0::FUN_0060dd10(unsigned id)
         ((unsigned int *)((char *)this + 0x40))[*(unsigned int *)((char *)this + 0x48) & 1] = 0;
         return false;
     }
-    SBUIListboxUnk0061e890 *font;
+    SBFontUnk0061e840 *font;
     switch (id)
     {
     case 0:
