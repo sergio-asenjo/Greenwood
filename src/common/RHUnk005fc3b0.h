@@ -25,7 +25,6 @@ public:
     unsigned char FUN_005fcc50(float scale) const;
     SBGeoVector2D FUN_005fc8f0(bool direction, float scale) const;
     RHUnk005fc3b0 FUN_005fc9e0(float angle, float scale);
-    float FUN_005fc680(const RHUnk005fc3b0 &other, float scale) const;
     void Set(float x, float y) { ((float *)this)[0] = x; ((float *)this)[1] = y; }
 };
 

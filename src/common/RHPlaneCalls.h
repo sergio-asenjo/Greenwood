@@ -17,7 +17,7 @@ public:
     void Unk005dfa00();
     void FUN_005dfa20(const RHUnk00613e90 &offset);
     void FUN_005dfaa0(const SBGeoPoint2D &offset);
-    void *FUN_005df990();
+    const RHUnk00613e90 &Normal() const;
     bool FUN_005dfb00(SBFile &file);
     void Emit(SBFile &file);
     RHUnk00613e90 m_00;

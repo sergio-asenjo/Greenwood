@@ -1,12 +1,8 @@
 #ifndef RHMALIGNITYGEOMETRYCALLS_H
 #define RHMALIGNITYGEOMETRYCALLS_H
 
-class RHUnk00613e90;
+#include "RHFastFindGridCore.h"
 
-class RHMalignityGeometryCalls
-{
-public:
-    bool FUN_004eff80(const RHUnk00613e90 &first, const RHUnk00613e90 &second, unsigned long mask);
-};
+typedef RHFastFindGrid RHMalignityGeometryCalls;
 
 #endif

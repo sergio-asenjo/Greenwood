@@ -24,6 +24,7 @@ struct RHScriptIter
 {
     RHScriptNode *node;
     RHScriptIter(RHScriptNode *value) : node(value) {}
+    void *&operator*() const { return node->data; }
     RHScriptIter operator++(int)
     {
         RHScriptIter previous = *this;
@@ -46,6 +47,8 @@ public:
     char padding[3];
     int index;
     RHScriptIter erase(RHScriptIter position);
+    int FUN_0046eb20();
+    char *FUN_0046eb70();
     void Unk0044e190(int wanted);
     void Unk0044eab0(RHUnk0046eb30 &source);
     void Unk004e6dc0(RHUnk0046eb30 &source, int wanted);

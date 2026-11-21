@@ -301,7 +301,11 @@ int RHUnk005f4fc0::FUN_005f5090(const std::string &name, int mode)
     }
 }
 
-// FUNCTION: GAME 0x005f5280
+// TEMPLATE: GAME 0x005f5280 FOLDED
+// ?ResolveRenderCode@RHPortraitInputRenderer@@QAEHI@Z
+
+// TEMPLATE: GAME 0x005f5280 FOLDED
+// ?FUN_005f5280@SBFileUnk005f5280@@QAEHH@Z
 int SBFileUnk005f5280::FUN_005f5280(int)
 {
     return -1;

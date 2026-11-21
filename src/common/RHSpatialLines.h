@@ -23,6 +23,9 @@ public:
     virtual void FUN_00520480(SBDrawManager *draw, SBGeoBoundingBox2D box, float scale, unsigned short color);
     void FUN_0051fdc0();
     bool FUN_0051fea0(const SBGeoPoint2D &point, float &distance);
+    bool ComputeDeviation(SBGeoVector2D &result, const SBGeoVector2D &heading,
+                          const SBGeoPoint2D &position, const SBGeoPoint2D &nextPosition,
+                          float radius, float distance, float clearance) const;
     float m_24;
     float m_28;
     float m_2c;

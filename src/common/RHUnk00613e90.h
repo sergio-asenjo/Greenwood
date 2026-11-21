@@ -35,6 +35,11 @@ public:
     {
         return y * scale;
     }
+    RHUnk00613e90 &ScaleY(float scale)
+    {
+        y *= scale;
+        return *this;
+    }
     void Set(float first, float second, float third)
     {
         x = first;

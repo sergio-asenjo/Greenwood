@@ -1,25 +1,25 @@
-#include "RHUnk0060c2xx.h"
+#include "RHUnk0060bd40.h"
 #include "RHUnkSectorPoints.h"
 #include "RHUnk005fc3b0.h"
 #include "SBGeoBoundingBox2DCore.h"
 
 DECOMP_SIZE_ASSERT(RHUnkSectorPoints, 0x2c)
 
-void EmitRHUnk0060c2xx(RHUnk0060c2xx *self, const SBGeoPoint2D &point)
+void EmitRHUnk0060c2xx(RHUnk0060bd40 *self, const SBGeoPoint2D &point)
 {
-    void (RHUnk0060c2xx::*add)(const SBGeoPoint2D &) = &RHUnk0060c2xx::FUN_0060c260;
+    void (RHUnk0060bd40::*add)(const SBGeoPoint2D &) = &RHUnk0060bd40::FUN_0060c260;
     (self->*add)(point);
-    void (RHUnk0060c2xx::*clear)() = &RHUnk0060c2xx::FUN_0060c280;
+    void (RHUnk0060bd40::*clear)() = &RHUnk0060bd40::FUN_0060c280;
     (self->*clear)();
-    void (RHUnk0060c2xx::*erase)(unsigned long) = &RHUnk0060c2xx::FUN_0060c290;
+    void (RHUnk0060bd40::*erase)(unsigned long) = &RHUnk0060bd40::FUN_0060c290;
     (self->*erase)(0);
-    const SBGeoPoint2D &(RHUnk0060c2xx::*at)(unsigned long) const = &RHUnk0060c2xx::FUN_0060c2b0;
+    const SBGeoPoint2D &(RHUnk0060bd40::*at)(unsigned long) const = &RHUnk0060bd40::FUN_0060c2b0;
     (self->*at)(0);
     RHUnkSectorPoints other;
 }
 
 // FUNCTION: GAME 0x0060be00
-bool RHUnk0060c2xx::FUN_0060be00(const SBGeoPoint2D &point) const
+bool RHUnk0060bd40::FUN_0060be00(const SBGeoPoint2D &point) const
 {
     SBGeoPoint2D previous;
     SBGeoPoint2D current;
@@ -134,13 +134,13 @@ bool RHUnk0060c2xx::FUN_0060be00(const SBGeoPoint2D &point) const
 }
 
 // FUNCTION: GAME 0x0060c250
-unsigned long RHUnk0060c2xx::FUN_0060c250() const
+unsigned long RHUnk0060bd40::FUN_0060c250() const
 {
     return (unsigned long)((const RHUnk0053bf20 *)this)->FUN_0053bf20();
 }
 
 // FUNCTION: GAME 0x0060c260
-void RHUnk0060c2xx::FUN_0060c260(const SBGeoPoint2D &point)
+void RHUnk0060bd40::FUN_0060c260(const SBGeoPoint2D &point)
 {
     m_2c = false;
     m_2d = false;
@@ -148,7 +148,7 @@ void RHUnk0060c2xx::FUN_0060c260(const SBGeoPoint2D &point)
 }
 
 // FUNCTION: GAME 0x0060c280
-void RHUnk0060c2xx::FUN_0060c280()
+void RHUnk0060bd40::FUN_0060c280()
 {
     m_2c = false;
     m_2d = false;
@@ -156,7 +156,7 @@ void RHUnk0060c2xx::FUN_0060c280()
 }
 
 // FUNCTION: GAME 0x0060c290
-void RHUnk0060c2xx::FUN_0060c290(unsigned long index)
+void RHUnk0060bd40::FUN_0060c290(unsigned long index)
 {
     m_2c = false;
     m_2d = false;
@@ -164,7 +164,7 @@ void RHUnk0060c2xx::FUN_0060c290(unsigned long index)
 }
 
 // FUNCTION: GAME 0x0060c2b0
-const SBGeoPoint2D &RHUnk0060c2xx::FUN_0060c2b0(unsigned long index) const
+const SBGeoPoint2D &RHUnk0060bd40::FUN_0060c2b0(unsigned long index) const
 {
     return FUN_00610cb0(index);
 }
