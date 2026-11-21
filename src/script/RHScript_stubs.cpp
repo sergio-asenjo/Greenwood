@@ -11,19 +11,12 @@
 
 #include "SBNullstr.h"
 #include "RHScript.h"
+#include "RHPathCore.h"
 #include "RHCampaignCore.h"
-
-struct RHUnkPathRegistry;
-extern RHUnkPathRegistry *g_unk0x6c0b9c;
+#include "RHHikingGuideStorage.h"
 
 DECOMP_SIZE_ASSERT(RHUnk0044e2e0, 0x24)
 
-
-class RHUnk0051d0e0
-{
-public:
-    unsigned short Find(int value);
-};
 
 // FUNCTION: GAME 0x0044e190
 void RHUnk0046eb30::Unk0044e190(int wanted)
@@ -122,12 +115,12 @@ void RHUnk0046eb30::Unk0044eab0(RHUnk0046eb30 &source)
 }
 
 // FUNCTION: GAME 0x0051d0e0
-unsigned short RHUnk0051d0e0::Find(int value)
+unsigned short RHHikingGuide::GetHikingPathIndex(RHUnk0051d2c0 *path)
 {
-    int *first = *(int *volatile *)((char *)this + 8);
-    unsigned short count = first == 0 ? 0 : *(int **)((char *)this + 0xc) - first;
+    RHUnk0051d2c0 **first = m_04.First();
+    unsigned short count = first == 0 ? 0 : m_04.end() - first;
     for (unsigned short i = 0; i < count; ++i)
-        if ((*(int **)((char *)this + 8))[i] == value)
+        if (m_04[i] == path)
             return i;
     return 0xffff;
 }
@@ -290,18 +283,17 @@ RHScriptBatchCalls *RHScriptBatchCalls::FUN_005209b0()
 void RHScriptBatchCalls::FUN_00520a70() {}
 void RHScriptBatchCalls::FUN_00549090() {}
 
-bool RHScriptAIStateCalls::FUN_00410620(RHScriptStimulusValue) { return false; }
 void RHScriptAIStateCalls::FUN_0043a220(RHMalignityPosition, int, int, int) {}
 
 // FUNCTION: GAME 0x00550fa0
-void RHArtificialIntelligencePathCursor::FUN_00550fa0(void *value)
+void RHPath::FUN_00550fa0(void *value)
 {
-    m_id = ((RHUnk0051d0e0 *)g_unk0x6c0b9c)->Find((int)value);
-    m_path = (RHAIPathArray *)value;
+    m_8 = g_unk0x6c0b9c->GetHikingPathIndex(static_cast<RHUnk0051d2c0 *>(value));
+    m_4 = (RHPathArray *)value;
     if (value)
     {
-        m_current = 0;
-        m_forward = 1;
+        m_0 = 0;
+        m_2 = 1;
     }
 }
 RHUnkSequenceOrder::~RHUnkSequenceOrder() {}

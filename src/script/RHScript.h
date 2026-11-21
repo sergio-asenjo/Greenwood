@@ -229,7 +229,6 @@ class RHSequenceElement;
 // evidence (docs/05-naming.md). Modelled as a provisional class method so the
 // caller emits `mov ecx,element; push global; call`. Defined once in
 // RHScript_stubs.cpp.
-#include "RHSequenceAppendCalls.h"
 
 // Callee 0x00452030 — __thiscall, one stack arg, plain `ret 4`: a 6-byte index
 // getter reading the dword at [this + index*4 + 0x94]
@@ -340,12 +339,6 @@ extern void *g_unk0x6c0f78;
 
 #include "RHSpriteLastFrameCalls.h"
 
-class RHUnk004af060
-{
-public:
-    void Unk(int direction);
-};
-
 #include "RHActorCancelCalls.h"
 
 #include "RHUnk00571160Position.h"
@@ -360,12 +353,6 @@ SBGeoPoint2D RHUnk005758d0(const SBGeoPoint2D &point);
 #include "RHSequenceConstructionCalls.h"
 
 #include "RHScriptListCore.h"
-
-class RHUnk0058a3d0
-{
-public:
-    void *Unk(void *context, int value, void *sequence);
-};
 
 class RHScriptSequenceVtable
 {
@@ -466,13 +453,7 @@ public:
 
 #include "RHEngineAccessors.h"
 
-#include "RHPCActionQueryCalls.h"
 
-class RHUnk004af1d0
-{
-public:
-    void Unk(bool value);
-};
 
 class RHUnk0048a970
 {
@@ -487,25 +468,7 @@ public:
 class RHScriptAIStateCalls
 {
 public:
-    bool FUN_00410620(RHScriptStimulusValue value);
-    void FUN_00410d30();
     void FUN_0043a220(RHMalignityPosition position, int first, int second, int third);
-};
-
-struct RHAIPathArray;
-
-// SIZE 0x0c
-class RHArtificialIntelligencePathCursor
-{
-public:
-    void Unk00550f60(unsigned short path);
-    void FUN_00550fa0(void *path);
-    unsigned char m_current; // 0x00
-    unsigned char m_previous; // 0x01
-    char m_forward; // 0x02
-    undefined m_03; // 0x03
-    RHAIPathArray *m_path; // 0x04
-    unsigned short m_id; // 0x08
 };
 
 // SIZE 0x04
@@ -534,7 +497,6 @@ void RHUnk00574690(void *actor, RHUnk00571160Position *position, void *location)
 
 
 
-#include "RHPositionProvider.h"
 
 #if !defined(RHSPRITECORE_H) && !defined(RHELEMENTACTORANIMAL_H)
 class RHUnk005b5e00
@@ -569,12 +531,8 @@ public:
     bool Unk004e3e30(int index);
     void Unk004e3e00(int index, int value);
     int Unk004e3e20(int index);
-    void Unk0040d980(int state);
-    void Unk0048cbc0();
     void Unk0046bcf0(int state, int value);
-    void *Unk0058a940(void *context, int value, void *element);
     bool Unk00489e80(void *target);
-    void Unk0049d6c0();
     void Unk0048ec00(void *scroll);
     void Unk004d9330(void *actor, bool flag);
     void Unk0057ff70(float height);
@@ -590,9 +548,7 @@ public:
     void Unk0046b9e0();
     bool Unk0049d560(int action);
     bool Unk00456ce0(void *type);
-    void Unk00419fb0(int value);
     void Unk00419fd0(int value, int duration);
-    void Unk0041ac50();
     float FUN_00489680(void *target);
     void FUN_00456d20();
     RHScriptBatchCalls *FUN_005209b0();
