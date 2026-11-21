@@ -47,7 +47,7 @@ float SBGeoVector2D::FUN_005fc660(const SBGeoPoint2D &other) const
 }
 
 // FUNCTION: GAME 0x005fc680
-float RHUnk005fc3b0::FUN_005fc680(const RHUnk005fc3b0 &other, float value) const
+float SBGeoVector2D::FUN_005fc680(const SBGeoVector2D &other, float value) const
 {
     return (other.m_y * m_x - m_y * other.m_x) / value;
 }

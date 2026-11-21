@@ -30,6 +30,7 @@ public:
 class RHUnk0060fbf0;
 class RHMobileUnk00611360;
 class RHUnkSectorPoints;
+class RHUnk0060bd40;
 
 class SBGeoBoundingBox2D
 {
@@ -49,6 +50,7 @@ public:
     bool FUN_00608d60(const RHUnkSectorPoints &) const;
     RHUnk0060fbf0 FUN_006093f0(const RHMobileUnk006100e0 &segment) const;
     RHUnk0060fbf0 FUN_00609440(const RHMobileUnk006100e0 &segment, double first, double last) const;
+    void ClipAttached(const RHUnk0060bd40 &input, RHUnk0060bd40 &output) const;
     char m_00[0x14];
 };
 

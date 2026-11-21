@@ -62,6 +62,7 @@ public:
     void FUN_00610ac0();
     void FUN_00610b10();
     void FUN_00610b50(unsigned long index);
+    unsigned GetPathPointCount() const;
     const SBGeoPoint2D &FUN_00610cb0(unsigned long index) const;
 };
 

@@ -4,6 +4,5 @@
 // FUNCTION: GAME 0x0060a840
 SBGeoSegment2D::SBGeoSegment2D(const SBGeoSegment2D &other)
 {
-    ((RHMobileUnk0060a820 *)this)->FUN_006158b0(*(const SBGeoPoint2D *)&other,
-        *(const SBGeoPoint2D *)((const char *)&other + 8));
+    reinterpret_cast<RHMobileUnk0060a820 *>(m_00)->RHMobileUnk0060a820::RHMobileUnk0060a820(other.First(), other.Second());
 }

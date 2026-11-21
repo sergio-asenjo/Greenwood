@@ -473,6 +473,11 @@ void SBGeoPolyLine2DList::FUN_00610b50(unsigned long index)
     m_dirty = true;
 }
 
+unsigned SBGeoPolyLine2DList::GetPathPointCount() const
+{
+    return size();
+}
+
 // FUNCTION: GAME 0x00610cb0
 const SBGeoPoint2D &SBGeoPolyLine2DList::FUN_00610cb0(unsigned long index) const
 {
@@ -486,7 +491,7 @@ void RHMobileUnk00611360::FUN_00610e20(const RHMobileUnk00611360 &other)
 {
     unsigned long count = other.FUN_00610f30();
     for (unsigned long i = 0; i < count; ++i)
-        ((RHUnkTargetPoints *)this)->FUN_00611100(((RHUnkSectorPoints *)&other)->FUN_006112c0(i));
+        FUN_00611100(((RHUnkSectorPoints *)&other)->FUN_006112c0(i));
 }
 
 // FUNCTION: GAME 0x00610e60
@@ -521,7 +526,7 @@ void RHMobileUnk00611360::FUN_00610f50(const SBGeoPoint2D &point, unsigned long 
 }
 
 // FUNCTION: GAME 0x00611100
-void RHUnkTargetPoints::FUN_00611100(const SBGeoPoint2D &point)
+void RHMobileUnk00611360::FUN_00611100(const SBGeoPoint2D &point)
 {
     push_back(point);
     m_dirty = true;

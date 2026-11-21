@@ -392,3 +392,193 @@ RHUnk0060fbf0 SBGeoBoundingBox2D::FUN_00609440(const RHMobileUnk006100e0 &line, 
     clippedLast.m_y = dy * leave + first.m_y;
         return RHUnk0060fbf0(SBGeoSegment2D(clippedFirst, clippedLast).Line());
 }
+
+#include "RHUnk0060bd40.h"
+#include "SBList.h"
+#include <float.h>
+#include <string.h>
+
+DECOMP_SIZE_ASSERT(SBList<unsigned char>, 0x24)
+DECOMP_STATIC_ASSERT(offsetof(SBList<unsigned char>, m_current) == 0xc)
+DECOMP_STATIC_ASSERT(offsetof(SBList<unsigned char>, m_dirty) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(SBList<unsigned char>, m_index) == 0x14)
+
+template<> inline void SBList<unsigned char>::GoTo(int wanted)
+{
+    int count = size();
+    int from = m_dirty ? 0 : m_index;
+    if (m_dirty || (wanted < from && wanted < (from + 1) / 2))
+    {
+        if (wanted <= (count + 1) / 2)
+        {
+            m_current = begin();
+            from = 0;
+        }
+        else
+        {
+            m_current = end();
+            from = count;
+        }
+    }
+    else if (wanted > from && wanted >= (from + count) / 2)
+    {
+        m_current = end();
+        from = count;
+    }
+    std::advance(m_current, wanted - from);
+    m_dirty = false;
+    m_index = wanted;
+}
+
+// STUB: GAME 0x00609aa0
+void SBGeoBoundingBox2D::ClipAttached(const RHUnk0060bd40 &input, RHUnk0060bd40 &output) const
+{
+    SBGeoPoint2D previous;
+    SBGeoPoint2D current;
+    SBList<unsigned char> flags;
+    float bounds[4];
+    memcpy(bounds, m_00, sizeof(bounds));
+    const float left = bounds[0], right = bounds[2], bottom = bounds[1], top = bounds[3];
+    unsigned long last = input.FUN_0060c250() - 1;
+    output.FUN_0060c280();
+    if (!input.FUN_0060c250())
+        return;
+    previous = input.FUN_0060c2b0(last);
+    for (unsigned long i = 0; i <= last; ++i)
+    {
+        current = input.FUN_0060c2b0(i);
+        float dx = current.m_x - previous.m_x, dy = current.m_y - previous.m_y;
+        float xin, xout, yin, yout;
+        if (dx > 0.0f || (dx == 0.0f && previous.m_x > right))
+        {
+            xin = left;
+            xout = right;
+        }
+        else
+        {
+            xin = right;
+            xout = left;
+        }
+        if (dy > 0.0f || (dy == 0.0f && previous.m_y > top))
+        {
+            yin = bottom;
+            yout = top;
+        }
+        else
+        {
+            yin = top;
+            yout = bottom;
+        }
+        double txout, tyout;
+        if (dx != 0.0f)
+            txout = (xout - previous.m_x) / dx;
+        else
+            txout = previous.m_x < left || previous.m_x > right ? -FLT_MAX : FLT_MAX;
+        if (dy != 0.0f)
+            tyout = (yout - previous.m_y) / dy;
+        else
+            tyout = previous.m_y < bottom || previous.m_y > top ? -FLT_MAX : FLT_MAX;
+        double firstOut, lastOut;
+        if (txout < tyout)
+        {
+            firstOut = txout;
+            lastOut = tyout;
+        }
+        else
+        {
+            firstOut = tyout;
+            lastOut = txout;
+        }
+        if (lastOut > 0.0)
+        {
+            double txin = dx != 0.0f ? (xin - previous.m_x) / dx : -FLT_MAX;
+            double tyin = dy != 0.0f ? (yin - previous.m_y) / dy : -FLT_MAX;
+            double enter = txin < tyin ? tyin : txin;
+            if (firstOut < enter)
+            {
+                if (firstOut > 0.0 && firstOut <= 1.0)
+                {
+                    if (txin < tyin)
+                        output.FUN_0060c260(SBGeoPoint2D(xout, yin));
+                    else
+                        output.FUN_0060c260(SBGeoPoint2D(xin, yout));
+                }
+            }
+            else if (firstOut > 0.0 && enter <= 1.0)
+            {
+                if (enter > 0.0)
+                {
+                    if (txin > tyin)
+                        output.FUN_0060c260(SBGeoPoint2D(xin, previous.m_y + txin * dy));
+                    else
+                        output.FUN_0060c260(SBGeoPoint2D(previous.m_x + tyin * dx, yin));
+                }
+                if (firstOut < 1.0)
+                {
+                    if (txout < tyout)
+                        output.FUN_0060c260(SBGeoPoint2D(xout, previous.m_y + txout * dy));
+                    else
+                        output.FUN_0060c260(SBGeoPoint2D(previous.m_x + tyout * dx, yout));
+                }
+                else
+                    output.FUN_0060c260(current);
+            }
+            if (lastOut > 0.0 && lastOut <= 1.0)
+                output.FUN_0060c260(SBGeoPoint2D(xout, yout));
+        }
+        previous = current;
+    }
+    unsigned long count = output.FUN_0060c250();
+    if (count < 3)
+    {
+        output.FUN_0060c280();
+        return;
+    }
+    for (unsigned long j = 0; j < count; ++j)
+    {
+        current = output.FUN_0060c2b0(j);
+        unsigned char flag;
+        if (current.m_x == left)
+            flag = current.m_y == bottom ? 0x19 : current.m_y == top ? 0x1c : 8;
+        else if (current.m_x == right)
+            flag = current.m_y == bottom ? 0x13 : current.m_y == top ? 0x16 : 2;
+        else
+            flag = current.m_y == bottom ? 1 : current.m_y == top ? 4 : 0;
+        flags.push_back(flag);
+        flags.m_dirty = true;
+    }
+    unsigned long prev = count - 1, index = 0, next = 1;
+    while (index < count)
+    {
+        if (count < 3)
+        {
+            output.FUN_0060c280();
+            return;
+        }
+        flags.GoTo(index);
+        unsigned char atFlag = *flags.m_current;
+        flags.GoTo(next);
+        unsigned char nextFlag = *flags.m_current;
+        flags.GoTo(prev);
+        unsigned char prevFlag = *flags.m_current;
+        bool sameSide = (prevFlag & atFlag & 15) && (atFlag & nextFlag & 15) &&
+                        (prevFlag & nextFlag & 15);
+        if ((atFlag & 16) && (atFlag == nextFlag || sameSide))
+        {
+            flags.GoTo(index);
+            flags.erase(flags.m_current);
+            flags.m_dirty = true;
+            output.FUN_0060c290(index);
+            --count;
+            index = 0;
+            prev = count - 1;
+            next = 1;
+        }
+        else
+        {
+            prev = index++;
+            if (++next >= count)
+                next -= count;
+        }
+    }
+}

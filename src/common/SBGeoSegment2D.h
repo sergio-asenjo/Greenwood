@@ -2,6 +2,7 @@
 #define SB_GEO_SEGMENT_2D_H
 
 class SBGeoPoint2D;
+class SBGeoBoundingBox2D;
 class RHUnk0060fbf0;
 
 #include "RHMobileSegmentCalls.h"
@@ -33,6 +34,7 @@ public:
         return *reinterpret_cast<const RHMobileUnk006100e0 *>(m_00);
     }
     bool IsIntersecting(const SBGeoSegment2D &other) const;
+    bool FUN_0060ad50(const SBGeoBoundingBox2D &box) const;
     RHUnk0060fbf0 FUN_0060ad60(const RHMobileUnk006100e0 &other) const;
     bool FUN_0060a980(const RHMobileUnk0060a820 &other) const;
     RHUnk0060fbf0 FUN_0060ad80(const RHMobileUnk0060a820 &other) const;

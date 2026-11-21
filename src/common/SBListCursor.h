@@ -10,6 +10,8 @@ public:
     typename Storage::iterator m_current;
     bool m_dirty;
     int m_index;
+    void Seek(int wanted);
+    void SeekForTraversal(int wanted);
     typename Storage::iterator AdvanceCurrent()
     {
         typedef typename Storage::iterator Iterator;
