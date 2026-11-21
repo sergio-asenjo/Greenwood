@@ -45,8 +45,8 @@ bool RHPortraitRenderer005cadc0::FUN_005cafa0(unsigned id)
 {
     if (((SBUIUnk0060dae0 *)this)->FUN_0060dae0(id))
     {
-        SBGeoBoundingBox2D area(*(SBGeoBoundingBox2D *)((SBUIUnk0060d530 *)this)->FUN_0060d690());
-        SBGeoBoundingBox2D box(*(SBGeoBoundingBox2D *)((SBUIUnk0060d530 *)this)->FUN_0060d690());
+        SBGeoBoundingBox2D area(*FUN_0060d690());
+        SBGeoBoundingBox2D box(*FUN_0060d690());
         SBUIInputFieldDrawUnk drawer;
         SBFontUnk0061e840 *font = id ? m_enabled : m_disabled;
         if (font)

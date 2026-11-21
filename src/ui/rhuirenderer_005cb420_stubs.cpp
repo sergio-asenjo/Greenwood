@@ -1,11 +1,7 @@
 #include "SBNullstr.h"
 #include "rhuirenderer_005cb420.h"
 
-class SBUIUnk0060dae0
-{
-public:
-    bool FUN_0060dae0(unsigned int id);
-};
+typedef RHPortraitRenderer0060dab0 SBUIUnk0060dae0;
 
 // TEMPLATE: GAME 0x00613e90 FOLDED
 // ?FUN_00613e90@SBUIInputFieldDrawUnk@@QAEAAV?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@XZ

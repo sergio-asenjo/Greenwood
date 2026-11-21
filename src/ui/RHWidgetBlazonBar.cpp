@@ -40,7 +40,7 @@ bool RHGameBlazonWidget::FUN_005cc680(const SBGeoBoundingBox2D &bounds)
         std::wstring title(
             // STRING: GAME 0x006b8dc0
             L"BlazonBar");
-        initialized = RHPortraitRootLifetime::FUN_0061a1e0((const RHMapTitleText &)title, bounds, 0) == true;
+        initialized = RHPortraitRootLifetime::FUN_0061a1e0(title, bounds, 0) == true;
     }
     if (initialized) {
         SBGeoVector2D origin((const SBGeoVector2D &)bounds.Min());

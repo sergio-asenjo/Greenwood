@@ -53,7 +53,7 @@ bool RHUIRendererShiftingTitbit::Render(unsigned id)
         SBGeoBoundingBox2D box;
         SBGeoVector2D bankSize;
         ((RHMobileUnk00607da0 *)&box)->FUN_00607da0((const RHMobileUnk00607da0 &)TitbitBox.FUN_006090d0(SBGeoVector2D((float)TitbitWord50, 0.0f)));
-        ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(SBGeoVector2D(4.0f, 4.0f));
+        box.Translate(SBGeoVector2D(4.0f, 4.0f));
         TitbitResource->FUN_006006f0(0x10, bankSize);
         unsigned surface;
         if (((RHUnk00600820 *)TitbitResource)->ResolveSurface((void *)0x10, m_54, (float *)&surface) != 1)
@@ -67,12 +67,12 @@ bool RHUIRendererShiftingTitbit::Render(unsigned id)
         SBGeoVector2D surfaceSize;
         SBDrawManager *draw = g_unk0x6c11d0;
         draw->FUN_005e57e0(surface, surfaceSize);
-        ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(0.5f * TitbitVectorCopy(bankSize.Unk005fc190(-surfaceSize)));
+            box.Translate(0.5f * TitbitVectorCopy(bankSize.Unk005fc190(-surfaceSize)));
         box.UnkSecondPoint(box.m_p0.Unk005fc190(surfaceSize));
         ((SBDrawManager *)draw)->BlitAlphaKeying(surface, 0, TitbitBlitArg, &box, TitbitWord4c, TitbitWord4e, 1);
         if (m_59)
         {
-            ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(SBGeoVector2D(3.0f, 0.0f));
+            box.Translate(SBGeoVector2D(3.0f, 0.0f));
             ((SBDrawManager *)draw)->BlitAlphaKeying(surface, 0, TitbitBlitArg, &box, TitbitWord4c, TitbitWord4e, 1);
         }
     }

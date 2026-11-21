@@ -53,16 +53,7 @@ public:
 
 typedef RHMenuScreenView RHPortraitTextResourceCalls;
 
-class SBUIUnk0060d530
-{
-public:
-    void *FUN_0060d690();
-};
-
-class SBUIUnk0060dae0
-{
-public:
-    bool FUN_0060dae0(unsigned int id);
-};
+#include "RHPortraitRenderer0060dab0.h"
+typedef RHPortraitRenderer0060dab0 SBUIUnk0060dae0;
 
 #endif

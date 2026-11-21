@@ -32,11 +32,6 @@ public:
 };
 
 SBGeoVector2D operator*(float, const SBGeoVector2D &);
-class RHMobileUnk006091b0
-{
-public:
-    RHMobileUnk006091b0 &FUN_006091b0(const SBGeoPoint2D &);
-};
 
 class SBGeoBoundingBox2D
 {
@@ -45,7 +40,7 @@ public:
     ~SBGeoBoundingBox2D() {}
     SBGeoBoundingBox2D &operator=(const SBGeoBoundingBox2D &);
     SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &) const;
-    SBGeoBoundingBox2D &operator+=(const SBGeoVector2D &);
+    SBGeoBoundingBox2D &Translate(const SBGeoPoint2D &offset);
     void UnkSecondPoint(const SBGeoPoint2D &point)
     {
         m_flag = true;

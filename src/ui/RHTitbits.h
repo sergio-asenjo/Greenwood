@@ -41,31 +41,6 @@ class SBGeoPoint2D;
 // sub-object at RHTitbit+0x18.
 #include "RHUnk00613e90.h"
 
-// The 48-byte serialised element. Fields are named by offset only; identity is
-// unproven (no oracle signal).
-struct RHTitbit
-{
-    int m_00;      // [0x00]
-    short m_04;    // [0x04]
-    short m_06;    // [0x06]
-    short m_08;    // [0x08]
-    short m_0a;    // [0x0a]
-    int m_0c;      // [0x0c]
-    int m_10;      // [0x10]
-    union
-    {
-        int m_14i;
-        short m_14s;
-    } m_u14;       // [0x14]
-    RHUnk00613e90 m_sub; // [0x18]
-    int m_24;      // [0x24]
-    char m_28;     // [0x28]
-    char m_29;
-    char m_2a;
-    char m_2b;
-    int m_2c;      // [0x2c]
-};
-
 struct RHTitbitNode
 {
     RHTitbitNode *m_next; // [0x00]
@@ -75,39 +50,40 @@ struct RHTitbitNode
 
 struct RHTitbitIterator
 {
-    RHTitbitNode *node;
-    RHTitbitIterator(RHTitbitNode *value) : node(value) {}
+    RHTitbitList::Node *node;
+    RHTitbitIterator(RHTitbitList::Node *value) : node(value) {}
 };
 
 inline RHTitbit &RHTitbitList::Item(int index)
 {
     At(index);
-    return m_cur->m_data;
+    return *m_current;
 }
 
 inline void RHTitbitList::Advance(int distance)
 {
     for (; distance > 0; --distance)
-        m_cur = m_cur->m_next;
+        ++m_current;
     for (; distance < 0; ++distance)
-        m_cur = m_cur->m_prev;
+        --m_current;
 }
 
 inline void RHTitbitList::Seek(int i)
 {
-    if (m_valid)
+    const int count = size();
+    if (m_dirty)
     {
-        if (i <= (m_count + 1) / 2)
+        if (i <= (count + 1) / 2)
         {
-            m_cur = m_head->m_next;
+            m_current = begin();
             Advance(i);
         }
         else
         {
-            m_cur = m_head;
-            Advance(i - m_count);
+            m_current = end();
+            Advance(i - count);
         }
-        m_valid = 0;
+        m_dirty = false;
         m_index = i;
     }
     else
@@ -122,16 +98,16 @@ inline void RHTitbitList::Seek(int i)
             }
             else
             {
-                m_cur = m_head->m_next;
+                m_current = begin();
                 Advance(i);
             }
         }
         else
         {
-            if (i >= (m_index + m_count) / 2)
+            if (i >= (m_index + count) / 2)
             {
-                m_cur = m_head;
-                Advance(i - m_count);
+                m_current = end();
+                Advance(i - count);
             }
             else
             {

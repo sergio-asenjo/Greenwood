@@ -1,6 +1,9 @@
 #ifndef RHTITBITSCORE_H
 #define RHTITBITSCORE_H
 #include "RHSectorActorList.h"
+#include "RHUnk00613e90.h"
+#include "SBList.h"
+#include "SBUIUnkSurface.h"
 #include <string>
 
 class SBFile;
@@ -12,7 +15,6 @@ class RHElementActorPC;
 class RHSprite;
 class SBDrawManager;
 class RHFrameHolder;
-class RHUnk00613e90;
 class SBFontUnk0061e840;
 struct RHTitbit;
 struct RHTitbitNode;
@@ -21,15 +23,35 @@ enum RHtitbitKind
 {
 };
 
-class RHTitbitList
+struct RHTitbit
+{
+    int m_00;
+    short m_04;
+    short m_06;
+    short m_08;
+    short m_0a;
+    RHElement *m_0c;
+    int m_10;
+    union
+    {
+        int m_14i;
+        short m_14s;
+    } m_u14;
+    RHUnk00613e90 m_sub;
+    int m_24;
+    char m_28;
+    char m_29;
+    char m_2a;
+    char m_2b;
+    int m_2c;
+};
+
+class RHTitbitList : public SBList<RHTitbit>
 {
 public:
-    int m_00;                // [0x00]
-    RHTitbitNode *m_head;    // [0x04]
-    int m_count;             // [0x08]
-    RHTitbitNode *m_cur;     // [0x0c]
-    char m_valid;            // [0x10]
-    int m_index;             // [0x14]
+    typedef std::list<RHTitbit>::_Node Node;
+    using SBList<RHTitbit>::_Head;
+    using SBList<RHTitbit>::_Size;
 
     __forceinline void At(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
     RHTitbit &Item(int index);
@@ -43,7 +65,7 @@ public:
     void Sort()
     {
         FUN_005c8980();
-        m_valid = 1;
+        m_dirty = true;
     }
     void *Clear(void *out, RHTitbitNode *first, RHTitbitNode *last);
 };
@@ -51,6 +73,8 @@ public:
 class RHTitbits
 {
 public:
+    RHTitbits();
+    ~RHTitbits();
     unsigned long LoadFromResource();
     unsigned long AddTitbit(const RHUnk00613e90 &position, unsigned short layer, RHtitbitKind kind,
         RHElement *element, unsigned short subtype, RHElementActorPC *pc, bool shadow, unsigned long id);
@@ -66,6 +90,8 @@ public:
     bool RenderText(const std::wstring &text, const SBGeoBoundingBox2D &box, unsigned long flags) const;
 
     void FUN_005c72a0();
+    bool RefreshTitbitChain(RHElementActorPC *actor);
+    void Update();
     void SetBlinking(RHElementActorPC *actor, unsigned short action, bool blinking);
     void ResetBlinking();
 
@@ -78,12 +104,11 @@ public:
     unsigned long m_mask;
     unsigned short m_counts[8];
     RHTitbitList m_list; // [0x20]
-    char m_pad1[0x38];
     SBDrawManager *m_draw;
     RHFrameHolder *m_bank;
     SBFontUnk0061e840 *m_font;
     SBFontUnk0061e840 *m_outline;
-    char m_80[0x20];
+    SBUIUnkSurface m_80;
     unsigned short m_a0;
     char m_a2[2];
     unsigned long m_a4;  // [0xa4]

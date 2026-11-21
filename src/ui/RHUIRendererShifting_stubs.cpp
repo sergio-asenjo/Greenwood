@@ -35,7 +35,7 @@ SBGeoBoundingBox2D::SBGeoBoundingBox2D()
 SBGeoBoundingBox2D::SBGeoBoundingBox2D(const SBGeoSegment2D &segment)
 {
     m_flag = false;
-    FUN_00607e30((const RHMalignitySegment &)segment);
+    FUN_00607e30(segment);
     m_flag = true;
 }
 

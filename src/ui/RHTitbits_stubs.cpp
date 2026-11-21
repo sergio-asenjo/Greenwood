@@ -31,7 +31,7 @@ void *RHTitbitList::Clear(void *out, RHTitbitNode *first, RHTitbitNode *last)
         erased->m_prev->m_next = erased->m_next;
         erased->m_next->m_prev = erased->m_prev;
         operator delete(erased);
-        --m_count;
+        --_Size;
     }
     *(RHTitbitNode **)out = node;
     return out;

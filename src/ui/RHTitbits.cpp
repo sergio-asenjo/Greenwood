@@ -25,21 +25,21 @@ void FUN_005c9010(RHUnk005c9010Iterator &, int, std::bidirectional_iterator_tag)
 
 struct RHTitbitCursor : std::iterator<std::bidirectional_iterator_tag, RHTitbit>
 {
-    RHTitbitNode *node;
-    RHTitbitCursor(RHTitbitNode *value = 0) : node(value) {}
+    RHTitbitList::Node *node;
+    RHTitbitCursor(RHTitbitList::Node *value = 0) : node(value) {}
     RHTitbitCursor &operator=(const RHTitbitCursor &other)
     {
         node = other.node;
         return *this;
     }
-    RHTitbitCursor &AssignNode(RHTitbitNode *value)
+    RHTitbitCursor &AssignNode(RHTitbitList::Node *value)
     {
-        *(RHTitbitNode *volatile *)&node = value;
+        *(RHTitbitList::Node *volatile *)&node = value;
         return *this;
     }
-    RHTitbitCursor &operator++() { node = node->m_next; return *this; }
-    RHTitbitCursor &operator--() { node = node->m_prev; return *this; }
-    RHTitbit &operator*() { return node->m_data; }
+    RHTitbitCursor &operator++() { node = node->_Next; return *this; }
+    RHTitbitCursor &operator--() { node = node->_Prev; return *this; }
+    RHTitbit &operator*() { return node->_Value; }
 };
 
 template<bool rewind, bool outlined> class RHTitbitAccessMode
@@ -47,13 +47,13 @@ template<bool rewind, bool outlined> class RHTitbitAccessMode
 public:
     RHTitbitCursor Begin()
     {
-        RHTitbitNode *head = ((RHTitbitList *)this)->m_head;
-        RHTitbitNode *first = *(RHTitbitNode *volatile *)&head->m_next;
+        RHTitbitList::Node *head = ((RHTitbitList *)this)->_Head;
+        RHTitbitList::Node *first = *(RHTitbitList::Node *volatile *)&head->_Next;
         return RHTitbitCursor(first);
     }
     RHTitbitCursor End()
     {
-        RHTitbitNode *head = *(RHTitbitNode *volatile *)&((RHTitbitList *)this)->m_head;
+        RHTitbitList::Node *head = *(RHTitbitList::Node *volatile *)&((RHTitbitList *)this)->_Head;
         return RHTitbitCursor(head);
     }
     RHTitbit &Get(int index, bool removing = false)
@@ -66,7 +66,7 @@ public:
                 std::bidirectional_iterator_tag category;
                 if (rewind)
                     FUN_005c9010((RHUnk005c9010Iterator &)m_current.AssignNode(
-                        *(RHTitbitNode *volatile *)&((RHTitbitList *)this)->m_head->m_next), index, category);
+                        *(RHTitbitList::Node *volatile *)&((RHTitbitList *)this)->_Head->_Next), index, category);
                 else
                 {
                     m_current = Begin();
@@ -94,12 +94,12 @@ public:
                         std::bidirectional_iterator_tag category;
                         if (removing)
                         {
-                            m_current.node = (RHTitbitNode *)((RHUnk0046eb30 *)this)->FUN_0046eb80().node;
+                            m_current.node = (RHTitbitList::Node *)((RHUnk0046eb30 *)this)->FUN_0046eb80().node;
                             FUN_005c9010((RHUnk005c9010Iterator &)m_current, index, category);
                         }
                         else
                             FUN_005c9010((RHUnk005c9010Iterator &)m_current.AssignNode(
-                                *(RHTitbitNode *volatile *)&((RHTitbitList *)this)->m_head->m_next), index, category);
+                                *(RHTitbitList::Node *volatile *)&((RHTitbitList *)this)->_Head->_Next), index, category);
                     }
                     else
                     {
@@ -151,6 +151,14 @@ DECOMP_STATIC_ASSERT(offsetof(RHTitbits, m_counts) == 0x10)
 DECOMP_STATIC_ASSERT(offsetof(RHTitbits, m_draw) == 0x70)
 DECOMP_STATIC_ASSERT(offsetof(RHTitbits, m_bank) == 0x74)
 DECOMP_STATIC_ASSERT(offsetof(RHTitbits, m_a0) == 0xa0)
+
+#include "RHElementActorPC.h"
+#include "RHElementCore.h"
+#include "RHBonusInfo.h"
+#include "RHDrawManager.h"
+
+DECOMP_STATIC_ASSERT(offsetof(RHElementActorPC, m_quickActionIds) == 0x538)
+DECOMP_STATIC_ASSERT(sizeof(SBList<RHTitbit *>) == 0x24)
 
 // FUNCTION: GAME 0x005c2570
 unsigned long RHTitbits::LoadFromResource()
@@ -264,7 +272,7 @@ unsigned long RHTitbits::AddTitbit(const RHUnk00613e90 &position, unsigned short
     if (!((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0()[0x53] && (kind == 5 || kind == 6 || kind == 7))
         return -1;
     titbit.m_10 = (int)pc;
-    titbit.m_0c = (int)element;
+    titbit.m_0c = element;
     titbit.m_sub = position;
     titbit.m_08 = 0;
     titbit.m_06 = 0;
@@ -373,7 +381,7 @@ bool RHTitbits::RemoveQuickActionTitbitsFor(RHElementActorPC *actor, unsigned sh
     if (id == -1)
         return false;
     bool removed = false;
-    unsigned short count = m_list.m_count;
+    unsigned short count = m_list._Size;
     for (int index = count - 1; count != 0; --count, --index)
     {
         RHTitbitAccess &list = *(RHTitbitAccess *)&m_list;
@@ -418,18 +426,18 @@ bool RHTitbits::RemoveUnconsciousStarsIf(RHElementActor *actor)
         int index = i - 1;
         RHTitbit entry;
         entry = m_list.Item(index);
-        if (entry.m_00 == 1 && entry.m_0c == (int)actor && !*(bool *)((char *)actor + 0x1ce))
+        if (entry.m_00 == 1 && entry.m_0c == static_cast<const void *>(actor) && !*(bool *)((char *)actor + 0x1ce))
         {
             removed = true;
             RHTitbitAccess &list = *(RHTitbitAccess *)&m_list;
             ((RHTitbitAccessMode<false, true> *)&list)->Get(index, false);
-            RHTitbitNode *node = list.m_current.node;
-            node->m_prev->m_next = node->m_next;
-            node->m_next->m_prev = node->m_prev;
+            RHTitbitList::Node *node = list.m_current.node;
+            node->_Prev->_Next = node->_Next;
+            node->_Next->_Prev = node->_Prev;
             ::operator delete(node);
-            int remaining = ((RHTitbitList *)&list)->m_count - 1;
+            int remaining = ((RHTitbitList *)&list)->_Size - 1;
             list.m_dirty = true;
-            ((RHTitbitList *)&list)->m_count = remaining;
+            ((RHTitbitList *)&list)->_Size = remaining;
         }
     }
     return removed;
@@ -461,7 +469,7 @@ bool RHTitbits::Serialize(SBFile &file)
 
     if (!file.m_bLoading)
     {
-        count = m_list.m_count;
+        count = m_list._Size;
         if (file.Access(&count, 4) < 0)
         {
             SBString *err = file.GetError();
@@ -474,8 +482,8 @@ bool RHTitbits::Serialize(SBFile &file)
     {
         RHTitbitList &list = m_list;
         typedef RHTitbitIterator (RHTitbitList::*Erase)(RHTitbitIterator, RHTitbitIterator);
-        (list.*(Erase)&RHTitbitList::Clear)(RHTitbitIterator(list.m_head->m_next), RHTitbitIterator(list.m_head));
-        list.m_valid = 1;
+        (list.*(Erase)&RHTitbitList::Clear)(RHTitbitIterator(list._Head->_Next), RHTitbitIterator(list._Head));
+        list.m_dirty = true;
         if (file.Access(&count, 4) < 0)
         {
             SBString *err = file.GetError();
@@ -488,15 +496,15 @@ bool RHTitbits::Serialize(SBFile &file)
         m_a8 = 10.0f;
     }
 
-    RHTitbitNode *node;
+    RHTitbitList::Node *node;
     for (i = 0; i < count; i++)
     {
         if (!file.m_bLoading)
         {
             RHTitbitList &list = m_list;
             list.At(i);
-            node = list.m_cur;
-            elem = node->m_data;
+            node = list.m_current._Mynode();
+            elem = node->_Value;
         }
 
         if (file.Access(&elem.m_00, 4) < 0)
@@ -570,14 +578,14 @@ bool RHTitbits::Serialize(SBFile &file)
             return false;
         }
 
-        g_pEngine->SerializeElementPointer(file, *(RHElement **)(&elem.m_0c));
+        g_pEngine->SerializeElementPointer(file, elem.m_0c);
         g_pEngine->SerializeNestedB(file, &elem.m_10);
         ((RHUnk005df510 *)((char *)&elem + 0x1c))->Serialize(file);
 
         if (file.m_bLoading)
         {
             m_list.Seek(i);
-            m_list.m_cur->m_data = elem;
+            *m_list.m_current = elem;
         }
     }
 
@@ -623,13 +631,61 @@ void RHTitbits::FUN_005c72a0()
     m_list.Sort();
 }
 
+// STUB: GAME 0x005c7560
+bool RHTitbits::RefreshTitbitChain(RHElementActorPC *actor)
+{
+    SBGeoPoint2D origin;
+    SBGeoPoint2D target;
+    unsigned count = m_list._Size;
+    SBList<RHTitbit *> chain;
+    float phase = m_a8;
+    for (unsigned action = 0; action < 3; ++action)
+    {
+        unsigned long id = actor->m_quickActionIds[(unsigned short)action];
+        if (id != -1)
+        {
+            for (unsigned index = 0; index < count; ++index)
+            {
+                RHTitbit *entry = &m_list.Item(index);
+                if (entry->m_2c == id && entry->m_04 != 2)
+                {
+                    chain.InsertLast(entry);
+                    break;
+                }
+            }
+        }
+    }
+    origin = actor->m_actorInfo->m_4.m_20;
+    for (SBList<RHTitbit *>::iterator it = chain.begin(); it != chain.end(); ++it)
+    {
+        const RHTitbit &entry = **it;
+        RHElement *element = entry.m_0c;
+        if (!element)
+        {
+            target.m_x = entry.m_sub.x;
+            target.m_y = entry.m_sub.y - entry.m_sub.z;
+        }
+        else if ((element->m_04 & 0xf) == 9)
+        {
+            RHUnk00613e90 position = element->m_50->m_c;
+            target.m_x = position.x;
+            target.m_y = position.y - position.z;
+        }
+        else
+            target = element->m_50->m_20;
+        RHDrawManager::mpDrawManager->DrawDottedLine(origin, target, phase, 10.0f, 1.0f, 0);
+        origin = target;
+    }
+    return true;
+}
+
 // FUNCTION: GAME 0x005c77f0
 void RHTitbits::SetBlinking(RHElementActorPC *actor, unsigned short action, bool blinking)
 {
     unsigned long id = *(unsigned long *)((char *)actor + 0x538 + action * 4);
     if (id == -1)
         return;
-    unsigned count = m_list.m_count;
+    unsigned count = m_list._Size;
     for (int index = 0; (unsigned)index < count; ++index)
     {
         RHTitbit &entry = ((RHTitbitAccessMode<true, false> *)&m_list)->Get(index, false);
@@ -641,7 +697,7 @@ void RHTitbits::SetBlinking(RHElementActorPC *actor, unsigned short action, bool
 // FUNCTION: GAME 0x005c7970
 void RHTitbits::ResetBlinking()
 {
-    unsigned count = m_list.m_count;
+    unsigned count = m_list._Size;
     for (int index = 0; (unsigned)index < count; ++index)
         *(bool *)&((RHTitbitAccess *)&m_list)->Get(index).m_28 = false;
 }
@@ -650,7 +706,7 @@ void RHTitbits::ResetBlinking()
 short RHTitbits::FUN_005c7fb0(unsigned long id)
 {
     RHTitbit value;
-    unsigned count = m_list.m_count;
+    unsigned count = m_list._Size;
     for (int index = 0; (unsigned)index < count; ++index)
     {
         RHTitbit &entry = ((RHTitbitAccess *)&m_list)->Get(index);
@@ -664,11 +720,11 @@ short RHTitbits::FUN_005c7fb0(unsigned long id)
 // STUB: GAME 0x005c8120
 void RHTitbits::FUN_005c8120(int kind, RHElement *element)
 {
-    for (int index = 0; (unsigned)index < (unsigned)m_list.m_count; ++index)
+    for (int index = 0; (unsigned)index < m_list._Size; ++index)
     {
         RHTitbitAccess &list = *(RHTitbitAccess *)&m_list;
         RHTitbit &entry = list.Get(index, true);
-        if (entry.m_00 == kind && entry.m_0c == (int)element)
+        if (entry.m_00 == kind && entry.m_0c == element)
         {
             list.Get(index, true);
             ((RHUnk0046eb30 *)&list)->erase(RHScriptIter((RHScriptNode *)list.m_current.node));
@@ -681,10 +737,10 @@ void RHTitbits::FUN_005c8120(int kind, RHElement *element)
 // FUNCTION: GAME 0x005c8340
 bool RHTitbits::FUN_005c8340(int kind, RHElement *element)
 {
-    for (int index = 0; (unsigned)index < (unsigned)m_list.m_count; ++index)
+    for (int index = 0; (unsigned)index < m_list._Size; ++index)
     {
         RHTitbit &entry = ((RHTitbitAccess *)&m_list)->Get(index);
-        if (entry.m_00 == kind && entry.m_0c == (int)element)
+        if (entry.m_00 == kind && entry.m_0c == element)
             return true;
     }
     return false;
@@ -731,7 +787,7 @@ bool RHTitbits::RenderText(const std::wstring &text, const SBGeoPoint2D &point) 
 // STUB: GAME 0x005c8780
 bool RHTitbits::IsRunningForQA(unsigned long id)
 {
-    unsigned count = m_list.m_count;
+    unsigned count = m_list._Size;
     for (int index = 0; (unsigned)index < count; ++index)
     {
         RHTitbitAccess &list = *(RHTitbitAccess *)&m_list;
@@ -805,18 +861,18 @@ void RHTitbitList::Resize(long count)
 {
     RHTitbit *value = new RHTitbit;
     std::list<RHTitbit> &list = *(std::list<RHTitbit> *)this;
-    if (count <= m_count)
+    if (count <= (long)_Size)
     {
-        for (long remaining = m_count - count; remaining > 0; --remaining)
+        for (long remaining = (long)_Size - count; remaining > 0; --remaining)
             list.pop_back();
     }
     else
     {
-        for (long remaining = count - m_count; remaining > 0; --remaining)
+        for (long remaining = count - (long)_Size; remaining > 0; --remaining)
             list.insert(list.end(), *value);
     }
     delete value;
-    m_valid = 1;
+    m_dirty = true;
 }
 
 #include "RHGameWidgetLifetime.h"
@@ -964,9 +1020,9 @@ RHUIRendererBlinking::~RHUIRendererBlinking()
 #include "RHGameWidgetRendererCalls.h"
 
 // FUNCTION: GAME 0x005c9320
-bool RHGameWidgetRendererCalls::FUN_005c9320(unsigned id)
+bool RHUIRendererBlinking::FUN_005c9320(unsigned id)
 {
-    RHUIRendererBlinking *blinking = (RHUIRendererBlinking *)this;
+    RHUIRendererBlinking *blinking = this;
     if (blinking->m_active && id == blinking->m_currentId) {
         if ((++blinking->m_frame / blinking->m_current.m_period) & 1)
             ((SBUIUnk0060da20 *)this)->FUN_0060da20(blinking->m_current.m_second);
@@ -1464,4 +1520,295 @@ public:
 void EmitRHTitbitNativeHelpers(RHTitbitNativeAccess *list)
 {
     list->EmitBuynode();
+}
+
+#include "RHFontManager.h"
+#include "SBDrawManagerCore.h"
+#include "SBFont.h"
+
+extern RHTitbits *g_unk0x6c10e8;
+extern RHFrameHolder *g_unk0x006c0b1c;
+
+DECOMP_SIZE_ASSERT(RHTitbit, 0x30)
+DECOMP_SIZE_ASSERT(RHTitbitList::Node, 0x38)
+DECOMP_SIZE_ASSERT(RHTitbitList, 0x50)
+DECOMP_STATIC_ASSERT(offsetof(RHTitbitList, _Head) == 4)
+DECOMP_STATIC_ASSERT(offsetof(RHTitbitList, _Size) == 8)
+DECOMP_STATIC_ASSERT(offsetof(RHTitbitList, m_current) == 0xc)
+DECOMP_STATIC_ASSERT(offsetof(RHTitbitList, m_dirty) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHTitbitList, m_index) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(RHTitbitList, m_20) == 0x20)
+DECOMP_STATIC_ASSERT(offsetof(RHTitbit, m_sub) == 0x18)
+DECOMP_STATIC_ASSERT(offsetof(RHTitbits, m_list) == 0x20)
+DECOMP_STATIC_ASSERT(offsetof(RHTitbits, m_font) == 0x78)
+DECOMP_STATIC_ASSERT(offsetof(RHTitbits, m_outline) == 0x7c)
+DECOMP_STATIC_ASSERT(offsetof(RHTitbits, m_80) == 0x80)
+
+// STRING: GAME 0x006b8bf4
+static const char *RHTitbitsFontName = "Titbits";
+
+// STUB: GAME 0x005c2240
+RHTitbits::RHTitbits()
+    : m_font(RHFontManager::FUN_005024f0()->GetFont(std::string(RHTitbitsFontName))),
+      m_outline(RHFontManager::FUN_005024f0()->GetFont(std::string("Background"))),
+      m_80(0)
+{
+    m_draw = g_unk0x6c11d0;
+    m_bank = g_unk0x006c0b1c;
+    m_sprite = new RHSprite(0);
+    g_unk0x6c10e8 = this;
+    m_surface = -1;
+    m_mask = -1;
+    m_font->AttachToRenderContext(&m_80, 1);
+    if (m_outline)
+        m_outline->AttachToRenderContext(&m_80, 1);
+    m_a4 = 15;
+    m_a8 = 0.0f;
+    m_ac = 0;
+}
+
+// TEMPLATE: GAME 0x0057c9c0 FOLDED
+// ??Eiterator@?$list@URHTitbit@@V?$allocator@URHTitbit@@@std@@@std@@QAE?AV012@H@Z
+
+// FUNCTION: GAME 0x005c2440
+RHTitbits::~RHTitbits()
+{
+    if (m_surface != (unsigned long)-1)
+        m_draw->FUN_005e5160(m_surface);
+    if (m_mask != (unsigned long)-1)
+        m_draw->FUN_005e5160(m_mask);
+    g_unk0x6c10e8 = 0;
+    delete m_sprite;
+    delete m_font;
+    delete m_outline;
+}
+
+#include "RHElementActorNPC.h"
+#include "RHOrderCore.h"
+#include <stdlib.h>
+
+// TEMPLATE: GAME 0x0046eb80 FOLDED
+// ?begin@?$list@URHTitbit@@V?$allocator@URHTitbit@@@std@@@std@@QAE?AViterator@12@XZ
+
+// TEMPLATE: GAME 0x005c9010 FOLDED
+// ?_Advance@std@@YAXAAViterator@?$list@URHTitbit@@V?$allocator@URHTitbit@@@std@@@1@HUbidirectional_iterator_tag@1@@Z
+
+static __forceinline void ExpireTitbit(RHTitbitList &list)
+{
+    typedef std::list<RHTitbit>::iterator Iterator;
+    Iterator next = list.m_current;
+    Iterator (Iterator::*previous)(int) = &Iterator::operator++;
+    RHTitbitList::Node *node = (next.*previous)(0)._Mynode();
+    node->_Prev->_Next = node->_Next;
+    node->_Next->_Prev = node->_Prev;
+    ::operator delete(node);
+    int remaining = list._Size - 1;
+    list.m_dirty = true;
+    list._Size = remaining;
+}
+
+static __forceinline void SeekTitbitForErase(RHTitbitList &list, int index)
+{
+    typedef std::list<RHTitbit> List;
+    typedef List::iterator Iterator;
+    Iterator (List::*begin)() = &List::begin;
+    void (__cdecl *advance)(Iterator &, int, std::bidirectional_iterator_tag) = &std::_Advance;
+
+    const int count = list.size();
+    if (list.m_dirty)
+    {
+        const std::bidirectional_iterator_tag category = std::_Iter_cat(list.m_current);
+        if (index <= (count + 1) / 2)
+            advance(list.m_current = (list.*begin)(), index, category);
+        else
+            advance(list.m_current = list.end(), index - count, category);
+        list.m_dirty = false;
+        list.m_index = index;
+    }
+    else
+    {
+        const int previous = list.m_index;
+        if (index != previous)
+        {
+            const std::bidirectional_iterator_tag category = std::_Iter_cat(list.m_current);
+            if (index < previous)
+            {
+                if (index < (previous + 1) / 2)
+                    advance(list.m_current = (list.*begin)(), index, category);
+                else
+                    advance(list.m_current, index - previous, category);
+            }
+            else if (index < (previous + count) / 2)
+                advance(list.m_current, index - previous, category);
+            else
+                advance(list.m_current = list.end(), index - count, category);
+            list.m_index = index;
+        }
+    }
+}
+
+// STUB: GAME 0x005c7ac0
+void RHTitbits::Update()
+{
+    typedef std::list<RHTitbit> List;
+    typedef List::iterator Iterator;
+    Iterator (List::*erase)(Iterator) = &List::erase;
+    const short last = m_list.size() - 1;
+    if (last < 0)
+        return;
+    int index = last;
+    int remaining = index + 1;
+    RHTitbitList &list = m_list;
+    do
+    {
+        RHTitbit &entry = list.Item(index);
+        switch (entry.m_00)
+        {
+        case 0:
+            if (++entry.m_04 == 6)
+            {
+                list.At(index);
+                (list.*erase)(list.m_current);
+                list.m_dirty = true;
+            }
+            break;
+        case 2:
+            {
+                RHElementActor *actor = static_cast<RHElementActor *>(entry.m_0c);
+                if ((actor->RHElement::m_04 & 31) == 20 &&
+                    static_cast<RHElementActorNPC *>(actor)->CurrentAIState() == 237)
+                    break;
+                RHOrder *order = actor->m_134;
+                if (order && (order->m_24 == 101 || order->m_24 == 103))
+                    break;
+                list.At(index);
+                (list.*erase)(list.m_current);
+                list.m_dirty = true;
+            }
+            break;
+        case 1:
+            {
+                RHElementActorHuman *actor = static_cast<RHElementActorHuman *>(entry.m_0c);
+                if (actor)
+                {
+                    if (!actor->IsUnconscious() || actor->IsDead())
+                    {
+                        list.At(index);
+                        (list.*erase)(list.m_current);
+                        list.m_dirty = true;
+                    }
+                }
+                else if (--entry.m_04 == 0)
+                {
+                    list.At(index);
+                    (list.*erase)(list.m_current);
+                    list.m_dirty = true;
+                }
+            }
+            break;
+        case 4:
+            {
+                short frame = entry.m_08;
+                if (frame == 25)
+                {
+                    list.At(index);
+                    (list.*erase)(list.m_current);
+                    list.m_dirty = true;
+                }
+                else
+                    entry.m_08 = frame + 1;
+            }
+            break;
+        case 5:
+            if (rand() & 3)
+                ++entry.m_08;
+            if (static_cast<unsigned short>(entry.m_08) == m_counts[0])
+            {
+                list.At(index);
+                ExpireTitbit(list);
+            }
+            else
+                entry.m_sub.z += float(rand() % 4 + 2);
+            break;
+        case 6:
+            if (rand() & 3)
+                ++entry.m_08;
+            if (static_cast<unsigned short>(entry.m_08) == m_counts[1])
+            {
+                list.At(index);
+                ExpireTitbit(list);
+            }
+            else
+                entry.m_sub.z += 1.0f;
+            break;
+        case 7:
+            ++entry.m_08;
+            if (static_cast<unsigned short>(entry.m_08) == m_counts[2])
+            {
+                list.At(index);
+                (list.*erase)(list.m_current);
+                list.m_dirty = true;
+            }
+            else
+                entry.m_sub.z += 1.0f;
+            break;
+        case 11:
+            ++entry.m_08;
+            if (static_cast<unsigned short>(entry.m_08) == m_counts[7])
+            {
+                list.At(index);
+                ExpireTitbit(list);
+            }
+            else
+                entry.m_sub.z += 1.0f;
+            break;
+        case 8:
+            if (g_pEngine->FollowedElement() != entry.m_0c)
+            {
+                list.At(index);
+                ExpireTitbit(list);
+            }
+            break;
+        case 12:
+            list.At(index);
+            ExpireTitbit(list);
+            break;
+        case 15:
+            {
+                const int state = entry.m_0c->m_50->m_88;
+                if (state == 21 || state == 22)
+                    break;
+                SeekTitbitForErase(list, index);
+                (list.*erase)(list.m_current);
+                list.m_dirty = true;
+            }
+            break;
+        case 9:
+            {
+                const unsigned short animation = entry.m_06;
+                if (!animation)
+                    break;
+                if (animation != 11)
+                {
+                    if (static_cast<unsigned short>(++entry.m_0a) > 1)
+                    {
+                        ++entry.m_08;
+                        entry.m_0a = 0;
+                        if (static_cast<unsigned short>(entry.m_08) >= m_sprite->FUN_005bdcf0(animation))
+                            entry.m_08 = 0;
+                    }
+                }
+                else if (static_cast<unsigned short>(++entry.m_0a) > 1)
+                {
+                    ++entry.m_08;
+                    const unsigned short frame = entry.m_08;
+                    entry.m_0a = 0;
+                    if (frame >= 8)
+                        entry.m_08 = 0;
+                }
+            }
+            break;
+        }
+        --index;
+    } while (--remaining);
 }
