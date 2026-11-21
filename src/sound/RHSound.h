@@ -190,11 +190,7 @@ struct RHUnk005ad570Profiles
     void **m_68; // 0x68
 };
 
-class RHUnk0055dbb0
-{
-public:
-    char *FUN_0055dbb0();
-};
+#include "RHPlayerProfileAccess.h"
 
 #include "RHPlayerProfileManagerStorage.h"
 

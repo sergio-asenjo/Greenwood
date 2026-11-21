@@ -107,12 +107,6 @@ public:
 
 DECOMP_SIZE_ASSERT(RHUnk005aa860, 0x24)
 
-class RHScriptFXArray
-{
-public:
-    void Unk005008e0(void **, void **);
-};
-
 DECOMP_SIZE_ASSERT(RHUnk005b2410, 0x10)
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 
@@ -1551,7 +1545,7 @@ void RHSound::FUN_005a9420()
         }
         if (m_27b)
         {
-            FUN_005a9040(m_254, (void *)0x005a7750, m_25c);
+            FUN_005a9040(m_254, (void *)FUN_005a7750, m_25c);
             m_27b = 0;
             m_27c = 1;
         }
@@ -2080,47 +2074,45 @@ void EmitSoundChannelCleanup(RHSoundChannels *channels)
     channels->~RHSoundChannels();
 }
 
+inline void RHSoundChannels::Insert(RHSoundChannel *position, unsigned int added, const RHSoundChannel &value)
+{
+    if ((unsigned int)(m_0c - m_08) < added)
+    {
+        unsigned int growth = added < Size() ? Size() : added;
+        int capacity = FUN_0045a490() + growth;
+        RHSoundChannel *storage = std::_Allocate((ptrdiff_t)capacity, (RHSoundChannel *)0);
+        RHSoundChannel *next = FUN_005aaca0(m_04, position, storage);
+        FUN_005aacf0(next, added, value);
+        FUN_005aaca0(position, m_08, next + added);
+        Destroy(Begin(), End());
+        operator delete(m_04);
+        m_0c = storage + capacity;
+        m_08 = storage + (FUN_0045a490() + added);
+        m_04 = storage;
+    }
+    else if ((unsigned int)(m_08 - position) < added)
+    {
+        FUN_005aaca0(position, m_08, position + added);
+        FUN_005aacf0(m_08, added - (m_08 - position), value);
+        std::fill(position, m_08, value);
+        m_08 += added;
+    }
+    else if (added > 0)
+    {
+        FUN_005aaca0(m_08 - added, m_08, m_08);
+        std::copy_backward(position, m_08 - added, m_08);
+        std::fill(position, position + added, value);
+        m_08 += added;
+    }
+}
+
 // STUB: GAME 0x005aaa50
 void RHSoundChannels::FUN_005aaa50(unsigned int count, const RHSoundChannel &value)
 {
     if (Size() < count)
-    {
-        unsigned int added = count - Size();
-        RHSoundChannel *position = m_08;
-        if ((unsigned int)(m_0c - m_08) < added)
-        {
-            unsigned int growth = Size() < added ? added : Size();
-            int capacity = FUN_0045a490() + growth;
-            RHSoundChannel *storage = (RHSoundChannel *)operator new((capacity < 0 ? 0 : capacity) * sizeof(RHSoundChannel));
-            RHSoundChannel *next = FUN_005aaca0(m_04, position, storage);
-            FUN_005aacf0(next, added, value);
-            FUN_005aaca0(position, m_08, next + added);
-            ((RHScriptFXArray *)this)->Unk005008e0((void **)m_04, (void **)m_08);
-            operator delete(m_04);
-            m_0c = storage + capacity;
-            m_08 = storage + (FUN_0045a490() + added);
-            m_04 = storage;
-        }
-        else if ((unsigned int)(m_08 - position) < added)
-        {
-            FUN_005aaca0(position, m_08, position + added);
-            FUN_005aacf0(m_08, added - (m_08 - position), value);
-            std::fill(position, m_08, value);
-            m_08 += added;
-        }
-        else if (added > 0)
-        {
-            FUN_005aaca0(m_08 - added, m_08, m_08);
-            std::copy_backward(position, m_08 - added, m_08);
-            std::fill(position, position + added, value);
-            m_08 += added;
-        }
-    }
-    else if (m_04 && count < Size())
-    {
-        RHSoundChannel *next = std::copy(m_08, m_08, m_04 + count);
-        m_08 = next;
-    }
+        Insert(End(), count - Size(), value);
+    else if (count < Size())
+        Remove(Begin() + count, End());
 }
 
 // FUNCTION: GAME 0x005aaca0

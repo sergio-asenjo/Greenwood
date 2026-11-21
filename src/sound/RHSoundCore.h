@@ -69,6 +69,7 @@ struct RHSoundChannels
         m_08 = next;
         return first;
     }
+    void Insert(RHSoundChannel *position, unsigned int count, const RHSoundChannel &value);
     void FUN_005aaa50(unsigned int, const RHSoundChannel &);
     int FUN_0045a490();
     RHSoundChannel *FUN_005aaca0(RHSoundChannel *, RHSoundChannel *, RHSoundChannel *);
