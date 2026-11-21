@@ -1,6 +1,7 @@
 // Scratch hello-world to validate the compile -> PDB -> reccmp loop.
 
-// FUNCTION: GAME 0x00579a20
+// TEMPLATE: GAME 0x00579a20 FOLDED
+// ?FUN_00579a20@@YAHXZ
 int FUN_00579a20()
 {
     return 0;

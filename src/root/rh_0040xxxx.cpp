@@ -4,20 +4,6 @@
 
 #include "../script/RHScript.h"
 
-class RHUnk0040bf00
-{
-public:
-    void FUN_0040bf90(unsigned char value);
-    char m_0[0x174];
-    unsigned char m_174;
-};
-
-// FUNCTION: GAME 0x0040bf90
-void RHUnk0040bf00::FUN_0040bf90(unsigned char value)
-{
-    m_174 |= value;
-}
-
 class RHUnk0040bc00List
 {
 public:
@@ -51,11 +37,6 @@ RHUnk0040bc00::RHUnk0040bc00(const char *value)
 bool FUN_0040eda0(const RHMalignityPosition *value, RHMalignityPosition other)
 {
     return value->x == other.x && value->y == other.y && value->area == other.area && value->layer == other.layer;
-}
-
-void EmitRHUnk0040bf00(RHUnk0040bf00 *object)
-{
-    object->FUN_0040bf90(0);
 }
 
 void EmitRHUnk0040ed00(const RHMalignityPosition *object)

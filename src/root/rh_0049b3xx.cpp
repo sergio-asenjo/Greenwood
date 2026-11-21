@@ -18,7 +18,8 @@
 #include <math.h>
 #include "RHScript.h"
 #include "RHEngineWidenedCalls.h"
-#include "RHUnkTargetSpriteCalls.h"
+#include "RHSpriteCore.h"
+#include "RHSequenceGenericCalls.h"
 
 #define AT(type, off) (*(type *)((char *)this + off))
 
@@ -82,7 +83,7 @@ public:
 class RHUnk0049b690
 {
 public:
-    void FUN_0049b690(RHUnk00585500 *value);
+    void FUN_0049b690(RHUnk00584d60 *value);
 };
 
 class RHUnk0049b510
@@ -137,12 +138,6 @@ extern RHUnk00452030 *g_unk0x6c07fc;
 extern RHFastFindGrid *g_unk0x6c0a9c;
 extern RHTitbits *g_unk0x6c10e8;
 extern RHEngine *g_pEngine;
-
-class RHPositionInterface
-{
-public:
-    bool TurnFast();
-};
 
 class RHPathActorInfo
 {
@@ -331,7 +326,7 @@ void RHUnk0049b390::FUN_0049b470(void *value, bool flag)
 // FUNCTION: GAME 0x0049b490
 void RHUnk0049b390::FUN_0049b490(unsigned row, unsigned flags)
 {
-    ((RHUnkTargetSprite *)AT(void *, 0x50))->FUN_005b76e0(row, flags);
+    ((RHSprite *)AT(void *, 0x50))->FUN_005b76e0(row, flags);
 }
 
 // FUNCTION: GAME 0x0049b4b0
@@ -396,7 +391,7 @@ void RHUnk0049b670::FUN_0049b670() { AT(char, 0xa8) = 0; }
 void RHUnk0049b680::FUN_0049b680(int value) { AT(int, 0x68) = value; }
 
 // FUNCTION: GAME 0x0049b690
-void RHUnk0049b690::FUN_0049b690(RHUnk00585500 *value) { value->Unk(this); }
+void RHUnk0049b690::FUN_0049b690(RHUnk00584d60 *value) { value->AppendToSequence((RHSequence *)this); }
 
 // FUNCTION: GAME 0x0049bb00
 char RHUnk0049bb00::FUN_0049bb00()
@@ -474,5 +469,5 @@ void rh_emit_accessors(void *object, const RHUnk0049b100 &point)
     ((RHUnk0049b390 *)object)->FUN_0049b420();
     ((RHUnk0049b390 *)object)->FUN_0049b430();
     ((RHUnk0049b390 *)object)->FUN_0049b470(0, false);
-    ((RHUnk0049b690 *)object)->FUN_0049b690((RHUnk00585500 *)object);
+    ((RHUnk0049b690 *)object)->FUN_0049b690((RHUnk00584d60 *)object);
 }
