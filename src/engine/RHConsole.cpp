@@ -5,6 +5,7 @@
 #include <new>
 #include <stdio.h>
 #include <math.h>
+#include <windows.h>
 #include <iterator>
 #include "RHElementActorPC.h"
 #include "SBGeoPoint2D.h"
@@ -16,6 +17,19 @@
 #include "ToolboxColor.h"
 #include "RHElementCore.h"
 #include "RHElementActor.h"
+#include "RHEngine.h"
+#include "RHFrameHolder.h"
+#include "RHConsoleBlockMap.h"
+#include "RHElementActorNPC.h"
+#include "SBHardware.h"
+
+struct RHConsoleHelpCommand
+{
+    unsigned count;
+    char **words;
+    char *description;
+    void (RHConsole::*callback)(unsigned, char **);
+};
 
 typedef int RHConsole_size_assert[(sizeof(RHConsole) == 0x688) ? 1 : -1];
 DECOMP_SIZE_ASSERT(std::string, 0x10)
@@ -29,11 +43,24 @@ DECOMP_STATIC_ASSERT(offsetof(RHUnk0060f8a0, m_24) == 0x24)
 DECOMP_STATIC_ASSERT(offsetof(RHConsole, m_position) == 0x88)
 DECOMP_STATIC_ASSERT(offsetof(RHConsole, m_history) == 0x8b)
 DECOMP_STATIC_ASSERT(offsetof(RHConsole, m_historyIndex) == 0x5b4)
+DECOMP_SIZE_ASSERT(RHConsoleHelpArray, 0x20)
+DECOMP_SIZE_ASSERT(RHConsoleHelpCommand, 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHConsoleHelpArray, dirty) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(RHConsole, m_5b8) == 0x5b8)
+DECOMP_STATIC_ASSERT(offsetof(RHConsole, m_5d8) == 0x5d8)
+DECOMP_SIZE_ASSERT(SBList<RHElementActorPC *>, 0x24)
+DECOMP_STATIC_ASSERT(offsetof(SBList<RHElementActorPC *>, m_dirty) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(SBList<RHElementActorPC *>, m_current) == 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(SBList<RHElementActorPC *>, m_index) == 0x14)
 DECOMP_STATIC_ASSERT(offsetof(RHConsole, m_completion) == 0x5f8)
 DECOMP_STATIC_ASSERT(offsetof(RHConsole, m_completionDirty) == 0x67c)
 DECOMP_STATIC_ASSERT(offsetof(RHConsole, m_completionIndex) == 0x680)
 DECOMP_STATIC_ASSERT(offsetof(RHConsole, m_close) == 0x684)
-DECOMP_STATIC_ASSERT(offsetof(RHConsoleEngine, m_4a52) == 0x4a52)
+DECOMP_STATIC_ASSERT(offsetof(RHEngine, m_4a52) == 0x4a52)
+DECOMP_STATIC_ASSERT(offsetof(RHEngine, m_4b2c) == 0x4b2c)
+DECOMP_STATIC_ASSERT(offsetof(RHEngine, m_4be4) == 0x4be4)
+DECOMP_STATIC_ASSERT(offsetof(RHEngine, m_frameHolder) == 0x42f0)
+DECOMP_STATIC_ASSERT(offsetof(RHEngine, m_shadowColor) == 0x4aa6)
 DECOMP_SIZE_ASSERT(RHUnk005069a0, 0x14)
 DECOMP_STATIC_ASSERT(offsetof(RHUnk005069a0, m_00) == 0)
 DECOMP_STATIC_ASSERT(offsetof(RHUnk005069a0, m_04) == 4)
@@ -41,11 +68,6 @@ DECOMP_STATIC_ASSERT(offsetof(RHUnk005069a0, m_0c) == 0x0c)
 DECOMP_STATIC_ASSERT(offsetof(RHElement, m_04) == 4)
 DECOMP_STATIC_ASSERT(offsetof(RHElement, m_50) == 0x50)
 
-class RHEngine
-{
-public:
-    void FUN_004e2390(void *actor);
-};
 class RHMessenger;
 #include "RHCampaignValueCalls.h"
 extern RHEngine *g_pEngine;
@@ -55,6 +77,7 @@ RHMessenger *RHUnk00546050();
 #include "RHCampaignCore.h"
 
 #include "RHElementActorSoldierCore.h"
+#include "RHSequenceManager.h"
 
 class RHScriptBatchCalls
 {
@@ -62,7 +85,6 @@ public:
     void Unk004e3220(int);
     void Unk004520e0(int, int);
     void Unk004d9330(void *, bool);
-    void *Unk0058a940(void *, int, void *);
 };
 
 #include "RHSequenceGenericCalls.h"
@@ -573,71 +595,86 @@ void RHConsole::FUN_0045cc60(unsigned, char **)
 }
 
 #include "RHCampaignPointerArray.h"
+#include "RHCampaignProfiles.h"
+DECOMP_SIZE_ASSERT(RHCampaignProfiles, 0x70)
+DECOMP_STATIC_ASSERT(offsetof(RHCampaignProfiles, m_characters) == 0x10)
 
 class RHUnk00597a70;
 void FUN_0059fb00(RHUnk00597a70 **destination, RHUnk00597a70 *const &value);
 
-struct RHConsoleHelpCommand
+// STUB: GAME 0x0045b400
+RHConsole::~RHConsole()
 {
-    unsigned count;
-    char **words;
-    char *description;
-    void (RHConsole::*callback)(unsigned, char **);
-};
-
-struct RHConsoleHelpArray
-{
-    unsigned allocator;
-    RHConsoleHelpCommand **first;
-    RHConsoleHelpCommand **last;
-    RHConsoleHelpCommand **end;
-    RHConsoleHelpCommand **cursor;
-    bool dirty;
-    unsigned size() const { return first == 0 ? 0 : last - first; }
-    void insert(RHConsoleHelpCommand *const &value)
+    unsigned count = m_5b8.size();
+    for (unsigned i = 0; i < count; ++i)
     {
-        RHScriptFXArray *array = (RHScriptFXArray *)this;
-        RHConsoleHelpCommand **position = last;
-        if ((unsigned)(end - last) < 1)
-        {
-            unsigned growth = size() > 1 ? size() : 1;
-            int capacity = size() + growth;
-            RHConsoleHelpCommand **storage = std::_Allocate(capacity, (RHConsoleHelpCommand **)0);
-            RHConsoleHelpCommand **destination = storage;
-            for (RHConsoleHelpCommand **source = first; source != position; ++source, ++destination)
-                FUN_0059fb00((RHUnk00597a70 **)destination, *(RHUnk00597a70 *const *)source);
-            array->Unk004fe450((void **)destination, 1, reinterpret_cast<void *const &>(value));
-            ++destination;
-            array->Unk004fe420((void **)position, (void **)last, (void **)destination);
-            array->Unk005008e0((void **)first, (void **)last);
-            delete[] first;
-            end = storage + capacity;
-            last = storage + size() + 1;
-            first = storage;
-        }
-        else if ((unsigned)(last - position) < 1)
-        {
-            array->Unk004fe420((void **)position, (void **)last, (void **)(position + 1));
-            array->Unk004fe450((void **)last, 1 - (last - position), reinterpret_cast<void *const &>(value));
-            RHConsoleHelpCommand **fillEnd = last;
-            for (RHConsoleHelpCommand **destination = position; destination != fillEnd; ++destination)
-                *destination = value;
-            ++last;
-        }
-        else
-        {
-            array->Unk004fe420((void **)(last - 1), (void **)last, (void **)last);
-            RHConsoleHelpCommand **source = last - 1;
-            RHConsoleHelpCommand **destination = last;
-            while (position != source)
-                *--destination = *--source;
-            for (destination = position; destination != position + 1; ++destination)
-                *destination = value;
-            ++last;
-        }
-        dirty = true;
+        RHConsoleHelpCommand *command = m_5b8[i];
+        delete[] command->description;
+        for (unsigned j = 0; j < command->count; ++j)
+            delete[] command->words[j];
+        delete[] command->words;
+        delete command;
     }
-};
+    m_5b8.clear();
+    m_5b8.dirty = true;
+    count = m_5d8.size();
+    for (unsigned k = 0; k < count; ++k)
+    {
+        RHConsoleHelpCommand *command = m_5d8[k];
+        delete[] command->description;
+        for (unsigned j = 0; j < command->count; ++j)
+            delete[] command->words[j];
+        delete[] command->words;
+        delete command;
+    }
+    m_5d8.clear();
+    m_5d8.dirty = true;
+    g_unk0x6c0808 = 0;
+}
+
+inline void RHConsoleHelpArray::insert(RHConsoleHelpCommand *const &value)
+{
+    RHScriptFXArray *array = (RHScriptFXArray *)this;
+    RHConsoleHelpCommand **position = _Last;
+    if ((unsigned)(_End - _Last) < 1)
+    {
+        unsigned growth = size() > 1 ? size() : 1;
+        int capacity = size() + growth;
+        RHConsoleHelpCommand **storage = std::_Allocate(capacity, (RHConsoleHelpCommand **)0);
+        RHConsoleHelpCommand **destination = storage;
+        for (RHConsoleHelpCommand **source = _First; source != position; ++source, ++destination)
+            FUN_0059fb00((RHUnk00597a70 **)destination, *(RHUnk00597a70 *const *)source);
+        array->Unk004fe450((void **)destination, 1, reinterpret_cast<void *const &>(value));
+        ++destination;
+        array->Unk004fe420((void **)position, (void **)_Last, (void **)destination);
+        array->Unk005008e0((void **)_First, (void **)_Last);
+        allocator.deallocate(_First, this->capacity());
+        _End = storage + capacity;
+        _Last = storage + size() + 1;
+        _First = storage;
+    }
+    else if ((unsigned)(_Last - position) < 1)
+    {
+        array->Unk004fe420((void **)position, (void **)_Last, (void **)(position + 1));
+        array->Unk004fe450((void **)_Last, 1 - (_Last - position), reinterpret_cast<void *const &>(value));
+        RHConsoleHelpCommand **fillEnd = _Last;
+        for (RHConsoleHelpCommand **destination = position; destination != fillEnd; ++destination)
+            *destination = value;
+        ++_Last;
+    }
+    else
+    {
+        array->Unk004fe420((void **)(_Last - 1), (void **)_Last, (void **)_Last);
+        RHConsoleHelpCommand **source = _Last - 1;
+        RHConsoleHelpCommand **destination = _Last;
+        while (position != source)
+            *--destination = *--source;
+        for (destination = position; destination != position + 1; ++destination)
+            *destination = value;
+        ++_Last;
+    }
+    dirty = true;
+}
 
 // FUNCTION: GAME 0x0045b620
 void RHConsole::FUN_0045b620(const char *text, void (RHConsole::*callback)(unsigned, char **), const char *description)
@@ -657,7 +694,7 @@ void RHConsole::FUN_0045b620(const char *text, void (RHConsole::*callback)(unsig
     command->callback = callback;
     command->description = new char[strlen(description) + 1];
     strcpy(command->description, description);
-    ((RHConsoleHelpArray *)m_5b8)->insert(command);
+    m_5b8.insert(command);
     delete[] line;
 }
 
@@ -679,14 +716,14 @@ void RHConsole::FUN_0045b900(const char *text, void (RHConsole::*callback)(unsig
     command->callback = callback;
     command->description = new char[strlen(description) + 1];
     strcpy(command->description, description);
-    ((RHConsoleHelpArray *)m_5d8)->insert(command);
+    m_5d8.insert(command);
     delete[] line;
 }
 
 // FUNCTION: GAME 0x0045bff0
 void RHConsole::FUN_0045bff0()
 {
-    RHConsoleHelpArray *commands = (RHConsoleHelpArray *)FUN_00460600();
+    RHConsoleHelpArray *commands = FUN_00460600();
     typedef bool (__cdecl *Message)(SBDrawManager *, const char *);
     Message output = (Message)&FUN_005ede40;
     // STRING: GAME 0x006ac910
@@ -696,7 +733,7 @@ void RHConsole::FUN_0045bff0()
     unsigned count = commands->size();
     for (unsigned index = 0; index < count; ++index)
     {
-        RHConsoleHelpCommand *command = commands->first[index];
+        RHConsoleHelpCommand *command = (*commands)[index];
         char text[256];
         int length = 0;
         unsigned words = command->count;
@@ -728,7 +765,7 @@ namespace Toolbox
 // FUNCTION: GAME 0x0045c1a0
 bool RHConsole::ExecuteCommand()
 {
-    RHConsoleHelpArray *commands = (RHConsoleHelpArray *)FUN_00460600();
+    RHConsoleHelpArray *commands = FUN_00460600();
     signed char *line = (signed char *)m_04;
     unsigned argumentCount;
     char **arguments = FUN_0045c360(line, argumentCount);
@@ -746,7 +783,7 @@ bool RHConsole::ExecuteCommand()
             ((Message)&FUN_005ede40)(m_engine->m_draw, "Praised be His Name.");
         }
     }
-    RHConsoleHelpCommand **first = commands->first;
+    RHConsoleHelpCommand **first = commands->begin();
     unsigned count = commands->size();
     for (unsigned index = 0; index < count; ++index)
     {
@@ -775,7 +812,7 @@ bool RHConsole::ExecuteCommand()
 void RHConsole::CheckForCompletion(char *destination, char *source, unsigned short &position)
 {
     short start = position - 1;
-    RHConsoleHelpArray *commands = (RHConsoleHelpArray *)FUN_00460600();
+    RHConsoleHelpArray *commands = FUN_00460600();
     if (m_5b6)
         return;
     for (; start >= 0 && source[start] != ' '; --start)
@@ -796,7 +833,7 @@ void RHConsole::CheckForCompletion(char *destination, char *source, unsigned sho
         ++current;
         if (current >= count)
             current = 0;
-        char *word = commands->first[current]->words[0];
+        char *word = (*commands)[current]->words[0];
         if (strncmp(prefix, word, strlen(prefix)) == 0)
         {
             if (strlen(word) > strlen(prefix))
@@ -818,6 +855,30 @@ std::string RHUnk0060f8a0::FUN_0045caf0() const
 void EmitRHConsoleHardwareName(const RHUnk0060f8a0 *hardware)
 {
     hardware->FUN_0045caf0();
+}
+
+// STUB: GAME 0x0045c5b0
+void RHConsole::DisplayConfig()
+{
+    SBDrawManager *draw = g_unk0x6c11d0;
+    FUN_005ede40(m_engine->m_draw, "");
+    // STRING: GAME 0x006aca4c
+    FUN_005ede40(m_engine->m_draw, "=> Memory Information");
+    FUN_005ede40(m_engine->m_draw, "");
+    // STRING: GAME 0x006aca24
+    FUN_005ede40(m_engine->m_draw, "Total Physical Memory........ %d MBytes", (unsigned short)SBHardware::GetAmountOfPhysicalMemory());
+    // STRING: GAME 0x006ac9fc
+    FUN_005ede40(m_engine->m_draw, "Free Physical Memory......... %d MBytes", (unsigned short)SBHardware::GetAmountOfFreePhysicalMemory());
+    // STRING: GAME 0x006ac9d4
+    FUN_005ede40(m_engine->m_draw, "Total Page Memory............ %d MBytes", (unsigned short)SBHardware::GetAmountOfPageMemory());
+    // STRING: GAME 0x006ac9ac
+    FUN_005ede40(m_engine->m_draw, "Free Page Memory............. %d MBytes", (unsigned short)SBHardware::GetAmountOfFreePageMemory());
+    FUN_005ede40(m_engine->m_draw, "");
+    // STRING: GAME 0x006ac994
+    FUN_005ede40(m_engine->m_draw, "=> Display Information");
+    FUN_005ede40(m_engine->m_draw, "");
+    // STRING: GAME 0x006ac96c
+    FUN_005ede40(m_engine->m_draw, "Current display bit depth ... %d bits", draw->UnkField10c());
 }
 
 // FUNCTION: GAME 0x0045ccb0
@@ -980,7 +1041,7 @@ void RHConsole::FUN_0045d650(unsigned, char **)
             Assign assign = &SBGeoPoint2D::operator=;
             (point.*assign)(*position);
             ++soldierCount;
-            ((RHScriptBatchCalls *)((char *)m_engine + 0x43f8))->Unk0058a940("", 0, element);
+            reinterpret_cast<RHSequenceManager *>((char *)m_engine + 0x43f8)->Unk0058a940("", 0, element);
         }
     }
     // STRING: GAME 0x006ad0e8
@@ -1134,7 +1195,7 @@ void RHConsole::FUN_0045db80(unsigned, char **)
     Message output = reinterpret_cast<Message>(&FUN_005edae0);
     // STRING: GAME 0x006ad438
     output(m_engine->m_draw, "noise");
-    RHConsoleEngine *engine = m_engine;
+    RHEngine *engine = m_engine;
     engine->m_4b34 ^= 1;
     if (engine->m_4b34)
     {
@@ -1159,7 +1220,7 @@ void RHConsole::FUN_0045dc20(unsigned, char **)
 {
     // STRING: GAME 0x006ad480
     FUN_005edae0(m_engine->m_draw, "Zone");
-    RHConsoleEngine *engine = m_engine;
+    RHEngine *engine = m_engine;
     engine->m_4be4 ^= 1;
     if (engine->m_4be4)
     {
@@ -1234,7 +1295,7 @@ void RHConsole::FUN_0045dd90(unsigned, char **)
         if ((RHConsoleField<volatile unsigned>(actor, 4) & 0xf) == 0xc)
         {
             RHUnk005861c0 *element = new RHUnk005861c0(1, 0x26, actor, (void *)0, (unsigned short)100, (unsigned short)0);
-            ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940("", 0, element);
+            RHSequenceManager::Instance()->Unk0058a940("", 0, element);
         }
     }
     // STRING: GAME 0x006ad4f4
@@ -1247,9 +1308,9 @@ void RHConsole::FUN_0045de60(unsigned, char **)
     RHConsoleBlockMap before;
     RHConsoleBlockMap after;
     char buffer[128];
-    RHConsoleField<RHConsoleBlockAllocator *>(m_engine, 0x42f0)->FUN_00506070(&before);
-    int merges = ((RHConsoleBlockAllocator *)((char *)RHConsoleField<void *>(m_engine, 0x42f0) + 0xc0))->FUN_00506620();
-    RHConsoleField<RHConsoleBlockAllocator *>(m_engine, 0x42f0)->FUN_00506070(&after);
+    m_engine->m_frameHolder->FUN_00506070(&before);
+    int merges = m_engine->m_frameHolder->m_pool.FUN_00506620();
+    m_engine->m_frameHolder->FUN_00506070(&after);
     // STRING: GAME 0x006ad510
     FUN_005ede40(m_engine->m_draw, "Free Blocks map after optimisation (%d merge)", merges);
     int size = (int)pow(g_unk0x00677670, 5.0);
@@ -1261,6 +1322,73 @@ void RHConsole::FUN_0045de60(unsigned, char **)
         sprintf(buffer, "%05d: %d", size, after.m_counts[index] - before.m_counts[index]);
         output(m_engine->m_draw, buffer);
         size += size;
+    }
+}
+
+// STUB: GAME 0x0045df30
+void RHConsole::FUN_0045df30(unsigned count, char **arguments)
+{
+    if (count > 1)
+    {
+        // STRING: GAME 0x006ad75c
+        if (strcmp(arguments[1], "FRAMECACHE") == 0)
+        {
+            RHConsoleBlockMap info;
+            // STRING: GAME 0x006ad718
+            FUN_005ede40(m_engine->m_draw, "===================================================================");
+            // STRING: GAME 0x006ad6f8
+            FUN_005ede40(m_engine->m_draw, "Current status of frame cache.");
+            FUN_005ede40(m_engine->m_draw, "");
+            m_engine->m_frameHolder->FUN_00506070(&info);
+            RHFrameMemoryPool &pool = m_engine->m_frameHolder->m_pool;
+            // STRING: GAME 0x006ad6c4
+            FUN_005ede40(m_engine->m_draw, "Physically allocated ram %d, Logically allocated %d",
+                pool.FUN_005065b0(), pool.FUN_005065d0());
+            RHFrameHolder *holder = m_engine->m_frameHolder;
+            // STRING: GAME 0x006ad694
+            FUN_005ede40(m_engine->m_draw, "Cache hit %d, Cache Miss %d, Hit Ratio %f %%",
+                holder->m_bc * 100, holder->m_b8, (double)holder->m_bc / (int)(holder->m_bc + holder->m_b8));
+            FUN_005ede40(m_engine->m_draw, "");
+            // STRING: GAME 0x006ad678
+            FUN_005ede40(m_engine->m_draw, "Number of paged frame %d", info.Counter(1));
+            // STRING: GAME 0x006ad650
+            FUN_005ede40(m_engine->m_draw, "Amount of memory used by paged frame %d", info.Counter(3));
+            FUN_005ede40(m_engine->m_draw, "");
+            // STRING: GAME 0x006ad630
+            FUN_005ede40(m_engine->m_draw, "Number of unpageable frame %d", info.Counter(0));
+            // STRING: GAME 0x006ad610
+            FUN_005ede40(m_engine->m_draw, "Number of non paged frame %d", info.Counter(2));
+            // STRING: GAME 0x006ad5e4
+            FUN_005ede40(m_engine->m_draw, "Amount of memory used by non paged frame %d", info.Counter(4));
+            FUN_005ede40(m_engine->m_draw, "");
+        }
+        // STRING: GAME 0x006ad5d8
+        if (strcmp(arguments[1], "HARDWARE") == 0)
+            DisplayConfig();
+        // STRING: GAME 0x006ac1e4
+        if (strcmp(arguments[1], "SHADOW") == 0)
+        {
+            // STRING: GAME 0x006ad5b8
+            FUN_005ede40(m_engine->m_draw, "Used color for shadow ... %x", m_engine->m_shadowColor);
+            for (unsigned short i = 0; i < (int)m_engine->m_npcs.size(); ++i)
+            {
+                if (m_engine->m_npcs[i]->RHElement::m_08)
+                {
+                    if (m_engine->m_npcs[i]->RHElement::m_8e)
+                    {
+                        // STRING: GAME 0x006ad57c
+                        FUN_005ede40(m_engine->m_draw, "Shadow enabled on NPC ..... <COLOR=FF4488>yes<COLOR=FFFFFF>");
+                    }
+                    else
+                    {
+                        // STRING: GAME 0x006ad540
+                        FUN_005ede40(m_engine->m_draw, "Shadow enabled on NPC ..... <COLOR=FF0000>no<COLOR=FFFFFF>");
+                    }
+                    break;
+                }
+            }
+            m_engine->m_frameHolder->DumpOneDictionary();
+        }
     }
 }
 
@@ -1309,7 +1437,7 @@ void RHConsole::FUN_0045e2e0(unsigned, char **)
             actor->v55(100, false, false);
             actor->v17(3);
             RHUnk00584d60 *element = new RHUnk00584d60(1, 0xa1, actor);
-            ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940("", 0, element);
+            RHSequenceManager::Instance()->Unk0058a940("", 0, element);
         }
     }
     // STRING: GAME 0x006ad7c4
@@ -1335,7 +1463,7 @@ void RHConsole::FUN_0045e400(unsigned, char **)
 // FUNCTION: GAME 0x0045e450
 void RHConsole::FUN_0045e450(unsigned, char **)
 {
-    RHConsoleEngine *engine = m_engine;
+    RHEngine *engine = m_engine;
     char enabled = engine->m_4b2e;
     engine->m_4b30 = 0;
     engine->m_4b2e = !enabled;
@@ -1368,6 +1496,14 @@ void RHConsole::FUN_0045e4b0(unsigned, char **)
     }
 }
 
+// STUB: GAME 0x0045e510
+void RHConsole::CheatAssertFalse(unsigned, char **)
+{
+    // STRING: GAME 0x006ad87c
+    FUN_005ede40(m_engine->m_draw, "assert( false );");
+    DebugBreak();
+}
+
 // FUNCTION: GAME 0x0045e527
 void RHConsole::FUN_0045e527(unsigned, char **)
 {
@@ -1390,6 +1526,23 @@ void RHConsole::FUN_0045e530(unsigned count, char **arguments)
             // STRING: GAME 0x006ad890
             FUN_005ede40(m_engine->m_draw, "Actors infos hidden !");
         }
+    }
+}
+
+// FUNCTION: GAME 0x0045e5d0
+void RHConsole::CheatCompanyNrDisplay(unsigned, char **)
+{
+    RHEngine *engine = m_engine;
+    engine->m_4b3a ^= 1;
+    if (engine->m_4b3a == 1)
+    {
+        // STRING: GAME 0x006ad8e0
+        FUN_005ede40(m_engine->m_draw, "Company number displayed");
+    }
+    else
+    {
+        // STRING: GAME 0x006ad8c8
+        FUN_005ede40(m_engine->m_draw, "Company number hidden");
     }
 }
 
@@ -1444,7 +1597,7 @@ void RHConsole::FUN_0045e6f0(unsigned, char **)
         actor->v55(100, false, false);
         actor->v17(3);
         RHUnk00584d60 *element = new RHUnk00584d60(1, 0xa1, actor);
-        ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940("", 0, element);
+        RHSequenceManager::Instance()->Unk0058a940("", 0, element);
         ((RHScriptBatchCalls *)m_engine)->Unk004d9330(0, false);
         // STRING: GAME 0x006ad974
         FUN_005edae0(m_engine->m_draw, "Sleep well...");
@@ -1464,7 +1617,7 @@ void RHConsole::FUN_0045e7e0(unsigned, char **)
         actor->v53(0, false, true);
         actor->v17(12);
         RHUnk00584d60 *element = new RHUnk00584d60(1, 0xa1, actor);
-        ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940("", 0, element);
+        RHSequenceManager::Instance()->Unk0058a940("", 0, element);
         ((RHScriptBatchCalls *)m_engine)->Unk004d9330(0, false);
         // STRING: GAME 0x006ad984
         FUN_005edae0(m_engine->m_draw, "Sleep well... forever!");
@@ -1485,7 +1638,7 @@ void RHConsole::FUN_0045e8d0(unsigned, char **)
         {
             RHElementActorPC *actor = RHConsoleField<RHConsolePCList>(m_engine, 0x49f8).getFirst();
             RHUnk005861c0 *element = new RHUnk005861c0(1, 0x26, actor, 10000, 0);
-            ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940("", 0, element);
+            RHSequenceManager::Instance()->Unk0058a940("", 0, element);
         }
         else
         {
@@ -1543,7 +1696,7 @@ void RHConsole::FUN_0045eb50(unsigned, char **)
         {
             RHElementActorPC *actor = RHConsoleField<RHConsolePCList>(m_engine, 0x49f8).get((unsigned short)index);
             RHUnk005861c0 *element = new RHUnk005861c0(1, 0x26, actor, 10000, 0);
-            ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940("", 0, element);
+            RHSequenceManager::Instance()->Unk0058a940("", 0, element);
             // STRING: GAME 0x006ada4c
             sprintf(buffer, "%s has been recalled by San Petrus.", RHConsoleField<RHConsoleProfile *>(actor, 0x5fc)->m_name.c_str());
             output(m_engine->m_draw, buffer);
@@ -1556,7 +1709,7 @@ void RHConsole::FUN_0045ec90(unsigned, char **)
 {
     // STRING: GAME 0x006adae0
     FUN_005edae0(m_engine->m_draw, "Wasps");
-    RHConsoleEngine *engine = m_engine;
+    RHEngine *engine = m_engine;
     if (RHConsoleField<RHConsolePCList>(engine, 0x49f8).m_count == 0)
     {
         // STRING: GAME 0x006adaa0
@@ -1576,7 +1729,7 @@ void RHConsole::FUN_0045ee70(unsigned, char **)
 {
     // STRING: GAME 0x006adb0c
     FUN_005edae0(m_engine->m_draw, "Arrows");
-    RHConsoleEngine *engine = m_engine;
+    RHEngine *engine = m_engine;
     if (RHConsoleField<RHConsolePCList>(engine, 0x49f8).m_count == 0)
     {
         // STRING: GAME 0x006adae8
@@ -1667,7 +1820,62 @@ void RHConsole::FUN_0045f2a0(unsigned count, char **arguments)
 // FUNCTION: GAME 0x0045f310
 void RHConsole::FUN_0045f310(unsigned, char **)
 {
-    m_engine->m_4b3c = !m_engine->m_4b3c;
+    m_engine->m_showSightRadius = !m_engine->m_showSightRadius;
+}
+
+template<> void SBList<RHElementActorPC *>::GoTo(int wanted)
+{
+    int count = size();
+    if (m_dirty)
+    {
+        if (wanted <= (count + 1) / 2)
+        {
+            m_current = begin();
+            std::advance(m_current, wanted);
+        }
+        else
+        {
+            m_current = end();
+            std::advance(m_current, wanted - count);
+        }
+        m_dirty = false;
+        m_index = wanted;
+    }
+    else if (wanted != m_index)
+    {
+        int previous = m_index;
+        if (wanted < previous && wanted < (previous + 1) / 2)
+        {
+            m_current = begin();
+            std::advance(m_current, wanted);
+        }
+        else if (wanted > previous && wanted >= (previous + count) / 2)
+        {
+            m_current = end();
+            std::advance(m_current, wanted - count);
+        }
+        else
+            std::advance(m_current, wanted - previous);
+        m_index = wanted;
+    }
+}
+
+// STUB: GAME 0x0045f330
+void RHConsole::FUN_0045f330(unsigned count, char **arguments)
+{
+    // STRING: GAME 0x006adbcc
+    FUN_005edae0(m_engine->m_draw, "PCs knocked out !");
+    if (count >= 2)
+    {
+        SBList<RHElementActorPC *> actors;
+        ConvertStringToPCs(actors, RHCampaignCharacterName(arguments[1]));
+        unsigned size = actors.size();
+        for (unsigned i = 0; i < size; ++i)
+        {
+            actors.GoTo(i);
+            RHScript::InflictPain(*actors.m_current, 100, true);
+        }
+    }
 }
 
 // FUNCTION: GAME 0x0045f4e0
@@ -1730,6 +1938,87 @@ RHElementActorPC *RHConsole::FUN_0045f670(char *name)
 {
     RHElementActorPC *actor = FUN_005e19e0(name);
     return RHConsoleField<RHConsoleActorSearch>(m_engine, 0x4938).find((RHConsoleActor *)actor) == -1 ? 0 : actor;
+}
+
+static inline RHCampaignProfiles *ConsoleProfiles()
+{
+    if (!g_unk0x6c0e84)
+        g_unk0x6c0e84 = new RHCampaignProfiles;
+    return g_unk0x6c0e84;
+}
+
+static inline RHCharacterProfile *ConsoleProfile(const std::string &name)
+{
+    return ConsoleProfiles()->FUN_0056d5d0(name);
+}
+
+static inline bool AppendConsolePC(RHConsole &console, SBList<RHElementActorPC *> &actors,
+    const RHCharacterProfile *profile)
+{
+    if (profile)
+    {
+        RHElementActorPC *actor = console.m_engine->GetPC(profile);
+        if (actor)
+        {
+            actors.InsertLast(actor);
+            return true;
+        }
+    }
+    return false;
+}
+
+// STUB: GAME 0x0045f6f0
+void RHConsole::ConvertStringToPCs(SBList<RHElementActorPC *> &actors, const std::string &names)
+{
+    unsigned count = strlen(names.c_str());
+    for (unsigned i = 0; i < count; ++i)
+    {
+        RHCharacterProfile *profile;
+        switch (toupper(names[i]))
+        {
+        case 'R':
+            if (!AppendConsolePC(*this, actors, ConsoleProfiles()->m_characters.begin()[0]))
+                AppendConsolePC(*this, actors, ConsoleProfiles()->m_characters.begin()[1]);
+            break;
+        case 'J':
+            profile = ConsoleProfile("Petit Jean");
+            AppendConsolePC(*this, actors, profile);
+            break;
+        case 'T':
+            profile = ConsoleProfile("Frere Tuck");
+            AppendConsolePC(*this, actors, profile);
+            break;
+        case 'S':
+            profile = ConsoleProfile("Stutely");
+            AppendConsolePC(*this, actors, profile);
+            break;
+        case 'W':
+            profile = ConsoleProfile("Will Ecarlate");
+            AppendConsolePC(*this, actors, profile);
+            break;
+        case 'M':
+            // STRING: GAME 0x006add80
+            profile = ConsoleProfile("Marianne");
+            AppendConsolePC(*this, actors, profile);
+            break;
+        case 'A':
+            profile = ConsoleProfile("Paysan A");
+            AppendConsolePC(*this, actors, profile);
+            break;
+        case 'B':
+            profile = ConsoleProfile("Paysan B");
+            AppendConsolePC(*this, actors, profile);
+            break;
+        case 'C':
+            profile = ConsoleProfile("Paysan C");
+            AppendConsolePC(*this, actors, profile);
+            break;
+        default:
+            // STRING: GAME 0x006add44
+            FUN_005ede40(m_engine->m_draw, "Unknown character (use one or more of these : RJTSWMABS) !");
+            break;
+        }
+    }
 }
 
 // FUNCTION: GAME 0x004600b0
@@ -1890,9 +2179,9 @@ void RHConsole::FUN_00460460(unsigned count, char **arguments)
 }
 
 // FUNCTION: GAME 0x00460600
-void *RHConsole::FUN_00460600()
+RHConsoleHelpArray *RHConsole::FUN_00460600()
 {
-    return m_5b6 ? m_5d8 : m_5b8;
+    return m_5b6 ? &m_5d8 : &m_5b8;
 }
 
 // FUNCTION: GAME 0x00460620
