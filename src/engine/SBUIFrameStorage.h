@@ -12,6 +12,7 @@ class SBUIFrameArray : public std::vector<T>
 public:
     SBUIFrameArray() : m_dirty(true) {}
     ~SBUIFrameArray() { clear(); }
+    void Append(const SBUIFrameArray &other);
     T *m_cursor;
     bool m_dirty;
     bool m_cursorValid;

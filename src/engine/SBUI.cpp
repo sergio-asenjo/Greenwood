@@ -1,4 +1,5 @@
 #include "SBUI.h"
+#include "RHPortraitRootLifetime.h"
 #include <vector>
 
 DECOMP_SIZE_ASSERT(SBUI, 0x17f8)
@@ -204,7 +205,7 @@ void RHMapWindowPart::FUN_00618850(void *frame)
     unsigned long *counter = (unsigned long *)frame;
     unsigned long value = counter != 0 ? *counter : 0;
     for (unsigned index = 0; index < count; ++index)
-        m_windows._First[index]->V1c();
+        m_windows._First[index]->FUN_0061a3a0();
     ((SBDrawManager *)m_draw)->FUN_005e6440(m_surface, 0, 0, 0, 0);
     FUN_006189e0(value++);
     g_unk0x6c1340->FUN_005f1700();
@@ -223,14 +224,14 @@ void SBUI::FUN_00618910(unsigned long surface)
     ((SBDrawManager *)m_draw)->FUN_005e6440(m_surface, (const SBGeoBoundingBox2D *)surface,
         0, (const SBGeoBoundingBox2D *)surface, 0);
     for (unsigned index = 0; index < count; ++index)
-        m_windows._First[index]->V18(surface);
+        m_windows._First[index]->FUN_0061a430(*reinterpret_cast<SBGeoBoundingBox2D *>(surface));
     g_unk0x6c1340->FUN_005f1700();
     ((SBDrawManager *)g_unk0x6c11d0)->FUN_005e5260();
     g_unk0x6c1340->PopMouseBackground(false);
     ((SBDrawManager *)m_draw)->FUN_005e6440(m_surface, (const SBGeoBoundingBox2D *)surface,
         0, (const SBGeoBoundingBox2D *)surface, 0);
     for (index = 0; index < count; ++index)
-        m_windows._First[index]->V18(surface);
+        m_windows._First[index]->FUN_0061a430(*reinterpret_cast<SBGeoBoundingBox2D *>(surface));
     g_unk0x6c1340->FUN_005f1700();
     ((SBDrawManager *)g_unk0x6c11d0)->FUN_005e5260();
     g_unk0x6c1340->PopMouseBackground(false);
@@ -261,7 +262,7 @@ void SBUI::FUN_006189e0(unsigned long frame)
     if (m_surface == 0)
     {
         for (unsigned index = 0; index < count; ++index)
-            m_windows[index]->V14();
+            m_windows[index]->FUN_0061a570();
     }
     else
     {
@@ -273,11 +274,11 @@ void SBUI::FUN_006189e0(unsigned long frame)
             ((SBDrawManager *)m_draw)->FUN_005e6440(m_surface, &m_179c[m_17c8 & 1],
                 0, &m_179c[m_17c8 & 1], 0);
             for (unsigned index = 0; index < restoreCount; ++index)
-                m_windows[index]->V18((unsigned long)&m_179c[m_17c8 & 1]);
+                m_windows[index]->FUN_0061a430(m_179c[m_17c8 & 1]);
         }
         for (unsigned index = 0; index < count; ++index)
         {
-            for (SBFrameEvent *event = m_windows[index]->V10(frame); event != 0; event = event->next)
+            for (SBFrameEvent *event = m_windows[index]->FUN_0061a610(reinterpret_cast<const void *>(frame)); event != 0; event = event->next)
             {
                 switch (event->type)
                 {
@@ -332,7 +333,7 @@ void SBUI::FUN_006189e0(unsigned long frame)
         renderer.FUN_00614d70(false);
         if (m_alternate != 0)
         {
-            ((RHMobileUnk006091b0 *)&destination)->FUN_006091b0(SBGeoVector2D(1, 1));
+            destination.Translate(SBGeoVector2D(1, 1));
             renderer.FUN_00614230(m_alternate, m_178c, destination, 1, 0, true);
             destination -= SBGeoVector2D(1, 1);
         }
@@ -364,7 +365,7 @@ RHPortraitWidgetEvent *SBUI::InputLoop(SBInputMouseState &mouse, SBInputKeyboard
 {
     RHPortraitWidgetInput input;
     m_input.FUN_0060e2a0(keyboard);
-    input.shortcuts = (RHGameWidgetInputCalls *)&m_input;
+    input.shortcuts = &m_input;
     if (m_tooltip == 0)
     {
         m_tooltip = new RHUnk006279d0;
@@ -384,7 +385,7 @@ RHPortraitWidgetEvent *SBUI::InputLoop(SBInputMouseState &mouse, SBInputKeyboard
     if (!skip)
     {
         if (m_17f4 != 0)
-            events = m_17f4->V0c(input);
+            events = static_cast<RHPortraitWidgetEvent *>(m_17f4->FUN_0061a6e0(&input));
         else if (m_17f0 != 0)
             events = (RHPortraitWidgetEvent *)m_17f0->V18(&input);
         else
@@ -394,7 +395,7 @@ RHPortraitWidgetEvent *SBUI::InputLoop(SBInputMouseState &mouse, SBInputKeyboard
             {
                 if (m_flags[index] == 1)
                 {
-                    RHPortraitWidgetEvent *event = m_windows[index]->V0c(input);
+                    RHPortraitWidgetEvent *event = static_cast<RHPortraitWidgetEvent *>(m_windows[index]->FUN_0061a6e0(&input));
                     if (event != 0)
                     {
                         if (events == 0)
@@ -422,7 +423,7 @@ RHPortraitWidgetEvent *SBUI::InputLoop(SBInputMouseState &mouse, SBInputKeyboard
     {
         bool widgetTooltip = (event->type == 0 || event->type == 0x12) &&
             ((RHGameWidgetLifetimeBase *)event->widget)->m_08;
-        bool windowTooltip = event->type == 0xb && ((SBUIWindowView *)event->widget)->V4c();
+        bool windowTooltip = event->type == 0xb && ((SBUIWindowView *)event->widget)->FUN_0050e5e0();
         if (widgetTooltip || windowTooltip)
         {
             active = true;
@@ -460,17 +461,11 @@ public:
     void Insert(T *position, unsigned count, const T &value);
 };
 
-class RHUnk006286e0 : public std::vector<int>
-{
-public:
-    void FUN_006286e0(const RHUnk006286e0 &other);
-    int *m_cursor;
-    bool m_dirty;
-};
+template<> void SBUIFrameArray<int>::Append(const SBUIFrameArray<int> &other);
 
-void EmitRHUnk006286e0(RHUnk006286e0 *values)
+void EmitRHUnk006286e0(SBUIFrameArray<int> *values)
 {
-    values->FUN_006286e0(*values);
+    values->Append(*values);
 }
 
 inline void SBUIFlagArray::Insert(char *position, unsigned count, const char &value)
@@ -522,7 +517,7 @@ bool SBUI::FUN_00619800(SBUIWindowView *window)
         SBUIFlagArray &flags = m_flags;
         flags.Insert(flags.end(), 1, flag);
         flags.dirty = true;
-        window->AttachToDisplay(m_display);
+        window->FUN_0061a350(m_display);
         return true;
     }
     return false;
@@ -595,7 +590,7 @@ bool SBUI::FUN_00619c20(unsigned long display)
     m_display = display;
     unsigned count = Size();
     for (unsigned index = 0; index < count; ++index)
-        m_windows._First[index]->AttachToDisplay(display);
+        m_windows._First[index]->FUN_0061a350(display);
     if (m_tooltip != 0)
         m_tooltip->FUN_00627ee0(display);
     return true;
@@ -1395,15 +1390,19 @@ void RHUnk006279d0::FUN_00628500()
 }
 
 // FUNCTION: GAME 0x006286e0
-void RHUnk006286e0::FUN_006286e0(const RHUnk006286e0 &other)
+template<> void SBUIFrameArray<int>::Append(const SBUIFrameArray<int> &other)
 {
+    typedef std::vector<int> Values;
     int index = 0;
     int offset = size();
     int count = other.size();
     unsigned total = size() + other.size();
     int value = 0;
     if (size() < total)
-        ((SBArray<RHSaveGame *> *)this)->Insert((RHSaveGame **)end(), total - size(), (RHSaveGame *const &)value);
+    {
+        void (Values::*insertCount)(int *, unsigned, const int &) = &Values::insert;
+        (this->*insertCount)(end(), total - size(), value);
+    }
     else if (total < size())
     {
         int *(std::vector<int>::*eraseRange)(int *, int *) = &std::vector<int>::erase;
@@ -1416,7 +1415,7 @@ void RHUnk006286e0::FUN_006286e0(const RHUnk006286e0 &other)
 }
 
 // TEMPLATE: GAME 0x00619d50
-// ?_Xran@?$vector@PAVSBUIWindowView@@V?$allocator@PAVSBUIWindowView@@@std@@@std@@IBEXXZ
+// ?_Xran@?$vector@PAVRHPortraitRootLifetime@@V?$allocator@PAVRHPortraitRootLifetime@@@std@@@std@@IBEXXZ
 
 // TEMPLATE: GAME 0x00619e30
 // ?_Xran@?$vector@DV?$allocator@D@std@@@std@@IBEXXZ

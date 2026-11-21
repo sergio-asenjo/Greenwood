@@ -43,7 +43,7 @@ SBUIUnk0060e1b0::~SBUIUnk0060e1b0()
 }
 
 // FUNCTION: GAME 0x0060e240
-int RHGameWidgetInputCalls::FUN_0060e240(unsigned short shortcut)
+int SBUIUnk0060e1b0::FUN_0060e240(unsigned short shortcut)
 {
     return ((SBUIKeyboardFields *)this)->state[shortcut];
 }

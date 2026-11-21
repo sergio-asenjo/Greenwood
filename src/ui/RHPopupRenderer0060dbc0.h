@@ -13,6 +13,10 @@ public:
     RHPopupRenderer0060dbc0();
     ~RHPopupRenderer0060dbc0();
     void *FUN_0060dc00(unsigned flags);
+    int FUN_0060dc20(unsigned int id);
+    int FUN_0060dcd0();
+    void *FUN_0060dd00();
+    bool FUN_0060e0d0(void *first, void *second, void *third, void *fourth);
     bool FUN_0060dd10(unsigned id);
     int FUN_0060dda0(SBFontUnk0061e840 *font, bool silent);
     SBFontUnk0061e840 *m_50;

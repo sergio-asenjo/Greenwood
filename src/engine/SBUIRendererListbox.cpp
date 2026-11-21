@@ -1,14 +1,25 @@
 #include "SBNullstr.h"
-#include "SBUIRendererListbox.h"
+#include "SBUIListboxFont.h"
 #include "SB.h"
 #include "SBUIRendererInputField.h"
 #include "RHPortraitInputRenderer.h"
 #include "RHMobileUnk00607da0.h"
 #include "RHUnk00600820.h"
 #include "RHPortraitDrawCalls.h"
-#include "RHMobileUnk006091b0.h"
 
 DECOMP_SIZE_ASSERT(RHPortraitInputRenderer, 0x84)
+
+// TEMPLATE: GAME 0x00579a20 FOLDED
+// ?CurrentRenderCode@RHPortraitInputRenderer@@QBEHXZ
+int RHPortraitInputRenderer::CurrentRenderCode() const
+{
+    return 0;
+}
+
+int RHPortraitInputRenderer::ResolveRenderCode(unsigned)
+{
+    return -1;
+}
 
 // FUNCTION: GAME 0x0061c530
 RHPortraitInputRenderer::RHPortraitInputRenderer() : m_64(-1), m_68(-1), m_82(0x14)
@@ -91,7 +102,7 @@ bool RHPortraitInputRenderer::FUN_0061c610(unsigned long)
             if (m_position.m_p1.m_y - m_position.m_p0.m_y
                     - ((SBDrawManager *)m_drawManager)->FUN_005e5750(bottom) <= end)
                 finished = true;
-            ((RHMobileUnk006091b0 *)&destination)->FUN_006091b0(
+            destination.Translate(
                 SBGeoVector2D(0, ((SBDrawManager *)m_drawManager)->FUN_005e5750(middle)));
         } while (!finished);
         height = m_position.m_p1.m_y - m_position.m_p0.m_y;
@@ -144,14 +155,14 @@ bool RHPortraitInputRenderer::FUN_0061c610(unsigned long)
 }
 
 // FUNCTION: GAME 0x0061d1c0
-bool SBUIListboxUnk0061d980::FUN_0061d1c0()
+bool RHPortraitInputRenderer::FUN_0061d1c0()
 {
     m_7e = 0;
     return true;
 }
 
 // FUNCTION: GAME 0x0061d980
-bool SBUIListboxUnk0061d980::FUN_0061d980(SBFontUnk0061e840 *first,
+bool RHPortraitInputRenderer::FUN_0061d980(SBFontUnk0061e840 *first,
     SBFontUnk0061e840 *second, SBFontUnk0061e840 *third, bool alternate)
 {
     if (alternate) {
@@ -186,7 +197,7 @@ bool SBUIListboxUnk0061d980::FUN_0061d980(SBFontUnk0061e840 *first,
 }
 
 // STUB: GAME 0x0061d1d0
-bool SBUIListboxUnk0061d980::FUN_0061d1d0(std::wstring *text, unsigned flags)
+bool RHPortraitInputRenderer::FUN_0061d1d0(std::wstring *text, unsigned flags)
 {
     SBGeoBoundingBox2D lineBox;
     SBUIInputFieldDrawUnk drawer;
@@ -233,10 +244,10 @@ bool SBUIListboxUnk0061d980::FUN_0061d1d0(std::wstring *text, unsigned flags)
         ((RHPortraitInputRenderer *)this)->FUN_0061d3f0(m_7e, flags));
 }
 
-void EmitSBUIRendererListbox(SBUIListboxUnk0061d980 *listbox,
+void EmitSBUIRendererListbox(RHPortraitInputRenderer *listbox,
     SBFontUnk0061e840 *font)
 {
-    ((RHPortraitInputRenderer *)listbox)->FUN_0061c590(0);
+    listbox->FUN_0061c590(0);
     listbox->FUN_0061d1c0();
     listbox->FUN_0061d980(font, font, font, false);
     listbox->FUN_0061d1d0(0, 0);

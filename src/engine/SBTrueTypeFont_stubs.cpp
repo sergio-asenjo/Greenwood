@@ -1,7 +1,7 @@
 #include "SBTrueTypeFont.h"
 #include "SBUIUnkSurface.h"
 #include <windows.h>
-#include "SBUIRendererListbox.h"
+#include "SBUIListboxFont.h"
 #include "SBNativeFont.h"
 #include "SBGeoVector2D.h"
 #include "SBGeoBoundingBox2D.h"

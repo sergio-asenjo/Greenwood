@@ -2,7 +2,7 @@
 #include "SBUIRendererInputField.h"
 #include "SBUIRenderer.h"
 #include "SBFont.h"
-#include "SBUIRendererListbox.h"
+#include "SBUIListboxFont.h"
 #include "RHPortraitRenderer006212d0.h"
 #include "RHPopupRenderer0060dbc0.h"
 #include <stddef.h>
@@ -845,13 +845,6 @@ bool SBUIInputFieldUnk00621440::FUN_00621470(unsigned int id)
 
 #include "RHUnk005fc400.h"
 
-class RHMobileUnk006091b0
-{
-public:
-    RHMobileUnk006091b0 &FUN_006091b0(const SBGeoPoint2D &);
-    SBGeoPoint2D m_0;
-    SBGeoPoint2D m_8;
-};
 
 // FUNCTION: GAME 0x00621b80
 void RHPortraitRenderer006212d0::FUN_0060d6a0(const SBGeoBoundingBox2D &box)
@@ -862,7 +855,7 @@ void RHPortraitRenderer006212d0::FUN_0060d6a0(const SBGeoBoundingBox2D &box)
         const SBGeoVector2D &origin = SBGeoVector2D(*(SBGeoVector2D *)&m_bounds.m_p0);
         m_bounds -= origin;
     }
-    ((RHMobileUnk006091b0 *)&m_bounds)->FUN_006091b0(displacement);
+    m_bounds.Translate(displacement);
     ((SBUIInputFieldUnk00621440 *)this)->FUN_00621c30(m_bounds);
 }
 

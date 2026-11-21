@@ -92,14 +92,14 @@ RHPortraitRootLifetime::~RHPortraitRootLifetime()
 // ??_GRHPortraitRootLifetime@@UAEPAXI@Z
 
 // FUNCTION: GAME 0x0061a1e0
-bool RHPortraitRootLifetime::FUN_0061a1e0(const RHMapTitleText &title, const RHMapBox &box, unsigned flags)
+bool RHPortraitRootLifetime::FUN_0061a1e0(const std::wstring &title, const RHMapBox &box, unsigned flags)
 {
     m_input.widget = this;
     m_input.data = 0;
     m_input.type = 0xb;
     ((RHMobileUnk00607da0 *)&m_bounds)->FUN_00607da0((const RHMobileUnk00607da0 &)box);
     m_flags = flags;
-    ((std::wstring *)((char *)this + 0x24))->assign((const std::wstring &)title, 0, std::wstring::npos);
+    m_title.assign(title, 0, std::wstring::npos);
     m_visible = true;
     std::list<SBFrameWidgetView *> &excluded = *(std::list<SBFrameWidgetView *> *)&m_excluded;
     excluded.erase(excluded.begin(), excluded.end());
@@ -380,8 +380,9 @@ inline void SBFrameWidgetFindList::Seek(int position)
 
 // Parked: the cursor address is hoisted into a register across the search and seek.
 // STUB: GAME 0x0061ab10
-bool RHPortraitRootLifetime::FUN_0061ab10(SBFrameWidgetView *widget)
+bool RHPortraitRootLifetime::FUN_0061ab10(void *item)
 {
+    SBFrameWidgetView *widget = static_cast<SBFrameWidgetView *>(item);
     SBFrameWidgetFindList &excluded = m_excluded;
     int position = excluded.Find(widget, excluded.count);
     if (position != -1) {
@@ -408,7 +409,7 @@ void RHPortraitRootLifetime::FUN_0061ad20(const SBGeoBoundingBox2D &bounds)
     for (unsigned index = 0; index < Size(); ++index) {
         SBFrameWidgetView *widget = m_widgets.begin()[index];
         SBGeoBoundingBox2D box(*(SBGeoBoundingBox2D *)((char *)widget + 0x30));
-        ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(offset);
+        box.Translate(offset);
         widget->V1c(box);
     }
     ((RHMobileUnk00607da0 *)&m_bounds)->FUN_00607da0((const RHMobileUnk00607da0 &)bounds);
@@ -416,7 +417,7 @@ void RHPortraitRootLifetime::FUN_0061ad20(const SBGeoBoundingBox2D &bounds)
 
 void EmitSBFrameWnd(RHPortraitRootLifetime *window)
 {
-    window->FUN_0061a1e0(*(RHMapTitleText *)0, *(RHMapBox *)0, 0);
+    window->FUN_0061a1e0(*(std::wstring *)0, *(RHMapBox *)0, 0);
     window->FUN_0061a350(0);
     window->FUN_0061a3a0();
     window->FUN_0061a430(window->m_bounds);

@@ -31,6 +31,12 @@ public:
     virtual void FUN_0060d530(unsigned int surface);
     virtual void FUN_0060d780(const SBGeoPoint2D &point);
     virtual void FUN_0060d6a0(const SBGeoBoundingBox2D &box);
+    unsigned int FUN_0060d500(unsigned int id);
+    void FUN_0060d520();
+    bool FUN_0060d890(const SBGeoPoint2D &point);
+    bool FUN_0060da20(unsigned int id);
+    bool FUN_0060d550(long resource);
+    SBGeoBoundingBox2D *FUN_0060d690();
     void AssignName(const std::wstring &name)
     {
         m_name.assign(name, 0, std::wstring::npos);

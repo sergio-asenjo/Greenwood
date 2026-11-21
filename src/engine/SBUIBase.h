@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include "SBUIUnkSurface.h"
+#include "SBUIKeyboardCalls.h"
 #ifndef SBGEO_BOUNDINGBOX2D_VIEW
 #include "SBGeoBoundingBox2DCore.h"
 #endif
@@ -16,30 +17,8 @@ class SBFrameWidgetView;
 struct SBInputMouseState;
 struct SBFrameEvent;
 
-class SBUIWindowView
-{
-public:
-    virtual void V00() = 0;
-    virtual void V04() = 0;
-    virtual void AttachToDisplay(unsigned long display) = 0;
-    virtual RHPortraitWidgetEvent *V0c(const RHPortraitWidgetInput &input) = 0;
-    virtual SBFrameEvent *V10(unsigned long frame) = 0;
-    virtual void V14() = 0;
-    virtual void V18(unsigned long surface) = 0;
-    virtual void V1c() = 0;
-    virtual void V20() = 0;
-    virtual void V24() = 0;
-    virtual void V28() = 0;
-    virtual void V2c() = 0;
-    virtual void V30() = 0;
-    virtual void V34() = 0;
-    virtual void V38() = 0;
-    virtual void V3c() = 0;
-    virtual void V40() = 0;
-    virtual void V44() = 0;
-    virtual void V48() = 0;
-    virtual bool V4c() const = 0;
-};
+class RHPortraitRootLifetime;
+typedef RHPortraitRootLifetime SBUIWindowView;
 
 class SBFontUnk0061e840;
 
@@ -59,34 +38,6 @@ public:
 };
 
 class RHUnk006279d0;
-
-class SBInputKeyboardState;
-
-class SBUIUnk0060e1b0
-{
-public:
-    void *FUN_0060e210(unsigned flags);
-    SBUIUnk0060e1b0(int capacity);
-    ~SBUIUnk0060e1b0();
-    void FUN_0060e460();
-    bool FUN_0060e260() const;
-    bool FUN_0060e2a0(const SBInputKeyboardState &input);
-    bool EmitRefresh(const SBInputKeyboardState &input);
-    unsigned int vptr;
-    unsigned short first;
-    unsigned short second;
-    bool initialized;
-    bool changed;
-    unsigned short keys[256];
-    unsigned short padding;
-    int state[256];
-    int previous[256];
-    int repeat[256];
-    unsigned long released[256];
-    unsigned long pressed[256];
-    unsigned long delay;
-    unsigned char keyboard[256];
-};
 
 struct SBUIWindowArray : public std::vector<SBUIWindowView *>
 {
@@ -192,6 +143,12 @@ public:
     int Find(SBUIWindowView *window)
     {
         return m_windows.Find(window);
+    }
+    SBUI &ReleaseInput()
+    {
+        m_17f0 = 0;
+        m_17f4 = 0;
+        return *this;
     }
 };
 

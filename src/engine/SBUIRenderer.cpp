@@ -1,6 +1,6 @@
 #include "SBNullstr.h"
 #include "SBUIRenderer.h"
-#include "SBUIRendererListbox.h"
+#include "SBUIListboxFont.h"
 #include "SB.h"
 #include <stddef.h>
 
@@ -42,6 +42,7 @@ class SBGeoBoundingBox2D
 public:
     SBGeoBoundingBox2D();
     SBGeoBoundingBox2D &operator=(const SBGeoBoundingBox2D &);
+    SBGeoBoundingBox2D &Translate(const SBGeoPoint2D &offset);
     bool Unk00608f30() const;
     void SetEnd(const SBGeoPoint2D &point) { m_flag = true; m_p1 = point; }
     SBGeoPoint2D m_p0; // 0x00
@@ -50,13 +51,6 @@ public:
 };
 #endif
 
-// SIZE 0x14
-class RHMobileUnk006091b0
-{
-public:
-    RHMobileUnk006091b0 &FUN_006091b0(const SBGeoPoint2D &);
-    undefined m_00[0x14]; // 0x00
-};
 
 class RHMobileUnk00607da0
 {
@@ -92,8 +86,6 @@ DECOMP_STATIC_ASSERT(offsetof(RHPortraitRenderer0060d470, m_drawManager) == 0x1c
 DECOMP_STATIC_ASSERT(offsetof(RHPortraitRenderer0060d470, m_name) == 0x28)
 DECOMP_SIZE_ASSERT(RHUnk005fc3b0, 0x08)
 DECOMP_SIZE_ASSERT(SBGeoBoundingBox2D, 0x14)
-DECOMP_SIZE_ASSERT(RHMobileUnk006091b0, 0x14)
-DECOMP_SIZE_ASSERT(SBUIUnk0060d530, 0x3c)
 DECOMP_SIZE_ASSERT(SBUIUnk0060da20, 0x4c)
 DECOMP_SIZE_ASSERT(SBUIUnk0060dae0, 0x50)
 DECOMP_SIZE_ASSERT(SBUIUnk0060dd00, 0x7c)
@@ -129,16 +121,16 @@ RHPortraitRenderer0060d470::~RHPortraitRenderer0060d470()
 }
 
 // FUNCTION: GAME 0x0060d500
-unsigned int SBUIUnk0060d530::FUN_0060d500(unsigned int id)
+unsigned int RHPortraitRenderer0060d470::FUN_0060d500(unsigned int id)
 {
-    ((RHUnk00600820 *)m_resource)->ResolveSurface((void *)m_resourceId, id, (float *)&id);
+    ((RHUnk00600820 *)m_resources)->ResolveSurface((void *)m_widgetResource, id, (float *)&id);
     return id;
 }
 
 // FUNCTION: GAME 0x0060d520
-void SBUIUnk0060d530::FUN_0060d520()
+void RHPortraitRenderer0060d470::FUN_0060d520()
 {
-    ((SBUIUnk005fd4a0 *)m_resource)->FUN_005fd4a0(m_resourceId);
+    ((SBUIUnk005fd4a0 *)m_resources)->FUN_005fd4a0(m_widgetResource);
 }
 
 // FUNCTION: GAME 0x0060d530
@@ -149,16 +141,16 @@ void RHPortraitRenderer0060d470::FUN_0060d530(unsigned int surface)
 }
 
 // STUB: GAME 0x0060d550
-bool SBUIUnk0060d530::FUN_0060d550(long resourceId)
+bool RHPortraitRenderer0060d470::FUN_0060d550(long resourceId)
 {
     RHUnk005fc3b0 size;
-    m_resourceId = resourceId;
-    SBGeoBoundingBox2D &position = m_box;
+    m_widgetResource = resourceId;
+    SBGeoBoundingBox2D &position = m_position;
     if (!position.Unk00608f30())
         return false;
-    if (m_resourceId != -1)
+    if (m_widgetResource != -1)
     {
-        if (!((RHMapResources *)m_resource)->FUN_006006f0(m_resourceId, size))
+        if (!m_resources->FUN_006006f0(m_widgetResource, size))
         {
             SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBUIRenderer.cpp", 0x78,
                 "Unable to retrieve the size of a resource");
@@ -172,9 +164,9 @@ bool SBUIUnk0060d530::FUN_0060d550(long resourceId)
 }
 
 // FUNCTION: GAME 0x0060d690
-void *SBUIUnk0060d530::FUN_0060d690()
+SBGeoBoundingBox2D *RHPortraitRenderer0060d470::FUN_0060d690()
 {
-    return m_bytes + 8;
+    return &m_position;
 }
 
 // STUB: GAME 0x0060d6a0
@@ -207,7 +199,7 @@ void RHPortraitRenderer0060d470::FUN_0060d780(const SBGeoPoint2D &point)
     unsigned char *m_bytes = (unsigned char *)this;
     RHUnk005fc3b0 size;
     SBGeoBoundingBox2D &position = m_box;
-    ((RHMobileUnk006091b0 *)&position)->FUN_006091b0(point.Unk005fc110(position.m_p0));
+    position.Translate(point.Unk005fc110(position.m_p0));
     if ((!position.Unk00608f30() || position.m_p1.m_x - position.m_p0.m_x == 0.0f)
         && m_resourceId != -1)
     {
@@ -232,7 +224,7 @@ void RHPortraitRenderer0060d470::FUN_0060d780(const SBGeoPoint2D &point)
 
 // Parked: the target spills point.m_x through an integer move into the dead argument slot.
 // STUB: GAME 0x0060d890
-bool RHGameWidgetRendererCalls::FUN_0060d890(const SBGeoPoint2D &point)
+bool RHPortraitRenderer0060d470::FUN_0060d890(const SBGeoPoint2D &point)
 {
     SBDrawViewport view;
     unsigned long surface;
@@ -256,8 +248,9 @@ bool RHGameWidgetRendererCalls::FUN_0060d890(const SBGeoPoint2D &point)
 }
 
 // FUNCTION: GAME 0x0060da20
-bool SBUIUnk0060da20::FUN_0060da20(unsigned int id)
+bool RHPortraitRenderer0060d470::FUN_0060da20(unsigned int id)
 {
+    unsigned char *m_bytes = reinterpret_cast<unsigned char *>(this);
     *(unsigned int *)(m_bytes + 0x3c) = id;
     if (id == 0xff)
     {
@@ -280,8 +273,9 @@ bool SBUIUnk0060da20::FUN_0060da20(unsigned int id)
 }
 
 // FUNCTION: GAME 0x0060dae0
-bool SBUIUnk0060dae0::FUN_0060dae0(unsigned int id)
+bool RHPortraitRenderer0060dab0::FUN_0060dae0(unsigned int id)
 {
+    unsigned char *m_bytes = reinterpret_cast<unsigned char *>(this);
     *(unsigned int *)(m_bytes + 0x3c) = id;
     if (id != 0xff && m_resourceId != -1)
     {
@@ -303,8 +297,9 @@ bool SBUIUnk0060dae0::FUN_0060dae0(unsigned int id)
 }
 
 // FUNCTION: GAME 0x0060db80
-unsigned int SBUIUnk0060dae0::FUN_0060db80(unsigned int id)
+unsigned int RHPortraitRenderer0060dab0::FUN_0060db80(unsigned int id)
 {
+    unsigned char *m_bytes = reinterpret_cast<unsigned char *>(this);
     ((RHUnk00600820 *)m_resource)->ResolveSurface((void *)m_resourceId, id, (float *)&id);
     if (((unsigned int *)(m_bytes + 0x40))[*(unsigned int *)(m_bytes + 0x48) & 1] != id)
         id = -1;
@@ -312,8 +307,9 @@ unsigned int SBUIUnk0060dae0::FUN_0060db80(unsigned int id)
 }
 
 // FUNCTION: GAME 0x0060dc20
-int SBUIUnk0060dd00::FUN_0060dc20(unsigned int id)
+int RHPopupRenderer0060dbc0::FUN_0060dc20(unsigned int id)
 {
+    unsigned char *m_bytes = reinterpret_cast<unsigned char *>(this);
     int result = 0;
     if (m_bytes[0x78] == 1)
         return -1;
@@ -331,8 +327,9 @@ int SBUIUnk0060dd00::FUN_0060dc20(unsigned int id)
 }
 
 // FUNCTION: GAME 0x0060dcd0
-int SBUIUnk0060dd00::FUN_0060dcd0()
+int RHPopupRenderer0060dbc0::FUN_0060dcd0()
 {
+    unsigned char *m_bytes = reinterpret_cast<unsigned char *>(this);
     if (*(SBFontUnk0061e840 **)(m_bytes + 0x50)) {
         int value = ((RHPopupRenderer0060dbc0 *)this)->FUN_0060dda0(*(SBFontUnk0061e840 **)(m_bytes + 0x50), true);
         return (*(SBFontUnk0061e840 **)(m_bytes + 0x50))->GetHeight() * value;
@@ -341,18 +338,18 @@ int SBUIUnk0060dd00::FUN_0060dcd0()
 }
 
 // FUNCTION: GAME 0x0060dd00
-void *SBUIUnk0060dd00::FUN_0060dd00()
+void *RHPopupRenderer0060dbc0::FUN_0060dd00()
 {
-    return m_bytes + 0x68;
+    return &m_68;
 }
 
 // FUNCTION: GAME 0x0060e0d0
-bool SBUIUnk0060dd00::FUN_0060e0d0(void *first, void *second, void *third, void *fourth)
+bool RHPopupRenderer0060dbc0::FUN_0060e0d0(void *first, void *second, void *third, void *fourth)
 {
-    *(void **)(m_bytes + 0x54) = first;
-    *(void **)(m_bytes + 0x50) = second;
-    *(void **)(m_bytes + 0x58) = third;
-    *(void **)(m_bytes + 0x5c) = fourth;
+    m_54 = static_cast<SBFontUnk0061e840 *>(first);
+    m_50 = static_cast<SBFontUnk0061e840 *>(second);
+    m_58 = static_cast<SBFontUnk0061e840 *>(third);
+    m_5c = static_cast<SBFontUnk0061e840 *>(fourth);
     return true;
 }
 

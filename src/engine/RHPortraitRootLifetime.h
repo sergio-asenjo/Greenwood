@@ -8,7 +8,6 @@
 
 class SBFrameWidgetView;
 class SBDrawManager;
-class RHMapTitleText;
 class SBGeoPoint2D;
 class SBGeoBoundingBox2D;
 struct SBFrameEvent;
@@ -121,7 +120,7 @@ class RHPortraitRootLifetime
 public:
     RHPortraitRootLifetime();
     virtual ~RHPortraitRootLifetime();
-    virtual bool FUN_0061a1e0(const RHMapTitleText &title, const RHMapBox &box, unsigned flags);
+    virtual bool FUN_0061a1e0(const std::wstring &title, const RHMapBox &box, unsigned flags);
     virtual void FUN_0061a350(unsigned long display);
     virtual void *FUN_0061a6e0(const void *input);
     virtual SBFrameEvent *FUN_0061a610(const void *input);
@@ -135,7 +134,7 @@ public:
     virtual bool FUN_0061a800(void *widget);
     virtual bool FUN_0061a920(void *widget);
     virtual bool FUN_0061aa30(void *widget);
-    virtual bool FUN_0061ab10(SBFrameWidgetView *widget);
+    virtual bool FUN_0061ab10(void *widget);
     virtual int FUN_0050e540(void *value);
     virtual char FUN_0050e5c0();
     virtual void FUN_0050e5d0(char value);

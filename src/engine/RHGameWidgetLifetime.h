@@ -8,6 +8,7 @@
 #include "RHPortraitUnk005d3880.h"
 
 class SBGeoBoundingBox2D;
+struct RHPortraitWidgetInput;
 
 // VTABLE: GAME 0x0067a630
 // SIZE 0x80
@@ -19,7 +20,34 @@ public:
     ~RHGameWidgetLifetimeBase();
     RHGameWidgetLifetimeBase &operator=(const RHGameWidgetLifetimeBase &other);
     virtual void *FUN_005dee10(unsigned flags);
+    virtual void AttachWidget(unsigned int display);
+    virtual void ReleaseWidget();
+    virtual void DrawWidget();
+    virtual void ResetWidget();
+    virtual unsigned long *UpdateWidget(unsigned index);
+    virtual RHPortraitWidgetEvent *HandleWidget(const RHPortraitWidgetInput &input);
+    virtual void SetWidgetBounds(const SBGeoBoundingBox2D &box);
+    virtual void SetWidgetPosition(const SBGeoPoint2D &position);
+    virtual int WidgetState();
+    virtual void SetWidgetResource(long id);
+    virtual void SetWidgetText(const std::wstring &text);
+    virtual bool Create(const std::wstring &text, const SBGeoBoundingBox2D &box, unsigned long flags, long id);
+    virtual unsigned SelectWidgetResource(unsigned id);
+
+    RHPortraitRenderer0060d470 &BitmapRenderer();
+    SBGeoBoundingBox2D &WidgetBounds();
+    unsigned long *MakeWidgetFrame(unsigned index);
+    bool ContainsWidgetPoint(const SBGeoPoint2D &point);
+    RHPortraitWidgetEvent *MakeWidgetEvent(int type);
+    void SetScrollFirst(int value) { *(int *)((char *)this + 0xd4) = value; }
+    void SetScrollSecond(int value) { *(int *)((char *)this + 0xd8) = value; }
+    void SetQuickActionFirst(int value) { *(int *)((char *)this + 0xdc) = value; }
+    void SetQuickActionSecond(int value) { *(int *)((char *)this + 0xe0) = value; }
+    void SetQuickActionThird(int value) { *(int *)((char *)this + 0xe8) = value; }
+    void SetQuickActionFourth(int value) { *(int *)((char *)this + 0xe4) = value; }
+
     bool Create(const std::wstring &name, const SBGeoBoundingBox2D &box, unsigned long flags);
+    void FUN_0060d290(const SBGeoPoint2D &position);
     bool m_04;
     bool m_05;
     bool m_06;
@@ -53,6 +81,7 @@ typedef RHPortraitRenderer0060dab0 RHGameRenderer0060dad0;
 
 class SBDrawManager;
 
+// VTABLE: GAME 0x0067a620
 class RHGameRenderer0060da10 : public RHPortraitRenderer0060d470
 {
 public:
@@ -94,6 +123,7 @@ public:
     void SetBlinking(SBResourceWidgetID, SBResourceWidgetID, SBResourceWidgetID, unsigned long);
     void RemoveBlinking(SBResourceWidgetID);
     void *FUN_005c9250(unsigned flags);
+    bool FUN_005c9320(unsigned id);
     BlinkingItem m_current;
     unsigned m_currentId;
     unsigned m_frame;
@@ -103,6 +133,7 @@ public:
 };
 
 typedef RHUIRendererBlinking RHGameRenderer005c9270;
+typedef RHGameWidgetLifetimeBase RHPortraitBitmapWidget;
 
 // VTABLE: GAME 0x00678ce0
 class RHGameLifetime00515b40 : public RHGameWidgetLifetimeBase
@@ -112,7 +143,9 @@ public:
     ~RHGameLifetime00515b40() {}
     RHGameLifetime00515b40 &operator=(const RHGameLifetime00515b40 &other);
     RHGameLifetime00515b40 &Assign(const RHGameLifetime00515b40 &other);
-    void *FUN_00517280(unsigned flags);
+    virtual void *FUN_005dee10(unsigned flags);
+    virtual void DrawWidget();
+    virtual unsigned SelectWidgetResource(unsigned id);
     RHGameRenderer0060dad0 m_renderer;
 };
 
@@ -120,8 +153,20 @@ public:
 class RHGameLifetime00515d30 : public RHGameLifetime00515b40
 {
 public:
+    RHGameLifetime00515d30() { m_state = 0; }
     ~RHGameLifetime00515d30() {}
-    void *FUN_005172a0(unsigned flags);
+    virtual void *FUN_005dee10(unsigned flags);
+    virtual RHPortraitWidgetEvent *HandleWidget(const RHPortraitWidgetInput &input);
+    virtual int WidgetState();
+    virtual void SetWidgetResource(long id);
+    virtual RHPortraitWidgetEvent *LeaveWidget(const RHPortraitWidgetInput &input);
+    virtual RHPortraitWidgetEvent *EnterWidget(const RHPortraitWidgetInput &input);
+    virtual RHPortraitWidgetEvent *ReleaseWidgetButton(const RHPortraitWidgetInput &input);
+    virtual RHPortraitWidgetEvent *PressWidgetButton(const RHPortraitWidgetInput &input);
+    virtual RHPortraitWidgetEvent *OtherWidgetButton(const RHPortraitWidgetInput &input);
+    virtual bool ContainsWidgetInput(const RHPortraitWidgetInput &input);
+    virtual long WidgetResource();
+    virtual bool SetWidgetEnabled(char enabled);
 };
 
 // VTABLE: GAME 0x00678fc8
@@ -146,7 +191,19 @@ public:
     RHGameRenderer0060da10 m_renderer;
 };
 
-class RHGameLifetime0044fe90 : public RHGameLifetime00517590
+// VTABLE: GAME 0x00678c10
+class RHGameLifetime00515f00 : public RHGameLifetime00517590
+{
+public:
+    RHGameLifetime00515f00() {}
+    ~RHGameLifetime00515f00() {}
+    RHGameLifetime00515f00 &operator=(const RHGameLifetime00515f00 &other);
+    virtual void *FUN_005dee10(unsigned flags);
+    virtual RHPortraitWidgetEvent *HandleWidget(const RHPortraitWidgetInput &input);
+    virtual int WidgetState();
+};
+
+class RHGameLifetime0044fe90 : public RHGameLifetime00515f00
 {
 public:
     // FUNCTION: GAME 0x0044fca0
@@ -156,17 +213,8 @@ public:
         m_cc = 0;
     }
     ~RHGameLifetime0044fe90() {}
+    RHGameLifetime0044fe90 &operator=(const RHGameLifetime0044fe90 &other);
     int m_cc;
-};
-
-// VTABLE: GAME 0x00678c10
-class RHGameLifetime00515f00 : public RHGameLifetime00517590
-{
-public:
-    RHGameLifetime00515f00() {}
-    ~RHGameLifetime00515f00() {}
-    RHGameLifetime00515f00 &operator=(const RHGameLifetime00515f00 &other);
-    void *FUN_005172c0(unsigned flags);
 };
 
 // VTABLE: GAME 0x00678b60
@@ -212,22 +260,37 @@ class RHGameLifetime00525880 : public RHGameWidgetLifetimeBase
 {
 public:
     RHGameLifetime00525880();
+    enum BaseExpansion { InlineBase };
+    explicit RHGameLifetime00525880(BaseExpansion) {}
     ~RHGameLifetime00525880() {}
-    void *FUN_00525860(unsigned flags);
+    virtual void *FUN_005dee10(unsigned flags);
+    virtual void DrawWidget();
+    virtual unsigned SelectWidgetResource(unsigned id);
     RHGameRenderer0060dbc0 m_renderer;
 };
 
+// VTABLE: GAME 0x006791a8
 class RHGameLifetime00525560 : public RHGameLifetime00525880
 {
 public:
-    RHGameLifetime00525560()
+    RHGameLifetime00525560() : RHGameLifetime00525880(InlineBase)
     {
-        *(unsigned *)this = 0x006791a8;
+        m_fc = true;
+        m_fd = true;
+    }
+    enum BaseConstruction { SeparateBase };
+    explicit RHGameLifetime00525560(BaseConstruction)
+    {
         m_fc = true;
         m_fd = true;
     }
     ~RHGameLifetime00525560() {}
-    void *FUN_005258e0(unsigned flags);
+    virtual void *FUN_005dee10(unsigned flags);
+    virtual void ResetWidget();
+    virtual unsigned long *UpdateWidget(unsigned index);
+    virtual RHPortraitWidgetEvent *HandleWidget(const RHPortraitWidgetInput &input);
+    virtual int WidgetState();
+    virtual void SetWidgetText(const std::wstring &text);
     bool m_fc;
     bool m_fd;
 };
