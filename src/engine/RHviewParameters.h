@@ -1,14 +1,18 @@
 #ifndef RHVIEWPARAMETERS_H
 #define RHVIEWPARAMETERS_H
 
+#ifndef SBGEO_POINT2D_VIEW
 #include "SBGeoPoint2D.h"
+#endif
 #include "SBGeoVector2D.h"
 
 class RHviewParameters
 {
 public:
     char m_00;
-    char m_01[9];
+    char m_01[7];
+    char m_viewStatus;
+    char m_09;
     unsigned short m_0a;
     char m_0c[0x14];
     float m_20;

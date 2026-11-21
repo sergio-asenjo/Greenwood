@@ -19,6 +19,7 @@ public:
     RHSector(int type);
     short Index() const { return m_38; }
     unsigned short LiftFlag() const { return (unsigned)m_30 >> 9; }
+    unsigned short HeightFlag() const { return (unsigned)m_30 >> 14; }
     unsigned short SectorFlag() const { return (unsigned)m_30 >> 1; }
     unsigned short BaseFlag() const { return (unsigned)m_30; }
     const SBGeoBoundingBox2D &Bounds() const { return m_3c; }

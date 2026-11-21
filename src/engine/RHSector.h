@@ -117,18 +117,7 @@ public:
 
 #include "RHSectorDoorCore.h"
 
-// VTABLE: GAME 0x00679c8c
-// SIZE 0x70
-class RHUnk0057ee90 : public RHSector
-{
-public:
-    RHUnk0057ee90();
-    virtual ~RHUnk0057ee90();
-    void FUN_0057ef70();
-    float m_58;         // 0x58
-    SBGeoPoint2D m_5c;  // 0x5c
-    RHUnk00613e90 m_64; // 0x64
-};
+#include "RHUnk0057ee90.h"
 
 #include "RHGate.h"
 
