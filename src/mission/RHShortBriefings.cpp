@@ -62,11 +62,17 @@ public:
 // TEMPLATE: GAME 0x0054c320
 // ?insert@?$vector@UShortBriefing@RHShortBriefings@@V?$allocator@UShortBriefing@RHShortBriefings@@@std@@@std@@QAEXPAUShortBriefing@RHShortBriefings@@IABU34@@Z
 
-// TEMPLATE: GAME 0x0054c570
+// TEMPLATE: GAME 0x0054c570 FOLDED
+// ?_Ufill@?$vector@URHMinimapHighlightedElement@@V?$allocator@URHMinimapHighlightedElement@@@std@@@std@@IAEXPAURHMinimapHighlightedElement@@IABU3@@Z
+
+// TEMPLATE: GAME 0x0054c570 FOLDED
 // ?_Ufill@?$vector@UShortBriefing@RHShortBriefings@@V?$allocator@UShortBriefing@RHShortBriefings@@@std@@@std@@IAEXPAUShortBriefing@RHShortBriefings@@IABU34@@Z
 
 // TEMPLATE: GAME 0x0054c5a0
 // ?copy@std@@YAPAUShortBriefing@RHShortBriefings@@PAU23@00@Z
+
+// TEMPLATE: GAME 0x00509ba0 FOLDED
+// ?_Construct@std@@YAXPAURHMinimapHighlightedElement@@ABU2@@Z
 
 // TEMPLATE: GAME 0x00509ba0 FOLDED
 // ?_Construct@std@@YAXPAUShortBriefing@RHShortBriefings@@ABU23@@Z
@@ -191,7 +197,7 @@ public:
     virtual void V2c();
     virtual void V30(const RHMapWideText &text, const SBGeoBoundingBox2D &box, bool enabled, unsigned long id);
     virtual void V34();
-    virtual void V38(bool enabled);
+    virtual void V38(int enabled);
 };
 
 #include "RHBriefingWindowCalls.h"
@@ -232,12 +238,7 @@ typedef RHGameLifetime00525560 RHBriefingTitle;
 
 typedef RHGameLifetime0044fe90 RHBriefingPicture;
 
-class SBUIUnk0060dd00
-{
-public:
-    bool FUN_0060e0d0(void *first, void *second, void *third, void *fourth);
-    int FUN_0060dcd0();
-};
+typedef RHPopupRenderer0060dbc0 SBUIUnk0060dd00;
 
 class RHSaveGame;
 template<class T> class SBArray
@@ -273,7 +274,7 @@ void RHShortBriefings::FUN_005a28c0(RHMenuWindow *window, SBGeoBoundingBox2D &bo
     m_fc = window;
     for (ShortBriefing *position = values.begin(); position != values.end(); ++position) {
         ShortBriefing value = *position;
-        RHBriefingTitle *title = new RHBriefingTitle;
+        RHBriefingTitle *title = new RHBriefingTitle(RHBriefingTitle::SeparateBase);
         void *font = value.m_4 ? inactive : active;
         SBGeoBoundingBox2D bounds;
         ((RHMobileUnk00607da0 *)&bounds)->FUN_00607da0((const RHMobileUnk00607da0 &)box);
@@ -469,7 +470,10 @@ void RHShortBriefings::Emit(SBFile &file)
     SerializeShortBriefing(file, value);
 }
 
-// TEMPLATE: GAME 0x005a3320
+// TEMPLATE: GAME 0x005a3320 FOLDED
+// ?_Ucopy@?$vector@URHMinimapHighlightedElement@@V?$allocator@URHMinimapHighlightedElement@@@std@@@std@@IAEPAURHMinimapHighlightedElement@@PBU3@0PAU3@@Z
+
+// TEMPLATE: GAME 0x005a3320 FOLDED
 // ?_Ucopy@?$vector@UShortBriefing@RHShortBriefings@@V?$allocator@UShortBriefing@RHShortBriefings@@@std@@@std@@IAEPAUShortBriefing@RHShortBriefings@@PBU34@0PAU34@@Z
 
 // TEMPLATE: GAME 0x005a3360

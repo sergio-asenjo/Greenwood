@@ -49,10 +49,6 @@ void EmitRHMissionProfileCtor(RHMission *mission, const RHMissionProfile *profil
     new (mission) RHMission(profile);
 }
 
-// LIBRARY: GAME 0x00642a7d
-extern "C" int __cdecl rand() { return 0; }
-
-
 // TEMPLATE: GAME 0x004238c0 FOLDED
 // ?Tidy@RHCampaignWideString@@QAEX_N@Z
 void RHCampaignWideString::Tidy(bool built)

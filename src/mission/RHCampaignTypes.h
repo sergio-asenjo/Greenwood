@@ -388,16 +388,7 @@ public:
 
 extern RHEngine *g_pEngine;
 
-// SIZE 0x08
-#define SBGEO_VECTOR2D_VIEW
-class SBGeoVector2D : public SBGeoPoint2D
-{
-public:
-    SBGeoVector2D(const SBGeoPoint2D &point);
-    ~SBGeoVector2D() {}
-    SBGeoVector2D(const SBGeoVector2D &other);
-    SBGeoVector2D &operator=(const SBGeoVector2D &other);
-};
+#include "SBGeoVector2D.h"
 
 // SIZE 0x14
 #define SBGEO_BOUNDINGBOX2D_VIEW
@@ -405,6 +396,7 @@ class SBGeoBoundingBox2D
 {
 public:
     SBGeoBoundingBox2D(const SBGeoBoundingBox2D &value);
+    SBGeoBoundingBox2D &Translate(const SBGeoPoint2D &offset);
     SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &value) const;
     bool FUN_006083b0(const SBGeoPoint2D &point) const;
     SBGeoPoint2D m_0; // 0x00
@@ -439,11 +431,6 @@ struct RHCampaignCharacterData
     undefined4 m_98; // 0x98
 };
 
-class RHMobileUnk006091b0
-{
-public:
-    RHMobileUnk006091b0 &FUN_006091b0(const SBGeoPoint2D &value);
-};
 
 #include "RHMobileUnk00607da0.h"
 

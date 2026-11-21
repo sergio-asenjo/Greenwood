@@ -105,14 +105,10 @@ struct RHCampaignWidgetInput
 {
     undefined m_00[0x0a];
     unsigned short flags;
-    RHGameWidgetInputCalls *shortcuts;
+    SBUIUnk0060e1b0 *shortcuts;
 };
 
-class RHGameWidgetRendererCalls
-{
-public:
-    bool FUN_0060d890(const SBGeoPoint2D &point);
-};
+#include "RHGameWidgetRendererCalls.h"
 
 struct RHCampaignWidgetView
 {
@@ -148,11 +144,8 @@ public:
     virtual unsigned V24();
 };
 
-class SBUIUnk0060da20
-{
-public:
-    bool FUN_0060da20(unsigned id);
-};
+#include "RHPortraitRenderer0060d470.h"
+typedef RHPortraitRenderer0060d470 SBUIUnk0060da20;
 
 // FUNCTION: GAME 0x0044fd00
 void RHUnk0044fd00::FUN_0044fd00(int value)
@@ -318,19 +311,22 @@ void RHCampaign::FUN_00450c50()
 // STUB: GAME 0x00450ec0
 void RHCampaign::CreateGang()
 {
-    for (RHPCDescription **it = m_114.begin(); it != m_114.end(); ++it)
+    std::vector<RHPCDescription *> &gang = m_114;
+    for (RHPCDescription **it = gang.begin(); it != gang.end(); ++it)
         if (*it != 0)
             (*it)->FUN_00459dd0(1);
-    ((RHMissionArrayStorage *)&m_114)->FUN_004609a0(m_114.begin(), m_114.end());
-    ((RHMissionArrayStorage *)&m_104)->FUN_004609a0(m_104.begin(), m_104.end());
-    bool defaultGang = g_unk0x6c05cc.FUN_0045a010(RHCampaignText("")) == 0;
+    ((RHMissionArrayStorage *)&gang)->FUN_004609a0(gang.begin(), gang.end());
+    std::vector<RHPCDescription *> &available = m_104;
+    ((RHMissionArrayStorage *)&available)->FUN_004609a0(available.begin(), available.end());
+    bool defaultGang = g_unk0x6c05cc.FUN_0045a010(RHProfileText("", strlen(""))) == 0;
     if (defaultGang)
     {
         if (g_unk0x6c0e84 == 0)
             g_unk0x6c0e84 = new RHCampaignProfiles;
-        RHPCDescription *value = new RHPCDescription(g_unk0x6c0e84->m_characters.begin()[1], true);
-        ((RHMissionArrayStorage *)&m_114)->FUN_004e5820(m_114.end(), (const unsigned long &)value);
-        ((RHMissionArrayStorage *)&m_104)->FUN_004e5820(m_104.end(), (const unsigned long &)m_114.back());
+        RHCampaignPointerArray<RHCharacterProfile *> &characters = g_unk0x6c0e84->m_characters;
+        RHPCDescription *value = new RHPCDescription(characters.begin()[1], true);
+        ((RHMissionArrayStorage *)&gang)->FUN_004e5820(gang.end(), (const unsigned long &)value);
+        ((RHMissionArrayStorage *)&available)->FUN_004e5820(available.end(), (const unsigned long &)m_114.back());
     }
     else
     {
@@ -344,61 +340,61 @@ void RHCampaign::CreateGang()
             {
             case 'R':
                 {
-                    ((RHCampaignPCArray *)&m_114)->Push(new RHPCDescription(profiles->FUN_0056d5d0(RHCampaignText("Robin des bois")), true));
+                    ((RHCampaignPCArray *)&m_114)->Push(new RHPCDescription(profiles->FUN_0056d5d0(RHCampaignCharacterName("Robin des bois")), true));
                     ((RHMissionArrayStorage *)&m_104)->FUN_004e5820(m_104.end(), (const unsigned long &)m_114.back());
                 }
                 break;
             case 'J':
                 {
-                    ((RHCampaignPCArray *)&m_114)->Push(new RHPCDescription(profiles->FUN_0056d5d0(RHCampaignText("Petit Jean")), true));
+                    ((RHCampaignPCArray *)&m_114)->Push(new RHPCDescription(profiles->FUN_0056d5d0(RHCampaignCharacterName("Petit Jean")), true));
                     ((RHMissionArrayStorage *)&m_104)->FUN_004e5820(m_104.end(), (const unsigned long &)m_114.back());
                 }
                 break;
             case 'T':
                 {
-                    ((RHCampaignPCArray *)&m_114)->Push(new RHPCDescription(profiles->FUN_0056d5d0(RHCampaignText("Frere Tuck")), true));
+                    ((RHCampaignPCArray *)&m_114)->Push(new RHPCDescription(profiles->FUN_0056d5d0(RHCampaignCharacterName("Frere Tuck")), true));
                     ((RHMissionArrayStorage *)&m_104)->FUN_004e5820(m_104.end(), (const unsigned long &)m_114.back());
                 }
                 break;
             case 'S':
                 {
-                    ((RHCampaignPCArray *)&m_114)->PushCounted(new RHPCDescription(profiles->FUN_0056d5d0(RHCampaignText("Stutely")), true));
+                    ((RHCampaignPCArray *)&m_114)->PushCounted(new RHPCDescription(profiles->FUN_0056d5d0(RHCampaignCharacterName("Stutely")), true));
                     ((SBArray<RHSaveGame *> *)&m_104)->Insert((RHSaveGame **)m_104.end(), 1, (RHSaveGame *const &)m_114.back());
                 }
                 break;
             case 'W':
                 {
-                    ((RHCampaignPCArray *)&m_114)->PushCounted(new RHPCDescription(profiles->FUN_0056d5d0(RHProfileText("Will Ecarlate")), true));
+                    ((RHCampaignPCArray *)&m_114)->PushCounted(new RHPCDescription(profiles->FUN_0056d5d0("Will Ecarlate"), true));
                     ((SBArray<RHSaveGame *> *)&m_104)->Insert((RHSaveGame **)m_104.end(), 1, (RHSaveGame *const &)m_114.back());
                 }
                 break;
             case 'M':
                 {
-                    ((RHCampaignPCArray *)&m_114)->PushCounted(new RHPCDescription(profiles->FUN_0056d5d0(RHProfileText("Lady Marianne")), true));
+                    ((RHCampaignPCArray *)&m_114)->PushCounted(new RHPCDescription(profiles->FUN_0056d5d0("Lady Marianne"), true));
                     ((SBArray<RHSaveGame *> *)&m_104)->Insert((RHSaveGame **)m_104.end(), 1, (RHSaveGame *const &)m_114.back());
                 }
                 break;
             case 'A':
                 {
-                    ((RHCampaignPCArray *)&m_114)->PushCounted(new RHPCDescription(profiles->FUN_0056d5d0(RHProfileText(
+                    ((RHCampaignPCArray *)&m_114)->PushCounted(new RHPCDescription(profiles->FUN_0056d5d0(
                         // STRING: GAME 0x006ab954
-                        "Paysan A")), true));
+                        "Paysan A"), true));
                     ((SBArray<RHSaveGame *> *)&m_104)->Insert((RHSaveGame **)m_104.end(), 1, (RHSaveGame *const &)m_114.back());
                 }
                 break;
             case 'B':
                 {
-                    ((RHCampaignPCArray *)&m_114)->PushCounted(new RHPCDescription(profiles->FUN_0056d5d0(RHProfileText(
+                    ((RHCampaignPCArray *)&m_114)->PushCounted(new RHPCDescription(profiles->FUN_0056d5d0(
                         // STRING: GAME 0x006ab948
-                        "Paysan B")), true));
+                        "Paysan B"), true));
                     ((SBArray<RHSaveGame *> *)&m_104)->Insert((RHSaveGame **)m_104.end(), 1, (RHSaveGame *const &)m_114.back());
                 }
                 break;
             case 'C':
                 {
-                    ((RHCampaignPCArray *)&m_114)->PushCounted(new RHPCDescription(profiles->FUN_0056d5d0(RHProfileText(
+                    ((RHCampaignPCArray *)&m_114)->PushCounted(new RHPCDescription(profiles->FUN_0056d5d0(
                         // STRING: GAME 0x006ab93c
-                        "Paysan C")), true));
+                        "Paysan C"), true));
                     ((SBArray<RHSaveGame *> *)&m_104)->Insert((RHSaveGame **)m_104.end(), 1, (RHSaveGame *const &)m_114.back());
                 }
                 break;
@@ -1670,16 +1666,28 @@ void RHCampaign::FUN_00456e60()
     std::string reason;
     SBSimpleUnk005f9510(g_unk0x006c13c0, "\n");
     SBSimpleUnk005f9510(g_unk0x006c13c0, "\n");
+    SBSimpleUnk005f9510(g_unk0x006c13c0,
+        // STRING: GAME 0x006abd10
+        " ---------- \n");
+    SBSimpleUnk005f9510(g_unk0x006c13c0,
+        // STRING: GAME 0x006abd00
+        "| Campaign |\n");
     SBSimpleUnk005f9510(g_unk0x006c13c0, " ---------- \n");
-    SBSimpleUnk005f9510(g_unk0x006c13c0, "| Campaign |\n");
-    SBSimpleUnk005f9510(g_unk0x006c13c0, " ---------- \n");
-    SBSimpleUnk005f9510(g_unk0x006c13c0, " - Ransom : %d\n", ((RHUnk00452030 *)this)->Get(1));
-    SBSimpleUnk005f9510(g_unk0x006c13c0, " - Gang size : %d\n", m_114.size());
-    SBSimpleUnk005f9510(g_unk0x006c13c0, " - ARES : %d\n", *(signed char *)((char *)this + 0x100));
+    SBSimpleUnk005f9510(g_unk0x006c13c0,
+        // STRING: GAME 0x006abcf0
+        " - Ransom : %d\n", ((RHUnk00452030 *)this)->Get(1));
+    SBSimpleUnk005f9510(g_unk0x006c13c0,
+        // STRING: GAME 0x006abcdc
+        " - Gang size : %d\n", m_114.size());
+    SBSimpleUnk005f9510(g_unk0x006c13c0,
+        // STRING: GAME 0x006abccc
+        " - ARES : %d\n", *(signed char *)((char *)this + 0x100));
     SBSimpleUnk005f9510(g_unk0x006c13c0, "\n");
     SBSimpleUnk005f9510(g_unk0x006c13c0, "\n");
     SBSimpleUnk005f9510(g_unk0x006c13c0, " ---------- \n");
-    SBSimpleUnk005f9510(g_unk0x006c13c0, "| Missions |\n");
+    SBSimpleUnk005f9510(g_unk0x006c13c0,
+        // STRING: GAME 0x006abcbc
+        "| Missions |\n");
     SBSimpleUnk005f9510(g_unk0x006c13c0, " ---------- \n");
     unsigned count = m_144.size();
     for (unsigned index = 0; index < count; ++index)
@@ -1687,23 +1695,39 @@ void RHCampaign::FUN_00456e60()
         RHMission &mission = m_144[index];
         switch (mission.m_8)
         {
-        case 0: status = "AVAILABLE"; break;
-        case 1: status.assign("WON", 3); break;
-        case 2: status = "LOST"; break;
+        case 0: status =
+            // STRING: GAME 0x006abca4
+            "AVAILABLE"; break;
+        case 1: status.assign(
+            // STRING: GAME 0x006abcb0
+            "WON", 3); break;
+        case 2: status =
+            // STRING: GAME 0x006abcb4
+            "LOST"; break;
         }
         if (mission.IsAccessible(reason))
-            accessible = "ACCESSIBLE";
+            accessible =
+                // STRING: GAME 0x006abc98
+                "ACCESSIBLE";
         else
-            accessible = "NOT ACCESSIBLE";
+            accessible =
+                // STRING: GAME 0x006abc88
+                "NOT ACCESSIBLE";
         RHMissionProfile *profile = (RHMissionProfile *)mission.m_profile;
-        SBSimpleUnk005f9510(g_unk0x006c13c0, " - Mission[ %d ] \"%s\" (%s,%s) : %s - %s (%s)\n",
+        SBSimpleUnk005f9510(g_unk0x006c13c0,
+            // STRING: GAME 0x006abc58
+            " - Mission[ %d ] \"%s\" (%s,%s) : %s - %s (%s)\n",
             index, profile->m_24.c_str(), profile->m_14.c_str(), profile->m_04.c_str(),
             status.c_str(), accessible.c_str(), reason.c_str());
     }
     SBSimpleUnk005f9510(g_unk0x006c13c0, "\n");
     SBSimpleUnk005f9510(g_unk0x006c13c0, "\n");
-    SBSimpleUnk005f9510(g_unk0x006c13c0, " -------------- \n");
-    SBSimpleUnk005f9510(g_unk0x006c13c0, "| Robin's gang |\n");
+    SBSimpleUnk005f9510(g_unk0x006c13c0,
+        // STRING: GAME 0x006abc44
+        " -------------- \n");
+    SBSimpleUnk005f9510(g_unk0x006c13c0,
+        // STRING: GAME 0x006abc30
+        "| Robin's gang |\n");
     SBSimpleUnk005f9510(g_unk0x006c13c0, " -------------- \n");
     count = m_114.size();
     for (unsigned character = 0; character < count; ++character)
@@ -1711,7 +1735,9 @@ void RHCampaign::FUN_00456e60()
         RHPCDescription *description = m_114[character];
         const char *name = ((RHProfileText *)((char *)description->m_profile + 0x14))->c_str();
         unsigned short *displayName = *(unsigned short **)((char *)description + 0x30);
-        SBSimpleUnk005f9510(g_unk0x006c13c0, " - Gang member[ %d ] \"%S\" (%s)\n",
+        SBSimpleUnk005f9510(g_unk0x006c13c0,
+            // STRING: GAME 0x006abc10
+            " - Gang member[ %d ] \"%S\" (%s)\n",
             character, displayName ? displayName : (const unsigned short *)L"", name);
     }
 }
@@ -2287,7 +2313,7 @@ void RHEngine::FUN_004e3770(RHElement *element)
     char *position = RHCampaignField<char *>(element, 0x50) + 4;
     SBGeoBoundingBox2D box(*(SBGeoBoundingBox2D *)((RHPositionInterface *)position)->Unk0055fa10(
         RHCampaignField<int>(position, 0x88)));
-    ((RHMobileUnk006091b0 *)((char *)&box + 4))->FUN_006091b0(SBGeoVector2D(point));
+    ((SBGeoBoundingBox2D *)((char *)&box + 4))->Translate(SBGeoVector2D(point));
     RHPathObstacleGrid *grid = (RHPathObstacleGrid *)((char *)this + 0x11c);
     info = RHCampaignField<char *>(element, 0x50);
     if (grid->FUN_004f5750(box, RHCampaignField<unsigned short>(info, 0xde)) &&
@@ -2387,14 +2413,14 @@ bool RHPCDescription::FUN_0055bb30(SBFile &file)
 }
 
 // FUNCTION: GAME 0x0056d5d0
-void *RHCampaignProfiles::FUN_0056d5d0(const RHProfileText &name)
+RHCharacterProfile *RHCampaignProfiles::FUN_0056d5d0(const std::string &name)
 {
-    void **first = m_characters.begin();
-    void **last = m_characters.end();
-    for (void **it = first; it != last; ++it)
+    RHCharacterProfile **first = m_characters.begin();
+    RHCharacterProfile **last = m_characters.end();
+    for (RHCharacterProfile **it = first; it != last; ++it)
     {
         const std::string &text = *(const std::string *)((char *)*it + 0x14);
-        if (text.compare(0, text.size(), name.c_str(), name.m_size) == 0)
+        if (text.compare(0, text.size(), name.c_str(), name.size()) == 0)
             return *it;
     }
     return *first;
