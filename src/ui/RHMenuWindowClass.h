@@ -21,7 +21,7 @@ public:
     void FUN_00544600(const std::vector<void *> &widgets, unsigned spacing);
     unsigned FUN_00544800(const std::vector<void *> &widgets, unsigned spacing);
     void FUN_005449e0(const std::vector<void *> &widgets, unsigned spacing);
-    bool FUN_00544b40(const std::wstring &title, const RHMapBox &box, unsigned flags);
+    virtual bool FUN_0061a1e0(const std::wstring &title, const RHMapBox &box, unsigned flags);
     void FUN_00544b80(bool display, bool modal);
 
     SBDrawManager *m_draw;

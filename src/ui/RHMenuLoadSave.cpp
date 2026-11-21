@@ -12,10 +12,11 @@
 #include "ToolboxWideString.h"
 #include "RHScriptListCore.h"
 #include "RHMapWidget.h"
-#include "RHMenuCampaignMapClass.h"
-#include "SBUIRendererListbox.h"
-#include "RHCopyPointers.h"
+#include "SBUIListboxFont.h"
+#include "RHMenuWidgetVector.h"
 #include "SBPicture.h"
+#include "RHPortraitWidgetInput.h"
+#include "RHPortraitTextWidget.h"
 
 #include "RHPlayerProfileManagerStorage.h"
 extern wchar_t g_unk0x006c0b50[1];
@@ -77,22 +78,10 @@ inline void RHLoadSaveInsertWidget(std::vector<void *> &widgets, void *const &wi
     ((SBArray<RHSaveGame *> *)&widgets)->Insert((RHSaveGame **)widgets.end(), 1, (RHSaveGame *const &)widget);
 }
 
-class RHLoadSaveWidgetVector : public std::vector<void *>
-{
-public:
-    void Clear()
-    {
-        iterator last = FUN_004598e0(end(), end(), begin());
-        typedef void (RHLoadSaveWidgetVector::*Destroy)(iterator, iterator);
-        Destroy destroy = &RHLoadSaveWidgetVector::_Destroy;
-        (this->*destroy)(last, end());
-        _Last = last;
-    }
-};
-
-#define m_accept (*(RHPortraitButton *)((char *)this + 0x140))
-#define m_remove (*(RHPortraitButton *)((char *)this + 0x240))
-#define m_cancel (*(RHPortraitButton *)((char *)this + 0x340))
+DECOMP_STATIC_ASSERT(offsetof(RHMenuLoadSave, m_accept) == 0x140)
+DECOMP_STATIC_ASSERT(offsetof(RHMenuLoadSave, m_remove) == 0x240)
+DECOMP_STATIC_ASSERT(offsetof(RHMenuLoadSave, m_cancel) == 0x340)
+DECOMP_STATIC_ASSERT(offsetof(RHMenuLoadSave, m_load) == 0x8b8)
 #define m_picture (*(RHMapWidget *)((char *)this + 0x7e4))
 #define m_slots (*(RHMenuLoadSaveList *)((char *)this + 0x5e4))
 #define m_text (*(RHPortraitEditableWidget *)((char *)this + 0x440))
@@ -100,7 +89,7 @@ public:
 // STUB: GAME 0x005307d0
 bool RHMenuLoadSave::FUN_005307d0()
 {
-    if (FUN_00544b40(g_unk0x006c0b50, RHMapBox(0.0f, 0.0f, 640.0f, 480.0f), 0))
+    if (RHMenuWindow::FUN_0061a1e0(g_unk0x006c0b50, RHMapBox(0.0f, 0.0f, 640.0f, 480.0f), 0))
     {
         m_screen->FUN_0053be80(std::string("Default"));
         SBFontUnk0061e840 *normal = m_screen->FUN_0053be80(std::string(
@@ -112,13 +101,14 @@ bool RHMenuLoadSave::FUN_005307d0()
         SBFontUnk0061e840 *selected = m_screen->FUN_0053be80(std::string(
             // STRING: GAME 0x006b0e20
             "ListSelected"));
-        RHLoadSaveWidgetVector widgets;
-        m_accept.FUN_005d1e30((int)m_screen, FUN_005e23d0(*(bool *)((char *)this + 0x8b8) ? 10 : 11), 0xbe);
+        RHMenuWidgetVector widgets;
+        RHPortraitRootLifetime &frame = *this;
+        m_accept.FUN_005d1e30((int)m_screen, FUN_005e23d0(m_load ? 10 : 11), 0xbe);
         m_remove.FUN_005d1e30((int)m_screen, FUN_005e23d0(8), 0xbe);
         m_cancel.FUN_005d1e30((int)m_screen, FUN_005e23d0(0x10), 0xbe);
-        ((RHMenuCampaignMap *)this)->V30(&m_accept);
-        ((RHMenuCampaignMap *)this)->V30(&m_remove);
-        ((RHMenuCampaignMap *)this)->V30(&m_cancel);
+        frame.FUN_0061a800(&m_accept);
+        frame.FUN_0061a800(&m_remove);
+        frame.FUN_0061a800(&m_cancel);
         m_focus.FUN_004ffc70((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_accept, true);
         RHFocusManager &focus = m_focus;
         focus.FUN_004ffc70((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_remove, true);
@@ -131,35 +121,35 @@ bool RHMenuLoadSave::FUN_005307d0()
         RHLoadSaveInsertWidget(widgets, &m_cancel);
         ((RHMenuWindow *)this)->FUN_00544380(widgets, 2);
         widgets.Clear();
-        *(bool *)((char *)this + 0x144) = false;
-        *(bool *)((char *)this + 0x244) = false;
+        m_accept.m_04 = false;
+        m_remove.m_04 = false;
         {
             std::wstring text(g_unk0x006c0b50);
             m_picture.V30(text, RHMapBox(460.0f, 0.0f, 460.0f, 0.0f), 0, 0xa4);
         }
-        ((RHMenuCampaignMap *)this)->V30(&m_picture);
+        frame.FUN_0061a800(&m_picture);
         RHLoadSaveInsertWidget(widgets, &m_picture);
         ((RHMenuWindow *)this)->FUN_00544600(widgets, 2);
         widgets.Clear();
-        if (*(bool *)((char *)this + 0x8b8))
+        if (m_load)
         {
             {
                 std::wstring text(g_unk0x006c0b50);
                 ((RHMapWidget *)&m_slots)->V30(text, RHMapBox(30.0f, 10.0f, 450.0f, 460.0f), 0, 0xc9);
             }
-            ((SBUIListboxUnk0061d980 *)&m_slots.m_renderer)->FUN_0061d980(normal, focused, selected, false);
-            ((RHMenuCampaignMap *)this)->V30(&m_slots);
+            m_slots.m_renderer.FUN_0061d980(normal, focused, selected, false);
+            frame.FUN_0061a800(&m_slots);
             focus.FUN_004ffc20(&m_slots ? (RHFocusFocusableView *)((char *)this + 0x7ac) : 0);
         }
         else
         {
             ((RHMapWidget *)&m_slots)->V30(g_unk0x006c0b50, RHMapBox(30.0f, 10.0f, 450.0f, 430.0f), 0, 0xc9);
-            ((SBUIListboxUnk0061d980 *)&m_slots.m_renderer)->FUN_0061d980(normal, focused, selected, false);
-            ((RHMenuCampaignMap *)this)->V30(&m_slots);
+            m_slots.m_renderer.FUN_0061d980(normal, focused, selected, false);
+            frame.FUN_0061a800(&m_slots);
             focus.FUN_004ffc20(&m_slots ? (RHFocusFocusableView *)((char *)this + 0x7ac) : 0);
             m_text.FUN_005d2810(SBGeoPoint2D(30.0f, 440.0f), (RHMenuScreenView *)m_screen);
             m_text.SetMaximum(45);
-            ((RHMenuCampaignMap *)this)->V30(&m_text);
+            frame.FUN_0061a800(&m_text);
             m_text.Activate(m_screen->FUN_0053bf30());
         }
         PopulateSaveGameList();
@@ -169,9 +159,6 @@ bool RHMenuLoadSave::FUN_005307d0()
     return false;
 }
 
-#undef m_accept
-#undef m_remove
-#undef m_cancel
 #undef m_picture
 #undef m_slots
 #undef m_text
@@ -620,6 +607,381 @@ RHMenuEvent *RHMenuLoadSaveText::FUN_00532040(unsigned value)
     return event;
 }
 
+// STUB: GAME 0x00532140
+template<class Renderer, class Item>
+void *SBWidgetListBox<Renderer, Item>::FUN_00532140(const RHPortraitWidgetInput &input)
+{
+    switch (m_state)
+    {
+    case 0:
+    {
+        RHPortraitWidgetEvent *event = 0;
+        m_renderer.FUN_0061d570(m_180, m_128.size());
+        if ((unsigned char)FUN_00533cd0(input.point) != 0)
+            m_state = 1;
+        else if (FUN_00533d80(input.point) != false)
+            m_state = 4;
+        else
+            return event;
+        event = &m_event;
+        m_event.value = 0;
+        m_event.next = 0;
+        m_event.widget = this;
+        event->type = 0;
+        return event;
+    }
+    case 1:
+    {
+        RHPortraitWidgetEvent *event = 0;
+        m_renderer.FUN_0061d570(m_180, m_128.size());
+        if (FUN_00533d80(input.point)) {
+            if (!(input.flags & 0x40))
+                m_state = 4;
+        } else if (!m_30.FUN_006083b0(input.point)) {
+            m_state = 0;
+        } else {
+            if (input.wheel != 0)
+                return FUN_00533f70(input.point);
+            unsigned short flags = input.flags;
+            if (flags & 8) {
+                event = &m_event;
+                m_event.value = 0;
+                m_event.next = 0;
+                m_event.widget = this;
+                event->type = 2;
+                return event;
+            }
+            if (flags & 2) {
+                unsigned short invalid = 0xffff;
+                if (m_17c == invalid)
+                    return event;
+                event = &m_event;
+                m_event.next = 0;
+                m_17c = invalid;
+                m_event.widget = this;
+                m_event.value = invalid;
+                event->type = 15;
+                return event;
+            }
+            unsigned short hit = FUN_00534050(input.point);
+            if (input.flags & 0x40) {
+                m_state = 2;
+                input.ui->m_selected = this;
+            }
+            if (m_17e != hit && m_198.FUN_005fc0e0(input.point)) {
+                m_17e = hit;
+                m_198 = input.point;
+                event = &m_event;
+                m_event.next = 0;
+                m_event.widget = this;
+                event->type = 14;
+                m_event.value = m_17e;
+            }
+            return event;
+        }
+        unsigned short invalid = 0xffff;
+        if (m_17e != invalid) {
+            event = &m_event;
+            m_event.next = 0;
+            m_17e = invalid;
+            m_event.widget = this;
+            m_event.value = invalid;
+            event->type = 14;
+        }
+        return event;
+    }
+    case 2:
+        return FUN_00533b0(input.point);
+    case 3:
+    {
+        RHMenuEvent *event = 0;
+        if (m_30.FUN_00608400(input.point)) {
+            event = FUN_00533f70(input.point);
+            if ((unsigned char)FUN_00533cd0(input.point)) {
+                m_state = 2;
+                return event;
+            }
+            if (!(input.flags & 1))
+                return event;
+            m_state = 4;
+        } else {
+            if (!(input.flags & 1))
+                return event;
+            m_state = 0;
+        }
+        input.ui->Clear();
+        return event;
+    }
+    case 4:
+        return FUN_00533020(input.point);
+    case 5:
+        return FUN_00533590(input.point);
+    }
+    return 0;
+}
+
+template<class T> inline void SBList<T>::GoToForTraversal(int wanted)
+{
+    int count = _Size;
+    if (m_dirty)
+    {
+        if (wanted <= (count + 1) / 2)
+        {
+            m_current = begin();
+            std::advance(m_current, wanted);
+        }
+        else
+        {
+            m_current = end();
+            std::advance(m_current, wanted - count);
+        }
+        m_dirty = false;
+    }
+    else
+    {
+        int previous = m_index;
+        if (wanted == previous)
+            return;
+        if (wanted < previous)
+        {
+            if (wanted < (previous + 1) / 2)
+            {
+                m_current = begin();
+                std::advance(m_current, wanted);
+            }
+            else
+                std::advance(m_current, wanted - previous);
+        }
+        else if (wanted < (previous + count) / 2)
+            std::advance(m_current, wanted - previous);
+        else
+        {
+            m_current = end();
+            std::advance(m_current, wanted - count);
+        }
+    }
+    m_index = wanted;
+}
+
+template<class T> inline T &SBList<T>::GetForTraversal(int wanted)
+{
+    GoToForTraversal(wanted);
+    return *m_current;
+}
+
+template<> void SBList<unsigned long>::GoTo(int wanted)
+{
+    GoToForTraversal(wanted);
+}
+
+template<> void SBList<std::wstring>::GoTo(int wanted)
+{
+    GoToForTraversal(wanted);
+}
+
+DECOMP_STATIC_ASSERT(offsetof(RHMenuLoadSaveSlots, m_renderer) == 0x80)
+DECOMP_STATIC_ASSERT(offsetof(RHMenuLoadSaveSlots, m_128) == 0x128)
+DECOMP_STATIC_ASSERT(offsetof(RHMenuLoadSaveSlots, m_158) == 0x158)
+DECOMP_STATIC_ASSERT(offsetof(RHMenuLoadSaveSlots, m_180) == 0x180)
+
+// STUB: GAME 0x005323f0
+template<> void RHMenuLoadSaveSlots::Refresh()
+{
+    RHPortraitInputRenderer &renderer = m_renderer;
+    renderer.FUN_0061d570(m_180, m_128.size());
+    renderer.FUN_0061c610(0);
+    unsigned short row = m_180;
+    int count = m_128.size();
+    bool full = !renderer.FUN_0061d1c0();
+    while (!full && row < (unsigned short)count)
+    {
+        if (row == m_17c)
+        {
+            m_158.GoTo(row);
+            m_128.GoTo(row);
+            full = !renderer.FUN_0061d1d0(&*m_128.m_current, *m_158.m_current | 0x10);
+        }
+        else if (row == m_17e)
+        {
+            m_158.GoTo(row);
+            m_128.GoTo(row);
+            full = !renderer.FUN_0061d1d0(&*m_128.m_current, *m_158.m_current | 0x20);
+        }
+        else
+        {
+            unsigned long &flags = m_158.GetForTraversal(row);
+            std::wstring &text = m_128.GetForTraversal(row);
+            full = !renderer.FUN_0061d1d0(&text, flags);
+        }
+        ++row;
+    }
+    renderer.FUN_0061d1c0();
+}
+
+DECOMP_SIZE_ASSERT(RHMenuLoadSaveList, 0x200)
+DECOMP_SIZE_ASSERT(RHPortraitWidgetEvent, 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHMenuLoadSaveList, m_id) == 0x1d0)
+DECOMP_STATIC_ASSERT(offsetof(RHMenuLoadSaveList, m_1ec) == 0x1ec)
+DECOMP_STATIC_ASSERT(offsetof(RHMenuLoadSaveList, m_keyEvent) == 0x1f0)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitWidgetEvent, next) == 0xc)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitWidgetInput, shortcuts) == 0xc)
+DECOMP_STATIC_ASSERT(offsetof(SBUIUnk0060e1b0, repeat) == 0xa0c)
+
+// STUB: GAME 0x005328c0
+RHPortraitWidgetEvent *RHMenuLoadSaveList::ProcessInput(const RHPortraitWidgetInput &input)
+{
+    RHPortraitWidgetEvent *keyEvent = 0;
+    bool handled = false;
+    if ((unsigned short)m_104.size() > 0 && m_1ec && m_1ed)
+    {
+        int pressed = input.shortcuts->FUN_0060e240(0xd0);
+        int repeat = input.shortcuts->repeat[0xd0];
+        if (pressed == 1 && (repeat == 2 || repeat == 0))
+        {
+            if (m_17c == 0xffff)
+                m_17c = m_17e != 0xffff ? m_17e : m_180;
+            else if (m_17c < (int)m_104.size() - 1)
+            {
+                unsigned short top = m_180;
+                ++m_17c;
+                if (m_17c >= m_renderer.FUN_0061d5e0() + top)
+                    m_180 = top + 1;
+            }
+            m_17e = 0xffff;
+            keyEvent = &m_keyEvent;
+            m_keyEvent.widget = this;
+            keyEvent->type = 15;
+            m_keyEvent.value = m_17c;
+        }
+        else
+        {
+            pressed = input.shortcuts->FUN_0060e240(0xc8);
+            repeat = input.shortcuts->repeat[0xc8];
+            if (pressed == 1 && (repeat == 2 || repeat == 0))
+            {
+                if (m_17c == 0xffff)
+                    m_17c = m_17e != 0xffff ? m_17e : m_180;
+                else if (m_17c > 0)
+                {
+                    unsigned short top = m_180;
+                    --m_17c;
+                    if (m_17c < top)
+                        m_180 = top - 1;
+                }
+                m_17e = 0xffff;
+                keyEvent = &m_keyEvent;
+                m_keyEvent.widget = this;
+                keyEvent->type = 15;
+                m_keyEvent.value = m_17c;
+            }
+            else
+            {
+                pressed = input.shortcuts->FUN_0060e240(0x1c);
+                repeat = input.shortcuts->repeat[0x1c];
+                if (pressed == 1 && (repeat == 2 || repeat == 0))
+                {
+                    keyEvent = &m_keyEvent;
+                    m_keyEvent.widget = this;
+                    m_keyEvent.value = 0;
+                    keyEvent->type = 2;
+                }
+            }
+        }
+        if (keyEvent)
+        {
+            m_keyEvent.next = 0;
+            handled = true;
+        }
+    }
+    RHMenuEvent *(RHMenuLoadSaveSlots::*defaultInput)(const SBGeoPoint2D &) =
+        &RHMenuLoadSaveSlots::FUN_00532d30;
+    RHMenuEvent *(RHMenuLoadSaveSlots::*focusedInput)(const SBGeoPoint2D &) =
+        &RHMenuLoadSaveSlots::FUN_00532db0;
+    RHPortraitWidgetEvent *result;
+    if (keyEvent)
+    {
+        result = keyEvent;
+        switch (RHMenuLoadSaveSlots::m_state)
+        {
+        case 0:
+            result->next = reinterpret_cast<RHPortraitWidgetEvent *>((this->*defaultInput)(input.point));
+            break;
+        case 1:
+            result->next = reinterpret_cast<RHPortraitWidgetEvent *>((this->*focusedInput)(input.point));
+            break;
+        case 2:
+            result->next = reinterpret_cast<RHPortraitWidgetEvent *>(FUN_00533b0(input.point));
+            break;
+        case 3:
+        {
+            RHPortraitWidgetEvent *scroll = 0;
+            if (m_30.FUN_00608400(input.point))
+            {
+                scroll = reinterpret_cast<RHPortraitWidgetEvent *>(FUN_00533f70(input.point));
+                if ((unsigned char)FUN_00533cd0(input.point))
+                {
+                    RHMenuLoadSaveSlots::m_state = 2;
+                    result->next = scroll;
+                    break;
+                }
+                if (input.flags & 1)
+                {
+                    RHMenuLoadSaveSlots::m_state = 4;
+                    input.ui->Clear();
+                }
+            }
+            else if (input.flags & 1)
+            {
+                RHMenuLoadSaveSlots::m_state = 0;
+                input.ui->Clear();
+            }
+            result->next = scroll;
+            break;
+        }
+        case 4:
+            result->next = reinterpret_cast<RHPortraitWidgetEvent *>(FUN_00533020(input.point));
+            break;
+        case 5:
+            result->next = reinterpret_cast<RHPortraitWidgetEvent *>(FUN_00533590(input.point));
+            break;
+        default:
+            result->next = 0;
+            break;
+        }
+    }
+    else
+    {
+        switch (RHMenuLoadSaveSlots::m_state)
+        {
+        case 0:
+            result = reinterpret_cast<RHPortraitWidgetEvent *>((this->*defaultInput)(input.point));
+            break;
+        case 1:
+            result = reinterpret_cast<RHPortraitWidgetEvent *>((this->*focusedInput)(input.point));
+            break;
+        case 2:
+            result = reinterpret_cast<RHPortraitWidgetEvent *>(FUN_00533b0(input.point));
+            break;
+        case 3:
+            result = reinterpret_cast<RHPortraitWidgetEvent *>(FUN_00533800(input.point));
+            break;
+        case 4:
+            result = reinterpret_cast<RHPortraitWidgetEvent *>(FUN_00533020(input.point));
+            break;
+        case 5:
+            result = reinterpret_cast<RHPortraitWidgetEvent *>(FUN_00533590(input.point));
+            break;
+        default:
+            result = 0;
+            break;
+        }
+        if (result)
+            handled = true;
+    }
+    FUN_005d5790(result, RHMenuLoadSaveSlots::m_state, handled);
+    return result;
+}
+
 class RHMenuLoadSaveUnk00532c50
 {
 public:
@@ -652,7 +1014,7 @@ RHMenuEvent *RHMenuLoadSaveUnk00532c50::FUN_00532c60(bool enabled)
         event = (RHMenuEvent *)&eventType;
     }
     *(bool *)((char *)this + 0x24) = enabled;
-    ((RHGameWidgetAnimatedCalls *)((char *)this + 8))->FUN_005d5790(event, *(int *)((char *)this - 0x14c), false);
+    ((RHPortraitAnimated *)((char *)this + 8))->FUN_005d5790(event, *(int *)((char *)this - 0x14c), false);
     return event;
 }
 
@@ -1188,7 +1550,7 @@ bool RHMenuLoadSaveText::FUN_00533d80(const SBGeoPoint2D &point)
 
 #pragma inline_depth(0)
 void EmitRHMenuLoadSaveHelpers(RHMenuLoadSaveListBase *list, RHMenuLoadSaveMap *map, RHMenuLoadSaveText *text,
-    RHMenuLoadSaveSlots *slots, RHMenuLoadSaveList *box, const int &key)
+    RHMenuLoadSaveSlots *slots, RHMenuLoadSaveList *box, const int &key, const RHPortraitWidgetInput &input)
 {
     list->FUN_00531d60();
     list->FUN_00531e50();
@@ -1201,6 +1563,7 @@ void EmitRHMenuLoadSaveHelpers(RHMenuLoadSaveListBase *list, RHMenuLoadSaveMap *
     text->FUN_00533d80(*(const SBGeoPoint2D *)list);
     slots->RHMenuLoadSaveSlots::SBWidgetListBox();
     slots->FUN_00532cf0(0);
+    slots->FUN_00532140(input);
     slots->FUN_00532d30(*(const SBGeoPoint2D *)list);
     slots->FUN_00532db0(*(const SBGeoPoint2D *)list);
     slots->FUN_00533020(*(const SBGeoPoint2D *)list);

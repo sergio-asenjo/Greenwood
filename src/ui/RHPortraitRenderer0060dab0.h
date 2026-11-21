@@ -13,6 +13,8 @@ public:
     ~RHPortraitRenderer0060dab0();
     RHPortraitRenderer0060dab0 &operator=(const RHPortraitRenderer0060dab0 &other);
     RHPortraitRenderer0060dab0 &Assign(const RHPortraitRenderer0060dab0 &other);
+    bool FUN_0060dae0(unsigned int id);
+    unsigned int FUN_0060db80(unsigned int id);
     unsigned short m_4c;    // 0x4c
     unsigned short m_4e;    // 0x4e
 };

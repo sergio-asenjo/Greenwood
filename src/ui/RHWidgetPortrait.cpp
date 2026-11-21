@@ -29,13 +29,15 @@
 // stack slot, so the 0x10 frame is unchanged.
 
 #include "SBNullstr.h"
+#include "SBGeoVector2D.h"
 #include "RHSectorActorList.h"
 #include "RHWidgetPortrait.h"
 #include "../engine/RHGame_calls.h"
 #include "../engine/SBUIRenderer.h"
 #include "../element/RHElementActorPC.h"
 #include "RHPortraitDrawCalls.h"
-#include "../engine/SBUIRendererListbox.h"
+#include "SBUIListboxFont.h"
+#include "SBUIInputFieldDraw.h"
 
 // TEMPLATE: GAME 0x004e6c10 FOLDED
 // ?clear@?$list@KV?$allocator@K@std@@@std@@QAEXXZ
@@ -48,6 +50,9 @@
 
 // TEMPLATE: GAME 0x0057c9c0 FOLDED
 // ??Eiterator@?$list@KV?$allocator@K@std@@@std@@QAE?AV012@H@Z
+
+// TEMPLATE: GAME 0x005c9010 FOLDED
+// ?_Advance@std@@YAXAAViterator@?$list@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@V?$allocator@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@@2@@1@HUbidirectional_iterator_tag@1@@Z
 
 // TEMPLATE: GAME 0x005c9010 FOLDED
 // ?_Advance@std@@YAXAAViterator@?$list@KV?$allocator@K@std@@@1@HUbidirectional_iterator_tag@1@@Z
@@ -545,6 +550,21 @@ void RHPortraitInputField::FUN_005cf380()
     *(int *)((char *)this + 0xc4) = value;
 }
 
+// FUNCTION: GAME 0x005cf520
+int RHPortraitInputWidget::GenerateCode(SBResourceWidgetID id)
+{
+    RHPortraitInputRenderer &renderer = m_renderer;
+    int current = renderer.CurrentRenderCode();
+    int requested;
+    if (id == 0xff)
+        requested = 0;
+    else if ((requested = renderer.ResolveRenderCode(id)) == -1)
+        return 3;
+    if (current != requested)
+        return requested ? 1 : 2;
+    return 0;
+}
+
 class RHPortraitTextWidgetDispatch
 {
 public:
@@ -892,9 +912,33 @@ RHPortraitWidgetEvent *RHPortraitUnk005d0180::FUN_005d0340(const RHPortraitWidge
         if (result)
             handled = true;
     }
-    ((RHGameWidgetAnimatedCalls *)((char *)this + 0x1dc))
+    ((RHPortraitAnimated *)((char *)this + 0x1dc))
         ->FUN_005d5790(result, ((RHPortraitInputField *)this)->m_state, handled);
     return result;
+}
+
+extern RHMapResources *g_unk0x006c1840;
+
+// STUB: GAME 0x005d0000
+bool RHPortraitUnk005cf570::FUN_005d0000(const std::wstring &text, const SBGeoBoundingBox2D &box,
+    unsigned long flags, long resource)
+{
+    RHGameWidgetLifetimeBase::Create(text, box, flags);
+    RHPortraitInputRenderer &renderer = m_renderer;
+    renderer.m_resources = g_unk0x006c1840;
+    renderer.FUN_0060d6a0(box);
+    renderer.FUN_0060d550(resource);
+    renderer.m_24 = flags;
+    renderer.AssignName(text);
+    if (m_30.Width() == 0.0f) {
+        const SBGeoBoundingBox2D &position = *renderer.FUN_0060d690();
+        m_30.m_10 = position.m_10;
+        if (position.m_10) {
+            m_30.m_first = position.m_first;
+            m_30.m_second = position.m_second;
+        }
+    }
+    return true;
 }
 
 // FUNCTION: GAME 0x005d06d0
@@ -922,7 +966,7 @@ RHPortraitWidgetEvent *RHPortraitUnk005d06d0::V04(bool enabled)
         event = (RHPortraitWidgetEvent *)&eventType;
     }
     *(bool *)((char *)this + 0x24) = enabled;
-    ((RHGameWidgetAnimatedCalls *)((char *)this + 8))->FUN_005d5790(event, *(int *)((char *)this - 0x158), false);
+    ((RHPortraitAnimated *)((char *)this + 8))->FUN_005d5790(event, *(int *)((char *)this - 0x158), false);
     return event;
 }
 
@@ -1571,6 +1615,7 @@ complete:
 
 DECOMP_SIZE_ASSERT(std::wstring, 0x10)
 DECOMP_SIZE_ASSERT(RHPortraitInputWidget, 0x104)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitInputWidget, m_renderer) == 0x80)
 DECOMP_SIZE_ASSERT(RHPortraitTextLines, 0x30)
 DECOMP_SIZE_ASSERT(RHPortraitItemIndices, 0x18)
 DECOMP_STATIC_ASSERT(offsetof(RHPortraitTextLines, m_current) == 0x0c)
@@ -1592,6 +1637,8 @@ DECOMP_STATIC_ASSERT(offsetof(RHPortraitUnk005cf570, m_second) == 0x134)
 DECOMP_STATIC_ASSERT(offsetof(RHPortraitUnk005cf570, m_items) == 0x164)
 DECOMP_STATIC_ASSERT(offsetof(RHPortraitTextLines, m_text) == 0x20)
 DECOMP_STATIC_ASSERT(offsetof(RHPortraitUnk005cf570, m_188) == 0x188)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitUnk005cf570, m_18a) == 0x18a)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitUnk005cf570, m_18c) == 0x18c)
 DECOMP_STATIC_ASSERT(offsetof(RHPortraitUnk005cf570, m_point) == 0x1a4)
 DECOMP_STATIC_ASSERT(offsetof(RHPortraitUnk005cf570, m_firstBox) == 0x1ac)
 DECOMP_STATIC_ASSERT(offsetof(RHPortraitUnk005cf570, m_secondBox) == 0x1c0)
@@ -1621,6 +1668,184 @@ unsigned short RHPortraitUnk005cf570::AddItem(const std::wstring &text, std::wst
     m_first.Append(value);
     m_items.Append(index);
     return m_first.size() - 1;
+}
+
+template<class Storage> inline void SBListCursorStorage<Storage>::SeekForTraversal(int wanted)
+{
+    typedef typename Storage::iterator Iterator;
+    Iterator (Storage::*begin)() = &Storage::begin;
+    void (__cdecl *advance)(Iterator &, int, std::bidirectional_iterator_tag) = &std::_Advance;
+    int count = size();
+    if (m_dirty)
+    {
+        if (wanted <= (count + 1) / 2)
+        {
+            Iterator &current = m_current;
+            current = (this->*begin)();
+            std::bidirectional_iterator_tag category;
+            advance(current, wanted, category);
+        }
+        else
+        {
+            Iterator &current = m_current;
+            current = end();
+            std::bidirectional_iterator_tag category;
+            advance(current, wanted - count, category);
+        }
+        m_dirty = false;
+        m_index = wanted;
+    }
+    else
+    {
+        int previous = m_index;
+        if (wanted != previous)
+        {
+            if (wanted < previous)
+            {
+                if (wanted < (previous + 1) / 2)
+                {
+                    Iterator &current = m_current;
+                    current = (this->*begin)();
+                    std::bidirectional_iterator_tag category;
+                    advance(current, wanted, category);
+                }
+                else
+                {
+                    std::bidirectional_iterator_tag category;
+                    advance(m_current, wanted - previous, category);
+                }
+            }
+            else if (wanted < (previous + count) / 2)
+            {
+                std::bidirectional_iterator_tag category;
+                advance(m_current, wanted - previous, category);
+            }
+            else
+            {
+                Iterator &current = m_current;
+                current = end();
+                std::bidirectional_iterator_tag category;
+                advance(current, wanted - count, category);
+            }
+            m_index = wanted;
+        }
+    }
+}
+
+#pragma inline_depth(1)
+// STUB: GAME 0x005cfce0
+void RHPortraitUnk005cf570::DrawWidget()
+{
+    RHPortraitInputRendererMember *renderer = &m_renderer;
+    renderer->FUN_0061d570(m_18c, m_second.size());
+    renderer->FUN_0061c610(0);
+    unsigned short row = m_18c;
+    int count = m_second.size();
+    bool full = !renderer->FUN_0061d1c0();
+    do
+    {
+        if (full || row >= (unsigned short)count)
+            break;
+        unsigned long flags;
+        RHPortraitTextLines *lines;
+        if (row == m_188)
+        {
+            int wanted = row;
+            RHPortraitItemIndices &items = m_items;
+            items.Seek(wanted);
+            lines = &m_second;
+            lines->Seek(wanted);
+            flags = *items.m_current | 0x10;
+            goto highlight;
+        }
+        if (row == m_18a)
+        {
+            int wanted = row;
+            RHPortraitItemIndices &items = m_items;
+            items.Seek(wanted);
+            lines = &m_second;
+            lines->Seek(wanted);
+            flags = *items.m_current | 0x20;
+        }
+        else
+        {
+            int wanted = row;
+            RHPortraitItemIndices &items = m_items;
+            items.SeekForTraversal(wanted);
+            RHPortraitTextLines &text = m_second;
+            text.SeekForTraversal(wanted);
+            full = !renderer->RefreshItem(*text.m_current, *items.m_current);
+            ++row;
+            continue;
+        }
+    highlight:
+        full = !renderer->RefreshItem(*lines->m_current, flags);
+        ++row;
+    }
+    while (true);
+    renderer->FUN_0061d1c0();
+}
+#pragma inline_depth()
+
+// STUB: GAME 0x005ca710
+bool RHPortraitInputRendererMember::RefreshItem(const std::wstring &text, unsigned long flags)
+{
+    SBGeoBoundingBox2D line;
+    SBGeoBoundingBox2D descriptionBox;
+    SBGeoBoundingBox2D bindingBox;
+    std::wstring description;
+    std::wstring binding;
+    SBUIInputFieldDrawUnk drawer;
+    line = FUN_0061d3f0(m_7e, flags);
+    descriptionBox.FUN_00609050(line.m_first, line.m_first.Unk005fc190(
+        SBGeoVector2D(line.Width() * 0.7f, line.Height())));
+    bindingBox.FUN_00609050(line.m_first.Unk005fc190(SBGeoVector2D(line.Width() * 0.7f, 0.0f)), line.Max());
+    const wchar_t separator = L'|';
+    unsigned int split = text.find(&separator, 0, 1);
+    if (split != std::wstring::npos)
+    {
+        description.assign(text.c_str(), split);
+        if (split < text.size() - 1)
+            binding.assign(text.c_str() + split + 1);
+    }
+    else
+        description.assign(text, 0, std::wstring::npos);
+
+    SBFontUnk0061e840 *font;
+    if (flags & 0x2000)
+    {
+        switch (flags & 0xf0)
+        {
+        case 0x10: font = m_5c; break;
+        case 0x20: font = m_60; break;
+        default: font = m_58; break;
+        }
+    }
+    else
+    {
+        switch (flags & 0xf0)
+        {
+        case 0x10: font = m_50; break;
+        case 0x20: font = m_54; break;
+        default: font = m_4c; break;
+        }
+    }
+    // STRING: GAME 0x006b8c9c
+    description.append(L" : ");
+    drawer.FUN_00614230(font, description, descriptionBox, 1, 0, true);
+    drawer.FUN_00614230(font, binding, bindingBox, 2, 0, true);
+    ++m_7e;
+    return m_position.FUN_006084a0(FUN_0061d3f0(m_7e, flags));
+}
+
+void RHPortraitInputWidget::AttachWidget(unsigned int surface)
+{
+    m_renderer.FUN_0060d530(surface);
+}
+
+void RHPortraitInputWidget::ReleaseWidget()
+{
+    m_renderer.FUN_0060d520();
 }
 
 void EmitRHPortraitListItem(RHPortraitUnk005cf570 &widget, const std::wstring &text, std::wstring value, unsigned long index)
@@ -1696,7 +1921,7 @@ RHPortraitWidgetEvent *RHPortraitButtonStrategy::FUN_005d1de0()
     RHPortraitWidgetEvent *event = 0;
     if (*((char *)this - 0xd4))
     {
-        RHGameWidgetAnimatedCalls *animated = (RHGameWidgetAnimatedCalls *)((char *)this + 4);
+        RHPortraitAnimated *animated = (RHPortraitAnimated *)((char *)this + 4);
         *(void **)((char *)this - 0x88) = (char *)this - 0xd8;
         event = (RHPortraitWidgetEvent *)((char *)this - 0x8c);
         event->type = 2;
@@ -1780,7 +2005,7 @@ RHPortraitWidgetEvent *RHPortraitButton::FUN_005d2000(const RHPortraitWidgetInpu
         case 2: event = FUN_005d22c0(input); break;
         }
     }
-    ((RHGameWidgetAnimatedCalls *)((char *)this + 0xdc))->FUN_005d5790(event, RHPortraitButtonBase::m_state, 0);
+    ((RHPortraitAnimated *)((char *)this + 0xdc))->FUN_005d5790(event, RHPortraitButtonBase::m_state, 0);
     return event;
 }
 
@@ -1795,58 +2020,54 @@ RHPortraitWidgetEvent *RHPortraitButton::FUN_005d2090(const RHPortraitWidgetInpu
     return 0;
 }
 
-// Parked: The zero value is hoisted across point cleanup rather than created in the event arm.
-// STUB: GAME 0x005d2120
+// FUNCTION: GAME 0x005d2120
 RHPortraitWidgetEvent *RHPortraitButton::FUN_005d2120(const RHPortraitWidgetInput &input)
 {
+    RHPortraitWidgetEvent *result = 0;
     SBGeoBoundingBox2D &box = Box();
     if (box.FUN_006083b0(input.point) &&
-        ((RHGameWidgetRendererCalls *)((char *)this + 0x80))->FUN_0060d890(input.point.Unk005fc110(*(SBGeoPoint2D *)&box)))
+        m_renderer.FUN_0060d890(input.point.Unk005fc110(box.m_first)))
     {
         if (input.flags & 0x40)
         {
             RHPortraitButtonBase::m_state = 3;
-            input.ui->m_selected = (RHPortraitUnk005d3880 *)this;
-            return 0;
+            input.ui->m_selected = this;
         }
-        RHPortraitWidgetEvent *event = &Event();
-        *(void **)((char *)this + 0x50) = this;
-        *(int *)((char *)this + 0x54) = 0;
-        *(int *)((char *)this + 0x58) = 0;
-        event->type = 0;
-        return event;
+        else
+        {
+            result = &Event();
+            m_event.widget = this;
+            m_event.value = 0;
+            m_event.next = 0;
+            result->type = 0;
+        }
     }
-    RHPortraitButtonBase::m_state = 0;
-    return 0;
+    else
+        RHPortraitButtonBase::m_state = 0;
+    return result;
 }
 
-// Parked: Event and capture-zero liveness changes the point temporary registers and EH offsets.
-// STUB: GAME 0x005d21f0
+// FUNCTION: GAME 0x005d21f0
 RHPortraitWidgetEvent *RHPortraitButton::FUN_005d21f0(const RHPortraitWidgetInput &input)
 {
-    RHPortraitWidgetEvent *result;
+    RHPortraitWidgetEvent *result = 0;
     SBGeoBoundingBox2D &box = Box();
     if (box.FUN_006083b0(input.point) &&
-        ((RHGameWidgetRendererCalls *)((char *)this + 0x80))->FUN_0060d890(input.point.Unk005fc110(*(SBGeoPoint2D *)&box)))
+        m_renderer.FUN_0060d890(input.point.Unk005fc110(box.m_first)))
     {
-        if (input.flags & 9)
+        if ((input.flags & 1) || (input.flags & 8))
         {
             input.ui->Clear();
             RHPortraitButtonBase::m_state = 1;
             result = &Event();
-            *(void **)((char *)this + 0x50) = this;
-            *(int *)((char *)this + 0x54) = 0;
-            *(int *)((char *)this + 0x58) = 0;
+            m_event.widget = this;
+            m_event.value = 0;
+            m_event.next = 0;
             result->type = 2;
         }
-        else
-            result = 0;
     }
     else
-    {
         RHPortraitButtonBase::m_state = 2;
-        result = 0;
-    }
     return result;
 }
 
@@ -1880,7 +2101,7 @@ RHPortraitWidgetEvent *RHPortraitButtonStrategy::FUN_005d2370(bool value)
             *(int *)((char *)this - 0x84) = 0;
             *(int *)((char *)this - 0x80) = 0;
         }
-        ((RHGameWidgetAnimatedCalls *)((char *)this + 4))->FUN_005d5790(event, *(int *)((char *)this + 0x20), 0);
+        ((RHPortraitAnimated *)((char *)this + 4))->FUN_005d5790(event, *(int *)((char *)this + 0x20), 0);
     }
     return event;
 }
@@ -1938,73 +2159,7 @@ void *RHPortraitButtonBase::FUN_005d24f0(unsigned flags)
 }
 #pragma inline_depth()
 
-// VTABLE: GAME 0x0067a158
-class RHPortraitTextWidgetBase : public RHGameWidgetLifetimeBase
-{
-public:
-    RHPortraitTextWidgetBase() {}
-    ~RHPortraitTextWidgetBase() {}
-    void *FUN_005d3390(unsigned flags);
-    void FUN_005d2ee0(const SBGeoBoundingBox2D &box);
-    void FUN_005d2f10(const SBGeoPoint2D &point);
-    void FUN_005d2ec0();
-    RHPortraitRenderer006212d0 m_renderer;
-};
-
-// VTABLE: GAME 0x0067a120
-class RHPortraitTextWidget : public RHPortraitTextWidgetBase
-{
-public:
-    RHPortraitTextWidget() : m_linked(0)
-    {
-        m_state = 0;
-        m_indices[0] = 0;
-        m_indices[1] = 0;
-        m_caretFlags[0] = 0;
-        m_caretFlags[1] = 0;
-        m_positions[0] = 0;
-        m_positions[1] = 0;
-    }
-    ~RHPortraitTextWidget();
-    void *FUN_005d33b0(unsigned flags);
-    int FUN_005d2fa0();
-    void FUN_005d3360();
-    RHPortraitBoxEvent *FUN_005d3290(unsigned value);
-    void FUN_005d2cf0(const std::wstring &text);
-    RHPortraitWidgetEvent *FUN_005d3090(const RHPortraitWidgetInput &input);
-    RHPortraitWidgetEvent *FUN_005d33d0(const RHPortraitWidgetInput &input);
-    RHPortraitWidgetEvent &Event() { return *(RHPortraitWidgetEvent *)((char *)this + 0x4c); }
-    RHPortraitText0061db10 m_text;
-    RHPortraitTextWidget *m_linked;
-    undefined m_15c[0x10];
-    int m_indices[2];
-    char m_caretFlags[2];
-    undefined m_176[2];
-    unsigned m_positions[2];
-};
-
-struct __declspec(novtable) RHPortraitEditableStrategy
-{
-    RHPortraitEditableStrategy()
-    {
-        ((RHUnk005cca80 *)this)->RHUnk005cca80::RHUnk005cca80();
-    }
-    virtual RHPortraitTextWidget *FUN_005d2ca0();
-    virtual RHPortraitWidgetEvent *FUN_005d2cb0(bool active);
-    RHPortraitUIOwner *m_owner;
-};
-
-// VTABLE: GAME 0x0067a0e0 RHPortraitTextWidget
-// VTABLE: GAME 0x0067a118 RHPortraitEditableStrategy
-class RHPortraitEditableWidget : public RHPortraitTextWidget, public RHPortraitAnimated, public RHPortraitEditableStrategy
-{
-public:
-    RHPortraitEditableWidget();
-    ~RHPortraitEditableWidget();
-    void *FUN_005d26f0(unsigned flags);
-    bool FUN_005d2810(const SBGeoPoint2D &point, RHPortraitTextResourceCalls *resources);
-    RHPortraitWidgetEvent *FUN_005d2a70(const RHPortraitWidgetInput &input);
-};
+#include "RHPortraitTextWidget.h"
 
 DECOMP_SIZE_ASSERT(RHPortraitTextWidgetBase, 0x110)
 DECOMP_SIZE_ASSERT(RHPortraitTextWidget, 0x180)
@@ -2065,7 +2220,7 @@ bool RHPortraitEditableWidget::FUN_005d2810(const SBGeoPoint2D &point, RHPortrai
 
 // Parked: Animated text-state switch and linked-widget cleanup need codegen alignment.
 // STUB: GAME 0x005d2a70
-RHPortraitWidgetEvent *RHPortraitEditableWidget::FUN_005d2a70(const RHPortraitWidgetInput &input)
+RHPortraitWidgetEvent *RHPortraitEditableWidget::HandleWidget(const RHPortraitWidgetInput &input)
 {
     RHPortraitWidgetEvent *result = 0;
     RHPortraitWidgetEvent &event = *(RHPortraitWidgetEvent *)((char *)this + 0x4c);
@@ -2128,7 +2283,7 @@ RHPortraitWidgetEvent *RHPortraitEditableWidget::FUN_005d2a70(const RHPortraitWi
                                 linked->m_state = 0;
                             }
                             if (linked->m_linked)
-                                ((RHPortraitTextLinkedCalls *)linked->m_linked)->FUN_0053f9f0(this);
+                                linked->m_linked->FUN_0053f9f0(this);
                         }
                     }
                 }
@@ -2155,7 +2310,7 @@ RHPortraitWidgetEvent *RHPortraitEditableWidget::FUN_005d2a70(const RHPortraitWi
             break;
         }
     }
-    ((RHGameWidgetAnimatedCalls *)((char *)this + 0x188))->FUN_005d5790(result, RHPortraitTextWidgetBase::m_state, 0);
+    ((RHPortraitAnimated *)((char *)this + 0x188))->FUN_005d5790(result, RHPortraitTextWidgetBase::m_state, 0);
     if (m_owner && RHPortraitTextWidgetBase::m_state != 13)
     {
         m_owner->FUN_00500790(true);
@@ -2220,7 +2375,7 @@ void RHPortraitTextWidgetBase::FUN_005d2ee0(const SBGeoBoundingBox2D &box)
 // FUNCTION: GAME 0x005d2f10
 void RHPortraitTextWidgetBase::FUN_005d2f10(const SBGeoPoint2D &point)
 {
-    ((RHGameWidgetBaseCalls *)this)->FUN_0060d290(point);
+    ((RHGameWidgetLifetimeBase *)this)->FUN_0060d290(point);
     SBGeoBoundingBox2D copy(point);
     ((RHPortraitRendererDispatch *)&m_renderer)->v3(copy);
 }
@@ -2252,105 +2407,121 @@ inline RHPortraitTextWidget::~RHPortraitTextWidget()
 {
 }
 
-// Parked: Text-state switch registers and linked-widget return tails need alignment.
-// STUB: GAME 0x005d3090
-RHPortraitWidgetEvent *RHPortraitTextWidget::FUN_005d3090(const RHPortraitWidgetInput &input)
+inline RHPortraitWidgetEvent *RHPortraitTextWidget::OnIdle(const RHPortraitWidgetInput &input)
 {
-    RHPortraitWidgetEvent *result;
+    RHPortraitWidgetEvent *result = 0;
+    if ((unsigned char)((RHPortraitUnk005d3880 *)this)->FUN_005d3880(input.point) && !(input.flags & 0x40))
+    {
+        RHPortraitWidgetEvent *event = &Event();
+        m_state = 1;
+        m_event.widget = this;
+        m_event.value = 0;
+        event->type = 0;
+        m_event.next = 0;
+        result = event;
+    }
+    return result;
+}
+
+inline RHPortraitWidgetEvent *RHPortraitTextWidget::OnHover(const RHPortraitWidgetInput &input)
+{
+    if ((unsigned char)((RHPortraitUnk005d3880 *)this)->FUN_005d3880(input.point))
+    {
+        if (input.flags & 0x40)
+        {
+            m_state = 4;
+            input.ui->m_selected = this;
+        }
+    }
+    else if (!(input.flags & 0x40))
+    {
+        m_state = 0;
+        input.ui->Clear();
+    }
+    return 0;
+}
+
+inline RHPortraitWidgetEvent *RHPortraitTextWidget::OnPressed(const RHPortraitWidgetInput &input)
+{
+    RHPortraitWidgetEvent *result = 0;
+    if ((unsigned char)((RHPortraitUnk005d3880 *)this)->FUN_005d3880(input.point))
+    {
+        if (input.flags & 1)
+        {
+            if (!m_linked)
+            {
+                m_state = 13;
+                ((SBUIInputFieldUnk00621440 *)&m_text)->FUN_0061e340();
+                ((SBUIInputFieldTextUnk *)&m_text)->FUN_0061e320(1);
+                RHPortraitWidgetEvent *event = &Event();
+                m_event.next = 0;
+                m_event.widget = this;
+                m_event.value = 0;
+                event->type = 8;
+                result = event;
+            }
+            else
+            {
+                m_state = 2;
+                input.ui->Clear();
+                RHPortraitTextWidget *linked = m_linked;
+                if (this != linked)
+                {
+                    if (linked->m_state == 2 || linked->m_state == 13)
+                    {
+                        ((SBUIInputFieldTextUnk *)&linked->m_text)->FUN_0061e320(0);
+                        linked->m_state = 0;
+                    }
+                    if (linked->m_linked)
+                        linked->m_linked->FUN_0053f9f0(this);
+                }
+            }
+        }
+    }
+    else
+    {
+        m_state = 1;
+        if (input.flags & 1)
+            input.ui->Clear();
+    }
+    return result;
+}
+
+inline RHPortraitWidgetEvent *RHPortraitTextWidget::OnSelected(const RHPortraitWidgetInput &input)
+{
+    RHPortraitWidgetEvent *result = 0;
+    if ((unsigned char)((RHPortraitUnk005d3880 *)this)->FUN_005d3880(input.point) && (input.flags & 8))
+    {
+        RHPortraitWidgetEvent *event = &Event();
+        m_event.next = 0;
+        m_event.widget = this;
+        m_event.value = 0;
+        event->type = 3;
+        result = event;
+    }
+    return result;
+}
+
+// FUNCTION: GAME 0x005d3090
+RHPortraitWidgetEvent *RHPortraitTextWidget::HandleWidget(const RHPortraitWidgetInput &input)
+{
     if (*((char *)this + 4))
     {
         switch (m_state)
         {
         case 0:
-            result = 0;
-            if ((unsigned char)((RHPortraitUnk005d3880 *)this)->FUN_005d3880(input.point) && !(input.flags & 0x40))
-            {
-                result = &Event();
-                m_state = 1;
-                Event().widget = this;
-                Event().value = 0;
-                result->type = 0;
-                Event().next = 0;
-            }
-            break;
+            return OnIdle(input);
         case 1:
-            result = 0;
-            if ((unsigned char)((RHPortraitUnk005d3880 *)this)->FUN_005d3880(input.point))
-            {
-                if (input.flags & 0x40)
-                {
-                    m_state = 4;
-                    input.ui->m_selected = (RHPortraitUnk005d3880 *)this;
-                }
-            }
-            else if (!(input.flags & 0x40))
-            {
-                m_state = 0;
-                input.ui->Clear();
-            }
-            break;
+            return OnHover(input);
         case 4:
-            result = 0;
-            if ((unsigned char)((RHPortraitUnk005d3880 *)this)->FUN_005d3880(input.point))
-            {
-                if (input.flags & 1)
-                {
-                    if (!m_linked)
-                    {
-                        m_state = 13;
-                        ((SBUIInputFieldUnk00621440 *)&m_text)->FUN_0061e340();
-                        ((SBUIInputFieldTextUnk *)&m_text)->FUN_0061e320(1);
-                        result = &Event();
-                        Event().next = 0;
-                        Event().widget = this;
-                        Event().value = 0;
-                        result->type = 8;
-                    }
-                    else
-                    {
-                        m_state = 2;
-                        input.ui->Clear();
-                        RHPortraitTextWidget *linked = m_linked;
-                        if (linked != this)
-                        {
-                            if (linked->m_state == 2 || linked->m_state == 13)
-                            {
-                                ((SBUIInputFieldTextUnk *)&linked->m_text)->FUN_0061e320(0);
-                                linked->m_state = 0;
-                            }
-                            if (linked->m_linked)
-                                ((RHPortraitTextLinkedCalls *)linked->m_linked)->FUN_0053f9f0(this);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                m_state = 1;
-                if (input.flags & 1)
-                    input.ui->Clear();
-            }
-            break;
+            return OnPressed(input);
         case 2:
-            result = 0;
-            if ((unsigned char)((RHPortraitUnk005d3880 *)this)->FUN_005d3880(input.point) && (input.flags & 8))
-            {
-                result = &Event();
-                Event().next = 0;
-                Event().widget = this;
-                Event().value = 0;
-                result->type = 3;
-            }
-            break;
+            return OnSelected(input);
         case 13:
             return FUN_005d33d0(input);
-        default:
-            result = 0;
         }
     }
-    else
-        result = 0;
-    return result;
+    return 0;
 }
 
 // Parked: The cached branch exchanges the event pointer and shared vtable registers.
@@ -2717,7 +2888,7 @@ RHPortraitWidgetEvent *RHPortraitUnk005d3fe0::FUN_005d3ef0(const RHPortraitWidge
     case 2: event = FUN_005d46e0(input); break;
     default: event = 0; break;
     }
-    ((RHGameWidgetAnimatedCalls *)((char *)this + 0xb0))->FUN_005d5790(event, m_state, 0);
+    ((RHPortraitAnimated *)((char *)this + 0xb0))->FUN_005d5790(event, m_state, 0);
     return event;
 }
 
@@ -2810,7 +2981,7 @@ void RHPortraitUnk005d3fe0::FUN_005d4280(const SBGeoPoint2D &point)
         position.FUN_005fc1e0(displacement);
         m_widgets[i].v8(position);
     }
-    ((RHMobileUnk006091b0 *)&m_box)->FUN_006091b0(displacement);
+    m_box.Translate(displacement);
 }
 
 // FUNCTION: GAME 0x005d4360
@@ -2818,7 +2989,7 @@ void RHPortraitUnk005d3fe0::FUN_005d4360(const SBGeoPoint2D &point)
 {
     SBGeoBoundingBox2D box(m_box);
     SBGeoVector2D displacement = point.Unk005fc110(m_box.m_first);
-    ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(displacement);
+    box.Translate(displacement);
     ((RHPortraitWidgetStrategy *)this)->v7(box);
 }
 
@@ -3036,7 +3207,7 @@ RHPortraitWidgetEvent *RHPortraitUnk005d3880::FUN_005d4cb0(const RHPortraitWidge
     case 10: event = widget->v27(input); break;
     default: event = 0; break;
     }
-    ((RHGameWidgetAnimatedCalls *)((char *)this + 0xe0))->FUN_005d5790(event, m_state, 0);
+    ((RHPortraitAnimated *)((char *)this + 0xe0))->FUN_005d5790(event, m_state, 0);
     return event;
 }
 
@@ -3066,11 +3237,10 @@ int RHPortraitUnk005d3880::FUN_005d4db0(const SBGeoPoint2D &point)
     return false;
 }
 
-// Parked: Retaining the UI receiver exchanges this/input registers; direct access reloads the receiver.
-// STUB: GAME 0x005d4e50
+// FUNCTION: GAME 0x005d4e50
 RHPortraitWidgetEvent *RHPortraitUnk005d3880::FUN_005d4e50(const RHPortraitWidgetInput &input)
 {
-    if ((char)FUN_005d4db0(*(SBGeoPoint2D *)&input))
+    if ((char)FUN_005d4db0(input.point))
     {
         if (input.flags & 0x40)
         {
@@ -3085,11 +3255,8 @@ RHPortraitWidgetEvent *RHPortraitUnk005d3880::FUN_005d4e50(const RHPortraitWidge
             m_state = 6;
             m_selected = 0;
         }
-        if (input.flags & 9)
-        {
-            input.ui->m_selected = 0;
-            input.ui->m_captured = 0;
-        }
+        if ((input.flags & 1) || (input.flags & 8))
+            input.ui->Clear();
     }
     return 0;
 }
@@ -3138,22 +3305,18 @@ RHPortraitWidgetEvent *RHPortraitUnk005d3880::FUN_005d4f30(const RHPortraitWidge
     return event;
 }
 
-// Parked: Input-flag scheduling and the UI receiver register remain different.
-// STUB: GAME 0x005d4f80
+// FUNCTION: GAME 0x005d4f80
 RHPortraitWidgetEvent *RHPortraitUnk005d3880::FUN_005d4f80(const RHPortraitWidgetInput &input)
 {
-    if (!(char)FUN_005d4db0(*(SBGeoPoint2D *)&input))
+    if (!(char)FUN_005d4db0(input.point))
     {
-        unsigned char flags = (unsigned char)input.flags;
-        if (!(flags & 0x40))
+        if (!(input.flags & 0x40))
         {
             m_state = 9;
             m_selected = 1;
         }
-        if (input.flags & 9)
-        {
+        if ((input.flags & 1) || (input.flags & 8))
             input.ui->Clear();
-        }
     }
     else if (input.flags & 0x40)
     {
@@ -3476,9 +3639,9 @@ inline SBResourceUnkKeyIterator RHPortraitFind(RHUnk00514e10 &map, const RHPortr
 
 // Parked: the event and found-node registers are swapped (esi/ebp).
 // STUB: GAME 0x005d5790
-void RHGameWidgetAnimatedCalls::FUN_005d5790(void *event, int state, bool option)
+void RHPortraitAnimated::FUN_005d5790(void *event, int state, bool option)
 {
-    RHPortraitAnimated *animated = (RHPortraitAnimated *)this;
+    RHPortraitAnimated *animated = this;
     if (animated->m_state != state || option == true) {
         animated->m_state = state;
         animated->m_handled = 0;
@@ -3718,55 +3881,13 @@ void EmitPortraitWidgetBatch99(RHPortraitUnk005d3880 *widget, RHPortraitUnk005d3
     ((RHPortraitFullLifetime *)widget)->FUN_005d61e0(0);
 }
 
-class RHPortraitBitmapWidget
-{
-public:
-    virtual void Unk00();
-    virtual void Unk04();
-    virtual void Unk08();
-    virtual void Unk0c();
-    virtual void Unk10();
-    virtual void Unk14();
-    virtual void Unk18();
-    virtual void Unk1c();
-    virtual void Unk20();
-    virtual void Unk24();
-    virtual void Unk28();
-    virtual void Unk2c();
-    virtual bool Create(const std::wstring &text, const RHMapBox &box, unsigned long flags, long id);
-    void SetScrollFirst(int value)
-    {
-        *(int *)((char *)this + 0xd4) = value;
-    }
-    void SetScrollSecond(int value)
-    {
-        *(int *)((char *)this + 0xd8) = value;
-    }
-    void SetQuickActionFirst(int value)
-    {
-        *(int *)((char *)this + 0xdc) = value;
-    }
-    void SetQuickActionSecond(int value)
-    {
-        *(int *)((char *)this + 0xe0) = value;
-    }
-    void SetQuickActionThird(int value)
-    {
-        *(int *)((char *)this + 0xe8) = value;
-    }
-    void SetQuickActionFourth(int value)
-    {
-        *(int *)((char *)this + 0xe4) = value;
-    }
-};
-
 // FUNCTION: GAME 0x005cf390
-bool RHPortraitBitmapWidget::Create(const std::wstring &text, const RHMapBox &box, unsigned long flags, long id)
+bool RHGameWidgetLifetimeBase::Create(const std::wstring &text, const RHMapBox &box, unsigned long flags, long id)
 {
     long resource = id;
     if (resource == 0)
         resource = -1;
-    ((RHGameWidgetLifetimeBase *)this)->Create(text, box, flags);
+    RHGameWidgetLifetimeBase::Create(text, box, flags);
     ((RHPortraitRenderer0060d470 *)((char *)this + 0x80))->FUN_0060d6a0(box);
     RHPortraitRenderer0060d470 &renderer = *(RHPortraitRenderer0060d470 *)((char *)this + 0x80);
     ((SBUIUnk0060d530 *)&renderer)->FUN_0060d550(resource);
@@ -3778,9 +3899,121 @@ bool RHPortraitBitmapWidget::Create(const std::wstring &text, const RHMapBox &bo
     return true;
 }
 
+RHPortraitRenderer0060d470 &RHGameWidgetLifetimeBase::BitmapRenderer()
+{
+    return *reinterpret_cast<RHPortraitRenderer0060d470 *>(reinterpret_cast<char *>(this) + 0x80);
+}
+
+SBGeoBoundingBox2D &RHGameWidgetLifetimeBase::WidgetBounds()
+{
+    return *reinterpret_cast<SBGeoBoundingBox2D *>(&m_30);
+}
+
+void RHGameWidgetLifetimeBase::AttachWidget(unsigned int display)
+{
+    BitmapRenderer().FUN_0060d530(display);
+}
+
+void RHGameWidgetLifetimeBase::ReleaseWidget()
+{
+    BitmapRenderer().FUN_0060d520();
+}
+
+void RHGameWidgetLifetimeBase::DrawWidget()
+{
+    BitmapRenderer().FUN_0060da20(WidgetState());
+}
+
+void RHGameWidgetLifetimeBase::ResetWidget()
+{
+    BitmapRenderer().m_surfaces[0] = -1;
+    BitmapRenderer().m_surfaces[1] = -1;
+}
+
+extern "C" int __cdecl _purecall();
+
+RHPortraitWidgetEvent *RHGameWidgetLifetimeBase::HandleWidget(const RHPortraitWidgetInput &)
+{
+    _purecall();
+    return 0;
+}
+
+void RHGameWidgetLifetimeBase::SetWidgetBounds(const SBGeoBoundingBox2D &box)
+{
+    BitmapRenderer().FUN_0060d6a0(box);
+    WidgetBounds() = *BitmapRenderer().FUN_0060d690();
+}
+
+void RHGameWidgetLifetimeBase::SetWidgetPosition(const SBGeoPoint2D &position)
+{
+    FUN_0060d290(position);
+    BitmapRenderer().FUN_0060d780(position);
+}
+
+int RHGameWidgetLifetimeBase::WidgetState()
+{
+    return 255;
+}
+
+void RHGameWidgetLifetimeBase::SetWidgetResource(long id)
+{
+    BitmapRenderer().FUN_0060d550(id);
+    WidgetBounds() = *BitmapRenderer().FUN_0060d690();
+}
+
+void RHGameWidgetLifetimeBase::SetWidgetText(const std::wstring &text)
+{
+    m_10 = text;
+    BitmapRenderer().AssignName(text);
+}
+
+unsigned RHGameWidgetLifetimeBase::SelectWidgetResource(unsigned id)
+{
+    RHPortraitRenderer0060d470 &renderer = BitmapRenderer();
+    unsigned previous = renderer.m_surfaces[renderer.m_48 & 1];
+    unsigned current = id == 255 ? 0 : renderer.FUN_0060d500(id);
+    if (current == (unsigned)-1)
+        return 3;
+    if (previous != current)
+        return current == 0 ? 2 : 1;
+    return 0;
+}
+
+unsigned long *RHGameWidgetLifetimeBase::MakeWidgetFrame(unsigned index)
+{
+    RHPortraitRenderer0060d470 &renderer = BitmapRenderer();
+    renderer.m_48 = index;
+    *reinterpret_cast<SBGeoBoundingBox2D *>(&m_60) = *renderer.FUN_0060d690();
+    m_5c = SelectWidgetResource(WidgetState());
+    m_78 = 0;
+    m_74 = reinterpret_cast<unsigned long>(this);
+    return &m_5c;
+}
+
+unsigned long *RHGameWidgetLifetimeBase::UpdateWidget(unsigned index)
+{
+    return MakeWidgetFrame(index);
+}
+
+bool RHGameWidgetLifetimeBase::ContainsWidgetPoint(const SBGeoPoint2D &point)
+{
+    SBGeoBoundingBox2D &box = WidgetBounds();
+    return box.FUN_006083b0(point) &&
+        ((RHGameWidgetRendererCalls *)&BitmapRenderer())->FUN_0060d890(point.Unk005fc110(box.m_first));
+}
+
+RHPortraitWidgetEvent *RHGameWidgetLifetimeBase::MakeWidgetEvent(int type)
+{
+    m_event.next = 0;
+    m_event.widget = this;
+    m_event.type = type;
+    m_event.value = 0;
+    return &m_event;
+}
+
 void EmitRHPortraitBitmapCreate(RHPortraitBitmapWidget &widget, const std::wstring &text, const RHMapBox &box)
 {
-    widget.RHPortraitBitmapWidget::Create(text, box, 0, 0);
+    widget.RHGameWidgetLifetimeBase::Create(text, box, 0, 0);
 }
 
 inline void RHWidgetPortrait::SetScrollState(long value)
@@ -5739,7 +5972,7 @@ std::wstring FUN_005e23d0(unsigned long id);
 // FUNCTION: GAME 0x005db7e0
 RHUnk005db7e0::~RHUnk005db7e0()
 {
-    std::vector<RHUnk005db7e0Entry>::iterator entry;
+    std::vector<RHPortraitQuickEntry>::iterator entry;
     for (entry = m_entries.begin(); entry != m_entries.end(); ++entry)
     {
         FUN_005df300((RHUnk005d92c0Sub *)&entry->m_08);
@@ -5752,12 +5985,10 @@ RHUnk005db7e0::~RHUnk005db7e0()
 }
 
 DECOMP_SIZE_ASSERT(RHUnk005db7e0, 0xc0)
-DECOMP_SIZE_ASSERT(RHUnk005db7e0Entry, 0x278)
-DECOMP_SIZE_ASSERT(RHUnk005db7e0Slot, 0xd0)
+DECOMP_SIZE_ASSERT(RHGameLifetime0044fe90, 0xd0)
+DECOMP_STATIC_ASSERT(offsetof(RHGameLifetime0044fe90, m_cc) == 0xcc)
 DECOMP_STATIC_ASSERT(offsetof(RHUnk005db7e0, m_entries) == 0xb0)
-DECOMP_STATIC_ASSERT(offsetof(RHUnk005db7e0Entry, m_08) == 0x08)
-DECOMP_STATIC_ASSERT(offsetof(RHUnk005db7e0Entry, m_d8) == 0xd8)
-DECOMP_STATIC_ASSERT(offsetof(RHUnk005db7e0Entry, m_1a8) == 0x1a8)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitQuickEntry, m_1a8) == 0x1a8)
 
 // STUB: GAME 0x005db920
 bool RHUnk005db7e0::FUN_005db920(RHMission *mission)
@@ -5765,106 +5996,116 @@ bool RHUnk005db7e0::FUN_005db920(RHMission *mission)
     if (mission == 0)
         return true;
 
-    RHMissionProfile *profile = mission->m_profile;
-
-    RHMapWideText title;
-    unsigned length = wcslen(L"Requirements");
-    if (title.Grow(length, true))
     {
-        wmemcpy(title.m_chars, L"Requirements", length);
-        title.End(length);
+        std::wstring title(L"Requirements");
+        RHPortraitRootLifetime::FUN_0061a1e0(title, RHMapBox(0.0f, 0.0f, 0.0f, 0.0f), 0);
     }
-    SBGeoBoundingBox2D bounds(0.0f, 0.0f, 0.0f, 0.0f);
-    FUN_0061a1e0((const RHMapTitleText &)title, bounds, 0);
-
+    RHMissionProfile *profile = mission->m_profile;
     std::vector<RHaction> actions = RHWidgetRequirements::PurifyActions(
         *(const std::vector<RHaction> *)&profile->m_84);
     unsigned characters = profile->m_74.GetSize();
-    unsigned count = *(unsigned short *)(profile->m_38 + 0x3a);
-    m_entries.resize(count + actions.size());
+    unsigned actionCount = actions.size();
+    unsigned optional = *(unsigned short *)(profile->m_38 + 0x3a) - characters;
+    m_entries.resize(optional + actionCount + characters);
 
+    RHPortraitQuickEntry *cursor = m_entries.begin();
     unsigned index = 0;
     unsigned i;
-    for (i = 0; i < characters; ++i, ++index)
+    for (i = 0; i < characters; ++i, ++index, ++cursor)
     {
-        RHUnk005db7e0Entry &entry = m_entries[index];
+        RHPortraitQuickEntry &entry = *cursor;
         float left = (float)(index * 50 + 5);
         entry.m_00 = 0;
         entry.m_04 = (int)profile->m_74.m_first[i];
 
-        std::wstring label(L"Required character");
-        SBGeoBoundingBox2D labelBox(SBGeoPoint2D(left, 5.0f));
-        ((RHMapWidget *)&entry.m_08)->V30(label, labelBox, 0, 0xf2);
-        std::wstring state(L"Yes or No");
-        SBGeoBoundingBox2D stateBox(SBGeoPoint2D(left, 5.0f));
-        ((RHMapWidget *)&entry.m_d8)->V30(state, stateBox, 0, 0x8e);
-        std::wstring selected(L"Selected");
-        SBGeoBoundingBox2D selectedBox(SBGeoPoint2D(left, 5.0f));
-        ((RHMapWidget *)&entry.m_1a8)->V30(selected, selectedBox, 0, 0x114);
+        {
+            std::wstring label(L"Required character");
+            ((RHMapWidget *)&entry.m_08)->V30(label, SBGeoBoundingBox2D(SBGeoPoint2D(left, 5.0f)), 0, 0xf2);
+        }
+        {
+            std::wstring state(L"Yes or No");
+            ((RHMapWidget *)&entry.m_d8)->V30(state, SBGeoBoundingBox2D(SBGeoPoint2D(left, 5.0f)), 0, 0x8e);
+        }
+        {
+            std::wstring selected(L"Selected");
+            ((RHMapWidget *)&entry.m_1a8)->V30(selected, SBGeoBoundingBox2D(SBGeoPoint2D(left, 5.0f)), 0, 0x114);
+        }
 
         const std::string &character = *(const std::string *)((char *)entry.m_04 + 0x14);
         ((RHMapWidget *)&entry.m_08)->V38(FUN_005dcbb0(character));
         ((RHMapWidget *)&entry.m_d8)->V38(1);
         entry.m_1a8.m_04 = false;
-        std::wstring name = FUN_005e23d0(0x12d);
-        entry.m_08.m_widget.m_08 = true;
-        entry.m_08.m_widget.m_20.assign(name, 0, std::wstring::npos);
-        FUN_005df300((RHUnk005d92c0Sub *)&entry.m_08);
-        FUN_005df300((RHUnk005d92c0Sub *)&entry.m_d8);
-        FUN_005df300((RHUnk005d92c0Sub *)&entry.m_1a8);
+        {
+            std::wstring name = FUN_005e23d0(0x12d);
+            entry.m_08.m_08 = true;
+            entry.m_08.m_20.assign(name, 0, std::wstring::npos);
+        }
+        FUN_0061a800(&entry.m_08);
+        FUN_0061a800(&entry.m_d8);
+        FUN_0061a800(&entry.m_1a8);
     }
 
-    for (i = 0; i < actions.size(); ++i, ++index)
+    for (i = 0; i < actionCount; ++i, ++index, ++cursor)
     {
-        RHUnk005db7e0Entry &entry = m_entries[index];
+        RHPortraitQuickEntry &entry = *cursor;
         float left = (float)(index * 50 + 5);
         entry.m_00 = (int)actions[i];
         entry.m_04 = 0;
 
-        std::wstring label(L"Required action");
-        SBGeoBoundingBox2D labelBox(SBGeoPoint2D(left, 5.0f));
-        ((RHMapWidget *)&entry.m_08)->V30(label, labelBox, 0, 0xf3);
-        std::wstring state(L"Yes or No");
-        SBGeoBoundingBox2D stateBox(SBGeoPoint2D(left, 5.0f));
-        ((RHMapWidget *)&entry.m_d8)->V30(state, stateBox, 0, 0x8e);
-        std::wstring selected(L"Selected");
-        SBGeoBoundingBox2D selectedBox(SBGeoPoint2D(left, 5.0f));
-        ((RHMapWidget *)&entry.m_1a8)->V30(selected, selectedBox, 0, 0x114);
+        {
+            std::wstring label(L"Required action");
+            ((RHMapWidget *)&entry.m_08)->V30(label, SBGeoBoundingBox2D(SBGeoPoint2D(left, 5.0f)), 0, 0xf3);
+        }
+        {
+            std::wstring state(L"Yes or No");
+            ((RHMapWidget *)&entry.m_d8)->V30(state, SBGeoBoundingBox2D(SBGeoPoint2D(left, 5.0f)), 0, 0x8e);
+        }
+        {
+            std::wstring selected(L"Selected");
+            ((RHMapWidget *)&entry.m_1a8)->V30(selected, SBGeoBoundingBox2D(SBGeoPoint2D(left, 5.0f)), 0, 0x114);
+        }
 
         ((RHMapWidget *)&entry.m_08)->V38(FUN_005dcb10(entry.m_00));
         ((RHMapWidget *)&entry.m_d8)->V38(1);
         entry.m_1a8.m_04 = false;
-        std::wstring name = FUN_005e23d0(0x12e);
-        entry.m_08.m_widget.m_08 = true;
-        entry.m_08.m_widget.m_20.assign(name, 0, std::wstring::npos);
-        FUN_005df300((RHUnk005d92c0Sub *)&entry.m_08);
-        FUN_005df300((RHUnk005d92c0Sub *)&entry.m_d8);
-        FUN_005df300((RHUnk005d92c0Sub *)&entry.m_1a8);
+        {
+            std::wstring name = FUN_005e23d0(0x12e);
+            entry.m_08.m_08 = true;
+            entry.m_08.m_20.assign(name, 0, std::wstring::npos);
+        }
+        FUN_0061a800(&entry.m_08);
+        FUN_0061a800(&entry.m_d8);
+        FUN_0061a800(&entry.m_1a8);
     }
 
-    for (i = 0; i < count - characters; ++i, ++index)
+    for (i = 0; i < optional; ++i, ++index, ++cursor)
     {
-        RHUnk005db7e0Entry &entry = m_entries[index];
+        RHPortraitQuickEntry &entry = *cursor;
         float left = (float)(index * 50 + 5);
         entry.m_00 = 0;
         entry.m_04 = 0;
 
-        std::wstring label(L"Optional PC");
-        SBGeoBoundingBox2D labelBox(SBGeoPoint2D(left, 5.0f));
-        ((RHMapWidget *)&entry.m_08)->V30(label, labelBox, 0, 0xf4);
-        std::wstring state(L"Yes or No");
-        SBGeoBoundingBox2D stateBox(SBGeoPoint2D(left, 5.0f));
-        ((RHMapWidget *)&entry.m_d8)->V30(state, stateBox, 0, 0x8e);
-        std::wstring selected(L"Selected");
-        SBGeoBoundingBox2D selectedBox(SBGeoPoint2D(left, 5.0f));
-        ((RHMapWidget *)&entry.m_1a8)->V30(selected, selectedBox, 0, 0x114);
+        {
+            std::wstring label(L"Optional PC");
+            ((RHMapWidget *)&entry.m_08)->V30(label, SBGeoBoundingBox2D(SBGeoPoint2D(left, 5.0f)), 0, 0xf4);
+        }
+        {
+            std::wstring state(L"Yes or No");
+            ((RHMapWidget *)&entry.m_d8)->V30(state, SBGeoBoundingBox2D(SBGeoPoint2D(left, 5.0f)), 0, 0x8e);
+        }
+        {
+            std::wstring selected(L"Selected");
+            ((RHMapWidget *)&entry.m_1a8)->V30(selected, SBGeoBoundingBox2D(SBGeoPoint2D(left, 5.0f)), 0, 0x114);
+        }
 
         ((RHMapWidget *)&entry.m_08)->V38(0);
         ((RHMapWidget *)&entry.m_d8)->V38(1);
-        std::wstring name = FUN_005e23d0(0x12f);
-        entry.m_08.m_widget.m_08 = true;
-        entry.m_08.m_widget.m_20.assign(name, 0, std::wstring::npos);
-        FUN_005df300((RHUnk005d92c0Sub *)&entry.m_08);
+        {
+            std::wstring name = FUN_005e23d0(0x12f);
+            entry.m_08.m_08 = true;
+            entry.m_08.m_20.assign(name, 0, std::wstring::npos);
+        }
+        FUN_0061a800(&entry.m_08);
     }
 
     return true;
@@ -5878,7 +6119,7 @@ void RHUnk005db7e0::FUN_005dc690(const SBGeoBoundingBox2D &bounds)
     unsigned width = m_entries.size() * 50 - 10;
     position = bounds.m_first;
     position.FUN_005fc1e0(SBGeoVector2D(bounds.Width() * 0.5f - (width >> 1), 0.0f));
-    for (std::vector<RHUnk005db7e0Entry>::iterator entry = m_entries.begin(); entry != m_entries.end(); ++entry)
+    for (std::vector<RHPortraitQuickEntry>::iterator entry = m_entries.begin(); entry != m_entries.end(); ++entry)
     {
         ((RHUnk005d92c0Sub *)&entry->m_08)->v08(position);
         ((RHUnk005d92c0Sub *)&entry->m_d8)->v08(position.Unk005fc190(SBGeoVector2D(25.0f, 30.0f)));
@@ -6042,8 +6283,9 @@ bool RHPortraitRootList::FUN_005df120(RHUnk005d92c0Sub *widget)
 // ?_Destroy@?$vector@PAVRHUnk005d92c0Sub@@V?$allocator@PAVRHUnk005d92c0Sub@@@std@@@std@@IAEXPAPAVRHUnk005d92c0Sub@@0@Z
 
 // FUNCTION: GAME 0x005df300
-bool RHPortraitRootList::FUN_005df300(RHUnk005d92c0Sub *widget)
+bool RHPortraitRootList::FUN_0061a920(void *item)
 {
+    RHUnk005d92c0Sub *widget = static_cast<RHUnk005d92c0Sub *>(item);
     if (widget)
     {
         if (RHPortraitRootLifetime::FUN_0061a920(widget))
@@ -6097,25 +6339,6 @@ int FUN_005dcb10(int value)
     return 0;
 }
 
-// SIZE 0x278
-struct RHPortraitQuickEntry
-{
-    ~RHPortraitQuickEntry();
-    int m_00; // 0x00
-    int m_04; // 0x04
-    RHGameLifetime00517590 m_08; // 0x08
-    undefined m_d4[4]; // 0xd4
-    RHGameLifetime00517590 m_d8; // 0xd8
-    undefined m_1a4[4]; // 0x1a4
-    RHGameLifetime00515b40 m_1a8; // 0x1a8
-};
-
-// FUNCTION: GAME 0x005dc5d0
-RHPortraitQuickEntry::~RHPortraitQuickEntry()
-{
-}
-
-#include "RHPCActionQueryCalls.h"
 
 struct RHPortraitPCNode
 {
@@ -6209,7 +6432,7 @@ bool RHPortraitQuickList::FUN_005dd1d0(RHPortraitPCList &list)
             {
                 list.FUN_005c8e40(i);
                 char *actor = list.m_0c->m_actor;
-                if (((RHUnk0049d4f0 *)actor)->Unk(action) || ((RHScriptBatchCalls *)actor)->Unk0049d560(action))
+                if (((RHElementActorPC *)actor)->FUN_0049d4f0(action) || ((RHScriptBatchCalls *)actor)->Unk0049d560(action))
                 {
                     enabled = true;
                     break;
@@ -6232,7 +6455,7 @@ bool RHPortraitQuickList::FUN_005dd1d0(RHPortraitPCList &list)
                 }
                 else if (action == 13)
                 {
-                    if (((RHUnk0049d4f0 *)actor)->Unk(14))
+                    if (((RHElementActorPC *)actor)->FUN_0049d4f0(14))
                     {
                         enabled = true;
                         break;
@@ -6240,7 +6463,7 @@ bool RHPortraitQuickList::FUN_005dd1d0(RHPortraitPCList &list)
                 }
                 else if (action == 14)
                 {
-                    if (((RHUnk0049d4f0 *)actor)->Unk(13))
+                    if (((RHElementActorPC *)actor)->FUN_0049d4f0(13))
                     {
                         enabled = true;
                         break;
@@ -6618,6 +6841,25 @@ RHGameLifetime00515f00 &RHGameLifetime00515f00::operator=(const RHGameLifetime00
     return *this;
 }
 
+// STUB: GAME 0x005ddee0
+RHGameLifetime0044fe90 &RHGameLifetime0044fe90::operator=(const RHGameLifetime0044fe90 &other)
+{
+    Assign(other);
+    m_cc = other.m_cc;
+    return *this;
+}
+
+// STUB: GAME 0x005ddc60
+RHPortraitQuickEntry &RHPortraitQuickEntry::operator=(const RHPortraitQuickEntry &other)
+{
+    m_00 = other.m_00;
+    m_04 = other.m_04;
+    m_08 = other.m_08;
+    m_d8 = other.m_d8;
+    m_1a8 = other.m_1a8;
+    return *this;
+}
+
 RHGameLifetime005161a0 &EmitRHPortraitAlphaWidgetAssignment(RHGameLifetime005161a0 &destination,
     const RHGameLifetime005161a0 &source)
 {
@@ -6689,9 +6931,9 @@ SBGeoBoundingBox2D RHPortraitInputRenderer::FUN_0061d3f0(unsigned short line, in
     float width = bounds.m_second.m_x - bounds.m_first.m_x;
     unsigned index = line;
     ((RHMobileUnk00607da0 *)&box)->FUN_00607da0((const RHMobileUnk00607da0 &)RHMapBox(
-        0.0f, (float)((unsigned)((SBUIListboxUnk0061d980 *)this)->m_4c->GetHeight() * index),
+        0.0f, (float)((unsigned)m_4c->GetHeight() * index),
         width - ((SBDrawManager *)m_drawManager)->FUN_005e56c0(m_68),
-        (float)((unsigned)((SBUIListboxUnk0061d980 *)this)->m_4c->GetHeight() * (index + 1))));
+        (float)((unsigned)m_4c->GetHeight() * (index + 1))));
     if (value & 0x1000)
     {
         box.m_10 = true;

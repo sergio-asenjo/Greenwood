@@ -14,6 +14,7 @@
 #include "RHMenuWindow.h"
 #include "SBList.h"
 #include "RHPortraitAnimated.h"
+#include "RHPortraitUnk005d3880.h"
 
 // SIZE 0x8c8
 class RHMenuLoadSave : public RHMenuWindowFocus
@@ -39,7 +40,10 @@ public:
     bool FUN_00531720(int msg, void *widget, void *data);
     bool FUN_00531740(int msg, void *widget, void *data);
 
-    undefined m_140[0x37c]; // 0x140
+    RHPortraitButton m_accept;
+    RHPortraitButton m_remove;
+    RHPortraitButton m_cancel;
+    undefined m_440[0x7c];
     int m_fieldState; // 0x4bc
     undefined m_4c0[0x40]; // 0x4c0
     int m_500; // 0x500
@@ -47,7 +51,9 @@ public:
     undefined m_508[0x48]; // 0x508
     undefined m_field[0x48]; // 0x550
     int m_598; // 0x598
-    undefined m_59c[0x32c]; // 0x59c
+    undefined m_59c[0x31c];
+    bool m_load;
+    undefined m_8b9[0xf];
 };
 
 class RHMenuLoadSaveListBase
@@ -101,6 +107,8 @@ public:
     // STUB: GAME 0x00531e60
     ~SBWidgetListBox() {}
     void *FUN_00532cf0(unsigned flags);
+    void *FUN_00532140(const RHPortraitWidgetInput &input);
+    void Refresh();
     RHMenuEvent *FUN_00532d30(const SBGeoPoint2D &point);
     RHMenuEvent *FUN_00532db0(const SBGeoPoint2D &input);
     RHMenuEvent *FUN_00533020(const SBGeoPoint2D &input);
@@ -133,12 +141,14 @@ class RHMenuLoadSaveList : public RHMenuLoadSaveSlots, public RHPortraitAnimated
 public:
     // STUB: GAME 0x00532710
     ~RHMenuLoadSaveList() {}
+    RHPortraitWidgetEvent *ProcessInput(const RHPortraitWidgetInput &input);
     void *FUN_00532d10(unsigned flags);
     void RemoveAll();
     void AddItem(const std::wstring &text, unsigned long value, unsigned long flags);
     bool m_1ec;
     bool m_1ed;
-    undefined m_1ee[0x12];
+    undefined m_1ee[2];
+    RHPortraitWidgetEvent m_keyEvent;
 };
 
 #endif

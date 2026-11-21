@@ -19,39 +19,7 @@
 #include "SB.h"
 #include "Decomp.h"
 #include "RHMenuWindow.h"
-
-// SIZE 0x160
-class RHMenuSelectPlayerWidget
-{
-public:
-    void FUN_0053f9f0(RHMenuSelectPlayerWidget *stop);
-    void Select()
-    {
-        RHMenuSelectPlayerWidget *linked = m_parent;
-        if (linked)
-        {
-            m_state = 2;
-            if (this != linked)
-            {
-                if (linked->m_state == 2 || linked->m_state == 13)
-                {
-                    ((SBUIInputFieldTextUnk *)linked->m_110)->FUN_0061e320(0);
-                    linked->m_state = 0;
-                }
-                linked = linked->m_parent;
-                if (linked)
-                    linked->FUN_0053f9f0(this);
-            }
-        }
-    }
-
-    undefined m_00[0x7c]; // 0x00
-    int m_state; // 0x7c
-    undefined m_80[0x90]; // 0x80
-    undefined m_110[0x48]; // 0x110
-    RHMenuSelectPlayerWidget *m_parent; // 0x158
-    undefined m_15c[4]; // 0x15c
-};
+#include "RHPortraitTextWidget.h"
 
 // SIZE 0x15ac
 // VTABLE: GAME 0x00679890

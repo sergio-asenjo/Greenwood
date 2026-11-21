@@ -7,21 +7,17 @@
 
 class RHMission;
 
-// SIZE 0xd0
-struct RHUnk005db7e0Slot
-{
-    RHGameLifetime00515f00 m_widget; // 0x00
-    undefined m_cc[4]; // 0xcc
-};
-
 // SIZE 0x278
-struct RHUnk005db7e0Entry
+struct RHPortraitQuickEntry
 {
+    // FUNCTION: GAME 0x005dc5d0
+    ~RHPortraitQuickEntry() {}
+    RHPortraitQuickEntry &operator=(const RHPortraitQuickEntry &other);
     int m_00; // 0x00
     int m_04; // 0x04
-    RHUnk005db7e0Slot m_08; // 0x08
-    RHUnk005db7e0Slot m_d8; // 0xd8
-    RHGameLifetime00515b40 m_1a8; // 0x1a8
+    RHGameLifetime0044fe90 m_08; // 0x08
+    RHGameLifetime0044fe90 m_d8; // 0xd8
+    RHGameLifetime005161a0 m_1a8; // 0x1a8
 };
 
 // SIZE 0xc0
@@ -33,7 +29,7 @@ public:
     void FUN_005dc690(const SBGeoBoundingBox2D &bounds);
     void *FUN_0050ef90(unsigned flags);
     bool FUN_005db920(RHMission *mission);
-    std::vector<RHUnk005db7e0Entry> m_entries; // 0xb0
+    std::vector<RHPortraitQuickEntry> m_entries; // 0xb0
 };
 
 #endif

@@ -20,6 +20,7 @@ class RHPortraitAnimated
 {
 public:
     RHPortraitAnimated(int id);
+    void FUN_005d5790(void *event, int state, bool option);
     ~RHPortraitAnimated()
     {
         RHUnk00514e10 &map = m_map;

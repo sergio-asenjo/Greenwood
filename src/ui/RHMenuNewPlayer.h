@@ -13,7 +13,7 @@
 #include "Decomp.h"
 #include "RHMenuWindow.h"
 #include "RHPortraitLinkedLifetimeView.h"
-#include "RHGameTitleLifetimeInline.h"
+#include "RHPortraitTextWidget.h"
 
 // SIZE 0x114
 // VTABLE: GAME 0x00679784

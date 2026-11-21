@@ -53,7 +53,6 @@ RHMenuNewPlayer::~RHMenuNewPlayer()
 }
 
 #include "RHMapWidget.h"
-#include "RHMenuCampaignMapClass.h"
 #include "RHSaveGameManager.h"
 #include "RHPortraitUnk005d3880.h"
 #include "RHButtonSelection.h"
@@ -68,30 +67,30 @@ inline void RHNewPlayerInsert(std::vector<void *> &widgets, void *const &widget)
 // STUB: GAME 0x00537960
 bool RHMenuNewPlayer::Create()
 {
-    if (((RHMenuWindow *)this)->FUN_00544b40(g_unk0x006c0b50, RHMapBox(0.0f, 0.0f, 496.0f, 463.0f), 0))
+    if (RHMenuWindow::FUN_0061a1e0(g_unk0x006c0b50, RHMapBox(0.0f, 0.0f, 496.0f, 463.0f), 0))
     {
         std::vector<void *> widgets;
         void *title = m_screen->FUN_0053be80(std::string("MissionTitle"));
         void *normal = m_screen->FUN_0053be80(std::string("PopupScroll"));
         ((RHMapWidget *)&m_title)->V30(FUN_005e23d0(0x1e), RHMapBox(0.0f, 45.0f, 496.0f, 100.0f), 0, unsigned(-1));
         ((SBUIUnk0060dd00 *)&m_title.m_renderer)->FUN_0060e0d0(title, title, title, title);
-        ((RHMenuCampaignMap *)this)->V30(&m_title);
+        FUN_0061a800(&m_title);
         ((RHMapWidget *)&m_nameLabel)->V30(FUN_005e23d0(0x3d), RHMapBox(0.0f, 100.0f, 496.0f, 300.0f), 0, unsigned(-1));
         ((RHMapWidget *)&m_difficultyLabel)->V30(FUN_005e23d0(0x43), RHMapBox(0.0f, 200.0f, 496.0f, 300.0f), 0, unsigned(-1));
         ((SBUIUnk0060dd00 *)&m_nameLabel.m_renderer)->FUN_0060e0d0(normal, normal, normal, normal);
         ((SBUIUnk0060dd00 *)&m_difficultyLabel.m_renderer)->FUN_0060e0d0(normal, normal, normal, normal);
-        ((RHMenuCampaignMap *)this)->V30(&m_nameLabel);
-        ((RHMenuCampaignMap *)this)->V30(&m_difficultyLabel);
+        FUN_0061a800(&m_nameLabel);
+        FUN_0061a800(&m_difficultyLabel);
         m_name.FUN_005d2810(SBGeoPoint2D(35.0f, 130.0f), m_screen);
         m_name.SetMaximum(30);
-        ((RHMenuCampaignMap *)this)->V30(&m_name);
+        FUN_0061a800(&m_name);
         for (unsigned long i = 0; i != 3; ++i)
         {
             RHPortraitLinkedLifetime *radio = &m_radios[i];
             ((RHPortraitUnk005d3880 *)radio)->FUN_005d4bb0((int)m_screen, g_unk0x006c0b50, SBGeoPoint2D(0.0f, 250.0f), 0xd3);
             unsigned long next = (i + 1) % 3;
             ((RHPortraitUnk005d3880 *)radio)->FUN_005d3ab0((RHPortraitUnk005d3880 *)&m_radios[next]);
-            ((RHMenuCampaignMap *)this)->V30(radio);
+            FUN_0061a800(radio);
             RHNewPlayerInsert(widgets, radio);
             ((RHFocusManager *)((char *)this + 0xc8))->FUN_004ffc70(radio ? (RHFocusGroupableView *)((char *)radio + 0xdc) : 0, true);
         }
@@ -106,7 +105,7 @@ bool RHMenuNewPlayer::Create()
             ((RHMapWidget *)label)->V30(FUN_005e23d0(j + 0x22), RHMapBox(0.0f, 0.0f, 100.0f, 50.0f), 0, unsigned(-1));
             ((SBUIUnk0060dd00 *)&label->m_renderer)->FUN_0060e0d0(normal, normal, normal, normal);
             label->m_renderer.SetM60(2);
-            ((RHMenuCampaignMap *)this)->V30(label);
+            FUN_0061a800(label);
             RHNewPlayerInsert(widgets, radio);
             RHNewPlayerInsert(widgets, label);
             ((RHMenuWindow *)this)->FUN_00544800(widgets, 5);
@@ -115,8 +114,8 @@ bool RHMenuNewPlayer::Create()
         m_cancelButton.FUN_005d1e30((int)m_screen, g_unk0x006c0b50, 0x92);
         m_okButton.FUN_005d1e30((int)m_screen, g_unk0x006c0b50, 0x91);
         ((RHUnk005d92c0Sub *)&m_okButton)->v08(SBGeoPoint2D(0.0f, 370.0f));
-        ((RHMenuCampaignMap *)this)->V30(&m_cancelButton);
-        ((RHMenuCampaignMap *)this)->V30(&m_okButton);
+        FUN_0061a800(&m_cancelButton);
+        FUN_0061a800(&m_okButton);
         RHNewPlayerInsert(widgets, &m_okButton);
         RHNewPlayerInsert(widgets, &m_cancelButton);
         ((RHMenuWindow *)this)->FUN_005449e0(widgets, 20);

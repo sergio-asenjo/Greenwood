@@ -56,45 +56,6 @@ class RHMenuWindow;
 
 // SIZE 0x100
 
-// SIZE 0x1a4
-class RHPortraitEditableWidget
-{
-public:
-    RHPortraitEditableWidget();
-    ~RHPortraitEditableWidget();
-    bool FUN_005d2810(const SBGeoPoint2D &point, RHMenuScreenView *resources);
-    void SetMaximum(unsigned maximum) { *(unsigned *)((char *)this + 0x130) = maximum; }
-    void Activate(void *ui)
-    {
-        if (m_state != 13)
-        {
-            *(RHPortraitEditableWidget **)((char *)ui + 0x17f0) = this;
-            SBUIInputFieldTextUnk *text = (SBUIInputFieldTextUnk *)((char *)this + 0x110);
-            m_state = 13;
-            ((SBUIInputFieldUnk00621440 *)text)->FUN_0061e340();
-            text->FUN_0061e320(1);
-        }
-    }
-    bool IsSelected() const { return m_state == 4 || m_state == 2 || m_state == 1 || m_state == 13; }
-    const std::wstring &GetText() const
-    {
-        *(std::wstring *)((char *)this + 0x10) = ((SBUIInputFieldUnk00621440 *)((char *)this + 0x110))->FUN_0061df60();
-        return *(std::wstring *)((char *)this + 0x10);
-    }
-    void SetInfo(const std::wstring &text)
-    {
-        m_info.assign(text);
-        m_infoDirty = true;
-    }
-
-    undefined m_00[0x7c]; // 0x00
-    int m_state; // 0x7c
-    undefined m_80[0x50];
-    std::wstring m_info;
-    bool m_infoDirty;
-    undefined m_e1[0xc3];
-};
-
 struct RHMenuEvent;
 
 #include "RHGameWidgetLifetime.h"

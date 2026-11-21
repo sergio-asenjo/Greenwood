@@ -6,7 +6,6 @@
 #include "RHPlayerProfile.h"
 #include "ToolboxWideString.h"
 #include "RHMapBox.h"
-#include "RHMenuCampaignMapClass.h"
 #include "RHFocusManager.h"
 #include "RHSaveGameManager.h"
 #include "RHPlayerProfileManager.h"
@@ -14,10 +13,13 @@
 #include <stddef.h>
 
 DECOMP_SIZE_ASSERT(RHPortraitEditableWidget, 0x1a4)
-DECOMP_SIZE_ASSERT(RHMenuSelectPlayerWidget, 0x160)
 DECOMP_SIZE_ASSERT(RHMenuSelectPlayer, 0x15ac)
-DECOMP_STATIC_ASSERT(offsetof(RHPortraitEditableWidget, m_info) == 0xd0)
-DECOMP_STATIC_ASSERT(offsetof(RHPortraitEditableWidget, m_infoDirty) == 0xe0)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitTextWidget, m_state) == 0x7c)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitTextWidget, m_text) == 0x110)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitTextWidget, m_linked) == 0x158)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitEditableWidget, m_renderer) + offsetof(RHPortraitRenderer006212d0, m_prompt) == 0xd0)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitEditableWidget, m_renderer) + offsetof(RHPortraitRenderer006212d0, m_promptEnabled) == 0xe0)
+DECOMP_STATIC_ASSERT(offsetof(RHPortraitEditableWidget, m_text) + offsetof(RHPortraitText0061db10, m_maximum) == 0x130)
 
 extern wchar_t g_unk0x006c0b50[1];
 
@@ -120,17 +122,17 @@ inline void RHSelectPlayerInsert(std::vector<void *> &widgets, void *const &widg
 // FUNCTION: GAME 0x0053e9e0
 bool RHMenuSelectPlayer::FUN_0053e9e0()
 {
-    if (((RHMenuWindow *)this)->FUN_00544b40(g_unk0x006c0b50, RHMapBox(0.0f, 0.0f, 640.0f, 480.0f), 0))
+    if (RHMenuWindow::FUN_0061a1e0(g_unk0x006c0b50, RHMapBox(0.0f, 0.0f, 640.0f, 480.0f), 0))
     {
         std::vector<void *> widgets;
         m_button140.FUN_005d1e30((int)m_screen, FUN_005e23d0(5), 0xbe);
         m_button240.FUN_005d1e30((int)m_screen, FUN_005e23d0(6), 0xbe);
         m_button340.FUN_005d1e30((int)m_screen, FUN_005e23d0(7), 0xbe);
         m_button440.FUN_005d1e30((int)m_screen, FUN_005e23d0(8), 0xbe);
-        ((RHMenuCampaignMap *)this)->V30(&m_button140);
-        ((RHMenuCampaignMap *)this)->V30(&m_button240);
-        ((RHMenuCampaignMap *)this)->V30(&m_button340);
-        ((RHMenuCampaignMap *)this)->V30(&m_button440);
+        FUN_0061a800(&m_button140);
+        FUN_0061a800(&m_button240);
+        FUN_0061a800(&m_button340);
+        FUN_0061a800(&m_button440);
         ((RHFocusManager *)((char *)this + 0xc8))->FUN_004ffc70((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_button140, true);
         ((RHFocusManager *)((char *)this + 0xc8))->FUN_004ffc70((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_button240, true);
         ((RHFocusManager *)((char *)this + 0xc8))->FUN_004ffc70((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_button340, true);
@@ -146,10 +148,10 @@ bool RHMenuSelectPlayer::FUN_0053e9e0()
             m_profiles->FUN_0055dd10(i);
             unsigned long next = (i + 1) % 10;
             m_entries[i].FUN_005d2810(SBGeoPoint2D(30.0f, 72.0f), (RHMenuScreenView *)m_screen);
-            *(int *)((char *)&m_entries[i] + 0x130) = 30;
+            m_entries[i].SetMaximum(30);
             RHSelectPlayerInsert(widgets, &m_entries[i]);
-            ((RHMenuCampaignMap *)this)->V30(&m_entries[i]);
-            *(RHPortraitEditableWidget **)((char *)&m_entries[i] + 0x158) = &m_entries[next];
+            FUN_0061a800(&m_entries[i]);
+            m_entries[i].m_linked = &m_entries[next];
         }
         ((RHMenuWindow *)this)->FUN_00544800(widgets, 2);
         FUN_0053f040();
@@ -204,7 +206,7 @@ void RHMenuSelectPlayer::FUN_0053f040()
             m_entries[index].SetInfo(GetProfileInfo(profile));
             *((bool *)&entry + 4) = true;
             if (profile == (RHPlayerProfile *)((RHUnk0055dbb0 *)m_profiles)->FUN_0055dbb0())
-                ((RHMenuSelectPlayerWidget *)&entry)->Select();
+                entry.Select();
         }
         else
         {
@@ -262,9 +264,9 @@ bool RHMenuSelectPlayer::FUN_0053f410(int, void *, void *)
         RHPlayerProfile *profile = m_profiles->AddProfile(menu.GetName(), menu.FUN_00538280());
         unsigned short index = m_profiles->m_profiles.size() - 1;
         ((RHGameMenuText *)&m_entries[index])->v11(profile->GetName());
-        m_entries[index].m_info.assign(GetProfileInfo(profile)), m_entries[index].m_infoDirty = true;
+        m_entries[index].m_renderer.m_prompt.assign(GetProfileInfo(profile)), m_entries[index].m_renderer.m_promptEnabled = true;
         *((bool *)&m_entries[index] + 4) = true;
-        ((RHMenuSelectPlayerWidget *)&m_entries[index])->Select();
+        m_entries[index].Select();
         FUN_0053f9a0();
     }
     ((RHMenuWindow *)&menu)->FUN_00544300();
@@ -277,12 +279,12 @@ bool RHMenuSelectPlayer::FUN_0053f620(int, void *, void *)
 {
     RHMenuWindowUI *ui = m_screen->FUN_0053bf30();
     RHPortraitEditableWidget *entry = &m_entries[(unsigned short)FUN_0053efe0()];
-    if (entry->m_state != 13)
+    if (entry->RHPortraitTextWidget::m_state != 13)
     {
         ui->m_17f0 = entry;
-        entry->m_state = 13;
-        ((SBUIInputFieldUnk00621440 *)(entry->m_00 + 0x110))->FUN_0061e340();
-        ((SBUIInputFieldTextUnk *)(entry->m_00 + 0x110))->FUN_0061e320(1);
+        entry->RHPortraitTextWidget::m_state = 13;
+        ((SBUIInputFieldUnk00621440 *)&entry->m_text)->FUN_0061e340();
+        ((SBUIInputFieldTextUnk *)&entry->m_text)->FUN_0061e320(1);
     }
     return false;
 }
@@ -309,8 +311,8 @@ bool RHMenuSelectPlayer::FUN_0053f6d0(int, void *widget, void *)
         // STRING: GAME 0x006b1064
         std::wstring(L"Robin") : name);
     ((RHGameMenuText *)&m_entries[index])->v11(profile->GetName());
-    m_entries[index].m_info.assign(GetProfileInfo(profile)), m_entries[index].m_infoDirty = true;
-    ((RHMenuSelectPlayerWidget *)&m_entries[index])->Select();
+    m_entries[index].m_renderer.m_prompt.assign(GetProfileInfo(profile)), m_entries[index].m_renderer.m_promptEnabled = true;
+    m_entries[index].Select();
     m_profiles->FUN_0055e410(index);
     m_profiles->Save();
     return false;
@@ -326,17 +328,17 @@ void RHMenuSelectPlayer::FUN_0053f9a0()
 }
 
 // FUNCTION: GAME 0x0053f9f0
-void RHMenuSelectPlayerWidget::FUN_0053f9f0(RHMenuSelectPlayerWidget *stop)
+void RHPortraitTextWidget::FUN_0053f9f0(RHPortraitTextWidget *stop)
 {
-    RHMenuSelectPlayerWidget *widget = this;
+    RHPortraitTextWidget *widget = this;
     while (stop != widget)
     {
         if (widget->m_state == 2 || widget->m_state == 13)
         {
-            ((SBUIInputFieldTextUnk *)widget->m_110)->FUN_0061e320(0);
+            ((SBUIInputFieldTextUnk *)&widget->m_text)->FUN_0061e320(0);
             widget->m_state = 0;
         }
-        widget = widget->m_parent;
+        widget = widget->m_linked;
         if (!widget)
             break;
     }

@@ -198,9 +198,9 @@ void RHMenuWindow::FUN_005449e0(const std::vector<void *> &widgets, unsigned spa
 }
 
 // FUNCTION: GAME 0x00544b40
-bool RHMenuWindow::FUN_00544b40(const std::wstring &title, const RHMapBox &box, unsigned flags)
+bool RHMenuWindow::FUN_0061a1e0(const std::wstring &title, const RHMapBox &box, unsigned flags)
 {
-    return RHPortraitRootLifetime::FUN_0061a1e0(*(const RHMapTitleText *)&title, box, flags);
+    return RHPortraitRootLifetime::FUN_0061a1e0(title, box, flags);
 }
 
 #include "RHBriefingWindowCalls.h"

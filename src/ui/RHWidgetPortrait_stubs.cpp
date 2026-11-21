@@ -13,7 +13,7 @@
 #include "SBNullstr.h"
 #include "RHWidgetPortrait.h"
 
-#include "SBUIRendererListbox.h"
+#include "SBUIListboxFont.h"
 #include "RHGameWidgetLifetime.h"
 
 // FUNCTION: GAME 0x0049f510
@@ -65,7 +65,7 @@ typedef RHPortraitRenderer0060dab0 RHPortraitRenderer0060dad0;
 unsigned RHPortraitInputRenderer::FUN_0061d5e0()
 {
     float span = *(float *)((char *)this + 0x14) - *(float *)((char *)this + 0xc);
-    unsigned count = ((SBUIListboxUnk0061d980 *)this)->m_4c->GetHeight();
+    unsigned count = m_4c->GetHeight();
     return (unsigned)(span / count);
 }
 
@@ -118,5 +118,4 @@ RHPortraitText0061db10::RHPortraitText0061db10()
 RHPortraitText0061db10::~RHPortraitText0061db10()
 {
 }
-void RHPortraitTextLinkedCalls::FUN_0053f9f0(void *) {}
 unsigned SBUIInputFieldTextUnk::FUN_0061dd30() { return 0; }

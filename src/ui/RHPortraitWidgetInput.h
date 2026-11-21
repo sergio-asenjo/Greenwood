@@ -12,7 +12,7 @@ class RHPortraitUnk005d3880;
 struct RHPortraitWidgetUI
 {
     undefined m_00[0x17f0];
-    RHPortraitUnk005d3880 *m_selected;
+    void *m_selected;
     RHPortraitUnk005d3880 *m_captured;
     void Clear()
     {
@@ -26,7 +26,7 @@ struct RHPortraitWidgetInput
     SBGeoPoint2D point;
     short wheel;
     unsigned short flags;
-    RHGameWidgetInputCalls *shortcuts;
+    SBUIUnk0060e1b0 *shortcuts;
     RHPortraitWidgetUI *ui;
 };
 

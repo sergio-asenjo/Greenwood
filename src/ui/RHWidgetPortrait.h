@@ -143,6 +143,7 @@ public:
     {
     }
     void *FUN_005d1b40(unsigned flags);
+    bool RefreshItem(const std::wstring &text, unsigned long flags);
 };
 
 // VTABLE: GAME 0x0067a00c
@@ -152,6 +153,9 @@ public:
     RHPortraitInputWidget();
     ~RHPortraitInputWidget() {}
     void *FUN_005d09b0(unsigned flags);
+    int GenerateCode(SBResourceWidgetID id);
+    virtual void AttachWidget(unsigned int surface);
+    virtual void ReleaseWidget();
     RHPortraitInputRendererMember m_renderer;
 };
 
@@ -216,6 +220,9 @@ public:
     }
     ~RHPortraitUnk005cf570() {}
     virtual void *FUN_005dee10(unsigned flags);
+    virtual void DrawWidget();
+    bool FUN_005d0000(const std::wstring &text, const SBGeoBoundingBox2D &box,
+        unsigned long flags, long resource);
     unsigned short AddItem(const std::wstring &text, std::wstring value, unsigned long index);
     void DeleteAllItems()
     {
@@ -295,12 +302,6 @@ public:
 #include "RHFocusManager.h"
 
 typedef RHFocusManager RHPortraitUIOwner;
-
-class RHPortraitTextLinkedCalls
-{
-public:
-    void FUN_0053f9f0(void *stop);
-};
 
 typedef RHMenuScreenView RHPortraitTextResourceCalls;
 
