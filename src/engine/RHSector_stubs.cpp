@@ -13,7 +13,6 @@ RHUnk0057d490::RHUnk0057d490()
 // FUNCTION: GAME 0x0057d5b0
 RHUnk0057d490::~RHUnk0057d490() {}
 
-void RHSector::DisplayAlpha(unsigned long, unsigned long, bool) {}
 // TEMPLATE: GAME 0x0057cd50 FOLDED
 // ?Serialize@RHSector@@UAE_NAAVSBFile@@@Z
 bool RHSector::Serialize(SBFile &) { return true; }
@@ -65,7 +64,6 @@ RHSectorActorIter RHSectorActorList::erase(RHSectorActorIter position)
     return position;
 }
 
-// FUNCTION: GAME 0x005c8e40
 void RHProfileListCursor::GoTo(int wanted)
 {
     int count = size();
@@ -113,6 +111,66 @@ void RHProfileListCursor::GoTo(int wanted)
         }
     }
 }
+
+template<class Storage>
+void SBListCursorStorage<Storage>::Seek(int wanted)
+{
+    int count = size();
+    if (m_dirty)
+    {
+        if (wanted <= (count + 1) / 2)
+        {
+            m_current = begin();
+            std::advance(m_current, wanted);
+        }
+        else
+        {
+            m_current = end();
+            std::advance(m_current, wanted - count);
+        }
+        m_dirty = false;
+        m_index = wanted;
+    }
+    else
+    {
+        int previous = m_index;
+        if (wanted != previous)
+        {
+            if (wanted < previous)
+            {
+                if (wanted < (previous + 1) / 2)
+                {
+                    m_current = begin();
+                    std::advance(m_current, wanted);
+                }
+                else
+                    std::advance(m_current, wanted - previous);
+            }
+            else
+            {
+                if (wanted < (previous + count) / 2)
+                    std::advance(m_current, wanted - previous);
+                else
+                {
+                    m_current = end();
+                    std::advance(m_current, wanted - count);
+                }
+            }
+            m_index = wanted;
+        }
+    }
+}
+
+// TEMPLATE: GAME 0x005c8e40 FOLDED
+// ?Seek@?$SBListCursorStorage@V?$list@KV?$allocator@K@std@@@std@@@@QAEXH@Z
+template class SBListCursorStorage<std::list<unsigned long> >;
+
+// TEMPLATE: GAME 0x005c8e40 FOLDED
+// ?Seek@?$SBListCursorStorage@V?$list@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@V?$allocator@V?$basic_string@GU?$char_traits@G@std@@V?$allocator@G@2@@std@@@2@@std@@@@QAEXH@Z
+template class SBListCursorStorage<std::list<std::wstring> >;
+
+// TEMPLATE: GAME 0x005c8e40 FOLDED
+// ?GoTo@RHProfileListCursor@@QAEXH@Z
 
 // SYNTHETIC: GAME 0x00522560
 // RHUnk00522540::`scalar deleting destructor'

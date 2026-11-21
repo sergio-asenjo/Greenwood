@@ -80,11 +80,11 @@ bool RHUnk00581c40::FUN_00581ee0(unsigned long surface, float scale, const SBGeo
     if (m_4->FUN_005b9b60(view, scale))
     {
         info.m_masks = 1;
-        ((RHSpritePositionCalls *)((char *)m_4 + 4))->FUN_0055f550();
+        static_cast<RHPositionInterface &>(*m_4).ComputePositionMap();
         unsigned short frame = m_1a;
         RHSprite *sprite = m_4;
         info.m_surface = m_10;
-        ((RHEngineWidenedCalls *)sprite)->FUN_005bd450();
+        sprite->FUN_005bd450();
         sprite->m_184 = selected != 0;
         sprite->m_186 = frame;
         m_4->CreateTargetSprite(info);

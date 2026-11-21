@@ -37,6 +37,138 @@ DECOMP_STATIC_ASSERT(offsetof(RHSeekPoint, m_18) == 0x18)
 DECOMP_STATIC_ASSERT(offsetof(RHSeekPoint, m_38) == 0x38)
 DECOMP_STATIC_ASSERT(offsetof(RHSeekPointDirectionView, value) == 0x10)
 
+#include "RHSpatialLines.h"
+#include <math.h>
+
+SBGeoVector2D FUN_005fc580(const SBGeoVector2D &vector, float scale);
+extern double g_unk0x006774b8;
+extern double g_unk0x00677d90;
+
+DECOMP_SIZE_ASSERT(RHMobileUnk0051fd10, 0x44)
+DECOMP_SIZE_ASSERT(RHUnk00520ae0, 0x40)
+DECOMP_STATIC_ASSERT(offsetof(RHMobileUnk0051fd10, m_34) == 0x34)
+DECOMP_STATIC_ASSERT(offsetof(RHMobileUnk0051fd10, m_3c) == 0x3c)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk00520ae0, m_24) == 0x24)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk00520ae0, m_30) == 0x30)
+
+// STUB: GAME 0x0051ff60
+bool RHMobileUnk0051fd10::ComputeDeviation(SBGeoVector2D &result, const SBGeoVector2D &heading,
+                                           const SBGeoPoint2D &position, const SBGeoPoint2D &,
+                                           float radius, float distance, float clearance) const
+{
+    SBGeoVector2D offset;
+    double correction = clearance + m_28;
+    offset = position.Unk005fc110(First());
+    double normalDistance = offset.FUN_005fc660(m_34);
+
+    if (distance > 0.0f)
+    {
+        if (distance < correction)
+        {
+            if (normalDistance < correction)
+                correction = radius * -0.95;
+            else
+                correction = normalDistance - correction;
+        }
+        else
+        {
+            if (clearance + m_24 <= distance)
+                return false;
+            double force = (distance - clearance) * m_2c + m_30;
+            correction = normalDistance - (distance * force + (g_unk0x00677d90 - force) * normalDistance);
+        }
+        if (fabs(correction) > radius)
+            return false;
+        bool forward = heading.FUN_005fc660(m_3c) > 0.0f;
+        float along = (float)sqrt(radius * radius - correction * correction);
+        if (forward)
+            result = ((-correction) * m_34).Unk005fc190(along * m_3c);
+        else
+            result = -SBGeoVector2D((correction * m_34).Unk005fc190(along * m_3c));
+        return true;
+    }
+
+    if (distance > -correction)
+    {
+        if (normalDistance > -correction)
+            correction = radius * 0.95;
+        else
+            correction = normalDistance + correction;
+    }
+    else
+    {
+        if (-distance >= clearance + m_24)
+            return false;
+        double force = (-distance - clearance) * m_2c + m_30;
+        correction = normalDistance - (distance * force + (g_unk0x00677d90 - force) * normalDistance);
+    }
+    if (fabs(correction) > radius)
+        return false;
+    bool forward = heading.FUN_005fc660(m_3c) > 0.0f;
+    float along = (float)sqrt(radius * radius - correction * correction);
+    if (forward)
+        result = ((-correction) * m_34).Unk005fc190(along * m_3c);
+    else
+        result = -SBGeoVector2D((correction * m_34).Unk005fc190(along * m_3c));
+    return true;
+}
+
+// FUNCTION: GAME 0x00520e10
+bool RHUnk00520ae0::ComputeDeviation(SBGeoVector2D &result, const SBGeoVector2D &heading,
+    const SBGeoPoint2D &position, const SBGeoPoint2D &, float travelRadius,
+    float obstructionDistance, float clearance) const
+{
+    RHUnk005fc3b0 displacement;
+    float remaining = obstructionDistance - clearance;
+    double distance;
+    if (remaining - m_30 < 0.0f)
+    {
+        displacement.SBGeoVector2D::operator=(Unk005fc110(position));
+        distance = displacement.Unk005fc6a0(1.0f);
+        if (distance - clearance - m_30 < 0.0)
+        {
+            if (distance < obstructionDistance)
+                clearance = (float)(travelRadius * 0.99 + distance);
+            else
+                clearance = (float)(travelRadius * 0.99 + obstructionDistance);
+        }
+        else
+        {
+            clearance += m_30;
+            displacement.SBGeoVector2D::operator=(Unk005fc110(position));
+            distance = displacement.Unk005fc6a0(1.0f);
+        }
+    }
+    else if (remaining - m_24 < 0.0f)
+    {
+        displacement.SBGeoVector2D::operator=(Unk005fc110(position));
+        distance = displacement.Unk005fc6a0(1.0f);
+        double weight = remaining * m_28 + m_2c;
+        clearance = (float)(obstructionDistance * weight + (g_unk0x00677d90 - weight) * distance);
+    }
+    else
+        return false;
+
+    if (distance < (double)1.0e-15f)
+        return false;
+
+    displacement.FUN_005fc4d0((float)(g_unk0x00677d90 / distance));
+    double forward = ((travelRadius * travelRadius - clearance * clearance) / distance + distance) *
+        g_unk0x006774b8;
+
+    if (travelRadius < fabs(forward))
+        return false;
+
+    double lateral = sqrt(travelRadius * travelRadius - forward * forward);
+    if (heading.FUN_005fc680(displacement, 1.0f) > 0.0f)
+        result = FUN_005fc580(displacement, (float)forward).Unk005fc190(
+            FUN_005fc580(displacement.FUN_005fc8f0(false, 1.0f), (float)lateral));
+    else
+        result = FUN_005fc580(displacement, (float)forward).Unk005fc190(
+            FUN_005fc580(displacement.FUN_005fc8f0(true, 1.0f), (float)lateral));
+    return true;
+}
+
 // FUNCTION: GAME 0x00521210
 bool RHUnk00520ae0::Serialize(SBFile &file)
 {

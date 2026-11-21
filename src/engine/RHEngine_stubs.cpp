@@ -6,9 +6,10 @@
 #include "SBFilePosition.h"
 #include "RHFastFindGridCore.h"
 #include "RHUnkMaskObstacleTable.h"
-#include "RHUnkTargetSpriteCalls.h"
+#include "RHSpriteCore.h"
 #include "RHSpriteLastFrameCalls.h"
 #include "RHElementFX.h"
+#include "RHElementFXCore.h"
 #include "RHElementGrid.h"
 #include "RHUnk004b1520List.h"
 #include <stddef.h>
@@ -38,14 +39,6 @@ DECOMP_STATIC_ASSERT(offsetof(RHUnk0054eab0, m_158) == 0x158)
 DECOMP_STATIC_ASSERT(offsetof(RHUnk0054eab0, m_178) == 0x178)
 DECOMP_STATIC_ASSERT(offsetof(RHUnk0054eab0, m_19c) == 0x19c)
 
-
-class RHEngineSoundCalls
-{
-public:
-    void FUN_005a5060(void *source, void *first, void *second, unsigned third, unsigned volume);
-};
-
-void RHEngineSoundCalls::FUN_005a5060(void *, void *, void *, unsigned, unsigned) {}
 
 RHUnk004a1bc0::RHUnk004a1bc0(bool) {}
 
@@ -148,10 +141,10 @@ SBResourceScalarVector::SBResourceScalarVector(const std::allocator<unsigned lon
 int RHUnk0054eab0::FUN_0054eea0(SBFile &file, void *grid)
 {
     int start = ((ToolboxPositionFile *)&file)->FUN_005f5440();
-    RHMobileBase004a8130 *element = new RHMobileBase004a8130(1);
+    RHElementFX *element = new RHElementFX(1);
     *(void **)((char *)this + 0x18) = element;
     *(void **)((char *)element + 0xac) = this;
-    element->Unk38(file);
+    element->v14(file);
     file.Access((char *)this + 2, 1);
     *(char *)((char *)this + 3) = 1;
     file.Access((char *)this + 0x10, 4);
@@ -171,7 +164,7 @@ int RHUnk0054eab0::FUN_0054eea0(SBFile &file, void *grid)
     file.Access((char *)this + 0xa, 1);
     if (*(char *)((char *)this + 8) != 0)
     {
-        (*(RHUnkTargetSprite **)((char *)element + 0x50))->FUN_005b76e0(0x94, 0);
+        (*(RHSprite **)((char *)element + 0x50))->FUN_005b76e0(0x94, 0);
         ((RHUnk005bd5b0 *)*(void **)((char *)element + 0x50))->Unk(false);
     }
     else
@@ -190,7 +183,7 @@ int RHUnk0054eab0::FUN_0054eea0(SBFile &file, void *grid)
     *(char *)((char *)this + 1) = *(char *)((char *)this + 1) == 0;
     file.Access((char *)this + 7, 1);
     if (*(char *)((char *)this + 7) != 0)
-        ((RHElementFX *)element)->InitializeBackgroundRestoration();
+        element->InitializeBackgroundRestoration();
 
     unsigned short count;
     unsigned short layer;
@@ -463,7 +456,6 @@ public:
 
 
 RHUnk0046ffe0::RHUnk0046ffe0(bool) {}
-RHUnk004bac30::RHUnk004bac30() {}
 
 void RHEngineMissionElementCalls::Unk00() {}
 void RHEngineMissionElementCalls::Unk04() {}

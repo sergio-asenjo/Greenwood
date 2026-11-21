@@ -129,6 +129,63 @@ bool RHGroundMark::AddGroundMark(const SBGeoPoint2D &point, unsigned short type)
     return true;
 }
 
+#include "RHEngine.h"
+
+DECOMP_SIZE_ASSERT(RHGroundInfo, 0xc)
+DECOMP_STATIC_ASSERT(offsetof(RHGroundMark, m_list) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(RHFrameHolder, m_48) == 0x48)
+DECOMP_STATIC_ASSERT(offsetof(RHEngine, m_frameCount) == 0x4a94)
+
+// STUB: GAME 0x0051c0d0
+bool RHGroundMark::RefreshMark(unsigned long surface, float scale, const SBGeoBoundingBox2D &view)
+{
+    RHspriteRenderingInfo rendering;
+    SBGeoBoundingBox2D source;
+    SBGeoBoundingBox2D destination;
+    RHGroundInfo info;
+    RHGroundInfoList &marks = m_list;
+    for (unsigned short index = 0; index < m_list.m_count; ++index)
+    {
+        marks.GoTo(index);
+        info = marks.m_cur->m_data;
+        RHSprite *position = m_sprite;
+        position->m_18.m_x = (float)floor(info.m_x);
+        position->m_18.m_y = (float)floor(info.m_y);
+        position->m_4 = 4;
+        m_sprite->m_da = info.m_b;
+        if (m_sprite->FUN_005b9b60(view, scale))
+        {
+            rendering.m_surface = m_surface;
+            rendering.m_masks = 1;
+            m_sprite->ComputePositionMap();
+            RHSprite *sprite = m_sprite;
+            unsigned short frame = info.m_a;
+            sprite->FUN_005bd450();
+            sprite->m_184 = 0;
+            sprite->m_186 = frame;
+            if (!(g_pEngine->m_frameCount & 1))
+                ++info.m_a;
+            m_sprite->CreateTargetSprite(rendering);
+            if (m_sprite->FUN_005ba130(view, scale, source, destination))
+                m_drawManager->BlitAlphaKeying(m_surface, &source, surface, &destination,
+                    g_pEngine->FUN_004d2340(15), g_unk0x006c0b1c->m_48, 1);
+        }
+        if (info.m_a == 6)
+        {
+            marks.GoTo(index);
+            marks.Erase(RHGroundInfoIter(marks.m_cur));
+            marks.m_valid = true;
+            --index;
+        }
+        else
+        {
+            marks.GoTo(index);
+            marks.m_cur->m_data = info;
+        }
+    }
+    return true;
+}
+
 // Parked: serializer scalar-slot colouring and insertion EH temporaries differ.
 // STUB: GAME 0x0051c380
 bool RHGroundMark::Serialize(SBFile &file)

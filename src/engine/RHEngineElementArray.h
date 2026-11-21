@@ -34,6 +34,20 @@ public:
                 break;
             }
     }
+    __forceinline void EraseIndex(unsigned index)
+    {
+        typedef std::vector<T *> Values;
+        unsigned (Values::*size)() const = &Values::size;
+        if ((this->*size)() <= index)
+            this->_Xran();
+        T **position = _First + index;
+        T **(*shift)(T **, T **, T **) = &std::copy;
+        shift(position + 1, _Last, position);
+        void (RHEngineElementArray::*destroy)(T **, T **) = &RHEngineElementArray::_Destroy;
+        (this->*destroy)(_Last - 1, _Last);
+        --_Last;
+        m_changed = true;
+    }
     unsigned VolatileSize() const
     {
         T **first = *(T **const volatile *)&_First;

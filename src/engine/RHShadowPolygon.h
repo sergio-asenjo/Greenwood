@@ -15,6 +15,7 @@
 // SIZE 0x08
 class SBGeoVector2D;
 #ifndef SBGEO_POINT2D_VIEW
+#define SBGEO_POINT2D_VIEW
 class SBGeoPoint2D
 {
 public:
@@ -37,19 +38,7 @@ public:
 
 // SIZE 0x08
 #ifndef SBGEO_VECTOR2D_VIEW
-class SBGeoVector2D : public SBGeoPoint2D
-{
-public:
-    SBGeoVector2D();
-    SBGeoVector2D(float, float);
-    ~SBGeoVector2D() {}
-    SBGeoVector2D &operator=(const SBGeoVector2D &other);
-    SBGeoVector2D(const SBGeoVector2D &other);
-};
-#endif
-
-#ifndef SBGEO_VECTOR2D_VIEW
-#define SBGEO_VECTOR2D_VIEW
+#include "SBGeoVector2D.h"
 #endif
 #include "RHUnk005fc3b0.h"
 
@@ -102,7 +91,6 @@ public:
 
     RHScriptIter FUN_0044e850(RHScriptIter, RHScriptIter);
     RHScriptIter FUN_0044e900(RHScriptIter position);
-    void FUN_0044e9b0();
 };
 
 class RHShadowVectorStdList : public RHShadowPointListBase
@@ -237,10 +225,16 @@ struct RHUnk005c9010Iterator : std::iterator<std::bidirectional_iterator_tag, RH
 
 void FUN_005c9010(RHUnk005c9010Iterator &, int, std::bidirectional_iterator_tag);
 
+typedef std::allocator<RHUnk00597a70 *> RHShadowAllocator;
+
 // SIZE 0x0c
 struct RHUnk0058e7f0List
 {
-    undefined4 m_0; // 0x00
+    RHUnk0058e7f0List() {}
+    __forceinline explicit RHUnk0058e7f0List(const RHShadowAllocator &allocator)
+        : m_allocator(allocator) {}
+
+    RHShadowAllocator m_allocator;
     RHUnk005c9010Node *m_head; // 0x04
     int m_count; // 0x08
 
@@ -268,6 +262,15 @@ void FUN_0059fb00(RHUnk00597a70 **, RHUnk00597a70 *const &);
 
 struct RHShadowAreaNodeList : public RHUnk0058e7f0List
 {
+    __forceinline RHShadowAreaNodeList(const RHShadowAllocator &allocator)
+        : RHUnk0058e7f0List(allocator)
+    {
+        m_head = AllocateNode(0, 0);
+        m_count = 0;
+    }
+
+    RHUnk005c9010Node *AllocateNode(RHUnk005c9010Node *next, RHUnk005c9010Node *previous);
+
     ~RHShadowAreaNodeList()
     {
 #pragma inline_depth(0)
@@ -276,16 +279,11 @@ struct RHShadowAreaNodeList : public RHUnk0058e7f0List
     }
 };
 
-struct RHShadowAllocator
-{
-    char m_value;
-};
-
 struct RHShadowEraseNodeList : public RHUnk0058e7f0List
 {
     __forceinline RHShadowEraseNodeList(const RHShadowAllocator &allocator)
     {
-        *(RHShadowAllocator *)&m_0 = allocator;
+        m_allocator = allocator;
         m_head = (RHUnk005c9010Node *)((RHUnk0046eb30 *)this)->Unk0059f720(0, 0);
         m_count = 0;
     }
@@ -689,6 +687,9 @@ struct RHShadowUnk00594800Item
 class RHShadowPolygonFindList : public RHShadowPolygonList
 {
 public:
+    __forceinline RHShadowPolygonFindList(const RHShadowAllocator &allocator)
+        : RHShadowPolygonList(allocator) {}
+
     bool m_18; // 0x18
     int m_1c; // 0x1c
     RHUnk00597a70 *m_20; // 0x20
@@ -1017,44 +1018,24 @@ typedef void (RHShadowPolygon::*RHShadowDrawLine)(unsigned short, int, int, int,
 
 struct RHShadowRawEmpty18
 {
-    char m_data[0x18];
+    RHUnk00613e90 m_normal;
+    char m_data[0x0c];
     ~RHShadowRawEmpty18()
     {
         ((RHMobileUnk006100e0 *)this)->FUN_00578c50();
     }
 };
 
-struct RHShadowRawPair14
-{
-    SBGeoPoint2D m_0;
-    SBGeoPoint2D m_8;
-    char m_10[4];
-};
-
 struct RHShadowRawPair18
 {
-    SBGeoPoint2D m_0;
-    SBGeoPoint2D m_8;
-    char m_10[4];
+    SBGeoBoundingBox2D m_bounds;
     RHUnk00597a70 *m_14;
-};
-
-struct RHShadowRawD8
-{
-    RHShadowVectorStdList m_list;
-    char m_pad0c[0x14];
-    SBGeoPoint2D m_point;
-    char m_pad28[0x8];
-    ~RHShadowRawD8()
-    {
-        m_list.FUN_0044e9b0();
-    }
 };
 
 class RHShadowPolygon
 {
 public:
-    undefined m_pad0[0x04]; // 0x00
+    RHFastFindGrid *m_grid;
     SBDrawManager *m_4; // 0x04
     RHShadowRawEmpty18 m_8; // 0x08
     int m_20; // 0x20
@@ -1070,12 +1051,12 @@ public:
     char m_60; // 0x60
     bool m_61; // 0x61
     undefined m_pad62[0x02]; // 0x62
-    RHShadowRawPair14 m_64; // 0x64
-    RHShadowRawPair14 m_78; // 0x78
+    SBGeoBoundingBox2D m_64; // 0x64
+    SBGeoBoundingBox2D m_78; // 0x78
     float m_8c; // +0x8c; also compared as raw 0x3f800000
     int m_90; // 0x90
     int m_94; // 0x94
-    SBGeoPoint2D m_98; // 0x98
+    SBGeoVector2D m_98; // 0x98
     float m_a0; // 0xa0
     RHUnk00613e90 m_a4; // 0xa4
     SBGeoPoint2D m_b0; // 0xb0
@@ -1085,10 +1066,10 @@ public:
     unsigned short m_c2; // 0xc2
     unsigned short m_c4; // 0xc4
     unsigned short m_c6; // 0xc6
-    SBGeoPoint2D m_c8; // 0xc8
-    SBGeoPoint2D m_d0; // 0xd0
-    RHShadowRawD8 m_d8; // 0xd8
-    RHShadowRawPair14 m_108; // 0x108
+    SBGeoVector2D m_c8; // 0xc8
+    SBGeoVector2D m_d0; // 0xd0
+    RHUnk0060bd40 m_d8; // 0xd8
+    SBGeoBoundingBox2D m_108; // 0x108
     RHShadowRawPair18 m_11c; // 0x11c
     RHShadowPolygonList m_134; // +0x134; head +0x138, count +0x13c, cache +0x140/+0x144/+0x148
     undefined m_pad14c[0x0c]; // 0x14c
@@ -1112,7 +1093,10 @@ public:
     RHShadowDrawLine m_20c; // 0x20c
     RHShadowDrawLine m_210; // 0x210
     RHShadowDrawLine m_214; // 0x214
+    bool m_218;
+    bool m_219;
 
+    RHShadowPolygon();
     ~RHShadowPolygon();
     void FUN_0058c590(bool, unsigned short, unsigned short);
     void FUN_0058c630(unsigned short, unsigned short);
@@ -1303,6 +1287,7 @@ public:
 class RHUnk0059ec90
 {
 public:
+    __forceinline explicit RHUnk0059ec90(unsigned capacity);
     virtual ~RHUnk0059ec90();
     unsigned m_capacity;
     RHShadowPoolBlocks m_blocks;
@@ -1315,6 +1300,7 @@ public:
 class RHUnk0059f000
 {
 public:
+    __forceinline explicit RHUnk0059f000(unsigned capacity);
     virtual ~RHUnk0059f000();
     unsigned m_capacity;
     RHShadowIteratorPoolBlocks m_blocks;

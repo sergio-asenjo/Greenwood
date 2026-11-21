@@ -10,7 +10,6 @@ public:
     void FUN_005563f0(unsigned value);
     void FUN_004eb120(SBFile &file, void *pathFinder);
     void FUN_00558670(SBFile &file);
-    bool FUN_005bd450();
     int FUN_005b7f60(unsigned long value);
     void FUN_0050efd0(void *actor);
     void FUN_004e3660(char flag);

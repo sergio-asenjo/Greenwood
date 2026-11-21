@@ -58,13 +58,7 @@ public:
 
 #include "RHActorPositionCalls.h"
 
-class RHElementActor
-{
-public:
-    void FUN_00462700(unsigned short value);
-};
-
-#include "RHPCActionQueryCalls.h"
+#include "RHElementActorPC.h"
 
 class RHUnk00452030;
 extern RHUnk00452030 *g_unk0x6c07fc;
@@ -463,7 +457,7 @@ bool RHSectorProduction::FUN_00580940(const RHElementActorPC *pc) const
     switch (m_0)
     {
     case 9:
-        return ((RHUnk0049d4f0 *)pc)->Unk(1);
+        return pc->FUN_0049d4f0(1);
     case 12:
         return false;
     }

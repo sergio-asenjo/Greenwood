@@ -136,6 +136,7 @@ public:
 class RHSprite;
 class SBDrawManager;
 class RHFrameHolder;
+class SBGeoBoundingBox2D;
 
 // VTABLE: GAME 0x006790b4
 class RHGroundMark
@@ -146,6 +147,7 @@ public:
     virtual void *FUN_0051bc70(unsigned flags);
     bool AddGroundMark(const SBGeoPoint2D &point, unsigned short type);
     unsigned long LoadFromResource();
+    bool RefreshMark(unsigned long surface, float scale, const SBGeoBoundingBox2D &view);
     bool Serialize(SBFile &file);
     void Emit(SBFile &file);
 

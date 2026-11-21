@@ -38,7 +38,6 @@ public:
 };
 
 #include "SBGeoPoint2D.h"
-#include "SBGeoVector2D.h"
 
 
 struct SBDrawUnk005e56c0Iterator
@@ -469,31 +468,6 @@ unsigned short SBDrawManager::FUN_005e5750(unsigned long surface)
         return 0;
     }
     return found->m_height;
-}
-
-inline SBResourceUnkKeyIterator SBDrawFindExternalEnd(SBDrawUnk005f0090 &tree, const unsigned long &key)
-{
-    SBResourceUnkKeyIterator found((SBResourceUnkKeyNode *)tree.FUN_005f0090(key));
-    SBResourceUnkTreeEnd &view = (SBResourceUnkTreeEnd &)tree;
-    return (found.m_node != view.FUN_00617690().m_node && key >= found.m_node->m_key
-        ? found : view.FUN_00617690());
-}
-
-// FUNCTION: GAME 0x005e57e0
-void SBDrawManager::FUN_005e57e0(unsigned surface, SBGeoVector2D &size)
-{
-    if (surface == 0) surface = 1;
-    SBDrawUnk005f0090 &tree = *(SBDrawUnk005f0090 *)((char *)this + 0x54);
-    const unsigned long &key = *(const unsigned long *)&surface;
-    SBDrawUnk005f0090Node *node = (SBDrawUnk005f0090Node *)SBDrawFindExternalEnd(tree, key).m_node;
-    if (node == *(SBDrawUnk005f0090Node **)((char *)this + 0x58)) {
-        SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0x4e1,
-            "Trying to access an inexisting surface");
-        return;
-    }
-    float height = node->m_height;
-    size.m_x = node->m_width;
-    size.m_y = height;
 }
 
 // FUNCTION: GAME 0x005e5890
@@ -1114,6 +1088,33 @@ bool SBDrawManager::BlitAlpha(unsigned long source, SBGeoBoundingBox2D *sourceBo
 #undef SBDRAW_ALPHA_STRETCH_CALL
 #undef SBDRAW_ALPHA_KEY_CALL
 #undef SBDRAW_ALPHA_CALL
+
+#include "SBGeoVector2D.h"
+
+inline SBResourceUnkKeyIterator SBDrawFindExternalEnd(SBDrawUnk005f0090 &tree, const unsigned long &key)
+{
+    SBResourceUnkKeyIterator found((SBResourceUnkKeyNode *)tree.FUN_005f0090(key));
+    SBResourceUnkTreeEnd &view = (SBResourceUnkTreeEnd &)tree;
+    return (found.m_node != view.FUN_00617690().m_node && key >= found.m_node->m_key
+        ? found : view.FUN_00617690());
+}
+
+// FUNCTION: GAME 0x005e57e0
+void SBDrawManager::FUN_005e57e0(unsigned surface, SBGeoVector2D &size)
+{
+    if (surface == 0) surface = 1;
+    SBDrawUnk005f0090 &tree = *(SBDrawUnk005f0090 *)((char *)this + 0x54);
+    const unsigned long &key = *(const unsigned long *)&surface;
+    SBDrawUnk005f0090Node *node = (SBDrawUnk005f0090Node *)SBDrawFindExternalEnd(tree, key).m_node;
+    if (node == *(SBDrawUnk005f0090Node **)((char *)this + 0x58)) {
+        SBAssert(0, "P:\\Robin Hood\\SBLibNG\\SBDrawManager.cpp", 0x4e1,
+            "Trying to access an inexisting surface");
+        return;
+    }
+    float height = node->m_height;
+    size.m_x = node->m_width;
+    size.m_y = height;
+}
 
 #define SBDRAW_BLEND_PIXEL_FUNCTION(Name, RedShift, GreenShift, GreenMask, SourceGreenMask) \
 static __forceinline unsigned short Name(unsigned short source, unsigned short destination, unsigned short weight) \
@@ -2546,11 +2547,10 @@ bool SBDrawManager::FUN_005ed270(const RHMobileUnk00607da0 &bounds)
     return false;
 }
 
-#include "RHMobileUnk006091b0.h"
 #include "RHUnk00608f10.h"
 
 // FUNCTION: GAME 0x005ecdc0
-bool SBDrawManager::FUN_005ecdc0(unsigned long surface, const SBGeoBoundingBox2D &box,
+bool SBDrawManager::FUN_005ecdc0(unsigned long surface, SBGeoBoundingBox2D &box,
     unsigned short color, unsigned long flags)
 {
     long client[4];
@@ -2570,8 +2570,8 @@ bool SBDrawManager::FUN_005ecdc0(unsigned long surface, const SBGeoBoundingBox2D
         float y = (float)client[1];
         offset.m_x = (float)client[0];
         offset.m_y = y;
-        ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(offset);
-        ((RHMobileUnk006091b0 *)&screen)->FUN_006091b0(offset);
+        box.Translate(offset);
+        screen.Translate(offset);
     }
     if (!(unsigned char)((RHUnk00608f10 *)&screen)->FUN_00608f10((void *)&box))
         return false;

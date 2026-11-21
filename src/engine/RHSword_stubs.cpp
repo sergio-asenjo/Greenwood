@@ -14,7 +14,7 @@
 RHSword::RHSword()
 {
     ((RHWeapon *)this)->RHWeapon::RHWeapon();
-    m_unk4 = 0;
+    m_profile = 0;
     *(unsigned *)this = 0x679e48;
 }
 RHSword::~RHSword() {}

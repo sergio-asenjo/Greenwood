@@ -311,6 +311,19 @@ void RHSector::FUN_0057cee0(SBDrawManager *draw, unsigned long surface, const SB
     }
 }
 
+#include "RHDrawManagerCore.h"
+#include "RHUnk0060bd40.h"
+
+// STUB: GAME 0x0057d260
+void RHSector::DisplayAlpha(unsigned long color, unsigned long alpha, bool mode)
+{
+    if (static_cast<unsigned short>(Unk0060ce80()) > 2 && m_34)
+    {
+        RHUnk0060bd40 polygon(*static_cast<RHUnkSectorPoints *>(this));
+        RHDrawManager::mpDrawManager->DrawAlphaConstantPolygon(polygon, color, alpha, mode);
+    }
+}
+
 // FUNCTION: GAME 0x0057d390
 void RHSector::FUN_0057d390(void *, unsigned long, const SBGeoBoundingBox2D &, float, unsigned short)
 {

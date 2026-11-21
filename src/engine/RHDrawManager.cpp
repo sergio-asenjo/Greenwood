@@ -1,6 +1,9 @@
 #include "Decomp.h"
 #include "RHMobileUnk00607da0.h"
 #include "RHDrawManager.h"
+#include "RHUnk0060bd40.h"
+#include "SBList.h"
+#include "RHEngine.h"
 #include <math.h>
 
 DECOMP_SIZE_ASSERT(SBDrawViewport, 0x18)
@@ -245,6 +248,29 @@ void RHDrawManager::DrawEllipse(const SBDrawViewport &viewport, const SBGeoPoint
         }
         DrawEllipsePoints(viewport, position, x, y, color);
     }
+}
+
+// STUB: GAME 0x00461bc0
+void RHDrawManager::DrawAlphaConstantPolygon(const RHUnk0060bd40 &polygon, unsigned long color, unsigned long alpha, bool)
+{
+    SBGeoVector2D origin;
+    RHUnk0060bd40 clipped;
+    SBList<SBGeoPoint2D> vertices;
+    SBGeoPoint2D point;
+    ClipAttached(polygon, clipped);
+    {
+        SBGeoVector2D offset(m_p0);
+        origin = offset;
+    }
+    unsigned long count = clipped.FUN_0060c250();
+    if (count < 3)
+        return;
+    vertices.InsertLast(clipped.FUN_0060c2b0(count - 1));
+    for (unsigned long index = 0; index < count; ++index)
+        vertices.InsertLast(clipped.FUN_0060c2b0(index));
+    unsigned long destination = (unsigned long)g_pEngine->m_48c4;
+    m_drawManager->FUN_005eec00(destination, m_18, &vertices,
+                                (int)(m_14 * 2), (int)origin.m_x, (int)origin.m_y, color, alpha);
 }
 
 // FUNCTION: GAME 0x004618f0

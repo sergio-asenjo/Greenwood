@@ -17,9 +17,7 @@ DECOMP_SIZE_ASSERT(RHShadowPolygonList, 0x18)
 DECOMP_SIZE_ASSERT(RHShadowPolygonEraseList, 0x18)
 DECOMP_SIZE_ASSERT(RHShadowPolygonFindList, 0x24)
 DECOMP_SIZE_ASSERT(RHShadowRawEmpty18, 0x18)
-DECOMP_SIZE_ASSERT(RHShadowRawPair14, 0x14)
 DECOMP_SIZE_ASSERT(RHShadowRawPair18, 0x18)
-DECOMP_SIZE_ASSERT(RHShadowRawD8, 0x30)
 DECOMP_SIZE_ASSERT(RHShadowPointListBase, 0x0c)
 DECOMP_SIZE_ASSERT(RHUnk0060bd40, 0x30)
 DECOMP_SIZE_ASSERT(RHUnk00597a70, 0xa0)
@@ -42,7 +40,7 @@ DECOMP_SIZE_ASSERT(SBGeoBoundingBox2D, 0x14)
 DECOMP_SIZE_ASSERT(RHUnk00613e90, 0x0c)
 DECOMP_SIZE_ASSERT(RHShadowUnk0060c260, 0x30)
 DECOMP_SIZE_ASSERT(RHMapBox, 0x14)
-DECOMP_SIZE_ASSERT(RHShadowPolygon, 0x218)
+DECOMP_SIZE_ASSERT(RHShadowPolygon, 0x21c)
 DECOMP_SIZE_ASSERT(std::vector<RHElement *>, 0x10)
 DECOMP_SIZE_ASSERT(RHEngine, 0x4d68)
 DECOMP_STATIC_ASSERT(offsetof(RHEngine, m_elements) == 0x48d8)
@@ -73,6 +71,8 @@ DECOMP_STATIC_ASSERT(offsetof(RHShadowPolygon, m_184) == 0x184)
 DECOMP_STATIC_ASSERT(offsetof(RHShadowPolygon, m_188) == 0x188)
 DECOMP_STATIC_ASSERT(offsetof(RHShadowPolygon, m_18c) == 0x18c)
 DECOMP_STATIC_ASSERT(offsetof(RHShadowPolygon, m_18e) == 0x18e)
+DECOMP_STATIC_ASSERT(offsetof(RHShadowPolygon, m_218) == 0x218)
+DECOMP_STATIC_ASSERT(offsetof(RHShadowPolygon, m_219) == 0x219)
 
 // FUNCTION: GAME 0x0058c360
 RHShadowPolygon::~RHShadowPolygon()
@@ -141,27 +141,12 @@ RHScriptIter RHShadowPointListBase::FUN_0044e900(RHScriptIter position)
     return position;
 }
 
-// FUNCTION: GAME 0x0044e9b0
-void RHShadowPointListBase::FUN_0044e9b0()
-{
-    RHUnk005c9010Node *last = (RHUnk005c9010Node *)m_head;
-    RHUnk005c9010Node *current = last->m_next;
-    while (current != last)
-    {
-        RHUnk005c9010Node *node = current;
-        current = current->m_next;
-        node->m_prev->m_next = node->m_next;
-        node->m_next->m_prev = node->m_prev;
-        ((SBGeoPoint2D *)((char *)node + 8))->~SBGeoPoint2D();
-        operator delete(node);
-        --m_count;
-    }
-}
+// TEMPLATE: GAME 0x0044e9b0
+// ?clear@?$list@VSBGeoPoint2D@@V?$allocator@VSBGeoPoint2D@@@std@@@std@@QAEXXZ
 
 void EmitShadowPointListOperations(RHShadowPointListBase &list, RHScriptIter position)
 {
     list.FUN_0044e900(position);
-    list.FUN_0044e9b0();
 }
 
 inline void RHShadowDestroyCachedList(RHUnk0058e7f0List &list)
@@ -2948,7 +2933,7 @@ float RHShadowPolygon::FUN_0059df10(RHUnk0059df10Object *object)
         RHUnk00613e90 offset;
         RHUnk005df860 *plane = (RHUnk005df860 *)(object->m_0 + 0xa8);
         offset = ((const RHUnk00613e90 &)m_a4).FUN_005df550(*(const RHUnk00613e90 *)plane);
-        float height = offset.FUN_005df5f0(*(const RHUnk00613e90 *)plane->FUN_005df990());
+        float height = offset.FUN_005df5f0(plane->Normal());
         if (!m_61)
         {
             float limit = m_a0 * 0.35f;
@@ -4027,6 +4012,7 @@ DECOMP_SIZE_ASSERT(RHShadowPoolAllocatedRanges, 0x28)
 DECOMP_SIZE_ASSERT(RHShadowPoolDescriptor<RHShadowPoolClearRanges>, 0x2c)
 DECOMP_SIZE_ASSERT(RHShadowPoolBlocks, 0x48)
 DECOMP_SIZE_ASSERT(RHShadowIteratorMemoryRange, 0x08)
+DECOMP_SIZE_ASSERT(RHShadowAlphaIterator, 0x24)
 DECOMP_SIZE_ASSERT(RHShadowIteratorMemoryBlock, 0x2c)
 DECOMP_SIZE_ASSERT(RHShadowIteratorPoolBlocks, 0x48)
 DECOMP_SIZE_ASSERT(RHShadowPoolPointers, 0x20)
@@ -4034,6 +4020,75 @@ DECOMP_SIZE_ASSERT(RHUnk0059ec90, 0x70)
 DECOMP_SIZE_ASSERT(RHUnk0059f000, 0x70)
 DECOMP_STATIC_ASSERT(offsetof(RHUnk0059ec90, m_blocks) == 8)
 DECOMP_STATIC_ASSERT(offsetof(RHUnk0059ec90, m_pointers) == 0x50)
+
+__forceinline RHUnk0059ec90::RHUnk0059ec90(unsigned capacity)
+{
+    RHShadowMemoryBlock block;
+    m_capacity = capacity;
+    void *allocation = operator new(capacity * sizeof(RHShadowEvent));
+    void **(std::vector<void *>::*insert)(void **, void *const &) = &std::vector<void *>::insert;
+    (m_pointers.*insert)(m_pointers.end(), allocation);
+    m_pointers.m_dirty = true;
+    RHShadowMemoryRange range = {0, capacity};
+    block.m_tag = capacity;
+    typedef std::list<RHShadowMemoryRange> RangeList;
+    void (RangeList::*append)(const RHShadowMemoryRange &) = &RangeList::push_back;
+    (block.m_ranges.m_list.*append)(range);
+    block.m_ranges.m_dirty = true;
+    m_blocks.FUN_0059fcf0(m_blocks.end(), block);
+    m_blocks.m_dirty = true;
+}
+
+__forceinline RHUnk0059f000::RHUnk0059f000(unsigned capacity)
+{
+    m_capacity = capacity;
+    void *allocation = operator new(capacity * sizeof(RHShadowAlphaIterator));
+    void **(std::vector<void *>::*insert)(void **, void *const &) = &std::vector<void *>::insert;
+    (m_pointers.*insert)(m_pointers.end(), allocation);
+    m_pointers.m_dirty = true;
+    RHShadowIteratorMemoryBlock *storage = m_blocks.m_allocator.allocate(1, 0);
+    try
+    {
+        new (storage) RHShadowIteratorMemoryBlock;
+    }
+    catch (...)
+    {
+        m_blocks.m_allocator.deallocate(storage, 1);
+        throw;
+    }
+    m_blocks.m_first = storage;
+    m_blocks.m_last = storage + 1;
+    m_blocks.m_end = storage + 1;
+    RHShadowIteratorMemoryRange range = {0, capacity};
+    storage->m_tag = capacity;
+    storage->m_ranges.m_list.push_back(range);
+    m_blocks.m_dirty = true;
+}
+
+// STUB: GAME 0x0058bff0
+RHShadowPolygon::RHShadowPolygon()
+    : m_134(RHShadowAllocator()), m_158(RHShadowAllocator()),
+      m_198(RHShadowAllocator()), m_1bc(RHShadowAllocator()),
+      m_1e0(RHShadowAllocator())
+{
+    m_218 = false;
+    m_219 = false;
+    m_194 = new RHUnk0059ec90(500);
+    m_190 = new RHUnk0059f000(500);
+    m_50 = 0;
+    m_grid = g_unk0x6c0a9c;
+    m_4 = g_unk0x6c11d0;
+}
+
+// TEMPLATE: GAME 0x0059f720 FOLDED
+// ?AllocateNode@RHShadowAreaNodeList@@QAEPAURHUnk005c9010Node@@PAU2@0@Z
+RHUnk005c9010Node *RHShadowAreaNodeList::AllocateNode(RHUnk005c9010Node *next, RHUnk005c9010Node *previous)
+{
+    RHUnk005c9010Node *node = new RHUnk005c9010Node;
+    node->m_next = next ? next : node;
+    node->m_prev = previous ? previous : node;
+    return node;
+}
 
 // SYNTHETIC: GAME 0x0059f370
 // RHUnk0059ec90::`scalar deleting destructor'

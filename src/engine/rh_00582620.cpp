@@ -2,6 +2,7 @@
 // No __FILE__ or oracle evidence: class and method identity are unproven.
 
 #include "RHSequenceDispatch.h"
+#include "RHSequenceManagerListOps.h"
 #include "RHSequenceElementCalls.h"
 
 inline unsigned RHSequenceDispatchCount(unsigned short first, unsigned short last, unsigned &index)

@@ -35,7 +35,7 @@ RHProfileManager *RHUnk00436500GetProfileManager();
 // FUNCTION: GAME 0x005c1b60
 char RHSword::FUN_005c1b60() const
 {
-    return *((const char *)m_unk4 + 0x16);
+    return m_profile->m_16;
 }
 
 // FUNCTION: GAME 0x005c1d70
@@ -109,7 +109,7 @@ float RHHumanWeaponCalls::FUN_005c1f50(int index)
 unsigned short RHSword::FUN_005c1f90(int index) const
 {
     if (index < 10)
-        return *(const unsigned short *)((const char *)m_unk4 + index * 32 + 0x36);
+        return *(const unsigned short *)((const char *)m_profile + index * 32 + 0x36);
     return 0;
 }
 
@@ -117,14 +117,14 @@ unsigned short RHSword::FUN_005c1f90(int index) const
 unsigned short RHSword::FUN_005c1fb0(int index) const
 {
     if (index < 10)
-        return *(const unsigned short *)((const char *)m_unk4 + index * 32 + 0x3a);
+        return *(const unsigned short *)((const char *)m_profile + index * 32 + 0x3a);
     return 1;
 }
 
 // FUNCTION: GAME 0x005c1fd0
 bool RHSword::Serialize(SBFile &file)
 {
-    return RHUnk00436500GetProfileManager()->SerializeProfilePointer(file, *(const RHHtHWeaponProfile **)&m_unk4);
+    return RHUnk00436500GetProfileManager()->SerializeProfilePointer(file, m_profile);
 }
 
 // FUNCTION: GAME 0x005c1ff0

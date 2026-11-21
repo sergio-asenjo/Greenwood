@@ -9,6 +9,7 @@ class SBGeoSegment2D;
 class SBGeoPolyLine2DList;
 class SBDrawViewport;
 class SBDrawManager;
+class RHUnk0060bd40;
 
 class RHDrawManager : public SBGeoBoundingBox2D
 {
@@ -18,6 +19,7 @@ public:
     void DrawSegment(const SBGeoSegment2D &segment, unsigned short color);
     void DrawPolyLine(const SBGeoPolyLine2DList &list, unsigned short color);
     void FillBox(const SBGeoBoundingBox2D &box, unsigned short color);
+    void DrawAlphaConstantPolygon(const RHUnk0060bd40 &polygon, unsigned long color, unsigned long alpha, bool mode);
     void DrawEllipsePoints(const SBDrawViewport &viewport, const SBGeoPoint2D &center, short x, short y, unsigned short color);
     void DrawDottedLine(const SBGeoPoint2D &from, const SBGeoPoint2D &to, float &phase, float dash, float thickness, unsigned short color);
     unsigned short GetPackedColor(unsigned long color);

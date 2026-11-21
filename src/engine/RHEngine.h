@@ -18,6 +18,10 @@ class RHElementActorPC;
 class RHElementActorNPC;
 class RHElementActorHuman;
 class RHElementActorSoldier;
+class SBDrawManager;
+class RHFrameHolder;
+struct RHnoise;
+class RHMessenger;
 class RHElementMobile;
 class RHElementFX;
 class RHMission;
@@ -88,6 +92,9 @@ class RHElementActorPC;
 
 class RHUnk0051e5e0;
 
+class RHPathFinder;
+struct RHpathRequest;
+
 class RHEngine
 {
 public:
@@ -107,6 +114,7 @@ public:
         return m_49f8.m_count != 0;
     }
     void TurnPathFinderOff();
+    void ProcessPathRequests(const SBGeoBoundingBox2D &bounds);
     void PerformPathFinderStateChange(unsigned short layer, unsigned short sector, unsigned long state, bool mode);
     void FUN_004d2b70(void *actor);
     bool FUN_004c0340(SBGeoPoint2D &point);
@@ -145,7 +153,7 @@ public:
     void FUN_004e09d0(const SBGeoPoint2D &point, bool queued, bool immediate);
     void FUN_004e0d80(const SBGeoPoint2D &point, bool queued, bool immediate);
     void FUN_004e17c0(void *actor, int value);
-    void FUN_004e0030(const SBGeoPoint2D &point, void *actor, char flag);
+    void FUN_004e0030(const SBGeoPoint2D &point, bool queued, char flag);
     void FUN_004e0fb0(const SBGeoPoint2D &point, bool queued, bool immediate, void *provided);
     void FUN_004debe0();
     void FUN_004debf0(const SBGeoPoint2D &point);
@@ -168,6 +176,7 @@ public:
     bool FUN_004c7cd0();
     bool FUN_004c7cf0();
     void FUN_004c8140();
+    void FUN_004c94c0();
     bool FUN_004c9b30(unsigned long destination);
     unsigned FUN_004c7d50();
     bool FUN_004c7d80(void *first, int second, void **result);
@@ -175,18 +184,28 @@ public:
     void FUN_004e3c20(void *point);
     void FUN_004d8fd0(RHPCDescription *description);
     void SelectFollowElement(RHElementActor *actor);
+    __forceinline RHElementActor *FollowedElement() const
+    {
+        return *(const char *)((const char *)this + 0x4719) == 1 ?
+            *(RHElementActor *const *)((const char *)this + 0xd8) : 0;
+    }
     void FUN_004d9420();
+    void DisplayNoises(const SBGeoBoundingBox2D &bounds, float scale);
+    void DisplayNoise(RHnoise *noise, unsigned short startRadius, const SBGeoBoundingBox2D &bounds, float scale);
     void FUN_004d52d0(void *first, void *second, float third);
     void FUN_004d5320(const void *value);
+    void FUN_004d53f0(void *surface, const SBGeoBoundingBox2D &bounds, float scale);
     bool FUN_004c0040();
     bool FUN_004c02d0();
     void FUN_004d3d00(void *first, const SBGeoBoundingBox2D &second, float third, unsigned fourth, unsigned fifth, unsigned sixth);
-    void FUN_004d3e90(void *first, void *second, unsigned third, unsigned fourth, unsigned fifth, unsigned sixth);
+    void FUN_004d3e90(unsigned long surface, const SBGeoBoundingBox2D &bounds, float scale, unsigned fourth, unsigned fifth, unsigned sixth);
     void FUN_004d40a0(void *first, const SBGeoBoundingBox2D &second, unsigned third, unsigned fourth, unsigned fifth, unsigned short sixth);
     void FUN_004d4230(const SBGeoBoundingBox2D &bounds, unsigned second);
-    void FUN_004d7800(void *first, void *second, unsigned third);
-    void FUN_004d7820(void *first, void *second, unsigned third);
+    void FUN_004d7800(unsigned long surface, const SBGeoBoundingBox2D &bounds, float scale);
+    void FUN_004d7820(unsigned long surface, const SBGeoBoundingBox2D &bounds, float scale);
+    void FUN_004d7f40(SBGeoBoundingBox2D &bounds, float scale);
     void FUN_004d7460(void *first, void *second, float third);
+    void FUN_004d7490(unsigned long surface, SBGeoBoundingBox2D &view, float scale);
     void FUN_004d5a90(void *actor);
     void FUN_004d5ba0(void *actor, float alpha, int first, int second, int third, int fourth);
     void FUN_004d7dd0(void *first, void *second, void *third);
@@ -199,6 +218,7 @@ public:
     char FUN_004c7f50(void *actor);
     void FUN_004c7f60(const void *point);
     void FUN_004db7f0(SBGeoPoint2D &point);
+    bool FUN_004db7a0();
     int FUN_004db7b0(void *actor);
     void FUN_004db880();
     void FUN_004db8c0(unsigned char value);
@@ -215,6 +235,9 @@ public:
     void FUN_004dc260(const void *event);
     void FUN_004de170(bool first, bool second, bool third);
     void FUN_004de1e0();
+    void FUN_004de290();
+    void FUN_004de5e0();
+    bool FUN_004e1a40(const SBGeoPoint2D &point, int mode);
     void FUN_004de840();
     void InitializeActorsFromMissionStream(SBFile &file, std::vector<RHbeamMe> &beamMes);
     void InitializeBuildingTenantsFromMissionStream(SBFile &file);
@@ -256,6 +279,7 @@ public:
     bool FUN_004c42d0(SBFile &file, void *&value);
     bool FUN_004c43b0(SBFile &file, void *&value);
     bool FUN_004c4490(SBFile &file, void *&value);
+    static void CreateMasters();
     RHElementActorPC *GetPC(RHPCDescription *description) const;
     RHElementActorPC *GetPC(const RHCharacterProfile *profile) const;
     void LoadDynRes(unsigned mission);
@@ -269,11 +293,33 @@ public:
     }
     void Emit(SBFile &file, void *&value);
 
-    undefined m_0000[0xdc];
-    void *m_00dc;
+    undefined m_0000[0x68];
+    RHMessenger *m_0068;
+    undefined m_006c[6];
+    bool m_0072;
+    bool m_0073;
+    bool m_0074;
+    undefined m_0075[0x13];
+    bool m_0088;
+    bool m_0089;
+    bool m_008a;
+    undefined m_008b;
+    RHElement *m_008c;
+    void *m_0090;
+    undefined m_0094[0x40];
+    RHElement *m_focusElement;
+    undefined m_00d8[4];
+    SBDrawManager *m_draw;
     undefined m_00e0[0x3c];
-    undefined m_011c[0x42dc];
-    undefined m_43f8[0x364];
+    undefined m_011c[0x3e9c];
+    unsigned short m_3fb8;
+    undefined m_3fba[0x336];
+    RHFrameHolder *m_frameHolder;
+    undefined m_42f4[0x104];
+    undefined m_43f8[0x1c0];
+    RHPathFinder *m_pathFinder;
+    SBList<RHpathRequest *> m_failedPathRequests;
+    undefined m_45e0[0x17c];
     float m_475c;
     undefined m_4760[0x164];
     void *m_48c4;
@@ -288,16 +334,55 @@ public:
     RHEngineElementArray<RHElementFX> m_groundFX;
     RHEngineElementArray<RHElement> m_activeElements;
     RHSectorActorList m_49f8;
-    undefined m_4a1c[0x8c];
+    undefined m_4a1c[0x36];
+    char m_4a52;
+    char m_4a53;
+    char m_4a54;
+    char m_4a55;
+    undefined m_4a56[0x3e];
+    unsigned m_frameCount;
+    undefined m_4a98[0xe];
+    unsigned short m_shadowColor;
     char m_4aa8;
     undefined m_4aa9[3];
     SBListAutoDelete<RHUnk004e4660Entry *> m_4aac;
-    undefined m_4ac4[0x128];
+    undefined m_4ac4[0xc];
+    unsigned m_4ad0;
+    undefined m_4ad4[0x58];
+    char m_4b2c;
+    char m_4b2d;
+    char m_4b2e;
+    char m_4b2f;
+    unsigned short m_4b30;
+    char m_4b32;
+    char m_4b33;
+    char m_4b34;
+    char m_4b35;
+    char m_4b36;
+    char m_4b37;
+    char m_4b38;
+    char ShowMobileGeometry() const { return m_4b38; }
+    char m_4b39;
+    char m_4b3a;
+    char m_4b3b;
+    bool m_showSightRadius;
+    char m_4b3d;
+    char m_4b3e;
+    undefined m_4b3f[0x9d];
+    char m_4bdc;
+    undefined m_4bdd[7];
+    char m_4be4;
+    undefined m_4be5[7];
     SBListAutoDelete<RHEngineDrawEntry *> m_4bec;
-    SBListAutoDelete<RHUnk004e48b0Entry *> m_4c04;
-    undefined m_4c1c[0x80];
+    undefined m_4c04[0xc];
+    SBList<unsigned short> m_noiseRadii;
+    undefined m_4c34[0x44];
+    SBListAutoDelete<RHUnk004e48b0Entry *> m_4c78;
+    undefined m_4c90[0xc];
     SBListAutoDelete<RHUnk004e49f0Entry *> m_4c9c;
-    undefined m_4cb4[0x14];
+    undefined m_4cb4[0xc];
+    unsigned short m_discoveryRange;
+    undefined m_4cc2[6];
     RHEngineElementArray<RHElementActorHuman> m_teamHumans[2];
     RHEngineElementArray<RHElementActorSoldier> m_teamSoldiers[2];
     RHEngineElementArray<RHElementActorSoldier> m_soldiers;
@@ -407,25 +492,6 @@ public:
     virtual void Unk12c();
     virtual int Unk130();
 };
-
-// SIZE 0x18c
-class RHUnk004bac30 : public RHEngineMissionElementCalls
-{
-public:
-    RHUnk004bac30();
-    undefined m_04[0x188]; // 0x04
-};
-
-#ifndef RHELEMENTMOBILEBASE_VIEW
-#define RHELEMENTMOBILEBASE_VIEW
-// SIZE 0xfc
-class RHMobileBase004a8130 : public RHEngineMissionElementCalls
-{
-public:
-    RHMobileBase004a8130(int type);
-    undefined m_04[0xf8]; // 0x04
-};
-#endif
 
 #ifndef RHRECONNAISSANCEENGINE_VIEW
 #define RHRECONNAISSANCEENGINE_VIEW
