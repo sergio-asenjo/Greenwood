@@ -21,10 +21,17 @@ public:
         short m_1e;
     };
 
-    short m_00;
-    short m_02;
-    short m_04;
-    short m_06;
+    union
+    {
+        struct
+        {
+            short m_00;
+            short m_02;
+            short m_04;
+            short m_06;
+        };
+        unsigned short m_ranges[4];
+    };
     short m_08;
     short m_0a;
     short m_0c;

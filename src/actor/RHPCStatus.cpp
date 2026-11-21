@@ -11,11 +11,7 @@ DECOMP_SIZE_ASSERT(RHUnk00423b10, 0x10)
 DECOMP_SIZE_ASSERT(RHPCWideText, 0x10)
 DECOMP_SIZE_ASSERT(RHMapWideText, 0x10)
 
-class RHUnk0055dbb0
-{
-public:
-    char *FUN_0055dbb0();
-};
+#include "RHPlayerProfileAccess.h"
 
 #include "RHPlayerProfileManagerStorage.h"
 
