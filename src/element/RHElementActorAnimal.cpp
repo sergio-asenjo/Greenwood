@@ -1,4 +1,6 @@
 #include "RHElementActorAnimal.h"
+#include "RHSequenceManager.h"
+#include "RHFastFindGridCore.h"
 #include <stdlib.h>
 
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
@@ -138,7 +140,7 @@ bool RHElementActorAnimal::GoTo(const SBGeoPoint2D &destination, unsigned short 
         {
             RHPositionInterface *position = m_50->Position();
             void *box = position->Unk0055fa10(position->m_88);
-            if (!((RHUnkPathGeometry *)g_unk0x6c0a9c)->Unk004f9170(m_50->m_24, destination, m_50->m_de, box))
+            if (!g_unk0x6c0a9c->Unk004f9170(m_50->m_24, destination, m_50->m_de, box))
                 return false;
         }
         int animation;

@@ -4,6 +4,7 @@
 #include "RHHumanListCore.h"
 #include "RHActorCommand.h"
 #include "RHRepulsivePoint.h"
+#include "RHElementActor.h"
 
 class SBFile;
 class SBGeoPoint2D;
@@ -12,12 +13,23 @@ class RHOrder;
 class RHActorTranslationSequenceCalls;
 class RHUnk00613e90;
 class RHUnk005864a0;
+class RHSword;
+class RHBow;
+class RHSightObstacle;
 
-class RHElementActorHuman
+class RHElementActorHuman : public RHElementActor
 {
 public:
-    unsigned ElementTypeBits() const { return m_typeBits; }
+    virtual char IsDead() const;
+    __forceinline bool IsUnconscious() const { return *(const char *)((const char *)this + 0x1ce) != 0; }
+    unsigned ElementTypeBits() const { return (unsigned)RHElement::m_04 & 7; }
     bool FUN_00471a50();
+    bool IsRollNeeded(RHSightObstacle *area);
+    bool FindRollPoint(SBGeoPoint2D &point, RHSightObstacle *area, bool checkDirection);
+    void UpdateRoll();
+    void FUN_00479430(RHUnk00613e90 &point, float height);
+    void ComputeBowPoint(RHUnk00613e90 &point, int type, short direction);
+    int CanShootWithBowAt(const RHUnk00613e90 &point, int &type, bool extended);
     bool FUN_00471b00();
     void FUN_00471c00(unsigned short amount, void *source, bool force);
     void FUN_0047ef70();
@@ -38,9 +50,49 @@ public:
     void FUN_00479970(RHSequenceElement *element);
     void Translate(RHSequenceElement *element, RHcommand command);
     void GetTransitionFlags(RHSequenceElement *element, unsigned long &first, unsigned long &second, unsigned long &third);
-    bool Serialize(SBFile &file);
+    virtual bool Serialize(SBFile &file);
+    virtual bool V68() = 0;
+    virtual void V6c() = 0;
+    virtual bool V70() = 0;
+    virtual void V74() = 0;
+    virtual void V78() = 0;
+    virtual bool V7c() = 0;
+    virtual void V80() = 0;
+    virtual void V84() = 0;
+    virtual void V88() = 0;
+    virtual void V8c() = 0;
+    virtual void V90() = 0;
+    virtual void V94() = 0;
+    virtual void V98() = 0;
+    virtual void V9c() = 0;
+    virtual void Va0() = 0;
+    virtual void Va4() = 0;
+    virtual void Va8() = 0;
+    virtual void Vac() = 0;
+    virtual void Vb0() = 0;
+    virtual void Vb4() = 0;
+    virtual void Vb8() = 0;
+    virtual void Vbc() = 0;
+    virtual void Vc0() = 0;
+    virtual void Vc4() = 0;
+    virtual void Vc8() = 0;
+    virtual short GetLifePoints() const = 0;
+    virtual void Vd0() = 0;
+    virtual void Vd4() = 0;
+    virtual void Vd8() = 0;
+    virtual void Vdc() = 0;
+    virtual void Ve0() = 0;
+    virtual unsigned short FUN_0049ec20(unsigned action) = 0;
+    virtual void Ve8() = 0;
+    virtual void Vec() = 0;
+    virtual void Vf0() = 0;
+    virtual void Vf4() = 0;
+    virtual bool Vf8() = 0;
+    bool FUN_004860b0();
+    bool IsTrueOrFalseBeggar();
     void FUN_0047a870(void *value);
     bool FUN_0047a450(RHElementActorHuman *other);
+    virtual void GetRepulsiveObjects(RHRepulsivePointList &points, RHRepulsiveLineList &lines, RHElementActor *actor);
     void FUN_0047f4f0(void *value);
     bool FUN_0047f420();
     void FUN_0047a880(RHSequenceElement *element);
@@ -77,6 +129,7 @@ public:
     int FUN_004801d0(void *first, void *second, int weaponData);
     int FUN_004808f0(void *first, void *second, int weaponData);
     int FUN_00481150(int weaponData);
+    int FUN_0047c130(const SBGeoPoint2D &point, bool);
     void FUN_0047c420(void *value);
     int FUN_0047c4c0(RHElementActorHuman *actor);
     void FUN_0047ca50();
@@ -111,17 +164,6 @@ public:
     bool FUN_0049b6a0();
     void Emit(SBFile &file, RHSequenceElement *element, RHcommand command);
 
-    char m_000[4];
-    union
-    {
-        unsigned m_flags;
-        struct
-        {
-            unsigned m_typeBits : 3;
-            unsigned m_otherBits : 29;
-        };
-    };
-    char m_008[0x1b0];
     RHHumanList m_1b8;
     char m_1d0[0x1c];
     undefined m_1ec[0x20];
@@ -136,7 +178,8 @@ public:
     short m_240[9];
     undefined m_252[2];
     void *m_254;
-    undefined m_258[8];
+    RHBow *m_bow;
+    RHSword *m_25c;
     RHHumanList m_260;
     undefined m_278[0x10];
     undefined m_288;

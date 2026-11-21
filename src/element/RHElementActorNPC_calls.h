@@ -2,7 +2,8 @@
 #define RHELEMENTACTORNPC_CALLS_H
 #include "RHSectorActorList.h"
 
-#include "RHSprite.h"
+#include "RHSprite_calls.h"
+#include "RHSpriteCore.h"
 
 #include "RHElementActorNPC.h"
 
@@ -22,6 +23,7 @@ public:
 void RHSerializeName(SBFile &file, const char *name);
 bool FUN_00416b30(void *&value, SBFile &file);
 
+class RHEngine;
 extern RHEngine *g_pEngine;
 
 class RHFastFindGrid;
@@ -87,25 +89,6 @@ public:
 
 #include "RHScriptListCore.h"
 #include "RHSectorActorIterator.h"
-
-struct RHNPCDetectableList : public std::list<RHDetectable>
-{
-    RHNPCDetectableList();
-    ~RHNPCDetectableList();
-    void ClearNodes()
-    {
-        typedef std::list<unsigned long> Native;
-        ((Native *)this)->clear();
-    }
-    void *m_cursor;
-    bool m_dirty;
-    char m_11[3];
-    int m_index;
-    bool m_searching;
-    char m_19[3];
-    int m_found;
-    RHDetectable m_value;
-};
 
 class RHNPCActorCalls
 {

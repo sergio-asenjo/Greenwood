@@ -30,9 +30,6 @@ struct RHCivilianProfileView
 #include "RHSoldierNPCCalls.h"
 class RHSequenceElement;
 
-#include "RHElementActorCivilianCore.h"
-
-
 #include "RHCivilianSpriteView.h"
 
 class SBDrawManager;
@@ -68,14 +65,9 @@ public:
 #define SBGEOVECTOR2D_H
 #define SBGEO_BOUNDINGBOX2D_VIEW
 
-// SIZE 0x70
-class RHCampaignProfiles
-{
-public:
-    RHCampaignProfiles();
-    ~RHCampaignProfiles();
-    undefined m_00[0x70]; // 0x00
-};
+#include "RHElementActorCivilianCore.h"
+
+#include "RHCampaignProfiles.h"
 
 #include "SBDrawManagerCore.h"
 
@@ -84,11 +76,6 @@ public:
 #include "RHPositionInterfaceCore.h"
 
 class RHEngine;
-class RHElementActor
-{
-public:
-    void InitializeScript(std::string &script);
-};
 
 extern RHEngine *g_pEngine;
 extern RHCampaignProfiles *g_unk0x6c0e84;

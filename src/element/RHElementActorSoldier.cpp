@@ -42,12 +42,12 @@
 #include "RHMalignityStimulus.h"
 #include "RHMalignityPosition.h"
 #include "RHScriptEngineCalls.h"
+#include "RHSequenceManager.h"
 #include "RHSequenceGenericCalls.h"
 #include "RHCampaignPropertyCalls.h"
 #include "SBDrawManager.h"
 #include "RHMalignityCampaignIndexList.h"
 #include "RHElementActorHumanCore.h"
-#include "RHElementActorHumanBase.h"
 #include "RHHumanStatus.h"
 #include "RHCivilianSpriteView.h"
 #include "RHActorTranslation.h"
@@ -526,7 +526,6 @@ void RHElementActorSoldier::GetTransitionFlags(RHSequenceElement *element, unsig
 class RHMessenger;
 RHMessenger *RHUnk00546050();
 
-#include "../ai/RHMalignityVisibilityCalls.h"
 
 // STUB: GAME 0x004a4a40
 void RHElementActorSoldier::FUN_004a4a40()
@@ -564,7 +563,7 @@ bool RHElementActorSoldier::FUN_004a4aa0(const SBGeoPoint2D &point, RHElementAct
         break;
     case 5:
         if (RHSOLDIER_FIELD(char, 8) ||
-            ((RHMalignityVisibilityCalls *)this)->FUN_004860b0() ||
+            FUN_004860b0() ||
             ((RHSoldierActorCalls *)this)->V130() == 0 ||
             (((RHSoldierActorCalls *)this)->Vf4() && RHSOLDIER_FIELD(int, 0x144) == 3))
             return false;
@@ -587,7 +586,7 @@ bool RHElementActorSoldier::FUN_004a4aa0(const SBGeoPoint2D &point, RHElementAct
         }
         if (RHSOLDIER_FIELD(char, 8) ||
             ((RHSoldierActorCalls *)this)->V130() == 0 ||
-            ((RHMalignityVisibilityCalls *)this)->FUN_004860b0() ||
+            FUN_004860b0() ||
             ((RHSoldierActorCalls *)this)->Vf8() ||
             ((RHSoldierActorCalls *)this)->Vf4())
             return false;
@@ -641,7 +640,7 @@ void RHElementActorSoldier::SetAttentiveMode(bool value, bool flag)
             element = new RHUnk00584d60(1, 0x85, this);
         else
             element = new RHUnk00584d60(1, 0x84, this);
-        ((RHScriptBatchCalls *)*(void **)((char *)this + 0x5c))->Unk0058a940("", 0, element);
+        (*reinterpret_cast<RHSequenceManager **>((char *)this + 0x5c))->Unk0058a940("", 0, element);
     }
     *(bool *)((char *)this + 0xa2d) = value;
 }
@@ -922,8 +921,8 @@ void RHElementActorSoldier::FUN_004a5890()
     case 0xb2:
         if (*(void **)(RHSOLDIER_VBASE + 0x80))
             RHSoldierSetHeading((char *)RHSOLDIER_FIELD(void *, 0x50) + 4,
-                ((RHUnk005fc3b0 *)&((RHUnk004237d0 *)*(void **)(RHSOLDIER_VBASE + 0x80))->FUN_004237d0()
-                    .Unk005fc110(((RHUnk004237d0 *)this)->FUN_004237d0()))->FUN_005fcc50(0.57357645f));
+                ((RHUnk005fc3b0 *)&(*(RHElement **)(RHSOLDIER_VBASE + 0x80))->FUN_004237d0()
+                    .Unk005fc110(((RHElement *)this)->FUN_004237d0()))->FUN_005fcc50(0.57357645f));
         break;
     }
     ((RHArtificialMalignity *)((char *)this + 0x6e8))->FUN_0044da40();
@@ -944,7 +943,7 @@ void RHElementActorSoldier::FUN_004a5a00(void *first, void *second)
 // FUNCTION: GAME 0x004a5a50
 void RHElementActorSoldier::FUN_004a5a50()
 {
-    SBGeoVector2D direction = ((RHMalignityActorCalls *)this)->FUN_004135b0();
+    SBGeoVector2D direction = ((RHElementActor *)this)->FUN_004135b0();
     char *profile = *(char **)(RHSOLDIER_FIELD(char *, 0x25c) + 4);
     unsigned short height = *(unsigned short *)(profile + 0x18);
     unsigned short width = *(unsigned short *)(profile + 0x1a);

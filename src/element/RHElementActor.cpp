@@ -1,5 +1,6 @@
 #include "RHElementActor_calls.h"
 #include "RHElementActor.h"
+#include "RHElementActorHumanCore.h"
 #include "RHElementGrid.h"
 #include "RHSectorActorList.h"
 #include "VMCore.h"
@@ -248,20 +249,25 @@ void RHElementActor::FUN_00462700(unsigned short value)
     RHActorField<void *>(Info(), 0xe0) = areas[value];
 }
 
+static inline RHBonusInfoBase *RHBorrowMapPosition(RHSprite *sprite)
+{
+    return &RHActorField<RHBonusInfoBase>(sprite, 4);
+}
+
 // Parked: actor/receiver registers, point-temporary lifetime and copy scheduling differ.
 // STUB: GAME 0x00462730
-void RHElementActor::FUN_00462730(RHElementActor *actor, bool value)
+void RHElement::CopyPositionMapEtc(const RHElement *source, bool value)
 {
-    Position()->FUN_0055fa20(RHActorField<RHBonusProjection *>(actor->Info(), 0xec));
-    RHActorField<unsigned short>(Position(), 0xda) = RHActorField<unsigned short>(actor->Info(), 0xde);
-    RHActorField<void *>(Position(), 0xdc) = RHActorField<void *>(actor->Info(), 0xe0);
-    unsigned short direction = RHActorField<unsigned short>(actor->Info(), 0xd8) & 15;
-    RHActorField<unsigned short>(Position(), 0xd4) = direction;
-    RHActorField<unsigned short>(Position(), 0xd6) = direction;
+    RHBorrowMapPosition(m_50)->FUN_0055fa20(RHActorField<RHBonusProjection *>(source->m_50, 0xec));
+    RHActorField<unsigned short>(RHBorrowMapPosition(m_50), 0xda) = RHActorField<unsigned short>(source->m_50, 0xde);
+    RHActorField<void *>(RHBorrowMapPosition(m_50), 0xdc) = RHActorField<void *>(source->m_50, 0xe0);
+    unsigned short direction = RHActorField<unsigned short>(source->m_50, 0xd8) & 15;
+    RHActorField<unsigned short>(RHBorrowMapPosition(m_50), 0xd4) = direction;
+    RHActorField<unsigned short>(RHBorrowMapPosition(m_50), 0xd6) = direction;
     if (value)
     {
-        const SBGeoPoint2D &point = actor->FUN_00462920();
-        RHBonusInfoBase *position = Position();
+        const SBGeoPoint2D &point = source->FUN_00462920();
+        RHBonusInfoBase *position = RHBorrowMapPosition(m_50);
         RHActorField<SBGeoPoint2D>(position, 0x20) = point;
         {
             SBGeoVector2D displacement(point);
@@ -274,8 +280,8 @@ void RHElementActor::FUN_00462730(RHElementActor *actor, bool value)
     }
     else
     {
-        RHBonusInfoBase *position = Position();
-        SBGeoPoint2D &point = RHActorField<SBGeoPoint2D>(actor->Info(), 0x24);
+        RHBonusInfoBase *position = RHBorrowMapPosition(m_50);
+        SBGeoPoint2D &point = RHActorField<SBGeoPoint2D>(source->m_50, 0x24);
         RHActorField<SBGeoPoint2D>(position, 0x20) = point;
         {
             SBGeoVector2D displacement(point);
@@ -286,7 +292,7 @@ void RHElementActor::FUN_00462730(RHElementActor *actor, bool value)
         }
         RHActorField<int>(position, 4) = 2;
     }
-    Position()->FUN_0055f290();
+    RHBorrowMapPosition(m_50)->FUN_0055f290();
 }
 
 void *FUN_0048f170(void *value);
@@ -294,9 +300,9 @@ void *FUN_0048f170(void *value);
 #include "RHUnk005bb520.h"
 
 // FUNCTION: GAME 0x00462920
-SBGeoPoint2D RHElementActor::FUN_00462920()
+SBGeoPoint2D RHElement::FUN_00462920() const
 {
-    return ((RHUnk005bb520 *)*(void **)((char *)this + 0x50))->FUN_005bb520();
+    return ((RHUnk005bb520 *)m_50)->FUN_005bb520();
 }
 
 // FUNCTION: GAME 0x00462970
@@ -404,7 +410,7 @@ bool RHElementActor::Serialize(SBFile &file)
         RH_ACTOR_ACCESS(present, 1, 213);
         if (present)
         {
-            m_15c = (RHSequence *)new RHUnk00582220;
+            m_15c = new RHSequence;
             m_15c->Serialize(file, false);
         }
         RH_ACTOR_ACCESS(count, 2, 220);
@@ -464,6 +470,9 @@ void RHElementActor::FUN_00463260(unsigned first, unsigned second, unsigned thir
 
 // SYNTHETIC: GAME 0x00463270
 // ??_GRHElementActor@@UAEPAXI@Z
+
+// SYNTHETIC: GAME 0x0046ebc0
+// ??_ERHElementActor@@WBAE@AEPAXI@Z
 
 // STUB: GAME 0x00463290
 RHElementActor::~RHElementActor()
@@ -549,7 +558,7 @@ void RHScriptBatchCalls::Unk00464630()
     RHUnk00584d60 *element = new RHUnk00584d60(1, 0xa1, this);
     RHActorField<RHUnk00584d60 *>(this, 0x138) = element;
     RHActorField<int>(element, 0x5c) = 9;
-    RHActorField<RHScriptBatchCalls *>(this, 0x5c)->Unk0058a940(
+    RHActorField<RHSequenceManager *>(this, 0x5c)->Unk0058a940(
         "", 0, RHActorField<RHUnk00584d60 *>(this, 0x138));
 }
 
@@ -825,10 +834,10 @@ void RHElementActor::ExecuteImmediately(RHSequenceElement *element)
             {
                 RHElementActor *related = *(RHElementActor **)((char *)this + 0x5cc);
                 if (related)
-                    related->FUN_00462730(this, false);
+                    related->CopyPositionMapEtc(this, false);
                 related = *(RHElementActor **)((char *)this + 0x254);
                 if (related)
-                    related->FUN_00462730(this, false);
+                    related->CopyPositionMapEtc(this, false);
             }
         }
         if (Type() == 12 && !same && draw)
@@ -1695,7 +1704,7 @@ void RHScriptBatchCalls::Unk0046b9e0()
         }
     }
     RHUnk00584d60 *element = new RHUnk00584d60(1, 0x4d, actor);
-    ((RHScriptBatchCalls *)RHActorField<void *>(actor, 0x5c))->Unk0058a940("", 0, element);
+    RHActorField<RHSequenceManager *>(actor, 0x5c)->Unk0058a940("", 0, element);
 }
 
 // FUNCTION: GAME 0x0046bab0
@@ -1715,7 +1724,7 @@ void RHElementActor::FUN_0046bab0()
         }
     }
     RHUnk00584d60 *element = new RHUnk00584d60(1, 0x4e, this);
-    ((RHScriptBatchCalls *)RHActorField<void *>(this, 0x5c))->Unk0058a940("", 0, element);
+    RHActorField<RHSequenceManager *>(this, 0x5c)->Unk0058a940("", 0, element);
 }
 
 // FUNCTION: GAME 0x0046bb80
@@ -1746,8 +1755,7 @@ inline void *RHFirstSequenceOrder(RHSequenceElement *element)
     return 0;
 }
 
-// Parked: info+4 position accesses fold into single displacements; the original keeps the add.
-// STUB: GAME 0x0046bd40
+// FUNCTION: GAME 0x0046bd40
 void RHElementActor::FUN_0046bd40(RHSequenceElement *element)
 {
     if (!m_130 || !RHFirstSequenceOrder(m_130) || RHActorField<int>(RHFirstSequenceOrder(m_130), 0x24) != 0x12e)
@@ -1757,9 +1765,9 @@ void RHElementActor::FUN_0046bd40(RHSequenceElement *element)
     }
     if (RHActorField<unsigned char>(element, 4) == 4 && (RHActorField<unsigned char>(element, 0x88) & 2))
     {
-        if (((SBGeoBoundingBox2D *)((char *)g_unk0x6c0a9c + 0x3e84))->FUN_00608400(RHActorField<SBGeoPoint2D>(Info(), 0x24)))
+        if (((SBGeoBoundingBox2D *)((char *)g_unk0x6c0a9c + 0x3e84))->FUN_00608400(m_50->m_20))
         {
-            Position()->SetFlagFd();
+            m_50->SetFlagFd();
             RHActorField<char>(this, 0x12) = 1;
             RHActorField<char>(this, 0x88) = 0;
         }
@@ -1771,7 +1779,7 @@ void RHElementActor::FUN_0046bd40(RHSequenceElement *element)
     }
     if (m_130 == element)
     {
-        Position()->ResetTarget(SBGeoPoint2D(0.0f, 0.0f));
+        m_50->ResetTarget(SBGeoPoint2D(0.0f, 0.0f));
         m_130 = 0;
         m_134 = 0;
     }
@@ -1790,7 +1798,7 @@ void RHElementActor::FUN_0046c6b0(int style, const SBGeoPoint2D &destination)
     unsigned short level = 1;
     RHActorTranslationSequenceCalls *current = (RHActorTranslationSequenceCalls *)m_130;
     unsigned long flags = RHActorField<unsigned long>(current, 0x88);
-    RHUnk00582220 *sequence = new RHUnk00582220;
+    RHSequence *sequence = new RHSequence;
     if (RHActorSectorFlag(RHActorField<void *>(current, 0x78), 12))
     {
         SBGeoPoint2D point;
@@ -1801,7 +1809,7 @@ void RHElementActor::FUN_0046c6b0(int style, const SBGeoPoint2D &destination)
                 RHActorField<unsigned short>(this, 0x16c), 0, m_160, flags, 1.0f))
         {
             if (sequence)
-                sequence->FUN_00582280(1);
+                delete sequence;
             current->V0c(5, true);
             return;
         }
@@ -1816,7 +1824,7 @@ void RHElementActor::FUN_0046c6b0(int style, const SBGeoPoint2D &destination)
                 RHActorField<RHMovementBox *>(current, 0x80), m_160, flags))
         {
             if (sequence)
-                sequence->FUN_00582280(1);
+                delete sequence;
             current->V0c(5, true);
             return;
         }
@@ -1830,14 +1838,14 @@ void RHElementActor::FUN_0046c6b0(int style, const SBGeoPoint2D &destination)
                 RHActorField<unsigned short>(this, 0x16c), 0, m_160, flags, 1.0f))
         {
             if (sequence)
-                sequence->FUN_00582280(1);
+                delete sequence;
             current->V0c(5, true);
             return;
         }
     }
     if (current)
         current->V0c(6, true);
-    ((RHScriptBatchCalls *)RHActorField<void *>(this, 0x5c))->Unk0058a940("", 0, sequence);
+    RHActorField<RHSequenceManager *>(this, 0x5c)->Unk0058a940("", 0, sequence);
 }
 
 // FUNCTION: GAME 0x0046c8e0
@@ -1921,7 +1929,7 @@ void RHElementActor::CheckForLineCrossing()
         {
             CrossElevationLine(line);
             if ((RHActorField<unsigned>(this, 4) & 7) == 4)
-                ((RHActorCrossingHumanCalls *)this)->FUN_004846d0();
+                static_cast<RHElementActorHuman *>(this)->UpdateRoll();
             if (m_134)
                 ((RHMobilePosition *)Position())->FUN_0055fc20(m_134->m_2a != 0);
         }
@@ -1968,7 +1976,7 @@ void RHElementActor::CheckForLineCrossing()
     if (elevationCount)
     {
         if ((RHActorField<unsigned>(this, 4) & 7) == 4)
-            ((RHActorCrossingHumanCalls *)this)->FUN_004846d0();
+            static_cast<RHElementActorHuman *>(this)->UpdateRoll();
         if (m_134)
             ((RHMobilePosition *)Position())->FUN_0055fc20(m_134->m_2a != 0);
     }
@@ -2435,7 +2443,7 @@ bool RHElementActor::FUN_0046e270()
             ((RHUnk0046bcb0 *)m_150)->Unk(8);
         m_150 = 0;
         m_130->FUN_00585970(0, true);
-        ((RHUnk0058a3d0 *)*(void **)((char *)this + 0x5c))->Unk("", 0, m_15c);
+        static_cast<RHSequenceManager *>(m_5c)->Launch("", 0, static_cast<RHSequence *>(m_15c));
         FUN_0046c8e0(0);
         return true;
     }
@@ -2525,15 +2533,15 @@ void RHElementActor::FUN_0046e980(bool first, bool second)
 }
 
 // FUNCTION: GAME 0x004846d0
-void RHActorCrossingHumanCalls::FUN_004846d0()
+void RHElementActorHuman::UpdateRoll()
 {
     RHOrder *order = RHActorField<RHOrder *>(this, 0x134);
     if (order && order->m_24 == 0x7f &&
         RHActorField<RHSequenceElement *>(this, 0x130)->m_10 != 0x4c)
     {
-        void *area = RHActorField<void *>(RHActorField<void *>(this, 0x50), 0xec);
+        RHSightObstacle *area = RHActorField<RHSightObstacle *>(RHActorField<void *>(this, 0x50), 0xec);
         SBGeoPoint2D point;
-        if (FUN_004843a0(area) && FUN_004843d0(point, area, true))
+        if (IsRollNeeded(area) && FindRollPoint(point, area, true))
         {
             RHActorField<SBGeoPoint2D>(RHActorField<RHOrder *>(this, 0x134), 0x14) = point;
             RHActorField<RHOrder *>(this, 0x134)->FUN_0054e730();
@@ -2840,16 +2848,10 @@ void RHActorEmitWidened(RHUnk0053bf20 *first, RHUnk00560410 *second,
     list->FUN_004e52a0();
     point->FUN_005fc700(1.0f);
     ((RHActorSequencePointCalls *)first)->FUN_005871b0(0);
-    ((RHActorCrossingHumanCalls *)first)->FUN_004846d0();
     ((RHSequenceElement *)first)->Unk00587160(0);
     new SBGeoBoundingBox2D(*(SBGeoBoundingBox2D *)first);
 }
 
-// FUNCTION: GAME 0x00470160
-bool RHElementActor::FUN_00470160()
-{
-    return ((RHActorActionCalls *)this)->Vcc() <= 0;
-}
 
 struct RHUnk0046bbf0OrderList
 {
@@ -2954,7 +2956,7 @@ void RHElementActor::Emit(SBFile &file, std::string &name)
     FUN_0046e7c0(0, 0);
     FUN_0046e960();
     FUN_0046e980(false, false);
-    FUN_00470160();
+    IsDead();
     Serialize(file);
     ExecuteImmediately(0);
     Translate(0, RHcommandUnk0);

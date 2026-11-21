@@ -311,7 +311,6 @@ bool RHElementActorCivilian::FUN_00470ce0()
 
 bool RHCivilianVirtualBool(void *object, unsigned offset);
 
-#include "../ai/RHMalignityVisibilityCalls.h"
 #include "../ai/RHMalignityActorCalls.h"
 #include "../engine/RHMessenger.h"
 #include "RHActorSequenceStorage.h"
@@ -354,7 +353,7 @@ bool RHElementActorCivilian::FUN_00470d00(const SBGeoPoint2D &point, RHElementAc
     {
     case 3:
         if (!RHCivilianField<char>(this, 8) &&
-            !((RHMalignityVisibilityCalls *)this)->FUN_004860b0() &&
+            !FUN_004860b0() &&
             FUN_00470ca0() &&
             ((RHMalignityActorCalls *)pcArg)->Vf8())
         {
@@ -414,7 +413,7 @@ void FUN_00471060(unsigned int index)
 {
     RHElementScroll **scrolls = g_unk0x6c09dc;
     RHMinimap *minimap = g_unk0x6c0c50;
-    minimap->FUN_0054a440(scrolls[index]->FUN_004ba5d0());
+    minimap->SetHighlighted(scrolls[index]->FUN_004ba5d0());
 }
 
 // FUNCTION: GAME 0x00470f70
@@ -596,11 +595,11 @@ void EmitRHCivilianAdjustedReceiver(RHCivilianAdjustedReceiver *receiver, unsign
 }
 
 // FUNCTION: GAME 0x00485990
-bool RHElementActorCivilian::FUN_00485990()
+bool RHElementActorHuman::IsTrueOrFalseBeggar()
 {
-    if ((RHCivilianField<unsigned>(this, 4) & 0x1f) == 4)
-        return FUN_00470ca0();
-    return *(int *)(RHCivilianField<char *>(this, 0x50) + 0x8c) == 0x14;
+    if ((RHElement::m_04 & 0x1f) == 4)
+        return static_cast<RHElementActorCivilian *>(this)->FUN_00470ca0();
+    return RHCivilianField<int>(RHElement::m_50, 0x8c) == 0x14;
 }
 
 // FUNCTION: GAME 0x005bdef0
@@ -659,7 +658,7 @@ void RHElementActorCivilian::Emit(SBFile &file)
     FUN_00470ce0();
     FUN_00471240(0);
     FUN_004712b0(0);
-    FUN_00485990();
+    IsTrueOrFalseBeggar();
 }
 
 class RHCivilianVisibilityDispatch

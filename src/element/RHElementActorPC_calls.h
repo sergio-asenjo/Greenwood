@@ -14,9 +14,7 @@
 class RHScriptBatchCalls
 {
 public:
-    void *Unk0058a940(void *context, int value, void *element);
     bool Unk0049d560(int action);
-    void Unk0049d6c0();
     void Unk00464630();
     void Unk0046bcf0(int state, int value);
     void Unk00485200(int index, int amount);
@@ -141,16 +139,7 @@ struct RHActorPCProfileNode
     undefined value[0x10]; // 0x08
 };
 
-// SIZE 0x70
-class RHCampaignProfiles
-{
-public:
-    RHCampaignProfiles();
-    ~RHCampaignProfiles();
-    undefined m_0[0x14]; // 0x00
-    void **m_14; // 0x14
-    undefined m_18[0x58]; // 0x18
-};
+#include "RHCampaignProfiles.h"
 
 // SIZE 0x48
 class RHPCDescription
@@ -247,16 +236,7 @@ public:
     void FUN_00493660(int value);
 };
 
-class RHElementActor
-{
-public:
-    void FUN_0046bb80();
-    void InitializeScript(std::string &name);
-    void FUN_00478c20(RHUnk00613e90 &point, int posture);
-    SBGeoPoint2D FUN_00462920();
-};
-
-#include "RHElementPositionCalls.h"
+#include "RHElementActor.h"
 
 template<class T>
 inline T &RHActorPCField(void *actor, unsigned offset)

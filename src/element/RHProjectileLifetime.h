@@ -2,6 +2,7 @@
 #define RHPROJECTILELIFETIME_H
 
 #include "RHElementProjectile.h"
+#include "RHMalignityPosition.h"
 
 struct RHProjectilePointLifetime
 {
@@ -37,14 +38,21 @@ class __declspec(novtable) RHProjectileLifetime : public RHElementObject
 public:
     RHProjectileLifetime(int action, void *victim);
     ~RHProjectileLifetime();
-    virtual bool FUN_004b9f40();
+    virtual char FUN_004b9f40();
     virtual unsigned V68();
     void *FUN_004b40f0(unsigned flags);
     RHProjectilePointLifetime point100;
     RHProjectilePointLifetime point10c;
-    unsigned char data118[8];
-    void *material;
-    unsigned char data124[8];
+    union
+    {
+        struct
+        {
+            unsigned char data118[8];
+            void *material;
+            unsigned char data124[8];
+        };
+        RHMalignityPosition impactPosition;
+    };
     void *target;
     unsigned short count130;
     unsigned char flag132;

@@ -3,11 +3,31 @@
 #include "RHMalignityActorCalls.h"
 #include "RHMalignityOwnerCalls.h"
 #include "RHElementActorHumanCore.h"
+#include "RHShadowPolygon.h"
+#include "RHSectorCore.h"
+#include "RHElementObject.h"
+#include "RHFastFindGridCore.h"
 
 DECOMP_SIZE_ASSERT(RHNPCDetectableRecord, 0x14)
 DECOMP_SIZE_ASSERT(RHNPCDetectableNode, 0x1c)
 DECOMP_SIZE_ASSERT(RHNPCDetectableStorage, 0x18)
 DECOMP_SIZE_ASSERT(RHNPCDetectableList, 0x34)
+DECOMP_STATIC_ASSERT(offsetof(RHElementActorNPC, m_detectables) == 0x504)
+DECOMP_SIZE_ASSERT(RHElementActorNPC, 0x704)
+DECOMP_STATIC_ASSERT(offsetof(RHElementActorNPC, m_4cc) == 0x4cc)
+DECOMP_STATIC_ASSERT(offsetof(RHElementActorNPC, m_detectableStrength) == 0x63c)
+DECOMP_STATIC_ASSERT(offsetof(RHElementActorNPC, m_654) == 0x654)
+DECOMP_STATIC_ASSERT(offsetof(RHviewParameters, m_viewStatus) == 0x08)
+DECOMP_STATIC_ASSERT(offsetof(RHviewParameters, m_48) == 0x48)
+DECOMP_STATIC_ASSERT(offsetof(RHviewParameters, m_50) == 0x50)
+DECOMP_STATIC_ASSERT(offsetof(RHviewParameters, m_58) == 0x58)
+DECOMP_STATIC_ASSERT(offsetof(RHviewParameters, m_78) == 0x78)
+DECOMP_STATIC_ASSERT(offsetof(RHElementObject, m_fc) == 0xfc)
+DECOMP_STATIC_ASSERT(offsetof(RHSprite, m_c) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHSprite, m_d4) == 0xd8)
+DECOMP_STATIC_ASSERT(offsetof(RHSprite, m_dc) == 0xe0)
+DECOMP_STATIC_ASSERT(offsetof(RHElement, m_64) == 0x64)
+DECOMP_STATIC_ASSERT(offsetof(RHEngine, m_showSightRadius) == 0x4b3c)
 
 #define RHNPC_ACCESS(buffer, size, line) \
     if (file.Access(buffer, size) < 0) \
@@ -254,6 +274,42 @@ void RHElementActorNPC::FUN_00487b70()
     RHNPC_FIELD(float, 0x660) = 0.8f;
 }
 
+// FUNCTION: GAME 0x00487b90
+void RHElementActorNPC::FUN_00487b90(
+    const SBGeoBoundingBox2D &box, float zoom, unsigned long flags, int)
+{
+    SBGeoVector2D vector;
+    RHUnk00613e90 origin;
+    if (FUN_004860b0())
+        return;
+    char viewStatus = m_654.m_viewStatus;
+    if (!viewStatus || !m_12)
+        return;
+    const RHSector *area = static_cast<const RHSector *>(m_50->m_dc);
+    if (area && ((unsigned char)((unsigned)area->m_30 >> 13) & 1))
+        return;
+    if (viewStatus == 5)
+        return;
+
+    FUN_00478c20(origin, 0);
+    if (origin.z >= 0.0f)
+    {
+        unsigned char red, green, blue;
+        FUN_0048a650(red, green, blue);
+        unsigned short blueChannel = blue;
+        unsigned short greenChannel = green;
+        RHShadowPolygon *polygon = m_4cc;
+        unsigned short redChannel = red;
+        polygon->m_c6 = blueChannel;
+        unsigned long displayFlags = flags;
+        polygon->m_c4 = greenChannel;
+        polygon->m_c2 = redChannel;
+        m_4cc->DisplayDebug(box, zoom, this, origin, m_654, displayFlags);
+        if (g_pEngine->m_showSightRadius)
+            m_4cc->FUN_0058ea70();
+    }
+}
+
 // FUNCTION: GAME 0x00487ce0
 void RHElementActorNPC::FUN_00487ce0()
 {
@@ -328,6 +384,73 @@ DECOMP_SIZE_ASSERT(RHDetectable, 0x14)
 DECOMP_SIZE_ASSERT(RHNPCCachedList, 0x18)
 DECOMP_SIZE_ASSERT(RHNPCDetectableTimerPayload, 0x1c)
 
+inline void RHNPCDetectableList::Seek(int wanted)
+{
+    int count = size();
+    if (m_dirty)
+    {
+        if (wanted <= (count + 1) / 2)
+        {
+            m_cursor = begin();
+            std::advance(m_cursor, wanted);
+        }
+        else
+        {
+            m_cursor = end();
+            std::advance(m_cursor, wanted - count);
+        }
+        m_dirty = false;
+    }
+    else if (wanted == m_index)
+        return;
+    else if (wanted < m_index)
+    {
+        if (wanted < (m_index + 1) / 2)
+        {
+            m_cursor = begin();
+            std::advance(m_cursor, wanted);
+        }
+        else
+            std::advance(m_cursor, wanted - m_index);
+    }
+    else if (wanted < (m_index + count) / 2)
+        std::advance(m_cursor, wanted - m_index);
+    else
+    {
+        m_cursor = end();
+        std::advance(m_cursor, wanted - count);
+    }
+    m_index = wanted;
+}
+
+// STUB: GAME 0x00488870
+void RHElementActorNPC::CleanUpDetectables(int kind)
+{
+    RHNPCDetectableList &list = m_detectables[kind];
+    unsigned short count = list.size();
+    for (unsigned short i = 0; i < count; ++i)
+    {
+        list.Seek(i);
+        void *object = list.m_cursor->m_00;
+        bool remove;
+        switch (kind)
+        {
+        case 0: remove = static_cast<RHElement *>(object)->IsDead() != 0; break;
+        case 2: remove = !static_cast<RHElement *>(object)->m_12; break;
+        case 5: remove = !static_cast<RHElementActorHuman *>(object)->IsTrueOrFalseBeggar(); break;
+        default: continue;
+        }
+        if (remove)
+        {
+            list.Seek(i);
+            list.erase(list.m_cursor);
+            list.m_dirty = true;
+            --i;
+            --count;
+        }
+    }
+}
+
 // FUNCTION: GAME 0x00488a40
 void RHElementActorNPC::FUN_00488a40(unsigned char index, unsigned short timer)
 {
@@ -358,7 +481,137 @@ void EmitRHNPCDetectableTimer(RHElementActorNPC &actor)
     actor.FUN_00488a40(0, 0);
 }
 
-#include "../ai/RHMalignityVisibilityCalls.h"
+#include "RHArtificialIntelligenceValueList.h"
+#include "RHStimulus.h"
+#include "RHElementActorPC.h"
+
+DECOMP_STATIC_ASSERT(offsetof(RHElementActorPC, m_5e8) == 0x5e8)
+
+static inline int RHNPCDetectionCamp(RHElementActorNPC *actor)
+{
+    typedef int (__fastcall *GetCamp)(RHElementActorNPC *);
+    return (*reinterpret_cast<GetCamp **>(actor))[0x130 / 4](actor);
+}
+
+static inline void RHNPCQueueDetection(RHArtificialIntelligenceValueList<RHStimulus> &stimuli,
+                                      RHStimulus &stimulus, RHDetectable &value,
+                                      unsigned type, unsigned event)
+{
+    memcpy(stimulus.m_00, &value.m_00, sizeof(value.m_00));
+    stimulus.m_20 = event;
+    stimulus.m_type = type;
+    RHArtificialIntelligenceValueList<RHStimulus>::Iterator position = {stimuli.m_head};
+    stimuli.Insert(position, stimulus);
+    stimuli.m_dirty = true;
+}
+
+// FUNCTION: GAME 0x00488b80
+bool RHElementActorNPC::HandleDetection(RHDetectable &value, bool visible,
+                                       RHArtificialIntelligenceValueList<RHStimulus> &stimuli)
+{
+    RHStimulus stimulus;
+    bool react = false;
+    int kind = value.m_04;
+    if (visible && !value.m_08)
+    {
+        switch (kind)
+        {
+        case 0:
+        {
+            RHElement *actor = static_cast<RHElement *>(value.m_00);
+            stimulus.m_20 = 0;
+            memcpy(stimulus.m_00, &actor, sizeof(actor));
+            stimulus.m_type = 3;
+            stimuli.Append(stimulus);
+            stimuli.m_dirty = true;
+            value.m_08 = true;
+            if (actor->m_elementType == 4 && RHNPCDetectionCamp(this) == 0 && actor->m_08)
+                actor->FUN_004621f0();
+            break;
+        }
+        case 3:
+            RHNPCQueueDetection(stimuli, stimulus, value, 3, 11);
+            react = true;
+            break;
+        case 4:
+            RHNPCQueueDetection(stimuli, stimulus, value, 3, 18);
+            react = true;
+            break;
+        case 1:
+            RHNPCQueueDetection(stimuli, stimulus, value, 3, 9);
+            react = true;
+            break;
+        case 5:
+            RHNPCQueueDetection(stimuli, stimulus, value, 3, 31);
+            react = true;
+            break;
+        case 2:
+            RHNPCQueueDetection(stimuli, stimulus, value, 5, 10);
+            react = true;
+            break;
+        }
+    }
+    else if (kind == 0 && !visible && value.m_08)
+    {
+        void *actor = value.m_00;
+        RHArtificialIntelligenceValueList<RHStimulus>::Iterator position = {stimuli.m_head};
+        stimulus.m_20 = 1;
+        memcpy(stimulus.m_00, &actor, sizeof(actor));
+        stimulus.m_type = 3;
+        stimuli.Insert(position, stimulus);
+        stimuli.m_dirty = true;
+        value.m_08 = false;
+    }
+    return react;
+}
+
+#include "RHUnk00571160Position.h"
+
+// FUNCTION: GAME 0x00488e00
+void RHElementActorNPC::HandlePredetection(RHDetectable &value, unsigned short amount,
+                                          RHArtificialIntelligenceValueList<RHStimulus> &stimuli)
+{
+    int kind = value.m_04;
+    RHStimulus stimulus;
+    if (kind >= 3 && kind <= 5)
+        return;
+    RHElement *actor = static_cast<RHElement *>(value.m_00);
+    if (actor->m_elementType != 12 || static_cast<RHElementActorPC *>(value.m_00)->m_5e8)
+        return;
+    bool detected = amount > 0 && m_detectableStrength[kind] >= 100;
+    char previous = value.m_0c;
+    value.m_0c = detected;
+    if (previous || !detected)
+        return;
+    RHUnk00571160Position position;
+    switch (kind)
+    {
+    case 0:
+    case 1:
+    case 2:
+        actor->m_50->GetPosition(position);
+        break;
+    case 3:
+    case 4:
+    case 5:
+        return;
+    }
+    stimulus.m_20 = 53;
+    memcpy(stimulus.m_00, &position, sizeof(position));
+    stimulus.m_type = 2;
+    RHArtificialIntelligenceValueNode<RHStimulus> *next = stimuli.m_head;
+    RHArtificialIntelligenceValueNode<RHStimulus> *previousNode = next->m_previous;
+    RHArtificialIntelligenceValueNode<RHStimulus> *node =
+        static_cast<RHArtificialIntelligenceValueNode<RHStimulus> *>(operator new(sizeof(*node)));
+    node->m_next = next ? next : node;
+    node->m_previous = previousNode ? previousNode : node;
+    next->m_previous = node;
+    node->m_previous->m_next = node;
+    new (&node->m_value) RHStimulus(stimulus);
+    stimuli.m_dirty = true;
+    ++stimuli.m_count;
+}
+
 #include "../engine/RHMessenger.h"
 
 RHMessenger *RHUnk00546050();
@@ -391,7 +644,7 @@ bool RHElementActorNPC::FUN_0048af40(const SBGeoPoint2D &point, RHElementActorHu
                 (void *)&point, RHNPC_FIELD(void *, 0x54), includeKey);
         }
         if (RHNPC_FIELD(char, 8) ||
-            ((RHMalignityVisibilityCalls *)this)->FUN_004860b0() ||
+            FUN_004860b0() ||
             (self->V130() == 0 && (RHNPC_FIELD(unsigned, 4) & 0x1f) == 0x14))
             return false;
         return ((RHSprite *)RHNPC_FIELD(void *, 0x50))->FUN_005b9e30(
@@ -406,7 +659,7 @@ bool RHElementActorNPC::FUN_0048af40(const SBGeoPoint2D &point, RHElementActorHu
                 (void *)&point, RHNPC_FIELD(void *, 0x54), RHNPC_FIELD(bool, 8));
         }
         if (RHNPC_FIELD(char, 8) || (RHNPC_FIELD(unsigned, 4) & 0x1f) != 0x14 ||
-            self->V130() == 0 || ((RHMalignityVisibilityCalls *)this)->FUN_004860b0())
+            self->V130() == 0 || FUN_004860b0())
             return false;
         return ((RHSprite *)RHNPC_FIELD(void *, 0x50))->FUN_005b9e30(
             (void *)&point, RHNPC_FIELD(void *, 0x54), false);
@@ -421,7 +674,7 @@ bool RHElementActorNPC::FUN_0048af40(const SBGeoPoint2D &point, RHElementActorHu
                 (void *)&point, RHNPC_FIELD(void *, 0x54), RHNPC_FIELD(bool, 8));
         }
         if (RHNPC_FIELD(char, 8) || (RHNPC_FIELD(unsigned, 4) & 0x1f) != 0x14 ||
-            self->V130() == 0 || ((RHMalignityVisibilityCalls *)this)->FUN_004860b0() || self->Vf8())
+            self->V130() == 0 || FUN_004860b0() || self->Vf8())
             return false;
         return ((RHSprite *)RHNPC_FIELD(void *, 0x50))->FUN_005b9e30(
             (void *)&point, RHNPC_FIELD(void *, 0x54), false);
@@ -434,7 +687,7 @@ bool RHElementActorNPC::FUN_0048af40(const SBGeoPoint2D &point, RHElementActorHu
             return ((RHSprite *)RHNPC_FIELD(void *, 0x50))->FUN_005b9e30(
                 (void *)&point, RHNPC_FIELD(void *, 0x54), RHNPC_FIELD(bool, 8));
         }
-        if (RHNPC_FIELD(char, 8) || ((RHMalignityVisibilityCalls *)this)->FUN_004860b0() ||
+        if (RHNPC_FIELD(char, 8) || FUN_004860b0() ||
             self->V130() != 1 || self->Vf8() || self->Vf4())
             return false;
         return ((RHSprite *)RHNPC_FIELD(void *, 0x50))->FUN_005b9e30(
@@ -449,14 +702,14 @@ bool RHElementActorNPC::FUN_0048af40(const SBGeoPoint2D &point, RHElementActorHu
         {
             if (RHNPC_FIELD(char, 8))
                 return ((RHElementActorHuman *)this)->FUN_00483160((void *)&point, pc, focus);
-            if (!((RHMalignityVisibilityCalls *)this)->FUN_004860b0())
+            if (!FUN_004860b0())
                 return ((RHSprite *)RHNPC_FIELD(void *, 0x50))->FUN_005b9e30(
                     (void *)&point, RHNPC_FIELD(void *, 0x54), false);
         }
         if (RHNPC_FIELD(char, 8))
             return ((RHElementActorHuman *)this)->FUN_00483160((void *)&point, pc, focus);
         if (RHNPC_FIELD(int, 0x4f0) &&
-            ((RHMalignityVisibilityCalls *)this)->FUN_004860b0() &&
+            FUN_004860b0() &&
             RHNPC_FIELD(unsigned short, 0x23c) == 0 &&
             *(int *)((char *)RHNPC_FIELD(void *, 0x50) + 0x8c) != 7 &&
             ((RHScriptBatchCalls *)pc)->Unk0049d560(0x17))
@@ -522,13 +775,13 @@ public:
 // FUNCTION: GAME 0x0048b510
 void RHSoldierNPCCalls::FUN_0048b510(void *element)
 {
-    RHNPC_AI(RHUnk00413640)->Unk(0, true);
+    RHNPC_AI(RHArtificialIntelligence)->SetMusicState(0, true);
     RHNPC_AI(RHNPCAIStateCalls)->V10(0, true);
     if (*((char *)this + 0x65c))
         ((RHElementActorNPC *)this)->FUN_00486f30(5);
     *((bool *)this + 0x4ee) = element && (*(unsigned *)((char *)element + 4) & 0xf) == 0xc;
     *((char *)RHNPC_AI(char) + 0x2ac) = 0;
-    RHNPC_AI(RHScriptBatchCalls)->Unk00419fb0(0);
+    RHNPC_AI(RHArtificialIntelligence)->SetReactionState(0);
     RHElementActorNPC::FUN_0048c6a0(this, 3);
     RHElementActorNPC::FUN_0048c6a0(this, 4);
     ((RHElementActorHuman *)this)->FUN_0047f4f0(element);
@@ -623,33 +876,32 @@ bool RHElementActorNPC::Serialize(SBFile &file)
 #include "RHSequenceConstructionCalls.h"
 #include "RHSequenceInteractionAction.h"
 #include "RHSequenceGenericConstruction.h"
-#include "RHSequenceAppendCalls.h"
 
 // STUB: GAME 0x0048be40
 bool RHElementActorNPC::FUN_0048be40(void *context, unsigned flags, RHElementActorHuman *target)
 {
     if (RHNPC_FIELD(void *, 0x500))
     {
-        RHUnk00582220 *sequence = new RHUnk00582220;
+        RHSequence *sequence = new RHSequence;
         if (!*(char *)((char *)this + (*(int **)((char *)this + 0x49c))[1] + 0x660))
         {
             RHUnk00584d60 *action = new RHUnk00584d60(1, 0x7f, this);
-            ((RHUnk00585500 *)action)->Unk(sequence);
+            action->AppendToSequence(sequence);
         }
         RHUnk00585ea0 *first = new RHUnk00585ea0(1, 0x1b, target, this);
-        ((RHUnk00585500 *)first)->Unk(sequence);
+        first->AppendToSequence(sequence);
         RHUnk00585ea0 *second = new RHUnk00585ea0(1, 0x1b, this, target);
-        ((RHUnk00585500 *)second)->Unk(sequence);
+        second->AppendToSequence(sequence);
         if (!*(char *)((char *)this + (*(int **)((char *)this + 0x49c))[1] + 0x660))
         {
             RHUnk00584d60 *action = new RHUnk00584d60(2, 0x80, this);
-            ((RHUnk00585500 *)action)->Unk(sequence);
+            action->AppendToSequence(sequence);
         }
         RHUnk005866a0 *action = new RHUnk005866a0(2, 0xaf, 0);
         action->Unk00586ed0(0x28, (int)RHNPC_FIELD(void *, 0x500));
         action->Unk00586ed0(0x29, (int)target);
         action->Unk00586ed0(0x2a, (int)this);
-        ((RHUnk00585500 *)action)->Unk(sequence);
+        action->AppendToSequence(sequence);
         ((RHElementActorPC *)target)->FUN_004a0340(sequence, (flags & 8) != 0, 0x1e, 0x32, (RHElementActorHuman *)this, true);
         return true;
     }
@@ -960,12 +1212,6 @@ void RHElementActorNPC::GetTransitionFlags(RHSequenceElement *element, unsigned 
     }
 }
 
-class RHElementActor
-{
-public:
-    bool FUN_0046d710();
-};
-
 class RHNPCAIReactionCalls
 {
 public:
@@ -1005,11 +1251,11 @@ void RHSoldierNPCCalls::FUN_0048d790(RHSoldierSequenceElement *element)
                     RHNPC_AI(RHNPCAIReactionCalls)->V3c(2);
                     *((char *)RHNPC_AI(char) + 0x175) = 1;
                 }
-                RHNPC_AI(RHScriptBatchCalls)->Unk0040d980(4);
+                RHNPC_AI(RHArtificialIntelligence)->DispatchWorldEvent(4);
             }
         }
         else
-            RHNPC_AI(RHScriptBatchCalls)->Unk0040d980(3);
+            RHNPC_AI(RHArtificialIntelligence)->DispatchWorldEvent(3);
         break;
     case 0x19: case 0x1a: case 0x1b: case 0x1c: case 0x1d: case 0x1e: case 0x1f: case 0x22:
     case 0x23: case 0x27: case 0x2a: case 0x2e: case 0x2f: case 0x30: case 0x32: case 0x36:
@@ -1018,21 +1264,21 @@ void RHSoldierNPCCalls::FUN_0048d790(RHSoldierSequenceElement *element)
     case 0x56: case 0x6b: case 0x77: case 0x78: case 0x7b: case 0x7c: case 0x87: case 0x88:
     case 0x8a: case 0x8d:
         if (element->m_58 == 0 || element->m_58 == 6)
-            RHNPC_AI(RHScriptBatchCalls)->Unk0040d980(5);
+            RHNPC_AI(RHArtificialIntelligence)->DispatchWorldEvent(5);
         else
-            RHNPC_AI(RHScriptBatchCalls)->Unk0040d980(6);
+            RHNPC_AI(RHArtificialIntelligence)->DispatchWorldEvent(6);
         break;
     case 0x37: case 0x38: case 0x39: case 0x3a:
         if (element->m_58 == 0 || element->m_58 == 6)
-            RHNPC_AI(RHScriptBatchCalls)->Unk0040d980(5);
+            RHNPC_AI(RHArtificialIntelligence)->DispatchWorldEvent(5);
         break;
     case 0xa1:
         if (element->m_58 == 0)
-            RHNPC_AI(RHScriptBatchCalls)->Unk0040d980(5);
+            RHNPC_AI(RHArtificialIntelligence)->DispatchWorldEvent(5);
         break;
     case 0x89:
         if (element->m_58 == 0 || (element->m_58 > 4 && element->m_58 <= 6))
-            RHNPC_AI(RHScriptBatchCalls)->Unk0040d980(0x1b);
+            RHNPC_AI(RHArtificialIntelligence)->DispatchWorldEvent(0x1b);
         break;
     }
 }
@@ -1045,12 +1291,12 @@ void RHElementActorNPC::FUN_0048d990(unsigned short amount, void *source, bool f
     if (previous)
     {
         if (!RHNPC_FIELD(char, 0x1ce) && *(int *)((char *)RHNPC_AI(char) + 0x14) == 2)
-            RHNPC_AI(RHScriptBatchCalls)->Unk0040d980(13);
+            RHNPC_AI(RHArtificialIntelligence)->DispatchWorldEvent(13);
     }
     else if (RHNPC_FIELD(char, 0x1ce))
     {
         ((RHMalignityActorCalls *)this)->FUN_0048e580();
-        RHNPC_AI(RHScriptBatchCalls)->Unk0040d980(15);
+        RHNPC_AI(RHArtificialIntelligence)->DispatchWorldEvent(15);
         RHNPC_FIELD(bool, 0x4ee) = source && (*(unsigned *)((char *)source + 4) & 15) == 12;
     }
 }
@@ -1058,6 +1304,17 @@ void RHElementActorNPC::FUN_0048d990(unsigned short amount, void *source, bool f
 #include "RHUnk0046bd20.h"
 #include "RHArtificialBonhomie.h"
 #include "RHArtificialIntelligenceCore.h"
+#include "RHPathCore.h"
+
+RHArtificialIntelligence &RHElementActorNPC::Intelligence()
+{
+    return *Intelligence(m_aiBaseOffsets[1]);
+}
+
+RHPath &RHElementActorNPC::ActorPath()
+{
+    return *reinterpret_cast<RHPath *>(reinterpret_cast<char *>(&m_aiBaseOffsets) + m_aiBaseOffsets[1] + 0x4cc - OffsetAI);
+}
 
 // STUB: GAME 0x0048a980
 void RHSoldierNPCCalls::FUN_0048a980()
@@ -1102,30 +1359,30 @@ awake:
     RHNPC_FIELD(unsigned short, 0x4f8) = 0;
     unsigned char delta = (unsigned char)*g_unk0x006c08a4 - RHNPC_FIELD(unsigned char, 0x4ec) - 100;
     if ((RHNPC_FIELD(unsigned int, 0x4) & 0x1f) == 4)
-        ((RHBonhomieSpeechReceiver *)((char *)this + 0x6e8))->FUN_0040dbe0((bool)delta);
+        ((RHArtificialBonhomie *)((char *)this + 0x6e8))->FUN_0040dbe0((bool)delta);
     RHArtificialIntelligence *intelligence = RHNPC_AI(RHArtificialIntelligence);
-    if (!((unsigned char)intelligence->m_174[0] > 0) && !intelligence->m_1c4[0] &&
+    if (!(intelligence->m_174 > 0) && !intelligence->m_1c4 &&
         !*((char *)g_pEngine + 0x4d84))
     {
         if (!((RHNPCActorCalls *)this)->V48() && (delta & 0xf) == 0)
             RHNPC_AI(RHNPCAIReactionCalls)->V18(delta);
-        if (intelligence->m_54[0x44])
+        if (intelligence->m_98)
         {
-            if (*(unsigned int *)&intelligence->m_54[0x50] <= *g_unk0x006c08a4)
+            if (intelligence->m_a4 <= *g_unk0x006c08a4)
             {
-                intelligence->m_54[0x44] = 0;
-                if (*(int *)&intelligence->m_08[0xc] == 0xf)
+                intelligence->m_98 = false;
+                if (intelligence->m_14 == 0xf)
                     intelligence->Unk00410010(false);
             }
         }
-        if (intelligence->m_254[0x14])
+        if (intelligence->m_268)
         {
-            if (*(unsigned int *)&intelligence->m_254[0x10] <= *g_unk0x006c08a4)
-                RHNPC_AI(RHScriptBatchCalls)->Unk00419fb0(0);
+            if (intelligence->m_264 <= *g_unk0x006c08a4)
+                RHNPC_AI(RHArtificialIntelligence)->SetReactionState(0);
         }
         while (!intelligence->m_178.empty())
         {
-            if ((unsigned char)intelligence->m_174[0] > 0 || intelligence->m_1c4[0])
+            if (intelligence->m_174 > 0 || intelligence->m_1c4)
                 break;
             RHStimulus stimulus = intelligence->m_178.front();
             intelligence->m_178.pop_front();
@@ -1135,9 +1392,9 @@ awake:
     }
     else
     {
-        ++*(unsigned int *)&intelligence->m_54[0x48];
-        ++*(unsigned int *)&intelligence->m_54[0x50];
-        ++*(unsigned int *)&intelligence->m_254[0x10];
+        ++intelligence->m_9c;
+        ++intelligence->m_a4;
+        ++intelligence->m_264;
     }
 }
 
@@ -1302,7 +1559,6 @@ bool RHElementActorNPC::FUN_0048d460(unsigned flags, RHActorTranslationSequenceC
 }
 
 #include "RHElementActorCivilianCore.h"
-#include "RHPositionProvider.h"
 #include "RHSoundActorCalls.h"
 #include "RHMalignityPosition.h"
 
@@ -1328,8 +1584,8 @@ void RHElementActorNPC::FUN_0048ec70()
         }
         return;
     }
-    RHMalignityPosition position;
-    ((RHUnk00560420 *)((char *)RHNPC_FIELD(void *, 0x50) + 4))->Unk((RHUnk00571160Position *)&position);
+    RHUnk00571160Position position;
+    m_50->GetPosition(position);
     if ((RHNPC_FIELD(unsigned, 4) & 31) == 4)
     {
         if (((RHElementActorCivilian *)this)->FUN_00470ce0())
@@ -1387,6 +1643,12 @@ int RHElementActorNPC::FUN_0048efa0()
         !((RHNPCActorCalls *)this)->Vf4())
         return 1;
     return 0;
+}
+
+inline void RHNPCDetectableList::ClearNodes()
+{
+    typedef std::list<unsigned long> Native;
+    ((Native *)this)->clear();
 }
 
 // FUNCTION: GAME 0x0048efe0
@@ -1457,6 +1719,32 @@ void RHElementActorNPC::FUN_0048c4d0()
 extern float g_unk0x006774cc;
 extern float g_actorStepScale;
 
+// FUNCTION: GAME 0x00489b30
+float RHElementActorNPC::ComputeVisibility(RHElementObject *object)
+{
+    SBGeoVector2D planar;
+    RHUnk00613e90 offset;
+    RHUnk00613e90 origin;
+    RHUnk00613e90 target;
+    if (!m_654.m_viewStatus || m_654.m_viewStatus == 5)
+        return 0.0f;
+    const RHSector *sector = static_cast<RHSector *>(m_50->m_dc);
+    if (!((unsigned char)((unsigned)sector->m_30 >> 13) & 1) && !object->m_fc)
+    {
+        FUN_00478c20(origin, 0);
+        target = object->m_50->m_c;
+        target.z += 1.0f;
+        offset = target.FUN_005df550(origin).ScaleY(1.7434468269348145f);
+        planar.Set(offset.x, offset.y);
+        float distance = offset.x * offset.x + offset.y * offset.y + offset.z * offset.z;
+        int range = m_654.m_78;
+        if (!(distance > range * range) &&
+            !(planar.FUN_005fc660(m_654.m_48) < 0.0f) && IsDetecting(target, false))
+            return FUN_00489d00(offset);
+    }
+    return 0.0f;
+}
+
 // FUNCTION: GAME 0x00489d00
 float RHElementActorNPC::FUN_00489d00(const RHUnk00613e90 &offset)
 {
@@ -1480,6 +1768,49 @@ float RHElementActorNPC::FUN_00489d00(const RHUnk00613e90 &offset)
     if (visibility < 0.0f)
         visibility = 0.0f;
     return visibility;
+}
+
+// FUNCTION: GAME 0x00489eb0
+bool RHElementActorNPC::IsDetecting(RHUnk00613e90 &point, bool checkRange)
+{
+    RHUnk005fc3b0 planar;
+    RHUnk00613e90 offset;
+    RHUnk00613e90 origin;
+    if (!m_654.m_viewStatus || m_654.m_viewStatus == 5)
+        return false;
+    const RHSector *sector = static_cast<RHSector *>(m_50->m_dc);
+    if ((unsigned char)((unsigned)sector->m_30 >> 13) & 1)
+        return false;
+    FUN_00478c20(origin, 0);
+    offset = point.FUN_005df550(origin);
+    planar.Set(offset.x, offset.y);
+    offset.y *= 1.7434468269348145f;
+    float zz = offset.z * offset.z;
+    if (offset.x * offset.x + (offset.y * offset.y + zz) > 3600.0f)
+    {
+        if (checkRange)
+        {
+            offset.y *= 1.7434468269348145f;
+            int range = m_654.m_78;
+            if (offset.x * offset.x + (offset.y * offset.y + zz) > range * range ||
+                planar.FUN_005fc660(m_654.m_48) < 0.0f)
+                return false;
+        }
+        if (m_654.m_50.FUN_005fc680(planar, 1.0f) < 0.0f || m_654.m_58.FUN_005fc680(planar, 1.0f) > 0.0f)
+            return false;
+        return static_cast<RHFastFindGrid *>(m_64)->FUN_004eff80(origin, point, 2);
+    }
+    else
+    {
+        short heading = m_50->m_d4;
+        unsigned short relative = (planar.FUN_005fcc50(0.57357645f) - heading + 16) % 16;
+        switch (relative)
+        {
+        case 0: case 1: case 2: case 3: case 4: case 12: case 13: case 14: case 15:
+            return static_cast<RHFastFindGrid *>(m_64)->FUN_004eff80(origin, point, 2);
+        }
+    }
+    return false;
 }
 
 // STUB: GAME 0x0048a650

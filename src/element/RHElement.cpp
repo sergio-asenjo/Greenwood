@@ -39,7 +39,7 @@ DECOMP_STATIC_ASSERT(offsetof(RHElement, m_74) == 0x74)
 DECOMP_STATIC_ASSERT(offsetof(RHElement, m_80) == 0x80)
 DECOMP_STATIC_ASSERT(offsetof(RHElement, m_90) == 0x90)
 DECOMP_STATIC_ASSERT(offsetof(RHElement, m_a6) == 0xa6)
-DECOMP_STATIC_ASSERT(offsetof(RHEngine, m_00dc) == 0xdc)
+DECOMP_STATIC_ASSERT(offsetof(RHEngine, m_draw) == 0xdc)
 DECOMP_STATIC_ASSERT(offsetof(RHEngine, m_011c) == 0x11c)
 DECOMP_STATIC_ASSERT(offsetof(RHEngine, m_43f8) == 0x43f8)
 DECOMP_STATIC_ASSERT(offsetof(RHEngine, m_4aa8) == 0x4aa8)
@@ -52,7 +52,7 @@ RHElement::RHElement(int type, char flag) : m_04(type), m_08(flag)
     m_12 = 1;
     m_8e = 1;
     m_50 = new RHSprite(m_04);
-    m_60 = g_pEngine->m_00dc;
+    m_60 = g_pEngine->m_draw;
     m_64 = g_pEngine->m_011c;
     m_68 = g_unk0x006c0b1c;
     m_5c = g_pEngine->m_43f8;
@@ -97,10 +97,10 @@ void RHElement::FUN_004621d0(RHUnk005df510 &point) const
 void RHElement::FUN_004621f0() { m_08 = 0; }
 
 // FUNCTION: GAME 0x00462200
-char RHElement::FUN_00462200() const { return 1; }
+char RHElement::IsDead() const { return 1; }
 
 // FUNCTION: GAME 0x00462210
-char RHElement::FUN_00462210(void *value) { return 0; }
+char RHElement::Instruct(RHSequenceElementCalls *) { return 0; }
 
 // SYNTHETIC: GAME 0x00462220
 // RHElement::`scalar deleting destructor'
@@ -723,8 +723,8 @@ void RHElement::Emit(SBFile &file)
     RHUnk005df510 point;
     FUN_004621d0(point);
     FUN_004621f0();
-    FUN_00462200();
-    FUN_00462210(0);
+    IsDead();
+    Instruct(0);
     FUN_004622d0();
     Serialize(file);
     CrossElevationLine(0);

@@ -4,24 +4,7 @@
 #include "SB.h"
 #include "Decomp.h"
 
-// SIZE 0x08
-#define SBGEO_POINT2D_VIEW
-class SBGeoVector2D;
-class SBGeoPoint2D
-{
-public:
-    SBGeoPoint2D();
-    SBGeoPoint2D(float x, float y);
-    ~SBGeoPoint2D();
-    SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
-    float FUN_005fc700(float scale) const;
-    SBGeoVector2D Unk005fc110(const SBGeoPoint2D &point) const;
-    SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &point) const;
-    SBGeoPoint2D FUN_005fc200(const SBGeoPoint2D &point) const;
-    float m_x; // 0x00
-    float m_y; // 0x04
-};
-
+#include "SBGeoPoint2D.h"
 #include "SBGeoVector2D.h"
 #include "RHUnk005fc3b0.h"
 
@@ -85,11 +68,7 @@ public:
 
 #include "RHElementActorNPC.h"
 
-class RHScriptBatchCalls
-{
-public:
-    void *Unk0058a940(void *context, int value, void *element);
-};
+class RHSequenceManager;
 
 #define SBGEO_POINT2D_VIEW
 #include "RHSequenceMovementConstruction.h"
@@ -135,7 +114,7 @@ public:
     undefined m_00[0x50]; // 0x00
     RHAnimalSprite *m_50; // 0x50
     undefined m_54[0x8]; // 0x54
-    RHScriptBatchCalls *m_5c; // 0x5c
+    RHSequenceManager *m_5c; // 0x5c
     undefined m_60[0x158]; // 0x60
     unsigned short m_1b8; // 0x1b8
     undefined m_1ba[0x2]; // 0x1ba

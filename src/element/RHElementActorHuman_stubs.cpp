@@ -42,7 +42,6 @@ bool RHUnkHumanPositionRange::FUN_0051afe0(RHUnk00571160Position position)
     return false;
 }
 
-int RHHumanActorCalls::FUN_0047b8a0(const RHUnk00613e90 &, int *, bool) { return 0; }
 SBGeoPoint2D RHHumanActorCalls::FUN_004237d0() { return *(SBGeoPoint2D *)this; }
 
 // TEMPLATE: GAME 0x00424410 FOLDED

@@ -101,7 +101,6 @@ SBGeoBoundingBox2D SBGeoBoundingBox2D::FUN_006090d0(const SBGeoVector2D &offset)
 bool RHActorGridCalls::FUN_004f5e50(SBGeoPoint2D &, const SBGeoPoint2D &, int) { return false; }
 void RHElementActor::FUN_0046bcb0(int) {}
 
-bool RHActorCrossingHumanCalls::FUN_004843d0(SBGeoPoint2D &, void *, bool) { return false; }
 // FUNCTION: GAME 0x0054e730
 void RHOrder::FUN_0054e730()
 {

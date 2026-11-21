@@ -12,13 +12,18 @@ class RHElevationLine;
 class SBGeoVector2D;
 class SBGeoBoundingBox2D;
 class RHElementActor;
+class RHElementActorPC;
+class RHRepulsivePointList;
+class RHRepulsiveLineList;
 
 #include "RHUnk005df510.h"
 #include "RHUnk00613e90.h"
 #include "RHActorSequenceStorage.h"
 
 class RHSprite;
+class RHBonusInfo;
 class RHUnk005069a0;
+class RHSequenceElementCalls;
 
 // VTABLE: GAME 0x006776a0
 // SIZE 0xa8
@@ -34,9 +39,9 @@ public:
     virtual SBGeoVector2D FUN_004621a0() const;
     virtual bool FUN_004b23c0(const void *first, void *second, int third) = 0;
     virtual void *FUN_004b29c0(void *value) = 0;
-    virtual bool FUN_004b26a0(const SBGeoPoint2D *first, int second, RHElementActor *third) = 0;
+    virtual bool FUN_004b26a0(const SBGeoPoint2D *first, unsigned short second, RHElementActorPC *selectedPC) = 0;
     virtual void *Refresh(unsigned long surface, float value, const SBGeoBoundingBox2D &box, unsigned long flags) = 0;
-    virtual bool FUN_004b9f40() = 0;
+    virtual char FUN_004b9f40() = 0;
     virtual float FUN_004621c0() const;
     virtual void FUN_004621d0(RHUnk005df510 &point) const;
     virtual void FUN_004621f0();
@@ -44,21 +49,29 @@ public:
     virtual void InitializeFromMissionStream(SBFile &file) = 0;
     virtual bool Serialize(SBFile &file);
     virtual void FUN_00462940(int action);
-    virtual char FUN_00462200() const;
+    virtual char IsDead() const;
     virtual void v19(unsigned value) {}
-    virtual char FUN_00462210(void *value);
+    virtual char Instruct(RHSequenceElementCalls *element);
     virtual void v21(unsigned value) {}
     virtual char v22(void *value) { return 0; }
     virtual void v23(unsigned value) {}
     virtual char v24() const { return 0; }
-    virtual void FUN_004b2600(void *points, void *lines, void *actor) {}
+    virtual void GetRepulsiveObjects(RHRepulsivePointList &points, RHRepulsiveLineList &lines, RHElementActor *actor) {}
     void *FUN_004622d0() const;
+    void CopyPositionMapEtc(const RHElement *source, bool value);
+    SBGeoPoint2D FUN_00462920() const;
     int FUN_004671b0() const;
     RHUnk005069a0 *FUN_004a1af0();
+    SBGeoPoint2D FUN_004237d0() const;
     void CrossElevationLine(RHElevationLine *line);
     void Emit(SBFile &file);
 
-    int m_04;
+    union
+    {
+        int m_04;
+        struct { unsigned m_elementType : 4; };
+        struct { unsigned m_kind5 : 5; };
+    };
     char m_08;
     undefined m_09[3];
     int m_0c;
@@ -66,7 +79,11 @@ public:
     char m_12;
     undefined m_13;
     RHUnk0045aaf0 m_14;
-    RHSprite *m_50;
+    union
+    {
+        RHSprite *m_50;
+        RHBonusInfo *m_actorInfo;
+    };
     int m_54;
     int m_58;
     void *m_5c;

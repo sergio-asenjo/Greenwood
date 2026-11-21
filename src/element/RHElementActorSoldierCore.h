@@ -53,10 +53,19 @@ public:
     void SetOutlineColors();
     int FUN_004a5d30();
     void FUN_004a5d50(RHMalignityPosition position, unsigned short first, unsigned short second, void *actor);
+    class RHArtificialMalignity &Malignity();
+    void ResetReactionFlags()
+    {
+        m_a22[0xb] = 0;
+        m_a22[0xa] = 0;
+    }
     void Emit(SBFile &file);
+    friend class RHEngine;
 
 private:
-    char m_704[0x338];
+    char m_704[0x31c];
+    unsigned short m_a20;
+    char m_a22[0x1a];
     int m_unkA3c;
 };
 

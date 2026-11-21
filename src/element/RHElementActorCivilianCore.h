@@ -40,7 +40,6 @@ public:
     int FUN_004712b0(RHSoldierSequenceElement *element);
     bool FUN_00475810(RHElementActorCivilian *arg);
     bool FUN_004646e0(RHElementActorCivilian *arg);
-    bool FUN_00485990();
     void Emit(SBFile &file);
 
 private:

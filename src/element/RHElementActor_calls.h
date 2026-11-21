@@ -45,18 +45,7 @@ public:
     char m_14[0x58];
     SBGeoPoint2D m_6c;
 };
-class RHSequenceManager
-{
-public:
-    bool PreSerializePointer(SBFile &file, RHOrder **order);
-    bool PreSerializePointer(SBFile &file, RHSequenceElement **element, bool launch);
-    bool FUN_0058bd70(void *actor, int command);
-};
-class RHSequence
-{
-public:
-    bool Serialize(SBFile &file, bool loading);
-};
+#include "RHSequenceManager.h"
 #include "RHSequenceConstructionCalls.h"
 class RHFastFindGrid;
 extern RHEngine *g_pEngine;
@@ -83,12 +72,6 @@ public:
     void FUN_0055f290();
     void FUN_0055fa20(RHBonusProjection *projection);
     void FUN_0055fa70(void *area);
-    void SetFlagFd() { *((char *)this + 0xfd) = 1; }
-    void ResetTarget(const SBGeoPoint2D &point)
-    {
-        *(SBGeoPoint2D *)((char *)this + 0x44) = point;
-        *(int *)((char *)this + 8) = 0;
-    }
 };
 class RHBonusInfo
 {
@@ -108,12 +91,10 @@ class RHElementActor;
 class RHScriptBatchCalls
 {
 public:
-    void Unk0040d980(int stimulus);
     void Unk0046bcf0(int posture, int value);
     void Unk0046bd10(int state);
     void Unk00464630();
     void Unk0046b9e0();
-    void *Unk0058a940(void *context, int value, void *element);
 };
 extern RHTitbits *g_unk0x6c10e8;
 extern RHElementActor *g_unk0x6c100c;
@@ -149,7 +130,6 @@ public:
     void *m_28;
 };
 
-#include "RHActorCrossingHumanCalls.h"
 
 #include "RHElementAreaShape.h"
 
@@ -169,7 +149,7 @@ enum RHActorUnkType { RHActorUnkType12 = 12 };
 
 #include "RHActorCancelCalls.h"
 
-#include "RHSequenceLaunchCalls.h"
+#include "RHSequenceManager.h"
 
 
 extern char g_unk0x6c0691;

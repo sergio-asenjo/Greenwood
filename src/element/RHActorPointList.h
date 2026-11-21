@@ -1,7 +1,9 @@
 #ifndef RHACTORPOINTLIST_H
 #define RHACTORPOINTLIST_H
 
+#ifndef SBGEO_POINT2D_VIEW
 #include "SBGeoPoint2D.h"
+#endif
 #include <iterator>
 #include <new>
 

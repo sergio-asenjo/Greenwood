@@ -14,28 +14,20 @@
 #include "RHActorCommand.h"
 class RHOrder;
 class RHUnk00613e90;
-#include "RHElementActorHumanBase.h"
+#include "RHElementActor.h"
 #include "RHEngine.h"
 extern RHEngine *g_pEngine;
 class RHFastFindGrid;
 extern RHFastFindGrid *g_unk0x6c0a9c;
 #include "RHPathGeometryCalls.h"
-class RHFastFindGrid
-{
-public:
-    bool SerializeLinePointer(SBFile &file, void *&value);
-};
+#include "RHFastFindGridCore.h"
 #include "RHRepulsivePoint.h"
 class RHSightObstacle
 {
 public:
     bool Serialize(SBFile &file);
 };
-class RHSequenceManager
-{
-public:
-    bool PreSerializePointer(SBFile &file, RHSequenceElement **value, bool mode);
-};
+#include "RHSequenceManager.h"
 void RHSerializeName(SBFile &file, const char *name);
 
 struct RHTitbitNode;
@@ -105,14 +97,7 @@ inline void RHHumanList::Resize(unsigned wanted, void *value)
     }
 // SIZE 0x49c
 class RHUnk005864a0;
-class RHSprite
-{
-public:
-    int PerformAction(RHOrder *order, int animation, int progression, bool reset);
-    bool IsActionDone(RHOrder *order, int animation);
-    float FUN_005bdcb0();
-    bool FUN_005b9e30(void *first, void *second, bool third);
-};
+#include "RHSpriteCore.h"
 class RHUnkHumanPlacementA
 {
 public:
@@ -179,25 +164,10 @@ public:
 
 #include "RHSequencePropertyScalarCalls.h"
 
-class RHManagerListCalls
-{
-public:
-    void FUN_0058bed0();
-};
-
-// SIZE 0x04
-class RHUnk0058bed0Object
-{
-public:
-    virtual ~RHUnk0058bed0Object() = 0; // vtable+0x00
-};
-
 class RHMalignityActorCalls
 {
 public:
     void FUN_0048c700(void *actor, unsigned mode);
-    void FUN_0048e420(void *actor);
-    SBGeoVector2D FUN_004135b0();
 };
 
 #include "RHHumanEngineActorArray.h"

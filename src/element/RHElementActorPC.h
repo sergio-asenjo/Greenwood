@@ -2,11 +2,12 @@
 #define RHELEMENTACTORPC_H
 
 #include "Decomp.h"
+#include "RHElementActorHumanCore.h"
 #include <string>
 
 class SBFile;
 class RHSequenceElement;
-class RHUnk00582220;
+class RHSequence;
 class RHUnk00585ea0;
 class RHActorTranslationSequenceCalls;
 class SBGeoPoint2D;
@@ -19,7 +20,7 @@ struct RHBonusGlobalView;
 struct RHBonusProjection;
 
 // SIZE 0x60c
-class RHElementActorPC
+class RHElementActorPC : public RHElementActorHuman
 {
 public:
     void GetTransitionFlags(RHSequenceElement *element, unsigned long &first, unsigned long &second, unsigned long &third);
@@ -37,9 +38,6 @@ public:
     unsigned FUN_0048f9f0();
     unsigned FUN_0048fa00();
     void AbortQuickAction(unsigned short action);
-    bool SetQuickActionSequence(void *first, void *second, unsigned short action, unsigned long id);
-    bool SetQuickActionSequence(int value, unsigned short action, unsigned long id);
-    bool SetQuickActionSequence(int value, unsigned short action, unsigned long id, void *target, unsigned short amount);
     std::wstring GetTooltipTextForAction(int action);
     int FUN_00493ae0(bool allow, void *unused);
     bool FUN_004936f0();
@@ -51,17 +49,16 @@ public:
     void FUN_0049b930(int amount, int unused, bool mode);
     void FUN_0049b9c0(int amount, void *source, bool force);
     bool FUN_00490450(void *owner, void *target);
-    void FUN_004909a0(RHUnk00582220 *sequence);
+    void FUN_004909a0(RHSequence *sequence);
     void *FUN_00490e10(RHElementActorHuman *target);
     void FUN_004913f0(const SBGeoBoundingBox2D &view, float scale);
     unsigned short FUN_00493b40(void *target, const SBGeoPoint2D &point, int unused1, int unused2);
     void FUN_00493c10(void *element);
     bool FUN_0049bdf0(RHSequenceElement *element);
-    void FUN_0049bfd0(unsigned short action, unsigned short flags, unsigned short variant);
     void FUN_0049d400(RHSequenceElement *element);
     void FUN_0049d450(RHSequenceElement *element);
     void FUN_0049c660(unsigned short value);
-    unsigned short FUN_0049f500();
+    virtual short GetLifePoints() const;
     unsigned short FUN_0049ff60();
     static RHElementActorPC *CreatePCFromMissionStream(SBFile &file);
     void ApplyProjection(RHBonusProjection *projection);
@@ -73,6 +70,7 @@ public:
     int FUN_0049d5c0(unsigned short action);
     unsigned short FUN_0049d5e0(int action);
     void FUN_0049d680(int action);
+    void FUN_0049d6c0();
     void FUN_0049d890(unsigned short action);
     void FUN_0049d960(unsigned short action);
     void FUN_0049da00(unsigned short action);
@@ -87,7 +85,7 @@ public:
     void FUN_0049e8f0(int value);
     bool FUN_0049eab0(SBGeoPoint2D &result);
     void FUN_0049ec50(unsigned action, unsigned short amount);
-    unsigned short FUN_0049ec20(unsigned action);
+    virtual unsigned short FUN_0049ec20(unsigned action);
     void FUN_0049ece0(const void *target);
     void FUN_0049eeb0(const void *target);
     void FUN_0049f080(const RHUnk00613e90 &point);
@@ -106,7 +104,7 @@ public:
     void FUN_0049ff70();
     void FUN_0049ffe0(void *first, unsigned char flag, unsigned third, unsigned fourth, unsigned fifth, unsigned sixth, unsigned seventh);
     void FUN_004a0020(RHUnk00585ea0 *action, bool interactive, unsigned distance, unsigned titbit, unsigned flag, unsigned offset, unsigned long flags);
-    void FUN_004a0340(RHUnk00582220 *sequence, bool interactive, unsigned distance, unsigned titbit, RHElementActorHuman *target, bool flag);
+    void FUN_004a0340(RHSequence *sequence, bool interactive, unsigned distance, unsigned titbit, RHElementActorHuman *target, bool flag);
     void FUN_004a05a0();
     char FUN_004a05f0(const RHElementActorPC *other);
     void FUN_004a0670();
@@ -116,21 +114,55 @@ public:
     void FUN_004a0c90(int first, int second, bool third);
     void FUN_004a0cc0(RHElementActorPC *other);
     void FUN_004a0d10(float x, float y, void *area, unsigned short layer, unsigned short before, unsigned short after, void *target);
-    undefined m_0[0x50]; // 0x00
-    RHBonusInfo *m_50; // +0x50
-    undefined m_54[0x10]; // 0x54
-    RHBonusGlobalView *m_64; // +0x64
-    undefined m_68[0x2a];
-    unsigned char m_92;
-    undefined m_93[0x0d];
-    int m_a0;
-    unsigned short m_a4;
-    undefined m_a6[0x5a];
-    char m_100; // +0x100
-    undefined m_101[3]; // 0x101
-    unsigned m_104; // +0x104
-    void *m_108; // +0x108
-    undefined m_10c[0x4ec];
+    bool FUN_0049d4f0(int value) const;
+
+    virtual void Vfc() = 0;
+    virtual void V100() = 0;
+    virtual void FUN_0049bfd0(unsigned short action, unsigned short flags, unsigned short variant);
+    virtual void V108() = 0;
+    virtual void V10c() = 0;
+    virtual void V110() = 0;
+    virtual void V114() = 0;
+    virtual void V118() = 0;
+    virtual void V11c() = 0;
+    virtual void V120() = 0;
+    virtual void V124() = 0;
+    virtual void V128() = 0;
+    virtual void V12c() = 0;
+    virtual void V130() = 0;
+    virtual void V134() = 0;
+    virtual void V138() = 0;
+    virtual void V13c() = 0;
+    virtual void V140() = 0;
+    virtual void V144() = 0;
+    virtual void V148() = 0;
+    virtual void V14c() = 0;
+    virtual void V150() = 0;
+    virtual void V154() = 0;
+    virtual void V158() = 0;
+    virtual void V15c() = 0;
+    virtual void V160() = 0;
+    virtual void V164() = 0;
+    virtual void V168() = 0;
+    virtual void V16c() = 0;
+    virtual bool SetQuickActionSequence(void *first, void *second, unsigned short action, unsigned long id);
+    bool SetQuickActionSequence(int value, unsigned short action, unsigned long id);
+    bool SetQuickActionSequence(int value, unsigned short action, unsigned long id, void *target, unsigned short amount);
+
+    undefined m_49c[0x4c];
+    char m_4e8; // 0x4e8
+    undefined m_4e9[3];
+    void *m_4ec; // 0x4ec
+    undefined m_4f0[0x10];
+    int m_500; // 0x500
+    int m_504; // 0x504
+    undefined m_508[3];
+    bool m_50b[3]; // 0x50b
+    undefined m_50e[0x2a];
+    unsigned long m_quickActionIds[3];
+    undefined m_544[0xa4];
+    void *m_5e8;
+    undefined m_5ec[0xc];
     RHPCDescription *m_5f8;
     void *m_5fc; // +0x5fc
     void *m_600; // +0x600
