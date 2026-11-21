@@ -47,34 +47,13 @@ void EmitSCSerializeRecordValue(SCSerializeRecordValue *record)
 }
 
 // FUNCTION: GAME 0x00639b40
-SCSerialize::SCSerialize()
+SCSerialize::SCSerialize() : m_00(0)
 {
-    std::allocator<char> allocator;
-    m_00 = 0;
-    m_pad04[0] = *(const char *)&allocator;
-    SCSerializeUnkNode *head = (SCSerializeUnkNode *)operator new(sizeof(SCSerializeUnkNode));
-    head->m_next = head;
-    head->m_previous = head;
-    m_08 = head;
-    m_0c = 0;
 }
 
 // FUNCTION: GAME 0x00639b70
 SCSerialize::~SCSerialize()
 {
-    SCSerializeUnkNode *head = m_08;
-    SCSerializeUnkNode *node = head->m_next;
-    while (node != head) {
-        SCSerializeUnkNode *removed = node;
-        node = node->m_next;
-        removed->m_previous->m_next = removed->m_next;
-        removed->m_next->m_previous = removed->m_previous;
-        operator delete(removed);
-        --m_0c;
-    }
-    operator delete(m_08);
-    m_08 = 0;
-    m_0c = 0;
 }
 
 // STUB: GAME 0x0063a5c0
@@ -219,14 +198,14 @@ int SCSerialize::Serialize(bool writing)
     int result;
     if (writing) {
         float version = 1.5f;
-        int count = m_0c;
+        int count = m_objects.size();
         result = SBFileUnk00643cd3(
             // STRING: GAME 0x006be350
             "SBSCRIPT", 8, 1, m_00);
         result += SBFileUnk00643cd3(&version, 1, 4, m_00);
         result += SBFileUnk00643cd3(&count, 1, 4, m_00);
-        for (SCSerializeUnkNode *node = m_08->m_next; node != m_08; node = node->m_next)
-            node->m_object->FUN_0063a940(m_00, writing);
+        for (std::list<SCSerializeUnkObject *>::iterator it = m_objects.begin(); it != m_objects.end(); ++it)
+            (*it)->FUN_0063a940(m_00, writing);
     } else {
         char tag[9];
         float version;
@@ -252,34 +231,18 @@ int SCSerialize::Serialize(bool writing)
         for (int index = 0; index < count; ++index) {
             SCSerializeUnkObject *object = new SCSerializeUnkObject;
             result += object->FUN_0063a940(m_00, false);
-            SCSerializeUnkNode *head = m_08;
-            SCSerializeUnkNode *previous = head->m_previous;
-            SCSerializeUnkNode *node = (SCSerializeUnkNode *)operator new(0xc);
-            node->m_next = head ? head : node;
-            node->m_previous = previous ? previous : node;
-            head->m_previous = node;
-            node->m_previous->m_next = node;
-            SCSerializeUnkObject **destination = &node->m_object;
-            if (destination)
-                *destination = object;
-            ++m_0c;
+            m_objects.push_back(object);
         }
     }
     return result;
 }
 
-// Parked: loop-count register copy and explicit test differ.
-// STUB: GAME 0x0063b5c0
+// FUNCTION: GAME 0x0063b5c0
 bool SCSerialize::Destroy()
 {
-    while (m_0c != 0) {
-        SCSerializeUnkObject *object = m_08->m_previous->m_object;
-        delete object;
-        SCSerializeUnkNode *node = m_08->m_previous;
-        node->m_previous->m_next = node->m_next;
-        node->m_next->m_previous = node->m_previous;
-        operator delete(node);
-        --m_0c;
+    while (!m_objects.empty()) {
+        delete m_objects.back();
+        m_objects.pop_back();
     }
     return true;
 }

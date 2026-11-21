@@ -1043,8 +1043,16 @@ int VMCoreCustom::ISendMessageWithArguments(VMNativeStack *stack)
     return 0;
 }
 
-// FUNCTION: GAME 0x00405d20
-int VMCoreCustom::FUN_00405d20(VMNativeStack *stack)
+// TEMPLATE: GAME 0x00405d20 FOLDED
+// ?INoWhere@VMCoreCustom@@SAHPAUVMNativeStack@@@Z
+int VMCoreCustom::INoWhere(VMNativeStack *stack)
+{
+    return FUN_00579a20();
+}
+
+// TEMPLATE: GAME 0x00405d20 FOLDED
+// ?IGod@VMCoreCustom@@SAHPAUVMNativeStack@@@Z
+int VMCoreCustom::IGod(VMNativeStack *stack)
 {
     return FUN_00579a20();
 }
@@ -2395,7 +2403,7 @@ int VMCoreCustom::IForbidNPCRemark(VMNativeStack *stack)
     return 0;
 }
 
-// STUB: GAME 0x004075c0
+// FUNCTION: GAME 0x004075c0
 bool VMCoreCustom::FUN_006390a0()
 {
     g_unk0x006c1948 = 265;
@@ -2511,7 +2519,7 @@ bool VMCoreCustom::FUN_006390a0()
     g_unk0x006c1944[0x1b0 / 4] = FUN_00405c90;
     g_unk0x006c1944[0x1b4 / 4] = ISendMessage;
     g_unk0x006c1944[0x1b8 / 4] = ISendMessageWithArguments;
-    g_unk0x006c1944[0x1bc / 4] = FUN_00405d20;
+    g_unk0x006c1944[0x1bc / 4] = IGod;
     g_unk0x006c1944[0x1c0 / 4] = ISelect;
     g_unk0x006c1944[0x1c4 / 4] = IDeactivate;
     g_unk0x006c1944[0x1c8 / 4] = IActivate;
@@ -2559,7 +2567,7 @@ bool VMCoreCustom::FUN_006390a0()
     g_unk0x006c1944[0x270 / 4] = IPutActorInBulding;
     g_unk0x006c1944[0x274 / 4] = FUN_004064b0;
     g_unk0x006c1944[0x278 / 4] = IGetAnyActorInsideBuilding;
-    g_unk0x006c1944[0x27c / 4] = FUN_00405d20;
+    g_unk0x006c1944[0x27c / 4] = INoWhere;
     g_unk0x006c1944[0x280 / 4] = IGetDistance;
     g_unk0x006c1944[0x284 / 4] = FUN_00406530;
     g_unk0x006c1944[0x288 / 4] = FUN_00406550;

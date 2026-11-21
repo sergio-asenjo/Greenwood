@@ -204,9 +204,7 @@ public:
     SCSerialize();
     ~SCSerialize();
     FILE *m_00; // 0x00
-    char m_pad04[4]; // 0x04
-    SCSerializeUnkNode *m_08; // 0x08
-    int m_0c; // 0x0c
+    std::list<SCSerializeUnkObject *> m_objects; // 0x04
 
     bool Destroy();
     bool OpenSCB(const char *, bool);

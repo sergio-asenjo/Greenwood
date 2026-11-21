@@ -16,6 +16,12 @@
 // LIBRARY: GAME 0x006432e0
 // __CIacos
 
+// LIBRARY: GAME 0x00642a70
+// _srand
+
+// LIBRARY: GAME 0x00642a7d
+// _rand
+
 // LIBRARY: GAME 0x00641782
 // ??0_Lockit@std@@QAE@XZ
 

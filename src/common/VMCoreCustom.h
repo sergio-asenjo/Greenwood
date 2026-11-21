@@ -86,7 +86,8 @@ public:
     static int FUN_004064b0(VMNativeStack *stack);
     static int IForbidNPCRemark(VMNativeStack *stack);
     static int FUN_00404e80(VMNativeStack *stack);
-    static int FUN_00405d20(VMNativeStack *stack);
+    static int INoWhere(VMNativeStack *stack);
+    static int IGod(VMNativeStack *stack);
     static int ISetGlobal(VMNativeStack *stack);
     static int IGetGlobal(VMNativeStack *stack);
     static int IGetActorScript(VMNativeStack *stack);
