@@ -3,14 +3,25 @@
 
 #include <list>
 #include "RHMotionAreaList.h"
+#ifndef SBGEO_POINT2D_VIEW
+#include "SBGeoPoint2D.h"
+#endif
+#include "SBResourceManager.h"
 
 class SBFile;
 class RHElementActor;
 class RHPatchVirtualCalls;
+class RHUnk0057d3f0;
 
 class RHPatchActorList
 {
 public:
+    ~RHPatchActorList()
+    {
+        typedef std::list<RHElementActor *> Actors;
+        void (Actors::*clear)() = &Actors::clear;
+        (list.*clear)();
+    }
     std::list<RHElementActor *> list;
     std::list<RHElementActor *>::iterator current;
     char valid;
@@ -57,6 +68,7 @@ public:
 class RHPatch
 {
 public:
+    ~RHPatch();
     bool Serialize(SBFile &file) { return ((RHUnk0054f870 *)this)->Unk0054f870(file); }
     void Enter(RHElementActor *actor);
     void Leave(RHElementActor *actor);
@@ -95,7 +107,14 @@ public:
     RHMotionAreaList<void *> m_d0;
     RHMotionAreaList<void *> m_f4;
     RHMotionAreaList<void *> m_118;
-    char padding13c[0x3c];
+    unsigned short m_13c;
+    unsigned short m_13e;
+    SBGeoPoint2D m_140;
+    RHUnk0057d3f0 *m_148;
+    RHUnk0057d3f0 *m_14c;
+    RHUnk0057d3f0 *m_150;
+    RHUnk0057d3f0 *m_154;
+    SBResourceSurfaceArray m_158;
     RHPatchActorList m_178;
     char m_19c;
 };

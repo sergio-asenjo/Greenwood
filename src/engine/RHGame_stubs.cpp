@@ -11,12 +11,10 @@ void RHGame::FUN_00512310() {}
 // FUNCTION: GAME 0x0060d9f0
 RHGameRenderer0060da10::RHGameRenderer0060da10()
 {
-    *(unsigned *)this = 0x67a620;
 }
 // FUNCTION: GAME 0x0060da10
 RHGameRenderer0060da10::~RHGameRenderer0060da10()
 {
-    *(unsigned *)this = 0x67a620;
 }
 RHGameRenderer0060dab0::RHGameRenderer0060dab0() {}
 RHGameRenderer0060dab0::~RHGameRenderer0060dab0() {}
@@ -24,7 +22,7 @@ RHGameRenderer0060dab0::~RHGameRenderer0060dab0() {}
 #include "RHMobileUnk00607da0.h"
 
 // FUNCTION: GAME 0x0060d290
-void RHGameWidgetBaseCalls::FUN_0060d290(const SBGeoPoint2D &position)
+void RHGameWidgetLifetimeBase::FUN_0060d290(const SBGeoPoint2D &position)
 {
     SBGeoVector2D offset((const SBGeoVector2D &)position);
     SBGeoBoundingBox2D &box = *(SBGeoBoundingBox2D *)((char *)this + 0x30);

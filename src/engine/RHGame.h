@@ -2,6 +2,7 @@
 #define RHGAME_H
 
 #include "Decomp.h"
+#include <string>
 
 class SBFile;
 class RHMenuCampaignMap;
@@ -10,6 +11,7 @@ class RHMenuBuyBlazons;
 class RHGameBlazonWidget;
 class RHUnk005db7e0;
 class RHSaveGame;
+class RHUnk00536360;
 
 // SIZE 0x357c
 class RHGame
@@ -21,6 +23,7 @@ public:
     void UpdateBlazons(RHMenuCampaignMap *map, RHMenuMissionDescription *description, RHMenuBuyBlazons *buy, bool flag);
     void FUN_0050e850();
     void FUN_0050e860();
+    void FUN_0050ea80(const std::wstring &text, int message, char mission);
     void FUN_0050eb80(bool value);
     void FUN_0050ebe0(char value);
     void FUN_0050eca0(char value);
@@ -99,7 +102,8 @@ private:
     char m_60; // 0x60
     char m_61; // 0x61
     char m_62; // 0x62
-    undefined m_opaque63[0x29ac - 0x63]; // 0x63
+    undefined m_opaque63[0x29a8 - 0x63];
+    RHUnk00536360 *m_resultMenu;
     RHUnk005db7e0 *m_29ac;
     RHGameBlazonWidget *m_29b0; // 0x29b0
     undefined m_opaque29b4[0x3558 - 0x29b4]; // 0x29b4

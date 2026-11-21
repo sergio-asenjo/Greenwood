@@ -56,9 +56,12 @@ public:
     virtual bool FUN_0051abe0(bool, RHElementActor *, bool, bool, bool);
     virtual bool Serialize(SBFile &file);
     void Link(RHUnk0051a5e0 *other);
+    const SBGeoPoint2D &FUN_00414320() const;
     RHSector *FirstSector() const { return m_10; }
     RHSector *SecondSector() const { return m_0c; }
-    unsigned char m_04[8];
+    unsigned m_kind;
+    unsigned char m_08;
+    unsigned char m_09[3];
     RHSector *m_0c;
     RHSector *m_10;
     unsigned short m_14;

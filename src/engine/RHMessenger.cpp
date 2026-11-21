@@ -214,7 +214,7 @@ inline bool RHMessengerActionLocked(RHElementActorPC *actor, unsigned short slot
 }
 
 // STUB: GAME 0x005460c0
-void RHMessenger::RHUnk005460c0(RHUnk5490f0 &message)
+void RHMessenger::RHUnk005460c0(RHMessage &message)
 {
     int type = message.m_type;
     int value = message.m_value;
@@ -223,7 +223,7 @@ void RHMessenger::RHUnk005460c0(RHUnk5490f0 &message)
         switch (type)
         {
         case 1:
-            switch (message.m_unk0c)
+            switch (static_cast<RHUnk00549120 &>(message).m_0c)
             {
             case 1:
             case 3:
@@ -236,7 +236,7 @@ void RHMessenger::RHUnk005460c0(RHUnk5490f0 &message)
     switch (type)
     {
     case 2:
-        command = message.m_unk0c;
+        command = static_cast<RHUnk00549250 &>(message).m_0c;
         switch (command)
         {
         case 5:
@@ -396,7 +396,7 @@ void RHMessenger::RHUnk005460c0(RHUnk5490f0 &message)
         }
         break;
     case 1:
-        switch (message.m_unk0c)
+        switch (static_cast<RHUnk00549120 &>(message).m_0c)
         {
         case 3:
             switch (value & 0x49)
@@ -494,7 +494,7 @@ void RHMessenger::RHUnk005460c0(RHUnk5490f0 &message)
         }
         break;
     case 0:
-        command = message.m_unk0c;
+        command = static_cast<RHUnk5490f0 &>(message).m_unk0c;
         switch (command)
         {
         case 0xf:
@@ -575,7 +575,7 @@ void RHMessenger::RHUnk005460c0(RHUnk5490f0 &message)
     switch (type)
     {
     case 2:
-        command = message.m_unk0c;
+        command = static_cast<RHUnk00549250 &>(message).m_0c;
         switch (command)
         {
         case 0xd:
@@ -601,7 +601,7 @@ void RHMessenger::RHUnk005460c0(RHUnk5490f0 &message)
         }
         break;
     case 0:
-        command = message.m_unk0c;
+        command = static_cast<RHUnk5490f0 &>(message).m_unk0c;
         switch (command)
         {
         case 0xf:
@@ -788,23 +788,7 @@ bool RHMessenger::SerializeLockUser(SBFile &file)
     return true;
 }
 
-struct RHScriptNode
-{
-    RHScriptNode *next;
-    RHScriptNode *prev;
-};
-
-struct RHScriptIter
-{
-    RHScriptNode *node;
-    RHScriptIter(RHScriptNode *value) : node(value) {}
-};
-
-class RHUnk0046eb30
-{
-public:
-    RHScriptIter erase(RHScriptIter position);
-};
+#include "RHScriptListCore.h"
 
 #include "SBGeoPolyLine2DList.h"
 

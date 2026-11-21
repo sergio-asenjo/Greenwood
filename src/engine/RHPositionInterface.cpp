@@ -178,7 +178,7 @@ void RHBonusInfoBase::FUN_0055f290()
 }
 
 // FUNCTION: GAME 0x0055f550
-void RHSpritePositionCalls::FUN_0055f550()
+void RHPositionInterface::ComputePositionMap()
 {
     if (IsMapValid())
         return;

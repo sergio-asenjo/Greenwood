@@ -29,6 +29,7 @@ public:
 #include "RHMobileUnk00607da0.h"
 #include "RHUnk00613e90.h"
 class RHElement;
+struct RHUnk00571160Position;
 #include <math.h>
 
 #ifndef SBGEO_BOUNDINGBOX2D_VIEW
@@ -79,6 +80,7 @@ public:
     void ComputePositionSprite();
     void ComputePosition3D();
     void *Unk0055fa10(int value);
+    void GetPosition(RHUnk00571160Position &position) const;
     void *Current() { return Unk0055fa10(*(volatile int *)&m_88); }
     SBGeoBoundingBox2D &Box() { return *(SBGeoBoundingBox2D *)Unk0055fa10(m_88); }
     void UpdateBox();
@@ -116,6 +118,17 @@ public:
     bool IncrementMapValid() const { return m_8 & 1; }
     bool Increment3DValid() const { return (m_8 >> 1) & 1; }
     void SetHeading(unsigned short heading) { m_d6 = heading & 15; }
+    void SetHeadingInstantly(unsigned short heading) { m_d4 = heading; m_d6 = heading; }
+    unsigned short Layer() const { return m_da; }
+    void SetLayer(unsigned short layer) { m_da = layer; }
+    void SetArea(void *area) { m_dc = area; }
+    void SetValidity(unsigned validity) { m_4 = validity; }
+    void SetFlagFd() { m_fd = 1; }
+    void ResetTarget(const SBGeoPoint2D &point)
+    {
+        m_44 = point;
+        m_8 = 0;
+    }
     void Increment3DFromMap();
     void Position3DFromMap();
 

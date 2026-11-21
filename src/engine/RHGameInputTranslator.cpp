@@ -454,7 +454,7 @@ void RHGamePad::ManageMoveAxis(SBInputJoystickState &state)
     {
         RHGamePadSelection &selection = ((RHGamePadEngine *)m_engine)->m_selection;
         selection.GoTo(0);
-        RHElementActorPC *pc = selection.m_current.node->value;
+        RHElementActorPC *pc = selection.m_current.node->pc;
         long x = state.m_axes[0];
         if (x || state.m_axes[1])
         {
@@ -604,7 +604,7 @@ void RHGamePad::ManageActionSelect(SBInputJoystickState &state)
     {
         RHGamePadSelection &selection = ((RHGamePadEngine *)m_engine)->m_selection;
         selection.GoTo(0);
-        RHElementActorPC *pc = selection.m_current.node->value;
+        RHElementActorPC *pc = selection.m_current.node->pc;
         if (!RHGamePadOpponentCount(pc))
         {
             if (!state.m_buttons[1] && m_previous.m_buttons[1])
@@ -684,7 +684,7 @@ bool RHGamePad::CheckValidityOfPosition(SBGeoVector2D &move, bool fast)
     char *sector;
     RHGamePadSelection &selection = ((RHGamePadEngine *)m_engine)->m_selection;
     selection.GoTo(0);
-    RHElementActorPC *pc = selection.m_current.node->value;
+    RHElementActorPC *pc = selection.m_current.node->pc;
     SBGeoPoint2D position(RHGamePadPosition(pc));
     SBGeoPoint2D destination = position.Unk005fc190(move);
     bool valid = false;
@@ -715,14 +715,7 @@ static inline RHGamePadSelection &RHGamePadOpponents(RHElementActorPC *pc)
     return *(RHGamePadSelection *)((char *)pc + 0x260);
 }
 
-class RHUnk6c1040;
-extern RHUnk6c1040 *g_unk0x6c1040;
-
-class RHScriptBatchCalls
-{
-public:
-    void *Unk0058a940(void *context, int value, void *element);
-};
+#include "RHSequenceManager.h"
 
 // STUB: GAME 0x00519f10
 void RHGamePad::RecognizeSwing()
@@ -778,11 +771,11 @@ void RHGamePad::RecognizeSwing()
     }
     unsigned short facing = RHGamePadFacing(pc);
     unsigned short direction = ((RHUnk005fc3b0 &)extreme).FUN_005fcc50(1.0f);
-    RHUnk6c1040 *manager = g_unk0x6c1040;
+    RHSequenceManager *manager = RHSequenceManager::Instance();
     RHGamePadSelection &opponents = RHGamePadOpponents(pc);
     RHElementActorPC *target = 0;
     if (opponents.m_count)
-        target = opponents.m_head->next->value;
+        target = opponents.m_head->next->pc;
     if ((short)count == 1)
     {
         if (facing == direction || (facing + 1) % 16 == direction || (facing - 1) % 16 == direction)
@@ -792,17 +785,17 @@ void RHGamePad::RecognizeSwing()
                 element = new RHUnk00585ea0(1, 0x3b, pc, target);
             else
                 element = new RHUnk00585ea0(1, 0x3c, pc, target);
-            ((RHScriptBatchCalls *)manager)->Unk0058a940("", 0, element);
+            manager->Unk0058a940("", 0, element);
         }
         if ((facing + 4) % 16 == direction || (facing + 5) % 16 == direction || (facing + 3) % 16 == direction)
         {
             RHUnk00585ea0 *element = new RHUnk00585ea0(1, 0x3e, pc, target);
-            ((RHScriptBatchCalls *)manager)->Unk0058a940("", 0, element);
+            manager->Unk0058a940("", 0, element);
         }
         if ((facing + 0xc) % 16 == direction || (facing + 0xd) % 16 == direction || (facing + 0xb) % 16 == direction)
         {
             RHUnk00585ea0 *element = new RHUnk00585ea0(1, 0x3f, pc, target);
-            ((RHScriptBatchCalls *)manager)->Unk0058a940("", 0, element);
+            manager->Unk0058a940("", 0, element);
         }
     }
     else
@@ -810,7 +803,7 @@ void RHGamePad::RecognizeSwing()
         if (state2)
         {
             RHUnk00585ea0 *element = new RHUnk00585ea0(1, 0x3d, pc, target);
-            ((RHScriptBatchCalls *)manager)->Unk0058a940("", 0, element);
+            manager->Unk0058a940("", 0, element);
         }
         else if (state1)
         {
@@ -819,7 +812,7 @@ void RHGamePad::RecognizeSwing()
                 element = new RHUnk00585ea0(1, 0x42, pc, target);
             else
                 element = new RHUnk00585ea0(1, 0x42, pc, target);
-            ((RHScriptBatchCalls *)manager)->Unk0058a940("", 0, element);
+            manager->Unk0058a940("", 0, element);
         }
     }
     m_points.clear();
@@ -869,7 +862,7 @@ void RHGamePad::ChooseOpponent(RHElementActorPC *pc, unsigned short direction, s
             {
                 RHGamePadSelection &opponents = RHGamePadOpponents(pc);
                 opponents.GoTo(i);
-                RHElementActorPC *opponent = opponents.m_current.node->value;
+                RHElementActorPC *opponent = opponents.m_current.node->pc;
                 bool found = (unsigned short)((const RHUnk005fc3b0 &)RHGamePadPosition(opponent).Unk005fc110(RHGamePadPosition(pc))).FUN_005fcc50(1.0f) == direction;
                 if (found)
                 {

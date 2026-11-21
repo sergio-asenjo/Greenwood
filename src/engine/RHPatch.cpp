@@ -22,9 +22,24 @@ DECOMP_STATIC_ASSERT(offsetof(RHPatch, m_ac) == 0xac)
 DECOMP_STATIC_ASSERT(offsetof(RHPatch, m_d0) == 0xd0)
 DECOMP_STATIC_ASSERT(offsetof(RHPatch, m_f4) == 0xf4)
 DECOMP_STATIC_ASSERT(offsetof(RHPatch, m_118) == 0x118)
+DECOMP_STATIC_ASSERT(offsetof(RHPatch, m_13c) == 0x13c)
+DECOMP_STATIC_ASSERT(offsetof(RHPatch, m_140) == 0x140)
+DECOMP_STATIC_ASSERT(offsetof(RHPatch, m_148) == 0x148)
+DECOMP_STATIC_ASSERT(offsetof(RHPatch, m_154) == 0x154)
+DECOMP_STATIC_ASSERT(offsetof(RHPatch, m_158) == 0x158)
 DECOMP_STATIC_ASSERT(offsetof(RHPatch, m_178) == 0x178)
+DECOMP_STATIC_ASSERT(offsetof(RHPatch, m_19c) == 0x19c)
 DECOMP_SIZE_ASSERT(RHMotionAreaList<void *>, 0x24)
 DECOMP_STATIC_ASSERT(offsetof(RHMotionAreaList<void *>, m_cursor) == 0x0c)
+DECOMP_SIZE_ASSERT(SBResourceSurfaceArray, 0x20)
+DECOMP_SIZE_ASSERT(RHPatchActorList, 0x24)
+DECOMP_STATIC_ASSERT(offsetof(RHPatchActorList, list) == 0)
+DECOMP_STATIC_ASSERT(offsetof(RHPatchActorList, valid) == 0x10)
+
+// STUB: GAME 0x0054ec40
+RHPatch::~RHPatch()
+{
+}
 
 // FUNCTION: GAME 0x0054f870
 bool RHUnk0054f870::Unk0054f870(SBFile &file)
@@ -161,7 +176,7 @@ bool RHUnk0054f870::Unk0054f870(SBFile &file)
     return true;
 }
 
-#include "RHUnkTargetSpriteCalls.h"
+#include "RHSpriteCore.h"
 #include "RHSpriteLastFrameCalls.h"
 #include "RHElementFX.h"
 #include "RHCivilianSpriteView.h"
@@ -184,7 +199,7 @@ void RHPatch::FUN_0054fc40(bool open)
         {
             unsigned short x = (*(RHSprite **)((char *)m_18 + 0x50))->m_184;
             unsigned short y = (*(RHSprite **)((char *)m_18 + 0x50))->m_186;
-            (*(RHUnkTargetSprite **)((char *)m_18 + 0x50))->FUN_005b76e0(0x95, 0);
+            (*(RHSprite **)((char *)m_18 + 0x50))->FUN_005b76e0(0x95, 0);
             (*(RHUnk005bd5b0 **)((char *)m_18 + 0x50))->Unk(true);
             ((RHElementFX *)m_18)->FUN_004a9990();
             unsigned short height = (*(RHCivilianSpriteView **)((char *)m_18 + 0x50))->FUN_005bdf20();
@@ -192,7 +207,7 @@ void RHPatch::FUN_0054fc40(bool open)
             bounds.FUN_00609050(*(SBGeoPoint2D *)(*(char **)((char *)m_18 + 0x50) + 0x1c),
                                 (*(SBGeoPoint2D *)(*(char **)((char *)m_18 + 0x50) + 0x1c)).Unk005fc190(SBGeoVector2D((float)width, (float)height)));
             RHSprite *sprite = *(RHSprite **)((char *)m_18 + 0x50);
-            ((RHEngineWidenedCalls *)sprite)->FUN_005bd450();
+            sprite->FUN_005bd450();
             sprite->m_184 = x;
             sprite->m_186 = y;
         }
@@ -255,7 +270,7 @@ void RHPatch::FUN_00550070(bool mode)
             if (m_8)
             {
                 *((char *)m_18 + 0x12) = 1;
-                (*(RHUnkTargetSprite **)((char *)m_18 + 0x50))->FUN_005b76e0(0x94, 0);
+                (*(RHSprite **)((char *)m_18 + 0x50))->FUN_005b76e0(0x94, 0);
                 (*(RHUnk005bd5b0 **)((char *)m_18 + 0x50))->Unk(false);
             }
             else if (m_18)
@@ -271,7 +286,7 @@ void RHPatch::FUN_00550070(bool mode)
         if (m_a)
         {
             *((char *)m_18 + 0x12) = 1;
-            (*(RHUnkTargetSprite **)((char *)m_18 + 0x50))->FUN_005b76e0(0x96, 0);
+            (*(RHSprite **)((char *)m_18 + 0x50))->FUN_005b76e0(0x96, 0);
             (*(RHUnk005bd5b0 **)((char *)m_18 + 0x50))->Unk(false);
         }
         else if (m_18)
@@ -295,7 +310,7 @@ void RHPatch::FUN_00550150()
         if (m_9)
         {
             *((char *)m_18 + 0x12) = 1;
-            (*(RHUnkTargetSprite **)((char *)m_18 + 0x50))->FUN_005b76e0(0x95, 0);
+            (*(RHSprite **)((char *)m_18 + 0x50))->FUN_005b76e0(0x95, 0);
             (*(RHUnk005bd5b0 **)((char *)m_18 + 0x50))->Unk(true);
             m_b = 1;
         }
@@ -309,7 +324,7 @@ void RHPatch::FUN_00550150()
     else if (m_9)
     {
         *((char *)m_18 + 0x12) = 1;
-        (*(RHUnkTargetSprite **)((char *)m_18 + 0x50))->FUN_005b76e0(0x95, 0);
+        (*(RHSprite **)((char *)m_18 + 0x50))->FUN_005b76e0(0x95, 0);
         (*(RHUnk005bd5b0 **)((char *)m_18 + 0x50))->Unk(false);
         m_b = 1;
     }
@@ -338,7 +353,7 @@ void RHPatch::FUN_00550220()
         {
             ((RHElementFX *)m_18)->RestoreBackground();
             *((char *)m_18 + 0x12) = 1;
-            (*(RHUnkTargetSprite **)((char *)m_18 + 0x50))->FUN_005b76e0(0x94, 0);
+            (*(RHSprite **)((char *)m_18 + 0x50))->FUN_005b76e0(0x94, 0);
             (*(RHUnk005bd5b0 **)((char *)m_18 + 0x50))->Unk(false);
             m_b = 0;
             FUN_0054fe50(false, true);

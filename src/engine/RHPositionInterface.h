@@ -79,7 +79,6 @@ class RHSpritePositionCalls : public RHPositionInterface
 {
 public:
     SBGeoVector2D FUN_004a4a10();
-    void FUN_0055f550();
     bool FUN_00560460();
     bool WithinTargetRadius(float radius, const SBGeoVector2D &delta)
     {

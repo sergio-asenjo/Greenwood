@@ -44,7 +44,7 @@ public:
 class RHReceiverInterface
 {
 public:
-    virtual void v00(RHUnk5490f0 &message) = 0;
+    virtual void v00(RHMessage &message) = 0;
 };
 
 class SBGeoPoint2D;
@@ -140,6 +140,9 @@ public:
     ~RHMessenger();
     virtual void *FUN_00545ed0(unsigned flags);
     bool Serialize(SBFile &file);
+    bool SpriteMaskMode() const { return m_flag17; }
+    bool Flag20() const { return m_flag20; }
+    unsigned short Value26() const { return m_value26; }
 
     // Target 0x00547460 (__FILE__ rhmessenger.cpp). On the loading path it
     // reads the "lock user" byte into a local, and when the read value differs
@@ -150,7 +153,7 @@ public:
     // SerializeLockUser) plus the +0x23 lock-user flag its body serialises.
     bool SerializeLockUser(SBFile &file);
 
-    void RHUnk005460c0(RHUnk5490f0 &message);
+    void RHUnk005460c0(RHMessage &message);
 
     // Target 0x00547560 — __thiscall(this), no extra args (ends in a plain
     // `ret`, not `ret N`). PROVISIONAL identity: it clears a run of byte/word
@@ -178,6 +181,7 @@ public:
     void DisplayMouseWay(unsigned short value);
 
 private:
+    friend class RHEngine;
     std::vector<RHReceiverInterface *> m_receivers;
     bool m_flag14;
     bool m_flag15;

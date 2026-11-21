@@ -9,6 +9,7 @@
 #endif
 #include <list>
 #include <iterator>
+#include "RHScriptListCore.h"
 
 class RHMessenger;
 class RHEngine;
@@ -23,31 +24,10 @@ struct SBInputJoystickState
 
 class RHElementActorPC;
 
-struct RHGamePadListNode
-{
-    RHGamePadListNode *next;
-    RHGamePadListNode *previous;
-    RHElementActorPC *value;
-};
-
-struct RHScriptIter
-{
-    RHGamePadListNode *node;
-};
-
-class RHUnk0046eb30
-{
-public:
-    RHScriptIter FUN_0046eb80();
-};
-
-struct RHUnk005c9010Iterator;
-void FUN_005c9010(RHUnk005c9010Iterator &current, int distance, std::bidirectional_iterator_tag category);
-
 struct RHGamePadSelection
 {
     unsigned m_allocator;
-    RHGamePadListNode *m_head;
+    RHScriptNode *m_head;
     unsigned m_count;
     RHScriptIter m_current;
     bool m_dirty;
@@ -84,7 +64,7 @@ struct RHGamePadSelection
     }
     __forceinline void GoTo(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
     unsigned GetCount() const { return m_count; }
-    RHElementActorPC *GetCurrent() const { return m_current.node->value; }
+    RHElementActorPC *GetCurrent() const { return m_current.node->pc; }
     RHElementActorPC *Selected()
     {
         GoTo(0);
@@ -118,7 +98,7 @@ struct RHGamePadSelection
         }
         else if (wanted != m_index)
             Move(wanted, count);
-        return m_current.node->value;
+        return m_current.node->pc;
     }
     void Seek(int wanted)
     {

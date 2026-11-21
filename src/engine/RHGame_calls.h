@@ -109,21 +109,10 @@ public:
     void *FUN_005176d0(unsigned flags);
 };
 
-class RHGameWidgetBaseCalls
-{
-public:
-    void FUN_0060d290(const SBGeoPoint2D &position);
-};
-
 #include "RHGameWidgetRendererCalls.h"
 
 #include "SBUIKeyboardCalls.h"
 
-class RHGameWidgetAnimatedCalls
-{
-public:
-    void FUN_005d5790(void *event, int state, bool option);
-};
 
 namespace std
 {
@@ -196,8 +185,6 @@ public:
     virtual void v20(); // vtable+0x50
     virtual void v21(bool value); // vtable+0x54
 };
-
-#include "RHMenuCampaignMapClass.h"
 
 class RHMapCampaign
 {
