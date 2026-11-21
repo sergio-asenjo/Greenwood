@@ -1,4 +1,11 @@
 #include "RHFrameHolder.h"
+#include "SBResourceManager.h"
+
+namespace std
+{
+template <>
+void _Construct(RHUnk005074d0::Value *, const RHUnk005074d0::Value &);
+}
 
 class RHEngine
 {
@@ -30,6 +37,7 @@ DECOMP_SIZE_ASSERT(RHFrameHolder, 0xec)
 DECOMP_STATIC_ASSERT(offsetof(RHFrameHolder, m_drawManager) == 0x04)
 DECOMP_STATIC_ASSERT(offsetof(RHFrameHolder, m_frames) == 0x08)
 DECOMP_STATIC_ASSERT(offsetof(RHFrameHolder, m_dictionaries) == 0x18)
+DECOMP_STATIC_ASSERT(offsetof(RHFrameHolder, m_48) == 0x48)
 DECOMP_STATIC_ASSERT(offsetof(RHFrameHolder, m_rows) == 0x4c)
 DECOMP_STATIC_ASSERT(offsetof(RHFrameHolder, m_bank) == 0x5c)
 DECOMP_STATIC_ASSERT(offsetof(RHFrameHolder, m_b4) == 0xb4)
@@ -794,15 +802,15 @@ unsigned long RHFrameHolder::AddRowFromResource(SBResourceManager *resources, un
 #include <string.h>
 #include <math.h>
 
-#include "RHConsoleBlockAllocator.h"
+#include "RHConsoleBlockMap.h"
 
 DECOMP_SIZE_ASSERT(RHConsoleBlockMap, 0x9c)
 
 // FUNCTION: GAME 0x00506070
-bool RHConsoleBlockAllocator::FUN_00506070(RHConsoleBlockMap *information)
+bool RHFrameHolder::FUN_00506070(RHConsoleBlockMap *information)
 {
     memset(information, 0, sizeof(*information));
-    RHFrameHolder &holder = *(RHFrameHolder *)this;
+    RHFrameHolder &holder = *this;
     unsigned int remaining = holder.m_frames.Size();
     unsigned int index = 0;
     if (remaining > 0)
@@ -841,7 +849,7 @@ bool RHFrameHolder::FUN_00506160(SBFile &file)
 {
     char text[80];
     RHConsoleBlockMap information;
-    ((RHConsoleBlockAllocator *)this)->FUN_00506070(&information);
+    FUN_00506070(&information);
     sprintf(text,
         // STRING: GAME 0x006b00bc
         "%d;%d;%d;%d\n",
@@ -1018,9 +1026,9 @@ bool RHFrameMemoryPool::FUN_00506600(const RHFramePoolBlock &first, const RHFram
 }
 
 // FUNCTION: GAME 0x00506620
-int RHConsoleBlockAllocator::FUN_00506620()
+int RHFrameMemoryPool::FUN_00506620()
 {
-    RHFrameMemoryPool &pool = *(RHFrameMemoryPool *)this;
+    RHFrameMemoryPool &pool = *this;
     typedef std::vector<RHFramePoolBlock> Blocks;
     Blocks blocks;
     unsigned long count = 0;

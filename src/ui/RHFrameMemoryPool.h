@@ -29,6 +29,7 @@ public:
     bool FUN_00506560(RHFramePoolList *list, const RHFramePoolBlock &value);
     unsigned long FUN_005065b0() const;
     unsigned long FUN_005065d0() const;
+    int FUN_00506620();
     static bool FUN_00506600(const RHFramePoolBlock &first, const RHFramePoolBlock &second);
     unsigned long Size() const { return m_pages.size(); }
 

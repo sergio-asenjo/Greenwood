@@ -14,35 +14,8 @@ std::map<unsigned short, unsigned short>::insert(const value_type &value);
 #include "SBGeoPoint2D.h"
 #include "SBGeoVector2D.h"
 
-template <class T>
-class SBArray
-{
-public:
-    int m_grow; // 0x00
-    T *m_first; // 0x04
-    T *m_last; // 0x08
-    T *m_end; // 0x0c
-    undefined4 m_10; // 0x10
-    bool m_dirty; // 0x14
-
-    unsigned int Size() const { return m_first == 0 ? 0 : m_last - m_first; }
-    unsigned int GetSize() const;
-    T &operator[](unsigned long index) { return m_first[index]; }
-    void Insert(T *, unsigned int, const T &);
-    void Remove(T *, T *);
-    void Resize(unsigned int size)
-    {
-        if (Size() < size)
-        {
-            T *position = m_last;
-            Insert(position, size - GetSize(), T());
-        }
-        else if (size < GetSize())
-            Remove(m_first + size, m_last);
-    }
-    void RemoveAll() { Remove(m_first, m_last); m_dirty = true; }
-    void InsertLast(const T &value) { Insert(m_last, 1, value); m_dirty = true; }
-};
+template <class T> class SBArray;
+class SBResourceManager;
 
 #include "RHFrameHolderRowMap.h"
 
@@ -83,19 +56,6 @@ public:
     undefined m_multi; // 0x08
     undefined m_09[3]; // 0x09
     unsigned int m_size; // 0x0c
-};
-
-namespace std
-{
-template <>
-void _Construct(RHUnk005074d0::Value *, const RHUnk005074d0::Value &);
-}
-
-class SBResourceManager
-{
-public:
-    unsigned int FUN_00600550(unsigned long);
-    bool FUN_00600920(unsigned long, unsigned long, unsigned long &);
 };
 
 #include "RHUnk005f4fc0.h"
@@ -234,6 +194,7 @@ public:
 #include "SBDrawViewport.h"
 
 class SBDrawViewport;
+struct RHConsoleBlockMap;
 
 // VTABLE: GAME 0x00678b5c
 // SIZE 0xec
@@ -262,11 +223,13 @@ public:
     unsigned short FUN_005046a0(unsigned long);
     unsigned short FUN_005046c0(unsigned long);
     void FUN_00506120();
+    bool FUN_00506070(RHConsoleBlockMap *information);
     bool FUN_00506160(SBFile &file);
     void DumpOneDictionary();
     RHUnk005068e0 *FUN_00505170(unsigned long);
     void Emit(SBResourceManager *, SBArray<SBGeoVector2D> &);
     SBDrawManager *&Draw() { return m_drawManager; }
+    unsigned short BlitOpacity() const { return m_48; }
 
     SBDrawManager *m_drawManager;
     RHFrameHolderFrameArray m_frames; // 0x08

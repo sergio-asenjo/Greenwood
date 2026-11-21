@@ -1,5 +1,6 @@
 #include "SBNullstr.h"
 #include "RHFrameHolder.h"
+#include "RHFrameHolderArray.h"
 
 
 namespace std

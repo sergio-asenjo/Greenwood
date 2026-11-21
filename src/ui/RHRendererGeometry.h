@@ -30,9 +30,12 @@ public:
     ~SBGeoBoundingBox2D() {}
     bool FUN_006083b0(const SBGeoPoint2D &point) const;
     bool FUN_00608400(const SBGeoPoint2D &point) const;
+    bool FUN_006084a0(const SBGeoBoundingBox2D &box);
     bool Unk00608f30() const;
     void FUN_00607d90();
     SBGeoBoundingBox2D &FUN_00607da0(const SBGeoBoundingBox2D &other);
+    SBGeoBoundingBox2D &Translate(const SBGeoPoint2D &offset);
+    int FUN_00609050(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
     void FUN_00607e90(const SBGeoBoundingBox2D &other);
     SBGeoBoundingBox2D FUN_006090d0(const SBGeoVector2D &offset) const;
     SBGeoBoundingBox2D FUN_006092c0(const SBGeoBoundingBox2D &box) const;
