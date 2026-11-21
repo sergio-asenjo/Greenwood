@@ -1,6 +1,10 @@
+#include "SBGeoPoint2D.h"
 #include "RHPath.h"
 #include "SBGeoSegment2D.h"
 #include "VMCore.h"
+#include "RHFastFindGridCore.h"
+#include "RHElementCore.h"
+#include "RHSpriteCore.h"
 #include <stddef.h>
 
 DECOMP_SIZE_ASSERT(RHPathArray, 0x10)
@@ -8,6 +12,11 @@ DECOMP_SIZE_ASSERT(RHPathHistory, 0x14)
 DECOMP_SIZE_ASSERT(RHPathHistoryNode, 0x1c)
 DECOMP_SIZE_ASSERT(RHPathHistoryList, 0x18)
 DECOMP_SIZE_ASSERT(RHPath, 0x24)
+DECOMP_SIZE_ASSERT(RHMotionAreaList<RHUnk00571160Position>, 0x24)
+DECOMP_SIZE_ASSERT(RHMotionAreaList<unsigned short>, 0x24)
+DECOMP_STATIC_ASSERT(offsetof(RHPath, m_c) == 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(RHPathHistory, m_12) == 0x12)
+DECOMP_STATIC_ASSERT(offsetof(RHElement, m_50) == 0x50)
 DECOMP_SIZE_ASSERT(RHUnkWaypointRef, 0x04)
 DECOMP_SIZE_ASSERT(RHWaypoint, 0x7c)
 DECOMP_SIZE_ASSERT(SBSimpleVirtualMachine, 0x5c)
@@ -42,9 +51,9 @@ int RHUnkWaypointRef::Unk00408660()
 }
 
 // FUNCTION: GAME 0x00408750
-int RHUnkWaypointRef::Unk00408750(RHElementMobile *mobile)
+int RHUnkWaypointRef::Unk00408750(void *actor)
 {
-    ((VMCore *)m_0)->FUN_006392e0(&mobile, 4);
+    ((VMCore *)m_0)->FUN_006392e0(&actor, 4);
     // STRING: GAME 0x006a6ce8
     ((VMCore *)m_0)->FUN_00639300(&std::string("ReachPoint"));
     int value;
@@ -107,7 +116,7 @@ void RHUnkPathEngine::Unk004dab90(RHPathArray *path, unsigned short index)
 
 // Parked: temporary cleanup scheduling and coupled calls.
 // FUNCTION: GAME 0x004f9170
-bool RHUnkPathGeometry::Unk004f9170(const SBGeoPoint2D &a, const SBGeoPoint2D &b, unsigned short layer, void *radius)
+bool RHFastFindGrid::Unk004f9170(const SBGeoPoint2D &a, const SBGeoPoint2D &b, unsigned short layer, void *radius)
 {
     SBGeoBoundingBox2D *box = (SBGeoBoundingBox2D *)radius;
     bool blocked;
@@ -132,7 +141,7 @@ bool RHUnkPathGeometry::Unk004f9260(const SBGeoPoint2D &a, const SBGeoPoint2D &b
     RHUnk004f9260List lines(allocator);
     segment.m_0 = a;
     segment.m_8 = b;
-    box.FUN_00607e30(segment);
+    box.FUN_00607e30((const SBGeoSegment2D &)segment);
     ((RHMalignityGridCalls *)this)->FUN_004ed070((RHMalignityQueryList &)lines, layer, box, 2);
     unsigned short count = lines.m_count;
     for (unsigned short i = 0; i < count; ++i)
@@ -176,12 +185,12 @@ bool RHPath::TestIfPathIsFine(RHElementActor *actor)
                 ((RHUnkPathEngine *)g_pEngine)->Unk004dab90(m_4, i - 1);
                 fine = false;
             }
-            else if (!((RHUnkPathGeometry *)g_unk0x6c0a9c)->Unk004f9170(previous, current, waypoint->m_6c,
+            else if (!g_unk0x6c0a9c->Unk004f9170(previous, current, waypoint->m_6c,
                          ((RHUnkPathActorView *)actor)->UnkRadius()))
             {
                 ((RHUnkPathEngine *)g_pEngine)->Unk004dab90(m_4, i - 1);
                 if (actor->m_4 == 0x103 &&
-                    ((RHUnkPathGeometry *)g_unk0x6c0a9c)->Unk004f9170(previous, current, waypoint->m_6c,
+                    g_unk0x6c0a9c->Unk004f9170(previous, current, waypoint->m_6c,
                         ((RHUnkPathEngineView *)g_pEngine)->Actor().UnkRadius()))
                 {
                     SBAssert(0, "P:\\Robin Hood\\RHpath.cpp", 277,
@@ -232,7 +241,7 @@ bool RHPath::SerializeStatus(SBFile &file)
         if (m_8 == 0xffff)
             m_4 = 0;
         else
-            m_4 = g_unk0x6c0b9c->m_8[m_8];
+            m_4 = g_unk0x6c0b9c->m_04[m_8];
         RH_PATH_ACCESS(count, 2, 337);
         RHPathHistoryList &list = m_c;
         list.clear();
@@ -325,6 +334,76 @@ void RHPath::InitializeHistoryEntriesOnPath()
 void EmitRHPathHistory(RHPath &path)
 {
     path.InitializeHistoryEntriesOnPath();
+}
+
+// STUB: GAME 0x00551530
+void RHPath::FUN_00551530(RHMotionAreaList<RHUnk00571160Position> &positions,
+                         RHMotionAreaList<unsigned short> &headings, unsigned short count,
+                         const RHElement &actor)
+{
+    RHUnk005fc3b0 offset;
+    SBGeoPoint2D origin;
+    SBGeoPoint2D destination;
+    SBGeoBoundingBox2D bounds;
+    if (m_c.empty())
+        return;
+
+    int index = m_c.size() - 1;
+    int distance = 0;
+    unsigned short lastDistance = m_c.back().m_12;
+    bounds = actor.m_50->Box();
+    bounds.m_p0.m_x -= 3.0f;
+    bounds.m_flag = true;
+    bounds.m_p1.m_x += 3.0f;
+    bounds.m_p0.m_y -= 3.0f;
+    bounds.m_p1.m_y += 3.0f;
+    RHPathHistory *entry = 0;
+    RHUnk00571160Position sample;
+    for (unsigned position = 0; (unsigned short)position < count; ++position)
+    {
+        if ((position & 1) == 0)
+        {
+            distance += 30;
+            do
+            {
+                if ((short)--index < 0)
+                    return;
+                entry = &m_c[(short)index];
+            } while ((unsigned short)(lastDistance - entry->m_12) < (unsigned short)distance);
+            sample.x = entry->m_0;
+            sample.y = entry->m_4;
+            sample.area = entry->m_8;
+            sample.layer = entry->m_c;
+            if ((unsigned short)position < count - 1)
+            {
+                offset.Unk005fcd40((entry->m_10 + 4) & 15, 0.57357645f);
+                offset.FUN_005fc4d0(20.0f);
+            }
+            else
+                offset.Set(0.0f, 0.0f);
+        }
+        else
+            offset.FUN_005fc4d0(-1.0f);
+
+        origin.Set(sample.x, sample.y);
+        destination = origin.Unk005fc190(offset);
+        if (!g_unk0x6c0a9c->Unk004f9170(origin, destination, sample.layer, &bounds))
+        {
+            destination = origin.Unk005fc190(0.6f * offset);
+            if (!g_unk0x6c0a9c->Unk004f9170(origin, destination, sample.layer, &bounds))
+            {
+                destination = origin.Unk005fc190(0.3f * offset);
+                if (!g_unk0x6c0a9c->Unk004f9170(origin, destination, sample.layer, &bounds))
+                    destination = origin;
+            }
+        }
+        RHUnk00571160Position result = {destination.m_x, destination.m_y, sample.area, sample.layer};
+        positions.InsertLast(result);
+        headings.InsertLast((unsigned char)entry->m_10);
+    }
+
+    if ((short)--index >= 0)
+        m_c.EraseThrough((short)index);
 }
 
 // FUNCTION: GAME 0x00551a70

@@ -8,12 +8,10 @@
 #include "RHUnk005fc3b0.h"
 #include "RHFastFindGrid.h"
 #include "SBFilePosition.h"
+#include "SBGeoSegment2D.h"
+#include "SBGeoIntersection2D.h"
+#include "SBDrawManagerCore.h"
 
-class RHMobileUnk006091b0
-{
-public:
-    RHMobileUnk006091b0 &FUN_006091b0(const SBGeoPoint2D &offset);
-};
 
 #include "RHUnk0053bf20.h"
 
@@ -27,6 +25,95 @@ DECOMP_SIZE_ASSERT(RHUnkSightVertex, 0x10)
 DECOMP_SIZE_ASSERT(RHUnkSightVertexNode, 0x18)
 DECOMP_SIZE_ASSERT(RHUnkSightVertexIter, 0x04)
 DECOMP_SIZE_ASSERT(RHUnkSightVertexList, 0x30)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk005a3450, m_vertices) == 0x4c)
+
+// STUB: GAME 0x005a5060
+void RHUnk005a3450::FUN_005a5060(SBDrawManager *draw, unsigned long surface, const SBGeoBoundingBox2D &box,
+                                 float scale, unsigned short color)
+{
+    SBGeoPoint2D upper;
+    SBGeoPoint2D lower;
+    SBGeoPoint2D previousUpper;
+    SBGeoPoint2D previousLower;
+    SBGeoPoint2D first;
+    SBGeoPoint2D second;
+    SBGeoVector2D offset;
+    SBGeoSegment2D segment(SBGeoPoint2D(0, 0), SBGeoPoint2D(0, 0));
+    RHUnk0060fbf0 clipped;
+    offset = box.Min();
+
+    unsigned remaining = (unsigned short)m_vertices.m_count;
+    if (remaining)
+    {
+        const RHFastFindSightVertex last = m_vertices.m_head->previous->value;
+        previousUpper.Set(last.x, last.y - last.upper);
+        previousLower.Set(last.x, last.y - last.lower);
+        unsigned index = 0;
+        do
+        {
+            const RHFastFindSightVertex vertex = m_vertices.At(index);
+            upper.Set(vertex.x, vertex.y - vertex.upper);
+            lower.Set(vertex.x, vertex.y - vertex.lower);
+
+            segment.First() = upper;
+            segment.Second() = lower;
+            clipped.FUN_0060fca0(box.FUN_006093f0(segment.Line()));
+            if (clipped.FUN_0063b9a0() == 4)
+            {
+                segment = *static_cast<const SBGeoSegment2D *>(clipped.FUN_0053bf20());
+                first = segment.First().FUN_005fc200(offset);
+                second = segment.Second().FUN_005fc200(offset);
+                if (scale != 1.0f)
+                {
+                    first.m_x *= scale;
+                    first.m_y *= scale;
+                    second.m_x *= scale;
+                    second.m_y *= scale;
+                }
+                draw->FUN_005ecbd0(surface, first, second, color);
+            }
+
+            segment.First() = previousLower;
+            segment.Second() = lower;
+            clipped.FUN_0060fca0(box.FUN_006093f0(segment.Line()));
+            if (clipped.FUN_0063b9a0() == 4)
+            {
+                segment = *static_cast<const SBGeoSegment2D *>(clipped.FUN_0053bf20());
+                first = segment.First().FUN_005fc200(offset);
+                second = segment.Second().FUN_005fc200(offset);
+                if (scale != 1.0f)
+                {
+                    first.m_x *= scale;
+                    first.m_y *= scale;
+                    second.m_x *= scale;
+                    second.m_y *= scale;
+                }
+                draw->FUN_005ecbd0(surface, first, second, color);
+            }
+
+            segment.First() = previousUpper;
+            segment.Second() = upper;
+            clipped.FUN_0060fca0(box.FUN_006093f0(segment.Line()));
+            if (clipped.FUN_0063b9a0() == 4)
+            {
+                segment = *static_cast<const SBGeoSegment2D *>(clipped.FUN_0053bf20());
+                first = segment.First().FUN_005fc200(offset);
+                second = segment.Second().FUN_005fc200(offset);
+                if (scale != 1.0f)
+                {
+                    first.m_x *= scale;
+                    first.m_y *= scale;
+                    second.m_x *= scale;
+                    second.m_y *= scale;
+                }
+                draw->FUN_005ecbd0(surface, first, second, color);
+            }
+            previousUpper = upper;
+            previousLower = lower;
+            ++index;
+        } while (--remaining);
+    }
+}
 
 inline void RHSightInsertVertex(RHUnkSightVertexList &list, const RHUnkSightVertex &value)
 {
@@ -269,14 +356,14 @@ void RHSightObstacle::Translate(const RHUnk00613e90 &offset)
     bounds[3] = y1 + bounds[3];
     bounds[4] += offset.z;
     bounds[5] += offset.z;
-    ((RHMobileUnk006091b0 *)&m_24)->FUN_006091b0(SBGeoVector2D(offset.x, offset.y));
-    ((RHMobileUnk006091b0 *)&m_38)->FUN_006091b0(SBGeoVector2D(offset.x, offset.y - offset.z));
+    m_24.Translate(SBGeoVector2D(offset.x, offset.y));
+    m_38.Translate(SBGeoVector2D(offset.x, offset.y - offset.z));
 }
 
 // FUNCTION: GAME 0x005df990
-void *RHUnk005df860::FUN_005df990()
+const RHUnk00613e90 &RHUnk005df860::Normal() const
 {
-    return (char *)this + 0x3c;
+    return m_3c;
 }
 
 // FUNCTION: GAME 0x005dfc40
@@ -329,7 +416,7 @@ void RHUnkSectorPoints::FUN_0060ceb0(const SBGeoPoint2D &point)
 {
     m_28 = 0;
     m_29 = 0;
-    ((RHUnkTargetPoints *)this)->FUN_00611100(point);
+    FUN_00611100(point);
 }
 
 void RHSightObstacle::Emit(SBFile &file)
@@ -338,7 +425,7 @@ void RHSightObstacle::Emit(SBFile &file)
     UpdateBox(RHUnk00613e90(0, 0, 0), SBGeoVector2D(0, 0), RHUnk00613e90(1, 1, 1));
     Translate(RHUnk00613e90(0, 0, 0));
     Serialize(file);
-    m_a8.FUN_005df990();
+    m_a8.Normal();
     m_0c.FUN_005dfc40(RHUnk00613e90(1, 2, 3));
     m_0c.FUN_005dfc60(RHUnk00613e90(1, 2, 3));
     SBGeoPoint2D point;
@@ -412,7 +499,7 @@ int RHUnk005a3450::Unk005a3810(SBFile &file, RHFastFindPointerArray &materials)
     m_firstPlane.Unk005dfa00();
     m_secondPlane.Unk005df860(top1, top2, top0);
     m_secondPlane.Unk005dfa00();
-    if (*(float *)((char *)m_firstPlane.FUN_005df990() + 8) < 0.0f)
+    if (m_firstPlane.Normal().z < 0.0f)
     {
         m_firstPlane.Unk005df860(bottom2, bottom0, bottom1);
         m_firstPlane.Unk005dfa00();

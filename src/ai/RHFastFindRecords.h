@@ -3,6 +3,7 @@
 
 #include "RHFastFindGrid.h"
 #include "SBResourceManager.h"
+#include "RHUnkMaskObstacleTable.h"
 
 // SIZE 0xc0
 class RHFastFindAssignmentC0
@@ -34,63 +35,27 @@ public:
     SBResourceSurfaceArray m_a0;
 };
 
-class RHFastFindClearedWordRecord : public std::vector<unsigned short>
+inline RHFastFindRecordStorage::~RHFastFindRecordStorage()
 {
-public:
-    ~RHFastFindClearedWordRecord()
-    {
-        typedef std::vector<int> Values;
-        int *(Values::*erase)(int *, int *) = &Values::erase;
-        (((Values *)this)->*erase)((int *)begin(), (int *)end());
-    }
-    char m_10[0x10];
-};
+    ((RHScriptFXArray *)this)->Unk005008e0(m_first, m_last);
+    delete[] m_first;
+    m_first = 0;
+    m_last = 0;
+    m_end = 0;
+}
 
-class RHFastFindRecordStorage
+inline RHFastFindClearedPointerRecord::~RHFastFindClearedPointerRecord()
 {
-public:
-    ~RHFastFindRecordStorage()
-    {
-        ((RHScriptFXArray *)this)->Unk005008e0(m_first, m_last);
-        delete[] m_first;
-        m_first = 0;
-        m_last = 0;
-        m_end = 0;
-    }
-    char m_00[4];
-    void **m_first;
-    void **m_last;
-    void **m_end;
-};
+    typedef std::vector<int> Values;
+    int *(Values::*erase)(int *, int *) = &Values::erase;
+    (((Values *)this)->*erase)((int *)m_first, (int *)m_last);
+}
 
-class RHFastFindClearedPointerRecord : public RHFastFindRecordStorage
+inline RHUnk004fd7f0 &RHUnk004fd7f0::operator=(const RHUnk004fd7f0 &other)
 {
-public:
-    ~RHFastFindClearedPointerRecord()
-    {
-        typedef std::vector<int> Values;
-        int *(Values::*erase)(int *, int *) = &Values::erase;
-        (((Values *)this)->*erase)((int *)m_first, (int *)m_last);
-    }
-    char m_10[0x10];
-};
-
-class RHUnk004fd7f0
-{
-public:
-    RHFastFindClearedPointerRecord m_00;
-    RHFastFindClearedWordRecord m_20;
-    RHFastFindClearedPointerRecord m_40;
-    RHFastFindClearedPointerRecord m_60;
-    RHFastFindClearedPointerRecord m_80;
-    RHFastFindClearedPointerRecord m_a0;
-    ~RHUnk004fd7f0();
-    RHUnk004fd7f0 &operator=(const RHUnk004fd7f0 &other)
-    {
-        ((RHFastFindAssignmentC0 *)this)->FUN_004fec70((const RHFastFindAssignmentC0 &)other);
-        return *this;
-    }
-};
+    ((RHFastFindAssignmentC0 *)this)->FUN_004fec70((const RHFastFindAssignmentC0 &)other);
+    return *this;
+}
 
 class RHUnk004fda20
 {

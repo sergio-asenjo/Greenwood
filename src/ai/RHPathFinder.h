@@ -35,6 +35,7 @@ public:
     SBGeoBoundingBox2D();
     ~SBGeoBoundingBox2D() {}
     SBGeoBoundingBox2D &operator=(const SBGeoBoundingBox2D &box);
+    SBGeoBoundingBox2D &Translate(const SBGeoPoint2D &offset);
     SBGeoPoint2D FUN_00608f40() const;
     bool FUN_00608400(const SBGeoPoint2D &point) const;
     SBGeoPoint2D first; // +0x00
@@ -119,11 +120,6 @@ public:
 #include "SBGeoVector2D.h"
 #include "RHUnk005fc3b0.h"
 
-class RHMobileUnk006091b0
-{
-public:
-    RHMobileUnk006091b0 &FUN_006091b0(const SBGeoPoint2D &point);
-};
 
 
 

@@ -293,6 +293,22 @@ public:
     Iterator Begin() { return Iterator(Head()->next); }
     Iterator End() { return Iterator(Head()); }
 
+    void Clear()
+    {
+        RHFastFindUniqueNode *head = Head();
+        RHFastFindUniqueNode *node = head->next;
+        while (node != head)
+        {
+            RHFastFindUniqueNode *removed = node;
+            node = node->next;
+            removed->previous->next = removed->next;
+            removed->next->previous = removed->previous;
+            operator delete(removed);
+            --count;
+        }
+        m_changed = true;
+    }
+
     void Remove(unsigned short index)
     {
         GoTo(index);

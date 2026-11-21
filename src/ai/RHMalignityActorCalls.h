@@ -46,7 +46,7 @@ public:
     virtual void V8c() = 0;
     virtual void V90() = 0;
     virtual void V94() = 0;
-    virtual void V98() = 0;
+    virtual void V98(void *sequence) = 0;
     virtual void V9c() = 0;
     virtual void Va0() = 0;
     virtual void Va4() = 0;
@@ -103,7 +103,6 @@ public:
     virtual void V170(int action, bool mode, unsigned short focus, unsigned long id) = 0;
     bool FUN_0048a260(const RHUnk00613e90 &point);
     float FUN_0048db80(void *position, void *actor);
-    void FUN_0048e420(void *actor);
     void FUN_0048e580();
     void FUN_0048e5b0(unsigned operation, unsigned short value, unsigned unused);
     unsigned short FUN_0048e5f0(unsigned operation);
@@ -112,13 +111,11 @@ public:
     void FUN_0048e630(unsigned operation, unsigned short value);
     void FUN_0048e650(unsigned operation, unsigned short value);
     bool FUN_0048e670(void *actor);
-    SBGeoVector2D FUN_004135b0();
     void FUN_0048e870(void *actor);
     void FUN_0048ebe0();
     void FUN_0048c700(void *actor, unsigned mode);
     unsigned char FUN_0048ca20(void *actor, unsigned mode);
     void FUN_0048cb90(void *actor);
-    void FUN_0048d050();
     unsigned char FUN_0048c8e0(void *actor, unsigned mode);
     bool FUN_0048a130(void *actor);
     bool FUN_0048a350(void *actor);

@@ -56,9 +56,9 @@ DECOMP_STATIC_ASSERT(offsetof(RHFastFindGrid, m_repulsivePoints) == 0x41b4)
 DECOMP_STATIC_ASSERT(offsetof(RHFastFindGrid, m_repulsiveLayers) == 0x41c4)
 
 // FUNCTION: GAME 0x0060ad50
-bool RHMalignitySegment::FUN_0060ad50(const SBGeoBoundingBox2D &box)
+bool SBGeoSegment2D::FUN_0060ad50(const SBGeoBoundingBox2D &box) const
 {
-    return box.FUN_00608650((const RHMobileUnk006100e0 &)*this);
+    return box.FUN_00608650(Line());
 }
 
 
@@ -196,7 +196,7 @@ RHUnk005209d0::~RHUnk005209d0()
 // FUNCTION: GAME 0x0051a5e0
 RHUnk0051a5e0::RHUnk0051a5e0()
 {
-    *(int *)m_04 = 0;
+    m_kind = 0;
 }
 RHUnk0051aa00::~RHUnk0051aa00() {}
 

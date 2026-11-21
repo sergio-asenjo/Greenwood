@@ -3,21 +3,14 @@
 
 #include "RHMotionAreaList.h"
 #include "RHTitbitsCore.h"
+#include "RHPathArray.h"
 
 class SBFile;
 class RHElementActor;
+class RHElement;
 class RHWaypoint;
-
-struct RHPathArray
-{
-    int m_grow;
-    RHWaypoint **m_first;
-    RHWaypoint **m_last;
-    RHWaypoint **m_end;
-    unsigned size() { return m_first == 0 ? 0 : m_last - m_first; }
-    RHWaypoint **begin() { return m_first; }
-    RHWaypoint *&operator[](unsigned index) { return *(begin() + index); }
-};
+class SBGeoVector2D;
+struct RHUnk00571160Position;
 
 struct RHPathHistory
 {
@@ -85,17 +78,38 @@ public:
         ((RHTitbitList *)this)->At(index);
         return m_cur->m_data;
     }
+    void EraseThrough(short last)
+    {
+        (*this)[0];
+        iterator first((std::list<RHPathHistory>::_Node *)m_cur);
+        (*this)[last];
+        iterator end((std::list<RHPathHistory>::_Node *)m_cur);
+        ++end;
+        RHMotionAreaListStorage<RHPathHistory>::erase(first, end);
+        m_valid = 1;
+    }
 };
 
 class RHPath
 {
 public:
+    RHPath();
     ~RHPath();
+    SBGeoVector2D FUN_004ae380() const;
     bool TestIfPathIsFine(RHElementActor *actor);
     bool SerializeStatus(SBFile &file);
     RHWaypoint *LookupNextWaypoint() const;
     void ResetHistory();
     void InitializeHistoryEntriesOnPath();
+    void Unk005505b0(unsigned short waypoint);
+    RHPath &Unk005505c0();
+    RHPath &Unk00550640();
+    int Unk00550660(int condition);
+    void Unk00550f60(unsigned short path);
+    void FUN_00550fa0(void *path);
+    void FUN_00551530(RHMotionAreaList<RHUnk00571160Position> &positions,
+                      RHMotionAreaList<unsigned short> &headings, unsigned short count,
+                      const RHElement &actor);
     unsigned short GetWaypointCount() const
     {
         if (m_4 == 0)

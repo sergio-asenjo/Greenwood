@@ -1,8 +1,9 @@
 #include "SBNullstr.h"
 #include "RHPath.h"
+#include "SBGeoSegment2D.h"
 
 // GLOBAL: GAME 0x006c0b9c
-RHUnkPathRegistry *g_unk0x6c0b9c;
+RHHikingGuide *g_unk0x6c0b9c;
 
 // FUNCTION: GAME 0x0048f180
 void RHPathUnk0048f180(RHPathHistory *dst, const RHPathHistory *src)
@@ -21,10 +22,10 @@ RHPathHistoryNode *RHPathHistoryList::Unk00551de0(RHPathHistoryNode *next, RHPat
 }
 
 // FUNCTION: GAME 0x00607e30
-void SBGeoBoundingBox2D::FUN_00607e30(const RHMalignitySegment &segment)
+void SBGeoBoundingBox2D::FUN_00607e30(const SBGeoSegment2D &segment)
 {
-    Unk00607dc0(*(const SBGeoPoint2D *)&segment);
-    Unk00607dc0(*(const SBGeoPoint2D *)((const char *)&segment + 8));
+    Unk00607dc0(segment.First());
+    Unk00607dc0(segment.Second());
 }
 RHPathHelperList::RHPathHelperList(const char &allocator)
 {

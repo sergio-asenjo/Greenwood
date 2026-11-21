@@ -33,8 +33,12 @@ public:
     RHUnk00520ae0(const SBGeoPoint2D &point, float first, float second);
     virtual ~RHUnk00520ae0(); // vtable+0x00
     RHUnk00520ae0 &operator=(const RHUnk00520ae0 &other);
+    void SetForce(float first, float second);
     void FUN_00520c80(const SBGeoPoint2D &first, const SBGeoPoint2D &second);
     bool FUN_00520ce0(const SBGeoPoint2D &point, float &distance);
+    bool ComputeDeviation(SBGeoVector2D &result, const SBGeoVector2D &heading,
+                          const SBGeoPoint2D &position, const SBGeoPoint2D &nextPosition,
+                          float radius, float distance, float clearance) const;
     bool Serialize(SBFile &file);
     RHUnk005fc3b0 m_14; // +0x14
     RHUnk005fc3b0 m_1c; // +0x1c

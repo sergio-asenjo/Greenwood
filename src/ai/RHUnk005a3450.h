@@ -2,10 +2,12 @@
 #define RHUNK005A3450_H
 
 #include "sb3dstuff.h"
+#include "RHPlaneCalls.h"
 #include "RHUnkSectorPoints.h"
 #include "RHFastFindSightStorage.h"
 
 class RHFastFindPointerArray;
+class SBDrawManager;
 
 class RHUnk005a3450
 {
@@ -14,6 +16,8 @@ public:
     RHUnk005a3450(int type);
     ~RHUnk005a3450();
     int Unk005a3810(SBFile &file, RHFastFindPointerArray &materials);
+    void FUN_005a5060(SBDrawManager *draw, unsigned long surface, const SBGeoBoundingBox2D &box,
+                      float scale, unsigned short color);
     void *Unk005a5780();
     unsigned short ProjectionFlag() { return m_flags >> 2; }
     RHUnk005df860 &FirstPlane() { return m_firstPlane; }

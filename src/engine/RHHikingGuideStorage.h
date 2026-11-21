@@ -4,10 +4,11 @@
 #include <vector>
 #include "Decomp.h"
 #include "RHWaypoint.h"
+#include "RHPathArray.h"
 
 class SBFile;
 
-class RHUnk0051d2c0Storage : public std::vector<RHWaypoint *>
+class RHUnk0051d2c0Storage : public RHPathArray
 {
 public:
     ~RHUnk0051d2c0Storage() { clear(); }
@@ -44,6 +45,7 @@ class RHHikingGroupArrayStorage : public std::vector<RHUnk0051d2c0 *>
 {
 public:
     ~RHHikingGroupArrayStorage() { clear(); }
+    RHUnk0051d2c0 **const volatile &First() const { return _First; }
     RHUnk0051d2c0 **m_cursor;
     bool m_dirty;
     bool m_searching;
@@ -87,7 +89,11 @@ public:
     int FUN_0051cac0(SBFile &file);
     void FUN_0051cd10(SBFile &file);
     bool FUN_0051d020(SBFile &file);
+    void BeamDoorWaypointsIntoHouses();
+    unsigned short GetHikingPathIndex(RHUnk0051d2c0 *path);
     RHHikingGroupArray m_04;
 };
+
+extern RHHikingGuide *g_unk0x6c0b9c;
 
 #endif

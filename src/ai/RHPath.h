@@ -7,13 +7,7 @@
 #include "RHPathCore.h"
 
 #include "RHWaypoint.h"
-
-struct RHUnkPathRegistry
-{
-    char m_pad0[8];
-    RHPathArray **m_8; // +0x08
-};
-extern RHUnkPathRegistry *g_unk0x6c0b9c;
+#include "RHHikingGuideStorage.h"
 
 #include "RHPathGeometryCalls.h"
 

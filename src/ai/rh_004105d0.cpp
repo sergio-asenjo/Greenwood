@@ -1,30 +1,15 @@
 #include "RHUnkWaypointRef.h"
-
-class RHElementMobile;
-class RHScriptBatchCalls
-{
-public:
-    void Unk0040d980(int value);
-};
+#include "RHWaypoint.h"
+#include "RHArtificialIntelligenceCore.h"
 extern char g_unk0x6c0691;
 
-class RHUnk004105d0
-{
-public:
-    void FUN_004105d0(RHElementMobile *target);
-    int m_0;
-    RHElementMobile *m_4;
-    char m_8[0xc];
-    int m_14;
-};
-
 // FUNCTION: GAME 0x004105d0
-void RHUnk004105d0::FUN_004105d0(RHElementMobile *target)
+void RHArtificialIntelligence::ActivateWaypoint(RHWaypoint *waypoint)
 {
     if (g_unk0x6c0691)
     {
-        ((RHUnkWaypointRef *)((char *)target + 0x60))->Unk00408750(m_4);
+        reinterpret_cast<RHUnkWaypointRef *>((char *)waypoint + 0x60)->Unk00408750(m_npcActor);
         if (m_14 != 0xe)
-            ((RHScriptBatchCalls *)this)->Unk0040d980(0x14);
+            DispatchWorldEvent(0x14);
     }
 }

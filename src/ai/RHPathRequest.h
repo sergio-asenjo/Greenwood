@@ -2,6 +2,9 @@
 #define RH_PATH_REQUEST_H
 
 #include "Decomp.h"
+#ifndef SBGEO_POINT2D_VIEW
+#include "SBGeoPoint2D.h"
+#endif
 
 class RHElement;
 
@@ -26,7 +29,8 @@ struct RHpathRequest
     undefined m_pad2e[2]; // 0x2e
     int m_30; // +0x30
     char m_34; // +0x34
-    undefined m_pad35[7]; // 0x35
+    undefined m_pad35[3];
+    unsigned m_failedFrame;
 };
 
 #endif

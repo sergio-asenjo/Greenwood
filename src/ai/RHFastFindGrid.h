@@ -48,8 +48,9 @@ struct RHFastFindLayer
     unsigned short m_lineCount; // +0x08
     char m_0a[2];
     void **m_lines; // +0x0c
-    char m_10[4];
-    void *m_14;
+    unsigned short m_sectorCount;
+    char m_12[2];
+    void **m_14;
     unsigned short m_obstacleCount;
     char m_1a[2];
     void **m_obstacles; // +0x1c
@@ -118,13 +119,6 @@ public:
 #include "RHUnk0051f0f0.h"
 
 #include "SBGeoBoundingBox2DCore.h"
-
-class RHMalignitySegment
-{
-public:
-    bool FUN_0060ad50(const SBGeoBoundingBox2D &box);
-    undefined m_00[0x10];
-};
 
 class RHFastFindLine : public RHUnk0051f0f0
 {

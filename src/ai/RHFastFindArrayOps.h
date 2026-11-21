@@ -16,6 +16,7 @@ public:
     void Unk004fe450(void **destination, unsigned int count, void *const &value);
     void Unk005008e0(void **first, void **last);
     unsigned int Size() { return first == 0 ? 0 : last - first; }
+    void InsertLast(void *const &value);
 };
 
 class RHFastFindGateArray : public RHScriptFXArray

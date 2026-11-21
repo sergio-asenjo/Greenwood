@@ -57,14 +57,13 @@ struct RHMalignityActor
 class RHMalignityReactionCalls
 {
 public:
-    void FUN_00412d60(RHMalignityPosition position, short heading, int mode);
     void FUN_0042c7d0(RHMalignityActor *actor, int mode);
 };
 
 // FUNCTION: GAME 0x0042c7d0
 void RHMalignityReactionCalls::FUN_0042c7d0(RHMalignityActor *actor, int mode)
 {
-    FUN_00412d60(((RHArtificialIntelligence *)this)->FUN_004165e0(actor, true),
+    ((RHArtificialIntelligence *)this)->FUN_00412d60(((RHArtificialIntelligence *)this)->FUN_004165e0(actor, true),
         (int)actor->GetValue18(), mode);
 }
 
@@ -169,5 +168,5 @@ public:
 // FUNCTION: GAME 0x0042c980
 void RHUnk0042c980::FUN_0042c980(int value)
 {
-    ((RHScriptBatchCalls *)((char *)this + (*(int **)this)[1]))->Unk0040d980(value);
+    ((RHArtificialIntelligence *)((char *)this + (*(int **)this)[1]))->DispatchWorldEvent(value);
 }

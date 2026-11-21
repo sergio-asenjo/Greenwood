@@ -238,7 +238,7 @@ bool RHPathObstacleGrid::FUN_004f5890(SBGeoBoundingBox2D &box, unsigned short se
             y = -(box.last.y - m_3e84.last.y);
         else
             y = 0.0f;
-        ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(SBGeoPoint2D(x, y));
+        box.Translate(SBGeoPoint2D(x, y));
     }
     unsigned short iteration = 0;
     do
@@ -258,16 +258,16 @@ bool RHPathObstacleGrid::FUN_004f5890(SBGeoBoundingBox2D &box, unsigned short se
             {
                 float distance = normal->FUN_005fc660(origin->Unk005fc110(box.first));
                 if (distance > (-0.10000000149011612f))
-                    ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(operator*(distance + 1.0f, *(SBGeoVector2D *)normal));
+                    box.Translate(operator*(distance + 1.0f, *(SBGeoVector2D *)normal));
                 distance = normal->FUN_005fc660(origin->Unk005fc110(box.last));
                 if (distance > (-0.10000000149011612f))
-                    ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(operator*(distance + 1.0f, *(SBGeoVector2D *)normal));
+                    box.Translate(operator*(distance + 1.0f, *(SBGeoVector2D *)normal));
                 distance = normal->FUN_005fc660(origin->Unk005fc110(SBGeoPoint2D(box.last.x, box.first.y)));
                 if (distance > (-0.10000000149011612f))
-                    ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(operator*(distance + 1.0f, *(SBGeoVector2D *)normal));
+                    box.Translate(operator*(distance + 1.0f, *(SBGeoVector2D *)normal));
                 distance = normal->FUN_005fc660(origin->Unk005fc110(SBGeoPoint2D(box.first.x, box.last.y)));
                 if (distance > (-0.10000000149011612f))
-                    ((RHMobileUnk006091b0 *)&box)->FUN_006091b0(operator*(distance + 1.0f, *(SBGeoVector2D *)normal));
+                    box.Translate(operator*(distance + 1.0f, *(SBGeoVector2D *)normal));
             }
             ++index;
             --count;
