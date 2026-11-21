@@ -147,11 +147,7 @@ public:
 
 #include "RHUnk00608f10.h"
 
-class RHUnk0055dbb0
-{
-public:
-    char *FUN_0055dbb0();
-};
+#include "RHPlayerProfileAccess.h"
 
 #include "RHMalignityGeometryCalls.h"
 
@@ -220,11 +216,6 @@ struct RHMalignityMessageNode
 
 #include "SBGeoSegment2D.h"
 
-class RHMobileUnk006091b0
-{
-public:
-    RHMobileUnk006091b0 &FUN_006091b0(const SBGeoPoint2D &value);
-};
 
 class RHMalignitySegment
 {

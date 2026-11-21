@@ -1,11 +1,14 @@
 #include "SBNullstr.h"
 #include "RHArtificialMalignity.h"
+#include "RHElementActor.h"
+#include "RHSword.h"
+#include "RHHtHWeaponProfile.h"
 #include <math.h>
 #include <stddef.h>
 
 
 // FUNCTION: GAME 0x004135b0
-SBGeoVector2D RHMalignityActorCalls::FUN_004135b0()
+SBGeoVector2D RHElementActor::FUN_004135b0()
 {
     RHUnk005fc3b0 direction;
     direction.Unk005fcd40(RHMalignityHeading(this), 0.57357645f);
@@ -13,7 +16,6 @@ SBGeoVector2D RHMalignityActorCalls::FUN_004135b0()
 }
 
 
-#include "RHMalignityVisibilityCalls.h"
 
 
 class RHMalignityRemarkCalls
@@ -37,14 +39,13 @@ public:
     virtual void V1c() = 0;
     virtual void V20() = 0;
     virtual void V24(RHMalignityStimulus *stimulus) = 0;
-    void FUN_00412d60(RHMalignityPosition position, short heading, int mode);
     void FUN_0041a3e0();
 };
 
 SBGeoVector2D FUN_0040ec60(const RHMalignityPosition &first, SBGeoPoint2D second);
 
 // FUNCTION: GAME 0x00412d60
-void RHMalignityReactionCalls::FUN_00412d60(RHMalignityPosition position, short heading, int mode)
+void RHArtificialIntelligence::FUN_00412d60(RHMalignityPosition position, short heading, int mode)
 {
     RHUnk00613e90 delta;
     SBGeoVector2D direction;
@@ -58,11 +59,11 @@ void RHMalignityReactionCalls::FUN_00412d60(RHMalignityPosition position, short 
     }
     else
     {
-        direction = FUN_0040ec60(position, ((RHArtificialIntelligence *)this)->FUN_0040cc20(*(void **)((char *)this + 4)));
+        direction = FUN_0040ec60(position, FUN_0040cc20(m_actor));
         float height = RHMalignityField<float>(RHMalignityField<void *>(*(void **)((char *)this + 4), 0x50), 0x18);
         direction.m_y += heading - height;
     }
-    ((RHArtificialIntelligence *)this)->Unk00412f40((RHUnk005fc3b0 *)&direction, mode);
+    Unk00412f40((RHUnk005fc3b0 *)&direction, mode);
 }
 void RHArtificialMalignity::FUN_0043b1b0(RHMalignityPosition, int) {}
 void RHArtificialMalignity::FUN_0043c960(RHMalignityPosition, int) {}
@@ -243,33 +244,26 @@ public:
 unsigned char RHMalignityHeadingPoint::FUN_005fcc50(float) const { return 0; }
 
 
-class RHMalignityAbilityCalls
-{
-public:
-    unsigned short FUN_005c1b50(int index);
-    int FUN_005c2130(float value, int first, int second);
-};
-
 // FUNCTION: GAME 0x005c1b50
-unsigned short RHMalignityAbilityCalls::FUN_005c1b50(int index)
+unsigned short RHSword::GetRange(int index) const
 {
-    return *(unsigned short *)((char *)*(void **)((char *)this + 4) + index * 2);
+    return m_profile->m_ranges[index];
 }
 
 // FUNCTION: GAME 0x005c2130
-int RHMalignityAbilityCalls::FUN_005c2130(float value, int first, int second)
+int RHSword::FUN_005c2130(float value, int first, int second)
 {
-    if (FUN_005c1b50(first) < value)
+    if (GetRange(first) < value)
     {
-        if (FUN_005c1b50(second) >= value)
+        if (GetRange(second) >= value)
             return 1;
     }
     return 0;
 }
 
-void EmitRHMalignityAbilityCalls(RHMalignityAbilityCalls *self)
+void EmitRHMalignityAbilityCalls(RHSword *self)
 {
-    int (RHMalignityAbilityCalls::*f)(float, int, int) = &RHMalignityAbilityCalls::FUN_005c2130;
+    int (RHSword::*f)(float, int, int) = &RHSword::FUN_005c2130;
     (self->*f)(0.0f, 0, 0);
 }
 

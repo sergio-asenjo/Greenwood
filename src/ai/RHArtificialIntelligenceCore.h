@@ -16,6 +16,7 @@ class SBFile;
 class SBGeoPoint2D;
 class RHUnk005fc3b0;
 class RHArtificialIntelligenceActor;
+class RHElementActorNPC;
 class RHArtificialIntelligenceList;
 class RHSeekPoint;
 struct RHArtificialIntelligencePosition;
@@ -31,6 +32,7 @@ class RHUnk00564020;
 class RHUnk004241a0List;
 class RHUnk00424060List;
 
+// VTABLE: GAME 0x0067743c
 class RHArtificialIntelligence
 {
 public:
@@ -41,24 +43,25 @@ public:
     static RHUnk00564020 mlistHouses;
     static RHUnk004241a0List mlistScreenRemarks;
     static RHUnk00424060List mlistForbiddenRemarks;
-    ~RHArtificialIntelligence();
-    virtual void V00(int value) = 0;
-    virtual void V04(int value) = 0;
+    RHArtificialIntelligence();
+    virtual void V00(int value);
+    virtual void V04(int value);
     virtual bool V08(SBFile &file) = 0;
-    virtual void V0c() = 0;
+    virtual int V0c(SBFile &file) = 0;
     virtual void V10(int first, int second) = 0;
-    virtual void V14() = 0;
-    virtual void V18() = 0;
-    virtual void V1c() = 0;
-    virtual void *FUN_0040fd20(unsigned flags);
-    virtual void V24(RHMalignityStimulus *stimulus) = 0;
-    virtual bool V28() = 0;
-    virtual void V2c() = 0;
-    virtual void V30() = 0;
-    virtual void V34() = 0;
-    virtual void V38() = 0;
-    virtual void V3c(int value) = 0;
-    virtual void V40(unsigned short first, unsigned short second, unsigned short third) = 0;
+    virtual void V14();
+    virtual void V18(unsigned char value);
+    virtual void V1c();
+    virtual ~RHArtificialIntelligence();
+    virtual bool V24(RHMalignityStimulus *stimulus);
+    virtual bool V28();
+    virtual void FUN_00417580();
+    virtual void V30(void *target, bool flag) = 0;
+    virtual void V34(unsigned first, unsigned second);
+    virtual void V38(bool enabled);
+    virtual void V3c(int value);
+    virtual void V40(unsigned short first, unsigned short second, unsigned short third);
+    void *FUN_0040fd20(unsigned flags);
     void DispatchActorEvent(RHElementActor *actor, unsigned event)
     {
         RHMalignityStimulus stimulus;
@@ -67,7 +70,23 @@ public:
         stimulus.m_type = 3;
         V24(&stimulus);
     }
+    void DispatchPositionEvent(const RHMalignityPosition &position, unsigned event)
+    {
+        RHMalignityStimulus stimulus(RHMalignityStimulus::Position);
+        stimulus.m_20 = event;
+        stimulus.m_type = 2;
+        stimulus.m_position = position;
+        V24(&stimulus);
+    }
     bool InitState();
+    bool AcceptStimulus(RHMalignityStimulus stimulus);
+    void SetMusicState(int state, unsigned char flags);
+    void SetReactionState(int value);
+    void FinishStimulus();
+    void DispatchWorldEvent(int event);
+    void ActivateWaypoint(RHWaypoint *waypoint);
+    bool HandleWaypointStimulus(const RHMalignityStimulus &stimulus);
+    void Unk0041ac50();
     void Unk00416710(unsigned value);
     unsigned short Unk0041a420();
     void FUN_0041a490();
@@ -82,13 +101,13 @@ public:
     bool Unk00414be0(SBFile &file);
     bool Unk00418600(unsigned short path);
     void *FUN_00417ed0(SBGeoPoint2D *position, bool active);
-    void FUN_00417580();
     void Unk00418c40(int remark, unsigned flags);
     void Unk00410600();
     void FUN_004121a0();
     void FUN_00411a00(unsigned flags);
     SBGeoPoint2D FUN_00412160(const RHWaypoint *source);
     bool Unk00412c80(void *waypoint, unsigned short flags);
+    void FUN_00412d60(RHMalignityPosition position, short height, int mode);
     void FUN_00412e90(SBGeoPoint2D point, int mode);
     bool Unk00412f40(RHUnk005fc3b0 *direction, int mode);
     void FUN_00413240(SBGeoPoint2D point, int first, int second);
@@ -125,16 +144,81 @@ public:
     int ValueBetween(unsigned short first, unsigned short second, unsigned char percent);
     void FUN_00412cf0(const RHMalignityPosition &position, unsigned short heading, int mode);
 
-    RHArtificialIntelligenceActor *m_actor;
-    char m_08[0x20];
+    union
+    {
+        RHArtificialIntelligenceActor *m_actor;
+        RHElementActorNPC *m_npcActor;
+    };
+    unsigned short m_08;
+    unsigned short m_0a;
+    int m_0c;
+    char m_10[4];
+    int m_14;
+    int m_18;
+    int m_1c;
+    int m_20;
+    bool m_24;
+    char m_25[3];
     int m_initialAction;
     char m_2c[4];
     RHPath m_30;
-    char m_54[0x8c];
+    char m_54[0x1c];
+    bool m_hasWaypoints;
+    char m_71;
+    bool m_72;
+    char m_73;
+    unsigned short m_74;
+    char m_76[2];
+    unsigned char *m_waypointCommands;
+    short m_waypointCommandCount;
+    bool m_7e;
+    bool m_7f;
+    RHElement *m_80;
+    unsigned long m_84;
+    unsigned long m_88;
+    unsigned long m_8c;
+    union
+    {
+        unsigned long m_90;
+        RHElementActorNPC *m_reactionTarget;
+    };
+    unsigned long m_94;
+    bool m_98;
+    char m_99[3];
+    unsigned int m_9c;
+    bool m_a0;
+    char m_a1[3];
+    unsigned int m_a4;
+    unsigned short m_a8;
+    unsigned short m_aa;
+    unsigned long m_ac;
+    unsigned long m_b0;
+    unsigned long m_b4;
+    unsigned long m_b8;
+    unsigned long m_bc;
+    unsigned short m_c0;
+    unsigned short m_c2;
+    unsigned short m_c4;
+    unsigned short m_c6;
+    unsigned short m_c8;
+    char m_ca[2];
+    unsigned long m_cc;
+    union
+    {
+        RHMalignityPosition m_reactionPosition;
+        struct
+        {
+            char m_d0[8];
+            unsigned long m_d8;
+            char m_dc[4];
+        };
+    };
     RHMalignityPosition m_e0;
-    char m_f0[4];
+    bool m_hasEvaded;
+    char m_f1[3];
     SBGeoPoint2D m_f4;
-    char m_fc[4];
+    unsigned char m_fc;
+    char m_fd[3];
     RHArtificialIntelligenceCachedList<void *> m_100;
     RHArtificialIntelligenceCachedList<void *> m_124;
     RHArtificialIntelligenceCachedList<void *> m_148;
@@ -143,24 +227,54 @@ public:
     char m_170;
     char m_171[2];
     char m_173;
-    char m_174[4];
+    unsigned char m_174;
+    bool m_175;
+    char m_176[2];
     RHArtificialIntelligenceCachedList<RHStimulus> m_178;
-    char m_1c4[0x10];
+    bool m_1c4;
+    char m_1c5[3];
+    unsigned m_1c8;
+    int m_1cc;
+    void *m_1d0;
     RHArtificialIntelligenceCachedList<void *> m_1d4;
-    char m_1f8[0x10];
+    void *m_1f8;
+    void *m_1fc;
+    void *m_200;
+    bool m_204;
+    char m_205[3];
     RHArtificialIntelligenceCachedList<void *> m_208;
-    char m_22c[4];
+    unsigned short m_22c;
+    char m_22e[2];
     RHArtificialIntelligenceCachedList<int> m_230;
-    char m_254[0x18];
+    unsigned long m_254;
+    unsigned long m_258;
+    unsigned short m_25c;
+    bool m_25e;
+    bool m_25f;
+    unsigned long m_260;
+    unsigned int m_264;
+    bool m_268;
+    char m_269[3];
     RHUnk0056de50 m_26c;
-    char m_2ac[8];
+    bool m_2ac;
+    bool m_2ad;
+    char m_2ae[2];
+    RHElementActor *m_2b0;
     RHArtificialIntelligenceCachedList<void *> m_2b4;
     RHArtificialIntelligenceCachedList<void *> m_2d8;
     RHArtificialIntelligenceCachedList<void *> m_2fc;
     RHArtificialIntelligenceCachedList<void *> m_320;
-    char m_344[8];
+    bool m_344;
+    char m_345;
+    unsigned short m_346;
+    bool m_348;
+    char m_349[3];
     RHArtificialIntelligenceCachedList<RHArtificialIntelligenceTriple> m_34c;
-    char m_378[0x14];
+    char m_378[8];
+    unsigned long m_380;
+    char m_384[4];
+    unsigned short m_388;
+    unsigned short m_38a;
 };
 
 #endif

@@ -18,7 +18,7 @@ class RHArtificialMalignity : public virtual RHArtificialIntelligence
 public:
     RHArtificialMalignity();
     ~RHArtificialMalignity();
-    virtual void V0c();
+    virtual int V0c(SBFile &file);
     void InitOneAI();
     bool SerializeExactlyThisAI(SBFile &file);
     void InitializeFriendCheck(unsigned short actor, unsigned short delay, unsigned short waypoint);
@@ -71,6 +71,7 @@ public:
     void *FUN_00445d40();
     bool FUN_004460f0();
     void FUN_004461a0(void *target, void *actor);
+    RHElementActor *FUN_00446400();
     void FUN_00446700();
     bool FUN_004468a0();
     void FUN_004469e0();
@@ -105,6 +106,7 @@ public:
     void FUN_00430020();
     bool FUN_00430170(RHMalignityList &list, int team);
     void FUN_004303e0();
+    int FUN_00432d30();
     void FUN_0044d0b0();
     bool FUN_0044d1d0();
     unsigned short FUN_0044d6c0();

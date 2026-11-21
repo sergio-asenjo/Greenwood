@@ -8,10 +8,83 @@
 #include "RHActorScriptContext.h"
 #include "RHUnk0046bd20.h"
 #include "RHUnk005fc3b0.h"
+#include "RHUnk00571160Position.h"
 #include "RHMalignityPosition.h"
 #include "RHPositionInterfaceCore.h"
 #include "RHPathGeometryCalls.h"
+#include "RHFastFindGridCore.h"
+#include "RHElementActorNPC.h"
+#include "RHSequenceManager.h"
+#include <stddef.h>
 #include <stdlib.h>
+
+DECOMP_SIZE_ASSERT(RHArtificialBonhomie, 0x3a8)
+DECOMP_STATIC_ASSERT(offsetof(RHArtificialBonhomie, m_active) == 0x04)
+DECOMP_STATIC_ASSERT(offsetof(RHArtificialBonhomie, m_target) == 0x08)
+DECOMP_STATIC_ASSERT(offsetof(RHArtificialBonhomie, m_acceptsOrders) == 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(RHArtificialBonhomie, m_serialState) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHArtificialBonhomie, m_14w) == 0x14)
+DECOMP_STATIC_ASSERT(offsetof(RHArtificialBonhomie, m_16w) == 0x16)
+
+// GLOBAL: GAME 0x00677428
+// RHArtificialBonhomie::`vbtable'
+
+// FUNCTION: GAME 0x0040bf20
+RHArtificialBonhomie::RHArtificialBonhomie()
+{
+    m_0c = 1;
+    m_20 = 2;
+    m_target = 0;
+    m_acceptsOrders = true;
+    m_active = true;
+    m_14w = 0;
+    m_16w = 0;
+}
+
+// FUNCTION: GAME 0x0040bfb0
+RHArtificialBonhomie::~RHArtificialBonhomie()
+{
+}
+
+// SYNTHETIC: GAME 0x0040eb40
+// RHArtificialBonhomie::`scalar deleting destructor'
+
+void RHArtificialBonhomie::V30(void *, bool)
+{
+}
+
+// STUB: GAME 0x0040bfd0
+bool RHArtificialBonhomie::V24(RHMalignityStimulus *stimulus)
+{
+    unsigned event = stimulus->m_20;
+    Unk00422b70(0, event);
+    if (!AcceptStimulus(*stimulus))
+    {
+        FinishStimulus();
+        return true;
+    }
+    bool handled = false;
+    switch (event)
+    {
+    case 0: case 2: case 8: case 9: case 10: case 0xc: case 0xe: case 0xf:
+    case 0x16: case 0x20: case 0x46:
+        handled = FUN_0040d150(*stimulus);
+        break;
+    case 1: case 4: case 0xb: case 0xd: case 0x14: case 0x1e: case 0x2d:
+    case 0x31: case 0x32:
+        handled = HandleReactionStimulus(*stimulus);
+        break;
+    case 3: case 5: case 7: case 0x3b: case 0x3c: case 0x3d: case 0x3e:
+    case 0x3f: case 0x40:
+        handled = HandleStateStimulus(*stimulus);
+        break;
+    case 0x15:
+        static_cast<RHArtificialIntelligence *>(this)->V00(0);
+        break;
+    }
+    FinishStimulus();
+    return handled;
+}
 
 extern char g_unk0x6c0691;
 extern RHElementActor *g_unk0x6c100c;
@@ -30,36 +103,26 @@ T &RHBonhomieField(void *object, int offset)
     return *(T *)((char *)object + offset);
 }
 
-class RHBonhomieCompleteView
-{
-public:
-    void Unk0040d980(int value)
-    {
-        ((RHScriptBatchCalls *)((char *)this + (*(int **)this)[1]))->Unk0040d980(value);
-    }
-};
-
 // FUNCTION: GAME 0x0040d910
-void RHArtificialBonhomie::FUN_0040d910(unsigned flags)
+void RHArtificialBonhomie::V00(int flags)
 {
-    RHBonhomieCompleteView *complete = (RHBonhomieCompleteView *)((char *)this - 0x1c);
-    RHBonhomieField<unsigned short>(this, -6) = 0;
-    if (RHBonhomieField<RHElementActor *>(this, (*(int **)complete)[1] - 0x18)->FUN_0046d710())
+    m_16w = 0;
+    if (m_npcActor->FUN_0046d710())
     {
-        ((RHArtificialIntelligence *)RHBonhomieBase(this))->V3c(2);
-        RHBonhomieField<unsigned char>(RHBonhomieBase(this), 0x175) = 1;
-        complete->Unk0040d980(21);
+        V3c(2);
+        m_175 = true;
+        RHBonhomieInterface(this)->DispatchWorldEvent(21);
     }
     else
-        ((RHArtificialIntelligence *)RHBonhomieBase(this))->FUN_00411a00(flags);
+        FUN_00411a00(flags);
 }
 
 // FUNCTION: GAME 0x0040d9e0
-void RHArtificialBonhomie::FUN_0040d9e0(unsigned char frame)
+void RHArtificialBonhomie::V18(unsigned char frame)
 {
     if (frame & 0x3f)
         return;
-    switch (RHBonhomieField<int>(RHBonhomieBase(this), 0x14))
+    switch (m_14)
     {
     case 0x07:
     case 0x09:
@@ -75,31 +138,31 @@ void RHArtificialBonhomie::FUN_0040d9e0(unsigned char frame)
     case 0xe2:
     case 0xe4:
     case 0xee:
-        if (RHBonhomieField<RHUnk0046bd20 *>(RHBonhomieBase(this), 0x4)->FUN_0046bd20() != 0xa1)
+        if (reinterpret_cast<RHUnk0046bd20 *>(m_npcActor)->FUN_0046bd20() != 0xa1)
             return;
-        if (!((RHSequenceManager *)g_unk0x6c1040)->FUN_0058bd70(RHBonhomieField<void *>(RHBonhomieBase(this), 0x4), 0))
+        if (!RHSequenceManager::Instance()->FUN_0058bd70(m_npcActor, 0))
         {
-            if (RHBonhomieField<unsigned short>(RHBonhomieBase(this), 0x38a) < 3)
+            if (m_38a < 3)
             {
-                ++RHBonhomieField<unsigned short>(RHBonhomieBase(this), 0x38a);
+                ++m_38a;
                 return;
             }
-            if (RHBonhomieField<void *>(RHBonhomieBase(this), 0x380))
-                ((RHArtificialIntelligence *)RHBonhomieBase(this))->Unk00412240(RHBonhomieField<RHUnk00571160Position>(RHBonhomieBase(this), 0x378), RHBonhomieField<unsigned short>(RHBonhomieBase(this), 0x388), 1.0f);
+            if (m_380)
+                Unk00412240(*reinterpret_cast<RHUnk00571160Position *>(m_378), m_388, 1.0f);
             else
-                ((RHBonhomieCompleteView *)((char *)this - 0x1c))->Unk0040d980(4);
-            RHBonhomieField<unsigned short>(RHBonhomieBase(this), 0x38a) = 0;
+                RHBonhomieInterface(this)->DispatchWorldEvent(4);
+            m_38a = 0;
             return;
         }
-        RHBonhomieField<unsigned short>(RHBonhomieBase(this), 0x38a) = 0;
+        m_38a = 0;
         return;
     default:
-        RHBonhomieField<unsigned short>(RHBonhomieBase(this), 0x38a) = 0;
+        m_38a = 0;
     }
 }
 
 // FUNCTION: GAME 0x0040dbe0
-void RHBonhomieSpeechReceiver::FUN_0040dbe0(bool phase)
+void RHArtificialBonhomie::FUN_0040dbe0(bool phase)
 {
     if (phase)
         return;
@@ -135,22 +198,22 @@ void RHBonhomieSpeechReceiver::FUN_0040dbe0(bool phase)
 }
 
 // FUNCTION: GAME 0x0040dcb0
-void RHArtificialBonhomie::FUN_0040dcb0(int state, int substate)
+void RHArtificialBonhomie::V10(int state, int substate)
 {
-    ((RHArtificialIntelligence *)(RHBonhomieBase(this)))->Unk00422b70(2, substate);
+    Unk00422b70(2, substate);
     switch (state)
     {
     case 0:
     case 1:
     case 2:
-        ((RHUnk00413640 *)(RHBonhomieBase(this)))->Unk(0, 0);
+        SetMusicState(0, 0);
         break;
     case 3:
     case 6:
-        ((RHUnk00413640 *)(RHBonhomieBase(this)))->Unk(1, 0);
+        SetMusicState(1, 0);
         break;
     }
-    RHElementActor *actor = RHBonhomieField<RHElementActor *>(RHBonhomieBase(this), 4);
+    RHElementActorNPC *actor = m_npcActor;
     if (RHBonhomieField<unsigned char>(actor, 0x100) && g_unk0x6c0691)
     {
         RHElementActor *saved = g_unk0x6c100c;
@@ -158,79 +221,72 @@ void RHArtificialBonhomie::FUN_0040dcb0(int state, int substate)
         switch (state)
         {
         case 0:
-            actor = RHBonhomieField<RHElementActor *>(RHBonhomieBase(this), 4);
-            RHBonhomieField<RHActorScriptContext>(actor, 0x108).FilterAIEvent(actor, 0x64);
+            actor = m_npcActor;
+            actor->m_108.FilterAIEvent(actor, 0x64);
             break;
         case 1:
-            actor = RHBonhomieField<RHElementActor *>(RHBonhomieBase(this), 4);
-            RHBonhomieField<RHActorScriptContext>(actor, 0x108).FilterAIEvent(actor, 0x65);
+            actor = m_npcActor;
+            actor->m_108.FilterAIEvent(actor, 0x65);
             break;
         case 2:
-            actor = RHBonhomieField<RHElementActor *>(RHBonhomieBase(this), 4);
-            RHBonhomieField<RHActorScriptContext>(actor, 0x108).FilterAIEvent(actor, 0x66);
+            actor = m_npcActor;
+            actor->m_108.FilterAIEvent(actor, 0x66);
             break;
         case 3:
-            actor = RHBonhomieField<RHElementActor *>(RHBonhomieBase(this), 4);
-            RHBonhomieField<RHActorScriptContext>(actor, 0x108).FilterAIEvent(actor, 0x67);
+            actor = m_npcActor;
+            actor->m_108.FilterAIEvent(actor, 0x67);
             break;
         case 4:
-            RHBonhomieField<RHActorScriptContext>(RHBonhomieField<void *>(RHBonhomieBase(this), 4), 0x108).FilterAIEvent(RHBonhomieField<void *>(RHBonhomieBase(this), 0x80), 0x68);
+            m_npcActor->m_108.FilterAIEvent(m_80, 0x68);
             break;
         case 5:
-            RHBonhomieField<RHActorScriptContext>(RHBonhomieField<void *>(RHBonhomieBase(this), 4), 0x108).FilterAIEvent(RHBonhomieField<void *>(RHBonhomieBase(this), 0x80), 0x69);
+            m_npcActor->m_108.FilterAIEvent(m_80, 0x69);
             break;
         case 6:
-            RHBonhomieField<RHActorScriptContext>(RHBonhomieField<void *>(RHBonhomieBase(this), 4), 0x108).FilterAIEvent(RHBonhomieField<void *>(RHBonhomieBase(this), 0x80), 0x6a);
+            m_npcActor->m_108.FilterAIEvent(m_80, 0x6a);
             break;
         }
         g_unk0x6c100c = saved;
     }
-    RHBonhomieField<int>(RHBonhomieBase(this), 0xc) = state;
-    RHBonhomieField<int>(RHBonhomieBase(this), 0x14) = substate;
+    m_0c = state;
+    m_14 = substate;
 }
 
-class RHBonhomieAdjustedReceiver
-{
-public:
-    void FUN_0040eb90(bool enabled);
-};
-
 // FUNCTION: GAME 0x0040e0a0
-int RHArtificialBonhomie::FUN_0040e0a0(SBFile &file)
+int RHArtificialBonhomie::V0c(SBFile &file)
 {
-    file.Access((char *)this - 0xc, 4);
+    file.Access(&m_serialState, 4);
     unsigned char mode;
     file.Access(&mode, 1);
     mode &= 0x7f;
-    char *complete = (char *)this - 0x1c;
     switch (mode)
     {
     case 0:
-        RHBonhomieField<int>(this, (*(int **)complete)[1] + 4) = 0;
+        m_20 = 0;
         break;
     case 1:
-        RHBonhomieField<int>(this, (*(int **)complete)[1] + 4) = 1;
+        m_20 = 1;
         break;
     case 2:
-        RHBonhomieField<int>(this, (*(int **)complete)[1] + 4) = 3;
+        m_20 = 3;
         break;
     case 3:
-        RHBonhomieField<int>(this, (*(int **)complete)[1] + 4) = 4;
+        m_20 = 4;
         break;
     }
-    file.Access((char *)this + (*(int **)complete)[1] + 8, 1);
+    file.Access(&m_24, 1);
     return 6;
 }
 
 // FUNCTION: GAME 0x0040e150
-bool RHArtificialBonhomie::SerializeExactlyThisAI(SBFile &file)
+bool RHArtificialBonhomie::V08(SBFile &file)
 {
     // STRING: GAME 0x006a73b0
     RHSerializeName(file, "RHArtificialBonhomie");
 
     if (file.m_version >= 0x22)
     {
-        if (file.Access((char *)this - 6, 2) < 0)
+        if (file.Access(&m_16w, 2) < 0)
         {
             SBString *err = file.GetError();
             const char *reason = err->m_chars ? err->m_chars : "";
@@ -244,7 +300,7 @@ bool RHArtificialBonhomie::SerializeExactlyThisAI(SBFile &file)
 
     if (file.m_version > 0x1d)
     {
-        if (file.Access((char *)this - 8, 2) < 0)
+        if (file.Access(&m_14w, 2) < 0)
         {
             SBString *err = file.GetError();
             const char *reason = err->m_chars ? err->m_chars : "";
@@ -254,7 +310,7 @@ bool RHArtificialBonhomie::SerializeExactlyThisAI(SBFile &file)
         }
     }
 
-    if (file.Access((char *)this - 0x18, 1) < 0)
+    if (file.Access(&m_active, 1) < 0)
     {
         SBString *err = file.GetError();
         const char *reason = err->m_chars ? err->m_chars : "";
@@ -263,7 +319,7 @@ bool RHArtificialBonhomie::SerializeExactlyThisAI(SBFile &file)
         return false;
     }
 
-    if (!FUN_00416b30(*(void **)((char *)this - 0x14), file))
+    if (!FUN_00416b30(m_target, file))
     {
         SBAssert(1,
                  // STRING: GAME 0x006a7350
@@ -274,7 +330,7 @@ bool RHArtificialBonhomie::SerializeExactlyThisAI(SBFile &file)
         return false;
     }
 
-    if (file.Access((char *)this - 0x10, 1) < 0)
+    if (file.Access(&m_acceptsOrders, 1) < 0)
     {
         SBString *err = file.GetError();
         const char *reason = err->m_chars ? err->m_chars : "";
@@ -309,7 +365,7 @@ bool RHArtificialBonhomie::ProposeGoodAppleChaseFleeDestination(RHMalignityPosit
             void *actor = RHBonhomieInterface(this)->m_actor;
             RHPositionInterface *bounds = (RHPositionInterface *)((char *)RHBonhomieField<void *>(actor, 0x50) + 4);
             void *radius = bounds->Unk0055fa10(bounds->m_88);
-            if (((RHUnkPathGeometry *)g_unk0x6c0a9c)->Unk004f9170(
+            if (g_unk0x6c0a9c->Unk004f9170(
                     RHBonhomieInterface(this)->FUN_0040cbf0(origin),
                     RHBonhomieInterface(this)->FUN_0040cbf0(destination), origin.layer, radius))
                 goto found;
@@ -325,21 +381,7 @@ found:
 }
 
 // FUNCTION: GAME 0x0040eb90
-void RHBonhomieAdjustedReceiver::FUN_0040eb90(bool enabled)
+void RHArtificialBonhomie::V38(bool enabled)
 {
-    *(bool *)((char *)this - 0x10) = !enabled;
-}
-
-void EmitRHBonhomieAdjustedReceiver(RHBonhomieAdjustedReceiver *receiver, bool enabled)
-{
-    receiver->FUN_0040eb90(enabled);
-}
-
-void RHArtificialBonhomie::Emit(SBFile &file)
-{
-    FUN_0040d910(0);
-    FUN_0040d9e0(0);
-    FUN_0040dcb0(0, 0);
-    ((RHBonhomieSpeechReceiver *)this)->FUN_0040dbe0(false);
-    SerializeExactlyThisAI(file);
+    m_acceptsOrders = !enabled;
 }
