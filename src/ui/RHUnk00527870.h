@@ -19,7 +19,7 @@ public:
     bool m_dc;
 };
 
-// SIZE 0x278
+// SIZE 0x27c
 class RHUnk005276d0
 {
 public:
@@ -28,6 +28,7 @@ public:
     RHUnk00527870 m_location;
     RHGameLifetime00515f00 m_e0;
     RHGameLifetime00515f00 m_1ac;
+    void *m_mission;
 };
 
 #endif

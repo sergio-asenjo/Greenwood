@@ -5,7 +5,6 @@
 #include "RHMapBox.h"
 #include "SBUIRenderer.h"
 #include "RHMapWidget.h"
-#include "RHMenuCampaignMapClass.h"
 #include "RHFocusManager.h"
 #include "RHSaveGameManager.h"
 #include "RHMission.h"
@@ -48,7 +47,8 @@ DECOMP_SIZE_ASSERT(RHMenuBuyBlazons, 0x44c)
 // Parked at 0.8023: first string boundary and register scheduling differ.
 // STUB: GAME 0x00524990
 RHMenuBuyBlazons::RHMenuBuyBlazons(RHMenuWindow *parent, RHMenuWindowScreen *screen)
-    : RHMenuWindowFocus(parent, screen, 0xed, 1, true), m_444(0),
+    : RHMenuWindowFocus(parent, screen, 0xed, 1, true),
+      m_title(RHGameLifetime00525560::SeparateBase), m_444(0),
       m_448(screen->FUN_0053be80(std::string("Debrief")))
 {
     m_cancel.FUN_005d1e30((int)m_screen, std::wstring(g_unk0x006c0b50), 0x92);
@@ -90,15 +90,15 @@ inline void RHBuyBlazonsInsert(std::vector<void *> &widgets, void *const &widget
 // FUNCTION: GAME 0x00524dd0
 bool RHMenuBuyBlazons::Create(RHMission *mission, RHMenuShortMissionBlazons *blazons)
 {
-    if (((RHMenuWindow *)this)->FUN_00544b40(
+    if (RHMenuWindow::FUN_0061a1e0(
             // STRING: GAME 0x006b0914
             L"Buy blazons background",
             RHMapBox(0.0f, 0.0f, 400.0f, 200.0f), 0))
     {
         std::vector<void *> widgets;
-        ((RHMenuCampaignMap *)this)->V30(&m_cancel);
-        ((RHMenuCampaignMap *)this)->V30(&m_ok);
-        ((RHMenuCampaignMap *)this)->V30(&m_title);
+        FUN_0061a800(&m_cancel);
+        FUN_0061a800(&m_ok);
+        FUN_0061a800(&m_title);
         ((RHUnk005d92c0Sub *)&m_ok)->v08(SBGeoPoint2D(0.0f, 135.0f));
         RHBuyBlazonsInsert(widgets, &m_ok);
         RHBuyBlazonsInsert(widgets, &m_cancel);
@@ -132,7 +132,7 @@ void RHMenuBuyBlazons::UpdateState()
         text += L"\n";
         text += FUN_005e23d0(0xef);
         ((RHMapWidget *)&m_title)->V2c((const RHMapTitleText &)text);
-        ((RHMenuCampaignMap *)this)->V1c();
+        FUN_0061a3a0();
     }
     else
         ((RHGameMenuCalls *)this)->FUN_00544b30();

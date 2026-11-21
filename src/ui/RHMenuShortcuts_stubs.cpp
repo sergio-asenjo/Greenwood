@@ -153,7 +153,7 @@ RHPortraitWidgetEvent *RHMenuShortcutsList::FUN_005ce6b0(const RHPortraitWidgetI
         if (result)
             handled = true;
     }
-    RHGameWidgetAnimatedCalls &animated = *(RHGameWidgetAnimatedCalls *)((char *)this + 0x1dc);
+    RHPortraitAnimated &animated = *(RHPortraitAnimated *)((char *)this + 0x1dc);
     animated.FUN_005d5790(result, field.m_state, handled);
     if (m_214 == 0xffff)
     {

@@ -37,7 +37,6 @@
 #include "RHButtonSelection.h"
 
 #include "RHMenuWindow.h"
-#include "RHGameTitleLifetimeInline.h"
 #include "RHPortraitLinkedLifetimeView.h"
 #include "RHPortraitRadioLifetimeView.h"
 #include "../engine/RHGraphicConfigClass.h"

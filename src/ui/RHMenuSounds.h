@@ -79,21 +79,7 @@ public:
     undefined m_00[0xcc];
 };
 
-#pragma inline_depth(0)
-class __declspec(novtable) RHMenuSoundsTitle : public RHGameLifetime00525880
-{
-public:
-    RHMenuSoundsTitle()
-    {
-        *(unsigned *)this = 0x006791a8;
-        m_fc = true;
-        m_fd = true;
-    }
-
-    bool m_fc;
-    bool m_fd;
-};
-#pragma inline_depth()
+typedef RHGameLifetime00525560 RHMenuSoundsTitle;
 
 // SIZE 0xc
 #include "RHSoundConfig.h"

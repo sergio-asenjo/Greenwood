@@ -5,12 +5,14 @@
 #include "RHMenuCloseCalls.h"
 #include "RHMapBox.h"
 #include "RHMapWidget.h"
-#include "RHMenuCampaignMapClass.h"
 #include "RHFocusManager.h"
+#include "RHMenuWidgetVector.h"
 #include "RHSaveGameManager.h"
 #include "SBUIRenderer.h"
 #include "RHGame_calls.h"
 #include "RHSoundCore.h"
+#include "RHPlayerProfile.h"
+#include "RHPlayerProfileManagerStorage.h"
 
 
 // GLOBAL: GAME 0x006c0670
@@ -71,33 +73,40 @@ inline void RHMoviesInsert(std::vector<void *> &widgets, void *const &widget)
 // STUB: GAME 0x00536d30
 bool RHMenuMovies::FUN_00536d30()
 {
-    if (((RHMenuWindow *)this)->FUN_00544b40(g_unk0x006c0b50, RHMapBox(0.0f, 0.0f, 640.0f, 480.0f), 0))
+    bool created;
     {
-        void *font = m_screen->FUN_0053be80(std::string("MissionTitle"));
-        std::vector<void *> widgets;
+        std::wstring title(g_unk0x006c0b50);
+        created = RHMenuWindow::FUN_0061a1e0(title, RHMapBox(0.0f, 0.0f, 640.0f, 480.0f), 0);
+    }
+    if (created)
+    {
+        SBFontUnk0061e840 *font = m_screen->FUN_0053be80(std::string("MissionTitle"));
+        RHMenuWidgetVector widgets;
+        RHPortraitRootLifetime &frame = *this;
         m_ok.FUN_005d1e30((int)m_screen, FUN_005e23d0(15), 0xbe);
-        ((RHMenuCampaignMap *)this)->V30(&m_ok);
-        ((RHFocusManager *)((char *)this + 0xc8))->FUN_004ffc70((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_ok, true);
-        RHFocusManager &focus = *(RHFocusManager *)((char *)this + 0xc8);
+        frame.FUN_0061a800(&m_ok);
+        m_focus.FUN_004ffc70((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_ok, true);
+        RHFocusManager &focus = m_focus;
         focus.FUN_004ffce0((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_ok, 1);
         focus.FUN_004ffce0((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_ok, 0x1c);
         focus.FUN_004ffce0((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_ok, 0x9c);
         RHMoviesInsert(widgets, &m_ok);
         ((RHMenuWindow *)this)->FUN_00544380(widgets, 2);
-        widgets.clear();
+        widgets.Clear();
         m_intro.FUN_005d1e30((int)m_screen, g_unk0x006c0b50, 0x129);
         m_outro.FUN_005d1e30((int)m_screen, g_unk0x006c0b50, 0x12a);
-        ((RHMenuCampaignMap *)this)->V30(&m_intro);
-        ((RHMenuCampaignMap *)this)->V30(&m_outro);
+        frame.FUN_0061a800(&m_intro);
+        frame.FUN_0061a800(&m_outro);
         ((RHUnk005d92c0Sub *)&m_intro)->v08(SBGeoPoint2D(110.0f, 80.0f));
         RHMoviesInsert(widgets, &m_intro);
         RHMoviesInsert(widgets, &m_outro);
         ((RHMenuWindow *)this)->FUN_00544800(widgets, 30);
         ((RHMapWidget *)&m_title)->V30(FUN_005e23d0(2), RHMapBox(0.0f, 0.0f, 500.0f, 480.0f), 0, unsigned(-1));
         ((SBUIUnk0060dd00 *)&m_title.m_renderer)->FUN_0060e0d0(font, font, font, font);
-        ((RHMenuCampaignMap *)this)->V30(&m_title);
-        if (*(unsigned *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x2c) < 100)
-            ((RHMenuCampaignMap *)this)->V38(&m_outro);
+        frame.FUN_0061a800(&m_title);
+        void *activeProfile = RHPlayerProfileManagerStorage::mInstance.FUN_0055dbb0();
+        if (static_cast<RHPlayerProfile *>(activeProfile)->GetM2c() < 100)
+            frame.FUN_0061aa30(&m_outro);
         return true;
     }
     return false;

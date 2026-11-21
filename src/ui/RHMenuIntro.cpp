@@ -61,7 +61,6 @@ RHMenuIntro::~RHMenuIntro()
 }
 
 #include "RHMapWidget.h"
-#include "RHMenuCampaignMapClass.h"
 #include "RHSaveGameManager.h"
 
 extern wchar_t g_unk0x006c0b50[1];
@@ -74,7 +73,7 @@ inline void RHIntroInsert(std::vector<void *> &widgets, void *const &widget)
 // STUB: GAME 0x0052e4b0
 bool RHMenuIntro::Create()
 {
-    if (((RHMenuWindow *)this)->FUN_00544b40(
+    if (RHMenuWindow::FUN_0061a1e0(
         // STRING: GAME 0x006b0db0
         L"Intro", RHMapBox(0.0f, 0.0f, 640.0f, 480.0f), 0))
     {
@@ -97,15 +96,15 @@ bool RHMenuIntro::Create()
         }
         ((SBUIUnk0060dd00 *)&m_840.m_renderer)->FUN_0060e0d0(edit, edit, edit, edit);
         ((SBUIUnk0060dd00 *)&m_940.m_renderer)->FUN_0060e0d0(normal, normal, normal, normal);
-        ((RHMenuCampaignMap *)this)->V30(&m_140);
-        ((RHMenuCampaignMap *)this)->V30(&m_240);
-        ((RHMenuCampaignMap *)this)->V30(&m_340);
-        ((RHMenuCampaignMap *)this)->V30(&m_740);
-        ((RHMenuCampaignMap *)this)->V30(&m_440);
-        ((RHMenuCampaignMap *)this)->V30(&m_540);
-        ((RHMenuCampaignMap *)this)->V30(&m_640);
-        ((RHMenuCampaignMap *)this)->V30(&m_840);
-        ((RHMenuCampaignMap *)this)->V30(&m_940);
+        FUN_0061a800(&m_140);
+        FUN_0061a800(&m_240);
+        FUN_0061a800(&m_340);
+        FUN_0061a800(&m_740);
+        FUN_0061a800(&m_440);
+        FUN_0061a800(&m_540);
+        FUN_0061a800(&m_640);
+        FUN_0061a800(&m_840);
+        FUN_0061a800(&m_940);
         RHIntroInsert(widgets, &m_140);
         RHIntroInsert(widgets, &m_240);
         RHIntroInsert(widgets, &m_340);
@@ -307,7 +306,7 @@ bool FUN_005f1150(ToolboxMouseState &mouse, unsigned char *keyboard);
 bool FUN_005e17a0(unsigned char *keyboard);
 void FUN_005e1400();
 
-// STUB: GAME 0x0052f540
+// FUNCTION: GAME 0x0052f540
 void RHMenuIntro::FUN_0052f540()
 {
     SBDrawManager *draw = g_unk0x6c11d0;
@@ -318,7 +317,7 @@ void RHMenuIntro::FUN_0052f540()
     unsigned long texture;
     ((SBResourceManager *)g_unk0x006c1840)->FUN_00600920(0x134, 0, texture);
     int textureHeight = draw->FUN_005e5750(texture);
-    unsigned short textureWidth = draw->FUN_005e56c0(texture);
+    int textureWidth = draw->FUN_005e56c0(texture);
     int left = ((int)width - textureWidth) / 2;
     unsigned long buffer = draw->Unk005e4ed0(width, height, 0, false);
     ToolboxMouseState mouse;

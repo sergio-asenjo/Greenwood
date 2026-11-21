@@ -12,7 +12,6 @@
 #include "RHMission.h"
 #include "RHGameBlazonWidget.h"
 #include "RHMapWidget.h"
-#include "RHMenuCampaignMapClass.h"
 #include "SBUIRenderer.h"
 #include "SBThreadedInput.h"
 #include "SBFrameWnd.h"
@@ -81,20 +80,20 @@ SBFrameEvent *RHMenuShortMissionDescription::FUN_00540ec0(const void *input)
 // FUNCTION: GAME 0x00540970
 bool RHMenuShortMissionDescription::Create()
 {
-    if (FUN_00544b40(
+    if (RHMenuWindow::FUN_0061a1e0(
             // STRING: GAME 0x006b1070
             L"Short mission description",
             RHMapBox(0.0f, 0.0f, 220.0f, 100.0f), 0))
     {
         void *font = m_screen->FUN_0053be80(std::string("PopupScroll"));
         ((RHMapWidget *)&m_text)->V30(g_unk0x006c0b50, RHMapBox(0.0f, 0.0f, 0.0f, 0.0f), 0, 0x85);
-        ((RHMenuCampaignMap *)this)->V30(&m_text);
+        FUN_0061a800(&m_text);
         ((RHMapWidget *)&m_picture)->V30(g_unk0x006c0b50, RHMapBox(9.0f, 8.0f, 9.0f, 8.0f), 0, 0x117);
-        ((RHMenuCampaignMap *)this)->V30(&m_picture);
+        FUN_0061a800(&m_picture);
         ((RHMapWidget *)&m_title)->V30(g_unk0x006c0b50, RHMapBox(48.0f, 5.0f, 215.0f, 80.0f), 0, unsigned(-1));
         ((SBUIUnk0060dd00 *)&m_title.m_renderer)->FUN_0060e0d0(font, font, font, font);
         m_title.m_renderer.SetM64(2);
-        ((RHMenuCampaignMap *)this)->V30(&m_title);
+        FUN_0061a800(&m_title);
         return true;
     }
     return false;
@@ -160,7 +159,7 @@ void RHMenuShortMissionDescription::FUN_00541060()
     SBGeoBoundingBox2D bounds(((RHMapWidget *)this)->V24());
     SBGeoBoundingBox2D previous(((RHMapWidget *)this)->V24());
     offset = position.Unk005fc110(bounds.Min());
-    ((RHMobileUnk006091b0 *)&bounds)->FUN_006091b0(offset);
+    bounds.Translate(offset);
     if ((char)bounds.FUN_00609170(m_box)) {
         if ((float)draw->FUN_005e56c0(0) < bounds.Max().GetX())
             offset.m_x = (float)draw->FUN_005e56c0(0) - bounds.Max().GetX();
@@ -170,7 +169,7 @@ void RHMenuShortMissionDescription::FUN_00541060()
             offset.m_y = (float)draw->FUN_005e5750(0) - bounds.Max().GetY();
         else
             offset.m_y = 0.0f;
-        ((RHMobileUnk006091b0 *)&bounds)->FUN_006091b0(offset);
+        bounds.Translate(offset);
         RHPortraitRootLifetime::FUN_0061ad20(bounds);
         previous.FUN_00607e90(bounds);
         m_screen->FUN_0053c7f0((unsigned long)&previous);

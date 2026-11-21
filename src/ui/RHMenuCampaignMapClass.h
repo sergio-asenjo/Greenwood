@@ -2,6 +2,9 @@
 #define RHMENUCAMPAIGNMAPCLASS_H
 
 #include <vector>
+#include "RHMenuWindowClass.h"
+#include "RHUnk00527870.h"
+#include "RHMenuShortMissionDescriptionCore.h"
 
 class RHMapTitleText;
 #include "RHMapBox.h"
@@ -11,31 +14,13 @@ struct RHMapByte
     signed char value;
 };
 
-class RHMenuCampaignMap
+// VTABLE: GAME 0x00679218
+class RHMenuCampaignMap : public RHMenuWindow
 {
 public:
-    virtual void V00();
-    virtual void V04();
-    virtual void V08();
-    virtual void V0c();
-    virtual void V10();
-    virtual void V14();
-    virtual void V18();
-    virtual void V1c();
-    virtual void V20();
-    virtual void V24();
-    virtual void V28();
-    virtual void V2c();
-    virtual void V30(void *);
-    virtual void V34();
-    virtual void V38(void *);
-    virtual void V3c(void *);
-    virtual void V40();
-    virtual void V44();
-    virtual void V48();
-    virtual void V4c();
+    virtual ~RHMenuCampaignMap();
     virtual void RouteEvent(struct RHMenuEvent *event);
-    virtual void V54();
+    virtual void FUN_00528a60();
     bool HandleEvent(struct RHMenuEvent *event);
     bool Create();
     void DisplayPseudoMissionDebriefing();
@@ -49,9 +34,15 @@ public:
     bool FUN_00528730(int, void *, void *);
     bool FUN_005287d0(int, void *, void *);
     void FUN_00528810();
-    void FUN_00528a60();
     void Emit();
-    char m_04[0x26fc];
+    SBFontUnk0061e840 *m_font;
+    RHGameLifetime00515d30 m_close;
+    RHUnk005276d0 m_locations[10];
+    RHGameLifetime00515f00 m_arrows[10];
+    RHMenuShortMissionDescription m_description;
+    RHGameLifetime00525560 m_label;
+    std::wstring m_message;
+    unsigned m_26fc;
     unsigned m_2700;
 };
 

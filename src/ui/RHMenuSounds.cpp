@@ -58,6 +58,7 @@ bool RHMenuSounds::FUN_00541390(RHMenuEvent *event)
 // FUNCTION: GAME 0x00541520
 RHMenuSounds::RHMenuSounds(void *screen)
     : RHMenuWindowFocus(0, screen, 0, false),
+      m_108c(RHMenuSoundsTitle::SeparateBase),
       m_settings(*(RHMenuSoundsSettings *)(((RHUnk0055dbb0 *)g_unk0x006c0e48)->FUN_0055dbb0() + 0x44)),
       m_changed(false)
 {
@@ -95,7 +96,6 @@ RHMenuSounds::~RHMenuSounds()
 }
 
 #include "RHMapWidget.h"
-#include "RHMenuCampaignMapClass.h"
 #include "RHSaveGameManager.h"
 #include "RHPortraitUnk005d3880.h"
 
@@ -153,21 +153,22 @@ static __forceinline bool RHSoundsCreateGroup(RHMenuSounds &menu, const std::wst
 // STUB: GAME 0x00541a90
 bool RHMenuSounds::Create()
 {
-    if (FUN_00544b40(g_unk0x006c0b50, RHMapBox(0.0f, 0.0f, 640.0f, 480.0f), 0))
+    if (RHMenuWindow::FUN_0061a1e0(g_unk0x006c0b50, RHMapBox(0.0f, 0.0f, 640.0f, 480.0f), 0))
     {
         RHSoundsWidgetVector widgets;
+        RHPortraitRootLifetime &frame = *this;
         void *normal = m_screen->FUN_0053be80(std::string("Default"));
         void *edit = m_screen->FUN_0053be80(std::string("EditField"));
         void *title = m_screen->FUN_0053be80(std::string("MissionTitle"));
         ((RHMapWidget *)&m_b8c)->V30(FUN_005e23d0(0x1d), RHMapBox(0.0f, 0.0f, 460.0f, 480.0f), 0, unsigned(-1));
         ((SBUIUnk0060dd00 *)&m_b8c.m_renderer)->FUN_0060e0d0(title, title, title, title);
-        ((RHMenuCampaignMap *)this)->V30(&m_b8c);
+        frame.FUN_0061a800(&m_b8c);
         m_140.FUN_005d1e30((int)m_screen, FUN_005e23d0(0xf), 0xbe);
         m_240.FUN_005d1e30((int)m_screen, FUN_005e23d0(0x10), 0xbe);
         RHSoundsInsert(widgets, &m_140);
         RHSoundsInsert(widgets, &m_240);
-        ((RHMenuCampaignMap *)this)->V30(&m_140);
-        ((RHMenuCampaignMap *)this)->V30(&m_240);
+        frame.FUN_0061a800(&m_140);
+        frame.FUN_0061a800(&m_240);
         m_focus.FUN_004ffc70((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_140, true);
         RHFocusManager &focus = m_focus;
         focus.FUN_004ffc70((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_240, true);
@@ -184,8 +185,8 @@ bool RHMenuSounds::Create()
         ((RHPortraitUnk005d3880 *)&m_454)->FUN_005d3ab0((RHPortraitUnk005d3880 *)&m_340);
         RHSoundsInsert(widgets, &m_340);
         RHSoundsInsert(widgets, &m_454);
-        ((RHMenuCampaignMap *)this)->V30(&m_340);
-        ((RHMenuCampaignMap *)this)->V30(&m_454);
+        frame.FUN_0061a800(&m_340);
+        frame.FUN_0061a800(&m_454);
         ((RHMenuWindow *)this)->FUN_00544800(widgets, 2);
         widgets.Clear();
         ((RHMapWidget *)&m_454)->V54(RHSoundsField<bool>(sound, 0x211));
@@ -195,8 +196,8 @@ bool RHMenuSounds::Create()
         ((RHPortraitUnk005d3880 *)&m_67c)->FUN_005d3ab0((RHPortraitUnk005d3880 *)&m_568);
         RHSoundsInsert(widgets, &m_568);
         RHSoundsInsert(widgets, &m_67c);
-        ((RHMenuCampaignMap *)this)->V30(&m_568);
-        ((RHMenuCampaignMap *)this)->V30(&m_67c);
+        frame.FUN_0061a800(&m_568);
+        frame.FUN_0061a800(&m_67c);
         ((RHMenuWindow *)this)->FUN_00544800(widgets, 2);
         widgets.Clear();
         RHSoundsField<void *>(&m_340, 0xd0) = edit;
@@ -208,11 +209,11 @@ bool RHMenuSounds::Create()
         RHSoundsCreateGroup<0x928>(*this, g_unk0x006c0b50, RHMapBox(30.0f, 370.0f, 30.0f, 370.0f));
         RHSoundsCreateGroup<0x9f4>(*this, g_unk0x006c0b50, RHMapBox(30.0f, 410.0f, 30.0f, 410.0f));
         RHSoundsCreateGroup<0xac0>(*this, g_unk0x006c0b50, RHMapBox(30.0f, 450.0f, 30.0f, 450.0f));
-        ((RHMenuCampaignMap *)this)->V30(&m_790);
-        ((RHMenuCampaignMap *)this)->V30(&m_85c);
-        ((RHMenuCampaignMap *)this)->V30(&m_928);
-        ((RHMenuCampaignMap *)this)->V30(&m_9f4);
-        ((RHMenuCampaignMap *)this)->V30(&m_ac0);
+        frame.FUN_0061a800(&m_790);
+        frame.FUN_0061a800(&m_85c);
+        frame.FUN_0061a800(&m_928);
+        frame.FUN_0061a800(&m_9f4);
+        frame.FUN_0061a800(&m_ac0);
         ((RHMapWidget *)&m_c8c)->V30(FUN_005e23d0(0x38), RHMapBox(30.0f, 270.0f, 460.0f, 480.0f), 0, unsigned(-1));
         ((RHMapWidget *)&m_d8c)->V30(FUN_005e23d0(0x39), RHMapBox(30.0f, 310.0f, 460.0f, 480.0f), 0, unsigned(-1));
         ((RHMapWidget *)&m_e8c)->V30(FUN_005e23d0(0x3a), RHMapBox(30.0f, 350.0f, 460.0f, 480.0f), 0, unsigned(-1));
@@ -223,11 +224,11 @@ bool RHMenuSounds::Create()
         ((SBUIUnk0060dd00 *)&m_e8c.m_renderer)->FUN_0060e0d0(normal, normal, normal, normal);
         ((SBUIUnk0060dd00 *)&m_f8c.m_renderer)->FUN_0060e0d0(normal, normal, normal, normal);
         ((SBUIUnk0060dd00 *)&m_108c.m_renderer)->FUN_0060e0d0(normal, normal, normal, normal);
-        ((RHMenuCampaignMap *)this)->V30(&m_c8c);
-        ((RHMenuCampaignMap *)this)->V30(&m_d8c);
-        ((RHMenuCampaignMap *)this)->V30(&m_e8c);
-        ((RHMenuCampaignMap *)this)->V30(&m_f8c);
-        ((RHMenuCampaignMap *)this)->V30(&m_108c);
+        frame.FUN_0061a800(&m_c8c);
+        frame.FUN_0061a800(&m_d8c);
+        frame.FUN_0061a800(&m_e8c);
+        frame.FUN_0061a800(&m_f8c);
+        frame.FUN_0061a800(&m_108c);
         SynchronizeWidgets();
         return true;
     }

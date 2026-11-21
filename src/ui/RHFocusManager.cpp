@@ -253,10 +253,10 @@ int RHFocusManager::FUN_004ffed0(const void *input) const
     for (; key <= 255; ++key) {
         if (action != 0)
             break;
-        int pressed = (*(RHGameWidgetInputCalls **)((char *)input + 0x0c))->FUN_0060e240(key);
+        int pressed = (*(SBUIUnk0060e1b0 **)((char *)input + 0x0c))->FUN_0060e240(key);
         unsigned index = key;
-        int state = *(int *)((char *)*(RHGameWidgetInputCalls **)((char *)input + 0x0c) + 0xa0c + index * 4);
-        RHGameWidgetInputCalls *shortcuts = *(RHGameWidgetInputCalls **)((char *)input + 0x0c);
+        int state = (*(SBUIUnk0060e1b0 **)((char *)input + 0x0c))->repeat[index];
+        SBUIUnk0060e1b0 *shortcuts = *(SBUIUnk0060e1b0 **)((char *)input + 0x0c);
         if (pressed == 1) {
             if (state == 2 || state == 0) {
                 unsigned translated = FUN_005fb1d0(key & 0x7f);
@@ -579,7 +579,7 @@ RHFocusEvent *RHFocusManager::FUN_005004d0(const void *input)
     if (m_40[1] == true) {
         unsigned key = 0;
         for (; (unsigned short)key <= 255; ++key) {
-            RHGameWidgetInputCalls *shortcuts = *(RHGameWidgetInputCalls **)((char *)input + 0x0c);
+            SBUIUnk0060e1b0 *shortcuts = *(SBUIUnk0060e1b0 **)((char *)input + 0x0c);
             int pressed = shortcuts->FUN_0060e240((unsigned short)key);
             typedef RHFocusShortcutIterator (RHFocusShortcutTree::*Find)(const unsigned short &);
             Find find = &RHFocusShortcutTree::FUN_00500a20;
@@ -587,7 +587,7 @@ RHFocusEvent *RHFocusManager::FUN_005004d0(const void *input)
             typedef RHFocusEvent *(RHFocusManager::*Link)(RHFocusEvent *, RHFocusEvent *) const;
             Link link = &RHFocusManager::FUN_00500040;
             if (pressed == 1) {
-                shortcuts = *(RHGameWidgetInputCalls **)((char *)input + 0x0c);
+                shortcuts = *(SBUIUnk0060e1b0 **)((char *)input + 0x0c);
                 int state = *(int *)((char *)shortcuts + 0xa0c + (key & 0xffff) * 4);
                 if (state == 0) {
                     RHFocusNode<RHFocusGroupableView> *groupHead = *(RHFocusNode<RHFocusGroupableView> *volatile *)&m_groupHead;
@@ -609,7 +609,7 @@ RHFocusEvent *RHFocusManager::FUN_005004d0(const void *input)
                 }
             }
             else if (pressed == 0) {
-                shortcuts = *(RHGameWidgetInputCalls **)((char *)input + 0x0c);
+                shortcuts = *(SBUIUnk0060e1b0 **)((char *)input + 0x0c);
                 if (((RHPortraitKeyboardCalls *)shortcuts)->FUN_0060e270((unsigned short)key)) {
                     unsigned short *first = std::find(m_pressed.begin(), m_pressed.end(), shortcut);
                     if (first != m_pressed.end()) {

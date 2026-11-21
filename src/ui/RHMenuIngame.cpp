@@ -3,7 +3,6 @@
 #include "SBNullstr.h"
 #include "RHMenuIngame.h"
 #include "RHMapBox.h"
-#include "RHMenuCampaignMapClass.h"
 #include "RHFocusManager.h"
 #include "RHSaveGameManager.h"
 #include "RHMission.h"
@@ -84,7 +83,7 @@ inline void RHIngameInsert(std::vector<void *> &widgets, void *const &widget)
 // FUNCTION: GAME 0x0052d750
 bool RHMenuIngame::FUN_0052d750()
 {
-    if (((RHMenuWindow *)this)->FUN_00544b40(g_unk0x006c0b50, RHMapBox(0.0f, 0.0f, 640.0f, 480.0f), 0))
+    if (RHMenuWindow::FUN_0061a1e0(g_unk0x006c0b50, RHMapBox(0.0f, 0.0f, 640.0f, 480.0f), 0))
     {
         std::vector<void *> widgets;
         m_continue.FUN_005d1e30((int)m_screen, FUN_005e23d0(9), 0xbe);
@@ -93,12 +92,12 @@ bool RHMenuIngame::FUN_0052d750()
         m_options.FUN_005d1e30((int)m_screen, FUN_005e23d0(12), 0xbe);
         m_restart.FUN_005d1e30((int)m_screen, FUN_005e23d0(13), 0xbe);
         m_quit.FUN_005d1e30((int)m_screen, FUN_005e23d0(14), 0xbe);
-        ((RHMenuCampaignMap *)this)->V30(&m_continue);
-        ((RHMenuCampaignMap *)this)->V30(&m_load);
-        ((RHMenuCampaignMap *)this)->V30(&m_save);
-        ((RHMenuCampaignMap *)this)->V30(&m_options);
-        ((RHMenuCampaignMap *)this)->V30(&m_restart);
-        ((RHMenuCampaignMap *)this)->V30(&m_quit);
+        FUN_0061a800(&m_continue);
+        FUN_0061a800(&m_load);
+        FUN_0061a800(&m_save);
+        FUN_0061a800(&m_options);
+        FUN_0061a800(&m_restart);
+        FUN_0061a800(&m_quit);
         ((RHFocusManager *)((char *)this + 0xc8))->FUN_004ffce0((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_continue, 1);
         ((RHFocusManager *)((char *)this + 0xc8))->FUN_004ffc70((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_continue, true);
         ((RHFocusManager *)((char *)this + 0xc8))->FUN_004ffc70((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_load, true);

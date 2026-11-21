@@ -3,7 +3,6 @@
 
 #include "RHMapBox.h"
 #include "RHMapWidget.h"
-#include "RHGameTitleLifetimeInline.h"
 #include <stddef.h>
 
 extern wchar_t g_unk0x006c0b50[1];
@@ -87,7 +86,6 @@ bool RHMenuYesNo::AskForConfirmation(RHMenuWindowScreen *screen, const std::wstr
 }
 
 #include "RHMapBox.h"
-#include "RHMenuCampaignMapClass.h"
 #include "RHFocusManager.h"
 #include "RHSaveGameManager.h"
 
@@ -101,15 +99,15 @@ inline void RHYesNoInsert(std::vector<void *> &widgets, void *const &widget)
 // FUNCTION: GAME 0x00545710
 bool RHMenuYesNo::FUN_00545710()
 {
-    if (((RHMenuWindow *)this)->FUN_00544b40(g_unk0x006c0b50, RHMapBox(0.0f, 0.0f, 400.0f, 200.0f), 0))
+    if (RHMenuWindow::FUN_0061a1e0(g_unk0x006c0b50, RHMapBox(0.0f, 0.0f, 400.0f, 200.0f), 0))
     {
         std::vector<void *> widgets;
         RHYesNoInsert(widgets, &m_344);
         RHYesNoInsert(widgets, &m_244);
         ((RHMenuWindow *)this)->FUN_005449e0(widgets, 18);
-        ((RHMenuCampaignMap *)this)->V30(&m_344);
-        ((RHMenuCampaignMap *)this)->V30(&m_244);
-        ((RHMenuCampaignMap *)this)->V30(&m_144);
+        FUN_0061a800(&m_344);
+        FUN_0061a800(&m_244);
+        FUN_0061a800(&m_144);
         ((RHFocusManager *)((char *)this + 0xc8))->FUN_004ffc70((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_344, false);
         RHFocusManager &focus = *(RHFocusManager *)((char *)this + 0xc8);
         focus.FUN_004ffc70((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_244, false);

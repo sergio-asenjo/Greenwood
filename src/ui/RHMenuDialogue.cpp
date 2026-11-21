@@ -53,7 +53,6 @@
 #include "RHMenuCloseCalls.h"
 #include "RHMapWindowClass.h"
 #include "RHMapWidget.h"
-#include "RHMenuCampaignMapClass.h"
 #include "RHFocusManager.h"
 #include "SBUIRenderer.h"
 #include "RHWidgetPortraitClass.h"
@@ -243,7 +242,7 @@ inline void RHDialogueSetText(RHPortraitButton &button, const std::wstring &text
 // STUB: GAME 0x0052a9a0
 bool RHMenuDialogue::Create()
 {
-    if (((RHMenuWindow *)this)->FUN_00544b40(g_unk0x006c0b50, RHMapBox(0.0f, 0.0f, 496.0f, 463.0f), 0))
+    if (RHMenuWindow::FUN_0061a1e0(g_unk0x006c0b50, RHMapBox(0.0f, 0.0f, 496.0f, 463.0f), 0))
     {
         void *font = m_screen->FUN_0053be80(std::string("PopupScroll"));
         std::vector<void *> widgets;
@@ -257,10 +256,10 @@ bool RHMenuDialogue::Create()
         m_text.m_renderer.FUN_005cb9d0(130, 170);
         ((RHMapWidget *)&m_portrait)->V30(g_unk0x006c0b50, RHMapBox(330.0f, 50.0f, 450.0f, 210.0f), 0, 0x102);
         ((RHMapWidget *)&m_portrait)->V38(0);
-        ((RHMenuCampaignMap *)this)->V30(&m_skip);
-        ((RHMenuCampaignMap *)this)->V30(&m_close);
-        ((RHMenuCampaignMap *)this)->V30(&m_text);
-        ((RHMenuCampaignMap *)this)->V30(&m_portrait);
+        FUN_0061a800(&m_skip);
+        FUN_0061a800(&m_close);
+        FUN_0061a800(&m_text);
+        FUN_0061a800(&m_portrait);
         ((RHUnk005d92c0Sub *)&m_skip)->v08(SBGeoPoint2D(0.0f, 384.0f));
         RHDialogueInsert(widgets, &m_skip);
         RHDialogueInsert(widgets, &m_close);
@@ -631,11 +630,7 @@ void RHUnk0052b860::FUN_0052bc20()
     ((RHUnk005cbb80 *)((char *)this + 0x80))->FUN_005cbc80(V24());
 }
 
-class RHGameWidgetRendererCalls
-{
-public:
-    bool FUN_0060d890(const SBGeoPoint2D &point);
-};
+#include "RHGameWidgetRendererCalls.h"
 
 #include "SBUIKeyboardCalls.h"
 
@@ -645,7 +640,7 @@ struct RHDialogueWidgetInput
     unsigned short m_08;
     unsigned char m_flags;
     unsigned char m_0b;
-    RHGameWidgetInputCalls *m_shortcuts;
+    SBUIUnk0060e1b0 *m_shortcuts;
 };
 
 struct RHDialogueWidgetEvent

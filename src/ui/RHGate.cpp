@@ -308,7 +308,7 @@ void RHUnk0051aa00::Unk0051b2a0(SBFile &file, RHSectorBuilding *building)
     int highestLayer;
     file.Access(&type, 1);
     m_88 = (unsigned char)type;
-    file.Access(&m_04[4], 1);
+    file.Access(&m_08, 1);
     file.Access(&m_8c[0], 1);
     file.Access(&m_8c[3], 1);
     file.Access(&m_8c[1], 1);
@@ -389,8 +389,8 @@ void RHUnk0051aa00::Unk0051b2a0(SBFile &file, RHSectorBuilding *building)
 // FUNCTION: GAME 0x0051b6e0
 RHUnk0051b6e0::RHUnk0051b6e0(RHUnk0051e1e0 *first, RHUnk0051e1e0 *second)
 {
-    *(int *)m_04 = 2;
-    m_04[4] = 1;
+    m_kind = 2;
+    m_08 = 1;
     m_88 = first;
     m_8c = second;
     m_20 = *(SBGeoPoint2D *)((char *)first + 4);

@@ -12,7 +12,6 @@
 #include "RHMapWindowClass.h"
 #include "RHMapResources.h"
 #include "RHMapWidget.h"
-#include "RHMenuCampaignMapClass.h"
 #include "RHMenuScreenView.h"
 #include "RHFocusManager.h"
 #include "RHSaveGameManager.h"
@@ -125,7 +124,7 @@ inline void RHMissionDescriptionSetText(RHPortraitButton &button, const std::wst
 // STUB: GAME 0x00534770
 bool RHMenuMissionDescription::Create()
 {
-    if (((RHMenuWindow *)this)->FUN_00544b40(g_unk0x006c0b50, RHMapBox(0.0f, 0.0f, 496.0f, 463.0f), 0))
+    if (RHMenuWindow::FUN_0061a1e0(g_unk0x006c0b50, RHMapBox(0.0f, 0.0f, 496.0f, 463.0f), 0))
     {
         void *titleFont = m_screen->FUN_0053be80(std::string("MissionTitle"));
         void *textFont = m_screen->FUN_0053be80(std::string("PopupScroll"));
@@ -138,13 +137,13 @@ bool RHMenuMissionDescription::Create()
         m_close.FUN_005d1e30((int)m_screen, g_unk0x006c0b50, 0x92);
         ((RHMapWidget *)&m_title)->V30(FUN_00535650(m_mission, 0), RHMapBox(50.0f, 50.0f, bounds.Min().GetX() - 10.0f, 125.0f), 0, unsigned(-1));
         RHMissionDescriptionSetText(m_close, FUN_005e23d0(0x14d));
-        ((RHMenuCampaignMap *)this)->V30(&m_close);
-        ((RHMenuCampaignMap *)this)->V30(&m_picture);
-        ((RHMenuCampaignMap *)this)->V30(&m_title);
+        FUN_0061a800(&m_close);
+        FUN_0061a800(&m_picture);
+        FUN_0061a800(&m_title);
         if ((char)m_mission->FUN_0054cbf0())
         {
             ((RHMapWidget *)&m_text)->V30(FUN_00535650(m_mission, 2), RHMapBox(50.0f, bounds.Max().GetY() + 5.0f, 450.0f, 385.0f), 0, unsigned(-1));
-            ((RHMenuCampaignMap *)this)->V30(&m_text);
+            FUN_0061a800(&m_text);
             m_930->FUN_0044ef60(RHMapBox(50.0f, 125.0f, bounds.Min().GetX() - 20.0f, 463.0f), (RHFocusManager *)((char *)this + 0xc8));
             m_start.FUN_005d1e30((int)m_screen, g_unk0x006c0b50, 0x9e);
             m_buy.FUN_005d1e30((int)m_screen, g_unk0x006c0b50, 0x9d);
@@ -153,9 +152,9 @@ bool RHMenuMissionDescription::Create()
             RHMissionDescriptionSetText(m_buy, FUN_005e23d0(0x146));
             RHMissionDescriptionSetText(m_accept, FUN_005e23d0(0x147));
             ((RHUnk005d92c0Sub *)&m_start)->v08(SBGeoPoint2D(0.0f, 384.0f));
-            ((RHMenuCampaignMap *)this)->V30(&m_start);
-            ((RHMenuCampaignMap *)this)->V30(&m_buy);
-            ((RHMenuCampaignMap *)this)->V30(&m_accept);
+            FUN_0061a800(&m_start);
+            FUN_0061a800(&m_buy);
+            FUN_0061a800(&m_accept);
             RHMissionDescriptionInsert(widgets, &m_start);
             RHMissionDescriptionInsert(widgets, &m_buy);
             RHMissionDescriptionInsert(widgets, &m_accept);
@@ -171,7 +170,7 @@ bool RHMenuMissionDescription::Create()
                 m_cancel.FUN_005d1e30((int)m_screen, g_unk0x006c0b50, 0xa0);
                 ((RHUnk005d92c0Sub *)&m_cancel)->v08(SBGeoPoint2D(0.0f, 384.0f));
                 RHMissionDescriptionSetText(m_cancel, FUN_005e23d0(0x143));
-                ((RHMenuCampaignMap *)this)->V30(&m_cancel);
+                FUN_0061a800(&m_cancel);
                 focus.FUN_004ffc70((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_cancel, true);
                 focus.FUN_004ffce0((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_cancel, 0x1c);
                 focus.FUN_004ffce0((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_cancel, 0x9c);
@@ -186,12 +185,12 @@ bool RHMenuMissionDescription::Create()
         else
         {
             ((RHMapWidget *)&m_text)->V30(FUN_00535650(m_mission, 2), RHMapBox(50.0f, 125.0f, 450.0f, 385.0f), 0, unsigned(-1));
-            ((RHMenuCampaignMap *)this)->V30(&m_text);
+            FUN_0061a800(&m_text);
             m_text.m_renderer.FUN_005cb9d0((unsigned long)(bounds.Width() + 10.0f), (unsigned long)(bounds.Max().GetY() - bounds.Min().GetY() + bounds.Min().GetY() - 125.0f + 5.0f));
             m_cancel.FUN_005d1e30((int)m_screen, g_unk0x006c0b50, 0x91);
             ((RHUnk005d92c0Sub *)&m_cancel)->v08(SBGeoPoint2D(0.0f, 384.0f));
             RHMissionDescriptionSetText(m_cancel, FUN_005e23d0(0x143));
-            ((RHMenuCampaignMap *)this)->V30(&m_cancel);
+            FUN_0061a800(&m_cancel);
             ((RHFocusManager *)((char *)this + 0xc8))->FUN_004ffc70((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_cancel, true);
             RHFocusManager &focus = *(RHFocusManager *)((char *)this + 0xc8);
             focus.FUN_004ffce0((RHFocusGroupableView *)(RHPortraitButtonStrategy *)&m_cancel, 0x1c);
