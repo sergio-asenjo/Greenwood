@@ -1,17 +1,18 @@
 #include "RHElementScroll.h"
 #include "VMCore.h"
 #include "RHElementScrollStaticStorage.h"
-#include "RHUnk004ba8d0.h"
+#include "RHElementStone.h"
+#include "RHElementActorNPC.h"
+#include "RHSword.h"
+#include "RHHtHWeaponProfile.h"
+#include "RHArtificialIntelligenceCore.h"
+#include "RHSequenceTimedCalls.h"
+#include "RHSequenceManager.h"
+#include "RHSpriteCore.h"
 #include <algorithm>
 #include <string.h>
 
 extern "C" int __cdecl rand();
-
-class RHSprite
-{
-public:
-    unsigned short FUN_005bdcf0(unsigned short frame);
-};
 
 // FUNCTION: GAME 0x00404780
 void RHUnk00404860::FUN_00404780()
@@ -41,12 +42,6 @@ class RHEngine;
 extern RHEngine *g_pEngine;
 
 #include "RHPlayerProfileAccess.h"
-
-class RHUnkTargetSprite
-{
-public:
-    bool FUN_005b76e0(unsigned animation, unsigned short direction);
-};
 
 DECOMP_SIZE_ASSERT(RHElementObject, 0x100)
 DECOMP_SIZE_ASSERT(VMCoreCustom, 0x60)
@@ -90,7 +85,7 @@ RHElementScroll::~RHElementScroll()
 }
 
 // FUNCTION: GAME 0x004b9f40
-bool RHElementScroll::FUN_004b9f40()
+char RHElementScroll::FUN_004b9f40()
 {
     if (m_12)
     {
@@ -215,9 +210,9 @@ void RHElementScroll::FUN_004ba400()
         m_12 = m_16c[*(int *)(profile + 0x1c)];
     RHBonusInfo *info = Info();
     if (m_16f)
-        ((RHUnkTargetSprite *)info)->FUN_005b76e0(0xbf, *(unsigned short *)((char *)info + 0xd8));
+        ((RHSprite *)info)->FUN_005b76e0(0xbf, *(unsigned short *)((char *)info + 0xd8));
     else
-        ((RHUnkTargetSprite *)info)->FUN_005b76e0(0xbe, *(unsigned short *)((char *)info + 0xd8));
+        ((RHSprite *)info)->FUN_005b76e0(0xbe, *(unsigned short *)((char *)info + 0xd8));
 }
 
 // FUNCTION: GAME 0x004ba470
@@ -242,7 +237,7 @@ bool RHElementScroll::FUN_004ba4e0(unsigned long value)
 {
     RHBonusInfo *info = Info();
     m_164 = 3;
-    ((RHUnkTargetSprite *)info)->FUN_005b76e0(0xc0, *(unsigned short *)((char *)info + 0xd8));
+    ((RHSprite *)info)->FUN_005b76e0(0xc0, *(unsigned short *)((char *)info + 0xd8));
     if (!*(char *)((char *)this + 0x158))
         return false;
     SetScrollExecutingScript(this);
@@ -287,26 +282,22 @@ void RHElementScroll::ResetScrollExecutingScript()
     g_scrollExecutingScript = 0;
 }
 
-// Parked: helper entities and allocation/EH cleanup shape differ.
 // STUB: GAME 0x004ba5d0
-void *RHElementScroll::FUN_004ba5d0()
+RHElement *RHElementScroll::FUN_004ba5d0()
 {
-    if (!IsRevealable())
+    RHElement *element = 0;
+    if (IsRevealable())
     {
-        ((RHUnk004ba7a0 *)this)->Set(1);
-        return this;
+        if (!(unsigned char)FUN_004ba550())
+        {
+            ((RHUnk004ba7a0 *)this)->Set(1);
+            return this;
+        }
+        element = new RHElementBonus((RHElementBonus::BonusType)0xa, false, 1);
+        element->CopyPositionMapEtc(this, false);
+        g_pEngine->AddElement(element, false, true);
+        ((RHUnk004ba7a0 *)this)->Set(2);
     }
-    if (!(unsigned char)FUN_004ba550())
-    {
-        ((RHUnk004ba7a0 *)this)->Set(1);
-        return this;
-    }
-    void *element = operator new(0x100);
-    if (element != 0)
-        ((RHElementBonus *)element)->RHElementBonus::RHElementBonus((RHElementBonus::BonusType)0xa, false, 1);
-    ((RHUnk00462730 *)element)->FUN_00462730(this, 0);
-    g_pEngine->AddElement((RHElement *)element, false, true);
-    ((RHUnk004ba7a0 *)this)->Set(2);
     return element;
 }
 
@@ -352,7 +343,7 @@ void RHUnk004ba7a0::Set(int status)
     if (status == 3)
     {
         RHBonusInfo *info = *(RHBonusInfo **)((char *)this + 0x50);
-        ((RHUnkTargetSprite *)info)->FUN_005b76e0(0xc0, *(unsigned short *)((char *)info + 0xd8));
+        ((RHSprite *)info)->FUN_005b76e0(0xc0, *(unsigned short *)((char *)info + 0xd8));
     }
     FUN_004ba7e0();
 }
@@ -371,7 +362,7 @@ void RHUnk004ba7a0::FUN_004ba7e0()
 // ??_ERHElementScroll@@WBFM@AEPAXI@Z
 
 // FUNCTION: GAME 0x004ba8d0
-RHUnk004ba8d0::RHUnk004ba8d0(void *victim) : RHProjectileLifetime(5, victim)
+RHElementStone::RHElementStone(void *victim) : RHProjectileLifetime(5, victim)
 {
     *(unsigned *)this = 0x67890c;
     m_b0 = 6;
@@ -379,7 +370,46 @@ RHUnk004ba8d0::RHUnk004ba8d0(void *victim) : RHProjectileLifetime(5, victim)
 
 void EmitRHUnk004ba8d0(void *storage, void *victim)
 {
-    ((RHUnk004ba8d0 *)storage)->RHUnk004ba8d0::RHUnk004ba8d0(victim);
+    ((RHElementStone *)storage)->RHElementStone::RHElementStone(victim);
+}
+
+class RHUnk6c1040;
+extern RHUnk6c1040 *g_unk0x6c1040;
+
+DECOMP_SIZE_ASSERT(RHMalignityStimulus, 0x2c)
+DECOMP_SIZE_ASSERT(RHUnk005861c0, 0x7c)
+DECOMP_STATIC_ASSERT(offsetof(RHElementActorHuman, m_25c) == 0x25c)
+DECOMP_STATIC_ASSERT(offsetof(RHSword, m_profile) == 4)
+DECOMP_STATIC_ASSERT(offsetof(RHHtHWeaponProfile, m_14) == 0x14)
+
+// FUNCTION: GAME 0x004baa30
+bool RHElementStone::HitHuman(RHElementActorHuman *actor)
+{
+    m_50->FUN_005b76e0(0xc5, 0);
+    if (!actor->Vf8())
+    {
+        if (actor->m_kind5 == 20)
+        {
+            const RHSword *weapon = actor->m_25c;
+            unsigned short resistance = weapon->m_profile->m_14;
+            int roll = rand() % 100;
+            if (roll < resistance)
+                goto alert;
+        }
+        RHUnk005861c0 *damage = new RHUnk005861c0(1, 0x29, actor, InteractionTarget(),
+            (unsigned short)10, (unsigned short)100);
+        RHSequenceManager::Instance()->Unk0058a940("", 0, damage);
+    }
+    else
+    {
+    alert:
+        if (actor->m_elementType == 4)
+        {
+            RHElementActorNPC *npc = static_cast<RHElementActorNPC *>(actor);
+            npc->Intelligence(npc->m_aiBaseOffsets[1])->DispatchPositionEvent(impactPosition, 0x1c);
+        }
+    }
+    return true;
 }
 
 unsigned RHElementScroll::V68()

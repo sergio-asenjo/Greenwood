@@ -28,12 +28,6 @@ public:
     void *m_0;
 };
 
-class RHUnk00462730
-{
-public:
-    void FUN_00462730(void *, int);
-};
-
 // VTABLE: GAME 0x00678898
 // VTABLE: GAME 0x00678894 SBSimpleVirtualMachine
 // VTABLE: GAME 0x00678890 RHScript
@@ -43,7 +37,7 @@ public:
     RHElementScroll();
     virtual ~RHElementScroll();
     void InitializeFromMissionStream(SBFile &file);
-    bool FUN_004b9f40();
+    char FUN_004b9f40();
     void FUN_004b9fa0();
     virtual bool FUN_004b23c0(const void *first, void *second, int third);
     bool IsRevealable() const;
@@ -51,7 +45,7 @@ public:
     int FUN_004ba550();
     virtual void *Refresh(unsigned long surface, float value, const SBGeoBoundingBox2D &box, unsigned long flags);
     static void ResetScrollExecutingScript();
-    void *FUN_004ba5d0();
+    RHElement *FUN_004ba5d0();
     virtual bool Serialize(SBFile &file);
     virtual unsigned V68();
     static void SetScrollExecutingScript(RHElementScroll *scroll);

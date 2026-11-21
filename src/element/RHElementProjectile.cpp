@@ -588,7 +588,7 @@ int RHProjectileVector::FUN_004b7fc0(const RHProjectileVector &other) const
     return 1;
 }
 
-#include "RHElementPositionCalls.h"
+#include "RHElementTarget.h"
 #include "RHScriptEngineCalls.h"
 #include "RHElementObjectTypeBits.h"
 
@@ -639,7 +639,7 @@ void *RHElementProjectile::FUN_004b8000() const
     for (unsigned index = 0; index < size; ++index) {
         char *target = (char *)(*(void ***)((char *)engine + 0x48dc))[index];
         if (RHProjectileObjectType(target) == 9) {
-            RHProjectileVector center = *(RHProjectileVector *)&((RHElementPositionCalls *)target)->FUN_004bb180();
+            RHProjectileVector center = *(RHProjectileVector *)&reinterpret_cast<const RHElementTarget *>(target)->GetCenter();
             RHUnk00613e90 distance;
             RHUnk00613e90 delta;
             sprite = *(char **)((char *)this + 0x50);
@@ -665,7 +665,7 @@ void *EmitRHProjectileTarget(RHElementProjectile *projectile)
 }
 
 struct RHUnk00571160Position;
-#include "RHPositionProvider.h"
+#include "RHPositionInterfaceCore.h"
 #include "RHUnk005df9e0.h"
 
 struct RHAnimalNoisePosition;
@@ -681,7 +681,7 @@ extern float g_unk0x006774cc;
 void RHElementProjectile::FUN_004b8230()
 {
     unsigned char position[16];
-    ((RHUnk00560420 *)((char *)*(void **)((char *)this + 0x50) + 4))->Unk((RHUnk00571160Position *)position);
+    ((RHPositionInterface *)((char *)*(void **)((char *)this + 0x50) + 4))->GetPosition(*(RHUnk00571160Position *)position);
     char *sprite = *(char **)((char *)this + 0x50);
     void *material = *(void **)(sprite + 0xec);
     if (!material) {
@@ -777,7 +777,7 @@ bool RHElementProjectile::WillHit(void *target)
     if (RHProjectileBaseType(target) == 4)
         ((RHHumanActorCalls *)target)->FUN_00479320(center);
     else if (RHProjectileObjectType(target) == 9)
-        center = ((RHElementPositionCalls *)target)->FUN_004bb180();
+        center = static_cast<const RHElementTarget *>(target)->GetCenter();
     else
         center = *(RHUnk00613e90 *)(*(char **)((char *)target + 0x50) + 0x10);
     RHUnk00613e90 first;

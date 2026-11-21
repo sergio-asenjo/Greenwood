@@ -209,18 +209,17 @@ bool RHElementObject::FUN_004b23c0(const void *first, void *second, int third)
     return false;
 }
 
-#include "RHPCActionQueryCalls.h"
 
 // FUNCTION: GAME 0x004b2420
 bool RHElementObject::FUN_004b2420(void *actor) const
 {
     if (m_a8 == 0)
         return true;
-    if (((RHUnk0049d4f0 *)actor)->Unk(m_a8)) {
+    if (static_cast<RHElementActorPC *>(actor)->FUN_0049d4f0(m_a8)) {
         if (((RHElementActorPC *)actor)->FUN_0049d5e0(m_a8) - ((RHObjectPCQuantity *)actor)->Ve4(m_a8) != 0)
             return true;
     }
-    else if (m_a8 == 13 && ((RHUnk0049d4f0 *)actor)->Unk(14)) {
+    else if (m_a8 == 13 && static_cast<RHElementActorPC *>(actor)->FUN_0049d4f0(14)) {
         if (((RHElementActorPC *)actor)->FUN_0049d5e0(14) - ((RHObjectPCQuantity *)actor)->Ve4(14) != 0)
             return true;
     }
@@ -246,42 +245,7 @@ void EmitRHObjectPoint(const RHElementObject *object, const SBGeoPoint2D &point)
     object->FUN_004b24d0(point);
 }
 
-class RHMobileUnk00520c50
-{
-public:
-    void FUN_00520c50(float first, float second);
-};
-
-struct RHObjectRepulsiveNode
-{
-    RHObjectRepulsiveNode *next;
-    RHObjectRepulsiveNode *previous;
-    void *value;
-};
-
-struct RHObjectRepulsiveList
-{
-    void PushBack(void *value)
-    {
-        RHObjectRepulsiveNode *next = head;
-        RHObjectRepulsiveNode *previous = next->previous;
-        RHObjectRepulsiveNode *node = (RHObjectRepulsiveNode *)operator new(12);
-        node->next = next ? next : node;
-        node->previous = previous ? previous : node;
-        next->previous = node;
-        node->previous->next = node;
-        void **payload = &node->value;
-        if (payload)
-            *payload = value;
-        ++count;
-        dirty = true;
-    }
-    unsigned char allocator;
-    RHObjectRepulsiveNode *head;
-    unsigned count;
-    RHObjectRepulsiveNode *cursor;
-    bool dirty;
-};
+#include "RHRepulsivePointList.h"
 
 struct RHObjectSpritePoint
 {
@@ -291,7 +255,7 @@ struct RHObjectSpritePoint
 };
 
 // FUNCTION: GAME 0x004b2600
-void RHElementObject::FUN_004b2600(void *points, void *, void *)
+void RHElementObject::GetRepulsiveObjects(RHRepulsivePointList &points, RHRepulsiveLineList &, RHElementActor *)
 {
     unsigned radius = V68();
     if (radius != 0) {
@@ -301,76 +265,130 @@ void RHElementObject::FUN_004b2600(void *points, void *, void *)
         *(float *)((char *)this + 0xc0) = x;
         *(float *)((char *)this + 0xc4) = y;
         __int64 radiusValue = radius;
-        void *point = &m_member;
-        ((RHMobileUnk00520c50 *)point)->FUN_00520c50((float)radiusValue, 10.0f);
-        ((RHObjectRepulsiveList *)points)->PushBack(point);
+        RHUnk00520ae0 *point = &m_member;
+        point->SetForce((float)radiusValue, 10.0f);
+        points.AppendInline(point);
     }
 }
 
-void EmitRHObjectRepulsive(RHElementObject *object, void *points)
+void EmitRHObjectRepulsive(RHElementObject *object, RHRepulsivePointList &points, RHRepulsiveLineList &lines, RHElementActor *actor)
 {
-    object->FUN_004b2600(points, points, object);
+    object->RHElementObject::GetRepulsiveObjects(points, lines, actor);
+}
+
+#include "RHPathObstacleGrid.h"
+#include "RHSequenceConstructionCalls.h"
+#include "RHSequenceInteractionAction.h"
+#include "RHSequenceMovementConstruction.h"
+#include "RHSequenceManager.h"
+#include "RHActorMessage.h"
+#include "RHMessenger.h"
+#include "RHTitbitsCore.h"
+
+extern RHMessenger *RHUnk00546050();
+extern RHTitbits *g_unk0x6c10e8;
+
+// FUNCTION: GAME 0x004b26a0
+bool RHElementObject::FUN_004b26a0(const SBGeoPoint2D *, unsigned short flags, RHElementActorPC *actor)
+{
+    if (!(RHUnk00546050()->Flag20() && actor->FUN_0049d4f0(m_a8)) && !FUN_004b2420(actor))
+        return false;
+    RHSequence *sequence;
+    int animation;
+    if (flags & 8)
+    {
+        if (!RHUnk00546050()->Flag20())
+        {
+            actor->FUN_0046bb80();
+            return true;
+        }
+        animation = 10;
+    }
+    else
+        animation = actor->m_50->m_88 == 10 ? 16 : 6;
+    SBGeoBoundingBox2D box(actor->m_50->Box().FUN_006090d0(m_50->m_20));
+    if (static_cast<RHPathObstacleGrid *>(m_64)->FUN_004f5890(box, m_50->Layer()))
+    {
+        sequence = new RHSequence;
+        RHUnk00588530 *movement = new RHUnk00588530(1, 21, actor, animation, this, (float)(V68() + 15), 0);
+        movement->AppendToSequence(sequence);
+        RHSequence *postSequence = new RHSequence;
+        RHUnk00585ea0 *action = new RHUnk00585ea0(1, 0x54, actor, this);
+        action->AppendToSequence(postSequence);
+        movement->m_68 = postSequence;
+        if (RHUnk00546050()->Flag20())
+        {
+            {
+                unsigned short focus = RHUnk00546050()->Value26();
+                unsigned short layer = m_50->m_da;
+                RHUnk00613e90 position;
+                actor->SetQuickActionSequence(sequence, 0, focus,
+                    g_unk0x6c10e8->AddTitbit(position, layer, (RHtitbitKind)3, this, 0x27, actor, animation == 10, 0xffffffff));
+            }
+            RHUnk00546050()->RHUnk005460c0(RHUnk00549250(6, 0));
+        }
+        else
+            static_cast<RHSequenceManager *>(m_5c)->Launch("", 0, sequence);
+        return true;
+    }
+    return false;
 }
 
 #define SBGEO_BOUNDINGBOX2D_VIEW
 #include "RHActorSequenceStorage.h"
 
-class RHMessenger;
-RHMessenger *RHUnk00546050();
-extern "C" int __cdecl atexit(void (__cdecl *callback)());
-
-// GLOBAL: GAME 0x006c0968
-unsigned char g_unk0x006c0968[0x3c] = {0};
 // GLOBAL: GAME 0x006c09a4
-unsigned char g_unk0x006c09a4 = 0;
+// ?$S14@?1??FUN_004b29c0@RHElementObject@@UAEPAXPAX@Z@4EA
 
-// Parked: guard-byte temporary coalesces into AL instead of the target DL copy.
-// STUB: GAME 0x004b29c0
+// FUNCTION: GAME 0x004b29c0
 void *RHElementObject::FUN_004b29c0(void *actor)
 {
-    unsigned char initialized = g_unk0x006c09a4;
-    if (!(initialized & 1)) {
-        g_unk0x006c09a4 = initialized | 1;
-        ((RHUnk0045aaf0 *)g_unk0x006c0968)->RHUnk0045aaf0::RHUnk0045aaf0();
-        atexit((void (__cdecl *)())0x004b2b50);
-    }
-    if (*(bool *)((char *)RHUnk00546050() + 0x20) && ((RHUnk0049d4f0 *)actor)->Unk(m_a8)) {
-        *(unsigned char *)((char *)this + 0x92) = 1;
-        *(int *)((char *)this + 0xa0) = 0;
-        *(unsigned short *)((char *)this + 0xa4) = 2;
-        ((RHUnk0045aaf0 *)g_unk0x006c0968)->FUN_0045abc0(0x5b, 0, 0);
-        return g_unk0x006c0968;
+    // GLOBAL: GAME 0x006c0968
+    static RHUnk0045aaf0 result;
+    if (RHUnk00546050()->Flag20() && static_cast<RHElementActorPC *>(actor)->FUN_0049d4f0(m_a8)) {
+        m_92 = 1;
+        m_a0 = 0;
+        m_a4 = 2;
+        result.FUN_0045abc0(0x5b, 0, 0);
+        return &result;
     }
     if (!FUN_004b2420(actor)) {
-        ((RHUnk0045aaf0 *)g_unk0x006c0968)->FUN_0045abc0(0x5c, 0, 0);
-        return g_unk0x006c0968;
+        result.FUN_0045abc0(0x5c, 0, 0);
+        return &result;
     }
-    char unique = (char)FUN_004b2d70();
-    *(unsigned char *)((char *)this + 0x92) = 1;
-    *(int *)((char *)this + 0xa0) = 0;
-    *(unsigned short *)((char *)this + 0xa4) = 2;
-    if (!unique) {
-        switch ((unsigned short)m_ae) {
-        case 1:
-            ((RHUnk0045aaf0 *)g_unk0x006c0968)->FUN_0045abc0(0xca, 0, 0);
-            return g_unk0x006c0968;
-        case 2:
-            ((RHUnk0045aaf0 *)g_unk0x006c0968)->FUN_0045abc0(0xcb, 0, 0);
-            return g_unk0x006c0968;
-        case 3:
-            ((RHUnk0045aaf0 *)g_unk0x006c0968)->FUN_0045abc0(0xcc, 0, 0);
-            return g_unk0x006c0968;
-        case 4:
-            ((RHUnk0045aaf0 *)g_unk0x006c0968)->FUN_0045abc0(0xcd, 0, 0);
-            return g_unk0x006c0968;
-        case 5:
-            ((RHUnk0045aaf0 *)g_unk0x006c0968)->FUN_0045abc0(0xce, 0, 0);
-            return g_unk0x006c0968;
-        }
+    if ((char)FUN_004b2d70()) {
+        m_92 = 1;
+        m_a0 = 0;
+        m_a4 = 2;
+        result.FUN_0045abc0(0x5b, 0, 0);
+        return &result;
     }
-    ((RHUnk0045aaf0 *)g_unk0x006c0968)->FUN_0045abc0(0x5b, 0, 0);
-    return g_unk0x006c0968;
+    m_92 = 1;
+    m_a0 = 0;
+    m_a4 = 2;
+    switch ((unsigned short)m_ae) {
+    case 1:
+        result.FUN_0045abc0(0xca, 0, 0);
+        return &result;
+    case 2:
+        result.FUN_0045abc0(0xcb, 0, 0);
+        return &result;
+    case 3:
+        result.FUN_0045abc0(0xcc, 0, 0);
+        return &result;
+    case 4:
+        result.FUN_0045abc0(0xcd, 0, 0);
+        return &result;
+    case 5:
+        result.FUN_0045abc0(0xce, 0, 0);
+        return &result;
+    }
+    result.FUN_0045abc0(0x5b, 0, 0);
+    return &result;
 }
+
+// LIBRARY: GAME 0x004b2b50
+// $E15
 
 void EmitRHObjectFocus(RHElementObject *object, void *actor)
 {
@@ -414,7 +432,7 @@ void *RHElementObject::Refresh(unsigned long surface, float value, const SBGeoBo
 }
 
 // FUNCTION: GAME 0x004b2d60
-void RHElementObject::FUN_004b2d60(unsigned short value)
+void RHElementObject::SetQuantity(unsigned short value)
 {
     m_ae = value;
 }
@@ -432,7 +450,7 @@ int RHElementObject::FUN_004b2d70()
 void RHElementObject::Emit(SBFile &file)
 {
     FUN_004b2390(0);
-    FUN_004b2d60(0);
+    SetQuantity(0);
     FUN_004b2d70();
     Serialize(file);
 }
@@ -473,10 +491,10 @@ struct RHObjectMasterMap
 };
 
 // SYNTHETIC: GAME 0x004b2e50
-// $E15
+// $E17
 
 // SYNTHETIC: GAME 0x004b2e80
-// $E16
+// $E18
 
 // FUNCTION: GAME 0x004b2ea0
 RHObjectMasterTree::~RHObjectMasterTree()
@@ -498,25 +516,15 @@ RHObjectMasterTree::~RHObjectMasterTree()
     }
 }
 
-class __declspec(novtable) RHObjectMasterLifetime : public RHElementObject
-{
-public:
-    RHObjectMasterLifetime(const char *first, const char *second, unsigned short value, int type, bool flag);
-};
+DECOMP_SIZE_ASSERT(RHElementObjectMaster, 0x100)
 
 // FUNCTION: GAME 0x004b2f20
-RHObjectMasterLifetime::RHObjectMasterLifetime(const char *first, const char *second, unsigned short value, int type, bool flag)
+RHElementObjectMaster::RHElementObjectMaster(const char *first, const char *second, unsigned short value, int type, bool flag)
     : RHElementObject(11, false, 0)
 {
-    *(unsigned short *)((char *)this + 0x10) = value;
-    *(int *)((char *)this + 0xb0) = type;
-    *(unsigned long *)this = 0x006786e4;
-    ((RHElementObjectMaster *)this)->FUN_004b3170(std::string(first), std::string(second), flag);
-}
-
-void EmitRHObjectMasterConstructor(void *storage, const char *first, const char *second)
-{
-    ((RHObjectMasterLifetime *)storage)->RHObjectMasterLifetime::RHObjectMasterLifetime(first, second, 0, 0, false);
+    m_10 = value;
+    m_b0 = type;
+    FUN_004b3170(std::string(first), std::string(second), flag);
 }
 
 // FUNCTION: GAME 0x004b3090
@@ -564,7 +572,7 @@ void RHElementObjectMaster::FUN_004b3170(const std::string &first, const std::st
 }
 
 // FUNCTION: GAME 0x004b31c0
-int RHElementObjectMaster::FUN_004b31c0(int first, int second, int third, int fourth)
+void *RHElementObjectMaster::Refresh(unsigned long, float, const SBGeoBoundingBox2D &, unsigned long)
 {
     return 0;
 }
@@ -572,7 +580,6 @@ int RHElementObjectMaster::FUN_004b31c0(int first, int second, int third, int fo
 void EmitRHObjectMasterLoad(RHElementObjectMaster *master, const std::string &first, const std::string &second)
 {
     master->FUN_004b3170(first, second, false);
-    master->FUN_004b31c0(0, 0, 0, 0);
 }
 
 // FUNCTION: GAME 0x004b31d0

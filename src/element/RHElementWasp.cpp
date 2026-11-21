@@ -136,13 +136,14 @@ public:
 // GLOBAL: GAME 0x006c0a40
 unsigned g_unk0x006c0a40;
 
-#include "RHElementActorHumanBase.h"
+#include "RHElementActor.h"
 #include "RHMalignityActorCalls.h"
 #include "RHArtificialMalignityCore.h"
 #include "RHMalignityGeometryCalls.h"
 #include "RHBonusInfo.h"
 #include "RHSequenceGenericCalls.h"
 #include "RHScriptEngineCalls.h"
+#include "RHSequenceManager.h"
 #include "RHActorCancelCalls.h"
 #include "RHHumanEngineActorArray.h"
 #include <stdlib.h>
@@ -314,7 +315,7 @@ bool RHElementWasp::Hourglass()
             if (!((RHMalignityActorCalls *)m_160)->V48() && !RHWaspField<char>(m_160, 0x1ce) && !RHWaspField<int>(m_160, 0x268)) {
                 ((RHUnk0046bcb0 *)m_160)->Unk(5);
                 RHUnk00584d60 *action = new RHUnk00584d60(1, 0x89, m_160);
-                ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940("", 0, action);
+                RHSequenceManager::Instance()->Unk0058a940("", 0, action);
             }
             ((RHMalignityActorCalls *)this)->V5c(0);
         }

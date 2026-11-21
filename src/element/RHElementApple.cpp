@@ -1,5 +1,5 @@
 #include "RHProjectileLifetime.h"
-#include "RHUnkTargetSpriteCalls.h"
+#include "RHSpriteCore.h"
 #include "RHProjectileSoundCalls.h"
 #include "RHEngineWidenedCalls.h"
 #include "RHElementActorSoldier.h"
@@ -30,11 +30,12 @@ RHElementApple::RHElementApple(RHElementActorHuman *actor)
 // FUNCTION: GAME 0x004a6380
 void RHElementApple::FUN_004a6380()
 {
-    (*(RHUnkTargetSprite **)((char *)this + 0x50))->FUN_005b76e0(0xc5, 0);
+    m_50->FUN_005b76e0(0xc5, 0);
     ((RHElementProjectile *)this)->FUN_004b8230();
 }
 
 #include "RHSequenceInteractionAction.h"
+#include "RHSequenceManager.h"
 
 typedef char RHAppleInteractionSize[(sizeof(RHUnk00585ea0) == 0x68) ? 1 : -1];
 
@@ -45,17 +46,16 @@ class RHScriptBatchCalls
 {
 public:
     unsigned int Unk004baea0();
-    void *Unk0058a940(void *context, int value, void *element);
 };
 
 // FUNCTION: GAME 0x004a63a0
 bool RHElementApple::FUN_004a63a0(void *target)
 {
-    (*(RHUnkTargetSprite **)((char *)this + 0x50))->FUN_005b76e0(0xc5, 0);
+    m_50->FUN_005b76e0(0xc5, 0);
     if (((RHScriptBatchCalls *)target)->Unk004baea0() & 0x40)
     {
         RHUnk00585ea0 *action = new RHUnk00585ea0(1, 0x99, target, InteractionTarget());
-        ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940("", 0, action);
+        RHSequenceManager::Instance()->Unk0058a940("", 0, action);
         return true;
     }
     return false;
@@ -64,7 +64,7 @@ bool RHElementApple::FUN_004a63a0(void *target)
 // FUNCTION: GAME 0x004a6450
 bool RHElementApple::HitHuman(RHElementActorHuman *actor)
 {
-    (*(RHUnkTargetSprite **)((char *)this + 0x50))->FUN_005b76e0(0xc5, 0);
+    m_50->FUN_005b76e0(0xc5, 0);
     unsigned kind = *(unsigned *)((char *)actor + 4) & 0x1f;
     if (kind == 0x14)
     {

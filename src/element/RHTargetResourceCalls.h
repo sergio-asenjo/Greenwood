@@ -7,7 +7,6 @@
 class RHUnkTargetSprite : public RHBonusInfo
 {
 public:
-    bool FUN_005b76e0(unsigned index, unsigned short row);
 };
 
 #include "SBDrawManagerCore.h"

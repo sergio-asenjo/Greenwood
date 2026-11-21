@@ -24,7 +24,6 @@ inline void FXRestore(SBDrawManager *const &draw, RHUnkFXEngine *engine, const u
 }
 
 #include "RHMobileUnk00607da0.h"
-#include "RHMobileUnk006091b0.h"
 #include "RHUnk00608f10.h"
 #include "SBGeoIntersection2D.h"
 #include "SBGeoSegment2D.h"
@@ -48,7 +47,7 @@ void *RHElementFX::Refresh(unsigned long surface, float value, const SBGeoBoundi
     unsigned short frame = fx_sprite->FUN_005bb5f0();
     if (frame != 0)
     {
-        m_14.FUN_0045abf0(frame, ((RHElementActor *)this)->FUN_00462920(), 9, 0);
+        m_14.FUN_0045abf0(frame, FUN_00462920(), 9, 0);
         result = &m_14;
     }
     else
@@ -72,7 +71,7 @@ void *RHElementFX::Refresh(unsigned long surface, float value, const SBGeoBoundi
     }
     if (!fx_sprite->FUN_005b9b60(box, value))
     {
-        ((RHEngineWidenedCalls *)fx_sprite)->FUN_005bd450();
+        fx_sprite->FUN_005bd450();
         goto refreshDone;
     }
     info.m_surface = m_54;
@@ -206,7 +205,7 @@ refreshDone:
         shadow = SBGeoBoundingBox2D(SBGeoPoint2D(),
                                     SBGeoPoint2D((float)fx_sprite->FUN_005bdd50(),
                                                  (float)fx_sprite->FUN_005bdd70()));
-        ((RHMobileUnk006091b0 *)&shadow)->FUN_006091b0(
+        shadow.Translate(
             SBGeoVector2D(fx_sprite->m_18.Unk005fc190(*fx_sprite->FUN_005bdd90())));
 
         segment.First() = shadow.m_p0;
@@ -276,7 +275,7 @@ refreshDone:
     }
     if (*(int *)((char *)this + 0xb0) != 0x11b)
     {
-        ((RHUnkTargetSprite *)fx_sprite)->FUN_005b76e0(*(int *)((char *)this + 0xb0), 0);
+        ((RHSprite *)fx_sprite)->FUN_005b76e0(*(int *)((char *)this + 0xb0), 0);
         *(int *)((char *)this + 0xb0) = 0x11b;
     }
     return result;
@@ -309,7 +308,7 @@ void RHElementFX::FUN_004a9990()
         source.FUN_00609050(SBGeoPoint2D(0.0f, 0.0f),
                             SBGeoVector2D((float)fx_sprite->FUN_005bdd50(), (float)fx_sprite->FUN_005bdd70()));
         ((RHMobileUnk00607da0 *)&destination)->FUN_00607da0((const RHMobileUnk00607da0 &)source);
-        ((RHMobileUnk006091b0 *)&destination)->FUN_006091b0(SBGeoVector2D(fx_sprite->m_18.Unk005fc190(hotspot)));
+        destination.Translate(SBGeoVector2D(fx_sprite->m_18.Unk005fc190(hotspot)));
         info.m_surface = *(unsigned long *)((char *)this + 0x54);
         info.m_05 = 1;
         fx_sprite->CreateTargetSprite(info);
@@ -344,7 +343,7 @@ void RHElementFX::RestoreBackground()
 }
 
 // STUB: GAME 0x004a9ec0
-void RHElementFX::InitializeFromProtoStream(SBFile &file)
+void RHElementFX::v14(SBFile &file)
 {
     bool enabled;
     char flag;
@@ -417,7 +416,7 @@ void RHElementFX::InitializeBackgroundRestoration()
 #include "RHPatchClass.h"
 
 // FUNCTION: GAME 0x004aa2f0
-bool RHElementFX::FUN_004aa2f0()
+char RHElementFX::FUN_004b9f40()
 {
     if (*((char *)this + 0x12))
     {
@@ -545,24 +544,22 @@ int RHElementFX::FUN_004aa930()
     return 0;
 }
 
-// STUB: GAME 0x004aa980
+// FUNCTION: GAME 0x004aa980
 bool RHElementFX::IsElementBehind(RHElement *element)
 {
-    unsigned long last;
-    unsigned long index;
-    SBGeoPoint2D position(*(SBGeoPoint2D *)(*(char **)((char *)element + 0x50) + 0x24));
+    SBGeoPoint2D position(element->m_50->m_20);
     SBGeoPoint2D point;
-    RHUnkSectorPoints &line = (RHUnkSectorPoints &)m_d4;
-    last = ((RHMobileUnk00611360 &)line).FUN_00610f30();
+    RHMobileUnk00611360 &line = m_d4;
+    unsigned long last = line.FUN_00610f30();
     if (!last)
-        return position.m_y < *(float *)((char *)fx_sprite + 0x28);
+        return position.m_y < m_50->m_20.m_y;
     point = line.FUN_006112c0(0);
     if (position.m_x < point.m_x)
         return position.m_y < point.m_y;
-    point = line.FUN_006112c0(--last);
+    point = line.FUN_006112c0(last - 1);
     if (position.m_x > point.m_x)
         return position.m_y < point.m_y;
-    index = 1;
+    unsigned long index = 1;
     float x = position.m_x;
     while (line.FUN_006112c0(index).m_x < x)
     {
@@ -575,9 +572,9 @@ bool RHElementFX::IsElementBehind(RHElement *element)
 
 void RHElementFX::Emit(SBFile &file)
 {
-    InitializeFromProtoStream(file);
+    v14(file);
     InitializeBackgroundRestoration();
-    FUN_004aa2f0();
+    FUN_004b9f40();
     Serialize(file);
     FUN_004aa930();
     IsElementBehind(this);

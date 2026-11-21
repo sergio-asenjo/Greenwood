@@ -13,7 +13,8 @@ class RHSoundSource;
 class RHMobileEvent;
 class RHUnkTargetSprite;
 struct RHMobileElement;
-struct RHMobilePath;
+class RHPath;
+class RHWaypoint;
 class RHUnk005a3450;
 class RHUnk00520ae0;
 class RHMobileUnk0051fd10;
@@ -27,17 +28,19 @@ public:
     virtual ~RHElementMobile();
     virtual bool FUN_004b23c0(const void *first, void *second, int third);
     virtual void *FUN_004b29c0(void *value);
-    virtual bool FUN_004b26a0(const SBGeoPoint2D *first, int second, RHElementActor *third) { return false; }
+    virtual bool FUN_004b26a0(const SBGeoPoint2D *first, unsigned short second, RHElementActorPC *selectedPC) { return false; }
     virtual void *Refresh(unsigned long surface, float value, const SBGeoBoundingBox2D &box, unsigned long flags);
-    virtual bool FUN_004b9f40();
+    virtual char FUN_004b9f40();
     virtual void v14(SBFile &file) {}
     virtual void InitializeFromMissionStream(SBFile &file);
     virtual bool Serialize(SBFile &file);
     virtual void v21(unsigned value);
     bool ExecuteMacroCommand();
     void CheckForLineCrossing();
+    void FUN_004af060(int direction);
     void FUN_004af0f0(int value);
     void FUN_004af170(void *value);
+    void FUN_004af1d0(bool value);
     void FUN_004abfe0();
     void FUN_004ab720();
     void FUN_004ab7e0(float distance);
@@ -55,8 +58,8 @@ public:
     RHEngineElementArray<RHMobileUnk0051fd10> m_164;
     unsigned short m_184;
     undefined m_186[2];
-    RHMobilePath *m_188;
-    RHMobileElement *m_18c;
+    RHPath *m_188;
+    RHWaypoint *m_18c;
     unsigned char *m_190;
     unsigned short m_194;
     undefined m_196[2];

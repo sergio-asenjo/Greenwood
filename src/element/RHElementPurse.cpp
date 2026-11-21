@@ -31,7 +31,8 @@
 #include "SBNullstr.h"
 #include "RHElementPurse.h"
 #include "RHEngineWidenedCalls.h"
-#include "RHUnkTargetSpriteCalls.h"
+#include "RHSpriteCore.h"
+#include "RHSpriteCore.h"
 #include "RHEngineSerializationCalls.h"
 #include "RHEngine.h"
 #include "RHProjectileSoundCalls.h"
@@ -86,11 +87,11 @@ bool RHElementPurse::FUN_004b97c0()
         (*(RHEngineWidenedCalls **)((char *)this + 0x50))->FUN_005b7f60(3);
         return result;
     }
-    RHEngineWidenedCalls *sprite = *(RHEngineWidenedCalls **)((char *)this + 0x50);
+    RHSprite *sprite = *(RHSprite **)((char *)this + 0x50);
     if (*(unsigned *)((char *)sprite + 0x1dc) != 0xc5 && *(unsigned *)((char *)this + 0xb4) != 0xc5) {
         *(unsigned *)((char *)this + 0xb4) = 0xc5;
         sprite->FUN_005bd450();
-        (*(RHUnkTargetSprite **)((char *)this + 0x50))->FUN_005b76e0(0xc5, 0);
+        m_50->FUN_005b76e0(0xc5, 0);
     }
     (*(RHEngineWidenedCalls **)((char *)this + 0x50))->FUN_005b7f60(8);
     return true;

@@ -4,6 +4,7 @@
 
 #include "SB.h"
 #include "Decomp.h"
+#include "RHPathCore.h"
 #include <new>
 
 template <class T> inline T &RHMobileField(void *object, unsigned offset)
@@ -20,21 +21,15 @@ template <class T> inline const T &RHMobileField(const void *object, unsigned of
 extern char g_unk0x6c0691;
 
 class SBGeoSegment2D;
+class RHSprite;
 #include "RHFastFindGeometry.h"
 #include "RHUnk00613e90.h"
 
 #include "RHSpriteLastFrameCalls.h"
 
-class RHUnk004af1d0
-{
-public:
-    void Unk(bool value);
-};
-
 class RHUnkTargetSprite
 {
 public:
-    bool FUN_005b76e0(unsigned index, unsigned short row);
     char m_0[0x10];
     RHUnk00613e90 m_10;
     char m_1c[8];
@@ -54,32 +49,15 @@ public:
 struct RHMobileElement
 {
     void OffsetPoint(const SBGeoPoint2D &point);
-    char m_0[0x50];
-    RHUnkTargetSprite *m_50;
+    char m_0[0x12];
+    bool m_12;
+    char m_13[0x3d];
+    RHSprite *m_50;
     char m_54[0x10];
     short m_64;
     short m_66;
     char m_68[0x94];
     float m_fc;
-};
-
-struct RHMobileWaypoints
-{
-    int m_0;
-    RHMobileElement **m_4;
-    RHMobileElement **m_8;
-    unsigned short Size() const { if (!m_4) return 0; return (unsigned short)(m_8 - m_4); }
-};
-
-// SIZE 0x08
-struct RHMobilePath
-{
-    undefined4 m_0; // 0x00
-    RHMobileWaypoints *m_4; // 0x04
-    SBGeoVector2D FUN_004ae380() const;
-    unsigned short Size() const { return m_4 == 0 ? 0 : m_4->m_4 == 0 ? 0 : (unsigned short)(m_4->m_8 - m_4->m_4); }
-    bool FUN_00550660(unsigned char value);
-    void FUN_005505c0();
 };
 
 class RHMobileSegment
@@ -182,18 +160,6 @@ public:
     float m_30;
 };
 
-class RHMobileUnk00520c50
-{
-public:
-    void FUN_00520c50(float first, float second);
-    char m_0[0x24];
-    float m_24;
-    float m_28;
-    float m_2c;
-    float m_30;
-};
-
-#include "RHMobileUnk006091b0.h"
 
 class RHMobileUnk006100e0;
 
@@ -290,34 +256,6 @@ public:
     char m_1a[2];
     int m_1c;
     RHSoundSource *m_20;
-};
-
-// SIZE 0x1c
-struct RHMobileNode005504d0
-{
-    RHMobileNode005504d0 *next; // 0x00
-    RHMobileNode005504d0 *previous; // 0x04
-    undefined m_8[0x14]; // 0x08
-};
-
-// SIZE 0x20
-class RHMobileUnk005504d0
-{
-public:
-    RHMobileUnk005504d0();
-    bool m_0; // 0x00
-    bool m_1; // 0x01
-    bool m_2; // 0x02
-    undefined m_3; // 0x03
-    undefined4 m_4; // 0x04
-    unsigned short m_8; // 0x08
-    undefined m_a[2]; // 0x0a
-    undefined m_c; // 0x0c
-    undefined m_d[3]; // 0x0d
-    RHMobileNode005504d0 *m_10; // 0x10
-    unsigned m_14; // 0x14
-    undefined4 m_18; // 0x18
-    bool m_1c; // 0x1c
 };
 
 class RHSoundPendingData
@@ -423,46 +361,7 @@ struct RHMobileSoundNode
 
 #include "RHElementCore.h"
 
-#ifndef RHELEMENTMOBILEBASE_VIEW
-#define RHELEMENTMOBILEBASE_VIEW
-// VTABLE: GAME 0x006784a0
-// SIZE 0xfc
-class RHMobileBase004a8130 : public RHElement
-{
-public:
-    RHMobileBase004a8130(int type);
-    virtual ~RHMobileBase004a8130(); // vtable+0x00
-    virtual bool FUN_004b23c0(const void *first, void *second, int third);
-    virtual void *FUN_004b29c0(void *value);
-    virtual bool FUN_004b26a0(const SBGeoPoint2D *first, int second, RHElementActor *third);
-    virtual void *Refresh(unsigned long surface, float value, const SBGeoBoundingBox2D &box, unsigned long flags);
-    virtual bool FUN_004b9f40();
-    virtual void v14(SBFile &file); // vtable+0x38
-    virtual void InitializeFromMissionStream(SBFile &file);
-    virtual bool Serialize(SBFile &file); // vtable+0x40
-    undefined m_a8[0xc]; // 0xa8
-    SBGeoBoundingBox2D m_b4; // 0xb4
-    char m_c8; // 0xc8
-    int m_cc; // 0xcc
-    char m_d0; // 0xd0
-    RHMobileUnk00611360 m_d4; // 0xd4
-    undefined m_f8[4]; // 0xf8
-};
-#endif
-
-// VTABLE: GAME 0x00678508
-// SIZE 0x104
-class RHUnk004aac40 : public RHMobileBase004a8130
-{
-public:
-    RHUnk004aac40();
-    virtual ~RHUnk004aac40(); // vtable+0x00
-    virtual void *Refresh(unsigned long surface, float value, const SBGeoBoundingBox2D &box, unsigned long flags);
-    virtual bool FUN_004b9f40();
-    virtual bool Serialize(SBFile &file); // vtable+0x40
-    float m_fc; // 0xfc
-    RHElementMobile *m_100; // 0x100
-};
+#include "RHElementFXMasked.h"
 
 class RHElevationLine
 {
@@ -485,13 +384,6 @@ void *FUN_0048f170(void *value);
 typedef RHTransientPointerList<RHElevationLine> RHMobileLineTransientList;
 
 #include "RHElementMobileCore.h"
-
-// SIZE 0x270
-class RHUnk004af060 : public RHElementMobile
-{
-public:
-    void Unk(int direction);
-};
 
 extern bool g_mobileAssertDoubleBond;
 
@@ -531,12 +423,6 @@ public:
     void FUN_005a3810(SBFile &file, RHMobilePointerArray &materials);
     undefined m_0[0x1a8];
 };
-class RHArtificialIntelligencePathCursor
-{
-public:
-    void Unk00550f60(unsigned short index);
-    void Unk005505b0(unsigned short index);
-};
 #include "RHActorPositionCalls.h"
 class RHBonusInfo
 {
@@ -569,13 +455,6 @@ public:
     void *m_50;
     void *m_54;
 };
-class RHPath
-{
-public:
-    ~RHPath();
-    bool SerializeStatus(SBFile &file);
-};
-
 inline void RHMobileElement::OffsetPoint(const SBGeoPoint2D &point)
 {
     SBGeoVector2D offset((const SBGeoVector2D &)point);

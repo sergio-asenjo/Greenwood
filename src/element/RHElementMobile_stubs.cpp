@@ -9,40 +9,33 @@ public:
 };
 
 // FUNCTION: GAME 0x004a8130
-RHMobileBase004a8130::RHMobileBase004a8130(int type) : RHElement(type, 0)
+RHElementFX::RHElementFX(int type) : RHElement(type, 0)
 {
     RHMobileField<unsigned short>(this, 0x10) = 0x1001;
-    RHMobileField<unsigned>(this, 0xa8) = 1;
-    RHMobileField<unsigned char>(this, 0x12) = 1;
-    RHMobileField<unsigned>(this, 0xac) = 0;
+    m_a8 = 1;
+    m_12 = 1;
+    m_ac = 0;
     m_cc = -1;
     m_c8 = 0;
     m_d0 = 0;
-    RHMobileField<unsigned>(this, 0xb0) = 0x11b;
+    m_b0 = 0x11b;
 }
 
 // SYNTHETIC: GAME 0x004a81d0
-// RHMobileBase004a8130::`scalar deleting destructor'
+// RHElementFX::`scalar deleting destructor'
 
 // FUNCTION: GAME 0x004a81f0
-RHMobileBase004a8130::~RHMobileBase004a8130()
+RHElementFX::~RHElementFX()
 {
 }
-bool RHMobileBase004a8130::FUN_004b23c0(const void *, void *, int) { return false; }
-void *RHMobileBase004a8130::FUN_004b29c0(void *) { return 0; }
-bool RHMobileBase004a8130::FUN_004b26a0(const SBGeoPoint2D *, int, RHElementActor *) { return false; }
-void *RHMobileBase004a8130::Refresh(unsigned long, float, const SBGeoBoundingBox2D &, unsigned long) { return 0; }
-bool RHMobileBase004a8130::FUN_004b9f40() { return true; }
-void RHMobileBase004a8130::v14(SBFile &) {}
-void RHMobileBase004a8130::InitializeFromMissionStream(SBFile &) {}
-bool RHMobileBase004a8130::Serialize(SBFile &) { return false; }
+bool RHElementFX::FUN_004b23c0(const void *, void *, int) { return false; }
+void *RHElementFX::FUN_004b29c0(void *) { return 0; }
+bool RHElementFX::FUN_004b26a0(const SBGeoPoint2D *, unsigned short, RHElementActorPC *) { return false; }
+void RHElementFX::InitializeFromMissionStream(SBFile &) {}
 // SYNTHETIC: GAME 0x004aac80
-// RHUnk004aac40::`scalar deleting destructor'
+// RHElementFXMasked::`scalar deleting destructor'
 // FUNCTION: GAME 0x004aaca0
-RHUnk004aac40::~RHUnk004aac40() {}
-void *RHUnk004aac40::Refresh(unsigned long, float, const SBGeoBoundingBox2D &, unsigned long) { return 0; }
-bool RHUnk004aac40::FUN_004b9f40() { return true; }
-bool RHUnk004aac40::Serialize(SBFile &) { return false; }
+RHElementFXMasked::~RHElementFXMasked() {}
 
 RHMobileSegment::RHMobileSegment(const SBGeoPoint2D &, const SBGeoPoint2D &) {}
 RHMobileSegment::~RHMobileSegment() {}
@@ -52,10 +45,9 @@ DECOMP_SIZE_ASSERT(RHMobileUnk0060a820, 0x10)
 RHMobileUnk0060a820::~RHMobileUnk0060a820() {}
 void RHMobileGrid::FUN_004ed370(void *, unsigned short, const RHMobileSegment &, unsigned) {}
 // FUNCTION: GAME 0x006158b0
-RHMobileUnk0060a820 &RHMobileUnk0060a820::FUN_006158b0(const SBGeoPoint2D &first, const SBGeoPoint2D &second)
+RHMobileUnk0060a820::RHMobileUnk0060a820(const SBGeoPoint2D &first, const SBGeoPoint2D &second)
+    : RHMobileUnk006100e0(first, second)
 {
-    ((RHMobileUnk006100e0 *)this)->RHMobileUnk006100e0::RHMobileUnk006100e0(first, second);
-    return *this;
 }
 
 // FUNCTION: GAME 0x006158d0
@@ -83,8 +75,6 @@ void RHMobileUnk00607da0::FUN_00607990(const RHMobileUnk00607da0 &other)
 }
 void RHMobileUnk006100e0::FUN_00578c50() throw() {}
 
-bool RHMobilePath::FUN_00550660(unsigned char) { return false; }
-void RHMobilePath::FUN_005505c0() {}
 RHUnk005fc3b0::RHUnk005fc3b0(float x, float y) : SBGeoVector2D(x, y) {}
 void FUN_004b0620(RHUnk005fc3b0 *destination, const RHUnk005fc3b0 &value) { new (destination) RHUnk005fc3b0(value); }
 void FUN_004b05b0(RHUnk005fc3b0 *first, RHUnk005fc3b0 *last, const RHUnk005fc3b0 &value)
@@ -267,7 +257,7 @@ bool RHMobileUnk0060a820::FUN_00615910(const SBGeoSegment2D &segment) const
     RHUnk005fc3b0 second;
     RHUnk005fc3b0 direction;
     RHUnk005fc3b0 first;
-    box.FUN_00607e30((const RHMalignitySegment &)segment);
+    box.FUN_00607e30(segment);
     if (box.FUN_00608730((const RHMobileUnk006100e0 &)*this))
     {
         const RHMobileUnk006100e0 &ray = (const RHMobileUnk006100e0 &)*this;

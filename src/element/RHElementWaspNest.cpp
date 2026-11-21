@@ -35,8 +35,8 @@
 #include "RHProjectileSoundCalls.h"
 #include "RHProjectileLifetime.h"
 #include "RHElementWasp.h"
-#include "RHEngineWidenedCalls.h"
-#include "RHUnkTargetSpriteCalls.h"
+#include "RHSpriteCore.h"
+#include "RHSpriteCore.h"
 #include "RHEngine.h"
 
 DECOMP_SIZE_ASSERT(RHElementProjectile, 0x15c)
@@ -66,10 +66,10 @@ inline void RHSetWaspNestAnimation(RHElementWaspNest *nest, unsigned row)
     unsigned &current = *(unsigned *)((char *)nest + 0xb4);
     if (current != row)
     {
-        RHEngineWidenedCalls *sprite = *(RHEngineWidenedCalls **)((char *)nest + 0x50);
+        RHSprite *sprite = *(RHSprite **)((char *)nest + 0x50);
         current = row;
         sprite->FUN_005bd450();
-        (*(RHUnkTargetSprite **)((char *)nest + 0x50))->FUN_005b76e0(row, 0);
+        nest->m_50->FUN_005b76e0(row, 0);
     }
 }
 

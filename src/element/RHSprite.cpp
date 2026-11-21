@@ -8,11 +8,11 @@
 #include "RHMask.h"
 #include "RHFastFindUniqueList.h"
 #include "RHFrameHolder.h"
+#include "RHFrameHolderArray.h"
 #include "RHMobileUnk00607da0.h"
 #include "RHFastFindGridCore.h"
 #include "RHUnk004a96a0.h"
 #include "RHspriteRenderingInfoCore.h"
-#include "RHMobileUnk006091b0.h"
 #include "RHPlayerProfileAccess.h"
 #include "RHPlayerProfileManagerStorage.h"
 
@@ -445,7 +445,7 @@ void RHSprite::LoadPositionInfoFromFile(SBFile &file, int kind)
                 RHSpriteField<float>(this, 0x20) = (float)FUN_006433ab(source.m_y);
                 RHSpriteField<int>(position, 4) = 4;
             }
-            ((RHSpritePositionCalls *)position)->FUN_0055f550();
+            position->ComputePositionMap();
             file.Access(&value, 2);
             RHSpriteField<unsigned short>(this, 0xde) = value;
             ((RHUnkPathGeometry *)RHSpriteField<void *>(this, 0x1d4))->Unk004fbec0(file, area);
@@ -537,7 +537,7 @@ void RHSprite::LoadPositionInfoFromFile(SBFile &file, int kind)
                 RHSpriteField<unsigned short>(this, 0xda) = value & 15;
                 file.Access(&value, 2);
                 if (((RHSpriteFrameTable *)((RHUnk005b5e00 *)this)->Unk())->Frame(value) != 0xffff)
-                    ((RHUnkTargetSprite *)this)->FUN_005b76e0(value, 0);
+                    FUN_005b76e0(value, 0);
                 else
                     SBAssert(1, g_spriteFile, 0x220,
                         // STRING: GAME 0x006b8770
@@ -595,7 +595,7 @@ bool RHSprite::FUN_005b73f0(unsigned short count)
 }
 
 // FUNCTION: GAME 0x005b76e0
-bool RHUnkTargetSprite::FUN_005b76e0(unsigned animation, unsigned short direction)
+bool RHSprite::FUN_005b76e0(unsigned animation, unsigned short direction)
 {
     unsigned short frame = RHSpriteField<unsigned short *>(((RHUnk005b5e00 *)this)->Unk(), 4)[animation] + direction;
     RHSpriteField<int>(this, 0x1dc) = animation;
@@ -816,7 +816,7 @@ int RHSprite::FUN_005b7fd0(float modulation, int progression)
         result = 0;
     if (finished == true)
     {
-        ((RHEngineWidenedCalls *)this)->FUN_005bd450();
+        FUN_005bd450();
         result = 3;
     }
     return result;
@@ -871,7 +871,7 @@ int RHSprite::PerformAction(RHOrder *order, int animation, int progression, bool
         result = 0;
     if (finished == true)
     {
-        ((RHEngineWidenedCalls *)this)->FUN_005bd450();
+        FUN_005bd450();
         result = 3;
     }
     return result;
@@ -983,7 +983,7 @@ int RHSprite::PerformFlight(RHOrder *order, int animation, int progression, int 
         position->m_fc = 0;
         break;
     case 3:
-        ((RHEngineWidenedCalls *)this)->FUN_005bd450();
+        FUN_005bd450();
         RHSpriteField<char>(this, 0x101) = 1;
         RHSpriteField<unsigned short>(this, 0xde) = RHSpriteField<unsigned short>(this, 0xe4);
         RHSpriteField<void *>(this, 0xe0) = RHSpriteField<void *>(this, 0xe8);
@@ -1053,7 +1053,7 @@ int RHSprite::PerformMotion(RHOrder *order, RHOrder *following, int animation, i
         {
             m_184 = ((RHSpriteFrameTable *)((RHUnk005b5e00 *)this)->Unk())->Frame(animation) + m_d4;
             FUN_005b7300(animation, progression);
-            ((RHEngineWidenedCalls *)this)->FUN_005bd450();
+            FUN_005bd450();
             return 3;
         }
         m_150 = O(int, 0x34);
@@ -2267,7 +2267,7 @@ struct RHSpriteFrameVector
 };
 
 // FUNCTION: GAME 0x005bd450
-bool RHEngineWidenedCalls::FUN_005bd450()
+bool RHSprite::FUN_005bd450()
 {
     RHSpriteFrameVector *frames = (RHSpriteFrameVector *)((RHUnk005b5e00 *)this)->FUN_005b5de0();
     if (RHSpriteField<void *>(this, 0x154) && frames->size() != 0)
@@ -2585,7 +2585,7 @@ void RHUnk004a96a0::FUN_004a96a0(void *surface, float scale, void *box, bool fla
         RHSpriteField<RHSprite *>(this, 0x50)->CreateTargetSprite(info);
         if (RHSpriteField<RHSprite *>(this, 0x50)->FUN_005ba130(*(const SBGeoBoundingBox2D *)box, 1.0f, sourceBox, targetBox))
         {
-            ((RHMobileUnk006091b0 *)&targetBox)->FUN_006091b0(*(const SBGeoVector2D *)box);
+            targetBox.Translate(*(const SBGeoVector2D *)box);
             RHSpriteField<char>(this, 0xc8) = 1;
             if (RHSpriteField<int>(this, 0xa8) == 1 && RHSpriteField<char>(this, 0x8e) == 1)
             {

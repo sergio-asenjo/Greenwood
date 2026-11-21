@@ -1,10 +1,13 @@
 #include "RHElementFX.h"
 #include "RHElementTarget.h"
+#include "RHElementScroll.h"
+#include "SBSimpleVirtualMachine.h"
+#include "RHTargetResourceCalls.h"
+#include "RHCivilianSpriteView.h"
 #include "RHCopyPointers.h"
 #include "../ai/RHFastFindArrayOps.h"
 #include "VMCore.h"
 #include "RHMalignityActorCalls.h"
-#include "RHElementPositionCalls.h"
 #include "RHUnk00613e90.h"
 #include "RHHumanSequenceElement.h"
 #include "RHSpriteLastFrameCalls.h"
@@ -14,11 +17,26 @@
 #include <new>
 #include <stddef.h>
 
+class RHUnk005df4f0 : public RHBonusTriple
+{
+public:
+    RHUnk005df4f0(float x, float y, float z);
+};
+
+#include "RHSequenceElementCalls.h"
+
+class RHTargetSequenceCalls : public RHSequenceElementCalls
+{
+public:
+    int m_64;
+};
+
 DECOMP_SIZE_ASSERT(RHElementTarget, 0x18c)
 DECOMP_SIZE_ASSERT(RHScript, 4)
 DECOMP_SIZE_ASSERT(SBSimpleVirtualMachine, 0x5c)
 DECOMP_SIZE_ASSERT(VMCoreCustom, 0x60)
-DECOMP_STATIC_ASSERT(offsetof(RHElementTarget, m_15c) == 0x15c)
+DECOMP_STATIC_ASSERT(offsetof(RHElementTarget, RHUnkTargetScriptRef::m_0) == 0x15c)
+DECOMP_STATIC_ASSERT(offsetof(RHTargetSequenceCalls, m_64) == 0x64)
 DECOMP_SIZE_ASSERT(std::vector<RHMobileUnk006100e0 *>, 0x10)
 DECOMP_STATIC_ASSERT(offsetof(RHElementTarget, m_16c) == 0x16c)
 
@@ -192,7 +210,7 @@ void RHElementTarget::InitializeFromMissionStream(SBFile &file)
         short pointY;
         file.Access(&pointX, 2);
         file.Access(&pointY, 2);
-        RHElementTarget_m_d4.FUN_00611100(SBGeoPoint2D((float)pointX, (float)pointY));
+        m_d4.FUN_00611100(SBGeoPoint2D((float)pointX, (float)pointY));
         float height = (float)pointY;
         if (height < RHElementTarget_m_f8)
             RHElementTarget_m_f8 = height;
@@ -263,26 +281,33 @@ void RHElementTarget::InitializeFromMissionStream(SBFile &file)
     Info()->m_4.SetPoint(SBGeoPoint2D((float)offsetX, (float)offsetY));
     Info()->RestorePoint();
     Info()->m_4.m_4 = 7;
-    Info()->FUN_005b76e0(row, flags);
+    reinterpret_cast<RHSprite *>(Info())->FUN_005b76e0(row, flags);
     Info()->m_4.SetFlags(flags & 0xf);
     if (g_unk0x6c0691 && RHElementTarget_m_154)
         ((RHUnkTargetScriptRef *)(((char *)this) + 0x15c))->FUN_004034e0();
 }
 
-// FUNCTION: GAME 0x004bad80
-RHElementTarget::~RHElementTarget()
+// FUNCTION: GAME 0x004bac30
+RHElementTarget::RHElementTarget() : RHElementFX(9), m_160(3), m_164(0), m_168(0)
 {
-    m_16c.clear();
+    m_10 = 0x800;
+    m_50->SetHeadingInstantly(0);
+    RHSprite *sprite = m_50;
+    sprite->FUN_005bd450();
+    sprite->m_184 = 0;
+    sprite->m_186 = 0;
+    m_d0 = 1;
+    m_94w = g_unk0x6c11d0->Unk(255, 0, 0);
 }
 
-// FUNCTION: GAME 0x004bad60
-RHElementTarget *RHElementTarget::FUN_004bad60(char flags)
-{
-    this->RHElementTarget::~RHElementTarget();
-    if (flags & 1)
-        operator delete(this);
-    return this;
-}
+// SYNTHETIC: GAME 0x004bad80
+// ??1RHElementTarget@@UAE@XZ
+
+// SYNTHETIC: GAME 0x004bad60
+// RHElementTarget::`scalar deleting destructor'
+
+// SYNTHETIC: GAME 0x004bc440
+// ??_ERHElementTarget@@WBFI@AEPAXI@Z
 
 // FUNCTION: GAME 0x004bae60
 void RHElementTarget::FUN_004bae60(RHTargetSequenceCalls *sequence, int (RHUnkTargetScriptRef::*callback)(int))
@@ -292,7 +317,7 @@ void RHElementTarget::FUN_004bae60(RHTargetSequenceCalls *sequence, int (RHUnkTa
         RHUnkTargetScriptRef *script = this ? (RHUnkTargetScriptRef *)(((char *)this) + 0x15c) : 0;
         (script->*callback)(sequence->m_64);
     }
-    sequence->V0c(0, true);
+    sequence->Slot0c(0, true);
 }
 
 // FUNCTION: GAME 0x004baf50
@@ -355,19 +380,17 @@ int RHElementTarget::FUN_004bb0a0(void *actor)
     return (RHElementTarget_m_168 & 0x80) ? 0x2d : 3;
 }
 
-// Parked: direct box access omits the canonical base getter call.
-// STUB: GAME 0x004bb180
-RHUnk00613e90 RHElementPositionCalls::FUN_004bb180()
+// FUNCTION: GAME 0x004bb180
+RHUnk00613e90 RHElementTarget::GetCenter() const
 {
-    void *sprite = *(void **)((char *)this + 0x50);
-    RHUnk00613e90 result = *(RHUnk00613e90 *)((char *)sprite + 0x10);
-    SBGeoBoundingBox2D box(*(SBGeoBoundingBox2D *)((char *)sprite + 0x1a0));
+    RHUnk00613e90 result = m_50->m_c;
+    SBGeoBoundingBox2D box(*(const SBGeoBoundingBox2D *)FUN_004622d0());
     result.z += box.FUN_00608f40().m_y - box.m_p0.m_y;
     return result;
 }
 
 // FUNCTION: GAME 0x004bb240
-bool RHElementTarget::FUN_004bb240(void *point, void *pc, int focus) const
+bool RHElementTarget::FUN_004b23c0(const void *point, void *pc, int focus)
 {
     if (((char *)this)[0x12])
     {
@@ -395,19 +418,30 @@ bool RHElementTarget::FUN_004bb240(void *point, void *pc, int focus) const
                 break;
             }
             return filter && (*(const unsigned *)(((char *)this) + 0x168) & filter) &&
-                   (*(RHSprite *const *)(((char *)this) + 0x50))->FUN_005b9e30(point, *(void *const *)(((char *)this) + 0x54), false);
+                   m_50->FUN_005b9e30(const_cast<void *>(point), *(void *const *)(((char *)this) + 0x54), false);
         }
     }
     return false;
 }
 
 #include "RHSequenceConstructionCalls.h"
+
+void *RHElementTarget::FUN_004b29c0(void *actor)
+{
+    static RHUnk0045aaf0 changeMouse;
+    int command = FUN_004baff0(actor);
+    if (command)
+    {
+        changeMouse.FUN_0045abc0(command, 0, 0);
+        return &changeMouse;
+    }
+    return RHElementFX::FUN_004b29c0(actor);
+}
 #include "RHSequenceGenericConstruction.h"
 #include "RHSequenceInteractionAction.h"
 #include "RHSequenceMovementConstruction.h"
-#include "RHSequenceAppendCalls.h"
-#include "RHSequenceLaunchCalls.h"
-#include "RHElementActorHumanBase.h"
+#include "RHSequenceManager.h"
+#include "RHElementActorPC.h"
 #include "RHActorMessage.h"
 #include "RHMessenger.h"
 #include "RHTitbitsCore.h"
@@ -415,79 +449,73 @@ bool RHElementTarget::FUN_004bb240(void *point, void *pc, int focus) const
 extern RHMessenger *RHUnk00546050();
 extern RHTitbits *g_unk0x6c10e8;
 
-template<class T> inline T &RHTargetField(void *object, unsigned offset)
-{
-    return *(T *)((char *)object + offset);
-}
-
 // STUB: GAME 0x004bb3a0
-bool RHElementTarget::FUN_004bb3a0(void *point, unsigned flags, RHElementActorPC *actor)
+bool RHElementTarget::FUN_004b26a0(const SBGeoPoint2D *, unsigned short flags, RHElementActorPC *actor)
 {
-    unsigned short focus = RHTargetField<unsigned short>(RHUnk00546050(), 0x26);
+    unsigned short focus = RHUnk00546050()->Value26();
     int animation;
     if (flags & 8)
     {
-        if (!RHTargetField<bool>(RHUnk00546050(), 0x20))
+        if (!RHUnk00546050()->Flag20())
         {
-            ((RHElementActor *)actor)->FUN_0046bb80();
+            actor->FUN_0046bb80();
             return true;
         }
         animation = 10;
     }
     else
-        animation = RHTargetField<int>(RHTargetField<void *>(actor, 0x50), 0x8c) == 10 ? 16 : 6;
+        animation = actor->m_50->m_88 == 10 ? 16 : 6;
     int command = FUN_004baf50(actor);
     if (command)
     {
-        if (!RHTargetField<bool>(RHUnk00546050(), 0x20))
+        if (!RHUnk00546050()->Flag20())
         {
             unsigned short level = 1;
-            RHUnk00582220 *sequence = new RHUnk00582220;
+            RHSequence *sequence = new RHSequence;
             if (sequence->FUN_00582640(level, actor, animation,
-                RHTargetField<SBGeoPoint2D>(RHTargetField<void *>(actor, 0x50), 0x24),
-                RHTargetField<void *>(RHTargetField<void *>(actor, 0x50), 0xe0),
-                RHTargetField<unsigned short>(RHTargetField<void *>(actor, 0x50), 0xde),
-                RHTargetField<SBGeoPoint2D>(Info(), 0x24), RHTargetField<void *>(Info(), 0xe0),
-                RHTargetField<unsigned short>(Info(), 0xde), this, 0.0f, 0, 1.0f))
+                actor->m_50->m_20, actor->m_50->m_dc, actor->m_50->m_da,
+                m_50->m_20, m_50->m_dc, m_50->m_da, this, 0.0f, 0, 1.0f))
             {
                 RHUnk005866a0 *turn = new RHUnk005866a0(level++, 26, actor);
-                turn->Unk00587010(8, ((RHElementActor *)this)->FUN_00462920());
-                ((RHUnk00585500 *)turn)->Unk(sequence);
+                turn->Unk00587010(8, FUN_00462920());
+                turn->AppendToSequence(sequence);
                 RHUnk00585ea0 *action = new RHUnk00585ea0(level, command, actor, this);
-                ((RHUnk00585500 *)action)->Unk(sequence);
-                ((RHUnk0058a3d0 *)*(void **)((char *)this + 0x5c))->Unk((void *)"", 0, sequence);
-                ((RHMalignityActorCalls *)actor)->V104(12, 0, 255);
+                action->AppendToSequence(sequence);
+                static_cast<RHSequenceManager *>(m_5c)->Launch("", 0, sequence);
+                actor->FUN_0049bfd0(12, 0, 255);
                 return true;
             }
-            ((RHMalignityActorCalls *)actor)->V104(14, 0, 255);
+            actor->FUN_0049bfd0(14, 0, 255);
             if (sequence)
-                sequence->FUN_00582280(1);
+                delete sequence;
             return true;
         }
-        RHUnk00582220 *sequence = new RHUnk00582220;
+        RHSequence *sequence = new RHSequence;
         RHUnk00588530 *movement = new RHUnk00588530(1, 21, actor, animation,
-            RHTargetField<SBGeoPoint2D>(Info(), 0x24), RHTargetField<void *>(Info(), 0xe0),
-            RHTargetField<unsigned short>(Info(), 0xde), 0.0f, 0);
-        ((RHUnk00585500 *)movement)->Unk(sequence);
-        RHUnk00582220 *postSequence = new RHUnk00582220;
+            m_50->m_20, m_50->m_dc, m_50->m_da, 0.0f, 0);
+        movement->AppendToSequence(sequence);
+        RHSequence *postSequence = new RHSequence;
         RHUnk005866a0 *turn = new RHUnk005866a0(1, 26, actor);
-        turn->Unk00587010(8, ((RHElementActor *)this)->FUN_00462920());
-        ((RHUnk00585500 *)turn)->Unk(postSequence);
+        turn->Unk00587010(8, FUN_00462920());
+        turn->AppendToSequence(postSequence);
         RHUnk00585ea0 *action = new RHUnk00585ea0(2, command, actor, this);
-        ((RHUnk00585500 *)action)->Unk(postSequence);
-        movement->m_68 = (RHMovementOwned *)postSequence;
-        RHUnk00613e90 position;
-        ((RHMalignityActorCalls *)actor)->V170(command, false, focus,
-            g_unk0x6c10e8->AddTitbit(position, 0, (RHtitbitKind)3, (RHElement *)this,
-                FUN_004bb0a0(actor), actor, animation == 10, 0xffffffff));
-        RHUnk00546050()->RHUnk005460c0((RHUnk5490f0 &)RHUnk00549250(6, 0));
+        action->AppendToSequence(postSequence);
+        movement->m_68 = postSequence;
+        {
+            RHUnk00613e90 position;
+            RHTitbits *titbits = g_unk0x6c10e8;
+            actor->SetQuickActionSequence(static_cast<RHSequence *>(movement->m_54), 0, focus,
+                titbits->AddTitbit(position, 0, (RHtitbitKind)3, this,
+                    FUN_004bb0a0(actor), actor, animation == 10, 0xffffffff));
+        }
+        RHUnk00546050()->RHUnk005460c0(RHUnk00549250(6, 0));
         return true;
     }
     return false;
 }
 
 // FUNCTION: GAME 0x004bbf80
-bool RHElementTarget::FUN_004bbf80()
+char RHElementTarget::FUN_004b9f40()
 {
     if (((char *)this)[0x12])
         ((RHEngineWidenedCalls *)Info())->FUN_005b7f60(*(unsigned long *)(((char *)this) + 0x164));
@@ -585,11 +613,12 @@ bool RHElementTarget::Serialize(SBFile &file)
 // ?insert@?$vector@PAVRHMobileUnk006100e0@@V?$allocator@PAVRHMobileUnk006100e0@@@std@@@std@@QAEXPAPAVRHMobileUnk006100e0@@IABQAV3@@Z
 
 // FUNCTION: GAME 0x004bc1d0
-bool RHElementTarget::FUN_004bc1d0(RHTargetSequenceCalls *sequence)
+char RHElementTarget::Instruct(RHSequenceElementCalls *element)
 {
+    RHTargetSequenceCalls *sequence = static_cast<RHTargetSequenceCalls *>(element);
     RHElementActor *saved = g_unk0x6c100c;
     g_unk0x6c100c = (RHElementActor *)this;
-    switch (((RHSequenceElement *)sequence)->m_10)
+    switch (element->m_10)
     {
     case 0x99:
         FUN_004bae60(sequence, &RHUnkTargetScriptRef::FUN_004035d0);
@@ -621,23 +650,23 @@ bool RHElementTarget::FUN_004bc1d0(RHTargetSequenceCalls *sequence)
     case 0xa6:
         *(int *)(((char *)this) + 0x160) = ((RHSequenceElement *)sequence)->Unk00587160(0x15);
         *(unsigned *)(((char *)this) + 0x164) = 8;
-        Info()->FUN_005b76e0(*(unsigned *)(((char *)this) + 0x160), *(unsigned short *)((char *)Info() + 0xd8));
+        reinterpret_cast<RHSprite *>(Info())->FUN_005b76e0(*(unsigned *)(((char *)this) + 0x160), *(unsigned short *)((char *)Info() + 0xd8));
         ((RHUnk005bd5b0 *)Info())->Unk(false);
-        sequence->V0c(0, true);
+        sequence->Slot0c(0, true);
         break;
     case 0xa4:
         *(int *)(((char *)this) + 0x160) = ((RHSequenceElement *)sequence)->Unk00587160(0x15);
         *(unsigned *)(((char *)this) + 0x164) = 0;
-        Info()->FUN_005b76e0(*(unsigned *)(((char *)this) + 0x160), *(unsigned short *)((char *)Info() + 0xd8));
+        reinterpret_cast<RHSprite *>(Info())->FUN_005b76e0(*(unsigned *)(((char *)this) + 0x160), *(unsigned short *)((char *)Info() + 0xd8));
         ((RHUnk005bd5b0 *)Info())->Unk(false);
-        sequence->V0c(0, true);
+        sequence->Slot0c(0, true);
         break;
     case 0xa5:
         *(int *)(((char *)this) + 0x160) = ((RHSequenceElement *)sequence)->Unk00587160(0x15);
         *(unsigned *)(((char *)this) + 0x164) = 1;
-        Info()->FUN_005b76e0(*(unsigned *)(((char *)this) + 0x160), *(unsigned short *)((char *)Info() + 0xd8));
+        reinterpret_cast<RHSprite *>(Info())->FUN_005b76e0(*(unsigned *)(((char *)this) + 0x160), *(unsigned short *)((char *)Info() + 0xd8));
         ((RHUnk005bd5b0 *)Info())->Unk(false);
-        sequence->V0c(0, true);
+        sequence->Slot0c(0, true);
         break;
     }
     g_unk0x6c100c = saved;
@@ -659,10 +688,10 @@ void RHElementTarget::Emit(SBFile &file)
     FUN_004baf50(0);
     FUN_004baff0(0);
     FUN_004bb0a0(0);
-    FUN_004bb240(0, 0, 0);
+    FUN_004b23c0(0, 0, 0);
     FUN_004bae60(0, &RHUnkTargetScriptRef::FUN_004035d0);
-    ((RHElementPositionCalls *)this)->FUN_004bb180();
-    FUN_004bbf80();
+    GetCenter();
+    FUN_004b9f40();
     InitializeFromMissionStream(file);
     FUN_004bc3d0(0);
 }

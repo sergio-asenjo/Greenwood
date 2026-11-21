@@ -28,11 +28,12 @@ public:
     virtual ~RHElementObject();
     virtual bool FUN_004b23c0(const void *first, void *second, int third);
     virtual void *FUN_004b29c0(void *actor);
-    virtual bool FUN_004b26a0(const SBGeoPoint2D *first, int second, RHElementActor *third);
+    virtual bool FUN_004b26a0(const SBGeoPoint2D *first, unsigned short second, RHElementActorPC *selectedPC);
     virtual void *Refresh(unsigned long surface, float value, const SBGeoBoundingBox2D &box, unsigned long flags);
     virtual void v14(SBFile &file) {}
     virtual void InitializeFromMissionStream(SBFile &file) {}
     virtual bool Serialize(SBFile &file);
+    virtual char Instruct(RHSequenceElementCalls *element);
     virtual unsigned V68() = 0;
     virtual bool FUN_004b2420(void *actor) const;
 
@@ -42,8 +43,8 @@ public:
     bool FUN_004a7840(void *point, void *actor, int focus);
     bool FUN_004a78c0(void *actor);
     bool FUN_004b24d0(const SBGeoPoint2D &point) const;
-    virtual void FUN_004b2600(void *points, void *lines, void *actor);
-    void FUN_004b2d60(unsigned short value);
+    virtual void GetRepulsiveObjects(RHRepulsivePointList &points, RHRepulsiveLineList &lines, RHElementActor *actor);
+    virtual void SetQuantity(unsigned short value);
     int FUN_004b2d70();
 
     int m_a8;                     // [0xa8]
@@ -248,14 +249,20 @@ public:
 extern RHObjectMasterNode *g_unk0x006c09c0;
 extern unsigned g_unk0x006c09c4;
 
-class RHElementObjectMaster
+// VTABLE: GAME 0x006786e4
+class RHElementObjectMaster : public RHElementObject
 {
 public:
-    virtual ~RHElementObjectMaster();
+    RHElementObjectMaster(const char *resource, const char *name, unsigned short id, int type, bool flag);
+    virtual bool FUN_004b23c0(const void *, void *, int) { return false; }
+    virtual void *FUN_004b29c0(void *) { return 0; }
+    virtual bool FUN_004b26a0(const SBGeoPoint2D *, unsigned short, RHElementActorPC *) { return false; }
+    virtual void *Refresh(unsigned long surface, float scale, const SBGeoBoundingBox2D &bounds, unsigned long flags);
+    virtual char FUN_004b9f40() { return 0; }
+    virtual unsigned V68() { return 0; }
     static void AddMasterObject(int key, RHElementObjectMaster *master);
     static void DeleteMasters();
     void FUN_004b3170(const std::string &first, const std::string &second, bool flag);
-    int FUN_004b31c0(int first, int second, int third, int fourth);
 };
 
 #endif

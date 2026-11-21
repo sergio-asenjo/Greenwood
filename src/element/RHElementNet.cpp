@@ -1,6 +1,7 @@
 #include "SBNullstr.h"
 #include "RHElementNet.h"
-#include "RHPCActionQueryCalls.h"
+#include "RHElementActorPC.h"
+#include "RHArtificialIntelligenceCore.h"
 #include <new>
 
 class RHSprite
@@ -39,7 +40,6 @@ class RHScriptBatchCalls
 {
 public:
     void Unk00464630();
-    void Unk0040d980(int state);
 };
 
 class RHBonusInfo
@@ -52,12 +52,6 @@ class RHElementActorNPC
 {
 public:
     static void FUN_0048c6a0(void *actor, unsigned mode);
-};
-
-class RHMobileUnk00520c50
-{
-public:
-    void FUN_00520c50(float first, float second);
 };
 
 inline void RHNetCopyPosition(float *destination, const char *sprite)
@@ -196,7 +190,7 @@ void RHElementNet::FUN_004b1270()
             (*(RHBonusInfo **)(victim + 0x50))->FUN_005bd560(0, true);
             if ((*(unsigned *)(victim + 4) & 0xf) == 4)
             {
-                ((RHScriptBatchCalls *)(victim + 0x49c + (*(int **)(victim + 0x49c))[1]))->Unk0040d980(0x1e);
+                ((RHArtificialIntelligence *)(victim + 0x49c + (*(int **)(victim + 0x49c))[1]))->DispatchWorldEvent(0x1e);
                 if (!((RHNetVictimCalls *)victim)->V48() && !*(victim + 0x1ce))
                     RHElementActorNPC::FUN_0048c6a0(victim, 1);
             }
@@ -223,10 +217,10 @@ void RHElementNet::FUN_004b1380(RHNetListStorage &points, RHNetListStorage &, vo
     {
         RHNetCopyPosition((float *)((char *)this + 0xc0), *(const char **)((char *)this + 0x50));
         RHNetCopyPosition((float *)((char *)&m_15c + 4), *(const char **)((char *)this + 0x50));
-        RHMobileUnk00520c50 *outer = (RHMobileUnk00520c50 *)((char *)this + 0xbc);
-        outer->FUN_00520c50(40.0f, 15.0f);
-        RHMobileUnk00520c50 *inner = (RHMobileUnk00520c50 *)&m_15c;
-        inner->FUN_00520c50(15.0f, 30.0f);
+        RHUnk00520ae0 *outer = &m_member;
+        outer->SetForce(40.0f, 15.0f);
+        RHUnk00520ae0 *inner = &m_15c;
+        inner->SetForce(15.0f, 30.0f);
         RHNetPushRepulsivePoint(points, outer);
         RHNetPushRepulsivePoint(points, inner);
     }
@@ -238,7 +232,7 @@ bool RHElementNet::FUN_004b14a0(void *point, void *pc, int focus) const
     if (*((char *)this + 0x12) && pc &&
         *(unsigned short *)(*(char **)((char *)this + 0x50) + 0xde) != 0xffff &&
         *(unsigned int *)((char *)g_pEngine + 0x4a00) <= 1 && focus == 3)
-        return !*((char *)this + 0x132) && ((RHUnk0049d4f0 *)pc)->Unk(0x11) &&
+        return !*((char *)this + 0x132) && static_cast<RHElementActorPC *>(pc)->FUN_0049d4f0(0x11) &&
                (*(RHSprite **)((char *)this + 0x50))->FUN_005b9e30(point, *(void **)((char *)this + 0x54), false);
     return false;
 }

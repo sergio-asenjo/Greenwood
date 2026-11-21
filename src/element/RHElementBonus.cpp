@@ -1,8 +1,12 @@
 #include "SBNullstr.h"
-#include "RHSprite.h"
+#include "SBGeoPoint2D.h"
+#include "RHSpriteCore.h"
 #include "RHElementBonus.h"
 #include "RHElementObject.h"
 #include "RHEngineWidenedCalls.h"
+#include "RHEngine.h"
+#include "RHElementActorPC.h"
+#include "RHFastFindGridCore.h"
 #include <stdlib.h>
 
 int FUN_004a7240(volatile int value);
@@ -238,6 +242,39 @@ RHElementBonus *RHElementBonus::CreateBonusFromMissionStream(SBFile &file)
     return bonus;
 }
 
+static inline float RHBonusSquaredDistance(const RHUnk00613e90 &offset)
+{
+    return offset.x * offset.x + offset.z * offset.z + offset.y * offset.y;
+}
+
+// FUNCTION: GAME 0x004a7900
+void RHElementBonus::RefreshDiscovered()
+{
+    if (!m_08 || !m_12)
+        return;
+    RHEngine *engine = g_pEngine;
+    RHUnk00613e90 position = m_50->m_c;
+    unsigned count = (unsigned char)g_pEngine->PCCount();
+    for (unsigned index = 0; index < count; ++index)
+    {
+        RHElementActorPC *actor = g_pEngine->m_pcs[(unsigned char)index];
+        if (actor->IsDead() || actor->IsUnconscious() || !actor->m_12)
+            continue;
+        RHUnk00613e90 eye = actor->m_50->m_c;
+        actor->FUN_00478c20(eye, 0);
+        float factor = 1.3f;
+        if (actor->m_50->m_88 != 0x10)
+            factor = 1.0f;
+        float distance = RHBonusSquaredDistance(eye.FUN_005df550(position).ScaleY(1.7434468269348145f));
+        if (distance < (unsigned(engine->m_discoveryRange) * engine->m_discoveryRange) * factor &&
+            static_cast<RHFastFindGrid *>(m_64)->FUN_004eff80(position, eye, 2))
+        {
+            m_08 = 0;
+            return;
+        }
+    }
+}
+
 // FUNCTION: GAME 0x004a7aa0
 void RHElementBonus::Initialize(unsigned long type, unsigned short quantity)
 {
@@ -278,12 +315,12 @@ void RHElementBonus::SetQuantity(unsigned short quantity)
             case 4: action = 0xc1; break;
             case 5: action = 0xc2; break;
             }
-            ((RHUnkTargetSprite *)Info())->FUN_005b76e0(action, Info()->m_4.m_d4);
+            m_50->FUN_005b76e0(action, Info()->m_4.m_d4);
         }
         else
             amount = quantity;
     }
-    ((RHElementObject *)this)->FUN_004b2d60(amount);
+    RHElementObject::SetQuantity(amount);
 }
 
 // FUNCTION: GAME 0x004b2f10

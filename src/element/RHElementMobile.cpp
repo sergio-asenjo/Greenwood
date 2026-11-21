@@ -3,13 +3,14 @@
 #include "RHUnk0051f0f0.h"
 #include "RHAmbushPoint.h"
 #include "RHSoundSourceCore.h"
+#include "RHWaypoint.h"
+#include "RHSpriteCore.h"
 #include <stdlib.h>
 
 extern "C" double __cdecl fabs(double);
 
 DECOMP_SIZE_ASSERT(SBGeoPoint2D, 0x08)
 DECOMP_SIZE_ASSERT(SBGeoVector2D, 0x08)
-DECOMP_SIZE_ASSERT(RHMobilePath, 0x08)
 DECOMP_SIZE_ASSERT(RHMobilePolygon, 0x3c)
 DECOMP_STATIC_ASSERT(offsetof(RHMobilePolygon, m_30) == 0x30)
 DECOMP_STATIC_ASSERT(offsetof(RHMobilePolygon, m_34) == 0x34)
@@ -23,13 +24,14 @@ DECOMP_SIZE_ASSERT(RHMobileUnk0051fd10, 0x44)
 DECOMP_STATIC_ASSERT(offsetof(RHMobileUnk0051fd10, m_00) == 0x04)
 DECOMP_STATIC_ASSERT(offsetof(RHMobileUnk0051fd10, m_14) == 0x14)
 DECOMP_STATIC_ASSERT(offsetof(RHMobileUnk0051fd10, m_18) == 0x18)
-DECOMP_SIZE_ASSERT(RHMobileNode005504d0, 0x1c)
-DECOMP_SIZE_ASSERT(RHMobileUnk005504d0, 0x20)
+DECOMP_SIZE_ASSERT(RHPathHistoryNode, 0x1c)
+DECOMP_SIZE_ASSERT(RHPath, 0x24)
 DECOMP_SIZE_ASSERT(RHMobileSoundNode, 0x24)
 DECOMP_SIZE_ASSERT(RHSound, 0x294)
 DECOMP_SIZE_ASSERT(SBGeoBoundingBox2D, 0x14)
-DECOMP_SIZE_ASSERT(RHMobileBase004a8130, 0xfc)
-DECOMP_SIZE_ASSERT(RHUnk004aac40, 0x104)
+DECOMP_SIZE_ASSERT(RHElementFX, 0xfc)
+DECOMP_SIZE_ASSERT(RHElementFXMasked, 0x104)
+DECOMP_STATIC_ASSERT(offsetof(RHElementFXMasked, m_100) == 0x100)
 DECOMP_SIZE_ASSERT(RHElementMobile, 0x270)
 DECOMP_STATIC_ASSERT(offsetof(RHElementMobile, m_200) == 0x200)
 DECOMP_STATIC_ASSERT(offsetof(RHElementMobile, m_23c) == 0x23c)
@@ -39,7 +41,8 @@ DECOMP_SIZE_ASSERT(RHSoundSource, 0x50)
 DECOMP_STATIC_ASSERT(offsetof(RHSoundSource, m_10) == 0x10)
 DECOMP_STATIC_ASSERT(offsetof(RHSoundSourceFields, m_0c) == 0x0c)
 DECOMP_STATIC_ASSERT(offsetof(RHSoundSourcePoints, m_changed) == 0x14)
-DECOMP_SIZE_ASSERT(RHUnk004af060, 0x270)
+DECOMP_STATIC_ASSERT(offsetof(RHMobileElement, m_12) == 0x12)
+DECOMP_STATIC_ASSERT(offsetof(RHMobileElement, m_50) == 0x50)
 DECOMP_SIZE_ASSERT(RHMobileLineTransientList, 0x24)
 DECOMP_SIZE_ASSERT(RHMobileLineTransientList::Node, 0x0c)
 
@@ -92,7 +95,7 @@ void *FUN_0048f170(void *value)
 // ??1?$vector@VSBGeoPoint2D@@V?$allocator@VSBGeoPoint2D@@@std@@@std@@QAE@XZ
 
 // FUNCTION: GAME 0x004aac40
-RHUnk004aac40::RHUnk004aac40() : RHMobileBase004a8130(5)
+RHElementFXMasked::RHElementFXMasked() : RHElementFX(5)
 {
     RHMobileField<unsigned>(this, 0xa8) = 1;
     RHMobileField<unsigned char>(this, 0x12) = 1;
@@ -121,7 +124,7 @@ void RHElementMobile::FUN_004abfe0()
     }
     else
     {
-        RHMobileElement *waypoint = RHMobileField<RHMobileElement *>(this, 0x18c);
+        RHWaypoint *waypoint = m_18c;
         if (RHMobileField<unsigned short>(waypoint, 0x70))
         {
             if (RHMobileField<bool>(waypoint, 0x6e))
@@ -136,14 +139,14 @@ void RHElementMobile::FUN_004abfe0()
                 unsigned short alternatives = *(unsigned short *)m_190;
                 m_190 += 2;
                 unsigned char condition = *m_190++;
-                bool selected = m_188->FUN_00550660(condition);
+                bool selected = m_188->Unk00550660(condition) != 0;
                 if (!selected)
                 {
                     m_190 += 2;
                     if (alternatives == 2)
                     {
                         condition = *m_190++;
-                        selected = m_188->FUN_00550660(condition);
+                        selected = m_188->Unk00550660(condition) != 0;
                     }
                 }
                 fallback = true;
@@ -190,8 +193,8 @@ void RHElementMobile::FUN_004abfe0()
     }
     RHUnk005fc3b0 direction;
     SBGeoPoint2D destination;
-    m_188->FUN_005505c0();
-    RHMobileElement *waypoint = m_188->m_4->m_4[RHMobileField<unsigned char>(m_188, 0)];
+    m_188->Unk005505c0();
+    RHWaypoint *waypoint = m_188->m_4->First()[RHMobileField<unsigned char>(m_188, 0)];
     destination.m_x = waypoint->m_64;
     destination.m_y = waypoint->m_66;
     RHMobilePosition *position = (RHMobilePosition *)((char *)m_50 + 4);
@@ -203,7 +206,7 @@ void RHElementMobile::FUN_004abfe0()
     RHMobileField<RHUnk005fc3b0>(position, 0x6c).FUN_005fc430(direction);
     position->FUN_0055fc20(false);
     if (RHMobileField<bool>(this, 0x1f0))
-        ((RHUnk004af060 *)this)->Unk(direction.FUN_005fcc50(0.57357645f));
+        FUN_004af060(direction.FUN_005fcc50(0.57357645f));
     unsigned short count = Size();
     for (unsigned short i = 0; i < count; ++i)
     {
@@ -231,7 +234,7 @@ bool RHElementMobile::ExecuteMacroCommand()
         for (unsigned short i = 0; i < count; ++i)
         {
             RHMobileElement *element = m_children[i];
-            element->m_50->FUN_005b76e0(m_1ec, 0);
+            reinterpret_cast<RHSprite *>(element->m_50)->FUN_005b76e0(m_1ec, 0);
             ((RHUnk005bd5b0 *)element->m_50)->Unk(false);
         }
         m_194 -= 3;
@@ -243,7 +246,7 @@ bool RHElementMobile::ExecuteMacroCommand()
         m_19c = speed;
         m_194 -= 5;
         m_190 += 4;
-        ((RHUnk004af1d0 *)this)->Unk(speed != 0.0f);
+        FUN_004af1d0(speed != 0.0f);
         return true;
     }
     case 130:
@@ -256,13 +259,13 @@ bool RHElementMobile::ExecuteMacroCommand()
         m_190 += 4;
         unsigned short waypoint = *(unsigned short *)m_190;
         m_190 += 2;
-        if (waypoint >= m_188->Size())
+        if (waypoint >= m_188->GetWaypointCount())
             SBAssert(1,
                 // STRING: GAME 0x006aeb08
                 "P:\\Robin Hood\\RHelementmobile.cpp", 741,
                 // STRING: GAME 0x006aebb8
                 "VERBOTEN : Mobile element waypoint command referencing non-existing waypoint (%d) !", waypoint);
-        RHMobileElement *element = m_188->m_4->m_4[waypoint];
+        RHWaypoint *element = m_188->m_4->First()[waypoint];
         destination.m_x = element->m_64;
         destination.m_y = element->m_66;
         position = ((RHUnkTargetSprite *)m_50)->m_24;
@@ -298,7 +301,7 @@ bool RHElementMobile::ExecuteMacroCommand()
     {
         unsigned short value = *(unsigned short *)m_190;
         m_190 += 2;
-        ((RHUnk004af060 *)this)->Unk(value);
+        FUN_004af060(value);
         m_194 -= 3;
         return true;
     }
@@ -324,7 +327,7 @@ extern RHTitbits *g_unk0x6c10e8;
 float g_unk0x006777c4 = 4.0f;
 
 // FUNCTION: GAME 0x004ab600
-bool RHElementMobile::FUN_004b9f40()
+char RHElementMobile::FUN_004b9f40()
 {
     if (RHMobileField<bool>(this, 0x12) && !RHMobileField<bool>(this, 0xa8))
     {
@@ -352,7 +355,7 @@ bool RHElementMobile::FUN_004b9f40()
             if (!((RHSpritePositionCalls *)((char *)m_50 + 4))->FUN_00560460())
                 return true;
             unsigned char index = RHMobileField<unsigned char>(m_188, 0);
-            RHMobileField<RHMobileElement *>(this, 0x18c) = m_188->m_4->m_4[index];
+            m_18c = m_188->m_4->First()[index];
         }
         FUN_004abfe0();
     }
@@ -400,7 +403,7 @@ void RHElementMobile::FUN_004ab7e0(float distance)
     }
     position->m_4 = 2;
     ((RHBonusInfoBase *)((char *)m_50 + 4))->FUN_0055f290();
-    RHMobileField<RHMobileUnk006091b0>(this, 0x1ac).FUN_006091b0(movement);
+    m_1ac.Translate(movement);
     m_1f4.FUN_005fc1e0(movement);
     if (m_1fc)
     {
@@ -506,17 +509,24 @@ void RHElementMobile::FUN_004ab7e0(float distance)
     m_204.y += movement.m_y;
 }
 
-// STUB: GAME 0x004ac750
+// GLOBAL: GAME 0x006c0918
+// ?$S18@?1??FUN_004b29c0@RHElementMobile@@UAEPAXPAX@Z@4EA
+
+// FUNCTION: GAME 0x004ac750
 void *RHElementMobile::FUN_004b29c0(void *actor)
 {
+    // GLOBAL: GAME 0x006c0920
     static RHUnk0045aaf0 changeMouse;
-    if (actor != 0 && RHMobileField<void *>(this, 0x1fc) != actor)
+    if (actor != 0 && m_1fc != actor)
     {
         changeMouse.FUN_0045abc0(0x11, 0, 0);
         return &changeMouse;
     }
     return 0;
 }
+
+// LIBRARY: GAME 0x004ac7b0
+// $E19
 
 void EmitRHMobileMouseFocus(RHElementMobile *element)
 {
@@ -553,7 +563,7 @@ void RHElementMobile::InitializeFromMissionStream(SBFile &file)
     RHMobilePointerArray &parts = RHMobileField<RHMobilePointerArray>(this, 0xac);
     for (i = 0; i < count; ++i)
     {
-        RHUnk004aac40 *part = new RHUnk004aac40;
+        RHElementFXMasked *part = new RHElementFXMasked;
         part->v14(file);
         part->m_100 = this;
         parts.Append(part);
@@ -591,7 +601,7 @@ void RHElementMobile::InitializeFromMissionStream(SBFile &file)
     for (i = 0; i < count; ++i)
     {
         vertices.FUN_005c8e40(i);
-        ((RHMobileUnk00520c50 *)vertices.m_c->value)->FUN_00520c50(0, 15.0f);
+        ((RHUnk00520ae0 *)vertices.m_c->value)->SetForce(0, 15.0f);
         vertices.FUN_005c8e40(i);
         corners.Append(vertices.m_c->value);
     }
@@ -623,16 +633,16 @@ void RHElementMobile::InitializeFromMissionStream(SBFile &file)
     unsigned short pathIndex;
     file.Access(&pathIndex, 2);
     void *storage = ::operator new(0x40);
-    m_188 = (RHMobilePath *)new (storage) RHMobileUnk005504d0;
-    ((RHArtificialIntelligencePathCursor *)m_188)->Unk00550f60(pathIndex);
+    m_188 = new (storage) RHPath;
+    m_188->Unk00550f60(pathIndex);
     unsigned initial;
     unsigned unused;
     file.Access(&initial, 4);
     file.Access(&unused, 4);
     RHMobileField<unsigned short>(this, 0x184) = (unsigned short)initial;
-    ((RHArtificialIntelligencePathCursor *)m_188)->Unk005505b0((unsigned short)initial);
-    RHMobileElement *waypoint = m_188->m_4->m_4[RHMobileField<unsigned char>(m_188, 0)];
-    RHMobileField<RHMobileElement *>(this, 0x18c) = waypoint;
+    m_188->Unk005505b0((unsigned short)initial);
+    RHWaypoint *waypoint = m_188->m_4->First()[RHMobileField<unsigned char>(m_188, 0)];
+    m_18c = waypoint;
     ((RHUnkTargetSprite *)m_50)->m_de = RHMobileField<unsigned short>(waypoint, 0x6c);
     RHMobileField<void *>(m_50, 0xe0) = RHMobileField<void *>(waypoint, 0x68);
     unsigned short areaIndex;
@@ -659,14 +669,14 @@ void RHElementMobile::InitializeFromMissionStream(SBFile &file)
     RHMobileUnk004b06f0 &vectors = RHMobileField<RHMobileUnk004b06f0>(this, 0x1c8);
     for (i = 0; i < count; ++i)
     {
-        RHMobileBase004a8130 *part = (RHMobileBase004a8130 *)m_children[i];
+        RHElementFX *part = (RHElementFX *)m_children[i];
         part->FUN_00462940(1);
         SBGeoBoundingBox2D local(-50.0f, -50.0f, 50.0f, 50.0f);
         RHMobileField<RHMobileUnk00607da0>(part, 0x54).FUN_00607da0(*(RHMobileUnk00607da0 *)&local);
-        RHUnkTargetSprite *sprite = m_children[i]->m_50;
-        original = sprite->m_24;
+        RHSprite *sprite = m_children[i]->m_50;
+        original = sprite->m_20;
         SBGeoPoint2D destination = original.Unk005fc190(SBGeoVector2D(translation));
-        sprite->m_24 = destination;
+        sprite->m_20 = destination;
         void *base = ((RHPositionInterface *)((char *)sprite + 4))->Unk0055fa10(RHMobileField<int>(sprite, 0x8c));
         SBGeoBoundingBox2D shifted = ((SBGeoBoundingBox2D *)base)->FUN_006090d0(SBGeoVector2D(destination));
         RHMobileField<RHMobileUnk00607da0>(sprite, 0xc0).FUN_00607da0(*(RHMobileUnk00607da0 *)&shifted);
@@ -675,7 +685,7 @@ void RHElementMobile::InitializeFromMissionStream(SBFile &file)
         ((RHBonusInfoBase *)partPosition)->FUN_0055fa20((RHBonusProjection *)((RHUnkTargetSprite *)m_50)->m_ec);
         ((RHBonusInfoBase *)partPosition)->FUN_0055f290();
         ((RHBonusInfo *)sprite)->FUN_005bd560(0, true);
-        sprite->m_de = RHMobileField<unsigned short>(waypoint, 0x6c);
+        sprite->m_da = RHMobileField<unsigned short>(waypoint, 0x6c);
         RHMobileField<void *>(sprite, 0xe0) = RHMobileField<void *>(waypoint, 0x68);
         vectors.FUN_004b01b0(vectors.m_8, 1, RHUnk005fc3b0(0, 0));
         RHMobileField<bool>(this, 0x1dc) = true;
@@ -687,10 +697,10 @@ void RHElementMobile::InitializeFromMissionStream(SBFile &file)
     for (i = 0; i < count; ++i)
         RHMobileField<float>(m_children[i], 0xfc) = m_19c == 0.0f ? 1000000.0f : 1.0f / m_19c;
     if (RHMobileField<bool>(this, 0x1f0))
-        ((RHUnk004af060 *)this)->Unk(((RHUnk005fc3b0 *)&m_188->FUN_004ae380())->FUN_005fcc50(1.0f));
+        FUN_004af060(((RHUnk005fc3b0 *)&m_188->FUN_004ae380())->FUN_005fcc50(1.0f));
 }
 
-static inline const SBGeoVector2D &MobilePathDifference(SBGeoVector2D &result, float lastX, float lastY, RHMobileElement *first)
+static inline const SBGeoVector2D &MobilePathDifference(SBGeoVector2D &result, float lastX, float lastY, RHWaypoint *first)
 {
     result.m_x = lastX;
     result.m_y = lastY;
@@ -701,14 +711,14 @@ static inline const SBGeoVector2D &MobilePathDifference(SBGeoVector2D &result, f
 
 // Parked: first-waypoint loads are CSE-hoisted before the result's coordinate stores.
 // STUB: GAME 0x004ae380
-SBGeoVector2D RHMobilePath::FUN_004ae380() const
+SBGeoVector2D RHPath::FUN_004ae380() const
 {
     SBGeoVector2D result;
-    unsigned int count = m_4 == 0 ? 0 : m_4->m_4 == 0 ? 0 : m_4->m_8 - m_4->m_4;
-    RHMobileElement *last = m_4->m_4[(unsigned short)(count - 1)];
+    unsigned int count = m_4 == 0 ? 0 : m_4->size();
+    RHWaypoint *last = m_4->First()[(unsigned short)(count - 1)];
     float lastY = last->m_66;
     float lastX = last->m_64;
-    RHMobileElement *first = m_4->m_4[0];
+    RHWaypoint *first = m_4->First()[0];
     return SBGeoVector2D(MobilePathDifference(result, lastX, lastY, first));
 }
 
@@ -732,7 +742,7 @@ bool RHElementMobile::Serialize(SBFile &file)
     RHSerializeName(file, "RHElementMobile");
     unsigned short parts = Size();
     for (unsigned short i = 0; i < parts; ++i)
-        ((RHMobileBase004a8130 *)m_children[i])->Serialize(file);
+        ((RHElementFX *)m_children[i])->Serialize(file);
     RH_MOBILE_ACCESS(RHMobileField<unsigned char>(this, 0xa8), 1, 0x550);
     RHMobileUnk004b06f0 &vectors = RHMobileField<RHMobileUnk004b06f0>(this, 0x1c8);
     unsigned count;
@@ -763,7 +773,7 @@ bool RHElementMobile::Serialize(SBFile &file)
     g_pEngine->FUN_004c3af0(file, RHMobileField<void *>(this, 0x1fc));
     RH_MOBILE_ACCESS(RHMobileField<unsigned>(this, 0x210), 4, 0x570);
     RH_MOBILE_ACCESS(RHMobileField<unsigned>(this, 0x214), 4, 0x571);
-    RHMobileElement *waypoint = m_188->m_4->m_4[RHMobileField<unsigned short>(this, 0x184)];
+    RHWaypoint *waypoint = m_188->m_4->First()[RHMobileField<unsigned short>(this, 0x184)];
     origin.m_x = waypoint->m_64;
     origin.m_y = waypoint->m_66;
     saved.FUN_005fc430(((RHUnkTargetSprite *)m_50)->m_24.Unk005fc110(origin));
@@ -775,7 +785,7 @@ bool RHElementMobile::Serialize(SBFile &file)
     }
     else
         saved.Serialize(file);
-    ((RHPath *)m_188)->SerializeStatus(file);
+    m_188->SerializeStatus(file);
     bool active;
     int offset;
     if (file.m_bLoading)
@@ -783,8 +793,8 @@ bool RHElementMobile::Serialize(SBFile &file)
         file.Access(&active, 1);
         if (active)
         {
-            RHMobileElement *current = m_188->m_4->m_4[RHMobileField<unsigned char>(m_188, 0)];
-            RHMobileField<RHMobileElement *>(this, 0x18c) = current;
+            RHWaypoint *current = m_188->m_4->First()[RHMobileField<unsigned char>(m_188, 0)];
+            m_18c = current;
             file.Access(&offset, 4);
             m_190 = offset == -1 ? 0 : RHMobileField<unsigned char *>(current, 0x74) + offset;
             file.Access(&m_194, 2);
@@ -797,7 +807,7 @@ bool RHElementMobile::Serialize(SBFile &file)
     }
     else
     {
-        RHMobileElement *current = RHMobileField<RHMobileElement *>(this, 0x18c);
+        RHWaypoint *current = m_18c;
         active = current != 0;
         file.Access(&active, 1);
         if (active)
@@ -885,18 +895,15 @@ bool RHElementMobile::Serialize(SBFile &file)
 
 #undef RH_MOBILE_ACCESS
 
-// Parked: position-subobject address arithmetic remains folded into the store.
-// STUB: GAME 0x004af060
-void RHUnk004af060::Unk(int direction)
+// FUNCTION: GAME 0x004af060
+void RHElementMobile::FUN_004af060(int direction)
 {
     unsigned short count = Size();
     for (unsigned short i = 0; i < count; ++i)
     {
         RHMobileElement *element = m_children[i];
         int value = direction & 15;
-        RHUnkTargetSprite *sprite = element->m_50;
-        *(unsigned short *)((char *)sprite + 0xd8) = (unsigned short)value;
-        ((RHMobilePosition *)((char *)sprite + 4))->SetFieldD6(value);
+        element->m_50->SetHeadingInstantly((unsigned short)value);
         element->m_50->FUN_005b76e0(m_1ec, direction);
         ((RHUnk005bd5b0 *)element->m_50)->Unk(false);
     }
@@ -910,8 +917,8 @@ void RHElementMobile::FUN_004af0f0(int value)
     for (unsigned short i = 0; i < count; ++i)
     {
         RHMobileElement *element = m_children.First()[i];
-        element->m_50->FUN_005b76e0(m_1ec, 0);
-        element->m_50->FUN_005b76e0(m_1ec, 0);
+        reinterpret_cast<RHSprite *>(element->m_50)->FUN_005b76e0(m_1ec, 0);
+        reinterpret_cast<RHSprite *>(element->m_50)->FUN_005b76e0(m_1ec, 0);
         ((RHUnk005bd5b0 *)element->m_50)->Unk(false);
     }
 }
@@ -922,6 +929,14 @@ void RHElementMobile::FUN_004af170(void *value)
     unsigned short count = Size();
     for (unsigned short i = 0; i < count; ++i)
         ((RHBonusInfoBase *)((char *)m_children[i]->m_50 + 4))->FUN_0055fa20((RHBonusProjection *)value);
+}
+
+// FUNCTION: GAME 0x004af1d0
+void RHElementMobile::FUN_004af1d0(bool value)
+{
+    m_12 = value;
+    for (unsigned int index = 0; index < m_children.size(); ++index)
+        m_children[index]->m_12 = value;
 }
 
 // FUNCTION: GAME 0x004af210
@@ -937,10 +952,10 @@ void RHElementMobile::v21(unsigned value)
         RHMobileField<bool>(this, 0xa8) = true;
         break;
     case 158:
-        ((RHUnk004af1d0 *)this)->Unk(true);
+        FUN_004af1d0(true);
         break;
     case 159:
-        ((RHUnk004af1d0 *)this)->Unk(false);
+        FUN_004af1d0(false);
         break;
     default:
         return;
@@ -1417,7 +1432,7 @@ void RHMobileUnk0051fd10::FUN_00520480(SBDrawManager *draw, SBGeoBoundingBox2D b
 }
 
 // FUNCTION: GAME 0x00520c50
-void RHMobileUnk00520c50::FUN_00520c50(float first, float second)
+void RHUnk00520ae0::SetForce(float first, float second)
 {
     m_24 = first + second;
     m_30 = first;
@@ -1533,16 +1548,10 @@ void EmitRHUnk005215f0(void *storage, SBFile &file)
 }
 
 // FUNCTION: GAME 0x005504d0
-RHMobileUnk005504d0::RHMobileUnk005504d0()
+RHPath::RHPath()
 {
-    undefined value;
-    m_c = value;
-    RHMobileNode005504d0 *node = (RHMobileNode005504d0 *)::operator new(0x1c);
-    node->next = node;
-    node->previous = node;
-    m_10 = node;
-    m_14 = 0;
-    *(volatile bool *)&m_1c = true;
+    volatile char &valid = m_c.m_valid;
+    valid = true;
     m_0 = false;
     m_1 = false;
     m_4 = 0;
@@ -1569,8 +1578,8 @@ void RHMobileUnk005a5960::FUN_005a5960(const SBGeoPoint2D &value)
     RHMobileField<float>(this, 0x10) += value.m_x;
     RHMobileField<float>(this, 0x14) += value.m_y;
     RHMobileField<float>(this, 0x18) += value.m_y;
-    RHMobileField<RHMobileUnk006091b0>(this, 0x24).FUN_006091b0(value);
-    RHMobileField<RHMobileUnk006091b0>(this, 0x38).FUN_006091b0(value);
+    RHMobileField<SBGeoBoundingBox2D>(this, 0x24).Translate(value);
+    RHMobileField<SBGeoBoundingBox2D>(this, 0x38).Translate(value);
 }
 
 // FUNCTION: GAME 0x005a87f0
@@ -1669,10 +1678,10 @@ void SBGeoBoundingBox2D::FUN_00607e90(const SBGeoBoundingBox2D &other)
 }
 
 // FUNCTION: GAME 0x006091b0
-RHMobileUnk006091b0 &RHMobileUnk006091b0::FUN_006091b0(const SBGeoPoint2D &value)
+SBGeoBoundingBox2D &SBGeoBoundingBox2D::Translate(const SBGeoPoint2D &value)
 {
-    m_0.FUN_005fc1e0(value);
-    m_8.FUN_005fc1e0(value);
+    m_p0.FUN_005fc1e0(value);
+    m_p1.FUN_005fc1e0(value);
     return *this;
 }
 
@@ -1682,7 +1691,7 @@ RHMobileUnk006091b0 &RHMobileUnk006091b0::FUN_006091b0(const SBGeoPoint2D &value
 // FUNCTION: GAME 0x0060a820
 SBGeoSegment2D::SBGeoSegment2D(const SBGeoPoint2D &first, const SBGeoPoint2D &second)
 {
-    ((RHMobileUnk0060a820 *)this)->FUN_006158b0(first, second);
+    reinterpret_cast<RHMobileUnk0060a820 *>(m_00)->RHMobileUnk0060a820::RHMobileUnk0060a820(first, second);
 }
 
 #include "RHGameInputTranslator.h"
@@ -1723,7 +1732,7 @@ void RHElementMobile::Emit(SBFile &file)
 
 void RHElementMobile::TranslateGeometry(const SBGeoVector2D &value)
 {
-    RHMobileField<RHMobileUnk006091b0>(this, 0xec).FUN_006091b0(value);
+    RHMobileField<SBGeoBoundingBox2D>(this, 0xec).Translate(value);
     RHMobileField<RHMobileUnk00611360>(this, 0x120).FUN_00611360(value);
     SBGeoBoundingBox2D &bounds = RHMobileField<SBGeoBoundingBox2D>(this, 0x1e0);
     RHMobileField<RHMobileUnk00607da0>(this, 0x1e0).FUN_00607da0(*(RHMobileUnk00607da0 *)&bounds.FUN_006090d0(value));
@@ -1780,6 +1789,9 @@ RHElementMobile::RHElementMobile() : RHElement(2, 0)
 
 #include "RHUnk005a3450.h"
 
+// SYNTHETIC: GAME 0x004ab2d0
+// RHElementMobile::`scalar deleting destructor'
+
 // STUB: GAME 0x004ab2f0
 RHElementMobile::~RHElementMobile()
 {
@@ -1789,7 +1801,7 @@ RHElementMobile::~RHElementMobile()
         delete m_164[j];
     for (unsigned short k = 0; k < (unsigned short)m_144.VolatileSize(); ++k)
         delete m_144[k];
-    delete (RHPath *)m_188;
+    delete m_188;
 }
 
 extern SBDrawManager *g_unk0x6c11d0;

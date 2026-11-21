@@ -43,7 +43,7 @@ char RHElementArrow::FUN_004a6640()
 
 #include "RHUnk00613e90.h"
 #include "RHUnk005fc3b0.h"
-#include "RHEngineWidenedCalls.h"
+#include "RHSpriteCore.h"
 
 // GLOBAL: GAME 0x00678318
 double g_unk0x00678318 = 57.295777918682042;
@@ -102,6 +102,7 @@ void RHElementArrow::GetOrientations(unsigned char &heading, short &pitch)
 }
 
 #include "RHSequenceInteractionAction.h"
+#include "RHSequenceManager.h"
 
 class RHUnk6c1040;
 extern RHUnk6c1040 *g_unk0x6c1040;
@@ -110,7 +111,6 @@ class RHScriptBatchCalls
 {
 public:
     unsigned int Unk004baea0();
-    void *Unk0058a940(void *context, int value, void *element);
 };
 
 #include "RHBonusInfo.h"
@@ -211,7 +211,7 @@ bool RHElementArrow::HitHuman(RHElementActorHuman *target)
             {
                 RHUnk005861c0 *action = new RHUnk005861c0(1, 0x28, target, InteractionTarget(), (void *)this,
                     (unsigned short)m_bow->FUN_004502e0(m_160 == 0));
-                ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940("", 0, action);
+                RHSequenceManager::Instance()->Unk0058a940("", 0, action);
                 if ((unsigned char)(*(unsigned *)((char *)target + 4) & 15) == 4)
                 {
                     RHArtificialIntelligence *ai = (RHArtificialIntelligence *)((char *)target + 0x49c +
@@ -260,7 +260,7 @@ bool RHElementArrow::FUN_004a6aa0(void *target)
         if (((RHScriptBatchCalls *)target)->Unk004baea0() & 1)
         {
             RHUnk00585ea0 *action = new RHUnk00585ea0(1, 0x93, target, InteractionTarget());
-            ((RHScriptBatchCalls *)g_unk0x6c1040)->Unk0058a940("", 0, action);
+            RHSequenceManager::Instance()->Unk0058a940("", 0, action);
             m_166 = 0;
             return true;
         }
@@ -321,14 +321,14 @@ void *RHElementArrow::Refresh(unsigned long surface, float value, const SBGeoBou
 
         if (m_161)
         {
-            void *sprite = *(void **)((char *)this + 0x50);
+            RHSprite *sprite = *(RHSprite **)((char *)this + 0x50);
             unsigned short heading = m_162;
-            ((RHEngineWidenedCalls *)sprite)->FUN_005bd450();
+            sprite->FUN_005bd450();
             *(unsigned short *)((char *)sprite + 0x184) = heading;
             int frame = rand() % 3 + 3;
-            sprite = *(void **)((char *)this + 0x50);
+            sprite = *(RHSprite **)((char *)this + 0x50);
             heading = m_162;
-            ((RHEngineWidenedCalls *)sprite)->FUN_005bd450();
+            sprite->FUN_005bd450();
             *(unsigned short *)((char *)sprite + 0x184) = heading;
             *(unsigned short *)((char *)sprite + 0x186) = (unsigned short)frame;
             m_162 = (m_162 + 14) % 16;
@@ -338,14 +338,14 @@ void *RHElementArrow::Refresh(unsigned long surface, float value, const SBGeoBou
             unsigned char heading;
             short pitch;
             GetOrientations(heading, pitch);
-            void *sprite = *(void **)((char *)this + 0x50);
+            RHSprite *sprite = *(RHSprite **)((char *)this + 0x50);
             unsigned short result = heading;
-            ((RHEngineWidenedCalls *)sprite)->FUN_005bd450();
+            sprite->FUN_005bd450();
             *(unsigned short *)((char *)sprite + 0x184) = result;
             short frame = (short)((double)pitch * g_unk0x00678320 + g_unk0x006774b8) + 4;
-            sprite = *(void **)((char *)this + 0x50);
+            sprite = *(RHSprite **)((char *)this + 0x50);
             result = heading;
-            ((RHEngineWidenedCalls *)sprite)->FUN_005bd450();
+            sprite->FUN_005bd450();
             *(unsigned short *)((char *)sprite + 0x184) = result;
             *(unsigned short *)((char *)sprite + 0x186) = (unsigned short)frame;
         }

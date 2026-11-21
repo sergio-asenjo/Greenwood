@@ -183,6 +183,7 @@ public:
     void *Unk();
     void *FUN_005b5de0();
     SBGeoPoint2D *Unk005bdd30(short index);
+    SBGeoPoint2D *FUN_004e0490(int index, short base);
 };
 #endif
 
@@ -198,6 +199,7 @@ struct RHSpriteFrameTable
 };
 
 #include "RHSpriteLastFrameCalls.h"
+#include "RHspriteRenderingInfoCore.h"
 #include "RHspriteRenderingInfoCore.h"
 
 class RHOrder;
@@ -275,6 +277,7 @@ public:
     char m_21c[12];
     unsigned char m_228;
     bool FUN_005bd3a0(RHSprite &other);
+    bool FUN_005bd450();
     void FUN_005b5e20();
     int FUN_0049b2c0();
     void FUN_005b5e60();
@@ -289,6 +292,7 @@ public:
     void FUN_005b7720(int);
     bool FUN_005b7300(int, int);
     bool FUN_005b73f0(unsigned short count);
+    bool FUN_005b76e0(unsigned animation, unsigned short direction);
     bool FUN_005b7820(int);
     bool FUN_005b7e40(float, int);
     int FUN_005b7fd0(float, int);

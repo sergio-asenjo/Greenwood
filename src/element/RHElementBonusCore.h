@@ -15,11 +15,12 @@ public:
     RHElementBonus(BonusType type, bool flag, unsigned short quantity);
     RHElementBonus(unsigned long type, bool flag, unsigned short quantity);
     ~RHElementBonus();
-    virtual bool FUN_004b9f40();
+    virtual char FUN_004b9f40();
     virtual unsigned V68();
     virtual void SetQuantity(unsigned short quantity);
     void *FUN_004a7130(unsigned flags);
     void Initialize(unsigned long type, unsigned short quantity);
+    void RefreshDiscovered();
     void ApplyProjection(RHBonusProjection *projection);
     RHBonusInfo *&Info() { return *(RHBonusInfo **)((char *)this + 0x50); }
     static RHElementBonus *CreateBonusFromMissionStream(SBFile &file);
