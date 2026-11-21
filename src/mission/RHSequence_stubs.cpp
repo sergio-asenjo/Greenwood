@@ -34,20 +34,6 @@ bool RHSequenceElement::Serialize(SBFile &, bool) { return true; }
 
 // Targets 0x00586050 / 0x005865a0 / 0x00585e70 / 0x00588270.
 
-// Inlined SBList<RHSequenceElement*>::insert(iterator, T* const&). The node is
-// 0xc bytes ({next, prev, data}); only the tail links through CopyData.
-RHSeqIter RHSeqList::insert(RHSeqIter pos, RHSequenceElement *const &value)
-{
-    RHSeqNode *s = (RHSeqNode *)pos.m_p;
-    RHSeqNode *node = (RHSeqNode *)::operator new(0xc);
-    node->m_next = s;
-    node->m_prev = s->m_prev;
-    s->m_prev = node;
-    node->m_prev->m_next = node;
-    CopyData(&node->m_data, &value);
-    return RHSeqIter(node);
-}
-
 struct RHSequenceListNode
 {
     RHSequenceListNode *next;
@@ -70,4 +56,3 @@ RHSeqIter RHUnkListSeq::insert(RHSeqIter pos, RHSequence *const &value)
     ++m_8;
     return RHSeqIter(node);
 }
-void RHUnk00582220::Slot00() {}

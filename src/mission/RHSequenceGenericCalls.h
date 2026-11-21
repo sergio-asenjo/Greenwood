@@ -9,28 +9,28 @@ public:
     virtual ~RHUnkSequenceOrder();
 };
 
-// SIZE 0x14
-class RHSequenceOrderList : public std::list<RHUnkSequenceOrder *>
+class RHOrder;
+class RHSequence;
+
+// SIZE 0x18
+class RHSequenceOrderList : public std::list<RHOrder *>
 {
 public:
     RHSequenceOrderList() : m_dirty(true) {}
     ~RHSequenceOrderList() { clear(); }
+    iterator InlineBegin() { return iterator(_Acc::_Next(_Head)); }
     void clear()
     {
         iterator position = begin();
         iterator last = end();
-        iterator (std::list<RHUnkSequenceOrder *>::*eraseOne)(iterator) = &std::list<RHUnkSequenceOrder *>::erase;
+        iterator (std::list<RHOrder *>::*eraseOne)(iterator) = &std::list<RHOrder *>::erase;
         while (position != last)
             (this->*eraseOne)(position++);
     }
-    void DeleteAll()
-    {
-        for (m_cursor = begin(); m_cursor != end(); ++m_cursor)
-            delete *m_cursor;
-        clear();
-    }
+    void DeleteAll();
     iterator m_cursor; // 0x0c
     bool m_dirty;      // 0x10
+    int m_index;
 };
 
 // VTABLE: GAME 0x00679cd8
@@ -43,6 +43,7 @@ public:
     ~RHUnk00584d60();
     virtual void *FUN_00584d40(unsigned int flags);
     float FUN_00584d30();
+    void AppendToSequence(RHSequence *sequence);
     void SetFlag(bool value) { m_60 = value; }
     unsigned char m_04;          // 0x04
     char m_05[3];                // 0x05
@@ -53,7 +54,7 @@ public:
     unsigned short m_14;         // 0x14
     char m_16[2];                // 0x16
     RHSequenceOrderList m_orders; // 0x18
-    char m_2c[0x1c];             // 0x2c
+    char m_30[0x18];
     void *m_48;                  // 0x48
     void *m_4c;                  // 0x4c
     void *m_50;                  // 0x50

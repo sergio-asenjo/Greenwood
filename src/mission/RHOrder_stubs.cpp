@@ -14,7 +14,7 @@
 
 #include "SBNullstr.h"
 #include "RHOrder.h"
-#include "RHSequenceManager.h"
+#include "RHSequenceManagerListOps.h"
 
 struct RHOrderListNode
 {

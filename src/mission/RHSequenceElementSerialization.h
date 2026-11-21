@@ -11,6 +11,7 @@ public:
     SBGeoPoint2D(const SBGeoPoint2D &other);
     ~SBGeoPoint2D();
     SBGeoPoint2D &operator=(const SBGeoPoint2D &other);
+    bool operator==(const SBGeoPoint2D &other) const;
     SBGeoVector2D Unk005fc110(const SBGeoPoint2D &other) const;
     SBGeoPoint2D Unk005fc190(const SBGeoPoint2D &other) const;
     SBGeoPoint2D &FUN_005fc1e0(const SBGeoPoint2D &other);

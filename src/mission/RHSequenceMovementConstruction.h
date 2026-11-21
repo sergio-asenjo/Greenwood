@@ -8,12 +8,7 @@
 #endif
 
 struct RHMovementBox;
-
-class RHMovementOwned
-{
-public:
-    virtual ~RHMovementOwned();
-};
+class RHSequence;
 
 // VTABLE: GAME 0x00679d88
 class RHUnk00588530 : public RHUnk00584d60
@@ -41,9 +36,10 @@ public:
     RHUnk00588530 *FUN_00589810();
     void FUN_00589c00(int state, int value);
     void FUN_00589c70(int priority);
+    void FUN_00589ca0();
     void EmitMovement();
     void *m_64;
-    RHMovementOwned *m_68;
+    RHSequence *m_68;
     SBGeoPoint2D m_6c;
     unsigned short m_74;
     char m_76[2];

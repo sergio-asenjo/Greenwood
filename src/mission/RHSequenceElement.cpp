@@ -25,7 +25,7 @@
 #include "SBNullstr.h"
 #include "RHElementActor.h"
 #include "RHSequenceElement.h"
-#include "RHSequenceManager.h"
+#include "RHSequenceManagerListOps.h"
 
 // The 4-byte global read/written by SerializeStaticStuff (original 0x006b74d8).
 // GLOBAL: GAME 0x006b74d8
@@ -222,32 +222,8 @@ public:
 };
 
 #include "RHSequenceElementCalls.h"
-#include "RHSequenceAppendCalls.h"
+#include "RHSequenceConstructionCalls.h"
 #include <list>
-
-class RHSequenceAppendList : public std::list<RHSequenceElementCalls *>
-{
-public:
-    void Append(RHSequenceElementCalls *const &element, volatile bool &dirty)
-    {
-        _Nodeptr node = _Head;
-        _Acc::_Prev(node) = _Buynode(node, _Acc::_Prev(node));
-        node = _Acc::_Prev(node);
-        _Acc::_Next(_Acc::_Prev(node)) = node;
-        allocator.construct(&_Acc::_Value(node), element);
-        unsigned count = *(volatile unsigned *)&_Size;
-        dirty = true;
-        _Size = count + 1;
-    }
-};
-
-struct RHSequenceAppendView
-{
-    char m_00[8];
-    RHSequenceAppendList elements;
-    char m_14[4];
-    bool m_18;
-};
 
 // FUNCTION: GAME 0x00584cf0
 RHUnk00584d60::RHUnk00584d60()
@@ -281,6 +257,13 @@ RHUnk00584d60::RHUnk00584d60(unsigned short level, int command, void *actor)
     m_60 = false;
     m_58 = 3;
     m_5c = 11;
+}
+
+inline void RHSequenceOrderList::DeleteAll()
+{
+    for (m_cursor = begin(); m_cursor != end(); ++m_cursor)
+        delete *m_cursor;
+    clear();
 }
 
 // Parked: list teardown inlining and the base iterator increment differ.
@@ -439,14 +422,13 @@ void RHSequenceElementCalls::FUN_00585450(int priority)
 }
 
 // FUNCTION: GAME 0x00585500
-void RHUnk00585500::Unk(void *sequence)
+void RHUnk00584d60::AppendToSequence(RHSequence *sequence)
 {
-    RHSequenceAppendView *owner = (RHSequenceAppendView *)sequence;
-    RHSequenceElementCalls *element = (RHSequenceElementCalls *)this;
-    if (*(unsigned short *)((char *)sequence + 0x10) != 0)
-        owner->elements.back()->m_4c = element;
-    element->m_54 = sequence;
-    owner->elements.Append(element, owner->m_18);
+    RHSequenceElement *element = reinterpret_cast<RHSequenceElement *>(this);
+    if (static_cast<unsigned short>(sequence->m_elements.size()) != 0)
+        sequence->m_elements.back()->m_4c = element;
+    m_54 = sequence;
+    sequence->m_elements.Append(element, sequence->m_elements.m_dirty);
 }
 
 // FUNCTION: GAME 0x00585570
@@ -490,7 +472,7 @@ void RHSequenceElementCalls::FUN_00585710()
 }
 
 DECOMP_SIZE_ASSERT(RHSequenceElementCalls, 0x64)
-DECOMP_SIZE_ASSERT(RHSequenceStateOrders, 0x14)
+DECOMP_SIZE_ASSERT(RHSequenceStateOrders, 0x18)
 DECOMP_SIZE_ASSERT(RHOrder, 0x3c)
 DECOMP_STATIC_ASSERT(offsetof(RHOrder, m_2e) == 0x2e)
 
@@ -659,7 +641,7 @@ void RHSequenceElementCalls::FUN_00585e30()
 
 void RHSequenceElementCalls::Emit(int value, RHSequenceElementCalls *other)
 {
-    ((RHUnk00585500 *)this)->Unk(other);
+    ((RHUnk00584d60 *)this)->AppendToSequence((RHSequence *)other);
     FUN_00585570();
     FUN_005857c0(other);
     FUN_00585940(other);

@@ -2,25 +2,16 @@
 #define RHSEQUENCEMANAGER_H
 #include "RHSectorActorList.h"
 
-#include "RHOrder.h"
 #include "Decomp.h"
 #include <list>
 #include <new>
 
-class RHSequence
-{
-public:
-    bool Serialize(SBFile &file, bool loading);
-    static bool SerializeStaticStuff(SBFile &file);
-};
-
+class RHOrder;
+class SBFile;
+class RHSequence;
 class RHSequenceElement;
-
-class RHManagerListCalls
-{
-public:
-    void FUN_0058bed0();
-};
+class RHUnk6c1040;
+extern RHUnk6c1040 *g_unk0x6c1040;
 
 class RHPathSequenceSerializer
 {
@@ -28,37 +19,7 @@ public:
     bool FUN_0058b7c0(SBFile &file, void *&value);
 };
 
-#include "RHSequenceConstructionCalls.h"
-
-struct RHScriptNode;
-struct RHTitbitNode;
-struct RHScriptIter
-{
-    RHScriptNode *node;
-    RHScriptIter(RHScriptNode *value) : node(value) {}
-};
-
-class RHUnk0046eb30
-{
-public:
-    RHScriptIter begin();
-    int FUN_0046eb20();
-    char *FUN_0046eb70();
-    RHScriptIter FUN_0046eb80();
-    RHScriptIter erase(RHScriptIter position);
-};
-
-#include "RHTitbitsCore.h"
-
-struct RHUnk005c9010Iterator;
-void FUN_005c9010(RHUnk005c9010Iterator &current, int distance, std::bidirectional_iterator_tag category);
-
-class RHSeqList
-{
-public:
-    static void CopyData(RHSequenceElement **destination, RHSequenceElement *const *source);
-    __forceinline void GoTo(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
-};
+#include "RHScriptListCore.h"
 
 template<class T> struct RHManagerNode
 {
@@ -99,11 +60,7 @@ public:
         valid = 1;
         return result;
     }
-    T &operator[](int wanted)
-    {
-        ((RHSeqList *)this)->GoTo(wanted);
-        return *cursor;
-    }
+    T &operator[](int wanted);
     T &Get(int wanted)
     {
         int size = Count();
@@ -306,32 +263,14 @@ public:
 template<class T> class RHManagerCopyList : public RHManagerList<T>
 {
 public:
-    void push_back(const T &value)
-    {
-        RHManagerNode<T> *next = Head();
-        RHManagerNode<T> *previous = next->previous;
-        RHManagerNode<T> *node = (RHManagerNode<T> *)::operator new(sizeof(RHManagerNode<T>));
-        node->next = next ? next : node;
-        node->previous = previous ? previous : node;
-        next->previous = node;
-        node->previous->next = node;
-        RHSeqList::CopyData((RHSequenceElement **)&node->value, (RHSequenceElement *const *)&value);
-        ++_Size;
-        valid = 1;
-    }
+    void push_back(const T &value);
 };
 
 class RHManagerOwnedSequenceList : public RHManagerList<RHSequence *>
 {
 public:
-    ~RHManagerOwnedSequenceList() { ((RHManagerListCalls *)this)->FUN_0058bed0(); }
-};
-
-class RHSequenceElementCursor : public RHManagerList<RHSequenceElement *>
-{
-public:
-    RHUnkIter end() { return RHUnkIter(*(void **)((char *)this + 4)); }
-    RHUnkIter insert(RHUnkIter pos, RHSequenceElement *const &value);
+    ~RHManagerOwnedSequenceList();
+    void DeleteAll();
 };
 
 // VTABLE: GAME 0x00679db8
@@ -342,6 +281,12 @@ public:
     RHSequenceManager();
     ~RHSequenceManager();
     virtual void *FUN_0058a130(unsigned int flags);
+    static __forceinline RHSequenceManager *Instance()
+    {
+        return reinterpret_cast<RHSequenceManager *>(g_unk0x6c1040);
+    }
+    RHSequence *Launch(const char *context, int value, RHSequence *sequence);
+    void *Unk0058a940(void *context, int value, void *element);
     bool Serialize(SBFile &file);
     bool PreSerializePointer(SBFile &file, RHOrder **order);
     bool PreSerializePointer(SBFile &file, RHSequenceElement **element, bool launch);

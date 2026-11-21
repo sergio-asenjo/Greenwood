@@ -2,6 +2,7 @@
 #include "RHSectorActorList.h"
 #include "RHSequenceElementMovement.h"
 #include <iterator>
+#include <stddef.h>
 #include "RHActorTranslation.h"
 
 // STRING: GAME 0x006b757c
@@ -39,6 +40,13 @@ struct RHMovementSequenceView
 
 #include "RHSequenceMovementConstruction.h"
 #include "RHMovementBox.h"
+
+DECOMP_SIZE_ASSERT(RHUnk00588530, 0x9c)
+DECOMP_SIZE_ASSERT(RHSequenceOrderList, 0x18)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk00584d60, m_orders) == 0x18)
+DECOMP_STATIC_ASSERT(offsetof(RHSequenceOrderList, m_cursor) == 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(RHSequenceOrderList, m_dirty) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHSequenceOrderList, m_index) == 0x14)
 
 // FUNCTION: GAME 0x00588270
 RHUnk00588530::RHUnk00588530()
@@ -733,7 +741,7 @@ bool RHSequenceElementMovement::Serialize(SBFile &file, bool pointers)
         RH_MOVEMENT_ACCESS(exists, 1, 1342);
         if (exists)
         {
-            m_68 = (RHSequence *)new RHUnk00582220;
+            m_68 = new RHSequence;
             m_68->Serialize(file, false);
         }
         else
@@ -782,4 +790,101 @@ void RHUnk00588530::FUN_00589c70(int priority)
     if (RHMovementField<int>(this, 0x5c) >= priority && RHMovementField<int>(this, 0x58) == 2)
         FUN_00588940();
     ((RHSequenceElementCalls *)this)->FUN_00585450(priority);
+}
+
+template<bool inlineBegin>
+static inline RHOrder *SeekMovementOrder(RHSequenceOrderList &orders, int wanted)
+{
+    typedef std::list<RHOrder *> List;
+    typedef List::iterator Iterator;
+    Iterator (List::*begin)() = &List::begin;
+    void (__cdecl *advance)(Iterator &, int, std::bidirectional_iterator_tag) = &std::_Advance;
+    int size = orders.size();
+    if (orders.m_dirty)
+    {
+        if (wanted <= (size + 1) / 2)
+        {
+            std::bidirectional_iterator_tag category;
+            orders.m_cursor = inlineBegin ? orders.InlineBegin() : (orders.*begin)();
+            advance(orders.m_cursor, wanted, category);
+        }
+        else
+        {
+            std::bidirectional_iterator_tag category;
+            orders.m_cursor = orders.end();
+            advance(orders.m_cursor, wanted - size, category);
+        }
+        orders.m_dirty = false;
+        orders.m_index = wanted;
+    }
+    else
+    {
+        int previous = orders.m_index;
+        if (wanted != previous)
+        {
+            if (wanted < previous)
+            {
+                if (wanted < (previous + 1) / 2)
+                {
+                    std::bidirectional_iterator_tag category;
+                    orders.m_cursor = (orders.*begin)();
+                    advance(orders.m_cursor, wanted, category);
+                }
+                else
+                {
+                    std::bidirectional_iterator_tag category;
+                    advance(orders.m_cursor, wanted - previous, category);
+                }
+            }
+            else if (wanted < (previous + size) / 2)
+            {
+                std::bidirectional_iterator_tag category;
+                advance(orders.m_cursor, wanted - previous, category);
+            }
+            else
+            {
+                std::bidirectional_iterator_tag category;
+                orders.m_cursor = orders.end();
+                advance(orders.m_cursor, wanted - size, category);
+            }
+            orders.m_index = wanted;
+        }
+    }
+    return *orders.m_cursor;
+}
+
+// TEMPLATE: GAME 0x0046eb80 FOLDED
+// ?begin@?$list@PAVRHOrder@@V?$allocator@PAVRHOrder@@@std@@@std@@QAE?AViterator@12@XZ
+
+// TEMPLATE: GAME 0x005c9010 FOLDED
+// ?_Advance@std@@YAXAAViterator@?$list@PAVRHOrder@@V?$allocator@PAVRHOrder@@@std@@@1@HUbidirectional_iterator_tag@1@@Z
+
+// STUB: GAME 0x00589ca0
+void RHUnk00588530::FUN_00589ca0()
+{
+    unsigned count = m_orders.size();
+    if (count <= 1)
+        return;
+
+    RHSequenceOrderList &orders = m_orders;
+    orders.m_cursor = orders.InlineBegin();
+    orders.m_dirty = false;
+    orders.m_index = 0;
+    RHOrder *previous = *orders.m_cursor;
+    for (unsigned index = 1; index < count; ++index)
+    {
+        RHOrder *order = SeekMovementOrder<true>(orders, index);
+        if (order->m_24 == previous->m_24 && order->m_14 == previous->m_14)
+        {
+            delete SeekMovementOrder<false>(orders, index);
+            typedef RHSequenceOrderList::iterator Iterator;
+            Iterator (std::list<RHOrder *>::*eraseOrder)(Iterator) = &std::list<RHOrder *>::erase;
+            (orders.*eraseOrder)(orders.m_cursor);
+            --index;
+            --count;
+            orders.m_dirty = true;
+        }
+        else
+            previous = order;
+    }
 }

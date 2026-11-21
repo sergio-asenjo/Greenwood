@@ -79,39 +79,6 @@ public:
 
 #include "RHSequenceMovementConstruction.h"
 
-// SBList node: {next, prev, data}. The read-path insert allocates 0xc bytes.
-class RHSeqNode
-{
-public:
-    RHSeqNode *m_next;
-    RHSeqNode *m_prev;
-    RHSequenceElement *m_data;
-};
-
-// SBList<RHSequenceElement*> at RHSequence+0x08. Layout from RHSaveGameManager /
-// RHGroundMark (m_head at list+0x04, m_count at list+0x08, m_cur at list+0x0c,
-// m_valid at list+0x10, m_index at list+0x14).
-class RHSeqList
-{
-public:
-    char m_pad0[4];
-    RHSeqNode *m_head; // [0x04]
-    int m_count;       // [0x08]
-    RHSeqNode *m_cur;  // [0x0c]
-    char m_valid;      // [0x10]
-    char m_pad1[3];
-    int m_index; // [0x14]
-
-    __forceinline void GoTo(int index) { ((RHSectorActorList *)this)->Unk005c8e40(index); }
-
-    RHSeqIter end() { return RHSeqIter(m_head); }
-
-    // Target 0x0059fb00 (out-of-line 4-byte payload copy).
-    static void CopyData(RHSequenceElement **dst, RHSequenceElement *const *src);
-
-    RHSeqIter insert(RHSeqIter pos, RHSequenceElement *const &value);
-};
-
 // std::list<RHSequence*>-shaped object held by g_unk0x6c1040 at +0x190. The
 // inlined std::list insert is the out-of-line target 0x00424410 (same callee as
 // RHOrder::Serialize; MSVC6 std::list layout: _Head at +0x04, _Size at +0x08,
@@ -146,28 +113,6 @@ inline RHUnkListSeq &RHSequenceGlobalList()
 // The five element types the load path allocates (sizes from the operator new
 // operands: 0x64 / 0x7c / 0x74 / 0x68 / 0x9c). Method identity is NOT proven, so
 // each stays provisional RHUnk*; only the size and the virtual Serialize matter.
-class RHSequence
-{
-public:
-    bool Serialize(SBFile &file, bool bArg); // 0x005843c0
-
-    static bool SerializeStaticStuff(SBFile &file);
-
-    void Unk005849e0(RHSequenceElement *first, RHSequenceElement *second);
-
-    void Emit(SBFile &file);
-
-    char m_pad0[4];        // [0x00] (opaque)
-    int m_04;              // [0x04]
-    RHSeqList m_list;      // [0x08] SBList<RHSequenceElement*>
-    char m_pad20[0xc];     // [0x20, 0x2c)
-    short m_2c;            // [0x2c]
-    short m_2e;            // [0x2e]
-    short m_30;            // [0x30]
-    short m_32;            // [0x32]
-    char m_34;             // [0x34]
-};
-
 #include "RHSequenceConstructionCalls.h"
 
 // Serialises a type-name tag into the stream; target 0x005e1b70. Defined once

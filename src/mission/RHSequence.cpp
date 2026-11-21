@@ -70,7 +70,6 @@
 #include "RHScriptEngineCalls.h"
 #include "RHMalignityQueryList.h"
 #include "RHTransientPointerListConstruction.h"
-#include "RHSequenceAppendCalls.h"
 #include "RHUnk005fc3b0.h"
 #include "RHMovementBox.h"
 #include "RHMalignityActorCalls.h"
@@ -87,7 +86,7 @@ template<class T> inline T &RHSequenceField(void *object, unsigned offset)
 }
 
 // STUB: GAME 0x00582640
-bool RHUnk00582220::FUN_00582640(unsigned short &level, void *actor, int style, const SBGeoPoint2D &start, void *startArea, unsigned short startLayer, const SBGeoPoint2D &end, void *endArea, unsigned short endLayer, void *element, float distance, unsigned long flags, float scale)
+bool RHSequence::FUN_00582640(unsigned short &level, void *actor, int style, const SBGeoPoint2D &start, void *startArea, unsigned short startLayer, const SBGeoPoint2D &end, void *endArea, unsigned short endLayer, void *element, float distance, unsigned long flags, float scale)
 {
     RHMalignityQueryList route;
     SBGeoPoint2D origin(start);
@@ -113,14 +112,14 @@ bool RHUnk00582220::FUN_00582640(unsigned short &level, void *actor, int style, 
     {
         RHUnk00588530 *movement = new RHUnk00588530(level++, 2, actor, startArea, SBGeoPoint2D(), actor, 0.0f, 0);
         movement->m_98 = scale;
-        ((RHUnk00585500 *)movement)->Unk(this);
+        movement->AppendToSequence(this);
     }
     unsigned short firstLevel = level;
     if (endArea == startArea)
     {
         RHUnk00588530 *movement = new RHUnk00588530(level++, 20, actor, style, destination, element, distance, flags);
         movement->m_98 = scale;
-        ((RHUnk00585500 *)movement)->Unk(this);
+        movement->AppendToSequence(this);
         return true;
     }
     bool finalMove;
@@ -171,13 +170,13 @@ bool RHUnk00582220::FUN_00582640(unsigned short &level, void *actor, int style, 
             {
                 RHUnk005866a0 *wait = new RHUnk005866a0(level++, 160, actor);
                 wait->Unk00586ed0(2, 50);
-                ((RHUnk00585500 *)wait)->Unk(this);
+                wait->AppendToSequence(this);
             }
             RHUnk005866a0 *wait = new RHUnk005866a0(level++, 160, actor);
             int first = rand() & 15;
             int second = rand() & 15;
             wait->Unk00586ed0(2, first + second);
-            ((RHUnk00585500 *)wait)->Unk(this);
+            wait->AppendToSequence(this);
             RHUnk00588530 *movement;
             if (reverse)
                 movement = new RHUnk00588530(level++, 25, actor, RHSequenceField<SBGeoPoint2D>(gate, 0x18), startArea,
@@ -186,18 +185,18 @@ bool RHUnk00582220::FUN_00582640(unsigned short &level, void *actor, int style, 
                 movement = new RHUnk00588530(level++, 25, actor, RHSequenceField<SBGeoPoint2D>(gate, 0x20), startArea,
                     (unsigned char)((const RHUnk005fc3b0 &)RHSequenceField<SBGeoPoint2D>(gate, 0x18).Unk005fc110(RHSequenceField<SBGeoPoint2D>(gate, 0x20))).FUN_005fcc50(1.0f), currentFlags);
             movement->m_98 = scale;
-            ((RHUnk00585500 *)movement)->Unk(this);
+            movement->AppendToSequence(this);
         }
         else
         {
             RHUnk00588530 *movement = new RHUnk00588530(level++, 20, actor, style,
                 RHSequenceField<SBGeoPoint2D>(gate, reverse ? 0x18 : 0x20), 0, 0.0f, currentFlags);
             movement->m_98 = scale;
-            ((RHUnk00585500 *)movement)->Unk(this);
+            movement->AppendToSequence(this);
             movement = new RHUnk00588530(level++, 2, actor, (void *)0,
                 RHSequenceField<SBGeoPoint2D>(gate, reverse ? 0x18 : 0x20), actor, 10.0f, 0);
             movement->m_98 = scale;
-            ((RHUnk00585500 *)movement)->Unk(this);
+            movement->AppendToSequence(this);
         }
         if (RHSequenceField<int>(gate, 4) == 1)
         {
@@ -206,10 +205,10 @@ bool RHUnk00582220::FUN_00582640(unsigned short &level, void *actor, int style, 
             {
                 RHUnk005866a0 *turn = new RHUnk005866a0(level++, 26, actor);
                 turn->Unk00587010(8, RHSequenceField<SBGeoPoint2D>(gate, reverse ? 0x20 : 0x18));
-                ((RHUnk00585500 *)turn)->Unk(this);
+                turn->AppendToSequence(this);
                 RHUnk005866a0 *command = new RHUnk005866a0(level++, 10, actor);
                 command->Unk00586ed0(36, (int)gate);
-                ((RHUnk00585500 *)command)->Unk(this);
+                command->AppendToSequence(this);
                 return true;
             }
             if ((RHSequenceField<unsigned long>(nextArea, 0x30) & 0x200) && RHSequenceField<int>(nextArea, 0xf0) == 2)
@@ -217,16 +216,16 @@ bool RHUnk00582220::FUN_00582640(unsigned short &level, void *actor, int style, 
                 RHUnk00588530 *movement = new RHUnk00588530(level++, 169, actor, nextArea, SBGeoPoint2D(), (void *)0, 0.0f, 0);
                 movement->m_98 = scale;
                 movement->m_7c = gate;
-                ((RHUnk00585500 *)movement)->Unk(this);
+                movement->AppendToSequence(this);
             }
             RHUnk00588530 *movement = new RHUnk00588530(level++, 19, actor, style, 0);
             movement->m_7c = gate;
             movement->m_98 = scale;
-            ((RHUnk00585500 *)movement)->Unk(this);
+            movement->AppendToSequence(this);
             movement = new RHUnk00588530(level++, 2, actor, (void *)0,
                 RHSequenceField<SBGeoPoint2D>(gate, reverse ? 0x20 : 0x18), actor, 10.0f, 0);
             movement->m_98 = scale;
-            ((RHUnk00585500 *)movement)->Unk(this);
+            movement->AppendToSequence(this);
         }
         else
         {
@@ -241,7 +240,7 @@ bool RHUnk00582220::FUN_00582640(unsigned short &level, void *actor, int style, 
                 command->Unk00586ed0(23, RHSequenceField<int>(gate, 0x88));
                 command->Unk00586ed0(24, RHSequenceField<int>(gate, 0x8c));
             }
-            ((RHUnk00585500 *)command)->Unk(this);
+            command->AppendToSequence(this);
         }
         startArea = nextArea;
     }
@@ -249,19 +248,19 @@ bool RHUnk00582220::FUN_00582640(unsigned short &level, void *actor, int style, 
     {
         RHUnk00588530 *movement = new RHUnk00588530(level++, 20, actor, style, destination, element, distance, currentFlags);
         movement->m_98 = scale;
-        ((RHUnk00585500 *)movement)->Unk(this);
+        movement->AppendToSequence(this);
     }
     if ((currentFlags & 4) && (RHSequenceField<unsigned long>(nextArea, 0x30) & 0x2000))
     {
         RHUnk00588530 *movement = new RHUnk00588530(level++, 20, actor, style, RHSequenceField<SBGeoPoint2D>(gate, 0x20), element, distance, currentFlags);
         movement->m_98 = scale;
-        ((RHUnk00585500 *)movement)->Unk(this);
+        movement->AppendToSequence(this);
     }
     return true;
 }
 
 // STUB: GAME 0x00583630
-bool RHUnk00582220::FUN_00583630(unsigned short &level, void *actor, int style, const SBGeoPoint2D &start, void *startAreaInput, unsigned short startLayer, void *&endArea, unsigned short &endLayer, void *element, RHMovementBox *line, float distance, unsigned long flags)
+bool RHSequence::FUN_00583630(unsigned short &level, void *actor, int style, const SBGeoPoint2D &start, void *startAreaInput, unsigned short startLayer, void *&endArea, unsigned short &endLayer, void *element, RHMovementBox *line, float distance, unsigned long flags)
 {
     RHMalignityQueryList route;
     SBGeoPoint2D origin(start);
@@ -293,7 +292,7 @@ bool RHUnk00582220::FUN_00583630(unsigned short &level, void *actor, int style, 
     if (endArea != startArea)
     {
         RHUnk00588530 *movement = new RHUnk00588530(level++, 2, actor, startArea, SBGeoPoint2D(), actor, 0.0f, 0);
-        ((RHUnk00585500 *)movement)->Unk(this);
+        movement->AppendToSequence(this);
     }
     unsigned short firstLevel = level;
     if (endArea != startArea)
@@ -320,26 +319,26 @@ bool RHUnk00582220::FUN_00583630(unsigned short &level, void *actor, int style, 
                     {
                         RHUnk005866a0 *wait = new RHUnk005866a0(level++, 161, actor);
                         wait->Unk00586ed0(2, 50);
-                        ((RHUnk00585500 *)wait)->Unk(this);
+                        wait->AppendToSequence(this);
                     }
                     RHUnk005866a0 *wait = new RHUnk005866a0(level++, 161, actor);
                     int first = rand() & 15;
                     first += rand() & 15;
                     wait->Unk00586ed0(2, first);
-                    ((RHUnk00585500 *)wait)->Unk(this);
+                    wait->AppendToSequence(this);
                     RHUnk00588530 *movement = new RHUnk00588530(level++, 25, actor,
                         RHSequenceField<SBGeoPoint2D>(gate, 0x18), startArea,
                         (unsigned char)((const RHUnk005fc3b0 &)RHSequenceField<SBGeoPoint2D>(gate, 0x20).Unk005fc110(RHSequenceField<SBGeoPoint2D>(gate, 0x18))).FUN_005fcc50(1.0f), flags);
-                    ((RHUnk00585500 *)movement)->Unk(this);
+                    movement->AppendToSequence(this);
                 }
                 else
                 {
                     RHUnk00588530 *movement = new RHUnk00588530(level++, 20, actor, style,
                         RHSequenceField<SBGeoPoint2D>(gate, 0x18), element, 0.0f, flags);
-                    ((RHUnk00585500 *)movement)->Unk(this);
+                    movement->AppendToSequence(this);
                     movement = new RHUnk00588530(level++, 2, actor, (void *)0,
                         RHSequenceField<SBGeoPoint2D>(gate, 0x18), actor, 10.0f, 0);
-                    ((RHUnk00585500 *)movement)->Unk(this);
+                    movement->AppendToSequence(this);
                 }
             }
             else
@@ -351,26 +350,26 @@ bool RHUnk00582220::FUN_00583630(unsigned short &level, void *actor, int style, 
                     {
                         RHUnk005866a0 *wait = new RHUnk005866a0(level++, 161, actor);
                         wait->Unk00586ed0(2, 50);
-                        ((RHUnk00585500 *)wait)->Unk(this);
+                        wait->AppendToSequence(this);
                     }
                     RHUnk005866a0 *wait = new RHUnk005866a0(level++, 161, actor);
                     int first = rand() & 15;
                     first += rand() & 15;
                     wait->Unk00586ed0(2, first);
-                    ((RHUnk00585500 *)wait)->Unk(this);
+                    wait->AppendToSequence(this);
                     RHUnk00588530 *movement = new RHUnk00588530(level++, 25, actor,
                         RHSequenceField<SBGeoPoint2D>(gate, 0x20), startArea,
                         (unsigned char)((const RHUnk005fc3b0 &)RHSequenceField<SBGeoPoint2D>(gate, 0x18).Unk005fc110(RHSequenceField<SBGeoPoint2D>(gate, 0x20))).FUN_005fcc50(1.0f), flags);
-                    ((RHUnk00585500 *)movement)->Unk(this);
+                    movement->AppendToSequence(this);
                 }
                 else
                 {
                     RHUnk00588530 *movement = new RHUnk00588530(level++, 20, actor, style,
                         RHSequenceField<SBGeoPoint2D>(gate, 0x20), element, 0.0f, flags);
-                    ((RHUnk00585500 *)movement)->Unk(this);
+                    movement->AppendToSequence(this);
                     movement = new RHUnk00588530(level++, 2, actor, (void *)0,
                         RHSequenceField<SBGeoPoint2D>(gate, 0x20), actor, 10.0f, 0);
-                    ((RHUnk00585500 *)movement)->Unk(this);
+                    movement->AppendToSequence(this);
                 }
             }
             if (RHSequenceField<int>(gate, 4) == 1)
@@ -380,28 +379,28 @@ bool RHUnk00582220::FUN_00583630(unsigned short &level, void *actor, int style, 
                 {
                     RHUnk005866a0 *turn = new RHUnk005866a0(level++, 26, actor);
                     turn->Unk00587010(8, RHSequenceField<bool>(gate, 0x81) ? RHSequenceField<SBGeoPoint2D>(gate, 0x20) : RHSequenceField<SBGeoPoint2D>(gate, 0x18));
-                    ((RHUnk00585500 *)turn)->Unk(this);
+                    turn->AppendToSequence(this);
                     RHUnk005866a0 *command = new RHUnk005866a0(level++, 10, actor);
                     command->Unk00586ed0(36, (int)gate);
-                    ((RHUnk00585500 *)command)->Unk(this);
+                    command->AppendToSequence(this);
                     return true;
                 }
                 if (((unsigned char)(RHSequenceField<unsigned long>(nextArea, 0x30) >> 9) & 1) && RHSequenceField<int>(nextArea, 0xf0) == 2)
                 {
                     RHUnk00588530 *movement = new RHUnk00588530(level++, 169, actor, nextArea, SBGeoPoint2D(), (void *)0, 0.0f, 0);
                     movement->m_7c = gate;
-                    ((RHUnk00585500 *)movement)->Unk(this);
+                    movement->AppendToSequence(this);
                 }
                 RHUnk00588530 *movement = new RHUnk00588530(level++, 19, actor, style, 0);
                 movement->m_7c = gate;
-                ((RHUnk00585500 *)movement)->Unk(this);
+                movement->AppendToSequence(this);
                 if (RHSequenceField<bool>(gate, 0x81))
                     movement = new RHUnk00588530(level++, 2, actor, (void *)0,
                         RHSequenceField<SBGeoPoint2D>(gate, 0x20), actor, 10.0f, 0);
                 else
                     movement = new RHUnk00588530(level++, 2, actor, (void *)0,
                         RHSequenceField<SBGeoPoint2D>(gate, 0x18), actor, 10.0f, 0);
-                ((RHUnk00585500 *)movement)->Unk(this);
+                movement->AppendToSequence(this);
             }
             else
             {
@@ -416,20 +415,20 @@ bool RHUnk00582220::FUN_00583630(unsigned short &level, void *actor, int style, 
                     command->Unk00586ed0(23, RHSequenceField<int>(gate, 0x88));
                     command->Unk00586ed0(24, RHSequenceField<int>(gate, 0x8c));
                 }
-                ((RHUnk00585500 *)command)->Unk(this);
+                command->AppendToSequence(this);
             }
             startArea = nextArea;
         }
         if (!((unsigned char)(RHSequenceField<unsigned long>(nextArea, 0x30) >> 13) & 1))
         {
             RHUnk00588530 *movement = new RHUnk00588530(level++, 20, actor, style, line, distance, (int)(flags | 0x80));
-            ((RHUnk00585500 *)movement)->Unk(this);
+            movement->AppendToSequence(this);
         }
     }
     else
     {
         RHUnk00588530 *movement = new RHUnk00588530(level++, 20, actor, style, line, distance, (int)(flags | 0x80));
-        ((RHUnk00585500 *)movement)->Unk(this);
+        movement->AppendToSequence(this);
     }
     return true;
 }
@@ -481,7 +480,7 @@ inline void RHSequenceElementList::clear()
 
 inline void RHSequenceElementList::DeleteAll()
 {
-    for (m_cursor = begin(); m_cursor != end(); ++m_cursor)
+    for (SetCurrent(begin()); m_cursor != end(); ++m_cursor)
         delete (RHUnkSequenceOrder *)*m_cursor;
     clear();
 }
@@ -489,7 +488,7 @@ inline void RHSequenceElementList::DeleteAll()
 // STUB: GAME 0x00584b40
 inline RHSequenceElementList::~RHSequenceElementList()
 {
-    for (m_cursor = begin(); m_cursor != end(); ++m_cursor)
+    for (SetCurrent(begin()); m_cursor != end(); ++m_cursor)
         delete (RHUnkSequenceOrder *)*m_cursor;
     ClearRHSequenceElementRange(this);
 }
@@ -499,6 +498,64 @@ inline RHSequenceElementListStorage::~RHSequenceElementListStorage()
     ClearRHSequenceElementRange(this);
 }
 
+inline void RHSequenceElementListStorage::GoToInline(int wanted)
+{
+    void (__cdecl *advance)(iterator &, int, std::bidirectional_iterator_tag) = &std::_Advance;
+    bool dirty = m_dirty;
+    int count = size();
+    if (dirty)
+    {
+        if (wanted <= (count + 1) / 2)
+        {
+            SetCurrent(begin());
+            std::bidirectional_iterator_tag category;
+            advance(m_cursor, wanted, category);
+        }
+        else
+        {
+            SetCurrent(end());
+            std::bidirectional_iterator_tag category;
+            advance(m_cursor, wanted - count, category);
+        }
+        m_dirty = false;
+        m_index = wanted;
+    }
+    else
+    {
+        int previous = m_index;
+        if (wanted != previous)
+        {
+            if (wanted < previous)
+            {
+                if (wanted < (previous + 1) / 2)
+                {
+                    SetCurrent(begin());
+                    std::bidirectional_iterator_tag category;
+                    advance(m_cursor, wanted, category);
+                }
+                else
+                {
+                    std::bidirectional_iterator_tag category;
+                    advance(m_cursor, wanted - previous, category);
+                }
+            }
+            else if (wanted < (previous + count) / 2)
+                AdvanceCurrent(wanted - previous);
+            else
+            {
+                SetCurrent(end());
+                AdvanceCurrent(wanted - count);
+            }
+            m_index = wanted;
+        }
+    }
+}
+
+void RHSequenceElementListStorage::GoTo(int wanted)
+{
+    GoToInline(wanted);
+}
+
 // TEMPLATE: GAME 0x0044e8b0 FOLDED
 // ?erase@?$list@PAVRHSequenceElement@@V?$allocator@PAVRHSequenceElement@@@std@@@std@@QAE?AViterator@12@V312@0@Z
 
@@ -506,10 +563,13 @@ inline RHSequenceElementListStorage::~RHSequenceElementListStorage()
 // ?erase@?$list@PAVRHSequenceElement@@V?$allocator@PAVRHSequenceElement@@@std@@@std@@QAE?AViterator@12@V312@@Z
 
 // TEMPLATE: GAME 0x0046eb30 FOLDED
-// ?erase@?$list@PAVRHUnkSequenceOrder@@V?$allocator@PAVRHUnkSequenceOrder@@@std@@@std@@QAE?AViterator@12@V312@@Z
+// ?erase@?$list@PAVRHOrder@@V?$allocator@PAVRHOrder@@@std@@@std@@QAE?AViterator@12@V312@@Z
+
+// TEMPLATE: GAME 0x005c9010 FOLDED
+// ?_Advance@std@@YAXAAViterator@?$list@PAVRHSequenceElement@@V?$allocator@PAVRHSequenceElement@@@std@@@1@HUbidirectional_iterator_tag@1@@Z
 
 // FUNCTION: GAME 0x00582220
-RHUnk00582220::RHUnk00582220()
+RHSequence::RHSequence()
 {
     m_04 = g_unk0x6b7480++;
     m_2c = 0;
@@ -519,18 +579,12 @@ RHUnk00582220::RHUnk00582220()
     m_34 = 0;
 }
 
-// FUNCTION: GAME 0x00582280
-void *RHUnk00582220::FUN_00582280(unsigned int flags)
-{
-    this->~RHUnk00582220();
-    if (flags & 1)
-        operator delete(this);
-    return this;
-}
+// SYNTHETIC: GAME 0x00582280
+// RHSequence::`scalar deleting destructor'
 
 // Parked: list teardown inline depth and range-erase scheduling differ.
 // STUB: GAME 0x005822a0
-RHUnk00582220::~RHUnk00582220()
+RHSequence::~RHSequence()
 {
     m_elements.DeleteAll();
 }
@@ -589,7 +643,7 @@ bool RHSequence::Serialize(SBFile &file, bool bArg)
     RHSequenceElement *elem;
     if (!file.m_bLoading)
     {
-        count = m_list.m_count;
+        count = m_elements.size();
         if (file.Access(&count, 4) < 0)
         {
             SBString *err = file.GetError();
@@ -613,8 +667,8 @@ bool RHSequence::Serialize(SBFile &file, bool bArg)
     {
         if (!file.m_bLoading)
         {
-            m_list.GoTo(i);
-            elem = m_list.m_cur->m_data;
+            m_elements.GoTo(i);
+            elem = *m_elements.m_cursor;
             type = *((unsigned char *)elem + 4);
             if (file.Access(&type, 1) < 0)
             {
@@ -659,9 +713,8 @@ bool RHSequence::Serialize(SBFile &file, bool bArg)
 
             elem->Serialize(file, bArg);
 
-            m_list.insert(m_list.end(), elem);
-            m_list.m_count++;
-            m_list.m_valid = 1;
+            m_elements.insert(m_elements.end(), elem);
+            m_elements.m_dirty = true;
             *(RHSequence **)((char *)elem + 0x54) = this;
         }
     }
@@ -683,11 +736,11 @@ bool RHSequence::Serialize(SBFile &file, bool bArg)
     if (count <= 1)
         return true;
 
-    RHSequenceElement *prev = m_list.m_head->m_next->m_data;
+    RHSequenceElement *prev = m_elements.front();
     for (unsigned int j = 1; j < count; j++)
     {
-        m_list.GoTo(j);
-        RHSequenceElement *cur = m_list.m_cur->m_data;
+        m_elements.GoToInline(j);
+        RHSequenceElement *cur = *m_elements.m_cursor;
         *(RHSequenceElement **)((char *)prev + 0x4c) = cur;
         prev = cur;
     }
@@ -721,8 +774,8 @@ void RHSequence::Unk005849e0(RHSequenceElement *first, RHSequenceElement *second
 {
     for (unsigned short index = m_2c - 1; ; --index)
     {
-        ((RHUnk0046eb30 *)&m_list)->GoToInline(index);
-        if (m_list.m_cur->m_data == first)
+        m_elements.GoToInline(index);
+        if (*m_elements.m_cursor == first)
         {
             ++m_30;
             break;

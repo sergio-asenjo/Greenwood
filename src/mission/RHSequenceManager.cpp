@@ -1,9 +1,18 @@
 #include "SBNullstr.h"
-#include "RHSequenceManager.h"
+#include "RHSequenceManagerListOps.h"
 #include "RHSequenceElement.h"
+#include "RHSequenceConstructionCalls.h"
+#include "RHTitbitsCore.h"
 #include <stddef.h>
 
-DECOMP_SIZE_ASSERT(RHUnk00582220, 0x3c)
+DECOMP_SIZE_ASSERT(RHSequence, 0x3c)
+DECOMP_SIZE_ASSERT(RHSequenceElementList, 0x18)
+DECOMP_STATIC_ASSERT(offsetof(RHSequence, m_elements) == 0x08)
+DECOMP_STATIC_ASSERT(offsetof(RHSequence, m_2c) == 0x2c)
+DECOMP_STATIC_ASSERT(offsetof(RHSequence, m_34) == 0x34)
+DECOMP_STATIC_ASSERT(offsetof(RHSequenceElementList, m_cursor) == 0x0c)
+DECOMP_STATIC_ASSERT(offsetof(RHSequenceElementList, m_dirty) == 0x10)
+DECOMP_STATIC_ASSERT(offsetof(RHSequenceElementList, m_index) == 0x14)
 DECOMP_SIZE_ASSERT(RHManagerList<void *>, 0x24)
 DECOMP_SIZE_ASSERT(RHManagerSequenceView, 0x2c)
 DECOMP_SIZE_ASSERT(RHManagerElementView, 0x3c)
@@ -45,15 +54,7 @@ RHScriptIter RHUnk0046eb30::FUN_0046eb80()
 }
 
 #include "RHSequenceGenericCalls.h"
-#include "RHSequenceAppendCalls.h"
-
-class RHUnk00582620
-{
-public:
-    bool FUN_00582530();
-};
-
-#include "RHSequenceLaunchCalls.h"
+#include "RHSequenceDispatch.h"
 
 // Parked: list-constructor inlining and folded helper identities remain to be matched.
 // STUB: GAME 0x00589fb0
@@ -74,31 +75,25 @@ void *RHSequenceManager::FUN_0058a130(unsigned int flags)
 // STUB: GAME 0x0058a150
 RHSequenceManager::~RHSequenceManager()
 {
-    ((RHManagerListCalls *)&m_4)->FUN_0058bed0();
+    m_4.DeleteAll();
     m_4.valid = 1;
 }
 
 // FUNCTION: GAME 0x0058a3d0
-void *RHUnk0058a3d0::Unk(void *context, int value, void *sequence)
+RHSequence *RHSequenceManager::Launch(const char *, int, RHSequence *sequence)
 {
-    ((RHSequenceManager *)this)->m_4.push_back((RHSequence *)sequence);
+    m_4.push_back(sequence);
     ((RHUnk00582620 *)sequence)->FUN_00582530();
     return sequence;
 }
 
-class RHScriptBatchCalls
-{
-public:
-    void *Unk0058a940(void *context, int value, void *element);
-};
-
 // FUNCTION: GAME 0x0058a940
-void *RHScriptBatchCalls::Unk0058a940(void *context, int value, void *element)
+void *RHSequenceManager::Unk0058a940(void *context, int value, void *element)
 {
-    RHUnk00582220 *sequence = new RHUnk00582220;
+    RHSequence *sequence = new RHSequence;
     ((RHUnk00584d60 *)element)->m_14 = 1;
-    ((RHUnk00585500 *)element)->Unk(sequence);
-    ((RHUnk0058a3d0 *)this)->Unk(context, value, sequence);
+    static_cast<RHUnk00584d60 *>(element)->AppendToSequence(sequence);
+    Launch(static_cast<const char *>(context), value, sequence);
     return sequence;
 }
 
@@ -139,8 +134,8 @@ bool RHSequenceManager::Serialize(SBFile &file)
     }
     else
     {
-        RHManagerList<RHSequence *> &sequences = m_4;
-        ((RHManagerListCalls *)&sequences)->FUN_0058bed0();
+        RHManagerOwnedSequenceList &sequences = m_4;
+        sequences.DeleteAll();
         sequences.valid = 1;
         RHManagerList<RHSequenceElement *> &elements = m_28;
         typedef std::list<RHSequenceElement *>::iterator Iterator;
@@ -177,7 +172,7 @@ bool RHSequenceManager::Serialize(SBFile &file)
             m_4[i]->Serialize(file, true);
         else
         {
-            RHSequence *sequence = (RHSequence *)new RHUnk00582220;
+            RHSequence *sequence = new RHSequence;
             sequence->Serialize(file, true);
             m_4[i] = sequence;
         }
@@ -580,6 +575,31 @@ bool RHSequenceManager::FUN_0058bd70(void *actor, int command)
             return true;
     }
     return false;
+}
+
+// TEMPLATE: GAME 0x0046eb30 FOLDED
+// ?erase@?$list@PAVRHSequence@@V?$allocator@PAVRHSequence@@@std@@@std@@QAE?AViterator@12@V312@@Z
+
+// STUB: GAME 0x0058bdd0
+RHManagerOwnedSequenceList::~RHManagerOwnedSequenceList()
+{
+    typedef std::list<RHSequence *> List;
+    for (cursor = List::begin(); cursor != List::end(); ++cursor)
+        delete *cursor;
+    Iterator (List::*eraseNode)(Iterator) = &List::erase;
+    Iterator end = List::end();
+    for (Iterator position = List::begin(); position != end;)
+        (this->*eraseNode)(position++);
+}
+
+// FUNCTION: GAME 0x0058bed0
+void RHManagerOwnedSequenceList::DeleteAll()
+{
+    typedef std::list<RHSequence *> List;
+    Iterator end;
+    for (cursor = List::begin(); end = List::end(), cursor != end; ++cursor)
+        delete *cursor;
+    List::clear();
 }
 
 void RHSequenceManager::Emit(SBFile &file)

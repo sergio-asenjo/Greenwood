@@ -3,19 +3,9 @@
 
 #include "RHSequenceElementSerialization.h"
 
-class RHSequence
-{
-public:
-    bool Serialize(SBFile &file, bool pointers);
-};
-
 #include "RHSequenceConstructionCalls.h"
 
-class RHSequenceManager
-{
-public:
-    bool PreSerializePointer(SBFile &file, RHSequenceElement **value, bool launch);
-};
+#include "RHSequenceManager.h"
 
 class RHUnk6c1040;
 extern RHUnk6c1040 *g_unk0x6c1040;
