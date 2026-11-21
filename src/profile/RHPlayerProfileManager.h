@@ -169,6 +169,7 @@ public:
     static RHPlayerProfileManager *FUN_0052ef90();
     void FUN_0055d930(unsigned long index);
     bool FUN_0055da70(RHPlayerProfile *profile);
+    char *FUN_0055dbb0();
     int FUN_0055dbc0(RHPlayerProfile *profile);
     RHPlayerProfile *FUN_0055dd10(unsigned long index);
     void FUN_0055e410(unsigned long index);
