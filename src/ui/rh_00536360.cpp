@@ -1,14 +1,20 @@
 #include "SBNullstr.h"
-#include "RHPortraitRootLifetime.h"
-#include "RHGameWidgetLifetime.h"
-#include "SBUIUnkSurface.h"
 #include "SBGeoPoint2D.h"
+#include "RHMissionResultMenu.h"
 #include "SBDrawManagerCore.h"
 #include "SBFont.h"
+#include "RHFontManager.h"
+#include "SBUIRenderer.h"
+#include "SBResourceManager.h"
 #include "RHMenuScreenView.h"
 #include "RHMenuWindow.h"
 #include "RHMessenger.h"
 #include "RHGame.h"
+#include "RHMapResources.h"
+#include "RHPlayerProfile.h"
+#include "RHPlayerProfileManager.h"
+#include "RHPlayerProfileManagerStorage.h"
+#include "RHUnk005fc3b0.h"
 #include <stddef.h>
 #include <string>
 
@@ -18,60 +24,13 @@ extern SBDrawManager *g_unk0x6c11d0;
 RHMessenger *RHUnk00546050();
 SBGeoVector2D FUN_005fc580(const SBGeoVector2D &point, float factor);
 
-class RHUnk00536360Sub
-{
-public:
-    virtual void V00();
-    virtual void V04();
-    virtual void V08();
-    virtual void V0c();
-    virtual void V10();
-    virtual void V14();
-    virtual void V18();
-    virtual void V1c();
-    virtual void V20();
-    virtual void V24();
-    virtual void V28();
-    virtual void V2c(int arg);
-};
-
-// VTABLE: GAME 0x006796d4
-// SIZE 0x478
-class RHUnk00536360 : public RHPortraitRootLifetime
-{
-public:
-    virtual ~RHUnk00536360();
-    virtual void FUN_0061a570();
-    void FUN_00536360(int arg);
-    void FUN_00536380(char opening);
-    void FUN_005368d0();
-
-    unsigned long m_surface;
-    SBGeoPoint2D m_a4;
-    std::string m_ac;
-    void *m_bc;
-    bool m_c0;
-    undefined m_c1[3];
-    void *m_c4;
-    bool m_c8;
-    bool m_c9;
-    undefined m_ca[6];
-    float m_d0;
-    SBGeoBoundingBox2D m_bounds;
-    SBFontUnk0061e840 *m_font;
-    SBUIUnkSurface m_ec;
-    RHGameLifetime00515d30 m_10c;
-    RHGameLifetime00515d30 m_1dc;
-    RHGameLifetime00525560 m_2ac;
-    RHGameLifetime00515f00 m_3ac;
-};
-
 DECOMP_SIZE_ASSERT(RHUnk00536360, 0x478)
 DECOMP_STATIC_ASSERT(offsetof(RHUnk00536360, m_a4) == 0xa4)
 DECOMP_STATIC_ASSERT(offsetof(RHUnk00536360, m_ac) == 0xac)
 DECOMP_STATIC_ASSERT(offsetof(RHUnk00536360, m_d0) == 0xd0)
 DECOMP_STATIC_ASSERT(offsetof(RHUnk00536360, m_c4) == 0xc4)
 DECOMP_STATIC_ASSERT(offsetof(RHUnk00536360, m_c8) == 0xc8)
+DECOMP_STATIC_ASSERT(offsetof(RHUnk00536360, m_cc) == 0xcc)
 DECOMP_STATIC_ASSERT(offsetof(RHUnk00536360, m_bounds) == 0xd4)
 DECOMP_STATIC_ASSERT(offsetof(RHUnk00536360, m_font) == 0xe8)
 DECOMP_STATIC_ASSERT(offsetof(RHUnk00536360, m_ec) == 0xec)
@@ -79,6 +38,49 @@ DECOMP_STATIC_ASSERT(offsetof(RHUnk00536360, m_10c) == 0x10c)
 DECOMP_STATIC_ASSERT(offsetof(RHUnk00536360, m_1dc) == 0x1dc)
 DECOMP_STATIC_ASSERT(offsetof(RHUnk00536360, m_2ac) == 0x2ac)
 DECOMP_STATIC_ASSERT(offsetof(RHUnk00536360, m_3ac) == 0x3ac)
+DECOMP_SIZE_ASSERT(RHGameLifetime00515d30, 0xd0)
+DECOMP_SIZE_ASSERT(RHGameLifetime00525560, 0x100)
+DECOMP_SIZE_ASSERT(RHGameLifetime00515f00, 0xcc)
+DECOMP_STATIC_ASSERT(offsetof(RHGameLifetime00515d30, m_renderer) == 0x80)
+DECOMP_STATIC_ASSERT(offsetof(RHGameLifetime00525560, m_renderer) == 0x80)
+DECOMP_STATIC_ASSERT(offsetof(RHGameLifetime00525560, m_fc) == 0xfc)
+DECOMP_STATIC_ASSERT(offsetof(RHGameLifetime00515f00, m_renderer) == 0x80)
+
+// STUB: GAME 0x00535a30
+RHUnk00536360::RHUnk00536360() : m_ec(0), m_2ac(RHGameLifetime00525560::SeparateBase)
+{
+    SBDrawManager *draw = g_unk0x6c11d0;
+    RHPortraitBitmapWidget *ok = &m_10c;
+    RHPortraitBitmapWidget *cancel = &m_1dc;
+    RHPortraitBitmapWidget *text = &m_2ac;
+    RHPortraitBitmapWidget *background = &m_3ac;
+    {
+        std::wstring label(L"OK");
+        ok->Create(label, RHMapBox(150.0f, 130.0f, 150.0f, 130.0f), 0, 0x91);
+    }
+    {
+        // STRING: GAME 0x006b0eec
+        std::wstring label(L"Cancel");
+        cancel->Create(label, RHMapBox(209.0f, 130.0f, 209.0f, 130.0f), 0, 0x92);
+    }
+    {
+        // STRING: GAME 0x006b0ee0
+        std::wstring label(L"Text");
+        text->Create(label, RHMapBox(25.0f, 50.0f, 375.0f, 120.0f), 0, -1);
+    }
+    {
+        // STRING: GAME 0x006b0ec8
+        std::wstring label(L"Background");
+        background->Create(label, RHMapBox(0.0f, 0.0f, 0.0f, 0.0f), 0, 0xed);
+    }
+    static_cast<SBResourceManager *>(m_resource)->FUN_00600920(0xed, 0, m_cc);
+    static_cast<RHMapResources *>(m_resource)->FUN_006006f0(0xed, m_a4);
+    m_surface = draw->Unk005e4ed0((unsigned short)m_a4.GetX(), (unsigned short)m_a4.GetY(), 0, false);
+    draw->FUN_005e61e0(m_surface, 0, draw->FUN_005e5f60(0), 0);
+    m_font = RHFontManager::FUN_005024f0()->GetFont(std::string("PopupScroll"));
+    m_font->AttachToRenderContext(&m_ec, 0);
+    m_2ac.m_renderer.FUN_0060e0d0(m_font, m_font, m_font, m_font);
+}
 
 // FUNCTION: GAME 0x00535f60
 RHUnk00536360::~RHUnk00536360()
@@ -95,10 +97,40 @@ RHUnk00536360::~RHUnk00536360()
 // SYNTHETIC: GAME 0x00535f40
 // ??_GRHUnk00536360@@UAEPAXI@Z
 
-// FUNCTION: GAME 0x00536360
-void RHUnk00536360::FUN_00536360(int arg)
+// STUB: GAME 0x00536140
+bool RHUnk00536360::FUN_00536140()
 {
-    ((RHUnk00536360Sub *)&m_2ac)->V2c(arg);
+    bool initialized;
+    {
+        // STRING: GAME 0x006b0efc
+        std::wstring title(L"Mission lost,won,start,interrupt");
+        initialized = RHPortraitRootLifetime::FUN_0061a1e0(title,
+            RHMapBox(0.0f, 0.0f, 629.0f, 480.0f), 0);
+    }
+    if (initialized) {
+        FUN_0061a800(&m_3ac);
+        FUN_0061a800(&m_2ac);
+        FUN_0061a800(&m_10c);
+        FUN_0061a800(&m_1dc);
+        RHUnk005fc3b0 size;
+        static_cast<RHMapResources *>(m_resource)->FUN_006006f0(0xed, size);
+        RHPlayerProfileManager &profiles = RHPlayerProfileManagerStorage::mInstance;
+        float height = reinterpret_cast<RHPlayerProfile *>(profiles.FUN_0055dbb0())->m_graphics.m_point.GetY();
+        const RHGraphicConfig &graphics = reinterpret_cast<RHPlayerProfile *>(profiles.FUN_0055dbb0())->m_graphics;
+        m_bounds.SetMin(SBGeoPoint2D((graphics.m_point.GetX() - size.GetX()) * 0.5f,
+            (height - size.GetY()) * 0.5f));
+        m_bounds.SetMax(m_bounds.Min().Unk005fc190(size));
+        FUN_0061ad20(m_bounds);
+        return true;
+    }
+    return false;
+}
+
+// FUNCTION: GAME 0x00536360
+void RHUnk00536360::FUN_00536360(const std::wstring &text)
+{
+    RHPortraitBitmapWidget *widget = &m_2ac;
+    widget->SetWidgetText(text);
 }
 
 // STUB: GAME 0x00536380
@@ -128,6 +160,12 @@ void RHUnk00536360::FUN_00536380(char opening)
     else
         ((RHGame *)g_unk0x6c0b3c)->FUN_0050eb80(0);
     m_d0 = 1.5f;
+}
+
+// FUNCTION: GAME 0x005364f0
+void RHUnk00536360::FUN_005364f0(int message)
+{
+    m_bc = message;
 }
 
 // STUB: GAME 0x00536500
@@ -189,7 +227,7 @@ void RHUnk00536360::FUN_005368d0()
             ((RHGame *)g_unk0x6c0b3c)->FUN_0050eca0(1);
         else
             ((RHGame *)g_unk0x6c0b3c)->FUN_0050eb80(1);
-        RHUnk5490f0 message((int)m_bc);
+        RHUnk5490f0 message(m_bc);
         RHUnk00546050()->RHUnk005460c0(message);
     } else {
         FUN_00536380(0);

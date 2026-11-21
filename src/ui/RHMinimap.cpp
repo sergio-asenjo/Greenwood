@@ -48,6 +48,10 @@ bool FUN_0054ae80(const RHMinimapHighlightedElement &element);
 extern RHMinimap *g_unk0x6c0c50;
 class RHMapResources;
 extern RHMapResources *g_unk0x006c1840;
+void RHSerializeName(SBFile &file, const char *name);
+
+// TEMPLATE: GAME 0x005008e0 FOLDED
+// ?_Destroy@?$vector@URHMinimapHighlightedElement@@V?$allocator@URHMinimapHighlightedElement@@@std@@@std@@IAEXPAURHMinimapHighlightedElement@@0@Z
 
 // FUNCTION: GAME 0x005493e0
 RHMinimap::RHMinimap() : m_dc(0), m_e0(false)
@@ -79,6 +83,87 @@ RHMinimap::~RHMinimap()
 {
     *(unsigned *)this = 0x00679b70;
     ((SBUIUnk005fd4a0 *)g_unk0x006c1840)->FUN_005fd4a0(0x3d);
+}
+
+#include "SBDrawManagerCore.h"
+
+static inline void MinimapSerializeError(SBFile &file, int line)
+{
+    const char *reason = file.GetError()->m_chars;
+    SBAssert(0, "P:\\Robin Hood\\RHminimap.cpp", line,
+        "Serialize failed reason is %s", reason ? reason : "");
+}
+
+// STUB: GAME 0x00549650
+bool RHMinimap::Serialize(SBFile &file)
+{
+    // STRING: GAME 0x006b11d4
+    RHSerializeName(file, "RHMinimap");
+
+    if (file.Access(&m_121, 1) < 0) {
+        MinimapSerializeError(file, 0x68);
+        return false;
+    }
+    if (file.Access(&m_120, 1) < 0) {
+        MinimapSerializeError(file, 0x69);
+        return false;
+    }
+    if (file.Access(&m_124, 4) < 0) {
+        MinimapSerializeError(file, 0x6a);
+        return false;
+    }
+    if (file.Access(&m_dc, 4) < 0) {
+        MinimapSerializeError(file, 0x6b);
+        return false;
+    }
+    if (file.Access(&m_e0, 1) < 0) {
+        MinimapSerializeError(file, 0x6c);
+        return false;
+    }
+
+    if (file.m_version >= 25) {
+        if (file.Access(&m_e1, 1) < 0) {
+            MinimapSerializeError(file, 0x70);
+            return false;
+        }
+        m_f8.Serialize(file);
+        if (file.m_bLoading && m_e1) {
+            SBGeoVector2D origin(m_e4.Min());
+            float height = m_e4.Max().m_y - m_e4.Min().m_y;
+            float width = m_e4.Width();
+            m_e4 = (m_e4 - origin).FUN_006090d0(0.5f * SBGeoVector2D(
+                m_minimapDraw->FUN_005e56c0(0) - width,
+                m_minimapDraw->FUN_005e5750(0) - height));
+        }
+    }
+
+    if (!file.m_bLoading) {
+        unsigned count = m_highlighted.size();
+        if (file.Access(&count, 4) < 0)
+            MinimapSerializeError(file, 0x27);
+        else {
+            for (std::vector<RHMinimapHighlightedElement>::iterator entry = m_highlighted.begin();
+                 entry != m_highlighted.end(); ++entry)
+                if (!SerializeHighlightedElement(file, *entry))
+                    break;
+        }
+    } else {
+        m_highlighted.clear();
+        unsigned count;
+        if (file.Access(&count, 4) < 0)
+            MinimapSerializeError(file, 0x3c);
+        else if (count != 0) {
+            do {
+                RHMinimapHighlightedElement entry;
+                if (!SerializeHighlightedElement(file, entry))
+                    break;
+                m_highlighted.push_back(entry);
+            } while (--count);
+        }
+    }
+    if (file.m_bLoading)
+        m_b0 = false;
+    return true;
 }
 
 // FUNCTION: GAME 0x00549a80
@@ -148,7 +233,6 @@ bool FUN_00549ae0(const RHMinimapSortElement *a, const RHMinimapSortElement *b){
 
 #include "RHMobileUnk00607da0.h"
 #include "SBResourceManager.h"
-#include "SBDrawManagerCore.h"
 #include "RHPortraitDrawCalls.h"
 #include "RHMapWidget.h"
 #include "SBFrameWnd.h"
@@ -163,7 +247,8 @@ extern float g_unk0x006c0c58[2];
 bool RHMinimap::FUN_00549c10(const void *name, const void *box, unsigned long flags)
 {
     SBGeoBoundingBox2D bounds;
-    RHPortraitRootLifetime::FUN_0061a1e0(*(const RHMapTitleText *)name, *(const RHMapBox *)box, flags);
+    RHPortraitRootLifetime::FUN_0061a1e0(*static_cast<const std::wstring *>(name),
+        *static_cast<const RHMapBox *>(box), flags);
     m_minimapDraw = g_unk0x6c11d0;
     m_engine = (char *)g_pEngine;
     m_surface = *(unsigned long *)(m_engine + 0x48c8);
@@ -244,25 +329,25 @@ bool RHMinimap::FUN_0054a0f0(const void *arg)
     return false;
 }
 
-// STUB: GAME 0x0054a440
-void RHMinimap::FUN_0054a440(const void *element)
+// FUNCTION: GAME 0x0054a440
+void RHMinimap::SetHighlighted(const RHElement *element)
 {
-    RHElement *value = (RHElement *)element;
-    if (FUN_0054ae90(value))
+    if (FUN_0054ae90(element))
         return;
     RHMinimapHighlightedElement entry;
-    entry.m_element = value;
+    entry.m_element = const_cast<RHElement *>(element);
     entry.m_0c = 0;
     m_highlighted.push_back(entry);
     m_dc = 0x19;
 }
 
 #include "SBUIKeyboardCalls.h"
+#include "SBUIBase.h"
 
 class RHUnk0048a970;
 extern RHUnk0048a970 *g_unk0x6c0b3c;
 
-// STUB: GAME 0x0054a640
+// FUNCTION: GAME 0x0054a640
 SBFrameInputEvent *RHMinimap::FUN_0054a640(const void *arg)
 {
     m_input.widget = this;
@@ -280,7 +365,7 @@ SBFrameInputEvent *RHMinimap::FUN_0054a640(const void *arg)
         return 0;
     }
     if ((unsigned short)m_a4 != 0 &&
-        (*(RHGameWidgetInputCalls *const *)((const char *)arg + 0xc))->FUN_0060e240((unsigned short)m_a4) == 2)
+        (*(SBUIUnk0060e1b0 *const *)((const char *)arg + 0xc))->FUN_0060e240((unsigned short)m_a4) == 2)
     {
         if (m_120 == true)
         {
@@ -335,9 +420,7 @@ SBFrameInputEvent *RHMinimap::FUN_0054a640(const void *arg)
     m_128 = 0;
     if (m_122)
     {
-        char *game = (char *)g_unk0x6c0b3c;
-        *(void **)(game + 0x1858) = 0;
-        *(void **)(game + 0x185c) = 0;
+        ((SBUI *)((char *)g_unk0x6c0b3c + 0x68))->ReleaseInput();
         m_122 = false;
     }
     return 0;
@@ -403,7 +486,7 @@ void RHMinimap::FUN_0054a920()
             SBGeoVector2D maximum(source.Max());
             destination.SetMax(FUN_005fc580(maximum, 1.0f - m_124));
         }
-        ((RHMobileUnk006091b0 *)&destination)->FUN_006091b0(SBGeoVector2D(
+        destination.Translate(SBGeoVector2D(
             m_10c.Min().Unk005fc190(FUN_005fc580(bounds.Min().Unk005fc110(m_10c.Min()), 1.0f - m_124))));
         if (m_124 >= 0.8f && !m_121)
         {
@@ -439,10 +522,10 @@ bool FUN_0054ae80(const RHMinimapHighlightedElement &element)
 }
 
 // FUNCTION: GAME 0x0054ae90
-bool RHMinimap::FUN_0054ae90(RHElement *element)
+bool RHMinimap::FUN_0054ae90(const RHElement *element) const
 {
-    RHMinimapHighlightedElement *entry = *(RHMinimapHighlightedElement **)((char *)this + 0xd0);
-    RHMinimapHighlightedElement *end = *(RHMinimapHighlightedElement **)((char *)this + 0xd4);
+    const RHMinimapHighlightedElement *entry = m_highlighted.begin();
+    const RHMinimapHighlightedElement *end = m_highlighted.end();
     for (; entry != end; ++entry)
     {
         if (entry->m_element == element)

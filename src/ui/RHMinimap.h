@@ -97,6 +97,7 @@ public:
     RHMinimap();
     ~RHMinimap();
     void *FUN_00549510(unsigned flags);
+    bool Serialize(SBFile &file);
 
     // Windows codegen hands this NO `this` and returns with a plain `ret`
     // (caller cleans the two stack args, `add esp,0x8` at 0x0054999b), so on
@@ -111,10 +112,10 @@ public:
     void FUN_00549e00(const void *point);                                      // ret 4
     void FUN_00549f50();                                                       // ret
     bool FUN_0054a0f0(const void *arg);                                        // ret 4
-    void FUN_0054a440(const void *element);                                    // ret 4
+    void SetHighlighted(const RHElement *element);
     SBFrameInputEvent *FUN_0054a640(const void *arg);                           // ret 4
     void FUN_0054a920();                                                       // ret
-    bool FUN_0054ae90(RHElement *element);
+    bool FUN_0054ae90(const RHElement *element) const;
     bool IsRealPoint(const SBGeoPoint2D &point);
     bool RealToMap(const SBGeoPoint2D &point, SBGeoPoint2D &result);
     void FUN_0054b1f0();
